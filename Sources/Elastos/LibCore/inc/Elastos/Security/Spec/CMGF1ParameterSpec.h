@@ -1,0 +1,57 @@
+
+#ifndef __CMGF1PARAMETERSPEC_H__
+#define __CMGF1PARAMETERSPEC_H__
+
+#include "_CMGF1ParameterSpec.h"
+
+namespace Elastos {
+namespace Security {
+namespace Spec {
+
+CarClass(CMGF1ParameterSpec)
+{
+public:
+    static CARAPI_(AutoPtr<IMGF1ParameterSpec>) InitStatic();
+
+    CARAPI GetDigestAlgorithm(
+        /* [out] */ String *algorithm);
+
+    CARAPI constructor(
+        /* [in] */ const String& mdName);
+
+
+public:
+    /**
+     * The predefined MGF1 parameter specification with an "SHA-1" message
+     * digest.
+     */
+    static const AutoPtr<IMGF1ParameterSpec> SHA1;
+
+    /**
+     * The predefined MGF1 parameter specification with an "SHA-256" message
+     * digest.
+     */
+    static const AutoPtr<IMGF1ParameterSpec> SHA256;
+
+    /**
+     * The predefined MGF1 parameter specification with an "SHA-384" message
+     * digest.
+     */
+    static const AutoPtr<IMGF1ParameterSpec> SHA384;
+
+    /**
+     * The predefined MGF1 parameter specification with an "SHA-512" message
+     * digest.
+     */
+    static const AutoPtr<IMGF1ParameterSpec> SHA512;
+
+private:
+    //  Message digest algorithm name
+    String mMdName;
+};
+
+} // namespace Spec
+} // namespace Security
+} // namespace Elastos
+
+#endif // __CMGF1PARAMETERSPEC_H__

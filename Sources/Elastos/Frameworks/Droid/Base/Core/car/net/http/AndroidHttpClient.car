@@ -1,0 +1,188 @@
+module
+{
+    using interface Elastos.IO.IInputStream;
+
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IContentResolver;
+    interface Elastos.Droid.Net.Http.IHeaders;
+    interface Elastos.Droid.Net.Http.IHttpsConnection;
+    interface Org.Apache.Http.IHttpRequest;
+    interface Org.Apache.Http.IHttpEntity;
+    interface Org.Apache.Http.Entity.IAbstractHttpEntity;
+    interface Org.Apache.Http.IHttpEntityEnclosingRequest;
+    interface Org.Apache.Http.IStatusLine;
+    interface Org.Apache.Http.Params.IHttpParams;
+    interface Elastos.Net.ISocket;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+    namespace Http {
+
+    interface IAndroidHttpClient {
+        /**
+         * Release resources associated with this client.  You must call this,
+         * or significant resources (sockets and memory) may be leaked.
+         */
+        Close();
+
+        /**
+         * Enables cURL request logging for this client.
+         *
+         * @param name to log messages with
+         * @param level at which to log messages (see {@link android.util.Log})
+         */
+        EnableCurlLogging(
+            [in] String name,
+            [in] Int32 level);
+
+        /**
+         * Disables cURL logging for this client.
+         */
+        DisableCurlLogging();
+    }
+
+    [deprecated]
+    interface IAndroidHttpClientHelper {
+        /**
+         * Create a new HttpClient with reasonable defaults (which you can update).
+         *
+         * @param userAgent to report in your HTTP requests
+         * @param context to use for caching SSL sessions (may be null for no caching)
+         * @return AndroidHttpClient for you to use for all your requests.
+         */
+        NewInstance(
+            [in] String userAgent,
+            [in] IContext* ctx,
+            [out] IAndroidHttpClient** client);
+
+        /**
+         * Create a new HttpClient with reasonable defaults (which you can update).
+         * @param userAgent to report in your HTTP requests.
+         * @return AndroidHttpClient for you to use for all your requests.
+         */
+        NewInstanceEx(
+            [in] String userAgent,
+            [out] IAndroidHttpClient** client);
+
+        /**
+         * Modifies a request to indicate to the server that we would like a
+         * gzipped response.  (Uses the "Accept-Encoding" HTTP header.)
+         * @param request the request to modify
+         * @see #getUngzippedContent
+         */
+        ModifyRequestToAcceptGzipResponse(
+            [in] IHttpRequest* request);
+
+        /**
+         * Gets the input stream from a response entity.  If the entity is gzipped
+         * then this will get a stream over the uncompressed data.
+         *
+         * @param entity the entity whose content should be read
+         * @return the input stream to read from
+         * @throws IOException
+         */
+        GetUngzippedContent(
+            [in] IHttpEntity* entity,
+            [out] IInputStream** stream);
+
+        /**
+         * Compress data to send to server.
+         * Creates a Http Entity holding the gzipped data.
+         * The data will not be compressed if it is too short.
+         * @param data The bytes to compress
+         * @return Entity holding the data
+         */
+        GetCompressedEntity(
+            [in] ArrayOf<Byte>* data,
+            [in] IContentResolver* resolver,
+            [out] IAbstractHttpEntity** entity);
+
+        /**
+         * Retrieves the minimum size for compressing data.
+         * Shorter data will not be compressed.
+         */
+        GetMinGzipSize(
+            [in] IContentResolver* resolver,
+            [out] Int64* size);
+
+        /**
+         * Returns the date of the given HTTP date string. This method can identify
+         * and parse the date formats emitted by common HTTP servers, such as
+         * <a href="http://www.ietf.org/rfc/rfc0822.txt">RFC 822</a>,
+         * <a href="http://www.ietf.org/rfc/rfc0850.txt">RFC 850</a>,
+         * <a href="http://www.ietf.org/rfc/rfc1036.txt">RFC 1036</a>,
+         * <a href="http://www.ietf.org/rfc/rfc1123.txt">RFC 1123</a> and
+         * <a href="http://www.opengroup.org/onlinepubs/007908799/xsh/asctime.html">ANSI
+         * C's asctime()</a>.
+         *
+         * @return the number of milliseconds since Jan. 1, 1970, midnight GMT.
+         * @throws IllegalArgumentException if {@code dateString} is not a date or
+         *     of an unsupported format.
+         */
+        ParseDate(
+            [in] String dateString,
+            [out] Int64* date);
+    }
+
+    interface IAndroidHttpClientConnection {
+        /**
+         * Bind socket and set HttpParams to AndroidHttpClientConnection
+         * @param socket outgoing socket
+         * @param params HttpParams
+         * @throws IOException
+          */
+        Bind(
+            [in] ISocket* socket,
+            [in] IHttpParams* params);
+
+        ToString(
+            [out] String* str);
+
+        /**
+         * Sends the request line and all headers over the connection.
+         * @param request the request whose headers to send.
+         * @throws HttpException
+         * @throws IOException
+         */
+        SendRequestHeader(
+            [in] IHttpRequest* request);
+
+        /**
+         * Sends the request entity over the connection.
+         * @param request the request whose entity to send.
+         * @throws HttpException
+         * @throws IOException
+         */
+        SendRequestEntity(
+            [in] IHttpEntityEnclosingRequest* request);
+
+        Flush();
+
+        /**
+         * Parses the response headers and adds them to the
+         * given {@code headers} object, and returns the response StatusLine
+         * @param headers store parsed header to headers.
+         * @throws IOException
+         * @return StatusLine
+         * @see HttpClientConnection#receiveResponseHeader()
+          */
+        ParseResponseHeader(
+            [in] IHeaders* headers,
+            [out] IStatusLine** statusLine);
+
+        /**
+         * Return the next response entity.
+         * @param headers contains values for parsing entity
+         * @see HttpClientConnection#receiveResponseEntity(HttpResponse response)
+         */
+        ReceiveResponseEntity(
+            [in] IHeaders* headers,
+            [out] IHttpEntity** entity);
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
+}

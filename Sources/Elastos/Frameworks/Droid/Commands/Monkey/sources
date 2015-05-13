@@ -1,0 +1,33 @@
+
+TARGET_NAME= Elastos.Droid.Commands.Monkey
+TARGET_TYPE= eco
+
+EXPORT_ALL_SYMBOLS = 1
+
+include $(MAKEDIR)/../../sources.inc
+
+VPATH := $(MAKEDIR)/../../Base/Core/src/os : $(MAKEDIR)/../../Base/Core/src/view/ : $(MAKEDIR)/../../Base/Core/src/app
+
+INCLUDES += $(MAKEDIR)/inc
+
+IMPORTS = Elastos.Droid.Core.eco
+
+SOURCES = Elastos.Droid.Commands.Monkey.car
+SOURCES += Build.cpp
+SOURCES += SystemClock.cpp
+SOURCES += ServiceManager.cpp
+SOURCES += Process.cpp
+SOURCES += ActivityManagerNative.cpp
+#SOURCES += CMotionEvent.cpp
+SOURCES += Elastos.Droid.Core.cpp
+SOURCES += Elastos.Core.cpp
+
+LIBRARIES = src/Elastos.Droid.Commands.Monkey.lib
+
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+LIBRARIES += $(PREBUILD_LIB)/libm.a
+LIBRARIES += -licuuc -licui18n -lcutils -lutils -lbinder

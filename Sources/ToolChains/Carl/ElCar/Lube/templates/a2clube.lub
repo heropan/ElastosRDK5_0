@@ -1,0 +1,9 @@
+$;;=========================================================================
+$;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
+$;;=========================================================================
+$
+$INPUT module
+$
+$TEMPLATE "android/android.lub"
+$TEMPLATE "android/a2cforeground.lub"
+$TEMPLATE "android/dirs.lub"

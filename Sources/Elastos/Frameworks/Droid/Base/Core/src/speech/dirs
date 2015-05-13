@@ -1,0 +1,3 @@
+
+DIRS += srec
+DIRS += tts

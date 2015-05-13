@@ -1,0 +1,73 @@
+
+module
+{
+    enum Elastos.Math.RoundingMode;
+
+    namespace Elastos {
+    namespace Math {
+
+    /**
+     * Immutable objects describing settings such as rounding mode and digit
+     * precision for the numerical operations provided by class BigDecimal.
+     *
+     * @sa BigDecimal
+     */
+    interface IMathContext {
+        /**
+         * Returns the precision. The precision is the number of digits used for an
+         * operation. Results are rounded to this precision. The precision is
+         * guaranteed to be non negative. If the precision is zero, then the
+         * computations have to be performed exact, results are not rounded in this
+         * case.
+         *
+         * @return the precision.
+         */
+        GetPrecision(
+            [out] Int32* precision);
+
+        /**
+         * Returns the rounding mode. The rounding mode is the strategy to be used
+         * to round results.
+         * <p>
+         * The rounding mode is one of
+         * RoundingMode#UP, RoundingMode#DOWN, RoundingMode#CEILING, RoundingMode#FLOOR,
+         * RoundingMode#HALF_UP, RoundingMode#HALF_DOWN, RoundingMode#HALF_EVEN,
+         * or RoundingMode#UNNECESSARY.
+         *
+         * @sa RoundingMode#UP
+         * @sa RoundingMode#DOWN
+         * @sa RoundingMode#CEILING
+         * @sa RoundingMode#FLOOR
+         * @sa RoundingMode#HALF_UP
+         * @sa RoundingMode#HALF_DOWN
+         * @sa RoundingMode#HALF_EVEN
+         * @sa RoundingMode#UNNECESSARY
+         *
+         * @return the rounding mode.
+         */
+        GetRoundingMode(
+            [out] RoundingMode* roundingMode);
+    }
+
+    /**
+     * Immutable objects describing settings such as rounding mode and digit precision
+     * for the numerical operations provided by class BigDecimal.
+     */
+
+    interface IMathContextHelper {
+        GetDECIMAL32(
+            [out] IMathContext** context);
+
+        GetDECIMAL64(
+            [out] IMathContext** context);
+
+        GetDECIMAL128(
+            [out] IMathContext** context);
+
+        GetUNLIMITED(
+            [out] IMathContext** context);
+    }
+
+    } // namespace Math
+    } // namespace Elastos
+}

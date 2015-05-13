@@ -1,0 +1,22 @@
+module
+{
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Text.IParcelableSpan;
+    interface Elastos.Droid.Text.Style.ILeadingMarginSpan;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    interface IQuoteSpan /*implements ILeadingMarginSpan, IParcelableSpan*/ {
+        GetColor(
+            [out] Int32* ret);
+    }
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

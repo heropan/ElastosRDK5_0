@@ -1,0 +1,43 @@
+
+#ifndef __CPPPOENATIVE_H__
+#define __CPPPOENATIVE_H__
+
+#include "_CPppoeNative.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Net {
+namespace Pppoe {
+
+CarClass(CPppoeNative)
+{
+public:
+
+    CARAPI GetInterfaceName(
+        /* [in] */ Int32 index,
+        /* [out] */ String* str);
+
+    CARAPI GetInterfaceCnt(
+        /* [out] */ Int32* val);
+
+    CARAPI InitPppoeNative(
+        /* [out] */ Int32* val);
+
+    CARAPI WaitForEvent(
+        /* [out] */ String* str);
+
+    CARAPI IsInterfaceAdded(
+        /* [in] */ const String& ifname,
+        /* [out] */ Int32* val);
+public:
+    static const String TAG;
+private:
+    // TODO: Add your private member variables here.
+};
+
+} // Pppoe
+} // Net
+} // Droid
+} // Elastos
+
+#endif // __CPPPOENATIVE_H__

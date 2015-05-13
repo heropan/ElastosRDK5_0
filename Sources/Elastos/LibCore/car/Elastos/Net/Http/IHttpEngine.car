@@ -1,0 +1,116 @@
+
+module
+{
+    using interface Elastos.IO.IInputStream;
+    using interface Elastos.IO.IOutputStream;
+    using interface Elastos.Net.ICacheResponse;
+    using interface Elastos.Net.IURI;
+
+    namespace Elastos {
+    namespace Net {
+    namespace Http {
+
+    /**
+     * Handles a single HTTP request/response pair. Each HTTP engine follows this
+     * lifecycle:
+     * <ol>
+     *     <li>It is created.
+     *     <li>The HTTP request message is sent with sendRequest(). Once the request
+     *         is sent it is an error to modify the request headers. After
+     *         sendRequest() has been called the request body can be written to if
+     *         it exists.
+     *     <li>The HTTP response message is read with readResponse(). After the
+     *         response has been read the response headers and body can be read.
+     *         All responses have a response body input stream, though in some
+     *         instances this stream is empty.
+     * </ol>
+     *
+     * <p>The request and response may be served by the HTTP response cache, by the
+     * network, or by both in the event of a conditional GET.
+     *
+     * <p>This class may hold a socket connection that needs to be released or
+     * recycled. By default, this socket connection is held when the last byte of
+     * the response is consumed. To release the connection when it is no longer
+     * required, use {@link #automaticallyReleaseConnectionToPool()}.
+     */
+    interface IHttpEngine {
+
+        GetUri(
+            [out] IURI** url);
+
+        /**
+         * Figures out what the response source will be, and opens a socket to that
+         * source if necessary. Prepares the request headers and gets ready to start
+         * writing the request body if it exists.
+         */
+        SendRequest();
+
+        /**
+         * Returns the request body or null if this request doesn't have a body.
+         */
+        GetRequestBody(
+            [out] IOutputStream** os);
+
+        HasResponse(
+            [out] Boolean* value);
+
+        GetRequestHeaders(
+            [out] IRequestHeaders** requesh);
+
+        GetResponseHeaders(
+            [out] IResponseHeaders** rponh);
+
+        GetResponseCode(
+            [out] Int32* value);
+
+        GetResponseBody(
+            [out] IInputStream** is);
+
+        GetCacheResponse(
+            [out] ICacheResponse** cr);
+
+        GetConnection(
+            [out] IHttpConnection** hc);
+
+        HasRecycledConnection(
+            [out] Boolean* value);
+
+        /**
+         * Cause the socket connection to be released to the connection pool when
+         * it is no longer needed. If it is already unneeded, it will be pooled
+         * immediately.
+         */
+        AutomaticallyReleaseConnectionToPool();
+
+        /**
+         * Releases this engine so that its resources may be either reused or
+         * closed.
+         */
+        ToRelease(
+            [in] Boolean reusable);
+
+        /**
+         * Returns true if the response must have a (possibly 0-length) body.
+         * See RFC 2616 section 4.3.
+         */
+        HasResponseBody(
+            [out] Boolean* value);
+
+        /**
+         * Trailers are headers included after the last chunk of a response encoded
+         * with chunked encoding.
+         */
+        ReadTrailers();
+
+        /**
+         * Flushes the remaining request header and body, parses the HTTP response
+         * headers and starts reading the HTTP response body if it exists.
+         */
+        ReadResponse();
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Elastos
+
+}

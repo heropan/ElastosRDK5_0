@@ -1,0 +1,138 @@
+
+module
+{
+    interface Elastos.Droid.Content.IComponentName;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace AppWidget {
+
+        /**
+         * Describes the meta data for an installed AppWidget provider. The fields in this class correspond to the fields in the <appwidget-provider> xml tag.
+         */
+        interface IAppWidgetProviderInfo {
+            /**
+             * Widget is not resizable.
+             */
+            const Int32 RESIZE_NONE             = 0;
+            /**
+             * Widget is resizable in the horizontal axis only.
+             */
+            const Int32 RESIZE_HORIZONTAL       = 1;
+            /**
+             * Widget is resizable in the vertical axis only.
+             */
+            const Int32 RESIZE_VERTICAL         = 2;
+            /**
+             * Widget is resizable in both the horizontal and vertical axes.
+             */
+            const Int32 RESIZE_BOTH = RESIZE_HORIZONTAL | RESIZE_VERTICAL;
+
+            /**
+             * Indicates that the widget can be displayed on the home screen. This is the default value.
+             */
+            const Int32 WIDGET_CATEGORY_HOME_SCREEN = 1;
+
+            /**
+             * Indicates that the widget can be displayed on the keyguard.
+             */
+            const Int32 WIDGET_CATEGORY_KEYGUARD = 2;
+
+            SetProvider(
+                [in] IComponentName* name);
+
+            GetProvider(
+                [out] IComponentName** name);
+
+            SetMinWidth(
+                [in] Int32 width);
+
+            GetMinWidth(
+                [out] Int32* width);
+
+            SetMinHeight(
+                [in] Int32 height);
+
+            GetMinHeight(
+                [out] Int32* height);
+
+            SetMinResizeWidth(
+                [in] Int32 width);
+
+            GetMinResizeWidth(
+                [out] Int32* width);
+
+            SetMinResizeHeight(
+                [in] Int32 height);
+
+            GetMinResizeHeight(
+                [out] Int32* height);
+
+            SetUpdatePeriodMillis(
+                [in] Int32 period);
+
+            GetUpdatePeriodMillis(
+                [out] Int32* period);
+
+            SetInitialLayout(
+                [in] Int32 layout);
+
+            GetInitialLayout(
+                [out] Int32* layout);
+
+            SetInitialKeyguardLayout(
+                [in] Int32 layout);
+
+            GetInitialKeyguardLayout(
+                [out] Int32* layout);
+
+            SetConfigure(
+                [in] IComponentName* name);
+
+            GetConfigure(
+                [out] IComponentName** name);
+
+            SetLabel(
+                [in] String label);
+
+            GetLabel(
+                [out] String* label);
+
+            SetIcon(
+                [in] Int32 icon);
+
+            GetIcon(
+                [out] Int32* icon);
+
+            SetAutoAdvanceViewId(
+                [in] Int32 id);
+
+            GetAutoAdvanceViewId(
+                [out] Int32* id);
+
+            SetPreviewImage(
+                [in] Int32 image);
+
+            GetPreviewImage(
+                [out] Int32* image);
+
+            SetResizeMode(
+                [in] Int32 mode);
+
+            GetResizeMode(
+                [out] Int32* mode);
+
+            SetWidgetCategory(
+                [in] Int32 category);
+
+            GetWidgetCategory(
+                [out] Int32* category);
+
+            Clone(
+                [out] IAppWidgetProviderInfo** info);
+        }
+
+    }//namespace AppWidget
+    }//namespace Droid
+    }//namespace Elastos
+}

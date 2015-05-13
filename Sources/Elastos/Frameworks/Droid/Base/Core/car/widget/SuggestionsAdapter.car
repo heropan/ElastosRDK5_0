@@ -1,0 +1,49 @@
+
+module
+{
+    interface Elastos.Droid.View.IView;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
+
+    /**
+     * Provides the contents for the suggestion drop-down list.in {@link SearchDialog}.
+     *
+     * @hide
+     */
+    interface ISuggestionsAdapter extends Elastos.Droid.Widget.IResourceCursorAdapter
+    {
+        const Int32 REFINE_NONE = 0;
+        const Int32 REFINE_BY_ENTRY = 1;
+        const Int32 REFINE_ALL = 2;
+
+
+        /**
+         * Enables query refinement for all suggestions. This means that an additional icon
+         * will be shown for each entry. When clicked, the suggested text on that line will be
+         * copied to the query text field.
+         * <p>
+         *
+         * @param refine which queries to refine. Possible values are {@link #REFINE_NONE},
+         * {@link #REFINE_BY_ENTRY}, and {@link #REFINE_ALL}.
+         */
+        SetQueryRefinement(
+            [in] Int32 refineWhat);
+
+        /**
+         * Returns the current query refinement preference.
+         * @return value of query refinement preference
+         */
+        GetQueryRefinement(
+            [out] Int32* value);
+
+        Close();
+
+
+    }
+
+    } // namespace Widget
+    } // namespace Droid
+    } // namespace Elastos
+}

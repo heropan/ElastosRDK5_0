@@ -1,0 +1,27 @@
+
+module
+{
+    interface Elastos.Droid.View.IKeyEvent;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Policy {
+
+    interface IPhoneFallbackEventHandler extends Elastos.Droid.View.IFallbackEventHandler {
+        OnKeyDown(
+            [in] Int32 keyCode,
+            [in] IKeyEvent *event,
+            [out] Boolean *res);
+
+        OnKeyUp(
+            [in] Int32 keyCode,
+            [in] IKeyEvent *event,
+            [out] Boolean *res);
+    }
+
+    } // namespace Policy
+    } // namespace Internal
+    } // namepsace Droid
+    } // namespace Elastos
+}

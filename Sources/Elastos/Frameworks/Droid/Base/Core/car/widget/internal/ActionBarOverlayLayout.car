@@ -1,0 +1,30 @@
+
+module 
+{
+    interface Elastos.Droid.Internal.App.IActionBarImpl;
+    interface Elastos.Droid.Widget.IFrameLayout;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+    namespace Internal{
+
+    interface IActionBarOverlayLayout extends Elastos.Droid.Widget.IFrameLayout
+    {
+        SetActionBar(
+            [in] IActionBarImpl* impl);
+
+        SetShowingForActionMode(
+            [in] Boolean showing);
+    }
+
+
+    }// namespace Internal
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+
+}
+
+
+

@@ -1,0 +1,27 @@
+module
+{
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.Res.IConfiguration;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+
+    [local]
+    interface ISystemUI {
+        Start();
+
+        SetContext(
+            [in] IContext* ctx);
+
+        GetContext(
+            [out] IContext** context);
+
+        OnConfigurationChanged(
+            [in] IConfiguration* newConfig);
+    }
+
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

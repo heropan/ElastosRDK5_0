@@ -1,0 +1,102 @@
+module
+{
+    merge("appwidget/AppWidgetProviderInfo.car");
+    merge("appwidget/AppWidgetHostView.car");
+    merge("appwidget/AppWidgetHost.car");
+    merge("appwidget/IAppWidgetHost.car");
+    merge("appwidget/AppWidgetManager.car");
+    merge("appwidget/AppWidgetProvider.car");
+    merge("appwidget/IAppWidgetService.car");
+
+    using interface Elastos.IO.IParcel;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
+    interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.View.IViewParent;
+    interface Elastos.Droid.View.IViewManager;
+    interface Elastos.Droid.View.IKeyEventCallback;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.Widget.IRemoteViewsOnClickHandler;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace AppWidget {
+
+        [local]
+        class CAppWidgetHost {
+            constructor(
+                [in] IContext* ctx,
+                [in] Int32 hostId);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] Int32 hostId,
+                [in] IRemoteViewsOnClickHandler* handler,
+                [in] ILooper* looper);
+
+            interface IAppWidgetHost;
+        }
+
+        singleton class CAppWidgetHostHelper {
+            interface IAppWidgetHostHelper;
+        }
+
+        [local]
+        class CAppWidgetHostCallbacks {
+            constructor(
+                [in] IAppWidgetHost* host);
+
+            interface IIAppWidgetHost;
+        }
+
+        [local]
+        class CAppWidgetHostView {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IRemoteViewsOnClickHandler* handler);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] Int32 animationIn,
+                [in] Int32 animationOut);
+
+            interface IAppWidgetHostView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        singleton class CAppWidgetHostViewHelper {
+            interface IAppWidgetHostViewHelper;
+        }
+
+        [local]
+        class CAppWidgetManager {
+            constructor(
+                [in] IContext* ctx);
+
+            interface IAppWidgetManager;
+        }
+
+        [local]
+        singleton class CAppWidgetManagerHelper {
+            interface IAppWidgetManagerHelper;
+        }
+
+        class CAppWidgetProviderInfo {
+            constructor();
+
+            interface IAppWidgetProviderInfo;
+            interface IParcelable;
+        }
+
+    }//namespace AppWidget
+    }//namespace Droid
+    }//namespace Elastos
+}

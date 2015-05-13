@@ -1,0 +1,22 @@
+
+module
+{
+    interface Elastos.Droid.Utility.IPoolable;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Utility {
+
+    interface IPool {
+        Acquire(
+            [out] IPoolable** element);
+
+        // Method name Release is duplicated in class, Release->ReleaseElement
+        ReleaseElement(
+            [in] IPoolable* element);
+    }
+
+    } // namespace Utility
+    } // namepsace Droid
+    } // namespace Elastos
+}

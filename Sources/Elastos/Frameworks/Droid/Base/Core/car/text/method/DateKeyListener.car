@@ -1,0 +1,40 @@
+module
+{
+    interface Elastos.Droid.Text.Method.INumberKeyListener;
+    interface Elastos.Droid.Text.Method.INumberKeyListenerHelper;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Method {
+
+    /**
+     * For entering dates in a text field.
+     * <p></p>
+     * As for all implementations of {@link KeyListener}, this class is only concerned
+     * with hardware keyboards.  Software input methods have no obligation to trigger
+     * the methods in this class.
+     */
+    interface IDateKeyListener extends INumberKeyListener {}
+
+    interface IDateKeyListenerHelper extends INumberKeyListenerHelper {
+
+        /**
+         * The characters that are used.
+         *
+         * @see KeyEvent#getMatch
+         * @see #getAcceptedChars
+         */
+        GetCHARACTERS(
+            [out,callee] ArrayOf<Char32>* ret);
+
+        GetInstance(
+            [out] IDateKeyListener** ret);
+
+    }
+
+    }//namespace Method
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+}

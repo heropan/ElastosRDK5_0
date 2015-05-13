@@ -1,0 +1,59 @@
+module
+{
+    using interface Elastos.Utility.IObjectStringMap;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.View.IWindow;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    [local]
+    interface ILocalActivityManager {
+        StartActivity(
+            [in] String id,
+            [in] IIntent* intent,
+            [out] IWindow** window);
+
+        DestroyActivity(
+            [in] String id,
+            [in] Boolean finish,
+            [out] IWindow** window);
+
+        GetCurrentActivity(
+            [out] IActivity** activity);
+
+        GetCurrentId(
+            [out] String* id);
+
+        GetActivity(
+            [in] String id,
+            [out] IActivity** activity);
+
+        DispatchCreate(
+            [in] IBundle* st);
+
+        SaveInstanceState(
+            [out] IBundle** st);
+
+        DispatchResume();
+
+        DispatchPause(
+            [in] Boolean finishing);
+
+        DispatchStop();
+
+        DispatchRetainNonConfigurationInstance(
+            [out] IObjectStringMap** osMap);
+
+        RemoveAllActivities();
+
+        DispatchDestroy(
+              [in] Boolean finishing);
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

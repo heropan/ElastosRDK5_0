@@ -1,0 +1,49 @@
+
+#ifndef __CX509CERTPATHIMPLHELPER_H__
+#define __CX509CERTPATHIMPLHELPER_H__
+
+#include "_CX509CertPathImplHelper.h"
+
+namespace Org {
+namespace Apache {
+namespace Harmony {
+namespace Security {
+namespace Provider {
+namespace Cert {
+
+CarClass(CX509CertPathImplHelper)
+{
+public:
+    CARAPI GetInstance(
+        /* [in] */ Elastos::IO::IInputStream * pIs,
+        /* [out] */ Org::Apache::Harmony::Security::Provider::Cert::IX509CertPathImpl ** ppInstance);
+
+    CARAPI GetInstanceEx(
+        /* [in] */ Elastos::IO::IInputStream * pIs,
+        /* [in] */ const String& encoding,
+        /* [out] */ Org::Apache::Harmony::Security::Provider::Cert::IX509CertPathImpl ** ppInstance);
+
+    CARAPI GetInstanceEx2(
+        /* [in] */ ArrayOf<Byte> * pPath,
+        /* [out] */ Org::Apache::Harmony::Security::Provider::Cert::IX509CertPathImpl ** ppInstance);
+
+    CARAPI GetInstanceEx3(
+        /* [in] */ ArrayOf<Byte> * pBytesArray,
+        /* [in] */ const String& encoding,
+        /* [out] */ Org::Apache::Harmony::Security::Provider::Cert::IX509CertPathImpl ** ppInstance);
+
+    CARAPI GetASN1(
+        /* [out] */ Org::Apache::Harmony::Security::Asn1::IASN1SequenceOf ** ppAsn1);
+
+private:
+    // TODO: Add your private member variables here.
+};
+
+}
+}
+}
+}
+}
+}
+
+#endif // __CX509CERTPATHIMPLHELPER_H__

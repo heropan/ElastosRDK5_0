@@ -1,0 +1,2 @@
+EXPORT_HEADERS = elastos/Logger.h
+EXPORT_HEADERS += elastos/Slogger.h

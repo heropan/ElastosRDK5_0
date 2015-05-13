@@ -1,0 +1,117 @@
+
+module
+{
+    interface Elastos.Droid.Widget.IImageView;
+    interface Elastos.Droid.Widget.ITextView;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Policy {
+
+    interface INetworkControllerSignalCluster {
+        SetWifiIndicators(
+            [in] Boolean visible,
+            [in] Int32 strengthIcon,
+            [in] Int32 activityIcon,
+            [in] String contentDescription);
+
+        SetMobileDataIndicators(
+            [in] Boolean visible,
+            [in] Int32 strengthIcon,
+            [in] Int32 activityIcon,
+            [in] Int32 typeIcon,
+            [in] String contentDescription,
+            [in] String typeContentDescription);
+
+        SetEthernetIndicators(
+            [in] Boolean visible,
+            [in] Int32 strengthIcon,
+            [in] Int32 activityIcon,
+            [in] String contentDescription);
+
+        SetIsAirplaneMode(
+            [in] Boolean is,
+            [in] Int32 airplaneIcon);
+    }
+
+    interface INetworkSignalChangedCallback {
+        OnWifiSignalChanged(
+            [in] Boolean enabled,
+            [in] Int32 wifiSignalIconId,
+            [in] String wifitSignalContentDescriptionId,
+            [in] String description);
+
+        OnMobileDataSignalChanged(
+            [in] Boolean enabled,
+            [in] Int32 mobileSignalIconId,
+            [in] String mobileSignalContentDescriptionId,
+            [in] Int32 dataTypeIconId,
+            [in] String dataTypeContentDescriptionId,
+            [in] String description);
+
+        OnAirplaneModeChanged(
+            [in] Boolean enabled);
+    }
+
+    [local]
+    interface INetworkController { /*extends Elastos.Droid.Content.IBroadcastReceiver*/
+        HasMobileDataFeature(
+            [out] Boolean* result);
+
+        IsEmergencyOnly(
+            [out] Boolean* result);
+
+        AddPhoneSignalIconView(
+            [in] IImageView* v);
+
+        AddDataDirectionIconView(
+            [in] IImageView* v);
+
+        AddDataDirectionOverlayIconView(
+            [in] IImageView* v);
+
+        AddWifiIconView(
+            [in] IImageView* v);
+
+        AddWimaxIconView(
+            [in] IImageView* v);
+
+        AddCombinedSignalIconView(
+            [in] IImageView* v);
+
+        AddDataTypeIconView(
+            [in] IImageView* v);
+
+        AddCombinedLabelView(
+            [in] ITextView* v);
+
+        AddMobileLabelView(
+            [in] ITextView* v);
+
+        AddWifiLabelView(
+            [in] ITextView* v);
+
+        AddEmergencyLabelView(
+            [in] ITextView* v);
+
+        AddSignalCluster(
+            [in] INetworkControllerSignalCluster* cluster);
+
+        AddNetworkSignalChangedCallback(
+            [in] INetworkSignalChangedCallback* cb);
+
+        RefreshSignalCluster(
+            [in] INetworkControllerSignalCluster* cluster);
+
+        SetStackedMode(
+            [in] Boolean stacked);
+    }
+
+    } // namespace Policy
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

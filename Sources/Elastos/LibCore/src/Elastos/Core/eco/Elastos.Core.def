@@ -1,0 +1,86 @@
+;;==========================================================================
+;; Copyright (c) 2000-20013,  Elastos, Inc.  All Rights Reserved.
+;;==========================================================================
+
+LIBRARY Elastos.Core.eco
+
+EXPORTS
+    ;;ListNode
+    ListNodeAddNext
+    ListNodeAddPrev
+    ListNodeDetach
+    ListNodeAddListAfter
+    ListNodeAddListBefore
+    ListNodeDetachSublist
+
+    ;;QuickListNode
+    QuickListNodeDetach
+
+    ;;TreeNode
+    TreeNodeAddRight
+    TreeNodeAddLeft
+    TreeNodeRemoveWithReplacement
+    TreeNodeMoveCloserToRoot
+
+    ;;MultiTreeNode
+    MultiTreeNodeAddChild
+    MultiTreeNodeDetachChild
+    MultiTreeNodeFirstChild
+    MultiTreeNodeAddNext
+    MultiTreeNodeAddPrev
+    MultiTreeNodeAddChildren
+    MultiTreeNodeAddSiblingsAfter
+    MultiTreeNodeAddSiblingsBefore
+    MultiTreeNodeDetachChildAndSiblings
+    MultiTreeNodeDetachSelfAndSiblings
+
+    ;;DoubleLinkNode
+    DoubleLinkNodeInsertPrev
+    DoubleLinkNodeInsertNext
+    DoubleLinkNodeDetach
+
+    ;;SingleLinkNode
+    SingleLinkNodeInsertNext
+    SingleLinkNodeDetach
+
+    ;;SimpleContainer
+    SimpleContainerCurrent
+    SimpleContainerMoveNext
+    SimpleContainerReset
+    SimpleContainerAdd
+    SimpleContainerRemove
+
+    ;;ObjectContainer
+    ObjectContainerDispose
+    ObjectContainerCurrent
+    ObjectContainerAdd
+    ObjectContainerRemove
+
+#if defined(_android)
+    ;;NativeThread
+    NativeThreadSelf
+    NativeCreateThread
+    NativeAttachCurrentThread
+    NativeDetachCurrentThread
+    NativeGetMainThreadGroup
+    NativeGetThreadFromThreadObject
+    NativeLockThreadList
+    NativeUnlockThreadList
+    NativeChangeStatus
+    NativeChangeThreadPriority
+    NativeGetCount
+    NativeCreateObject
+    NativeDestroyObject
+    NativeLockObject
+    NativeUnlockObject
+    NativeObjectWait
+    NativeObjectNotify
+    NativeObjectNotifyAll
+    NativeThreadSleep
+    NativeThreadInterrupt
+
+    ;;ThreadKey
+    once
+    sKeyInstance
+#endif
+

@@ -1,0 +1,27 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Opengl {
+
+    interface IEGLObjectHandle {
+        /**
+         * Returns the native handle of the wrapped EGL object. This handle can be
+         * cast to the corresponding native type on the native side.
+         *
+         * For example, EGLDisplay dpy = (EGLDisplay)handle;
+         *
+         * @return the native handle of the wrapped EGL object.
+         */
+        GetHandle(
+            [out] Int32* handle);
+
+        GetHashCode(
+            [out] Int32* code);
+    }
+
+    } // namespace Opengl
+    } // namespace Droid
+    } // namespace Elastos
+}

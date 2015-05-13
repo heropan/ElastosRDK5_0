@@ -1,0 +1,38 @@
+
+module
+{
+    interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.View.IInputChannel;
+    interface Elastos.Droid.View.IInputEvent;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+
+    interface IInputEventReceiver {
+        Dispose();
+
+        OnInputEvent(
+            [in] IInputEvent* event);
+
+        OnBatchedInputEventPending();
+
+        FinishInputEvent(
+            [in] IInputEvent* event,
+            [in] Boolean handled);
+
+        ConsumeBatchedInputEvents(
+            [in] Int64 frameTimeNanos);
+    }
+
+    interface IInputEventReceiverFactory {
+        CreateInputEventReceiver(
+            [in] IInputChannel* inputChannel,
+            [in] ILooper* looper,
+            [out] IInputEventReceiver** receiver);
+    }
+
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

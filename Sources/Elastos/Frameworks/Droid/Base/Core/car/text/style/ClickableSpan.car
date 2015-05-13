@@ -1,0 +1,36 @@
+
+module
+{
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.Text.Style.ICharacterStyle;
+    interface Elastos.Droid.Text.Style.ICharacterStyleHelper;
+    interface Elastos.Droid.Text.Style.IUpdateAppearance;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    /**
+     * If an object of this type is attached to the text of a TextView
+     * with a movement method of LinkMovementMethod, the affected spans of
+     * text can be selected.  If clicked, the {@link #onClick} method will
+     * be called.
+     */
+    [local]
+    interface IClickableSpan extends ICharacterStyle /*implements IUpdateAppearance*/ {
+        /**
+         * Performs the click action associated with this span.
+         */
+        OnClick(
+            [in] IView* widget);
+    }
+
+    interface IClickableSpanHelper extends ICharacterStyleHelper {}
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

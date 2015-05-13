@@ -1,0 +1,33 @@
+
+module
+{
+    interface Elastos.Droid.Os.IMessage;
+    interface Elastos.Droid.Os.IIMessenger;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+    interface IMessenger {
+        Send(
+            [in] IMessage* message);
+
+        GetIMessenger(
+            [out] IIMessenger** mgr);
+
+        GetHashCode(
+            [out] Int32* hashcode);
+
+        EqualsEx(
+            [in] IMessenger* other,
+            [out] Boolean* equals);
+
+        Equals(
+            [in] IInterface* other,
+            [out] Boolean* equals);
+    }
+
+    } // namespace Os
+    } // namespace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,1038 @@
+module
+{
+    using interface Elastos.Core.ICharSequence;
+
+    interface Elastos.Droid.Os.IUserHandle;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Graphics.IBitmap;
+    interface Elastos.Droid.Widget.IRemoteViews;
+    interface Elastos.Droid.Content.IContext;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    interface INotificationStyle;
+    interface INotificationAction;
+
+    /**
+     * A class that represents how a persistent notification is to be presented to the user using the NotificationManager.
+     *
+     * @sa NotificationManager
+     * <p>
+     * The Notification.Builder has been added to make it easier to construct Notifications.
+     *
+     * @sa Notification.Builder
+     * <p>
+     * <h3>Developer Guides</h3>
+     * <p>
+     * For a guide to creating notifications, read the Status Bar Notifications developer guide.
+     *
+     * @sa Status Bar Notifications
+     */
+
+    [deprecated, local, parcelable]
+    interface INotification {
+        /**
+         * Use all default values (where applicable).
+         */
+        const Int32 DEFAULT_ALL = ~0;
+
+        /**
+         * Use the default notification sound. This will ignore any given #sound.
+         *
+         * @sa #sound
+         *
+         * @see #defaults
+         */
+
+        const Int32 DEFAULT_SOUND = 1;
+
+        /**
+         * Use the default notification vibrate. This will ignore any given
+         * #vibrate. Using phone vibration requires the
+         * android.Manifest.permission#VIBRATE VIBRATE permission.
+         *
+         * @sa #vibrate
+         * @sa android.Manifest.permission#VIBRATE VIBRATE
+         *
+         * @see #defaults
+         */
+
+        const Int32 DEFAULT_VIBRATE = 2;
+
+        /**
+         * Use the default notification lights. This will ignore the
+         * #FLAG_SHOW_LIGHTS bit, and #ledARGB, #ledOffMS, or
+         * #ledOnMS.
+         *
+         * @sa #FLAG_SHOW_LIGHTS
+         * @sa #ledARGB
+         * @sa #ledOffMS
+         * @sa #ledOnMS
+         *
+         * @see #defaults
+         */
+
+        const Int32 DEFAULT_LIGHTS = 4;
+
+        /**
+         * Use this constant as the value for audioStreamType to request that
+         * the default stream type for notifications be used.  Currently the
+         * default stream type is AudioManager#STREAM_NOTIFICATION.
+         *
+         * @sa AudioManager#STREAM_NOTIFICATION
+         */
+        const Int32 STREAM_DEFAULT = -1;
+
+        /**
+         * Bit to be bitwise-ored into the #flags field that should be
+         * set if you want the LED on for this notification.
+         *
+         * @sa #flags
+         * <ul>
+         * <li>To turn the LED off, pass 0 in the alpha channel for colorARGB
+         *      or 0 for both ledOnMS and ledOffMS.</li>
+         * <li>To turn the LED on, pass 1 for ledOnMS and 0 for ledOffMS.</li>
+         * <li>To flash the LED, pass the number of milliseconds that it should
+         *      be on and off to ledOnMS and ledOffMS.</li>
+         * </ul>
+         * <p>
+         * Since hardware varies, you are not guaranteed that any of the values
+         * you pass are honored exactly.  Use the system defaults (TODO) if possible
+         * because they will be set to values that work on any given hardware.
+         * <p>
+         * The alpha channel must be set for forward compatibility.
+         *
+         */
+        const Int32 FLAG_SHOW_LIGHTS        = 0x00000001;
+
+        /**
+         * Bit to be bitwise-ored into the #flags field that should be
+         * set if this notification is in reference to something that is ongoing,
+         * like a phone call.  It should not be set if this notification is in
+         * reference to something that happened at a particular point in time,
+         * like a missed phone call.
+         *
+         * @sa #flags
+         */
+        const Int32 FLAG_ONGOING_EVENT      = 0x00000002;
+
+        /**
+         * Bit to be bitwise-ored into the #flags field that if set,
+         * the audio will be repeated until the notification is
+         * cancelled or the notification window is opened.
+         *
+         * @sa #flags
+         */
+        const Int32 FLAG_INSISTENT          = 0x00000004;
+
+        /**
+         * Bit to be bitwise-ored into the #flags field that should be
+         * set if you want the sound and/or vibration play each time the
+         * notification is sent, even if it has not been canceled before that.
+         *
+         * @sa #flags
+         */
+        const Int32 FLAG_ONLY_ALERT_ONCE    = 0x00000008;
+
+        /**
+         * Bit to be bitwise-ored into the #flags field that should be
+         * set if the notification should be canceled when it is clicked by the
+         * user.  On tablets, the
+         *
+         * @sa #flags
+         */
+        const Int32 FLAG_AUTO_CANCEL        = 0x00000010;
+
+        /**
+         * Bit to be bitwise-ored into the #flags field that should be
+         * set if the notification should not be canceled when the user clicks
+         * the Clear all button.
+         *
+         * @sa #flags
+         */
+        const Int32 FLAG_NO_CLEAR           = 0x00000020;
+
+        /**
+         * Bit to be bitwise-ored into the #flags field that should be
+         * set if this notification represents a currently running service.  This
+         * will normally be set for you by Service#startForeground.
+         *
+         * @sa #flags
+         * @sa Service#startForeground
+         */
+        const Int32 FLAG_FOREGROUND_SERVICE = 0x00000040;
+
+        /**
+         * Obsolete flag indicating high-priority notifications; use the priority field instead.
+         *
+         * @deprecated Use #priority with a positive value.
+         *
+         * @sa #priority
+         */
+        const Int32 FLAG_HIGH_PRIORITY      = 0x00000080;
+
+        /**
+         * Default notification #priority. If your application does not prioritize its own
+         * notifications, use this value for all notifications.
+         *
+         * @sa #priority
+         */
+        const Int32 PRIORITY_DEFAULT = 0;
+
+        /**
+         * Lower #priority, for items that are less important. The UI may choose to show these
+         * items smaller, or at a different position in the list, compared with your app's
+         * #PRIORITY_DEFAULT items.
+         *
+         * @sa #priority
+         */
+        const Int32 PRIORITY_LOW = -1;
+
+        /**
+         * Lowest #priority; these items might not be shown to the user except under special
+         * circumstances, such as detailed notification logs.
+         *
+         * @sa #priority
+         */
+        const Int32 PRIORITY_MIN = -2;
+
+        /**
+         * Higher #priority, for more important notifications or alerts. The UI may choose to
+         * show these items larger, or at a different position in notification lists, compared with
+         * your app's #PRIORITY_DEFAULT items.
+         *
+         * @sa #priority
+         * @sa #PRIORITY_DEFAULT
+         */
+        const Int32 PRIORITY_HIGH = 1;
+
+        /**
+         * Highest #priority, for your application's most important items that require the
+         * user's prompt attention or input.
+         *
+         * @sa #priority
+         */
+        const Int32 PRIORITY_MAX = 2;
+
+        /**
+         * @hide
+         * Notification type: incoming call (voice or video) or similar synchronous communication request.
+         */
+        const String KIND_CALL = "android.call";
+
+        /**
+         * @hide
+         * Notification type: incoming direct message (SMS, instant message, etc.).
+         */
+        const String KIND_MESSAGE = "android.message";
+
+        /**
+         * @hide
+         * Notification type: asynchronous bulk message (email).
+         */
+        const String KIND_EMAIL = "android.email";
+
+        /**
+         * @hide
+         * Notification type: calendar event.
+         */
+        const String KIND_EVENT = "android.event";
+
+        /**
+         * @hide
+         * Notification type: promotion or advertisement.
+         */
+        const String KIND_PROMO = "android.promo";
+
+        /**
+         * Extra key for people values (type TBD).
+         *
+         * @hide
+         */
+        const String EXTRA_PEOPLE = "android.people";
+
+        GetWhen(
+            [out] Int64* when);
+
+        SetWhen(
+            [in] Int64 when);
+
+        GetIcon(
+            [out] Int32* icon);
+
+        SetIcon(
+            [in] Int32 icon);
+
+        GetIconLevel(
+            [out] Int32* iconLevel);
+
+        SetIconLevel(
+            [in] Int32 iconLevel);
+
+        GetNumber(
+            [out] Int32* number);
+
+        SetNumber(
+            [in] Int32 number);
+
+        GetContentIntent(
+            [out] IPendingIntent** intent);
+
+        SetContentIntent(
+            [in] IPendingIntent* intent);
+
+        GetDeleteIntent(
+            [out] IPendingIntent** intent);
+
+        SetDeleteIntent(
+            [in] IPendingIntent* intent);
+
+        GetFullScreenIntent(
+            [out] IPendingIntent** intent);
+
+        SetFullScreenIntent(
+            [in] IPendingIntent* intent);
+
+        GetTickerText(
+            [out] ICharSequence** text);
+
+        SetTickerText(
+            [in] ICharSequence* text);
+
+        GetTickerView(
+            [out] IRemoteViews** view);
+
+        SetTickerView(
+            [in] IRemoteViews* view);
+
+        GetContentView(
+            [out] IRemoteViews** view);
+
+        SetContentView(
+            [in] IRemoteViews* view);
+
+        GetBigContentView(
+            [out] IRemoteViews** view);
+
+        SetBigContentView(
+            [in] IRemoteViews* view);
+
+        GetLargeIcon(
+            [out] IBitmap** bitmap);
+
+        SetLargeIcon(
+            [in] IBitmap* bitmap);
+
+        GetSound(
+            [out] IUri** sound);
+
+        SetSound(
+            [in] IUri* sound);
+
+        GetAudioStreamType(
+            [out] Int32* type);
+
+        SetAudioStreamType(
+            [in] Int32 type);
+
+        GetVibrate(
+            [out, callee] ArrayOf<Int64>* vibrate);
+
+        SetVibrate(
+            [in] ArrayOf<Int64>* vibrate);
+
+        GetLedARGB(
+            [out] Int32* argb);
+
+        SetLedARGB(
+            [in] Int32 argb);
+
+        GetLedOnMS(
+            [out] Int32* onMS);
+
+        SetLedOnMS(
+            [in] Int32 onMS);
+
+        GetLedOffMS(
+            [out] Int32* offMS);
+
+        SetLedOffMS(
+            [in] Int32 offMS);
+
+        GetDefaults(
+            [out] Int32* defaults);
+
+        SetDefaults(
+            [in] Int32 defaults);
+
+        GetFlags(
+            [out] Int32* flags);
+
+        SetFlags(
+            [in] Int32 flags);
+
+        GetPriority(
+            [out] Int32* priority);
+
+        SetPriority(
+            [in] Int32 priority);
+
+        GetKind(
+            [out, callee] ArrayOf<String>* kind);
+
+        SetKind(
+            [in] ArrayOf<String>* kind);
+
+        GetExtras(
+            [out] IBundle** extras);
+
+        SetExtras(
+            [in] IBundle* extras);
+
+        GetActions(
+            [out, callee] ArrayOf<INotificationAction*>* actions);
+
+        SetActions(
+            [in] ArrayOf<INotificationAction*>* actions);
+
+        /**
+         * Sets the #contentView field to be a view with the standard "Latest Event"
+         * layout.
+         *
+         * @sa #contentView
+         *
+         * <p>Uses the #icon and #when fields to set the icon and time fields
+         * in the view.</p>
+         *
+         * @sa #icon
+         * @sa #when
+         *
+         * @param context       The context for your application / activity.
+         * @param contentTitle The title that goes in the expanded entry.
+         * @param contentText  The text that goes in the expanded entry.
+         * @param contentIntent The intent to launch when the user clicks the expanded notification.
+         * If this is an activity, it must include the
+         * android.content.Intent#FLAG_ACTIVITY_NEW_TASK flag, which requires
+         * that you take care of task management as described in the
+         * <a href="{@docRoot}guide/topics/fundamentals/tasks-and-back-stack.html">Tasks and Back
+         * Stack</a> document.
+         *
+         * @sa android.content.Intent#FLAG_ACTIVITY_NEW_TASK
+         *
+         * @deprecated Use Builder instead.
+         *
+         * @sa Builder
+         */
+        //@Deprecated
+        SetLatestEventInfo(
+            [in] IContext* ctx,
+            [in] ICharSequence* contentTitle,
+            [in] ICharSequence* contentText,
+            [in] IPendingIntent* contentIntent);
+
+        SetUser(
+            [in] IUserHandle* user);
+
+        ToString(
+            [out] String* str);
+    }
+
+    interface INotificationAction {
+        Clone(
+            [out] INotificationAction** action);
+
+        GetIcon(
+            [out] Int32* icon);
+
+        GetTitle(
+            [out] ICharSequence** title);
+
+        GetActionIntent(
+            [out] IPendingIntent** actionIntent);
+    }
+
+    /**
+     * Builder class for Notification objects.
+     *
+     * @sa Notification
+     *
+     * Provides a convenient way to set the various fields of a Notification and generate
+     * content views using the platform's notification layout template. If your app supports
+     * versions of Android as old as API level 4, you can instead use
+     * android.support.v4.app.NotificationCompat.Builder NotificationCompat.Builder,
+     * available in the <a href="{@docRoot}tools/extras/support-library.html">Android Support
+     * library</a>.
+     *
+     * @sa Notification
+     * @sa android.support.v4.app.NotificationCompat.Builder NotificationCompat.Builder
+     *
+     * <p>Example:
+     *
+     * <pre class="prettyprint">
+     * Notification noti = new Notification.Builder(mContext)
+     *         .setContentTitle(&quot;New mail from &quot; + sender.toString())
+     *         .setContentText(subject)
+     *         .setSmallIcon(R.drawable.new_mail)
+     *         .setLargeIcon(aBitmap)
+     *         .build();
+     * </pre>
+     */
+    [deprecated]
+    interface INotificationBuilder {
+        /**
+         * Add a timestamp pertaining to the notification (usually the time the event occurred).
+         * It will be shown in the notification content view by default; use
+         * Builder#setShowWhen(boolean) setShowWhen to control this.
+         *
+         * @sa Builder#setShowWhen(boolean) setShowWhen
+         * @see Notification#when
+         */
+        SetWhen(
+            [in] Int64 when);
+
+        /**
+         * Control whether the timestamp set with Builder#setWhen(long) setWhen is shown
+         * in the content view.
+         *
+         * @sa Builder#setWhen(long) setWhen
+         */
+        SetShowWhen(
+            [in] Boolean show);
+
+        /**
+         * Show the Notification#when field as a stopwatch.
+         *
+         * @sa Notification#when
+         *
+         * Instead of presenting <code>when</code> as a timestamp, the notification will show an
+         * automatically updating display of the minutes and seconds since <code>when</code>.
+         *
+         * Useful when showing an elapsed time (like an ongoing phone call).
+         *
+         * @see android.widget.Chronometer
+         * @see Notification#when
+         */
+        SetUsesChronometer(
+            [in] Boolean b);
+
+        /**
+         * Set the small icon resource, which will be used to represent the notification in the
+         * status bar.
+         *
+
+         * The platform template for the expanded view will draw this icon in the left, unless a
+         * #setLargeIcon(Bitmap) large icon has also been specified, in which case the small
+         * icon will be moved to the right-hand side.
+         *
+         * @sa #setLargeIcon(Bitmap) large icon
+         *
+
+         * @param icon
+         *            A resource ID in the application's package of the drawable to use.
+         * @see Notification#icon
+         */
+        SetSmallIcon(
+            [in] Int32 icon);
+
+        /**
+         * A variant of #setSmallIcon(int) setSmallIcon(int) that takes an additional
+         * level parameter for when the icon is a android.graphics.drawable.LevelListDrawable LevelListDrawable.
+         *
+         * @sa #setSmallIcon(int) setSmallIcon(int)
+         * @sa android.graphics.drawable.LevelListDrawable LevelListDrawable
+         *
+         * @param icon A resource ID in the application's package of the drawable to use.
+         * @param level The level to use for the icon.
+         *
+         * @see Notification#icon
+         * @see Notification#iconLevel
+         */
+        SetSmallIconEx(
+            [in] Int32 icon,
+            [in] Int32 level);
+
+        /**
+         * Set the first line of text in the platform notification template.
+         */
+        SetContentTitle(
+            [in] ICharSequence* title);
+
+        /**
+         * Set the second line of text in the platform notification template.
+         */
+        SetContentText(
+            [in] ICharSequence* text);
+
+        /**
+         * Set the third line of text in the platform notification template.
+         * Don't use if you're also using #setProgress(int, int, boolean); they occupy the same location in the standard template.
+         *
+         * @sa #setProgress(int, int, boolean)
+         */
+        SetSubText(
+            [in] ICharSequence* text);
+
+        /**
+         * Set the large number at the right-hand side of the notification.  This is
+         * equivalent to setContentInfo, although it might show the number in a different
+         * font size for readability.
+         */
+        SetNumber(
+            [in] Int32 number);
+
+        /**
+         * A small piece of additional information pertaining to this notification.
+         *
+         * The platform template will draw this on the last line of the notification, at the far
+         * right (to the right of a smallIcon if it has been placed there).
+         */
+        SetContentInfo(
+            [in] ICharSequence* info);
+
+        /**
+         * Set the progress this notification represents.
+         *
+         * The platform template will represent this using a ProgressBar.
+         *
+         * @sa ProgressBar
+         */
+        SetProgress(
+            [in] Int32 max,
+            [in] Int32 progress,
+            [in] Boolean indeterminate);
+
+        /**
+         * Supply a custom RemoteViews to use instead of the platform template.
+         *
+         * @see Notification#contentView
+         */
+        SetContent(
+            [in] IRemoteViews* views);
+
+        /**
+         * Supply a PendingIntent to be sent when the notification is clicked.
+         *
+         * @sa PendingIntent
+         *
+         * As of android.os.Build.VERSION_CODES#HONEYCOMB, if this field is unset and you
+         * have specified a custom RemoteViews with #setContent(RemoteViews), you can use
+         * RemoteViews#setOnClickPendingIntent RemoteViews.setOnClickPendingIntent(int,PendingIntent)
+         * to assign PendingIntents to individual views in that custom layout (i.e., to create
+         * clickable buttons inside the notification view).
+         *
+         * @sa android.os.Build.VERSION_CODES#HONEYCOMB
+         * @sa #setContent(RemoteViews)
+         * @sa RemoteViews#setOnClickPendingIntent RemoteViews.setOnClickPendingIntent(int,PendingIntent)
+         *
+         * @see Notification#contentIntent Notification.contentIntent
+         */
+        SetContentIntent(
+            [in] IPendingIntent* intent);
+
+        /**
+         * Supply a PendingIntent to send when the notification is cleared explicitly by the user.
+         *
+         * @sa PendingIntent
+         *
+         * @see Notification#deleteIntent
+         */
+        SetDeleteIntent(
+            [in] IPendingIntent* intent);
+
+        /**
+         * An intent to launch instead of posting the notification to the status bar.
+         * Only for use with extremely high-priority notifications demanding the user's
+         * <strong>immediate</strong> attention, such as an incoming phone call or
+         * alarm clock that the user has explicitly set to a particular time.
+         * If this facility is used for something else, please give the user an option
+         * to turn it off and use a normal notification, as this can be extremely
+         * disruptive.
+         *
+         * @param intent The pending intent to launch.
+         * @param highPriority Passing true will cause this notification to be sent
+         *          even if other notifications are suppressed.
+         *
+         * @see Notification#fullScreenIntent
+         */
+        SetFullScreenIntent(
+            [in] IPendingIntent* intent,
+            [in] Boolean highPriority);
+
+        /**
+         * Set the "ticker" text which is displayed in the status bar when the notification first
+         * arrives.
+         *
+         * @see Notification#tickerText
+         */
+        SetTicker(
+            [in] ICharSequence* tickerText);
+
+        /**
+         * Set the text that is displayed in the status bar when the notification first
+         * arrives, and also a RemoteViews object that may be displayed instead on some
+         * devices.
+         *
+         * @see Notification#tickerText
+         * @see Notification#tickerView
+         */
+        SetTickerEx(
+            [in] ICharSequence* tickerText,
+            [in] IRemoteViews* views);
+
+        /**
+         * Add a large icon to the notification (and the ticker on some devices).
+         *
+         * In the platform template, this image will be shown on the left of the notification view
+         * in place of the #setSmallIcon(int) small icon (which will move to the right side).
+         *
+         * @sa #setSmallIcon(int) small icon
+         *
+         * @see Notification#largeIcon
+         */
+        SetLargeIcon(
+            [in] IBitmap* icon);
+
+        /**
+         * Set the sound to play.
+         *
+         * It will be played on the #STREAM_DEFAULT default stream for notifications.
+         *
+         * @sa #STREAM_DEFAULT default stream
+         *
+         * @see Notification#sound
+         */
+        SetSound(
+            [in] IUri* sound);
+
+        /**
+         * Set the sound to play, along with a specific stream on which to play it.
+         *
+         * See android.media.AudioManager for the <code>STREAM_</code> constants.
+         *
+         * @sa android.media.AudioManager
+         *
+         * @see Notification#sound
+         */
+        SetSoundEx(
+            [in] IUri* sound,
+            [in] Int32 streamType);
+
+        /**
+         * Set the vibration pattern to use.
+         *
+
+         * See android.os.Vibrator#vibrate(long[], int) for a discussion of the
+         * <code>pattern</code> parameter.
+         *
+         * @sa android.os.Vibrator#vibrate(long[], int)
+         *
+         * @see Notification#vibrate
+         */
+        SetVibrate(
+            [in] ArrayOf<Int64>* pattern);
+
+        /**
+         * Set the desired color for the indicator LED on the device, as well as the
+         * blink duty cycle (specified in milliseconds).
+         *
+         * Not all devices will honor all (or even any) of these values.
+         *
+         * @see Notification#ledARGB
+         * @see Notification#ledOnMS
+         * @see Notification#ledOffMS
+         */
+        SetLights(
+            [in] Int32 argb,
+            [in] Int32 onMs,
+            [in] Int32 offMs);
+
+        /**
+         * Set whether this is an "ongoing" notification.
+         *
+         * Ongoing notifications cannot be dismissed by the user, so your application or service
+         * must take care of canceling them.
+         *
+         * They are typically used to indicate a background task that the user is actively engaged
+         * with (e.g., playing music) or is pending in some way and therefore occupying the device
+         * (e.g., a file download, sync operation, active network connection).
+         *
+         * @see Notification#FLAG_ONGOING_EVENT
+         * @see Service#setForeground(boolean)
+         */
+        SetOngoing(
+            [in] Boolean ongoing);
+
+        /**
+         * Set this flag if you would only like the sound, vibrate
+         * and ticker to be played if the notification is not already showing.
+         *
+         * @see Notification#FLAG_ONLY_ALERT_ONCE
+         */
+        SetOnlyAlertOnce(
+            [in] Boolean onlyAlertOnce);
+
+        /**
+         * Make this notification automatically dismissed when the user touches it. The
+         * PendingIntent set with #setDeleteIntent will be sent when this happens.
+         *
+         * @sa #setDeleteIntent
+         *
+         * @see Notification#FLAG_AUTO_CANCEL
+         */
+        SetAutoCancel(
+            [in] Boolean autoCancel);
+
+        /**
+         * Set which notification properties will be inherited from system defaults.
+         * <p>
+         * The value should be one or more of the following fields combined with
+         * bitwise-or:
+         * #DEFAULT_SOUND, #DEFAULT_VIBRATE, #DEFAULT_LIGHTS.
+         *
+         * @sa #DEFAULT_SOUND
+         * @sa #DEFAULT_VIBRATE
+         * @sa #DEFAULT_LIGHTS
+         * <p>
+         * For all default values, use #DEFAULT_ALL.
+         *
+         * @sa #DEFAULT_ALL
+         */
+        SetDefaults(
+            [in] Int32 defaults);
+
+        /**
+         * Set the priority of this notification.
+         *
+         * @see Notification#priority
+         */
+        SetPriority(
+            [in] Int32 pri);
+
+        /**
+         * @hide
+         *
+         * Add a kind (category) to this notification. Optional.
+         *
+         * @see Notification#kind
+         */
+        AddKind(
+            [in] String k);
+
+        /**
+         * Add metadata to this notification.
+         *
+         * A reference to the Bundle is held for the lifetime of this Builder, and the Bundle's
+         * current contents are copied into the Notification each time #build() is
+         * called.
+         *
+         * @sa #build()
+         *
+         * @see Notification#extras
+         * @hide
+         */
+        SetExtras(
+            [in] IBundle* bag);
+
+        /**
+         * Add an action to this notification. Actions are typically displayed by
+         * the system as a button adjacent to the notification content.
+         *
+         * @param icon Resource ID of a drawable that represents the action.
+         * @param title Text describing the action.
+         * @param intent PendingIntent to be fired when the action is invoked.
+         */
+        AddAction(
+            [in] Int32 icon,
+            [in] ICharSequence* title,
+            [in] IPendingIntent* intent);
+
+        /**
+         * Add a rich notification style to be applied at build time.
+         *
+         * @param style Object responsible for modifying the notification style.
+         */
+        SetStyle(
+            [in] INotificationStyle* style);
+
+        /**
+         * @deprecated Use #build() instead.
+         *
+         * @sa #build()
+         */
+        //@Deprecated
+        GetNotification(
+            [out] INotification** notification);
+
+        /**
+         * Combine all of the options that have been set and return a new  Notification
+         * object.
+         *
+         * @sa Notification
+         */
+        Build(
+            [out] INotification** notification);
+
+        /**
+         * Apply the unstyled operations and return a new {@link Notification} object.
+         */
+        BuildUnstyled(
+            [out] INotification** notification);
+
+        GetSubText(
+            [out] ICharSequence** text);
+
+        GetContentText(
+            [out] ICharSequence** text);
+
+        ApplyStandardTemplateWithActions(
+            [in] Int32 layoutId,
+            [out] IRemoteViews** remoteViews);
+    }
+
+    /**
+     * An object that can apply a rich notification style to a Notification.Builder
+     * object.
+     *
+     * @sa Notification.Builder
+     */
+    interface INotificationStyle {
+        SetBuilder(
+            [in] INotificationBuilder* builder);
+
+        Build(
+            [out] INotification** notification);
+    }
+
+    /**
+     * Helper class for generating large-format notifications that include a large image attachment.
+     *
+     * This class is a "rebuilder": It consumes a Builder object and modifies its behavior, like so:
+     * <pre class="prettyprint">
+     * Notification noti = new Notification.BigPictureStyle(
+     *      new Notification.Builder()
+     *         .setContentTitle(&quot;New photo from &quot; + sender.toString())
+     *         .setContentText(subject)
+     *         .setSmallIcon(R.drawable.new_post)
+     *         .setLargeIcon(aBitmap))
+     *      .bigPicture(aBigBitmap)
+     *      .build();
+     * </pre>
+     *
+     * @see Notification#bigContentView
+     */
+    interface INotificationBigPictureStyle extends INotificationStyle {
+        /**
+         * Overrides ContentTitle in the big form of the template.
+         * This defaults to the value passed to setContentTitle().
+         */
+        SetBigContentTitle(
+            [in] ICharSequence* title);
+
+        /**
+         * Set the first line of text after the detail section in the big form of the template.
+         */
+        SetSummaryText(
+            [in] ICharSequence* cs);
+
+        /**
+         * Provide the bitmap to be used as the payload for the BigPicture notification.
+         */
+        BigPicture(
+            [in] IBitmap* b);
+
+        /**
+         * Override the large icon when the big notification is shown.
+         */
+        BigLargeIcon(
+            [in] IBitmap* b);
+    }
+
+    /**
+     * Helper class for generating large-format notifications that include a lot of text.
+     *
+     * This class is a "rebuilder": It consumes a Builder object and modifies its behavior, like so:
+     * <pre class="prettyprint">
+     * Notification noti = new Notification.BigTextStyle(
+     *      new Notification.Builder()
+     *         .setContentTitle(&quot;New mail from &quot; + sender.toString())
+     *         .setContentText(subject)
+     *         .setSmallIcon(R.drawable.new_mail)
+     *         .setLargeIcon(aBitmap))
+     *      .bigText(aVeryLongString)
+     *      .build();
+     * </pre>
+     *
+     * @see Notification#bigContentView
+     *
+     * @implements Elastos.Droid.App.INotificationStyle
+     */
+    interface INotificationBigTextStyle extends INotificationStyle {
+        /**
+         * Overrides ContentTitle in the big form of the template.
+         * This defaults to the value passed to setContentTitle().
+         */
+        SetBigContentTitle(
+            [in] ICharSequence* title);
+
+        /**
+         * Set the first line of text after the detail section in the big form of the template.
+         */
+        SetSummaryText(
+            [in] ICharSequence* cs);
+
+        /**
+         * Provide the longer text to be displayed in the big form of the
+         * template in place of the content text.
+         */
+        BigText(
+            [in] ICharSequence* cs);
+    }
+
+    /**
+     * Helper class for generating large-format notifications that include a list of (up to 5) strings.
+     *
+     * This class is a "rebuilder": It consumes a Builder object and modifies its behavior, like so:
+     * <pre class="prettyprint">
+     * Notification noti = new Notification.InboxStyle(
+     *      new Notification.Builder()
+     *         .setContentTitle(&quot;5 New mails from &quot; + sender.toString())
+     *         .setContentText(subject)
+     *         .setSmallIcon(R.drawable.new_mail)
+     *         .setLargeIcon(aBitmap))
+     *      .addLine(str1)
+     *      .addLine(str2)
+     *      .setContentTitle("")
+     *      .setSummaryText(&quot;+3 more&quot;)
+     *      .build();
+     * </pre>
+     *
+     * @see Notification#bigContentView
+     */
+    interface INotificationInboxStyle extends INotificationStyle {
+        /**
+         * Overrides ContentTitle in the big form of the template.
+         * This defaults to the value passed to setContentTitle().
+         */
+        SetBigContentTitle(
+            [in] ICharSequence* title);
+
+        /**
+         * Set the first line of text after the detail section in the big form of the template.
+         */
+        SetSummaryText(
+            [in] ICharSequence* cs);
+
+        /**
+         * Append a line to the digest section of the Inbox notification.
+         */
+        AddLine(
+            [in] ICharSequence* cs);
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

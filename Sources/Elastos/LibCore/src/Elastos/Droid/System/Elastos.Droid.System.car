@@ -1,0 +1,17 @@
+
+module
+{
+    merge("../../../../car/Elastos/Droid/System/IZygote.car");
+
+    namespace Elastos {
+    namespace Droid {
+    namespace System {
+
+    singleton class CZygote {
+        interface IZygote;
+    }
+
+    } // namespace System
+    } // namespace Droid
+    } // namespace Elastos
+}

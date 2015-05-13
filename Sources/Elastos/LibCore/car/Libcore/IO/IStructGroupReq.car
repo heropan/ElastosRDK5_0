@@ -1,0 +1,25 @@
+
+module
+{
+    interface Elastos.Net.IInetAddress;
+
+    namespace Libcore {
+    namespace IO {
+
+    /**
+     * Corresponds to C's {@code struct group_req}.
+     */
+    interface IStructGroupReq {
+        GetGrInterface(
+            [out] Int32* grInterface);
+
+        GetGrGroup(
+            [out] IInetAddress** grGroup);
+
+        ToString(
+            [out] String* str);
+    }
+
+    } // namespace IO
+    } // namespace Libcore
+}

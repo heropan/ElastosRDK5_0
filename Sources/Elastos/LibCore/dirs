@@ -1,0 +1,10 @@
+
+ifeq "$(XDK_TARGET_PLATFORM)" "android"
+DIRS = car
+else
+DIRS =
+endif
+DIRS += inc
+DIRS += src
+
+

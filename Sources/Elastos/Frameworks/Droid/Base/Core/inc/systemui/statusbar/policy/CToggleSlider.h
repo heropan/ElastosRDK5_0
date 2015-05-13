@@ -1,0 +1,80 @@
+#ifndef __CTOGGLESLIDER_H_
+#define __CTOGGLESLIDER_H_
+
+#include "_CToggleSlider.h"
+#include "view/ViewMacro.h"
+#include "view/ViewGroupLayoutParamsMacro.h"
+#include "widget/RelativeLayoutMacro.h"
+#include "systemui/statusbar/policy/ToggleSlider.h"
+
+namespace Elastos {
+namespace Droid {
+namespace SystemUI {
+namespace StatusBar {
+namespace Policy {
+
+CarClass(CToggleSlider), public ToggleSlider
+{
+public:
+    IVIEW_METHODS_DECL()
+    IVIEWGROUP_METHODS_DECL()
+    IVIEWPARENT_METHODS_DECL()
+    IVIEWMANAGER_METHODS_DECL()
+    IDRAWABLECALLBACK_METHODS_DECL()
+    IKEYEVENTCALLBACK_METHODS_DECL()
+    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
+    IRELATIVELAYOUT_METHODS_DECL()
+
+    CARAPI_(PInterface) Probe(
+        /*  [in] */ REIID riid);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle);
+
+    CARAPI SetOnChangedListener(
+        /* [in] */ IToggleSliderListener* listener);
+
+    CARAPI SetChecked(
+        /* [in] */ Boolean checked);
+
+    CARAPI IsChecked(
+        /* [out] */ Boolean* settingsEnabled);
+
+    CARAPI SetMax(
+        /* [in] */ Int32 maxValue);
+
+    CARAPI SetValue(
+        /* [in] */ Int32 value);
+
+    CARAPI OnCheckedChanged(
+        /* [in] */ ICompoundButton* buttonView,
+        /* [in] */ Boolean isChecked);
+
+    CARAPI OnProgressChanged(
+        /* [in] */ ISeekBar* seekBar,
+        /* [in] */ Int32 progress,
+        /* [in] */ Boolean fromUser);
+
+    CARAPI OnStartTrackingTouch(
+        /* [in] */ ISeekBar* seekBar);
+
+    CARAPI OnStopTrackingTouch(
+        /* [in] */ ISeekBar* seekBar);
+};
+
+}// namespace Policy
+}// namespace StatusBar
+}// namespace SystemUI
+}// namespace Droid
+}// namespace Elastos
+
+#endif //__CTOGGLESLIDER_H_

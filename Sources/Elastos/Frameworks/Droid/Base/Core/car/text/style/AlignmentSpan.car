@@ -1,0 +1,21 @@
+
+module
+{
+    interface Elastos.Droid.Text.Style.IParagraphStyle;
+    enum Elastos.Droid.Text.LayoutAlignment;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    interface IAlignmentSpan extends IParagraphStyle {
+        GetAlignment(
+            [out] LayoutAlignment* alignment);
+    }
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+}

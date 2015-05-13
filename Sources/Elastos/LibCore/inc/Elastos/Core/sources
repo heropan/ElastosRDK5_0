@@ -1,0 +1,44 @@
+
+#==========================================================================
+# Copyright (c) 2000-2013,  Elastos, Inc.  All Rights Reserved.
+#==========================================================================
+
+EXPORT_HEADERS = listnode.h
+EXPORT_HEADERS += linknode.h
+EXPORT_HEADERS += container.h
+EXPORT_HEADERS += quicklist.h
+EXPORT_HEADERS += treenode.h
+EXPORT_HEADERS += multitreenode.h
+EXPORT_HEADERS += ElUtilities.h
+EXPORT_HEADERS += CObjectEnumerator.h
+EXPORT_HEADERS += CObjectContainer.h
+EXPORT_HEADERS += elastos/Mutex.h
+EXPORT_HEADERS += elastos/RWLock.h
+
+ifeq ("$(XDK_TARGET_PLATFORM)", $(filter "$(XDK_TARGET_PLATFORM)", "android" "linux"))
+EXPORT_HEADERS += elastos/ElRefWrapper.h
+EXPORT_HEADERS += elastos/UniquePtr.h
+EXPORT_HEADERS += elastos/Autolock.h
+EXPORT_HEADERS += elastos/Condition.h
+EXPORT_HEADERS += elastos/Object.h
+EXPORT_HEADERS += elastos/Thread.h
+EXPORT_HEADERS += elastos/ThreadBase.h
+EXPORT_HEADERS += elastos/NativeThread.h
+EXPORT_HEADERS += elastos/ThreadGroup.h
+EXPORT_HEADERS += elastos/Number.h
+EXPORT_HEADERS += elastos/Math.h
+EXPORT_HEADERS += elastos/cbigint.h
+EXPORT_HEADERS += elastos/StringUtils.h
+EXPORT_HEADERS += elastos/ObjectUtils.h
+EXPORT_HEADERS += elastos/HexStringParser.h
+EXPORT_HEADERS += elastos/StringToIntegral.h
+EXPORT_HEADERS += elastos/IntegralToString.h
+EXPORT_HEADERS += elastos/StringToReal.h
+EXPORT_HEADERS += elastos/RealToString.h
+EXPORT_HEADERS += elastos/Character.h
+EXPORT_HEADERS += elastos/AbstractStringBuilder.h
+EXPORT_HEADERS += elastos/StringBuilder.h
+EXPORT_HEADERS += elastos/StringBuffer.h
+
+endif
+

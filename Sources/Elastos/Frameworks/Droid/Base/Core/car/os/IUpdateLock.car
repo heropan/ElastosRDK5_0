@@ -1,0 +1,27 @@
+module
+{
+    interface Elastos.Droid.Os.IBinder;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+    /**
+     * Direct interface to the UpdateLockService's functionality
+     *
+     * {@hide}
+     */
+    interface IIUpdateLock {
+        AcquireUpdateLock(
+            [in] IBinder* token,
+            [in] String tag);
+
+        ReleaseUpdateLock(
+            [in] IBinder* token);
+    }
+
+    } // namespace Os
+    } // namespace Droid
+    } // namespace Elastos
+
+}

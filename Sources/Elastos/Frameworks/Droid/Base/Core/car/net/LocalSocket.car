@@ -1,0 +1,95 @@
+
+module
+{
+    using interface Elastos.IO.IFileDescriptor;
+    using interface Elastos.IO.IInputStream;
+    using interface Elastos.IO.IOutputStream;
+
+    interface Elastos.Droid.Net.ILocalSocketAddress;
+    interface Elastos.Droid.Net.ICredentials;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    [deprecated]
+    interface ILocalSocket extends Elastos.IO.ICloseable {
+//        ToString(
+//            [out] String* result);
+
+        Connect(
+            [in] ILocalSocketAddress* endpoint);
+
+        Bind(
+            [in] ILocalSocketAddress* bindpoint);
+
+        GetLocalSocketAddress(
+            [out] ILocalSocketAddress** address);
+
+        GetInputStream(
+            [out] IInputStream** is);
+
+        GetOutputStream(
+            [out] IOutputStream** os);
+
+        ShutdownInput();
+
+        ShutdownOutput();
+
+        SetReceiveBufferSize(
+            [in] Int32 size);
+
+        GetReceiveBufferSize(
+            [out] Int32* size);
+
+        SetSoTimeout(
+            [in] Int32 n);
+
+        GetSoTimeout(
+            [out] Int32* n);
+
+        SetSendBufferSize(
+            [in] Int32 n);
+
+        GetSendBufferSize(
+            [out] Int32* n);
+
+        GetRemoteSocketAddress(
+            [out] ILocalSocketAddress** result);
+
+        IsConnected(
+            [out] Boolean* result);
+
+        IsClosed(
+            [out] Boolean* result);
+
+        IsBound(
+            [out] Boolean* result);
+
+        IsOutputShutdown(
+            [out] Boolean* result);
+
+        IsInputShutdown(
+            [out] Boolean* result);
+
+        ConnectEx(
+            [in] ILocalSocketAddress* endpoint,
+            [in] Int32 timeout);
+
+        SetFileDescriptorsForSend(
+            [in] ArrayOf<IFileDescriptor*>* fds);
+
+        GetAncillaryFileDescriptors(
+            [out, callee] ArrayOf<IFileDescriptor*>* result);
+
+        GetPeerCredentials(
+            [out] ICredentials** result);
+
+        GetFileDescriptor(
+            [out] IFileDescriptor** result);
+    }
+
+    } // namespace Net
+    } // namepsace Droid
+    } // namespace Elastos
+}

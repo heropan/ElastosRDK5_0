@@ -1,0 +1,30 @@
+
+module
+{
+    interface Elastos.Net.IInetAddress;
+
+    namespace Elastos {
+    namespace Net {
+
+    /**
+     * An IPv4 address. See InetAddress.
+     * @implements Elastos.Net.IInetAddress
+     */
+    interface IInet4Address extends IInetAddress {
+
+    }
+
+    interface IInet4AddressHelper {
+        GetANY(
+            [out] IInetAddress** result);
+
+        GetLOOPBACK(
+            [out] IInetAddress** result);
+
+        GetALL(
+            [out] IInetAddress** result);
+    }
+
+    } // namespace Net
+    } // namespace Elastos
+}

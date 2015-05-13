@@ -1,0 +1,80 @@
+
+module
+{
+
+    using interface Elastos.IO.IInputStream;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Drm {
+    namespace Mobile1 {
+
+    interface IDrmRightsManager {
+        /**
+         * The "application/vnd.oma.drm.rights+xml" mime type.
+         */
+        const String DRM_MIMETYPE_RIGHTS_XML_STRING = "application/vnd.oma.drm.rights+xml";
+
+        /**
+         * The "application/vnd.oma.drm.rights+wbxml" mime type.
+         */
+        const String DRM_MIMETYPE_RIGHTS_WBXML_STRING = "application/vnd.oma.drm.rights+wbxml";
+
+        /**
+        * Install one DRM rights and return one instance of DrmRights.
+        *
+        * @param rightsData    raw rights data.
+        * @param mimeTypeStr   the mime type of the rights object.
+        *
+        * @return the instance of the installed DrmRights.
+        */
+        InstallRights(
+            [in] IInputStream* rightsData,
+            [in] Int32 length,
+            [in] String mimeTypeStr,
+            [out] IDrmRights** rights);
+
+        /**
+         * Query DRM rights of specified DRM raw content.
+         *
+         * @param content       raw content object.
+         *
+         * @return the instance of DrmRights, or null if there is no rights.
+         */
+        QueryRights(
+            [in] IDrmRawContent* content,
+            [out] IDrmRights** rights);
+
+        /**
+         * Get the list of all DRM rights saved in local client.
+         *
+         * @return the list of all the rights object.
+         */
+        GetRightsList(
+            [out] IObjectContainer** rightsList);
+
+        /**
+         * Delete the specified DRM rights object.
+         *
+         * @param rights    the specified rights object to be deleted.
+         */
+        DeleteRights(
+            [in] IDrmRights* rights);
+    }
+
+    interface IDrmRightsManagerHelper {
+    /**
+     * Get the DrmRightsManager instance.
+     *
+     * @return the instance of DrmRightsManager.
+     */
+    GetInstance(
+        [out] IDrmRightsManager** manager);
+    }
+
+
+    } // namespace mobile1
+    } // namespace drm
+    } // namepsace Droid
+    } // namespace Elastos
+}

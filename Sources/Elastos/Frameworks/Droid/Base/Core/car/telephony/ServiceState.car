@@ -1,0 +1,179 @@
+
+module
+{
+
+    interface Elastos.Droid.Os.IBundle;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Telephony {
+
+    interface IServiceState {
+
+        //const String LOG_TAG = "PHONE";
+        const Int32 STATE_IN_SERVICE = 0;
+        const Int32 STATE_OUT_OF_SERVICE = 1;
+        const Int32 STATE_EMERGENCY_ONLY = 2;
+        const Int32 STATE_POWER_OFF = 3;
+        const Int32 RIL_RADIO_TECHNOLOGY_UNKNOWN = 0;
+        const Int32 RIL_RADIO_TECHNOLOGY_GPRS = 1;
+        const Int32 RIL_RADIO_TECHNOLOGY_EDGE = 2;
+        const Int32 RIL_RADIO_TECHNOLOGY_UMTS = 3;
+        const Int32 RIL_RADIO_TECHNOLOGY_IS95A = 4;
+        const Int32 RIL_RADIO_TECHNOLOGY_IS95B = 5;
+        const Int32 RIL_RADIO_TECHNOLOGY_1xRTT = 6;
+        const Int32 RIL_RADIO_TECHNOLOGY_EVDO_0 = 7;
+        const Int32 RIL_RADIO_TECHNOLOGY_EVDO_A = 8;
+        const Int32 RIL_RADIO_TECHNOLOGY_HSDPA = 9;
+        const Int32 RIL_RADIO_TECHNOLOGY_HSUPA = 10;
+        const Int32 RIL_RADIO_TECHNOLOGY_HSPA = 11;
+        const Int32 RIL_RADIO_TECHNOLOGY_EVDO_B = 12;
+        const Int32 RIL_RADIO_TECHNOLOGY_EHRPD = 13;
+        const Int32 RIL_RADIO_TECHNOLOGY_LTE = 14;
+        const Int32 RIL_RADIO_TECHNOLOGY_HSPAP = 15;
+        const Int32 RIL_RADIO_TECHNOLOGY_GSM = 16;
+        const Int32 REGISTRATION_STATE_NOT_REGISTERED_AND_NOT_SEARCHING = 0;
+        const Int32 REGISTRATION_STATE_HOME_NETWORK = 1;
+        const Int32 REGISTRATION_STATE_NOT_REGISTERED_AND_SEARCHING = 2;
+        const Int32 REGISTRATION_STATE_REGISTRATION_DENIED = 3;
+        const Int32 REGISTRATION_STATE_UNKNOWN = 4;
+        const Int32 REGISTRATION_STATE_ROAMING = 5;
+
+        DescribeContents(
+            [out] Int32* val);
+
+        GetState(
+            [out] Int32* state);
+
+        GetRoaming(
+            [out] Boolean* roaming);
+
+        IsEmergencyOnly(
+            [out] Boolean* res);
+
+        GetCdmaRoamingIndicator(
+            [out] Int32* cdmaRoamingIndicator);
+
+        GetCdmaDefaultRoamingIndicator(
+            [out] Int32* cdmaDefaultRoamingIndicator);
+
+        GetCdmaEriIconIndex(
+            [out] Int32* cdmaEriIconIndex);
+
+        GetCdmaEriIconMode(
+            [out] Int32* cdmaEriIconMode);
+
+        GetOperatorAlphaLong(
+            [out] String* operatorAlphaLong);
+
+        GetOperatorAlphaShort(
+            [out] String* operatorAlphaShort);
+
+        GetOperatorNumeric(
+            [out] String* operatorNumeric);
+
+        GetIsManualSelection(
+            [out] Boolean* isManualSelection);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        Equals(
+            [in] IInterface* o,
+            [out] Boolean* res);
+
+        ToString(
+            [out] String* res);
+
+        SetStateOutOfService();
+
+        SetStateOff();
+
+        SetState(
+            [in] Int32 state);
+
+        SetRoaming(
+            [in] Boolean roaming);
+
+        SetEmergencyOnly(
+            [in] Boolean emergencyOnly);
+
+        SetCdmaRoamingIndicator(
+            [in] Int32 roaming);
+
+        SetCdmaDefaultRoamingIndicator (
+            [in] Int32 roaming);
+
+        SetCdmaEriIconIndex(
+            [in] Int32 index);
+
+        SetCdmaEriIconMode(
+            [in] Int32 mode);
+
+        SetOperatorName(
+            [in] String longName,
+            [in] String shortName,
+            [in] String numeric);
+
+        SetOperatorAlphaLong(
+            [in] String longName);
+
+        SetIsManualSelection(
+            [in] Boolean isManual);
+
+        FillInNotifierBundle(
+            [in] IBundle* m);
+
+        SetRadioTechnology(
+            [in] Int32 state);
+
+        SetCssIndicator(
+            [in] Int32 css);
+
+        SetSystemAndNetworkId(
+            [in] Int32 systemId,
+            [in] Int32 networkId);
+
+        GetRilRadioTechnology(
+            [out] Int32* rilRadioTechnology);
+
+        GetRadioTechnology(
+            [out] Int32* radioTechnology);
+
+        GetNetworkType(
+            [out] Int32* networkType);
+
+        GetCssIndicator(
+            [out] Int32* cssIndicator);
+
+        GetNetworkId(
+            [out] Int32* networkId);
+
+        GetSystemId(
+            [out] Int32* systemId);
+
+    }
+
+    interface IServiceStateHelper {
+        NewFromBundle(
+            [in] IBundle* m,
+            [out] IServiceState** res);
+
+        RilRadioTechnologyToString(
+            [in] Int32 rt,
+            [out] String* res);
+
+        IsGsm(
+            [in] Int32 radioTechnology,
+            [out] Boolean* res);
+
+        IsCdma(
+            [in] Int32 radioTechnology,
+            [out] Boolean* res);
+
+    }
+
+    } // namespace Telephony
+    } // namespace Droid
+    } // namespace Elastos
+}

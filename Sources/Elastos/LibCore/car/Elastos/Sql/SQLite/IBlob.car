@@ -1,0 +1,44 @@
+module
+{
+    using interface Elastos.IO.IInputStream;
+    using interface Elastos.IO.IOutputStream;
+
+    namespace Elastos {
+    namespace Sql {
+    namespace SQLite {
+
+    interface IBlobR extends Elastos.IO.IInputStream {
+    }
+
+    interface IBlobW extends Elastos.IO.IOutputStream {
+        /**
+         * Flush blob; dummy to satisfy OutputStream class.
+         */
+        Flush();
+    }
+
+    interface IBlob {
+        /**
+        * Return InputStream for this blob
+        * @return InputStream
+        */
+        GetInputStream(
+            [out] IInputStream** instream);
+
+        /**
+        * Return OutputStream for this blob
+        * @return OutputStream
+        */
+        GetOutputStream(
+            [out] IOutputStream ** outstream);
+
+        /**
+        * Close blob.
+        */
+        Close();
+    }
+
+    } // namespace SQLite
+    } // namespace Sql
+    } // namespace Elastos
+}

@@ -1,0 +1,517 @@
+
+module
+{
+    interface Elastos.Net.IInetSocketAddress;
+    interface Elastos.Net.IInetAddress;
+    interface Elastos.Net.ISocketAddress;
+    interface Elastos.IO.IByteBuffer;
+    interface Libcore.IO.IStructFlock;
+    interface Libcore.IO.IStructStat;
+    interface Libcore.IO.IStructStatFs;
+    interface Libcore.IO.IStructAddrinfo;
+    interface Libcore.IO.IStructPasswd;
+    interface Libcore.IO.IStructLinger;
+    interface Libcore.IO.IStructTimeval;
+    interface Libcore.IO.IStructPollfd;
+    interface Libcore.IO.IStructGroupReq;
+    interface Libcore.IO.IStructUtsname;
+
+    namespace Libcore {
+    namespace IO {
+
+    [deprecated]
+    interface IOs {
+        Accept(
+            [in] Int32 fd,
+            [in] IInetSocketAddress* peerAddress,
+            [out] Int32* retFd);
+
+        Access(
+            [in] String path,
+            [in] Int32 mode,
+            [out] Boolean* succeed);
+
+        Bind(
+            [in] Int32 fd,
+            [in] IInetAddress* address,
+            [in] Int32 port);
+
+        Chmod(
+            [in] String path,
+            [in] Int32 mode);
+
+        Chown(
+            [in] String path,
+            [in] Int32 uid,
+            [in] Int32 gid);
+
+        Close(
+            [in] Int32 fd);
+
+        Connect(
+            [in] Int32 fd,
+            [in] IInetAddress* address,
+            [in] Int32 port);
+
+        Dup(
+            [in] Int32 oldFd,
+            [out] Int32* retFd);
+
+        Dup2(
+            [in] Int32 oldFd,
+            [in] Int32 newFd,
+            [out] Int32* retFd);
+
+        Environ(
+            [out, callee] ArrayOf<String>* env);
+
+        Fchmod(
+            [in] Int32 fd,
+            [in] Int32 mode);
+
+        Fchown(
+            [in] Int32 fd,
+            [in] Int32 uid,
+            [in] Int32 gid);
+
+        FcntlVoid(
+            [in] Int32 fd,
+            [in] Int32 cmd,
+            [out] Int32* result);
+
+        FcntlInt64(
+            [in] Int32 fd,
+            [in] Int32 cmd,
+            [in] Int64 arg,
+            [out] Int32* result);
+
+        FcntlFlock(
+            [in] Int32 fd,
+            [in] Int32 cmd,
+            [in] IStructFlock* arg,
+            [out] Int32* result);
+
+        Fdatasync(
+            [in] Int32 fd);
+
+        Fstat(
+            [in] Int32 fd,
+            [out] IStructStat** stat);
+
+        Fstatfs(
+            [in] Int32 fd,
+            [out] IStructStatFs** statFs);
+
+        Fsync(
+            [in] Int32 fd);
+
+        Ftruncate(
+            [in] Int32 fd,
+            [in] Int64 length);
+
+        Gai_strerror(
+            [in] Int32 error,
+            [out] String* strerror);
+
+        Getaddrinfo(
+            [in] String node,
+            [in] IStructAddrinfo* hints,
+            [out, callee] ArrayOf<IInetAddress*>* addrinfo);
+
+        Getegid(
+            [out] Int32* egid);
+
+        Geteuid(
+            [out] Int32* euid);
+
+        Getgid(
+            [out] Int32* gid);
+
+        Getenv(
+            [in] String name,
+            [out] String* env);
+
+        /* TODO: break into getnameinfoHost and getnameinfoService? */
+        Getnameinfo(
+            [in] IInetAddress* address,
+            [in] Int32 flags,
+            [out] String* nameinfo);
+
+        Getpid(
+            [out] Int32* pid);
+
+        Getppid(
+            [out] Int32* ppid);
+
+        Getpwnam(
+            [in] String name,
+            [out] IStructPasswd** pwnam);
+
+        Getpwuid(
+            [in] Int32 uid,
+            [out] IStructPasswd** pwuid);
+
+        Getsockname(
+            [in] Int32 fd,
+            [out] ISocketAddress** sockname);
+
+        GetsockoptByte(
+            [in] Int32 fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [out] Int32* sockopt);
+
+        GetsockoptInAddr(
+            [in] Int32 fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [out] IInetAddress** addr);
+
+        GetsockoptInt(
+            [in] Int32 fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [out] Int32* sockopt);
+
+        GetsockoptLinger(
+            [in] Int32 fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [out] IStructLinger** linger);
+
+        GetsockoptTimeval(
+            [in] Int32 fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [out] IStructTimeval** timeval);
+
+        Getuid(
+            [out] Int32* uid);
+
+        If_indextoname(
+            [in] Int32 index,
+            [out] String* name);
+
+        Inet_pton(
+            [in] Int32 family,
+            [in] String address,
+            [out] IInetAddress** addr);
+
+        IoctlInetAddress(
+            [in] Int32 fd,
+            [in] Int32 cmd,
+            [in] String interfaceName,
+            [out] IInetAddress** addr);
+
+        IoctlInt(
+            [in] Int32 fd,
+            [in] Int32 cmd,
+            [in] Int32* arg,
+            [out] Int32* result);
+
+        Isatty(
+            [in] Int32 fd,
+            [out] Boolean* isatty);
+
+        Kill(
+            [in] Int32 pid,
+            [in] Int32 signal);
+
+        Lchown(
+            [in] String path,
+            [in] Int32 uid,
+            [in] Int32 gid);
+
+        Listen(
+            [in] Int32 fd,
+            [in] Int32 backlog);
+
+        Lseek(
+            [in] Int32 fd,
+            [in] Int64 offset,
+            [in] Int32 whence,
+            [out] Int64* result);
+
+        Lstat(
+            [in] String path,
+            [out] IStructStat** stat);
+
+        Mincore(
+            [in] Int64 address,
+            [in] Int64 byteCount,
+            [in] ArrayOf<Byte> vector);
+
+        Mkdir(
+            [in] String path,
+            [in] Int32 mode);
+
+        Mlock(
+            [in] Int64 address,
+            [in] Int64 byteCount);
+
+        Mmap(
+            [in] Int64 address,
+            [in] Int64 byteCount,
+            [in] Int32 prot,
+            [in] Int32 flags,
+            [in] Int32 fd,
+            [in] Int64 offset,
+            [out] Int64* result);
+
+        Msync(
+            [in] Int64 address,
+            [in] Int64 byteCount,
+            [in] Int32 flags);
+
+        Munlock(
+            [in] Int64 address,
+            [in] Int64 byteCount);
+
+        Munmap(
+            [in] Int64 address,
+            [in] Int64 byteCount);
+
+        Open(
+            [in] String path,
+            [in] Int32 flags,
+            [in] Int32 mode,
+            [out] Int32* fd);
+
+        Pipe(
+            [out, callee] ArrayOf<Int32>* fds);
+
+        /* TODO: if we used the non-standard ppoll(2) behind the scenes, we could take a long timeout. */
+        Poll(
+            [in] ArrayOf<IStructPollfd*> fds,
+            [in] Int32 timeoutMs,
+            [out] Int32* result);
+
+        Pread(
+            [in] Int32 fd,
+            [out] ArrayOf<Byte> bytes,
+            [in] Int32 byteOffset,
+            [in] Int32 byteCount,
+            [in] Int64 offset,
+            [out] Int32* num);
+
+        PreadEx(
+            [in] Int32 fd,
+            [in] IByteBuffer* buffer,
+            [in] Int64 offset,
+            [out] Int32* num);
+
+        Pwrite(
+            [in] Int32 fd,
+            [in] ArrayOf<Byte> bytes,
+            [in] Int32 byteOffset,
+            [in] Int32 byteCount,
+            [in] Int64 offset,
+            [out] Int32* num);
+
+        PwriteEx(
+            [in] Int32 fd,
+            [in] IByteBuffer* buffer,
+            [in] Int64 offset,
+            [out] Int32* num);
+
+        Read(
+            [in] Int32 fd,
+            [out] ArrayOf<Byte> bytes,
+            [in] Int32 byteOffset,
+            [in] Int32 byteCount,
+            [out] Int32* num);
+
+        ReadEx(
+            [in] Int32 fd,
+            [in] IByteBuffer* buffer,
+            [out] Int32* num);
+
+        Readv(
+            [in] Int32 fd,
+            [in] ArrayOf<IInterface*> buffers,
+            [in] ArrayOf<Int32> offsets,
+            [in] ArrayOf<Int32> byteCounts,
+            [out] Int32* num);
+
+        Recvfrom(
+            [in] Int32 fd,
+            [out] ArrayOf<Byte> bytes,
+            [in] Int32 byteOffset,
+            [in] Int32 byteCount,
+            [in] Int32 flags,
+            [in] IInetSocketAddress* srcAddress,
+            [out] Int32* num);
+
+        RecvfromEx(
+            [in] Int32 fd,
+            [in] IByteBuffer* buffer,
+            [in] Int32 flags,
+            [in] IInetSocketAddress* srcAddress,
+            [out] Int32* num);
+
+        Remove(
+            [in] String path);
+
+        Rename(
+            [in] String oldPath,
+            [in] String newPath);
+
+        Sendto(
+            [in] Int32 fd,
+            [in] ArrayOf<Byte> bytes,
+            [in] Int32 byteOffset,
+            [in] Int32 byteCount,
+            [in] Int32 flags,
+            [in] IInetAddress* inetAddress,
+            [in] Int32 port,
+            [out] Int32* result);
+
+        SendtoEx(
+            [in] Int32 fd,
+            [in] IByteBuffer* buffer,
+            [in] Int32 flags,
+            [in] IInetAddress* inetAddress,
+            [in] Int32 port,
+            [out] Int32* result);
+
+        Sendfile(
+            [in] Int32 outFd,
+            [in] Int32 inFd,
+            [in/*, out */] Int64* inOffset,
+            [in] Int64 byteCount,
+            [out] Int64* result);
+
+        Setegid(
+            [in] Int32 egid);
+
+        Seteuid(
+            [in] Int32 euid);
+
+        Setgid(
+            [in] Int32 gid);
+
+        Setsid(
+            [out] Int32* sid);
+
+        SetsockoptByte(
+            [in] Int32 fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [in] Int32 value);
+
+        SetsockoptIfreq(
+            [in] Int32 fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [in] String interfaceName);
+
+        SetsockoptInt(
+            [in] Int32 fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [in] Int32 value);
+
+        SetsockoptIpMreqn(
+            [in] Int32 fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [in] Int32 value);
+
+        SetsockoptGroupReq(
+            [in] Int32 fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [in] IStructGroupReq* value);
+
+        SetsockoptLinger(
+            [in] Int32 fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [in] IStructLinger* value);
+
+        SetsockoptTimeval(
+            [in] Int32 fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [in] IStructTimeval* value);
+
+        Setuid(
+            [in] Int32 uid);
+
+        Shutdown(
+            [in] Int32 fd,
+            [in] Int32 how);
+
+        Socket(
+            [in] Int32 socketDomain,
+            [in] Int32 type,
+            [in] Int32 protocol,
+            [out] Int32* fd);
+
+        Socketpair(
+            [in] Int32 socketDomain,
+            [in] Int32 type,
+            [in] Int32 protocol,
+            [out] Int32* fd1,
+            [out] Int32* fd2);
+
+        Stat(
+            [in] String path,
+            [out] IStructStat** stat);
+
+        /* TODO: replace statfs with statvfs. */
+        Statfs(
+            [in] String path,
+            [out] IStructStatFs** statfs);
+
+        Strerror(
+            [in] Int32 errno,
+            [out] String* strerr);
+
+        Symlink(
+            [in] String oldPath,
+            [in] String newPath);
+
+        Sysconf(
+            [in] Int32 name,
+            [out] Int64* result);
+
+        Tcdrain(
+            [in] Int32 fd);
+
+        Umask(
+            [in] Int32 mask,
+            [out] Int32* result);
+
+        Uname(
+            [out] IStructUtsname** uname);
+
+        Waitpid(
+            [in] Int32 pid,
+            [in/*, out */] Int32* status,
+            [in] Int32 options,
+            [out] Int32* result);
+
+        Write(
+            [in] Int32 fd,
+            [in] ArrayOf<Byte> bytes,
+            [in] Int32 byteOffset,
+            [in] Int32 byteCount,
+            [out] Int32* num);
+
+        WriteEx(
+            [in] Int32 fd,
+            [in] IByteBuffer* buffer,
+            [out] Int32* num);
+
+        Writev(
+            [in] Int32 fd,
+            [in] ArrayOf<IInterface*> buffers,
+            [in] ArrayOf<Int32> offsets,
+            [in] ArrayOf<Int32> byteCounts,
+            [out] Int32* result);
+    }
+
+    } // namespace IO
+    } // namespace Libcore
+}

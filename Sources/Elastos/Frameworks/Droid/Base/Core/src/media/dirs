@@ -1,0 +1,4 @@
+
+DIRS += media
+DIRS += drm
+DIRS += mtp

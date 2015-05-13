@@ -1,0 +1,29 @@
+
+module
+{
+    interface Elastos.Droid.App.IFragment;
+    interface Elastos.Droid.Webkit.IWebView;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+    /**
+     * A fragment that displays a WebView.
+     * <p>
+     * The WebView is automically paused or resumed when the Fragment is paused or resumed.
+     */
+    [local]
+    interface IWebViewFragment extends Elastos.Droid.App.IFragment {
+
+        /**
+         * Gets the WebView.
+         */
+        GetWebView(
+            [out] IWebView** webView);
+    }
+
+    } // namespace Webkit
+    } // namepsace Droid
+    } // namespace Elastos
+}

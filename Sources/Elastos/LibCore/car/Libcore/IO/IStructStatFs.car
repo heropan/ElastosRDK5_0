@@ -1,0 +1,49 @@
+
+module
+{
+    namespace Libcore {
+    namespace IO {
+
+    /**
+     * File information returned by fstatfs(2) and statfs(2).
+     *
+     * TODO: this should be {@code struct statvfs}, but Bionic doesn't support that yet.
+     * @hide until the TODO is fixed.
+     */
+    interface IStructStatFs {
+        /** File system block size (used for block counts). */
+        GetBsize(
+            [out] Int64* bsize);
+
+        /** Total block count. */
+        GetBlocks(
+            [out] Int64* blocks);
+
+        /** Free block count. */
+        GetBfree(
+            [out] Int64* bfree);
+
+        /** Free block count available to non-root. */
+        GetBavail(
+            [out] Int64* bavail);
+
+        /** Total file (inode) count. */
+        GetFiles(
+            [out] Int64* files);
+
+        /** Free file (inode) count. */
+        GetFfree(
+            [out] Int64* ffree);
+
+        /** Maximum filename length. */
+        GetNamemax(
+            [out] Int64* namemax);
+
+        /** Fundamental file system block size. */
+        GetFrsize(
+            [out] Int64* frsize);
+    }
+
+    } // namespace IO
+    } // namespace Libcore
+}

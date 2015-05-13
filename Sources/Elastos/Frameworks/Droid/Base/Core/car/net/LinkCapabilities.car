@@ -1,0 +1,170 @@
+
+module
+{
+    using interface Elastos.Utility.IObjectContainer;
+    using interface Elastos.Utility.IObjectInt32Map;
+
+    interface Elastos.Droid.Net.ILinkCapabilities;
+    interface Elastos.Droid.Os.IParcel;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+        interface IKey{
+        const Int32 RO_NETWORK_TYPE = 1;
+
+        /**
+         * Desired minimum forward link (download) bandwidth for the
+         * in kilobits per second (kbps). Values should be strings such
+         * "50", "100", "1500", etc.
+         */
+        const Int32 RW_DESIRED_FWD_BW = 2;
+
+        /**
+         * Required minimum forward link (download) bandwidth, in
+         * per second (kbps), below which the socket cannot function.
+         * Values should be strings such as "50", "100", "1500", etc.
+         */
+        const Int32 RW_REQUIRED_FWD_BW = 3;
+
+        /**
+         * Available forward link (download) bandwidth for the socket.
+         * This value is in kilobits per second (kbps).
+         * Values will be strings such as "50", "100", "1500", etc.
+         */
+        const Int32 RO_AVAILABLE_FWD_BW = 4;
+
+        /**
+         * Desired minimum reverse link (upload) bandwidth for the socket
+         * in kilobits per second (kbps).
+         * Values should be strings such as "50", "100", "1500", etc.
+         * <p>
+         * This key is set via the needs map.
+         */
+        const Int32 RW_DESIRED_REV_BW = 5;
+
+        /**
+         * Required minimum reverse link (upload) bandwidth, in kilobits
+         * per second (kbps), below which the socket cannot function.
+         * If a rate is not specified, the default rate of kbps will be
+         * Values should be strings such as "50", "100", "1500", etc.
+         */
+        const Int32 RW_REQUIRED_REV_BW = 6;
+
+        /**
+         * Available reverse link (upload) bandwidth for the socket.
+         * This value is in kilobits per second (kbps).
+         * Values will be strings such as "50", "100", "1500", etc.
+         */
+        const Int32 RO_AVAILABLE_REV_BW = 7;
+
+        /**
+         * Maximum latency for the socket, in milliseconds, above which
+         * socket cannot function.
+         * Values should be strings such as "50", "300", "500", etc.
+         */
+        const Int32 RW_MAX_ALLOWED_LATENCY = 8;
+
+        /**
+         * Interface that the socket is bound to. This can be a virtual
+         * interface (e.g. VPN or Mobile IP) or a physical interface
+         * (e.g. wlan0 or rmnet0).
+         * Values will be strings such as "wlan0", "rmnet0"
+         */
+        const Int32 RO_BOUND_INTERFACE = 9;
+
+        /**
+         * Physical interface that the socket is routed on.
+         * This can be different from BOUND_INTERFACE in cases such as
+         * VPN or Mobile IP. The physical interface may change over time
+         * if seamless mobility is supported.
+         * Values will be strings such as "wlan0", "rmnet0"
+         */
+        const Int32 RO_PHYSICAL_INTERFACE = 10;
+        }
+
+        interface IRole{
+
+        // examples only, discuss which roles should be defined, and then
+        // code these to match
+
+        /** Default Role */
+        const String DEFAULT = "default";
+        /** Bulk down load */
+        const String BULK_DOWNLOAD = "bulk.download";
+        /** Bulk upload */
+        const String BULK_UPLOAD = "bulk.upload";
+
+        /** VoIP Application at 24kbps */
+        const String VOIP_24KBPS = "voip.24k";
+        /** VoIP Application at 32kbps */
+        const String VOIP_32KBPS = "voip.32k";
+
+        /** Video Streaming at 480p */
+        const String VIDEO_STREAMING_480P = "video.streaming.480p";
+        /** Video Streaming at 720p */
+        const String VIDEO_STREAMING_720I = "video.streaming.720i";
+
+        /** Video Chat Application at 360p */
+        const String VIDEO_CHAT_360P = "video.chat.360p";
+        /** Video Chat Application at 480p */
+        const String VIDEO_CHAT_480P = "video.chat.480i";
+        }
+
+        [local]
+        interface ILinkCapabilities {
+
+            Clear();
+
+            IsEmpty(
+                [out] Boolean* result);
+
+            GetSize(
+                [out] Int32* result);
+
+            GetValue(
+                [in] Int32 key,
+                [out] String* result);
+
+            GetCapabilities(
+                [out] IObjectInt32Map** result);
+
+            Put(
+                [in] Int32 key,
+                [in] String value);
+
+            ContainsKey(
+                [in] Int32 key,
+                [out] Boolean* result);
+
+            ContainsValue(
+                [in] String value,
+                [out] Boolean* result);
+
+            GetEntrySet(
+                [out, callee] ArrayOf<Int32>* keys,
+                [out] IObjectContainer** values);
+
+            GetKeySet(
+                [out, callee] ArrayOf<Int32>* keys);
+
+            GetValues(
+                [out] IObjectContainer** result);
+
+            ToString(
+                [out] String* result);
+        }
+
+        [local]
+        interface ILinkCapabilitiesHelper {
+
+            CreateNeedsMap(
+                [in] String applicationRole,
+                [out] ILinkCapabilities** result);
+        }
+
+    } // namespace Net
+    } // namepsace Droid
+    } // namespace Elastos
+}

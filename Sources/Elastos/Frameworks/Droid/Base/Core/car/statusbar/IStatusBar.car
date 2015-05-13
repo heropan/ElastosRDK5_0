@@ -1,0 +1,72 @@
+
+
+module
+{
+    using interface Elastos.Droid.Os.IBinder;
+
+    interface Elastos.Droid.StatusBar.IStatusBarIcon;
+    interface Elastos.Droid.StatusBar.IStatusBarNotification;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace StatusBar {
+
+    interface IIStatusBar
+    {
+        SetIcon(
+            [in] Int32 index,
+            [in] IStatusBarIcon* icon);
+
+        RemoveIcon(
+            [in] Int32 index);
+
+        AddNotification(
+            [in] IBinder* key,
+            [in] IStatusBarNotification* notification);
+
+        UpdateNotification(
+            [in] IBinder* key,
+            [in] IStatusBarNotification* notification);
+
+        RemoveNotification(
+            [in] IBinder* key);
+
+        Disable(
+            [in] Int32 state);
+
+        AnimateExpandNotificationsPanel();
+
+        AnimateExpandSettingsPanel();
+
+        AnimateCollapsePanels();
+
+        SetSystemUiVisibility(
+            [in] Int32 vis,
+            [in] Int32 mask);
+
+        TopAppWindowChanged(
+            [in] Boolean menuVisible);
+
+        SetImeWindowStatus(
+            [in] IBinder* token,
+            [in] Int32 vis,
+            [in] Int32 backDisposition);
+
+        SetHardKeyboardStatus(
+            [in] Boolean available,
+            [in] Boolean enabled);
+
+        ToggleRecentApps();
+
+        PreloadRecentApps();
+
+        CancelPreloadRecentApps();
+
+        ToString(
+            [out] String* info);
+    }
+
+    } // namespace StatusBar
+    } // namespace Droid
+    } // namespace Elastos
+}

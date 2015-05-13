@@ -1,0 +1,46 @@
+module
+{
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.SystemUI.StatusBar.Tablet.IInputMethodButton;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Tablet {
+
+
+    interface IOnHardKeyboardEnabledChangeListener {
+        OnHardKeyboardEnabledChange(
+            [in] Boolean enabled);
+    }
+
+    interface IInputMethodsPanel extends Elastos.Droid.Widget.ILinearLayout {
+
+        SetHardKeyboardEnabledChangeListener(
+            [in] IOnHardKeyboardEnabledChangeListener* listener);
+
+        OpenPanel();
+
+        ClosePanel(
+            [in] Boolean closeKeyboard);
+
+        SetImeToken(
+            [in] IBinder* token);
+
+        SetImeSwitchButton(
+            [in] IInputMethodButton* imb);
+
+        SetHardKeyboardStatus(
+            [in] Boolean available,
+            [in] Boolean enabled);
+    }
+
+
+    } // namespace Tablet
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}
+

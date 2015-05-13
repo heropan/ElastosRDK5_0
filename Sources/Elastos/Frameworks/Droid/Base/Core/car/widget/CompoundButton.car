@@ -1,0 +1,71 @@
+
+module
+{
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
+
+    interface ICompoundButton;
+
+    /**
+     * Interface definition for a callback to be invoked when the checked state
+     * of a compound button changed.
+     */
+    interface ICompoundButtonOnCheckedChangeListener {
+        /**
+         * Called when the checked state of a compound button has changed.
+         *
+         * @param buttonView The compound button view whose state has changed.
+         * @param isChecked  The new checked state of buttonView.
+         */
+        OnCheckedChanged(
+            [in] ICompoundButton* buttonView,
+            [in] Boolean isChecked);
+    }
+
+    interface ICompoundButton extends IButton {
+        /**
+             * Register a callback to be invoked when the checked state of this button
+             * changes.
+             *
+             * @param listener the callback to call on checked state change
+             */
+        SetOnCheckedChangeListener(
+            [in] ICompoundButtonOnCheckedChangeListener* listener);
+
+        /**
+             * Register a callback to be invoked when the checked state of this button
+             * changes. This callback is used for internal purpose only.
+             *
+             * @param listener the callback to call on checked state change
+             * @hide
+             */
+        SetOnCheckedChangeWidgetListener(
+            [in] ICompoundButtonOnCheckedChangeListener* listener);
+
+        /**
+             * Set the background to a given Drawable, identified by its resource id.
+             *
+             * @param resid the resource id of the drawable to use as the background
+             */
+        SetButtonDrawable(
+            [in] Int32 resid);
+
+        /**
+             * Set the background to a given Drawable
+             *
+             * @param d The Drawable to use as the background
+             */
+        SetButtonDrawableEx(
+            [in] IDrawable* d);
+
+        GetButtonDrawable(
+            [out] IDrawable** d);
+    }
+
+    } // namespace Widget
+    } // namespace Droid
+    } // namespace Elastos
+}

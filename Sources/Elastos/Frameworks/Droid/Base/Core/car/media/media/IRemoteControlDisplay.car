@@ -1,0 +1,56 @@
+
+module
+{
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Graphics.IBitmap;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+    [oneway]
+    interface IIRemoteControlDisplay {
+        /**
+         * Sets the generation counter of the current client that is displayed on the remote control.
+         * @param clientGeneration the new RemoteControlClient generation
+         * @param clientMediaIntent the PendingIntent associated with the client.
+         *    May be null, which implies there is no registered media button event receiver.
+         * @param clearing true if the new client generation value maps to a remote control update
+         *    where the display should be cleared.
+         */
+        SetCurrentClientId(
+            [in] Int32 clientGeneration,
+            [in] IPendingIntent* clientMediaIntent,
+            [in] Boolean clearing);
+
+        SetPlaybackState(
+            [in] Int32 generationId,
+            [in] Int32 state,
+            [in] Int64 stateChangeTimeMs);
+
+        SetTransportControlFlags(
+            [in] Int32 generationId,
+            [in] Int32 transportControlFlags);
+
+        SetMetadata(
+            [in] Int32 generationId,
+            [in] IBundle* metadata);
+
+        SetArtwork(
+            [in] Int32 generationId,
+            [in] IBitmap* artwork);
+
+        /**
+         * To combine metadata text and artwork in one binder call
+         */
+        SetAllMetadata(
+            [in] Int32 generationId,
+            [in] IBundle* metadata,
+            [in] IBitmap* artwork);
+    }
+
+    } // namespace Media
+    } // namepsace Droid
+    } // namespace Elastos
+}

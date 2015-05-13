@@ -1,0 +1,40 @@
+
+module
+{
+
+    interface Elastos.Droid.Webkit.IDownloadListener;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+    /**
+    * An abstract download listener that allows passing extra information as
+    * part of onDownloadStart callback.
+    * @hide
+    */
+    interface IBrowserDownloadListener extends IDownloadListener {
+        /**
+         * Notify the host application that a file should be downloaded
+         * @param url The full url to the content that should be downloaded
+         * @param userAgent the user agent to be used for the download.
+         * @param contentDisposition Content-disposition http header, if
+         *                           present.
+         * @param mimetype The mimetype of the content reported by the server
+         * @param referer The referer associated with this url
+         * @param contentLength The file size reported by the server
+         */
+        OnDownloadStartEx(
+            [in] String url,
+            [in] String userAgent,
+            [in] String contentDisposition,
+            [in] String mimetype,
+            [in] String referer,
+            [in] Int64 contentLength);
+        }
+    }
+
+    } // namespace Webkit
+    } // namepsace Droid
+    } // namespace Elastos
+}

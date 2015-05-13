@@ -1,0 +1,33 @@
+$;;=========================================================================
+$;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
+$;;=========================================================================
+$
+$INPUT module
+$OUTPUT "${module.name}So.def"
+$
+EXPORTS
+$WITH all classes DO
+$   WITH all interfaces DO
+$       IF attrib is not "clsobj" and attrib is not "callback"
+$           WITH all methods DO
+    ${class.name}So${name}
+$           END DO
+$       END IF
+$   END DO
+$   IF attrib is "hascallback"
+    register${class.name}SoCarServerObj
+$   END IF
+$   WITH all interfaces DO
+$       IF attrib is "callback"
+$           WITH all methods DO
+    register${class.name}So${method.name}Callback
+$           END DO
+$       END IF
+$   END DO
+$   IF attrib is "hascallback"
+    ${class.name}SoStartListen
+    StopListener
+$   END IF
+$END DO
+$
+$END OUTPUT

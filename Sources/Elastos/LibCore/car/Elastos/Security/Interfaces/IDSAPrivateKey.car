@@ -1,0 +1,29 @@
+
+module
+{
+    interface Elastos.Math.IBigInteger;
+    interface Elastos.Security.Interfaces.IDSAKey;
+    interface Elastos.Security.IPrivateKey;
+
+    namespace Elastos {
+    namespace Security {
+    namespace Interfaces {
+
+    /**
+     * The interface for a Digital Signature Algorithm (DSA) private key.
+     */
+    interface IDSAPrivateKey extends Elastos.Security.Interfaces.IDSAKey/*,
+    Elastos.Security.IPrivateKey*/ {
+        /**
+         * Returns the private key value {@code x}.
+         *
+         * @return the private key value {@code x}.
+         */
+         GetX(
+            [out] IBigInteger** x);
+    }
+
+    } // namespace Interfaces
+    } // namespace Security
+    } // namespace Elastos
+}

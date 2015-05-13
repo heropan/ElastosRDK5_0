@@ -1,0 +1,115 @@
+
+module
+{
+    using interface Elastos.Utility.IObjectContainer;
+    using interface Elastos.Net.IInetAddress;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+	interface ICompareResult {
+        ToString(
+            [out] String* result);
+
+        GetRemoved(
+            [out] IObjectContainer** result);
+
+        AddRemoved(
+            [in] IInterface* removed);
+
+        GetAdded(
+            [out] IObjectContainer** result);
+
+        AddAdded(
+            [in] IInterface* added);
+    }
+
+    interface ILinkProperties {
+
+        SetInterfaceName(
+            [in] String iface);
+
+        GetInterfaceName(
+            [out] String* result);
+
+        GetAddresses(
+            [out] IObjectContainer** result);
+
+        AddLinkAddress(
+            [in] ILinkAddress* address);
+
+        GetLinkAddresses(
+            [out] IObjectContainer** result);
+
+        AddDns(
+            [in] IInetAddress* dns);
+
+        GetDnses(
+            [out] IObjectContainer** result);
+
+        AddRoute(
+            [in] IRouteInfo* route);
+
+        GetRoutes(
+            [out] IObjectContainer** result);
+
+        SetHttpProxy(
+            [in] IProxyProperties* proxy);
+
+        GetHttpProxy(
+            [out] IProxyProperties** result);
+
+        Clear();
+
+        ToString(
+            [out] String* result);
+
+        IsIdenticalInterfaceName(
+            [in] ILinkProperties* target,
+            [out] Boolean* result);
+
+        IsIdenticalAddresses(
+            [in] ILinkProperties* target,
+            [out] Boolean* result);
+
+        IsIdenticalDnses(
+            [in] ILinkProperties* target,
+            [out] Boolean* result);
+
+        IsIdenticalRoutes(
+            [in] ILinkProperties* target,
+            [out] Boolean* result);
+
+        IsIdenticalHttpProxy(
+            [in] ILinkProperties* target,
+            [out] Boolean* result);
+
+        EqualsEx(
+            [in] ILinkProperties* target,
+            [out] Boolean* result);
+
+        Equals(
+            [in] IInterface* target,
+            [out] Boolean* result);
+
+        GetHashCode(
+            [out] Int32* result);
+
+        CompareAddresses(
+            [in] ILinkProperties* target,
+            [out] ICompareResult** result);
+
+        CompareDnses(
+            [in] ILinkProperties* target,
+            [out] ICompareResult** result);
+
+        CompareRoutes(
+            [in] ILinkProperties* target,
+            [out] ICompareResult** result);
+    }
+
+    } // namespace Net
+    } // namepsace Droid
+    } // namespace Elastos
+}

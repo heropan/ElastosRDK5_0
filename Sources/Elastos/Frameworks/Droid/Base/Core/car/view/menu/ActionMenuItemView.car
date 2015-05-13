@@ -1,0 +1,31 @@
+
+module
+{
+    interface Elastos.Droid.View.Menu.IMenuBuilderItemInvoker;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Menu {
+
+        /**
+         * @hide
+         */
+        [local]
+        interface IActionMenuItemView extends Elastos.Droid.Widget.ITextView {
+            SetItemInvoker(
+                [in] IMenuBuilderItemInvoker* itemInvoker);
+
+            SetExpandedFormat(
+                [in] Boolean expandedFormat);
+
+            HasText(
+                [out] Boolean* rst);
+        }
+
+    } // namespace Menu
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

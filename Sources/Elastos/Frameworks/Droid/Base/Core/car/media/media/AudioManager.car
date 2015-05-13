@@ -1,0 +1,1830 @@
+
+module
+{
+    interface Elastos.Droid.View.IKeyEvent;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Bluetooth.IBluetoothDevice;
+    interface Elastos.Droid.Media.IIRingtonePlayer;
+    interface Elastos.Droid.Media.IRemoteControlClient;
+    interface Elastos.Droid.Media.IIRemoteControlDisplay;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+    /**
+     * Interface definition for a callback to be invoked when the audio focus of the system is
+     * updated.
+     */
+    interface IOnAudioFocusChangeListener {
+        /**
+         * Called on the listener to notify it the audio focus for this listener has been changed.
+         * The focusChange value indicates whether the focus was gained,
+         * whether the focus was lost, and whether that loss is transient, or whether the new focus
+         * holder will hold it for an unknown amount of time.
+         * When losing focus, listeners can use the focus change information to decide what
+         * behavior to adopt when losing focus. A music player could for instance elect to lower
+         * the volume of its music stream (duck) for transient focus losses, and pause otherwise.
+         * @param focusChange the type of focus change, one of {@link AudioManager#AUDIOFOCUS_GAIN},
+         *   {@link AudioManager#AUDIOFOCUS_LOSS}, {@link AudioManager#AUDIOFOCUS_LOSS_TRANSIENT}
+         *   and {@link AudioManager#AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK}.
+         */
+        OnAudioFocusChange(
+            [in] Int32 focusChange);
+    }
+
+    /**
+     * AudioManager provides access to volume and ringer mode control.
+     * <p>
+     * Use <code>Context.getSystemService(Context.AUDIO_SERVICE)</code> to get
+     * an instance of this class.
+     */
+    interface IAudioManager {
+        /* define audio device name */
+        const String AUDIO_NAME_CODEC     = "AUDIO_CODEC";
+        const String AUDIO_NAME_HDMI      = "AUDIO_HDMI";
+        const String AUDIO_NAME_SPDIF     = "AUDIO_SPDIF";
+
+        /* define type of device */
+        const String AUDIO_INPUT_TYPE     = "audio_devices_in";
+        const String AUDIO_OUTPUT_TYPE    = "audio_devices_out";
+        const String AUDIO_INPUT_ACTIVE   = "audio_devices_in_active";
+        const String AUDIO_OUTPUT_ACTIVE  = "audio_devices_out_active";
+
+        /**
+         * Broadcast intent, a hint for applications that audio is about to become
+         * 'noisy' due to a change in audio outputs. For example, this intent may
+         * be sent when a wired headset is unplugged, or when an A2DP audio
+         * sink is disconnected, and the audio system is about to automatically
+         * switch audio route to the speaker. Applications that are controlling
+         * audio streams may consider pausing, reducing volume or some other action
+         * on receipt of this intent so as not to surprise the user with audio
+         * from the speaker.
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_AUDIO_BECOMING_NOISY = "android.media.AUDIO_BECOMING_NOISY";
+
+        /**
+         * Sticky broadcast intent action indicating that the ringer mode has
+         * changed. Includes the new ringer mode.
+         *
+         * @see #EXTRA_RINGER_MODE
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String RINGER_MODE_CHANGED_ACTION = "android.media.RINGER_MODE_CHANGED";
+
+        /**
+         * The new ringer mode.
+         *
+         * @see #RINGER_MODE_CHANGED_ACTION
+         * @see #RINGER_MODE_NORMAL
+         * @see #RINGER_MODE_SILENT
+         * @see #RINGER_MODE_VIBRATE
+         */
+        const String EXTRA_RINGER_MODE = "android.media.EXTRA_RINGER_MODE";
+
+        /**
+         * Broadcast intent action indicating that the vibrate setting has
+         * changed. Includes the vibrate type and its new setting.
+         *
+         * @see #EXTRA_VIBRATE_TYPE
+         * @see #EXTRA_VIBRATE_SETTING
+         * @deprecated Applications should maintain their own vibrate policy based on
+         * current ringer mode and listen to {@link #RINGER_MODE_CHANGED_ACTION} instead.
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String VIBRATE_SETTING_CHANGED_ACTION = "android.media.VIBRATE_SETTING_CHANGED";
+
+        /**
+         * @hide Broadcast intent when the volume for a particular stream type changes.
+         * Includes the stream, the new volume and previous volumes.
+         * Notes:
+         *  - for internal platform use only, do not make public,
+         *  - never used for "remote" volume changes
+         *
+         * @see #EXTRA_VOLUME_STREAM_TYPE
+         * @see #EXTRA_VOLUME_STREAM_VALUE
+         * @see #EXTRA_PREV_VOLUME_STREAM_VALUE
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String VOLUME_CHANGED_ACTION = "android.media.VOLUME_CHANGED_ACTION";
+
+        /**
+         * @hide Broadcast intent when the master volume changes.
+         * Includes the new volume
+         *
+         * @see #EXTRA_MASTER_VOLUME_VALUE
+         * @see #EXTRA_PREV_MASTER_VOLUME_VALUE
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String MASTER_VOLUME_CHANGED_ACTION = "android.media.MASTER_VOLUME_CHANGED_ACTION";
+
+        /**
+         * @hide Broadcast intent when the master mute state changes.
+         * Includes the the new volume
+         *
+         * @see #EXTRA_MASTER_VOLUME_MUTED
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String MASTER_MUTE_CHANGED_ACTION = "android.media.MASTER_MUTE_CHANGED_ACTION";
+
+        /**
+         * The new vibrate setting for a particular type.
+         *
+         * @see #VIBRATE_SETTING_CHANGED_ACTION
+         * @see #EXTRA_VIBRATE_TYPE
+         * @see #VIBRATE_SETTING_ON
+         * @see #VIBRATE_SETTING_OFF
+         * @see #VIBRATE_SETTING_ONLY_SILENT
+         * @deprecated Applications should maintain their own vibrate policy based on
+         * current ringer mode and listen to {@link #RINGER_MODE_CHANGED_ACTION} instead.
+         */
+        const String EXTRA_VIBRATE_SETTING = "android.media.EXTRA_VIBRATE_SETTING";
+
+        /**
+         * The vibrate type whose setting has changed.
+         *
+         * @see #VIBRATE_SETTING_CHANGED_ACTION
+         * @see #VIBRATE_TYPE_NOTIFICATION
+         * @see #VIBRATE_TYPE_RINGER
+         * @deprecated Applications should maintain their own vibrate policy based on
+         * current ringer mode and listen to {@link #RINGER_MODE_CHANGED_ACTION} instead.
+         */
+        const String EXTRA_VIBRATE_TYPE = "android.media.EXTRA_VIBRATE_TYPE";
+
+        /**
+         * @hide The stream type for the volume changed intent.
+         */
+        const String EXTRA_VOLUME_STREAM_TYPE = "android.media.EXTRA_VOLUME_STREAM_TYPE";
+
+        /**
+         * @hide The volume associated with the stream for the volume changed intent.
+         */
+        const String EXTRA_VOLUME_STREAM_VALUE = "android.media.EXTRA_VOLUME_STREAM_VALUE";
+
+        /**
+         * @hide The previous volume associated with the stream for the volume changed intent.
+         */
+        const String EXTRA_PREV_VOLUME_STREAM_VALUE = "android.media.EXTRA_PREV_VOLUME_STREAM_VALUE";
+
+        /**
+         * @hide The new master volume value for the master volume changed intent.
+         * Value is integer between 0 and 100 inclusive.
+         */
+        const String EXTRA_MASTER_VOLUME_VALUE = "android.media.EXTRA_MASTER_VOLUME_VALUE";
+
+        /**
+         * @hide The previous master volume value for the master volume changed intent.
+         * Value is integer between 0 and 100 inclusive.
+         */
+        const String EXTRA_PREV_MASTER_VOLUME_VALUE = "android.media.EXTRA_PREV_MASTER_VOLUME_VALUE";
+
+        /**
+         * @hide The new master volume mute state for the master mute changed intent.
+         * Value is boolean
+         */
+        const String EXTRA_MASTER_VOLUME_MUTED = "android.media.EXTRA_MASTER_VOLUME_MUTED";
+
+        /** The audio stream for phone calls */
+        const Int32 STREAM_VOICE_CALL = 0; // IAudioSystem::STREAM_VOICE_CALL;
+
+        /** The audio stream for system sounds */
+        const Int32 STREAM_SYSTEM = 1; // IAudioSystem::STREAM_SYSTEM;
+
+        /** The audio stream for the phone ring */
+        const Int32 STREAM_RING = 2; // IAudioSystem::STREAM_RING;
+
+        /** The audio stream for music playback */
+        const Int32 STREAM_MUSIC = 3; // IAudioSystem::STREAM_MUSIC;
+
+        /** The audio stream for alarms */
+        const Int32 STREAM_ALARM = 4; // IAudioSystem::STREAM_ALARM;
+
+        /** The audio stream for notifications */
+        const Int32 STREAM_NOTIFICATION = 5; // IAudioSystem::STREAM_NOTIFICATION;
+
+        /** @hide The audio stream for phone calls when connected to bluetooth */
+        const Int32 STREAM_BLUETOOTH_SCO = 6; // IAudioSystem::STREAM_BLUETOOTH_SCO;
+
+        /** @hide The audio stream for enforced system sounds in certain countries (e.g camera in Japan) */
+        const Int32 STREAM_SYSTEM_ENFORCED = 7; // IAudioSystem::STREAM_SYSTEM_ENFORCED;
+
+        /** The audio stream for DTMF Tones */
+        const Int32 STREAM_DTMF = 8; // IAudioSystem::STREAM_DTMF;
+
+        /** @hide The audio stream for text to speech (TTS) */
+        const Int32 STREAM_TTS = 9; // IAudioSystem::STREAM_TTS;
+
+        /** Number of audio streams */
+        /**
+         * @deprecated Use AudioSystem::getNumStreamTypes() instead
+         */
+        //@Deprecated
+        const Int32 NUM_STREAMS = 5; // IAudioSystem::NUM_STREAMS;
+
+        /**  @hide Default volume index values for audio streams */
+//      const Int32 DEFAULT_STREAM_VOLUME[] = {
+//          4,  // STREAM_VOICE_CALL
+//          7,  // STREAM_SYSTEM
+//          5,  // STREAM_RING
+//          11, // STREAM_MUSIC
+//          6,  // STREAM_ALARM
+//          5,  // STREAM_NOTIFICATION
+//          7,  // STREAM_BLUETOOTH_SCO
+//          7,  // STREAM_SYSTEM_ENFORCED
+//          11, // STREAM_DTMF
+//          11  // STREAM_TTS;
+//      };
+
+        /**
+         * Increase the ringer volume.
+         *
+         * @see #adjustVolume(Int32, Int32)
+         * @see #adjustStreamVolume(Int32, Int32, Int32)
+         */
+        const Int32 ADJUST_RAISE = 1;
+
+        /**
+         * Decrease the ringer volume.
+         *
+         * @see #adjustVolume(Int32, Int32)
+         * @see #adjustStreamVolume(Int32, Int32, Int32)
+         */
+        const Int32 ADJUST_LOWER = -1;
+
+        /**
+         * Maintain the previous ringer volume. This may be useful when needing to
+         * show the volume toast without actually modifying the volume.
+         *
+         * @see #adjustVolume(Int32, Int32)
+         * @see #adjustStreamVolume(Int32, Int32, Int32)
+         */
+        const Int32 ADJUST_SAME = 0;
+
+        // Flags should be powers of 2!
+
+        /**
+         * Show a toast containing the current volume.
+         *
+         * @see #adjustStreamVolume(Int32, Int32, Int32)
+         * @see #adjustVolume(Int32, Int32)
+         * @see #setStreamVolume(Int32, Int32, Int32)
+         * @see #setRingerMode(Int32)
+         */
+        const Int32 FLAG_SHOW_UI = 1 << 0; // 1;
+
+        /**
+         * Whether to include ringer modes as possible options when changing volume.
+         * For example, if TRUE and volume level is 0 and the volume is adjusted
+         * with {@link #ADJUST_LOWER}, then the ringer mode may switch the silent or
+         * vibrate mode.
+         * <p>
+         * By default this is on for the ring stream. If this flag is included,
+         * this behavior will be present regardless of the stream type being
+         * affected by the ringer mode.
+         *
+         * @see #adjustVolume(Int32, Int32)
+         * @see #adjustStreamVolume(Int32, Int32, Int32)
+         */
+        const Int32 FLAG_ALLOW_RINGER_MODES = 1 << 1; // 2;
+
+        /**
+         * Whether to play a sound when changing the volume.
+         * <p>
+         * If this is given to {@link #adjustVolume(Int32, Int32)} or
+         * {@link #adjustSuggestedStreamVolume(Int32, Int32, Int32)}, it may be ignored
+         * in some cases (for example, the decided stream type is not
+         * {@link AudioManager#STREAM_RING}, or the volume is being adjusted
+         * downward).
+         *
+         * @see #adjustStreamVolume(Int32, Int32, Int32)
+         * @see #adjustVolume(Int32, Int32)
+         * @see #setStreamVolume(Int32, Int32, Int32)
+         */
+        const Int32 FLAG_PLAY_SOUND = 1 << 2; // 4;
+
+        /**
+         * Removes any sounds/vibrate that may be in the queue, or are playing (related to
+         * changing volume).
+         */
+        const Int32 FLAG_REMOVE_SOUND_AND_VIBRATE = 1 << 3; // 8;
+
+        /**
+         * Whether to vibrate if going into the vibrate ringer mode.
+         */
+        const Int32 FLAG_VIBRATE = 1 << 4; // 16;
+
+        /**
+         * Indicates to VolumePanel that the volume slider should be disabled as user
+         * cannot change the stream volume
+         * @hide
+         */
+        const Int32 FLAG_FIXED_VOLUME = 1 << 5; // 32;
+
+        /**
+         * Ringer mode that will be silent and will not vibrate. (This overrides the
+         * vibrate setting.)
+         *
+         * @see #setRingerMode(Int32)
+         * @see #getRingerMode()
+         */
+        const Int32 RINGER_MODE_SILENT = 0;
+
+        /**
+         * Ringer mode that will be silent and will vibrate. (This will cause the
+         * phone ringer to always vibrate, but the notification vibrate to only
+         * vibrate if set.)
+         *
+         * @see #setRingerMode(Int32)
+         * @see #getRingerMode()
+         */
+        const Int32 RINGER_MODE_VIBRATE = 1;
+
+        /**
+         * Ringer mode that may be audible and may vibrate. It will be audible if
+         * the volume before changing out of this mode was audible. It will vibrate
+         * if the vibrate setting is on.
+         *
+         * @see #setRingerMode(Int32)
+         * @see #getRingerMode()
+         */
+        const Int32 RINGER_MODE_NORMAL = 2;
+
+        /**
+         * Vibrate type that corresponds to the ringer.
+         *
+         * @see #setVibrateSetting(Int32, Int32)
+         * @see #getVibrateSetting(Int32)
+         * @see #shouldVibrate(Int32)
+         * @deprecated Applications should maintain their own vibrate policy based on
+         * current ringer mode that can be queried via {@link #getRingerMode()}.
+         */
+        const Int32 VIBRATE_TYPE_RINGER = 0;
+
+        /**
+         * Vibrate type that corresponds to notifications.
+         *
+         * @see #setVibrateSetting(Int32, Int32)
+         * @see #getVibrateSetting(Int32)
+         * @see #shouldVibrate(Int32)
+         * @deprecated Applications should maintain their own vibrate policy based on
+         * current ringer mode that can be queried via {@link #getRingerMode()}.
+         */
+        const Int32 VIBRATE_TYPE_NOTIFICATION = 1;
+
+        /**
+         * Vibrate setting that suggests to never vibrate.
+         *
+         * @see #setVibrateSetting(Int32, Int32)
+         * @see #getVibrateSetting(Int32)
+         * @deprecated Applications should maintain their own vibrate policy based on
+         * current ringer mode that can be queried via {@link #getRingerMode()}.
+         */
+        const Int32 VIBRATE_SETTING_OFF = 0;
+
+        /**
+         * Vibrate setting that suggests to vibrate when possible.
+         *
+         * @see #setVibrateSetting(Int32, Int32)
+         * @see #getVibrateSetting(Int32)
+         * @deprecated Applications should maintain their own vibrate policy based on
+         * current ringer mode that can be queried via {@link #getRingerMode()}.
+         */
+        const Int32 VIBRATE_SETTING_ON = 1;
+
+        /**
+         * Vibrate setting that suggests to only vibrate when in the vibrate ringer
+         * mode.
+         *
+         * @see #setVibrateSetting(Int32, Int32)
+         * @see #getVibrateSetting(Int32)
+         * @deprecated Applications should maintain their own vibrate policy based on
+         * current ringer mode that can be queried via {@link #getRingerMode()}.
+         */
+        const Int32 VIBRATE_SETTING_ONLY_SILENT = 2;
+
+        /**
+         * Suggests using the default stream type. This may not be used in all
+         * places a stream type is needed.
+         */
+        const Int32 USE_DEFAULT_STREAM_TYPE = 0x80000000; // Math::INT32_MIN_VALUE;
+
+        //====================================================================
+        // Bluetooth SCO control
+        /**
+         * Sticky broadcast intent action indicating that the bluetoooth SCO audio
+         * connection state has changed. The intent contains on extra {@link #EXTRA_SCO_AUDIO_STATE}
+         * indicating the new state which is either {@link #SCO_AUDIO_STATE_DISCONNECTED}
+         * or {@link #SCO_AUDIO_STATE_CONNECTED}
+         *
+         * @see #startBluetoothSco()
+         * @deprecated Use  {@link #ACTION_SCO_AUDIO_STATE_UPDATED} instead
+         */
+        //@Deprecated
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_SCO_AUDIO_STATE_CHANGED = "android.media.SCO_AUDIO_STATE_CHANGED";
+
+         /**
+         * Sticky broadcast intent action indicating that the bluetoooth SCO audio
+         * connection state has been updated.
+         * <p>This intent has two extras:
+         * <ul>
+         *   <li> {@link #EXTRA_SCO_AUDIO_STATE} - The new SCO audio state. </li>
+         *   <li> {@link #EXTRA_SCO_AUDIO_PREVIOUS_STATE}- The previous SCO audio state. </li>
+         * </ul>
+         * <p> EXTRA_SCO_AUDIO_STATE or EXTRA_SCO_AUDIO_PREVIOUS_STATE can be any of:
+         * <ul>
+         *   <li> {@link #SCO_AUDIO_STATE_DISCONNECTED}, </li>
+         *   <li> {@link #SCO_AUDIO_STATE_CONNECTING} or </li>
+         *   <li> {@link #SCO_AUDIO_STATE_CONNECTED}, </li>
+         * </ul>
+         * @see #startBluetoothSco()
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_SCO_AUDIO_STATE_UPDATED = "android.media.ACTION_SCO_AUDIO_STATE_UPDATED";
+
+        /**
+         * Extra for intent {@link #ACTION_SCO_AUDIO_STATE_CHANGED} containing the new
+         * bluetooth SCO connection state.
+         */
+        const String EXTRA_SCO_AUDIO_STATE = "android.media.extra.SCO_AUDIO_STATE";
+
+        /**
+         * Extra for intent {@link #ACTION_SCO_AUDIO_STATE_UPDATED} containing the previous
+         * bluetooth SCO connection state.
+         */
+        const String EXTRA_SCO_AUDIO_PREVIOUS_STATE = "android.media.extra.SCO_AUDIO_PREVIOUS_STATE";
+
+        /**
+         * Value for extra {@link #EXTRA_SCO_AUDIO_STATE} indicating that the
+         * SCO audio channel is not established
+         */
+        const Int32 SCO_AUDIO_STATE_DISCONNECTED = 0;
+
+        /**
+         * Value for extra {@link #EXTRA_SCO_AUDIO_STATE} indicating that the
+         * SCO audio channel is established
+         */
+        const Int32 SCO_AUDIO_STATE_CONNECTED = 1;
+
+        /**
+         * Value for extra EXTRA_SCO_AUDIO_STATE or EXTRA_SCO_AUDIO_PREVIOUS_STATE
+         * indicating that the SCO audio channel is being established
+         */
+        const Int32 SCO_AUDIO_STATE_CONNECTING = 2;
+
+        /**
+         * Value for extra {@link #EXTRA_SCO_AUDIO_STATE} indicating that
+         * there was an error trying to obtain the state
+         */
+        const Int32 SCO_AUDIO_STATE_ERROR = -1;
+
+        /* modes for setMode/getMode/setRoute/getRoute */
+        /**
+         * Audio harware modes.
+         */
+        /**
+         * Invalid audio mode.
+         */
+        const Int32 MODE_INVALID = -2; // IAudioSystem::MODE_INVALID;
+
+        /**
+         * Current audio mode. Used to apply audio routing to current mode.
+         */
+        const Int32 MODE_CURRENT = -1; // IAudioSystem::MODE_CURRENT;
+
+        /**
+         * Normal audio mode: not ringing and no call established.
+         */
+        const Int32 MODE_NORMAL = 0; // IAudioSystem::MODE_NORMAL;
+
+        /**
+         * Ringing audio mode. An incoming is being signaled.
+         */
+        const Int32 MODE_RINGTONE = 1; // IAudioSystem::MODE_RINGTONE;
+
+        /**
+         * In call audio mode. A telephony call is established.
+         */
+        const Int32 MODE_IN_CALL = 2; // IAudioSystem::MODE_IN_CALL;
+
+        /**
+         * In communication audio mode. An audio/video chat or VoIP call is established.
+         */
+        const Int32 MODE_IN_COMMUNICATION = 3; // IAudioSystem::MODE_IN_COMMUNICATION;
+
+        /* Routing bits for setRouting/getRouting API */
+        /**
+         * Routing audio output to earpiece
+         * @deprecated   Do not set audio routing directly, use setSpeakerphoneOn(),
+         * setBluetoothScoOn() methods instead.
+         */
+        //@Deprecated
+        const Int32 ROUTE_EARPIECE = 1; // IAudioSystem::ROUTE_EARPIECE;
+
+        /**
+         * Routing audio output to speaker
+         * @deprecated   Do not set audio routing directly, use setSpeakerphoneOn(),
+         * setBluetoothScoOn() methods instead.
+         */
+        //@Deprecated
+        const Int32 ROUTE_SPEAKER = 2; // IAudioSystem::ROUTE_SPEAKER;
+
+        /**
+         * @deprecated use {@link #ROUTE_BLUETOOTH_SCO}
+         * @deprecated   Do not set audio routing directly, use setSpeakerphoneOn(),
+         * setBluetoothScoOn() methods instead.
+         */
+        //@Deprecated
+        const Int32 ROUTE_BLUETOOTH = 4; // IAudioSystem::ROUTE_BLUETOOTH_SCO;
+
+        /**
+         * Routing audio output to bluetooth SCO
+         * @deprecated   Do not set audio routing directly, use setSpeakerphoneOn(),
+         * setBluetoothScoOn() methods instead.
+         */
+        //@Deprecated
+        const Int32 ROUTE_BLUETOOTH_SCO = 4; // IAudioSystem::ROUTE_BLUETOOTH_SCO;
+
+        /**
+         * Routing audio output to headset
+         * @deprecated   Do not set audio routing directly, use setSpeakerphoneOn(),
+         * setBluetoothScoOn() methods instead.
+         */
+        //@Deprecated
+        const Int32 ROUTE_HEADSET = 8; // IAudioSystem::ROUTE_HEADSET;
+
+        /**
+         * Routing audio output to bluetooth A2DP
+         * @deprecated   Do not set audio routing directly, use setSpeakerphoneOn(),
+         * setBluetoothScoOn() methods instead.
+         */
+        //@Deprecated
+        const Int32 ROUTE_BLUETOOTH_A2DP = 16; // IAudioSystem::ROUTE_BLUETOOTH_A2DP;
+
+        /**
+         * Used for mask parameter of {@link #setRouting(Int32,Int32,Int32)}.
+         * @deprecated   Do not set audio routing directly, use setSpeakerphoneOn(),
+         * setBluetoothScoOn() methods instead.
+         */
+        const Int32 ROUTE_ALL = 0xFFFFFFFF; // IAudioSystem::ROUTE_ALL;
+
+        /* Sound effect identifiers */
+        /**
+         * Keyboard and direction pad click sound
+         * @see #playSoundEffect(Int32)
+         */
+        const Int32 FX_KEY_CLICK = 0;
+
+        /**
+         * Focus has moved up
+         * @see #playSoundEffect(Int32)
+         */
+        const Int32 FX_FOCUS_NAVIGATION_UP = 1;
+
+        /**
+         * Focus has moved down
+         * @see #playSoundEffect(Int32)
+         */
+        const Int32 FX_FOCUS_NAVIGATION_DOWN = 2;
+
+        /**
+         * Focus has moved left
+         * @see #playSoundEffect(Int32)
+         */
+        const Int32 FX_FOCUS_NAVIGATION_LEFT = 3;
+
+        /**
+         * Focus has moved right
+         * @see #playSoundEffect(Int32)
+         */
+        const Int32 FX_FOCUS_NAVIGATION_RIGHT = 4;
+
+        /**
+         * IME standard keypress sound
+         * @see #playSoundEffect(Int32)
+         */
+        const Int32 FX_KEYPRESS_STANDARD = 5;
+
+        /**
+         * IME spacebar keypress sound
+         * @see #playSoundEffect(Int32)
+         */
+        const Int32 FX_KEYPRESS_SPACEBAR = 6;
+
+        /**
+         * IME delete keypress sound
+         * @see #playSoundEffect(Int32)
+         */
+        const Int32 FX_KEYPRESS_DELETE = 7;
+
+        /**
+         * IME return_keypress sound
+         * @see #playSoundEffect(Int32)
+         */
+        const Int32 FX_KEYPRESS_RETURN = 8;
+
+        /**
+         * @hide Number of sound effects
+         */
+        const Int32 NUM_SOUND_EFFECTS = 9;
+
+        /**
+         * Used to indicate a gain of audio focus, or a request of audio focus, of unknown duration.
+         * @see OnAudioFocusChangeListener#onAudioFocusChange(Int32)
+         * @see #requestAudioFocus(OnAudioFocusChangeListener, Int32, Int32)
+         */
+        const Int32 AUDIOFOCUS_GAIN = 1;
+
+        /**
+         * Used to indicate a temporary gain or request of audio focus, anticipated to last a short
+         * amount of time. Examples of temporary changes are the playback of driving directions, or an
+         * event notification.
+         * @see OnAudioFocusChangeListener#onAudioFocusChange(Int32)
+         * @see #requestAudioFocus(OnAudioFocusChangeListener, Int32, Int32)
+         */
+        const Int32 AUDIOFOCUS_GAIN_TRANSIENT = 2;
+
+        /**
+         * Used to indicate a temporary request of audio focus, anticipated to last a short
+         * amount of time, and where it is acceptable for other audio applications to keep playing
+         * after having lowered their output level (also referred to as "ducking").
+         * Examples of temporary changes are the playback of driving directions where playback of music
+         * in the background is acceptable.
+         * @see OnAudioFocusChangeListener#onAudioFocusChange(Int32)
+         * @see #requestAudioFocus(OnAudioFocusChangeListener, Int32, Int32)
+         */
+        const Int32 AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK = 3;
+
+        /**
+         * Used to indicate a loss of audio focus of unknown duration.
+         * @see OnAudioFocusChangeListener#onAudioFocusChange(Int32)
+         */
+        const Int32 AUDIOFOCUS_LOSS = -1; // -1 * AUDIOFOCUS_GAIN;
+
+        /**
+         * Used to indicate a transient loss of audio focus.
+         * @see OnAudioFocusChangeListener#onAudioFocusChange(Int32)
+         */
+        const Int32 AUDIOFOCUS_LOSS_TRANSIENT = -2; // -1 * AUDIOFOCUS_GAIN_TRANSIENT;
+
+        /**
+         * Used to indicate a transient loss of audio focus where the loser of the audio focus can
+         * lower its output volume if it wants to continue playing (also referred to as "ducking"), as
+         * the new focus owner doesn't require others to be silent.
+         * @see OnAudioFocusChangeListener#onAudioFocusChange(Int32)
+         */
+        const Int32 AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK = -3; // -1 * AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK;
+
+        /**
+         * A failed focus change request.
+         */
+        const Int32 AUDIOFOCUS_REQUEST_FAILED = 0;
+
+        /**
+         * A successful focus change request.
+         */
+        const Int32 AUDIOFOCUS_REQUEST_GRANTED = 1;
+
+        // FIXME remove because we are not using intents anymore between AudioService and RcDisplay
+        /**
+         * @hide
+         * Broadcast intent action indicating that the displays on the remote controls
+         * should be updated because a new remote control client is now active. If there is no
+         * {@link #EXTRA_REMOTE_CONTROL_CLIENT}, the remote control display should be cleared
+         * because there is no valid client to supply it with information.
+         *
+         * @see #EXTRA_REMOTE_CONTROL_CLIENT
+         */
+        const String REMOTE_CONTROL_CLIENT_CHANGED = "android.media.REMOTE_CONTROL_CLIENT_CHANGED";
+
+        // FIXME remove because we are not using intents anymore between AudioService and RcDisplay
+        /**
+         * @hide
+         * The IRemoteControlClientDispatcher monotonically increasing generation counter.
+         *
+         * @see #REMOTE_CONTROL_CLIENT_CHANGED_ACTION
+         */
+        const String EXTRA_REMOTE_CONTROL_CLIENT_GENERATION = "android.media.EXTRA_REMOTE_CONTROL_CLIENT_GENERATION";
+
+        // FIXME remove because we are not using intents anymore between AudioService and RcDisplay
+        /**
+         * @hide
+         * The name of the RemoteControlClient.
+         * This String is passed as the client name when calling methods from the
+         * IRemoteControlClientDispatcher interface.
+         *
+         * @see #REMOTE_CONTROL_CLIENT_CHANGED_ACTION
+         */
+        const String EXTRA_REMOTE_CONTROL_CLIENT_NAME = "android.media.EXTRA_REMOTE_CONTROL_CLIENT_NAME";
+
+        // FIXME remove because we are not using intents anymore between AudioService and RcDisplay
+        /**
+         * @hide
+         * The media button event receiver associated with the RemoteControlClient.
+         * The {@link android.content.ComponentName} value of the event receiver can be retrieved with
+         * {@link android.content.ComponentName#unflattenFromString(String)}
+         *
+         * @see #REMOTE_CONTROL_CLIENT_CHANGED_ACTION
+         */
+        const String EXTRA_REMOTE_CONTROL_EVENT_RECEIVER = "android.media.EXTRA_REMOTE_CONTROL_EVENT_RECEIVER";
+
+        // FIXME remove because we are not using intents anymore between AudioService and RcDisplay
+        /**
+         * @hide
+         * The flags describing what information has changed in the current remote control client.
+         *
+         * @see #REMOTE_CONTROL_CLIENT_CHANGED_ACTION
+         */
+        const String EXTRA_REMOTE_CONTROL_CLIENT_INFO_CHANGED = "android.media.EXTRA_REMOTE_CONTROL_CLIENT_INFO_CHANGED";
+
+        // This section re-defines new output device constants from AudioSystem, because the AudioSystem
+        // class is not used by other parts of the framework, which instead use definitions and methods
+        // from AudioManager. AudioSystem is an internal class used by AudioManager and AudioService.
+
+        /** {@hide} The audio output device code for the small speaker at the front of the device used
+         *  when placing calls.  Does not refer to an in-ear headphone without attached microphone,
+         *  such as earbuds, earphones, or in-ear monitors (IEM). Those would be handled as a
+         *  {@link #DEVICE_OUT_WIRED_HEADPHONE}.
+         */
+        const Int32 DEVICE_OUT_EARPIECE = 0x1; // IAudioSystem::DEVICE_OUT_EARPIECE;
+
+        /** {@hide} The audio output device code for the built-in speaker */
+        const Int32 DEVICE_OUT_SPEAKER = 0x2; // IAudioSystem::DEVICE_OUT_SPEAKER;
+
+        /** {@hide} The audio output device code for a wired headset with attached microphone */
+        const Int32 DEVICE_OUT_WIRED_HEADSET = 0x4; // IAudioSystem::DEVICE_OUT_WIRED_HEADSET;
+
+        /** {@hide} The audio output device code for a wired headphone without attached microphone */
+        const Int32 DEVICE_OUT_WIRED_HEADPHONE = 0x8; // IAudioSystem::DEVICE_OUT_WIRED_HEADPHONE;
+
+        /** {@hide} The audio output device code for generic Bluetooth SCO, for voice */
+        const Int32 DEVICE_OUT_BLUETOOTH_SCO = 0x10; // IAudioSystem::DEVICE_OUT_BLUETOOTH_SCO;
+
+        /** {@hide} The audio output device code for Bluetooth SCO Headset Profile (HSP) and
+         *  Hands-Free Profile (HFP), for voice
+         */
+        const Int32 DEVICE_OUT_BLUETOOTH_SCO_HEADSET = 0x20; // IAudioSystem::DEVICE_OUT_BLUETOOTH_SCO_HEADSET;
+
+        /** {@hide} The audio output device code for Bluetooth SCO car audio, for voice */
+        const Int32 DEVICE_OUT_BLUETOOTH_SCO_CARKIT = 0x40; // IAudioSystem::DEVICE_OUT_BLUETOOTH_SCO_CARKIT;
+
+        /** {@hide} The audio output device code for generic Bluetooth A2DP, for music */
+        const Int32 DEVICE_OUT_BLUETOOTH_A2DP = 0x80; // IAudioSystem::DEVICE_OUT_BLUETOOTH_A2DP;
+
+        /** {@hide} The audio output device code for Bluetooth A2DP headphones, for music */
+        const Int32 DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES = 0x100; // IAudioSystem::DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES;
+
+        /** {@hide} The audio output device code for Bluetooth A2DP external speaker, for music */
+        const Int32 DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER = 0x200; // IAudioSystem::DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER;
+
+        /** {@hide} The audio output device code for S/PDIF or HDMI */
+        const Int32 DEVICE_OUT_AUX_DIGITAL = 0x400; // IAudioSystem::DEVICE_OUT_AUX_DIGITAL;
+
+        /** {@hide} The audio output device code for an analog wired headset attached via a
+         *  docking station
+         */
+        const Int32 DEVICE_OUT_ANLG_DOCK_HEADSET = 0x800; // IAudioSystem::DEVICE_OUT_ANLG_DOCK_HEADSET;
+
+        /** {@hide} The audio output device code for a digital wired headset attached via a
+         *  docking station
+         */
+        const Int32 DEVICE_OUT_DGTL_DOCK_HEADSET = 0x1000; // IAudioSystem::DEVICE_OUT_DGTL_DOCK_HEADSET;
+
+        /** {@hide} The audio output device code for a USB audio accessory. The accessory is in USB host
+         * mode and the Android device in USB device mode
+         */
+        const Int32 DEVICE_OUT_USB_ACCESSORY = 0x2000; // IAudioSystem::DEVICE_OUT_USB_ACCESSORY;
+
+        /** {@hide} The audio output device code for a USB audio device. The device is in USB device
+         * mode and the Android device in USB host mode
+         */
+        const Int32 DEVICE_OUT_USB_DEVICE = 0x4000; // IAudioSystem::DEVICE_OUT_USB_DEVICE;
+
+        /** {@hide} This is not used as a returned value from {@link #getDevicesForStream}, but could be
+         *  used in the future in a set method to select whatever default device is chosen by the
+         *  platform-specific implementation.
+         */
+        const Int32 DEVICE_OUT_DEFAULT = 0x40000000; // IAudioSystem::DEVICE_OUT_DEFAULT;
+
+        /**
+         * Used as a key for {@link #getProperty} to request the native or optimal output sample rate
+         * for this device's primary output stream, in decimal Hz.
+         */
+        const String PROPERTY_OUTPUT_SAMPLE_RATE = "android.media.property.OUTPUT_SAMPLE_RATE";
+
+        /**
+         * Used as a key for {@link #getProperty} to request the native or optimal output buffer size
+         * for this device's primary output stream, in decimal PCM frames.
+         */
+        const String PROPERTY_OUTPUT_FRAMES_PER_BUFFER = "android.media.property.OUTPUT_FRAMES_PER_BUFFER";
+
+        /**
+         * @hide
+         */
+        PreDispatchKeyEvent(
+            [in] IKeyEvent* event,
+            [in] Int32 stream);
+
+        /**
+         * @hide
+         */
+        HandleKeyDown(
+            [in] IKeyEvent* event,
+            [in] Int32 stream);
+
+        /**
+         * @hide
+         */
+        HandleKeyUp(
+            [in] IKeyEvent* event,
+            [in] Int32 stream);
+
+        /**
+         * Adjusts the volume of a particular stream by one step in a direction.
+         * <p>
+         * This method should only be used by applications that replace the platform-wide
+         * management of audio settings or the main telephony application.
+         *
+         * @param streamType The stream type to adjust. One of {@link #STREAM_VOICE_CALL},
+         * {@link #STREAM_SYSTEM}, {@link #STREAM_RING}, {@link #STREAM_MUSIC} or
+         * {@link #STREAM_ALARM}
+         * @param direction The direction to adjust the volume. One of
+         *            {@link #ADJUST_LOWER}, {@link #ADJUST_RAISE}, or
+         *            {@link #ADJUST_SAME}.
+         * @param flags One or more flags.
+         * @see #adjustVolume(Int32, Int32)
+         * @see #setStreamVolume(Int32, Int32, Int32)
+         */
+        AdjustStreamVolume(
+            [in] Int32 streamType,
+            [in] Int32 direction,
+            [in] Int32 flags);
+
+        /**
+         * Adjusts the volume of the most relevant stream. For example, if a call is
+         * active, it will have the highest priority regardless of if the in-call
+         * screen is showing. Another example, if music is playing in the background
+         * and a call is not active, the music stream will be adjusted.
+         * <p>
+         * This method should only be used by applications that replace the platform-wide
+         * management of audio settings or the main telephony application.
+         *
+         * @param direction The direction to adjust the volume. One of
+         *            {@link #ADJUST_LOWER}, {@link #ADJUST_RAISE}, or
+         *            {@link #ADJUST_SAME}.
+         * @param flags One or more flags.
+         * @see #adjustSuggestedStreamVolume(Int32, Int32, Int32)
+         * @see #adjustStreamVolume(Int32, Int32, Int32)
+         * @see #setStreamVolume(Int32, Int32, Int32)
+         */
+        AdjustVolume(
+            [in] Int32 direction,
+            [in] Int32 flags);
+
+        /**
+         * Adjusts the volume of the most relevant stream, or the given fallback
+         * stream.
+         * <p>
+         * This method should only be used by applications that replace the platform-wide
+         * management of audio settings or the main telephony application.
+         *
+         * @param direction The direction to adjust the volume. One of
+         *            {@link #ADJUST_LOWER}, {@link #ADJUST_RAISE}, or
+         *            {@link #ADJUST_SAME}.
+         * @param suggestedStreamType The stream type that will be used if there
+         *            isn't a relevant stream. {@link #USE_DEFAULT_STREAM_TYPE} is valid here.
+         * @param flags One or more flags.
+         * @see #adjustVolume(Int32, Int32)
+         * @see #adjustStreamVolume(Int32, Int32, Int32)
+         * @see #setStreamVolume(Int32, Int32, Int32)
+         */
+        AdjustSuggestedStreamVolume(
+            [in] Int32 direction,
+            [in] Int32 suggestedStreamType,
+            [in] Int32 flags);
+
+        /**
+         * Adjusts the master volume for the device's audio amplifier.
+         * <p>
+         *
+         * @param steps The number of volume steps to adjust. A positive
+         *            value will raise the volume.
+         * @param flags One or more flags.
+         * @hide
+         */
+        AdjustMasterVolume(
+            [in] Int32 steps,
+            [in] Int32 flags);
+
+        /**
+         * Returns the current ringtone mode.
+         *
+         * @return The current ringtone mode, one of {@link #RINGER_MODE_NORMAL},
+         *         {@link #RINGER_MODE_SILENT}, or {@link #RINGER_MODE_VIBRATE}.
+         * @see #setRingerMode(Int32)
+         */
+        GetRingerMode(
+            [out] Int32* result);
+
+        /**
+         * Returns the maximum volume index for a particular stream.
+         *
+         * @param streamType The stream type whose maximum volume index is returned.
+         * @return The maximum valid volume index for the stream.
+         * @see #getStreamVolume(Int32)
+         */
+        GetStreamMaxVolume(
+            [in] Int32 streamType,
+            [out] Int32* result);
+
+        /**
+         * Returns the current volume index for a particular stream.
+         *
+         * @param streamType The stream type whose volume index is returned.
+         * @return The current volume index for the stream.
+         * @see #getStreamMaxVolume(Int32)
+         * @see #setStreamVolume(Int32, Int32, Int32)
+         */
+        GetStreamVolume(
+            [in] Int32 streamType,
+            [out] Int32* result);
+
+        /**
+         * Get last audible volume before stream was muted.
+         *
+         * @hide
+         */
+        GetLastAudibleStreamVolume(
+            [in] Int32 streamType,
+            [out] Int32* result);
+
+        /**
+         * Get the stream type whose volume is driving the UI sounds volume.
+         * UI sounds are screen lock/unlock, camera shutter, key clicks...
+         * @hide
+         */
+        GetMasterStreamType(
+            [out] Int32* result);
+
+        /**
+         * Sets the ringer mode.
+         * <p>
+         * Silent mode will mute the volume and will not vibrate. Vibrate mode will
+         * mute the volume and vibrate. Normal mode will be audible and may vibrate
+         * according to user settings.
+         *
+         * @param ringerMode The ringer mode, one of {@link #RINGER_MODE_NORMAL},
+         *            {@link #RINGER_MODE_SILENT}, or {@link #RINGER_MODE_VIBRATE}.
+         * @see #getRingerMode()
+         */
+        SetRingerMode(
+            [in] Int32 ringerMode);
+
+        /**
+         * Sets the volume index for a particular stream.
+         *
+         * @param streamType The stream whose volume index should be set.
+         * @param index The volume index to set. See
+         *            {@link #getStreamMaxVolume(Int32)} for the largest valid value.
+         * @param flags One or more flags.
+         * @see #getStreamMaxVolume(Int32)
+         * @see #getStreamVolume(Int32)
+         */
+        SetStreamVolume(
+            [in] Int32 streamType,
+            [in] Int32 index,
+            [in] Int32 flags);
+
+        /**
+         * Returns the maximum volume index for master volume.
+         *
+         * @hide
+         */
+        GetMasterMaxVolume(
+            [out] Int32* result);
+
+        /**
+         * Returns the current volume index for master volume.
+         *
+         * @return The current volume index for master volume.
+         * @hide
+         */
+        GetMasterVolume(
+            [out] Int32* result);
+
+        /**
+         * Get last audible volume before master volume was muted.
+         *
+         * @hide
+         */
+        GetLastAudibleMasterVolume(
+            [out] Int32* result);
+
+        /**
+         * Sets the volume index for master volume.
+         *
+         * @param index The volume index to set. See
+         *            {@link #getMasterMaxVolume(Int32)} for the largest valid value.
+         * @param flags One or more flags.
+         * @see #getMasterMaxVolume(Int32)
+         * @see #getMasterVolume(Int32)
+         * @hide
+         */
+        SetMasterVolume(
+            [in] Int32 index,
+            [in] Int32 flags);
+
+        /**
+         * Solo or unsolo a particular stream. All other streams are muted.
+         * <p>
+         * The solo command is protected against client process death: if a process
+         * with an active solo request on a stream dies, all streams that were muted
+         * because of this request will be unmuted automatically.
+         * <p>
+         * The solo requests for a given stream are cumulative: the AudioManager
+         * can receive several solo requests from one or more clients and the stream
+         * will be unsoloed only when the same number of unsolo requests are received.
+         * <p>
+         * For a better user experience, applications MUST unsolo a soloed stream
+         * in onPause() and solo is again in onResume() if appropriate.
+         *
+         * @param streamType The stream to be soloed/unsoloed.
+         * @param state The required solo state: TRUE for solo ON, FALSE for solo OFF
+         */
+        SetStreamSolo(
+            [in] Int32 streamType,
+            [in] Boolean state);
+
+        /**
+         * Mute or unmute an audio stream.
+         * <p>
+         * The mute command is protected against client process death: if a process
+         * with an active mute request on a stream dies, this stream will be unmuted
+         * automatically.
+         * <p>
+         * The mute requests for a given stream are cumulative: the AudioManager
+         * can receive several mute requests from one or more clients and the stream
+         * will be unmuted only when the same number of unmute requests are received.
+         * <p>
+         * For a better user experience, applications MUST unmute a muted stream
+         * in onPause() and mute is again in onResume() if appropriate.
+         * <p>
+         * This method should only be used by applications that replace the platform-wide
+         * management of audio settings or the main telephony application.
+         *
+         * @param streamType The stream to be muted/unmuted.
+         * @param state The required mute state: TRUE for mute ON, FALSE for mute OFF
+         */
+        SetStreamMute(
+            [in] Int32 streamType,
+            [in] Boolean state);
+
+        /**
+         * get stream mute state.
+         *
+         * @hide
+         */
+        IsStreamMute(
+            [in] Int32 streamType,
+            [out] Boolean* result);
+
+        /**
+         * set master mute state.
+         *
+         * @hide
+         */
+        SetMasterMute(
+            [in] Boolean state);
+
+        /**
+         * set master mute state with optional flags.
+         *
+         * @hide
+         */
+        SetMasterMuteEx(
+            [in] Boolean state,
+            [in] Int32 flags);
+
+        /**
+         * get master mute state.
+         *
+         * @hide
+         */
+        IsMasterMute(
+            [out] Boolean* result);
+
+        /**
+         * forces the stream controlled by hard volume keys
+         * specifying streamType == -1 releases control to the
+         * logic.
+         *
+         * @hide
+         */
+        ForceVolumeControlStream(
+            [in] Int32 streamType);
+
+        /**
+         * Returns whether a particular type should vibrate according to user
+         * settings and the current ringer mode.
+         * <p>
+         * This shouldn't be needed by most clients that use notifications to
+         * vibrate. The notification manager will not vibrate if the policy doesn't
+         * allow it, so the client should always set a vibrate pattern and let the
+         * notification manager control whether or not to actually vibrate.
+         *
+         * @param vibrateType The type of vibrate. One of
+         *            {@link #VIBRATE_TYPE_NOTIFICATION} or
+         *            {@link #VIBRATE_TYPE_RINGER}.
+         * @return Whether the type should vibrate at the instant this method is
+         *         called.
+         * @see #setVibrateSetting(Int32, Int32)
+         * @see #getVibrateSetting(Int32)
+         */
+        ShouldVibrate(
+            [in] Int32 vibrateType,
+            [out] Boolean* result);
+
+        /**
+         * Returns whether the user's vibrate setting for a vibrate type.
+         * <p>
+         * This shouldn't be needed by most clients that want to vibrate, instead
+         * see {@link #shouldVibrate(Int32)}.
+         *
+         * @param vibrateType The type of vibrate. One of
+         *            {@link #VIBRATE_TYPE_NOTIFICATION} or
+         *            {@link #VIBRATE_TYPE_RINGER}.
+         * @return The vibrate setting, one of {@link #VIBRATE_SETTING_ON},
+         *         {@link #VIBRATE_SETTING_OFF}, or
+         *         {@link #VIBRATE_SETTING_ONLY_SILENT}.
+         * @see #setVibrateSetting(Int32, Int32)
+         * @see #shouldVibrate(Int32)
+         */
+        GetVibrateSetting(
+            [in] Int32 vibrateType,
+            [out] Int32* result);
+
+        /**
+         * Sets the setting for when the vibrate type should vibrate.
+         * <p>
+         * This method should only be used by applications that replace the platform-wide
+         * management of audio settings or the main telephony application.
+         *
+         * @param vibrateType The type of vibrate. One of
+         *            {@link #VIBRATE_TYPE_NOTIFICATION} or
+         *            {@link #VIBRATE_TYPE_RINGER}.
+         * @param vibrateSetting The vibrate setting, one of
+         *            {@link #VIBRATE_SETTING_ON},
+         *            {@link #VIBRATE_SETTING_OFF}, or
+         *            {@link #VIBRATE_SETTING_ONLY_SILENT}.
+         * @see #getVibrateSetting(Int32)
+         * @see #shouldVibrate(Int32)
+         */
+        SetVibrateSetting(
+            [in] Int32 vibrateType,
+            [in] Int32 vibrateSetting);
+
+        /**
+         * Sets the speakerphone on or off.
+         * <p>
+         * This method should only be used by applications that replace the platform-wide
+         * management of audio settings or the main telephony application.
+         *
+         * @param on set <var>TRUE</var> to turn on speakerphone;
+         *           <var>FALSE</var> to turn it off
+         */
+        SetSpeakerphoneOn(
+            [in] Boolean on);
+
+        /**
+         * Checks whether the speakerphone is on or off.
+         *
+         * @return TRUE if speakerphone is on, FALSE if it's off
+         */
+        IsSpeakerphoneOn(
+            [out] Boolean* result);
+
+        /**
+         * Indicates if current platform supports use of SCO for off call use cases.
+         * Application wanted to use bluetooth SCO audio when the phone is not in call
+         * must first call thsi method to make sure that the platform supports this
+         * feature.
+         * @return TRUE if bluetooth SCO can be used for audio when not in call
+         *         FALSE otherwise
+         * @see #startBluetoothSco()
+        */
+        IsBluetoothScoAvailableOffCall(
+            [out] Boolean* result);
+
+        /**
+         * Start bluetooth SCO audio connection.
+         * <p>Requires Permission:
+         *   {@link android.Manifest.permission#MODIFY_AUDIO_SETTINGS}.
+         * <p>This method can be used by applications wanting to send and received audio
+         * to/from a bluetooth SCO headset while the phone is not in call.
+         * <p>As the SCO connection establishment can take several seconds,
+         * applications should not rely on the connection to be available when the method
+         * returns but instead register to receive the intent {@link #ACTION_SCO_AUDIO_STATE_UPDATED}
+         * and wait for the state to be {@link #SCO_AUDIO_STATE_CONNECTED}.
+         * <p>As the ACTION_SCO_AUDIO_STATE_UPDATED intent is sticky, the application can check the SCO
+         * audio state before calling startBluetoothSco() by reading the intent returned by the receiver
+         * registration. If the state is already CONNECTED, no state change will be received via the
+         * intent after calling startBluetoothSco(). It is however useful to call startBluetoothSco()
+         * so that the connection stays active in case the current initiator stops the connection.
+         * <p>Unless the connection is already active as described above, the state will always
+         * transition from DISCONNECTED to CONNECTING and then either to CONNECTED if the connection
+         * succeeds or back to DISCONNECTED if the connection fails (e.g no headset is connected).
+         * <p>When finished with the SCO connection or if the establishment fails, the application must
+         * call {@link #stopBluetoothSco()} to clear the request and turn down the bluetooth connection.
+         * <p>Even if a SCO connection is established, the following restrictions apply on audio
+         * output streams so that they can be routed to SCO headset:
+         * <ul>
+         *   <li> the stream type must be {@link #STREAM_VOICE_CALL} </li>
+         *   <li> the format must be mono </li>
+         *   <li> the sampling must be 16kHz or 8kHz </li>
+         * </ul>
+         * <p>The following restrictions apply on input streams:
+         * <ul>
+         *   <li> the format must be mono </li>
+         *   <li> the sampling must be 8kHz </li>
+         * </ul>
+         * <p>Note that the phone application always has the priority on the usage of the SCO
+         * connection for telephony. If this method is called while the phone is in call
+         * it will be ignored. Similarly, if a call is received or sent while an application
+         * is using the SCO connection, the connection will be lost for the application and NOT
+         * returned automatically when the call ends.
+         * @see #stopBluetoothSco()
+         * @see #ACTION_SCO_AUDIO_STATE_UPDATED
+         */
+        StartBluetoothSco();
+
+        /**
+         * Stop bluetooth SCO audio connection.
+         * <p>Requires Permission:
+         *   {@link android.Manifest.permission#MODIFY_AUDIO_SETTINGS}.
+         * <p>This method must be called by applications having requested the use of
+         * bluetooth SCO audio with {@link #startBluetoothSco()}
+         * when finished with the SCO connection or if the establishment times out.
+         * @see #startBluetoothSco()
+         */
+        StopBluetoothSco();
+
+        /**
+         * Request use of Bluetooth SCO headset for communications.
+         * <p>
+         * This method should only be used by applications that replace the platform-wide
+         * management of audio settings or the main telephony application.
+         *
+         * @param on set <var>TRUE</var> to use bluetooth SCO for communications;
+         *               <var>FALSE</var> to not use bluetooth SCO for communications
+         */
+        SetBluetoothScoOn(
+            [in] Boolean on);
+
+        /**
+         * Checks whether communications use Bluetooth SCO.
+         *
+         * @return TRUE if SCO is used for communications;
+         *         FALSE if otherwise
+         */
+        IsBluetoothScoOn(
+            [out] Boolean* result);
+
+        /**
+         * @param on set <var>TRUE</var> to route A2DP audio to/from Bluetooth
+         *           headset; <var>FALSE</var> disable A2DP audio
+         * @deprecated Do not use.
+         */
+        //@Deprecated
+        SetBluetoothA2dpOn(
+            [in] Boolean on);
+
+        /**
+         * Checks whether A2DP audio routing to the Bluetooth headset is on or off.
+         *
+         * @return TRUE if A2DP audio is being routed to/from Bluetooth headset;
+         *         FALSE if otherwise
+         */
+        IsBluetoothA2dpOn(
+            [out] Boolean* result);
+
+        /**
+         * @hide
+         * Signals whether remote submix audio rerouting is enabled.
+         */
+        SetRemoteSubmixOn(
+            [in] Boolean on,
+            [in] Int32 address);
+
+        /**
+         * Sets audio routing to the wired headset on or off.
+         *
+         * @param on set <var>TRUE</var> to route audio to/from wired
+         *           headset; <var>FALSE</var> disable wired headset audio
+         * @deprecated Do not use.
+         */
+        //@Deprecated
+        SetWiredHeadsetOn(
+            [in] Boolean on);
+
+        /**
+         * Checks whether a wired headset is connected or not.
+         * <p>This is not a valid indication that audio playback is
+         * actually over the wired headset as audio routing depends on other conditions.
+         *
+         * @return true if a wired headset is connected.
+         *         false if otherwise
+         * @deprecated Use only to check is a headset is connected or not.
+         */
+        IsWiredHeadsetOn(
+            [out] Boolean* result);
+
+        /**
+         * Sets the microphone mute on or off.
+         * <p>
+         * This method should only be used by applications that replace the platform-wide
+         * management of audio settings or the main telephony application.
+         *
+         * @param on set <var>TRUE</var> to mute the microphone;
+         *           <var>FALSE</var> to turn mute off
+         */
+        SetMicrophoneMute(
+            [in] Boolean on);
+
+        /**
+         * Checks whether the microphone mute is on or off.
+         *
+         * @return TRUE if microphone is muted, FALSE if it's not
+         */
+        IsMicrophoneMute(
+            [out] Boolean* result);
+
+        /**
+         * Sets the audio mode.
+         * <p>
+         * The audio mode encompasses audio routing AND the behavior of
+         * the telephony layer. Therefore this method should only be used by applications that
+         * replace the platform-wide management of audio settings or the main telephony application.
+         * In particular, the {@link #MODE_IN_CALL} mode should only be used by the telephony
+         * application when it places a phone call, as it will cause signals from the radio layer
+         * to feed the platform mixer.
+         *
+         * @param mode  the requested audio mode (NORMAL, RINGTONE, or IN_CALL).
+         *              Informs the HAL about the current audio state so that
+         *              it can route the audio appropriately.
+         */
+        SetMode(
+            [in] Int32 mode);
+
+        /**
+         * Returns the current audio mode.
+         *
+         * @return      the current audio mode (NORMAL, RINGTONE, or IN_CALL).
+         *              Returns the current current audio state from the HAL.
+         */
+        GetMode(
+            [out] Int32* result);
+
+        /**
+         * Sets the audio routing for a specified mode
+         *
+         * @param mode   audio mode to change route. E.g., MODE_RINGTONE.
+         * @param routes bit vector of routes requested, created from one or
+         *               more of ROUTE_xxx types. Set bits indicate that route should be on
+         * @param mask   bit vector of routes to change, created from one or more of
+         * ROUTE_xxx types. Unset bits indicate the route should be left unchanged
+         *
+         * @deprecated   Do not set audio routing directly, use setSpeakerphoneOn(),
+         * setBluetoothScoOn() methods instead.
+         */
+        //@Deprecated
+        SetRouting(
+            [in] Int32 mode,
+            [in] Int32 routes,
+            [in] Int32 mask);
+
+        /**
+         * Returns the current audio routing bit vector for a specified mode.
+         *
+         * @param mode audio mode to get route (e.g., MODE_RINGTONE)
+         * @return an audio route bit vector that can be compared with ROUTE_xxx
+         * bits
+         * @deprecated   Do not query audio routing directly, use isSpeakerphoneOn(),
+         * isBluetoothScoOn(), isBluetoothA2dpOn() and isWiredHeadsetOn() methods instead.
+         */
+        //@Deprecated
+        GetRouting(
+            [in] Int32 mode,
+            [out] Int32* result);
+
+        /**
+         * Checks whether any music is active.
+         *
+         * @return TRUE if any music tracks are active.
+         */
+        IsMusicActive(
+            [out] Boolean* result);
+
+        /**
+         * @hide
+         * Checks whether speech recognition is active
+         * @return true if a recording with source {@link MediaRecorder.AudioSource#VOICE_RECOGNITION}
+         *    is underway.
+         */
+        IsSpeechRecognitionActive(
+            [out] Boolean* result);
+
+        /**
+         * @hide
+         * If the stream is active locally or remotely, adjust its volume according to the enforced
+         * priority rules.
+         * Note: only AudioManager.STREAM_MUSIC is supported at the moment
+         */
+        AdjustLocalOrRemoteStreamVolume(
+            [in] Int32 streamType,
+            [in] Int32 direction);
+
+        /*
+         * Sets a generic audio configuration parameter. The use of these parameters
+         * are platform dependant, see libaudio
+         *
+         * ** Temporary interface - DO NOT USE
+         *
+         * TODO: Replace with a more generic key:value get/set mechanism
+         *
+         * param key   name of parameter to set. Must not be null.
+         * param value value of parameter. Must not be null.
+         */
+        /**
+         * @hide
+         * @deprecated Use {@link #setPrameters(String)} instead
+         */
+        //@Deprecated
+        SetParameter(
+            [in] String key,
+            [in] String value);
+
+        /**
+         * Sets a variable number of parameter values to audio hardware.
+         *
+         * @param keyValuePairs list of parameters key value pairs in the form:
+         *    key1=value1;key2=value2;...
+         *
+         */
+        SetParameters(
+            [in] String keyValuePairs);
+
+        /**
+         * Sets a varaible number of parameter values to audio hardware.
+         *
+         * @param keys list of parameters
+         * @return list of parameters key value pairs in the form:
+         *    key1=value1;key2=value2;...
+         */
+        GetParameters(
+            [in] String keys,
+            [out] String* result);
+
+        /**
+         * Plays a sound effect (Key clicks, lid open/close...)
+         * @param effectType The type of sound effect. One of
+         *            {@link #FX_KEY_CLICK},
+         *            {@link #FX_FOCUS_NAVIGATION_UP},
+         *            {@link #FX_FOCUS_NAVIGATION_DOWN},
+         *            {@link #FX_FOCUS_NAVIGATION_LEFT},
+         *            {@link #FX_FOCUS_NAVIGATION_RIGHT},
+         *            {@link #FX_KEYPRESS_STANDARD},
+         *            {@link #FX_KEYPRESS_SPACEBAR},
+         *            {@link #FX_KEYPRESS_DELETE},
+         *            {@link #FX_KEYPRESS_RETURN},
+         * NOTE: This version uses the UI settings to determine
+         * whether sounds are heard or not.
+         */
+        PlaySoundEffect(
+            [in] Int32 effectType);
+
+        /**
+         * Plays a sound effect (Key clicks, lid open/close...)
+         * @param effectType The type of sound effect. One of
+         *            {@link #FX_KEY_CLICK},
+         *            {@link #FX_FOCUS_NAVIGATION_UP},
+         *            {@link #FX_FOCUS_NAVIGATION_DOWN},
+         *            {@link #FX_FOCUS_NAVIGATION_LEFT},
+         *            {@link #FX_FOCUS_NAVIGATION_RIGHT},
+         *            {@link #FX_KEYPRESS_STANDARD},
+         *            {@link #FX_KEYPRESS_SPACEBAR},
+         *            {@link #FX_KEYPRESS_DELETE},
+         *            {@link #FX_KEYPRESS_RETURN},
+         * @param volume Sound effect volume.
+         * The volume value is a raw scalar so UI controls should be scaled logarithmically.
+         * If a volume of -1 is specified, the AudioManager.STREAM_MUSIC stream volume minus 3dB will be used.
+         * NOTE: This version is for applications that have their own
+         * settings panel for enabling and controlling volume.
+         */
+        PlaySoundEffectEx(
+            [in] Int32 effectType,
+            [in] Float volume);
+
+        /**
+         *  Load Sound effects.
+         *  This method must be called when sound effects are enabled.
+         */
+        LoadSoundEffects();
+
+        /**
+         *  Unload Sound effects.
+         *  This method can be called to free some memory when
+         *  sound effects are disabled.
+         */
+        UnloadSoundEffects();
+
+        /**
+         * @hide
+         * Registers a listener to be called when audio focus changes. Calling this method is optional
+         * before calling {@link #requestAudioFocus(IOnAudioFocusChangeListener, Int32, Int32)}, as it
+         * will register the listener as well if it wasn't registered already.
+         * @param l the listener to be notified of audio focus changes.
+         */
+        RegisterAudioFocusListener(
+            [in] IOnAudioFocusChangeListener* l);
+
+        /**
+         * @hide
+         * Causes the specified listener to not be called anymore when focus is gained or lost.
+         * @param l the listener to unregister.
+         */
+        UnregisterAudioFocusListener(
+            [in] IOnAudioFocusChangeListener* l);
+
+        /**
+         *  Request audio focus.
+         *  Send a request to obtain the audio focus
+         *  @param l the listener to be notified of audio focus changes
+         *  @param streamType the main audio stream type affected by the focus request
+         *  @param durationHint use {@link #AUDIOFOCUS_GAIN_TRANSIENT} to indicate this focus request
+         *      is temporary, and focus will be abandonned shortly. Examples of transient requests are
+         *      for the playback of driving directions, or notifications sounds.
+         *      Use {@link #AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK} to indicate also that it's ok for
+         *      the previous focus owner to keep playing if it ducks its audio output.
+         *      Use {@link #AUDIOFOCUS_GAIN} for a focus request of unknown duration such
+         *      as the playback of a song or a video.
+         *  @return {@link #AUDIOFOCUS_REQUEST_FAILED} or {@link #AUDIOFOCUS_REQUEST_GRANTED}
+         */
+        RequestAudioFocus(
+            [in] IOnAudioFocusChangeListener* l,
+            [in] Int32 streamType,
+            [in] Int32 durationHint,
+            [out] Int32* result);
+
+        /**
+         * @hide
+         * Used internally by telephony package to request audio focus. Will cause the focus request
+         * to be associated with the "voice communication" identifier only used in AudioService
+         * to identify this use case.
+         * @param streamType use STREAM_RING for focus requests when ringing, VOICE_CALL for
+         *    the establishment of the call
+         * @param durationHint the type of focus request. AUDIOFOCUS_GAIN_TRANSIENT is recommended so
+         *    media applications resume after a call
+         */
+        RequestAudioFocusForCall(
+            [in] Int32 streamType,
+            [in] Int32 durationHint);
+
+        /**
+         * @hide
+         * Used internally by telephony package to abandon audio focus, typically after a call or
+         * when ringing ends and the call is rejected or not answered.
+         * Should match one or more calls to {@link #requestAudioFocusForCall(Int32, Int32)}.
+         */
+        AbandonAudioFocusForCall();
+
+        /**
+         *  Abandon audio focus. Causes the previous focus owner, if any, to receive focus.
+         *  @param l the listener with which focus was requested.
+         *  @return {@link #AUDIOFOCUS_REQUEST_FAILED} or {@link #AUDIOFOCUS_REQUEST_GRANTED}
+         */
+        AbandonAudioFocus(
+            [in] IOnAudioFocusChangeListener* l,
+            [out] Int32* result);
+
+        //====================================================================
+        // Remote Control
+        /**
+         * Register a component to be the sole receiver of MEDIA_BUTTON intents.
+         * @param eventReceiver identifier of a {@link android.content.BroadcastReceiver}
+         *      that will receive the media button intent. This broadcast receiver must be declared
+         *      in the application manifest.
+         */
+        RegisterMediaButtonEventReceiver(
+            [in] IComponentName* eventReceiver);
+
+        /**
+         * @hide
+         * no-op if (pi == null) or (eventReceiver == null)
+         */
+        RegisterMediaButtonIntent(
+            [in] IPendingIntent* pi,
+            [in] IComponentName* eventReceiver);
+
+        /**
+         * @hide
+         * Used internally by telephony package to register an intent receiver for ACTION_MEDIA_BUTTON.
+         * @param eventReceiver the component that will receive the media button key events,
+         *          no-op if eventReceiver is null
+         */
+        RegisterMediaButtonEventReceiverForCalls(
+            [in] IComponentName* eventReceiver);
+
+        /**
+         * @hide
+         */
+        UnregisterMediaButtonEventReceiverForCalls();
+
+        /**
+         * Unregister the receiver of MEDIA_BUTTON intents.
+         * @param eventReceiver identifier of a {@link android.content.BroadcastReceiver}
+         *      that was registered with {@link #registerMediaButtonEventReceiver(ComponentName)}.
+         */
+        UnregisterMediaButtonEventReceiver(
+            [in] IComponentName* eventReceiver);
+
+        /**
+         * @hide
+         */
+        UnregisterMediaButtonIntent(
+            [in] IPendingIntent* pi,
+            [in] IComponentName* eventReceiver);
+
+        /**
+         * Registers the remote control client for providing information to display on the remote
+         * controls.
+         * @param rcClient The remote control client from which remote controls will receive
+         *      information to display.
+         * @see RemoteControlClient
+         */
+        RegisterRemoteControlClient(
+            [in] IRemoteControlClient* rcClient);
+
+        /**
+         * Unregisters the remote control client that was providing information to display on the
+         * remote controls.
+         * @param rcClient The remote control client to unregister.
+         * @see #registerRemoteControlClient(RemoteControlClient)
+         */
+        UnregisterRemoteControlClient(
+            [in] IRemoteControlClient* rcClient);
+
+        /**
+         * @hide
+         * Registers a remote control display that will be sent information by remote control clients.
+         * @param rcd
+         */
+        RegisterRemoteControlDisplay(
+            [in] IIRemoteControlDisplay* rcd);
+
+        /**
+         * @hide
+         * Unregisters a remote control display that was sent information by remote control clients.
+         * @param rcd
+         */
+        UnregisterRemoteControlDisplay(
+            [in] IIRemoteControlDisplay* rcd);
+
+        /**
+         * @hide
+         * Sets the artwork size a remote control display expects when receiving bitmaps.
+         * @param rcd
+         * @param w the maximum width of the expected bitmap. Negative values indicate it is
+         *   useless to send artwork.
+         * @param h the maximum height of the expected bitmap. Negative values indicate it is
+         *   useless to send artwork.
+         */
+        RemoteControlDisplayUsesBitmapSize(
+            [in] IIRemoteControlDisplay* rcd,
+            [in] Int32 w,
+            [in] Int32 h);
+
+        /**
+         *  @hide
+         *  Reload audio settings. This method is called by Settings backup
+         *  agent when audio settings are restored and causes the AudioService
+         *  to read and apply restored settings.
+         */
+        ReloadAudioSettings();
+
+        /**
+         * Checks whether the phone is in silent mode, with or without vibrate.
+         *
+         * @return true if phone is in silent mode, with or without vibrate.
+         *
+         * @see #getRingerMode()
+         *
+         * @hide pending API Council approval
+         */
+        IsSilentMode(
+            [out] Boolean* result);
+
+        /**
+         * Return the enabled devices for the specified output stream type.
+         *
+         * @param streamType The stream type to query. One of
+         *            {@link #STREAM_VOICE_CALL},
+         *            {@link #STREAM_SYSTEM},
+         *            {@link #STREAM_RING},
+         *            {@link #STREAM_MUSIC},
+         *            {@link #STREAM_ALARM},
+         *            {@link #STREAM_NOTIFICATION},
+         *            {@link #STREAM_DTMF}.
+         *
+         * @return The bit-mask "or" of audio output device codes for all enabled devices on this
+         *         stream. Zero or more of
+         *            {@link #DEVICE_OUT_EARPIECE},
+         *            {@link #DEVICE_OUT_SPEAKER},
+         *            {@link #DEVICE_OUT_WIRED_HEADSET},
+         *            {@link #DEVICE_OUT_WIRED_HEADPHONE},
+         *            {@link #DEVICE_OUT_BLUETOOTH_SCO},
+         *            {@link #DEVICE_OUT_BLUETOOTH_SCO_HEADSET},
+         *            {@link #DEVICE_OUT_BLUETOOTH_SCO_CARKIT},
+         *            {@link #DEVICE_OUT_BLUETOOTH_A2DP},
+         *            {@link #DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES},
+         *            {@link #DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER},
+         *            {@link #DEVICE_OUT_AUX_DIGITAL},
+         *            {@link #DEVICE_OUT_ANLG_DOCK_HEADSET},
+         *            {@link #DEVICE_OUT_DGTL_DOCK_HEADSET}.
+         *            {@link #DEVICE_OUT_DEFAULT} is not used here.
+         *
+         * The implementation may support additional device codes beyond those listed, so
+         * the application should ignore any bits which it does not recognize.
+         * Note that the information may be imprecise when the implementation
+         * cannot distinguish whether a particular device is enabled.
+         *
+         * {@hide}
+         */
+        GetDevicesForStream(
+            [in] Int32 streamType,
+            [out] Int32* result);
+
+         /**
+         * Indicate wired accessory connection state change.
+         * @param device type of device connected/disconnected (AudioManager.DEVICE_OUT_xxx)
+         * @param state  new connection state: 1 connected, 0 disconnected
+         * @param name   device name
+         * {@hide}
+         */
+        SetWiredDeviceConnectionState(
+            [in] Int32 device,
+            [in] Int32 state,
+            [in] String name);
+
+         /**
+         * Indicate A2DP sink connection state change.
+         * @param device Bluetooth device connected/disconnected
+         * @param state  new connection state (BluetoothProfile.STATE_xxx)
+         * @return a delay in ms that the caller should wait before broadcasting
+         * BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED intent.
+         * {@hide}
+         */
+        SetBluetoothA2dpDeviceConnectionState(
+            [in] IBluetoothDevice* device,
+            [in] Int32 state,
+            [out] Int32* result);
+
+        /** {@hide} */
+        GetRingtonePlayer(
+            [out] IIRingtonePlayer** result);
+
+        /**
+         * Returns the value of the property with the specified key.
+         * @param key One of the strings corresponding to a property key: either
+         *            {@link #PROPERTY_OUTPUT_SAMPLE_RATE} or
+         *            {@link #PROPERTY_OUTPUT_FRAMES_PER_BUFFER}
+         * @return A string representing the associated value for that property key,
+         *         or null if there is no value for that key.
+         */
+        GetProperty(
+            [in] String key,
+            [out] String* result);
+    }
+
+    interface IAudioManagerHelper{
+        /**
+         * Checks valid ringer mode values.
+         *
+         * @return true if the ringer mode indicated is valid, false otherwise.
+         *
+         * @see #setRingerMode(Int32)
+         * @hide
+         */
+        IsValidRingerMode(
+            [in] Int32 rightMode,
+            [out] Boolean* result);
+
+        GetDefaultStreamVolume(
+            [out, callee] ArrayOf<Int32>* defaultStreamVolume);
+    }
+
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,161 @@
+
+module
+{
+    interface Elastos.Droid.Os.IWorkSource;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    interface IIBatteryStats {
+        GetStatistics(
+            [out, callee] ArrayOf<Byte>* stats);
+
+        NoteStartWakelock(
+            [in] Int32 uid,
+            [in] Int32 pid,
+            [in] String name,
+            [in] Int32 type);
+
+        NoteStopWakelock(
+            [in] Int32 uid,
+            [in] Int32 pid,
+            [in] String name,
+            [in] Int32 type);
+
+        /* DO NOT CHANGE the position of noteStartSensor without updating
+           SensorService.cpp */
+        NoteStartSensor(
+            [in] Int32 uid,
+            [in] Int32 sensor);
+
+        /* DO NOT CHANGE the position of noteStopSensor without updating
+           SensorService.cpp */
+        NoteStopSensor(
+            [in] Int32 uid,
+            [in] Int32 sensor);
+
+        NoteStartWakelockFromSource(
+            [in] IWorkSource* ws,
+            [in] Int32 pid,
+            [in] String name,
+            [in] Int32 type);
+
+        NoteStopWakelockFromSource(
+            [in] IWorkSource* ws,
+            [in] Int32 pid,
+            [in] String name,
+            [in] Int32 type);
+
+        NoteStartGps(
+            [in] Int32 uid);
+
+        NoteStopGps(
+            [in] Int32 uid);
+
+        NoteScreenOn();
+
+        NoteScreenBrightness(
+            [in] Int32 brightness);
+
+        NoteScreenOff();
+
+        NoteInputEvent();
+
+        NoteUserActivity(
+            [in] Int32 uid,
+            [in] Int32 event);
+
+//        NotePhoneOn();
+//
+//        NotePhoneOff();
+//
+//        NotePhoneSignalStrength(
+//            [in] SignalStrength signalStrength);
+//
+//        NotePhoneDataConnectionState(
+//            [in] Int32 dataType,
+//            [in] Boolean hasData);
+//
+//        NotePhoneState(
+//            [in] Int32 phoneState);
+
+        NoteWifiOn();
+
+        NoteWifiOff();
+
+        NoteWifiRunning(
+            [in] IWorkSource* ws);
+
+        NoteWifiRunningChanged(
+            [in] IWorkSource* oldWs,
+            [in] IWorkSource* newWs);
+
+        NoteWifiStopped(
+            [in] IWorkSource* ws);
+
+        NoteBluetoothOn();
+
+        NoteBluetoothOff();
+
+        NoteFullWifiLockAcquired(
+            [in] Int32 uid);
+
+        NoteFullWifiLockReleased(
+            [in] Int32 uid);
+
+        NoteWifiScanStarted(
+            [in] Int32 uid);
+
+        NoteWifiScanStopped(
+            [in] Int32 uid);
+
+        NoteWifiMulticastEnabled(
+            [in] Int32 uid);
+
+        NoteWifiMulticastDisabled(
+            [in] Int32 uid);
+
+        NoteFullWifiLockAcquiredFromSource(
+            [in] IWorkSource* ws);
+
+        NoteFullWifiLockReleasedFromSource(
+            [in] IWorkSource* ws);
+
+        NoteWifiScanStartedFromSource(
+            [in] IWorkSource* ws);
+
+        NoteWifiScanStoppedFromSource(
+            [in] IWorkSource* ws);
+
+        NoteWifiMulticastEnabledFromSource(
+            [in] IWorkSource* ws);
+
+        NoteWifiMulticastDisabledFromSource(
+            [in] IWorkSource* ws);
+
+        NoteNetworkInterfaceType(
+            [in] String iface,
+            [in] Int32 type);
+
+        SetBatteryState(
+            [in] Int32 status,
+            [in] Int32 health,
+            [in] Int32 plugType,
+            [in] Int32 level,
+            [in] Int32 temp,
+            [in] Int32 volt);
+
+        GetAwakeTimeBattery(
+            [out] Int64* value);
+
+        GetAwakeTimePlugged(
+            [out] Int64* value);
+    }
+
+    } // namespace App
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
+}

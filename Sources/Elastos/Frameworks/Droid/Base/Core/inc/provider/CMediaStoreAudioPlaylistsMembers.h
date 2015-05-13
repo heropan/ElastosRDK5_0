@@ -1,0 +1,42 @@
+
+#ifndef __CMEDIASTOREAUDIOPLAYLISTSMEMBERS_H__
+#define __CMEDIASTOREAUDIOPLAYLISTSMEMBERS_H__
+
+#include "_CMediaStoreAudioPlaylistsMembers.h"
+
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Content::IContentResolver;
+
+namespace Elastos {
+namespace Droid {
+namespace Provider {
+
+CarClass(CMediaStoreAudioPlaylistsMembers)
+{
+public:
+    CARAPI GetContentUri(
+        /* [in] */ const String& volumeName,
+        /* [in] */ Int64 playlistId,
+        /* [out] */ IUri** uri);
+
+    /**
+     * Convenience method to move a playlist item to a new location
+     * @param res The content resolver to use
+     * @param playlistId The numeric id of the playlist
+     * @param from The position of the item to move
+     * @param to The position to move the item to
+     * @return true on success
+     */
+    CARAPI MoveItem(
+        /* [in] */ IContentResolver* res,
+        /* [in] */ Int64 playlistId,
+        /* [in] */ Int32 from,
+        /* [in] */ Int32 to,
+        /* [out] */ Boolean* result);
+};
+
+} //namespace Provider
+} //namespace Droid
+} //namespace Elastos
+
+#endif //__CMEDIASTOREAUDIOPLAYLISTSMEMBERS_H__

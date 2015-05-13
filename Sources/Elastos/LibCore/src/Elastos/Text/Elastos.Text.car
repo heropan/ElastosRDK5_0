@@ -1,0 +1,217 @@
+module
+{
+    merge("../../../car/Elastos/Text/Exceptions.car");
+    merge("../../../car/Elastos/Text/IAnnotation.car");
+    merge("../../../car/Elastos/Text/IFormat.car");
+    merge("../../../car/Elastos/Text/IDateFormat.car");
+    merge("../../../car/Elastos/Text/IDateFormatSymbols.car");
+    merge("../../../car/Elastos/Text/INumberFormat.car");
+    merge("../../../car/Elastos/Text/IMessageFormat.car");
+    merge("../../../car/Elastos/Text/IChoiceFormat.car");
+    merge("../../../car/Elastos/Text/IDecimalFormat.car");
+    merge("../../../car/Elastos/Text/ISimpleDateFormat.car");
+    merge("../../../car/Elastos/Text/IBreakIterator.car");
+    merge("../../../car/Elastos/Text/ICollator.car");
+    merge("../../../car/Elastos/Text/ICollationElementIterator.car");
+    merge("../../../car/Elastos/Text/IRuleBasedCollator.car");
+    merge("../../../car/Elastos/Text/INormalizer.car");
+    merge("../../../car/Elastos/Text/IBidi.car");
+    merge("../../../car/Elastos/Text/IRuleBasedBreakIterator.car");
+
+    merge("../../../car/Elastos/Text/Spi/IBreakIteratorProvider.car");
+    merge("../../../car/Elastos/Text/Spi/ICollatorProvider.car");
+    merge("../../../car/Elastos/Text/Spi/IDateFormatProvider.car");
+    merge("../../../car/Elastos/Text/Spi/IDateFormatSymbolsProvider.car");
+    merge("../../../car/Elastos/Text/Spi/IDecimalFormatSymbolsProvider.car");
+    merge("../../../car/Elastos/Text/Spi/INumberFormatProvider.car");
+
+    using interface Libcore.ICU.ILocale;
+    using interface Libcore.ICU.INativeBreakIterator;
+    using interface Libcore.ICU.ICollationElementIteratorICU;
+    using interface Libcore.ICU.IRuleBasedCollatorICU;
+    using interface Elastos.Core.IComparator;
+    interface Elastos.Utility.IObjectMap;
+
+    namespace Elastos {
+    namespace Text {
+
+        class CAnnotation {
+            constructor(
+                [in] IInterface* attribute);
+
+            interface IAnnotation;
+        }
+
+        singleton class CDateFormatHelper {
+            interface IDateFormatHelper;
+        }
+
+        singleton class CDateFormatFieldHelper {
+            interface IDateFormatFieldHelper;
+        }
+
+        class CDateFormatSymbols {
+            constructor();
+
+            constructor(
+                [in] ILocale* locale);
+
+            interface IDateFormatSymbols;
+        }
+
+        singleton class CDateFormatSymbolsHelper {
+            interface IDateFormatSymbolsHelper;
+        }
+
+        singleton class CBreakIteratorHelper {
+            interface IBreakIteratorHelper;
+        }
+
+        class CRuleBasedBreakIterator {
+            constructor(
+                [in] INativeBreakIterator * iterator);
+
+            interface IRuleBasedBreakIterator;
+        }
+
+        class CNumberFormatField {
+            constructor(
+                [in] String fieldName);
+
+            interface INumberFormatField;
+        }
+
+        singleton class CNumberFormatHelper {
+            interface INumberFormatHelper;
+        }
+
+        class CMessageFormat {
+
+            constructor(
+                [in] String tem,
+                [in] ILocale* locale);
+
+            constructor(
+                [in] String tem);
+
+            interface IMessageFormat;
+        }
+
+        class CMessageFormatField {
+            constructor(
+                [in] String name);
+
+            interface IMessageFormatField;
+        }
+
+        [deprecated]
+        class CChoiceFormat {
+            constructor(
+                [in] ArrayOf<Double> limits,
+                [in] ArrayOf<String> formats);
+
+            constructor(
+                [in] String tem);
+
+            interface IChoiceFormat;
+        }
+
+        singleton class CChoiceFormatHelper {
+            interface IChoiceFormatHelper;
+        }
+
+        class CDecimalFormat {
+            constructor();
+
+            constructor(
+                [in] String pattern);
+
+            constructor(
+                [in] String pattern,
+                [in] IDecimalFormatSymbols* value);
+
+            constructor(
+                [in] String pattern,
+                [in] ILocale* locale);
+
+            interface IDecimalFormat;
+        }
+
+        class CSimpleDateFormat {
+            constructor();
+
+            constructor(
+                [in] String pattern);
+
+            constructor(
+                [in] String temp,
+                [in] IDateFormatSymbols* value);
+
+            constructor(
+                [in] String temp,
+                [in] ILocale* locale);
+
+            interface ISimpleDateFormat;
+        }
+
+        singleton class CCollatorHelper {
+            interface ICollatorHelper;
+        }
+
+        class CCollationElementIterator {
+            constructor(
+                [in] ICollationElementIteratorICU* iterator);
+
+            interface ICollationElementIterator;
+        }
+
+        singleton class CCollationElementIteratorHelper {
+            interface ICollationElementIteratorHelper;
+        }
+
+        [deprecated]
+        class CRuleBasedCollator {
+            constructor(
+                [in] IRuleBasedCollatorICU* wrapper);
+
+            constructor(
+                [in] String rules);
+
+            interface IRuleBasedCollator;
+            // interface IComparator;
+        }
+
+        singleton class CNormalizerHelper {
+            interface INormalizerHelper;
+        }
+
+        [deprecated]
+        class CBidi {
+            constructor(
+                [in] IAttributedCharacterIterator* paragraph);
+
+            constructor(
+                [in] ArrayOf<Char32>* text,
+                [in] Int32 textStart,
+                [in] ArrayOf<Byte>* embeddings,
+                [in] Int32 embStart,
+                [in] Int32 paragraphLength,
+                [in] Int32 flags);
+
+            constructor(
+                [in] String paragraph,
+                [in] Int32 flags);
+
+            constructor(
+                [in] Int64 pBidi);
+
+            interface IBidi;
+        }
+
+        singleton class CBidiHelper {
+            interface IBidiHelper;
+        }
+
+    } // namespace Text
+    } // namespace Elastos
+}

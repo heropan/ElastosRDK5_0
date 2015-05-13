@@ -1,0 +1,16 @@
+module
+{
+    namespace Elastos {
+    namespace Sql {
+    namespace SQLite {
+
+    interface IShell extends ICallback {
+    }
+
+    interface IDBDump extends ICallback {
+    }
+
+    } // namespace SQLite
+    } // namespace Sql
+    } // namespace Elastos
+}

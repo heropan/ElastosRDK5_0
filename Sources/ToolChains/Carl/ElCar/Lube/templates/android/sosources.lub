@@ -1,0 +1,37 @@
+$;;=========================================================================
+$;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
+$;;=========================================================================
+$
+$INPUT module
+$OUTPUT "sources"
+$
+TARGET_NAME= ${name}So
+TARGET_TYPE= dll
+
+INCLUDES = $$(XDK_PRODUCT_TOOLS); \
+
+USE_STDINC = 1
+USE_STDLIB = 1
+
+ifeq "$$(XDK_TARGET_PLATFORM)" "android"
+INCLUDES = $$(XDK_PRODUCT_TOOLS)/../android/inc/bionic/libc/include;
+INCLUDES += $$(XDK_PRODUCT_TOOLS)/../android/inc/bionic/libc/arch-arm/include;
+INCLUDES += $$(XDK_PRODUCT_TOOLS)/../android/inc/kernel/include;
+INCLUDES += $$(XDK_PRODUCT_TOOLS)/../android/inc/bionic/libc/kernel/arch-arm;
+INCLUDES += $$(XDK_PRODUCT_TOOLS)/../android/inc/frameworks/base/include;
+INCLUDES += $$(XDK_PRODUCT_TOOLS)/../android/inc/system/core/include
+endif
+
+SOURCES= \
+$   WITH all classes DO
+$       IF type is not "sink" and type is not "clsobj"
+    ${name}So.cpp \
+$       END IF
+$   END DO ;; all classes
+$
+    ${module.name}So.def \
+
+LINK_FLAGS += -L$$(XDK_PRODUCT_TOOLS)/../android/lib -lc -ldl -lutils -lz -lcutils
+LINK_FLAGS += -lsgl -lhardware -lhardware_legacy -lskiagl -lm -lstdc++ -lui
+$
+$END OUTPUT

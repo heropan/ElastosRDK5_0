@@ -1,0 +1,22 @@
+module
+{
+    interface Elastos.Net.ISocketImpl;
+
+    namespace Elastos{
+    namespace Net{
+
+    interface IPlainSocketImpl extends ISocketImpl
+    {
+        InitLocalPort(
+                [in] Int32 localPort);
+
+        InitRemoteAddressAndPort(
+                [in] IInetAddress* remoteAddress,
+                [in] Int32 remotePort);
+
+        SocksAccept();
+    }
+
+    } // namespace Net
+    } // namespace Elastos
+}

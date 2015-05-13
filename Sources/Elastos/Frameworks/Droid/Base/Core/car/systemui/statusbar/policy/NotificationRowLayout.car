@@ -1,0 +1,43 @@
+module
+{
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IMotionEvent;
+    interface Elastos.Droid.View.IViewOnLongClickListener;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.IOnSizeChangedListener;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Policy {
+
+    interface INotificationRowLayout extends Elastos.Droid.Widget.ILinearLayout {
+        SetLongPressListener(
+            [in] IViewOnLongClickListener* listener);
+
+        SetOnSizeChangedListener(
+            [in] IOnSizeChangedListener* l);
+
+        SetAnimateBounds(
+            [in] Boolean anim);
+
+        SetViewRemoval(
+            [in] Boolean removeViews);
+
+        SetLayoutTransitionsEnabled(
+            [in] Boolean b);
+
+        DismissRowAnimated(
+            [in] IView* child);
+
+        DismissRowAnimatedEx(
+            [in] IView* child,
+            [in] Int32 vel);
+    }
+
+    } // namespace Policy
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

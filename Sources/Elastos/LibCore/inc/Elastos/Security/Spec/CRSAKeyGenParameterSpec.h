@@ -1,0 +1,50 @@
+
+#ifndef __CRSAKEYGENPARAMETERSPEC_H__
+#define __CRSAKEYGENPARAMETERSPEC_H__
+
+#include "_CRSAKeyGenParameterSpec.h"
+
+using Elastos::Math::IBigInteger;
+
+namespace Elastos {
+namespace Security {
+namespace Spec {
+
+CarClass(CRSAKeyGenParameterSpec)
+{
+public:
+    static CARAPI_(const AutoPtr<IBigInteger>) InitStatic(
+        /* [in] */ Int64 bi);
+
+    CARAPI GetKeysize(
+        /* [out] */ Int32 *keySize);
+
+    CARAPI GetPublicExponent(
+        /* [out] */ IBigInteger **pubExponent);
+
+    CARAPI constructor(
+        /* [in] */ Int32 keysize,
+        /* [in] */ IBigInteger *publicExponent);
+
+    /**
+     * The value of the public exponent {@code F0} = 3.
+     */
+    static const AutoPtr<IBigInteger> F0;
+
+    /**
+     * The value of the public exponent {@code F4} = 65537.
+     */
+    static const AutoPtr<IBigInteger> F4;
+
+private:
+    // Key size
+    Int32 mKeysize;
+    // Public Exponent
+    AutoPtr<IBigInteger> mPublicExponent;
+};
+
+}
+}
+}
+
+#endif // __CRSAKEYGENPARAMETERSPEC_H__

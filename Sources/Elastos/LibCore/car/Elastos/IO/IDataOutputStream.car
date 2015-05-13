@@ -1,0 +1,27 @@
+
+module
+{
+    namespace Elastos {
+    namespace IO {
+    /**
+    * Wraps an existing OutputStream and writes big-endian typed data to it. Typically,
+    * this stream can be read in by DataInputStream. Types that can be written include
+    * byte, 16-bit short, 32-bit int, 32-bit float, 64-bit long, 64-bit double, byte
+    * strings, and MUTF-8 encoded strings.
+    * @sa DataInputStream
+    * @implement Elastos.IO.IFliterOutputStream
+    */
+
+    interface IDataOutputStream extends IFilterOutputStream {
+        /**
+         * Returns the total number of bytes written to the target stream so far.
+         *
+         * @return the number of bytes written to the target stream.
+         */
+        GetSize(
+            [out] Int32* size);
+    }
+
+    } // namespace IO
+    } // namespace Elastos
+}

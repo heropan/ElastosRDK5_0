@@ -1,0 +1,20 @@
+
+module
+{
+
+    using interface Elastos.Utility.IUUID;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+    interface IParcelUuid
+    {
+        GetUuid(
+            [out] IUUID** uuid);
+    }
+
+    }
+    }// Droid
+    }// Elastos
+}

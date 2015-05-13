@@ -1,0 +1,20 @@
+TARGET_NAME= power
+TARGET_TYPE= lib
+
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../inc
+INCLUDES += $(MAKEDIR)/../../../../Core/inc
+INCLUDES += $(PREBUILD_INC)/skia/core
+
+include $(MAKEDIR)/../../../../../sources.inc
+
+SOURCES += CPowerManagerService.cpp
+SOURCES += DisplayPowerController.cpp
+SOURCES += ElectronBeam.cpp
+SOURCES += CMountShutdownObserver.cpp
+SOURCES += ShutdownThread.cpp
+SOURCES += Notifier.cpp
+SOURCES += DisplayPowerState.cpp
+SOURCES += DisplayPowerRequest.cpp
+SOURCES += MobileDirectController.cpp
+SOURCES += WirelessChargerDetector.cpp

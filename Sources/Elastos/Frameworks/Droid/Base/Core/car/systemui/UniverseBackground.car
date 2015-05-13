@@ -1,0 +1,28 @@
+module
+{
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IMotionEvent;
+    interface Elastos.Droid.View.IWindowManagerLayoutParams;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+
+    interface IUniverseBackground extends Elastos.Droid.Widget.IFrameLayout {
+        GetWindowManagerLayoutParams(
+            [out] IWindowManagerLayoutParams** lp);
+
+        AnimateCollapse();
+
+        AnimateCollapseEx(
+            [in] Float velocityMultiplier);
+
+        ConsumeEvent(
+            [in] IMotionEvent* event,
+            [out] Boolean* result);
+    }
+
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

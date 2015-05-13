@@ -1,0 +1,32 @@
+module
+{
+    interface Elastos.Droid.Os.IBinder;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Tablet {
+
+    interface IInputMethodButton extends Elastos.Droid.Widget.IImageView {
+        SetIconImage(
+            [in] Int32 resId);
+
+        SetImeWindowStatus(
+            [in] IBinder* token,
+            [in] Boolean showButton);
+
+        SetHardKeyboardStatus(
+            [in] Boolean available);
+
+        SetScreenLocked(
+            [in] Boolean locked);
+    }
+
+    } // namespace Tablet
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}
+

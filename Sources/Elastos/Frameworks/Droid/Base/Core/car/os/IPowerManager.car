@@ -1,0 +1,94 @@
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+    interface IIPowerManager
+    {
+        // WARNING: The first two methods must remain the first two methods because their
+        // transaction numbers must not change unless IPowerManager.cpp is also updated.
+        AcquireWakeLock(
+            [in] IBinder* lock,
+            [in] Int32 flags,
+            [in] String tag,
+            [in] IWorkSource* ws);
+
+        ReleaseWakeLock(
+            [in] IBinder* lock,
+            [in] Int32 flags);
+
+        UpdateWakeLockWorkSource(
+            [in] IBinder* lock,
+            [in] IWorkSource* ws);
+
+        IsWakeLockLevelSupported(
+            [in] Int32 level,
+            [out] Boolean* res);
+
+        UserActivity(
+            [in] Int64 eventTime,
+            [in] Int32 event,
+            [in] Int32 flags);
+
+        WakeUp(
+            [in] Int64 eventTime);
+
+        GoToSleep(
+            [in] Int64 eventTime,
+            [in] Int32 reason);
+
+        Nap(
+            [in] Int64 eventTime);
+
+        IsScreenOn(
+            [out] Boolean* isScreenOn);
+
+        Reboot(
+            [in] Boolean confirm,
+            [in] String reason,
+            [in] Boolean wait);
+
+        Shutdown(
+            [in] Boolean confirm,
+            [in] Boolean wait);
+
+        Crash(
+            [in] String message);
+
+        SetStayOnSetting(
+            [in] Int32 val);
+
+        SetMaximumScreenOffTimeoutFromDeviceAdmin(
+            [in] Int32 timeMs);
+
+        // temporarily overrides the screen brightness settings to allow the user to
+        // see the effect of a settings change without applying it immediately
+        SetTemporaryScreenBrightnessSettingOverride(
+            [in] Int32 brightness);
+
+        SetTemporaryScreenAutoBrightnessAdjustmentSettingOverride(
+            [in] Float adj);
+
+        // sets the attention light (used by phone app only)
+        SetAttentionLight(
+            [in] Boolean on,
+            [in] Int32 color);
+
+        GoToBootFastSleep(
+            [in] Int64 time);
+
+        BootFastWake(
+            [in] Int64 time);
+
+        IsBootFastStatus(
+            [out] Boolean* result);
+
+        IsBootFastWakeFromStandby(
+            [out] Boolean* result);
+    }
+
+    } // namespace Os
+    } // namespace Droid
+    } // namespace Elastos
+}

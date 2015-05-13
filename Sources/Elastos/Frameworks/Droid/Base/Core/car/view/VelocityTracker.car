@@ -1,0 +1,52 @@
+
+module
+{
+    interface Elastos.Droid.Graphics.IRect;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+
+    interface IVelocityTracker extends Elastos.Droid.Utility.IPoolable {
+        Recycle();
+
+        Clear();
+
+        AddMovement(
+            [in] IMotionEvent* event);
+
+        ComputeCurrentVelocity(
+            [in] Int32 units);
+
+        ComputeCurrentVelocityEx(
+            [in] Int32 units,
+            [in] Float maxVelocity);
+
+        GetXVelocity(
+            [out] Float* velocity);
+
+        GetYVelocity(
+            [out] Float* velocity);
+
+        GetXVelocityEx(
+            [in] Int32 id,
+            [out] Float* velocity);
+
+        GetYVelocityEx(
+            [in] Int32 id,
+            [out] Float* velocity);
+    }
+
+    interface IVelocityTrackerHelper {
+        Obtain(
+            [out] IVelocityTracker** velocity);
+
+        ObtainEx(
+            [in] String strategy,
+            [out] IVelocityTracker** velocity);
+    }
+
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

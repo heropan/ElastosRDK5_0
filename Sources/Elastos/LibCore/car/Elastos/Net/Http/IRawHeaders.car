@@ -1,0 +1,147 @@
+
+module
+{
+    interface Elastos.Utility.ISet;
+    interface Elastos.Utility.IList;
+    interface Elastos.Utility.IMap;
+
+    namespace Elastos {
+    namespace Net {
+    namespace Http {
+
+    /**
+     * The HTTP status and unparsed header fields of a single HTTP message. Values
+     * are represented as uninterpreted strings; use {@link RequestHeaders} and
+     * {@link ResponseHeaders} for interpreted headers. This class maintains the
+     * order of the header fields within the HTTP message.
+     *
+     * <p>This class tracks fields line-by-line. A field with multiple comma-
+     * separated values on the same line will be treated as a field with a single
+     * value by this class. It is the caller's responsibility to detect and split
+     * on commas if their field permits multiple values. This simplifies use of
+     * single-valued fields whose values routinely contain commas, such as cookies
+     * or dates.
+     *
+     * <p>This class trims whitespace from values. It never returns values with
+     * leading or trailing whitespace.
+     */
+    interface IRawHeaders {
+        /**
+         * Sets the response status line (like "HTTP/1.0 200 OK") or request line
+         * (like "GET / HTTP/1.1").
+         */
+        SetStatusLine(
+            [in] String statusLine);
+
+        GetStatusLine(
+            [out] String* str);
+
+        /**
+         * Returns the status line's HTTP minor version. This returns 0 for HTTP/1.0
+         * and 1 for HTTP/1.1. This returns 1 if the HTTP version is unknown.
+         */
+        GetHttpMinorVersion(
+            [out] Int32* value);
+
+        /**
+         * Returns the HTTP status code or -1 if it is unknown.
+         */
+        GetResponseCode(
+            [out] Int32* value);
+
+        /**
+         * Returns the HTTP status message or null if it is unknown.
+         */
+        GetResponseMessage(
+            [out] String* str);
+
+        /**
+         * Add an HTTP header line containing a field name, a literal colon, and a
+         * value.
+         */
+        AddLine(
+            [in] String line);
+
+        /**
+         * Add a field with the specified value.
+         */
+        Add(
+            [in] String fieldName,
+            [in] String value);
+
+        RemoveAll(
+            [in] String fieldName);
+
+        AddAll(
+            [in] String fieldName,
+            [in] IList* headerFields);
+
+        /**
+         * Set a field with the specified value. If the field is not found, it is
+         * added. If the field is found, the existing values are replaced.
+         */
+        Set(
+            [in] String fieldName,
+            [in] String value);
+
+        /**
+         * Returns the number of field values.
+         */
+        Length(
+            [out] Int32* value);
+
+        /**
+         * Returns the field at {@code position} or null if that is out of range.
+         */
+        GetFieldName(
+            [in] Int32 index,
+            [out] String* str);
+
+        /**
+         * Returns the value at {@code index} or null if that is out of range.
+         */
+        GetValue(
+            [in] Int32 index,
+            [out] String* str);
+
+        /**
+         * Returns the last value corresponding to the specified field, or null.
+         */
+        Get(
+            [in] String fieldName,
+            [out] String* str);
+
+        /**
+         * @param fieldNames a case-insensitive set of HTTP header field names.
+         */
+        GetAll(
+            [in] ISet* fieldNames,
+            [out] IRawHeaders** rh);
+
+        ToHeaderString(
+            [out] String* str);
+
+        /**
+         * Returns an immutable map containing each field to its list of values. The
+         * status line is mapped to null.
+         */
+        ToMultimap(
+            [out] IMap** strmap);
+    }
+
+    interface IRawHeadersHelper {
+        /**
+         * Creates a new instance from the given map of fields to values. If
+         * present, the null field's last element will be used to set the status
+         * line.
+         */
+        FromMultimap(
+            [in] IMap* map,
+            [out] IRawHeaders** rh);
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Elastos
+
+}

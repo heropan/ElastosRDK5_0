@@ -1,0 +1,215 @@
+
+module
+{
+    interface Elastos.Droid.Media.ICodecCapabilities;
+    interface Elastos.Droid.Media.ICodecProfileLevel;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+    interface ICodecProfileLevel
+    {
+        // from OMX_VIDEO_AVCPROFILETYPE
+        const Int32 AVCProfileBaseline = 0x01;
+        const Int32 AVCProfileMain     = 0x02;
+        const Int32 AVCProfileExtended = 0x04;
+        const Int32 AVCProfileHigh     = 0x08;
+        const Int32 AVCProfileHigh10   = 0x10;
+        const Int32 AVCProfileHigh422  = 0x20;
+        const Int32 AVCProfileHigh444  = 0x40;
+
+        // from OMX_VIDEO_AVCLEVELTYPE
+        const Int32 AVCLevel1       = 0x01;
+        const Int32 AVCLevel1b      = 0x02;
+        const Int32 AVCLevel11      = 0x04;
+        const Int32 AVCLevel12      = 0x08;
+        const Int32 AVCLevel13      = 0x10;
+        const Int32 AVCLevel2       = 0x20;
+        const Int32 AVCLevel21      = 0x40;
+        const Int32 AVCLevel22      = 0x80;
+        const Int32 AVCLevel3       = 0x100;
+        const Int32 AVCLevel31      = 0x200;
+        const Int32 AVCLevel32      = 0x400;
+        const Int32 AVCLevel4       = 0x800;
+        const Int32 AVCLevel41      = 0x1000;
+        const Int32 AVCLevel42      = 0x2000;
+        const Int32 AVCLevel5       = 0x4000;
+        const Int32 AVCLevel51      = 0x8000;
+
+        // from OMX_VIDEO_H263PROFILETYPE
+        const Int32 H263ProfileBaseline             = 0x01;
+        const Int32 H263ProfileH320Coding           = 0x02;
+        const Int32 H263ProfileBackwardCompatible   = 0x04;
+        const Int32 H263ProfileISWV2                = 0x08;
+        const Int32 H263ProfileISWV3                = 0x10;
+        const Int32 H263ProfileHighCompression      = 0x20;
+        const Int32 H263ProfileInternet             = 0x40;
+        const Int32 H263ProfileInterlace            = 0x80;
+        const Int32 H263ProfileHighLatency          = 0x100;
+
+        // from OMX_VIDEO_H263LEVELTYPE
+        const Int32 H263Level10      = 0x01;
+        const Int32 H263Level20      = 0x02;
+        const Int32 H263Level30      = 0x04;
+        const Int32 H263Level40      = 0x08;
+        const Int32 H263Level45      = 0x10;
+        const Int32 H263Level50      = 0x20;
+        const Int32 H263Level60      = 0x40;
+        const Int32 H263Level70      = 0x80;
+
+        // from OMX_VIDEO_MPEG4PROFILETYPE
+        const Int32 MPEG4ProfileSimple              = 0x01;
+        const Int32 MPEG4ProfileSimpleScalable      = 0x02;
+        const Int32 MPEG4ProfileCore                = 0x04;
+        const Int32 MPEG4ProfileMain                = 0x08;
+        const Int32 MPEG4ProfileNbit                = 0x10;
+        const Int32 MPEG4ProfileScalableTexture     = 0x20;
+        const Int32 MPEG4ProfileSimpleFace          = 0x40;
+        const Int32 MPEG4ProfileSimpleFBA           = 0x80;
+        const Int32 MPEG4ProfileBasicAnimated       = 0x100;
+        const Int32 MPEG4ProfileHybrid              = 0x200;
+        const Int32 MPEG4ProfileAdvancedRealTime    = 0x400;
+        const Int32 MPEG4ProfileCoreScalable        = 0x800;
+        const Int32 MPEG4ProfileAdvancedCoding      = 0x1000;
+        const Int32 MPEG4ProfileAdvancedCore        = 0x2000;
+        const Int32 MPEG4ProfileAdvancedScalable    = 0x4000;
+        const Int32 MPEG4ProfileAdvancedSimple      = 0x8000;
+
+        // from OMX_VIDEO_MPEG4LEVELTYPE
+        const Int32 MPEG4Level0      = 0x01;
+        const Int32 MPEG4Level0b     = 0x02;
+        const Int32 MPEG4Level1      = 0x04;
+        const Int32 MPEG4Level2      = 0x08;
+        const Int32 MPEG4Level3      = 0x10;
+        const Int32 MPEG4Level4      = 0x20;
+        const Int32 MPEG4Level4a     = 0x40;
+        const Int32 MPEG4Level5      = 0x80;
+
+        // from OMX_AUDIO_AACPROFILETYPE
+        const Int32 AACObjectMain       = 1;
+        const Int32 AACObjectLC         = 2;
+        const Int32 AACObjectSSR        = 3;
+        const Int32 AACObjectLTP        = 4;
+        const Int32 AACObjectHE         = 5;
+        const Int32 AACObjectScalable   = 6;
+        const Int32 AACObjectERLC       = 17;
+        const Int32 AACObjectLD         = 23;
+        const Int32 AACObjectHE_PS      = 29;
+        const Int32 AACObjectELD        = 39;
+
+        /**
+         * Defined in the OpenMAX IL specs, depending on the type of media
+         * this can be OMX_VIDEO_AVCPROFILETYPE, OMX_VIDEO_H263PROFILETYPE,
+         * or OMX_VIDEO_MPEG4PROFILETYPE.
+         */
+        GetPrfile(
+            [out] Int32* value);
+
+        SetProfile(
+            [in] Int32 value);
+
+        /**
+         * Defined in the OpenMAX IL specs, depending on the type of media
+         * this can be OMX_VIDEO_AVCLEVELTYPE, OMX_VIDEO_H263LEVELTYPE
+         * or OMX_VIDEO_MPEG4LEVELTYPE.
+         */
+        GetLevel(
+            [out] Int32* value);
+
+        SetLevel(
+            [in] Int32 value);
+    }
+
+    [deprecated]
+    interface ICodecCapabilities
+    {
+        // from OMX_COLOR_FORMATTYPE
+        const Int32 COLOR_FormatMonochrome              = 1;
+        const Int32 COLOR_Format8bitRGB332              = 2;
+        const Int32 COLOR_Format12bitRGB444             = 3;
+        const Int32 COLOR_Format16bitARGB4444           = 4;
+        const Int32 COLOR_Format16bitARGB1555           = 5;
+        const Int32 COLOR_Format16bitRGB565             = 6;
+        const Int32 COLOR_Format16bitBGR565             = 7;
+        const Int32 COLOR_Format18bitRGB666             = 8;
+        const Int32 COLOR_Format18bitARGB1665           = 9;
+        const Int32 COLOR_Format19bitARGB1666           = 10;
+        const Int32 COLOR_Format24bitRGB888             = 11;
+        const Int32 COLOR_Format24bitBGR888             = 12;
+        const Int32 COLOR_Format24bitARGB1887           = 13;
+        const Int32 COLOR_Format25bitARGB1888           = 14;
+        const Int32 COLOR_Format32bitBGRA8888           = 15;
+        const Int32 COLOR_Format32bitARGB8888           = 16;
+        const Int32 COLOR_FormatYUV411Planar            = 17;
+        const Int32 COLOR_FormatYUV411PackedPlanar      = 18;
+        const Int32 COLOR_FormatYUV420Planar            = 19;
+        const Int32 COLOR_FormatYUV420PackedPlanar      = 20;
+        const Int32 COLOR_FormatYUV420SemiPlanar        = 21;
+        const Int32 COLOR_FormatYUV422Planar            = 22;
+        const Int32 COLOR_FormatYUV422PackedPlanar      = 23;
+        const Int32 COLOR_FormatYUV422SemiPlanar        = 24;
+        const Int32 COLOR_FormatYCbYCr                  = 25;
+        const Int32 COLOR_FormatYCrYCb                  = 26;
+        const Int32 COLOR_FormatCbYCrY                  = 27;
+        const Int32 COLOR_FormatCrYCbY                  = 28;
+        const Int32 COLOR_FormatYUV444Interleaved       = 29;
+        const Int32 COLOR_FormatRawBayer8bit            = 30;
+        const Int32 COLOR_FormatRawBayer10bit           = 31;
+        const Int32 COLOR_FormatRawBayer8bitcompressed  = 32;
+        const Int32 COLOR_FormatL2                      = 33;
+        const Int32 COLOR_FormatL4                      = 34;
+        const Int32 COLOR_FormatL8                      = 35;
+        const Int32 COLOR_FormatL16                     = 36;
+        const Int32 COLOR_FormatL24                     = 37;
+        const Int32 COLOR_FormatL32                     = 38;
+        const Int32 COLOR_FormatYUV420PackedSemiPlanar  = 39;
+        const Int32 COLOR_FormatYUV422PackedSemiPlanar  = 40;
+        const Int32 COLOR_Format18BitBGR666             = 41;
+        const Int32 COLOR_Format24BitARGB6666           = 42;
+        const Int32 COLOR_Format24BitABGR6666           = 43;
+
+        const Int32 COLOR_TI_FormatYUV420PackedSemiPlanar = 0x7f000100;
+        const Int32 COLOR_QCOM_FormatYUV420SemiPlanar     = 0x7fa30c00;
+
+        GetProfileLevels(
+            [out, callee] ArrayOf<ICodecProfileLevel*>* value);
+
+        SetProfileLevels(
+            [in] ArrayOf<ICodecProfileLevel*>* value);
+
+        GetColorFormats(
+            [out, callee] ArrayOf<Int32>* value);
+
+        SetColorFormats(
+            [in] ArrayOf<Int32>* value);
+    }
+
+    interface IMediaCodecInfo {
+        /**
+         * Retrieve the codec name.
+         */
+        GetName(
+            [out] String* result);
+
+        /**
+         * Query if the codec is an encoder.
+         */
+        IsEncoder(
+            [out] Boolean* result);
+
+        /**
+         * Query the media types supported by the codec.
+         */
+        GetSupportedTypes(
+            [out, callee] ArrayOf<String>* result);
+
+        GetCapabilitiesForType(
+            [in] String type,
+            [out] ICodecCapabilities** result);
+    }
+
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
+}

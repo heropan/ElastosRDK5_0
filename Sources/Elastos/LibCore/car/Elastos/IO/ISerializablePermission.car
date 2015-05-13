@@ -1,0 +1,14 @@
+module
+{
+    namespace Elastos {
+    namespace IO {
+    /**
+     * Legacy security code; do not use.
+     * @implements Elastos.IO.IBasicPermission
+     */
+    interface ISerializablePermission extends IBasicPermission {
+    }
+
+    } // namespace IO
+    } // namespace Elastos
+}

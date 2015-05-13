@@ -1,0 +1,24 @@
+module
+{
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IViewGroup;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace Recent {
+
+    interface ITaskDescriptionAdapter extends Elastos.Droid.Widget.IBaseAdapter {
+        CreateView(
+            [in] IViewGroup* parent,
+            [out] IView** v);
+
+        RecycleView(
+            [in] IView* v);
+    }
+
+    } // namespace Recent
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

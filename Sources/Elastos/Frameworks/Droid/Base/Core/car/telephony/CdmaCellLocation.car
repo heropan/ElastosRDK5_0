@@ -1,0 +1,63 @@
+
+module
+{
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Telephony {
+
+    interface ICdmaCellLocation extends Elastos.Droid.Telephony.ICellLocation {
+
+        GetBaseStationId(
+            [out] Int32* baseStationId);
+
+        GetBaseStationLatitude(
+            [out] Int32* baseStationLatitude);
+
+        GetBaseStationLongitude(
+            [out] Int32* baseStationLongitude);
+
+        GetSystemId(
+            [out] Int32* systemid);
+
+        GetNetworkId(
+            [out] Int32* networkid);
+
+        SetStateInvalid();
+
+        SetCellLocationData(
+            [in] Int32 baseStationId,
+            [in] Int32 baseStationLatitude,
+            [in] Int32 baseStationLongitude);
+
+        SetCellLocationDataEx(
+            [in] Int32 baseStationId,
+            [in] Int32 baseStationLatitude,
+            [in] Int32 baseStationLongitude,
+            [in] Int32 systemId,
+            [in] Int32 networkId);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        Equals(
+            [in] IInterface* o,
+            [out] Boolean* result);
+
+        ToString(
+            [out] String* str);
+
+    }
+
+    interface ICdmaCellLocationHelper {
+
+        ConvertQuartSecToDecDegrees(
+            [in] Int32 quartSec,
+            [out] Double* val);
+
+    }
+
+    } // namespace Telephony
+    } // namespace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,113 @@
+
+#ifndef __CSUGGESTIONSINFO_H__
+#define __CSUGGESTIONSINFO_H__
+
+namespace Elastos {
+namespace Droid {
+namespace View {
+namespace Textservice {
+
+/**
+ * This class contains a metadata of suggestions from the text service
+ */
+CarClass(CSuggestionsInfo)
+{
+public:
+    /**
+     * Constructor.
+     * @param suggestionsAttributes from the text service
+     * @param suggestions from the text service
+     */
+    CARAPI constructor(
+        /* [in] */ Int32 suggestionsAttributes,
+        /* [in] */ ArrayOf<String>* suggestions);
+
+    /**
+     * Constructor.
+     * @param suggestionsAttributes from the text service
+     * @param suggestions from the text service
+     * @param cookie the cookie of the input TextInfo
+     * @param sequence the cookie of the input TextInfo
+     */
+    CARAPI constructor(
+        /* [in] */ Int32 suggestionsAttributes,
+        /* [in] */ ArrayOf<String>* suggestions,
+        /* [in] */ Int32 cookie,
+        /* [in] */ Int32 sequence);
+
+    CARAPI ReadFromParcel(
+        /* [in] */ IParcel* parcel);
+
+    /**
+     * Used to package this object into a {@link Parcel}.
+     *
+     * @param dest The {@link Parcel} to be written.
+     * @param flags The flags used for parceling.
+     */
+    //@Override
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest);
+
+    /**
+     * Set the cookie and the sequence of SuggestionsInfo which are set to TextInfo from a client
+     * application
+     * @param cookie the cookie of an input TextInfo
+     * @param sequence the cookie of an input TextInfo
+     */
+    CARAPI SetCookieAndSequence(
+        /* [in] */ Int32 cookie,
+        /* [in] */ Int32 sequence);
+
+    /**
+     * @return the cookie which may be set by a client application
+     */
+    CARAPI GetCookie(
+        /* [out] */ Int32* cookie);
+
+    /**
+     * @return the sequence which may be set by a client application
+     */
+    CARAPI GetSequence(
+        /* [out] */ Int32* sequence);
+
+    /**
+     * @return the attributes of suggestions. This includes whether the spell checker has the word
+     * in its dictionary or not and whether the spell checker has confident suggestions for the
+     * word or not.
+     */
+    CARAPI GetSuggestionsAttributes(
+        /* [out] */ Int32* attr);
+
+    /**
+     * @return the count of the suggestions. If there's no suggestions at all, this method returns
+     * -1. Even if this method returns 0, it doesn't necessarily mean that there are no suggestions
+     * for the requested word. For instance, the caller could have been asked to limit the maximum
+     * number of suggestions returned.
+     */
+    CARAPI GetSuggestionsCount(
+        /* [out] */ Int32* count);
+
+    /**
+     * @param i the id of suggestions
+     * @return the suggestion at the specified id
+     */
+    CARAPI GetSuggestionAt(
+        /* [in] */ Int32 i,
+        /* [out] */ String* str);
+
+private:
+    static AutoPtr<ArrayOf<String> > EMPTY;// = ArrayUtils.emptyArray(String.class);
+
+    Int32 mSuggestionsAttributes;
+    AutoPtr<ArrayOf<String> > mSuggestions;
+    Boolean mSuggestionsAvailable;
+    Int32 mCookie;
+    Int32 mSequence;
+};
+
+}   //namespace Textservice
+}   //namespace View
+}   //namespace Droid
+}   //namespace Elastos
+
+#endif //__CSUGGESTIONSINFO_H__

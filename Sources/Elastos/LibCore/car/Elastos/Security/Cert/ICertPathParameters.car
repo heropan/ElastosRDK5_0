@@ -1,0 +1,21 @@
+
+module
+{
+    interface Elastos.Core.ICloneable;
+    namespace Elastos {
+    namespace Security {
+    namespace Cert {
+
+    /**
+     * The interface specification for certification path algorithm parameters.
+     * <p>
+     * This interface is for grouping purposes of {@code CertPath} parameter
+     * implementations.
+     */
+    interface ICertPathParameters extends Elastos.Core.ICloneable {
+    }
+
+    } // namespace Cert
+    } // namespace Security
+    } // namespace Elastos
+}

@@ -1,0 +1,25 @@
+module
+{
+    interface Elastos.Droid.SystemUI.StatusBar.Phone.IPhoneStatusBar;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Phone {
+
+    interface IPhoneStatusBarView extends Elastos.Droid.SystemUI.StatusBar.Phone.IPanelBar {
+
+        SetBar(
+            [in] IPhoneStatusBar* bar);
+
+        HasFullWidthNotifications(
+            [out] Boolean* result);
+    }
+
+    } // namespace Phone
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

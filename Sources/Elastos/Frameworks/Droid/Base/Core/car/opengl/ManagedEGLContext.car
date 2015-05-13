@@ -1,0 +1,25 @@
+
+module
+{
+    interface Elastos.Droid.Graphics.IBitmap;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Opengl {
+
+    [deprecated]
+    interface IManagedEGLContext {
+
+        GetContext(
+            [out] Elastosx.Microedition.Khronos.Egl.IEGLContext** ctx);
+
+        Terminate();
+
+        OnTerminate(
+            [in] Elastosx.Microedition.Khronos.Egl.IEGLContext* ctx);
+    }
+
+    } // namespace Opengl
+    } // namespace Droid
+    } // namespace Elastos
+}

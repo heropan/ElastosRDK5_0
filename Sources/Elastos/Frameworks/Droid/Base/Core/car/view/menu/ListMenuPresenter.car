@@ -1,0 +1,41 @@
+
+module
+{
+    interface Elastos.Droid.Widget.IListAdapter;
+    interface Elastos.Droid.Os.IBundle;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Menu {
+
+        /**
+         * The item view for each item in the {@link IconMenuView}.
+         */
+        [local]
+        interface IListMenuPresenter extends Elastos.Droid.View.Menu.IMenuPresenter {
+
+            GetAdapter(
+                [out] IListAdapter** apt);
+
+            GetItemIndexOffset(
+                [out] Int32* offset);
+
+            SetItemIndexOffset(
+                [in] Int32 offset);
+
+            SaveHierarchyState(
+                [in] IBundle* outState);
+
+            RestoreHierarchyState(
+                [in] IBundle* outState);
+
+            SetId(
+                [in] Int32 id);
+        }
+
+    } // namespace Menu
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

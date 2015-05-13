@@ -1,0 +1,134 @@
+
+module
+{
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.View.IKeyEvent;
+    interface Elastos.Droid.Bluetooth.IBluetoothDevice;
+    interface Elastos.Droid.Media.IIAudioFocusDispatcher;
+    interface Elastos.Droid.Media.IIRemoteControlClient;
+    interface Elastos.Droid.Media.IIRemoteVolumeObserver;
+    interface Elastos.Droid.Media.IIRingtonePlayer;
+    interface Elastos.Droid.Media.IIAudioRoutesObserver;
+    interface Elastos.Droid.Media.IAudioRoutesInfo;
+    interface Elastos.Droid.Media.IIAudioService;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Inner classes
+    ///////////////////////////////////////////////////////////////////////////
+
+    interface IAudioServiceVolumeStreamState {
+        GetSettingNameForDevice(
+            [in] Boolean lastAudible,
+            [in] Int32 device,
+            [out] String* result);
+
+        ReadSettings();
+
+        ApplyDeviceVolume(
+            [in] Int32 device);
+
+        ApplyAllVolumes();
+
+        AdjustIndex(
+            [in] Int32 deltaIndex,
+            [in] Int32 device,
+            [out] Boolean* result);
+
+        SetIndex(
+            [in] Int32 index,
+            [in] Int32 device,
+            [in] Boolean lastAudible,
+            [out] Boolean* result);
+
+        GetIndex(
+            [in] Int32 device,
+            [in] Boolean lastAudible,
+            [out] Int32* result);
+
+        SetLastAudibleIndex(
+            [in] Int32 index,
+            [in] Int32 device);
+
+        AdjustLastAudibleIndex(
+            [in] Int32 deltaIndex,
+            [in] Int32 device);
+
+        GetMaxIndex(
+            [out] Int32* result);
+
+        // only called by setAllIndexes() which is already synchronized
+        GetAllIndexes(
+            [in] Boolean lastAudible);
+            //[out] ConcurrentHashMap <Integer, Integer> result);
+
+        SetAllIndexes(
+            [in] IAudioServiceVolumeStreamState* srcStream,
+            [in] Boolean lastAudible);
+
+        SetAllIndexesToMax();
+
+        Mute(
+            [in] IBinder* cb,
+            [in] Boolean state);
+
+        GetStreamType(
+            [out] Int32* result);
+    }
+
+    interface IAudioService extends Elastos.Droid.Media.IIAudioService {
+        /**
+         * A fake stream type to match the notion of remote media playback
+         */
+        const Int32 STREAM_REMOTE_MUSIC = -200;
+
+        //==========================================================================================
+        // AudioFocus
+        //==========================================================================================
+        /* constant to identify focus stack entry that is used to hold the focus while the phone
+         * is ringing or during a call. Used by com.android.internal.telephony.CallManager when
+         * entering and exiting calls.
+         */
+        const String IN_VOICE_COMM_FOCUS_ID = "AudioFocus_For_Phone_Ring_And_Calls";
+
+        ClearAllScoClients(
+            [in] Int32 exceptPid,
+            [in] Boolean stopSco);
+
+        IsStreamAffectedByRingerMode(
+            [in] Int32 streamType,
+            [out] Boolean* result);
+
+        IsStreamAffectedByMute(
+            [in] Int32 streamType,
+            [out] Boolean* result);
+
+        // Handles request to override default use of A2DP for media.
+        SetBluetoothA2dpOnInt(
+            [in] Boolean on);
+
+        DisableSafeMediaVolume();
+    }
+
+    interface IAudioServiceHelper {
+        /**
+         * @see #setVibrateSetting(int, int);
+         */
+        GetValueForVibrateSetting(
+            [in] Int32 existingValue,
+            [in] Int32 vibrateType,
+            [in] Int32 vibrateSetting,
+            [out] Int32* result);
+    }
+
+    } // namespace Media
+    } // namepsace Droid
+    } // namespace Elastos
+}

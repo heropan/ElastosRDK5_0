@@ -1,0 +1,108 @@
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace DevSamples {
+    namespace JSTestObject {
+
+    [deprecated]
+    interface ITestObject {
+        Test_NULL();
+
+        Test_Int16(
+            [in] Int16 inValue,
+            [out] Int16* outValue);
+
+        Test_Int32(
+            [in] Int32 inValue,
+            [out] Int32* outValue);
+
+        Test_Int64(
+            [in] Int64 inValue,
+            [out] Int64* outValue);
+
+        Test_Byte(
+            [in] Byte inValue,
+            [out] Byte* outValue);
+
+        Test_Float(
+            [in] Float inValue,
+            [out] Float* outValue);
+
+        Test_Double(
+            [in] Double inValue,
+            [out] Double* outValue);
+
+        Test_Char8(
+            [in] Char8 inValue,
+            [out] Char8* outValue);
+
+        Test_Char16(
+            [in] Char16 inValue,
+            [out] Char16* outValue);
+
+        Test_CString(
+            [in] CString inCStr,
+            [out] CString* outCStr);
+
+        Test_String(
+            [in] String inStr,
+            [out] String* outStr);
+
+        Test_Int32_String(
+            [in] Int32 inValue,
+            [out] String* outStr);
+
+        Test_String_Int32_Int32_Int32_Int32_String_String_String_String(
+            [in] String inStr,
+            [in] Int32 inValue1,
+            [in] Int32 inValue2,
+            [in] Int32 inValue3,
+            [in] Int32 inValue4,
+            [out] String* outStr1,
+            [out] String* outStr2,
+            [out] String* outStr3,
+            [out] String* outStr4);
+
+        Test_Boolean(
+            [in] Boolean inValue,
+            [out] Boolean* outValue);
+
+        Test_EMuid(
+            [in] EMuid inId,
+            [out] EMuid* outId);
+
+        Test_EGuid(
+            [in] EGuid inId,
+            [out] EGuid* outId);
+
+        Test_ECode(
+            [in] ECode inValue,
+            [out] ECode* outValue);
+
+        //test_17_Enum([in] Enum aEnum,[out] Enum * pEnum);
+
+        Test_ArrayOfInt32(
+            [in] ArrayOf<Int32> inArray1,
+            [in] ArrayOf<Int32>* inArray2,
+            [out, callee] ArrayOf<Int32>* outArray);
+
+        //test_23_Struct([in] Struct aStruct,[out] Struct * pStruct);   //IStructInfo/IStructSetter/IStructGetter
+
+        Test_Interface(
+            [in] IInterface* inObject,
+            [out] IInterface** outObject);
+    }
+
+    class CTestObject {
+        interface ITestObject;
+    }
+
+    } // namespace JSTestObject
+    } // namespace DevSamples
+    } // namespace Droid
+    } // namespace Elastos
+
+
+}
+

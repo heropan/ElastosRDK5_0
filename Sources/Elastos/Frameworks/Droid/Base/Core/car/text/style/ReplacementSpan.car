@@ -1,0 +1,42 @@
+
+module
+{
+    using interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Graphics.IPaint;
+    interface Elastos.Droid.Graphics.ICanvas;
+    interface Elastos.Droid.Graphics.IPaintFontMetricsInt;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    interface IReplacementSpan extends IMetricAffectingSpan {
+        GetSize(
+            [in] IPaint* paint,
+            [in] ICharSequence* text,
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] IPaintFontMetricsInt* fm,
+            [out] Int32* size);
+
+        Draw(
+            [in] ICanvas* canvas,
+            [in] ICharSequence* text,
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] Float x,
+            [in] Int32 top,
+            [in] Int32 y,
+            [in] Int32 bottom,
+            [in] IPaint* paint);
+    }
+
+    interface IReplacementSpanHelper extends IMetricAffectingSpanHelper {
+    }
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+}

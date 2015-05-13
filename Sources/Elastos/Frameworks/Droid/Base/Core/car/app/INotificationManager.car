@@ -1,0 +1,52 @@
+module
+{
+    interface Elastos.Droid.App.ITransientNotification;
+    interface Elastos.Droid.App.INotification;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    /** {@hide} */
+    [deprecated]
+    interface IINotificationManager {
+        CancelAllNotifications(
+            [in]String pkg,
+            [in] Int32 userId);
+
+        EnqueueToast(
+            [in] String pkg,
+            [in] ITransientNotification* cb,
+            [in] Int32 duration);
+
+        CancelToast(
+            [in] String pkg,
+            [in] ITransientNotification* cb);
+
+        EnqueueNotificationWithTag(
+            [in] String pkg,
+            [in] String tag,
+            [in] Int32 id,
+            [in] INotification* notification,
+            [out, callee] ArrayOf<Int32>* idReceived,
+            [in] Int32 userId);
+
+        CancelNotificationWithTag(
+            [in] String pkg,
+            [in] String tag,
+            [in] Int32 id,
+            [in] Int32 userId);
+
+        SetNotificationsEnabledForPackage(
+            [in] String pkg,
+            [in] Boolean enabled);
+
+        AreNotificationsEnabledForPackage(
+            [in] String pkg,
+            [out] Boolean* res);
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

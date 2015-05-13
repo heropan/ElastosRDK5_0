@@ -1,0 +1,4 @@
+
+DIRS = Xml
+DIRS += Xmlpull
+DIRS += Apache

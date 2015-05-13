@@ -1,0 +1,30 @@
+module
+{
+    using interface Elastos.Text.ICollator;
+    using interface Libcore.ICU.ILocale;
+    using interface Elastos.Utility.Spi.ILocaleServiceProvider;
+
+    namespace Elastos {
+    namespace Text {
+    namespace Spi {
+
+    interface ICollatorProvider { //extends ILocaleServiceProvide
+        /**
+         * Returns an instance of {@code Collator} for the given locale.
+         *
+         * @param locale the locale
+         * @return an instance of {@code Collator}
+         * @throws NullPointerException if {@code locale == null}
+         * @throws IllegalArgumentException
+         *             if locale isn't one of the locales returned from
+         *             getAvailableLocales().
+         */
+        GetInstance(
+            [in] ILocale * locale,
+            [out] ICollator ** collator);
+    }
+
+    } // namespace Spi
+    } // namespace Text
+    } // namespace Elastos
+}

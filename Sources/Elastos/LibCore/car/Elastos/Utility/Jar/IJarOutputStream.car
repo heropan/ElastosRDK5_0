@@ -1,0 +1,15 @@
+
+module
+{
+    using interface Elastos.Utility.Zip.IZipOutputStream;
+
+    namespace Elastos{
+    namespace Utility{
+    namespace Jar{
+
+        interface IJarOutputStream extends Elastos.Utility.Zip.IZipOutputStream {
+        }
+    }//Jar
+    }//Utility
+    }//Elastos
+}

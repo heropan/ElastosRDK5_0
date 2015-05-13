@@ -1,0 +1,21 @@
+module
+{
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    [local]
+    interface IResolverActivity extends Elastos.Droid.Widget.IAdapterViewOnItemClickListener {
+        OnButtonClick(
+            [in] IView* v);
+    }
+
+    } // namespace App
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
+}

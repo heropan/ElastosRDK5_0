@@ -1,0 +1,15 @@
+
+module
+{
+    namespace Elastos {
+    namespace Net {
+    namespace Http {
+
+    interface IUnknownLengthHttpInputStream extends IAbstractHttpInputStream {
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Elastos
+
+}

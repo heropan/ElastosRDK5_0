@@ -1,0 +1,71 @@
+
+module
+{
+    interface Elastos.Droid.Hardware.Usb.IUsbEndpoint;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+    namespace Usb {
+
+    interface IUsbInterface {
+        /**
+         * Returns the interface's ID field.
+         * This is an integer that uniquely identifies the interface on the device.
+         *
+         * @return the interface's ID
+         */
+        GetId(
+            [out] Int32* id);
+
+        /**
+         * Returns the interface's class field.
+         * Some useful constants for USB classes can be found in {@link UsbConstants}
+         *
+         * @return the interface's class
+         */
+        GetInterfaceClass(
+            [out] Int32* cls);
+
+        /**
+         * Returns the interface's subclass field.
+         *
+         * @return the interface's subclass
+         */
+        GetInterfaceSubclass(
+            [out] Int32* cls);
+
+        /**
+         * Returns the interface's protocol field.
+         *
+         * @return the interface's protocol
+         */
+        GetInterfaceProtocol(
+            [out] Int32* protocol);
+
+        /**
+         * Returns the number of {@link android.hardware.usb.UsbEndpoint}s this interface contains.
+         *
+         * @return the number of endpoints
+         */
+        GetEndpointCount(
+            [out] Int32* count);
+
+        /**
+         * Returns the {@link android.hardware.usb.UsbEndpoint} at the given index.
+         *
+         * @return the endpoint
+         */
+        GetEndpoint(
+            [in] Int32 index,
+            [out] IUsbEndpoint** endpoint);
+
+        ToString(
+            [out] String* str);
+    }
+
+    } // namespace Usb
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,132 @@
+
+module
+{
+    merge("util/AtomicFile.car");
+    merge("util/AttributeSet.car");
+    merge("util/XmlPullAttributes.car");
+    merge("util/Xml.car");
+    merge("util/DisplayMetrics.car");
+    merge("util/TypedValue.car");
+    merge("util/Pool.car");
+    merge("util/Poolable.car");
+    merge("util/PoolableManager.car");
+    merge("util/Predicate.car");
+    merge("util/EventLogTags.car");
+    merge("util/FastXmlSerializer.car");
+    merge("util/TrustedTime.car");
+    merge("util/NtpTrustedTime.car");
+    merge("util/Property.car");
+    merge("util/Protocol.car");
+    merge("util/Pair.car");
+    merge("util/IndentingPrintWriter.car");
+    merge("util/Base64.car");
+
+    using interface Elastos.IO.IFile;
+    using interface Elastos.IO.IWriter;
+    using interface Elastos.IO.ICloseable;
+    using interface Elastos.IO.IFlushable;
+    using interface Elastos.IO.IPrintWriter;
+    using interface Elastos.IO.IBufferedReader;
+    using interface Org.Xmlpull.V1.IXmlPullParser;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Utility {
+
+    class CAtomicFile {
+        constructor(
+            [in] IFile* baseName);
+
+        interface IAtomicFile;
+    }
+
+    class CDisplayMetrics {
+        interface IDisplayMetrics;
+    }
+
+    class CTypedValue {
+        interface ITypedValue;
+    }
+
+    singleton class CTypedValueHelper {
+        interface ITypedValueHelper;
+    }
+
+    class CParcelableObjectContainer {
+        constructor();
+
+        interface IObjectContainer;
+        interface IParcelable;
+    }
+
+    class CXmlPullAttributes {
+        constructor(
+            [in] IXmlPullParser* ps);
+
+        interface IXmlPullAttributes;
+    }
+
+    class CFastXmlSerializer {
+        interface IFastXmlSerializer;
+    }
+
+    [deprecated]
+    class CEventLogTags {
+        // constructor();
+
+        // constructor(
+        //     [in] IBufferedReader** input);
+
+        interface IEventLogTags;
+    }
+
+    singleton class CNtpTrustedTimeHelper {
+        interface INtpTrustedTimeHelper;
+    }
+
+    singleton class CPropertyHelper {
+        constructor();
+        interface IPropertyHelper;
+    }
+
+    class CPair {
+        constructor(
+            [in] IInterface *first,
+            [in] IInterface *second);
+
+        interface IPair;
+    }
+
+    singleton class CPairHelper {
+        interface IPairHelper;
+    }
+
+    singleton class CXml {
+        interface IXml;
+    }
+
+    singleton class CBase64 {
+        interface IBase64;
+    }
+
+    } // namespace Utility
+
+    namespace Internal {
+    namespace Utility {
+
+        class CIndentingPrintWriter {
+            constructor(
+                [in] IWriter* writer,
+                [in] String indent);
+
+            interface IIndentingPrintWriter;
+            interface ICloseable;
+            interface IFlushable;
+        }
+
+    } // namespace Utility
+    } // namespace Internal
+
+    } // namespace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,157 @@
+
+module
+{
+
+    interface Elastos.Droid.Os.IBundle;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Telephony {
+
+    [deprecated]
+    interface ISignalStrength {
+
+        const Int32 SIGNAL_STRENGTH_NONE_OR_UNKNOWN = 0;
+        const Int32 SIGNAL_STRENGTH_POOR = 1;
+        const Int32 SIGNAL_STRENGTH_MODERATE = 2;
+        const Int32 SIGNAL_STRENGTH_GOOD = 3;
+        const Int32 SIGNAL_STRENGTH_GREAT = 4;
+        const Int32 NUM_SIGNAL_STRENGTH_BINS = 5;
+        const Int32 INVALID = 0x7FFFFFFF;
+
+        Initialize(
+            [in] Int32 gsmSignalStrength,
+            [in] Int32 gsmBitErrorRate,
+            [in] Int32 cdmaDbm,
+            [in] Int32 cdmaEcio,
+            [in] Int32 evdoDbm,
+            [in] Int32 evdoEcio,
+            [in] Int32 evdoSnr,
+            [in] Boolean gsm);
+
+        InitializeEx(
+            [in] Int32 gsmSignalStrength,
+            [in] Int32 gsmBitErrorRate,
+            [in] Int32 cdmaDbm,
+            [in] Int32 cdmaEcio,
+            [in] Int32 evdoDbm,
+            [in] Int32 evdoEcio,
+            [in] Int32 evdoSnr,
+            [in] Int32 lteSignalStrength,
+            [in] Int32 lteRsrp,
+            [in] Int32 lteRsrq,
+            [in] Int32 lteRssnr,
+            [in] Int32 lteCqi,
+            [in] Boolean gsm);
+
+        DescribeContents(
+            [out] Int32* val);
+
+        ValidateInput();
+
+        SetGsm(
+            [in] Boolean gsmFlag);
+
+        GetGsmSignalStrength(
+            [out] Int32* gsmSignalStrength);
+
+        GetGsmBitErrorRate(
+            [out] Int32* gsmBitErrorRate);
+
+        GetCdmaDbm(
+            [out] Int32* cdmaDbm);
+
+        GetCdmaEcio(
+            [out] Int32* cdmaEcio);
+
+        GetEvdoDbm(
+            [out] Int32* evdoDbm);
+
+        GetEvdoEcio(
+            [out] Int32* evdoEcio);
+
+        GetEvdoSnr(
+            [out] Int32* evdoSnr);
+
+        GetLteSignalStrength(
+            [out] Int32* lteSignalStrength);
+
+        GetLteRsrp(
+            [out] Int32* lteRsrp);
+
+        GetLteRsrq(
+            [out] Int32* lteRsrq);
+
+        GetLteRssnr(
+            [out] Int32* lteRssnr);
+
+        GetLteCqi(
+            [out] Int32* lteCqi);
+
+        GetLevel(
+            [out] Int32* level);
+
+        GetAsuLevel(
+            [out] Int32* asuLevel);
+
+        GetDbm(
+            [out] Int32* dbm);
+
+        GetGsmDbm(
+            [out] Int32* gsmDbm);
+
+        GetGsmLevel(
+            [out] Int32* gsmLevel);
+
+        GetGsmAsuLevel(
+            [out] Int32* gsmAsuLevel);
+
+        GetCdmaLevel(
+            [out] Int32* cdmaLevel);
+
+        GetCdmaAsuLevel(
+            [out] Int32* cdmaAsuLevel);
+
+        GetEvdoLevel(
+            [out] Int32* evdoLevel);
+
+        GetEvdoAsuLevel(
+            [out] Int32* evdoAsuLevel);
+
+        GetLteDbm(
+            [out] Int32* lteDbm);
+
+        GetLteLevel(
+            [out] Int32* lteLevel);
+
+        GetLteAsuLevel(
+            [out] Int32* lteAsuLevel);
+
+        IsGsm(
+            [out] Boolean* res);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        Equals (
+            [in] IInterface* o,
+            [out] Boolean* res);
+
+        ToString(
+            [out] String* str);
+
+        FillInNotifierBundle(
+            [in] IBundle* m);
+
+    }
+
+    [deprecated]
+    interface ISignalStrengthHelper {
+        NewFromBundle(
+            [in] IBundle* m);
+    }
+
+    } // namespace Telephony
+    } // namespace Droid
+    } // namespace Elastos
+}

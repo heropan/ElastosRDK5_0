@@ -1,0 +1,84 @@
+
+module
+{
+    merge("animation/Animator.car");
+    merge("animation/AnimatorInflater.car");
+    merge("animation/AnimatorSet.car");
+    merge("animation/Keyframe.car");
+    merge("animation/KeyframeSet.car");
+    merge("animation/TypeEvaluator.car");
+    merge("animation/TimeInterpolator.car");
+    merge("animation/ValueAnimator.car");
+    merge("animation/TimeAnimator.car");
+    merge("animation/LayoutTransition.car");
+    merge("animation/ObjectAnimator.car");
+    merge("animation/PropertyValuesHolder.car");
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Animation {
+
+    class CAnimatorSet {
+        interface IAnimatorSet;
+    }
+
+    class CAnimatorSetBuilder {
+        constructor(
+            [in] IAnimatorSet* host,
+            [in] IAnimator* anim);
+
+        interface IAnimatorSetBuilder;
+    }
+
+    class CArgbEvaluator {
+        interface IArgbEvaluator;
+    }
+
+    class CFloatEvaluator {
+        interface IFloatEvaluator;
+    }
+
+    class CInt32Evaluator {
+        interface IInt32Evaluator;
+    }
+
+    class CLayoutTransition {
+        constructor();
+        interface ILayoutTransition;
+    }
+
+    singleton class CKeyframeHelper {
+        interface IKeyframeHelper;
+    }
+
+    class CObjectAnimator {
+        constructor();
+
+        interface IObjectAnimator;
+    }
+
+    singleton class CObjectAnimatorHelper {
+        interface IObjectAnimatorHelper;
+    }
+
+    singleton class CPropertyValuesHolderHelper {
+        interface IPropertyValuesHolderHelper;
+    }
+
+    class CTimeAnimator {
+        interface ITimeAnimator;
+    }
+
+    class CValueAnimator {
+        interface IValueAnimator;
+    }
+
+    singleton class CValueAnimatorHelper {
+        interface IValueAnimatorHelper;
+    }
+
+
+    } // namespace Animation
+    } // namepsace Droid
+    } // namespace Elastos
+}

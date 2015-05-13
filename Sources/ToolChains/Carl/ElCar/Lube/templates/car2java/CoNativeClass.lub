@@ -1,0 +1,35 @@
+$INPUT class
+$OUTPUT "${name}.java"
+
+package com.elastos.runtime;
+
+import  dalvik.annotation.CAR;
+@CoNativeClass(Module="${module.name}.eco", CARClass="${name}")
+class ${name}{
+		
+$WITH all interfaces DO
+$   IF attrib is not "callback" and attrib is not "callbacksink" and attrib is not "clsobj" and attrib is not "filter" and name is not "IRegime" and name is not "IObject"
+$       WITH all parents_and_me DO
+$       WITH all methods DO
+    native $^
+$           WITH all parameters DO
+$           IF parameter is last
+${type} $^
+$           END IF
+$           END DO ;; all parameters
+${name}($^
+$           WITH all parameters DO
+${type} ${name}$^
+$           IF parameter is not last
+,$^
+$           END IF
+$           END DO ;; all parameters
+);
+$       END DO ;; all methods
+$       END DO ;; parents_and_me
+$   END IF ;; is not "callback" and not "callbacksink" and not "clsobj" and not "filter"
+$
+}
+$END DO ;; all interfaces
+$
+$END OUTPUT

@@ -1,0 +1,13 @@
+
+TARGET_NAME= utils
+TARGET_TYPE= lib
+
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Security/Utils
+
+SOURCES = AlgNameMapper.cpp
+SOURCES += CAlgNameMapperHelper.cpp
+SOURCES += CArrayHelper.cpp
+SOURCES += CJarUtils.cpp
+SOURCES += CObjectIdentifierInUtils.cpp
+SOURCES += CObjectIdentifierInUtilsHelper.cpp

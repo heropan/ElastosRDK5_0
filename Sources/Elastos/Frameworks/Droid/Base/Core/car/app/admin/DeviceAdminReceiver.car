@@ -1,0 +1,241 @@
+module
+{
+    using interface Elastos.Core.ICharSequence;
+
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.App.Admin.IDevicePolicyManager;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+    namespace Admin {
+
+    /**
+     * Base class for implementing a device administration component. This class
+     * provides a convenience for interpreting the raw intent actions that are sent
+     * by the system.
+     * <p>
+     * The callback methods, like the base BroadcastReceiver.onReceive() method,
+     * happen on the main thread of the process. Thus long running operations must be
+     * done on another thread. Note that because a receiver is done once returning
+     * from its receive function, such long-running operations should probably be
+     * done in a Service.
+     *
+     * @sa BroadcastReceiver.onReceive()
+     * @sa Service
+     * <p>
+     * When publishing your DeviceAdmin subclass as a receiver, it must handle
+     * ACTION_DEVICE_ADMIN_ENABLED and require the BIND_DEVICE_ADMIN permission.
+     * A typical manifest entry would look like:
+     *
+     * @sa ACTION_DEVICE_ADMIN_ENABLED
+     * @sa BIND_DEVICE_ADMIN
+     *
+     * <pre>
+     * <receiver android:name=".app.DeviceAdminSample$DeviceAdminSampleReceiver"
+     *   android:label="@string/sample_device_admin"
+     *   android:description="@string/sample_device_admin_description"
+     *   android:permission="android.permission.BIND_DEVICE_ADMIN">
+     * <meta-data android:name="android.app.device_admin"
+     *          android:resource="@xml/device_admin_sample" />
+     * <intent-filter>
+     *   <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+     * </intent-filter>
+     * </receiver>
+     * </pre>
+     * <p>
+     * The meta-data referenced here provides addition information specific to the
+     * device administrator, as parsed by the DeviceAdminInfo class. A typical file
+     * would be:
+     *
+     * @sa DeviceAdminInfo
+     * <pre>
+     * <device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+     *  <uses-policies>
+     *   <limit-password />
+     *   <watch-login />
+     *   <reset-password />
+     *   <force-lock />
+     *   <wipe-data />
+     *   <expire-password />
+     *   <encrypted-storage />
+     *   <disable-camera />
+     *   <disable-keyguard-features />
+     * </uses-policies>
+     * </device-admin>
+     * </pre>
+     * <p>
+     * <strong>Developer Guides</strong>
+     * <p>
+     * For more information about device administration, read the Device Administration developer guide.
+     *
+     * @sa Administration
+     *
+     * @implements Elastos.Droid.App.Admin.Elastos.Droid.Content.IBroadcastReceiver
+     */
+    [local]
+    interface IDeviceAdminReceiver extends Elastos.Droid.Content.IBroadcastReceiver {
+        /**
+         * This is the primary action that a device administrator must implement to be
+         * allowed to manage a device.  This will be set to the receiver
+         * when the user enables it for administration.  You will generally
+         * handle this in DeviceAdminReceiver#onEnabled(Context, Intent).  To be
+         * supported, the receiver must also require the
+         * android.Manifest.permission#BIND_DEVICE_ADMIN permission so
+         * that other applications can not abuse it.
+         *
+         * @sa DeviceAdminReceiver#onEnabled(Context, Intent)
+         * @sa rmission#BIND_DEVICE_ADMIN
+         */
+        const String ACTION_DEVICE_ADMIN_ENABLED = "android.app.action.DEVICE_ADMIN_ENABLED";
+
+        /**
+         * Action sent to a device administrator when the user has requested to
+         * disable it, but before this has actually been done.  This gives you
+         * a chance to supply a message to the user about the impact of
+         * disabling your admin, by setting the extra field
+         * #EXTRA_DISABLE_WARNING in the result Intent.  If not set,
+         * no warning will be displayed.  If set, the given text will be shown
+         * to the user before they disable your admin.
+         *
+         * @sa #EXTRA_DISABLE_WARNING
+         */
+        const String ACTION_DEVICE_ADMIN_DISABLE_REQUESTED
+                = "android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED";
+
+        /**
+         * A CharSequence that can be shown to the user informing them of the
+         * impact of disabling your admin.
+         *
+         * @see #ACTION_DEVICE_ADMIN_DISABLE_REQUESTED
+         */
+        const String EXTRA_DISABLE_WARNING = "android.app.extra.DISABLE_WARNING";
+
+        /**
+         * Action sent to a device administrator when the user has disabled
+         * it.  Upon return, the application no longer has access to the
+         * protected device policy manager APIs.  You will generally
+         * handle this in DeviceAdminReceiver#onDisabled(Context, Intent).  Note
+         * that this action will be
+         * sent the receiver regardless of whether it is explicitly listed in
+         * its intent filter.
+         *
+         * @sa DeviceAdminReceiver#onDisabled(Context, Intent)
+         */
+        const String ACTION_DEVICE_ADMIN_DISABLED = "android.app.action.DEVICE_ADMIN_DISABLED";
+
+        /**
+         * Action sent to a device administrator when the user has changed the
+         * password of their device.  You can at this point check the characteristics
+         * of the new password with DevicePolicyManager#isActivePasswordSufficient()
+         * DevicePolicyManager.isActivePasswordSufficient().
+         * You will generally
+         * handle this in DeviceAdminReceiver#onPasswordChanged.
+         *
+         * @sa DevicePolicyManager#isActivePasswordSufficient() DevicePolicyManager.isActivePasswordSufficient()
+         * @sa DeviceAdminReceiver#onPasswordChanged
+         *
+         * <p>The calling device admin must have requested
+         * DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD to receive
+         * this broadcast.
+         *
+         * @sa DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD
+         */
+        const String ACTION_PASSWORD_CHANGED = "android.app.action.ACTION_PASSWORD_CHANGED";
+
+        /**
+         * Action sent to a device administrator when the user has failed at
+         * attempted to enter the password.  You can at this point check the
+         * number of failed password attempts there have been with
+         * DevicePolicyManager#getCurrentFailedPasswordAttempts DevicePolicyManager.getCurrentFailedPasswordAttempts().  You will generally
+         * handle this in DeviceAdminReceiver#onPasswordFailed.
+         *
+         * @sa DevicePolicyManager#getCurrentFailedPasswordAttempts
+         * DevicePolicyManager.getCurrentFailedPasswordAttempts()
+         * @sa DeviceAdminReceiver#onPasswordFailed
+         *
+         * <p>The calling device admin must have requested
+         * DeviceAdminInfo#USES_POLICY_WATCH_LOGIN to receive
+         * this broadcast.
+         *
+         * @sa DeviceAdminInfo#USES_POLICY_WATCH_LOGIN
+         *
+         */
+        const String ACTION_PASSWORD_FAILED = "android.app.action.ACTION_PASSWORD_FAILED";
+
+        /**
+         * Action sent to a device administrator when the user has successfully
+         * entered their password, after failing one or more times.
+         *
+         * <p>The calling device admin must have requested
+         * DeviceAdminInfo#USES_POLICY_WATCH_LOGIN to receive
+         * this broadcast.
+         *
+         * @sa DeviceAdminInfo#USES_POLICY_WATCH_LOGIN
+         */
+        const String ACTION_PASSWORD_SUCCEEDED = "android.app.action.ACTION_PASSWORD_SUCCEEDED";
+
+        /**
+         * Action periodically sent to a device administrator when the device password
+         * is expiring.
+         *
+         * <p>The calling device admin must have requested
+         * DeviceAdminInfo#USES_POLICY_EXPIRE_PASSWORD to receive
+         * this broadcast.
+         *
+         * @sa DeviceAdminInfo#USES_POLICY_EXPIRE_PASSWORD
+         */
+        const String ACTION_PASSWORD_EXPIRING = "android.app.action.ACTION_PASSWORD_EXPIRING";
+
+        /**
+         * Name under which a DevicePolicy component publishes information
+         * about itself.  This meta-data must reference an XML resource containing
+         * a device-admin tag.  XXX TO DO: describe syntax.
+         */
+        const String DEVICE_ADMIN_META_DATA = "android.app.device_admin";
+
+        GetManager(
+            [in] IContext* ctx,
+            [out] IDevicePolicyManager** manager);
+
+        GetWho(
+            [in] IContext* ctx,
+            [out] IComponentName** component);
+
+        OnEnabled(
+            [in] IContext* ctx,
+            [in] IIntent* intent);
+
+        OnDisableRequested(
+            [in] IContext* ctx,
+            [in] IIntent* intent,
+            [out] ICharSequence** message);
+
+        OnDisabled(
+            [in] IContext* ctx,
+            [in] IIntent* intent);
+
+        OnPasswordChanged(
+            [in] IContext* ctx,
+            [in] IIntent* intent);
+
+        OnPasswordFailed(
+            [in] IContext* ctx,
+            [in] IIntent* intent);
+
+        OnPasswordSucceeded(
+            [in] IContext* ctx,
+            [in] IIntent* intent);
+
+        OnPasswordExpiring(
+            [in] IContext* ctx,
+            [in] IIntent* intent);
+    }
+
+    } // namespace Admin
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

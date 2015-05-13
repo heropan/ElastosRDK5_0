@@ -1,0 +1,41 @@
+#ifndef __STARTINGDATA_H__
+#define __STARTINGDATA_H__
+
+#include "Elastos.Droid.Server_server.h"
+
+using Elastos::Core::ICharSequence;
+using Elastos::Droid::Content::Res::ICompatibilityInfo;
+
+namespace Elastos {
+namespace Droid {
+namespace Server {
+namespace Wm {
+
+class StartingData : public ElRefBase
+{
+public:
+    StartingData(
+        /* [in] */ const String& pkg,
+        /* [in] */ Int32 theme,
+        /* [in] */ ICompatibilityInfo* compatInfo,
+        /* [in] */ ICharSequence* nonLocalizedLabel,
+        /* [in] */ Int32 labelRes,
+        /* [in] */ Int32 icon,
+        /* [in] */ Int32 windowFlags);
+
+public:
+    String mPkg;
+    Int32 mTheme;
+    AutoPtr<ICompatibilityInfo> mCompatInfo;
+    AutoPtr<ICharSequence> mNonLocalizedLabel;
+    Int32 mLabelRes;
+    Int32 mIcon;
+    Int32 mWindowFlags;
+};
+
+} // Wm
+} // Server
+} // Droid
+} // Elastos
+
+#endif //__STARTINGDATA_H__

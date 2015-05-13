@@ -1,0 +1,25 @@
+TARGET_NAME= Elastos.Droid.System
+TARGET_TYPE= eco
+
+C_DEFINES += -DHAVE_SELINUX
+C_DEFINES += -DHAVE_ANDROID_OS
+C_DEFINES += -DHAVE_PRCTL
+CAR_FLAGS += -u
+LUBE_FLAGS += -n -u
+
+IMPORTS = Elastos.Core.eco
+
+INCLUDES += $(MAKEDIR)/../../../../inc/common;
+INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/IO;
+INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Droid/System;
+
+SOURCES = Elastos.Droid.System.car
+SOURCES += CZygote.cpp
+SOURCES += Elastos.Core.cpp
+
+LIBRARIES = $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
+LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+LIBRARIES += -lm -llog -lcutils -lselinux -lstdc++ -licuuc -licui18n

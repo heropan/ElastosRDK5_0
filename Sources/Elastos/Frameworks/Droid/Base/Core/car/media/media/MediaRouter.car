@@ -1,0 +1,875 @@
+
+module
+{
+    interface Elastos.Utility.IList;
+    interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Media.IRouteGroup;
+    interface Elastos.Droid.Media.IRouteCategory;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.View.IDisplay;
+    interface Elastos.Droid.Media.IMediaRouter;
+    interface Elastos.Droid.Media.IVolumeCallback;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+    [local]
+    interface IRouteInfo {
+        /** @hide */ const Int32 STATUS_NONE = 0;
+        /** @hide */ const Int32 STATUS_SCANNING = 1;
+        /** @hide */ const Int32 STATUS_CONNECTING = 2;
+        /** @hide */ const Int32 STATUS_AVAILABLE = 3;
+        /** @hide */ const Int32 STATUS_NOT_AVAILABLE = 4;
+
+        /**
+         * The default playback type, "local", indicating the presentation of the media is happening
+         * on the same device (e.g. a phone, a tablet) as where it is controlled from.
+         * @see #setPlaybackType(int)
+         */
+        const Int32 PLAYBACK_TYPE_LOCAL = 0;
+
+        /**
+         * A playback type indicating the presentation of the media is happening on
+         * a different device (i.e. the remote device) than where it is controlled from.
+         * @see #setPlaybackType(int)
+         */
+        const Int32 PLAYBACK_TYPE_REMOTE = 1;
+
+        /**
+         * Playback information indicating the playback volume is fixed, i.e. it cannot be
+         * controlled from this object. An example of fixed playback volume is a remote player,
+         * playing over HDMI where the user prefers to control the volume on the HDMI sink, rather
+         * than attenuate at the source.
+         * @see #setVolumeHandling(int)
+         */
+        const Int32 PLAYBACK_VOLUME_FIXED = 0;
+
+        /**
+         * Playback information indicating the playback volume is variable and can be controlled
+         * from this object.
+         */
+        const Int32 PLAYBACK_VOLUME_VARIABLE = 1;
+
+        /**
+         * Set the user-visible name of this route.
+         * @param name Name to display to the user to describe this route
+         */
+        SetName(
+            [in] ICharSequence* name);
+
+        /**
+         * @return The user-friendly name of a media route. This is the string presented
+         * to users who may select this as the active route.
+         */
+        GetName(
+            [out] ICharSequence** result);
+
+        SetNameEx(
+            [in] Int32 nameResId);
+
+        /**
+         * Return the properly localized/resource selected name of this route.
+         *
+         * @param context Context used to resolve the correct configuration to load
+         * @return The user-friendly name of the media route. This is the string presented
+         * to users who may select this as the active route.
+         */
+        GetNameEx(
+            [in] IContext* ctx,
+            [out] ICharSequence** result);
+
+        /**
+         * @return The user-friendly status for a media route. This may include a description
+         * of the currently playing media, if available.
+         */
+        GetStatus(
+            [out] ICharSequence** result);
+
+        /**
+         * Set this route's status by predetermined status code. If the caller
+         * should dispatch a route changed event this call will return true;
+         */
+        SetStatusCode(
+            [in] Int32 statusCode,
+            [out] Boolean* result);
+
+        /**
+         * @hide
+         */
+        GetStatusCode(
+            [out] Int32* result);
+
+        SetSupportedTypes(
+            [in] Int32 supportedTypes);
+
+        /**
+         * @return A media type flag set describing which types this route supports.
+         */
+        GetSupportedTypes(
+            [out] Int32* result);
+
+        SetGroup(
+            [in] IRouteGroup* group);
+
+        /**
+         * @return The group that this route belongs to.
+         */
+        GetGroup(
+            [out] IRouteGroup** result);
+
+        SetCategory(
+            [in] IRouteCategory* category);
+
+        /**
+         * @return the category this route belongs to.
+         */
+        GetCategory(
+            [out] IRouteCategory** result);
+
+        /**
+         * Get the icon representing this route.
+         * This icon will be used in picker UIs if available.
+         *
+         * @return the icon representing this route or null if no icon is available
+         */
+        GetIconDrawable(
+            [out] IDrawable** result);
+
+        /**
+         * Set an application-specific tag object for this route.
+         * The application may use this to store arbitrary data associated with the
+         * route for internal tracking.
+         *
+         * <p>Note that the lifespan of a route may be well past the lifespan of
+         * an Activity or other Context; take care that objects you store here
+         * will not keep more data in memory alive than you intend.</p>
+         *
+         * @param tag Arbitrary, app-specific data for this route to hold for later use
+         */
+        SetTag(
+            [in] IInterface* tag);
+
+        /**
+         * @return The tag object previously set by the application
+         * @see #setTag(Object)
+         */
+        GetTag(
+            [out] IInterface** result);
+
+        /**
+         * @return the type of playback associated with this route
+         * @see UserRouteInfo#setPlaybackType(int)
+         */
+        GetPlaybackType(
+            [out] Int32* result);
+
+        /**
+         * @return the stream over which the playback associated with this route is performed
+         * @see UserRouteInfo#setPlaybackStream(int)
+         */
+        GetPlaybackStream(
+            [out] Int32* result);
+
+        /**
+         * Return the current volume for this route. Depending on the route, this may only
+         * be valid if the route is currently selected.
+         *
+         * @return the volume at which the playback associated with this route is performed
+         * @see UserRouteInfo#setVolume(int)
+         */
+        GetVolume(
+            [out] Int32* result);
+
+        /**
+         * Request a volume change for this route.
+         * @param volume value between 0 and getVolumeMax
+         */
+        RequestSetVolume(
+            [in] Int32 volume);
+
+        /**
+         * Request an incremental volume update for this route.
+         * @param direction Delta to apply to the current volume
+         */
+        RequestUpdateVolume(
+            [in] Int32 direction);
+
+        /**
+         * @return the maximum volume at which the playback associated with this route is performed
+         * @see UserRouteInfo#setVolumeMax(int)
+         */
+        GetVolumeMax(
+            [out] Int32* result);
+
+        /**
+         * @return how volume is handling on the route
+         * @see UserRouteInfo#setVolumeHandling(int)
+         */
+        GetVolumeHandling(
+            [out] Int32* result);
+
+        /**
+         * Gets the {@link Display} that should be used by the application to show
+         * a {@link android.app.Presentation} on an external display when this route is selected.
+         * Depending on the route, this may only be valid if the route is currently
+         * selected.
+         * <p>
+         * The preferred presentation display may change independently of the route
+         * being selected or unselected.  For example, the presentation display
+         * of the default system route may change when an external HDMI display is connected
+         * or disconnected even though the route itself has not changed.
+         * </p><p>
+         * This method may return null if there is no external display associated with
+         * the route or if the display is not ready to show UI yet.
+         * </p><p>
+         * The application should listen for changes to the presentation display
+         * using the {@link Callback#onRoutePresentationDisplayChanged} callback and
+         * show or dismiss its {@link android.app.Presentation} accordingly when the display
+         * becomes available or is removed.
+         * </p><p>
+         * This method only makes sense for {@link #ROUTE_TYPE_LIVE_VIDEO live video} routes.
+         * </p>
+         *
+         * @return The preferred presentation display to use when this route is
+         * selected or null if none.
+         *
+         * @see #ROUTE_TYPE_LIVE_VIDEO
+         * @see android.app.Presentation
+         */
+        GetPresentationDisplay(
+            [out] IDisplay** result);
+
+        /**
+         * @return true if this route is enabled and may be selected
+         */
+        IsEnabled(
+            [out] Boolean* result);
+
+        // @Override
+        ToString(
+            [out] String* result);
+
+        SetPresentationDisplay(
+            [in] IDisplay* presentationDisplay);
+
+        GetDeviceAddress(
+            [out] String* result);
+
+        SetDeviceAddress(
+            [in] String deviceAddress);
+
+        SetVolumeHandling(
+            [in] Int32 volumeHandling);
+
+        SetPlaybackType(
+            [in] Int32 playbackType);
+
+        SetEnabled(
+            [in] Boolean enabled);
+
+        GetEnabled(
+            [out] Boolean* result);
+    }
+
+    [local]
+    interface IRouteCategory {
+        /**
+         * @return the name of this route category
+         */
+        GetName(
+            [out] ICharSequence** result);
+
+        /**
+         * Return the properly localized/configuration dependent name of this RouteCategory.
+         *
+         * @param context Context to resolve name resources
+         * @return the name of this route category
+         */
+        GetNameEx(
+             [in] IContext* ctx,
+             [out] ICharSequence** result);
+
+        /**
+         * Return the current list of routes in this category that have been added
+         * to the MediaRouter.
+         *
+         * <p>This list will not include routes that are nested within RouteGroups.
+         * A RouteGroup is treated as a single route within its category.</p>
+         *
+         * @param out a List to fill with the routes in this category. If this parameter is
+         *            non-null, it will be cleared, filled with the current routes with this
+         *            category, and returned. If this parameter is null, a new List will be
+         *            allocated to report the category's current routes.
+         * @return A list with the routes in this category that have been added to the MediaRouter.
+         */
+        GetRoutes(
+            [in] IList* inList,
+            [out] IList** retList);
+
+        /**
+         * Return whether or not this category supports grouping.
+         *
+         * <p>If this method returns true, all routes obtained from this category
+         * via calls to {@link #getRouteAt(int)} will be {@link MediaRouter.RouteGroup}s.</p>
+         *
+         * @return true if this category supports
+         */
+        IsGroupable(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this is the category reserved for system routes.
+         * @hide
+         */
+        IsSystem(
+            [out] Boolean* result);
+
+        ToString(
+            [out] String* result);
+
+        SetIsSystem(
+            [in] Boolean isSystem);
+    }
+
+    [local]
+    interface ICallback {
+        /**
+         * Called when the supplied route becomes selected as the active route
+         * for the given route type.
+         *
+         * @param router the MediaRouter reporting the event
+         * @param type Type flag set indicating the routes that have been selected
+         * @param info Route that has been selected for the given route types
+         */
+        OnRouteSelected(
+            [in] IMediaRouter* router,
+            [in] Int32 type,
+            [in] IRouteInfo* info);
+
+        /**
+         * Called when the supplied route becomes unselected as the active route
+         * for the given route type.
+         *
+         * @param router the MediaRouter reporting the event
+         * @param type Type flag set indicating the routes that have been unselected
+         * @param info Route that has been unselected for the given route types
+         */
+        OnRouteUnselected(
+            [in] IMediaRouter* router,
+            [in] Int32 type,
+            [in] IRouteInfo* info);
+
+        /**
+         * Called when a route for the specified type was added.
+         *
+         * @param router the MediaRouter reporting the event
+         * @param info Route that has become available for use
+         */
+        OnRouteAdded(
+            [in] IMediaRouter* router,
+            [in] IRouteInfo* info);
+
+        /**
+         * Called when a route for the specified type was removed.
+         *
+         * @param router the MediaRouter reporting the event
+         * @param info Route that has been removed from availability
+         */
+        OnRouteRemoved(
+            [in] IMediaRouter* router,
+            [in] IRouteInfo* info);
+
+        /**
+         * Called when an aspect of the indicated route has changed.
+         *
+         * <p>This will not indicate that the types supported by this route have
+         * changed, only that cosmetic info such as name or status have been updated.</p>
+         *
+         * @param router the MediaRouter reporting the event
+         * @param info The route that was changed
+         */
+        OnRouteChanged(
+            [in] IMediaRouter* router,
+            [in] IRouteInfo* info);
+
+        /**
+         * Called when a route is added to a group.
+         *
+         * @param router the MediaRouter reporting the event
+         * @param info The route that was added
+         * @param group The group the route was added to
+         * @param index The route index within group that info was added at
+         */
+        OnRouteGrouped(
+            [in] IMediaRouter* router,
+            [in] IRouteInfo* info,
+            [in] IRouteGroup* group,
+            [in] Int32 index);
+
+        /**
+         * Called when a route is removed from a group.
+         *
+         * @param router the MediaRouter reporting the event
+         * @param info The route that was removed
+         * @param group The group the route was removed from
+         */
+        OnRouteUngrouped(
+            [in] IMediaRouter* router,
+            [in] IRouteInfo* info,
+            [in] IRouteGroup* group);
+
+        /**
+         * Called when a route's volume changes.
+         *
+         * @param router the MediaRouter reporting the event
+         * @param info The route with altered volume
+         */
+        OnRouteVolumeChanged(
+            [in] IMediaRouter* router,
+            [in] IRouteInfo* info);
+
+        /**
+         * Called when a route's presentation display changes.
+         * <p>
+         * This method is called whenever the route's presentation display becomes
+         * available, is removes or has changes to some of its properties (such as its size).
+         * </p>
+         *
+         * @param router the MediaRouter reporting the event
+         * @param info The route whose presentation display changed
+         *
+         * @see RouteInfo#getPresentationDisplay()
+         */
+        OnRoutePresentationDisplayChanged(
+            [in] IMediaRouter* router,
+            [in] IRouteInfo* info);
+    }
+
+    [local]
+    interface IUserRouteInfo extends IRouteInfo {
+
+        /**
+         * Set the current user-visible status for this route.
+         * @param status Status to display to the user to describe what the endpoint
+         * of this route is currently doing
+         */
+        SetStatus(
+            [in] ICharSequence* status);
+
+        /**
+         * Set the RemoteControlClient responsible for reporting playback info for this
+         * user route.
+         *
+         * <p>If this route manages remote playback, the data exposed by this
+         * RemoteControlClient will be used to reflect and update information
+         * such as route volume info in related UIs.</p>
+         *
+         * <p>The RemoteControlClient must have been previously registered with
+         * {@link AudioManager#registerRemoteControlClient(RemoteControlClient)}.</p>
+         *
+         * @param rcc RemoteControlClient associated with this route
+         */
+        SetRemoteControlClient(
+            [in] IRemoteControlClient* rcc);
+
+        /**
+         * Retrieve the RemoteControlClient associated with this route, if one has been set.
+         *
+         * @return the RemoteControlClient associated with this route
+         * @see #setRemoteControlClient(RemoteControlClient)
+         */
+        GetRemoteControlClient(
+            [out] IRemoteControlClient** result);
+
+        /**
+         * Set an icon that will be used to represent this route.
+         * The system may use this icon in picker UIs or similar.
+         *
+         * @param icon icon drawable to use to represent this route
+         */
+        SetIconDrawable(
+            [in] IDrawable* icon);
+
+        /**
+         * Set an icon that will be used to represent this route.
+         * The system may use this icon in picker UIs or similar.
+         *
+         * @param resId Resource ID of an icon drawable to use to represent this route
+         */
+        SetIconResource(
+            [in] Int32 resId);
+
+        /**
+         * Set a callback to be notified of volume update requests
+         * @param vcb
+         */
+        SetVolumeCallback(
+            [in] IVolumeCallback* vcb);
+
+        /**
+         * Defines whether playback associated with this route is "local"
+         *    ({@link RouteInfo#PLAYBACK_TYPE_LOCAL}) or "remote"
+         *    ({@link RouteInfo#PLAYBACK_TYPE_REMOTE}).
+         * @param type
+         */
+        // SetPlaybackType(
+        //     [in] Int32 type);
+
+        /**
+         * Defines whether volume for the playback associated with this route is fixed
+         * ({@link RouteInfo#PLAYBACK_VOLUME_FIXED}) or can modified
+         * ({@link RouteInfo#PLAYBACK_VOLUME_VARIABLE}).
+         * @param volumeHandling
+         */
+        // SetVolumeHandling(
+        //     [in] Int32 volumeHandling);
+
+        /**
+         * Defines at what volume the playback associated with this route is performed (for user
+         * feedback purposes). This information is only used when the playback is not local.
+         * @param volume
+         */
+        SetVolume(
+            [in] Int32 volume);
+
+        /**
+         * Defines the maximum volume at which the playback associated with this route is performed
+         * (for user feedback purposes). This information is only used when the playback is not
+         * local.
+         * @param volumeMax
+         */
+        SetVolumeMax(
+            [in] Int32 volumeMax);
+
+        /**
+         * Defines over what stream type the media is presented.
+         * @param stream
+         */
+        SetPlaybackStream(
+            [in] Int32 stream);
+    }
+
+    [local]
+    interface IRouteGroup extends IRouteInfo {
+        /**
+         * Add a route to this group. The route must not currently belong to another group.
+         *
+         * @param route route to add to this group
+         */
+        AddRoute(
+            [in] IRouteInfo* route);
+
+        /**
+         * Add a route to this group before the specified index.
+         *
+         * @param route route to add
+         * @param insertAt insert the new route before this index
+         */
+        AddRouteEx(
+            [in] IRouteInfo* route,
+            [in] Int32 insertAt);
+
+        /**
+         * Remove a route from this group.
+         *
+         * @param route route to remove
+         */
+        RemoveRoute(
+            [in] IRouteInfo* route);
+
+        /**
+         * Remove the route at the specified index from this group.
+         *
+         * @param index index of the route to remove
+         */
+        RemoveRouteEx(
+            [in] Int32 index);
+
+        /**
+         * @return The number of routes in this group
+         */
+        GetRouteCount(
+            [out] Int32* result);
+
+        /**
+         * Return the route in this group at the specified index
+         *
+         * @param index Index to fetch
+         * @return The route at index
+         */
+        GetRouteAt(
+            [in] Int32 index,
+            [out] IRouteInfo** result);
+
+        /**
+         * Set an icon that will be used to represent this group.
+         * The system may use this icon in picker UIs or similar.
+         *
+         * @param icon icon drawable to use to represent this group
+         */
+        SetIconDrawable(
+            [in] IDrawable* icon);
+
+        /**
+         * Set an icon that will be used to represent this group.
+         * The system may use this icon in picker UIs or similar.
+         *
+         * @param resId Resource ID of an icon drawable to use to represent this group
+         */
+        SetIconResource(
+            [in] Int32 resId);
+
+        MemberStatusChanged(
+            [in] IRouteInfo* info,
+            [in] ICharSequence* status);
+    }
+
+    [local]
+    interface IVolumeCallback {
+        /**
+         * Called when the volume for the route should be increased or decreased.
+         * @param info the route affected by this event
+         * @param direction an integer indicating whether the volume is to be increased
+         *     (positive value) or decreased (negative value).
+         *     For bundled changes, the absolute value indicates the number of changes
+         *     in the same direction, e.g. +3 corresponds to three "volume up" changes.
+         */
+        OnVolumeUpdateRequest(
+            [in] IRouteInfo* info,
+            [in] Int32 direction);
+
+        /**
+         * Called when the volume for the route should be set to the given value
+         * @param info the route affected by this event
+         * @param volume an integer indicating the new volume value that should be used, always
+         *     between 0 and the value set by {@link UserRouteInfo#setVolumeMax(int)}.
+         */
+        OnVolumeSetRequest(
+            [in] IRouteInfo* info,
+            [in] Int32 volume);
+    }
+
+    [local]
+    interface IMediaRouter {
+        /**
+         * Route type flag for live audio.
+         *
+         * <p>A device that supports live audio routing will allow the media audio stream
+         * to be routed to supported destinations. This can include internal speakers or
+         * audio jacks on the device itself, A2DP devices, and more.</p>
+         *
+         * <p>Once initiated this routing is transparent to the application. All audio
+         * played on the media stream will be routed to the selected destination.</p>
+         */
+        const Int32 ROUTE_TYPE_LIVE_AUDIO = 0x1;
+
+        /**
+         * Route type flag for live video.
+         *
+         * <p>A device that supports live video routing will allow a mirrored version
+         * of the device's primary display or a customized
+         * {@link android.app.Presentation Presentation} to be routed to supported destinations.</p>
+         *
+         * <p>Once initiated, display mirroring is transparent to the application.
+         * While remote routing is active the application may use a
+         * {@link android.app.Presentation Presentation} to replace the mirrored view
+         * on the external display with different content.</p>
+         *
+         * @see RouteInfo#getPresentationDisplay()
+         * @see android.app.Presentation
+         */
+        const Int32 ROUTE_TYPE_LIVE_VIDEO = 0x2;
+
+        /**
+         * Route type flag for application-specific usage.
+         *
+         * <p>Unlike other media route types, user routes are managed by the application.
+         * The MediaRouter will manage and dispatch events for user routes, but the application
+         * is expected to interpret the meaning of these events and perform the requested
+         * routing tasks.</p>
+         */
+        const Int32 ROUTE_TYPE_USER = 0x00800000;
+
+        /**
+         * @hide for use by framework routing UI
+         */
+        GetSystemAudioRoute(
+            [out] IRouteInfo** result);
+
+        /**
+         * @hide for use by framework routing UI
+         */
+        GetSystemAudioCategory(
+            [out] IRouteCategory** result);
+
+        /**
+         * Return the currently selected route for the given types
+         *
+         * @param type route types
+         * @return the selected route
+         */
+        GetSelectedRoute(
+            [in] Int32 type,
+            [out] IRouteInfo** result);
+
+        /**
+         * Add a callback to listen to events about specific kinds of media routes.
+         * If the specified callback is already registered, its registration will be updated for any
+         * additional route types specified.
+         *
+         * @param types Types of routes this callback is interested in
+         * @param cb Callback to add
+         */
+        AddCallback(
+            [in] Int32 types,
+            [in] ICallback* cb);
+
+        /**
+         * Remove the specified callback. It will no longer receive events about media routing.
+         *
+         * @param cb Callback to remove
+         */
+        RemoveCallback(
+            [in] ICallback* cb);
+
+        /**
+         * Select the specified route to use for output of the given media types.
+         *
+         * @param types type flags indicating which types this route should be used for.
+         *              The route must support at least a subset.
+         * @param route Route to select
+         */
+        SelectRoute(
+            [in] Int32 types,
+            [in] IRouteInfo* route);
+
+        /**
+         * @hide internal use
+         */
+        SelectRouteInt(
+            [in] Int32 types,
+            [in] IRouteInfo* route);
+
+        /**
+         * Add an app-specified route for media to the MediaRouter.
+         * App-specified route definitions are created using {@link #createUserRoute(RouteCategory)}
+         *
+         * @param info Definition of the route to add
+         * @see #createUserRoute()
+         * @see #removeUserRoute(UserRouteInfo)
+         */
+        AddUserRoute(
+            [in] IUserRouteInfo* info);
+
+        /**
+         * @hide Framework use only
+         */
+        AddRouteInt(
+            [in] IRouteInfo* info);
+
+        /**
+         * Remove an app-specified route for media from the MediaRouter.
+         *
+         * @param info Definition of the route to remove
+         * @see #addUserRoute(UserRouteInfo)
+         */
+        RemoveUserRoute(
+            [in] IUserRouteInfo* info);
+
+        /**
+         * Remove all app-specified routes from the MediaRouter.
+         *
+         * @see #removeUserRoute(UserRouteInfo)
+         */
+        ClearUserRoutes();
+
+        /**
+         * @hide internal use only
+         */
+        RemoveRouteInt32(
+            [in] IRouteInfo* info);
+
+        /**
+         * Return the number of {@link MediaRouter.RouteCategory categories} currently
+         * represented by routes known to this MediaRouter.
+         *
+         * @return the number of unique categories represented by this MediaRouter's known routes
+         */
+        GetCategoryCount(
+            [out] Int32* result);
+
+        /**
+         * Return the {@link MediaRouter.RouteCategory category} at the given index.
+         * Valid indices are in the range [0-getCategoryCount).
+         *
+         * @param index which category to return
+         * @return the category at index
+         */
+        GetCategoryAt(
+            [in] Int32 index,
+            [out] IRouteCategory** result);
+
+        /**
+         * Return the number of {@link MediaRouter.RouteInfo routes} currently known
+         * to this MediaRouter.
+         *
+         * @return the number of routes tracked by this router
+         */
+        GetRouteCount(
+            [out] Int32* result);
+
+        /**
+         * Return the route at the specified index.
+         *
+         * @param index index of the route to return
+         * @return the route at index
+         */
+        GetRouteAt(
+            [in] Int32 index,
+            [out] IRouteInfo** result);
+
+        /**
+         * Create a new user route that may be modified and registered for use by the application.
+         *
+         * @param category The category the new route will belong to
+         * @return A new UserRouteInfo for use by the application
+         *
+         * @see #addUserRoute(UserRouteInfo)
+         * @see #removeUserRoute(UserRouteInfo)
+         * @see #createRouteCategory(CharSequence)
+         */
+        CreateUserRoute(
+            [in] IRouteCategory* category,
+            [out] IUserRouteInfo** result);
+
+        /**
+         * Create a new route category. Each route must belong to a category.
+         *
+         * @param name Name of the new category
+         * @param isGroupable true if routes in this category may be grouped with one another
+         * @return the new RouteCategory
+         */
+        CreateRouteCategory(
+            [in] ICharSequence* name,
+            [in] Boolean isGroupable,
+            [out] IRouteCategory** result);
+
+        /**
+         * Create a new route category. Each route must belong to a category.
+         *
+         * @param nameResId Resource ID of the name of the new category
+         * @param isGroupable true if routes in this category may be grouped with one another
+         * @return the new RouteCategory
+         */
+        CreateRouteCategoryEx(
+            [in] Int32 nameResId,
+            [in] Boolean isGroupable,
+            [out] IRouteCategory** result);
+    }
+
+    } // namespace Media
+    } // namepsace Droid
+    } // namespace Elastos
+}

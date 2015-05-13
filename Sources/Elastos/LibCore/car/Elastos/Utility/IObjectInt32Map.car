@@ -1,0 +1,39 @@
+
+module
+{
+    namespace Elastos{
+    namespace Utility{
+
+    interface IObjectInt32Map {
+        ContainsKey(
+            [in] Int32 key,
+            [out] Boolean* result);
+
+        Get(
+            [in] Int32 key,
+            [out] IInterface** value);
+
+        Put(
+            [in] Int32 key,
+            [in] IInterface* value);
+
+        Remove(
+            [in] Int32 key);
+
+        GetSize(
+            [out] Int32* size);
+
+        GetKeys(
+            [out, callee] ArrayOf<Int32>* keys);
+
+        GetValues(
+            [out] IObjectContainer** values);
+
+        GetAllItems(
+            [out, callee] ArrayOf<Int32>* keys,
+            [out] IObjectContainer** values);
+    }
+
+    } // namespace Utility
+    } // namespace Elastos
+}

@@ -1,0 +1,13 @@
+$;;=========================================================================
+$;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
+$;;=========================================================================
+$
+$INPUT module
+$
+$
+$WITH all classes DO
+$	IF type is not "generic" and type is not "sink" and type is not "clsobj"
+$           TEMPLATE "a2cforeh.lub"
+$           TEMPLATE "a2cforecpp.lub"
+$   END IF
+$END DO

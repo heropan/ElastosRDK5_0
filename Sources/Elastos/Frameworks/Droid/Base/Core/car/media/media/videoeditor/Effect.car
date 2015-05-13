@@ -1,0 +1,77 @@
+module
+{
+    interface Elastos.Droid.Media.Videoeditor.IMediaItem;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+    namespace Videoeditor {
+
+    interface IEffect {
+        /**
+         * Get the id of the effect.
+         *
+         * @return The id of the effect
+         */
+        GetId(
+            [out] String* result);
+
+        /**
+         * Set the duration of the effect. If a preview or export is in progress,
+         * then this change is effective for next preview or export session.
+         *
+         * @param durationMs of the effect in milliseconds
+         */
+        SetDuration(
+            [in] Int64 durationMs);
+
+        /**
+         * Get the duration of the effect
+         *
+         * @return The duration of the effect in milliseconds
+         */
+        GetDuration(
+            [out] Int64* result);
+
+        /**
+         * Set start time of the effect. If a preview or export is in progress, then
+         * this change is effective for next preview or export session.
+         *
+         * @param startTimeMs The start time of the effect relative to the beginning
+         *            of the media item in milliseconds
+         */
+        SetStartTime(
+            [in] Int64 startTimeMs);
+
+        /**
+         * Get the start time of the effect
+         *
+         * @return The start time in milliseconds
+         */
+        GetStartTime(
+            [out] Int64* result);
+
+        /**
+         * Set the start time and duration
+         *
+         * @param startTimeMs start time in milliseconds
+         * @param durationMs The duration in milliseconds
+         */
+        SetStartTimeAndDuration(
+            [in] Int64 startTimeMs,
+            [in] Int64 durationMs);
+
+        /**
+         * Get the media item owner.
+         *
+         * @return The media item owner
+         */
+        GetMediaItem(
+            [out] IMediaItem** result);
+
+    }
+    } // namespace videoeditor
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
+}

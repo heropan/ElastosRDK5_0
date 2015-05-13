@@ -1,0 +1,143 @@
+
+module
+{
+    interface Libcore.ICU.ILocale;
+
+    namespace Libcore {
+    namespace ICU {
+
+    interface IICUHelper {
+        /**
+         * Returns an array of ISO language names (two-letter codes), fetched either
+         * from ICU's database or from our memory cache.
+         *
+         * @return The array.
+         */
+        GetISOLanguages(
+            [out, callee] ArrayOf<String>* languages);
+
+        /**
+         * Returns an array of ISO country names (two-letter codes), fetched either
+         * from ICU's database or from our memory cache.
+         *
+         * @return The array.
+         */
+        GetISOCountries(
+            [out, callee] ArrayOf<String>* countries);
+
+        /**
+         * Returns the appropriate {Locale} given a {String} of the form returned
+         * by {toString}. This is very lenient, and doesn't care what's between the underscores:
+         * this method can parse strings that {Locale.toString} won't produce.
+         * Used to remove duplication.
+         */
+        LocaleFromString(
+            [in] String localeName,
+            [out] ILocale** locale);
+
+        LocalesFromStrings(
+            [in] ArrayOf<String> localeNames,
+            [out, callee] ArrayOf<ILocale*>* locales);
+
+        GetAvailableLocales(
+            [out, callee] ArrayOf<ILocale*>* locales);
+
+        GetAvailableBreakIteratorLocales(
+            [out, callee] ArrayOf<ILocale*>* locales);
+
+        GetAvailableCalendarLocales(
+            [out, callee] ArrayOf<ILocale*>* locales);
+
+        GetAvailableCollatorLocales(
+            [out, callee] ArrayOf<ILocale*>* locales);
+
+        GetAvailableDateFormatLocales(
+            [out, callee] ArrayOf<ILocale*>* locales);
+
+        GetAvailableDateFormatSymbolsLocales(
+            [out, callee] ArrayOf<ILocale*>* locales);
+
+        GetAvailableDecimalFormatSymbolsLocales(
+            [out, callee] ArrayOf<ILocale*>* locales);
+
+        GetAvailableNumberFormatLocales(
+            [out, callee] ArrayOf<ILocale*>* locales);
+
+        /**
+         * Returns the ICU version in use. This is "4.4" for gingerbread, for example.
+         */
+        GetIcuVersion(
+            [out] String* icuVersion);
+
+        /**
+         * Returns the Unicode version our ICU supports. This is "5.2" for gingerbread, for example.
+         */
+        GetUnicodeVersion(
+            [out] String* unicodeVersion);
+
+        ToLowerCase(
+            [in] String s,
+            [in] String localname,
+            [out] String* ls);
+
+        ToUpperCase(
+            [in] String s,
+            [in] String localname,
+            [out] String* us);
+
+        GetAvailableCurrencyCodes(
+            [out, callee] ArrayOf<String>* codes);
+
+        GetCurrencyCode(
+            [in] String locale,
+            [out] String* currencyCode);
+
+        GetCurrencyDisplayName(
+            [in] String locale,
+            [in] String currencyCode,
+            [out] String* displayName);
+
+        GetCurrencyFractionDigits(
+            [in] String currencyCode,
+            [out] Int32* currencyFractionDigits);
+
+        GetCurrencySymbol(
+            [in] String locale,
+            [in] String currencyCode,
+            [out] String* currencySymbol);
+
+        GetDisplayCountry(
+            [in] String countryCode,
+            [in] String locale,
+            [out] String* displayCountry);
+
+        GetDisplayLanguage(
+            [in] String languageCode,
+            [in] String locale,
+            [out] String* displayLanguage);
+
+        GetDisplayVariant(
+            [in] String variantCode,
+            [in] String locale,
+            [out] String* displayVariant);
+
+        GetISO3Country(
+            [in] String locale,
+            [out] String* ISO3country);
+
+        GetISO3Language(
+            [in] String locale,
+            [out] String* ISO3Language);
+
+        AddLikelySubtags(
+            [in] String locale,
+            [out] String* result);
+
+        GetScript(
+            [in] String locale,
+            [out] String* script);
+    }
+
+    } // IO
+    } // namespace LibCore
+}

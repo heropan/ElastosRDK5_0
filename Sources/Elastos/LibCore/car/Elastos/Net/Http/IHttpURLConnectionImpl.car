@@ -1,0 +1,49 @@
+
+module
+{
+    using interface Elastos.Net.IHttpURLConnection;
+    using interface Elastos.Net.IProxy;
+
+    namespace Elastos {
+    namespace Net {
+    namespace Http {
+
+    interface IHttpURLConnectionImpl extends Elastos.Net.IHttpURLConnection {
+        GetHttpEngine(
+            [out] IHttpEngine** he);
+
+        /**
+         * React to a failed authorization response by looking up new credentials.
+         *
+         * @return true if credentials have been added to successorRequestHeaders
+         *     and another request should be attempted.
+         */
+        ProcessAuthHeader(
+            [in] Int32 responseCode,
+            [in] IResponseHeaders* response,
+            [in] IRawHeaders* successorRequestHeaders,
+            [out] Boolean* value);
+
+        GetDefaultPort(
+            [out] Int32* value);
+
+        /** @see HttpURLConnection#setFixedLengthStreamingMode(int) */
+        GetFixedContentLength(
+            [out] Int32* value);
+
+        /** @see HttpURLConnection#setChunkedStreamingMode(int) */
+        GetChunkLength(
+            [out] Int32* value);
+
+        GetProxy(
+            [out] IProxy** pro);
+
+        SetProxy(
+            [in] IProxy* proxy);
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Elastos
+
+}

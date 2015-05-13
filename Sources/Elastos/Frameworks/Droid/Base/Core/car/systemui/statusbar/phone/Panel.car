@@ -1,0 +1,131 @@
+module
+{
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IMotionEvent;
+
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Phone {
+
+    interface IPanelView;
+    interface IPanelHolder;
+
+    interface IPanelBar extends Elastos.Droid.Widget.IFrameLayout {
+        const Int32 STATE_CLOSED    = 0;
+        const Int32 STATE_OPENING   = 1;
+        const Int32 STATE_OPEN      = 2;
+
+        Go(
+            [in] Int32 state);
+
+        AddPanel(
+            [in] IPanelView* pv);
+
+        SetPanelHolder(
+            [in] IPanelHolder* ph);
+
+        GetBarHeight(
+            [out] Float* height);
+
+        SelectPanelForTouch(
+            [in] IMotionEvent* touch,
+            [out] IPanelView** view);
+
+        PanelsEnabled(
+            [out] Boolean* enabled);
+
+        // called from PanelView when self-expanding, too
+        StartOpeningPanel(
+            [in] IPanelView* pv);
+
+        PanelExpansionChanged(
+            [in] IPanelView* pv,
+            [in] Float frac);
+
+        CollapseAllPanels(
+            [in] Boolean animate);
+
+        OnPanelPeeked();
+
+        OnAllPanelsCollapsed();
+
+        OnPanelFullyOpened(
+            [in] IPanelView* openPanel);
+
+        OnTrackingStarted(
+            [in] IPanelView* panel);
+
+        OnTrackingStopped(
+            [in] IPanelView* panel);
+    }
+
+    interface IPanelView extends Elastos.Droid.Widget.IFrameLayout {
+        const Boolean BRAKES = FALSE;
+
+        SetRubberbandingEnabled(
+            [in] Boolean enabled);
+
+        Fling(
+            [in] Float vel,
+            [in] Boolean always);
+
+        GetName(
+            [out] String* name);
+
+        SetExpandedHeight(
+            [in] Float height);
+
+        SetExpandedHeightInternal(
+            [in] Float h);
+
+        GetHandle(
+            [out] IView** view);
+
+        SetExpandedFraction(
+            [in] Float frac);
+
+        GetExpandedHeight(
+            [out] Float* height);
+
+        GetExpandedFraction(
+            [out] Float* fraction);
+
+        IsFullyExpanded(
+            [out] Boolean* isFullyExpanded);
+
+        IsFullyCollapsed(
+            [out] Boolean* isFullyCollapsed);
+
+        IsCollapsing(
+            [out] Boolean* isCollapsing);
+
+        SetBar(
+            [in] IPanelBar* panelBar);
+
+        Collapse();
+
+        Expand();
+    }
+
+    interface IPanelHolder extends Elastos.Droid.Widget.IFrameLayout {
+
+        GetPanelIndex(
+            [in] IPanelView* pv,
+            [out] Int32* index);
+
+        SetSelectedPanel(
+            [in] IPanelView* pv);
+
+        SetBar(
+            [in] IPanelBar* panelBar);
+    }
+
+    } // namespace Phone
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

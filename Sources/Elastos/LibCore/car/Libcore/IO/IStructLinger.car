@@ -1,0 +1,25 @@
+
+module
+{
+    namespace Libcore {
+    namespace IO {
+
+    /**
+     * Corresponds to C's {@code struct linger} from
+     * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_socket.h.html">&lt;sys/socket.h&gt;</a>
+     */
+    interface IStructLinger {
+        /** Whether or not linger is enabled. Non-zero is on. */
+        GetOnoff(
+            [out] Int32* onoff);
+
+        GetLinger(
+            [out] Int32* linger);
+
+        IsOn(
+            [out] Boolean* isOn);
+    }
+
+    } // namespace IO
+    } // namespace Libcore
+}

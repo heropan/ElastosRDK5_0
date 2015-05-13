@@ -1,0 +1,115 @@
+
+module
+{
+    using interface Elastos.Core.ICharSequence;
+
+    interface Elastos.Droid.Text.ILayout;
+    interface Elastos.Droid.Text.ILayoutHelper;
+    interface Elastos.Droid.Text.ITextPaint;
+    interface Elastos.Droid.Text.ITextDirectionHeuristic;
+    enum Elastos.Droid.Text.LayoutAlignment;
+    enum Elastos.Droid.Text.TextUtilsTruncateAt;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+
+    interface IBoringLayoutMetrics extends Elastos.Droid.Graphics.IPaintFontMetricsInt {
+        GetWidth(
+            [out] Int32* width);
+
+        SetWidth(
+            [in] Int32 width);
+    }
+
+    interface IBoringLayout extends ILayout {
+
+        /**
+         * Returns a BoringLayout for the specified text, potentially reusing
+         * this one if it is already suitable.  The caller must make sure that
+         * no one is still using this Layout.
+         */
+        ReplaceOrMake(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] IBoringLayoutMetrics* metrics,
+            [in] Boolean includepad,
+            [out] IBoringLayout** layout);
+
+        /**
+         * Returns a BoringLayout for the specified text, potentially reusing
+         * this one if it is already suitable.  The caller must make sure that
+         * no one is still using this Layout.
+         */
+        ReplaceOrMakeEx(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] IBoringLayoutMetrics* metrics,
+            [in] Boolean includepad,
+            [in] TextUtilsTruncateAt ellipsize,
+            [in] Int32 ellipsizedWidth,
+            [out] IBoringLayout** layout);
+    }
+
+    interface IBoringLayoutHelper extends ILayoutHelper {
+        Make(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] IBoringLayoutMetrics* metrics,
+            [in] Boolean includepad,
+            [out] IBoringLayout** ret);
+
+        MakeEx(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] IBoringLayoutMetrics* metrics,
+            [in] Boolean includepad,
+            [in] TextUtilsTruncateAt ellipsize,
+            [in] Int32 ellipsizedWidth,
+            [out] IBoringLayout** ret);
+
+        IsBoring(
+            [in] ICharSequence* text,
+            [in] ITextPaint* paint,
+            [out] IBoringLayoutMetrics** ret);
+
+        IsBoringEx(
+            [in] ICharSequence* text,
+            [in] ITextPaint* paint,
+            [in] ITextDirectionHeuristic* textDir,
+            [out] IBoringLayoutMetrics** ret);
+
+        IsBoringEx2(
+            [in] ICharSequence* text,
+            [in] ITextPaint* paint,
+            [in] IBoringLayoutMetrics* metrics,
+            [out] IBoringLayoutMetrics** ret);
+
+        IsBoringEx3(
+            [in] ICharSequence* text,
+            [in] ITextPaint* paint,
+            [in] ITextDirectionHeuristic* textDir,
+            [in] IBoringLayoutMetrics* metrics,
+            [out] IBoringLayoutMetrics** ret);
+    }
+
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
+}

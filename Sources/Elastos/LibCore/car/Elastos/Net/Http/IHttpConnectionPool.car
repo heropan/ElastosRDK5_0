@@ -1,0 +1,38 @@
+
+module
+{
+    interface Elastos.Utility.IObjectContainer;
+
+    namespace Elastos {
+    namespace Net {
+    namespace Http {
+
+    /**
+     * A pool of HTTP connections. This class exposes its tuning parameters as
+     * system properties:
+     * <ul>
+     *   <li>{@code http.keepAlive} true if HTTP connections should be pooled at
+     *       all. Default is true.
+     *   <li>{@code http.maxConnections} maximum number of connections to each URI.
+     *       Default is 5.
+     * </ul>
+     *
+     * <p>This class <i>doesn't</i> adjust its configuration as system properties
+     * are changed. This assumes that the applications that set these parameters do
+     * so before making HTTP connections, and that this class is initialized lazily.
+     */
+    interface IHttpConnectionPool {
+        Get(
+            [in] IHttpConnectionAddress* address,
+            [in] Int32 connectTimeout,
+            [out] IHttpConnection** hc);
+
+        Recycle(
+            [in] IHttpConnection* connection);
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Elastos
+
+}

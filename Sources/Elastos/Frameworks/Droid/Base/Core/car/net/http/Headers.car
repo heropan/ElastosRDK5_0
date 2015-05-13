@@ -1,0 +1,183 @@
+module
+{
+    interface Org.Apache.Http.Util.ICharArrayBuffer;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+    namespace Http {
+
+    interface IHeaderCallback;
+
+    interface IHeaders {
+        // header parsing constant
+        /**
+         * indicate HTTP 1.0 connection close after the response
+         */
+        const Int32 CONN_CLOSE = 1;
+
+        /**
+         * indicate HTTP 1.1 connection keep alive
+         */
+        const Int32 CONN_KEEP_ALIVE = 2;
+
+        // initial values.
+        const Int32 NO_CONN_TYPE = 0;
+
+        const Int64 NO_TRANSFER_ENCODING = 0;
+
+        const Int64 NO_CONTENT_LENGTH = -1;
+
+        // header strings
+        const String TRANSFER_ENCODING = "transfer-encoding";
+
+        const String CONTENT_LEN = "content-length";
+
+        const String CONTENT_TYPE = "content-type";
+
+        const String CONTENT_ENCODING = "content-encoding";
+
+        const String CONN_DIRECTIVE = "connection";
+
+        const String LOCATION = "location";
+
+        const String PROXY_CONNECTION = "proxy-connection";
+
+        const String WWW_AUTHENTICATE = "www-authenticate";
+
+        const String PROXY_AUTHENTICATE = "proxy-authenticate";
+
+        const String CONTENT_DISPOSITION = "content-disposition";
+
+        const String ACCEPT_RANGES = "accept-ranges";
+
+        const String EXPIRES = "expires";
+
+        const String CACHE_CONTROL = "cache-control";
+
+        const String LAST_MODIFIED = "last-modified";
+
+        const String ETAG = "etag";
+
+        const String SET_COOKIE = "set-cookie";
+
+        const String PRAGMA = "pragma";
+
+        const String REFRESH = "refresh";
+
+        const String X_PERMITTED_CROSS_DOMAIN_POLICIES = "x-permitted-cross-domain-policies";
+
+        ParseHeader(
+            [in] ICharArrayBuffer* buffer);
+
+        GetTransferEncoding(
+            [out] Int64* encoding);
+
+        GetContentLength(
+            [out] Int64* length);
+
+        GetConnectionType(
+            [out] Int32* type);
+
+        GetContentType(
+            [out] String* type);
+
+        GetContentEncoding(
+            [out] String* encoding);
+
+        GetLocation(
+            [out] String* location);
+
+        GetWwwAuthenticate(
+            [out] String* authenticate);
+
+        GetProxyAuthenticate(
+            [out] String* authenticate);
+
+        GetContentDisposition(
+            [out] String* disposition);
+
+        GetAcceptRanges(
+            [out] String* ranges);
+
+        GetExpires(
+            [out] String* expires);
+
+        GetCacheControl(
+            [out] String* control);
+
+        GetLastModified(
+            [out] String* modified);
+
+        GetEtag(
+            [out] String* etag);
+
+        GetSetCookie(
+            [out] IObjectContainer** cookie);
+
+        GetPragma(
+            [out] String* sPragma);
+
+        GetRefresh(
+            [out] String* refresh);
+
+        GetXPermittedCrossDomainPolicies(
+            [out] String* policies);
+
+        SetContentLength(
+            [in] Int64 length);
+
+        SetContentType(
+            [in] String type);
+
+        SetContentEncoding(
+            [in] String encoding);
+
+        SetLocation(
+            [in] String location);
+
+        SetWwwAuthenticate(
+            [in] String authenticate);
+
+        SetProxyAuthenticate(
+            [in] String authenticate);
+
+        SetContentDisposition(
+            [in] String disposition);
+
+        SetAcceptRanges(
+            [in] String ranges);
+
+        SetExpires(
+            [in] String expires);
+
+        SetCacheControl(
+            [in] String control);
+
+        SetLastModified(
+            [in] String modified);
+
+        SetEtag(
+            [in] String etage);
+
+        SetXPermittedCrossDomainPolicies(
+            [in] String policies);
+
+        /**
+         * Reports all non-null headers to the callback
+         */
+        GetHeaders(
+            [out] IHeaderCallback** hcb);
+    }
+
+    interface IHeaderCallback {
+        Header(
+            [in] String name,
+            [in] String value);
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
+}

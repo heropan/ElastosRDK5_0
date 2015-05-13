@@ -1,0 +1,34 @@
+module
+{
+    interface Elastos.Droid.View.IMotionEvent;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Policy {
+
+    interface IDeadZone extends Elastos.Droid.View.IView {
+
+        const Int32 HORIZONTAL  = 0;
+        const Int32 VERTICAL    = 1;
+
+        SetFlashOnTouchCapture(
+            [in] Boolean dbg);
+
+        Poke(
+            [in] IMotionEvent* event);
+
+        SetFlash(
+            [in] Float f);
+
+        GetFlash(
+            [out] Float* f);
+    }
+
+    } // namespace Policy
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

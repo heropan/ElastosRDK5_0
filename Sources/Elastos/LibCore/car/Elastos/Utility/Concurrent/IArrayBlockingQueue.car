@@ -1,0 +1,14 @@
+
+module
+{
+    namespace Elastos {
+    namespace Utility {
+    namespace Concurrent {
+
+    interface IArrayBlockingQueue extends IBlockingQueue {
+    }
+
+    } // namespace Concurrent
+    } // namespace Utility
+    } // namespace Elastos
+}

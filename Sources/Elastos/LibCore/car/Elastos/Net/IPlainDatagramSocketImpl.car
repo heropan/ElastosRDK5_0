@@ -1,0 +1,15 @@
+module
+{
+    interface Elastos.Net.IDatagramSocketImpl;
+
+    namespace Elastos{
+    namespace Net{
+
+    interface IPlainDatagramSocketImpl extends IDatagramSocketImpl
+    {
+
+    }
+
+    } // namespace Net
+    } // namespace Elastos
+}

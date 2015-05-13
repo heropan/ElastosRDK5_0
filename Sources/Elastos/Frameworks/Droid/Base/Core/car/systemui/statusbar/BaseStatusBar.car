@@ -1,0 +1,50 @@
+module
+{
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.StatusBar.IIStatusBarService;
+    interface Elastos.Droid.StatusBar.IStatusBarNotification;
+    interface Elastos.Droid.SystemUI.ISystemUI;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+
+    interface IBaseStatusBar extends Elastos.Droid.SystemUI.ISystemUI {
+
+        // Should match the value in PhoneWindowManager
+        const String SYSTEM_DIALOG_REASON_RECENT_APPS = "recentapps";
+
+        const Int32 EXPANDED_LEAVE_ALONE = -10000;
+        const Int32 EXPANDED_FULL_OPEN = -10001;
+
+        GetStatusBarService(
+            [out] IIStatusBarService** service);
+
+        IsDeviceProvisioned(
+            [out] Boolean* isDeviceProvisioned);
+
+        UserSwitched(
+            [in] Int32 newUserId);
+
+        NotificationIsForCurrentUser(
+            [in] IStatusBarNotification* notification,
+            [out] Boolean* result);
+
+        DismissPopups();
+
+        DismissIntruder();
+
+        InKeyguardRestrictedInputMode(
+            [out] Boolean* result);
+
+        //protected
+        ShouldDisableNavbarGestures(
+            [out] Boolean* result);
+    }
+
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,14 @@
+module
+{
+    interface Elastos.IO.Channels.Spi.IAbstractSelectionKey;
+
+    namespace Elastos {
+    namespace IO {
+
+    interface ISelectionKeyImpl extends Elastos.IO.Channels.Spi.IAbstractSelectionKey {
+
+    }
+
+    } // namespace IO
+    } // namespace Elastos
+}

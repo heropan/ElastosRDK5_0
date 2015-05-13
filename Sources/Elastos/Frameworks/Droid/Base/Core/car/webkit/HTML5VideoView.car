@@ -1,0 +1,136 @@
+
+module
+{
+    interface Elastos.Droid.Graphics.ISurfaceTexture;
+    interface Elastos.Droid.Media.IMediaPlayerOnPreparedListener;
+    interface Elastos.Droid.Webkit.IHTML5VideoViewProxy;
+    interface Elastos.Droid.Webkit.IWebViewClassic;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+    interface IHTML5VideoViewHelper {
+        Release();
+    }
+
+    /**
+     * @hide This is only used by the browser
+     */
+    interface IHTML5VideoView /*extends IMediaPlayerOnPreparedListener*/ {
+
+        // common Video control FUNCTIONS:
+        Start();
+
+        Pause();
+
+        GetDuration(
+            [out] Int32* duration);
+
+        GetCurrentPosition(
+            [out] Int32* position);
+
+        SeekTo(
+            [in] Int32 pos);
+
+        IsPlaying(
+            [out] Boolean* result);
+
+        Reset();
+
+        StopPlayback();
+
+        IsReleased(
+            [out] Boolean* result);
+
+        GetPauseDuringPreparing(
+            [out] Boolean* result);
+
+        // Every time we start a new Video, we create a VideoView and a MediaPlayer
+        Init(
+            [in] Int32 videoLayerId,
+            [in] Int32 position,
+            [in] Boolean skipPrepare);
+
+        SetVideoURI(
+            [in] String uri,
+            [in] IHTML5VideoViewProxy* proxy);
+
+        // Listeners setup FUNCTIONS:
+        SetOnCompletionListener(
+            [in] IHTML5VideoViewProxy* proxy);
+
+        SetOnErrorListener(
+            [in] IHTML5VideoViewProxy* proxy);
+
+        SetOnPreparedListener(
+            [in] IHTML5VideoViewProxy* proxy);
+
+        SetOnInfoListener(
+            [in] IHTML5VideoViewProxy* proxy);
+
+        PrepareDataCommon(
+            [in] IHTML5VideoViewProxy* proxy);
+
+        ReprepareData(
+            [in] IHTML5VideoViewProxy* proxy);
+
+        // Normally called immediately after setVideoURI. But for full screen,
+        // this should be after surface holder created
+        PrepareDataAndDisplayMode(
+            [in] IHTML5VideoViewProxy* proxy);
+
+        // Common code
+        GetVideoLayerId(
+            [out] Int32* id);
+
+        GetCurrentState(
+            [out] Int32* state);
+
+        // Pause the play and update the play/pause button
+        PauseAndDispatch(
+            [in] IHTML5VideoViewProxy* proxy);
+
+        // Below are functions that are different implementation on inline and full-
+        // screen mode. Some are specific to one type, but currently are called
+        // directly from the proxy.
+        EnterFullScreenVideoState(
+            [in] Int32 layerId,
+            [in] IHTML5VideoViewProxy* proxy,
+            [in] IWebViewClassic* webView);
+
+        IsFullScreenMode(
+            [out] Boolean* result);
+
+        DecideDisplayMode();
+
+        GetReadyToUseSurfTex(
+            [out] Boolean* result);
+
+        DeleteSurfaceTexture();
+
+        GetTextureName(
+            [out] Int32* name);
+
+        GetPlayerBuffering(
+            [out] Boolean* result);
+
+        SetPlayerBuffering(
+            [in] Boolean playerBuffering);
+
+        FullScreenExited(
+            [out] Boolean* result);
+
+        SetStartWhenPrepared(
+            [in] Boolean willPlay);
+
+        GetStartWhenPrepared(
+            [out] Boolean* result);
+
+        ShowControllerInFullScreen();
+    }
+
+    } // namespace Webkit
+    } // namepsace Droid
+    } // namespace Elastos
+}

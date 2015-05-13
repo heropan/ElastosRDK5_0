@@ -1,0 +1,99 @@
+
+#ifndef __CDOWNLOADSIMPL_H__
+#define __CDOWNLOADSIMPL_H__
+
+#include "_CDownloadsImpl.h"
+
+using Elastos::Droid::Net::IUri;
+
+namespace Elastos {
+namespace Droid {
+namespace Provider {
+
+CarClass(CDownloadsImpl)
+{
+public:
+    /**
+     * The content:// URI to access downloads owned by the caller's UID.
+     */
+    CARAPI GetCONTENTURI(
+        /* [out] */ IUri** uri);
+
+    /**
+     * The content URI for accessing all downloads across all UIDs (requires the
+     * ACCESS_ALL_DOWNLOADS permission).
+     */
+    CARAPI GetALLDOWNLOADSCONTENTURI(
+        /* [out] */ IUri** uri);
+
+    /**
+     * The content URI for accessing publicly accessible downloads (i.e., it requires no
+     * permissions to access this downloaded file)
+     */
+    CARAPI GetPUBLICLYACCESSIBLEDOWNLOADSURI(
+        /* [out] */ IUri** uri);
+
+    /**
+     * Returns whether the status is informational (i.e. 1xx).
+     */
+    CARAPI IsStatusInformational(
+        /* [in] */ Int32 status,
+        /* [out] */ Boolean* res);
+
+    /**
+     * Returns whether the status is a success (i.e. 2xx).
+     */
+    CARAPI IsStatusSuccess(
+        /* [in] */ Int32 status,
+        /* [out] */ Boolean* res);
+
+    /**
+     * Returns whether the status is an error (i.e. 4xx or 5xx).
+     */
+    CARAPI IsStatusError(
+        /* [in] */ Int32 status,
+        /* [out] */ Boolean* res);
+
+    /**
+     * Returns whether the status is a client error (i.e. 4xx).
+     */
+    CARAPI IsStatusClientError(
+        /* [in] */ Int32 status,
+        /* [out] */ Boolean* res);
+
+    /**
+     * Returns whether the status is a server error (i.e. 5xx).
+     */
+    CARAPI IsStatusServerError(
+        /* [in] */ Int32 status,
+        /* [out] */ Boolean* res);
+
+    /**
+     * this method determines if a notification should be displayed for a
+     * given {@link #COLUMN_VISIBILITY} value
+     * @param visibility the value of {@link #COLUMN_VISIBILITY}.
+     * @return true if the notification should be displayed. false otherwise.
+     */
+    CARAPI IsNotificationToBeDisplayed(
+        /* [in] */ Int32 visibility,
+        /* [out] */ Boolean* res);
+
+    /**
+     * Returns whether the download has completed (either with success or
+     * error).
+     */
+    CARAPI IsStatusCompleted(
+        /* [in] */ Int32 status,
+        /* [out] */ Boolean* res);
+
+    /** {@hide} */
+    CARAPI StatusToString(
+        /* [in] */ Int32 status,
+        /* [out] */ String* value);
+};
+
+}
+}
+}
+
+#endif //__CDOWNLOADSIMPL_H__

@@ -1,0 +1,9 @@
+
+ifeq "$(XDK_TARGET_PLATFORM)" "android"
+DIRS = Elastos
+DIRS += common
+DIRS += Libcore
+DIRS += Org
+else
+DIRS = Elastos/Core
+endif

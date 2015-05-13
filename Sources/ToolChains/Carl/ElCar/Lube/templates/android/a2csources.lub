@@ -1,0 +1,36 @@
+$;;=========================================================================
+$;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
+$;;=========================================================================
+$
+$INPUT module
+$OUTPUT "sources"
+$
+TARGET_NAME= ${name}
+TARGET_TYPE= $^
+$IF type is "library"
+lib
+$ELSE
+dll
+$END IF
+
+SOURCES = ${name}.car
+$   WITH all classes DO
+$       IF type is not "sink" and type is not "clsobj"
+SOURCES += ${name}.cpp
+$       END IF
+$   END DO ;; all classes
+$
+
+INCLUDES += $$(MAKEDIR)\..\so;
+
+$IF type is not "library"
+$  IF compilingenv is not "InSDK"
+LIBRARIES= $$(XDK_LIB_PATH)\elastos.lib
+LIBRARIES+= $$(XDK_USER_LIB)\${name}So.lib
+LIBRARIES+= $$(XDK_LIB_PATH)\ElCRuntime.lib
+$  ELSE
+ELASTOS_LIBS= elastos.lib
+$  END IF;; not InSDK
+$END IF ;; type is not "library"
+$
+$END OUTPUT

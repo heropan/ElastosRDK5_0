@@ -1,0 +1,12 @@
+
+module
+{
+    namespace Elastos {
+    namespace IO {
+
+    interface IFilterReader extends IReader {
+    }
+
+    } // namespace IO
+    } // namespace Elastos
+}

@@ -1,0 +1,25 @@
+module
+{
+    interface Elastos.Droid.Text.Style.ICharacterStyle;
+    interface Elastos.Droid.Text.Style.ICharacterStyleHelper;
+    interface Elastos.Droid.Text.Style.IUpdateAppearance;
+    interface Elastos.Droid.Text.IParcelableSpan;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    interface IBackgroundColorSpan extends ICharacterStyle /*implements IUpdateAppearance, IParcelableSpan*/ {
+        GetBackgroundColor(
+            [out] Int32* result);
+    }
+
+    interface IBackgroundColorSpanHelper extends ICharacterStyleHelper {}
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

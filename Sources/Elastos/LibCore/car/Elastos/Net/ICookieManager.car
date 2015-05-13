@@ -1,0 +1,36 @@
+
+module
+{
+    interface Elastos.Net.ICookieHandler;
+    interface Elastos.Net.ICookiePolicy;
+    interface Elastos.Net.ICookieStore;
+
+    namespace Elastos {
+    namespace Net {
+
+    interface ICookieManager extends ICookieHandler {
+        /**
+         * Sets the cookie policy of this cookie manager.
+         *
+         * ACCEPT_ORIGINAL_SERVER is the default policy for CookieManager.
+         *
+         * @param cookiePolicy
+         *            the cookie policy. if null, the original policy will not be
+         *            changed.
+         */
+        SetCookiePolicy(
+            [in] ICookiePolicy* cookiePolicy);
+
+        /**
+         * Gets current cookie store.
+         *
+         * @return the cookie store currently used by cookie manager.
+         */
+        GetCookieStore(
+            [out] ICookieStore** cookieStore);
+    }
+
+    } // namespace Net
+    } // namespace Elastos
+
+}

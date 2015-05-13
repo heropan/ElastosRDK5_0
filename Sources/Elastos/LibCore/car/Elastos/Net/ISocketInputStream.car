@@ -1,0 +1,13 @@
+module
+{
+    using interface Elastos.IO.IInputStream;
+
+    namespace Elastos{
+    namespace Net{
+
+    interface ISocketInputStream extends Elastos.IO.IInputStream {
+    }
+
+    } // namespace Net
+    } // namespace Elastos
+}

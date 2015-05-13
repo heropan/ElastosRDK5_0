@@ -1,0 +1,25 @@
+
+module
+{
+    namespace Elastos {
+    namespace Security {
+    namespace Spec {
+
+    /**
+     * The parameter specification used to generate elliptic curve domain parameters.
+     */
+    interface IECGenParameterSpec extends IAlgorithmParameterSpec {
+        /**
+         * Returns the name (standard or predefined) of the to-be-generated elliptic
+         * curve domain parameter.
+         *
+         * @return the name
+         */
+        GetName(
+            [out] String* name);
+    }
+
+    } // namespace Spec
+    } // namespace Security
+    } // namespace Elastos
+}

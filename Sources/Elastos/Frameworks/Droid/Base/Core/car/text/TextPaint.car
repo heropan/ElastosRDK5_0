@@ -1,0 +1,72 @@
+
+module
+{
+    interface Elastos.Droid.Graphics.IPaint;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+
+    /**
+     * TextPaint is an extension of Paint that leaves room for some extra
+     * data used during text measuring and drawing.
+     */
+    [deprecated]
+    interface ITextPaint extends Elastos.Droid.Graphics.IPaint {
+
+        // Special value 0 means no background paint
+        SetBgColor(
+            [in] Int32 bgColor);
+
+        GetBgColor(
+            [out] Int32* bgColor);
+
+        SetBaselineShift(
+            [in] Int32 baselineShift);
+
+        GetBaselineShift(
+            [out] Int32* baselineShift);
+
+        SetLinkColor(
+            [in] Int32 linkColor);
+
+        GetLinkColor(
+            [out] Int32* linkColor);
+
+        SetDrawableState(
+            [in] ArrayOf<Int32>* drawableState);
+
+        GetDrawableState(
+            [out, callee] ArrayOf<Int32>* drawableState);
+
+        SetDensity(
+            [in] Float density);
+
+        GetDensity(
+            [out] Float* density);
+
+        /**
+         * Special value 0 means no custom underline
+         * @hide
+         */
+        SetUnderlineColor(
+            [in] Int32 underlineColor);
+
+        GetUnderlineColor(
+            [out] Int32* underlineColor);
+
+        /**
+         * Defined as a multiplier of the default underline thickness. Use 1.0f for default thickness.
+         * @hide
+         */
+        SetUnderlineThickness(
+            [in] Float underlineThickness);
+
+        GetUnderlineThickness(
+            [out] Float* underlineThickness);
+    }
+
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
+}

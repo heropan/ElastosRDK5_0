@@ -1,0 +1,26 @@
+
+module
+{
+    interface Elastos.Droid.App.IDialog;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Policy {
+    namespace Impl {
+
+    [local]
+    interface IRecentApplicationsDialog extends Elastos.Droid.App.IDialog {
+        /**
+         * Dismiss the dialog and switch to the selected application.
+         */
+        DismissAndSwitch();
+    }
+
+
+    } // Impl
+    } // Policy
+    } // Internal
+    } // Droid
+    } // Elastos
+}

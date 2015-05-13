@@ -1,0 +1,54 @@
+
+module
+{
+    using interface Elastos.Core.IStringBuilder;
+    interface Org.Apache.Harmony.Security.Utils.IObjectIdentifierInUtils;
+    interface Org.Apache.Harmony.Security.Asn1.IASN1Type;
+    interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
+
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Security {
+    namespace X501 {
+
+    /**
+     * X.501 AttributeTypeAndValue
+     */
+    interface IAttributeTypeAndValue {
+        /**
+         * Appends AttributeTypeAndValue string representation
+         *
+         * @param attrFormat - format of DN
+         */
+        AppendName(
+            [in] String attrFormat,
+            [in] IStringBuilder* sb);
+
+        /**
+         * Gets type of the AttributeTypeAndValue
+         */
+        GetType(
+            [out] IObjectIdentifierInUtils** identifier);
+    }
+
+    interface IAttributeTypeAndValueHelper {
+        GetAttributeValue(
+            [out] IASN1Type** attributeValue);
+
+        SetAttributeValue(
+            [in] IASN1Type* attributeValue);
+
+        GetASN1Sequence(
+            [out] IASN1Sequence** asn1);
+
+        SetASN1Sequence(
+            [in] IASN1Sequence* asn1);
+    }
+
+    } // namespace X501
+    } // namespace Security
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

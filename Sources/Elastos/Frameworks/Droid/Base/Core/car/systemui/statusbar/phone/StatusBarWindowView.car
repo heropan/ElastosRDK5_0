@@ -1,0 +1,19 @@
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Phone {
+
+    interface IStatusBarWindowView extends Elastos.Droid.Widget.IFrameLayout {
+
+        CancelExpandHelper();
+    }
+
+    } // namespace Phone
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

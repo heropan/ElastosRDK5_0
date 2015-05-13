@@ -1,0 +1,123 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Content {
+
+    /**
+     *
+     * Extended ComponentCallbacks interface with a new callback for finer-grained memory management.
+     *
+     * @sa ComponentCallbacks
+     * @implements Elastos.Droid.Content.Elastos.Droid.Content.IComponentCallbacks
+     */
+    interface IComponentCallbacks2 extends Elastos.Droid.Content.IComponentCallbacks {
+        /**
+         * Level for #onTrimMemory(int): the process is nearing the end
+         * of the background LRU list, and if more memory isn't found soon it will
+         * be killed.
+         *
+         * @sa #onTrimMemory(int)
+         */
+        const Int32 TRIM_MEMORY_COMPLETE = 80;
+
+        /**
+         * Level for #onTrimMemory(int): the process is around the middle
+         * of the background LRU list; freeing memory can help the system keep
+         * other processes running later in the list for better overall performance.
+         *
+         * @sa #onTrimMemory(int)
+         */
+        const Int32 TRIM_MEMORY_MODERATE = 60;
+
+        /**
+         * Level for #onTrimMemory(int): the process has gone on to the
+         * LRU list.  This is a good opportunity to clean up resources that can
+         * efficiently and quickly be re-built if the user returns to the app.
+         *
+         * @sa #onTrimMemory(int)
+         */
+        const Int32 TRIM_MEMORY_BACKGROUND = 40;
+
+        /**
+         * Level for #onTrimMemory(int): the process had been showing
+         * a user interface, and is no longer doing so.  Large allocations with
+         * the UI should be released at this point to allow memory to be better
+         * managed.
+         *
+         * @sa #onTrimMemory(int)
+         */
+        const Int32 TRIM_MEMORY_UI_HIDDEN = 20;
+
+        /**
+         * Level for #onTrimMemory(int): the process is not an expendable
+         * background process, but the device is running extremely low on memory
+         * and is about to not be able to keep any background processes running.
+         * Your running process should free up as many non-critical resources as it
+         * can to allow that memory to be used elsewhere.  The next thing that
+         * will happen after this is #onLowMemory() called to report that
+         * nothing at all can be kept in the background, a situation that can start
+         * to notably impact the user.
+         *
+         * @sa #onTrimMemory(int)
+         * @sa #onLowMemory()
+         */
+        const Int32 TRIM_MEMORY_RUNNING_CRITICAL = 15;
+
+        /**
+         * Level for #onTrimMemory(int): the process is not an expendable
+         * background process, but the device is running low on memory.
+         * Your running process should free up unneeded resources to allow that
+         * memory to be used elsewhere.
+         *
+         * @sa #onTrimMemory(int)
+         */
+        const Int32 TRIM_MEMORY_RUNNING_LOW = 10;
+
+        /**
+         * Level for #onTrimMemory(int): the process is not an expendable
+         * background process, but the device is running moderately low on memory.
+         * Your running process may want to release some unneeded resources for
+         * use elsewhere.
+         *
+         * @sa #onTrimMemory(int)
+         */
+        const Int32 TRIM_MEMORY_RUNNING_MODERATE = 5;
+
+        /**
+         * Called when the operating system has determined that it is a good
+         * time for a process to trim unneeded memory from its process.  This will
+         * happen for example when it goes in the background and there is not enough
+         * memory to keep as many background processes running as desired.  You
+         * should never compare to exact values of the level, since new intermediate
+         * values may be added -- you will typically want to compare if the value
+         * is greater or equal to a level you are interested in.
+         *
+         * <p>To retrieve the processes current trim level at any point, you can
+         * use android.app.ActivityManager#getMyMemoryState ActivityManager.getMyMemoryState(RunningAppProcessInfo).
+         *
+         * @param level The context of the trim, giving a hint of the amount of
+         * trimming the application may like to perform.  May be
+         * #TRIM_MEMORY_COMPLETE, #TRIM_MEMORY_MODERATE,
+         * #TRIM_MEMORY_BACKGROUND, #TRIM_MEMORY_UI_HIDDEN,
+         * #TRIM_MEMORY_RUNNING_CRITICAL, #TRIM_MEMORY_RUNNING_LOW,
+         * or #TRIM_MEMORY_RUNNING_MODERATE.
+         *
+         * @sa android.app.ActivityManager#getMyMemoryState ActivityManager.getMyMemoryState(RunningAppProcessInfo)
+         * @sa #TRIM_MEMORY_COMPLETE
+         * @sa #TRIM_MEMORY_MODERATE
+         * @sa #TRIM_MEMORY_BACKGROUND
+         * @sa #TRIM_MEMORY_UI_HIDDEN
+         * @sa #TRIM_MEMORY_RUNNING_CRITICAL
+         * @sa #TRIM_MEMORY_RUNNING_LOW
+         * @sa #TRIM_MEMORY_RUNNING_MODERATE
+         */
+        OnTrimMemory(
+            [in] Int32 level);
+    }
+
+    } // namespace Content
+    } // namespace Droid
+    } // namespace Elastos
+}

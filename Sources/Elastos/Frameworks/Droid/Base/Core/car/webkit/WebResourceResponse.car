@@ -1,0 +1,71 @@
+
+module
+{
+    using interface Elastos.IO.IInputStream;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+    /**
+     * Encapsulates a resource response. Applications can return an instance of this
+     * class from {@link WebViewClient#shouldInterceptRequest} to provide a custom
+     * response when the WebView requests a particular resource.
+     */
+    interface IWebResourceResponse {
+
+        /**
+         * Sets the resource response's MIME type, for example text/html.
+         *
+         * @param mimeType the resource response's MIME type
+         */
+        SetMimeType(
+            [in] String mimeType);
+
+        /**
+         * Gets the resource response's MIME type.
+         *
+         * @return the resource response's MIME type
+         */
+        GetMimeType(
+            [out] String* mimeType);
+
+        /**
+         * Sets the resource response's encoding, for example UTF-8. This is used
+         * to decode the data from the input stream.
+         *
+         * @param encoding the resource response's encoding
+         */
+        SetEncoding(
+            [in] String encoding);
+
+        /**
+         * Gets the resource response's encoding.
+         *
+         * @return the resource response's encoding
+         */
+        GetEncoding(
+            [out] String* encoding);
+
+        /**
+         * Sets the input stream that provides the resource respone's data. Callers
+         * must implement {@link InputStream#read(byte[]) InputStream.read(byte[])}.
+         *
+         * @param data the input stream that provides the resource response's data
+         */
+        SetData(
+            [in] IInputStream* data);
+
+        /**
+         * Gets the input stream that provides the resource respone's data.
+         *
+         * @return the input stream that provides the resource response's data
+         */
+        GetData(
+            [out] IInputStream** inputStream);
+    }
+
+    } // namespace Webkit
+    } // namepsace Droid
+    } // namespace Elastos
+}

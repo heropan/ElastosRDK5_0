@@ -1,0 +1,48 @@
+
+module
+{
+    using interface Elastos.Core.ICharSequence;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
+
+    interface IToggleButton extends Elastos.Droid.Widget.ICompoundButton
+    {
+        /**
+         * Returns the text for when the button is in the checked state.
+         *
+         * @return The text.
+         */
+        GetTextOn(
+            [out] ICharSequence** on);
+
+        /**
+         * Sets the text for when the button is in the checked state.
+         *
+         * @param textOn The text.
+         */
+        SetTextOn(
+            [in] ICharSequence* textOn);
+
+        /**
+         * Returns the text for when the button is not in the checked state.
+         *
+         * @return The text.
+         */
+        GetTextOff(
+            [out] ICharSequence** on);
+
+        /**
+         * Sets the text for when the button is not in the checked state.
+         *
+         * @param textOff The text.
+         */
+        SetTextOff(
+            [in] ICharSequence* textOff);
+    }
+
+    } // namespace Widget
+    } // namespace Droid
+    } // namespace Elastos
+}

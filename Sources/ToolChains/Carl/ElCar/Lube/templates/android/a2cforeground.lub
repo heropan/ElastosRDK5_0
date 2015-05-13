@@ -1,0 +1,8 @@
+$;;=========================================================================
+$;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
+$;;=========================================================================
+$
+$INPUT module
+$
+$TEMPLATE "a2csources.lub"
+$TEMPLATE "a2cforecpph.lub"

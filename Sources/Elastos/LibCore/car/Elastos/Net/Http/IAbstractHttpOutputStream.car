@@ -1,0 +1,28 @@
+
+module
+{
+    using interface Elastos.IO.IOutputStream;
+
+    namespace Elastos {
+    namespace Net {
+    namespace Http {
+
+    /**
+     * An input stream for the body of an HTTP response.
+     *
+     * <p>Since a single socket's input stream may be used to read multiple HTTP
+     * responses from the same server, subclasses shouldn't close the socket stream.
+     *
+     * <p>A side effect of reading an HTTP response is that the response cache
+     * is populated. If the stream is closed early, that cache entry will be
+     * invalidated.
+     */
+    //[deprecated]
+    interface IAbstractHttpOutputStream extends Elastos.IO.IOutputStream {
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Elastos
+
+}

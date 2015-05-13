@@ -1,0 +1,129 @@
+
+module
+{
+    merge("policy/IFaceLockCallback.car");
+    merge("policy/IFaceLockInterface.car");
+    merge("policy/IPolicy.car");
+    merge("policy/PolicyManager.car");
+    merge("policy/PhoneFallbackEventHandler.car");
+    merge("policy/RecentApplicationsDialog.car");
+    merge("policy/RecentApplicationsBackground.car");
+
+    interface Elastos.Droid.Utility.IAttributeSet;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
+    interface Elastos.Droid.View.IViewParent;
+    interface Elastos.Droid.View.IViewManager;
+    interface Elastos.Droid.View.IWindow;
+    interface Elastos.Droid.View.IViewOnClickListener;
+    interface Elastos.Droid.View.ILayoutInflater;
+    interface Elastos.Droid.View.IPhoneWindowRotationWatcher;
+    interface Elastos.Droid.View.IKeyEventCallback;
+    interface Elastos.Droid.View.IOnKeyguardExitResult;
+    interface Elastos.Droid.View.IWindowCallback;
+    interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
+    interface Elastos.Droid.View.Menu.IMenuBuilderCallback;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.Internal.Policy.Impl.IRecentApplicationsDialog;
+    interface Elastos.Droid.Internal.Policy.Impl.IRecentApplicationsBackground;
+    interface Elastos.Droid.Internal.Policy.IPolicy;
+    interface Elastos.Droid.Internal.Policy.IPhoneFallbackEventHandler;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Policy {
+
+    namespace Impl {
+    /**
+     * Simple implementation of the policy interface that spawns the right
+     * set of objects
+     */
+    [local]
+    class CPolicy {
+        interface IPolicy;
+    }
+
+    [local]
+    class CPhoneWindow {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IWindow;
+        interface IMenuBuilderCallback;
+    }
+
+    class CPhoneWindowSavedState {
+        constructor();
+
+        interface IParcelable;
+    }
+
+    class CPhoneWindowRotationWatcher {
+        constructor();
+
+        interface IPhoneWindowRotationWatcher;
+    }
+
+    [local]
+    class CPhoneLayoutInflater {
+        constructor(
+            [in] IContext* ctx);
+
+        interface ILayoutInflater;
+    }
+
+    [local]
+    class CPhoneWindowManager {
+        interface Elastos.Droid.View.IWindowManagerPolicy;
+    }
+
+    [local]
+    class CRecentApplicationsDialog {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IRecentApplicationsDialog;
+        interface IWindowCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IKeyEventCallback;
+        interface IViewOnClickListener;
+    }
+
+    [local]
+    class CRecentApplicationsBackground {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        interface IRecentApplicationsBackground;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    [local]
+    class CPhoneFallbackEventHandler {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IPhoneFallbackEventHandler;
+    }
+
+    } // namespace Impl
+
+    [local]
+    singleton class CPolicyManager {
+        interface IPolicyManager;
+    }
+
+    } // Policy
+    } // Internal
+    } // Droid
+    } // Elastos
+}

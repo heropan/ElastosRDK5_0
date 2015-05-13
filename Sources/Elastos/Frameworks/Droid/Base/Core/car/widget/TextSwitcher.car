@@ -1,0 +1,34 @@
+
+module
+{
+    using interface Elastos.Core.ICharSequence;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
+
+    interface ITextSwitcher extends IViewSwitcher
+    {
+        /**
+         * Sets the text of the next view and switches to the next view. This can
+         * be used to animate the old text out and animate the next text in.
+         *
+         * @param text the new text to display
+         */
+        SetText(
+            [in] ICharSequence* text);
+
+        /**
+         * Sets the text of the text view that is currently showing.  This does
+         * not perform the animations.
+         *
+         * @param text the new text to display
+         */
+        SetCurrentText(
+            [in] ICharSequence* text);
+    }
+
+    } // namespace Widget
+    } // namespace Droid
+    } // namespace Elastos
+}

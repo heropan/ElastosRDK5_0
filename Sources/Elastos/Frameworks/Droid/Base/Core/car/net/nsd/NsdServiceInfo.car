@@ -1,0 +1,60 @@
+module
+{
+    interface Elastos.Net.IInetAddress;
+    interface Elastos.Droid.Net.Nsd.IDnsSdTxtRecord;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+    namespace Nsd {
+
+        interface INsdServiceInfo
+        {
+            /** Get the service name */
+            GetServiceName(
+                [out] String* name);
+
+            /** Set the service name */
+            SetServiceName(
+                [in] String s);
+
+            /** Get the service type */
+            GetServiceType(
+                [out] String* type);
+
+            /** Set the service type */
+            SetServiceType(
+                [in] String s);
+
+            /** @hide */
+            GetTxtRecord(
+                [out] IDnsSdTxtRecord** rec);
+
+            /** @hide */
+            SetTxtRecord(
+                [in] IDnsSdTxtRecord* t);
+
+            /** Get the host address. The host address is valid for a resolved service. */
+            GetHost(
+                [out] IInetAddress** host);
+
+            /** Set the host address */
+            SetHost(
+                [in] IInetAddress* s);
+
+            /** Get port number. The port number is valid for a resolved service. */
+            GetPort(
+                [out] Int32* port);
+
+            /** Set port number */
+            SetPort(
+                [in] Int32 p);
+
+            ToString(
+                [out] String* info);
+        }
+    }
+    }
+    }
+    }
+}

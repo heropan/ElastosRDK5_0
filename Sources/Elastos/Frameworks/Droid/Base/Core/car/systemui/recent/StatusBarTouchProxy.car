@@ -1,0 +1,19 @@
+module
+{
+    interface Elastos.Droid.View.IView;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace Recent {
+
+    interface IStatusBarTouchProxy extends Elastos.Droid.Widget.IFrameLayout {
+        SetStatusBar(
+            [in] IView* statusBar);
+    }
+
+    } // namespace Recent
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

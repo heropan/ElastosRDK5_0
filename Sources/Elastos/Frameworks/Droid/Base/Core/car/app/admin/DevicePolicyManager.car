@@ -1,0 +1,1131 @@
+module
+{
+    using interface Elastos.Net.IProxy;
+
+    interface Elastos.Droid.Os.IRemoteCallback;
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Content.IContext;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+    namespace Admin {
+
+    /**
+     * Public interface for managing policies enforced on a device.  Most clients
+     * of this class must have published a {@sa DeviceAdminReceiver} that the user
+     * has currently enabled.
+     *
+     * <div class="special reference">
+     * <h3>Developer Guides</h3>
+     * <p>For more information about managing policies for device adminstration, read the
+     * <a href="{@docRoot}guide/topics/admin/device-admin.html">Device Administration</a>
+     * developer guide.</p>
+     * </div>
+     */
+    [deprecated]
+    interface IDevicePolicyManager {
+        /**
+         * Activity action: ask the user to add a new device administrator to the system.
+         * The desired policy is the ComponentName of the policy in the
+         * {@sa #EXTRA_DEVICE_ADMIN} extra field.  This will invoke a UI to
+         * bring the user through adding the device administrator to the system (or
+         * allowing them to reject it).
+         *
+         * <p>You can optionally include the {@sa #EXTRA_ADD_EXPLANATION}
+         * field to provide the user with additional explanation (in addition
+         * to your component's description) about what is being added.
+         *
+         * <p>If your administrator is already active, this will ordinarily return immediately (without
+         * user intervention).  However, if your administrator has been updated and is requesting
+         * additional uses-policy flags, the user will be presented with the new list.  New policies
+         * will not be available to the updated administrator until the user has accepted the new list.
+         */
+        const String ACTION_ADD_DEVICE_ADMIN = "android.app.action.ADD_DEVICE_ADMIN";
+
+        /**
+         * Activity action: send when any policy admin changes a policy.
+         * This is generally used to find out when a new policy is in effect.
+         *
+         * @hide
+         */
+        const String ACTION_DEVICE_POLICY_MANAGER_STATE_CHANGED
+                = "android.app.action.DEVICE_POLICY_MANAGER_STATE_CHANGED";
+
+        /**
+         * The ComponentName of the administrator component.
+         *
+         * @see #ACTION_ADD_DEVICE_ADMIN
+         */
+        const String EXTRA_DEVICE_ADMIN = "android.app.extra.DEVICE_ADMIN";
+
+        /**
+         * An optional CharSequence providing additional explanation for why the
+         * admin is being added.
+         *
+         * @see #ACTION_ADD_DEVICE_ADMIN
+         */
+        const String EXTRA_ADD_EXPLANATION = "android.app.extra.ADD_EXPLANATION";
+
+        /**
+         * Activity action: have the user enter a new password. This activity should
+         * be launched after using {@sa #setPasswordQuality(ComponentName, int)},
+         * or {@sa #setPasswordMinimumLength(ComponentName, int)} to have the user
+         * enter a new password that meets the current requirements. You can use
+         * {@sa #isActivePasswordSufficient()} to determine whether you need to
+         * have the user select a new password in order to meet the current
+         * constraints. Upon being resumed from this activity, you can check the new
+         * password characteristics to see if they are sufficient.
+         */
+        const String ACTION_SET_NEW_PASSWORD = "android.app.action.SET_NEW_PASSWORD";
+
+        /**
+         * Constant for {@sa #setPasswordQuality}: the policy has no requirements
+         * for the password.  Note that quality constants are ordered so that higher
+         * values are more restrictive.
+         */
+        const Int32 PASSWORD_QUALITY_UNSPECIFIED = 0;
+
+        /**
+         * Constant for {@sa #setPasswordQuality}: the policy allows for low-security biometric
+         * recognition technology.  This implies technologies that can recognize the identity of
+         * an individual to about a 3 digit PIN (false detection is less than 1 in 1,000).
+         * Note that quality constants are ordered so that higher values are more restrictive.
+         */
+        const Int32 PASSWORD_QUALITY_BIOMETRIC_WEAK = 0x8000;
+
+        /**
+         * Constant for {@sa #setPasswordQuality}: the policy requires some kind
+         * of password, but doesn't care what it is.  Note that quality constants
+         * are ordered so that higher values are more restrictive.
+         */
+        const Int32 PASSWORD_QUALITY_SOMETHING = 0x10000;
+
+        /**
+         * Constant for {@sa #setPasswordQuality}: the user must have entered a
+         * password containing at least numeric characters.  Note that quality
+         * constants are ordered so that higher values are more restrictive.
+         */
+        const Int32 PASSWORD_QUALITY_NUMERIC = 0x20000;
+
+        /**
+         * Constant for {@sa #setPasswordQuality}: the user must have entered a
+         * password containing at least alphabetic (or other symbol) characters.
+         * Note that quality constants are ordered so that higher values are more
+         * restrictive.
+         */
+        const Int32 PASSWORD_QUALITY_ALPHABETIC = 0x40000;
+
+        /**
+         * Constant for {@sa #setPasswordQuality}: the user must have entered a
+         * password containing at least <em>both></em> numeric <em>and</em>
+         * alphabetic (or other symbol) characters.  Note that quality constants are
+         * ordered so that higher values are more restrictive.
+         */
+        const Int32 PASSWORD_QUALITY_ALPHANUMERIC = 0x50000;
+
+        /**
+         * Constant for {@sa #setPasswordQuality}: the user must have entered a
+         * password containing at least a letter, a numerical digit and a special
+         * symbol, by default. With this password quality, passwords can be
+         * restricted to contain various sets of characters, like at least an
+         * uppercase letter, etc. These are specified using various methods,
+         * like {@sa #setPasswordMinimumLowerCase(ComponentName, int)}. Note
+         * that quality constants are ordered so that higher values are more
+         * restrictive.
+         */
+        const Int32 PASSWORD_QUALITY_COMPLEX = 0x60000;
+
+        /**
+         * Flag for {@sa #resetPassword}: don't allow other admins to change
+         * the password again until the user has entered it.
+         */
+        const Int32 RESET_PASSWORD_REQUIRE_ENTRY = 0x0001;
+
+        /**
+         * Flag for {@sa #wipeData(int)}: also erase the device's external
+         * storage.
+         */
+        const Int32 WIPE_EXTERNAL_STORAGE = 0x0001;
+
+        /**
+         * Result code for {@sa #setStorageEncryption} and {@sa #getStorageEncryptionStatus}:
+         * indicating that encryption is not supported.
+         */
+        const Int32 ENCRYPTION_STATUS_UNSUPPORTED = 0;
+
+        /**
+         * Result code for #setStorageEncryption and #getStorageEncryptionStatus:
+         * indicating that encryption is supported, but is not currently active.
+         * @sa #setStorageEncryption
+         * @sa #getStorageEncryptionStatus
+         */
+        const Int32 ENCRYPTION_STATUS_INACTIVE = 1;
+
+        /**
+         * Result code for #setStorageEncryption and #getStorageEncryptionStatus:
+         * indicating that encryption is not currently active, but is currently
+         * being activated.  This is only reported by devices that support
+         * encryption of data and only when the storage is currently
+         * undergoing a process of becoming encrypted.  A device that must reboot and/or wipe data
+         * to become encrypted will never return this value.
+         * @sa #setStorageEncryption
+         * @sa #getStorageEncryptionStatus
+         */
+        const Int32 ENCRYPTION_STATUS_ACTIVATING = 2;
+
+        /**
+         * Result code for #setStorageEncryption and  #getStorageEncryptionStatus:
+         * indicating that encryption is active.
+         *
+         * @sa #setStorageEncryption
+         * @sa #getStorageEncryptionStatus
+         */
+        const Int32 ENCRYPTION_STATUS_ACTIVE = 3;
+
+        /**
+         * Activity action: begin the process of encrypting data on the device.  This activity should
+         * be launched after using #setStorageEncryption to request encryption be activated.
+         * After resuming from this activity, use #getStorageEncryption
+         * to check encryption status.  However, on some devices this activity may never return, as
+         * it may trigger a reboot and in some cases a complete data wipe of the device.
+         *
+         * @sa #setStorageEncryption
+         * @sa #getStorageEncryption
+         *
+         */
+        const String ACTION_START_ENCRYPTION
+                = "android.app.action.START_ENCRYPTION";
+
+        /**
+         * Widgets are enabled in keyguard
+         */
+        const Int32 KEYGUARD_DISABLE_FEATURES_NONE = 0;
+
+        /**
+         * Disable all keyguard widgets
+         */
+        const Int32 KEYGUARD_DISABLE_WIDGETS_ALL = 1 << 0;
+
+        /**
+         * Disable the camera on secure keyguard screens (e.g. PIN/Pattern/Password)
+         */
+        const Int32 KEYGUARD_DISABLE_SECURE_CAMERA = 1 << 1;
+
+        /**
+         * Disable all current and future keyguard customizations.
+         */
+        const Int32 KEYGUARD_DISABLE_FEATURES_ALL = 0x7fffffff;
+
+        /**
+         * Return true if the given administrator component is currently
+         * active (enabled) in the system.
+         */
+        IsAdminActive(
+            [in] IComponentName* who,
+            [out] Boolean* isAdminActive);
+
+        /**
+         * Return a list of all currently active device administrator's component
+         * names.  Note that if there are no administrators than null may be
+         * returned.
+         */
+        GetActiveAdmins(
+            [out] IObjectContainer** admins);
+
+        /**
+         * Used by package administration code to determine if a package can be stopped
+         * or uninstalled.
+         * @hide
+         */
+        PackageHasActiveAdmins(
+            [in] String packageName,
+            [out] Boolean* hasAdmins);
+
+        /**
+         * Remove a current administration component.  This can only be called
+         * by the application that owns the administration component; if you
+         * try to remove someone else's component, a security exception will be
+         * thrown.
+         */
+        RemoveActiveAdmin(
+            [in] IComponentName* who);
+
+        /**
+         * Returns true if an administrator has been granted a particular device policy.  This can
+         * be used to check if the administrator was activated under an earlier set of policies,
+         * but requires additional policies after an upgrade.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated with.  Must be
+         * an active administrator, or an exception will be thrown.
+         * @param usesPolicy Which uses-policy to check, as defined in {@sa DeviceAdminInfo}.
+         */
+        HasGrantedPolicy(
+            [in] IComponentName* admin,
+            [in] Int32 usesPolicy,
+            [out] Boolean* hasGrant);
+
+        /**
+         * Called by an application that is administering the device to set the
+         * password restrictions it is imposing.  After setting this, the user
+         * will not be able to enter a new password that is not at least as
+         * restrictive as what has been set.  Note that the current password
+         * will remain until the user has set a new one, so the change does not
+         * take place immediately.  To prompt the user for a new password, use
+         * #ACTION_SET_NEW_PASSWORD after setting this value.
+         *
+         * @sa #ACTION_SET_NEW_PASSWORD
+         *
+         * <p>Quality constants are ordered so that higher values are more restrictive;
+         * thus the highest requested quality constant (between the policy set here,
+         * the user's preference, and any other considerations) is the one that
+         * is in effect.
+         *
+         * <p>The calling device admin must have requested
+         * DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @sa DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated with.
+         * @param quality The new desired quality.  One of
+         * {@sa #PASSWORD_QUALITY_UNSPECIFIED}, {@sa #PASSWORD_QUALITY_SOMETHING},
+         * {@sa #PASSWORD_QUALITY_NUMERIC}, {@sa #PASSWORD_QUALITY_ALPHABETIC},
+         * {@sa #PASSWORD_QUALITY_ALPHANUMERIC} or {@sa #PASSWORD_QUALITY_COMPLEX}.
+         */
+        SetPasswordQuality(
+            [in] IComponentName* admin,
+            [in] Int32 quality);
+
+        /**
+         * Retrieve the current minimum password quality for all admins
+         * or a particular one.
+         * @param admin The name of the admin component to check, or null to aggregate
+         * all admins.
+         */
+        GetPasswordQuality(
+            [in] IComponentName* admin,
+            [out] Int32* password);
+
+        /** @hide per-user version */
+        GetPasswordQualityEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        /**
+         * Called by an application that is administering the device to set the
+         * minimum allowed password length.  After setting this, the user
+         * will not be able to enter a new password that is not at least as
+         * restrictive as what has been set.  Note that the current password
+         * will remain until the user has set a new one, so the change does not
+         * take place immediately.  To prompt the user for a new password, use
+         * {@sa #ACTION_SET_NEW_PASSWORD} after setting this value.  This
+         * constraint is only imposed if the administrator has also requested either
+         * {@sa #PASSWORD_QUALITY_NUMERIC}, {@sa #PASSWORD_QUALITY_ALPHABETIC}
+         * {@sa #PASSWORD_QUALITY_ALPHANUMERIC}, or {@sa #PASSWORD_QUALITY_COMPLEX}
+         * with {@sa #setPasswordQuality}.
+         *
+         * <p>The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated with.
+         * @param length The new desired minimum password length.  A value of 0
+         * means there is no restriction.
+         */
+        SetPasswordMinimumLength(
+            [in] IComponentName* admin,
+            [in] Int32 length);
+
+        /**
+         * Retrieve the current minimum password length for all admins
+         * or a particular one.
+         * @param admin The name of the admin component to check, or null to aggregate
+         * all admins.
+         */
+        GetPasswordMinimumLength(
+            [in] IComponentName* admin,
+            [out] Int32* password);
+
+        /** @hide per-user version */
+        GetPasswordMinimumLengthEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        /**
+         * Called by an application that is administering the device to set the
+         * minimum number of upper case letters required in the password. After
+         * setting this, the user will not be able to enter a new password that is
+         * not at least as restrictive as what has been set. Note that the current
+         * password will remain until the user has set a new one, so the change does
+         * not take place immediately. To prompt the user for a new password, use
+         * {@sa #ACTION_SET_NEW_PASSWORD} after setting this value. This
+         * constraint is only imposed if the administrator has also requested
+         * {@sa #PASSWORD_QUALITY_COMPLEX} with {@sa #setPasswordQuality}. The
+         * default value is 0.
+         * <p>
+         * The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated
+         *            with.
+         * @param length The new desired minimum number of upper case letters
+         *            required in the password. A value of 0 means there is no
+         *            restriction.
+         */
+        SetPasswordMinimumUpperCase(
+            [in] IComponentName* admin,
+            [in] Int32 length);
+
+        /**
+         * Retrieve the current number of upper case letters required in the
+         * password for all admins or a particular one. This is the same value as
+         * set by {#link {@sa #setPasswordMinimumUpperCase(ComponentName, int)}
+         * and only applies when the password quality is
+         * {@sa #PASSWORD_QUALITY_COMPLEX}.
+         *
+         * @param admin The name of the admin component to check, or null to
+         *            aggregate all admins.
+         * @return The minimum number of upper case letters required in the
+         *         password.
+         */
+        GetPasswordMinimumUpperCase(
+            [in] IComponentName* admin,
+            [out] Int32* password);
+
+        /** @hide per-user version */
+        GetPasswordMinimumUpperCaseEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        /**
+         * Called by an application that is administering the device to set the
+         * minimum number of lower case letters required in the password. After
+         * setting this, the user will not be able to enter a new password that is
+         * not at least as restrictive as what has been set. Note that the current
+         * password will remain until the user has set a new one, so the change does
+         * not take place immediately. To prompt the user for a new password, use
+         * {@sa #ACTION_SET_NEW_PASSWORD} after setting this value. This
+         * constraint is only imposed if the administrator has also requested
+         * {@sa #PASSWORD_QUALITY_COMPLEX} with {@sa #setPasswordQuality}. The
+         * default value is 0.
+         * <p>
+         * The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated
+         *            with.
+         * @param length The new desired minimum number of lower case letters
+         *            required in the password. A value of 0 means there is no
+         *            restriction.
+         */
+        SetPasswordMinimumLowerCase(
+            [in] IComponentName* admin,
+            [in] Int32 length);
+
+        /**
+         * Retrieve the current number of lower case letters required in the
+         * password for all admins or a particular one. This is the same value as
+         * set by {#link {@sa #setPasswordMinimumLowerCase(ComponentName, int)}
+         * and only applies when the password quality is
+         * {@sa #PASSWORD_QUALITY_COMPLEX}.
+         *
+         * @param admin The name of the admin component to check, or null to
+         *            aggregate all admins.
+         * @return The minimum number of lower case letters required in the
+         *         password.
+         */
+        GetPasswordMinimumLowerCase(
+            [in] IComponentName* admin,
+            [out] Int32* password);
+
+        /** @hide per-user version */
+        GetPasswordMinimumLowerCaseEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        /**
+         * Called by an application that is administering the device to set the
+         * minimum number of letters required in the password. After setting this,
+         * the user will not be able to enter a new password that is not at least as
+         * restrictive as what has been set. Note that the current password will
+         * remain until the user has set a new one, so the change does not take
+         * place immediately. To prompt the user for a new password, use
+         * {@sa #ACTION_SET_NEW_PASSWORD} after setting this value. This
+         * constraint is only imposed if the administrator has also requested
+         * {@sa #PASSWORD_QUALITY_COMPLEX} with {@sa #setPasswordQuality}. The
+         * default value is 1.
+         * <p>
+         * The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated
+         *            with.
+         * @param length The new desired minimum number of letters required in the
+         *            password. A value of 0 means there is no restriction.
+         */
+        SetPasswordMinimumLetters(
+            [in] IComponentName* admin,
+            [in] Int32 length);
+
+        /**
+         * Retrieve the current number of letters required in the password for all
+         * admins or a particular one. This is the same value as
+         * set by {#link {@sa #setPasswordMinimumLetters(ComponentName, int)}
+         * and only applies when the password quality is
+         * {@sa #PASSWORD_QUALITY_COMPLEX}.
+         *
+         * @param admin The name of the admin component to check, or null to
+         *            aggregate all admins.
+         * @return The minimum number of letters required in the password.
+         */
+        GetPasswordMinimumLetters(
+            [in] IComponentName* admin,
+            [out] Int32* password);
+
+        /** @hide per-user version */
+        GetPasswordMinimumLettersEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        /**
+         * Called by an application that is administering the device to set the
+         * minimum number of numerical digits required in the password. After
+         * setting this, the user will not be able to enter a new password that is
+         * not at least as restrictive as what has been set. Note that the current
+         * password will remain until the user has set a new one, so the change does
+         * not take place immediately. To prompt the user for a new password, use
+         * {@sa #ACTION_SET_NEW_PASSWORD} after setting this value. This
+         * constraint is only imposed if the administrator has also requested
+         * {@sa #PASSWORD_QUALITY_COMPLEX} with {@sa #setPasswordQuality}. The
+         * default value is 1.
+         * <p>
+         * The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated
+         *            with.
+         * @param length The new desired minimum number of numerical digits required
+         *            in the password. A value of 0 means there is no restriction.
+         */
+        SetPasswordMinimumNumeric(
+            [in] IComponentName* admin,
+            [in] Int32 length);
+
+        /**
+         * Retrieve the current number of numerical digits required in the password
+         * for all admins or a particular one. This is the same value as
+         * set by {#link {@sa #setPasswordMinimumNumeric(ComponentName, int)}
+         * and only applies when the password quality is
+         * {@sa #PASSWORD_QUALITY_COMPLEX}.
+         *
+         * @param admin The name of the admin component to check, or null to
+         *            aggregate all admins.
+         * @return The minimum number of numerical digits required in the password.
+         */
+        GetPasswordMinimumNumeric(
+            [in] IComponentName* admin,
+            [out] Int32* password);
+
+        /** @hide per-user version */
+        GetPasswordMinimumNumericEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        /**
+         * Called by an application that is administering the device to set the
+         * minimum number of symbols required in the password. After setting this,
+         * the user will not be able to enter a new password that is not at least as
+         * restrictive as what has been set. Note that the current password will
+         * remain until the user has set a new one, so the change does not take
+         * place immediately. To prompt the user for a new password, use
+         * {@sa #ACTION_SET_NEW_PASSWORD} after setting this value. This
+         * constraint is only imposed if the administrator has also requested
+         * {@sa #PASSWORD_QUALITY_COMPLEX} with {@sa #setPasswordQuality}. The
+         * default value is 1.
+         * <p>
+         * The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated
+         *            with.
+         * @param length The new desired minimum number of symbols required in the
+         *            password. A value of 0 means there is no restriction.
+         */
+        SetPasswordMinimumSymbols(
+            [in] IComponentName* admin,
+            [in] Int32 length);
+
+        /**
+         * Retrieve the current number of symbols required in the password for all
+         * admins or a particular one. This is the same value as
+         * set by {#link {@sa #setPasswordMinimumSymbols(ComponentName, int)}
+         * and only applies when the password quality is
+         * {@sa #PASSWORD_QUALITY_COMPLEX}.
+         *
+         * @param admin The name of the admin component to check, or null to
+         *            aggregate all admins.
+         * @return The minimum number of symbols required in the password.
+         */
+        GetPasswordMinimumSymbols(
+            [in] IComponentName* admin,
+            [out] Int32* password);
+
+
+        /** @hide per-user version*/
+        GetPasswordMinimumSymbolsEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        /**
+         * Called by an application that is administering the device to set the
+         * minimum number of non-letter characters (numerical digits or symbols)
+         * required in the password. After setting this, the user will not be able
+         * to enter a new password that is not at least as restrictive as what has
+         * been set. Note that the current password will remain until the user has
+         * set a new one, so the change does not take place immediately. To prompt
+         * the user for a new password, use {@sa #ACTION_SET_NEW_PASSWORD} after
+         * setting this value. This constraint is only imposed if the administrator
+         * has also requested {@sa #PASSWORD_QUALITY_COMPLEX} with
+         * {@sa #setPasswordQuality}. The default value is 0.
+         * <p>
+         * The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated
+         *            with.
+         * @param length The new desired minimum number of letters required in the
+         *            password. A value of 0 means there is no restriction.
+         */
+        SetPasswordMinimumNonLetter(
+            [in] IComponentName* admin,
+            [in] Int32 length);
+
+        /**
+         * Retrieve the current number of non-letter characters required in the
+         * password for all admins or a particular one. This is the same value as
+         * set by {#link {@sa #setPasswordMinimumNonLetter(ComponentName, int)}
+         * and only applies when the password quality is
+         * {@sa #PASSWORD_QUALITY_COMPLEX}.
+         *
+         * @param admin The name of the admin component to check, or null to
+         *            aggregate all admins.
+         * @return The minimum number of letters required in the password.
+         */
+        GetPasswordMinimumNonLetter(
+            [in] IComponentName* admin,
+            [out] Int32* password);
+
+        /** @hide per-user version */
+        GetPasswordMinimumNonLetterEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        /**
+         * Called by an application that is administering the device to set the length
+         * of the password history. After setting this, the user will not be able to
+         * enter a new password that is the same as any password in the history. Note
+         * that the current password will remain until the user has set a new one, so
+         * the change does not take place immediately. To prompt the user for a new
+         * password, use {@sa #ACTION_SET_NEW_PASSWORD} after setting this value.
+         * This constraint is only imposed if the administrator has also requested
+         * either {@sa #PASSWORD_QUALITY_NUMERIC},
+         * {@sa #PASSWORD_QUALITY_ALPHABETIC}, or
+         * {@sa #PASSWORD_QUALITY_ALPHANUMERIC} with {@sa #setPasswordQuality}.
+         *
+         * <p>
+         * The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD} to be able to call this
+         * method; if it has not, a security exception will be thrown.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated
+         *        with.
+         * @param length The new desired length of password history. A value of 0
+         *        means there is no restriction.
+         */
+        SetPasswordHistoryLength(
+            [in] IComponentName* admin,
+            [in] Int32 length);
+
+        /**
+         * Called by a device admin to set the password expiration timeout. Calling this method
+         * will restart the countdown for password expiration for the given admin, as will changing
+         * the device password (for all admins).
+         *
+         * <p>The provided timeout is the time delta in ms and will be added to the current time.
+         * For example, to have the password expire 5 days from now, timeout would be
+         * 5 * 86400 * 1000 = 432000000 ms for timeout.
+         *
+         * <p>To disable password expiration, a value of 0 may be used for timeout.
+         *
+         * <p>The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_EXPIRE_PASSWORD} to be able to call this
+         * method; if it has not, a security exception will be thrown.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated with.
+         * @param timeout The limit (in ms) that a password can remain in effect. A value of 0
+         *        means there is no restriction (unlimited).
+         */
+        SetPasswordExpirationTimeout(
+            [in] IComponentName* admin,
+            [in] Int64 timeout);
+
+        /**
+         * Get the password expiration timeout for the given admin. The expiration timeout is the
+         * recurring expiration timeout provided in the call to
+         * {@sa #setPasswordExpirationTimeout(ComponentName, long)} for the given admin or the
+         * aggregate of all policy administrators if admin is null.
+         *
+         * @param admin The name of the admin component to check, or null to aggregate all admins.
+         * @return The timeout for the given admin or the minimum of all timeouts
+         */
+        GetPasswordExpirationTimeout(
+            [in] IComponentName* admin,
+            [out] Int64* password);
+
+        /**
+         * Get the current password expiration time for the given admin or an aggregate of
+         * all admins if admin is null. If the password is expired, this will return the time since
+         * the password expired as a negative number.  If admin is null, then a composite of all
+         * expiration timeouts is returned - which will be the minimum of all timeouts.
+         *
+         * @param admin The name of the admin component to check, or null to aggregate all admins.
+         * @return The password expiration time, in ms.
+         */
+        GetPasswordExpiration(
+            [in] IComponentName* admin,
+            [out] Int64* password);
+
+        /**
+         * Retrieve the current password history length for all admins
+         * or a particular one.
+         * @param admin The name of the admin component to check, or null to aggregate
+         * all admins.
+         * @return The length of the password history
+         */
+        GetPasswordHistoryLength(
+            [in] IComponentName* admin,
+            [out] Int32* password);
+
+        /** @hide per-user version */
+        GetPasswordHistoryLengthEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        /**
+         * Return the maximum password length that the device supports for a
+         * particular password quality.
+         * @param quality The quality being interrogated.
+         * @return Returns the maximum length that the user can enter.
+         */
+        GetPasswordMaximumLength(
+            [in] Int32 quality,
+            [out] Int32* password);
+
+        /**
+         * Determine whether the current password the user has set is sufficient
+         * to meet the policy requirements (quality, minimum length) that have been
+         * requested.
+         *
+         * <p>The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @return Returns true if the password meets the current requirements,
+         * else false.
+         */
+        IsActivePasswordSufficient(
+            [out] Boolean* isSufficient);
+
+        /**
+         * Retrieve the number of times the user has failed at entering a
+         * password since that last successful password entry.
+         *
+         * <p>The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_WATCH_LOGIN} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         */
+        GetCurrentFailedPasswordAttempts(
+            [out] Int32* password);
+
+        /**
+         * Setting this to a value greater than zero enables a built-in policy
+         * that will perform a device wipe after too many incorrect
+         * device-unlock passwords have been entered.  This built-in policy combines
+         * watching for failed passwords and wiping the device, and requires
+         * that you request both {@sa DeviceAdminInfo#USES_POLICY_WATCH_LOGIN} and
+         * {@sa DeviceAdminInfo#USES_POLICY_WIPE_DATA}}.
+         *
+         * <p>To implement any other policy (e.g. wiping data for a particular
+         * application only, erasing or revoking credentials, or reporting the
+         * failure to a server), you should implement
+         * {@sa DeviceAdminReceiver#onPasswordFailed(Context, android.content.Intent)}
+         * instead.  Do not use this API, because if the maximum count is reached,
+         * the device will be wiped immediately, and your callback will not be invoked.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated with.
+         * @param num The number of failed password attempts at which point the
+         * device will wipe its data.
+         */
+        SetMaximumFailedPasswordsForWipe(
+            [in] IComponentName* admin,
+            [in] Int32 num);
+
+        /**
+         * Retrieve the current maximum number of login attempts that are allowed
+         * before the device wipes itself, for all admins
+         * or a particular one.
+         * @param admin The name of the admin component to check, or null to aggregate
+         * all admins.
+         */
+        GetMaximumFailedPasswordsForWipe(
+            [in] IComponentName* admin,
+            [out] Int32* password);
+
+        /** @hide per-user version */
+        GetMaximumFailedPasswordsForWipeEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        /**
+         * Force a new device unlock password (the password needed to access the
+         * entire device, not for individual accounts) on the user.  This takes
+         * effect immediately.
+         * The given password must be sufficient for the
+         * current password quality and length constraints as returned by
+         * {@sa #getPasswordQuality(ComponentName)} and
+         * {@sa #getPasswordMinimumLength(ComponentName)}; if it does not meet
+         * these constraints, then it will be rejected and false returned.  Note
+         * that the password may be a stronger quality (containing alphanumeric
+         * characters when the requested quality is only numeric), in which case
+         * the currently active quality will be increased to match.
+         *
+         * <p>The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_RESET_PASSWORD} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @param password The new password for the user.
+         * @param flags May be 0 or {@sa #RESET_PASSWORD_REQUIRE_ENTRY}.
+         * @return Returns true if the password was applied, or false if it is
+         * not acceptable for the current constraints.
+         */
+        ResetPassword(
+            [in] String password,
+            [in] Int32 flags,
+            [out] Boolean* reset);
+
+        /**
+         * Called by an application that is administering the device to set the
+         * maximum time for user activity until the device will lock.  This limits
+         * the length that the user can set.  It takes effect immediately.
+         *
+         * <p>The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_FORCE_LOCK} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated with.
+         * @param timeMs The new desired maximum time to lock in milliseconds.
+         * A value of 0 means there is no restriction.
+         */
+        SetMaximumTimeToLock(
+            [in] IComponentName* admin,
+            [in] Int64 timeMs);
+
+        /**
+         * Retrieve the current maximum time to unlock for all admins
+         * or a particular one.
+         * @param admin The name of the admin component to check, or null to aggregate
+         * all admins.
+         */
+        GetMaximumTimeToLock(
+            [in] IComponentName* admin,
+            [out] Int64* time);
+
+        /** @hide per-user version */
+        GetMaximumTimeToLockEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int64* time);
+
+        /**
+         * Make the device lock immediately, as if the lock screen timeout has
+         * expired at the point of this call.
+         *
+         * <p>The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_FORCE_LOCK} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         */
+        LockNow();
+
+        /**
+         * Ask the user date be wiped.  This will cause the device to reboot,
+         * erasing all user data while next booting up.  External storage such
+         * as SD cards will be also erased if the flag {@sa #WIPE_EXTERNAL_STORAGE}
+         * is set.
+         *
+         * <p>The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_WIPE_DATA} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @param flags Bit mask of additional options: currently 0 and
+         *              {@sa #WIPE_EXTERNAL_STORAGE} are supported.
+         */
+        WipeData(
+            [in] Int32 flags);
+
+        /**
+         * Called by an application that is administering the device to set the
+         * global proxy and exclusion list.
+         * <p>
+         * The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_SETS_GLOBAL_PROXY} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         * Only the first device admin can set the proxy. If a second admin attempts
+         * to set the proxy, the {@sa ComponentName} of the admin originally setting the
+         * proxy will be returned. If successful in setting the proxy, null will
+         * be returned.
+         * The method can be called repeatedly by the device admin alrady setting the
+         * proxy to update the proxy and exclusion list.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated
+         *            with.
+         * @param proxySpec the global proxy desired. Must be an HTTP Proxy.
+         *            Pass Proxy.NO_PROXY to reset the proxy.
+         * @param exclusionList a list of domains to be excluded from the global proxy.
+         * @return returns null if the proxy was successfully set, or a {@sa ComponentName}
+         *            of the device admin that sets thew proxy otherwise.
+         * @hide
+         */
+        SetGlobalProxy(
+            [in] IComponentName* admin,
+            [in] IProxy* proxySpec,
+            [in] ArrayOf<String>* exclusionList,
+            [out] IComponentName** component);
+
+        /**
+         * Returns the component name setting the global proxy.
+         * @return ComponentName object of the device admin that set the global proxy, or
+         *            null if no admin has set the proxy.
+         * @hide
+         */
+        GetGlobalProxyAdmin(
+            [out] IComponentName** global);
+
+        /**
+         * Called by an application that is administering the device to
+         * request that the storage system be encrypted.
+         *
+         * <p>When multiple device administrators attempt to control device
+         * encryption, the most secure, supported setting will always be
+         * used.  If any device administrator requests device encryption,
+         * it will be enabled;  Conversely, if a device administrator
+         * attempts to disable device encryption while another
+         * device administrator has enabled it, the call to disable will
+         * fail (most commonly returning {@sa #ENCRYPTION_STATUS_ACTIVE}).
+         *
+         * <p>This policy controls encryption of the secure (application data) storage area.  Data
+         * written to other storage areas may or may not be encrypted, and this policy does not require
+         * or control the encryption of any other storage areas.
+         * There is one exception:  If {@sa android.os.Environment#isExternalStorageEmulated()} is
+         * true, then the directory returned by
+         * {@sa android.os.Environment#getExternalStorageDirectory()} must be written to disk
+         * within the encrypted storage area.
+         *
+         * <p>Important Note:  On some devices, it is possible to encrypt storage without requiring
+         * the user to create a device PIN or Password.  In this case, the storage is encrypted, but
+         * the encryption key may not be fully secured.  For maximum security, the administrator should
+         * also require (and check for) a pattern, PIN, or password.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated with.
+         * @param encrypt true to request encryption, false to release any previous request
+         * @return the new request status (for all active admins) - will be one of
+         * {@sa #ENCRYPTION_STATUS_UNSUPPORTED}, {@sa #ENCRYPTION_STATUS_INACTIVE}, or
+         * {@sa #ENCRYPTION_STATUS_ACTIVE}.  This is the value of the requests;  Use
+         * {@sa #getStorageEncryptionStatus()} to query the actual device state.
+         */
+        SetStorageEncryption(
+            [in] IComponentName* admin,
+            [in] Boolean encrypt,
+            [out] Int32* result);
+
+        /**
+         * Called by an application that is administering the device to
+         * determine the requested setting for secure storage.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated with.  If null,
+         * this will return the requested encryption setting as an aggregate of all active
+         * administrators.
+         * @return true if the admin(s) are requesting encryption, false if not.
+         */
+        GetStorageEncryption(
+            [in] IComponentName* admin,
+            [out] Boolean* result);
+
+         /**
+          * Called by an application that is administering the device to
+          * determine the current encryption status of the device.
+          *
+          * Depending on the returned status code, the caller may proceed in different
+          * ways.  If the result is {@sa #ENCRYPTION_STATUS_UNSUPPORTED}, the
+          * storage system does not support encryption.  If the
+          * result is {@sa #ENCRYPTION_STATUS_INACTIVE}, use {@sa
+          * #ACTION_START_ENCRYPTION} to begin the process of encrypting or decrypting the
+          * storage.  If the result is {@sa #ENCRYPTION_STATUS_ACTIVATING} or
+          * {@sa #ENCRYPTION_STATUS_ACTIVE}, no further action is required.
+          *
+          * @return current status of encryption.  The value will be one of
+          * {@sa #ENCRYPTION_STATUS_UNSUPPORTED}, {@sa #ENCRYPTION_STATUS_INACTIVE},
+          * {@sa #ENCRYPTION_STATUS_ACTIVATING}, or{@sa #ENCRYPTION_STATUS_ACTIVE}.
+          */
+        GetStorageEncryptionStatus(
+            [out] Int32* st);
+
+        /** @hide per-user version */
+        GetStorageEncryptionStatusEx(
+            [in] Int32 userHandle,
+            [out] Int32* st);
+
+        /**
+         * Called by an application that is administering the device to disable all cameras
+         * on the device.  After setting this, no applications will be able to access any cameras
+         * on the device.
+         *
+         * <p>The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_DISABLE_CAMERA} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated with.
+         * @param disabled Whether or not the camera should be disabled.
+         */
+        SetCameraDisabled(
+            [in] IComponentName* admin,
+            [in] Boolean disabled);
+
+        /**
+         * Determine whether or not the device's cameras have been disabled either by the current
+         * admin, if specified, or all admins.
+         * @param admin The name of the admin component to check, or null to check if any admins
+         * have disabled the camera
+         */
+        GetCameraDisabled(
+            [in] IComponentName* admin,
+            [out] Boolean* disabled);
+
+        /** @hide per-user version */
+        GetCameraDisabledEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Boolean* disabled);
+
+        /**
+         * Called by an application that is administering the device to disable keyguard customizations,
+         * such as widgets. After setting this, keyguard features will be disabled according to the
+         * provided feature list.
+         *
+         * <p>The calling device admin must have requested
+         * {@sa DeviceAdminInfo#USES_POLICY_DISABLE_KEYGUARD_FEATURES} to be able to call
+         * this method; if it has not, a security exception will be thrown.
+         *
+         * @param admin Which {@sa DeviceAdminReceiver} this request is associated with.
+         * @param which {@sa #KEYGUARD_DISABLE_FEATURES_NONE} (default),
+         * {@sa #KEYGUARD_DISABLE_WIDGETS_ALL}, {@sa #KEYGUARD_DISABLE_SECURE_CAMERA},
+         * {@sa #KEYGUARD_DISABLE_FEATURES_ALL}
+         */
+        SetKeyguardDisabledFeatures(
+            [in] IComponentName* admin,
+            [in] Int32 which);
+
+        /**
+         * Determine whether or not features have been disabled in keyguard either by the current
+         * admin, if specified, or all admins.
+         * @param admin The name of the admin component to check, or null to check if any admins
+         * have disabled features in keyguard.
+         * @return bitfield of flags. See {@sa #setKeyguardDisabledFeatures(ComponentName, int)}
+         * for a list.
+         */
+        GetKeyguardDisabledFeatures(
+            [in] IComponentName* admin,
+            [out] Int32* which);
+
+        /** @hide per-user version */
+        GetKeyguardDisabledFeaturesEx(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int32* which);
+
+        /**
+         * @hide
+         */
+        SetActiveAdmin(
+            [in] IComponentName* policyReceiver,
+            [in] Boolean refreshing);
+
+        /**
+         * Returns the DeviceAdminInfo as defined by the administrator's package info & meta-data
+         * @hide
+         */
+        GetAdminInfo(
+            [in] IComponentName* cn,
+            [out] IDeviceAdminInfo** info);
+
+        /**
+         * @hide
+         */
+        GetRemoveWarning(
+            [in] IComponentName* admin,
+            [in] IRemoteCallback* result);
+
+        /**
+         * @hide
+         */
+        SetActivePasswordState(
+            [in] Int32 quality,
+            [in] Int32 length,
+            [in] Int32 letters,
+            [in] Int32 uppercase,
+            [in] Int32 lowercase,
+            [in] Int32 numbers,
+            [in] Int32 symbols,
+            [in] Int32 nonletter,
+            [in] Int32 userHandle);
+
+        /**
+         * @hide
+         */
+        ReportFailedPasswordAttempt(
+            [in] Int32 userHandle);
+
+        ReportSuccessfulPasswordAttempt(
+            [in] Int32 userHandle);
+    }
+
+    [local]
+    interface IDevicePolicyManagerHelper {
+        Create(
+            [in] IContext* ctx,
+            [in] IHandler* handler,
+            [out] IDevicePolicyManager** policymanager);
+    }
+
+    } // namespace Admin
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

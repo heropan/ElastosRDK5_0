@@ -1,0 +1,25 @@
+module
+{
+    interface Elastos.Droid.App.IActivity;
+    interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Content {
+    /**
+     * Presents multiple options for handling the case where a sync was aborted because there
+     * were too many pending deletes. One option is to force the delete, another is to rollback
+     * the deletes, the third is to do nothing.
+     * @hide
+     */
+    class CSyncActivityTooManyDeletes {
+
+        interface IActivity;
+        interface IAdapterViewOnItemClickListener;
+    }
+
+    } // namespace Content
+    } // namespace Droid
+    } // namespace Elastos
+
+}

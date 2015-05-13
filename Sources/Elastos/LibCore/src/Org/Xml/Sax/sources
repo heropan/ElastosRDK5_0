@@ -1,0 +1,28 @@
+TARGET_NAME= Org.Xml.Sax
+TARGET_TYPE= eco
+
+INCLUDES += $(MAKEDIR)/../../../../inc/common;
+INCLUDES += ./;
+INCLUDES += $(MAKEDIR)/../../../../inc/Org;
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Xml/Sax;
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Xml/Sax/Helpers;
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Xml/Sax/Ext;
+
+CAR_FLAGS += -u
+LUBE_FLAGS += -n -u
+
+SOURCES = Org.Xml.Sax.car
+SOURCES += CInputSource.cpp
+SOURCES += CHandlerBase.cpp
+SOURCES += Elastos.Core.cpp
+
+LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
+LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+LIBRARIES += $(PREBUILD_LIB)/libm.a
+
+LIBRARIES += Ext/Ext.lib
+LIBRARIES += Helpers/Helpers.lib
+LIBRARIES += -lcutils -licuuc

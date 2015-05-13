@@ -1,0 +1,18 @@
+
+module
+{
+    interface Elastos.Droid.Content.Res.IConfiguration;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+
+        interface IContextThemeWrapper extends Elastos.Droid.Content.IContextWrapper {
+            ApplyOverrideConfiguration(
+                [in] IConfiguration* overrideConfiguration);
+        }
+
+    } // namespace View
+    } // namespace Droid
+    } // namespace Elastos
+}

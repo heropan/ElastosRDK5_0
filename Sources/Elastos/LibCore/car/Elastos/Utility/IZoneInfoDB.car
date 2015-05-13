@@ -1,0 +1,34 @@
+module
+{
+    interface Elastos.Utility.ITimeZone;
+
+    namespace Elastos{
+    namespace Utility{
+
+    interface IZoneInfoDB {
+        GetAvailableIDs(
+            [out, callee] ArrayOf<String>* array);
+
+        GetAvailableIDsEx(
+            [in] Int32 rawOffset,
+            [out, callee] ArrayOf<String>* array);
+
+        GetSystemDefault(
+            [out] ITimeZone** tz);
+
+        GetTimeZone(
+            [in] String id,
+            [out] ITimeZone** tz);
+
+        GetVersion(
+            [out] String* v);
+
+        MakeTimeZone(
+            [in]  String id,
+            [out] ITimeZone** tz);
+    }
+
+    } // namespace Utility
+    } // namespace Elastos
+}
+

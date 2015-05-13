@@ -1,0 +1,20 @@
+module
+{
+    interface Elastos.Droid.Text.Method.IMovementMethod;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Method {
+
+    /**
+     * Base classes for movement methods.
+     */
+    interface IBaseMovementMethod /*implements IMovementMethod*/ {}
+
+    }//namespace Method
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

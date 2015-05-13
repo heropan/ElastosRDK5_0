@@ -1,0 +1,21 @@
+
+module
+{
+    interface Elastos.Droid.App.IFragmentManagerImpl;
+    interface Elastos.Droid.App.IBackStackRecord;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    [local]
+    interface IBackStackState {
+        Instantiate(
+            [in] IFragmentManagerImpl* fm,
+            [out] IBackStackRecord** record);
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

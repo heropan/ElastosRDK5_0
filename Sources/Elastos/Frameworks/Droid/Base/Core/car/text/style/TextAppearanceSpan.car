@@ -1,0 +1,63 @@
+module
+{
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.Res.IColorStateList;
+    interface Elastos.Droid.Text.Style.IMetricAffectingSpan;
+    interface Elastos.Droid.Text.Style.IMetricAffectingSpanHelper;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    /**
+     * Sets the text color, size, style, and typeface to match a TextAppearance
+     * resource.
+     */
+    interface ITextAppearanceSpan extends IMetricAffectingSpan /*implements IParcelableSpan*/ {
+
+        /**
+         * Returns the typeface family specified by this span, or <code>null</code>
+         * if it does not specify one.
+         */
+        GetFamily(
+            [out] String* ret);
+
+        /**
+         * Returns the text color specified by this span, or <code>null</code>
+         * if it does not specify one.
+         */
+        GetTextColor(
+            [out] IColorStateList** ret);
+
+        /**
+         * Returns the link color specified by this span, or <code>null</code>
+         * if it does not specify one.
+         */
+        GetLinkTextColor(
+            [out] IColorStateList** ret);
+
+        /**
+         * Returns the text size specified by this span, or <code>-1</code>
+         * if it does not specify one.
+         */
+        GetTextSize(
+            [out] Int32* ret);
+
+        /**
+         * Returns the text style specified by this span, or <code>0</code>
+         * if it does not specify one.
+         */
+        GetTextStyle(
+            [out] Int32* ret);
+    }
+
+    interface ITextAppearanceSpanHelper extends IMetricAffectingSpanHelper {}
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

@@ -1,0 +1,168 @@
+
+module
+{
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.View.IIWindow;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Accessibility {
+
+    interface IAccessibilityEvent;
+    interface IAccessibilityInteractionConnection;
+    /**
+     * Listener for the system accessibility state. To listen for changes to the accessibility
+     * state on the device, implement this interface and register it with the system by
+     * calling {@link AccessibilityManager#addAccessibilityStateChangeListener
+     * addAccessibilityStateChangeListener()}.
+     */
+    interface IAccessibilityStateChangeListener {
+
+        /**
+         * Called back on change in the accessibility state.
+         *
+         * @param enabled Whether accessibility is enabled.
+         */
+        OnAccessibilityStateChanged(
+            [in] Boolean enabled);
+    }
+
+    [deprecated]
+    interface IAccessibilityManager {
+        /** @hide */
+        const Int32 STATE_FLAG_ACCESSIBILITY_ENABLED = 0x00000001;
+
+        /** @hide */
+        const Int32 STATE_FLAG_TOUCH_EXPLORATION_ENABLED = 0x00000002;
+
+        /**
+         * Returns if the accessibility in the system is enabled.
+         *
+         * @return True if accessibility is enabled, false otherwise.
+         */
+        IsEnabled(
+            [out] Boolean* result);
+
+        /**
+         * Returns if the touch exploration in the system is enabled.
+         *
+         * @return True if touch exploration is enabled, false otherwise.
+         */
+        IsTouchExplorationEnabled(
+            [out] Boolean* result);
+
+        /**
+         * Sends an {@link AccessibilityEvent}.
+         *
+         * @param event The event to send.
+         *
+         * @throws IllegalStateException if accessibility is not enabled.
+         *
+         * <strong>Note:</strong> The preferred mechanism for sending custom accessibility
+         * events is through calling
+         * {@link android.view.ViewParent#requestSendAccessibilityEvent(View, AccessibilityEvent)}
+         * instead of this method to allow predecessors to augment/filter events sent by
+         * their descendants.
+         */
+        SendAccessibilityEvent(
+            [in] IAccessibilityEvent* event);
+
+        /**
+         * Requests feedback interruption from all accessibility services.
+         */
+        Interrupt();
+
+        /**
+         * Returns the {@link ServiceInfo}s of the installed accessibility services.
+         *
+         * @return An unmodifiable list with {@link ServiceInfo}s.
+         *
+         * @deprecated Use {@link #getInstalledAccessibilityServiceList()}
+         */
+        GetAccessibilityServiceList(
+            [out] IObjectContainer** serviceList);
+
+        /**
+         * Returns the {@link AccessibilityServiceInfo}s of the installed accessibility services.
+         *
+         * @return An unmodifiable list with {@link AccessibilityServiceInfo}s.
+         */
+        GetInstalledAccessibilityServiceList(
+            [out] IObjectContainer** serviceList);
+
+        /**
+         * Returns the {@link AccessibilityServiceInfo}s of the enabled accessibility services
+         * for a given feedback type.
+         *
+         * @param feedbackTypeFlags The feedback type flags.
+         * @return An unmodifiable list with {@link AccessibilityServiceInfo}s.
+         *
+         * @see AccessibilityServiceInfo#FEEDBACK_AUDIBLE
+         * @see AccessibilityServiceInfo#FEEDBACK_GENERIC
+         * @see AccessibilityServiceInfo#FEEDBACK_HAPTIC
+         * @see AccessibilityServiceInfo#FEEDBACK_SPOKEN
+         * @see AccessibilityServiceInfo#FEEDBACK_VISUAL
+         */
+        GetEnabledAccessibilityServiceList(
+            [in] Int32 feedbackTypeFlags,
+            [out] IObjectContainer** serviceList);
+
+        /**
+         * Registers an {@link AccessibilityStateChangeListener} for changes in
+         * the global accessibility state of the system.
+         *
+         * @param listener The listener.
+         * @return True if successfully registered.
+         */
+        AddAccessibilityStateChangeListener(
+            [in] IAccessibilityStateChangeListener* listener,
+            [out] Boolean* add);
+
+        /**
+         * Unregisters an {@link AccessibilityStateChangeListener}.
+         *
+         * @param listener The listener.
+         * @return True if successfully unregistered.
+         */
+        RemoveAccessibilityStateChangeListener(
+            [in] IAccessibilityStateChangeListener* listener,
+            [out] Boolean* remove);
+
+        /**
+         * Adds an accessibility interaction connection interface for a given window.
+         * @param windowToken The window token to which a connection is added.
+         * @param connection The connection.
+         *
+         * @hide
+         */
+        AddAccessibilityInteractionConnection(
+            [in] IIWindow* windowToken,
+            [in] IAccessibilityInteractionConnection* connection,
+            [out] Int32* add);
+
+        /**
+         * Removed an accessibility interaction connection interface for a given window.
+         * @param windowToken The window token to which a connection is removed.
+         *
+         * @hide
+         */
+        RemoveAccessibilityInteractionConnection(
+            [in] IIWindow* windowToken);
+    }
+
+    [local]
+    interface IAccessibilityManagerHelper {
+        CreateAsSharedAcrossUsers(
+            [in] IContext* ctx);
+
+        GetInstance(
+            [in] IContext* ctx,
+            [out] IAccessibilityManager** manager);
+    }
+
+    } // namespace Accessibility
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

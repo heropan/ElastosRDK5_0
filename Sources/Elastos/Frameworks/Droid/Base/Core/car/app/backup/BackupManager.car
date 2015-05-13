@@ -1,0 +1,91 @@
+module
+{
+    interface Elastos.Droid.App.Backup.IRestoreSession;
+    interface Elastos.Droid.App.Backup.IRestoreObserver;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+    namespace Backup {
+
+    /**
+     * Direct interface to the Backup Manager Service that applications invoke on.  The only
+     * operation currently needed is a simple notification that the app has made changes to
+     * data it wishes to back up, so the system should run a backup pass.
+     *
+     * Apps will use the android.app.backup.BackupManager class rather than going through
+     * this Binder interface directly.
+     *
+     * @sa android.app.backup.BackupManager
+     *
+     * {@hide}
+     */
+    interface IBackupManager {
+        /**
+         * Notifies the Android backup system that your application wishes to back up
+         * new changes to its data.  A backup operation using your application's
+         * android.app.backup.BackupAgent subclass will be scheduled when you
+         * call this method.
+         *
+         * @sa android.app.backup.BackupAgent
+         */
+        DataChanged();
+
+        /**
+         * Restore the calling application from backup.  The data will be restored from the
+         * current backup dataset if the application has stored data there, or from
+         * the dataset used during the last full device setup operation if the current
+         * backup dataset has no matching data.  If no backup data exists for this application
+         * in either source, a nonzero value will be returned.
+         *
+         * <p>If this method returns zero (meaning success), the OS will attempt to retrieve
+         * a backed-up dataset from the remote transport, instantiate the application's
+         * backup agent, and pass the dataset to the agent's
+         * android.app.backup.BackupAgent#onRestore(BackupDataInput, int, android.os.ParcelFileDescriptor) onRestore()
+         * method.
+         *
+         * @sa android.app.backup.BackupAgent#onRestore(BackupDataInput, int, android.os.ParcelFileDescriptor) onRestore()
+         *
+         * @param observer The RestoreObserver to receive callbacks during the restore
+         * operation. This must not be null.
+         *
+         * @sa RestoreObserver
+         *
+         * @return Zero on success; nonzero on error.
+         */
+        RequestRestore(
+            [in] IRestoreObserver* observer,
+            [out] Int32* result);
+
+        /**
+         * Begin the process of restoring data from backup.  See the
+         * android.app.backup.RestoreSession class for documentation on that process.
+         *
+         * @sa android.app.backup.RestoreSession
+         * @hide
+         */
+        BeginRestoreSession(
+            [out] IRestoreSession** session);
+    }
+
+    interface IBackupManagerHelper {
+        /**
+         * Convenience method for callers who need to indicate that some other package
+         * needs a backup pass.  This can be useful in the case of groups of packages
+         * that share a uid.
+         * <p>
+         * This method requires that the application hold the "android.permission.BACKUP"
+         * permission if the package named in the argument does not run under the same uid
+         * as the caller.
+         *
+         * @param packageName The package name identifying the application to back up.
+         */
+        DataChanged(
+            [in] String packageName);
+    }
+
+    } // namespace Backup
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,19 @@
+module
+{
+    interface Elastos.Droid.Graphics.IBitmap;
+    interface Elastos.Droid.Text.Style.ILeadingMarginSpan;
+    interface Elastos.Droid.Text.Style.ILineHeightSpan;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    interface IIconMarginSpan /*implements ILeadingMarginSpan,  ILineHeightSpan*/ {}
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

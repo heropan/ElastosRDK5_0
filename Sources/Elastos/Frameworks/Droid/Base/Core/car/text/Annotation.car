@@ -1,0 +1,27 @@
+module
+{
+    interface Elastos.Core.Os.IParcel;
+    interface Elastos.Droid.Text.IParcelableSpan;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+
+    /**
+     * Annotations are simple key-value pairs that are preserved across
+     * TextView save/restore cycles and can be used to keep application-specific
+     * data that needs to be maintained for regions of text.
+     */
+    interface IAnnotation /*implements IParcelableSpan*/ {
+        GetKey(
+            [out] String* ret);
+
+        GetValue(
+            [out] String* ret);
+    }
+
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

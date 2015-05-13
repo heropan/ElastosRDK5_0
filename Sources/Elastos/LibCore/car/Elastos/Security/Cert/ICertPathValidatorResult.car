@@ -1,0 +1,19 @@
+
+module
+{
+    namespace Elastos {
+    namespace Security {
+    namespace Cert {
+
+    /**
+     * The interface specification for certification path validation results.
+     * <p>
+     * This interface is for grouping purposes of validation result implementations.
+     */
+    interface ICertPathValidatorResult extends Elastos.Core.ICloneable {
+    }
+
+    } // namespace Cert
+    } // namespace Security
+    } // namespace Elastos
+}

@@ -1,0 +1,49 @@
+
+module
+{
+    namespace Elastos {
+    namespace IO {
+    namespace Channels {
+     
+    /**
+     * Channels that implement this interface can be asynchronously closed and
+     * interrupted.
+     * <p>
+     * A channel that can be asynchronously closed permits that a thread blocked on
+     * an I/O operation (the I/O thread) can be released by another thread calling
+     * the channel's {@link #close()} method. The I/O thread will throw an
+     * {@link AsynchronousCloseException} and the channel will be closed.
+     * <p>
+     * A channel that is interruptible permits a thread blocked on an I/O operation
+     * (the I/O thread) to be interrupted by another thread (by invoking
+     * {@link Thread#interrupt()} on the I/O thread). When the I/O thread is
+     * interrupted it will throw a {@link ClosedByInterruptException}, it will have
+     * its interrupted status set and the channel will be closed. If the I/O thread
+     * attempts to make an I/O call with the interrupt status set the call will
+     * immediately fail with a {@link ClosedByInterruptException}.
+     */
+    interface IInterruptibleChannel extends Elastos.IO.Channels.IChannel {
+    
+        /**
+         * Closes an open channel. If the channel is already closed then this method
+         * has no effect. If there is a problem with closing the channel then the
+         * method throws an IOException and the exception contains reasons for the
+         * failure.
+         * <p>
+         * If an attempt is made to perform an operation on a closed channel then a
+         * {@link ClosedChannelException} will be thrown on that attempt.
+         * <p>
+         * If multiple threads attempt to simultaneously close a channel, then only
+         * one thread will run the closure code, and others will be blocked until
+         * the first returns.
+         *
+         * @throws IOException
+         *             if a problem occurs closing the channel.
+         */
+        //Close();
+    }
+
+    } // namespace Channels
+    } // namespace IO
+    } // namespace Elastos
+}

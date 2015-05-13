@@ -1,0 +1,40 @@
+
+module
+{
+    interface Elastos.Droid.Text.IInputFilter;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+
+    interface ILoginFilter /*implements IInputFilter*/ {
+        /**
+         * Called when we start processing filter.
+         */
+        OnStart();
+
+        /**
+         * Called whenever we encounter an invalid character.
+         * @param c the invalid character
+         */
+        OnInvalidCharacter(
+            [in] Char32 c);
+
+        /**
+         * Called when we're done processing filter
+         */
+        OnStop();
+
+        /**
+         * Returns whether or not we allow character c.
+         * Subclasses must override this method.
+         */
+        IsAllowed(
+            [in] Char32 c,
+            [out] Boolean* ret);
+    }
+
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+}

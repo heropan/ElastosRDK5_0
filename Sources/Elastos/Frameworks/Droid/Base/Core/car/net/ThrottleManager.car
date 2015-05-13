@@ -1,0 +1,157 @@
+
+module
+{
+    interface Elastos.Droid.Net.IIThrottleManager;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    interface IThrottleManager {
+        /**
+         * Broadcast each polling period to indicate new data counts.
+         *
+         * Includes four extras:
+         * EXTRA_CYCLE_READ - a long of the read bytecount for the current cycle
+         * EXTRA_CYCLE_WRITE -a long of the write bytecount for the current cycle
+         * EXTRA_CYLCE_START -a long of MS for the cycle start time
+         * EXTRA_CYCLE_END   -a long of MS for the cycle stop time
+         * {@hide}
+         */
+        const String THROTTLE_POLL_ACTION = "android.net.thrott.POLL_ACTION";
+        /**
+         * The lookup key for a long for the read bytecount for this period.  Retrieve with
+         * {@link android.content.Intent#getLongExtra(String)}.
+         * {@hide}
+         */
+        const String EXTRA_CYCLE_READ = "cycleRead";
+        /**
+         * contains a long of the number of bytes written in the cycle
+         * {@hide}
+         */
+        const String EXTRA_CYCLE_WRITE = "cycleWrite";
+        /**
+         * contains a long of the number of bytes read in the cycle
+         * {@hide}
+         */
+        const String EXTRA_CYCLE_START = "cycleStart";
+        /**
+         * contains a long of the ms since 1970 used to init a calendar, etc for the end
+         * of the cycle
+         * {@hide}
+         */
+        const String EXTRA_CYCLE_END = "cycleEnd";
+
+        /**
+         * Broadcast when the thottle level changes.
+         * {@hide}
+         */
+        const String THROTTLE_ACTION = "android.net.thrott.THROTTLE_ACTION";
+        /**
+         * int of the current bandwidth in TODO
+         * {@hide}
+         */
+        const String EXTRA_THROTTLE_LEVEL = "level";
+
+        /**
+         * Broadcast on boot and whenever the settings change.
+         * {@hide}
+         */
+        const String POLICY_CHANGED_ACTION = "android.net.thrott.POLICY_CHANGED_ACTION";
+
+        // {@hide}
+        const Int32 DIRECTION_TX = 0;
+        // {@hide}
+        const Int32 DIRECTION_RX = 1;
+
+        // {@hide}
+        const Int32 PERIOD_CYCLE  = 0;
+        // {@hide}
+        const Int32 PERIOD_YEAR   = 1;
+        // {@hide}
+        const Int32 PERIOD_MONTH  = 2;
+        // {@hide}
+        const Int32 PERIOD_WEEK   = 3;
+        // @hide
+        const Int32 PERIOD_7DAY   = 4;
+        // @hide
+        const Int32 PERIOD_DAY    = 5;
+        // @hide
+        const Int32 PERIOD_24HOUR = 6;
+        // @hide
+        const Int32 PERIOD_HOUR   = 7;
+        // @hide
+        const Int32 PERIOD_60MIN  = 8;
+        // @hide
+        const Int32 PERIOD_MINUTE = 9;
+        // @hide
+        const Int32 PERIOD_60SEC  = 10;
+        // @hide
+        const Int32 PERIOD_SECOND = 11;
+
+        /**
+         * returns a long of the byte count either read or written on the named interface
+         * for the period described.  Direction is either DIRECTION_RX or DIRECTION_TX and
+         * period may only be PERIOD_CYCLE for the current cycle (other periods may be supported
+         * in the future).  Ago indicates the number of periods in the past to lookup - 0 means
+         * the current period, 1 is the last one, 2 was two periods ago..
+         * {@hide}
+         */
+        GetByteCount(
+            [in] String iface,
+            [in] Int32 direction,
+            [in] Int32 period,
+            [in] Int32 ago,
+            [out] Int64* result);
+
+        /**
+         * returns a long of the ms from the epoch to the time the current cycle ends for the
+         * named interface
+         * {@hide}
+         */
+         GetResetTime(
+            [in] String iface,
+            [out] Int64* result);
+
+        /**
+         * returns a long of the ms from the epoch to the time the current cycle started for the
+         * named interface
+         * {@hide}
+         */
+         GetPeriodStartTime(
+            [in] String iface,
+            [out] Int64* result);
+
+        /**
+         * returns the number of bytes read+written after which a particular cliff
+         * takes effect on the named iface.  Currently only cliff #1 is supported (1 step)
+         * {@hide}
+         */
+         GetCliffThreshold(
+            [in] String iface,
+            [in] Int32 cliff,
+            [out] Int64* result);
+
+        /**
+         * returns the thottling bandwidth (bps) for a given cliff # on the named iface.
+         * only cliff #1 is currently supported.
+         * {@hide}
+         */
+         GetCliffLevel(
+            [in] String iface,
+            [in] Int32 cliff,
+            [out] Int32* result);
+
+        /**
+         * returns the help URI for throttling
+         * {@hide}
+         */
+         GetHelpUri(
+            [out] String* result);
+    }
+
+    } // namespace Net
+    } // namepsace Droid
+    } // namespace Elastos
+
+}

@@ -1,0 +1,141 @@
+
+module
+{
+    interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.Pm.IApplicationInfo;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace InputMethod {
+
+    /**
+     * This class is used to specify meta information of a subtype contained in an input method editor
+     * (IME). Subtype can describe locale (e.g. en_US, fr_FR...) and mode (e.g. voice, keyboard...),
+     * and is used for IME switch and settings. The input method subtype allows the system to bring up
+     * the specified subtype of the designated IME directly.
+     *
+     * <p>It should be defined in an XML resource file of the input method with the
+     * <code>&lt;subtype&gt;</code> element. For more information, see the guide to
+     * <a href="{@docRoot}resources/articles/creating-input-method.html">
+     * Creating an Input Method</a>.</p>
+     */
+    [local, parcelable]
+    interface IInputMethodSubtype {
+        /**
+         * @return Resource ID of the subtype name string.
+         */
+        GetNameResId(
+            [out] Int32* id);
+
+        /**
+         * @return Resource ID of the subtype icon drawable.
+         */
+        GetIconResId(
+            [out] Int32* id);
+
+        /**
+         * @return The locale of the subtype. This method returns the "locale" string parameter passed
+         * to the constructor.
+         */
+        GetLocale(
+            [out] String* locale);
+
+        /**
+         * @return The mode of the subtype.
+         */
+        GetMode(
+            [out] String* mode);
+
+        /**
+         * @return The extra value of the subtype.
+         */
+        GetExtraValue(
+            [out] String* value);
+
+        /**
+         * @return true if this subtype is auxiliary, false otherwise. An auxiliary subtype will not be
+         * shown in the list of enabled IMEs for choosing the current IME in the Settings even when this
+         * subtype is enabled. Please note that this subtype will still be shown in the list of IMEs in
+         * the IME switcher to allow the user to tentatively switch to this subtype while an IME is
+         * shown. The framework will never switch the current IME to this subtype by
+         * {@link android.view.inputmethod.InputMethodManager#switchToLastInputMethod}.
+         * The intent of having this flag is to allow for IMEs that are invoked in a one-shot way as
+         * auxiliary input mode, and return to the previous IME once it is finished (e.g. voice input).
+         */
+        IsAuxiliary(
+            [out] Boolean* isAuxi);
+
+        /**
+         * @return true when this subtype will be enabled by default if no other subtypes in the IME
+         * are enabled explicitly, false otherwise. Note that a subtype with this method returning true
+         * will not be shown in the list of subtypes in each IME's subtype enabler. Having an
+         * "automatic" subtype is an example use of this flag.
+         */
+        OverridesImplicitlyEnabledSubtype(
+            [out] Boolean* enabled);
+
+        /**
+         * @param context Context will be used for getting Locale and PackageManager.
+         * @param packageName The package name of the IME
+         * @param appInfo The application info of the IME
+         * @return a display name for this subtype. The string resource of the label (mSubtypeNameResId)
+         * may have exactly one %s in it. If there is, the %s part will be replaced with the locale's
+         * display name by the formatter. If there is not, this method returns the string specified by
+         * mSubtypeNameResId. If mSubtypeNameResId is not specified (== 0), it's up to the framework to
+         * generate an appropriate display name.
+         */
+        GetDisplayName(
+            [in] IContext* ctx,
+            [in] String packageName,
+            [in] IApplicationInfo* appInfo,
+            [out] ICharSequence** name);
+
+        /**
+         * The string of ExtraValue in subtype should be defined as follows:
+         * example: key0,key1=value1,key2,key3,key4=value4
+         * @param key The key of extra value
+         * @return The subtype contains specified the extra value
+         */
+        ContainsExtraValueKey(
+            [in] String key,
+            [out] Boolean* contain);
+
+        /**
+         * The string of ExtraValue in subtype should be defined as follows:
+         * example: key0,key1=value1,key2,key3,key4=value4
+         * @param key The key of extra value
+         * @return The value of the specified key
+         */
+        GetExtraValueOf(
+            [in] String key,
+            [out] String* sKey);
+
+        EqualsEx(
+            [in] IInputMethodSubtype* o,
+            [out] Boolean* e);
+
+        Equals(
+            [in] IInterface* o,
+            [out] Boolean* e);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+    }
+
+    [local, deprecated]
+    interface IInputMethodSubtypeHelper {
+        Sort(
+            [in] IContext* ctx,
+            [in] Int32 flags,
+            [in] IInputMethodInfo* imi,
+            [in] IObjectContainer* subtypeList,
+            [out] IObjectContainer** sortedSubtypeList);
+    }
+
+    } // namespace InputMethod
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,24 @@
+
+module
+{
+    interface Elastos.Droid.Content.IContext;
+
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+
+    /**
+     * Sensor manager implementation that communicates with the built-in
+     * system sensors.
+     *
+     * @hide
+     */
+    [local]
+    interface ISystemSensorManager extends ISensorManager {
+    }
+
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,12 @@
+TARGET_NAME= Ext
+TARGET_TYPE= lib
+
+#INCLUDES += $(MAKEDIR)/../../../../inc/common;
+INCLUDES += ../;
+INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax;
+INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax/Helpers;
+INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax/Ext;
+
+SOURCES += CLocator2Impl.cpp
+SOURCES += CAttributes2Impl.cpp
+SOURCES += CDefaultHandler2.cpp

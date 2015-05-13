@@ -1,0 +1,82 @@
+module
+{
+    interface Elastos.Droid.View.IMotionEvent;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IHandlerCaller;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Service {
+    namespace Wallpaper {
+
+    interface IWallpaperEngine {
+        SetDesiredSize(
+            [in] Int32 width,
+            [in] Int32 height);
+
+        SetVisibility(
+            [in] Boolean visible);
+
+        DispatchPointer(
+            [in] IMotionEvent* event);
+
+        DispatchWallpaperCommand(
+            [in] String action,
+            [in] Int32 x,
+            [in] Int32 y,
+            [in] Int32 z,
+            [in] IBundle* extras);
+
+        Destroy();
+    }
+
+    [deprecated]
+    interface IWallpaperEngineWrapper extends IWallpaperEngine {
+        ReportShown();
+
+        GetConnection(
+            [out] IWallpaperConnection** connection);
+
+        GetWindowToken(
+            [out] IBinder** windowToken);
+
+        SetWindowType(
+            [in] Int32 windowType);
+
+        GetWindowType(
+            [out] Int32* windowType);
+
+        SetIsPreview(
+            [in] Boolean isPreview);
+
+        GetIsPreview(
+            [out] Boolean* isPreview);
+
+        SetShownReported(
+            [in] Boolean shownReported);
+
+        GetShownReported(
+            [out] Boolean* shownReported);
+
+        SetReqWidth(
+            [in] Int32 reqWidth);
+
+        GetReqWidth(
+            [out] Int32* reqWidth);
+
+        SetReqHeight(
+            [in] Int32 reqHeight);
+
+        GetReqHeight(
+            [out] Int32* reqHeight);
+
+        GetHandlerCaller(
+            [out] IHandlerCaller** caller);
+    }
+
+    } //Wallpaper
+    } //Service
+    } //Droid
+    } //Elastos
+}

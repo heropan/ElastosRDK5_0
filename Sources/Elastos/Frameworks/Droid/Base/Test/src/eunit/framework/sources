@@ -1,0 +1,12 @@
+
+TARGET_NAME= framework
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../inc
+INCLUDES += ../
+
+SOURCES = Assert.cpp
+SOURCES += CTestFailure.cpp
+SOURCES += CTestResult.cpp
+SOURCES += CTestSuite.cpp
+SOURCES += TestCase.cpp

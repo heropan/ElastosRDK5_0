@@ -1,0 +1,125 @@
+module
+{
+    using interface Elastos.IO.IInputStream;
+    using interface Elastos.Utility.IObjectStringMap;
+
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Net.Http.IRequest;
+    interface Elastos.Droid.Net.IWebAddress;
+    interface Org.Apache.Http.IHttpHost;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+    namespace Http {
+
+    interface IRequestQueue {
+        /**
+         * Enables data state and proxy tracking
+         */
+        EnablePlatformNotifications();
+
+        /**
+         * If platform notifications have been enabled, call this method
+         * to disable before destroying RequestQueue
+         */
+        DisablePlatformNotifications();
+
+        /**
+         * used by webkit
+         * @return proxy host if set, null otherwise
+         */
+        GetProxyHost(
+            [out] IHttpHost** host);
+
+        /**
+         * Queues an HTTP request
+         * @param url The url to load.
+         * @param method "GET" or "POST."
+         * @param headers A hashmap of http headers.
+         * @param eventHandler The event handler for handling returned
+         * data.  Callbacks will be made on the supplied instance.
+         * @param bodyProvider InputStream providing HTTP body, null if none
+         * @param bodyLength length of body, must be 0 if bodyProvider is null
+         */
+        QueueRequest(
+            [in] String url,
+            [in] String method,
+            [in] IObjectStringMap* headers,
+            [in] IEventHandler* eventHandler,
+            [in] IInputStream* bodyProvider,
+            [in] Int32 bodyLength,
+            [out] IRequestHandle** handle);
+
+        /**
+         * Queues an HTTP request
+         * @param url The url to load.
+         * @param uri The uri of the url to load.
+         * @param method "GET" or "POST."
+         * @param headers A hashmap of http headers.
+         * @param eventHandler The event handler for handling returned
+         * data.  Callbacks will be made on the supplied instance.
+         * @param bodyProvider InputStream providing HTTP body, null if none
+         * @param bodyLength length of body, must be 0 if bodyProvider is null
+         */
+        QueueRequestEx(
+            [in] String url,
+            [in] IWebAddress* uri,
+            [in] String method,
+            [in] IObjectStringMap* headers,
+            [in] IEventHandler* eventHandler,
+            [in] IInputStream* bodyProvider,
+            [in] Int32 bodyLength,
+            [out] IRequestHandle** handle);
+
+        QueueSynchronousRequest(
+            [in] String url,
+            [in] IWebAddress* uri,
+            [in] String method,
+            [in] IObjectStringMap* headers,
+            [in] IEventHandler* eventHandler,
+            [in] IInputStream* bodyProvider,
+            [in] Int32 bodyLength,
+            [out] IRequestHandle** handle);
+
+        /*
+         * RequestFeeder implementation
+         */
+        GetRequest(
+            [out] IRequest** request);
+
+        /**
+         * @return a request for given host if possible
+         */
+        GetRequestEx(
+            [in] IHttpHost* host,
+            [out] IRequest** request);
+
+        /**
+         * @return true if a request for this host is available
+         */
+        HaveRequest(
+            [in] IHttpHost* host,
+            [out] Boolean* haveRequest);
+
+        /**
+         * Put request back on head of queue
+         */
+        RequeueRequest(
+            [in] IRequest* request);
+
+        /**
+         * This must be called to cleanly shutdown RequestQueue
+         */
+        Shutdown();
+
+        StartTiming();
+
+        StopTiming();
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
+}

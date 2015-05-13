@@ -1,0 +1,224 @@
+
+module
+{
+
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Telephony.ICellInfo;
+    interface Elastos.Droid.Telephony.ICellLocation;
+    interface Elastos.Droid.Telephony.IPhoneStateListener;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Telephony {
+
+    [local]
+    interface ITelephonyManager {
+
+        const String ACTION_PHONE_STATE_CHANGED = "android.intent.action.PHONE_STATE";
+        const String EXTRA_STATE = "state";
+        const String EXTRA_STATE_IDLE = "0";
+        const String EXTRA_STATE_RINGING = "1";
+        const String EXTRA_STATE_OFFHOOK = "2";
+        const String EXTRA_INCOMING_NUMBER = "incoming_number";
+        const Int32 PHONE_TYPE_NONE = 0;
+        const Int32 PHONE_TYPE_GSM = 1;
+        const Int32 PHONE_TYPE_CDMA = 2;
+        const Int32 PHONE_TYPE_SIP = 3;
+        const Int32 NETWORK_TYPE_UNKNOWN = 0;
+        const Int32 NETWORK_TYPE_GPRS = 1;
+        const Int32 NETWORK_TYPE_EDGE = 2;
+        const Int32 NETWORK_TYPE_UMTS = 3;
+        const Int32 NETWORK_TYPE_CDMA = 4;
+        const Int32 NETWORK_TYPE_EVDO_0 = 5;
+        const Int32 NETWORK_TYPE_EVDO_A = 6;
+        const Int32 NETWORK_TYPE_1xRTT = 7;
+        const Int32 NETWORK_TYPE_HSDPA = 8;
+        const Int32 NETWORK_TYPE_HSUPA = 9;
+        const Int32 NETWORK_TYPE_HSPA = 10;
+        const Int32 NETWORK_TYPE_IDEN = 11;
+        const Int32 NETWORK_TYPE_EVDO_B = 12;
+        const Int32 NETWORK_TYPE_LTE = 13;
+        const Int32 NETWORK_TYPE_EHRPD = 14;
+        const Int32 NETWORK_TYPE_HSPAP = 15;
+        const Int32 NETWORK_CLASS_UNKNOWN = 0;
+        const Int32 NETWORK_CLASS_2_G = 1;
+        const Int32 NETWORK_CLASS_3_G = 2;
+        const Int32 NETWORK_CLASS_4_G = 3;
+        const Int32 SIM_STATE_UNKNOWN = 0;
+        const Int32 SIM_STATE_ABSENT = 1;
+        const Int32 SIM_STATE_PIN_REQUIRED = 2;
+        const Int32 SIM_STATE_PUK_REQUIRED = 3;
+        const Int32 SIM_STATE_NETWORK_LOCKED = 4;
+        const Int32 SIM_STATE_READY = 5;
+        const Int32 CALL_STATE_IDLE = 0;
+        const Int32 CALL_STATE_RINGING = 1;
+        const Int32 CALL_STATE_OFFHOOK = 2;
+        const Int32 DATA_ACTIVITY_NONE = 0x00000000;
+        const Int32 DATA_ACTIVITY_IN = 0x00000001;
+        const Int32 DATA_ACTIVITY_OUT = 0x00000002;
+        const Int32 DATA_ACTIVITY_INOUT = 0x00000003;
+        const Int32 DATA_ACTIVITY_DORMANT = 0x00000004;
+        const Int32 DATA_UNKNOWN        = -1;
+        const Int32 DATA_DISCONNECTED   = 0;
+        const Int32 DATA_CONNECTING     = 1;
+        const Int32 DATA_CONNECTED      = 2;
+        const Int32 DATA_SUSPENDED      = 3;
+
+        GetDeviceSoftwareVersion(
+            [out] String* res);
+
+        GetDeviceId(
+            [out] String* res);
+
+        GetCellLocation(
+            [out] ICellLocation** res);
+
+        EnableLocationUpdates();
+
+        DisableLocationUpdates();
+
+        GetNeighboringCellInfo(
+            [out, callee] ArrayOf< INeighboringCellInfo* > * res);
+
+        GetCurrentPhoneType(
+            [out] Int32* val);
+
+        GetPhoneType(
+            [out] Int32* val);
+
+        GetNetworkOperatorName(
+            [out] String* res);
+
+        GetNetworkOperator(
+            [out] String* res);
+
+        IsNetworkRoaming(
+            [out] Boolean* res);
+
+        GetNetworkCountryIso(
+            [out] String* res);
+
+        GetNetworkType(
+            [out] Int32* val);
+
+        GetNetworkTypeName(
+            [out] String* res);
+
+        HasIccCard(
+            [out] Boolean* res);
+
+        GetSimState(
+            [out] Int32* val);
+
+        GetSimOperator(
+            [out] String* res);
+
+        GetSimOperatorName(
+            [out] String* res);
+
+        GetSimCountryIso(
+            [out] String* res);
+
+        GetSimSerialNumber(
+            [out] String* res);
+
+        GetLteOnCdmaMode(
+            [out] Int32* val);
+
+        GetSubscriberId(
+            [out] String* res);
+
+        GetLine1Number(
+            [out] String* res);
+
+        GetLine1AlphaTag(
+            [out] String* res);
+
+        GetMsisdn(
+            [out] String* res);
+
+        GetVoiceMailNumber(
+            [out] String* res);
+
+        GetCompleteVoiceMailNumber(
+            [out] String* res);
+
+        GetVoiceMessageCount(
+            [out] Int32* val);
+
+        GetVoiceMailAlphaTag(
+            [out] String* res);
+
+        GetIsimImpi(
+            [out] String* res);
+
+        GetIsimDomain(
+            [out] String* res);
+
+        GetIsimImpu(
+            [out, callee] ArrayOf<String>* res);
+
+        GetCallState(
+            [out] Int32* val);
+
+        GetDataActivity(
+            [out] Int32* val);
+
+        GetDataState(
+            [out] Int32* val);
+
+        Listen(
+            [in] IPhoneStateListener* funclistener,
+            [in] Int32 Events);
+
+        GetCdmaEriIconIndex(
+            [out] Int32* val);
+
+        GetCdmaEriIconMode(
+            [out] Int32* val);
+
+        GetCdmaEriText(
+            [out] String* res);
+
+        IsVoiceCapable(
+            [out] Boolean* res);
+
+        IsSmsCapable(
+            [out] Boolean* res);
+
+        GetAllCellInfo(
+            [out, callee] ArrayOf<ICellInfo*>* res);
+
+    }
+
+    [local, deprecated]
+    interface ITelephonyManagerHelper {
+
+        GetDefault(
+            [out] ITelephonyManager** res);
+
+        From(
+            [in] IContext* ctx,
+            [out] ITelephonyManager** res);
+
+        GetPhoneType(
+            [in] Int32 networkMode,
+            [out] Int32* val);
+
+        GetLteOnCdmaModeStatic(
+            [out] Int32* val);
+
+        GetNetworkClass(
+            [in] Int32 networkType,
+            [out] Int32* val);
+
+        GetNetworkTypeName(
+            [in] Int32 type,
+            [out] String* res);
+
+    }
+
+    } // namespace Telephony
+    } // namespace Droid
+    } // namespace Elastos
+}

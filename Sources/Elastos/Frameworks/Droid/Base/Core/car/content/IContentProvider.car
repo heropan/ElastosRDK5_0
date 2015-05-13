@@ -1,0 +1,103 @@
+
+module
+{
+    using interface Elastos.IO.IFileDescriptor;
+    using interface Elastos.IO.IPrintWriter;
+
+    interface Elastos.Droid.Content.IContentProviderResult;
+    interface Elastos.Droid.Content.IContentValues;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.Res.IAssetFileDescriptor;
+    interface Elastos.Droid.Content.Res.IConfiguration;
+    interface Elastos.Droid.Database.ICursor;
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IICancellationSignal;
+    interface Elastos.Droid.Os.IParcelFileDescriptor;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Content {
+
+    /**
+     * The ipc interface to talk to a content provider.
+     * @hide
+     */
+    [deprecated]
+    interface IIContentProvider {
+        Query(
+            [in] IUri* uri,
+            [in] ArrayOf<String>* projection,
+            [in] String selection,
+            [in] ArrayOf<String>* selectionArgs,
+            [in] String sortOrder,
+            [in] IICancellationSignal* cancellationSignal,
+            [out] ICursor** cursor);
+
+        GetType(
+            [in] IUri* uri,
+            [out] String* type);
+
+        Insert(
+            [in] IUri* uri,
+            [in] IContentValues* initialValues,
+            [out] IUri** insertedUri);
+
+        BulkInsert(
+            [in] IUri* uri,
+            [in] ArrayOf<IContentValues*>* initialValues,
+            [out] Int32* number);
+
+        Delete(
+            [in] IUri* uri,
+            [in] String selection,
+            [in] ArrayOf<String>* selectionArgs,
+            [out] Int32* rowsAffected);
+
+        Update(
+            [in] IUri* uri,
+            [in] IContentValues* values,
+            [in] String selection,
+            [in] ArrayOf<String>* selectionArgs,
+            [out] Int32* rowsAffected);
+
+        OpenFile(
+            [in] IUri* uri,
+            [in] String mode,
+            [out] IParcelFileDescriptor** fileDescriptor);
+
+        OpenAssetFile(
+            [in] IUri* uri,
+            [in] String mode,
+            [out] IAssetFileDescriptor** fileDescriptor);
+
+        ApplyBatch(
+            [in] IObjectContainer* operations,
+            [out, callee] ArrayOf<IContentProviderResult*>* providerResults);
+
+        Call(
+            [in] String method,
+            [in] String arg,
+            [in] IBundle* extras,
+            [out] IBundle** bundle);
+
+        CreateCancellationSignal(
+            [out] IICancellationSignal** cancellationSignal);
+
+        // Data interchange.
+        GetStreamTypes(
+            [in] IUri* uri,
+            [in] String mimeTypeFilter,
+            [out, callee] ArrayOf<String>* streamTypes);
+
+        OpenTypedAssetFile(
+            [in] IUri* uri,
+            [in] String mimeType,
+            [in] IBundle* opts,
+            [out] IAssetFileDescriptor** fileDescriptor);
+    }
+
+    } // namespace Content
+    } // namespace Droid
+    } // namespace Elastos
+}

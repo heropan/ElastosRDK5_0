@@ -1,0 +1,86 @@
+
+#include "cmdef.h"
+#include "CCountDownLatch.h"
+
+namespace Elastos {
+namespace Utility {
+namespace Concurrent {
+
+CCountDownLatch::Sync::Sync(
+    /* [in] */ Int32 count)
+{
+    SetState(count);
+}
+
+Int32 CCountDownLatch::Sync::GetCount()
+{
+    return GetState();
+}
+
+Int32 CCountDownLatch::Sync::TryAcquireShared(
+    /* [in] */ Int32 acquires)
+{
+    return (GetState() == 0) ? 1 : -1;
+}
+
+Boolean CCountDownLatch::Sync::TryReleaseShared(
+    /* [in] */ Int32 releases)
+{
+    // Decrement count; signal when transition to zero
+    for (;;) {
+        Int32 c = GetState();
+        if (c == 0) {
+            return FALSE;
+        }
+        Int32 nextc = c - 1;
+        if (CompareAndSetState(c, nextc)) {
+            return nextc == 0;
+        }
+    }
+}
+
+
+ECode CCountDownLatch::constructor(
+    /* [in] */ Int32 count)
+{
+    if (count < 0) {
+        // throw new IllegalArgumentException("count < 0");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mSync = new Sync(count);
+    return NOERROR;
+}
+
+ECode CCountDownLatch::Await()
+{
+    return mSync->AcquireSharedInterruptibly(1);
+}
+
+ECode CCountDownLatch::AwaitEx(
+    /* [in] */ Int64 timeout,
+    /* [in] */ ITimeUnit* unit,
+    /* [out] */ Boolean* result)
+{
+    // return mSync->TryAcquireSharedNanos(1, unit.toNanos(timeout));
+    PRINT_FILE_LINE("TODO");
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CCountDownLatch::CountDown()
+{
+    mSync->ReleaseShared(1);
+    return NOERROR;
+}
+
+ECode CCountDownLatch::GetCount(
+    /* [out] */ Int64* count)
+{
+    VALIDATE_NOT_NULL(count);
+
+    *count = mSync->GetCount();
+    return NOERROR;
+}
+
+} // namespace Concurrent
+} // namespace Utility
+} // namespace Elastos

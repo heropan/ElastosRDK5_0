@@ -1,0 +1,18 @@
+
+module {
+
+    interface Elastos.Droid.View.IView;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+
+    interface IAnalogClock extends Elastos.Droid.View.IView
+    {
+    }
+
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+
+}

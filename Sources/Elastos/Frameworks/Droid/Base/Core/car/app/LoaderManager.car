@@ -1,0 +1,55 @@
+module
+{
+    using interface Elastos.IO.IPrintWriter;
+    using interface Elastos.IO.IFileDescriptor;
+    interface Elastos.Droid.App.IActivity;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    [deprecated]
+    interface ILoaderManager {
+        Dump(
+            [in] String prefix,
+            [in] IFileDescriptor* fd,
+            [in] IPrintWriter* writer,
+            [in] ArrayOf<String>* args);
+    }
+
+    [local]
+    interface ILoaderManagerImpl extends ILoaderManager {
+        DoStart();
+
+        DoStop();
+
+        DoRetain();
+
+        FinishRetain();
+
+        DoReportNextStart();
+
+        DoReportStart();
+
+        DoDestroy();
+
+        ToString(
+            [out] String* str);
+
+        HasRunningLoaders(
+            [out] Boolean* hasLoaders);
+
+        IsRetaining(
+            [out] Boolean* isRetaining);
+
+        UpdateActivity(
+            [in] IActivity* activity);
+
+        GetName(
+            [out] String* who);
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,29 @@
+
+module
+{
+    importlib("Elastos.Core.eco");
+
+    merge("../../../../car/Org/Xmlpull/V1/Exceptions.car");
+    merge("../../../../car/Org/Xmlpull/V1/IXmlPullParser.car");
+    merge("../../../../car/Org/Xmlpull/V1/IXmlSerializer.car");
+    merge("../../../../car/Org/Kxml2/IO/IKXmlParser.car");
+
+    using interface Elastos.IO.ICloseable;
+
+    namespace Org {
+    namespace Kxml2 {
+    namespace IO {
+
+    class CKXmlParser {
+        interface IKXmlParser;
+        interface ICloseable;
+    }
+
+    class CKXmlSerializer {
+        interface Org.Xmlpull.V1.IXmlSerializer;
+    }
+
+    } //namespace IO
+    } //namespace Kxml2
+    } //namespace Org
+}

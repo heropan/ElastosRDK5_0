@@ -1,0 +1,75 @@
+
+#include "cmdef.h"
+#include "provider/CContactsContactMethodsHelper.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Provider {
+
+ECode CContactsContactMethodsHelper::GetCONTENTURI(
+    /* [out] */ IUri** uri)
+{
+    VALIDATE_NOT_NULL(uri);
+
+    return CContactsContactMethods::GetCONTENTURI(uri);
+}
+
+ECode CContactsContactMethodsHelper::GetCONTENTEMAILURI(
+    /* [out] */ IUri** uri)
+{
+    VALIDATE_NOT_NULL(uri);
+
+    return CContactsContactMethods::GetCONTENTEMAILURI(uri);
+}
+
+ECode CContactsContactMethodsHelper::EncodePredefinedImProtocol(
+    /* [in] */ Int32 protocol,
+    /* [out] */ String* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    return CContactsContactMethods::EncodePredefinedImProtocol(protocol, value);
+}
+
+ECode CContactsContactMethodsHelper::EncodeCustomImProtocol(
+    /* [in] */ const String& protocolString,
+    /* [out] */ String* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    return CContactsContactMethods::EncodeCustomImProtocol(protocolString, value);
+}
+
+ECode CContactsContactMethodsHelper::DecodeImProtocol(
+    /* [in] */ const String& encodedString,
+    /* [out] */ IInterface** value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    return CContactsContactMethods::DecodeImProtocol(encodedString, value);
+}
+
+ECode CContactsContactMethodsHelper::LookupProviderNameFromId(
+    /* [in] */ Int32 protocol,
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name);
+
+    return CContactsContactMethods::LookupProviderNameFromId(protocol, name);
+}
+
+ECode CContactsContactMethodsHelper::GetDisplayLabel(
+    /* [in] */ IContext* context,
+    /* [in] */ Int32 kind,
+    /* [in] */ Int32 type,
+    /* [in] */ ICharSequence* label,
+    /* [out] */ ICharSequence** lb)
+{
+    VALIDATE_NOT_NULL(lb);
+
+    return CContactsContactMethods::GetDisplayLabel(context, kind, type, label, lb);
+}
+
+} // Provider
+} // Droid
+} // Elastos

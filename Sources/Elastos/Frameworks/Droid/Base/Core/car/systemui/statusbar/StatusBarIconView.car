@@ -1,0 +1,27 @@
+module
+{
+    interface Elastos.Droid.StatusBar.IStatusBarIcon;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+
+
+    interface IStatusBarIconView extends Elastos.Droid.SystemUI.StatusBar.IAnimatedImageView {
+        Set(
+            [in] IStatusBarIcon* icon,
+            [out] Boolean* succeeded);
+
+        GetStatusBarIcon(
+            [out] IStatusBarIcon** icon);
+
+        ToString(
+            [out] String* str);
+    }
+
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

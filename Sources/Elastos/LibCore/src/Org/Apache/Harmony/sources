@@ -1,0 +1,70 @@
+
+TARGET_NAME= Org.Apache.Harmony
+TARGET_TYPE= eco
+
+CAR_FLAGS += -u
+LUBE_FLAGS += -n -u
+
+INCLUDES += $(MAKEDIR)/../../../../inc/common
+
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Crypto/Internal
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Kernel/Vm
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Luni/Internal/Util
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Luni/Lang/Reflect
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Luni/Util
+
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Asn1
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Fortress
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Pkcs10
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Pkcs8
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Pkcs7
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Provider/Cert
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Provider/Crypto
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Utils
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/X501
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/X509
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/X509/Tsp
+
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Xml/Dom
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Xml/Parsers
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Xml
+
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Xnet/Provider/Jsse
+
+
+SOURCES = Org.Apache.Harmony.car
+SOURCES += Elastos.Core.cpp
+
+LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
+LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+LIBRARIES += $(PREBUILD_LIB)/libm.a
+
+LIBRARIES += Crypto/Internal/internal.lib
+LIBRARIES += Kernel/Vm/vm.lib
+LIBRARIES += Kernel/Vm/vm.lib
+LIBRARIES += Luni/Lang/Reflect/reflect.lib
+LIBRARIES += Luni/Util/util.lib
+
+LIBRARIES += Security/Asn1/asn1.lib
+LIBRARIES += Security/Fortress/fortress.lib
+LIBRARIES += Security/Pkcs10/pkcs10.lib
+LIBRARIES += Security/Pkcs7/pkcs7.lib
+LIBRARIES += Security/Pkcs8/pkcs8.lib
+LIBRARIES += Security/Provider/Cert/cert.lib
+LIBRARIES += Security/Provider/Crypto/crypto.lib
+LIBRARIES += Security/Utils/utils.lib
+LIBRARIES += Security/X501/x501.lib
+LIBRARIES += Security/X509/Tsp/tsp.lib
+LIBRARIES += Security/X509/x509.lib
+LIBRARIES += Security/Security.lib
+LIBRARIES += Xml/Dom/dom.lib
+LIBRARIES += Xml/Parsers/parsers.lib
+LIBRARIES += Xml/xml.lib
+
+LIBRARIES += Xnet/Provider/Jsse/jsse.lib
+
+LIBRARIES += -lcutils

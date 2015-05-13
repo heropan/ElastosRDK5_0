@@ -1,0 +1,43 @@
+module
+{
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Utility.IAttributeSet;
+    using interface Org.Xmlpull.V1.IXmlPullParser;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Preference {
+
+        interface IGenericInflaterParent {
+            AddItemFromInflater(
+                [in] IInterface* child);
+        }
+
+        [local]
+        interface IGenericInflaterFactory {
+            /**
+             * Hook you can supply that is called when inflating from a
+             * inflater. You can use this to customize the tag
+             * names available in your XML files.
+             * <p>
+             * Note that it is good practice to prefix these custom names with your
+             * package (i.e., com.coolcompany.apps) to avoid conflicts with system
+             * names.
+             *
+             * @param name Tag name to be inflated.
+             * @param context The context the item is being created in.
+             * @param attrs Inflation attributes as specified in XML file.
+             * @return Newly created item. Return null for the default behavior.
+             */
+            OnCreateItem(
+                [in] String name,
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [out] IInterface** item);
+        }
+
+    } // Preference
+    } // Droid
+    } // Elastos
+
+}

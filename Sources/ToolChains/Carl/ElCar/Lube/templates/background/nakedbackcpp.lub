@@ -1,0 +1,61 @@
+$;;=========================================================================
+$;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
+$;;=========================================================================
+$
+$INPUT class
+$OUTPUT "_${name}.cpp"
+$
+#include <new>
+#include "${name}.h"
+
+${ClassNamespaceBegin(class)}
+$WITH all constructors DO
+CARAPI _${class.name}CreateObject(
+$    WITH all parameters DO
+$       IF parameter is not last
+    /* [${attrib}] */ ${type} ${prefixingname(parameter)},
+$       END IF
+$    END DO ;; all parameters
+    ${class.name} **ppObj)
+{
+    ECode ec = NOERROR;
+    ${class.name} *pObj = NULL;
+
+    void* pLocation = calloc(sizeof(${class.name}), 1);
+    if (!pLocation) {
+        ec = E_OUT_OF_MEMORY;
+        goto Exit;
+    }
+    pObj = (${class.name} *)new(pLocation) ${class.name};
+    pObj->AddRef();
+
+    ec = pObj->Initialize();
+    if (FAILED(ec)) goto Exit;
+$   IF method.attrib is not "TrivialCtor"
+    ec = pObj->constructor($^
+$   WITH all parameters DO
+$       IF parameter is first and parameter is last
+,$^
+$       END IF
+$       IF parameter is not last
+${prefixingname(parameter)},$^
+$       END IF
+$   END DO ;; all parameters
+$   Rewrite(")")
+;
+    if (FAILED(ec)) goto Exit;
+$   END IF;
+
+    *ppObj = pObj;
+
+Exit:
+    if (FAILED(ec) && pObj) {
+        ((${class.name}*)pObj)->~${class.name}();
+        free(pObj);
+    }
+    return ec;
+}
+$END DO ;;
+${ClassNamespaceEnd(class)}
+$
+$END OUTPUT

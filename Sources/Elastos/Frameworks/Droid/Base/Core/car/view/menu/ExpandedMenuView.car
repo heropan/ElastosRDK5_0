@@ -1,0 +1,20 @@
+
+module
+{
+    interface Elastos.Droid.Widget.IListView;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Menu {
+
+        [local]
+        interface IExpandedMenuView extends Elastos.Droid.Widget.IListView {
+
+        }
+
+    } // namespace Menu
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,24 @@
+module
+{
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Text.IParcelableSpan;
+    interface Elastos.Droid.Text.Style.IMetricAffectingSpan;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    interface IRelativeSizeSpan extends IMetricAffectingSpan /*implements IParcelableSpan*/ {
+        GetSizeChange(
+            [out] Float* ret);
+    }
+
+    interface IRelativeSizeSpanHelper extends IMetricAffectingSpanHelper {}
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

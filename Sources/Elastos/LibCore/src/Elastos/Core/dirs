@@ -1,0 +1,5 @@
+
+DIRS = eco
+ifeq "$(XDK_TARGET_PLATFORM)" "android"
+DIRS += lib
+endif

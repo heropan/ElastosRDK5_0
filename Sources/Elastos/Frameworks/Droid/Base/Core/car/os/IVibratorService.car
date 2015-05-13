@@ -1,0 +1,31 @@
+module
+{
+    interface Elastos.Droid.Os.IBinder;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+    /** @hide */
+    [deprecated]
+    interface IVibratorService {
+        HasVibrator(
+            [out] Boolean* hasVibrator);
+
+        Vibrate(
+            [in] Int64 milliseconds,
+            [in] IBinder* token);
+
+        VibratePattern(
+            [in] ArrayOf<Int64>* pattern,
+            [in] Int32 repeat,
+            [in] IBinder* token);
+
+        CancelVibrate(
+            [in] IBinder* token);
+    }
+
+    } // namespace Os
+    } // namespace Droid
+    } // namespace Elastos
+}

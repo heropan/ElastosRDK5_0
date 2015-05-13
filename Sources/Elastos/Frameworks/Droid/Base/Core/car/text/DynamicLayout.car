@@ -1,0 +1,35 @@
+
+module
+{
+    interface Elastos.Droid.Text.ILayoutHelper;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+
+    interface IDynamicLayout extends ILayout {
+        /**
+         * @hide
+         */
+        GetBlockEndLines(
+            [out, callee] ArrayOf<Int32>* ret);
+
+        /**
+         * @hide
+         */
+        GetBlockIndices(
+            [out, callee] ArrayOf<Int32>* ret);
+
+        /**
+         * @hide
+         */
+        GetNumberOfBlocks(
+            [out] Int32* ret);
+    }
+
+    interface IDynamicLayoutHelper extends ILayoutHelper {}
+
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
+}

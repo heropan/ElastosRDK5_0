@@ -1,0 +1,41 @@
+
+#ifndef __CENCODERCAPABILITIESHELPER_H__
+#define __CENCODERCAPABILITIESHELPER_H__
+
+#include "_CEncoderCapabilitiesHelper.h"
+#include "ext/frameworkext.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Media {
+
+CarClass(CEncoderCapabilitiesHelper)
+{
+public:
+    /**
+     * Returns the array of supported output file formats.
+     * @see android.media.MediaRecorder.OutputFormat
+     */
+    CARAPI GetOutputFileFormats(
+        /* [out,callee] */ ArrayOf<Int32>** result);
+
+    /**
+     * Returns the capabilities of the supported video encoders.
+     * @see android.media.EncoderCapabilities.VideoEncoderCap
+     */
+    GetVideoEncoders(
+        /* [out] */ IObjectContainer** result);
+
+    /**
+     * Returns the capabilities of the supported audio encoders.
+     * @see android.media.EncoderCapabilities.AudioEncoderCap
+     */
+    GetAudioEncoders(
+        /* [out] */ IObjectContainer** result);
+};
+
+} // namespace Media
+} // namepsace Droid
+} // namespace Elastos
+
+#endif // __CENCODERCAPABILITIESHELPER_H__

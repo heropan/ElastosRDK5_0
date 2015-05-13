@@ -1,0 +1,17 @@
+
+module
+{
+    using interface Elastos.Net.IURLStreamHandler;
+
+    namespace Elastos {
+    namespace Net {
+    namespace Http {
+
+    interface IHttpHandler extends Elastos.Net.IURLStreamHandler {
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Elastos
+
+}

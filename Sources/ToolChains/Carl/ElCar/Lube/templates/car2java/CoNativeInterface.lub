@@ -1,0 +1,27 @@
+$INPUT interface
+$OUTPUT "${name}.java"
+
+package com.elastos.runtime;
+
+import  dalvik.annotation.CAR;
+@CoNativeInterface(Module="${module.name}.eco", CARInterface="${name}")
+class ${name}{
+$ WITH all methods DO
+    native $^
+$           WITH all parameters DO
+$           IF parameter is last
+${type} $^
+$           END IF
+$           END DO ;; all parameters
+${name}($^
+$           WITH all parameters DO
+${type} ${name}$^
+$           IF parameter is not last
+,$^
+$           END IF
+$           END DO ;; all parameters
+);
+$       END DO ;; all methods
+}
+$
+$END OUTPUT

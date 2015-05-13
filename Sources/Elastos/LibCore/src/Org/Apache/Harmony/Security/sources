@@ -1,0 +1,10 @@
+
+TARGET_NAME= security
+TARGET_TYPE= lib
+
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Apache/Harmony/Security
+
+SOURCES = CPrivateKeyImpl.cpp
+SOURCES += CPublicKeyImpl.cpp
+SOURCES += CSystemScope.cpp

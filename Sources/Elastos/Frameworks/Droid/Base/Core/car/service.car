@@ -1,0 +1,80 @@
+
+module
+{
+    merge("service/dreams/DreamService.car");
+    merge("service/dreams/IDreamManager.car");
+    merge("service/dreams/IDreamService.car");
+    // merge("service/dreams/Sandman.car");
+
+    // merge("service/textservice/SpellCheckerService.car");
+
+    merge("service/wallpaper/IWallpaperConnection.car");
+    merge("service/wallpaper/IWallpaperEngine.car");
+    merge("service/wallpaper/IWallpaperService.car");
+
+    interface Elastos.Droid.View.IBaseIWindow;
+    interface Elastos.Droid.Os.IHandlerCallerCallback;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Service {
+
+  //       class CDreamService {
+  //           interface IDreamService;
+  //       }
+
+  //       class CSandman {
+  //           interface ISandman;
+  //       }
+
+  //       singleton class CSandmanHelper {
+  //           interface ISandmanHelper;
+  //       }
+
+  //       class CSpellCheckerService {
+  //           interface ISpellCheckerService;
+  //       }
+
+    namespace Wallpaper {
+
+    [local]
+    class CWallpaperEngineWrapper {
+        constructor(
+            [in] Handle32 context,
+            [in] IWallpaperConnection* conn,
+            [in] IBinder* windowToken,
+            [in] Int32 windowType,
+            [in] Boolean isPreview,
+            [in] Int32 reqWidth,
+            [in] Int32 reqHeight);
+
+        interface IWallpaperEngineWrapper;
+        interface IBinder;
+        interface IHandlerCallerCallback;
+    }
+
+    class CWallpaperServiceWrapper {
+        constructor(
+            [in] Handle32 context);
+
+        interface IIWallpaperService;
+        interface IBinder;
+    }
+
+    class CWallpaperServiceEngineWindow {
+        constructor(
+            [in] Handle32 engine);
+
+        interface IBaseIWindow;
+        interface IBinder;
+    }
+        // class CWallpaperSettingsActivity {
+
+  //           interface IWallpaperSettingsActivity;
+  //       }
+
+    } // namespace Wallpaper
+    } // namespace service
+    } // namepsace Droid
+    } // namespace Elastos
+}

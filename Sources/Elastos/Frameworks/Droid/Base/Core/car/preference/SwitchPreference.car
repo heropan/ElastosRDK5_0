@@ -1,0 +1,63 @@
+module
+{
+    using interface Elastos.Core.ICharSequence;
+    
+    namespace Elastos {
+    namespace Droid {
+    namespace Preference {
+    
+        interface ISwitchPreference extends ITwoStatePreference {
+            /**
+             * Set the text displayed on the switch widget in the on state.
+             * This should be a very short string; one word if possible.
+             *
+             * @param onText Text to display in the on state
+             */
+            SetSwitchTextOn(
+                [in] ICharSequence* onText);
+        
+            /**
+             * Set the text displayed on the switch widget in the off state.
+             * This should be a very short string; one word if possible.
+             *
+             * @param offText Text to display in the off state
+             */
+            SetSwitchTextOff(
+                [in] ICharSequence* offText);
+        
+            /**
+             * Set the text displayed on the switch widget in the on state.
+             * This should be a very short string; one word if possible.
+             *
+             * @param resId The text as a string resource ID
+             */
+            SetSwitchTextOnEx(
+                [in] Int32 resId);
+        
+            /**
+             * Set the text displayed on the switch widget in the off state.
+             * This should be a very short string; one word if possible.
+             *
+             * @param resId The text as a string resource ID
+             */
+            SetSwitchTextOffEx(
+                [in] Int32 resId);
+        
+            /**
+             * @return The text that will be displayed on the switch widget in the on state
+             */
+            GetSwitchTextOn(
+                [out] ICharSequence** textOn);
+        
+            /**
+             * @return The text that will be displayed on the switch widget in the off state
+             */
+            GetSwitchTextOff(
+                [out] ICharSequence** textOff);
+        }
+    
+    } // Preference
+    } // Droid
+    } // Elastos
+
+}

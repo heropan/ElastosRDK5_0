@@ -1,0 +1,37 @@
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Display {
+
+    /**
+     * Private interface to the window manager.
+     */
+    interface IDisplayManagerServiceWindowManagerFuncs {
+        /**
+         * Request that the window manager call
+         * {@link #performTraversalInTransactionFromWindowManager} within a surface
+         * transaction at a later time.
+         */
+        RequestTraversal();
+    }
+
+    /**
+     * Private interface to the input manager.
+     */
+    interface IDisplayManagerServiceInputManagerFuncs {
+        /**
+         * Sets information about the displays as needed by the input system.
+         * The input system should copy this information if required.
+         */
+        SetDisplayViewports(
+            [in] IDisplayViewport* defaultViewport,
+            [in] IDisplayViewport* externalTouchViewport);
+    }
+
+    } // namespace Display
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
+}

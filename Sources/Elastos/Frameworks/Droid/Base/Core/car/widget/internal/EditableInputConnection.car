@@ -1,0 +1,21 @@
+
+module
+{
+    interface Elastos.Droid.View.InputMethod.IBaseInputConnection;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+    namespace Internal{
+
+    interface IEditableInputConnection extends Elastos.Droid.View.InputMethod.IBaseInputConnection
+    {
+    }
+
+    }// namespace Internal
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+
+}
+

@@ -1,0 +1,36 @@
+
+module
+{
+    interface Elastos.Math.IBigInteger;
+    interface Elastos.Security.Spec.IECParameterSpec;
+    interface Elastos.Security.Spec.IECPoint;
+
+    namespace Elastos {
+    namespace Security {
+    namespace Spec {
+
+    /**
+     * The parameters specifying an Elliptic Curve (EC) public key.
+     */
+    interface IECPublicKeySpec extends IKeySpec {
+        /**
+         * Returns the domain parameter specification.
+         *
+         * @return the domain parameter specification.
+         */
+        GetParams(
+            [out] IECParameterSpec** params);
+
+        /**
+         * Returns the public elliptic curve point {@code W}.
+         *
+         * @return the public elliptic curve point {@code W}.
+         */
+        GetW(
+            [out] IECPoint** w);
+    }
+
+    } // namespace Spec
+    } // namespace Security
+    } // namespace Elastos
+}

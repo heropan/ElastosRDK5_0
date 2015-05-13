@@ -1,0 +1,21 @@
+
+module
+{
+    using interface Elastos.Utility.Zip.IZipInputStream;
+    interface Elastos.Utility.Jar.IManifest;
+
+    namespace Elastos{
+    namespace Utility{
+    namespace Jar{
+
+        interface IJarInputStream extends Elastos.Utility.Zip.IZipInputStream {
+            GetManifest(
+                [out] IManifest** manifest);
+
+            GetNextJarEntry(
+                [out] IJarEntry** jarEntry);
+        }
+    }//Jar
+    }//Utility
+    }//Elastos
+}

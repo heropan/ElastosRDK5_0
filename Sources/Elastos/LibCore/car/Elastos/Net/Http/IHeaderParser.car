@@ -1,0 +1,50 @@
+
+module
+{
+    interface Elastos.Utility.IObjectContainer;
+
+    namespace Elastos {
+    namespace Net {
+    namespace Http {
+
+    interface ICacheControlHandler {
+        Handle(
+            [in] String directive,
+            [in] String parameter);
+    }
+
+    /**
+     * @hide
+     */
+    [deprecated]
+    interface IHeaderParserHelper {
+        /**
+         * Parse a comma-separated list of cache control header values.
+         */
+        ParseCacheControl(
+            [in] String value,
+            [in] ICacheControlHandler* handler);
+
+        /**
+         * Parse RFC 2617 challenges. This API is only interested in the scheme
+         * name and realm.
+         */
+        ParseChallenges(
+            [in] IRawHeaders* responseHeaders,
+            [in] String challengeHeader,
+            [out] IObjectContainer** obj);
+
+        /**
+         * Returns {@code value} as a positive integer, or 0 if it is negative, or
+         * -1 if it cannot be parsed.
+         */
+        ParseSeconds(
+            [in] String value,
+            [out] Int32* number);
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Elastos
+
+}

@@ -1,0 +1,22 @@
+module
+{
+    interface Elastos.Droid.Graphics.IBitmap;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    /**
+     * System private API for retrieving thumbnails
+     * {@hide}
+     */
+    interface IThumbnailRetriever {
+        GetThumbnail(
+            [in] Int32 index,
+            [out] IBitmap** thumbnail);
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

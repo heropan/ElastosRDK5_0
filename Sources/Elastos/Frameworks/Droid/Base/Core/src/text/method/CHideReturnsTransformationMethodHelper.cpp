@@ -1,0 +1,24 @@
+
+#include "text/method/CHideReturnsTransformationMethodHelper.h"
+#include "text/method/CHideReturnsTransformationMethod.h"
+#include "ext/frameworkext.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Text {
+namespace Method {
+
+ECode CHideReturnsTransformationMethodHelper::GetInstance(
+    /* [out] */ IHideReturnsTransformationMethod** ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    AutoPtr<IHideReturnsTransformationMethod> hrtm = CHideReturnsTransformationMethod::GetInstance();
+    *ret = hrtm;
+    INTERFACE_ADDREF(*ret);
+    return NOERROR;
+}
+
+} //namespace Method
+} //namespace Text
+} //namespace Droid
+} //namespace Elastos

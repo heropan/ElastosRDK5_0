@@ -1,0 +1,79 @@
+module
+{
+    using interface Elastos.Text.INumberFormat;
+    using interface Libcore.ICU.ILocale;
+    using interface Elastos.Utility.Spi.ILocaleServiceProvider;
+
+    namespace Elastos {
+    namespace Text {
+    namespace Spi {
+
+    interface INumberFormatProvider { //extends ILocaleServiceProvide
+        /**
+         * Returns an instance of {@code NumberFormat} that formats
+         * monetary values for the given locale.
+         *
+         * @param locale the locale
+         * @return an instance of {@code NumberFormat}
+         * @throws NullPointerException if {@code locale == null}
+         * @throws IllegalArgumentException
+         *             if locale isn't one of the locales returned from
+         *             getAvailableLocales().
+         */
+        GetCurrencyInstance(
+            [in] ILocale * locale ,
+            [out] INumberFormat ** outformat);
+
+        /**
+         * Returns an instance of {@code NumberFormat} that formats
+         * integer values for the given locale. The returned {@code NumberFormat}
+         * is configured to round floating point numbers to the nearest integer
+         * using half-even rounding mode for formatting, and to parse only the
+         * integer part of an input string.
+         *
+         * @param locale the locale
+         * @return an instance of {@code NumberFormat}
+         * @throws NullPointerException if {@code locale == null}
+         * @throws IllegalArgumentException
+         *             if locale isn't one of the locales returned from
+         *             getAvailableLocales().
+         */
+        GetIntegerInstance(
+            [in] ILocale * locale,
+            [out] INumberFormat ** outformat);
+
+        /**
+         * Returns an instance of {@code NumberFormat} class for general
+         * use in the given locale.
+         *
+         * @param locale the locale
+         * @return an instance of {@code NumberFormat}
+         * @throws NullPointerException if {@code locale == null}
+         * @throws IllegalArgumentException
+         *             if locale isn't one of the locales returned from
+         *             getAvailableLocales().
+         */
+        GetNumberInstance(
+            [in] ILocale * locale,
+            [out] INumberFormat ** outformat);
+
+        /**
+         * Returns an instance of {@code NumberFormat} class that formats
+         * percentage values for the given locale.
+         *
+         * @param locale the locale
+         * @return an instance of {@code NumberFormat}
+         * @throws NullPointerException if {@code locale == null}
+         * @throws IllegalArgumentException
+         *             if locale isn't one of the locales returned from
+         *             getAvailableLocales().
+         */
+        GetPercentInstance(
+            [in] ILocale * locale,
+            [out] INumberFormat ** outformat);
+    }
+
+    } // namespace Spi
+    } // namespace Text
+    } // namespace Elastos
+}

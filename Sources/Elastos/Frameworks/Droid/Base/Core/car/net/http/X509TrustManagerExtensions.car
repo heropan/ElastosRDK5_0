@@ -1,0 +1,32 @@
+module
+{
+    using interface Elastos.Security.Cert.IX509Certificate;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+    namespace Http {
+
+    interface IX509TrustManagerExtensions {
+        /**
+         * Verifies the given certificate chain.
+         *
+         * <p>See {@link X509TrustManager#checkServerTrusted(X509Certificate[], String)} for a
+         * description of the chain and authType parameters. The final parameter, host, should be the
+         * hostname of the server.</p>
+         *
+         * @throws CertificateException if the chain does not verify correctly.
+         * @return the properly ordered chain used for verification as a list of X509Certificates.
+         */
+        CheckServerTrusted(
+            [in] ArrayOf<IX509Certificate*> chain,
+            [in] String authType,
+            [in] String host,
+            [out] IObjectContainer** certificates);
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
+}

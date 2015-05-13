@@ -1,0 +1,21 @@
+module
+{
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Text.IParcelableSpan;
+    interface Elastos.Droid.Text.Style.ILeadingMarginSpan;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    interface IBulletSpan /*implements ILeadingMarginSpan, IParcelableSpan*/ {
+        const Int32 STANDARD_GAP_WIDTH = 2;
+    }
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

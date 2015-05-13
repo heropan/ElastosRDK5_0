@@ -1,0 +1,345 @@
+
+module
+{
+    merge("hardware/Camera.car");
+    merge("hardware/ISerialManager.car");
+    merge("hardware/Sensor.car");
+    merge("hardware/SensorEvent.car");
+    merge("hardware/SensorEventListener.car");
+    merge("hardware/SensorListener.car");
+    merge("hardware/SensorManager.car");
+    merge("hardware/SerialManager.car");
+    merge("hardware/SerialPort.car");
+    merge("hardware/SystemSensorManager.car");
+
+    merge("hardware/display/DisplayManager.car");
+    merge("hardware/display/DisplayManagerGlobal.car");
+    merge("hardware/display/IDisplayManagerCallback.car");
+    merge("hardware/display/IDisplayManager.car");
+    merge("hardware/display/WifiDisplay.car");
+    merge("hardware/display/WifiDisplayStatus.car");
+    merge("hardware/input/IInputManager.car");
+    merge("hardware/input/IInputDevicesChangedListener.car");
+    merge("hardware/input/InputManager.car");
+    merge("hardware/input/KeyboardLayout.car");
+    merge("hardware/usb/IUsbManager.car");
+    merge("hardware/usb/UsbAccessory.car");
+    merge("hardware/usb/UsbConstants.car");
+    merge("hardware/usb/UsbDevice.car");
+    merge("hardware/usb/UsbDeviceConnection.car");
+    merge("hardware/usb/UsbEndpoint.car");
+    merge("hardware/usb/UsbInterface.car");
+    merge("hardware/usb/UsbManager.car");
+    merge("hardware/usb/UsbRequest.car");
+    merge("hardware/usb/UsbCameraManager.car");
+
+    using interface Elastos.Core.IComparable;
+
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.View.IRotationWatcher;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+        class CSerialPort {
+            constructor(
+                [in] String name);
+
+            interface ISerialPort;
+        }
+
+        [local]
+        class CSerialManager {
+            constructor(
+                [in] IContext* ctx,
+                [in] IISerialManager* service);
+
+            interface ISerialManager;
+        }
+
+        class CSensorEvent {
+            constructor(
+                [in] Int32 size);
+
+            interface ISensorEvent;
+        }
+
+        class CSensor {
+            constructor();
+
+            interface ISensor;
+        }
+
+        class CSensorManager {
+            interface ISensorManager;
+        }
+
+        singleton class CSensorManagerHelper {
+            interface ISensorManagerHelper;
+        }
+
+        [local]
+        class CSystemSensorManager {
+            constructor(
+                [in] IContext* ctx,
+                [in] ILooper* mainLooper);
+
+            interface ISystemSensorManager;
+        }
+
+        class CHardwareCamera {
+            constructor();
+
+            constructor(
+                [in] Int32 cameraId);
+
+            interface IHardwareCamera;
+        }
+
+        class CLegacySensorManagerRotationWatcher {
+            constructor();
+
+            interface IRotationWatcher;
+        }
+
+        singleton class CHardwareCameraHelper {
+            interface IHardwareCameraHelper;
+        }
+
+    namespace Display {
+        /**
+         * Manages the properties of attached displays.
+         * <p>
+         * Get an instance of this class by calling
+         * {@link android.content.Context#getSystemService(java.lang.String)
+         * Context.getSystemService()} with the argument
+         * {@link android.content.Context#DISPLAY_SERVICE}.
+         * </p>
+         */
+        [local]
+        class CDisplayManager {
+            constructor(
+                [in] IContext* ctx);
+
+            interface IDisplayManager;
+        }
+
+        class CDisplayManagerCallback {
+            constructor(
+                [in] Handle32 owner);
+
+            interface IDisplayManagerCallback;
+            interface IBinder;
+        }
+
+        /**
+         * Describes the properties of a Wifi display.
+         * <p>
+         * This object is immutable.
+         * </p>
+         *
+         * @hide
+         */
+        class CWifiDisplay {
+            constructor();
+
+            constructor(
+                [in] String deviceAddress,
+                [in] String deviceName,
+                [in] String deviceAlias);
+
+            interface IWifiDisplay;
+            interface IParcelable;
+        }
+
+        /**
+         * Describes the current global state of Wifi display connectivity, including the
+         * currently connected display and all available or remembered displays.
+         * <p>
+         * This object is immutable.
+         * </p>
+         *
+         * @hide
+         */
+        [deprecated]
+        class CWifiDisplayStatus {
+            constructor();
+
+            constructor(
+                [in] Int32 featureState,
+                [in] Int32 scanState,
+                [in] Int32 activeDisplayState,
+                [in] IWifiDisplay* activeDisplay,
+                [in] ArrayOf<IWifiDisplay*>* availableDisplays,
+                [in] ArrayOf<IWifiDisplay*>* rememberedDisplays);
+
+            interface IWifiDisplayStatus;
+            interface IParcelable;
+        }
+
+        singleton class CDisplayManagerGlobalHelper {
+            interface IDisplayManagerGlobalHelper;
+        }
+    } // namespace Display
+
+    namespace Input {
+
+        class CInputManagerInputDevicesChangedListener {
+            constructor(
+                [in] Handle32 inputManager);
+
+            interface IInputDevicesChangedListener;
+        }
+
+        class CInputManager {
+            interface IInputManager;
+        }
+
+        singleton class CInputManagerHelper {
+            interface IInputManagerHelper;
+        }
+
+        class CKeyboardLayout {
+            constructor();
+
+            constructor(
+                [in] String descriptor,
+                [in] String label,
+                [in] String collection);
+
+            constructor(
+                [in] IParcel* source);
+
+            interface IKeyboardLayout;
+            interface IComparable;
+            interface IParcelable;
+        }
+
+    } // namespace Input
+
+    namespace Usb {
+
+    class CUsbAccessory {
+        constructor();
+
+        /**
+         * UsbAccessory should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] String manufacturer,
+            [in] String model,
+            [in] String description,
+            [in] String ver,
+            [in] String uri,
+            [in] String serial);
+
+        /**
+         * UsbAccessory should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] ArrayOf<String> strings);
+
+        interface IUsbAccessory;
+        interface IParcelable;
+    }
+
+    [deprecated]
+    class CUsbDevice {
+        constructor();
+
+        /**
+         * UsbDevice should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] String name,
+            [in] Int32 vendorId,
+            [in] Int32 productId,
+            [in] Int32 cls,
+            [in] Int32 subCls,
+            [in] Int32 protocol,
+            [in] ArrayOf<IParcelable*>* interfaces);
+
+        interface IUsbDevice;
+        interface IParcelable;
+    }
+
+    singleton class CUsbDeviceHelper {
+        interface IUsbDeviceHelper;
+    }
+
+    class CUsbDeviceConnection {
+        /**
+         * UsbDevice should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] IUsbDevice* device);
+
+        interface IUsbDeviceConnection;
+    }
+
+    class CUsbEndpoint {
+
+        constructor();
+
+        /**
+         * UsbEndpoint should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] Int32 address,
+            [in] Int32 attributes,
+            [in] Int32 size,
+            [in] Int32 interval);
+
+        interface IUsbEndpoint;
+        interface IParcelable;
+    }
+
+    class CUsbInterface {
+
+        constructor();
+
+        /**
+         * UsbInterface should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] Int32 id,
+            [in] Int32 cls,
+            [in] Int32 subCls,
+            [in] Int32 protocol,
+            [in] ArrayOf<IParcelable*> endpoints);
+
+        interface IUsbInterface;
+        interface IParcelable;
+    }
+
+    [local]
+    class CUsbManager {
+        /**
+         * {@hide}
+         */
+        constructor(
+            [in] IContext* ctx,
+            [in] IIUsbManager* service);
+
+        interface IUsbManager;
+    }
+
+    class CUsbRequest {
+        constructor();
+
+        interface IUsbRequest;
+    }
+
+    } // namespace Usb
+    } // namespace Hardware
+    } // namepsace Droid
+    } // namespace Elastos
+}

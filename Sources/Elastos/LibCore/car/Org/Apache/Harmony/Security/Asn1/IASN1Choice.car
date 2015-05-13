@@ -1,0 +1,32 @@
+
+module
+{
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Security {
+    namespace Asn1 {
+
+    [deprecated]
+    interface IASN1Choice extends IASN1Type {
+        SetType(
+            [in] ArrayOf<IASN1Type*>* type);
+
+        GetType(
+            [out, callee] ArrayOf<IASN1Type*>* type);
+
+        GetIndex(
+            [in] IInterface* object,
+            [out] Int32* index);
+
+        GetObjectToEncode(
+            [in] IInterface* object,
+            [out] IInterface** obj);
+    }
+
+    } // namespace Asn1
+    } // namespace Security
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

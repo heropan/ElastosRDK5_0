@@ -1,0 +1,27 @@
+
+module
+{
+    interface Elastos.Droid.View.IMotionEvent;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+    namespace Internal{
+
+    interface IPointerLocationView extends Elastos.Droid.View.IView
+    {
+        SetPrintCoords(
+            [in] Boolean state);
+    
+        AddPointerEvent(
+            [in] IMotionEvent* event);
+    }
+
+    }// namespace Internal
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+
+}
+    
+    

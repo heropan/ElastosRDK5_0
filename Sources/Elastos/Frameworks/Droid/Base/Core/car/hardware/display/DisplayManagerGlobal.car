@@ -1,0 +1,97 @@
+
+module
+{
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.View.ICompatibilityInfoHolder;
+    interface Elastos.Droid.View.IDisplay;
+    interface Elastos.Droid.View.IDisplayInfo;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+    namespace Display {
+
+    interface IDisplayManagerGlobal {
+        const Int32 EVENT_DISPLAY_ADDED = 1;
+        const Int32 EVENT_DISPLAY_CHANGED = 2;
+        const Int32 EVENT_DISPLAY_REMOVED = 3;
+
+        /**
+         * Get information about a particular logical display.
+         *
+         * @param displayId The logical display id.
+         * @return Information about the specified display, or NULL if it does not exist.
+         * This object belongs to an internal cache and should be treated as if it were immutable.
+         */
+        GetDisplayInfo(
+            [in] Int32 displayId,
+            [out] IDisplayInfo** displayInfo);
+
+        /**
+         * Gets all currently valid logical display ids.
+         *
+         * @return An array containing all display ids.
+         */
+        GetDisplayIds(
+            [out, callee] ArrayOf<Int32>* displayIds);
+
+        /**
+         * Gets information about a logical display.
+         *
+         * The display metrics may be adjusted to provide compatibility
+         * for legacy applications.
+         *
+         * @param displayId The logical display id.
+         * @param cih The compatibility info, or NULL if none is required.
+         * @return The display object, or NULL if there is no display with the given id.
+         */
+        GetCompatibleDisplay(
+            [in] Int32 displayId,
+            [in] ICompatibilityInfoHolder* cih,
+            [out] IDisplay** display);
+
+        /**
+         * Gets information about a logical display without applying any compatibility metrics.
+         *
+         * @param displayId The logical display id.
+         * @return The display object, or NULL if there is no display with the given id.
+         */
+        GetRealDisplay(
+            [in] Int32 displayId,
+            [out] IDisplay** display);
+
+        RegisterDisplayListener(
+            [in] IDisplayListener* listener,
+            [in] IHandler* handler);
+
+        UnregisterDisplayListener(
+            [in] IDisplayListener* listener);
+
+        ScanWifiDisplays();
+
+        ConnectWifiDisplay(
+            [in] String deviceAddress);
+
+        DisconnectWifiDisplay();
+
+        RenameWifiDisplay(
+            [in] String deviceAddress,
+            [in] String alias);
+
+        ForgetWifiDisplay(
+            [in] String deviceAddress);
+
+        GetWifiDisplayStatus(
+            [out] IWifiDisplayStatus** status);
+    }
+
+    interface IDisplayManagerGlobalHelper {
+        GetInstance(
+            [out] IDisplayManagerGlobal** global);
+    }
+
+    } // namespace Display
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}

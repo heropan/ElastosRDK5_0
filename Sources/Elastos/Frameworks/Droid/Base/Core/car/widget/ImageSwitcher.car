@@ -1,0 +1,28 @@
+module
+{
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.View.IView;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
+
+    [local]
+    interface IImageSwitcher extends Elastos.Droid.Widget.IViewSwitcher {
+
+        SetImageResource(
+            [in] Int32 resid);
+
+        SetImageURI(
+            [in] IUri* uri);
+
+        SetImageDrawable(
+            [in] IDrawable* drawable);
+    }
+
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+
+}

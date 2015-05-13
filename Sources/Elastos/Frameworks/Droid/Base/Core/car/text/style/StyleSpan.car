@@ -1,0 +1,36 @@
+module
+{
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Text.IParcelableSpan;
+    interface Elastos.Droid.Text.Style.IMetricAffectingSpan;
+    interface Elastos.Droid.Text.Style.IMetricAffectingSpanHelper;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    /**
+     *
+     * Describes a style in a span.
+     * Note that styles are cumulative -- if both bold and italic are set in
+     * separate spans, or if the base style is bold and a span calls for italic,
+     * you get bold italic.  You can't turn off a style from the base style.
+     *
+     */
+    interface IStyleSpan extends IMetricAffectingSpan /*implements IParcelableSpan*/ {
+        /**
+         * Returns the style constant defined in {@link android.graphics.Typeface}.
+         */
+        GetStyle(
+            [out] Int32* ret);
+    }
+
+    interface IStyleSpanHelper extends IMetricAffectingSpanHelper {}
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

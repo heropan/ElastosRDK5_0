@@ -1,0 +1,137 @@
+#ifndef __ELEMENT_H__
+#define __ELEMENT_H__
+
+#include "ext/frameworkext.h"
+#include <elastos/List.h>
+
+using Elastos::Utility::List;
+using Org::Xml::Sax::ILocator;
+
+namespace Elastos {
+namespace Droid {
+namespace Sax {
+
+/**
+ * An XML element. Provides access to child elements and hooks to listen
+ * for events related to this element.
+ *
+ * @see RootElement
+ */
+class Element
+{
+public:
+    CARAPI Init(
+        /* [in] */ IElement* parent,
+        /* [in] */ const String& uri,
+        /* [in] */ const String& localName,
+        /* [in] */ Int32 depth);
+
+    virtual CARAPI_(PInterface) Probe(
+            /* [in]  */ REIID riid) = 0;
+
+    /**
+     * Gets the child element with the given name. Uses an empty string as the
+     * namespace.
+     */
+    CARAPI GetChild(
+        /* [in] */ const String&  localName,
+        /* [out] */ IElement** result);
+
+    /**
+     * Gets the child element with the given name.
+     */
+    CARAPI GetChildEx(
+        /* [in] */ const String&  uri,
+        /* [in] */ const String&  localName,
+        /* [out] */ IElement** result);
+
+    /**
+     * Gets the child element with the given name. Uses an empty string as the
+     * namespace. We will throw a {@link org.xml.sax.SAXException} at parsing
+     * time if the specified child is missing. This helps you ensure that your
+     * listeners are called.
+     */
+    CARAPI RequireChild(
+        /* [in] */ const String&  localName,
+        /* [out] */ IElement** result);
+
+    /**
+     * Gets the child element with the given name. We will throw a
+     * {@link org.xml.sax.SAXException} at parsing time if the specified child
+     * is missing. This helps you ensure that your listeners are called.
+     */
+    CARAPI RequireChildEx(
+        /* [in] */ const String&  uri,
+        /* [in] */ const String&  localName,
+        /* [out] */ IElement** result);
+
+    /**
+     * Sets start and end element listeners at the same time.
+     */
+    CARAPI SetElementListener(
+        /* [in] */ IInterface* elementListener);
+
+    /**
+     * Sets start and end text element listeners at the same time.
+     */
+    CARAPI SetTextElementListener(
+        /* [in] */ IInterface* elementListener);
+
+    /**
+     * Sets a listener for the start of this element.
+     */
+    CARAPI SetStartElementListener(
+        /* [in] */ IStartElementListener* startElementListener);
+
+    /**
+     * Sets a listener for the end of this element.
+     */
+    CARAPI SetEndElementListener(
+        /* [in] */ IEndElementListener* endElementListener);
+
+    /**
+     * Sets a listener for the end of this text element.
+     */
+    CARAPI SetEndTextElementListener(
+        /* [in] */ IEndTextElementListener* endTextElementListener);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
+
+protected:
+    static CARAPI_(String) ToString(
+        /* [in] */ const String& uri,
+        /* [in] */ const String& localName);
+
+    /**
+     * Clears flags on required children.
+     */
+    CARAPI ResetRequiredChildren();
+
+    /**
+     * Throws an exception if a required child was not present.
+     */
+    CARAPI CheckRequiredChildren(
+        /* [in] */ ILocator* locator);
+
+public:
+    /* const */ String mUri;
+    /* const */ String mLocalName;
+    /* const */ Int32 mDepth;
+    /* const */ AutoPtr<IElement> mParent;
+
+    AutoPtr<IChildren> mChildren;
+    AutoPtr<List<AutoPtr<IElement> > > mRequiredChilden;
+
+    Boolean mVisited;
+
+    AutoPtr<IStartElementListener> mStartElementListener;
+    AutoPtr<IEndElementListener> mEndElementListener;
+    AutoPtr<IEndTextElementListener> mEndTextElementListener;
+};
+
+} // namespace Os
+} // namespace Droid
+} // namespace Elastos
+
+#endif //__ELEMENT_H__

@@ -1,0 +1,1440 @@
+module
+{
+    merge("text/format/DateFormat.car");
+    merge("text/format/DateUtils.car");
+    merge("text/format/Formatter.car");
+    merge("text/format/Time.car");
+    merge("text/method/TransformationMethod.car");
+    merge("text/method/TransformationMethod2.car");
+    merge("text/method/AllCapsTransformationMethod.car");
+    merge("text/method/BaseMovementMethod.car");
+    merge("text/method/ArrowKeyMovementMethod.car");
+    merge("text/method/MetaKeyKeyListener.car");
+    merge("text/method/BaseKeyListener.car");
+    merge("text/method/NumberKeyListener.car");
+    merge("text/method/DateKeyListener.car");
+    merge("text/method/DateTimeKeyListener.car");
+    merge("text/method/DialerKeyListener.car");
+    merge("text/method/DigitsKeyListener.car");
+    merge("text/method/ReplacementTransformationMethod.car");
+    merge("text/method/HideReturnsTransformationMethod.car");
+    merge("text/method/KeyListener.car");
+    merge("text/method/MultiTapKeyListener.car");
+    merge("text/method/ScrollingMovementMethod.car");
+    merge("text/method/LinkMovementMethod.car");
+    merge("text/method/MovementMethod.car");
+    merge("text/method/PasswordTransformationMethod.car");
+    merge("text/method/QwertyKeyListener.car");
+    merge("text/method/SingleLineTransformationMethod.car");
+    merge("text/method/TextKeyListener.car");
+    merge("text/method/TimeKeyListener.car");
+    merge("text/NoCopySpan.car");
+    merge("text/method/Touch.car");
+    merge("text/method/WordIterator.car");
+    merge("text/style/CharacterStyle.car");
+    merge("text/style/MetricAffectingSpan.car");
+    merge("text/style/AbsoluteSizeSpan.car");
+    merge("text/style/ParagraphStyle.car");
+    merge("text/style/AlignmentSpan.car");
+    merge("text/style/BackgroundColorSpan.car");
+    merge("text/style/BulletSpan.car");
+    merge("text/style/ClickableSpan.car");
+    merge("text/style/DrawableMarginSpan.car");
+    merge("text/style/ReplacementSpan.car");
+    merge("text/style/DynamicDrawableSpan.car");
+    merge("text/style/EasyEditSpan.car");
+    merge("text/style/ForegroundColorSpan.car");
+    merge("text/style/IconMarginSpan.car");
+    merge("text/style/ImageSpan.car");
+    merge("text/style/LeadingMarginSpan.car");
+    merge("text/style/LineBackgroundSpan.car");
+    merge("text/style/WrapTogetherSpan.car");
+    merge("text/style/LineHeightSpan.car");
+    merge("text/style/LocaleSpan.car");
+    merge("text/style/MaskFilterSpan.car");
+    merge("text/ParcelableSpan.car");
+    merge("text/style/QuoteSpan.car");
+    merge("text/style/RasterizerSpan.car");
+    merge("text/style/RelativeSizeSpan.car");
+    merge("text/style/ScaleXSpan.car");
+    merge("text/style/SpellCheckSpan.car");
+    merge("text/style/StrikethroughSpan.car");
+    merge("text/style/StyleSpan.car");
+    merge("text/style/SubscriptSpan.car");
+    merge("text/style/SuggestionRangeSpan.car");
+    merge("text/style/SuggestionSpan.car");
+    merge("text/style/SuperscriptSpan.car");
+    merge("text/style/TabStopSpan.car");
+    merge("text/style/TextAppearanceSpan.car");
+    merge("text/style/TypefaceSpan.car");
+    merge("text/style/UnderlineSpan.car");
+    merge("text/style/URLSpan.car");
+    merge("text/style/UpdateAppearance.car");
+    merge("text/style/UpdateLayout.car");
+    merge("text/util/Linkify.car");
+    merge("text/AlteredCharSequence.car");
+    merge("text/AndroidCharacter.car");
+    merge("text/Annotation.car");
+    merge("text/AutoText.car");
+    merge("text/Html.car");
+    merge("text/LoginFilter.car");
+
+    merge("text/Layout.car");
+    merge("text/TextPaint.car");
+    merge("text/BoringLayout.car");
+    merge("text/TextUtils.car");
+    merge("text/TextDirectionHeuristic.car");
+    merge("text/Spanned.car");
+    merge("text/Spannable.car");
+    merge("text/SpannableString.car");
+    merge("text/SpannedString.car");
+    merge("text/ClipboardManager.car");
+    merge("text/DynamicLayout.car");
+    merge("text/Editable.car");
+    merge("text/GetChars.car");
+    merge("text/GraphicsOperations.car");
+    merge("text/InputFilter.car");
+    merge("text/InputType.car");
+//    merge("text/ParcelableSpan.car");
+    merge("text/Selection.car");
+    merge("text/SpanWatcher.car");
+    merge("text/StaticLayout.car");
+    merge("text/TextWatcher.car");
+    merge("text/SpannableStringBuilder.car");
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Format {
+
+    singleton class CDateFormat{
+        interface IDateFormat;
+    }
+
+    singleton class CDateUtils{
+        interface IDateUtils;
+    }
+
+    singleton class CFormatter{
+        interface IFormatter;
+    }
+
+    /**
+     * An alternative to the {@link java.util.Calendar} and
+     * {@link java.util.GregorianCalendar} classes. An instance of the Time class represents
+     * a moment in time, specified with second precision. It is modelled after
+     * struct tm, and in fact, uses struct tm to implement most of the
+     * functionality.
+     */
+    class CTime{
+        interface ITime;
+
+        /**
+         * Construct a Time object in the timezone named by the string
+         * argument "timezone". The time is initialized to Jan 1, 1970.
+         * @param timezone string containing the timezone to use.
+         * @see TimeZone
+         */
+        constructor(
+            [in] String timezone);
+
+        /**
+         * Construct a Time object in the default timezone. The time is initialized to
+         * Jan 1, 1970.
+         */
+        constructor();
+
+        /**
+         * A copy constructor.  Construct a Time object by copying the given
+         * Time object.  No normalization occurs.
+         *
+         * @param other
+         */
+        constructor(
+            [in]ITime* other);
+    }
+
+    singleton class CTimeHelper{
+        interface ITimeHelper;
+    }
+
+    }//namespace Format
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Text.IInputFilter;
+    interface Elastos.Droid.Text.ITextWatcher;
+    interface Elastos.Droid.Text.ISpanWatcher;
+    interface Elastos.Droid.Text.ISelectionPositionIterator;
+    interface Libcore.ICU.ILocale;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Method {
+
+    [local]
+    class CAllCapsTransformationMethod{
+        interface IAllCapsTransformationMethod;//interface ITransformationMethod2;
+
+        constructor(
+            [in] IContext* ctx);
+    }
+
+    class CArrowKeyMovementMethod{
+        interface IMovementMethod;
+        interface IArrowKeyMovementMethod;
+    }
+
+    singleton class CArrowKeyMovementMethodHelper{
+        interface IArrowKeyMovementMethodHelper;
+    }
+
+    class CBaseMovementMethod{
+        interface IMovementMethod;
+    }
+
+    class CDateKeyListener{
+        interface IDateKeyListener;
+        interface IInputFilter;
+        interface IKeyListener;
+    }
+
+    singleton class CDateKeyListenerHelper{
+        interface IDateKeyListenerHelper;
+    }
+
+    class CDateTimeKeyListener{
+        interface IDateTimeKeyListener;
+        interface IInputFilter;
+        interface IKeyListener;
+    }
+
+    singleton class CDateTimeKeyListenerHelper{
+        interface IDateTimeKeyListenerHelper;
+    }
+
+    class CDialerKeyListener{
+        interface IDialerKeyListener;
+        interface IInputFilter;
+        interface IKeyListener;
+    }
+
+    singleton class CDialerKeyListenerHelper{
+        interface IDialerKeyListenerHelper;
+    }
+
+    class CDigitsKeyListener{
+        /**
+         * Allocates a DigitsKeyListener that accepts the digits 0 through 9.
+         */
+        constructor();
+
+        /**
+         * Allocates a DigitsKeyListener that accepts the digits 0 through 9,
+         * plus the minus sign (only at the beginning) and/or decimal point
+         * (only one per field) if specified.
+         */
+        constructor(
+            [in] Boolean sign,
+            [in] Boolean decimal);
+
+        interface IDigitsKeyListener;
+        interface IInputFilter;
+        interface IKeyListener;
+    }
+
+    singleton class CDigitsKeyListenerHelper{
+        interface IDigitsKeyListenerHelper;
+    }
+
+    class CLinkMovementMethod{
+        interface ILinkMovementMethod;
+        interface IMovementMethod;
+    }
+
+    singleton class CLinkMovementMethodHelper{
+        interface ILinkMovementMethodHelper;
+    }
+
+    class CMultiTapKeyListener{
+        constructor(
+            [in] Capitalize cap,
+            [in] Boolean autotext);
+
+        interface IMultiTapKeyListener;
+        interface IKeyListener;
+        interface ISpanWatcher;
+    }
+
+    singleton class CMultiTapKeyListenerHelper{
+        interface IMultiTapKeyListenerHelper;
+    }
+
+    class CHideReturnsTransformationMethod{
+        interface IHideReturnsTransformationMethod;
+        interface ITransformationMethod;
+    }
+
+    singleton class CHideReturnsTransformationMethodHelper{
+        interface IHideReturnsTransformationMethodHelper;
+    }
+
+    class CPasswordTransformationMethod{
+        interface IPasswordTransformationMethod;
+        interface ITextWatcher;
+    }
+
+    singleton class CPasswordTransformationMethodHelper{
+        interface IPasswordTransformationMethodHelper;
+    }
+
+    class CQwertyKeyListener{
+        interface IQwertyKeyListener;
+        interface IKeyListener;
+
+        constructor(
+            [in] Capitalize cap,
+            [in] Boolean autoText);
+
+        constructor(
+            [in] Capitalize cap,
+            [in] Boolean autotext,
+            [in] Boolean fullKeyboard);
+    }
+
+    singleton class CQwertyKeyListenerHelper{
+        interface IQwertyKeyListenerHelper;
+    }
+
+    class CScrollingMovementMethod{
+        interface IScrollingMovementMethod;
+        interface IMovementMethod;
+    }
+
+    singleton class CScrollingMovementMethodHelper{
+        interface IScrollingMovementMethodHelper;
+    }
+
+    class CSingleLineTransformationMethod{
+        interface ISingleLineTransformationMethod;
+        interface ITransformationMethod;
+    }
+
+    singleton class CSingleLineTransformationMethodHelper{
+        interface ISingleLineTransformationMethodHelper;
+    }
+
+    class CTextKeyListener{
+        interface ITextKeyListener;
+        interface IKeyListener;
+        interface ISpanWatcher;
+
+        /**
+         * Creates a new TextKeyListener with the specified capitalization
+         * and correction properties.
+         *
+         * @param cap when, if ever, to automatically capitalize.
+         * @param autotext whether to automatically do spelling corrections.
+         */
+        constructor(
+            [in] Capitalize cap,
+            [in] Boolean autotext);
+    }
+
+    singleton class CTextKeyListenerHelper{
+        interface ITextKeyListenerHelper;
+    }
+
+    class CTimeKeyListener{
+        interface ITimeKeyListener;
+        interface IKeyListener;
+        interface IInputFilter;
+    }
+
+    singleton class CTimeKeyListenerHelper{
+        interface ITimeKeyListenerHelper;
+    }
+
+    singleton class CTouch{
+        interface ITouch;
+    }
+
+    class CWordIterator{
+        interface IWordIterator;
+        interface ISelectionPositionIterator;
+
+        /**
+         * Constructs a WordIterator using the default locale.
+         */
+        //public
+        constructor();
+
+        /**
+         * Constructs a new WordIterator for the specified locale.
+         * @param locale The locale to be used when analysing the text.
+         */
+        //public
+        constructor(
+            [in] ILocale* locale);
+    }
+
+    singleton class CMetaKeyKeyListenerHelper {
+        interface IMetaKeyKeyListenerHelper;
+    }
+
+    } // namespace Method
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
+
+    interface Elastos.Droid.Text.IParcelableSpan;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.Graphics.IBitmap;
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Graphics.IMaskFilter;
+    interface Elastos.Droid.Graphics.IRasterizer;
+    interface Elastos.Droid.Content.Res.IColorStateList;
+    enum Elastos.Droid.Text.LayoutAlignment;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    class CAbsoluteSizeSpan{
+        interface IAbsoluteSizeSpan;
+        interface IUpdateLayout;
+        interface IParcelableSpan;
+        interface IParcelable;
+
+        /**
+         * Set the text size to <code>size</code> physical pixels.
+         */
+        constructor();
+
+        //public
+        constructor(
+            [in] Int32 size);
+
+        /**
+         * Set the text size to <code>size</code> physical pixels,
+         * or to <code>size</code> device-independent pixels if
+         * <code>dip</code> is true.
+         */
+        //public
+        constructor(
+            [in] Int32 size,
+            [in] Boolean dip);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+    }
+
+    singleton class CAbsoluteSizeSpanHelper{
+        interface IAbsoluteSizeSpanHelper;
+    }
+
+    class CBackgroundColorSpan{
+        interface IBackgroundColorSpan;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+
+        constructor();
+
+        //public
+        constructor(
+            [in] Int32 color);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+    }
+
+    singleton class CBackgroundColorSpanHelper{
+        interface IBackgroundColorSpanHelper;
+    }
+
+    class CBulletSpan{
+        interface IBulletSpan;
+        interface ILeadingMarginSpan;
+        interface IParcelableSpan;
+        interface IParcelable;
+
+        //public
+        constructor();
+
+        //public
+        constructor(
+            [in] Int32 gapWidth);
+
+        //public
+        constructor(
+            [in] Int32 gapWidth,
+            [in] Int32 color);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+    }
+
+    class CDrawableMarginSpan{
+        interface IDrawableMarginSpan;
+        interface ILeadingMarginSpan;
+        interface ILineHeightSpan;
+
+        //public
+        constructor(
+            [in] IDrawable* b);
+
+        //public
+        constructor(
+            [in] IDrawable* b,
+            [in] Int32 pad);
+    }
+
+    class CEasyEditSpan{
+        interface IEasyEditSpan;
+        interface IParcelableSpan;
+        interface IParcelable;
+
+        constructor();
+    }
+
+    class CForegroundColorSpan {
+        constructor(
+            [in] Int32 color);
+
+        constructor(
+            [in] IParcel* src);
+
+        interface IForegroundColorSpan;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    singleton class CForegroundColorSpanHelper{
+        interface IForegroundColorSpanHelper;
+    }
+
+    class CIconMarginSpan{
+        //public
+        constructor(
+            [in] IBitmap* b);
+
+        //public
+        constructor(
+            [in] IBitmap* b,
+            [in] Int32 pad);
+
+        interface ILeadingMarginSpan;
+        interface ILineHeightSpan;
+    }
+
+    [local]
+    class CImageSpan {
+        /**
+         * @deprecated Use {@link #ImageSpan(Context, Bitmap)} instead.
+         */
+        //@Deprecated
+        //public
+        constructor(
+            [in] IBitmap* b);
+
+        /**
+         * @deprecated Use {@link #ImageSpan(Context, Bitmap, int) instead.
+         */
+        //@Deprecated
+        //public
+        constructor(
+            [in] IBitmap* b,
+            [in] Int32 verticalAlignment);
+
+        //public
+        constructor(
+            [in] IContext* ctx,
+            [in] IBitmap* b);
+
+        /**
+         * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
+         * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
+         */
+        //public
+        constructor(
+            [in] IContext* ctx,
+            [in] IBitmap* b,
+            [in] Int32 verticalAlignment);
+
+        //public
+        constructor(
+            [in] IDrawable* d);
+
+        /**
+         * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
+         * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
+         */
+        //public
+        constructor(
+            [in] IDrawable* d,
+            [in] Int32 verticalAlignment);
+
+        //public
+        constructor(
+            [in] IDrawable* d,
+            [in] String source);
+
+        /**
+         * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
+         * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
+         */
+        //public
+        constructor(
+            [in] IDrawable* d,
+            [in] String source,
+            [in] Int32 verticalAlignment);
+
+        //public
+        constructor(
+            [in] IContext* ctx,
+            [in] IUri* uri);
+
+        /**
+         * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
+         * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
+         */
+        //public
+        constructor(
+            [in] IContext* ctx,
+            [in] IUri* uri,
+            [in] Int32 verticalAlignment);
+
+        //public
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 resourceId);
+
+        /**
+         * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
+         * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
+         */
+        //public
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 resourceId,
+            [in] Int32 verticalAlignment);
+
+        interface IImageSpan;
+        interface IUpdateLayout;
+    }
+
+    singleton class CImageSpanHelper{
+        interface IImageSpanHelper;
+    }
+
+    class CLocaleSpan{
+        /**
+         * Creates a LocaleSpan.
+         * @param locale The {@link Locale} of the text to which the span is
+         * attached.
+         */
+        constructor();
+
+        //public
+        constructor(
+            [in] ILocale* locale);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+
+        interface ILocaleSpan;
+        interface IParcelableSpan;
+        interface IUpdateLayout;
+        interface IParcelable;
+    }
+
+    singleton class CLocaleSpanHelper{
+        interface ILocaleSpanHelper;
+    }
+
+    class CMaskFilterSpan{
+        //public
+        constructor(
+            [in] IMaskFilter* filter);
+
+        interface IMaskFilterSpan;
+        interface IUpdateAppearance;
+    }
+
+    singleton class CMaskFilterSpanHelper{
+        interface IMaskFilterSpanHelper;
+    }
+
+    class CQuoteSpan{
+        //public
+        constructor();
+
+        //public
+        constructor(
+            [in] Int32 color);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+
+        interface IQuoteSpan;
+        interface ILeadingMarginSpan;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CRasterizerSpan{
+        //public
+        constructor(
+            [in] IRasterizer* r);
+
+        interface IRasterizerSpan;
+        interface IUpdateAppearance;
+    }
+
+    singleton class CRasterizerSpanHelper{
+        interface IRasterizerSpanHelper;
+    }
+
+    class CRelativeSizeSpan{
+        constructor();
+
+        //public
+        constructor(
+            [in] Float proportion);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+
+        interface IRelativeSizeSpan;
+        interface IParcelableSpan;
+        interface IUpdateLayout;
+        interface IParcelable;
+    }
+
+    singleton class CRelativeSizeSpanHelper{
+        interface IRelativeSizeSpanHelper;
+    }
+
+    class CScaleXSpan{
+        constructor();
+
+        //public
+        constructor(
+            [in] Float proportion);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+
+        interface IScaleXSpan;
+        interface IParcelableSpan;
+        interface IUpdateLayout;
+        interface IParcelable;
+    }
+
+    singleton class CScaleXSpanHelper{
+        interface IScaleXSpanHelper;
+    }
+
+    class CSpellCheckSpan{
+        //public
+        constructor();
+
+        //public
+        constructor(
+            [in] IParcel* src);
+
+        interface ISpellCheckSpan;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CStrikethroughSpan{
+        //public
+        constructor();
+
+        //public
+        constructor(
+            [in] IParcel* src);
+
+        interface IStrikethroughSpan;
+        //interface ICharacterStyle;//be extends by IStrikethroughSpan
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    singleton class CStrikethroughSpanHelper{
+        interface IStrikethroughSpanHelper;
+    }
+
+    class CStyleSpan{
+        constructor();
+
+        /**
+         *
+         * @param style An integer constant describing the style for this span. Examples
+         * include bold, italic, and normal. Values are constants defined
+         * in {@link android.graphics.Typeface}.
+         */
+        //public
+        constructor(
+            [in] Int32 style);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+
+        interface IStyleSpan;
+        interface IParcelableSpan;
+        interface IUpdateLayout;
+        interface IParcelable;
+    }
+
+    singleton class CStyleSpanHelper{
+        interface IStyleSpanHelper;
+    }
+
+    class CSubscriptSpan{
+        //public
+        constructor();
+
+        //public
+        constructor(
+            [in] IParcel* src);
+
+        interface ISubscriptSpan;
+        //interface IMetricAffectingSpan;//be extends by ISubscriptSpan
+        interface IUpdateLayout;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    singleton class CSubscriptSpanHelper{
+        interface ISubscriptSpanHelper;
+    }
+
+    class CSuggestionRangeSpan{
+        //public
+        constructor();
+
+        //public
+        constructor(
+            [in] IParcel* src);
+
+        interface ISuggestionRangeSpan;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    singleton class CSuggestionRangeSpanHelper{
+        interface ISuggestionRangeSpanHelper;
+    }
+
+    [local,deprecated]
+    class CSuggestionSpan{
+        interface ISuggestionSpan;
+        interface IParcelableSpan;
+        interface IParcelable;
+
+        constructor();
+
+        /**
+         * @param context Context for the application
+         * @param suggestions Suggestions for the string under the span
+         * @param flags Additional flags indicating how this span is handled in TextView
+         */
+        //public
+        constructor(
+            [in] IContext* ctx,
+            [in] ArrayOf<String>* suggestions,
+            [in] Int32 flags);
+
+        /**
+         * @param locale Locale of the suggestions
+         * @param suggestions Suggestions for the string under the span
+         * @param flags Additional flags indicating how this span is handled in TextView
+         */
+        //public
+        constructor(
+            [in] ILocale* locale,
+            [in] ArrayOf<String>* suggestions,
+            [in] Int32 flags);
+
+        /**
+         * @param context Context for the application
+         * @param locale locale Locale of the suggestions
+         * @param suggestions Suggestions for the string under the span. Only the first up to
+         * {@link SuggestionSpan#SUGGESTIONS_MAX_SIZE} will be considered. Null values not permitted.
+         * @param flags Additional flags indicating how this span is handled in TextView
+         * @param notificationTargetClass if not null, this class will get notified when the user
+         * selects one of the suggestions.
+         */
+        //public
+        constructor(
+            [in] IContext* ctx,
+            [in] ILocale* locale,
+            [in] ArrayOf<String>* suggestions,
+            [in] Int32 flags,
+            [in] Handle32 notificationTargetClass);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+    }
+
+    singleton class CSuggestionSpanHelper{
+        interface ISuggestionSpanHelper;
+    }
+
+    class CSuperscriptSpan{
+        interface ISuperscriptSpan;
+        interface IParcelableSpan;
+        interface IUpdateLayout;
+        interface IParcelable;
+
+        //public
+        constructor();
+
+        //public
+        constructor(
+            [in] IParcel* src);
+    }
+
+    singleton class CSuperscriptSpanHelper{
+        interface ISuperscriptSpanHelper;
+    }
+
+    [local]
+    class CTextAppearanceSpan{
+        interface ITextAppearanceSpan;
+        interface IParcelableSpan;
+        interface IUpdateLayout;
+        interface IParcelable;
+
+        constructor();
+
+        /**
+         * Uses the specified TextAppearance resource to determine the
+         * text appearance.  The <code>appearance</code> should be, for example,
+         * <code>android.R.style.TextAppearance_Small</code>.
+         */
+        //public
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 appearance);
+
+        /**
+         * Uses the specified TextAppearance resource to determine the
+         * text appearance, and the specified text color resource
+         * to determine the color.  The <code>appearance</code> should be,
+         * for example, <code>android.R.style.TextAppearance_Small</code>,
+         * and the <code>colorList</code> should be, for example,
+         * <code>android.R.styleable.Theme_textColorPrimary</code>.
+         */
+        //public
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 appearance,
+            [in] Int32 colorList);
+
+        /**
+         * Makes text be drawn with the specified typeface, size, style,
+         * and colors.
+         */
+        //public
+        constructor(
+            [in] String family,
+            [in] Int32 style,
+            [in] Int32 size,
+            [in] IColorStateList* color,
+            [in] IColorStateList* linkColor);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+    }
+
+    singleton class CTextAppearanceSpanHelper{
+        interface ITextAppearanceSpanHelper;
+    }
+
+    class CTypefaceSpan{
+        interface ITypefaceSpan;
+        interface IParcelableSpan;
+        interface IUpdateLayout;
+        interface IParcelable;
+
+        constructor();
+
+        /**
+         * @param family The font family for this typeface.  Examples include
+         * "monospace", "serif", and "sans-serif".
+         */
+        //public
+        constructor(
+            [in] String family);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+    }
+
+    singleton class CTypefaceSpanHelper{
+        interface ITypefaceSpanHelper;
+    }
+
+    class CUnderlineSpan{
+        interface IUnderlineSpan;
+        //interface ICharacterStyle;//be extends by IUnderlineSpan
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+
+        //public
+        constructor();
+
+        //public
+        constructor(
+            [in] IParcel* src);
+    }
+
+    singleton class CUnderlineSpanHelper{
+        interface IUnderlineSpanHelper;
+    }
+
+    class CURLSpan{
+        interface IURLSpan;
+        interface IParcelableSpan;
+        interface IParcelable;
+
+        constructor();
+
+        //public
+        constructor(
+            [in] String url);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+    }
+
+    singleton class CURLSpanHelper{
+        interface IURLSpanHelper;
+    }
+
+    class CAlignmentSpanStandard {
+        constructor();
+
+        constructor(
+            [in] LayoutAlignment align);
+
+        constructor(
+            [in] IParcel* src);
+
+        interface IAlignmentSpan;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CLeadingMarginSpanStandard {
+        constructor();
+
+        constructor(
+            [in] LayoutAlignment align);
+
+        constructor(
+            [in] IParcel* src);
+
+        interface ILeadingMarginSpan;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    } // namespace Style
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Utility {
+
+    singleton class CLinkify{
+        interface ILinkify;
+    }
+
+    } // namespace Utility
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
+
+    using interface Elastos.Core.ICharSequence;
+
+    interface Elastos.Droid.Graphics.IPaint;
+    interface Elastos.Droid.Content.Res.IResources;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+
+    [deprecated]
+    class CAlteredCharSequence{
+        interface IAlteredCharSequence;
+        //interface ICharSequence;//be extends by IGetChars
+        interface IGetChars;
+        constructor(
+            [in] ICharSequence* source,
+            [in] ArrayOf<Char32>* sub,
+            [in] Int32 substart,
+            [in] Int32 subend);
+    }
+
+    singleton class CAlteredCharSequenceHelper{
+        interface IAlteredCharSequenceHelper;
+    }
+
+    class CAndroidCharacter{
+        interface IAndroidCharacter;
+    }
+
+    singleton class CAndroidCharacterHelper{
+        interface IAndroidCharacterHelper;
+    }
+
+    class CAnnotation{
+        interface IAnnotation;
+        interface IParcelableSpan;
+        interface IParcelable;
+
+        constructor();
+
+        //public
+        constructor(
+            [in] String key,
+            [in] String value);
+
+        //public
+        constructor(
+            [in] IParcel* src);
+    }
+
+    class CAutoText{
+        interface IAutoText;
+        //private
+        constructor(
+            [in] IResources* resources);
+    }
+
+    singleton class CAutoTextHelper{
+        interface IAutoTextHelper;
+    }
+
+    [deprecated]
+    class CLayoutDirections {
+        constructor(
+            [in] ArrayOf<Int32>* directions);
+
+        interface ILayoutDirections;
+    }
+
+    [deprecated]
+    class CTextPaint {
+
+        constructor();
+
+        constructor(
+            [in] Int32 flags);
+
+        constructor(
+            [in] IPaint* p);
+
+        interface ITextPaint;
+    }
+
+    class CBoringLayout {
+        constructor(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] IBoringLayoutMetrics* metrics,
+            [in] Boolean includepad);
+
+        constructor(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] IBoringLayoutMetrics* metrics,
+            [in] Boolean includepad,
+            [in] TextUtilsTruncateAt ellipsize,
+            [in] Int32 ellipsizedWidth);
+
+        interface IBoringLayout;
+        interface ITextUtilsEllipsizeCallback;
+    }
+
+    singleton class CBoringLayoutHelper {
+        interface IBoringLayoutHelper;
+    }
+
+    class CBoringLayoutMetrics {
+        interface IBoringLayoutMetrics;
+    }
+
+    class CDynamicLayout {
+        constructor(
+            [in] ICharSequence* base,
+            [in] ITextPaint* paint,
+            [in] Int32 width,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad);
+
+        constructor(
+            [in] ICharSequence* base,
+            [in] ICharSequence* display,
+            [in] ITextPaint* paint,
+            [in] Int32 width,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad);
+
+        constructor(
+            [in] ICharSequence* base,
+            [in] ICharSequence* display,
+            [in] ITextPaint* paint,
+            [in] Int32 width,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad,
+            [in] TextUtilsTruncateAt ellipsize,
+            [in] Int32 ellipsizedWidth);
+
+        constructor(
+            [in] ICharSequence* base,
+            [in] ICharSequence* display,
+            [in] ITextPaint* paint,
+            [in] Int32 width,
+            [in] LayoutAlignment align,
+            [in] ITextDirectionHeuristic* textDir,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad,
+            [in] TextUtilsTruncateAt ellipsize,
+            [in] Int32 ellipsizedWidth);
+
+        interface IDynamicLayout;
+    }
+
+    singleton class CDynamicLayoutHelper {
+        interface IDynamicLayoutHelper;
+    }
+
+    singleton class CLayoutHelper {
+        interface ILayoutHelper;
+    }
+
+    singleton class CEditableFactory {
+        interface IEditableFactory;
+    }
+
+    singleton class CSpannableFactory {
+        interface ISpannableFactory;
+    }
+
+    class CLengthFilter {
+        constructor(
+            [in] Int32 max);
+
+        interface IInputFilter;
+    }
+
+    class CNoCopySpan {
+        interface INoCopySpan;
+    }
+
+    singleton class CSelection {
+        interface ISelection;
+    }
+
+    class CStaticLayout {
+        constructor(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [in] Int32 width,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad);
+
+        /**
+         * @hide
+         */
+        constructor(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [in] Int32 width,
+            [in] LayoutAlignment align,
+            [in] ITextDirectionHeuristic* textDir,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad);
+
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 bufstart,
+            [in] Int32 bufend,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad);
+
+        /**
+         * @hide
+         */
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 bufstart,
+            [in] Int32 bufend,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] ITextDirectionHeuristic* textDir,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad);
+
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 bufstart,
+            [in] Int32 bufend,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad,
+            [in] TextUtilsTruncateAt ellipsize,
+            [in] Int32 ellipsizedWidth);
+
+        /**
+         * @hide
+         */
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 bufstart,
+            [in] Int32 bufend,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] ITextDirectionHeuristic* textDir,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad,
+            [in] TextUtilsTruncateAt ellipsize,
+            [in] Int32 ellipsizedWidth,
+            [in] Int32 maxLines);
+
+        constructor(
+            [in] ICharSequence* text);
+
+        interface IStaticLayout;
+    }
+
+    class CSpannableStringBuilder {
+        constructor();
+
+        constructor(
+            [in] ICharSequence* source);
+
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 start,
+            [in] Int32 end);
+
+        interface ISpannableStringBuilder;
+        interface IGetChars;
+    }
+
+    class CSpannedString{
+        constructor(
+            [in] ICharSequence* source);
+
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 start,
+            [in] Int32 end);
+
+        interface ISpannedString;
+        interface IGetChars;
+    }
+
+    class CSpannableString {
+        constructor(
+            [in] ICharSequence* source);
+
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 start,
+            [in] Int32 end);
+
+        interface ISpannableString;
+        interface IGetChars;
+    }
+
+    singleton class CSpannedStringHelper {
+        interface ISpannedStringHelper;
+    }
+
+    singleton class CSpannableStringHelper {
+        interface ISpannableStringHelper;
+    }
+
+    /**
+     * This filter will capitalize all the lower case letters that are added
+     * through edits.
+     */
+    class CAllCaps {
+        interface IInputFilter;
+    }
+
+    class CSimpleStringSplitter {
+        constructor(
+            [in] Char32 delimiter);
+
+        interface ISimpleStringSplitter;
+    }
+
+    singleton class CHtml{
+        interface IHtml;
+    }
+
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
+}

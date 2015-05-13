@@ -1,0 +1,15 @@
+
+TARGET_NAME = testTimer
+TARGET_TYPE = ecx
+
+IMPORTS = Elastos.Core.eco
+IMPORTS += Elastos.Core.eco
+
+SOURCES = main.cpp
+SOURCES += MyTimerTask.cpp
+
+LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += -lstdc++  -lm -ldl -llog -lz -lcutils -lutils -lbinder

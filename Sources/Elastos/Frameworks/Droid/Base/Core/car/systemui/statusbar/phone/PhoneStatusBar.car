@@ -1,0 +1,96 @@
+module
+{
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.StatusBar.IStatusBarIcon;
+    interface Elastos.Droid.StatusBar.IStatusBarNotification;
+    interface Elastos.Droid.Animation.IAnimator;
+    interface Elastos.Droid.Animation.ITimeInterpolator;
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IViewPropertyAnimator;
+    interface Elastos.Droid.View.IMotionEvent;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Phone {
+
+    [local]
+    interface IPhoneStatusBar extends Elastos.Droid.SystemUI.StatusBar.IBaseStatusBar {
+
+        const String ACTION_STATUSBAR_START = "com.android.internal.policy.statusbar.START";
+
+        ShowClock(
+            [in] Boolean show);
+
+        GetHandler(
+            [out] IHandler** handler);
+
+        AnimateCollapsePanelsEx();
+
+        SetVisibilityWhenDone(
+            [in] IViewPropertyAnimator* a,
+            [in] IView* v,
+            [in] Int32 vis,
+            [out] IViewPropertyAnimator** animator);
+
+        SetVisibilityWhenDoneEx(
+            [in] IAnimator* a,
+            [in] IView* v,
+            [in] Int32 vis,
+            [out] IAnimator** animator);
+
+        Interpolator(
+            [in] ITimeInterpolator* ti,
+            [in] IAnimator* a,
+            [out] IAnimator** animator);
+
+        StartDelay(
+            [in] Int32 d,
+            [in] IAnimator* a,
+            [out] IAnimator** animator);
+
+        StartAnimation(
+            [in] IAnimator* a,
+            [out] IAnimator** animator);
+
+        FlipToNotifications();
+
+        SwitchToSettings();
+
+        FlipToSettings();
+
+        FlipPanels();
+
+        AnimateCollapseQuickSettings();
+
+        IsClinging(
+            [out] Boolean* isClinging);
+
+        HideCling();
+
+        ShowCling();
+
+        InterceptTouchEvent(
+            [in] IMotionEvent* event,
+            [out] Boolean* result);
+
+//      GetGestureRecorder(
+//          [out] IGestureRecorder** recorder);
+
+        SetLightsOn(
+            [in] Boolean on);
+
+        StartActivityDismissingKeyguard(
+            [in] IIntent* intent,
+            [in] Boolean onlyProvisioned);
+    }
+
+    } // namespace Phone
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

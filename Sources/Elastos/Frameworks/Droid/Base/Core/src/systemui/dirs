@@ -1,0 +1,4 @@
+
+DIRS += statusbar
+DIRS += recent
+DIRS += media

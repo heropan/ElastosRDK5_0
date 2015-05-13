@@ -1,0 +1,25 @@
+
+module {
+
+    interface Elastos.Droid.Database.IDataSetObserver;
+    interface Elastos.Droid.Database.ICursor;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+
+    interface IAlphabetIndexer
+    {
+        /**
+         * Sets a new cursor as the data set and resets the cache of indices.
+         * @param cursor the new cursor to use as the data set
+         */
+        SetCursor(
+            [in] ICursor* cursor);
+    }
+
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+
+}

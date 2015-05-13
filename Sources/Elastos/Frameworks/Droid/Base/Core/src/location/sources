@@ -1,0 +1,37 @@
+TARGET_NAME= location
+TARGET_TYPE= lib
+
+include $(MAKEDIR)/../../../../sources.inc
+
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../inc/
+INCLUDES += $(PREBUILD_INC)/skia/utils
+INCLUDES += $(PREBUILD_INC)/skia/core
+
+C_DEFINES += -DDROID_CORE
+
+SOURCES = CAddress.cpp
+SOURCES += CCountry.cpp
+SOURCES += CCountryDetector.cpp
+SOURCES += CCriteria.cpp
+SOURCES += CGeocoder.cpp
+SOURCES += CGeocoderHelper.cpp
+SOURCES += CGeocoderParams.cpp
+SOURCES += CGeofence.cpp
+SOURCES += CGpsSatellite.cpp
+SOURCES += CGpsStatus.cpp
+SOURCES += CGpsStatusListenerTransport.cpp
+SOURCES += CListenerTransport.cpp
+SOURCES += CLocation.cpp
+SOURCES += CLocationManager.cpp
+SOURCES += CLocationProvider.cpp
+SOURCES += CLocationProviderHelper.cpp
+SOURCES += CLocationRequest.cpp
+SOURCES += Country.cpp
+SOURCES += CountryDetector.cpp
+SOURCES += CProviderProperties.cpp
+SOURCES += CProviderRequest.cpp
+SOURCES += CGpsNetInitiatedHandler.cpp
+SOURCES += CGpsNiResponse.cpp
+SOURCES += CGpsNiNotification.cpp
+SOURCES += LocationManager.cpp

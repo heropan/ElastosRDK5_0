@@ -1,0 +1,87 @@
+module
+{
+
+    using interface Elastos.Text.ICharacterIterator;
+    interface Elastos.Text.IStringCharacterIterator;
+    using interface Libcore.ICU.ILocale;
+
+    namespace Libcore {
+    namespace ICU {
+
+    interface INativeBreakIterator {
+        // @Override
+        Clone(
+            [out] INativeBreakIterator ** outiter);
+
+        // @Override
+        Equals(
+            [in] IInterface * object,
+            [out] Boolean * value);
+
+        // @Override
+        GetHashCode(
+            [out] Int32 * value);
+
+        Current(
+            [out] Int32 * value);
+
+        First(
+            [out] Int32 * value);
+
+        Following(
+            [in] Int32 offset,
+            [out] Int32 * value);
+
+        GetText(
+            [out] ICharacterIterator ** outiter);
+
+        Last(
+            [out] Int32 * value);
+
+        Next(
+            [in] Int32 n,
+            [out] Int32 * value);
+
+        NextEx(
+            [out] Int32 * value);
+
+        Previous(
+            [out] Int32 * value);
+
+        SetText(
+            [in] ICharacterIterator * newText);
+
+        SetTextEx(
+            [in] String newText);
+
+        IsBoundary(
+            [in] Int32 offset,
+            [out] Boolean * value);
+
+        Preceding(
+            [in] Int32 offset,
+            [out] Int32 * value);
+    }
+
+    interface INativeBreakIteratorHelper {
+
+        GetCharacterInstance(
+            [in] ILocale * where,
+            [out] INativeBreakIterator ** outiter);
+
+        GetLineInstance(
+            [in] ILocale * where,
+            [out] INativeBreakIterator ** outiter);
+
+        GetSentenceInstance(
+            [in] ILocale * where,
+            [out] INativeBreakIterator ** outiter);
+
+        GetWordInstance(
+            [in] ILocale * where,
+            [out] INativeBreakIterator ** outiter);
+    }
+
+    } // namespace ICU
+    } // namespace Libcore
+}

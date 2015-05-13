@@ -1,0 +1,34 @@
+
+module
+{
+    interface Elastos.Droid.Webkit.IJsResult;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+    /**
+     * Public class for handling JavaScript prompt requests. The WebChromeClient will receive a
+     * {@link WebChromeClient#onJsPrompt(WebView, String, String, String, JsPromptResult)} call with a
+     * JsPromptResult instance as a parameter. This parameter is used to return the result of this user
+     * dialog prompt back to the WebView instance. The client can call cancel() to cancel the dialog or
+     * confirm() with the user's input to confirm the dialog.
+     */
+    interface IJsPromptResult extends IJsResult {
+        /**
+         * Handle a confirmation response from the user.
+         */
+        ConfirmEx(
+            [in] String result);
+
+        /**
+         * @hide Only for use by WebViewProvider implementations
+         */
+        GetStringResult(
+            [out] String* stringResult);
+    }
+
+    } // namespace Webkit
+    } // namepsace Droid
+    } // namespace Elastos
+}

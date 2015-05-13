@@ -1,0 +1,34 @@
+
+module
+{
+    interface Elastos.Droid.Graphics.ISurfaceTexture;
+    interface Elastos.Droid.Webkit.IHTML5VideoView;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+    interface IHTML5VideoInlineHelper {
+        // Inline Video specific FUNCTIONS:
+
+        GetSurfaceTexture(
+            [in] Int32 videoLayerId,
+            [out] ISurfaceTexture** surfaceTexture);
+
+        SurfaceTextureDeleted(
+            [out] Boolean* result);
+
+        CleanupSurfaceTexture();
+    }
+
+    /**
+     * @hide This is only used by the browser
+     */
+    interface IHTML5VideoInline extends IHTML5VideoView {
+
+    }
+
+    } // namespace Webkit
+    } // namepsace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,15 @@
+TARGET_NAME = media
+TARGET_TYPE = lib
+
+C_DEFINES += -DDROID_CORE
+
+include $(MAKEDIR)/../../../../../sources.inc
+
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../inc/
+INCLUDES += $(MAKEDIR)/../../../inc/systemui
+INCLUDES += $(MAKEDIR)/../../../inc/systemui/media
+
+
+SOURCES = CNotificationPlayer.cpp
+SOURCES += CRingtonePlayer.cpp

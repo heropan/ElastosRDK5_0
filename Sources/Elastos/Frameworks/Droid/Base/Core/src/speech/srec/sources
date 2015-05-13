@@ -1,0 +1,22 @@
+
+TARGET_NAME= srec
+TARGET_TYPE= lib
+
+include $(MAKEDIR)/../../../../../sources.inc
+
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../inc/
+INCLUDES += $(MAKEDIR)/../../../inc/speech
+
+#C_DEFINES += -D_FRAMEWORK_CORE
+
+SOURCES = CMicrophoneInputStream.cpp
+SOURCES += CRecognizer.cpp
+SOURCES += CRecognizerHelper.cpp
+SOURCES += CUlawEncoderInputStream.cpp
+SOURCES += CUlawEncoderInputStreamHelper.cpp
+SOURCES += CWaveHeader.cpp
+SOURCES += MicrophoneInputStream.cpp
+SOURCES += Recognizer.cpp
+SOURCES += UlawEncoderInputStream.cpp
+SOURCES += WaveHeader.cpp

@@ -1,0 +1,56 @@
+module
+{
+    interface Elastos.Droid.Os.IUserHandle;
+    interface Elastos.Droid.App.INotification;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace StatusBar {
+
+    interface IStatusBarNotification
+    {
+        DescribeContents(
+            [out] Int32* value);
+
+        IsOngoing(
+            [out] Boolean* result);
+
+        IsClearable(
+            [out] Boolean* result);
+
+        /** Returns a userHandle for the instance of the app that posted this notification. */
+        GetUserId(
+            [out] Int32* userId);
+
+        GetPkg(
+            [out] String* pkg);
+
+        GetTag(
+            [out] String* tag);
+
+        GetId(
+            [out] Int32* id);
+
+        GetNotification(
+            [out] INotification** notification);
+
+        GetUid(
+            [out] Int32* uid);
+
+        GetInitialPid(
+            [out] Int32* initialPid);
+
+        GetScore(
+            [out] Int32* score);
+
+        GetUser(
+            [out] IUserHandle** user);
+
+        ToString(
+            [out] String* str);
+    }
+
+    } // namespace StatusBar
+    } // namespace Droid
+    } // namespace Elastos
+}

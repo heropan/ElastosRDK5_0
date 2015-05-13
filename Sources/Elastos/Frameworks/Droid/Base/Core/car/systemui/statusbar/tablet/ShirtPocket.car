@@ -1,0 +1,25 @@
+module
+{
+    interface Elastos.Droid.Content.IClipData;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Tablet {
+
+    interface IShirtPocket extends Elastos.Droid.Widget.IImageView {
+        Holding(
+            [out] Boolean* result);
+
+        Stash(
+            [in] IClipData* clipping);
+    }
+
+    } // namespace Tablet
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}
+

@@ -1,0 +1,39 @@
+
+module
+{
+    interface Elastos.Droid.Accounts.IAccount;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Content {
+
+    interface ISyncInfo {
+        /** @hide */
+        GetAuthorityId(
+            [out] Int32* authorityId);
+
+        /**
+         * The {@link Account} that is currently being synced.
+         */
+        GetAccount(
+            [out] IAccount** account);
+
+        /**
+         * The authority of the provider that is currently being synced.
+         */
+        GetAuthority(
+            [out] String* authority);
+
+        /**
+         * The start time of the current sync operation in milliseconds since boot.
+         * This is represented in elapsed real time.
+         * See {@link android.os.SystemClock#elapsedRealtime()}.
+         */
+        GetStartTime(
+            [out] Int64* startTime);
+    }
+
+    } // namespace Content
+    } // namespace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,112 @@
+
+module
+{
+    interface Elastos.Droid.Hardware.Usb.IUsbInterface;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+    namespace Usb {
+
+    interface IUsbDevice {
+        /**
+         * Returns the name of the device.
+         * In the standard implementation, this is the path of the device file
+         * for the device in the usbfs file system.
+         *
+         * @return the device name
+         */
+        GetDeviceName(
+            [out] String* name);
+
+        /**
+         * Returns a unique integer ID for the device.
+         * This is a convenience for clients that want to use an integer to represent
+         * the device, rather than the device name.
+         * IDs are not persistent across USB disconnects.
+         *
+         * @return the device ID
+         */
+        GetDeviceId(
+            [out] Int32* id);
+
+        /**
+         * Returns a vendor ID for the device.
+         *
+         * @return the device vendor ID
+         */
+        GetVendorId(
+            [out] Int32* id);
+
+        /**
+         * Returns a product ID for the device.
+         *
+         * @return the device product ID
+         */
+        GetProductId(
+            [out] Int32* id);
+
+        /**
+         * Returns the devices's class field.
+         * Some useful constants for USB device classes can be found in {@link UsbConstants}.
+         *
+         * @return the devices's class
+         */
+        GetDeviceClass(
+            [out] Int32* cls);
+
+        /**
+         * Returns the device's subclass field.
+         *
+         * @return the device's subclass
+         */
+        GetDeviceSubclass(
+            [out] Int32* cls);
+
+        /**
+         * Returns the device's protocol field.
+         *
+         * @return the device's protocol
+         */
+        GetDeviceProtocol(
+            [out] Int32* protocol);
+
+        /**
+         * Returns the number of {@link UsbInterface}s this device contains.
+         *
+         * @return the number of interfaces
+         */
+        GetInterfaceCount(
+            [out] Int32* count);
+
+        /**
+         * Returns the {@link UsbInterface} at the given index.
+         *
+         * @return the interface
+         */
+        GetInterface(
+            [in] Int32 index,
+            [out] IUsbInterface** usbInterface);
+
+        GetHashCode(
+            [out] Int32* value);
+
+        ToString(
+            [out] String* str);
+    }
+
+    interface IUsbDeviceHelper {
+        GetDeviceId(
+            [in] String name,
+            [out] Int32* id);
+
+        GetDeviceName(
+            [in] Int32 id,
+            [out] String* name);
+    }
+
+    } // namespace Usb
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}

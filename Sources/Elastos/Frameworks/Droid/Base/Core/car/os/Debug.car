@@ -1,0 +1,41 @@
+module
+{
+    interface Elastos.IO.IFileDescriptor;
+    interface Elastos.Droid.Os.IDebugMemoryInfo;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+    interface IDebug {
+        const Int32 TRACE_COUNT_ALLOCS = 1;
+        const Int32 SHOW_FULL_DETAIL = 1;
+        const Int32 SHOW_CLASSLOADER = 2;
+        const Int32 SHOW_INITIALIZED = 4;
+
+        DumpHeap(
+            [in] IFileDescriptor* fd);
+
+        GetMemoryInfo(
+            [in] IDebugMemoryInfo* memoryInfo);
+
+        GetMemoryInfoEx(
+            [in] Int32 pid,
+            [in] IDebugMemoryInfo* memoryInfo);
+
+        GetPss(
+            [out] Int64* pss);
+
+        GetPssEx(
+            [in] Int32 pid,
+            [out] Int64* pss);
+
+        DumpNativeBacktraceToFile(
+            [in] Int32 pid,
+            [in] String file);
+    }
+
+    } // namespace Os
+    } // namespace Droid
+    } // namespace Elastos
+}

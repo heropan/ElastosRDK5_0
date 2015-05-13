@@ -1,0 +1,58 @@
+
+module
+{
+    using interface Elastos.Core.ICharSequence;
+    using interface Elastos.IO.IFileDescriptor;
+    using interface Elastos.IO.IPrintWriter;
+
+    interface Elastos.Droid.App.IFragmentTransaction;
+    interface Elastos.Droid.App.IFragmentManager;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    [deprecated]
+    interface IBackStackRecord extends IFragmentTransaction{
+        /* @Override */
+        ToString(
+            [out] String* str);
+
+        Dump(
+            [in] String prefix,
+            [in] IFileDescriptor* fd,
+            [in] IPrintWriter* writer,
+            [in] ArrayOf<String>* args);
+
+        GetId(
+            [out] Int32* id);
+
+        GetBreadCrumbTitleRes(
+            [out] Int32* titleRes);
+
+        GetBreadCrumbShortTitleRes(
+            [out] Int32* shortTitleRes);
+
+        GetBreadCrumbTitle(
+            [out] ICharSequence** title);
+
+        GetBreadCrumbShortTitle(
+            [out] ICharSequence** shortTitle);
+
+        PopFromBackStack(
+            [in] Boolean doStateMove);
+
+        GetName(
+            [out] String* name);
+
+        GetTransition(
+            [out] Int32* trans);
+
+        GetTransitionStyle(
+            [out] Int32* transStyle);
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

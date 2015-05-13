@@ -1,0 +1,23 @@
+
+module
+{
+    interface Elastos.Droid.Text.Style.IUpdateAppearance;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    /**
+     * The classes that affect character-level text formatting in a way that
+     * triggers a text layout update when one is added or removed must implement
+     * this interface.  This interface also includes {@link UpdateAppearance}
+     * since such a change implicitly also impacts the appearance.
+     */
+    interface IUpdateLayout extends IUpdateAppearance {}
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+}

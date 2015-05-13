@@ -1,0 +1,23 @@
+
+module
+{
+    using interface Elastos.Net.IURLStreamHandler;
+
+    namespace Elastos {
+    namespace Net {
+    namespace Url {
+
+    /**
+     * This subclass extends <code>URLConnection</code>.
+     * <p>
+     * This class is responsible for connecting, getting content and input stream of
+     * the file.
+     */
+    interface IFtpHandler extends Elastos.Net.IURLStreamHandler {
+    }
+
+    } // namespace Url
+    } // namespace Net
+    } // namespace Elastos
+
+}

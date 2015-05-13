@@ -1,0 +1,23 @@
+module
+{
+    interface Elastos.Droid.Text.IParcelableSpan;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    /**
+     * Provides an easy way to edit a portion of text.
+     * <p>
+     * The {@link TextView} uses this span to allow the user to delete a chuck of text in one click.
+     * the text. {@link TextView} removes this span as soon as the text is edited, or the cursor moves.
+     */
+    interface IEasyEditSpan /*implements IParcelableSpan*/ {/*constructor();*/}
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

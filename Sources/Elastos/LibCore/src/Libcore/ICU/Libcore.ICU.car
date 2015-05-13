@@ -1,0 +1,143 @@
+module
+{
+    merge("../../../car/Libcore/ICU/Exceptions.car");
+    merge("../../../car/Libcore/ICU/ICollationKeyICU.car");
+    merge("../../../car/Libcore/ICU/ILocale.car");
+    merge("../../../car/Libcore/ICU/ILocaleData.car");
+    merge("../../../car/Libcore/ICU/IICUHelper.car");
+    merge("../../../car/Libcore/ICU/IRuleBasedCollatorICU.car");
+    merge("../../../car/Libcore/ICU/ITimeZones.car");
+    merge("../../../car/Libcore/ICU/ICollationElementIteratorICU.car");
+    merge("../../../car/Libcore/ICU/INativeDecimalFormat.car");
+    merge("../../../car/Libcore/ICU/INativeBreakIterator.car");
+    merge("../../../car/Libcore/ICU/INativeCollationHelper.car");
+    merge("../../../car/Libcore/ICU/INativeIDNHelper.car");
+    merge("../../../car/Libcore/ICU/INativePluralRules.car");
+    merge("../../../car/Libcore/ICU/INativeNormalizerHelper.car");
+
+    interface Elastos.Text.IDecimalFormatSymbols;
+
+    namespace Libcore {
+    namespace ICU {
+
+        class CLocale {
+            /**
+             * There's a circular dependency between toLowerCase/toUpperCase and
+             * Locale.US. Work around this by avoiding these methods when constructing
+             * the built-in locales.
+             *
+             * @param unused required for this constructor to have a unique signature
+             */
+            constructor(
+                [in] Boolean unused,
+                [in] String lowerCaseLanguageCode,
+                [in] String upperCaseCountryCode);
+
+            constructor();
+
+            /**
+             * Constructs a new {@code Locale} using the specified language.
+             */
+            constructor(
+                [in] String language);
+
+            /**
+             * Constructs a new {@code Locale} using the specified language and country codes.
+             */
+            constructor(
+               [in] String language,
+               [in] String country);
+
+            /**
+             * Constructs a new {@code Locale} using the specified language, country,
+             * and variant codes.
+             */
+            constructor(
+                [in] String language,
+                [in] String country,
+                [in] String variant);
+
+            interface ILocale;
+        }
+
+        singleton class CLocaleHelper {
+            interface ILocaleHelper;
+        }
+
+        singleton class CLocaleDataHelper {
+            interface ILocaleDataHelper;
+        }
+
+        singleton class CICUHelper {
+            interface IICUHelper;
+        }
+
+        singleton class CCollationElementIteratorICUHelper {
+            interface ICollationElementIteratorICUHelper;
+        }
+
+        class CCollationKeyICU {
+            constructor(
+                [in] String source,
+                [in] ArrayOf<Byte> bytes);
+
+            interface ICollationKeyICU;
+        }
+
+        class CLocaleData {
+            interface ILocaleData;
+        }
+
+        singleton class CNativeBreakIteratorHelper {
+            interface INativeBreakIteratorHelper;
+        }
+
+        singleton class CNativeCollationHelper {
+            interface INativeCollationHelper;
+        }
+
+        class CNativeDecimalFormat {
+            constructor(
+                [in] String pattern,
+                [in] IDecimalFormatSymbols* dfs);
+
+            constructor(
+                [in] String pattern,
+                [in] ILocaleData* data);
+
+            interface INativeDecimalFormat;
+        }
+
+        singleton class CNativeIDNHelper {
+            interface INativeIDNHelper;
+        }
+
+        singleton class CNativeNormalizerHelper {
+            interface INativeNormalizerHelper;
+        }
+
+        class CNativePluralRules {
+            interface INativePluralRules;
+        }
+
+        singleton class CNativePluralRulesHelper {
+            interface INativePluralRulesHelper;
+        }
+
+        class CRuleBasedCollatorICU {
+            constructor(
+                [in] String rules);
+
+            constructor(
+                [in] ILocale * locale);
+
+            interface IRuleBasedCollatorICU;
+        }
+
+        singleton class CTimeZones {
+            interface ITimeZones;
+        }
+
+    } // namespace ICU
+    } // namespace LibCore
+}

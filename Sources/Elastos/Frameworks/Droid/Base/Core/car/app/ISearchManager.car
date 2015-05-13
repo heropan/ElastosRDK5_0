@@ -1,0 +1,37 @@
+module {
+
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Content.Pm.IResolveInfo;
+    interface Elastos.Droid.App.ISearchableInfo;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    interface IISearchManager {
+        GetSearchableInfo (
+            [in] IComponentName* launchActivity,
+            [out] ISearchableInfo** info);
+
+        GetSearchablesInGlobalSearch(
+            [out] IObjectContainer** infos);
+
+        GetGlobalSearchActivities(
+            [out] IObjectContainer** infos);
+
+        GetGlobalSearchActivity(
+            [out] IComponentName** name);
+
+        GetWebSearchActivity(
+            [out] IComponentName** name);
+
+        GetAssistIntent(
+            [in] Int32 userHandle,
+            [out] IComponentName** name);
+    }
+
+    }
+    }
+    }
+
+}

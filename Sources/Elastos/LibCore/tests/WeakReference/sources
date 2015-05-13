@@ -1,0 +1,20 @@
+
+TARGET_NAME = testWeakRef
+TARGET_TYPE = ecx
+
+INCLUDES += $(MAKEDIR)/eco
+VPATH := $(MAKEDIR)/eco/
+
+IMPORTS = Elastos.Core.eco
+IMPORTS += WeakReference.eco
+
+SOURCES = main.cpp
+SOURCES += ElSWRefBase.cpp
+SOURCES += Elastos.Core.cpp
+SOURCES += WeakReference.cpp
+
+LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += -lm -lcutils

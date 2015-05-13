@@ -1,0 +1,81 @@
+
+module
+{
+
+    interface Elastos.Droid.View.IViewGroupLayoutParams;
+    interface Elastos.Droid.View.Menu.IActionMenuPresenter;
+    interface Elastos.Droid.Content.Res.IConfiguration;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Menu {
+
+        interface IActionMenuViewLayoutParams extends Elastos.Droid.Widget.ILinearLayoutLayoutParams {
+
+            SetIsOverflowButton(
+                [in] Boolean isOverflow);
+
+            GetIsOverflowButton(
+                [out] Boolean* isOverflow);
+
+            SetCellsUsed(
+                [in] Int32 cellsUsed);
+
+            GetCellsUsed(
+                [out] Int32* cellsUsed);
+
+            SetExtraPixels(
+                [in] Int32 extraPixels);
+
+            GetExtraPixels(
+                [out] Int32* extraPixels);
+
+            SetExpandable(
+                [in] Boolean expandable);
+
+            GetExpandable(
+                [out] Boolean* expandable);
+
+            SetPreventEdgeOffset(
+                [in] Boolean preventEdgeOffset);
+
+            GetPreventEdgeOffset(
+                [out] Boolean* preventEdgeOffset);
+
+            SetExpanded(
+                [in] Boolean expanded);
+
+            GetExpanded(
+                [out] Boolean* expanded);
+        }
+
+        /**
+         * @hide
+         */
+        [local]
+        interface IActionMenuView extends Elastos.Droid.Widget.ILinearLayout {
+            SetPresenter(
+                [in] IActionMenuPresenter* presenter);
+
+            IsExpandedFormat(
+                [out] Boolean* res);
+
+            SetMaxItemHeight(
+                [in] Int32 maxItemHeight);
+
+            IsOverflowReserved(
+                [out] Boolean* res);
+
+            SetOverflowReserved(
+                [in] Boolean reserveOverflow);
+
+            GenerateOverflowButtonLayoutParams(
+                [out] IViewGroupLayoutParams** pm);
+        }
+
+    } // namespace Menu
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

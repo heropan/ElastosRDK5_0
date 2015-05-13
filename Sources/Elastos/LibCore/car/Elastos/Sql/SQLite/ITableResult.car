@@ -1,0 +1,20 @@
+module
+{
+    namespace Elastos {
+    namespace Sql {
+    namespace SQLite {
+
+    interface ITableResult extends ICallback {
+        /**
+         * Make String representation of result set.
+         */
+        Clear();
+
+        ToString(
+            [out] String* str);
+    }
+
+    } // namespace SQLite
+    } // namespace Sql
+    } // namespace Elastos
+}

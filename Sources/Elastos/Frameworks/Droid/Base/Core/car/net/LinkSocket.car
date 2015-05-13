@@ -1,0 +1,72 @@
+
+module
+{
+    using interface Elastos.Utility.IObjectContainer;
+    using interface Elastos.Net.ISocketAddress;
+
+    interface Elastos.Droid.Net.ILinkProperties;
+    interface Elastos.Droid.Net.ILinkCapabilities;
+    interface Elastos.Droid.Net.ILinkRequestReason;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    [local]
+    interface ILinkSocket extends Elastos.Net.ISocket{
+
+        GetLinkProperties(
+            [out] ILinkProperties** result);
+
+        SetNeededCapabilities(
+            [in] ILinkCapabilities* needs,
+            [out] Boolean* result);
+
+        GetNeededCapabilities(
+            [out] ILinkCapabilities** result);
+
+        GetCapabilities(
+            [out] ILinkCapabilities** result);
+
+        GetCapabilitiesEx(
+            [in] IObjectContainer* capabilities,
+            [out] ILinkCapabilities** result);
+
+        SetTrackedCapabilities(
+            [in] IObjectContainer* capabilities);
+
+        GetTrackedCapabilities(
+            [out] IObjectContainer** result);
+
+        ConnectEx2(
+            [in] String dstName,
+            [in] Int32 dstPort,
+            [in] Int32 timeout);
+
+        ConnectEx3(
+            [in] String dstName,
+            [in] Int32 dstPort);
+
+        ConnectEx4(
+            [in] Int32 timeout);
+
+        ConnectEx5();
+
+
+        RequestNewLink(
+            [in] ILinkRequestReason* linkRequestReason);
+
+    }
+
+    interface ILinkRequestReason {
+
+        /** This link is working properly */
+        const Int32 LINK_PROBLEM_NONE = 0;
+        /** This link has an unknown issue */
+        const Int32 LINK_PROBLEM_UNKNOWN = 1;
+    }
+
+    } // namespace Net
+    } // namepsace Droid
+    } // namespace Elastos
+}

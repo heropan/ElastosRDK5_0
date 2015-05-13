@@ -1,0 +1,23 @@
+module
+{
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.SystemUI.StatusBar.Phone.ITicker;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Phone {
+
+    interface ITickerView extends Elastos.Droid.Widget.ITextSwitcher {
+
+        SetTicker(
+            [in] ITicker* t);
+    }
+
+    } // namespace Phone
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

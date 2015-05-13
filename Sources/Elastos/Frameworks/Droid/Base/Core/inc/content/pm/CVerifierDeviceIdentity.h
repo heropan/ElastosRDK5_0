@@ -1,0 +1,91 @@
+
+#ifndef __CVERIFIERDEVICEIDENTITY_H__
+#define __CVERIFIERDEVICEIDENTITY_H__
+
+#include "_CVerifierDeviceIdentity.h"
+#include "CVerifierDeviceIdentityHelper.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Content {
+namespace Pm {
+
+CarClass(CVerifierDeviceIdentity)
+{
+    friend class CVerifierDeviceIdentityHelper;
+
+public:
+    CVerifierDeviceIdentity();
+
+    ~CVerifierDeviceIdentity();
+
+    CARAPI constructor();
+
+    /**
+     * Create a verifier device identity from a long.
+     *
+     * @param identity device identity in a 64-bit integer.
+     * @throws
+     */
+    CARAPI constructor(
+        /* [in] */ Int64 identity);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* isEquals);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
+
+    CARAPI ReadFromParcel(
+        /* [in] */ IParcel* source);
+
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest);
+
+private:
+    CARAPI constructor(
+        /* [in] */ IParcel* source);
+
+    static const String EncodeBase32(
+        /* [in, out] */ Int64* input);
+
+    static const CARAPI DecodeBase32(
+        /* [in] */ ArrayOf<Byte>* input,
+        /* [out] */ Int64* vaule);
+
+    static const AutoPtr<ArrayOf<Char8> > InitENCODE();
+
+private:
+    Int64 mIdentity;
+
+    String mIdentityString;
+
+    /**
+     * Encoded size of a long (64-bit) into Base32. This format will end up
+     * looking like XXXX-XXXX-XXXX-X (length ignores hyphens) when applied with
+     * the GROUP_SIZE below.
+     */
+    static const Int32 LONG_SIZE;
+
+    /**
+     * Size of groupings when outputting as strings. This helps people read it
+     * out and keep track of where they are.
+     */
+    static const Int32 GROUP_SIZE;
+
+    static const AutoPtr<ArrayOf<Char8> > ENCODE;
+
+    static const Char8 SEPARATOR;
+
+};
+
+}
+}
+}
+}
+
+#endif // __CVERIFIERDEVICEIDENTITY_H__

@@ -1,0 +1,31 @@
+
+module
+{
+    interface Elastos.Droid.Os.IHandler;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+    /**
+     * SslErrorHandler: class responsible for handling SSL errors.
+     * This class is passed as a parameter to BrowserCallback.displaySslErrorDialog
+     * and is meant to receive the user's response.
+     */
+    interface ISslErrorHandler extends Elastos.Droid.Os.IHandler {
+        /**
+         * Proceed with the SSL certificate.
+         */
+        Proceed();
+
+        /**
+         * Cancel this request and all pending requests for the WebView that had
+         * the error.
+         */
+        Cancel();
+    }
+
+    } // namespace Webkit
+    } // namepsace Droid
+    } // namespace Elastos
+}

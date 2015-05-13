@@ -1,0 +1,152 @@
+
+module
+{
+    interface Elastos.Droid.Utility.IDisplayMetrics;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+
+    interface IDisplayInfo {
+        GetLayerStack(
+            [out] Int32* layerStack);
+
+        SetLayerStack(
+            [in] Int32 layerStack);
+
+        GetFlags(
+            [out] Int32* flags);
+
+        SetFlags(
+            [in] Int32 flags);
+
+        GetType(
+            [out] Int32* type);
+
+        SetType(
+            [in] Int32 type);
+
+        GetAddress(
+            [out] String* address);
+
+        SetAddress(
+            [in] String address);
+
+        GetName(
+            [out] String* name);
+
+        SetName(
+            [in] String name);
+
+        GetAppWidth(
+            [out] Int32* appWidth);
+
+        SetAppWidth(
+            [in] Int32 appWidth);
+
+        GetAppHeight(
+            [out] Int32* appHeight);
+
+        SetAppHeight(
+            [in] Int32 appHeight);
+
+        GetSmallestNominalAppWidth(
+            [out] Int32* smallestNominalAppWidth);
+
+        SetSmallestNominalAppWidth(
+            [in] Int32 smallestNominalAppWidth);
+
+        GetSmallestNominalAppHeight(
+            [out] Int32* smallestNominalAppHeight);
+
+        SetSmallestNominalAppHeight(
+            [in] Int32 smallestNominalAppHeight);
+
+        GetLargestNominalAppWidth(
+            [out] Int32* largestNominalAppWidth);
+
+        SetLargestNominalAppWidth(
+            [in] Int32 largestNominalAppWidth);
+
+        GetLargestNominalAppHeight(
+            [out] Int32* largestNominalAppHeight);
+
+        SetLargestNominalAppHeight(
+            [in] Int32 largestNominalAppHeight);
+
+        GetLogicalWidth(
+            [out] Int32* logicalWidth);
+
+        SetLogicalWidth(
+            [in] Int32 logicalWidth);
+
+        GetLogicalHeight(
+            [out] Int32* logicalHeight);
+
+        SetLogicalHeight(
+            [in] Int32 logicalHeight);
+
+        GetRotation(
+            [out] Int32* rotation);
+
+        SetRotation(
+            [in] Int32 rotation);
+
+        GetRefreshRate(
+            [out] Float* refreshRate);
+
+        SetRefreshRate(
+            [in] Float refreshRate);
+
+        GetLogicalDensityDpi(
+            [out] Int32* logicalDensityDpi);
+
+        SetLogicalDensityDpi(
+            [in] Int32 logicalDensityDpi);
+
+        GetPhysicalXDpi(
+            [out] Float* physicalXDpi);
+
+        SetPhysicalXDpi(
+            [in] Float physicalXDpi);
+
+        GetPhysicalYDpi(
+            [out] Float* physicalYDpi);
+
+        SetPhysicalYDpi(
+            [in] Float physicalYDpi);
+
+        EqualsEx(
+            [in] IDisplayInfo* otherObj,
+            [out] Boolean* isEquals);
+
+        Equals(
+            [in] IInterface* otherObj,
+            [out] Boolean* isEquals);
+
+        GetHashCode(
+            [out] Int32* hash);
+
+        CopyFrom(
+            [in] IDisplayInfo* otherObj);
+
+        GetAppMetrics(
+            [in] IDisplayMetrics* outMetrics,
+            [in] ICompatibilityInfoHolder* cih);
+
+        GetLogicalMetrics(
+            [in] IDisplayMetrics* outMetrics,
+            [in] ICompatibilityInfoHolder* cih);
+
+        GetNaturalWidth(
+            [out] Int32* width);
+
+        GetNaturalHeight(
+            [out] Int32* height);
+
+    }
+
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

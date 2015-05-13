@@ -1,0 +1,31 @@
+module
+{
+    interface Elastos.Droid.Graphics.IBitmap;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+    namespace Videoeditor {
+
+    interface IOverlayFrame extends IOverlay {
+        /**
+         * Get the overlay bitmap.
+         *
+         * @return Get the overlay bitmap
+         */
+        GetBitmap(
+            [out] IBitmap** result);
+
+        /**
+         * Set the overlay bitmap.
+         *
+         * @param bitmap The overlay bitmap.
+         */
+        SetBitmap(
+            [in] IBitmap* bitmap);
+    }
+    } // namespace videoeditor
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
+}

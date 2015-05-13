@@ -1,0 +1,30 @@
+
+module
+{
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
+    interface Elastos.Droid.AccessibilityService.IAccessibilityServiceConnection;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace AccessibilityService {
+
+    [deprecated]
+    interface IAccessibilityServiceClient extends Elastos.Droid.Os.IBinder {
+        SetConnection(
+            [in] IAccessibilityServiceConnection* connection,
+            [in] Int32 connectionId);
+
+        OnAccessibilityEvent(
+            [in] IAccessibilityEvent* event);
+
+        OnInterrupt();
+
+        OnGesture(
+            [in] Int32 gesture);
+    }
+
+    } // namespace AccessibilityService
+    } // namepsace Droid
+    } // namespace Elastos
+}

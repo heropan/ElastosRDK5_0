@@ -1,0 +1,127 @@
+
+module
+{
+
+    interface Elastos.IO.IByteBuffer;
+
+    namespace Elastos {
+    namespace IO {
+    namespace Channels {
+
+    interface IReadableByteChannel;
+
+    /**
+    * The interface for channels that can read data into a set of buffers in a
+    * single operation. The corresponding interface for writes is
+    * {@link GatheringByteChannel}.
+    */
+    interface IScatteringByteChannel extends IReadableByteChannel
+    {
+        /**
+         * Reads bytes from the channel into the given buffer.
+         * <p>
+         * The maximum number of bytes that will be read is the
+         * {@link java.nio.Buffer#remaining() remaining} number of bytes in the
+         * buffer when the method is invoked. The bytes will be read into the buffer
+         * starting at the buffer's current
+         * {@link java.nio.Buffer#position() position}.
+         * <p>
+         * The call may block if other threads are also attempting to read from the
+         * same channel.
+         * <p>
+         * Upon completion, the buffer's {@code position} is updated to the end of
+         * the bytes that were read. The buffer's
+         * {@link java.nio.Buffer#limit() limit} is not changed.
+         *
+         * @param buffer
+         *            the byte buffer to receive the bytes.
+         * @return the number of bytes actually read.
+         * @throws AsynchronousCloseException
+         *             if another thread closes the channel during the read.
+         * @throws ClosedByInterruptException
+         *             if another thread interrupts the calling thread while the
+         *             operation is in progress. The interrupt state of the calling
+         *             thread is set and the channel is closed.
+         * @throws ClosedChannelException
+         *             if the channel is closed.
+         * @throws IOException
+         *             another I/O error occurs, details are in the message.
+         * @throws NonReadableChannelException
+         *             if the channel was not opened for reading.
+         */
+         /*
+        ReadByteBuffer(
+            [in] IByteBuffer* buffer,
+            [out] Int32* number);
+            */
+
+        /**
+        * Reads bytes from this channel into the specified array of buffers.
+        * <p>
+        * This method is equivalent to {@code read(buffers, 0, buffers.length);}
+        *
+        * @param buffers
+        *            the array of byte buffers to store the bytes being read.
+        * @return the number of bytes actually read.
+        * @throws AsynchronousCloseException
+        *             if the channel is closed by another thread during this read
+        *             operation.
+        * @throws ClosedByInterruptException
+        *             if another thread interrupts the calling thread while the
+        *             operation is in progress. The interrupt state of the calling
+        *             thread is set and the channel is closed.
+        * @throws ClosedChannelException
+        *             if the channel is closed.
+        * @throws IOException
+        *             if another I/O error occurs; details are in the message.
+        * @throws NonWritableChannelException
+        *             if the channel has not been opened in a mode that permits
+        *             reading.
+        */
+        ReadByteBuffers( [in]  ArrayOf<IByteBuffer> buffers,
+                 [out] Int64* ret);
+
+         /**
+         * Attempts to read all {@code remaining()} bytes from {@code length} byte
+         * buffers, in order, starting at {@code buffers[offset]}. The number of
+     * bytes actually read is returned.
+     * <p>
+     * If a read operation is in progress, subsequent threads will block until
+     * the read is completed and will then contend for the ability to read.
+     *
+     * @param buffers
+     *            the array of byte buffers into which the bytes will be copied.
+     * @param offset
+     *            the index of the first buffer to store bytes in.
+     * @param length
+     *            the maximum number of buffers to store bytes in.
+     * @return the number of bytes actually read.
+     * @throws AsynchronousCloseException
+     *             if the channel is closed by another thread during this read
+     *             operation.
+     * @throws ClosedByInterruptException
+     *             if another thread interrupts the calling thread while the
+     *             operation is in progress. The interrupt state of the calling
+     *             thread is set and the channel is closed.
+     * @throws ClosedChannelException
+     *             if the channel is closed.
+     * @throws IndexOutOfBoundsException
+     *             if {@code offset < 0} or {@code length < 0}, or if
+     *             {@code offset + length} is greater than the size of
+     *             {@code buffers}.
+     * @throws IOException
+     *             if another I/O error occurs; details are in the message.
+     * @throws NonWritableChannelException
+     *             if the channel has not been opened in a mode that permits
+     *             reading.
+     */
+     ReadByteBuffersEx( [in]  ArrayOf<IByteBuffer> buffers,
+                 [in]  Int32 offset,
+                 [in]  Int32 length,
+                 [out] Int64* ret);
+    }
+
+    } // namespace Channels
+    } // namespace IO
+    } // namespace Elastos
+}

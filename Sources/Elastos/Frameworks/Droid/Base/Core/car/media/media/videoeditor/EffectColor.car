@@ -1,0 +1,64 @@
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+    namespace Videoeditor {
+
+    interface IEffectColor extends IEffect {
+        /**
+         * Change the video frame color to the RGB color value provided
+         */
+        const Int32 TYPE_COLOR = 1;
+        /**
+         * Change the video frame color to a gradation from RGB color (at the top of
+         * the frame) to black (at the bottom of the frame).
+         */
+        const Int32 TYPE_GRADIENT = 2;
+        /**
+         * Change the video frame color to sepia
+         */
+        const Int32 TYPE_SEPIA = 3;
+        /**
+         * Invert the video frame color
+         */
+        const Int32 TYPE_NEGATIVE = 4;
+        /**
+         * Make the video look like as if it was recorded in 50's
+         */
+        const Int32 TYPE_FIFTIES = 5;
+        /**
+         * Change the video frame color to the RGB color value GREEN
+         */
+        const Int32 GREEN = 0x0000ff00;
+        /**
+         * Change the video frame color to the RGB color value PINK
+         */
+        const Int32 PINK = 0x00ff66cc;
+        /**
+         * Change the video frame color to the RGB color value GRAY
+         */
+        const Int32 GRAY = 0x007f7f7f;
+
+        /**
+         * Get the effect type.
+         *
+         * @return The effect type
+         */
+        GetType(
+            [out] Int32* result);
+
+        /**
+         * Get the color if effect type is TYPE_COLOR or TYPE_GRADIENT.
+         *
+         * @return the color as RGB 888 if type is TYPE_COLOR or TYPE_GRADIENT.
+         */
+        GetColor(
+            [out] Int32* result);
+
+    }
+    } // namespace videoeditor
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
+}

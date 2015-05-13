@@ -1,0 +1,60 @@
+
+TARGET_NAME= Elastos.Core
+TARGET_TYPE= lib
+
+VPATH := $(MAKEDIR)/../eco
+
+EXPORT_LIBRARY= 1
+
+INCLUDES += $(MAKEDIR)/../../../../inc/common;
+INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Core/elastos;
+INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/IO;
+INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/IO/elastos/io;
+INCLUDES += $(MAKEDIR)/../../../../inc/Libcore/ICU;
+INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Utility/Concurrent/elastos;
+INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Utility/Logging;
+
+IMPORTS += Elastos.Core.eco
+
+SOURCES = Math.cpp
+SOURCES += cbigint.cpp
+SOURCES += StringUtils.cpp
+SOURCES += HexStringParser.cpp
+SOURCES += StringToIntegral.cpp
+SOURCES += IntegralToString.cpp
+SOURCES += StringToReal.cpp
+SOURCES += RealToString.cpp
+SOURCES += Character.cpp
+SOURCES += AbstractStringBuilder.cpp
+SOURCES += StringBuilder.cpp
+SOURCES += StringBuffer.cpp
+SOURCES += Object.cpp
+SOURCES += Thread.cpp
+SOURCES += ThreadBase.cpp
+SOURCES += ThreadGroup.cpp
+SOURCES += ObjectUtils.cpp
+
+VPATH += $(MAKEDIR)/../../IO/eco
+VPATH += $(MAKEDIR)/../../IO/lib
+
+SOURCES += InputStream.cpp
+SOURCES += OutputStream.cpp
+SOURCES += FilterInputStream.cpp
+SOURCES += Writer.cpp
+SOURCES += PrintWriter.cpp
+
+VPATH += $(MAKEDIR)/../../Utility/eco
+VPATH += $(MAKEDIR)/../../Utility/lib
+
+SOURCES += TimerTask.cpp
+
+C_FLAGS += -DHAVE_PTHREADS
+
+VPATH += $(MAKEDIR)/../../Utility/eco/Concurrent:$(MAKEDIR)/../../Utility/eco/Concurrent/Locks
+
+SOURCES += FutureTask.cpp
+
+VPATH += $(MAKEDIR)/../../Utility/lib/Logging
+
+SOURCES += Logger.cpp
+SOURCES += Slogger.cpp

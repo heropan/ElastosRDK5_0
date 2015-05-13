@@ -1,0 +1,65 @@
+
+TARGET_NAME= method
+TARGET_TYPE= lib
+
+include $(MAKEDIR)/../../../../../sources.inc
+
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../inc/
+INCLUDES += $(MAKEDIR)/../../../inc/text
+
+C_DEFINES += -DDROID_CORE
+
+SOURCES = AllCapsTransformationMethod.cpp
+SOURCES += ArrowKeyMovementMethod.cpp
+SOURCES += BaseKeyListener.cpp
+SOURCES += BaseMovementMethod.cpp
+SOURCES += CAllCapsTransformationMethod.cpp
+SOURCES += CArrowKeyMovementMethod.cpp
+SOURCES += CArrowKeyMovementMethodHelper.cpp
+SOURCES += CBaseMovementMethod.cpp
+SOURCES += CDateKeyListener.cpp
+SOURCES += CDateKeyListenerHelper.cpp
+SOURCES += CDateTimeKeyListener.cpp
+SOURCES += CDateTimeKeyListenerHelper.cpp
+SOURCES += CDialerKeyListener.cpp
+SOURCES += CDialerKeyListenerHelper.cpp
+SOURCES += CDigitsKeyListener.cpp
+SOURCES += CDigitsKeyListenerHelper.cpp
+SOURCES += CLinkMovementMethod.cpp
+SOURCES += CLinkMovementMethodHelper.cpp
+SOURCES += CPasswordTransformationMethod.cpp
+SOURCES += CPasswordTransformationMethodHelper.cpp
+SOURCES += CQwertyKeyListener.cpp
+SOURCES += CQwertyKeyListenerHelper.cpp
+SOURCES += CScrollingMovementMethod.cpp
+SOURCES += CScrollingMovementMethodHelper.cpp
+SOURCES += CSingleLineTransformationMethod.cpp
+SOURCES += CSingleLineTransformationMethodHelper.cpp
+SOURCES += CTextKeyListener.cpp
+SOURCES += CTextKeyListenerHelper.cpp
+SOURCES += CTimeKeyListener.cpp
+SOURCES += CTimeKeyListenerHelper.cpp
+SOURCES += CTouch.cpp
+SOURCES += CWordIterator.cpp
+SOURCES += DateKeyListener.cpp
+SOURCES += DateTimeKeyListener.cpp
+SOURCES += DialerKeyListener.cpp
+SOURCES += DigitsKeyListener.cpp
+SOURCES += LinkMovementMethod.cpp
+SOURCES += MetaKeyKeyListener.cpp
+SOURCES += CMetaKeyKeyListenerHelper.cpp
+SOURCES += NumberKeyListener.cpp
+SOURCES += QwertyKeyListener.cpp
+SOURCES += ReplacementTransformationMethod.cpp
+SOURCES += ScrollingMovementMethod.cpp
+SOURCES += TextKeyListener.cpp
+SOURCES += TimeKeyListener.cpp
+SOURCES += Touch.cpp
+SOURCES += WordIterator.cpp
+SOURCES += CMultiTapKeyListener.cpp
+SOURCES += CMultiTapKeyListenerHelper.cpp
+SOURCES += CHideReturnsTransformationMethod.cpp
+SOURCES += CHideReturnsTransformationMethodHelper.cpp
+SOURCES += HideReturnsTransformationMethod.cpp
+SOURCES += MultiTapKeyListener.cpp

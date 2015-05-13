@@ -1,0 +1,239 @@
+module
+{
+    interface Elastos.Droid.App.IService;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.Os.IMessage;
+
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace AccessibilityService {
+
+        [deprecated]
+        interface IAccessibilityService extends Elastos.Droid.App.IService
+        {
+            /**
+             * The user has performed a swipe up gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_UP = 1;
+
+            /**
+             * The user has performed a swipe down gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_DOWN = 2;
+
+            /**
+             * The user has performed a swipe left gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_LEFT = 3;
+
+            /**
+             * The user has performed a swipe right gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_RIGHT = 4;
+
+            /**
+             * The user has performed a swipe left and right gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_LEFT_AND_RIGHT = 5;
+
+            /**
+             * The user has performed a swipe right and left gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_RIGHT_AND_LEFT = 6;
+
+            /**
+             * The user has performed a swipe up and down gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_UP_AND_DOWN = 7;
+
+            /**
+             * The user has performed a swipe down and up gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_DOWN_AND_UP = 8;
+
+            /**
+             * The user has performed a left and up gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_LEFT_AND_UP = 9;
+
+            /**
+             * The user has performed a left and down gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_LEFT_AND_DOWN = 10;
+
+            /**
+             * The user has performed a right and up gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_RIGHT_AND_UP = 11;
+
+            /**
+             * The user has performed a right and down gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_RIGHT_AND_DOWN = 12;
+
+            /**
+             * The user has performed an up and left gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_UP_AND_LEFT = 13;
+
+            /**
+             * The user has performed an up and right gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_UP_AND_RIGHT = 14;
+
+            /**
+             * The user has performed an down and left gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_DOWN_AND_LEFT = 15;
+
+            /**
+             * The user has performed an down and right gesture on the touch screen.
+             */
+            const Int32 GESTURE_SWIPE_DOWN_AND_RIGHT = 16;
+
+            /**
+             * The {@link Intent} that must be declared as handled by the service.
+             */
+            const String SERVICE_INTERFACE =
+                "android.accessibilityservice.AccessibilityService";
+
+            /**
+             * Name under which an AccessibilityService component publishes information
+             * about itself. This meta-data must reference an XML resource containing an
+             * <code>&lt;{@link android.R.styleable#AccessibilityService accessibility-service}&gt;</code>
+             * tag. This is a a sample XML file configuring an accessibility service:
+             * <pre> &lt;accessibility-service
+             *     android:accessibilityEventTypes="typeViewClicked|typeViewFocused"
+             *     android:packageNames="foo.bar, foo.baz"
+             *     android:accessibilityFeedbackType="feedbackSpoken"
+             *     android:notificationTimeout="100"
+             *     android:accessibilityFlags="flagDefault"
+             *     android:settingsActivity="foo.bar.TestBackActivity"
+             *     android:canRetrieveWindowContent="true"
+             *     . . .
+             * /&gt;</pre>
+             */
+            const String SERVICE_META_DATA = "android.accessibilityservice";
+
+            /**
+             * Action to go back.
+             */
+            const Int32 GLOBAL_ACTION_BACK = 1;
+
+            /**
+             * Action to go home.
+             */
+            const Int32 GLOBAL_ACTION_HOME = 2;
+
+            /**
+             * Action to open the recent apps.
+             */
+            const Int32 GLOBAL_ACTION_RECENTS = 3;
+
+            /**
+             * Action to open the notifications.
+             */
+            const Int32 GLOBAL_ACTION_NOTIFICATIONS = 4;
+
+            /**
+             * Action to open the quick settings.
+             */
+            const Int32 GLOBAL_ACTION_QUICK_SETTINGS = 5;
+
+            /**
+             * Callback for {@link android.view.accessibility.AccessibilityEvent}s.
+             *
+             * @param event An event.
+             */
+            OnAccessibilityEvent(
+                [in] IAccessibilityEvent* event);
+
+            /**
+             * Callback for interrupting the accessibility feedback.
+             */
+            OnInterrupt();
+
+            /**
+             * Gets the root node in the currently active window if this service
+             * can retrieve window content.
+             *
+             * @return The root node if this service can retrieve window content.
+             */
+            GetRootInActiveWindow(
+                [out] IAccessibilityNodeInfo** info);
+
+            /**
+             * Performs a global action. Such an action can be performed
+             * at any moment regardless of the current application or user
+             * location in that application. For example going back, going
+             * home, opening recents, etc.
+             *
+             * @param action The action to perform.
+             * @return Whether the action was successfully performed.
+             *
+             * @see #GLOBAL_ACTION_BACK
+             * @see #GLOBAL_ACTION_HOME
+             * @see #GLOBAL_ACTION_NOTIFICATIONS
+             * @see #GLOBAL_ACTION_RECENTS
+             */
+            PerformGlobalAction(
+                [in] Int32 action,
+                [out] Boolean* result);
+
+            /**
+             * Gets the an {@link AccessibilityServiceInfo} describing this
+             * {@link AccessibilityService}. This method is useful if one wants
+             * to change some of the dynamically configurable properties at
+             * runtime.
+             *
+             * @return The accessibility service info.
+             *
+             * @see AccessibilityNodeInfo
+             */
+            GetServiceInfo(
+                [out] IAccessibilityServiceInfo** info);
+
+            /**
+             * Sets the {@link AccessibilityServiceInfo} that describes this service.
+             * <p>
+             * Note: You can call this method any time but the info will be picked up after
+             *       the system has bound to this service and when this method is called thereafter.
+             *
+             * @param info The info.
+             */
+            SetServiceInfo(
+                [in] IAccessibilityServiceInfo* info);
+
+        }
+
+        interface IAccessibilityServiceCallbacks
+        {
+            OnAccessibilityEvent(
+                [in] IAccessibilityEvent* event);
+
+            OnInterrupt();
+
+            OnServiceConnected();
+
+            OnSetConnectionId(
+                [in] Int32 connectionId);
+
+            OnGesture(
+                [in] Int32 gestureId,
+                [out] Boolean* result);
+        }
+
+        [deprecated]
+        interface IAccessibilityServiceClientWrapper extends IAccessibilityServiceClient
+        {
+            const Int32 NO_ID = -1;
+        }
+
+    }
+    }
+    }
+}

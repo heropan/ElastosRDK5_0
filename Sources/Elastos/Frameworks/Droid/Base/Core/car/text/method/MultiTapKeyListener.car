@@ -1,0 +1,43 @@
+module
+{
+    interface Elastos.Droid.Text.Method.IBaseKeyListener;
+    interface Elastos.Droid.Text.Method.IBaseKeyListenerHelper;
+    interface Elastos.Droid.Text.ISpanWatcher;
+    interface Elastos.Droid.Text.ISpannable;
+
+    enum Elastos.Droid.Text.Method.Capitalize;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Method {
+
+    /**
+     * This is the standard key listener for alphabetic input on 12-key
+     * keyboards.  You should generally not need to instantiate this yourself;
+     * TextKeyListener will do it for you.
+     * <p></p>
+     * As for all implementations of {@link KeyListener}, this class is only concerned
+     * with hardware keyboards.  Software input methods have no obligation to trigger
+     * the methods in this class.
+     */
+    interface IMultiTapKeyListener extends IBaseKeyListener /*implements ISpanWatcher*/ {}
+
+    interface IMultiTapKeyListenerHelper extends IBaseKeyListenerHelper {
+
+        /**
+         * Returns a new or existing instance with the specified capitalization
+         * and correction properties.
+         */
+        GetInstance(
+            [in] Boolean autotext,
+            [in] Capitalize cap,
+            [out] IMultiTapKeyListener** ret);
+    }
+
+    }//namespace Method
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

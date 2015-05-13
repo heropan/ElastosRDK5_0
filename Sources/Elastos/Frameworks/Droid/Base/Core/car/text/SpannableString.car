@@ -1,0 +1,21 @@
+module
+{
+    using interface Elastos.Core.ICharSequence;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+
+    interface ISpannableString extends Elastos.Droid.Text.ISpannable {
+    }
+
+    interface ISpannableStringHelper {
+        ValueOf(
+            [in] ICharSequence* source,
+            [out] ISpannableString** spanStr);
+    }
+
+    } // namespace Text
+    } // namespace Droid
+    } // namespace Elastos
+}

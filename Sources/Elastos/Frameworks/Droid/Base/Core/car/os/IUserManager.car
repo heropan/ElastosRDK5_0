@@ -1,0 +1,64 @@
+module
+{
+    interface Elastos.Droid.Content.Pm.IUserInfo;
+    interface Elastos.Droid.Graphics.IBitmap;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+    /**
+     *  {@hide}
+     */
+    interface IIUserManager {
+        CreateUser(
+            [in] String name,
+            [in] Int32 flags,
+            [out] IUserInfo** userInfo);
+
+        RemoveUser(
+            [in] Int32 userHandle,
+            [out] Boolean* succeeded);
+
+        SetUserName(
+            [in] Int32 userHandle,
+            [in] String name);
+
+        SetUserIcon(
+            [in] Int32 userHandle,
+            [in] IBitmap* icon);
+
+        GetUserIcon(
+            [in] Int32 userHandle,
+            [out] IBitmap** icon);
+
+        GetUsers(
+            [in] Boolean excludeDying,
+            [out] IObjectContainer** users);
+
+        GetUserInfo(
+            [in] Int32 userHandle,
+            [out] IUserInfo** userInfo);
+
+        SetGuestEnabled(
+            [in] Boolean enabled);
+
+        IsGuestEnabled(
+            [out] Boolean* enabled);
+
+        WipeUser(
+            [in] Int32 userHandle);
+
+        GetUserSerialNumber(
+            [in] Int32 userHandle,
+            [out] Int32* number);
+
+        GetUserHandle(
+            [in] Int32 userSerialNumber,
+            [out] Int32* handle);
+    }
+
+    } // namespace Os
+    } // namespace Droid
+    } // namespace Elastos
+}

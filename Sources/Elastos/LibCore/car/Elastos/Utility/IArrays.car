@@ -1,0 +1,1990 @@
+module
+{
+    interface Elastos.Core.IComparator;
+
+    namespace Elastos {
+    namespace Utility {
+
+    [deprecated]
+    interface IArrays {
+    /**
+     * Returns a {@code List} of the objects in the specified array. The size of the
+     * {@code List} cannot be modified, i.e. adding and removing are unsupported, but
+     * the elements can be set. Setting an element modifies the underlying
+     * array.
+     *
+     * @param array
+     *            the array.
+     * @return a {@code List} of the elements of the specified array.
+     */
+    AsList(
+        [in] ArrayOf<IInterface*>* array,
+        [out] IList** outList);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array}.
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     */
+    BinarySearchByte(
+        [in] ArrayOf<Byte>* array,
+        [in] Byte value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array},
+     * in the range specified by fromIndex (inclusive) and toIndex (exclusive).
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param startIndex the inclusive start index.
+     * @param endIndex the exclusive start index.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     * @throws IllegalArgumentException if {@code startIndex > endIndex}
+     * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
+     * @since 1.6
+     */
+    BinarySearchByteEx(
+        [in] ArrayOf<Byte>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Byte value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array}.
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     */
+    BinarySearchChar32(
+        [in] ArrayOf<Char32>* array,
+        [in] Char32 value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array},
+     * in the range specified by fromIndex (inclusive) and toIndex (exclusive).
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param startIndex the inclusive start index.
+     * @param endIndex the exclusive start index.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     * @throws IllegalArgumentException if {@code startIndex > endIndex}
+     * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
+     * @since 1.6
+     */
+    BinarySearchChar32Ex(
+        [in] ArrayOf<Char32>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Char32 value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array}.
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     */
+    BinarySearchDouble(
+        [in] ArrayOf<Double>* array,
+        [in] Double value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array},
+     * in the range specified by fromIndex (inclusive) and toIndex (exclusive).
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param startIndex the inclusive start index.
+     * @param endIndex the exclusive start index.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     * @throws IllegalArgumentException if {@code startIndex > endIndex}
+     * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
+     * @since 1.6
+     */
+    BinarySearchDoubleEx(
+        [in] ArrayOf<Double>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Double value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array}.
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     */
+    BinarySearchFloat(
+        [in] ArrayOf<Float>* array,
+        [in] Float value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array},
+     * in the range specified by fromIndex (inclusive) and toIndex (exclusive).
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param startIndex the inclusive start index.
+     * @param endIndex the exclusive start index.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     * @throws IllegalArgumentException if {@code startIndex > endIndex}
+     * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
+     * @since 1.6
+     */
+    BinarySearchFloatEx(
+        [in] ArrayOf<Float>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Float value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array}.
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     */
+    BinarySearchInt32(
+        [in] ArrayOf<Int32>* array,
+        [in] Int32 value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array},
+     * in the range specified by fromIndex (inclusive) and toIndex (exclusive).
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param startIndex the inclusive start index.
+     * @param endIndex the exclusive start index.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     * @throws IllegalArgumentException if {@code startIndex > endIndex}
+     * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
+     * @since 1.6
+     */
+    BinarySearchInt32Ex(
+        [in] ArrayOf<Int32>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Int32 value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array}.
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     */
+    BinarySearchInt64(
+        [in] ArrayOf<Int64>* array,
+        [in] Int64 value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array},
+     * in the range specified by fromIndex (inclusive) and toIndex (exclusive).
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param startIndex the inclusive start index.
+     * @param endIndex the exclusive start index.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     * @throws IllegalArgumentException if {@code startIndex > endIndex}
+     * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
+     * @since 1.6
+     */
+    BinarySearchInt64Ex(
+        [in] ArrayOf<Int64>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Int64 value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array}.
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     * @throws ClassCastException
+     *         if an element in the array or the search element does not
+     *         implement {@code Comparable}, or cannot be compared to each other.
+     */
+    BinarySearchObject(
+        [in] ArrayOf<IInterface* >* array,
+        [in] IInterface* value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array},
+     * in the range specified by fromIndex (inclusive) and toIndex (exclusive).
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param startIndex the inclusive start index.
+     * @param endIndex the exclusive start index.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     * @throws ClassCastException
+     *         if an element in the array or the search element does not
+     *         implement {@code Comparable}, or cannot be compared to each other.
+     * @throws IllegalArgumentException if {@code startIndex > endIndex}
+     * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
+     * @since 1.6
+     */
+    BinarySearchObjectEx(
+        [in] ArrayOf<IInterface* >* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] IInterface* value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array},
+     * using {@code comparator} to compare elements.
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param value the element to find.
+     * @param comparator the {@code Comparator} used to compare the elements.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     * @throws ClassCastException
+     *         if an element in the array or the search element does not
+     *         implement {@code Comparable}, or cannot be compared to each other.
+     */
+    BinarySearch(
+        [in] ArrayOf<IInterface* >* array,
+        [in] IInterface* value,
+        [in] IComparator* comparator,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array},
+     * in the range specified by fromIndex (inclusive) and toIndex (exclusive),
+     * using {@code comparator} to compare elements.
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param startIndex the inclusive start index.
+     * @param endIndex the exclusive start index.
+     * @param value the element to find.
+     * @param comparator the {@code Comparator} used to compare the elements.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     * @throws ClassCastException
+     *         if an element in the array or the search element does not
+     *         implement {@code Comparable}, or cannot be compared to each other.
+     * @throws IllegalArgumentException if {@code startIndex > endIndex}
+     * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
+     * @since 1.6
+     */
+    BinarySearchEx(
+        [in] ArrayOf<IInterface* >* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] IInterface* value,
+        [in] IComparator* comparator,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array}.
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     */
+     BinarySearchInt16(
+        [in] ArrayOf<Int16>* array,
+        [in] Int16 value,
+        [out] Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array},
+     * in the range specified by fromIndex (inclusive) and toIndex (exclusive).
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param startIndex the inclusive start index.
+     * @param endIndex the exclusive start index.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     * @throws IllegalArgumentException if {@code startIndex > endIndex}
+     * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
+     * @since 1.6
+     */
+    BinarySearchInt16Ex(
+        [in] ArrayOf<Int16>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Int16 value,
+        [out] Int32* index);
+
+    /**
+     * Fills the specified array with the specified element.
+     *
+     * @param array
+     *            the {@code byte} array to fill.
+     * @param value
+     *            the {@code byte} element.
+     */
+    FillByte(
+        [in] ArrayOf<Byte>* array,
+        [in] Byte value);
+
+    /**
+     * Fills the specified range in the array with the specified element.
+     *
+     * @param array
+     *            the {@code byte} array to fill.
+     * @param start
+     *            the first index to fill.
+     * @param end
+     *            the last + 1 index to fill.
+     * @param value
+     *            the {@code byte} element.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    FillByteEx(
+        [in] ArrayOf<Byte>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Byte value);
+
+    /**
+     * Fills the specified array with the specified element.
+     *
+     * @param array
+     *            the {@code short} array to fill.
+     * @param value
+     *            the {@code short} element.
+     */
+    FillInt16(
+        [in] ArrayOf<Int16>* array,
+        [in] Int16 value);
+
+    /**
+     * Fills the specified range in the array with the specified element.
+     *
+     * @param array
+     *            the {@code short} array to fill.
+     * @param start
+     *            the first index to fill.
+     * @param end
+     *            the last + 1 index to fill.
+     * @param value
+     *            the {@code short} element.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    FillInt16Ex(
+        [in] ArrayOf<Int16>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Int16 value);
+
+    /**
+     * Fills the specified array with the specified element.
+     *
+     * @param array
+     *            the {@code char} array to fill.
+     * @param value
+     *            the {@code char} element.
+     */
+    FillChar32(
+        [in] ArrayOf<Char32>* array,
+        [in] Char32 value);
+
+    /**
+     * Fills the specified range in the array with the specified element.
+     *
+     * @param array
+     *            the {@code char} array to fill.
+     * @param start
+     *            the first index to fill.
+     * @param end
+     *            the last + 1 index to fill.
+     * @param value
+     *            the {@code char} element.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    FillChar32Ex(
+        [in] ArrayOf<Char32>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Char32 value);
+
+    /**
+     * Fills the specified array with the specified element.
+     *
+     * @param array
+     *            the {@code int} array to fill.
+     * @param value
+     *            the {@code int} element.
+     */
+    FillInt32(
+        [in] ArrayOf<Int32>* array,
+        [in] Int32 value);
+
+    /**
+     * Fills the specified range in the array with the specified element.
+     *
+     * @param array
+     *            the {@code int} array to fill.
+     * @param start
+     *            the first index to fill.
+     * @param end
+     *            the last + 1 index to fill.
+     * @param value
+     *            the {@code int} element.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    FillInt32Ex(
+        [in] ArrayOf<Int32>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Int32 value);
+
+    /**
+     * Fills the specified array with the specified element.
+     *
+     * @param array
+     *            the {@code long} array to fill.
+     * @param value
+     *            the {@code long} element.
+     */
+    FillInt64(
+        [in] ArrayOf<Int64>* array,
+        [in] Int64 value);
+
+    /**
+     * Fills the specified range in the array with the specified element.
+     *
+     * @param array
+     *            the {@code long} array to fill.
+     * @param start
+     *            the first index to fill.
+     * @param end
+     *            the last + 1 index to fill.
+     * @param value
+     *            the {@code long} element.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    FillInt64Ex(
+        [in] ArrayOf<Int64>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Int64 value);
+
+    /**
+     * Fills the specified array with the specified element.
+     *
+     * @param array
+     *            the {@code float} array to fill.
+     * @param value
+     *            the {@code float} element.
+     */
+    FillFloat(
+        [in] ArrayOf<Float>* array,
+        [in] Float value);
+
+    /**
+     * Fills the specified range in the array with the specified element.
+     *
+     * @param array
+     *            the {@code float} array to fill.
+     * @param start
+     *            the first index to fill.
+     * @param end
+     *            the last + 1 index to fill.
+     * @param value
+     *            the {@code float} element.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    FillFloatEx(
+        [in] ArrayOf<Float>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Float value);
+
+    /**
+     * Fills the specified array with the specified element.
+     *
+     * @param array
+     *            the {@code double} array to fill.
+     * @param value
+     *            the {@code double} element.
+     */
+    FillDouble(
+        [in] ArrayOf<Double>* array,
+        [in] Double value);
+
+    /**
+     * Fills the specified range in the array with the specified element.
+     *
+     * @param array
+     *            the {@code double} array to fill.
+     * @param start
+     *            the first index to fill.
+     * @param end
+     *            the last + 1 index to fill.
+     * @param value
+     *            the {@code double} element.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    FillDoubleEx(
+        [in] ArrayOf<Double>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Double value);
+
+    /**
+     * Fills the specified array with the specified element.
+     *
+     * @param array
+     *            the {@code boolean} array to fill.
+     * @param value
+     *            the {@code boolean} element.
+     */
+    FillBoolean(
+        [in] ArrayOf<Boolean>* array,
+        [in] Boolean value);
+
+    /**
+     * Fills the specified range in the array with the specified element.
+     *
+     * @param array
+     *            the {@code boolean} array to fill.
+     * @param start
+     *            the first index to fill.
+     * @param end
+     *            the last + 1 index to fill.
+     * @param value
+     *            the {@code boolean} element.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    FillBooleanEx(
+        [in] ArrayOf<Boolean>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Boolean value);
+
+    /**
+     * Fills the specified array with the specified element.
+     *
+     * @param array
+     *            the {@code Object} array to fill.
+     * @param value
+     *            the {@code Object} element.
+     */
+    FillObject(
+        [in] ArrayOf<IInterface* >* array,
+        [in] IInterface* value);
+
+    /**
+     * Fills the specified range in the array with the specified element.
+     *
+     * @param array
+     *            the {@code Object} array to fill.
+     * @param start
+     *            the first index to fill.
+     * @param end
+     *            the last + 1 index to fill.
+     * @param value
+     *            the {@code Object} element.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    FillObjectEx(
+        [in] ArrayOf<IInterface* >* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] IInterface* value);
+
+    /**
+     * Returns a hash code based on the contents of the given array. For any two
+     * {@code boolean} arrays {@code a} and {@code b}, if
+     * {@code Arrays.equals(a, b)} returns {@code true}, it means
+     * that the return value of {@code Arrays.hashCode(a)} equals {@code Arrays.hashCode(b)}.
+     * <p>
+     * The value returned by this method is the same value as the
+     * {@link List#hashCode()} method which is invoked on a {@link List}
+     * containing a sequence of {@link Boolean} instances representing the
+     * elements of array in the same order. If the array is {@code null}, the return
+     * value is 0.
+     *
+     * @param array
+     *            the array whose hash code to compute.
+     * @return the hash code for {@code array}.
+     */
+    HashCodeBoolean(
+        [in] ArrayOf<Boolean>* array,
+        [out] Int32* code);
+
+    /**
+     * Returns a hash code based on the contents of the given array. For any two
+     * not-null {@code int} arrays {@code a} and {@code b}, if
+     * {@code Arrays.equals(a, b)} returns {@code true}, it means
+     * that the return value of {@code Arrays.hashCode(a)} equals {@code Arrays.hashCode(b)}.
+     * <p>
+     * The value returned by this method is the same value as the
+     * {@link List#hashCode()} method which is invoked on a {@link List}
+     * containing a sequence of {@link Integer} instances representing the
+     * elements of array in the same order. If the array is {@code null}, the return
+     * value is 0.
+     *
+     * @param array
+     *            the array whose hash code to compute.
+     * @return the hash code for {@code array}.
+     */
+    HashCodeInt32(
+        [in] ArrayOf<Int32>* array,
+        [out] Int32* code);
+
+    /**
+     * Returns a hash code based on the contents of the given array. For any two
+     * {@code short} arrays {@code a} and {@code b}, if
+     * {@code Arrays.equals(a, b)} returns {@code true}, it means
+     * that the return value of {@code Arrays.hashCode(a)} equals {@code Arrays.hashCode(b)}.
+     * <p>
+     * The value returned by this method is the same value as the
+     * {@link List#hashCode()} method which is invoked on a {@link List}
+     * containing a sequence of {@link Short} instances representing the
+     * elements of array in the same order. If the array is {@code null}, the return
+     * value is 0.
+     *
+     * @param array
+     *            the array whose hash code to compute.
+     * @return the hash code for {@code array}.
+     */
+    HashCodeInt16(
+        [in] ArrayOf<Int16>* array,
+        [out] Int32* code);
+
+    /**
+     * Returns a hash code based on the contents of the given array. For any two
+     * {@code char} arrays {@code a} and {@code b}, if
+     * {@code Arrays.equals(a, b)} returns {@code true}, it means
+     * that the return value of {@code Arrays.hashCode(a)} equals {@code Arrays.hashCode(b)}.
+     * <p>
+     * The value returned by this method is the same value as the
+     * {@link List#hashCode()} method which is invoked on a {@link List}
+     * containing a sequence of {@link Character} instances representing the
+     * elements of array in the same order. If the array is {@code null}, the return
+     * value is 0.
+     *
+     * @param array
+     *            the array whose hash code to compute.
+     * @return the hash code for {@code array}.
+     */
+    HashCodeChar32(
+        [in] ArrayOf<Char32>* array,
+        [out] Int32* code);
+
+    /**
+     * Returns a hash code based on the contents of the given array. For any two
+     * {@code byte} arrays {@code a} and {@code b}, if
+     * {@code Arrays.equals(a, b)} returns {@code true}, it means
+     * that the return value of {@code Arrays.hashCode(a)} equals {@code Arrays.hashCode(b)}.
+     * <p>
+     * The value returned by this method is the same value as the
+     * {@link List#hashCode()} method which is invoked on a {@link List}
+     * containing a sequence of {@link Byte} instances representing the
+     * elements of array in the same order. If the array is {@code null}, the return
+     * value is 0.
+     *
+     * @param array
+     *            the array whose hash code to compute.
+     * @return the hash code for {@code array}.
+     */
+    HashCodeByte(
+        [in] ArrayOf<Byte>* array,
+        [out] Int32* code);
+
+    /**
+     * Returns a hash code based on the contents of the given array. For any two
+     * {@code long} arrays {@code a} and {@code b}, if
+     * {@code Arrays.equals(a, b)} returns {@code true}, it means
+     * that the return value of {@code Arrays.hashCode(a)} equals {@code Arrays.hashCode(b)}.
+     * <p>
+     * The value returned by this method is the same value as the
+     * {@link List#hashCode()} method which is invoked on a {@link List}
+     * containing a sequence of {@link Long} instances representing the
+     * elements of array in the same order. If the array is {@code null}, the return
+     * value is 0.
+     *
+     * @param array
+     *            the array whose hash code to compute.
+     * @return the hash code for {@code array}.
+     */
+    HashCodeInt64(
+        [in] ArrayOf<Int64>* array,
+        [out] Int32* code);
+
+    /**
+     * Returns a hash code based on the contents of the given array. For any two
+     * {@code float} arrays {@code a} and {@code b}, if
+     * {@code Arrays.equals(a, b)} returns {@code true}, it means
+     * that the return value of {@code Arrays.hashCode(a)} equals {@code Arrays.hashCode(b)}.
+     * <p>
+     * The value returned by this method is the same value as the
+     * {@link List#hashCode()} method which is invoked on a {@link List}
+     * containing a sequence of {@link Float} instances representing the
+     * elements of array in the same order. If the array is {@code null}, the return
+     * value is 0.
+     *
+     * @param array
+     *            the array whose hash code to compute.
+     * @return the hash code for {@code array}.
+     */
+    HashCodeFloat(
+        [in] ArrayOf<Float>* array,
+        [out] Int32* code);
+
+    /**
+     * Returns a hash code based on the contents of the given array. For any two
+     * {@code double} arrays {@code a} and {@code b}, if
+     * {@code Arrays.equals(a, b)} returns {@code true}, it means
+     * that the return value of {@code Arrays.hashCode(a)} equals {@code Arrays.hashCode(b)}.
+     * <p>
+     * The value returned by this method is the same value as the
+     * {@link List#hashCode()} method which is invoked on a {@link List}
+     * containing a sequence of {@link Double} instances representing the
+     * elements of array in the same order. If the array is {@code null}, the return
+     * value is 0.
+     *
+     * @param array
+     *            the array whose hash code to compute.
+     * @return the hash code for {@code array}.
+     */
+    HashCodeDouble(
+        [in] ArrayOf<Double>* array,
+        [out] Int32* code);
+
+    /**
+     * Returns a hash code based on the contents of the given array. If the
+     * array contains other arrays as its elements, the hash code is based on
+     * their identities not their contents. So it is acceptable to invoke this
+     * method on an array that contains itself as an element, either directly or
+     * indirectly.
+     * <p>
+     * For any two arrays {@code a} and {@code b}, if
+     * {@code Arrays.equals(a, b)} returns {@code true}, it means
+     * that the return value of {@code Arrays.hashCode(a)} equals
+     * {@code Arrays.hashCode(b)}.
+     * <p>
+     * The value returned by this method is the same value as the method
+     * Arrays.asList(array).hashCode(). If the array is {@code null}, the return value
+     * is 0.
+     *
+     * @param array
+     *            the array whose hash code to compute.
+     * @return the hash code for {@code array}.
+     */
+    HashCodeObject(
+        [in] ArrayOf<IInterface* >* array,
+        [out] Int32* code);
+
+    /**
+     * Returns a hash code based on the "deep contents" of the given array. If
+     * the array contains other arrays as its elements, the hash code is based
+     * on their contents not their identities. So it is not acceptable to invoke
+     * this method on an array that contains itself as an element, either
+     * directly or indirectly.
+     * <p>
+     * For any two arrays {@code a} and {@code b}, if
+     * {@code Arrays.deepEquals(a, b)} returns {@code true}, it
+     * means that the return value of {@code Arrays.deepHashCode(a)} equals
+     * {@code Arrays.deepHashCode(b)}.
+     * <p>
+     * The computation of the value returned by this method is similar to that
+     * of the value returned by {@link List#hashCode()} invoked on a
+     * {@link List} containing a sequence of instances representing the
+     * elements of array in the same order. The difference is: If an element e
+     * of array is itself an array, its hash code is computed by calling the
+     * appropriate overloading of {@code Arrays.hashCode(e)} if e is an array of a
+     * primitive type, or by calling {@code Arrays.deepHashCode(e)} recursively if e is
+     * an array of a reference type. The value returned by this method is the
+     * same value as the method {@code Arrays.asList(array).hashCode()}. If the array is
+     * {@code null}, the return value is 0.
+     *
+     * @param array
+     *            the array whose hash code to compute.
+     * @return the hash code for {@code array}.
+     */
+    DeepHashCode(
+        [in] ArrayOf<IInterface* >* array,
+        [out] Int32* code);
+
+    /**
+     * Compares the two arrays.
+     *
+     * @param array1
+     *            the first {@code byte} array.
+     * @param array2
+     *            the second {@code byte} array.
+     * @return {@code true} if both arrays are {@code null} or if the arrays have the
+     *         same length and the elements at each index in the two arrays are
+     *         equal, {@code false} otherwise.
+     */
+    EqualsByte(
+        [in] ArrayOf<Byte>* array1,
+        [in] ArrayOf<Byte>* array2,
+        [out] Boolean* result);
+
+    /**
+     * Compares the two arrays.
+     *
+     * @param array1
+     *            the first {@code short} array.
+     * @param array2
+     *            the second {@code short} array.
+     * @return {@code true} if both arrays are {@code null} or if the arrays have the
+     *         same length and the elements at each index in the two arrays are
+     *         equal, {@code false} otherwise.
+     */
+    EqualsInt16(
+        [in] ArrayOf<Int16>* array1,
+        [in] ArrayOf<Int16>* array2,
+        [out] Boolean* result);
+
+    /**
+     * Compares the two arrays.
+     *
+     * @param array1
+     *            the first {@code char} array.
+     * @param array2
+     *            the second {@code char} array.
+     * @return {@code true} if both arrays are {@code null} or if the arrays have the
+     *         same length and the elements at each index in the two arrays are
+     *         equal, {@code false} otherwise.
+     */
+    EqualsChar32(
+        [in] ArrayOf<Char32>* array1,
+        [in] ArrayOf<Char32>* array2,
+        [out] Boolean* result);
+
+    /**
+     * Compares the two arrays.
+     *
+     * @param array1
+     *            the first {@code int} array.
+     * @param array2
+     *            the second {@code int} array.
+     * @return {@code true} if both arrays are {@code null} or if the arrays have the
+     *         same length and the elements at each index in the two arrays are
+     *         equal, {@code false} otherwise.
+     */
+    EqualsInt32(
+        [in] ArrayOf<Int32>* array1,
+        [in] ArrayOf<Int32>* array2,
+        [out] Boolean* result);
+
+    /**
+     * Compares the two arrays.
+     *
+     * @param array1
+     *            the first {@code long} array.
+     * @param array2
+     *            the second {@code long} array.
+     * @return {@code true} if both arrays are {@code null} or if the arrays have the
+     *         same length and the elements at each index in the two arrays are
+     *         equal, {@code false} otherwise.
+     */
+    EqualsInt64(
+        [in] ArrayOf<Int64>* array1,
+        [in] ArrayOf<Int64>* array2,
+        [out] Boolean* result);
+
+    /**
+     * Compares the two arrays. The values are compared in the same manner as
+     * {@code Float.equals()}.
+     *
+     * @param array1
+     *            the first {@code float} array.
+     * @param array2
+     *            the second {@code float} array.
+     * @return {@code true} if both arrays are {@code null} or if the arrays have the
+     *         same length and the elements at each index in the two arrays are
+     *         equal, {@code false} otherwise.
+     * @see Float#equals(Object)
+     */
+    EqualsFloat(
+        [in] ArrayOf<Float>* array1,
+        [in] ArrayOf<Float>* array2,
+        [out] Boolean* result);
+
+    /**
+     * Compares the two arrays. The values are compared in the same manner as
+     * {@code Double.equals()}.
+     *
+     * @param array1
+     *            the first {@code double} array.
+     * @param array2
+     *            the second {@code double} array.
+     * @return {@code true} if both arrays are {@code null} or if the arrays have the
+     *         same length and the elements at each index in the two arrays are
+     *         equal, {@code false} otherwise.
+     * @see Double#equals(Object)
+     */
+    EqualsDouble(
+        [in] ArrayOf<Double>* array1,
+        [in] ArrayOf<Double>* array2,
+        [out] Boolean* result);
+
+    /**
+     * Compares the two arrays.
+     *
+     * @param array1
+     *            the first {@code boolean} array.
+     * @param array2
+     *            the second {@code boolean} array.
+     * @return {@code true} if both arrays are {@code null} or if the arrays have the
+     *         same length and the elements at each index in the two arrays are
+     *         equal, {@code false} otherwise.
+     */
+    EqualsBoolean(
+        [in] ArrayOf<Boolean>* array1,
+        [in] ArrayOf<Boolean>* array2,
+        [out] Boolean* result);
+
+    /**
+     * Compares the two arrays.
+     *
+     * @param array1
+     *            the first {@code Object} array.
+     * @param array2
+     *            the second {@code Object} array.
+     * @return {@code true} if both arrays are {@code null} or if the arrays have the
+     *         same length and the elements at each index in the two arrays are
+     *         equal according to {@code equals()}, {@code false} otherwise.
+     */
+    EqualsObject(
+        [in] ArrayOf<IInterface* >* array1,
+        [in] ArrayOf<IInterface* >* array2,
+        [out] Boolean* result);
+
+    /**
+     * Returns {@code true} if the two given arrays are deeply equal to one another.
+     * Unlike the method {@code equals(Object[] array1, Object[] array2)}, this method
+     * is appropriate for use for nested arrays of arbitrary depth.
+     * <p>
+     * Two array references are considered deeply equal if they are both {@code null},
+     * or if they refer to arrays that have the same length and the elements at
+     * each index in the two arrays are equal.
+     * <p>
+     * Two {@code null} elements {@code element1} and {@code element2} are possibly deeply equal if any
+     * of the following conditions satisfied:
+     * <p>
+     * {@code element1} and {@code element2} are both arrays of object reference types, and
+     * {@code Arrays.deepEquals(element1, element2)} would return {@code true}.
+     * <p>
+     * {@code element1} and {@code element2} are arrays of the same primitive type, and the
+     * appropriate overloading of {@code Arrays.equals(element1, element2)} would return
+     * {@code true}.
+     * <p>
+     * {@code element1 == element2}
+     * <p>
+     * {@code element1.equals(element2)} would return {@code true}.
+     * <p>
+     * Note that this definition permits {@code null} elements at any depth.
+     * <p>
+     * If either of the given arrays contain themselves as elements, the
+     * behavior of this method is uncertain.
+     *
+     * @param array1
+     *            the first {@code Object} array.
+     * @param array2
+     *            the second {@code Object} array.
+     * @return {@code true} if both arrays are {@code null} or if the arrays have the
+     *         same length and the elements at each index in the two arrays are
+     *         equal according to {@code equals()}, {@code false} otherwise.
+     */
+    DeepEquals(
+        [in] ArrayOf<IInterface* >* array1,
+        [in] ArrayOf<IInterface* >* array2,
+        [out] Boolean* result);
+
+    /**
+     * Sorts the specified array in ascending numerical order.
+     *
+     * @param array
+     *            the {@code byte} array to be sorted.
+     */
+    SortByte(
+        [in] ArrayOf<Byte>* array);
+
+    /**
+     * Sorts the specified range in the array in ascending numerical order.
+     *
+     * @param array
+     *            the {@code byte} array to be sorted.
+     * @param start
+     *            the start index to sort.
+     * @param end
+     *            the last + 1 index to sort.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    SortByteEx(
+        [in] ArrayOf<Byte>* array,
+        [in] Int32 start,
+        [in] Int32 end);
+
+    /**
+     * Checks that the range described by {@code offset} and {@code count} doesn't exceed
+     * {@code arrayLength}.
+     *
+     * @hide
+     */
+    CheckOffsetAndCount(
+        [in] Int32 arrayLength,
+        [in] Int32 offset,
+        [in] Int32 count);
+
+    /**
+     * Checks that the range described by {@code start} and {@code end} doesn't exceed
+     * {@code len}.
+     *
+     * @hide
+     */
+    CheckStartAndEnd(
+        [in] Int32 len,
+        [in] Int32 start,
+        [in] Int32 end);
+
+    /**
+     * Sorts the specified array in ascending numerical order.
+     *
+     * @param array
+     *            the {@code char} array to be sorted.
+     */
+    SortChar32(
+        [in] ArrayOf<Char32>* array);
+
+    /**
+     * Sorts the specified range in the array in ascending numerical order.
+     *
+     * @param array
+     *            the {@code char} array to be sorted.
+     * @param start
+     *            the start index to sort.
+     * @param end
+     *            the last + 1 index to sort.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    SortChar32Ex(
+        [in] ArrayOf<Char32>* array,
+        [in] Int32 start,
+        [in] Int32 end);
+
+    /**
+     * Sorts the specified array in ascending numerical order.
+     *
+     * @param array
+     *            the {@code double} array to be sorted.
+     * @see #sort(double[], int, int)
+     */
+    SortDouble(
+        [in] ArrayOf<Double>* array);
+
+    /**
+     * Sorts the specified range in the array in ascending numerical order. The
+     * values are sorted according to the order imposed by {@code Double.compareTo()}.
+     *
+     * @param array
+     *            the {@code double} array to be sorted.
+     * @param start
+     *            the start index to sort.
+     * @param end
+     *            the last + 1 index to sort.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     * @see Double#compareTo(Double)
+     */
+    SortDoubleEx(
+        [in] ArrayOf<Double>* array,
+        [in] Int32 start,
+        [in] Int32 end);
+
+    /**
+     * Sorts the specified array in ascending numerical order.
+     *
+     * @param array
+     *            the {@code float} array to be sorted.
+     * @see #sort(float[], int, int)
+     */
+    SortFloat(
+        [in] ArrayOf<Float>* array);
+
+    /**
+     * Sorts the specified range in the array in ascending numerical order. The
+     * values are sorted according to the order imposed by {@code Float.compareTo()}.
+     *
+     * @param array
+     *            the {@code float} array to be sorted.
+     * @param start
+     *            the start index to sort.
+     * @param end
+     *            the last + 1 index to sort.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     * @see Float#compareTo(Float)
+     */
+    SortFloatEx(
+        [in] ArrayOf<Float>* array,
+        [in] Int32 start,
+        [in] Int32 end);
+
+    /**
+     * Sorts the specified array in ascending numerical order.
+     *
+     * @param array
+     *            the {@code int} array to be sorted.
+     */
+    SortInt32(
+        [in] ArrayOf<Int32>* array);
+
+    /**
+     * Sorts the specified range in the array in ascending numerical order.
+     *
+     * @param array
+     *            the {@code int} array to be sorted.
+     * @param start
+     *            the start index to sort.
+     * @param end
+     *            the last + 1 index to sort.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    SortInt32Ex(
+        [in] ArrayOf<Int32>* array,
+        [in] Int32 start,
+        [in] Int32 end);
+
+    /**
+     * Sorts the specified array in ascending numerical order.
+     *
+     * @param array
+     *            the {@code long} array to be sorted.
+     */
+    SortInt64(
+        [in] ArrayOf<Int64>* array);
+
+    /**
+     * Sorts the specified range in the array in ascending numerical order.
+     *
+     * @param array
+     *            the {@code long} array to be sorted.
+     * @param start
+     *            the start index to sort.
+     * @param end
+     *            the last + 1 index to sort.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    SortInt64Ex(
+        [in] ArrayOf<Int64>* array,
+        [in] Int32 start,
+        [in] Int32 end);
+
+    /**
+     * Sorts the specified array in ascending numerical order.
+     *
+     * @param array
+     *            the {@code short} array to be sorted.
+     */
+    SortInt16(
+        [in] ArrayOf<Int16>* array);
+
+    /**
+     * Sorts the specified range in the array in ascending numerical order.
+     *
+     * @param array
+     *            the {@code short} array to be sorted.
+     * @param start
+     *            the start index to sort.
+     * @param end
+     *            the last + 1 index to sort.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    SortInt16Ex(
+        [in] ArrayOf<Int16>* array,
+        [in] Int32 start,
+        [in] Int32 end);
+
+// BEGIN android-note
+
+    /*
+     * <p>If this platform has an optimizing VM, check whether ComparableTimSort
+     * offers any performance benefit over TimSort in conjunction with a
+     * comparator that returns:
+     *    {@code ((Comparable)first).compareTo(Second)}.
+     * If not, you are better off deleting ComparableTimSort to eliminate the
+     * code duplication.  In other words, the commented out code below
+     * is the preferable implementation for sorting arrays of Comparables if it
+     * offers sufficient performance.
+     */
+
+//    /**
+//     * A comparator that implements the natural order of a group of
+//     * mutually comparable elements.  Using this comparator saves us
+//     * from duplicating most of the code in this file (one version for
+//     * Comparables, one for explicit comparators).
+//     */
+//    private static final Comparator<Object> NATURAL_ORDER = new Comparator<Object>() {
+//        @SuppressWarnings("unchecked")
+//        public int compare(Object first, Object second) {
+//            return ((Comparable<Object>)first).compareTo(second);
+//        }
+//    };
+//
+//    public static void sort(Object[] a) {
+//        sort(a, 0, a.length, NATURAL_ORDER);
+//    }
+//
+//    public static void sort(Object[] a, int fromIndex, int toIndex) {
+//        sort(a, fromIndex, toIndex, NATURAL_ORDER);
+//    }
+
+// END android-note
+
+    /**
+     * Sorts the specified array in ascending natural order.
+     *
+     * @param array
+     *            the {@code Object} array to be sorted.
+     * @throws ClassCastException
+     *                if an element in the array does not implement {@code Comparable}
+     *                or if some elements cannot be compared to each other.
+     * @see #sort(Object[], int, int)
+     */
+    SortObject(
+        [in] ArrayOf<IInterface* >* array);
+
+    /**
+     * Sorts the specified range in the array in ascending natural order. All
+     * elements must implement the {@code Comparable} interface and must be
+     * comparable to each other without a {@code ClassCastException} being
+     * thrown.
+     *
+     * @param array
+     *            the {@code Object} array to be sorted.
+     * @param start
+     *            the start index to sort.
+     * @param end
+     *            the last + 1 index to sort.
+     * @throws ClassCastException
+     *                if an element in the array does not implement {@code Comparable}
+     *                or some elements cannot be compared to each other.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    SortObjectEx(
+        [in] ArrayOf<IInterface* >* array,
+        [in] Int32 start,
+        [in] Int32 end);
+
+    /**
+     * Sorts the specified range in the array using the specified {@code Comparator}.
+     * All elements must be comparable to each other without a
+     * {@code ClassCastException} being thrown.
+     *
+     * @param array
+     *            the {@code Object} array to be sorted.
+     * @param start
+     *            the start index to sort.
+     * @param end
+     *            the last + 1 index to sort.
+     * @param comparator
+     *            the {@code Comparator}.
+     * @throws ClassCastException
+     *                if elements in the array cannot be compared to each other
+     *                using the {@code Comparator}.
+     * @throws IllegalArgumentException
+     *                if {@code start > end}.
+     * @throws ArrayIndexOutOfBoundsException
+     *                if {@code start < 0} or {@code end > array.length}.
+     */
+    SortEx(
+        [in] ArrayOf<IInterface* >* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] IComparator* comparator);
+
+    /**
+     * Sorts the specified array using the specified {@code Comparator}. All elements
+     * must be comparable to each other without a {@code ClassCastException} being thrown.
+     *
+     * @param array
+     *            the {@code Object} array to be sorted.
+     * @param comparator
+     *            the {@code Comparator}.
+     * @throws ClassCastException
+     *                if elements in the array cannot be compared to each other
+     *                using the {@code Comparator}.
+     */
+    Sort(
+        [in] ArrayOf<IInterface* >* array,
+        [in] IComparator* comparator);
+
+    /**
+     * Creates a {@code String} representation of the {@code boolean[]} passed.
+     * The result is surrounded by brackets ({@code "[]"}), each
+     * element is converted to a {@code String} via the
+     * {@link String#valueOf(boolean)} and separated by {@code ", "}.
+     * If the array is {@code null}, then {@code "null"} is returned.
+     *
+     * @param array
+     *            the {@code boolean} array to convert.
+     * @return the {@code String} representation of {@code array}.
+     * @since 1.5
+     */
+    ToStringBoolean(
+        [in] ArrayOf<Boolean>* array,
+        [out] String* str);
+
+    /**
+     * Creates a {@code String} representation of the {@code byte[]} passed. The
+     * result is surrounded by brackets ({@code "[]"}), each element
+     * is converted to a {@code String} via the {@link String#valueOf(int)} and
+     * separated by {@code ", "}. If the array is {@code null}, then
+     * {@code "null"} is returned.
+     *
+     * @param array
+     *            the {@code byte} array to convert.
+     * @return the {@code String} representation of {@code array}.
+     * @since 1.5
+     */
+    ToStringByte(
+        [in] ArrayOf<Byte>* array,
+        [out] String* str);
+
+    /**
+     * Creates a {@code String} representation of the {@code char[]} passed. The
+     * result is surrounded by brackets ({@code "[]"}), each element
+     * is converted to a {@code String} via the {@link String#valueOf(char)} and
+     * separated by {@code ", "}. If the array is {@code null}, then
+     * {@code "null"} is returned.
+     *
+     * @param array
+     *            the {@code char} array to convert.
+     * @return the {@code String} representation of {@code array}.
+     * @since 1.5
+     */
+    ToStringChar32(
+        [in] ArrayOf<Char32>* array,
+        [out] String* str);
+
+    /**
+     * Creates a {@code String} representation of the {@code double[]} passed.
+     * The result is surrounded by brackets ({@code "[]"}), each
+     * element is converted to a {@code String} via the
+     * {@link String#valueOf(double)} and separated by {@code ", "}.
+     * If the array is {@code null}, then {@code "null"} is returned.
+     *
+     * @param array
+     *            the {@code double} array to convert.
+     * @return the {@code String} representation of {@code array}.
+     * @since 1.5
+     */
+    ToStringDouble(
+        [in] ArrayOf<Double>* array,
+        [out] String* str);
+
+    /**
+     * Creates a {@code String} representation of the {@code float[]} passed.
+     * The result is surrounded by brackets ({@code "[]"}), each
+     * element is converted to a {@code String} via the
+     * {@link String#valueOf(float)} and separated by {@code ", "}.
+     * If the array is {@code null}, then {@code "null"} is returned.
+     *
+     * @param array
+     *            the {@code float} array to convert.
+     * @return the {@code String} representation of {@code array}.
+     * @since 1.5
+     */
+    ToStringFloat(
+        [in] ArrayOf<Float>* array,
+        [out] String* str);
+
+    /**
+     * Creates a {@code String} representation of the {@code int[]} passed. The
+     * result is surrounded by brackets ({@code "[]"}), each element
+     * is converted to a {@code String} via the {@link String#valueOf(int)} and
+     * separated by {@code ", "}. If the array is {@code null}, then
+     * {@code "null"} is returned.
+     *
+     * @param array
+     *            the {@code int} array to convert.
+     * @return the {@code String} representation of {@code array}.
+     * @since 1.5
+     */
+    ToStringInt32(
+        [in] ArrayOf<Int32>* array,
+        [out] String* str);
+
+    /**
+     * Creates a {@code String} representation of the {@code long[]} passed. The
+     * result is surrounded by brackets ({@code "[]"}), each element
+     * is converted to a {@code String} via the {@link String#valueOf(long)} and
+     * separated by {@code ", "}. If the array is {@code null}, then
+     * {@code "null"} is returned.
+     *
+     * @param array
+     *            the {@code long} array to convert.
+     * @return the {@code String} representation of {@code array}.
+     * @since 1.5
+     */
+    ToStringInt64(
+        [in] ArrayOf<Int64>* array,
+        [out] String* str);
+
+    /**
+     * Creates a {@code String} representation of the {@code short[]} passed.
+     * The result is surrounded by brackets ({@code "[]"}), each
+     * element is converted to a {@code String} via the
+     * {@link String#valueOf(int)} and separated by {@code ", "}. If
+     * the array is {@code null}, then {@code "null"} is returned.
+     *
+     * @param array
+     *            the {@code short} array to convert.
+     * @return the {@code String} representation of {@code array}.
+     * @since 1.5
+     */
+    ToStringInt16(
+        [in] ArrayOf<Int16>* array,
+        [out] String* str);
+
+    /**
+     * Creates a {@code String} representation of the {@code Object[]} passed.
+     * The result is surrounded by brackets ({@code "[]"}), each
+     * element is converted to a {@code String} via the
+     * {@link String#valueOf(Object)} and separated by {@code ", "}.
+     * If the array is {@code null}, then {@code "null"} is returned.
+     *
+     * @param array
+     *            the {@code Object} array to convert.
+     * @return the {@code String} representation of {@code array}.
+     * @since 1.5
+     */
+    ToStringObject(
+        [in] ArrayOf<IInterface* >* array,
+        [out] String* str);
+
+    /**
+     * Creates a <i>"deep"</i> {@code String} representation of the
+     * {@code Object[]} passed, such that if the array contains other arrays,
+     * the {@code String} representation of those arrays is generated as well.
+     * <p>
+     * If any of the elements are primitive arrays, the generation is delegated
+     * to the other {@code toString} methods in this class. If any element
+     * contains a reference to the original array, then it will be represented
+     * as {@code "[...]"}. If an element is an {@code Object[]}, then its
+     * representation is generated by a recursive call to this method. All other
+     * elements are converted via the {@link String#valueOf(Object)} method.
+     *
+     * @param array
+     *            the {@code Object} array to convert.
+     * @return the {@code String} representation of {@code array}.
+     * @since 1.5
+     */
+    DeepToString(
+        [in] ArrayOf<IInterface* >* array,
+        [out] String* str);
+
+    /**
+     * Copies {@code newLength} elements from {@code original} into a new array.
+     * If {@code newLength} is greater than {@code original.length}, the result is padded
+     * with the value {@code false}.
+     *
+     * @param original the original array
+     * @param newLength the length of the new array
+     * @return the new array
+     * @throws NegativeArraySizeException if {@code newLength < 0}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfBoolean(
+        [in] ArrayOf<Boolean>* original,
+        [in] Int32 newLength,
+        [out, callee] ArrayOf<Boolean>* result);
+
+    /**
+     * Copies {@code newLength} elements from {@code original} into a new array.
+     * If {@code newLength} is greater than {@code original.length}, the result is padded
+     * with the value {@code (byte) 0}.
+     *
+     * @param original the original array
+     * @param newLength the length of the new array
+     * @return the new array
+     * @throws NegativeArraySizeException if {@code newLength < 0}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfByte(
+        [in] ArrayOf<Byte>* original,
+        [in] Int32 newLength,
+        [out, callee] ArrayOf<Byte>* result);
+
+    /**
+     * Copies {@code newLength} elements from {@code original} into a new array.
+     * If {@code newLength} is greater than {@code original.length}, the result is padded
+     * with the value {@code '\\u0000'}.
+     *
+     * @param original the original array
+     * @param newLength the length of the new array
+     * @return the new array
+     * @throws NegativeArraySizeException if {@code newLength < 0}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfChar32(
+        [in] ArrayOf<Char32>* original,
+        [in] Int32 newLength,
+        [out, callee] ArrayOf<Char32>* result);
+
+    /**
+     * Copies {@code newLength} elements from {@code original} into a new array.
+     * If {@code newLength} is greater than {@code original.length}, the result is padded
+     * with the value {@code 0.0d}.
+     *
+     * @param original the original array
+     * @param newLength the length of the new array
+     * @return the new array
+     * @throws NegativeArraySizeException if {@code newLength < 0}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfDouble(
+        [in] ArrayOf<Double>* original,
+        [in] Int32 newLength,
+        [out, callee] ArrayOf<Double>* result);
+
+    /**
+     * Copies {@code newLength} elements from {@code original} into a new array.
+     * If {@code newLength} is greater than {@code original.length}, the result is padded
+     * with the value {@code 0.0f}.
+     *
+     * @param original the original array
+     * @param newLength the length of the new array
+     * @return the new array
+     * @throws NegativeArraySizeException if {@code newLength < 0}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfFloat(
+        [in] ArrayOf<Float>* original,
+        [in] Int32 newLength,
+        [out, callee] ArrayOf<Float>* result);
+
+    /**
+     * Copies {@code newLength} elements from {@code original} into a new array.
+     * If {@code newLength} is greater than {@code original.length}, the result is padded
+     * with the value {@code 0}.
+     *
+     * @param original the original array
+     * @param newLength the length of the new array
+     * @return the new array
+     * @throws NegativeArraySizeException if {@code newLength < 0}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfInt32(
+        [in] ArrayOf<Int32>* original,
+        [in] Int32 newLength,
+        [out, callee] ArrayOf<Int32>* result);
+
+    /**
+     * Copies {@code newLength} elements from {@code original} into a new array.
+     * If {@code newLength} is greater than {@code original.length}, the result is padded
+     * with the value {@code 0L}.
+     *
+     * @param original the original array
+     * @param newLength the length of the new array
+     * @return the new array
+     * @throws NegativeArraySizeException if {@code newLength < 0}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfInt64(
+        [in] ArrayOf<Int64>* original,
+        [in] Int32 newLength,
+        [out, callee] ArrayOf<Int64>* result);
+
+    /**
+     * Copies {@code newLength} elements from {@code original} into a new array.
+     * If {@code newLength} is greater than {@code original.length}, the result is padded
+     * with the value {@code (short) 0}.
+     *
+     * @param original the original array
+     * @param newLength the length of the new array
+     * @return the new array
+     * @throws NegativeArraySizeException if {@code newLength < 0}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfInt16(
+        [in] ArrayOf<Int16>* original,
+        [in] Int32 newLength,
+        [out, callee] ArrayOf<Int16>* result);
+
+    /**
+     * Copies {@code newLength} elements from {@code original} into a new array.
+     * If {@code newLength} is greater than {@code original.length}, the result is padded
+     * with the value {@code null}.
+     *
+     * @param original the original array
+     * @param newLength the length of the new array
+     * @return the new array
+     * @throws NegativeArraySizeException if {@code newLength < 0}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOf(
+        [in] ArrayOf<IInterface* >* original,
+        [in] Int32 newLength,
+        [out, callee] ArrayOf<IInterface* >* result);
+
+    /**
+     * Copies {@code newLength} elements from {@code original} into a new array.
+     * If {@code newLength} is greater than {@code original.length}, the result is padded
+     * with the value {@code null}.
+     *
+     * @param original the original array
+     * @param newLength the length of the new array
+     * @param newType the class of the new array
+     * @return the new array
+     * @throws NegativeArraySizeException if {@code newLength < 0}
+     * @throws NullPointerException if {@code original == null}
+     * @throws ArrayStoreException if a value in {@code original} is incompatible with T
+     * @since 1.6
+     */
+    /*CopyOfU(
+        [in] U[] original,
+        [in] int newLength,
+        [in] Class<? extends T[]> newType,
+        [out] <T, U> T[] result);*/
+
+    /**
+     * Copies elements from {@code original} into a new array, from indexes start (inclusive) to
+     * end (exclusive). The original order of elements is preserved.
+     * If {@code end} is greater than {@code original.length}, the result is padded
+     * with the value {@code false}.
+     *
+     * @param original the original array
+     * @param start the start index, inclusive
+     * @param end the end index, exclusive
+     * @return the new array
+     * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
+     * @throws IllegalArgumentException if {@code start > end}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfRangeBoolean(
+        [in] ArrayOf<Boolean>* original,
+        [in] Int32 start,
+        [in] Int32 end,
+        [out, callee] ArrayOf<Boolean>* arrayCopy);
+
+    /**
+     * Copies elements from {@code original} into a new array, from indexes start (inclusive) to
+     * end (exclusive). The original order of elements is preserved.
+     * If {@code end} is greater than {@code original.length}, the result is padded
+     * with the value {@code (byte) 0}.
+     *
+     * @param original the original array
+     * @param start the start index, inclusive
+     * @param end the end index, exclusive
+     * @return the new array
+     * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
+     * @throws IllegalArgumentException if {@code start > end}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfRangeByte(
+        [in] ArrayOf<Byte>* original,
+        [in] Int32 start,
+        [in] Int32 end,
+        [out, callee] ArrayOf<Byte>* arrayCopy);
+
+    /**
+     * Copies elements from {@code original} into a new array, from indexes start (inclusive) to
+     * end (exclusive). The original order of elements is preserved.
+     * If {@code end} is greater than {@code original.length}, the result is padded
+     * with the value {@code '\\u0000'}.
+     *
+     * @param original the original array
+     * @param start the start index, inclusive
+     * @param end the end index, exclusive
+     * @return the new array
+     * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
+     * @throws IllegalArgumentException if {@code start > end}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfRangeChar32(
+        [in] ArrayOf<Char32>* original,
+        [in] Int32 start,
+        [in] Int32 end,
+        [out, callee] ArrayOf<Char32>* arrayCopy);
+
+    /**
+     * Copies elements from {@code original} into a new array, from indexes start (inclusive) to
+     * end (exclusive). The original order of elements is preserved.
+     * If {@code end} is greater than {@code original.length}, the result is padded
+     * with the value {@code 0.0d}.
+     *
+     * @param original the original array
+     * @param start the start index, inclusive
+     * @param end the end index, exclusive
+     * @return the new array
+     * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
+     * @throws IllegalArgumentException if {@code start > end}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfRangeDouble(
+        [in] ArrayOf<Double>* original,
+        [in] Int32 start,
+        [in] Int32 end,
+        [out, callee] ArrayOf<Double>* arrayCopy);
+
+    /**
+     * Copies elements from {@code original} into a new array, from indexes start (inclusive) to
+     * end (exclusive). The original order of elements is preserved.
+     * If {@code end} is greater than {@code original.length}, the result is padded
+     * with the value {@code 0.0f}.
+     *
+     * @param original the original array
+     * @param start the start index, inclusive
+     * @param end the end index, exclusive
+     * @return the new array
+     * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
+     * @throws IllegalArgumentException if {@code start > end}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfRangeFloat(
+        [in] ArrayOf<Float>* original,
+        [in] Int32 start,
+        [in] Int32 end,
+        [out, callee] ArrayOf<Float>* arrayCopy);
+
+    /**
+     * Copies elements from {@code original} into a new array, from indexes start (inclusive) to
+     * end (exclusive). The original order of elements is preserved.
+     * If {@code end} is greater than {@code original.length}, the result is padded
+     * with the value {@code 0}.
+     *
+     * @param original the original array
+     * @param start the start index, inclusive
+     * @param end the end index, exclusive
+     * @return the new array
+     * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
+     * @throws IllegalArgumentException if {@code start > end}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfRangeInt32(
+        [in] ArrayOf<Int32>* original,
+        [in] Int32 start,
+        [in] Int32 end,
+        [out, callee] ArrayOf<Int32>* arrayCopy);
+
+    /**
+     * Copies elements from {@code original} into a new array, from indexes start (inclusive) to
+     * end (exclusive). The original order of elements is preserved.
+     * If {@code end} is greater than {@code original.length}, the result is padded
+     * with the value {@code 0L}.
+     *
+     * @param original the original array
+     * @param start the start index, inclusive
+     * @param end the end index, exclusive
+     * @return the new array
+     * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
+     * @throws IllegalArgumentException if {@code start > end}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfRangeInt64(
+        [in] ArrayOf<Int64>* original,
+        [in] Int32 start,
+        [in] Int32 end,
+        [out, callee] ArrayOf<Int64>* arrayCopy);
+
+    /**
+     * Copies elements from {@code original} into a new array, from indexes start (inclusive) to
+     * end (exclusive). The original order of elements is preserved.
+     * If {@code end} is greater than {@code original.length}, the result is padded
+     * with the value {@code (short) 0}.
+     *
+     * @param original the original array
+     * @param start the start index, inclusive
+     * @param end the end index, exclusive
+     * @return the new array
+     * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
+     * @throws IllegalArgumentException if {@code start > end}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    CopyOfRangeInt16(
+        [in] ArrayOf<Int16>* original,
+        [in] Int32 start,
+        [in] Int32 end,
+        [out, callee] ArrayOf<Int16>* arrayCopy);
+
+    /**
+     * Copies elements from {@code original} into a new array, from indexes start (inclusive) to
+     * end (exclusive). The original order of elements is preserved.
+     * If {@code end} is greater than {@code original.length}, the result is padded
+     * with the value {@code null}.
+     *
+     * @param original the original array
+     * @param start the start index, inclusive
+     * @param end the end index, exclusive
+     * @return the new array
+     * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
+     * @throws IllegalArgumentException if {@code start > end}
+     * @throws NullPointerException if {@code original == null}
+     * @since 1.6
+     */
+    //@SuppressWarnings("unchecked")
+    CopyOfRange(
+        [in] ArrayOf<IInterface* >* original,
+        [in] Int32 start,
+        [in] Int32 end,
+        [out, callee] ArrayOf<IInterface* >* arrayCopy);
+
+    /**
+     * Copies elements from {@code original} into a new array, from indexes start (inclusive) to
+     * end (exclusive). The original order of elements is preserved.
+     * If {@code end} is greater than {@code original.length}, the result is padded
+     * with the value {@code null}.
+     *
+     * @param original the original array
+     * @param start the start index, inclusive
+     * @param end the end index, exclusive
+     * @return the new array
+     * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
+     * @throws IllegalArgumentException if {@code start > end}
+     * @throws NullPointerException if {@code original == null}
+     * @throws ArrayStoreException if a value in {@code original} is incompatible with T
+     * @since 1.6
+     */
+    //@SuppressWarnings("unchecked")
+    /*CopyOfRangeU(
+        [in] U[] original,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Class<? extends T[]> newType,
+        [out] <T, U> T[] arrayCopy);*/
+    }
+
+    } // namespace Utility
+    } // namespace Elastos
+}

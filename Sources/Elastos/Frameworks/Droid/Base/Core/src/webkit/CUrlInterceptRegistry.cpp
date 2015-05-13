@@ -1,0 +1,70 @@
+
+#include "webkit/CUrlInterceptRegistry.h"
+#include "webkit/UrlInterceptRegistry.h"
+#include <elastos/Algorithm.h>
+
+namespace Elastos {
+namespace Droid {
+namespace Webkit {
+
+ECode CUrlInterceptRegistry::SetUrlInterceptDisabled(
+    /* [in] */ Boolean disabled)
+{
+    UrlInterceptRegistry::SetUrlInterceptDisabled(disabled);
+    return NOERROR;
+}
+
+ECode CUrlInterceptRegistry::UrlInterceptDisabled(
+    /* [out] */ Boolean* disabled)
+{
+    VALIDATE_NOT_NULL(disabled);
+    *disabled = UrlInterceptRegistry::UrlInterceptDisabled();
+    return NOERROR;
+}
+
+ECode CUrlInterceptRegistry::RegisterHandler(
+    /* [in] */ IUrlInterceptHandler* handler,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(handler);
+    *result = UrlInterceptRegistry::RegisterHandler(handler);
+    return NOERROR;
+}
+
+ECode CUrlInterceptRegistry::UnregisterHandler(
+    /* [in] */ IUrlInterceptHandler* handler,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(handler);
+    *result = UrlInterceptRegistry::UnregisterHandler(handler);
+    return NOERROR;
+}
+
+ECode CUrlInterceptRegistry::GetSurrogate(
+    /* [in] */ const String& url,
+    /* [in] */ IMap* headers,
+    /* [out] */ ICacheManagerCacheResult** cacheResult)
+{
+    VALIDATE_NOT_NULL(headers);
+    VALIDATE_NOT_NULL(cacheResult);
+    AutoPtr<ICacheManagerCacheResult> result = UrlInterceptRegistry::GetSurrogate(url, headers);
+    *cacheResult = result;
+    INTERFACE_ADDREF(*cacheResult);
+    return NOERROR;
+}
+
+ECode CUrlInterceptRegistry::GetPluginData(
+    /* [in] */ const String& url,
+    /* [in] */ IMap* headers,
+    /* [out] */ IPluginData** pluginData)
+{
+    VALIDATE_NOT_NULL(headers);
+    AutoPtr<IPluginData> pd = UrlInterceptRegistry::GetPluginData(url, headers);
+    *pluginData = pd;
+    INTERFACE_ADDREF(*pluginData);
+    return NOERROR;
+}
+
+} // namespace Webkit
+} // namespace Droid
+} // namespace Elastos

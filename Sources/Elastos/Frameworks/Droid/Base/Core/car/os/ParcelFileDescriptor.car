@@ -1,0 +1,157 @@
+module
+{
+    using interface Elastos.IO.IFile;
+    using interface Elastos.IO.IFileDescriptor;
+    using interface Elastos.IO.IFileInputStream;
+    using interface Elastos.IO.IFileOutputStream;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+
+    interface IParcelFileDescriptor extends Elastos.IO.ICloseable {
+        /**
+         * For use with {@link #open}: if {@link #MODE_CREATE} has been supplied
+         * and this file doesn't already exist, then create the file with
+         * permissions such that any application can read it.
+         */
+        const Int32 MODE_WORLD_READABLE = 0x00000001;
+
+        /**
+         * For use with {@link #open}: if {@link #MODE_CREATE} has been supplied
+         * and this file doesn't already exist, then create the file with
+         * permissions such that any application can write it.
+         */
+        const Int32 MODE_WORLD_WRITEABLE = 0x00000002;
+
+        /**
+         * For use with {@link #open}: open the file with read-only access.
+         */
+        const Int32 MODE_READ_ONLY = 0x10000000;
+
+        /**
+         * For use with {@link #open}: open the file with write-only access.
+         */
+        const Int32 MODE_WRITE_ONLY = 0x20000000;
+
+        /**
+         * For use with {@link #open}: open the file with read and write access.
+         */
+        const Int32 MODE_READ_WRITE = 0x30000000;
+
+        /**
+         * For use with {@link #open}: create the file if it doesn't already exist.
+         */
+        const Int32 MODE_CREATE = 0x08000000;
+
+        /**
+         * For use with {@link #open}: erase contents of file when opening.
+         */
+        const Int32 MODE_TRUNCATE = 0x04000000;
+
+        /**
+         * For use with {@link #open}: append to end of file while writing.
+         */
+        const Int32 MODE_APPEND = 0x02000000;
+
+        /**
+         * Retrieve the actual FileDescriptor associated with this object.
+         *
+         * @return Returns the FileDescriptor associated with this object.
+         */
+        GetFileDescriptor(
+            [out] IFileDescriptor** des);
+
+        GetStatSize(
+            [out] Int64* len);
+
+        SeekTo(
+            [in] Int64 startOffset,
+            [out] Int64* toOffset);
+
+        /**
+         * Return the native fd int for this ParcelFileDescriptor.  The
+         * ParcelFileDescriptor still owns the fd, and it still must be closed
+         * through this API.
+         */
+        GetFd(
+            [out] Int32* fd);
+    }
+
+    interface IParcelFileDescriptorHelper {
+        /**
+         * Create a new ParcelFileDescriptor accessing a given file.
+         *
+         * @param file The file to be opened.
+         * @param mode The desired access mode, must be one of
+         * {@link #MODE_READ_ONLY}, {@link #MODE_WRITE_ONLY}, or
+         * {@link #MODE_READ_WRITE}; may also be any combination of
+         * {@link #MODE_CREATE}, {@link #MODE_TRUNCATE},
+         * {@link #MODE_WORLD_READABLE}, and {@link #MODE_WORLD_WRITEABLE}.
+         *
+         * @return Returns a new ParcelFileDescriptor pointing to the given
+         * file.
+         *
+         * @throws FileNotFoundException Throws FileNotFoundException if the given
+         * file does not exist or can not be opened with the requested mode.
+         */
+        Open(
+            [in] IFile* file,
+            [in] Int32 mode,
+            [out] IParcelFileDescriptor** descriptor);
+
+        /**
+         * Take ownership of a raw native fd in to a new ParcelFileDescriptor.
+         * The returned ParcelFileDescriptor now owns the given fd, and will be
+         * responsible for closing it.  You must not close the fd yourself.
+         *
+         * @param fd The native fd that the ParcelFileDescriptor should adopt.
+         *
+         * @return Returns a new ParcelFileDescriptor holding a FileDescriptor
+         * for the given fd.
+         */
+        AdoptFd(
+            [in] Int32 fd,
+            [out] IParcelFileDescriptor** descriptor);
+
+        /**
+         * Create two ParcelFileDescriptors structured as a data pipe.  The first
+         * ParcelFileDescriptor in the returned array is the read side; the second
+         * is the write side.
+         */
+        CreatePipe(
+            [out, callee] ArrayOf<IParcelFileDescriptor*>* pfds);
+
+        /**
+        * Create a new ParcelFileDescriptor that is a dup of an existing
+        * FileDescriptor.  This obeys standard POSIX semantics, where the
+        * new file descriptor shared state such as file position with the
+        * original file descriptor.
+        */
+        Dup(
+            [in] IFileDescriptor* fd,
+            [out] IParcelFileDescriptor** descriptor);
+
+    }
+
+    /**
+     * An InputStream you can create on a ParcelFileDescriptor, which will
+     * take care of calling {@link ParcelFileDescriptor#close
+     * ParcelFileDescriptor.close()} for you when the stream is closed.
+     */
+    interface IParcelFileDescriptorAutoCloseInputStream extends Elastos.IO.IFileInputStream {
+    }
+
+    /**
+     * An OutputStream you can create on a ParcelFileDescriptor, which will
+     * take care of calling {@link ParcelFileDescriptor#close
+     * ParcelFileDescriptor.close()} for you when the stream is closed.
+     */
+    interface IParcelFileDescriptorAutoCloseOutputStream extends Elastos.IO.IFileOutputStream{
+    }
+
+    } // namespace Os
+    } // namespace Droid
+    } // namespace Elastos
+}

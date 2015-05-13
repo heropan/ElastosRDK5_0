@@ -1,0 +1,25 @@
+module
+{
+    interface Elastos.Droid.App.Backup.IBackupHelper;
+    interface Elastos.Droid.App.Backup.IBackupHelperDispatcher;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+    namespace Backup {
+
+    //interface IBackupAgentHelper extends IBackupAgent {
+    interface IBackupAgentHelper {
+        GetDispatcher(
+            [out] IBackupHelperDispatcher** dispatcher);
+
+        AddHelper(
+            [in] String keyPrefix,
+            [in] IBackupHelper* helper);
+    }
+
+    } // namespace Backup
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

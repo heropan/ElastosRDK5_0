@@ -1,0 +1,46 @@
+module
+{
+    interface Elastos.Droid.SystemUI.StatusBar.Tablet.ITabletStatusBar;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Policy {
+
+    interface IToggleSlider;
+
+    interface IToggleSliderListener {
+        OnInit(
+            [in] IToggleSlider* v);
+
+        OnChanged(
+            [in] IToggleSlider* v,
+            [in] Boolean tracking,
+            [in] Boolean checked,
+            [in] Int32 value);
+    }
+
+    interface IToggleSlider extends Elastos.Droid.Widget.IRelativeLayout {
+        SetOnChangedListener(
+            [in] IToggleSliderListener* listener);
+
+        SetChecked(
+            [in] Boolean checked);
+
+        IsChecked(
+            [out] Boolean* settingsEnabled);
+
+        SetMax(
+            [in] Int32 maxValue);
+
+        SetValue(
+            [in] Int32 value);
+    }
+
+    } // namespace Policy
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

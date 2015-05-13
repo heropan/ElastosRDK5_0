@@ -1,0 +1,55 @@
+
+module 
+{
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
+
+    /**
+     * An extension to TextView that supports the {@link android.widget.Checkable} interface.
+     * This is useful when used in a {@link android.widget.ListView ListView} where the it's
+     * {@link android.widget.ListView#setChoiceMode(int) setChoiceMode} has been set to
+     * something other than {@link android.widget.ListView#CHOICE_MODE_NONE CHOICE_MODE_NONE}.
+     *
+     * @attr ref android.R.styleable#CheckedTextView_checked
+     * @attr ref android.R.styleable#CheckedTextView_checkMark
+     */
+    interface ICheckedTextView extends ITextView
+    {
+        /**
+         * Set the checkmark to a given Drawable, identified by its resourece id. This will be drawn
+         * when {@link #isChecked()} is true.
+         * 
+         * @param resid The Drawable to use for the checkmark.
+         */
+        SetCheckMarkDrawable(
+            [in] Int32 resid);
+
+        /**
+         * Set the checkmark to a given Drawable. This will be drawn when {@link #isChecked()} is true.
+         *
+         * @param d The Drawable to use for the checkmark.
+         */
+        SetCheckMarkDrawableEx(
+            [in] IDrawable* d);
+
+        /**
+         * Gets the checkmark drawable
+         *
+         * @return The drawable use to represent the checkmark, if any.
+         *
+         * @see #setCheckMarkDrawable(Drawable)
+         * @see #setCheckMarkDrawable(int)
+         *
+         * @attr ref android.R.styleable#CheckedTextView_checkMark
+         */
+        GetCheckMarkDrawable(
+            [out] IDrawable** drawable);
+    }
+
+    } // namespace Widget
+    } // namespace Droid
+    } // namespace Elastos
+}

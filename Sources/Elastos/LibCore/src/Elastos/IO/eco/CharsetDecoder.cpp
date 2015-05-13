@@ -1,0 +1,411 @@
+
+#include "CCoderResult.h"
+#include "CCodingErrorAction.h"
+#include "CharsetDecoder.h"
+#include "CharBuffer.h"
+
+using Elastos::IO::Charset::CCoderResult;
+
+namespace Elastos {
+namespace IO {
+namespace Charset {
+
+const Int32 CharsetDecoder::INIT;
+const Int32 CharsetDecoder::ONGOING;
+const Int32 CharsetDecoder::END;
+const Int32 CharsetDecoder::FLUSH;
+
+CharsetDecoder::CharsetDecoder()
+    : mAverageCharsPerByte(0.0f)
+    , mMaxCharsPerByte(0.0f)
+    , mStatus(0)
+{}
+
+CharsetDecoder::~CharsetDecoder()
+{}
+
+ECode CharsetDecoder::Init(
+    /* [in] */ ICharset* charset,
+    /* [in] */ Float averageCharsPerByte,
+    /* [in] */ Float maxCharsPerByte)
+{
+    if (averageCharsPerByte <= 0 || maxCharsPerByte <= 0) {
+        // throw new IllegalArgumentException("averageCharsPerByte and maxCharsPerByte must be positive");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (averageCharsPerByte > maxCharsPerByte) {
+        // throw new IllegalArgumentException("averageCharsPerByte is greater than maxCharsPerByte");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mAverageCharsPerByte = averageCharsPerByte;
+    mMaxCharsPerByte = maxCharsPerByte;
+    mCs = charset;
+    mStatus = INIT;
+    AutoPtr<ICodingErrorAction> action;
+    ASSERT_SUCCEEDED(CCodingErrorAction::New((ICodingErrorAction**)&action));
+    AutoPtr<ICodingErrorAction> report;
+    action->GetREPORT((ICodingErrorAction**)&report);
+    mMalformedInputAction = report;
+    mUnmappableCharacterAction = report;
+    mReplacementChars = "\ufffd";
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(CharsetDecoder, ICharsetDecoder)
+
+ECode CharsetDecoder::AverageCharsPerByte(
+    /* [out] */ Float* average)
+{
+    VALIDATE_NOT_NULL(average)
+    *average = mAverageCharsPerByte;
+    return NOERROR;
+}
+
+ECode CharsetDecoder::Charset(
+    /* [out] */ ICharset** charset)
+{
+    VALIDATE_NOT_NULL(charset)
+    *charset = mCs;
+    INTERFACE_ADDREF(*charset)
+    return NOERROR;
+}
+
+ECode CharsetDecoder::Decode(
+    /* [in] */ IByteBuffer* byteBuffer,
+    /* [out] */ ICharBuffer** charBuffer)
+{
+    VALIDATE_NOT_NULL(charBuffer)
+    Reset();
+    Int32 remaining = 0;
+    assert(byteBuffer != NULL);
+    FAIL_RETURN(byteBuffer->GetRemaining(&remaining))
+    Int32 length = (Int32) (remaining * mAverageCharsPerByte);
+    AutoPtr<ICharBuffer> output;
+    FAIL_RETURN(CharBuffer::Allocate(length, (ICharBuffer**)&output))
+    AutoPtr<ICoderResult> result;
+
+    while (TRUE) {
+        result = NULL;
+        FAIL_RETURN(DecodeEx(byteBuffer, output, FALSE, (ICoderResult**)&result))
+        FAIL_RETURN(CheckCoderResult(result))
+        Boolean ret = FALSE;
+        if ((result->IsUnderflow(&ret), ret)) {
+            break;
+        }
+        else if ((result->IsOverflow(&ret), ret)) {
+            AutoPtr<ICharBuffer> tmpOutput;
+            FAIL_RETURN(AllocateMore(output, (ICharBuffer**)&tmpOutput))
+            output = tmpOutput;
+        }
+    }
+
+    result = NULL;
+    FAIL_RETURN(DecodeEx(byteBuffer, output, TRUE, (ICoderResult**)&result))
+    FAIL_RETURN(CheckCoderResult(result))
+
+    while (TRUE) {
+        result = NULL;
+        Flush(output, (ICoderResult**)&result);
+        FAIL_RETURN(CheckCoderResult(result))
+        Boolean ret = FALSE;
+        if ((result->IsOverflow(&ret), ret)) {
+            AutoPtr<ICharBuffer> tmpOutput;
+            FAIL_RETURN(AllocateMore(output, (ICharBuffer**)&tmpOutput))
+            output = tmpOutput;
+        }
+        else {
+            break;
+        }
+    }
+
+    output->Flip();
+    mStatus = FLUSH;
+    *charBuffer = output;
+    INTERFACE_ADDREF(*charBuffer)
+    return NOERROR;
+}
+
+ECode CharsetDecoder::DecodeEx(
+    /* [in] */ IByteBuffer* byteBuffer,
+    /* [in] */ ICharBuffer* charBuffer,
+    /* [in] */ Boolean endOfInput,
+    /* [out] */ ICoderResult** result)
+{
+    VALIDATE_NOT_NULL(result)
+    /*
+     * status check
+     */
+    if ((mStatus == FLUSH) || (!endOfInput && mStatus == END)) {
+        // throw new IllegalStateException();
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+
+    *result = NULL;
+
+    // begin to decode
+    while (TRUE) {
+        AutoPtr<ICodingErrorAction> action;
+        ECode ec = DecodeLoop(byteBuffer, charBuffer, result);
+        if (ec == E_BUFFER_OVER_FLOW_EXCEPTION || ec == E_BUFFER_UNDER_FLOW_EXCEPTION) {
+            // unexpected exception
+            // throw new CoderMalfunctionError(ex);
+            return E_CODER_MALFUNCTION_ERROR;
+        }
+        /*
+         * result handling
+         */
+        Boolean ret = FALSE;
+        if (((*result)->IsUnderflow(&ret), ret)) {
+            Int32 remaining = 0;
+            assert(byteBuffer != NULL);
+            byteBuffer->GetRemaining(&remaining);
+            mStatus = endOfInput ? END : ONGOING;
+            if (endOfInput && remaining > 0) {
+                *result = NULL;
+                CCoderResult::MalformedForLength(remaining, result);
+            }
+            else {
+                return NOERROR;
+            }
+        }
+        ret = FALSE;
+        if (((*result)->IsOverflow(&ret), ret)) {
+            return NOERROR;
+        }
+        // set coding error handle action
+        action = mMalformedInputAction;
+        ret = FALSE;
+        if (((*result)->IsUnmappable(&ret), ret)) {
+            action = mUnmappableCharacterAction;
+        }
+        // If the action is IGNORE or REPLACE, we should continue decoding.
+        AutoPtr<ICodingErrorAction> codingErrorAction;
+        FAIL_RETURN(CCodingErrorAction::New((ICodingErrorAction** )&codingErrorAction));
+        AutoPtr<ICodingErrorAction> REPLACE;
+        codingErrorAction->GetREPLACE((ICodingErrorAction**)&REPLACE);
+        if (_CObject_Compare(action, REPLACE)) {
+            Int32 remaining = 0;
+            assert(charBuffer != NULL);
+            charBuffer->GetRemaining(&remaining);
+            if (remaining < mReplacementChars.GetLength()) {
+                *result = NULL;
+                return CCoderResult::GetOVERFLOW(result);
+            }
+            charBuffer->PutString(mReplacementChars);
+        }
+        else {
+            AutoPtr<ICodingErrorAction> IGNORE;
+            codingErrorAction->GetIGNORE((ICodingErrorAction**)&IGNORE);
+            if (!_CObject_Compare(action, IGNORE)){
+                return NOERROR;
+            }
+        }
+        Int32 tmpPosition = 0;
+        byteBuffer->GetPosition(&tmpPosition);
+        Int32 tmpLen = 0;
+        (*result)->GetLength(&tmpLen);
+        byteBuffer->SetPosition(tmpPosition + tmpLen);
+    }
+    return NOERROR;
+}
+
+ECode CharsetDecoder::DetectedCharset(
+    /* [out] */ ICharset** charset)
+{
+    // throw new UnsupportedOperationException();
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode CharsetDecoder::Flush(
+    /* [in] */ ICharBuffer* charBuffer,
+    /* [out] */ ICoderResult** result)
+{
+    VALIDATE_NOT_NULL(result)
+    if (mStatus != END && mStatus != INIT) {
+        // throw new IllegalStateException();
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    FAIL_RETURN(ImplFlush(charBuffer, result))
+    AutoPtr<ICoderResult> UNDERFLOW;
+    CCoderResult::GetUNDERFLOW((ICoderResult**)&UNDERFLOW);
+    if (_CObject_Compare(*result, UNDERFLOW)) {
+        mStatus = FLUSH;
+    }
+    return NOERROR;
+}
+
+ECode CharsetDecoder::IsAutoDetecting(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
+}
+
+ECode CharsetDecoder::IsCharsetDetected(
+    /* [out] */ Boolean* result)
+{
+    // throw new UnsupportedOperationException();
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode CharsetDecoder::MalformedInputAction(
+    /* [out] */ ICodingErrorAction** codingErrorAction)
+{
+    VALIDATE_NOT_NULL(codingErrorAction)
+    *codingErrorAction = mMalformedInputAction;
+    INTERFACE_ADDREF(*codingErrorAction)
+    return NOERROR;
+}
+
+ECode CharsetDecoder::MaxCharsPerByte(
+    /* [out] */ Float* maxNumber)
+{
+    VALIDATE_NOT_NULL(maxNumber)
+    *maxNumber = mMaxCharsPerByte;
+    return NOERROR;
+}
+
+ECode CharsetDecoder::OnMalformedInput(
+    /* [in] */ ICodingErrorAction* newAction,
+    /* [out] */ ICharsetDecoder** decoder)
+{
+    VALIDATE_NOT_NULL(newAction)
+    VALIDATE_NOT_NULL(decoder)
+    mMalformedInputAction = newAction;
+    ImplOnMalformedInput(newAction);
+    *decoder = (ICharsetDecoder*)this;
+    INTERFACE_ADDREF(*decoder)
+    return NOERROR;
+}
+
+ECode CharsetDecoder::OnUnmappableCharacter(
+    /* [in] */ ICodingErrorAction* newAction,
+    /* [out] */ ICharsetDecoder** decoder)
+{
+    VALIDATE_NOT_NULL(newAction)
+    VALIDATE_NOT_NULL(decoder)
+    mUnmappableCharacterAction = newAction;
+    ImplOnUnmappableCharacter(newAction);
+    *decoder = (ICharsetDecoder*)this;
+    INTERFACE_ADDREF(*decoder)
+    return NOERROR;
+}
+
+ECode CharsetDecoder::Replacement(
+    /* [out] */ String* replacement)
+{
+    VALIDATE_NOT_NULL(replacement)
+    *replacement = mReplacementChars;
+    return NOERROR;
+}
+
+ECode CharsetDecoder::ReplaceWith(
+    /* [in] */ const String& newReplacement)
+{
+    if (newReplacement.IsNullOrEmpty()) {
+        // throw new IllegalArgumentException("replacement == null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    if (newReplacement.GetByteLength() > mMaxCharsPerByte) {
+        // throw new IllegalArgumentException("replacement length > maxCharsPerByte: " +
+        //         newReplacement.length() + " > " + maxCharsPerByte());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mReplacementChars = newReplacement;
+    ImplReplaceWith(newReplacement);
+    return NOERROR;
+}
+
+ECode CharsetDecoder::Reset()
+{
+    mStatus = INIT;
+    ImplReset();
+    return NOERROR;
+}
+
+ECode CharsetDecoder::UnmappableCharacterAction(
+    /* [out] */ ICodingErrorAction** codingErrorAction)
+{
+    VALIDATE_NOT_NULL(codingErrorAction)
+    *codingErrorAction = mUnmappableCharacterAction;
+    INTERFACE_ADDREF(*codingErrorAction)
+    return NOERROR;
+}
+
+ECode CharsetDecoder::ImplFlush(
+    /* [in] */ ICharBuffer* outInput,
+    /* [out] */ ICoderResult** result)
+{
+    VALIDATE_NOT_NULL(result)
+    CCoderResult::GetUNDERFLOW(result);
+    return NOERROR;
+}
+
+ECode CharsetDecoder::ImplOnMalformedInput(
+    /* [in] */ ICodingErrorAction* newAction)
+{
+    // default implementation is empty
+    return NOERROR;
+}
+
+ECode CharsetDecoder::ImplOnUnmappableCharacter(
+    /* [in] */ ICodingErrorAction* newAction)
+{
+    // default implementation is empty
+    return NOERROR;
+}
+
+ECode CharsetDecoder::ImplReplaceWith(
+    /* [in] */ const String& newReplacement)
+{
+    // // default implementation is empty
+    return NOERROR;
+}
+
+ECode CharsetDecoder::ImplReset()
+{
+    // default implementation is empty
+    return NOERROR;
+}
+
+ECode CharsetDecoder::CheckCoderResult(
+    /* [in] */ ICoderResult* result)
+{
+    assert(result != NULL);
+    Boolean ret = FALSE;
+    AutoPtr<ICodingErrorAction> action;
+    FAIL_RETURN(CCodingErrorAction::New((ICodingErrorAction**)&action))
+    AutoPtr<ICodingErrorAction> REPORT;
+    action->GetREPORT((ICodingErrorAction**)&REPORT);
+    if ((result->IsMalformed(&ret), ret) && _CObject_Compare(mMalformedInputAction, REPORT)) {
+        // throw new MalformedInputException(result.length());
+        return E_MALFORMED_INPUT_EXCEPTION;
+    }
+    else if ((result->IsUnmappable(&ret), ret) && _CObject_Compare(mUnmappableCharacterAction, REPORT)) {
+        // throw new UnmappableCharacterException(result.length());
+        return E_UNMAPPABLE_CHARACTER_EXCEPTION;
+    }
+    return NOERROR;
+}
+
+ECode CharsetDecoder::AllocateMore(
+    /* [in] */ ICharBuffer* output,
+    /* [out] */ ICharBuffer** newOutput)
+{
+    VALIDATE_NOT_NULL(newOutput)
+    Int32 capacity = 0;
+    output->GetCapacity(&capacity);
+    if (capacity == 0) {
+        return CharBuffer::Allocate(1, newOutput);
+    }
+    FAIL_RETURN(CharBuffer::Allocate(capacity * 2, newOutput))
+    output->Flip();
+    (*newOutput)->PutCharBuffer(output);
+    return NOERROR;
+}
+
+} // namespace Charset
+} // namespace IO
+} // namespace Elastos

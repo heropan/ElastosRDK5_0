@@ -1,0 +1,79 @@
+
+module
+{
+    interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionConnectionCallback;
+    interface Elastos.Droid.Os.IBundle;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Accessibility {
+
+    /**
+     * Interface for interaction between the AccessibilityManagerService
+     * and the ViewRoot in a given window.
+     *
+     * @hide
+     */
+    [oneway]
+    interface IAccessibilityInteractionConnection {
+        FindAccessibilityNodeInfoByAccessibilityId(
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 flags,
+            [in] Int32 interrogatingPid,
+            [in] Int64 interrogatingTid);
+
+        FindAccessibilityNodeInfoByViewId(
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 viewId,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 flags,
+            [in] Int32 interrogatingPid,
+            [in] Int64 interrogatingTid);
+
+        FindAccessibilityNodeInfosByText(
+            [in] Int64 accessibilityNodeId,
+            [in] String text,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 flags,
+            [in] Int32 interrogatingPid,
+            [in] Int64 interrogatingTid);
+
+        FindFocus(
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 focusType,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 flags,
+            [in] Int32 interrogatingPid,
+            [in] Int64 interrogatingTid);
+
+        FocusSearch(
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 direction,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 flags,
+            [in] Int32 interrogatingPid,
+            [in] Int64 interrogatingTid);
+
+        PerformAccessibilityAction(
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 action,
+            [in] IBundle* arguments,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 flags,
+            [in] Int32 interrogatingPid,
+            [in] Int64 interrogatingTid);
+    }
+
+    } // namespace Accessibility
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

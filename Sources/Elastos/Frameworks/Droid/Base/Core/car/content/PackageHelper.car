@@ -1,0 +1,101 @@
+
+module
+{
+    using interface Elastos.IO.IFile;
+    using interface Elastos.Utility.Zip.IZipEntry;
+    using interface Elastos.Utility.Zip.IZipFile;
+    using interface Elastos.Utility.Zip.IZipOutputStream;
+    interface Elastos.Droid.Os.Storage.IMountService;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Content {
+
+    interface IPackageHelper {
+        const Int32 RECOMMEND_INSTALL_INTERNAL = 1;
+        const Int32 RECOMMEND_INSTALL_EXTERNAL = 2;
+        const Int32 RECOMMEND_FAILED_INSUFFICIENT_STORAGE = -1;
+        const Int32 RECOMMEND_FAILED_INVALID_APK = -2;
+        const Int32 RECOMMEND_FAILED_INVALID_LOCATION = -3;
+        const Int32 RECOMMEND_FAILED_ALREADY_EXISTS = -4;
+        const Int32 RECOMMEND_MEDIA_UNAVAILABLE = -5;
+        const Int32 RECOMMEND_FAILED_INVALID_URI = -6;
+        const Int32 RECOMMEND_FAILED_VERSION_DOWNGRADE = -7;
+
+        // App installation location settings values
+        const Int32 APP_INSTALL_AUTO = 0;
+        const Int32 APP_INSTALL_INTERNAL = 1;
+        const Int32 APP_INSTALL_EXTERNAL = 2;
+
+        GetMountService(
+            [out] IMountService** mountService);
+
+        CreateSdDir(
+            [in] Int32 sizeMb,
+            [in] String cid,
+            [in] String sdEncKey,
+            [in] Int32 uid,
+            [in] Boolean isExternal,
+            [out] String* dir);
+
+        MountSdDir(
+            [in] String cid,
+            [in] String key,
+            [in] Int32 ownerUid,
+            [out] String* dir);
+
+        UnMountSdDir(
+            [in] String cid,
+            [out] Boolean* result);
+
+        RenameSdDir(
+            [in] String oldId,
+            [in] String newId,
+            [out] Boolean* result);
+
+        GetSdDir(
+            [in] String cid,
+            [out] String* dir);
+
+        GetSdFilesystem(
+            [in] String cid,
+            [out] String* str);
+
+        FinalizeSdDir(
+            [in] String cid,
+            [out] Boolean* result);
+
+        DestroySdDir(
+            [in] String cid,
+            [out] Boolean* result);
+
+        GetSecureContainerList(
+            [out, callee] ArrayOf<String>* ids);
+
+        IsContainerMounted(
+            [in] String cid,
+            [out] Boolean* isMounted);
+
+        ExtractPublicFiles(
+            [in] String packagePath,
+            [in] IFile* publicZipFile,
+            [out] Int32* size);
+
+        CopyZipEntry(
+            [in] IZipEntry* zipEntry,
+            [in] IZipFile* inZipFile,
+            [in] IZipOutputStream* outZipStream);
+
+        FixSdPermissions(
+            [in] String cid,
+            [in] Int32 gid,
+            [in] String filename,
+            [out] Boolean* result);
+    }
+
+    } // namespace Content
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
+}

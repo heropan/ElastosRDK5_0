@@ -1,0 +1,11 @@
+module
+{
+    namespace Elastos{
+    namespace Utility{
+
+    interface IZoneInfo extends ITimeZone {
+    }
+
+    } // namespace Utility
+    } // namespace Elastos
+}

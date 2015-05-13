@@ -1,0 +1,22 @@
+
+module
+{
+    using interface Elastos.IO.IOutputStream;
+
+    namespace Elastos {
+    namespace Net {
+    namespace Http {
+
+    interface IRetryableOutputStream extends IAbstractHttpOutputStream {
+        ContentLength(
+            [out] Int32* value);
+
+        WriteToSocket(
+            [in] IOutputStream* socketOut);
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Elastos
+
+}

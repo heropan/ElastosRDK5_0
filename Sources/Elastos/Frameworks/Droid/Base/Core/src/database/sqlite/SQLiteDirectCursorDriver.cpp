@@ -1,0 +1,95 @@
+
+#include "database/sqlite/SQLiteDirectCursorDriver.h"
+#include "database/sqlite/CSQLiteQuery.h"
+#include "database/sqlite/CSQLiteCursor.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Database {
+namespace Sqlite {
+
+SQLiteDirectCursorDriver::SQLiteDirectCursorDriver(
+    /* [in] */ ISQLiteDatabase* db,
+    /* [in] */ const String& sql,
+    /* [in] */ const String& editTable,
+    /* [in] */ ICancellationSignal* cancellationSignal)
+    : mDatabase(db)
+    , mEditTable(editTable)
+    , mSql(sql)
+    , mCancellationSignal(cancellationSignal)
+{}
+
+CAR_INTERFACE_IMPL(SQLiteDirectCursorDriver, ISQLiteCursorDriver)
+
+ECode SQLiteDirectCursorDriver::Query(
+    /* [in] */ ISQLiteDatabaseCursorFactory* factory,
+    /* [in] */ ArrayOf<String>* selectionArgs,
+    /* [out] */ ICursor** cs)
+{
+    VALIDATE_NOT_NULL(cs)
+    *cs = NULL;
+
+    AutoPtr<ISQLiteQuery> query;
+    FAIL_RETURN(CSQLiteQuery::New(mDatabase, mSql, NULL, (ISQLiteQuery**)&query));
+    AutoPtr<ICursor> cursor;
+    //try {
+    ECode ec = query->BindAllArgsAsStrings(selectionArgs);
+    if (FAILED(ec)) {
+        query->Close();
+        return ec;
+    }
+
+    if (factory == NULL) {
+        ec = CSQLiteCursor::New((ISQLiteCursorDriver*)this, mEditTable, query, (ISQLiteCursor**)&cursor);
+    }
+    else {
+        ec = factory->NewCursor(mDatabase, (ISQLiteCursorDriver*)this, mEditTable, query, (ICursor**)&cursor);
+    }
+    if (FAILED(ec)) {
+        query->Close();
+        return ec;
+    }
+    // } catch (RuntimeException ex) {
+    //     query.close();
+    //     throw ex;
+    // }
+    mQuery = query;
+    *cs = cursor;
+    INTERFACE_ADDREF(*cs)
+    return NOERROR;
+}
+
+ECode SQLiteDirectCursorDriver::CursorClosed()
+{
+    // Do nothing
+    return NOERROR;
+}
+
+ECode SQLiteDirectCursorDriver::SetBindArguments(
+    /* [in] */ ArrayOf<String>* bindArgs)
+{
+    return mQuery->BindAllArgsAsStrings(bindArgs);;
+}
+
+ECode SQLiteDirectCursorDriver::CursorDeactivated()
+{
+    // Do nothing
+    return NOERROR;
+}
+
+ECode SQLiteDirectCursorDriver::CursorRequeried(
+        /* [in] */ ICursor* cursor)
+{
+    // Do nothing
+    return NOERROR;
+}
+
+String SQLiteDirectCursorDriver::ToString()
+{
+    return String("SQLiteDirectCursorDriver: ") + mSql;
+}
+
+} //Sqlite
+} //Database
+} //Droid
+} //Elastos

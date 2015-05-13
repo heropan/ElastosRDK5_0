@@ -1,0 +1,17 @@
+
+module
+{
+    namespace Elastos {
+    namespace IO {
+    /**
+    * A specialized InputStream for reading the contents of a byte array.
+    * @sa ByteArrayOutputStream
+    *@implement Elastos.IO.IInputStream
+    */
+
+    interface IByteArrayInputStream extends IInputStream {
+    }
+
+    } // namespace IO
+    } // namespace Elastos
+}

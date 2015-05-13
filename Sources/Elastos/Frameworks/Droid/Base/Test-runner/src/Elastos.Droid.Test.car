@@ -1,0 +1,10 @@
+
+module
+{
+    importlib("Eunit.eco");
+    importlib("Elastos.Core.eco");
+    importlib("Elastos.Droid.Core.eco");
+
+    merge("../car/fake_interface.car");
+    merge("../car/droid/test.car");
+}

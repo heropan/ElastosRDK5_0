@@ -1,0 +1,60 @@
+
+module
+{
+    merge("accessibilityservice/AccessibilityServiceInfo.car");
+    merge("accessibilityservice/IAccessibilityServiceConnection.car");
+    merge("accessibilityservice/IAccessibilityServiceClient.car");
+    merge("accessibilityservice/AccessibilityService.car");
+    merge("accessibilityservice/UiTestAutomationBridge.car");
+
+    interface Elastos.Droid.App.IService;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.Os.IHandlerCallerCallback;
+    interface Elastos.Droid.Content.Pm.IResolveInfo;
+    interface Elastos.Droid.AccessibilityService.IAccessibilityServiceCallbacks;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace AccessibilityService {
+
+        // [deprecated]
+        // class CAccessibilityService {
+        //     interface IAccessibilityService;
+        // }
+
+        [local]
+        class CAccessibilityServiceClientWrapper {
+            constructor(
+                [in] IContext* ctx,
+                [in] ILooper* looper,
+                [in] IAccessibilityServiceCallbacks* cb);
+
+            interface IAccessibilityServiceClientWrapper;
+            interface IHandlerCallerCallback;
+        }
+
+        [local]
+        class CAccessibilityServiceInfo {
+            constructor();
+
+            constructor(
+                [in] IResolveInfo* resolveInfo,
+                [in] IContext* ctx);
+
+            interface IAccessibilityServiceInfo;
+            interface IParcelable;
+        }
+
+        class CAccessibilityServiceInfoHelper {
+            interface IAccessibilityServiceInfoHelper;
+        }
+
+        class CUiTestAutomationBridge {
+            interface IUiTestAutomationBridge;
+        }
+
+    }
+    }
+    }
+}

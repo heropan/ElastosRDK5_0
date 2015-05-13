@@ -1,0 +1,15 @@
+$;;=========================================================================
+$;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
+$;;=========================================================================
+$
+$INPUT module
+$
+$WITH all classes DO
+$    IF type is not "clsobj" and type is not "sink"
+$        TEMPLATE "soh.lub"
+$        TEMPLATE "socpp.lub"
+$    END IF
+$END DO
+$
+$TEMPLATE "sosources.lub"
+$TEMPLATE "so2libdef.lub"

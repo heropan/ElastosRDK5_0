@@ -1,0 +1,142 @@
+
+module
+{
+    interface Elastos.Net.IInetAddress;
+    interface Elastos.Net.IDatagramPacket;
+    interface Elastos.IO.IFileDescriptor;
+    interface Elastos.IO.IByteBuffer;
+
+    namespace Libcore {
+    namespace IO {
+
+    [deprecated]
+    interface IIoBridge {
+        Available(
+            [in] Int32 fd,
+            [out] Int32* avail);
+
+        Bind(
+            [in] Int32 fd,
+            [in] IInetAddress* inetAddress,
+            [in] Int32 port);
+
+        Connect(
+            [in] Int32 fd,
+            [in] IInetAddress* inetAddress,
+            [in] Int32 port,
+            [out] Boolean* result);
+
+        ConnectEx(
+            [in] Int32 fd,
+            [in] IInetAddress* inetAddress,
+            [in] Int32 port,
+            [in] Int32 timeoutMs,
+            [out] Boolean* result);
+
+        CloseSocket(
+            [in] Int32 fd);
+
+        IsConnected(
+            [in] Int32 fd,
+            [in] IInetAddress* inetAddress,
+            [in] Int32 port,
+            [in] Int32 timeoutMs,
+            [in] Int32 remainingTimeoutMs,
+            [out] Boolean* isConnected);
+
+        GetSocketOption(
+            [in] Int32 fd,
+            [in] Int32 option,
+            [out] IInterface** value);
+
+        SetSocketOption(
+            [in] Int32 fd,
+            [in] Int32 option,
+            [in] IInterface* value);
+
+        /**
+         * java.io only throws FileNotFoundException when opening files, regardless of what actually
+         * went wrong. Additionally, java.io is more restrictive than POSIX when it comes to opening
+         * directories: POSIX says read-only is okay, but java.io doesn't even allow that. We also
+         * have an Android-specific hack to alter the default permissions.
+         */
+        Open(
+            [in] String path,
+            [in] Int32 flags,
+            [out] Int32* fd);
+
+        /**
+         * java.io thinks that a read at EOF is an error and should return -1, contrary to traditional
+         * Unix practice where you'd read until you got 0 bytes (and any future read would return -1).
+         */
+        Read(
+            [in] Int32 fd,
+            [out] ArrayOf<Byte> bytes,
+            [in] Int32 byteOffset,
+            [in] Int32 byteCount,
+            [out] Int32* count);
+
+        /**
+         * java.io always writes every byte it's asked to, or fails with an error. (That is, unlike
+         * Unix it never just writes as many bytes as happens to be convenient.)
+         */
+        Write(
+            [in] Int32 fd,
+            [in] ArrayOf<Byte> bytes,
+            [in] Int32 byteOffset,
+            [in] Int32 byteCount);
+
+        Sendto(
+            [in] Int32 fd,
+            [in] ArrayOf<Byte> bytes,
+            [in] Int32 byteOffset,
+            [in] Int32 byteCount,
+            [in] Int32 flags,
+            [in] IInetAddress* inetAddress,
+            [in] Int32 port,
+            [out] Int32* result);
+
+        SendtoEx(
+            [in] Int32 fd,
+            [in] IByteBuffer* buffer,
+            [in] Int32 flags,
+            [in] IInetAddress* inetAddress,
+            [in] Int32 port,
+            [out] Int32* result);
+
+        Recvfrom(
+            [in] Boolean isRead,
+            [in] Int32 fd,
+            [out] ArrayOf<Byte> bytes,
+            [in] Int32 byteOffset,
+            [in] Int32 byteCount,
+            [in] Int32 flags,
+            [in] IDatagramPacket* packet,
+            [in] Boolean isConnected,
+            [out] Int32* result);
+
+        RecvfromEx(
+            [in] Boolean isRead,
+            [in] Int32 fd,
+            [in] IByteBuffer* buffer,
+            [in] Int32 flags,
+            [in] IDatagramPacket* packet,
+            [in] Boolean isConnected,
+            [out] Int32* result);
+
+        Socket(
+            [in] Boolean stream,
+            [out] Int32* fd);
+
+        GetSocketLocalAddress(
+            [in] Int32 fd,
+            [out] IInetAddress** address);
+
+        GetSocketLocalPort(
+            [in] Int32 fd,
+            [out] Int32* port);
+    }
+
+    } // namespace IO
+    } // namespace Libcore
+}

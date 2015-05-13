@@ -1,0 +1,24 @@
+module
+{
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.View.Textservice.IISpellCheckerSession;
+    interface Elastos.Droid.View.Textservice.ISpellCheckerSessionListener;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Textservice {
+
+    interface IISpellCheckerService {
+        GetISpellCheckerSession(
+            [in] String locale,
+            [in] ISpellCheckerSessionListener* listener,
+            [in] IBundle* bundle,
+            [out] IISpellCheckerSession** spellSession);
+    }
+
+    } // namespace Textservice
+    } // namespace View
+    } // namespace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,21 @@
+module
+{
+    interface Elastos.Droid.SystemUI.StatusBar.Tablet.INotificationPanel;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Tablet {
+
+    interface INotificationPanelTitle extends Elastos.Droid.Widget.IRelativeLayout {
+        SetPanel(
+            [in] INotificationPanel* b);
+    }
+
+    } // namespace Tablet
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

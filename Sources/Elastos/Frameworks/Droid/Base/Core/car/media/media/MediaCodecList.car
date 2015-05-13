@@ -1,0 +1,26 @@
+
+module
+{
+    interface Elastos.Droid.Media.ICodecCapabilities;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+    interface IMediaCodecList {
+        /**
+         * Count the number of available codecs.
+         */
+        GetCodecCount(
+            [out] Int32* result);
+
+        GetCodecInfoAt(
+            [in] Int32 index,
+            [out] IMediaCodecInfo** result);
+
+    }
+
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
+}

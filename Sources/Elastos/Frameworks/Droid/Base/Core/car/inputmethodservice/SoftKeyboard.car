@@ -1,0 +1,35 @@
+
+module
+{
+    //todo: for SoftKeyboard app
+
+    using interface Elastos.Core.ICharSequence;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace InputMethodService {
+
+    interface ISoftKeyboard {
+        const Int32 KEYCODE_OPTIONS = -100;
+
+        PickSuggestionManually(
+            [in] Int32 index);
+    }
+
+    [deprecated]
+    interface ICandidateView extends Elastos.Droid.View.IView {
+        SetService(
+            [in] ISoftKeyboard* listener);
+
+        SetSuggestions(
+            [in] ArrayOf<ICharSequence*>* suggestions,
+            [in] Boolean completions,
+            [in] Boolean typedWordValid);
+
+        Clear();
+    }
+
+    } // namespace InputMethodService
+    } // namespace Droid
+    } // namespace Elastos
+}

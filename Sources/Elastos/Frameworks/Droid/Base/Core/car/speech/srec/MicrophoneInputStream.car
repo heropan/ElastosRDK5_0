@@ -1,0 +1,49 @@
+module
+{
+    using interface Elastos.IO.IInputStream;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Speech {
+    namespace Srec {
+
+    /**
+     * PCM input stream from the microphone, 16 bits per sample.
+     */
+    [deprecated]
+    interface IMicrophoneInputStream extends Elastos.IO.IInputStream {
+        //@Override
+        /*
+        Read(
+            [out] Int32* ret);
+        */
+
+        //@Override
+        /*
+        ReadEx(
+            [in] ArrayOf<Byte>* b,
+            [out] Int32* ret);
+        */
+
+        //@Override
+        /*
+        ReadEx2(
+            [in] ArrayOf<Byte>* b,
+            [in] Int32 offset,
+            [in] Int32 length,
+            [out] Int32* ret);
+        */
+
+        /**
+         * Closes this stream.
+         */
+        //@Override
+        //Close();
+    }
+
+    }//namespace Srec
+    }//namespace Speech
+    }//namespace Droid
+    }//namespace Elastos
+
+}

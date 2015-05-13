@@ -1,0 +1,31 @@
+module
+{
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Text.IParcelableSpan;
+    interface Elastos.Droid.Text.Style.IMetricAffectingSpan;
+    interface Elastos.Droid.Text.Style.IMetricAffectingSpanHelper;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    /**
+     * Changes the typeface family of the text to which the span is attached.
+     */
+    interface ITypefaceSpan extends IMetricAffectingSpan /*implements IParcelableSpan*/ {
+        /**
+         * Returns the font family name.
+         */
+        GetFamily(
+            [out] String* ret);
+    }
+
+    interface ITypefaceSpanHelper extends IMetricAffectingSpanHelper {}
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

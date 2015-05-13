@@ -1,0 +1,110 @@
+
+module {
+
+    merge("gesture/Prediction.car");
+    merge("gesture/GesturePoint.car");
+    merge("gesture/OrientedBoundingBox.car");
+    merge("gesture/GestureStroke.car");
+    merge("gesture/Gesture.car");
+    merge("gesture/Instance.car");
+    merge("gesture/Learner.car");
+    merge("gesture/InstanceLearner.car");
+    merge("gesture/GestureLibrary.car");
+    merge("gesture/GestureStore.car");
+    merge("gesture/GestureLibraries.car");
+    merge("gesture/GestureOverlayView.car");
+
+    interface Elastos.IO.IFile;
+    interface Elastos.Droid.Content.IContext;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Gesture {
+
+    class CPrediction {
+        constructor(
+            [in] String label,
+            [in] Double predictionScore);
+
+        interface IPrediction;
+    }
+
+    class CGesturePoint {
+        constructor(
+            [in] Float x,
+            [in] Float y,
+            [in] Int64 t);
+    
+        interface IGesturePoint;
+    }
+
+    class COrientedBoundingBox {
+        constructor(
+            [in] Float angle,
+            [in] Float cx,
+            [in] Float cy,
+            [in] Float w,
+            [in] Float h);
+    
+        interface IOrientedBoundingBox;
+    }
+
+    class CGestureStroke {
+        /**
+         * A constructor that constructs a gesture stroke from a list of gesture points.
+         *
+         * @param points
+         */
+        constructor(
+            [in] IObjectContainer *points);
+
+        interface IGestureStroke;
+    }
+
+    class CGestureStore {
+        constructor();
+
+        interface IGestureStore;
+    }
+
+    class CGesture {
+        constructor();
+        
+        interface IGesture;
+        interface IParcelable;
+    }
+
+    //class CInstanceLearner {
+    //    constructor();
+    //    interface IInstanceLearner;
+    //}
+
+    singleton class CGestureLibraries {
+        interface IGestureLibraries;
+    }
+
+    //class CGestureOverlayView {
+    //    constructor(
+    //        [in] IContext* ctx);
+    //    constructor(
+    //        [in] IContext* ctx,
+    //        [in] IAttributeSet *attrs);
+    //    constructor(
+    //        [in] IContext* ctx,
+    //        [in] IAttributeSet *attrs,
+    //        [in] Int32 defStyle);
+    //    interface IGestureOverlayView;
+    //}
+
+    //class CFadeOutRunnable {
+    //    constructor();
+
+    //    interface IFadeOutRunnable;
+    //    interface IRunnable;
+    //}
+
+    }//namespace Gesture
+    }//namespace Droid
+    }//namespace Elastos
+
+}

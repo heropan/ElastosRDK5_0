@@ -1,0 +1,5 @@
+
+DIRS = Core
+DIRS += Math
+DIRS += IO
+DIRS += Utility

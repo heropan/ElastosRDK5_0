@@ -1,0 +1,130 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Location {
+
+    /**
+     * Used for receiving notifications when GPS status has changed.
+     */
+    [deprecated]
+    interface IGpsStatusListener {
+        /**
+         * Called to report changes in the GPS status.
+         * The event number is one of:
+         * <ul>
+         * <li> {@link GpsStatus#GPS_EVENT_STARTED}
+         * <li> {@link GpsStatus#GPS_EVENT_STOPPED}
+         * <li> {@link GpsStatus#GPS_EVENT_FIRST_FIX}
+         * <li> {@link GpsStatus#GPS_EVENT_SATELLITE_STATUS}
+         * </ul>
+         *
+         * When this method is called, the client should call
+         * {@link LocationManager#getGpsStatus} to get additional
+         * status information.
+         *
+         * @param event event number for this notification
+         */
+        OnGpsStatusChanged(
+            [in] Int32 event);
+    }
+
+    /**
+     * Used for receiving NMEA sentences from the GPS.
+     * NMEA 0183 is a standard for communicating with marine electronic devices
+     * and is a common method for receiving data from a GPS, typically over a serial port.
+     * See <a href="http://en.wikipedia.org/wiki/NMEA_0183">NMEA 0183</a> for more details.
+     * You can implement this interface and call {@link LocationManager#addNmeaListener}
+     * to receive NMEA data from the GPS engine.
+     */
+    interface IGpsStatusNmeaListener {
+        OnNmeaReceived(
+            [in] Int64 timestamp,
+            [in] String nmea);
+    }
+
+    [deprecated]
+    interface IGpsStatus {
+
+        /**
+         * Event sent when the GPS system has started.
+         */
+        const Int32 GpsStatus_GPS_EVENT_STARTED = 1;
+
+        /**
+         * Event sent when the GPS system has stopped.
+         */
+        const Int32 GpsStatus_GPS_EVENT_STOPPED = 2;
+
+        /**
+         * Event sent when the GPS system has received its first fix since starting.
+         * Call {@link #getTimeToFirstFix()} to find the time from start to first fix.
+         */
+        const Int32 GpsStatus_GPS_EVENT_FIRST_FIX = 3;
+
+        /**
+         * Event sent periodically to report GPS satellite status.
+         * Call {@link #getSatellites()} to retrieve the status for each satellite.
+         */
+        const Int32 GpsStatus_GPS_EVENT_SATELLITE_STATUS = 4;
+
+        /**
+         * Used internally within {@link LocationManager} to copy GPS status
+         * data from the Location Manager Service to its cached GpsStatus instance.
+         * Is synchronized to ensure that GPS status updates are atomic.
+         */
+        SetStatus(
+            [in] Int32 svCount,
+            [in] ArrayOf<Int32>* prns,
+            [in] ArrayOf<Float>* snrs,
+            [in] ArrayOf<Float>* elevations,
+            [in] ArrayOf<Float>* azimuths,
+            [in] Int32 ephemerisMask,
+            [in] Int32 almanacMask,
+            [in] Int32 usedInFixMask);
+
+        /**
+         * Used by {@link LocationManager#getGpsStatus} to copy LocationManager's
+         * cached GpsStatus instance to the client's copy.
+         * Since this method is only used within {@link LocationManager#getGpsStatus},
+         * it does not need to be synchronized.
+         */
+        SetStatusEx(
+            [in] IGpsStatus* status);
+
+        SetTimeToFirstFix(
+            [in] Int32 ttff);
+
+        /**
+         * Returns the time required to receive the first fix since the most recent
+         * restart of the GPS engine.
+         *
+         * @return time to first fix in milliseconds
+         */
+        GetTimeToFirstFix(
+            [out] Int32* time);
+
+        /**
+         * Returns an array of {@link GpsSatellite} objects, which represent the
+         * current state of the GPS engine.
+         *
+         * @return the list of satellites
+         */
+        GetSatellites(
+            [out] IObjectContainer** satellites);
+
+        /**
+         * Returns the maximum number of satellites that can be in the satellite
+         * list that can be returned by {@link #getSatellites()}.
+         *
+         * @return the maximum number of satellites
+         */
+        GetMaxSatellites(
+            [out] Int32* maxNumber);
+    }
+
+    }//namespace Location
+    }//namespace Droid
+    }//namespace Elastos
+}

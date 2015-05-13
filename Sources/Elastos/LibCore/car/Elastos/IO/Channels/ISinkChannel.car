@@ -1,0 +1,34 @@
+
+module
+{
+    interface Elastos.IO.IByteBuffer;
+
+    namespace Elastos {
+    namespace IO {
+    namespace Channels {
+
+    interface ISinkChannel extends Elastos.IO.Channels.Spi.IAbstractSelectableChannel
+    {
+        // extended from IWritableByteChannel
+        WriteByteBuffer(
+            [in]  IByteBuffer* buffer,
+            [out] Int32* ret);
+
+        // extended from IGatheringByteChannel
+        WriteByteBuffers(
+            [in]  ArrayOf<IByteBuffer*> buffers,
+            [out] Int64* ret);
+
+        // extended from IGatheringByteChannel
+        WriteByteBuffersEx(
+            [in]  ArrayOf<IByteBuffer*> buffers,
+            [in]  Int32 offset,
+            [in]  Int32 length,
+            [out] Int64* ret);
+
+    } // ISinkChannel
+
+    } // namespace Channels
+    } // namespace IO
+    } // namespace Elastos
+}

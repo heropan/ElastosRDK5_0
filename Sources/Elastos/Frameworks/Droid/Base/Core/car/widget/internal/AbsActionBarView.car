@@ -1,0 +1,66 @@
+
+module
+{
+    interface Elastos.Droid.View.IViewGroup;
+    interface Elastos.Droid.Widget.Internal.IActionBarContainer;
+    interface Elastos.Droid.Widget.Internal.IScrollingTabContainerView;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+    namespace Internal{
+    //zhangjingcheng
+
+    interface IAbsActionBarView extends Elastos.Droid.View.IViewGroup
+    {
+        /**
+         * Sets whether the bar should be split right now, no questions asked.
+         * @param split true if the bar should split
+         */
+        SetSplitActionBar(
+            [in] Boolean split);
+
+        /**
+         * Sets whether the bar should split if we enter a narrow screen configuration.
+         * @param splitWhenNarrow true if the bar should check to split after a config change
+         */
+        SetSplitWhenNarrow(
+            [in] Boolean splitWhenNarrow);
+
+        SetContentHeight(
+            [in] Int32 height);
+
+        GetContentHeight(
+            [out] Int32* height);
+
+        SetSplitView(
+            [in] IActionBarContainer* splitView);
+
+        GetAnimatedVisibility(
+            [out] Int32* visible);
+
+        AnimateToVisibility(
+            [in] Int32 visibility);
+
+        ShowOverflowMenu(
+            [out] Boolean* menu);
+
+        PostShowOverflowMenu();
+
+        HideOverflowMenu(
+            [out] Boolean* menu);
+
+        IsOverflowMenuShowing(
+            [out] Boolean* showing);
+
+        IsOverflowReserved(
+            [out] Boolean* reserved);
+
+        DismissPopupMenus();
+    }
+
+    }// namespace Internal
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+}

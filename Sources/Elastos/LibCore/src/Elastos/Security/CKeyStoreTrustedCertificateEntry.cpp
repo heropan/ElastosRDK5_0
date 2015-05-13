@@ -1,0 +1,41 @@
+
+#include "CKeyStoreTrustedCertificateEntry.h"
+#include "cmdef.h"
+
+namespace Elastos {
+namespace Security {
+
+
+ECode CKeyStoreTrustedCertificateEntry::GetTrustedCertificate(
+    /* [out] */ Elastos::Security::Cert::ICertificate **cert)
+{
+    VALIDATE_NOT_NULL(cert)
+    *cert = mTrustCertificate;
+    INTERFACE_ADDREF(*cert)
+    return NOERROR;
+}
+
+ECode CKeyStoreTrustedCertificateEntry::ToString(
+    /* [out] */ String *str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("Trusted certificate entry:\n");
+    String cert;
+    mTrustCertificate->ToString(&cert);
+    (*str) += cert;
+    return NOERROR;
+}
+
+ECode CKeyStoreTrustedCertificateEntry::constructor(
+    /* [in] */ Elastos::Security::Cert::ICertificate *trustCertificate)
+{
+    if (trustCertificate == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    mTrustCertificate = trustCertificate;
+    return NOERROR;
+}
+
+}
+}
+

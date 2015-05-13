@@ -1,0 +1,20 @@
+TARGET_NAME= Org.Kxml2.IO
+TARGET_TYPE= eco
+
+INCLUDES += $(MAKEDIR)/../../../../inc/common;
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Kxml2/IO;
+
+CAR_FLAGS += -u
+LUBE_FLAGS += -n -u
+
+SOURCES = Org.Kxml2.IO.car
+SOURCES += CKXmlParser.cpp
+SOURCES += CKXmlSerializer.cpp
+SOURCES += Elastos.Core.cpp
+
+LIBRARIES = $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
+LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+LIBRARIES += -licuuc -lm -lcutils

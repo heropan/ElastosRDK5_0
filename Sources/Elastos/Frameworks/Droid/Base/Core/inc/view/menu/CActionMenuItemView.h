@@ -1,0 +1,105 @@
+
+#ifndef  __CACTIONMENUITEMVIEW_H__
+#define  __CACTIONMENUITEMVIEW_H__
+
+#include "_CActionMenuItemView.h"
+#include "view/menu/ActionMenuItemView.h"
+#include "widget/TextViewMacro.h"
+
+namespace Elastos {
+namespace Droid {
+namespace View {
+namespace Menu {
+
+CarClass(CActionMenuItemView), public ActionMenuItemView
+{
+public:
+    IVIEW_METHODS_DECL()
+
+    IDRAWABLECALLBACK_METHODS_DECL()
+
+    IKEYEVENTCALLBACK_METHODS_DECL()
+
+    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
+
+    ITEXTVIEW_METHODS_DECL()
+
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
+    CARAPI OnPreDraw(
+        /* [out] */ Boolean* result);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI GetItemData(
+        /* [out] */ IMenuItemImpl** itemData);
+
+    CARAPI Initialize(
+        /* [in] */ IMenuItemImpl* itemData,
+        /* [in] */ Int32 menuType);
+
+    CARAPI SetTitle(
+        /* [in] */ ICharSequence* title);
+
+    CARAPI SetCheckable(
+        /* [in] */ Boolean checkable);
+
+    CARAPI SetChecked(
+        /* [in] */ Boolean checked);
+
+    CARAPI SetShortcut(
+        /* [in] */ Boolean showShortcut,
+        /* [in] */ Char32 shortcutKey);
+
+    CARAPI PrefersCondensedTitle(
+        /* [out] */ Boolean* supported);
+
+    CARAPI ShowsIcon(
+        /* [out] */ Boolean* shows);
+
+    CARAPI SetEnabledEx(
+        /* [in] */ Boolean enabled);
+
+    CARAPI NeedsDividerBefore(
+        /* [out] */ Boolean* need);
+
+    CARAPI NeedsDividerAfter(
+        /* [out] */ Boolean* need);
+
+    CARAPI OnLongClick(
+        /* [in] */ IView* v,
+        /* [out] */ Boolean* result);
+
+    CARAPI OnClick(
+        /* [in] */ IView* v);
+
+    CARAPI SetItemInvoker(
+        /* [in] */ IMenuBuilderItemInvoker* invoker);
+
+    CARAPI SetExpandedFormat(
+        /* [in] */ Boolean expandedFormat);
+
+    CARAPI SetIcon(
+        /* [in] */ IDrawable* icon);
+
+    CARAPI HasText(
+        /* [out] */ Boolean* rst);
+};
+
+} // namespace Menu
+} // namespace View
+} // namespace Droid
+} // namespace Elastos
+
+#endif  //__CACTIONMENUITEMVIEW_H__

@@ -1,0 +1,20 @@
+module
+{
+    using interface Libcore.ICU.ILocale;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    interface ILocaleSelectionListener {
+        // You can add any argument if you really need it...
+        OnLocaleSelected(
+            [in] ILocale* locale);
+    }
+
+    } // namespace App
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
+}

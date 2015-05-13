@@ -1,0 +1,341 @@
+module
+{
+    interface Elastos.Droid.View.IKeyEvent;
+    interface Elastos.Droid.View.IMotionEvent;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IMenu;
+    interface Elastos.Droid.View.IMenuItem;
+    interface Elastos.Droid.View.IWindowManagerLayoutParams;
+    interface Elastos.Droid.View.IActionModeCallback;
+    interface Elastos.Droid.View.IActionMode;
+    interface Elastos.Droid.View.IWindowManager;
+    interface Elastos.Droid.View.IWindow;
+    interface Elastos.Droid.View.IViewGroupLayoutParams;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Os.IBinder;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Service {
+    namespace Dreams {
+
+    interface IDreamService extends Elastos.Droid.App.IService // implements Window.Callback
+    {
+
+        /**
+         * The name of the dream manager service.
+         * @hide
+         */
+        const String DREAM_SERVICE = "dreams";
+
+        /**
+         * The {@link Intent} that must be declared as handled by the service.
+         */
+        const String SERVICE_INTERFACE = "android.service.dreams.DreamService";
+
+        /**
+         * Name under which a Dream publishes information about itself.
+         * This meta-data must reference an XML resource containing
+         * a <code>&lt;{@link android.R.styleable#Dream dream}&gt;</code>
+         * tag.
+         */
+        const String DREAM_META_DATA = "android.service.dream";
+
+        /**
+         * @hide
+         */
+        SetDebug(
+            [in] Boolean dbg);
+
+        // begin Window.Callback methods
+        /** {@inheritDoc} */
+        DispatchKeyEvent(
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /** {@inheritDoc} */
+        DispatchKeyShortcutEvent(
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /** {@inheritDoc} */
+        DispatchTouchEvent(
+            [in] IMotionEvent* event,
+            [out] Boolean* result);
+
+        /** {@inheritDoc} */
+        DispatchTrackballEvent(
+            [in] IMotionEvent* event,
+            [out] Boolean* result);
+
+        /** {@inheritDoc} */
+        DispatchGenericMotionEvent(
+            [in] IMotionEvent* event,
+            [out] Boolean* result);
+
+        /** {@inheritDoc} */
+        DispatchPopulateAccessibilityEvent(
+            [in] IAccessibilityEvent* event,
+            [out] Boolean* result);
+
+        /** {@inheritDoc} */
+        OnCreatePanelView(
+            [in] Int32 featureId,
+            [out] IView** result);
+
+        /** {@inheritDoc} */
+        OnCreatePanelMenu(
+            [in] Int32 featureId,
+            [in] IMenu* menu,
+            [out] Boolean* result);
+
+        /** {@inheritDoc} */
+        OnPreparePanel(
+            [in] Int32 featureId,
+            [in] IView* view,
+            [in] IMenu* menu,
+            [out] Boolean* result);
+
+        /** {@inheritDoc} */
+        OnMenuOpened(
+            [in] Int32 featureId,
+            [in] IMenu* menu,
+            [out] Boolean* result);
+
+        /** {@inheritDoc} */
+        OnMenuItemSelected(
+            [in] Int32 featureId,
+            [in] IMenuItem* item,
+            [out] Boolean* result);
+
+        /** {@inheritDoc} */
+        OnWindowAttributesChanged(
+            [in] IWindowManagerLayoutParams* attrs);
+
+        /** {@inheritDoc} */
+        OnContentChanged();
+
+        /** {@inheritDoc} */
+        OnWindowFocusChanged(
+            [in] Boolean hasFocus);
+
+        /** {@inheritDoc} */
+        OnAttachedToWindow();
+
+        /** {@inheritDoc} */
+        OnDetachedFromWindow();
+
+        /** {@inheritDoc} */
+        OnPanelClosed(
+            [in] Int32 featureId,
+            [in] IMenu* menu);
+
+        /** {@inheritDoc} */
+        OnSearchRequested(
+            [out] Boolean* result);
+
+        /** {@inheritDoc} */
+        OnWindowStartingActionMode(
+            [in] IActionModeCallback* mCallback,
+            [out] IActionMode** result);
+
+        /** {@inheritDoc} */
+        OnActionModeStarted(
+            [in] IActionMode* mode);
+
+        /** {@inheritDoc} */
+        OnActionModeFinished(
+            [in] IActionMode* mode);
+
+        // end Window.Callback methods
+
+        // begin public api
+        /**
+         * Retrieves the current {@link android.view.WindowManager} for the dream.
+         * Behaves similarly to {@link android.app.Activity#getWindowManager()}.
+         *
+         * @return The current window manager, or null if the dream is not started.
+         */
+        GetWindowManager(
+            [out] IWindowManager** result);
+
+        /**
+         * Retrieves the current {@link android.view.Window} for the dream.
+         * Behaves similarly to {@link android.app.Activity#getWindow()}.
+         *
+         * @return The current window, or null if the dream is not started.
+         */
+        GetWindow(
+            [out] IWindow** result);
+
+       /**
+         * Inflates a layout resource and set it to be the content view for this Dream.
+         * Behaves similarly to {@link android.app.Activity#setContentView(int)}.
+         *
+         * <p>Note: Requires a window, do not call before {@link #onAttachedToWindow()}</p>
+         *
+         * @param layoutResID Resource ID to be inflated.
+         *
+         * @see #setContentView(android.view.View)
+         * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
+         */
+        SetContentView(
+            [in] Int32 layoutResID);
+
+        /**
+         * Sets a view to be the content view for this Dream.
+         * Behaves similarly to {@link android.app.Activity#setContentView(android.view.View)} in an activity,
+         * including using {@link ViewGroup.LayoutParams#MATCH_PARENT} as the layout height and width of the view.
+         *
+         * <p>Note: This requires a window, so you should usually call it during
+         * {@link #onAttachedToWindow()} and never earlier (you <strong>cannot</strong> call it
+         * during {@link #onCreate}).</p>
+         *
+         * @see #setContentView(int)
+         * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
+         */
+        SetContentViewEx(
+            [in] IView* view);
+
+        /**
+         * Sets a view to be the content view for this Dream.
+         * Behaves similarly to
+         * {@link android.app.Activity#setContentView(android.view.View, android.view.ViewGroup.LayoutParams)}
+         * in an activity.
+         *
+         * <p>Note: This requires a window, so you should usually call it during
+         * {@link #onAttachedToWindow()} and never earlier (you <strong>cannot</strong> call it
+         * during {@link #onCreate}).</p>
+         *
+         * @param view The desired content to display.
+         * @param params Layout parameters for the view.
+         *
+         * @see #setContentView(android.view.View)
+         * @see #setContentView(int)
+         */
+        SetContentViewEx2(
+            [in] IView* view,
+            [in] IViewGroupLayoutParams* params);
+
+        /**
+         * Adds a view to the Dream's window, leaving other content views in place.
+         *
+         * <p>Note: Requires a window, do not call before {@link #onAttachedToWindow()}</p>
+         *
+         * @param view The desired content to display.
+         * @param params Layout parameters for the view.
+         */
+        AddContentView(
+            [in] IView* view,
+            [in] IViewGroupLayoutParams* params);
+
+        /**
+         * Finds a view that was identified by the id attribute from the XML that
+         * was processed in {@link #onCreate}.
+         *
+         * <p>Note: Requires a window, do not call before {@link #onAttachedToWindow()}</p>
+         *
+         * @return The view if found or null otherwise.
+         */
+        FindViewById(
+            [in] Int32 id,
+            [out] IView** result);
+
+        /**
+         * Marks this dream as interactive to receive input events.
+         *
+         * <p>Non-interactive dreams (default) will dismiss on the first input event.</p>
+         *
+         * <p>Interactive dreams should call {@link #finish()} to dismiss themselves.</p>
+         *
+         * @param interactive True if this dream will handle input events.
+         */
+        SetInteractive(
+            [in] Boolean interactive);
+
+        /**
+         * Returns whether or not this dream is interactive.  Defaults to false.
+         *
+         * @see #setInteractive(boolean)
+         */
+        IsInteractive(
+            [out] Boolean* result);
+
+        /**
+         * Sets View.SYSTEM_UI_FLAG_LOW_PROFILE on the content view.
+         *
+         * @param lowProfile True to set View.SYSTEM_UI_FLAG_LOW_PROFILE
+         * @hide There is no reason to have this -- dreams can set this flag
+         * on their own content view, and from there can actually do the
+         * correct interactions with it (seeing when it is cleared etc).
+         */
+        SetLowProfile(
+            [in] Boolean lowProfile);
+
+        /**
+         * Returns whether or not this dream is in low profile mode. Defaults to true.
+         *
+         * @see #setLowProfile(boolean)
+         * @hide
+         */
+        IsLowProfile(
+            [out] Boolean* result);
+
+        /**
+         * Controls {@link android.view.WindowManager.LayoutParams#FLAG_FULLSCREEN}
+         * on the dream's window.
+         *
+         * @param fullscreen If true, the fullscreen flag will be set; else it
+         * will be cleared.
+         */
+        SetFullscreen(
+            [in] Boolean fullscreen);
+
+        /**
+         * Returns whether or not this dream is in fullscreen mode. Defaults to false.
+         *
+         * @see #setFullscreen(boolean)
+         */
+        IsFullscreen(
+            [out] Boolean* result);
+
+        /**
+         * Marks this dream as keeping the screen bright while dreaming.
+         *
+         * @param screenBright True to keep the screen bright while dreaming.
+         */
+        SetScreenBright(
+            [in] Boolean screenBright);
+
+        /**
+         * Returns whether or not this dream keeps the screen bright while dreaming. Defaults to false,
+         * allowing the screen to dim if necessary.
+         *
+         * @see #setScreenBright(boolean)
+         */
+        IsScreenBright(
+            [out] Boolean* result);
+
+        /**
+         * Called when the dream's window has been created and is visible and animation may now begin.
+         */
+        OnDreamingStarted();
+
+        /**
+         * Called when this Dream is stopped, either by external request or by calling finish(),
+         * before the window has been removed.
+         */
+        OnDreamingStopped();
+
+        /**
+         * Stops the dream, detaches from the window, and wakes up.
+         */
+        Finish();
+    }
+
+    } // namespace Dreams
+    } // namespace Service
+    } // namepsace Droid
+    } // namespace Elastos
+}

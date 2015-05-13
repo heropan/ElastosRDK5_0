@@ -1,0 +1,52 @@
+
+module
+{
+    interface Elastos.Security.Cert.IPolicyNode;
+    interface Elastos.Security.Cert.ICertPathValidatorResult;
+    interface Elastos.Security.IPublicKey;
+
+    namespace Elastos {
+    namespace Security {
+    namespace Cert {
+
+    interface IPKIXCertPathValidatorResult extends ICertPathValidatorResult {
+        /**
+         * Returns the valid policy tree from the validation.
+         *
+         * @return the valid policy tree from the validation.
+         */
+        GetPolicyTree(
+            [out] IPolicyNode** policyTree);
+
+        /**
+         * Returns the subject public key from the validation.
+         *
+         * @return the subject public key from the validation.
+         */
+        GetPublicKey(
+            [out] IPublicKey** key);
+
+        /**
+         * Returns the trust anchor describing the certification authority (CA) that
+         * served as trust anchor for this certification path.
+         *
+         * @return the trust anchor.
+         */
+        GetTrustAnchor(
+            [out] ITrustAnchor** anchor);
+
+        /**
+         * Returns a string representation for this {@code
+         * PKIXCertPathValidatorResult} instance.
+         *
+         * @return a string representation for this {@code
+         *         PKIXCertPathValidatorResult} instance.
+         */
+        ToString(
+            [out] String* str);
+    }
+
+    } // namespace Cert
+    } // namespace Security
+    } // namespace Elastos
+}

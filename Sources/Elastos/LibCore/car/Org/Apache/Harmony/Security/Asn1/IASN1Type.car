@@ -1,0 +1,82 @@
+
+module
+{
+    using interface Elastos.IO.IInputStream;
+
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Security {
+    namespace Asn1 {
+
+    [deprecated]
+    interface IASN1Type extends IASN1Constants {
+        /** Integer representation of primitive identifier. */
+        GetId(
+            [out] Int32* id);
+
+        /** Integer representation of constructed identifier. */
+        GetConstrId(
+            [out] Int32* constrId);
+
+        Decode(
+            [in] ArrayOf<Byte>* encoded,
+            [out] IInterface** object);
+
+        DecodeEx(
+            [in] ArrayOf<Byte>* encoded,
+            [in] Int32 offset,
+            [in] Int32 encodingLen,
+            [out] IInterface** object);
+
+        DecodeEx2(
+            [in] IInputStream* is,
+            [out] IInterface** object);
+
+        Verify(
+            [in] ArrayOf<Byte>* encoded);
+
+        VerifyEx(
+            [in] IInputStream* is);
+
+        Encode(
+            [in] IInterface* object,
+            [out, callee] ArrayOf<Byte>* encode);
+
+        DecodeEx3(
+            [in] IBerInputStream* bis,
+            [out] IInterface** object);
+
+        /**
+         * Tests provided identifier.
+         *
+         * @param identifier identifier to be verified
+         * @return true if identifier is associated with this ASN.1 type
+        */
+        CheckTag(
+            [in] Int32 identifier,
+            [out] Boolean* checkTag);
+
+        EncodeASN(
+            [in] IBerOutputStream* bos);
+
+        EncodeContent(
+            [in] IBerOutputStream* bos);
+
+        SetEncodingContent(
+            [in] IBerOutputStream* bos);
+
+        GetEncodedLength(
+            [in] IBerOutputStream* bos,
+            [out] Int32* length);
+
+        ToString(
+            [out] String* result);
+    }
+
+    } // namespace Asn1
+    } // namespace Security
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

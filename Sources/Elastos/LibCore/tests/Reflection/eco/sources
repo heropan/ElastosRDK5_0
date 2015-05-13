@@ -1,0 +1,16 @@
+TARGET_NAME= Reflection
+TARGET_TYPE= eco
+
+IMPORTS = Elastos.Core.eco
+
+CAR_FLAGS += -u
+LUBE_FLAGS += -n -u
+
+SOURCES = Reflection.car
+SOURCES += CFooBar.cpp
+
+LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+LIBRARIES += -llog -lcutils

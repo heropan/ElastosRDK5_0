@@ -1,0 +1,77 @@
+
+module
+{
+    interface Elastos.Droid.Graphics.IRect;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+
+    [local, deprecated]
+    interface IWindowInfo {
+        SetToken(
+            [in] IInterface* token);
+
+        SetFrame(
+            [in] IRect* frame);
+
+        SetType(
+            [in] Int32 type);
+
+        SetDisplayId(
+            [in] Int32 displayId);
+
+        SetCompatibilityScale(
+            [in] Float compatibilityScale);
+
+        SetVisible(
+            [in] Boolean visible);
+
+        SetLayer(
+            [in] Int32 layer);
+
+        SetTouchableRegion(
+            [in] IRect* touchableRegion);
+
+        GetToken(
+            [out] IInterface** token);
+
+        GetDisplayId(
+            [out] Int32* id);
+
+        GetType(
+            [out] Int32* type);
+
+        GetCompatibilityScale(
+            [out] Float* compatibilityScale);
+
+        GetVisible(
+            [out] Boolean* visible);
+
+        GetLayer(
+            [out] Int32* layer);
+
+
+        GetFrame(
+            [out] IRect** frame);
+
+        GetTouchableRegion(
+            [out] IRect** region);
+
+        Recycle();
+    }
+
+    [local]
+    interface IWindowInfoHelper {
+        Obtain(
+            [out] IWindowInfo** outInfo);
+
+        ObtainEx(
+            [in] IWindowInfo* other,
+            [out] IWindowInfo** outInfo);
+    }
+
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

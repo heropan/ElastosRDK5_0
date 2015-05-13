@@ -1,0 +1,17 @@
+
+module
+{
+    using interface Elastos.IO.IInputStream;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+    interface IResampleInputStream extends Elastos.IO.IInputStream
+    {
+    }
+
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
+}

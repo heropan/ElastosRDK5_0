@@ -1,0 +1,47 @@
+
+module
+{
+    using interface Elastos.Security.IService;
+    using interface Elastos.Utility.IList;
+    using interface Elastos.Security.IProvider;
+
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Security {
+    namespace Fortress {
+
+    interface ISecurityAccess {
+        /**
+         * Access to Security.renumProviders()
+         *
+         */
+        RenumProviders();
+
+        /**
+         * Access to Service.getAliases()
+         * @param s
+         * @return
+         */
+        GetAliases(
+            [in] IService* s,
+            [out] IList** aliases);
+
+        /**
+         * Access to Provider.getService(String type)
+         * @param p
+         * @param type
+         * @return
+         */
+        GetService(
+            [in] IProvider* p,
+            [in] String type,
+            [out] IService** service);
+    }
+
+    } // namespace Fortress
+    } // namespace Security
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

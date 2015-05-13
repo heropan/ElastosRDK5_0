@@ -1,0 +1,32 @@
+module
+{
+    interface Elastos.Droid.Graphics.IRect;
+    
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+    namespace Videoeditor {
+    
+    interface IEffectKenBurns extends IEffect {
+        /**
+         * Get the start rectangle.
+         *
+         * @return The start rectangle
+         */
+        GetStartRect(
+            [out] IRect** result);
+
+        /**
+         * Get the end rectangle.
+         *
+         * @return The end rectangle
+         */
+        GetEndRect(
+            [out] IRect** result);
+
+    }
+    } // namespace videoeditor {
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
+}

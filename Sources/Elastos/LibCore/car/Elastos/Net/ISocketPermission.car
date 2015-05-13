@@ -1,0 +1,13 @@
+
+module
+{
+    namespace Elastos{
+    namespace Net{
+
+    interface ISocketPermission extends IPermission {
+    }
+
+    } // namespace Net
+    } // namespace Elastos
+
+}

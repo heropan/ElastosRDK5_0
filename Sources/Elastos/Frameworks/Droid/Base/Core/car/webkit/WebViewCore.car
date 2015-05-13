@@ -1,0 +1,77 @@
+
+module
+{
+    interface Elastos.Droid.Os.IMessage;
+    interface Elastos.Droid.Webkit.IWebSettingsClassic;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+    /**
+     * @hide
+     */
+    interface IWebViewCoreEventHub /*extends WebViewInputDispatcher.WebKitCallbacks*/ {
+
+        const Int32 MESSAGE_RELAY = 125;
+    }
+
+    interface IWebViewCoreHelper {
+        /**
+         * Causes all timers to pause. This applies to all WebViews in the current
+         * app process.
+         */
+        PauseTimers();
+
+        /**
+         * Resume all timers. This applies to all WebViews in the current process.
+         */
+        ResumeTimers();
+    }
+
+
+    /**
+     * @hide
+     */
+    interface IWebViewCore {
+//        GetInputDispatcherCallbacks(
+//            [out] IWebKitCallbacks** callBack);
+
+        //-------------------------------------------------------------------------
+        // Common methods
+        //-------------------------------------------------------------------------
+
+        GetSettings(
+            [out] IWebSettingsClassic** settings);
+
+        /**
+         * @hide
+         */
+        SendMessage(
+            [in] IMessage* msg);
+
+        SetMockGeolocationPosition(
+            [in] Double latitude,
+            [in] Double longitude,
+            [in] Double accuracy);
+
+        SetMockGeolocationError(
+            [in] Int32 code,
+            [in] String message);
+
+        SetMockGeolocationPermission(
+            [in] Boolean allow);
+
+        SetMockDeviceOrientation(
+            [in] Boolean canProvideAlpha,
+            [in] Double alpha,
+            [in] Boolean canProvideBeta,
+            [in] Double beta,
+            [in] Boolean canProvideGamma,
+            [in] Double gamma);
+    }
+
+    } // namespace Webkit
+    } // namepsace Droid
+    } // namespace Elastos
+}

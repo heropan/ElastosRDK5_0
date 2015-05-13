@@ -1,0 +1,33 @@
+module
+{
+
+    interface Elastos.Droid.Content.IDialogInterface;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.View.Menu.IMenuPresenterCallback;
+    interface Elastos.Droid.View.Menu.IMenuBuilder;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Menu {
+
+        /**
+         * @hide
+         */
+        [local]
+        interface IMenuDialogHelper {
+
+            Show(
+                [in] IBinder* windowToken);
+
+            SetPresenterCallback(
+                [in] IMenuPresenterCallback* cb);
+
+            Dismiss();
+        }
+
+    } // namespace Menu
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

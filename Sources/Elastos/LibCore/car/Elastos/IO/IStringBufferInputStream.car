@@ -1,0 +1,15 @@
+
+module
+{
+    namespace Elastos {
+    namespace IO {
+    /**
+     * A specialized InputStream that reads bytes from a String in a sequential manner.
+     * @implements Elastos.IO.IInputStream
+     */
+    interface IStringBufferInputStream extends IInputStream {
+    }
+
+    } // namespace IO
+    } // namespace Elastos
+}

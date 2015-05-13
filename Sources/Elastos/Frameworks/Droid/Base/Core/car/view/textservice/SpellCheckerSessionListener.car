@@ -1,0 +1,29 @@
+
+module
+{
+    interface Elastos.Droid.View.Textservice.ISuggestionsInfo;
+    interface Elastos.Droid.View.Textservice.ISentenceSuggestionsInfo;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Textservice {
+
+    /**
+     *
+     * @hide
+     */
+    [oneway]
+    interface ISpellCheckerSessionListener {
+        OnGetSuggestions(
+            [in] ArrayOf<ISuggestionsInfo*> results);
+
+        OnGetSentenceSuggestions(
+            [in] ArrayOf<ISentenceSuggestionsInfo*> result);
+    }
+
+    } // namespace Textservice
+    } // namespace View
+    } // namespace Droid
+    } // namespace Elastos
+}

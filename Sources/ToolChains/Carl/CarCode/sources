@@ -1,0 +1,17 @@
+#==========================================================================
+# Copyright (c) 2000-2009,  Elastos, Inc.  All Rights Reserved.
+#==========================================================================
+
+TARGET_NAME= carcode
+TARGET_TYPE = exe
+
+SOURCES = carcode.cpp
+
+LIBRARIES = ../ElCar/Carc/clsbase/clsbase.lib
+LIBRARIES += ../ElCar/Carc/clsutil/clsutil.lib
+ifeq "$(XDK_TARGET_PLATFORM)" "linux"
+LIBRARIES += -lz
+else
+LIBRARIES += $(XDK_USER_LIB)/libz.lib
+endif
+LIBRARIES += -lstdc++

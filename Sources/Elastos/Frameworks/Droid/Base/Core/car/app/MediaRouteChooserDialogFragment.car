@@ -1,0 +1,41 @@
+module
+{
+
+    interface Elastos.Droid.App.IDialogFragment;
+    interface Elastos.Droid.View.IViewOnClickListener;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    interface ILauncherListener;
+
+    interface IMediaRouteChooserDialogFragment {
+        const String FRAGMENT_TAG = "elastos:MediaRouteChooserDialogFragment";
+
+        SetLauncherListener(
+            [in] ILauncherListener* listener);
+
+        SetExtendedSettingsClickListener(
+            [in] IViewOnClickListener* listener);
+
+        SetRouteTypes(
+            [in] Int32 types);
+    }
+
+    /**
+     * Implemented by the MediaRouteButton that launched this dialog
+     */
+    [local]
+    interface ILauncherListener {
+        OnDetached(
+            [in] IMediaRouteChooserDialogFragment* detachedFragment);
+    }
+
+    } //namespace App
+    } //namespace Internal
+    } //namespace Droid
+    } //namespace Elastos
+
+}

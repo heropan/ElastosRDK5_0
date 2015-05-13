@@ -1,0 +1,21 @@
+module
+{
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IMotionEvent;
+    interface Elastos.Droid.SystemUI.Recent.IRecentsCallback;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace Recent {
+
+    interface IRecentsVerticalScrollView extends Elastos.Droid.Widget.IScrollView {
+        DismissChild(
+            [in] IView* v);
+    }
+
+    } // namespace Recent
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

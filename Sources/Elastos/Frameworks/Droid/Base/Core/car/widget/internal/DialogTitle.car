@@ -1,0 +1,24 @@
+
+module
+{
+    interface Elastos.Droid.Widget.ITextView;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+    namespace Internal{
+
+    /**
+     * Used by dialogs to change the font size and number of lines to try to fit
+     * the text to the available space.
+     */
+    interface IDialogTitle extends Elastos.Droid.Widget.ITextView
+    {
+    }
+
+    }// namespace Internal
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+
+}

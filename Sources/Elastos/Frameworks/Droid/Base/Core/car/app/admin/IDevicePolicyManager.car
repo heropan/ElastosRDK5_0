@@ -1,0 +1,272 @@
+module
+{
+    interface Elastos.Droid.Os.IRemoteCallback;
+    interface Elastos.Droid.Content.IComponentName;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+    namespace Admin {
+
+    /**
+     *Public interface for managing policies enforced on a device. Most clients of this
+     * class must have published a DeviceAdminReceiver that the user has currently enabled.
+     *
+     * @sa DeviceAdminReceiver
+     * <p>
+     * <strong>Developer Guides</strong>
+     * <p>
+     * For more information about managing policies for device adminstration, read the Device Administration developer guide.
+     *
+     * @sa Administration
+     */
+    [deprecated]
+    interface IIDevicePolicyManager {
+        SetPasswordQuality(
+            [in] IComponentName* who,
+            [in] Int32 quality,
+            [in] Int32 userHandle);
+
+        GetPasswordQuality(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        SetPasswordMinimumLength(
+            [in] IComponentName* who,
+            [in] Int32 length,
+            [in] Int32 userHandle);
+
+        GetPasswordMinimumLength(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        SetPasswordMinimumUpperCase(
+            [in] IComponentName* who,
+            [in] Int32 length,
+            [in] Int32 userHandle);
+
+        GetPasswordMinimumUpperCase(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        SetPasswordMinimumLowerCase(
+            [in] IComponentName* who,
+            [in] Int32 length,
+            [in] Int32 userHandle);
+
+        GetPasswordMinimumLowerCase(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        SetPasswordMinimumLetters(
+            [in] IComponentName* who,
+            [in] Int32 length,
+            [in] Int32 userHandle);
+
+        GetPasswordMinimumLetters(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        SetPasswordMinimumNumeric(
+            [in] IComponentName* who,
+            [in] Int32 length,
+            [in] Int32 userHandle);
+
+        GetPasswordMinimumNumeric(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        SetPasswordMinimumSymbols(
+            [in] IComponentName* who,
+            [in] Int32 length,
+            [in] Int32 userHandle);
+
+        GetPasswordMinimumSymbols(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        SetPasswordMinimumNonLetter(
+            [in] IComponentName* who,
+            [in] Int32 length,
+            [in] Int32 userHandle);
+
+        GetPasswordMinimumNonLetter(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        SetPasswordHistoryLength(
+            [in] IComponentName* who,
+            [in] Int32 length,
+            [in] Int32 userHandle);
+
+        GetPasswordHistoryLength(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        SetPasswordExpirationTimeout(
+            [in] IComponentName* who,
+            [in] Int64 expiration,
+            [in] Int32 userHandle);
+
+        GetPasswordExpirationTimeout(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int64* password);
+
+        GetPasswordExpiration(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int64* password);
+
+        IsActivePasswordSufficient(
+            [in] Int32 userHandle,
+            [out] Boolean* result);
+
+        GetCurrentFailedPasswordAttempts(
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        SetMaximumFailedPasswordsForWipe(
+            [in] IComponentName* admin,
+            [in] Int32 num,
+            [in] Int32 userHandle);
+
+        GetMaximumFailedPasswordsForWipe(
+            [in] IComponentName* admin,
+            [in] Int32 userHandle,
+            [out] Int32* password);
+
+        ResetPassword(
+            [in] String password,
+            [in] Int32 flags,
+            [in] Int32 userHandle,
+            [out] Boolean* result);
+
+        SetMaximumTimeToLock(
+            [in] IComponentName* who,
+            [in] Int64 timeMs,
+            [in] Int32 userHandle);
+
+        GetMaximumTimeToLock(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int64* time);
+
+        LockNow();
+
+        WipeData(
+            [in] Int32 flags,
+            [in] Int32 userHandle);
+
+        SetGlobalProxy(
+            [in] IComponentName* admin,
+            [in] String proxySpec,
+            [in] String exclusionList,
+            [in] Int32 userHandle,
+            [out] IComponentName** component);
+
+        GetGlobalProxyAdmin(
+            [in] Int32 userHandle,
+            [out] IComponentName** component);
+
+        SetStorageEncryption(
+            [in] IComponentName* who,
+            [in] Boolean encrypt,
+            [in] Int32 userHandle,
+            [out] Int32* value);
+
+        GetStorageEncryption(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Boolean* result);
+
+        GetStorageEncryptionStatus(
+            [in] Int32 userHandle,
+            [out] Int32* st);
+
+        SetCameraDisabled(
+            [in] IComponentName* who,
+            [in] Boolean disabled,
+            [in] Int32 userHandle);
+
+        GetCameraDisabled(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Boolean* result);
+
+        SetKeyguardDisabledFeatures(
+            [in] IComponentName* who,
+            [in] Int32 which,
+            [in] Int32 userHandle);
+
+        GetKeyguardDisabledFeatures(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int32* features);
+
+        SetActiveAdmin(
+            [in] IComponentName* policyReceiver,
+            [in] Boolean refreshing,
+            [in] Int32 userHandle);
+
+        IsAdminActive(
+            [in] IComponentName* policyReceiver,
+            [in] Int32 userHandle,
+            [out] Boolean* isActive);
+
+        GetActiveAdmins(
+            [in] Int32 userHandle,
+            [out] IObjectContainer** admins);
+
+        PackageHasActiveAdmins(
+            [in] String packageName,
+            [in] Int32 userHandle,
+            [out] Boolean* hasActive);
+
+        GetRemoveWarning(
+            [in] IComponentName* policyReceiver,
+            [in] IRemoteCallback* result,
+            [in] Int32 userHandle);
+
+        RemoveActiveAdmin(
+            [in] IComponentName* policyReceiver,
+            [in] Int32 userHandle);
+
+        HasGrantedPolicy(
+            [in] IComponentName* policyReceiver,
+            [in] Int32 usesPolicy,
+            [in] Int32 userHandle,
+            [out] Boolean* hasGrant);
+
+        SetActivePasswordState(
+            [in] Int32 quality,
+            [in] Int32 length,
+            [in] Int32 letters,
+            [in] Int32 uppercase,
+            [in] Int32 lowercase,
+            [in] Int32 numbers,
+            [in] Int32 symbols,
+            [in] Int32 nonletter,
+            [in] Int32 userHandle);
+
+        ReportFailedPasswordAttempt(
+            [in] Int32 userHandle);
+
+        ReportSuccessfulPasswordAttempt(
+            [in] Int32 userHandle);
+    }
+
+    } // namespace Admin
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

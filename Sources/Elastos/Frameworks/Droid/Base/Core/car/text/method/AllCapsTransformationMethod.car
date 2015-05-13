@@ -1,0 +1,23 @@
+module
+{
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Text.Method.ITransformationMethod2;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Method {
+
+    /**
+     * Transforms source text into an ALL CAPS string, locale-aware.
+     *
+     * @hide
+     */
+    interface IAllCapsTransformationMethod extends ITransformationMethod2 {}
+
+    }//namespace Method
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

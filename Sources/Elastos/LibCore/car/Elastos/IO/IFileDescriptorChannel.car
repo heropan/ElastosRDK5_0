@@ -1,0 +1,17 @@
+
+module
+{
+    using interface Elastos.Core.ICharSequence;
+
+    namespace Elastos {
+    namespace IO {
+
+    interface IFileDescriptorChannel
+    {
+        GetFD(
+            [out] IFileDescriptor** desc);
+    }
+
+    } // namespace IO
+    } // namespace Elastos
+}

@@ -1,0 +1,13 @@
+module
+{
+    using interface Elastos.Utility.IDate;
+
+    namespace Elastos {
+    namespace Sql {
+
+    interface IDate extends Elastos.Utility.IDate{
+    }
+
+    } // namespace Sql
+    } // namespace Elastos
+}

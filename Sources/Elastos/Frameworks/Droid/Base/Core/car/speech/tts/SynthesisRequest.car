@@ -1,0 +1,75 @@
+module
+{
+    interface Elastos.Droid.Os.IBundle;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Speech {
+    namespace Tts {
+
+    /**
+     * Contains data required by engines to synthesize speech. This data is :
+     * <ul>
+     *   <li>The text to synthesize</li>
+     *   <li>The synthesis locale, represented as a language, country and a variant.
+     *   The language is an ISO 639-3 letter language code, and the country is an
+     *   ISO 3166 alpha 3 code. The variant is not specified.</li>
+     *   <li>The synthesis speech rate, with 100 being the normal, and
+     *   higher values representing higher speech rates.</li>
+     *   <li>The voice pitch, with 100 being the default pitch.</li>
+     * </ul>
+     *
+     * Any additional parameters sent to the text to speech service are passed in
+     * uninterpreted, see the @code{params} argument in {@link TextToSpeech#speak}
+     * and {@link TextToSpeech#synthesizeToFile}.
+     */
+    interface ISynthesisRequest {
+        /**
+         * Gets the text which should be synthesized.
+         */
+        GetText(
+            [out] String* ret);
+
+        /**
+         * Gets the ISO 3-letter language code for the language to use.
+         */
+        GetLanguage(
+            [out] String* ret);
+
+        /**
+         * Gets the ISO 3-letter country code for the language to use.
+         */
+        GetCountry(
+            [out] String* ret);
+
+        /**
+         * Gets the language variant to use.
+         */
+        GetVariant(
+            [out] String* ret);
+
+        /**
+         * Gets the speech rate to use. The normal rate is 100.
+         */
+        GetSpeechRate(
+            [out] Int32* ret);
+
+        /**
+         * Gets the pitch to use. The normal pitch is 100.
+         */
+        GetPitch(
+            [out] Int32* ret);
+
+        /**
+         * Gets the additional params, if any.
+         */
+        GetParams(
+            [out] IBundle** ret);
+    }
+
+    }//namespace Tts
+    }//namespace Speech
+    }//namespace Droid
+    }//namespace Elastos
+
+}

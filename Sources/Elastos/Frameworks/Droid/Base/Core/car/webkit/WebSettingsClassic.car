@@ -1,0 +1,204 @@
+
+module
+{
+    using interface Libcore.ICU.ILocale;
+
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Webkit.IAutoFillProfile;
+    interface Elastos.Droid.Webkit.IWebStorage;
+    interface Elastos.Droid.Webkit.IWebSettings;
+    interface Elastos.Droid.Webkit.IWebSettingsClassic;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+    // AutoFill Profile data
+    interface IAutoFillProfile {
+        GetUniqueId(
+            [out] Int32* id);
+
+        GetFullName(
+            [out] String* fullName);
+
+        GetEmailAddress(
+            [out] String* address);
+
+        GetCompanyName(
+            [out] String* companyName);
+
+        GetAddressLine1(
+            [out] String* addressLine1);
+
+        GetAddressLine2(
+            [out] String* addressLine2);
+
+        GetCity(
+            [out] String* city);
+
+        GetState(
+            [out] String* state);
+
+        GetZipCode(
+            [out] String* zipCode);
+
+        GetCountry(
+            [out] String* country);
+
+        GetPhoneNumber(
+            [out] String* phoneNumber);
+    }
+
+    /**
+     * WebSettings implementation for the WebViewClassic implementation of WebView.
+     * @hide
+     */
+    interface IWebSettingsClassic extends IWebSettings {
+
+        /**
+         * Set the double-tap zoom of the page in percent. Default is 100.
+         * @param doubleTapZoom A percent value for increasing or decreasing the double-tap zoom.
+         */
+        SetDoubleTapZoom(
+            [in] Int32 doubleTapZoom);
+
+        /**
+         * Get the double-tap zoom of the page in percent.
+         * @return A percent value describing the double-tap zoom.
+         */
+        GetDoubleTapZoom(
+            [out] Int32* zoom);
+
+        /**
+         * Set the number of pages cached by the WebKit for the history navigation.
+         * @param size A non-negative integer between 0 (no cache) and 20 (max).
+         */
+        SetPageCacheCapacity(
+            [in] Int32 size);
+
+        /**
+         * Tell the WebView to use Skia's hardware accelerated rendering path
+         * @param flag True if the WebView should use Skia's hw-accel path
+         */
+        SetHardwareAccelSkiaEnabled(
+            [in] Boolean flag);
+
+        /**
+         * @return True if the WebView is using hardware accelerated skia
+         */
+        GetHardwareAccelSkiaEnabled(
+            [out] Boolean* enabled);
+
+        /**
+         * Tell the WebView to show the visual indicator
+         * @param flag True if the WebView should show the visual indicator
+         */
+        SetShowVisualIndicator(
+            [in] Boolean flag);
+
+        /**
+         * @return True if the WebView is showing the visual indicator
+         */
+        GetShowVisualIndicator(
+            [out] Boolean* result);
+
+        /**
+         * Tell the WebView to enable WebWorkers API.
+         * @param flag True if the WebView should enable WebWorkers.
+         * Note that this flag only affects V8. JSC does not have
+         * an equivalent setting.
+         */
+        SetWorkersEnabled(
+            [in] Boolean flag);
+
+        /**
+         * Sets whether XSS Auditor is enabled.
+         * Only used by LayoutTestController.
+         * @param flag Whether XSS Auditor should be enabled.
+         */
+        SetXSSAuditorEnabled(
+            [in] Boolean flag);
+
+        /**
+         * Enables/disables HTML5 link "prefetch" parameter.
+         */
+        SetLinkPrefetchEnabled(
+            [in] Boolean flag);
+
+        /**
+         * If set, webkit alternately shrinks and expands images viewed outside
+         * of an HTML page to fit the screen. This conflicts with attempts by
+         * the UI to zoom in and out of an image, so it is set false by default.
+         * @param shrink Set true to let webkit shrink the standalone image to fit.
+         */
+        SetShrinksStandaloneImagesToFit(
+            [in] Boolean shrink);
+
+        /**
+         * Specify the maximum decoded image size. The default is
+         * 2 megs for small memory devices and 8 megs for large memory devices.
+         * @param size The maximum decoded size, or zero to set to the default.
+         */
+        SetMaximumDecodedImageSize(
+            [in] Int64 size);
+
+        /**
+         * Returns whether the viewport metatag can disable zooming
+         */
+        ForceUserScalable(
+            [out] Boolean* flag);
+
+        /**
+         * Sets whether viewport metatag can disable zooming.
+         * @param flag Whether or not to forceably enable user scalable.
+         */
+        SetForceUserScalable(
+            [in] Boolean flag);
+
+        SetAutoFillEnabled(
+            [in] Boolean enabled);
+
+        GetAutoFillEnabled(
+            [out] Boolean* enabled);
+
+        SetAutoFillProfile(
+            [in] IAutoFillProfile* profile);
+
+        GetAutoFillProfile(
+            [out] IAutoFillProfile** profile);
+
+        GetDoubleTapToastCount(
+            [out] Int32* count);
+
+        SetProperty(
+            [in] String key,
+            [in] String value);
+
+        GetProperty(
+            [in] String key,
+            [out] String* property);
+    }
+
+    [local]
+    interface IWebSettingsClassicHelper {
+        /**
+         * Returns the default User-Agent used by a WebView.
+         * An instance of WebView could use a different User-Agent if a call
+         * is made to {@link WebSettings#setUserAgent(int)} or
+         * {@link WebSettings#setUserAgentString(String)}.
+         *
+         * @param context a Context object used to access application assets
+         * @param locale The Locale to use in the User-Agent string.
+         * @see WebViewFactoryProvider#getDefaultUserAgent(Context)
+         * @see WebView#getDefaultUserAgent(Context)
+         */
+        GetDefaultUserAgentForLocale(
+            [in] IContext* context,
+            [in] ILocale* locale,
+            [out] String* ua);
+    }
+
+    } // namespace Webkit
+    } // namepsace Droid
+    } // namespace Elastos
+}

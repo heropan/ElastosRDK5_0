@@ -1,0 +1,29 @@
+module
+{
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Net.IUri;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace Media {
+
+    [local]
+    interface INotificationPlayer extends Elastos.Droid.Media.IMediaPlayerOnCompletionListener {
+        Play(
+            [in] IContext* ctx,
+            [in] IUri* uri,
+            [in] Boolean looping,
+            [in] Int32 stream);
+
+        Stop();
+
+        SetUsesWakeLock(
+            [in] IContext* ctx);
+    }
+
+    } // namespace Media
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

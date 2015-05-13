@@ -1,0 +1,18 @@
+
+module
+{
+    namespace Elastos {
+    namespace Net {
+
+    /**
+     * This abstract class represents a protocol-independent base for socket-endpoint
+     * representing classes. The class has to be implemented according to a specific
+     * protocol.
+     */
+
+    interface ISocketAddress {
+    }
+
+    } // namespace Net
+    } // namespace Elastos
+}

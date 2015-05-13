@@ -1,0 +1,51 @@
+
+module
+{
+    interface Elastos.Droid.View.IDisplayInfo;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+    namespace Display {
+
+    interface IIDisplayManager {
+        GetDisplayInfo(
+            [in] Int32 displayId,
+            [out] IDisplayInfo** displayInfo);
+
+        GetDisplayIds(
+            [out, callee] ArrayOf<Int32>* displayIds);
+
+        RegisterCallback(
+            [in] IDisplayManagerCallback* cb);
+
+        // No permissions required.
+        ScanWifiDisplays();
+
+        // Requires CONFIGURE_WIFI_DISPLAY permission to connect to an unknown device.
+        // No permissions required to connect to a known device.
+        ConnectWifiDisplay(
+            [in] String address);
+
+        // No permissions required.
+        DisconnectWifiDisplay();
+
+        // Requires CONFIGURE_WIFI_DISPLAY permission.
+        RenameWifiDisplay(
+            [in] String address,
+            [in] String alias);
+
+        // Requires CONFIGURE_WIFI_DISPLAY permission.
+        ForgetWifiDisplay(
+            [in] String address);
+
+        // No permissions required.
+        GetWifiDisplayStatus(
+            [out] IWifiDisplayStatus** wds);
+    }
+
+    } // namespace Display
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}

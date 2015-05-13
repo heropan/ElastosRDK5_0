@@ -1,0 +1,72 @@
+TARGET_NAME= net
+TARGET_TYPE= lib
+
+include $(MAKEDIR)/../../../../sources.inc
+
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../inc/
+
+C_DEFINES += -DDROID_CORE
+
+SOURCES = CaptivePortalTracker.cpp
+SOURCES += CConnectivityManager.cpp
+SOURCES += CConnectivityManagerHelper.cpp
+SOURCES += CCredentials.cpp
+SOURCES += CCompareResult.cpp
+SOURCES += CDhcpInfo.cpp
+SOURCES += DhcpInfoInternal.cpp
+SOURCES += DhcpStateMachine.cpp
+SOURCES += CDnsPinger.cpp
+SOURCES += DummyDataStateTracker.cpp
+SOURCES += CInterfaceConfiguration.cpp
+SOURCES += CLinkAddress.cpp
+SOURCES += CLinkCapabilities.cpp
+SOURCES += CLinkCapabilitiesHelper.cpp
+SOURCES += CLinkProperties.cpp
+SOURCES += CLinkSocket.cpp
+SOURCES += CLocalServerSocket.cpp
+SOURCES += CLocalSocket.cpp
+SOURCES += CLocalSocketAddress.cpp
+SOURCES += LocalSocketImpl.cpp
+SOURCES += CNetworkConfig.cpp
+SOURCES += CNetworkIdentity.cpp
+SOURCES += CNetworkIdentityHelper.cpp
+SOURCES += CNetworkInfo.cpp
+SOURCES += CNetworkPolicy.cpp
+SOURCES += CNetworkPolicyManager.cpp
+SOURCES += CNetworkPolicyManagerHelper.cpp
+SOURCES += CNetworkQuotaInfo.cpp
+SOURCES += CNetworkState.cpp
+SOURCES += CNetworkStats.cpp
+SOURCES += CNetworkStatsHelper.cpp
+SOURCES += CNetworkStatsEntry.cpp
+SOURCES += CNetworkStatsFactory.cpp
+SOURCES += CNetworkStatsHistory.cpp
+SOURCES += CNetworkStatsHistoryHelper.cpp
+SOURCES += CNetworkStatsHistoryEntry.cpp
+SOURCES += CNetworkTemplate.cpp
+SOURCES += CNetworkTemplateHelper.cpp
+SOURCES += NetworkUtils.cpp
+SOURCES += CProxy.cpp
+SOURCES += CProxyProperties.cpp
+SOURCES += CRouteInfo.cpp
+SOURCES += CRouteInfoHelper.cpp
+SOURCES += CStringUri.cpp
+SOURCES += CTrafficStats.cpp
+SOURCES += Uri.cpp
+SOURCES += CUriHelper.cpp
+SOURCES += CUriBuilder.cpp
+SOURCES += CHierarchicalUri.cpp
+SOURCES += CStringUri.cpp
+SOURCES += COpaqueUri.cpp
+#SOURCES += CParseException.cpp
+SOURCES += CSntpClient.cpp
+SOURCES += CThrottleManager.cpp
+SOURCES += CLegacyVpnInfo.cpp
+SOURCES += CVpnConfig.cpp
+SOURCES += CVpnConfigHelper.cpp
+SOURCES += CVpnProfile.cpp
+SOURCES += CVpnProfileHelper.cpp
+
+
+#LIBRARIES += wifi/wifi.lib

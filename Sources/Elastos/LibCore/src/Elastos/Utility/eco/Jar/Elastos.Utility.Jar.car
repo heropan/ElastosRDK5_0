@@ -1,0 +1,130 @@
+
+module
+{
+    merge("../../../../../car/Elastos/Utility/Jar/IAttributes.car");
+    merge("../../../../../car/Elastos/Utility/Jar/IJarEntry.car");
+    merge("../../../../../car/Elastos/Utility/Jar/IManifest.car");
+    merge("../../../../../car/Elastos/Utility/Jar/IJarFile.car");
+    merge("../../../../../car/Elastos/Utility/Jar/IJarInputStream.Car");
+    merge("../../../../../car/Elastos/Utility/Jar/IJarOutputStream.car");
+    merge("../../../../../car/Elastos/Utility/Jar/IPack200.car");
+
+    using interface Elastos.Core.ICloneable;
+    using interface Elastos.Utility.IMap;
+    using interface Elastos.Utility.Zip.IZipEntry;
+    using interface Elastos.IO.IFile;
+    using interface Elastos.IO.IFlushable;
+    using interface Elastos.IO.IOutputStream;
+    using interface Elastos.IO.IInputStream;
+
+    namespace Elastos {
+    namespace Utility {
+    namespace Jar {
+
+        class CName {
+            constructor(
+                [in] String name);
+
+            constructor(
+                [in] String name,
+                [in] Boolean validateName);
+
+            interface IName;
+        }
+
+        class CAttributes {
+            constructor();
+
+            constructor(
+                [in] IAttributes* attributes);
+
+            constructor(
+                [in] Int32 size);
+
+            interface IAttributes;
+            interface ICloneable;
+            interface IMap;
+        }
+
+        class CJarEntry {
+            constructor(
+                [in] String name);
+
+            constructor(
+                [in] IZipEntry* zipEntry);
+
+            constructor(
+                [in] IJarEntry* jarEntry);
+
+            interface IJarEntry;
+        }
+
+        [deprecated]
+        class CJarFile {
+            constructor(
+                [in] IFile* file);
+
+            constructor(
+                [in] IFile* file,
+                [in] Boolean verify);
+
+            constructor(
+                [in] IFile* file,
+                [in] Boolean verify,
+                [in] Int32 mode);
+
+            constructor(
+                [in] String filename);
+
+            constructor(
+                [in] String filename,
+                [in] Boolean verify);
+
+            interface IJarFile;
+        }
+
+        [deprecated]
+        class CJarInputStream {
+            constructor(
+                [in] IInputStream* stream,
+                [in] Boolean verify);
+
+            constructor(
+                [in] IInputStream* stream);
+
+            interface IJarInputStream;
+        }
+
+        class CJarOutputStream {
+            constructor(
+                [in] IOutputStream* os,
+                [in] IManifest* manifest);
+
+            constructor(
+                [in] IOutputStream* os);
+
+            interface IJarOutputStream;
+            interface IFlushable;
+        }
+
+        class CManifest {
+            constructor();
+
+            constructor(
+                [in] IInputStream* is);
+
+            constructor(
+                [in] IManifest* mani);
+
+            interface IManifest ;
+            interface ICloneable;
+        }
+
+        singleton class CPack200Helper {
+            interface IPack200Helper;
+        }
+
+    } // namespace Jar
+    } // namespace Utility
+    } // namespace Elastos
+}

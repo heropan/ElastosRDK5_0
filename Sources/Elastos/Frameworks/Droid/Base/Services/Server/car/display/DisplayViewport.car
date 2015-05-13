@@ -1,0 +1,58 @@
+module
+{
+    using interface Elastos.Droid.Graphics.IRect;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Display {
+
+    interface IDisplayViewport {
+        CopyFrom(
+            [in] IDisplayViewport* other);
+
+        ToString(
+            [out] String* str);
+
+        SetValid(
+            [in] Boolean valid);
+
+        IsValid(
+            [out] Boolean* valid);
+
+        SetOrientation(
+            [in] Int32 ori);
+
+        GetOrientation(
+            [out] Int32* ori);
+
+        SetLogicalFrame(
+            [in] IRect* frame);
+
+        GetLogicalFrame(
+            [out] IRect** frame);
+
+        SetPhysicalFrame(
+            [in] IRect* frame);
+
+        GetPhysicalFrame(
+            [out] IRect** frame);
+
+        SetDeviceWidth(
+            [in] Int32 w);
+
+        GetDeviceWidth(
+            [out] Int32* w);
+
+        SetDeviceHeight(
+            [in] Int32 h);
+
+        GetDeviceHeight(
+            [out] Int32* h);
+    }
+
+    } // namespace Display
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
+}

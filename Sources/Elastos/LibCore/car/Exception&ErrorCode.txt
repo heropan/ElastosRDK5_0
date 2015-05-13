@@ -1,0 +1,24 @@
+
+======== FAMILY_NAME ========           ======== FAMILY_CODE ========
+Elastos.Core.Exceptions                             0x20
+Elastos.Core.Errors                                 0x21
+Elastos.IO.Exceptions                               0x22
+Elastos.IO.Errors                                   0x23
+Elastos.Utility.Zip.Exceptions                      0x24
+Elastos.Utility.Zip.Errors                          0x25
+Elastos.Utility.Concurrent.Exceptions               0x26
+Elastos.Utility.Exceptions                          0x27
+Elastos.SQL.Exceptions                              0x28
+//Elastos.Math.Exceptions                             0x29
+Libcore.IO.Exceptions                               0x2A
+Elastos.Net.Exceptions                              0x2B
+Elastos.Security.Exceptions                         0x2C
+Elastos.Text.Exceptions                             0x2D
+Org.Xmlpull.V1.Exceptions                           0x2E
+Org.Xml.Sax.Exceptions                              0x2F
+Eunit.Framework.Errors                              0x40
+Elastos.Droid.Content.Exceptions                    0x50
+Elastos.Droid.App.Exceptions                        0x51
+Elastos.Droid.View.Exceptions                       0x52
+Elastos.Droid.Server.Exceptions                     0x70
+Elastos.Droid.Os.Exceptions                         0x56

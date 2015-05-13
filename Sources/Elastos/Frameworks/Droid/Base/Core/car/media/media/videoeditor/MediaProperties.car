@@ -1,0 +1,257 @@
+module
+{
+
+    interface Elastos.Droid.Utility.IPair;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+    namespace Videoeditor {
+
+    interface IMediaPropertiesH264Profile {
+        const Int32 H264ProfileBaseline = 0x01; /**< Baseline profile */
+        const Int32 H264ProfileMain     = 0x02; /**< Main profile */
+        const Int32 H264ProfileExtended = 0x04; /**< Extended profile */
+        const Int32 H264ProfileHigh     = 0x08; /**< High profile */
+        const Int32 H264ProfileHigh10   = 0x10; /**< High 10 profile */
+        const Int32 H264ProfileHigh422  = 0x20; /**< High 4:2:2 profile */
+        const Int32 H264ProfileHigh444  = 0x40; /**< High 4:4:4 profile */
+        const Int32 H264ProfileUnknown  = 0x7FFFFFFF;
+    }
+
+    interface IMediaPropertiesH264Level {
+        const Int32 H264Level1   = 0x01; /**< Level 1 */
+        const Int32 H264Level1b  = 0x02; /**< Level 1b */
+        const Int32 H264Level11  = 0x04; /**< Level 1.1 */
+        const Int32 H264Level12  = 0x08; /**< Level 1.2 */
+        const Int32 H264Level13  = 0x10; /**< Level 1.3 */
+        const Int32 H264Level2   = 0x20; /**< Level 2 */
+        const Int32 H264Level21  = 0x40; /**< Level 2.1 */
+        const Int32 H264Level22  = 0x80; /**< Level 2.2 */
+        const Int32 H264Level3   = 0x100; /**< Level 3 */
+        const Int32 H264Level31  = 0x200; /**< Level 3.1 */
+        const Int32 H264Level32  = 0x400; /**< Level 3.2 */
+        const Int32 H264Level4   = 0x800; /**< Level 4 */
+        const Int32 H264Level41  = 0x1000; /**< Level 4.1 */
+        const Int32 H264Level42  = 0x2000; /**< Level 4.2 */
+        const Int32 H264Level5   = 0x4000; /**< Level 5 */
+        const Int32 H264Level51  = 0x8000; /**< Level 5.1 */
+        const Int32 H264LevelUnknown = 0x7FFFFFFF;
+    }
+
+    interface IMediaPropertiesH263Profile {
+        const Int32 H263ProfileBaseline            = 0x01;
+        const Int32 H263ProfileH320Coding          = 0x02;
+        const Int32 H263ProfileBackwardCompatible  = 0x04;
+        const Int32 H263ProfileISWV2               = 0x08;
+        const Int32 H263ProfileISWV3               = 0x10;
+        const Int32 H263ProfileHighCompression     = 0x20;
+        const Int32 H263ProfileInternet            = 0x40;
+        const Int32 H263ProfileInterlace           = 0x80;
+        const Int32 H263ProfileHighLatency       = 0x100;
+        const Int32 H263ProfileUnknown          = 0x7FFFFFFF;
+    }
+
+    interface IMediaPropertiesH263Level {
+        const Int32 H263Level10  = 0x01;
+        const Int32 H263Level20  = 0x02;
+        const Int32 H263Level30  = 0x04;
+        const Int32 H263Level40  = 0x08;
+        const Int32 H263Level45  = 0x10;
+        const Int32 H263Level50  = 0x20;
+        const Int32 H263Level60  = 0x40;
+        const Int32 H263Level70  = 0x80;
+        const Int32 H263LevelUnknown = 0x7FFFFFFF;
+    }
+
+    interface IMediaPropertiesMPEG4Profile {
+        const Int32 MPEG4ProfileSimple           = 0x01;
+        const Int32 MPEG4ProfileSimpleScalable   = 0x02;
+        const Int32 MPEG4ProfileCore             = 0x04;
+        const Int32 MPEG4ProfileMain             = 0x08;
+        const Int32 MPEG4ProfileNbit             = 0x10;
+        const Int32 MPEG4ProfileScalableTexture  = 0x20;
+        const Int32 MPEG4ProfileSimpleFace       = 0x40;
+        const Int32 MPEG4ProfileSimpleFBA        = 0x80;
+        const Int32 MPEG4ProfileBasicAnimated    = 0x100;
+        const Int32 MPEG4ProfileHybrid           = 0x200;
+        const Int32 MPEG4ProfileAdvancedRealTime = 0x400;
+        const Int32 MPEG4ProfileCoreScalable     = 0x800;
+        const Int32 MPEG4ProfileAdvancedCoding   = 0x1000;
+        const Int32 MPEG4ProfileAdvancedCore     = 0x2000;
+        const Int32 MPEG4ProfileAdvancedScalable = 0x4000;
+        const Int32 MPEG4ProfileAdvancedSimple   = 0x8000;
+        const Int32 MPEG4ProfileUnknown          = 0x7FFFFFFF;
+    }
+
+    interface IMediaPropertiesMPEG4Level {
+        const Int32 MPEG4Level0  = 0x01; /**< Level 0 */
+        const Int32 MPEG4Level0b = 0x02; /**< Level 0b */
+        const Int32 MPEG4Level1  = 0x04; /**< Level 1 */
+        const Int32 MPEG4Level2  = 0x08; /**< Level 2 */
+        const Int32 MPEG4Level3  = 0x10; /**< Level 3 */
+        const Int32 MPEG4Level4  = 0x20; /**< Level 4 */
+        const Int32 MPEG4Level4a = 0x40; /**< Level 4a */
+        const Int32 MPEG4Level5  = 0x80; /**< Level 5 */
+        const Int32 MPEG4LevelUnknown = 0x7FFFFFFF;
+    }
+
+    interface IMediaProperties {
+        /**
+         *  Supported heights
+         */
+        const Int32 HEIGHT_144 = 144;
+        const Int32 HEIGHT_288 = 288;
+        const Int32 HEIGHT_360 = 360;
+        const Int32 HEIGHT_480 = 480;
+        const Int32 HEIGHT_720 = 720;
+        const Int32 HEIGHT_1080 = 1080;
+
+        /**
+         *  Supported aspect ratios
+         */
+        const Int32 ASPECT_RATIO_UNDEFINED = 0;
+        const Int32 ASPECT_RATIO_3_2 = 1;
+        const Int32 ASPECT_RATIO_16_9 = 2;
+        const Int32 ASPECT_RATIO_4_3 = 3;
+        const Int32 ASPECT_RATIO_5_3 = 4;
+        const Int32 ASPECT_RATIO_11_9 = 5;
+
+        /**
+         *  Bitrate values (in bits per second)
+         */
+        const Int32 BITRATE_28K = 28000;
+        const Int32 BITRATE_40K = 40000;
+        const Int32 BITRATE_64K = 64000;
+        const Int32 BITRATE_96K = 96000;
+        const Int32 BITRATE_128K = 128000;
+        const Int32 BITRATE_192K = 192000;
+        const Int32 BITRATE_256K = 256000;
+        const Int32 BITRATE_384K = 384000;
+        const Int32 BITRATE_512K = 512000;
+        const Int32 BITRATE_800K = 800000;
+        const Int32 BITRATE_2M = 2000000;
+        const Int32 BITRATE_5M = 5000000;
+        const Int32 BITRATE_8M = 8000000;
+
+        /**
+         *  Video codec types
+         */
+        const Int32 VCODEC_H263 = 1;
+        const Int32 VCODEC_H264 = 2;
+        const Int32 VCODEC_MPEG4 = 3;
+
+        /**
+         *  Audio codec types
+         */
+        const Int32 ACODEC_NO_AUDIO = 0;
+        const Int32 ACODEC_AMRNB = 1;
+        const Int32 ACODEC_AAC_LC = 2;
+        const Int32 ACODEC_AAC_PLUS = 3;
+        const Int32 ACODEC_ENHANCED_AAC_PLUS = 4;
+        const Int32 ACODEC_MP3 = 5;
+        const Int32 ACODEC_EVRC = 6;
+        // 7 value is used for PCM
+        const Int32 ACODEC_AMRWB = 8;
+        const Int32 ACODEC_OGG = 9;
+
+        /**
+         *  Samples per frame for each audio codec
+         */
+        const Int32 SAMPLES_PER_FRAME_AAC = 1024;
+        const Int32 SAMPLES_PER_FRAME_MP3 = 1152;
+        const Int32 SAMPLES_PER_FRAME_AMRNB = 160;
+        const Int32 SAMPLES_PER_FRAME_AMRWB = 320;
+
+        const Int32 DEFAULT_SAMPLING_FREQUENCY = 32000;
+        const Int32 DEFAULT_CHANNEL_COUNT = 2;
+
+        /**
+         *  File format types
+         */
+        const Int32 FILE_3GP = 0;
+        const Int32 FILE_MP4 = 1;
+        const Int32 FILE_AMR = 2;
+        const Int32 FILE_MP3 = 3;
+        // 4 is for PCM
+        const Int32 FILE_JPEG = 5;
+        // 6 is for BMP
+        // 7 is for GIF
+        const Int32 FILE_PNG = 8;
+        // 9 is for ARGB8888
+        const Int32 FILE_M4V = 10;
+        const Int32 FILE_UNSUPPORTED = 255;
+
+        /**
+         * Undefined video codec profiles
+         */
+        const Int32 UNDEFINED_VIDEO_PROFILE = 255;
+
+        /**
+         * The maximum count of audio tracks supported
+         */
+        const Int32 AUDIO_MAX_TRACK_COUNT = 1;
+
+        /** The maximum volume supported (100 means that no amplification is
+         * supported, i.e. attenuation only)
+         */
+        const Int32 AUDIO_MAX_VOLUME_PERCENT = 100;
+    }
+
+    interface IMediaPropertiesHelper {
+
+        GetAllSupportedAspectRatios(
+            [out,callee] ArrayOf<Int32>* result);
+
+        /**
+         * Get the supported resolutions for the specified aspect ratio.
+         *
+         * @param aspectRatio The aspect ratio for which the resolutions are
+         *        requested
+         * @return The array of width and height pairs
+         */
+        GetSupportedResolutions(
+            [in] Int32 aspectRatio,
+            [out,callee] ArrayOf<IPair*>* result);
+
+        /**
+         * @return The array of supported video codecs
+         */
+        GetSupportedVideoCodecs(
+            [out,callee] ArrayOf<Int32>* result);
+
+        /**
+         * @return The array of supported audio codecs
+         */
+        GetSupportedAudioCodecs(
+            [out,callee] ArrayOf<Int32>* result);
+
+        /**
+         * @return The array of supported file formats
+         */
+        GetSupportedVideoFileFormat(
+            [out,callee] ArrayOf<Int32>* result);
+
+        /**
+         * @return The array of supported video bitrates
+         */
+        GetSupportedVideoBitrates(
+            [out,callee] ArrayOf<Int32>* result);
+
+        /**
+         * @return The maximum value for the audio volume
+         */
+        GetSupportedMaxVolume(
+            [out] Int32* result);
+
+        /**
+         * @return The maximum number of audio tracks supported
+         */
+        GetSupportedAudioTrackCount(
+            [out] Int32* result);
+    }
+    } // namespace videoeditor
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
+}

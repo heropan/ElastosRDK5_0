@@ -1,0 +1,39 @@
+
+module
+{
+    interface Elastos.Droid.View.IViewBaseSavedState;
+    interface Elastos.Droid.Widget.IAdapterView;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+
+    interface IAbsSpinnerSavedState extends Elastos.Droid.View.IViewBaseSavedState {
+    }
+
+    interface IAbsSpinner extends Elastos.Droid.Widget.IAdapterView {
+        /**
+         * Jump directly to a specific item in the adapter data.
+         */
+        SetSelectionEx(
+            [in] Int32 position,
+            [in] Boolean animate);
+
+        /**
+         * Maps a point to a position in the list.
+         *
+         * @param x X in local coordinate
+         * @param y Y in local coordinate
+         * @return The position of the item which contains the specified point, or
+         *         {@link #INVALID_POSITION} if the point does not intersect an item.
+         */
+        PointToPosition(
+            [in] Int32 x,
+            [in] Int32 y,
+            [out] Int32* pos);
+    }
+
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+}

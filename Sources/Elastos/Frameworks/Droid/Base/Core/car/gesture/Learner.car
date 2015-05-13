@@ -1,0 +1,51 @@
+module {
+    namespace Elastos {
+    namespace Droid {
+    namespace Gesture {
+    interface ILearner {
+        /**
+         * Add an instance to the learner
+         * 
+         * @param instance
+         */
+        AddInstance(
+            [in] IInstance *instance);
+
+        /**
+         * Retrieve all the instances
+         * 
+         * @return instances
+         */
+//        ArrayList<Instance> getInstances();
+        GetInstance(
+            [out] IObjectContainer **instances);
+
+        /**
+         * Remove an instance based on its id
+         * 
+         * @param id
+         */
+        RemoveInstance(
+            [in] Int64 id);
+
+        /**
+         * Remove all the instances of a category
+         * 
+         * @param name the category name
+         */
+        RemoveInstances(
+            [in] String name);
+
+//        abstract ArrayList<Prediction> classify(int sequenceType, int orientationType, float[] vector);
+        Classify(
+            [in] Int32 sequenceType,
+            [in] Int32 orientationType,
+            [in] ArrayOf<Float> vec,
+            [out] IObjectContainer **predictions);
+
+    }
+
+    }//namespace Gesture
+    }//namespace Droid
+    }//namespace Elastos
+}

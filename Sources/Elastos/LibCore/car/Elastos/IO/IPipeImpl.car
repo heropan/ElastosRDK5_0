@@ -1,0 +1,14 @@
+
+module
+{
+
+    namespace Elastos {
+    namespace IO {
+
+    interface IPipeImpl extends Elastos.IO.Channels.IPipe {
+
+    } // IPipeImpl
+
+    } // namespace IO
+    } // namespace Elastos
+}

@@ -1,0 +1,82 @@
+
+module
+{
+    using interface Elastos.Utility.IObjectStringMap;
+    interface Elastos.Droid.Net.Wifi.P2p.IWifiP2pDevice;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+    namespace Wifi {
+    namespace P2p {
+    namespace Nsd {
+
+    /**
+     * A class for a response of bonjour service discovery.
+     *
+     * @hide
+     */
+    interface IWifiP2pDnsSdServiceResponse extends IWifiP2pServiceResponse {
+        /**
+         * Returns query DNS name.
+         * @return DNS name.
+         */
+        GetDnsQueryName(
+            [out] String* dnsQueryName);
+
+        /**
+         * Return query DNS type.
+         * @return DNS type.
+         */
+        GetDnsType(
+            [out] Int32* dnsType);
+
+        /**
+         * Return bonjour version number.
+         * @return version number.
+         */
+        GetVersion(
+            [out] Int32* versionNumber);
+
+        /**
+         * Return instance name.
+         * @return
+         */
+        GetInstanceName(
+            [out] String* instanceName);
+
+        /**
+         * Return TXT record data.
+         * @return TXT record data.
+         */
+        GetTxtRecord(
+            [out] IObjectStringMap** txtRecord);
+    }
+
+    [deprecated]
+    interface IWifiP2pDnsSdServiceResponseHelper {
+        /**
+         * Creates DnsSd service response.
+         *  This is only called from WifiP2pServiceResponse
+         *
+         * @param status status code.
+         * @param dev source device.
+         * @param data DnsSd response data.
+         * @return DnsSd service response data.
+         * @hide
+         */
+        NewInstance(
+            [in] Int32 status,
+            [in] Int32 transId,
+            [in] IWifiP2pDevice* dev,
+            [in] ArrayOf<Byte>* data,
+            [out] IWifiP2pDnsSdServiceResponse** instance);
+    }
+
+    } // namespace nsd
+    } // namespace p2p
+    } // namespace wifi
+    } // namespace net
+    } // namespace Droid
+    } // namespace Elastos
+}

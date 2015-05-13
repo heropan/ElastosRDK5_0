@@ -1,0 +1,265 @@
+
+module
+{
+    interface Elastos.Droid.Bluetooth.IBluetoothDevice;
+    interface Elastos.Droid.View.IKeyEvent;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Content.IComponentName;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+    interface IIAudioService {
+        AdjustVolume(
+            [in] Int32 direction,
+            [in] Int32 flags);
+
+        [oneway] AdjustLocalOrRemoteStreamVolume(
+            [in] Int32 streamType,
+            [in] Int32 direction);
+
+        AdjustSuggestedStreamVolume(
+            [in] Int32 direction,
+            [in] Int32 suggestedStreamType,
+            [in] Int32 flags);
+
+        AdjustStreamVolume(
+            [in] Int32 streamType,
+            [in] Int32 direction,
+            [in] Int32 flags);
+
+        AdjustMasterVolume(
+            [in] Int32 direction,
+            [in] Int32 flags);
+
+        SetStreamVolume(
+            [in] Int32 streamType,
+            [in] Int32 index,
+            [in] Int32 flags);
+
+        [oneway] SetRemoteStreamVolume(
+            [in] Int32 index);
+
+        SetMasterVolume(
+            [in] Int32 index,
+            [in] Int32 flags);
+
+        SetStreamSolo(
+            [in] Int32 streamType,
+            [in] Boolean state,
+            [in] IBinder* cb);
+
+        SetStreamMute(
+            [in] Int32 streamType,
+            [in] Boolean state,
+            [in] IBinder* cb);
+
+        IsStreamMute(
+            [in] Int32 streamType,
+            [out] Boolean* result);
+
+        SetMasterMute(
+            [in] Boolean state,
+            [in] Int32 flags,
+            [in] IBinder* cb);
+
+        IsMasterMute(
+            [out] Boolean* result);
+
+        GetStreamVolume(
+            [in] Int32 streamType,
+            [out] Int32* result);
+
+        GetMasterVolume(
+            [out] Int32* result);
+
+        GetStreamMaxVolume(
+            [in] Int32 streamType,
+            [out] Int32* result);
+
+        GetMasterMaxVolume(
+            [out] Int32* result);
+
+        GetLastAudibleStreamVolume(
+            [in] Int32 streamType,
+            [out] Int32* result);
+
+        GetLastAudibleMasterVolume(
+            [out] Int32* result);
+
+        SetRingerMode(
+            [in] Int32 ringerMode);
+
+        GetRingerMode(
+            [out] Int32* result);
+
+        SetVibrateSetting(
+            [in] Int32 vibrateType,
+            [in] Int32 vibrateSetting);
+
+        GetVibrateSetting(
+            [in] Int32 vibrateType,
+            [out] Int32* result);
+
+        ShouldVibrate(
+            [in] Int32 vibrateType,
+            [out] Boolean* result);
+
+        SetMode(
+            [in] Int32 mode,
+            [in] IBinder* cb);
+
+        GetMode(
+            [out] Int32* result);
+
+        [oneway] PlaySoundEffect(
+            [in] Int32 effectType);
+
+        [oneway] PlaySoundEffectVolume(
+            [in] Int32 effectType,
+            [in] Float volume);
+
+        LoadSoundEffects(
+            [out] Boolean* result);
+
+        [oneway] UnloadSoundEffects();
+
+        [oneway] ReloadAudioSettings();
+
+        SetSpeakerphoneOn(
+            [in] Boolean on);
+
+        IsSpeakerphoneOn(
+            [out] Boolean* result);
+
+        SetBluetoothScoOn(
+            [in] Boolean on);
+
+        IsBluetoothScoOn(
+            [out] Boolean* result);
+
+        SetBluetoothA2dpOn(
+            [in] Boolean on);
+
+        IsBluetoothA2dpOn(
+            [out] Boolean* result);
+
+        [oneway] SetRemoteSubmixOn(
+            [in] Boolean on,
+            [in] Int32 address);
+
+        RequestAudioFocus(
+            [in] Int32 mainStreamType,
+            [in] Int32 durationHint,
+            [in] IBinder* cb,
+            [in] IIAudioFocusDispatcher* l,
+            [in] String clientId,
+            [in] String callingPackageName,
+            [out] Int32* result);
+
+        AbandonAudioFocus(
+            [in] IIAudioFocusDispatcher* l,
+            [in] String clientId,
+            [out] Int32* result);
+
+        UnregisterAudioFocusClient(
+            [in] String clientId);
+
+        [oneway] DispatchMediaKeyEvent(
+            [in] IKeyEvent* keyEvent);
+
+        DispatchMediaKeyEventUnderWakelock(
+            [in] IKeyEvent* keyEvent);
+
+        [oneway] RegisterMediaButtonIntent(
+            [in] IPendingIntent* pi,
+            [in] IComponentName* c);
+
+        [oneway] UnregisterMediaButtonIntent(
+            [in] IPendingIntent* pi,
+            [in] IComponentName* c);
+
+        [oneway] RegisterMediaButtonEventReceiverForCalls(
+            [in] IComponentName* c);
+
+        [oneway] UnregisterMediaButtonEventReceiverForCalls();
+
+        RegisterRemoteControlClient(
+            [in] IPendingIntent* mediaIntent,
+            [in] IIRemoteControlClient* rcClient,
+            [in] String callingPackageName,
+            [out] Int32* result);
+
+        [oneway] UnregisterRemoteControlClient(
+            [in] IPendingIntent* mediaIntent,
+            [in] IIRemoteControlClient* rcClient);
+
+        [oneway] RegisterRemoteControlDisplay(
+            [in] IIRemoteControlDisplay* rcd);
+
+        [oneway] UnregisterRemoteControlDisplay(
+            [in] IIRemoteControlDisplay* rcd);
+
+        [oneway] RemoteControlDisplayUsesBitmapSize(
+            [in] IIRemoteControlDisplay* rcd,
+            [in] Int32 w,
+            [in] Int32 h);
+
+        [oneway] SetPlaybackInfoForRcc(
+            [in] Int32 rccId,
+            [in] Int32 what,
+            [in] Int32 value);
+
+        GetRemoteStreamMaxVolume(
+            [out] Int32* result);
+
+        GetRemoteStreamVolume(
+            [out] Int32* result);
+
+        [oneway] RegisterRemoteVolumeObserverForRcc(
+            [in] Int32 rccId,
+            [in] IIRemoteVolumeObserver* rvo);
+
+        StartBluetoothSco(
+            [in] IBinder* cb);
+
+        StopBluetoothSco(
+            [in] IBinder* cb);
+
+        ForceVolumeControlStream(
+            [in] Int32 streamType,
+            [in] IBinder* cb);
+
+        SetRingtonePlayer(
+            [in] IIRingtonePlayer* player);
+
+        GetRingtonePlayer(
+            [out] IIRingtonePlayer** result);
+
+        GetMasterStreamType(
+            [out] Int32* result);
+
+        SetWiredDeviceConnectionState(
+            [in] Int32 device,
+            [in] Int32 state,
+            [in] String name);
+
+        SetBluetoothA2dpDeviceConnectionState(
+            [in] IBluetoothDevice* device,
+            [in] Int32 state,
+            [out] Int32* result);
+
+        StartWatchingRoutes(
+            [in] IIAudioRoutesObserver* observer,
+            [out] IAudioRoutesInfo** result);
+
+        IsCameraSoundForced(
+            [out] Boolean* result);
+    }
+
+    } // namespace Media
+    } // namepsace Droid
+    } // namespace Elastos
+}

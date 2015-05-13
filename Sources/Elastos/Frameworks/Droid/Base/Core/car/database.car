@@ -1,0 +1,228 @@
+
+module
+{
+    merge("database/sqlite/SQLiteClosable.car");
+    merge("database/sqlite/SQLiteCursorDriver.car");
+    merge("database/sqlite/SQLiteDatabase.car");
+    merge("database/sqlite/SQLiteOpenHelper.car");
+    merge("database/sqlite/SQLiteProgram.car");
+    merge("database/sqlite/SQLiteQuery.car");
+    merge("database/sqlite/SQLiteQueryBuilder.car");
+    merge("database/sqlite/SQLiteStatement.car");
+    merge("database/sqlite/SQLiteTransactionListener.car");
+
+    merge("database/Cursor.car");
+    merge("database/CrossProcessCursor.car");
+    merge("database/IContentObserver.car");
+    merge("database/ContentObserver.car");
+    merge("database/AbstractCursor.car");
+    merge("database/AbstractWindowedCursor.car");
+    merge("database/IBulkCursor.car");
+    merge("database/CharArrayBuffer.car");
+    merge("database/Observable.car");
+    merge("database/ContentObservable.car");
+    merge("database/CursorWrapper.car");
+    merge("database/CrossProcessCursorWrapper.car");
+    merge("database/CursorJoiner.car");
+    merge("database/CursorWindow.car");
+    merge("database/DatabaseErrorHandler.car");
+    merge("database/DatabaseUtils.car");
+    merge("database/DataSetObservable.car");
+    merge("database/DataSetObserver.car");
+    merge("database/MatrixCursor.car");
+    merge("database/MergeCursor.car");
+    merge("database/ContentObserverTransport.car");
+    merge("database/sqlite/SQLiteCursor.car");
+
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.ICancellationSignal;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Database {
+    namespace Sqlite {
+
+    class CSQLiteCursor {
+        constructor(
+            [in] ISQLiteDatabase* db,
+            [in] ISQLiteCursorDriver* driver,
+            [in] String editTable,
+            [in] ISQLiteQuery* query);
+
+        constructor(
+            [in] ISQLiteCursorDriver* driver,
+            [in] String editTable,
+            [in] ISQLiteQuery* query);
+
+        interface ISQLiteCursor;
+    }
+
+    class CSQLiteQueryBuilder {
+        constructor();
+
+        interface ISQLiteQueryBuilder;
+    }
+
+    singleton class CSQLiteQueryBuilderHelper {
+        interface ISQLiteQueryBuilderHelper;
+    }
+
+    singleton class  CSQLiteDatabaseHelper {
+        interface ISQLiteDatabaseHelper;
+    }
+
+    class CSQLiteQuery {
+        constructor(
+            [in] ISQLiteDatabase* db,
+            [in] String query,
+            [in] ICancellationSignal* cancellationSignal);
+
+        interface ISQLiteQuery;
+    }
+
+    [deprecated]
+    class CSQLiteStatement {
+        constructor(
+            [in] ISQLiteDatabase* db,
+            [in] String sql,
+            [in] ArrayOf<IInterface*>* bindArgs);
+
+        interface ISQLiteStatement;
+    }
+
+    } //Sqlite
+    } //Database
+    } //Droid
+    } //Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Database {
+
+    [deprecated]
+    class CCharArrayBuffer {
+        constructor(
+            [in] Int32 size);
+
+        constructor(
+            [in] ArrayOf<Char32>* buf);
+
+        interface ICharArrayBuffer;
+    }
+
+    class CDataSetObservable {
+        interface IDataSetObservable;
+    }
+
+    class CContentObservable {
+        interface IContentObservable;
+    }
+
+    class CCursorWrapper {
+        constructor(
+            [in] ICursor* cursor);
+
+        interface ICursorWrapper;
+    }
+
+    class CCursorWindow {
+        constructor();
+
+        constructor(
+            [in] String name);
+
+        constructor(
+            [in] Boolean localWindow);
+
+        interface ICursorWindow;
+        interface IParcelable;
+    }
+
+    singleton class CCursorWindowHelper {
+        interface ICursorWindowHelper;
+    }
+
+    class CCursorJoiner {
+        constructor(
+            [in] ICursor* cursorLeft,
+            [in] ArrayOf<String> columnNamesLeft,
+            [in] ICursor* cursorRight,
+            [in] ArrayOf<String> columnNamesRight);
+
+        interface ICursorJoiner;
+    }
+
+    [deprecated]
+    class CMergeCursor {
+        constructor(
+            [in] ArrayOf<ICursor*>* cursors);
+
+        interface IMergeCursor;
+    }
+
+    [deprecated]
+    class CMatrixCursor {
+        constructor(
+            [in] ArrayOf<String>* columnNames,
+            [in] Int32 initialCapacity);
+
+        constructor(
+            [in] ArrayOf<String>* columnNames);
+
+        interface IMatrixCursor;
+    }
+
+    class CCursorToBulkCursorAdaptor {
+        constructor(
+            [in] ICursor* cursor,
+            [in] IIContentObserver* observer,
+            [in] String providerName);
+
+        interface IBinder;
+        interface IBulkCursor;
+        interface IProxyDeathRecipient;
+    }
+
+    singleton class CDatabaseUtils {
+        interface IDatabaseUtils;
+    }
+
+    class CDatabaseInsertHelper {
+        constructor(
+            [in] ISQLiteDatabase* db,
+            [in] String tableName);
+
+        interface IDatabaseInsertHelper;
+    }
+
+    class CBulkCursorDescriptor {
+        constructor();
+
+        interface IParcelable;
+    }
+
+    class CCrossProcessCursorWrapper {
+        constructor(
+            [in] ICursor* cursor);
+
+        interface ICrossProcessCursorWrapper;
+        interface ICrossProcessCursor;
+    }
+
+    class CDefaultDatabaseErrorHandler {
+        interface IDatabaseErrorHandler;
+    }
+
+    class CContentObserverTransport {
+        constructor(
+            [in] IContentObserver* contentObserver);
+
+        interface IContentObserverTransport;
+    }
+
+    } //Database
+    } //Droid
+    } //Elastos
+
+}
+

@@ -1,0 +1,20 @@
+
+module
+{
+    interface Elastos.Droid.Webkit.IHTML5VideoView;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+    /**
+     * @hide This is only used by the browser
+     */
+    interface IHTML5VideoFullScreen extends IHTML5VideoView {
+
+    }
+
+    } // namespace Webkit
+    } // namepsace Droid
+    } // namespace Elastos
+}

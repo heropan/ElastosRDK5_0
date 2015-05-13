@@ -1,0 +1,33 @@
+
+module
+{
+    using interface Elastos.Utility.Jar.IAttributes;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Content {
+    namespace Pm {
+
+    interface IManifestDigest {
+        Equals(
+            [in] IInterface* obj,
+            [out] Boolean* result);
+
+        GetHashCode (
+            [out] Int32* code);
+
+        ToString(
+            [out] String* str);
+    }
+
+    interface IManifestDigestHelper {
+        FromAttributes(
+            [in] IAttributes* attributes,
+            [out] IManifestDigest** digest);
+    }
+
+    } // namespace Pm
+    } // namespace Content
+    } // namespace Droid
+    } // namespace Elastos
+}

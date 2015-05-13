@@ -1,0 +1,19 @@
+
+module
+{
+    interface Elastos.Security.IDomainCombiner;
+
+    namespace Elastosx {
+    namespace Security {
+    namespace Auth {
+
+    [deprecated]
+    interface ISubjectDomainCombiner extends Elastos.Security.IDomainCombiner {
+        GetSubject(
+            [out] ISubject** subject);
+    }
+
+    } // namespace Auth
+    } // namespace Security
+    } // namespace Elastosx
+}

@@ -1,0 +1,91 @@
+module
+{
+    namespace Libcore {
+    namespace ICU {
+
+    interface INativeCollationHelper {
+
+        // Collator.
+        CloseCollator(
+            [in] Int32 address);
+
+        Compare(
+            [in] Int32 address,
+            [in] String source,
+            [in] String target ,
+            [out] Int32 * value);
+
+        GetAttribute(
+            [in] Int32 address,
+            [in] Int32 type,
+            [out] Int32 * value);
+
+        GetCollationElementIterator(
+            [in] Int32 address,
+            [in] String source,
+            [out] Int32 * value);
+
+        GetRules(
+            [in] Int32 address,
+            [out] String * str);
+
+        GetSortKey(
+            [in] Int32 address,
+            [in] String source,
+            [out,callee] ArrayOf<Byte> * outarray);
+
+        OpenCollator(
+            [in] String locale,
+            [out] Int32 * value);
+
+        OpenCollatorFromRules(
+            [in] String rules,
+            [in] Int32 normalizationMode,
+            [in] Int32 collationStrength,
+            [out] Int32 * value);
+
+        SafeClone(
+            [in] Int32 address,
+            [out] Int32 * value);
+
+        SetAttribute(
+            [in] Int32 address,
+            [in] Int32 type,
+            [in] Int32 value);
+
+        // CollationElementIterator.
+        CloseElements(
+            [in] Int32 address);
+
+        GetMaxExpansion(
+            [in] Int32 address,
+            [in] Int32 order,
+            [out] Int32 * value);
+
+        GetOffset(
+            [in] Int32 address,
+            [out] Int32 * value);
+
+        Next(
+            [in] Int32 address,
+            [out] Int32 * value);
+
+        Previous(
+            [in] Int32 address,
+            [out] Int32 * value);
+
+        Reset(
+            [in] Int32 address);
+
+        SetOffset(
+            [in] Int32 address,
+            [in] Int32 offset);
+
+        SetText(
+            [in] Int32 address,
+            [in] String source);
+    }
+
+    } // namespace ICU
+    } // namespace Libcore
+}

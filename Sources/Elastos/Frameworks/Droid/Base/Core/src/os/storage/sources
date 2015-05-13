@@ -1,0 +1,17 @@
+TARGET_NAME= storage
+TARGET_TYPE= lib
+
+C_DEFINES += -D_FRAMEWORK_CORE
+
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../inc
+INCLUDES += $(MAKEDIR)/../../../inc/os/storage
+
+#SOURCES = COnObbStateChangeListener.cpp
+#SOURCES += CStorageEventListener.cpp
+SOURCES += CMountServiceBinderListener.cpp
+SOURCES += CObbActionListener.cpp
+SOURCES += CStorageManager.cpp
+SOURCES += CStorageManagerHelper.cpp
+SOURCES += CStorageVolume.cpp
+SOURCES += CStorageVolumeHelper.cpp

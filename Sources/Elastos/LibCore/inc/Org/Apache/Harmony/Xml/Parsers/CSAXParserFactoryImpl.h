@@ -1,0 +1,61 @@
+
+#ifndef __CSAXPARSERFACTORYIMPL_H__
+#define __CSAXPARSERFACTORYIMPL_H__
+
+#include "_CSAXParserFactoryImpl.h"
+
+namespace Org {
+namespace Apache {
+namespace Harmony {
+namespace Xml {
+namespace Parsers {
+
+CarClass(CSAXParserFactoryImpl)
+{
+public:
+    CARAPI NewSAXParser(
+        /* [out] */ Elastosx::Xml::Parsers::ISAXParser ** ppParser);
+
+    CARAPI SetNamespaceAware(
+        /* [in] */ Boolean awareness);
+
+    CARAPI SetValidating(
+        /* [in] */ Boolean validating);
+
+    CARAPI IsNamespaceAware(
+        /* [out] */ Boolean * pIsAware);
+
+    CARAPI IsValidating(
+        /* [out] */ Boolean * pIsValidating);
+
+    CARAPI SetFeature(
+        /* [in] */ const String& name,
+        /* [in] */ Boolean value);
+
+    CARAPI GetFeature(
+        /* [in] */ const String& name,
+        /* [out] */ Boolean * pFeature);
+
+    CARAPI GetSchema(
+        /* [out] */ Elastosx::Xml::Validation::ISchema ** ppSchema);
+
+    CARAPI SetSchema(
+        /* [in] */ Elastosx::Xml::Validation::ISchema * pSchema);
+
+    CARAPI SetXIncludeAware(
+        /* [in] */ Boolean state);
+
+    CARAPI IsXIncludeAware(
+        /* [out] */ Boolean * pIsAware);
+
+private:
+    // TODO: Add your private member variables here.
+};
+
+}
+}
+}
+}
+}
+
+#endif // __CSAXPARSERFACTORYIMPL_H__

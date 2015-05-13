@@ -1,0 +1,25 @@
+module
+{
+    using interface Elastos.Core.IComparator;
+
+    namespace Elastos {
+    namespace Utility {
+    /**
+     * A {@code Set} is a data structure which does not allow duplicate elements.
+     *
+     * @since 1.2
+     */
+    interface IPriorityQueue extends IQueue {
+        /**
+         * Gets the comparator of the priority queue.
+         *
+         * @return the comparator of the priority queue or null if the natural
+         *         ordering is used.
+         */
+        Comparator(
+            [out] IComparator** outcom);
+    }
+
+    } // namespace Utility
+    } // namespace Elastos
+}

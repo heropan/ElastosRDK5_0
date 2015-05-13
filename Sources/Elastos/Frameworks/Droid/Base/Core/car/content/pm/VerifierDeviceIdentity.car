@@ -1,0 +1,39 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Content {
+    namespace Pm {
+
+    interface IVerifierDeviceIdentity {
+        Equals(
+            [in] IInterface* obj,
+            [out] Boolean* isEquals);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        ToString(
+            [out] String* str);
+    }
+
+    interface IVerifierDeviceIdentityHelper {
+        /**
+         * Generate a new device identity.
+         *
+         * @return random uniformly-distributed device identity
+         */
+        Generate(
+            [out] IVerifierDeviceIdentity** identity);
+
+        Parse(
+            [in] String deviceIdentity,
+            [out] IVerifierDeviceIdentity** identity);
+    }
+
+    } // namespace Pm
+    } // namespace Content
+    } // namespace Droid
+    } // namespace Elastos
+}

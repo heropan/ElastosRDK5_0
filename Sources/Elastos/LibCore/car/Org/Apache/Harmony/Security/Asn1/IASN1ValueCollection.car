@@ -1,0 +1,39 @@
+
+module
+{
+    using interface Elastos.Utility.ICollection;
+    interface Org.Apache.Harmony.Security.Asn1.IASN1Type;
+
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Security {
+    namespace Asn1 {
+
+    interface IASN1ValueCollection extends IASN1Type {
+        SetType(
+            [in] IASN1Type* type);
+
+        GetType(
+            [out] IASN1Type** type);
+
+        /**
+         * Provides an object's values to be encoded
+         *
+         * Derived classes should override this method to provide
+         * encoding for a selected class of objects.
+         *
+         * @param - an object to be encoded
+         * @return - a collection of object's values to be encoded
+         */
+         GetValues(
+            [in] IInterface* object,
+            [out] ICollection** values);
+    }
+
+    } // namespace Asn1
+    } // namespace Security
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

@@ -1,0 +1,35 @@
+
+module
+{
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Internal.Os.IPkgUsageStats;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    interface IIUsageStats {
+        NoteResumeComponent(
+            [in] IComponentName* componentName);
+
+        NotePauseComponent(
+            [in] IComponentName* componentName);
+
+        NoteLaunchTime(
+            [in] IComponentName* componentName,
+            [in] Int32 millis);
+
+        GetPkgUsageStats(
+            [in] IComponentName* componentName,
+            [out] IPkgUsageStats** stats);
+
+        GetAllPkgUsageStats(
+            [out, callee] ArrayOf<IPkgUsageStats*>* allStats);
+    }
+
+    } // namespace App
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
+}

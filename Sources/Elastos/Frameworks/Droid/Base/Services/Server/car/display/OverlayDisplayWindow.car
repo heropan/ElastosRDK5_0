@@ -1,0 +1,23 @@
+module
+{
+    using interface Elastos.Droid.Graphics.ISurfaceTexture;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Display {
+
+    [local]
+    interface IOverlayDisplayWindowListener {
+        OnWindowCreated(
+            [in] ISurfaceTexture* surfaceTexture,
+            [in] Float refreshRate);
+
+        OnWindowDestroyed();
+    }
+
+    } // namespace Display
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
+}

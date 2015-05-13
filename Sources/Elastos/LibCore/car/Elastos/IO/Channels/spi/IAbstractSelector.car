@@ -1,0 +1,59 @@
+
+module
+{
+    interface Elastos.IO.Channels.IDatagramChannel;
+    interface Elastos.IO.Channels.IPipe;
+    interface Elastos.IO.Channels.ISelector;
+    interface Elastos.IO.Channels.IServerSocketChannel;
+    interface Elastos.IO.Channels.ISocketChannel;
+    interface Elastos.IO.Channels.IChannel;
+    interface Elastos.IO.Channels.ISelectionKey;
+    interface Elastos.IO.Channels.Spi.ISelectorProvider;
+
+    namespace Elastos {
+    namespace IO {
+    namespace Channels {
+    namespace Spi {
+
+   /**
+   * {@code AbstractSelector} is the base implementation class for selectors.
+   * It realizes the interruption of selection by {@code begin} and
+   * {@code end}. It also holds the cancellation and the deletion of the key
+   * set.
+   */
+   interface IAbstractSelector extends Elastos.IO.Channels.ISelector {
+
+     /**
+     * Closes this selector. This method does nothing if this selector is
+     * already closed. The actual closing must be implemented by subclasses in
+     * {@code implCloseSelector()}.
+     */
+    // Close();
+
+     /**
+     * Returns true if this selector is open.
+     */
+    // IsOpen(
+    // [out] Boolean* isOpen);
+
+     /**
+     * Returns this selector's provider.
+     */
+    // Provider(
+    // [out] ISelectorProvider** provider);
+
+    Cancel(
+        [in] ISelectionKey* key);
+
+    Register(
+        [in]  IAbstractSelectableChannel* channel,
+        [in]  Int32 operations,
+        [in]  IObject* obj,
+        [out] ISelectionKey** returnKey);
+
+    } // end interface
+    } // namespace Spi
+    } // namespace Channels
+    } // namespace IO
+    } // namespace Elastos
+}

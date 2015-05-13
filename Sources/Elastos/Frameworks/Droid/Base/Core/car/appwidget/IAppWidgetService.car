@@ -1,0 +1,136 @@
+
+module
+{
+    interface Elastos.Utility.IObjectContainer;
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IBinder;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace AppWidget {
+
+        [deprecated]
+        interface IIAppWidgetService {
+            //
+            // for AppWidgetHost
+            //
+            StartListening(
+                [in] IIAppWidgetHost* host,
+                [in] String packageName,
+                [in] Int32 hostId,
+                [out] IObjectContainer** views,
+                [out, callee] ArrayOf<Int32>* values);
+
+            StartListeningAsUser(
+                [in] IIAppWidgetHost* host,
+                [in] String packageName,
+                [in] Int32 hostId,
+                [out] IObjectContainer** updatedViews,
+                [in] Int32 userId,
+                [out, callee] ArrayOf<Int32>* values);
+
+            StopListening(
+                [in] Int32 hostId);
+
+            StopListeningAsUser(
+                [in] Int32 hostId,
+                [in] Int32 userId);
+
+            AllocateAppWidgetId(
+                [in] String packageName,
+                [in] Int32 hostId,
+                [out] Int32* id);
+
+            GetAppWidgetIdsForHost(
+                [in] Int32 hostId,
+                [out, callee] ArrayOf<Int32>* ids);
+
+            DeleteAppWidgetId(
+                [in] Int32 appWidgetId);
+
+            DeleteHost(
+                [in] Int32 hostId);
+
+            DeleteAllHosts();
+
+            GetAppWidgetViews(
+                [in] Int32 appWidgetId,
+                [out] IParcelable** views);
+
+            //
+            // for AppWidgetManager
+            //
+            UpdateAppWidgetIds(
+                [in] ArrayOf<Int32>* appWidgetIds,
+                [in] IParcelable* views);
+
+            UpdateAppWidgetOptions(
+                [in] Int32 appWidgetId,
+                [in] IBundle* extras);
+
+            GetAppWidgetOptions(
+                [in] Int32 appWidgetId,
+                [out] IBundle** options);
+
+            PartiallyUpdateAppWidgetIds(
+                [in] ArrayOf<Int32>* appWidgetIds,
+                [in] IParcelable* views);
+
+            UpdateAppWidgetProvider(
+                [in] IComponentName* provider,
+                [in] IParcelable* views);
+
+            NotifyAppWidgetViewDataChanged(
+                [in] ArrayOf<Int32>* appWidgetIds,
+                [in] Int32 viewId);
+
+            GetInstalledProviders(
+                [in] Int32 categoryFilter,
+                [out] IObjectContainer** providers);
+
+            GetAppWidgetInfo(
+                [in] Int32 appWidgetId,
+                [out] IAppWidgetProviderInfo** info);
+
+            HasBindAppWidgetPermission(
+                [in] String packageName,
+                [out] Boolean* result);
+
+            SetBindAppWidgetPermission(
+                [in] String packageName,
+                [in] Boolean permission);
+
+            BindAppWidgetId(
+                [in] Int32 appWidgetId,
+                [in] IComponentName* provider,
+                [in] IBundle* options);
+
+            BindAppWidgetIdIfAllowed(
+                [in] String packageName,
+                [in] Int32 appWidgetId,
+                [in] IComponentName* provider,
+                [in] IBundle* options,
+                [out] Boolean* result);
+
+            BindRemoteViewsService(
+                [in] Int32 appWidgetId,
+                [in] IIntent* intent,
+                [in] IBinder* connection,
+                [in] Int32 userId);
+
+            UnbindRemoteViewsService(
+                [in] Int32 appWidgetId,
+                [in] IIntent* intent,
+                [in] Int32 userId);
+
+            GetAppWidgetIds(
+                [in] IComponentName* provider,
+                [out, callee] ArrayOf<Int32>* ids);
+        }
+
+    }//namespace AppWidget
+    }//namespace Droid
+    }//namespace Elastos
+}

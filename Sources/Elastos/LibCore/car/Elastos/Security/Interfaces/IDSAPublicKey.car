@@ -1,0 +1,26 @@
+
+module
+{
+    interface Elastos.Math.IBigInteger;
+
+    namespace Elastos {
+    namespace Security {
+    namespace Interfaces {
+
+    /**
+     * The interface for a Digital Signature Algorithm (DSA) public key.
+     */
+    interface IDSAPublicKey extends Elastos.Security.Interfaces.IDSAKey/*, Elastos.Security.IPublicKey*/ {
+        /**
+         * Returns the public key value {@code y}.
+         *
+         * @return the public key value {@code y}.
+         */
+        GetY(
+            [out] IBigInteger** y);
+    }
+
+    } // namespace Interfaces
+    } // namespace Security
+    } // namespace Elastos
+}

@@ -1,0 +1,79 @@
+
+module
+{
+
+    interface Elastos.Droid.Content.IContext;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Telephony {
+
+    [local, deprecated]
+    interface IPhoneStateListener {
+
+        const Int32 LISTEN_NONE = 0;
+        const Int32 LISTEN_SERVICE_STATE                            = 0x00000001;
+        const Int32 LISTEN_SIGNAL_STRENGTH                          = 0x00000002;
+        const Int32 LISTEN_MESSAGE_WAITING_INDICATOR                = 0x00000004;
+        const Int32 LISTEN_CALL_FORWARDING_INDICATOR                = 0x00000008;
+        const Int32 LISTEN_CELL_LOCATION                            = 0x00000010;
+        const Int32 LISTEN_CALL_STATE                               = 0x00000020;
+        const Int32 LISTEN_DATA_CONNECTION_STATE                    = 0x00000040;
+        const Int32 LISTEN_DATA_ACTIVITY                            = 0x00000080;
+        const Int32 LISTEN_SIGNAL_STRENGTHS                         = 0x00000100;
+        const Int32 LISTEN_OTASP_CHANGED                            = 0x00000200;
+        const Int32 LISTEN_CELL_INFO = 0x00000400;
+
+        SetContext(
+            [in] IContext* ctx);
+
+        SetPackageName(
+            [in] String packageName);
+
+        SetUid(
+            [in] Int32 uid);
+
+        OnServiceStateChanged(
+            [in] IServiceState* serviceState);
+
+        OnSignalStrengthChanged(
+            [in] Int32 asu);
+
+        OnMessageWaitingIndicatorChanged(
+            [in] Boolean mwi);
+
+        OnCallForwardingIndicatorChanged(
+            [in] Boolean cfi);
+
+        OnCellLocationChanged(
+            [in] ICellLocation* location);
+
+        OnCallStateChanged(
+            [in] Int32 state,
+            [in] String incomingNumber);
+
+        OnDataConnectionStateChanged(
+            [in] Int32 state);
+
+        OnDataConnectionStateChangedEx(
+            [in] Int32 state,
+            [in] Int32 networkType);
+
+        OnDataActivity(
+            [in] Int32 direction);
+
+        OnSignalStrengthsChanged(
+            [in] ISignalStrength* signalStrength);
+
+        OnOtaspChanged(
+            [in] Int32 otaspMode);
+
+        OnCellInfoChanged(
+            [in] ArrayOf<ICellInfo*>* cellInfo);
+
+    }
+
+    } // namespace Telephony
+    } // namespace Droid
+    } // namespace Elastos
+}

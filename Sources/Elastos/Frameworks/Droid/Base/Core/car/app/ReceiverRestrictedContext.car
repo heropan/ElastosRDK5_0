@@ -1,0 +1,28 @@
+
+module
+{
+    interface Elastos.Droid.Content.IBroadcastReceiver;
+    interface Elastos.Droid.Content.IServiceConnection;
+    interface Elastos.Droid.Content.IIntentFilter;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Os.IUserHandle;
+    interface Elastos.Droid.Os.IHandler;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    /**
+     * Proxying implementation of Context that simply delegates all of its calls to
+     * another Context. Can be subclassed to modify behavior without changing the
+     * original Context.
+     *
+     * @implements Elastos.Droid.Content.Elastos.Droid.Content.IContext
+     */
+    interface IReceiverRestrictedContext extends Elastos.Droid.Content.IContextWrapper {
+    }
+
+    } // namespace Content
+    } // namespace Droid
+    } // namespace Elastos
+}

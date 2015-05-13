@@ -1,0 +1,24 @@
+
+module
+{
+    interface Elastos.Droid.View.Textservice.IISpellCheckerSession;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Textservice {
+
+    /**
+     * Interface to the text service session.
+     * @hide
+     */
+    interface ITextServicesSessionListener {
+        [oneway] OnServiceConnected(
+            [in] IISpellCheckerSession* spellCheckerSession);
+    }
+
+    } // namespace Textservice
+    } // namespace View
+    } // namespace Droid
+    } // namespace Elastos
+}

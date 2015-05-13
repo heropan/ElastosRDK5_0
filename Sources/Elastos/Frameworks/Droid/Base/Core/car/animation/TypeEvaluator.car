@@ -1,0 +1,98 @@
+
+module
+{
+    using interface Elastos.Core.INumber;
+    using interface Elastos.Core.IFloat;
+    using interface Elastos.Core.IInteger;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Animation {
+
+    /**
+     * Interface for use with the setEvaluator(TypeEvaluator) function. Evaluators
+     * allow developers to create animations on arbitrary property types, by allowing
+     * them to supply custom evaulators for types that are not automatically
+     * understood and used by the animation system.
+     *
+     * @sa setEvaluator(TypeEvaluator)
+     */
+
+    interface ITypeEvaluator {
+        /**
+         * This function returns the result of linearly interpolating the start and end values, with
+         * <code>fraction</code> representing the proportion between the start and end values. The
+         * calculation is a simple parametric calculation: <code>result = x0 + t * (v1 - v0)</code>,
+         * where <code>x0</code> is <code>startValue</code>, <code>x1</code> is <code>endValue</code>,
+         * and <code>t</code> is <code>fraction</code>.
+         *
+         * @param fraction   The fraction from the starting to the ending values
+         * @param startValue The start value.
+         * @param endValue   The end value.
+         * @return A linear interpolation between the start and end values, given the
+         *         <code>fraction</code> parameter.
+         */
+        Evaluate(
+            [in] Float fraction,
+            [in] IInterface* startValue,
+            [in] IInterface* endValue,
+            [out] IInterface** result);
+    }
+
+    interface IArgbEvaluator extends Elastos.Droid.Animation.ITypeEvaluator{
+
+        EvaluateEx(
+            [in] Float f,
+            [in] Int32 startFloat,
+            [in] Int32 endFloat,
+            [out] Int32* r);
+    }
+
+    interface IFloatEvaluator extends Elastos.Droid.Animation.ITypeEvaluator {
+        /**
+         * This function returns the result of linearly interpolating the start and end values, with
+         * <code>fraction</code> representing the proportion between the start and end values. The
+         * calculation is a simple parametric calculation: <code>result = x0 + t * (v1 - v0)</code>,
+         * where <code>x0</code> is <code>startValue</code>, <code>x1</code> is <code>endValue</code>,
+         * and <code>t</code> is <code>fraction</code>.
+         *
+         * @param fraction   The fraction from the starting to the ending values
+         * @param startValue The start value; should be of type <code>float</code> or
+         *                   <code>Float</code>
+         * @param endValue   The end value; should be of type <code>float</code> or <code>Float</code>
+         * @return A linear interpolation between the start and end values, given the
+         *         <code>fraction</code> parameter.
+         */
+        EvaluateEx(
+            [in] Float f,
+            [in] Float startFloat,
+            [in] Float endFloat,
+            [out] Float* r);
+    }
+
+    interface IInt32Evaluator extends Elastos.Droid.Animation.ITypeEvaluator {
+        /**
+         * This function returns the result of linearly interpolating the start and end values, with
+         * <code>fraction</code> representing the proportion between the start and end values. The
+         * calculation is a simple parametric calculation: <code>result = x0 + t * (v1 - v0)</code>,
+         * where <code>x0</code> is <code>startValue</code>, <code>x1</code> is <code>endValue</code>,
+         * and <code>t</code> is <code>fraction</code>.
+         *
+         * @param fraction   The fraction from the starting to the ending values
+         * @param startValue The start value; should be of type <code>int</code> or
+         *                   <code>Integer</code>
+         * @param endValue   The end value; should be of type <code>int</code> or <code>Integer</code>
+         * @return A linear interpolation between the start and end values, given the
+         *         <code>fraction</code> parameter.
+         */
+        EvaluateEx(
+            [in] Float f,
+            [in] Int32 startValue,
+            [in] Int32 endValue,
+            [out] Int32* r);
+    }
+
+    } // namespace Animation
+    } // namepsace Droid
+    } // namespace Elastos
+}

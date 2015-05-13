@@ -1,0 +1,71 @@
+
+module
+{
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionConnectionCallback;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+
+    interface IAccessibilityInteractionController {
+
+        FindAccessibilityNodeInfoByAccessibilityIdClientThread(
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 flags,
+            [in] Int32 interrogatingPid,
+            [in] Int64 interrogatingTid);
+
+        FindAccessibilityNodeInfoByViewIdClientThread(
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 viewId,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 flags,
+            [in] Int32 interrogatingPid,
+            [in] Int64 interrogatingTid);
+
+        FindAccessibilityNodeInfosByTextClientThread(
+            [in] Int64 accessibilityNodeId,
+            [in] String text,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 flags,
+            [in] Int32 interrogatingPid,
+            [in] Int64 interrogatingTid);
+
+        FindFocusClientThread(
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 focusType,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 flags,
+            [in] Int32 interogatingPid,
+            [in] Int64 interrogatingTid);
+
+        FocusSearchClientThread(
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 direction,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 flags,
+            [in] Int32 interogatingPid,
+            [in] Int64 interrogatingTid);
+
+        PerformAccessibilityActionClientThread(
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 action,
+            [in] IBundle* arguments,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 flags,
+            [in] Int32 interogatingPid,
+            [in] Int64 interrogatingTid);
+    }
+
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

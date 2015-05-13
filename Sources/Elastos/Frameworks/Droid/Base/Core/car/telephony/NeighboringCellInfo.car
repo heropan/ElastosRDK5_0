@@ -1,0 +1,54 @@
+
+module
+{
+
+    interface IParcelable;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Telephony {
+
+    interface INeighboringCellInfo {
+
+        /**
+         * Signal strength is not available
+         */
+        const Int32 UNKNOWN_RSSI = 99;
+        /**
+         * Cell location is not available
+         */
+        const Int32 UNKNOWN_CID = -1;
+
+        GetRssi(
+            [out] Int32* rssi);
+
+        GetLac(
+            [out] Int32* lac);
+
+        GetCid(
+            [out] Int32* cid);
+
+        GetPsc(
+            [out] Int32* psc);
+
+        GetNetworkType(
+            [out] Int32* networkType);
+
+        SetCid(
+            [in] Int32 cid);
+
+        SetRssi(
+            [in] Int32 rssi);
+
+        ToString(
+            [out] String* str);
+
+        DescribeContents(
+            [out] Int32* val);
+
+    }
+
+    } // namespace Telephony
+    } // namespace Droid
+    } // namespace Elastos
+}

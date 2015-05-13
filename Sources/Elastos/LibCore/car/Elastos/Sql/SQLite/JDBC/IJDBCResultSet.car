@@ -1,0 +1,24 @@
+module
+{
+    namespace Elastos {
+    namespace Sql {
+    namespace SQLite {
+    namespace JDBC {
+
+    interface IJDBCResultSet extends Elastos.Sql.IResultSet {
+
+        IsUpdatable(
+            [out] Boolean * value);
+
+        FillRowbuf();
+
+        FindColumnEx(
+            [in] String columnName,
+            [out] Int32 * value);
+    }
+
+    } // namespace JDBC
+    } // namespace SQLite
+    } // namespace Sql
+    } // namespace Elastos
+}

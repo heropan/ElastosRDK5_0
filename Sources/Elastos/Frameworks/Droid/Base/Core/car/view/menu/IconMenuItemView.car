@@ -1,0 +1,32 @@
+
+module
+{
+    interface Elastos.Droid.View.Menu.IMenuBuilderItemInvoker;
+    interface Elastos.Droid.View.Menu.IMenuItemImpl;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Menu {
+
+        /**
+         * The item view for each item in the {@link IconMenuView}.
+         */
+        [local]
+        interface IIconMenuItemView extends Elastos.Droid.Widget.ITextView {
+            SetItemInvoker(
+                [in] IMenuBuilderItemInvoker* itemInvoker);
+
+            SetItemData(
+                [in] IMenuItemImpl* data);
+
+            GetIcon(
+                [out] IDrawable** icon);
+        }
+
+    } // namespace Menu
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

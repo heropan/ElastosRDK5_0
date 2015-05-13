@@ -1,0 +1,34 @@
+
+module
+{
+
+    interface Elastos.Droid.View.IViewGroupLayoutParams;
+    interface Elastos.Droid.View.IViewGroup;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+
+    interface IAbsoluteLayoutLayoutParams extends Elastos.Droid.View.IViewGroupLayoutParams {
+        SetX(
+            [in] Int32 x);
+
+        SetY(
+            [in] Int32 y);
+
+        GetX(
+            [out] Int32* x);
+
+        GetY(
+            [out] Int32* y);
+    }
+
+    interface IAbsoluteLayout extends Elastos.Droid.View.IViewGroup {
+
+    }
+
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+
+}

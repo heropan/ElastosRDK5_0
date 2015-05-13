@@ -1,0 +1,69 @@
+
+module
+{
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IViewGroup;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
+    interface IRemoteViewsOnClickHandler;
+    /**
+     * An interface for the RemoteAdapter to notify other classes when adapters
+     * are actually connected to/disconnected from their actual services.
+     */
+    interface IRemoteAdapterConnectionCallback
+    {
+        /**
+         * @return whether the adapter was set or not.
+         */
+        OnRemoteAdapterConnected(
+            [out] Boolean* res);
+
+        OnRemoteAdapterDisconnected();
+
+        /**
+         * This defers a notifyDataSetChanged on the pending RemoteViewsAdapter if it has not
+         * connected yet.
+         */
+        DeferNotifyDataSetChanged();
+    }
+
+
+    /**
+     * An adapter to a RemoteViewsService which fetches and caches RemoteViews
+     * to be later inflated as child views.
+     */
+    /** @hide */
+    [local]
+    interface IRemoteViewsAdapter extends IBaseAdapter
+    {
+        IsDataReady(
+            [out] Boolean* res);
+
+        SetRemoteViewsOnClickHandler(
+            [in] IRemoteViewsOnClickHandler* handler);
+
+        SaveRemoteViewsCache();
+
+        GetRemoteViewsServiceIntent(
+            [out] IIntent** intent);
+
+        /**
+         * This method allows an AdapterView using this Adapter to provide information about which
+         * views are currently being displayed. This allows for certain optimizations and preloading
+         * which  wouldn't otherwise be possible.
+         */
+        SetVisibleRangeHint(
+            [in] Int32 lowerBound,
+            [in] Int32 upperBound);
+
+        SuperNotifyDataSetChanged();
+    }
+
+    } // namespace Widget
+    } // namespace Droid
+    } // namespace Elastos
+}

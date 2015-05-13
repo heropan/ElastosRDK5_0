@@ -1,0 +1,499 @@
+
+module
+{
+    interface Elastos.Droid.Graphics.IBitmap;
+    interface Elastos.Droid.App.IPendingIntent;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+    /**
+     * Class used to modify metadata in a {@link RemoteControlClient} object.
+     * Use {@link RemoteControlClient#editMetadata(boolean)} to create an instance of an editor,
+     * on which you set the metadata for the RemoteControlClient instance. Once all the information
+     * has been set, use {@link #apply()} to make it the new metadata that should be displayed
+     * for the associated client. Once the metadata has been "applied", you cannot reuse this
+     * instance of the MetadataEditor.
+     */
+    interface IMetadataEditor {
+        /**
+         * The metadata key for the content artwork / album art.
+         */
+        const Int32 BITMAP_KEY_ARTWORK = 100;
+
+        /**
+         * @hide
+         * TODO(jmtrivi) have lockscreen and music move to the new key name
+         */
+        const Int32 METADATA_KEY_ARTWORK = BITMAP_KEY_ARTWORK; // = 100;
+
+        /**
+         * @hide
+         */
+        Clone(
+            [out] IMetadataEditor** result);
+
+        /**
+         * Adds textual information to be displayed.
+         * Note that none of the information added after {@link #apply()} has been called,
+         * will be displayed.
+         * @param key The identifier of a the metadata field to set. Valid values are
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_ALBUM},
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_ALBUMARTIST},
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_TITLE},
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_ARTIST},
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_AUTHOR},
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_COMPILATION},
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_COMPOSER},
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_DATE},
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_GENRE},
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_TITLE},
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_WRITER}.
+         * @param value The text for the given key, or {@code null} to signify there is no valid
+         *      information for the field.
+         * @return Returns a reference to the same MetadataEditor object, so you can chain put
+         *      calls together.
+         */
+        PutString(
+            [in] Int32 key,
+            [in] String value,
+            [out] IMetadataEditor** result);
+
+        /**
+         * Adds numerical information to be displayed.
+         * Note that none of the information added after {@link #apply()} has been called,
+         * will be displayed.
+         * @param key the identifier of a the metadata field to set. Valid values are
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_CD_TRACK_NUMBER},
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_DISC_NUMBER},
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_DURATION} (with a value
+         *      expressed in milliseconds),
+         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_YEAR}.
+         * @param value The long value for the given key
+         * @return Returns a reference to the same MetadataEditor object, so you can chain put
+         *      calls together.
+         * @throws IllegalArgumentException
+         */
+        PutInt64(
+            [in] Int32 key,
+            [in] Int64 value,
+            [out] IMetadataEditor** result);
+
+        /**
+         * Sets the album / artwork picture to be displayed on the remote control.
+         * @param key the identifier of the bitmap to set. The only valid value is
+         *      {@link #BITMAP_KEY_ARTWORK}
+         * @param bitmap The bitmap for the artwork, or null if there isn't any.
+         * @return Returns a reference to the same MetadataEditor object, so you can chain put
+         *      calls together.
+         * @throws IllegalArgumentException
+         * @see android.graphics.Bitmap
+         */
+        PutBitmap(
+            [in] Int32 key,
+            [in] IBitmap* bitmap,
+            [out] IMetadataEditor** result);
+
+        /**
+         * Clears all the metadata that has been set since the MetadataEditor instance was
+         *     created with {@link RemoteControlClient#editMetadata(boolean)}.
+         */
+        Clear();
+
+        /**
+         * Associates all the metadata that has been set since the MetadataEditor instance was
+         *     created with {@link RemoteControlClient#editMetadata(boolean)}, or since
+         *     {@link #clear()} was called, with the RemoteControlClient. Once "applied",
+         *     this MetadataEditor cannot be reused to edit the RemoteControlClient's metadata.
+         */
+        Apply();
+    }
+
+    interface IRemoteControlClient {
+        /**
+         * Playback state of a RemoteControlClient which is stopped.
+         *
+         * @see #setPlaybackState(int)
+         */
+        const Int32 PLAYSTATE_STOPPED = 1;
+
+        /**
+         * Playback state of a RemoteControlClient which is paused.
+         *
+         * @see #setPlaybackState(int)
+         */
+        const Int32 PLAYSTATE_PAUSED = 2;
+
+        /**
+         * Playback state of a RemoteControlClient which is playing media.
+         *
+         * @see #setPlaybackState(int)
+         */
+        const Int32 PLAYSTATE_PLAYING = 3;
+
+        /**
+         * Playback state of a RemoteControlClient which is fast forwarding in the media
+         *    it is currently playing.
+         *
+         * @see #setPlaybackState(int)
+         */
+        const Int32 PLAYSTATE_FAST_FORWARDING = 4;
+
+        /**
+         * Playback state of a RemoteControlClient which is fast rewinding in the media
+         *    it is currently playing.
+         *
+         * @see #setPlaybackState(int)
+         */
+        const Int32 PLAYSTATE_REWINDING = 5;
+
+        /**
+         * Playback state of a RemoteControlClient which is skipping to the next
+         *    logical chapter (such as a song in a playlist) in the media it is currently playing.
+         *
+         * @see #setPlaybackState(int)
+         */
+        const Int32 PLAYSTATE_SKIPPING_FORWARDS = 6;
+
+        /**
+         * Playback state of a RemoteControlClient which is skipping back to the previous
+         *    logical chapter (such as a song in a playlist) in the media it is currently playing.
+         *
+         * @see #setPlaybackState(int)
+         */
+        const Int32 PLAYSTATE_SKIPPING_BACKWARDS = 7;
+
+        /**
+         * Playback state of a RemoteControlClient which is buffering data to play before it can
+         *    start or resume playback.
+         *
+         * @see #setPlaybackState(int)
+         */
+        const Int32 PLAYSTATE_BUFFERING = 8;
+
+        /**
+         * Playback state of a RemoteControlClient which cannot perform any playback related
+         *    operation because of an internal error. Examples of such situations are no network
+         *    connectivity when attempting to stream data from a server, or expired user credentials
+         *    when trying to play subscription-based content.
+         *
+         * @see #setPlaybackState(int)
+         */
+        const Int32 PLAYSTATE_ERROR = 9;
+
+        /**
+         * @hide
+         * The value of a playback state when none has been declared.
+         * Intentionally hidden as an application shouldn't set such a playback state value.
+         */
+        const Int32 PLAYSTATE_NONE = 0;
+
+        /**
+         * @hide
+         * The default playback type, "local", indicating the presentation of the media is happening on
+         * the same device (e.g. a phone, a tablet) as where it is controlled from.
+         */
+        const Int32 PLAYBACK_TYPE_LOCAL = 0;
+
+        /**
+         * @hide
+         * A playback type indicating the presentation of the media is happening on
+         * a different device (i.e. the remote device) than where it is controlled from.
+         */
+        const Int32 PLAYBACK_TYPE_REMOTE = 1;
+
+        /**
+         * @hide
+         * Playback information indicating the playback volume is fixed, i.e. it cannot be controlled
+         * from this object. An example of fixed playback volume is a remote player, playing over HDMI
+         * where the user prefer to control the volume on the HDMI sink, rather than attenuate at the
+         * source.
+         * @see #PLAYBACKINFO_VOLUME_HANDLING.
+         */
+        const Int32 PLAYBACK_VOLUME_FIXED = 0;
+
+        /**
+         * @hide
+         * Playback information indicating the playback volume is variable and can be controlled from
+         * this object.
+         * @see #PLAYBACKINFO_VOLUME_HANDLING.
+         */
+        const Int32 PLAYBACK_VOLUME_VARIABLE = 1;
+
+        /**
+         * @hide (to be un-hidden)
+         * The playback information value indicating the value of a given information type is invalid.
+         * @see #PLAYBACKINFO_VOLUME_HANDLING.
+         */
+        const Int32 PLAYBACKINFO_INVALID_VALUE = 0x80000000; // = Integer.MIN_VALUE;
+
+        //==========================================
+        // Public keys for playback information
+        /**
+         * @hide
+         * Playback information that defines the type of playback associated with this
+         * RemoteControlClient. See {@link #PLAYBACK_TYPE_LOCAL} and {@link #PLAYBACK_TYPE_REMOTE}.
+         */
+        const Int32 PLAYBACKINFO_PLAYBACK_TYPE = 1;
+
+        /**
+         * @hide
+         * Playback information that defines at what volume the playback associated with this
+         * RemoteControlClient is performed. This information is only used when the playback type is not
+         * local (see {@link #PLAYBACKINFO_PLAYBACK_TYPE}).
+         */
+        const Int32 PLAYBACKINFO_VOLUME = 2;
+
+        /**
+         * @hide
+         * Playback information that defines the maximum volume volume value that is supported
+         * by the playback associated with this RemoteControlClient. This information is only used
+         * when the playback type is not local (see {@link #PLAYBACKINFO_PLAYBACK_TYPE}).
+         */
+        const Int32 PLAYBACKINFO_VOLUME_MAX = 3;
+
+        /**
+         * @hide
+         * Playback information that defines how volume is handled for the presentation of the media.
+         * @see #PLAYBACK_VOLUME_FIXED
+         * @see #PLAYBACK_VOLUME_VARIABLE
+         */
+        const Int32 PLAYBACKINFO_VOLUME_HANDLING = 4;
+
+        /**
+         * @hide
+         * Playback information that defines over what stream type the media is presented.
+         */
+        const Int32 PLAYBACKINFO_USES_STREAM = 5;
+
+        //==========================================
+        // Private keys for playback information
+        /**
+         * @hide
+         * Used internally to relay playback state (set by the application with
+         * {@link #setPlaybackState(int)}) to AudioService
+         */
+        const Int32 PLAYBACKINFO_PLAYSTATE = 255;
+
+        /**
+         * Flag indicating a RemoteControlClient makes use of the "previous" media key.
+         *
+         * @see #setTransportControlFlags(int)
+         * @see android.view.KeyEvent#KEYCODE_MEDIA_PREVIOUS
+         */
+        const Int32 FLAG_KEY_MEDIA_PREVIOUS = 1 << 0;
+
+        /**
+         * Flag indicating a RemoteControlClient makes use of the "rewind" media key.
+         *
+         * @see #setTransportControlFlags(int)
+         * @see android.view.KeyEvent#KEYCODE_MEDIA_REWIND
+         */
+        const Int32 FLAG_KEY_MEDIA_REWIND = 1 << 1;
+
+        /**
+         * Flag indicating a RemoteControlClient makes use of the "play" media key.
+         *
+         * @see #setTransportControlFlags(int)
+         * @see android.view.KeyEvent#KEYCODE_MEDIA_PLAY
+         */
+        const Int32 FLAG_KEY_MEDIA_PLAY = 1 << 2;
+
+        /**
+         * Flag indicating a RemoteControlClient makes use of the "play/pause" media key.
+         *
+         * @see #setTransportControlFlags(int)
+         * @see android.view.KeyEvent#KEYCODE_MEDIA_PLAY_PAUSE
+         */
+        const Int32 FLAG_KEY_MEDIA_PLAY_PAUSE = 1 << 3;
+
+        /**
+         * Flag indicating a RemoteControlClient makes use of the "pause" media key.
+         *
+         * @see #setTransportControlFlags(int)
+         * @see android.view.KeyEvent#KEYCODE_MEDIA_PAUSE
+         */
+        const Int32 FLAG_KEY_MEDIA_PAUSE = 1 << 4;
+
+        /**
+         * Flag indicating a RemoteControlClient makes use of the "stop" media key.
+         *
+         * @see #setTransportControlFlags(int)
+         * @see android.view.KeyEvent#KEYCODE_MEDIA_STOP
+         */
+        const Int32 FLAG_KEY_MEDIA_STOP = 1 << 5;
+
+        /**
+         * Flag indicating a RemoteControlClient makes use of the "fast forward" media key.
+         *
+         * @see #setTransportControlFlags(int)
+         * @see android.view.KeyEvent#KEYCODE_MEDIA_FAST_FORWARD
+         */
+        const Int32 FLAG_KEY_MEDIA_FAST_FORWARD = 1 << 6;
+
+        /**
+         * Flag indicating a RemoteControlClient makes use of the "next" media key.
+         *
+         * @see #setTransportControlFlags(int)
+         * @see android.view.KeyEvent#KEYCODE_MEDIA_NEXT
+         */
+        const Int32 FLAG_KEY_MEDIA_NEXT = 1 << 7;
+
+        /**
+         * @hide
+         * The flags for when no media keys are declared supported.
+         * Intentionally hidden as an application shouldn't set the transport control flags
+         *     to this value.
+         */
+        const Int32 FLAGS_KEY_MEDIA_NONE = 0;
+
+        /**
+         * @hide
+         * Flag used to signal some type of metadata exposed by the RemoteControlClient is requested.
+         */
+        const Int32 FLAG_INFORMATION_REQUEST_METADATA = 1 << 0;
+
+        /**
+         * @hide
+         * Flag used to signal that the transport control buttons supported by the
+         *     RemoteControlClient are requested.
+         * This can for instance happen when playback is at the end of a playlist, and the "next"
+         * operation is not supported anymore.
+         */
+        const Int32 FLAG_INFORMATION_REQUEST_KEY_MEDIA = 1 << 1;
+
+        /**
+         * @hide
+         * Flag used to signal that the playback state of the RemoteControlClient is requested.
+         */
+        const Int32 FLAG_INFORMATION_REQUEST_PLAYSTATE = 1 << 2;
+
+        /**
+         * @hide
+         * Flag used to signal that the album art for the RemoteControlClient is requested.
+         */
+        const Int32 FLAG_INFORMATION_REQUEST_ALBUM_ART = 1 << 3;
+
+        /** @hide */
+        const Int32 DEFAULT_PLAYBACK_VOLUME_HANDLING = PLAYBACK_VOLUME_VARIABLE; // = 1;
+
+        /** @hide */
+        // hard-coded to the same number of steps as AudioService.MAX_STREAM_VOLUME[STREAM_MUSIC]
+        const Int32 DEFAULT_PLAYBACK_VOLUME = 15;
+
+        /**
+         * @hide
+         * Default value for the unique identifier
+         */
+        const Int32 RCSE_ID_UNREGISTERED = -1;
+
+        /**
+         * Creates a {@link MetadataEditor}.
+         * @param startEmpty Set to false if you want the MetadataEditor to contain the metadata that
+         *     was previously applied to the RemoteControlClient, or true if it is to be created empty.
+         * @return a new MetadataEditor instance.
+         */
+        EditMetadata(
+            [in] Boolean startEmpty,
+            [out] IMetadataEditor** result);
+
+        /**
+         * Sets the current playback state.
+         * @param state The current playback state, one of the following values:
+         *       {@link #PLAYSTATE_STOPPED},
+         *       {@link #PLAYSTATE_PAUSED},
+         *       {@link #PLAYSTATE_PLAYING},
+         *       {@link #PLAYSTATE_FAST_FORWARDING},
+         *       {@link #PLAYSTATE_REWINDING},
+         *       {@link #PLAYSTATE_SKIPPING_FORWARDS},
+         *       {@link #PLAYSTATE_SKIPPING_BACKWARDS},
+         *       {@link #PLAYSTATE_BUFFERING},
+         *       {@link #PLAYSTATE_ERROR}.
+         */
+        SetPlaybackState(
+            [in] Int32 state);
+
+        /**
+         * Sets the flags for the media transport control buttons that this client supports.
+         * @param transportControlFlags A combination of the following flags:
+         *      {@link #FLAG_KEY_MEDIA_PREVIOUS},
+         *      {@link #FLAG_KEY_MEDIA_REWIND},
+         *      {@link #FLAG_KEY_MEDIA_PLAY},
+         *      {@link #FLAG_KEY_MEDIA_PLAY_PAUSE},
+         *      {@link #FLAG_KEY_MEDIA_PAUSE},
+         *      {@link #FLAG_KEY_MEDIA_STOP},
+         *      {@link #FLAG_KEY_MEDIA_FAST_FORWARD},
+         *      {@link #FLAG_KEY_MEDIA_NEXT}
+         */
+        SetTransportControlFlags(
+            [in] Int32 transportControlFlags);
+
+        /**
+         * @hide
+         * Set information describing information related to the playback of media so the system
+         * can implement additional behavior to handle non-local playback usecases.
+         * @param what a key to specify the type of information to set. Valid keys are
+         *        {@link #PLAYBACKINFO_PLAYBACK_TYPE},
+         *        {@link #PLAYBACKINFO_USES_STREAM},
+         *        {@link #PLAYBACKINFO_VOLUME},
+         *        {@link #PLAYBACKINFO_VOLUME_MAX},
+         *        and {@link #PLAYBACKINFO_VOLUME_HANDLING}.
+         * @param value the value for the supplied information to set.
+         */
+        SetPlaybackInformation(
+            [in] Int32 what,
+            [in] Int32 value);
+
+        /**
+         * @hide
+         * Return playback information represented as an integer value.
+         * @param what a key to specify the type of information to retrieve. Valid keys are
+         *        {@link #PLAYBACKINFO_PLAYBACK_TYPE},
+         *        {@link #PLAYBACKINFO_USES_STREAM},
+         *        {@link #PLAYBACKINFO_VOLUME},
+         *        {@link #PLAYBACKINFO_VOLUME_MAX},
+         *        and {@link #PLAYBACKINFO_VOLUME_HANDLING}.
+         * @return the current value for the given information type, or
+         *   {@link #PLAYBACKINFO_INVALID_VALUE} if an error occurred or the request is invalid, or
+         *   the value is unknown.
+         */
+        GetInt32PlaybackInformation(
+            [in] Int32 what,
+            [out] Int32* result);
+
+        /**
+         * @hide
+         * Accessor to media button intent description (includes target component)
+         */
+        GetRcMediaIntent(
+            [out] IPendingIntent** result);
+
+        /**
+         * @hide
+         * Accessor to IRemoteControlClient
+         */
+        GetIRemoteControlClient(
+            [out] IIRemoteControlClient** result);
+
+        /**
+         * @hide
+         * To be only used by AudioManager after it has received the unique id from
+         * IAudioService.registerRemoteControlClient()
+         * @param id the unique identifier of the RemoteControlStackEntry in AudioService with which
+         *              this RemoteControlClient is associated.
+         */
+        SetRcseId(
+            [in] Int32 id);
+
+        /**
+         * @hide
+         */
+        GetRcseId(
+            [out] Int32* result);
+    }
+
+    } // namespace Media
+    } // namepsace Droid
+    } // namespace Elastos
+}

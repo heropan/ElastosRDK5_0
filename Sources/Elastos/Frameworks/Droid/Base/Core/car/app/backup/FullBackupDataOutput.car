@@ -1,0 +1,28 @@
+module
+{
+    interface Elastos.Droid.Os.IParcelFileDescriptor;
+    interface Elastos.Droid.App.Backup.IBackupDataOutput;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+    namespace Backup {
+
+    /**
+     * Provides the interface through which a BackupAgent writes entire files to a full
+     * backup data set, via its onFullBackup(FullBackupDataOutput) method.
+     *
+     * @sa BackupAgent
+     * @sa onFullBackup(FullBackupDataOutput)
+     */
+
+    interface IFullBackupDataOutput {
+        GetData(
+            [out] IBackupDataOutput** data);
+    }
+
+    } // namespace Backup
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

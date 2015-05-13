@@ -1,0 +1,14 @@
+module
+{
+    interface Elastos.Net.IPlainSocketImpl;
+
+    namespace Elastos{
+    namespace Net{
+
+    interface IPlainServerSocketImpl extends IPlainSocketImpl
+    {
+    }
+
+    } // namespace Net
+    } // namespace Elastos
+}

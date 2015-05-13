@@ -1,0 +1,60 @@
+
+module
+{
+    interface Elastos.Droid.Text.ITextWatcher;
+    using interface Elastos.Core.ICharSequence;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+
+    interface IDialerFilter extends Elastos.Droid.Widget.IRelativeLayout {
+        IsQwertyKeyboard(
+            [out] Boolean* res);
+
+        GetMode(
+            [out] Int32* mode);
+
+        /**
+         * Change the mode of the widget.
+         *
+         * @param newMode The mode to switch to.
+         */
+        SetMode(
+            [in] Int32 newMode);
+
+        GetLetters(
+            [out] ICharSequence** letters);
+
+        GetDigits(
+            [out] ICharSequence** digits);
+
+        GetFilterText(
+            [out] ICharSequence** text);
+
+        Append(
+            [in] String text);
+
+        /**
+         * Clears both the digits and the filter text.
+         */
+        ClearText();
+
+        SetLettersWatcher(
+            [in] ITextWatcher* watcher);
+
+        SetDigitsWatcher(
+            [in] ITextWatcher* watcher);
+
+        SetFilterWatcher(
+            [in] ITextWatcher* watcher);
+
+        RemoveFilterWatcher(
+            [in] ITextWatcher* watcher);
+    }
+
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+
+}

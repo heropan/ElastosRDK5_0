@@ -1,0 +1,19 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Policy {
+
+    interface IClock extends Elastos.Droid.Widget.ITextView {
+
+    }
+
+    } // namespace Policy
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

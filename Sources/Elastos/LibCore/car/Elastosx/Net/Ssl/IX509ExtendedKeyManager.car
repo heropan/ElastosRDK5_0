@@ -1,0 +1,17 @@
+
+module
+{
+    /**
+     * The abstract extension for the {@code X509KeyManager} interface.
+     */
+
+    namespace Elastosx {
+    namespace Net {
+    namespace Ssl {
+
+    interface IX509ExtendedKeyManager extends IX509KeyManager {}
+
+    } // namespace Ssl
+    } // namespace Crypto
+    } // namespace Elastosx
+}

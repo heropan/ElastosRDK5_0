@@ -1,0 +1,171 @@
+
+module
+{
+    interface Elastos.Droid.Widget.IDatePicker;
+    interface Elastos.Droid.Widget.ICalendarView;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+
+    /**
+     * The callback used to indicate the user changes\d the date.
+     */
+    interface IOnDateChangedListener {
+        /**
+         * Called upon a date change.
+         *
+         * @param view The view associated with this listener.
+         * @param year The year that was set.
+         * @param monthOfYear The month that was set (0-11) for compatibility
+         *            with {@link java.util.Calendar}.
+         * @param dayOfMonth The day of the month that was set.
+         */
+        OnDateChanged(
+            [in] IDatePicker* view,
+            [in] Int32 year,
+            [in] Int32 monthOfYear,
+            [in] Int32 dayOfMonth);
+    }
+
+    interface IDatePicker extends Elastos.Droid.Widget.IFrameLayout {
+        /**
+         * Gets the minimal date supported by this {@link DatePicker} in
+         * milliseconds since January 1, 1970 00:00:00 in
+         * {@link TimeZone#getDefault()} time zone.
+         * <p>
+         * Note: The default minimal date is 01/01/1900.
+         * <p>
+         *
+         * @return The minimal supported date.
+         */
+        GetMinDate(
+            [out] Int64* minDate);
+
+        /**
+         * Sets the minimal date supported by this {@link NumberPicker} in
+         * milliseconds since January 1, 1970 00:00:00 in
+         * {@link TimeZone#getDefault()} time zone.
+         *
+         * @param minDate The minimal supported date.
+         */
+        SetMinDate(
+            [in] Int64 minDate);
+
+        /**
+         * Gets the maximal date supported by this {@link DatePicker} in
+         * milliseconds since January 1, 1970 00:00:00 in
+         * {@link TimeZone#getDefault()} time zone.
+         * <p>
+         * Note: The default maximal date is 12/31/2100.
+         * <p>
+         *
+         * @return The maximal supported date.
+         */
+        GetMaxDate(
+            [out] Int64* maxDate);
+
+        /**
+         * Sets the maximal date supported by this {@link DatePicker} in
+         * milliseconds since January 1, 1970 00:00:00 in
+         * {@link TimeZone#getDefault()} time zone.
+         *
+         * @param maxDate The maximal supported date.
+         */
+        SetMaxDate(
+            [in] Int64 maxDate);
+
+        /**
+         * Gets whether the {@link CalendarView} is shown.
+         *
+         * @return True if the calendar view is shown.
+         * @see #getCalendarView()
+         */
+        GetCalendarViewShown(
+            [out] Boolean* shown);
+
+        /**
+         * Gets the {@link CalendarView}.
+         *
+         * @return The calendar view.
+         * @see #getCalendarViewShown()
+         */
+        GetCalendarView (
+            [out] ICalendarView** view);
+
+        /**
+         * Sets whether the {@link CalendarView} is shown.
+         *
+         * @param shown True if the calendar view is to be shown.
+         */
+        SetCalendarViewShown(
+            [in] Boolean shown);
+
+        /**
+         * Gets whether the spinners are shown.
+         *
+         * @return True if the spinners are shown.
+         */
+        GetSpinnersShown(
+            [out] Boolean* shown);
+
+        /**
+         * Sets whether the spinners are shown.
+         *
+         * @param shown True if the spinners are to be shown.
+         */
+        SetSpinnersShown(
+            [in] Boolean shown);
+
+        /**
+         * Updates the current date.
+         *
+         * @param year The year.
+         * @param month The month which is <strong>starting from zero</strong>.
+         * @param dayOfMonth The day of the month.
+         */
+        UpdateDate(
+            [in] Int32 year,
+            [in] Int32 month,
+            [in] Int32 dayOfMonth);
+
+        /**
+         * Initialize the state. If the provided values designate an inconsistent
+         * date the values are normalized before updating the spinners.
+         *
+         * @param year The initial year.
+         * @param monthOfYear The initial month <strong>starting from zero</strong>.
+         * @param dayOfMonth The initial day of the month.
+         * @param onDateChangedListener How user is notified date is changed by
+         *            user, can be null.
+         */
+        Init(
+            [in] Int32 year,
+            [in] Int32 monthOfYear,
+            [in] Int32 dayOfMonth,
+            [in] IOnDateChangedListener* onDateChangedListener);
+
+        /**
+         * @return The selected year.
+         */
+        GetYear(
+            [out] Int32* year);
+
+        /**
+         * @return The selected month.
+         */
+        GetMonth(
+            [out] Int32* month);
+
+        /**
+         * @return The selected day of month.
+         */
+        GetDayOfMonth(
+            [out] Int32* day);
+    }
+
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+
+}

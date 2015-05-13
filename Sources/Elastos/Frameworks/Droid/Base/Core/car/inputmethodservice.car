@@ -1,0 +1,186 @@
+
+module
+{
+    merge("inputmethodservice/ExtractEditText.car");
+    merge("inputmethodservice/AbstractInputMethodService.car");
+    merge("inputmethodservice/InputMethodService.car");
+    merge("inputmethodservice/SoftInputWindow.car");
+    merge("inputmethodservice/ExtractEditLayout.car");
+
+    //For SoftKeyboard.
+    merge("inputmethodservice/SoftKeyboard.car");
+
+    interface Elastos.Droid.App.IService;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IHandlerCallerCallback;
+    interface Elastos.Droid.Utility.IAttributeSet;
+    interface Elastos.Droid.Internal.View.IIInputMethod;
+    interface Elastos.Droid.View.IViewParent;
+    interface Elastos.Droid.View.IViewManager;
+    interface Elastos.Droid.View.IKeyEventCallback;
+    interface Elastos.Droid.View.IDispatcherState;
+    interface Elastos.Droid.View.IOnPreDrawListener;
+    interface Elastos.Droid.View.IWindowCallback;
+    interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
+    interface Elastos.Droid.View.IViewOnClickListener;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.View.InputMethod.IInputMethod;
+    interface Elastos.Droid.View.InputMethod.IInputMethodSession;
+    interface Elastos.Droid.View.Menu.IMenuBuilder;
+    interface Elastos.Droid.Widget.IEditText;
+    interface Elastos.Droid.Widget.IButton;
+
+
+    namespace Elastos {
+    namespace Droid {
+    namespace InputMethodService {
+
+    [local]
+    class CExtractButton {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
+
+        interface IButton;
+        interface IOnPreDrawListener;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    [local]
+    class CExtractEditText {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
+
+        interface IExtractEditText;
+        interface IOnPreDrawListener;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    [local]
+    class CSoftInputWindow {
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 theme,
+            [in] IDispatcherState* dispatcherState);
+
+        interface ISoftInputWindow;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+    }
+
+    [local]
+    class CKeyboardView {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
+
+        interface IKeyboardView;
+        interface IViewOnClickListener;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    [local]
+    class CIInputMethodWrapper {
+        constructor(
+            [in] IAbstractInputMethodService* context,
+            [in] IInputMethod* inputMethod);
+
+        interface Elastos.Droid.Internal.View.IIInputMethod;
+        interface IBinder;
+        interface IHandlerCallerCallback;
+    }
+
+    [local]
+    class CIInputMethodSessionWrapper {
+        constructor(
+            [in] IContext* ctx,
+            [in] IInputMethodSession* inputMethodSession);
+
+        interface Elastos.Droid.Internal.View.IIInputMethodSession;
+        interface IBinder;
+        interface IHandlerCallerCallback;
+    }
+
+    //For SoftKeyboard.
+    [local]
+    class CLatinKeyboardView {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
+
+        interface IKeyboardView;
+        interface IViewOnClickListener;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    //For SoftKeyboard.
+    [local]
+    class CCandidateView {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+        interface ICandidateView;
+    }
+
+    [local]
+    class CExtractEditLayout {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        interface IExtractEditLayout;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    } // namespace InputMethodService
+    } // namespace Droid
+    } // namespace Elastos
+}

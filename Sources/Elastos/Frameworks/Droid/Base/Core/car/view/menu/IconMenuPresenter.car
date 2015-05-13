@@ -1,0 +1,31 @@
+
+module
+{
+    interface Elastos.Droid.Os.IBundle;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Menu {
+
+        /**
+         * The item view for each item in the {@link IconMenuView}.
+         */
+        [local]
+        interface IIconMenuPresenter extends Elastos.Droid.View.Menu.IBaseMenuPresenter {
+
+            GetNumActualItemsShown(
+                [out] Int32* rst);
+
+            SaveHierarchyState(
+                [in] IBundle* outState);
+
+            RestoreHierarchyState(
+                [in] IBundle* inState);
+        }
+
+    } // namespace Menu
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

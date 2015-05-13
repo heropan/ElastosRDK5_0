@@ -1,0 +1,29 @@
+module
+{
+    using interface Elastos.Core.Threading.IThread;
+    interface Elastos.Droid.Os.ILooper;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+
+    /**
+     * A {@link Parcelable} implementation that should be used by inheritance
+     * hierarchies to ensure the state of all classes along the chain is saved.
+     */
+    interface IWindowManagerPolicyThread {
+        Set(
+            [in] IThread* thread,
+            [in] ILooper* looper);
+
+        GetThread(
+            [out] IThread** thd);
+
+        GetLooper(
+            [out] ILooper** lpr);
+    }
+
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

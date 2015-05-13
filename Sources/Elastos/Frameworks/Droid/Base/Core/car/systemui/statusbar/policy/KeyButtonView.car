@@ -1,0 +1,36 @@
+module
+{
+    interface Elastos.Droid.Widget.IImageView;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Policy {
+
+    interface IKeyButtonView extends Elastos.Droid.Widget.IImageView {
+        SetDrawingAlpha(
+            [in] Float alpha);
+
+        GetDrawingAlpha(
+            [out] Float* alpha);
+
+        SetGlowAlpha(
+            [in] Float alpha);
+
+        GetGlowAlpha(
+            [out] Float* alpha);
+
+        SetGlowScale(
+            [in] Float scale);
+
+        GetGlowScale(
+            [out] Float* scale);
+    }
+
+    } // namespace Policy
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

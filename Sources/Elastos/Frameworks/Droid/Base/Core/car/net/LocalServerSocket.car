@@ -1,0 +1,29 @@
+
+module
+{
+    using interface Elastos.IO.IFileDescriptor;
+
+    interface Elastos.Droid.Net.ILocalSocketAddress;
+    interface Elastos.Droid.Net.ILocalSocket;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    interface ILocalServerSocket {
+        GetLocalSocketAddress(
+            [out] ILocalSocketAddress** result);
+
+        Accept(
+            [out] ILocalSocket** result);
+
+        GetFileDescriptor(
+            [out] IFileDescriptor** result);
+
+        Close();
+    }
+
+    } // namespace Net
+    } // namepsace Droid
+    } // namespace Elastos
+}

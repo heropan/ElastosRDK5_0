@@ -1,0 +1,41 @@
+
+module
+{
+    using interface Elastos.Droid.Os.IHandler;
+    using interface Elastos.Security.Cert.IX509Certificate;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+    /**
+     * ClientCertRequestHandler: class responsible for handling client
+     * certificate requests.  This class is passed as a parameter to
+     * BrowserCallback.displayClientCertRequestDialog and is meant to
+     * receive the user's response.
+     *
+     * @hide
+     */
+    interface IClientCertRequestHandler extends Elastos.Droid.Os.IHandler {
+        /**
+         * Proceed with the specified private key and client certificate chain.
+         */
+//        Proceed(
+//            [in] IPrivateKey* privateKey,
+//            [in] ArrayOf<IX509Certificate*> chain);
+
+        /**
+         * Igore the request for now, the user may be prompted again.
+         */
+        Ignore();
+
+        /**
+         * Cancel this request, remember the users negative choice.
+         */
+        Cancel();
+    }
+
+    } // namespace Webkit
+    } // namepsace Droid
+    } // namespace Elastos
+}

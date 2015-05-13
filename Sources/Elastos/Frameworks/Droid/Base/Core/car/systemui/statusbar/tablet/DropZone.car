@@ -1,0 +1,22 @@
+module
+{
+    interface Elastos.Droid.SystemUI.StatusBar.Tablet.IShirtPocket;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Tablet {
+
+    interface IDropZone extends Elastos.Droid.View.IView {
+        SetPocket(
+            [in] IShirtPocket* p);
+    }
+
+    } // namespace Tablet
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}
+

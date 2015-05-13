@@ -1,0 +1,99 @@
+
+#ifndef __CLIMITEDLENGTHINPUTSTREAM_H__
+#define __CLIMITEDLENGTHINPUTSTREAM_H__
+
+#include "_CLimitedLengthInputStream.h"
+#include "elastos/io/FilterInputStream.h"
+
+using Elastos::IO::IInputStream;
+using Elastos::IO::FilterInputStream;
+
+namespace Elastos {
+namespace Droid {
+namespace Content {
+namespace Pm {
+
+/**
+ * A class that limits the amount of data that is read from an InputStream. When
+ * the specified length is reached, the stream returns an EOF even if the
+ * underlying stream still has more data.
+ *
+ * @hide
+ */
+CarClass(CLimitedLengthInputStream), public FilterInputStream
+{
+public:
+    CLimitedLengthInputStream();
+
+    ~CLimitedLengthInputStream();
+
+    virtual CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
+    /**
+     * @param in underlying stream to wrap
+     * @param offset offset into stream where data starts
+     * @param length length of data at offset
+     * @throws IOException if an error occurred with the underlying stream
+     */
+    CARAPI constructor(
+        /* [in] */ IInputStream* inStream,
+        /* [in] */ Int64 offset,
+        /* [in] */ Int64 length);
+
+    CARAPI Read(
+        /* [out] */ Int32* value);
+
+    CARAPI ReadBytes(
+        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [out] */ Int32 * pNumber);
+
+    CARAPI ReadBytesEx(
+        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 byteCount,
+        /* [out] */ Int32* number);
+
+    CARAPI Close();
+
+    CARAPI Available(
+        /* [out] */ Int32* number);
+
+    CARAPI Mark(
+        /* [in] */ Int32 readLimit);
+
+    CARAPI IsMarkSupported(
+        /* [out] */ Boolean* supported);
+
+    CARAPI Reset();
+
+    CARAPI Skip(
+        /* [in] */ Int64 byteCount,
+        /* [out] */ Int64* number);
+
+    CARAPI GetLock(
+        /* [out] */ IInterface** lockobj);
+
+private:
+    /**
+     * The end of the stream where we don't want to allow more data to be read.
+     */
+    Int64 mEnd;
+
+    /**
+     * Current offset in the stream.
+     */
+    Int64 mOffset;
+
+    /**
+     * Constant for the maximum {@code long} value, 2<sup>63</sup>-1.
+     */
+    static const Int64 MAX_VALUE = 0x7FFFFFFFFFFFFFFFL;
+};
+
+}
+}
+}
+}
+
+#endif // __CLIMITEDLENGTHINPUTSTREAM_H__

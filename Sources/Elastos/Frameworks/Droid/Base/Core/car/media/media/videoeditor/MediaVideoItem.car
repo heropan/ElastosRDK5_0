@@ -1,0 +1,170 @@
+module
+{
+    interface Elastos.Droid.View.ISurfaceHolder;
+    interface Elastos.Droid.Graphics.IBitmap;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+    namespace Videoeditor {
+
+    interface IWaveformData;
+
+    interface IMediaVideoItem extends IMediaItem {
+        /**
+         * Sets the start and end marks for trimming a video media item.
+         * This method will adjust the duration of bounding transitions, effects
+         * and overlays if the current duration of the transactions become greater
+         * than the maximum allowable duration.
+         *
+         * @param beginMs Start time in milliseconds. Set to 0 to extract from the
+         *           beginning
+         * @param endMs End time in milliseconds. Set to {@link #END_OF_FILE} to
+         *           extract until the end
+         *
+         * @throws IllegalArgumentException if the start time is greater or equal than
+         *           end time, the end time is beyond the file duration, the start time
+         *           is negative
+         */
+        SetExtractBoundaries(
+            [in] Int64 beginMs,
+            [in] Int64 endMs);
+
+        GetBoundaryBeginTime(
+            [out] Int64* result);
+
+        GetBoundaryEndTime(
+            [out] Int64* result);
+
+        /**
+         * Render a frame according to the playback (in the native aspect ratio) for
+         * the specified media item. All effects and overlays applied to the media
+         * item are ignored. The extract boundaries are also ignored. This method
+         * can be used to playback frames when implementing trimming functionality.
+         *
+         * @param surfaceHolder SurfaceHolder used by the application
+         * @param timeMs time corresponding to the frame to display (relative to the
+         *            the beginning of the media item).
+         * @return The accurate time stamp of the frame that is rendered .
+         * @throws IllegalStateException if a playback, preview or an export is
+         *             already in progress
+         * @throws IllegalArgumentException if time is negative or greater than the
+         *             media item duration
+         */
+        RenderFrame(
+            [in] ISurfaceHolder* surfaceHolder,
+            [in] Int64 timeMs,
+            [out] Int64* result);
+
+        /**
+         * This API allows to generate a file containing the sample volume levels of
+         * the Audio track of this media item. This function may take significant
+         * time and is blocking. The file can be retrieved using
+         * getAudioWaveformFilename().
+         *
+         * @param listener The progress listener
+         *
+         * @throws IOException if the output file cannot be created
+         * @throws IllegalArgumentException if the mediaItem does not have a valid
+         *             Audio track
+         */
+        ExtractAudioWaveform(
+            [in] IExtractAudioWaveformProgressListener* listener);
+
+        /**
+         * @return The waveform data
+         */
+        GetWaveformData(
+            [out] IWaveformData** result);
+
+        /**
+         * Set volume of the Audio track of this mediaItem
+         *
+         * @param volumePercent in %/. 100% means no change; 50% means half value, 200%
+         *            means double, 0% means silent.
+         * @throws UsupportedOperationException if volume value is not supported
+         */
+        SetVolume(
+            [in] Int32 volumePercent);
+
+        /**
+         * Get the volume value of the audio track as percentage. Call of this
+         * method before calling setVolume will always return 100%
+         *
+         * @return the volume in percentage
+         */
+        GetVolume(
+            [out] Int32* result);
+
+        /**
+         * @param muted true to mute the media item
+         */
+        SetMute(
+            [in] Boolean muted);
+
+
+        /**
+         * @return true if the media item is muted
+         */
+        IsMuted(
+            [out] Boolean* result);
+
+        /**
+         * @return The video type
+         */
+        GetVideoType(
+            [out] Int32* result);
+
+        /**
+         * @return The video profile
+         */
+        GetVideoProfile(
+            [out] Int32* result);
+
+        /**
+         * @return The video profile
+         */
+        GetVideoLevel(
+            [out] Int32* result);
+
+        /**
+         * @return The video bitrate
+         */
+        GetVideoBitrate(
+            [out] Int32* result);
+
+        /**
+         * @return The audio bitrate
+         */
+        GetAudioBitrate(
+            [out] Int32* result);
+
+        /**
+         * @return The number of frames per second
+         */
+        GetFps(
+            [out] Int32* result);
+
+        /**
+         * @return The audio codec
+         */
+        GetAudioType(
+            [out] Int32* result);
+
+        /**
+         * @return The number of audio channels
+         */
+        GetAudioChannels(
+            [out] Int32* result);
+
+        /**
+         * @return The audio sample frequency
+         */
+        GetAudioSamplingFrequency(
+            [out] Int32* result);
+    }
+    } // namespace videoeditor
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,269 @@
+module
+{
+    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.IO.IFileDescriptor;
+
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IParcelFileDescriptor;
+    interface Elastos.Droid.Os.IDebugMemoryInfo;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Content.IIntentReceiver;
+    interface Elastos.Droid.Content.Pm.IActivityInfo;
+    interface Elastos.Droid.Content.Pm.IApplicationInfo;
+    interface Elastos.Droid.Content.Pm.IServiceInfo;
+    interface Elastos.Droid.Content.Res.IConfiguration;
+    interface Elastos.Droid.Content.Res.ICompatibilityInfo;
+    interface Elastos.Droid.App.IInstrumentationWatcher;
+    interface Elastos.Droid.App.IResultInfo;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    // TODO IApplicationThreadNative should extends Binder
+    // and implements IApplicationThread
+    [deprecated]
+    interface IApplicationThread {
+        const Int32 BACKUP_MODE_INCREMENTAL = 0;
+        const Int32 BACKUP_MODE_FULL = 1;
+        const Int32 BACKUP_MODE_RESTORE = 2;
+        const Int32 BACKUP_MODE_RESTORE_FULL = 3;
+        const Int32 DEBUG_OFF = 0;
+        const Int32 DEBUG_ON = 1;
+        const Int32 DEBUG_WAIT = 2;
+        const Int32 PACKAGE_REMOVED = 0;
+        const Int32 EXTERNAL_STORAGE_UNAVAILABLE = 1;
+
+        SchedulePauseActivity(
+            [in] IBinder* token,
+            [in] Boolean finished,
+            [in] Boolean userLeaving,
+            [in] Int32 configChanges);
+
+        ScheduleStopActivity(
+            [in] IBinder* token,
+            [in] Boolean showWindow,
+            [in] Int32 configChanges);
+
+        ScheduleWindowVisibility(
+            [in] IBinder* token,
+            [in] Boolean showWindow);
+
+        ScheduleSleeping(
+            [in] IBinder* token,
+            [in] Boolean sleeping);
+
+        ScheduleResumeActivity(
+            [in] IBinder* token,
+            [in] Boolean isForward);
+
+        ScheduleSendResult(
+            [in] IBinder* token,
+            [in] IObjectContainer* results);
+
+        ScheduleLaunchActivity(
+            [in] IIntent* intent,
+            [in] IBinder* token,
+            [in] Int32 ident,
+            [in] IActivityInfo* info,
+            [in] IConfiguration* curConfig,
+            [in] ICompatibilityInfo* compatInfo,
+            [in] IBundle* state,
+            [in] IObjectContainer* pendingResults,
+            [in] IObjectContainer* pendingNewIntents,
+            [in] Boolean notResumed,
+            [in] Boolean isForward,
+            [in] String profileName,
+            [in] IParcelFileDescriptor* profileFd,
+            [in] Boolean autoStopProfiler);
+
+        ScheduleRelaunchActivity(
+            [in] IBinder* token,
+            [in] ArrayOf<IResultInfo*>* pendingResults,
+            [in] ArrayOf<IIntent*>* pendingNewIntents,
+            [in] Int32 configChanges,
+            [in] Boolean notResumed,
+            [in] IConfiguration* config);
+
+        ScheduleNewIntent(
+            [in] IObjectContainer* intent,
+            [in] IBinder* token);
+
+        ScheduleDestroyActivity(
+            [in] IBinder* token,
+            [in] Boolean finished,
+            [in] Int32 configChanges);
+
+        ScheduleReceiver(
+            [in] IIntent* intent,
+            [in] IActivityInfo* info,
+            [in] ICompatibilityInfo* compatInfo,
+            [in] Int32 resultCode,
+            [in] String data,
+            [in] IBundle* extras,
+            [in] Boolean sync,
+            [in] Int32 sendingUser);
+
+        ScheduleCreateBackupAgent(
+            [in] IApplicationInfo* app,
+            [in] ICompatibilityInfo* compatInfo,
+            [in] Int32 backupMode);
+
+        ScheduleDestroyBackupAgent(
+            [in] IApplicationInfo* app,
+            [in] ICompatibilityInfo* compatInfo);
+
+        ScheduleCreateService(
+            [in] IBinder* token,
+            [in] IServiceInfo* info,
+            [in] ICompatibilityInfo* compatInfo);
+
+        ScheduleBindService(
+            [in] IBinder* token,
+            [in] IIntent* intent,
+            [in] Boolean rebind);
+
+        ScheduleUnbindService(
+            [in] IBinder* token,
+            [in] IIntent* intent);
+
+        ScheduleServiceArgs(
+            [in] IBinder* token,
+            [in] Boolean taskRemoved,
+            [in] Int32 startId,
+            [in] Int32 flags,
+            [in] IIntent* args);
+
+        ScheduleStopService(
+            [in] IBinder* token);
+
+        BindApplication(
+            [in] String packageName,
+            [in] IApplicationInfo* info,
+            [in] IObjectContainer* providers,
+            [in] IComponentName* testName,
+            [in] String profileName,
+            [in] IParcelFileDescriptor* profileFd,
+            [in] Boolean autoStopProfiler,
+            [in] IBundle* testArguments,
+            [in] IInstrumentationWatcher* testWatcher,
+            [in] Int32 debugMode,
+            [in] Boolean openGlTrace,
+            [in] Boolean restrictedBackupMode,
+            [in] Boolean persistent,
+            [in] IConfiguration* config,
+            [in] ICompatibilityInfo* compatInfo,
+            [in] IObjectStringMap* services,
+            [in] IBundle* coreSettings);
+
+        ScheduleExit();
+
+        ScheduleSuicide();
+
+        RequestThumbnail(
+            [in] IBinder* token);
+
+        ScheduleConfigurationChanged(
+            [in] IConfiguration* config);
+
+        UpdateTimeZone();
+
+        ClearDnsCache();
+
+        SetHttpProxy(
+            [in] String proxy,
+            [in] String port,
+            [in] String exclList);
+
+        ProcessInBackground();
+
+        DumpService(
+            [in] IFileDescriptor* fd,
+            [in] IBinder* servicetoken,
+            [in] ArrayOf<String>* args);
+
+        DumpProvider(
+            [in] IFileDescriptor* fd,
+            [in] IBinder* servicetoken,
+            [in] ArrayOf<String>* args);
+
+        ScheduleRegisteredReceiver(
+            [in] IIntentReceiver* receiver,
+            [in] IIntent* intent,
+            [in] Int32 resultCode,
+            [in] String data,
+            [in] IBundle* extras,
+            [in] Boolean ordered,
+            [in] Boolean sticky,
+            [in] Int32 sendingUser);
+
+        ScheduleLowMemory();
+
+        ScheduleActivityConfigurationChanged(
+            [in] IBinder* token);
+
+        ProfilerControl(
+            [in] Boolean start,
+            [in] String path,
+            [in] IParcelFileDescriptor* fd,
+            [in] Int32 profileType);
+
+        DumpHeap(
+            [in] Boolean managed,
+            [in] String path,
+            [in] IParcelFileDescriptor* fd);
+
+        SetSchedulingGroup(
+            [in] Int32 group);
+
+        GetMemoryInfo(
+            [in] IDebugMemoryInfo* outInfo);
+
+        DispatchPackageBroadcast(
+            [in] Int32 cmd,
+            [in] ArrayOf<String>* packages);
+
+        ScheduleCrash(
+            [in] String msg);
+
+        DumpActivity(
+            [in] IFileDescriptor* fd,
+            [in] IBinder* servicetoken,
+            [in] String prefix,
+            [in] ArrayOf<String>* args);
+
+        SetCoreSettings(
+            [in] IBundle* coreSettings);
+
+        UpdatePackageCompatibilityInfo(
+            [in] String pkg,
+            [in] ICompatibilityInfo* info);
+
+        ScheduleTrimMemory(
+            [in] Int32 level);
+
+        DumpMemInfo(
+            [in] IFileDescriptor* fd,
+            [in] Boolean checkin,
+            [in] Boolean all,
+            [in] ArrayOf<String>* args,
+            [out] IDebugMemoryInfo** info);
+
+        DumpGfxInfo(
+            [in] IFileDescriptor* fd,
+            [in] ArrayOf<String>* args);
+
+        DumpDbInfo(
+            [in] IFileDescriptor* fd,
+            [in] ArrayOf<String>* args);
+
+        UnstableProviderDied(
+            [in] IBinder* provider);
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

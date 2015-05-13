@@ -1,0 +1,405 @@
+
+#include "database/MatrixCursor.h"
+#include "database/DatabaseUtils.h"
+#include <elastos/StringUtils.h>
+#include <elastos/Slogger.h>
+
+using Elastos::Core::INumber;
+using Elastos::Core::IDouble;
+using Elastos::Core::IFloat;
+using Elastos::Core::IInteger16;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IInteger64;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::IByte;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::Logging::Slogger;
+
+
+namespace Elastos {
+namespace Droid {
+namespace Database {
+
+MatrixCursor::RowBuilder::RowBuilder(
+    /* [in] */ Int32 index,
+    /* [in] */ Int32 endIndex,
+    /* [in] */ MatrixCursor* owner)
+    : mIndex(index)
+    , mEndIndex(endIndex)
+    , mOwner(owner)
+{}
+
+CAR_INTERFACE_IMPL(MatrixCursor::RowBuilder, IRowBuilder)
+
+ECode MatrixCursor::RowBuilder::Add(
+    /* [in] */ IInterface* columnValue)
+{
+    if (mIndex == mEndIndex) {
+//      throw new CursorIndexOutOfBoundsException("No more columns left.");
+        Slogger::E(String("RowBuilder"), "No more columns left.");
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    mOwner->mData->Set(mIndex++,  columnValue);
+    return NOERROR;
+}
+
+
+MatrixCursor::MatrixCursor()
+    : mRowCount(0)
+    , mColumnCount(0)
+{}
+
+void MatrixCursor::Init(
+    /* [in] */ ArrayOf<String>* columnNames,
+    /* [in] */ Int32 initialCapacity)
+{
+    mColumnNames = columnNames;
+    mColumnCount = columnNames->GetLength();
+
+    if (initialCapacity < 1) {
+        initialCapacity = 1;
+    }
+
+    mData = ArrayOf<IInterface*>::Alloc(mColumnCount * initialCapacity);
+}
+
+void MatrixCursor::Init(
+    /* [in] */ ArrayOf<String>* columnNames)
+{
+    return Init(columnNames, 16);
+}
+
+ECode MatrixCursor::Get(
+    /* [in] */ Int32 column,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    if (column < 0 || column >= mColumnCount) {
+        // throw new CursorIndexOutOfBoundsException("Requested column: "
+        //         + column + ", # of columns: " +  columnCount);
+        Slogger::E(String("MatrixCursor"), "Requested column: %d, # of columns: ", column, mColumnCount);
+        return E_CURSOR_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+    if (mPos < 0) {
+        // throw new CursorIndexOutOfBoundsException("Before first row.");
+        Slogger::E(String("MatrixCursor"), "Before first row.");
+        return E_CURSOR_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+    if (mPos >= mRowCount) {
+        // throw new CursorIndexOutOfBoundsException("After last row.");
+        Slogger::E(String("MatrixCursor"), "After last row.");
+        return E_CURSOR_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+    *obj = (*mData)[mPos * mColumnCount + column];
+    INTERFACE_ADDREF(*obj)
+    return NOERROR;
+}
+
+ECode MatrixCursor::NewRow(
+    /* [out] */ IRowBuilder** builder)
+{
+    VALIDATE_NOT_NULL(builder)
+
+    mRowCount++;
+    Int32 endIndex = mRowCount * mColumnCount;
+    EnsureCapacity(endIndex);
+    Int32 start = endIndex - mColumnCount;
+    AutoPtr<IRowBuilder> m_builder = new RowBuilder(start, endIndex, this);
+    *builder = m_builder;
+    INTERFACE_ADDREF(*builder)
+    return NOERROR;
+}
+
+ECode MatrixCursor::AddRow(
+    /* [in] */ const ArrayOf<IInterface*>& columnValues)
+{
+    if (columnValues.GetLength() != mColumnCount) {
+//         throw new IllegalArgumentException("columnNames.length = "
+//                    + columnCount + ", columnValues.length = "
+//                    + columnValues.length);
+        Slogger::E(String("MatrixCursor"), "columnNames.length = %d, columnValues.length = %d"
+                , mColumnCount, columnValues.GetLength());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    Int32 start = mRowCount++ *mColumnCount;
+    EnsureCapacity(start + mColumnCount);
+    mData->Copy(start, &columnValues, 0, mColumnCount);
+    return NOERROR;
+}
+
+ECode MatrixCursor::AddRow(
+    /* [in] */ IObjectContainer* columnValues)
+{
+    Int32 start = mRowCount * mColumnCount;
+    Int32 end = start + mColumnCount;
+    EnsureCapacity(end);
+
+    //if (columnValues instanceof ArrayList<?>) {
+    //    addRow((ArrayList<?>) columnValues, start);
+    //    return;
+    //}
+
+    Int32 current = start;
+    AutoPtr< ArrayOf<IInterface*> > localData = mData;
+    AutoPtr<IObjectEnumerator> enumerator;
+    columnValues->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
+    Boolean hasNext;
+    while(enumerator->MoveNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> columnValue;
+        enumerator->Current((IInterface**)&columnValue);
+        if (current == end) {
+            // TODO: null out row?
+            //throw new IllegalArgumentException(
+            //        "columnValues.size() > columnNames.length");
+            Slogger::E(String("MatrixCursor"), "columnValues.size() > columnNames.length");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        localData->Set(current++, columnValue);
+    }
+
+    if (current != end) {
+        // TODO: null out row?
+        //throw new IllegalArgumentException(
+        //        "columnValues.size() < columnNames.length");
+        Slogger::E(String("MatrixCursor"), "columnValues.size() < columnNames.length");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    // Increase row count here in case we encounter an exception.
+    mRowCount++;
+    return NOERROR;
+}
+
+//MatrixCursor::AddRow(
+//        /* [in] */ ArrayList<?> columnValues,
+//        /* [in] */ Int32 start)
+/*{
+    Int32 size = columnValues.GetSize();
+    if (size != columnCount) {
+        //throw new IllegalArgumentException("columnNames.length = "
+        //        + columnCount + ", columnValues.size() = " + size);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    mRowCount++;
+    ArrayOf< AutoPtr<IInterface> >* localData = mData;
+    for (Int32 i = 0; i < size; i++) {
+        (*localData)[start + i] = columnValues[i];
+    }
+}*/
+
+void MatrixCursor::EnsureCapacity(
+    /* [in] */ Int32 size)
+{
+    Int32 oldSize = mData->GetLength();
+    if (size > oldSize) {
+        AutoPtr< ArrayOf<IInterface*> > oldData = mData;
+        Int32 newSize = oldSize * 2;
+        if (newSize < size) {
+            newSize = size;
+        }
+        mData = ArrayOf<IInterface *>::Alloc(newSize);
+        mData->Copy(0, oldData, 0, oldSize);
+    }
+}
+
+ECode MatrixCursor::GetCount(
+    /* [out] */ Int32* count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = mRowCount;
+    return NOERROR;
+}
+
+ECode MatrixCursor::GetColumnNames(
+    /* [out, callee] */ ArrayOf<String>** names)
+{
+    VALIDATE_NOT_NULL(names)
+    *names = mColumnNames;
+    ARRAYOF_ADDREF(*names)
+    return NOERROR;
+}
+
+ECode MatrixCursor::GetString(
+    /* [in] */ Int32 column,
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    AutoPtr<IInterface> value;
+    Get(column, (IInterface**)&value);
+    if (value == NULL) {
+        *str = String(NULL);
+        return NOERROR;
+    }
+    ICharSequence::Probe(value)->ToString(str);
+    return NOERROR;
+}
+
+ECode MatrixCursor::GetInt16(
+    /* [in] */ Int32 column,
+    /* [out] */ Int16* value)
+{
+    VALIDATE_NOT_NULL(value)
+
+    AutoPtr<IInterface> _value;
+    String tmpStr;
+    Get(column, (IInterface**)&_value);
+    if (_value == NULL) {
+        *value = 0;
+        return NOERROR;
+    }
+    if (INumber::Probe(_value) != NULL) {
+        INumber::Probe(_value)->Int16Value(value);
+        return NOERROR;
+    }
+    assert(0);
+    // return Short.parseShort(value.toString());
+    return NOERROR;
+}
+
+ECode MatrixCursor::GetInt32(
+    /* [in] */ Int32 column,
+    /* [out] */ Int32* value)
+{
+    VALIDATE_NOT_NULL(value)
+
+    AutoPtr<IInterface> _value;
+    Get(column, (IInterface**)&_value);
+    if (_value == NULL) {
+        *value = 0;
+        return NOERROR;
+    }
+    if (INumber::Probe(_value) != NULL) {
+        INumber::Probe(_value)->Int32Value(value);
+        return NOERROR;
+    }
+    assert(0);
+    // return Integer.parseInt(value.toString());
+    return NOERROR;
+}
+
+ECode MatrixCursor::GetInt64(
+    /* [in] */ Int32 column,
+    /* [out] */ Int64* value)
+{
+    VALIDATE_NOT_NULL(value)
+
+    AutoPtr<IInterface> _value;
+    Get(column, (IInterface**)&_value);
+    if (_value == NULL) {
+        *value = 0;
+        return NOERROR;
+    }
+    if (INumber::Probe(_value) != NULL) {
+        INumber::Probe(_value)->Int64Value(value);
+        return NOERROR;
+    }
+    assert(0);
+    // return Long.parseLong(value.toString());
+    return NOERROR;
+}
+
+ECode MatrixCursor::GetFloat(
+    /* [in] */ Int32 column,
+    /* [out] */ Float* value)
+{
+    VALIDATE_NOT_NULL(value)
+
+    AutoPtr<IInterface> _value;
+    Get(column, (IInterface**)&_value);
+    if (_value == NULL) {
+        *value = 0.0f;
+        return NOERROR;
+    }
+    if (INumber::Probe(_value) != NULL) {
+        INumber::Probe(_value)->FloatValue(value);
+        return NOERROR;
+    }
+    assert(0);
+    // return Float.parseFloat(value.toString());
+    return NOERROR;
+}
+
+ECode MatrixCursor::GetDouble(
+    /* [in] */ Int32 column,
+    /* [out] */ Double* value)
+{
+    VALIDATE_NOT_NULL(value)
+
+    AutoPtr<IInterface> _value;
+    Get(column, (IInterface**)&_value);
+    if (_value == NULL) {
+        *value = 0.0d;
+        return NOERROR;
+    }
+    if (INumber::Probe(_value) != NULL) {
+        INumber::Probe(_value)->DoubleValue(value);
+        return NOERROR;
+    }
+    assert(0);
+    // return Double.parseDouble(value.toString());
+    return NOERROR;
+}
+
+ECode MatrixCursor::GetBlob(
+    /* [in] */ Int32 column,
+    /* [out, callee] */ ArrayOf<Byte>** blob)
+{
+    VALIDATE_NOT_NULL(blob)
+
+    AutoPtr<IInterface> value;
+    Get(column, (IInterface**)&value);
+    if (value == NULL) {
+        *blob = NULL;
+        return NOERROR;
+    }
+    if (IArrayOf::Probe(value) != NULL) {
+        AutoPtr<IArrayOf> array = IArrayOf::Probe(value);
+        Int32 len;
+        array->GetLength(&len);
+        AutoPtr< ArrayOf<Byte> > _blob = ArrayOf<Byte>::Alloc(len);
+        for (Int32 i = 0; i < len; ++i) {
+            AutoPtr<IByte> b;
+            array->Get(i, (IInterface**)&b);
+            b->GetValue(&(*_blob)[i]);
+        }
+        *blob = _blob;
+        ARRAYOF_ADDREF(*blob)
+        return NOERROR;
+    }
+    *blob = NULL;
+    return NOERROR;
+}
+
+//@Override
+ECode MatrixCursor::GetType(
+    /* [in] */ Int32 column,
+    /* [out] */ Int32* type)
+{
+    VALIDATE_NOT_NULL(type)
+
+    AutoPtr<IInterface> value;
+    Get(column, (IInterface**)&value);
+    *type = DatabaseUtils::GetTypeOfObject(value);
+    return NOERROR;
+}
+
+ECode MatrixCursor::IsNull(
+    /* [in] */ Int32 column,
+    /* [out] */ Boolean* isNull)
+{
+    VALIDATE_NOT_NULL(isNull)
+
+    AutoPtr<IInterface> value;
+    Get(column, (IInterface**)&value);
+    *isNull = value == NULL;
+    return NOERROR;
+}
+
+} //Database
+} //Droid
+} //Elastos

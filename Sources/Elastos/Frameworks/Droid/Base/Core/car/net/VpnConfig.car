@@ -1,0 +1,102 @@
+
+module
+{
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.IContext;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Net {
+
+    interface IVpnConfig {
+        const String SERVICE_INTERFACE = "android.net.VpnService";
+
+        const String DIALOGS_PACKAGE = "com.android.vpndialogs";
+
+        const String LEGACY_VPN = "[Legacy VPN]";
+
+        GetUser(
+            [out] String* user);
+
+        SetUser(
+            [in] String user);
+
+        GetInterfaze(
+            [out] String* interfaze);
+
+        SetInterfaze(
+            [in] String interfaze);
+
+        GetSession(
+            [out] String* session);
+
+        SetSession(
+            [in] String session);
+
+        GetMtu(
+            [out] Int32* mtu);
+
+        SetMtu(
+            [in] Int32 mtu);
+
+        GetAddresses(
+            [out] String* addresses);
+
+        SetAddresses(
+            [in] String addresses);
+
+        GetRoutes(
+            [out] String* routes);
+
+        SetRoutes(
+            [in] String routes);
+
+        GetDnsServers(
+            [out] IObjectContainer** dnsServers);
+
+        SetDnsServers(
+            [in] IObjectContainer* dnsServers);
+
+        GetSearchDomains(
+            [out] IObjectContainer** searchDomains);
+
+        SetSearchDomains(
+            [in] IObjectContainer* searchDomains);
+
+        GetConfigureIntent(
+            [out] IPendingIntent** configureIntent);
+
+        SetConfigureIntent(
+            [in] IPendingIntent* configureIntent);
+
+        GetStartTime(
+            [out] Int64* startTime);
+
+        SetStartTime(
+            [in] Int64 startTime);
+
+        GetLegacy(
+            [out] Boolean* legacy);
+
+        SetLegacy(
+            [in] Boolean legacy);
+    }
+
+    [local]
+    interface IVpnConfigHelper {
+        GetIntentForConfirmation(
+            [out] IIntent** intent);
+
+        GetIntentForStatusPanel(
+            [in] IContext* ctx,
+            [in] IVpnConfig* config,
+            [out] IPendingIntent** intent);
+    }
+
+    } // namespace Net
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
+}

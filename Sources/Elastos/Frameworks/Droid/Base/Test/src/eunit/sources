@@ -1,0 +1,22 @@
+
+TARGET_NAME = Eunit
+TARGET_TYPE = eco
+
+IMPORTS = Elastos.Core.eco
+
+INCLUDES += $(MAKEDIR)/../../inc/
+INCLUDES += $(MAKEDIR)/../../inc/eunit
+INCLUDES += $(MAKEDIR)/../../inc/eunit/framework
+
+SOURCES  = Eunit.car
+SOURCES += Elastos.Core.cpp
+
+LIBRARIES += framework/framework.lib
+LIBRARIES += runner/runner.lib
+LIBRARIES += textui/textui.lib
+LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += -lm -licuuc -llog -lutils

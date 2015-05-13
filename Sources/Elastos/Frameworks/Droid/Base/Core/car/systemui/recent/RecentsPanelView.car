@@ -1,0 +1,91 @@
+module
+{
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.SystemUI.Recent.ITaskDescription;
+    interface Elastos.Droid.SystemUI.Recent.ITaskDescriptionAdapter;
+    interface Elastos.Droid.SystemUI.Recent.IRecentTasksLoader;
+    interface Elastos.Droid.SystemUI.Recent.IRecentsCallback;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace Recent {
+
+    [local]
+    interface IRecentsScrollView {
+        NumItemsInOneScreenful(
+            [out] Int32* num);
+
+        SetAdapter(
+            [in] ITaskDescriptionAdapter* adapter);
+
+        SetCallback(
+            [in] IRecentsCallback* cb);
+
+        SetMinSwipeAlpha(
+            [in] Float minAlpha);
+
+        FindViewForTask(
+            [in] Int32 persistentTaskId,
+            [out] IView** view);
+    }
+
+    [deprecated]
+    interface IRecentsPanelView extends Elastos.Droid.Widget.IFrameLayout {
+        NumItemsInOneScreenful(
+            [out] Int32* num);
+
+        Show(
+            [in] Boolean show);
+
+        ShowEx(
+            [in] Boolean show,
+            [in] IObjectContainer* recentTaskDescriptions,
+            [in] Boolean firstScreenful,
+            [in] Boolean waitingForWindowAnimation);
+
+        OnUiHidden();
+
+        DismissAndGoBack();
+
+        IsShowing(
+            [out] Boolean* result);
+
+        SetStatusBarView(
+            [in] IView* statusBarView);
+
+        SetRecentTasksLoader(
+            [in] IRecentTasksLoader* loader);
+
+        UpdateValuesFromResources();
+
+        SetMinSwipeAlpha(
+            [in] Float minAlpha);
+
+        OnTaskThumbnailLoaded(
+            [in] ITaskDescription* td);
+
+        OnWindowAnimationStart();
+
+        ClearRecentTasksList();
+
+        OnTaskLoadingCancelled();
+
+        RefreshViews();
+
+        RefreshRecentTasksList();
+
+        OnTasksLoaded(
+            [in] IObjectContainer* tasks,
+            [in] Boolean firstScreenful);
+
+        SimulateClick(
+            [in] Int32 persistentTaskId,
+            [out] Boolean* result);
+    }
+
+    } // namespace Recent
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

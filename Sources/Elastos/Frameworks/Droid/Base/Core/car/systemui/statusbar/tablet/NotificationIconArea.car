@@ -1,0 +1,24 @@
+module
+{
+    interface Elastos.Droid.View.IMotionEvent;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Tablet {
+
+    interface INotificationIconArea extends Elastos.Droid.Widget.IRelativeLayout {
+    }
+
+
+    interface INotificationIconAreaIconLayout extends Elastos.Droid.Widget.ILinearLayout {
+    }
+
+    } // namespace Tablet
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}
+

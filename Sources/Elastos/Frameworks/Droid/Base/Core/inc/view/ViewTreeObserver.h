@@ -1,0 +1,436 @@
+
+#ifndef __VIEWTREEOBSERVER_H__
+#define __VIEWTREEOBSERVER_H__
+
+#include "ext/frameworkext.h"
+#include <elastos/List.h>
+
+using Elastos::Utility::List;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::IRegion;
+
+namespace Elastos {
+namespace Droid {
+namespace View {
+
+class ViewTreeObserver : public ElRefBase, public IViewTreeObserver
+{
+public:
+    class InternalInsetsInfo
+        : public ElRefBase
+        , public IInternalInsetsInfo
+    {
+    public:
+        InternalInsetsInfo();
+
+        CAR_INTERFACE_DECL();
+
+        /**
+         * Set which parts of the window can be touched: either
+         * {@link #TOUCHABLE_INSETS_FRAME}, {@link #TOUCHABLE_INSETS_CONTENT},
+         * or {@link #TOUCHABLE_INSETS_VISIBLE}.
+         */
+        CARAPI SetTouchableInsets(
+            /* [in] */ Int32 val);
+
+        CARAPI GetTouchableInsets(
+            /* [out] */ Int32* val);
+
+        CARAPI EqualsEx(
+            /* [in] */ IInternalInsetsInfo* o,
+            /* [out] */ Boolean* equal);
+
+        CARAPI Equals(
+            /* [in] */ IInterface* other,
+            /* [out] */ Boolean * result);
+
+        CARAPI GetHashCode(
+            /* [out] */ Int32* hash);
+
+        CARAPI GetContentInsets(
+            /* [out] */ IRect** contentInsets);
+
+        CARAPI GetVisibleInsets(
+            /* [out] */ IRect** visibleInsets);
+
+        CARAPI GetTouchableRegion(
+            /* [out] */ IRegion** touchableRegion);
+
+        CARAPI_(void) Reset();
+
+        CARAPI_(void) Set(
+            /* [in] */ InternalInsetsInfo* other);
+
+    public:
+        /**
+         * Offsets from the frame of the window at which the content of
+         * windows behind it should be placed.
+         */
+        AutoPtr<IRect> mContentInsets;
+
+        /**
+         * Offsets from the fram of the window at which windows behind it
+         * are visible.
+         */
+        AutoPtr<IRect> mVisibleInsets;
+
+        /**
+         * Touchable region defined relative to the origin of the frame of the window.
+         * Only used when {@link #setTouchableInsets(int)} is called with
+         * the option {@link #TOUCHABLE_INSETS_REGION}.
+         */
+        AutoPtr<IRegion> mTouchableRegion;
+
+        Int32 mTouchableInsets;
+    };
+
+public:
+    ViewTreeObserver();
+
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
+    CARAPI_(UInt32) AddRef();
+
+    CARAPI_(UInt32) Release();
+
+    CARAPI GetInterfaceID(
+        /* [in] */ IInterface *pObject,
+        /* [out] */ InterfaceID *pIID);
+
+    /**
+     * Register a callback to be invoked when a view has been scrolled.
+     *
+     * @param listener The callback to add
+     *
+     * @throws IllegalStateException If {@link #isAlive()} returns false
+     */
+    CARAPI AddOnScrollChangedListener(
+        /* [in] */ IOnScrollChangedListener* listener);
+
+    /**
+     * Remove a previously installed scroll-changed callback
+     *
+     * @param victim The callback to remove
+     *
+     * @throws IllegalStateException If {@link #isAlive()} returns false
+     *
+     * @see #addOnScrollChangedListener(OnScrollChangedListener)
+     */
+    CARAPI RemoveOnScrollChangedListener(
+        /* [in] */ IOnScrollChangedListener* victim);
+
+    /**
+     * Register a callback to be invoked when the invoked when the touch mode changes.
+     *
+     * @param listener The callback to add
+     *
+     * @throws IllegalStateException If {@link #isAlive()} returns false
+     */
+    CARAPI AddOnTouchModeChangeListener(
+        /* [in] */ IOnTouchModeChangeListener* listener);
+
+    /**
+     * Remove a previously installed touch mode change callback
+     *
+     * @param victim The callback to remove
+     *
+     * @throws IllegalStateException If {@link #isAlive()} returns false
+     *
+     * @see #addOnTouchModeChangeListener(OnTouchModeChangeListener)
+     */
+    CARAPI RemoveOnTouchModeChangeListener(
+        /* [in] */ IOnTouchModeChangeListener* victim);
+
+    /**
+     * Register a callback to be invoked when the invoked when it is time to
+     * compute the window's internal insets.
+     *
+     * @param listener The callback to add
+     *
+     * @throws IllegalStateException If {@link #isAlive()} returns false
+     *
+     * We are not yet ready to commit to this API and support it, so
+     * @hide
+     */
+    CARAPI AddOnComputeInternalInsetsListener(
+        /* [in] */ IOnComputeInternalInsetsListener* listener);
+
+    /**
+     * Remove a previously installed internal insets computation callback
+     *
+     * @param victim The callback to remove
+     *
+     * @throws IllegalStateException If {@link #isAlive()} returns false
+     *
+     * @see #addOnComputeInternalInsetsListener(OnComputeInternalInsetsListener)
+     *
+     * We are not yet ready to commit to this API and support it, so
+     * @hide
+     */
+    CARAPI RemoveOnComputeInternalInsetsListener(
+        /* [in] */ IOnComputeInternalInsetsListener* victim);
+
+    /**
+     * Register a callback to be invoked when the view tree is about to be drawn
+     *
+     * @param listener The callback to add
+     *
+     * @throws IllegalStateException If {@link #isAlive()} returns false
+     */
+    CARAPI AddOnPreDrawListener(
+        /* [in] */ IOnPreDrawListener* listener);
+
+     /**
+     * Remove a previously installed pre-draw callback
+     *
+     * @param victim The callback to remove
+     *
+     * @throws IllegalStateException If {@link #isAlive()} returns false
+     *
+     * @see #addOnPreDrawListener(OnPreDrawListener)
+     */
+    CARAPI RemoveOnPreDrawListener(
+        /* [in] */ IOnPreDrawListener* victim);
+
+    CARAPI Merge(
+        /* [in] */ IViewTreeObserver* observer);
+
+    /**
+     * Register a callback to be invoked when the focus state within the view tree changes.
+     *
+     * @param listener The callback to add
+     *
+     * @throws IllegalStateException If {@link #isAlive()} returns false
+     */
+    CARAPI AddOnGlobalFocusChangeListener(
+        /* [in] */ IOnGlobalFocusChangeListener* listener);
+
+    /**
+     * Remove a previously installed focus change callback.
+     *
+     * @param victim The callback to remove
+     *
+     * @throws IllegalStateException If {@link #isAlive()} returns false
+     *
+     * @see #addOnGlobalFocusChangeListener(OnGlobalFocusChangeListener)
+     */
+    CARAPI RemoveOnGlobalFocusChangeListener(
+        /* [in] */ IOnGlobalFocusChangeListener* victim);
+
+    /**
+     * Register a callback to be invoked when the global layout state or the visibility of views
+     * within the view tree changes
+     *
+     * @param listener The callback to add
+     *
+     * @throws IllegalStateException If {@link #isAlive()} returns false
+     */
+    CARAPI AddOnGlobalLayoutListener(
+        /* [in] */ IOnGlobalLayoutListener* listener);
+
+    /**
+     * Remove a previously installed global layout callback
+     *
+     * @param victim The callback to remove
+     *
+     * @throws IllegalStateException If {@link #isAlive()} returns false
+     *
+     * @see #addOnGlobalLayoutListener(OnGlobalLayoutListener)
+     */
+    CARAPI RemoveGlobalOnLayoutListener(
+        /* [in] */ IOnGlobalLayoutListener*  victim);
+
+    /**
+     * Indicates whether this ViewTreeObserver is alive. When an observer is not alive,
+     * any call to a method (except this one) will throw an exception.
+     *
+     * If an application keeps a long-lived reference to this ViewTreeObserver, it should
+     * always check for the result of this method before calling any other method.
+     *
+     * @return True if this object is alive and be used, false otherwise.
+     */
+    CARAPI IsAlive(
+        /* [out] */ Boolean* alive);
+
+    /**
+     * Notifies registered listeners that focus has changed.
+     */
+    CARAPI DispatchOnGlobalFocusChange(
+        /* [in] */ IView* oldFocus,
+        /* [in] */ IView* newFocus);
+
+    /**
+     * Notifies registered listeners that a global layout happened. This can be called
+     * manually if you are forcing a layout on a View or a hierarchy of Views that are
+     * not attached to a Window or in the GONE state.
+     */
+    CARAPI DispatchOnGlobalLayout();
+
+    /**
+     * Notifies registered listeners that the drawing pass is about to start. If a
+     * listener returns true, then the drawing pass is canceled and rescheduled. This can
+     * be called manually if you are forcing the drawing on a View or a hierarchy of Views
+     * that are not attached to a Window or in the GONE state.
+     *
+     * @return True if the current draw should be canceled and resceduled, false otherwise.
+     */
+    CARAPI DispatchOnPreDraw(
+        /* [out] */ Boolean* cancelDraw);
+
+    /**
+     * Notifies registered listeners that the drawing pass is about to start.
+     */
+    CARAPI DispatchOnDraw();
+
+    /**
+     * Notifies registered listeners that the touch mode has changed.
+     *
+     * @param inTouchMode True if the touch mode is now enabled, false otherwise.
+     */
+    CARAPI DispatchOnTouchModeChanged(
+        /* [in] */ Boolean inTouchMode);
+
+    /**
+     * Notifies registered listeners that something has scrolled.
+     */
+    CARAPI DispatchOnScrollChanged();
+
+    /**
+     * Returns whether there are listeners for computing internal insets.
+     */
+    CARAPI HasComputeInternalInsetsListeners(
+        /* [out] */ Boolean* has);
+
+    /**
+     * Calls all listeners to compute the current insets.
+     */
+    CARAPI DispatchOnComputeInternalInsets(
+        /* [in] */ IInternalInsetsInfo* inoutInfo);
+
+private:
+    CARAPI CheckIsAlive();
+
+    /**
+     * Marks this ViewTreeObserver as not alive. After invoking this method, invoking
+     * any other method but {@link #isAlive()} and {@link #kill()} will throw an Exception.
+     *
+     * @hide
+     */
+    CARAPI_(void) Kill();
+
+private:
+    //TODO: CopyOnWriteArrayList ----Thread-safe; List---Don't know.
+
+    // Recursive listeners use CopyOnWriteArrayList
+    // private CopyOnWriteArrayList<OnGlobalFocusChangeListener> mOnGlobalFocusListeners;
+    // private CopyOnWriteArrayList<OnTouchModeChangeListener> mOnTouchModeChangeListeners;
+
+    // // Non-recursive listeners use CopyOnWriteArray
+    // // Any listener invoked from ViewRootImpl.performTraversals() should not be recursive
+    // private CopyOnWriteArray<OnGlobalLayoutListener> mOnGlobalLayoutListeners;
+    // private CopyOnWriteArray<OnComputeInternalInsetsListener> mOnComputeInternalInsetsListeners;
+    // private CopyOnWriteArray<OnScrollChangedListener> mOnScrollChangedListeners;
+    // private CopyOnWriteArray<OnPreDrawListener> mOnPreDrawListeners;
+
+    List<AutoPtr<IOnGlobalLayoutListener> > mOnGlobalLayoutListeners;
+    List<AutoPtr<IOnComputeInternalInsetsListener> > mOnComputeInternalInsetsListeners;
+
+    List<AutoPtr<IOnPreDrawListener> > mOnPreDrawListeners;
+    List<AutoPtr<IOnDrawListener> > mOnDrawListeners;
+
+    Boolean mAlive;
+
+    /**
+     * Copy on write array. This array is not thread safe, and only one loop can
+     * iterate over this array at any given time. This class avoids allocations
+     * until a concurrent modification happens.
+     *
+     * Usage:
+     *
+     * CopyOnWriteArray.Access<MyData> access = array.start();
+     * try {
+     *     for (int i = 0; i < access.size(); i++) {
+     *         MyData d = access.get(i);
+     *     }
+     * } finally {
+     *     access.end();
+     * }
+     */
+    // static class CopyOnWriteArray<T> {
+    //     private ArrayList<T> mData = new ArrayList<T>();
+    //     private ArrayList<T> mDataCopy;
+
+    //     private final Access<T> mAccess = new Access<T>();
+
+    //     private boolean mStart;
+
+    //     static class Access<T> {
+    //         private ArrayList<T> mData;
+    //         private int mSize;
+
+    //         T get(int index) {
+    //             return mData.get(index);
+    //         }
+
+    //         int size() {
+    //             return mSize;
+    //         }
+    //     }
+
+    //     CopyOnWriteArray() {
+    //     }
+
+    //     private ArrayList<T> getArray() {
+    //         if (mStart) {
+    //             if (mDataCopy == null) mDataCopy = new ArrayList<T>(mData);
+    //             return mDataCopy;
+    //         }
+    //         return mData;
+    //     }
+
+    //     Access<T> start() {
+    //         if (mStart) throw new IllegalStateException("Iteration already started");
+    //         mStart = true;
+    //         mDataCopy = null;
+    //         mAccess.mData = mData;
+    //         mAccess.mSize = mData.size();
+    //         return mAccess;
+    //     }
+
+    //     void end() {
+    //         if (!mStart) throw new IllegalStateException("Iteration not started");
+    //         mStart = false;
+    //         if (mDataCopy != null) {
+    //             mData = mDataCopy;
+    //         }
+    //         mDataCopy = null;
+    //     }
+
+    //     int size() {
+    //         return getArray().size();
+    //     }
+
+    //     void add(T item) {
+    //         getArray().add(item);
+    //     }
+
+    //     void addAll(CopyOnWriteArray<T> array) {
+    //         getArray().addAll(array.mData);
+    //     }
+
+    //     void remove(T item) {
+    //         getArray().remove(item);
+    //     }
+
+    //     void clear() {
+    //         getArray().clear();
+    //     }
+    // }
+};
+
+} // namespace View
+} // namespace Droid
+} // namespace Elastos
+
+#endif //__VIEWTREEOBSERVER_H__

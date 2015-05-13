@@ -1,0 +1,104 @@
+
+module
+{
+    using interface Elastos.IO.IPrintWriter;
+
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Net.INetworkPolicy;
+    interface Elastos.Droid.Net.INetworkPolicyListener;
+    interface Elastos.Droid.Text.Format.ITime;
+    interface Elastos.Droid.Content.IContext;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    [deprecated]
+    interface INetworkPolicyManager {
+
+        /** No specific network policy, use system default. */
+        const Int32 POLICY_NONE = 0x0;
+        /** Reject network usage on metered networks when application in background. */
+        const Int32 POLICY_REJECT_METERED_BACKGROUND = 0x1;
+
+        /** All network traffic should be allowed. */
+        const Int32 RULE_ALLOW_ALL = 0x0;
+        /** Reject traffic on metered networks. */
+        const Int32 RULE_REJECT_METERED = 0x1;
+
+        /**
+         * {@link Intent} extra that indicates which {@link NetworkTemplate} rule it
+         * applies to.
+         */
+        const String EXTRA_NETWORK_TEMPLATE = "android.net.NETWORK_TEMPLATE";
+
+        SetUidPolicy(
+            [in] Int32 uid,
+            [in] Int32 policy);
+
+        GetUidPolicy(
+            [in] Int32 uid,
+            [out] Int32* result);
+
+        GetUidsWithPolicy(
+            [in] Int32 policy,
+            [out, callee] ArrayOf<Int32>* result);
+
+        RegisterListener(
+            [in] INetworkPolicyListener* listener);
+
+        UnregisterListener(
+            [in] INetworkPolicyListener* listener);
+
+        SetNetworkPolicies(
+            [in] ArrayOf<INetworkPolicy*>* policies);
+
+        GetNetworkPolicies(
+            [out, callee] ArrayOf<INetworkPolicy*>* result);
+
+        SetRestrictBackground(
+            [in] Boolean restrictBackground);
+
+        GetRestrictBackground(
+            [out] Boolean* result);
+    }
+
+    [local]
+    interface INetworkPolicyManagerHelper {
+
+        From(
+            [in] IContext* ctx,
+            [out] INetworkPolicyManager** result);
+
+        ComputeLastCycleBoundary(
+            [in] Int64 currentTime,
+            [in] INetworkPolicy* policy,
+            [out] Int64* result);
+
+        ComputeNextCycleBoundary(
+            [in] Int64 currentTime,
+            [in] INetworkPolicy* policy,
+            [out] Int64* result);
+
+        SnapToCycleDay(
+            [in] ITime* time,
+            [in] Int32 cycleDay);
+
+        IsUidValidForPolicy(
+            [in] IContext* ctx,
+            [in] Int32 uid,
+            [out] Boolean* result);
+
+        DumpPolicy(
+            [in] IPrintWriter* fout,
+            [in] Int32 policy);
+
+        DumpRules(
+            [in] IPrintWriter* fout,
+            [in] Int32 rules);
+    }
+
+    } // namespace Net
+    } // namepsace Droid
+    } // namespace Elastos
+}

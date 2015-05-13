@@ -1,0 +1,31 @@
+
+module
+{
+    using interface Elastos.Core.IRunnable;
+    interface Elastos.Utility.Concurrent.ICallable;
+
+    namespace Elastos {
+    namespace Utility {
+    namespace Concurrent {
+
+    interface IExecutors {
+        /**
+         * Returns a {@link Callable} object that, when
+         * called, runs the given task and returns the given result.  This
+         * can be useful when applying methods requiring a
+         * <tt>Callable</tt> to an otherwise resultless action.
+         * @param task the task to run
+         * @param result the result to return
+         * @return a callable object
+         * @throws NullPointerException if task null
+         */
+        Callable(
+            [in] IRunnable* task,
+            [in] IInterface* result,
+            [out] ICallable** object);
+    }
+
+    } // namespace Concurrent
+    } // namespace Utility
+    } // namespace Elastos
+}

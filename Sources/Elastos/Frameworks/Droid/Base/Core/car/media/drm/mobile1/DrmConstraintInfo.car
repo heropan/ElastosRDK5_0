@@ -1,0 +1,49 @@
+
+module
+{
+    using interface Elastos.Utility.IDate;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Drm {
+    namespace Mobile1 {
+
+    interface IDrmConstraintInfo {
+        /**
+         * Get the count constraint.
+         *
+         * @return the count or -1 if no limit.
+         */
+        GetCount(
+            [out] Int32* count);
+
+        /**
+         * Get the start date constraint.
+         *
+         * @return the start date or null if no limit.
+         */
+        GetStartDate(
+            [out] IDate** startDate);
+
+        /**
+         * Get the end date constraint.
+         *
+         * @return the end date or null if no limit.
+         */
+        GetEndDate(
+            [out] IDate** endDate);
+
+        /**
+         * Get the Interval constraint.
+         *
+         * @return the interval or -1 if no limit.
+         */
+        GetInterval(
+            [out] Int64* interval);
+    }
+
+    } // namespace mobile1
+    } // namespace drm
+    } // namepsace Droid
+    } // namespace Elastos
+}

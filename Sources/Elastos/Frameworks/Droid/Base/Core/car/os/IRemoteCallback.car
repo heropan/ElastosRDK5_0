@@ -1,0 +1,19 @@
+module
+{
+    interface Elastos.Droid.Os.IBundle;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+    /** @hide */
+    [oneway]
+    interface IRemoteCallback {
+        SendResult(
+            [in] IBundle* data);
+    }
+
+    } // namespace Os
+    } // namespace Droid
+    } // namespace Elastos
+}

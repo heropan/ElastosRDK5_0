@@ -1,0 +1,46 @@
+module
+{
+    interface Elastos.Droid.App.IPendingIntent;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    /**
+     * System private API for talking with the alarm manager service.
+     *
+     * {@hide}
+     */
+    interface IIAlarmManager {
+        Set(
+            [in] Int32 type,
+            [in] Int64 triggerAtTime,
+            [in] IPendingIntent* operation);
+
+        SetRepeating(
+            [in] Int32 type,
+            [in] Int64 triggerAtTime,
+            [in] Int64 interval,
+            [in] IPendingIntent* operation);
+
+        SetInexactRepeating(
+            [in] Int32 type,
+            [in] Int64 triggerAtTime,
+            [in] Int64 interval,
+            [in] IPendingIntent* operation);
+
+        SetTime(
+            [in] Int64 millis);
+
+        SetTimeZone(
+            [in] String zone);
+
+        Remove(
+            [in] IPendingIntent* operation);
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}
+

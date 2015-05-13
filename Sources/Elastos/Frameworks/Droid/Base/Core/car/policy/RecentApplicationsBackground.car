@@ -1,0 +1,19 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Policy {
+    namespace Impl {
+
+    [local]
+    interface IRecentApplicationsBackground extends Elastos.Droid.Widget.ILinearLayout {
+    }
+
+    } // Impl
+    } // Policy
+    } // Internal
+    } // Droid
+    } // Elastos
+}

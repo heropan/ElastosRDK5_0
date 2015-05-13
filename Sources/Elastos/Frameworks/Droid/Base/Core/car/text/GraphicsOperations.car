@@ -1,0 +1,111 @@
+module
+{
+    using interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Graphics.ICanvas;
+    interface Elastos.Droid.Graphics.IPaint;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+
+    /**
+     * Please implement this interface if your CharSequence can do quick
+     * draw/measure/widths calculations from an internal array.
+     * {@hide}
+     */
+    [deprecated]
+    interface IGraphicsOperations extends Elastos.Core.ICharSequence {
+        /**
+         * Just like {@link Canvas#drawText}.
+         */
+        DrawText(
+            [in] ICanvas* c,
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] Float x,
+            [in] Float y,
+            [in] IPaint* p);
+
+        /**
+         * Just like {@link Canvas#drawTextRun}.
+         * {@hide}
+         */
+        DrawTextRun(
+            [in] ICanvas* c,
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] Int32 contextStart,
+            [in] Int32 contextEnd,
+            [in] Float x,
+            [in] Float y,
+            [in] Int32 flags,
+            [in] IPaint* p);
+
+       /**
+         * Just like {@link Paint#measureText}.
+         */
+        MeasureText(
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] IPaint* p,
+            [out] Float* width);
+
+        /**
+         * Just like {@link Paint#getTextWidths}.
+         */
+        GetTextWidths(
+            [in] Int32 start,
+            [in] Int32 end,
+            [out, callee] ArrayOf<Float>* widths,
+            [in] IPaint* p,
+            [out] Int32* width);
+
+        /**
+         * Just like {@link Paint#getTextRunAdvances}.
+         * @hide
+         */
+        GetTextRunAdvances(
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] Int32 contextStart,
+            [in] Int32 contextEnd,
+            [in] Int32 flags,
+            [in] ArrayOf<Float>* advances,
+            [in] Int32 AdvancesIndex,
+            [in] IPaint* paint,
+            [out] Float* result);
+
+        /**
+         * Just like {@link Paint#getTextRunAdvances}.
+         * @hide
+         */
+        GetTextRunAdvancesEx(
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] Int32 contextStart,
+            [in] Int32 contextEnd,
+            [in] Int32 flags,
+            [in] ArrayOf<Float>* advances,
+            [in] Int32 advancesIndex,
+            [in] IPaint* paint,
+            [in] Int32 reserved,
+            [out] Float* result);
+
+        /**
+         * Just like {@link Paint#getTextRunCursor}.
+         * @hide
+         */
+        GetTextRunCursor(
+            [in] Int32 contextStart,
+            [in] Int32 contextEnd,
+            [in] Int32 flags,
+            [in] Int32 offset,
+            [in] Int32 cursorOpt,
+            [in] IPaint* p,
+            [out] Int32* result);
+    }
+
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
+}

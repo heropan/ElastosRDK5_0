@@ -1,0 +1,66 @@
+
+module
+{
+    namespace Elastos {
+    namespace Core {
+
+    interface IEnum {
+        /**
+         * Returns the name of this enum constant. The name is the field as it
+         * appears in the {@code enum} declaration.
+         *
+         * @return the name of this enum constant.
+         * @see #toString()
+         */
+        Name(
+            [out] String* str);
+
+        /**
+         * Returns the position of the enum constant in the declaration. The first
+         * constant has an ordinal value of zero.
+         *
+         * @return the ordinal value of this enum constant.
+         */
+        Ordinal(
+            [out] Int32* value);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        /**
+         * Compares the argument to the receiver, and returns {@code true} if the
+         * specified object is a {@code Map} and both {@code Map}s contain the same mappings.
+         *
+         * @param object
+         *            the {@code Object} to compare with this {@code Object}.
+         * @return boolean {@code true} if the {@code Object} is the same as this {@code Object}
+         *         {@code false} if it is different from this {@code Object}.
+         * @see #hashCode()
+         * @see #entrySet()
+         */
+        Equals(
+            [in] IInterface* object,
+            [out] Boolean* result);
+
+        /**
+         * Returns a string containing a concise, human-readable description of this
+         * object. In this case, the enum constant's name is returned.
+         *
+         * @return a printable representation of this object.
+         */
+        ToString(
+            [out] String* str);
+
+        /**
+         * Returns the enum constant's declaring class.
+         *
+         * @return the class object representing the constant's enum type.
+         */
+        // @SuppressWarnings("unchecked")
+        GetDeclaringClass(
+            [out] InterfaceID* riid);
+        }
+
+    } // namespace Core
+    } // namespace Elastos
+}

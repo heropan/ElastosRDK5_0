@@ -1,0 +1,11 @@
+
+module
+{
+    namespace Elastosx {
+    namespace Crypto {
+    namespace Spec {
+        interface IIvParameterSpec {}
+    } // namespace Spec
+    } // namespace Crypto
+    } // namespace Elastosx
+}

@@ -1,0 +1,84 @@
+
+module
+{
+    interface Elastos.Droid.Net.INetworkIdentity;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    interface INetworkTemplate {
+
+        const Int32 MATCH_MOBILE_ALL = 1;
+        const Int32 MATCH_MOBILE_3G_LOWER = 2;
+        const Int32 MATCH_MOBILE_4G = 3;
+        const Int32 MATCH_WIFI = 4;
+        const Int32 MATCH_ETHERNET = 5;
+        const Int32 MATCH_MOBILE_WILDCARD = 6;
+        const Int32 MATCH_WIFI_WILDCARD = 7;
+
+        ToString(
+            [out] String* result);
+
+        GetHashCode(
+            [out] Int32* result);
+
+        Equals(
+            [in] IInterface* obj,
+            [out] Boolean* result);
+
+        EqualsEx(
+            [in] INetworkTemplate* obj,
+            [out] Boolean* result);
+
+        GetMatchRule(
+            [out] Int32* result);
+
+        GetSubscriberId(
+            [out] String* result);
+
+        GetNetworkId(
+            [out] String* result);
+
+        Matches(
+            [in] INetworkIdentity* ident,
+            [out] Boolean* result);
+    }
+
+    interface INetworkTemplateHelper {
+
+        ForceAllNetworkTypes();
+
+        BuildTemplateMobileAll(
+            [in] String subscriberId,
+            [out] INetworkTemplate** result);
+
+        BuildTemplateMobile3gLower(
+            [in] String subscriberId,
+            [out] INetworkTemplate** result);
+
+        BuildTemplateMobile4g(
+            [in] String subscriberId,
+            [out] INetworkTemplate** result);
+
+        BuildTemplateMobileWildcard(
+            [out] INetworkTemplate** result);
+
+        BuildTemplateWifiWildcard(
+            [out] INetworkTemplate** result);
+
+        BuildTemplateWifi(
+            [out] INetworkTemplate** result);
+
+        BuildTemplateWifiEx(
+            [in] String networkId,
+            [out] INetworkTemplate** result);
+
+        BuildTemplateEthernet(
+            [out] INetworkTemplate** result);
+    }
+
+    } // namespace Net
+    } // namepsace Droid
+    } // namespace Elastos
+}

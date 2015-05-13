@@ -1,0 +1,131 @@
+//==========================================================================
+// Copyright (c) 2000-2009,  Elastos, Inc.  All Rights Reserved.
+//==========================================================================
+
+library
+{
+    typedef [dummytype] Byte UInt8;
+    typedef [dummytype] Int64 SystemTime;
+    typedef [dummytype] Int32 Address;
+
+    typedef [dummytype] EGuid ClassID;
+    typedef [dummytype] EMuid InterfaceID;
+    typedef [dummytype] InterfaceID EIID;
+
+    typedef [dummytype] EMuid  REMuid;
+    typedef [dummytype] ClassID RClassID;
+    typedef [dummytype] InterfaceID REIID;
+    typedef [dummytype] InterfaceID RInterfaceID;
+
+    typedef [dummytype] Int32 MemorySize;
+    typedef [dummytype] Int32 ThreadCreationFlags;
+    typedef [dummytype] Int32 ModuleLoadFlags;
+    typedef [dummytype] Int32 MemoryMapFlags;
+    typedef [dummytype] Int32 EventState;
+    typedef [dummytype] Int32 SystemEvents;
+    typedef [dummytype] Int32 Encoding;
+
+    typedef [dummytype] Int32 Char32;
+    typedef [dummytype] Char32* PChar32;
+
+    typedef [dummytype] Int32 Second32;
+    typedef [dummytype] Int32 Millisecond32;
+    typedef [dummytype] Int32 Microsecond32;
+
+    typedef [dummytype] Int64 Second64;
+    typedef [dummytype] Int64 Millisecond64;
+    typedef [dummytype] Int64 Microsecond64;
+
+    typedef [dummytype] Second32*      PSecond32;
+    typedef [dummytype] Millisecond32* PMillisecond32;
+    typedef [dummytype] Microsecond32* PMicrosecond32;
+
+    typedef [dummytype] Second64*      PSecond64;
+    typedef [dummytype] Millisecond64* PMillisecond64;
+    typedef [dummytype] Microsecond64* PMicrosecond64;
+
+    typedef [dummytype] Int64 Timestamp64;
+    typedef [dummytype] Byte  Flags8;
+    typedef [dummytype] Int16 Flags16;
+    typedef [dummytype] Int32 Flags32;
+    typedef [dummytype] Int64 Flags64;
+
+    typedef [dummytype] Flags8  *PFlags8;
+    typedef [dummytype] Flags16 *PFlags16;
+    typedef [dummytype] Flags32 *PFlags32;
+    typedef [dummytype] Flags64 *PFlags64;
+
+    typedef [dummytype] Int32 Handle32;
+    typedef [dummytype] Int64 Handle64;
+
+    typedef [dummytype] Handle32* PHandle32;
+    typedef [dummytype] Handle64* PHandle64;
+
+    interface IInterface {
+    }
+
+    typedef [dummytype] IInterface * PInterface;
+
+    interface IObject extends IInterface {
+        Aggregate(
+            [in] Int32 type,
+            [in] IInterface *object);
+
+        GetDomain(
+            [out] IInterface **object);
+
+        GetClassID(
+            [out] ClassID *clsid);
+
+        GetHashCode(
+            [out] Int32 * pHashCode);
+
+        Equals(
+            [in] IInterface * pInterface,
+            [out] Boolean * pEquals);
+
+        ToString(
+            [out] String* pInfo);
+    }
+
+    typedef [dummytype] Int32 AggregateType;
+
+    interface IAspect extends IInterface {
+        AspectAggregate(
+            [in] AggregateType type,
+            [in] IInterface *object);
+
+        AspectGetDomain(
+            [out] IInterface **object);
+
+        GetAspectID(
+            [out] ClassID *clsid);
+    }
+
+    interface IClassObject extends IInterface {
+        CreateObject(
+            [in] IInterface *outer,
+            [in] InterfaceID riid,
+            [out] IInterface **object);
+
+        StayResident(
+            [in] Boolean bIsStayResident);
+    }
+
+    typedef [dummytype] IClassObject * PClassObject;
+
+    interface IProxyDeathRecipient extends IInterface {
+        ProxyDied();
+    }
+
+    interface IWeakReference extends IInterface {
+        Resolve(
+            [in] InterfaceID riid,
+            [out] IInterface** objectReference);
+    }
+
+    interface IWeakReferenceSource extends IInterface {
+        GetWeakReference(
+            [out] IWeakReference** weakReference);
+    }
+}

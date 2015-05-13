@@ -1,0 +1,22 @@
+module
+{
+    interface Elastos.Droid.Text.IParcelableSpan;
+    interface Elastos.Droid.Text.Style.ICharacterStyle;
+    interface Elastos.Droid.Text.Style.ICharacterStyleHelper;
+    interface Elastos.Droid.Text.Style.IUpdateAppearance;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    interface IUnderlineSpan extends ICharacterStyle /*implements IUpdateAppearance, IParcelableSpan*/ {}
+
+    interface IUnderlineSpanHelper extends ICharacterStyleHelper {}
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

@@ -1,0 +1,75 @@
+
+#ifndef __CCAMERAPROFILEHELPER_H__
+#define __CCAMERAPROFILEHELPER_H__
+
+#include "_CCameraProfileHelper.h"
+#include "ext/frameworkext.h"
+#include <elastos/HashMap.h>
+#include <elastos/Mutex.h>
+
+using Elastos::Utility::HashMap;
+using Elastos::Core::Threading::Mutex;
+
+namespace Elastos {
+namespace Droid {
+namespace Media {
+/**
+ * The CameraProfile class is used to retrieve the pre-defined still image
+ * capture (jpeg) quality levels (0-100) used for low, medium, and high
+ * quality settings in the Camera application.
+ *
+ */
+CarClass(CCameraProfileHelper)
+{
+public:
+    /**
+     * Returns a pre-defined still image capture (jpeg) quality level
+     * used for the given quality level in the Camera application for
+     * the first back-facing camera on the device. If the device has no
+     * back-facing camera, this returns 0.
+     *
+     * @param quality The target quality level
+     */
+    CARAPI GetJpegEncodingQualityParameter(
+        /* [in] */ Int32 quality,
+        /* [out] */ Int32* result);
+
+    /**
+     * Returns a pre-defined still image capture (jpeg) quality level
+     * used for the given quality level in the Camera application for
+     * the specified camera.
+     *
+     * @param cameraId The id of the camera
+     * @param quality The target quality level
+     */
+    CARAPI GetJpegEncodingQualityParameterEx(
+        /* [in] */ Int32 cameraId,
+        /* [in] */ Int32 quality,
+        /* [out] */ Int32* result);
+
+private:
+    CARAPI_(AutoPtr<ArrayOf<Int32> >) GetImageEncodingQualityLevels(
+        /* [in] */ Int32 cameraId);
+
+    // Methods implemented by JNI
+    CARAPI_(void) NativeInit();
+
+    CARAPI_(Int32) NativeGetNumImageEncodingQualityLevels(
+        /* [in] */ Int32 cameraId);
+
+    CARAPI_(Int32) NativeGetImageEncodingQualityLevel(
+        /* [in] */ Int32 cameraId,
+        /* [in] */ Int32 index);
+
+private:
+    /*
+     * Cache the Jpeg encoding quality parameters
+     */
+    HashMap<Int32, AutoPtr<ArrayOf<Int32> > > sCache;
+    Mutex mCacheLock;
+};
+
+} // namespace Media
+} // namepsace Droid
+} // namespace Elastos
+#endif

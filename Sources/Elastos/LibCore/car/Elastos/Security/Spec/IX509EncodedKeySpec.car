@@ -1,0 +1,19 @@
+
+module
+{
+    interface Elastos.Math.IBigInteger;
+
+    namespace Elastos {
+    namespace Security {
+    namespace Spec {
+
+    /**
+     * The key specification of an X.509 encoded key in ASN.1 format.
+     */
+    interface IX509EncodedKeySpec extends IEncodedKeySpec {
+    }
+
+    } // namespace Spec
+    } // namespace Security
+    } // namespace Elastos
+}

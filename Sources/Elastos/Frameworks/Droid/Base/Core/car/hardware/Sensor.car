@@ -1,0 +1,167 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+
+    /**
+     * Class representing a sensor. Use {@link SensorManager#getSensorList} to get
+     * the list of available Sensors.
+     *
+     * @see SensorManager
+     * @see SensorEventListener
+     * @see SensorEvent
+     *
+     */
+    interface ISensor {
+        /**
+         * A constant describing an accelerometer sensor type. See
+         * {@link android.hardware.SensorEvent#values SensorEvent.values} for more
+         * details.
+         */
+        const Int32 TYPE_ACCELEROMETER = 1;
+
+        /**
+         * A constant describing a magnetic field sensor type. See
+         * {@link android.hardware.SensorEvent#values SensorEvent.values} for more
+         * details.
+         */
+        const Int32 TYPE_MAGNETIC_FIELD = 2;
+
+        /**
+         * A constant describing an orientation sensor type. See
+         * {@link android.hardware.SensorEvent#values SensorEvent.values} for more
+         * details.
+         *
+         * @deprecated use {@link android.hardware.SensorManager#getOrientation
+         *             SensorManager.getOrientation()} instead.
+         */
+        //@Deprecated
+        const Int32 TYPE_ORIENTATION = 3;
+
+        /** A constant describing a gyroscope sensor type */
+        const Int32 TYPE_GYROSCOPE = 4;
+
+        /**
+         * A constant describing a light sensor type. See
+         * {@link android.hardware.SensorEvent#values SensorEvent.values} for more
+         * details.
+         */
+        const Int32 TYPE_LIGHT = 5;
+
+        /** A constant describing a pressure sensor type */
+        const Int32 TYPE_PRESSURE = 6;
+
+        /**
+         * A constant describing a temperature sensor type
+         *
+         * @deprecated use
+         *             {@link android.hardware.Sensor#TYPE_AMBIENT_TEMPERATURE
+         *             Sensor.TYPE_AMBIENT_TEMPERATURE} instead.
+         */
+        //@Deprecated
+        const Int32 TYPE_TEMPERATURE = 7;
+
+        /**
+         * A constant describing a proximity sensor type. See
+         * {@link android.hardware.SensorEvent#values SensorEvent.values} for more
+         * details.
+         */
+        const Int32 TYPE_PROXIMITY = 8;
+
+        /**
+         * A constant describing a gravity sensor type.
+         * See {@link android.hardware.SensorEvent SensorEvent}
+         * for more details.
+         */
+        const Int32 TYPE_GRAVITY = 9;
+
+        /**
+         * A constant describing a linear acceleration sensor type.
+         * See {@link android.hardware.SensorEvent SensorEvent}
+         * for more details.
+         */
+        const Int32 TYPE_LINEAR_ACCELERATION = 10;
+
+        /**
+         * A constant describing a rotation vector sensor type.
+         * See {@link android.hardware.SensorEvent SensorEvent}
+         * for more details.
+         */
+        const Int32 TYPE_ROTATION_VECTOR = 11;
+
+        /**
+         * A constant describing a relative humidity sensor type.
+         * See {@link android.hardware.SensorEvent SensorEvent}
+         * for more details.
+         */
+        const Int32 TYPE_RELATIVE_HUMIDITY = 12;
+
+        /** A constant describing an ambient temperature sensor type */
+        const Int32 TYPE_AMBIENT_TEMPERATURE = 13;
+
+        /**
+         * A constant describing all sensor types.
+         */
+        const Int32 TYPE_ALL = -1;
+
+
+        /**
+         * @return name string of the sensor.
+         */
+        GetName(
+            [out] String* value);
+
+        /**
+         * @return vendor string of this sensor.
+         */
+        GetVendor(
+            [out] String* value);
+
+        /**
+         * @return generic type of this sensor.
+         */
+        GetType(
+            [out] Int32* value);
+
+        /**
+         * @return version of the sensor's module.
+         */
+        GetVersion(
+            [out] Int32* value);
+
+        /**
+         * @return maximum range of the sensor in the sensor's unit.
+         */
+        GetMaximumRange(
+            [out] Float* value);
+
+        /**
+         * @return resolution of the sensor in the sensor's unit.
+         */
+        GetResolution(
+            [out] Float* value);
+
+        /**
+         * @return the power in mA used by this sensor while in use
+         */
+        GetPower(
+            [out] Float* value);
+
+        /**
+         * @return the minimum delay allowed between two events in microsecond
+         * or zero if this sensor only returns a value when the data it's measuring
+         * changes.
+         */
+        GetMinDelay(
+            [out] Int32* delay);
+
+        //GetHandle(
+        //    [out] Int32* handle);
+    }
+
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}

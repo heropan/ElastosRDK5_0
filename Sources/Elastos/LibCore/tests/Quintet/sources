@@ -1,0 +1,14 @@
+
+TARGET_NAME = testQuintet
+TARGET_TYPE = ecx
+
+IMPORTS = Elastos.Core.eco
+
+SOURCES = test.cpp
+SOURCES += Elastos.Core.cpp
+
+LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += -lstdc++ -licuuc -licui18n -lm -lcutils

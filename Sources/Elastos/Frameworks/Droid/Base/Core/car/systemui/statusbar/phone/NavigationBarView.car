@@ -1,0 +1,92 @@
+module
+{
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.Widget.IImageView;
+    interface Elastos.Droid.Widget.ILinearLayout;
+    interface Elastos.Droid.SystemUI.StatusBar.IBaseStatusBar;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Phone {
+
+    interface INavigationBarView extends Elastos.Droid.Widget.ILinearLayout {
+        SetDelegateView(
+            [in] IView* view);
+
+        SetBar(
+            [in] IBaseStatusBar* phoneStatusBar);
+
+        GetRecentsButton(
+            [out] IView** view);
+
+        GetMenuButton(
+            [out] IView** view);
+
+        GetBackButton(
+            [out] IView** view);
+
+        GetHomeButton(
+            [out] IView** view);
+
+        GetScreenShotButton(
+            [out] IView** view);
+
+        GetVolumeDownButton(
+            [out] IView** view);
+
+        GetVolumeUpButton(
+            [out] IView** view);
+
+        // for when home is disabled, but search isn't
+        GetSearchLight(
+            [out] IView** view);
+
+        NotifyScreenOn(
+            [in] Boolean screenOn);
+
+        SetNavigationIconHints(
+            [in] Int32 hints);
+
+        SetNavigationIconHintsEx(
+            [in] Int32 hints,
+            [in] Boolean force);
+
+        SetDisabledFlags(
+            [in] Int32 disabledFlags);
+
+        SetDisabledFlagsEx(
+            [in] Int32 disabledFlags,
+            [in] Boolean force);
+
+        SetSlippery(
+            [in] Boolean newSlippery);
+
+        SetMenuVisibility(
+            [in] Boolean show);
+
+        SetMenuVisibilityEx(
+            [in] Boolean show,
+            [in] Boolean force);
+
+        SetLowProfile(
+            [in] Boolean lightsOut);
+
+        SetLowProfileEx(
+            [in] Boolean lightsOut,
+            [in] Boolean animate,
+            [in] Boolean force);
+
+        SetHidden(
+            [in] Boolean hide);
+
+        Reorient();
+    }
+
+    } // namespace Phone
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

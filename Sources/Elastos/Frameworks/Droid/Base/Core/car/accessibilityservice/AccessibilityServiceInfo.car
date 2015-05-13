@@ -1,0 +1,245 @@
+module
+{
+    interface Elastos.Droid.Content.Pm.IResolveInfo;
+    interface Elastos.Droid.Content.Pm.IPackageManager;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace AccessibilityService {
+
+    [deprecated]
+    interface IAccessibilityServiceInfo {
+        /**
+         * Denotes spoken feedback.
+         */
+        const Int32 FEEDBACK_SPOKEN = 0x0000001;
+
+        /**
+         * Denotes haptic feedback.
+         */
+        const Int32 FEEDBACK_HAPTIC =  0x0000002;
+
+        /**
+         * Denotes audible (not spoken) feedback.
+         */
+        const Int32 FEEDBACK_AUDIBLE = 0x0000004;
+
+        /**
+         * Denotes visual feedback.
+         */
+        const Int32 FEEDBACK_VISUAL = 0x0000008;
+
+        /**
+         * Denotes generic feedback.
+         */
+        const Int32 FEEDBACK_GENERIC = 0x0000010;
+
+        /**
+         * Denotes braille feedback.
+         */
+        const Int32 FEEDBACK_BRAILLE = 0x0000020;
+
+        /**
+         * Mask for all feedback types.
+         *
+         * @see #FEEDBACK_SPOKEN
+         * @see #FEEDBACK_HAPTIC
+         * @see #FEEDBACK_AUDIBLE
+         * @see #FEEDBACK_VISUAL
+         * @see #FEEDBACK_GENERIC
+         * @see #FEEDBACK_BRAILLE
+         */
+        const Int32 FEEDBACK_ALL_MASK = 0xFFFFFFFF;
+
+        /**
+         * If an {@link AccessibilityService} is the default for a given type.
+         * Default service is invoked only if no package specific one exists. In case of
+         * more than one package specific service only the earlier registered is notified.
+         */
+        const Int32 DEFAULT = 0x0000001;
+
+        /**
+         * If this flag is set the system will regard views that are not important
+         * for accessibility in addition to the ones that are important for accessibility.
+         * That is, views that are marked as not important for accessibility via
+         * {@link View#IMPORTANT_FOR_ACCESSIBILITY_NO} and views that are marked as
+         * potentially important for accessibility via
+         * {@link View#IMPORTANT_FOR_ACCESSIBILITY_AUTO} for which the system has determined
+         * that are not important for accessibility, are both reported while querying the
+         * window content and also the accessibility service will receive accessibility events
+         * from them.
+         * <p>
+         * <strong>Note:</strong> For accessibility services targeting API version
+         * {@link Build.VERSION_CODES#JELLY_BEAN} or higher this flag has to be explicitly
+         * set for the system to regard views that are not important for accessibility. For
+         * accessibility services targeting API version lower than
+         * {@link Build.VERSION_CODES#JELLY_BEAN} this flag is ignored and all views are
+         * regarded for accessibility purposes.
+         * </p>
+         * <p>
+         * Usually views not important for accessibility are layout managers that do not
+         * react to user actions, do not draw any content, and do not have any special
+         * semantics in the context of the screen content. For example, a three by three
+         * grid can be implemented as three horizontal linear layouts and one vertical,
+         * or three vertical linear layouts and one horizontal, or one grid layout, etc.
+         * In this context the actual layout mangers used to achieve the grid configuration
+         * are not important, rather it is important that there are nine evenly distributed
+         * elements.
+         * </p>
+         */
+        const Int32 FLAG_INCLUDE_NOT_IMPORTANT_VIEWS = 0x0000002;
+
+        /**
+         * This flag requests that the system gets into touch exploration mode.
+         * In this mode a single finger moving on the screen behaves as a mouse
+         * pointer hovering over the user interface. The system will also detect
+         * certain gestures performed on the touch screen and notify this service.
+         * The system will enable touch exploration mode if there is at least one
+         * accessibility service that has this flag set. Hence, clearing this
+         * flag does not guarantee that the device will not be in touch exploration
+         * mode since there may be another enabled service that requested it.
+         */
+        const Int32 FLAG_REQUEST_TOUCH_EXPLORATION_MODE= 0x0000004;
+
+        SetEventTypes (
+            [in] Int32 types);
+
+        GetEventTypes (
+            [out] Int32* types);
+
+        SetPackageNames (
+            [in] ArrayOf<String>* names);
+
+        GetPackageNames (
+            [out, callee] ArrayOf<String>* names);
+
+        SetFeedbackType (
+            [in] Int32 type);
+
+        GetFeedbackType (
+            [out] Int32* type);
+
+        SetNotificationTimeout (
+            [in] Int64 timeout);
+
+        GetNotificationTimeout (
+            [out] Int64* timeout);
+
+        SetFlags (
+            [in] Int32 flags);
+
+        GetFlags (
+            [out] Int32* flags);
+
+        /**
+        * Updates the properties that an AccessibilitySerivice can change dynamically.
+        *
+        * @param other The info from which to update the properties.
+        *
+        * @hide
+        */
+        UpdateDynamicallyConfigurableProperties(
+            [in] IAccessibilityServiceInfo* other);
+
+        /**
+         * The accessibility service id.
+         * <p>
+         *   <strong>Generated by the system.</strong>
+         * </p>
+         * @return The id.
+         */
+        GetId(
+            [out] String* id);
+
+        /**
+         * The service {@link ResolveInfo}.
+         * <p>
+         *   <strong>Generated by the system.</strong>
+         * </p>
+         * @return The info.
+         */
+        GetResolveInfo(
+            [out] IResolveInfo** info);
+
+        /**
+         * The settings activity name.
+         * <p>
+         *    <strong>Statically set from
+         *    {@link AccessibilityService#SERVICE_META_DATA meta-data}.</strong>
+         * </p>
+         * @return The settings activity name.
+         */
+        GetSettingsActivityName(
+            [out] String* activityName);
+
+        /**
+         * Whether this service can retrieve the current window's content.
+         * <p>
+         *    <strong>Statically set from
+         *    {@link AccessibilityService#SERVICE_META_DATA meta-data}.</strong>
+         * </p>
+         * @return True if window content can be retrieved.
+         */
+        GetCanRetrieveWindowContent(
+            [out] Boolean* result);
+
+        /**
+         * Gets the non-localized description of the accessibility service.
+         * <p>
+         *    <strong>Statically set from
+         *    {@link AccessibilityService#SERVICE_META_DATA meta-data}.</strong>
+         * </p>
+         * @return The description.
+         *
+         * @deprecated Use {@link #loadDescription(PackageManager)}.
+         */
+        GetDescription(
+            [out] String* description);
+
+        /**
+         * The localized description of the accessibility service.
+         * <p>
+         *    <strong>Statically set from
+         *    {@link AccessibilityService#SERVICE_META_DATA meta-data}.</strong>
+         * </p>
+         * @return The localized description.
+         */
+        LoadDescription(
+            [in] IPackageManager* packageManager,
+            [out] String* description);
+
+        /**
+         * {@inheritDoc}
+         */
+        DescribeContents(
+            [out] Int32* result);
+    }
+
+    interface IAccessibilityServiceInfoHelper {
+        /**
+         * Returns the string representation of a feedback type. For example,
+         * {@link #FEEDBACK_SPOKEN} is represented by the string FEEDBACK_SPOKEN.
+         *
+         * @param feedbackType The feedback type.
+         * @return The string representation.
+         */
+        FeedbackTypeToString(
+            [in] Int32 feedbackType,
+            [out] String* representation);
+
+        /**
+         * Returns the string representation of a flag. For example,
+         * {@link #DEFAULT} is represented by the string DEFAULT.
+         *
+         * @param flag The flag.
+         * @return The string representation.
+         */
+        FlagToString(
+            [in] Int32 flag,
+            [out] String* representation);
+    }
+
+    } // namespace AccessibilityService
+    } // namepsace Droid
+    } // namespace Elastos
+}

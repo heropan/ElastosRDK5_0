@@ -1,0 +1,49 @@
+
+EXPORT_HEADERS = elastos/TimerTask.h
+
+ifeq ("$(XDK_TARGET_PLATFORM)", $(filter "$(XDK_TARGET_PLATFORM)", "android" "linux"))
+EXPORT_HEADERS += elastos/Algorithm.h
+EXPORT_HEADERS += elastos/ConceptCheck.h
+EXPORT_HEADERS += elastos/etl_algo.h
+EXPORT_HEADERS += elastos/etl_algobase.h
+EXPORT_HEADERS += elastos/etl_alloc.h
+EXPORT_HEADERS += elastos/etl_concept_check.h
+EXPORT_HEADERS += elastos/etl_construct.h
+EXPORT_HEADERS += elastos/etl_def.h
+EXPORT_HEADERS += elastos/etl_exception_defines.h
+EXPORT_HEADERS += elastos/etl_function.h
+EXPORT_HEADERS += elastos/etl_function_exception.h
+EXPORT_HEADERS += elastos/etl_hash_fun.h
+EXPORT_HEADERS += elastos/etl_hashmap.h
+EXPORT_HEADERS += elastos/etl_hashset.h
+EXPORT_HEADERS += elastos/etl_hashtable.h
+EXPORT_HEADERS += elastos/etl_iterator.h
+EXPORT_HEADERS += elastos/etl_iterator_base_funcs.h
+EXPORT_HEADERS += elastos/etl_iterator_base_types.h
+EXPORT_HEADERS += elastos/etl_list.h
+EXPORT_HEADERS += elastos/etl_map.h
+EXPORT_HEADERS += elastos/etl_multimap.h
+EXPORT_HEADERS += elastos/etl_multiset.h
+EXPORT_HEADERS += elastos/etl_pair.h
+EXPORT_HEADERS += elastos/etl_set.h
+EXPORT_HEADERS += elastos/etl_tree.h
+EXPORT_HEADERS += elastos/etl_type_traits.h
+EXPORT_HEADERS += elastos/etl_uninitialized.h
+EXPORT_HEADERS += elastos/etl_vector.h
+EXPORT_HEADERS += elastos/etl_deque.h
+EXPORT_HEADERS += elastos/etl_stack.h
+EXPORT_HEADERS += elastos/etl_heap.h
+EXPORT_HEADERS += elastos/etl_queue.h
+EXPORT_HEADERS += elastos/etl_blockingqueue.h
+EXPORT_HEADERS += elastos/HashMap.h
+EXPORT_HEADERS += elastos/HashSet.h
+EXPORT_HEADERS += elastos/HashTable.h
+EXPORT_HEADERS += elastos/List.h
+EXPORT_HEADERS += elastos/Map.h
+EXPORT_HEADERS += elastos/Pair.h
+EXPORT_HEADERS += elastos/Set.h
+EXPORT_HEADERS += elastos/Vector.h
+EXPORT_HEADERS += elastos/Stack.h
+EXPORT_HEADERS += elastos/Queue.h
+EXPORT_HEADERS += elastos/BlockingQueue.h
+endif

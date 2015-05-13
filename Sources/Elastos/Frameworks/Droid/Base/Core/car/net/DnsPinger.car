@@ -1,0 +1,51 @@
+
+module
+{
+    using interface Elastos.Net.IInetAddress;
+    interface Elastos.Droid.Os.IHandler;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    /**
+     * Async response packet for dns pings.
+     * arg1 is the ID of the ping, also returned by {@link #pingDnsAsync(InetAddress, int, int)}
+     * arg2 is the delay, or is negative on error.
+     */
+    interface IDnsPinger extends Elastos.Droid.Os.IHandler {
+
+        const Int32 DNS_PING_RESULT = 0x00050000; // BASE;
+        /** An error code for a {@link #DNS_PING_RESULT} packet */
+        const Int32 _TIMEOUT = -1;
+        /** An error code for a {@link #DNS_PING_RESULT} packet */
+        const Int32 SOCKET_EXCEPTION = -2;
+
+        /**
+         * Returns a list of DNS addresses, coming from either the link properties of the
+         * specified connection or the default system DNS if the link properties has no dnses.
+         * @return a non-empty non-null list
+         */
+        GetDnsList(
+            [out] IObjectContainer** result);
+
+        /**
+         * Send a ping.  The response will come via a {@link #DNS_PING_RESULT} to the handler
+         * specified at creation.
+         * @param dns address of dns server to ping
+         * @param timeout timeout for ping
+         * @return an ID field, which will also be included in the {@link #DNS_PING_RESULT} message.
+         */
+        PingDnsAsync(
+            [in] IInetAddress* dns,
+            [in] Int32 timeout,
+            [in] Int32 delay,
+            [out] Int32* result);
+
+        CancelPings();
+    }
+
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
+}

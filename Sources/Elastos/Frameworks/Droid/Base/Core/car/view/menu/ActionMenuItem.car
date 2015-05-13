@@ -1,0 +1,26 @@
+module
+{
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Menu {
+
+        /**
+         * @hide
+         */
+        [local]
+        interface IActionMenuItem extends Elastos.Droid.View.IMenuItem {
+
+            SetExclusiveCheckable(
+                [in] Boolean exclusive);
+
+            Invoke(
+                [out] Boolean* res);
+        }
+
+    } // namespace Menu
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

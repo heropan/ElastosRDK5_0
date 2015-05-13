@@ -1,0 +1,40 @@
+
+module
+{
+    interface Elastos.Droid.Widget.ITextView;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+
+    interface IEditText extends Elastos.Droid.Widget.ITextView {
+
+        /**
+         * Convenience for {@link Selection#setSelection(Spannable, Int32, Int32)}.
+         */
+        SetSelection(
+            [in] Int32 start,
+            [in] Int32 stop);
+
+        /**
+         * Convenience for {@link Selection#setSelection(Spannable, Int32)}.
+         */
+        SetSelectionEx(
+            [in] Int32 index);
+
+        /**
+         * Convenience for {@link Selection#selectAll}.
+         */
+        SelectAll();
+
+        /**
+         * Convenience for {@link Selection#extendSelection}.
+         */
+        ExtendSelection(
+            [in] Int32 index);
+    }
+
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+}

@@ -1,0 +1,91 @@
+
+module
+{
+    interface Elastos.Droid.View.Menu.IMenuBuilder;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Menu {
+
+        interface IIconMenuViewSavedState extends Elastos.Droid.View.IViewBaseSavedState{
+
+            SetFocusedPosition(
+                [in] Int32 focusedPosition);
+
+            GetFocusedPosition(
+                [out] Int32* focusedPosition);
+        }
+
+        [local]
+        interface IIconMenuView extends Elastos.Droid.View.IViewGroup {
+            /**
+             * Returns the number of items per row.
+             * <p>
+             * This should only be used for testing.
+             *
+             * @return The length of the array is the number of rows. A value at a
+             *         position is the number of items in that row.
+             * @hide
+             */
+            GetLayout(
+                [out, callee] ArrayOf<Int32>* items);
+
+            /**
+             * Returns the number of rows in the layout.
+             * <p>
+             * This should only be used for testing.
+             *
+             * @return The length of the array is the number of rows. A value at a
+             *         position is the number of items in that row.
+             * @hide
+             */
+            GetLayoutNumRows(
+                [out] Int32* nunmber);
+        }
+
+        interface IIconMenuViewLayoutParams extends Elastos.Droid.View.IViewGroupMarginLayoutParams {
+
+            SetLeft(
+                [in] Int32 left);
+
+            GetLeft(
+                [out] Int32* left);
+
+            SetTop(
+                [in] Int32 top);
+
+            GetTop(
+                [out] Int32* top);
+
+            SetRight(
+                [in] Int32 right);
+
+            GetRight(
+                [out] Int32* right);
+
+            SetBottom(
+                [in] Int32 bottom);
+
+            GetBottom(
+                [out] Int32* bottom);
+
+            SetDesiredWidth(
+                [in] Int32 desiredWidth);
+
+            GetDesiredWidth(
+                [out] Int32* desiredWidth);
+
+            SetMaxNumItemsOnRow(
+                [in] Int32 maxNumItemsOnRow);
+
+            GetMaxNumItemsOnRow(
+                [out] Int32* maxNumItemsOnRow);
+
+        }
+
+    } // namespace Menu
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

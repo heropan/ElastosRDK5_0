@@ -1,0 +1,32 @@
+TARGET_NAME = statusbar
+TARGET_TYPE = lib
+
+C_DEFINES += -DDROID_CORE
+
+include $(MAKEDIR)/../../../../../sources.inc
+
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../inc/
+INCLUDES += $(MAKEDIR)/../../../inc/systemui
+INCLUDES += $(MAKEDIR)/../../../inc/systemui/statusbar
+
+
+SOURCES = AnimatedImageView.cpp
+SOURCES += CAnimatedImageView.cpp
+SOURCES += BaseStatusBar.cpp
+SOURCES += CCommandQueue.cpp
+SOURCES += DelegateViewHelper.cpp
+SOURCES += NotificationData.cpp
+SOURCES += StatusBarIconView.cpp
+SOURCES += CStatusBarIconView.cpp
+SOURCES += SignalClusterView.cpp
+SOURCES += CSignalClusterView.cpp
+SOURCES += DoNotDisturb.cpp
+SOURCES += LatestItemView.cpp
+SOURCES += CLatestItemView.cpp
+SOURCES += RotationToggle.cpp
+SOURCES += CRotationToggle.cpp
+
+LIBRARIES += policy/policy.lib
+LIBRARIES += phone/phone.lib
+LIBRARIES += tablet/tablet.lib

@@ -1,0 +1,173 @@
+
+module
+{
+    merge("Inputmethods/PinyinIME/BalloonHint.car");
+    merge("Inputmethods/PinyinIME/CandidateViewListener.car");
+    merge("Inputmethods/PinyinIME/IPinyinDecoderService.car");
+    merge("Inputmethods/PinyinIME/DecodingInfo.car");
+    merge("Inputmethods/PinyinIME/CandidatesContainer.car");
+    merge("Inputmethods/PinyinIME/SoftKey.car");
+    merge("Inputmethods/PinyinIME/PinyinIME.car");
+    merge("Inputmethods/PinyinIME/CandidateView.car");
+    merge("Inputmethods/PinyinIME/ComposingView.car");
+    merge("Inputmethods/PinyinIME/Environment.car");
+    merge("Inputmethods/PinyinIME/InputModeSwitcher.car");
+    merge("Inputmethods/PinyinIME/Settings.car");
+    merge("Inputmethods/PinyinIME/SkbContainer.car");
+    merge("Inputmethods/PinyinIME/SoftKeyboard.car");
+    merge("Inputmethods/PinyinIME/SoftKeyboardView.car");
+    merge("Inputmethods/PinyinIME/SoundManager.car");
+
+    interface Elastos.Droid.Content.ISharedPreferences;
+    interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
+    interface Elastos.Droid.View.Animation.IAnimationListener;
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IViewParent;
+    interface Elastos.Droid.View.IViewManager;
+    interface Elastos.Droid.View.IViewOnTouchListener;
+    interface Elastos.Droid.View.IKeyEventCallback;
+    interface Elastos.Droid.View.IOnGestureListener;
+    interface Elastos.Droid.View.IOnDoubleTapListener;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.Utility.IAttributeSet;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Inputmethods {
+    namespace PinyinIME {
+        [local]
+        class CBalloonHint {
+            constructor(
+                [in] IContext* ctx,
+                [in] IView* parent,
+                [in] Int32 measureSpecMode);
+
+            interface IBalloonHint;
+        }
+
+        [local]
+        class CBalloonView {
+            constructor(
+                [in] IContext* ctx);
+
+            interface IBalloonView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CDecodingInfo {
+            constructor(
+                [in] IPinyinIME* ime);
+
+            interface IDecodingInfo;
+        }
+
+        singleton class CPinyinSettings {
+            interface ISettings;
+        }
+
+        class CPinyinEnvironment {
+            interface IPinyinEnvironment;
+        }
+
+        singleton class CPinyinEnvironmentHelper {
+            interface IPinyinEnvironmentHelper;
+        }
+
+        [local]
+        class CCandidatesContainer {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface ICandidatesContainer;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+            interface IViewOnTouchListener;
+            interface IAnimationListener;
+            interface IArrowUpdater;
+        }
+
+        [local]
+        class CPinyinCandidateView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface ICandidateView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CComposingView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface IComposingView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CSkbContainer {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface ISkbContainer;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+            interface IViewOnTouchListener;
+        }
+
+        [local]
+        class CSoftKeyboardView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface ISoftKeyboardView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CSoundManager {
+            constructor(
+                [in] IContext* ctx);
+
+            interface ISoundManager;
+        }
+
+        singleton class CSoundManagerHelper {
+            interface ISoundManagerHelper;
+        }
+
+        [local]
+        class CPinyinGestureListener {
+            constructor(
+                [in] Boolean reponseGestures,
+                [in] IPinyinIME* ime);
+
+            interface IOnGestureListener;
+            interface IOnDoubleTapListener;
+        }
+
+    } // namespace PinyinIME
+    } // namespace Inputmethods
+    } // namespace Droid
+    } // namespace Elastos
+}

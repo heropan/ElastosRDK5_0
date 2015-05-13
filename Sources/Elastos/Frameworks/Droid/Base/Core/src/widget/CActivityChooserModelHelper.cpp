@@ -1,0 +1,27 @@
+#include "widget/CActivityChooserModelHelper.h"
+#include "widget/ActivityChooserModel.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+
+ECode CActivityChooserModelHelper::constructor()
+{
+    return NOERROR;
+}
+
+ECode CActivityChooserModelHelper::Get(
+    /* [in] */ IContext* context,
+    /* [in] */ const String& historyFileName,
+    /* [out] */ IActivityChooserModel** result)
+{
+    AutoPtr<IActivityChooserModel> activity =
+        ActivityChooserModel::Get(context, historyFileName);
+    *result = activity;
+    INTERFACE_ADDREF(*result);
+    return NOERROR;
+}
+
+}// namespace Widget
+}// namespace Droid
+}// namespace Elastos

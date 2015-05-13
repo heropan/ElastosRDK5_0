@@ -1,0 +1,31 @@
+
+module
+{
+    using interface Elastos.Net.IJarURLConnection;
+
+    namespace Elastos {
+    namespace Net {
+    namespace Url {
+
+    /**
+     * This subclass extends {@code URLConnection}.
+     * <p>
+     *
+     * This class is responsible for connecting and retrieving resources from a Jar
+     * file which can be anywhere that can be referred to by an URL.
+     */
+    interface IJarURLConnectionImpl extends Elastos.Net.IJarURLConnection {
+    }
+
+    interface IJarURLConnectionImplHelper {
+        /**
+         * Closes the cached files.
+         */
+        CloseCachedFiles();
+    }
+
+    } // namespace Url
+    } // namespace Net
+    } // namespace Elastos
+
+}

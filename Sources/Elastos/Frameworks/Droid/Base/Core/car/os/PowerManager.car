@@ -1,0 +1,502 @@
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+    interface IPowerManagerWakeLock
+    {
+        /**
+         * Sets whether this WakeLock is reference counted.
+         * <p>
+         * Wake locks are reference counted by default.  If a wake lock is
+         * reference counted, then each call to {@link #acquire()} must be
+         * balanced by an equal number of calls to {@link #release()}.  If a wake
+         * lock is not reference counted, then one call to {@link #release()} is
+         * sufficient to undo the effect of all previous calls to {@link #acquire()}.
+         * </p>
+         *
+         * @param value True to make the wake lock reference counted, false to
+         * make the wake lock non-reference counted.
+         */
+        SetReferenceCounted(
+            [in] Boolean value);
+
+        /**
+         * Acquires the wake lock.
+         * <p>
+         * Ensures that the device is on at the level requested when
+         * the wake lock was created.
+         * </p>
+         */
+        AcquireLock();
+
+        /**
+         * Acquires the wake lock with a timeout.
+         * <p>
+         * Ensures that the device is on at the level requested when
+         * the wake lock was created.  The lock will be released after the given timeout
+         * expires.
+         * </p>
+         *
+         * @param timeout The timeout after which to release the wake lock, in milliseconds.
+         */
+        AcquireLockEx(
+            [in] Int64 timeout);
+
+        /**
+         * Releases the wake lock.
+         * <p>
+         * This method releases your claim to the CPU or screen being on.
+         * The screen may turn off shortly after you release the wake lock, or it may
+         * not if there are other wake locks still held.
+         * </p>
+         */
+        ReleaseLock();
+
+        /**
+         * Returns true if the wake lock has been acquired but not yet released.
+         *
+         * @return True if the wake lock is held.
+         */
+        IsHeld(
+            [out] Boolean* isHeld);
+
+        /**
+         * Sets the work source associated with the wake lock.
+         * <p>
+         * The work source is used to determine on behalf of which application
+         * the wake lock is being held.  This is useful in the case where a
+         * service is performing work on behalf of an application so that the
+         * cost of that work can be accounted to the application.
+         * </p>
+         *
+         * @param ws The work source, or null if none.
+         */
+        SetWorkSource(
+            [in] IWorkSource* ws);
+
+        ToString(
+            [out] String* s);
+    }
+
+    interface IPowerManager
+    {
+        /* NOTE: Wake lock levels were previously defined as a bit field, except that only a few
+         * combinations were actually supported so the bit field was removed.  This explains
+         * why the numbering scheme is so odd.  If adding a new wake lock level, any unused
+         * value can be used.
+         */
+
+        /**
+         * Wake lock level: Ensures that the CPU is running; the screen and keyboard
+         * backlight will be allowed to go off.
+         * <p>
+         * If the user presses the power button, then the screen will be turned off
+         * but the CPU will be kept on until all partial wake locks have been released.
+         * </p>
+         */
+        const Int32 PARTIAL_WAKE_LOCK = 0x00000001;
+
+        /**
+         * Wake lock level: Ensures that the screen is on (but may be dimmed);
+         * the keyboard backlight will be allowed to go off.
+         * <p>
+         * If the user presses the power button, then the {@link #SCREEN_DIM_WAKE_LOCK} will be
+         * implicitly released by the system, causing both the screen and the CPU to be turned off.
+         * Contrast with {@link #PARTIAL_WAKE_LOCK}.
+         * </p>
+         *
+         * @deprecated Most applications should use
+         * {@link android.view.WindowManager.LayoutParams#FLAG_KEEP_SCREEN_ON} instead
+         * of this type of wake lock, as it will be correctly managed by the platform
+         * as the user moves between applications and doesn't require a special permission.
+         */
+        //@Deprecated
+        const Int32 SCREEN_DIM_WAKE_LOCK = 0x00000006;
+
+        /**
+         * Wake lock level: Ensures that the screen is on at full brightness;
+         * the keyboard backlight will be allowed to go off.
+         * <p>
+         * If the user presses the power button, then the {@link #SCREEN_BRIGHT_WAKE_LOCK} will be
+         * implicitly released by the system, causing both the screen and the CPU to be turned off.
+         * Contrast with {@link #PARTIAL_WAKE_LOCK}.
+         * </p>
+         *
+         * @deprecated Most applications should use
+         * {@link android.view.WindowManager.LayoutParams#FLAG_KEEP_SCREEN_ON} instead
+         * of this type of wake lock, as it will be correctly managed by the platform
+         * as the user moves between applications and doesn't require a special permission.
+         */
+        //@Deprecated
+        const Int32 SCREEN_BRIGHT_WAKE_LOCK = 0x0000000a;
+
+        /**
+         * Wake lock level: Ensures that the screen and keyboard backlight are on at
+         * full brightness.
+         * <p>
+         * If the user presses the power button, then the {@link #FULL_WAKE_LOCK} will be
+         * implicitly released by the system, causing both the screen and the CPU to be turned off.
+         * Contrast with {@link #PARTIAL_WAKE_LOCK}.
+         * </p>
+         *
+         * @deprecated Most applications should use
+         * {@link android.view.WindowManager.LayoutParams#FLAG_KEEP_SCREEN_ON} instead
+         * of this type of wake lock, as it will be correctly managed by the platform
+         * as the user moves between applications and doesn't require a special permission.
+         */
+        //@Deprecated
+        const Int32 FULL_WAKE_LOCK = 0x0000001a;
+
+        /**
+         * Wake lock level: Turns the screen off when the proximity sensor activates.
+         * <p>
+         * If the proximity sensor detects that an object is nearby, the screen turns off
+         * immediately.  Shortly after the object moves away, the screen turns on again.
+         * </p><p>
+         * A proximity wake lock does not prevent the device from falling asleep
+         * unlike {@link #FULL_WAKE_LOCK}, {@link #SCREEN_BRIGHT_WAKE_LOCK} and
+         * {@link #SCREEN_DIM_WAKE_LOCK}.  If there is no user activity and no other
+         * wake locks are held, then the device will fall asleep (and lock) as usual.
+         * However, the device will not fall asleep while the screen has been turned off
+         * by the proximity sensor because it effectively counts as ongoing user activity.
+         * </p><p>
+         * Since not all devices have proximity sensors, use {@link #isWakeLockLevelSupported}
+         * to determine whether this wake lock level is supported.
+         * </p>
+         *
+         * {@hide}
+         */
+        const Int32 PROXIMITY_SCREEN_OFF_WAKE_LOCK = 0x00000020;
+
+        /**
+         * Mask for the wake lock level component of a combined wake lock level and flags integer.
+         *
+         * @hide
+         */
+        const Int32 WAKE_LOCK_LEVEL_MASK = 0x0000ffff;
+
+        /**
+         * Wake lock flag: Turn the screen on when the wake lock is acquired.
+         * <p>
+         * Normally wake locks don't actually wake the device, they just cause
+         * the screen to remain on once it's already on.  Think of the video player
+         * application as the normal behavior.  Notifications that pop up and want
+         * the device to be on are the exception; use this flag to be like them.
+         * </p><p>
+         * Cannot be used with {@link #PARTIAL_WAKE_LOCK}.
+         * </p>
+         */
+        const Int32 ACQUIRE_CAUSES_WAKEUP = 0x10000000;
+
+        /**
+         * Wake lock flag: When this wake lock is released, poke the user activity timer
+         * so the screen stays on for a little longer.
+         * <p>
+         * Will not turn the screen on if it is not already on.
+         * See {@link #ACQUIRE_CAUSES_WAKEUP} if you want that.
+         * </p><p>
+         * Cannot be used with {@link #PARTIAL_WAKE_LOCK}.
+         * </p>
+         */
+        const Int32 ON_AFTER_RELEASE = 0x20000000;
+
+        /**
+         * Flag for {@link WakeLock#release release(int)} to defer releasing a
+         * {@link #WAKE_BIT_PROXIMITY_SCREEN_OFF} wake lock until the proximity sensor returns
+         * a negative value.
+         *
+         * {@hide}
+         */
+        const Int32 WAIT_FOR_PROXIMITY_NEGATIVE = 1;
+
+        /**
+         * Brightness value for fully on.
+         * @hide
+         */
+        const Int32 BRIGHTNESS_ON = 255;
+
+        /**
+         * Brightness value for fully off.
+         * @hide
+         */
+        const Int32 BRIGHTNESS_OFF = 0;
+
+        // Note: Be sure to update android.os.BatteryStats and PowerManager.h
+        // if adding or modifying user activity event constants.
+
+        /**
+         * User activity event type: Unspecified event type.
+         * @hide
+         */
+        const Int32 USER_ACTIVITY_EVENT_OTHER = 0;
+
+        /**
+         * User activity event type: Button or key pressed or released.
+         * @hide
+         */
+        const Int32 USER_ACTIVITY_EVENT_BUTTON = 1;
+
+        /**
+         * User activity event type: Touch down, move or up.
+         * @hide
+         */
+        const Int32 USER_ACTIVITY_EVENT_TOUCH = 2;
+
+        /**
+         * User activity flag: Do not restart the user activity timeout or brighten
+         * the display in response to user activity if it is already dimmed.
+         * @hide
+         */
+        const Int32 USER_ACTIVITY_FLAG_NO_CHANGE_LIGHTS = 1 << 0;
+
+        /**
+         * Go to sleep reason code: Going to sleep due by user request.
+         * @hide
+         */
+        const Int32 GO_TO_SLEEP_REASON_USER = 0;
+
+        /**
+         * Go to sleep reason code: Going to sleep due by request of the
+         * device administration policy.
+         * @hide
+         */
+        const Int32 GO_TO_SLEEP_REASON_DEVICE_ADMIN = 1;
+
+        /**
+         * Go to sleep reason code: Going to sleep due to a screen timeout.
+         * @hide
+         */
+        const Int32 GO_TO_SLEEP_REASON_TIMEOUT = 2;
+
+        /**
+         * Gets the minimum supported screen brightness setting.
+         * The screen may be allowed to become dimmer than this value but
+         * this is the minimum value that can be set by the user.
+         * @hide
+         */
+        GetMinimumScreenBrightnessSetting(
+            [out] Int32* screenBrightness);
+
+        /**
+         * Gets the maximum supported screen brightness setting.
+         * The screen may be allowed to become dimmer than this value but
+         * this is the maximum value that can be set by the user.
+         * @hide
+         */
+        GetMaximumScreenBrightnessSetting(
+            [out] Int32* screenBrightness);
+
+        /**
+         * Gets the default screen brightness setting.
+         * @hide
+         */
+        GetDefaultScreenBrightnessSetting(
+            [out] Int32* screenBrightness);
+
+        /**
+         * Creates a new wake lock with the specified level and flags.
+         * <p>
+         * The {@code levelAndFlags} parameter specifies a wake lock level and optional flags
+         * combined using the logical OR operator.
+         * </p><p>
+         * The wake lock levels are: {@link #PARTIAL_WAKE_LOCK},
+         * {@link #FULL_WAKE_LOCK}, {@link #SCREEN_DIM_WAKE_LOCK}
+         * and {@link #SCREEN_BRIGHT_WAKE_LOCK}.  Exactly one wake lock level must be
+         * specified as part of the {@code levelAndFlags} parameter.
+         * </p><p>
+         * The wake lock flags are: {@link #ACQUIRE_CAUSES_WAKEUP}
+         * and {@link #ON_AFTER_RELEASE}.  Multiple flags can be combined as part of the
+         * {@code levelAndFlags} parameters.
+         * </p><p>
+         * Call {@link WakeLock#acquire() acquire()} on the object to acquire the
+         * wake lock, and {@link WakeLock#release release()} when you are done.
+         * </p><p>
+         * {@samplecode
+         * PowerManager pm = (PowerManager)mContext.getSystemService(
+         *                                          Context.POWER_SERVICE);
+         * PowerManager.WakeLock wl = pm.newWakeLock(
+         *                                      PowerManager.SCREEN_DIM_WAKE_LOCK
+         *                                      | PowerManager.ON_AFTER_RELEASE,
+         *                                      TAG);
+         * wl.acquire();
+         * // ... do work...
+         * wl.release();
+         * }
+         * </p><p>
+         * Although a wake lock can be created without special permissions,
+         * the {@link android.Manifest.permission#WAKE_LOCK} permission is
+         * required to actually acquire or release the wake lock that is returned.
+         * </p><p class="note">
+         * If using this to keep the screen on, you should strongly consider using
+         * {@link android.view.WindowManager.LayoutParams#FLAG_KEEP_SCREEN_ON} instead.
+         * This window flag will be correctly managed by the platform
+         * as the user moves between applications and doesn't require a special permission.
+         * </p>
+         *
+         * @param levelAndFlags Combination of wake lock level and flag values defining
+         * the requested behavior of the WakeLock.
+         * @param tag Your class name (or other tag) for debugging purposes.
+         *
+         * @see WakeLock#acquire()
+         * @see WakeLock#release()
+         * @see #PARTIAL_WAKE_LOCK
+         * @see #FULL_WAKE_LOCK
+         * @see #SCREEN_DIM_WAKE_LOCK
+         * @see #SCREEN_BRIGHT_WAKE_LOCK
+         * @see #ACQUIRE_CAUSES_WAKEUP
+         * @see #ON_AFTER_RELEASE
+         */
+        NewWakeLock(
+            [in] Int32 levelAndFlags,
+            [in] String tag,
+            [out] IPowerManagerWakeLock** wakeLock);
+
+        /**
+         * Notifies the power manager that user activity happened.
+         * <p>
+         * Resets the auto-off timer and brightens the screen if the device
+         * is not asleep.  This is what happens normally when a key or the touch
+         * screen is pressed or when some other user activity occurs.
+         * This method does not wake up the device if it has been put to sleep.
+         * </p><p>
+         * Requires the {@link android.Manifest.permission#DEVICE_POWER} permission.
+         * </p>
+         *
+         * @param when The time of the user activity, in the {@link SystemClock#uptimeMillis()}
+         * time base.  This timestamp is used to correctly order the user activity request with
+         * other power management functions.  It should be set
+         * to the timestamp of the input event that caused the user activity.
+         * @param noChangeLights If true, does not cause the keyboard backlight to turn on
+         * because of this event.  This is set when the power key is pressed.
+         * We want the device to stay on while the button is down, but we're about
+         * to turn off the screen so we don't want the keyboard backlight to turn on again.
+         * Otherwise the lights flash on and then off and it looks weird.
+         *
+         * @see #wakeUp
+         * @see #goToSleep
+         */
+        UserActivity(
+            [in] Int64 when,
+            [in] Boolean noChangeLights);
+
+        /**
+         * Forces the device to go to sleep.
+         * <p>
+         * Overrides all the wake locks that are held.
+         * This is what happens when the power key is pressed to turn off the screen.
+         * </p><p>
+         * Requires the {@link android.Manifest.permission#DEVICE_POWER} permission.
+         * </p>
+         *
+         * @param time The time when the request to go to sleep was issued, in the
+         * {@link SystemClock#uptimeMillis()} time base.  This timestamp is used to correctly
+         * order the go to sleep request with other power management functions.  It should be set
+         * to the timestamp of the input event that caused the request to go to sleep.
+         *
+         * @see #userActivity
+         * @see #wakeUp
+         */
+        GoToSleep(
+            [in] Int64 eventTime);
+
+        /**
+         * Forces the device to wake up from sleep.
+         * <p>
+         * If the device is currently asleep, wakes it up, otherwise does nothing.
+         * This is what happens when the power key is pressed to turn on the screen.
+         * </p><p>
+         * Requires the {@link android.Manifest.permission#DEVICE_POWER} permission.
+         * </p>
+         *
+         * @param time The time when the request to wake up was issued, in the
+         * {@link SystemClock#uptimeMillis()} time base.  This timestamp is used to correctly
+         * order the wake up request with other power management functions.  It should be set
+         * to the timestamp of the input event that caused the request to wake up.
+         *
+         * @see #userActivity
+         * @see #goToSleep
+         */
+        WakeUp(
+            [in] Int64 eventTime);
+
+        Nap(
+            [in] Int64 time);
+
+        GoToBootFastSleep(
+            [in] Int64 time);
+
+        BootFastWake(
+            [in] Int64 time);
+
+        IsBootFastStatus(
+            [out] Boolean* result);
+
+        IsBootFastWakeFromStandby(
+            [out] Boolean* result);
+
+        SetBacklightBrightness(
+            [in] Int32 brightness);
+
+        IsWakeLockLevelSupported(
+            [in] Int32 level,
+            [out] Boolean* support);
+
+        /**
+          * Returns whether the screen is currently on.
+          * <p>
+          * Only indicates whether the screen is on.  The screen could be either bright or dim.
+          * </p><p>
+          * {@samplecode
+          * PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+          * boolean isScreenOn = pm.isScreenOn();
+          * }
+          * </p>
+          *
+          * @return whether the screen is on (bright or dim).
+          */
+        IsScreenOn(
+            [out] Boolean* isScreenOn);
+
+        /**
+         * Reboot the device.  Will not return if the reboot is successful.
+         * <p>
+         * Requires the {@link android.Manifest.permission#REBOOT} permission.
+         * </p>
+         *
+         * @param reason code to pass to the kernel (e.g., "recovery") to
+         *               request special boot modes, or null.
+         */
+        Reboot(
+            [in] Boolean confirm,
+            [in] String reason,
+            [in] Boolean wait);
+    }
+
+    interface IPowerManagerHelper {
+        /**
+         * Returns true if the screen auto-brightness adjustment setting should
+         * be available in the UI.  This setting is experimental and disabled by default.
+         * @hide
+         */
+        UseScreenAutoBrightnessAdjustmentFeature(
+            [out] Boolean* result);
+
+        /**
+         * Returns true if the twilight service should be used to adjust screen brightness
+         * policy.  This setting is experimental and disabled by default.
+         * @hide
+         */
+        UseTwilightAdjustmentFeature(
+            [out] Boolean* result);
+
+        ValidateWakeLockParameters(
+            [in] Int32 levelAndFlags,
+            [in] String tag);
+    }
+
+    } // namespace Os
+    } // namespace Droid
+    } // namespace Elastos
+}

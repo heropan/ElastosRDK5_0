@@ -1,0 +1,10 @@
+
+#==========================================================================
+# Copyright (c) 2000-2013,  Elastos, Inc.  All Rights Reserved.
+#==========================================================================
+
+EXPORT_HEADERS = elastos/io/InputStream.h
+EXPORT_HEADERS += elastos/io/OutputStream.h
+EXPORT_HEADERS += elastos/io/FilterInputStream.h
+EXPORT_HEADERS += elastos/io/PrintWriter.h
+EXPORT_HEADERS += elastos/io/Writer.h

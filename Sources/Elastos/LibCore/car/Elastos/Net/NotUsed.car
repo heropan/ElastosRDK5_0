@@ -1,0 +1,22 @@
+
+module
+{
+    namespace Elastos{
+    namespace Net{
+
+    //interface IDatagramChannel {
+    //}
+
+    interface ISocketChannel {
+    }
+
+    interface IServerSocketChannel {
+    }
+
+//    interface IPrincipal{
+//    }
+
+    } // namespace Net
+    } // namespace Elastos
+
+}

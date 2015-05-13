@@ -1,0 +1,12 @@
+
+module
+{
+    namespace Elastos {
+    namespace IO {
+
+    interface IFilterWriter extends IWriter {
+    }
+
+    } // namespace IO
+    } // namespace Elastos
+}

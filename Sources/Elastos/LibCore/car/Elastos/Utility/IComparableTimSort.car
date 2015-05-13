@@ -1,0 +1,35 @@
+
+module
+{
+    namespace Elastos {
+    namespace Utility {
+    /**
+     * This is a near duplicate of {@link TimSort}, modified for use with
+     * arrays of objects that implement {@link Comparable}, instead of using
+     * explicit comparators.
+     *
+     * <p>If you are using an optimizing VM, you may find that ComparableTimSort
+     * offers no performance benefit over TimSort in conjunction with a
+     * comparator that simply returns {@code ((Comparable)first).compareTo(Second)}.
+     * If this is the case, you are better off deleting ComparableTimSort to
+     * eliminate the code duplication.  (See Arrays.java for details.)
+     */
+    interface IComparableTimSortHelper {
+        /*
+         * The next two methods (which are package private and static) constitute
+         * the entire API of this class.  Each of these methods obeys the contract
+         * of the public method with the same signature in java.util.Arrays.
+         */
+
+        Sort(
+            [in] ArrayOf<IInterface*> a);
+
+        SortEx(
+            [in] ArrayOf<IInterface*> a,
+            [in] Int32 lo,
+            [in] Int32 hi);
+    }
+
+    } // namespace Utility
+    } // namespace Elastos
+}

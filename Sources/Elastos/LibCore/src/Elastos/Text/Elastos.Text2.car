@@ -1,0 +1,104 @@
+module
+{
+    merge("../../../car/Elastos/Text/ICharacterIterator.car");
+    merge("../../../car/Elastos/Text/ICollationKey.car");
+    merge("../../../car/Elastos/Text/IStringCharacterIterator.car");
+    merge("../../../car/Elastos/Text/IDecimalFormatSymbols.car");
+    merge("../../../car/Elastos/Text/IFieldPosition.car");
+    merge("../../../car/Elastos/Text/IParsePosition.car");
+    merge("../../../car/Elastos/Text/IAttributedCharacterIterator.car");
+    merge("../../../car/Elastos/Text/IAttributedString.car");
+
+    using interface Libcore.ICU.ILocale;
+    interface Elastos.Utility.IObjectMap;
+
+    namespace Elastos {
+    namespace Text {
+
+        class CAttributedCharacterIteratorAttribute {
+            constructor(
+                [in] String name);
+
+            interface IAttributedCharacterIteratorAttribute;
+        }
+
+        class CDecimalFormatSymbols {
+            constructor();
+
+            constructor(
+                [in] ILocale* locale);
+
+            interface IDecimalFormatSymbols;
+        }
+
+        singleton class CDecimalFormatSymbolsHelper {
+            interface IDecimalFormatSymbolsHelper;
+        }
+
+        class CFieldPosition {
+            constructor(
+                [in] Int32 field);
+
+            constructor(
+                [in] IAttributedCharacterIteratorAttribute* attribute);
+
+            constructor(
+                [in] IAttributedCharacterIteratorAttribute* attribute,
+                [in] Int32 field);
+
+            interface IFieldPosition;
+        }
+
+        class CParsePosition {
+            constructor(
+                [in] Int32 index);
+
+            interface IParsePosition;
+        }
+
+        class CStringCharacterIterator {
+            constructor(
+                [in] String value);
+
+            constructor(
+                [in] String value,
+                [in] Int32 location);
+
+            constructor(
+                [in] String value,
+                [in] Int32 start,
+                [in] Int32 end,
+                [in] Int32 location);
+
+            interface IStringCharacterIterator;
+        }
+
+        [deprecated]
+        class CAttributedString {
+            constructor(
+                [in] IAttributedCharacterIterator* iterator);
+
+            constructor(
+                [in] IAttributedCharacterIterator* iterator,
+                [in] Int32 start,
+                [in] Int32 end);
+
+            constructor(
+                [in] IAttributedCharacterIterator* iterator,
+                [in] Int32 start,
+                [in] Int32 end,
+                [in] ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes);
+
+            constructor(
+                [in] String value);
+
+            // constructor(
+            //     [in] String value,
+            //     [in] IObjectMap * attributes);
+
+            interface IAttributedString;
+    }
+
+    } // namespace Text
+    } // namespace Elastos
+}

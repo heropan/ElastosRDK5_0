@@ -1,0 +1,105 @@
+
+module
+{
+    using interface Elastos.IO.IInputStream;
+    using interface Elastos.IO.IOutputStream;
+    using interface Elastos.Net.IProxy;
+
+    namespace Elastos {
+    namespace Net {
+    namespace Http {
+
+    /**
+     * This address has two parts: the address we connect to directly and the
+     * origin address of the resource. These are the same unless a proxy is
+     * being used. It also includes the SSL socket factory so that a socket will
+     * not be reused if its SSL configuration is different.
+     */
+    interface IHttpConnection;
+    interface IHttpConnectionAddress {
+        GetProxy(
+            [out] IProxy** outproxy);
+
+        Equals(
+            [in] IInterface* other,
+            [out] Boolean* value);
+
+        GetHashCode(
+            [out] Int32* value);
+
+        Connect(
+            [in] Int32 connectTimeout,
+            [out] IHttpConnection** hc);
+    }
+
+    /**
+     * Holds the sockets and streams of an HTTP or HTTPS connection, which may be
+     * used for multiple HTTP request/response exchanges. Connections may be direct
+     * to the origin server or via a proxy. Create an instance using the {@link
+     * Address} inner class.
+     *
+     * <p>Do not confuse this class with the misnamed {@code HttpURLConnection},
+     * which isn't so much a connection as a single request/response pair.
+     */
+    interface IHttpConnection {
+
+        CloseSocketAndStreams();
+
+        SetSoTimeout(
+            [in] Int32 readTimeout);
+
+        GetOutputStream(
+            [out] IOutputStream** os);
+
+        GetInputStream(
+            [out] IInputStream** is);
+
+        GetAddress(
+            [out] IHttpConnectionAddress** hca);
+
+        /**
+         * Create an {@code SSLSocket} and perform the SSL handshake
+         * (performing certificate validation.
+         *
+         * @param sslSocketFactory Source of new {@code SSLSocket} instances.
+         * @param tlsTolerant If true, assume server can handle common
+         * TLS extensions and SSL deflate compression. If false, use
+         * an SSL3 only fallback mode without compression.
+         */
+        // SetupSecureSocket(SSLSocketFactory sslSocketFactory, boolean tlsTolerant);
+
+        /**
+         * Return an {@code SSLSocket} that is not only connected but has
+         * also passed hostname verification.
+         *
+         * @param hostnameVerifier Used to verify the hostname we
+         * connected to is an acceptable match for the peer certificate
+         * chain of the SSLSession.
+         */
+        // public SSLSocket verifySecureSocketHostname(HostnameVerifier hostnameVerifier);
+
+        /**
+         * Return an {@code SSLSocket} if already connected, otherwise null.
+         */
+        // public SSLSocket getSecureSocketIfConnected();
+
+        /**
+         * Returns true if this connection has been used to satisfy an earlier
+         * HTTP request/response pair.
+         */
+        IsRecycled(
+            [out] Boolean* value);
+
+        SetRecycled();
+    }
+
+    interface IHttpConnectionHelper {
+        // public static HttpConnection connect(URI uri, SSLSocketFactory sslSocketFactory,
+        //        Proxy proxy, boolean requiresTunnel, int connectTimeout);
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Elastos
+
+}

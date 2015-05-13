@@ -1,0 +1,54 @@
+module
+{
+    using interface Elastos.Droid.App.IService;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Speech {
+    namespace Tts {
+
+    /**
+     * Abstract base class for TTS engine implementations. The following methods
+     * need to be implemented.
+     *
+     * <ul>
+     *   <li>{@link #onIsLanguageAvailable}</li>
+     *   <li>{@link #onLoadLanguage}</li>
+     *   <li>{@link #onGetLanguage}</li>
+     *   <li>{@link #onSynthesizeText}</li>
+     *   <li>{@link #onStop}</li>
+     * </ul>
+     *
+     * The first three deal primarily with language management, and are used to
+     * query the engine for it's support for a given language and indicate to it
+     * that requests in a given language are imminent.
+     *
+     * {@link #onSynthesizeText} is central to the engine implementation. The
+     * implementation should synthesize text as per the request parameters and
+     * return synthesized data via the supplied callback. This class and its helpers
+     * will then consume that data, which might mean queueing it for playback or writing
+     * it to a file or similar. All calls to this method will be on a single
+     * thread, which will be different from the main thread of the service. Synthesis
+     * must be synchronous which means the engine must NOT hold on the callback or call
+     * any methods on it after the method returns
+     *
+     * {@link #onStop} tells the engine that it should stop all ongoing synthesis, if
+     * any. Any pending data from the current synthesis will be discarded.
+     *
+     */
+    //public abstract class
+    interface  ITextToSpeechService extends Elastos.Droid.App.IService {
+    }
+
+    interface ITextToSpeechServiceUtteranceProgressDispatcher {
+        DispatchOnDone();
+        DispatchOnStart();
+        DispatchOnError();
+    }
+
+    }//namespace Tts
+    }//namespace Speech
+    }//namespace Droid
+    }//namespace Elastos
+
+}

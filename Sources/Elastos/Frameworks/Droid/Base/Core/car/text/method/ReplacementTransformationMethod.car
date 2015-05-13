@@ -1,0 +1,23 @@
+module
+{
+    interface Elastos.Droid.Text.Method.ITransformationMethod;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Method {
+
+    /**
+     * This transformation method causes the characters in the {@link #getOriginal}
+     * array to be replaced by the corresponding characters in the
+     * {@link #getReplacement} array.
+     */
+    //public abstract
+    interface IReplacementTransformationMethod /*implements ITransformationMethod*/ {}
+
+    }//namespace Method
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

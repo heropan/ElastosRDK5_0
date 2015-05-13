@@ -1,0 +1,45 @@
+module
+{
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.SystemUI.StatusBar.IBaseStatusBar;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Tablet {
+
+    interface ITabletStatusBarView extends Elastos.Droid.Widget.IFrameLayout {
+        SetDelegateView(
+            [in] IView* view);
+
+        SetBar(
+            [in] IBaseStatusBar* bar);
+
+        SetHandler(
+            [in] IHandler* h);
+
+        /**
+         * Let the status bar know that if you tap on ignore while panel is showing, don't do anything.
+         *
+         * Debounces taps on, say, a popup's trigger when the popup is already showing.
+         */
+        SetIgnoreChildren(
+            [in] Int32 index,
+            [in] IView* ignore,
+            [in] IView* panel);
+
+        SetShowVolume(
+            [in] Boolean show,
+            [in] IContext* ctx);
+    }
+
+    } // namespace Tablet
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}
+

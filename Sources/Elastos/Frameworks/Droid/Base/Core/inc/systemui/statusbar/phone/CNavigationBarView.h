@@ -1,0 +1,115 @@
+#ifndef __CNAVIGATIONBARVIEW_H_
+#define __CNAVIGATIONBARVIEW_H_
+
+#include "_CNavigationBarView.h"
+#include "view/ViewMacro.h"
+#include "view/ViewGroupLayoutParamsMacro.h"
+#include "widget/LinearLayoutMacro.h"
+#include "systemui/statusbar/phone/NavigationBarView.h"
+
+namespace Elastos {
+namespace Droid {
+namespace SystemUI {
+namespace StatusBar {
+namespace Phone {
+
+CarClass(CNavigationBarView), public NavigationBarView
+{
+public:
+    IVIEW_METHODS_DECL()
+    IVIEWGROUP_METHODS_DECL()
+    IVIEWPARENT_METHODS_DECL()
+    IVIEWMANAGER_METHODS_DECL()
+    IDRAWABLECALLBACK_METHODS_DECL()
+    IKEYEVENTCALLBACK_METHODS_DECL()
+    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
+    ILINEARLAYOUT_METHODS_DECL()
+
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI SetDelegateView(
+        /* [in] */ IView* view);
+
+    CARAPI SetBar(
+        /* [in] */ IBaseStatusBar* phoneStatusBar);
+
+    CARAPI GetRecentsButton(
+        /* [out] */ IView** view);
+
+    CARAPI GetMenuButton(
+        /* [out] */ IView** view);
+
+    CARAPI GetBackButton(
+        /* [out] */ IView** view);
+
+    CARAPI GetHomeButton(
+        /* [out] */ IView** view);
+
+    CARAPI GetScreenShotButton(
+        /* [out] */ IView** view);
+
+    CARAPI GetVolumeDownButton(
+        /* [out] */ IView** view);
+
+    CARAPI GetVolumeUpButton(
+        /* [out] */ IView** view);
+
+    // for when home is disabled, but search isn't
+    CARAPI GetSearchLight(
+        /* [out] */ IView** view);
+
+    CARAPI NotifyScreenOn(
+        /* [in] */ Boolean screenOn);
+
+    CARAPI SetNavigationIconHints(
+        /* [in] */ Int32 hints);
+
+    CARAPI SetNavigationIconHintsEx(
+        /* [in] */ Int32 hints,
+        /* [in] */ Boolean force);
+
+    CARAPI SetDisabledFlags(
+        /* [in] */ Int32 disabledFlags);
+
+    CARAPI SetDisabledFlagsEx(
+        /* [in] */ Int32 disabledFlags,
+        /* [in] */ Boolean force);
+
+    CARAPI SetSlippery(
+        /* [in] */ Boolean newSlippery);
+
+    CARAPI SetMenuVisibility(
+        /* [in] */ Boolean show);
+
+    CARAPI SetMenuVisibilityEx(
+        /* [in] */ Boolean show,
+        /* [in] */ Boolean force);
+
+    CARAPI SetLowProfile(
+        /* [in] */ Boolean lightsOut);
+
+    CARAPI SetLowProfileEx(
+        /* [in] */ Boolean lightsOut,
+        /* [in] */ Boolean animate,
+        /* [in] */ Boolean force);
+
+    CARAPI SetHidden(
+        /* [in] */ Boolean hide);
+
+    CARAPI Reorient();
+
+};
+
+
+}// namespace Phone
+}// namespace StatusBar
+}// namespace SystemUI
+}// namespace Droid
+}// namespace Elastos
+
+#endif //__CNAVIGATIONBARVIEW_H_

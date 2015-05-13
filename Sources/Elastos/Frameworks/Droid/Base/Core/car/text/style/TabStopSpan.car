@@ -1,0 +1,30 @@
+
+module
+{
+    interface Elastos.Droid.Text.Style.IParagraphStyle;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    /**
+     * Represents a single tab stop on a line.
+     */
+    interface ITabStopSpan extends IParagraphStyle
+    {
+        /**
+         * Returns the offset of the tab stop from the leading margin of the
+         * line.
+         * @return the offset
+         */
+        GetTabStop(
+            [out] Int32* offset);
+    }
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+
+}

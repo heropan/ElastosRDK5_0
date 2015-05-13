@@ -1,0 +1,21 @@
+module
+{
+    interface Elastos.Droid.Text.ITextPaint;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    interface IMetricAffectingSpan extends ICharacterStyle {
+        UpdateMeasureState(
+            [in] ITextPaint* p);
+    }
+
+    interface IMetricAffectingSpanHelper extends ICharacterStyleHelper {}
+
+    }//namespace Style
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+}

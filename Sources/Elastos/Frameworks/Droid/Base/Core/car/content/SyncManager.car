@@ -1,0 +1,104 @@
+
+module
+{
+    using interface Elastos.Core.IStringBuilder;
+    interface Elastos.Droid.Content.ISyncStorageEngine;
+    interface Elastos.Droid.Accounts.IAccount;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Content.ISyncAdapterType;
+    interface Elastos.Droid.Content.ISyncOperation;
+    interface Elastos.Droid.Content.ISyncQueue;
+    interface Elastos.Droid.Content.IISyncContext;
+    interface Elastos.Droid.Os.IPowerManagerWakeLock;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Content {
+
+    [deprecated]
+    interface ISyncManager {
+        UpdateRunningAccounts();
+
+        GetSyncStorageEngine(
+            [out] ISyncStorageEngine** engine);
+
+        /**
+         * Initiate a sync. This can start a sync for all providers
+         * (pass null to url, set onlyTicklable to false), only those
+         * providers that are marked as ticklable (pass null to url,
+         * set onlyTicklable to true), or a specific provider (set url
+         * to the content url of the provider).
+         *
+         * <p>If the ContentResolver.SYNC_EXTRAS_UPLOAD boolean in extras is
+         * true then initiate a sync that just checks for local changes to send
+         * to the server, otherwise initiate a sync that first gets any
+         * changes from the server before sending local changes back to
+         * the server.
+         *
+         * <p>If a specific provider is being synced (the url is non-null)
+         * then the extras can contain SyncAdapter-specific information
+         * to control what gets synced (e.g. which specific feed to sync).
+         *
+         * <p>You'll start getting callbacks after this.
+         *
+         * @param requestedAccount the account to sync, may be null to signify all accounts
+         * @param userId the id of the user whose accounts are to be synced. If userId is USER_ALL,
+         *          then all users' accounts are considered.
+         * @param requestedAuthority the authority to sync, may be null to indicate all authorities
+         * @param extras a Map of SyncAdapter-specific information to control
+         *          syncs of a specific provider. Can be null. Is ignored
+         *          if the url is null.
+         * @param delay how many milliseconds in the future to wait before performing this
+         * @param onlyThoseWithUnkownSyncableState
+         */
+        ScheduleSync(
+            [in] IAccount* requestedAccount,
+            [in] Int32 userId,
+            [in] String requestedAuthority,
+            [in] IBundle* extras,
+            [in] Int64 delay,
+            [in] Boolean onlyThoseWithUnkownSyncableState);
+
+        ScheduleLocalSync(
+            [in] IAccount* account,
+            [in] Int32 userId,
+            [in] String authority);
+
+        GetSyncAdapterTypes(
+            [in] Int32 userId,
+            [out, callee] ArrayOf<ISyncAdapterType*>* syncAdapterTypes);
+
+        /**
+         * Cancel the active sync if it matches the authority and account.
+         * @param account limit the cancelations to syncs with this account, if non-null
+         * @param authority limit the cancelations to syncs with this authority, if non-null
+         */
+        CancelActiveSync(
+            [in] IAccount* account,
+            [in] Int32 userId,
+            [in] String authority);
+
+        /**
+         * Create and schedule a SyncOperation.
+         *
+         * @param syncOperation the SyncOperation to schedule
+         */
+        ScheduleSyncOperation(
+            [in] ISyncOperation* syncOperation);
+
+        /**
+         * Remove scheduled sync operations.
+         * @param account limit the removals to operations with this account, if non-null
+         * @param authority limit the removals to operations with this authority, if non-null
+         */
+        ClearScheduledSyncOperations(
+            [in] IAccount* account,
+            [in] Int32 userId,
+            [in] String authority);
+
+    }
+
+    } // namespace Content
+    } // namespace Droid
+    } // namespace Elastos
+}

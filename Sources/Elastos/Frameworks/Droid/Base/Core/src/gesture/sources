@@ -1,0 +1,28 @@
+TARGET_NAME= gesture
+TARGET_TYPE= lib
+
+C_DEFINES += -DDROID_CORE
+
+include $(MAKEDIR)/../../../../sources.inc
+
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../inc/
+
+SOURCES += CPrediction.cpp
+SOURCES += CGesturePoint.cpp
+SOURCES += COrientedBoundingBox.cpp
+SOURCES += GestureUtils.cpp
+SOURCES += CGestureStroke.cpp
+SOURCES += CGesture.cpp
+SOURCES += GestureConstants.cpp
+SOURCES += Instance.cpp
+#SOURCES += CInstance.cpp
+#SOURCES += CInstanceHelper.cpp
+SOURCES += Learner.cpp
+SOURCES += InstanceLearner.cpp
+SOURCES += GestureLibrary.cpp
+SOURCES += CGestureStore.cpp
+SOURCES += CGestureLibraries.cpp
+#SOURCES += GestureOverlayView.cpp
+#SOURCES += CGestureOverlayView.cpp
+#SOURCES += CFadeOutRunnable.cpp

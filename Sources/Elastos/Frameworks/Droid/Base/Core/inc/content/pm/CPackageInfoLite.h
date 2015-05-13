@@ -1,0 +1,96 @@
+
+#ifndef __CPACKAGEINFOLITE_H__
+#define __CPACKAGEINFOLITE_H__
+
+#include "_CPackageInfoLite.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Content {
+namespace Pm {
+
+/**
+ * Basic information about a package as specified in its manifest.
+ * Utility class used in PackageManager methods
+ * @hide
+ */
+CarClass(CPackageInfoLite)
+{
+public:
+    CPackageInfoLite();
+
+    ~CPackageInfoLite();
+
+    CARAPI constructor();
+
+    CARAPI ToString(
+        /* [out] */ String* str);
+
+    CARAPI ReadFromParcel(
+        /* [in] */ IParcel* source);
+
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest);
+
+    CARAPI GetPackageName(
+        /* [out] */ String* name);
+
+    CARAPI SetPackageName(
+        /* [in] */ const String& name);
+
+    CARAPI GetVersionCode(
+        /* [out] */ Int32* versionCode);
+
+    CARAPI SetVersionCode(
+        /* [in] */ Int32 versionCode);
+
+    CARAPI GetRecommendedInstallLocation(
+        /* [out] */ Int32* location);
+
+    CARAPI SetRecommendedInstallLocation(
+        /* [in] */ Int32 location);
+
+    CARAPI GetInstallLocation(
+        /* [out] */ Int32* location);
+
+    CARAPI SetInstallLocation(
+        /* [in] */ Int32 location);
+
+    CARAPI GetVerifiers(
+        /* [out, callee] */ ArrayOf<IVerifierInfo*>** verifiers);
+
+    CARAPI SetVerifiers(
+        /* [in] */ ArrayOf<IVerifierInfo*>* verifiers);
+
+public:
+    /**
+     * The name of this package.  From the &lt;manifest&gt; tag's "name"
+     * attribute.
+     */
+    String mPackageName;
+
+    /**
+     * The android:versionCode of the package.
+     */
+    Int32 mVersionCode;
+
+    /**
+     * Specifies the recommended install location. Can be one of
+     * {@link #PackageHelper.RECOMMEND_INSTALL_INTERNAL} to install on internal storage
+     * {@link #PackageHelper.RECOMMEND_INSTALL_EXTERNAL} to install on external media
+     * {@link PackageHelper.RECOMMEND_FAILED_INSUFFICIENT_STORAGE} for storage errors
+     * {@link PackageHelper.RECOMMEND_FAILED_INVALID_APK} for parse errors.
+     */
+    Int32 mRecommendedInstallLocation;
+
+    Int32 mInstallLocation;
+
+    AutoPtr< ArrayOf<IVerifierInfo*> > mVerifiers;
+};
+
+} // namespace Pm
+} // namespace Content
+} // namespace Droid
+} // namespace Elastos
+
+#endif // __CPACKAGEINFOLITE_H__

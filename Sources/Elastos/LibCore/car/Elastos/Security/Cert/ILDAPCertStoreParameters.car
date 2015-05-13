@@ -1,0 +1,39 @@
+
+module
+{
+    namespace Elastos {
+    namespace Security {
+    namespace Cert {
+
+    interface ILDAPCertStoreParameters extends ICertStoreParameters {
+        /**
+         * Returns the LDAP server port.
+         *
+         * @return the LDAP server port.
+         */
+        GetPort(
+            [out] Int32* port);
+
+        /**
+         * Returns the LDAP server name.
+         *
+         * @return the LDAP server name.
+         */
+        GetServerName(
+            [out] String* name);
+
+        /**
+         * Returns the string representation of this {@code LDAPCertStoreParameters}
+         * instance.
+         *
+         * @return the string representation of this {@code LDAPCertStoreParameters}
+         *         instance.
+         */
+        ToString(
+            [out] String* str);
+    }
+
+    } // namespace Cert
+    } // namespace Security
+    } // namespace Elastos
+}

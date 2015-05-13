@@ -1,0 +1,139 @@
+
+#ifndef __SCROLLBARDRAWABLE_H__
+#define __SCROLLBARDRAWABLE_H__
+
+#include "ext/frameworkext.h"
+#include "graphics/drawable/Drawable.h"
+
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IColorFilter;
+using Elastos::Droid::Graphics::IRegion;
+using Elastos::Droid::Graphics::IInsets;
+using Elastos::Droid::Graphics::PorterDuffMode;
+using Elastos::Droid::Graphics::Drawable::Drawable;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+
+class ScrollBarDrawable : public Elastos::Droid::Graphics::Drawable::Drawable
+{
+public:
+    ScrollBarDrawable();
+
+    /**
+     * Indicate whether the horizontal scrollbar track should always be drawn regardless of the
+     * extent. Defaults to false.
+     *
+     * @param alwaysDrawTrack Set to true if the track should always be drawn
+     */
+    CARAPI SetAlwaysDrawHorizontalTrack(
+        /* [in] */ Boolean alwaysDrawTrack);
+
+    /**
+     * Indicate whether the vertical scrollbar track should always be drawn regardless of the
+     * extent. Defaults to false.
+     *
+     * @param alwaysDrawTrack Set to true if the track should always be drawn
+     */
+    CARAPI SetAlwaysDrawVerticalTrack(
+        /* [in] */ Boolean alwaysDrawTrack);
+
+    /**
+     * Indicates whether the horizontal scrollbar track should always be drawn regardless of the
+     * extent.
+     */
+    CARAPI_(Boolean) GetAlwaysDrawHorizontalTrack();
+
+    /**
+     * Indicates whether the vertical scrollbar track should always be drawn regardless of the
+     * extent.
+     */
+    CARAPI_(Boolean) GetAlwaysDrawVerticalTrack();
+
+    CARAPI SetParameters(
+        /* [in] */ Int32 range,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 extent,
+        /* [in] */ Boolean vertical);
+
+    CARAPI Draw(
+        /* [in] */ ICanvas* canvas);
+
+    CARAPI SetVerticalThumbDrawable(
+        /* [in] */ IDrawable* thumb);
+
+    CARAPI SetVerticalTrackDrawable(
+        /* [in] */ IDrawable* track);
+
+    CARAPI SetHorizontalThumbDrawable(
+        /* [in] */ IDrawable* thumb);
+
+    CARAPI SetHorizontalTrackDrawable(
+        /* [in] */ IDrawable* track);
+
+    CARAPI_(Int32) GetSize(
+        /* [in] */ Boolean vertical);
+
+    CARAPI SetAlpha(
+        /* [in] */ Int32 alpha);
+
+    CARAPI SetColorFilter(
+        /* [in] */ IColorFilter* cf);
+
+    CARAPI_(Int32) GetOpacity();
+
+    // overrides from Drawable.Callback
+
+    CARAPI InvalidateDrawable(
+        /* [in] */ IDrawable* who);
+
+    CARAPI ScheduleDrawable(
+        /* [in] */ IDrawable* who,
+        /* [in] */ IRunnable* what,
+        /* [in] */ Int64 when);
+
+    CARAPI UnscheduleDrawable(
+        /* [in] */ IDrawable* who,
+        /* [in] */ IRunnable* what);
+
+protected:
+    virtual CARAPI_(void) OnBoundsChange(
+        /* [in] */ IRect* bounds);
+
+    CARAPI_(void) DrawTrack(
+        /* [in] */ ICanvas* canvas,
+        /* [in] */ IRect* bounds,
+        /* [in] */ Boolean vertical);
+
+    CARAPI_(void) DrawThumb(
+        /* [in] */ ICanvas* canvas,
+        /* [in] */ IRect* bounds,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 length,
+        /* [in] */ Boolean vertical);
+
+private:
+    AutoPtr<IDrawable> mVerticalTrack;
+    AutoPtr<IDrawable> mHorizontalTrack;
+    AutoPtr<IDrawable> mVerticalThumb;
+    AutoPtr<IDrawable> mHorizontalThumb;
+    Int32 mRange;
+    Int32 mOffset;
+    Int32 mExtent;
+    Boolean mVertical;
+    Boolean mChanged;
+    Boolean mRangeChanged;
+    AutoPtr<IRect> mTempBounds;
+    Boolean mAlwaysDrawHorizontalTrack;
+    Boolean mAlwaysDrawVerticalTrack;
+};
+
+
+}// namespace Widget
+}// namespace Droid
+}// namespace Elastos
+
+#endif //__SCROLLBARDRAWABLE_H__

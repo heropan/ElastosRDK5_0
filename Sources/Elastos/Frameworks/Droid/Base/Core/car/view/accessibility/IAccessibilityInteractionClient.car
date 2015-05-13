@@ -1,0 +1,264 @@
+
+module
+{
+    interface Elastos.Droid.AccessibilityService.IAccessibilityServiceConnection;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionConnectionCallback;
+    interface Elastos.Droid.Os.IMessage;
+    interface Elastos.Droid.Os.IBundle;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Accessibility {
+
+    /**
+     * This class is a singleton that performs accessibility interaction
+     * which is it queries remote view hierarchies about snapshots of their
+     * views as well requests from these hierarchies to perform certain
+     * actions on their views.
+     *
+     * Rationale: The content retrieval APIs are synchronous from a client's
+     *     perspective but internally they are asynchronous. The client thread
+     *     calls into the system requesting an action and providing a callback
+     *     to receive the result after which it waits up to a timeout for that
+     *     result. The system enforces security and the delegates the request
+     *     to a given view hierarchy where a message is posted (from a binder
+     *     thread) describing what to be performed by the main UI thread the
+     *     result of which it delivered via the mentioned callback. However,
+     *     the blocked client thread and the main UI thread of the target view
+     *     hierarchy can be the same thread, for example an accessibility service
+     *     and an activity run in the same process, thus they are executed on the
+     *     same main thread. In such a case the retrieval will fail since the UI
+     *     thread that has to process the message describing the work to be done
+     *     is blocked waiting for a result is has to compute! To avoid this scenario
+     *     when making a call the client also passes its process and thread ids so
+     *     the accessed view hierarchy can detect if the client making the request
+     *     is running in its main UI thread. In such a case the view hierarchy,
+     *     specifically the binder thread performing the IPC to it, does not post a
+     *     message to be run on the UI thread but passes it to the singleton
+     *     interaction client through which all interactions occur and the latter is
+     *     responsible to execute the message before starting to wait for the
+     *     asynchronous result delivered via the callback. In this case the expected
+     *     result is already received so no waiting is performed.
+     *
+     * @hide
+     */
+    interface IAccessibilityInteractionClient extends IAccessibilityInteractionConnectionCallback {
+        const Int32 NO_ID = -1;
+
+        /**
+         * Sets the message to be processed if the interacted view hierarchy
+         * and the interacting client are running in the same thread.
+         *
+         * @param message The message.
+         */
+        SetSameThreadMessage(
+            [in] IMessage* message);
+
+        /**
+         * Gets the root {@link AccessibilityNodeInfo} in the currently active window.
+         *
+         * @param connectionId The id of a connection for interacting with the system.
+         * @return The root {@link AccessibilityNodeInfo} if found, null otherwise.
+         */
+        GetRootInActiveWindow(
+            [in] Int32 connectionId,
+            [out] IAccessibilityNodeInfo** info);
+
+        /**
+         * Finds an {@link AccessibilityNodeInfo} by accessibility id.
+         *
+         * @param connectionId The id of a connection for interacting with the system.
+         * @param accessibilityWindowId A unique window id. Use
+         *     {@link android.view.accessibility.AccessibilityNodeInfo#ACTIVE_WINDOW_ID}
+         *     to query the currently active window.
+         * @param accessibilityNodeId A unique view id or virtual descendant id from
+         *     where to start the search. Use
+         *     {@link android.view.accessibility.AccessibilityNodeInfo#ROOT_NODE_ID}
+         *     to start from the root.
+         * @param prefetchFlags flags to guide prefetching.
+         * @return An {@link AccessibilityNodeInfo} if found, null otherwise.
+         */
+        FindAccessibilityNodeInfoByAccessibilityId(
+            [in] Int32 connectionId,
+            [in] Int32 accessibilityWindowId,
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 prefetchFlags,
+            [out] IAccessibilityNodeInfo** info);
+
+        /**
+         * Finds an {@link AccessibilityNodeInfo} by View id. The search is performed in
+         * the window whose id is specified and starts from the node whose accessibility
+         * id is specified.
+         *
+         * @param connectionId The id of a connection for interacting with the system.
+         * @param accessibilityWindowId A unique window id. Use
+         *     {@link android.view.accessibility.AccessibilityNodeInfo#ACTIVE_WINDOW_ID}
+         *     to query the currently active window.
+         * @param accessibilityNodeId A unique view id or virtual descendant id from
+         *     where to start the search. Use
+         *     {@link android.view.accessibility.AccessibilityNodeInfo#ROOT_NODE_ID}
+         *     to start from the root.
+         * @param viewId The id of the view.
+         * @return An {@link AccessibilityNodeInfo} if found, null otherwise.
+         */
+        FindAccessibilityNodeInfoByViewId(
+            [in] Int32 connectionId,
+            [in] Int32 accessibilityWindowId,
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 viewId,
+            [out] IAccessibilityNodeInfo** info);
+
+        /**
+         * Finds {@link AccessibilityNodeInfo}s by View text. The match is case
+         * insensitive containment. The search is performed in the window whose
+         * id is specified and starts from the node whose accessibility id is
+         * specified.
+         *
+         * @param connectionId The id of a connection for interacting with the system.
+         * @param accessibilityWindowId A unique window id. Use
+         *     {@link android.view.accessibility.AccessibilityNodeInfo#ACTIVE_WINDOW_ID}
+         *     to query the currently active window.
+         * @param accessibilityNodeId A unique view id or virtual descendant id from
+         *     where to start the search. Use
+         *     {@link android.view.accessibility.AccessibilityNodeInfo#ROOT_NODE_ID}
+         *     to start from the root.
+         * @param text The searched text.
+         * @return A list of found {@link AccessibilityNodeInfo}s.
+         */
+        FindAccessibilityNodeInfosByText(
+            [in] Int32 connectionId,
+            [in] Int32 accessibilityWindowId,
+            [in] Int64 accessibilityNodeId,
+            [in] String text,
+            [out] IObjectContainer** infos);
+
+        /**
+         * Finds the {@link android.view.accessibility.AccessibilityNodeInfo} that has the
+         * specified focus type. The search is performed in the window whose id is specified
+         * and starts from the node whose accessibility id is specified.
+         *
+         * @param connectionId The id of a connection for interacting with the system.
+         * @param accessibilityWindowId A unique window id. Use
+         *     {@link android.view.accessibility.AccessibilityNodeInfo#ACTIVE_WINDOW_ID}
+         *     to query the currently active window.
+         * @param accessibilityNodeId A unique view id or virtual descendant id from
+         *     where to start the search. Use
+         *     {@link android.view.accessibility.AccessibilityNodeInfo#ROOT_NODE_ID}
+         *     to start from the root.
+         * @param focusType The focus type.
+         * @return The accessibility focused {@link AccessibilityNodeInfo}.
+         */
+        FindFocus(
+            [in] Int32 connectionId,
+            [in] Int32 accessibilityWindowId,
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 focusType,
+            [out] IAccessibilityNodeInfo** info);
+
+        /**
+         * Finds the accessibility focused {@link android.view.accessibility.AccessibilityNodeInfo}.
+         * The search is performed in the window whose id is specified and starts from the
+         * node whose accessibility id is specified.
+         *
+         * @param connectionId The id of a connection for interacting with the system.
+         * @param accessibilityWindowId A unique window id. Use
+         *     {@link android.view.accessibility.AccessibilityNodeInfo#ACTIVE_WINDOW_ID}
+         *     to query the currently active window.
+         * @param accessibilityNodeId A unique view id or virtual descendant id from
+         *     where to start the search. Use
+         *     {@link android.view.accessibility.AccessibilityNodeInfo#ROOT_NODE_ID}
+         *     to start from the root.
+         * @param direction The direction in which to search for focusable.
+         * @return The accessibility focused {@link AccessibilityNodeInfo}.
+         */
+        FocusSearch(
+            [in] Int32 connectionId,
+            [in] Int32 accessibilityWindowId,
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 direction,
+            [out] IAccessibilityNodeInfo** info);
+
+        /**
+         * Performs an accessibility action on an {@link AccessibilityNodeInfo}.
+         *
+         * @param connectionId The id of a connection for interacting with the system.
+         * @param accessibilityWindowId A unique window id. Use
+         *     {@link android.view.accessibility.AccessibilityNodeInfo#ACTIVE_WINDOW_ID}
+         *     to query the currently active window.
+         * @param accessibilityNodeId A unique view id or virtual descendant id from
+         *     where to start the search. Use
+         *     {@link android.view.accessibility.AccessibilityNodeInfo#ROOT_NODE_ID}
+         *     to start from the root.
+         * @param action The action to perform.
+         * @param arguments Optional action arguments.
+         * @return Whether the action was performed.
+         */
+        PerformAccessibilityAction(
+            [in] Int32 connectionId,
+            [in] Int32 accessibilityWindowId,
+            [in] Int64 accessibilityNodeId,
+            [in] Int32 action,
+            [in] IBundle* bundle,
+            [out] Boolean* result);
+
+        ClearCache();
+
+        OnAccessibilityEvent(
+            [in] IAccessibilityEvent* event);
+
+        /**
+         * Gets a cached accessibility service connection.
+         *
+         * @param connectionId The connection id.
+         * @return The cached connection if such.
+         */
+        GetConnection(
+            [in] Int32 connectionId,
+            [out] IAccessibilityServiceConnection** connection);
+
+        /**
+         * Adds a cached accessibility service connection.
+         *
+         * @param connectionId The connection id.
+         * @param connection The connection.
+         */
+        AddConnection(
+            [in] Int32 connectionId,
+            [in] IAccessibilityServiceConnection* connection);
+
+        /**
+         * Removes a cached accessibility service connection.
+         *
+         * @param connectionId The connection id.
+         */
+        RemoveConnection(
+            [in] Int32 connectionId);
+    }
+
+    interface IAccessibilityInteractionClientHelper {
+        /**
+         * @return The client for the current thread.
+         */
+        GetInstance(
+            [out] IAccessibilityInteractionClient** client);
+
+        /**
+         * <strong>Note:</strong> We keep one instance per interrogating thread since
+         * the instance contains state which can lead to undesired thread interleavings.
+         * We do not have a thread local variable since other threads should be able to
+         * look up the correct client knowing a thread id. See ViewRootImpl for details.
+         *
+         * @return The client for a given <code>threadId</code>.
+         */
+        GetInstanceForThread(
+            [in] Int64 threadId,
+            [out] IAccessibilityInteractionClient** client);
+    }
+
+    } // namespace Accessibility
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

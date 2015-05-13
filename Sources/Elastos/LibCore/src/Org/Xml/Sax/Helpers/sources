@@ -1,0 +1,23 @@
+TARGET_NAME= Helpers
+TARGET_TYPE= lib
+
+#INCLUDES += $(MAKEDIR)/../../../../inc/common;
+INCLUDES += ../;
+INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax;
+INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax/Ext;
+INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax/Helpers;
+
+SOURCES += LocatorImpl.cpp
+SOURCES += AttributesImpl.cpp
+SOURCES += CAttributeListImpl.cpp
+SOURCES += CAttributesImpl.cpp
+SOURCES += CLocatorImpl.cpp
+SOURCES += CNamespaceSupport.cpp
+SOURCES += CParserFactory.cpp
+SOURCES += CXMLReaderFactory.cpp
+SOURCES += CXMLReaderAdapter.cpp
+SOURCES += CDefaultHandler.cpp
+SOURCES += CAttributeListAdapter.cpp
+SOURCES += CParserAdapter.cpp
+SOURCES += CXMLFilterImpl.cpp
+SOURCES += NewInstanceHelper.cpp

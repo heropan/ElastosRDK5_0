@@ -1,0 +1,233 @@
+
+module
+{
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.View.IDisplay;
+    interface Elastos.Droid.Hardware.Display.IWifiDisplayStatus;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+    namespace Display {
+
+    /**
+     * Listens for changes in available display devices.
+     */
+    interface IDisplayListener {
+        /**
+         * Called whenever a logical display has been added to the system.
+         * Use {@link DisplayManager#getDisplay} to get more information about
+         * the display.
+         *
+         * @param displayId The id of the logical display that was added.
+         */
+        OnDisplayAdded(
+            [in] Int32 displayId);
+
+        /**
+         * Called whenever a logical display has been removed from the system.
+         *
+         * @param displayId The id of the logical display that was removed.
+         */
+        OnDisplayRemoved(
+            [in] Int32 displayId);
+
+        /**
+         * Called whenever the properties of a logical display have changed.
+         *
+         * @param displayId The id of the logical display that changed.
+         */
+        OnDisplayChanged(
+            [in] Int32 displayId);
+    }
+
+    /**
+     * Manages the properties of attached displays.
+     * <p>
+     * Get an instance of this class by calling
+     * {@link android.content.Context#getSystemService(java.lang.String)
+     * Context.getSystemService()} with the argument
+     * {@link android.content.Context#DISPLAY_SERVICE}.
+     * </p>
+     */
+    interface IDisplayManager {
+        /**
+         * Broadcast receiver that indicates when the Wifi display status changes.
+         * <p>
+         * The status is provided as a {@link WifiDisplayStatus} object in the
+         * {@link #EXTRA_WIFI_DISPLAY_STATUS} extra.
+         * </p><p>
+         * This broadcast is only sent to registered receivers and can only be sent by the system.
+         * </p>
+         * @hide
+         */
+        const String ACTION_WIFI_DISPLAY_STATUS_CHANGED =
+                "android.hardware.display.action.WIFI_DISPLAY_STATUS_CHANGED";
+
+        /**
+         * Contains a {@link WifiDisplayStatus} object.
+         * @hide
+         */
+        const String EXTRA_WIFI_DISPLAY_STATUS =
+                "android.hardware.display.extra.WIFI_DISPLAY_STATUS";
+
+        /**
+         * Display category: Presentation displays.
+         * <p>
+         * This category can be used to identify secondary displays that are suitable for
+         * use as presentation displays.
+         * </p>
+         *
+         * @see android.app.Presentation for information about presenting content
+         * on secondary displays.
+         * @see #getDisplays(String)
+         */
+        const String DISPLAY_CATEGORY_PRESENTATION =
+                "android.hardware.display.category.PRESENTATION";
+
+        /**
+         * Gets information about a logical display.
+         *
+         * The display metrics may be adjusted to provide compatibility
+         * for legacy applications.
+         *
+         * @param displayId The logical display id.
+         * @return The display object, or null if there is no valid display with the given id.
+         */
+        GetDisplay(
+            [in] Int32 displayId,
+            [out] IDisplay** display);
+
+        /**
+         * Gets all currently valid logical displays.
+         *
+         * @return An array containing all displays.
+         */
+        GetDisplays(
+            [out, callee] ArrayOf<IDisplay*>* displays);
+
+        /**
+         * Gets all currently valid logical displays of the specified category.
+         * <p>
+         * When there are multiple displays in a category the returned displays are sorted
+         * of preference.  For example, if the requested category is
+         * {@link #DISPLAY_CATEGORY_PRESENTATION} and there are multiple presentation displays
+         * then the displays are sorted so that the first display in the returned array
+         * is the most preferred presentation display.  The application may simply
+         * use the first display or allow the user to choose.
+         * </p>
+         *
+         * @param category The requested display category or null to return all displays.
+         * @return An array containing all displays sorted by order of preference.
+         *
+         * @see #DISPLAY_CATEGORY_PRESENTATION
+         */
+        GetDisplaysEx(
+            [in] String category,
+            [out, callee] ArrayOf<IDisplay*>* displays);
+
+        /**
+         * Registers an display listener to receive notifications about when
+         * displays are added, removed or changed.
+         *
+         * @param listener The listener to register.
+         * @param handler The handler on which the listener should be invoked, or null
+         * if the listener should be invoked on the calling thread's looper.
+         *
+         * @see #unregisterDisplayListener
+         */
+        RegisterDisplayListener(
+            [in] IDisplayListener* listener,
+            [in] IHandler* handler);
+
+        /**
+         * Unregisters an input device listener.
+         *
+         * @param listener The listener to unregister.
+         *
+         * @see #registerDisplayListener
+         */
+        UnregisterDisplayListener(
+            [in] IDisplayListener* listener);
+
+        /**
+         * Initiates a fresh scan of availble Wifi displays.
+         * The results are sent as a {@link #ACTION_WIFI_DISPLAY_STATUS_CHANGED} broadcast.
+         * @hide
+         */
+        ScanWifiDisplays();
+
+        /**
+         * Connects to a Wifi display.
+         * The results are sent as a {@link #ACTION_WIFI_DISPLAY_STATUS_CHANGED} broadcast.
+         * <p>
+         * Automatically remembers the display after a successful connection, if not
+         * already remembered.
+         * </p><p>
+         * Requires {@link android.Manifest.permission#CONFIGURE_WIFI_DISPLAY} to connect
+         * to unknown displays.  No permissions are required to connect to already known displays.
+         * </p>
+         *
+         * @param deviceAddress The MAC address of the device to which we should connect.
+         * @hide
+         */
+        ConnectWifiDisplay(
+            [in] String deviceAddress);
+
+        /**
+         * Disconnects from the current Wifi display.
+         * The results are sent as a {@link #ACTION_WIFI_DISPLAY_STATUS_CHANGED} broadcast.
+         * @hide
+         */
+        DisconnectWifiDisplay();
+
+        /**
+         * Renames a Wifi display.
+         * <p>
+         * The display must already be remembered for this call to succeed.  In other words,
+         * we must already have successfully connected to the display at least once and then
+         * not forgotten it.
+         * </p><p>
+         * Requires {@link android.Manifest.permission#CONFIGURE_WIFI_DISPLAY}.
+         * </p>
+         *
+         * @param deviceAddress The MAC address of the device to rename.
+         * @param alias The alias name by which to remember the device, or null
+         * or empty if no alias should be used.
+         * @hide
+         */
+        RenameWifiDisplay(
+            [in] String deviceAddress,
+            [in] String alias);
+
+        /**
+         * Forgets a previously remembered Wifi display.
+         * <p>
+         * Automatically disconnects from the display if currently connected to it.
+         * </p><p>
+         * Requires {@link android.Manifest.permission#CONFIGURE_WIFI_DISPLAY}.
+         * </p>
+         *
+         * @param deviceAddress The MAC address of the device to forget.
+         * @hide
+         */
+        ForgetWifiDisplay(
+            [in] String deviceAddress);
+
+        /**
+         * Gets the current Wifi display status.
+         * Watch for changes in the status by registering a broadcast receiver for
+         * {@link #ACTION_WIFI_DISPLAY_STATUS_CHANGED}.
+         *
+         * @return The current Wifi display status.
+         * @hide
+         */
+        GetWifiDisplayStatus(
+            [out] IWifiDisplayStatus** wds);
+    }
+
+    } // namespace Display
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}

@@ -1,0 +1,290 @@
+
+module
+{
+    using interface Elastos.IO.IPrintWriter;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    interface INetworkStats;
+
+    interface INetworkStatsEntry {
+        IsNegative(
+            [out] Boolean* result);
+
+        IsEmpty(
+            [out] Boolean* result);
+
+        Add(
+            [in] INetworkStatsEntry* another);
+
+//        ToString(
+//            [out] String* result);
+
+        SetIface(
+            [in] String iface);
+
+        GetIface(
+            [out] String* iface);
+
+        SetUid(
+            [in] Int32 uid);
+
+        GetUid(
+            [out] Int32* uid);
+
+        SetSet(
+            [in] Int32 set);
+
+        GetSet(
+            [out] Int32* set);
+
+        SetTag(
+            [in] Int32 tag);
+
+        GetTag(
+            [out] Int32* tag);
+
+        SetRxBytes(
+            [in] Int64 rxBytes);
+
+        GetRxBytes(
+            [out] Int64* rxBytes);
+
+        SetRxPackets(
+            [in] Int64 rxPackets);
+
+        GetRxPackets(
+            [out] Int64* rxPackets);
+
+        SetTxBytes(
+            [in] Int64 txBytes);
+
+        GetTxBytes(
+            [out] Int64* txBytes);
+
+        SetTxPackets(
+            [in] Int64 txPackets);
+
+        GetTxPackets(
+            [out] Int64* txPackets);
+
+        SetOperations(
+            [in] Int64 operations);
+
+        GetOperations(
+            [out] Int64* operations);
+    }
+
+
+    interface INetworkStats {
+        /** {@link #iface} value when interface details unavailable. */
+        const String IFACE_ALL = "NULL";
+        /** {@link #uid} value when UID details unavailable. */
+        const Int32 UID_ALL = -1;
+        /** {@link #set} value when all sets combined. */
+        const Int32 SET_ALL = -1;
+        /** {@link #set} value where background data is accounted. */
+        const Int32 SET_DEFAULT = 0;
+        /** {@link #set} value where foreground data is accounted. */
+        const Int32 SET_FOREGROUND = 1;
+        /** {@link #tag} value for total data across all tags. */
+        const Int32 TAG_NONE = 0;
+
+        Clone(
+            [out] INetworkStats** result);
+
+        AddIfaceValues(
+            [in] String iface,
+            [in] Int64 rxBytes,
+            [in] Int64 rxPackets,
+            [in] Int64 txBytes,
+            [in] Int64 txPackets);
+
+        AddValues(
+            [in] String iface,
+            [in] Int32 uid,
+            [in] Int32 set,
+            [in] Int32 tag,
+            [in] Int64 rxBytes,
+            [in] Int64 rxPackets,
+            [in] Int64 txBytes,
+            [in] Int64 txPackets,
+            [in] Int64 operations);
+
+        AddValuesEx(
+            [in] INetworkStatsEntry* entry);
+
+        GetValues(
+            [in] Int32 i,
+            [in] INetworkStatsEntry* recycle,
+            [out] INetworkStatsEntry** result);
+
+        GetElapsedRealtime(
+            [out] Int64* result);
+
+        GetElapsedRealtimeAge(
+            [out] Int64* result);
+
+        GetSize(
+            [out] Int32* result);
+
+        GetInternalSize(
+            [out] Int32* result);
+
+        CombineValues(
+            [in] String iface,
+            [in] Int32 uid,
+            [in] Int32 tag,
+            [in] Int64 rxBytes,
+            [in] Int64 rxPackets,
+            [in] Int64 txBytes,
+            [in] Int64 txPackets,
+            [in] Int64 operations);
+
+        CombineValuesEx(
+            [in] String iface,
+            [in] Int32 uid,
+            [in] Int32 set,
+            [in] Int32 tag,
+            [in] Int64 rxBytes,
+            [in] Int64 rxPackets,
+            [in] Int64 txBytes,
+            [in] Int64 txPackets,
+            [in] Int64 operations);
+
+        CombineValuesEx2(
+            [in] INetworkStatsEntry* entry);
+
+        CombineAllValues(
+            [in] INetworkStats* another);
+
+        FindIndex(
+            [in] String iface,
+            [in] Int32 uid,
+            [in] Int32 set,
+            [in] Int32 tag,
+            [out] Int32* result);
+
+        FindIndexHinted(
+            [in] String iface,
+            [in] Int32 uid,
+            [in] Int32 set,
+            [in] Int32 tag,
+            [in] Int32 hintIndex,
+            [out] Int32* result);
+
+        SpliceOperationsFrom(
+            [in] INetworkStats* stats);
+
+        GetUniqueIfaces(
+            [out, callee] ArrayOf<String>* result);
+
+        GetUniqueUids(
+            [out, callee] ArrayOf<Int32>* result);
+
+        GetTotalBytes(
+            [out] Int64* result);
+
+        GetTotal(
+            [in] INetworkStatsEntry* recycle,
+            [out] INetworkStatsEntry** result);
+
+        GetTotalEx(
+            [in] INetworkStatsEntry* recycle,
+            [in] Int32 limitUid,
+            [out] INetworkStatsEntry** result);
+
+        GetTotalEx2(
+            [in] INetworkStatsEntry* recycle,
+            [in] IObjectContainer* limitIface,
+            [out] INetworkStatsEntry** result);
+
+        GetTotalIncludingTags(
+            [in] INetworkStatsEntry* recycle,
+            [out] INetworkStatsEntry** result);
+
+        Subtract(
+            [in] INetworkStats* right,
+            [out] INetworkStats** result);
+
+        GroupedByIface(
+            [out] INetworkStats** result);
+
+        GroupedByUid(
+            [out] INetworkStats** result);
+
+        WithoutUids(
+            [in] ArrayOf<Int32> uids,
+            [out] INetworkStats** result);
+
+        Dump(
+            [in] String prefix,
+            [in] IPrintWriter* pw);
+
+        ToString(
+            [out] String* result);
+
+        GetIFace(
+            [out, callee] ArrayOf<String>* face);
+
+        GetUid(
+            [out, callee] ArrayOf<Int32>* uid);
+
+        GetSet(
+            [out, callee] ArrayOf<Int32>* set);
+
+        GetTag(
+            [out, callee] ArrayOf<Int32>* tag);
+
+        GetRxBytes(
+            [out, callee] ArrayOf<Int64>* rxBytes);
+
+        GetRxPackets(
+            [out, callee] ArrayOf<Int64>* rxPackets);
+
+        GetTxBytes(
+            [out, callee] ArrayOf<Int64>* txBytes);
+
+        GetTxPackets(
+            [out, callee] ArrayOf<Int64>* txPackets);
+
+        GetOperations(
+            [out, callee] ArrayOf<Int64>* operations);
+
+    }
+
+    interface INonMonotonicObserver
+    {
+        FoundNonMonotonic(
+            [in] INetworkStats* left,
+            [in] Int32 leftIndex,
+            [in] INetworkStats* right,
+            [in] Int32 rightIndex,
+            [in] IInterface* cookie);
+    }
+
+    interface INetworkStatsHelper
+    {
+        SetToString(
+            [in] Int32 set,
+            [out] String* result);
+
+        TagToString(
+            [in] Int32 tag,
+            [out] String* result);
+
+        Subtract(
+            [in] INetworkStats* left,
+            [in] INetworkStats* right,
+            [in] INonMonotonicObserver* observer,
+            [in] IInterface* cookie,
+            [out] INetworkStats** result);
+    }
+
+
+    } // namespace Net
+    } // namepsace Droid
+    } // namespace Elastos
+}

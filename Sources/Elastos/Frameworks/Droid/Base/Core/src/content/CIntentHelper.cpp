@@ -1,0 +1,98 @@
+
+#include "content/CIntentHelper.h"
+#include <ext/frameworkdef.h>
+
+namespace Elastos {
+namespace Droid {
+namespace Content {
+
+ECode CIntentHelper::CreateChooser(
+    /* [in] */ IIntent* target,
+    /* [in] */ ICharSequence* title,
+    /* [out] */ IIntent** intent)
+{
+    VALIDATE_NOT_NULL(intent)
+    AutoPtr<IIntent> it = Intent::CreateChooser(target, title);
+    *intent = it;
+    INTERFACE_ADDREF(*intent)
+    return NOERROR;
+}
+
+ECode CIntentHelper::MakeMainActivity(
+    /* [in] */ IComponentName* mainActivity,
+    /* [out] */ IIntent** intent)
+{
+    VALIDATE_NOT_NULL(intent)
+    AutoPtr<IIntent> it = Intent::MakeMainActivity(mainActivity);
+    *intent = it;
+    INTERFACE_ADDREF(*intent)
+    return NOERROR;
+}
+
+ECode CIntentHelper::MakeMainSelectorActivity(
+    /* [in] */ const String& selectorAction,
+    /* [in] */ const String& selectorCategory,
+    /* [out] */ IIntent** intent)
+{
+    VALIDATE_NOT_NULL(intent)
+    AutoPtr<IIntent> it = Intent::MakeMainSelectorActivity(selectorAction, selectorCategory);
+    *intent = it;
+    INTERFACE_ADDREF(*intent)
+    return NOERROR;
+}
+
+ECode CIntentHelper::MakeRestartActivityTask(
+    /* [in] */ IComponentName* mainActivity,
+    /* [out] */ IIntent** intent)
+{
+    VALIDATE_NOT_NULL(intent)
+    AutoPtr<IIntent> it = Intent::MakeRestartActivityTask(mainActivity);
+    *intent = it;
+    INTERFACE_ADDREF(*intent)
+    return NOERROR;
+}
+
+ECode CIntentHelper::GetIntent(
+    /* [in] */ const String& uri,
+    /* [out] */ IIntent** intent)
+{
+    return Intent::GetIntent(uri, intent);
+}
+
+ECode CIntentHelper::ParseUri(
+    /* [in] */ const String& uri,
+    /* [in] */ Int32 flags,
+    /* [out] */ IIntent** intent)
+{
+    return Intent::ParseUri(uri, flags, intent);
+}
+
+ECode CIntentHelper::GetIntentOld(
+    /* [in] */ const String& uri,
+    /* [out] */ IIntent** intent)
+{
+    return Intent::GetIntentOld(uri, intent);
+}
+
+ECode CIntentHelper::ParseIntent(
+    /* [in] */ IResources* resources,
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ IAttributeSet* attrs,
+    /* [out] */ IIntent** intent)
+{
+    return Intent::ParseIntent(resources, parser, attrs, intent);
+}
+
+ECode CIntentHelper::NormalizeMimeType(
+    /* [in] */ const String& type,
+    /* [out] */ String* mimeType)
+{
+    VALIDATE_NOT_NULL(mimeType)
+    *mimeType = Intent::NormalizeMimeType(type);
+    return NOERROR;
+}
+
+}
+}
+}
+

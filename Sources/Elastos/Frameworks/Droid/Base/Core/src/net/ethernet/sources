@@ -1,0 +1,13 @@
+TARGET_NAME= ethernet
+TARGET_TYPE= lib
+
+C_DEFINES += -DDROID_CORE
+
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../inc
+INCLUDES += $(MAKEDIR)/../../../inc/net/ethernet
+
+SOURCES += CEthernetDevInfo.cpp
+SOURCES += CEthernetManager.cpp
+SOURCES += EthernetDataTracker.cpp
+SOURCES += CEDTInterfaceObserver.cpp

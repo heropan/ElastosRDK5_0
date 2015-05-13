@@ -1,0 +1,30 @@
+
+module
+{
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Luni {
+    namespace Util {
+
+    interface IDeleteOnExit /* extends Elastos.Core.Threading.IThread */ {
+        /**
+         * Schedules a file for deletion.
+         *
+         * @param filename The file to delete.
+        */
+        AddFile(
+            [in] String filename);
+    }
+
+    interface IDeleteOnExitHelper {
+        GetInstance(
+            [out] IDeleteOnExit** instance);
+    }
+
+    } // namespace Util
+    } // namespace Luni
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

@@ -1,0 +1,65 @@
+
+module
+{
+
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.Content.Res.IConfiguration;
+    interface Elastos.Droid.View.Menu.ISubMenuBuilder;
+    interface Elastos.Droid.View.IMenuItem;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Menu {
+
+        interface IActionMenuPresenterSavedState {
+
+            SetOpenSubMenuId(
+                [in] Int32 menuId);
+
+            GetOpenSubMenuId(
+                [out] Int32* menuId);
+        }
+
+        [local]
+        interface IActionMenuPresenter extends IBaseMenuPresenter {
+            OnConfigurationChanged(
+                [in] IConfiguration* newConfig);
+
+            SetWidthLimit(
+                [in] Int32 width,
+                [in] Boolean strict);
+
+            SetReserveOverflow(
+                [in] Boolean reserveOverflow);
+
+            SetItemLimit(
+                [in] Int32 itemCount);
+
+            SetExpandedActionViewsExclusive(
+                [in] Boolean isExclusive);
+
+            ShowOverflowMenu(
+                [out] Boolean* res);
+
+            HideOverflowMenu(
+                [out] Boolean* res);
+
+            DismissPopupMenus(
+                [out] Boolean* res);
+
+            HideSubMenus(
+                [out] Boolean* res);
+
+            IsOverflowMenuShowing(
+                [out] Boolean* res);
+
+            IsOverflowReserved(
+                [out] Boolean* res);
+        }
+
+    } // namespace Menu
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

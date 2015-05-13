@@ -1,0 +1,15 @@
+
+DIRS = accessibility
+DIRS += am
+DIRS += connectivity
+DIRS += display
+DIRS += input
+DIRS += location
+DIRS += net
+DIRS += pm
+DIRS += usb
+DIRS += wm
+DIRS += accounts
+DIRS += power
+DIRS += dreams
+DIRS += search

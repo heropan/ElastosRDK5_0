@@ -1,0 +1,94 @@
+module
+{
+    namespace Org {
+    namespace Xml {
+    namespace Sax {
+    namespace Helpers {
+
+    interface ILocatorImpl{
+        /**
+         * Set the public identifier for this locator.
+         *
+         * @param publicId The new public identifier, or null
+         *        if none is available.
+         * @see #getPublicId
+         */
+        SetPublicId(
+            [in] String publicId);
+
+        /**
+         * Set the system identifier for this locator.
+         *
+         * @param systemId The new system identifier, or null
+         *        if none is available.
+         * @see #getSystemId
+         */
+        SetSystemId(
+            [in] String systemId);
+
+        /**
+         * Set the line number for this locator (1-based).
+         *
+         * @param lineNumber The line number, or -1 if none is available.
+         * @see #getLineNumber
+         */
+        SetLineNumber(
+            [in] Int32 lineNumber);
+
+        /**
+         * Set the column number for this locator (1-based).
+         *
+         * @param columnNumber The column number, or -1 if none is available.
+         * @see #getColumnNumber
+         */
+        SetColumnNumber(
+            [in] Int32 columnNumber);
+            
+        /**
+         * Return the saved public identifier.
+         *
+         * @return The public identifier as a string, or null if none
+         *         is available.
+         * @see org.xml.sax.Locator#getPublicId
+         * @see #setPublicId
+         */
+        //GetPublicId (
+        //    [out] String* publicId);
+    
+        /**
+         * Return the saved system identifier.
+         *
+         * @return The system identifier as a string, or null if none
+         *         is available.
+         * @see org.xml.sax.Locator#getSystemId
+         * @see #setSystemId
+         */
+        //GetSystemId (
+        //    [out] String* systemId);
+    
+        /**
+         * Return the saved line number (1-based).
+         *
+         * @return The line number as an integer, or -1 if none is available.
+         * @see org.xml.sax.Locator#getLineNumber
+         * @see #setLineNumber
+         */
+        //GetLineNumber (
+        //    [out] Int32* lineNumber);
+    
+        /**
+         * Return the saved column number (1-based).
+         *
+         * @return The column number as an integer, or -1 if none is available.
+         * @see org.xml.sax.Locator#getColumnNumber
+         * @see #setColumnNumber
+         */
+        //GetColumnNumber (
+        //    [out] Int32* columnNumber);
+    }
+
+    } // namespace Helpers
+    } // namespace Sax
+    } // namespace Xml
+    } // namespace Org
+}

@@ -1,0 +1,100 @@
+
+module
+{
+    using interface Elastos.Utility.IIterator;
+    using interface Elastos.Utility.IList;
+
+    namespace Elastos {
+    namespace Security {
+    namespace Cert {
+
+    interface ICertPath {
+        /**
+         * Returns the type of {@code Certificate} in this instance.
+         *
+         * @return the certificate type.
+         */
+        GetType(
+            [out] String* type);
+
+        /**
+         * Returns {@code true} if {@code Certificate}s in the list are the same
+         * type and the lists are equal (and by implication the certificates
+         * contained within are the same).
+         *
+         * @param other
+         *            {@code CertPath} to be compared for equality.
+         * @return {@code true} if the object are equal, {@code false} otherwise.
+         */
+        Equals(
+            [in] IInterface* other,
+            [out] Boolean* result);
+
+        /**
+         * Overrides {@code Object.hashCode()}. The function is defined as follows:
+         * <pre>
+         * {@code hashCode = 31 * path.getType().hashCode() +
+         * path.getCertificates().hashCode();}
+         * </pre>
+         *
+         * @return the hash code for this instance.
+         */
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        /**
+         * Returns a {@code String} representation of this {@code CertPath}
+         * instance. It is the result of calling {@code toString} on all {@code
+         * Certificate}s in the {@code List}.
+         *
+         * @return a string representation of this instance.
+         */
+        ToString(
+            [out] String* str);
+
+        /**
+         * Returns an immutable List of the {@code Certificate}s contained
+         * in the {@code CertPath}.
+         *
+         * @return a list of {@code Certificate}s in the {@code CertPath}.
+         */
+        GetCertificates(
+            [out] IList** certs);
+
+        /**
+         * Returns an encoding of the {@code CertPath} using the default encoding.
+         *
+         * @return default encoding of the {@code CertPath}.
+         * @throws CertificateEncodingException
+         *             if the encoding fails.
+         */
+        GetEncoded(
+            [out, callee] ArrayOf<Byte>* encoded);
+
+        /**
+         * Returns an encoding of the {@code CertPath} using the specified encoding.
+         *
+         * @param encoding
+         *            encoding that should be generated.
+         * @return default encoding of the {@code CertPath}.
+         * @throws CertificateEncodingException
+         *             if the encoding fails.
+         */
+        GetEncodedEx(
+            [in] String encoding,
+            [out, callee] ArrayOf<Byte>* encoded);
+
+        /**
+         * Returns an {@code Iterator} over the supported encodings for a
+         * representation of the certificate path.
+         *
+         * @return {@code Iterator} over supported encodings (as {@code String}s).
+         */
+        GetEncodings(
+            [out] IIterator** encodings);
+    }
+
+    } // namespace Cert
+    } // namespace Security
+    } // namespace Elastos
+}

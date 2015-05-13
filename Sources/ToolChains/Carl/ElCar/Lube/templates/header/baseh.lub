@@ -1,0 +1,265 @@
+$;;=========================================================================
+$;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
+$;;=========================================================================
+$
+$INPUT module
+$OUTPUT "_${name}.h"
+$
+$WITH all interfaces DO
+${InterfaceNamespaceBegin(interface)}$^
+interface ${name};
+${InterfaceNamespaceEnd(interface)}$^
+$END DO
+$
+EXTERN_C ELAPI _Impl_AcquireCallbackHandler(PInterface pServerObj, _ELASTOS REIID iid, PInterface *ppHandler);
+
+$WITH all interfaces DO
+$  IF interface.attrib is "sink" and interface.attrib is "defined"
+#ifndef __INTERFACE_${fullname}_DEFINED__
+#define __INTERFACE_${fullname}_DEFINED__
+${InterfaceNamespaceBegin(interface)}$^
+CAR_INTERFACE("${FormatUuid(iid)}")
+${name} : public ${parent.namespace}${parent.name}
+{
+    virtual CARAPI_(PInterface) Probe(
+            /* [in] */ _ELASTOS REIID riid) = 0;
+
+    static CARAPI_(${name}*) Probe(PInterface pObj)
+    {
+        if (pObj == NULL) return NULL;
+        return (${name}*)pObj->Probe(EIID_${name});
+    }
+
+    static CARAPI_(${name}*) Probe(IObject* pObj)
+    {
+        return (${name}*)pObj->Probe(EIID_${name});
+    }
+
+$   WITH all methods DO
+$       IF type is "ECode"
+    virtual CARAPI ${name}($^
+$       ELSE
+    virtual CARAPI_(${NamespaceType(type)}) ${name}($^
+$       END IF
+$
+$       WITH all parameters DO
+
+        /* [${attrib}] */ ${ParamNamespaceType(type)} ${prefixingname(parameter)}$^
+$           IF parameter is not last
+,$^
+$           END IF
+$       END DO ;; all parameters
+) = 0;
+$
+$       IF method is not last
+
+$       END IF
+$   END DO ;; all methods
+
+$IF attrib is "generic"
+$NewHeaderOfGenericInterfaces(interface)
+$END IF
+};
+${InterfaceNamespaceEnd(interface)}$^
+#endif // __INTERFACE_${fullname}_DEFINED__
+$  END IF;; sink
+$END DO ;; all interfaces
+
+$WITH all interfaces DO
+$  IF interface.attrib is not "sink"
+#ifndef __INTERFACE_${fullname}_DEFINED__
+#define __INTERFACE_${fullname}_DEFINED__
+${InterfaceNamespaceBegin(interface)}$^
+CAR_INTERFACE("${FormatUuid(iid)}")
+${name} : public ${parent.namespace}${parent.name}
+{
+$   WITH all interfaceconsts DO
+$     IF type is "Byte" or type is "Int16" or type is "Int32" or type is "Char32"
+    static const _ELASTOS ${type} ${name} = ${value};
+$     ELSE
+    static const _ELASTOS ${type} ${name};
+$     END IF
+$   END DO ;; all interfaceconsts
+
+$   IF interface.type is "normal"
+    virtual CARAPI_(PInterface) Probe(
+            /* [in] */ _ELASTOS REIID riid) = 0;
+
+    static CARAPI_(${name}*) Probe(PInterface pObj)
+    {
+        if (pObj == NULL) return NULL;
+        return (${name}*)pObj->Probe(EIID_${name});
+    }
+
+    static CARAPI_(${name}*) Probe(IObject* pObj)
+    {
+        return (${name}*)pObj->Probe(EIID_${name});
+    }
+$   END IF
+
+$   WITH all methods DO
+$   IF interface.type is "normal"
+$       IF type is "ECode"
+    virtual CARAPI ${name}($^
+$       ELSE
+    virtual CARAPI_(${NamespaceType(type)}) ${name}($^
+$       END IF
+$
+$       WITH all parameters DO
+
+        /* [${attrib}] */ ${ParamNamespaceType(type)} ${prefixingname(parameter)}$^
+$           IF parameter is not last
+,$^
+$           END IF
+$       END DO ;; all parameters
+) = 0;
+$   END IF ;; "normal"
+$
+$       IF interface.type is "callbacks"
+    // callback helper method
+    static _ELASTOS ECode Add${name}Callback(
+                    PInterface pServerObj,
+                    _ELASTOS ECode (*pFunc)(_ELASTOS PVoid, PInterface$^
+$                   WITH all parameters DO
+, ${ParamNamespaceType(type)}$^
+$                   END DO
+),
+                    _ELASTOS PVoid pUserData=NULL)
+    {
+        ${interface.name}Handler* pHandler;
+        _ELASTOS ECode ec;
+
+        ec = _Impl_AcquireCallbackHandler(pServerObj,
+
+                        EIID_${interface.name}Handler, (PInterface*)&pHandler);
+        if (FAILED(ec)) return ec;
+
+        ec = pHandler->Add${name}Callback(
+                        Elastos::EventHandler::Make(pUserData, *(_ELASTOS PVoid*)&pFunc));
+        pHandler->Release();
+        return ec;
+    }
+
+    template <class T>
+    static _ELASTOS ECode Add${name}Callback(
+                PInterface pServerObj,
+                T *pThis,
+                _ELASTOS ECode (CARAPICALLTYPE T::*pFunc)(
+                        PInterface$^
+$                   WITH all parameters DO
+, ${ParamNamespaceType(type)}$^
+$                   END DO
+))
+    {
+        ${interface.name}Handler* pHandler;
+        _ELASTOS ECode ec;
+
+        ec = _Impl_AcquireCallbackHandler(pServerObj,
+
+                        EIID_${interface.name}Handler, (PInterface*)&pHandler);
+        if (FAILED(ec)) return ec;
+
+        if (Conversion<T, CCarObject>::exists) {
+            ec = pHandler->Add${name}Callback(
+                            Elastos::EventHandler::Make(pThis, *(_ELASTOS PVoid*)&pFunc, CallbackType_CAR));
+        }
+        else {
+            ec = pHandler->Add${name}Callback(
+                            Elastos::EventHandler::Make(pThis, *(_ELASTOS PVoid*)&pFunc, CallbackType_CPP));
+        }
+        pHandler->Release();
+        return ec;
+    }
+
+    static _ELASTOS ECode Remove${name}Callback(
+                    PInterface pServerObj,
+                    _ELASTOS ECode (*pFunc)(_ELASTOS PVoid, PInterface$^
+$                   WITH all parameters DO
+, ${ParamNamespaceType(type)}$^
+$                   END DO
+),
+                    _ELASTOS PVoid pUserData=NULL)
+    {
+        ${interface.name}Handler* pHandler;
+        _ELASTOS ECode ec;
+
+        ec = _Impl_AcquireCallbackHandler(pServerObj,
+
+                        EIID_${interface.name}Handler, (PInterface*)&pHandler);
+        if (FAILED(ec)) return ec;
+
+        ec = pHandler->Remove${name}Callback(
+                                Elastos::EventHandler::Make(pUserData, *(_ELASTOS PVoid*)&pFunc));
+        pHandler->Release();
+        return ec;
+    }
+
+    template <class T>
+    static _ELASTOS ECode Remove${name}Callback(
+                    PInterface pServerObj,
+                T *pThis,
+                _ELASTOS ECode (CARAPICALLTYPE T::*pFunc)(
+                        PInterface$^
+$                   WITH all parameters DO
+, ${ParamNamespaceType(type)}$^
+$                   END DO
+))
+    {
+        ${interface.name}Handler* pHandler;
+        _ELASTOS ECode ec;
+
+        ec = _Impl_AcquireCallbackHandler(pServerObj,
+
+                        EIID_${interface.name}Handler, (PInterface*)&pHandler);
+        if (FAILED(ec)) return ec;
+
+        ec = pHandler->Remove${name}Callback(
+                                    Elastos::EventHandler::Make(pThis, *(_ELASTOS PVoid*)&pFunc));
+        pHandler->Release();
+        return ec;
+    }
+
+    static _ELASTOS ECode Acquire${name}Rendezvous(
+                            PInterface pServerObj,
+                            ICallbackRendezvous** ppRendezvous)
+    {
+        ${interface.name}Handler* pHandler;
+        _ELASTOS ECode ec;
+
+        ec = _Impl_AcquireCallbackHandler(pServerObj,
+
+                        EIID_${interface.name}Handler, (PInterface*)&pHandler);
+        if (FAILED(ec)) return ec;
+
+        ec = pHandler->Acquire${name}Rendezvous(ppRendezvous);
+        pHandler->Release();
+        return ec;
+    }
+$       END IF ;; callbacks
+$
+$       IF interface.type is "delegates"
+$       ;; TODO: generate "AssignXXXDelegate" and "RevokeXXXDelegate"
+$       END IF ;; delegates
+$       IF method is not last
+
+$       END IF
+$   END DO ;; all methods
+
+$IF attrib is "generic"
+$NewHeaderOfGenericInterfaces(interface)
+$END IF
+};
+${InterfaceNamespaceEnd(interface)}$^
+#endif // __INTERFACE_${fullname}_DEFINED__
+$  END IF;; not sink
+$END DO ;; all interfaces
+$
+$WITH all classes DO
+$   IF type is not "generic"
+$       IF attrib is "hascallback" or attrib is "hasfilter"
+$           TEMPLATE "trigger.lub"
+$       END IF
+$   END IF
+$END DO
+$
+$END OUTPUT

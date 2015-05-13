@@ -1,0 +1,30 @@
+
+module
+{
+    interface Elastos.Droid.Internal.View.IInputBindResult;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace View {
+
+    [oneway]
+    interface IInputMethodClient {
+        SetUsingInputMethod(
+            [in] Boolean state);
+
+        OnBindMethod(
+            [in] IInputBindResult* res);
+
+        OnUnbindMethod(
+            [in] Int32 sequence);
+
+        SetActive(
+            [in] Boolean active);
+    }
+
+    } // namespace View
+    } // namespace Internal
+    } // namepsace Droid
+    } // namespace Elastos
+}

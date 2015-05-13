@@ -1,0 +1,74 @@
+module
+{
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Content.Pm.IContainerEncryptionParams;
+    interface Elastos.Droid.Content.Pm.IPackageInfoLite;
+    interface Elastos.Droid.Content.Res.IObbInfo;
+    interface Elastos.Droid.Os.IParcelFileDescriptor;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    interface IMediaContainerService {
+        CopyResourceToContainer(
+            [in] IUri* packageURI,
+            [in] String containerId,
+            [in] String key,
+            [in] String resFileName,
+            [in] String publicResFileName,
+            [in] Boolean isExternal,
+            [in] Boolean isForwardLocked,
+            [out] String* path);
+
+        CopyResource(
+            [in] IUri* packageURI,
+            [in] IContainerEncryptionParams* encryptionParams,
+            [in] IParcelFileDescriptor* outStream,
+            [out] Int32* res);
+
+        GetMinimalPackageInfo(
+            [in] String packagePath,
+            [in] Int32 flags,
+            [in] Int64 threshold,
+            [out] IPackageInfoLite** pkgLite);
+
+        CheckInternalFreeStorage(
+            [in] IUri* fileUri,
+            [in] Boolean isForwardLocked,
+            [in] Int64 threshold,
+            [out] Boolean* res);
+
+        CheckExternalFreeStorage(
+            [in] IUri* fileUri,
+            [in] Boolean isForwardLocked,
+            [out] Boolean* res);
+
+        GetObbInfo(
+            [in] String filename,
+            [out] IObbInfo** obbInfo);
+
+        CalculateDirectorySize(
+            [in] String directory,
+            [out] Int64* size);
+
+        /** Return file system stats: [0] is total bytes, [1] is available bytes */
+        GetFileSystemStats(
+            [in] String path,
+            [out, callee] ArrayOf<Int64>* stats);
+
+        ClearDirectory(
+            [in] String directory);
+
+        CalculateInstalledSize(
+            [in] String packagePath,
+            [in] Boolean isForwardLocked,
+            [out] Int64* size);
+    }
+
+    } // namespace App
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
+}

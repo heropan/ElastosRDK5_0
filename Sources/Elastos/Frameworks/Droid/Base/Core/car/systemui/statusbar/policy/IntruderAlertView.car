@@ -1,0 +1,27 @@
+module
+{
+    interface Elastos.Droid.View.IViewOnClickListener;
+    interface Elastos.Droid.Widget.IRemoteViews;
+    interface Elastos.Droid.SystemUI.StatusBar.IBaseStatusBar;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Policy {
+
+    interface IIntruderAlertView extends Elastos.Droid.Widget.ILinearLayout {
+        SetBar(
+            [in] IBaseStatusBar* bar);
+
+        ApplyIntruderContent(
+            [in] IRemoteViews* intruderView,
+            [in] IViewOnClickListener* listener);
+    }
+
+    } // namespace Policy
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

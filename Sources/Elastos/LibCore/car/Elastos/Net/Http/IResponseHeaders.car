@@ -1,0 +1,139 @@
+
+module
+{
+    interface Elastos.Utility.IDate;
+    interface Elastos.Utility.ISet;
+    interface Elastos.Utility.IMap;
+    using interface Elastos.Net.IURI;
+    using interface Elastos.Net.ResponseSource;
+
+    namespace Elastos {
+    namespace Net {
+    namespace Http {
+
+    interface IRequestHeaders;
+
+    /**
+     * Parsed HTTP response headers.
+     */
+    //[deprecated]
+    interface IResponseHeaders {
+        IsContentEncodingGzip(
+            [out] Boolean* value);
+
+        StripContentEncoding();
+
+        StripContentLength();
+
+        IsChunked(
+            [out] Boolean* value);
+
+        HasConnectionClose(
+            [out] Boolean* value);
+
+        GetUri(
+            [out] IURI** url);
+
+        GetHeaders(
+            [out] IRawHeaders** rh);
+
+        GetServedDate(
+            [out] IDate** adate);
+
+        GetLastModified(
+            [out] IDate** adate);
+
+        GetExpires(
+            [out] IDate** adate);
+
+        IsNoCache(
+            [out] Boolean* value);
+
+        IsNoStore(
+            [out] Boolean* value);
+
+        GetMaxAgeSeconds(
+            [out] Int32* value);
+
+        GetSMaxAgeSeconds(
+            [out] Int32* value);
+
+        IsPublic(
+            [out] Boolean* value);
+
+        IsMustRevalidate(
+            [out] Boolean* value);
+
+        GetEtag(
+            [out] String* str);
+
+        GetVaryFields(
+            [out] ISet** obj);
+
+        GetContentEncoding(
+            [out] String* str);
+
+        GetContentLength(
+            [out] Int32* value);
+
+        GetConnection(
+            [out] String* str);
+
+        SetLocalTimestamps(
+            [in] Int64 sentRequestMillis,
+            [in] Int64 receivedResponseMillis);
+
+        /**
+         * Returns true if this response can be stored to later serve another
+         * request.
+         */
+        IsCacheable(
+            [in] IRequestHeaders* request,
+            [out] Boolean* value);
+
+        /**
+         * Returns true if a Vary header contains an asterisk. Such responses cannot
+         * be cached.
+         */
+        HasVaryAll(
+            [out] Boolean* value);
+
+        /**
+         * Returns true if none of the Vary headers on this response have changed
+         * between {@code cachedRequest} and {@code newRequest}.
+         */
+        VaryMatches(
+            [in] IMap* cachedRequest,
+            [in] IMap* newRequest,
+            [out] Boolean* value);
+
+        /**
+         * Returns the source to satisfy {@code request} given this cached response.
+         */
+        ChooseResponseSource(
+            [in] Int64 nowMillis,
+            [in] IRequestHeaders* request,
+            [out] ResponseSource* ressou);
+
+        /**
+         * Returns true if this cached response should be used; false if the
+         * network response should be used.
+         */
+        Validate(
+            [in] IResponseHeaders* networkResponse,
+            [out] Boolean* value);
+
+        /**
+         * Combines this cached header with a network header as defined by RFC 2616,
+         * 13.5.3.
+         */
+        Combine(
+            [in] IResponseHeaders* network,
+            [out] IResponseHeaders** outres);
+    }
+
+    } // namespace Http
+    } // namespace Net
+    } // namespace Elastos
+
+}

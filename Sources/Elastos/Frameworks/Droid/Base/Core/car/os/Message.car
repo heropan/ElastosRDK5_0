@@ -1,0 +1,166 @@
+
+module
+{
+    interface Elastos.Core.IRunnable;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Os.IMessenger;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+    [deprecated]
+    interface IMessage {
+        GetNext(
+            [out] IMessage** next);
+
+        SetNext(
+            [in] IMessage* next);
+
+        /**
+         * Return a Message instance to the global pool.  You MUST NOT touch
+         * the Message after calling this function -- it has effectively been
+         * freed.
+         */
+        Recycle();
+
+        /**
+         * Make this message like o.  Performs a shallow copy of the data field.
+         * Does not copy the linked list fields, nor the timestamp or
+         * target/callback of the original message.
+         */
+        CopyFrom(
+            [in] IMessage* o);
+
+        /**
+         * Return the targeted delivery time of this message, in milliseconds.
+         */
+        GetWhen(
+            [out] Int64* when);
+
+        SetWhen(
+            [in] Int64 when);
+
+        SetTarget(
+            [in] IHandler* target);
+
+        /**
+         * Retrieve the a {@link android.os.Handler Handler} implementation that
+         * will receive this message. The object must implement
+         * {@link android.os.Handler#handleMessage(android.os.Message)
+         * Handler.handleMessage()}. Each Handler has its own name-space for
+         * message codes, so you do not need to
+         * worry about yours conflicting with other handlers.
+         */
+        GetTarget(
+            [out] IHandler** target);
+
+        /**
+         * Sends this Message to the Handler specified by {@link #getTarget}.
+         * Throws a null pointer exception if this field has not been set.
+         */
+        SendToTarget();
+
+        SetData(
+            [in] IBundle* data);
+
+        GetData(
+            [out] IBundle** data);
+
+        SetWhat(
+            [in] Int32 val);
+
+        GetWhat(
+            [out] Int32* val);
+
+        SetReplyTo(
+            [in] IMessenger* replyTo);
+
+        GetReplyTo(
+            [out] IMessenger** replyTo);
+
+        SetArg1(
+            [in] Int32 arg1);
+
+        GetArg1(
+            [out] Int32* arg1);
+
+        SetArg2(
+            [in] Int32 arg2);
+
+        GetArg2(
+            [out] Int32* arg2);
+
+        SetObj(
+            [in] IInterface* obj);
+
+        GetObj(
+            [out] IInterface** obj);
+
+        SetCallback(
+            [in] IRunnable* cb);
+
+        GetCallback(
+            [out] IRunnable** cb);
+
+        IsAsynchronous(
+            [out] Boolean* async);
+
+        SetAsynchronous(
+            [in] Boolean async);
+
+        IsInUse(
+            [out] Boolean* use);
+
+        MarkInUse();
+    }
+
+    interface IMessageHelper {
+        Obtain(
+            [out] IMessage** msg);
+
+        ObtainEx(
+            [in] IMessage* orig,
+            [out] IMessage** msg);
+
+        ObtainEx2(
+            [in] IHandler* target,
+            [out] IMessage** msg);
+
+        ObtainEx3(
+            [in] IHandler* target,
+            [in] Int32 what,
+            [out] IMessage** msg);
+
+        ObtainEx4(
+            [in] IHandler* target,
+            [in] Int32 what,
+            [in] IInterface* obj,
+            [out] IMessage** msg);
+
+        ObtainEx5(
+            [in] IHandler* target,
+            [in] Int32 what,
+            [in] Int32 arg1,
+            [in] Int32 arg2,
+            [out] IMessage** msg);
+
+        ObtainEx6(
+            [in] IHandler* target,
+            [in] Int32 what,
+            [in] Int32 arg1,
+            [in] Int32 arg2,
+            [in] IInterface* obj,
+            [out] IMessage** msg);
+
+        ObtainEx7(
+            [in] IHandler* target,
+            [in] IRunnable* cb,
+            [out] IMessage** msg);
+    }
+
+    } // namespace Os
+    } // namespace Droid
+    } // namespace Elastos
+}

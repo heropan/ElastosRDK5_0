@@ -1,0 +1,46 @@
+module
+{
+    interface Elastos.Utility.ITimerTask;
+    interface Elastos.Utility.IDate;
+
+    namespace Elastos {
+    namespace Utility {
+
+    interface ITimer {
+        Cancel();
+
+        Purge(
+            [out] Int32* value);
+
+        Schedule(
+            [in] ITimerTask* task,
+            [in] IDate* when);
+
+        ScheduleEx(
+            [in] ITimerTask* task,
+            [in] Int64 delay);
+
+        ScheduleEx2(
+            [in] ITimerTask* task,
+            [in] Int64 delay,
+            [in] Int64 period);
+
+        ScheduleEx3(
+            [in] ITimerTask* task,
+            [in] IDate* when,
+            [in] Int64 period);
+
+        ScheduleAtFixedRate(
+            [in] ITimerTask* task,
+            [in] Int64 delay,
+            [in] Int64 period);
+
+        scheduleAtFixedRateEx(
+            [in] ITimerTask* task,
+            [in] IDate *when,
+            [in] Int64 period);
+    }
+
+    } // namespace Utility
+    } // namespace Elastos
+}

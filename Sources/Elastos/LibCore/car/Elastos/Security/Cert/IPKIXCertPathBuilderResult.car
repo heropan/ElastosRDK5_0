@@ -1,0 +1,24 @@
+
+module
+{
+    interface Elastos.Security.Cert.ICertPath;
+    interface Elastos.Security.Cert.IPKIXCertPathValidatorResult;
+
+    namespace Elastos {
+    namespace Security {
+    namespace Cert {
+
+    interface IPKIXCertPathBuilderResult extends IPKIXCertPathValidatorResult {
+        /**
+         * Returns the validated certification path.
+         *
+         * @return the validated certification path.
+         */
+        GetCertPath(
+            [out] ICertPath** certPath);
+    }
+
+    } // namespace Cert
+    } // namespace Security
+    } // namespace Elastos
+}

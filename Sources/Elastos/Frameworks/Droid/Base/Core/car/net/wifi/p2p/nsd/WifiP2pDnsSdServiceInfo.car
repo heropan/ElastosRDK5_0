@@ -1,0 +1,64 @@
+
+module
+{
+    using interface Elastos.Utility.IObjectStringMap;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+    namespace Wifi {
+    namespace P2p {
+    namespace Nsd {
+
+    /**
+     * A class for storing Bonjour service information that is advertised
+     * over a Wi-Fi peer-to-peer setup.
+     *
+     * {@see android.net.wifi.p2p.WifiP2pManager#addLocalService}
+     * {@see android.net.wifi.p2p.WifiP2pManager#removeLocalService}
+     * {@see WifiP2pServiceInfo}
+     * {@see WifiP2pUpnpServiceInfo}
+     */
+    interface IWifiP2pDnsSdServiceInfo extends IWifiP2pServiceInfo {
+        /**
+         * Bonjour version 1.
+         * @hide
+         */
+        const Int32 VERSION_1 = 0x01;
+
+        /**
+         * Pointer record.
+         * @hide
+         */
+        const Int32 DNS_TYPE_PTR = 12;
+
+        /**
+         * Text record.
+         * @hide
+         */
+        const Int32 DNS_TYPE_TXT = 16;
+    }
+
+    interface IWifiP2pDnsSdServiceInfoHelper {
+        NewInstance(
+            [in] String instanceName,
+            [in] String serviceType,
+            [in] IObjectStringMap* txtMap,
+            [out] IWifiP2pDnsSdServiceInfo** instance);
+
+        CreateRequest(
+            [in] String dnsName,
+            [in] Int32 dnsType,
+            [in] Int32 versionNumber,
+            [out] String* request);
+    }
+
+    } // namespace nsd
+    } // namespace p2p
+    } // namespace wifi
+    } // namespace net
+    } // namespace Droid
+    } // namespace Elastos
+}
+
+

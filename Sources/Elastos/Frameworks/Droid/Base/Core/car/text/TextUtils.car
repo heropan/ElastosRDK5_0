@@ -1,0 +1,168 @@
+
+module
+{
+    using interface Elastos.Utility.IIterator;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+
+    enum TextUtilsTruncateAt {
+        TextUtilsTruncateAt_NONE = -1,
+        TextUtilsTruncateAt_START,
+        TextUtilsTruncateAt_MIDDLE,
+        TextUtilsTruncateAt_END,
+        TextUtilsTruncateAt_MARQUEE,
+        /**
+         * @hide
+         */
+        TextUtilsTruncateAt_END_SMALL,
+    }
+
+    /**
+     * An interface for splitting strings according to rules that are opaque to the user of this
+     * interface. This also has less overhead than split, which uses regular expressions and
+     * allocates an array to hold the results.
+     *
+     * <p>The most efficient way to use this class is:
+     *
+     * <pre>
+     * // Once
+     * TextUtils.StringSplitter splitter = new TextUtils.SimpleStringSplitter(delimiter);
+     *
+     * // Once per string to split
+     * splitter.setString(string);
+     * for (String s : splitter) {
+     *     ...
+     * }
+     * </pre>
+     */
+    interface IStringSplitter extends Elastos.Utility.IIterator {
+        SetString(
+            [in] String string);
+    }
+
+    /**
+     * A simple string splitter.
+     *
+     * <p>If the final character in the string to split is the delimiter then no empty string will
+     * be returned for the empty string after that delimeter. That is, splitting <tt>"a,b,"</tt> on
+     * comma will return <tt>"a", "b"</tt>, not <tt>"a", "b", ""</tt>.
+     */
+    interface ISimpleStringSplitter extends IStringSplitter {
+        GetIterator(
+            [out] IIterator** it);
+
+        NextString(
+            [out] String* str);
+    }
+
+    interface ITextUtilsEllipsizeCallback {
+        /**
+         * This method is called to report that the specified region of
+         * text was ellipsized away by a call to {@link #ellipsize}.
+         */
+        Ellipsized(
+            [in] Int32 start,
+            [in] Int32 end);
+    }
+
+    interface ITextUtils {
+        /** @hide */
+        const Int32 ALIGNMENT_SPAN = 1;
+
+        /** @hide */
+        const Int32 FOREGROUND_COLOR_SPAN = 2;
+
+        /** @hide */
+        const Int32 RELATIVE_SIZE_SPAN = 3;
+
+        /** @hide */
+        const Int32 SCALE_X_SPAN = 4;
+
+        /** @hide */
+        const Int32 STRIKETHROUGH_SPAN = 5;
+
+        /** @hide */
+        const Int32 UNDERLINE_SPAN = 6;
+
+        /** @hide */
+        const Int32 STYLE_SPAN = 7;
+
+        /** @hide */
+        const Int32 BULLET_SPAN = 8;
+
+        /** @hide */
+        const Int32 QUOTE_SPAN = 9;
+
+        /** @hide */
+        const Int32 LEADING_MARGIN_SPAN = 10;
+
+        /** @hide */
+        const Int32 URL_SPAN = 11;
+
+        /** @hide */
+        const Int32 BACKGROUND_COLOR_SPAN = 12;
+
+        /** @hide */
+        const Int32 TYPEFACE_SPAN = 13;
+
+        /** @hide */
+        const Int32 SUPERSCRIPT_SPAN = 14;
+
+        /** @hide */
+        const Int32 SUBSCRIPT_SPAN = 15;
+
+        /** @hide */
+        const Int32 ABSOLUTE_SIZE_SPAN = 16;
+
+        /** @hide */
+        const Int32 TEXT_APPEARANCE_SPAN = 17;
+
+        /** @hide */
+        const Int32 ANNOTATION = 18;
+
+        /** @hide */
+        const Int32 SUGGESTION_SPAN = 19;
+
+        /** @hide */
+        const Int32 SPELL_CHECK_SPAN = 20;
+
+        /** @hide */
+        const Int32 SUGGESTION_RANGE_SPAN = 21;
+
+        /** @hide */
+        const Int32 EASY_EDIT_SPAN = 22;
+
+        /** @hide */
+        const Int32 LOCALE_SPAN = 23;
+
+        /**
+         * Capitalization mode for {@link #getCapsMode}: capitalize all
+         * characters.  This value is explicitly defined to be the same as
+         * {@link InputType#TYPE_TEXT_FLAG_CAP_CHARACTERS}.
+         */
+        const Int32 CAP_MODE_CHARACTERS
+                = 0x00001000; //InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS;
+
+        /**
+         * Capitalization mode for {@link #getCapsMode}: capitalize the first
+         * character of all words.  This value is explicitly defined to be the same as
+         * {@link InputType#TYPE_TEXT_FLAG_CAP_WORDS}.
+         */
+        const Int32 CAP_MODE_WORDS
+                = 0x00002000; //InputType.TYPE_TEXT_FLAG_CAP_WORDS;
+
+        /**
+         * Capitalization mode for {@link #getCapsMode}: capitalize the first
+         * character of each sentence.  This value is explicitly defined to be the same as
+         * {@link InputType#TYPE_TEXT_FLAG_CAP_SENTENCES}.
+         */
+        const Int32 CAP_MODE_SENTENCES
+                = 0x00004000; //InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+    }
+
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
+}
