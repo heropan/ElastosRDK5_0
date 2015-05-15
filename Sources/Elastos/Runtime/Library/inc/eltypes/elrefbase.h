@@ -176,6 +176,14 @@ private:
 
 _ELASTOS_NAMESPACE_END
 
+#ifndef REFCOUNT_ADDREF
+#define REFCOUNT_ADDREF(i) if (i) { (i)->AddRef(); }
+#endif
+
+#ifndef REFCOUNT_RELEASE
+#define REFCOUNT_RELEASE(i) if (i) { (i)->Release(); }
+#endif
+
 #endif // __cplusplus
 
 #endif //__ELREFBASE_H__

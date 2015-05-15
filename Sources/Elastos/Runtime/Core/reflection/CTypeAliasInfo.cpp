@@ -5,16 +5,23 @@
 #include "CTypeAliasInfo.h"
 #include "CObjInfoList.h"
 
+CTypeAliasInfo::CTypeAliasInfo(
+    /* [in] */ CClsModule * pCClsModule,
+    /* [in] */ AliasDirEntry *pAliasDirEntry)
+{
+    m_pCClsModule = pCClsModule;
+    m_pAliasDirEntry = pAliasDirEntry;
+}
+
 UInt32 CTypeAliasInfo::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CTypeAliasInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_TypeAliase);
-    Int32 nRef = atomic_dec(&m_cRef);
+    Int32 nRef = atomic_dec(&mRef);
 
     if (0 == nRef) {
         g_objInfoList.RemoveTypeAliasInfo(m_pAliasDirEntry);
@@ -46,29 +53,14 @@ ECode CTypeAliasInfo::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CTypeAliasInfo::CTypeAliasInfo(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ AliasDirEntry *pAliasDirEntry)
-{
-    m_pCClsModule = pCClsModule;
-    m_pCClsModule->AddRef();
-    m_pAliasDirEntry = pAliasDirEntry;
-    m_cRef = 0;
-}
-
-CTypeAliasInfo::~CTypeAliasInfo()
-{
-    if (m_pCClsModule) m_pCClsModule->Release();
-}
-
 ECode CTypeAliasInfo::GetName(
-    /* [out] */ StringBuf * pName)
+    /* [out] */ String * pName)
 {
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    pName->Copy(adjustNameAddr(m_pCClsModule->m_nBase, m_pAliasDirEntry->pszName));
+    *pName = adjustNameAddr(m_pCClsModule->m_nBase, m_pAliasDirEntry->pszName);
     return NOERROR;
 }
 

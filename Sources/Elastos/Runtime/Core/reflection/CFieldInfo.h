@@ -10,6 +10,11 @@
 class CFieldInfo : public IFieldInfo
 {
 public:
+    CFieldInfo(
+        /* [in] */ IStructInfo * pStructInfo,
+        /* [in] */ const String& name,
+        /* [in] */ IDataTypeInfo *pTypeInfo);
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -22,24 +27,15 @@ public:
         /* [out] */ InterfaceID *pIID);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetTypeInfo(
         /* [out] */ IDataTypeInfo ** ppTypeInfo);
 
-    CFieldInfo(
-        /* [in] */ IStructInfo * pStructInfo,
-        /* [in] */ CString name,
-        /* [in] */ IDataTypeInfo *pTypeInfo);
-
-    virtual ~CFieldInfo();
-
 private:
     IStructInfo    *m_pStructInfo;
-    String         m_sName;
+    String          m_sName;
     IDataTypeInfo  *m_pTypeInfo;
-
-    Int32          m_cRef;
 };
 
 #endif // __CFIELDINFO_H__

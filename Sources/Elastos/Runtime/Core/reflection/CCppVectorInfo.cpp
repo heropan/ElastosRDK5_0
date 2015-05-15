@@ -6,16 +6,25 @@
 #include "CObjInfoList.h"
 #include "CStructInfo.h"
 
-UInt32 CCppVectorRefInfo::AddRef()
+CCppVectorInfo::CCppVectorInfo(
+    /* [in] */ IDataTypeInfo *pElementTypeInfo,
+    /* [in] */ Int32 length)
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    m_pElementTypeInfo = pElementTypeInfo;
+    pElementTypeInfo->GetSize(&m_iSize);
+    m_iLength = length;
+    m_iSize *= m_iLength;
 }
 
-UInt32 CCppVectorRefInfo::Release()
+UInt32 CCppVectorInfo::AddRef()
+{
+    return ElLightRefBase::AddRef();
+}
+
+UInt32 CCppVectorInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_DataType);
-    Int32 nRef = atomic_dec(&m_cRef);
+    Int32 nRef = atomic_dec(&mRef);
 
     if (0 == nRef) {
         g_objInfoList.DetachCppVectorInfo(this);
@@ -26,7 +35,7 @@ UInt32 CCppVectorRefInfo::Release()
     return nRef;
 }
 
-PInterface CCppVectorRefInfo::Probe(
+PInterface CCppVectorInfo::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
@@ -43,34 +52,17 @@ PInterface CCppVectorRefInfo::Probe(
     }
 }
 
-ECode CCppVectorRefInfo::GetInterfaceID(
+ECode CCppVectorInfo::GetInterfaceID(
     /* [in] */ IInterface *pObject,
     /* [out] */ InterfaceID *pIID)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-CCppVectorRefInfo::CCppVectorRefInfo(
-    /* [in] */ IDataTypeInfo *pElementTypeInfo,
-    /* [in] */ Int32 length)
+ECode CCppVectorInfo::GetName(
+    /* [out] */ String * pName)
 {
-    m_pElementTypeInfo = pElementTypeInfo;
-    m_pElementTypeInfo->AddRef();
-    pElementTypeInfo->GetSize(&m_iSize);
-    m_iLength = length;
-    m_iSize *= m_iLength;
-    m_cRef = 0;
-}
-
-CCppVectorRefInfo::~CCppVectorRefInfo()
-{
-    if (m_pElementTypeInfo) m_pElementTypeInfo->Release();
-}
-
-ECode CCppVectorRefInfo::GetName(
-    /* [out] */ StringBuf * pName)
-{
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
@@ -82,7 +74,7 @@ ECode CCppVectorRefInfo::GetName(
     return NOERROR;
 }
 
-ECode CCppVectorRefInfo::GetSize(
+ECode CCppVectorInfo::GetSize(
     /* [out] */ MemorySize * pSize)
 {
     if (!pSize) {
@@ -94,7 +86,7 @@ ECode CCppVectorRefInfo::GetSize(
     return NOERROR;
 }
 
-ECode CCppVectorRefInfo::GetDataType(
+ECode CCppVectorInfo::GetDataType(
     /* [out] */ CarDataType * pDataType)
 {
     if (!pDataType) {
@@ -106,15 +98,16 @@ ECode CCppVectorRefInfo::GetDataType(
     return NOERROR;
 }
 
-ECode CCppVectorRefInfo::GetElementTypeInfo(
+ECode CCppVectorInfo::GetElementTypeInfo(
     /* [out] */ IDataTypeInfo ** ppElementTypeInfo)
 {
-    m_pElementTypeInfo->AddRef();
     *ppElementTypeInfo = m_pElementTypeInfo;
+    (*ppElementTypeInfo)->AddRef();
+
     return NOERROR;
 }
 
-ECode CCppVectorRefInfo::GetLength(
+ECode CCppVectorInfo::GetLength(
     /* [out] */ Int32 * pLength)
 {
     if (!pLength) {
@@ -126,14 +119,14 @@ ECode CCppVectorRefInfo::GetLength(
     return NOERROR;
 }
 
-ECode CCppVectorRefInfo::GetMaxAlignSize(
+ECode CCppVectorInfo::GetMaxAlignSize(
     /* [out] */ MemorySize * pAlignSize)
 {
     Int32 size = 1;
     CarDataType dataType;
     m_pElementTypeInfo->GetDataType(&dataType);
     if (dataType == CarDataType_Struct) {
-        ((CStructRefInfo *)m_pElementTypeInfo)->GetMaxAlignSize(&size);
+        ((CStructInfo *)m_pElementTypeInfo.Get())->GetMaxAlignSize(&size);
     }
     else {
         m_pElementTypeInfo->GetSize(&size);

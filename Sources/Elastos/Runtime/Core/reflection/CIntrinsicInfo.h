@@ -10,9 +10,15 @@
 
 _ELASTOS_NAMESPACE_USING
 
-class CIntrinsicInfo : public IDataTypeInfo
+class CIntrinsicInfo
+    : public ElLightRefBase
+    , public IDataTypeInfo
 {
 public:
+    CIntrinsicInfo(
+        /* [in] */ CarDataType dataType,
+        /* [in] */ UInt32 uSize);
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -25,7 +31,7 @@ public:
         /* [out] */ InterfaceID *pIID);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetSize(
         /* [out] */ MemorySize * pSize);
@@ -33,17 +39,9 @@ public:
     CARAPI GetDataType(
         /* [out] */ CarDataType * pDataType);
 
-    CIntrinsicInfo(
-        /* [in] */ CarDataType dataType,
-        /* [in] */ UInt32 uSize);
-
-//    virtual ~CIntrinsicInfo();
-
 private:
     CarDataType m_dataType;
     UInt32      m_uSize;
-
-    Int32       m_cRef;
 };
 
 #endif // __CINTRINSICINFO_H__

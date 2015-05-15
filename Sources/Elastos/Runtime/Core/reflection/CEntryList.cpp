@@ -11,23 +11,6 @@
 #include "CFieldInfo.h"
 #include "CClassInfo.h"
 
-UInt32 CEntryList::AddRef()
-{
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
-}
-
-UInt32 CEntryList::Release()
-{
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
-}
-
 CEntryList::CEntryList(
     /* [in] */ EntryType type,
     /* [in] */ void *pDesc,
@@ -38,7 +21,6 @@ CEntryList::CEntryList(
     /* [in] */ CClassInfo *pClsInfo)
 {
     m_pCClsModule = pCClsModule;
-    m_pCClsModule->AddRef();
     m_pClsMod = m_pCClsModule->m_pClsMod;
 
     m_type = type;
@@ -51,13 +33,10 @@ CEntryList::CEntryList(
     m_pClsInfo = pClsInfo;
 
     m_nBase = m_pCClsModule->m_nBase;
-    m_cRef = 0;
 }
 
 CEntryList::~CEntryList()
 {
-    if (m_pCClsModule) m_pCClsModule->Release();
-
     if (m_pObjElement) {
         for (UInt32 i = 0; i < m_uTotalCount; i++) {
             if (m_pObjElement[i].pObj) {
@@ -66,6 +45,16 @@ CEntryList::~CEntryList()
         }
         delete[] m_pObjElement;
     }
+}
+
+UInt32 CEntryList::AddRef()
+{
+    return ElLightRefBase::AddRef();
+}
+
+UInt32 CEntryList::Release()
+{
+    return ElLightRefBase::Release();
 }
 
 ECode CEntryList::InitElemList()
@@ -354,36 +343,34 @@ ECode CEntryList::AcquireObjByIndex(
         return ec;
     }
 
-    m_pObjElement[uIndex].pObj->AddRef();
     *ppObject = m_pObjElement[uIndex].pObj;
+    (*ppObject)->AddRef();
     return NOERROR;
 }
 
 ECode CEntryList::GetAllObjInfos(
-    /* [out] */ BufferOf<IInterface *> * pObjInfos)
+    /* [out] */ ArrayOf<IInterface *> * pObjInfos)
 {
     if (!pObjInfos) {
         return E_INVALID_ARGUMENT;
     }
 
-    Int32 nCapacity = pObjInfos->GetCapacity();
-    if (!nCapacity) {
+    Int32 nCapacity = pObjInfos->GetLength();
+    if (nCapacity == 0) {
         return E_INVALID_ARGUMENT;
     }
 
     if (!m_uTotalCount) {
-        pObjInfos->SetUsed(0);
         return NOERROR;
     }
 
     Int32 nCount = nCapacity < (int)m_uTotalCount ? nCapacity : m_uTotalCount;
-    IInterface *pObject = NULL;
     ECode ec = NOERROR;
     for (Int32 i = 0; i < nCount; i++) {
-        ec = AcquireObjByIndex(i, &pObject);
+        AutoPtr<IInterface> pObject;
+        ec = AcquireObjByIndex(i, (IInterface**)&pObject);
         if (FAILED(ec)) return ec;
-        pObjInfos->SetUsed(i + 1);
-        (*pObjInfos)[i] = pObject;
+        pObjInfos->Set(i, pObject);
     }
 
     return NOERROR;

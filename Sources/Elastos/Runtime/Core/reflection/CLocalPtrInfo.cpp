@@ -5,16 +5,25 @@
 #include "CLocalPtrInfo.h"
 #include "CObjInfoList.h"
 
+CLocalPtrInfo::CLocalPtrInfo(
+    /* [in] */ CClsModule * pCClsModule,
+    /* [in] */ TypeDescriptor *pTypeDescriptor,
+    /* [in] */ Int32 iPointer)
+{
+    m_pCClsModule = pCClsModule;
+    m_pTypeDescriptor = pTypeDescriptor;
+    m_iPointer = iPointer;
+}
+
 UInt32 CLocalPtrInfo::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CLocalPtrInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_Local);
-    Int32 nRef = atomic_dec(&m_cRef);
+    Int32 nRef = atomic_dec(&mRef);
 
     if (0 == nRef) {
         g_objInfoList.RemoveLocalPtrInfo(m_pTypeDescriptor, m_iPointer);
@@ -49,31 +58,14 @@ ECode CLocalPtrInfo::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CLocalPtrInfo::CLocalPtrInfo(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ TypeDescriptor *pTypeDescriptor,
-    /* [in] */ Int32 iPointer)
-{
-    m_pCClsModule =pCClsModule;
-    m_pCClsModule->AddRef();
-    m_pTypeDescriptor = pTypeDescriptor;
-    m_iPointer= iPointer;
-    m_cRef = 0;
-}
-
-CLocalPtrInfo::~CLocalPtrInfo()
-{
-    if (m_pCClsModule) m_pCClsModule->Release();
-}
-
 ECode CLocalPtrInfo::GetName(
-    /* [out] */ StringBuf * pName)
+    /* [out] */ String * pName)
 {
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    pName->Copy(g_cDataTypeList[CarDataType_LocalPtr].name);
+    *pName = g_cDataTypeList[CarDataType_LocalPtr].name;
     return NOERROR;
 }
 

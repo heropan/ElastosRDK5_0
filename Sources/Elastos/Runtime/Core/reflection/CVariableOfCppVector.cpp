@@ -6,21 +6,41 @@
 #include "CStructInfo.h"
 #include "CObjInfoList.h"
 
+CVariableOfCppVector::CVariableOfCppVector(
+    /* [in] */ IDataTypeInfo *pElementTypeInfo,
+    /* [in] */ Int32 length,
+    /* [in] */ PVoid pVarPtr)
+{
+    m_pElementTypeInfo = pElementTypeInfo;
+
+    m_pVarPtr = pVarPtr;
+    m_iElementSize = 0;
+    m_iLength = length;
+    m_pElementTypeInfo->GetDataType(&m_dataType);
+    m_pElementTypeInfo->GetSize(&m_iElementSize);
+    m_pCppVectorSGetters = NULL;
+
+    m_uSize = m_iLength * m_iElementSize;
+}
+
+CVariableOfCppVector::~CVariableOfCppVector()
+{
+    if (m_pCppVectorSGetters) {
+        for (Int32 i = 0; i < m_iLength; i++) {
+            if (m_pCppVectorSGetters[i]) m_pCppVectorSGetters[i]->Release();
+        }
+        delete [] m_pCppVectorSGetters;
+    }
+}
+
 UInt32 CVariableOfCppVector::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CVariableOfCppVector::Release()
 {
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
+    return ElLightRefBase::Release();
 }
 
 PInterface CVariableOfCppVector::Probe(
@@ -44,36 +64,6 @@ ECode CVariableOfCppVector::GetInterfaceID(
     /* [out] */ InterfaceID *pIID)
 {
     return E_NOT_IMPLEMENTED;
-}
-
-CVariableOfCppVector::CVariableOfCppVector(
-    /* [in] */ IDataTypeInfo *pElementTypeInfo,
-    /* [in] */ Int32 length,
-    /* [in] */ PVoid pVarPtr)
-{
-    m_pElementTypeInfo = pElementTypeInfo;
-    m_pElementTypeInfo->AddRef();
-
-    m_pVarPtr = pVarPtr;
-    m_iElementSize = 0;
-    m_iLength = length;
-    m_pElementTypeInfo->GetDataType(&m_dataType);
-    m_pElementTypeInfo->GetSize(&m_iElementSize);
-    m_pCppVectorSGetters = NULL;
-
-    m_uSize = m_iLength * m_iElementSize;
-    m_cRef = 0;
-}
-
-CVariableOfCppVector::~CVariableOfCppVector()
-{
-    if (m_pElementTypeInfo) m_pElementTypeInfo->Release();
-    if (m_pCppVectorSGetters) {
-        for (Int32 i = 0; i < m_iLength; i++) {
-            if (m_pCppVectorSGetters[i]) m_pCppVectorSGetters[i]->Release();
-        }
-        delete [] m_pCppVectorSGetters;
-    }
 }
 
 ECode CVariableOfCppVector::Init()
@@ -243,7 +233,7 @@ ECode CVariableOfCppVector::GetStructElementSetter(
         return E_INVALID_OPERATION;
     }
 
-    CStructRefInfo *pStructInfo = (CStructRefInfo *)m_pElementTypeInfo;
+    CStructInfo *pStructInfo = (CStructInfo *)m_pElementTypeInfo.Get();
 
     AutoPtr<IVariableOfStruct> pVariable;
     ECode ec = pStructInfo->CreateVariableBox(
@@ -443,7 +433,7 @@ ECode CVariableOfCppVector::GetStructElementGetter(
         return E_INVALID_OPERATION;
     }
 
-    CStructRefInfo *pStructInfo = (CStructRefInfo *)m_pElementTypeInfo;
+    CStructInfo *pStructInfo = (CStructInfo *)m_pElementTypeInfo.Get();
 
     AutoPtr<IVariableOfStruct> pVariable;
     ECode ec = pStructInfo->CreateVariableBox(
@@ -479,8 +469,8 @@ ECode CVariableOfCppVector::GetSetter(
         return E_INVALID_ARGUMENT;
     }
 
-    this->AddRef();
     *ppSetter = (ICppVectorSetter *)this;
+    (*ppSetter)->AddRef();
     return NOERROR;
 }
 
@@ -491,8 +481,8 @@ ECode CVariableOfCppVector::GetGetter(
         return E_INVALID_ARGUMENT;
     }
 
-    this->AddRef();
     *ppGetter = (ICppVectorGetter *)this;
+    (*ppGetter)->AddRef();
     return NOERROR;
 }
 
@@ -515,21 +505,21 @@ ECode CVariableOfCppVector::AcquireCppVectorSGetter(
 
     if (!m_pCppVectorSGetters[index]) {
         Int32 length = 0;
-        ECode ec = ((ICppVectorInfo *)m_pElementTypeInfo)->GetLength(&length);
+        ECode ec = ((ICppVectorInfo *)m_pElementTypeInfo.Get())->GetLength(&length);
         if (FAILED(ec)) {
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return ec;
         }
 
         AutoPtr<IDataTypeInfo> pElementTypeInfo;
-        ec = ((ICppVectorInfo *)m_pElementTypeInfo)->GetElementTypeInfo(
+        ec = ((ICppVectorInfo *)m_pElementTypeInfo.Get())->GetElementTypeInfo(
             (IDataTypeInfo **)&pElementTypeInfo);
         if (FAILED(ec)) {
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return ec;
         }
 
-        CVariableOfCppVector *pSGetter = new CVariableOfCppVector(
+        AutoPtr<CVariableOfCppVector> pSGetter = new CVariableOfCppVector(
             pElementTypeInfo, length,
             (PByte)m_pVarPtr  + m_iElementSize * index);
         if (pSGetter == NULL) {
@@ -539,7 +529,6 @@ ECode CVariableOfCppVector::AcquireCppVectorSGetter(
 
         ec = pSGetter->Init();
         if (FAILED(ec)) {
-            delete pSGetter;
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return ec;
         }
@@ -554,8 +543,8 @@ ECode CVariableOfCppVector::AcquireCppVectorSGetter(
         }
     }
 
-    m_pCppVectorSGetters[index]->AddRef();
     *ppSGetter = m_pCppVectorSGetters[index];
+    (*ppSGetter)->AddRef();
 
     g_objInfoList.UnlockHashTable(EntryType_Struct);
 

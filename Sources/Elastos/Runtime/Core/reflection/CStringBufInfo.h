@@ -5,9 +5,11 @@
 #ifndef __CSTRINGBUFINFO_H__
 #define __CSTRINGBUFINFO_H__
 
-#include <elastos.h>
+#include "refutil.h"
 
-class CStringBufInfo : public IStringBufInfo
+class CStringBufInfo
+    : public ElLightRefBase
+    , public IStringBufInfo
 {
 public:
     CARAPI_(PInterface) Probe(
@@ -22,7 +24,7 @@ public:
         /* [out] */ InterfaceID *pIID);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetSize(
         /* [out] */ MemorySize * pSize);
@@ -37,11 +39,6 @@ public:
     CARAPI CreateVariableBox(
         /* [in] */ PCarQuintet variableDescriptor,
         /* [out] */ IVariableOfStringBuf ** ppVariableBox);
-
-    CStringBufInfo():m_cRef(0){}
-
-private:
-    Int32 m_cRef;
 };
 
 #endif // __CSTRINGBUFINFO_H__

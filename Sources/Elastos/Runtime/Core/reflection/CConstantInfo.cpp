@@ -4,21 +4,21 @@
 
 #include "CConstantInfo.h"
 
+CConstantInfo::CConstantInfo(
+    /* [in] */ CClsModule * pCClsModule,
+    /* [in] */ ConstDirEntry *pConstDirEntry)
+    : m_pCClsModule(pCClsModule)
+    , m_pConstDirEntry(pConstDirEntry)
+{}
+
 UInt32 CConstantInfo::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CConstantInfo::Release()
 {
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
+    return ElLightRefBase::Release();
 }
 
 PInterface CConstantInfo::Probe(
@@ -42,29 +42,14 @@ ECode CConstantInfo::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CConstantInfo::CConstantInfo(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ ConstDirEntry *pConstDirEntry)
-{
-    m_pCClsModule = pCClsModule;
-    m_pCClsModule->AddRef();
-    m_pConstDirEntry = pConstDirEntry;
-    m_cRef = 0;
-}
-
-CConstantInfo::~CConstantInfo()
-{
-    if (m_pCClsModule) m_pCClsModule->Release();
-}
-
 ECode CConstantInfo::GetName(
-    /* [out] */ StringBuf * pName)
+    /* [out] */ String * pName)
 {
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    pName->Copy(adjustNameAddr(m_pCClsModule->m_nBase, m_pConstDirEntry->pszName));
+    *pName = adjustNameAddr(m_pCClsModule->m_nBase, m_pConstDirEntry->pszName);
     return NOERROR;
 }
 

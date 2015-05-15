@@ -7,16 +7,20 @@
 
 #include "refutil.h"
 
-class CClsModule
+class CClsModule : public ElLightRefBase
 {
 public:
+    CClsModule(
+        /* [in] */ CLSModule *pClsMod,
+        /* [in] */ Boolean bAllocedClsMod,
+        /* [in] */ const String& path,
+        /* [in] */ Void *pIModule);
+
+    ~CClsModule();
+
     CARAPI_(UInt32) AddRef();
+
     CARAPI_(UInt32) Release();
-
-    CClsModule():m_cRef(0){}
-
-    CClsModule(CLSModule *pClsMod, Boolean bAllocedClsMod,
-                    CString path, Void *pIModule);
 
     CARAPI GetModuleInfo(
         /* [out] */ IModuleInfo ** ppModuleInfo);
@@ -27,18 +31,15 @@ public:
         /* [in] */ TypeDescriptor *pTypeDype,
         /* [out] */ TypeDescriptor **ppOrgTypeDesc);
 
-    ~CClsModule();
-
+public:
     CLSModule*      m_pClsMod;
     Boolean         m_bAllocedClsMode;
     Int32           m_nBase;
 
 private:
-    TypeAliasDesc   *m_pTypeAliasList;
-    StringBuf_<_MAX_PATH>  m_sbPath;
-    Void         *m_pIModule;
-
-    Int32           m_cRef;
+    TypeAliasDesc  *m_pTypeAliasList;
+    String          m_sbPath;
+    Void           *m_pIModule;
 };
 
 #endif // __CCLSMODULE_H__

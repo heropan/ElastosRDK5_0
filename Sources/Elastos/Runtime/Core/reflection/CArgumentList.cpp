@@ -6,21 +6,27 @@
 #include "CMethodInfo.h"
 #include "CConstructorInfo.h"
 
+CArgumentList::CArgumentList()
+    : m_pParamBuf(NULL)
+    , m_pParamElem(NULL)
+    , m_uParamCount(0)
+    , m_uParamBufSize(0)
+    , m_bMethodInfo(FALSE)
+{}
+
+CArgumentList::~CArgumentList()
+{
+    if (m_pParamBuf) free(m_pParamBuf);
+}
+
 UInt32 CArgumentList::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CArgumentList::Release()
 {
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
+    return ElLightRefBase::Release();
 }
 
 PInterface CArgumentList::Probe(
@@ -44,21 +50,6 @@ ECode CArgumentList::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CArgumentList::CArgumentList()
-{
-    m_pParamElem = 0;
-    m_uParamCount = 0;
-    m_pParamBuf = NULL;
-    m_pFunctionInfo = NULL;
-    m_cRef = 0;
-}
-
-CArgumentList::~CArgumentList()
-{
-    if (m_pParamBuf) free(m_pParamBuf);
-    if (m_pFunctionInfo) m_pFunctionInfo->Release();
-}
-
 ECode CArgumentList::Init(
     /* [in] */ IFunctionInfo *pFunctionInfo,
     /* [in] */ ParmElement *pParamElem,
@@ -77,7 +68,6 @@ ECode CArgumentList::Init(
     m_uParamBufSize = uParamBufSize;
     memset(m_pParamBuf, 0, uParamBufSize);
     m_pFunctionInfo = pFunctionInfo;
-    m_pFunctionInfo->AddRef();
 
     m_bMethodInfo = bMethodInfo;
 
@@ -90,8 +80,8 @@ ECode CArgumentList::GetFunctionInfo(
     if (!ppFunctionInfo) {
         return E_INVALID_ARGUMENT;
     }
-    m_pFunctionInfo->AddRef();
     *ppFunctionInfo = m_pFunctionInfo;
+    (*ppFunctionInfo)->AddRef();
     return NOERROR;
 }
 
@@ -301,10 +291,10 @@ ECode CArgumentList::SetInputArgumentOfObjectPtr(
         CMethodInfo *pMethodInfo = NULL;
         ECode ec = NOERROR;
         if (m_bMethodInfo) {
-            pMethodInfo = (CMethodInfo *)m_pFunctionInfo;
+            pMethodInfo = (CMethodInfo *)m_pFunctionInfo.Get();
         }
         else {
-            pMethodInfo = ((CConstructorInfo *)m_pFunctionInfo)->m_pMethodInfo;
+            pMethodInfo = ((CConstructorInfo *)m_pFunctionInfo.Get())->m_pMethodInfo;
         }
 
         Int32 nBase = pMethodInfo->m_pCClsModule->m_nBase;

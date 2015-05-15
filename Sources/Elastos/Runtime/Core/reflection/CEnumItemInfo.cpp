@@ -5,6 +5,15 @@
 #include "CEnumItemInfo.h"
 #include "CEnumInfo.h"
 
+CEnumItemInfo::CEnumItemInfo(
+    /* [in] */ IEnumInfo * pEnumInfo,
+    /* [in] */ const String& name,
+    /* [in] */ Int32 value)
+    : m_pEnumInfo(pEnumInfo)
+    , m_sName(name)
+    , m_iValue(value)
+{}
+
 UInt32 CEnumItemInfo::AddRef()
 {
     return m_pEnumInfo->AddRef();
@@ -36,29 +45,14 @@ ECode CEnumItemInfo::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CEnumItemInfo::CEnumItemInfo(
-    /* [in] */ IEnumInfo * pEnumInfo,
-    /* [in] */ CString name,
-    /* [in] */ Int32 value)
-{
-    m_pEnumInfo = pEnumInfo;
-    m_sName = name;
-    m_iValue = value;
-    m_cRef = 0;
-}
-
-CEnumItemInfo::~CEnumItemInfo()
-{
-}
-
 ECode CEnumItemInfo::GetName(
-    /* [out] */ StringBuf * pName)
+    /* [out] */ String * pName)
 {
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    pName->Copy(m_sName);
+    *pName = m_sName;
     return NOERROR;
 }
 
@@ -69,8 +63,8 @@ ECode CEnumItemInfo::GetEnumInfo(
         return E_INVALID_ARGUMENT;
     }
 
-    m_pEnumInfo->AddRef();
     *ppEnumInfo = m_pEnumInfo;
+    (*ppEnumInfo)->AddRef();
     return NOERROR;
 }
 

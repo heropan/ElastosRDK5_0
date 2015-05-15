@@ -7,9 +7,15 @@
 
 #include "CClsModule.h"
 
-class CTypeAliasInfo : public ITypeAliasInfo
+class CTypeAliasInfo
+    : public ElLightRefBase
+    , public ITypeAliasInfo
 {
 public:
+    CTypeAliasInfo(
+        /* [in] */ CClsModule * pCClsModule,
+        /* [in] */ AliasDirEntry *pAliasDirEntry);
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -22,7 +28,7 @@ public:
         /* [out] */ InterfaceID *pIID);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetTypeInfo(
         /* [out] */ IDataTypeInfo ** ppTypeInfo);
@@ -36,17 +42,9 @@ public:
     CARAPI GetPtrLevel(
         /* [out] */ Int32 *pLevel);
 
-    CTypeAliasInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ AliasDirEntry *pAliasDirEntry);
-
-    virtual ~CTypeAliasInfo();
-
 private:
-    CClsModule     *m_pCClsModule;
-    AliasDirEntry  *m_pAliasDirEntry;
-
-    Int32 m_cRef;
+    AutoPtr<CClsModule>  m_pCClsModule;
+    AliasDirEntry       *m_pAliasDirEntry;
 };
 
 #endif // __CTYPEALIASINFO_H__

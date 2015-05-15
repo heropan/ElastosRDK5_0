@@ -21,16 +21,44 @@ struct VObject
     VTable* vtab;
 };
 
+CMethodInfo::CMethodInfo(
+    /* [in] */ CClsModule * pCClsModule,
+    /* [in] */ MethodDescriptor *pMethodDescriptor,
+    /* [in] */ UInt32 uIndex)
+{
+    m_pMethodDescriptor = pMethodDescriptor;
+    m_uIndex = uIndex;
+    m_pCClsModule = pCClsModule;
+    m_pClsMod = m_pCClsModule->m_pClsMod;
+    m_pParamElem = NULL;
+    m_pParameterInfos = NULL;
+    m_nBase = m_pCClsModule->m_nBase;
+}
+
+CMethodInfo::~CMethodInfo()
+{
+    Int32 count = m_pMethodDescriptor->cParams;
+    if (m_pParameterInfos) {
+        for (Int32 i = 0; i < count; i++) {
+            if ((*m_pParameterInfos)[i]) delete (*m_pParameterInfos)[i];
+        }
+        ArrayOf<IParamInfo *>::Free(m_pParameterInfos);
+    }
+
+    if (m_pParamElem) {
+        delete [] m_pParamElem;
+    }
+}
+
 UInt32 CMethodInfo::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CMethodInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_Method);
-    Int32 nRef = atomic_dec(&m_cRef);
+    Int32 nRef = atomic_dec(&mRef);
 
     if (0 == nRef) {
         g_objInfoList.RemoveMethodInfo(m_pMethodDescriptor, m_uIndex);
@@ -65,58 +93,22 @@ ECode CMethodInfo::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CMethodInfo::CMethodInfo(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ MethodDescriptor *pMethodDescriptor,
-    /* [in] */ UInt32 uIndex)
-{
-    m_pMethodDescriptor = pMethodDescriptor;
-    m_uIndex = uIndex;
-    m_pCClsModule = pCClsModule;
-    m_pCClsModule->AddRef();
-    m_pClsMod = m_pCClsModule->m_pClsMod;
-    m_pParamElem = NULL;
-    m_pParameterInfos = NULL;
-    m_nBase = m_pCClsModule->m_nBase;
-    m_cRef = 0;
-}
-
-CMethodInfo::~CMethodInfo()
-{
-    Int32 i = 0, count = m_pMethodDescriptor->cParams;
-    if (m_pParameterInfos) {
-        for(i = 0; i < count; i++) {
-            if ((*m_pParameterInfos)[i]) delete (*m_pParameterInfos)[i];
-        }
-        BufferOf<IParamInfo *>::Free(m_pParameterInfos);
-    }
-
-    if (m_pParamElem) {
-        delete [] m_pParamElem;
-    }
-
-    if (m_pCClsModule) m_pCClsModule->Release();
-}
-
 ECode CMethodInfo::Init()
 {
     ECode ec = InitParmElement();
     if (FAILED(ec)) return ec;
 
-    ec = InitParamInfos();
-    if (FAILED(ec)) return ec;
-
-    return NOERROR;
+    return InitParamInfos();
 }
 
 ECode CMethodInfo::GetName(
-    /* [out] */ StringBuf * pName)
+    /* [out] */ String * pName)
 {
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    pName->Copy(adjustNameAddr(m_nBase, m_pMethodDescriptor->pszName));
+    *pName = adjustNameAddr(m_nBase, m_pMethodDescriptor->pszName);
 
     return NOERROR;
 }
@@ -133,16 +125,13 @@ ECode CMethodInfo::GetParamCount(
 }
 
 ECode CMethodInfo::GetAllParamInfos(
-    /* [out] */ BufferOf<IParamInfo *> * pParamInfos)
+    /* [out] */ ArrayOf<IParamInfo *> * pParamInfos)
 {
-    if (!pParamInfos || !pParamInfos->GetCapacity()) {
+    if (!pParamInfos || !pParamInfos->GetLength()) {
         return E_INVALID_ARGUMENT;
     }
 
     pParamInfos->Copy(m_pParameterInfos);
-    for (Int32 i = 0; i < pParamInfos->GetUsed(); i++) {
-        (*pParamInfos)[i]->AddRef();
-    }
 
     return NOERROR;
 }
@@ -155,7 +144,7 @@ ECode CMethodInfo::GetParamInfoByIndex(
         return E_INVALID_ARGUMENT;
     }
 
-    if (index >= m_pParameterInfos->GetUsed()) {
+    if (index >= m_pParameterInfos->GetLength()) {
         return E_DOES_NOT_EXIST;
     }
 
@@ -299,14 +288,14 @@ EExit:
 ECode CMethodInfo::InitParamInfos()
 {
     Int32 i = 0, count = m_pMethodDescriptor->cParams;
-    m_pParameterInfos = BufferOf<IParamInfo *>::Alloc(count);
+    m_pParameterInfos = ArrayOf<IParamInfo *>::Alloc(count);
     if (m_pParameterInfos == NULL) {
         return E_OUT_OF_MEMORY;
     }
-    memset(m_pParameterInfos->GetPayload(), 0, count * sizeof(PInterface));
-    m_pParameterInfos->SetUsed(count);
 
-    for(i = 0; i < count; i++) {
+    for (i = 0; i < count; i++) {
+        // do not use m_pParameterInfos->Set(i, xxx), because it will
+        // call xxx->AddRef()
         (*m_pParameterInfos)[i] = new CParamInfo(m_pCClsModule, this,
                 &m_pParamElem[i],
                 getParamDescAddr(m_nBase, m_pMethodDescriptor->ppParams, i),
@@ -317,10 +306,10 @@ ECode CMethodInfo::InitParamInfos()
     return NOERROR;
 
 EExit:
-    for(i = 0; i < count; i++) {
+    for (i = 0; i < count; i++) {
         if ((*m_pParameterInfos)[i]) delete (*m_pParameterInfos)[i];
     }
-    BufferOf<IParamInfo *>::Free(m_pParameterInfos);
+    ArrayOf<IParamInfo *>::Free(m_pParameterInfos);
     m_pParameterInfos = NULL;
 
     return NOERROR;
@@ -339,7 +328,7 @@ ECode CMethodInfo::CreateFunctionArgumentList(
         return E_INVALID_OPERATION;
     }
 
-    CArgumentList *pArgumentList = new CArgumentList();
+    AutoPtr<CArgumentList> pArgumentList = new CArgumentList();
     if (pArgumentList == NULL) {
         return E_OUT_OF_MEMORY;
     }
@@ -351,12 +340,11 @@ ECode CMethodInfo::CreateFunctionArgumentList(
     ECode ec = pArgumentList->Init(pFunctionInfo, m_pParamElem,
                     m_pMethodDescriptor->cParams, m_uParamBufSize, bMethodInfo);
     if FAILED(ec) {
-        delete pArgumentList;
         return ec;
     }
 
-    pArgumentList->AddRef();
     *ppArgumentList = pArgumentList;
+    (*ppArgumentList)->AddRef();
 
     return NOERROR;
 }
@@ -365,7 +353,7 @@ ECode CMethodInfo::CreateCBArgumentList(
     /* [in] */ ICallbackMethodInfo *pCallbackMethodInfo,
     /* [out] */ ICallbackArgumentList ** ppCBArgumentList)
 {
-    CCallbackArgumentList *pCBArgumentList = new CCallbackArgumentList();
+    AutoPtr<CCallbackArgumentList> pCBArgumentList = new CCallbackArgumentList();
     if (pCBArgumentList == NULL) {
         return E_OUT_OF_MEMORY;
     }
@@ -393,12 +381,11 @@ The GCC4 is 64-bit types (like long long) alignment and m_pHandlerThis(4-Byte)
     ECode ec = pCBArgumentList->Init(pCallbackMethodInfo, m_pParamElem,
                         m_pMethodDescriptor->cParams, m_uParamBufSize);
     if FAILED(ec) {
-        delete pCBArgumentList;
         return ec;
     }
 
-    pCBArgumentList->AddRef();
     *ppCBArgumentList = pCBArgumentList;
+    (*ppCBArgumentList)->AddRef();
 
     return NOERROR;
 }
@@ -444,4 +431,3 @@ ECode CMethodInfo::Invoke(
     void* pMethodAddr = vobj->vtab->methods[METHOD_INDEX(m_uIndex)];
     return (ECode)invoke(pMethodAddr, pParamBuf,  m_uParamBufSize);
 }
-

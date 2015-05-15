@@ -6,19 +6,12 @@
 
 UInt32 CConstructorInfo::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CConstructorInfo::Release()
 {
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
+    return ElLightRefBase::Release();
 }
 
 PInterface CConstructorInfo::Probe(
@@ -45,11 +38,6 @@ ECode CConstructorInfo::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CConstructorInfo::~CConstructorInfo()
-{
-    if (m_pMethodInfo) m_pMethodInfo->Release();
-}
-
 ECode CConstructorInfo::Init(
     /* [in] */ CClsModule * pCClsModule,
     /* [in] */ MethodDescriptor *pMethodDescriptor,
@@ -70,7 +58,7 @@ ECode CConstructorInfo::Init(
 }
 
 ECode CConstructorInfo::GetName(
-    /* [out] */ StringBuf * pName)
+    /* [out] */ String * pName)
 {
     return m_pMethodInfo->GetName(pName);
 }
@@ -86,7 +74,7 @@ ECode CConstructorInfo::GetParamCount(
 }
 
 ECode CConstructorInfo::GetAllParamInfos(
-    /* [out] */ BufferOf<IParamInfo *> * pParamInfos)
+    /* [out] */ ArrayOf<IParamInfo *> * pParamInfos)
 {
     return m_pMethodInfo->GetAllParamInfos(pParamInfos);
 }

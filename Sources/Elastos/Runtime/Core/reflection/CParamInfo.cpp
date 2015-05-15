@@ -7,6 +7,20 @@
 #include "CLocalPtrInfo.h"
 #include "CLocalTypeInfo.h"
 
+CParamInfo::CParamInfo(
+    /* [in] */ CClsModule *pCClsModule,
+    /* [in] */ IMethodInfo *pMethodInfo,
+    /* [in] */ ParmElement *pParmElement,
+    /* [in] */ ParamDescriptor *pParamDescriptor,
+    /* [in] */ Int32 iIndex)
+{
+    m_pCClsModule = pCClsModule;
+    m_pMethodInfo = pMethodInfo;
+    m_pParmElement = pParmElement;
+    m_pParamDescriptor = pParamDescriptor;
+    m_iIndex = iIndex;
+}
+
 UInt32 CParamInfo::AddRef()
 {
     return m_pMethodInfo->AddRef();
@@ -38,25 +52,6 @@ ECode CParamInfo::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CParamInfo::CParamInfo(
-    /* [in] */ CClsModule *pCClsModule,
-    /* [in] */ IMethodInfo *pMethodInfo,
-    /* [in] */ ParmElement *pParmElement,
-    /* [in] */ ParamDescriptor *pParamDescriptor,
-    /* [in] */ Int32 iIndex)
-{
-    m_pCClsModule = pCClsModule;
-    m_pMethodInfo = pMethodInfo;
-    m_pParmElement = pParmElement;
-    m_pParamDescriptor = pParamDescriptor;
-    m_iIndex = iIndex;
-    m_cRef = 0;
-}
-
-CParamInfo::~CParamInfo()
-{
-}
-
 ECode CParamInfo::GetMethodInfo(
     /* [out] */ IMethodInfo ** ppMethodInfo)
 {
@@ -64,20 +59,20 @@ ECode CParamInfo::GetMethodInfo(
         return E_INVALID_ARGUMENT;
     }
 
-    m_pMethodInfo->AddRef();
     *ppMethodInfo = m_pMethodInfo;
+    (*ppMethodInfo)->AddRef();
 
     return NOERROR;
 }
 
 ECode CParamInfo::GetName(
-    /* [out] */ StringBuf * pName)
+    /* [out] */ String * pName)
 {
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    pName->Copy(adjustNameAddr(m_pCClsModule->m_nBase, m_pParamDescriptor->pszName));
+    *pName = adjustNameAddr(m_pCClsModule->m_nBase, m_pParamDescriptor->pszName);
     return NOERROR;
 }
 

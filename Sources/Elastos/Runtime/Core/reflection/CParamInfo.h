@@ -10,6 +10,13 @@
 class CParamInfo : public IParamInfo
 {
 public:
+    CParamInfo(
+        /* [in] */ CClsModule *pCClsModule,
+        /* [in] */ IMethodInfo *pMethodInfo,
+        /* [in] */ ParmElement *pParmElement,
+        /* [in] */ ParamDescriptor *pParamDescriptor,
+        /* [in] */ Int32 iIndex);
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -25,7 +32,7 @@ public:
         /* [out] */ IMethodInfo ** ppMethodInfo);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetIndex(
         /* [out] */ Int32 * pIndex);
@@ -48,29 +55,18 @@ public:
     CARAPI GetUsedTypeAliasInfo(
         /* [out] */ ITypeAliasInfo ** ppUsedTypeAliasInfo);
 
-    CParamInfo(
-        /* [in] */ CClsModule *pCClsModule,
-        /* [in] */ IMethodInfo *pMethodInfo,
-        /* [in] */ ParmElement *pParmElement,
-        /* [in] */ ParamDescriptor *pParamDescriptor,
-        /* [in] */ Int32 iIndex);
-
-    virtual ~CParamInfo();
-
 private:
-    CClsModule      *m_pCClsModule;
-    ParamDescriptor *m_pParamDescriptor;
-    TypeDescriptor  *m_pTypeDescriptor;
+    CClsModule       *m_pCClsModule;
+    ParamDescriptor  *m_pParamDescriptor;
+    TypeDescriptor   *m_pTypeDescriptor;
 
-    MethodDescriptor   *m_pMethodDescriptor;
+    MethodDescriptor *m_pMethodDescriptor;
 
-    IMethodInfo     *m_pMethodInfo;
-    ParmElement     *m_pParmElement;
+    IMethodInfo      *m_pMethodInfo;
+    ParmElement      *m_pParmElement;
 
-    Int32              m_iIndex;
-    UInt32              m_uPointer;
-
-    Int32  m_cRef;
+    Int32             m_iIndex;
+    UInt32            m_uPointer;
 };
 
 #endif // __CPARAMINFO_H__

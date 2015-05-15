@@ -6,24 +6,27 @@
 #include "CEntryList.h"
 #include <dlfcn.h>
 
-UInt32 CClsModule::AddRef()
+CClsModule::CClsModule(
+    /* [in] */ CLSModule *pClsMod,
+    /* [in] */ Boolean bAllocedClsMod,
+    /* [in] */ const String& path,
+    /* [in] */ Void *pIModule)
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
-}
-
-UInt32 CClsModule::Release()
-{
-    g_objInfoList.LockHashTable(EntryType_ClsModule);
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        g_objInfoList.RemoveClsModule(m_sbPath);
-        delete this;
+    m_pClsMod = pClsMod;
+    m_bAllocedClsMode = bAllocedClsMod;
+    m_sbPath = path;
+    m_pTypeAliasList = NULL;
+    m_pIModule = NULL;
+    if (!m_bAllocedClsMode && pIModule) {
+        m_pIModule = pIModule;
     }
-    g_objInfoList.UnlockHashTable(EntryType_ClsModule);
-    assert(nRef >= 0);
-    return nRef;
+
+    if (bAllocedClsMod) {
+        m_nBase = 0;
+    }
+    else {
+        m_nBase = Int32(pClsMod);
+    }
 }
 
 CClsModule::~CClsModule()
@@ -45,23 +48,23 @@ CClsModule::~CClsModule()
     }
 }
 
-CClsModule::CClsModule(CLSModule *pClsMod, Boolean bAllocedClsMod,
-                CString path, Void *pIModule)
+UInt32 CClsModule::AddRef()
 {
-    m_pClsMod = pClsMod;
-    m_bAllocedClsMode = bAllocedClsMod;
-    m_sbPath.Copy(path);
-    m_pTypeAliasList = NULL;
-    m_pIModule = NULL;
-    m_cRef = 0;
-    if (!m_bAllocedClsMode && pIModule) {
-        m_pIModule = pIModule;
-   }
+    return ElLightRefBase::AddRef();
+}
 
-    if (bAllocedClsMod)
-        m_nBase = 0;
-    else
-        m_nBase = Int32(pClsMod);
+UInt32 CClsModule::Release()
+{
+    g_objInfoList.LockHashTable(EntryType_ClsModule);
+    Int32 nRef = atomic_dec(&mRef);
+
+    if (0 == nRef) {
+        g_objInfoList.RemoveClsModule(m_sbPath);
+        delete this;
+    }
+    g_objInfoList.UnlockHashTable(EntryType_ClsModule);
+    assert(nRef >= 0);
+    return nRef;
 }
 
 ECode CClsModule::GetModuleInfo(
@@ -71,7 +74,7 @@ ECode CClsModule::GetModuleInfo(
         return E_INVALID_ARGUMENT;
     }
 
-    return _CReflector_AcquireModuleInfo(adjustNameAddr(this->m_nBase, m_pClsMod->pszUunm), ppModuleInfo);
+    return _CReflector_AcquireModuleInfo(String(adjustNameAddr(this->m_nBase, m_pClsMod->pszUunm)), ppModuleInfo);
 }
 
 ECode CClsModule::InitOrgType()
@@ -80,7 +83,7 @@ ECode CClsModule::InitOrgType()
         return NOERROR;
     }
 
-    int i = 0;
+    Int32 i = 0;
     m_pTypeAliasList = new TypeAliasDesc[m_pClsMod->cAliases];
     if (!m_pTypeAliasList) {
         return E_OUT_OF_MEMORY;
@@ -140,5 +143,6 @@ ECode CClsModule::AliasToOriginal(
     }
 
     *ppOrgTypeDesc = m_pTypeAliasList[pTypeDype->sIndex].pOrgTypeDesc;
+
     return NOERROR;
 }

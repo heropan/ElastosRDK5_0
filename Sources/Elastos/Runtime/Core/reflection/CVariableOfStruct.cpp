@@ -6,21 +6,34 @@
 #include "CStructInfo.h"
 #include "CVariableOfCppVector.h"
 
+CVariableOfStruct::CVariableOfStruct()
+{
+    m_pVarBuf = NULL;
+    m_bAlloc = FALSE;
+    m_uVarSize = 0;
+    m_iCount = 0;
+    m_pCppVectorSGetters = NULL;
+}
+
+CVariableOfStruct::~CVariableOfStruct()
+{
+    if (m_bAlloc && m_pVarBuf) free(m_pVarBuf);
+    if (m_pCppVectorSGetters) {
+        for (Int32 i = 0; i < m_iCount; i++) {
+            if (m_pCppVectorSGetters[i]) m_pCppVectorSGetters[i]->Release();
+        }
+        delete [] m_pCppVectorSGetters;
+    }
+}
+
 UInt32 CVariableOfStruct::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CVariableOfStruct::Release()
 {
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
+    return ElLightRefBase::Release();
 }
 
 PInterface CVariableOfStruct::Probe(
@@ -48,29 +61,6 @@ ECode CVariableOfStruct::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CVariableOfStruct::CVariableOfStruct()
-{
-    m_pVarBuf = NULL;
-    m_bAlloc = FALSE;
-    m_pStructInfo = NULL;
-    m_uVarSize = 0;
-    m_iCount = 0;
-    m_pCppVectorSGetters = NULL;
-    m_cRef = 0;
-}
-
-CVariableOfStruct::~CVariableOfStruct()
-{
-    if (m_pStructInfo) m_pStructInfo->Release();
-    if (m_bAlloc && m_pVarBuf) free(m_pVarBuf);
-    if (m_pCppVectorSGetters) {
-        for (Int32 i = 0; i < m_iCount; i++) {
-            if (m_pCppVectorSGetters[i]) m_pCppVectorSGetters[i]->Release();
-        }
-        delete [] m_pCppVectorSGetters;
-    }
-}
-
 ECode CVariableOfStruct::Init(
     /* [in] */ IStructInfo *pStructInfo,
     /* [in] */ PVoid pVarBuf)
@@ -79,9 +69,8 @@ ECode CVariableOfStruct::Init(
     if (FAILED(ec)) return ec;
 
     m_pStructInfo = pStructInfo;
-    m_pStructInfo->AddRef();
-    m_pStructFieldDesc = ((CStructRefInfo *)m_pStructInfo)->m_pStructFieldDesc;
-    m_uVarSize = ((CStructRefInfo *)m_pStructInfo)->m_uSize;
+    m_pStructFieldDesc = ((CStructInfo *)m_pStructInfo.Get())->m_pStructFieldDesc;
+    m_uVarSize = ((CStructInfo *)m_pStructInfo.Get())->m_uSize;
     if (!pVarBuf) {
         m_pVarBuf = (PByte)malloc(m_uVarSize);
         if (m_pVarBuf == NULL) {
@@ -115,7 +104,7 @@ ECode CVariableOfStruct::GetTypeInfo(
     }
 
     *ppTypeInfo = m_pStructInfo;
-    m_pStructInfo->AddRef();
+    (*ppTypeInfo)->AddRef();
     return NOERROR;
 }
 
@@ -165,8 +154,8 @@ ECode CVariableOfStruct::GetSetter(
         return E_INVALID_ARGUMENT;
     }
 
-    this->AddRef();
     *ppSetter = (IStructSetter *)this;
+    (*ppSetter)->AddRef();
 
     return NOERROR;
 }
@@ -178,8 +167,9 @@ ECode CVariableOfStruct::GetGetter(
         return E_INVALID_ARGUMENT;
     }
 
-    this->AddRef();
     *ppGetter = (IStructGetter *)this;
+    (*ppGetter)->AddRef();
+
     return NOERROR;
 }
 

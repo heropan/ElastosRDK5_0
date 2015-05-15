@@ -56,7 +56,7 @@ ELAPI _CSystem_QueryPerformanceFrequency(
 #include <callback.h>
 
 ELAPI _CReflector_AcquireModuleInfo(
-    /* [in] */ _ELASTOS CString name,
+    /* [in] */ const _ELASTOS String& name,
     /* [out] */ IModuleInfo **piModuleInfo);
 
 ELAPI _CReflector_AcquireIntrinsicTypeInfo(
@@ -65,16 +65,16 @@ ELAPI _CReflector_AcquireIntrinsicTypeInfo(
 
 #ifdef __cplusplus
 ELAPI _CReflector_AcquireEnumInfo(
-    /* [in] */ _ELASTOS CString name,
-    /* [in] */ const _ELASTOS BufferOf<_ELASTOS CString> *pItemNames,
-    /* [in] */ const _ELASTOS BufferOf<_ELASTOS Int32> *pItemValues,
+    /* [in] */ const _ELASTOS String& name,
+    /* [in] */ _ELASTOS ArrayOf<_ELASTOS String> *pItemNames,
+    /* [in] */ _ELASTOS ArrayOf<_ELASTOS Int32> *pItemValues,
     /* [out] */ IEnumInfo **ppEnumInfo);
 
 
 ELAPI _CReflector_AcquireStructInfo(
-    /* [in] */ _ELASTOS CString name,
-    /* [in] */ const _ELASTOS BufferOf<_ELASTOS CString> *pFieldNames,
-    /* [in] */ const _ELASTOS BufferOf<IDataTypeInfo *> *pFieldTypeInfos,
+    /* [in] */ const _ELASTOS String& name,
+    /* [in] */ _ELASTOS ArrayOf<_ELASTOS String> *pFieldNames,
+    /* [in] */ _ELASTOS ArrayOf<IDataTypeInfo *> *pFieldTypeInfos,
     /* [out] */ IStructInfo **ppStructInfo);
 #else
 

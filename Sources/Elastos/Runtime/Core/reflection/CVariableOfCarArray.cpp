@@ -6,21 +6,42 @@
 #include "CStructInfo.h"
 #include "CObjInfoList.h"
 
+CVariableOfCarArray::CVariableOfCarArray(
+    /* [in] */ ICarArrayInfo *pTypeInfo,
+    /* [in] */ PCarQuintet pCq,
+    /* [in] */ Boolean bAlloc)
+{
+    m_pCarArrayInfo = pTypeInfo;
+
+    m_pCq = pCq;
+    m_bAlloc = bAlloc;
+    m_iElementSize = 0;
+    m_iLength = 0;
+
+    AutoPtr<IDataTypeInfo> pElementTypeInfo;
+    m_pCarArrayInfo->GetElementTypeInfo((IDataTypeInfo**)&pElementTypeInfo);
+    assert(pElementTypeInfo);
+    pElementTypeInfo->GetDataType(&m_dataType);
+    pElementTypeInfo->GetSize(&m_iElementSize);
+    assert(m_iElementSize);
+    m_iLength = pCq->m_size / m_iElementSize;
+}
+
+CVariableOfCarArray::~CVariableOfCarArray()
+{
+    if (m_bAlloc && m_pCq) {
+        free(m_pCq);
+    }
+}
+
 UInt32 CVariableOfCarArray::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CVariableOfCarArray::Release()
 {
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
+    return ElLightRefBase::Release();
 }
 
 PInterface CVariableOfCarArray::Probe(
@@ -50,38 +71,6 @@ ECode CVariableOfCarArray::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CVariableOfCarArray::CVariableOfCarArray(
-    /* [in] */ ICarArrayInfo *pTypeInfo,
-    /* [in] */ PCarQuintet pCq,
-    /* [in] */ Boolean bAlloc)
-{
-    m_pCarArrayInfo = pTypeInfo;
-    m_pCarArrayInfo->AddRef();
-
-    m_pCq = pCq;
-    m_bAlloc = bAlloc;
-    m_iElementSize = 0;
-    m_iLength = 0;
-
-    AutoPtr<IDataTypeInfo> pElementTypeInfo;
-    m_pCarArrayInfo->GetElementTypeInfo((IDataTypeInfo**)&pElementTypeInfo);
-    assert(pElementTypeInfo);
-    pElementTypeInfo->GetDataType(&m_dataType);
-    pElementTypeInfo->GetSize(&m_iElementSize);
-    assert(m_iElementSize);
-    m_iLength = pCq->m_size / m_iElementSize;
-    m_cRef = 0;
-}
-
-CVariableOfCarArray::~CVariableOfCarArray()
-{
-    if (m_bAlloc && m_pCq) {
-        free(m_pCq);
-    }
-
-    if (m_pCarArrayInfo) m_pCarArrayInfo->Release();
-}
-
 ECode CVariableOfCarArray::GetTypeInfo(
     /* [out] */ IDataTypeInfo ** ppTypeInfo)
 {
@@ -89,8 +78,8 @@ ECode CVariableOfCarArray::GetTypeInfo(
         return E_INVALID_ARGUMENT;
     }
 
-    m_pCarArrayInfo->AddRef();
     *ppTypeInfo = m_pCarArrayInfo;
+    REFCOUNT_ADDREF(*ppTypeInfo);
     return NOERROR;
 }
 
@@ -131,8 +120,8 @@ ECode CVariableOfCarArray::GetSetter(
         return E_INVALID_ARGUMENT;
     }
 
-    this->AddRef();
     *ppSetter = (ICarArraySetter *)this;
+    (*ppSetter)->AddRef();
     return NOERROR;
 }
 
@@ -143,9 +132,8 @@ ECode CVariableOfCarArray::GetGetter(
         return E_INVALID_ARGUMENT;
     }
 
-    this->AddRef();
     *ppGetter = (ICarArrayGetter *)this;
-
+    (*ppGetter)->AddRef();
     return NOERROR;
 }
 
@@ -320,7 +308,7 @@ ECode CVariableOfCarArray::GetStructElementSetter(
         return ec;
     }
 
-    CStructRefInfo *pStructInfo = (CStructRefInfo *)pElementTypeInfo.Get();
+    CStructInfo *pStructInfo = (CStructInfo *)pElementTypeInfo.Get();
 
     AutoPtr<IVariableOfStruct> pVariable;
     ec = pStructInfo->CreateVariableBox(
@@ -527,7 +515,7 @@ ECode CVariableOfCarArray::GetStructElementGetter(
         return ec;
     }
 
-    CStructRefInfo *pStructInfo = (CStructRefInfo *)pElementTypeInfo.Get();
+    CStructInfo *pStructInfo = (CStructInfo *)pElementTypeInfo.Get();
 
     AutoPtr<IVariableOfStruct> pVariable;
     ec = pStructInfo->CreateVariableBox(

@@ -4,21 +4,26 @@
 
 #include "CCallbackArgumentList.h"
 
+CCallbackArgumentList::CCallbackArgumentList()
+    : m_pParamBuf(NULL)
+    , m_uParamBufSize(0)
+    , m_pParamElem(NULL)
+    , m_uParamCount(0)
+{}
+
+CCallbackArgumentList::~CCallbackArgumentList()
+{
+    if (m_pParamBuf) free(m_pParamBuf);
+}
+
 UInt32 CCallbackArgumentList::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CCallbackArgumentList::Release()
 {
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
+    return ElLightRefBase::Release();
 }
 
 PInterface  CCallbackArgumentList::Probe(
@@ -42,21 +47,6 @@ ECode CCallbackArgumentList::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CCallbackArgumentList::CCallbackArgumentList()
-{
-    m_pParamElem = 0;
-    m_uParamCount = 0;
-    m_pParamBuf = NULL;
-    m_pCallbackMethodInfo = NULL;
-    m_cRef = 0;
-}
-
-CCallbackArgumentList::~CCallbackArgumentList()
-{
-    if (m_pParamBuf) free(m_pParamBuf);
-    if (m_pCallbackMethodInfo) m_pCallbackMethodInfo->Release();
-}
-
 ECode CCallbackArgumentList::Init(
     /* [in] */ ICallbackMethodInfo *pCallbackMethodInfo,
     /* [in] */ ParmElement *pParamElem,
@@ -73,7 +63,6 @@ ECode CCallbackArgumentList::Init(
     memset(m_pParamBuf, 0, uParamBufSize);
     m_uParamBufSize = uParamBufSize;
     m_pCallbackMethodInfo = pCallbackMethodInfo;
-    m_pCallbackMethodInfo->AddRef();
 
     return NOERROR;
 }
@@ -84,8 +73,8 @@ ECode CCallbackArgumentList::GetCallbackMethodInfo(
     if (!ppCallbackMethodInfo) {
         return E_INVALID_ARGUMENT;
     }
-    m_pCallbackMethodInfo->AddRef();
     *ppCallbackMethodInfo = m_pCallbackMethodInfo;
+    (*ppCallbackMethodInfo)->AddRef();
 
     return NOERROR;
 }

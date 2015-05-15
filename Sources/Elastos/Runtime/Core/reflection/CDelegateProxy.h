@@ -7,9 +7,17 @@
 
 #include "refutil.h"
 
-class CDelegateProxy : public IDelegateProxy
+class CDelegateProxy
+    : public ElLightRefBase
+    , public IDelegateProxy
 {
 public:
+    CDelegateProxy(
+        /* [in] */ ICallbackMethodInfo * pCallbackMethodInfo,
+        /* [in] */ ICallbackInvocation * pCallbackInvocation,
+        /* [in] */ PVoid targetObject,
+        /* [in] */ PVoid targetMethod);
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -48,21 +56,11 @@ public:
     CARAPI GetDelegate(
         /* [out] */ EventHandler * pHandler);
 
-    CDelegateProxy(
-        /* [in] */ ICallbackMethodInfo * pCallbackMethodInfo,
-        /* [in] */ ICallbackInvocation * pCallbackInvocation,
-        /* [in] */ PVoid targetObject,
-        /* [in] */ PVoid targetMethod);
-
-    virtual ~CDelegateProxy();
-
 private:
-    ICallbackMethodInfo * m_pCallbackMethodInfo;
-    ICallbackInvocation * m_pCallbackInvocation;
-    PVoid                 m_pTargetObject;
-    PVoid                 m_pTargetMethod;
-
-    Int32                 m_cRef;
+    AutoPtr<ICallbackMethodInfo> m_pCallbackMethodInfo;
+    AutoPtr<ICallbackInvocation> m_pCallbackInvocation;
+    PVoid                        m_pTargetObject;
+    PVoid                        m_pTargetMethod;
 };
 
 #endif // __CDELEGATEPROXY_H__

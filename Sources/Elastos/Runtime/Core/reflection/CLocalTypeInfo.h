@@ -7,9 +7,14 @@
 
 #include "CClsModule.h"
 
-class CLocalTypeInfo : public IDataTypeInfo
+class CLocalTypeInfo
+    : public ElLightRefBase
+    , public IDataTypeInfo
 {
 public:
+    CLocalTypeInfo(
+        /* [in] */ MemorySize size);
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -22,7 +27,7 @@ public:
         /* [out] */ InterfaceID *pIID);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetSize(
         /* [out] */ MemorySize * pSize);
@@ -30,15 +35,8 @@ public:
     CARAPI GetDataType(
         /* [out] */ CarDataType * pDataType);
 
-    CLocalTypeInfo(
-        /* [in] */ MemorySize size);
-
-    virtual ~CLocalTypeInfo();
-
 private:
     MemorySize      m_size;
-
-    Int32           m_cRef; 
 };
 
 #endif // __CLOCALTYPEINFO_H__

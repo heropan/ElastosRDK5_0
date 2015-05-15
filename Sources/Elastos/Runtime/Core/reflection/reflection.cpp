@@ -8,7 +8,7 @@
 CObjInfoList g_objInfoList;
 
 ELAPI _CReflector_AcquireModuleInfo(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IModuleInfo **ppModuleInfo)
 {
     return g_objInfoList.AcquireModuleInfo(name, ppModuleInfo);
@@ -22,13 +22,13 @@ ELAPI _CReflector_AcquireIntrinsicTypeInfo(
 }
 
 ELAPI _CReflector_AcquireEnumInfo(
-    /* [in] */ CString name,
-    /* [in] */ const BufferOf<CString>* pItemNames,
-    /* [in] */ const BufferOf<Int32>* pItemValues,
+    /* [in] */ const String& name,
+    /* [in] */ ArrayOf<String>* pItemNames,
+    /* [in] */ ArrayOf<Int32>* pItemValues,
     /* [out] */ IEnumInfo **ppEnumInfo)
 {
-    return g_objInfoList.AcquireDynamicEnumInfo(name, *pItemNames,
-                                                *pItemValues, ppEnumInfo);
+    return g_objInfoList.AcquireDynamicEnumInfo(name, pItemNames,
+                                                pItemValues, ppEnumInfo);
 }
 
 ELAPI _CReflector_AcquireCppVectorInfo(
@@ -41,13 +41,13 @@ ELAPI _CReflector_AcquireCppVectorInfo(
 }
 
 ELAPI _CReflector_AcquireStructInfo(
-    /* [in] */ CString name,
-    /* [in] */ const BufferOf<CString> * pFieldNames,
-    /* [in] */ const BufferOf<IDataTypeInfo *> * pFieldTypeInfos,
+    /* [in] */ const String& name,
+    /* [in] */ ArrayOf<String> * pFieldNames,
+    /* [in] */ ArrayOf<IDataTypeInfo *> * pFieldTypeInfos,
     /* [out] */ IStructInfo **ppStructInfo)
 {
-    return g_objInfoList.AcquireDynamicStructInfo(name, *pFieldNames,
-                                                *pFieldTypeInfos, ppStructInfo);
+    return g_objInfoList.AcquireDynamicStructInfo(name, pFieldNames,
+                                                pFieldTypeInfos, ppStructInfo);
 }
 
 ELAPI _CReflector_AcquireCarArrayInfo(
@@ -79,7 +79,7 @@ ELAPI _CObject_ReflectModuleInfo(
         return E_NO_INTERFACE;
     }
 
-    return _CReflector_AcquireModuleInfo(clsid.pUunm, ppModuleInfo);
+    return _CReflector_AcquireModuleInfo(String(clsid.pUunm), ppModuleInfo);
 }
 
 ELAPI _CObject_ReflectClassInfo(
@@ -102,8 +102,8 @@ ELAPI _CObject_ReflectClassInfo(
         return E_NO_INTERFACE;
     }
 
-    AutoPtr<CModuleRefInfo> pModuleInfo;
-    ec = g_objInfoList.AcquireModuleInfo(clsid.pUunm,
+    AutoPtr<CModuleInfo> pModuleInfo;
+    ec = g_objInfoList.AcquireModuleInfo(String(clsid.pUunm),
                                          (IModuleInfo **)&pModuleInfo);
     if (FAILED(ec)) {
         return ec;
@@ -149,8 +149,8 @@ ELAPI _CObject_ReflectInterfaceInfo(
     ec = pObject->GetClassID(&clsid);
     if (FAILED(ec)) return E_INVALID_ARGUMENT;
 
-    AutoPtr<CModuleRefInfo> pModuleInfo;
-    ec = _CReflector_AcquireModuleInfo(clsid.pUunm, (IModuleInfo **)&pModuleInfo);
+    AutoPtr<CModuleInfo> pModuleInfo;
+    ec = _CReflector_AcquireModuleInfo(String(clsid.pUunm), (IModuleInfo **)&pModuleInfo);
     if (FAILED(ec)) {
         return ec;
     }

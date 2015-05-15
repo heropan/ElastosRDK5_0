@@ -5,21 +5,29 @@
 #include "CVariableOfStringBuf.h"
 #include "CObjInfoList.h"
 
+CVariableOfStringBuf::CVariableOfStringBuf(
+    /* [in] */ PStringBuf psb,
+    /* [in] */ Boolean bAlloc)
+{
+    m_psb = psb;
+    m_bAlloc = bAlloc;
+}
+
+CVariableOfStringBuf::~CVariableOfStringBuf()
+{
+    if (m_bAlloc && m_psb) {
+        StringBuf::Free(m_psb);
+    }
+}
+
 UInt32 CVariableOfStringBuf::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CVariableOfStringBuf::Release()
 {
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
+    return ElLightRefBase::Release();
 }
 
 PInterface CVariableOfStringBuf::Probe(
@@ -47,22 +55,6 @@ ECode CVariableOfStringBuf::GetInterfaceID(
     /* [out] */ InterfaceID *pIID)
 {
     return E_NOT_IMPLEMENTED;
-}
-
-CVariableOfStringBuf::CVariableOfStringBuf(
-    /* [in] */ PStringBuf psb,
-    /* [in] */ Boolean bAlloc)
-{
-    m_psb = psb;
-    m_bAlloc = bAlloc;
-    m_cRef = 0;
-}
-
-CVariableOfStringBuf::~CVariableOfStringBuf()
-{
-    if (m_bAlloc && m_psb) {
-        StringBuf::Free(m_psb);
-    }
 }
 
 ECode CVariableOfStringBuf::GetTypeInfo(
@@ -108,8 +100,8 @@ ECode CVariableOfStringBuf::GetSetter(
         return E_INVALID_ARGUMENT;
     }
 
-    this->AddRef();
     *ppSetter = (IStringBufSetter *)this;
+    (*ppSetter)->AddRef();
     return NOERROR;
 }
 
@@ -120,8 +112,8 @@ ECode CVariableOfStringBuf::GetGetter(
         return E_INVALID_ARGUMENT;
     }
 
-    this->AddRef();
     *ppGetter = (IStringBufGetter *)this;
+    (*ppGetter)->AddRef();
     return NOERROR;
 }
 

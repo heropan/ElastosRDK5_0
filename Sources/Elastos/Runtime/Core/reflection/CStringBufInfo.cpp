@@ -2,25 +2,17 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#include "refutil.h"
 #include "CStringBufInfo.h"
 #include "CVariableOfStringBuf.h"
 
 UInt32 CStringBufInfo::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CStringBufInfo::Release()
 {
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
+    return ElLightRefBase::Release();
 }
 
 PInterface  CStringBufInfo::Probe(
@@ -48,13 +40,13 @@ ECode CStringBufInfo::GetInterfaceID(
 }
 
 ECode CStringBufInfo::GetName(
-    /* [out] */ StringBuf * pName)
+    /* [out] */ String * pName)
 {
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    pName->Copy(g_cDataTypeList[CarDataType_StringBuf].name);
+    *pName = g_cDataTypeList[CarDataType_StringBuf].name;
     return NOERROR;
 }
 
@@ -95,7 +87,7 @@ ECode CStringBufInfo::CreateVariable(
     }
 
     *ppVariableBox = (IVariableOfStringBuf *)pVarBox;
-    pVarBox->AddRef();
+    (*ppVariableBox)->AddRef();
 
     return NOERROR;
 }
@@ -119,7 +111,7 @@ ECode CStringBufInfo::CreateVariableBox(
     }
 
     *ppVariableBox = (IVariableOfStringBuf *)pVarBox;
-    pVarBox->AddRef();
+    (*ppVariableBox)->AddRef();
 
     return NOERROR;
 }

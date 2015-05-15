@@ -8,9 +8,18 @@
 #include "CClsModule.h"
 #include "CEntryList.h"
 
-class CMethodInfo : public IMethodInfo
+class CMethodInfo
+    : public ElLightRefBase
+    , public IMethodInfo
 {
 public:
+    CMethodInfo(
+        /* [in] */ CClsModule * pCClsModule,
+        /* [in] */ MethodDescriptor *pMethodDescriptor,
+        /* [in] */ UInt32 uIndex);
+
+    virtual ~CMethodInfo();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -22,14 +31,16 @@ public:
         /* [in] */ IInterface *pObject,
         /* [out] */ InterfaceID *pIID);
 
+    CARAPI Init();
+
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetParamCount(
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllParamInfos(
-        /* [out] */ BufferOf<IParamInfo *> * pParamInfos);
+        /* [out] */ ArrayOf<IParamInfo *> * pParamInfos);
 
     CARAPI GetParamInfoByIndex(
         /* [in] */ Int32 index,
@@ -63,28 +74,17 @@ public:
         /* [in] */ ICallbackMethodInfo *pCallbackMethodInfo,
         /* [out] */ ICallbackArgumentList ** ppCBArgumentList);
 
-    CARAPI Init();
-
-    CMethodInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ MethodDescriptor *pMethodDescriptor,
-        /* [in] */ UInt32 uIndex);
-
-    virtual ~CMethodInfo();
-
+public:
     MethodDescriptor   *m_pMethodDescriptor;
     UInt32              m_uIndex;
     CLSModule          *m_pClsMod;
-    CClsModule         *m_pCClsModule;
+    AutoPtr<CClsModule> m_pCClsModule;
 
 private:
-
-    BufferOf<IParamInfo *>    *m_pParameterInfos;
+    ArrayOf<IParamInfo *> *m_pParameterInfos;
     ParmElement    *m_pParamElem;
     UInt32          m_uParamBufSize;
     Int32           m_nBase;
-
-    Int32 m_cRef;
 };
 
 #endif // __CMETHODINFO_H__

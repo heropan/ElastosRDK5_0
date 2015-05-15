@@ -5,21 +5,19 @@
 #include "CCallbackMethodInfo.h"
 #include "CDelegateProxy.h"
 
+CCallbackMethodInfo::CCallbackMethodInfo()
+    : m_uEventNum(0)
+    , m_pMethodDescriptor(NULL)
+{}
+
 UInt32 CCallbackMethodInfo::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CCallbackMethodInfo::Release()
 {
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
+    return ElLightRefBase::Release();
 }
 
 PInterface  CCallbackMethodInfo::Probe(
@@ -46,11 +44,6 @@ ECode CCallbackMethodInfo::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CCallbackMethodInfo::~CCallbackMethodInfo()
-{
-    if (m_pMethodInfo) m_pMethodInfo->Release();
-}
-
 ECode CCallbackMethodInfo::Init(
     /* [in] */ CClsModule * pCClsModule,
     /* [in] */ UInt32 uEventNum,
@@ -66,14 +59,14 @@ ECode CCallbackMethodInfo::Init(
 }
 
 ECode CCallbackMethodInfo::GetName(
-    /* [out] */ StringBuf * pName)
+    /* [out] */ String * pName)
 {
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    pName->Copy(adjustNameAddr(m_pMethodInfo->m_pCClsModule->m_nBase,
-                    m_pMethodDescriptor->pszName));
+    *pName = adjustNameAddr(m_pMethodInfo->m_pCClsModule->m_nBase,
+                    m_pMethodDescriptor->pszName);
     return NOERROR;
 }
 
@@ -84,7 +77,7 @@ ECode CCallbackMethodInfo::GetParamCount(
 }
 
 ECode CCallbackMethodInfo::GetAllParamInfos(
-    /* [out] */ BufferOf<IParamInfo *> * pParamInfos)
+    /* [out] */ ArrayOf<IParamInfo *> * pParamInfos)
 {
     return m_pMethodInfo->GetAllParamInfos(pParamInfos);
 }

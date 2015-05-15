@@ -10,22 +10,25 @@
 #pragma warning(disable: 4731)
 #endif
 
+CDelegateProxy::CDelegateProxy(
+    /* [in] */ ICallbackMethodInfo * pCallbackMethodInfo,
+    /* [in] */ ICallbackInvocation * pCallbackInvocation,
+    /* [in] */ PVoid targetObject,
+    /* [in] */ PVoid targetMethod)
+    : m_pCallbackMethodInfo(pCallbackMethodInfo)
+    , m_pCallbackInvocation(pCallbackInvocation)
+    , m_pTargetObject(targetObject)
+    , m_pTargetMethod(targetMethod)
+{}
 
 UInt32 CDelegateProxy::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CDelegateProxy::Release()
 {
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
+    return ElLightRefBase::Release();
 }
 
 PInterface CDelegateProxy::Probe(
@@ -49,27 +52,6 @@ ECode CDelegateProxy::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CDelegateProxy::CDelegateProxy(
-    /* [in] */ ICallbackMethodInfo * pCallbackMethodInfo,
-    /* [in] */ ICallbackInvocation * pCallbackInvocation,
-    /* [in] */ PVoid targetObject,
-    /* [in] */ PVoid targetMethod)
-{
-    m_pTargetObject = targetObject;
-    m_pTargetMethod = targetMethod;
-    pCallbackMethodInfo->AddRef();
-    m_pCallbackMethodInfo = pCallbackMethodInfo;
-    pCallbackInvocation->AddRef();
-    m_pCallbackInvocation = pCallbackInvocation;
-    m_cRef = 0;
-}
-
-CDelegateProxy::~CDelegateProxy()
-{
-    if (m_pCallbackMethodInfo) m_pCallbackMethodInfo->Release();
-    if (m_pCallbackInvocation) m_pCallbackInvocation->Release();
-}
-
 ECode CDelegateProxy::GetCallbackMethodInfo(
     /* [out] */ ICallbackMethodInfo ** ppCallbackMethodInfo)
 {
@@ -77,8 +59,8 @@ ECode CDelegateProxy::GetCallbackMethodInfo(
         return E_INVALID_ARGUMENT;
     }
 
-    m_pCallbackMethodInfo->AddRef();
     *ppCallbackMethodInfo = m_pCallbackMethodInfo;
+    (*ppCallbackMethodInfo)->AddRef();
     return NOERROR;
 }
 
@@ -111,8 +93,8 @@ ECode CDelegateProxy::GetCallbackInvocation(
         return E_INVALID_ARGUMENT;
     }
 
-    m_pCallbackInvocation->AddRef();
     *ppCallbackInvocation = m_pCallbackInvocation;
+    (*ppCallbackInvocation)->AddRef();
     return NOERROR;
 }
 
@@ -142,7 +124,7 @@ ECode CDelegateProxy::EventHander(
 {
     AutoPtr<CCallbackArgumentList> pCBArgumentList;
 
-    ECode ec = ((CCallbackMethodInfo *)m_pCallbackMethodInfo)
+    ECode ec = ((CCallbackMethodInfo *)m_pCallbackMethodInfo.Get())
         ->CreateCBArgumentList((ICallbackArgumentList **)&pCBArgumentList);
     if (FAILED(ec)) {
         return ec;

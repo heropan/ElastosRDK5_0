@@ -49,23 +49,6 @@ E_FAIL_EXIT:
     return -1;
 }
 
-UInt32 CObjInfoList::AddRef()
-{
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
-}
-
-UInt32 CObjInfoList::Release()
-{
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
-}
-
 CObjInfoList::CObjInfoList()
 {
     pthread_mutexattr_t recursiveAttr;
@@ -122,7 +105,6 @@ CObjInfoList::CObjInfoList()
     m_pCCppVectorHead = NULL;
     m_pStructInfoHead = NULL;
     m_pCarArrayInfoHead = NULL;
-    m_cRef = 0;
 }
 
 CObjInfoList::~CObjInfoList()
@@ -159,6 +141,16 @@ CObjInfoList::~CObjInfoList()
     pthread_mutex_destroy(&m_lockDataType);
     pthread_mutex_destroy(&m_lockLocal);
     pthread_mutex_destroy(&m_lockClsModule);
+}
+
+UInt32 CObjInfoList::AddRef()
+{
+    return ElLightRefBase::AddRef();
+}
+
+UInt32 CObjInfoList::Release()
+{
+    return ElLightRefBase::Release();
 }
 
 ECode CObjInfoList::LockHashTable(
@@ -278,7 +270,7 @@ ECode CObjInfoList::UnlockHashTable(
 }
 
 ECode CObjInfoList::AcquireModuleInfo(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IModuleInfo **ppModuleInfo)
 {
     if (name.IsNull() || !ppModuleInfo) {
@@ -288,28 +280,28 @@ ECode CObjInfoList::AcquireModuleInfo(
     void *pIModule;
     ECode ec = NOERROR;
 
-    pIModule = dlopen(name, RTLD_NOW);
+    pIModule = dlopen(name.string(), RTLD_NOW);
     if(NULL == pIModule){
         return E_FILE_NOT_FOUND;
     }
 
     LockHashTable(EntryType_Module);
-    IModuleInfo **ppModInfo = m_hModInfos.Get((char *)(const char*)name);
+    IModuleInfo **ppModInfo = m_hModInfos.Get(const_cast<char*>(name.string()));
     if (ppModInfo) {
         dlclose(pIModule);
-        (*ppModInfo)->AddRef();
         *ppModuleInfo = *ppModInfo;
+        (*ppModuleInfo)->AddRef();
         UnlockHashTable(EntryType_Module);
         return NOERROR;
     }
 
-    CModuleRefInfo* pModInfo = NULL;
+    AutoPtr<CModuleInfo> pModInfo;
     CClsModule*  pCClsModule = NULL;
 
     LockHashTable(EntryType_ClsModule);
 
     CClsModule** ppCClsModule = NULL;
-    ppCClsModule = m_hClsModule.Get((char *)(const char*)name);
+    ppCClsModule = m_hClsModule.Get(const_cast<char*>(name.string()));
     if (ppCClsModule) {
         pCClsModule = *ppCClsModule;
     }
@@ -345,28 +337,28 @@ ECode CObjInfoList::AcquireModuleInfo(
             goto Exit;
         }
 
-        if (!m_hClsModule.Put((char *)(const char*)name, (CClsModule**)&pCClsModule)) {
+        if (!m_hClsModule.Put(const_cast<char*>(name.string()), (CClsModule**)&pCClsModule)) {
             delete pCClsModule;
             ec = E_OUT_OF_MEMORY;
             goto Exit;
         }
     }
 
-    pModInfo = new CModuleRefInfo(pCClsModule, name);
+    pModInfo = new CModuleInfo(pCClsModule, name);
     if (pModInfo == NULL) {
         if (!ppCClsModule && pCClsModule) delete pCClsModule;
         ec = E_OUT_OF_MEMORY;
         goto Exit;
     }
 
-    if (!g_objInfoList.m_hModInfos.Put((char *)(const char*)name,
+    if (!g_objInfoList.m_hModInfos.Put(const_cast<char*>(name.string()),
             (IModuleInfo**)&pModInfo)) {
         ec = E_OUT_OF_MEMORY;
         goto Exit;
     }
 
-    pModInfo->AddRef();
     *ppModuleInfo = (IModuleInfo *)pModInfo;
+    (*ppModuleInfo)->AddRef();
 
     ec = NOERROR;
 
@@ -374,20 +366,16 @@ Exit:
     UnlockHashTable(EntryType_ClsModule);
     UnlockHashTable(EntryType_Module);
 
-    if (FAILED(ec)) {
-        if (pModInfo) delete pModInfo;
-    }
-
     return ec;
 }
 
 ECode CObjInfoList:: RemoveModuleInfo(
-    /* [in] */ CString path)
+    /* [in] */ const String& path)
 {
     if (path.IsNull()) {
         return E_INVALID_ARGUMENT;
     }
-    m_hModInfos.Remove((PVoid)(const char *)path);
+    m_hModInfos.Remove((PVoid)path.string());
     return NOERROR;
 }
 
@@ -418,7 +406,7 @@ ECode CObjInfoList::AcquireClassInfo(
 
     IInterface **ppObj = m_hClassInfos.Get(&pClsDirEntry);
     if (!ppObj) {
-        CClassInfo *pClassInfo = new CClassInfo(pCClsModule, pClsDirEntry);
+        AutoPtr<CClassInfo> pClassInfo = new CClassInfo(pCClsModule, pClsDirEntry);
         if (pClassInfo == NULL) {
             UnlockHashTable(EntryType_Class);
             return E_OUT_OF_MEMORY;
@@ -426,24 +414,23 @@ ECode CObjInfoList::AcquireClassInfo(
 
         ECode ec = pClassInfo->Init();
         if (FAILED(ec)) {
-            delete pClassInfo;
             UnlockHashTable(EntryType_Class);
             return ec;
         }
 
         if (!m_hClassInfos.Put(&pClsDirEntry, (IInterface**)&pClassInfo)) {
-            delete pClassInfo;
             UnlockHashTable(EntryType_Class);
             return E_OUT_OF_MEMORY;
         }
 
         *ppObject = pClassInfo;
+        (*ppObject)->AddRef();
     }
     else {
         *ppObject = *ppObj;
+        (*ppObject)->AddRef();
     }
 
-    (*ppObject)->AddRef();
     UnlockHashTable(EntryType_Class);
 
     return NOERROR;
@@ -477,7 +464,7 @@ ECode CObjInfoList::AcquireStaticStructInfo(
 
     IInterface **ppObj = m_hStructInfos.Get(&pStructDirEntry);
     if (!ppObj) {
-        CStructRefInfo *pStructInfo = new CStructRefInfo();
+        AutoPtr<CStructInfo> pStructInfo = new CStructInfo();
         if (pStructInfo == NULL) {
             UnlockHashTable(EntryType_Struct);
             return E_OUT_OF_MEMORY;
@@ -485,23 +472,22 @@ ECode CObjInfoList::AcquireStaticStructInfo(
 
         ECode ec = pStructInfo->InitStatic(pCClsModule, pStructDirEntry);
         if (FAILED(ec)) {
-            delete pStructInfo;
             UnlockHashTable(EntryType_Struct);
             return ec;
         }
 
         if (!m_hStructInfos.Put(&pStructDirEntry, (IInterface**)&pStructInfo)) {
-            delete pStructInfo;
             UnlockHashTable(EntryType_Struct);
             return E_OUT_OF_MEMORY;
         }
 
         *ppObject = pStructInfo;
+        (*ppObject)->AddRef();
     }
     else {
         *ppObject = *ppObj;
+        (*ppObject)->AddRef();
     }
-    (*ppObject)->AddRef();
 
     UnlockHashTable(EntryType_Struct);
 
@@ -509,32 +495,32 @@ ECode CObjInfoList::AcquireStaticStructInfo(
 }
 
 ECode CObjInfoList::AcquireDynamicStructInfo(
-    /* [in] */ CString name,
-    /* [in] */ const BufferOf<CString>& fieldNames,
-    /* [in] */ const BufferOf<IDataTypeInfo *>& fieldTypeInfos,
+    /* [in] */ const String& name,
+    /* [in] */ ArrayOf<String>* fieldNames,
+    /* [in] */ ArrayOf<IDataTypeInfo*>* fieldTypeInfos,
     /* [out] */ IStructInfo **ppStructInfo)
 {
-    if (name.IsNullOrEmpty() || fieldNames.IsNullOrEmpty()
-        || fieldTypeInfos.IsNullOrEmpty() || !ppStructInfo
-        || fieldNames.GetUsed() != fieldTypeInfos.GetUsed()) {
+    if (name.IsNullOrEmpty() || fieldNames == NULL
+        || fieldTypeInfos == NULL || !ppStructInfo
+        || fieldNames->GetLength() != fieldTypeInfos->GetLength()) {
         return E_INVALID_ARGUMENT;
     }
 
     InfoLinkNode *pNode = m_pStructInfoHead;
     ECode ec = NOERROR;
-    StringBuf_<_MAX_PATH> structName;
-    CStructRefInfo *pStructInfo = NULL;
+    String structName;
+    AutoPtr<CStructInfo> pStructInfo;
     Int32 count = 0, i = 0;
-    BufferOf<CString>    *pFieldNames = NULL;
-    BufferOf<IDataTypeInfo *>     *pFieldTypeInfos = NULL;
+    AutoPtr< ArrayOf<String> > pFieldNames;
+    AutoPtr< ArrayOf<IDataTypeInfo*> > pFieldTypeInfos;
     LockHashTable(EntryType_Struct);
     for (; pNode; pNode = pNode->pNext) {
-        pStructInfo = (CStructRefInfo *)pNode->pInfo;
+        pStructInfo = (CStructInfo *)pNode->pInfo;
         pStructInfo->GetName(&structName);
 
-        if (name.Compare((char*)structName) == 0) {
+        if (name.Equals(structName)) {
             pStructInfo->GetFieldCount(&count);
-            if (count != fieldNames.GetUsed()) {
+            if (count != fieldNames->GetLength()) {
                 UnlockHashTable(EntryType_Struct);
                 return E_DATAINFO_EXIST;
             }
@@ -542,24 +528,24 @@ ECode CObjInfoList::AcquireDynamicStructInfo(
             pFieldNames = pStructInfo->m_pFieldNames;
             pFieldTypeInfos = pStructInfo->m_pFieldTypeInfos;
             for (i = 0; i < count; i++) {
-                if (fieldNames[i].Compare((*pFieldNames)[i])) {
+                if (!(*fieldNames)[i].Equals((*pFieldNames)[i])) {
                     UnlockHashTable(EntryType_Struct);
                     return E_DATAINFO_EXIST;
                 }
-                if ((*pFieldTypeInfos)[i] != fieldTypeInfos[i]) {
+                if ((*pFieldTypeInfos)[i] != (*fieldTypeInfos)[i]) {
                     UnlockHashTable(EntryType_Struct);
                     return E_DATAINFO_EXIST;
                 }
             }
 
-            pStructInfo->AddRef();
             *ppStructInfo  = pStructInfo;
+            (*ppStructInfo)->AddRef();
             UnlockHashTable(EntryType_Struct);
             return ec;
         }
     }
 
-    pStructInfo = new CStructRefInfo();
+    pStructInfo = new CStructInfo();
     if (pStructInfo == NULL) {
         UnlockHashTable(EntryType_Struct);
         return E_OUT_OF_MEMORY;
@@ -567,20 +553,18 @@ ECode CObjInfoList::AcquireDynamicStructInfo(
 
     ec = pStructInfo->InitDynamic(name, fieldNames, fieldTypeInfos);
     if (FAILED(ec)) {
-        delete pStructInfo;
         UnlockHashTable(EntryType_Struct);
         return ec;
     }
 
     ec = AddInfoNode(pStructInfo, &m_pStructInfoHead);
     if (FAILED(ec)) {
-        delete pStructInfo;
         UnlockHashTable(EntryType_Struct);
         return ec;
     }
 
-    pStructInfo->AddRef();
     *ppStructInfo = pStructInfo;
+    (*ppStructInfo)->AddRef();
 
     UnlockHashTable(EntryType_Struct);
 
@@ -615,7 +599,7 @@ ECode CObjInfoList::AcquireStaticEnumInfo(
 
     IInterface **ppObj = m_hEnumInfos.Get(&pEnumDirEntry);
     if (!ppObj) {
-        CEnumRefInfo *pEnumInfo = new CEnumRefInfo();
+        AutoPtr<CEnumInfo> pEnumInfo = new CEnumInfo();
         if (pEnumInfo == NULL) {
             UnlockHashTable(EntryType_Enum);
             return E_OUT_OF_MEMORY;
@@ -623,23 +607,22 @@ ECode CObjInfoList::AcquireStaticEnumInfo(
 
         ECode ec = pEnumInfo->InitStatic(pCClsModule, pEnumDirEntry);
         if (FAILED(ec)) {
-            delete pEnumInfo;
             UnlockHashTable(EntryType_Enum);
             return ec;
         }
 
         if (!m_hEnumInfos.Put(&pEnumDirEntry, (IInterface**)&pEnumInfo)) {
-            delete pEnumInfo;
             UnlockHashTable(EntryType_Enum);
             return E_OUT_OF_MEMORY;
         }
 
         *ppObject = pEnumInfo;
+        (*ppObject)->AddRef();
     }
     else {
         *ppObject = *ppObj;
+        (*ppObject)->AddRef();
     }
-    (*ppObject)->AddRef();
 
     UnlockHashTable(EntryType_Enum);
 
@@ -658,90 +641,90 @@ ECode CObjInfoList::RemoveEnumInfo(
 }
 
 ECode CObjInfoList::AcquireDynamicEnumInfo(
-    /* [in] */ CString name,
-    /* [in] */ const BufferOf<CString>& itemNames,
-    /* [in] */ const BufferOf<Int32>& itemValues,
+    /* [in] */ const String& name,
+    /* [in] */ ArrayOf<String>* itemNames,
+    /* [in] */ ArrayOf<Int32>* itemValues,
     /* [out] */ IEnumInfo **ppEnumInfo)
 {
-    if (name.IsNull() || itemNames.IsNullOrEmpty()
-        || itemValues.IsNullOrEmpty() || !ppEnumInfo
-        || itemNames.GetUsed() != itemValues.GetUsed()) {
+    if (name.IsNull() || itemNames == NULL
+        || itemValues == NULL || !ppEnumInfo
+        || itemNames->GetLength() != itemValues->GetLength()) {
         return E_INVALID_ARGUMENT;
     }
 
     InfoLinkNode *pNode = m_pEnumInfoHead;
-    ECode ec = NOERROR;
-    StringBuf_<_MAX_PATH> enumName;
-    CEnumRefInfo *pEnumInfo = NULL;
+    String enumName;
+    AutoPtr<CEnumInfo> pEnumInfo;
     Int32 count = 0, i = 0;
-    BufferOf<CString>    *pItemNames;
-    BufferOf<Int32>      *pItemValues;
+    AutoPtr< ArrayOf<String> > pItemNames;
+    AutoPtr< ArrayOf<Int32> > pItemValues;
 
     LockHashTable(EntryType_Enum);
     for (; pNode; pNode = pNode->pNext) {
-        pEnumInfo = (CEnumRefInfo *)pNode->pInfo;
+        pEnumInfo = (CEnumInfo *)pNode->pInfo;
         pEnumInfo->GetName(&enumName);
 
-        if (name.Compare((char*)enumName) == 0) {
+        if (name.Equals(enumName)) {
             pEnumInfo->GetItemCount(&count);
-            if (count != itemNames.GetUsed()) {
+            if (count != itemNames->GetLength()) {
                 if (!name.IsEmpty()) {
                     UnlockHashTable(EntryType_Enum);
                     return E_DATAINFO_EXIST;
                 }
-                else
+                else {
                     continue;
+                }
             }
 
             pItemNames = pEnumInfo->m_pItemNames;
             pItemValues = pEnumInfo->m_pItemValues;
             for (i = 0; i < count; i++) {
-                if (itemNames[i].Compare((*pItemNames)[i]) != 0) {
+                if (!(*itemNames)[i].Equals((*pItemNames)[i])) {
                     if (!name.IsEmpty()) {
                         UnlockHashTable(EntryType_Enum);
                         return E_DATAINFO_EXIST;
                     }
-                    else
+                    else {
                         continue;
+                    }
                 }
-                if (itemValues[i] != (*pItemValues)[i]) {
+                if ((*itemValues)[i] != (*pItemValues)[i]) {
                     if (!name.IsEmpty()) {
                         UnlockHashTable(EntryType_Enum);
                         return E_DATAINFO_EXIST;
                     }
-                    else
+                    else {
                         continue;
+                    }
                 }
             }
 
-            pEnumInfo->AddRef();
-            *ppEnumInfo  = pEnumInfo;
-            return ec;
+            *ppEnumInfo = pEnumInfo;
+            (*ppEnumInfo)->AddRef();
+            return NOERROR;
         }
     }
 
-    pEnumInfo = new CEnumRefInfo();
+    pEnumInfo = new CEnumInfo();
     if (pEnumInfo == NULL) {
         UnlockHashTable(EntryType_Enum);
         return E_OUT_OF_MEMORY;
     }
 
-    ec = pEnumInfo->InitDynamic(name, itemNames, itemValues);
+    ECode ec = pEnumInfo->InitDynamic(name, itemNames, itemValues);
     if (FAILED(ec)) {
-        delete pEnumInfo;
         UnlockHashTable(EntryType_Enum);
         return ec;
     }
 
     ec = AddInfoNode(pEnumInfo, &m_pEnumInfoHead);
     if (FAILED(ec)) {
-        delete pEnumInfo;
         UnlockHashTable(EntryType_Enum);
         return ec;
     }
 
-    pEnumInfo->AddRef();
-    *ppEnumInfo  = pEnumInfo;
+    *ppEnumInfo = pEnumInfo;
+    (*ppEnumInfo)->AddRef();
 
     UnlockHashTable(EntryType_Enum);
 
@@ -765,7 +748,7 @@ ECode CObjInfoList::AcquireTypeAliasInfo(
 
     IInterface **ppObj = m_hTypeAliasInfos.Get(&pAliasDirEntry);
     if (!ppObj) {
-        CTypeAliasInfo *pAliasInfo = new CTypeAliasInfo(pCClsModule,
+        AutoPtr<CTypeAliasInfo> pAliasInfo = new CTypeAliasInfo(pCClsModule,
             pAliasDirEntry);
         if (pAliasInfo == NULL) {
             UnlockHashTable(EntryType_TypeAliase);
@@ -773,17 +756,17 @@ ECode CObjInfoList::AcquireTypeAliasInfo(
         }
 
         if (!m_hTypeAliasInfos.Put(&pAliasDirEntry, (IInterface**)&pAliasInfo)) {
-            delete pAliasInfo;
             UnlockHashTable(EntryType_TypeAliase);
             return E_OUT_OF_MEMORY;
         }
 
         *ppObject = pAliasInfo;
+        (*ppObject)->AddRef();
     }
     else {
         *ppObject = *ppObj;
+        (*ppObject)->AddRef();
     }
-    (*ppObject)->AddRef();
 
     UnlockHashTable(EntryType_TypeAliase);
 
@@ -822,7 +805,7 @@ ECode CObjInfoList::AcquireInterfaceInfo(
 
     IInterface **ppObj = m_hIFInfos.Get(&iid);
     if (!ppObj) {
-        CInterfaceInfo *pIFInfo = new CInterfaceInfo(pCClsModule, uIndex);
+        AutoPtr<CInterfaceInfo> pIFInfo = new CInterfaceInfo(pCClsModule, uIndex);
         if (pIFInfo == NULL) {
             UnlockHashTable(EntryType_Interface);
             return E_OUT_OF_MEMORY;
@@ -830,23 +813,22 @@ ECode CObjInfoList::AcquireInterfaceInfo(
 
         ECode ec = pIFInfo->Init();
         if (FAILED(ec)) {
-            delete pIFInfo;
             UnlockHashTable(EntryType_Interface);
             return ec;
         }
 
         if (!m_hIFInfos.Put(&iid, (IInterface**)&pIFInfo)) {
-            delete pIFInfo;
             UnlockHashTable(EntryType_Interface);
             return E_OUT_OF_MEMORY;
         }
 
         *ppObject = pIFInfo;
+        (*ppObject)->AddRef();
     }
     else {
         *ppObject = *ppObj;
+        (*ppObject)->AddRef();
     }
-    (*ppObject)->AddRef();
 
     UnlockHashTable(EntryType_Interface);
 
@@ -881,7 +863,7 @@ ECode CObjInfoList::AcquireMethodInfo(
     memcpy((PByte)&iKeyValue + 4, &uIndex, 4);
     IInterface **ppObj = m_hMethodInfos.Get(&iKeyValue);
     if (!ppObj) {
-        CMethodInfo *pMethodInfo = new CMethodInfo(pCClsModule,
+        AutoPtr<CMethodInfo> pMethodInfo = new CMethodInfo(pCClsModule,
             pMethodDescriptor, uIndex);
         if (pMethodInfo == NULL) {
             UnlockHashTable(EntryType_Method);
@@ -890,22 +872,21 @@ ECode CObjInfoList::AcquireMethodInfo(
 
         ECode ec = pMethodInfo->Init();
         if (FAILED(ec)) {
-            delete pMethodInfo;
             UnlockHashTable(EntryType_Method);
             return ec;
         }
 
         if (!m_hMethodInfos.Put(&iKeyValue, (IInterface**)&pMethodInfo)) {
-            delete pMethodInfo;
             UnlockHashTable(EntryType_Method);
             return E_OUT_OF_MEMORY;
         }
         *ppObject = pMethodInfo;
+        (*ppObject)->AddRef();
     }
     else {
         *ppObject = *ppObj;
+        (*ppObject)->AddRef();
     }
-    (*ppObject)->AddRef();
 
     UnlockHashTable(EntryType_Method);
 
@@ -1047,7 +1028,7 @@ ECode CObjInfoList::AcquireIntrinsicInfo(
             m_pDataTypeInfos[dataType] = new CStringBufInfo();
         }
 //        else if (dataType ==
-//            m_pDataTypeInfos[dataType] = new CCarArrayRefInfo(quintetType, pElementTypeInfo, dataType)
+//            m_pDataTypeInfos[dataType] = new CCarArrayInfo(quintetType, pElementTypeInfo, dataType)
         else {
             m_pDataTypeInfos[dataType] = new CIntrinsicInfo(dataType, uSize);
         }
@@ -1060,8 +1041,8 @@ ECode CObjInfoList::AcquireIntrinsicInfo(
     }
     UnlockHashTable(EntryType_DataType);
 
-    m_pDataTypeInfos[dataType]->AddRef();
     *ppDataTypeInfo = m_pDataTypeInfos[dataType];
+    (*ppDataTypeInfo)->AddRef();
 
     return NOERROR;
 }
@@ -1086,8 +1067,8 @@ ECode CObjInfoList::AcquireLocalTypeInfo(
     }
     UnlockHashTable(EntryType_Local);
 
-    m_pLocalTypeInfos[type]->AddRef();
     *ppDataTypeInfo = m_pLocalTypeInfos[type];
+    (*ppDataTypeInfo)->AddRef();
 
     return NOERROR;
 }
@@ -1109,7 +1090,7 @@ ECode CObjInfoList::AcquireLocalPtrInfo(
     memcpy((PByte)&iKeyValue + 4, &iPointer, 4);
     IInterface **ppObj = m_hLocalPtrInfos.Get(&iKeyValue);
     if (!ppObj) {
-        CLocalPtrInfo *pLocalPtrInfo = new CLocalPtrInfo(pCClsModule,
+        AutoPtr<CLocalPtrInfo> pLocalPtrInfo = new CLocalPtrInfo(pCClsModule,
                                             pTypeDescriptor, iPointer);
         if (pLocalPtrInfo == NULL) {
             UnlockHashTable(EntryType_Local);
@@ -1117,16 +1098,16 @@ ECode CObjInfoList::AcquireLocalPtrInfo(
         }
 
         if (!m_hLocalPtrInfos.Put(&iKeyValue, (IInterface**)&pLocalPtrInfo)) {
-            delete pLocalPtrInfo;
             UnlockHashTable(EntryType_Local);
             return E_OUT_OF_MEMORY;
         }
         *ppLocalPtrInfo = pLocalPtrInfo;
+        (*ppLocalPtrInfo)->AddRef();
     }
     else {
         *ppLocalPtrInfo = (ILocalPtrInfo *)*ppObj;
+        (*ppLocalPtrInfo)->AddRef();
     }
-    (*ppLocalPtrInfo)->AddRef();
 
     UnlockHashTable(EntryType_Local);
 
@@ -1160,7 +1141,7 @@ ECode CObjInfoList::AcquireCppVectorInfo(
 
     InfoLinkNode *pNode = m_pCCppVectorHead;
     Int32 len = 0;
-    ICppVectorInfo *pCppVectorInfo = NULL;
+    AutoPtr<ICppVectorInfo> pCppVectorInfo;
     ECode ec = NOERROR;
     LockHashTable(EntryType_DataType);
     for (; pNode; pNode = pNode->pNext) {
@@ -1174,15 +1155,15 @@ ECode CObjInfoList::AcquireCppVectorInfo(
                 return ec;
             }
             if (pElementInfo.Get() == pElementTypeInfo) {
-                pCppVectorInfo->AddRef();
                 *ppCppVectorInfo = pCppVectorInfo;
+                (*ppCppVectorInfo)->AddRef();
                 UnlockHashTable(EntryType_DataType);
                 return NOERROR;
             }
         }
     }
 
-    pCppVectorInfo = new CCppVectorRefInfo(pElementTypeInfo, length);
+    pCppVectorInfo = new CCppVectorInfo(pElementTypeInfo, length);
     if (pCppVectorInfo == NULL) {
         UnlockHashTable(EntryType_DataType);
         return E_OUT_OF_MEMORY;
@@ -1190,13 +1171,12 @@ ECode CObjInfoList::AcquireCppVectorInfo(
 
     ec = AddInfoNode(pCppVectorInfo, &m_pCCppVectorHead);
     if (FAILED(ec)) {
-        delete pCppVectorInfo;
         UnlockHashTable(EntryType_DataType);
         return ec;
     }
 
-    pCppVectorInfo->AddRef();
     *ppCppVectorInfo = pCppVectorInfo;
+    (*ppCppVectorInfo)->AddRef();
     UnlockHashTable(EntryType_DataType);
 
     return NOERROR;
@@ -1248,8 +1228,7 @@ ECode CObjInfoList::AcquireCarArrayInfo(
     }
 
     InfoLinkNode *pNode = m_pCarArrayInfoHead;
-    ICarArrayInfo *pCarArrayInfo = NULL;
-    Void * pContext = NULL;
+    AutoPtr<ICarArrayInfo> pCarArrayInfo;
 
     CarDataType dataType;
     ec = pElementTypeInfo->GetDataType(&dataType);
@@ -1263,7 +1242,7 @@ ECode CObjInfoList::AcquireCarArrayInfo(
         LockHashTable(EntryType_DataType);
         if (!m_pCarArrayInfos[dataType]) {
             m_pCarArrayInfos[dataType] =
-                new CCarArrayRefInfo(quintetType, pElementTypeInfo, dataType);
+                new CCarArrayInfo(quintetType, pElementTypeInfo, dataType);
             if (!m_pCarArrayInfos[dataType]) {
                 UnlockHashTable(EntryType_DataType);
                 return E_OUT_OF_MEMORY;
@@ -1272,8 +1251,8 @@ ECode CObjInfoList::AcquireCarArrayInfo(
         }
         UnlockHashTable(EntryType_DataType);
 
-        m_pCarArrayInfos[dataType]->AddRef();
         *ppCarArrayInfo = m_pCarArrayInfos[dataType];
+        (*ppCarArrayInfo)->AddRef();
     }
     else {
         AutoPtr<IDataTypeInfo> pElementInfo;
@@ -1286,15 +1265,15 @@ ECode CObjInfoList::AcquireCarArrayInfo(
                 UnlockHashTable(EntryType_DataType);
                 return ec;
             }
-            if (pElementInfo == pElementTypeInfo) {
-                pCarArrayInfo->AddRef();
+            if (pElementInfo.Get() == pElementTypeInfo) {
                 *ppCarArrayInfo = pCarArrayInfo;
+                (*ppCarArrayInfo)->AddRef();
                 UnlockHashTable(EntryType_DataType);
                 return NOERROR;
             }
         }
 
-        pCarArrayInfo = new CCarArrayRefInfo(quintetType, pElementTypeInfo);
+        pCarArrayInfo = new CCarArrayInfo(quintetType, pElementTypeInfo);
         if (pCarArrayInfo == NULL) {
             UnlockHashTable(EntryType_DataType);
             return E_OUT_OF_MEMORY;
@@ -1302,13 +1281,12 @@ ECode CObjInfoList::AcquireCarArrayInfo(
 
         ec = AddInfoNode(pCarArrayInfo, &m_pCarArrayInfoHead);
         if (FAILED(ec)) {
-            delete pCarArrayInfo;
             UnlockHashTable(EntryType_DataType);
             return ec;
         }
 
-        pCarArrayInfo->AddRef();
         *ppCarArrayInfo = pCarArrayInfo;
+        (*ppCarArrayInfo)->AddRef();
         UnlockHashTable(EntryType_DataType);
     }
 
@@ -1360,7 +1338,7 @@ ECode CObjInfoList::AcquireConstructorInfo(
         return NOERROR;
     }
 
-    CConstructorInfo *pConstructInfo = new CConstructorInfo();
+    AutoPtr<CConstructorInfo> pConstructInfo = new CConstructorInfo();
     if (pConstructInfo == NULL) {
         UnlockHashTable(EntryType_Constructor);
         return E_OUT_OF_MEMORY;
@@ -1369,7 +1347,6 @@ ECode CObjInfoList::AcquireConstructorInfo(
     ECode ec = pConstructInfo->Init(pCClsModule,
                     pMethodDescriptor, uIndex, pClsId);
     if (FAILED(ec)) {
-        delete pConstructInfo;
         UnlockHashTable(EntryType_Constructor);
         return ec;
     }
@@ -1398,7 +1375,7 @@ ECode CObjInfoList::AcquireCBMethodInfoInfo(
         return NOERROR;
     }
 
-    CCallbackMethodInfo *pCBMethodInfo = new CCallbackMethodInfo();
+    AutoPtr<CCallbackMethodInfo> pCBMethodInfo = new CCallbackMethodInfo();
     if (pCBMethodInfo == NULL) {
         UnlockHashTable(EntryType_CBMethod);
         return E_OUT_OF_MEMORY;
@@ -1407,7 +1384,6 @@ ECode CObjInfoList::AcquireCBMethodInfoInfo(
     ECode ec = pCBMethodInfo->Init(pCClsModule,
                     uEventNum, pMethodDescriptor, uIndex);
     if (FAILED(ec)) {
-        delete pCBMethodInfo;
         UnlockHashTable(EntryType_CBMethod);
         return ec;
     }
@@ -1420,8 +1396,8 @@ ECode CObjInfoList::AcquireCBMethodInfoInfo(
 }
 
 ECode CObjInfoList::AddInfoNode(
-    IDataTypeInfo *pInfo,
-    InfoLinkNode **ppLinkHead)
+    /* [in] */ IDataTypeInfo *pInfo,
+    /* [in] */ InfoLinkNode **ppLinkHead)
 {
     InfoLinkNode *pNode = new InfoLinkNode();
     if (!pNode) {
@@ -1442,8 +1418,8 @@ ECode CObjInfoList::AddInfoNode(
 }
 
 ECode CObjInfoList::DeleteInfoNode(
-    IDataTypeInfo *pInfo,
-    InfoLinkNode **ppLinkHead)
+    /* [in] */ IDataTypeInfo *pInfo,
+    /* [in] */ InfoLinkNode **ppLinkHead)
 {
     InfoLinkNode *pPreNode = *ppLinkHead;
     InfoLinkNode *pNode = pPreNode;

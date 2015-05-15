@@ -7,9 +7,13 @@
 
 #include "CMethodInfo.h"
 
-class CCallbackMethodInfo : public ICallbackMethodInfo
+class CCallbackMethodInfo
+    : public ElLightRefBase
+    , public ICallbackMethodInfo
 {
 public:
+    CCallbackMethodInfo();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -21,14 +25,20 @@ public:
         /* [in] */ IInterface *pObject,
         /* [out] */ InterfaceID *pIID);
 
+    CARAPI Init(
+        /* [in] */ CClsModule * pCClsModule,
+        /* [in] */ UInt32 uEventNum,
+        /* [in] */ MethodDescriptor *pMethodDescriptor,
+        /* [in] */ UInt32 uIndex);
+
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetParamCount(
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllParamInfos(
-        /* [out] */ BufferOf<IParamInfo *> * pParamInfos);
+        /* [out] */ ArrayOf<IParamInfo *> * pParamInfos);
 
     CARAPI GetParamInfoByIndex(
         /* [in] */ Int32 index,
@@ -55,22 +65,10 @@ public:
     CARAPI CreateCBArgumentList(
         /* [out] */ ICallbackArgumentList ** ppCBArgumentList);
 
-    CARAPI Init(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ UInt32 uEventNum,
-        /* [in] */ MethodDescriptor *pMethodDescriptor,
-        /* [in] */ UInt32 uIndex);
-
-    CCallbackMethodInfo():m_cRef(0) {}
-
-    virtual ~CCallbackMethodInfo();
-
 private:
-    CMethodInfo       *m_pMethodInfo;
-    UInt32            m_uEventNum;
-    MethodDescriptor  *m_pMethodDescriptor;
-
-    Int32 m_cRef;
+    AutoPtr<CMethodInfo> m_pMethodInfo;
+    UInt32               m_uEventNum;
+    MethodDescriptor    *m_pMethodDescriptor;
 };
 
 #endif // __CCALLBACKMETHODINFO_H__

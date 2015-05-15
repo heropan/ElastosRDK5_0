@@ -7,9 +7,15 @@
 
 #include "CEntryList.h"
 
-class CStructRefInfo : public IStructInfo
+class CStructInfo
+    : public ElLightRefBase
+    , public IStructInfo
 {
 public:
+    CStructInfo();
+
+    virtual ~CStructInfo();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -21,8 +27,17 @@ public:
         /* [in] */ IInterface *pObject,
         /* [out] */ InterfaceID *pIID);
 
+    CARAPI InitStatic(
+        /* [in] */ CClsModule * pCClsModule,
+        /* [in] */ StructDirEntry *pStructDirEntry);
+
+    CARAPI InitDynamic(
+        /* [in] */ const String& name,
+        /* [in] */ ArrayOf<String>* fieldNames,
+        /* [in] */ ArrayOf<IDataTypeInfo*>* fieldTypeInfos);
+
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetSize(
         /* [out] */ MemorySize * pSize);
@@ -37,7 +52,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllFieldInfos(
-        /* [out] */ BufferOf<IFieldInfo *> * pFieldInfos);
+        /* [out] */ ArrayOf<IFieldInfo *> * pFieldInfos);
 
     CARAPI GetFieldInfo(
         /* [in] */ CString name,
@@ -61,33 +76,18 @@ public:
     CARAPI GetMaxAlignSize(
         /* [out] */ MemorySize * pAlignSize);
 
-    CARAPI InitStatic(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ StructDirEntry *pStructDirEntry);
-
-    CARAPI InitDynamic(
-        /* [in] */ CString name,
-        /* [in] */ const BufferOf<CString>& fieldNames,
-        /* [in] */ const BufferOf<IDataTypeInfo *>& fieldTypeInfos);
-
-    CStructRefInfo();
-
-    virtual ~CStructRefInfo();
-
-    BufferOf<CString>    *m_pFieldNames;
-    BufferOf<IDataTypeInfo *>     *m_pFieldTypeInfos;
-    StructFieldDesc *m_pStructFieldDesc;
-    UInt32           m_uSize;
+public:
+    AutoPtr< ArrayOf<String> >         m_pFieldNames;
+    AutoPtr< ArrayOf<IDataTypeInfo*> > m_pFieldTypeInfos;
+    StructFieldDesc                   *m_pStructFieldDesc;
+    UInt32                             m_uSize;
 
 private:
-    CClsModule      *m_pCClsModule;
-    StructDirEntry  *m_pStructDirEntry;
+    AutoPtr<CClsModule>                m_pCClsModule;
+    StructDirEntry                    *m_pStructDirEntry;
 
-    BufferOf<IFieldInfo *>     *m_pFieldInfos;
-    char            *m_pName;
-    char            *m_pBuf;
-
-    Int32 m_cRef;
+    ArrayOf<IFieldInfo *>             *m_pFieldInfos;
+    String                             m_pName;
 };
 
 #endif // __CSTRUCTINFO_H__

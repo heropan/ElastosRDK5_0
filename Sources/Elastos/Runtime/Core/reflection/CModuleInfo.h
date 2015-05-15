@@ -7,9 +7,15 @@
 
 #include "CEntryList.h"
 
-class CModuleRefInfo : public IModuleInfo
+class CModuleInfo
+    : public ElLightRefBase
+    , public IModuleInfo
 {
 public:
+    CModuleInfo(
+        /* [in] */ CClsModule * pCClsModule,
+        /* [in] */ const String& path);
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -22,7 +28,7 @@ public:
         /* [out] */ InterfaceID *pIID);
 
     CARAPI GetPath(
-        /* [out] */ StringBuf * pPath);
+        /* [out] */ String * pPath);
 
     CARAPI GetVersion(
         /* [out] */ Int32 * pMajor,
@@ -34,7 +40,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllClassInfos(
-        /* [out] */ BufferOf<IClassInfo *> * pClassInfos);
+        /* [out] */ ArrayOf<IClassInfo *> * pClassInfos);
 
     CARAPI GetClassInfo(
         /* [in] */ CString name,
@@ -44,7 +50,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllInterfaceInfos(
-        /* [out] */ BufferOf<IInterfaceInfo *> * pInterfaceInfos);
+        /* [out] */ ArrayOf<IInterfaceInfo *> * pInterfaceInfos);
 
     CARAPI GetInterfaceInfo(
         /* [in] */ CString name,
@@ -54,7 +60,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllStructInfos(
-        /* [out] */ BufferOf<IStructInfo *> * pStructInfos);
+        /* [out] */ ArrayOf<IStructInfo *> * pStructInfos);
 
     CARAPI GetStructInfo(
         /* [in] */ CString name,
@@ -64,7 +70,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllEnumInfos(
-        /* [out] */ BufferOf<IEnumInfo *> * pEnumInfos);
+        /* [out] */ ArrayOf<IEnumInfo *> * pEnumInfos);
 
     CARAPI GetEnumInfo(
         /* [in] */ CString name,
@@ -74,7 +80,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllTypeAliasInfos(
-        /* [out] */ BufferOf<ITypeAliasInfo *> * pTypeAliasInfos);
+        /* [out] */ ArrayOf<ITypeAliasInfo *> * pTypeAliasInfos);
 
     CARAPI GetTypeAliasInfo(
         /* [in] */ CString name,
@@ -84,7 +90,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllConstantInfos(
-        /* [out] */ BufferOf<IConstantInfo *> * pConstantInfos);
+        /* [out] */ ArrayOf<IConstantInfo *> * pConstantInfos);
 
     CARAPI GetConstantInfo(
         /* [in] */ CString name,
@@ -94,7 +100,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllImportModuleInfos(
-        /* [out] */ BufferOf<IModuleInfo *> * pModuleInfos);
+        /* [out] */ ArrayOf<IModuleInfo *> * pModuleInfos);
 
     CARAPI AcquireClassList();
 
@@ -108,29 +114,22 @@ public:
 
     CARAPI AcquireConstantList();
 
-    CModuleRefInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ CString path);
-
-    virtual ~CModuleRefInfo();
-
-    CClsModule  *m_pCClsModule;
-    CLSModule   *m_pClsMod;
+public:
+    AutoPtr<CClsModule>  m_pCClsModule;
+    CLSModule           *m_pClsMod;
 
 private:
-    CEntryList  *m_pClassList;
-    CEntryList  *m_pInterfaceList;
-    CEntryList  *m_pStructList;
-    CEntryList  *m_pEnumList;
-    CEntryList  *m_pAliasList;
-    CEntryList  *m_pConstantList;
+    AutoPtr<CEntryList>  m_pClassList;
+    AutoPtr<CEntryList>  m_pInterfaceList;
+    AutoPtr<CEntryList>  m_pStructList;
+    AutoPtr<CEntryList>  m_pEnumList;
+    AutoPtr<CEntryList>  m_pAliasList;
+    AutoPtr<CEntryList>  m_pConstantList;
 
-    StringBuf_<_MAX_PATH>  m_sbPath;
-    Int32       m_iAliasCount;
+    String               m_sbPath;
+    Int32                m_iAliasCount;
 
-    CRITICAL_SECTION  m_lockList;
-
-    Int32 m_cRef;
+    CRITICAL_SECTION     m_lockList;
 };
 
 #endif // __CMODULEINFO_H__

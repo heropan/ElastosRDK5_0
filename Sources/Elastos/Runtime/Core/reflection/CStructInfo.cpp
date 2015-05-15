@@ -8,19 +8,36 @@
 #include "CCarArrayInfo.h"
 #include "CCppVectorInfo.h"
 
-UInt32 CStructRefInfo::AddRef()
+CStructInfo::CStructInfo()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    m_pStructFieldDesc = NULL;
+    m_uSize = 0;
 }
 
-UInt32 CStructRefInfo::Release()
+CStructInfo::~CStructInfo()
+{
+    if (m_pStructFieldDesc) delete [] m_pStructFieldDesc;
+
+    if (m_pFieldInfos) {
+        for (Int32 i = 0; i < m_pFieldInfos->GetLength(); i++) {
+            if ((*m_pFieldInfos)[i]) delete (*m_pFieldInfos)[i];
+        }
+        ArrayOf<IFieldInfo *>::Free(m_pFieldInfos);
+    }
+}
+
+UInt32 CStructInfo::AddRef()
+{
+    return ElLightRefBase::AddRef();
+}
+
+UInt32 CStructInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_Struct);
-    Int32 nRef = atomic_dec(&m_cRef);
+    Int32 nRef = atomic_dec(&mRef);
 
     if (0 == nRef) {
-        if (!m_pCClsModule) {
+        if (m_pCClsModule == NULL) {
             g_objInfoList.DetachStructInfo(this);
         }
         else {
@@ -33,7 +50,7 @@ UInt32 CStructRefInfo::Release()
     return nRef;
 }
 
-PInterface CStructRefInfo::Probe(
+PInterface CStructInfo::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
@@ -50,53 +67,18 @@ PInterface CStructRefInfo::Probe(
     }
 }
 
-ECode CStructRefInfo::GetInterfaceID(
+ECode CStructInfo::GetInterfaceID(
     /* [in] */ IInterface *pObject,
     /* [out] */ InterfaceID *pIID)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-CStructRefInfo::CStructRefInfo()
-{
-    m_pCClsModule = NULL;
-    m_pName = NULL;
-    m_pFieldNames = NULL;
-    m_pBuf = NULL;
-    m_pStructFieldDesc = NULL;
-    m_uSize = 0;
-    m_cRef = 0;
-}
-
-CStructRefInfo::~CStructRefInfo()
-{
-    if (m_pStructFieldDesc) delete [] m_pStructFieldDesc;
-    if (m_pCClsModule) m_pCClsModule->Release();
-    if (m_pBuf) free(m_pBuf);
-    if (m_pFieldNames) BufferOf<CString>::Free(m_pFieldNames);
-
-    Int32 i = 0;
-    if (m_pFieldTypeInfos) {
-        for (int i = 0; i < m_pFieldTypeInfos->GetUsed(); i++) {
-            if ((*m_pFieldTypeInfos)[i]) (*m_pFieldTypeInfos)[i]->Release();
-        }
-        BufferOf<IDataTypeInfo *>::Free(m_pFieldTypeInfos);
-    }
-
-    if (m_pFieldInfos) {
-        for (i = 0; i < m_pFieldInfos->GetUsed(); i++) {
-            if ((*m_pFieldInfos)[i]) delete (*m_pFieldInfos)[i];
-        }
-        BufferOf<IFieldInfo *>::Free(m_pFieldInfos);
-    }
-}
-
-ECode CStructRefInfo::InitStatic(
+ECode CStructInfo::InitStatic(
     /* [in] */ CClsModule * pCClsModule,
     /* [in] */ StructDirEntry *pStructDirEntry)
 {
     m_pCClsModule = pCClsModule;
-    m_pCClsModule->AddRef();
 
 	Int32 nBase = m_pCClsModule->m_nBase;
     m_pStructDirEntry = pStructDirEntry;
@@ -105,32 +87,29 @@ ECode CStructRefInfo::InitStatic(
     StructElement *pElem = NULL;
 
     ECode ec = NOERROR;
-    int i = 0;
-    m_pFieldTypeInfos = BufferOf<IDataTypeInfo *>::Alloc(pDesc->cElems);
+    Int32 i = 0;
+    m_pFieldTypeInfos = ArrayOf<IDataTypeInfo*>::Alloc(pDesc->cElems);
     if (!m_pFieldTypeInfos) {
         ec = E_OUT_OF_MEMORY;
         goto EExit;
     }
 
-    m_pFieldNames = BufferOf<CString>::Alloc(pDesc->cElems);
+    m_pFieldNames = ArrayOf<String>::Alloc(pDesc->cElems);
     if (!m_pFieldNames) {
         ec = E_OUT_OF_MEMORY;
         goto EExit;
     }
-
-    memset(m_pFieldTypeInfos->GetPayload(), 0, sizeof(PInterface) * pDesc->cElems);
-    memset(m_pFieldNames->GetPayload(), 0, sizeof(CString) * pDesc->cElems);
-    m_pFieldTypeInfos->SetUsed(pDesc->cElems);
-    m_pFieldNames->SetUsed(pDesc->cElems);
 
     for (i = 0; i < pDesc->cElems; i++) {
         pElem = getStructElementAddr(nBase, pDesc->ppElems, i);
         (*m_pFieldNames)[i] = adjustNameAddr(nBase, pElem->pszName);
 
+        AutoPtr<IDataTypeInfo> dataTypeInfo;
         ec = g_objInfoList.AcquireDataTypeInfo(m_pCClsModule,
             &pElem->type,
-            (IDataTypeInfo**)&(*m_pFieldTypeInfos)[i], TRUE);
+            (IDataTypeInfo**)&dataTypeInfo, TRUE);
         if (FAILED(ec)) goto EExit;
+        m_pFieldTypeInfos->Set(i, dataTypeInfo);
     }
 
     ec = InitFieldElement();
@@ -142,117 +121,52 @@ ECode CStructRefInfo::InitStatic(
     return NOERROR;
 
 EExit:
-    if (m_pFieldNames) {
-        BufferOf<CString>::Free(m_pFieldNames);
-        m_pFieldNames = NULL;
-    }
-
-    if (m_pFieldTypeInfos) {
-        for (i = 0; i < pDesc->cElems; i++) {
-            if ((*m_pFieldTypeInfos)[i]) (*m_pFieldTypeInfos)[i]->Release();
-        }
-
-        BufferOf<IDataTypeInfo *>::Free(m_pFieldTypeInfos);
-        m_pFieldTypeInfos = NULL;
-    }
+    m_pFieldNames = NULL;
+    m_pFieldTypeInfos = NULL;
 
     return ec;
 }
 
-ECode CStructRefInfo::InitDynamic(
-    /* [in] */ CString name,
-    /* [in] */ const BufferOf<CString>& fieldNames,
-    /* [in] */ const BufferOf<IDataTypeInfo *>& fieldTypeInfos)
+ECode CStructInfo::InitDynamic(
+    /* [in] */ const String& name,
+    /* [in] */ ArrayOf<String>* fieldNames,
+    /* [in] */ ArrayOf<IDataTypeInfo*>* fieldTypeInfos)
 {
-    ECode ec = NOERROR;
-
-    //Get the totle size;
-    int i, size = StringAlignSize(name);
-
-    for (i = 0; i < fieldNames.GetUsed(); i++) {
-        size += StringAlignSize(fieldNames[i]);
-    }
-
-    m_pBuf = (char *)malloc(size);
-    if (!m_pBuf) {
-        ec = E_OUT_OF_MEMORY;
-        goto EExit;
-    }
-
-    //
-    m_pFieldNames = BufferOf<CString>::Alloc(fieldNames.GetUsed());
-    if (!m_pFieldNames) {
-        ec = E_OUT_OF_MEMORY;
-        goto EExit;
-    }
-
-    size = 0;
-    m_pName = m_pBuf;
-    strcpy(m_pName, name);
-    size = StringAlignSize(name);
-
-    m_pFieldNames->SetUsed(fieldNames.GetUsed());
-    for (i = 0; i < fieldNames.GetUsed(); i++) {
-        (*m_pFieldNames)[i] = m_pBuf + size;
-        strcpy((char *)(const char *)(*m_pFieldNames)[i], fieldNames[i]);
-        size += StringAlignSize(fieldNames[i]);
-    }
-
-    //
-    m_pFieldTypeInfos = fieldTypeInfos.Clone();
-    if (!m_pFieldTypeInfos) {
-        ec = E_OUT_OF_MEMORY;
-        goto EExit;
-    }
-
-    m_pFieldTypeInfos->SetUsed(m_pFieldTypeInfos->GetUsed());
-    for (i = 0; i < m_pFieldTypeInfos->GetUsed(); i++) {
-        (*m_pFieldTypeInfos)[i]->AddRef();
-    }
-
-    ec = InitFieldElement();
-    if (FAILED(ec)) goto EExit;
-
-    ec = InitFieldInfos();
-    if (FAILED(ec)) goto EExit;
-
-    return NOERROR;
-
-EExit:
-    if (m_pBuf) {
-        delete m_pBuf;
-        m_pBuf = NULL;
-    }
-
-    if (m_pFieldNames) {
-        BufferOf<CString>::Free(m_pFieldNames);
-        m_pFieldNames = NULL;
-    }
-
-    if (m_pFieldTypeInfos) {
-		for (i = 0; i < m_pFieldTypeInfos->GetUsed(); i++) {
-            if ((*m_pFieldTypeInfos)[i]) (*m_pFieldTypeInfos)[i]->Release();
-        }
-
-        BufferOf<IDataTypeInfo *>::Free(m_pFieldTypeInfos);
-        m_pFieldTypeInfos = NULL;
-    }
-
-    return ec;
-}
-
-ECode CStructRefInfo::GetName(
-    /* [out] */ StringBuf * pName)
-{
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (fieldNames == NULL || fieldTypeInfos == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    pName->Copy(m_pName);
+    m_pName = name;
+    m_pFieldNames = fieldNames;
+    m_pFieldTypeInfos = fieldTypeInfos;
+
+    ECode ec = InitFieldElement();
+    if (FAILED(ec)) goto EExit;
+
+    ec = InitFieldInfos();
+    if (FAILED(ec)) goto EExit;
+
+    return NOERROR;
+
+EExit:
+    m_pFieldNames = NULL;
+    m_pFieldTypeInfos = NULL;
+
+    return ec;
+}
+
+ECode CStructInfo::GetName(
+    /* [out] */ String * pName)
+{
+    if (pName == NULL) {
+        return E_INVALID_ARGUMENT;
+    }
+
+    *pName = m_pName;
     return NOERROR;
 }
 
-ECode CStructRefInfo::GetSize(
+ECode CStructInfo::GetSize(
     /* [out] */ MemorySize * pSize)
 {
     if (!pSize) {
@@ -263,7 +177,7 @@ ECode CStructRefInfo::GetSize(
     return NOERROR;
 }
 
-ECode CStructRefInfo::GetDataType(
+ECode CStructInfo::GetDataType(
     /* [out] */ CarDataType * pDataType)
 {
     if (!pDataType) {
@@ -274,7 +188,7 @@ ECode CStructRefInfo::GetDataType(
     return NOERROR;
 }
 
-ECode CStructRefInfo::GetModuleInfo(
+ECode CStructInfo::GetModuleInfo(
     /* [out] */ IModuleInfo ** ppModuleInfo)
 {
     if (m_pCClsModule) {
@@ -285,34 +199,31 @@ ECode CStructRefInfo::GetModuleInfo(
     }
 }
 
-ECode CStructRefInfo::GetFieldCount(
+ECode CStructInfo::GetFieldCount(
     /* [out] */ Int32 * pCount)
 {
     if (!pCount) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pCount = m_pFieldNames->GetUsed();
+    *pCount = m_pFieldNames->GetLength();
 
     return NOERROR;
 }
 
-ECode CStructRefInfo::GetAllFieldInfos(
-    /* [out] */ BufferOf<IFieldInfo *> * pFieldInfos)
+ECode CStructInfo::GetAllFieldInfos(
+    /* [out] */ ArrayOf<IFieldInfo *> * pFieldInfos)
 {
-    if (!pFieldInfos || !pFieldInfos->GetCapacity()) {
+    if (!pFieldInfos || !pFieldInfos->GetLength()) {
         return E_INVALID_ARGUMENT;
     }
 
     pFieldInfos->Copy(m_pFieldInfos);
-    for (int i = 0; i < pFieldInfos->GetUsed(); i++) {
-        (*pFieldInfos)[i]->AddRef();
-    }
 
     return NOERROR;
 }
 
-ECode CStructRefInfo::GetFieldInfo(
+ECode CStructInfo::GetFieldInfo(
     /* [in] */ CString name,
     /* [out] */ IFieldInfo ** ppFieldInfo)
 {
@@ -320,8 +231,8 @@ ECode CStructRefInfo::GetFieldInfo(
         return E_INVALID_ARGUMENT;
     }
 
-    for (int i = 0; i < m_pFieldNames->GetUsed(); i++) {
-        if ((*m_pFieldNames)[i].Compare(name) == 0) {
+    for (Int32 i = 0; i < m_pFieldNames->GetLength(); i++) {
+        if ((*m_pFieldNames)[i].Equals(name)) {
             *ppFieldInfo = (IFieldInfo *)(*m_pFieldInfos)[i];
             (*ppFieldInfo)->AddRef();
             return NOERROR;
@@ -331,26 +242,26 @@ ECode CStructRefInfo::GetFieldInfo(
     return E_DOES_NOT_EXIST;
 }
 
-ECode CStructRefInfo::GetMaxAlignSize(
+ECode CStructInfo::GetMaxAlignSize(
     /* [out] */ MemorySize * pAlignSize)
 {
     Int32 size = 0, align = 1;
 
     CarDataType dataType;
-    for (int i = 0; i < m_pFieldTypeInfos->GetUsed(); i++) {
+    for (Int32 i = 0; i < m_pFieldTypeInfos->GetLength(); i++) {
         ((IDataTypeInfo *)(*m_pFieldTypeInfos)[i])->GetDataType(&dataType);
         if (dataType == CarDataType_Struct) {
-            ((CStructRefInfo *)(*m_pFieldTypeInfos)[i]) \
+            ((CStructInfo *)(*m_pFieldTypeInfos)[i]) \
                 ->GetMaxAlignSize(&size);
         }
         else if (dataType == CarDataType_ArrayOf
                 || dataType == CarDataType_BufferOf
                 || dataType == CarDataType_MemoryBuf) {
-            ((CCarArrayRefInfo *)(*m_pFieldTypeInfos)[i]) \
+            ((CCarArrayInfo *)(*m_pFieldTypeInfos)[i]) \
                 ->GetMaxAlignSize(&size);
         }
         else if (dataType == CarDataType_CppVector) {
-            ((CCppVectorRefInfo *)(*m_pFieldTypeInfos)[i]) \
+            ((CCppVectorInfo *)(*m_pFieldTypeInfos)[i]) \
                 ->GetMaxAlignSize(&size);
         }
         else {
@@ -367,17 +278,17 @@ ECode CStructRefInfo::GetMaxAlignSize(
     return NOERROR;
 }
 
-ECode CStructRefInfo::InitFieldInfos()
+ECode CStructInfo::InitFieldInfos()
 {
-    Int32 i = 0, count = m_pFieldTypeInfos->GetUsed();
-    m_pFieldInfos = BufferOf<IFieldInfo *>::Alloc(count);
+    Int32 i = 0, count = m_pFieldTypeInfos->GetLength();
+    m_pFieldInfos = ArrayOf<IFieldInfo *>::Alloc(count);
     if (m_pFieldInfos == NULL) {
         return E_OUT_OF_MEMORY;
     }
-    memset(m_pFieldInfos->GetPayload(), 0, count * sizeof(PInterface));
-    m_pFieldInfos->SetUsed(count);
 
     for (i = 0; i < count; i++) {
+        // do not use m_pFieldInfos->Set(i, xxx), because it will call
+        // xxx->AddRef()
         (*m_pFieldInfos)[i] = new CFieldInfo(this, (*m_pFieldNames)[i],
             (IDataTypeInfo*)(*m_pFieldTypeInfos)[i]);
         if (!(*m_pFieldInfos)[i]) goto EExit;
@@ -389,7 +300,7 @@ EExit:
     for (i = 0; i < count; i++) {
         if ((*m_pFieldInfos)[i]) delete (*m_pFieldInfos)[i];
     }
-    BufferOf<IFieldInfo *>::Free(m_pFieldInfos);
+    ArrayOf<IFieldInfo *>::Free(m_pFieldInfos);
     m_pFieldInfos = NULL;
 
     return NOERROR;
@@ -406,9 +317,9 @@ CAR_INLINE UInt32 AdjuctElemOffset(UInt32 uOffset, UInt32 uElemSize, UInt32 uAli
     return uOffset;
 }
 
-ECode CStructRefInfo::InitFieldElement()
+ECode CStructInfo::InitFieldElement()
 {
-    Int32 count = m_pFieldTypeInfos->GetUsed();
+    Int32 count = m_pFieldTypeInfos->GetLength();
     m_pStructFieldDesc = new StructFieldDesc[count];
     if (!m_pStructFieldDesc) {
         return E_OUT_OF_MEMORY;
@@ -425,21 +336,21 @@ ECode CStructRefInfo::InitFieldElement()
     for (int i = 0; i < count; i++) {
         ((IDataTypeInfo *)(*m_pFieldTypeInfos)[i])->GetDataType(&dataType);
         if (dataType == CarDataType_Struct) {
-            ((CStructRefInfo *)(*m_pFieldTypeInfos)[i]) \
+            ((CStructInfo *)(*m_pFieldTypeInfos)[i]) \
                 ->GetMaxAlignSize(&elemtAlign);
-            ((CStructRefInfo *)(*m_pFieldTypeInfos)[i])->GetSize(&elemtSize);
+            ((CStructInfo *)(*m_pFieldTypeInfos)[i])->GetSize(&elemtSize);
         }
         else if (dataType == CarDataType_ArrayOf
                 || dataType == CarDataType_BufferOf
                 || dataType == CarDataType_MemoryBuf) {
-            ((CCarArrayRefInfo *)(*m_pFieldTypeInfos)[i]) \
+            ((CCarArrayInfo *)(*m_pFieldTypeInfos)[i]) \
                 ->GetMaxAlignSize(&elemtAlign);
-            ((CCarArrayRefInfo *)(*m_pFieldTypeInfos)[i])->GetSize(&elemtSize);
+            ((CCarArrayInfo *)(*m_pFieldTypeInfos)[i])->GetSize(&elemtSize);
         }
         else if (dataType == CarDataType_CppVector) {
-            ((CCppVectorRefInfo *)(*m_pFieldTypeInfos)[i]) \
+            ((CCppVectorInfo *)(*m_pFieldTypeInfos)[i]) \
                 ->GetMaxAlignSize(&elemtAlign);
-            ((CCppVectorRefInfo *)(*m_pFieldTypeInfos)[i])->GetSize(&elemtSize);
+            ((CCppVectorInfo *)(*m_pFieldTypeInfos)[i])->GetSize(&elemtSize);
         }
         else {
             ((IDataTypeInfo *)(*m_pFieldTypeInfos)[i])->GetSize(&elemtSize);
@@ -454,7 +365,7 @@ ECode CStructRefInfo::InitFieldElement()
         m_pStructFieldDesc[i].pos = uOffset;
         uOffset += m_pStructFieldDesc[i].size;
 
-        m_pStructFieldDesc[i].pszName = (char *)(const char *)(*m_pFieldNames)[i];
+        m_pStructFieldDesc[i].pszName = (char *)(*m_pFieldNames)[i].string();
     }
 
     m_uSize = AdjuctElemOffset(uOffset, align, align);
@@ -462,28 +373,27 @@ ECode CStructRefInfo::InitFieldElement()
     return NOERROR;
 }
 
-ECode CStructRefInfo::CreateVarBox(
+ECode CStructInfo::CreateVarBox(
     /* [in] */ PVoid variableDescriptor,
     /* [out] */ IVariableOfStruct ** ppVariable)
 {
-    CVariableOfStruct *pStructBox = new CVariableOfStruct();
+    AutoPtr<CVariableOfStruct> pStructBox = new CVariableOfStruct();
     if (pStructBox == NULL) {
         return E_OUT_OF_MEMORY;
     }
 
     ECode ec = pStructBox->Init(this, variableDescriptor);
     if (FAILED(ec)) {
-        delete pStructBox;
         return ec;
     }
 
     *ppVariable = (IVariableOfStruct *)pStructBox;
-    pStructBox->AddRef();
+    (*ppVariable)->AddRef();
 
     return NOERROR;
 }
 
-ECode CStructRefInfo::CreateVariable(
+ECode CStructInfo::CreateVariable(
     /* [out] */ IVariableOfStruct ** ppVariable)
 {
     if (!ppVariable) {
@@ -493,7 +403,7 @@ ECode CStructRefInfo::CreateVariable(
     return CreateVarBox(NULL, ppVariable);
 }
 
-ECode CStructRefInfo::CreateVariableBox(
+ECode CStructInfo::CreateVariableBox(
     /* [in] */ PVoid variableDescriptor,
     /* [out] */ IVariableOfStruct ** ppVariable)
 {

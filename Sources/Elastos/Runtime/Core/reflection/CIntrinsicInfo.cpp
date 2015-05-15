@@ -6,21 +6,22 @@
 #include "CObjInfoList.h"
 #include "refutil.h"
 
+CIntrinsicInfo::CIntrinsicInfo(
+    /* [in] */ CarDataType dataType,
+    /* [in] */ UInt32 uSize)
+{
+    m_dataType = dataType;
+    m_uSize = uSize;
+}
+
 UInt32 CIntrinsicInfo::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CIntrinsicInfo::Release()
 {
-    Int32 nRef = atomic_dec(&m_cRef);
-
-    if (0 == nRef) {
-        delete this;
-    }
-    assert(nRef >= 0);
-    return nRef;
+    return ElLightRefBase::Release();
 }
 
 PInterface CIntrinsicInfo::Probe(
@@ -44,23 +45,14 @@ ECode CIntrinsicInfo::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CIntrinsicInfo::CIntrinsicInfo(
-    /* [in] */ CarDataType dataType,
-    /* [in] */ UInt32 uSize)
-{
-    m_dataType = dataType;
-    m_uSize = uSize;
-    m_cRef = 0;
-}
-
 ECode CIntrinsicInfo::GetName(
-    /* [out] */ StringBuf * pName)
+    /* [out] */ String * pName)
 {
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    pName->Copy(g_cDataTypeList[m_dataType].name);
+    *pName = g_cDataTypeList[m_dataType].name;
     return NOERROR;
 }
 

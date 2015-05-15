@@ -751,15 +751,14 @@ bool isValidMiddleName(const char* pszName)
 
 bool isValidSuffix(const char* pszName)
 {
-    if (!strcmp("dll", pszName)) return true;
-    if (!strcmp("wgt", pszName)) return true;
+    if (!strcmp("eco", pszName)) return true;
     return false;
 }
 
 /*
  * <LastName>   ::= <ModuleName> "." <Suffix>
  * <ModuleName> ::= <ID>
- * <Suffix>     ::= "dll" | "wgt"
+ * <Suffix>     ::= "eco"
  */
 bool isValidLastName(const char* pszName)
 {

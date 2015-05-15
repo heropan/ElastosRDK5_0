@@ -7,11 +7,19 @@
 
 #include "CClsModule.h"
 
-class CVariableOfCppVector :
-    public ICppVectorSetter,
-    public ICppVectorGetter
+class CVariableOfCppVector
+    : public ElLightRefBase
+    , public ICppVectorSetter
+    , public ICppVectorGetter
 {
 public:
+    CVariableOfCppVector(
+        /* [in] */ IDataTypeInfo  *pElementTypeInfo,
+        /* [in] */ Int32 length,
+        /* [in] */ PVoid pVarPtr);
+
+    virtual ~CVariableOfCppVector();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -22,6 +30,8 @@ public:
     CARAPI GetInterfaceID(
         /* [in] */ IInterface *pObject,
         /* [out] */ InterfaceID *pIID);
+
+    CARAPI Init();
 
 //--------------Setter----------------------------------------------------------
     CARAPI ZeroAllElements();
@@ -197,26 +207,15 @@ public:
         /* [in] */ Boolean bSetter,
         /* [out] */ IInterface ** ppSGetter);
 
-    CARAPI Init();
-
-    CVariableOfCppVector(
-        /* [in] */ IDataTypeInfo  *pElementTypeInfo,
-        /* [in] */ Int32 length,
-        /* [in] */ PVoid pVarPtr);
-
-    virtual ~CVariableOfCppVector();
-
 private:
-    IDataTypeInfo  *m_pElementTypeInfo;
-    CarDataType     m_dataType;
-    PVoid           m_pVarPtr;
-    UInt32          m_uSize;
-    Int32           m_iElementSize;
-    Int32           m_iLength;
+    AutoPtr<IDataTypeInfo> m_pElementTypeInfo;
+    CarDataType            m_dataType;
+    PVoid                  m_pVarPtr;
+    UInt32                 m_uSize;
+    Int32                  m_iElementSize;
+    Int32                  m_iLength;
 
-    IInterface **m_pCppVectorSGetters;
-
-    Int32           m_cRef;
+    IInterface           **m_pCppVectorSGetters;
 };
 
 #endif // __CVARIABLEOFCPPVECTOR_H__

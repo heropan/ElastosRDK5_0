@@ -7,9 +7,15 @@
 
 #include "CEntryList.h"
 
-class CEnumRefInfo : public IEnumInfo
+class CEnumInfo
+    : public ElLightRefBase
+    , public IEnumInfo
 {
 public:
+    CEnumInfo();
+
+    virtual ~CEnumInfo();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -21,6 +27,15 @@ public:
         /* [in] */ IInterface *pObject,
         /* [out] */ InterfaceID *pIID);
 
+    CARAPI InitStatic(
+        /* [in] */ CClsModule * pCClsModule,
+        /* [in] */ EnumDirEntry *pEnumDirEntry);
+
+    CARAPI InitDynamic(
+        /* [in] */ const String& name,
+        /* [in] */ ArrayOf<String>* itemNames,
+        /* [in] */ ArrayOf<Int32>* itemValues);
+
     CARAPI GetSize(
         /* [out] */ MemorySize * pSize);
 
@@ -28,7 +43,7 @@ public:
         /* [out] */ CarDataType * pDataType);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetModuleInfo(
         /* [out] */ IModuleInfo ** ppModuleInfo);
@@ -37,7 +52,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllItemInfos(
-        /* [out] */ BufferOf<IEnumItemInfo *> * pItemInfos);
+        /* [out] */ ArrayOf<IEnumItemInfo *> * pItemInfos);
 
     CARAPI GetItemInfo(
         /* [in] */ CString name,
@@ -45,31 +60,16 @@ public:
 
     CARAPI InitItemInfos();
 
-    CARAPI InitStatic(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ EnumDirEntry *pEnumDirEntry);
-
-    CARAPI InitDynamic(
-        /* [in] */ CString name,
-        /* [in] */ const BufferOf<CString>& itemNames,
-        /* [in] */ const BufferOf<Int32>& itemValues);
-
-    CEnumRefInfo();
-
-    virtual ~CEnumRefInfo();
-
-    BufferOf<CString>     *m_pItemNames;
-    BufferOf<Int32>      *m_pItemValues;
+public:
+    AutoPtr< ArrayOf<String> > m_pItemNames;
+    AutoPtr< ArrayOf<Int32> >  m_pItemValues;
 
 private:
-    CClsModule      *m_pCClsModule;
-    EnumDirEntry    *m_pEnumDirEntry;
-    BufferOf<IEnumItemInfo *>     *m_pItemInfos;
+    AutoPtr<CClsModule>        m_pCClsModule;
+    EnumDirEntry              *m_pEnumDirEntry;
+    ArrayOf<IEnumItemInfo *>  *m_pItemInfos;
 
-    char            *m_pName;
-    char            *m_pBuf;
-
-    Int32            m_cRef;
+    String                     m_pName;
 };
 
 #endif // __CENUMINFO_H__

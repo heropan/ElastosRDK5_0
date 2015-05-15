@@ -9,12 +9,19 @@
 
 _ELASTOS_NAMESPACE_USING
 
-class CVariableOfStringBuf  :
-    public IVariableOfStringBuf,
-    public IStringBufSetter,
-    public IStringBufGetter
+class CVariableOfStringBuf
+    : public ElLightRefBase
+    , public IVariableOfStringBuf
+    , public IStringBufSetter
+    , public IStringBufGetter
 {
 public:
+    CVariableOfStringBuf(
+        /* [in] */ PStringBuf psb,
+        /* [in] */ Boolean bAlloc);
+
+    virtual ~CVariableOfStringBuf();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -61,17 +68,9 @@ public:
     CARAPI GetData(
         /* [out] */ StringBuf * sBuf);
 
-    CVariableOfStringBuf(
-        /* [in] */ PStringBuf psb,
-        /* [in] */ Boolean bAlloc);
-
-    virtual ~CVariableOfStringBuf();
-
 private:
     PStringBuf     m_psb;
-    Boolean         m_bAlloc;
-
-    Int32          m_cRef;
+    Boolean        m_bAlloc;
 };
 
 #endif // __CVARIABLEOFSTRINGBUF_H__

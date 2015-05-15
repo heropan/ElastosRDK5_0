@@ -14,9 +14,17 @@ struct CBMethodDesc
     UInt32 uEventNum;
 };
 
-class CClassInfo : public IClassInfo
+class CClassInfo
+    : public ElLightRefBase
+    , public IClassInfo
 {
 public:
+    CClassInfo(
+        /* [in] */ CClsModule * pCClsModule,
+        /* [in] */ ClassDirEntry *pClsDirEntry);
+
+    virtual ~CClassInfo();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -28,8 +36,10 @@ public:
         /* [in] */ IInterface *pObject,
         /* [out] */ InterfaceID *pIID);
 
+    CARAPI Init();
+
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetId(
         /* [out] */ ClassID * pclsid);
@@ -74,7 +84,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllAspectInfos(
-        /* [out] */ BufferOf<IClassInfo *> * pAspectInfos);
+        /* [out] */ ArrayOf<IClassInfo *> * pAspectInfos);
 
     CARAPI GetAspectInfo(
         /* [in] */ CString name,
@@ -87,7 +97,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllAggregateeInfos(
-        /* [out] */ BufferOf<IClassInfo *> * pAggregateeInfos);
+        /* [out] */ ArrayOf<IClassInfo *> * pAggregateeInfos);
 
     CARAPI GetAggregateeInfo(
         /* [in] */ CString name,
@@ -97,7 +107,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllConstructorInfos(
-        /* [out] */ BufferOf<IConstructorInfo *> * pConstructorInfos);
+        /* [out] */ ArrayOf<IConstructorInfo *> * pConstructorInfos);
 
     CARAPI GetConstructorInfoByParamNames(
         /* [in] */ CString name,
@@ -111,7 +121,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllInterfaceInfos(
-        /* [out] */ BufferOf<IInterfaceInfo *> * pInterfaceInfos);
+        /* [out] */ ArrayOf<IInterfaceInfo *> * pInterfaceInfos);
 
     CARAPI GetInterfaceInfo(
         /* [in] */ CString name,
@@ -121,7 +131,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllCallbackInterfaceInfos(
-        /* [out] */ BufferOf<IInterfaceInfo *> * pCallbackInterfaceInfos);
+        /* [out] */ ArrayOf<IInterfaceInfo *> * pCallbackInterfaceInfos);
 
     CARAPI GetCallbackInterfaceInfo(
         /* [in] */ CString name,
@@ -131,7 +141,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllMethodInfos(
-        /* [out] */ BufferOf<IMethodInfo *> * pMethodInfos);
+        /* [out] */ ArrayOf<IMethodInfo *> * pMethodInfos);
 
     CARAPI GetMethodInfo(
         /* [in] */ CString name,
@@ -141,7 +151,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllCallbackMethodInfos(
-        /* [out] */ BufferOf<ICallbackMethodInfo *> * pCallbackMethodInfos);
+        /* [out] */ ArrayOf<ICallbackMethodInfo *> * pCallbackMethodInfos);
 
     CARAPI GetCallbackMethodInfo(
         /* [in] */ CString name,
@@ -149,8 +159,6 @@ public:
 
     CARAPI RemoveAllCallbackHandlers(
         /* [in] */ PInterface server);
-
-    CARAPI Init();
 
     CARAPI CreateObject(
         /* [out] */ PInterface * pObject);
@@ -161,26 +169,29 @@ public:
 
     CARAPI CreateIFList();
 
-    CARAPI AcquireSpecialMethodList(EntryType type, CEntryList **ppEntryList);
+    CARAPI AcquireSpecialMethodList(
+        /* [in] */ EntryType type,
+        /* [out] */ CEntryList ** ppEntryList);
 
     CARAPI AcquireAggregateeList();
+
     CARAPI AcquireAspectList();
+
     CARAPI AcquireMethodList();
+
     CARAPI AcquireInterfaceList();
+
     CARAPI AcquireCBInterfaceList();
+
     CARAPI AcquireConstructorList();
+
     CARAPI AcquireCBMethodList();
 
     CARAPI CreateObjInRgm(
         /* [in] */ PRegime rgm,
         /* [out] */ PInterface * pObject);
 
-    CClassInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ ClassDirEntry *pClsDirEntry);
-
-    virtual ~CClassInfo();
-
+public:
     ClassDirEntry   *m_pClassDirEntry;
     ClassID          m_clsId;
 
@@ -192,31 +203,27 @@ public:
     UInt32           m_uCBIFCount;
 
 private:
-    CClsModule      *m_pCClsModule;
-    CLSModule       *m_pClsMod;
-    ClassDescriptor *m_pDesc;
-    Int32            m_nBase;
+    AutoPtr<CClsModule>  m_pCClsModule;
+    CLSModule           *m_pClsMod;
+    ClassDescriptor     *m_pDesc;
+    Int32                m_nBase;
 
     char   m_szUrn[_MAX_PATH];
-
-
 
     UInt32 m_uMethodCount;
     UInt32 m_uCBMethodCount;
     UInt32 m_uCtorCount;
 
-    CEntryList *m_pAspectList;
-    CEntryList *m_pAggregateeList;
-    CEntryList *m_pMethodList;
-    CEntryList *m_pCBInterfaceList;
-    CEntryList *m_pInterfaceList;
-    CEntryList *m_pCtorList;
-    CEntryList *m_pCBMethodList;
+    AutoPtr<CEntryList> m_pAspectList;
+    AutoPtr<CEntryList> m_pAggregateeList;
+    AutoPtr<CEntryList> m_pMethodList;
+    AutoPtr<CEntryList> m_pCBInterfaceList;
+    AutoPtr<CEntryList> m_pInterfaceList;
+    AutoPtr<CEntryList> m_pCtorList;
+    AutoPtr<CEntryList> m_pCBMethodList;
 
-    CClassInfo *m_pCtorClassInfo;
-    IClassInfo *m_pGenericInfo;
-
-    Int32      m_cRef;
+    AutoPtr<CClassInfo> m_pCtorClassInfo;
+    AutoPtr<IClassInfo> m_pGenericInfo;
 };
 
 #endif // __CCLASSINFO_H__

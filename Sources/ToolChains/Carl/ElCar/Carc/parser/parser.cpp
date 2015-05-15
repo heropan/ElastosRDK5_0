@@ -5979,7 +5979,7 @@ int P_CAR(const char *pszModuleName, BOOL bNested)
                     else pszUunm = g_szCurrentToken;
                 }
                 else {
-                    //if g_szCurrentToken is "Elastos:System:Elastos.Runtime.CarRuntime.eco",
+                    //if g_szCurrentToken is "Elastos:System:Elastos.Runtime.eco",
                     //we delete prefix "Elastos:System:" in order to
                     //make function IsElastosUunm in locmod.cpp work correctly.
                     pszUunm = "Elastos.Runtime.eco";

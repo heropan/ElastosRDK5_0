@@ -7,9 +7,15 @@
 
 #include "refutil.h"
 
-class CArgumentList : public IArgumentList
+class CArgumentList
+    : public ElLightRefBase
+    , public IArgumentList
 {
 public:
+    CArgumentList();
+
+    virtual ~CArgumentList();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -20,6 +26,13 @@ public:
     CARAPI GetInterfaceID(
         /* [in] */ IInterface *pObject,
         /* [out] */ InterfaceID *pIID);
+
+    CARAPI Init(
+        /* [in] */ IFunctionInfo * pFunctionInfo,
+        /* [in] */ ParmElement * pParamElem,
+        /* [in] */ UInt32 uParamCount,
+        /* [in] */ UInt32 uParamBufSize,
+        /* [in] */ Boolean bMethodInfo);
 
     CARAPI GetFunctionInfo(
         /* [out] */ IFunctionInfo ** ppFunctionInfo);
@@ -203,26 +216,15 @@ public:
         /* [in] */ ParamIOAttribute attrib,
         /* [in] */ Int32 iPointer = 0);
 
-    CARAPI Init(
-        /* [in] */ IFunctionInfo *pFunctionInfo,
-        /* [in] */ ParmElement *pParamElem,
-        /* [in] */ UInt32 uParamCount,
-        /* [in] */ UInt32 uParamBufSize,
-        /* [in] */ Boolean bMethodInfo);
-
-    CArgumentList();
-    virtual ~CArgumentList();
-
-    Byte  *m_pParamBuf;
+public:
+    Byte           *m_pParamBuf;
 
 private:
     ParmElement    *m_pParamElem;
     UInt32          m_uParamCount;
     UInt32          m_uParamBufSize;
-    IFunctionInfo  *m_pFunctionInfo;
+    AutoPtr<IFunctionInfo>  m_pFunctionInfo;
     Boolean         m_bMethodInfo;
-
-    Int32           m_cRef;
 };
 
 #endif // __CARGLIST_H__

@@ -7,12 +7,17 @@
 
 #include "refutil.h"
 
-class CVariableOfStruct :
-    public IVariableOfStruct,
-    public IStructSetter,
-    public IStructGetter
+class CVariableOfStruct
+    : public ElLightRefBase
+    , public IVariableOfStruct
+    , public IStructSetter
+    , public IStructGetter
 {
 public:
+    CVariableOfStruct();
+
+    virtual ~CVariableOfStruct();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -23,6 +28,10 @@ public:
     CARAPI GetInterfaceID(
         /* [in] */ IInterface *pObject,
         /* [out] */ InterfaceID *pIID);
+
+    CARAPI Init(
+        /* [in] */ IStructInfo *pStructInfo,
+        /* [in] */ PVoid pVarBuf);
 
     CARAPI GetTypeInfo(
         /* [out] */ IDataTypeInfo ** ppTypeInfo);
@@ -38,10 +47,6 @@ public:
 
     CARAPI GetGetter(
         /* [out] */ IStructGetter ** ppGetter);
-
-    CARAPI Init(
-        /* [in] */ IStructInfo *pStructInfo,
-        /* [in] */ PVoid pVarBuf);
 
 //--------------Setter----------------------------------------------------------
 
@@ -204,21 +209,15 @@ public:
         /* [in] */ Boolean bSetter,
         /* [out] */ IInterface ** ppSGetter);
 
-    CVariableOfStruct();
-
-    virtual ~CVariableOfStruct();
-
 private:
-    IStructInfo     *m_pStructInfo;
-    StructFieldDesc  *m_pStructFieldDesc;
-    PByte   m_pVarBuf;
-    Boolean m_bAlloc;
-    Int32  m_iCount;
-    UInt32  m_uVarSize;
+    AutoPtr<IStructInfo>  m_pStructInfo;
+    StructFieldDesc      *m_pStructFieldDesc;
+    PByte                 m_pVarBuf;
+    Boolean               m_bAlloc;
+    Int32                 m_iCount;
+    UInt32                m_uVarSize;
 
-    IInterface **m_pCppVectorSGetters;
-
-    Int32 m_cRef;
+    IInterface          **m_pCppVectorSGetters;
 };
 
 #endif // __CSTRUCTVARIABLE_H__

@@ -10,6 +10,11 @@
 class CEnumItemInfo : public IEnumItemInfo
 {
 public:
+    CEnumItemInfo(
+        /* [in] */ IEnumInfo * pEnumInfo,
+        /* [in] */ const String& name,
+        /* [in] */ Int32 value);
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -22,7 +27,7 @@ public:
         /* [out] */ InterfaceID *pIID);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetEnumInfo(
         /* [out] */ IEnumInfo ** ppEnumInfo);
@@ -30,19 +35,10 @@ public:
     CARAPI GetValue(
         /* [out] */ Int32 * pValue);
 
-    CEnumItemInfo(
-        /* [in] */ IEnumInfo  * pEnumInfo,
-        /* [in] */ CString name,
-        /* [in] */ Int32 value);
-
-    virtual ~CEnumItemInfo();
-
 private:
-    IEnumInfo  *m_pEnumInfo;
+    IEnumInfo *m_pEnumInfo;
     String     m_sName;
     Int32      m_iValue;
-
-    Int32      m_cRef;
 };
 
 #endif // __CENUMITEMINFO_H__

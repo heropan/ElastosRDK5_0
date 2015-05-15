@@ -7,7 +7,9 @@
 
 #include "CMethodInfo.h"
 
-class CConstructorInfo : public IConstructorInfo
+class CConstructorInfo
+    : public ElLightRefBase
+    , public IConstructorInfo
 {
 public:
     CARAPI_(PInterface) Probe(
@@ -21,14 +23,20 @@ public:
         /* [in] */ IInterface *pObject,
         /* [out] */ InterfaceID *pIID);
 
+    CARAPI Init(
+        /* [in] */ CClsModule * pCClsModule,
+        /* [in] */ MethodDescriptor *pMethodDescriptor,
+        /* [in] */ UInt32 uIndex,
+        /* [in] */ ClassID *pClsId);
+
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetParamCount(
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllParamInfos(
-        /* [out] */ BufferOf<IParamInfo *> * pParamInfos);
+        /* [out] */ ArrayOf<IParamInfo *> * pParamInfos);
 
     CARAPI GetParamInfoByIndex(
         /* [in] */ Int32 index,
@@ -57,27 +65,17 @@ public:
         /* [in] */ IArgumentList * pArgumentList,
         /* [out] */ PInterface * pObject);
 
-    CConstructorInfo():m_cRef(0){}
+public:
+    AutoPtr<CMethodInfo> m_pMethodInfo;
 
-    CARAPI Init(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ MethodDescriptor *pMethodDescriptor,
-        /* [in] */ UInt32 uIndex,
-        /* [in] */ ClassID *pClsId);
-
-    virtual ~CConstructorInfo();
-
-    CMethodInfo    *m_pMethodInfo;
-
-    char m_szUrn2[_MAX_PATH];
-    ClassID m_instClsId;
+    char                 m_szUrn2[_MAX_PATH];
+    ClassID              m_instClsId;
 
 private:
-    Int32           m_nOutParamIndex;
+    Int32                m_nOutParamIndex;
 
-    char    m_szUrn[_MAX_PATH];
-    ClassID m_clsId;
-    Int32     m_cRef;
+    char                 m_szUrn[_MAX_PATH];
+    ClassID              m_clsId;
 };
 
 #endif // __CCONSTRUCTORINFO_H__

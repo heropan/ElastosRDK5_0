@@ -5,6 +5,15 @@
 #include "CFieldInfo.h"
 #include "CObjInfoList.h"
 
+CFieldInfo::CFieldInfo(
+    /* [in] */ IStructInfo * pStructInfo,
+    /* [in] */ const String& name,
+    /* [in] */ IDataTypeInfo *pTypeInfo)
+    : m_pStructInfo(pStructInfo)
+    , m_sName(name)
+    , m_pTypeInfo(pTypeInfo)
+{}
+
 UInt32 CFieldInfo::AddRef()
 {
     return m_pStructInfo->AddRef();
@@ -36,29 +45,14 @@ ECode CFieldInfo::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CFieldInfo::CFieldInfo(
-    /* [in] */ IStructInfo * pStructInfo,
-    /* [in] */ CString name,
-    /* [in] */ IDataTypeInfo *pTypeInfo)
-{
-    m_pStructInfo = pStructInfo;
-    m_sName = name;
-    m_pTypeInfo = pTypeInfo;
-    m_cRef = 0;
-}
-
-CFieldInfo::~CFieldInfo()
-{
-}
-
 ECode CFieldInfo::GetName(
-    /* [out] */ StringBuf * pName)
+    /* [out] */ String * pName)
 {
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    pName->Copy(m_sName);
+    *pName = m_sName;
     return NOERROR;
 }
 
@@ -70,6 +64,6 @@ ECode CFieldInfo::GetTypeInfo(
     }
 
     *ppTypeInfo = m_pTypeInfo;
-    m_pTypeInfo->AddRef();
+    (*ppTypeInfo)->AddRef();
     return NOERROR;
 }

@@ -7,9 +7,15 @@
 
 #include "CClsModule.h"
 
-class CCppVectorRefInfo : public ICppVectorInfo
+class CCppVectorInfo
+    : public ElLightRefBase
+    , public ICppVectorInfo
 {
 public:
+    CCppVectorInfo(
+        /* [in] */ IDataTypeInfo *pElementTypeInfo,
+        /* [in] */ Int32 length);
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -22,7 +28,7 @@ public:
         /* [out] */ InterfaceID *pIID);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetSize(
         /* [out] */ MemorySize * pSize);
@@ -39,19 +45,10 @@ public:
     CARAPI GetMaxAlignSize(
         /* [out] */ MemorySize * pAlignSize);
 
-    CCppVectorRefInfo(
-        /* [in] */ IDataTypeInfo *pElementTypeInfo,
-        /* [in] */ Int32 length);
-
-    virtual ~CCppVectorRefInfo();
-
 private:
-
-    IDataTypeInfo  *m_pElementTypeInfo;
+    AutoPtr<IDataTypeInfo>  m_pElementTypeInfo;
     Int32          m_iLength;
     Int32          m_iSize;
-
-    Int32          m_cRef;
 };
 
 #endif // __CCPPVECTORINFO_H__

@@ -7,9 +7,15 @@
 
 #include "CClsModule.h"
 
-class CConstantInfo : public IConstantInfo
+class CConstantInfo
+    : public ElLightRefBase
+    , public IConstantInfo
 {
 public:
+    CConstantInfo(
+        /* [in] */ CClsModule * pCClsModule,
+        /* [in] */ ConstDirEntry * pConstDirEntry);
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -22,7 +28,7 @@ public:
         /* [out] */ InterfaceID *pIID);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetValue(
         /* [out] */ Int32 * pValue);
@@ -30,17 +36,9 @@ public:
     CARAPI GetModuleInfo(
         /* [out] */ IModuleInfo ** ppModuleInfo);
 
-    CConstantInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ ConstDirEntry  *pConstDirEntry);
-
-    virtual ~CConstantInfo();
-
 private:
-    CClsModule     *m_pCClsModule;
-    ConstDirEntry  *m_pConstDirEntry;
-
-    Int32 m_cRef;
+    AutoPtr<CClsModule>  m_pCClsModule;
+    ConstDirEntry       *m_pConstDirEntry;
 };
 
 #endif // __CCONSTANTINFO_H__

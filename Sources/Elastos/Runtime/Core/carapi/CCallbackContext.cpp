@@ -326,14 +326,11 @@ ECode CCallbackContext::SendCallbackEvent(
 
 ECode CCallbackContext::RequestToFinish(Int32 flag)
 {
-    //ThreadEvent eventType = ThreadEvent_RequestToQuit;
     if (flag ==CallbackContextFinish_Nice) {
         m_bRequestToQuit = TRUE;
-        //eventType = ThreadEvent_RequestToQuit;
     }
     else if (flag == CallbackContextFinish_ASAP) {
         m_bRequestToQuit = FALSE;
-        //eventType = ThreadEvent_ForceToQuit;
     }
     else return E_NOT_IMPLEMENTED;
 

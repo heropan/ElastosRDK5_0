@@ -306,20 +306,11 @@ EXPORTS
     EIID_CALLBACK_TRIGGER                           @517    NONAME  DATA
     EIID_SUPER_CALLBACK_CONNECTOR                   @518    NONAME  DATA
 
-    ECLSID_AObjectEx                                @520    NONAME  DATA
-    ECLSID_AObjectContainer                         @521    NONAME  DATA
-    ECLSID_AObjectContainerClassObject              @522    NONAME  DATA
-
     EIID_IWeakReference                             @523    NONAME  DATA
     EIID_IWeakReferenceSource                       @524    NONAME  DATA
 
-    EIID_IObjectEx                                  @565    NONAME  DATA
-    EIID_IObjectContainer                           @566    NONAME  DATA
     EIID_ICallbackSink                              @567    NONAME  DATA
     EIID_IRegime                                    @569    NONAME  DATA
-    EIID_IAObjectContainerClassObject               @570    NONAME  DATA
-    EIID_IObjectEnumerator                          @580    NONAME  DATA
-    EIID_IStringEnumerator                          @581    NONAME  DATA
 
     EIID_IDataTypeInfo                              @607    NONAME  DATA
     EIID_ILocalPtrInfo                              @608    NONAME  DATA

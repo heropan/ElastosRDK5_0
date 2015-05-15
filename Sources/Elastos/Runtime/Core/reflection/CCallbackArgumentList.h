@@ -7,9 +7,15 @@
 
 #include "refutil.h"
 
-class CCallbackArgumentList : public ICallbackArgumentList
+class CCallbackArgumentList
+    : public ElLightRefBase
+    , public ICallbackArgumentList
 {
 public:
+    CCallbackArgumentList();
+
+    virtual ~CCallbackArgumentList();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -20,6 +26,12 @@ public:
     CARAPI GetInterfaceID(
         /* [in] */ IInterface *pObject,
         /* [out] */ InterfaceID *pIID);
+
+    CARAPI Init(
+        /* [in] */ ICallbackMethodInfo *pCallbackMethodInfo,
+        /* [in] */ ParmElement *pParamElem,
+        /* [in] */ UInt32 uParamCount,
+        /* [in] */ UInt32 uParamBufSize);
 
     CARAPI GetCallbackMethodInfo(
         /* [out] */ ICallbackMethodInfo ** ppCallbackMethodInfo);
@@ -108,24 +120,14 @@ public:
         /* [in] */ Int32 index,
         /* [out] */ PInterface * pValue);
 
-    CARAPI Init(
-        /* [in] */ ICallbackMethodInfo *pCallbackMethodInfo,
-        /* [in] */ ParmElement *pParamElem,
-        /* [in] */ UInt32 uParamCount,
-        /* [in] */ UInt32 uParamBufSize);
-
-    CCallbackArgumentList();
-    virtual ~CCallbackArgumentList();
-
+public:
     Byte  *m_pParamBuf;
     UInt32 m_uParamBufSize;
 
 private:
-    ParmElement          *m_pParamElem;
-    UInt32                m_uParamCount;
-    ICallbackMethodInfo  *m_pCallbackMethodInfo;
-
-    Int32                m_cRef;
+    ParmElement                  *m_pParamElem;
+    UInt32                        m_uParamCount;
+    AutoPtr<ICallbackMethodInfo>  m_pCallbackMethodInfo;
 };
 
 #endif // __CCALLBACKARGLIST_H__

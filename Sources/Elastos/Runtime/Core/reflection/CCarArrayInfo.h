@@ -7,9 +7,16 @@
 
 #include "CClsModule.h"
 
-class CCarArrayRefInfo : public ICarArrayInfo
+class CCarArrayInfo
+    : public ElLightRefBase
+    , public ICarArrayInfo
 {
 public:
+    CCarArrayInfo(
+        /* [in] */ CarDataType quintetType,
+        /* [in] */ IDataTypeInfo *pElementTypeInfo,
+        /* [in] */ CarDataType dataType = CarDataType_Struct);
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -22,7 +29,7 @@ public:
         /* [out] */ InterfaceID *pIID);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetSize(
         /* [out] */ MemorySize * pSize);
@@ -44,21 +51,12 @@ public:
     CARAPI GetMaxAlignSize(
         /* [out] */ MemorySize * pAlignSize);
 
-    CCarArrayRefInfo(
-        /* [in] */ CarDataType quintetType,
-        /* [in] */ IDataTypeInfo *pElementTypeInfo,
-        /* [in] */ CarDataType dataType = CarDataType_Struct);
-
-    virtual ~CCarArrayRefInfo();
-
 private:
-    CarQuintetFlag  m_carQuintetFlag;
+    CarQuintetFlag         m_carQuintetFlag;
 
-    IDataTypeInfo  *m_pElementTypeInfo;
-    CarDataType     m_elementDataType;
-    CarDataType     m_quintetType;
-
-    Int32 m_cRef;
+    AutoPtr<IDataTypeInfo> m_pElementTypeInfo;
+    CarDataType            m_elementDataType;
+    CarDataType            m_quintetType;
 };
 
 #endif // __CCARARRAYINFO_H__

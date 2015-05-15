@@ -12,18 +12,23 @@ extern CObjInfoList g_objInfoList;
 
 #define MAX_ITEM_COUNT 64
 
-class CObjInfoList
+class CObjInfoList : public ElLightRefBase
 {
 public:
+    CObjInfoList();
+
+    ~CObjInfoList();
+
     CARAPI_(UInt32) AddRef();
+
     CARAPI_(UInt32) Release();
 
     CARAPI AcquireModuleInfo(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IModuleInfo **ppModuleInfo);
 
     CARAPI RemoveModuleInfo(
-        /* [in] */ CString path);
+        /* [in] */ const String& path);
 
     CARAPI AcquireClassInfo(
         /* [in] */ CClsModule * pCClsModule,
@@ -39,9 +44,9 @@ public:
         /* [out] */ IInterface ** ppObject);
 
     CARAPI AcquireDynamicStructInfo(
-        /* [in] */ CString name,
-        /* [in] */ const BufferOf<CString>& fieldNames,
-        /* [in] */ const BufferOf<IDataTypeInfo *>& fieldTypeInfos,
+        /* [in] */ const String& name,
+        /* [in] */ ArrayOf<String>* fieldNames,
+        /* [in] */ ArrayOf<IDataTypeInfo*>* fieldTypeInfos,
         /* [out] */ IStructInfo **ppStructInfo);
 
     CARAPI RemoveStructInfo(
@@ -56,9 +61,9 @@ public:
         /* [in] */ EnumDirEntry *pEnumDirEntry);
 
     CARAPI AcquireDynamicEnumInfo(
-        /* [in] */ CString name,
-        /* [in] */ const BufferOf<CString>& itemNames,
-        /* [in] */ const BufferOf<Int32>& itemValues,
+        /* [in] */ const String& name,
+        /* [in] */ ArrayOf<String>* itemNames,
+        /* [in] */ ArrayOf<Int32>* itemValues,
         /* [out] */  IEnumInfo **ppEnumInfo);
 
     CARAPI DetachEnumInfo(
@@ -160,12 +165,12 @@ public:
         /* [in] */ ICarArrayInfo *pCarArrayInfo);
 
     CARAPI AddInfoNode(
-        IDataTypeInfo *pInfo,
-        InfoLinkNode **ppLinkHead);
+        /* [in] */ IDataTypeInfo *pInfo,
+        /* [out] */ InfoLinkNode **ppLinkHead);
 
     CARAPI DeleteInfoNode(
-        IDataTypeInfo *pInfo,
-        InfoLinkNode **ppLinkHead);
+        /* [in] */ IDataTypeInfo *pInfo,
+        /* [out] */ InfoLinkNode **ppLinkHead);
 
     CARAPI LockHashTable(
         /* [in] */ EntryType type);
@@ -175,10 +180,6 @@ public:
 
     CARAPI RemoveClsModule(
         /* [in] */ CString path);
-
-    CObjInfoList();
-
-    ~CObjInfoList();
 
 private:
     HashTable<IInterface *> m_hTypeAliasInfos;
@@ -221,8 +222,6 @@ private:
     InfoLinkNode       *m_pCCppVectorHead;
     InfoLinkNode       *m_pStructInfoHead;
     InfoLinkNode       *m_pCarArrayInfoHead;
-
-    Int32              m_cRef;
 };
 
 #endif // __COBJINFOLIST_H__

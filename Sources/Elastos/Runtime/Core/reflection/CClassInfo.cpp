@@ -6,16 +6,47 @@
 #include "CCallbackMethodInfo.h"
 #include "CConstructorInfo.h"
 
+CClassInfo::CClassInfo(
+    /* [in] */ CClsModule * pCClsModule,
+    /* [in] */ ClassDirEntry *pClsDirEntry)
+{
+    m_pCClsModule = pCClsModule;
+    m_pClsMod = m_pCClsModule->m_pClsMod;
+    m_pClassDirEntry = pClsDirEntry;
+    m_pIFList = NULL;
+    m_pCBIFList = NULL;
+
+    m_pCBMethodDesc = NULL;
+
+    m_uMethodCount = 0;
+    m_uCBMethodCount = 0;
+    m_uCBIFCount = 0;
+    m_uIFCount = 0;
+
+    m_nBase = m_pCClsModule->m_nBase;
+    m_pDesc = adjustClassDescAddr(m_nBase, m_pClassDirEntry->pDesc);
+
+    m_clsId.pUunm = m_szUrn;
+    m_clsId.clsid = m_pDesc->clsid;
+    strcpy(m_clsId.pUunm, adjustNameAddr(m_nBase, m_pClsMod->pszUunm));
+}
+
+CClassInfo::~CClassInfo()
+{
+    if (m_pCBMethodDesc) delete [] m_pCBMethodDesc;
+    if (m_pIFList) delete[] m_pIFList;
+    if (m_pCBIFList) delete[] m_pCBIFList;
+}
+
 UInt32 CClassInfo::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CClassInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_Class);
-    Int32 nRef = atomic_dec(&m_cRef);
+    Int32 nRef = atomic_dec(&mRef);
 
     if (0 == nRef) {
         g_objInfoList.RemoveClassInfo(m_pClassDirEntry);
@@ -47,79 +78,19 @@ ECode CClassInfo::GetInterfaceID(
     return E_NOT_IMPLEMENTED;
 }
 
-CClassInfo::CClassInfo(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ ClassDirEntry *pClsDirEntry)
-{
-    m_pCClsModule = pCClsModule;
-    m_pCClsModule->AddRef();
-    m_pClsMod = m_pCClsModule->m_pClsMod;
-    m_pClassDirEntry = pClsDirEntry;
-    m_pIFList = NULL;
-    m_pCBIFList = NULL;
-
-    m_pMethodList = NULL;
-    m_pAspectList = NULL;
-    m_pAggregateeList = NULL;
-    m_pCBInterfaceList = NULL;
-    m_pInterfaceList = NULL;
-    m_pCtorList = NULL;
-    m_pCBMethodList = NULL;
-    m_pCBMethodDesc = NULL;
-    m_pCtorClassInfo = NULL;
-    m_pGenericInfo = NULL;
-
-    m_uMethodCount = 0;
-    m_uCBMethodCount = 0;
-    m_uCBIFCount = 0;
-    m_uIFCount = 0;
-    m_cRef = 0;
-
-    m_nBase = m_pCClsModule->m_nBase;
-    m_pDesc = adjustClassDescAddr(m_nBase, m_pClassDirEntry->pDesc);
-
-    m_clsId.pUunm = m_szUrn;
-    m_clsId.clsid =  m_pDesc->clsid;
-    strcpy(m_clsId.pUunm, adjustNameAddr(m_nBase, m_pClsMod->pszUunm));
-}
-
-CClassInfo::~CClassInfo()
-{
-    if (m_pCClsModule) m_pCClsModule->Release();
-    if (m_pMethodList) m_pMethodList->Release();
-    if (m_pCBMethodList) m_pCBMethodList->Release();
-    if (m_pCBMethodDesc) {
-        delete [] m_pCBMethodDesc;
-    }
-    if (m_pIFList) delete[] m_pIFList;
-    if (m_pCBIFList) delete[] m_pCBIFList;
-
-    if (m_pAspectList) m_pAspectList->Release();
-    if (m_pAggregateeList) m_pAggregateeList->Release();
-    if (m_pCBInterfaceList) m_pCBInterfaceList->Release();
-    if (m_pInterfaceList) m_pInterfaceList->Release();
-    if (m_pCtorList) m_pCtorList->Release();
-
-    if (m_pCtorClassInfo) m_pCtorClassInfo->Release();
-    if (m_pGenericInfo) m_pGenericInfo->Release();
-}
-
 ECode CClassInfo::Init()
 {
-    ECode ec = CreateIFList();
-    if (FAILED(ec)) return ec;
-
-    return NOERROR;
+    return CreateIFList();
 }
 
 ECode CClassInfo::GetName(
-    /* [out] */ StringBuf * pName)
+    /* [out] */ String * pName)
 {
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    pName->Copy(adjustNameAddr(m_nBase, m_pClassDirEntry->pszName));
+    *pName = adjustNameAddr(m_nBase, m_pClassDirEntry->pszName);
     return NOERROR;
 }
 
@@ -131,7 +102,6 @@ ECode CClassInfo::GetId(
     }
 
     pclsid->clsid =  m_pDesc->clsid;
-
     strcpy(pclsid->pUunm,  adjustNameAddr(m_nBase, m_pClsMod->pszUunm));
 
     return NOERROR;
@@ -298,7 +268,6 @@ ECode CClassInfo::HasGeneric(
 
             if (*pbHasGeneric) {
                 m_pGenericInfo = pParentClassInfo;
-                m_pGenericInfo->AddRef();
                 break;
             }
             else {
@@ -321,7 +290,7 @@ ECode CClassInfo::GetGenericInfo(
     }
 
     *ppGenericInfo = m_pGenericInfo;
-    if (*ppGenericInfo) (*ppGenericInfo)->AddRef();
+    REFCOUNT_ADDREF(*ppGenericInfo);
 
     return NOERROR;
 }
@@ -351,6 +320,7 @@ ECode CClassInfo::GetAspectCount(
     }
 
     *pCount = m_pDesc->cAspects;
+
     return NOERROR;
 }
 
@@ -361,10 +331,9 @@ ECode CClassInfo::AcquireAspectList()
     if (!m_pAspectList) {
         m_pAspectList = new CEntryList(EntryType_Aspect,
             m_pDesc, m_pDesc->cAspects, m_pCClsModule);
-        if (m_pAspectList)
-            m_pAspectList->AddRef();
-        else
+        if (!m_pAspectList) {
             ec = E_OUT_OF_MEMORY;
+        }
     }
     g_objInfoList.UnlockHashTable(EntryType_Aspect);
 
@@ -372,7 +341,7 @@ ECode CClassInfo::AcquireAspectList()
 }
 
 ECode CClassInfo::GetAllAspectInfos(
-    /* [out] */ BufferOf<IClassInfo *> * pAspectInfos)
+    /* [out] */ ArrayOf<IClassInfo *> * pAspectInfos)
 {
     ECode ec = AcquireAspectList();
     if (FAILED(ec)) return ec;
@@ -423,6 +392,7 @@ ECode CClassInfo::GetAggregateeCount(
     }
 
     *pCount = m_pDesc->cAggregates;
+
     return NOERROR;
 }
 
@@ -433,10 +403,9 @@ ECode CClassInfo::AcquireAggregateeList()
     if (!m_pAggregateeList) {
         m_pAggregateeList = new CEntryList(EntryType_Aggregatee,
                 m_pDesc, m_pDesc->cAggregates, m_pCClsModule);
-        if (m_pAggregateeList)
-            m_pAggregateeList->AddRef();
-        else
+        if (!m_pAggregateeList) {
             ec = E_OUT_OF_MEMORY;
+        }
     }
     g_objInfoList.UnlockHashTable(EntryType_Aggregatee);
 
@@ -444,7 +413,7 @@ ECode CClassInfo::AcquireAggregateeList()
 }
 
 ECode CClassInfo::GetAllAggregateeInfos(
-    /* [out] */ BufferOf<IClassInfo *> * pAggregateeInfos)
+    /* [out] */ ArrayOf<IClassInfo *> * pAggregateeInfos)
 {
     ECode ec = AcquireAggregateeList();
     if (FAILED(ec)) return ec;
@@ -488,9 +457,9 @@ ECode CClassInfo::AcquireConstructorList()
             return ec;
         }
 
-        StringBuf_<_MAX_PATH> clsName;
-        clsName << adjustNameAddr(m_nBase, m_pClassDirEntry->pszName)
-                << "ClassObject";
+        String clsName;
+        clsName = adjustNameAddr(m_nBase, m_pClassDirEntry->pszName);
+        clsName += "ClassObject";
 
         ec = pModuleInfo->GetClassInfo(clsName, (IClassInfo**)&m_pCtorClassInfo);
     }
@@ -498,8 +467,9 @@ ECode CClassInfo::AcquireConstructorList()
 
     if (FAILED(ec)) return ec;
 
+    m_pCtorList = NULL;
     return m_pCtorClassInfo->AcquireSpecialMethodList(
-                EntryType_Constructor, &m_pCtorList);
+                EntryType_Constructor, (CEntryList**)&m_pCtorList);
 }
 
 ECode CClassInfo::GetConstructorCount(
@@ -523,14 +493,13 @@ ECode CClassInfo::GetConstructorCount(
 }
 
 ECode CClassInfo::GetAllConstructorInfos(
-    /* [out] */ BufferOf<IConstructorInfo *> * pConstructorInfos)
+    /* [out] */ ArrayOf<IConstructorInfo *> * pConstructorInfos)
 {
     if (!pConstructorInfos) {
         return E_INVALID_ARGUMENT;
     }
 
     if (!(m_pDesc->dwAttribs & ClassAttrib_hasctor)) {
-        pConstructorInfos->SetUsed(0);
         return NOERROR;
     }
 
@@ -540,8 +509,8 @@ ECode CClassInfo::GetAllConstructorInfos(
     ec = m_pCtorList->GetAllObjInfos((PTypeInfos)pConstructorInfos);
     if (FAILED(ec)) return ec;
 
-    Int32 used = pConstructorInfos->GetUsed();
-    for(Int32 i = 0; i < used;i++) {
+    Int32 size = pConstructorInfos->GetLength();
+    for (Int32 i = 0; i < size; i++) {
         CConstructorInfo *pCObj = (CConstructorInfo*)(*pConstructorInfos)[i];
         pCObj->m_instClsId.clsid = this->m_clsId.clsid;
         strcpy(pCObj->m_instClsId.pUunm, this->m_clsId.pUunm);
@@ -652,10 +621,9 @@ ECode CClassInfo::AcquireInterfaceList()
     if (!m_pInterfaceList) {
         m_pInterfaceList = new CEntryList(EntryType_ClassInterface,
             m_pDesc, m_uIFCount, m_pCClsModule, m_pIFList, m_uIFCount);
-        if (m_pInterfaceList)
-            m_pInterfaceList->AddRef();
-        else
+        if (m_pInterfaceList) {
             ec = E_OUT_OF_MEMORY;
+        }
     }
     g_objInfoList.UnlockHashTable(EntryType_ClassInterface);
 
@@ -663,7 +631,7 @@ ECode CClassInfo::AcquireInterfaceList()
 }
 
 ECode CClassInfo::GetAllInterfaceInfos(
-    /* [out] */ BufferOf<IInterfaceInfo *> * pInterfaceInfos)
+    /* [out] */ ArrayOf<IInterfaceInfo *> * pInterfaceInfos)
 {
     ECode ec = AcquireInterfaceList();
     if (FAILED(ec)) return ec;
@@ -694,6 +662,7 @@ ECode CClassInfo::GetCallbackInterfaceCount(
     }
 
     *pCount = m_uCBIFCount;
+
     return NOERROR;
 }
 
@@ -708,10 +677,9 @@ ECode CClassInfo::AcquireCBInterfaceList()
     if (!m_pCBInterfaceList) {
         m_pCBInterfaceList = new CEntryList(EntryType_ClassInterface,
             m_pDesc, m_uCBIFCount, m_pCClsModule, m_pCBIFList, m_uCBIFCount);
-        if (m_pCBInterfaceList)
-            m_pCBInterfaceList->AddRef();
-        else
+        if (!m_pCBInterfaceList) {
             ec = E_OUT_OF_MEMORY;
+        }
     }
     g_objInfoList.UnlockHashTable(EntryType_ClassInterface);
 
@@ -719,7 +687,7 @@ ECode CClassInfo::AcquireCBInterfaceList()
 }
 
 ECode CClassInfo::GetAllCallbackInterfaceInfos(
-    /* [out] */ BufferOf<IInterfaceInfo *> * pCallbackInterfaceInfos)
+    /* [out] */ ArrayOf<IInterfaceInfo *> * pCallbackInterfaceInfos)
 {
     ECode ec = AcquireCBInterfaceList();
     if (FAILED(ec)) return ec;
@@ -760,10 +728,13 @@ ECode CClassInfo::GetMethodCount(
 
 ECode CClassInfo::AcquireMethodList()
 {
-    return AcquireSpecialMethodList(EntryType_Method, &m_pMethodList);
+    m_pMethodList = NULL;
+    return AcquireSpecialMethodList(EntryType_Method, (CEntryList**)&m_pMethodList);
 }
 
-ECode CClassInfo::AcquireSpecialMethodList(EntryType type, CEntryList **ppEntryList)
+ECode CClassInfo::AcquireSpecialMethodList(
+    /* [in] */ EntryType type,
+    /* [out] */ CEntryList **ppEntryList)
 {
     ECode ec = NOERROR;
 
@@ -793,10 +764,12 @@ ECode CClassInfo::AcquireSpecialMethodList(EntryType type, CEntryList **ppEntryL
 
         *ppEntryList = new CEntryList(type,
             m_pDesc, uMethodCount, m_pCClsModule, pIFList, uListCount, this);
-        if (*ppEntryList)
+        if (*ppEntryList) {
             (*ppEntryList)->AddRef();
-        else
+        }
+        else {
             ec = E_OUT_OF_MEMORY;
+        }
     }
     g_objInfoList.UnlockHashTable(type);
 
@@ -804,7 +777,7 @@ ECode CClassInfo::AcquireSpecialMethodList(EntryType type, CEntryList **ppEntryL
 }
 
 ECode CClassInfo::GetAllMethodInfos(
-    /* [out] */ BufferOf<IMethodInfo *> * pMethodInfos)
+    /* [out] */ ArrayOf<IMethodInfo *> * pMethodInfos)
 {
     ECode ec = AcquireMethodList();
     if (FAILED(ec)) return ec;
@@ -850,10 +823,9 @@ ECode CClassInfo::AcquireCBMethodList()
         m_pCBMethodList = new CEntryList(EntryType_CBMethod,
             m_pClassDirEntry->pDesc, m_uCBMethodCount, m_pCClsModule,
             m_pCBIFList, m_uCBIFCount, this);
-        if (m_pCBMethodList)
-            m_pCBMethodList->AddRef();
-        else
+        if (!m_pCBMethodList) {
             ec = E_OUT_OF_MEMORY;
+        }
     }
     g_objInfoList.UnlockHashTable(EntryType_CBMethod);
 
@@ -861,7 +833,7 @@ ECode CClassInfo::AcquireCBMethodList()
 }
 
 ECode CClassInfo::GetAllCallbackMethodInfos(
-    /* [out] */ BufferOf<ICallbackMethodInfo*> * pCallbackMethodInfos)
+    /* [out] */ ArrayOf<ICallbackMethodInfo*> * pCallbackMethodInfos)
 {
     ECode ec =AcquireCBMethodList();
     if (FAILED(ec)) return ec;
@@ -944,7 +916,7 @@ ECode CClassInfo::CreateIFList()
         return E_OUT_OF_MEMORY;
     }
 
-    int i, j, k, n = 0, iNo, uListCount = 0;
+    Int32 i, j, k, n = 0, iNo, uListCount = 0;
     UInt32 uIndex = 0, uEventNum = 1, uBeginNo = METHOD_START_NO;
     Boolean bCallBack = FALSE;
     m_uIFCount = 0;

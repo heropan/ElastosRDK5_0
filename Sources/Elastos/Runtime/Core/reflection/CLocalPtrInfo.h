@@ -7,9 +7,16 @@
 
 #include "CClsModule.h"
 
-class CLocalPtrInfo : public ILocalPtrInfo
+class CLocalPtrInfo
+    : public ElLightRefBase
+    , public ILocalPtrInfo
 {
 public:
+    CLocalPtrInfo(
+        /* [in] */ CClsModule * pCClsModule,
+        /* [in] */ TypeDescriptor *pTypeDescriptor,
+        /* [in] */ Int32 iPointer);
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -22,7 +29,7 @@ public:
         /* [out] */ InterfaceID *pIID);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetSize(
         /* [out] */ MemorySize * pSize);
@@ -36,19 +43,10 @@ public:
     CARAPI GetPtrLevel(
         /* [out] */ Int32 *pLevel);
 
-    CLocalPtrInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ TypeDescriptor *pTypeDescriptor,
-        /* [in] */ Int32 iPointer);
-
-    virtual ~CLocalPtrInfo();
-
 private:
-    CClsModule      *m_pCClsModule;
-    TypeDescriptor  *m_pTypeDescriptor;
-    Int32           m_iPointer;
-
-    Int32           m_cRef;
+    AutoPtr<CClsModule> m_pCClsModule;
+    TypeDescriptor     *m_pTypeDescriptor;
+    Int32               m_iPointer;
 };
 
 #endif // __CLOCALPTRINFO_H__

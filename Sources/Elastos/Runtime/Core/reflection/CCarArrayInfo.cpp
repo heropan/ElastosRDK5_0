@@ -7,16 +7,24 @@
 #include "CObjInfoList.h"
 #include "CStructInfo.h"
 
-UInt32 CCarArrayRefInfo::AddRef()
+CCarArrayInfo::CCarArrayInfo(
+    /* [in] */ CarDataType quintetType,
+    /* [in] */ IDataTypeInfo *pElementTypeInfo,
+    /* [in] */ CarDataType dataType)
+    : m_pElementTypeInfo(pElementTypeInfo)
+    , m_elementDataType(dataType)
+    , m_quintetType(quintetType)
+{}
+
+UInt32 CCarArrayInfo::AddRef()
 {
-    Int32 nRef = atomic_inc(&m_cRef);
-    return (UInt32)nRef;
+    return ElLightRefBase::AddRef();
 }
 
-UInt32 CCarArrayRefInfo::Release()
+UInt32 CCarArrayInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_DataType);
-    Int32 nRef = atomic_dec(&m_cRef);
+    Int32 nRef = atomic_dec(&mRef);
 
     if (0 == nRef) {
         g_objInfoList.DetachCarArrayInfo(this);
@@ -27,7 +35,7 @@ UInt32 CCarArrayRefInfo::Release()
     return nRef;
 }
 
-PInterface CCarArrayRefInfo::Probe(
+PInterface CCarArrayInfo::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
@@ -44,35 +52,17 @@ PInterface CCarArrayRefInfo::Probe(
     }
 }
 
-ECode CCarArrayRefInfo::GetInterfaceID(
+ECode CCarArrayInfo::GetInterfaceID(
     /* [in] */ IInterface *pObject,
     /* [out] */ InterfaceID *pIID)
 {
     return E_NOT_IMPLEMENTED;
 }
 
- CCarArrayRefInfo::CCarArrayRefInfo(
-    /* [in] */ CarDataType quintetType,
-    /* [in] */ IDataTypeInfo *pElementTypeInfo,
-    /* [in] */ CarDataType dataType)
+ECode CCarArrayInfo::GetName(
+    /* [out] */ String * pName)
 {
-    m_pElementTypeInfo = pElementTypeInfo;
-    m_pElementTypeInfo->AddRef();
-
-    m_elementDataType = dataType;
-    m_quintetType = quintetType;
-    m_cRef = 0;
-}
-
-CCarArrayRefInfo::~CCarArrayRefInfo()
-{
-    if (m_pElementTypeInfo) m_pElementTypeInfo->Release();
-}
-
-ECode CCarArrayRefInfo::GetName(
-    /* [out] */ StringBuf * pName)
-{
-    if (pName == NULL || !pName->GetCapacity()) {
+    if (pName == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
@@ -80,16 +70,15 @@ ECode CCarArrayRefInfo::GetName(
 //        pName->Copy(g_cDataTypeList[CarDataType_LocalType].name);
 //    }
 
-
-    pName->Copy(g_cDataTypeList[m_quintetType].name);
+    *pName = g_cDataTypeList[m_quintetType].name;
 
     if (m_quintetType != CarDataType_MemoryBuf) {
-        StringBuf_<32> elementName;
+        String elementName;
         ECode ec = m_pElementTypeInfo->GetName(&elementName);
         if (FAILED(ec)) return ec;
 
         pName->Append("<");
-        pName->Append((char*)elementName);
+        pName->Append(elementName);
         if (m_elementDataType == CarDataType_Interface) {
             pName->Append("*");
         }
@@ -99,13 +88,13 @@ ECode CCarArrayRefInfo::GetName(
     return NOERROR;
 }
 
-ECode CCarArrayRefInfo::GetSize(
+ECode CCarArrayInfo::GetSize(
     /* [out] */ MemorySize * pSize)
 {
     return E_INVALID_OPERATION;
 }
 
-ECode CCarArrayRefInfo::GetDataType(
+ECode CCarArrayInfo::GetDataType(
     /* [out] */ CarDataType * pDataType)
 {
     if (!pDataType) {
@@ -116,19 +105,19 @@ ECode CCarArrayRefInfo::GetDataType(
     return NOERROR;
 }
 
-ECode CCarArrayRefInfo::GetElementTypeInfo(
+ECode CCarArrayInfo::GetElementTypeInfo(
     /* [out] */ IDataTypeInfo ** ppElementTypeInfo)
 {
     if (!ppElementTypeInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    m_pElementTypeInfo->AddRef();
     *ppElementTypeInfo = m_pElementTypeInfo;
+    (*ppElementTypeInfo)->AddRef();
     return NOERROR;
 }
 
-ECode CCarArrayRefInfo::CreateVariable(
+ECode CCarArrayInfo::CreateVariable(
     /* [in] */ Int32 capacity,
     /* [out] */ IVariableOfCarArray ** ppVariable)
 {
@@ -163,12 +152,12 @@ ECode CCarArrayRefInfo::CreateVariable(
     }
 
     *ppVariable = (IVariableOfCarArray *)pCarArrayBox;
-    pCarArrayBox->AddRef();
+    (*ppVariable)->AddRef();
 
     return NOERROR;
 }
 
-ECode CCarArrayRefInfo::CreateVariableBox(
+ECode CCarArrayInfo::CreateVariableBox(
     /* [in] */ PCarQuintet variableDescriptor,
     /* [out] */ IVariableOfCarArray ** ppVariable)
 {
@@ -194,18 +183,18 @@ ECode CCarArrayRefInfo::CreateVariableBox(
     }
 
     *ppVariable = (IVariableOfCarArray *)pCarArrayBox;
-    pCarArrayBox->AddRef();
+    (*ppVariable)->AddRef();
 
     return NOERROR;
 }
 
-ECode CCarArrayRefInfo::GetMaxAlignSize(
+ECode CCarArrayInfo::GetMaxAlignSize(
     /* [out] */ MemorySize * pAlignSize)
 {
     Int32 size = 1;
 
     if (m_elementDataType == CarDataType_Struct) {
-        ((CStructRefInfo *)m_pElementTypeInfo)->GetMaxAlignSize(&size);
+        ((CStructInfo *)m_pElementTypeInfo.Get())->GetMaxAlignSize(&size);
     }
     else {
         m_pElementTypeInfo->GetSize(&size);

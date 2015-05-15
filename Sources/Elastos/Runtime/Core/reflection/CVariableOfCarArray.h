@@ -7,12 +7,20 @@
 
 #include "CClsModule.h"
 
-class CVariableOfCarArray :
-    public IVariableOfCarArray,
-    public ICarArraySetter,
-    public ICarArrayGetter
+class CVariableOfCarArray
+    : public ElLightRefBase
+    , public IVariableOfCarArray
+    , public ICarArraySetter
+    , public ICarArrayGetter
 {
 public:
+    CVariableOfCarArray(
+        /* [in] */ ICarArrayInfo *pTypeInfo,
+        /* [in] */ PCarQuintet pVarPtr,
+        /* [in] */ Boolean bAlloc);
+
+    virtual ~CVariableOfCarArray();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -205,23 +213,14 @@ public:
         /* [in] */ void *pParam,
         /* [in] */ CarDataType type);
 
-    CVariableOfCarArray(
-        /* [in] */ ICarArrayInfo *pTypeInfo,
-        /* [in] */ PCarQuintet pVarPtr,
-        /* [in] */ Boolean bAlloc);
-
-    virtual ~CVariableOfCarArray();
-
 private:
-    ICarArrayInfo   *m_pCarArrayInfo;
-    PCarQuintet     m_pCq;
-    Boolean         m_bAlloc;
-    Int32           m_iElementSize;
-    Int32           m_iLength;
+    AutoPtr<ICarArrayInfo> m_pCarArrayInfo;
+    PCarQuintet            m_pCq;
+    Boolean                m_bAlloc;
+    Int32                  m_iElementSize;
+    Int32                  m_iLength;
 
-    CarDataType     m_dataType;
-
-    Int32           m_cRef;
+    CarDataType            m_dataType;
 };
 
 #endif // __CCARARRAYVARIABLE_H__

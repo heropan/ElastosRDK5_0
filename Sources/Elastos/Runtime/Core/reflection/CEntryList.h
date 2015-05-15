@@ -31,31 +31,13 @@ struct IFIndexEntry
     UInt32               attribs;
 };
 
-typedef BufferOf<IInterface *>*  PTypeInfos;
+typedef ArrayOf<IInterface *>*  PTypeInfos;
 
 class CClassInfo;
 
-class CEntryList
+class CEntryList : public ElLightRefBase
 {
 public:
-    CARAPI_(UInt32) AddRef();
-    CARAPI_(UInt32) Release();
-
-    CARAPI AcquireObjByName(
-        /* [in] */ CString name,
-        /* [out] */ IInterface ** ppObject);
-
-    CARAPI AcquireObjByIndex(
-        /* [in] */ UInt32 uIndex,
-        /* [out] */ IInterface ** ppObject);
-
-    CARAPI InitElemList();
-
-    CARAPI GetAllObjInfos(
-        /* [out] */ BufferOf<IInterface *>* pObjInfos);
-
-    CEntryList():m_cRef(0){}
-
     CEntryList(
         /* [in] */ EntryType type,
         /* [in] */ void *pDesc,
@@ -67,23 +49,39 @@ public:
 
     ~CEntryList();
 
-    CClsModule       *m_pCClsModule;
-    UInt32            m_uTotalCount;
+    CARAPI_(UInt32) AddRef();
+
+    CARAPI_(UInt32) Release();
+
+    CARAPI InitElemList();
+
+    CARAPI AcquireObjByName(
+        /* [in] */ CString name,
+        /* [out] */ IInterface ** ppObject);
+
+    CARAPI AcquireObjByIndex(
+        /* [in] */ UInt32 uIndex,
+        /* [out] */ IInterface ** ppObject);
+
+    CARAPI GetAllObjInfos(
+        /* [out] */ ArrayOf<IInterface *>* pObjInfos);
+
+public:
+    AutoPtr<CClsModule> m_pCClsModule;
+    UInt32              m_uTotalCount;
 
 private:
-    CLSModule        *m_pClsMod;
-    void             *m_pDesc;
-    EntryType         m_type;
-    CClassInfo       *m_pClsInfo;
-    ObjElement       *m_pObjElement;
-    Int32             m_nBase;
+    CLSModule          *m_pClsMod;
+    void               *m_pDesc;
+    EntryType           m_type;
+    CClassInfo         *m_pClsInfo;
+    ObjElement         *m_pObjElement;
+    Int32               m_nBase;
 
-    IFIndexEntry     *m_pIFList;
-    UInt32            m_uListCount;
+    IFIndexEntry       *m_pIFList;
+    UInt32              m_uListCount;
 
     HashTable<UInt32, Type_String> m_pHTIndexs;
-
-    Int32             m_cRef;
 };
 
 #endif // __CENTRYLIST_H__

@@ -7,9 +7,17 @@
 
 #include "CEntryList.h"
 
-class CInterfaceInfo : public IInterfaceInfo
+class CInterfaceInfo
+    : public ElLightRefBase
+    , public IInterfaceInfo
 {
 public:
+    CInterfaceInfo(
+        /* [in] */ CClsModule * pCClsModule,
+        /* [in] */ UInt32 uIndex);
+
+    virtual ~CInterfaceInfo();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -21,6 +29,8 @@ public:
         /* [in] */ IInterface *pObject,
         /* [out] */ InterfaceID *pIID);
 
+    CARAPI Init();
+
     CARAPI GetSize(
         /* [out] */ MemorySize * pSize);
 
@@ -28,7 +38,7 @@ public:
         /* [out] */ CarDataType * pDataType);
 
     CARAPI GetName(
-        /* [out] */ StringBuf * pName);
+        /* [out] */ String * pName);
 
     CARAPI GetId(
         /* [out] */ InterfaceID * pId);
@@ -49,7 +59,7 @@ public:
         /* [out] */ Int32 * pCount);
 
     CARAPI GetAllMethodInfos(
-        /* [out] */ BufferOf<IMethodInfo *> * pMethodInfos);
+        /* [out] */ ArrayOf<IMethodInfo *> * pMethodInfos);
 
     CARAPI GetMethodInfo(
         /* [in] */ CString name,
@@ -59,18 +69,10 @@ public:
 
     CARAPI AcquireMethodList();
 
-    CARAPI Init();
-
-    CInterfaceInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ UInt32 uIndex);
-
-    virtual ~CInterfaceInfo();
-
 private:
-    CClsModule          *m_pCClsModule;
+    AutoPtr<CClsModule>  m_pCClsModule;
     CLSModule           *m_pClsMod;
-    CEntryList          *m_pMethodList;
+    AutoPtr<CEntryList>  m_pMethodList;
     InterfaceDirEntry   *m_pInterfaceDirEntry;
     InterfaceDescriptor *m_pDesc;
     IFIndexEntry        *m_pIFList;
@@ -79,8 +81,6 @@ private:
     UInt32  m_uIFCount;
     UInt32  m_uMethodCount;
     Int32   m_nBase;
-
-    Int32   m_cRef;
 };
 
 #endif // __CINTERFACEINFO_H__
