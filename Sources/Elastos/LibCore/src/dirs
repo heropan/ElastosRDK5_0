@@ -1,9 +1,6 @@
 
-ifeq "$(XDK_TARGET_PLATFORM)" "android"
-DIRS += Elastos/Utility/lib/Logging
-endif
+#DIRS += Elastos/Utility/lib/Logging
 DIRS += Elastos/Core
-ifeq "$(XDK_TARGET_PLATFORM)" "android"
 DIRS += Elastos/Math
 DIRS += Libcore/IO
 DIRS += Libcore/ICU
@@ -14,4 +11,3 @@ DIRS += Org/Kxml2/IO
 DIRS += Org/Xml
 DIRS += Org/Xmlpull
 DIRS += Elastos/Droid/System
-endif

@@ -2,6 +2,8 @@
 module
 {
     merge("../../../../car/Elastos/Utility/Exceptions.car");
+    merge("../../../../car/Elastos/Utility/IObjectEnumerator.car");
+    merge("../../../../car/Elastos/Utility/IObjectContainer.car");
     merge("../../../../car/Elastos/Utility/IBitSet.car");
     merge("../../../../car/Elastos/Utility/IDate.car");
     merge("../../../../car/Elastos/Utility/ICalendar.car");

@@ -1,11 +1,12 @@
 module
 {
-    using interface Elastos.Core.IComparable;
-    using interface Libcore.ICU.ILocale;
+    interface Elastos.Core.IComparable;
+    interface Elastos.Utility.IObjectContainer;
     interface Elastos.IO.Charset.ICharsetEncoder;
     interface Elastos.IO.Charset.ICharsetDecoder;
     interface Elastos.IO.ICharBuffer;
     interface Elastos.IO.IByteBuffer;
+    interface Libcore.ICU.ILocale;
 
     namespace Elastos {
     namespace IO {

@@ -3,6 +3,7 @@ module
 {
     using interface Elastos.IO.IInputStream;
 
+    interface Elastos.Utility.IObjectContainer;
     interface Elastos.Utility.Zip.IZipEntry;
 
     namespace Elastos {
@@ -10,25 +11,25 @@ module
     namespace Zip {
 
     /**
-    * This class provides random read access to a zip file. You pay more to read the 
-    * zip file's central directory up front (from the constructor), but if you're 
-    * using getEntry(String) to look up multiple files by name, you get the benefit of 
+    * This class provides random read access to a zip file. You pay more to read the
+    * zip file's central directory up front (from the constructor), but if you're
+    * using getEntry(String) to look up multiple files by name, you get the benefit of
     * this index.
     *
     * @sa getEntry(String)
     *
     * <p>
     * If you only want to iterate through all the files (using entries(), you should
-    * consider ZipInputStream, which provides stream-like read access to a zip file 
+    * consider ZipInputStream, which provides stream-like read access to a zip file
     * and has a lower up-front cost because you don't pay to build an in-memory index.
     *
     * @sa entries()
     * @sa ZipInputStream
     *
     * <p>
-    * If you want to create a zip file, use ZipOutputStream. There is no API for 
+    * If you want to create a zip file, use ZipOutputStream. There is no API for
     * updating an existing zip file.
-    * 
+    *
     * @sa ZipOutputStream
     *
     * @implements Elastos.Utility.Zip.IZipConstants

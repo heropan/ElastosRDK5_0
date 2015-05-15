@@ -1,5 +1,7 @@
 module
 {
+    interface Elastos.Utility.IObjectContainer;
+
     namespace Elastos {
     namespace Text {
 

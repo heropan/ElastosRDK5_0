@@ -1,8 +1,8 @@
 
-#ifndef __OBJECT_H__
-#define __OBJECT_H__
+#ifndef __ELASTOS_CORE_OBJECT_H__
+#define __ELASTOS_CORE_OBJECT_H__
 
-//#include "NativeThread.h"
+#include <coredef.h>
 #include <elrefbase.h>
 
 namespace Elastos {
@@ -12,6 +12,10 @@ namespace Threading {
 struct NativeObject;
 
 class Object
+    : public ElRefBase
+    , public IObject
+    , public ISynchronize
+    , public IWeakReferenceSource
 {
 public:
     class Autolock
@@ -28,9 +32,27 @@ public:
     };
 
 public:
-    Object();
+    CAR_INTERFACE_DECL();
 
-    virtual ~Object();
+    Aggregate(
+        /* [in] */ Int32 type,
+        /* [in] */ IInterface* object);
+
+    GetDomain(
+        /* [out] */ IInterface** object);
+
+    GetClassID(
+        /* [out] */ ClassID* clsid);
+
+    GetHashCode(
+        /* [out] */ Int32* hashCode);
+
+    Equals(
+        /* [in] */ IInterface* other,
+        /* [out] */ Boolean* result);
+
+    ToString(
+        /* [out] */ String* info);
 
     CARAPI Lock();
 
@@ -156,7 +178,7 @@ public:
      * @see #wait(long,int)
      * @see java.lang.Thread
      */
-    CARAPI Wait(
+    CARAPI WaitEx(
         /* [in] */ Int64 millis);
 
     /**
@@ -196,34 +218,24 @@ public:
      * @see #wait(long,int)
      * @see java.lang.Thread
      */
-    CARAPI Wait(
+    CARAPI WaitEx2(
         /* [in] */ Int64 millis,
         /* [in] */ Int32 nanos);
 
+    CARAPI GetWeakReference(
+        /* [out] */ IWeakReference** weakReference);
+
+protected:
+    Object();
+
+    virtual ~Object();
+
 public:
     NativeObject* mNativeObject;
-};
-
-class LockObject
-    : public ElRefBase
-    , public IInterface
-    , public Object
-{
-public:
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
 };
 
 } // namespace Threading
 } // namespace Core
 } // namespace Elastos
 
-#endif //__OBJECT_H__
+#endif //__ELASTOS_CORE_OBJECT_H__

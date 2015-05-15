@@ -1,8 +1,10 @@
 
 module
 {
-    namespace Elastos{
-    namespace Utility{
+    interface Elastos.Utility.IObjectContainer;
+
+    namespace Elastos {
+    namespace Utility {
 
     interface IObjectInt32Map {
         ContainsKey(

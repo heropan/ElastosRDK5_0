@@ -2,7 +2,7 @@
 TARGET_NAME= Elastos.Core
 TARGET_TYPE= eco
 
-ifeq "$(XDK_TARGET_PLATFORM)" "android"
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
 
 INCLUDES += $(MAKEDIR)/../../../../inc/common;
 INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Core;
@@ -53,6 +53,7 @@ CAR_FLAGS += -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Elastos.Core.car
+SOURCES += Object.cpp
 SOURCES += exportext.cpp
 SOURCES += listnode.cpp
 SOURCES += treenode.cpp
@@ -74,7 +75,6 @@ SOURCES += CDouble.cpp
 SOURCES += CArrayOf.cpp
 SOURCES += CRandom.cpp
 SOURCES += Init.cpp
-SOURCES += Object.cpp
 SOURCES += NativeThread.cpp
 SOURCES += Thread.cpp
 SOURCES += ThreadBase.cpp
@@ -865,18 +865,3 @@ LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib
 LIBRARIES += $(PREBUILD_LIB)/libm.a
 LIBRARIES += -lcutils -licuuc -licui18n -lm -lssl -lcrypto -lsqlite -llog -lselinux -lz -lutils
-
-else
-
-SOURCES = Elastos.Core.def
-SOURCES += listnode.cpp
-SOURCES += treenode.cpp
-SOURCES += quicklist.cpp
-SOURCES += multitreenode.cpp
-SOURCES += linknode.cpp
-SOURCES += container.cpp
-
-LIBRARIES = $(XDK_USER_LIB)/crt0.lib
-LIBRARIES += -lstdc++
-
-endif

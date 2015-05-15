@@ -118,10 +118,11 @@ module
     merge("../../../../car/Elastos/IO/IFileChannelImpl.car");
 
 
-    interface Elastos.Utility.IObjectStringMap;
     interface Elastos.Core.IComparable;
     interface Elastos.IO.Channels.Spi.ISelectorProvider;
     interface Elastos.Net.IURI;
+    interface Elastos.Utility.IObjectEnumerator;
+    interface Elastos.Utility.IObjectStringMap;
 
     namespace Elastos {
     namespace IO {
