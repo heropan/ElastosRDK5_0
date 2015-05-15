@@ -22,7 +22,7 @@ module
      * @implement Elastos.IO.ICloseable
      */
 
-    interface IInputStream extends ICloseable {
+    interface IInputStream {
         /**
          * Returns an estimated number of bytes that can be read or skipped without blocking for more
          * input.
@@ -116,7 +116,7 @@ module
         /**
          * Equivalent to {read(buffer, 0, buffer.length)}.
          */
-        ReadBytes(
+        Read(
             [out] ArrayOf<Byte> buffer,
             [out] Int32* number);
 
@@ -139,7 +139,7 @@ module
          * IndexOutOfBoundsException | if {offset < 0} or {length < 0}, or if {offset + length} is greater than the length of {b}.
          * IOException | if the stream is closed or another IOException occurs.
          */
-        ReadBytesEx(
+        Read(
             [out] ArrayOf<Byte> buffer,
             [in] Int32 offset,
             [in] Int32 length,
@@ -181,9 +181,6 @@ module
         Skip(
             [in] Int64 byteCount,
             [out] Int64* number);
-
-        GetLock(
-            [out] IInterface** lockObj);
     }
 
     } // namespace IO

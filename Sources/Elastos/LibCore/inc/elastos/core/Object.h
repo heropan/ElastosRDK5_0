@@ -3,11 +3,9 @@
 #define __ELASTOS_CORE_OBJECT_H__
 
 #include <coredef.h>
-#include <elrefbase.h>
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 struct NativeObject;
 
@@ -234,7 +232,6 @@ public:
     NativeObject* mNativeObject;
 };
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos
 

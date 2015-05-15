@@ -1,30 +1,27 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "InputStream.h"
 #include <elastos/Math.h>
 
 namespace Elastos {
 namespace IO {
 
-InputStream::InputStream()
+PInterface InputStream::Probe(
+    /* [in] */ REIID riid)
 {
-    mLock = new LockObject();
-}
-
-InputStream::~InputStream()
-{
-}
-
-AutoPtr<IInterface> InputStream::GetLock()
-{
-    AutoPtr<IInterface> obj = (IInterface*)mLock.Get();
-    return obj;
+    if (riid == EIID_ICloseable) {
+        return (ICloseable*)this;
+    }
+    else if (riid == EIID_IInputStream) {
+        return (IInputStream*)this;
+    }
+    else return Object::Probe(riid);
 }
 
 ECode InputStream::Available(
     /* [out] */ Int32* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number);
     *number = 0;
     return NOERROR;
 }
@@ -48,24 +45,24 @@ ECode InputStream::IsMarkSupported(
     return NOERROR;
 }
 
-ECode InputStream::ReadBytes(
+ECode InputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    return ReadBytesEx(buffer, 0, buffer->GetLength(), number);
+    return Read(buffer, 0, buffer->GetLength(), number);
 }
 
-ECode InputStream::ReadBytesEx(
+ECode InputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number);
     assert(buffer != NULL);
-    assert(number != NULL);
 
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
@@ -90,7 +87,7 @@ ECode InputStream::ReadBytesEx(
             return ec;
         }
         if (c == -1) {
-            *number = i == 0? -1 : i;
+            *number = i == 0 ? -1 : i;
             return NOERROR;
         }
         (*buffer)[offset + i] = (Byte)c;
@@ -108,6 +105,7 @@ ECode InputStream::Skip(
     /* [in] */ Int64 byteCount,
     /* [out] */ Int64* number)
 {
+    VALIDATE_NOT_NULL(number);
     //TODO:
     //
 //  return Streams.skipByReading(this, byteCount);
@@ -118,7 +116,7 @@ ECode InputStream::Skip(
     while (skipped < byteCount) {
         Int32 toRead = (Int32)Elastos::Core::Math::Min(byteCount - skipped, (Int64)buffer->GetLength());
         Int32 read = 0;
-        FAIL_RETURN(ReadBytesEx(buffer.Get(), 0, toRead, &read));
+        FAIL_RETURN(Read(buffer.Get(), 0, toRead, &read));
         if (read == -1) {
             break;
         }
@@ -129,7 +127,6 @@ ECode InputStream::Skip(
     }
 
     *number = skipped;
-
     return NOERROR;
 }
 

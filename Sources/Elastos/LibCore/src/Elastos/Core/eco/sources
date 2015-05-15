@@ -2,9 +2,9 @@
 TARGET_NAME= Elastos.Core
 TARGET_TYPE= eco
 
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
 
-INCLUDES += $(MAKEDIR)/../../../../inc/common;
 INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Core;
 INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Core/elastos;
 INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Math;

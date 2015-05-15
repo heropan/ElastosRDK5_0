@@ -1,4 +1,5 @@
 
-EXPORT_HEADERS = elastos/core/NativeThread.h
-EXPORT_HEADERS = elastos/core/Object.h
-EXPORT_HEADERS = elastos/core/Thread.h
+EXPORT_HEADERS = elastos/coredef.h
+EXPORT_HEADERS += elastos/core/NativeThread.h
+EXPORT_HEADERS += elastos/core/Object.h
+EXPORT_HEADERS += elastos/core/Thread.h

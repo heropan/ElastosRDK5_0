@@ -1,4 +1,4 @@
-#include "cmdef.h"
+#include "coredef.h"
 #include "container.h"
 
 ELAPI SimpleContainerCurrent(
@@ -79,7 +79,7 @@ ELAPI ObjectContainerCurrent(
     ec = SimpleContainerCurrent((SimpleContainer*)container, (DLinkNode **)&node);
     if (NOERROR == ec) {
         *object = node->mObject;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADDREF(*object);
     }
     return ec;
 }

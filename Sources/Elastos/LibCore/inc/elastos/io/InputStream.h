@@ -2,7 +2,6 @@
 #ifndef __INPUTSTREAM_H__
 #define __INPUTSTREAM_H__
 
-#include <elastos.h>
 #ifdef ELASTOS_CORE
 #include <Elastos.Core_server.h>
 #else
@@ -10,21 +9,19 @@
 #endif
 #include <elastos/Object.h>
 
-using Elastos::Core::Threading::Object;
-using Elastos::Core::Threading::LockObject;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace IO {
 
 class InputStream
+    : public Object
+    , public ICloseable
+    , public IInputStream
 {
 public:
-    InputStream();
-
-    virtual ~InputStream();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
 
     /**
      * Returns an estimated number of bytes that can be read or skipped without blocking for more
@@ -63,7 +60,7 @@ public:
      * @return the estimated number of bytes available
      * @throws IOException if this stream is closed or an error occurs
      */
-    virtual CARAPI Available(
+    CARAPI Available(
         /* [out] */ Int32* number);
 
     /**
@@ -73,7 +70,7 @@ public:
      * @throws IOException
      *             if an error occurs while closing this stream.
      */
-    virtual CARAPI Close();
+    CARAPI Close();
 
     /**
      * Sets a mark position in this InputStream. The parameter {@code readlimit}
@@ -90,7 +87,7 @@ public:
      * @see #markSupported()
      * @see #reset()
      */
-    virtual CARAPI Mark(
+    CARAPI Mark(
         /* [in] */ Int32 readLimit);
 
     /**
@@ -101,7 +98,7 @@ public:
      * @see #mark(int)
      * @see #reset()
      */
-    virtual CARAPI IsMarkSupported(
+    CARAPI IsMarkSupported(
         /* [out] */ Boolean* supported);
 
     /**
@@ -127,7 +124,7 @@ public:
      * @throws IOException
      *             if this stream is closed or another IOException occurs.
      */
-    virtual CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
@@ -151,7 +148,7 @@ public:
      * @throws IOException
      *             if the stream is closed or another IOException occurs.
      */
-    virtual CARAPI ReadBytesEx(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -170,7 +167,7 @@ public:
      *             if this stream is closed or another IOException occurs.
      */
     //synchronized
-    virtual CARAPI Reset();
+    CARAPI Reset();
 
     /**
      * Skips at most {@code n} bytes in this stream. This method does nothing and returns
@@ -187,15 +184,9 @@ public:
      * @throws IOException
      *             if this stream is closed or another IOException occurs.
      */
-    virtual CARAPI Skip(
+    CARAPI Skip(
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* number);
-
-protected:
-    virtual CARAPI_(AutoPtr<IInterface>) GetLock();
-
-protected:
-    AutoPtr<LockObject> mLock;
 };
 
 } // namespace IO

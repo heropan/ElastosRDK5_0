@@ -4,7 +4,6 @@
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 Object::Object()
     : mNativeObject(NativeCreateObject())
@@ -114,6 +113,5 @@ ECode Object::GetWeakReference(
     return NOERROR;
 }
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos
