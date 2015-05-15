@@ -36,9 +36,10 @@ const char *c_pszUsage = \
     "-w                  Suppress compiler warning messages\n" \
     "-s                  Do not using system type library\n" \
     "-e                  Do not load elastos.dll by default\n" \
-    "-k                  Specify this option when compiling in kernel." \
+    "-k                  Specify this option when compiling in kernel\n" \
     "-d                  Create the dependencies when the current .car file merge .cls or .car\n" \
     "-u                  Support weak reference\n" \
+    "-n                  Specify this option when using naked mode\n"
     "-?                  Display this list of CAR compiler switches\n";
 
 inline BOOL IsCommandSwitch(char c)
@@ -325,6 +326,11 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
 
                 case 'u':
                     pArgs->dwAttribs |= Command_u_WeakRef;
+
+                    break;
+
+                case 'n':
+                    pArgs->dwAttribs |= Command_n_NakedMode;
 
                     break;
 

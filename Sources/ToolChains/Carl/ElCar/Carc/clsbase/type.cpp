@@ -575,6 +575,9 @@ int MethodCopy(
 {
     int n, m;
 
+    pDest->pszSignature = new char[strlen(pSrc->pszSignature) + 1];
+    strcpy(pDest->pszSignature, pSrc->pszSignature);
+
     n = TypeCopy(pSrcModule, &pSrc->type,
                 pDestModule, &pDest->type, bNameSpace);
     if (n < 0) _Return (n);
@@ -602,6 +605,9 @@ int MethodXCopy(
     BOOL bNameSpace)
 {
     int n, m;
+
+    pDest->pszSignature = new char[strlen(pSrc->pszSignature) + 1];
+    strcpy(pDest->pszSignature, pSrc->pszSignature);
 
     n = TypeXCopy(pSrcModule, &pSrc->type,
                 pDestModule, &pDest->type, bNameSpace);

@@ -179,6 +179,7 @@ int CFlatBuffer::WriteMethodDescriptor(MethodDescriptor *pDesc)
             WriteData(p, d.cParams * sizeof(int));
     }
     d.pszName = (char *)WriteString(d.pszName);
+    d.pszSignature = (char *)WriteString(d.pszSignature);
 
     return WriteData(&d, sizeof(MethodDescriptor));
 }
@@ -558,6 +559,7 @@ int CalcMethodSize(MethodDescriptor *p)
     int n, size = sizeof(MethodDescriptor);
 
     size += StringAlignSize(p->pszName);
+    size += StringAlignSize(p->pszSignature);
 
     for (n = 0; n < p->cParams; n++) {
         if (p->ppParams[n]->type.pNestedType) {

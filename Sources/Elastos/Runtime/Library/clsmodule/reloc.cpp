@@ -50,6 +50,7 @@ void MapMethodDescriptor(MethodDescriptor *p)
     int n;
 
     p->pszName += s_nBase;
+    p->pszSignature += s_nBase;
 
     if (0 != p->cParams) {
         p->ppParams = (ParamDescriptor **)((int)p->ppParams + s_nBase);

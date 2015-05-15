@@ -3,7 +3,7 @@ $;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
 $;;=========================================================================
 $
 $INPUT class
-$OUTPUT "_${name}.cpp"
+$OUTPUT "_${fullname}.cpp"
 $
 #include <new>
 #include "${name}.h"

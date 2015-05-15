@@ -60,7 +60,7 @@ private:
 
 protected:
 
-    Elastos::Core::Threading::Mutex                       _m_lock;
+    Mutex                       _m_lock;
     PInterface*                 _m_ppServer;
     ICallbackConnector**        _m_ppConnector;
     Int32                       _m_nMaxEvents;

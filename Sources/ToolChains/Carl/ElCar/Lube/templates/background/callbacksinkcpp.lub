@@ -19,7 +19,7 @@ ECode _CCallbackSink_::_AddCallback(
 
     ECode ec;
 
-    Elastos::Core::Threading::Mutex::Autolock lock(_m_lock);
+    Mutex::Autolock lock(_m_lock);
     ec = (*_m_ppConnector)->CheckCallbackSinkConnection(nEvent);
     if (SUCCEEDED(ec)) {
         ec = _m_events[nEvent].Add(pCallbackContext, handler);
@@ -89,7 +89,7 @@ ECode _CCallbackSink_::_AcquireCallbackRendezvous(
     if (FAILED(ec)) return ec;
 
     {
-        Elastos::Core::Threading::Mutex::Autolock lock(_m_lock);
+        Mutex::Autolock lock(_m_lock);
 
         pContainer = &(_m_events[nEvent]);
         pContainer->Find(pCallbackContext, &pCallbackNode);
@@ -103,7 +103,7 @@ ECode _CCallbackSink_::_AcquireCallbackRendezvous(
         bNewAdded = TRUE;
 
         if (pCallbackNode == NULL) {
-            Elastos::Core::Threading::Mutex::Autolock lock(_m_lock);
+            Mutex::Autolock lock(_m_lock);
             pContainer->Find(pCallbackContext, &pCallbackNode);
             if (pCallbackNode == NULL) goto Exit;
         }
@@ -134,7 +134,7 @@ ECode _CCallbackSink_::_RemoveAllCallbacks()
     if (FAILED(ec)) return ec;
 
     {
-        Elastos::Core::Threading::Mutex::Autolock lock(_m_lock);
+        Mutex::Autolock lock(_m_lock);
         for (int n = 0; n < _m_nMaxEvents; n++) {
             _m_events[n].Dispose(pCallbackContext, *_m_ppServer, n);
         }
@@ -152,7 +152,7 @@ ECode _CCallbackSink_::_CancelPendingCallback(Int32 nEventId)
     CallbackContextNode* _pContext_;
     CallbackContextNode* _pCallbackNode_;
 
-    Elastos::Core::Threading::Mutex::Autolock lock(_m_lock);
+    Mutex::Autolock lock(_m_lock);
 
     _pEvent_ = &(_m_events[nEventId]);
     _pContext_ = _pEvent_->m_pCurrent;
@@ -180,7 +180,7 @@ ECode _CCallbackSink_::_CancelAllPendingCallbacks()
     ECode ec = NOERROR;
     Int32 idxEvent = 0;
 
-    Elastos::Core::Threading::Mutex::Autolock lock(_m_lock);
+    Mutex::Autolock lock(_m_lock);
 
     for (idxEvent = 0; idxEvent < _m_nMaxEvents; ++idxEvent) {
         ec =_CancelPendingCallback(idxEvent);

@@ -13,7 +13,7 @@ $
 
 $   WITH all classes DO
 $     IF type is "clsobj"
-#include "${name}.h"
+#include "${fullname}.h"
 $     END IF
 $   END DO ;; all classes
 

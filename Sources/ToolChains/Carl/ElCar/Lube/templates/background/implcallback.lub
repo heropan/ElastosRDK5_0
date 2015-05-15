@@ -284,7 +284,7 @@ ECode _${name}::CancelAllPendingCallbacks()
     PInterface _pObj_;
     DLinkNode * _pContext_;
 
-    Elastos::Core::Threading::Mutex::Autolock lock(_m_syncLock);
+    Mutex::Autolock lock(_m_syncLock);
 
     _pContext_ = m_currICallbackSink.mCurrent;
 
@@ -309,7 +309,7 @@ ECode _${name}::_CancelPendingCallback(Int32 event)
     PInterface _pObj_;
     DLinkNode * _pContext_;
 
-    Elastos::Core::Threading::Mutex::Autolock lock(_m_syncLock);
+    Mutex::Autolock lock(_m_syncLock);
 
     _pContext_ = m_currICallbackSink.mCurrent;
 
@@ -407,7 +407,7 @@ ECode _${name}::_AddConnection(PInterface pSink)
 {
     ECode ec;
 
-    Elastos::Core::Threading::Mutex::Autolock lock(_m_syncLock);
+    Mutex::Autolock lock(_m_syncLock);
 
 $WITH all interfaces DO
 $   IF attrib is "callback"
@@ -427,7 +427,7 @@ ECode _${name}::_Disconnect(PInterface pSink)
     PInterface pObj;
 
     {
-        Elastos::Core::Threading::Mutex::Autolock lock(_m_syncLock);
+        Mutex::Autolock lock(_m_syncLock);
 
 $WITH all interfaces DO
 $   IF attrib is "callback"
@@ -461,7 +461,7 @@ ECode _${name}::RemoveAllCallbacks()
 {
     PInterface pObj;
 
-    Elastos::Core::Threading::Mutex::Autolock lock(_m_syncLock);
+    Mutex::Autolock lock(_m_syncLock);
 
 $WITH all interfaces DO
 $   IF attrib is "callback"

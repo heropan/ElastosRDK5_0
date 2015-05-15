@@ -30,7 +30,7 @@ $  END DO;; all coalescence methods
 ${ClassNamespaceEnd(class)}
 $END IF;; hascoalescence
 
-#include "_${name}.h"
+#include "_${fullname}.h"
 
 ${ClassNamespaceBegin(class)}
 $IF type is not "generic"

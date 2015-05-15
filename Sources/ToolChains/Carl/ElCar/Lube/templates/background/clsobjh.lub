@@ -3,10 +3,10 @@ $;; Copyright (c) 2000-2007,  Elastos, Inc.  All Rights Reserved.
 $;;=========================================================================
 $
 $INPUT class
-$OUTPUT "${name}.h"
+$OUTPUT "${fullname}.h"
 
-#ifndef __CAR_${Upper(name)}_H__
-#define __CAR_${Upper(name)}_H__
+#ifndef __CAR_${fullname}_H__
+#define __CAR_${fullname}_H__
 
 #include "${module.name}_server.h"
 #include <elaatomics.h>
@@ -71,6 +71,6 @@ private:
 };
 
 ${ClassNamespaceEnd(class)}
-#endif // __CAR_${Upper(name)}_H__
+#endif // __CAR_${fullname}_H__
 $
 $END OUTPUT

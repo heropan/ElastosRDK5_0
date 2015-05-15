@@ -7,10 +7,10 @@ $OUTPUT "${name}.mk"
 $
 $   WITH all classes DO
 $      IF type is not "sink" and type is not "clsobj"
-SOURCES += _${name}.cpp
+SOURCES += _${fullname}.cpp
 $      END IF
 $      IF attrib is "hasctor" and lubeoption is not "UseCustomClassObject"
-SOURCES += ${name}ClassObject.cpp
+SOURCES += ${fullname}ClassObject.cpp
 $      END IF
 $   END DO ;; all classes
 $   WITH all classes DO

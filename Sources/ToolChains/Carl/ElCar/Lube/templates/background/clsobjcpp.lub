@@ -3,10 +3,10 @@ $;; Copyright (c) 2000-2007,  Elastos, Inc.  All Rights Reserved.
 $;;=========================================================================
 $
 $INPUT class
-$OUTPUT "${name}.cpp"
+$OUTPUT "${fullname}.cpp"
 
 #include "${ClassNameOfClassObj(name)}.h"
-#include "${name}.h"
+#include "${fullname}.h"
 
 extern "C" Int32 g_dllLockCount;
 

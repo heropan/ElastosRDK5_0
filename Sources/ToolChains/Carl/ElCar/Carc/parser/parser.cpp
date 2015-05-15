@@ -12,6 +12,7 @@
 #endif
 #include "carc.h"
 #include "clsutil.h"
+#include "StringBuilder.h"
 
 #ifdef _linux
 #define _stricmp strcasecmp
@@ -42,6 +43,7 @@ ClassAttrib s_DefaultThreadModel = ClassAttrib_freethreaded;
 bool s_bLenientNaming = false;
 bool s_bInKernel = false;
 bool s_bSupportWeakRef = false;
+bool s_bInNakedMode = false;
 
 static const IID EIID_IInterface = \
 {0x00000000,0x0000,0x0000,{0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x66}};
@@ -1728,6 +1730,9 @@ int GenerateAsyncCallbackInterface(
     return x;
 }
 
+BOOL IsMethodDuplicated(InterfaceDescriptor* pIntfDesc, MethodDescriptor* pMethod);
+int BuildMethodSignature(MethodDescriptor *pMethod);
+
 int GenerateHandlerInterface(
     const char *pszName,
     CLSModule *pModule,
@@ -1777,6 +1782,13 @@ int GenerateHandlerInterface(
         pParam->type.type = Type_EventHandler;
         pParam->type.nPointer = 0;
 
+        BuildMethodSignature(pSinkDesc->ppMethods[n]);
+        pSinkDesc->cMethods -= 1;
+        if (IsMethodDuplicated(pSinkDesc, pSinkDesc->ppMethods[n])) {
+            return 0;
+        }
+        pSinkDesc->cMethods += 1;
+
         //////// RemoveXXXCallback(pThis, pFunc, pUserData) ////////
         strcpy(szMethodName, "Remove");
         strcat(szMethodName, pSrcDesc->ppMethods[i]->pszName);
@@ -1795,6 +1807,13 @@ int GenerateHandlerInterface(
         memset(&pParam->type, 0, sizeof(pParam->type));
         pParam->type.type = Type_EventHandler;
         pParam->type.nPointer = 0;
+
+        BuildMethodSignature(pSinkDesc->ppMethods[n]);
+        pSinkDesc->cMethods -= 1;
+        if (IsMethodDuplicated(pSinkDesc, pSinkDesc->ppMethods[n])) {
+            return 0;
+        }
+        pSinkDesc->cMethods += 1;
 
         //////// AcquireXXXRendezvous(pThis, pFunc, pUserData) ////////
         strcpy(szMethodName, "Acquire");
@@ -1815,6 +1834,12 @@ int GenerateHandlerInterface(
         pParam->type.nPointer = 2;
         pParam->type.sIndex = r;
 
+        BuildMethodSignature(pSinkDesc->ppMethods[n]);
+        pSinkDesc->cMethods -= 1;
+        if (IsMethodDuplicated(pSinkDesc, pSinkDesc->ppMethods[n])) {
+            return 0;
+        }
+        pSinkDesc->cMethods += 1;
     }
 
     return x;
@@ -3556,6 +3581,138 @@ int P_InterfaceConst(InterfaceDirEntry *pItfDirEntry)
     }
 }
 
+int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
+{
+    CARDataType type = pType->type;
+    int pointer = pType->nPointer;
+    switch(type) {
+        case Type_Char8:
+            sb.Append("C8");
+            break;
+        case Type_Char16:
+            sb.Append("C16");
+            break;
+        case Type_Boolean:
+            sb.Append("Z");
+            break;
+        case Type_Byte:
+            sb.Append("B");
+            break;
+        case Type_Int8:
+            sb.Append("I8");
+            break;
+        case Type_Int16:
+            sb.Append("I16");
+            break;
+        case Type_Int32:
+            sb.Append("I32");
+            break;
+        case Type_Int64:
+            sb.Append("I64");
+            break;
+        case Type_UInt16:
+            sb.Append("UI16");
+            break;
+        case Type_UInt32:
+            sb.Append("UI32");
+            break;
+        case Type_UInt64:
+            sb.Append("UI64");
+            break;
+        case Type_Float:
+            sb.Append("F");
+            break;
+        case Type_Double:
+            sb.Append("D");
+            break;
+        case Type_ECode:
+            sb.Append("E");
+            break;
+        case Type_EMuid:
+            sb.Append("IID");
+            break;
+        case Type_EGuid:
+            sb.Append("CID");
+            break;
+        case Type_String:
+            sb.Append("LElastos/String;");
+            break;
+        case Type_CString:
+            sb.Append("LElastos/CString;");
+            break;
+        case Type_enum: {
+            sb.Append("L");
+            if (s_pModule->ppEnumDir[pType->sIndex]->pszNameSpace != NULL) {
+                char* ns = (char*)malloc(strlen(s_pModule->ppEnumDir[pType->sIndex]->pszNameSpace) + 1);
+                strcpy(ns, s_pModule->ppEnumDir[pType->sIndex]->pszNameSpace);
+
+                char* c;
+                while ((c = strchr(ns, '.')) != NULL) {
+                    *c = '/';
+                }
+
+                sb.Append(ns);
+                sb.Append("/");
+                free(ns);
+            }
+            sb.Append(s_pModule->ppEnumDir[pType->sIndex]->pszName);
+            sb.Append(";");
+            break;
+        }
+        case Type_ArrayOf: {
+            sb.Append("[");
+            if (TypeSignature(pType->pNestedType, sb) == Ret_AbortOnError) return Ret_AbortOnError;
+            break;
+        }
+        case Type_interface: {
+            sb.Append("L");
+            if (s_pModule->ppInterfaceDir[pType->sIndex]->pszNameSpace != NULL) {
+                char* ns = (char*)malloc(strlen(s_pModule->ppInterfaceDir[pType->sIndex]->pszNameSpace) + 1);
+                strcpy(ns, s_pModule->ppInterfaceDir[pType->sIndex]->pszNameSpace);
+
+                char* c;
+                while ((c = strchr(ns, '.')) != NULL) {
+                    *c = '/';
+                }
+
+                sb.Append(ns);
+                sb.Append("/");
+                free(ns);
+            }
+            sb.Append(s_pModule->ppInterfaceDir[pType->sIndex]->pszName);
+            sb.Append(";");
+            break;
+        }
+        case Type_alias:
+            if (TypeSignature(&s_pModule->ppAliasDir[pType->sIndex]->type, sb) == Ret_AbortOnError) {
+                return Ret_AbortOnError;
+            }
+            break;
+        default:
+            assert(0);
+            return Ret_AbortOnError;
+    }
+    switch (pointer) {
+        case 0:
+            break;
+        case 1:
+            sb.Append("*");
+            break;
+        case 2:
+            sb.Append("**");
+            break;
+        default:
+            assert(0);
+            return Ret_AbortOnError;
+    }
+    return Ret_Continue;
+}
+
+int BuildArgumentSignature(ParamDescriptor* pParam, StringBuilder& sb)
+{
+    return TypeSignature(&pParam->type, sb);
+}
+
 // ARG_ATTRIBS -> s_lbracket ARG_ATTRIB { s_comma ARG_ATTRIB } s_rbracket
 // ARG_ATTRIB  -> k_in | k_out | k_retval
 //
@@ -3661,6 +3818,43 @@ int P_MethodArg(MethodDescriptor *pMethod, BOOL isLocal, BOOL isDeprecated)
     return Ret_Continue;
 }
 
+int BuildMethodSignature(MethodDescriptor *pMethod)
+{
+    StringBuilder sb;
+    sb.Append("(");
+    for (int i = 0; i < pMethod->cParams; i++) {
+        BuildArgumentSignature(pMethod->ppParams[i], sb);
+    }
+    sb.Append(")");
+    sb.Append("E");
+    char* signature = sb.ToString();
+    pMethod->pszSignature = new char[strlen(signature) + 1];
+    if (!pMethod->pszSignature) return Ret_AbortOnError;
+    strcpy(pMethod->pszSignature, signature);
+    return Ret_Continue;
+}
+
+BOOL IsMethodDuplicated(InterfaceDescriptor* pIntfDesc, MethodDescriptor* pMethod)
+{
+    int n;
+
+    if (0 != pIntfDesc->sParentIndex) {
+        if (IsMethodDuplicated(s_pModule->ppInterfaceDir[pIntfDesc->sParentIndex]->pDesc, pMethod)) {
+            return true;
+        }
+    }
+
+    for (n = 0; n < pIntfDesc->cMethods; n++) {
+        if (!strcmp(pIntfDesc->ppMethods[n]->pszName, pMethod->pszName)
+            && !strcmp(pIntfDesc->ppMethods[n]->pszSignature, pMethod->pszSignature)) {
+            ErrorReport(CAR_E_DupMethodName, pIntfDesc->ppMethods[n]->pszName);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // METHOD      -> [ oneway ] ident METHOD_ARGS s_semicolon
 // METHOD_ARGS -> s_lparen [ METHOD_ARG { s_comma METHOD_ARG } ] s_rparen
 //
@@ -3727,6 +3921,14 @@ int P_Method(InterfaceDirEntry *pItfDirEntry, BOOL isDeprecated)
         ErrorReport(CAR_E_ExpectSymbol, ";");
         return Ret_AbortOnError;
     }
+
+    BuildMethodSignature(pDesc->ppMethods[n]);
+
+    pDesc->cMethods -= 1;
+    if (IsMethodDuplicated(pDesc, pDesc->ppMethods[n])) {
+        return Ret_AbortOnError;
+    }
+    pDesc->cMethods += 1;
     return Ret_Continue;
 }
 
@@ -4023,7 +4225,10 @@ void CheckInterfaceDupMethodNameEx(InterfaceDirEntry *pientry)
                     pDesc->cMethods; m++) {
                     if (!strcmp(pDesc->ppMethods[n]->pszName,
                         s_pModule->ppInterfaceDir[nParentIndex]->\
-                        pDesc->ppMethods[m]->pszName)) {
+                        pDesc->ppMethods[m]->pszName)
+                        && !strcmp(pDesc->ppMethods[n]->pszSignature,
+                            s_pModule->ppInterfaceDir[nParentIndex]->\
+                            pDesc->ppMethods[m]->pszSignature)) {
                         ErrorReport(CAR_E_DupMethodName,
                                     pDesc->ppMethods[n]->pszName);
                     }
@@ -4575,6 +4780,10 @@ int P_ClassInterface(ClassDirEntry *pClass)
         pClass->pDesc->dwAttribs |= ClassAttrib_naked;
     }
 
+    if (s_bInNakedMode) {
+        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
+    }
+
 ErrorSkip:
     if (GetToken(s_pFile) != Token_S_semicolon) {
         ErrorReport(CAR_E_ExpectSymbol, ";");
@@ -4841,6 +5050,13 @@ int P_ClassCtorMethod(ClassDirEntry *pClass, BOOL isDeprecated)
     pIntfDesc->ppMethods[n]->ppParams[i]->dwAttribs = ParamAttrib_out;
     memcpy(&pIntfDesc->ppMethods[n]->ppParams[i]->type, &type, sizeof(type));
 
+    BuildMethodSignature(pIntfDesc->ppMethods[n]);
+    pIntfDesc->cMethods -= 1;
+    if (IsMethodDuplicated(pIntfDesc, pIntfDesc->ppMethods[n])) {
+        return Ret_AbortOnError;
+    }
+    pIntfDesc->cMethods += 1;
+
     return Ret_Continue;
 }
 
@@ -4899,6 +5115,13 @@ int AddTrivialClassCtorMethod(ClassDirEntry *pClass)
     }
     pIntfDesc->ppMethods[n]->ppParams[i]->dwAttribs = ParamAttrib_out;
     memcpy(&pIntfDesc->ppMethods[n]->ppParams[i]->type, &type, sizeof(type));
+
+    BuildMethodSignature(pIntfDesc->ppMethods[n]);
+    pIntfDesc->cMethods -= 1;
+    if (IsMethodDuplicated(pIntfDesc, pIntfDesc->ppMethods[n])) {
+        return Ret_AbortOnError;
+    }
+    pIntfDesc->cMethods += 1;
 
     return Ret_Continue;
 }

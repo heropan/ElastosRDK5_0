@@ -187,7 +187,7 @@ ECode ${name}::AddCallback(
     /* [in] */ EventHandler handler)
 {
     {
-        Elastos::Core::Threading::Mutex::Autolock lock(_m_lock);
+        Mutex::Autolock lock(_m_lock);
 
         if (_m_EventsStatus[nEvent] & Delegate_Registered) {
             assert(0 && "E_DELEGATE_ALREADY_REGISTERED");
@@ -207,7 +207,7 @@ ECode ${name}::RemoveCallback(
     /* [in] */ EventHandler handler)
 {
     {
-        Elastos::Core::Threading::Mutex::Autolock lock(_m_lock);
+        Mutex::Autolock lock(_m_lock);
 
         if (_m_EventsStatus[nEvent] & Delegate_Initialized) {
             _m_EventsStatus[nEvent] &= ~Delegate_Registered;
@@ -227,7 +227,7 @@ ECode ${name}::AcquireCallbackRendezvous(
 ECode ${name}::RemoveAllCallbacks()
 {
     {
-        Elastos::Core::Threading::Mutex::Autolock lock(_m_lock);
+        Mutex::Autolock lock(_m_lock);
 
         InitializeEvents();
     }
@@ -303,7 +303,7 @@ $           END IF
     Int32 cFlags;
     ECode ec = NOERROR;
 
-    Elastos::Core::Threading::Mutex::Autolock lock(_m_lock);
+    Mutex::Autolock lock(_m_lock);
 
 #ifdef _DEBUG
     if (_m_cNestings[${ClassNameOfSink(class.name)}_${name}]++ >= 128) {

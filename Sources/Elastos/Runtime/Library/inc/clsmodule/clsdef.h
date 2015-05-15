@@ -175,6 +175,7 @@ const int c_nMaxParams = 32;
 struct MethodDescriptor
 {
     char                *pszName;
+    char                *pszSignature;
     TypeDescriptor      type;
     unsigned short      cParams;
     ParamDescriptor     **ppParams;

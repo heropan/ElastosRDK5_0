@@ -202,6 +202,7 @@ void DeleteMethods(MethodDescriptor *pMethod)
         DeleteParam(pMethod->ppParams[n]);
     }
     delete [] pMethod->ppParams;
+    delete pMethod->pszSignature;
     delete pMethod->pszName;
     delete pMethod;
 }
@@ -924,12 +925,6 @@ int CreateInterfaceMethod(
     assert(pInterface != NULL);
     assert(pszName != NULL);
 
-    n = SelectInterfaceMethod(pszName, pInterface);
-    if (n >= 0) {
-        ExtraMessage("interface", pszName);
-        _ReturnError (CLSError_DupEntry);
-    }
-
     if (pInterface->cMethods >= c_nMaxMethods)
         _ReturnError (CLSError_FullEntry);
 
@@ -1028,6 +1023,9 @@ int MethodAppend(
     if (n < 0) _Return (n);
 
     pDest = pDesc->ppMethods[n];
+    pDest->pszSignature = new char[strlen(pSrc->pszSignature) + 1];
+    strcpy(pDest->pszSignature, pSrc->pszSignature);
+
     TypeCopy(&pSrc->type, &pDest->type);
 
     for (n = 0; n < pSrc->cParams; n++) {

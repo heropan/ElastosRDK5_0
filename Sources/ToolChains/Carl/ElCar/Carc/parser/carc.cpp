@@ -19,6 +19,7 @@ static char s_szCarDepName[_MAX_PATH] = "";
 extern bool s_bLenientNaming;
 extern bool s_bInKernel;
 extern bool s_bSupportWeakRef;
+extern bool s_bInNakedMode;
 
 extern void SetDefaultThreadModel(ClassAttrib attrib);
 
@@ -157,6 +158,8 @@ CLSModule * CompileCAR(const char *pszName, DWORD dwAttribs)
     }
     if (dwAttribs & Command_u_WeakRef)
         s_bSupportWeakRef = true;
+    if (dwAttribs & Command_n_NakedMode)
+        s_bInNakedMode = true;
 
     InitNamespace();
 
