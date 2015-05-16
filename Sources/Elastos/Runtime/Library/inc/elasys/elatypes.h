@@ -434,7 +434,7 @@ EXTERN_C void __asm(char*, ...);
 #define CAR_INTERFACE(x)    interface DECLSPEC_UUID(x) DECLSPEC_NOVTABLE
 #endif
 
-#ifdef _DEBUG
+#ifdef _CALLBACK_KEYWORD_CHECK
 #define CarClass(name)      class name : public _##name name##_CallbackKeyword_Checking
 #else
 #define CarClass(name)      class name : public _##name
