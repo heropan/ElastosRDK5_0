@@ -49,11 +49,14 @@ C_DEFINES += -DHAVE_PRCTL
 C_DEFINES += -DHAVE_SYS_UIO_H
 C_DEFINES += -fpermissive
 
-CAR_FLAGS += -u
+CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Elastos.Core.car
 SOURCES += Object.cpp
+SOURCES += Thread.cpp
+SOURCES += NativeThread.cpp
+
 SOURCES += exportext.cpp
 SOURCES += listnode.cpp
 SOURCES += treenode.cpp
@@ -75,8 +78,7 @@ SOURCES += CDouble.cpp
 SOURCES += CArrayOf.cpp
 SOURCES += CRandom.cpp
 SOURCES += Init.cpp
-SOURCES += NativeThread.cpp
-SOURCES += Thread.cpp
+
 SOURCES += ThreadBase.cpp
 SOURCES += ThreadGroup.cpp
 SOURCES += CThread.cpp

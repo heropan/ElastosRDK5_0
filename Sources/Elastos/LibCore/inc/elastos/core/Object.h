@@ -3,11 +3,18 @@
 #define __ELASTOS_CORE_OBJECT_H__
 
 #include <coredef.h>
+#ifdef ELASTOS_CORE
+#include "Elastos.Core_server.h"
+#else
+#include "Elastos.Core.h"
+#endif
+#include <NativeThread.h>
+
+using Elastos::Core::Threading::ISynchronize;
+using Elastos::Core::Threading::NativeObject;
 
 namespace Elastos {
 namespace Core {
-
-struct NativeObject;
 
 class Object
     : public ElRefBase
@@ -19,11 +26,16 @@ public:
     class Autolock
     {
     public:
-        inline Autolock(Object& object) : mObject(object) { mObject.Lock(); }
+        inline Autolock(
+            /* [in] */ Object& object) : mObject(object)
+        { mObject.Lock(); }
 
-        inline Autolock(Object* object) : mObject(*object) { mObject.Lock(); }
+        inline Autolock(
+            /* [in] */ Object* object) : mObject(*object)
+        { mObject.Lock(); }
 
-        inline ~Autolock() { mObject.Unlock(); }
+        inline ~Autolock()
+        { mObject.Unlock(); }
 
     private:
         Object& mObject;
@@ -32,24 +44,24 @@ public:
 public:
     CAR_INTERFACE_DECL();
 
-    Aggregate(
+    CARAPI Aggregate(
         /* [in] */ Int32 type,
         /* [in] */ IInterface* object);
 
-    GetDomain(
+    CARAPI GetDomain(
         /* [out] */ IInterface** object);
 
-    GetClassID(
+    CARAPI GetClassID(
         /* [out] */ ClassID* clsid);
 
-    GetHashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* hashCode);
 
-    Equals(
+    CARAPI Equals(
         /* [in] */ IInterface* other,
         /* [out] */ Boolean* result);
 
-    ToString(
+    CARAPI ToString(
         /* [out] */ String* info);
 
     CARAPI Lock();
@@ -176,7 +188,7 @@ public:
      * @see #wait(long,int)
      * @see java.lang.Thread
      */
-    CARAPI WaitEx(
+    CARAPI Wait(
         /* [in] */ Int64 millis);
 
     /**
@@ -216,7 +228,7 @@ public:
      * @see #wait(long,int)
      * @see java.lang.Thread
      */
-    CARAPI WaitEx2(
+    CARAPI Wait(
         /* [in] */ Int64 millis,
         /* [in] */ Int32 nanos);
 

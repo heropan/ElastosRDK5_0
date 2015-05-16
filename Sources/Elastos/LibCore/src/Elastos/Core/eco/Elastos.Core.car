@@ -66,10 +66,16 @@ module
 
     interface Elastos.Core.IRunnable;
     interface Elastos.Core.ICharSequence;
+    interface Elastos.Core.Threading.ISynchronize;
     interface Elastos.Utility.IObjectContainer;
 
     namespace Elastos {
     namespace Core {
+
+    class CObject {
+        interface IObject;
+        interface ISynchronize;
+    }
 
     class CPathClassLoader {
         constructor (

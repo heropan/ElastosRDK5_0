@@ -130,7 +130,7 @@ module
          * @see #wait(long,int)
          * @see java.lang.Thread
          */
-        WaitEx(
+        Wait(
             [in] Int64 millis);
 
         /**
@@ -170,7 +170,7 @@ module
          * @see #wait(long,int)
          * @see java.lang.Thread
          */
-        WaitEx2(
+        Wait(
             [in] Int64 millis,
             [in] Int32 nanos);
     }

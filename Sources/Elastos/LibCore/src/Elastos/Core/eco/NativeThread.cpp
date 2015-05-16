@@ -1,6 +1,7 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "NativeThread.h"
+#include "Thread.h"
 #include "ThreadGroup.h"
 #include "CThreadGroup.h"
 #include "Globals.h"
@@ -243,8 +244,8 @@ Boolean NativePrepMainThread()
     Thread* _t = reinterpret_cast<Thread*>(threadObj->Probe(EIID_Thread));
     assert(_t != NULL);
     _t->mNativeThread = thread;
-    thread->mThreadObj = _t;
-    INTERFACE_ADDREF(threadObj);
+    thread->mThreadObj = reinterpret_cast<Int32>(_t);
+    REFCOUNT_ADDREF(threadObj);
 
     /*
      * Set the context class loader.  This invokes a ClassLoader method,
@@ -672,7 +673,7 @@ static void SetThreadName(
  * from moving it around (e.g. added to the tracked allocation list).
  */
 Boolean NativeCreateThread(
-    /* [in] */ Thread* threadObj,
+    /* [in] */ Int32 threadObj,
     /* [in] */ Int32 reqStackSize)
 {
     pthread_attr_t threadAttr;
@@ -683,7 +684,7 @@ Boolean NativeCreateThread(
     NativeThreadStatus oldStatus;
     Int32 cc;
 
-    assert(threadObj != NULL);
+    assert(threadObj != 0);
     self = NativeThreadSelf();
     if (reqStackSize == 0) {
         stackSize = kDefaultStackSize;//gDvm.mStackSize;
@@ -736,7 +737,7 @@ Boolean NativeCreateThread(
      */
     // dvmSetFieldInt(vmThreadObj, gDvm.offJavaLangVMThread_vmData, (u4)newThread);
     // dvmSetFieldObject(threadObj, gDvm.offJavaLangThread_vmThread, vmThreadObj);
-    threadObj->mNativeThread = newThread;
+    reinterpret_cast<Thread*>(threadObj)->mNativeThread = newThread;
 
     /*
      * Thread creation might take a while, so release the lock.
@@ -897,8 +898,9 @@ fail:
 static void* ThreadEntry(void* arg)
 {
     NativeThread* self = (NativeThread*)arg;
+    Thread* threadObj = reinterpret_cast<Thread*>(self->mThreadObj);
 
-    const char* threadName = self->mThreadObj->mName.string();
+    const char* threadName = threadObj->mName.string();
     SetThreadName(threadName);
 
     /*
@@ -962,7 +964,7 @@ static void* ThreadEntry(void* arg)
      * setPriority(), and then starts the thread.  We could manage this with
      * a "needs priority update" flag to avoid the redundant call.
      */
-    Int32 priority = self->mThreadObj->mPriority;
+    Int32 priority = threadObj->mPriority;
     NativeChangeThreadPriority(self, priority);
 
     /*
@@ -977,7 +979,7 @@ static void* ThreadEntry(void* arg)
     // LOGV("threadid=%d: calling run()\n", self->threadId);
     // assert(strcmp(run->name, "run") == 0);
     // dvmCallMethod(self, run, self->threadObj, &unused);
-    ECode ec = self->mThreadObj->Run();
+    ECode ec = threadObj->Run();
     // LOGV("threadid=%d: exiting\n", self->threadId);
 
     /*
@@ -1113,7 +1115,7 @@ ECode NativeAttachCurrentThread(
      * provides values for priority and daemon (which are normally inherited
      * from the current thread).
      */
-    ec = CThread::NewByFriend((IThreadGroup*)args->mGroup->Probe(EIID_IThreadGroup),
+    ec = CThread::NewByFriend((IThreadGroup*)reinterpret_cast<ThreadGroup*>(args->mGroup)->Probe(EIID_IThreadGroup),
             threadNameStr, os_getThreadPriorityFromSystem(), isDaemon, (CThread**)&threadObj);
     if (FAILED(ec)) {
     //     LOGE("exception thrown while constructing attached thread object\n");
@@ -1124,7 +1126,7 @@ ECode NativeAttachCurrentThread(
      * This makes threadObj visible to the GC.  We still have it in the
      * tracked allocation table, so it can't move around on us.
      */
-    self->mThreadObj = (Thread*)threadObj.Get();
+    self->mThreadObj = reinterpret_cast<Int32>((Thread*)threadObj.Get());
 
     /*
      * Set the VMThread field, which tells interpreted code that we're alive.
@@ -1176,7 +1178,7 @@ ECode NativeAttachCurrentThread(
     //     dvmDbgPostThreadStart(self);
 
     *thread = (IThread*)threadObj.Get();
-    INTERFACE_ADDREF(*thread);
+    REFCOUNT_ADDREF(*thread);
     return NOERROR;
 
 fail_unlink:
@@ -1230,6 +1232,7 @@ void NativeDetachCurrentThread()
 {
     NativeThread* self = NativeThreadSelf();
     assert(self != NULL);
+    Thread* thread = reinterpret_cast<Thread*>(self->mThreadObj);
 
     /*
      * Make sure we're not detaching a thread that's still running.  (This
@@ -1259,7 +1262,7 @@ void NativeDetachCurrentThread()
     //     }
     // }
 
-    AutoPtr<IThreadGroup> group = self->mThreadObj->mGroup;
+    AutoPtr<IThreadGroup> group = thread->mGroup;
     // group = dvmGetFieldObject(self->threadObj, gDvm.offJavaLangThread_group);
     // LOG_THREAD("threadid=%d: detach (group=%p)\n", self->threadId, group);
 
@@ -1285,7 +1288,7 @@ void NativeDetachCurrentThread()
         /*
          * Use threadObj to take the ref of self->mThreadObj;
          */
-        threadObj = (IThread*)self->mThreadObj->Probe(EIID_IThread);
+        threadObj = (IThread*)thread->Probe(EIID_IThread);
         tg->RemoveThread(threadObj);
     }
 
@@ -1299,7 +1302,7 @@ void NativeDetachCurrentThread()
     //                 gDvm.offJavaLangThread_vmThread);
     // dvmAddTrackedAlloc(vmThread, self);
     // dvmSetFieldObject(self->threadObj, gDvm.offJavaLangThread_vmThread, NULL);
-    self->mThreadObj->mNativeThread = NULL;
+    thread->mNativeThread = NULL;
 
     /* clear out our struct Thread pointer, since it's going away */
     // dvmSetFieldObject(vmThread, gDvm.offJavaLangVMThread_vmData, NULL);
@@ -1551,13 +1554,13 @@ AutoPtr<IThreadGroup> NativeGetMainThreadGroup()
  * before calling this.
  */
 NativeThread* NativeGetThreadFromThreadObject(
-    /* [in] */ Thread* threadObj)
+    /* [in] */ Int32 threadObj)
 {
     // Int32 vmData;
 
     // vmData = dvmGetFieldInt(vmThreadObj, gDvm.offJavaLangVMThread_vmData);
     assert(threadObj != NULL);
-    NativeThread* thread = threadObj->mNativeThread;
+    NativeThread* thread = reinterpret_cast<Thread*>(threadObj)->mNativeThread;
     if (FALSE) {
         thread = gCore.mThreadList;
         while (thread != NULL) {

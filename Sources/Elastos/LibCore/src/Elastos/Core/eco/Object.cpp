@@ -1,17 +1,23 @@
 
-#include "Thread.h"
 #include "Object.h"
+#include "Thread.h"
+
+using Elastos::Core::Threading::Thread;
+using Elastos::Core::Threading::IThread;
+using Elastos::Core::Threading::EIID_ISynchronize;
 
 namespace Elastos {
 namespace Core {
 
 Object::Object()
-    : mNativeObject(NativeCreateObject())
-{}
+{
+    mNativeObject = Threading::NativeCreateObject();
+    mNativeObject->mObjectObj = reinterpret_cast<Int32>(this);
+}
 
 Object::~Object()
 {
-    NativeDestroyObject(mNativeObject);
+    Threading::NativeDestroyObject(mNativeObject);
 }
 
 CAR_INTERFACE_IMPL_3(Object, IObject, ISynchronize, IWeakReferenceSource)
@@ -88,16 +94,16 @@ ECode Object::NotifyAll()
 
 ECode Object::Wait()
 {
-    return WaitEx2(0, 0);
+    return Wait(0, 0);
 }
 
-ECode Object::WaitEx(
+ECode Object::Wait(
     /* [in] */ Int64 millis)
 {
-    return WaitEx2(millis, 0);
+    return Wait(millis, 0);
 }
 
-ECode Object::WaitEx2(
+ECode Object::Wait(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {

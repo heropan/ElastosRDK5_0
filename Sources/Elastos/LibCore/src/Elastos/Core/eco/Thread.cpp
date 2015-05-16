@@ -1,12 +1,11 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Thread.h"
 #include "NativeThread.h"
 #include "ThreadGroup.h"
 #include <elastos/Math.h>
-#include "stdio.h"
 #ifdef ELASTOS_CORE
-#include <elastos/CSystem.h>
+#include "CSystem.h"
 #endif
 
 using Elastos::Core::ISystem;
@@ -165,6 +164,44 @@ ECode Thread::Init(
     return NOERROR;
 }
 
+PInterface Thread::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_IRunnable) {
+        return (IRunnable*)this;
+    }
+    else if (riid == EIID_IThread) {
+        return (IThread*)this;
+    }
+    else return Object::Probe(riid);
+}
+
+UInt32 Thread::AddRef()
+{
+    return ElRefBase::AddRef();
+}
+
+UInt32 Thread::Release()
+{
+    return ElRefBase::Release();
+}
+
+ECode Thread::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    VALIDATE_NOT_NULL(iid);
+    if (object == (IInterface*)(IRunnable*)this) {
+        *iid = EIID_IRunnable;
+        return NOERROR;
+    }
+    else if (object == (IInterface*)(IThread*)this) {
+        *iid = EIID_IThread;
+        return NOERROR;
+    }
+    else return Object::GetInterfaceID(object, iid);
+}
+
 ECode Thread::Create(
     /* [in] */ IThreadGroup* _group,
     /* [in] */ IRunnable* runnable,
@@ -303,7 +340,7 @@ ECode Thread::GetContextClassLoader(
     VALIDATE_NOT_NULL(outload)
 
     *outload = mContextClassLoader;
-    INTERFACE_ADDREF(*outload)
+    REFCOUNT_ADDREF(*outload)
     return NOERROR;
 }
 
@@ -373,7 +410,7 @@ Int32 Thread::NativeGetState()
     Int32 result;
 
     NativeLockThreadList(NULL);
-    thread = NativeGetThreadFromThreadObject(this);
+    thread = NativeGetThreadFromThreadObject(reinterpret_cast<Int32>(this));
     if (thread != NULL) {
         result = thread->mStatus;
     }
@@ -398,7 +435,7 @@ ECode Thread::GetThreadGroup(
     }
     else {
         *group = (IThreadGroup*)mGroup->Probe(EIID_IThreadGroup);
-        INTERFACE_ADDREF(*group);
+        REFCOUNT_ADDREF(*group);
         return NOERROR;
     }
 }
@@ -414,7 +451,7 @@ ECode Thread::GetUncaughtExceptionHandler(
         assert(0 && "TODO");
         // *handler = mGroup;           // ThreadGroup is instance of UEH
 
-    INTERFACE_ADDREF(*handler)
+    REFCOUNT_ADDREF(*handler)
     return NOERROR;
 }
 
@@ -439,7 +476,7 @@ void Thread::NativeInterrupt()
     NativeThread* thread;
 
     NativeLockThreadList(NULL);
-    thread = NativeGetThreadFromThreadObject(this);
+    thread = NativeGetThreadFromThreadObject(reinterpret_cast<Int32>(this));
     if (thread != NULL) {
         NativeThreadInterrupt(thread);
     }
@@ -488,7 +525,7 @@ Boolean Thread::NativeIsInterrupted()
     Boolean interrupted;
 
     NativeLockThreadList(NULL);
-    NativeThread* thread = NativeGetThreadFromThreadObject(this);
+    NativeThread* thread = NativeGetThreadFromThreadObject(reinterpret_cast<Int32>(this));
     if (thread != NULL)
         interrupted = thread->mInterrupted;
     else
@@ -515,13 +552,13 @@ ECode Thread::Join()
     return NOERROR;
 }
 
-ECode Thread::JoinEx(
+ECode Thread::Join(
     /* [in] */ Int64 millis)
 {
-    return JoinEx2(millis, 0);
+    return Join(millis, 0);
 }
 
-ECode Thread::JoinEx2(
+ECode Thread::Join(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {
@@ -664,7 +701,7 @@ void Thread::NativeNameChanged(
 
     /* get the thread's ID */
     NativeLockThreadList(NULL);
-    NativeThread* thread = NativeGetThreadFromThreadObject(this);
+    NativeThread* thread = NativeGetThreadFromThreadObject(reinterpret_cast<Int32>(this));
     if (thread != NULL) {
         threadId = thread->mThreadId;
     }
@@ -708,7 +745,7 @@ void Thread::NativeSetPriority(
     /* [in] */ Int32 priority)
 {
     NativeLockThreadList(NULL);
-    NativeThread* thread = NativeGetThreadFromThreadObject(this);
+    NativeThread* thread = NativeGetThreadFromThreadObject(reinterpret_cast<Int32>(this));
     if (thread != NULL)
         NativeChangeThreadPriority(thread, priority);
     //dvmDumpAllThreads(false);
@@ -747,7 +784,7 @@ ECode Thread::Start()
     mHasBeenStarted = TRUE;
 
     /* copying collector will pin threadObj for us since it was an argument */
-    return NativeCreateThread(this, (Int32)mStackSize) ? NOERROR : E_RUNTIME_EXCEPTION;
+    return NativeCreateThread(reinterpret_cast<Int32>(this), (Int32)mStackSize) ? NOERROR : E_RUNTIME_EXCEPTION;
 }
 
 ECode Thread::Stop()
@@ -995,8 +1032,8 @@ ECode Thread::Attach(
     if (self != NULL) {
         // *p_env = self->jniEnv;
         // return JNI_OK;
-        *thread = (IThread*)self->mThreadObj->Probe(EIID_IThread);
-        INTERFACE_ADDREF(*thread);
+        *thread = (IThread*)reinterpret_cast<Thread*>(self->mThreadObj)->Probe(EIID_IThread);
+        REFCOUNT_ADDREF(*thread);
         return NOERROR;
     }
 
@@ -1038,7 +1075,7 @@ ECode Thread::Attach(
     // }
     AutoPtr<IThreadGroup> threadGroup = NativeGetMainThreadGroup();
     argsCopy.mName = name;
-    argsCopy.mGroup = reinterpret_cast<ThreadGroup*>(threadGroup->Probe(EIID_ThreadGroup));
+    argsCopy.mGroup = reinterpret_cast<Int32>(threadGroup->Probe(EIID_ThreadGroup));
     ECode ec = NativeAttachCurrentThread(&argsCopy, FALSE, thread);
 
     /* restore the count */

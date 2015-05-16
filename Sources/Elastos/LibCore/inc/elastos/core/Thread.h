@@ -11,6 +11,8 @@
 #include "Object.h"
 #include <elastos/Mutex.h>
 
+using Elastos::Core::Object;
+
 namespace Elastos {
 namespace Core {
 namespace Threading {
@@ -67,7 +69,10 @@ enum {
 struct NativeThread;
 class ThreadGroup;
 
-class Thread : public Object
+class Thread
+    : public Object
+    , public IRunnable
+    , public IThread
 {
 private:
     /** Park states */
@@ -85,6 +90,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Returns the number of active {@code Thread}s in the running {@code
      * Thread}'s group and its subgroups.
@@ -106,7 +113,7 @@ public:
      * @see java.lang.SecurityException
      * @see java.lang.SecurityManager
      */
-    virtual CARAPI CheckAccess();
+    CARAPI CheckAccess();
 
     /**
      * Returns the number of stack frames in this thread.
@@ -117,7 +124,7 @@ public:
      *             suspended or not, and suspend was deprecated too.
      */
     //@Deprecated
-    virtual CARAPI CountStackFrames(
+    CARAPI CountStackFrames(
         /* [out] */ Int32* number);
 
     /**
@@ -133,7 +140,7 @@ public:
      * @deprecated Not implemented.
      */
     //@Deprecated
-    virtual CARAPI Destroy();
+    CARAPI Destroy();
 
     /**
      * Prints to the standard error stream a text representation of the current
@@ -203,7 +210,7 @@ public:
      *
      * @return the thread's ID.
      */
-    virtual CARAPI GetId(
+    CARAPI GetId(
         /* [out] */ Int64* id);
 
     /**
@@ -211,7 +218,7 @@ public:
      *
      * @return the Thread's name
      */
-    virtual CARAPI GetName(
+    CARAPI GetName(
         /* [out] */ String* name);
 
     /**
@@ -220,7 +227,7 @@ public:
      * @return the Thread's priority
      * @see Thread#setPriority
      */
-    virtual CARAPI GetPriority(
+    CARAPI GetPriority(
         /* [out] */ Int32* priority);
 
     /**
@@ -245,7 +252,7 @@ public:
      *
      * @return a {@link State} value.
      */
-    virtual CARAPI GetState(
+    CARAPI GetState(
         /* [out] */ ThreadState* state);
 
     /**
@@ -253,7 +260,7 @@ public:
      *
      * @return the Thread's ThreadGroup
      */
-    virtual CARAPI GetThreadGroup(
+    CARAPI GetThreadGroup(
         /* [out] */ IThreadGroup** group);
 
     /**
@@ -297,7 +304,7 @@ public:
      * @see Thread#interrupted
      * @see Thread#isInterrupted
      */
-    virtual CARAPI Interrupt();
+    CARAPI Interrupt();
 
     /**
      * Returns a <code>boolean</code> indicating whether the current Thread (
@@ -321,7 +328,7 @@ public:
      * @return a <code>boolean</code> indicating the liveness of the Thread
      * @see Thread#start
      */
-    virtual CARAPI IsAlive(
+    CARAPI IsAlive(
         /* [out] */ Boolean* isAlive);
 
     /**
@@ -334,7 +341,7 @@ public:
      * @return a <code>boolean</code> indicating whether the Thread is a daemon
      * @see Thread#setDaemon
      */
-    virtual CARAPI IsDaemon(
+    CARAPI IsDaemon(
         /* [out] */ Boolean* isDaemon);
 
     /**
@@ -346,7 +353,7 @@ public:
      * @see Thread#interrupt
      * @see Thread#interrupted
      */
-    virtual CARAPI IsInterrupted(
+    CARAPI IsInterrupted(
         /* [out] */ Boolean* isInterrupted);
 
     /**
@@ -358,7 +365,7 @@ public:
      * @see Object#notifyAll
      * @see java.lang.ThreadDeath
      */
-    virtual CARAPI Join();
+    CARAPI Join();
 
     /**
      * Blocks the current Thread (<code>Thread.currentThread()</code>) until
@@ -371,7 +378,7 @@ public:
      * @see Object#notifyAll
      * @see java.lang.ThreadDeath
      */
-    virtual CARAPI JoinEx(
+    CARAPI Join(
         /* [in] */ Int64 millis);
 
     /**
@@ -386,7 +393,7 @@ public:
      * @see Object#notifyAll
      * @see java.lang.ThreadDeath
      */
-    virtual CARAPI JoinEx2(
+    CARAPI Join(
         /* [in] */ Int64 millis,
         /* [in] */ Int32 nanos);
 
@@ -402,7 +409,7 @@ public:
      * @deprecated Used with deprecated method {@link Thread#suspend}
      */
     //@Deprecated
-    virtual CARAPI Resume();
+    CARAPI Resume();
 
     /**
      * Set the context ClassLoader for the receiver.
@@ -430,7 +437,7 @@ public:
      *             if <code>checkAccess()</code> fails with a SecurityException
      * @see Thread#isDaemon
      */
-    virtual CARAPI SetDaemon(
+    CARAPI SetDaemon(
         /* [in] */ Boolean isDaemon);
 
     /**
@@ -460,7 +467,7 @@ public:
      *         SecurityException
      * @see Thread#getName
      */
-    virtual CARAPI SetName(
+    CARAPI SetName(
         /* [in] */ const String& threadName);
 
     /**
@@ -478,7 +485,7 @@ public:
      *             less than Thread.MIN_PRIORITY
      * @see Thread#getPriority
      */
-    virtual CARAPI SetPriority(
+    CARAPI SetPriority(
         /* [in] */ Int32 priority);
 
     /**
@@ -535,7 +542,7 @@ public:
      *
      * @see Thread#run
      */
-    virtual CARAPI Start();
+    CARAPI Start();
 
     /**
      * Requests the receiver Thread to stop and throw ThreadDeath. The Thread is
@@ -548,7 +555,7 @@ public:
      * leave your application and the VM in an unpredictable state.
      */
     //@Deprecated
-    virtual CARAPI Stop();
+    CARAPI Stop();
 
     /**
      * Requests the receiver Thread to stop and throw the
@@ -580,7 +587,7 @@ public:
      * @deprecated May cause deadlocks.
      */
     //@Deprecated
-    virtual CARAPI Suspend();
+    CARAPI Suspend();
 
     /**
      * Causes the calling Thread to yield execution time to another Thread that
@@ -610,7 +617,7 @@ public:
      *
      * @hide for Unsafe
      */
-    virtual CARAPI Unpark();
+    CARAPI Unpark();
 
     /**
      * Parks the current thread for a particular number of nanoseconds, or
@@ -633,7 +640,7 @@ public:
      *
      * @hide for Unsafe
      */
-    virtual CARAPI ParkFor(
+    CARAPI ParkFor(
         /* [in] */ Int64 nanos);
 
     /**
@@ -657,7 +664,7 @@ public:
      *
      * @hide for Unsafe
      */
-    virtual CARAPI ParkUntil(
+    CARAPI ParkUntil(
         /* [in] */ Int64 time);
 
     /**
@@ -666,7 +673,7 @@ public:
      *
      * @see Thread#start
      */
-    virtual CARAPI Run();
+    CARAPI Run();
 
     static CARAPI Attach(
         /* [out] */ IThread** thread);
@@ -675,10 +682,7 @@ public:
         /* [in] */ const String& name,
         /* [out] */ IThread** thread);
 
-    virtual CARAPI Detach();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CARAPI Detach();
 
     /**
      * Adds a runnable to be invoked upon interruption. If this thread has

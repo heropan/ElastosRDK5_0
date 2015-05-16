@@ -2,8 +2,9 @@
 #ifndef __CSYSTEM_H__
 #define __CSYSTEM_H__
 
-#include <elastos.h>
-#include "_CSystem.h"
+#include "coredef.h"
+#include "_Elastos_Core_CSystem.h"
+#include "Object.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
@@ -16,9 +17,13 @@ namespace Elastos {
 namespace Core {
 
 CarClass(CSystem)
+    , public Object
+    , public ISystem
 {
 public:
     CARAPI constructor();
+
+    CAR_INTERFACE_DECL()
 
     /**
      * Sets the standard input stream to the given user defined input stream.

@@ -62,7 +62,7 @@ module
             [in] ECode ec);
     }
 
-    interface IThread extends ISynchronize {
+    interface IThread {
 
         /**
          * The maximum priority value allowed for a thread.
@@ -271,7 +271,7 @@ module
          * @see Object#notifyAll
          * @see java.lang.ThreadDeath
          */
-        JoinEx(
+        Join(
             [in] Int64 millis);
 
         /**
@@ -286,7 +286,7 @@ module
          * @see Object#notifyAll
          * @see java.lang.ThreadDeath
          */
-        JoinEx2(
+        Join(
             [in] Int64 millis,
             [in] Int32 nanos);
 

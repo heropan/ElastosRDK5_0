@@ -2,7 +2,7 @@
 #ifndef __CTHREADGROUP_H__
 #define __CTHREADGROUP_H__
 
-#include "_CThreadGroup.h"
+#include "_Elastos_Core_Threading_CThreadGroup.h"
 #include "ThreadGroup.h"
 
 namespace Elastos {

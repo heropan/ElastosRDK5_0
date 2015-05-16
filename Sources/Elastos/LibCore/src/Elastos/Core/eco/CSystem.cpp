@@ -75,6 +75,37 @@ ECode CSystem::constructor()
     return NOERROR;
 }
 
+PInterface CSystem::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_ISystem) {
+        return (ISystem*)this;
+    }
+    else return Object::Probe(riid);
+}
+
+UInt32 CSystem::AddRef()
+{
+    return ElRefBase::AddRef();
+}
+
+UInt32 CSystem::Release()
+{
+    return ElRefBase::Release();
+}
+
+ECode CSystem::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    VALIDATE_NOT_NULL(iid);
+    if (object == (IInterface*)(ISystem*)this) {
+        *iid = EIID_ISystem;
+        return NOERROR;
+    }
+    else return Object::GetInterfaceID(object, iid);
+}
+
 ECode CSystem::SetIn(
     /* [in] */ IInputStream* newIn)
 {

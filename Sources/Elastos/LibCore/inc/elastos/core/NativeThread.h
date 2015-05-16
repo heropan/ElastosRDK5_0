@@ -2,16 +2,16 @@
 #ifndef __NATIVETHREAD_H__
 #define __NATIVETHREAD_H__
 
-#include "Thread.h"
-#include "ThreadGroup.h"
-#include <elastos.h>
+#ifdef ELASTOS_CORE
+#include "Elastos.Core_server.h"
+#else
+#include "Elastos.Core.h"
+#endif
 #include <pthread.h>
 
 namespace Elastos {
 namespace Core {
 namespace Threading {
-
-class Object;
 
 typedef struct NativeObject
 {
@@ -20,7 +20,7 @@ typedef struct NativeObject
      * the comments in Sync.c for a description of its layout.
      */
     UInt32      mLock;
-    Object*     mObjectObj;
+    Int32       mObjectObj;
 } NativeObject;
 
 struct Monitor;
@@ -71,11 +71,9 @@ struct NativeAttachArgs
 {
     Int32        mVersion;    /* must be >= JNI_VERSION_1_2 */
     String       mName;       /* NULL or name of thread as modified UTF-8 str */
-    ThreadGroup* mGroup;      /* global ref of a ThreadGroup object, or NULL */
+    Int32        mGroup;      /* global ref of a ThreadGroup object, or NULL */
 };
 typedef struct NativeAttachArgs NativeAttachArgs;
-
-class Thread;
 
 /*
  * Our per-thread data.
@@ -139,7 +137,7 @@ typedef struct NativeThread
     // Object*     exception;
 
     /* the java/lang/Thread that we are associated with */
-    Thread* mThreadObj;
+    Int32 mThreadObj;
 
     /* the JNIEnv pointer associated with this thread */
     // JNIEnv*     jniEnv;
@@ -337,7 +335,7 @@ inline void NativeUnlockMutex(
  * Create a thread as a result of java.lang.Thread.start().
  */
 ELAPI_(Boolean) NativeCreateThread(
-    /* [in] */ Thread* threadObj,
+    /* [in] */ Int32 threadObj,
     /* [in] */ Int32 reqStackSize);
 
 ELAPI NativeAttachCurrentThread(
@@ -360,7 +358,7 @@ ELAPI_(AutoPtr<IThreadGroup>) NativeGetMainThreadGroup();
  * before calling this.
  */
 ELAPI_(NativeThread*) NativeGetThreadFromThreadObject(
-    /* [in] */ Thread* threadObj);
+    /* [in] */ Int32 threadObj);
 
 /*
  * Update the priority value of the underlying pthread.

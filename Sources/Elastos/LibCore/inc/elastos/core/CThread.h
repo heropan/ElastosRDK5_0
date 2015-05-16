@@ -2,14 +2,14 @@
 #ifndef __CTHREAD_H__
 #define __CTHREAD_H__
 
-#include "_CThread.h"
+#include "_Elastos_Core_Threading_CThread.h"
 #include "Thread.h"
 
 namespace Elastos {
 namespace Core {
 namespace Threading {
 
-CarClass(CThread), Thread
+CarClass(CThread), public Thread
 {
 public:
     /**
