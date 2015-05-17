@@ -17,8 +17,16 @@ static _SingletonObjState_ _s_${name}_ObjState_ = _SingletonObjState_Uninitializ
 $END IF
 
 ${ClassNamespaceBegin(class)}
+$ TEMPLATE "headercpp/basenewimpl.lub"
+$
+$
+$IF type is not "generic" and attrib is not "private"
+$TEMPLATE "headercpp/classnewimpl.lub"
+$END IF
+$
 $IF class.attrib is not "hasctor"
-CARAPI _${class.name}CreateObject(${class.name} **ppObj)
+CARAPI _${class.name}CreateObject(
+    /* [out] */ ${class.name} **ppObj)
 {
 $
 $IF class.attrib is not "singleton"
@@ -90,25 +98,25 @@ $END IF  ;; singleton
 
 $IF type is not "aspect"
 $    IF class.attrib is not "singleton"
-ECode _${class.name}::NewByFriend($^
+ECode _${class.name}::NewByFriend(
 $    ELSE
-ECode _${class.name}::AcquireSingletonByFriend($^
+ECode _${class.name}::AcquireSingletonByFriend(
 $    END IF ;; "singleton"
- ${class.name} **ppNewObj)
+    /* [out] */ ${class.name} **newObj)
 {
-    return _${class.name}CreateObject(ppNewObj);
+    return _${class.name}CreateObject(newObj);
 }
 $END IF
 
 $IF type is not "aspect"
 $    IF class.attrib is not "singleton"
-ECode _${class.name}::NewByFriend($^
+ECode _${class.name}::NewByFriend(
 $    ELSE
-ECode _${class.name}::AcquireSingletonByFriend($^
+ECode _${class.name}::AcquireSingletonByFriend(
 $    END IF ;; "singleton"
- ${class.name} **ppNewObj)
+    /* [out] */ ${class.name} **newObj)
 {
-    return _${class.name}CreateObject(ppNewObj);
+    return _${class.name}CreateObject(newObj);
 }
 $END IF
 
@@ -120,7 +128,7 @@ $       IF parameter is not last
     /* [${attrib}] */ ${type} ${prefixingname(parameter)},
 $       END IF
 $    END DO ;; all parameters
-    ${class.name} **ppObj)
+    /* [out] */ ${class.name} **ppObj)
 {
 $
 $IF class.attrib is not "singleton"
@@ -237,16 +245,15 @@ $   WITH all interfaces DO
 $       IF attrib is "clsobj"
 $           WITH all methods DO
 $               IF class.attrib is not "singleton"
-ECode _${class.name}::NewByFriend($^
+ECode _${class.name}::NewByFriend(
 $               ELSE
-ECode _${class.name}::AcquireSingletonByFriend($^
+ECode _${class.name}::AcquireSingletonByFriend(
 $               END IF ;; "singleton"
 $               WITH all parameters DO
 $                   IF parameter is not last
-
-    /* [${attrib}] */ ${type} ${prefixingname(parameter)},$^
+    /* [${attrib}] */ ${type} ${prefixingname(parameter)},
 $                   ELSE
- ${class.name} **${prefixingname(parameter)})
+    /* [out] */ ${class.name} **${prefixingname(parameter)})
 $                   END IF
 $               END DO ;; all parameters
 {
@@ -265,15 +272,6 @@ $       END IF ;; attrib is "clsobj"
 $   END DO ;; all interfaces
 $END IF ;; not "aspect"
 $END IF ;; not "hasctor"
-
-$ TEMPLATE "headercpp/basenewimpl.lub"
-$
-$
-$IF type is not "generic" and attrib is not "private"
-$TEMPLATE "headercpp/classnewimpl.lub"
-$END IF
-$
-
 ${ClassNamespaceEnd(class)}
 $
 $END OUTPUT

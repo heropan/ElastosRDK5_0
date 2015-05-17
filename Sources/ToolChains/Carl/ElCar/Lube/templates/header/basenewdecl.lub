@@ -7,17 +7,17 @@ $         WITH all methods DO
 $           IF attrib is not "defaultctor"
 
 $             IF class.attrib is "singleton"
-    static _ELASTOS ECode _AcquireSingletonInRegime($^
+    static _ELASTOS ECode _AcquireSingletonInRegime(
 $             ELSE
-    static _ELASTOS ECode _NewInRegime($^
+    static _ELASTOS ECode _NewInRegime(
 $             END IF ;; is singleton
-/* [in] */ IRegime* __pRegime$^
+        /* [in] */ IRegime* __regime$^
 $             WITH all parameters DO
-,$^
+,
 $               IF parameter is not last
-/* [${attrib}] */ ${ParamNamespaceType(type)} ${prefixingname(parameter)}$^
+        /* [${attrib}] */ ${ParamNamespaceType(type)} ${name}$^
 $               ELSE
-/* [out] */ IInterface** __ppObject);
+        /* [out] */ IInterface** __object);
 $               END IF ;; parameter is not last
 $             END DO ;; all parameters
 $           END IF ;; is not defaultctor

@@ -3,13 +3,13 @@ $;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
 $;;=========================================================================
 $
 $INPUT module
-$WITH all classes DO
-$   IF type is not "sink" and type is not "clsobj" and attrib is not "private" and type is not "generic"
 
 EXTERN_C ELAPI _Impl_CheckClsId(
     PInterface pServerObj,
     const _ELASTOS ClassID* pClassid,
     PInterface *ppServerObj);
+$WITH all classes DO
+$   IF type is not "sink" and type is not "clsobj" and attrib is not "private" and type is not "generic"
 
 ${ClassNamespaceBegin(class)}$^
 class ${name}

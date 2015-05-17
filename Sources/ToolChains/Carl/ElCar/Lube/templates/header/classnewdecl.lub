@@ -5,25 +5,27 @@ $   WITH all interfaces DO
 $       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter" and name is not "IObject"
 
 $           IF class.attrib is "singleton"
-    static _ELASTOS ECode AcquireSingletonInRegime($^
+    static _ELASTOS ECode AcquireSingletonInRegime(
 $           ELSE
-    static _ELASTOS ECode NewInRegime($^
+    static _ELASTOS ECode NewInRegime(
 $           END IF ;; is singleton
-/* [in] */ IRegime* pRegime,/* [out] */ ${namespace}${name}** pp${name});
+        /* [in] */ IRegime* regime,
+        /* [out] */ ${namespace}${name}** __${name});
 
 $           IF class.attrib is "singleton"
-    static _ELASTOS ECode AcquireSingletonInRegime($^
+    static _ELASTOS ECode AcquireSingletonInRegime(
 $           ELSE
-    static _ELASTOS ECode NewInRegime($^
+    static _ELASTOS ECode NewInRegime(
 $           END IF ;; is singleton
-/* [in] */ PInterface __pRegime, /* [out] */ ${namespace}${name}** __pp${name});
+        /* [in] */ PInterface __regime,
+        /* [out] */ ${namespace}${name}** __${name});
 
 $           IF class.attrib is "singleton"
-    static _ELASTOS ECode AcquireSingleton($^
+    static _ELASTOS ECode AcquireSingleton(
 $           ELSE
-    static _ELASTOS ECode New($^
+    static _ELASTOS ECode New(
 $           END IF ;; is singleton
-/* [out] */ ${namespace}${name}** pp${name});
+        /* [out] */ ${namespace}${name}** __${name});
 $
 $       END IF ;; attrib is not clsobj and is not callback and ...
 $   END DO ;; all interfaces
@@ -38,30 +40,30 @@ $                   WITH all interfaces DO
 $                       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter" and name is not "IObject"
 
 $                           IF class.attrib is "singleton"
-    static _ELASTOS ECode AcquireSingletonInRegime($^
+    static _ELASTOS ECode AcquireSingletonInRegime(
 $                           ELSE
-    static _ELASTOS ECode NewInRegime($^
+    static _ELASTOS ECode NewInRegime(
 $                           END IF ;; is singleton
-/* [in] */ PInterface __pRegime$^
+        /* [in] */ PInterface __regime$^
 $                           WITH all parameters DO
-,$^
+,
 $                               IF parameter is not last
-/* [${attrib}] */ ${ParamNamespaceType(type)} ${prefixingname(parameter)}$^
+        /* [${attrib}] */ ${ParamNamespaceType(type)} ${name}$^
 $                               ELSE
-/* [out] */ ${interface.namespace}${interface.name}** __pp${interface.name});
+        /* [out] */ ${interface.namespace}${interface.name}** __${interface.name});
 $                               END IF ;; parameter is not last
 $                           END DO ;; all parameters
 
 $                           IF class.attrib is "singleton"
-    static _ELASTOS ECode AcquireSingleton($^
+    static _ELASTOS ECode AcquireSingleton(
 $                           ELSE
-    static _ELASTOS ECode New($^
+    static _ELASTOS ECode New(
 $                           END IF ;; is singleton
 $                           WITH all parameters DO
 $                               IF parameter is not last
-/* [${attrib}] */ ${ParamNamespaceType(type)} ${prefixingname(parameter)},
+        /* [${attrib}] */ ${ParamNamespaceType(type)} ${name},
 $                               ELSE
-/* [out] */ ${interface.namespace}${interface.name}** __pp${interface.name});
+        /* [out] */ ${interface.namespace}${interface.name}** __${interface.name});
 $                               END IF ;; parameter is not last
 $                           END DO ;; all parameters
 $                       END IF ;; attrib is not clsobj and is not callback and ...
@@ -74,12 +76,12 @@ $   END IF ;; attrib is hasctor
 $
 $ ELSE ;; !(is not aspect)
 $
-    CAR_INLINE static _ELASTOS ECode Attach(/* [in] */ IInterface* pObject)
+    CAR_INLINE static _ELASTOS ECode Attach(/* [in] */ IInterface* object)
     {
         return _CObject_AttachAspect(pObject, ECLSID_${name});
     }
 
-    CAR_INLINE static _ELASTOS ECode Detach(/* [in] */ IInterface* pObject)
+    CAR_INLINE static _ELASTOS ECode Detach(/* [in] */ IInterface* object)
     {
         return _CObject_DetachAspect(pObject, ECLSID_${name});
     }

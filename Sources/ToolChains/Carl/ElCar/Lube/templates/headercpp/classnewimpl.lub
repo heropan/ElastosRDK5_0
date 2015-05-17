@@ -5,31 +5,33 @@ $   WITH all interfaces DO
 $       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter" and name is not "IObject"
 
 $           IF class.attrib is "singleton"
-ECode _${class.name}::AcquireSingletonInRegime($^
+ECode _${class.name}::AcquireSingletonInRegime(
 $           ELSE
-ECode _${class.name}::NewInRegime($^
+ECode _${class.name}::NewInRegime(
 $           END IF ;; is singleton
-/* [in] */ IRegime* pRegime,/* [out] */ ${namespace}${name}** pp${name})
+    /* [in] */ IRegime* regime,
+    /* [out] */ ${namespace}${name}** ${name})
 {
 
-    return _CObject_CreateInstance(ECLSID_${class.name}, pRegime, ${namespace}EIID_${name}, (IInterface**)pp${name});
+    return _CObject_CreateInstance(ECLSID_${class.name}, regime, ${namespace}EIID_${name}, (IInterface**)${name});
 
 }
 
 $           IF class.attrib is "singleton"
-ECode _${class.name}::AcquireSingletonInRegime($^
+ECode _${class.name}::AcquireSingletonInRegime(
 $           ELSE
-ECode _${class.name}::NewInRegime($^
+ECode _${class.name}::NewInRegime(
 $           END IF ;; is singleton
-/* [in] */ PInterface __pRegime, /* [out] */ ${namespace}${name}** __pp${name})
+    /* [in] */ PInterface __regime,
+    /* [out] */ ${namespace}${name}** __${name})
 {
-    PRegime pRegime = NULL;
+    PRegime regime = NULL;
 
-    if (!IS_RGM_NUMBER(__pRegime)){
-        pRegime = IRegime::Probe(__pRegime);
-        if (!pRegime) return E_NO_INTERFACE;
+    if (!IS_RGM_NUMBER(__regime)){
+        regime = IRegime::Probe(__regime);
+        if (!regime) return E_NO_INTERFACE;
     }
-    else pRegime = (PRegime)__pRegime;
+    else regime = (PRegime)__regime;
 
     return $^
 $           IF class.attrib is "singleton"
@@ -37,17 +39,17 @@ AcquireSingletonInRegime($^
 $           ELSE
 NewInRegime($^
 $           END IF ;; is singleton
-pRegime, __pp${name});
+regime, __${name});
 }
 
 $           IF class.attrib is "singleton"
-ECode _${class.name}::AcquireSingleton($^
+ECode _${class.name}::AcquireSingleton(
 $           ELSE
-ECode _${class.name}::New($^
+ECode _${class.name}::New(
 $           END IF ;; is singleton
-/* [out] */ ${namespace}${name}** pp${name})
+    /* [out] */ ${namespace}${name}** ${name})
 {
-    return _CObject_CreateInstance(ECLSID_${class.name}, RGM_SAME_DOMAIN, ${namespace}EIID_${name}, (PInterface*)pp${name});
+    return _CObject_CreateInstance(ECLSID_${class.name}, RGM_SAME_DOMAIN, ${namespace}EIID_${name}, (PInterface*)${name});
 }
 $
 $       END IF ;; attrib is not clsobj and is not callback and ...
@@ -63,28 +65,28 @@ $                   WITH all interfaces DO
 $                       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter" and name is not "IObject"
 
 $                           IF class.attrib is "singleton"
-ECode _${class.name}::AcquireSingletonInRegime($^
+ECode _${class.name}::AcquireSingletonInRegime(
 $                           ELSE
-ECode _${class.name}::NewInRegime($^
+ECode _${class.name}::NewInRegime(
 $                           END IF ;; is singleton
-/* [in] */ PInterface __pRegime$^
+    /* [in] */ PInterface __regime$^
 $                           WITH all parameters DO
-,$^
+,
 $                               IF parameter is not last
-/* [${attrib}] */ ${ParamNamespaceType(type)} ${prefixingname(parameter)}$^
+    /* [${attrib}] */ ${ParamNamespaceType(type)} ${name}$^
 $                               ELSE
-/* [out] */ ${interface.namespace}${interface.name}** __pp${interface.name})
+    /* [out] */ ${interface.namespace}${interface.name}** __${interface.name})
 $                               END IF ;; parameter is not last
 $                           END DO ;; all parameters
 {
     IInterface* __pNewObj;
     PRegime pRegime = NULL;
 
-    if (!IS_RGM_NUMBER(__pRegime)){
-        pRegime = IRegime::Probe(__pRegime);
+    if (!IS_RGM_NUMBER(__regime)){
+        pRegime = IRegime::Probe(__regime);
         if (!pRegime) return E_NO_INTERFACE;
     }
-    else pRegime = (PRegime)__pRegime;
+    else pRegime = (PRegime)__regime;
 
     ECode ec = $^
 $                           IF class.attrib is "singleton"
@@ -96,15 +98,15 @@ pRegime$^
 $                           WITH all parameters DO
 , $^
 $                               IF parameter is not last
-${prefixingname(parameter)}$^
+${name}$^
 $                               ELSE
 &__pNewObj);
 $                               END IF ;; parameter is not last
 $                           END DO ;; all parameters
     if (FAILED(ec)) return ec;
 
-    *__pp${name} = ${namespace}${name}::Probe(__pNewObj);
-    if (*__pp${name}) (*__pp${name})->AddRef();
+    *__${name} = ${namespace}${name}::Probe(__pNewObj);
+    if (*__${name}) (*__${name})->AddRef();
     else ec = E_NO_INTERFACE;
     __pNewObj->Release();
 
@@ -112,15 +114,15 @@ $                           END DO ;; all parameters
 }
 
 $                           IF class.attrib is "singleton"
-ECode _${class.name}::AcquireSingleton($^
+ECode _${class.name}::AcquireSingleton(
 $                           ELSE
-ECode _${class.name}::New($^
+ECode _${class.name}::New(
 $                           END IF ;; is singleton
 $                           WITH all parameters DO
 $                               IF parameter is not last
-/* [${attrib}] */ ${ParamNamespaceType(type)} ${prefixingname(parameter)},
+    /* [${attrib}] */ ${ParamNamespaceType(type)} ${name},
 $                               ELSE
-/* [out] */ ${interface.namespace}${interface.name}** __pp${interface.name})
+    /* [out] */ ${interface.namespace}${interface.name}** __${interface.name})
 $                               END IF ;; parameter is not last
 $                           END DO ;; all parameters
 {
@@ -134,9 +136,9 @@ RGM_SAME_DOMAIN$^
 $                           WITH all parameters DO
 , $^
 $                               IF parameter is not last
-${prefixingname(parameter)}$^
+${name}$^
 $                               ELSE
-__pp${interface.name});
+__${interface.name});
 $                               END IF ;; parameter is not last
 $                           END DO ;; all parameters
 }

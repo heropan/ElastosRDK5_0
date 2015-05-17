@@ -7,17 +7,17 @@ $         WITH all methods DO
 $           IF attrib is not "defaultctor"
 
 $             IF class.attrib is "singleton"
-ECode _${class.name}::_AcquireSingletonInRegime($^
+ECode _${class.name}::_AcquireSingletonInRegime(
 $             ELSE
-ECode _${class.name}::_NewInRegime($^
+ECode _${class.name}::_NewInRegime(
 $             END IF ;; is singleton
-/* [in] */ IRegime* __pRegime$^
+    /* [in] */ IRegime* __regime$^
 $             WITH all parameters DO
-,$^
+,
 $               IF parameter is not last
-/* [${attrib}] */ ${ParamNamespaceType(type)} ${prefixingname(parameter)}$^
+    /* [${attrib}] */ ${ParamNamespaceType(type)} ${name}$^
 $               ELSE
-/* [out] */ IInterface** __ppObject)
+    /* [out] */ IInterface** __object)
 $               END IF ;; parameter is not last
 $             END DO ;; all parameters
 {
@@ -32,16 +32,16 @@ $             END DO ;; all parameters
     ec = pClassObject->${method.name}($^
 $           WITH all parameters DO
 $             IF parameter is not last
-${prefixingname(parameter)}, $^
+${name}, $^
 $             ELSE
 &pObject);
 $             END IF ;; parameter is not last
 $           END DO ;; all parameters
 
-    if (!IS_RGM_NUMBER(__pRegime) && NULL != pObject)
-        ec = _CObject_EnterRegime(pObject, __pRegime);
+    if (!IS_RGM_NUMBER(__regime) && NULL != pObject)
+        ec = _CObject_EnterRegime(pObject, __regime);
 
-    *__ppObject = pObject;
+    *__object = pObject;
 
     pClassObject->Release();
 

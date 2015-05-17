@@ -15,16 +15,18 @@ class ${class.name};
 
 $IF class.type is not "sink"
 $  IF class.attrib is not "hasctor"
-CARAPI _${class.name}CreateObject(${class.name} **ppObj);
+CARAPI _${class.name}CreateObject(
+    /* [out] */ ${class.name} **newObj);
 $  ELSE
 $  WITH all constructors DO
+
 CARAPI _${class.name}CreateObject(
 $    WITH all parameters DO
 $       IF parameter is not last
-        /* [${attrib}] */ ${type} ${prefixingname(parameter)},
+    /* [${attrib}] */ ${type} ${prefixingname(parameter)},
 $       END IF
 $    END DO ;; all parameters
-        ${class.name} **);
+    /* [out] */ ${class.name} **newObj);
 $  END DO
 $  END IF
 $END IF
@@ -40,7 +42,6 @@ $IF type is not "generic" and attrib is not "private"
 $TEMPLATE "classnewdecl.lub"
 $END IF
 $
-
 $IF attrib is not "hasctor"
 $  IF type is not "aspect"
 $   IF class.attrib is not "singleton"
@@ -55,16 +56,16 @@ $   WITH all interfaces DO
 $       IF attrib is "clsobj"
 $           WITH all methods DO
 $               IF class.attrib is not "singleton"
-    static ECode NewByFriend($^
+
+    static ECode NewByFriend(
 $               ELSE
-    static ECode AcquireSingletonByFriend($^
+    static ECode AcquireSingletonByFriend(
 $               END IF ;; "singleton"
 $               WITH all parameters DO
 $                   IF parameter is not last
-
-    /* [${attrib}] */ ${type} ${prefixingname(parameter)},$^
+        /* [${attrib}] */ ${type} ${name},
 $                   ELSE
- ${class.name} **${prefixingname(parameter)});
+        /* [out] */ ${class.name} **${name});
 $                   END IF
 $               END DO ;; all parameters
 $           END DO ;; all methods
