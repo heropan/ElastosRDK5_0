@@ -1,26 +1,26 @@
 
 module
 {
-    merge("../../../../../car/Elastos/Utility/Zip/Errors.car");
-    merge("../../../../../car/Elastos/Utility/Zip/Exceptions.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IZipConstants.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IChecksum.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IAdler32.car");
-    merge("../../../../../car/Elastos/Utility/Zip/ICRC32.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IInflater.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IDeflater.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IZipEntry.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IInflaterInputStream.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IInflaterOutputStream.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IDeflaterInputStream.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IDeflaterOutputStream.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IZipInputStream.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IZipOutputStream.car");
-    merge("../../../../../car/Elastos/Utility/Zip/ICheckedInputStream.car");
-    merge("../../../../../car/Elastos/Utility/Zip/ICheckedOutputStream.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IGZIPInputStream.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IGZIPOutputStream.car");
-    merge("../../../../../car/Elastos/Utility/Zip/IZipFile.car");
+    merge("../../../../car/Elastos/Utility/Zip/Errors.car");
+    merge("../../../../car/Elastos/Utility/Zip/Exceptions.car");
+    merge("../../../../car/Elastos/Utility/Zip/IZipConstants.car");
+    merge("../../../../car/Elastos/Utility/Zip/IChecksum.car");
+    merge("../../../../car/Elastos/Utility/Zip/IAdler32.car");
+    merge("../../../../car/Elastos/Utility/Zip/ICRC32.car");
+    merge("../../../../car/Elastos/Utility/Zip/IInflater.car");
+    merge("../../../../car/Elastos/Utility/Zip/IDeflater.car");
+    merge("../../../../car/Elastos/Utility/Zip/IZipEntry.car");
+    merge("../../../../car/Elastos/Utility/Zip/IInflaterInputStream.car");
+    merge("../../../../car/Elastos/Utility/Zip/IInflaterOutputStream.car");
+    merge("../../../../car/Elastos/Utility/Zip/IDeflaterInputStream.car");
+    merge("../../../../car/Elastos/Utility/Zip/IDeflaterOutputStream.car");
+    merge("../../../../car/Elastos/Utility/Zip/IZipInputStream.car");
+    merge("../../../../car/Elastos/Utility/Zip/IZipOutputStream.car");
+    merge("../../../../car/Elastos/Utility/Zip/ICheckedInputStream.car");
+    merge("../../../../car/Elastos/Utility/Zip/ICheckedOutputStream.car");
+    merge("../../../../car/Elastos/Utility/Zip/IGZIPInputStream.car");
+    merge("../../../../car/Elastos/Utility/Zip/IGZIPOutputStream.car");
+    merge("../../../../car/Elastos/Utility/Zip/IZipFile.car");
 
     using interface Elastos.IO.IOutputStream;
     using interface Elastos.IO.IFile;

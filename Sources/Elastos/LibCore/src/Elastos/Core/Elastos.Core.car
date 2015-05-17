@@ -1,68 +1,68 @@
 
 module
 {
-    merge("../../../../car/Elastos/Core/Errors.car");
-    merge("../../../../car/Elastos/Core/Exceptions.car");
-    merge("../../../../car/Elastos/Core/ICharSequence.car");
-    merge("../../../../car/Elastos/Core/IAppendable.car");
-    merge("../../../../car/Elastos/Core/ICloneable.car");
-    merge("../../../../car/Elastos/Core/IComparable.car");
-    merge("../../../../car/Elastos/Core/IComparator.car");
-    merge("../../../../car/Elastos/Core/IStringBuilder.car");
-    merge("../../../../car/Elastos/Core/IStringBuffer.car");
-    merge("../../../../car/Elastos/Core/IArrayOf.car");
-    merge("../../../../car/Elastos/Core/INumber.car");
-    merge("../../../../car/Elastos/Core/IBoolean.car");
-    merge("../../../../car/Elastos/Core/IByte.car");
-    merge("../../../../car/Elastos/Core/IChar32.car");
-    merge("../../../../car/Elastos/Core/IChar16.car");
-    merge("../../../../car/Elastos/Core/IChar8.car");
-    merge("../../../../car/Elastos/Core/IInteger16.car");
-    merge("../../../../car/Elastos/Core/IInteger32.car");
-    merge("../../../../car/Elastos/Core/IInteger64.car");
-    merge("../../../../car/Elastos/Core/IFloat.car");
-    merge("../../../../car/Elastos/Core/IDouble.car");
-    merge("../../../../car/Elastos/Core/IString.car");
-    merge("../../../../car/Elastos/Core/IRunnable.car");
-    merge("../../../../car/Elastos/Core/ISynchronize.car");
-    merge("../../../../car/Elastos/Core/IThread.car");
-    merge("../../../../car/Elastos/Core/IThreadGroup.car");
-    merge("../../../../car/Elastos/Core/IClassLoader.car");
-    merge("../../../../car/Elastos/Core/IRandom.car");
-    merge("../../../../car/Elastos/Core/IThrowable.car");
-    merge("../../../../car/Elastos/Core/IStackTraceElement.car");
-    merge("../../../../car/Elastos/Core/IBlockGuard.car");
-    merge("../../../../car/Elastos/Core/ICloseGuard.car");
-    merge("../../../../car/Elastos/Core/IEnum.car");
-    merge("../../../../car/Elastos/Core/ISystem.car");
+    merge("../../../car/Elastos/Core/Errors.car");
+    merge("../../../car/Elastos/Core/Exceptions.car");
+    merge("../../../car/Elastos/Core/ICharSequence.car");
+    merge("../../../car/Elastos/Core/IAppendable.car");
+    merge("../../../car/Elastos/Core/ICloneable.car");
+    merge("../../../car/Elastos/Core/IComparable.car");
+    merge("../../../car/Elastos/Core/IComparator.car");
+    merge("../../../car/Elastos/Core/IStringBuilder.car");
+    merge("../../../car/Elastos/Core/IStringBuffer.car");
+    merge("../../../car/Elastos/Core/IArrayOf.car");
+    merge("../../../car/Elastos/Core/INumber.car");
+    merge("../../../car/Elastos/Core/IBoolean.car");
+    merge("../../../car/Elastos/Core/IByte.car");
+    merge("../../../car/Elastos/Core/IChar32.car");
+    merge("../../../car/Elastos/Core/IChar16.car");
+    merge("../../../car/Elastos/Core/IChar8.car");
+    merge("../../../car/Elastos/Core/IInteger16.car");
+    merge("../../../car/Elastos/Core/IInteger32.car");
+    merge("../../../car/Elastos/Core/IInteger64.car");
+    merge("../../../car/Elastos/Core/IFloat.car");
+    merge("../../../car/Elastos/Core/IDouble.car");
+    merge("../../../car/Elastos/Core/IString.car");
+    merge("../../../car/Elastos/Core/IRunnable.car");
+    merge("../../../car/Elastos/Core/ISynchronize.car");
+    merge("../../../car/Elastos/Core/IThread.car");
+    merge("../../../car/Elastos/Core/IThreadGroup.car");
+    merge("../../../car/Elastos/Core/IClassLoader.car");
+    merge("../../../car/Elastos/Core/IRandom.car");
+    merge("../../../car/Elastos/Core/IThrowable.car");
+    merge("../../../car/Elastos/Core/IStackTraceElement.car");
+    merge("../../../car/Elastos/Core/IBlockGuard.car");
+    merge("../../../car/Elastos/Core/ICloseGuard.car");
+    merge("../../../car/Elastos/Core/IEnum.car");
+    merge("../../../car/Elastos/Core/ISystem.car");
 
-    merge("../../../../src/Elastos/Math/Elastos.Math.car");
+    merge("../../../src/Elastos/Math/Elastos.Math.car");
 
-    merge("../../../../src/Libcore/IO/Libcore.IO.car");
+    merge("../../../src/Libcore/IO/Libcore.IO.car");
 
-    merge("../../../../src/Elastos/Text/Elastos.Text2.car");
+    merge("../../../src/Elastos/Text/Elastos.Text2.car");
 
-    merge("../../../../src/Libcore/ICU/Libcore.ICU.car");
+    merge("../../../src/Libcore/ICU/Libcore.ICU.car");
 
-    merge("../../../../src/Libcore/Utility/Libcore.Utility.car");
+    merge("../../../src/Libcore/Utility/Libcore.Utility.car");
 
-    merge("../../../../src/Elastos/IO/eco/Elastos.IO.car");
+    merge("../../../src/Elastos/IO/Elastos.IO.car");
 
-    merge("../../../../src/Elastos/Utility/eco/Elastos.Utility.car");
+    merge("../../../src/Elastos/Utility/Elastos.Utility.car");
 
-    merge("../../../../src/Elastos/Net/Elastos.Net.car");
+    merge("../../../src/Elastos/Net/Elastos.Net.car");
 
-    merge("../../../../src/Elastos/Text/Elastos.Text.car");
+    merge("../../../src/Elastos/Text/Elastos.Text.car");
 
-    merge("../../../../src/Elastos/Security/Elastos.Security.car");
+    merge("../../../src/Elastos/Security/Elastos.Security.car");
 
-    merge("../../../../src/Elastos/Utility/eco/Concurrent/Elastos.Utility.Concurrent.car");
+    merge("../../../src/Elastos/Utility/Concurrent/Elastos.Utility.Concurrent.car");
 
-    merge("../../../../src/Elastos/Utility/eco/Zip/Elastos.Utility.Zip.car");
+    merge("../../../src/Elastos/Utility/Zip/Elastos.Utility.Zip.car");
 
-    merge("../../../../src/Elastos/Utility/eco/Jar/Elastos.Utility.Jar.car");
+    merge("../../../src/Elastos/Utility/Jar/Elastos.Utility.Jar.car");
 
-    merge("../../../../src/Elastos/Sql/Elastos.Sql.car");
+    merge("../../../src/Elastos/Sql/Elastos.Sql.car");
 
     interface Elastos.Core.IRunnable;
     interface Elastos.Core.ICharSequence;
