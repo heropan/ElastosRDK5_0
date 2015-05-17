@@ -30,5 +30,5 @@ $     END IF
 $   END IF
 $END DO ;; all classes
 $
-$TEMPLATE "modpub.lub"
-$TEMPLATE "makefile.lub"
+$TEMPLATE "background/modpub.lub"
+$TEMPLATE "background/makefile.lub"

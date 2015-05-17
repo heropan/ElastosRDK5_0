@@ -996,6 +996,7 @@ int DoCompiling(const char *pFileName)
 
     if (SearchFileFromPath(s_szCurrentPath, pFileName, szPath) < 0) {
         if (SearchFileFromPath(s_pszSourceDirList, pFileName, szPath) < 0) {
+printf("==== File: %s, Line: %d, file: %s path: %s, list: %s ====\n", __FILE__, __LINE__, pFileName, s_szCurrentPath, s_pszSourceDirList);
             ErrorReport(Lube_E_OpenFile, pFileName);
             return LUBE_FAIL;
         }

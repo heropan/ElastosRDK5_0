@@ -15,8 +15,8 @@ ${ClassNamespaceBegin(class)}$^
 class ${name}
 {
 public:
-$ TEMPLATE "basenew.lub"
-$ TEMPLATE "classnew.lub"
+$ TEMPLATE "basenewdecl.lub"
+$ TEMPLATE "classnewdecl.lub"
 $ IF attrib is "hascallback"
 $     TEMPLATE "clientcallback.lub"
 $ END IF

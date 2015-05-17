@@ -1252,7 +1252,13 @@ $   END DO ;; all interfaces
 $END IF ;; not "aspect"
 $END IF ;; not "hasctor"
 $
-
+$ TEMPLATE "headercpp/basenewimpl.lub"
+$
+$
+$IF type is not "generic" and attrib is not "private"
+$TEMPLATE "headercpp/classnewimpl.lub"
+$END IF
+$
 #endif // _NO_${Upper(name)}_CLASSOBJECT_
 
 $END IF ;; type is not "generic" and type is not "clsobj"
