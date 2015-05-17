@@ -1,6 +1,6 @@
 
-TARGET_NAME= Elastos.Core
-TARGET_TYPE= lib
+TARGET_NAME = Elastos.CoreLibrary
+TARGET_TYPE = lib
 
 VPATH := $(MAKEDIR)/../eco
 
