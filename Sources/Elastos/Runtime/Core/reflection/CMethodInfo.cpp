@@ -40,7 +40,10 @@ CMethodInfo::~CMethodInfo()
     Int32 count = m_pMethodDescriptor->cParams;
     if (m_pParameterInfos) {
         for (Int32 i = 0; i < count; i++) {
-            if ((*m_pParameterInfos)[i]) delete (*m_pParameterInfos)[i];
+            if ((*m_pParameterInfos)[i]) {
+                delete (*m_pParameterInfos)[i];
+                (*m_pParameterInfos)[i] = NULL;
+            }
         }
         ArrayOf<IParamInfo *>::Free(m_pParameterInfos);
     }
@@ -307,7 +310,10 @@ ECode CMethodInfo::InitParamInfos()
 
 EExit:
     for (i = 0; i < count; i++) {
-        if ((*m_pParameterInfos)[i]) delete (*m_pParameterInfos)[i];
+        if ((*m_pParameterInfos)[i]) {
+            delete (*m_pParameterInfos)[i];
+            (*m_pParameterInfos)[i] = NULL;
+        }
     }
     ArrayOf<IParamInfo *>::Free(m_pParameterInfos);
     m_pParameterInfos = NULL;
