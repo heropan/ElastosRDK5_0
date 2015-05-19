@@ -340,7 +340,7 @@ ECode Thread::GetContextClassLoader(
     VALIDATE_NOT_NULL(outload)
 
     *outload = mContextClassLoader;
-    REFCOUNT_ADDREF(*outload)
+    REFCOUNT_ADD(*outload)
     return NOERROR;
 }
 
@@ -435,7 +435,7 @@ ECode Thread::GetThreadGroup(
     }
     else {
         *group = (IThreadGroup*)mGroup->Probe(EIID_IThreadGroup);
-        REFCOUNT_ADDREF(*group);
+        REFCOUNT_ADD(*group);
         return NOERROR;
     }
 }
@@ -451,7 +451,7 @@ ECode Thread::GetUncaughtExceptionHandler(
         assert(0 && "TODO");
         // *handler = mGroup;           // ThreadGroup is instance of UEH
 
-    REFCOUNT_ADDREF(*handler)
+    REFCOUNT_ADD(*handler)
     return NOERROR;
 }
 
@@ -1033,7 +1033,7 @@ ECode Thread::Attach(
         // *p_env = self->jniEnv;
         // return JNI_OK;
         *thread = (IThread*)reinterpret_cast<Thread*>(self->mThreadObj)->Probe(EIID_IThread);
-        REFCOUNT_ADDREF(*thread);
+        REFCOUNT_ADD(*thread);
         return NOERROR;
     }
 

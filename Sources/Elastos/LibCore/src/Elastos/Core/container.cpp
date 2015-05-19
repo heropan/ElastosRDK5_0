@@ -79,7 +79,7 @@ ELAPI ObjectContainerCurrent(
     ec = SimpleContainerCurrent((SimpleContainer*)container, (DLinkNode **)&node);
     if (NOERROR == ec) {
         *object = node->mObject;
-        REFCOUNT_ADDREF(*object);
+        REFCOUNT_ADD(*object);
     }
     return ec;
 }

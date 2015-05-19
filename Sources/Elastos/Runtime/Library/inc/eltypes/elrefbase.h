@@ -176,8 +176,8 @@ private:
 
 _ELASTOS_NAMESPACE_END
 
-#ifndef REFCOUNT_ADDREF
-#define REFCOUNT_ADDREF(i) if (i) { (i)->AddRef(); }
+#ifndef REFCOUNT_ADD
+#define REFCOUNT_ADD(i) if (i) { (i)->AddRef(); }
 #endif
 
 #ifndef REFCOUNT_RELEASE
