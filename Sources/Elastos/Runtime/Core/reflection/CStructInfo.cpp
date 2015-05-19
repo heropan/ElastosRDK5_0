@@ -20,7 +20,10 @@ CStructInfo::~CStructInfo()
 
     if (m_pFieldInfos) {
         for (Int32 i = 0; i < m_pFieldInfos->GetLength(); i++) {
-            if ((*m_pFieldInfos)[i]) delete (*m_pFieldInfos)[i];
+            if ((*m_pFieldInfos)[i]) {
+                delete (*m_pFieldInfos)[i];
+                (*m_pFieldInfos)[i] = NULL;
+            }
         }
         ArrayOf<IFieldInfo *>::Free(m_pFieldInfos);
     }
@@ -298,7 +301,10 @@ ECode CStructInfo::InitFieldInfos()
 
 EExit:
     for (i = 0; i < count; i++) {
-        if ((*m_pFieldInfos)[i]) delete (*m_pFieldInfos)[i];
+        if ((*m_pFieldInfos)[i]) {
+            delete (*m_pFieldInfos)[i];
+            (*m_pFieldInfos)[i] = NULL;
+        }
     }
     ArrayOf<IFieldInfo *>::Free(m_pFieldInfos);
     m_pFieldInfos = NULL;

@@ -14,7 +14,10 @@ CEnumInfo::~CEnumInfo()
 {
     if (m_pItemInfos) {
         for (Int32 i = 0; i < m_pItemInfos->GetLength(); i++) {
-            if ((*m_pItemInfos)[i]) delete (*m_pItemInfos)[i];
+            if ((*m_pItemInfos)[i]) {
+                delete (*m_pItemInfos)[i];
+                (*m_pItemInfos)[i] = NULL;
+            }
         }
         ArrayOf<IEnumItemInfo *>::Free(m_pItemInfos);
     }
@@ -204,7 +207,10 @@ ECode CEnumInfo::InitItemInfos()
 
 EExit:
     for (Int32 i = 0; i < count; i++) {
-        if ((*m_pItemInfos)[i]) delete (*m_pItemInfos)[i];
+        if ((*m_pItemInfos)[i]) {
+            delete (*m_pItemInfos)[i];
+            (*m_pItemInfos)[i] = NULL;
+        }
     }
     ArrayOf<IEnumItemInfo *>::Free(m_pItemInfos);
     m_pItemInfos = NULL;
