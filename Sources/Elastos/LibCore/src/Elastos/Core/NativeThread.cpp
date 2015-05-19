@@ -245,7 +245,7 @@ Boolean NativePrepMainThread()
     assert(_t != NULL);
     _t->mNativeThread = thread;
     thread->mThreadObj = reinterpret_cast<Int32>(_t);
-    REFCOUNT_ADDREF(threadObj);
+    REFCOUNT_ADD(threadObj);
 
     /*
      * Set the context class loader.  This invokes a ClassLoader method,
@@ -1178,7 +1178,7 @@ ECode NativeAttachCurrentThread(
     //     dvmDbgPostThreadStart(self);
 
     *thread = (IThread*)threadObj.Get();
-    REFCOUNT_ADDREF(*thread);
+    REFCOUNT_ADD(*thread);
     return NOERROR;
 
 fail_unlink:

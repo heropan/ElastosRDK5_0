@@ -290,7 +290,7 @@ ECode CClassInfo::GetGenericInfo(
     }
 
     *ppGenericInfo = m_pGenericInfo;
-    REFCOUNT_ADDREF(*ppGenericInfo);
+    REFCOUNT_ADD(*ppGenericInfo);
 
     return NOERROR;
 }

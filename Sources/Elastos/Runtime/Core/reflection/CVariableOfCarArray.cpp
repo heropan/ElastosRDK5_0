@@ -79,7 +79,7 @@ ECode CVariableOfCarArray::GetTypeInfo(
     }
 
     *ppTypeInfo = m_pCarArrayInfo;
-    REFCOUNT_ADDREF(*ppTypeInfo);
+    REFCOUNT_ADD(*ppTypeInfo);
     return NOERROR;
 }
 
