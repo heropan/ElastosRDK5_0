@@ -7,7 +7,9 @@
 #include "util/CTypedValue.h"
 #include "text/TextUtils.h"
 #include "ext/frameworkext.h"
+#include <elastos/Slogger.h>
 
+using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::R;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::CTypedValue;
@@ -41,10 +43,17 @@ const Int32 CAlertController::ButtonHandler::MSG_DISMISS_DIALOG = 1;
 CAlertController::ButtonHandler::ButtonHandler(
     /* [in] */ IDialogInterface* dialog)
 {
+    Slogger::V("CAlertController", " >> create ButtonHandler(): %p", this);
+
     AutoPtr<IWeakReferenceSource> wr = IWeakReferenceSource::Probe(dialog);
     if (wr) {
         wr->GetWeakReference((IWeakReference**)&mDialog);
     }
+}
+
+CAlertController::ButtonHandler::~ButtonHandler()
+{
+    Slogger::V("CAlertController", " >> destory ButtonHandler(): %p", this);
 }
 
 ECode CAlertController::ButtonHandler::HandleMessage(
@@ -70,8 +79,14 @@ ECode CAlertController::ButtonHandler::HandleMessage(
         case MSG_DISMISS_DIALOG: {
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
-            IDialogInterface * dialog = IDialogInterface::Probe(obj);
-            dialog->Dismiss();
+            CAlertController* ac = (CAlertController*)IAlertController::Probe(obj);
+            ac->mDialogInterface->Dismiss();
+            // TODO
+            // AutoPtr<IDialogInterface> dialog;
+            // ac->mWeakDialogInterface->Resolve(EIID_IDialogInterface, (IInterface**)&obj);
+            // if (dialog) {
+            //     dialog->Dismiss();
+            // }
             break;
         }
     }
@@ -86,14 +101,24 @@ CAR_INTERFACE_IMPL(CAlertController::ButtonViewOnClickListener, IViewOnClickList
 CAlertController::ButtonViewOnClickListener::ButtonViewOnClickListener(
     /* [in] */ IWeakReference* host)
     : mWeakHost(host)
-{}
+{
+    Slogger::V("CAlertController", " >> create ButtonViewOnClickListener(): %p", this);
+}
+
+CAlertController::ButtonViewOnClickListener::~ButtonViewOnClickListener()
+{
+    Slogger::V("CAlertController", " >> destory ~ButtonViewOnClickListener(): %p", this);
+}
 
 ECode CAlertController::ButtonViewOnClickListener::OnClick(
     /* [in] */ IView* v)
 {
     AutoPtr<IAlertController> ac;
     mWeakHost->Resolve(EIID_IAlertController, (IInterface**)&ac);
-    if (ac == NULL) return NOERROR;
+    if (ac == NULL) {
+        Slogger::E("CAlertController", "ButtonViewOnClickListener::OnClick, CAlertController has been destoryed!");
+        return NOERROR;
+    }
 
     CAlertController* mHost = (CAlertController*)ac.Get();
 
@@ -114,11 +139,9 @@ ECode CAlertController::ButtonViewOnClickListener::OnClick(
     }
 
     // Post a message so we dismiss after the above handlers are executed
-    AutoPtr<IInterface> obj;
-    mHost->mWeakDialogInterface->Resolve(EIID_IInterface, (IInterface**)&obj);
     AutoPtr<IMessage> msg;
     helper->ObtainEx4(mHost->mHandler, ButtonHandler::MSG_DISMISS_DIALOG,
-        obj, (IMessage**)&msg);
+        ac->Probe(EIID_IAlertController), (IMessage**)&msg);
     msg->SendToTarget();
 
     return NOERROR;
@@ -142,7 +165,14 @@ CAlertController::CAlertController()
     , mMultiChoiceItemLayout(0)
     , mSingleChoiceItemLayout(0)
     , mListItemLayout(0)
-{}
+{
+    Slogger::V("CAlertController", " >> create CAlertController(): %p", this);
+}
+
+CAlertController::~CAlertController()
+{
+    Slogger::V("CAlertController", " >> destory ~CAlertController(): %p", this);
+}
 
 Boolean CAlertController::ShouldCenterSingleButton(
     /* [in] */ IContext* context)
@@ -152,8 +182,7 @@ Boolean CAlertController::ShouldCenterSingleButton(
     AutoPtr<IResourcesTheme> rTheme;
     context->GetTheme((IResourcesTheme**)&rTheme);
     Boolean result;
-    rTheme->ResolveAttribute(R::attr::alertDialogCenterButtons,
-            outValue, TRUE, &result);
+    rTheme->ResolveAttribute(R::attr::alertDialogCenterButtons, outValue, TRUE, &result);
     Int32 data;
     outValue->GetData(&data);
     return data != 0;
@@ -167,7 +196,8 @@ ECode CAlertController::constructor(
     mContext = context;
     AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(di);
     assert(wrs != NULL && "Error: Invalid dialog interface, IWeakReferenceSource not implemented!");
-    wrs->GetWeakReference((IWeakReference**)&mWeakDialogInterface);
+    // wrs->GetWeakReference((IWeakReference**)&mWeakDialogInterface);
+    mDialogInterface = di;  // TODO memery leak. luo.zhaohui
     mWindow = window;
     mHandler = new ButtonHandler(di);
     AutoPtr<IWeakReference> wr;
@@ -204,7 +234,10 @@ ECode CAlertController::GetDialogInterface(
     /* [out] */ IDialogInterface** dialog)
 {
     VALIDATE_NOT_NULL(dialog);
-    return mWeakDialogInterface->Resolve(EIID_IDialogInterface, (IInterface**)dialog);
+    *dialog = mDialogInterface;
+    INTERFACE_ADDREF(*dialog);
+    return NOERROR;
+    // return mWeakDialogInterface->Resolve(EIID_IDialogInterface, (IInterface**)dialog);
 }
 
 ECode CAlertController::GetSingleChoiceItemLayout(
@@ -262,11 +295,11 @@ Boolean CAlertController::CanTextInput(
         return TRUE;
     }
 
-    if (! v->Probe(EIID_IViewGroup)) {
+    AutoPtr<IViewGroup> vg = IViewGroup::Probe(v);
+    if (NULL == vg) {
         return FALSE;
     }
 
-    AutoPtr<IViewGroup> vg = (IViewGroup*)v;
     Int32 i;
     vg->GetChildCount(&i);
     AutoPtr<IView> tempView;
@@ -381,6 +414,7 @@ ECode CAlertController::SetButton(
             break;
 
         default:
+            Slogger::E("CAlertController", "SetButton: Button does not exist");
 //             throw new IllegalArgumentException("Button does not exist");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -466,6 +500,7 @@ ECode CAlertController::GetButton(
             *button = mButtonNeutral;
             break;
         default:
+            Slogger::E("CAlertController", "GetButton: Button does not exist");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 

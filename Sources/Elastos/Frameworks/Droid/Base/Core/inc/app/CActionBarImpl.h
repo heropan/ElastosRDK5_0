@@ -144,12 +144,33 @@ public:
     class TabImpl
         : public IActionBarTab
         , public ElRefBase
+        , public IObject
     {
     public:
         CAR_INTERFACE_DECL()
 
         TabImpl(
             /* [in] */ CActionBarImpl* actionBarImpl);
+
+        CARAPI Aggregate(
+            /* [in] */ AggrType aggrType,
+            /* [in] */ PInterface pObject);
+
+        CARAPI GetDomain(
+            /* [out] */ PInterface *ppObject);
+
+        CARAPI GetClassID(
+            /* [out] */ ClassID *pCLSID);
+
+        CARAPI Equals(
+            /* [in] */ IInterface* other,
+            /* [out] */ Boolean * result);
+
+        CARAPI GetHashCode(
+            /* [out] */ Int32* hash);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
 
         CARAPI GetTag(
             /* [out] */ IInterface** obj);

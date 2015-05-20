@@ -168,9 +168,9 @@ ECode CCache::Put(
         (*mHashes_idx)[idx] = idx_hash;
     }
     // overwrite the values in the tables:
-    (*mHashes)[index] = hash;
-    (*mEncodings)[index] = encoding;
-    (*mCache)[index] = object;
+    mHashes->Set(index, hash);
+    mEncodings->Set(index, encoding);
+    mCache->Set(index, object);
     return NOERROR;
 }
 
@@ -182,7 +182,7 @@ ECode CCache::constructor(
     mPrefix_size = pref_size;
     mHashes = ArrayOf<Int64>::Alloc(mCache_size);
     mHashes_idx = ArrayOf<Int64>::Alloc(mCache_size);
-    mEncodings = ArrayOf<ArrayOf<Byte>*>::Alloc(mCache_size);
+    mEncodings = ArrayOf<ByteArray >::Alloc(mCache_size);
     mCache = ArrayOf<IInterface*>::Alloc(mCache_size);
     return NOERROR;
 }

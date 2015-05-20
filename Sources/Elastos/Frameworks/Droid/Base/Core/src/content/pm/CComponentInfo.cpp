@@ -106,7 +106,7 @@ ECode CComponentInfo::GetPackageName(
 ECode CComponentInfo::SetPackageName(
     /* [in] */ const String& name)
 {
-    return CComponentInfo::SetPackageName(name);
+    return ComponentInfo::SetPackageName(name);
 }
 
 ECode CComponentInfo::GetLabelRes(

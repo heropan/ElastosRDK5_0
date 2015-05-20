@@ -9,6 +9,8 @@ using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Os::CBundle;
+using Eunit::Framework::EIID_ITest;
+using Eunit::Framework::ITestAnnotation;
 
 namespace Elastos {
 namespace Droid {
@@ -19,6 +21,13 @@ ECode InstrumentationTestCase::_Runnable::Run()
     ECode ec = mRunnable->Run();
     if (FAILED(ec)) (*mExceptions)[0] = ec;
     return NOERROR;
+}
+
+
+ECode InstrumentationTestCase::_RunnableInRunTest::Run()
+{
+    *mEC = mHost->RunMethod(mTestMethod, mTolerance, mIsRepetitive);
+    return *mEC;
 }
 
 
@@ -142,33 +151,27 @@ ECode InstrumentationTestCase::RunTest()
 
     Int32 runCount = 1;
     Boolean isRepetitive = FALSE;
+    AutoPtr<ITestAnnotation> annotation;
+    ec = THIS_PROBE(ITest)->GetTestAnnotation((ITestAnnotation**)&annotation);
     // if (method.isAnnotationPresent(FlakyTest.class)) {
     //     runCount = method.getAnnotation(FlakyTest.class).tolerance();
     // } else if (method.isAnnotationPresent(RepetitiveTest.class)) {
     //     runCount = method.getAnnotation(RepetitiveTest.class).numIterations();
     //     isRepetitive = true;
     // }
-
-    // if (method.isAnnotationPresent(UiThreadTest.class)) {
-    //     final int tolerance = runCount;
-    //     final boolean repetitive = isRepetitive;
-    //     final Method testMethod = method;
-    //     final Throwable[] exceptions = new Throwable[1];
-    //     getInstrumentation().runOnMainSync(new Runnable() {
-    //         public void run() {
-    //             try {
-    //                 runMethod(testMethod, tolerance, repetitive);
-    //             } catch (Throwable throwable) {
-    //                 exceptions[0] = throwable;
-    //             }
-    //         }
-    //     });
-    //     if (exceptions[0] != null) {
-    //         throw exceptions[0];
-    //     }
-    // } else {
+    Boolean isPresent;
+    if (SUCCEEDED(ec) && annotation != NULL && (annotation->IsAnnotationPresent(name, String("UiThreadTest"), &isPresent), isPresent)) {
+        Int32 tolerance = runCount;
+        Boolean repetitive = isRepetitive;
+        AutoPtr<IMethodInfo> testMethod = method;
+        AutoPtr<IInstrumentation> instrumentation;
+        GetInstrumentation((IInstrumentation**)&instrumentation);
+        AutoPtr<IRunnable> r = (IRunnable*)new _RunnableInRunTest(testMethod, tolerance, repetitive, &ec, this);
+        instrumentation->RunOnMainSync(r);
+    }
+    else {
         ec = RunMethod(method, runCount, isRepetitive);
-    // }
+    }
     return ec;
 }
 

@@ -615,7 +615,7 @@ public:
         CARAPI_(String) ToString();
 
     public:
-        AutoPtr<Activity> mActivity;
+        Activity* mActivity;
     };
 
     class ServiceIntentInfo : public IntentInfo
@@ -627,7 +627,7 @@ public:
         CARAPI_(String) ToString();
 
     public:
-        AutoPtr<Service> mService;
+        Service* mService;
     };
 
 public:

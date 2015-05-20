@@ -16,19 +16,18 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
-static AutoPtr< ArrayOf<Handle32> > InitEMPTY()
+static AutoPtr< ArrayOf<Int32Array > > InitEMPTY()
 {
     AutoPtr< ArrayOf<Int32> > state = ArrayOf<Int32>::Alloc(1);
     (*state)[0] = 0;
-    AutoPtr< ArrayOf<Handle32> > states = ArrayOf<Handle32>::Alloc(1);
-    (*states)[0] = (Handle32)state.Get();
-    state->AddRef();
+    AutoPtr< ArrayOf<Int32Array > > states = ArrayOf<Int32Array >::Alloc(1);
+    states->Set(0, state);
     return states;
 }
 
-const String CColorStateList::TAG = String("CColorStateList");
-AutoPtr< ArrayOf<Handle32> > CColorStateList::EMPTY = InitEMPTY();
-HashMap<Int32, AutoPtr<IColorStateList> > CColorStateList::sCache;
+const String CColorStateList::TAG("CColorStateList");
+AutoPtr< ArrayOf<Int32Array > > CColorStateList::EMPTY = InitEMPTY();
+HashMap<Int32, AutoPtr<IWeakReference> > CColorStateList::sCache;
 Mutex CColorStateList::sCacheLock;
 
 CColorStateList::CColorStateList()
@@ -37,12 +36,6 @@ CColorStateList::CColorStateList()
 
 CColorStateList::~CColorStateList()
 {
-    if (mStateSpecs != NULL) {
-        for (Int32 i = 0; i < mStateSpecs->GetLength(); i++) {
-            ArrayOf<Int32>* state = (ArrayOf<Int32>*)(*mStateSpecs)[i];
-            state->Release();
-        }
-    }
 }
 
 ECode CColorStateList::ValueOf(
@@ -56,16 +49,25 @@ ECode CColorStateList::ValueOf(
     Mutex::Autolock lock(sCacheLock);
 
     AutoPtr<IColorStateList> csl;
-    HashMap<Int32, AutoPtr<IColorStateList> >::Iterator it = sCache.Find(color);
-    if (it != sCache.End()) csl = it->mSecond;
+    HashMap<Int32, AutoPtr<IWeakReference> >::Iterator it = sCache.Find(color);
+    if (it != sCache.End()) {
+        IWeakReference* wr = it->mSecond;
+        wr->Resolve(EIID_IColorStateList, (IInterface**)&csl);
+    }
 
     if (csl == NULL) {
         AutoPtr< ArrayOf<Int32> > colors = ArrayOf<Int32>::Alloc(1);
         (*colors)[0] = color;
+        AutoPtr< ArrayOf<Handle32> > emptyArray = ArrayOf<Handle32>::Alloc(1);
+        emptyArray->Set(0, (Handle32)(*EMPTY)[0].Get());
         AutoPtr<CColorStateList> ccsl;
-        FAIL_RETURN(CColorStateList::NewByFriend(EMPTY, colors, (CColorStateList**)&ccsl));
+        FAIL_RETURN(CColorStateList::NewByFriend(emptyArray, colors, (CColorStateList**)&ccsl));
         csl = ccsl;
-        sCache[color] = csl;
+        AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(csl);
+        assert(wrs != NULL);
+        AutoPtr<IWeakReference> wr;
+        wrs->GetWeakReference((IWeakReference**)&wr);
+        sCache[color] = wr;
     }
 
     *_csl = csl.Get();
@@ -137,7 +139,11 @@ ECode CColorStateList::WithAlpha(
         (*colors)[i] = ((*mColors)[i] & 0xFFFFFF) | (alpha << 24);
     }
 
-    return CColorStateList::New(mStateSpecs, colors, colorState);
+    AutoPtr< ArrayOf<Handle32> > array = ArrayOf<Handle32>::Alloc(mStateSpecs->GetLength());
+    for (Int32 i = 0; i < mStateSpecs->GetLength(); ++i) {
+        array->Set(i, (Handle32)(*mStateSpecs)[i].Get());
+    }
+    return CColorStateList::New(array, colors, colorState);
 }
 
 ECode CColorStateList::Inflate(
@@ -156,7 +162,7 @@ ECode CColorStateList::Inflate(
     Int32 listAllocated = 20;
     Int32 listSize = 0;
     AutoPtr< ArrayOf<Int32> > colorList = ArrayOf<Int32>::Alloc(listAllocated);
-    AutoPtr< ArrayOf<Handle32> > stateSpecList = ArrayOf<Handle32>::Alloc(listAllocated);
+    AutoPtr< ArrayOf<Int32Array > > stateSpecList = ArrayOf<Int32Array >::Alloc(listAllocated);
 
     while ((parser->Next(&type), type) != IXmlPullParser::END_DOCUMENT
             && ((parser->GetDepth(&depth), depth) >= innerDepth
@@ -225,23 +231,22 @@ ECode CColorStateList::Inflate(
             AutoPtr< ArrayOf<Int32> > ncolor = ArrayOf<Int32>::Alloc(listAllocated);
             ncolor->Copy(colorList, 0, listSize);
 
-            AutoPtr< ArrayOf<Handle32> > nstate = ArrayOf<Handle32>::Alloc(listAllocated);
+            AutoPtr< ArrayOf<Int32Array > > nstate = ArrayOf<Int32Array >::Alloc(listAllocated);
             nstate->Copy(stateSpecList, 0, listSize);
 
             colorList = ncolor;
             stateSpecList = nstate;
         }
 
-        (*colorList)[listSize] = color;
-        (*stateSpecList)[listSize] = (Handle32)stateSpec.Get();
-        stateSpec->AddRef();
+        colorList->Set(listSize, color);
+        stateSpecList->Set(listSize, stateSpec.Get());
         listSize++;
     }
 
     mColors = ArrayOf<Int32>::Alloc(listSize);
     mColors->Copy(colorList, 0, listSize);
 
-    mStateSpecs = ArrayOf<Handle32>::Alloc(listSize);
+    mStateSpecs = ArrayOf<Int32Array >::Alloc(listSize);
     mStateSpecs->Copy(stateSpecList, 0, listSize);
 
     return NOERROR;
@@ -264,7 +269,7 @@ ECode CColorStateList::GetColorForState(
     VALIDATE_NOT_NULL(color);
     Int32 setLength = mStateSpecs->GetLength();
     for (Int32 i = 0; i < setLength; i++) {
-        ArrayOf<Int32>* stateSpec = (ArrayOf<Int32>*)(*mStateSpecs)[i];
+        ArrayOf<Int32>* stateSpec = (*mStateSpecs)[i];
         if (StateSet::StateSetMatches(stateSpec, stateSet)) {
             *color = (*mColors)[i];
             return NOERROR;
@@ -290,7 +295,7 @@ ECode CColorStateList::WriteToParcel(
     Int32 N = mStateSpecs->GetLength();
     dest->WriteInt32(N);
     for (int i = 0; i < N; i++) {
-        dest->WriteArrayOf((*mStateSpecs)[i]);
+        dest->WriteArrayOf((Handle32)(*mStateSpecs)[i].Get());
     }
     dest->WriteArrayOf((Handle32)mColors.Get());
     return NOERROR;
@@ -301,7 +306,7 @@ ECode CColorStateList::ReadFromParcel(
 {
     Int32 N;
     source->ReadInt32(&N);
-    AutoPtr< ArrayOf<Handle32> > stateSpec = ArrayOf<Handle32>::Alloc(N);
+    AutoPtr< ArrayOf<Int32Array > > stateSpec = ArrayOf<Int32Array >::Alloc(N);
     for (Int32 i = 0; i < N; i++) {
         source->ReadArrayOf((Handle32*)&(*stateSpec)[i]);
     }
@@ -309,21 +314,20 @@ ECode CColorStateList::ReadFromParcel(
     source->ReadArrayOf((Handle32*)&colors);
 
     assert(stateSpec->GetLength() == colors->GetLength());
-    mStateSpecs = stateSpec->Clone();
-    for (Int32 i = 0; i < colors->GetLength(); i++) {
-        (*mStateSpecs)[i] = (Handle32)((ArrayOf<Int32>*)(*colors)[i])->Clone();
-    }
-    mColors = colors->Clone();
 
-    if (colors->GetLength() > 0) {
+    mStateSpecs = stateSpec;
+    mColors = colors;
+
+    if (mStateSpecs && mStateSpecs->GetLength() > 0) {
         mDefaultColor = (*colors)[0];
 
-        for (Int32 i = 0; i < colors->GetLength(); i++) {
-            if (((ArrayOf<Int32>*)(*colors)[i])->GetLength() == 0) {
+        for (Int32 i = 0; i < mStateSpecs->GetLength(); ++i) {
+            if ((*mStateSpecs)[i]->GetLength() == 0) {
                 mDefaultColor = (*colors)[i];
             }
         }
     }
+
     return NOERROR;
 }
 
@@ -336,14 +340,25 @@ ECode CColorStateList::constructor(
     /* [in] */ ArrayOf<Handle32>* states,
     /* [in] */ ArrayOf<Int32>* colors)
 {
-    mStateSpecs = states;
     mColors = colors;
 
-    if (states->GetLength() > 0) {
+    if (states) {
+        mStateSpecs = ArrayOf<Int32Array >::Alloc(states->GetLength());
+        Int32Array array;
+        for (Int32 i = 0; i < states->GetLength(); ++i) {
+            array = (ArrayOf<Int32>*)(*states)[i];
+            mStateSpecs->Set(i, array);
+        }
+    }
+    else {
+        mStateSpecs = NULL;
+    }
+
+    if (mStateSpecs && mStateSpecs->GetLength() > 0) {
         mDefaultColor = (*colors)[0];
 
-        for (Int32 i = 0; i < states->GetLength(); ++i) {
-            if (((ArrayOf<Int32>*)(*states)[i])->GetLength() == 0) {
+        for (Int32 i = 0; i < mStateSpecs->GetLength(); ++i) {
+            if ((*mStateSpecs)[i]->GetLength() == 0) {
                 mDefaultColor = (*colors)[i];
             }
         }

@@ -20,6 +20,8 @@ class AlertDialog : public Dialog
     friend class CAlertDialogBuilder;
 
 public:
+    ~AlertDialog();
+
     AlertDialog(
         /* [in] */ IContext* context);
 

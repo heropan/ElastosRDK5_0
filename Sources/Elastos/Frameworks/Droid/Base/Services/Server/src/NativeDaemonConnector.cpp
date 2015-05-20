@@ -859,10 +859,11 @@ void NativeDaemonConnector::AppendEscaped(
 }
 
 ///** {@inheritDoc} */
-//void NativeDaemonConnector::Monitor()
-//{
-//    Mutex::AutoLock lock(mDaemonLock);
-//}
+void NativeDaemonConnector::Monitor()
+{
+    // TODO
+    // Watchdog.Monitor
+}
 //
 //void NativeDaemonConnector::Dump(
 ///* [in] */ AutoPtr<IFileDescriptor> fd,

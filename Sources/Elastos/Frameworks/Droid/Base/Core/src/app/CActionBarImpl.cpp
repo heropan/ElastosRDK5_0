@@ -320,13 +320,57 @@ ECode CActionBarImpl::ActionModeImpl::OnMenuModeChange(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(CActionBarImpl::TabImpl, IActionBarTab)
-
 CActionBarImpl::TabImpl::TabImpl(
     /* [in] */ CActionBarImpl* actionBarImpl)
     : mPosition(-1)
     , mActionBarImpl(actionBarImpl)
 {}
+
+CAR_INTERFACE_IMPL_2(CActionBarImpl::TabImpl, IActionBarTab, IObject)
+
+ECode CActionBarImpl::TabImpl::Aggregate(
+    /* [in] */ AggrType aggrType,
+    /* [in] */ PInterface pObject)
+{
+    return NOERROR;
+}
+
+ECode CActionBarImpl::TabImpl::GetDomain(
+    /* [out] */ PInterface *ppObject)
+{
+    return NOERROR;
+}
+
+ECode CActionBarImpl::TabImpl::GetClassID(
+    /* [out] */ ClassID *pCLSID)
+{
+    return NOERROR;
+}
+
+ECode CActionBarImpl::TabImpl::Equals(
+    /* [in] */ IInterface* other,
+    /* [out] */ Boolean * result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = (IActionBarTab::Probe(other) == THIS_PROBE(IActionBarTab));
+    return NOERROR;
+}
+
+ECode CActionBarImpl::TabImpl::GetHashCode(
+    /* [out] */ Int32* hash)
+{
+    VALIDATE_NOT_NULL(hash)
+    *hash = (Int32)THIS_PROBE(IActionBarTab);
+    return NOERROR;
+}
+
+ECode CActionBarImpl::TabImpl::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("CActionBarImpl::TabImpl");
+    return NOERROR;
+}
 
 ECode CActionBarImpl::TabImpl::GetTag(
     /* [out] */ IInterface** obj)

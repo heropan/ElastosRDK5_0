@@ -2,6 +2,7 @@
 #include "input/NativeInputManager.h"
 #include "input/CInputManagerService.h"
 #include "view/NativeInputChannel.h"
+#include "power/CPowerManagerService.h"
 #include <input/InputManager.h>
 #include <elastos/Slogger.h>
 #include <elastos/Math.h>
@@ -665,14 +666,12 @@ void NativeInputManager::setShowTouches(
 
 bool NativeInputManager::isScreenOn()
 {
-//    return android_server_PowerManagerService_isScreenOn();
-    return true;
+    return CPowerManagerService::isScreenOn();
 }
 
 bool NativeInputManager::isScreenBright()
 {
-//    return android_server_PowerManagerService_isScreenBright();
-    return true;
+    return CPowerManagerService::isScreenBright();
 }
 
 bool NativeInputManager::filterInputEvent(
@@ -738,6 +737,16 @@ void NativeInputManager::interceptKeyBeforeQueueing(
             }
         }
 
+        if (isBootFastStatus()) {
+            if (isPowered() == true) {
+                if (isScreenOn == false) {
+                    if (keyEvent->getKeyCode()==AKEYCODE_POWER) {
+                         tempWakeUp(0);
+                    }
+                }
+            }
+        }
+
         handleInterceptActions(wmActions, when, /*byref*/ policyFlags);
     }
     else {
@@ -785,14 +794,14 @@ void NativeInputManager::handleInterceptActions(
 #if DEBUG_INPUT_DISPATCHER_POLICY
         ALOGD("handleInterceptActions: Going to sleep.");
 #endif
-        //android_server_PowerManagerService_goToSleep(when);
+        CPowerManagerService::goToSleep(when);
     }
 
     if (wmActions & WM_ACTION_WAKE_UP) {
 #if DEBUG_INPUT_DISPATCHER_POLICY
         ALOGD("handleInterceptActions: Waking up.");
 #endif
-        //android_server_PowerManagerService_wakeUp(when);
+        CPowerManagerService::wakeUp(when);
     }
 
     if (wmActions & WM_ACTION_PASS_TO_USER) {
@@ -870,13 +879,26 @@ bool NativeInputManager::dispatchUnhandledKey(
     return result;
 }
 
+bool NativeInputManager::isBootFastStatus()
+{
+    return CPowerManagerService::isBootFastStatus();
+}
+
+bool NativeInputManager::isPowered()
+{
+    return CPowerManagerService::isPowered();
+}
+
+void NativeInputManager::tempWakeUp(nsecs_t eventTime)
+{
+    CPowerManagerService::tempWakeuUp(eventTime);
+}
+
 void NativeInputManager::pokeUserActivity(
     /* [in] */ nsecs_t eventTime,
     /* [in] */ int32_t eventType)
 {
-    // TODO:
-    //
-//    android_server_PowerManagerService_userActivity(eventTime, eventType);
+    CPowerManagerService::userActivity(eventTime, eventType);
 }
 
 bool NativeInputManager::checkInjectEventsPermissionNonReentrant(

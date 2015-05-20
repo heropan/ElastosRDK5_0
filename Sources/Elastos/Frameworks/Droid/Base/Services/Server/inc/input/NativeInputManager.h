@@ -162,6 +162,9 @@ private:
     // Power manager interactions.
     bool isScreenOn();
     bool isScreenBright();
+    void tempWakeUp(nsecs_t eventTime);
+    bool isBootFastStatus();
+    bool isPowered();
 
 private:
     android::sp<android::InputManager> mInputManager;

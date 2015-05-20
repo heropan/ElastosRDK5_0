@@ -645,6 +645,7 @@ ECode Instrumentation::CheckMonitorHit(
     Object::Autolock lock(mSync);
     Int32 hits;
     if (monitor->GetHits(&hits), hits < minHits) {
+        *reached = FALSE;
         return NOERROR;
     }
     mActivityMonitors->Remove(monitor);

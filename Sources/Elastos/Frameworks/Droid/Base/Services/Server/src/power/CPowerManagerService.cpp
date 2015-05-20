@@ -12,10 +12,12 @@
 #include <hardware_legacy/power.h>
 #include <utils/Log.h>
 #include <utils/Errors.h>
+#include <utils/Timers.h>
 #include <cutils/android_reboot.h>
 #include <suspend/autosuspend.h>
 #include <fcntl.h>
 #include <elastos/StringUtils.h>
+#include <androidfw/PowerManager.h>
 
 using Elastos::Core::StringUtils;
 using android::LogIfSlow;
@@ -59,10 +61,14 @@ namespace Droid {
 namespace Server {
 namespace Power {
 
+static CPowerManagerService* gPowerManagerService = NULL;
 static struct power_module* gPowerModule = NULL;
 static Mutex gPowerManagerLock;
-static Boolean gScreenOn = FALSE;
-static Boolean gScreenBright = FALSE;
+static Boolean gScreenOn = TRUE;
+static Boolean gScreenBright = TRUE;
+static nsecs_t gLastEventTime[android::USER_ACTIVITY_EVENT_LAST + 1];
+// Throttling interval for user activity calls.
+static const nsecs_t MIN_TIME_BETWEEN_USERACTIVITIES = 500 * 1000000L; // 500ms
 
 const String CPowerManagerService::TAG("PowerManagerService");
 const Boolean CPowerManagerService::DEBUG = FALSE;
@@ -611,6 +617,11 @@ void CPowerManagerService::NativeInit()
     else {
         ALOGE("Couldn't load %s module (%s)", POWER_HARDWARE_MODULE_ID,
                 (const char*)StringUtils::Int32ToString(-err));
+    }
+
+    // Initialize
+    for (int i = 0; i <= android::USER_ACTIVITY_EVENT_LAST; i++) {
+        gLastEventTime[i] = LLONG_MIN;
     }
 }
 
@@ -1567,8 +1578,8 @@ void CPowerManagerService::ChanceLedStatus(
 {
     Char32 portType = 'h';
     Int32 portNum = 20;
-    Slogger::E(TAG, "no Gpio!!!!!!!!!!!");
-    assert(0);
+    Slogger::E(TAG, "TODO: no Gpio!!!!!!!!!!!");
+    // assert(0);
     // Gpio::WriteGpio(portType, portNum, status);
 }
 
@@ -3110,9 +3121,84 @@ ECode CPowerManagerService::constructor()
     }
     NativeInit();
     NativeSetPowerState(TRUE, TRUE);
+    gPowerManagerService = this;
     return NOERROR;
 }
 
+// method for NativeInputManager
+bool CPowerManagerService::isScreenOn()
+{
+    Mutex::Autolock lock(gPowerManagerLock);
+    return gScreenOn;
+}
+
+bool CPowerManagerService::isScreenBright()
+{
+    Mutex::Autolock lock(gPowerManagerLock);
+    return gScreenBright;
+}
+
+bool CPowerManagerService::isBootFastStatus()
+{
+    return gPowerManagerService != NULL ? gPowerManagerService->mBootFastStats : false;
+}
+
+bool CPowerManagerService::isPowered()
+{
+    return gPowerManagerService != NULL ? gPowerManagerService->mIsPowered : false;
+}
+
+void CPowerManagerService::tempWakeuUp(
+    /* [in] */ nsecs_t eventTime)
+{
+    if (gPowerManagerService) {
+        gPowerManagerService->TempWakeUpFromNative(nanoseconds_to_milliseconds(eventTime));
+    }
+}
+
+void CPowerManagerService::userActivity(
+    /* [in] */ nsecs_t eventTime,
+    /* [in] */ int32_t eventType)
+{
+    // Tell the power HAL when user activity occurs.
+    if (gPowerModule && gPowerModule->powerHint) {
+        gPowerModule->powerHint(gPowerModule, POWER_HINT_INTERACTION, NULL);
+    }
+
+    if (gPowerManagerService) {
+        // Throttle calls into user activity by event type.
+        // We're a little conservative about argument checking here in case the caller
+        // passes in bad data which could corrupt system state.
+        if (eventType >= 0 && eventType <= android::USER_ACTIVITY_EVENT_LAST) {
+            nsecs_t now = systemTime(SYSTEM_TIME_MONOTONIC);
+            if (eventTime > now) {
+                eventTime = now;
+            }
+
+            if (gLastEventTime[eventType] + MIN_TIME_BETWEEN_USERACTIVITIES > eventTime) {
+                return;
+            }
+            gLastEventTime[eventType] = eventTime;
+        }
+        gPowerManagerService->UserActivityFromNative(nanoseconds_to_milliseconds(eventTime), eventType, 0);
+    }
+}
+
+void CPowerManagerService::wakeUp(
+    /* [in] */ nsecs_t eventTime)
+{
+    if (gPowerManagerService) {
+        gPowerManagerService->WakeUpFromNative(nanoseconds_to_milliseconds(eventTime));
+    }
+}
+
+void CPowerManagerService::goToSleep(
+    /* [in] */ nsecs_t eventTime)
+{
+    if (gPowerManagerService) {
+        gPowerManagerService->GoToSleepFromNative(nanoseconds_to_milliseconds(eventTime), 0);
+    }
+}
 
 } // namespace Power
 } // namespace Server

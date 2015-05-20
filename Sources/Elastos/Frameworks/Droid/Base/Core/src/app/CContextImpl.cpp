@@ -723,8 +723,7 @@ ECode CContextImpl::GetObbDir(
     if (mObbDir == NULL) {
         String pkgName;
         GetPackageName(&pkgName);
-//        mObbDir = Environment::GetExternalStorageAppObbDirectory(
-//                pkgName);
+        mObbDir = Environment::GetExternalStorageAppObbDirectory(pkgName);
     }
     *obbDir = mObbDir;
     INTERFACE_ADDREF(*obbDir);
@@ -904,11 +903,9 @@ ECode CContextImpl::DeleteDatabase(
 
 //    try {
     AutoPtr<IFile> f = ValidateFilePath(name, FALSE);
-//    return SQLiteDatabase.deleteDatabase(f);
+    return SQLiteDatabase::DeleteDatabase(f, succeeded);
 //    } catch (Exception e) {
 //    }
-    *succeeded = FALSE;
-    return NOERROR;
 }
 
 ECode CContextImpl::GetDatabasePath(
@@ -1429,7 +1426,7 @@ ECode CContextImpl::SendStickyOrderedBroadcast(
     /* [in] */ IBundle* initialExtras)
 {
     WarnIfCallingFromSystemProcess();
-    AutoPtr<IIntentReceiver> rd = NULL;
+    AutoPtr<IIntentReceiver> rd;
     if (resultReceiver != NULL) {
         if (mPackageInfo != NULL) {
             if (scheduler == NULL) {
@@ -1531,7 +1528,7 @@ ECode CContextImpl::SendStickyOrderedBroadcastAsUser(
     /* [in] */ const String& initialData,
     /* [in] */ IBundle* initialExtras)
 {
-    AutoPtr<IIntentReceiver> rd = NULL;
+    AutoPtr<IIntentReceiver> rd;
     if (resultReceiver != NULL) {
         if (mPackageInfo != NULL) {
             if (scheduler == NULL) {
@@ -2784,6 +2781,7 @@ ECode CContextImpl::CreateConfigurationContext(
     mPackageInfo->GetResDir(&resDir);
     AutoPtr<ICompatibilityInfo> comInfo;
     mResources->GetCompatibilityInfo((ICompatibilityInfo**)&comInfo);
+    c->mResources = NULL;
     mMainThread->GetTopLevelResources(
             resDir, GetDisplayId(), overrideConfiguration,
             (CCompatibilityInfo*)comInfo.Get(), (IResources**)&c->mResources);

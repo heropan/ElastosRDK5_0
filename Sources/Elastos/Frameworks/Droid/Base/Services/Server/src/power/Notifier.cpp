@@ -4,6 +4,7 @@
 #include "app/ActivityManagerNative.h"
 #include "os/SystemClock.h"
 #include "os/Handler.h"
+#include "os/BatteryStats.h"
 #include <elastos/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -14,6 +15,7 @@ using Elastos::Droid::Os::IUserHandleHelper;
 using Elastos::Droid::Os::CUserHandleHelper;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::BatteryStats;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::App::ActivityManagerNative;
@@ -171,15 +173,14 @@ void Notifier::OnWakeLockAcquired(
             , flags, (const char*)tag, ownerUid, ownerPid, workSource);
     }
 
-    PFL_EX("TODO")
     // try {
-    // Int32 monitorType = GetBatteryStatsWakeLockMonitorType(flags);
-    // if (workSource != NULL) {
-    //     mBatteryStats->NoteStartWakelockFromSource(workSource, ownerPid, tag, monitorType);
-    // }
-    // else {
-    //     mBatteryStats->NoteStartWakelock(ownerUid, ownerPid, tag, monitorType);
-    // }
+    Int32 monitorType = GetBatteryStatsWakeLockMonitorType(flags);
+    if (workSource != NULL) {
+        mBatteryStats->NoteStartWakelockFromSource(workSource, ownerPid, tag, monitorType);
+    }
+    else {
+        mBatteryStats->NoteStartWakelock(ownerUid, ownerPid, tag, monitorType);
+    }
     // } catch (RemoteException ex) {
     //     // Ignore
     // }
@@ -197,15 +198,14 @@ void Notifier::OnWakeLockReleased(
                 , flags, (const char*)tag, ownerUid, ownerPid, workSource);
     }
 
-    PFL_EX("TODO")
     // try {
-    // Int32 monitorType = GetBatteryStatsWakeLockMonitorType(flags);
-    // if (workSource != NULL) {
-    //     mBatteryStats->NoteStopWakelockFromSource(workSource, ownerPid, tag, monitorType);
-    // }
-    // else {
-    //     mBatteryStats->NoteStopWakelock(ownerUid, ownerPid, tag, monitorType);
-    // }
+    Int32 monitorType = GetBatteryStatsWakeLockMonitorType(flags);
+    if (workSource != NULL) {
+        mBatteryStats->NoteStopWakelockFromSource(workSource, ownerPid, tag, monitorType);
+    }
+    else {
+        mBatteryStats->NoteStopWakelock(ownerUid, ownerPid, tag, monitorType);
+    }
     // } catch (RemoteException ex) {
     //     // Ignore
     // }
@@ -214,14 +214,13 @@ void Notifier::OnWakeLockReleased(
 Int32 Notifier::GetBatteryStatsWakeLockMonitorType(
     /* [in] */ Int32 flags)
 {
-    assert(0);
-    // switch (flags & IPowerManager::WAKE_LOCK_LEVEL_MASK) {
-    //     case IPowerManager::PARTIAL_WAKE_LOCK:
-    //     case IPowerManager::PROXIMITY_SCREEN_OFF_WAKE_LOCK:
-    //         return BatteryStats::WAKE_TYPE_PARTIAL;
-    //     default:
-    //         return BatteryStats::WAKE_TYPE_FULL;
-    // }
+    switch (flags & IPowerManager::WAKE_LOCK_LEVEL_MASK) {
+        case IPowerManager::PARTIAL_WAKE_LOCK:
+        case IPowerManager::PROXIMITY_SCREEN_OFF_WAKE_LOCK:
+            return BatteryStats::WAKE_TYPE_PARTIAL;
+        default:
+            return BatteryStats::WAKE_TYPE_FULL;
+    }
     return 0;
 }
 
@@ -232,8 +231,8 @@ void Notifier::OnScreenOn()
     }
 
     // try {
-    assert(0);
-    // mBatteryStats->NoteScreenOn();
+
+    mBatteryStats->NoteScreenOn();
     // } catch (RemoteException ex) {
     //     // Ignore
     // }
@@ -246,8 +245,7 @@ void Notifier::OnScreenOff()
     }
 
     // try {
-    assert(0);
-    // mBatteryStats->NoteScreenOff();
+    mBatteryStats->NoteScreenOff();
     // } catch (RemoteException ex) {
     //     // Ignore
     // }
@@ -261,8 +259,7 @@ void Notifier::OnScreenBrightness(
     }
 
     // try {
-    PRINT_FILE_LINE_EX("TODO")
-    // mBatteryStats->NoteScreenBrightness(brightness);
+    mBatteryStats->NoteScreenBrightness(brightness);
     // } catch (RemoteException ex) {
     //     // Ignore
     // }
@@ -331,7 +328,7 @@ void Notifier::OnUserActivity(
     }
 
     // try {
-    // mBatteryStats->NoteUserActivity(uid, event);
+    mBatteryStats->NoteUserActivity(uid, event);
     // } catch (RemoteException ex) {
     //     // Ignore
     // }

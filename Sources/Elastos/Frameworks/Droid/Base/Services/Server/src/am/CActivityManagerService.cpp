@@ -3895,9 +3895,8 @@ void CActivityManagerService::DumpStackTraces(
         for (it = firstPids->Begin(); it != firstPids->End(); ++it) {
             Object::Autolock lock(observer);
             (*it)->GetValue(&pid);
-            // TODO: crash when anr.
-            // Process::SendSignal(pid, IProcess::SIGNAL_QUIT);
-            // observer->Wait(200);  // Wait for write-close, give up after 200msec
+            Process::SendSignal(pid, IProcess::SIGNAL_QUIT);
+            observer->Wait(200);  // Wait for write-close, give up after 200msec
         }
         // } catch (InterruptedException e) {
         //     Log.wtf(TAG, e);
@@ -3932,8 +3931,8 @@ void CActivityManagerService::DumpStackTraces(
                 {
                     Object::Autolock lock(observer);
                 // try {
-                    // Process::SendSignal(pid, IProcess::SIGNAL_QUIT);
-                    // observer->Wait(200);  // Wait for write-close, give up after 200msec
+                    Process::SendSignal(pid, IProcess::SIGNAL_QUIT);
+                    observer->Wait(200);  // Wait for write-close, give up after 200msec
                 }
                 // } catch (InterruptedException e) {
                 //     Log.wtf(TAG, e);

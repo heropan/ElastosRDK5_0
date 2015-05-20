@@ -517,7 +517,7 @@ Boolean CPackageManagerService::ActivityIntentResolver::IsFilterStopped(
     if (!sUserManager->Exists(userId)) return TRUE;
     AutoPtr<PackageParser::Package> p = filter->mActivity->mOwner;
     if (p != NULL) {
-        AutoPtr<PackageSetting> ps = (PackageSetting*)p->mExtras.Get();
+        AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(p->mExtras->Probe(EIID_PackageSetting));
         if (ps != NULL) {
             // System apps are never considered stopped for purposes of
             // filtering, because there may be no way for the user to
@@ -556,7 +556,7 @@ AutoPtr<IResolveInfo> CPackageManagerService::ActivityIntentResolver::NewResult(
         return NULL;
     }
 
-    AutoPtr<PackageSetting> ps = (PackageSetting*)activity->mOwner->mExtras.Get();
+    AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(activity->mOwner->mExtras->Probe(EIID_PackageSetting));
     if (ps == NULL) {
         return NULL;
     }
@@ -601,7 +601,7 @@ void CPackageManagerService::ActivityIntentResolver::DumpFilter(
     /* [in] */ PackageParser::ActivityIntentInfo* filter)
 {
     out->PrintString(prefix);
-    out->PrintInt32((Int32)filter->mActivity.Get());
+    out->PrintInt32((Int32)filter->mActivity);
     out->PrintChar(' ');
     out->PrintString(filter->mActivity->GetComponentShortName());
     out->PrintString(String(" filter "));
@@ -770,7 +770,7 @@ Boolean CPackageManagerService::ServiceIntentResolver::IsFilterStopped(
     if (!sUserManager->Exists(userId)) return TRUE;
     AutoPtr<PackageParser::Package> p = filter->mService->mOwner;
     if (p != NULL) {
-        AutoPtr<PackageSetting> ps = (PackageSetting*)p->mExtras.Get();
+        AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(p->mExtras->Probe(EIID_PackageSetting));;
         if (ps != NULL) {
             // System apps are never considered stopped for purposes of
             // filtering, because there may be no way for the user to
@@ -806,7 +806,7 @@ AutoPtr<IResolveInfo> CPackageManagerService::ServiceIntentResolver::NewResult(
     if (mHost->mSafeMode && (srvFlags & IApplicationInfo::FLAG_SYSTEM) == 0) {
         return NULL;
     }
-    AutoPtr<PackageSetting> ps = (PackageSetting*)service->mOwner->mExtras.Get();
+    AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(service->mOwner->mExtras->Probe(EIID_PackageSetting));
     if (ps == NULL) {
         return NULL;
     }
@@ -851,7 +851,7 @@ void CPackageManagerService::ServiceIntentResolver::DumpFilter(
     /* [in] */ PackageParser::ServiceIntentInfo* filter)
 {
     out->PrintString(prefix);
-    out->PrintInt32((Int32)filter->mService.Get());
+    out->PrintInt32((Int32)filter->mService);
     out->PrintChar(' ');
     out->PrintString(filter->mService->GetComponentShortName());
     out->PrintString(String(" filter "));
@@ -4035,7 +4035,7 @@ AutoPtr<IPackageInfo> CPackageManagerService::GeneratePackageInfo(
 {
     if (!sUserManager->Exists(userId)) return NULL;
     AutoPtr<IPackageInfo> pi;
-    AutoPtr<PackageSetting> ps = (PackageSetting*)p->mExtras.Get();
+    AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(p->mExtras->Probe(EIID_PackageSetting));
     if (ps == NULL) {
         return NULL;
     }
@@ -4215,7 +4215,7 @@ ECode CPackageManagerService::GetPackageGids(
         // if (DEBUG_PACKAGE_INFO)
         //     Log.v(TAG, "getPackageGids" + packageName + ": " + p);
         if (p != NULL) {
-            AutoPtr<PackageSetting> ps = (PackageSetting*)p->mExtras.Get();
+            AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(p->mExtras->Probe(EIID_PackageSetting));
             AutoPtr<SharedUserSetting> suid = ps->mSharedUser;
             AutoPtr< ArrayOf<Int32> > _gids = suid != NULL ? suid->mGids : ps->mGids;
 
@@ -4810,7 +4810,7 @@ ECode CPackageManagerService::CheckPermission(
         p = it->mSecond;
     }
     if (p != NULL && p->mExtras != NULL) {
-        AutoPtr<PackageSetting> ps = (PackageSetting*)p->mExtras.Get();
+        AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(p->mExtras->Probe(EIID_PackageSetting));
         if (ps->mSharedUser != NULL) {
             if (ps->mSharedUser->mGrantedPermissions.Find(permName)
                  != ps->mSharedUser->mGrantedPermissions.End()) {
@@ -8847,7 +8847,7 @@ void CPackageManagerService::GrantPermissionsLPw(
     /* [in] */ PackageParser::Package* pkg,
     /* [in] */ Boolean replace)
 {
-    AutoPtr<PackageSetting> ps = (PackageSetting*)pkg->mExtras.Get();
+    AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(pkg->mExtras->Probe(EIID_PackageSetting));
     if (ps == NULL) {
         return;
     }
@@ -10143,7 +10143,8 @@ void CPackageManagerService::ReplaceNonSystemPackageLI(
 
     Int64 origUpdateTime;
     if (pkg->mExtras != NULL) {
-        origUpdateTime = ((PackageSetting*)pkg->mExtras.Get())->mLastUpdateTime;
+        AutoPtr<PackageSetting> extras = reinterpret_cast<PackageSetting*>(pkg->mExtras->Probe(EIID_PackageSetting));
+        origUpdateTime = extras->mLastUpdateTime;
     }
     else {
         origUpdateTime = 0;
@@ -10304,7 +10305,7 @@ void CPackageManagerService::ReplaceSystemPackageLI(
     }
     else {
         if (newPackage->mExtras != NULL) {
-            AutoPtr<PackageSetting> newPkgSetting = (PackageSetting*)newPackage->mExtras.Get();
+            AutoPtr<PackageSetting> newPkgSetting = reinterpret_cast<PackageSetting*>(newPackage->mExtras->Probe(EIID_PackageSetting));
             newPkgSetting->mFirstInstallTime = oldPkgSetting->mFirstInstallTime;
             AutoPtr<ISystem> system;
             Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);

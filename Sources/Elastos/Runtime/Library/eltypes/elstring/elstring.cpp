@@ -372,7 +372,7 @@ String String::Substring(UInt32 start) const
 String String::Substring(UInt32 start, UInt32 end) const
 {
     if (!mString) return String(NULL);
-    if (start < 0) return String("");
+    if (start < 0 || end <= 0) return String("");
     if (IsEmpty()) return String("");
 
     UInt32 byteCount = GetByteLength();
@@ -381,7 +381,7 @@ String String::Substring(UInt32 start, UInt32 end) const
         end = charCount;
     }
 
-    if (end == 0 || start >= end) {
+    if (start >= end) {
         return String("");
     }
 

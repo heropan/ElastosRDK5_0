@@ -480,7 +480,6 @@ void DisplayPowerState::ScheduleScreenUpdate()
 
 void DisplayPowerState::PostScreenUpdateThreadSafe()
 {
-    SLOGGERD("DisplayPowerState", "DisplayPowerState::PostScreenUpdateThreadSafe: mHandler = %p", mHandler.Get())
     mHandler->RemoveCallbacks(mScreenUpdateRunnable);
     Boolean result;
     mHandler->Post(mScreenUpdateRunnable, &result);

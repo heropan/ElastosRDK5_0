@@ -23,7 +23,7 @@
 #include "app/CApplication.h"
 #include "app/CActionBarImpl.h"
 #include "app/CPendingIntent.h"
-//#include "app/CTaskStackBuilderHelper.h"
+#include "app/CTaskStackBuilderHelper.h"
 #include "app/CActivityNonConfigurationInstances.h"
 #include "impl/CPolicyManager.h"
 #include "net/CUriHelper.h"
@@ -89,7 +89,6 @@ using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::Content::Res::IResourcesHelper;
 using Elastos::Droid::Content::Res::CResourcesHelper;
-//using Elastos::Droid::Text::CSpannableStringBuilder;
 using Elastos::Droid::Text::ISelectionHelper;
 //using Elastos::Droid::Text::CSelectionHelper;
 using Elastos::Droid::Text::Method::ITextKeyListener;
@@ -107,6 +106,7 @@ using Elastos::Droid::View::EIID_IViewOnCreateContextMenuListener;
 using Elastos::Droid::View::EIID_ILayoutInflaterFactory2;
 using Elastos::Droid::App::ActivityManagerNative;
 using Elastos::Droid::App::ITaskStackBuilder;
+using Elastos::Droid::App::CTaskStackBuilderHelper;
 using Elastos::Droid::App::IInstrumentationActivityResult;
 using Elastos::Droid::App::CActivityNonConfigurationInstances;
 using Elastos::Droid::App::Fragment;
@@ -190,15 +190,15 @@ private:
     Activity* mHost;
 };
 
-const String Activity::TAG = String("Activity");
+const String Activity::TAG("Activity");
 const Boolean Activity::DEBUG_LIFECYCLE = FALSE;
-const String Activity::FRAGMENTS_TAG = String("android:fragments");
+const String Activity::FRAGMENTS_TAG("android:fragments");
 
-const String Activity::WINDOW_HIERARCHY_TAG = String("android:viewHierarchyState");
-const String Activity::SAVED_DIALOG_IDS_KEY = String("android:savedDialogIds");
-const String Activity::SAVED_DIALOGS_TAG = String("android:savedDialogs");
-const String Activity::SAVED_DIALOG_KEY_PREFIX = String("android:dialog_");
-const String Activity::SAVED_DIALOG_ARGS_KEY_PREFIX = String("android:dialog_args_");
+const String Activity::WINDOW_HIERARCHY_TAG("android:viewHierarchyState");
+const String Activity::SAVED_DIALOG_IDS_KEY("android:savedDialogIds");
+const String Activity::SAVED_DIALOGS_TAG("android:savedDialogs");
+const String Activity::SAVED_DIALOG_KEY_PREFIX("android:dialog_");
+const String Activity::SAVED_DIALOG_ARGS_KEY_PREFIX("android:dialog_args_");
 
 Activity::Activity()
     : mEmbeddedID(String(NULL))
@@ -1982,7 +1982,7 @@ ECode Activity::OnNavigateUp(
             Finish();
         } else if (recreate) {
             AutoPtr<ITaskStackBuilderHelper> taskBHelper;
-//            CTaskStackBuilderHelper::AcquireSingleton((ITaskStackBuilderHelper**)&taskBHelper);
+            CTaskStackBuilderHelper::AcquireSingleton((ITaskStackBuilderHelper**)&taskBHelper);
             AutoPtr<ITaskStackBuilder> b;
             taskBHelper->Create(this, (ITaskStackBuilder**)&b);
             OnCreateNavigateUpTaskStack(b);

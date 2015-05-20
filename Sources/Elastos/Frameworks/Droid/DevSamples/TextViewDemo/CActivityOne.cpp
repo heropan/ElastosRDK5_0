@@ -86,7 +86,7 @@ CActivityOne::MyListener::MyListener(
 
 CActivityOne::MyListener::~MyListener()
 {
-    Slogger::D("CActivityOne::MyListener", "~MyListener(): %p", this);
+    Slogger::D("CActivityOne::MyListener", "destory ~MyListener(): %p", this);
 }
 
 PInterface CActivityOne::MyListener::Probe(
@@ -322,11 +322,12 @@ ECode CActivityOne::MyListener::OnCheckedChanged(
 
 CActivityOne::CActivityOne()
 {
+    Slogger::D("CActivityOne", "create CActivityOne(): %p", this);
 }
 
 CActivityOne::~CActivityOne()
 {
-    Slogger::D("CActivityOne", "~CActivityOne(): %p", this);
+    Slogger::D("CActivityOne", "destory ~CActivityOne(): %p", this);
 }
 
 ECode CActivityOne::OnCreate(

@@ -45,6 +45,32 @@ private:
         AutoPtr< ArrayOf<ECode> > mExceptions;
     };
 
+    class _RunnableInRunTest : public Runnable
+    {
+    public:
+        _RunnableInRunTest(
+            /* [in] */ IMethodInfo* testMethod,
+            /* [in] */ Int32 tolerance,
+            /* [in] */ Boolean isRepetitive,
+            /* [out] */ ECode* ec,
+            /* [in] */ InstrumentationTestCase* host)
+            : mTestMethod(testMethod)
+            , mTolerance(tolerance)
+            , mIsRepetitive(isRepetitive)
+            , mEC(ec)
+            , mHost(host)
+        {}
+
+        CARAPI Run();
+
+    private:
+        AutoPtr<IMethodInfo> mTestMethod;
+        Int32 mTolerance;
+        Boolean mIsRepetitive;
+        ECode* mEC;
+        InstrumentationTestCase* mHost;
+    };
+
 public:
     CAR_INTERFACE_DECL()
 

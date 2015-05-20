@@ -248,6 +248,9 @@ ECode ZipInputStream::ReadBytesEx(
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
+    *number = -1;
+
     FAIL_RETURN(CheckClosed());
 
     if ((offset | byteCount) < 0 || offset > buffer->GetLength() ||

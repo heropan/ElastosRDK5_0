@@ -3418,6 +3418,8 @@ ECode CMountService::GetVolumeList(
     /* [out, callee] */ ArrayOf<IStorageVolume*>** volList)
 {
     VALIDATE_NOT_NULL(volList);
+    *volList = NULL;
+
     Int32 callingUserId = UserHandle::GetCallingUserId();
     Int32 permission;
     FAIL_RETURN(mContext->CheckPermission(
@@ -3426,9 +3428,8 @@ ECode CMountService::GetVolumeList(
     Boolean accessAll = permission == IPackageManager::PERMISSION_GRANTED;
 
     Mutex::Autolock lock(mVolumesLock);
-    AutoPtr< ArrayOf<IStorageVolume*> > filtered = ArrayOf<IStorageVolume*>::Alloc(30);
+    List<AutoPtr<IStorageVolume> > filtered;
     List<AutoPtr<IStorageVolume> >::Iterator iter;
-    Int32 i = 0;
     for (iter = mVolumes.Begin(); iter != mVolumes.End(); ++iter) {
         AutoPtr<IStorageVolume> volume = *iter;
         AutoPtr<IUserHandle> owner;
@@ -3436,14 +3437,14 @@ ECode CMountService::GetVolumeList(
         Int32 getIdentifierId;
         Boolean ownerMatch = owner == NULL || (owner->GetIdentifier(&getIdentifierId), getIdentifierId == callingUserId);
         if (accessAll || ownerMatch) {
-            filtered->Set(i, volume);
-            i++;
+            filtered.PushBack(volume);
         }
     }
 
-    AutoPtr< ArrayOf<IStorageVolume*> > array = ArrayOf<IStorageVolume*>::Alloc(i);
-    for (Int32 j = 0; j < i; j++) {
-        array->Set(j, (*filtered)[j]);
+    AutoPtr< ArrayOf<IStorageVolume*> > array = ArrayOf<IStorageVolume*>::Alloc(filtered.GetSize());
+    Int32 i = 0;
+    for (iter = filtered.Begin(); iter != filtered.End(); ++iter) {
+        array->Set(i++, *iter);
     }
 
     *volList = array;
@@ -3838,11 +3839,10 @@ String CMountService::BuildObbPath(
 
 ECode CMountService::Monitor()
 {
-    // if (mConnector != NULL) {
-    //     mConnector->Monitor();
-    // }
-    // return NOERROR;
-    return E_NOT_IMPLEMENTED;
+    if (mConnector != NULL) {
+        mConnector->Monitor();
+    }
+    return NOERROR;
 }
 
 ECode CMountService::constructor(

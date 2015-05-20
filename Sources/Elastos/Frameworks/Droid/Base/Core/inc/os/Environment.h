@@ -154,6 +154,13 @@ public:
         /* [in] */ const String& capsuleName);
 
     /**
+     * Generates the raw path to an application's OBB files
+     * @hide
+     */
+    static CARAPI_(AutoPtr<IFile>) GetExternalStorageAppObbDirectory(
+        /* [in] */ const String& capsuleName);
+
+    /**
      * Generates the path to an application's files.
      * @hide
      */
@@ -287,6 +294,7 @@ private:
     static AutoPtr<IFile> EXTERNAL_STORAGE_DIRECTORY;
     static AutoPtr<IFile> EXTERNAL_STORAGE_ELASTOS_DATA_DIRECTORY;
     static AutoPtr<IFile> EXTERNAL_STORAGE_ELASTOS_MEDIA_DIRECTORY;
+    static AutoPtr<IFile> EXTERNAL_STORAGE_ELASTOS_OBB_DIRECTORY;
     static AutoPtr<IFile> DOWNLOAD_CACHE_DIRECTORY;
 
     static Boolean sIsInitilized;
