@@ -18,7 +18,7 @@ module
          *
          * @param r result integer
          */
-        SetResultEx(
+        SetResult(
             [in] Int32 r);
 
         /**
@@ -26,7 +26,7 @@ module
          *
          * @param r result double
          */
-        SetResultEx2(
+        SetResult(
             [in] Double r);
 
         /**
@@ -43,7 +43,7 @@ module
          *
          * @param r result byte array
          */
-        SetResultEx3(
+        SetResult(
             [in] ArrayOf<Byte> r);
 
         /**

@@ -3,7 +3,11 @@ module
     namespace Elastos {
     namespace Sql {
 
-    interface IDatabaseMetaData extends IWrapper {
+    /**
+      * @Involve
+      * interface Elastos.Sql.IWrapper;
+      */
+    interface IDatabaseMetaData {
         /**
          * States that it may not be permitted to store {@code NULL} values.
          */
@@ -2653,7 +2657,7 @@ module
          * @throws SQLException
          *             a database error occurred.
          */
-        SupportsConvertEx(
+        SupportsConvert(
             [in] Int32 fromType,
             [in] Int32 toType,
             [out] Boolean* isSupported);

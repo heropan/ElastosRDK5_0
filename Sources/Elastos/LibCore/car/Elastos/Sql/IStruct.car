@@ -45,7 +45,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetAttributesEx(
+        GetAttributes(
             [in] IObjectStringMap * theMap,
             [out,callee] ArrayOf<IInterface * > * interarray);
     }

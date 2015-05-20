@@ -4,7 +4,11 @@ module
     namespace Sql {
     namespace SQLite {
 
-    interface IMockFunction extends IFunction {
+    /**
+      * @Involve
+      * interface Elastos.Sql.SQLite.IFunction;
+      */
+    interface IMockFunction {
 
         GetAggValue(
             [out] String * str);

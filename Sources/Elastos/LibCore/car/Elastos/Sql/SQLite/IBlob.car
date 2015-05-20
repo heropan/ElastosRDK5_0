@@ -7,10 +7,18 @@ module
     namespace Sql {
     namespace SQLite {
 
-    interface IBlobR extends Elastos.IO.IInputStream {
+    /**
+      * @Involve
+      * interface Elastos.IO.IInputStream;
+      */
+    interface IBlobR {
     }
 
-    interface IBlobW extends Elastos.IO.IOutputStream {
+    /**
+      * @Involve
+      * interface Elastos.IO.IOutputStream;
+      */
+    interface IBlobW {
         /**
          * Flush blob; dummy to satisfy OutputStream class.
          */

@@ -5,7 +5,12 @@ module
     namespace SQLite {
     namespace JDBC {
 
-    interface IJDBCDatabaseMetaData extends Elastos.Sql.IDatabaseMetaData {
+    /**
+      * @Involve
+      * interface Elastos.Sql.IDatabaseMetaData;
+      * interface Elastos.Sql.IWrapper;
+      */
+    interface IJDBCDatabaseMetaData {
         GetSQLKeywords(
             [out] String* str);
     }

@@ -63,8 +63,8 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-           WriteInt(
-               [in] Int32 theInt);
+        WriteInt(
+           [in] Int32 theInt);
 
         /**
          * Write a {@code long} value into the output stream.

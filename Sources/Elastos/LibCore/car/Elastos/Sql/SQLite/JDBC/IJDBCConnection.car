@@ -1,38 +1,20 @@
 module
 {
     interface Elastos.Sql.SQLite.IDatabase;
-    interface Elastos.Sql.SQLite.ICallback;
-    interface Elastos.Sql.SQLite.ITableResult;
 
     namespace Elastos {
     namespace Sql {
     namespace SQLite {
     namespace JDBC {
 
-    interface IJDBCConnection extends Elastos.Sql.IConnection{
+    /**
+      * @Involve
+      * interface Elastos.Sql.IConnection;
+      * interface Elastos.Sql.IWrapper;
+      */
+    interface IJDBCConnection {
         GetSQLiteDatabase(
             [out] IDatabase** db);
-    }
-
-    interface IDatabaseX extends Elastos.Sql.SQLite.IDatabase {
-        ExecEx2(
-            [in] String sql,
-            [in] ICallback * cb);
-
-        ExecEx3(
-            [in] String sql,
-            [in] ICallback * cb,
-            [in] ArrayOf<String> args);
-
-        GetTableEx5(
-            [in] String sql,
-            [in] ArrayOf<String> args,
-            [out] ITableResult ** tbl);
-
-        GetTableEx6(
-            [in] String sql,
-            [in] ArrayOf<String> args,
-            [in] ITableResult * tbl);
     }
 
     } // namespace JDBC

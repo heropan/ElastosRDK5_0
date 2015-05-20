@@ -5,7 +5,12 @@ module
     namespace SQLite {
     namespace JDBC {
 
-    interface IJDBCResultSetMetaData extends Elastos.Sql.IResultSetMetaData {
+    /**
+      * @Involve
+      * interface Elastos.Sql.IResultSetMetaData;
+      * interface Elastos.Sql.IWrapper;
+      */
+    interface IJDBCResultSetMetaData {
         FindColByName(
             [in] String columnName,
             [out] Int32 * value);

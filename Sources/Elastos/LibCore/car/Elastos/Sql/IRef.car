@@ -39,7 +39,7 @@ module
          * @throws SQLException
          *             if there is a database error.
          */
-        GetObjectEx(
+        GetObject(
             [in] IObjectStringMap * map,
             [out] IInterface ** inter);
 

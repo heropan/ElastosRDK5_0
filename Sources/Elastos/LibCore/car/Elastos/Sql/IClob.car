@@ -89,7 +89,7 @@ module
          * @throws SQLException
          *             if an error occurs accessing the {@code Clob}.
          */
-        GetPositionEx(
+        GetPosition(
             [in] String searchstr,
             [in] Int64 start,
             [out] Int64* position);
@@ -157,7 +157,7 @@ module
          * @throws SQLException
          *             if an error occurs accessing the {@code Clob}.
          */
-        SetStringEx(
+        SetString(
             [in] Int64 pos,
             [in] String str,
             [in] Int32 offset,
@@ -189,7 +189,7 @@ module
          * Returns a {@link Reader} that reads {@code length} characters from this clob, starting
          * at 1-based offset {code pos}.
          */
-        GetCharacterStreamEx(
+        GetCharacterStream(
             [in] Int64 pos,
             [in] Int64 length,
             [out] IReader** reader);

@@ -5,7 +5,12 @@ module
     namespace SQLite {
     namespace JDBC {
 
-    interface ITableResultX extends Elastos.Sql.SQLite.ITableResult {
+    /**
+      * @Involve
+      * interface Elastos.Sql.SQLite.ITableResult;
+      * interface Elastos.Sql.SQLite.ICallback;
+      */
+    interface ITableResultX {
     }
 
     } // namespace JDBC

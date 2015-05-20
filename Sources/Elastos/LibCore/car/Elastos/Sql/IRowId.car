@@ -4,20 +4,11 @@ module
     namespace Sql {
 
     interface IRowId{
-        Equals(
-            [in] IInterface* obj);
-
         /**
          * Returns an array of bytes representing the value of the corresponding SQL ROWID.
          */
         GetBytes(
             [out, callee] ArrayOf<Byte>* array);
-
-        ToString(
-            [out] String* str);
-
-        GetHashCode(
-            [out] Int32* hashcode);
     }
 
     } // namespace Sql

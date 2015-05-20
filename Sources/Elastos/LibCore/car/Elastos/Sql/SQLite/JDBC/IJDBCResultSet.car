@@ -5,14 +5,18 @@ module
     namespace SQLite {
     namespace JDBC {
 
-    interface IJDBCResultSet extends Elastos.Sql.IResultSet {
-
+    /**
+      * @Involve
+      * interface Elastos.Sql.IResultSet;
+      * interface Elastos.Sql.IWrapper;
+      */
+    interface IJDBCResultSet {
         IsUpdatable(
             [out] Boolean * value);
 
         FillRowbuf();
 
-        FindColumnEx(
+        FindColumn(
             [in] String columnName,
             [out] Int32 * value);
     }

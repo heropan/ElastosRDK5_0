@@ -32,7 +32,7 @@ module
          * @throws SQLException
          *             if there is a database error.
          */
-        GetArrayEx(
+        GetArray(
             [in] Int64 index,
             [in] Int32 count,
             [out] IInterface** arrayiter);
@@ -54,7 +54,7 @@ module
          * @throws SQLException
          *             if there is a database error.
          */
-        GetArrayEx2(
+        GetArray(
             [in] Int64 index,
             [in] Int32 count,
             [in] IObjectStringMap* sqlmap,
@@ -70,7 +70,7 @@ module
          * @throws SQLException
          *             if there is a database error.
          */
-        GetArrayEx3(
+        GetArray(
             [in] IObjectStringMap* sqlmap,
             [out] IInterface** arrayiter);
 
@@ -121,7 +121,7 @@ module
          * @throws SQLException
          *             if there is a database error.
          */
-        GetResultSetEx(
+        GetResultSet(
             [in] Int64 index,
             [in] Int32 count,
             [out] IResultSet** resultset);
@@ -144,7 +144,7 @@ module
          * @throws SQLException
          *             if there is a database error.
          */
-        GetResultSetEx2(
+        GetResultSet(
             [in] Int64 index,
             [in] Int32 count,
             [in] IObjectStringMap* sqlmap,
@@ -161,7 +161,7 @@ module
          * @throws SQLException
          *             if there is a database error.
          */
-        GetResultSetEx3(
+        GetResultSet(
             [in] IObjectStringMap* sqlmap,
             [out] IResultSet** resultset);
 

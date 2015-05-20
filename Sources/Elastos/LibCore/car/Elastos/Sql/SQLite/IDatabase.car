@@ -25,7 +25,7 @@ module
          * @param mode open mode (e.g. SQLITE_OPEN_READONLY)
          * @param vfs VFS name (for SQLite >= 3.5)
          */
-        OpenEx(
+        Open(
             [in] String filename,
             [in] Int32 mode,
             [in] String vfs);
@@ -38,7 +38,7 @@ module
          * @param vfs VFS name (for SQLite >= 3.5)
          * @param ver2 flag to force version on create (false = SQLite3, true = SQLite2)
          */
-        OpenEx2(
+        Open(
             [in] String filename,
             [in] Int32 mode,
             [in] String vfs,
@@ -100,7 +100,7 @@ module
          * @param cb the object implementing the callback methods
          * @param args arguments for the SQL statement, '%q' substitution
          */
-        ExecEx(
+        Exec(
             [in] String sql,
             [in] Elastos.Sql.SQLite.ICallback* cb,
             [in] ArrayOf<String> args);
@@ -161,7 +161,7 @@ module
          * @param sql the SQL statement to be executed
          * @return result set
          */
-        GetTableEx(
+        GetTable(
             [in] String sql,
             [out] ITableResult** tableresult);
 
@@ -174,7 +174,7 @@ module
          * @param args arguments for the SQL statement, '%q' substitution
          * @return result set
          */
-        GetTableEx2(
+        GetTable(
             [in] String sql,
             [in] Int32 maxrows,
             [in] ArrayOf<String> args,
@@ -188,7 +188,7 @@ module
          * @param args arguments for the SQL statement, '%q' substitution
          * @return result set
          */
-        GetTableEx3(
+        GetTable(
             [in] String sql,
             [in] ArrayOf<String> args,
             [out] ITableResult** tableresult);
@@ -201,7 +201,7 @@ module
          * @param args arguments for the SQL statement, '%q' substitution
          * @param tbl TableResult to receive result set
          */
-        GetTableEx4(
+        GetTable(
             [in] String sql,
             [in] ArrayOf<String> args,
             [in] ITableResult* tbl);
@@ -359,7 +359,7 @@ module
          * @param args arguments for the SQL statement, '%q' substitution
          * @return a Vm object
          */
-        CompileEx(
+        Compile(
             [in] String sql,
             [in] ArrayOf<String> args,
             [out] IVm** vm);
@@ -427,7 +427,7 @@ module
          *
          * @param skey the key as String
          */
-        KeyEx(
+        Key(
             [in] String skey);
     }
 
@@ -495,7 +495,7 @@ module
          * @return long
          */
 
-        LongFromJulianEx(
+        LongFromJulian(
             [in] String s ,
             [out] Int64 * value);
 

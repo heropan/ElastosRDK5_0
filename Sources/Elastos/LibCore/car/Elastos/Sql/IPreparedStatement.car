@@ -9,14 +9,19 @@ module
     namespace Elastos {
     namespace Sql {
 
-    interface IPreparedStatement extends IStatement {
+    /**
+      * @Involve
+      * interface Elastos.Sql.IStatement;
+      * interface Elastos.Sql.IWrapper;
+      */
+    interface IPreparedStatement {
         /**
          * Add a set of parameters to the {@code PreparedStatement}'s command batch.
          *
          * @throws SQLException
          *             if a database error happens.
          */
-        AddBatchEx();
+        AddBatch();
 
         /**
          * Clear the current parameter values.
@@ -47,7 +52,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        ExecuteEx4(
+        Execute(
             [out] Boolean * value);
 
         /**
@@ -59,7 +64,7 @@ module
          *             if a database error happens or if the SQL statement does not
          *             produce a {@code ResultSet}.
          */
-        ExecuteQueryEx(
+        ExecuteQuery(
             [out] IResultSet ** resultset);
 
         /**
@@ -73,7 +78,7 @@ module
          *             if a database error happens or if the SQL statement returns a
          *             {@code ResultSet}.
          */
-        ExecuteUpdateEx4(
+        ExecuteUpdate(
             [out] Int32 * value);
 
         /**
@@ -337,7 +342,7 @@ module
          * @see Date
          * @see java.util.Calendar
          */
-        SetDateEx(
+        SetDate(
             [in] Int32 parameterIndex,
             [in] IDate * theDate,
             [in] ICalendar * cal);
@@ -449,7 +454,7 @@ module
          *             if a database error happens.
          * @see Types
          */
-        SetNullEx(
+        SetNull(
             [in] Int32 paramIndex,
             [in] Int32 sqlType,
             [in] String typeName);
@@ -503,7 +508,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        SetObjectEx(
+        SetObject(
             [in] Int32 parameterIndex,
             [in] IObject * theObject,
             [in] Int32 targetSqlType);
@@ -534,7 +539,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        SetObjectEx2(
+        SetObject(
             [in] Int32 parameterIndex,
             [in] IObject * theObject,
             [in] Int32 targetSqlType,
@@ -631,7 +636,7 @@ module
          * @see Time
          * @see java.util.Calendar
          */
-        SetTimeEx(
+        SetTime(
             [in] Int32 parameterIndex,
             [in] ITime * theTime,
             [in] ICalendar * cal);
@@ -676,7 +681,7 @@ module
          * @see Timestamp
          * @see java.util.Calendar
          */
-        SetTimestampEx(
+        SetTimestamp(
             [in] Int32 parameterIndex,
             [in] ITimestamp * theTimestamp,
             [in] ICalendar * cal);
@@ -794,7 +799,7 @@ module
          * @param length character count
          * @throws SQLException if a database error happens.
          */
-        SetClobEx(
+        SetClob(
             [in] Int32 parameterIndex,
             [in] IReader * reader,
             [in] Int64 length);
@@ -810,7 +815,7 @@ module
          * @param length character count
          * @throws SQLException if a database error happens.
          */
-        SetBlobEx(
+        SetBlob(
             [in] Int32 parameterIndex,
             [in] IInputStream * inputStream,
             [in] Int64 length);
@@ -826,7 +831,7 @@ module
          * @param length character count
          * @throws SQLException if a database error happens.
          */
-        SetNClobEx(
+        SetNClob(
             [in] Int32 parameterIndex,
             [in] IReader * reader,
             [in] Int64 length);
@@ -855,7 +860,7 @@ module
          * @param length character count
          * @throws SQLException if a database error happens.
          */
-        SetAsciiStreamEx(
+        SetAsciiStream(
             [in] Int32 parameterIndex,
             [in] IInputStream * inputStream,
             [in] Int64 length);
@@ -871,7 +876,7 @@ module
          * @param length character count
          * @throws SQLException if a database error happens.
          */
-        SetBinaryStreamEx(
+        SetBinaryStream(
             [in] Int32 parameterIndex,
             [in] IInputStream * inputStream,
             [in] Int64 length);
@@ -887,7 +892,7 @@ module
          * @param length character count
          * @throws SQLException if a database error happens.
          */
-        SetCharacterStreamEx(
+        SetCharacterStream(
             [in] Int32 parameterIndex,
             [in] IReader * reader,
             [in] Int64 length);
@@ -902,7 +907,7 @@ module
          * @param inputStream the {@code InputStream}
          * @throws SQLException if a database error happens.
          */
-        SetAsciiStreamEx2(
+        SetAsciiStream(
             [in] Int32 parameterIndex,
             [in] IInputStream * inputStream);
 
@@ -916,7 +921,7 @@ module
          * @param inputStream the {@code InputStream}
          * @throws SQLException if a database error happens.
          */
-        SetBinaryStreamEx2(
+        SetBinaryStream(
             [in] Int32 parameterIndex,
             [in] IInputStream * inputStream);
 
@@ -930,7 +935,7 @@ module
          * @param reader the {@code Reader}
          * @throws SQLException if a database error happens.
          */
-        SetCharacterStreamEx2(
+        SetCharacterStream(
             [in] Int32 parameterIndex,
             [in] IReader * reader);
 
@@ -944,7 +949,7 @@ module
          * @param reader the {@code Reader}
          * @throws SQLException if a database error happens.
          */
-        SetNCharacterStreamEx(
+        SetNCharacterStream(
             [in] Int32 parameterIndex,
             [in] IReader * reader);
 
@@ -958,7 +963,7 @@ module
          * @param reader the {@code Reader}
          * @throws SQLException if a database error happens.
          */
-        SetClobEx2(
+        SetClob(
             [in] Int32 parameterIndex,
             [in] IReader * reader);
 
@@ -972,7 +977,7 @@ module
          * @param inputStream the {@code InputStream}
          * @throws SQLException if a database error happens.
          */
-        SetBlobEx2(
+        SetBlob(
             [in] Int32 parameterIndex,
             [in] IInputStream * inputStream);
 
@@ -986,7 +991,7 @@ module
          * @param reader the {@code Reader}
          * @throws SQLException if a database error happens.
          */
-        SetNClobEx2(
+        SetNClob(
             [in] Int32 parameterIndex,
             [in] IReader * reader);
 

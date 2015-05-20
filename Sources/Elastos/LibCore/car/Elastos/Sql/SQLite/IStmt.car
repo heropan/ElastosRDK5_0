@@ -80,7 +80,7 @@ module
          * @param pos parameter index, 1-based
          * @param value value of parameter
          */
-        BindEx(
+        Bind(
             [in] Int32 pos,
             [in] Int64 value);
 
@@ -89,7 +89,7 @@ module
          * @param pos parameter index, 1-based
          * @param value value of parameter
          */
-        BindEx2(
+        Bind(
             [in] Int32 pos,
             [in] Double value);
 
@@ -98,7 +98,7 @@ module
          * @param pos parameter index, 1-based
          * @param value value of parameter, may be null
          */
-        BindEx3(
+        Bind(
             [in] Int32 pos,
             [in] ArrayOf<Byte> value);
 
@@ -107,7 +107,7 @@ module
          * @param pos parameter index, 1-based
          * @param value value of parameter, may be null
          */
-        BindEx4(
+        Bind(
             [in] Int32 pos,
             [in] String value);
 
@@ -115,7 +115,7 @@ module
          * Bind positional SQL null to compiled SQLite3 statement.
          * @param pos parameter index, 1-based
          */
-        BindEx5(
+        Bind(
             [in] Int32 pos);
 
         /**

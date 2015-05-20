@@ -27,7 +27,7 @@ module
          * @throws SQLException
          *             if an error occurs accessing the {@code Blob}.
          */
-        GetBinaryStreamEx(
+        GetBinaryStream(
             [in] Int64 pos,
             [in] Int64 length);
 
@@ -97,7 +97,7 @@ module
          * @throws SQLException
          *             if an error occurs accessing the {@code Blob}.
          */
-        GetPositionEx(
+        GetPosition(
             [in] ArrayOf<Byte> pattern,
             [in] Int64 start,
             [out] Int64* position);
@@ -158,7 +158,7 @@ module
          * @throws SQLException
          *             if an error occurs accessing the {@code Blob}.
          */
-        SetBytesEx(
+        SetBytes(
             [in] Int64 pos,
             [in] ArrayOf<Byte> theBytes,
             [in] Int32 offset,

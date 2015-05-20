@@ -10,7 +10,13 @@ module
     namespace Elastos {
     namespace Sql {
 
-    interface ICallableStatement extends IPreparedStatement{
+    /**
+      * @Involve
+      * interface Elastos.Sql.IPreparedStatement;
+      * interface Elastos.Sql.IStatement;
+      * interface Elastos.Sql.IWrapper;
+      */
+    interface ICallableStatement {
        /**
          * Gets the value of a specified JDBC {@code ARRAY} parameter as a
          * {@code java.sql.Array}.
@@ -36,7 +42,7 @@ module
          * @throws SQLException
          *             if there is a problem accessing the database.
          */
-        GetArrayEx(
+        GetArray(
             [in] String parameterName,
             [out] IArray ** iarray);
 
@@ -76,7 +82,7 @@ module
          *             {@link #getBigDecimal(String)}
          */
         //@Deprecated
-        GetBigDecimalEx(
+        GetBigDecimal(
             [in] Int32 parameterIndex,
             [in] Int32 scale,
             [out] IBigDecimal ** bigdecimal);
@@ -93,7 +99,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetBigDecimalEx2(
+        GetBigDecimal(
             [in] String parameterName,
             [out] IBigDecimal ** bigdecimal);
 
@@ -126,7 +132,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetBlobEx(
+        GetBlob(
             [in] String parameterName,
             [out] IBlob ** blob);
 
@@ -156,7 +162,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetBooleanEx(
+        GetBoolean(
             [in] String parameterName,
             [out] Boolean * value);
 
@@ -187,7 +193,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetByteEx(
+        GetByte(
             [in] String parameterName,
             [out] Byte * obyte);
 
@@ -218,7 +224,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetBytesEx(
+        GetBytes(
             [in] String parameterName,
             [out,callee] ArrayOf<Byte> * obyte);
 
@@ -252,7 +258,7 @@ module
          *             if a database error occurs.
          * @see Clob
          */
-        GetClobEx(
+        GetClob(
             [in] String parameterName,
             [out] IClob ** clob);
 
@@ -292,7 +298,7 @@ module
          *             if a database error occurs.
          * @see Date
          */
-        GetDateEx(
+        GetDate(
             [in] Int32 parameterIndex,
             [in] ICalendar * cal,
             [out] IDate ** idate);
@@ -309,7 +315,7 @@ module
          *             if a database error occurs.
          * @see Date
          */
-        GetDateEx2(
+        GetDate(
             [in] String parameterName,
             [out] IDate ** idate);
 
@@ -331,7 +337,7 @@ module
          *             if a database error occurs.
          * @see Date
          */
-        GetDateEx3(
+        GetDate(
             [in] String parameterName,
             [in] ICalendar * cal,
             [out] IDate ** idate);
@@ -363,7 +369,7 @@ module
          * @throws SQLException
          *             if there is a problem accessing the database.
          */
-        GetDoubleEx(
+        GetDouble(
             [in] String parameterName,
             [out] Double * value);
 
@@ -394,7 +400,7 @@ module
          * @throws SQLException
          *             if there is a problem accessing the database.
          */
-        GetFloatEx(
+        GetFloat(
             [in] String parameterName,
             [out] Float * value);
 
@@ -425,7 +431,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetIntEx(
+        GetInt(
             [in] String parameterName,
             [out] Int32 * value);
 
@@ -456,7 +462,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetLongEx(
+        GetLong(
             [in] String parameterName,
             [out] Int64 * value);
 
@@ -493,7 +499,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetObjectEx(
+        GetObject(
             [in] Int32 parameterIndex,
             [in] IObjectStringMap * map,
             [out] IInterface ** inter);
@@ -514,7 +520,7 @@ module
          * @throws SQLException
          *             if there is a problem accessing the database.
          */
-        GetObjectEx2(
+        GetObject(
             [in] String parameterName,
             [out] IInterface ** inter);
 
@@ -531,7 +537,7 @@ module
          * @throws SQLException
          *             if there is a problem accessing the database.
          */
-        GetObjectEx3(
+        GetObject(
             [in] String parameterName,
             [in] IObjectStringMap * map,
             [out] IInterface ** inter);
@@ -565,7 +571,7 @@ module
          *             if there is a problem accessing the database.
          * @see Ref
          */
-        GetRefEx(
+        GetRef(
             [in] String parameterName,
             [out] IRef ** ref);
 
@@ -596,7 +602,7 @@ module
          * @throws SQLException
          *             if there is a problem accessing the database.
          */
-        GetShortEx(
+        GetShort(
             [in] String parameterName,
             [out] Int16 * value);
 
@@ -637,7 +643,7 @@ module
          * @throws SQLException
          *             if there is a problem accessing the database.
          */
-        GetStringEx(
+        GetString(
             [in] String parameterName,
             [out] String * str);
 
@@ -676,7 +682,7 @@ module
          * @see Time
          * @see java.util.Calendar
          */
-        GetTimeEx(
+        GetTime(
             [in] Int32 parameterIndex,
             [in] ICalendar * cal,
             [out] ITime ** itime);
@@ -693,7 +699,7 @@ module
          *             if a database error occurs.
          * @see Time
          */
-        GetTimeEx2(
+        GetTime(
             [in] String parameterName,
             [out] ITime ** itime);
 
@@ -714,7 +720,7 @@ module
          * @see Time
          * @see java.util.Calendar
          */
-        GetTimeEx3(
+        GetTime(
             [in] String parameterName,
             [in] ICalendar * cal,
             [out] ITime ** itime);
@@ -754,7 +760,7 @@ module
          *             if a database error occurs.
          * @see Timestamp
          */
-        GetTimestampEx(
+        GetTimestamp(
             [in] Int32 parameterIndex,
             [in] ICalendar * cal,
             [out] ITimestamp ** timestamp);
@@ -772,7 +778,7 @@ module
          *             if a database error occurs.
          * @see Timestamp
          */
-        GetTimestampEx2(
+        GetTimestamp(
             [in] String parameterName,
             [out] ITimestamp ** timestamp);
 
@@ -792,7 +798,7 @@ module
          *             if a database error occurs.
          * @see Timestamp
          */
-        GetTimestampEx3(
+        GetTimestamp(
             [in] String parameterName,
             [in] ICalendar * cal,
             [out] ITimestamp ** timestamp);
@@ -827,7 +833,7 @@ module
          *             if a database error occurs.
          * @see java.net.URL
          */
-        GetURLEx(
+        GetURL(
             [in] String parameterName,
             [out] IURL ** url);
 
@@ -882,7 +888,7 @@ module
          *             if a database error occurs.
          * @see Types
          */
-        RegisterOutParameterEx(
+        RegisterOutParameter(
             [in] Int32 parameterIndex,
             [in] Int32 sqlType,
             [in] Int32 scale);
@@ -905,7 +911,7 @@ module
          *             if a database error occurs.
          * @see Ref
          */
-        RegisterOutParameterEx2(
+        RegisterOutParameter(
             [in] Int32 paramIndex,
             [in] Int32 sqlType,
             [in] String typeName);
@@ -931,7 +937,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        RegisterOutParameterEx3(
+        RegisterOutParameter(
             [in] String parameterName,
             [in] Int32 sqlType);
 
@@ -957,7 +963,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        RegisterOutParameterEx4(
+        RegisterOutParameter(
             [in] String parameterName,
             [in] Int32 sqlType,
             [in] Int32 scale);
@@ -979,7 +985,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        RegisterOutParameterEx5(
+        RegisterOutParameter(
             [in] String parameterName,
             [in] Int32 sqlType,
             [in] String typeName);
@@ -1004,7 +1010,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetAsciiStreamEx3(
+        SetAsciiStream(
             [in] String parameterName,
             [in] IInputStream * theInputStream,
             [in] Int32 length);
@@ -1020,7 +1026,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetBigDecimalEx(
+        SetBigDecimal(
             [in] String parameterName,
             [in] IBigDecimal * theBigDecimal);
 
@@ -1042,7 +1048,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetBinaryStreamEx3(
+        SetBinaryStream(
             [in] String parameterName,
             [in] IInputStream * theInputStream,
             [in] Int32 length);
@@ -1058,7 +1064,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetBooleanEx(
+        SetBoolean(
             [in] String parameterName,
             [in] Boolean theBoolean);
 
@@ -1072,7 +1078,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetByteEx(
+        SetByte(
             [in] String parameterName,
             [in] Byte theByte);
 
@@ -1088,7 +1094,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetBytesEx(
+        SetBytes(
             [in] String parameterName,
             [in] ArrayOf<Byte> theBytes);
 
@@ -1105,7 +1111,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetCharacterStreamEx3(
+        SetCharacterStream(
             [in] String parameterName,
             [in] IReader * reader,
             [in] Int32 length);
@@ -1121,7 +1127,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetDateEx2(
+        SetDate(
             [in] String parameterName,
             [in] IDate * theDate);
 
@@ -1145,7 +1151,7 @@ module
          * @see java.util.Calendar
          * @see Date
          */
-        SetDateEx3(
+        SetDate(
             [in] String parameterName,
             [in] IDate * theDate,
             [in] ICalendar * cal);
@@ -1161,7 +1167,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetDoubleEx(
+        SetDouble(
             [in] String parameterName,
             [in] Double theDouble);
 
@@ -1176,7 +1182,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetFloatEx(
+        SetFloat(
             [in] String parameterName,
             [in] Float theFloat);
 
@@ -1190,7 +1196,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetIntEx(
+        SetInt(
             [in] String parameterName,
             [in] Int32 theInt);
 
@@ -1204,7 +1210,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetLongEx(
+        SetLong(
             [in] String parameterName,
             [in] Int64 theLong);
 
@@ -1220,7 +1226,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetNullEx2(
+        SetNull(
             [in] String parameterName,
             [in] Int32 sqlType);
 
@@ -1247,7 +1253,7 @@ module
          *             if a database error occurs.
          * @see Types
          */
-        SetNullEx3(
+        SetNull(
             [in] String parameterName,
             [in] Int32 sqlType,
             [in] String typeName);
@@ -1276,7 +1282,7 @@ module
          *             if a database error occurs.
          * @see SQLData
          */
-        SetObjectEx3(
+        SetObject(
             [in] String parameterName,
             [in] IInterface * theObject);
 
@@ -1309,7 +1315,7 @@ module
          *             if a database error occurs.
          * @see SQLData
          */
-        SetObjectEx4(
+        SetObject(
             [in] String parameterName,
             [in] IInterface * theObject,
             [in] Int32 targetSqlType);
@@ -1345,7 +1351,7 @@ module
          *             if a database error occurs.
          * @see SQLData
          */
-        SetObjectEx5(
+        SetObject(
             [in] String parameterName,
             [in] IInterface * theObject,
             [in] Int32 targetSqlType,
@@ -1362,7 +1368,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetShortEx(
+        SetShort(
             [in] String parameterName,
             [in] Int16 theShort);
 
@@ -1376,7 +1382,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetStringEx(
+        SetString(
             [in] String parameterName,
             [in] String theString);
 
@@ -1392,7 +1398,7 @@ module
          *             if a database error occurs.
          * @see Time
          */
-        SetTimeEx2(
+        SetTime(
             [in] String parameterName,
             [in] ITime * theTime);
 
@@ -1415,7 +1421,7 @@ module
          *             if a database error occurs.
          * @see Time
          */
-        SetTimeEx3(
+        SetTime(
             [in] String parameterName,
             [in] ITime * theTime,
             [in] ICalendar * cal);
@@ -1432,7 +1438,7 @@ module
          *             if a database error occurs.
          * @see Timestamp
          */
-        SetTimestampEx2(
+        SetTimestamp(
             [in] String parameterName,
             [in] ITimestamp * theTimestamp);
 
@@ -1456,7 +1462,7 @@ module
          * @see Timestamp
          * @see java.util.Calendar
          */
-        SetTimestampEx3(
+        SetTimestamp(
             [in] String parameterName,
             [in] ITimestamp * theTimestamp,
             [in] ICalendar * cal);
@@ -1473,7 +1479,7 @@ module
          *             if a database error occurs.
          * @see java.net.URL
          */
-        SetURLEx(
+        SetURL(
             [in] String parameterName,
             [in] IURL * theURL);
 
@@ -1509,7 +1515,7 @@ module
          * @param parameterName the parameter name
          * @throws SQLException if a database error occurs
          */
-        GetRowIdEx(
+        GetRowId(
             [in] String parameterName,
             [out] IRowId ** rowid);
 
@@ -1517,7 +1523,7 @@ module
          * Sets the named parameter to the given {@code rowId}.
          * @throws SQLException if a database error occurs
          */
-        SetRowIdEx(
+        SetRowId(
             [in] String parameterName,
             [in] IRowId * rowId);
 
@@ -1525,7 +1531,7 @@ module
          * Sets the named parameter to the given {@code string}.
          * @throws SQLException if a database error occurs
          */
-        SetNStringEx(
+        SetNString(
             [in] String parameterName,
             [in] String string);
 
@@ -1533,7 +1539,7 @@ module
          * Sets the named parameter to the characters from the given {@code reader}.
          * @throws SQLException if a database error occurs
          */
-        SetNCharacterStreamEx2(
+        SetNCharacterStream(
             [in] String parameterName,
             [in] IReader * reader,
             [in] Int64 length);
@@ -1542,7 +1548,7 @@ module
          * Sets the named parameter to the given {@code nclob}.
          * @throws SQLException if a database error occurs
          */
-        SetNClobEx3(
+        SetNClob(
             [in] String parameterName,
             [in] INClob * nclob);
 
@@ -1550,7 +1556,7 @@ module
          * Sets the named parameter to the next {@code length} characters from the given {@code reader}.
          * @throws SQLException if a database error occurs
          */
-        SetClobEx3(
+        SetClob(
             [in] String parameterName,
             [in] IReader * reader,
             [in] Int64 length);
@@ -1559,7 +1565,7 @@ module
          * Sets the named parameter to the next {@code length} bytes from the given {@code inputStream}.
          * @throws SQLException if a database error occurs
          */
-        SetBlobEx3(
+        SetBlob(
             [in] String parameterName,
             [in] IInputStream * inputStream,
             [in] Int64 length);
@@ -1568,7 +1574,7 @@ module
          * Sets the named parameter to the next {@code length} characters from the given {@code reader}.
          * @throws SQLException if a database error occurs
          */
-        SetNClobEx4(
+        SetNClob(
             [in] String parameterName,
             [in] IReader * reader,
             [in] Int64 length);
@@ -1593,7 +1599,7 @@ module
          * @param parameterName the parameter name
          * @throws SQLException if a database error occurs
          */
-        GetNClobEx(
+        GetNClob(
             [in] String parameterName,
             [out] INClob ** nclob);
 
@@ -1601,7 +1607,7 @@ module
          * Sets the named parameter to the given {@code sqlXml}.
          * @throws SQLException if a database error occurs
          */
-        SetSQLXMLEx(
+        SetSQLXML(
             [in] String parameterName,
             [in] ISQLXML * sqlXml);
 
@@ -1625,7 +1631,7 @@ module
          * @param parameterName the parameter name
          * @throws SQLException if a database error occurs
          */
-        GetSQLXMLEx(
+        GetSQLXML(
             [in] String parameterName,
             [out] ISQLXML ** sqlxml);
 
@@ -1649,7 +1655,7 @@ module
          * @param parameterName the parameter name
          * @throws SQLException if a database error occurs
          */
-        GetNStringEx(
+        GetNString(
             [in] String parameterName,
             [out] String * str);
 
@@ -1673,7 +1679,7 @@ module
          * @param parameterName the parameter name
          * @throws SQLException if a database error occurs
          */
-        GetNCharacterStreamEx(
+        GetNCharacterStream(
             [in] String parameterName,
             [out] IReader ** reader);
 
@@ -1694,7 +1700,7 @@ module
          * @param parameterName the parameter name
          * @throws SQLException if a database error occurs
          */
-        GetCharacterStreamEx(
+        GetCharacterStream(
             [in] String parameterName,
             [out] IReader ** reader);
 
@@ -1702,7 +1708,7 @@ module
          * Sets the named parameter to the given {@code blob}.
          * @throws SQLException if a database error occurs
          */
-        SetBlobEx4(
+        SetBlob(
             [in] String parameterName,
             [in] IBlob * blob);
 
@@ -1710,7 +1716,7 @@ module
          * Sets the named parameter to the given {@code clob}.
          * @throws SQLException if a database error occurs
          */
-        SetClobEx4(
+        SetClob(
             [in] String parameterName,
             [in] IClob * clob);
 
@@ -1718,7 +1724,7 @@ module
          * Sets the named parameter to the next {@code length} bytes from the given {@code inputStream}.
          * @throws SQLException if a database error occurs
          */
-        SetAsciiStreamEx4(
+        SetAsciiStream(
             [in] String parameterName,
             [in] IInputStream * x,
             [in] Int64 length);
@@ -1727,7 +1733,7 @@ module
          * Sets the named parameter to the bytes from the given {@code reader}.
          * @throws SQLException if a database error occurs
          */
-        SetAsciiStreamEx5(
+        SetAsciiStream(
             [in] String parameterName,
             [in] IInputStream * x);
 
@@ -1735,7 +1741,7 @@ module
          * Sets the named parameter to the next {@code length} bytes from the given {@code inputStream}.
          * @throws SQLException if a database error occurs
          */
-        SetBinaryStreamEx4(
+        SetBinaryStream(
             [in] String parameterName,
             [in] IInputStream * x,
             [in] Int64 length);
@@ -1744,7 +1750,7 @@ module
          * Sets the named parameter to the bytes from the given {@code reader}.
          * @throws SQLException if a database error occurs
          */
-        SetBinaryStreamEx5(
+        SetBinaryStream(
             [in] String parameterName,
             [in] IInputStream * x);
 
@@ -1752,7 +1758,7 @@ module
          * Sets the named parameter to the next {@code length} characters from the given {@code reader}.
          * @throws SQLException if a database error occurs
          */
-        SetCharacterStreamEx4(
+        SetCharacterStream(
             [in] String parameterName,
             [in] IReader * reader,
             [in] Int64 length);
@@ -1761,7 +1767,7 @@ module
          * Sets the named parameter to the characters from the given {@code reader}.
          * @throws SQLException if a database error occurs
          */
-        SetCharacterStreamEx5(
+        SetCharacterStream(
             [in] String parameterName,
             [in] IReader * reader);
 
@@ -1769,7 +1775,7 @@ module
          * Sets the named parameter to the characters from the given {@code reader}.
          * @throws SQLException if a database error occurs
          */
-        SetNCharacterStreamEx3(
+        SetNCharacterStream(
             [in] String parameterName,
             [in] IReader * value);
 
@@ -1777,7 +1783,7 @@ module
          * Sets the named parameter to the characters from the given {@code reader}.
          * @throws SQLException if a database error occurs
          */
-        SetClobEx5(
+        SetClob(
             [in] String parameterName,
             [in] IReader * reader);
 
@@ -1785,7 +1791,7 @@ module
          * Sets the named parameter to the bytes from the given {@code inputStream}.
          * @throws SQLException if a database error occurs
          */
-        SetBlobEx5(
+        SetBlob(
             [in] String parameterName,
             [in] IInputStream * inputStream);
 
@@ -1793,7 +1799,7 @@ module
          * Sets the named parameter to the characters from the given {@code reader}.
          * @throws SQLException if a database error occurs
          */
-        SetNClobEx5(
+        SetNClob(
             [in] String parameterName,
             [in] IReader * reader);
     }

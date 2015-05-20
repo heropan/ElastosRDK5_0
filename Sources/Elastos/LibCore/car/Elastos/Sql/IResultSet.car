@@ -10,7 +10,11 @@ module
     namespace Elastos {
     namespace Sql {
 
-    interface IResultSet extends IWrapper {
+    /**
+      * @Involve
+      * interface Elastos.Sql.IWrapper;
+      */
+    interface IResultSet {
         /**
          * A constant used to indicate that a {@code ResultSet} object must be
          * closed when the method {@code Connection.commit} is invoked.
@@ -190,7 +194,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetArrayEx(
+        GetArray(
             [in] String colName,
             [out] IArray ** iarray);
 
@@ -218,7 +222,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetAsciiStreamEx(
+        GetAsciiStream(
             [in] String columnName,
             [out] IInputStream** is);
 
@@ -251,7 +255,7 @@ module
          *             if a database error happens.
          */
         //@Deprecated
-        GetBigDecimalEx(
+        GetBigDecimal(
             [in] Int32 columnIndex,
             [in] Int32 scale,
             [out] IBigDecimal** bigDecimal);
@@ -267,7 +271,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetBigDecimalEx2(
+        GetBigDecimal(
             [in] String columnName,
             [out] IBigDecimal** bigDecimal);
 
@@ -286,7 +290,7 @@ module
          *             if a database error happens.
          */
         //@Deprecated
-        GetBigDecimalEx3(
+        GetBigDecimal(
             [in] String columnName,
             [in] Int32 scale,
             [out] IBigDecimal** bigDecimal);
@@ -326,7 +330,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetBinaryStreamEx(
+        GetBinaryStream(
             [in] String columnName,
                [out] IInputStream** is);
 
@@ -354,7 +358,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetBlobEx(
+        GetBlob(
             [in] String columnName,
             [out] IBlob** blob);
 
@@ -384,7 +388,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetBooleanEx(
+        GetBoolean(
             [in] String columnName,
             [out] Boolean* value);
 
@@ -412,7 +416,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetByteEx(
+        GetByte(
             [in] String columnName,
             [out] Byte* value);
 
@@ -440,7 +444,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetBytesEx(
+        GetBytes(
             [in] String columnName,
             [out,callee] ArrayOf<Byte>* value);
 
@@ -471,7 +475,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetCharacterStreamEx(
+        GetCharacterStream(
             [in] String columnName,
             [out] IReader** reader);
 
@@ -501,7 +505,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetClobEx(
+        GetClob(
             [in] String colName,
             [out] IClob** clob);
 
@@ -554,7 +558,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-         GetDateEx(
+         GetDate(
             [in] Int32 columnIndex,
             [in] ICalendar * cal,
             [out] IDate ** idate);
@@ -570,7 +574,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetDateEx2(
+        GetDate(
             [in] String columnName,
             [out] IDate ** idate);
 
@@ -587,7 +591,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetDateEx3(
+        GetDate(
             [in] String columnName,
             [in] ICalendar * cal,
             [out] IDate ** idate);
@@ -618,7 +622,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetDoubleEx(
+        GetDouble(
             [in] String columnName,
             [out] Double* value);
 
@@ -673,7 +677,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetFloatEx(
+        GetFloat(
             [in] String columnName,
             [out] Float* value);
 
@@ -703,7 +707,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetIntEx(
+        GetInt(
             [in] String columnName,
             [out] Int32* value);
 
@@ -733,7 +737,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetLongEx(
+        GetLong(
             [in] String columnName,
             [out] Int64* value);
 
@@ -787,7 +791,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetObjectEx(
+        GetObject(
             [in] Int32 columnIndex,
             [in] IObjectStringMap * map,
             [out] IInterface ** obj);
@@ -808,7 +812,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetObjectEx2(
+        GetObject(
             [in] String columnName,
             [out] IInterface** obj);
 
@@ -829,7 +833,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetObjectEx3(
+        GetObject(
             [in] String columnName,
             [in] IObjectStringMap * map,
             [out] IInterface** obj);
@@ -858,7 +862,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetRefEx(
+        GetRef(
             [in] String colName,
             [out] IRef** ref);
 
@@ -898,7 +902,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetShortEx(
+        GetShort(
             [in] String columnName,
             [out] Int16* value);
 
@@ -940,7 +944,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetStringEx(
+        GetString(
             [in] String columnName,
             [out] String* value);
 
@@ -973,7 +977,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetTimeEx(
+        GetTime(
             [in] Int32 columnIndex,
             [in] ICalendar* cal,
             [out] ITime** ti);
@@ -989,7 +993,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetTimeEx2(
+        GetTime(
             [in] String columnName,
             [out] ITime** ti);
 
@@ -1007,7 +1011,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetTimeEx3(
+        GetTime(
             [in] String columnName,
             [in] ICalendar* cal,
             [out] ITime** ti);
@@ -1023,9 +1027,9 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-    GetTimestamp(
-           [in] Int32 columnIndex,
-           [out] ITimestamp** timestamp);
+        GetTimestamp(
+               [in] Int32 columnIndex,
+               [out] ITimestamp** timestamp);
 
         /**
          * Gets the value of a column specified by column index, as a {@code
@@ -1041,7 +1045,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetTimestampEx(
+        GetTimestamp(
             [in] Int32 columnIndex,
             [in] ICalendar* cal,
             [out] ITimestamp** timestamp);
@@ -1057,7 +1061,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetTimestampEx2(
+        GetTimestamp(
             [in] String columnName,
             [out] ITimestamp** timestamp);
 
@@ -1075,7 +1079,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetTimestampEx3(
+        GetTimestamp(
             [in] String columnName,
             [in] ICalendar* cal,
             [out] ITimestamp** timestamp);
@@ -1123,7 +1127,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetUnicodeStreamEx(
+        GetUnicodeStream(
             [in] String columnName,
             [out] IInputStream** is);
 
@@ -1151,7 +1155,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        GetURLEx(
+        GetURL(
             [in] String columnName,
             [out] IURL** url);
 
@@ -1421,7 +1425,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateArrayEx(
+        UpdateArray(
             [in] String columnName,
             [in] IArray* x);
 
@@ -1454,7 +1458,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateAsciiStreamEx(
+        UpdateAsciiStream(
             [in] String columnName,
             [in] IInputStream* x,
             [in] Int32 length);
@@ -1485,7 +1489,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateBigDecimalEx(
+        UpdateBigDecimal(
             [in] String columnName,
             [in] IBigDecimal* x);
 
@@ -1518,7 +1522,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateBinaryStreamEx(
+        UpdateBinaryStream(
             [in] String columnName,
             [in] IInputStream* x,
             [in] Int32 length);
@@ -1549,7 +1553,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateBlobEx(
+        UpdateBlob(
             [in] String columnName,
             [in] IBlob* x);
 
@@ -1578,7 +1582,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateBooleanEx(
+        UpdateBoolean(
             [in] String columnName,
             [in] Boolean x);
 
@@ -1606,7 +1610,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateByteEx(
+        UpdateByte(
             [in] String columnName,
             [in] Byte x);
 
@@ -1635,7 +1639,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateBytesEx(
+        UpdateBytes(
             [in] String columnName,
             [in] ArrayOf<Byte> x);
 
@@ -1670,7 +1674,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateCharacterStreamEx(
+        UpdateCharacterStream(
             [in] String columnName,
             [in] IReader* reader,
                 [in] Int32 length);
@@ -1701,7 +1705,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateClobEx(
+        UpdateClob(
             [in] String columnName,
             [in] IClob* x);
 
@@ -1731,7 +1735,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateDateEx(
+        UpdateDate(
             [in] String columnName,
             [in] IDate* x);
 
@@ -1759,7 +1763,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateDoubleEx(
+        UpdateDouble(
             [in] String columnName,
             [in] Double x);
 
@@ -1787,7 +1791,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateFloatEx(
+        UpdateFloat(
             [in] String columnName,
             [in] Float x);
 
@@ -1815,7 +1819,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateIntEx(
+        UpdateInt(
             [in] String columnName,
             [in] Int32 x);
 
@@ -1843,7 +1847,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateLongEx(
+        UpdateLong(
             [in] String columnName,
             [in] Int64 x);
 
@@ -1866,7 +1870,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateNullEx(
+        UpdateNull(
             [in] String columnName);
 
         /**
@@ -1899,7 +1903,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateObjectEx(
+        UpdateObject(
             [in] Int32 columnIndex,
             [in] IInterface* x,
             [in] Int32 scale);
@@ -1914,7 +1918,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateObjectEx2(
+        UpdateObject(
             [in] String columnName,
             [in] IInterface* x);
 
@@ -1932,7 +1936,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateObjectEx3(
+        UpdateObject(
             [in] String columnName,
             [in] IInterface* x,
             [in] Int32 scale);
@@ -1963,7 +1967,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateRefEx(
+        UpdateRef(
             [in] String columnName,
             [in] IRef* x);
 
@@ -2000,7 +2004,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateShortEx(
+        UpdateShort(
             [in] String columnName,
             [in] Int16 x);
 
@@ -2028,7 +2032,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateStringEx(
+        UpdateString(
             [in] String columnName,
             [in] String x);
 
@@ -2056,7 +2060,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateTimeEx(
+        UpdateTime(
             [in] String columnName,
             [in] ITime* x);
 
@@ -2085,7 +2089,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        UpdateTimestampEx(
+        UpdateTimestamp(
             [in] String columnName,
             [in] ITimestamp* x);
 
@@ -2113,7 +2117,7 @@ module
          * Returns a {@code RowId} corresponding to the SQL ROWID at the named column.
          * @throws SQLException
          */
-        GetRowIdEx(
+        GetRowId(
             [in] String columnLabel,
             [out] IRowId** id);
 
@@ -2131,7 +2135,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateRowIdEx(
+        UpdateRowId(
             [in] String columnLabel,
             [in] IRowId* value);
 
@@ -2164,7 +2168,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateNStringEx(
+        UpdateNString(
             [in] String columnLabel,
             [in] String nString);
 
@@ -2182,7 +2186,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateNClobEx(
+        UpdateNClob(
             [in] String columnLabel,
             [in] INClob* nClob);
 
@@ -2198,7 +2202,7 @@ module
          * Returns an {@code NClob} corresponding to the value in the named column.
          * @throws SQLException
          */
-        GetNClobEx(
+        GetNClob(
             [in] String columnLabel,
             [out] INClob** nClob);
 
@@ -2214,7 +2218,7 @@ module
          * Returns an {@code SQLXML} corresponding to the value in the named column.
          * @throws SQLException
          */
-        GetSQLXMLEx(
+        GetSQLXML(
             [in] String columnLabel,
             [out] ISQLXML** sqlxml);
 
@@ -2232,7 +2236,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateSQLXMLEx(
+        UpdateSQLXML(
             [in] String columnLabel,
             [in] ISQLXML* xmlObject);
 
@@ -2248,7 +2252,7 @@ module
          * Returns a {@code String} corresponding to the value in the named column.
          * @throws SQLException
          */
-        GetNStringEx(
+        GetNString(
             [in] String columnLabel,
             [out] String* nstr);
 
@@ -2264,7 +2268,7 @@ module
          * Returns a {@code Reader} corresponding to the value in the named column.
          * @throws SQLException
          */
-        GetNCharacterStreamEx(
+        GetNCharacterStream(
             [in] String columnLabel,
             [out] IReader** reader);
 
@@ -2283,7 +2287,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateNCharacterStreamEx(
+        UpdateNCharacterStream(
             [in] String columnLabel,
             [in] IReader* reader,
             [in] Int64 length);
@@ -2293,7 +2297,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateAsciiStreamEx2(
+        UpdateAsciiStream(
             [in] Int32 columnIndex,
             [in] IInputStream* x,
             [in] Int64 length);
@@ -2303,7 +2307,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateBinaryStreamEx2(
+        UpdateBinaryStream(
             [in] Int32 columnIndex,
             [in] IInputStream* x,
             [in] Int64 length);
@@ -2313,7 +2317,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateCharacterStreamEx2(
+        UpdateCharacterStream(
             [in] Int32 columnIndex,
             [in] IReader* x,
             [in] Int64 length);
@@ -2323,7 +2327,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateAsciiStreamEx3(
+        UpdateAsciiStream(
             [in] String columnLabel,
             [in] IInputStream* x,
             [in] Int64 length);
@@ -2333,7 +2337,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateBinaryStreamEx3(
+        UpdateBinaryStream(
             [in] String columnLabel,
             [in] IInputStream* x,
             [in] Int64 length);
@@ -2343,7 +2347,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateCharacterStreamEx3(
+        UpdateCharacterStream(
             [in] String columnLabel,
             [in] IReader* reader,
             [in] Int64 length);
@@ -2353,7 +2357,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateBlobEx2(
+        UpdateBlob(
             [in] Int32 columnIndex,
             [in] IInputStream* inputStream,
             [in] Int64 length);
@@ -2363,7 +2367,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateBlobEx3(
+        UpdateBlob(
             [in] String columnLabel,
             [in] IInputStream* inputStream,
             [in] Int64 length);
@@ -2373,7 +2377,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateClobEx2(
+        UpdateClob(
             [in] Int32 columnIndex,
             [in] IReader* reader,
             [in] Int64 length);
@@ -2383,7 +2387,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateClobEx3(
+        UpdateClob(
             [in] String columnLabel,
             [in] IReader* reader,
             [in] Int64 length);
@@ -2393,7 +2397,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateNClobEx2(
+        UpdateNClob(
             [in] Int64 columnIndex,
             [in] IReader* reader,
             [in] Int64 length);
@@ -2403,7 +2407,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateNClobEx3(
+        UpdateNClob(
             [in] String columnLabel,
             [in] IReader* reader,
             [in] Int64 length);
@@ -2413,7 +2417,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateNCharacterStreamEx2(
+        UpdateNCharacterStream(
             [in] Int32 columnIndex,
             [in] IReader* x);
 
@@ -2422,7 +2426,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateNCharacterStreamEx3(
+        UpdateNCharacterStream(
             [in] String columnLabel,
             [in] IReader* reader);
 
@@ -2431,7 +2435,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateAsciiStreamEx4(
+        UpdateAsciiStream(
             [in] Int32 columnIndex,
             [in] IInputStream* x);
 
@@ -2440,7 +2444,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateBinaryStreamEx4(
+        UpdateBinaryStream(
             [in] Int32 columnIndex,
             [in] IInputStream* x);
 
@@ -2449,7 +2453,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-       UpdateCharacterStreamEx4(
+       UpdateCharacterStream(
            [in] Int32 columnIndex,
            [in] IReader * x);
 
@@ -2458,7 +2462,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateAsciiStreamEx5(
+        UpdateAsciiStream(
             [in] String columnLabel,
             [in] IInputStream* x);
 
@@ -2467,7 +2471,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateBinaryStreamEx5(
+        UpdateBinaryStream(
             [in] String columnLabel,
             [in] IInputStream* x);
 
@@ -2476,7 +2480,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateCharacterStreamEx5(
+        UpdateCharacterStream(
             [in] String columnLabel,
             [in] IReader* reader);
 
@@ -2485,7 +2489,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateBlobEx4(
+        UpdateBlob(
             [in] Int32 columnIndex,
             [in] IInputStream* inputStream);
 
@@ -2494,7 +2498,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateBlobEx5(
+        UpdateBlob(
             [in] String columnLabel,
             [in] IInputStream* inputStream);
 
@@ -2503,7 +2507,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateClobEx4(
+        UpdateClob(
             [in] Int32 columnIndex,
             [in] IReader* reader);
 
@@ -2512,7 +2516,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateClobEx5(
+        UpdateClob(
             [in] String columnLabel,
             [in] IReader* reader);
 
@@ -2521,7 +2525,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateNClobEx4(
+        UpdateNClob(
             [in] Int32 columnIndex,
             [in] IReader* reader);
 
@@ -2530,7 +2534,7 @@ module
          * The underlying database isn't changed until the next row update or insert operation.
          * @throws SQLException
          */
-        UpdateNClobEx5(
+        UpdateNClob(
             [in] String columnLabel,
             [in] IReader* reader);
     }

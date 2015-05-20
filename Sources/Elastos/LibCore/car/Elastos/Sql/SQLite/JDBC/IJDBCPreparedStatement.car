@@ -14,25 +14,23 @@ module
     namespace SQLite {
     namespace JDBC {
 
-    interface IJDBCPreparedStatement extends IJDBCStatement {
-
-        ExecuteBatchEx(
-            [out,callee] ArrayOf<Int32> * outarray);
-
-        ClearBatchEx();
-
-        CloseEx();
-
+    /**
+      * @Involve
+      * interface Elastos.Sql.SQLite.JDBC.IJDBCStatement;
+      * interface Elastos.Sql.IStatement;
+      * interface Elastos.Sql.IWrapper;
+      */
+    interface IJDBCPreparedStatement {
         RegisterOutputParameter(
             [in] String parameterName,
             [in] Int32 sqlType);
 
-        RegisterOutputParameterEx(
+        RegisterOutputParameter(
             [in] String parameterName,
             [in] Int32 sqlType,
             [in] Int32 scale);
 
-        RegisterOutputParameterEx2(
+        RegisterOutputParameter(
             [in] String parameterName,
             [in] Int32 sqlType,
             [in] String typeName);
@@ -41,108 +39,108 @@ module
             [in] Int32 parameterIndex,
             [out] Elastos.Net.IURL ** url);
 
-        SetNullEx2(
+        SetNull(
             [in] String parameterName,
             [in] Int32 sqlType);
 
-        SetBooleanEx(
+        SetBoolean(
             [in] String parameterName,
             [in] Boolean val);
 
-        SetByteEx(
+        SetByte(
             [in] String parameterName,
             [in] Byte val);
 
-        SetShortEx(
+        SetShort(
             [in] String parameterName,
             [in] Int16 val);
 
-        SetIntEx(
+        SetInt(
             [in] String parameterName,
             [in] Int32 val);
 
-        SetLongEx(
+        SetLong(
             [in] String parameterName,
             [in] Int64 val);
 
-        SetFloatEx(
+        SetFloat(
             [in] String parameterName,
             [in] Float val);
 
-        SetDoubleEx(
+        SetDouble(
             [in] String parameterName,
             [in] Double val);
 
-        SetBigDecimalEx(
+        SetBigDecimal(
             [in] String parameterName,
             [in] IBigDecimal * val);
 
-        SetStringEx(
+        SetString(
             [in] String parameterName,
             [in] String val);
 
-        SetBytesEx(
+        SetBytes(
             [in] String parameterName,
             [in] ArrayOf<Byte> val);
 
-        SetDateEx2(
+        SetDate(
             [in] String parameterName,
             [in] Elastos.Sql.IDate * val);
 
-        SetTimeEx2(
+        SetTime(
             [in] String parameterName,
             [in] Elastos.Sql.ITime * val);
 
-        SetTimestampEx2(
+        SetTimestamp(
             [in] String parameterName,
             [in] Elastos.Sql.ITimestamp * val);
 
-        SetAsciiStreamEx6(
+        SetAsciiStream(
             [in] String parameterName,
             [in] Elastos.IO.IInputStream * s,
             [in] Int32 length);
 
-        SetBinaryStreamEx6(
+        SetBinaryStream(
             [in] String parameterName,
             [in] Elastos.IO.IInputStream * s,
             [in] Int32 length);
 
-        SetObjectEx3(
+        SetObject(
             [in] String parameterName,
             [in] IObject * val,
             [in] Int32 targetSqlType,
             [in] Int32 scale);
 
-        SetObjectEx4(
+        SetObject(
             [in] String parameterName,
             [in] IObject * val,
             [in] Int32 targetSqlType);
 
-        SetObjectEx5(
+        SetObject(
             [in] String parameterName,
             [in] IObject * val);
 
-        SetCharacterStreamEx7(
+        SetCharacterStream(
             [in] String parameterName,
             [in] Elastos.IO.IReader * r,
             [in] Int32 length);
 
-        SetDateEx3(
+        SetDate(
             [in] String parameterName,
             [in] Elastos.Sql.IDate * val,
             [in] Elastos.Utility.ICalendar * cal);
 
-        SetTimeEx3(
+        SetTime(
             [in] String parameterName,
             [in] Elastos.Sql.ITime * val,
             [in] Elastos.Utility.ICalendar * cal);
 
-        SetTimestampEx3(
+        SetTimestamp(
             [in] String parameterName,
             [in] Elastos.Sql.ITimestamp * val,
             [in] Elastos.Utility.ICalendar * cal);
 
-        SetNullEx3(
+        SetNull(
             [in] String parameterName,
             [in] Int32 sqlType,
             [in] String typeName);
@@ -199,7 +197,7 @@ module
             [in] String parameterName,
             [out] IObject ** theobject);
 
-        GetObjectEx(
+        GetObject(
             [in] Int32 parameterIndex,
             [out] IObject ** theobject);
 
@@ -207,12 +205,12 @@ module
             [in] String parameterName,
             [out] IBigDecimal ** bigdecimal);
 
-        GetObjectEx2(
+        GetObject(
             [in] String parameterName,
             [in] Elastos.Utility.IObjectMap * map,
             [out] IObject ** theobject);
 
-        GetObjectEx3(
+        GetObject(
             [in] Int32 parameterIndex,
             [in] Elastos.Utility.IObjectMap * map,
             [out] IObject ** theobject);
@@ -221,7 +219,7 @@ module
             [in] Int32 parameterIndex,
             [out] IRef ** iref);
 
-        GetRefEx(
+        GetRef(
             [in] String parameterName,
             [out] IRef ** iref);
 
@@ -229,7 +227,7 @@ module
             [in] String parameterName,
             [out] Elastos.Sql.IBlob ** blob);
 
-        GetBlobEx(
+        GetBlob(
             [in] Int32 parameterIndex,
             [out] Elastos.Sql.IBlob ** blob);
 
@@ -237,7 +235,7 @@ module
             [in] String parameterName,
             [out] IClob ** clob);
 
-        GetClobEx(
+        GetClob(
             [in] Int32 parameterIndex,
             [out] IClob ** clob);
 
@@ -245,199 +243,199 @@ module
             [in] String parameterName,
             [out] IArray ** outarray);
 
-        GetArrayEx(
+        GetArray(
             [in] Int32 parameterIndex,
             [out] IArray ** outarray);
 
-        GetDateEx(
+        GetDate(
             [in] String parameterName,
             [in] ICalendar * cal,
             [out] Elastos.Sql.IDate ** thedate);
 
-        GetDateEx2(
+        GetDate(
             [in] Int32 parameterIndex,
             [in] ICalendar * cal,
             [out] Elastos.Sql.IDate ** thedate);
 
-        GetTimeEx(
+        GetTime(
             [in] String parameterName,
             [in] ICalendar * cal,
             [out] Elastos.Sql.ITime ** thetime);
 
-        GetTimeEx2(
+        GetTime(
             [in] Int32 parameterIndex,
             [in] ICalendar * cal,
             [out] Elastos.Sql.ITime ** thetime);
 
-        GetTimestampEx(
+        GetTimestamp(
             [in] String parameterName,
             [in] ICalendar * cal,
             [out] Elastos.Sql.ITimestamp ** timestamp);
 
-        GetTimestampEx2(
+        GetTimestamp(
             [in] Int32 parameterIndex,
             [in] ICalendar * cal,
             [out] Elastos.Sql.ITimestamp ** timestamp);
 
-        GetURLEx(
+        GetURL(
             [in] String parameterName,
             [out] Elastos.Net.IURL ** url);
 
-        SetRowIdEx(
+        SetRowId(
             [in] Int32 parameterIndex,
             [in] IRowId * x);
 
-        SetRowIdEx2(
+        SetRowId(
             [in] String parameterName,
             [in] IRowId * x);
 
-        SetNStringEx(
+        SetNString(
             [in] Int32 parameterIndex,
             [in] String value);
 
-        SetNStringEx2(
+        SetNString(
             [in] String parameterName,
             [in] String value);
 
-        SetNCharacterStreamEx2(
+        SetNCharacterStream(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IReader * x,
             [in] Int64 len);
 
-        SetNCharacterStreamEx3(
+        SetNCharacterStream(
             [in] String parameterName,
             [in] Elastos.IO.IReader * x,
             [in] Int64 len);
 
-        SetNClobEx8(
+        SetNClob(
             [in] Int32 parameterIndex,
             [in] INClob * value);
 
-        SetNClobEx3(
+        SetNClob(
             [in] String parameterName,
             [in] INClob * value);
 
-        SetClobEx3(
+        SetClob(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IReader * x,
             [in] Int64 len);
 
-        SetClobEx4(
+        SetClob(
             [in] String parameterName,
             [in] Elastos.IO.IReader * x,
             [in] Int64 len);
 
-        SetBlobEx3(
+        SetBlob(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IInputStream * x,
             [in] Int64 len);
 
-        SetBlobEx4(
+        SetBlob(
             [in] String parameterName,
             [in] Elastos.IO.IInputStream * x,
             [in] Int64 len);
 
-        SetNClobEx4(
+        SetNClob(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IReader * x,
             [in] Int64 len);
 
-        SetNClobEx5(
+        SetNClob(
             [in] String parameterName,
             [in] Elastos.IO.IReader * x,
             [in] Int64 len);
 
-        SetSQLXMLEx(
+        SetSQLXML(
             [in] Int32 parameterIndex,
             [in] ISQLXML * xml);
 
-        SetSQLXMLEx2(
+        SetSQLXML(
             [in] String parameterName,
             [in] ISQLXML * xml);
 
-        SetAsciiStreamEx7(
+        SetAsciiStream(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IInputStream * x,
             [in] Int64 len);
 
-        SetAsciiStreamEx3(
+        SetAsciiStream(
             [in] String parameterName,
             [in] Elastos.IO.IInputStream * x,
             [in] Int64 len);
 
-        SetBinaryStreamEx7(
+        SetBinaryStream(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IInputStream * x,
             [in] Int64 len);
 
-        SetBinaryStreamEx3(
+        SetBinaryStream(
             [in] String parameterName,
             [in] Elastos.IO.IInputStream * x,
             [in] Int64 len);
 
-        SetCharacterStreamEx3(
+        SetCharacterStream(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IReader * x,
             [in] Int64 len);
 
-        SetCharacterStreamEx4(
+        SetCharacterStream(
             [in] String parameterName,
             [in] Elastos.IO.IReader * x,
             [in] Int64 len);
 
-        SetAsciiStreamEx4(
+        SetAsciiStream(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IInputStream * x);
 
-        SetAsciiStreamEx5(
+        SetAsciiStream(
             [in] String parameterName,
             [in] Elastos.IO.IInputStream * x);
 
-        SetBinaryStreamEx4(
+        SetBinaryStream(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IInputStream * x);
 
-        SetBinaryStreamEx5(
+        SetBinaryStream(
             [in] String parameterName,
             [in] Elastos.IO.IInputStream * x);
 
-        SetCharacterStreamEx5(
+        SetCharacterStream(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IReader * x);
 
-        SetCharacterStreamEx6(
+        SetCharacterStream(
             [in] String parameterName,
             [in] Elastos.IO.IReader * x);
 
-        SetNCharacterStreamEx4(
+        SetNCharacterStream(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IReader * x);
 
-        SetNCharacterStreamEx5(
+        SetNCharacterStream(
             [in] String parameterName,
             [in] Elastos.IO.IReader * x);
 
-        SetClobEx5(
+        SetClob(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IReader * x);
 
-        SetClobEx6(
+        SetClob(
             [in] String parameterName,
             [in] Elastos.IO.IReader * x);
 
-        SetBlobEx5(
+        SetBlob(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IInputStream * x);
 
-        SetBlobEx6(
+        SetBlob(
             [in] String parameterName,
             [in] Elastos.IO.IInputStream * x);
 
-        SetNClobEx6(
+        SetNClob(
             [in] Int32 parameterIndex,
             [in] Elastos.IO.IReader * x);
 
-        SetNClobEx7(
+        SetNClob(
             [in] String parameterName,
             [in] Elastos.IO.IReader * x);
     }

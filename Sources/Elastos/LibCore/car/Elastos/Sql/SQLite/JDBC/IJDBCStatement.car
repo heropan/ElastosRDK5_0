@@ -5,7 +5,12 @@ module
     namespace SQLite {
     namespace JDBC {
 
-    interface IJDBCStatement extends Elastos.Sql.IStatement {
+    /**
+      * @Involve
+      * interface Elastos.Sql.IStatement;
+      * interface Elastos.Sql.IWrapper;
+      */
+    interface IJDBCStatement {
     }
 
     } // namespace JDBC

@@ -5,7 +5,11 @@ module
     namespace Elastos {
     namespace Sql {
 
-    interface IDate extends Elastos.Utility.IDate{
+    /**
+      * @Involve
+      * interface Elastos.Utility.IDate;
+      */
+    interface ISQLDate {
     }
 
     } // namespace Sql

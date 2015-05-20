@@ -4,14 +4,15 @@ module
     namespace Sql {
     namespace SQLite {
 
-    interface ITableResult extends ICallback {
+    /**
+      * @Involve
+      * interface Elastos.Sql.SQLite.ICallback;
+      */
+    interface ITableResult {
         /**
          * Make String representation of result set.
          */
         Clear();
-
-        ToString(
-            [out] String* str);
     }
 
     } // namespace SQLite

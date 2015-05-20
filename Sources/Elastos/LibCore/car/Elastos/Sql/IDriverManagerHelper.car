@@ -60,7 +60,7 @@ module
          *             if there is an error while attempting to connect to the
          *             database identified by the URL.
          */
-        GetConnectionEx(
+        GetConnection(
             [in] String url,
             [in] IProperties * info,
             [out] IConnection ** conn);
@@ -80,7 +80,7 @@ module
          *             if there is an error while attempting to connect to the
          *             database identified by the URL.
          */
-        GetConnectionEx2(
+        GetConnection(
             [in] String url,
             [in] String user,
             [in] String password,
