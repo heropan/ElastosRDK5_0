@@ -9,6 +9,9 @@ $OUTPUT "_${fullname}.h"
 #define __CAR_${fullname}_H__
 
 #include "${module.name}_server.h"
+$IF attrib is "singleton"
+#include <spinlock.h>
+$END IF
 
 ${ClassNamespaceBegin(class)}
 class ${class.name};
@@ -73,6 +76,13 @@ $           END DO ;; all methods
 $       END IF ;; attrib is "clsobj"
 $    END DO ;; all interfaces
 $   END IF ;;
+$END IF ;;
+
+$IF attrib is "singleton"
+    CARAPI_(void) OnLastStrongRef(
+        /* [in] */ const void* id);
+
+    CARAPI_(SpinLock&) GetSelfSpinLock();
 $END IF ;;
 };
 
