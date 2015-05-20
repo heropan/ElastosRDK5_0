@@ -2,7 +2,6 @@ module
 {
     using interface Elastos.Core.IRunnable;
     interface Elastos.Utility.Concurrent.IRejectedExecutionHandler;
-    interface Elastos.Utility.Concurrent.IAbstractExecutorService;
 
     namespace Elastos {
     namespace Utility {

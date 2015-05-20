@@ -14,7 +14,7 @@ module
      * interface ICollection;
      * interface IList;
      */
-    interface IUnsafeArrayList extends IList {
+    interface IUnsafeArrayList {
 
     }
 

@@ -1,7 +1,5 @@
 module
 {
-    interface Elastos.Utility.ITimeZone;
-
     namespace Elastos{
     namespace Utility{
 

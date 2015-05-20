@@ -1,7 +1,6 @@
 
 module
 {
-    using interface Elastos.Utility.Zip.IZipFile;
     interface Elastos.Utility.Jar.IJarEntry;
     interface Elastos.Utility.Jar.IManifest;
 

@@ -10,7 +10,6 @@ module
     interface Elastos.IO.IReader;
     interface Elastos.IO.IStringReader;
     interface Elastos.IO.IWriter;
-    interface Elastos.Utility.IDictionary;
 
     namespace Elastos {
     namespace Utility {

@@ -27,7 +27,7 @@ module
      * @Involve
      * interface IEnumeration;
      */
-    interface IStringTokenizer extends IEnumeration {
+    interface IStringTokenizer {
         /**
          * Returns the number of unprocessed tokens remaining in the string.
          *

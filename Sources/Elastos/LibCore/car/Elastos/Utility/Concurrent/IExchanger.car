@@ -1,8 +1,6 @@
 
 module
 {
-    using interface Elastos.Utility.ICollection;
-
     namespace Elastos {
     namespace Utility {
     namespace Concurrent {

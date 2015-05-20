@@ -1,7 +1,6 @@
 
 module
 {
-    using interface Elastos.Utility.Zip.IZipInputStream;
     interface Elastos.Utility.Jar.IManifest;
 
     namespace Elastos{

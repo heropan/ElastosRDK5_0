@@ -13,7 +13,7 @@ module
      * @Involve
      * interface IIterator;
      */
-    interface IListIterator extends IIterator {
+    interface IListIterator {
         /**
          * Inserts the specified object into the list between {@code next} and
          * {@code previous}. The object inserted will be the previous object.
