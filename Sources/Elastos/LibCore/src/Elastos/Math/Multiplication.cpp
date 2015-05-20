@@ -46,8 +46,11 @@ Boolean Multiplication::InitStatic()
 
         AutoPtr<IBigInteger> TEN = CreateBigInteger(1, 10LL);
         for (; i < BigTenPows->GetLength(); i++) {
-            (*BigFivePows)[i - 1]->Multiply((*BigFivePows)[1], &((*BigFivePows)[i]));
-            (*BigTenPows)[i - 1]->Multiply(TEN, &((*BigTenPows)[i]));
+            AutoPtr<IBigInteger> fivePowTemp, tenPowTemp;
+            (*BigFivePows)[i - 1]->Multiply((*BigFivePows)[1], (IBigInteger**)&fivePowTemp);
+            BigFivePows->Set(i, fivePowTemp);
+            (*BigTenPows)[i - 1]->Multiply(TEN, (IBigInteger**)&tenPowTemp);
+            BigTenPows->Set(i, tenPowTemp);
         }
     }
 

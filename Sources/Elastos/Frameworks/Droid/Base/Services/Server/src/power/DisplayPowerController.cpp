@@ -326,14 +326,6 @@ DisplayPowerController::DisplayPowerController(
     mTwilightListener = (TwilightService::ITwilightListener*)new MyTwilightListener(this);
 
     mHandler = new DisplayControllerHandler(looper, this);
-    AutoPtr<ILooper> l;
-    mHandler->GetLooper((ILooper**)&l);
-    AutoPtr<ISystemSensorManager> ssm;
-    ASSERT_SUCCEEDED(CSystemSensorManager::New(context, l,
-            (ISystemSensorManager**)&ssm));
-    mSensorManager = (ISensorManager*)ssm->Probe(EIID_ISensorManager);
-    ASSERT_SUCCEEDED(context->GetSystemService(
-            IContext::DISPLAY_SERVICE, (IInterface**)&mDisplayManager));
 
     AutoPtr<IResources> resources;
     ASSERT_SUCCEEDED(context->GetResources((IResources**)&resources));
@@ -488,7 +480,6 @@ void DisplayPowerController::SendUpdatePowerStateLocked()
 void DisplayPowerController::Initialize()
 {
     AutoPtr<ElectronBeam> eb = new ElectronBeam(mDisplayManager);
-    PRINT_FILE_LINE_EX("TODO")
     mPowerState = new DisplayPowerState(eb, mDisplayBlanker,
             mLights->GetLight(LightsService::_LIGHT_ID_BACKLIGHT));
     AutoPtr<IObjectAnimatorHelper> animatorHelper;
@@ -556,7 +547,6 @@ void DisplayPowerController::UpdatePowerState()
 
         mustNotify = !mDisplayReadyLocked;
     }
-
     // Initialize things the first time the power state is changed.
     if (mustInitialize) {
         Initialize();

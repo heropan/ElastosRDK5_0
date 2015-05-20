@@ -11,14 +11,27 @@ ActivityInstrumentationTestCase2::ActivityInstrumentationTestCase2()
     : mInitialTouchMode(FALSE)
 {}
 
-ECode ActivityInstrumentationTestCase2::constructor(
+ActivityInstrumentationTestCase2::ActivityInstrumentationTestCase2(
+    /* [in] */ const String& pkg,
+    /* [in] */ IClassInfo* activityClass)
+    : mActivityClass(activityClass)
+    , mInitialTouchMode(FALSE)
+{}
+
+ActivityInstrumentationTestCase2::ActivityInstrumentationTestCase2(
+    /* [in] */ IClassInfo* activityClass)
+    : mActivityClass(activityClass)
+    , mInitialTouchMode(FALSE)
+{}
+
+ECode ActivityInstrumentationTestCase2::Init(
     /* [in] */ const String& pkg,
     /* [in] */ IClassInfo* activityClass)
 {
-    return constructor(activityClass);
+    return Init(activityClass);
 }
 
-ECode ActivityInstrumentationTestCase2::constructor(
+ECode ActivityInstrumentationTestCase2::Init(
     /* [in] */ IClassInfo* activityClass)
 {
     mActivityClass = activityClass;

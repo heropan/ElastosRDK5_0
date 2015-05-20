@@ -1144,7 +1144,7 @@ ECode ApplicationPackageManager::GetResourcesForApplicationAsUser(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if (String("system").Equals(appPackageName)) {
+    if (appPackageName.Equals("system")) {
         AutoPtr<IContextImpl> ctx;
         mContext->mMainThread->GetSystemContext((IContextImpl**)&ctx);
         return ctx->GetResources(res);
@@ -1509,12 +1509,12 @@ ECode ApplicationPackageManager::InstallExistingPackage(
     ECode ec = mPM->InstallExistingPackage(packageName, result);
     if (FAILED(ec)) {
         *result = 0;
-        Slogger::W("PackageManager", String("Package ") + packageName + String(" doesn't exist"));
+        Slogger::W("PackageManager", "Package %s doesn't exist", packageName.string());
         return E_NAME_NOT_FOUND_EXCEPTION;
     }
 
     if (*result == INSTALL_FAILED_INVALID_URI) {
-        Slogger::W("PackageManager", String("Package ") + packageName + String(" doesn't exist"));
+        Slogger::W("PackageManager", "Package %s doesn't exist", packageName.string());
         return E_NAME_NOT_FOUND_EXCEPTION;
     }
     return NOERROR;

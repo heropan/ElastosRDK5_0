@@ -107,8 +107,8 @@ private:
 private:
     static Int32 mInitSize = 32;
     Int32 mIndex;
-    AutoPtr<ArrayOf<ArrayOf<Int32>*> > mLen; //new int[initSize][]
-    AutoPtr<ArrayOf<ArrayOf<IInterface*>*> > mVal;//new Object[initSize][];
+    AutoPtr<ArrayOf<Int32Array > > mLen; //new int[initSize][]
+    AutoPtr<ArrayOf<AutoPtr<ArrayOf<IInterface*> > > > mVal;//new Object[initSize][];
 };
 
 } // namespace Asn1

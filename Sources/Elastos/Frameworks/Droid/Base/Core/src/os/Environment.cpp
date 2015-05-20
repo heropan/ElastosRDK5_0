@@ -38,6 +38,7 @@ AutoPtr<IFile> Environment::SECURE_DATA_DIRECTORY;
 AutoPtr<IFile> Environment::EXTERNAL_STORAGE_DIRECTORY;
 AutoPtr<IFile> Environment::EXTERNAL_STORAGE_ELASTOS_DATA_DIRECTORY;
 AutoPtr<IFile> Environment::EXTERNAL_STORAGE_ELASTOS_MEDIA_DIRECTORY;
+AutoPtr<IFile> Environment::EXTERNAL_STORAGE_ELASTOS_OBB_DIRECTORY;
 AutoPtr<IFile> Environment::DOWNLOAD_CACHE_DIRECTORY;
 
 Boolean Environment::sIsInitilized = FALSE;
@@ -180,6 +181,15 @@ AutoPtr<IFile> Environment::GetExternalStorageAppMediaDirectory(
     return file;
 }
 
+AutoPtr<IFile> Environment::GetExternalStorageAppObbDirectory(
+    /* [in] */ const String& capsuleName)
+{
+    Init();
+    AutoPtr<IFile> file;
+    CFile::New(EXTERNAL_STORAGE_ELASTOS_OBB_DIRECTORY, capsuleName, (IFile**)&file);
+    return file;
+}
+
 AutoPtr<IFile> Environment::GetExternalStorageAppFilesDirectory(
     /* [in] */ const String& capsuleName)
 {
@@ -307,6 +317,7 @@ void Environment::Init()
         file1 = GetDirectory(String("EXTERNAL_STORAGE"), String("/sdcard"));
         CFile::New(file1, String("Elastos"), (IFile**)&file3);
         CFile::New(file3, String("media"), (IFile**)&EXTERNAL_STORAGE_ELASTOS_MEDIA_DIRECTORY);
+        CFile::New(file3, String("obb"), (IFile**)&EXTERNAL_STORAGE_ELASTOS_OBB_DIRECTORY);
 
         DOWNLOAD_CACHE_DIRECTORY = GetDirectory(String("DOWNLOAD_CACHE"), String("/cache"));
 

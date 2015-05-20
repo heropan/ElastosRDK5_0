@@ -343,7 +343,6 @@ ECode BaseStatusBar::RecentsPreloadOnTouchListener::OnTouch(
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* result)
 {
-SLOGGERD(TAG, "BaseStatusBar::RecentsPreloadOnTouchListener::OnTouch")
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
     assert(event != NULL && v != NULL);

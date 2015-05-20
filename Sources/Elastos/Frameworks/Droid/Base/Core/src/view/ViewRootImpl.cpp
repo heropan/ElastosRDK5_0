@@ -264,13 +264,13 @@ ECode ViewRootImpl::ViewRootHandler::HandleMessage(
                     && (mHost->mPendingContentInsets->Equals(args->mArg2, &bval), bval)
                     && (mHost->mPendingVisibleInsets->Equals(args->mArg3, &bval), bval)
                     && args->mArg4 == NULL) {
+                args->Recycle();
                 break;
             }
         } // fall through...
         case ViewRootImpl::MSG_RESIZED_REPORT: {
+            AutoPtr<SomeArgs> args = (SomeArgs*)obj.Get();
             if (mHost->mAdded) {
-                AutoPtr<SomeArgs> args = (SomeArgs*)obj.Get();
-
                 IConfiguration* config = IConfiguration::Probe(args->mArg4);
                 if (config != NULL) {
                     mHost->UpdateConfiguration(config, FALSE);
@@ -279,8 +279,6 @@ ECode ViewRootImpl::ViewRootHandler::HandleMessage(
                 mHost->mWinFrame->SetEx(IRect::Probe(args->mArg1));
                 mHost->mPendingContentInsets->SetEx(IRect::Probe(args->mArg2));
                 mHost->mPendingVisibleInsets->SetEx(IRect::Probe(args->mArg3));
-
-                args->Recycle();
 
                 if (what == MSG_RESIZED_REPORT) {
                     mHost->mReportNextDraw = TRUE;
@@ -292,6 +290,8 @@ ECode ViewRootImpl::ViewRootHandler::HandleMessage(
 
                 mHost->RequestLayout();
             }
+
+            args->Recycle();
             break;
         }
         case ViewRootImpl::MSG_WINDOW_MOVED: {

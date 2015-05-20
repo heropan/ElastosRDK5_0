@@ -621,6 +621,28 @@ public:
 
     CARAPI constructor();
 
+    // method for NativeInputManager
+    static CARAPI_(bool) isScreenOn();
+
+    static CARAPI_(bool) isScreenBright();
+
+    static CARAPI_(bool) isBootFastStatus();
+
+    static CARAPI_(bool) isPowered();
+
+    static CARAPI_(void) tempWakeuUp(
+        /* [in] */ nsecs_t eventTime);
+
+    static CARAPI_(void) userActivity(
+        /* [in] */ nsecs_t eventTime,
+        /* [in] */ int32_t eventType);
+
+    static CARAPI_(void) wakeUp(
+        /* [in] */ nsecs_t eventTime);
+
+    static CARAPI_(void) goToSleep(
+        /* [in] */ nsecs_t eventTime);
+
 protected:
     // CARAPI_(void) Dump(
     //     /* [in] */ IFileDescriptor* fd,

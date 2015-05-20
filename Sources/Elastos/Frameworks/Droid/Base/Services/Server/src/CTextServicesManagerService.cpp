@@ -1152,22 +1152,25 @@ ECode CTextServicesManagerService::SetCurrentSpellCheckerSubtypeLocked(
     if (DBG) {
         Slogger::W(TAG, "setCurrentSpellCheckerSubtype: %d", hashCode);
     }
-    const AutoPtr<ISpellCheckerInfo> sci;
+    AutoPtr<ISpellCheckerInfo> sci;
     GetCurrentSpellChecker(String(NULL), (ISpellCheckerInfo**)&sci);
-    Int32 tempHashCode = 0, subtypeCount;
-    assert(sci != NULL);
-    sci->GetSubtypeCount(&subtypeCount);
-    for (Int32 i = 0; sci != NULL && i < subtypeCount; ++i) {
-        AutoPtr<ISpellCheckerSubtype> subtype;
-        Int32 hashCode2;
-        sci->GetSubtypeAt(i, (ISpellCheckerSubtype**)&subtype);
-        assert(subtype != NULL);
-        subtype->GetHashCode(&hashCode2);
-        if(hashCode2 == hashCode) {
-            tempHashCode = hashCode;
-            break;
+    Int32 tempHashCode = 0;
+    if (sci != NULL) {
+        Int32 subtypeCount;
+        sci->GetSubtypeCount(&subtypeCount);
+        for (Int32 i = 0; i < subtypeCount; ++i) {
+            AutoPtr<ISpellCheckerSubtype> subtype;
+            Int32 hashCode2;
+            sci->GetSubtypeAt(i, (ISpellCheckerSubtype**)&subtype);
+            assert(subtype != NULL);
+            subtype->GetHashCode(&hashCode2);
+            if(hashCode2 == hashCode) {
+                tempHashCode = hashCode;
+                break;
+            }
         }
     }
+
     const Int64 ident = Binder::ClearCallingIdentity();
     //try {
     mSettings->PutSelectedSpellCheckerSubtype(tempHashCode);

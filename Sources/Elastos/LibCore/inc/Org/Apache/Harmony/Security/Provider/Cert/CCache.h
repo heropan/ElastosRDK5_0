@@ -84,7 +84,7 @@ private:
     // array containing the hash codes of encodings
     AutoPtr<ArrayOf<Int64> > mHashes;
     // array containing the encodings of the cached objects
-    AutoPtr<ArrayOf<ArrayOf<Byte>*> > mEncodings;
+    AutoPtr<ArrayOf<ByteArray > > mEncodings;
     // array containing the cached objects
     AutoPtr<ArrayOf<IInterface*> > mCache;
 

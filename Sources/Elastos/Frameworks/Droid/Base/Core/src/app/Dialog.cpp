@@ -186,13 +186,14 @@ Dialog::Dialog(
     , mCanceled(FALSE)
     , mDismissAction(new DismissAction(this))
 {
+    Slogger::V(TAG, " >> create Dialog(): %p", this);
     Init(context, cancelable, cancelListener);
 }
 
 Dialog::~Dialog()
 {
     mWindow->SetCallback(NULL);
-    // Slogger::V(TAG, "~Dialog(): %p", this);
+    Slogger::V(TAG, ">> destory ~Dialog(): %p", this);
 }
 
 ECode Dialog::Init(

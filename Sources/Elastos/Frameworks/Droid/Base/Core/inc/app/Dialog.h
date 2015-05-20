@@ -466,7 +466,7 @@ private:
     CARAPI_(AutoPtr<IComponentName>) GetAssociatedActivity();
 
 public:
-    AutoPtr<IContext> mContext;
+    AutoPtr<IContext> mContext;     // memory leak! IContext may hold Dialog. luo.zhaohui
     AutoPtr<IWindowManager> mWindowManager;
     AutoPtr<IWindow> mWindow;
     AutoPtr<IView> mDecor;

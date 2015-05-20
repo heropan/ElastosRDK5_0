@@ -172,16 +172,17 @@ ECode CDerOutputStream::Push(
 {
     mIndex++;
     if (mIndex == mVal->GetLength()) {
-        AutoPtr<ArrayOf<ArrayOf<Int32> *> > newLen = ArrayOf<ArrayOf<Int32> *>::Alloc(mVal->GetLength()*2);
+        AutoPtr<ArrayOf<Int32Array > > newLen = ArrayOf<Int32Array >::Alloc(mVal->GetLength()*2);
         newLen->Copy(0, mLen, 0, mVal->GetLength());
         mLen = newLen;
 
-        AutoPtr<ArrayOf<ArrayOf<IInterface*> *> > newVal = ArrayOf<ArrayOf<IInterface*> *>::Alloc(mVal->GetLength()* 2);
+        AutoPtr<ArrayOf<AutoPtr<ArrayOf<IInterface* > > > > newVal = ArrayOf<AutoPtr<ArrayOf<IInterface*> > >::Alloc(mVal->GetLength()* 2);
         newVal->Copy(0, mVal, 0, mVal->GetLength());
         mVal = newVal;
     }
-    (*mLen)[mIndex] = lengths;
-    (*mVal)[mIndex] = values;
+
+    mLen->Set(mIndex, lengths);
+    mVal->Set(mIndex, values);
     return NOERROR;
 }
 

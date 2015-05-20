@@ -189,7 +189,7 @@ public:
         /* [in] */ StringBuilder& builder,
         /* [in] */ const String& arg);
 
-    // CARAPI_(void) Monitor();
+    CARAPI_(void) Monitor();
 
 //    CARAPI_(void) Dump(
 //        /* [in] */ IFileDescriptor* fd,

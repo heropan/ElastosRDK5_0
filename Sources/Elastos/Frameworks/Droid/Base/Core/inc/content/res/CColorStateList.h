@@ -127,11 +127,12 @@ private:
 
 private:
     static const String TAG;
-    static AutoPtr< ArrayOf<Handle32> > EMPTY;
-    static HashMap<Int32, AutoPtr<IColorStateList> > sCache;
+    static AutoPtr< ArrayOf<Int32Array > > EMPTY;
+    //static HashMap<Int32, AutoPtr<IColorStateList> > sCache;
+    static HashMap<Int32, AutoPtr<IWeakReference> > sCache;
     static Mutex sCacheLock;
 
-    AutoPtr< ArrayOf<Handle32> > mStateSpecs; // must be parallel to mColors
+    AutoPtr< ArrayOf<Int32Array > > mStateSpecs; // must be parallel to mColors
     AutoPtr< ArrayOf<Int32> > mColors;      // must be parallel to mStateSpecs
     Int32 mDefaultColor;
 };

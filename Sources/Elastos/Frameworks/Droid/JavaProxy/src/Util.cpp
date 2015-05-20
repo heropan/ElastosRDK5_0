@@ -6988,7 +6988,7 @@ jobject Util::ToJavaRemoteViews(JNIEnv* env, IRemoteViews* obj){
                             {
                                 Float f = 0;
                                 source->ReadFloat(&f);
-                                jmethodID method = env->GetMethodID(klass, "setFloat", "(ILjava/lang/String;D)V");
+                                jmethodID method = env->GetMethodID(klass, "setFloat", "(ILjava/lang/String;F)V");
                                 CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setFloat: %d!\n", __LINE__);
                                 env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jfloat)f);
                                 CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setFloat: %d!\n", __LINE__);
@@ -6998,7 +6998,7 @@ jobject Util::ToJavaRemoteViews(JNIEnv* env, IRemoteViews* obj){
                             {
                                 Double d = 0;
                                 source->ReadDouble(&d);
-                                jmethodID method = env->GetMethodID(klass, "setDouble", "(ILjava/lang/String;F)V");
+                                jmethodID method = env->GetMethodID(klass, "setDouble", "(ILjava/lang/String;D)V");
                                 CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setDouble: %d!\n", __LINE__);
                                 env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jdouble)d);
                                 CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setDouble: %d!\n", __LINE__);

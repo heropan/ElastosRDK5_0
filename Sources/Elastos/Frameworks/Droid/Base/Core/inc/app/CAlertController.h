@@ -43,6 +43,8 @@ public:
         ButtonHandler(
             /* [in] */ IDialogInterface* dialog);
 
+        ~ButtonHandler();
+
         virtual CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
 
@@ -61,6 +63,8 @@ public:
         ButtonViewOnClickListener(
             /* [in] */ IWeakReference* host);
 
+        ~ButtonViewOnClickListener();
+
         CARAPI OnClick(
             /* [in] */ IView* v);
 
@@ -70,6 +74,8 @@ public:
 
 public:
     CAlertController();
+
+    ~CAlertController();
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -221,8 +227,8 @@ private:
 
 private:
     AutoPtr<IContext> mContext;
-    AutoPtr<IWeakReference> mWeakDialogInterface;
-    // AutoPtr<IDialogInterface> mDialogInterface;
+    // AutoPtr<IWeakReference> mWeakDialogInterface;
+    AutoPtr<IDialogInterface> mDialogInterface;  // TODO memery leak. luo.zhaohui
     AutoPtr<IWindow> mWindow;
 
     AutoPtr<ICharSequence> mTitle;
@@ -286,7 +292,7 @@ private:
 
     AutoPtr<ButtonHandler> mHandler;
 
-    AutoPtr<IViewOnClickListener> mButtonHandler;
+    AutoPtr<ButtonViewOnClickListener> mButtonHandler;
 };
 
 } // namespace App

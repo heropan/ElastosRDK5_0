@@ -229,7 +229,7 @@ private:
         /* [in] */ Int32 propertyConstant);
 
 private:
-    AutoPtr<IView> mView;
+    IView* mView; // View has this's reference
     Int64 mDuration;
     Boolean mDurationSet;
     Int64 mStartDelay;

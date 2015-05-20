@@ -19,8 +19,6 @@ class ActivityInstrumentationTestCase2
     , public IActivityInstrumentationTestCase2
 {
 public:
-    ActivityInstrumentationTestCase2();
-
     /**
      * Creates an {@link ActivityInstrumentationTestCase2}.
      *
@@ -30,7 +28,7 @@ public:
      *
      * @deprecated use {@link #ActivityInstrumentationTestCase2(Class)} instead
      */
-    CARAPI constructor(
+    ActivityInstrumentationTestCase2(
         /* [in] */ const String& pkg,
         /* [in] */ IClassInfo* activityClass);
 
@@ -40,7 +38,7 @@ public:
      * @param activityClass The activity to test. This must be a class in the instrumentation
      * targetPackage specified in the AndroidManifest.xml
      */
-    CARAPI constructor(
+    ActivityInstrumentationTestCase2(
         /* [in] */ IClassInfo* activityClass);
 
     CAR_INTERFACE_DECL()
@@ -104,6 +102,30 @@ public:
         /* [in] */ Boolean initialTouchMode);
 
 protected:
+    ActivityInstrumentationTestCase2();
+
+    /**
+     * Creates an {@link ActivityInstrumentationTestCase2}.
+     *
+     * @param pkg ignored - no longer in use.
+     * @param activityClass The activity to test. This must be a class in the instrumentation
+     * targetPackage specified in the AndroidManifest.xml
+     *
+     * @deprecated use {@link #ActivityInstrumentationTestCase2(Class)} instead
+     */
+    CARAPI Init(
+        /* [in] */ const String& pkg,
+        /* [in] */ IClassInfo* activityClass);
+
+    /**
+     * Creates an {@link ActivityInstrumentationTestCase2}.
+     *
+     * @param activityClass The activity to test. This must be a class in the instrumentation
+     * targetPackage specified in the AndroidManifest.xml
+     */
+    CARAPI Init(
+        /* [in] */ IClassInfo* activityClass);
+
     CARAPI SetUp();
 
     CARAPI TearDown();
