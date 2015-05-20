@@ -2,8 +2,8 @@
 TARGET_NAME= Elastos.Core
 TARGET_TYPE= eco
 
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 
 INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Core;
 INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Core/elastos;
@@ -56,6 +56,8 @@ SOURCES = Elastos.Core.car
 SOURCES += Object.cpp
 SOURCES += Thread.cpp
 SOURCES += NativeThread.cpp
+SOURCES += Singleton.cpp
+SOURCES += CSystem.cpp
 
 SOURCES += exportext.cpp
 SOURCES += listnode.cpp

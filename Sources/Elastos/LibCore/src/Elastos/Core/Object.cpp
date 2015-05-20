@@ -11,6 +11,7 @@ namespace Core {
 
 Object::Object()
 {
+    IncrementDllLockCount();
     mNativeObject = Threading::NativeCreateObject();
     mNativeObject->mObjectObj = reinterpret_cast<Int32>(this);
 }
@@ -18,9 +19,56 @@ Object::Object()
 Object::~Object()
 {
     Threading::NativeDestroyObject(mNativeObject);
+    DecrementDllLockCount();
 }
 
-CAR_INTERFACE_IMPL_3(Object, IObject, ISynchronize, IWeakReferenceSource)
+UInt32 Object::AddRef()
+{
+    return ElRefBase::AddRef();
+}
+
+UInt32 Object::Release()
+{
+    return ElRefBase::Release();
+}
+
+PInterface Object::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_IInterface) {
+        return (IInterface*)(IObject*)this;
+    }
+    else if (riid == EIID_IObject) {
+        return (IObject*)this;
+    }
+    else if (riid == EIID_ISynchronize) {
+        return (ISynchronize*)this;
+    }
+    else if (riid == EIID_IWeakReferenceSource) {
+        return (IWeakReferenceSource*)this;
+    }
+    return NULL;
+}
+
+ECode Object::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    VALIDATE_NOT_NULL(iid);
+    if (object == (IInterface*)(IObject*)this) {
+        *iid = EIID_IObject;
+    }
+    else if (object == (IInterface*)(ISynchronize*)this) {
+        *iid = EIID_ISynchronize;
+    }
+    else if (object == (IInterface*)(IWeakReferenceSource*)this) {
+        *iid = EIID_IWeakReferenceSource;
+    }
+    else {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    return NOERROR;
+}
 
 ECode Object::Aggregate(
     /* [in] */ Int32 type,

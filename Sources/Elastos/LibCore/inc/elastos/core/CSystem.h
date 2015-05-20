@@ -4,7 +4,7 @@
 
 #include "coredef.h"
 #include "_Elastos_Core_CSystem.h"
-#include "Object.h"
+#include "Singleton.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
@@ -17,7 +17,7 @@ namespace Elastos {
 namespace Core {
 
 CarClass(CSystem)
-    , public Object
+    , public Singleton
     , public ISystem
 {
 public:
