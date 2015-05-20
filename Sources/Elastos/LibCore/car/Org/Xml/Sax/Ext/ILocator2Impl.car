@@ -20,7 +20,11 @@ module
      * @author David Brownell
      * @version TBS
      */
-    interface ILocator2Impl extends Org.Xml.Sax.Helpers.ILocatorImpl {
+    /**
+      * @Involve
+      * interface Org.Xml.Sax.Helpers.ILocatorImpl;
+      */
+    interface ILocator2Impl {
         /**
          * Assigns the current value of the version property.
          *
@@ -38,7 +42,6 @@ module
          */
         SetEncoding(
             [in] String encoding);
-
     }
 
     } // namespace Ext

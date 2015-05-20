@@ -53,8 +53,12 @@ module
      * @author David Brownell
      * @version TBD
      */
+    /**
+      * @Involve
+      * interface Org.Xml.Sax.IEntityResolver;
+      */
     [deprecated]
-    interface IEntityResolver2 extends Org.Xml.Sax.IEntityResolver {
+    interface IEntityResolver2 {
         /**
          * Allows applications to provide an external subset for documents
          * that don't explicitly define one.  Documents with DOCTYPE declarations
@@ -184,7 +188,7 @@ module
          * @exception IOException Probably indicating a failure to create
          *    a new InputStream or Reader, or an illegal URL.
          */
-        ResolveEntityEx (
+        ResolveEntity(
             [in] String name,
             [in] String publicId,
             [in] String baseURI,

@@ -25,8 +25,9 @@ Object是所有C++类或者CAR类的子类，所以，所有CAR类都隐含实�
 
 此外，对于一些特殊用途不能被重载的函数，如：Release，若　Java 源码中有同名函数，请翻译成 ReleaseResource 或 ReleaseLock。
 
-可以利用 Subline Text 的正则表达式查询与替换功能来去掉Ex, Ex2后缀：
-查询：<code>([a-zA-Z]\w*)Ex[0-9]?\(</code>
+可以利用 Subline Text 的正则表达式查询与替换功能来去掉Ex, Ex2后缀。
+在 Subline Text 查询选项中，选中正则表达式和大小写匹配选项：
+查询：<code>([a-zA-Z]\w*)Ex[0-9]?\s\\(</code>
 替换：<code>$1(</code>
 
 ## 取消接口间的继承

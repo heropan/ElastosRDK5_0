@@ -62,8 +62,9 @@ module
      * @author David Megginson
      * @version 2.0.1 (sax2r2)
      */
+    [deprecated]
     interface INamespaceSupport {
-    
+
         /**
          * The XML Namespace URI as a constant.
          * The value is <code>http://www.w3.org/XML/1998/namespace</code>
@@ -73,8 +74,8 @@ module
          * to the "xml" prefix.</p>
          */
         const String XMLNS = "http://www.w3.org/XML/1998/namespace";
-    
-    
+
+
         /**
          * The namespace declaration URI as a constant.
          * The value is <code>http://www.w3.org/xmlns/2000/</code>, as defined
@@ -92,7 +93,7 @@ module
          * @see #isNamespaceDeclUris
          */
         const String NSDECL = "http://www.w3.org/xmlns/2000/";
-        
+
         /**
          * Reset this Namespace support object for reuse.
          *
@@ -245,7 +246,7 @@ module
          * @see java.lang.String#intern */
         ProcessName(
             [in] String qName,
-            [in] ArrayOf<String> parts,
+            [in] ArrayOf<String>* parts,
             [in] Boolean isAttribute,
             [out, callee] ArrayOf<String>* name);
 
@@ -328,7 +329,7 @@ module
          * @see #getDeclaredPrefixes
          * @see #getURI
          */
-        GetPrefixesEx(
+        GetPrefixes(
             [in] String uri,
             [out] IObjectContainer** prefixes);
 

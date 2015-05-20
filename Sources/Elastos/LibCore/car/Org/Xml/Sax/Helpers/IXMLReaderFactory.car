@@ -70,7 +70,7 @@ module
          *            loaded, instantiated, and cast to XMLReader.
          * @see #createXMLReader()
          */
-        CreateXMLReaderEx(
+        CreateXMLReader(
             [in] String className,
             [out] IXMLReader** reader);
     }

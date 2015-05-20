@@ -57,7 +57,7 @@ module
          * @see #makeParser()
          * @see org.xml.sax.Parser
          */
-        MakeParserEx(
+        MakeParser(
             [in] String className,
             [out] IParser** parser);
     }

@@ -9,21 +9,6 @@ module
 
     /**
      * This class is used to create implementations of XML Pull Parser defined in XMPULL V1 API.
-     * The name of actual factory class will be determined based on several parameters.
-     * It works similar to JAXP but tailored to work in J2ME environments
-     * (no access to system properties or file system) so name of parser class factory to use
-     * and its class used for loading (no class loader - on J2ME no access to context class loaders)
-     * must be passed explicitly. If no name of parser factory was passed (or is null)
-     * it will try to find name by searching in CLASSPATH for
-     * META-INF/services/org.xmlpull.v1.XmlPullParserFactory resource that should contain
-     * a comma separated list of class names of factories or parsers to try (in order from
-     * left to the right). If none found, it will throw an exception.
-     *
-     * <br /><strong>NOTE:</strong>In J2SE or J2EE environments, you may want to use
-     * <code>newInstance(property, classLoaderCtx)</code>
-     * where first argument is
-     * <code>System.getProperty(XmlPullParserFactory.PROPERTY_NAME)</code>
-     * and second is <code>Thread.getContextClassLoader().getClass()</code> .
      *
      * @see XmlPullParser
      *
@@ -141,7 +126,7 @@ module
         NewInstance(
             [out] IXmlPullParserFactory** xmlPullParserFac);
 
-        NewInstanceEx(
+        NewInstance(
             [in] String classNames,
 //            [in] Class context,
             [out] IXmlPullParserFactory** xmlPullParserFac);

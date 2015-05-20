@@ -68,7 +68,7 @@ module
          * @see org.xml.sax.SAXException
          * @see org.xml.sax.SAXParseException
          */
-        SetLocale (
+        SetLocale(
             [in] ILocale* locale);
 
         /**
@@ -87,7 +87,7 @@ module
          * @see EntityResolver
          * @see HandlerBase
          */
-        SetEntityResolver (
+        SetEntityResolver(
             [in] IEntityResolver* resolver);
 
         /**
@@ -106,7 +106,7 @@ module
          * @see DTDHandler
          * @see HandlerBase
          */
-        SetDTDHandler (
+        SetDTDHandler(
             [in] IDTDHandler* handler);
 
         /**
@@ -125,7 +125,7 @@ module
          * @see DocumentHandler
          * @see HandlerBase
          */
-        SetDocumentHandler (
+        SetDocumentHandler(
             [in] IDocumentHandler* handler);
 
         /**
@@ -145,7 +145,7 @@ module
          * @see SAXException
          * @see HandlerBase
          */
-        SetErrorHandler (
+        SetErrorHandler(
             [in] IErrorHandler* handler);
 
         /**
@@ -175,7 +175,7 @@ module
          * @see #setDocumentHandler
          * @see #setErrorHandler
          */
-        Parse (
+        Parse(
             [in] IInputSource* source);
 
         /**
@@ -200,7 +200,7 @@ module
          *            supplied by the application.
          * @see #parse(org.xml.sax.InputSource)
          */
-        ParseEx (
+        Parse(
             [in] String systemId);
     }
 

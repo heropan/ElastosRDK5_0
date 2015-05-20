@@ -1,7 +1,7 @@
 module
 {
     interface Org.Xml.Sax.IAttributes;
-    
+
     namespace Org {
     namespace Xml {
     namespace Sax {
@@ -41,7 +41,11 @@ module
      * @author David Megginson
      * @version 2.0.1 (sax2r2)
      */
-    interface IAttributesImpl extends Org.Xml.Sax.IAttributes {
+    /**
+      * @Involve
+      * interface Org.Xml.Sax.IAttributes;
+      */
+    interface IAttributesImpl {
         /**
          * Clear the attribute list for reuse.
          *
@@ -49,7 +53,7 @@ module
          * the current array is kept so it can be
          * reused.</p>
          */
-        Clear ();
+        Clear();
 
         /**
          * Copy an entire Attributes object.
@@ -79,7 +83,7 @@ module
          * @param type The attribute type as a string.
          * @param value The attribute value.
          */
-        AddAttribute (
+        AddAttribute(
             [in] String uri,
             [in] String localName,
             [in] String qName,
@@ -107,7 +111,7 @@ module
          *            supplied index does not point to an attribute
          *            in the list.
          */
-        SetAttribute (
+        SetAttribute(
             [in] Int32 index,
             [in] String uri,
             [in] String localName,
@@ -123,7 +127,7 @@ module
          *            supplied index does not point to an attribute
          *            in the list.
          */
-        RemoveAttribute (
+        RemoveAttribute(
             [in] Int32 index);
 
         /**

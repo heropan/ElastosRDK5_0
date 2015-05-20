@@ -52,7 +52,7 @@ module
          *         null if none is available.
          * @see #getSystemId
          */
-        GetPublicId (
+        GetPublicId(
             [out] String* id);
 
         /**
@@ -71,7 +71,7 @@ module
          *         if none is available.
          * @see #getPublicId
          */
-        GetSystemId (
+        GetSystemId(
             [out] String* id);
 
         /**
@@ -98,7 +98,7 @@ module
          * @return The line number, or -1 if none is available.
          * @see #getColumnNumber
          */
-        GetLineNumber (
+        GetLineNumber(
             [out] Int32* lineNumber);
 
         /**
@@ -125,7 +125,7 @@ module
          * @return The column number, or -1 if none is available.
          * @see #getLineNumber
          */
-        GetColumnNumber (
+        GetColumnNumber(
             [out] Int32* columnNumber);
     }
 

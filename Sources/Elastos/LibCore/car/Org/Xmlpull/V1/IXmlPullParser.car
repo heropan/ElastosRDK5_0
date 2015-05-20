@@ -137,6 +137,7 @@ module
      * @author <a href="http://www-ai.cs.uni-dortmund.de/PERSONAL/haustein.html">Stefan Haustein</a>
      * @author <a href="http://www.extreme.indiana.edu/~aslom/">Aleksander Slominski</a>
      */
+    [deprecated]
     interface IXmlPullParser {
         /** This constant represents the default namespace (empty string "") */
         const String NO_NAMESPACE = "";
@@ -462,7 +463,7 @@ module
          *
          * @param inputEncoding if not null it MUST be used as encoding for inputStream
          */
-        SetInputEx(
+        SetInput(
             [in] IInputStream* inputStream,
             [in] String inputEncoding);
 
@@ -726,7 +727,7 @@ module
          *  (null if the current event has no text associated).
          */
         GetTextCharacters(
-            [out] ArrayOf<Int32> holderForStartAndLength,
+            [in] ArrayOf<Int32>* holderForStartAndLength,
             [out, callee] ArrayOf<Char32>* textChar);
 
         // --------------------------------------------------------------------------
@@ -905,7 +906,7 @@ module
          * @param name If namespaces enabled local name of attribute otherwise just attribute name
          * @return value of attribute or null if attribute with given name does not exist
          */
-        GetAttributeValueEx(
+        GetAttributeValue(
             [in] String ns,
             [in] String name,
             [out] String* attriValue);
@@ -923,7 +924,7 @@ module
             [out] Int32* eventType);
 
         /**
-         * Get next parsing event - element content wil be coalesced and only one
+         * Get next parsing event - element content will be coalesced and only one
          * TEXT event must be returned for whole element content
          * (comments and processing instructions will be ignored and entity references
          * must be expanded or exception mus be thrown if entity reference can not be expanded).

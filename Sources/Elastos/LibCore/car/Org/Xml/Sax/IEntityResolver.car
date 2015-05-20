@@ -107,7 +107,7 @@ module
         *            or Reader for the InputSource.
         * @see org.xml.sax.InputSource
         */
-        ResolveEntity (
+        ResolveEntity(
             [in] String publicId,
             [in] String systemId,
             [out] IInputSource** src);

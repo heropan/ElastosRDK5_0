@@ -379,7 +379,7 @@ module
          *            supplied by the application.
          * @see #parse(org.xml.sax.InputSource)
          */
-        ParseEx(
+        Parse(
             [in] String systemId);
     }
 

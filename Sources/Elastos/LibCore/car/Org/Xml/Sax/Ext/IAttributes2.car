@@ -37,19 +37,23 @@ module
      * @author David Brownell
      * @version TBS
      */
-    interface IAttributes2 extends Org.Xml.Sax.IAttributes {
+    /**
+      * @Involve
+      * interface Org.Xml.Sax.IAttributes;
+      */
+    interface IAttributes2 {
 
         /*
          * Returns the current value of the attribute's "declared" flag.
          */
-        IsDeclared (
+        IsDeclared(
             [in] Int32 index,
             [out] Boolean* isDeclared);
 
         /*
          * Returns the current value of the attribute's "declared" flag.
          */
-        IsDeclaredEx (
+        IsDeclared(
             [in] String uri,
             [in] String localName,
             [out] Boolean* isDeclared);
@@ -57,7 +61,7 @@ module
         /*
          * Returns the current value of the attribute's "declared" flag.
          */
-        IsDeclaredEx2 (
+        IsDeclared(
             [in] String qName,
             [out] Boolean* isDeclared);
 
@@ -69,7 +73,7 @@ module
          * @exception java.lang.ArrayIndexOutOfBoundsException When the
          *            supplied index does not identify an attribute.
          */
-        IsSpecified (
+        IsSpecified(
             [in] Int32 index,
             [out] Boolean* isSpecified);
 
@@ -83,7 +87,7 @@ module
          * @exception java.lang.IllegalArgumentException When the
          *            supplied names do not identify an attribute.
          */
-        IsSpecifiedEx (
+        IsSpecified(
             [in] String uri,
             [in] String localName,
             [out] Boolean* isSpecified);
@@ -96,7 +100,7 @@ module
          * @exception java.lang.IllegalArgumentException When the
          *            supplied name does not identify an attribute.
          */
-        IsSpecifiedEx2 (
+        IsSpecified(
             [in] String qName,
             [out] Boolean* isSpecified);
     }
