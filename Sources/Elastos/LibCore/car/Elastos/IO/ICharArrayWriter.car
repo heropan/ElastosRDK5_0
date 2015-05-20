@@ -11,7 +11,12 @@ module
     * @implement Elastos.IO.IWriter
     */
 
-    interface ICharArrayWriter extends IWriter {
+     /**
+     * @Involve
+     * interface Elastos.Core.IAppendable;
+     * interface IWriter;
+     */
+    interface ICharArrayWriter {
         /**
          * Resets this writer. The current write position is reset to the beginning
          * of the buffer. All written characters are lost and the size of this

@@ -10,7 +10,11 @@ module
     * @sa ObjectOutput
     *
     */
-    interface IObjectInput extends IDataInput {
+     /**
+     * @Involve
+     * interface IDataInput;
+     */
+    interface IObjectInput {
         /**
          * Indicates the number of bytes of primitive data that can be read without
          * blocking.

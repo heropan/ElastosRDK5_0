@@ -6,7 +6,11 @@ module
      * Legacy security code; do not use.
      * @implements Elastos.IO.IBasicPermission
      */
-    interface ISerializablePermission extends IBasicPermission {
+     /**
+     * @Involve
+     * interface IBasicPermission;  // no .car file, perhaps abandoned
+     */
+    interface ISerializablePermission {
     }
 
     } // namespace IO

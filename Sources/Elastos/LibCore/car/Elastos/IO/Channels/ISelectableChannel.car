@@ -20,7 +20,12 @@ module
     * A channel may be registered with several selectors at the same time but only
     * once for any given selector.
     */
-    interface ISelectableChannel extends Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel {
+    /**
+    * @Involve
+    * interface Elastos.IO.Channels.IChannel;
+    * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
+    */
+    interface ISelectableChannel {
 
 	 /**
      * Gets the blocking lock which synchronizes the {@code configureBlocking}

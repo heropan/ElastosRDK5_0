@@ -17,7 +17,12 @@ module
     * @sa FileInputStream
     * @implement Elastos.IO.IOutputStream
     */
-    interface IFileOutputStream extends IOutputStream {
+     /**
+     * @Involve
+     * interface ICloseable;
+     * interface IOutputStream;
+     */
+    interface IFileOutputStream {
         /**
          * Returns a write-only FileChannel that shares its position with
          * this stream.

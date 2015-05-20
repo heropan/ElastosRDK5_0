@@ -16,8 +16,12 @@ module
     * operation. The corresponding interface for read operations is
     * {@link ScatteringByteChannel}.
     */
-    interface IGatheringByteChannel extends IWritableByteChannel
-    {
+    /**
+    * @Involve
+    * interface IChannel;
+    * interface IWritableByteChannel;
+    */
+    interface IGatheringByteChannel {
         /**
          * Writes bytes from the given buffer to the channel.
          * <p>

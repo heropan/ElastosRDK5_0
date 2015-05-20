@@ -151,7 +151,11 @@ module
      * @sa CharsetEncoder
      * it returns are inherently stateful.
      */
-    interface ICharset extends Elastos.Core.IComparable {
+     /**
+     * @Involve
+     * interface Elastos.Core.IComparable;
+     */
+    interface ICharset {
         /**
          * Determines whether this charset is a superset of the given charset. A charset C1 contains
          * charset C2 if every character representable by C2 is also representable by C1. This means

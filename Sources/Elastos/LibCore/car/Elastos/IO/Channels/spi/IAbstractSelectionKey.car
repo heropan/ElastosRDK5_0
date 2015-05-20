@@ -12,7 +12,11 @@ module
   * {@code AbstractSelectionKey} is the base implementation class for selection keys.
   * It implements validation and cancellation methods.
   */
-  interface IAbstractSelectionKey extends Elastos.IO.Channels.ISelectionKey {
+  /**
+  * @Involve
+  * interface Elastos.IO.Channels.ISelectionKey;
+  */
+  interface IAbstractSelectionKey {
 
      /**
      * Indicates whether this key is valid. A key is valid as long as it has not

@@ -16,7 +16,12 @@ module
  * selectable channels. It declares methods for registering, unregistering and
  * closing selectable channels. It is thread-safe.
  */
-interface IAbstractSelectableChannel extends Elastos.IO.Channels.ISelectableChannel {
+/**
+* @Involve
+* interface Elastos.IO.Channels.IChannel;
+* interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
+*/
+interface IAbstractSelectableChannel {
 
 	 /**
      * Returns the selector provider that has created this channel.

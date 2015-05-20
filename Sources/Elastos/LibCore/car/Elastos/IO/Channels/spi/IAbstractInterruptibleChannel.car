@@ -16,7 +16,11 @@ module
      * argument to the {@code end} method should indicate if the I/O operation has
      * actually completed so that any change may be visible to the invoker.
     */
-    interface IAbstractInterruptibleChannel extends Elastos.IO.Channels.IChannel {
+    /**
+    * @Involve
+    * interface Elastos.IO.Channels.IChannel;
+    */
+    interface IAbstractInterruptibleChannel {
 
         // IsOpen(
         //        [out] Boolean* isOpen);

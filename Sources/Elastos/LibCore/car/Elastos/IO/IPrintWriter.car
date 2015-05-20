@@ -15,9 +15,14 @@ module
      *
      */
 
+     /**
+     * @Involve
+     * interface Elastos.Core.IAppendable;
+     * interface IWriter;
+     */
 
     [deprecated]
-    interface IPrintWriter extends IWriter {
+    interface IPrintWriter {
         /**
          * Formats args according to the format string format, and writes the result
          * to this stream. This method uses the user's default locale.

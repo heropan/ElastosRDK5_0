@@ -14,7 +14,11 @@ module
      * @sa IObjectInputStream
      * @sa IClass
      */
-    interface IObjectStreamClass extends ISerializable {
+     /**
+     * @Involve
+     * interface ISerializable;
+     */
+    interface IObjectStreamClass {
         /**
          * Gets a field descriptor of the class represented by this class
          * descriptor.

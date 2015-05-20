@@ -4,7 +4,12 @@ module
     namespace Elastos {
     namespace IO {
 
-    interface IFilterOutputStream extends IOutputStream {
+    /**
+    * @Involve
+    * interface ICloseable;
+    * interface IOutputStream;
+    */
+    interface IFilterOutputStream {
     }
 
     } // namespace IO

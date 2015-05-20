@@ -15,7 +15,12 @@ module
      */
 
 
-    interface IPushbackReader extends IReader {
+     /**
+     * @Involve
+     * interface IReadable;
+     * interface IReader;
+     */
+    interface IPushbackReader {
         /**
          * Pushes the specified character oneChar back to this reader. This
          * is done in such a way that the next character read from this reader is

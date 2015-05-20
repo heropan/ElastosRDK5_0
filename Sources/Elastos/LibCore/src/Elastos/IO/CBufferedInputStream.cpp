@@ -4,7 +4,9 @@
 
 namespace Elastos {
 namespace IO {
+CBufferedInputStream::DEFAULT_BUFFER_SIZE = 8192;
 
+#if 0   // 4.2.2->5.0
 ECode CBufferedInputStream::Available(
     /* [out] */ Int32* number)
 {
@@ -14,7 +16,6 @@ ECode CBufferedInputStream::Available(
 
     return BufferedInputStream::Available(number);
 }
-
 ECode CBufferedInputStream::Close()
 {
     return BufferedInputStream::Close();
@@ -27,6 +28,7 @@ ECode CBufferedInputStream::Mark(
 
     return BufferedInputStream::Mark(readLimit);
 }
+#endif  // #if 0   // 4.2.2->5.0
 
 ECode CBufferedInputStream::IsMarkSupported(
     /* [out] */ Boolean* supported)
@@ -89,7 +91,7 @@ ECode CBufferedInputStream::Skip(
 ECode CBufferedInputStream::constructor(
     /* [in] */ IInputStream* is)
 {
-    return BufferedInputStream::Init(is, 8192);
+    return BufferedInputStream::Init(is, DEFAULT_BUFFER_SIZE);
 }
 
 ECode CBufferedInputStream::constructor(

@@ -19,7 +19,12 @@ module
      * @sa IExternalizable
      *
      */
-    interface IObjectOutputStream extends IOutputStream {
+     /**
+     * @Involve
+     * interface ICloseable;
+     * interface IOutputStream;
+     */
+    interface IObjectOutputStream {
         /**
          * Default method to write objects to this stream. Serializable fields
          * defined in the object's class and superclasses are written to the output

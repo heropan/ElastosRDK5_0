@@ -4,7 +4,12 @@ module
     namespace Elastos {
     namespace IO {
 
-    interface IFilterReader extends IReader {
+     /**
+     * @Involve
+     * interface IReadable;
+     * interface IReader;
+     */
+    interface IFilterReader {
     }
 
     } // namespace IO

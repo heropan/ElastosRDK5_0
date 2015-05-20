@@ -22,7 +22,11 @@ module
     /**
     * implement Elastos.IO.IBuffer
     */
-    interface IDoubleBuffer extends IBuffer {
+     /**
+     * @Involve
+     * interface IBuffer;
+     */
+    interface IDoubleBuffer {
 
         GetArray(
             [out, callee] ArrayOf<Double>* array);

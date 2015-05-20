@@ -16,7 +16,11 @@ module
      * block until the first read completes. It is undefined whether non-read
      * operations will block.
      */
-    interface IReadableByteChannel extends IChannel {
+     /**
+     * @Involve
+     * interface IChannel;
+     */
+    interface IReadableByteChannel {
 
         /**
          * Reads bytes from the channel into the given buffer.

@@ -76,7 +76,12 @@ module
      * content, size, etc.
      * @implement Elastos.IO.IInterruptibleChannel
      */
-    interface IFileChannel extends IInterruptibleChannel {
+     /**
+     * @Involve
+     * interface Elastos.IO.Channels.IChannel;
+     * interface IInterruptibleChannel;
+     */
+    interface IFileChannel {
         /**
          * Requests that all updates to this channel are committed to the storage
          * device.

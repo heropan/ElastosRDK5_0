@@ -14,9 +14,15 @@ module
      *
      *@implements Elastos.IO.IFilterOutputStream
      */
+     /**
+     * @Involve
+     * interface ICloseable;
+     * interface IOutputStream;
+     * interface IFilterOutputStream;
+     */
 
     [deprecated]
-    interface IPrintStream extends IFilterOutputStream {
+    interface IPrintStream {
         /**
          * Formats args according to the format string format, and writes the result
          * to this stream. This method uses the user's default locale.

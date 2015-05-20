@@ -17,7 +17,12 @@ module
      * another thread or process at any time. If this happens, the behavior of the
      * {@code MappedByteBuffer} is undefined.
      */
-    interface IMappedByteBuffer extends Elastos.IO.IByteBuffer {
+     /**
+     * @Involve
+     * interface IBuffer;
+     * interface Elastos.IO.IByteBuffer;
+     */
+    interface IMappedByteBuffer {
         /**
          * Returns true if there is a high probability that every page of this buffer is currently
          * loaded in RAM, meaning that accesses will not cause a page fault. It is impossible to give

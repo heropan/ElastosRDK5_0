@@ -7,10 +7,10 @@ module
     namespace IO {
     namespace Channels {
     /**
-    * A IServerSocketChannel is a partial abstraction of a selectable, stream-oriented 
-    * listening socket. Binding and manipulation of socket options can only be done    
-    * through the associated ServerSocket object, returned by calling socket().       
-    * IServerSocketChannels can not be constructed for an already existing 
+    * A IServerSocketChannel is a partial abstraction of a selectable, stream-oriented
+    * listening socket. Binding and manipulation of socket options can only be done
+    * through the associated ServerSocket object, returned by calling socket().
+    * IServerSocketChannels can not be constructed for an already existing
     * server-socket, nor can a SocketImpl be assigned.
     *<p>
     * A server-socket channel is open but not bound when created by the open() method.
@@ -18,8 +18,13 @@ module
     * calling the bind method of a related ServerSocket instance.
     * @implement Elastos.IO.ISelectableChannel
     */
-
-    interface IServerSocketChannel extends ISelectableChannel {
+    /**
+    * @Involve
+    * interface Elastos.IO.Channels.IChannel;
+    * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
+    * interface ISelectableChannel;
+    */
+    interface IServerSocketChannel {
         /**
          * Return the server-socket assigned this channel, which does not declare
          * any public methods that are not declared in {ServerSocket}.

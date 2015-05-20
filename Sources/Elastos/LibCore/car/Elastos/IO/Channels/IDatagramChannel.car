@@ -24,7 +24,15 @@ module
      * Datagram channels are thread-safe; only one thread can read or write at the
      * same time.
      */
-    interface IDatagramChannel extends Elastos.IO.Channels.Spi.IAbstractSelectableChannel {
+     /**
+     * @Involve
+    * interface Elastos.IO.Channels.IChannel;
+    * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
+     * interface Elastos.IO.Channels.ISelectableChannel;
+     * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
+     * interface Elastos.IO.Channels.Spi.IAbstractSelectableChannel;
+     */
+    interface IDatagramChannel {
         /**
          * Returns the related datagram socket of this channel, which does not
          * define additional public methods to those defined by DatagramSocket.

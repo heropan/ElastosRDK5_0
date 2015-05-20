@@ -13,8 +13,12 @@ module
      *@sa InputStreamReader
      *@implements Elastos.IO.IWriter
      */
-
-    interface IOutputStreamWriter extends IWriter {
+     /**
+     * @Involve
+     * interface Elastos.Core.IAppendable;
+     * interface IWriter;
+     */
+    interface IOutputStreamWriter {
         /**
          * Returns the historical name of the encoding used by this writer to convert characters to
          * bytes, or null if this writer has been closed. Most callers should probably keep

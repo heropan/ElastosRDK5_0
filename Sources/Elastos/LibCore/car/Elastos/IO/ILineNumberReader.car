@@ -13,7 +13,13 @@ module
     *
     */
 
-    interface ILineNumberReader extends IBufferedReader {
+     /**
+     * @Involve
+     * interface IReadable;
+     * interface IReader;
+     * interface IBufferedReader;
+     */
+    interface ILineNumberReader {
         /**
          * Returns the current line number for this reader. Numbering starts at 0.
          *

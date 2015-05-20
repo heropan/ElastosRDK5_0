@@ -7,7 +7,11 @@ module
     * @implement Elastos.IO.IBuffer
     */
 
-    interface IInt16Buffer extends IBuffer {
+     /**
+     * @Involve
+     * interface IBuffer;
+     */
+    interface IInt16Buffer {
         GetArray(
             [out, callee] ArrayOf<Int16>* array);
 

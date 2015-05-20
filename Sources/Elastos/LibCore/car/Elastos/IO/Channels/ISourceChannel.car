@@ -7,8 +7,13 @@ module
     namespace IO {
     namespace Channels {
 
-    interface ISourceChannel extends Elastos.IO.Channels.Spi.IAbstractSelectableChannel
-    {
+    /**
+    * @Involve
+    * interface Elastos.IO.Channels.IChannel;
+    * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
+    * interface Elastos.IO.Channels.Spi.IAbstractSelectableChannel
+    */
+    interface ISourceChannel {
         // extended from IReadableByteChannel
         ReadByteBuffer(
             [in] IByteBuffer* buffer);

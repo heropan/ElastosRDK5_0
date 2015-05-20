@@ -17,7 +17,12 @@ module
     * @sa ISerializable
     * @sa IExternalizable
     */
-    interface IObjectInputStream extends IInputStream {
+     /**
+     * @Involve
+     * interface Elastos.IO.ICloseable;
+     * interface IInputStream;
+     */
+    interface IObjectInputStream {
         /**
          * Default method to read objects from this stream. Serializable fields
          * defined in the object's class and superclasses are read from the source

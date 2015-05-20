@@ -16,7 +16,13 @@ module
     * @sa BufferedOutputStream
     * @implement Elastos.IO.IFilterInputStream
     */
-    interface IBufferedInputStream extends IFilterInputStream {
+    /**
+    * @Involved
+    * interface Elastos.IO.ICloseable;
+    * interface IInputStream;
+    * interface IFilterInputStream;
+    */
+    interface IBufferedInputStream {
     }
 
     } // namespace IO

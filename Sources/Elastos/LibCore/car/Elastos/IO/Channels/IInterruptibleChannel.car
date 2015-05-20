@@ -4,7 +4,7 @@ module
     namespace Elastos {
     namespace IO {
     namespace Channels {
-     
+
     /**
      * Channels that implement this interface can be asynchronously closed and
      * interrupted.
@@ -22,8 +22,12 @@ module
      * attempts to make an I/O call with the interrupt status set the call will
      * immediately fail with a {@link ClosedByInterruptException}.
      */
-    interface IInterruptibleChannel extends Elastos.IO.Channels.IChannel {
-    
+     /**
+     * @Involve
+     * interface Elastos.IO.Channels.IChannel;
+     */
+    interface IInterruptibleChannel {
+
         /**
          * Closes an open channel. If the channel is already closed then this method
          * has no effect. If there is a problem with closing the channel then the

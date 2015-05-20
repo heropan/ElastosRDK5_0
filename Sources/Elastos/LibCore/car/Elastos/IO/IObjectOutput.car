@@ -13,7 +13,11 @@ module
      *
      */
 
-    interface IObjectOutput extends IDataOutput {
+     /**
+     * @Involve
+     * interface IDataOutput;
+     */
+    interface IObjectOutput {
         /**
          * Closes the target stream. Implementations of this method should free any
          * resources used by the stream.

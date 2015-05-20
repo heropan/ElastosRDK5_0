@@ -9,6 +9,9 @@ namespace IO {
 
 class BufferedInputStream
     : public FilterInputStream
+    , IInputStream
+//    , interface IFilterInputStream;   // 此接口应可从FilterInputStream类继承得到
+
 {
 protected:
     BufferedInputStream();
@@ -85,7 +88,8 @@ public:
     CARAPI Read(
         /* [out] */ Int32* value);
 
-    /**
+    // 4.2.2->5.0 delete the annotation below
+    /** 
      * Reads at most {@code length} bytes from this stream and stores them in
      * byte array {@code buffer} starting at offset {@code offset}. Returns the
      * number of bytes actually read or -1 if no bytes were read and the end of
@@ -113,7 +117,7 @@ public:
     // synchronized
     CARAPI ReadBytesEx(
         /* [out] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Int32 offset,
+        /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 length,
         /* [out] */ Int32* number);
 

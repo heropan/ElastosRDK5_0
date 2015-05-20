@@ -4,7 +4,12 @@ module
     namespace Elastos {
     namespace IO {
 
-    interface IFilterWriter extends IWriter {
+     /**
+     * @Involve
+     * interface Elastos.Core.IAppendable;
+     * interface IWriter;
+     */
+    interface IFilterWriter {
     }
 
     } // namespace IO

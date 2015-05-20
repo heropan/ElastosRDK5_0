@@ -17,7 +17,12 @@ module
     *@implement Elastos.IO.IReader
     */
 
-    interface IBufferedReader extends IReader {
+    /**
+    * @Involve
+    * interface IReadable;
+    * interface IReader;
+    */
+    interface IBufferedReader {
         /**
          * Returns the next line of text available from this reader. A line is
          * represented by zero or more characters followed by {'\n'},

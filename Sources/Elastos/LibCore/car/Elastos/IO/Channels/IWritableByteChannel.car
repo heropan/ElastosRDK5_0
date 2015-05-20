@@ -3,7 +3,7 @@ module
 {
     interface Elastos.IO.Channels.IChannel;
     interface Elastos.IO.IByteBuffer;
-    
+
     namespace Elastos {
     namespace IO {
     namespace Channels {
@@ -16,7 +16,11 @@ module
      * block until the first write completes. It is undefined whether non-write
      * operations will block.
      */
-    interface IWritableByteChannel extends IChannel {
+     /**
+     * @Involve
+     * interface IChannel;
+     */
+    interface IWritableByteChannel {
 
         /**
          * Writes bytes from the given buffer to the channel.

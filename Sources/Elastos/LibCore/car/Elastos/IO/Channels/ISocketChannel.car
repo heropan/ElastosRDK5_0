@@ -38,8 +38,13 @@ module
      * write will block.
      * @implement Elastos.IO.ISelectableChannel
     */
-
-    interface ISocketChannel extends ISelectableChannel {
+    /**
+    * @Involve
+    * interface Elastos.IO.Channels.IChannel;
+    * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
+    * interface ISelectableChannel;
+    */
+    interface ISocketChannel {
        /**
         * Returns the socket assigned to this channel, which does not declare any public
         * methods that are not declared in {Socket}.

@@ -15,8 +15,12 @@ module
     * single operation. The corresponding interface for writes is
     * {@link GatheringByteChannel}.
     */
-    interface IScatteringByteChannel extends IReadableByteChannel
-    {
+    /**
+    * @Involve
+    * interface IChannel;
+    * interface IReadableByteChannel;
+    */
+    interface IScatteringByteChannel {
         /**
          * Reads bytes from the channel into the given buffer.
          * <p>

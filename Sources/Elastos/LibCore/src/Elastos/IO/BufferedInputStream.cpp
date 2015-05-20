@@ -5,6 +5,7 @@
 namespace Elastos {
 namespace IO {
 
+
 BufferedInputStream::BufferedInputStream()
     : mBuf(NULL)
     , mMarkpos(-1)
@@ -33,6 +34,7 @@ ECode BufferedInputStream::Available(
     /* [out] */ Int32* number)
 {
     assert(number != NULL);
+    Object::Autolock lock(mLock);
 
     AutoPtr<IInputStream> localIn = mIn; // 'in' could be invalidated by close()
     if (mBuf == NULL || localIn == NULL) {
@@ -115,6 +117,8 @@ ECode BufferedInputStream::Fillbuf(
 ECode BufferedInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
+    Object::Autolock lock(mLock);
+
     mMarklimit = readLimit;
     mMarkpos = mPos;
     return NOERROR;
@@ -170,7 +174,7 @@ ECode BufferedInputStream::Read(
 
 ECode BufferedInputStream::ReadBytesEx(
     /* [out] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int32 offset,
+    /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
@@ -189,8 +193,8 @@ ECode BufferedInputStream::ReadBytesEx(
         return StreamClosed();
     }
 
-    if ((offset | byteCount) < 0 || offset > buffer->GetLength()
-            || buffer->GetLength() - offset < byteCount) {
+    if ((byteOffset | byteCount) < 0 || byteOffset > buffer->GetLength()
+            || buffer->GetLength() - byteOffset < byteCount) {
 //      throw new IndexOutOfBoundsException();
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -208,7 +212,7 @@ ECode BufferedInputStream::ReadBytesEx(
     if (mPos < mCount) {
         /* There are bytes available in the buffer. */
         Int32 copylength = mCount - mPos >= byteCount ? byteCount : mCount - mPos;
-        buffer->Copy(offset, localBuf, mPos, copylength);
+        buffer->Copy(byteOffset, localBuf, mPos, copylength);
 
         mPos += copylength;
         if (copylength == byteCount) {
@@ -220,7 +224,7 @@ ECode BufferedInputStream::ReadBytesEx(
             *number = copylength;
             return NOERROR;
         }
-        offset += copylength;
+        byteOffset += copylength;
         required = byteCount - copylength;
     } else {
         required = byteCount;
@@ -233,7 +237,7 @@ ECode BufferedInputStream::ReadBytesEx(
          * buffer, simply read the bytes directly bypassing the buffer.
          */
         if (mMarkpos == -1 && required >= localBuf->GetLength()) {
-            FAIL_RETURN(localIn->ReadBytesEx(buffer, offset, required, &read));
+            FAIL_RETURN(localIn->ReadBytesEx(buffer, byteOffset, required, &read));
             if (read == -1) {
                 *number = required == byteCount ? -1 : byteCount - required;
                 return NOERROR;
@@ -255,7 +259,7 @@ ECode BufferedInputStream::ReadBytesEx(
 
             read = mCount - mPos >= required ? required : mCount - mPos;
             for (Int32 i = 0; i < read; i++) {
-                (*buffer)[offset + i] = (*localBuf)[mPos + i];
+                (*buffer)[byteOffset + i] = (*localBuf)[mPos + i];
             }
             mPos += read;
         }
@@ -269,7 +273,7 @@ ECode BufferedInputStream::ReadBytesEx(
             *number = byteCount - required;
             return NOERROR;
         }
-        offset += read;
+        byteOffset += read;
     }
 }
 

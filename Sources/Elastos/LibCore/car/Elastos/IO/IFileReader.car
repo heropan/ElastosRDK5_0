@@ -14,7 +14,13 @@ module
     * @implement Elastos.IO.IInputStreamReader
     */
 
-    interface IFileReader extends IInputStreamReader {
+     /**
+     * @Involve
+     * interface IReadable;
+     * interface IReader;
+     * interface IInputStreamReader;
+     */
+    interface IFileReader {
     }
 
     } // namespace IO

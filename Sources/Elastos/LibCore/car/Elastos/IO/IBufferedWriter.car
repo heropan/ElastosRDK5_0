@@ -17,7 +17,12 @@ module
      * @sa BufferedReader
      *@implement Elastos.IO.IWriter
      */
-    interface IBufferedWriter extends IWriter {
+     /**
+     * @Involve
+     * interface Elastos.Core.IAppendable;
+     * interface IWriter;
+     */
+    interface IBufferedWriter {
         /**
          * Writes a newline to this writer. A newline is determined by the System
          * property "line.separator". The target writer may or may not be flushed

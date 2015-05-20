@@ -3,7 +3,12 @@ module
     namespace Elastos {
     namespace IO {
 
-    interface ISequenceInputStream extends IInputStream {
+     /**
+     * @Involve
+     * interface Elastos.IO.ICloseable;
+     * interface IInputStream;
+     */
+    interface ISequenceInputStream {
     }
 
     } // namespace IO

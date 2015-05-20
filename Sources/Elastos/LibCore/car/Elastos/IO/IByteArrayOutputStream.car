@@ -4,7 +4,12 @@ module
     namespace Elastos {
     namespace IO {
 
-    interface IByteArrayOutputStream extends IOutputStream {
+    /**
+    @ Involve
+    * interface ICloseable;
+    * interface IOutputStream;
+    */
+    interface IByteArrayOutputStream {
         /**
          * Resets this stream to the beginning of the underlying byte array. All
          * subsequent writes will overwrite any bytes previously stored in this

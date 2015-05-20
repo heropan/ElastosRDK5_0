@@ -9,7 +9,12 @@ module
     *@implement Elastos.IO.IInputStream
     */
 
-    interface IByteArrayInputStream extends IInputStream {
+    /**
+    * @Involve
+    * interface Elastos.IO.ICloseable;
+    * interface IInputStream;
+    */
+    interface IByteArrayInputStream {
     }
 
     } // namespace IO

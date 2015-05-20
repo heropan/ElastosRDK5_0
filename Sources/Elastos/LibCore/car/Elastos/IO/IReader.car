@@ -18,7 +18,11 @@ module
      *@implements Elastos.IO.IReadable
      *@sa IWriter
      */
-    interface IReader extends IReadable {
+     /**
+     * @Involve
+     * interface IReadable;
+     */
+    interface IReader {
         /**
          * Sets a mark position in this reader. The parameter readLimit
          * indicates how many characters can be read before the mark is invalidated.

@@ -13,7 +13,13 @@ module
      *@implements Elastos.IO.IFilterInputStream
      */
 
-    interface IPushbackInputStream extends IFilterInputStream {
+     /**
+     * @Involve
+     * interface Elastos.IO.ICloseable;
+     * interface IInputStream;
+     * interface IFilterInputStream;
+     */
+    interface IPushbackInputStream {
         /**
          * Pushes the specified byte oneByte back to this stream. Only the
          * least significant byte of the integer oneByte is pushed back.

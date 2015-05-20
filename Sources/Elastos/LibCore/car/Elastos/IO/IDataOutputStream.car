@@ -12,7 +12,13 @@ module
     * @implement Elastos.IO.IFliterOutputStream
     */
 
-    interface IDataOutputStream extends IFilterOutputStream {
+     /**
+     * @Involve
+     * interface ICloseable;
+     * interface IOutputStream;
+     * interface IFilterOutputStream;
+     */
+    interface IDataOutputStream {
         /**
          * Returns the total number of bytes written to the target stream so far.
          *

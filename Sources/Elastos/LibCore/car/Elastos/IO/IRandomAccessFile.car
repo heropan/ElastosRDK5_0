@@ -14,7 +14,11 @@ module
      *
      * @implements Elastos.IO.ICloseable
      */
-    interface IRandomAccessFile extends ICloseable {
+     /**
+     * @Involve
+     * interface ICloseable;
+     */
+    interface IRandomAccessFile {
         /**
          * Gets this file's FileChannel object.
          * <p>

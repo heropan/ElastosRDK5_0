@@ -19,7 +19,11 @@ module
      * wrap(byte[]) wrap an existing byte array to create a new buffer;
      * @implement Elastos.IO.IBuffer
      */
-    interface IByteBuffer extends IBuffer {
+     /**
+     * @Involve
+     * interface IBuffer;
+     */
+    interface IByteBuffer {
         /**
          * Returns the byte array which this buffer is based on, if there is one.
          *

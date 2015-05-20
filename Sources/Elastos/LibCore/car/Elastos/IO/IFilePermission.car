@@ -52,7 +52,12 @@ module
     * @implement Elastos.IO.IPermission
     */
 
-    interface IFilePermission extends IPermission {
+     /**
+     * @Involve
+     * interface IGuard
+     * interface IPermission;
+     */
+    interface IFilePermission {
     }
 
     } // namespace IO

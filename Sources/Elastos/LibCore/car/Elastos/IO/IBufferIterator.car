@@ -68,7 +68,11 @@ module
      * @hide don't make this public without adding bounds checking.
      * @implement Elastos.IO.IBufferIterator
      */
-    interface IHeapBufferIterator extends IBufferIterator {
+     /**
+     * @Involve
+     * interface IBufferIterator;
+     */
+    interface IHeapBufferIterator {
     }
 
     } // namespace IO

@@ -17,7 +17,11 @@ module
      *@sa InputStream
      *@implements Elastos.IO.ICloseable
      */
-    interface IOutputStream extends ICloseable {
+     /**
+     * @Involve
+     * interface ICloseable;
+     */
+    interface IOutputStream {
         /**
          * Writes a single byte to this stream. Only the least significant byte of
          * the integer oneByte is written to the stream.

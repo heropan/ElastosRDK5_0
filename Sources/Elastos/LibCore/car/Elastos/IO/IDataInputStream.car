@@ -14,7 +14,13 @@ module
     * @implement Elastos.IO.IFilterInputStream
     */
 
-    interface IDataInputStream extends IFilterInputStream {
+     /**
+     * @Involve
+     * interface Elastos.IO.ICloseable;
+     * interface IInputStream;
+     * interface IFilterInputStream;
+     */
+    interface IDataInputStream {
     }
 
     interface IDataInputStreamHelper {

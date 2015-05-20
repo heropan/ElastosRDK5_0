@@ -12,7 +12,13 @@ module
      *
      * @implement Elastos.IO.IFilterInputStream
      */
-    interface ILineNumberInputStream extends IFilterInputStream {
+     /**
+     * @Involve
+     * interface Elastos.IO.ICloseable;
+     * interface IInputStream;
+     * interface IFilterInputStream;
+     */
+    interface ILineNumberInputStream {
         /**
          * Returns the current line number for this stream. Numbering starts at 0.
          *

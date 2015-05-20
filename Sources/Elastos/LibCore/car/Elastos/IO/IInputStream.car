@@ -21,7 +21,10 @@ module
      * @sa IOutputStream
      * @implement Elastos.IO.ICloseable
      */
-
+     /**
+     * @Involve
+     * interface Elastos.IO.ICloseable;
+     */
     interface IInputStream {
         /**
          * Returns an estimated number of bytes that can be read or skipped without blocking for more

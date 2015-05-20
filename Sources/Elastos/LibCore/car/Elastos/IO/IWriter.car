@@ -18,7 +18,11 @@ module
      *@sa Reader
      *@implements Elastos.IO.Elastos.Core.IAppendable
      */
-    interface IWriter extends Elastos.Core.IAppendable {
+     /**
+     * @Involve
+     * interface Elastos.Core.IAppendable;
+     */
+    interface IWriter {
         /**
          * Writes one character to the target. Only the two least significant bytes
          * of the integer oneChar are written.

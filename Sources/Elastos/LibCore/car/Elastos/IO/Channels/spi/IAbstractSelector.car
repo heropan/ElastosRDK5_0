@@ -21,7 +21,11 @@ module
    * {@code end}. It also holds the cancellation and the deletion of the key
    * set.
    */
-   interface IAbstractSelector extends Elastos.IO.Channels.ISelector {
+   /**
+   * @Involve
+   * interface Elastos.IO.Channels.ISelector;
+   */
+   interface IAbstractSelector {
 
      /**
      * Closes this selector. This method does nothing if this selector is

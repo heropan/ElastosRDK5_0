@@ -7,7 +7,12 @@ module
      * @sa CharArrayWriter
      * @implement Elastos.IO.IReader
      */
-    interface ICharArrayReader extends IReader {
+     /**
+     * @Involve
+     * interface IReadable;
+     * interface IReader;
+     */
+    interface ICharArrayReader {
     }
 
     } // namespace IO

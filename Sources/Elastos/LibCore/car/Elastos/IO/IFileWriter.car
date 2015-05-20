@@ -14,7 +14,13 @@ module
     * @implement Elastos.IO.IOutputStreamReader
     */
 
-    interface IFileWriter extends IOutputStreamWriter {
+     /**
+     * @Involve
+     * interface Elastos.Core.IAppendable;
+     * interface IWriter;
+     * interface IOutputStreamWriter;
+     */
+    interface IFileWriter {
     }
 
     } // namespace IO

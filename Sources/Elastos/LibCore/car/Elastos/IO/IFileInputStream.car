@@ -17,7 +17,12 @@ module
     * @implement Elastos.IO.IInputStream
     */
 
-    interface IFileInputStream extends IInputStream {
+     /**
+     * @Involve
+     * interface Elastos.IO.ICloseable;
+     * interface IInputStream;
+     */
+    interface IFileInputStream {
         /**
          * Returns a read-only FileChannel that shares its position with
          * this stream.

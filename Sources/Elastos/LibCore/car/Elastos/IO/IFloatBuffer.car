@@ -4,7 +4,11 @@ module
     namespace Elastos {
     namespace IO {
 
-    interface IFloatBuffer extends IBuffer {
+     /**
+     * @Involve
+     * interface IBuffer;
+     */
+    interface IFloatBuffer {
         GetArray(
             [out, callee] ArrayOf<Float>* array);
 

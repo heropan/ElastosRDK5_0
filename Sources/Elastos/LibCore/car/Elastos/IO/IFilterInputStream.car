@@ -12,8 +12,12 @@ module
     * @sa FilterOutputStream
     * @implement Elastos.IO.IInputStream
     */
-
-    interface IFilterInputStream extends IInputStream {
+    /**
+    * @Involved
+    * interface Elastos.IO.ICloseable;
+    * interface IInputStream;
+    */
+    interface IFilterInputStream {
     }
 
     } // namespace IO

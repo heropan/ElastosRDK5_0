@@ -7,7 +7,11 @@ module
     * @implement Elastos.IO.IBuffer
     */
 
-    interface IInt32Buffer extends IBuffer {
+     /**
+     * @Involve
+     * interface IBuffer;
+     */
+    interface IInt32Buffer {
         GetArray(
             [out, callee] ArrayOf<Int32>* array);
 

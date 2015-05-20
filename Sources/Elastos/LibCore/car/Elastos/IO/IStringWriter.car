@@ -3,7 +3,12 @@ module
     namespace Elastos {
     namespace IO {
 
-    interface IStringWriter extends IWriter {
+     /**
+     * @Involve
+     * interface Elastos.Core.IAppendable;
+     * interface IWriter;
+     */
+    interface IStringWriter {
         /**
          * Gets a reference to this writer's internal
          *

@@ -12,6 +12,7 @@ CarClass(CBufferedInputStream)
     , public BufferedInputStream
 {
 public:
+#if 0   // 4.2.2->5.0
     CARAPI Available(
         /* [out] */ Int32* number);
 
@@ -20,6 +21,7 @@ public:
     CARAPI Mark(
         /* [in] */ Int32 readLimit);
 
+#endif // #if 0   // 4.2.2->5.0
     CARAPI IsMarkSupported(
         /* [out] */ Boolean* supported);
 
@@ -54,6 +56,12 @@ public:
 
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
+    /**
+     * The default buffer size if it is not specified.
+     *
+     * @hide
+     */
+    public static const int DEFAULT_BUFFER_SIZE;
 };
 
 } // namespace IO

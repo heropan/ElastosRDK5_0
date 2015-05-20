@@ -5,7 +5,11 @@ module
     namespace Elastos {
     namespace IO {
 
-    interface IPipeImpl extends Elastos.IO.Channels.IPipe {
+     /**
+     * @Involve
+     * interface Elastos.IO.Channels.IPipe;
+     */
+    interface IPipeImpl {
 
     } // IPipeImpl
 
