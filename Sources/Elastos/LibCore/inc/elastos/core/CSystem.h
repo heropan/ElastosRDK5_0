@@ -369,6 +369,11 @@ public:
     // public static SecurityManager getSecurityManager() {
 
 private:
+    CARAPI_(void) OnLastStrongRef(
+        /* [in] */ const void* id);
+
+    CARAPI_(SpinLock&) GetSelfSpinLock();
+
     CARAPI InitSystemProperties();
 
     /*

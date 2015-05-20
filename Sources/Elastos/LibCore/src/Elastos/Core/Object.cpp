@@ -71,7 +71,7 @@ ECode Object::GetInterfaceID(
 }
 
 ECode Object::Aggregate(
-    /* [in] */ Int32 type,
+    /* [in] */ AggregateType type,
     /* [in] */ IInterface* object)
 {
     return E_NOT_IMPLEMENTED;

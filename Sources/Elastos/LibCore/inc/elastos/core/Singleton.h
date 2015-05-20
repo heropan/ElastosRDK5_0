@@ -15,13 +15,11 @@ public:
 
     CARAPI_(UInt32) Release();
 
-    CARAPI_(void) OnLastStrongRef(
-        /* [in] */ const void* id);
+    virtual CARAPI_(void) OnLastStrongRef(
+        /* [in] */ const void* id) = 0;
 
-public:
-    static Singleton* sInstance;
-    static _SingletonObjState_ sInstanceState;
-    static SpinLock sLock;
+protected:
+    virtual CARAPI_(SpinLock&) GetSelfSpinLock() = 0;
 };
 
 } // namespace Core
