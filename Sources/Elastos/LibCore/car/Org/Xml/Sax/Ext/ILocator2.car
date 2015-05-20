@@ -27,6 +27,10 @@ module
      * @author David Brownell
      * @version TBS
      */
+    /**
+      * @Involve
+      * interface Org.Xml.Sax.ILocator;
+      */
     interface ILocator2 extends Org.Xml.Sax.ILocator {
         /**
          * Returns the version of XML used for the entity.  This will

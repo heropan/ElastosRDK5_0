@@ -106,7 +106,7 @@ module
          * Set the output to the given writer.
          * <p><b>WARNING</b> no information about encoding is available!
          */
-        SetOutputEx(
+        SetOutput(
             [in] IWriter* writer);
 
         /**
@@ -257,8 +257,8 @@ module
         /**
          * Writes text, where special XML chars are escaped automatically
          */
-        WriteTextEx(
-            [in] ArrayOf<Char32> buf,
+        WriteText(
+            [in] ArrayOf<Char32>* buf,
             [in] Int32 start,
             [in] Int32 len);
 

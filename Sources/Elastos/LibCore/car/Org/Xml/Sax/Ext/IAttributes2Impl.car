@@ -31,7 +31,11 @@ module
      * @author David Brownell
      * @version TBS
      */
-    interface IAttributes2Impl extends Org.Xml.Sax.Helpers.IAttributesImpl {
+    /**
+      * @Involve
+      * interface Org.Xml.Sax.Helpers.IAttributesImpl;
+      */
+    interface IAttributes2Impl {
         /**
          * Assign a value to the "declared" flag of a specific attribute.
          * This is normally needed only for attributes of type CDATA,

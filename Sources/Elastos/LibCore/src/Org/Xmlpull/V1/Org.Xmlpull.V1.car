@@ -4,28 +4,28 @@ module
     importlib("Elastos.Core.eco");
     importlib("Org.Xml.Sax.eco");
 
-    // merge("../../../../car/Org/Xmlpull/V1/Exceptions.car");
-    merge("../../../../car/Org/Xmlpull/V1/IXmlPullParser.car");
-    merge("../../../../car/Org/Xmlpull/V1/IXmlPullParserFactory.car");
-    merge("../../../../car/Org/Xmlpull/V1/IXmlSerializer.car");
+    // merge("../../../../../car/Org/Xmlpull/V1/Exceptions.car");
+    merge("../../../../../car/Org/Xmlpull/V1/IXmlPullParser.car");
+    merge("../../../../../car/Org/Xmlpull/V1/IXmlPullParserFactory.car");
+    merge("../../../../../car/Org/Xmlpull/V1/IXmlSerializer.car");
 
-    namespace Org {
-    namespace Xmlpull {
-    namespace V1 {
+    // namespace Org {
+    // namespace Xmlpull {
+    // namespace V1 {
 
-        class CXmlPullParserFactory {
-            constructor();
+    //     class CXmlPullParserFactory {
+    //         constructor();
 
-            interface IXmlPullParserFactory;
-        }
+    //         interface IXmlPullParserFactory;
+    //     }
 
-        singleton class CXmlPullParserFactoryHelper {
-            interface IXmlPullParserFactoryHelper;
-        }
+    //     singleton class CXmlPullParserFactoryHelper {
+    //         interface IXmlPullParserFactoryHelper;
+    //     }
 
-    } // namespace V1
-    } // namespace Xmlpull
-    } // namespace Org
+    // } // namespace V1
+    // } // namespace Xmlpull
+    // } // namespace Org
 
     using interface Org.Xml.Sax.ILocator;
     using interface Org.Xml.Sax.IXMLReader;
@@ -33,25 +33,25 @@ module
 
     interface Org.Xmlpull.V1.IXmlPullParser;
 
-    namespace Org {
-    namespace Xmlpull {
-    namespace V1 {
-    namespace Sax2 {
+    // namespace Org {
+    // namespace Xmlpull {
+    // namespace V1 {
+    // namespace Sax2 {
 
-        class CDriver {
-            constructor();
+    //     class CDriver {
+    //         constructor();
 
-            constructor(
-                [in] IXmlPullParser* pp);
+    //         constructorEx2 (
+    //             [in] IXmlPullParser* pp);
 
-            interface ILocator;
-            interface IXMLReader;
-            interface IAttributes;
-        }
+    //         interface ILocator;
+    //         interface IXMLReader;
+    //         interface IAttributes;
+    //     }
 
-    } // namespace Sax2
-    } // namespace V1
-    } // namespace Xmlpull
-    } // namespace Org
+    // } // namespace Sax2
+    // } // namespace V1
+    // } // namespace Xmlpull
+    // } // namespace Org
 
 }

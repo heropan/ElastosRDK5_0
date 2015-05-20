@@ -46,6 +46,7 @@ module
      * @see org.xml.sax.Locator
      * @see org.xml.sax.HandlerBase
      */
+    [deprecated]
     interface IDocumentHandler {
         /**
          * Receive an object for locating the origin of SAX document events.
@@ -72,7 +73,7 @@ module
          *                any SAX document event.
          * @see org.xml.sax.Locator
          */
-        SetDocumentLocator (
+        SetDocumentLocator(
             [in] ILocator* locator);
 
         /**
@@ -85,7 +86,7 @@ module
          * @exception org.xml.sax.SAXException Any SAX exception, possibly
          *            wrapping another exception.
          */
-        StartDocument ();
+        StartDocument();
 
         /**
          * Receive notification of the end of a document.
@@ -99,7 +100,7 @@ module
          * @exception org.xml.sax.SAXException Any SAX exception, possibly
          *            wrapping another exception.
          */
-        EndDocument ();
+        EndDocument();
 
         /**
          * Receive notification of the beginning of an element.
@@ -123,7 +124,7 @@ module
          * @see #endElement
          * @see org.xml.sax.AttributeList
          */
-        StartElement (
+        StartElement(
             [in] String name,
             [in] IAttributeList* atts);
 
@@ -142,7 +143,7 @@ module
          * @exception org.xml.sax.SAXException Any SAX exception, possibly
          *            wrapping another exception.
          */
-        EndElement (
+        EndElement(
             [in] String name);
 
         /**
@@ -170,8 +171,8 @@ module
          * @see #ignorableWhitespace
          * @see org.xml.sax.Locator
          */
-        Characters (
-            [in] ArrayOf<Char32> ch,
+        Characters(
+            [in] ArrayOf<Char32>* ch,
             [in] Int32 start,
             [in] Int32 length);
 
@@ -199,8 +200,8 @@ module
          *            wrapping another exception.
          * @see #characters
          */
-        IgnorableWhitespace (
-            [in] ArrayOf<Char32> ch,
+        IgnorableWhitespace(
+            [in] ArrayOf<Char32>* ch,
             [in] Int32 start,
             [in] Int32 length);
 
@@ -221,7 +222,7 @@ module
          * @exception org.xml.sax.SAXException Any SAX exception, possibly
          *            wrapping another exception.
          */
-        ProcessingInstruction (
+        ProcessingInstruction(
             [in] String target,
             [in] String data);
     }

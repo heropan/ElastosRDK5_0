@@ -43,7 +43,7 @@ module
          */
         SetColumnNumber(
             [in] Int32 columnNumber);
-            
+
         /**
          * Return the saved public identifier.
          *
@@ -52,9 +52,9 @@ module
          * @see org.xml.sax.Locator#getPublicId
          * @see #setPublicId
          */
-        //GetPublicId (
+        //GetPublicId(
         //    [out] String* publicId);
-    
+
         /**
          * Return the saved system identifier.
          *
@@ -63,9 +63,9 @@ module
          * @see org.xml.sax.Locator#getSystemId
          * @see #setSystemId
          */
-        //GetSystemId (
+        //GetSystemId(
         //    [out] String* systemId);
-    
+
         /**
          * Return the saved line number (1-based).
          *
@@ -73,9 +73,9 @@ module
          * @see org.xml.sax.Locator#getLineNumber
          * @see #setLineNumber
          */
-        //GetLineNumber (
+        //GetLineNumber(
         //    [out] Int32* lineNumber);
-    
+
         /**
          * Return the saved column number (1-based).
          *
@@ -83,7 +83,7 @@ module
          * @see org.xml.sax.Locator#getColumnNumber
          * @see #setColumnNumber
          */
-        //GetColumnNumber (
+        //GetColumnNumber(
         //    [out] Int32* columnNumber);
     }
 

@@ -39,6 +39,7 @@ module
      * @author David Megginson
      * @version 2.0.1 (sax2r2)
      */
+    [deprecated]
     interface ILexicalHandler {
         /**
          * Report the start of DTD declarations, if any.
@@ -193,7 +194,7 @@ module
          * @exception SAXException The application may raise an exception.
          */
         Comment(
-            [out] ArrayOf<Char32> ch,
+            [in] ArrayOf<Char32>* ch,
             [in] Int32 start,
             [in] Int32 length);
     }

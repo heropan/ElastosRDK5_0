@@ -74,7 +74,7 @@ module
          * @see #unparsedEntityDecl
          * @see org.xml.sax.Attributes
          */
-        NotationDecl (
+        NotationDecl(
             [in] String name,
             [in] String publicId,
             [in] String systemId);
@@ -102,7 +102,7 @@ module
          * @see #notationDecl
          * @see org.xml.sax.Attributes
          */
-        UnparsedEntityDecl (
+        UnparsedEntityDecl(
             [in] String name,
             [in] String publicId,
             [in] String systemId,

@@ -1,7 +1,7 @@
 module
 {
     interface Org.Xml.Sax.IAttributeList;
-    
+
     namespace Org {
     namespace Xml {
     namespace Sax {
@@ -60,7 +60,11 @@ module
      * @see org.xml.sax.AttributeList
      * @see org.xml.sax.DocumentHandler#startElement
      */
-    interface IAttributeListImpl extends Org.Xml.Sax.IAttributeList {
+    /**
+      * @Involve
+      * interface Org.Xml.Sax.IAttributeList;
+      */
+    interface IAttributeListImpl {
         /**
          * Set the attribute list, discarding previous contents.
          *
@@ -69,7 +73,7 @@ module
          *
          * @param atts The attribute list to copy.
          */
-        SetAttributeList (
+        SetAttributeList(
             [in] IAttributeList* atts);
 
         /**

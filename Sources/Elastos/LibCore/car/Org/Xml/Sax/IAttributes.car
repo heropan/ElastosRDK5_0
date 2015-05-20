@@ -181,7 +181,7 @@ module
          * @return The index of the attribute, or -1 if it does not
          *         appear in the list.
          */
-        GetIndexEx(
+        GetIndex(
             [in] String qName,
             [out] Int32* index);
 
@@ -198,7 +198,7 @@ module
          *         attribute is not in the list or if Namespace
          *         processing is not being performed.
          */
-        GetTypeEx(
+        GetType(
             [in] String uri,
             [in] String localName,
             [out] String* type);
@@ -214,7 +214,7 @@ module
          *         attribute is not in the list or if qualified names
          *         are not available.
          */
-        GetTypeEx2(
+        GetType(
             [in] String qName,
             [out] String* type);
 
@@ -230,7 +230,7 @@ module
          * @return The attribute value as a string, or null if the
          *         attribute is not in the list.
          */
-        GetValueEx(
+        GetValue(
             [in] String uri,
             [in] String localName,
             [out] String* value);
@@ -246,7 +246,7 @@ module
          *         attribute is not in the list or if qualified names
          *         are not available.
          */
-        GetValueEx2(
+        GetValue(
             [in] String qName,
             [out] String* value);
     }

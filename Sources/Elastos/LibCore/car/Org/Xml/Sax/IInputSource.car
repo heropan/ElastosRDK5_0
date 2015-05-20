@@ -69,7 +69,7 @@ module
          * @see org.xml.sax.Locator#getPublicId
          * @see org.xml.sax.SAXParseException#getPublicId
          */
-        SetPublicId (
+        SetPublicId(
             [in] String publicId);
 
         /**
@@ -78,7 +78,7 @@ module
          * @return The public identifier, or null if none was supplied.
          * @see #setPublicId
          */
-        GetPublicId (
+        GetPublicId(
             [out] String* publicId);
 
         /**
@@ -104,7 +104,7 @@ module
          * @see org.xml.sax.Locator#getSystemId
          * @see org.xml.sax.SAXParseException#getSystemId
          */
-        SetSystemId (
+        SetSystemId(
             [in] String systemId);
 
         /**
@@ -119,7 +119,7 @@ module
          * @see #setSystemId
          * @see #getEncoding
          */
-        GetSystemId (
+        GetSystemId(
             [out] String* systemId);
 
         /**
@@ -139,7 +139,7 @@ module
          * @see #getEncoding
          * @see java.io.InputStream
          */
-        SetByteStream (
+        SetByteStream(
             [in] IInputStream* byteStream);
 
         /**
@@ -152,7 +152,7 @@ module
          * @see #getEncoding
          * @see #setByteStream
          */
-        GetByteStream (
+        GetByteStream(
             [out] IInputStream** byteStream);
 
         /**
@@ -170,7 +170,7 @@ module
          * @see #setByteStream
          * @see #getEncoding
          */
-        SetEncoding (
+        SetEncoding(
             [in] String encoding);
 
         /**
@@ -183,7 +183,7 @@ module
          * @see #getSystemId
          * @see #getByteStream
          */
-        GetEncoding (
+        GetEncoding(
             [out] String* encoding);
 
         /**
@@ -198,7 +198,7 @@ module
          * @see #getCharacterStream
          * @see java.io.Reader
          */
-        SetCharacterStream (
+        SetCharacterStream(
             [in] IReader* characterStream);
 
         /**
@@ -207,7 +207,7 @@ module
          * @return The character stream, or null if none was supplied.
          * @see #setCharacterStream
          */
-        GetCharacterStream (
+        GetCharacterStream(
             [out] IReader** characterStream);
     }
 

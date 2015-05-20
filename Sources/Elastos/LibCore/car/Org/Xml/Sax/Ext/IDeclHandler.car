@@ -113,7 +113,6 @@ module
             [in] String name,
             [in] String value);
 
-
         /**
          * Report a parsed external entity declaration.
          *

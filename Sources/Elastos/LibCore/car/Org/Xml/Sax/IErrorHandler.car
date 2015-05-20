@@ -53,7 +53,7 @@ module
          * recommendation.  The default behaviour is to take no
          * action.</p>
          *
-         * <p>The SAX parser must continue to provide normal parsing events
+         * <p>The SAX parser must contindue to provide normal parsing events
          * after invoking this method: it should still be possible for the
          * application to process the document through to the end.</p>
          *
@@ -66,7 +66,7 @@ module
          *            wrapping another exception.
          * @see org.xml.sax.SAXParseException
          */
-        Warning (
+        Warning(
             [in] ECode exception);
 
         /**
@@ -94,7 +94,7 @@ module
          *            wrapping another exception.
          * @see org.xml.sax.SAXParseException
          */
-        Error (
+        Error(
             [in] ECode exception);
 
         /**
@@ -115,7 +115,7 @@ module
          *
          * <p>The application must assume that the document is unusable
          * after the parser has invoked this method, and should continue
-         * (if at all) only for the sake of collecting additional error
+         *(if at all) only for the sake of collecting additional error
          * messages: in fact, SAX parsers are free to stop reporting any
          * other events once this method has been invoked.</p>
          *
@@ -125,7 +125,7 @@ module
          *            wrapping another exception.
          * @see org.xml.sax.SAXParseException
          */
-        FatalError (
+        FatalError(
             [in] ECode exception);
     }
 
