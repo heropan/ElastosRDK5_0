@@ -85,12 +85,12 @@ PInterface CSystem::Probe(
 
 UInt32 CSystem::AddRef()
 {
-    return ElRefBase::AddRef();
+    return Singleton::AddRef();
 }
 
 UInt32 CSystem::Release()
 {
-    return ElRefBase::Release();
+    return Singleton::Release();
 }
 
 ECode CSystem::GetInterfaceID(
@@ -103,6 +103,17 @@ ECode CSystem::GetInterfaceID(
         return NOERROR;
     }
     else return Object::GetInterfaceID(object, iid);
+}
+
+void CSystem::OnLastStrongRef(
+    /* [in] */ const void* id)
+{
+    return _CSystem::OnLastStrongRef(id);
+}
+
+SpinLock& CSystem::GetSelfSpinLock()
+{
+    return _CSystem::GetSelfSpinLock();
 }
 
 ECode CSystem::SetIn(

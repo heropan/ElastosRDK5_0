@@ -45,7 +45,7 @@ public:
     CAR_INTERFACE_DECL();
 
     CARAPI Aggregate(
-        /* [in] */ Int32 type,
+        /* [in] */ AggregateType type,
         /* [in] */ IInterface* object);
 
     CARAPI GetDomain(

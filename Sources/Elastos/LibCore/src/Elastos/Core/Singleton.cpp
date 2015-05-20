@@ -4,34 +4,22 @@
 namespace Elastos {
 namespace Core {
 
-Singleton* Singleton::sInstance = NULL;
-_SingletonObjState_ Singleton::sInstanceState = _SingletonObjState_Uninitialize;
-SpinLock Singleton::sLock;
-
 UInt32 Singleton::AddRef()
 {
-    sLock.Lock();
+    GetSelfSpinLock().Lock();
     Int32 ref = Object::AddRef();
-    sLock.Unlock();
+    GetSelfSpinLock().Unlock();
     return (UInt32)ref;
 }
 
 UInt32 Singleton::Release()
 {
-    sLock.Lock();
+    GetSelfSpinLock().Lock();
     Int32 ref = Object::Release();
     if (ref > 0) {
-        sLock.Unlock();
+        GetSelfSpinLock().Unlock();
     }
     return (UInt32)ref;
-}
-
-void Singleton::OnLastStrongRef(
-    /* [in] */ const void* id)
-{
-    sInstanceState = _SingletonObjState_Uninitialize;
-    sInstance = NULL;
-    sLock.Unlock();
 }
 
 } // namespace Core
