@@ -8,14 +8,6 @@ $
 #include <new>
 #include "${name}.h"
 
-$IF attrib is "singleton"
-#include <spinlock.h>
-
-static AutoPtr<${name}> _s_p${name}_ObjPtr_;
-static SpinLock _s_${name}_spinlockObj_;
-static _SingletonObjState_ _s_${name}_ObjState_ = _SingletonObjState_Uninitialize;
-$END IF
-
 ${ClassNamespaceBegin(class)}
 $ TEMPLATE "headercpp/basenewimpl.lub"
 $
@@ -50,44 +42,44 @@ BEGIN:
     ec = NOERROR;
     *ppObj = NULL;
 
-    _s_${class.name}_spinlockObj_.Lock();
+    ${class.name}::sLock.Lock();
 
     switch (_s_${class.name}_ObjState_) {
         case _SingletonObjState_Uninitialize:
-            _s_${class.name}_ObjState_ = _SingletonObjState_Initializing;
-            _s_${class.name}_spinlockObj_.Unlock();
+            ${class.name}::sInstanceState = _SingletonObjState_Initializing;
+            ${class.name}::sLock.Unlock();
 
             pLocation = calloc(sizeof(${class.name}), 1);
             if (!pLocation) {
-                _s_${class.name}_ObjState_ = _SingletonObjState_Uninitialize;
+                ${class.name}::sInstanceState = _SingletonObjState_Uninitialize;
                 ec = E_OUT_OF_MEMORY;
                 goto Exit;
             }
             pNewObj = (${class.name} *)new(pLocation) ${class.name};
 
-            _s_p${class.name}_ObjPtr_ = pNewObj;
+            ${class.name}::sInstance = pNewObj;
             *ppObj = pNewObj;
             (*ppObj)->AddRef();
-            _s_${class.name}_ObjState_ = _SingletonObjState_Initialized;
+            ${class.name}::sInstanceState = _SingletonObjState_Initialized;
             break;
         case _SingletonObjState_Initializing:
             do {
-                _s_${class.name}_spinlockObj_.Unlock();
+                ${class.name}::sLock.Unlock();
                 usleep(1);
 
-                _s_${class.name}_spinlockObj_.Lock();
+                ${class.name}::sLock.Lock();
                 if (_SingletonObjState_Uninitialize
-                        == _s_${class.name}_ObjState_) {
-                    _s_${class.name}_spinlockObj_.Unlock();
+                        == ${class.name}::sInstanceState) {
+                    ${class.name}::sLock.Unlock();
                     goto BEGIN;
                 }
             } while(_SingletonObjState_Initialized
-                        != _s_${class.name}_ObjState_);
+                        != ${class.name}::sInstanceState);
             /* Don't break here */
         case _SingletonObjState_Initialized:
-            *ppObj = _s_p${class.name}_ObjPtr_;
+            *ppObj = ${class.name}::sInstanceState;
             (*ppObj)->AddRef();
-            _s_${class.name}_spinlockObj_.Unlock();
+            ${class.name}::sLock.Unlock();
             break;
     }
 
@@ -174,16 +166,16 @@ BEGIN:
     ec = NOERROR;
     *ppObj = NULL;
 
-    _s_${class.name}_spinlockObj_.Lock();
+    ${class.name}::sLock.Lock();
 
-    switch (_s_${class.name}_ObjState_) {
+    switch (${class.name}::sInstanceState) {
         case _SingletonObjState_Uninitialize:
-            _s_${class.name}_ObjState_ = _SingletonObjState_Initializing;
-            _s_${class.name}_spinlockObj_.Unlock();
+            ${class.name}::sInstanceState = _SingletonObjState_Initializing;
+            ${class.name}::sLock.Unlock();
 
             pLocation = calloc(sizeof(${class.name}), 1);
             if (!pLocation) {
-                _s_${class.name}_ObjState_ = _SingletonObjState_Uninitialize;
+                ${class.name}::sInstanceState = _SingletonObjState_Uninitialize;
                 ec = E_OUT_OF_MEMORY;
                 goto Exit;
             }
@@ -202,34 +194,34 @@ $   END DO ;; all parameters
 $   Rewrite(")")
 ;
             if (FAILED(ec)) {
-                _s_${class.name}_ObjState_ = _SingletonObjState_Uninitialize;
+                ${class.name}::sInstanceState = _SingletonObjState_Uninitialize;
                 delete pNewObj;
                 goto Exit;
             }
 $   END IF;
-            _s_p${class.name}_ObjPtr_ = pNewObj;
+            ${class.name}::sInstance = pNewObj;
             *ppObj = pNewObj;
             (*ppObj)->AddRef();
-            _s_${class.name}_ObjState_ = _SingletonObjState_Initialized;
+            ${class.name}::sInstanceState = _SingletonObjState_Initialized;
             break;
         case _SingletonObjState_Initializing:
             do {
-                _s_${class.name}_spinlockObj_.Unlock();
+                ${class.name}::sLock.Unlock();
                 usleep(1);
 
-                _s_${class.name}_spinlockObj_.Lock();
+                ${class.name}::sLock.Lock();
                 if (_SingletonObjState_Uninitialize
-                        == _s_${class.name}_ObjState_) {
-                    _s_${class.name}_spinlockObj_.Unlock();
+                        == ${class.name}::sInstanceState) {
+                    ${class.name}::sLock.Unlock();
                     goto BEGIN;
                 }
             } while(_SingletonObjState_Initialized
-                        != _s_${class.name}_ObjState_);
+                        != ${class.name}::sInstanceState);
             /* Don't break here */
         case _SingletonObjState_Initialized:
-            *ppObj = _s_p${class.name}_ObjPtr_;
+            *ppObj = ${class.name}::sInstance;
             (*ppObj)->AddRef();
-            _s_${class.name}_spinlockObj_.Unlock();
+            ${class.name}::sLock.Unlock();
             break;
     }
 
