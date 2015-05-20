@@ -53,7 +53,7 @@ module
          * @throws FormatterClosedException
          *             if the {@code Formatter} has been closed.
          */
-        FormatEx(
+        Format(
             [in] ILocale* l,
             [in] String format,
             [in] ArrayOf<IInterface*>* args);

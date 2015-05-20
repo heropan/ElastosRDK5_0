@@ -279,7 +279,7 @@ module
          * @throws MissingResourceException
          *                if the resource bundle cannot be found.
          */
-        GetBundleEx(
+        GetBundle(
             [in] String bundleName,
             [in] ILocale* locale,
             [out] IResourceBundle** resbun);
@@ -333,7 +333,7 @@ module
          * @throws MissingResourceException
          *                if the {@code ResourceBundle} cannot be found.
          */
-        GetBundleEx2(
+        GetBundle(
             [in] String bundleName,
             [in] ILocale* locale,
             [in] IClassLoader* loader,
@@ -350,7 +350,7 @@ module
          *
          * @since 1.6
          */
-        GetBundleEx3(
+        GetBundle(
             [in] String baseName,
             [in] IResourceBundleControl* control,
             [out] IResourceBundle** resbun);
@@ -368,7 +368,7 @@ module
          *
          * @since 1.6
          */
-        GetBundleEx4(
+        GetBundle(
             [in] String baseName,
             [in] ILocale* targetLocale,
             [in] IResourceBundleControl* control,
@@ -389,7 +389,7 @@ module
          *
          * @since 1.6
          */
-        GetBundleEx5(
+        GetBundle(
             [in] String baseName,
             [in] ILocale* targetLocale,
             [in] IClassLoader* loader,
@@ -398,7 +398,7 @@ module
 
         ClearCache();
 
-        ClearCacheEx(
+        ClearCache(
             [in] IClassLoader* loader);
     }
 

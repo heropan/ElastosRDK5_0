@@ -14,7 +14,13 @@ module
      * @author Doug Lea
      * @param <V> The result type returned by this Future's <tt>get</tt> method
      */
-    interface IRunnableScheduledFuture extends IRunnableFuture {
+
+    /**
+     * @Involve
+     * interface IFuture;
+     * interface IRunnableFuture;
+     */
+    interface IRunnableScheduledFuture {
         /**
          * Returns true if this is a periodic task. A periodic task may
          * re-run according to some schedule. A non-periodic task can be
@@ -24,6 +30,14 @@ module
          */
         IsPeriodic(
             [out] Boolean* value);
+
+        GetDelay(
+            [in] ITimeUnit* unit,
+            [out] Int64* value);
+
+        CompareTo(
+            [in] IInterface* another,
+            [out] Int32* result);
     }
 
     } // namespace Concurrent

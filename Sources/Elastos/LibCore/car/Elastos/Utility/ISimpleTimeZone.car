@@ -22,7 +22,11 @@ module
      * @implements Elastos.Utility.ITimeZone
      */
 
-    interface ISimpleTimeZone extends ITimeZone {
+    /**
+     * @Involve
+     * interface ITimeZone;
+     */
+    interface ISimpleTimeZone {
         /**
          * The constant for representing a start or end time in GMT time mode.
          */
@@ -83,7 +87,7 @@ module
          *            the time of day in milliseconds standard time on which
          *            daylight savings time ends.
          */
-        SetEndRuleEx(
+        SetEndRule(
             [in] Int32 month,
             [in] Int32 day,
             [in] Int32 dayOfWeek,
@@ -105,7 +109,7 @@ module
          * @param after
          *            selects the day after or before the day of month.
          */
-        SetEndRuleEx2(
+        SetEndRule(
             [in] Int32 month,
             [in] Int32 day,
             [in] Int32 dayOfWeek,
@@ -144,7 +148,7 @@ module
          *            the time of day in milliseconds on which daylight savings time
          *            starts.
          */
-        SetStartRuleEx(
+        SetStartRule(
             [in] Int32 month,
             [in] Int32 day,
             [in] Int32 dayOfWeek,
@@ -166,7 +170,7 @@ module
          * @param after
          *            selects the day after or before the day of month.
          */
-        SetStartRuleEx2(
+        SetStartRule(
             [in] Int32 month,
             [in] Int32 day,
             [in] Int32 dayOfWeek,

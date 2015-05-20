@@ -21,7 +21,13 @@ module
      * @hide
      * @author Doug Lea
      */
-    interface IForkJoinWorkerThread extends Elastos.Core.Threading.IThread {
+
+    /**
+     * @Involve
+     * interface ISynchronize;
+     * interface IThread;
+     */
+    interface IForkJoinWorkerThread {
         /*
          * Overview:
          *

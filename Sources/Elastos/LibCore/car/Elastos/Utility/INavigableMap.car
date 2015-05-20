@@ -9,7 +9,13 @@ module
      * A map that has its keys ordered. The sorting is according to either the
      * natural ordering of its keys or the ordering given by a specified comparator.
      */
-    interface INavigableMap extends ISortedMap {
+
+    /**
+     * @Involve
+     * interface IMap;
+     * interface ISortedMap;
+     */
+    interface INavigableMap {
         /**
          * Returns a key-value mapping associated with the greatest key
          * strictly less than the given key, or {@code null} if there is
@@ -268,7 +274,7 @@ module
          *         range, and {@code fromKey} or {@code toKey} lies
          *         outside the bounds of the range
          */
-        SubMapEx(
+        SubMap(
             [in] IInterface* fromKey,
             [in] Boolean fromInclusive,
             [in] IInterface* toKey,
@@ -302,7 +308,7 @@ module
          *         restricted range, and {@code toKey} lies outside the
          *         bounds of the range
          */
-        HeadMapEx(
+        HeadMap(
             [in] IInterface* toKey,
             [in] Boolean inclusive,
             [out] INavigableMap** outnav);
@@ -334,7 +340,7 @@ module
          *         restricted range, and {@code fromKey} lies outside the
          *         bounds of the range
          */
-        TailMapEx(
+        TailMap(
             [in] IInterface* fromKey,
             [in] Boolean inclusive,
             [out] INavigableMap** outnav);

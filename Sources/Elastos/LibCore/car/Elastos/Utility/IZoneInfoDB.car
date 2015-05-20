@@ -9,7 +9,7 @@ module
         GetAvailableIDs(
             [out, callee] ArrayOf<String>* array);
 
-        GetAvailableIDsEx(
+        GetAvailableIDs(
             [in] Int32 rawOffset,
             [out, callee] ArrayOf<String>* array);
 

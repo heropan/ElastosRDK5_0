@@ -145,7 +145,7 @@ module
              * @throws IOException
              *             if I/O exception occurs.
              */
-            PackEx(
+            Pack(
                 [in] IJarInputStream* jarInputStream,
                 [in] IOutputStream* outputStream);
 
@@ -235,7 +235,7 @@ module
              * @throws IOException
              *             if I/O exception occurs.
              */
-            UnpackEx(
+            Unpack(
                 [in] IFile* file,
                 [in] IJarOutputStream* jarOutputStream);
 

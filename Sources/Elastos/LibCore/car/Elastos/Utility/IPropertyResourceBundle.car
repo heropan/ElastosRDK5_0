@@ -11,7 +11,12 @@ module
      * @see Properties
      * @since 1.1
      */
-    interface IPropertyResourceBundle extends IResourceBundle {
+
+    /**
+     * @Involve
+     * interface IResourceBundle;
+     */
+    interface IPropertyResourceBundle {
 
         HandleGetObject(
             [in] String key,

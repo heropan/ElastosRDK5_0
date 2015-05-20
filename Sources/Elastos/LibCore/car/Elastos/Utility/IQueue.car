@@ -107,7 +107,13 @@ module
      * @author Doug Lea
      * @param <E> the type of elements held in this collection
      */
-    interface IQueue extends ICollection {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     */
+    interface IQueue {
         /**
          * Inserts the specified element into this queue if it is possible to do
          * so immediately without violating capacity restrictions.
@@ -137,7 +143,7 @@ module
          * @return the head of this queue
          * @throws NoSuchElementException if this queue is empty
          */
-        RemoveEx(
+        Remove(
             [out] IInterface** e);
 
         /**

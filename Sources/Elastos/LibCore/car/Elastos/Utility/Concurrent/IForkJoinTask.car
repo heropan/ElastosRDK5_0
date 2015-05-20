@@ -142,7 +142,12 @@ module
      * @hide
      * @author Doug Lea
      */
-    interface IForkJoinTask extends IFuture {
+
+    /**
+     * @Involve
+     * interface IFuture;
+     */
+    interface IForkJoinTask {
 
         /**
          * Forces the given value to be returned as a result.  This method
@@ -420,7 +425,7 @@ module
          * @param tasks the tasks
          * @throws NullPointerException if any task is null
          */
-        InvokeAllEx(
+        InvokeAll(
             [in] ArrayOf<IForkJoinTask*>* tasks);
 
         /**
@@ -446,7 +451,7 @@ module
          * @return the tasks argument, to simplify usage
          * @throws NullPointerException if tasks or any element are null
          */
-        InvokeAllEx2(
+        InvokeAll(
             [in] ICollection* tasks,
             [out] ICollection** outcol);
 
@@ -545,7 +550,7 @@ module
          * @param result the result upon completion
          * @return the task
          */
-        AdaptEx(
+        Adapt(
             [in] IRunnable* runnable,
             [in] IInterface* result,
             [out] IForkJoinTask** outjoin);
@@ -559,7 +564,7 @@ module
          * @param callable the callable action
          * @return the task
          */
-        AdaptEx2(
+        Adapt(
             [in] ICallable* callable,
             [out] IForkJoinTask** outjoin);
     }

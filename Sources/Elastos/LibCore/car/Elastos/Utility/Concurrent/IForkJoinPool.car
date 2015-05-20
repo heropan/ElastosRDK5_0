@@ -186,7 +186,14 @@ module
      * @hide
      * @author Doug Lea
      */
-    interface IForkJoinPool extends IAbstractExecutorService {
+
+    /**
+     * @Involve
+     * interface IExecutor;
+     * interface IExecutorService;
+     * interface IAbstractExecutorService;
+     */
+    interface IForkJoinPool {
         /*
          * Implementation Overview
          *
@@ -428,7 +435,7 @@ module
          * @throws RejectedExecutionException if the task cannot be
          *         scheduled for execution
          */
-        ExecuteEx(
+        Execute(
             [in] IForkJoinTask* task);
 
         /**
@@ -440,7 +447,7 @@ module
          * @throws RejectedExecutionException if the task cannot be
          *         scheduled for execution
          */
-        SubmitEx3(
+        Submit(
             [in] IForkJoinTask* task,
             [out] IForkJoinTask** outfork);
 

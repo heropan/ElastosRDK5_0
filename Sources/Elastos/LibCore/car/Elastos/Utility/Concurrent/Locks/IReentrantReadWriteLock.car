@@ -7,7 +7,11 @@ module
     namespace Concurrent {
     namespace Locks {
 
-    interface IReentrantReadWriteLock extends IReadWriteLock {
+    /**
+     * @Involve
+     * interface IReadWriteLock;
+     */
+    interface IReentrantReadWriteLock {
         // Instrumentation and status
 
         /**

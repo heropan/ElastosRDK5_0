@@ -50,7 +50,15 @@ module
      *
      * @implements Elastos.Utility.Zip.IDeflaterOutputStream
      */
-    interface IZipOutputStream extends IDeflaterOutputStream {
+
+    /**
+     * @Involve
+     * interface ICloseable;
+     * interface IOutputStream;
+     * interface IFilterOutputStream;
+     * interface IDeflaterOutputStream;
+     */
+    interface IZipOutputStream {
         /**
          * Indicates deflated entries.
          */

@@ -8,6 +8,11 @@ module
      * An ListIterator is used to sequence over a List of objects. ListIterator can
      * move backwards or forwards through the list.
      */
+
+    /**
+     * @Involve
+     * interface IIterator;
+     */
     interface IListIterator extends IIterator {
         /**
          * Inserts the specified object into the list between {@code next} and

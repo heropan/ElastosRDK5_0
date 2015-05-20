@@ -42,7 +42,7 @@ module
          * @return the string associated with name, or {@code null} if name is not a
          *         valid key.
          */
-        GetValueEx(
+        GetValue(
             [in] String name,
             [out] String* value);
 

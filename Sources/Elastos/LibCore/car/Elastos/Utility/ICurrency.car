@@ -27,7 +27,7 @@ module
          * @since 1.7
          * @hide 1.7
          */
-        GetDisplayNameEx(
+        GetDisplayName(
             [in] ILocale* locale,
             [out] String* str);
 
@@ -49,7 +49,7 @@ module
          *
          * <p>If there is no locale-specific currency symbol, the ISO 4217 currency code is returned.
          */
-        GetSymbolEx(
+        GetSymbol(
             [in] ILocale* locale,
             [out] String* str);
 
@@ -86,7 +86,7 @@ module
          * @throws IllegalArgumentException
          *             if the locale's country is not a supported ISO 3166 country.
          */
-        GetInstanceEx(
+        GetInstance(
             [in] ILocale* locale,
             [out] ICurrency** outcur);
 

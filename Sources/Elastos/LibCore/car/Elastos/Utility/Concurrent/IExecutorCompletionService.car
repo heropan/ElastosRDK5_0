@@ -75,7 +75,12 @@ module
      *         use(result);
      * }}</pre>
      */
-    interface IExecutorCompletionService extends ICompletionService {
+
+    /**
+     * @Involve
+     * interface ICompletionService;
+     */
+    interface IExecutorCompletionService {
 
     }
 

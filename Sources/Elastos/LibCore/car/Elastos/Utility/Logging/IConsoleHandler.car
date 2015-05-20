@@ -27,7 +27,13 @@ module
      * <p>
      * This class is not thread-safe.
      */
-    interface IConsoleHandler extends IStreamHandler {
+
+    /**
+     * @Involve
+     * interface ILogHandler;
+     * interface IStreamHandler;
+     */
+    interface IConsoleHandler {
     }
 
     } // namespace Logging

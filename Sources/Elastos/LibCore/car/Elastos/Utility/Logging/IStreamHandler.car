@@ -28,7 +28,12 @@ module
      * <p>
      * This class is not thread-safe.
      */
-    interface IStreamHandler extends ILogHandler {
+
+    /**
+     * @Involve
+     * interface ILogHandler;
+     */
+    interface IStreamHandler {
         /**
          * Sets the output stream this handler writes to. Note it does nothing else.
          *
@@ -45,7 +50,7 @@ module
          * @param closeStream
          *            whether to close the underlying output stream.
          */
-        CloseEx(
+        Close(
             [in] Boolean closeStream);
     }
 

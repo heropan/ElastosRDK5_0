@@ -5,7 +5,14 @@ module
     namespace Utility {
     namespace Concurrent {
 
-    interface IArrayBlockingQueue extends IBlockingQueue {
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IQueue;
+     * interface IBlockingQueue;
+     */
+    interface IArrayBlockingQueue {
     }
 
     } // namespace Concurrent

@@ -51,7 +51,7 @@ module
      *             when an element in the list and the searched element cannot
      *             be compared to each other using the comparator.
      */
-    BinarySearchEx(
+    BinarySearch(
         [in] IList* list,
         [in] IInterface* object,
         [in] IComparator* comparator,
@@ -130,7 +130,7 @@ module
      *             when elements in the collection cannot be compared to each
      *             other using the {@code Comparator}.
      */
-    MaxEx(
+    Max(
         [in] ICollection* collection,
         [in] IComparator* comparator,
         [out] PInterface* result);
@@ -163,7 +163,7 @@ module
      *             when elements in the collection cannot be compared to each
      *             other using the {@code Comparator}.
      */
-    MinEx(
+    Min(
         [in] ICollection* collection,
         [in] IComparator* comparator,
         [out] PInterface* result);
@@ -219,7 +219,7 @@ module
      * @return a {@code Comparator} instance.
      * @since 1.5
      */
-    ReverseOrderEx(
+    ReverseOrder(
         [in] IComparator* c,
         [out] IComparator** result);
 
@@ -246,7 +246,7 @@ module
      * @throws UnsupportedOperationException
      *             when replacing an element in the list is not supported.
      */
-    ShuffleEx(
+    Shuffle(
         [in] IList* list,
         [in] IRandom* random);
 
@@ -258,7 +258,7 @@ module
      *            the element.
      * @return a set containing the element.
      */
-    NewSingleton(
+    Singleton(
         [in] IInterface* object,
         [out] ISet** result);
 
@@ -270,7 +270,7 @@ module
      *            the element.
      * @return a list containing the element.
      */
-    NewSingletonList(
+    SingletonList(
         [in] IInterface* object,
         [out] IList** result);
 
@@ -284,7 +284,7 @@ module
      *            the value.
      * @return a Map containing the key and value.
      */
-    NewSingletonMap(
+    SingletonMap(
         [in] PInterface key,
         [in] PInterface value,
         [out] IMap** result);
@@ -314,7 +314,7 @@ module
      *             when elements in the list cannot be compared to each other
      *             using the comparator.
      */
-    SortEx(
+    Sort(
         [in] IList* list,
         [in] IComparator* comparator);
 

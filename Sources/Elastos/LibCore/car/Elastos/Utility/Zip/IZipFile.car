@@ -3,8 +3,8 @@ module
 {
     using interface Elastos.IO.IInputStream;
 
-    interface Elastos.Utility.IObjectContainer;
     interface Elastos.Utility.Zip.IZipEntry;
+    interface Elastos.Utility.IEnumeration;
 
     namespace Elastos {
     namespace Utility {
@@ -34,7 +34,12 @@ module
     *
     * @implements Elastos.Utility.Zip.IZipConstants
     */
-    interface IZipFile extends IZipConstants {
+
+    /**
+     * @Involve
+     * interface IZipConstants;
+     */
+    interface IZipFile {
         /**
          * Open ZIP file for read.
          */
@@ -66,7 +71,7 @@ module
          * IllegalStateException |if this ZIP file has been closed.
          */
         GetEntries(
-            [out] IObjectContainer** entries);
+            [out] IEnumeration** entries);
 
         /**
          * Gets the ZIP entry with the specified name from this {ZipFile}.

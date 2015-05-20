@@ -6,7 +6,12 @@ module
     /**
      * An {@code Map} specialized for use with {@code Enum} types as keys.
      */
-    interface IEnumMap extends IMap {
+
+    /**
+     * @Involve
+     * interface IMap;
+     */
+    interface IEnumMap {
 
     }
 

@@ -1,10 +1,8 @@
 
 module
 {
-    interface Elastos.Utility.IObjectContainer;
-
-    namespace Elastos {
-    namespace Utility {
+    namespace Elastos{
+    namespace Utility{
 
     interface IObjectMap {
         Get(

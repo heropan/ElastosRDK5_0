@@ -26,7 +26,7 @@ module
          *             if {@code fromIndex} or {@code toIndex} is negative, or if
          *             {@code toIndex} is smaller than {@code fromIndex}.
          */
-        GetEx(
+        Get(
             [in] Int32 fromIndex,
             [in] Int32 toIndex,
             [out] IBitSet** bs);
@@ -44,7 +44,7 @@ module
          *
          * @throws IndexOutOfBoundsException if {@code index < 0}.
          */
-        SetEx(
+        Set(
             [in] Int32 index,
             [in] Boolean state);
 
@@ -55,7 +55,7 @@ module
          *             if {@code fromIndex} or {@code toIndex} is negative, or if
          *             {@code toIndex} is smaller than {@code fromIndex}.
          */
-        SetEx2(
+        Set(
             [in] Int32 fromIndex,
             [in] Int32 toIndex);
 
@@ -66,7 +66,7 @@ module
          *             if {@code fromIndex} or {@code toIndex} is negative, or if
          *             {@code toIndex} is smaller than {@code fromIndex}.
          */
-        SetEx3(
+        Set(
             [in] Int32 fromIndex,
             [in] Int32 toIndex,
             [in] Boolean state);
@@ -86,7 +86,7 @@ module
          *             if {@code fromIndex} or {@code toIndex} is negative, or if
          *             {@code toIndex} is smaller than {@code fromIndex}.
          */
-        ClearEx(
+        Clear(
             [in] Int32 fromIndex,
             [in] Int32 toIndex);
 
@@ -95,7 +95,7 @@ module
          * Use {@code clear} if you want to reuse this {@code BitSet} with the same capacity, but
          * create a new {@code BitSet} if you're trying to potentially reclaim memory.
          */
-        ClearEx3();
+        Clear();
 
         /**
          * Flips the bit at index {@code index}.
@@ -112,7 +112,7 @@ module
          *             if {@code fromIndex} or {@code toIndex} is negative, or if
          *             {@code toIndex} is smaller than {@code fromIndex}.
          */
-        FlipEx(
+        Flip(
             [in] Int32 fromIndex,
             [in] Int32 toIndex);
 
@@ -218,7 +218,7 @@ module
          * this {@code BitSet}.
          * @hide 1.7
          */
-        ToInt64Array(
+        ToArray(
             [out, callee] ArrayOf<Int64>* int64Arr);
 
         /**
@@ -227,7 +227,7 @@ module
          * this {@code BitSet}.
          * @hide 1.7
          */
-        ToByteArray(
+        ToArray(
             [out, callee] ArrayOf<Byte>* byteArr);
 
         Equals(
@@ -253,7 +253,7 @@ module
          * to the internal representation.
          * @hide 1.7
          */
-        ValueOfInt64Array(
+        ValueOf(
             [in] ArrayOf<Int64> int64Arr,
             [out] IBitSet** bs);
 
@@ -262,7 +262,7 @@ module
          * sequence of bits. This method does not alter the {@code LongBuffer}.
          * @hide 1.7
          */
-        ValueOfInt64Buffer(
+        ValueOf(
             [in] IInt64Buffer* int64Arr,
             [out] IBitSet** bs);
 
@@ -270,7 +270,7 @@ module
          * Equivalent to {@code BitSet.valueOf(ByteBuffer.wrap(bytes))}.
          * @hide 1.7
          */
-        ValueOfByteArray(
+        ValueOf(
             [in] ArrayOf<Byte> byteArr,
             [out] IBitSet** bs);
 
@@ -279,7 +279,7 @@ module
          * sequence of bits. This method does not alter the {@code ByteBuffer}.
          * @hide 1.7
          */
-        ValueOfByteBuffer(
+        ValueOf(
             [in] IByteBuffer* byteArr,
             [out] IBitSet** bs);
     }

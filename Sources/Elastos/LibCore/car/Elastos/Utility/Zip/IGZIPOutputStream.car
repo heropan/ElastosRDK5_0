@@ -7,10 +7,18 @@ module
 
     /**
      * The GZIPOutputStream class is used to write data to a stream in the GZIP storage format.
-     * 
+     *
      * @implements Elastos.Utility.Zip.IDeflaterOutputStream
      */
-    interface IGZIPOutputStream extends IDeflaterOutputStream {
+
+    /**
+     * @Involve
+     * interface ICloseable;
+     * interface IOutputStream;
+     * interface IFilterOutputStream;
+     * interface IDeflaterOutputStream;
+     */
+    interface IGZIPOutputStream {
     }
 
     } // namespace Zip

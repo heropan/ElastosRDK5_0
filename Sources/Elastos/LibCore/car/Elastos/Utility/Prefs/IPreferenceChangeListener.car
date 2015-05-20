@@ -14,7 +14,12 @@ module
      *
      * @since 1.4
      */
-    interface IPreferenceChangeListener extends Elastos.Utility.IEventListener {
+
+    /**
+     * @Involve
+     * interface IEventListener;
+     */
+    interface IPreferenceChangeListener {
         /**
          * This method gets invoked whenever a preference is added, deleted or
          * updated.

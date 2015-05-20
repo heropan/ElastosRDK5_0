@@ -167,7 +167,15 @@ module
      * @author Doug Lea
      * @param <E> the type of elements held in this collection
      */
-    interface IBlockingDeque extends IArrayBlockingQueue {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IQueue;
+     * interface IBlockingQueue;
+     */
+    interface IBlockingDeque {
         /*
          * We have "diamond" multiple interface inheritance here, and that
          * introduces ambiguities.  Methods might end up with different
@@ -292,7 +300,7 @@ module
          * @throws IllegalArgumentException if some property of the specified
          *         element prevents it from being added to this deque
          */
-        OfferFirstEx(
+        OfferFirst(
             [in] IInterface* e,
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
@@ -317,7 +325,7 @@ module
          * @throws IllegalArgumentException if some property of the specified
          *         element prevents it from being added to this deque
          */
-        OfferLastEx(
+        OfferLast(
             [in] IInterface* e,
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
@@ -392,7 +400,7 @@ module
          *         waiting time elapses before an element is available
          * @throws InterruptedException if interrupted while waiting
          */
-        PollFirstEx(
+        PollFirst(
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
             [out] IInterface** outface);
@@ -410,7 +418,7 @@ module
          *         waiting time elapses before an element is available
          * @throws InterruptedException if interrupted while waiting
          */
-        PollLastEx(
+        PollLast(
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
             [out] IInterface** outface);

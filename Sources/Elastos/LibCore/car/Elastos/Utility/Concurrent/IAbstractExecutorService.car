@@ -5,7 +5,12 @@ module
     namespace Utility {
     namespace Concurrent {
 
-    interface IAbstractExecutorService extends IExecutorService {
+    /**
+     * @Involve
+     * interface IExecutor;
+     * interface IExecutorService;
+     */
+    interface IAbstractExecutorService {
     }
 
     } // namespace Concurrent

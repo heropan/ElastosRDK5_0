@@ -28,8 +28,13 @@ module
      * {@code UnsupportedOperationException} if the underlying collection doesn't
      * support that method.
      */
+
+    /**
+     * @Involve
+     * interface IIterable;
+     */
     [deprecated]
-    interface ICollection extends IIterable {
+    interface ICollection {
         /**
          * Attempts to add {@code object} to the contents of this
          * {@code Collection} (optional).
@@ -308,7 +313,7 @@ module
          *                if the type of an element in this {@code Collection} cannot be
          *                stored in the type of the specified array.
          */
-        ToArrayEx(
+        ToArray(
             [in] ArrayOf<IInterface*>* inArray,
             [out, callee] ArrayOf<IInterface*>* outArray);
     }

@@ -7,7 +7,12 @@ module
     namespace Utility {
     namespace Concurrent {
 
-    interface IConcurrentHashMap extends IConcurrentMap {
+    /**
+     * @Involve
+     * interface IMap;
+     * interface IConcurrentMap;
+     */
+    interface IConcurrentHashMap {
         /**
          * Legacy method testing if some key maps into the specified value
          * in this table.  This method is identical in functionality to

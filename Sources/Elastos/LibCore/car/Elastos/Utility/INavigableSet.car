@@ -50,7 +50,15 @@ module
      * @param <E> the type of elements maintained by this set
      * @since 1.6
      */
-    interface INavigableSet extends ISortedSet {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface ISet;
+     * interface ISortedSet;
+     */
+    interface INavigableSet {
         /**
          * Returns the greatest element in this set strictly less than the
          * given element, or {@code null} if there is no such element.
@@ -195,7 +203,7 @@ module
          *         has a restricted range, and {@code fromElement} or
          *         {@code toElement} lies outside the bounds of the range.
          */
-        SubSetEx(
+        SubSet(
             [in] IInterface* fromElement,
             [in] Boolean fromInclusive,
             [in] IInterface* toElement,
@@ -229,7 +237,7 @@ module
          *         restricted range, and {@code toElement} lies outside the
          *         bounds of the range
          */
-        HeadSetEx(
+        HeadSet(
             [in] IInterface* toElement,
             [in] Boolean inclusive,
             [out] INavigableSet** outnav);
@@ -261,7 +269,7 @@ module
          *         restricted range, and {@code fromElement} lies outside the
          *         bounds of the range
          */
-        TailSetEx(
+        TailSet(
             [in] IInterface* fromElement,
             [in] Boolean inclusive,
             [out] INavigableSet** outnav);

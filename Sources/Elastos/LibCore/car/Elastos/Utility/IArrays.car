@@ -52,7 +52,7 @@ module
      * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
      * @since 1.6
      */
-    BinarySearchByteEx(
+    BinarySearchByte(
         [in] ArrayOf<Byte>* array,
         [in] Int32 startIndex,
         [in] Int32 endIndex,
@@ -90,7 +90,7 @@ module
      * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
      * @since 1.6
      */
-    BinarySearchChar32Ex(
+    BinarySearchChar32(
         [in] ArrayOf<Char32>* array,
         [in] Int32 startIndex,
         [in] Int32 endIndex,
@@ -128,7 +128,7 @@ module
      * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
      * @since 1.6
      */
-    BinarySearchDoubleEx(
+    BinarySearchDouble(
         [in] ArrayOf<Double>* array,
         [in] Int32 startIndex,
         [in] Int32 endIndex,
@@ -166,7 +166,7 @@ module
      * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
      * @since 1.6
      */
-    BinarySearchFloatEx(
+    BinarySearchFloat(
         [in] ArrayOf<Float>* array,
         [in] Int32 startIndex,
         [in] Int32 endIndex,
@@ -204,7 +204,7 @@ module
      * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
      * @since 1.6
      */
-    BinarySearchInt32Ex(
+    BinarySearchInt32(
         [in] ArrayOf<Int32>* array,
         [in] Int32 startIndex,
         [in] Int32 endIndex,
@@ -242,7 +242,7 @@ module
      * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
      * @since 1.6
      */
-    BinarySearchInt64Ex(
+    BinarySearchInt64(
         [in] ArrayOf<Int64>* array,
         [in] Int32 startIndex,
         [in] Int32 endIndex,
@@ -286,7 +286,7 @@ module
      * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
      * @since 1.6
      */
-    BinarySearchObjectEx(
+    BinarySearchObject(
         [in] ArrayOf<IInterface* >* array,
         [in] Int32 startIndex,
         [in] Int32 endIndex,
@@ -335,7 +335,7 @@ module
      * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
      * @since 1.6
      */
-    BinarySearchEx(
+    BinarySearch(
         [in] ArrayOf<IInterface* >* array,
         [in] Int32 startIndex,
         [in] Int32 endIndex,
@@ -374,7 +374,7 @@ module
      * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
      * @since 1.6
      */
-    BinarySearchInt16Ex(
+    BinarySearchInt16(
         [in] ArrayOf<Int16>* array,
         [in] Int32 startIndex,
         [in] Int32 endIndex,
@@ -409,7 +409,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    FillByteEx(
+    FillByte(
         [in] ArrayOf<Byte>* array,
         [in] Int32 start,
         [in] Int32 end,
@@ -443,7 +443,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    FillInt16Ex(
+    FillInt16(
         [in] ArrayOf<Int16>* array,
         [in] Int32 start,
         [in] Int32 end,
@@ -477,7 +477,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    FillChar32Ex(
+    FillChar32(
         [in] ArrayOf<Char32>* array,
         [in] Int32 start,
         [in] Int32 end,
@@ -511,7 +511,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    FillInt32Ex(
+    FillInt32(
         [in] ArrayOf<Int32>* array,
         [in] Int32 start,
         [in] Int32 end,
@@ -545,7 +545,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    FillInt64Ex(
+    FillInt64(
         [in] ArrayOf<Int64>* array,
         [in] Int32 start,
         [in] Int32 end,
@@ -579,7 +579,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    FillFloatEx(
+    FillFloat(
         [in] ArrayOf<Float>* array,
         [in] Int32 start,
         [in] Int32 end,
@@ -613,7 +613,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    FillDoubleEx(
+    FillDouble(
         [in] ArrayOf<Double>* array,
         [in] Int32 start,
         [in] Int32 end,
@@ -647,7 +647,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    FillBooleanEx(
+    FillBoolean(
         [in] ArrayOf<Boolean>* array,
         [in] Int32 start,
         [in] Int32 end,
@@ -681,7 +681,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    FillObjectEx(
+    FillObject(
         [in] ArrayOf<IInterface* >* array,
         [in] Int32 start,
         [in] Int32 end,
@@ -1114,7 +1114,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    SortByteEx(
+    SortByte(
         [in] ArrayOf<Byte>* array,
         [in] Int32 start,
         [in] Int32 end);
@@ -1164,7 +1164,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    SortChar32Ex(
+    SortChar32(
         [in] ArrayOf<Char32>* array,
         [in] Int32 start,
         [in] Int32 end);
@@ -1195,7 +1195,7 @@ module
      *                if {@code start < 0} or {@code end > array.length}.
      * @see Double#compareTo(Double)
      */
-    SortDoubleEx(
+    SortDouble(
         [in] ArrayOf<Double>* array,
         [in] Int32 start,
         [in] Int32 end);
@@ -1226,7 +1226,7 @@ module
      *                if {@code start < 0} or {@code end > array.length}.
      * @see Float#compareTo(Float)
      */
-    SortFloatEx(
+    SortFloat(
         [in] ArrayOf<Float>* array,
         [in] Int32 start,
         [in] Int32 end);
@@ -1254,7 +1254,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    SortInt32Ex(
+    SortInt32(
         [in] ArrayOf<Int32>* array,
         [in] Int32 start,
         [in] Int32 end);
@@ -1282,7 +1282,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    SortInt64Ex(
+    SortInt64(
         [in] ArrayOf<Int64>* array,
         [in] Int32 start,
         [in] Int32 end);
@@ -1310,7 +1310,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    SortInt16Ex(
+    SortInt16(
         [in] ArrayOf<Int16>* array,
         [in] Int32 start,
         [in] Int32 end);
@@ -1384,7 +1384,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    SortObjectEx(
+    SortObject(
         [in] ArrayOf<IInterface* >* array,
         [in] Int32 start,
         [in] Int32 end);
@@ -1410,7 +1410,7 @@ module
      * @throws ArrayIndexOutOfBoundsException
      *                if {@code start < 0} or {@code end > array.length}.
      */
-    SortEx(
+    Sort(
         [in] ArrayOf<IInterface* >* array,
         [in] Int32 start,
         [in] Int32 end,
@@ -1977,7 +1977,7 @@ module
      * @since 1.6
      */
     //@SuppressWarnings("unchecked")
-    /*CopyOfRangeU(
+    /*CopyOfRange(
         [in] U[] original,
         [in] Int32 start,
         [in] Int32 end,

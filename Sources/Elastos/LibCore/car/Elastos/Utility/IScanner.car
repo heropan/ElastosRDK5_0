@@ -30,7 +30,12 @@ module
      * <p>
      * The {@code Scanner} class is not thread-safe.
      */
-    interface IScanner extends Elastos.Utility.IIterator {
+
+    /**
+     * @Involve
+     * interface IIterator;
+     */
+    interface IScanner {
 
         /**
          * Closes this {@code Scanner} and the underlying input if the input implements
@@ -83,7 +88,7 @@ module
          *             if the {@code Scanner} is closed.
          * @see #findInLine(Pattern)
          */
-        FindInLineEx(
+        FindInLine(
             [in] String pattern,
             [out] String* str);
 
@@ -141,7 +146,7 @@ module
          *             if {@code horizon} is less than zero.
          * @see #findWithinHorizon(Pattern, int)
          */
-        FindWithinHorizonEx(
+        FindWithinHorizon(
             [in] String pattern,
             [in] Int32 horizon,
             [out] String* str);
@@ -158,7 +163,7 @@ module
          * @throws IllegalStateException
          *             if the {@code Scanner} has been closed.
          */
-        HasNextEx(
+        HasNext(
             [in] IPattern* pattern,
             [out] Boolean* value);
 
@@ -175,7 +180,7 @@ module
          * @throws IllegalStateException
          *             if the {@code Scanner} has been closed.
          */
-        HasNextEx2(
+        HasNext(
             [in] String pattern,
             [out] Boolean* value);
 
@@ -215,7 +220,7 @@ module
          * @throws IllegalStateException
          *             if the {@code Scanner} has been closed.
          */
-        HasNextBigIntegerEx(
+        HasNextBigInteger(
             [in] Int32 radix,
             [out] Boolean* value);
 
@@ -255,7 +260,7 @@ module
          * @throws IllegalStateException
          *             if the {@code Scanner} has been closed.
          */
-        HasNextByteEx(
+        HasNextByte(
             [in] Int32 radix,
             [out] Boolean* value);
 
@@ -308,7 +313,7 @@ module
          * @throws IllegalStateException
          *             if the {@code Scanner} has been closed.
          */
-        HasNextInt32Ex(
+        HasNextInt32(
             [in] Int32 radix,
             [out] Boolean* value);
 
@@ -348,7 +353,7 @@ module
          * @throws IllegalStateException
          *             if the {@code Scanner} has been closed.
          */
-        HasNextInt64Ex(
+        HasNextInt64(
             [in] Int32 radix,
             [out] Boolean* value);
 
@@ -376,7 +381,7 @@ module
          * @throws IllegalStateException
          *             if the {@code Scanner} has been closed.
          */
-        HasNextInt16Ex(
+        HasNextInt16(
             [in] Int32 radix,
             [out] Boolean* value);
 
@@ -426,7 +431,7 @@ module
          * @throws InputMismatchException
          *             if the next token does not match the pattern given.
          */
-        NextEx(
+        Next(
             [in] IPattern* pattern,
             [out] String* str);
 
@@ -447,7 +452,7 @@ module
          * @throws InputMismatchException
          *             if the next token does not match the pattern given.
          */
-        NextEx2(
+        Next(
             [in] String pattern,
             [out] String* str);
 
@@ -512,7 +517,7 @@ module
          *             if the next token can not be translated into a valid
          *             {@code BigInteger}.
          */
-        NextBigIntegerEx(
+        NextBigInteger(
             [in] Int32 radix,
             [out] IBigInteger** outbig);
 
@@ -571,7 +576,7 @@ module
          *             {@code byte} value.
          */
         // @SuppressWarnings("boxing")
-        NextByteEx(
+        NextByte(
             [in] Int32 radix,
             [out] Byte* value);
 
@@ -665,7 +670,7 @@ module
          *             {@code int} value.
          */
         // @SuppressWarnings("boxing")
-        NextInt32Ex(
+        NextInt32(
             [in] Int32 radix,
             [out] Int32* value);
 
@@ -725,7 +730,7 @@ module
          *             {@code long} value.
          */
         // @SuppressWarnings("boxing")
-        NextInt64Ex(
+        NextInt64(
             [in] Int32 radix,
             [out] Int64* value);
 
@@ -769,7 +774,7 @@ module
          *             {@code short} value.
          */
         // @SuppressWarnings("boxing")
-        NextInt16Ex(
+        NextInt16(
             [in] Int32 radix,
             [out] Int16* value);
 
@@ -814,7 +819,7 @@ module
          * @throws IllegalStateException
          *             if the {@code Scanner} is closed.
          */
-        SkipEx(
+        Skip(
             [in] String pattern,
             [out] IScanner** outscan);
 
@@ -846,7 +851,7 @@ module
          *            a string from which a {@code Pattern} can be compiled.
          * @return this {@code Scanner}.
          */
-        UseDelimiterEx(
+        UseDelimiter(
             [in] String pattern,
             [out] IScanner** outscan);
 

@@ -42,7 +42,15 @@ module
      * @author Doug Lea and Bill Scherer and Michael Scott
      * @param <E> the type of elements held in this collection
      */
-    interface ISynchronousQueue extends IBlockingQueue {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IQueue;
+     * interface IBlockingQueue;
+     */
+    interface ISynchronousQueue {
     }
 
     } // namespace Concurrent

@@ -6,7 +6,13 @@ module
     namespace Elastos {
     namespace Utility {
 
-    interface ILinkedList extends IList{
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IList;
+     */
+    interface ILinkedList {
         /**
          * Adds the specified object at the beginning of this {@code LinkedList}.
          *
@@ -141,7 +147,7 @@ module
         Push(
             [in] IInterface* object);
 
-        RemoveEx2(
+        Remove(
             [out] IInterface** object);
 
         /**

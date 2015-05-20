@@ -21,7 +21,12 @@ module
      * @param <K> the type of keys maintained by this map
      * @param <V> the type of mapped values
      */
-    interface IConcurrentMap extends Elastos.Utility.IMap {
+
+    /**
+     * @Involve
+     * interface IMap;
+     */
+    interface IConcurrentMap {
         /**
          * If the specified key is not already associated
          * with a value, associate it with the given value.
@@ -80,7 +85,7 @@ module
          *         and this map does not permit null keys or values
          *         (<a href="../Collection.html#optional-restrictions">optional</a>)
          */
-        RemoveEx(
+        Remove(
             [in] IInterface* key,
             [in] IInterface* value,
             [out] Boolean* result);
@@ -143,7 +148,7 @@ module
          * @throws IllegalArgumentException if some property of the specified key
          *         or value prevents it from being stored in this map
          */
-        ReplaceEx(
+        Replace(
             [in] IInterface* key,
             [in] IInterface* value,
             [out] IInterface** result);

@@ -252,7 +252,7 @@ module
          * @param param
          *            the parameter for the method call.
          */
-        EnteringEx(
+        Entering(
             [in] String sourceClass,
             [in] String sourceMethod,
             [in] IInterface* param);
@@ -270,7 +270,7 @@ module
          * @param params
          *            an array of parameters for the method call.
          */
-        EnteringEx2(
+        Entering(
             [in] String sourceClass,
             [in] String sourceMethod,
             [in] ArrayOf<IInterface*>* params);
@@ -301,7 +301,7 @@ module
          * @param result
          *            the return value of the method call.
          */
-        ExitingEx(
+        Exiting(
             [in] String sourceClass,
             [in] String sourceMethod,
             [in] IInterface* result);
@@ -418,7 +418,7 @@ module
          * @param param
          *            the parameter associated with the event that is logged.
          */
-        LogEx(
+        Log(
             [in] ILevel* logLevel,
             [in] String msg,
             [in] IInterface* param);
@@ -434,7 +434,7 @@ module
          * @param params
          *            the parameter array associated with the event that is logged.
          */
-        LogEx2(
+        Log(
             [in] ILevel* logLevel,
             [in] String msg,
             [in] ArrayOf<IInterface*>* params);
@@ -451,7 +451,7 @@ module
          *            the {@code Throwable} object associated with the event that is
          *            logged.
          */
-        LogEx3(
+        Log(
             [in] ILevel* logLevel,
             [in] String msg,
             [in] IThrowable* thrown);
@@ -471,7 +471,7 @@ module
          * @param record
          *            the log record to be logged.
          */
-        LogEx4(
+        Log(
             [in] ILogRecord* record);
 
         /**
@@ -508,7 +508,7 @@ module
          * @param param
          *            the parameter associated with the event that is logged.
          */
-        LogpEx(
+        Logp(
             [in] ILevel* logLevel,
             [in] String sourceClass,
             [in] String sourceMethod,
@@ -530,7 +530,7 @@ module
          * @param params
          *            the parameter array associated with the event that is logged.
          */
-        LogpEx2(
+        Logp(
             [in] ILevel* logLevel,
             [in] String sourceClass,
             [in] String sourceMethod,
@@ -552,7 +552,7 @@ module
          * @param thrown
          *            the {@code Throwable} object.
          */
-        LogpEx3(
+        Logp(
             [in] ILevel* logLevel,
             [in] String sourceClass,
             [in] String sourceMethod,
@@ -602,7 +602,7 @@ module
          * @param param
          *            the parameter associated with the event that is logged.
          */
-        LogrbEx(
+        Logrb(
             [in] ILevel* logLevel,
             [in] String sourceClass,
             [in] String sourceMethod,
@@ -629,7 +629,7 @@ module
          * @param params
          *            the parameter array associated with the event that is logged.
          */
-        LogrbEx2(
+        Logrb(
             [in] ILevel* logLevel,
             [in] String sourceClass,
             [in] String sourceMethod,
@@ -656,7 +656,7 @@ module
          * @param thrown
          *            the {@code Throwable} object.
          */
-        LogrbEx3(
+        Logrb(
             [in] ILevel* logLevel,
             [in] String sourceClass,
             [in] String sourceMethod,
@@ -708,7 +708,7 @@ module
          * @throws MissingResourceException
          *             if the specified resource bundle can not be loaded.
          */
-        GetAnonymousLoggerEx(
+        GetAnonymousLogger(
             [in] String resourceBundleName,
             [out] ILogger** outlog);
 
@@ -743,7 +743,7 @@ module
          *             if the name of the resource bundle cannot be found.
          * @return a named logger.
          */
-        GetLoggerEx(
+        GetLogger(
             [in] String name,
             [in] String resourceBundleName,
             [out] ILogger** outlog);

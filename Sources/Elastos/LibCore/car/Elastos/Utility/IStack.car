@@ -7,7 +7,15 @@ module
      * stack of objects. It enables users to pop to and push from the stack,
      * including null objects. There is no limit to the size of the stack.
      */
-    interface IStack extends IVector {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IList;
+     * interface IVector;
+     */
+    interface IStack {
         /**
          * Returns whether the stack is empty or not.
          *

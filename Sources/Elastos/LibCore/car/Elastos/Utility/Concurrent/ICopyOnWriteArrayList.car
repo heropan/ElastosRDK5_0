@@ -29,7 +29,13 @@ module
      * #lastIndexOf}) and methods for conditional adds ({@link #addIfAbsent} and
      * {@link #addAllAbsent}).
      */
-    interface ICopyOnWriteArrayList extends Elastos.Utility.IList {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     */
+    interface ICopyOnWriteArrayList {
 
         /**
          * Searches this list for {@code object} and returns the index of the first
@@ -37,7 +43,7 @@ module
          *
          * @return the index or -1 if the object was not found.
          */
-        IndexOfEx(
+        IndexOf(
             [in] IInterface* object,
             [in] Int32 from,
             [out] Int32* value);
@@ -48,7 +54,7 @@ module
          *
          * @return the index or -1 if the object was not found.
          */
-        LastIndexOfEx(
+        LastIndexOf(
             [in] IInterface* object,
             [in] Int32 to,
             [out] Int32* value);

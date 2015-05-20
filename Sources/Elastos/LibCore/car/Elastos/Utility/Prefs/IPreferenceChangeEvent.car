@@ -18,7 +18,12 @@ module
      *
      * @since 1.4
      */
-    interface IPreferenceChangeEvent extends Elastos.Utility.IEventObject {
+
+    /**
+     * @Involve
+     * interface IEventObject;
+     */
+    interface IPreferenceChangeEvent {
         /**
          * Gets the key of the changed preference.
          *

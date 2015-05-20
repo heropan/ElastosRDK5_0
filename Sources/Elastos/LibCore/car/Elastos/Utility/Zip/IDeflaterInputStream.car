@@ -11,7 +11,14 @@ module
      *
      * @implements Elastos.Utility.Zip.Elastos.IO.IFilterInputStream
      */
-    interface IDeflaterInputStream extends Elastos.IO.IFilterInputStream {
+
+    /**
+     * @Involve
+     * interface ICloseable;
+     * interface IInputStream;
+     * interface IFilterInputStream;
+     */
+    interface IDeflaterInputStream {
     }
 
     } // namespace Zip

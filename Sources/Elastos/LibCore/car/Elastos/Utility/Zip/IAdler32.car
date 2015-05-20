@@ -11,10 +11,15 @@ module
      * RFC 1950 for the specification.
      *
      * @sa CRC32
-     * 
+     *
      * @implements Elastos.Utility.Zip.IChecksum
      */
-    interface IAdler32 extends IChecksum {
+
+    /**
+     * @Involve
+     * interface IChecksum;
+     */
+    interface IAdler32 {
     }
 
     } // namespace Zip

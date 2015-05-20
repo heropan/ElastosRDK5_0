@@ -7,6 +7,13 @@ module
      *
      * @hide
      */
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IList;
+     */
     interface IUnsafeArrayList extends IList {
 
     }

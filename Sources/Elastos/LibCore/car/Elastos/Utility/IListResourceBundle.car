@@ -10,7 +10,12 @@ module
      * @see ResourceBundle
      * @since 1.1
      */
-    interface IListResourceBundle extends IResourceBundle {
+
+    /**
+     * @Involve
+     * interface IResourceBundle;
+     */
+    interface IListResourceBundle {
         // @Override
         HandleGetObject(
             [in] String key,

@@ -16,8 +16,15 @@ module
      *
      * @param <E> The element type of this list.
      */
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IList;
+     */
     [deprecated]
-    interface IVector extends IList {
+    interface IVector {
         /**
          * Adds the specified object at the end of this vector.
          *
@@ -120,7 +127,7 @@ module
          * @see #lastIndexOf(Object)
          * @see #lastIndexOf(Object, int)
          */
-        IndexOfEx(
+        IndexOf(
             [in] IInterface* object,
             [in] Int32 location,
             [out] Int32* value);
@@ -176,7 +183,7 @@ module
          * @see #indexOf(Object)
          * @see #indexOf(Object, int)
          */
-        LastIndexOfEx(
+        LastIndexOf(
             [in] IInterface* object,
             [in] Int32 location,
             [out] Int32* value);

@@ -604,7 +604,7 @@ module
 		 * @param field
 		 *            the field to clear.
 		 */
-		ClearEx(
+		Clear(
             [in] Int32 field);
 
         /**
@@ -813,7 +813,7 @@ module
 		 * @param increment
 		 *            {true} to increment the field, {false} to decrement.
 		 */
-		RollEx(
+		Roll(
             [in] Int32 field,
             [in] Boolean increment);
 
@@ -840,7 +840,7 @@ module
 		 * @param day
 		 *            the day of the month.
 		 */
-		SetEx(
+		Set(
             [in] Int32 year,
             [in] Int32 month,
             [in] Int32 day);
@@ -860,7 +860,7 @@ module
 		 * @param minute
 		 *            the minute.
 		 */
-		SetEx2(
+		Set(
             [in] Int32 year,
             [in] Int32 month,
             [in] Int32 day,
@@ -884,7 +884,7 @@ module
 		 * @param second
 		 *            the second.
 		 */
-		SetEx3(
+		Set(
             [in] Int32 year,
             [in] Int32 month,
             [in] Int32 day,
@@ -1027,7 +1027,7 @@ module
          *            the locale to use.
          * @return a {Calendar} subclass instance set to the current date and time.
          */
-        GetInstanceEx(
+        GetInstance(
             [in] ILocale* locale,
             [out] ICalendar** calenar);
 
@@ -1040,7 +1040,7 @@ module
          * @return a {Calendar} subclass instance set to the current date and time in
          *         the specified timezone.
          */
-        GetInstanceEx2(
+        GetInstance(
             [in] ITimeZone* timezone,
             [out] ICalendar** calenar);
 
@@ -1055,7 +1055,7 @@ module
          * @return a {Calendar} subclass instance set to the current date and time in
          *         the specified timezone.
          */
-        GetInstanceEx3(
+        GetInstance(
             [in] ITimeZone* timezone,
             [in] ILocale* locale,
             [out] ICalendar** calenar);

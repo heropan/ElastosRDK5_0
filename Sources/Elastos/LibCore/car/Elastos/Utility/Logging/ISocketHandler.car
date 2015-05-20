@@ -33,7 +33,13 @@ module
      * <p>
      * This class is not thread-safe.
      */
-    interface ISocketHandler extends IStreamHandler {
+
+    /**
+     * @Involve
+     * interface ILogHandler;
+     * interface IStreamHandler;
+     */
+    interface ISocketHandler {
     }
 
     } // namespace Logging

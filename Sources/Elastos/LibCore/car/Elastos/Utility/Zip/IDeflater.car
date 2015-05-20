@@ -14,7 +14,7 @@ module
      * It is usually more convenient to use DeflaterOutputStream.
      *
      * @sa DeflaterOutputStream
-     * <p>  
+     * <p>
      * To compress an in-memory byte[] to another in-memory byte[] manually:
      * <pre>
      * byte[] originalBytes = ...
@@ -32,15 +32,15 @@ module
      *  byte[] compressedBytes = baos.toByteArray();
      * </pre>
      * <p>
-     * In situations where you don't have all the input in one array 
+     * In situations where you don't have all the input in one array
      * (or have so much input that you want to feed it to the deflater in
      * chunks), it's possible to call setInput repeatedly, but you're much
      * better off using DeflaterOutputStream to handle all this for you.
      * DeflaterOutputStream also helps minimize memory requirements — the
      * sample code above is very expensive.
      *
-     * @sa setInput 
-     * @sa DeflaterOutputStream 
+     * @sa setInput
+     * @sa DeflaterOutputStream
      * <p>
      * <strong>Compression levels</strong>
      * <p>
@@ -53,7 +53,7 @@ module
      * @sa NO_COMPRESSION
      * @sa BEST_COMPRESSION
      * @sa BEST_SPEED
-     * 
+     *
      */
 
     interface IDeflater {
@@ -145,7 +145,7 @@ module
          * @return the number of bytes of compressed data written to {buf}.
          */
         // synchronized
-        DeflateEx(
+        Deflate(
             [out] ArrayOf<Byte> buf,
             [in] Int32 offset,
             [in] Int32 byteCount,
@@ -171,7 +171,7 @@ module
          * @since 1.7
          */
         // synchronized
-        DeflateEx2(
+        Deflate(
             [out] ArrayOf<Byte> buf,
             [in] Int32 offset,
             [in] Int32 byteCount,
@@ -221,7 +221,7 @@ module
         /**
          * Returns the total number of bytes of input read by this {Deflater}. This
          * method is limited to 32 bits; use #getBytesRead instead.
-         * 
+         *
          * @sa #getBytesRead
          */
         // synchronized
@@ -255,7 +255,7 @@ module
          * previously made settings for the compression strategy or level. This
          * operation <i>must</i> be called after #finished returns
          * true if the {Deflater} is to be reused.
-         * 
+         *
          * @sa #finished
          */
         // synchronized
@@ -282,7 +282,7 @@ module
          * @sa #Deflater(int, boolean)
          */
         // synchronized
-        SetDictionaryEx(
+        SetDictionary(
             [in] ArrayOf<Byte> buf,
             [in] Int32 offset,
             [in] Int32 byteCount);
@@ -299,7 +299,7 @@ module
          * for later compression.
          */
         // synchronized
-        SetInputEx(
+        SetInput(
             [in] ArrayOf<Byte> buf,
             [in] Int32 offset,
             [in] Int32 byteCount);

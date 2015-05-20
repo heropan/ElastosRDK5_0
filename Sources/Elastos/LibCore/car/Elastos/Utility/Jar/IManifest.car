@@ -43,7 +43,7 @@ module
              * @return main {@code Attributes} associated with the source {@code
              *         JarFile}.
              */
-             GetMainAttributes(
+            GetMainAttributes(
                 [out] IAttributes** attrib);
 
             /**

@@ -10,7 +10,12 @@ module
      * otherwise the default platform encoding is used instead. UTF-8 is the
      * recommended encoding.
      */
-    interface IXMLFormatter extends ILogFormatter {
+
+    /**
+     * @Involve
+     * interface ILogFormatter;
+     */
+    interface IXMLFormatter {
     }
 
     } // namespace Logging

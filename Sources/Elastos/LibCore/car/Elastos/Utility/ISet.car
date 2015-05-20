@@ -7,7 +7,13 @@ module
      *
      * @since 1.2
      */
-    interface ISet extends ICollection {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     */
+    interface ISet {
 
     }
 

@@ -5,7 +5,11 @@ module
     namespace Utility {
     namespace Concurrent {
 
-    interface IRunnableFuture extends IFuture {
+    /**
+     * @Involve
+     * interface IFuture;
+     */
+    interface IRunnableFuture {
     }
 
     } // namespace Concurrent

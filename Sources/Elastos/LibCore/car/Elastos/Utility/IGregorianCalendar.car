@@ -149,7 +149,12 @@ module
      *
      * @implements Elastos.Utility.ICalendar
      */
-    interface IGregorianCalendar extends ICalendar {
+
+    /**
+     * @Involve
+     * interface ICalendar;
+     */
+    interface IGregorianCalendar {
 
         /**
          * Value for the BC era.

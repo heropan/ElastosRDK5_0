@@ -73,7 +73,7 @@ module
          * @param data
          *            the argument passed to {@code update()}.
          */
-        NotifyObserversEx(
+        NotifyObservers(
             [in] IInterface* data);
 
         /**

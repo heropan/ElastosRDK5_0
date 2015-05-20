@@ -11,7 +11,13 @@ module
      *
      * @since 1.4
      */
-    interface IFilePreferencesImpl extends IAbstractPreferences {
+
+    /**
+     * @Involve
+     * interface IPreferences;
+     * interface IAbstractPreferences;
+     */
+    interface IFilePreferencesImpl {
     }
 
     } // namespace Prefs

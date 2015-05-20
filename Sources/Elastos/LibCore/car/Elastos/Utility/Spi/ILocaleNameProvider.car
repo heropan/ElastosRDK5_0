@@ -12,7 +12,12 @@ module
      * @since 1.6
      * @hide
      */
-    interface ILocaleNameProvider extends ILocaleServiceProvider {
+
+    /**
+     * @Involve
+     * interface ILocaleServiceProvider;
+     */
+    interface ILocaleNameProvider {
         /**
          * Returns the localized name for the given ISO 639 language code.
          *

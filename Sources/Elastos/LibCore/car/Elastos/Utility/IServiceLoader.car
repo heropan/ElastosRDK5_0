@@ -83,7 +83,7 @@ module
          * @param service the service class or interface
          * @return a new ServiceLoader
          */
-        LoadEx(
+        Load(
             [in] IInterface* service,
             [out] IServiceLoader** outser);
 

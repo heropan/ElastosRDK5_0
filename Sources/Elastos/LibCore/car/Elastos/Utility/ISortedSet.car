@@ -14,7 +14,14 @@ module
      * @see Comparator
      * @see Comparable
      */
-    interface ISortedSet extends ISet {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface ISet;
+     */
+    interface ISortedSet {
 
         /**
          * Returns the comparator used to compare elements in this {@code SortedSet}.

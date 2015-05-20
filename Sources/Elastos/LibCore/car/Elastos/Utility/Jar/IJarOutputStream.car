@@ -7,8 +7,16 @@ module
     namespace Utility{
     namespace Jar{
 
-        interface IJarOutputStream extends Elastos.Utility.Zip.IZipOutputStream {
-        }
+    /**
+     * @Involve
+     * interface ICloseable;
+     * interface IOutputStream;
+     * interface IFilterOutputStream;
+     * interface IDeflaterOutputStream;
+     * interface IZipOutputStream;
+     */
+    interface IJarOutputStream {
+    }
     }//Jar
     }//Utility
     }//Elastos

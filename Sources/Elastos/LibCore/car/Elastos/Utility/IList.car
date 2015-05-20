@@ -12,7 +12,13 @@ module
      * index, with the first index being zero. Normally, {@code List}s allow duplicate
      * elements, as compared to Sets, where elements have to be unique.
      */
-    interface IList extends ICollection {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     */
+    interface IList {
         /**
          * Inserts the specified object into this {@code List} at the specified location.
          * The object is inserted before the current element at the specified
@@ -35,7 +41,7 @@ module
          * @throws IndexOutOfBoundsException
          *                if {@code location < 0 || location > size()}
          */
-        AddEx(
+        Add(
             [in] Int32 location,
             [in] IInterface* object);
 
@@ -60,7 +66,7 @@ module
          * @throws IndexOutOfBoundsException
          *                if {@code location < 0 || location > size()}
          */
-        AddAllEx(
+        AddAll(
             [in] Int32 location,
             [in] ICollection* collection,
             [out] Boolean* modified);
@@ -127,7 +133,7 @@ module
          *                if {@code location < 0 || location > size()}
          * @see ListIterator
          */
-        GetListIteratorEx(
+        GetListIterator(
             [in] Int32 location,
             [out] IListIterator** it);
 
@@ -142,7 +148,7 @@ module
          * @throws IndexOutOfBoundsException
          *                if {@code location < 0 || location >= size()}
          */
-        RemoveEx(
+        Remove(
             [in] Int32 location,
             [out] IInterface** object);
 

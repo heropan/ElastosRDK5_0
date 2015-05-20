@@ -34,7 +34,15 @@ module
      * @author Doug Lea
      * @param <E> the type of elements held in this collection
      */
-    interface IDelayQueue extends IBlockingQueue {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IQueue;
+     * interface IBlockingQueue;
+     */
+    interface IDelayQueue {
         /**
          * Identity-based version for use in Itr.remove
          */

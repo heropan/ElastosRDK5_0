@@ -2,6 +2,7 @@ module
 {
     using interface Elastos.Core.IRunnable;
     interface Elastos.Utility.Concurrent.IRejectedExecutionHandler;
+    interface Elastos.Utility.Concurrent.IAbstractExecutorService;
 
     namespace Elastos {
     namespace Utility {
@@ -276,7 +277,14 @@ module
      * @since 1.5
      * @author Doug Lea
      */
-    interface IThreadPoolExecutor extends IAbstractExecutorService {
+
+    /**
+     * @Involve
+     * interface IExecutor;
+     * interface IExecutorService;
+     * interface IAbstractExecutorService;
+     */
+    interface IThreadPoolExecutor {
         /**
          * Returns true if this executor is in the process of terminating
          * after {@link #shutdown} or {@link #shutdownNow} but has not

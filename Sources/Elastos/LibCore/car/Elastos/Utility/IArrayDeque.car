@@ -45,7 +45,13 @@ module
      * @since   1.6
      * @param <E> the type of elements held in this collection
      */
-    interface IArrayDeque extends ICollection {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     */
+    interface IArrayDeque {
     }
 
     } // namespace Utility

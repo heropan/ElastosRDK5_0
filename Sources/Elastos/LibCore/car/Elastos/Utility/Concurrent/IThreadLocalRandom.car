@@ -29,7 +29,12 @@ module
      * @hide
      * @author Doug Lea
      */
-    interface IThreadLocalRandom extends Elastos.Core.IRandom {
+
+    /**
+     * @Involve
+     * interface IRandom;
+     */
+    interface IThreadLocalRandom {
 
         /**
          * Returns a pseudorandom, uniformly distributed value between the
@@ -41,7 +46,7 @@ module
          * to bound
          * @return the next value
          */
-        NextInt32Ex2(
+        NextInt32(
             [in] Int32 least,
             [in] Int32 bound,
             [out] Int32* value);
@@ -55,7 +60,7 @@ module
          * @return the next value
          * @throws IllegalArgumentException if n is not positive
          */
-        NextInt64Ex(
+        NextInt64(
             [in] Int64 n,
             [out] Int64* value);
 
@@ -69,7 +74,7 @@ module
          * @throws IllegalArgumentException if least greater than or equal
          * to bound
          */
-        NextInt64Ex2(
+        NextInt64(
             [in] Int64 least,
             [in] Int64 bound,
             [out] Int64* value);
@@ -83,7 +88,7 @@ module
          * @return the next value
          * @throws IllegalArgumentException if n is not positive
          */
-        NextDoubleEx(
+        NextDouble(
             [in] Double n,
             [out] Double* value);
 
@@ -97,7 +102,7 @@ module
          * @throws IllegalArgumentException if least greater than or equal
          * to bound
          */
-        NextDoubleEx2(
+        NextDouble(
             [in] Double least,
             [in] Double bound,
             [out] Double* value);

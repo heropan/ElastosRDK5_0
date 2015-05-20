@@ -64,7 +64,7 @@ module
          *         scheduled for execution
          * @throws NullPointerException if the task is null
          */
-        SubmitEx(
+        Submit(
             [in] IRunnable* task,
             [in] IInterface* result,
             [out] IFuture** future);
@@ -104,7 +104,7 @@ module
          *         before one is present
          * @throws InterruptedException if interrupted while waiting
          */
-        PollEx(
+        Poll(
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
             [out] IFuture** future);

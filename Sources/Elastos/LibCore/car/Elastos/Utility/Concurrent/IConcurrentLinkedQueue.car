@@ -62,7 +62,14 @@ module
      * @param <E> the type of elements held in this collection
      *
      */
-    interface IConcurrentLinkedQueue extends Elastos.Utility.IQueue {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IQueue;
+     */
+    interface IConcurrentLinkedQueue {
     }
 
     } // namespace Concurrent

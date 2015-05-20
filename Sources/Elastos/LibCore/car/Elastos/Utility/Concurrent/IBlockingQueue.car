@@ -143,7 +143,14 @@ module
      * @author Doug Lea
      * @param <E> the type of elements held in this collection
      */
-    interface IBlockingQueue extends Elastos.Utility.IQueue {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IQueue;
+     */
+    interface IBlockingQueue {
         /**
          * Inserts the specified element into this queue, waiting if necessary
          * for space to become available.
@@ -177,7 +184,7 @@ module
          * @throws IllegalArgumentException if some property of the specified
          *         element prevents it from being added to this queue
          */
-        OfferEx(
+        Offer(
             [in] IInterface* e,
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
@@ -205,7 +212,7 @@ module
          *         specified waiting time elapses before an element is available
          * @throws InterruptedException if interrupted while waiting
          */
-        PollEx(
+        Poll(
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
             [out] IInterface** e);
@@ -276,7 +283,7 @@ module
          *         queue, or some property of an element of this queue prevents
          *         it from being added to the specified collection
          */
-        DrainToEx(
+        DrainTo(
             [in] ICollection* c,
             [in] Int32 maxElements,
             [out] Int32* number);

@@ -31,7 +31,15 @@ module
      * @author Doug Lea
      * @param <E> the type of elements held in this collection
      */
-    interface ITransferQueue extends IBlockingQueue {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IQueue;
+     * interface IBlockingQueue;
+     */
+    interface ITransferQueue {
         /**
          * Transfers the element to a waiting consumer immediately, if possible.
          *
@@ -100,7 +108,7 @@ module
          * @throws IllegalArgumentException if some property of the specified
          *         element prevents it from being added to this queue
          */
-        TryTransferEx(
+        TryTransfer(
             [in] IInterface* e,
             [in] Int64 timeout,
             [in] ITimeUnit* unit,

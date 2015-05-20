@@ -7,7 +7,12 @@ module
      * {@code SimpleFormatter} can be used to print a summary of the information
      * contained in a {@code LogRecord} object in a human readable format.
      */
-    interface ISimpleFormatter extends ILogFormatter {
+
+    /**
+     * @Involve
+     * interface ILogFormatter;
+     */
+    interface ISimpleFormatter {
     }
 
     } // namespace Logging

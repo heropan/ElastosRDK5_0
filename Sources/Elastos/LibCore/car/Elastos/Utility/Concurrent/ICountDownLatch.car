@@ -78,7 +78,7 @@ module
          * @throws InterruptedException if the current thread is interrupted
          *         while waiting
          */
-        AwaitEx(
+        Await(
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
             [out] Boolean* result);

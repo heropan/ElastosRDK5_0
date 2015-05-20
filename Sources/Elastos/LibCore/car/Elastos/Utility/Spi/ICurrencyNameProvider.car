@@ -12,7 +12,12 @@ module
      * @since 1.6
      * @hide
      */
-    interface ICurrencyNameProvider extends ILocaleServiceProvider {
+
+    /**
+     * @Involve
+     * interface ILocaleServiceProvider;
+     */
+    interface ICurrencyNameProvider {
         /**
          * Returns the localized currency symbol for the given currency code.
          *

@@ -82,7 +82,7 @@ module
         /**
          * Equivalent to {getDisplayName(false, TimeZone.LONG, locale)}.
          */
-        GetDisplayNameEx(
+        GetDisplayName(
             [in] ILocale* locale,
             [out] String* name);
 
@@ -90,7 +90,7 @@ module
          * Equivalent to {getDisplayName(daylightTime, style, Locale.getDefault())}.
          * <a href="../util/Locale.html#default_locale">Be wary of the default locale</a>.
          */
-        GetDisplayNameEx2(
+        GetDisplayName(
             [in] Boolean daylightTime,
             [in] Int32 style,
             [out] String* name);
@@ -111,7 +111,7 @@ module
          * @sa TimeZone#SHORT
          * @param locale the display locale.
          */
-        GetDisplayNameEx3(
+        GetDisplayName(
             [in] Boolean daylightTime,
             [in] Int32 style,
             [in] ILocale* locale,
@@ -181,7 +181,7 @@ module
          * @sa Calendar#ZONE_OFFSET
          * @sa Calendar
          */
-        GetOffsetEx(
+        GetOffset(
             [in] Int32 era,
             [in] Int32 year,
             [in] Int32 month,
@@ -289,7 +289,7 @@ module
          *
          * @return a possibly-empty array.
          */
-        GetAvailableIDsEx(
+        GetAvailableIDs(
             [in] Int32 offsetMillis,
             [out, callee] ArrayOf<String>* ids);
 

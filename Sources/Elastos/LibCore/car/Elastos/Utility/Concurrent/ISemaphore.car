@@ -241,7 +241,7 @@ module
          *         if the waiting time elapsed before a permit was acquired
          * @throws InterruptedException if the current thread is interrupted
          */
-        TryAcquireEx(
+        TryAcquire(
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
             [out] Boolean* value);
@@ -297,7 +297,7 @@ module
          * @throws InterruptedException if the current thread is interrupted
          * @throws IllegalArgumentException if {@code permits} is negative
          */
-        AcquireEx(
+        Acquire(
             [in] Int32 permits);
 
         /**
@@ -323,7 +323,7 @@ module
          * @throws IllegalArgumentException if {@code permits} is negative
          *
          */
-        AcquireUninterruptiblyEx(
+        AcquireUninterruptibly(
             [in] Int32 permits);
 
         /**
@@ -353,7 +353,7 @@ module
          *         {@code false} otherwise
          * @throws IllegalArgumentException if {@code permits} is negative
          */
-        TryAcquireEx2(
+        TryAcquire(
             [in] Int32 permits,
             [out] Boolean* value);
 
@@ -407,7 +407,7 @@ module
          * @throws InterruptedException if the current thread is interrupted
          * @throws IllegalArgumentException if {@code permits} is negative
          */
-        TryAcquireEx3(
+        TryAcquire(
             [in] Int32 permits,
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
@@ -435,7 +435,7 @@ module
          * @param permits the number of permits to release
          * @throws IllegalArgumentException if {@code permits} is negative
          */
-        ToReleaseEx(
+        ToRelease(
             [in] Int32 permits);
 
         /**

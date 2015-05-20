@@ -149,7 +149,7 @@ module
          * @throws TimeoutException if the specified waiting time elapses
          *         before another thread enters the exchange
          */
-        ExchangeEx(
+        Exchange(
             [in] IInterface* x,
             [in] Int64 timeout,
             [in] ITimeUnit* unit,

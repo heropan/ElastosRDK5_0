@@ -229,7 +229,7 @@ module
          *         when {@code await} was called, or the barrier action (if
          *         present) failed due an exception
          */
-        AwaitEx(
+        Await(
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
             [out] Int32* value);

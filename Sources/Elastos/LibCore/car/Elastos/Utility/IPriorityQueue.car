@@ -9,7 +9,14 @@ module
      *
      * @since 1.2
      */
-    interface IPriorityQueue extends IQueue {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IQueue;
+     */
+    interface IPriorityQueue {
         /**
          * Gets the comparator of the priority queue.
          *

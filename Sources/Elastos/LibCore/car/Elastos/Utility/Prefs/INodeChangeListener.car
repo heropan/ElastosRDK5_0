@@ -13,7 +13,12 @@ module
      *
      * @since 1.4
      */
-    interface INodeChangeListener extends Elastos.Utility.IEventListener {
+
+    /**
+     * @Involve
+     * interface IEventListener;
+     */
+    interface INodeChangeListener {
         /**
          * This method gets called whenever a child node is added to another node.
          *

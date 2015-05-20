@@ -11,11 +11,11 @@ module
      * Used to read (decompress) the data from zip files.
      * <p>
      * A zip file (or "archive") is a collection of (possibly) compressed files
-     . 
-     * When reading from a ZipInputStream, you call getNextEntry() which 
-     * returns a ZipEntry of metadata corresponding to the userdata that 
-     * follows. When you appear to have hit the end of this stream (which is 
-     * really just the end of the current entry's userdata), call getNextEntry 
+     .
+     * When reading from a ZipInputStream, you call getNextEntry() which
+     * returns a ZipEntry of metadata corresponding to the userdata that
+     * follows. When you appear to have hit the end of this stream (which is
+     * really just the end of the current entry's userdata), call getNextEntry
      * again. When it returns null, there are no more entries in the input file.
      *
      * @sa getNextEntry()
@@ -59,7 +59,15 @@ module
      *
      * @implements Elastos.Utility.Zip.IInflaterInputStream
      */
-    interface IZipInputStream extends IInflaterInputStream {
+
+    /**
+     * @Involve
+     * interface ICloseable;
+     * interface IInputStream;
+     * interface IFilterInputStream;
+     * interface IInflaterInputStream;
+     */
+    interface IZipInputStream {
         /**
          * Closes the current ZIP entry and positions to read the next entry.
          *

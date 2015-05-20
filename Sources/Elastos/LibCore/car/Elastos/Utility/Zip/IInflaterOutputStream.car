@@ -12,7 +12,14 @@ module
      *
      * @implements Elastos.Utility.Zip.Elastos.IO.IFilterOutputStream
      */
-    interface IInflaterOutputStream extends Elastos.IO.IFilterOutputStream {
+
+    /**
+     * @Involve
+     * interface ICloseable;
+     * interface IOutputStream;
+     * interface IFilterOutputStream;
+     */
+    interface IInflaterOutputStream {
         /**
          * Finishes writing current uncompressed data into the InflaterOutputStream
          * without closing it.

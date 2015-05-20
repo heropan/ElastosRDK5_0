@@ -15,7 +15,7 @@ module
      * @sa InflaterInputStream
      * <p>
      * To decompress an in-memory byte[] to another in-memory byte[] manually:
-     * <pre> 
+     * <pre>
      * byte[] compressedBytes = ...
      *  int decompressedByteCount = ... // From your format's metadata.
      *  Inflater inflater = new Inflater();
@@ -28,15 +28,15 @@ module
      * </pre>
      * <p>
      * In situations where you don't have all the input in one array (or have so much
-     * input that you want to feed it to the inflater in chunks), it's possible to 
-     * call setInput(byte[]) repeatedly, but you're much better off using 
+     * input that you want to feed it to the inflater in chunks), it's possible to
+     * call setInput(byte[]) repeatedly, but you're much better off using
      * InflaterInputStream to handle all this for you.
      *
      * @sa setInput(byte[])
      * @sa InflaterInputStream
      *
      * <p>
-     * If you don't know how big the decompressed data will be, you can call 
+     * If you don't know how big the decompressed data will be, you can call
      * inflate(byte[]) repeatedly on a temporary buffer, copying the bytes to a
      * ByteArrayOutputStream, but this is probably another sign you'd be better off
      * using InflaterInputStream.
@@ -59,7 +59,7 @@ module
 
         /**
          * Indicates if the {Inflater} has inflated the entire deflated
-         * stream. If deflated bytes remain and {@sa #needsInput} returns 
+         * stream. If deflated bytes remain and {@sa #needsInput} returns
          * {true} this method will return {false}. This method should be
          * called after all deflated input is supplied to the {Inflater}.
          *
@@ -113,7 +113,7 @@ module
             [out] Int32* number);
 
         /**
-         * Returns the total number of bytes written to the output buffer by this 
+         * Returns the total number of bytes written to the output buffer by this
          * {Inflater}. The method is limited to 32 bits; use {@sa #getBytesWritten} instead.
          */
         // synchronized
@@ -146,7 +146,7 @@ module
          * @return the number of bytes inflated.
          */
         // synchronized
-        InflateEx(
+        Inflate(
             [out] ArrayOf<Byte> buf,
             [in] Int32 offset,
             [in] Int32 byteCount,
@@ -156,7 +156,7 @@ module
          * Returns true if the input bytes were compressed with a preset
          * dictionary. This method should be called if the first call to {@sa #inflate} returns 0,
          * to determine whether a dictionary is required. If so, {@sa #setDictionary}
-         * should be called with the appropriate dictionary before calling 
+         * should be called with the appropriate dictionary before calling
          * {inflate} again. Use {@sa #getAdler} to determine which dictionary is required.
          */
         // synchronized
@@ -191,7 +191,7 @@ module
          * #needsDictionary} for details.
          */
         // synchronized
-        SetDictionaryEx(
+        SetDictionary(
             [in] ArrayOf<Byte> buf,
             [in] Int32 offset,
             [in] Int32 byteCount);
@@ -209,7 +209,7 @@ module
          * called if {@sa #needsInput} returns {true}.
          */
         // synchronized
-        SetInputEx(
+        SetInput(
             [in] ArrayOf<Byte> buf,
             [in] Int32 offset,
             [in] Int32 byteCount);

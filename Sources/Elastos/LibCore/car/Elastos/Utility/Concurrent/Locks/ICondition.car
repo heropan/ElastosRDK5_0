@@ -203,7 +203,7 @@ module
          * @throws InterruptedException if the current thread is interrupted
          *         (and interruption of thread suspension is supported)
          */
-        AwaitEx(
+        Await(
             [in] Int64 time,
             [in] ITimeUnit* unit,
             [out] Boolean* value);

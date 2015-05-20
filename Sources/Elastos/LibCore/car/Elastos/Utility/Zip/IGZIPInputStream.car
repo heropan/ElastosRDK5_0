@@ -30,7 +30,15 @@ module
      *
      * @implements Elastos.Utility.Zip.IDeflaterInputStream
      */
-    interface IGZIPInputStream extends IInflaterInputStream {
+
+    /**
+     * @Involve
+     * interface ICloseable;
+     * interface IInputStream;
+     * interface IFilterInputStream;
+     * interface IInflaterInputStream;
+     */
+    interface IGZIPInputStream {
         /**
          * The magic header for the GZIP format.
          */

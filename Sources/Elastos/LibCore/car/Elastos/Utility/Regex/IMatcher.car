@@ -19,7 +19,12 @@ module
      *
      * @implements Elastos.Utility.Regex.IMatchResult
      */
-    interface IMatcher extends IMatchResult  {
+
+    /**
+     * @Involve
+     * interface IMatchResult;
+     */
+    interface IMatcher {
         /**
          * Appends a literal part of the input plus a replacement for the current
          * match to a given StringBuffer. The literal part is exactly the
@@ -71,7 +76,7 @@ module
          *
          * @return the {Matcher} itself.
          */
-        ResetEx(
+        Reset(
             [in] ICharSequence* input);
 
         /**
@@ -181,7 +186,7 @@ module
          *            of the region, the method will fail.
          * @return true if (and only if) a match has been found.
          */
-        FindEx(
+        Find(
             [in] Int32 start,
             [out] Boolean* found);
 

@@ -37,7 +37,7 @@ module
          *
          * @return the character index.
          */
-        EndEx(
+        End(
             [in] Int32 group,
             [out] Int32* index);
 
@@ -58,7 +58,7 @@ module
          *
          * @return the text that matched the group.
          */
-        GroupEx(
+        Group(
             [in] Int32 group,
             [out] String* text);
 
@@ -90,7 +90,7 @@ module
          *
          * @return the character index.
          */
-        StartEx(
+        Start(
             [in] Int32 group,
             [out] Int32* index);
     }

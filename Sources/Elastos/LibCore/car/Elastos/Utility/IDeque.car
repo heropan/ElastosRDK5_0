@@ -157,7 +157,14 @@ module
      * @since  1.6
      * @param <E> the type of elements held in this collection
      */
-    interface IDeque extends IQueue {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface IQueue;
+     */
+    interface IDeque {
         /**
          * Inserts the specified element at the front of this deque if it is
          * possible to do so immediately without violating capacity restrictions.

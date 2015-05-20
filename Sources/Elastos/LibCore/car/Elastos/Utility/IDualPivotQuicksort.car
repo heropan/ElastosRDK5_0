@@ -42,7 +42,7 @@ module
          * @throws ArrayIndexOutOfBoundsException
          *     if {@code fromIndex < 0} or {@code toIndex > a.length}
          */
-        SortInt32Ex(
+        SortInt32(
             [in] ArrayOf<Int32>* a,
             [in] Int32 fromIndex,
             [in] Int32 toIndex);
@@ -68,7 +68,7 @@ module
          * @throws ArrayIndexOutOfBoundsException
          *     if {@code fromIndex < 0} or {@code toIndex > a.length}
          */
-        SortInt64Ex(
+        SortInt64(
             [in] ArrayOf<Int64>* a,
             [in] Int32 fromIndex,
             [in] Int32 toIndex);
@@ -94,7 +94,7 @@ module
          * @throws ArrayIndexOutOfBoundsException
          *     if {@code fromIndex < 0} or {@code toIndex > a.length}
          */
-        SortInt16Ex(
+        SortInt16(
             [in] ArrayOf<Int16>* a,
             [in] Int32 fromIndex,
             [in] Int32 toIndex);
@@ -120,7 +120,7 @@ module
          * @throws ArrayIndexOutOfBoundsException
          *     if {@code fromIndex < 0} or {@code toIndex > a.length}
          */
-        SortCharEx(
+        SortChar(
             [in] ArrayOf<Char32>* a,
             [in] Int32 fromIndex,
             [in] Int32 toIndex);
@@ -146,7 +146,7 @@ module
          * @throws ArrayIndexOutOfBoundsException
          *     if {@code fromIndex < 0} or {@code toIndex > a.length}
          */
-        SortByteEx(
+        SortByte(
             [in] ArrayOf<Byte>* a,
             [in] Int32 fromIndex,
             [in] Int32 toIndex);
@@ -188,7 +188,7 @@ module
          * @throws ArrayIndexOutOfBoundsException
          *     if {@code fromIndex < 0} or {@code toIndex > a.length}
          */
-        SortFloatEx(
+        SortFloat(
             [in] ArrayOf<Float>* a,
             [in] Int32 fromIndex,
             [in] Int32 toIndex);
@@ -230,7 +230,7 @@ module
          * @throws ArrayIndexOutOfBoundsException
          *     if {@code fromIndex < 0} or {@code toIndex > a.length}
          */
-        SortDoubleEx(
+        SortDouble(
             [in] ArrayOf<Double>* a,
             [in] Int32 fromIndex,
             [in] Int32 toIndex);

@@ -12,7 +12,12 @@ module
      * @since 1.6
      * @hide
      */
-    interface ITimeZoneNameProvider extends ILocaleServiceProvider {
+
+    /**
+     * @Involve
+     * interface ILocaleServiceProvider;
+     */
+    interface ITimeZoneNameProvider {
         /**
          * Returns the localized name for the given time zone in the given locale.
          *

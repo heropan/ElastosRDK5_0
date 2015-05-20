@@ -375,7 +375,7 @@ module
          * @throws InterruptedException if thread interrupted while waiting
          * @throws TimeoutException if timed out while waiting
          */
-        AwaitAdvanceInterruptiblyEx(
+        AwaitAdvanceInterruptibly(
             [in] Int32 phase,
             [in] Int64 timeout,
             [in] ITimeUnit* unit,

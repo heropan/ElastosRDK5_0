@@ -9,7 +9,11 @@ module
     namespace Utility{
     namespace Jar{
 
-    interface IJarEntry extends Elastos.Utility.Zip.IZipEntry {
+    /**
+     * @Involve
+     * interface IZipEntry;
+     */
+    interface IJarEntry {
         /**
          * Returns the {@code Attributes} object associated with this entry or
          * {@code null} if none exists.

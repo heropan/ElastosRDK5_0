@@ -8,13 +8,21 @@ module
     namespace Utility{
     namespace Jar{
 
-        interface IJarInputStream extends Elastos.Utility.Zip.IZipInputStream {
-            GetManifest(
-                [out] IManifest** manifest);
+    /**
+     * @Involve
+     * interface ICloseable;
+     * interface IInputStream;
+     * interface IFilterInputStream;
+     * interface IInflaterInputStream;
+     * interface IZipInputStream;
+     */
+    interface IJarInputStream {
+        GetManifest(
+            [out] IManifest** manifest);
 
-            GetNextJarEntry(
-                [out] IJarEntry** jarEntry);
-        }
+        GetNextJarEntry(
+            [out] IJarEntry** jarEntry);
+    }
     }//Jar
     }//Utility
     }//Elastos

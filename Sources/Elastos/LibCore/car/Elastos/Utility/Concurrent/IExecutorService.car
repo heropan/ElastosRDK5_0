@@ -109,7 +109,12 @@ module
      * @since 1.5
      * @author Doug Lea
      */
-    interface IExecutorService extends IExecutor {
+
+    /**
+     * @Involve
+     * interface IExecutor;
+     */
+    interface IExecutorService {
         /**
          * Initiates an orderly shutdown in which previously submitted
          * tasks are executed, but no new tasks will be accepted.
@@ -212,7 +217,7 @@ module
          *         scheduled for execution
          * @throws NullPointerException if the task is null
          */
-        SubmitEx(
+        Submit(
             [in] IRunnable* task,
             [in] IInterface* result,
             [out] IFuture** future);
@@ -228,7 +233,7 @@ module
          *         scheduled for execution
          * @throws NullPointerException if the task is null
          */
-        SubmitEx2(
+        Submit(
             [in] IRunnable* task,
             [out] IFuture** future);
 
@@ -283,7 +288,7 @@ module
          * @throws RejectedExecutionException if any task cannot be scheduled
          *         for execution
          */
-        InvokeAllEx(
+        InvokeAll(
             [in] ICollection* tasks,
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
@@ -333,7 +338,7 @@ module
          * @throws RejectedExecutionException if tasks cannot be scheduled
          *         for execution
          */
-        InvokeAnyEx(
+        InvokeAny(
             [in] ICollection* tasks,
             [in] Int64 timeout,
             [in] ITimeUnit* unit,

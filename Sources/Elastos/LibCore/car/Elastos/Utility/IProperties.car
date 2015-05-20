@@ -15,7 +15,11 @@ module
     namespace Elastos {
     namespace Utility {
 
-    interface IProperties extends IDictionary {
+    /**
+     * @Involve
+     * interface IDictionary;
+     */
+    interface IProperties {
 
         /**
          * Searches for the property with the specified name. If the property is not
@@ -42,7 +46,7 @@ module
          *            the default value.
          * @return the named property value.
          */
-        GetPropertyEx(
+        GetProperty(
             [in] String name,
             [in] String defaultValue,
             [out] String* str);
@@ -58,7 +62,7 @@ module
          * Lists the mappings in this {@code Properties} to {@code out} in a human-readable form.
          * Note that values are truncated to 37 characters, so this method is rarely useful.
          */
-        ListEx(
+        List(
             [in] IPrintWriter* outwriter);
 
         /**
@@ -97,7 +101,7 @@ module
          * @since 1.6
          */
         // @SuppressWarnings("fallthrough")
-        LoadEx(
+        Load(
             [in] IReader* inreader);
 
         /**
@@ -173,7 +177,7 @@ module
          * @throws ClassCastException if a key or value is not a string
          * @since 1.6
          */
-        StoreEx(
+        Store(
             [in] IWriter* writer,
             [in] String comment);
 
@@ -237,7 +241,7 @@ module
          *            write into the {@code OutputStream}.
          * @throws IOException if an error occurs during writing to the output.
          */
-        StoreToXMLEx(
+        StoreToXML(
             [in] IOutputStream* os,
             [in] String comment,
             [in] String encoding);

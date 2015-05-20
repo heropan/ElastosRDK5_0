@@ -18,7 +18,12 @@ module
      *
      * @since 1.4
      */
-    interface INodeChangeEvent extends Elastos.Utility.IEventObject {
+
+    /**
+     * @Involve
+     * interface IEventObject;
+     */
+    interface INodeChangeEvent {
         /**
          * Gets the {@code Preferences} instance that fired this event.
          *

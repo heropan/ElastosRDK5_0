@@ -306,7 +306,7 @@ module
             [in] String input,
             [out] IMatcher** matcher);
 
-        MatcherEx(
+        Matcher(
             [in] ICharSequence* input,
             [out] IMatcher** matcher);
 
@@ -317,7 +317,7 @@ module
             [in] String input,
             [out, callee] ArrayOf<String>* result);
 
-        SplitEx(
+        Split(
             [in] ICharSequence* input,
             [out, callee] ArrayOf<String>* result);
 
@@ -349,7 +349,7 @@ module
          *            not apply there.)
          *            </ul>
          */
-        SplitEx2(
+        Split(
             [in] ICharSequence* input,
             [in] Int32 limit,
             [out, callee] ArrayOf<String>* result);
@@ -390,7 +390,7 @@ module
          * @see #UNICODE_CASE
          * @see #UNIX_LINES
          */
-        CompileEx(
+        Compile(
             [in] String regularExpression,
             [in] Int32 flags,
             [out] IPattern** result);
@@ -409,7 +409,7 @@ module
             [in] String input,
             [out] Boolean* matched);
 
-        MatchesEx(
+        Matches(
             [in] String regularExpression,
             [in] ICharSequence* input,
             [out] Boolean* matched);

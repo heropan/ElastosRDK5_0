@@ -12,7 +12,12 @@ module
      * @since 1.4
      * @see Preferences
      */
-    interface IAbstractPreferences extends IPreferences {
+
+    /**
+     * @Involve
+     * interface IPreferences;
+     */
+    interface IAbstractPreferences {
     }
 
     } // namespace Prefs

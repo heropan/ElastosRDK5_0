@@ -73,7 +73,12 @@ module
      * @since 1.5
      * @author Doug Lea
      */
-    interface IReentrantLock extends ILock {
+
+    /**
+     * @Involve
+     * interface ILock;
+     */
+    interface IReentrantLock {
         /**
          * Queries the number of holds on this lock by the current thread.
          *

@@ -12,7 +12,12 @@ module
      * @since 1.4
      * @see Preferences
      */
-    interface IFilePreferencesFactoryImpl extends IPreferencesFactory {
+
+    /**
+     * @Involve
+     * interface IPreferencesFactory;
+     */
+    interface IFilePreferencesFactoryImpl {
     }
 
     } // namespace Prefs

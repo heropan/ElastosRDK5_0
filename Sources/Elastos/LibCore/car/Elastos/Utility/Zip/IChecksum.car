@@ -41,7 +41,7 @@ module
          * @param buf
          *            the buffer holding the data to update the checksum with.
          */
-        UpdateEx(
+        Update(
             [in] ArrayOf<Byte> buf);
 
         /**
@@ -54,7 +54,7 @@ module
          * @param nbytes
          *            the number of bytes to read from {buf}.
          */
-        UpdateEx2(
+        Update(
             [in] ArrayOf<Byte> buf,
             [in] Int32 off,
             [in] Int32 nbytes);

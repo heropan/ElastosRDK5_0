@@ -8,7 +8,7 @@ module
     namespace Zip {
 
     /**
-     * The CheckedOutputStream class is used to maintain a running checksum of 
+     * The CheckedOutputStream class is used to maintain a running checksum of
      * all data written to a stream. The purpose of this checksum is to
      * establish data integrity, by publishing the checksum to other parties
      * wanting to read the non corrupted data.
@@ -16,7 +16,13 @@ module
      * @implements Elastos.Utility.Zip.Elastos.IO.IFilterOutputStream
      */
 
-    interface ICheckedOutputStream extends Elastos.IO.IFilterOutputStream {
+    /**
+     * @Involve
+     * interface ICloseable;
+     * interface IOutputStream;
+     * interface IFilterOutputStream;
+     */
+    interface ICheckedOutputStream {
         /**
          * Returns the checksum calculated on the stream read so far.
          *

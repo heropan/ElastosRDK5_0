@@ -8,12 +8,17 @@ module
     /**
      * The CRC32 class is used to compute a CRC32 checksum from data provided
      * as input value. See also Adler32 which is almost as good, but cheaper.
-     * 
+     *
      * @sa Adler32
      *
      * @implements Elastos.Utility.Zip.IChecksum
      */
-    interface ICRC32 extends IChecksum {
+
+    /**
+     * @Involve
+     * interface IChecksum;
+     */
+    interface ICRC32 {
     }
 
     } // namespace Zip

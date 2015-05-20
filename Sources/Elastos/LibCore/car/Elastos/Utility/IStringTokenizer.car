@@ -22,6 +22,11 @@ module
      *
      * @since 1.0
      */
+
+    /**
+     * @Involve
+     * interface IEnumeration;
+     */
     interface IStringTokenizer extends IEnumeration {
         /**
          * Returns the number of unprocessed tokens remaining in the string.
@@ -60,7 +65,7 @@ module
          * @throws NoSuchElementException
          *                if no tokens remain.
          */
-        NextTokenEx(
+        NextToken(
             [in] String delims,
             [out] String* str);
     }
