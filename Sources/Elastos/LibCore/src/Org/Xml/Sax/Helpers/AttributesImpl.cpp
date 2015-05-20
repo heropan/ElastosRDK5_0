@@ -112,7 +112,7 @@ ECode AttributesImpl::GetIndex(
     return NOERROR;
 }
 
-ECode AttributesImpl::GetIndexEx(
+ECode AttributesImpl::GetIndex(
     /* [in] */ const String& qName,
     /* [out] */ Int32* index)
 {
@@ -132,7 +132,7 @@ ECode AttributesImpl::GetIndexEx(
     return NOERROR;
 }
 
-ECode AttributesImpl::GetTypeEx(
+ECode AttributesImpl::GetType(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ String* type)
@@ -153,7 +153,7 @@ ECode AttributesImpl::GetTypeEx(
     return NOERROR;
 }
 
-ECode AttributesImpl::GetTypeEx2(
+ECode AttributesImpl::GetType(
     /* [in] */ const String& qName,
     /* [out] */ String* type)
 {
@@ -173,7 +173,7 @@ ECode AttributesImpl::GetTypeEx2(
     return NOERROR;
 }
 
-ECode AttributesImpl::GetValueEx(
+ECode AttributesImpl::GetValue(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ String* value)
@@ -194,7 +194,7 @@ ECode AttributesImpl::GetValueEx(
     return NOERROR;
 }
 
-ECode AttributesImpl::GetValueEx2(
+ECode AttributesImpl::GetValue(
     /* [in] */ const String& qName,
     /* [out] */ String* value)
 {

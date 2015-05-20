@@ -71,7 +71,7 @@ ECode CDefaultHandler2::EndElement(
 }
 
 ECode CDefaultHandler2::Characters(
-    /* [out] */ ArrayOf<Char32>* ch,
+    /* [in] */ ArrayOf<Char32>* ch,
     /* [in] */ Int32 start,
     /* [in] */ Int32 length)
 {
@@ -79,7 +79,7 @@ ECode CDefaultHandler2::Characters(
 }
 
 ECode CDefaultHandler2::IgnorableWhitespace(
-    /* [out] */ ArrayOf<Char32>* ch,
+    /* [in] */ ArrayOf<Char32>* ch,
     /* [in] */ Int32 start,
     /* [in] */ Int32 length)
 {
@@ -199,7 +199,7 @@ ECode CDefaultHandler2::ResolveEntity(
     /* [in] */ const String& systemId,
     /* [out] */ IInputSource** src)
 {
-    return ResolveEntityEx(String(NULL), publicId, String(NULL), systemId, src);
+    return ResolveEntity(String(NULL), publicId, String(NULL), systemId, src);
 }
 
 ECode CDefaultHandler2::GetExternalSubset(
@@ -214,7 +214,7 @@ ECode CDefaultHandler2::GetExternalSubset(
     return NOERROR;
 }
 
-ECode CDefaultHandler2::ResolveEntityEx(
+ECode CDefaultHandler2::ResolveEntity(
     /* [in] */ const String& name,
     /* [in] */ const String& publicId,
     /* [in] */ const String& baseURI,

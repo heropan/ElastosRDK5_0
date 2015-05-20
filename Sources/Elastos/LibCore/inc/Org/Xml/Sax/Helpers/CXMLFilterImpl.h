@@ -165,7 +165,7 @@ public:
      *            possibly from a byte stream or character stream
      *            supplied by the application.
      */
-    CARAPI ParseEx(
+    CARAPI Parse(
         /* [in] */ const String& systemId);
 
     /**

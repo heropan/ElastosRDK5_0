@@ -55,41 +55,41 @@ ECode CAttributes2Impl::GetIndex(
     return AttributesImpl::GetIndex(uri, localName, index);
 }
 
-ECode CAttributes2Impl::GetIndexEx(
+ECode CAttributes2Impl::GetIndex(
     /* [in] */ const String& qName,
     /* [out] */ Int32* index)
 {
-    return AttributesImpl::GetIndexEx(qName, index);
+    return AttributesImpl::GetIndex(qName, index);
 }
 
-ECode CAttributes2Impl::GetTypeEx(
+ECode CAttributes2Impl::GetType(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ String* type)
 {
-    return AttributesImpl::GetTypeEx(uri, localName, type);
+    return AttributesImpl::GetType(uri, localName, type);
 }
 
-ECode CAttributes2Impl::GetTypeEx2(
+ECode CAttributes2Impl::GetType(
     /* [in] */ const String& qName,
     /* [out] */ String* type)
 {
-    return AttributesImpl::GetTypeEx2(qName, type);
+    return AttributesImpl::GetType(qName, type);
 }
 
-ECode CAttributes2Impl::GetValueEx(
+ECode CAttributes2Impl::GetValue(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ String* value)
 {
-    return AttributesImpl::GetValueEx(uri, localName, value);
+    return AttributesImpl::GetValue(uri, localName, value);
 }
 
-ECode CAttributes2Impl::GetValueEx2(
+ECode CAttributes2Impl::GetValue(
     /* [in] */ const String& qName,
     /* [out] */ String* value)
 {
-    return AttributesImpl::GetValueEx2(qName, value);
+    return AttributesImpl::GetValue(qName, value);
 }
 
 ECode CAttributes2Impl::Clear()
@@ -252,7 +252,7 @@ ECode CAttributes2Impl::IsDeclared(
     return NOERROR;
 }
 
-ECode CAttributes2Impl::IsDeclaredEx(
+ECode CAttributes2Impl::IsDeclared(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ Boolean * isDeclared)
@@ -271,12 +271,12 @@ ECode CAttributes2Impl::IsDeclaredEx(
     return NOERROR;
 }
 
-ECode CAttributes2Impl::IsDeclaredEx2(
+ECode CAttributes2Impl::IsDeclared(
     /* [in] */ const String& qName,
     /* [out] */ Boolean * isDeclared)
 {
     int index = 0;
-    GetIndexEx(qName, &index);
+    GetIndex(qName, &index);
 
     if (index < 0){
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -305,7 +305,7 @@ ECode CAttributes2Impl::IsSpecified(
     return NOERROR;
 }
 
-ECode CAttributes2Impl::IsSpecifiedEx(
+ECode CAttributes2Impl::IsSpecified(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ Boolean* isSpecified)
@@ -324,12 +324,12 @@ ECode CAttributes2Impl::IsSpecifiedEx(
     return NOERROR;
 }
 
-ECode CAttributes2Impl::IsSpecifiedEx2(
+ECode CAttributes2Impl::IsSpecified(
     /* [in] */ const String& qName,
     /* [out] */ Boolean* isSpecified)
 {
     int index = 0;
-    GetIndexEx(qName, &index);
+    GetIndex(qName, &index);
 
     if (index < 0){
 //        throw new IllegalArgumentException (

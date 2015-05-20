@@ -122,7 +122,7 @@ public:
     CARAPI SetInput(
         /* [in] */ IReader* reader);
 
-    CARAPI SetInputEx(
+    CARAPI SetInput(
         /* [in] */ IInputStream* is,
         /* [in] */ const String& charset);
 
@@ -202,7 +202,7 @@ public:
         /* [in, out] */ ArrayOf<Int32>* poslen,
         /* [out, callee] */ ArrayOf<Char32>** characters);
 
-    CARAPI GetNamespaceEx(
+    CARAPI GetNamespace(
         /* [out] */ String* ns);
 
     CARAPI GetName(
@@ -241,7 +241,7 @@ public:
         /* [in] */ Int32 index,
         /* [out] */ String* value);
 
-    CARAPI GetAttributeValueEx(
+    CARAPI GetAttributeValue(
         /* [in] */ const String& ns,
         /* [in] */ const String& name,
         /* [out] */ String* value);

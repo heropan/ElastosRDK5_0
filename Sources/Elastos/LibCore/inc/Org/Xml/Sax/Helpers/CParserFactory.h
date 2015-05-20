@@ -64,7 +64,7 @@ public:
      * @see #makeParser()
      * @see org.xml.sax.Parser
      */
-    CARAPI MakeParserEx(
+    CARAPI MakeParser(
         /* [in] */ const String& className,
         /* [out] */ IParser** parser);
 

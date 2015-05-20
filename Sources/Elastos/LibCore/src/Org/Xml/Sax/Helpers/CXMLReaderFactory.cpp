@@ -29,7 +29,7 @@ ECode CXMLReaderFactory::CreateXMLReader(
     return XMLReaderFactory::CreateXMLReader(reader);
 }
 
-ECode CXMLReaderFactory::CreateXMLReaderEx(
+ECode CXMLReaderFactory::CreateXMLReader(
     /* [in] */ const String& className,
     /* [out] */ IXMLReader** reader)
 {

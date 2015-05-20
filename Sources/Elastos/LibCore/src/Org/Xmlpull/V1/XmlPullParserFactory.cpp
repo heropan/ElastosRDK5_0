@@ -128,10 +128,10 @@ ECode XmlPullParserFactory::NewInstance(
 {
     VALIDATE_NOT_NULL(xmlPullParserFac)
 
-    return NewInstanceEx(String(NULL), xmlPullParserFac);
+    return NewInstance(String(NULL), xmlPullParserFac);
 }
 
-ECode XmlPullParserFactory::NewInstanceEx(
+ECode XmlPullParserFactory::NewInstance(
     /* [in] */ const String& classNames,
  // /* [in] */  Class context,
     /* [out] */ IXmlPullParserFactory** xmlPullParserFac)

@@ -62,7 +62,7 @@ ECode CAttributeListAdapter::GetIndex(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAttributeListAdapter::GetIndexEx(
+ECode CAttributeListAdapter::GetIndex(
     /* [in] */ const String& qName,
     /* [out] */ Int32 * pIndex)
 {
@@ -70,7 +70,7 @@ ECode CAttributeListAdapter::GetIndexEx(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAttributeListAdapter::GetTypeEx(
+ECode CAttributeListAdapter::GetType(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ String * pType)
@@ -79,7 +79,7 @@ ECode CAttributeListAdapter::GetTypeEx(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAttributeListAdapter::GetTypeEx2(
+ECode CAttributeListAdapter::GetType(
     /* [in] */ const String& qName,
     /* [out] */ String * pType)
 {
@@ -87,7 +87,7 @@ ECode CAttributeListAdapter::GetTypeEx2(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAttributeListAdapter::GetValueEx(
+ECode CAttributeListAdapter::GetValue(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ String * pValue)
@@ -96,7 +96,7 @@ ECode CAttributeListAdapter::GetValueEx(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAttributeListAdapter::GetValueEx2(
+ECode CAttributeListAdapter::GetValue(
     /* [in] */ const String& qName,
     /* [out] */ String * pValue)
 {

@@ -171,7 +171,7 @@ ECode CParserAdapter::Parse(
     return NOERROR;
 }
 
-ECode CParserAdapter::ParseEx(
+ECode CParserAdapter::Parse(
     /* [in] */ const String& systemId)
 {
     AutoPtr<IInputSource> input;
@@ -371,23 +371,23 @@ ECode CParserAdapter::EndElement(
 }
 
 ECode CParserAdapter::Characters(
-    /* [in] */ const ArrayOf<Char32> & ch,
+    /* [in] */ ArrayOf<Char32>* ch,
     /* [in] */ Int32 start,
     /* [in] */ Int32 length)
 {
     if (mContentHandler != NULL) {
-        mContentHandler->Characters(const_cast< ArrayOf<Char32>* >(&ch), start, length);
+        mContentHandler->Characters(ch, start, length);
     }
     return NOERROR;
 }
 
 ECode CParserAdapter::IgnorableWhitespace(
-    /* [in] */ const ArrayOf<Char32> & ch,
+    /* [in] */ ArrayOf<Char32>* ch,
     /* [in] */ Int32 start,
     /* [in] */ Int32 length)
 {
     if (mContentHandler != NULL) {
-        mContentHandler->IgnorableWhitespace(const_cast< ArrayOf<Char32>* >(&ch), start, length);
+        mContentHandler->IgnorableWhitespace(ch, start, length);
     }
     return NOERROR;
 }
@@ -625,7 +625,7 @@ ECode CParserAdapter::AttributeListAdapter::GetIndex(
     return NOERROR;
 }
 
-ECode CParserAdapter::AttributeListAdapter::GetIndexEx(
+ECode CParserAdapter::AttributeListAdapter::GetIndex(
     /* [in] */ const String& qName,
     /* [out] */ Int32* value)
 {
@@ -645,7 +645,7 @@ ECode CParserAdapter::AttributeListAdapter::GetIndexEx(
     return NOERROR;
 }
 
-ECode CParserAdapter::AttributeListAdapter::GetTypeEx(
+ECode CParserAdapter::AttributeListAdapter::GetType(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ String* str)
@@ -656,16 +656,16 @@ ECode CParserAdapter::AttributeListAdapter::GetTypeEx(
     return NOERROR;
 }
 
-ECode CParserAdapter::AttributeListAdapter::GetTypeEx2(
+ECode CParserAdapter::AttributeListAdapter::GetType(
     /* [in] */ const String& qName,
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
 
-    return mQAtts->GetTypeEx(qName, str); // qAtts.getType(qName).intern();
+    return mQAtts->GetType(qName, str); // qAtts.getType(qName).intern();
 }
 
-ECode CParserAdapter::AttributeListAdapter::GetValueEx(
+ECode CParserAdapter::AttributeListAdapter::GetValue(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ String* str)
@@ -676,13 +676,13 @@ ECode CParserAdapter::AttributeListAdapter::GetValueEx(
     return NOERROR;
 }
 
-ECode CParserAdapter::AttributeListAdapter::GetValueEx2(
+ECode CParserAdapter::AttributeListAdapter::GetValue(
     /* [in] */ const String& qName,
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
 
-    return mQAtts->GetValueEx(qName, str);
+    return mQAtts->GetValue(qName, str);
 }
 
 

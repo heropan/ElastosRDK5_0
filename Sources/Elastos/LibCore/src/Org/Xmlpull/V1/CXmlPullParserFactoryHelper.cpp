@@ -12,12 +12,12 @@ ECode CXmlPullParserFactoryHelper::NewInstance(
     return XmlPullParserFactory::NewInstance(xmlPullParserFac);
 }
 
-ECode CXmlPullParserFactoryHelper::NewInstanceEx(
+ECode CXmlPullParserFactoryHelper::NewInstance(
     /* [in] */ const String& classNames,
  // /* [in] */  Class context,
     /* [out] */ IXmlPullParserFactory** xmlPullParserFac)
 {
-    return XmlPullParserFactory::NewInstanceEx(classNames, xmlPullParserFac);
+    return XmlPullParserFactory::NewInstance(classNames, xmlPullParserFac);
 }
 
 } // namespace V1

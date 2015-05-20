@@ -98,7 +98,7 @@ public:
      * @see #parse(org.xml.sax.InputSource)
      * @see org.xml.sax.Parser#parse(java.lang.String)
      */
-    CARAPI ParseEx(
+    CARAPI Parse(
         /* [in] */ const String& systemId);
 
     ////////////////////////////////////////////////////////////////////
@@ -330,7 +330,7 @@ public:
      * @return The type.
      * @see org.xml.sax.AttributeList#getType(java.lang.String)
      */
-    CARAPI GetTypeEx(
+    CARAPI GetType(
         /* [in] */ const String& name,
         /* [out] */ String* type);
 
@@ -340,7 +340,7 @@ public:
      * @return The value.
      * @see org.xml.sax.AttributeList#getValue(java.lang.String)
      */
-    CARAPI GetValueEx(
+    CARAPI GetValue(
         /* [in] */ const String& name,
         /* [out] */ String* value);
 

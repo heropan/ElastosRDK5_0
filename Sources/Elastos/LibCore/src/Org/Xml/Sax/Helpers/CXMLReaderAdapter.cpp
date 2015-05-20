@@ -52,7 +52,7 @@ ECode CXMLReaderAdapter::Parse(
     return mXmlReader->Parse(source);
 }
 
-ECode CXMLReaderAdapter::ParseEx(
+ECode CXMLReaderAdapter::Parse(
     /* [in] */ const String& systemId)
 {
     AutoPtr<IInputSource> source;
@@ -130,28 +130,28 @@ ECode CXMLReaderAdapter::EndElement(
 }
 
 ECode CXMLReaderAdapter::Characters(
-    /* [out] */ ArrayOf<Char32>* ch,
+    /* [in] */ ArrayOf<Char32>* ch,
     /* [in] */ Int32 start,
     /* [in] */ Int32 length)
 {
     VALIDATE_NOT_NULL(ch);
 
     if (mDocumentHandler != NULL) {
-        mDocumentHandler->Characters(*ch, start, length);
+        mDocumentHandler->Characters(ch, start, length);
     }
 
     return NOERROR;
 }
 
 ECode CXMLReaderAdapter::IgnorableWhitespace(
-    /* [out] */ ArrayOf<Char32>* ch,
+    /* [in] */ ArrayOf<Char32>* ch,
     /* [in] */ Int32 start,
     /* [in] */ Int32 length)
 {
     VALIDATE_NOT_NULL(ch);
 
     if (mDocumentHandler != NULL) {
-        mDocumentHandler->IgnorableWhitespace(*ch, start, length);
+        mDocumentHandler->IgnorableWhitespace(ch, start, length);
     }
 
     return NOERROR;
@@ -247,18 +247,18 @@ ECode CAttributesAdapter::GetValue(
     return mAttributes->GetValue(i, value);
 }
 
-ECode CAttributesAdapter::GetTypeEx(
+ECode CAttributesAdapter::GetType(
     /* [in] */ const String& qName,
     /* [out] */ String* type)
 {
-    return mAttributes->GetTypeEx2(qName, type);
+    return mAttributes->GetType(qName, type);
 }
 
-ECode CAttributesAdapter::GetValueEx(
+ECode CAttributesAdapter::GetValue(
     /* [in] */ const String& qName,
     /* [out] */ String* value)
 {
-    return mAttributes->GetValueEx2(qName, value);
+    return mAttributes->GetValue(qName, value);
 }
 
 ECode CAttributesAdapter::SetAttributes (

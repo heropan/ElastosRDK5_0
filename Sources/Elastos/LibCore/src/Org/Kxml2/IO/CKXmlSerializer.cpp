@@ -342,7 +342,7 @@ ECode CKXmlSerializer::SetPrefix(
     return NOERROR;
 }
 
-ECode CKXmlSerializer::SetOutputEx(
+ECode CKXmlSerializer::SetOutput(
     /* [in] */ IWriter* writer)
 {
     // BEGIN android-changed
@@ -390,7 +390,7 @@ ECode CKXmlSerializer::SetOutput(
     else {
         COutputStreamWriter::New(os, encoding, (IOutputStreamWriter**)&writer);
     }
-    SetOutputEx(writer);
+    SetOutput(writer);
     mEncoding = encoding;
     if (!encoding.IsNull()
         && encoding.StartWithIgnoreCase("utf")) { /*encoding.ToLowerCase(Locale.US).StartWith("utf")*/
@@ -626,7 +626,7 @@ ECode CKXmlSerializer::WriteText(
     return WriteEscaped(text, -1);
 }
 
-ECode CKXmlSerializer::WriteTextEx(
+ECode CKXmlSerializer::WriteText(
     /* [in] */ const ArrayOf<Char32>& buf,
     /* [in] */ Int32 start,
     /* [in] */ Int32 len)

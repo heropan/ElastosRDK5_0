@@ -85,7 +85,7 @@ public:
     CARAPI Parse(
         /* [in] */ IInputSource * input);
 
-    CARAPI ParseEx(
+    CARAPI Parse(
         /* [in] */ const String& systemId);
 
     CARAPI SetDocumentLocator(
@@ -103,12 +103,12 @@ public:
         /* [in] */ const String& qName);
 
     CARAPI Characters(
-        /* [in] */ const ArrayOf<Char32> & ch,
+        /* [in] */ ArrayOf<Char32>* ch,
         /* [in] */ Int32 start,
         /* [in] */ Int32 length);
 
     CARAPI IgnorableWhitespace(
-        /* [in] */ const ArrayOf<Char32> & ch,
+        /* [in] */ ArrayOf<Char32>* ch,
         /* [in] */ Int32 start,
         /* [in] */ Int32 length);
 
@@ -372,7 +372,7 @@ public:
          * @return The attributes index, or -1 if none was found.
          * @see org.xml.sax.Attributes#getIndex(java.lang.String)
          */
-        CARAPI GetIndexEx(
+        CARAPI GetIndex(
             /* [in] */ const String& qName,
             /* [out] */ Int32* value);
 
@@ -383,7 +383,7 @@ public:
          * @param localName The local name.
          * @return The attribute's type as an internalized string.
          */
-        CARAPI GetTypeEx(
+        CARAPI GetType(
             /* [in] */ const String& uri,
             /* [in] */ const String& localName,
             /* [out] */ String* str);
@@ -394,7 +394,7 @@ public:
          * @param qName The qualified name.
          * @return The attribute's type as an internalized string.
          */
-        CARAPI GetTypeEx2(
+        CARAPI GetType(
             /* [in] */ const String& qName,
             /* [out] */ String* str);
 
@@ -405,7 +405,7 @@ public:
          * @param localName The local name.
          * @return The attribute's value.
          */
-        CARAPI GetValueEx(
+        CARAPI GetValue(
             /* [in] */ const String& uri,
             /* [in] */ const String& localName,
             /* [out] */ String* str);
@@ -416,7 +416,7 @@ public:
          * @param qName The qualified name.
          * @return The attribute's value.
          */
-        CARAPI GetValueEx2(
+        CARAPI GetValue(
             /* [in] */ const String& qName,
             /* [out] */ String* str);
 

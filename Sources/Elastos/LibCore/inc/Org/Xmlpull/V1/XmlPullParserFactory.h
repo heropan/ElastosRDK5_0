@@ -51,7 +51,7 @@ public:
     static CARAPI NewInstance(
         /* [out] */ IXmlPullParserFactory** xmlPullParserFac);
 
-    static CARAPI NewInstanceEx(
+    static CARAPI NewInstance(
         /* [in] */ const String& classNames,
      // /* [in] */  Class context,
         /* [out] */ IXmlPullParserFactory** xmlPullParserFac);

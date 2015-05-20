@@ -493,7 +493,7 @@ search:
                 if (result == NULL) {
                     result = new StringBuilder();
                 }
-                result->AppendCharsEx(*mBuffer, start, mPosition - start);
+                result->AppendChars(*mBuffer, start, mPosition - start);
             }
             Boolean succeeded;
             FAIL_RETURN(FillBuffer(delimiter.GetLength(), &succeeded));
@@ -528,7 +528,7 @@ search:
         return NOERROR;
     }
     else {
-        result->AppendCharsEx(*mBuffer, start, end - start);
+        result->AppendChars(*mBuffer, start, end - start);
         return result->ToString(value);
     }
 }
@@ -629,7 +629,7 @@ ECode CKXmlParser::ReadDoctype(
     }
     Skip();
     if (saveDtdText) {
-        mBufferCapture->AppendCharsEx(*mBuffer, 0, mPosition);
+        mBufferCapture->AppendChars(*mBuffer, 0, mPosition);
         mBufferCapture->Delete(0, startPosition);
         mBufferCapture->ToString(&mText);
         mBufferCapture = NULL;
@@ -1302,7 +1302,7 @@ ECode CKXmlParser::ParseStartTag(
             typename StringMap::Iterator entryIt = elementDefaultAttributes->Begin();
             for (; entryIt != elementDefaultAttributes->End(); ++entryIt) {
                 String value;
-                GetAttributeValueEx(String(NULL), entryIt->mFirst, &value);
+                GetAttributeValue(String(NULL), entryIt->mFirst, &value);
                 if (!value.IsNull()) {
                     continue; // an explicit value overrides the default
                 }
@@ -1375,7 +1375,7 @@ ECode CKXmlParser::ReadEntity(
     Int32 length;
     out.GetLength(&length);
     String code;
-    out.SubstringEx(start + 1, length - 1, &code);
+    out.Substring(start + 1, length - 1, &code);
 
     if (isEntityToken) {
         mName = code;
@@ -1517,7 +1517,7 @@ ECode CKXmlParser::ReadValue(
                 if (result == NULL) {
                     result = new StringBuilder();
                 }
-                result->AppendCharsEx(*mBuffer, start, mPosition - start);
+                result->AppendChars(*mBuffer, start, mPosition - start);
             }
             Boolean succeeded;
             if (FillBuffer(1, &succeeded), !succeeded) {
@@ -1561,7 +1561,7 @@ ECode CKXmlParser::ReadValue(
         if (result == NULL) {
             result = new StringBuilder();
         }
-        result->AppendCharsEx(*mBuffer, start, mPosition - start);
+        result->AppendChars(*mBuffer, start, mPosition - start);
 
         if (c == '\r') {
             Boolean succeeded;
@@ -1619,7 +1619,7 @@ ECode CKXmlParser::ReadValue(
         return NOERROR;
     }
     else {
-        result->AppendCharsEx(*mBuffer, start, mPosition - start);
+        result->AppendChars(*mBuffer, start, mPosition - start);
         result->ToString(value);
         return NOERROR;
     }
@@ -1704,7 +1704,7 @@ ECode CKXmlParser::FillBuffer(
     }
 
     if (mBufferCapture != NULL) {
-        mBufferCapture->AppendCharsEx(*mBuffer, 0, mPosition);
+        mBufferCapture->AppendChars(*mBuffer, 0, mPosition);
     }
 
     if (mLimit != mPosition) {
@@ -1718,14 +1718,14 @@ ECode CKXmlParser::FillBuffer(
 
     mPosition = 0;
     Int32 total = 0;
-    FAIL_RETURN(mReader->ReadCharsEx(mBuffer, mLimit, mBuffer->GetLength() - mLimit, &total));
+    FAIL_RETURN(mReader->ReadChars(mBuffer, mLimit, mBuffer->GetLength() - mLimit, &total));
     while (total != -1) {
         mLimit += total;
         if (mLimit >= minimum) {
             *result = TRUE;
             return NOERROR;
         }
-        FAIL_RETURN(mReader->ReadCharsEx(mBuffer, mLimit, mBuffer->GetLength() - mLimit, &total));
+        FAIL_RETURN(mReader->ReadChars(mBuffer, mLimit, mBuffer->GetLength() - mLimit, &total));
     }
 
     return NOERROR;
@@ -1775,7 +1775,7 @@ ECode CKXmlParser::ReadName(
             if (result == NULL) {
                 result = new StringBuilder();
             }
-            result->AppendCharsEx(*mBuffer, start, mPosition - start);
+            result->AppendChars(*mBuffer, start, mPosition - start);
             Boolean succeeded;
             if (FillBuffer(1, &succeeded), !succeeded) {
                 result->ToString(value);
@@ -1804,7 +1804,7 @@ ECode CKXmlParser::ReadName(
             return NOERROR;
         }
         else {
-            result->AppendCharsEx(*mBuffer, start, mPosition - start);
+            result->AppendChars(*mBuffer, start, mPosition - start);
             return result->ToString(value);
         }
     }
@@ -1853,7 +1853,7 @@ ECode CKXmlParser::SetInput(
     return NOERROR;
 }
 
-ECode CKXmlParser::SetInputEx(
+ECode CKXmlParser::SetInput(
     /* [in] */ IInputStream* is,
     /* [in] */ const String& charsetStr)
 {
@@ -2347,7 +2347,7 @@ ECode CKXmlParser::GetTextCharacters(
     return NOERROR;
 }
 
-ECode CKXmlParser::GetNamespaceEx(
+ECode CKXmlParser::GetNamespace(
     /* [out] */ String* ns)
 {
     VALIDATE_NOT_NULL(ns);
@@ -2462,7 +2462,7 @@ ECode CKXmlParser::GetAttributeValue(
     return NOERROR;
 }
 
-ECode CKXmlParser::GetAttributeValueEx(
+ECode CKXmlParser::GetAttributeValue(
     /* [in] */ const String& ns,
     /* [in] */ const String& name,
     /* [out] */ String* value)
@@ -2517,7 +2517,7 @@ ECode CKXmlParser::Require(
     /* [in] */ const String& name)
 {
     String theNs, theNm;
-    GetNamespaceEx(&theNs);
+    GetNamespace(&theNs);
     GetName(&theNm);
     if (type != mType
             || (!ns.IsNull() && ns.Equals(theNs))

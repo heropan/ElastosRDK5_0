@@ -117,7 +117,7 @@ public:
      *            loaded, instantiated, and cast to XMLReader.
      * @see #createXMLReader()
      */
-    CARAPI CreateXMLReaderEx(
+    CARAPI CreateXMLReader(
         /* [in] */ const String& className,
         /* [out] */ IXMLReader** reader);
 

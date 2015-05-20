@@ -40,25 +40,25 @@ public:
         /* [in] */ const String& localName,
         /* [out] */ Int32 * pIndex);
 
-    CARAPI GetIndexEx(
+    CARAPI GetIndex(
         /* [in] */ const String& qName,
         /* [out] */ Int32 * pIndex);
 
-    CARAPI GetTypeEx(
+    CARAPI GetType(
         /* [in] */ const String& uri,
         /* [in] */ const String& localName,
         /* [out] */ String * pType);
 
-    CARAPI GetTypeEx2(
+    CARAPI GetType(
         /* [in] */ const String& qName,
         /* [out] */ String * pType);
 
-    CARAPI GetValueEx(
+    CARAPI GetValue(
         /* [in] */ const String& uri,
         /* [in] */ const String& localName,
         /* [out] */ String * pValue);
 
-    CARAPI GetValueEx2(
+    CARAPI GetValue(
         /* [in] */ const String& qName,
         /* [out] */ String * pValue);
 

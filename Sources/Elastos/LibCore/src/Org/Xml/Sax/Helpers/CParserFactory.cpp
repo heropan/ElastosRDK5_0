@@ -16,7 +16,7 @@ ECode CParserFactory::MakeParser(
     return ParserFactory::MakeParser(parser);
 }
 
-ECode CParserFactory::MakeParserEx(
+ECode CParserFactory::MakeParser(
     /* [in] */ const String& className,
     /* [out] */ IParser** parser)
 {

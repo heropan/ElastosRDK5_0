@@ -470,7 +470,7 @@ public:
      * @exception IOException Probably indicating a failure to create
      *    a new InputStream or Reader, or an illegal URL.
      */
-    CARAPI ResolveEntityEx(
+    CARAPI ResolveEntity(
         /* [in] */ const String& name,
         /* [in] */ const String& publicId,
         /* [in] */ const String& baseURI,

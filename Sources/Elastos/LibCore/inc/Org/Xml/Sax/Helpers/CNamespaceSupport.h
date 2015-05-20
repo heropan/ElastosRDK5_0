@@ -56,7 +56,7 @@ public:
         /* [in] */ const String& uri,
         /* [out] */ String* prefix);
 
-    CARAPI GetPrefixesEx(
+    CARAPI GetPrefixes(
         /* [in] */ const String& uri,
         /* [out] */ IObjectContainer** prefixes);
 

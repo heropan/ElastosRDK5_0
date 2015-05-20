@@ -34,11 +34,11 @@ public:
         /* [in] */ Int32 i,
         /* [out] */ String* value);
 
-    CARAPI GetTypeEx(
+    CARAPI GetType(
         /* [in] */ const String& name,
         /* [out] */ String* type);
 
-    CARAPI GetValueEx(
+    CARAPI GetValue(
         /* [in] */ const String& name,
         /* [out] */ String* value);
 

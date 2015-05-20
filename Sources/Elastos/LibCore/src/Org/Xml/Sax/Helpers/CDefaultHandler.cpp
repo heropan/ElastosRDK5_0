@@ -83,7 +83,7 @@ ECode CDefaultHandler::EndElement(
 }
 
 ECode CDefaultHandler::Characters(
-    /* [out] */ ArrayOf<Char32>* ch,
+    /* [in] */ ArrayOf<Char32>* ch,
     /* [in] */ Int32 start,
     /* [in] */ Int32 length)
 {

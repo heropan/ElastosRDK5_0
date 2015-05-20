@@ -88,7 +88,7 @@ public:
     CARAPI Parse(
         /* [in] */ IInputSource* source);
 
-    CARAPI ParseEx(
+    CARAPI Parse(
         /* [in] */ const String& systemId);
 
     CARAPI GetLength(
@@ -119,25 +119,25 @@ public:
         /* [in] */ const String& localName,
         /* [out] */ Int32* index);
 
-    CARAPI GetIndexEx(
+    CARAPI GetIndex(
         /* [in] */ const String& qName,
         /* [out] */ Int32* index);
 
-    CARAPI GetTypeEx(
+    CARAPI GetType(
         /* [in] */ const String& uri,
         /* [in] */ const String& localName,
         /* [out] */ String* type);
 
-    CARAPI GetTypeEx2(
+    CARAPI GetType(
         /* [in] */ const String& qName,
         /* [out] */ String* type);
 
-    CARAPI GetValueEx(
+    CARAPI GetValue(
         /* [in] */ const String& uri,
         /* [in] */ const String& localName,
         /* [out] */ String* value);
 
-    CARAPI GetValueEx2(
+    CARAPI GetValue(
         /* [in] */ const String& qName,
         /* [out] */ String* value);
 

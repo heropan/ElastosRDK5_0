@@ -63,7 +63,7 @@ public:
         /* [in] */ const String& prefix,
         /* [in] */ const String& ns);
 
-    CARAPI SetOutputEx(
+    CARAPI SetOutput(
         /* [in] */ IWriter* writer);
 
     CARAPI SetOutput(
@@ -101,7 +101,7 @@ public:
     CARAPI WriteText(
         /* [in] */ const String& text);
 
-    CARAPI WriteTextEx(
+    CARAPI WriteText(
         /* [in] */ const ArrayOf<Char32>& buf,
         /* [in] */ Int32 start,
         /* [in] */ Int32 len);

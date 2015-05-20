@@ -142,7 +142,7 @@ public:
      * @return The attribute's index, or -1 if none matches.
      * @see org.xml.sax.Attributes#getIndex(java.lang.String)
      */
-    CARAPI GetIndexEx(
+    CARAPI GetIndex(
         /* [in] */ const String& qName,
         /* [out] */ Int32* index);
 
@@ -156,7 +156,7 @@ public:
      *         matching attribute.
      * @see org.xml.sax.Attributes#getType(java.lang.String,java.lang.String)
      */
-    CARAPI GetTypeEx(
+    CARAPI GetType(
         /* [in] */ const String& uri,
         /* [in] */ const String& localName,
         /* [out] */ String* type);
@@ -169,7 +169,7 @@ public:
      *         matching attribute.
      * @see org.xml.sax.Attributes#getType(java.lang.String)
      */
-    CARAPI GetTypeEx2(
+    CARAPI GetType(
         /* [in] */ const String& qName,
         /* [out] */ String* type);
 
@@ -183,7 +183,7 @@ public:
      *         matching attribute.
      * @see org.xml.sax.Attributes#getValue(java.lang.String,java.lang.String)
      */
-    CARAPI GetValueEx(
+    CARAPI GetValue(
         /* [in] */ const String& uri,
         /* [in] */ const String& localName,
         /* [out] */ String* value);
@@ -196,7 +196,7 @@ public:
      *         matching attribute.
      * @see org.xml.sax.Attributes#getValue(java.lang.String)
      */
-    CARAPI GetValueEx2(
+    CARAPI GetValue(
         /* [in] */ const String& qName,
         /* [out] */ String* value);
 

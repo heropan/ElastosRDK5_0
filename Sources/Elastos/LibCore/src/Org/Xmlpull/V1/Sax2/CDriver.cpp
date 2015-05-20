@@ -308,7 +308,7 @@ ECode CDriver::Parse(
             //     }
             // }
         }
-        mPp->SetInputEx(stream, encoding);
+        mPp->SetInput(stream, encoding);
     }
     else {
         mPp->SetInput(reader);
@@ -354,7 +354,7 @@ ECode CDriver::Parse(
     return NOERROR;
 }
 
-ECode CDriver::ParseEx(
+ECode CDriver::Parse(
     /* [in] */ const String& systemId)
 {
     AutoPtr<IInputSource> is;
@@ -449,7 +449,7 @@ ECode CDriver::GetIndex(
     return NOERROR;
 }
 
-ECode CDriver::GetIndexEx(
+ECode CDriver::GetIndex(
     /* [in] */ const String& qName,
     /* [out] */ Int32* index)
 {
@@ -470,7 +470,7 @@ ECode CDriver::GetIndexEx(
     return NOERROR;
 }
 
-ECode CDriver::GetTypeEx(
+ECode CDriver::GetType(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ String* type)
@@ -493,7 +493,7 @@ ECode CDriver::GetTypeEx(
     return NOERROR;
 }
 
-ECode CDriver::GetTypeEx2(
+ECode CDriver::GetType(
     /* [in] */ const String& qName,
     /* [out] */ String* type)
 {
@@ -513,23 +513,23 @@ ECode CDriver::GetTypeEx2(
     return NOERROR;
 }
 
-ECode CDriver::GetValueEx(
+ECode CDriver::GetValue(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ String* value)
 {
     VALIDATE_NOT_NULL(value)
 
-    return mPp->GetAttributeValueEx(uri, localName, value);
+    return mPp->GetAttributeValue(uri, localName, value);
 }
 
-ECode CDriver::GetValueEx2(
+ECode CDriver::GetValue(
     /* [in] */ const String& qName,
     /* [out] */ String* value)
 {
     VALIDATE_NOT_NULL(value)
 
-    return mPp->GetAttributeValueEx(String(NULL), qName, value);
+    return mPp->GetAttributeValue(String(NULL), qName, value);
 }
 
 void CDriver::ParseSubTree(
@@ -586,7 +586,7 @@ void CDriver::ParseSubTree(
                         rawName.AppendString(name);
                     }
                     String strspace;
-                    mPp->GetNamespaceEx(&strspace);
+                    mPp->GetNamespace(&strspace);
                     StartElement(strspace,
                                  name,
                                  // TODO Fixed this. Was "not equals".
@@ -594,7 +594,7 @@ void CDriver::ParseSubTree(
                 }
                 else {
                     String strspace;
-                    mPp->GetNamespaceEx(&strspace);
+                    mPp->GetNamespace(&strspace);
                     String strname;
                     mPp->GetName(&strname);
                     StartElement(strspace, strname, strname);
@@ -625,7 +625,7 @@ void CDriver::ParseSubTree(
                         rawName.AppendString(name);
                     }
                     String strspace;
-                    mPp->GetNamespaceEx(&strspace);
+                    mPp->GetNamespace(&strspace);
                     mContentHandler->EndElement(strspace,
                                                 name,
                                                 !prefix.IsNull() ? name : rawName.ToString()
@@ -647,7 +647,7 @@ void CDriver::ParseSubTree(
                 }
                 else {
                     String strspace;
-                    mPp->GetNamespaceEx(&strspace);
+                    mPp->GetNamespace(&strspace);
                     String strname;
                     mPp->GetName(&strname);
                     mContentHandler->EndElement(strspace, strname, strname);

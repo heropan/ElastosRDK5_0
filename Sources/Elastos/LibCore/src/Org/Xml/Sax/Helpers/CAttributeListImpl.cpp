@@ -69,7 +69,7 @@ ECode CAttributeListImpl::GetValue(
     return NOERROR;
 }
 
-ECode CAttributeListImpl::GetTypeEx(
+ECode CAttributeListImpl::GetType(
     /* [in] */ const String& name,
     /* [out] */ String* type)
 {
@@ -80,7 +80,7 @@ ECode CAttributeListImpl::GetTypeEx(
     return GetType(index, type);
 }
 
-ECode CAttributeListImpl::GetValueEx(
+ECode CAttributeListImpl::GetValue(
     /* [in] */ const String& name,
     /* [out] */ String* value)
 {

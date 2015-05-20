@@ -133,7 +133,7 @@ ECode CNamespaceSupport::GetPrefix(
     return NOERROR;
 }
 
-ECode CNamespaceSupport::GetPrefixesEx(
+ECode CNamespaceSupport::GetPrefixes(
     /* [in] */ const String& uri,
     /* [out] */ IObjectContainer** prefixes)
 {

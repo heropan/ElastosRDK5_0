@@ -741,7 +741,7 @@ module
          * The current event must be START_TAG or END_TAG; otherwise,
          * null is returned.
          */
-        GetNamespaceEx (
+        GetNamespace(
             [out] String* nsp);
 
         /**

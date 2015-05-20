@@ -55,41 +55,41 @@ ECode CAttributesImpl::GetIndex(
     return AttributesImpl::GetIndex(uri, localName, index);
 }
 
-ECode CAttributesImpl::GetIndexEx(
+ECode CAttributesImpl::GetIndex(
     /* [in] */ const String& qName,
     /* [out] */ Int32* index)
 {
-    return AttributesImpl::GetIndexEx(qName, index);
+    return AttributesImpl::GetIndex(qName, index);
 }
 
-ECode CAttributesImpl::GetTypeEx(
+ECode CAttributesImpl::GetType(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ String* type)
 {
-    return AttributesImpl::GetTypeEx(uri, localName, type);
+    return AttributesImpl::GetType(uri, localName, type);
 }
 
-ECode CAttributesImpl::GetTypeEx2(
+ECode CAttributesImpl::GetType(
     /* [in] */ const String& qName,
     /* [out] */ String* type)
 {
-    return CAttributesImpl::GetTypeEx2(qName, type);
+    return CAttributesImpl::GetType(qName, type);
 }
 
-ECode CAttributesImpl::GetValueEx(
+ECode CAttributesImpl::GetValue(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ String* value)
 {
-    return AttributesImpl::GetValueEx(uri, localName, value);
+    return AttributesImpl::GetValue(uri, localName, value);
 }
 
-ECode CAttributesImpl::GetValueEx2(
+ECode CAttributesImpl::GetValue(
     /* [in] */ const String& qName,
     /* [out] */ String* value)
 {
-    return AttributesImpl::GetValueEx2(qName, value);
+    return AttributesImpl::GetValue(qName, value);
 }
 
 ECode CAttributesImpl::Clear()

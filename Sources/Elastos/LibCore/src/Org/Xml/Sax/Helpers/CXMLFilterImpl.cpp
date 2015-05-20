@@ -142,7 +142,7 @@ ECode CXMLFilterImpl::Parse(
     return mParent->Parse(input);
 }
 
-ECode CXMLFilterImpl::ParseEx(
+ECode CXMLFilterImpl::Parse(
     /* [in] */ const String& systemId)
 {
     AutoPtr<IInputSource> inputSource;
@@ -287,7 +287,7 @@ ECode CXMLFilterImpl::EndElement(
 }
 
 ECode CXMLFilterImpl::Characters(
-    /* [out] */ ArrayOf<Char32>* ch,
+    /* [in] */ ArrayOf<Char32>* ch,
     /* [in] */ Int32 start,
     /* [in] */ Int32 length)
 {
@@ -299,7 +299,7 @@ ECode CXMLFilterImpl::Characters(
 }
 
 ECode CXMLFilterImpl::IgnorableWhitespace(
-    /* [out] */ ArrayOf<Char32>* ch,
+    /* [in] */ ArrayOf<Char32>* ch,
     /* [in] */ Int32 start,
     /* [in] */ Int32 length)
 {

@@ -14,7 +14,7 @@ public:
     CARAPI NewInstance(
         /* [out] */ IXmlPullParserFactory** xmlPullParserFac);
 
-    CARAPI NewInstanceEx(
+    CARAPI NewInstance(
         /* [in] */ const String& classNames,
      // /* [in] */  Class context,
         /* [out] */ IXmlPullParserFactory** xmlPullParserFac);

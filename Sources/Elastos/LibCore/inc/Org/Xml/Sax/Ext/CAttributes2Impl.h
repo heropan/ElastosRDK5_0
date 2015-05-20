@@ -69,25 +69,25 @@ public:
         /* [in] */ const String& localName,
         /* [out] */ Int32* index);
 
-    CARAPI GetIndexEx(
+    CARAPI GetIndex(
         /* [in] */ const String& name,
         /* [out] */ Int32* index);
 
-    CARAPI GetTypeEx(
+    CARAPI GetType(
         /* [in] */ const String& uri,
         /* [in] */ const String& localName,
         /* [out] */ String* type);
 
-    CARAPI GetTypeEx2(
+    CARAPI GetType(
         /* [in] */ const String& name,
         /* [out] */ String* type);
 
-    CARAPI GetValueEx(
+    CARAPI GetValue(
         /* [in] */ const String& uri,
         /* [in] */ const String& localName,
         /* [out] */ String* value);
 
-    CARAPI GetValueEx2(
+    CARAPI GetValue(
         /* [in] */ const String& name,
         /* [out] */ String* value);
 
@@ -138,12 +138,12 @@ public:
         /* [in] */ Int32 index,
         /* [out] */ Boolean * isDeclared);
 
-    CARAPI IsDeclaredEx(
+    CARAPI IsDeclared(
         /* [in] */ const String& uri,
         /* [in] */ const String& localName,
         /* [out] */ Boolean * isDeclared);
 
-    CARAPI IsDeclaredEx2(
+    CARAPI IsDeclared(
         /* [in] */ const String& qName,
         /* [out] */ Boolean * isDeclared);
 
@@ -151,12 +151,12 @@ public:
         /* [in] */ Int32 index,
         /* [out] */ Boolean* isSpecified);
 
-    CARAPI IsSpecifiedEx(
+    CARAPI IsSpecified(
         /* [in] */ const String& uri,
         /* [in] */ const String& localName,
         /* [out] */ Boolean* isSpecified);
 
-    CARAPI IsSpecifiedEx2(
+    CARAPI IsSpecified(
         /* [in] */ const String& qName,
         /* [out] */ Boolean* isSpecified);
 

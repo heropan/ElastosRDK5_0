@@ -65,7 +65,7 @@ ECode CHandlerBase::EndElement(
 }
 
 ECode CHandlerBase::Characters(
-    /* [in] */ const ArrayOf<Char32> & ch,
+    /* [in] */ ArrayOf<Char32>* ch,
     /* [in] */ Int32 start,
     /* [in] */ Int32 length)
 {
@@ -73,7 +73,7 @@ ECode CHandlerBase::Characters(
 }
 
 ECode CHandlerBase::IgnorableWhitespace(
-    /* [in] */ const ArrayOf<Char32> & ch,
+    /* [in] */ ArrayOf<Char32>* ch,
     /* [in] */ Int32 start,
     /* [in] */ Int32 length)
 {

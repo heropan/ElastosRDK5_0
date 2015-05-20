@@ -174,7 +174,7 @@ public:
      * @see org.xml.sax.DocumentHandler#characters
      */
     CARAPI Characters(
-        /* [in] */ const ArrayOf<Char32> & ch,
+        /* [in] */ ArrayOf<Char32>* ch,
         /* [in] */ Int32 start,
         /* [in] */ Int32 length);
 
@@ -195,7 +195,7 @@ public:
      * @see org.xml.sax.DocumentHandler#ignorableWhitespace
      */
     CARAPI IgnorableWhitespace(
-        /* [in] */ const ArrayOf<Char32> & ch,
+        /* [in] */ ArrayOf<Char32>* ch,
         /* [in] */ Int32 start,
         /* [in] */ Int32 length);
 
