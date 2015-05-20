@@ -59,6 +59,7 @@ $               IF class.attrib is not "singleton"
 
     static ECode NewByFriend(
 $               ELSE
+
     static ECode AcquireSingletonByFriend(
 $               END IF ;; "singleton"
 $               WITH all parameters DO

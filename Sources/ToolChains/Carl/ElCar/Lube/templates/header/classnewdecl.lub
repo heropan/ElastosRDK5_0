@@ -2,7 +2,7 @@ $ INPUT class
 $ IF type is not "aspect"
 $   IF attrib is not "hasctor" OR attrib is "hasdefaultctor"
 $   WITH all interfaces DO
-$       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter" and name is not "IObject"
+$       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter"
 
 $           IF class.attrib is "singleton"
     static _ELASTOS ECode AcquireSingletonInRegime(
@@ -37,7 +37,7 @@ $       IF attrib is "clsobj"
 $           WITH all methods DO
 $               IF attrib is not "defaultctor"
 $                   WITH all interfaces DO
-$                       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter" and name is not "IObject"
+$                       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter"
 
 $                           IF class.attrib is "singleton"
     static _ELASTOS ECode AcquireSingletonInRegime(

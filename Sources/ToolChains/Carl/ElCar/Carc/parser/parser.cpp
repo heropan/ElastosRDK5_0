@@ -4319,6 +4319,8 @@ void CheckClassAttribs(ClassDescriptor *pDesc)
 
     if (!(pDesc->dwAttribs & ClassAttrib_t_aspect)) {
         AddConstClassInterface("IObject", NULL, pDesc);
+        AddConstClassInterface("ISynchronize", "Elastos.Core.Threading", pDesc);
+        AddConstClassInterface("IWeakReferenceSource", NULL, pDesc);
     }
     else {
         AddConstClassInterface("IAspect", NULL, pDesc);
@@ -4328,9 +4330,9 @@ void CheckClassAttribs(ClassDescriptor *pDesc)
         AddConstClassInterface("IRegime", NULL, pDesc);
     }
 
-    if (s_bSupportWeakRef && !(pDesc->dwAttribs & ClassAttrib_singleton)) {
-        AddConstClassInterface("IWeakReferenceSource", NULL, pDesc);
-    }
+    // if (s_bSupportWeakRef && !(pDesc->dwAttribs & ClassAttrib_singleton)) {
+    //     AddConstClassInterface("IWeakReferenceSource", NULL, pDesc);
+    // }
 
     CheckClassDupCtorSignature(pDesc);
     // CheckClassDupMethodName(pDesc);
@@ -4741,43 +4743,6 @@ int P_ClassInterface(ClassDirEntry *pClass)
             pDesc->ppInterfaces[x]->wAttribs |= ClassInterfaceAttrib_async;
             pDesc->dwAttribs |= ClassAttrib_hascallback;
         }
-    }
-
-    if (!strcmp("IActivity", szInterfaceName)) {
-        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
-    }
-    else if (!strcmp("IService", szInterfaceName)) {
-        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
-    }
-    else if (!strcmp("IBroadcastReceiver", szInterfaceName)) {
-        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
-    }
-    else if (!strcmp("IContentProvider", szInterfaceName)) {
-        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
-    }
-    else if (!strcmp("IApplication", szInterfaceName)) {
-        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
-    }
-    else if (!strcmp("IFragment", szInterfaceName)) {
-        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
-    }
-    else if (!strcmp("IListFragment", szInterfaceName)) {
-        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
-    }
-    else if (!strcmp("IBackupAgent", szInterfaceName)) {
-        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
-    }
-    else if (!strcmp("IInstrumentation", szInterfaceName)) {
-        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
-    }
-    else if (!strcmp("IBackupAgentHelper", szInterfaceName)) {
-        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
-    }
-    else if (!strcmp("ITest", szInterfaceName)) {
-        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
-    }
-    else if (!strcmp("IPreference", szInterfaceName)) {
-        pClass->pDesc->dwAttribs |= ClassAttrib_naked;
     }
 
     if (s_bInNakedMode) {

@@ -75,6 +75,7 @@ module
     class CObject {
         interface IObject;
         interface ISynchronize;
+        interface IWeakReferenceSource;
     }
 
     class CPathClassLoader {
