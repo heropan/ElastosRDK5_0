@@ -2,8 +2,8 @@
 module
 {
     merge("../Elastos/Core/Elastos.Core.car");
-    merge("../Elastos/Math/Elastos.Math.car");
-    merge("../Org/Xml/Sax/Org.Xml.Sax.car");
-    merge("../Org/Xmlpull/V1/Org.Xmplpull.V1.car");
-    merge("../Org/Kxml2/IO/Org.Kxml2.IO.car");
+    //merge("../Elastos/Math/Elastos.Math.car");
+    //merge("../Org/Xml/Sax/Org.Xml.Sax.car");
+    //merge("../Org/Xmlpull/V1/Org.Xmplpull.V1.car");
+    //merge("../Org/Kxml2/IO/Org.Kxml2.IO.car");
 }

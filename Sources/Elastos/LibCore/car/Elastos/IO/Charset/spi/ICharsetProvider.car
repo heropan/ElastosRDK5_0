@@ -2,7 +2,7 @@
 module
 {
     interface Elastos.IO.Charset.ICharset;
-    interface Elastos.Utility.IObjectEnumerator;
+    interface Elastos.Utility.IIterator;
 
     namespace Elastos {
     namespace IO {

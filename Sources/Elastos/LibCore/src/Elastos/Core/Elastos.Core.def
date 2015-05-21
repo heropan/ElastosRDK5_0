@@ -6,55 +6,55 @@ LIBRARY Elastos.Core.eco
 
 EXPORTS
     ;;ListNode
-    ListNodeAddNext
-    ListNodeAddPrev
-    ListNodeDetach
-    ListNodeAddListAfter
-    ListNodeAddListBefore
-    ListNodeDetachSublist
+    ;;ListNodeAddNext
+    ;;ListNodeAddPrev
+    ;;ListNodeDetach
+    ;;ListNodeAddListAfter
+    ;;ListNodeAddListBefore
+    ;;ListNodeDetachSublist
 
     ;;QuickListNode
-    QuickListNodeDetach
+    ;;QuickListNodeDetach
 
     ;;TreeNode
-    TreeNodeAddRight
-    TreeNodeAddLeft
-    TreeNodeRemoveWithReplacement
-    TreeNodeMoveCloserToRoot
+    ;;TreeNodeAddRight
+    ;;TreeNodeAddLeft
+    ;;TreeNodeRemoveWithReplacement
+    ;;TreeNodeMoveCloserToRoot
 
     ;;MultiTreeNode
-    MultiTreeNodeAddChild
-    MultiTreeNodeDetachChild
-    MultiTreeNodeFirstChild
-    MultiTreeNodeAddNext
-    MultiTreeNodeAddPrev
-    MultiTreeNodeAddChildren
-    MultiTreeNodeAddSiblingsAfter
-    MultiTreeNodeAddSiblingsBefore
-    MultiTreeNodeDetachChildAndSiblings
-    MultiTreeNodeDetachSelfAndSiblings
+    ;;MultiTreeNodeAddChild
+    ;;MultiTreeNodeDetachChild
+    ;;MultiTreeNodeFirstChild
+    ;;MultiTreeNodeAddNext
+    ;;MultiTreeNodeAddPrev
+    ;;MultiTreeNodeAddChildren
+    ;;MultiTreeNodeAddSiblingsAfter
+    ;;MultiTreeNodeAddSiblingsBefore
+    ;;MultiTreeNodeDetachChildAndSiblings
+    ;;MultiTreeNodeDetachSelfAndSiblings
 
     ;;DoubleLinkNode
-    DoubleLinkNodeInsertPrev
-    DoubleLinkNodeInsertNext
-    DoubleLinkNodeDetach
+    ;;DoubleLinkNodeInsertPrev
+    ;;DoubleLinkNodeInsertNext
+    ;;DoubleLinkNodeDetach
 
     ;;SingleLinkNode
-    SingleLinkNodeInsertNext
-    SingleLinkNodeDetach
+    ;;SingleLinkNodeInsertNext
+    ;;SingleLinkNodeDetach
 
     ;;SimpleContainer
-    SimpleContainerCurrent
-    SimpleContainerMoveNext
-    SimpleContainerReset
-    SimpleContainerAdd
-    SimpleContainerRemove
+    ;;SimpleContainerCurrent
+    ;;SimpleContainerMoveNext
+    ;;SimpleContainerReset
+    ;;SimpleContainerAdd
+    ;;SimpleContainerRemove
 
     ;;ObjectContainer
-    ObjectContainerDispose
-    ObjectContainerCurrent
-    ObjectContainerAdd
-    ObjectContainerRemove
+    ;;ObjectContainerDispose
+    ;;ObjectContainerCurrent
+    ;;ObjectContainerAdd
+    ;;ObjectContainerRemove
 
 #if defined(_android)
     ;;NativeThread

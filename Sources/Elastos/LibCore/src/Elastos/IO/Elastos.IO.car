@@ -118,1741 +118,1741 @@ module
     merge("../../../car/Elastos/IO/IFileChannelImpl.car");
 
 
-    interface Elastos.Core.IComparable;
-    interface Elastos.IO.Channels.Spi.ISelectorProvider;
-    interface Elastos.Net.IURI;
-    interface Elastos.Utility.IObjectEnumerator;
-    interface Elastos.Utility.IObjectStringMap;
-
-    namespace Elastos {
-    namespace IO {
-
-    singleton class CByteOrderHelper {
-        interface IByteOrderHelper;
-    }
-
-    /**
-     * Wraps an existing {@link InputStream} and <em>buffers</em> the input.
-     * Expensive interaction with the underlying input stream is minimized, since
-     * most (smaller) requests can be satisfied by accessing the buffer alone. The
-     * drawback is that some extra space is required to hold the buffer and that
-     * copying takes place when filling that buffer, but this is usually outweighed
-     * by the performance benefits.
-     *
-     * <p/>A typical application pattern for the class looks like this:<p/>
-     *
-     * <pre>
-     * BufferedInputStream buf = new BufferedInputStream(new FileInputStream(&quot;file.java&quot;));
-     * </pre>
-     *
-     * @see BufferedOutputStream
-     */
-    class CBufferedInputStream {
-           /**
-         * Constructs a new {@code BufferedInputStream}, providing {@code in} with a buffer
-         * of 8192 bytes.
-         *
-         * <p><strong>Warning:</strong> passing a null source creates a closed
-         * {@code BufferedInputStream}. All read operations on such a stream will
-         * fail with an IOException.
-         *
-         * @param in the {@code InputStream} the buffer reads from.
-         */
-        constructor(
-            [in] IInputStream* is);
-
-        /**
-         * Constructs a new {@code BufferedInputStream}, providing {@code in} with {@code size} bytes
-         * of buffer.
-         *
-         * <p><strong>Warning:</strong> passing a null source creates a closed
-         * {@code BufferedInputStream}. All read operations on such a stream will
-         * fail with an IOException.
-         *
-         * @param in the {@code InputStream} the buffer reads from.
-         * @param size the size of buffer in bytes.
-         * @throws IllegalArgumentException if {@code size <= 0}.
-         */
-        constructor(
-            [in] IInputStream* is,
-            [in] Int32 size);
-
-        interface IBufferedInputStream;
-    }
-
-    /**
-     * Wraps an existing {@link OutputStream} and <em>buffers</em> the output.
-     * Expensive interaction with the underlying input stream is minimized, since
-     * most (smaller) requests can be satisfied by accessing the buffer alone. The
-     * drawback is that some extra space is required to hold the buffer and that
-     * copying takes place when flushing that buffer, but this is usually outweighed
-     * by the performance benefits.
-     *
-     * <p/>A typical application pattern for the class looks like this:<p/>
-     *
-     * <pre>
-     * BufferedOutputStream buf = new BufferedOutputStream(new FileOutputStream(&quot;file.java&quot;));
-     * </pre>
-     *
-     * @see BufferedInputStream
-     */
-    class CBufferedOutputStream {
-        /**
-         * Constructs a new {@code BufferedOutputStream}, providing {@code out} with a buffer
-         * of 8192 bytes.
-         *
-         * @param out the {@code OutputStream} the buffer writes to.
-         */
-        constructor(
-            [in] IOutputStream* os);
-
-        /**
-         * Constructs a new {@code BufferedOutputStream}, providing {@code out} with {@code size} bytes
-         * of buffer.
-         *
-         * @param out the {@code OutputStream} the buffer writes to.
-         * @param size the size of buffer in bytes.
-         * @throws IllegalArgumentException if {@code size <= 0}.
-         */
-        constructor(
-            [in] IOutputStream* os,
-            [in] Int32 size);
-
-        interface IBufferedOutputStream;
-        interface IFlushable;
-    }
-
-    /**
-     * Wraps an existing {@link Reader} and <em>buffers</em> the input. Expensive
-     * interaction with the underlying reader is minimized, since most (smaller)
-     * requests can be satisfied by accessing the buffer alone. The drawback is that
-     * some extra space is required to hold the buffer and that copying takes place
-     * when filling that buffer, but this is usually outweighed by the performance
-     * benefits.
-     *
-     * <p/>A typical application pattern for the class looks like this:<p/>
-     *
-     * <pre>
-     * BufferedReader buf = new BufferedReader(new FileReader(&quot;file.java&quot;));
-     * </pre>
-     *
-     * @see BufferedWriter
-     * @since 1.1
-     */
-    class CBufferedReader {
-        /**
-         * Constructs a new {@code BufferedReader}, providing {@code in} with a buffer
-         * of 8192 characters.
-         *
-         * @param in the {@code Reader} the buffer reads from.
-         */
-        constructor(
-            [in] IReader* rin);
-
-        /**
-         * Constructs a new {@code BufferedReader}, providing {@code in} with {@code size} characters
-         * of buffer.
-         *
-         * @param in the {@code InputStream} the buffer reads from.
-         * @param size the size of buffer in characters.
-         * @throws IllegalArgumentException if {@code size <= 0}.
-         */
-        constructor(
-            [in] IReader* rin,
-            [in] Int32 size);
-
-        interface IBufferedReader;
-        interface ICloseable;
-    }
-
-    /**
-     * Wraps an existing {@link Writer} and <em>buffers</em> the output. Expensive
-     * interaction with the underlying reader is minimized, since most (smaller)
-     * requests can be satisfied by accessing the buffer alone. The drawback is that
-     * some extra space is required to hold the buffer and that copying takes place
-     * when filling that buffer, but this is usually outweighed by the performance
-     * benefits.
-     *
-     * <p/>A typical application pattern for the class looks like this:<p/>
-     *
-     * <pre>
-     * BufferedWriter buf = new BufferedWriter(new FileWriter(&quot;file.java&quot;));
-     * </pre>
-     *
-     * @see BufferedReader
-     */
-    class CBufferedWriter {
-        /**
-         * Constructs a new {@code BufferedWriter}, providing {@code out} with a buffer
-         * of 8192 bytes.
-         *
-         * @param out the {@code Writer} the buffer writes to.
-         */
-        constructor(
-            [in] IWriter* wout);
-
-        /**
-         * Constructs a new {@code BufferedWriter}, providing {@code out} with {@code size} bytes
-         * of buffer.
-         *
-         * @param out the {@code OutputStream} the buffer writes to.
-         * @param size the size of buffer in bytes.
-         * @throws IllegalArgumentException if {@code size <= 0}.
-         */
-        constructor(
-            [in] IWriter* wout,
-            [in] Int32 size);
-
-        interface IBufferedWriter;
-        interface ICloseable;
-        interface IFlushable;
-    }
-
-    /**
-     * A specialized {@link InputStream } for reading the contents of a byte array.
-     *
-     * @see ByteArrayOutputStream
-     */
-    [deprecated]
-    class CByteArrayInputStream {
-        /**
-         * Constructs a new {@code ByteArrayInputStream} on the byte array
-         * {@code buf}.
-         *
-         * @param buf
-         *            the byte array to stream over.
-         */
-        constructor(
-            [in] ArrayOf<Byte>* buffer);
-
-        /**
-         * Constructs a new {@code ByteArrayInputStream} on the byte array
-         * {@code buf} with the initial position set to {@code offset} and the
-         * number of bytes available set to {@code offset} + {@code length}.
-         *
-         * @param buf
-         *            the byte array to stream over.
-         * @param offset
-         *            the initial position in {@code buf} to start streaming from.
-         * @param length
-         *            the number of bytes available for streaming.
-         */
-        constructor(
-            [in] ArrayOf<Byte>* buffer,
-            [in] Int32 offset,
-            [in] Int32 length);
-
-        interface IByteArrayInputStream;
-    }
-
-    /**
-     * A specialized {@link OutputStream} for class for writing content to an
-     * (internal) byte array. As bytes are written to this stream, the byte array
-     * may be expanded to hold more bytes. When the writing is considered to be
-     * finished, a copy of the byte array can be requested from the class.
-     *
-     * @see ByteArrayInputStream
-     */
-    class CByteArrayOutputStream {
-        /**
-         * Constructs a new ByteArrayOutputStream with a default size of 32 bytes.
-         * If more than 32 bytes are written to this instance, the underlying byte
-         * array will expand.
-         */
-        constructor();
-
-        /**
-         * Constructs a new {@code ByteArrayOutputStream} with a default size of
-         * {@code size} bytes. If more than {@code size} bytes are written to this
-         * instance, the underlying byte array will expand.
-         *
-         * @param size
-         *            initial size for the underlying byte array, must be
-         *            non-negative.
-         * @throws IllegalArgumentException
-         *             if {@code size} < 0.
-         */
-        constructor(
-            [in] Int32 size);
-
-        interface IByteArrayOutputStream;
-        interface IFlushable;
-    }
-
-    /**
-     * A specialized {@link Reader} for reading the contents of a char array.
-     *
-     * @see CharArrayWriter
-     */
-    [deprecated]
-    class CCharArrayReader {
-        /**
-         * Constructs a CharArrayReader on the char array {@code buf}. The size of
-         * the reader is set to the length of the buffer and the object to to read
-         * from is set to {@code buf}.
-         *
-         * @param buf
-         *            the char array from which to read.
-         */
-        constructor(
-            [in] ArrayOf<Char32>* buf);
-
-        /**
-         * Constructs a CharArrayReader on the char array {@code buf}. The size of
-         * the reader is set to {@code length} and the start position from which to
-         * read the buffer is set to {@code offset}.
-         *
-         * @param buf
-         *            the char array from which to read.
-         * @param offset
-         *            the index of the first character in {@code buf} to read.
-         * @param length
-         *            the number of characters that can be read from {@code buf}.
-         * @throws IllegalArgumentException
-         *             if {@code offset < 0} or {@code length < 0}, or if
-         *             {@code offset} is greater than the size of {@code buf} .
-         */
-        constructor(
-            [in] ArrayOf<Char32>* buf,
-            [in] Int32 offset,
-            [in] Int32 length);
-
-        interface ICharArrayReader;
-        interface ICloseable;
-    }
-
-    /**
-     * A specialized {@link Writer} for class for writing content to an (internal)
-     * char array. As bytes are written to this writer, the char array may be
-     * expanded to hold more characters. When the writing is considered to be
-     * finished, a copy of the char array can be requested from the class.
-     *
-     * @see CharArrayReader
-     */
-    class CCharArrayWriter {
-        /**
-         * Constructs a new {@code CharArrayWriter} which has a buffer allocated
-         * with the default size of 32 characters. This buffer is also used as the
-         * {@code lock} to synchronize access to this writer.
-         */
-        constructor();
-
-        /**
-         * Constructs a new {@code CharArrayWriter} which has a buffer allocated
-         * with the size of {@code initialSize} characters. The buffer is also used
-         * as the {@code lock} to synchronize access to this writer.
-         *
-         * @param initialSize
-         *            the initial size of this CharArrayWriters buffer.
-         * @throws IllegalArgumentException
-         *             if {@code initialSize < 0}.
-         */
-        constructor(
-            [in] Int32 initialSize);
-
-        interface ICharArrayWriter;
-        interface ICloseable;
-        interface IFlushable;
-    }
-
-    /**
-     *
-     *
-     * @implements com::elastos::ICharBufferHelper
-     *
-     * @since Elastos 1.0
-     * @todo
-     *        java.io.CharBufferHelper
-     */
-    singleton class CCharBufferHelper {
-         interface ICharBufferHelper;
-    }
-
-    /**
-     * Wraps an existing {@link InputStream} and reads big-endian typed data from it.
-     * Typically, this stream has been written by a DataOutputStream. Types that can
-     * be read include byte, 16-bit short, 32-bit int, 32-bit float, 64-bit long,
-     * 64-bit double, byte strings, and strings encoded in
-     * {@link DataInput modified UTF-8}.
-     *
-     * @see DataOutputStream
-     */
-    class CDataInputStream {
-        /**
-         * Constructs a new DataInputStream on the InputStream {@code in}. All
-         * reads are then filtered through this stream. Note that data read by this
-         * stream is not in a human readable format and was most likely created by a
-         * DataOutputStream.
-         *
-         * <p><strong>Warning:</strong> passing a null source creates an invalid
-         * {@code DataInputStream}. All operations on such a stream will fail.
-         *
-         * @param in
-         *            the source InputStream the filter reads from.
-         * @see DataOutputStream
-         * @see RandomAccessFile
-         */
-        constructor(
-            [in] IInputStream* is);
-
-        interface IDataInput;
-        interface IDataInputStream;
-    }
-
-    singleton class CDataInputStreamHelper {
-        interface IDataInputStreamHelper;
-    }
-
-    /**
-     * Wraps an existing {@link OutputStream} and writes big-endian typed data to it.
-     * Typically, this stream can be read in by DataInputStream. Types that can be
-     * written include byte, 16-bit short, 32-bit int, 32-bit float, 64-bit long,
-     * 64-bit double, byte strings, and {@link DataInput MUTF-8} encoded strings.
-     *
-     * @see DataInputStream
-     */
-    class CDataOutputStream {
-        /**
-         * Constructs a new {@code DataOutputStream} on the {@code OutputStream}
-         * {@code out}. Note that data written by this stream is not in a human
-         * readable form but can be reconstructed by using a {@link DataInputStream}
-         * on the resulting output.
-         *
-         * @param out
-         *            the target stream for writing.
-         */
-        constructor(
-            [in] IOutputStream* os);
-
-        interface IDataOutput;
-        interface IDataOutputStream;
-        interface IFlushable;
-    }
-
-    /**
-     * An "abstract" representation of a file system entity identified by a
-     * pathname. The pathname may be absolute (relative to the root directory
-     * of the file system) or relative to the current directory in which the program
-     * is running.
-     *
-     * <p>The actual file referenced by a {@code File} may or may not exist. It may
-     * also, despite the name {@code File}, be a directory or other non-regular
-     * file.
-     *
-     * <p>This class provides limited functionality for getting/setting file
-     * permissions, file type, and last modified time.
-     *
-     * <p>On Android strings are converted to UTF-8 byte sequences when sending filenames to
-     * the operating system, and byte sequences returned by the operating system (from the
-     * various {@code list} methods) are converted to strings by decoding them as UTF-8
-     * byte sequences.
-     *
-     * @see java.io.Serializable
-     * @see java.lang.Comparable
-     */
-    class CFile {
-          /**
-         * Constructs a new file using the specified directory and name.
-         *
-         * @param dir
-         *            the directory where the file is stored.
-         * @param name
-         *            the file's name.
-         * @throws NullPointerException
-         *             if {@code name} is {@code null}.
-         */
-        constructor(
-            [in] IFile* dir,
-            [in] String name);
-
-        /**
-         * Constructs a new file using the specified path.
-         *
-         * @param path
-         *            the path to be used for the file.
-         */
-        constructor(
-            [in] String path);
-
-        /**
-         * Constructs a new File using the specified directory path and file name,
-         * placing a path separator between the two.
-         *
-         * @param dirPath
-         *            the path to the directory where the file is stored.
-         * @param name
-         *            the file's name.
-         * @throws NullPointerException
-         *             if {@code name == null}.
-         */
-        constructor(
-            [in] String dirPath,
-            [in] String name);
-
-        /**
-         * Constructs a new File using the path of the specified URI. {@code uri}
-         * needs to be an absolute and hierarchical Unified Resource Identifier with
-         * file scheme and non-empty path component, but with undefined authority,
-         * query or fragment components.
-         *
-         * @param uri
-         *            the Unified Resource Identifier that is used to construct this
-         *            file.
-         * @throws IllegalArgumentException
-         *             if {@code uri} does not comply with the conditions above.
-         * @see #toURI
-         * @see java.net.URI
-         */
-        constructor(
-            [in] IURI* urii);
-
-        interface IFile;
-        interface IComparable;
-    }
-
-    singleton class CFileHelper {
-        interface IFileHelper;
-    }
-
-    /**
-     * Wraps a Unix file descriptor. It's possible to get the file descriptor used by some
-     * classes (such as {@link FileInputStream}, {@link FileOutputStream},
-     * and {@link RandomAccessFile}), and then create new streams that point to the same
-     * file descriptor.
-     */
-    class CFileDescriptor {
-        interface IFileDescriptor;
-    }
-
-    singleton class CFileDescriptorHelper {
-        interface IFileDescriptorHelper;
-    }
-
-    /**
-     * An input stream that reads bytes from a file.
-     * <pre>   {@code
-     *   File file = ...
-     *   InputStream in = null;
-     *   try {
-     *     in = new BufferedInputStream(new FileInputStream(file));
-     *     ...
-     *   } finally {
-     *     if (in != null) {
-     *       in.close();
-     *     }
-     *   }
-     * }</pre>
-     *
-     * <p>This stream is <strong>not buffered</strong>. Most callers should wrap
-     * this stream with a {@link BufferedInputStream}.
-     *
-     * <p>Use {@link FileReader} to read characters, as opposed to bytes, from a
-     * file.
-     *
-     * @see BufferedInputStream
-     * @see FileOutputStream
-     */
-    class CFileInputStream {
-        /**
-         * Constructs a new {@code FileInputStream} that reads from {@code file}.
-         *
-         * @param file
-         *            the file from which this stream reads.
-         * @throws FileNotFoundException
-         *             if {@code file} does not exist.
-         */
-        constructor(
-            [in] IFile* file);
-
-        /**
-         * Constructs a new {@code FileInputStream} that reads from {@code fd}.
-         *
-         * @param fd
-         *            the FileDescriptor from which this stream reads.
-         * @throws NullPointerException
-         *             if {@code fd} is {@code null}.
-         */
-        constructor(
-            [in] IFileDescriptor* fd);
-
-        /**
-         * Equivalent to {@code new FileInputStream(new File(path))}.
-         */
-        constructor(
-            [in] String path);
-
-        interface IFileInputStream;
-    }
-
-    /**
-     * An output stream that writes bytes to a file. If the output file exists, it
-     * can be replaced or appended to. If it does not exist, a new file will be
-     * created.
-     * <pre>   {@code
-     *   File file = ...
-     *   OutputStream out = null;
-     *   try {
-     *     out = new BufferedOutputStream(new FileOutputStream(file));
-     *     ...
-     *   } finally {
-     *     if (out != null) {
-     *       out.close();
-     *     }
-     *   }
-     * }</pre>
-     *
-     * <p>This stream is <strong>not buffered</strong>. Most callers should wrap
-     * this stream with a {@link BufferedOutputStream}.
-     *
-     * <p>Use {@link FileWriter} to write characters, as opposed to bytes, to a file.
-     *
-     * @see BufferedOutputStream
-     * @see FileInputStream
-     */
-    class CFileOutputStream {
-        /**
-         * Constructs a new {@code FileOutputStream} that writes to {@code file}. The file will be
-         * truncated if it exists, and created if it doesn't exist.
-         *
-         * @throws FileNotFoundException if file cannot be opened for writing.
-         */
-        constructor(
-            [in] IFile* file);
-
-        /**
-         * Constructs a new {@code FileOutputStream} that writes to {@code file}.
-         * If {@code append} is true and the file already exists, it will be appended to; otherwise
-         * it will be truncated. The file will be created if it does not exist.
-         *
-         * @throws FileNotFoundException if the file cannot be opened for writing.
-         */
-        constructor(
-            [in] IFile* file,
-            [in] Boolean append);
-
-        /**
-         * Constructs a new {@code FileOutputStream} that writes to {@code fd}.
-         *
-         * @throws NullPointerException if {@code fd} is null.
-         */
-        constructor(
-            [in] IFileDescriptor* fd);
-
-        /**
-         * Constructs a new {@code FileOutputStream} that writes to {@code path}. The file will be
-         * truncated if it exists, and created if it doesn't exist.
-         *
-         * @throws FileNotFoundException if file cannot be opened for writing.
-         */
-        constructor(
-            [in] String path);
-
-        /**
-         * Constructs a new {@code FileOutputStream} that writes to {@code path}.
-         * If {@code append} is true and the file already exists, it will be appended to; otherwise
-         * it will be truncated. The file will be created if it does not exist.
-         *
-         * @throws FileNotFoundException if the file cannot be opened for writing.
-         */
-        constructor(
-            [in] String path,
-            [in] Boolean append);
-
-        interface IFileOutputStream;
-        interface IFlushable;
-    }
-
-    class CFilePermission {
-        constructor(
-            [in] String path,
-            [in] String actions);
-
-        interface IFilePermission;
-    }
-
-    /**
-     * A specialized {@link Reader} that reads from a file in the file system.
-     * All read requests made by calling methods in this class are directly
-     * forwarded to the equivalent function of the underlying operating system.
-     * Since this may induce some performance penalty, in particular if many small
-     * read requests are made, a FileReader is often wrapped by a
-     * BufferedReader.
-     *
-     * @see BufferedReader
-     * @see FileWriter
-     */
-    class CFileReader {
-        /**
-         * Constructs a new FileReader on the given {@code file}.
-         *
-         * @param file
-         *            a File to be opened for reading characters from.
-         * @throws FileNotFoundException
-         *             if {@code file} does not exist.
-         */
-        constructor(
-            [in] IFile* file);
-
-        /**
-         * Construct a new FileReader on the given FileDescriptor {@code fd}. Since
-         * a previously opened FileDescriptor is passed as an argument, no
-         * FileNotFoundException can be thrown.
-         *
-         * @param fd
-         *            the previously opened file descriptor.
-         */
-        constructor(
-            [in] IFileDescriptor* fd);
-
-        /**
-         * Construct a new FileReader on the given file named {@code filename}.
-         *
-         * @param filename
-         *            an absolute or relative path specifying the file to open.
-         * @throws FileNotFoundException
-         *             if there is no file named {@code filename}.
-         */
-        constructor(
-            [in] String filename);
-
-        interface IFileReader;
-        interface ICloseable;
-    }
-
-    /**
-     * A specialized {@link Writer} that writes to a file in the file system.
-     * All write requests made by calling methods in this class are directly
-     * forwarded to the equivalent function of the underlying operating system.
-     * Since this may induce some performance penalty, in particular if many small
-     * write requests are made, a FileWriter is often wrapped by a
-     * BufferedWriter.
-     *
-     * @see BufferedWriter
-     * @see FileReader
-     */
-    class CFileWriter {
-        /**
-         * Creates a FileWriter using the File {@code file}.
-         *
-         * @param file
-         *            the non-null File to write bytes to.
-         * @throws IOException
-         *             if {@code file} cannot be opened for writing.
-         */
-        constructor(
-            [in] IFile* file);
-
-        /**
-         * Creates a FileWriter using the File {@code file}. The parameter
-         * {@code append} determines whether or not the file is opened and appended
-         * to or just opened and overwritten.
-         *
-         * @param file
-         *            the non-null File to write bytes to.
-         * @param append
-         *            indicates whether or not to append to an existing file.
-         * @throws IOException
-         *             if the {@code file} cannot be opened for writing.
-         */
-        constructor(
-            [in] IFile* file,
-            [in] Boolean append);
-
-        /**
-         * Creates a FileWriter using the existing FileDescriptor {@code fd}.
-         *
-         * @param fd
-         *            the non-null FileDescriptor to write bytes to.
-         */
-        constructor(
-            [in] IFileDescriptor* fd);
-
-        /**
-         * Creates a FileWriter using the platform dependent {@code filename}.
-         *
-         * @param filename
-         *            the non-null name of the file to write bytes to.
-         * @throws IOException
-         *             if the file cannot be opened for writing.
-         */
-        constructor(
-            [in] String filename);
-
-        /**
-         * Creates a FileWriter using the platform dependent {@code filename}. The
-         * parameter {@code append} determines whether or not the file is opened and
-         * appended to or just opened and overwritten.
-         *
-         * @param filename
-         *            the non-null name of the file to write bytes to.
-         * @param append
-         *            indicates whether or not to append to an existing file.
-         * @throws IOException
-         *             if the {@code file} cannot be opened for writing.
-         */
-        constructor(
-            [in] String filename,
-            [in] Boolean append);
-
-        interface IFileWriter;
-        interface ICloseable;
-        interface IFlushable;
-    }
-
-    /**
-     * A CFilterInputStream contains some other input stream, which it uses as its basic source of data, possibly transforming the data
-     * along the way or providing additional functionality. The class FilterInputStream itself simply overrides all methods of
-     * InputStream with versions that pass all requests to the contained input stream. Subclasses of FilterInputStream may further
-     * override some of these methods and may also provide additional methods and fields.
-     *
-     * @implements com::elastos::IInputStream
-     *
-     * <strong>Direct Known Subclasses:</strong>
-     * - @ref com::elastos::CBufferedInputStream
-     * - @ref com::elastos::CCheckedInputStream
-     * - @ref com::elastos::CCipherInputStream
-     * - @ref com::elastos::CDataInputStream
-     * - @ref com::elastos::CDeflaterInputStream
-     * - @ref com::elastos::CDigestInputStream
-     * - @ref com::elastos::CInflaterInputStream
-     * - @ref com::elastos::CLineNumberInputStream,
-     * - @ref com::elastos::CProgressMonitorInputStream
-     * - @ref com::elastos::CPushbackInputStream
-     *
-     * @since Elastos 1.0
-     * @todo  http://docs.oracle.com/javase/6/docs/api/java/io/FilterInputStream.html
-     */
-    class CFilterInputStream {
-       /**
-        * Constructs a new with the specified input stream as source.
-        *
-        * <p><strong>Warning:</strong> passing a null source creates an invalid,
-        * that fails on every method that is not overridden.
-        * Subclasses should check for null in their constructors.
-        *
-        * @param is    the input stream to filter reads on.
-        * @return ECode    NOERROR(0)
-        */
-        constructor(
-            [in] IInputStream* is);
-
-        interface IFilterInputStream;
-    }
-
-    /**
-     * This class is the superclass of all classes that filter output streams. These streams sit on top of an already existing output stream
-     * (the underlying output stream) which it uses as its basic sink of data, but possibly transforming the data along the way or providing additional functionality.
-     *
-     * The class FilterOutputStream itself simply overrides all methods of OutputStream with versions that pass all requests to the underlying
-     * output stream. Subclasses of FilterOutputStream may further override some of these methods as well as provide additional methods and fields.
-     *
-     * @implements com::elastos::ICloseable
-     * @implements com::elastos::IFlushable
-     * @implements com::elastos::IFilterOutputStream
-     *
-     * @since Elastos 1.0
-     * @todo  http://docs.oracle.com/javase/6/docs/api/java/io/FilterOutputStream.html
-     */
-    class CFilterOutputStream {
-       /**
-        * @brief  Creates an output stream filter built on top of the specified underlying output stream.
-        *
-        * @param os  the underlying output stream to be assigned to the field this.out for later use, or null if this instance is to be created without an underlying stream.
-        */
-        constructor(
-            [in] IOutputStream* os);
-
-        interface IFilterOutputStream;
-        interface IFlushable;
-    }
-
-    /**
-     * A class for turning a byte stream into a character stream. Data read from the
-     * source input stream is converted into characters by either a default or a
-     * provided character converter. The default encoding is taken from the
-     * "file.encoding" system property. {@code InputStreamReader} contains a buffer
-     * of bytes read from the source stream and converts these into characters as
-     * needed. The buffer size is 8K.
-     *
-     * @see OutputStreamWriter
-     */
-    class CInputStreamReader {
-        /**
-         * Constructs a new {@code InputStreamReader} on the {@link InputStream}
-         * {@code in}. This constructor sets the character converter to the encoding
-         * specified in the "file.encoding" property and falls back to ISO 8859_1
-         * (ISO-Latin-1) if the property doesn't exist.
-         *
-         * @param in
-         *            the input stream from which to read characters.
-         */
-        constructor(
-            [in] IInputStream* is);
-
-        /**
-         * Constructs a new InputStreamReader on the InputStream {@code in}. The
-         * character converter that is used to decode bytes into characters is
-         * identified by name by {@code charsetName}. If the encoding cannot be found, an
-         * UnsupportedEncodingException error is thrown.
-         *
-         * @param in
-         *            the InputStream from which to read characters.
-         * @param charsetName
-         *            identifies the character converter to use.
-         * @throws NullPointerException
-         *             if {@code charsetName} is {@code null}.
-         * @throws UnsupportedEncodingException
-         *             if the encoding specified by {@code charsetName} cannot be found.
-         */
-        constructor(
-            [in] IInputStream* is,
-            [in] String charsetName);
-
-        interface IInputStreamReader;
-        interface ICloseable;
-    }
-
-    /**
-    * Wraps an existing InputStream and counts the line terminators encountered while reading the data. Line numbering starts at 0.
-    * Recognized line terminator sequences are '\r', '\n' and "\r\n". When using read, line terminator sequences are always translated into '\n'.
-    *
-    * @implements com::elastos::ILineNumberInputStream
-    *
-    * @since Elastos 1.0
-    * @todo  http://docs.oracle.com/javase/7/docs/api/java/io/LineNumberInputStream.html
-    *        java.io.LineNumberInputStream
-    */
-    class CLineNumberInputStream {
-        /**
-         * Constructs a new LineNumberInputStream on the IInputStream
-         * in Line numbers are counted for all data read from this stream.
-         *
-         * <p><strong>Warning:</strong> passing a null source creates an invalid
-         * LineNumberInputStream All operations on such a stream will fail.
-         *
-         * @param in   The non-null input stream to count line numbers.
-         */
-        constructor(
-            [in] IInputStream* is);
-
-        interface ILineNumberInputStream;
-    }
-
-   /**
-    * Wraps an existing Reader and counts the line terminators encountered while reading the data.
-    * The line number starts at 0 and is incremented any time '\r', '\n' or "\r\n" is read.
-    * The class has an internal buffer for its data. The size of the buffer defaults to 8 KB.
-    *
-    * @implements com::elastos::ILineNumberReader
-    *
-    * @since Elastos 1.0
-    * @todo  http://docs.oracle.com/javase/6/docs/api/java/io/LineNumberReader.html
-    *        java.io.LineNumberReader
-    */
-    class CLineNumberReader {
-        /**
-         * Constructs a new LineNumberReader on the Reader in The internal
-         * buffer gets the default size (8 KB).
-         *
-         * @param ir   the IReader that is buffered.
-         */
-        constructor(
-            [in] IReader* ir);
-
-        /**
-         * Constructs a new LineNumberReader on the Reader in The size of
-         * the internal buffer is specified by the parameter size
-         *
-         * @param ir    the Reader that is buffered.
-         * @param size  the size of the buffer to allocate.
-         * @throws IllegalArgumentException
-         *             if size <= 0
-         */
-        constructor(
-            [in] IReader* ir,
-            [in] Int32 size);
-
-        interface ILineNumberReader;
-        interface ICloseable;
-    }
-
-    /**
-     * A class for turning a character stream into a byte stream. Data written to
-     * the target input stream is converted into bytes by either a default or a
-     * provided character converter. The default encoding is taken from the
-     * "file.encoding" system property. {@code OutputStreamWriter} contains a buffer
-     * of bytes to be written to target stream and converts these into characters as
-     * needed. The buffer size is 8K.
-     *
-     * @see InputStreamReader
-     */
-    class COutputStreamWriter {
-        /**
-         * Constructs a new OutputStreamWriter using {@code out} as the target
-         * stream to write converted characters to. The default character encoding
-         * is used.
-         *
-         * @param out
-         *            the non-null target stream to write converted bytes to.
-         */
-        constructor(
-            [in] IOutputStream* os);
-
-        /**
-         * Constructs a new OutputStreamWriter using {@code out} as the target
-         * stream to write converted characters to and {@code charsetName} as the character
-         * encoding. If the encoding cannot be found, an
-         * UnsupportedEncodingException error is thrown.
-         *
-         * @param out
-         *            the target stream to write converted bytes to.
-         * @param charsetName
-         *            the string describing the desired character encoding.
-         * @throws NullPointerException
-         *             if {@code charsetName} is {@code null}.
-         * @throws UnsupportedEncodingException
-         *             if the encoding specified by {@code charsetName} cannot be found.
-         */
-        constructor(
-            [in] IOutputStream* os,
-            [in] String enc);
-
-        interface IOutputStreamWriter;
-        interface ICloseable;
-        interface IFlushable;
-    }
-
-    /**
-     * Wraps an existing {@link OutputStream} and provides convenience methods for
-     * writing common data types in a human readable format. This is not to be
-     * confused with DataOutputStream which is used for encoding common data types
-     * so that they can be read back in. No {@code IOException} is thrown by this
-     * class. Instead, callers should use {@link #checkError()} to see if a problem
-     * has occurred in this stream.
-     */
-    class CPrintStream {
-        /**
-         * Constructs a new {@code PrintStream} with {@code out} as its target
-         * stream. By default, the new print stream does not automatically flush its
-         * contents to the target stream when a newline is encountered.
-         *
-         * @param out
-         *            the target output stream.
-         * @throws NullPointerException
-         *             if {@code out} is {@code null}.
-         */
-        constructor(
-            [in] IOutputStream* outs);
-
-        /**
-         * Constructs a new {@code PrintStream} with {@code out} as its target
-         * stream. The parameter {@code autoFlush} determines if the print stream
-         * automatically flushes its contents to the target stream when a newline is
-         * encountered.
-         *
-         * @param out
-         *            the target output stream.
-         * @param autoFlush
-         *            indicates whether to flush contents upon encountering a
-         *            newline sequence.
-         * @throws NullPointerException
-         *             if {@code out} is {@code null}.
-         */
-        constructor(
-            [in] IOutputStream* outs,
-            [in] Boolean autoflush);
-
-        /**
-         * Constructs a new {@code PrintStream} with {@code out} as its target
-         * stream and using the character encoding {@code charsetName} while writing. The
-         * parameter {@code autoFlush} determines if the print stream automatically
-         * flushes its contents to the target stream when a newline is encountered.
-         *
-         * @param out
-         *            the target output stream.
-         * @param autoFlush
-         *            indicates whether or not to flush contents upon encountering a
-         *            newline sequence.
-         * @param charsetName
-         *            the non-null string describing the desired character encoding.
-         * @throws NullPointerException
-         *             if {@code out} or {@code charsetName} are {@code null}.
-         * @throws UnsupportedEncodingException
-         *             if the encoding specified by {@code charsetName} is not supported.
-         */
-        constructor(
-            [in] IOutputStream* outs,
-            [in] Boolean autoflush,
-            [in] String enc);
-
-        /**
-         * Constructs a new {@code PrintStream} with {@code file} as its target. The
-         * VM's default character set is used for character encoding.
-         *
-         * @param file
-         *            the target file. If the file already exists, its contents are
-         *            removed, otherwise a new file is created.
-         * @throws FileNotFoundException
-         *             if an error occurs while opening or creating the target file.
-         */
-        constructor(
-            [in] IFile* file);
-
-        /**
-         * Constructs a new {@code PrintStream} with {@code file} as its target. The
-         * character set named {@code charsetName} is used for character encoding.
-         *
-         * @param file
-         *            the target file. If the file already exists, its contents are
-         *            removed, otherwise a new file is created.
-         * @param charsetName
-         *            the name of the character set used for character encoding.
-         * @throws FileNotFoundException
-         *             if an error occurs while opening or creating the target file.
-         * @throws NullPointerException
-         *             if {@code charsetName} is {@code null}.
-         * @throws UnsupportedEncodingException
-         *             if the encoding specified by {@code charsetName} is not supported.
-         */
-        constructor(
-            [in] IFile* file,
-            [in] String csn);
-
-        /**
-         * Constructs a new {@code PrintStream} with the file identified by
-         * {@code fileName} as its target. The VM's default character
-         * set is used for character encoding.
-         *
-         * @param fileName
-         *            the target file's name. If the file already exists, its
-         *            contents are removed, otherwise a new file is created.
-         * @throws FileNotFoundException
-         *             if an error occurs while opening or creating the target file.
-         */
-        constructor(
-            [in] String fileName);
-
-        /**
-         * Constructs a new {@code PrintStream} with the file identified by
-         * {@code fileName} as its target. The character set named {@code charsetName} is
-         * used for character encoding.
-         *
-         * @param fileName
-         *            the target file's name. If the file already exists, its
-         *            contents are removed, otherwise a new file is created.
-         * @param charsetName
-         *            the name of the character set used for character encoding.
-         * @throws FileNotFoundException
-         *             if an error occurs while opening or creating the target file.
-         * @throws NullPointerException
-         *             if {@code charsetName} is {@code null}.
-         * @throws UnsupportedEncodingException
-         *             if the encoding specified by {@code charsetName} is not supported.
-         */
-        constructor(
-            [in] String fileName,
-            [in] String csn);
-
-        interface IPrintStream;
-        interface IFlushable;
-        interface Elastos.Core.IAppendable;
-    }
-
-    /**
-     * Wraps either an existing {@link OutputStream} or an existing {@link Writer}
-     * and provides convenience methods for printing common data types in a human
-     * readable format. No {@code IOException} is thrown by this class. Instead,
-     * callers should use {@link #checkError()} to see if a problem has occurred in
-     * this writer.
-     */
-    class CPrintWriter {
-        /**
-         * Constructs a new {@code PrintWriter} with {@code out} as its target
-         * stream. By default, the new print writer does not automatically flush its
-         * contents to the target stream when a newline is encountered.
-         *
-         * @param out
-         *            the target output stream.
-         * @throws NullPointerException
-         *             if {@code out} is {@code null}.
-         */
-        constructor(
-            [in] IOutputStream* outs);
-
-        /**
-         * Constructs a new {@code PrintWriter} with {@code out} as its target
-         * stream. The parameter {@code autoFlush} determines if the print writer
-         * automatically flushes its contents to the target stream when a newline is
-         * encountered.
-         *
-         * @param out
-         *            the target output stream.
-         * @param autoFlush
-         *            indicates whether contents are flushed upon encountering a
-         *            newline sequence.
-         * @throws NullPointerException
-         *             if {@code out} is {@code null}.
-         */
-        constructor(
-            [in] IOutputStream* outs,
-            [in] Boolean autoflush);
-
-        /**
-         * Constructs a new {@code PrintWriter} with {@code wr} as its target
-         * writer. By default, the new print writer does not automatically flush its
-         * contents to the target writer when a newline is encountered.
-         *
-         * @param wr
-         *            the target writer.
-         * @throws NullPointerException
-         *             if {@code wr} is {@code null}.
-         */
-        constructor(
-            [in] IWriter* wr);
-
-        /**
-         * Constructs a new {@code PrintWriter} with {@code out} as its target
-         * writer. The parameter {@code autoFlush} determines if the print writer
-         * automatically flushes its contents to the target writer when a newline is
-         * encountered.
-         *
-         * @param wr
-         *            the target writer.
-         * @param autoFlush
-         *            indicates whether to flush contents upon encountering a
-         *            newline sequence.
-         * @throws NullPointerException
-         *             if {@code out} is {@code null}.
-         */
-        constructor(
-            [in] IWriter* wr,
-            [in] Boolean autoflush);
-
-        /**
-         * Constructs a new {@code PrintWriter} with {@code file} as its target. The
-         * VM's default character set is used for character encoding.
-         * The print writer does not automatically flush its contents to the target
-         * file when a newline is encountered. The output to the file is buffered.
-         *
-         * @param file
-         *            the target file. If the file already exists, its contents are
-         *            removed, otherwise a new file is created.
-         * @throws FileNotFoundException
-         *             if an error occurs while opening or creating the target file.
-         */
-        constructor(
-            [in] IFile* file);
-
-        /**
-         * Constructs a new {@code PrintWriter} with {@code file} as its target. The
-         * character set named {@code csn} is used for character encoding.
-         * The print writer does not automatically flush its contents to the target
-         * file when a newline is encountered. The output to the file is buffered.
-         *
-         * @param file
-         *            the target file. If the file already exists, its contents are
-         *            removed, otherwise a new file is created.
-         * @param csn
-         *            the name of the character set used for character encoding.
-         * @throws FileNotFoundException
-         *             if an error occurs while opening or creating the target file.
-         * @throws NullPointerException
-         *             if {@code csn} is {@code null}.
-         * @throws UnsupportedEncodingException
-         *             if the encoding specified by {@code csn} is not supported.
-         */
-        constructor(
-            [in] IFile* file,
-            [in] String csn);
-        /**
-         * Constructs a new {@code PrintWriter} with the file identified by {@code
-         * fileName} as its target. The VM's default character set is
-         * used for character encoding. The print writer does not automatically
-         * flush its contents to the target file when a newline is encountered. The
-         * output to the file is buffered.
-         *
-         * @param fileName
-         *            the target file's name. If the file already exists, its
-         *            contents are removed, otherwise a new file is created.
-         * @throws FileNotFoundException
-         *             if an error occurs while opening or creating the target file.
-         */
-        constructor(
-            [in] String fileName);
-
-        /**
-         * Constructs a new {@code PrintWriter} with the file identified by {@code
-         * fileName} as its target. The character set named {@code csn} is used for
-         * character encoding. The print writer does not automatically flush its
-         * contents to the target file when a newline is encountered. The output to
-         * the file is buffered.
-         *
-         * @param fileName
-         *            the target file's name. If the file already exists, its
-         *            contents are removed, otherwise a new file is created.
-         * @param csn
-         *            the name of the character set used for character encoding.
-         * @throws FileNotFoundException
-         *             if an error occurs while opening or creating the target file.
-         * @throws NullPointerException
-         *             if {@code csn} is {@code null}.
-         * @throws UnsupportedEncodingException
-         *             if the encoding specified by {@code csn} is not supported.
-         */
-        constructor(
-            [in] String fileName,
-            [in] String csn);
-
-        interface IPrintWriter;
-        interface ICloseable;
-        interface IFlushable;
-    }
-
-    /**
-     * Wraps an existing InputStream and adds functionality to "push back" bytes that have been read, so that they can be read again.
-     * Parsers may find this useful. The number of bytes which may be pushed back can be specified during construction.
-     * If the buffer of pushed back bytes is empty, bytes are read from the underlying input stream.
-     *
-     * @implements com::elastos::IPushbackInputStream
-     *
-     * @since Elastos 1.0
-     * @todo  http://docs.oracle.com/javase/6/docs/api/java/io/PushbackInputStream.html
-     *        java.io.PushbackInputStream
-     */
-    class CPushbackInputStream {
-        /**
-         * Constructs a new PushbackInputStream with the specified input
-         * stream as source. The size of the pushback buffer is set to the default
-         * value of 1 byte.
-         *
-         * <p><strong>Warning:</strong> passing a null source creates an invalid
-         * PushbackInputStream All read operations on such a stream will
-         * fail.
-         *
-         * @param in
-         *            the source input stream.
-         */
-        constructor(
-            [in] IInputStream* is);
-        /**
-         * Constructs a new PushbackInputStream with in as source
-         * input stream. The size of the pushback buffer is set to size
-         *
-         * <p><strong>Warning:</strong> passing a null source creates an invalid
-         * PushbackInputStream All read operations on such a stream will
-         * fail.
-         *
-         * @param is    the source input stream.
-         * @param size  the size of the pushback buffer.
-         * @return ECode = NOERROR(0) if success, elas as follows:
-         * Value | Meaning |
-         * :-|:------------|
-         * IllegalArgumentException | if size is negative.
-         */
-        constructor(
-            [in] IInputStream* is,
-            [in] Int32 size);
-
-        interface IPushbackInputStream;
-    }
-
-    /**
-     * Wraps an existing Reader and adds functionality to "push back" characters that have been read, so that they can be read again.
-     * Parsers may find this useful. The number of characters which may be pushed back can be specified during construction.
-     * If the buffer of pushed back bytes is empty, characters are read from the underlying reader.
-     *
-     * @implements com::elastos::IPushbackReader
-     *
-     * @since Elastos 1.0
-     * @todo
-     *        java.io.PushbackReader
-     */
-    class CPushbackReader {
-        /**
-         * Constructs a new PushbackReader with the specified reader as
-         * source. The size of the pushback buffer is set to the default value of 1
-         * character.
-         *
-         * @param ir
-         *            the source reader.
-         */
-        constructor(
-            [in] IReader* ir);
-        /**
-         * Constructs a new PushbackReader with in as source reader.
-         * The size of the pushback buffer is set to size
-         *
-         * @param ir     the source reader.
-         * @param size   the size of the pushback buffer.
-         * @return ECode = NOERROR(0) if success, elas as follows:
-         * Value | Meaning |
-         * :-|:------------|
-         * IllegalArgumentException | if size is negative.
-         */
-        constructor(
-            [in] IReader* ir,
-            [in] Int32 size);
-
-        interface IPushbackReader;
-        interface ICloseable;
-    }
-
-    /**
-     * Allows reading from and writing to a file in a random-access manner. This is
-     * different from the uni-directional sequential access that a
-     * {@link FileInputStream} or {@link FileOutputStream} provides. If the file is
-     * opened in read/write mode, write operations are available as well. The
-     * position of the next read or write operation can be moved forwards and
-     * backwards after every operation.
-     */
-    class CRandomAccessFile {
-        /**
-         * Constructs a new {@code RandomAccessFile} based on {@code file} and opens
-         * it according to the access string in {@code mode}.
-         * <p><a id="accessmode"/>
-         * {@code mode} may have one of following values:
-         * <table border="0">
-         * <tr>
-         * <td>{@code "r"}</td>
-         * <td>The file is opened in read-only mode. An {@code IOException} is
-         * thrown if any of the {@code write} methods is called.</td>
-         * </tr>
-         * <tr>
-         * <td>{@code "rw"}</td>
-         * <td>The file is opened for reading and writing. If the file does not
-         * exist, it will be created.</td>
-         * </tr>
-         * <tr>
-         * <td>{@code "rws"}</td>
-         * <td>The file is opened for reading and writing. Every change of the
-         * file's content or metadata must be written synchronously to the target
-         * device.</td>
-         * </tr>
-         * <tr>
-         * <td>{@code "rwd"}</td>
-         * <td>The file is opened for reading and writing. Every change of the
-         * file's content must be written synchronously to the target device.</td>
-         * </tr>
-         * </table>
-         *
-         * @param file
-         *            the file to open.
-         * @param mode
-         *            the file access <a href="#accessmode">mode</a>, either {@code
-         *            "r"}, {@code "rw"}, {@code "rws"} or {@code "rwd"}.
-         * @throws FileNotFoundException
-         *             if the file cannot be opened or created according to {@code
-         *             mode}.
-         * @throws IllegalArgumentException
-         *             if {@code mode} is not {@code "r"}, {@code "rw"}, {@code
-         *             "rws"} or {@code "rwd"}.
-         */
-        constructor(
-            [in] IFile* pFile,
-            [in] String mode);
-
-        /**
-         * Constructs a new {@code RandomAccessFile} based on the file named {@code
-         * fileName} and opens it according to the access string in {@code mode}.
-         * The file path may be specified absolutely or relative to the system
-         * property {@code "user.dir"}.
-         *
-         * @param fileName
-         *            the name of the file to open.
-         * @param mode
-         *            the file access <a href="#accessmode">mode</a>, either {@code
-         *            "r"}, {@code "rw"}, {@code "rws"} or {@code "rwd"}.
-         * @throws FileNotFoundException
-         *             if the file cannot be opened or created according to {@code
-         *             mode}.
-         * @throws IllegalArgumentException
-         *             if {@code mode} is not {@code "r"}, {@code "rw"}, {@code
-         *             "rws"} or {@code "rwd"}.
-         */
-        constructor(
-            [in] String fileName,
-            [in] String mode);
-
-        interface IRandomAccessFile;
-        interface IDataInput;
-        interface IDataOutput;
-    }
-
-    /**
-     * Concatenates two or more existing {@link InputStream}s. Reads are taken from
-     * the first stream until it ends, then the next stream is used, until the last
-     * stream returns end of file.
-     */
-    class CSequenceInputStream {
-        /**
-         * Constructs a new {@code SequenceInputStream} using the two streams
-         * {@code s1} and {@code s2} as the sequence of streams to read from.
-         *
-         * @param s1
-         *            the first stream to get bytes from.
-         * @param s2
-         *            the second stream to get bytes from.
-         * @throws NullPointerException
-         *             if {@code s1} is {@code null}.
-         */
-        constructor(
-            [in] IInputStream* s1,
-            [in] IInputStream* s2);
-
-        /**
-         * Constructs a new SequenceInputStream using the elements returned from
-         * Enumeration {@code e} as the stream sequence. The instances returned by
-         * {@code e.nextElement()} must be of type {@link InputStream}.
-         *
-         * @param e
-         *            the enumeration of {@code InputStreams} to get bytes from.
-         * @throws NullPointerException
-         *             if any of the elements in {@code e} is {@code null}.
-         */
-        constructor(
-            [in] IObjectEnumerator* e);
-
-        interface ISequenceInputStream;
-    }
-
-    /**
-     * A specialized {@link InputStream} that reads bytes from a {@code String} in
-     * a sequential manner.
-     *
-     * @deprecated Use {@link StringReader}
-     */
-    class CStringBufferInputStream {
-        /**
-         * Construct a new {@code StringBufferInputStream} with {@code str} as
-         * source. The size of the stream is set to the {@code length()} of the
-         * string.
-         *
-         * @param str
-         *            the source string for this stream.
-         * @throws NullPointerException
-         *             if {@code str} is {@code null}.
-         */
-        constructor(
-            [in] String str);
-
-        interface IStringBufferInputStream;
-    }
-
-    /**
-     * A specialized {@link Reader} that reads characters from a {@code String} in
-     * a sequential manner.
-     *
-     * @see StringWriter
-     */
-    class CStringReader {
-        /**
-         * Construct a new {@code StringReader} with {@code str} as source. The size
-         * of the reader is set to the {@code length()} of the string and the Object
-         * to synchronize access through is set to {@code str}.
-         *
-         * @param str
-         *            the source string for this reader.
-         */
-        constructor(
-            [in] String str);
-
-        interface IStringReader;
-        interface ICloseable;
-    }
-
-    /**
-     * A specialized {@link Writer} that writes characters to a {@code StringBuffer}
-     * in a sequential manner, appending them in the process. The result can later
-     * be queried using the {@link #StringWriter(int)} or {@link #toString()}
-     * methods.
-     *
-     * @see StringReader
-     */
-    class CStringWriter {
-        /**
-         * Constructs a new {@code StringWriter} which has a {@link StringBuffer}
-         * allocated with the default size of 16 characters. The {@code
-         * StringBuffer} is also the {@code lock} used to synchronize access to this
-         * writer.
-         */
-        constructor();
-
-        /**
-         * Constructs a new {@code StringWriter} which has a {@link StringBuffer}
-         * allocated with a size of {@code initialSize} characters. The {@code
-         * StringBuffer} is also the {@code lock} used to synchronize access to this
-         * writer.
-         *
-         * @param initialSize
-         *            the intial size of the target string buffer.
-         */
-        constructor(
-            [in] Int32 initialSize);
-
-        interface IStringWriter;
-        interface ICloseable;
-        interface IFlushable;
-    }
-
-    singleton class CByteBufferHelper {
-        interface IByteBufferHelper;
-    }
-
-    singleton class CDoubleBufferHelper {
-        interface IDoubleBufferHelper;
-    }
-
-    [deprecated]
-    class CHeapBufferIterator {
-        constructor(
-            [in/* out*/] ArrayOf<Byte>* buffer,
-            [in] Int32 offset,
-            [in] Int32 byteCount,
-            [in] ByteOrder order);
-
-        interface IHeapBufferIterator;
-    }
-
-    singleton class CStreams {
-        interface IStreams;
-    }
-
-    singleton class CMemory {
-        interface IMemory;
-    }
-
-    singleton class CIoUtils {
-        interface IIoUtils;
-    }
-
-    class CUnsafeByteSequence {
-        constructor(
-            [in] Int32 capacity);
-
-        interface IUnsafeByteSequence;
-    }
-
-    singleton class CFloatBufferHelper {
-        interface IFloatBufferHelper;
-    }
-
-    singleton class CInt16BufferHelper {
-        interface IInt16BufferHelper;
-    }
-
-    singleton class CInt32BufferHelper {
-        interface IInt32BufferHelper;
-    }
-
-    singleton class CInt64BufferHelper {
-        interface IInt64BufferHelper;
-    }
-
-    singleton class CNativeConverterHelper {
-        constructor();
-
-        interface INativeConverterHelper;
-    }
-
-    singleton class CNIOAccessHelper {
-        interface INIOAccessHelper;
-    }
-
-    class CSelectorImpl {
-        constructor();
-
-        constructor(
-            [in] ISelectorProvider* selectorProvider);
-
-        interface ISelectorImpl;
-    }
-
-    } // namespace IO
-    } // namespace Elastos
-
-    namespace Elastos {
-    namespace IO {
-    namespace Channels {
-        class CChannels {
-            constructor();
-
-            interface IChannels;
-        }
-    } // namespace Channels
-    } // namespace IO
-    } // namespace Elastos
-
-    namespace Elastos {
-    namespace IO {
-    namespace Charset {
-
-        class CCodingErrorAction {
-            constructor();
-
-            interface ICodingErrorAction;
-        }
-
-        singleton class CCharsetHelper {
-            interface ICharsetHelper;
-        }
-
-        singleton class CCharsets {
-            interface ICharsets;
-        }
-
-        class CCoderResult {
-            constructor();
-
-            interface ICoderResult;
-        }
-
-        singleton class CCoderResultHelper {
-            interface ICoderResultHelper;
-        }
-
-        singleton class CModifiedUtf8 {
-            interface IModifiedUtf8;
-        }
-    } // namespace Charset
-    } // namespace IO
-    } // namespace Elastos
-
-    interface Elastos.IO.Channels.Spi.ISelectorProvider;
-
-    namespace Elastos {
-    namespace IO {
-        class CSelectorProviderImpl
-        {
-            constructor();
-            interface ISelectorProvider;
-        }
-    } // namespace IO
-    } // namespace Elastos
-
-
-    namespace Elastos {
-    namespace IO {
-    namespace Channels {
-    namespace Spi {
-
-    singleton class CSelectorProviderHelper {
-        interface ISelectorProviderHelper;
-    }
-
-    } // namespace Spi
-    } // namespace Channels
-    } // IO
-    } // Elastos
-
-    namespace Elastos {
-    namespace IO {
-    namespace Channels {
-
-    singleton class CDatagramChannelHelper {
-        interface IDatagramChannelHelper;
-    }
-
-    } // namespace Channels
-    } // IO
-    } // Elastos
+   //  interface Elastos.Core.IComparable;
+   //  interface Elastos.IO.Channels.Spi.ISelectorProvider;
+   //  interface Elastos.Net.IURI;
+   //  interface Elastos.Utility.IObjectEnumerator;
+   //  interface Elastos.Utility.IObjectStringMap;
+
+   //  namespace Elastos {
+   //  namespace IO {
+
+   //  singleton class CByteOrderHelper {
+   //      interface IByteOrderHelper;
+   //  }
+
+   //  /**
+   //   * Wraps an existing {@link InputStream} and <em>buffers</em> the input.
+   //   * Expensive interaction with the underlying input stream is minimized, since
+   //   * most (smaller) requests can be satisfied by accessing the buffer alone. The
+   //   * drawback is that some extra space is required to hold the buffer and that
+   //   * copying takes place when filling that buffer, but this is usually outweighed
+   //   * by the performance benefits.
+   //   *
+   //   * <p/>A typical application pattern for the class looks like this:<p/>
+   //   *
+   //   * <pre>
+   //   * BufferedInputStream buf = new BufferedInputStream(new FileInputStream(&quot;file.java&quot;));
+   //   * </pre>
+   //   *
+   //   * @see BufferedOutputStream
+   //   */
+   //  class CBufferedInputStream {
+   //         /**
+   //       * Constructs a new {@code BufferedInputStream}, providing {@code in} with a buffer
+   //       * of 8192 bytes.
+   //       *
+   //       * <p><strong>Warning:</strong> passing a null source creates a closed
+   //       * {@code BufferedInputStream}. All read operations on such a stream will
+   //       * fail with an IOException.
+   //       *
+   //       * @param in the {@code InputStream} the buffer reads from.
+   //       */
+   //      constructor(
+   //          [in] IInputStream* is);
+
+   //      /**
+   //       * Constructs a new {@code BufferedInputStream}, providing {@code in} with {@code size} bytes
+   //       * of buffer.
+   //       *
+   //       * <p><strong>Warning:</strong> passing a null source creates a closed
+   //       * {@code BufferedInputStream}. All read operations on such a stream will
+   //       * fail with an IOException.
+   //       *
+   //       * @param in the {@code InputStream} the buffer reads from.
+   //       * @param size the size of buffer in bytes.
+   //       * @throws IllegalArgumentException if {@code size <= 0}.
+   //       */
+   //      constructor(
+   //          [in] IInputStream* is,
+   //          [in] Int32 size);
+
+   //      interface IBufferedInputStream;
+   //  }
+
+   //  /**
+   //   * Wraps an existing {@link OutputStream} and <em>buffers</em> the output.
+   //   * Expensive interaction with the underlying input stream is minimized, since
+   //   * most (smaller) requests can be satisfied by accessing the buffer alone. The
+   //   * drawback is that some extra space is required to hold the buffer and that
+   //   * copying takes place when flushing that buffer, but this is usually outweighed
+   //   * by the performance benefits.
+   //   *
+   //   * <p/>A typical application pattern for the class looks like this:<p/>
+   //   *
+   //   * <pre>
+   //   * BufferedOutputStream buf = new BufferedOutputStream(new FileOutputStream(&quot;file.java&quot;));
+   //   * </pre>
+   //   *
+   //   * @see BufferedInputStream
+   //   */
+   //  class CBufferedOutputStream {
+   //      /**
+   //       * Constructs a new {@code BufferedOutputStream}, providing {@code out} with a buffer
+   //       * of 8192 bytes.
+   //       *
+   //       * @param out the {@code OutputStream} the buffer writes to.
+   //       */
+   //      constructor(
+   //          [in] IOutputStream* os);
+
+   //      /**
+   //       * Constructs a new {@code BufferedOutputStream}, providing {@code out} with {@code size} bytes
+   //       * of buffer.
+   //       *
+   //       * @param out the {@code OutputStream} the buffer writes to.
+   //       * @param size the size of buffer in bytes.
+   //       * @throws IllegalArgumentException if {@code size <= 0}.
+   //       */
+   //      constructor(
+   //          [in] IOutputStream* os,
+   //          [in] Int32 size);
+
+   //      interface IBufferedOutputStream;
+   //      interface IFlushable;
+   //  }
+
+   //  /**
+   //   * Wraps an existing {@link Reader} and <em>buffers</em> the input. Expensive
+   //   * interaction with the underlying reader is minimized, since most (smaller)
+   //   * requests can be satisfied by accessing the buffer alone. The drawback is that
+   //   * some extra space is required to hold the buffer and that copying takes place
+   //   * when filling that buffer, but this is usually outweighed by the performance
+   //   * benefits.
+   //   *
+   //   * <p/>A typical application pattern for the class looks like this:<p/>
+   //   *
+   //   * <pre>
+   //   * BufferedReader buf = new BufferedReader(new FileReader(&quot;file.java&quot;));
+   //   * </pre>
+   //   *
+   //   * @see BufferedWriter
+   //   * @since 1.1
+   //   */
+   //  class CBufferedReader {
+   //      /**
+   //       * Constructs a new {@code BufferedReader}, providing {@code in} with a buffer
+   //       * of 8192 characters.
+   //       *
+   //       * @param in the {@code Reader} the buffer reads from.
+   //       */
+   //      constructor(
+   //          [in] IReader* rin);
+
+   //      /**
+   //       * Constructs a new {@code BufferedReader}, providing {@code in} with {@code size} characters
+   //       * of buffer.
+   //       *
+   //       * @param in the {@code InputStream} the buffer reads from.
+   //       * @param size the size of buffer in characters.
+   //       * @throws IllegalArgumentException if {@code size <= 0}.
+   //       */
+   //      constructor(
+   //          [in] IReader* rin,
+   //          [in] Int32 size);
+
+   //      interface IBufferedReader;
+   //      interface ICloseable;
+   //  }
+
+   //  /**
+   //   * Wraps an existing {@link Writer} and <em>buffers</em> the output. Expensive
+   //   * interaction with the underlying reader is minimized, since most (smaller)
+   //   * requests can be satisfied by accessing the buffer alone. The drawback is that
+   //   * some extra space is required to hold the buffer and that copying takes place
+   //   * when filling that buffer, but this is usually outweighed by the performance
+   //   * benefits.
+   //   *
+   //   * <p/>A typical application pattern for the class looks like this:<p/>
+   //   *
+   //   * <pre>
+   //   * BufferedWriter buf = new BufferedWriter(new FileWriter(&quot;file.java&quot;));
+   //   * </pre>
+   //   *
+   //   * @see BufferedReader
+   //   */
+   //  class CBufferedWriter {
+   //      /**
+   //       * Constructs a new {@code BufferedWriter}, providing {@code out} with a buffer
+   //       * of 8192 bytes.
+   //       *
+   //       * @param out the {@code Writer} the buffer writes to.
+   //       */
+   //      constructor(
+   //          [in] IWriter* wout);
+
+   //      /**
+   //       * Constructs a new {@code BufferedWriter}, providing {@code out} with {@code size} bytes
+   //       * of buffer.
+   //       *
+   //       * @param out the {@code OutputStream} the buffer writes to.
+   //       * @param size the size of buffer in bytes.
+   //       * @throws IllegalArgumentException if {@code size <= 0}.
+   //       */
+   //      constructor(
+   //          [in] IWriter* wout,
+   //          [in] Int32 size);
+
+   //      interface IBufferedWriter;
+   //      interface ICloseable;
+   //      interface IFlushable;
+   //  }
+
+   //  /**
+   //   * A specialized {@link InputStream } for reading the contents of a byte array.
+   //   *
+   //   * @see ByteArrayOutputStream
+   //   */
+   //  [deprecated]
+   //  class CByteArrayInputStream {
+   //      /**
+   //       * Constructs a new {@code ByteArrayInputStream} on the byte array
+   //       * {@code buf}.
+   //       *
+   //       * @param buf
+   //       *            the byte array to stream over.
+   //       */
+   //      constructor(
+   //          [in] ArrayOf<Byte>* buffer);
+
+   //      /**
+   //       * Constructs a new {@code ByteArrayInputStream} on the byte array
+   //       * {@code buf} with the initial position set to {@code offset} and the
+   //       * number of bytes available set to {@code offset} + {@code length}.
+   //       *
+   //       * @param buf
+   //       *            the byte array to stream over.
+   //       * @param offset
+   //       *            the initial position in {@code buf} to start streaming from.
+   //       * @param length
+   //       *            the number of bytes available for streaming.
+   //       */
+   //      constructor(
+   //          [in] ArrayOf<Byte>* buffer,
+   //          [in] Int32 offset,
+   //          [in] Int32 length);
+
+   //      interface IByteArrayInputStream;
+   //  }
+
+   //  /**
+   //   * A specialized {@link OutputStream} for class for writing content to an
+   //   * (internal) byte array. As bytes are written to this stream, the byte array
+   //   * may be expanded to hold more bytes. When the writing is considered to be
+   //   * finished, a copy of the byte array can be requested from the class.
+   //   *
+   //   * @see ByteArrayInputStream
+   //   */
+   //  class CByteArrayOutputStream {
+   //      /**
+   //       * Constructs a new ByteArrayOutputStream with a default size of 32 bytes.
+   //       * If more than 32 bytes are written to this instance, the underlying byte
+   //       * array will expand.
+   //       */
+   //      constructor();
+
+   //      /**
+   //       * Constructs a new {@code ByteArrayOutputStream} with a default size of
+   //       * {@code size} bytes. If more than {@code size} bytes are written to this
+   //       * instance, the underlying byte array will expand.
+   //       *
+   //       * @param size
+   //       *            initial size for the underlying byte array, must be
+   //       *            non-negative.
+   //       * @throws IllegalArgumentException
+   //       *             if {@code size} < 0.
+   //       */
+   //      constructor(
+   //          [in] Int32 size);
+
+   //      interface IByteArrayOutputStream;
+   //      interface IFlushable;
+   //  }
+
+   //  /**
+   //   * A specialized {@link Reader} for reading the contents of a char array.
+   //   *
+   //   * @see CharArrayWriter
+   //   */
+   //  [deprecated]
+   //  class CCharArrayReader {
+   //      /**
+   //       * Constructs a CharArrayReader on the char array {@code buf}. The size of
+   //       * the reader is set to the length of the buffer and the object to to read
+   //       * from is set to {@code buf}.
+   //       *
+   //       * @param buf
+   //       *            the char array from which to read.
+   //       */
+   //      constructor(
+   //          [in] ArrayOf<Char32>* buf);
+
+   //      /**
+   //       * Constructs a CharArrayReader on the char array {@code buf}. The size of
+   //       * the reader is set to {@code length} and the start position from which to
+   //       * read the buffer is set to {@code offset}.
+   //       *
+   //       * @param buf
+   //       *            the char array from which to read.
+   //       * @param offset
+   //       *            the index of the first character in {@code buf} to read.
+   //       * @param length
+   //       *            the number of characters that can be read from {@code buf}.
+   //       * @throws IllegalArgumentException
+   //       *             if {@code offset < 0} or {@code length < 0}, or if
+   //       *             {@code offset} is greater than the size of {@code buf} .
+   //       */
+   //      constructor(
+   //          [in] ArrayOf<Char32>* buf,
+   //          [in] Int32 offset,
+   //          [in] Int32 length);
+
+   //      interface ICharArrayReader;
+   //      interface ICloseable;
+   //  }
+
+   //  /**
+   //   * A specialized {@link Writer} for class for writing content to an (internal)
+   //   * char array. As bytes are written to this writer, the char array may be
+   //   * expanded to hold more characters. When the writing is considered to be
+   //   * finished, a copy of the char array can be requested from the class.
+   //   *
+   //   * @see CharArrayReader
+   //   */
+   //  class CCharArrayWriter {
+   //      /**
+   //       * Constructs a new {@code CharArrayWriter} which has a buffer allocated
+   //       * with the default size of 32 characters. This buffer is also used as the
+   //       * {@code lock} to synchronize access to this writer.
+   //       */
+   //      constructor();
+
+   //      /**
+   //       * Constructs a new {@code CharArrayWriter} which has a buffer allocated
+   //       * with the size of {@code initialSize} characters. The buffer is also used
+   //       * as the {@code lock} to synchronize access to this writer.
+   //       *
+   //       * @param initialSize
+   //       *            the initial size of this CharArrayWriters buffer.
+   //       * @throws IllegalArgumentException
+   //       *             if {@code initialSize < 0}.
+   //       */
+   //      constructor(
+   //          [in] Int32 initialSize);
+
+   //      interface ICharArrayWriter;
+   //      interface ICloseable;
+   //      interface IFlushable;
+   //  }
+
+   //  /**
+   //   *
+   //   *
+   //   * @implements com::elastos::ICharBufferHelper
+   //   *
+   //   * @since Elastos 1.0
+   //   * @todo
+   //   *        java.io.CharBufferHelper
+   //   */
+   //  singleton class CCharBufferHelper {
+   //       interface ICharBufferHelper;
+   //  }
+
+   //  /**
+   //   * Wraps an existing {@link InputStream} and reads big-endian typed data from it.
+   //   * Typically, this stream has been written by a DataOutputStream. Types that can
+   //   * be read include byte, 16-bit short, 32-bit int, 32-bit float, 64-bit long,
+   //   * 64-bit double, byte strings, and strings encoded in
+   //   * {@link DataInput modified UTF-8}.
+   //   *
+   //   * @see DataOutputStream
+   //   */
+   //  class CDataInputStream {
+   //      /**
+   //       * Constructs a new DataInputStream on the InputStream {@code in}. All
+   //       * reads are then filtered through this stream. Note that data read by this
+   //       * stream is not in a human readable format and was most likely created by a
+   //       * DataOutputStream.
+   //       *
+   //       * <p><strong>Warning:</strong> passing a null source creates an invalid
+   //       * {@code DataInputStream}. All operations on such a stream will fail.
+   //       *
+   //       * @param in
+   //       *            the source InputStream the filter reads from.
+   //       * @see DataOutputStream
+   //       * @see RandomAccessFile
+   //       */
+   //      constructor(
+   //          [in] IInputStream* is);
+
+   //      interface IDataInput;
+   //      interface IDataInputStream;
+   //  }
+
+   //  singleton class CDataInputStreamHelper {
+   //      interface IDataInputStreamHelper;
+   //  }
+
+   //  /**
+   //   * Wraps an existing {@link OutputStream} and writes big-endian typed data to it.
+   //   * Typically, this stream can be read in by DataInputStream. Types that can be
+   //   * written include byte, 16-bit short, 32-bit int, 32-bit float, 64-bit long,
+   //   * 64-bit double, byte strings, and {@link DataInput MUTF-8} encoded strings.
+   //   *
+   //   * @see DataInputStream
+   //   */
+   //  class CDataOutputStream {
+   //      /**
+   //       * Constructs a new {@code DataOutputStream} on the {@code OutputStream}
+   //       * {@code out}. Note that data written by this stream is not in a human
+   //       * readable form but can be reconstructed by using a {@link DataInputStream}
+   //       * on the resulting output.
+   //       *
+   //       * @param out
+   //       *            the target stream for writing.
+   //       */
+   //      constructor(
+   //          [in] IOutputStream* os);
+
+   //      interface IDataOutput;
+   //      interface IDataOutputStream;
+   //      interface IFlushable;
+   //  }
+
+   //  /**
+   //   * An "abstract" representation of a file system entity identified by a
+   //   * pathname. The pathname may be absolute (relative to the root directory
+   //   * of the file system) or relative to the current directory in which the program
+   //   * is running.
+   //   *
+   //   * <p>The actual file referenced by a {@code File} may or may not exist. It may
+   //   * also, despite the name {@code File}, be a directory or other non-regular
+   //   * file.
+   //   *
+   //   * <p>This class provides limited functionality for getting/setting file
+   //   * permissions, file type, and last modified time.
+   //   *
+   //   * <p>On Android strings are converted to UTF-8 byte sequences when sending filenames to
+   //   * the operating system, and byte sequences returned by the operating system (from the
+   //   * various {@code list} methods) are converted to strings by decoding them as UTF-8
+   //   * byte sequences.
+   //   *
+   //   * @see java.io.Serializable
+   //   * @see java.lang.Comparable
+   //   */
+   //  class CFile {
+   //        /**
+   //       * Constructs a new file using the specified directory and name.
+   //       *
+   //       * @param dir
+   //       *            the directory where the file is stored.
+   //       * @param name
+   //       *            the file's name.
+   //       * @throws NullPointerException
+   //       *             if {@code name} is {@code null}.
+   //       */
+   //      constructor(
+   //          [in] IFile* dir,
+   //          [in] String name);
+
+   //      /**
+   //       * Constructs a new file using the specified path.
+   //       *
+   //       * @param path
+   //       *            the path to be used for the file.
+   //       */
+   //      constructor(
+   //          [in] String path);
+
+   //      /**
+   //       * Constructs a new File using the specified directory path and file name,
+   //       * placing a path separator between the two.
+   //       *
+   //       * @param dirPath
+   //       *            the path to the directory where the file is stored.
+   //       * @param name
+   //       *            the file's name.
+   //       * @throws NullPointerException
+   //       *             if {@code name == null}.
+   //       */
+   //      constructor(
+   //          [in] String dirPath,
+   //          [in] String name);
+
+   //      /**
+   //       * Constructs a new File using the path of the specified URI. {@code uri}
+   //       * needs to be an absolute and hierarchical Unified Resource Identifier with
+   //       * file scheme and non-empty path component, but with undefined authority,
+   //       * query or fragment components.
+   //       *
+   //       * @param uri
+   //       *            the Unified Resource Identifier that is used to construct this
+   //       *            file.
+   //       * @throws IllegalArgumentException
+   //       *             if {@code uri} does not comply with the conditions above.
+   //       * @see #toURI
+   //       * @see java.net.URI
+   //       */
+   //      constructor(
+   //          [in] IURI* urii);
+
+   //      interface IFile;
+   //      interface IComparable;
+   //  }
+
+   //  singleton class CFileHelper {
+   //      interface IFileHelper;
+   //  }
+
+   //  /**
+   //   * Wraps a Unix file descriptor. It's possible to get the file descriptor used by some
+   //   * classes (such as {@link FileInputStream}, {@link FileOutputStream},
+   //   * and {@link RandomAccessFile}), and then create new streams that point to the same
+   //   * file descriptor.
+   //   */
+   //  class CFileDescriptor {
+   //      interface IFileDescriptor;
+   //  }
+
+   //  singleton class CFileDescriptorHelper {
+   //      interface IFileDescriptorHelper;
+   //  }
+
+   //  /**
+   //   * An input stream that reads bytes from a file.
+   //   * <pre>   {@code
+   //   *   File file = ...
+   //   *   InputStream in = null;
+   //   *   try {
+   //   *     in = new BufferedInputStream(new FileInputStream(file));
+   //   *     ...
+   //   *   } finally {
+   //   *     if (in != null) {
+   //   *       in.close();
+   //   *     }
+   //   *   }
+   //   * }</pre>
+   //   *
+   //   * <p>This stream is <strong>not buffered</strong>. Most callers should wrap
+   //   * this stream with a {@link BufferedInputStream}.
+   //   *
+   //   * <p>Use {@link FileReader} to read characters, as opposed to bytes, from a
+   //   * file.
+   //   *
+   //   * @see BufferedInputStream
+   //   * @see FileOutputStream
+   //   */
+   //  class CFileInputStream {
+   //      /**
+   //       * Constructs a new {@code FileInputStream} that reads from {@code file}.
+   //       *
+   //       * @param file
+   //       *            the file from which this stream reads.
+   //       * @throws FileNotFoundException
+   //       *             if {@code file} does not exist.
+   //       */
+   //      constructor(
+   //          [in] IFile* file);
+
+   //      /**
+   //       * Constructs a new {@code FileInputStream} that reads from {@code fd}.
+   //       *
+   //       * @param fd
+   //       *            the FileDescriptor from which this stream reads.
+   //       * @throws NullPointerException
+   //       *             if {@code fd} is {@code null}.
+   //       */
+   //      constructor(
+   //          [in] IFileDescriptor* fd);
+
+   //      /**
+   //       * Equivalent to {@code new FileInputStream(new File(path))}.
+   //       */
+   //      constructor(
+   //          [in] String path);
+
+   //      interface IFileInputStream;
+   //  }
+
+   //  /**
+   //   * An output stream that writes bytes to a file. If the output file exists, it
+   //   * can be replaced or appended to. If it does not exist, a new file will be
+   //   * created.
+   //   * <pre>   {@code
+   //   *   File file = ...
+   //   *   OutputStream out = null;
+   //   *   try {
+   //   *     out = new BufferedOutputStream(new FileOutputStream(file));
+   //   *     ...
+   //   *   } finally {
+   //   *     if (out != null) {
+   //   *       out.close();
+   //   *     }
+   //   *   }
+   //   * }</pre>
+   //   *
+   //   * <p>This stream is <strong>not buffered</strong>. Most callers should wrap
+   //   * this stream with a {@link BufferedOutputStream}.
+   //   *
+   //   * <p>Use {@link FileWriter} to write characters, as opposed to bytes, to a file.
+   //   *
+   //   * @see BufferedOutputStream
+   //   * @see FileInputStream
+   //   */
+   //  class CFileOutputStream {
+   //      /**
+   //       * Constructs a new {@code FileOutputStream} that writes to {@code file}. The file will be
+   //       * truncated if it exists, and created if it doesn't exist.
+   //       *
+   //       * @throws FileNotFoundException if file cannot be opened for writing.
+   //       */
+   //      constructor(
+   //          [in] IFile* file);
+
+   //      /**
+   //       * Constructs a new {@code FileOutputStream} that writes to {@code file}.
+   //       * If {@code append} is true and the file already exists, it will be appended to; otherwise
+   //       * it will be truncated. The file will be created if it does not exist.
+   //       *
+   //       * @throws FileNotFoundException if the file cannot be opened for writing.
+   //       */
+   //      constructor(
+   //          [in] IFile* file,
+   //          [in] Boolean append);
+
+   //      /**
+   //       * Constructs a new {@code FileOutputStream} that writes to {@code fd}.
+   //       *
+   //       * @throws NullPointerException if {@code fd} is null.
+   //       */
+   //      constructor(
+   //          [in] IFileDescriptor* fd);
+
+   //      /**
+   //       * Constructs a new {@code FileOutputStream} that writes to {@code path}. The file will be
+   //       * truncated if it exists, and created if it doesn't exist.
+   //       *
+   //       * @throws FileNotFoundException if file cannot be opened for writing.
+   //       */
+   //      constructor(
+   //          [in] String path);
+
+   //      /**
+   //       * Constructs a new {@code FileOutputStream} that writes to {@code path}.
+   //       * If {@code append} is true and the file already exists, it will be appended to; otherwise
+   //       * it will be truncated. The file will be created if it does not exist.
+   //       *
+   //       * @throws FileNotFoundException if the file cannot be opened for writing.
+   //       */
+   //      constructor(
+   //          [in] String path,
+   //          [in] Boolean append);
+
+   //      interface IFileOutputStream;
+   //      interface IFlushable;
+   //  }
+
+   //  class CFilePermission {
+   //      constructor(
+   //          [in] String path,
+   //          [in] String actions);
+
+   //      interface IFilePermission;
+   //  }
+
+   //  /**
+   //   * A specialized {@link Reader} that reads from a file in the file system.
+   //   * All read requests made by calling methods in this class are directly
+   //   * forwarded to the equivalent function of the underlying operating system.
+   //   * Since this may induce some performance penalty, in particular if many small
+   //   * read requests are made, a FileReader is often wrapped by a
+   //   * BufferedReader.
+   //   *
+   //   * @see BufferedReader
+   //   * @see FileWriter
+   //   */
+   //  class CFileReader {
+   //      /**
+   //       * Constructs a new FileReader on the given {@code file}.
+   //       *
+   //       * @param file
+   //       *            a File to be opened for reading characters from.
+   //       * @throws FileNotFoundException
+   //       *             if {@code file} does not exist.
+   //       */
+   //      constructor(
+   //          [in] IFile* file);
+
+   //      /**
+   //       * Construct a new FileReader on the given FileDescriptor {@code fd}. Since
+   //       * a previously opened FileDescriptor is passed as an argument, no
+   //       * FileNotFoundException can be thrown.
+   //       *
+   //       * @param fd
+   //       *            the previously opened file descriptor.
+   //       */
+   //      constructor(
+   //          [in] IFileDescriptor* fd);
+
+   //      /**
+   //       * Construct a new FileReader on the given file named {@code filename}.
+   //       *
+   //       * @param filename
+   //       *            an absolute or relative path specifying the file to open.
+   //       * @throws FileNotFoundException
+   //       *             if there is no file named {@code filename}.
+   //       */
+   //      constructor(
+   //          [in] String filename);
+
+   //      interface IFileReader;
+   //      interface ICloseable;
+   //  }
+
+   //  /**
+   //   * A specialized {@link Writer} that writes to a file in the file system.
+   //   * All write requests made by calling methods in this class are directly
+   //   * forwarded to the equivalent function of the underlying operating system.
+   //   * Since this may induce some performance penalty, in particular if many small
+   //   * write requests are made, a FileWriter is often wrapped by a
+   //   * BufferedWriter.
+   //   *
+   //   * @see BufferedWriter
+   //   * @see FileReader
+   //   */
+   //  class CFileWriter {
+   //      /**
+   //       * Creates a FileWriter using the File {@code file}.
+   //       *
+   //       * @param file
+   //       *            the non-null File to write bytes to.
+   //       * @throws IOException
+   //       *             if {@code file} cannot be opened for writing.
+   //       */
+   //      constructor(
+   //          [in] IFile* file);
+
+   //      /**
+   //       * Creates a FileWriter using the File {@code file}. The parameter
+   //       * {@code append} determines whether or not the file is opened and appended
+   //       * to or just opened and overwritten.
+   //       *
+   //       * @param file
+   //       *            the non-null File to write bytes to.
+   //       * @param append
+   //       *            indicates whether or not to append to an existing file.
+   //       * @throws IOException
+   //       *             if the {@code file} cannot be opened for writing.
+   //       */
+   //      constructor(
+   //          [in] IFile* file,
+   //          [in] Boolean append);
+
+   //      /**
+   //       * Creates a FileWriter using the existing FileDescriptor {@code fd}.
+   //       *
+   //       * @param fd
+   //       *            the non-null FileDescriptor to write bytes to.
+   //       */
+   //      constructor(
+   //          [in] IFileDescriptor* fd);
+
+   //      /**
+   //       * Creates a FileWriter using the platform dependent {@code filename}.
+   //       *
+   //       * @param filename
+   //       *            the non-null name of the file to write bytes to.
+   //       * @throws IOException
+   //       *             if the file cannot be opened for writing.
+   //       */
+   //      constructor(
+   //          [in] String filename);
+
+   //      /**
+   //       * Creates a FileWriter using the platform dependent {@code filename}. The
+   //       * parameter {@code append} determines whether or not the file is opened and
+   //       * appended to or just opened and overwritten.
+   //       *
+   //       * @param filename
+   //       *            the non-null name of the file to write bytes to.
+   //       * @param append
+   //       *            indicates whether or not to append to an existing file.
+   //       * @throws IOException
+   //       *             if the {@code file} cannot be opened for writing.
+   //       */
+   //      constructor(
+   //          [in] String filename,
+   //          [in] Boolean append);
+
+   //      interface IFileWriter;
+   //      interface ICloseable;
+   //      interface IFlushable;
+   //  }
+
+   //  /**
+   //   * A CFilterInputStream contains some other input stream, which it uses as its basic source of data, possibly transforming the data
+   //   * along the way or providing additional functionality. The class FilterInputStream itself simply overrides all methods of
+   //   * InputStream with versions that pass all requests to the contained input stream. Subclasses of FilterInputStream may further
+   //   * override some of these methods and may also provide additional methods and fields.
+   //   *
+   //   * @implements com::elastos::IInputStream
+   //   *
+   //   * <strong>Direct Known Subclasses:</strong>
+   //   * - @ref com::elastos::CBufferedInputStream
+   //   * - @ref com::elastos::CCheckedInputStream
+   //   * - @ref com::elastos::CCipherInputStream
+   //   * - @ref com::elastos::CDataInputStream
+   //   * - @ref com::elastos::CDeflaterInputStream
+   //   * - @ref com::elastos::CDigestInputStream
+   //   * - @ref com::elastos::CInflaterInputStream
+   //   * - @ref com::elastos::CLineNumberInputStream,
+   //   * - @ref com::elastos::CProgressMonitorInputStream
+   //   * - @ref com::elastos::CPushbackInputStream
+   //   *
+   //   * @since Elastos 1.0
+   //   * @todo  http://docs.oracle.com/javase/6/docs/api/java/io/FilterInputStream.html
+   //   */
+   //  class CFilterInputStream {
+   //     /**
+   //      * Constructs a new with the specified input stream as source.
+   //      *
+   //      * <p><strong>Warning:</strong> passing a null source creates an invalid,
+   //      * that fails on every method that is not overridden.
+   //      * Subclasses should check for null in their constructors.
+   //      *
+   //      * @param is    the input stream to filter reads on.
+   //      * @return ECode    NOERROR(0)
+   //      */
+   //      constructor(
+   //          [in] IInputStream* is);
+
+   //      interface IFilterInputStream;
+   //  }
+
+   //  /**
+   //   * This class is the superclass of all classes that filter output streams. These streams sit on top of an already existing output stream
+   //   * (the underlying output stream) which it uses as its basic sink of data, but possibly transforming the data along the way or providing additional functionality.
+   //   *
+   //   * The class FilterOutputStream itself simply overrides all methods of OutputStream with versions that pass all requests to the underlying
+   //   * output stream. Subclasses of FilterOutputStream may further override some of these methods as well as provide additional methods and fields.
+   //   *
+   //   * @implements com::elastos::ICloseable
+   //   * @implements com::elastos::IFlushable
+   //   * @implements com::elastos::IFilterOutputStream
+   //   *
+   //   * @since Elastos 1.0
+   //   * @todo  http://docs.oracle.com/javase/6/docs/api/java/io/FilterOutputStream.html
+   //   */
+   //  class CFilterOutputStream {
+   //     /**
+   //      * @brief  Creates an output stream filter built on top of the specified underlying output stream.
+   //      *
+   //      * @param os  the underlying output stream to be assigned to the field this.out for later use, or null if this instance is to be created without an underlying stream.
+   //      */
+   //      constructor(
+   //          [in] IOutputStream* os);
+
+   //      interface IFilterOutputStream;
+   //      interface IFlushable;
+   //  }
+
+   //  /**
+   //   * A class for turning a byte stream into a character stream. Data read from the
+   //   * source input stream is converted into characters by either a default or a
+   //   * provided character converter. The default encoding is taken from the
+   //   * "file.encoding" system property. {@code InputStreamReader} contains a buffer
+   //   * of bytes read from the source stream and converts these into characters as
+   //   * needed. The buffer size is 8K.
+   //   *
+   //   * @see OutputStreamWriter
+   //   */
+   //  class CInputStreamReader {
+   //      /**
+   //       * Constructs a new {@code InputStreamReader} on the {@link InputStream}
+   //       * {@code in}. This constructor sets the character converter to the encoding
+   //       * specified in the "file.encoding" property and falls back to ISO 8859_1
+   //       * (ISO-Latin-1) if the property doesn't exist.
+   //       *
+   //       * @param in
+   //       *            the input stream from which to read characters.
+   //       */
+   //      constructor(
+   //          [in] IInputStream* is);
+
+   //      *
+   //       * Constructs a new InputStreamReader on the InputStream {@code in}. The
+   //       * character converter that is used to decode bytes into characters is
+   //       * identified by name by {@code charsetName}. If the encoding cannot be found, an
+   //       * UnsupportedEncodingException error is thrown.
+   //       *
+   //       * @param in
+   //       *            the InputStream from which to read characters.
+   //       * @param charsetName
+   //       *            identifies the character converter to use.
+   //       * @throws NullPointerException
+   //       *             if {@code charsetName} is {@code null}.
+   //       * @throws UnsupportedEncodingException
+   //       *             if the encoding specified by {@code charsetName} cannot be found.
+
+   //      constructor(
+   //          [in] IInputStream* is,
+   //          [in] String charsetName);
+
+   //      interface IInputStreamReader;
+   //      interface ICloseable;
+   //  }
+
+   //  /**
+   //  * Wraps an existing InputStream and counts the line terminators encountered while reading the data. Line numbering starts at 0.
+   //  * Recognized line terminator sequences are '\r', '\n' and "\r\n". When using read, line terminator sequences are always translated into '\n'.
+   //  *
+   //  * @implements com::elastos::ILineNumberInputStream
+   //  *
+   //  * @since Elastos 1.0
+   //  * @todo  http://docs.oracle.com/javase/7/docs/api/java/io/LineNumberInputStream.html
+   //  *        java.io.LineNumberInputStream
+   //  */
+   //  class CLineNumberInputStream {
+   //      /**
+   //       * Constructs a new LineNumberInputStream on the IInputStream
+   //       * in Line numbers are counted for all data read from this stream.
+   //       *
+   //       * <p><strong>Warning:</strong> passing a null source creates an invalid
+   //       * LineNumberInputStream All operations on such a stream will fail.
+   //       *
+   //       * @param in   The non-null input stream to count line numbers.
+   //       */
+   //      constructor(
+   //          [in] IInputStream* is);
+
+   //      interface ILineNumberInputStream;
+   //  }
+
+   // /**
+   //  * Wraps an existing Reader and counts the line terminators encountered while reading the data.
+   //  * The line number starts at 0 and is incremented any time '\r', '\n' or "\r\n" is read.
+   //  * The class has an internal buffer for its data. The size of the buffer defaults to 8 KB.
+   //  *
+   //  * @implements com::elastos::ILineNumberReader
+   //  *
+   //  * @since Elastos 1.0
+   //  * @todo  http://docs.oracle.com/javase/6/docs/api/java/io/LineNumberReader.html
+   //  *        java.io.LineNumberReader
+   //  */
+   //  class CLineNumberReader {
+   //      /**
+   //       * Constructs a new LineNumberReader on the Reader in The internal
+   //       * buffer gets the default size (8 KB).
+   //       *
+   //       * @param ir   the IReader that is buffered.
+   //       */
+   //      constructor(
+   //          [in] IReader* ir);
+
+   //      /**
+   //       * Constructs a new LineNumberReader on the Reader in The size of
+   //       * the internal buffer is specified by the parameter size
+   //       *
+   //       * @param ir    the Reader that is buffered.
+   //       * @param size  the size of the buffer to allocate.
+   //       * @throws IllegalArgumentException
+   //       *             if size <= 0
+   //       */
+   //      constructor(
+   //          [in] IReader* ir,
+   //          [in] Int32 size);
+
+   //      interface ILineNumberReader;
+   //      interface ICloseable;
+   //  }
+
+   //  /**
+   //   * A class for turning a character stream into a byte stream. Data written to
+   //   * the target input stream is converted into bytes by either a default or a
+   //   * provided character converter. The default encoding is taken from the
+   //   * "file.encoding" system property. {@code OutputStreamWriter} contains a buffer
+   //   * of bytes to be written to target stream and converts these into characters as
+   //   * needed. The buffer size is 8K.
+   //   *
+   //   * @see InputStreamReader
+   //   */
+   //  class COutputStreamWriter {
+   //      /**
+   //       * Constructs a new OutputStreamWriter using {@code out} as the target
+   //       * stream to write converted characters to. The default character encoding
+   //       * is used.
+   //       *
+   //       * @param out
+   //       *            the non-null target stream to write converted bytes to.
+   //       */
+   //      constructor(
+   //          [in] IOutputStream* os);
+
+   //      /**
+   //       * Constructs a new OutputStreamWriter using {@code out} as the target
+   //       * stream to write converted characters to and {@code charsetName} as the character
+   //       * encoding. If the encoding cannot be found, an
+   //       * UnsupportedEncodingException error is thrown.
+   //       *
+   //       * @param out
+   //       *            the target stream to write converted bytes to.
+   //       * @param charsetName
+   //       *            the string describing the desired character encoding.
+   //       * @throws NullPointerException
+   //       *             if {@code charsetName} is {@code null}.
+   //       * @throws UnsupportedEncodingException
+   //       *             if the encoding specified by {@code charsetName} cannot be found.
+   //       */
+   //      constructor(
+   //          [in] IOutputStream* os,
+   //          [in] String enc);
+
+   //      interface IOutputStreamWriter;
+   //      interface ICloseable;
+   //      interface IFlushable;
+   //  }
+
+   //  /**
+   //   * Wraps an existing {@link OutputStream} and provides convenience methods for
+   //   * writing common data types in a human readable format. This is not to be
+   //   * confused with DataOutputStream which is used for encoding common data types
+   //   * so that they can be read back in. No {@code IOException} is thrown by this
+   //   * class. Instead, callers should use {@link #checkError()} to see if a problem
+   //   * has occurred in this stream.
+   //   */
+   //  class CPrintStream {
+   //      /**
+   //       * Constructs a new {@code PrintStream} with {@code out} as its target
+   //       * stream. By default, the new print stream does not automatically flush its
+   //       * contents to the target stream when a newline is encountered.
+   //       *
+   //       * @param out
+   //       *            the target output stream.
+   //       * @throws NullPointerException
+   //       *             if {@code out} is {@code null}.
+   //       */
+   //      constructor(
+   //          [in] IOutputStream* outs);
+
+   //      /**
+   //       * Constructs a new {@code PrintStream} with {@code out} as its target
+   //       * stream. The parameter {@code autoFlush} determines if the print stream
+   //       * automatically flushes its contents to the target stream when a newline is
+   //       * encountered.
+   //       *
+   //       * @param out
+   //       *            the target output stream.
+   //       * @param autoFlush
+   //       *            indicates whether to flush contents upon encountering a
+   //       *            newline sequence.
+   //       * @throws NullPointerException
+   //       *             if {@code out} is {@code null}.
+   //       */
+   //      constructor(
+   //          [in] IOutputStream* outs,
+   //          [in] Boolean autoflush);
+
+   //      /**
+   //       * Constructs a new {@code PrintStream} with {@code out} as its target
+   //       * stream and using the character encoding {@code charsetName} while writing. The
+   //       * parameter {@code autoFlush} determines if the print stream automatically
+   //       * flushes its contents to the target stream when a newline is encountered.
+   //       *
+   //       * @param out
+   //       *            the target output stream.
+   //       * @param autoFlush
+   //       *            indicates whether or not to flush contents upon encountering a
+   //       *            newline sequence.
+   //       * @param charsetName
+   //       *            the non-null string describing the desired character encoding.
+   //       * @throws NullPointerException
+   //       *             if {@code out} or {@code charsetName} are {@code null}.
+   //       * @throws UnsupportedEncodingException
+   //       *             if the encoding specified by {@code charsetName} is not supported.
+   //       */
+   //      constructor(
+   //          [in] IOutputStream* outs,
+   //          [in] Boolean autoflush,
+   //          [in] String enc);
+
+   //      /**
+   //       * Constructs a new {@code PrintStream} with {@code file} as its target. The
+   //       * VM's default character set is used for character encoding.
+   //       *
+   //       * @param file
+   //       *            the target file. If the file already exists, its contents are
+   //       *            removed, otherwise a new file is created.
+   //       * @throws FileNotFoundException
+   //       *             if an error occurs while opening or creating the target file.
+   //       */
+   //      constructor(
+   //          [in] IFile* file);
+
+   //      /**
+   //       * Constructs a new {@code PrintStream} with {@code file} as its target. The
+   //       * character set named {@code charsetName} is used for character encoding.
+   //       *
+   //       * @param file
+   //       *            the target file. If the file already exists, its contents are
+   //       *            removed, otherwise a new file is created.
+   //       * @param charsetName
+   //       *            the name of the character set used for character encoding.
+   //       * @throws FileNotFoundException
+   //       *             if an error occurs while opening or creating the target file.
+   //       * @throws NullPointerException
+   //       *             if {@code charsetName} is {@code null}.
+   //       * @throws UnsupportedEncodingException
+   //       *             if the encoding specified by {@code charsetName} is not supported.
+   //       */
+   //      constructor(
+   //          [in] IFile* file,
+   //          [in] String csn);
+
+   //      /**
+   //       * Constructs a new {@code PrintStream} with the file identified by
+   //       * {@code fileName} as its target. The VM's default character
+   //       * set is used for character encoding.
+   //       *
+   //       * @param fileName
+   //       *            the target file's name. If the file already exists, its
+   //       *            contents are removed, otherwise a new file is created.
+   //       * @throws FileNotFoundException
+   //       *             if an error occurs while opening or creating the target file.
+   //       */
+   //      constructor(
+   //          [in] String fileName);
+
+   //      /**
+   //       * Constructs a new {@code PrintStream} with the file identified by
+   //       * {@code fileName} as its target. The character set named {@code charsetName} is
+   //       * used for character encoding.
+   //       *
+   //       * @param fileName
+   //       *            the target file's name. If the file already exists, its
+   //       *            contents are removed, otherwise a new file is created.
+   //       * @param charsetName
+   //       *            the name of the character set used for character encoding.
+   //       * @throws FileNotFoundException
+   //       *             if an error occurs while opening or creating the target file.
+   //       * @throws NullPointerException
+   //       *             if {@code charsetName} is {@code null}.
+   //       * @throws UnsupportedEncodingException
+   //       *             if the encoding specified by {@code charsetName} is not supported.
+   //       */
+   //      constructor(
+   //          [in] String fileName,
+   //          [in] String csn);
+
+   //      interface IPrintStream;
+   //      interface IFlushable;
+   //      interface Elastos.Core.IAppendable;
+   //  }
+
+   //  /**
+   //   * Wraps either an existing {@link OutputStream} or an existing {@link Writer}
+   //   * and provides convenience methods for printing common data types in a human
+   //   * readable format. No {@code IOException} is thrown by this class. Instead,
+   //   * callers should use {@link #checkError()} to see if a problem has occurred in
+   //   * this writer.
+   //   */
+   //  class CPrintWriter {
+   //      /**
+   //       * Constructs a new {@code PrintWriter} with {@code out} as its target
+   //       * stream. By default, the new print writer does not automatically flush its
+   //       * contents to the target stream when a newline is encountered.
+   //       *
+   //       * @param out
+   //       *            the target output stream.
+   //       * @throws NullPointerException
+   //       *             if {@code out} is {@code null}.
+   //       */
+   //      constructor(
+   //          [in] IOutputStream* outs);
+
+   //      /**
+   //       * Constructs a new {@code PrintWriter} with {@code out} as its target
+   //       * stream. The parameter {@code autoFlush} determines if the print writer
+   //       * automatically flushes its contents to the target stream when a newline is
+   //       * encountered.
+   //       *
+   //       * @param out
+   //       *            the target output stream.
+   //       * @param autoFlush
+   //       *            indicates whether contents are flushed upon encountering a
+   //       *            newline sequence.
+   //       * @throws NullPointerException
+   //       *             if {@code out} is {@code null}.
+   //       */
+   //      constructor(
+   //          [in] IOutputStream* outs,
+   //          [in] Boolean autoflush);
+
+   //      /**
+   //       * Constructs a new {@code PrintWriter} with {@code wr} as its target
+   //       * writer. By default, the new print writer does not automatically flush its
+   //       * contents to the target writer when a newline is encountered.
+   //       *
+   //       * @param wr
+   //       *            the target writer.
+   //       * @throws NullPointerException
+   //       *             if {@code wr} is {@code null}.
+   //       */
+   //      constructor(
+   //          [in] IWriter* wr);
+
+   //      /**
+   //       * Constructs a new {@code PrintWriter} with {@code out} as its target
+   //       * writer. The parameter {@code autoFlush} determines if the print writer
+   //       * automatically flushes its contents to the target writer when a newline is
+   //       * encountered.
+   //       *
+   //       * @param wr
+   //       *            the target writer.
+   //       * @param autoFlush
+   //       *            indicates whether to flush contents upon encountering a
+   //       *            newline sequence.
+   //       * @throws NullPointerException
+   //       *             if {@code out} is {@code null}.
+   //       */
+   //      constructor(
+   //          [in] IWriter* wr,
+   //          [in] Boolean autoflush);
+
+   //      /**
+   //       * Constructs a new {@code PrintWriter} with {@code file} as its target. The
+   //       * VM's default character set is used for character encoding.
+   //       * The print writer does not automatically flush its contents to the target
+   //       * file when a newline is encountered. The output to the file is buffered.
+   //       *
+   //       * @param file
+   //       *            the target file. If the file already exists, its contents are
+   //       *            removed, otherwise a new file is created.
+   //       * @throws FileNotFoundException
+   //       *             if an error occurs while opening or creating the target file.
+   //       */
+   //      constructor(
+   //          [in] IFile* file);
+
+   //      /**
+   //       * Constructs a new {@code PrintWriter} with {@code file} as its target. The
+   //       * character set named {@code csn} is used for character encoding.
+   //       * The print writer does not automatically flush its contents to the target
+   //       * file when a newline is encountered. The output to the file is buffered.
+   //       *
+   //       * @param file
+   //       *            the target file. If the file already exists, its contents are
+   //       *            removed, otherwise a new file is created.
+   //       * @param csn
+   //       *            the name of the character set used for character encoding.
+   //       * @throws FileNotFoundException
+   //       *             if an error occurs while opening or creating the target file.
+   //       * @throws NullPointerException
+   //       *             if {@code csn} is {@code null}.
+   //       * @throws UnsupportedEncodingException
+   //       *             if the encoding specified by {@code csn} is not supported.
+   //       */
+   //      constructor(
+   //          [in] IFile* file,
+   //          [in] String csn);
+   //      /**
+   //       * Constructs a new {@code PrintWriter} with the file identified by {@code
+   //       * fileName} as its target. The VM's default character set is
+   //       * used for character encoding. The print writer does not automatically
+   //       * flush its contents to the target file when a newline is encountered. The
+   //       * output to the file is buffered.
+   //       *
+   //       * @param fileName
+   //       *            the target file's name. If the file already exists, its
+   //       *            contents are removed, otherwise a new file is created.
+   //       * @throws FileNotFoundException
+   //       *             if an error occurs while opening or creating the target file.
+   //       */
+   //      constructor(
+   //          [in] String fileName);
+
+   //      /**
+   //       * Constructs a new {@code PrintWriter} with the file identified by {@code
+   //       * fileName} as its target. The character set named {@code csn} is used for
+   //       * character encoding. The print writer does not automatically flush its
+   //       * contents to the target file when a newline is encountered. The output to
+   //       * the file is buffered.
+   //       *
+   //       * @param fileName
+   //       *            the target file's name. If the file already exists, its
+   //       *            contents are removed, otherwise a new file is created.
+   //       * @param csn
+   //       *            the name of the character set used for character encoding.
+   //       * @throws FileNotFoundException
+   //       *             if an error occurs while opening or creating the target file.
+   //       * @throws NullPointerException
+   //       *             if {@code csn} is {@code null}.
+   //       * @throws UnsupportedEncodingException
+   //       *             if the encoding specified by {@code csn} is not supported.
+   //       */
+   //      constructor(
+   //          [in] String fileName,
+   //          [in] String csn);
+
+   //      interface IPrintWriter;
+   //      interface ICloseable;
+   //      interface IFlushable;
+   //  }
+
+   //  /**
+   //   * Wraps an existing InputStream and adds functionality to "push back" bytes that have been read, so that they can be read again.
+   //   * Parsers may find this useful. The number of bytes which may be pushed back can be specified during construction.
+   //   * If the buffer of pushed back bytes is empty, bytes are read from the underlying input stream.
+   //   *
+   //   * @implements com::elastos::IPushbackInputStream
+   //   *
+   //   * @since Elastos 1.0
+   //   * @todo  http://docs.oracle.com/javase/6/docs/api/java/io/PushbackInputStream.html
+   //   *        java.io.PushbackInputStream
+   //   */
+   //  class CPushbackInputStream {
+   //      /**
+   //       * Constructs a new PushbackInputStream with the specified input
+   //       * stream as source. The size of the pushback buffer is set to the default
+   //       * value of 1 byte.
+   //       *
+   //       * <p><strong>Warning:</strong> passing a null source creates an invalid
+   //       * PushbackInputStream All read operations on such a stream will
+   //       * fail.
+   //       *
+   //       * @param in
+   //       *            the source input stream.
+   //       */
+   //      constructor(
+   //          [in] IInputStream* is);
+   //      /**
+   //       * Constructs a new PushbackInputStream with in as source
+   //       * input stream. The size of the pushback buffer is set to size
+   //       *
+   //       * <p><strong>Warning:</strong> passing a null source creates an invalid
+   //       * PushbackInputStream All read operations on such a stream will
+   //       * fail.
+   //       *
+   //       * @param is    the source input stream.
+   //       * @param size  the size of the pushback buffer.
+   //       * @return ECode = NOERROR(0) if success, elas as follows:
+   //       * Value | Meaning |
+   //       * :-|:------------|
+   //       * IllegalArgumentException | if size is negative.
+   //       */
+   //      constructor(
+   //          [in] IInputStream* is,
+   //          [in] Int32 size);
+
+   //      interface IPushbackInputStream;
+   //  }
+
+   //  /**
+   //   * Wraps an existing Reader and adds functionality to "push back" characters that have been read, so that they can be read again.
+   //   * Parsers may find this useful. The number of characters which may be pushed back can be specified during construction.
+   //   * If the buffer of pushed back bytes is empty, characters are read from the underlying reader.
+   //   *
+   //   * @implements com::elastos::IPushbackReader
+   //   *
+   //   * @since Elastos 1.0
+   //   * @todo
+   //   *        java.io.PushbackReader
+   //   */
+   //  class CPushbackReader {
+   //      /**
+   //       * Constructs a new PushbackReader with the specified reader as
+   //       * source. The size of the pushback buffer is set to the default value of 1
+   //       * character.
+   //       *
+   //       * @param ir
+   //       *            the source reader.
+   //       */
+   //      constructor(
+   //          [in] IReader* ir);
+   //      /**
+   //       * Constructs a new PushbackReader with in as source reader.
+   //       * The size of the pushback buffer is set to size
+   //       *
+   //       * @param ir     the source reader.
+   //       * @param size   the size of the pushback buffer.
+   //       * @return ECode = NOERROR(0) if success, elas as follows:
+   //       * Value | Meaning |
+   //       * :-|:------------|
+   //       * IllegalArgumentException | if size is negative.
+   //       */
+   //      constructor(
+   //          [in] IReader* ir,
+   //          [in] Int32 size);
+
+   //      interface IPushbackReader;
+   //      interface ICloseable;
+   //  }
+
+   //  /**
+   //   * Allows reading from and writing to a file in a random-access manner. This is
+   //   * different from the uni-directional sequential access that a
+   //   * {@link FileInputStream} or {@link FileOutputStream} provides. If the file is
+   //   * opened in read/write mode, write operations are available as well. The
+   //   * position of the next read or write operation can be moved forwards and
+   //   * backwards after every operation.
+   //   */
+   //  class CRandomAccessFile {
+   //      /**
+   //       * Constructs a new {@code RandomAccessFile} based on {@code file} and opens
+   //       * it according to the access string in {@code mode}.
+   //       * <p><a id="accessmode"/>
+   //       * {@code mode} may have one of following values:
+   //       * <table border="0">
+   //       * <tr>
+   //       * <td>{@code "r"}</td>
+   //       * <td>The file is opened in read-only mode. An {@code IOException} is
+   //       * thrown if any of the {@code write} methods is called.</td>
+   //       * </tr>
+   //       * <tr>
+   //       * <td>{@code "rw"}</td>
+   //       * <td>The file is opened for reading and writing. If the file does not
+   //       * exist, it will be created.</td>
+   //       * </tr>
+   //       * <tr>
+   //       * <td>{@code "rws"}</td>
+   //       * <td>The file is opened for reading and writing. Every change of the
+   //       * file's content or metadata must be written synchronously to the target
+   //       * device.</td>
+   //       * </tr>
+   //       * <tr>
+   //       * <td>{@code "rwd"}</td>
+   //       * <td>The file is opened for reading and writing. Every change of the
+   //       * file's content must be written synchronously to the target device.</td>
+   //       * </tr>
+   //       * </table>
+   //       *
+   //       * @param file
+   //       *            the file to open.
+   //       * @param mode
+   //       *            the file access <a href="#accessmode">mode</a>, either {@code
+   //       *            "r"}, {@code "rw"}, {@code "rws"} or {@code "rwd"}.
+   //       * @throws FileNotFoundException
+   //       *             if the file cannot be opened or created according to {@code
+   //       *             mode}.
+   //       * @throws IllegalArgumentException
+   //       *             if {@code mode} is not {@code "r"}, {@code "rw"}, {@code
+   //       *             "rws"} or {@code "rwd"}.
+   //       */
+   //      constructor(
+   //          [in] IFile* pFile,
+   //          [in] String mode);
+
+   //      /**
+   //       * Constructs a new {@code RandomAccessFile} based on the file named {@code
+   //       * fileName} and opens it according to the access string in {@code mode}.
+   //       * The file path may be specified absolutely or relative to the system
+   //       * property {@code "user.dir"}.
+   //       *
+   //       * @param fileName
+   //       *            the name of the file to open.
+   //       * @param mode
+   //       *            the file access <a href="#accessmode">mode</a>, either {@code
+   //       *            "r"}, {@code "rw"}, {@code "rws"} or {@code "rwd"}.
+   //       * @throws FileNotFoundException
+   //       *             if the file cannot be opened or created according to {@code
+   //       *             mode}.
+   //       * @throws IllegalArgumentException
+   //       *             if {@code mode} is not {@code "r"}, {@code "rw"}, {@code
+   //       *             "rws"} or {@code "rwd"}.
+   //       */
+   //      constructor(
+   //          [in] String fileName,
+   //          [in] String mode);
+
+   //      interface IRandomAccessFile;
+   //      interface IDataInput;
+   //      interface IDataOutput;
+   //  }
+
+   //  /**
+   //   * Concatenates two or more existing {@link InputStream}s. Reads are taken from
+   //   * the first stream until it ends, then the next stream is used, until the last
+   //   * stream returns end of file.
+   //   */
+   //  class CSequenceInputStream {
+   //      /**
+   //       * Constructs a new {@code SequenceInputStream} using the two streams
+   //       * {@code s1} and {@code s2} as the sequence of streams to read from.
+   //       *
+   //       * @param s1
+   //       *            the first stream to get bytes from.
+   //       * @param s2
+   //       *            the second stream to get bytes from.
+   //       * @throws NullPointerException
+   //       *             if {@code s1} is {@code null}.
+   //       */
+   //      constructor(
+   //          [in] IInputStream* s1,
+   //          [in] IInputStream* s2);
+
+   //      /**
+   //       * Constructs a new SequenceInputStream using the elements returned from
+   //       * Enumeration {@code e} as the stream sequence. The instances returned by
+   //       * {@code e.nextElement()} must be of type {@link InputStream}.
+   //       *
+   //       * @param e
+   //       *            the enumeration of {@code InputStreams} to get bytes from.
+   //       * @throws NullPointerException
+   //       *             if any of the elements in {@code e} is {@code null}.
+   //       */
+   //      constructor(
+   //          [in] IObjectEnumerator* e);
+
+   //      interface ISequenceInputStream;
+   //  }
+
+   //  /**
+   //   * A specialized {@link InputStream} that reads bytes from a {@code String} in
+   //   * a sequential manner.
+   //   *
+   //   * @deprecated Use {@link StringReader}
+   //   */
+   //  class CStringBufferInputStream {
+   //      /**
+   //       * Construct a new {@code StringBufferInputStream} with {@code str} as
+   //       * source. The size of the stream is set to the {@code length()} of the
+   //       * string.
+   //       *
+   //       * @param str
+   //       *            the source string for this stream.
+   //       * @throws NullPointerException
+   //       *             if {@code str} is {@code null}.
+   //       */
+   //      constructor(
+   //          [in] String str);
+
+   //      interface IStringBufferInputStream;
+   //  }
+
+   //  /**
+   //   * A specialized {@link Reader} that reads characters from a {@code String} in
+   //   * a sequential manner.
+   //   *
+   //   * @see StringWriter
+   //   */
+   //  class CStringReader {
+   //      /**
+   //       * Construct a new {@code StringReader} with {@code str} as source. The size
+   //       * of the reader is set to the {@code length()} of the string and the Object
+   //       * to synchronize access through is set to {@code str}.
+   //       *
+   //       * @param str
+   //       *            the source string for this reader.
+   //       */
+   //      constructor(
+   //          [in] String str);
+
+   //      interface IStringReader;
+   //      interface ICloseable;
+   //  }
+
+   //  /**
+   //   * A specialized {@link Writer} that writes characters to a {@code StringBuffer}
+   //   * in a sequential manner, appending them in the process. The result can later
+   //   * be queried using the {@link #StringWriter(int)} or {@link #toString()}
+   //   * methods.
+   //   *
+   //   * @see StringReader
+   //   */
+   //  class CStringWriter {
+   //      /**
+   //       * Constructs a new {@code StringWriter} which has a {@link StringBuffer}
+   //       * allocated with the default size of 16 characters. The {@code
+   //       * StringBuffer} is also the {@code lock} used to synchronize access to this
+   //       * writer.
+   //       */
+   //      constructor();
+
+   //      /**
+   //       * Constructs a new {@code StringWriter} which has a {@link StringBuffer}
+   //       * allocated with a size of {@code initialSize} characters. The {@code
+   //       * StringBuffer} is also the {@code lock} used to synchronize access to this
+   //       * writer.
+   //       *
+   //       * @param initialSize
+   //       *            the intial size of the target string buffer.
+   //       */
+   //      constructor(
+   //          [in] Int32 initialSize);
+
+   //      interface IStringWriter;
+   //      interface ICloseable;
+   //      interface IFlushable;
+   //  }
+
+   //  singleton class CByteBufferHelper {
+   //      interface IByteBufferHelper;
+   //  }
+
+   //  singleton class CDoubleBufferHelper {
+   //      interface IDoubleBufferHelper;
+   //  }
+
+   //  [deprecated]
+   //  class CHeapBufferIterator {
+   //      constructor(
+   //          [in/* out*/] ArrayOf<Byte>* buffer,
+   //          [in] Int32 offset,
+   //          [in] Int32 byteCount,
+   //          [in] ByteOrder order);
+
+   //      interface IHeapBufferIterator;
+   //  }
+
+   //  singleton class CStreams {
+   //      interface IStreams;
+   //  }
+
+   //  singleton class CMemory {
+   //      interface IMemory;
+   //  }
+
+   //  singleton class CIoUtils {
+   //      interface IIoUtils;
+   //  }
+
+   //  class CUnsafeByteSequence {
+   //      constructor(
+   //          [in] Int32 capacity);
+
+   //      interface IUnsafeByteSequence;
+   //  }
+
+   //  singleton class CFloatBufferHelper {
+   //      interface IFloatBufferHelper;
+   //  }
+
+   //  singleton class CInt16BufferHelper {
+   //      interface IInt16BufferHelper;
+   //  }
+
+   //  singleton class CInt32BufferHelper {
+   //      interface IInt32BufferHelper;
+   //  }
+
+   //  singleton class CInt64BufferHelper {
+   //      interface IInt64BufferHelper;
+   //  }
+
+   //  singleton class CNativeConverterHelper {
+   //      constructor();
+
+   //      interface INativeConverterHelper;
+   //  }
+
+   //  singleton class CNIOAccessHelper {
+   //      interface INIOAccessHelper;
+   //  }
+
+   //  class CSelectorImpl {
+   //      constructor();
+
+   //      constructor(
+   //          [in] ISelectorProvider* selectorProvider);
+
+   //      interface ISelectorImpl;
+   //  }
+
+   //  } // namespace IO
+   //  } // namespace Elastos
+
+   //  namespace Elastos {
+   //  namespace IO {
+   //  namespace Channels {
+   //      class CChannels {
+   //          constructor();
+
+   //          interface IChannels;
+   //      }
+   //  } // namespace Channels
+   //  } // namespace IO
+   //  } // namespace Elastos
+
+   //  namespace Elastos {
+   //  namespace IO {
+   //  namespace Charset {
+
+   //      class CCodingErrorAction {
+   //          constructor();
+
+   //          interface ICodingErrorAction;
+   //      }
+
+   //      singleton class CCharsetHelper {
+   //          interface ICharsetHelper;
+   //      }
+
+   //      singleton class CCharsets {
+   //          interface ICharsets;
+   //      }
+
+   //      class CCoderResult {
+   //          constructor();
+
+   //          interface ICoderResult;
+   //      }
+
+   //      singleton class CCoderResultHelper {
+   //          interface ICoderResultHelper;
+   //      }
+
+   //      singleton class CModifiedUtf8 {
+   //          interface IModifiedUtf8;
+   //      }
+   //  } // namespace Charset
+   //  } // namespace IO
+   //  } // namespace Elastos
+
+   //  interface Elastos.IO.Channels.Spi.ISelectorProvider;
+
+   //  namespace Elastos {
+   //  namespace IO {
+   //      class CSelectorProviderImpl
+   //      {
+   //          constructor();
+   //          interface ISelectorProvider;
+   //      }
+   //  } // namespace IO
+   //  } // namespace Elastos
+
+
+   //  namespace Elastos {
+   //  namespace IO {
+   //  namespace Channels {
+   //  namespace Spi {
+
+   //  singleton class CSelectorProviderHelper {
+   //      interface ISelectorProviderHelper;
+   //  }
+
+   //  } // namespace Spi
+   //  } // namespace Channels
+   //  } // IO
+   //  } // Elastos
+
+   //  namespace Elastos {
+   //  namespace IO {
+   //  namespace Channels {
+
+   //  singleton class CDatagramChannelHelper {
+   //      interface IDatagramChannelHelper;
+   //  }
+
+   //  } // namespace Channels
+   //  } // IO
+   //  } // Elastos
 } // module

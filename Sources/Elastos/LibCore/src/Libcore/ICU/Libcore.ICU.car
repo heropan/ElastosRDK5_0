@@ -15,129 +15,129 @@ module
     merge("../../../car/Libcore/ICU/INativePluralRules.car");
     merge("../../../car/Libcore/ICU/INativeNormalizerHelper.car");
 
-    interface Elastos.Text.IDecimalFormatSymbols;
+    // interface Elastos.Text.IDecimalFormatSymbols;
 
-    namespace Libcore {
-    namespace ICU {
+    // namespace Libcore {
+    // namespace ICU {
 
-        class CLocale {
-            /**
-             * There's a circular dependency between toLowerCase/toUpperCase and
-             * Locale.US. Work around this by avoiding these methods when constructing
-             * the built-in locales.
-             *
-             * @param unused required for this constructor to have a unique signature
-             */
-            constructor(
-                [in] Boolean unused,
-                [in] String lowerCaseLanguageCode,
-                [in] String upperCaseCountryCode);
+    //     class CLocale {
+    //         /**
+    //          * There's a circular dependency between toLowerCase/toUpperCase and
+    //          * Locale.US. Work around this by avoiding these methods when constructing
+    //          * the built-in locales.
+    //          *
+    //          * @param unused required for this constructor to have a unique signature
+    //          */
+    //         constructor(
+    //             [in] Boolean unused,
+    //             [in] String lowerCaseLanguageCode,
+    //             [in] String upperCaseCountryCode);
 
-            constructor();
+    //         constructor();
 
-            /**
-             * Constructs a new {@code Locale} using the specified language.
-             */
-            constructor(
-                [in] String language);
+    //         /**
+    //          * Constructs a new {@code Locale} using the specified language.
+    //          */
+    //         constructor(
+    //             [in] String language);
 
-            /**
-             * Constructs a new {@code Locale} using the specified language and country codes.
-             */
-            constructor(
-               [in] String language,
-               [in] String country);
+    //         /**
+    //          * Constructs a new {@code Locale} using the specified language and country codes.
+    //          */
+    //         constructor(
+    //            [in] String language,
+    //            [in] String country);
 
-            /**
-             * Constructs a new {@code Locale} using the specified language, country,
-             * and variant codes.
-             */
-            constructor(
-                [in] String language,
-                [in] String country,
-                [in] String variant);
+    //         /**
+    //          * Constructs a new {@code Locale} using the specified language, country,
+    //          * and variant codes.
+    //          */
+    //         constructor(
+    //             [in] String language,
+    //             [in] String country,
+    //             [in] String variant);
 
-            interface ILocale;
-        }
+    //         interface ILocale;
+    //     }
 
-        singleton class CLocaleHelper {
-            interface ILocaleHelper;
-        }
+    //     singleton class CLocaleHelper {
+    //         interface ILocaleHelper;
+    //     }
 
-        singleton class CLocaleDataHelper {
-            interface ILocaleDataHelper;
-        }
+    //     singleton class CLocaleDataHelper {
+    //         interface ILocaleDataHelper;
+    //     }
 
-        singleton class CICUHelper {
-            interface IICUHelper;
-        }
+    //     singleton class CICUHelper {
+    //         interface IICUHelper;
+    //     }
 
-        singleton class CCollationElementIteratorICUHelper {
-            interface ICollationElementIteratorICUHelper;
-        }
+    //     singleton class CCollationElementIteratorICUHelper {
+    //         interface ICollationElementIteratorICUHelper;
+    //     }
 
-        class CCollationKeyICU {
-            constructor(
-                [in] String source,
-                [in] ArrayOf<Byte> bytes);
+    //     class CCollationKeyICU {
+    //         constructor(
+    //             [in] String source,
+    //             [in] ArrayOf<Byte> bytes);
 
-            interface ICollationKeyICU;
-        }
+    //         interface ICollationKeyICU;
+    //     }
 
-        class CLocaleData {
-            interface ILocaleData;
-        }
+    //     class CLocaleData {
+    //         interface ILocaleData;
+    //     }
 
-        singleton class CNativeBreakIteratorHelper {
-            interface INativeBreakIteratorHelper;
-        }
+    //     singleton class CNativeBreakIteratorHelper {
+    //         interface INativeBreakIteratorHelper;
+    //     }
 
-        singleton class CNativeCollationHelper {
-            interface INativeCollationHelper;
-        }
+    //     singleton class CNativeCollationHelper {
+    //         interface INativeCollationHelper;
+    //     }
 
-        class CNativeDecimalFormat {
-            constructor(
-                [in] String pattern,
-                [in] IDecimalFormatSymbols* dfs);
+    //     class CNativeDecimalFormat {
+    //         constructor(
+    //             [in] String pattern,
+    //             [in] IDecimalFormatSymbols* dfs);
 
-            constructor(
-                [in] String pattern,
-                [in] ILocaleData* data);
+    //         constructor(
+    //             [in] String pattern,
+    //             [in] ILocaleData* data);
 
-            interface INativeDecimalFormat;
-        }
+    //         interface INativeDecimalFormat;
+    //     }
 
-        singleton class CNativeIDNHelper {
-            interface INativeIDNHelper;
-        }
+    //     singleton class CNativeIDNHelper {
+    //         interface INativeIDNHelper;
+    //     }
 
-        singleton class CNativeNormalizerHelper {
-            interface INativeNormalizerHelper;
-        }
+    //     singleton class CNativeNormalizerHelper {
+    //         interface INativeNormalizerHelper;
+    //     }
 
-        class CNativePluralRules {
-            interface INativePluralRules;
-        }
+    //     class CNativePluralRules {
+    //         interface INativePluralRules;
+    //     }
 
-        singleton class CNativePluralRulesHelper {
-            interface INativePluralRulesHelper;
-        }
+    //     singleton class CNativePluralRulesHelper {
+    //         interface INativePluralRulesHelper;
+    //     }
 
-        class CRuleBasedCollatorICU {
-            constructor(
-                [in] String rules);
+    //     class CRuleBasedCollatorICU {
+    //         constructor(
+    //             [in] String rules);
 
-            constructor(
-                [in] ILocale * locale);
+    //         constructor(
+    //             [in] ILocale * locale);
 
-            interface IRuleBasedCollatorICU;
-        }
+    //         interface IRuleBasedCollatorICU;
+    //     }
 
-        singleton class CTimeZones {
-            interface ITimeZones;
-        }
+    //     singleton class CTimeZones {
+    //         interface ITimeZones;
+    //     }
 
-    } // namespace ICU
-    } // namespace LibCore
+    // } // namespace ICU
+    // } // namespace LibCore
 }

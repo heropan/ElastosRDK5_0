@@ -3,7 +3,6 @@
 #include <Reflection.h>
 
 using namespace Elastos;
-using Elastos::Core::ISystem;
 
 void testGetSet()
 {

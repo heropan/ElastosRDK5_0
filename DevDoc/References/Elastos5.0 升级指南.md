@@ -23,13 +23,6 @@ Object是所有C++类或者CAR类的子类，所以，所有CAR类都隐含实�
 
 相应的示例可以参考ISynchronize接口的声明。
 
-此外，对于一些特殊用途不能被重载的函数，如：Release，若　Java 源码中有同名函数，请翻译成 ReleaseResource 或 ReleaseLock。
-
-可以利用 Subline Text 的正则表达式查询与替换功能来去掉Ex, Ex2后缀。
-在 Subline Text 查询选项中，选中正则表达式和大小写匹配选项：
-查询：<code>([a-zA-Z]\w*)Ex[0-9]?\\(</code>，有时候还需要排查非大小写模式下的：<code>([a-zA-Z]\w*)Ex[0-9]?\s\\(</code>
-替换：<code>$1(</code>
-
 ## 取消接口间的继承
 当前，我们是按照Java中类的继承关系来定义Elastos中接口间的继承。比如，IActivity接口继承IContextThemeWrapper接口。
 
@@ -42,7 +35,6 @@ Object是所有C++类或者CAR类的子类，所以，所有CAR类都隐含实�
 因此，我们打算取消接口间的继承关系。不过，这会给编程带来一些小麻烦，不能再像以前那样一个接口支持所有方法，而是要Probe出相应的接口再调用。比如，当IActivity接口不再继承IContextThemeWrapper接口后，我们就不能通过IActivity接口调用IContextThemeWrapper里的方法了，而是要从IActivity接口Probe出IContextThemeWrapper接口再调用。
 
 由于取消了接口间的继承，因而，实现某个接口往往伴随着要实现别的接口。比如，实现IActivity的类应该也实现IContextThemeWrapper接口，而实现IContextThemeWrapper接口也应该实现IContextWrapper接口，而实现IContextWrapper接口也应该实现IContext接口。这些要同时实现的接口，在IActivity接口的声明中都无法体现出来。因此，我们需要在其声明的头部加上一定的注释，注明这些要同时实现的接口。注释的形式如下：
-
 ``` cpp
 /**
   * @Involve
@@ -65,3 +57,7 @@ interface IActivity {
 
 ## 其它
 宏<code>INTERFACE_ADDREF/ARRAYOF_ADDREF</code>改名为<code>REFCOUNT_ADD</code>；宏<code>INTERFACE_RELEASE/ARRAYOF_RELEASE</code>改名为<code>REFCOUNT_RELEASE</code>，定义在elrefbase.h中
+
+* 所有的非单例 Car 类中都需要使用 <code>CAR_OBJECT_DECL/CAR_OBJECT_IMPL</code>
+* 所有的单例 Car 类中都需要使用 <code>CAR_SINGLETON_DECL/CAR_SINGLETON_IMPL</code>
+* 请参考示例了解如何使用这些宏：<code>LibCore/inc/Org/Xml</code> 以及 <code>LibCore/src/Org/Xml</code>。
