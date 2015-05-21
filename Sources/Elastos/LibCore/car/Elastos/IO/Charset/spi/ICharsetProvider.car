@@ -16,7 +16,7 @@ module
          * @return the iterator.
          */
         Charsets(
-            [out] IObjectEnumerator** charsets);
+            [out] IIterator** charsetsIterator);    // Iterator<Charset>
 
         /**
          * Returns the named charset.

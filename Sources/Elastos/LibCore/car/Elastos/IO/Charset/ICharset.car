@@ -207,7 +207,7 @@ module
          * @return an unmodifiable set of this charset's aliases.
          */
         Aliases(
-            [out] IObjectContainer** aliases); // Set<String>
+            [out] ISet** aliasesSet); // Set<String>
 
         /**
          * Gets the name of this charset for the default locale.
