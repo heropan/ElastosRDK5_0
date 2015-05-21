@@ -2,16 +2,9 @@
 #ifndef __CXMLREADERFACTORY_H__
 #define __CXMLREADERFACTORY_H__
 
-#ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
-#include "CBufferedReader.h"
-#include "CInputStreamReader.h"
-#include "CCharsets.h"
-#else
-#include "Elastos.Core.h"
-#endif
 #include "__Org_Xml_Sax_Helpers_CXMLReaderFactory.h"
 #include "Singleton.h"
+#include <Elastos.Core.h>
 
 using Elastos::Core::IClassLoader;
 

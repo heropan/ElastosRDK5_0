@@ -2,14 +2,9 @@
 #ifndef __XMLPULLPARSERFACTORY_H__
 #define __XMLPULLPARSERFACTORY_H__
 
+#include "Object.h"
 #include "elastos/HashMap.h"
 #include "Org.Xmlpull.V1_server.h"
-#ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
-#else
-#include "Elastos.Core.h"
-#endif
-#include "Object.h"
 
 using Elastos::Utility::HashMap;
 using Org::Xmlpull::V1::IXmlPullParserFactory;

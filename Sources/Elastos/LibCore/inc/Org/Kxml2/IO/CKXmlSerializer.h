@@ -2,15 +2,9 @@
 #ifndef __CKXMLSERIALIZER_H__
 #define __CKXMLSERIALIZER_H__
 
-#include "_CKXmlSerializer.h"
+#include "__Org_Kxml2_IO_CKXmlSerializer.h"
 #include "Object.h"
-#ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
-#include "CBufferedWriter.h"
-#include "COutputStreamWriter.h"
-#else
-#include "Elastos.Core.h"
-#endif
+#include <Elastos.Core.h>
 
 using Elastos::Core::Object;
 using Elastos::Core::IBoolean;

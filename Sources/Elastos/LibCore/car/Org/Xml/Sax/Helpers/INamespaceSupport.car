@@ -1,5 +1,7 @@
 module
 {
+    using Elastos::Utility::IEnumeration;
+
     namespace Org {
     namespace Xml {
     namespace Sax {
@@ -281,7 +283,7 @@ module
          * @see #getURI
          */
         GetPrefixes(
-            [out] IObjectContainer** prefixes);
+            [out] IEnumeration** prefixes);
 
         /**
          * Return one of the prefixes mapped to a Namespace URI.
@@ -331,7 +333,7 @@ module
          */
         GetPrefixes(
             [in] String uri,
-            [out] IObjectContainer** prefixes);
+            [out] IEnumeration** prefixes);
 
         /**
          * Return an enumeration of all prefixes declared in this context.
@@ -346,7 +348,7 @@ module
          * @see #getURI
          */
         GetDeclaredPrefixes(
-            [out] IObjectContainer** prefixes);
+            [out] IEnumeration** prefixes);
 
         /**
          * Controls whether namespace declaration attributes are placed

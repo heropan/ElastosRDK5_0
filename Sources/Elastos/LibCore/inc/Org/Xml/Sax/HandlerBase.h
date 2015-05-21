@@ -3,6 +3,8 @@
 
 #include <elastos/Object.h>
 
+using Elastos::Core::Object;
+
 namespace Org {
 namespace Xml {
 namespace Sax {

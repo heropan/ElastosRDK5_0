@@ -20,13 +20,13 @@ ECode CInputSource::constructor(
 }
 
 ECode CInputSource::constructor(
-    /* [in] */ Elastos::IO::IInputStream* byteStream)
+    /* [in] */ IInputStream* byteStream)
 {
     return SetByteStream(byteStream);
 }
 
 ECode CInputSource::constructor(
-    /* [in] */ Elastos::IO::IReader* characterStream)
+    /* [in] */ IReader* characterStream)
 {
     return SetCharacterStream(characterStream);;
 }
@@ -67,7 +67,7 @@ ECode CInputSource::GetSystemId(
 }
 
 ECode CInputSource::SetByteStream(
-    /* [in] */ Elastos::IO::IInputStream* byteStream)
+    /* [in] */ IInputStream* byteStream)
 {
     mByteStream = byteStream;
 
@@ -75,11 +75,12 @@ ECode CInputSource::SetByteStream(
 }
 
 ECode CInputSource::GetByteStream(
-    /* [out] */ Elastos::IO::IInputStream** byteStream)
+    /* [out] */ IInputStream** byteStream)
 {
     VALIDATE_NOT_NULL(byteStream);
 
     *byteStream = (mByteStream).Get();
+    REFCOUNT_ADD(*byteStream);
 
     return NOERROR;
 }
@@ -103,7 +104,7 @@ ECode CInputSource::GetEncoding(
 }
 
 ECode CInputSource::SetCharacterStream(
-    /* [in] */ Elastos::IO::IReader* characterStream)
+    /* [in] */ IReader* characterStream)
 {
     mCharacterStream = characterStream;
 
@@ -111,11 +112,12 @@ ECode CInputSource::SetCharacterStream(
 }
 
 ECode CInputSource::GetCharacterStream(
-    /* [out] */ Elastos::IO::IReader** characterStream)
+    /* [out] */ IReader** characterStream)
 {
     VALIDATE_NOT_NULL(characterStream);
 
     *characterStream = mCharacterStream.Get();
+    REFCOUNT_ADD(*characterStream);
 
     return NOERROR;
 }

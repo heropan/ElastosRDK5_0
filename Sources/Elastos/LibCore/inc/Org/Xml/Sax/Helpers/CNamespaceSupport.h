@@ -3,17 +3,13 @@
 #define __CNAMESPACESUPPORT_H__
 
 #include "__Org_Xml_Sax_Helpers_CNamespaceSupport.h"
-#include "coredef.h"
+#include "Object.h"
 #include <elastos/HashMap.h>
 #include <elastos/List.h>
-#ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
-#include "CStringWrapper.h"
-#include "CObjectContainer.h"
-#else
-#include "Elastos.Core.h"
-#endif
+#include <Elastos.Core.h>
 
+using Elastos::Core::Object;
+using Elastos::Utility::IEnumeration;
 using Elastos::Utility::HashMap;
 using Elastos::Utility::List;
 
@@ -46,7 +42,7 @@ public:
 
     CARAPI ProcessName(
         /* [in] */ const String& qName,
-        /* [in] */ const ArrayOf<String> & parts,
+        /* [in] */ ArrayOf<String>* parts,
         /* [in] */ Boolean isAttribute,
         /* [out, callee] */ ArrayOf<String>** name);
 
@@ -55,7 +51,7 @@ public:
         /* [out] */ String* URI);
 
     CARAPI GetPrefixes(
-        /* [out] */ IObjectContainer** prefixes);
+        /* [out] */ IEnumeration** prefixes);
 
     CARAPI GetPrefix(
         /* [in] */ const String& uri,
@@ -63,10 +59,10 @@ public:
 
     CARAPI GetPrefixes(
         /* [in] */ const String& uri,
-        /* [out] */ IObjectContainer** prefixes);
+        /* [out] */ IEnumeration** prefixes);
 
     CARAPI GetDeclaredPrefixes(
-        /* [out] */ IObjectContainer** prefixes);
+        /* [out] */ IEnumeration** prefixes);
 
     CARAPI SetNamespaceDeclUris(
         /* [in] */ Boolean value);
@@ -81,10 +77,11 @@ private:
     AutoPtr<Context> mCurrentContext;
     Int32 mContextPos;
     Boolean mNamespaceDeclUris;
-    static AutoPtr<IObjectContainer> EMPTY_ENUMERATION;
+    static AutoPtr<IEnumeration> EMPTY_ENUMERATION;
 
 public:
-    class Context : public ElRefBase{
+    class Context : public Object
+    {
     public:
         /**
          * Create the root-level Namespace context.
@@ -93,17 +90,6 @@ public:
             /* [in] */ CNamespaceSupport* parent);
 
         virtual ~Context();
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid);
 
         /**
          * (Re)set the parent of this Namespace context.
@@ -179,7 +165,7 @@ public:
          * @return An enumeration of prefixes (possibly empty).
          * @see org.xml.sax.helpers.NamespaceSupport#getDeclaredPrefixes
          */
-        AutoPtr<IObjectContainer> GetDeclaredPrefixes();
+        AutoPtr<IEnumeration> GetDeclaredPrefixes();
 
         /**
          * Return an enumeration of all prefixes currently in force.
@@ -190,7 +176,7 @@ public:
          * @return An enumeration of prefixes (never empty).
          * @see org.xml.sax.helpers.NamespaceSupport#getPrefixes
          */
-        AutoPtr<IObjectContainer> GetPrefixes ();
+        AutoPtr<IEnumeration> GetPrefixes ();
 
         ////////////////////////////////////////////////////////////////
         // Internal methods.
@@ -222,8 +208,8 @@ public:
         ////////////////////////////////////////////////////////////////
 
     private:
-        AutoPtr<CNamespaceSupport> mParentHolder;
-        List<String> mDeclarations;
+        AutoPtr<IWeakReference> mWeakParentHolder;
+        AutoPtr<IArrayList> mDeclarations;
         Boolean mDeclSeen;
         Context* mParentContext;
     };

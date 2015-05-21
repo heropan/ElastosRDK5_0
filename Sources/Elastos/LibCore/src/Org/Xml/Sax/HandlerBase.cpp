@@ -104,7 +104,7 @@ ECode HandlerBase::Error(
 ECode HandlerBase::FatalError(
     /* [in] */ ECode exception)
 {
-    return E_SAX_PARSE_EXCEPTION;
+    return exception;
 }
 
 } // namespace Sax

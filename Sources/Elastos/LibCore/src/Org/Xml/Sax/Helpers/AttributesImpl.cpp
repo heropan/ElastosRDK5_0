@@ -253,25 +253,23 @@ ECode AttributesImpl::SetAttributes(
 
     if (mLength > 0) {
         mData = ArrayOf<String>::Alloc(mLength * 5);
+        String value;
 
         for (Int32 i = 0; i < mLength; i++) {
-         String value("");
+            atts->GetURI(i, &value);
+            (*mData)[i*5] = value;
 
-         atts->GetURI(i, &value);
+            atts->GetLocalName(i, &value);
+            (*mData)[i*5+1] = value;
 
-         (*mData)[i*5] = value;
+            atts->GetQName(i, &value);
+            (*mData)[i*5+2] = value;
 
-         atts->GetLocalName(i, &value);
-         (*mData)[i*5+1] = value;
+            atts->GetType(i, &value);
+            (*mData)[i*5+3] = value;
 
-         atts->GetQName(i, &value);
-         (*mData)[i*5+2] = value;
-
-         atts->GetType(i, &value);
-         (*mData)[i*5+3] = value;
-
-         atts->GetValue(i, &value);
-         (*mData)[i*5+4] = value;
+            atts->GetValue(i, &value);
+            (*mData)[i*5+4] = value;
         }
      }
 

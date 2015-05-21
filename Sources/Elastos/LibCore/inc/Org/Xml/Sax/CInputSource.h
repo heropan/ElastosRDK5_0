@@ -3,7 +3,11 @@
 #define __CINPUTSOURCE_H__
 
 #include "_Org_Xml_Sax_CInputSource.h"
-#include "coredef.h"
+#include "Object.h"
+
+using Elastos::Core::Object;
+using Elastos::IO::IReader;
+using Elastos::IO::IInputStream;
 
 namespace Org {
 namespace Xml {
@@ -64,7 +68,7 @@ public:
      * @see #setCharacterStream
      */
     CARAPI constructor(
-        /* [in] */ Elastos::IO::IInputStream* byteStream);
+        /* [in] */ IInputStream* byteStream);
 
     /**
      * Create a new input source with a character stream.
@@ -82,7 +86,7 @@ public:
      * @see #setCharacterStream
      */
     CARAPI constructor(
-        /* [in] */ Elastos::IO::IReader* characterStream);
+        /* [in] */ IReader* characterStream);
 
     /**
      * Set the public identifier for this input source.
@@ -167,7 +171,7 @@ public:
      * @see java.io.InputStream
      */
     CARAPI SetByteStream(
-        /* [in] */ Elastos::IO::IInputStream* byteStream);
+        /* [in] */ IInputStream* byteStream);
 
     /**
      * Get the byte stream for this input source.
@@ -180,7 +184,7 @@ public:
      * @see #setByteStream
      */
     CARAPI GetByteStream(
-        /* [out] */ Elastos::IO::IInputStream** byteStream);
+        /* [out] */ IInputStream** byteStream);
 
     /**
      * Set the character encoding, if known.
@@ -226,7 +230,7 @@ public:
      * @see java.io.Reader
      */
     CARAPI SetCharacterStream(
-        /* [in] */ Elastos::IO::IReader* characterStream);
+        /* [in] */ IReader* characterStream);
 
     /**
      * Get the character stream for this input source.
@@ -235,14 +239,14 @@ public:
      * @see #setCharacterStream
      */
     CARAPI GetCharacterStream(
-        /* [out] */ Elastos::IO::IReader** characterStream);
+        /* [out] */ IReader** characterStream);
 
 private:
     String mPublicId;
     String mSystemId;
     String mEncoding;
-    AutoPtr<Elastos::IO::IInputStream> mByteStream;
-    AutoPtr<Elastos::IO::IReader> mCharacterStream;
+    AutoPtr<IInputStream> mByteStream;
+    AutoPtr<IReader> mCharacterStream;
 };
 
 } // namespace Sax

@@ -2,18 +2,11 @@
 #ifndef  __CKXMLPARSER_H__
 #define  __CKXMLPARSER_H__
 
+#include "_Org_Kxml2_IO_CKXmlParser.h"
 #include "Object.h"
-#include "_CKXmlParser.h"
 #include <elastos/HashMap.h>
 #include <elastos/StringBuilder.h>
-#ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
-#include "CStringWrapper.h"
-#include "CBoolean.h"
-#include "CInputStreamReader.h"
-#else
-#include "Elastos.Core.h"
-#endif
+#include <Elastos.Core.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IBoolean;

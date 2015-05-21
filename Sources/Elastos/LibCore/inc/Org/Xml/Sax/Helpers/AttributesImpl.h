@@ -3,7 +3,6 @@
 #define __ATTRIBUTESIMPL_H__
 
 #include <elastos/Object.h>
-#include "coredef.h"
 
 using Elastos::Core::Object;
 using Org::Xml::Sax::IAttributes;

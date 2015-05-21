@@ -1,5 +1,6 @@
 
 #include "XmlPullParserFactory.h"
+#include "Elastos.Core.h"
 
 namespace Org {
 namespace Xmlpull {

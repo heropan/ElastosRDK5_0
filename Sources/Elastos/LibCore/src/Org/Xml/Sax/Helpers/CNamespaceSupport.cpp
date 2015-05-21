@@ -10,7 +10,18 @@ namespace Xml {
 namespace Sax {
 namespace Helpers {
 
-AutoPtr<IObjectContainer> CNamespaceSupport::EMPTY_ENUMERATION;
+static AutoPtr<IEnumeration> InitEMPTY_ENUMERATION()
+{
+    AutoPtr<ICollections> collections;
+    CCollections::AcquireSingleton((ICollections**)&collections);
+    AutoPtr<IList> list;
+    collections->GetEmptyList((IList**)&list);
+    AutoPtr<IEnumeration> enu;
+    collections->Enumeration(list, (IEnumeration**)&enu);
+    return enu;
+}
+
+AutoPtr<IEnumeration> CNamespaceSupport::EMPTY_ENUMERATION = InitEMPTY_ENUMERATION();
 
 CAR_INTERFACE_IMPL(CNamespaceSupport, Object, INamespaceSupport)
 CAR_OBJECT_IMPL(CNamespaceSupport)
@@ -87,18 +98,23 @@ ECode CNamespaceSupport::DeclarePrefix(
 
 ECode CNamespaceSupport::ProcessName(
     /* [in] */ const String& qName,
-    /* [in] */ const ArrayOf<String> & parts,
+    /* [in] */ ArrayOf<String>* parts,
     /* [in] */ Boolean isAttribute,
     /* [out, callee] */ ArrayOf<String>** nName)
 {
     VALIDATE_NOT_NULL(nName)
+    *nName = NULL;
+    VALIDATE_NOT_NULL(parts)
+    assert(parts->GetLength()　>= 3);
 
     AutoPtr< ArrayOf<String> > myParts = mCurrentContext->ProcessName(qName, isAttribute);
-    if (myParts == NULL) {
-        *nName = NULL;
-    }
-    else {
-        *nName = myParts;
+    if (myParts != NULL) {
+        assert(myParts->GetLength() >= 3);
+        (*parts)[0] = (*myParts)[0];
+        (*parts)[1] = (*myParts)[1];
+        (*parts)[2] = (*myParts)[2];
+
+        *nName = parts;
         REFCOUNT_ADD(*nName)
     }
     return NOERROR;
@@ -115,11 +131,11 @@ ECode CNamespaceSupport::GetURI(
 }
 
 ECode CNamespaceSupport::GetPrefixes(
-    /* [out] */ IObjectContainer** prefixes)
+    /* [out] */ IEnumeration** prefixes)
 {
     VALIDATE_NOT_NULL(prefixes)
 
-    AutoPtr<IObjectContainer> res = mCurrentContext->GetPrefixes();
+    AutoPtr<IEnumeration> res = mCurrentContext->GetPrefixes();
     *prefixes = res;
     REFCOUNT_ADD(*prefixes)
 
@@ -138,45 +154,42 @@ ECode CNamespaceSupport::GetPrefix(
 
 ECode CNamespaceSupport::GetPrefixes(
     /* [in] */ const String& uri,
-    /* [out] */ IObjectContainer** prefixes)
+    /* [out] */ IEnumeration** result)
 {
-    VALIDATE_NOT_NULL(prefixes)
+    VALIDATE_NOT_NULL(result)
 
-    AutoPtr<IObjectContainer> prefixes1;
-    CObjectContainer::New((IObjectContainer**)&prefixes1);
-    AutoPtr<IObjectContainer> allPrefixes;
-    GetPrefixes((IObjectContainer**)&allPrefixes);
-    AutoPtr<IObjectEnumerator> enumerator;
-    allPrefixes->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-    Boolean isflag = FALSE;
-    enumerator->MoveNext(&isflag);
-    while(isflag) {
-        AutoPtr<ICharSequence> outcsq;
-        enumerator->Current((IInterface**)&outcsq);
+    AutoPtr<IArrayList> prefixes;
+    CArrayList::New((IArrayList**)&prefixes)
+
+    AutoPtr<IEnumeration> allPrefixes;
+    GetPrefixes((IEnumeration**)&allPrefixes);
+
+    Boolean hasMore;
+    while (allPrefixes->HasMoreElements(&hasMore), hasMore) {
+        AutoPtr<IInterface> obj;
+        allPrefixes->NextElement((IInterface**)&obj);
+        ICharSequence* seq =  ICharSequence::Probe(obj);
         String prefix;
-        outcsq->ToString(&prefix);
-        String outuri;
-        GetURI(prefix,&outuri);
-        if (uri.Equals(outuri))
-        {
+        seq->ToString(&prefix);
+        if (uri.Equals(GetURI(prefix))) {
             AutoPtr<ICharSequence> csq;
             CStringWrapper::New(prefix, (ICharSequence**)&csq);
-            prefixes1->Add(csq);
+            prefixes->Add(csq);
         }
-        enumerator->MoveNext(&isflag);
     }
-    *prefixes = prefixes1;
-    REFCOUNT_ADD(*prefixes)
+
+    *result = prefixes;
+    REFCOUNT_ADD(*result)
 
     return NOERROR;
 }
 
 ECode CNamespaceSupport::GetDeclaredPrefixes(
-    /* [out] */ IObjectContainer** prefixes)
+    /* [out] */ IEnumeration** prefixes)
 {
     VALIDATE_NOT_NULL(prefixes)
 
-    AutoPtr<IObjectContainer> res = mCurrentContext->GetDeclaredPrefixes();
+    AutoPtr<IEnumeration> res = mCurrentContext->GetDeclaredPrefixes();
     *prefixes = res;
     REFCOUNT_ADD(*prefixes)
 
@@ -214,15 +227,14 @@ ECode CNamespaceSupport::IsNamespaceDeclUris(
 
 ECode CNamespaceSupport::constructor()
 {
-    CObjectContainer::New((IObjectContainer**)&EMPTY_ENUMERATION);
     return Reset();
 }
 
 CNamespaceSupport::Context::Context(
     /* [in] */ CNamespaceSupport* parent)
-    : mDeclarations()
 {
-    mParentHolder = parent;
+    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(parent);
+    wrs->GetWeakReference((IWeakReference**)&mWeakParentHolder);
     mDeclSeen = FALSE;
     mParentContext = NULL;
 
@@ -292,23 +304,25 @@ void CNamespaceSupport::Context::Clear ()
 }
 
 
-void CNamespaceSupport::Context::DeclarePrefix(
+ECode CNamespaceSupport::Context::DeclarePrefix(
     /* [in] */ const String& prefix,
     /* [in] */ const String& uri)
 {
     // Lazy processing...
     if (!mDeclsOK) {
         // throw new IllegalStateException ("can't declare any more prefixes in this context");
-        return;
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
     if (!mDeclSeen) {
        CopyTables();
     }
 
-    // prefix = prefix.intern();
-    // uri = uri.intern();
-    if (String("").Equals(prefix)) {
-        if (String("").Equals(uri)) {
+    if (mDeclarations == NULL) {
+        CArrayList::New((IArrayList**)&mDeclarations);
+    }
+
+    if (prefix.Equals("")) {
+        if (uri.Equals("")) {
             mDefaultNS = String(NULL);
         }
         else {
@@ -319,7 +333,10 @@ void CNamespaceSupport::Context::DeclarePrefix(
         mPrefixTable[prefix] = uri;
         mUriTable[uri] = prefix; // may wipe out another prefix
     }
-    mDeclarations.PushBack(prefix);
+
+    AutoPtr<ICharSequence> seq;
+    CStringWrapper::New(prefix, (ICharSequence**)&seq);
+    mDeclarations->Add(seq);
 }
 
 AutoPtr< ArrayOf<String> > CNamespaceSupport::Context::ProcessName (
@@ -356,14 +373,21 @@ AutoPtr< ArrayOf<String> > CNamespaceSupport::Context::ProcessName (
     (*name)[2] = qName;// qName.intern();
     Int32 index = qName.IndexOf(':');
 
-
-           // No prefix.
+    // No prefix.
     if (index == -1) {
         if (isAttribute) {
-            if (qName == "xmlns" && mParentHolder->mNamespaceDeclUris)
-                (*name)[0] = NSDECL;
-            else
-                (*name)[0] = "";
+            (*name)[0] = "";
+
+            if (qName.Equals("xmlns")) {
+                AutoPtr<INamespaceSupport> ns;
+                mWeakParentHolder->Resolve(EIID_INamespaceSupport, (IInterface**)&ns);
+                if (ns != NULL) {
+                    CNamespaceSupport* holder = (CNamespaceSupport**)ns.Get();
+                    if (holder->mNamespaceDeclUris) {
+                        (*name)[0] = NSDECL;
+                    }
+                }
+            }
         }
         else if (mDefaultNS.IsNull()) {
             (*name)[0] = "";
@@ -377,13 +401,13 @@ AutoPtr< ArrayOf<String> > CNamespaceSupport::Context::ProcessName (
         String prefix = qName.Substring(0, index);
         String local = qName.Substring(index+1);
         String uri;
-        if (String("").Equals(prefix)) {
+        if (prefix.Equals("")) {
             uri = mDefaultNS;
         }
         else {
             uri = mPrefixTable[prefix];
         }
-        if (uri.IsNull() || (!isAttribute && String("xmlns").Equals(prefix))) {
+        if (uri.IsNull() || (!isAttribute && prefix.Equals("xmlns"))) {
            return NULL;
         }
         (*name)[0] = uri;
@@ -400,7 +424,7 @@ AutoPtr< ArrayOf<String> > CNamespaceSupport::Context::ProcessName (
 String CNamespaceSupport::Context::GetURI (
     /* [in] */ const String& prefix)
 {
-    if (String("").Equals(prefix)) {
+    if (prefix.Equals("")) {
         return mDefaultNS;
     }
     else if (mPrefixTable.IsEmpty()) {
@@ -423,40 +447,42 @@ String CNamespaceSupport::Context::GetPrefix (
     return String("");
 }
 
-AutoPtr<IObjectContainer> CNamespaceSupport::Context::GetDeclaredPrefixes() {
-    // return (declarations == null) ? EMPTY_ENUMERATION : Collections.enumeration(declarations);
-    if (mDeclarations.IsEmpty()) {
+AutoPtr<IEnumeration> CNamespaceSupport::Context::GetDeclaredPrefixes()
+{
+    if (mDeclarations == NULL) {
         return EMPTY_ENUMERATION;
     }
     else {
-        AutoPtr<IObjectContainer> obj;
-        CObjectContainer::New((IObjectContainer**)&obj);
-        for (Int32 i = 0; i < mDeclarations.GetSize(); ++i)
-        {
-            AutoPtr<ICharSequence> csq;
-            CStringWrapper::New(mDeclarations[i], (ICharSequence**)&csq);
-            obj->Add(csq);
-        }
-        return obj;
+        AutoPtr<ICollections> collections;
+        CCollections::AcquireSingleton((ICollections**)&collections);
+        AutoPtr<IEnumeration> enu;
+        collections->Enumeration(IList::Probe(mDeclarations), (IEnumeration**)&enu);
+        return enu;
     }
 }
 
-AutoPtr<IObjectContainer> CNamespaceSupport::Context::GetPrefixes ()
+AutoPtr<IEnumeration> CNamespaceSupport::Context::GetPrefixes ()
 {
     if (mPrefixTable.IsEmpty()) {
         return EMPTY_ENUMERATION;
-    } else {
-        // return mPrefixTable.keys();
-        AutoPtr<IObjectContainer> obj;
-        CObjectContainer::New((IObjectContainer**)&obj);
+    }
+    else {
+        AutoPtr<IArrayList> prefixes;
+        CArrayList::New((IArrayList**)&prefixes)
+
         HashMap<String, String>::Iterator iter = mPrefixTable.Begin();
         while (iter != mPrefixTable.End()) {
             AutoPtr<ICharSequence> csq;
             CStringWrapper::New(iter->mFirst, (ICharSequence**)&csq);
-            obj->Add(csq);
+            prefixes->Add(csq);
             iter++;
         }
-        return obj;
+
+        AutoPtr<ICollections> collections;
+        CCollections::AcquireSingleton((ICollections**)&collections);
+        AutoPtr<IEnumeration> enu;
+        collections->Enumeration(IList::Probe(prefixes), (IEnumeration**)&enu);
+        return enu;
     }
 }
 
