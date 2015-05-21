@@ -16,11 +16,11 @@ BufferedInputStream::~BufferedInputStream()
 {
 }
 
-ECode BufferedInputStream::Init(
+ECode BufferedInputStream::constructor(
     /* [in] */ IInputStream* in,
     /* [in] */ Int32 size)
 {
-    FAIL_RETURN(FilterInputStream::Init(in));
+    FAIL_RETURN(FilterInputStream::constructor(in));
     if (size <= 0) {
 //        throw new IllegalArgumentException("size <= 0");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -136,6 +136,7 @@ ECode BufferedInputStream::Read(
     /* [out] */ Int32* value)
 {
     assert(value != NULL);
+    Object::Autolock lock(mLock);
 
     // Use local refs since buf and in may be invalidated by an
     // unsynchronized close()
@@ -172,13 +173,15 @@ ECode BufferedInputStream::Read(
     return NOERROR;
 }
 
-ECode BufferedInputStream::ReadBytesEx(
+ECode BufferedInputStream::Read(    // change from ReadBytesEx
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
+
+    Object::Autolock lock(mLock);
     *number = 0;
 
     if (buffer == NULL) {
@@ -279,6 +282,7 @@ ECode BufferedInputStream::ReadBytesEx(
 
 ECode BufferedInputStream::Reset()
 {
+    Object::Autolock lock(mLock);
     // BEGIN android-changed
     /*
      * These exceptions get thrown in some "normalish" circumstances,
@@ -303,6 +307,8 @@ ECode BufferedInputStream::Skip(
     /* [out] */ Int64* number)
 {
     assert(number != NULL);
+
+    Object::Autolock lock(mLock);
 
     // Use local refs since buf and in may be invalidated by an
     // unsynchronized close()

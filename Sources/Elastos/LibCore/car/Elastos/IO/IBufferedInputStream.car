@@ -23,6 +23,7 @@ module
     * interface IFilterInputStream;
     */
     interface IBufferedInputStream {
+            const Int32 DEFAULT_BUFFER_SIZE = 8192;
     }
 
     } // namespace IO

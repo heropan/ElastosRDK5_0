@@ -9,16 +9,14 @@ namespace IO {
 
 class BufferedInputStream
     : public FilterInputStream
-    , IInputStream
-//    , interface IFilterInputStream;   // 此接口应可从FilterInputStream类继承得到
-
+    , public IBufferedInputStream
 {
 protected:
     BufferedInputStream();
 
     ~BufferedInputStream();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* in,
         /* [in] */ Int32 size);
 
@@ -115,7 +113,7 @@ public:
      *             occurs.
      */
     // synchronized
-    CARAPI ReadBytesEx(
+    CARAPI Read(    // name changed from ReadBytesEx to Read
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 length,
