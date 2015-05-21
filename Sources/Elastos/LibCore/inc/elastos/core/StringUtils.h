@@ -182,6 +182,15 @@ public:
         /* [in] */ const char* regularExpression,
         /* [out] */ Boolean* result);
 
+    static CARAPI ParsePositiveLong(
+        /* [in] */ const String& input,
+        /* [out] */ Int64* result);
+
+    static CARAPI ParsePositiveLong(
+        /* [in] */ const String& input,
+        /* [in] */ const Int32 radix,
+        /* [out] */ Int64* result);
+
 private:
     StringUtils();
     ~StringUtils();

@@ -16,6 +16,8 @@ namespace Threading {
 extern "C" const InterfaceID EIID_ThreadGroup;
 
 class ThreadGroup
+    : public Object
+    : public IThreadUncaughtExceptionHandler
 {
 public:
     /**

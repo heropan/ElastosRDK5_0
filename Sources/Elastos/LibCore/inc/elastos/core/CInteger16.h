@@ -4,10 +4,13 @@
 
 #include "_CInteger16.h"
 
+using Elastos::Core::INumber;
+using Elastos::Core::IComparable;
+
 namespace Elastos {
 namespace Core {
 
-CarClass(CInteger16)
+CarClass(CInteger16) , public INumber, public IComparable
 {
 public:
     CARAPI constructor(

@@ -4,10 +4,13 @@
 
 #include "_CBoolean.h"
 
+using Elastos::IO::ISerializable;
+using Elastos::Core::IComparable;
+
 namespace Elastos {
 namespace Core {
 
-CarClass(CBoolean)
+CarClass(CBoolean) ,public ISerializable, public IComparable
 {
 public:
     CARAPI constructor(

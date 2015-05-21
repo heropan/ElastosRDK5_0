@@ -406,5 +406,28 @@ ECode StringUtils::Matches(
     return Matches(input, String(regularExpression), result);
 }
 
+ECode StringUtils::ParsePositiveLong(
+    /* [in] */ const String& input,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return ParsePositiveLong(input, 10, result);
+}
+
+ECode StringUtils::ParsePositiveLong(
+    /* [in] */ const String& input,
+    /* [in] */ const Int32 radix,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    if (radix < Character::MIN_RADIX || Character::MAX_RADIX) {
+        return E_NUMBER_FORMAT_EXCEPTION;
+    }
+    if (input.IsEmpty() || input.GetLength() == 0) {
+        return E_NUMBER_FORMAT_EXCEPTION;
+    }
+    return StringToIntegral::Parse(input, 0, radix, FALSE, result);
+}
+
 } // namespace Core
 } // namespace Elastos

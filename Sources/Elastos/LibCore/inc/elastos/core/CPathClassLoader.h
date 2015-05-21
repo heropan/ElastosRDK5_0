@@ -3,10 +3,12 @@
 
 #include "_CPathClassLoader.h"
 
+using Elastos::Core::IClassLoader;
+
 namespace Elastos {
 namespace Core {
 
-CarClass(CPathClassLoader)
+CarClass(CPathClassLoader) , public IClassLoader
 {
 public:
     CARAPI constructor(

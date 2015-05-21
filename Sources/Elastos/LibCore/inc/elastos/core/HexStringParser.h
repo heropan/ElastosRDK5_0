@@ -14,7 +14,7 @@ using Elastos::Utility::Regex::IPattern;
 namespace Elastos {
 namespace Core {
 
-class HexStringParser : public ElRefBase
+class HexStringParser : public Object
 {
 public:
     /*

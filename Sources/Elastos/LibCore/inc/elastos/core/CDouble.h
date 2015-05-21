@@ -4,10 +4,13 @@
 
 #include "_CDouble.h"
 
+using Elastos::Core::INumber;
+using Elastos::Core::IComparable;
+
 namespace Elastos {
 namespace Core {
 
-CarClass(CDouble)
+CarClass(CDouble) , public INumber, public IComparable
 {
 public:
     CARAPI constructor(

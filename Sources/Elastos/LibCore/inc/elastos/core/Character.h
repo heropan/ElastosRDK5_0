@@ -85,6 +85,9 @@ namespace Core {
  * @since 1.0
  */
 class Character
+    : public Object
+    , public ISerializable
+    , public IComparable
 {
 public:
     /*

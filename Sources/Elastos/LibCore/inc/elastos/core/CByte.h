@@ -4,10 +4,13 @@
 
 #include "_CByte.h"
 
+using Elastos::Core::INumber;
+using Elastos::Core::IComparable;
+
 namespace Elastos {
 namespace Core {
 
-CarClass(CByte)
+CarClass(CByte) ,public INumber, public IComparable
 {
 public:
     CARAPI constructor(

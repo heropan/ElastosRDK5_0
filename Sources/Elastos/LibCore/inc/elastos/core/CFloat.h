@@ -4,10 +4,13 @@
 
 #include "_CFloat.h"
 
+using Elastos::Core::INumber;
+using Elastos::Core::IComparable;
+
 namespace Elastos {
 namespace Core {
 
-CarClass(CFloat)
+CarClass(CFloat) , public INumber, public IComparable
 {
 public:
     CARAPI constructor(

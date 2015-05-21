@@ -3,6 +3,8 @@
 
 #include <elastos.h>
 
+using Elastos::IO::ISerializable;
+
 namespace Elastos {
 namespace Core {
 
@@ -12,6 +14,8 @@ namespace Core {
  * {@link Float}, and {@link Double}.
  */
 class Number
+    : public Object
+    , public ISerializable
 {
 public:
     virtual CARAPI_(PInterface) Probe(

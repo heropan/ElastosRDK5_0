@@ -173,7 +173,6 @@ public:
         /* [in] */ Int32 radix,
         /* [out] */ Int64* result);
 
-private:
     static CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ Int32 offset,
@@ -181,6 +180,7 @@ private:
         /* [in] */ Boolean negative,
         /* [out] */ Int64* result);
 
+private:
     static CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ Int32 offset,

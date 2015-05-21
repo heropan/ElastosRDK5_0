@@ -11,7 +11,7 @@ namespace Elastos {
 namespace Core {
 
 class Enum
-    : public ElRefBase
+    : public Object
     , public IEnum
     , public ISerializable
     , public IComparable

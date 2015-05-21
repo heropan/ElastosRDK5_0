@@ -2,6 +2,7 @@
 module
 {
     interface Elastos.Core.IStackTraceElement;
+    interface Elastos.Core.IAppendable;
     interface Elastos.IO.IPrintStream;
     interface Elastos.IO.IPrintWriter;
 
@@ -117,7 +118,7 @@ module
          * @param err
          *            the stream to write the stack trace on.
          */
-        PrintStackTraceEx(
+        PrintStackTrace(
             [in] IPrintStream* err);
 
         /**
@@ -129,12 +130,14 @@ module
          * @param err
          *            the writer to write the stack trace on.
          */
-        PrintStackTraceEx2(
+        PrintStackTrace(
             [in] IPrintWriter* err);
 
-        // @Override
-        ToString(
-            [out] String* str);
+
+        PrintStackTrace(
+            [in] IAppendable* err,
+            [in] String indent,
+            [in] ArrayOf<IStackTraceElement*>* parentStack);
 
         /**
          * Initializes the cause of this {@code Throwable}. The cause can only be

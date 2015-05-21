@@ -4,7 +4,12 @@ module
     namespace Elastos {
     namespace Core {
 
-    interface IFloat extends INumber {
+    /**
+     * @Involve
+     * interface INumber;
+     * interface IComparable;
+     */
+    interface IFloat {
         /**
           * Gets the primitive value of this byte.
           *
@@ -12,10 +17,6 @@ module
           */
         GetValue(
             [out] Float* value);
-
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* result);
 
         /**
          * Indicates whether this object represents an infinite value.

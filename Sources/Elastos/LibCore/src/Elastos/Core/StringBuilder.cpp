@@ -182,7 +182,7 @@ ECode StringBuilder::Substring(
     return SubstringO(start, str);
 }
 
-ECode StringBuilder::SubstringEx(
+ECode StringBuilder::Substring(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ String* str)
@@ -222,7 +222,7 @@ ECode StringBuilder::IndexOf(
     return IndexOfO(string, index);
 }
 
-ECode StringBuilder::IndexOfEx(
+ECode StringBuilder::IndexOf(
     /* [in] */ const String& subString,
     /* [in] */ Int32 start,
     /* [out] */ Int32* index)
@@ -237,7 +237,7 @@ ECode StringBuilder::LastIndexOf(
     return LastIndexOfO(string, index);
 }
 
-ECode StringBuilder::LastIndexOfEx(
+ECode StringBuilder::LastIndexOf(
     /* [in] */ const String& subString,
     /* [in] */ Int32 start,
     /* [out] */ Int32* index)
@@ -245,24 +245,24 @@ ECode StringBuilder::LastIndexOfEx(
     return LastIndexOfExO(subString, start, index);
 }
 
-ECode StringBuilder::AppendNULL()
+ECode StringBuilder::Append()
 {
     return AppendONULL();
 }
 
-ECode StringBuilder::AppendCStr(
+ECode StringBuilder::Append(
     /* [in] */ const char* str)
 {
     return AppendOCStr(str);
 }
 
-ECode StringBuilder::AppendBoolean(
+ECode StringBuilder::Append(
     /* [in] */ Boolean b)
 {
     return AppendOBoolean(b);
 }
 
-ECode StringBuilder::AppendChar(
+ECode StringBuilder::Append(
     /* [in] */ Char32 c)
 {
     return AppendOChar(c);
@@ -280,31 +280,31 @@ ECode StringBuilder::AppendInt64(
     return AppendOInt64(l);
 }
 
-ECode StringBuilder::AppendFloat(
+ECode StringBuilder::Append(
     /* [in] */ Float f)
 {
     return AppendOFloat(f);
 }
 
-ECode StringBuilder::AppendDouble(
+ECode StringBuilder::Append(
     /* [in] */ Double d)
 {
     return AppendODouble(d);
 }
 
-ECode StringBuilder::AppendObject(
+ECode StringBuilder::Append(
     /* [in] */ IInterface* obj)
 {
     return AppendOObject(obj);
 }
 
-ECode StringBuilder::AppendString(
+ECode StringBuilder::Append(
     /* [in] */ const String& str)
 {
     return AppendOString(str);
 }
 
-ECode StringBuilder::AppendStringBuffer(
+ECode StringBuilder::Append(
     /* [in] */ IStringBuffer* sb)
 {
     if (NULL == sb) {
@@ -316,7 +316,7 @@ ECode StringBuilder::AppendStringBuffer(
     return AppendOString(str);
 }
 
-ECode StringBuilder::AppendStringBuilder(
+ECode StringBuilder::Append(
     /* [in] */ IStringBuilder* sb)
 {
     if (NULL == sb) {
@@ -328,13 +328,13 @@ ECode StringBuilder::AppendStringBuilder(
     return AppendOString(str);
 }
 
-ECode StringBuilder::AppendChars(
+ECode StringBuilder::Append(
     /* [in] */ const ArrayOf<Char32>& chars)
 {
     return AppendOChars(chars);
 }
 
-ECode StringBuilder::AppendCharsEx(
+ECode StringBuilder::Append(
     /* [in] */ const ArrayOf<Char32>& chars,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
@@ -342,13 +342,13 @@ ECode StringBuilder::AppendCharsEx(
     return AppendOCharsEx(chars, offset, length);
 }
 
-ECode StringBuilder::AppendCharSequence(
+ECode StringBuilder::Append(
     /* [in] */ ICharSequence* csq)
 {
     return AppendOCharSequence(csq);
 }
 
-ECode StringBuilder::AppendCharSequenceEx(
+ECode StringBuilder::Append(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -356,14 +356,14 @@ ECode StringBuilder::AppendCharSequenceEx(
     return AppendOCharSequenceEx(csq, start, end);
 }
 
-ECode StringBuilder::InsertChar(
+ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Char32 c)
 {
     return InsertOChar(offset, c);
 }
 
-ECode StringBuilder::InsertBoolean(
+ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Boolean b)
 {
@@ -384,42 +384,42 @@ ECode StringBuilder::InsertInt64(
     return InsertOInt64(offset, l);
 }
 
-ECode StringBuilder::InsertFloat(
+ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Float f)
 {
     return InsertOFloat(offset, f);
 }
 
-ECode StringBuilder::InsertDouble(
+ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Double d)
 {
     return InsertODouble(offset, d);
 }
 
-ECode StringBuilder::InsertObject(
+ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ IInterface* obj)
 {
     return InsertOObject(offset, obj);
 }
 
-ECode StringBuilder::InsertString(
+ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ const String& str)
 {
     return InsertOString(offset, str);
 }
 
-ECode StringBuilder::InsertChars(
+ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ const ArrayOf<Char32>& chars)
 {
     return InsertOChars(offset, chars);
 }
 
-ECode StringBuilder::InsertCharsEx(
+ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ const ArrayOf<Char32>& str,
     /* [in] */ Int32 strOffset,
@@ -428,14 +428,14 @@ ECode StringBuilder::InsertCharsEx(
     return InsertOCharsEx(offset, str, strOffset, strLen);
 }
 
-ECode StringBuilder::InsertCharSequence(
+ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ ICharSequence* s)
 {
     return InsertOCharSequence(offset, s);
 }
 
-ECode StringBuilder::InsertCharSequenceEx(
+ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ ICharSequence* s,
     /* [in] */ Int32 start,
@@ -474,13 +474,6 @@ ECode StringBuilder::ToString(
     /* [out] */ String* str)
 {
     return SubstringO(0, str);
-}
-
-String StringBuilder::ToString()
-{
-    String str;
-    SubstringO(0, &str);
-    return str;
 }
 
 AutoPtr<ICharSequence> StringBuilder::ToCharSequence()

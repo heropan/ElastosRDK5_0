@@ -45,14 +45,14 @@ module
         /**
          * Returns a pseudo-random uniformly distributed {@code int}.
          */
-        NextInt32(
+        NextInt(
             [out] Int32* value);
 
         /**
          * Returns a pseudo-random uniformly distributed {@code int}
          * in the half-open range [0, n).
          */
-        NextInt32Ex(
+        NextInt(
             [in] Int32 n,
             [out] Int32* value);
 

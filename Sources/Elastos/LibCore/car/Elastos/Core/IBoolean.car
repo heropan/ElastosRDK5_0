@@ -12,16 +12,6 @@ module
          */
         GetValue(
             [out] Boolean* value);
-
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* result);
-
-        GetHashCode(
-            [out] Int32* hashCode);
-
-        ToString(
-            [out] String* string);
     }
 
     } // namespace Core

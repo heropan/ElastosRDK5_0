@@ -4,7 +4,12 @@ module
     namespace Elastos {
     namespace Core {
 
-    interface IByte extends INumber {
+    /**
+     * @Involve
+     * interface INumber;
+     * interface IComparable;
+     */
+    interface IByte {
         /**
          * Gets the primitive value of this byte.
          *
@@ -12,10 +17,6 @@ module
          */
         GetValue(
             [out] Byte* value);
-
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* result);
     }
 
     } // namespace Core

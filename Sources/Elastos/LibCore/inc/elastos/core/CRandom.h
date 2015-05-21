@@ -4,10 +4,12 @@
 
 #include "_CRandom.h"
 
+using Elastos::IO::ISerializable;
+
 namespace Elastos {
 namespace Core {
 
-CarClass(CRandom)
+CarClass(CRandom) , public ISerializable;
 {
 public:
     CRandom();

@@ -7,6 +7,11 @@ module
     namespace Core {
     namespace Threading {
 
+    /**
+     * @Involve
+     * interface IThreadUncaughtExceptionHandler;
+     */
+    [deprecated]
     interface IThreadGroup {
         /**
          * Returns the number of running {@code Thread}s which are children of this thread group,
@@ -69,8 +74,9 @@ module
          * @param threads the array into which the {@code Thread}s will be copied
          * @return the number of {@code Thread}s that were copied
          */
-        EnumerateThread(
-            [out] ArrayOf<IThread*> threads,
+
+        Enumerate(
+            [in] ArrayOf<IThread*>* threads,
             [out] Int32* number);
 
         /**
@@ -86,9 +92,9 @@ module
          *        recursively copied as well
          * @return the number of {@code Thread}s that were copied
          */
-        EnumerateThreadEx(
+        Enumerate(
+            [in] ArrayOf<IThread*>* threads,
             [in] Boolean recurse,
-            [out] ArrayOf<IThread*> threads,
             [out] Int32* number);
 
         /**
@@ -102,8 +108,8 @@ module
          * @param groups the array into which the {@code ThreadGroup}s will be copied
          * @return the number of {@code ThreadGroup}s that were copied
          */
-        EnumerateThreadGroup(
-            [out] ArrayOf<IThreadGroup*> groups,
+        Enumerate(
+            [in] ArrayOf<IThreadGroup*>* groups,
             [out] Int32* number);
 
         /**
@@ -119,9 +125,9 @@ module
          *        recursively copied as well or not
          * @return the number of {@code ThreadGroup}s that were copied
          */
-        EnumerateThreadGroupEx(
+        Enumerate(
+            [in] ArrayOf<IThreadGroup*>* groups,
             [in] Boolean recurse,
-            [out] ArrayOf<IThreadGroup*> groups,
             [out] Int32* number);
 
         /**

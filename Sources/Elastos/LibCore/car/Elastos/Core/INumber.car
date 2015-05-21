@@ -5,11 +5,10 @@ module
     namespace Core {
 
     /**
-     * The abstract superclass of the classes which represent numeric base types
-     * (that is {@link Byte}, {@link Short}, {@link Integer}, {@link Long},
-     * {@link Float}, and {@link Double}.
+     * @Involve
+     * interface IComparable;
      */
-    interface INumber extends IComparable {
+    interface INumber {
         /**
          * Returns this object's value as a byte. Might involve rounding and/or
          * truncating the value, so it fits into a byte.
@@ -61,12 +60,6 @@ module
          */
         DoubleValue(
             [out] Double* result);
-
-        GetHashCode(
-            [out] Int32* hashCode);
-
-        ToString(
-            [out] String* string);
     }
 
     } // namespace Core
