@@ -21,121 +21,121 @@ module
 
     interface Elastos.Net.IInetAddress;
 
-    namespace Libcore {
-    namespace IO {
+    // namespace Libcore {
+    // namespace IO {
 
-    class CStructAddrinfo {
-        constructor();
-        interface IStructAddrinfo;
-    }
+    // class CStructAddrinfo {
+    //     constructor();
+    //     interface IStructAddrinfo;
+    // }
 
-    singleton class COsConstants {
-        interface IOsConstants;
-    }
+    // singleton class COsConstants {
+    //     interface IOsConstants;
+    // }
 
-    class CPosix {
-        interface IOs;
-    }
+    // class CPosix {
+    //     interface IOs;
+    // }
 
-    singleton class CIoBridge {
-        interface IIoBridge;
-    }
+    // singleton class CIoBridge {
+    //     interface IIoBridge;
+    // }
 
-    singleton class CLibcore {
-        interface ILibcore;
-    }
+    // singleton class CLibcore {
+    //     interface ILibcore;
+    // }
 
-    class CStructLinger {
-        constructor(
-            [in] Int32 onoff,
-            [in] Int32 linger);
+    // class CStructLinger {
+    //     constructor(
+    //         [in] Int32 onoff,
+    //         [in] Int32 linger);
 
-        interface IStructLinger;
-    }
+    //     interface IStructLinger;
+    // }
 
-    class CStructPasswd {
-        constructor(
-            [in] String name,
-            [in] Int32 uid,
-            [in] Int32 gid,
-            [in] String dir,
-            [in] String shell);
+    // class CStructPasswd {
+    //     constructor(
+    //         [in] String name,
+    //         [in] Int32 uid,
+    //         [in] Int32 gid,
+    //         [in] String dir,
+    //         [in] String shell);
 
-        interface IStructPasswd;
-    }
+    //     interface IStructPasswd;
+    // }
 
-    class CStructPollfd {
-        interface IStructPollfd;
-    }
+    // class CStructPollfd {
+    //     interface IStructPollfd;
+    // }
 
-    class CStructStat {
-        constructor(
-            [in] Int64 dev,
-            [in] Int64 ino,
-            [in] Int32 mode,
-            [in] Int64 nlink,
-            [in] Int32 uid,
-            [in] Int32 gid,
-            [in] Int64 rdev,
-            [in] Int64 size,
-            [in] Int64 atime,
-            [in] Int64 mtime,
-            [in] Int64 ctime,
-            [in] Int64 blksize,
-            [in] Int64 blocks);
+    // class CStructStat {
+    //     constructor(
+    //         [in] Int64 dev,
+    //         [in] Int64 ino,
+    //         [in] Int32 mode,
+    //         [in] Int64 nlink,
+    //         [in] Int32 uid,
+    //         [in] Int32 gid,
+    //         [in] Int64 rdev,
+    //         [in] Int64 size,
+    //         [in] Int64 atime,
+    //         [in] Int64 mtime,
+    //         [in] Int64 ctime,
+    //         [in] Int64 blksize,
+    //         [in] Int64 blocks);
 
-        interface IStructStat;
-    }
+    //     interface IStructStat;
+    // }
 
-    class CStructStatFs {
-        constructor(
-            [in] Int64 bsize,
-            [in] Int64 blocks,
-            [in] Int64 bfree,
-            [in] Int64 bavail,
-            [in] Int64 files,
-            [in] Int64 ffree,
-            [in] Int64 namemax,
-            [in] Int64 frsize);
+    // class CStructStatFs {
+    //     constructor(
+    //         [in] Int64 bsize,
+    //         [in] Int64 blocks,
+    //         [in] Int64 bfree,
+    //         [in] Int64 bavail,
+    //         [in] Int64 files,
+    //         [in] Int64 ffree,
+    //         [in] Int64 namemax,
+    //         [in] Int64 frsize);
 
-        interface IStructStatFs;
-    }
+    //     interface IStructStatFs;
+    // }
 
-    class CStructTimeval {
-        constructor(
-            [in] Int64 sec,
-            [in] Int64 usec);
+    // class CStructTimeval {
+    //     constructor(
+    //         [in] Int64 sec,
+    //         [in] Int64 usec);
 
-        interface IStructTimeval;
-    }
+    //     interface IStructTimeval;
+    // }
 
-    class CStructUtsname {
-        constructor(
-            [in] String sysname,
-            [in] String nodename,
-            [in] String release,
-            [in] String ver,
-            [in] String machine);
+    // class CStructUtsname {
+    //     constructor(
+    //         [in] String sysname,
+    //         [in] String nodename,
+    //         [in] String release,
+    //         [in] String ver,
+    //         [in] String machine);
 
-        interface IStructUtsname;
-    }
+    //     interface IStructUtsname;
+    // }
 
-    class CStructGroupReq {
-        constructor(
-            [in] Int32 gr_interface,
-            [in] IInetAddress* gr_group);
+    // class CStructGroupReq {
+    //     constructor(
+    //         [in] Int32 gr_interface,
+    //         [in] IInetAddress* gr_group);
 
-        interface IStructGroupReq;
-    }
+    //     interface IStructGroupReq;
+    // }
 
-    singleton class CSocketTaggerHelper {
-        interface ISocketTaggerHelper;
-    }
+    // singleton class CSocketTaggerHelper {
+    //     interface ISocketTaggerHelper;
+    // }
 
-    singleton class CBase64 {
-        interface IBase64;
-    }
+    // singleton class CBase64 {
+    //     interface IBase64;
+    // }
 
-    } // namespace IO
-    } // namespace Libcore
+    // } // namespace IO
+    // } // namespace Libcore
 }

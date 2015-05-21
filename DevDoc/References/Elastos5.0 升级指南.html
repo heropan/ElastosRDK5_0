@@ -1029,18 +1029,13 @@ body .markdown-body
 <p>之前，CAR接口方法不支持重载，必须给同名的方法加“Ex”、“Ex2”等后缀。这种处理方式除了对编程不友好以外，还有一个比较大的弊端。在运行Java程序时，在兼容层需要根据CAR的方法转调同名的Java方法。对于加了后缀的CAR方法，我们不太方便得到相应的Java方法（人为的去掉后缀在某些情况下可能行不通）。</p>
 <p>现在，CAR编译器已能支持方法重载，因此，我们在声明接口中的方法时不需要再添加任何后缀，完全可以与Java中的方法同名。</p>
 <p>相应的示例可以参考ISynchronize接口的声明。</p>
-<p>此外，对于一些特殊用途不能被重载的函数，如：Release，若　Java 源码中有同名函数，请翻译成 ReleaseResource 或 ReleaseLock。</p>
-<p>可以利用 Subline Text 的正则表达式查询与替换功能来去掉Ex, Ex2后缀。<br />
-在 Subline Text 查询选项中，选中正则表达式和大小写匹配选项：<br />
-查询：<code>([a-zA-Z]\w<em>)Ex[0-9]?\(</code>，有时候还需要排查非大小写模式下的：<code>([a-zA-Z]\w</em>)Ex[0-9]?\s\(</code><br />
-替换：<code>$1(</code></p>
 <h2 id="_2"><a name="user-content-_2" href="#_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>取消接口间的继承</h2>
 <p>当前，我们是按照Java中类的继承关系来定义Elastos中接口间的继承。比如，IActivity接口继承IContextThemeWrapper接口。</p>
 <p>接口继承的好处是编程方便，通过IActivity接口指针就可以调用IContextThemeWrapper接口中的方法，类似Java代码。</p>
 <p>但接口继承也有比较大的弊端，一个弊端是若Java代码中，一个类实现了多个接口，那么Elastos中应该继承哪个接口并没有相应的标准。</p>
 <p>另一个比较大的弊端是会导致代码的冗余。比如，实现IActivity接口的类可以继承实现IContextThemeWrapper的类，但即使前者没有重新定义IContextThemeWrapper接口中的任何方法，仍然需要将该接口中的所有方法都包一下，转调基类的相应方法。</p>
 <p>因此，我们打算取消接口间的继承关系。不过，这会给编程带来一些小麻烦，不能再像以前那样一个接口支持所有方法，而是要Probe出相应的接口再调用。比如，当IActivity接口不再继承IContextThemeWrapper接口后，我们就不能通过IActivity接口调用IContextThemeWrapper里的方法了，而是要从IActivity接口Probe出IContextThemeWrapper接口再调用。</p>
-<p>由于取消了接口间的继承，因而，实现某个接口往往伴随着要实现别的接口。比如，实现IActivity的类应该也实现IContextThemeWrapper接口，而实现IContextThemeWrapper接口也应该实现IContextWrapper接口，而实现IContextWrapper接口也应该实现IContext接口。这些要同时实现的接口，在IActivity接口的声明中都无法体现出来。因此，我们需要在其声明的头部加上一定的注释，注明这些要同时实现的接口。注释的形式如下：</p>
+<p>由于取消了接口间的继承，因而，实现某个接口往往伴随着要实现别的接口。比如，实现IActivity的类应该也实现IContextThemeWrapper接口，而实现IContextThemeWrapper接口也应该实现IContextWrapper接口，而实现IContextWrapper接口也应该实现IContext接口。这些要同时实现的接口，在IActivity接口的声明中都无法体现出来。因此，我们需要在其声明的头部加上一定的注释，注明这些要同时实现的接口。注释的形式如下：<br />
 <pre><code class="cpp">/**
   * @Involve
   * interface IContext;
@@ -1051,11 +1046,15 @@ body .markdown-body
 interface IActivity {
    ...
 }
-</code></pre>
-
+</code></pre></p>
 <h2 id="_3"><a name="user-content-_3" href="#_3" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>让基类继承接口</h2>
 <p>当前，被继承的C++类不直接实现相应的接口，比如，Thread类不实现IThread接口。这样处理，是因为CThread之类本身会通过_CThread继承IThread接口，所以，在CThread类里必须重新定义IThread接口中的所有方法。</p>
 <p>现在，我们修正了CAR编译器生成的镜像代码，简化了CAR类的继承结构，已经可以支持让Thread类继承IThread接口，而CThread直接继承Thread即可。这样做也可以减小代码的冗余，让类的继承结构更加的简单、合理。</p>
 <p>相应的示例可以参考Thread和CThread的实现。</p>
 <h2 id="_4"><a name="user-content-_4" href="#_4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>其它</h2>
-<p>宏<code>INTERFACE_ADDREF/ARRAYOF_ADDREF</code>改名为<code>REFCOUNT_ADD</code>；宏<code>INTERFACE_RELEASE/ARRAYOF_RELEASE</code>改名为<code>REFCOUNT_RELEASE</code>，定义在elrefbase.h中</p></article></body></html>
+<p>宏<code>INTERFACE_ADDREF/ARRAYOF_ADDREF</code>改名为<code>REFCOUNT_ADD</code>；宏<code>INTERFACE_RELEASE/ARRAYOF_RELEASE</code>改名为<code>REFCOUNT_RELEASE</code>，定义在elrefbase.h中</p>
+<ul>
+<li>所有的非单例 Car 类中都需要使用 <code>CAR_OBJECT_DECL/CAR_OBJECT_IMPL</code></li>
+<li>所有的单例 Car 类中都需要使用 <code>CAR_SINGLETON_DECL/CAR_SINGLETON_IMPL</code></li>
+<li>请参考示例了解如何使用这些宏：<code>LibCore/inc/Org/Xml</code> 以及 <code>LibCore/src/Org/Xml</code>。</li>
+</ul></article></body></html>

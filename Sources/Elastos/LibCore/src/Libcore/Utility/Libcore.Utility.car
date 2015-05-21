@@ -4,22 +4,22 @@ module
     merge("../../../car/Libcore/Utility/IBasicLruCache.car");
     merge("../../../car/Libcore/Utility/ICollectionUtils.car");
 
-    namespace Libcore {
-    namespace Utility {
+    // namespace Libcore {
+    // namespace Utility {
 
-    class CBasicLruCache {
-        constructor();
+    // class CBasicLruCache {
+    //     constructor();
 
-        constructor(
-            [in] Int32 maxSize);
+    //     constructor(
+    //         [in] Int32 maxSize);
 
-        interface IBasicLruCache;
-    }
+    //     interface IBasicLruCache;
+    // }
 
-    singleton class CCollectionUtils {
-        interface ICollectionUtils;
-    }
+    // singleton class CCollectionUtils {
+    //     interface ICollectionUtils;
+    // }
 
-    } // namespace Utility
-    } // namespace Libcore
+    // } // namespace Utility
+    // } // namespace Libcore
 }

@@ -25,193 +25,193 @@ module
     merge("../../../car/Elastos/Text/Spi/IDecimalFormatSymbolsProvider.car");
     merge("../../../car/Elastos/Text/Spi/INumberFormatProvider.car");
 
-    using interface Libcore.ICU.ILocale;
-    using interface Libcore.ICU.INativeBreakIterator;
-    using interface Libcore.ICU.ICollationElementIteratorICU;
-    using interface Libcore.ICU.IRuleBasedCollatorICU;
-    using interface Elastos.Core.IComparator;
-    interface Elastos.Utility.IObjectMap;
+    // using interface Libcore.ICU.ILocale;
+    // using interface Libcore.ICU.INativeBreakIterator;
+    // using interface Libcore.ICU.ICollationElementIteratorICU;
+    // using interface Libcore.ICU.IRuleBasedCollatorICU;
+    // using interface Elastos.Core.IComparator;
+    // interface Elastos.Utility.IObjectMap;
 
-    namespace Elastos {
-    namespace Text {
+    // namespace Elastos {
+    // namespace Text {
 
-        class CAnnotation {
-            constructor(
-                [in] IInterface* attribute);
+    //     class CAnnotation {
+    //         constructor(
+    //             [in] IInterface* attribute);
 
-            interface IAnnotation;
-        }
+    //         interface IAnnotation;
+    //     }
 
-        singleton class CDateFormatHelper {
-            interface IDateFormatHelper;
-        }
+    //     singleton class CDateFormatHelper {
+    //         interface IDateFormatHelper;
+    //     }
 
-        singleton class CDateFormatFieldHelper {
-            interface IDateFormatFieldHelper;
-        }
+    //     singleton class CDateFormatFieldHelper {
+    //         interface IDateFormatFieldHelper;
+    //     }
 
-        class CDateFormatSymbols {
-            constructor();
+    //     class CDateFormatSymbols {
+    //         constructor();
 
-            constructor(
-                [in] ILocale* locale);
+    //         constructor(
+    //             [in] ILocale* locale);
 
-            interface IDateFormatSymbols;
-        }
+    //         interface IDateFormatSymbols;
+    //     }
 
-        singleton class CDateFormatSymbolsHelper {
-            interface IDateFormatSymbolsHelper;
-        }
+    //     singleton class CDateFormatSymbolsHelper {
+    //         interface IDateFormatSymbolsHelper;
+    //     }
 
-        singleton class CBreakIteratorHelper {
-            interface IBreakIteratorHelper;
-        }
+    //     singleton class CBreakIteratorHelper {
+    //         interface IBreakIteratorHelper;
+    //     }
 
-        class CRuleBasedBreakIterator {
-            constructor(
-                [in] INativeBreakIterator * iterator);
+    //     class CRuleBasedBreakIterator {
+    //         constructor(
+    //             [in] INativeBreakIterator * iterator);
 
-            interface IRuleBasedBreakIterator;
-        }
+    //         interface IRuleBasedBreakIterator;
+    //     }
 
-        class CNumberFormatField {
-            constructor(
-                [in] String fieldName);
+    //     class CNumberFormatField {
+    //         constructor(
+    //             [in] String fieldName);
 
-            interface INumberFormatField;
-        }
+    //         interface INumberFormatField;
+    //     }
 
-        singleton class CNumberFormatHelper {
-            interface INumberFormatHelper;
-        }
+    //     singleton class CNumberFormatHelper {
+    //         interface INumberFormatHelper;
+    //     }
 
-        class CMessageFormat {
+    //     class CMessageFormat {
 
-            constructor(
-                [in] String tem,
-                [in] ILocale* locale);
+    //         constructor(
+    //             [in] String tem,
+    //             [in] ILocale* locale);
 
-            constructor(
-                [in] String tem);
+    //         constructor(
+    //             [in] String tem);
 
-            interface IMessageFormat;
-        }
+    //         interface IMessageFormat;
+    //     }
 
-        class CMessageFormatField {
-            constructor(
-                [in] String name);
+    //     class CMessageFormatField {
+    //         constructor(
+    //             [in] String name);
 
-            interface IMessageFormatField;
-        }
+    //         interface IMessageFormatField;
+    //     }
 
-        [deprecated]
-        class CChoiceFormat {
-            constructor(
-                [in] ArrayOf<Double> limits,
-                [in] ArrayOf<String> formats);
+    //     [deprecated]
+    //     class CChoiceFormat {
+    //         constructor(
+    //             [in] ArrayOf<Double> limits,
+    //             [in] ArrayOf<String> formats);
 
-            constructor(
-                [in] String tem);
+    //         constructor(
+    //             [in] String tem);
 
-            interface IChoiceFormat;
-        }
+    //         interface IChoiceFormat;
+    //     }
 
-        singleton class CChoiceFormatHelper {
-            interface IChoiceFormatHelper;
-        }
+    //     singleton class CChoiceFormatHelper {
+    //         interface IChoiceFormatHelper;
+    //     }
 
-        class CDecimalFormat {
-            constructor();
+    //     class CDecimalFormat {
+    //         constructor();
 
-            constructor(
-                [in] String pattern);
+    //         constructor(
+    //             [in] String pattern);
 
-            constructor(
-                [in] String pattern,
-                [in] IDecimalFormatSymbols* value);
+    //         constructor(
+    //             [in] String pattern,
+    //             [in] IDecimalFormatSymbols* value);
 
-            constructor(
-                [in] String pattern,
-                [in] ILocale* locale);
+    //         constructor(
+    //             [in] String pattern,
+    //             [in] ILocale* locale);
 
-            interface IDecimalFormat;
-        }
+    //         interface IDecimalFormat;
+    //     }
 
-        class CSimpleDateFormat {
-            constructor();
+    //     class CSimpleDateFormat {
+    //         constructor();
 
-            constructor(
-                [in] String pattern);
+    //         constructor(
+    //             [in] String pattern);
 
-            constructor(
-                [in] String temp,
-                [in] IDateFormatSymbols* value);
+    //         constructor(
+    //             [in] String temp,
+    //             [in] IDateFormatSymbols* value);
 
-            constructor(
-                [in] String temp,
-                [in] ILocale* locale);
+    //         constructor(
+    //             [in] String temp,
+    //             [in] ILocale* locale);
 
-            interface ISimpleDateFormat;
-        }
+    //         interface ISimpleDateFormat;
+    //     }
 
-        singleton class CCollatorHelper {
-            interface ICollatorHelper;
-        }
+    //     singleton class CCollatorHelper {
+    //         interface ICollatorHelper;
+    //     }
 
-        class CCollationElementIterator {
-            constructor(
-                [in] ICollationElementIteratorICU* iterator);
+    //     class CCollationElementIterator {
+    //         constructor(
+    //             [in] ICollationElementIteratorICU* iterator);
 
-            interface ICollationElementIterator;
-        }
+    //         interface ICollationElementIterator;
+    //     }
 
-        singleton class CCollationElementIteratorHelper {
-            interface ICollationElementIteratorHelper;
-        }
+    //     singleton class CCollationElementIteratorHelper {
+    //         interface ICollationElementIteratorHelper;
+    //     }
 
-        [deprecated]
-        class CRuleBasedCollator {
-            constructor(
-                [in] IRuleBasedCollatorICU* wrapper);
+    //     [deprecated]
+    //     class CRuleBasedCollator {
+    //         constructor(
+    //             [in] IRuleBasedCollatorICU* wrapper);
 
-            constructor(
-                [in] String rules);
+    //         constructor(
+    //             [in] String rules);
 
-            interface IRuleBasedCollator;
-            // interface IComparator;
-        }
+    //         interface IRuleBasedCollator;
+    //         // interface IComparator;
+    //     }
 
-        singleton class CNormalizerHelper {
-            interface INormalizerHelper;
-        }
+    //     singleton class CNormalizerHelper {
+    //         interface INormalizerHelper;
+    //     }
 
-        [deprecated]
-        class CBidi {
-            constructor(
-                [in] IAttributedCharacterIterator* paragraph);
+    //     [deprecated]
+    //     class CBidi {
+    //         constructor(
+    //             [in] IAttributedCharacterIterator* paragraph);
 
-            constructor(
-                [in] ArrayOf<Char32>* text,
-                [in] Int32 textStart,
-                [in] ArrayOf<Byte>* embeddings,
-                [in] Int32 embStart,
-                [in] Int32 paragraphLength,
-                [in] Int32 flags);
+    //         constructor(
+    //             [in] ArrayOf<Char32>* text,
+    //             [in] Int32 textStart,
+    //             [in] ArrayOf<Byte>* embeddings,
+    //             [in] Int32 embStart,
+    //             [in] Int32 paragraphLength,
+    //             [in] Int32 flags);
 
-            constructor(
-                [in] String paragraph,
-                [in] Int32 flags);
+    //         constructor(
+    //             [in] String paragraph,
+    //             [in] Int32 flags);
 
-            constructor(
-                [in] Int64 pBidi);
+    //         constructor(
+    //             [in] Int64 pBidi);
 
-            interface IBidi;
-        }
+    //         interface IBidi;
+    //     }
 
-        singleton class CBidiHelper {
-            interface IBidiHelper;
-        }
+    //     singleton class CBidiHelper {
+    //         interface IBidiHelper;
+    //     }
 
-    } // namespace Text
-    } // namespace Elastos
+    // } // namespace Text
+    // } // namespace Elastos
 }

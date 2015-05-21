@@ -645,7 +645,10 @@
     ECode ClassName::GetClassID(                                                        \
         /* [out] */ ClassID* clsid)                                                     \
     {                                                                                   \
-        return _##ClassName::GetClassID(clsid);                                         \
+        VALIDATE_NOT_NULL(clsid);                                                       \
+                                                                                        \
+        *clsid = ECLSID_##ClassName;                                                    \
+        return NOERROR;                                                                 \
     }
 #endif
 
