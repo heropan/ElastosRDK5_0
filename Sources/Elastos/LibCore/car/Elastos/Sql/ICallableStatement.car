@@ -5,7 +5,7 @@ module
     using interface Elastos.Math.IBigDecimal;
     using interface Elastos.Net.IURL;
     using interface Elastos.Utility.ICalendar;
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.IMap;
 
     namespace Elastos {
     namespace Sql {
@@ -416,7 +416,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetInt(
+        GetInt32(
             [in] Int32 parameterIndex,
             [out] Int32 * value);
 
@@ -431,7 +431,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetInt(
+        GetInt32(
             [in] String parameterName,
             [out] Int32 * value);
 
@@ -447,7 +447,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetLong(
+        GetInt64(
             [in] Int32 parameterIndex,
             [out] Int64 * value);
 
@@ -462,7 +462,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetLong(
+        GetInt64(
             [in] String parameterName,
             [out] Int64 * value);
 
@@ -501,7 +501,7 @@ module
          */
         GetObject(
             [in] Int32 parameterIndex,
-            [in] IObjectStringMap * map,
+            [in] IMap * map,
             [out] IInterface ** inter);
 
         /**
@@ -539,7 +539,7 @@ module
          */
         GetObject(
             [in] String parameterName,
-            [in] IObjectStringMap * map,
+            [in] IMap * map,
             [out] IInterface ** inter);
 
         /**
@@ -587,7 +587,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        GetShort(
+        GetInt16(
             [in] Int32 parameterIndex,
             [out] Int16 * value);
 
@@ -602,7 +602,7 @@ module
          * @throws SQLException
          *             if there is a problem accessing the database.
          */
-        GetShort(
+        GetInt16(
             [in] String parameterName,
             [out] Int16 * value);
 
@@ -1196,7 +1196,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetInt(
+        SetInt32(
             [in] String parameterName,
             [in] Int32 theInt);
 
@@ -1210,7 +1210,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetLong(
+        SetInt64(
             [in] String parameterName,
             [in] Int64 theLong);
 
@@ -1368,7 +1368,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          */
-        SetShort(
+        SetInt16(
             [in] String parameterName,
             [in] Int16 theShort);
 

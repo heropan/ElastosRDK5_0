@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.IMap;
 
     namespace Elastos {
     namespace Sql {
@@ -40,7 +40,7 @@ module
          *             if there is a database error.
          */
         GetObject(
-            [in] IObjectStringMap * map,
+            [in] IMap * map,
             [out] IInterface ** inter);
 
         /**

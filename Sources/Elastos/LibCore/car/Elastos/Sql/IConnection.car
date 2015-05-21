@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.IMap;
     using interface Elastos.Utility.IProperties;
 
     interface Elastos.Sql.IStatement;
@@ -252,7 +252,7 @@ module
          *             if there is a problem accessing the database.
          */
         GetTypeMap(
-            [out] IObjectStringMap ** typemap);
+            [out] IMap ** typemap);
 
         /**
          * Gets the first instance of any {@code SQLWarning} objects that may have
@@ -780,7 +780,7 @@ module
          *             map} is not an instance of {@link Map}.
          */
          SetTypeMap(
-            [in] IObjectStringMap * typemap);
+            [in] IMap * typemap);
 
         /**
          * Returns a new empty Clob.

@@ -51,15 +51,15 @@ module
             [in] String parameterName,
             [in] Byte val);
 
-        SetShort(
+        SetInt16(
             [in] String parameterName,
             [in] Int16 val);
 
-        SetInt(
+        SetInt32(
             [in] String parameterName,
             [in] Int32 val);
 
-        SetLong(
+        SetInt64(
             [in] String parameterName,
             [in] Int64 val);
 
@@ -157,15 +157,15 @@ module
             [in] String parameterName,
             [out] Byte * outbyte);
 
-        GetShort(
+        GetInt16(
             [in] String parameterName,
             [out] Int16 * value);
 
-        GetInt(
+        GetInt32(
             [in] String parameterName,
             [out] Int32 * value);
 
-        GetLong(
+        GetInt64(
             [in] String parameterName,
             [out] Int64 * value);
 
@@ -207,12 +207,12 @@ module
 
         GetObject(
             [in] String parameterName,
-            [in] Elastos.Utility.IObjectMap * map,
+            [in] Elastos.Utility.IMap * map,
             [out] IObject ** theobject);
 
         GetObject(
             [in] Int32 parameterIndex,
-            [in] Elastos.Utility.IObjectMap * map,
+            [in] Elastos.Utility.IMap * map,
             [out] IObject ** theobject);
 
         GetRef(

@@ -392,7 +392,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        SetInt(
+        SetInt32(
             [in] Int32 parameterIndex,
             [in] Int32 theInt);
 
@@ -408,7 +408,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        SetLong(
+        SetInt64(
             [in] Int32 parameterIndex,
             [in] Int64 theLong);
 
@@ -576,7 +576,7 @@ module
          * @throws SQLException
          *             if a database error happens.
          */
-        SetShort(
+        SetInt16(
             [in] Int32 parameterIndex,
             [in] Int16 theShort);
 

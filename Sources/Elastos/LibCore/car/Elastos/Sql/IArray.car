@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.IMap;
     interface Elastos.Sql.IResultSet;
 
     namespace Elastos {
@@ -57,7 +57,7 @@ module
         GetArray(
             [in] Int64 index,
             [in] Int32 count,
-            [in] IObjectStringMap* sqlmap,
+            [in] IMap* sqlmap,
             [out] IInterface** arrayiter);
 
         /**
@@ -71,7 +71,7 @@ module
          *             if there is a database error.
          */
         GetArray(
-            [in] IObjectStringMap* sqlmap,
+            [in] IMap* sqlmap,
             [out] IInterface** arrayiter);
 
         /**
@@ -147,7 +147,7 @@ module
         GetResultSet(
             [in] Int64 index,
             [in] Int32 count,
-            [in] IObjectStringMap* sqlmap,
+            [in] IMap* sqlmap,
             [out] IResultSet** resultset);
 
         /**
@@ -162,7 +162,7 @@ module
          *             if there is a database error.
          */
         GetResultSet(
-            [in] IObjectStringMap* sqlmap,
+            [in] IMap* sqlmap,
             [out] IResultSet** resultset);
 
         /**
