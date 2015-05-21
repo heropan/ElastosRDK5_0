@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CKXmlSerializer.h"
 #include <elastos/StringBuilder.h>
 #include <elastos/StringUtils.h>
@@ -17,7 +16,14 @@ namespace IO {
 
 const Int32 CKXmlSerializer::WRITE_BUFFER_SIZE;
 
+CAR_INTERFACE_IMPL(CKXmlSerializer, Object, IXmlSerializer)
+CAR_OBJECT_IMPL(CKXmlSerializer)
+
 CKXmlSerializer::CKXmlSerializer()
+    : mAuto(0)
+    , mDepth(0)
+    , mPending(FALSE)
+    , mUnicode(FALSE)
 {
     mElementStack = ArrayOf<String>::Alloc(12);
     mNspCounts = ArrayOf<Int32>::Alloc(4);

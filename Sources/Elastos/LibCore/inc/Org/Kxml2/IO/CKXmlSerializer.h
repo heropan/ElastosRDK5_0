@@ -3,6 +3,7 @@
 #define __CKXMLSERIALIZER_H__
 
 #include "_CKXmlSerializer.h"
+#include "Object.h"
 #ifdef ELASTOS_CORE
 #include "Elastos.Core_server.h"
 #include "CBufferedWriter.h"
@@ -11,6 +12,7 @@
 #include "Elastos.Core.h"
 #endif
 
+using Elastos::Core::Object;
 using Elastos::Core::IBoolean;
 using Elastos::IO::IWriter;
 using Elastos::IO::IOutputStream;
@@ -21,8 +23,13 @@ namespace Kxml2 {
 namespace IO {
 
 CarClass(CKXmlSerializer)
+    , public Object
+    , public IXmlSerializer
 {
 public:
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
+
     CKXmlSerializer();
 
     ~CKXmlSerializer();
@@ -147,18 +154,19 @@ private:
     AutoPtr<IBufferedWriter> mWriter;
     // END android-changed
 
-    Boolean mPending;
-    Int32 mAuto;
-    Int32 mDepth;
-
     AutoPtr<ArrayOf<String> > mElementStack;
     //nsp/prefix/name
     AutoPtr<ArrayOf<Int32> > mNspCounts;
     AutoPtr<ArrayOf<String> > mNspStack;
     //prefix/nsp; both empty are ""
     AutoPtr<ArrayOf<Boolean> > mIndent;
-    Boolean mUnicode;
+
     String mEncoding;
+
+    Int32 mAuto;
+    Int32 mDepth;
+    Boolean mPending;
+    Boolean mUnicode;
 };
 
 } //namespace IO

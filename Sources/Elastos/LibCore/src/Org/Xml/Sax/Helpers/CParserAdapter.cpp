@@ -546,13 +546,11 @@ void CParserAdapter::CheckNotParsing(
 
 CAR_INTERFACE_IMPL(CParserAdapter::AttributeListAdapter, Object, IAttributes);
 
-CParserAdapter::AttributeListAdapter::AttributeListAdapter()
-{}
-
 CParserAdapter::AttributeListAdapter::AttributeListAdapter(
     /* [in] */ CParserAdapter* host)
 {
-    mHost = host;
+    IWeakReferenceSource* wrs = IWeakReferenceSource::Probe(host);
+    wrs->GetWeakReference((IWeakReference**)&mWeakHost);
 }
 
 ECode CParserAdapter::AttributeListAdapter::SetAttributeList(
@@ -633,18 +631,24 @@ ECode CParserAdapter::AttributeListAdapter::GetIndex(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = -1;
 
-    Int32 max = 0;
-    mHost->mAtts->GetLength(&max);
-    for (Int32 i = 0; i < max; i++) {
-        String name;
-        mQAtts->GetName(i, &name);
-        if (name.Equals(qName)) {
-            *value = i;
-            return NOERROR;
+    AutoPtr<IXMLReader> reader;
+    mWeakHost->Resovle(EIID_IXMLReader, (IInterface**)&reader);
+    if (reader) {
+        CParserAdapter* host = (CParserAdapter*)reader.Get();
+        Int32 max = 0;
+        host->mAtts->GetLength(&max);
+        for (Int32 i = 0; i < max; i++) {
+            String name;
+            mQAtts->GetName(i, &name);
+            if (name.Equals(qName)) {
+                *value = i;
+                return NOERROR;
+            }
         }
     }
-    *value = -1;
+
     return NOERROR;
 }
 

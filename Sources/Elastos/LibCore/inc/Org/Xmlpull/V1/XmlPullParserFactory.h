@@ -2,7 +2,6 @@
 #ifndef __XMLPULLPARSERFACTORY_H__
 #define __XMLPULLPARSERFACTORY_H__
 
-#include "coredef.h"
 #include "elastos/HashMap.h"
 #include "Org.Xmlpull.V1_server.h"
 #ifdef ELASTOS_CORE
@@ -10,6 +9,7 @@
 #else
 #include "Elastos.Core.h"
 #endif
+#include "Object.h"
 
 using Elastos::Utility::HashMap;
 using Org::Xmlpull::V1::IXmlPullParserFactory;
@@ -19,8 +19,12 @@ namespace Xmlpull {
 namespace V1 {
 
 class XmlPullParserFactory
+    : public Object
+    , public IXmlPullParserFactory
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI SetFeature(
         /* [in] */ const String& name,
         /* [in] */ Boolean state);

@@ -19,8 +19,6 @@ module
     namespace V1 {
 
         class CXmlPullParserFactory {
-            constructor();
-
             interface IXmlPullParserFactory;
         }
 
@@ -33,7 +31,7 @@ module
             class CDriver {
                 constructor();
 
-                constructorEx2 (
+                constructor(
                     [in] IXmlPullParser* pp);
 
                 interface ILocator;

@@ -2,7 +2,7 @@
 #ifndef  __CKXMLPARSER_H__
 #define  __CKXMLPARSER_H__
 
-#include "coredef.h"
+#include "Object.h"
 #include "_CKXmlParser.h"
 #include <elastos/HashMap.h>
 #include <elastos/StringBuilder.h>
@@ -30,8 +30,14 @@ namespace IO {
  * An XML pull parser with limited support for parsing internal DTDs.
  */
 CarClass(CKXmlParser)
+    , public Object
+    , public IKXmlParser
+    , public ICloseable
 {
 public:
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
+
     /**
      * Where a value is found impacts how that value is interpreted. For
      * example, in attributes, "\n" must be replaced with a space character. In
@@ -76,7 +82,7 @@ private:
      * <p>The parser will then return the characters {@code ghi jkl mno} in that
      * sequence by reading each buffer in sequence.
      */
-    class ContentSource : public ElRefBase
+    class ContentSource : public Object
     {
         friend class CKXmlParser;
 
@@ -86,10 +92,6 @@ private:
             /* [in] */ ArrayOf<Char32>* buffer,
             /* [in] */ Int32 position,
             /* [in] */ Int32 limit);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
 
     private:
         const AutoPtr<ContentSource> mNext;

@@ -2,6 +2,14 @@
 #include "CDriver.h"
 #include "elastos/StringBuilder.h"
 #include "XmlPullParserFactory.h"
+#ifdef ELASTOS_CORE
+#include "Elastos.Core_server.h"
+#include "CURL.h"
+#include "CInputSource.h"
+#include "CDefaultHandler.h"
+#else
+#include "Elastos.Core.h"
+#endif
 
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IInputStream;
@@ -20,19 +28,16 @@ namespace Xmlpull {
 namespace V1 {
 namespace Sax2 {
 
-const String CDriver::DECLARATION_HANDLER_PROPERTY = String("http://xml.org/sax/properties/declaration-handler");
+const String CDriver::DECLARATION_HANDLER_PROPERTY"http://xml.org/sax/properties/declaration-handler");
+const String CDriver::LEXICAL_HANDLER_PROPERTY"http://xml.org/sax/properties/lexical-handler");
+const String CDriver::NAMESPACES_FEATURE"http://xml.org/sax/features/namespaces");
+const String CDriver::NAMESPACE_PREFIXES_FEATURE"http://xml.org/sax/features/namespace-prefixes");
+const String CDriver::VALIDATION_FEATURE"http://xml.org/sax/features/validation");
+const String CDriver::APACHE_SCHEMA_VALIDATION_FEATURE"http://apache.org/xml/features/validation/schema");
+const String CDriver::APACHE_DYNAMIC_VALIDATION_FEATURE"http://apache.org/xml/features/validation/dynamic");
 
-const String CDriver::LEXICAL_HANDLER_PROPERTY = String("http://xml.org/sax/properties/lexical-handler");
-
-const String CDriver::NAMESPACES_FEATURE = String("http://xml.org/sax/features/namespaces");
-
-const String CDriver::NAMESPACE_PREFIXES_FEATURE = String("http://xml.org/sax/features/namespace-prefixes");
-
-const String CDriver::VALIDATION_FEATURE = String("http://xml.org/sax/features/validation");
-
-const String CDriver::APACHE_SCHEMA_VALIDATION_FEATURE = String("http://apache.org/xml/features/validation/schema");
-
-const String CDriver::APACHE_DYNAMIC_VALIDATION_FEATURE = String("http://apache.org/xml/features/validation/dynamic");
+CAR_INTERFACE_DECL_3(CDriver, Object, ILocator, IXMLReader, IAttributes)
+CAR_OBJECT_DECL(CDriver)
 
 ECode CDriver::constructor()
 {

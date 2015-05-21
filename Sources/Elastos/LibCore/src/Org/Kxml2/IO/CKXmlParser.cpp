@@ -113,16 +113,8 @@ CKXmlParser::ContentSource::ContentSource(
     , mLimit(limit)
 {}
 
-UInt32 CKXmlParser::ContentSource::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CKXmlParser::ContentSource::Release()
-{
-    return ElRefBase::Release();
-}
-
+CAR_INTERFACE_IMPL_2(CKXmlParser, Object, IKXmlParser, ICloseable)
+CAR_OBJECT_IMPL(CKXmlParser)
 
 CKXmlParser::CKXmlParser()
     : mProcessDocDecl(FALSE)

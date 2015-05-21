@@ -5,8 +5,10 @@ namespace Org {
 namespace Xmlpull {
 namespace V1 {
 
-const String XmlPullParserFactory::PROPERTY_NAME = String("org.xmlpull.v1.XmlPullParserFactory");
-const String XmlPullParserFactory::RESOURCE_NAME = String("/META-INF/services/") + PROPERTY_NAME;
+const String XmlPullParserFactory::PROPERTY_NAME("org.xmlpull.v1.XmlPullParserFactory");
+const String XmlPullParserFactory::RESOURCE_NAME("/META-INF/services/org.xmlpull.v1.XmlPullParserFactory");
+
+CAR_INTERFACE_IMPL(XmlPullParserFactory, Object, IXmlPullParserFactory)
 
 ECode XmlPullParserFactory::SetFeature(
     /* [in] */ const String& name,

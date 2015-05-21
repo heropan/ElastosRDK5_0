@@ -2,18 +2,11 @@
 #ifndef __ORG_SAX2_CDRIVER_H__
 #define __ORG_SAX2_CDRIVER_H__
 
-#include "coredef.h"
-#include "_CDriver.h"
+#include "Object.h"
+#include "__Org_Xmlpull_V1_Sax2_CDriver.h"
 #include "Org.Xml.Sax.h"
-#ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
-#include "CURL.h"
-#include "CInputSource.h"
-#include "CDefaultHandler.h"
-#else
-#include "Elastos.Core.h"
-#endif
 
+using Elastos::Core::Object;
 using Org::Xml::Sax::IEntityResolver;
 using Org::Xml::Sax::IDTDHandler;
 using Org::Xml::Sax::IContentHandler;
@@ -26,8 +19,15 @@ namespace V1 {
 namespace Sax2 {
 
 CarClass(CDriver)
+    , public Object
+    , public ILocator
+    , public IXMLReader
+    , public IAttributes
 {
 public:
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(

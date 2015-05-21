@@ -284,8 +284,6 @@ public:
     public:
         CAR_INTERFACE_DECL();
 
-        AttributeListAdapter();
-
         /**
          * Construct a new adapter.
          */
@@ -434,7 +432,7 @@ public:
 
     private:
         AutoPtr<IAttributeList> mQAtts;
-        AutoPtr<CParserAdapter> mHost; // TODO luo.zhaohui
+        AutoPtr<IWeakReference> mWeakHost;
     };
 };
 
