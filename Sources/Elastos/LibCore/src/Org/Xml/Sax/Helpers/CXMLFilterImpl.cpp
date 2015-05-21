@@ -1,14 +1,16 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "SaxError.h"
 #include "CXMLFilterImpl.h"
 #include "CInputSource.h"
-
 
 namespace Org {
 namespace Xml {
 namespace Sax {
 namespace Helpers {
+
+CAR_INTERFACE_IMPL_6(CXMLFilterImpl, Object, IXMLReader, IXMLFilter, IEntityResolver, IDTDHandler, IContentHandler, IErrorHandler)
+CAR_OBJECT_IMPL(CXMLFilterImpl)
 
 ECode CXMLFilterImpl::GetFeature(
     /* [in] */ const String& name,
@@ -76,7 +78,7 @@ ECode CXMLFilterImpl::GetEntityResolver(
     VALIDATE_NOT_NULL(resolver);
 
     *resolver = mEntityResolver;
-    INTERFACE_ADDREF(*resolver);
+    REFCOUNT_ADD(*resolver);
     return NOERROR;
 }
 
@@ -94,7 +96,7 @@ ECode CXMLFilterImpl::GetDTDHandler(
     VALIDATE_NOT_NULL(handler);
 
     *handler = mDtdHandler;
-    INTERFACE_ADDREF(*handler);
+    REFCOUNT_ADD(*handler);
     return NOERROR;
 }
 
@@ -112,7 +114,7 @@ ECode CXMLFilterImpl::GetContentHandler(
     VALIDATE_NOT_NULL(handler);
 
     *handler = mContentHandler;
-    INTERFACE_ADDREF(*handler);
+    REFCOUNT_ADD(*handler);
     return NOERROR;
 }
 
@@ -130,7 +132,7 @@ ECode CXMLFilterImpl::GetErrorHandler(
     VALIDATE_NOT_NULL(handler);
 
     *handler = mErrorHandler;
-    INTERFACE_ADDREF(*handler);
+    REFCOUNT_ADD(*handler);
     return NOERROR;
 }
 
@@ -166,7 +168,7 @@ ECode CXMLFilterImpl::GetParent(
     VALIDATE_NOT_NULL(parent);
 
     *parent = mParent;
-    INTERFACE_ADDREF(*parent);
+    REFCOUNT_ADD(*parent);
     return NOERROR;
 }
 

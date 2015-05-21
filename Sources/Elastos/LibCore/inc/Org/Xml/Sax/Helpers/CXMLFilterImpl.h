@@ -2,7 +2,10 @@
 #ifndef __CXMLFILTERIMPL_H__
 #define __CXMLFILTERIMPL_H__
 
-#include "_CXMLFilterImpl.h"
+#include "__Org_Xml_Sax_Helpers_CXMLFilterImpl.h"
+#include <elastos/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Org {
 namespace Xml {
@@ -10,8 +13,43 @@ namespace Sax {
 namespace Helpers {
 
 CarClass(CXMLFilterImpl)
+    , public Object
+    , public IXMLReader
+    , public IXMLFilter
+    , public IEntityResolver
+    , public IDTDHandler
+    , public IContentHandler
+    , public IErrorHandler
 {
 public:
+    CAR_INTERFACE_DECL();
+    CAR_OBJECT_DECL()
+
+    /**
+     * Construct an empty XML filter, with no parent.
+     *
+     * <p>This filter will have no parent: you must assign a parent
+     * before you start a parse or do any configuration with
+     * setFeature or setProperty, unless you use this as a pure event
+     * consumer rather than as an {@link XMLReader}.</p>
+     *
+     * @see org.xml.sax.XMLReader#setFeature
+     * @see org.xml.sax.XMLReader#setProperty
+     * @see #setParent
+     */
+    CARAPI constructor();
+
+    /**
+     * Construct an XML filter with the specified parent.
+     *
+     * @param parent the XML reader from which this filter receives its events.
+     *
+     * @see #setParent
+     * @see #getParent
+     */
+    CARAPI constructor(
+        /* [in] */ IXMLReader* parent);
+
     /**
      * Look up the value of a feature.
      *
@@ -398,31 +436,6 @@ public:
      */
     CARAPI FatalError(
         /* [in] */ ECode exception);
-
-    /**
-     * Construct an empty XML filter, with no parent.
-     *
-     * <p>This filter will have no parent: you must assign a parent
-     * before you start a parse or do any configuration with
-     * setFeature or setProperty, unless you use this as a pure event
-     * consumer rather than as an {@link XMLReader}.</p>
-     *
-     * @see org.xml.sax.XMLReader#setFeature
-     * @see org.xml.sax.XMLReader#setProperty
-     * @see #setParent
-     */
-    CARAPI constructor();
-
-    /**
-     * Construct an XML filter with the specified parent.
-     *
-     * @param parent the XML reader from which this filter receives its events.
-     *
-     * @see #setParent
-     * @see #getParent
-     */
-    CARAPI constructor(
-        /* [in] */ IXMLReader* parent);
 
 private:
     /**

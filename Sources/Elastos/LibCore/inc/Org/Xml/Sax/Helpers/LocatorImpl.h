@@ -2,8 +2,10 @@
 #define __LOCATORIMPL_H__
 
 #include <elastos.h>
-#include "cmdef.h"
-#include "_CLocatorImpl.h"
+#include "coredef.h"
+#include <elastos/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Org {
 namespace Xml {
@@ -52,8 +54,35 @@ namespace Helpers {
  * @see org.xml.sax.Locator Locator
  */
 class LocatorImpl
+    : public Object
+    , public ILocator
+    , public ILocatorImpl
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    LocatorImpl();
+
+    /**
+     * Zero-argument constructor.
+     *
+     * <p>This will not normally be useful, since the main purpose
+     * of this class is to make a snapshot of an existing Locator.</p>
+     */
+    CARAPI constructor();
+
+    /**
+     * Copy constructor.
+     *
+     * <p>Create a persistent copy of the current state of a locator.
+     * When the original locator changes, this copy will still keep
+     * the original values (and it can be used outside the scope of
+     * DocumentHandler methods).</p>
+     *
+     * @param locator The locator to copy.
+     */
+    CARAPI constructor(
+        /* [in] */ ILocator* locator);
 
     /**
      * Set the public identifier for this locator.
@@ -134,27 +163,6 @@ public:
      */
     CARAPI GetColumnNumber(
         /* [out] */ Int32* columnNumber);
-
-    /**
-     * Zero-argument constructor.
-     *
-     * <p>This will not normally be useful, since the main purpose
-     * of this class is to make a snapshot of an existing Locator.</p>
-     */
-    CARAPI constructor();
-
-    /**
-     * Copy constructor.
-     *
-     * <p>Create a persistent copy of the current state of a locator.
-     * When the original locator changes, this copy will still keep
-     * the original values (and it can be used outside the scope of
-     * DocumentHandler methods).</p>
-     *
-     * @param locator The locator to copy.
-     */
-    CARAPI constructor(
-        /* [in] */ ILocator* locator);
 
 private:
     String mPublicId;

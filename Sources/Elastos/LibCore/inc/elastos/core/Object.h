@@ -44,15 +44,7 @@ public:
 public:
     CAR_INTERFACE_DECL();
 
-    CARAPI Aggregate(
-        /* [in] */ AggregateType type,
-        /* [in] */ IInterface* object);
-
-    CARAPI GetDomain(
-        /* [out] */ IInterface** object);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID* clsid);
+    CAR_OBJECT_DECL();
 
     CARAPI GetHashCode(
         /* [out] */ Int32* hashCode);

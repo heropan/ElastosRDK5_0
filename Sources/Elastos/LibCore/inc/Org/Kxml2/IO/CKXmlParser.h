@@ -2,7 +2,7 @@
 #ifndef  __CKXMLPARSER_H__
 #define  __CKXMLPARSER_H__
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "_CKXmlParser.h"
 #include <elastos/HashMap.h>
 #include <elastos/StringBuilder.h>

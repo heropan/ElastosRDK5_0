@@ -23,7 +23,7 @@ CarClass(CSystem)
 public:
     CARAPI constructor();
 
-    CAR_INTERFACE_DECL()
+    CAR_SINGLETON_DECL()
 
     /**
      * Sets the standard input stream to the given user defined input stream.
@@ -369,10 +369,6 @@ public:
     // public static SecurityManager getSecurityManager() {
 
 private:
-    CARAPI_(void) OnLastStrongRef(
-        /* [in] */ const void* id);
-
-    CARAPI_(SpinLock&) GetSelfSpinLock();
 
     CARAPI InitSystemProperties();
 

@@ -9,21 +9,22 @@ module
     merge("../../../../car/Org/Kxml2/IO/IKXmlParser.car");
 
     using interface Elastos.IO.ICloseable;
+    using interface Org.Xmlpull.V1.IXmlSerializer;
 
-    // namespace Org {
-    // namespace Kxml2 {
-    // namespace IO {
+    namespace Org {
+    namespace Kxml2 {
+    namespace IO {
 
-    // class CKXmlParser {
-    //     interface IKXmlParser;
-    //     interface ICloseable;
-    // }
+    class CKXmlParser {
+        interface IKXmlParser;
+        interface ICloseable;
+    }
 
-    // class CKXmlSerializer {
-    //     interface Org.Xmlpull.V1.IXmlSerializer;
-    // }
+    class CKXmlSerializer {
+        interface IXmlSerializer;
+    }
 
-    // } //namespace IO
-    // } //namespace Kxml2
-    // } //namespace Org
+    } //namespace IO
+    } //namespace Kxml2
+    } //namespace Org
 }

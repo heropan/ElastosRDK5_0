@@ -1,10 +1,28 @@
 
 #include "AttributesImpl.h"
+#include <utils/Log.h>
 
 namespace Org {
 namespace Xml {
 namespace Sax {
 namespace Helpers {
+
+CAR_INTERFACE_IMPL_2(AttributesImpl, Object, IAttributes, IAttributesImpl)
+
+AttributesImpl::AttributesImpl()
+    : mLength(0)
+{}
+
+ECode AttributesImpl::constructor()
+{
+    return NOERROR;
+}
+
+ECode AttributesImpl::constructor(
+    /* [in] */ IAttributes* atts)
+{
+    return SetAttributes(atts);;
+}
 
 ECode AttributesImpl::GetLength(
     /* [out] */ Int32* length)
@@ -315,11 +333,11 @@ ECode AttributesImpl::RemoveAttribute(
 
         index = (mLength - 1) * 5;
 
-        (*mData) [index++] = NULL;
-        (*mData) [index++] = NULL;
-        (*mData) [index++] = NULL;
-        (*mData) [index++] = NULL;
-        (*mData) [index] = NULL;
+        (*mData)[index++] = NULL;
+        (*mData)[index++] = NULL;
+        (*mData)[index++] = NULL;
+        (*mData)[index++] = NULL;
+        (*mData)[index] = NULL;
 
         mLength--;
     } else {
@@ -394,19 +412,6 @@ ECode AttributesImpl::SetValue(
     return NOERROR;
 }
 
-ECode AttributesImpl::constructor()
-{
-    mLength = 0;
-    mData = NULL;
-    return NOERROR;
-}
-
-ECode AttributesImpl::constructor(
-    /* [in] */ IAttributes* atts)
-{
-    return SetAttributes(atts);;
-}
-
 void AttributesImpl::EnsureCapacity(
     /* [in] */ Int32 n)
 {
@@ -431,7 +436,6 @@ void AttributesImpl::EnsureCapacity(
     AutoPtr<ArrayOf<String> > newArray = ArrayOf<String>::Alloc(max);
     if (mLength > 0) {
         newArray->Copy(mData->GetPayload(), mLength * 5);
-        //System.arraycopy(data, 0, newData, 0, mLength*5);
     }
     mData = newArray;
 }
@@ -439,12 +443,8 @@ void AttributesImpl::EnsureCapacity(
 ECode AttributesImpl::BadIndex (
     /* [in] */ Int32 index)
 {
+    ALOGE("Attempt to modify attribute at illegal index: %d", index);
     return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//    throws ArrayIndexOutOfBoundsException
-//    {
-//    String msg =
-//        "Attempt to modify attribute at illegal index: " + index;
-//    throw new ArrayIndexOutOfBoundsException(msg);
 }
 
 } // namespace Helpers

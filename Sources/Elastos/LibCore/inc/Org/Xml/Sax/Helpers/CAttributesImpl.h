@@ -2,7 +2,7 @@
 #ifndef __CATTRIBUTESIMPL_H__
 #define __CATTRIBUTESIMPL_H__
 
-#include "_CAttributesImpl.h"
+#include "_Org_Xml_Sax_Helpers_CAttributesImpl.h"
 #include "AttributesImpl.h"
 
 namespace Org {
@@ -13,106 +13,7 @@ namespace Helpers {
 CarClass(CAttributesImpl), public AttributesImpl
 {
 public:
-    CARAPI GetLength(
-        /* [out] */ Int32* length);
-
-    CARAPI GetURI(
-        /* [in] */ Int32 index,
-        /* [out] */ String* URI);
-
-    CARAPI GetLocalName(
-        /* [in] */ Int32 index,
-        /* [out] */ String* localName);
-
-    CARAPI GetQName(
-        /* [in] */ Int32 index,
-        /* [out] */ String* qName);
-
-    CARAPI GetType(
-        /* [in] */ Int32 index,
-        /* [out] */ String* type);
-
-    CARAPI GetValue(
-        /* [in] */ Int32 index,
-        /* [out] */ String* value);
-
-    CARAPI GetIndex(
-        /* [in] */ const String& uri,
-        /* [in] */ const String& localName,
-        /* [out] */ Int32* index);
-
-    CARAPI GetIndex(
-        /* [in] */ const String& qName,
-        /* [out] */ Int32* index);
-
-    CARAPI GetType(
-        /* [in] */ const String& uri,
-        /* [in] */ const String& localName,
-        /* [out] */ String* type);
-
-    CARAPI GetType(
-        /* [in] */ const String& qName,
-        /* [out] */ String* type);
-
-    CARAPI GetValue(
-        /* [in] */ const String& uri,
-        /* [in] */ const String& localName,
-        /* [out] */ String* value);
-
-    CARAPI GetValue(
-        /* [in] */ const String& qName,
-        /* [out] */ String* value);
-
-    CARAPI Clear();
-
-    CARAPI SetAttributes(
-        /* [in] */ IAttributes* atts);
-
-    CARAPI AddAttribute(
-        /* [in] */ const String& uri,
-        /* [in] */ const String& localName,
-        /* [in] */ const String& qName,
-        /* [in] */ const String& type,
-        /* [in] */ const String& value);
-
-    CARAPI SetAttribute(
-        /* [in] */ Int32 index,
-        /* [in] */ const String& uri,
-        /* [in] */ const String& localName,
-        /* [in] */ const String& qName,
-        /* [in] */ const String& type,
-        /* [in] */ const String& value);
-
-    CARAPI RemoveAttribute(
-        /* [in] */ Int32 index);
-
-    CARAPI SetURI(
-        /* [in] */ Int32 index,
-        /* [in] */ const String& uri);
-
-    CARAPI SetLocalName(
-        /* [in] */ Int32 index,
-        /* [in] */ const String& localName);
-
-    CARAPI SetQName(
-        /* [in] */ Int32 index,
-        /* [in] */ const String& qName);
-
-    CARAPI SetType(
-        /* [in] */ Int32 index,
-        /* [in] */ const String& type);
-
-    CARAPI SetValue(
-        /* [in] */ Int32 index,
-        /* [in] */ const String& value);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IAttributes* atts);
-
-private:
-    // TODO: Add your private member variables here.
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Helpers

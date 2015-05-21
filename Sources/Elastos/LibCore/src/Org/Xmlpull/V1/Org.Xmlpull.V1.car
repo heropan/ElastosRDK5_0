@@ -9,49 +9,41 @@ module
     merge("../../../../../car/Org/Xmlpull/V1/IXmlPullParserFactory.car");
     merge("../../../../../car/Org/Xmlpull/V1/IXmlSerializer.car");
 
-    // namespace Org {
-    // namespace Xmlpull {
-    // namespace V1 {
-
-    //     class CXmlPullParserFactory {
-    //         constructor();
-
-    //         interface IXmlPullParserFactory;
-    //     }
-
-    //     singleton class CXmlPullParserFactoryHelper {
-    //         interface IXmlPullParserFactoryHelper;
-    //     }
-
-    // } // namespace V1
-    // } // namespace Xmlpull
-    // } // namespace Org
-
     using interface Org.Xml.Sax.ILocator;
     using interface Org.Xml.Sax.IXMLReader;
     using interface Org.Xml.Sax.IAttributes;
-
     interface Org.Xmlpull.V1.IXmlPullParser;
 
-    // namespace Org {
-    // namespace Xmlpull {
-    // namespace V1 {
-    // namespace Sax2 {
+    namespace Org {
+    namespace Xmlpull {
+    namespace V1 {
 
-    //     class CDriver {
-    //         constructor();
+        class CXmlPullParserFactory {
+            constructor();
 
-    //         constructorEx2 (
-    //             [in] IXmlPullParser* pp);
+            interface IXmlPullParserFactory;
+        }
 
-    //         interface ILocator;
-    //         interface IXMLReader;
-    //         interface IAttributes;
-    //     }
+        singleton class CXmlPullParserFactoryHelper {
+            interface IXmlPullParserFactoryHelper;
+        }
 
-    // } // namespace Sax2
-    // } // namespace V1
-    // } // namespace Xmlpull
-    // } // namespace Org
+        namespace Sax2 {
 
+            class CDriver {
+                constructor();
+
+                constructorEx2 (
+                    [in] IXmlPullParser* pp);
+
+                interface ILocator;
+                interface IXMLReader;
+                interface IAttributes;
+            }
+
+        } // namespace Sax2
+
+    } // namespace V1
+    } // namespace Xmlpull
+    } // namespace Org
 }

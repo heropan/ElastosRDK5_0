@@ -2,8 +2,8 @@
 #ifndef __STRINGBUILDER_H__
 #define __STRINGBUILDER_H__
 
-#include <cmdef.h>
-#include <elastos/AbstractStringBuilder.h>
+#include <coredef.h>
+#include <AbstractStringBuilder.h>
 
 namespace Elastos {
 namespace Core {

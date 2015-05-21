@@ -2,7 +2,7 @@
 #include "CSystem.h"
 #include <stdlib.h>
 #include "Elastos.Core_server.h"
-#include <elastos/StringBuilder.h>
+#include <StringBuilder.h>
 #include "CStringWrapper.h"
 #include "CHashMap.h"
 #include "CProperties.h"
@@ -49,6 +49,8 @@ AutoPtr<IInputStream> CSystem::mIn;
 AutoPtr<IPrintStream> CSystem::mOut;
 AutoPtr<IPrintStream> CSystem::mErr;
 
+CAR_SINGLETON_IMPL(CSystem, Singleton, ISystem)
+
 ECode CSystem::constructor()
 {
     AutoPtr<CFileInputStream> input;
@@ -72,48 +74,6 @@ ECode CSystem::constructor()
         mErr = (IPrintStream*)errPs->Probe(EIID_IPrintStream);
     }
     return NOERROR;
-}
-
-PInterface CSystem::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_ISystem) {
-        return (ISystem*)this;
-    }
-    else return Object::Probe(riid);
-}
-
-UInt32 CSystem::AddRef()
-{
-    return Singleton::AddRef();
-}
-
-UInt32 CSystem::Release()
-{
-    return Singleton::Release();
-}
-
-ECode CSystem::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (object == (IInterface*)(ISystem*)this) {
-        *iid = EIID_ISystem;
-        return NOERROR;
-    }
-    else return Object::GetInterfaceID(object, iid);
-}
-
-void CSystem::OnLastStrongRef(
-    /* [in] */ const void* id)
-{
-    return _CSystem::OnLastStrongRef(id);
-}
-
-SpinLock& CSystem::GetSelfSpinLock()
-{
-    return _CSystem::GetSelfSpinLock();
 }
 
 ECode CSystem::SetIn(

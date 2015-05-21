@@ -3,7 +3,7 @@
 #include "Thread.h"
 #include "NativeThread.h"
 #include "ThreadGroup.h"
-#include <elastos/Math.h>
+#include <Math.h>
 #ifdef ELASTOS_CORE
 #include "CSystem.h"
 #endif

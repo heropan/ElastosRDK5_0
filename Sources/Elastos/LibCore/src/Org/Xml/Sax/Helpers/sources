@@ -1,7 +1,6 @@
-TARGET_NAME= Helpers
+TARGET_NAME= helpers
 TARGET_TYPE= lib
 
-#INCLUDES += $(MAKEDIR)/../../../../inc/common;
 INCLUDES += ../;
 INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax;
 INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax/Ext;

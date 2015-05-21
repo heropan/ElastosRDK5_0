@@ -2,15 +2,16 @@
 #ifndef __ATTRIBUTESIMPL_H__
 #define __ATTRIBUTESIMPL_H__
 
-#include <elastos.h>
-#include "cmdef.h"
-#include "_CAttributesImpl.h"
+#include <elastos/Object.h>
+#include "coredef.h"
+
+using Elastos::Core::Object;
+using Org::Xml::Sax::IAttributes;
 
 namespace Org {
 namespace Xml {
 namespace Sax {
 namespace Helpers {
-
 
 /**
  * Default implementation of the Attributes interface.
@@ -47,8 +48,20 @@ namespace Helpers {
  * @version 2.0.1 (sax2r2)
  */
 class AttributesImpl
+    : public Object
+    , public IAttributes
+    , public IAttributesImpl
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    AttributesImpl();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IAttributes* atts);
+
     /**
      * Return the number of attributes in the list.
      *
@@ -351,11 +364,6 @@ public:
     CARAPI SetValue(
         /* [in] */ Int32 index,
         /* [in] */ const String& value);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IAttributes* atts);
 
 private:
     /**

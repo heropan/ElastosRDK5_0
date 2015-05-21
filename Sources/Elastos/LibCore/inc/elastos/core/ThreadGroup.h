@@ -7,7 +7,7 @@
 #else
 #include "Elastos.Core.h"
 #endif
-#include <elastos/Mutex.h>
+#include <Mutex.h>
 
 namespace Elastos {
 namespace Core {

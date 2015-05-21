@@ -2,8 +2,11 @@
 #ifndef __CPARSERADAPTER_H__
 #define __CPARSERADAPTER_H__
 
-#include "_CParserAdapter.h"
-#include "cmdef.h"
+#include "__Org_Xml_Sax_Helpers_CParserAdapter.h"
+#include "coredef.h"
+#include <elastos/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Org {
 namespace Xml {
@@ -37,11 +40,45 @@ namespace Helpers {
  * @see org.xml.sax.Parser
  */
 CarClass(CParserAdapter)
+    , public Object
+    , public IXMLReader
+    , public IDocumentHandler
 {
 public:
     class AttributeListAdapter;
 
 public:
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
+
+    CParserAdapter();
+
+    /**
+     * Construct a new parser adapter.
+     *
+     * <p>Use the "org.xml.sax.parser" property to locate the
+     * embedded SAX1 driver.</p>
+     *
+     * @exception SAXException If the embedded driver
+     *            cannot be instantiated or if the
+     *            org.xml.sax.parser property is not specified.
+     */
+    CARAPI constructor();
+
+    /**
+     * Construct a new parser adapter.
+     *
+     * <p>Note that the embedded parser cannot be changed once the
+     * adapter is created; to embed a different parser, allocate
+     * a new ParserAdapter.</p>
+     *
+     * @param parser The SAX1 parser to embed.
+     * @exception java.lang.NullPointerException If the parser parameter
+     *            is null.
+     */
+    CARAPI constructor(
+        /* [in] */ IParser * parser);
+
     CARAPI GetFeature(
         /* [in] */ const String& name,
         /* [out] */ Boolean * feature);
@@ -115,32 +152,6 @@ public:
     CARAPI ProcessingInstruction(
         /* [in] */ const String& target,
         /* [in] */ const String& data);
-
-    /**
-     * Construct a new parser adapter.
-     *
-     * <p>Use the "org.xml.sax.parser" property to locate the
-     * embedded SAX1 driver.</p>
-     *
-     * @exception SAXException If the embedded driver
-     *            cannot be instantiated or if the
-     *            org.xml.sax.parser property is not specified.
-     */
-    CARAPI constructor();
-
-    /**
-     * Construct a new parser adapter.
-     *
-     * <p>Note that the embedded parser cannot be changed once the
-     * adapter is created; to embed a different parser, allocate
-     * a new ParserAdapter.</p>
-     *
-     * @param parser The SAX1 parser to embed.
-     * @exception java.lang.NullPointerException If the parser parameter
-     *            is null.
-     */
-    CARAPI constructor(
-        /* [in] */ IParser * parser);
 
 private:
     /**
@@ -236,12 +247,13 @@ private:
     AutoPtr<INamespaceSupport> mNsSupport;
     AutoPtr<AttributeListAdapter> mAttAdapter;
 
-    Boolean mParsing; // = false;
     AutoPtr< ArrayOf<String> > mNameParts; // = new String[3];
 
     AutoPtr<IParser> mParser;
 
     AutoPtr<IAttributesImpl> mAtts;
+
+    Boolean mParsing; // = false;
 
     // Features
     Boolean mNamespaces; // = true;
@@ -266,7 +278,7 @@ public:
      * interned whenever requested.</p>
      */
     class AttributeListAdapter
-        : public ElRefBase
+        : public Object
         , public IAttributes
     {
     public:
@@ -422,7 +434,7 @@ public:
 
     private:
         AutoPtr<IAttributeList> mQAtts;
-        AutoPtr<CParserAdapter> mHost;
+        AutoPtr<CParserAdapter> mHost; // TODO luo.zhaohui
     };
 };
 

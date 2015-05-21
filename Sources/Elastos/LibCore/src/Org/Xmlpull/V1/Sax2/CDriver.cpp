@@ -188,11 +188,11 @@ ECode CDriver::SetProperty(
     /* [in] */ IInterface* value)
 {
     if(DECLARATION_HANDLER_PROPERTY.Equals(name)) {
-        return E_XML_SAX_NOT_SUPPORTED_EXCEPTION;
+        return E_SAX_NOT_SUPPORTED_EXCEPTION;
         // throw new SAXNotSupportedException("not supported setting property "+name);//+" to "+value);
     }
     else if(LEXICAL_HANDLER_PROPERTY.Equals(name)) {
-        return E_XML_SAX_NOT_SUPPORTED_EXCEPTION;
+        return E_SAX_NOT_SUPPORTED_EXCEPTION;
         // throw new SAXNotSupportedException("not supported setting property "+name);//+" to "+value);
     }
     else {
@@ -249,7 +249,7 @@ ECode CDriver::GetContentHandler(
     VALIDATE_NOT_NULL(handler)
 
     *handler = mContentHandler;
-    INTERFACE_ADDREF(*handler)
+    REFCOUNT_ADD(*handler)
     return NOERROR;
 }
 
@@ -266,7 +266,7 @@ ECode CDriver::GetErrorHandler(
     VALIDATE_NOT_NULL(handler)
 
     *handler = mErrorHandler;
-    INTERFACE_ADDREF(*handler)
+    REFCOUNT_ADD(*handler)
     return NOERROR;
 }
 
@@ -289,8 +289,8 @@ ECode CDriver::Parse(
             source->GetSystemId(&mSystemId);
             if(mSystemId.IsNull()) {
                 // SAXParseException saxException = new SAXParseException("null source systemId" , this);
-                mErrorHandler->FatalError(E_XML_SAX_PARSE_EXCEPTION);
-                return E_XML_SAX_PARSE_EXCEPTION;
+                mErrorHandler->FatalError(E_SAX_PARSE_EXCEPTION);
+                return E_SAX_PARSE_EXCEPTION;
             }
             // NOTE: replace with Connection to run in J2ME environment
             // try {
@@ -333,8 +333,8 @@ ECode CDriver::Parse(
     if(type != IXmlPullParser::START_TAG) {
         // final SAXParseException saxException = new SAXParseException("expected start tag not"+pp.getPositionDescription(), this);
         //throw saxException;
-        mErrorHandler->FatalError(E_XML_SAX_PARSE_EXCEPTION);
-        return E_XML_SAX_PARSE_EXCEPTION;
+        mErrorHandler->FatalError(E_SAX_PARSE_EXCEPTION);
+        return E_SAX_PARSE_EXCEPTION;
     }
     // } catch (XmlPullParserException ex)  {
     //     final SAXParseException saxException = new SAXParseException(

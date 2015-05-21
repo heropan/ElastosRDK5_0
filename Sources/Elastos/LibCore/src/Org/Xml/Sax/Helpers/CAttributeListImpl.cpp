@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CAttributeListImpl.h"
 
 namespace Org {
@@ -7,10 +6,10 @@ namespace Xml {
 namespace Sax {
 namespace Helpers {
 
+CAR_INTERFACE_IMPL_2(CAttributeListImpl, Object, IAttributeList, IAttributeListImpl)
+CAR_OBJECT_IMPL(CAttributeListImpl)
+
 CAttributeListImpl::CAttributeListImpl()
-    : mNames()
-    , mTypes()
-    , mValues()
 {
 }
 

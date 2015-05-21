@@ -1,4 +1,4 @@
-
+#include "coredef.h"
 #include "CLocator2Impl.h"
 
 namespace Org {
@@ -6,65 +6,40 @@ namespace Xml {
 namespace Sax {
 namespace Ext {
 
-ECode CLocator2Impl::SetPublicId(
-    /* [in] */ const String& publicId)
+CAR_INTERFACE_IMPL_2(CLocator2Impl, LocatorImpl, ILocator2, ILocator2Impl)
+CAR_OBJECT_IMPL(CLocator2Impl)
+
+ECode CLocator2Impl::constructor()
 {
-    return LocatorImpl::SetPublicId(publicId);
+    return LocatorImpl::constructor();
 }
 
-ECode CLocator2Impl::SetSystemId(
-    /* [in] */ const String& systemId)
+ECode CLocator2Impl::constructor(
+    /* [in] */ ILocator* locator)
 {
-    return LocatorImpl::SetSystemId(systemId);
-}
+    FAIL_RETURN(LocatorImpl::constructor(locator));
 
-ECode CLocator2Impl::SetLineNumber(
-    /* [in] */ Int32 lineNumber)
-{
-    return LocatorImpl::SetLineNumber(lineNumber);
-}
+    ILocator2* locator2 = ILocator2::Probe(locator);
 
-ECode CLocator2Impl::SetColumnNumber(
-    /* [in] */ Int32 columnNumber)
-{
-    return LocatorImpl::SetColumnNumber(columnNumber);
-}
+    if (locator2 != NULL) {
+        locator2->GetXMLVersion(&mVersion);
+        locator2->GetEncoding(&mEncoding);
+    }
 
-ECode CLocator2Impl::GetPublicId(
-    /* [out] */ String* publicId)
-{
-    return LocatorImpl::GetPublicId(publicId);
-}
-
-ECode CLocator2Impl::GetSystemId(
-    /* [out] */ String* systemId)
-{
-    return LocatorImpl::GetSystemId(systemId);
-}
-
-ECode CLocator2Impl::GetLineNumber(
-    /* [out] */ Int32* lineNumber)
-{
-    return LocatorImpl::GetLineNumber(lineNumber);
-}
-
-ECode CLocator2Impl::GetColumnNumber(
-    /* [out] */ Int32* columnNumber)
-{
-    return LocatorImpl::GetColumnNumber(columnNumber);
+    return NOERROR;
 }
 
 ECode CLocator2Impl::SetXMLVersion(
     /* [in] */ const String& xmlVersion)
 {
-    this->mVersion = xmlVersion;
+    mVersion = xmlVersion;
     return NOERROR;
 }
 
 ECode CLocator2Impl::SetEncoding(
     /* [in] */ const String& encoding)
 {
-    this->mEncoding = encoding;
+    mEncoding = encoding;
     return NOERROR;
 }
 
@@ -84,26 +59,6 @@ ECode CLocator2Impl::GetEncoding(
     VALIDATE_NOT_NULL(encoding);
 
     *encoding = mEncoding;
-
-    return NOERROR;
-}
-
-ECode CLocator2Impl::constructor()
-{
-    return NOERROR;
-}
-
-ECode CLocator2Impl::constructor(
-    /* [in] */ ILocator* locator)
-{
-    LocatorImpl::constructor(locator);
-
-    ILocator2* locator2 = ILocator2::Probe(locator);
-
-    if(locator2 != NULL){
-        locator2->GetXMLVersion(&mVersion);
-        locator2->GetEncoding(&mEncoding);
-    }
 
     return NOERROR;
 }

@@ -12,6 +12,9 @@ namespace Helpers {
 
 AutoPtr<IObjectContainer> CNamespaceSupport::EMPTY_ENUMERATION;
 
+CAR_INTERFACE_IMPL(CNamespaceSupport, Object, INamespaceSupport)
+CAR_OBJECT_IMPL(CNamespaceSupport)
+
 ECode CNamespaceSupport::Reset()
 {
     mContexts = ArrayOf<Context*>::Alloc(32);
@@ -59,7 +62,7 @@ ECode CNamespaceSupport::PopContext()
     mContextPos--;
     if (mContextPos < 0) {
         // throw new EmptyStackException();
-        return E_XML_SAX_EMPTYSTACK_EXCEPTION;
+        return E_SAX_EMPTYSTACK_EXCEPTION;
     }
     mCurrentContext = (*mContexts)[mContextPos];
     return NOERROR;
@@ -96,7 +99,7 @@ ECode CNamespaceSupport::ProcessName(
     }
     else {
         *nName = myParts;
-        INTERFACE_ADDREF(*nName)
+        REFCOUNT_ADD(*nName)
     }
     return NOERROR;
 }
@@ -118,7 +121,7 @@ ECode CNamespaceSupport::GetPrefixes(
 
     AutoPtr<IObjectContainer> res = mCurrentContext->GetPrefixes();
     *prefixes = res;
-    INTERFACE_ADDREF(*prefixes)
+    REFCOUNT_ADD(*prefixes)
 
     return NOERROR;
 }
@@ -163,7 +166,7 @@ ECode CNamespaceSupport::GetPrefixes(
         enumerator->MoveNext(&isflag);
     }
     *prefixes = prefixes1;
-    INTERFACE_ADDREF(*prefixes)
+    REFCOUNT_ADD(*prefixes)
 
     return NOERROR;
 }
@@ -175,7 +178,7 @@ ECode CNamespaceSupport::GetDeclaredPrefixes(
 
     AutoPtr<IObjectContainer> res = mCurrentContext->GetDeclaredPrefixes();
     *prefixes = res;
-    INTERFACE_ADDREF(*prefixes)
+    REFCOUNT_ADD(*prefixes)
 
     return NOERROR;
 }

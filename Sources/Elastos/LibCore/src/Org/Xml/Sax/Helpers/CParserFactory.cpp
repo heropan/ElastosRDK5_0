@@ -1,6 +1,7 @@
-
+#include "coredef.h"
 #include "CParserFactory.h"
 #include "NewInstanceHelper.h"
+#include <utils/Log.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -9,6 +10,8 @@ namespace Org {
 namespace Xml {
 namespace Sax {
 namespace Helpers {
+
+CAR_SINGLTON_IMPL(CParserFactory, Singleton, IParserFactory)
 
 ECode CParserFactory::MakeParser(
     /* [out] */ IParser** parser)
@@ -27,6 +30,7 @@ ECode ParserFactory::MakeParser(
     /* [out] */ IParser** parser)
 {
     VALIDATE_NOT_NULL(parser);
+    *parser = NULL;
 
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
@@ -34,13 +38,12 @@ ECode ParserFactory::MakeParser(
     String className;
     system->GetProperty(String("org.xml.sax.parser"), &className);
     if (className.IsNullOrEmpty()) {
-//        throw new NullPointerException("No value for sax.parser property");
+        ALOGE("ParserFactory::MakeParser NullPointerException: No value for sax.parser property!");
         return E_NULL_POINTER_EXCEPTION;
     } else {
         return ParserFactory::MakeParser(className, parser);
     }
 
-    *parser = NULL;
     return NOERROR;
 }
 
@@ -53,7 +56,7 @@ ECode ParserFactory::MakeParser(
     AutoPtr<IClassLoader> icl = NewInstanceHelper::GetClassLoader();
     AutoPtr<IInterface> ointer = NewInstanceHelper::NewInstance(icl, className);
     *parser = IParser::Probe(ointer.Get());
-    INTERFACE_ADDREF(*parser)
+    REFCOUNT_ADD(*parser)
 
     return NOERROR;
 }

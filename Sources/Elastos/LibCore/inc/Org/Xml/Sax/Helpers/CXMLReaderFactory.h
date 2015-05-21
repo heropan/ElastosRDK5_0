@@ -10,7 +10,8 @@
 #else
 #include "Elastos.Core.h"
 #endif
-#include "_CXMLReaderFactory.h"
+#include "__Org_Xml_Sax_Helpers_CXMLReaderFactory.h"
+#include "Singleton.h"
 
 using Elastos::Core::IClassLoader;
 
@@ -53,8 +54,12 @@ namespace Helpers {
  * @version 2.0.1 (sax2r2)
  */
 CarClass(CXMLReaderFactory)
+    : public Singleton
+    , public IXMLReaderFactory
 {
 public:
+    CAR_SINGLETON_DECL()
+
     /**
      * Attempt to create an XMLReader from system defaults.
      * In environments which can support it, the name of the XMLReader

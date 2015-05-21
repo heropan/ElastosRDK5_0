@@ -2,7 +2,7 @@
 #ifndef __XMLPULLPARSERFACTORY_H__
 #define __XMLPULLPARSERFACTORY_H__
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "elastos/HashMap.h"
 #include "Org.Xmlpull.V1_server.h"
 #ifdef ELASTOS_CORE

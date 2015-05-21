@@ -8,9 +8,9 @@ module
 
     //==========================================================================
     // Org.Xml.Sax XML error codes (Family: 0x2F)
-    const E_XML_SAX_EMPTYSTACK_EXCEPTION =                 0xAF010000;
-    const E_XML_SAX_NOT_RECOGNIZED_EXCEPTION =             0xAF010001;
-    const E_XML_SAX_EXCEPTION =                            0xAF010002;
-    const E_XML_SAX_PARSE_EXCEPTION =                      0xAF010003;
-    const E_XML_SAX_NOT_SUPPORTED_EXCEPTION =              0xAF010004;
+    const E_SAX_EMPTYSTACK_EXCEPTION =                 0xAF010000;
+    const E_SAX_NOT_RECOGNIZED_EXCEPTION =             0xAF010001;
+    const E_SAX_EXCEPTION =                            0xAF010002;
+    const E_SAX_PARSE_EXCEPTION =                      0xAF010003;
+    const E_SAX_NOT_SUPPORTED_EXCEPTION =              0xAF010004;
 }

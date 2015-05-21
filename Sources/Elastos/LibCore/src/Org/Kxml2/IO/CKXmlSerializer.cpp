@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CKXmlSerializer.h"
 #include <elastos/StringBuilder.h>
 #include <elastos/StringUtils.h>

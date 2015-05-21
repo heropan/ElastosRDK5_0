@@ -4,6 +4,7 @@
 #include "CParserFactory.h"
 #include "CAttributesImpl.h"
 #include "CNamespaceSupport.h"
+#include <utils/Log.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::ISystem;
@@ -13,10 +14,64 @@ namespace Xml {
 namespace Sax {
 namespace Helpers {
 
-const String CParserAdapter::FEATURES = String("http://xml.org/sax/features/");
-const String CParserAdapter::NAMESPACES = FEATURES + "mNamespaces";
-const String CParserAdapter::NAMESPACE_PREFIXES = FEATURES + "namespace-mPrefixes";
-const String CParserAdapter::XMLNS_URIs = FEATURES + "xmlns-mUris";
+const String CParserAdapter::FEATURES("http://xml.org/sax/features/");
+const String CParserAdapter::NAMESPACES("http://xml.org/sax/features/mNamespaces");
+const String CParserAdapter::NAMESPACE_PREFIXES("http://xml.org/sax/features/namespace-mPrefixes");
+const String CParserAdapter::XMLNS_URIs("http://xml.org/sax/features/xmlns-mUris");
+
+CAR_INTERFACE_IMPL_2(CParserAdapter, Object, IXMLReader, IDocumentHandler)
+CAR_OBJECT_IMPL(CParserAdapter)
+
+CParserAdapter::CParserAdapter()
+    : mParsing(FALSE)
+    , mNamespaces(TRUE)
+    , mPrefixes(FALSE)
+    , mUris(TRUE)
+{
+    mNameParts = ArrayOf<String>::Alloc(3);
+}
+
+ECode CParserAdapter::constructor()
+{
+    AutoPtr<ISystem> system;
+    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
+    String driver;
+    system->GetProperty(String("org.xml.sax.mParser"), &driver);
+
+    // try {
+    AutoPtr<IParser> parser;
+    FAIL_RETURN(ParserFactory::MakeParser((IParser**)&parser));
+    return Setup(parser);
+    // } catch (ClassNotFoundException e1) {
+    //     throw new
+    //     SAXException("Cannot find SAX1 driver class " +
+    //              driver, e1);
+    // } catch (IllegalAccessException e2) {
+    //     throw new
+    //     SAXException("SAX1 driver class " +
+    //              driver +
+    //              " found but cannot be loaded", e2);
+    // } catch (InstantiationException e3) {
+    //     throw new
+    //     SAXException("SAX1 driver class " +
+    //              driver +
+    //              " loaded but cannot be instantiated", e3);
+    // } catch (ClassCastException e4) {
+    //     throw new
+    //     SAXException("SAX1 driver class " +
+    //              driver +
+    //              " does not implement org.xml.sax.Parser");
+    // } catch (NullPointerException e5) {
+    //     throw new
+    //     SAXException("System property org.xml.sax.mParser not specified");
+    // }
+}
+
+ECode CParserAdapter::constructor(
+    /* [in] */ IParser * parser)
+{
+    return Setup(parser);
+}
 
 ECode CParserAdapter::GetFeature(
     /* [in] */ const String& name,
@@ -34,8 +89,8 @@ ECode CParserAdapter::GetFeature(
         *feature = mUris;
     }
     else {
-        // throw new SAXNotRecognizedException("Feature: " + name);
-        return E_XML_SAX_NOT_RECOGNIZED_EXCEPTION;
+        ALOGE("CParserAdapter::GetFeature SAXNotRecognizedException: %s", name.string());
+        return E_SAX_NOT_RECOGNIZED_EXCEPTION;
     }
     return NOERROR;
 }
@@ -62,8 +117,8 @@ ECode CParserAdapter::SetFeature(
         CheckNotParsing(String("feature"), name);
         mUris = value;
     } else {
-        // throw new SAXNotRecognizedException("Feature: " + name);
-        return E_XML_SAX_NOT_RECOGNIZED_EXCEPTION;
+        ALOGE("CParserAdapter::SetFeature SAXNotRecognizedException: %s", name.string());
+        return E_SAX_NOT_RECOGNIZED_EXCEPTION;
     }
     return NOERROR;
 }
@@ -72,23 +127,23 @@ ECode CParserAdapter::GetProperty(
     /* [in] */ const String& name,
     /* [out] */ IInterface ** value)
 {
-    // throw new SAXNotRecognizedException("Property: " + name);
-    return E_XML_SAX_NOT_RECOGNIZED_EXCEPTION;
+    ALOGE("CParserAdapter::GetProperty SAXNotRecognizedException: %s", name.string());
+    return E_SAX_NOT_RECOGNIZED_EXCEPTION;
 }
 
 ECode CParserAdapter::SetProperty(
     /* [in] */ const String& name,
     /* [in] */ IInterface * value)
 {
-    // throw new SAXNotRecognizedException("Property: " + name);
-    return E_XML_SAX_NOT_RECOGNIZED_EXCEPTION;
+    ALOGE("CParserAdapter::SetProperty SAXNotRecognizedException: %s", name.string());
+    return E_SAX_NOT_RECOGNIZED_EXCEPTION;
 }
 
 ECode CParserAdapter::SetEntityResolver(
     /* [in] */ IEntityResolver * resolver)
 {
     mEntityResolver = resolver;
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 ECode CParserAdapter::GetEntityResolver(
@@ -97,16 +152,16 @@ ECode CParserAdapter::GetEntityResolver(
     VALIDATE_NOT_NULL(resolver)
 
     *resolver = mEntityResolver;
-    INTERFACE_ADDREF(*resolver)
+    REFCOUNT_ADD(*resolver)
 
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 ECode CParserAdapter::SetDTDHandler(
     /* [in] */ IDTDHandler * handler)
 {
     mDtdHandler = handler;
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 ECode CParserAdapter::GetDTDHandler(
@@ -115,16 +170,16 @@ ECode CParserAdapter::GetDTDHandler(
     VALIDATE_NOT_NULL(handler)
 
     *handler = mDtdHandler;
-    INTERFACE_ADDREF(*handler)
+    REFCOUNT_ADD(*handler)
 
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 ECode CParserAdapter::SetContentHandler(
     /* [in] */ IContentHandler * handler)
 {
     mContentHandler = handler;
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 ECode CParserAdapter::GetContentHandler(
@@ -133,16 +188,16 @@ ECode CParserAdapter::GetContentHandler(
     VALIDATE_NOT_NULL(handler)
 
     *handler = mContentHandler;
-    INTERFACE_ADDREF(*handler)
+    REFCOUNT_ADD(*handler)
 
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 ECode CParserAdapter::SetErrorHandler(
     /* [in] */ IErrorHandler * handler)
 {
     mErrorHandler = handler;
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 ECode CParserAdapter::GetErrorHandler(
@@ -151,18 +206,19 @@ ECode CParserAdapter::GetErrorHandler(
     VALIDATE_NOT_NULL(handler)
 
     *handler = mErrorHandler;
-    INTERFACE_ADDREF(*handler)
+    REFCOUNT_ADD(*handler)
 
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 ECode CParserAdapter::Parse(
     /* [in] */ IInputSource * input)
 {
     if (mParsing) {
-        // throw new SAXException("Parser is already in use");
-        return E_XML_SAX_EXCEPTION;
+        ALOGE("CParserAdapter::Parse: SAXException: Parser is already in use");
+        return E_SAX_EXCEPTION;
     }
+
     SetupParser();
     mParsing = TRUE;
     mParser->Parse(input);
@@ -402,59 +458,6 @@ ECode CParserAdapter::ProcessingInstruction(
     return NOERROR;
 }
 
-ECode CParserAdapter::constructor()
-{
-    mNameParts = ArrayOf<String>::Alloc(3);
-    mParsing = FALSE;
-    mNamespaces = TRUE;
-    mPrefixes = FALSE;
-    mUris = FALSE;
-
-    AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-    String driver;
-    system->GetProperty(String("org.xml.sax.mParser"), &driver);
-
-    // try {
-    AutoPtr<IParser> parser;
-    FAIL_RETURN(ParserFactory::MakeParser((IParser**)&parser));
-    return Setup(parser);
-    // } catch (ClassNotFoundException e1) {
-    //     throw new
-    //     SAXException("Cannot find SAX1 driver class " +
-    //              driver, e1);
-    // } catch (IllegalAccessException e2) {
-    //     throw new
-    //     SAXException("SAX1 driver class " +
-    //              driver +
-    //              " found but cannot be loaded", e2);
-    // } catch (InstantiationException e3) {
-    //     throw new
-    //     SAXException("SAX1 driver class " +
-    //              driver +
-    //              " loaded but cannot be instantiated", e3);
-    // } catch (ClassCastException e4) {
-    //     throw new
-    //     SAXException("SAX1 driver class " +
-    //              driver +
-    //              " does not implement org.xml.sax.Parser");
-    // } catch (NullPointerException e5) {
-    //     throw new
-    //     SAXException("System property org.xml.sax.mParser not specified");
-    // }
-}
-
-ECode CParserAdapter::constructor(
-    /* [in] */ IParser * parser)
-{
-    mNameParts = ArrayOf<String>::Alloc(3);
-    mParsing = FALSE;
-    mNamespaces = TRUE;
-    mPrefixes = FALSE;
-    mUris = FALSE;
-    return Setup(parser);
-}
-
 ECode CParserAdapter::Setup(
     /* [in] */ IParser* parser)
 {
@@ -528,7 +531,7 @@ ECode CParserAdapter::MakeException(
     // } else {
     //     return new SAXParseException(message, null, null, -1, -1);
     // }
-    return E_XML_SAX_PARSE_EXCEPTION;
+    return E_SAX_PARSE_EXCEPTION;
 }
 
 void CParserAdapter::CheckNotParsing(
@@ -541,7 +544,7 @@ void CParserAdapter::CheckNotParsing(
     }
 }
 
-CAR_INTERFACE_IMPL(CParserAdapter::AttributeListAdapter, IAttributes);
+CAR_INTERFACE_IMPL(CParserAdapter::AttributeListAdapter, Object, IAttributes);
 
 CParserAdapter::AttributeListAdapter::AttributeListAdapter()
 {}

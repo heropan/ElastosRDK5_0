@@ -2,8 +2,8 @@
 #ifndef __CNAMESPACESUPPORT_H__
 #define __CNAMESPACESUPPORT_H__
 
-#include "_CNamespaceSupport.h"
-#include "cmdef.h"
+#include "__Org_Xml_Sax_Helpers_CNamespaceSupport.h"
+#include "coredef.h"
 #include <elastos/HashMap.h>
 #include <elastos/List.h>
 #ifdef ELASTOS_CORE
@@ -23,11 +23,16 @@ namespace Sax {
 namespace Helpers {
 
 CarClass(CNamespaceSupport)
+    , public Object
+    , public INamespaceSupport
 {
 public:
     class Context;
 
 public:
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
+
     CARAPI Reset();
 
     CARAPI PushContext();

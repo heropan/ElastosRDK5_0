@@ -9,7 +9,7 @@
 #endif
 #include "NativeThread.h"
 #include "Object.h"
-#include <elastos/Mutex.h>
+#include <Mutex.h>
 
 using Elastos::Core::Object;
 

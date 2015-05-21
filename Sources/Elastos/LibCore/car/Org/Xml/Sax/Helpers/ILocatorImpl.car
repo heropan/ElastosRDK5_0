@@ -5,6 +5,10 @@ module
     namespace Sax {
     namespace Helpers {
 
+    /**
+      * @Involve
+      * interface Org.Xml.Sax.ILocator;
+      */
     interface ILocatorImpl{
         /**
          * Set the public identifier for this locator.
@@ -43,48 +47,6 @@ module
          */
         SetColumnNumber(
             [in] Int32 columnNumber);
-
-        /**
-         * Return the saved public identifier.
-         *
-         * @return The public identifier as a string, or null if none
-         *         is available.
-         * @see org.xml.sax.Locator#getPublicId
-         * @see #setPublicId
-         */
-        //GetPublicId(
-        //    [out] String* publicId);
-
-        /**
-         * Return the saved system identifier.
-         *
-         * @return The system identifier as a string, or null if none
-         *         is available.
-         * @see org.xml.sax.Locator#getSystemId
-         * @see #setSystemId
-         */
-        //GetSystemId(
-        //    [out] String* systemId);
-
-        /**
-         * Return the saved line number (1-based).
-         *
-         * @return The line number as an integer, or -1 if none is available.
-         * @see org.xml.sax.Locator#getLineNumber
-         * @see #setLineNumber
-         */
-        //GetLineNumber(
-        //    [out] Int32* lineNumber);
-
-        /**
-         * Return the saved column number (1-based).
-         *
-         * @return The column number as an integer, or -1 if none is available.
-         * @see org.xml.sax.Locator#getColumnNumber
-         * @see #setColumnNumber
-         */
-        //GetColumnNumber(
-        //    [out] Int32* columnNumber);
     }
 
     } // namespace Helpers

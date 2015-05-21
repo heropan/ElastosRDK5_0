@@ -50,160 +50,156 @@ module
     interface Org.Xml.Sax.Ext.IDeclHandler;
     interface Org.Xml.Sax.Ext.IEntityResolver2;
 
-    // namespace Org {
-    // namespace Xml {
-    // namespace Sax {
+    namespace Org {
+    namespace Xml {
+    namespace Sax {
 
-        // class CInputSource {
-        //     constructor();
+        class CInputSource {
+            constructor();
 
-        //     constructor(
-        //         [in] String str);
+            constructor(
+                [in] String str);
 
-        //     constructor(
-        //         [in] IInputStream* inputStream);
+            constructor(
+                [in] IInputStream* inputStream);
 
-        //     constructor(
-        //         [in] IReader* reader);
+            constructor(
+                [in] IReader* reader);
 
-        //     interface IInputSource;
-        // }
+            interface IInputSource;
+        }
 
-        // class CHandlerBase {
-        //     interface IEntityResolver;
-        //     interface IDTDHandler;
-        //     interface IDocumentHandler;
-        //     interface IErrorHandler;
-        // }
+        class CHandlerBase {
+            interface IEntityResolver;
+            interface IDTDHandler;
+            interface IDocumentHandler;
+            interface IErrorHandler;
+        }
 
-        // namespace Helpers {
-        //     class CAttributeListImpl {
-        //         constructor();
+        namespace Helpers {
 
-        //         constructor(
-        //             [in] IAttributeList* atts);
+            class CAttributeListImpl {
+                constructor();
 
-        //         interface IAttributeListImpl;
-        //     }
+                constructor(
+                    [in] IAttributeList* atts);
 
-        //     class CAttributesImpl {
-        //         constructor();
+                interface IAttributeList;
+                interface IAttributeListImpl;
+            }
 
-        //         constructor(
-        //             [in] IAttributes* atts);
+            class CAttributesImpl {
+                constructor();
 
-        //         interface IAttributesImpl;
-        //     }
+                constructor(
+                    [in] IAttributes* atts);
 
-        //     class CLocatorImpl {
-        //         constructor();
+                interface IAttributes;
+                interface IAttributesImpl;
+            }
 
-        //         constructor(
-        //             [in] ILocator* locator);
+            class CLocatorImpl {
+                constructor();
 
-        //         interface ILocatorImpl;
-        //         interface ILocator;
-        //     }
+                constructor(
+                    [in] ILocator* locator);
 
-        //     class CNamespaceSupport {
-        //         constructor();
+                interface ILocator;
+                interface ILocatorImpl;
+            }
 
-        //         interface INamespaceSupport;
-        //     }
+            class CNamespaceSupport {
+                constructor();
 
-        //     singleton class CParserFactory {
-        //         interface IParserFactory;
-        //     }
+                interface INamespaceSupport;
+            }
 
-        //     singleton class CXMLReaderFactory {
-        //         interface IXMLReaderFactory;
-        //     }
+            singleton class CParserFactory {
+                interface IParserFactory;
+            }
 
-        //     class CDefaultHandler {
-        //         interface IEntityResolver;
-        //         interface IDTDHandler;
-        //         interface IContentHandler;
-        //         interface IErrorHandler;
-        //     }
+            singleton class CXMLReaderFactory {
+                interface IXMLReaderFactory;
+            }
 
-        //     class CXMLReaderAdapter {
-        //         constructor();
-        //         constructor(
-        //             [in] IXMLReader* xmlReader);
+            class CDefaultHandler {
+                interface IEntityResolver;
+                interface IDTDHandler;
+                interface IContentHandler;
+                interface IErrorHandler;
+            }
 
-        //         interface IParser;
-        //         interface IContentHandler;
-        //     }
+            class CXMLReaderAdapter {
+                constructor();
 
-        //     class CAttributesAdapter {
-        //         constructor();
+                constructor(
+                    [in] IXMLReader* xmlReader);
 
-        //         interface IAttributeList;
-        //     }
+                interface IParser;
+                interface IContentHandler;
+            }
 
-        //     class CXMLFilterImpl {
-        //         constructor();
-        //         constructor(
-        //             [in] IXMLReader* parent);
+            class CXMLFilterImpl {
+                constructor();
 
-        //         interface IXMLFilter;
-        //         interface IEntityResolver;
-        //         interface IDTDHandler;
-        //         interface IContentHandler;
-        //         interface IErrorHandler;
-        //     }
+                constructor(
+                    [in] IXMLReader* parent);
 
-        //     class CParserAdapter {
-        //         constructor();
-        //         constructor(
-        //             [in] IParser* parent);
+                interface IXMLReader;
+                interface IXMLFilter;
+                interface IEntityResolver;
+                interface IDTDHandler;
+                interface IContentHandler;
+                interface IErrorHandler;
+            }
 
-        //         interface IXMLReader;
-        //         interface IDocumentHandler;
-        //     }
+            class CParserAdapter {
+                constructor();
 
-        //     class CAttributeListAdapter {
-        //         constructor();
-        //         constructor(
-        //             [in] IAttributeList* parent);
+                constructor(
+                    [in] IParser* parent);
 
-        //         interface IAttributes;
-        //     }
-        // }
+                interface IXMLReader;
+                interface IDocumentHandler;
+            }
+        }
 
-        // namespace Ext {
-        //     class CLocator2Impl {
-        //         constructor();
+        namespace Ext {
+            class CLocator2Impl {
+                constructor();
 
-        //         constructor(
-        //             [in] ILocator* locator);
+                constructor(
+                    [in] ILocator* locator);
 
-        //         interface ILocator2Impl;
-        //         interface ILocator2;
-        //     }
+                interface ILocator;
+                interface ILocator2;
+                interface ILocator2Impl;
+            }
 
-        //     class CAttributes2Impl {
-        //         constructor();
+            class CAttributes2Impl {
+                constructor();
 
-        //         constructor(
-        //             [in] IAttributes* atts);
+                constructor(
+                    [in] IAttributes* atts);
 
-        //         interface IAttributes2Impl;
-        //         interface IAttributes2;
-        //     }
+                interface IAttributes;
+                interface IAttributes2;
+                interface IAttributes2Impl;
+            }
 
-        //     class CDefaultHandler2 {
-        //         interface IDTDHandler;
-        //         interface IContentHandler;
-        //         interface IErrorHandler;
-        //         interface ILexicalHandler;
-        //         interface IDeclHandler;
-        //         interface IEntityResolver2;
-        //     }
-        // }
+            class CDefaultHandler2 {
+                interface IDTDHandler;
+                interface IContentHandler;
+                interface IErrorHandler;
+                interface ILexicalHandler;
+                interface IDeclHandler;
+                interface IEntityResolver;
+                interface IEntityResolver2;
+            }
+        }
 
-    // } // namespace Sax
-    // } // namespace Xml
-    // } // namespace Org
+    } // namespace Sax
+    } // namespace Xml
+    } // namespace Org
 
 }

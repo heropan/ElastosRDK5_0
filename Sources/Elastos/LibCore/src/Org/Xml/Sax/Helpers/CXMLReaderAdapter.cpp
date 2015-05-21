@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CXMLReaderAdapter.h"
 #include "CXMLReaderFactory.h"
 #include "CInputSource.h"
@@ -9,6 +9,9 @@ namespace Org {
 namespace Xml {
 namespace Sax {
 namespace Helpers {
+
+CAR_INTERFACE_IMPL_2(CXMLReaderAdapter, Object, IParser, IContentHandler)
+CAR_OBJECT_IMPL(CXMLReaderAdapter)
 
 ECode CXMLReaderAdapter::SetLocale(
     /* [in] */ Libcore::ICU::ILocale* locale)
@@ -198,9 +201,7 @@ ECode CXMLReaderAdapter::Setup(
     }
 
     mXmlReader = xmlReader;
-    mQAtts = NULL;
-    CAttributesAdapter::New((IAttributeList**)&mQAtts);
-
+    mQAtts = new AttributesAdapter();
     return NOERROR;
 }
 
@@ -218,7 +219,13 @@ ECode CXMLReaderAdapter::SetupXMLReader()
     return NOERROR;
 }
 
-ECode CAttributesAdapter::GetLength(
+//===================================================================
+// AttributesAdapter
+//===================================================================
+
+CAR_INTERFACE_IMPL(AttributesAdapter, Object, IAttributeList)
+
+ECode AttributesAdapter::GetLength(
     /* [out] */ Int32* length)
 {
     VALIDATE_NOT_NULL(length);
@@ -226,51 +233,46 @@ ECode CAttributesAdapter::GetLength(
     return mAttributes->GetLength(length);
 }
 
-ECode CAttributesAdapter::GetName(
+ECode AttributesAdapter::GetName(
     /* [in] */ Int32 i,
     /* [out] */ String* name)
 {
     return mAttributes->GetQName(i, name);
 }
 
-ECode CAttributesAdapter::GetType(
+ECode AttributesAdapter::GetType(
     /* [in] */ Int32 i,
     /* [out] */ String* type)
 {
     return mAttributes->GetType(i, type);
 }
 
-ECode CAttributesAdapter::GetValue(
+ECode AttributesAdapter::GetValue(
     /* [in] */ Int32 i,
     /* [out] */ String* value)
 {
     return mAttributes->GetValue(i, value);
 }
 
-ECode CAttributesAdapter::GetType(
+ECode AttributesAdapter::GetType(
     /* [in] */ const String& qName,
     /* [out] */ String* type)
 {
     return mAttributes->GetType(qName, type);
 }
 
-ECode CAttributesAdapter::GetValue(
+ECode AttributesAdapter::GetValue(
     /* [in] */ const String& qName,
     /* [out] */ String* value)
 {
     return mAttributes->GetValue(qName, value);
 }
 
-ECode CAttributesAdapter::SetAttributes (
+ECode AttributesAdapter::SetAttributes (
         /* [in] */IAttributes* attributes)
 {
     mAttributes = attributes;
 
-    return NOERROR;
-}
-
-ECode CAttributesAdapter::constructor ()
-{
     return NOERROR;
 }
 

@@ -3,7 +3,7 @@
 #define __NEWINSTANCE_H__
 
 #include <elastos.h>
-#include "cmdef.h"
+#include "coredef.h"
 #include "_CAttributesImpl.h"
 
 using Elastos::Core::IClassLoader;

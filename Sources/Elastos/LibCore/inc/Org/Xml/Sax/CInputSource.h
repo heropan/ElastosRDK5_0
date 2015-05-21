@@ -2,16 +2,87 @@
 #ifndef __CINPUTSOURCE_H__
 #define __CINPUTSOURCE_H__
 
-#include "_CInputSource.h"
-#include "cmdef.h"
+#include "_Org_Xml_Sax_CInputSource.h"
+#include "coredef.h"
 
 namespace Org {
 namespace Xml {
 namespace Sax {
 
 CarClass(CInputSource)
+    , public Object
+    , public IInputSource
 {
 public:
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
+
+    /**
+     * Zero-argument default constructor.
+     *
+     * @see #setPublicId
+     * @see #setSystemId
+     * @see #setByteStream
+     * @see #setCharacterStream
+     * @see #setEncoding
+     */
+    CARAPI constructor();
+
+    /**
+     * Create a new input source with a system identifier.
+     *
+     * <p>Applications may use setPublicId to include a
+     * public identifier as well, or setEncoding to specify
+     * the character encoding, if known.</p>
+     *
+     * <p>If the system identifier is a URL, it must be fully
+     * resolved (it may not be a relative URL).</p>
+     *
+     * @param systemId The system identifier (URI).
+     * @see #setPublicId
+     * @see #setSystemId
+     * @see #setByteStream
+     * @see #setEncoding
+     * @see #setCharacterStream
+     */
+    CARAPI constructor(
+        /* [in] */ const String& systemId);
+
+    /**
+     * Create a new input source with a byte stream.
+     *
+     * <p>Application writers should use setSystemId() to provide a base
+     * for resolving relative URIs, may use setPublicId to include a
+     * public identifier, and may use setEncoding to specify the object's
+     * character encoding.</p>
+     *
+     * @param byteStream The raw byte stream containing the document.
+     * @see #setPublicId
+     * @see #setSystemId
+     * @see #setEncoding
+     * @see #setByteStream
+     * @see #setCharacterStream
+     */
+    CARAPI constructor(
+        /* [in] */ Elastos::IO::IInputStream* byteStream);
+
+    /**
+     * Create a new input source with a character stream.
+     *
+     * <p>Application writers should use setSystemId() to provide a base
+     * for resolving relative URIs, and may use setPublicId to include a
+     * public identifier.</p>
+     *
+     * <p>The character stream shall not include a byte order mark.</p>
+     *
+     * @param characterStream The raw character stream containing the document.
+     * @see #setPublicId
+     * @see #setSystemId
+     * @see #setByteStream
+     * @see #setCharacterStream
+     */
+    CARAPI constructor(
+        /* [in] */ Elastos::IO::IReader* characterStream);
 
     /**
      * Set the public identifier for this input source.
@@ -166,78 +237,11 @@ public:
     CARAPI GetCharacterStream(
         /* [out] */ Elastos::IO::IReader** characterStream);
 
-    /**
-     * Zero-argument default constructor.
-     *
-     * @see #setPublicId
-     * @see #setSystemId
-     * @see #setByteStream
-     * @see #setCharacterStream
-     * @see #setEncoding
-     */
-    CARAPI constructor();
-
-    /**
-     * Create a new input source with a system identifier.
-     *
-     * <p>Applications may use setPublicId to include a
-     * public identifier as well, or setEncoding to specify
-     * the character encoding, if known.</p>
-     *
-     * <p>If the system identifier is a URL, it must be fully
-     * resolved (it may not be a relative URL).</p>
-     *
-     * @param systemId The system identifier (URI).
-     * @see #setPublicId
-     * @see #setSystemId
-     * @see #setByteStream
-     * @see #setEncoding
-     * @see #setCharacterStream
-     */
-    CARAPI constructor(
-        /* [in] */ const String& systemId);
-
-    /**
-     * Create a new input source with a byte stream.
-     *
-     * <p>Application writers should use setSystemId() to provide a base
-     * for resolving relative URIs, may use setPublicId to include a
-     * public identifier, and may use setEncoding to specify the object's
-     * character encoding.</p>
-     *
-     * @param byteStream The raw byte stream containing the document.
-     * @see #setPublicId
-     * @see #setSystemId
-     * @see #setEncoding
-     * @see #setByteStream
-     * @see #setCharacterStream
-     */
-    CARAPI constructor(
-        /* [in] */ Elastos::IO::IInputStream* byteStream);
-
-    /**
-     * Create a new input source with a character stream.
-     *
-     * <p>Application writers should use setSystemId() to provide a base
-     * for resolving relative URIs, and may use setPublicId to include a
-     * public identifier.</p>
-     *
-     * <p>The character stream shall not include a byte order mark.</p>
-     *
-     * @param characterStream The raw character stream containing the document.
-     * @see #setPublicId
-     * @see #setSystemId
-     * @see #setByteStream
-     * @see #setCharacterStream
-     */
-    CARAPI constructor(
-        /* [in] */ Elastos::IO::IReader* characterStream);
-
 private:
     String mPublicId;
     String mSystemId;
-    AutoPtr<Elastos::IO::IInputStream> mByteStream;
     String mEncoding;
+    AutoPtr<Elastos::IO::IInputStream> mByteStream;
     AutoPtr<Elastos::IO::IReader> mCharacterStream;
 };
 

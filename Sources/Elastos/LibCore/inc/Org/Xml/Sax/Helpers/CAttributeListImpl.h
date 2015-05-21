@@ -2,8 +2,8 @@
 #ifndef __CATTRIBUTELISTIMPL_H__
 #define __CATTRIBUTELISTIMPL_H__
 
-#include "_CAttributeListImpl.h"
-#include "cmdef.h"
+#include "__Org_Xml_Sax_Helpers_CAttributeListImpl.h"
+#include "coredef.h"
 #include <elastos/List.h>
 
 using Elastos::Utility::List;
@@ -14,11 +14,16 @@ namespace Sax {
 namespace Helpers {
 
 CarClass(CAttributeListImpl)
+    , public Object
+    , public IAttributeList
+    , public IAttributeListImpl
 {
 public:
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
+
     CAttributeListImpl();
 
-public:
     CARAPI GetLength(
         /* [out] */ Int32* length);
 
@@ -68,9 +73,6 @@ private:
     CARAPI_(Int32) GetListIndex(
         /* [in] */ List<String>* list,
         /* [in] */ const String& value);
-//    AutoPtr<IObjectContainer> mNames; //  = new ArrayList<String>();
-//    AutoPtr<IObjectContainer> mTypes; // = new ArrayList<String>();
-//    AutoPtr<IObjectContainer> mValues; // = new ArrayList<String>();
 };
 
 } // namespace Helpers

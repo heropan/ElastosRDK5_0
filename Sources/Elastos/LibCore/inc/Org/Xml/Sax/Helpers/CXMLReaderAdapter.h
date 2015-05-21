@@ -2,17 +2,49 @@
 #ifndef __CXMLREADERADAPTER_H__
 #define __CXMLREADERADAPTER_H__
 
-#include "_CXMLReaderAdapter.h"
-#include "_CAttributesAdapter.h"
+#include "__Org_Xml_Sax_Helpers_CXMLReaderAdapter.h"
 
 namespace Org {
 namespace Xml {
 namespace Sax {
 namespace Helpers {
 
+class AttributesAdapter;
+
 CarClass(CXMLReaderAdapter)
+    , public　Object
+    , public IParser
+    , public IContentHandler
 {
 public:
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
+
+    /**
+     * Create a new adapter.
+     *
+     * <p>Use the "org.xml.sax.driver" property to locate the SAX2
+     * driver to embed.</p>
+     *
+     * @exception org.xml.sax.SAXException If the embedded driver
+     *            cannot be instantiated or if the
+     *            org.xml.sax.driver property is not specified.
+     */
+    CARAPI constructor();
+
+    /**
+     * Create a new adapter.
+     *
+     * <p>Create a new adapter, wrapped around a SAX2 XMLReader.
+     * The adapter will make the XMLReader act like a SAX1
+     * Parser.</p>
+     *
+     * @param xmlReader The SAX2 XMLReader to wrap.
+     * @exception java.lang.NullPointerException If the argument is null.
+     */
+    CARAPI constructor(
+        /* [in] */ IXMLReader* xmlReader);
+
     /**
      * Set the locale for error reporting.
      *
@@ -238,31 +270,6 @@ public:
     CARAPI SkippedEntity(
         /* [in] */ const String& name);
 
-    /**
-     * Create a new adapter.
-     *
-     * <p>Use the "org.xml.sax.driver" property to locate the SAX2
-     * driver to embed.</p>
-     *
-     * @exception org.xml.sax.SAXException If the embedded driver
-     *            cannot be instantiated or if the
-     *            org.xml.sax.driver property is not specified.
-     */
-    CARAPI constructor();
-
-    /**
-     * Create a new adapter.
-     *
-     * <p>Create a new adapter, wrapped around a SAX2 XMLReader.
-     * The adapter will make the XMLReader act like a SAX1
-     * Parser.</p>
-     *
-     * @param xmlReader The SAX2 XMLReader to wrap.
-     * @exception java.lang.NullPointerException If the argument is null.
-     */
-    CARAPI constructor(
-        /* [in] */ IXMLReader* xmlReader);
-
 private:
     /**
      * Internal setup.
@@ -280,11 +287,16 @@ private:
 private:
     AutoPtr<IXMLReader> mXmlReader;
     AutoPtr<IDocumentHandler> mDocumentHandler;
-    AutoPtr<CAttributesAdapter> mQAtts; // AttributesAdapter
+    AutoPtr<AttributesAdapter> mQAtts; // AttributesAdapter
 };
 
-CarClass(CAttributesAdapter) {
+class AttributesAdapter
+    : public Object
+    , public IAttributeList
+{
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Return the number of attributes.
      *
@@ -351,8 +363,6 @@ public:
      */
     CARAPI SetAttributes (
         /* [in] */IAttributes* attributes);
-
-    CARAPI constructor ();
 
 private:
     AutoPtr<IAttributes> mAttributes;

@@ -2,7 +2,7 @@
 #ifndef __ORG_SAX2_CDRIVER_H__
 #define __ORG_SAX2_CDRIVER_H__
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "_CDriver.h"
 #include "Org.Xml.Sax.h"
 #ifdef ELASTOS_CORE

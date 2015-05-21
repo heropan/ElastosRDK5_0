@@ -2057,7 +2057,7 @@ ECode CKXmlParser::GetProperty(
     }
     else if (property.Equals(PROPERTY_XMLDECL_STANDALONE)) {
         *value = mStandalone;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     else if (property.Equals(PROPERTY_LOCATION)) {
@@ -2343,7 +2343,7 @@ ECode CKXmlParser::GetTextCharacters(
     (*poslen)[0] = 0;
     (*poslen)[1] = result->GetLength();
     *characters = result;
-    INTERFACE_ADDREF(*characters)
+    REFCOUNT_ADD(*characters)
     return NOERROR;
 }
 

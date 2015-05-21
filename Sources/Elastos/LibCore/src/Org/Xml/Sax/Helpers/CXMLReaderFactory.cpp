@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CXMLReaderFactory.h"
 #include "NewInstanceHelper.h"
 #include "CParserFactory.h"
@@ -13,8 +13,8 @@ using Elastos::IO::CBufferedReader;
 using Elastos::IO::IInputStreamReader;
 using Elastos::IO::CInputStreamReader;
 using Elastos::IO::Charset::ICharset;
-using Elastos::IO::Charset::ICharsets;
-using Elastos::IO::Charset::CCharsets;
+using Elastos::IO::Charset::IStandardCharsets;
+using Elastos::IO::Charset::CStandardCharsets;
 
 namespace Org {
 namespace Xml {
@@ -22,6 +22,8 @@ namespace Sax {
 namespace Helpers {
 
 const String XMLReaderFactory::property("org.xml.sax.driver");
+
+CAR_SINGLETON_IMPL(CXMLReaderFactory, Singleton, IXMLReaderFactory)
 
 ECode CXMLReaderFactory::CreateXMLReader(
     /* [out] */ IXMLReader** reader)
@@ -67,8 +69,8 @@ ECode XMLReaderFactory::CreateXMLReader(
             // in = loader.getResourceAsStream (service);
 
         if (in != NULL) {
-            AutoPtr<ICharsets> csets;
-            CCharsets::AcquireSingleton((ICharsets**)&csets);
+            AutoPtr<IStandardCharsets> csets;
+            CStandardCharsets::AcquireSingleton((IStandardCharsets**)&csets);
             AutoPtr<ICharset> charset;
             csets->GetUTF_8((ICharset**)&charset);
             String utf8str;
@@ -106,7 +108,7 @@ ECode XMLReaderFactory::CreateXMLReader(
 
     CParserAdapter::New(outparser, (IXMLReader**)&outreader);
     *xmlreader = outreader;
-    INTERFACE_ADDREF(*xmlreader)
+    REFCOUNT_ADD(*xmlreader)
     // } catch (Exception e) {
     //     throw new SAXException ("Can't create default XMLReader; "
     //         + "is system property org.xml.sax.driver set?");
@@ -132,7 +134,7 @@ ECode XMLReaderFactory::LoadClass(
     AutoPtr<IXMLReader> outreader = (IXMLReader*) NewInstanceHelper::NewInstance(loader, className)->Probe(EIID_IXMLReader);
     if (outreader == NULL)
     {
-        return E_XML_SAX_EXCEPTION;
+        return E_SAX_EXCEPTION;
     }
     // } catch (ClassNotFoundException e1) {
     //     throw new SAXException("SAX2 driver class " + className +
@@ -149,7 +151,7 @@ ECode XMLReaderFactory::LoadClass(
     //                " does not implement XMLReader", e4);
     // }
     *xmlReader = outreader;
-    INTERFACE_ADDREF(*xmlReader)
+    REFCOUNT_ADD(*xmlReader)
     return NOERROR;
 }
 

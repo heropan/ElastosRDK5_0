@@ -2,19 +2,36 @@
 #ifndef __CPARSERFACTORY_H__
 #define __CPARSERFACTORY_H__
 
-#include "_CParserFactory.h"
-#include "cmdef.h"
+#include "__Org_Xml_Sax_Helpers_CParserFactory.h"
+#include "Singleton.h"
+
+using Elastos::Core::Singleton;
 
 namespace Org {
 namespace Xml {
 namespace Sax {
 namespace Helpers {
 
-//class ParserFactory;
+class ParserFactory {
+public:
+    static CARAPI MakeParser(
+        /* [out] */ IParser** parser);
+
+    static CARAPI MakeParser(
+        /* [in] */ const String& className,
+        /* [out] */ IParser** parser);
+
+private:
+    ParserFactory();
+};
 
 CarClass(CParserFactory)
+    , public Singleton
+    , public IParserFactory
 {
 public:
+    CAR_SINGLETON_DECL()
+
     /**
      * Create a new SAX parser using the `org.xml.sax.parser' system property.
      *
@@ -72,19 +89,6 @@ private:
     // TODO: Add your private member variables here.
 };
 
-
-class ParserFactory {
-public:
-    static CARAPI MakeParser(
-        /* [out] */ IParser** parser);
-
-    static CARAPI MakeParser(
-        /* [in] */ const String& className,
-        /* [out] */ IParser** parser);
-
-private:
-    ParserFactory();
-};
 
 } // namespace Helpers
 } // namespace Sax

@@ -27,7 +27,7 @@ Object是所有C++类或者CAR类的子类，所以，所有CAR类都隐含实�
 
 可以利用 Subline Text 的正则表达式查询与替换功能来去掉Ex, Ex2后缀。
 在 Subline Text 查询选项中，选中正则表达式和大小写匹配选项：
-查询：<code>([a-zA-Z]\w*)Ex[0-9]?\s\\(</code>
+查询：<code>([a-zA-Z]\w*)Ex[0-9]?\\(</code>，有时候还需要排查非大小写模式下的：<code>([a-zA-Z]\w*)Ex[0-9]?\s\\(</code>
 替换：<code>$1(</code>
 
 ## 取消接口间的继承

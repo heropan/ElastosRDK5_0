@@ -1,7 +1,6 @@
-TARGET_NAME= Ext
+TARGET_NAME= ext
 TARGET_TYPE= lib
 
-#INCLUDES += $(MAKEDIR)/../../../../inc/common;
 INCLUDES += ../;
 INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax;
 INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax/Helpers;

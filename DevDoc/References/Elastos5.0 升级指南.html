@@ -1032,7 +1032,7 @@ body .markdown-body
 <p>此外，对于一些特殊用途不能被重载的函数，如：Release，若　Java 源码中有同名函数，请翻译成 ReleaseResource 或 ReleaseLock。</p>
 <p>可以利用 Subline Text 的正则表达式查询与替换功能来去掉Ex, Ex2后缀。<br />
 在 Subline Text 查询选项中，选中正则表达式和大小写匹配选项：<br />
-查询：<code>([a-zA-Z]\w*)Ex[0-9]?\s\(</code><br />
+查询：<code>([a-zA-Z]\w<em>)Ex[0-9]?\(</code>，有时候还需要排查非大小写模式下的：<code>([a-zA-Z]\w</em>)Ex[0-9]?\s\(</code><br />
 替换：<code>$1(</code></p>
 <h2 id="_2"><a name="user-content-_2" href="#_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>取消接口间的继承</h2>
 <p>当前，我们是按照Java中类的继承关系来定义Elastos中接口间的继承。比如，IActivity接口继承IContextThemeWrapper接口。</p>

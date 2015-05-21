@@ -2,7 +2,7 @@
 #ifndef __CATTRIBUTES2IMPL_H__
 #define __CATTRIBUTES2IMPL_H__
 
-#include "_CAttributes2Impl.h"
+#include "_Org_Xml_Sax_Ext_CAttributes2Impl.h"
 #include "AttributesImpl.h"
 
 using Org::Xml::Sax::Helpers::AttributesImpl;
@@ -38,60 +38,13 @@ namespace Ext {
  * @author David Brownell
  * @version TBS
  */
-CarClass(CAttributes2Impl), public AttributesImpl
+CarClass(CAttributes2Impl)
+    , public AttributesImpl
+    , public IAttributes2Impl
 {
 public:
-    CARAPI GetLength(
-        /* [out] */ Int32* length);
-
-    CARAPI GetURI(
-        /* [in] */ Int32 index,
-        /* [out] */ String* URI);
-
-    CARAPI GetLocalName(
-        /* [in] */ Int32 index,
-        /* [out] */ String* localName);
-
-    CARAPI GetQName(
-        /* [in] */ Int32 index,
-        /* [out] */ String* qName);
-
-    CARAPI GetType(
-        /* [in] */ Int32 index,
-        /* [out] */ String* type);
-
-    CARAPI GetValue(
-        /* [in] */ Int32 index,
-        /* [out] */ String* value);
-
-    CARAPI GetIndex(
-        /* [in] */ const String& uri,
-        /* [in] */ const String& localName,
-        /* [out] */ Int32* index);
-
-    CARAPI GetIndex(
-        /* [in] */ const String& name,
-        /* [out] */ Int32* index);
-
-    CARAPI GetType(
-        /* [in] */ const String& uri,
-        /* [in] */ const String& localName,
-        /* [out] */ String* type);
-
-    CARAPI GetType(
-        /* [in] */ const String& name,
-        /* [out] */ String* type);
-
-    CARAPI GetValue(
-        /* [in] */ const String& uri,
-        /* [in] */ const String& localName,
-        /* [out] */ String* value);
-
-    CARAPI GetValue(
-        /* [in] */ const String& name,
-        /* [out] */ String* value);
-
-    CARAPI Clear();
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
 
     CARAPI SetAttributes(
         /* [in] */ IAttributes* atts);
@@ -113,39 +66,6 @@ public:
 
     CARAPI RemoveAttribute(
         /* [in] */ Int32 index);
-
-    CARAPI SetURI(
-        /* [in] */ Int32 index,
-        /* [in] */ const String& uri);
-
-    CARAPI SetLocalName(
-        /* [in] */ Int32 index,
-        /* [in] */ const String& localName);
-
-    CARAPI SetQName(
-        /* [in] */ Int32 index,
-        /* [in] */ const String& name);
-
-    CARAPI SetType(
-        /* [in] */ Int32 index,
-        /* [in] */ const String& type);
-
-    CARAPI SetValue(
-        /* [in] */ Int32 index,
-        /* [in] */ const String& value);
-
-    CARAPI IsDeclared(
-        /* [in] */ Int32 index,
-        /* [out] */ Boolean * isDeclared);
-
-    CARAPI IsDeclared(
-        /* [in] */ const String& uri,
-        /* [in] */ const String& localName,
-        /* [out] */ Boolean * isDeclared);
-
-    CARAPI IsDeclared(
-        /* [in] */ const String& qName,
-        /* [out] */ Boolean * isDeclared);
 
     CARAPI IsSpecified(
         /* [in] */ Int32 index,
