@@ -3,7 +3,7 @@
 #include <elastos/Character.h>
 #include <stdio.h>
 #include "StringBuilder.h"
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CStringWrapper.h"
 #else

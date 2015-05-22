@@ -3,7 +3,7 @@
 #define __MATH_H__
 
 #include <elastos.h>
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #else
 #include "Elastos.CoreLibrary.h"

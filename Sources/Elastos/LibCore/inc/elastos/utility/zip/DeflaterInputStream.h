@@ -2,7 +2,7 @@
 #ifndef __DEFLATERINPUTSTREAM_H__
 #define __DEFLATERINPUTSTREAM_H__
 
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CStreams.h"
 #else

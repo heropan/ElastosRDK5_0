@@ -3,7 +3,7 @@
 #define __EXECUTORS_H__
 
 #include "cmdef.h"
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #else
 #include "Elastos.CoreLibrary.h"

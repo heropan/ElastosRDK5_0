@@ -2,7 +2,7 @@
 #ifndef __ZIPFILE_H__
 #define __ZIPFILE_H__
 
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CObjectContainer.h"
 #include "CDataInputStream.h"

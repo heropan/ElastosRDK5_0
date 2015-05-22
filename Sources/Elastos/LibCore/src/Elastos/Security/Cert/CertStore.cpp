@@ -2,7 +2,7 @@
 #include "CertStore.h"
 #include "cmdef.h"
 
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "CSecurity.h"
 #endif
 

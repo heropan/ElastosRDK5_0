@@ -4,7 +4,7 @@
 #include <elastos/StringBuilder.h>
 #include <elastos/StringUtils.h>
 
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CThread.h"
 #include "CAtomicInteger32.h"

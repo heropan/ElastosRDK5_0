@@ -4,7 +4,7 @@
 #include "StringBuilder.h"
 #include "StringToIntegral.h"
 #include "StringUtils.h"
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "Pattern.h"
 #else
@@ -13,7 +13,7 @@
 
 using Elastos::Core::Math;
 using Elastos::Utility::Regex::IMatcher;
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 using Elastos::Utility::Regex::Pattern;
 #else
 using Elastos::Utility::Regex::IPatternHelper;
@@ -36,7 +36,7 @@ static String InitHEX_PATTERN()
 static AutoPtr<IPattern> InitPATTERN()
 {
     AutoPtr<IPattern> pattern;
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
     Pattern::Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
 #else
     AutoPtr<IPatternHelper> helper;

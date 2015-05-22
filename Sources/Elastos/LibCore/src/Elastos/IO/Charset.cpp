@@ -5,7 +5,7 @@
 #include <elastos/Mutex.h>
 #include <elastos/CSystem.h>
 #include "CStringWrapper.h"
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include <elastos/CSystem.h>
 #endif
 
@@ -367,7 +367,7 @@ AutoPtr<ICharset> Charset::GetDefaultCharset()
     if (DEFAULT_CHARSET.Get() == NULL) {
 
     AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
     AutoPtr<Elastos::Core::CSystem> cs;
     Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
     system = (ISystem*)cs.Get();

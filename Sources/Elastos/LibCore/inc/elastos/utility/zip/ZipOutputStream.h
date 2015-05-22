@@ -2,7 +2,7 @@
 #ifndef __ZIPOUTPUTSTREAM_H__
 #define __ZIPOUTPUTSTREAM_H__
 
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CByteArrayOutputStream.h"
 #else

@@ -3,7 +3,7 @@
 #define __CJARFILE_H__
 
 #include "_CJarFile.h"
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #else
 #include "Elastos.CoreLibrary.h"

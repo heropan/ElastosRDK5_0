@@ -4,7 +4,7 @@
 #include "NativeThread.h"
 #include "ThreadGroup.h"
 #include <Math.h>
-// #ifdef ELASTOS_CORE
+// #ifdef ELASTOS_CORELIBRARY
 // #include "CSystem.h"
 // #endif
 
@@ -230,7 +230,7 @@ ECode Thread::CheckAccess()
     // the receiver as parameter
 
 //     AutoPtr<ISystem> system;
-// #ifdef ELASTOS_CORE
+// #ifdef ELASTOS_CORELIBRARY
 //     AutoPtr<CSystem> cs;
 //     CSystem::AcquireSingletonByFriend((CSystem**)&cs);
 //     system = (ISystem*)cs.Get();
@@ -552,7 +552,7 @@ ECode Thread::Join(
 
 // TODO luozhaohui
 //     AutoPtr<ISystem> system;
-// #ifdef ELASTOS_CORE
+// #ifdef ELASTOS_CORELIBRARY
 //     AutoPtr<CSystem> cs;
 //     CSystem::AcquireSingletonByFriend((CSystem**)&cs);
 //     system = (ISystem*)cs.Get();
@@ -755,7 +755,7 @@ ECode Thread::Start()
 ECode Thread::Stop()
 {
 //     AutoPtr<ISystem> system;
-// #ifdef ELASTOS_CORE
+// #ifdef ELASTOS_CORELIBRARY
 //     AutoPtr<CSystem> cs;
 //     CSystem::AcquireSingletonByFriend((CSystem**)&cs);
 //     system = (ISystem*)cs.Get();
@@ -950,7 +950,7 @@ ECode Thread::ParkUntil(
          */
 // TODO luozhaohui
 //         AutoPtr<ISystem> system;
-// #ifdef ELASTOS_CORE
+// #ifdef ELASTOS_CORELIBRARY
 //         AutoPtr<CSystem> cs;
 //         CSystem::AcquireSingletonByFriend((CSystem**)&cs);
 //         system = (ISystem*)cs.Get();

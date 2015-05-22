@@ -2,7 +2,7 @@
 #ifndef __CGZIPINPUTSTREAM_H__
 #define __CGZIPINPUTSTREAM_H__
 
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CMemory.h"
 #else

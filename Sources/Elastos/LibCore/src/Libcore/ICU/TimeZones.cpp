@@ -11,7 +11,7 @@
 #include <unicode/smpdtfmt.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include <elastos/CSystem.h>
 #endif
 
@@ -74,7 +74,7 @@ AutoPtr< ArrayOf<String> > TimeZones::GetAvailableTimeZones()
     }
 
     AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
     AutoPtr<Elastos::Core::CSystem> cs;
     Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
     system = (ISystem*)cs.Get();
@@ -162,7 +162,7 @@ AutoPtr< ArrayOf< AutoPtr< ArrayOf<String> > > > TimeZones::ZoneStringsCache::Cr
     /* [in] */ AutoPtr<ILocale> locale)
 {
     AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
     AutoPtr<Elastos::Core::CSystem> cs;
     Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
     system = (ISystem*)cs.Get();

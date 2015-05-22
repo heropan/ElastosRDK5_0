@@ -2,7 +2,7 @@
 #ifndef __RSAPRIVATEKEYSPEC_H__
 #define __RSAPRIVATEKEYSPEC_H__
 
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #else
 #include "Elastos.CoreLibrary.h"

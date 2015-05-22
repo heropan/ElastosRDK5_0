@@ -2,7 +2,7 @@
 TARGET_NAME= core
 TARGET_TYPE= lib
 
-C_DEFINES += -DELASTOS_CORE
+C_DEFINES += -DELASTOS_CORELIBRARY
 
 include $(MAKEDIR)/../../sources.inc
 

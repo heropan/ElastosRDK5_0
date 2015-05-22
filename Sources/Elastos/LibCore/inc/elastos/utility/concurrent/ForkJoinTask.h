@@ -2,7 +2,7 @@
 #ifndef __FORKJOINTASK_H__
 #define __FORKJOINTASK_H__
 
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos/Mutex.h>
 #else

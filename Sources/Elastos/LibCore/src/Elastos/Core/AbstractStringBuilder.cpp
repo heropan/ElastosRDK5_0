@@ -7,7 +7,7 @@
 #include <elastos/IntegralToString.h>
 #include <elastos/Character.h>
 #include <elastos/ObjectUtils.h>
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CStringWrapper.h"
 #else

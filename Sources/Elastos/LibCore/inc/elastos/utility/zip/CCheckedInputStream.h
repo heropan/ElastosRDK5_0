@@ -4,7 +4,7 @@
 
 #include "_CCheckedInputStream.h"
 
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CStreams.h"
 #else

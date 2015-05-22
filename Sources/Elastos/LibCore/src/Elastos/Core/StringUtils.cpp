@@ -4,7 +4,7 @@
 #include "StringToReal.h"
 #include "IntegralToString.h"
 #include "RealToString.h"
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CStringWrapper.h"
 #include "CPatternHelper.h"

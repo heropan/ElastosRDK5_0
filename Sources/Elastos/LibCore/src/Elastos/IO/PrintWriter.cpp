@@ -1,7 +1,7 @@
 
 #include "cmdef.h"
 #include "elastos/io/PrintWriter.h"
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "COutputStreamWriter.h"
 #include "CFileOutputStream.h"
 #include "CBufferedOutputStream.h"
@@ -302,7 +302,7 @@ ECode PrintWriter::Println()
     Object::Autolock lock(mLock);
 
     AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
     AutoPtr<Elastos::Core::CSystem> cs;
     Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
     system = (ISystem*)cs.Get();

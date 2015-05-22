@@ -8,7 +8,7 @@
 #include "CZoneInfo.h"
 #include "TimeZoneGetter.h"
 #include "CRandomAccessFile.h"
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include <elastos/CSystem.h>
 #endif
 
@@ -59,7 +59,7 @@ ECode ZoneInfoDB::Init()
 String ZoneInfoDB::GetDirectoryName()
 {
     AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
     AutoPtr<CSystem> cs;
     CSystem::AcquireSingleton((CSystem**)&cs);
     system = (ISystem*)cs.Get();

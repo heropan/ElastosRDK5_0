@@ -1,6 +1,6 @@
 
 #include "TimeZoneGetter.h"
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include "CSystem.h"
 #endif
 
@@ -17,7 +17,7 @@ ECode TimeZoneGetter::DefaultTimeZoneGetter::GetId(
     VALIDATE_NOT_NULL(id);
 
     AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
     AutoPtr<Elastos::Core::CSystem> cs;
     Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
     system = (ISystem*)cs.Get();
