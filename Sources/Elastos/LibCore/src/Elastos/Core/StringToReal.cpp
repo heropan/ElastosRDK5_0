@@ -1,5 +1,5 @@
 
-#include <cmdef.h>
+#include <coredef.h>
 #include <StringToReal.h>
 #include <Character.h>
 #include <Math.h>
@@ -1004,7 +1004,7 @@ ECode StringToReal::InitialParse(
 
     AutoPtr<StringExponentPair> result = new StringExponentPair();
     *pair = result.Get();
-    INTERFACE_ADDREF(*pair);
+    REFCOUNT_ADD(*pair);
 
     if (length == 0) {
         return E_NUMBER_FORMAT_EXCEPTION;

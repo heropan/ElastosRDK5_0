@@ -2,17 +2,23 @@
 #ifndef __CBOOLEAN_H__
 #define __CBOOLEAN_H__
 
-#include "_CBoolean.h"
+#include "_Elastos_Core_CBoolean.h"
+#include "Object.h"
 
 using Elastos::IO::ISerializable;
-using Elastos::Core::IComparable;
 
 namespace Elastos {
 namespace Core {
 
-CarClass(CBoolean) ,public ISerializable, public IComparable
+CarClass(CBoolean)
+    , public Object
+    , public ISerializable
+    , public IComparable
 {
 public:
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ Boolean value);
 

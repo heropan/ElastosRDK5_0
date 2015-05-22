@@ -1,5 +1,6 @@
 #include "StringUtils.h"
-#include <cmdef.h>
+#include "Character.h"
+#include <coredef.h>
 #include "StringToIntegral.h"
 #include "StringToReal.h"
 #include "IntegralToString.h"
@@ -7,20 +8,21 @@
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CStringWrapper.h"
-#include "CPatternHelper.h"
-#include "CSplitter.h"
+//#include "CPatternHelper.h"
+//#include "CSplitter.h"
 #else
 #include "Elastos.CoreLibrary.h"
 #endif
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
-using Elastos::Utility::Regex::IPatternHelper;
-using Elastos::Utility::Regex::CPatternHelper;
-using Elastos::Utility::Regex::ISplitter;
-using Elastos::Utility::Regex::CSplitter;
-using Elastos::Utility::Regex::IPattern;
-using Elastos::Utility::Regex::IMatcher;
+using Elastos::Core::Character;
+//using Elastos::Utility::Regex::IPatternHelper;
+//using Elastos::Utility::Regex::CPatternHelper;
+//using Elastos::Utility::Regex::ISplitter;
+//using Elastos::Utility::Regex::CSplitter;
+//using Elastos::Utility::Regex::IPattern;
+//using Elastos::Utility::Regex::IMatcher;
 
 namespace Elastos {
 namespace Core {
@@ -275,20 +277,20 @@ ECode StringUtils::Split(
     VALIDATE_NOT_NULL(array);
     *array = NULL;
 
-    AutoPtr<ISplitter> splitter;
+    /*AutoPtr<ISplitter> splitter;
     CSplitter::AcquireSingleton((ISplitter**)&splitter);
-    splitter->FastSplit(regularExpression, input, limit, array);
+    splitter->FastSplit(regularExpression, input, limit, array);*/
     if (*array != NULL){
         return NOERROR;
     }
     else{
-        AutoPtr<IPatternHelper> helper;
+        /*AutoPtr<IPatternHelper> helper;
         FAIL_RETURN(CPatternHelper::AcquireSingleton((IPatternHelper**)&helper));
         AutoPtr<IPattern> pattern;
         FAIL_RETURN(helper->Compile(regularExpression, (IPattern**)&pattern));
         AutoPtr<ICharSequence> seq;
         FAIL_RETURN(CStringWrapper::New(input, (ICharSequence**)&seq));
-        return pattern->SplitEx2(seq, limit, array);
+        return pattern->SplitEx2(seq, limit, array);*/
     }
 }
 
@@ -301,14 +303,14 @@ ECode StringUtils::ReplaceFirst(
     VALIDATE_NOT_NULL(result);
     *result = String(NULL);
 
-    AutoPtr<IPatternHelper> helper;
+    /*AutoPtr<IPatternHelper> helper;
     FAIL_RETURN(CPatternHelper::AcquireSingleton((IPatternHelper**)&helper));
     AutoPtr<IPattern> pattern;
     FAIL_RETURN(helper->Compile(regularExpression, (IPattern**)&pattern));
 
     AutoPtr<IMatcher> matcher;
     FAIL_RETURN(pattern->Matcher(input, (IMatcher**)&matcher));
-    return matcher->ReplaceFirst(replacement, result);
+    return matcher->ReplaceFirst(replacement, result);*/
 }
 
 ECode StringUtils::ReplaceAll(
@@ -320,14 +322,14 @@ ECode StringUtils::ReplaceAll(
     VALIDATE_NOT_NULL(result);
     *result = String(NULL);
 
-    AutoPtr<IPatternHelper> helper;
+    /*AutoPtr<IPatternHelper> helper;
     FAIL_RETURN(CPatternHelper::AcquireSingleton((IPatternHelper**)&helper));
     AutoPtr<IPattern> pattern;
     FAIL_RETURN(helper->Compile(regularExpression, (IPattern**)&pattern));
 
     AutoPtr<IMatcher> matcher;
     FAIL_RETURN(pattern->Matcher(input, (IMatcher**)&matcher));
-    return matcher->ReplaceAll(replacement, result);
+    return matcher->ReplaceAll(replacement, result);*/
 }
 
 ECode StringUtils::Matches(
@@ -335,10 +337,10 @@ ECode StringUtils::Matches(
     /* [in] */ const String& regularExpression,
     /*[out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+   /* VALIDATE_NOT_NULL(result);
     AutoPtr<IPatternHelper> helper;
     FAIL_RETURN(CPatternHelper::AcquireSingleton((IPatternHelper**)&helper));
-    return helper->Matches(regularExpression, input, result);
+    return helper->Matches(regularExpression, input, result);*/
 }
 
 ECode StringUtils::Split(
@@ -406,15 +408,15 @@ ECode StringUtils::Matches(
     return Matches(input, String(regularExpression), result);
 }
 
-ECode StringUtils::ParsePositiveLong(
+ECode StringUtils::ParsePositiveInt64(
     /* [in] */ const String& input,
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
-    return ParsePositiveLong(input, 10, result);
+    return ParsePositiveInt64(input, 10, result);
 }
 
-ECode StringUtils::ParsePositiveLong(
+ECode StringUtils::ParsePositiveInt64(
     /* [in] */ const String& input,
     /* [in] */ const Int32 radix,
     /* [out] */ Int64* result)

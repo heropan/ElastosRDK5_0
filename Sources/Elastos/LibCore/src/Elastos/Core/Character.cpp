@@ -1,8 +1,14 @@
-
-#include <cmdef.h>
+#ifdef ELASTOS_CORE
+#include <coredef.h>
+#include "Character.h"
+#include "Math.h"
+#include "StringBuilder.h"
+#else
+#include <coredef.h>
 #include <elastos/Character.h>
 #include <elastos/Math.h>
 #include <elastos/StringBuilder.h>
+#endif
 
 namespace Elastos {
 namespace Core {
@@ -578,7 +584,7 @@ ECode Character::ToChars(
 
     Int32 bytes = GetByteCount(c);
     *seq = ArrayOf<Char8>::Alloc(bytes);
-    INTERFACE_ADDREF(*seq);
+    REFCOUNT_ADD(*seq);
     WriteUTFBytesToBuffer((Byte*)(*seq)->GetPayload(), c, bytes);
     return NOERROR;
 }
@@ -597,7 +603,7 @@ ECode Character::ToChars(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
     *dst = ArrayOf<Char8>::Alloc(src.GetLength() * 4);
-    INTERFACE_ADDREF(*dst);
+    REFCOUNT_ADD(*dst);
     Int32 dstOffset = 0;
     for (Int32 i = 0; i < count; ++i) {
         Int32 bytes;

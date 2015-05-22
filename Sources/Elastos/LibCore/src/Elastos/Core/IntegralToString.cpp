@@ -107,7 +107,7 @@ String IntegralToString::Int32ToString(
 String IntegralToString::ConvertInt32(
     /* [in] */ Int32 i)
 {
-    Boolean negative = FALSE;
+    /*Boolean negative = FALSE;
     String quickResult;
     if (i < 0) {
         negative = TRUE;
@@ -197,7 +197,7 @@ String IntegralToString::ConvertInt32(
     }
 
     quickResult = String(buf->GetPayload() + cursor, bufLen - cursor);
-    return quickResult;
+    return quickResult;*/
 }
 
 String IntegralToString::Int64ToString(
@@ -404,8 +404,8 @@ StringBuilder& IntegralToString::AppendByteAsHex(
     /* [in] */ Boolean upperCase)
 {
     const char* digits = upperCase ? UPPER_CASE_DIGITS : DIGITS;
-    sb.AppendChar(digits[(b >> 4) & 0xf]);
-    sb.AppendChar(digits[b & 0xf]);
+    sb.Append(digits[(b >> 4) & 0xf]);
+    sb.Append(digits[b & 0xf]);
     return sb;
 }
 
@@ -413,12 +413,12 @@ String IntegralToString::ByteToHexString(
     /* [in] */ Byte b,
     /* [in] */ Boolean upperCase)
 {
-    const char* digits = upperCase ? UPPER_CASE_DIGITS : DIGITS;
+   /* const char* digits = upperCase ? UPPER_CASE_DIGITS : DIGITS;
     StringBuilder sb(2);
     sb.AppendChar(digits[(b >> 4) & 0xf]);
     sb.AppendChar(digits[b & 0xf]);
 
-    return sb.ToString();
+    return sb.ToString();*/
 }
 
 String IntegralToString::BytesToHexString(

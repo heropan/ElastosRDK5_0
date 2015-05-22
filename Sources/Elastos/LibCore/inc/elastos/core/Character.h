@@ -4,6 +4,11 @@
 
 #include <elastos.h>
 #include "unicode/uchar.h"
+#include "elastos/core/Object.h"
+
+/*using Elastos::IO::ISerializable;
+using Elastos::Core::IComparable;*/
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Core {
@@ -86,8 +91,8 @@ namespace Core {
  */
 class Character
     : public Object
-    , public ISerializable
-    , public IComparable
+    /*, public ISerializable
+    , public IComparable*/
 {
 public:
     /*

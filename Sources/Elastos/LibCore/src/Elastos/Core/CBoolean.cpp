@@ -1,10 +1,14 @@
 
-#include "cmdef.h"
 #include "CBoolean.h"
-#include "elastos/StringUtils.h"
+#include "StringUtils.h"
+
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL_2(CBoolean, Object, ISerializable, IComparable)
+CAR_OBJECT_IMPL(CBoolean)
 
 ECode CBoolean::constructor(
     /* [in] */ Boolean value)

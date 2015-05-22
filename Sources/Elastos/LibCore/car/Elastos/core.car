@@ -81,12 +81,12 @@ module
         interface IComparable;
     }
 
-    // class CBoolean {
-    //     constructor(
-    //         [in] Boolean value);
+    class CBoolean {
+         constructor(
+             [in] Boolean value);
 
-    //     interface IBoolean;
-    // }
+         interface IBoolean;
+     }
 
     // class CByte {
     //     constructor(

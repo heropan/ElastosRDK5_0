@@ -145,7 +145,7 @@ module
          *             if {@code start} is negative, greater than {@code end} or if
          *             {@code end} is greater than the current {@link #length()}.
          */
-        SubstringEx(
+        Substring(
             [in] Int32 start,
             [in] Int32 end,
             [out] String* str);
@@ -178,7 +178,7 @@ module
          * @see #lastIndexOf(String,int)
          * @since 1.4
          */
-        IndexOfEx(
+        IndexOf(
             [in] String subString,
             [in] Int32 start,
             [out] Int32* index);
@@ -215,12 +215,12 @@ module
          * @see String#lastIndexOf(String,int)
          * @since 1.4
          */
-        LastIndexOfEx(
+        LastIndexOf(
             [in] String subString,
             [in] Int32 start,
             [out] Int32* index);
 
-        AppendNULL();
+        Append();
 
         /**
          * Adds the string representation of the specified boolean to the end of
@@ -234,7 +234,7 @@ module
          * @return this StringBuffer.
          * @see String#valueOf(boolean)
          */
-        AppendBoolean(
+        Append(
             [in] Boolean b);
 
         /**
@@ -245,7 +245,7 @@ module
          * @return this StringBuffer.
          * @see String#valueOf(char)
          */
-        AppendChar(
+        Append(
             [in] Char32 c);
 
         /**
@@ -257,7 +257,7 @@ module
          * @return this StringBuffer.
          * @see String#valueOf(double)
          */
-        AppendDouble(
+        Append(
             [in] Double d);
 
         /**
@@ -269,7 +269,7 @@ module
          * @return this StringBuffer.
          * @see String#valueOf(float)
          */
-        AppendFloat(
+        Append(
             [in] Float f);
 
         /**
@@ -309,7 +309,7 @@ module
          * @return this StringBuffer.
          * @see String#valueOf(Object)
          */
-        AppendObject(
+        Append(
             [in] IInterface* obj);
 
         /**
@@ -322,7 +322,7 @@ module
          *            the string to append (may be null).
          * @return this StringBuffer.
          */
-        AppendString(
+        Append(
             [in] String str);
 
         /**
@@ -338,7 +338,7 @@ module
          *
          * @since 1.4
          */
-        AppendStringBuffer(
+        Append(
             [in] IStringBuffer* sb);
 
         /**
@@ -354,7 +354,7 @@ module
          *
          * @since 1.4
          */
-        AppendStringBuilder(
+        Append(
             [in] IStringBuilder* sb);
 
         /**
@@ -366,7 +366,7 @@ module
          * @throws NullPointerException
          *            if {@code chars} is {@code null}.
          */
-        AppendChars(
+        Append(
             [in] ArrayOf<Char32> chars);
 
         /**
@@ -385,7 +385,7 @@ module
          * @throws NullPointerException
          *            if {@code chars} is {@code null}.
          */
-        AppendCharsEx(
+        Append(
             [in] ArrayOf<Char32> str,
             [in] Int32 start,
             [in] Int32 length);
@@ -402,7 +402,7 @@ module
          * @return this StringBuffer.
          * @since 1.5
          */
-        AppendCharSequence(
+        Append(
             [in] ICharSequence* csq);
 
         /**
@@ -424,7 +424,7 @@ module
          *             the length of {@code s}.
          * @since 1.5
          */
-        AppendCharSequenceEx(
+        Append(
             [in] ICharSequence* csq,
             [in] Int32 start,
             [in] Int32 end);
@@ -440,7 +440,7 @@ module
          * @throws ArrayIndexOutOfBoundsException
          *             if {@code index < 0} or {@code index > length()}.
          */
-        InsertChar(
+        Insert(
             [in] Int32 offset,
             [in] Char32 c);
 
@@ -456,7 +456,7 @@ module
          * @throws StringIndexOutOfBoundsException
          *             if {@code index < 0} or {@code index > length()}.
          */
-        InsertBoolean(
+        Insert(
             [in] Int32 offset,
             [in] Boolean b);
 
@@ -504,7 +504,7 @@ module
          * @throws StringIndexOutOfBoundsException
          *             if {@code index < 0} or {@code index > length()}.
          */
-        InsertDouble(
+        Insert(
             [in] Int32 offset,
             [in] Double d);
 
@@ -520,7 +520,7 @@ module
          * @throws StringIndexOutOfBoundsException
          *             if {@code index < 0} or {@code index > length()}.
          */
-        InsertFloat(
+        Insert(
             [in] Int32 offset,
             [in] Float f);
 
@@ -540,7 +540,7 @@ module
          * @throws StringIndexOutOfBoundsException
          *             if {@code index < 0} or {@code index > length()}.
          */
-        InsertObject(
+        Insert(
             [in] Int32 offset,
             [in] IInterface* obj);
 
@@ -558,7 +558,7 @@ module
          * @throws StringIndexOutOfBoundsException
          *             if {@code index < 0} or {@code index > length()}.
          */
-        InsertString(
+        Insert(
             [in] Int32 offset,
             [in] String str);
 
@@ -575,7 +575,7 @@ module
          * @throws NullPointerException
          *            if {@code chars} is {@code null}.
          */
-        InsertChars(
+        Insert(
             [in] Int32 offset,
             [in] ArrayOf<Char32> ch);
 
@@ -599,7 +599,7 @@ module
          *             length > chars.length}, {@code index < 0} or {@code index >
          *             length()}
          */
-        InsertCharsEx(
+        Insert(
             [in] Int32 offset,
             [in] ArrayOf<Char32> chars,
             [in] Int32 start,
@@ -621,7 +621,7 @@ module
          *             if {@code index < 0} or {@code index > length()}.
          * @since 1.5
          */
-        InsertCharSequence(
+        Insert(
             [in] Int32 offset,
             [in] ICharSequence* s);
 
@@ -648,7 +648,7 @@ module
          *             than the length of {@code s}.
          * @since 1.5
          */
-        InsertCharSequenceEx(
+        Insert(
             [in] Int32 offset,
             [in] ICharSequence* s,
             [in] Int32 start,
