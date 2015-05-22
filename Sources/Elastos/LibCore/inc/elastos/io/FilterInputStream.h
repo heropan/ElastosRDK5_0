@@ -16,8 +16,12 @@ namespace IO {
  *
  * @see FilterOutputStream
  */
-class FilterInputStream : public InputStream
+class FilterInputStream 
+    : public InputStream
+    , public IFilterInputStream
 {
+public:
+    CAR_INTERFACE_DECL()
 protected:
     FilterInputStream();
 
@@ -33,7 +37,7 @@ protected:
      *
      * @param in the input stream to filter reads on.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* in);
 
 public:
@@ -114,10 +118,9 @@ public:
      */
     CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
-
     /**
      * Resets this stream to the last marked location. This implementation
      * resets the target stream.
