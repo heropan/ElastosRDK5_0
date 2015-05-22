@@ -1,12 +1,13 @@
 $ INPUT class
+$ IF type is not "aspect"
 $   IF attrib is not "hasctor" OR attrib is "hasdefaultctor"
 $   WITH all interfaces DO
 $       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter"
 
 $           IF class.attrib is "singleton"
-ECode ${class.name}::AcquireSingletonInRegime(
+ECode _${class.name}::AcquireSingletonInRegime(
 $           ELSE
-ECode ${class.name}::NewInRegime(
+ECode _${class.name}::NewInRegime(
 $           END IF ;; is singleton
     /* [in] */ IRegime* regime,
     /* [out] */ ${namespace}${name}** ${name})
@@ -17,9 +18,9 @@ $           END IF ;; is singleton
 }
 
 $           IF class.attrib is "singleton"
-ECode ${class.name}::AcquireSingletonInRegime(
+ECode _${class.name}::AcquireSingletonInRegime(
 $           ELSE
-ECode ${class.name}::NewInRegime(
+ECode _${class.name}::NewInRegime(
 $           END IF ;; is singleton
     /* [in] */ PInterface __regime,
     /* [out] */ ${namespace}${name}** __${name})
@@ -42,9 +43,9 @@ regime, __${name});
 }
 
 $           IF class.attrib is "singleton"
-ECode ${class.name}::AcquireSingleton(
+ECode _${class.name}::AcquireSingleton(
 $           ELSE
-ECode ${class.name}::New(
+ECode _${class.name}::New(
 $           END IF ;; is singleton
     /* [out] */ ${namespace}${name}** ${name})
 {
@@ -64,9 +65,9 @@ $                   WITH all interfaces DO
 $                       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter"
 
 $                           IF class.attrib is "singleton"
-ECode ${class.name}::AcquireSingletonInRegime(
+ECode _${class.name}::AcquireSingletonInRegime(
 $                           ELSE
-ECode ${class.name}::NewInRegime(
+ECode _${class.name}::NewInRegime(
 $                           END IF ;; is singleton
     /* [in] */ PInterface __regime$^
 $                           WITH all parameters DO
@@ -113,9 +114,9 @@ $                           END DO ;; all parameters
 }
 
 $                           IF class.attrib is "singleton"
-ECode ${class.name}::AcquireSingleton(
+ECode _${class.name}::AcquireSingleton(
 $                           ELSE
-ECode ${class.name}::New(
+ECode _${class.name}::New(
 $                           END IF ;; is singleton
 $                           WITH all parameters DO
 $                               IF parameter is not last
@@ -148,3 +149,17 @@ $           END DO ;; all methods
 $       END IF ;; is clsobj
 $   END DO ;; all interfaces
 $   END IF ;; attrib is hasctor
+$
+$ ELSE ;; !(is not aspect)
+$
+ECode _${class.name}::Attach(/* [in] */ IInterface* pObject)
+{
+    return _CObject_AttachAspect(pObject, ECLSID_${name});
+}
+
+ECode _${class.name}::Detach(/* [in] */ IInterface* pObject)
+{
+    return _CObject_DetachAspect(pObject, ECLSID_${name});
+}
+$
+$ END IF ;; is not aspect

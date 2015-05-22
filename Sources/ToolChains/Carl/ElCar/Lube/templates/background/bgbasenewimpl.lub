@@ -7,9 +7,9 @@ $         WITH all methods DO
 $           IF attrib is not "defaultctor"
 
 $             IF class.attrib is "singleton"
-ECode ${class.name}::_AcquireSingletonInRegime(
+ECode _${class.name}::_AcquireSingletonInRegime(
 $             ELSE
-ECode ${class.name}::_NewInRegime(
+ECode _${class.name}::_NewInRegime(
 $             END IF ;; is singleton
     /* [in] */ IRegime* __regime$^
 $             WITH all parameters DO

@@ -7,6 +7,8 @@ lube.lbo :  $(MAKEDIR)/background/backcpp.lub       \
             $(MAKEDIR)/background/backh.lub         \
             $(MAKEDIR)/background/nakedbackh.lub \
             $(MAKEDIR)/background/nakedbackcpp.lub \
+            $(MAKEDIR)/background/bgbasenewimpl.lub \
+            $(MAKEDIR)/background/bgclassnewimpl.lub \
             $(MAKEDIR)/background/clsobjh.lub       \
             $(MAKEDIR)/background/clsobjcpp.lub     \
             $(MAKEDIR)/background/declaspect.lub    \
