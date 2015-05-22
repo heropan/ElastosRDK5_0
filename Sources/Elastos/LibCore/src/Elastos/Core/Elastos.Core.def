@@ -56,6 +56,48 @@ EXPORTS
     ;;ObjectContainerAdd
     ;;ObjectContainerRemove
 
+    ;;Object
+    _ZN7Elastos4Core6ObjectC2Ev
+    _ZN7Elastos4Core6ObjectD2Ev
+    _ZN7Elastos4Core6Object6AddRefEv
+    _ZN7Elastos4Core6Object7ReleaseEv
+    _ZN7Elastos4Core6Object5ProbeERKNS_6_EMuidE
+    _ZN7Elastos4Core6Object14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZN7Elastos4Core6Object11GetHashCodeEPi
+    _ZN7Elastos4Core6Object6EqualsEP10IInterfacePh
+    _ZN7Elastos4Core6Object8ToStringEPNS_6StringE
+    _ZN7Elastos4Core6Object4LockEv
+    _ZN7Elastos4Core6Object6UnlockEv
+    _ZN7Elastos4Core6Object6NotifyEv
+    _ZN7Elastos4Core6Object9NotifyAllEv
+    _ZN7Elastos4Core6Object4WaitEv
+    _ZN7Elastos4Core6Object4WaitEx
+    _ZN7Elastos4Core6Object4WaitExi
+    _ZN7Elastos4Core6Object16GetWeakReferenceEPP14IWeakReference
+    _ZThn8_N7Elastos4Core6Object6AddRefEv
+    _ZThn8_N7Elastos4Core6Object7ReleaseEv
+    _ZThn8_N7Elastos4Core6Object5ProbeERKNS_6_EMuidE
+    _ZThn8_N7Elastos4Core6Object14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn8_N7Elastos4Core6Object11GetHashCodeEPi
+    _ZThn8_N7Elastos4Core6Object6EqualsEP10IInterfacePh
+    _ZThn8_N7Elastos4Core6Object8ToStringEPNS_6StringE
+    _ZThn12_N7Elastos4Core6Object6AddRefEv
+    _ZThn12_N7Elastos4Core6Object7ReleaseEv
+    _ZThn12_N7Elastos4Core6Object5ProbeERKNS_6_EMuidE
+    _ZThn12_N7Elastos4Core6Object14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn12_N7Elastos4Core6Object4LockEv
+    _ZThn12_N7Elastos4Core6Object6UnlockEv
+    _ZThn12_N7Elastos4Core6Object6NotifyEv
+    _ZThn12_N7Elastos4Core6Object9NotifyAllEv
+    _ZThn12_N7Elastos4Core6Object4WaitEv
+    _ZThn12_N7Elastos4Core6Object4WaitEx
+    _ZThn12_N7Elastos4Core6Object4WaitExi
+    _ZThn16_N7Elastos4Core6Object6AddRefEv
+    _ZThn16_N7Elastos4Core6Object7ReleaseEv
+    _ZThn16_N7Elastos4Core6Object5ProbeERKNS_6_EMuidE
+    _ZThn16_N7Elastos4Core6Object14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn16_N7Elastos4Core6Object16GetWeakReferenceEPP14IWeakReference
+
 #if defined(_android)
     ;;NativeThread
     NativeThreadSelf
