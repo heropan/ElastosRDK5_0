@@ -5,24 +5,13 @@ module
     namespace Libcore {
     namespace ICU {
 
-    interface ICollationKeyICU extends Elastos.Text.ICollationKey {
+    /**
+     * ICollationKeyICU extends Elastos.Text.ICollationKey
+     * @Involve
+     * interface IComparable;
+     */
 
-        Equals(
-            [in] IInterface * object,
-            [out] Boolean * value);
-
-        /**
-         * Creates a hash code for this CollationKey.
-         * Compute the hash by iterating sparsely over about 32 (up to 63) bytes
-         * spaced evenly through the string.  For each byte, multiply the previous
-         * hash value by a prime number and add the new byte in, like a linear
-         * congruential random number generator, producing a pseudo-random
-         * deterministic value well distributed over the output range.
-         * @return hash value of collation key. Hash value is never 0.
-         * @stable ICU 2.4
-         */
-        GetHashCode(
-            [out] Int32 * value);
+    interface ICollationKeyICU {
     }
 
     } // namespace ICU

@@ -1,6 +1,7 @@
 module
 {
     using interface Elastos.Core.IInteger32;
+    interface Elastos.Utility.ILocale;
 
     namespace Libcore {
     namespace ICU {
@@ -175,6 +176,10 @@ module
     }
 
     interface ILocaleDataHelper {
+        MapInvalidAndNullLocales(
+            [in] ILocale* locale,
+            [out] ILocale** rst);
+
         /**
          * Returns a shared LocaleData for the given locale.
          */

@@ -1,6 +1,6 @@
 module
 {
-    using interface Libcore.ICU.ILocale;
+    using interface Elastos.Utility.ILocale;
     using interface Elastos.Math.IBigDecimal;
     using interface Elastos.Math.IBigInteger;
     interface Elastos.Utility.Regex.IPattern;

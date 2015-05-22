@@ -23,7 +23,7 @@ module
         SetDecimalFormatSymbols(
             [in] IDecimalFormatSymbols* dfs);
 
-        SetDecimalFormatSymbolsEx(
+        SetDecimalFormatSymbols(
             [in] ILocaleData* ld);
 
         FormatBigDecimal(
@@ -115,7 +115,8 @@ module
             [in] Boolean value);
 
         SetCurrency(
-            [in] ICurrency* currency);
+            [in] String currencySymbol,
+            [in] String currencyCode);
 
         SetGroupingSize(
             [in] Int32 value);

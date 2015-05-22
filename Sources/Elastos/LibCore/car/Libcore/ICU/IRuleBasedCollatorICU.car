@@ -7,6 +7,11 @@ module
     namespace Libcore {
     namespace ICU {
 
+    /**
+     * @Involve
+     * interface ICloneable;
+     */
+
     interface IRuleBasedCollatorICU {
 
         const Int32 VALUE_PRIMARY = 0;
@@ -50,9 +55,6 @@ module
 
         const Int32 STRENGTH = 5;
 
-        Clone(
-            [out] IRuleBasedCollatorICU ** outruleicu);
-
         Compare(
             [in] String source,
             [in] String target,
@@ -89,22 +91,13 @@ module
             [in] String source,
             [out] ICollationElementIteratorICU ** outicu);
 
-        GetCollationElementIteratorEx(
+        GetCollationElementIterator(
             [in] ICharacterIterator * it,
             [out] ICollationElementIteratorICU ** outicu);
 
-        // @Override
-        GetHashCode(
-            [out] Int32 * value);
-
-        EqualsEx(
+        Equals(
             [in] String source,
             [in] String target,
-            [out] Boolean * value);
-
-        // @Override
-        Equals(
-            [in] IInterface * object,
             [out] Boolean * value);
     }
 

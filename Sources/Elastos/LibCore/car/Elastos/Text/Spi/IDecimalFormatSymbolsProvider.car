@@ -1,7 +1,7 @@
 module
 {
     interface Elastos.Text.IDecimalFormatSymbols;
-    using interface Libcore.ICU.ILocale;
+    using interface Elastos.Utility.ILocale;
     using interface Elastos.Utility.Spi.ILocaleServiceProvider;
 
     namespace Elastos {

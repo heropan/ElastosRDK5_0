@@ -1,12 +1,13 @@
 module
 {
     using interface Elastos.Core.IArrayOf;
+    interface Elastos.Utility.ILocale;
 
     namespace Libcore {
     namespace ICU {
 
     [deprecated]
-    interface ITimeZones {
+    interface ITimeZoneNames {
         /*
          * Offsets into the arrays returned by DateFormatSymbols.getZoneStrings.
          */
@@ -47,6 +48,11 @@ module
         ForLocale(
             [in] ILocale * locale ,
             [out,callee] ArrayOf<String> * outarray);
+
+        GetExemplarLocation(
+            [in] String locale,
+            [in] String tz,
+            [out] String* location);
     }
 
     } // IO

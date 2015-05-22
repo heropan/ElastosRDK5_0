@@ -2,11 +2,10 @@ module
 {
     merge("../../../car/Libcore/ICU/Exceptions.car");
     merge("../../../car/Libcore/ICU/ICollationKeyICU.car");
-    merge("../../../car/Libcore/ICU/ILocale.car");
     merge("../../../car/Libcore/ICU/ILocaleData.car");
     merge("../../../car/Libcore/ICU/IICUHelper.car");
     merge("../../../car/Libcore/ICU/IRuleBasedCollatorICU.car");
-    merge("../../../car/Libcore/ICU/ITimeZones.car");
+    merge("../../../car/Libcore/ICU/ITimeZoneNames.car");
     merge("../../../car/Libcore/ICU/ICollationElementIteratorICU.car");
     merge("../../../car/Libcore/ICU/INativeDecimalFormat.car");
     merge("../../../car/Libcore/ICU/INativeBreakIterator.car");
@@ -14,6 +13,7 @@ module
     merge("../../../car/Libcore/ICU/INativeIDNHelper.car");
     merge("../../../car/Libcore/ICU/INativePluralRules.car");
     merge("../../../car/Libcore/ICU/INativeNormalizerHelper.car");
+    merge("../../../car/Libcore/ICU/IAlphabeticIndex.car");
 
     // interface Elastos.Text.IDecimalFormatSymbols;
 

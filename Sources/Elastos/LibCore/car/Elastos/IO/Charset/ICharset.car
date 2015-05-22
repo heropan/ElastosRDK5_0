@@ -7,7 +7,7 @@ module
     interface Elastos.IO.Charset.ICharsetDecoder;
     interface Elastos.IO.ICharBuffer;
     interface Elastos.IO.IByteBuffer;
-    interface Libcore.ICU.ILocale;
+    interface Elastos.Utility.ILocale;
 
     namespace Elastos {
     namespace IO {

@@ -1,6 +1,6 @@
 module
 {
-    using interface Libcore.ICU.ILocale;
+    using interface Elastos.Utility.ILocale;
     using interface Elastos.Text.ICharacterIterator;
 
     namespace Elastos {

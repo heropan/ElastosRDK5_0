@@ -9,9 +9,9 @@ module
     using interface Elastos.Utility.IGregorianCalendar;
     using interface Elastos.Utility.ISimpleTimeZone;
     using interface Elastos.Utility.ITimeZone;
-    using interface Libcore.ICU.ILocaleData;
+    using interface Elastos.Utility.ILocaleData;
     using interface Libcore.ICU.ITimeZones;
-    using interface Libcore.ICU.ILocale;
+    using interface Elastos.Utility.ILocale;
 
     namespace Elastos {
     namespace Text {

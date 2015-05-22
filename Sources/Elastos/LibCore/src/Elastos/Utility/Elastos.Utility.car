@@ -10,6 +10,7 @@ module
     merge("../../../car/Elastos/Utility/IIterable.car");
     merge("../../../car/Elastos/Utility/ICollection.car");
     merge("../../../car/Elastos/Utility/IList.car");
+    merge("../../../car/Elastos/Utility/ILocale.car");
     merge("../../../car/Elastos/Utility/IMap.car");
     merge("../../../car/Elastos/Utility/ILinkedList.car");
     merge("../../../car/Elastos/Utility/IDictionary.car");

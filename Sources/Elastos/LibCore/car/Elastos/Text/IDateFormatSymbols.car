@@ -4,9 +4,9 @@ module
     interface Elastos.IO.IObjectOutputStream;
     interface Elastos.IO.ISerializable;
     interface Elastos.Utility.IObjectContainer;
-    using interface Libcore.ICU.ILocale;
+    using interface Elastos.Utility.ILocale;
     using interface Libcore.ICU.IICUHelper;
-    using interface Libcore.ICU.ILocaleData;
+    using interface Elastos.Utility.ILocaleData;
     using interface Libcore.ICU.ITimeZones;
 
     namespace Elastos {

@@ -8,13 +8,6 @@ module
     [deprecated]
     interface ICollationElementIteratorICU {
         /**
-         * @stable ICU 2.4
-         */
-        const Int32 NULLORDER = 0xFFFFFFFF;
-
-        // public methods -----------------------------------------------
-
-        /**
          * Reset the collation elements to their initial state.
          * This will move the 'cursor' to the beginning of the text.
          * @stable ICU 2.4
@@ -62,7 +55,7 @@ module
         SetText(
             [in] String source);
 
-        SetTextEx(
+        SetText(
             [in] ICharacterIterator * source);
 
         /**
@@ -117,7 +110,7 @@ module
             [out] Int32 * value);
 
         GetInstance(
-            [in] Int32 collatorAddress,
+            [in] Int64 collatorAddress,
             [in] String source,
             [out] ICollationElementIteratorICU ** outiterICU);
     }

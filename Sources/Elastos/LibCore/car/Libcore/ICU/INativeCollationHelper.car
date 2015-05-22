@@ -1,5 +1,7 @@
 module
 {
+    interface Elastos.Utility.ILocale;
+
     namespace Libcore {
     namespace ICU {
 
@@ -7,35 +9,35 @@ module
 
         // Collator.
         CloseCollator(
-            [in] Int32 address);
+            [in] Int64 address);
 
         Compare(
-            [in] Int32 address,
+            [in] Int64 address,
             [in] String source,
             [in] String target ,
             [out] Int32 * value);
 
         GetAttribute(
-            [in] Int32 address,
+            [in] Int64 address,
             [in] Int32 type,
             [out] Int32 * value);
 
         GetCollationElementIterator(
-            [in] Int32 address,
+            [in] Int64 address,
             [in] String source,
-            [out] Int32 * value);
+            [out] Int64 * value);
 
         GetRules(
-            [in] Int32 address,
+            [in] Int64 address,
             [out] String * str);
 
         GetSortKey(
-            [in] Int32 address,
+            [in] Int64 address,
             [in] String source,
             [out,callee] ArrayOf<Byte> * outarray);
 
         OpenCollator(
-            [in] String locale,
+            [in] ILocale* locale,
             [out] Int32 * value);
 
         OpenCollatorFromRules(
@@ -45,29 +47,29 @@ module
             [out] Int32 * value);
 
         SafeClone(
-            [in] Int32 address,
+            [in] Int64 address,
             [out] Int32 * value);
 
         SetAttribute(
-            [in] Int32 address,
+            [in] Int64 address,
             [in] Int32 type,
             [in] Int32 value);
 
         // CollationElementIterator.
         CloseElements(
-            [in] Int32 address);
+            [in] Int64 address);
 
         GetMaxExpansion(
-            [in] Int32 address,
+            [in] Int64 address,
             [in] Int32 order,
             [out] Int32 * value);
 
         GetOffset(
-            [in] Int32 address,
+            [in] Int64 address,
             [out] Int32 * value);
 
         Next(
-            [in] Int32 address,
+            [in] Int64 address,
             [out] Int32 * value);
 
         Previous(
@@ -75,14 +77,14 @@ module
             [out] Int32 * value);
 
         Reset(
-            [in] Int32 address);
+            [in] Int64 address);
 
         SetOffset(
-            [in] Int32 address,
+            [in] Int64 address,
             [in] Int32 offset);
 
         SetText(
-            [in] Int32 address,
+            [in] Int64 address,
             [in] String source);
     }
 

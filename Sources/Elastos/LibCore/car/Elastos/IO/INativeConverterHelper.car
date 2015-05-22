@@ -70,11 +70,6 @@ module
             [in] String converterName2,
             [out] Boolean * value);
 
-        CanEncode(
-            [in] Int64 converterHandle,
-            [in] Int32 codeUnit,
-            [out] Boolean * value);
-
         GetAvailableCharsetNames(
             [out,callee] ArrayOf<String> * outarray);
 

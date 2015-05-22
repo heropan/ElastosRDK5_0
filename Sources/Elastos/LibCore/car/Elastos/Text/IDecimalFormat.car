@@ -8,8 +8,8 @@ module
     using interface Elastos.Math.IBigInteger;
     using interface Elastos.Math.IRoundingMode;
     using interface Elastos.Utility.ICurrency;
-    using interface Libcore.ICU.ILocale;
-    using interface Libcore.ICU.ILocaleData;
+    using interface Elastos.Utility.ILocale;
+    using interface Elastos.Utility.ILocaleData;
     using interface Libcore.ICU.INativeDecimalFormat;
 
     namespace Elastos {

@@ -3,25 +3,17 @@ module
 
     using interface Elastos.Text.ICharacterIterator;
     interface Elastos.Text.IStringCharacterIterator;
-    using interface Libcore.ICU.ILocale;
+    using interface Elastos.Utility.ILocale;
+
+    /**
+     * @Involve
+     * interface ICloneable;
+     */
 
     namespace Libcore {
     namespace ICU {
 
     interface INativeBreakIterator {
-        // @Override
-        Clone(
-            [out] INativeBreakIterator ** outiter);
-
-        // @Override
-        Equals(
-            [in] IInterface * object,
-            [out] Boolean * value);
-
-        // @Override
-        GetHashCode(
-            [out] Int32 * value);
-
         Current(
             [out] Int32 * value);
 
@@ -42,7 +34,7 @@ module
             [in] Int32 n,
             [out] Int32 * value);
 
-        NextEx(
+        Next(
             [out] Int32 * value);
 
         Previous(
@@ -51,8 +43,11 @@ module
         SetText(
             [in] ICharacterIterator * newText);
 
-        SetTextEx(
+        SetText(
             [in] String newText);
+
+        HasText(
+            [out] Boolean* hasText);
 
         IsBoundary(
             [in] Int32 offset,
