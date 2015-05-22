@@ -112,7 +112,7 @@ public:
      * @throws IOException
      *             if this stream is closed or another I/O error occurs.
      */
-    CARAPI ReadBytesEx(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

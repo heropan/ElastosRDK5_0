@@ -48,13 +48,13 @@ ECode FilterInputStream::Read(
     return mIn->Read(value);
 }
 
-ECode FilterInputStream::ReadBytesEx(
+ECode FilterInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
-    return mIn->ReadBytesEx(buffer, offset, length, number);
+    return mIn->Read(buffer, offset, length, number);
 }
 
 ECode FilterInputStream::Reset()

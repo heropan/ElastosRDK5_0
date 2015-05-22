@@ -73,7 +73,7 @@ ECode BufferedInputStream::Fillbuf(
     if (mMarkpos == -1 || (mPos - mMarkpos >= mMarklimit)) {
         /* Mark position not set or exceeded readlimit */
         Int32 result;
-        FAIL_RETURN(localIn->ReadBytes(*localBuf, &result));
+        FAIL_RETURN(localIn->Read(*localBuf, &result));
         if (result > 0) {
             mMarkpos = -1;
             mPos = 0;
@@ -107,7 +107,7 @@ ECode BufferedInputStream::Fillbuf(
     mPos -= mMarkpos;
     mCount = mMarkpos = 0;
     Int32 bytesread;
-    FAIL_RETURN(localIn->ReadBytesEx(
+    FAIL_RETURN(localIn->Read(
         *localBuf, mPos, (*localBuf)->GetLength() - mPos, &bytesread));
     mCount = bytesread <= 0 ? mPos : mPos + bytesread;
     *number = bytesread;
@@ -240,7 +240,7 @@ ECode BufferedInputStream::Read(    // change from ReadBytesEx
          * buffer, simply read the bytes directly bypassing the buffer.
          */
         if (mMarkpos == -1 && required >= localBuf->GetLength()) {
-            FAIL_RETURN(localIn->ReadBytesEx(buffer, byteOffset, required, &read));
+            FAIL_RETURN(localIn->Read(buffer, byteOffset, required, &read));
             if (read == -1) {
                 *number = required == byteCount ? -1 : byteCount - required;
                 return NOERROR;
