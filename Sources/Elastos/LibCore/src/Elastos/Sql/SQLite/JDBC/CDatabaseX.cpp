@@ -2,8 +2,6 @@
 #include "CDatabaseX.h"
 #include "CObject.h"
 
-using Elastos::Core::CObject;
-
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
@@ -13,12 +11,7 @@ CAR_OBJECT_IMPL(CDatabaseX)
 
 CDatabaseX::CDatabaseX()
 {
-    CObject::New((IObject**)&mLock);
-}
-
-ECode CDatabaseX::constructor()
-{
-    return NOERROR;
+    Elastos::Core::CObject::New((ISynchronize**)&mLock);
 }
 
 ECode CDatabaseX::Exec(
@@ -29,7 +22,8 @@ ECode CDatabaseX::Exec(
     ec = Exec(sql, cb);
     mLock->Lock();
     mLock->NotifyAll();
-    return mLock->Unlock();
+    mLock->Unlock();
+    return ec;
 }
 
 ECode CDatabaseX::Exec(
@@ -41,7 +35,8 @@ ECode CDatabaseX::Exec(
     ec = Exec(sql, cb, args);
     mLock->Lock();
     mLock->NotifyAll();
-    return mLock->Unlock();
+    mLock->Unlock();
+    return ec;
 }
 
 ECode CDatabaseX::GetTable(
@@ -53,7 +48,8 @@ ECode CDatabaseX::GetTable(
     ec = GetTable(sql, args, tbl);
     mLock->Lock();
     mLock->NotifyAll();
-    return mLock->Unlock();
+    mLock->Unlock();
+    return ec;
 }
 
 ECode CDatabaseX::GetTable(
@@ -65,7 +61,8 @@ ECode CDatabaseX::GetTable(
     ec = GetTable(sql, args, tbl);
     mLock->Lock();
     mLock->NotifyAll();
-    return mLock->Unlock();
+    mLock->Unlock();
+    return ec;
 }
 
 void CDatabaseX::Wait(Int32 ms)
