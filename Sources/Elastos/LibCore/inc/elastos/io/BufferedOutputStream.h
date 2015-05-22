@@ -13,15 +13,7 @@ class BufferedOutputStream
 {
 public:
     CAR_INTERFACE_DECL()
-protected:
-    BufferedOutputStream();
 
-    ~BufferedOutputStream();
-
-    CARAPI constructor(
-        /* [in] */ IOutputStream* outs,
-        /* [in] */ Int32 size);
-public:
     CARAPI Close();
 
     /**
@@ -77,6 +69,15 @@ public:
         /* [in] */ const ArrayOf<Byte> & buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
+
+protected:
+    BufferedOutputStream();
+
+    ~BufferedOutputStream();
+
+    CARAPI constructor(
+        /* [in] */ IOutputStream* outs,
+        /* [in] */ Int32 size);
 
 private:
     CARAPI FlushInternal();
