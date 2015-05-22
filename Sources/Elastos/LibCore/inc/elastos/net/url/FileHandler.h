@@ -2,7 +2,7 @@
 #ifndef __FILEHANDLER_H__
 #define __FILEHANDLER_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "URLStreamHandler.h"
 
 using Elastos::Net::IURLConnection;

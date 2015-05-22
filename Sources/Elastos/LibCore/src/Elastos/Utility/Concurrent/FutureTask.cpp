@@ -4,7 +4,7 @@
 #include <cutils/atomic-inline.h>
 
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "LockSupport.h"
 #include "Executors.h"
 #include "CInteger32.h"
@@ -12,7 +12,7 @@
 #include "CLockSupport.h"
 #include "CSystem.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 
 using Elastos::Core::ISystem;

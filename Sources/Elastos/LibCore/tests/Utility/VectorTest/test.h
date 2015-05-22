@@ -1,7 +1,7 @@
 #ifndef __VECTORTEST_H__
 #define __VECTORTEST_H__
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 
 using namespace Elastos;
 using namespace Elastos::Core;

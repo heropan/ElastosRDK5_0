@@ -3,7 +3,7 @@
 #include "CZygote.h"
 #include <elastos/Logger.h>
 #include <elastos/Thread.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #ifdef HAVE_SELINUX
 #include <selinux/android.h>
 #endif

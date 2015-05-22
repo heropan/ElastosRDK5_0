@@ -3,7 +3,7 @@
 #define __HTTPURLCONNECTIONIMPL_H__
 
 #include <cmdef.h>
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 #include <HttpURLConnection.h>
 
 using Elastos::Utility::IMap;

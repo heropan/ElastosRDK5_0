@@ -2,7 +2,7 @@
 #define __INETADDRESSHELPER_TEST_H_
 
 #include <elastos.h>
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 
 using namespace Elastos;
 using namespace Elastos::Net;

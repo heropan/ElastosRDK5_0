@@ -2,7 +2,7 @@
 #define __UTILITY_CCALENDAR_H__
 
 #include <elautoptr.h>
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <elastos/Mutex.h>
 
 using Libcore::ICU::ILocale;

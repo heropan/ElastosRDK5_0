@@ -1,7 +1,7 @@
 #ifndef __COLLATIONKEYICU_H__
 #define __COLLATIONKEYICU_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "CollationKey.h"
 
 using Elastos::Text::CollationKey;

@@ -1,7 +1,7 @@
 #ifndef __DECIMALFORMATSYMBOLS_H__
 #define __DECIMALFORMATSYMBOLS_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Libcore::ICU::ILocale;
 using Elastos::Utility::ICurrency;

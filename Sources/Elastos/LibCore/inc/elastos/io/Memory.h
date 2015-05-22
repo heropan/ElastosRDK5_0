@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_IO_MEMORY_H__
 #define __ELASTOS_IO_MEMORY_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 namespace Elastos {
 namespace IO {

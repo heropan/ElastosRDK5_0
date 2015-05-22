@@ -2,7 +2,7 @@
 #ifndef __ABSTRACTHTTPINPUTSTREAM_H__
 #define __ABSTRACTHTTPINPUTSTREAM_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "InputStream.h"
 
 using Elastos::IO::IInputStream;

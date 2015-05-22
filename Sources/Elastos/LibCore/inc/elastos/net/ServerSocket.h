@@ -2,7 +2,7 @@
 #ifndef __SERVERSOCKET_H__
 #define __SERVERSOCKET_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "CSocket.h"
 
 namespace Elastos {

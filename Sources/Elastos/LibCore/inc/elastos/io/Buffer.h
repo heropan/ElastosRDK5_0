@@ -1,7 +1,7 @@
 #ifndef __BUFFER_H__
 #define __BUFFER_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "MemoryBlock.h"
 
 namespace Elastos {

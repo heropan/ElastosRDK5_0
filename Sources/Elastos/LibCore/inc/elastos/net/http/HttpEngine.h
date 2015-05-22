@@ -2,7 +2,7 @@
 #ifndef __HTTPENGINE_H__
 #define __HTTPENGINE_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;

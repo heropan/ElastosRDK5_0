@@ -1,9 +1,9 @@
 #include "cmdef.h"
 #include "elastos/HashMap.h"
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 #include "CManifest.h"
 #include "InitManifest.h"

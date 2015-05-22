@@ -2,7 +2,7 @@
 #define __CHARSETPROVIDER_H__
 
 #include <cmdef.h>
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 namespace Elastos {
 namespace IO {

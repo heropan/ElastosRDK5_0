@@ -4,7 +4,7 @@
 #include "SocketChannel.h"
 #include "CFileDescriptor.h"
 #include "CInetSocketAddress.h"
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "Socket.h"
 
 using Elastos::IO::IFileDescriptor;

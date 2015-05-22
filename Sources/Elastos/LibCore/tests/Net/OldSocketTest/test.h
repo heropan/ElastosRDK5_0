@@ -1,7 +1,7 @@
 #ifndef __WEAKHASHMAP_TEST_H
 #define __WEAKHASHMAP_TEST_H
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include "elastos/ThreadBase.h"
 
 using namespace Elastos;

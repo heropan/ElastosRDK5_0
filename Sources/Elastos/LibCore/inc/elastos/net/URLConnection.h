@@ -3,7 +3,7 @@
 #define __URLCONNECTION_H__
 
 #include "cmdef.h"
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <elautoptr.h>
 #include <elastos/HashMap.h>
 #include <elastos/Mutex.h>

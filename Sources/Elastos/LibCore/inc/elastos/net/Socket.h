@@ -2,7 +2,7 @@
 #ifndef __SOCKET_H__
 #define __SOCKET_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <elastos/Mutex.h>
 
 using Elastos::Core::Threading::Mutex;

@@ -1,7 +1,7 @@
 #include "test.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <elautoptr.h>
 
 typedef int (CTest::*PTestEntry)(int argc, char *argv[]);

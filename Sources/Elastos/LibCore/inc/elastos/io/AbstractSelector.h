@@ -2,7 +2,7 @@
 #define __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTOR_H__
 
 #include <cmdef.h>
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 #include <elastos/Thread.h>
 #include <elastos/Mutex.h>
 #include <Selector.h>

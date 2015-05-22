@@ -3,7 +3,7 @@
 
 #include <elastos.h>
 #include "Org.Xml.Sax.h"
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include "elastos/StringBuilder.h"
 #include "elastos/StringBuffer.h"
 #include "elastos/StringUtils.h"

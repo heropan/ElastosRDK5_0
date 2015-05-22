@@ -4,7 +4,7 @@
 
 #include "__Org_Kxml2_IO_CKXmlSerializer.h"
 #include "Object.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::Object;
 using Elastos::Core::IBoolean;

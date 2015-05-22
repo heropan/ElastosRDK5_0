@@ -4,7 +4,7 @@
 #include "CSplitter.h"
 #include "CStringWrapper.h"
 #include <elastos/StringBuilder.h>
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;

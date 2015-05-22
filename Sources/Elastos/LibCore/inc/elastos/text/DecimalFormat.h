@@ -1,7 +1,7 @@
 #ifndef __DECIMALFORMAT__
 #define __DECIMALFORMAT__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <elautoptr.h>
 #include "NumberFormat.h"
 

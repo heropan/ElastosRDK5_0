@@ -6,7 +6,7 @@
 #include <elastos.h>
 #include <eltypes.h>
 #include <elrefbase.h>
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 
 using Elastos::ElRefBase;
 using Libcore::ICU::INativeBreakIterator;

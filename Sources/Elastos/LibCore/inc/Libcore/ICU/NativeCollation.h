@@ -8,7 +8,7 @@
 #include <unicode/unistr.h>
 #include <elastos/HashMap.h>
 #include <elastos/Mutex.h>
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Utility::HashMap;
 using Elastos::Core::Threading::Mutex;

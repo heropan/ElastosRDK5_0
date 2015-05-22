@@ -3,7 +3,7 @@
 #define __REGEX_CPATTERNHELPER_H__
 
 #include "_CPatternHelper.h"
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 
 using Elastos::Core::ICharSequence;
 

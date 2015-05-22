@@ -1,7 +1,7 @@
 #ifndef __WEAKHASHMAP_TEST_H
 #define __WEAKHASHMAP_TEST_H
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 
 using namespace Elastos;
 using namespace Elastos::Core;

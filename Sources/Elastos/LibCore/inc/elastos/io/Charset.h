@@ -6,7 +6,7 @@
 #endif
 
 #include <cmdef.h>
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 #include <elastos/HashMap.h>
 #include <elastos/HashSet.h>
 #include <elastos/Set.h>

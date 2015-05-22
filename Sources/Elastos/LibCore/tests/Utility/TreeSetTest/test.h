@@ -1,7 +1,7 @@
 #ifndef __TREESETTEST_H__
 #define __TREESETTEST_H__
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elastos.h>
 #include <elautoptr.h>
 #include <elquintet.h>

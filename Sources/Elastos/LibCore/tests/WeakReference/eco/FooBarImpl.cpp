@@ -1,7 +1,7 @@
 
 #include "FooBarImpl.h"
 // #include "WeakReferenceImpl.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 PInterface FooBarImpl::Probe(
     /* [in] */ REIID riid)

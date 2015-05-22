@@ -2,7 +2,7 @@
 #ifndef __DATAGRAMSOCKETIMPL_H__
 #define __DATAGRAMSOCKETIMPL_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::IO::IFileDescriptor;
 

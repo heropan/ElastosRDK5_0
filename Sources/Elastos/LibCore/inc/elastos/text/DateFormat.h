@@ -6,7 +6,7 @@
 #define __USE_MALLOC
 #endif
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "Format.h"
 #include <elastos/HashMap.h>
 #include "AttributedCharacterIteratorAttributeMacro.h"

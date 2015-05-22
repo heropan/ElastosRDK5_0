@@ -2,7 +2,7 @@
 #ifndef __INTERFACEADDRESS_H__
 #define __INTERFACEADDRESS_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <elautoptr.h>
 #include <elrefbase.h>
 

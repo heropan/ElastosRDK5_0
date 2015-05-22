@@ -1,5 +1,5 @@
 #include "UriCodec.h"
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 #include <elastos/Character.h>
 #include <elastos/IntegralToString.h>
 #include "CCharBufferHelper.h"

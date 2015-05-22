@@ -5,12 +5,12 @@
 #include "IntegralToString.h"
 #include "RealToString.h"
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "CStringWrapper.h"
 #include "CPatternHelper.h"
 #include "CSplitter.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 
 using Elastos::Core::ICharSequence;

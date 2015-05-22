@@ -2,7 +2,7 @@
 #ifndef __KEYSTOREBUILDER_H__
 #define __KEYSTOREBUILDER_H__
 
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 #include <elastos/Object.h>
 
 using Elastos::IO::IFile;

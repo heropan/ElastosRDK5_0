@@ -1,7 +1,7 @@
 #ifndef __CHANNELS_H__
 #define __CHANNELS_H__
 
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 #include "AbstractInterruptibleChannel.h"
 
 using Elastos::IO::Channels::Spi::AbstractInterruptibleChannel;

@@ -2,7 +2,7 @@
 #ifndef __NETWORKUTILITIES_H__
 #define __NETWORKUTILITIES_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <arpa/inet.h>
 
 ELAPI ByteArrayToSocketAddress(

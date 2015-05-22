@@ -3,7 +3,7 @@
 #define __CNATIVEDECIMALFORMAT_H__
 
 #include "_CNativeDecimalFormat.h"
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 #include <elastos/StringBuffer.h>
 
 using Elastos::Math::IBigDecimal;

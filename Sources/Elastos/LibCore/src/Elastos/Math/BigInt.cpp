@@ -2,7 +2,7 @@
 #include "cmdef.h"
 #include <BigInt.h>
 #include <elastos/Character.h>
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 #include <NativeBN.h>
 
 using Elastos::Core::Character;

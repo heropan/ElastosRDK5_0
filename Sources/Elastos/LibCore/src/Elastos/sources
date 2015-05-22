@@ -1,0 +1,24 @@
+
+TARGET_NAME = Elastos.CoreLibrary
+TARGET_TYPE = eco
+
+CAR_FLAGS += -n -u
+LUBE_FLAGS += -n -u
+
+C_DEFINES += -DELASTOS_CORE
+
+INCLUDES += $(MAKEDIR)/../../inc
+INCLUDES += $(MAKEDIR)/../../inc/elastos
+INCLUDES += $(MAKEDIR)/../../inc/elastos/core
+//INCLUDES += $(MAKEDIR)/../../inc/elastos/math
+
+SOURCES = Elastos.CoreLibrary.car
+
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += Core/core.lib
+//LIBRARIES += Math/math.lib
+
+LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+LIBRARIES += $(PREBUILD_LIB)/libm.a
+LIBRARIES += -lcutils -licuuc -licui18n -lm -lssl -lcrypto -lsqlite -llog -lselinux -lz -lutils

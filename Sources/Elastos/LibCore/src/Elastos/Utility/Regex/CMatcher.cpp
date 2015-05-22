@@ -7,7 +7,7 @@
 #include "eldebugdef.h"
 #include "CStringWrapper.h"
 #include "elastos/StringBuilder.h"
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "unicode/parseerr.h"
 #include "unicode/regex.h"
 

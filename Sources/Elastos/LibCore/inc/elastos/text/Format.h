@@ -1,7 +1,7 @@
 #ifndef __FORMAT_H_
 #define __FORMAT_H_
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "AttributedCharacterIteratorAttribute.h"
 #include <elastos/StringBuffer.h>
 

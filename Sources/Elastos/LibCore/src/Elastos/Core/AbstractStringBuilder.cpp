@@ -8,10 +8,10 @@
 #include <elastos/Character.h>
 #include <elastos/ObjectUtils.h>
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "CStringWrapper.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 
 #if defined(_DEBUG) || defined(_ELASTOS_DEBUG)

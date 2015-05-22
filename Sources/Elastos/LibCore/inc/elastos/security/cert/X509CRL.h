@@ -3,7 +3,7 @@
 #define __X509CRL_H__
 
 #include "CRL.h"
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "cmdef.h"
 
 using Elastos::Security::IPublicKey;

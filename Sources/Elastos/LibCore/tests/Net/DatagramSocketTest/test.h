@@ -2,7 +2,7 @@
 #define __DATAGRAMSOCKET_TEST_H_
 
 #include "cmdef.h"
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elastos.h>
 #include <elautoptr.h>
 #include <elastos/Mutex.h>

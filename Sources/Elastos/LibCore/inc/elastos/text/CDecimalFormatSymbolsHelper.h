@@ -4,7 +4,7 @@
 
 #include "_CDecimalFormatSymbolsHelper.h"
 #include <cmdef.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Libcore::ICU::ILocale;
 

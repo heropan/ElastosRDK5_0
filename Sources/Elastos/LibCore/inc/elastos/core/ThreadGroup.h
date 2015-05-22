@@ -3,9 +3,9 @@
 #define __THREADGROUP_H__
 
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 #include "Mutex.h"
 #include "Object.h"

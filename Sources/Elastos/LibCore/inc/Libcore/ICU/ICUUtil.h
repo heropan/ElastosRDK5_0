@@ -2,7 +2,7 @@
 #ifndef __ICU_ICU_H__
 #define __ICU_ICU_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "LocaleData.h"
 
 using Libcore::ICU::ILocale;

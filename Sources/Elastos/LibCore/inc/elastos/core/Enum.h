@@ -2,7 +2,7 @@
 #ifndef __ENUM_H__
 #define __ENUM_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::IO::ISerializable;
 using Elastos::Core::IComparable;

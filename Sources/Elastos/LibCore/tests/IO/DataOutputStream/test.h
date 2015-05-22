@@ -10,7 +10,7 @@
 #include <stdarg.h>
 
 #include "stdio.h"
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include "elastos.h"
 
 using namespace Elastos;

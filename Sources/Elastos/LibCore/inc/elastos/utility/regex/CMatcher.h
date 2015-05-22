@@ -6,7 +6,7 @@
 #include <unicode/regex.h>
 #include <elastos.h>
 #include <elastos/StringBuffer.h>
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IStringBuffer;

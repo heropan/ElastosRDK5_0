@@ -2,7 +2,7 @@
 #ifndef __IDN_H__
 #define __IDN_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 namespace Elastos {
 namespace Net {

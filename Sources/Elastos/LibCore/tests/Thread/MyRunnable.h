@@ -6,7 +6,7 @@
 #include <elautoptr.h>
 #include <eltypes.h>
 #include <stdio.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <elrefbase.h>
 #include <elastos/Mutex.h>
 

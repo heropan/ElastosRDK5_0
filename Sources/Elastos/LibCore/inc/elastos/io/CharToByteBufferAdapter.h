@@ -2,7 +2,7 @@
 #define __CHARTOBYTEBUFFERADAPTER_H__
 
 #include "CharBuffer.h"
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 
 namespace Elastos {
 namespace IO {

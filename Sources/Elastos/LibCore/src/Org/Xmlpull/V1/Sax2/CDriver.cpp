@@ -2,7 +2,7 @@
 #include "CDriver.h"
 #include "elastos/StringBuilder.h"
 #include "XmlPullParserFactory.h"
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IInputStream;

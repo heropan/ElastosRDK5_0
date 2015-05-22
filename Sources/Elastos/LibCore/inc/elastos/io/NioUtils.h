@@ -4,7 +4,7 @@
 #include "Buffer.h"
 #include "ByteBuffer.h"
 #include "HeapByteBuffer.h"
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::IO::Channels::IFileChannel;
 

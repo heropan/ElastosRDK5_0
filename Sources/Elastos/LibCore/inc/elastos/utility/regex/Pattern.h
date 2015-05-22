@@ -3,7 +3,7 @@
 #define __REGEX_PATTERN_H__
 
 #include "cmdef.h"
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <unicode/regex.h>
 
 using Elastos::Core::ICharSequence;

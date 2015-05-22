@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_IO_FILE_H__
 #define __ELASTOS_IO_FILE_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Core::IRandom;
 using Elastos::Net::IURI;

@@ -1,7 +1,7 @@
 #include "test.h"
 #include <stdio.h>
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elautoptr.h>
 #include <elastos/StringBuffer.h>
 

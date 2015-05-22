@@ -1,8 +1,8 @@
 #include "test.h"
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elautoptr.h>
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elastos/Math.h>
 
 using namespace Elastos;

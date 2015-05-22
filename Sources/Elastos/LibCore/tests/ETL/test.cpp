@@ -3,7 +3,7 @@
 #include <elautoptr.h>
 #include <eltypes.h>
 #include <stdio.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <elastos/StringBuilder.h>
 
 #include <elastos/Pair.h>

@@ -4,7 +4,7 @@
 
 #include <elastos.h>
 #include <stdio.h>
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elautoptr.h>
 
 using namespace Elastos;

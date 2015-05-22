@@ -2,7 +2,7 @@
 #include <elastos.h>
 #include <stdio.h>
 #include <new>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <elastos/StringUtils.h>
 #include <elastos/StringBuilder.h>
 

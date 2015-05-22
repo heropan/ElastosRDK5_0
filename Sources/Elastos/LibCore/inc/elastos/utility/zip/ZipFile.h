@@ -3,14 +3,14 @@
 #define __ZIPFILE_H__
 
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "CObjectContainer.h"
 #include "CDataInputStream.h"
 #include "CBufferedInputStream.h"
 #include "CRandomAccessFile.h"
 #include "CFile.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 #include "CZipEntry.h"
 #include "InflaterInputStream.h"

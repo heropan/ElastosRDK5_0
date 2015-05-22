@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <new>
 #include <Elastos.Utility.Zip.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 using namespace Elastos;
 
 Int32 deflate(IFile *file, IZipOutputStream *pzos, const char *path, Int32 flag)

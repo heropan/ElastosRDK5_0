@@ -6,7 +6,7 @@
 #include "Object.h"
 #include <elastos/HashMap.h>
 #include <elastos/StringBuilder.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IBoolean;

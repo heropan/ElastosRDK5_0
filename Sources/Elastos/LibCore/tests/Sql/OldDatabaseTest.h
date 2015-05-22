@@ -18,7 +18,7 @@
 #include <elautoptr.h>
 #include <eltypes.h>
 #include <Elastos.Sql.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <stdio.h>
 #include <elastos/Mutex.h>
 #include <elastos/Math.h>

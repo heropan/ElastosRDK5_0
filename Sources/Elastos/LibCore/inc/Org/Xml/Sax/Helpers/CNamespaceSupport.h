@@ -6,7 +6,7 @@
 #include "Object.h"
 #include <elastos/HashMap.h>
 #include <elastos/List.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::Object;
 using Elastos::Utility::IEnumeration;

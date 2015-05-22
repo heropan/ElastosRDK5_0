@@ -4,7 +4,7 @@
 
 #include "__Org_Xml_Sax_Helpers_CXMLReaderFactory.h"
 #include "Singleton.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::IClassLoader;
 

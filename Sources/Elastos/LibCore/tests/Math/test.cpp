@@ -2,12 +2,12 @@
 #include <elautoptr.h>
 #include <eltypes.h>
 #include <stdio.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <elastos/IntegralToString.h>
 #include <elastos/RealToString.h>
 #include <elastos/StringUtils.h>
 #include <elastos/Math.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <cmdef.h>
 
 using namespace Elastos;

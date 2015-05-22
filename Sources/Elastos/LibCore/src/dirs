@@ -1,14 +1,2 @@
 
-#DIRS += Elastos/Utility/lib/Logging
-DIRS += Elastos/Core
-DIRS += Elastos/Math
-DIRS += Libcore/IO
-DIRS += Libcore/ICU
-DIRS += Libcore/Utility
-DIRS += Elastos/IO
-DIRS += Elastos/Utility
-DIRS += Org/Kxml2/IO
-DIRS += Org/Xml
-DIRS += Org/Xmlpull
-DIRS += Elastos/Droid/System
-DIRS += lib
+DIRS = Elastos

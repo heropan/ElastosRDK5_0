@@ -2,7 +2,7 @@
 #ifndef __PROXYSELECTOR_H__
 #define __PROXYSELECTOR_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Net::INetPermission;
 

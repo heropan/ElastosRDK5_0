@@ -5,7 +5,7 @@
 #include <elastos.h>
 #include <elastos/List.h>
 #include <elastos/StringBuffer.h>
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "DateFormat.h"
 #include "elastos/Character.h"
 

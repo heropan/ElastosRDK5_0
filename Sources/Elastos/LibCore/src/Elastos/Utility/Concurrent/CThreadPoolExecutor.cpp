@@ -7,9 +7,9 @@
 #include "CArrayList.h"
 
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 
 using Elastos::Core::EIID_IRunnable;

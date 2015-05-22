@@ -3,11 +3,11 @@
 #define __ELASTOS_CORE_OBJECT_H__
 
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "coredef.h"
 #include "NativeThread.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elastos/coredef.h>
 #include <elastos/core/NativeThread.h>
 #endif

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTIONKEY_H__
 #define __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTIONKEY_H__
 
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 #include "SelectionKey.h"
 
 namespace Elastos {

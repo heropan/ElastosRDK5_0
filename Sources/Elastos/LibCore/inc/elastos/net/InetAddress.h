@@ -1,7 +1,7 @@
 #ifndef __INETADDRESS_H__
 #define __INETADDRESS_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "AddressCache.h"
 #include "ThreadBase.h"
 

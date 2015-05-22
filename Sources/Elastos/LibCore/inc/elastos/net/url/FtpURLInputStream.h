@@ -2,7 +2,7 @@
 #ifndef __FTPURLINPUTSTREAM_H__
 #define __FTPURLINPUTSTREAM_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "InputStream.h"
 #include "elastos/Mutex.h"
 

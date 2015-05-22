@@ -1,7 +1,7 @@
 #ifndef __UTILITY_ZONEINFODB_H__
 #define __UTILITY_ZONEINFODB_H__
 
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 #include <elastos/Mutex.h>
 
 using Elastos::IO::IByteBuffer;

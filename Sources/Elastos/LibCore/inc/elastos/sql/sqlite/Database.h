@@ -1,6 +1,7 @@
 #ifndef __DATABASE_H__
 #define __DATABASE_H__
 
+#include "Elastos.CoreLibrary_server.h"
 #include "sqlitejni.h"
 #include "Object.h"
 

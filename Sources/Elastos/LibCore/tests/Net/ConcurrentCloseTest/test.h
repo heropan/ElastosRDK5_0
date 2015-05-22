@@ -2,7 +2,7 @@
 #define __CONCURRENTCLOASE_TEST_H
 
 #include <elastos.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using namespace Elastos;
 using namespace Elastos::Core;

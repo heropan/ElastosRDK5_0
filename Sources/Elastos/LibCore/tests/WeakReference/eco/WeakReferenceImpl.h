@@ -4,7 +4,7 @@
 
 #include "WeakReference_server.h"
 // #include "ElSWRefBase.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <elrefbase.h>
 
 class WeakReferenceImpl

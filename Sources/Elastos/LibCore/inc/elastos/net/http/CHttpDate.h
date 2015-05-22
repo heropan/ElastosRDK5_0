@@ -3,7 +3,7 @@
 #define __CHTTPDATEHELPER_H__
 
 #include "_CHttpDate.h"
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Utility::IDate;
 

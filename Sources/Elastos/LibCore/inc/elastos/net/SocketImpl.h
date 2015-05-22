@@ -2,7 +2,7 @@
 #ifndef __SOCKETIMPL_H__
 #define __SOCKETIMPL_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IInputStream;

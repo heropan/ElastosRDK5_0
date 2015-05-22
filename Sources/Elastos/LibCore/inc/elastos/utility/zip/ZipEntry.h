@@ -3,13 +3,13 @@
 #define __ZIPENTRY_H__
 
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "CGregorianCalendar.h"
 #include "CDate.h"
 #include "CStreams.h"
 #include "CHeapBufferIterator.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 
 using Elastos::IO::IInputStream;

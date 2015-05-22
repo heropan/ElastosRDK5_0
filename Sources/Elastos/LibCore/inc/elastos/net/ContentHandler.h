@@ -2,7 +2,7 @@
 #ifndef __CONTENTHANDLER_H__
 #define __CONTENTHANDLER_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 namespace Elastos {
 namespace Net {

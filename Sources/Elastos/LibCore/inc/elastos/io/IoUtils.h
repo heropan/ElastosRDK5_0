@@ -2,7 +2,7 @@
 #ifndef __IOUTILS_H__
 #define __IOUTILS_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Net::ISocket;
 

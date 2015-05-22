@@ -2,7 +2,7 @@
 #ifndef __FILEURLCONNECTION_H__
 #define __FILEURLCONNECTION_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "URLConnection.h"
 
 using Elastos::Net::IURLConnection;

@@ -1,9 +1,9 @@
 #ifndef __PATTTERN_TEST_H
 #define __PATTTERN_TEST_H
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elautoptr.h>
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elastos/Math.h>
 
 using namespace Elastos;

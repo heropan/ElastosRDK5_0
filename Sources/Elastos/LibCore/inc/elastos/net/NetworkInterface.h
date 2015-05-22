@@ -1,7 +1,7 @@
 #ifndef __NETWORKINTERFACE_H__
 #define __NETWORKINTERFACE_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <elautoptr.h>
 #include <elrefbase.h>
 

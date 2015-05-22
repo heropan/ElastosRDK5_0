@@ -2,7 +2,7 @@
 #define __ELASTOS_IO_SERVERSOCKET_CHANNEL_H__
 
 #include "AbstractSelectableChannel.h"
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::IO::Channels::Spi::AbstractSelectableChannel;
 using Elastos::IO::Channels::ISelectionKey;

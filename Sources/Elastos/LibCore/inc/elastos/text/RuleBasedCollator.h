@@ -2,7 +2,7 @@
 #define __RULEBASEDCOLLATOR_H__
 
 #include "cmdef.h"
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "Collator.h"
 
 using Libcore::ICU::ICollationElementIteratorICU;

@@ -2,7 +2,7 @@
 #ifndef __X509CERTIFICATEX_H__
 #define __X509CERTIFICATEX_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "CertificateX.h"
 
 using Elastos::IO::IInputStream;

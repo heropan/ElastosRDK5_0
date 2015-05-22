@@ -1,7 +1,7 @@
 
 #include <elastos.h>
 #include "ElRefWrapper.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <elautoptr.h>
 #include <stdio.h>
 

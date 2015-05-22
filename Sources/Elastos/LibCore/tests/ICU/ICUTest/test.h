@@ -3,7 +3,7 @@
 
 
 #include <elastos.h>
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 
 using namespace Elastos;
 using namespace Libcore::ICU;

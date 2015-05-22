@@ -1,7 +1,7 @@
 #ifndef __ARRAYS_TEST_H
 #define __ARRAYS_TEST_H
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 using namespace Elastos;
 using namespace Elastos::Core;
 using Elastos::Utility::IArrays;

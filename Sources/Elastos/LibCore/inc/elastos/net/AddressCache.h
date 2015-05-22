@@ -3,7 +3,7 @@
 #define __ADDRESSCACHE_H__
 
 #include "cmdef.h"
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <elastos/HashMap.h>
 
 using Elastos::Utility::HashMap;

@@ -1,7 +1,7 @@
 #ifndef __UTILITY_ABSTRACTSET_H__
 #define __UTILITY_ABSTRACTSET_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "cmdef.h"
 #include "AbstractCollection.h"
 

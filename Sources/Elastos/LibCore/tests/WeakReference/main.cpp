@@ -2,7 +2,7 @@
 #include <WeakReference.h>
 #include <elautoptr.h>
 #include "ElSWRefBase.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using namespace Elastos;
 using Elastos::Core::ISystem;

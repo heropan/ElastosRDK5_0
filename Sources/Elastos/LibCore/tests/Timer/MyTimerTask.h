@@ -2,8 +2,8 @@
 #ifndef __MyTimerTask_H__
 #define __MyTimerTask_H__
 
-#include <Elastos.Core.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
+#include <Elastos.CoreLibrary.h>
 #include <elrefbase.h>
 #include <elastos/Mutex.h>
 #include <elastos/TimerTask.h>

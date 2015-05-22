@@ -6,7 +6,7 @@
 #include <eltypes.h>
 #include <stdio.h>
 #include <elastos/Mutex.h>
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Core::Threading::Mutex;
 using Elastos::Core::IRunnable;

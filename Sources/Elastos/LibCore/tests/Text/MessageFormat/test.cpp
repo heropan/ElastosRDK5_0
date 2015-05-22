@@ -1,12 +1,12 @@
 #include "test.h"
 #include "cmdef.h"
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include "elastos/StringBuffer.h"
 
 using namespace Elastos::Core;
 using namespace Elastos::Utility;
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elautoptr.h>
 #include <stdio.h>
 

@@ -2,7 +2,7 @@
 #ifndef __NATIVECONVERTER_H__
 #define __NATIVECONVERTER_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICharsetDecoder;

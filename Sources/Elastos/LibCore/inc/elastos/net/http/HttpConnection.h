@@ -3,7 +3,7 @@
 #define __HTTPCONNECTION_H__
 
 #include <cmdef.h>
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;

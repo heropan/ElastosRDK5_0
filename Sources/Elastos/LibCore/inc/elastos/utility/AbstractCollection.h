@@ -1,7 +1,7 @@
 #ifndef __UTILITY_ABSTRACTCOLLECTION_H__
 #define __UTILITY_ABSTRACTCOLLECTION_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 namespace Elastos {
 namespace Utility {

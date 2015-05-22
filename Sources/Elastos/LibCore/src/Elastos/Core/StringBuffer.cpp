@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include "StringBuilder.h"
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "CStringWrapper.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 
 #define DEFAULT_STEP 16

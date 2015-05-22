@@ -1,7 +1,7 @@
 #ifndef __BLOCKGUARD_H__
 #define __BLOCKGUARD_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <elastos/Object.h>
 
 using Elastos::Core::Threading::Object;

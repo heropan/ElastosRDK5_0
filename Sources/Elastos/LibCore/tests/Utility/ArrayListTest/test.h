@@ -2,7 +2,7 @@
 #define __ARRAYLIST_TEST_H
 
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elastos.h>
 #include <elautoptr.h>
 #include <elquintet.h>

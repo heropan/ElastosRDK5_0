@@ -4,7 +4,7 @@
 #include "CDate.h"
 #include <elastos/Thread.h>
 #include <elastos/Mutex.h>
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 
 using Elastos::Core::IClassLoader;
 using Elastos::Core::IRunnable;

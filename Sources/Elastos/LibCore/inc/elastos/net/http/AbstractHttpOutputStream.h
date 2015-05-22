@@ -2,7 +2,7 @@
 #ifndef __ABSTRACTHTTPOUTPUTSTREAM_H__
 #define __ABSTRACTHTTPOUTPUTSTREAM_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "OutputStream.h"
 
 using Elastos::IO::OutputStream;

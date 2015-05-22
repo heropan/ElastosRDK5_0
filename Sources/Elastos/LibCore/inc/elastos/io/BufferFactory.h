@@ -3,7 +3,7 @@
 #define __BUFFERFACTORY_H__
 
 #include <elastos.h>
-#include <Elastos.Core_server.h>
+#include <Elastos.CoreLibrary_server.h>
 
 namespace Elastos {
 namespace IO {

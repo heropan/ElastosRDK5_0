@@ -1,7 +1,7 @@
 #ifndef __COOKIESTORETEST_H__
 #define __COOKIESTORETEST_H__
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include "cmdef.h"
 #include <elastos.h>
 #include <elautoptr.h>

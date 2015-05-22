@@ -4,7 +4,7 @@
 
 #include "_CHttpResponseCache.h"
 #include "cmdef.h"
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "elastos/Mutex.h"
 #include "IoUtils.h"
 

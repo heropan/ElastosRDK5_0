@@ -3,7 +3,7 @@
 #define __COLLATIONELEMENTITERATORICU_H__
 
 #include "cmdef.h"
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Text::ICharacterIterator;
 

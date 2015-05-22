@@ -2,7 +2,7 @@
 #define __MULTICASTSOCKETTEST_H__
 
 #include "cmdef.h"
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elastos.h>
 #include <elautoptr.h>
 #include <elquintet.h>

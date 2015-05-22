@@ -2,7 +2,7 @@
 #ifndef __FTPHANDLER_H__
 #define __FTPHANDLER_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "URLConnection.h"
 
 using Elastos::Net::IURLConnection;

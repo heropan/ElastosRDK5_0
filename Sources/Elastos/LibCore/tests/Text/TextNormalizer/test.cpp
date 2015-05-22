@@ -1,6 +1,6 @@
 #include "test.h"
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elautoptr.h>
 
 using namespace Elastos;

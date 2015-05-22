@@ -1,7 +1,7 @@
 #ifndef __UTILITY_RESOURCEBUNDLE_H__
 #define __UTILITY_RESOURCEBUNDLE_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "cmdef.h"
 #include <elastos/Mutex.h>
 

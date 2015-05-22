@@ -3,11 +3,11 @@
 #define __ZIPINPUTSTREAM_H__
 
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "CMemory.h"
 #include "CPushbackInputStream.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 
 #include "cmdef.h"

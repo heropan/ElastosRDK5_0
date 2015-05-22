@@ -2,7 +2,7 @@
 #define __NUMBERFORMAT_H__
 
 #include <elautoptr.h>
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <elastos/StringBuffer.h>
 #include "Format.h"
 #include "CLocaleHelper.h"

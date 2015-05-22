@@ -2,9 +2,9 @@
 #define __JARVERIFIER_H__
 
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 #include "elastos/HashMap.h"
 #include <elastos.h>

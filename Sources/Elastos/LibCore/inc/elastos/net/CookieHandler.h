@@ -2,7 +2,7 @@
 #ifndef __COOKIEHANDLER_H__
 #define __COOKIEHANDLER_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <elautoptr.h>
 
 using Elastos::Utility::IMap;

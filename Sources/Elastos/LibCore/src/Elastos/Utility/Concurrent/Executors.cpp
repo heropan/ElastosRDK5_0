@@ -5,11 +5,11 @@
 #include <elastos/StringUtils.h>
 
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "CThread.h"
 #include "CAtomicInteger32.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 
 using Elastos::Core::StringBuilder;

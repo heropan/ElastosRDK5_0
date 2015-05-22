@@ -4,7 +4,7 @@
 
 #include "cmdef.h"
 #include "_CText.h"
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 
 namespace Org {
 namespace W3c {

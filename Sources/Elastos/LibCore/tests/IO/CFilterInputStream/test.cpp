@@ -2,7 +2,7 @@
 #include <elastos.h>
 #include <stdio.h>
 #include <elautoptr.h>
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 
 using namespace Elastos;
 void testConstructor()

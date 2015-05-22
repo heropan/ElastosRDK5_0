@@ -3,7 +3,7 @@
 #define __READER_H__
 
 #include <elastos.h>
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <elastos/Object.h>
 
 using Elastos::Core::Threading::Object;

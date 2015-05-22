@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <new>
 #include <Elastos.Utility.Zip.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <stdlib.h>
 using namespace Elastos;
 

@@ -1,7 +1,7 @@
 #ifndef __LINKEDHASHSETTEST_H__
 #define __LINKEDHASHSETTEST_H__
 
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elastos.h>
 #include <elautoptr.h>
 #include <elquintet.h>

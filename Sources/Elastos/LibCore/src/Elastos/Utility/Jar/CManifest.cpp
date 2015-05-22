@@ -1,8 +1,8 @@
 #ifdef ELASTOS_CORE
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "CManifest.h"
 #else
-#include "Elastos.Core.h"
+#include "Elastos.CoreLibrary.h"
 #endif
 #include "CByteBufferHelper.h"
 #include "CStringWrapper.h"

@@ -1,7 +1,7 @@
 #ifndef __FILECHANNELIMPL_H__
 #define __FILECHANNELIMPL_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include "FileChannel.h"
 #include "cmdef.h"
 

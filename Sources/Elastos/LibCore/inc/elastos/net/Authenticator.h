@@ -2,7 +2,7 @@
 #ifndef __AUTHENTICATOR_H__
 #define __AUTHENTICATOR_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 #include <elautoptr.h>
 #include <elastos/Mutex.h>
 

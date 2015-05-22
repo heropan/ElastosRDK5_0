@@ -2,7 +2,7 @@
 #ifndef __FORWARDINGOS_H__
 #define __FORWARDINGOS_H__
 
-#include "Elastos.Core_server.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Libcore::IO::IOs;
 using Elastos::Net::IInetSocketAddress;
