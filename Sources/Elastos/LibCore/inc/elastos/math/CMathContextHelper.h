@@ -1,14 +1,18 @@
 #ifndef __MATH_CMATHCONTEXTHELPER_H__
 #define __MATH_CMATHCONTEXTHELPER_H__
 
-#include "_CMathContextHelper.h"
+#include "__Elastos_Math__CMathContextHelper.h"
+#include "Singleton.h"
 
 namespace Elastos {
 namespace Math {
 
 CarClass(CMathContextHelper)
+    : public Singleton
+    , public IMathContextHelper
 {
 public:
+    CAR_SINGLETON_DECL()
 
     CARAPI GetDECIMAL32(
         /* [out] */ IMathContext** context);

@@ -1,14 +1,19 @@
 #ifndef __MATH_CBIGINTEGERHELPER_H__
 #define __MATH_CBIGINTEGERHELPER_H__
 
-#include "_CBigIntegerHelper.h"
+#include "__Elastos_Math__CBigIntegerHelper.h"
+#include "Singleton.h"
 
 namespace Elastos {
 namespace Math {
 
 CarClass(CBigIntegerHelper)
+    : public Singleton
+    , public IBigIntegerHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+
     /** Returns a {@code BigInteger} whose value is equal to {@code value}. */
     CARAPI ValueOf(
         /* [in] */ Int64 value,

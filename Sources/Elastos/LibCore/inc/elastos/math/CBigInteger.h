@@ -1,10 +1,11 @@
 #ifndef __MATH_CBIGINTEGER_H__
 #define __MATH_CBIGINTEGER_H__
 
-#include "_CBigInteger.h"
+#include "__Elastos_Math__CBigInteger.h"
 #include <elstring.h>
 #include <elastos/Mutex.h>
 #include <BigInt.h>
+#include "Object.h"
 
 using Elastos::Core::Threading::Mutex;
 
@@ -18,9 +19,17 @@ class Conversion;
 class Multiplication;
 
 CarClass(CBigInteger)
+    : public Object
+    , public IBigInteger
+    , public INumber
+    , public IComparable
 {
 public:
     CBigInteger();
+
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CARAPI constructor();
 
@@ -492,7 +501,7 @@ public:
      *
      * @param radix base to be used for the string representation.
      */
-    CARAPI ToStringEx(
+    CARAPI ToString(
         /* [in] */ Int32 radix,
         /* [out] */ String* string);
 

@@ -101,7 +101,7 @@ ECode Multiplication::PowerOf10(
     if (exp < BigTenPows->GetLength()) {
         // The largest power that fit in 'Int64' type
         *result =  (*BigTenPows)[intExp];
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else if (exp <= 50) {

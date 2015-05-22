@@ -1,18 +1,30 @@
 #ifndef __MATH_CBIGDECIMAL_H__
 #define __MATH_CBIGDECIMAL_H__
 
-#include "_CBigDecimal.h"
+#include "__Elastos_Math__CBigDecimal.h"
 #include <elstring.h>
 #include <elastos/Math.h>
 #include <CBigInteger.h>
+#include "Object.h"
+
+using Elastos::Core::INumber;
+using Elastos::Core::IComparable;
 
 namespace Elastos {
 namespace Math {
 
 CarClass(CBigDecimal)
+    : public Object
+    , public IBigDecimal
+    , public INumber
+    , public IComparable
 {
 public:
     CBigDecimal();
+
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * Constructs a new {@code BigDecimal} instance from the given int
@@ -393,7 +405,7 @@ public:
      * @throws NullPointerException
      *             if {@code augend == null} or {@code mc == null}.
      */
-    CARAPI AddEx(
+    CARAPI Add(
         /* [in] */ IBigDecimal* augend,
         /* [in] */ IMathContext* mc,
         /* [out] */ IBigDecimal** result);
@@ -424,7 +436,7 @@ public:
      * @throws NullPointerException
      *             if {@code subtrahend == null} or {@code mc == null}.
      */
-    CARAPI SubtractEx(
+    CARAPI Subtract(
         /* [in] */ IBigDecimal* subtrahend,
         /* [in] */ IMathContext* mc,
         /* [out] */ IBigDecimal** result);
@@ -457,7 +469,7 @@ public:
      * @throws NullPointerException
      *             if {@code multiplicand == null} or {@code mc == null}.
      */
-    CARAPI MultiplyEx(
+    CARAPI Multiply(
         /* [in] */ IBigDecimal* multiplicand,
         /* [in] */ IMathContext* mc,
         /* [out] */ IBigDecimal** result);
@@ -511,7 +523,7 @@ public:
      *             if {@code roundingMode == RoundingMode.UNNECESSARY} and
      *             rounding is necessary according to the scale of this.
      */
-    CARAPI DivideEx(
+    CARAPI Divide(
         /* [in] */ IBigDecimal* divisor,
         /* [in] */ RoundingMode roundingMode,
         /* [out] */ IBigDecimal** result);
@@ -533,7 +545,7 @@ public:
      * @throws ArithmeticException
      *             if the result cannot be represented exactly.
      */
-    CARAPI DivideEx2(
+    CARAPI Divide(
         /* [in] */ IBigDecimal* divisor,
         /* [out] */ IBigDecimal** result);
 
@@ -556,7 +568,7 @@ public:
      *             if {@code mc.getRoundingMode() == UNNECESSARY} and rounding
      *             is necessary according {@code mc.getPrecision()}.
      */
-    CARAPI DivideEx3(
+    CARAPI Divide(
         /* [in] */ IBigDecimal* divisor,
         /* [in] */ IMathContext* mc,
         /* [out] */ IBigDecimal** result);
@@ -599,7 +611,7 @@ public:
      *             if {@code mc.getPrecision() > 0} and the result requires more
      *             digits to be represented.
      */
-    CARAPI DivideToIntegralValueEx(
+    CARAPI DivideToIntegralValue(
         /* [in] */ IBigDecimal* divisor,
         /* [in] */ IMathContext* mc,
         /* [out] */ IBigDecimal** result);
@@ -644,7 +656,7 @@ public:
      *             this.divideToIntegralValue(divisor, mc)} requires more digits
      *             to be represented.
      */
-    CARAPI RemainderEx(
+    CARAPI Remainder(
         /* [in] */ IBigDecimal* divisor,
         /* [in] */ IMathContext* mc,
         /* [out] */ IBigDecimal** result);
@@ -692,7 +704,7 @@ public:
      * @see #divideToIntegralValue
      * @see #remainder
      */
-    CARAPI DivideAndRemainderEx(
+    CARAPI DivideAndRemainder(
         /* [in] */ IBigDecimal* divisor,
         /* [in] */ IMathContext* mc,
         /* [out, callee] */ ArrayOf<IBigDecimal*>** result);
@@ -731,7 +743,7 @@ public:
      * @throws ArithmeticException
      *             if {@code n < 0} or {@code n > 999999999}.
      */
-    CARAPI PowEx(
+    CARAPI Pow(
         /* [in] */ Int32 n,
         /* [in] */ IMathContext* mc,
         /* [out] */ IBigDecimal** result);
@@ -754,7 +766,7 @@ public:
      *            rounding mode and precision for the result of this operation.
      * @return {@code abs(this)}
      */
-    CARAPI AbsEx(
+    CARAPI Abs(
         /* [in] */ IMathContext* mc,
         /* [out] */ IBigDecimal** result);
 
@@ -775,7 +787,7 @@ public:
      *            rounding mode and precision for the result of this operation.
      * @return {@code -this}
      */
-    CARAPI NegateEx(
+    CARAPI Negate(
         /* [in] */ IMathContext* mc,
         /* [out] */ IBigDecimal** result);
 
@@ -796,7 +808,7 @@ public:
      *            rounding mode and precision for the result of this operation.
      * @return {@code this}, rounded
      */
-    CARAPI PlusEx(
+    CARAPI Plus(
         /* [in] */ IMathContext* mc,
         /* [out] */ IBigDecimal** result);
 
@@ -906,7 +918,7 @@ public:
      * @throws ArithmeticException
      *             if rounding would be necessary.
      */
-    CARAPI SetScaleEx(
+    CARAPI SetScale(
         /* [in] */ Int32 newScale,
         /* [out] */ IBigDecimal** result);
 

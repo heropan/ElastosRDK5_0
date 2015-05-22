@@ -286,7 +286,7 @@ String BigInt::DecString()
 
 String BigInt::HexString()
 {
-    return NativeBN::BN_bn2hex(mBignum);
+    return NativeBN::BN_bn2h(mBignum);
 }
 
 AutoPtr<ArrayOf<Byte> > BigInt::BigEndianMagnitude()
@@ -499,13 +499,13 @@ ECode BigInt::GeneratePrimeDefault(
     /* [in] */ BigInt& r)
 {
     FAIL_RETURN(NewBigInt(r));
-    return Check(NativeBN::BN_generate_prime_ex(r.mBignum, bitLength, FALSE, 0, 0, 0));
+    return Check(NativeBN::BN_generate_prime_(r.mBignum, bitLength, FALSE, 0, 0, 0));
 }
 
 Boolean BigInt::IsPrime(
     /* [in] */ Int32 certainty)
 {
-    return NativeBN::BN_is_prime_ex(mBignum, certainty, 0);
+    return NativeBN::BN_is_prime_(mBignum, certainty, 0);
 }
 
 } // namespace Math

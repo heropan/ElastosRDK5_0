@@ -3,6 +3,7 @@
 
 #include <elastos.h>
 #include <elquintet.h>
+#include "Object.h"
 
 namespace Elastos {
 namespace Math {
@@ -28,7 +29,7 @@ namespace Math {
  * </li>
  *</ul>
  */
-class Division
+class Division : public Object
 {
 public:
     /**
