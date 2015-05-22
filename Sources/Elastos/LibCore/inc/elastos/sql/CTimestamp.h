@@ -35,7 +35,7 @@ public:
         /* [in] */ ITimestamp * theTimestamp,
         /* [out] */ Boolean * value);
 
-    CARAPI CompareToEx(
+    CARAPI CompareTo(
         /* [in] */ ITimestamp * theTimestamp,
         /* [out] */ Int32 * value);
 
@@ -43,7 +43,7 @@ public:
         /* [in] */ IInterface * pTheObject,
         /* [out] */ Boolean * value);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ ITimestamp * theTimestamp,
         /* [out] */ Boolean * value);
 

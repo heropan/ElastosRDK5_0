@@ -23,7 +23,7 @@ public:
     CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte>& buffer);
 
-    CARAPI WriteBytesEx(
+    CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte>& b,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len);
@@ -43,7 +43,7 @@ public:
 
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
-        
+
 private:
     AutoPtr<CBlob> mBlob;
     Int32 mPos;

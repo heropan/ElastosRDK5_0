@@ -56,7 +56,7 @@ void Date::Init(
 {
     AutoPtr<IGregorianCalendar> cal;
     CGregorianCalendar::New(FALSE, (IGregorianCalendar**)&cal);
-    cal->SetEx(1900 + year, month, day);
+    cal->Set(1900 + year, month, day);
     cal->GetTimeInMillis(&mMilliseconds);
 }
 
@@ -70,7 +70,7 @@ Date::Date(
     AutoPtr<IGregorianCalendar> cal;
     CGregorianCalendar::New(FALSE, (IGregorianCalendar**)&cal);
 
-    cal->SetEx2(1900 + year, month, day, hour, minute);
+    cal->Set(1900 + year, month, day, hour, minute);
     cal->GetTimeInMillis(&mMilliseconds);
 }
 
@@ -82,10 +82,10 @@ Date::Date(
     /* [in] */ Int32 minute,
     /* [in] */ Int32 second)
 {
-    InitEx2(year,month,day,hour,minute,second);
+    Init(year,month,day,hour,minute,second);
 }
 
-void Date::InitEx2(
+void Date::Init(
     /* [in] */ Int32 year,
     /* [in] */ Int32 month,
     /* [in] */ Int32 day,
@@ -95,17 +95,17 @@ void Date::InitEx2(
 {
     AutoPtr<IGregorianCalendar> cal;
     CGregorianCalendar::New(FALSE, (IGregorianCalendar**)&cal);
-    cal->SetEx3(1900 + year, month, day, hour, minute, second);
+    cal->Set(1900 + year, month, day, hour, minute, second);
     cal->GetTimeInMillis(&mMilliseconds);
 }
 
 Date::Date(
     /* [in] */ Int64 milliseconds)
 {
-    InitEx(milliseconds);
+    Init(milliseconds);
 }
 
-void Date::InitEx(
+void Date::Init(
     /* [in] */ Int64 milliseconds)
 {
     mMilliseconds = milliseconds;
@@ -155,7 +155,7 @@ Int32 Date::CompareTo(
     return 1;
 }
 
-Boolean Date::EqualsEx(
+Boolean Date::Equals(
     /* [in] */ Elastos::Utility::IDate* date)
 {
     if (date == NULL) {
@@ -170,7 +170,7 @@ Boolean Date::EqualsEx(
 Boolean Date::Equals(
     /* [in] */ IInterface* date)
 {
-    return EqualsEx(IDate::Probe(date));
+    return Equals(IDate::Probe(date));
 }
 
 Int32 Date::GetDate()
@@ -379,7 +379,7 @@ String Date::ToString()
     String displayName;
     Boolean isIn;
     tz->InDaylightTime((Elastos::Utility::IDate*)this, &isIn);
-    tz->GetDisplayNameEx2(isIn, ITimeZone::SHORT, &displayName);
+    tz->GetDisplayName(isIn, ITimeZone::SHORT, &displayName);
     result.AppendString(displayName);
     result.AppendChar(' ');
     cal->Get(ICalendar::YEAR, &temp);
@@ -404,7 +404,7 @@ Int64 Date::UTC(
     CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timezoneHelper);
     timezoneHelper->GetTimeZone(String("GMT"), (ITimeZone**)&timezone);
     cal->SetTimeZone(timezone);
-    cal->SetEx3(1900 + year, month, day, hour, minute, second);
+    cal->Set(1900 + year, month, day, hour, minute, second);
     Int64 time;
     cal->GetTimeInMillis(&time);
     return time;

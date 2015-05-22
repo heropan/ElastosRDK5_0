@@ -8,6 +8,8 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_OBJECT_IMPL(CDatabase)
+
 PInterface CDatabase::Probe(
     /* [in] */ REIID riid)
 {
@@ -24,21 +26,21 @@ ECode CDatabase::Open(
     return Database::Open(filename,mode);
 }
 
-ECode CDatabase::OpenEx(
+ECode CDatabase::Open(
     /* [in] */ const String& filename,
     /* [in] */ Int32 mode,
     /* [in] */ const String& vfs)
 {
-    return Database::OpenEx(filename,mode,vfs);
+    return Database::Open(filename,mode,vfs);
 }
 
-ECode CDatabase::OpenEx2(
+ECode CDatabase::Open(
     /* [in] */ const String& filename,
     /* [in] */ Int32 mode,
     /* [in] */ const String& vfs,
     /* [in] */ Boolean ver2)
 {
-    return Database::OpenEx2(filename,mode,vfs,ver2);
+    return Database::Open(filename,mode,vfs,ver2);
 }
 
 ECode CDatabase::OpenAuxFile(
@@ -64,12 +66,12 @@ ECode CDatabase::Exec(
     return Database::Exec(sql,cb);
 }
 
-ECode CDatabase::ExecEx(
+ECode CDatabase::Exec(
     /* [in] */ const String& sql,
     /* [in] */ ICallback * cb,
     /* [in] */ const ArrayOf<String> & args)
 {
-    return Database::ExecEx(sql,cb,args);
+    return Database::Exec(sql,cb,args);
 }
 
 ECode CDatabase::LastInsertRowid(
@@ -115,48 +117,48 @@ ECode CDatabase::GetTable(
     return NOERROR;
 }
 
-ECode CDatabase::GetTableEx(
+ECode CDatabase::GetTable(
     /* [in] */ const String& sql,
     /* [out] */ ITableResult ** tableresult)
 {
     VALIDATE_NOT_NULL(tableresult);
-    AutoPtr<ITableResult> r = Database::GetTableEx(sql);
+    AutoPtr<ITableResult> r = Database::GetTable(sql);
     *tableresult = r;
     INTERFACE_ADDREF(*tableresult);
     return NOERROR;
 }
 
-ECode CDatabase::GetTableEx2(
+ECode CDatabase::GetTable(
     /* [in] */ const String& sql,
     /* [in] */ Int32 maxrows,
     /* [in] */ const ArrayOf<String> & args,
     /* [out] */ ITableResult ** tableresult)
 {
     VALIDATE_NOT_NULL(tableresult);
-    AutoPtr<ITableResult> r = Database::GetTableEx2(sql,maxrows,args);
+    AutoPtr<ITableResult> r = Database::GetTable(sql,maxrows,args);
     *tableresult = r;
     INTERFACE_ADDREF(*tableresult);
     return NOERROR;
 }
 
-ECode CDatabase::GetTableEx3(
+ECode CDatabase::GetTable(
     /* [in] */ const String& sql,
     /* [in] */ const ArrayOf<String> & args,
     /* [out] */ ITableResult ** tableresult)
 {
     VALIDATE_NOT_NULL(tableresult);
-    AutoPtr<ITableResult> r = Database::GetTableEx3(sql,args);
+    AutoPtr<ITableResult> r = Database::GetTable(sql,args);
     *tableresult = r;
     INTERFACE_ADDREF(*tableresult);
     return NOERROR;
 }
 
-ECode CDatabase::GetTableEx4(
+ECode CDatabase::GetTable(
     /* [in] */ const String& sql,
     /* [in] */ const ArrayOf<String> & args,
     /* [in] */ ITableResult * tbl)
 {
-    Database::GetTableEx4(sql,args,tbl);
+    Database::GetTable(sql,args,tbl);
     return NOERROR;
 }
 
@@ -268,13 +270,13 @@ ECode CDatabase::Compile(
     return NOERROR;
 }
 
-ECode CDatabase::CompileEx(
+ECode CDatabase::Compile(
     /* [in] */ const String& sql,
     /* [in] */ const ArrayOf<String> & args,
     /* [out] */ IVm ** ivm)
 {
     VALIDATE_NOT_NULL(ivm);
-    AutoPtr<IVm> r = Database::CompileEx(sql,args);
+    AutoPtr<IVm> r = Database::Compile(sql,args);
     *ivm = r;
     INTERFACE_ADDREF(*ivm);
     return NOERROR;
@@ -329,10 +331,10 @@ ECode CDatabase::Key(
     return Database::Key(ekey);
 }
 
-ECode CDatabase::KeyEx(
+ECode CDatabase::Key(
     /* [in] */ const String& skey)
 {
-    return Database::KeyEx(skey);
+    return Database::Key(skey);
 }
 
 UInt32 CDatabase::Release()

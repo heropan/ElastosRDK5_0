@@ -31,7 +31,7 @@ public:
         /* [in] */ Double d,
         /* [out] */ Int64 * value);
 
-    CARAPI LongFromJulianEx(
+    CARAPI LongFromJulian(
         /* [in] */ const String& s ,
         /* [out] */ Int64 * value);
 

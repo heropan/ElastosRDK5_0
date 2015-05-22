@@ -23,7 +23,7 @@ ECode CSinFunc::Function(
     Double d = StringUtils::ParseDouble(args[0]);
     functionCalled = TRUE;
     VALIDATE_NOT_NULL(fc);
-    fc->SetResultEx2(Elastos::Core::Math::Sin(d));
+    fc->SetResult(Elastos::Core::Math::Sin(d));
     return NOERROR;
 }
 

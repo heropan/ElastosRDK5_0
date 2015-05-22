@@ -78,7 +78,7 @@ ECode CFunctionContext::SetResult(
     return NOERROR;
 }
 
-ECode CFunctionContext::SetResultEx(
+ECode CFunctionContext::SetResult(
     /* [in] */ Int32 i)
 {
     hfunc *f = (hfunc *)mHandle;
@@ -103,7 +103,7 @@ ECode CFunctionContext::SetResultEx(
     return NOERROR;
 }
 
-ECode CFunctionContext::SetResultEx2(
+ECode CFunctionContext::SetResult(
     /* [in] */ Double d)
 {
     hfunc *f = (hfunc *)mHandle;
@@ -184,7 +184,7 @@ ECode CFunctionContext::SetError(
     return NOERROR;
 }
 
-ECode CFunctionContext::SetResultEx3(
+ECode CFunctionContext::SetResult(
     /* [in] */ const ArrayOf<Byte>& b)
 {
 #if HAVE_SQLITE3

@@ -19,7 +19,7 @@
         /* [in] */ Elastos::Utility::IDate * indate,            \
         /* [out] */ Int32 * value);                             \
                                                                 \
-    CARAPI EqualsEx(                                            \
+    CARAPI Equals(                                            \
         /* [in] */ Elastos::Utility::IDate * indate,            \
         /* [out] */ Boolean * value);                           \
                                                                 \
@@ -90,11 +90,11 @@ ECode className::CompareTo(                                     \
     return NOERROR;                                             \
 }                                                               \
                                                                 \
-ECode className::EqualsEx(                                      \
+ECode className::Equals(                                      \
         /* [in] */ Elastos::Utility::IDate * indate,            \
         /* [out] */ Boolean * value)                            \
 {                                                               \
-    *value = superClass::EqualsEx(indate);                      \
+    *value = superClass::Equals(indate);                      \
     return NOERROR;                                             \
 }                                                               \
                                                                 \

@@ -123,7 +123,7 @@ ECode CJDBCResultSet::DeleteRow()
         }
         (*args)[i] = (*rowbuf)[(*pkcoli)[i]];
     }
-    ECode ec = ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->ExecEx(sb.ToString(),NULL,*args);
+    ECode ec = ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->Exec(sb.ToString(),NULL,*args);
     if (ec != NOERROR)
     {
         return E_SQL_EXCEPTION;
@@ -157,12 +157,12 @@ ECode CJDBCResultSet::GetAsciiStream(
     return E_SQL_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetAsciiStreamEx(
+ECode CJDBCResultSet::GetAsciiStream(
     /* [in] */ const String& colName,
     /* [out] */ IInputStream ** iinputstream)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetAsciiStream(col,iinputstream);
 }
 
@@ -173,7 +173,7 @@ ECode CJDBCResultSet::GetBigDecimal(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetBigDecimalEx(
+ECode CJDBCResultSet::GetBigDecimal(
     /* [in] */ Int32 colIndex,
     /* [in] */ Int32 scale,
     /* [out] */ IBigDecimal ** bigdecimal)
@@ -181,23 +181,23 @@ ECode CJDBCResultSet::GetBigDecimalEx(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetBigDecimalEx2(
+ECode CJDBCResultSet::GetBigDecimal(
     /* [in] */ const String& colName,
     /* [out] */ IBigDecimal ** bigdecimal)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetBigDecimal(col,bigdecimal);
 }
 
-ECode CJDBCResultSet::GetBigDecimalEx3(
+ECode CJDBCResultSet::GetBigDecimal(
     /* [in] */ const String& colName,
     /* [in] */ Int32 scale,
     /* [out] */ IBigDecimal ** bigdecimal)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return GetBigDecimalEx(col, scale,bigdecimal);
+    FindColumn(colName,&col);
+    return GetBigDecimal(col, scale,bigdecimal);
 }
 
 ECode CJDBCResultSet::GetBinaryStream(
@@ -213,12 +213,12 @@ ECode CJDBCResultSet::GetBinaryStream(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetBinaryStreamEx(
+ECode CJDBCResultSet::GetBinaryStream(
     /* [in] */ const String& colName,
     /* [out] */ IInputStream ** iinputstream)
 {
     AutoPtr<ArrayOf<Byte> > data;
-    GetBytesEx(colName,(ArrayOf<Byte> **)&data);
+    GetBytes(colName,(ArrayOf<Byte> **)&data);
     if (data != NULL) {
         FAIL_RETURN(CByteArrayInputStream::New(data,(IByteArrayInputStream **)iinputstream));
     }
@@ -233,12 +233,12 @@ ECode CJDBCResultSet::GetBlob(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetBlobEx(
+ECode CJDBCResultSet::GetBlob(
     /* [in] */ const String& colName,
     /* [out] */ Elastos::Sql::IBlob ** oblob)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetBlob(col,oblob);
 }
 
@@ -254,12 +254,12 @@ ECode CJDBCResultSet::GetBoolean(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetBooleanEx(
+ECode CJDBCResultSet::GetBoolean(
     /* [in] */ const String& colName,
     /* [out] */ Boolean * value)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     GetBoolean(col,value);
     return NOERROR;
 }
@@ -271,12 +271,12 @@ ECode CJDBCResultSet::GetByte(
     return E_SQL_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetByteEx(
+ECode CJDBCResultSet::GetByte(
     /* [in] */ const String& colName,
     /* [out] */ Byte * value)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetByte(col,value);
 }
 
@@ -301,12 +301,12 @@ ECode CJDBCResultSet::GetBytes(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetBytesEx(
+ECode CJDBCResultSet::GetBytes(
     /* [in] */ const String& colName,
     /* [out, callee] */ ArrayOf<Byte> ** oarray)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetBytes(col,oarray);
 }
 
@@ -326,7 +326,7 @@ ECode CJDBCResultSet::GetCharacterStream(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetCharacterStreamEx(
+ECode CJDBCResultSet::GetCharacterStream(
     /* [in] */ const String& colName,
     /* [out] */ IReader ** reader)
 {
@@ -334,7 +334,7 @@ ECode CJDBCResultSet::GetCharacterStreamEx(
     *reader = NULL;
 
     String data = String(NULL);
-    GetStringEx(colName,&data);
+    GetString(colName,&data);
     if (data != NULL) {
         AutoPtr<ArrayOf<Char32> > cdata = data.GetChars();
         CCharArrayReader::New(cdata,(ICharArrayReader **)reader);
@@ -349,12 +349,12 @@ ECode CJDBCResultSet::GetClob(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetClobEx(
+ECode CJDBCResultSet::GetClob(
     /* [in] */ const String& colName,
     /* [out] */ IClob ** oclob)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetClob(col,oclob);
 }
 
@@ -385,12 +385,12 @@ ECode CJDBCResultSet::GetDouble(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetDoubleEx(
+ECode CJDBCResultSet::GetDouble(
     /* [in] */ const String& colName,
     /* [out] */ Double * value)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     GetDouble(col,value);
     return NOERROR;
 }
@@ -422,12 +422,12 @@ ECode CJDBCResultSet::GetFloat(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetFloatEx(
+ECode CJDBCResultSet::GetFloat(
     /* [in] */ const String& colName,
     /* [out] */ Float * value)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     GetFloat(col,value);
     return NOERROR;
 }
@@ -446,12 +446,12 @@ ECode CJDBCResultSet::GetInt(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetIntEx(
+ECode CJDBCResultSet::GetInt(
     /* [in] */ const String& colName,
     /* [out] */ Int32 * value)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     GetInt(col,value);
     return NOERROR;
 }
@@ -469,12 +469,12 @@ ECode CJDBCResultSet::GetLong(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetLongEx(
+ECode CJDBCResultSet::GetLong(
     /* [in] */ const String& colName,
     /* [out] */ Int64 * value)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     GetLong(col,value);
     return NOERROR;
 }
@@ -548,12 +548,12 @@ ECode CJDBCResultSet::GetRef(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetRefEx(
+ECode CJDBCResultSet::GetRef(
     /* [in] */ const String& colName,
     /* [out] */ IRef ** ref)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetRef(col,ref);
 }
 
@@ -579,12 +579,12 @@ ECode CJDBCResultSet::GetShort(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetShortEx(
+ECode CJDBCResultSet::GetShort(
     /* [in] */ const String& colName,
     /* [out] */ Int16 * value)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     GetShort(col,value);
     return NOERROR;
 }
@@ -612,12 +612,12 @@ ECode CJDBCResultSet::GetString(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetStringEx(
+ECode CJDBCResultSet::GetString(
     /* [in] */ const String& colName,
     /* [out] */ String * value)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     GetString(col,value);
     return NOERROR;
 }
@@ -630,7 +630,7 @@ ECode CJDBCResultSet::GetTime(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetTimeEx(
+ECode CJDBCResultSet::GetTime(
     /* [in] */ Int32 colIndex,
     /* [in] */ ICalendar * pCal,
     /* [out] */ ITime ** sqltime)
@@ -639,24 +639,24 @@ ECode CJDBCResultSet::GetTimeEx(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetTimeEx2(
+ECode CJDBCResultSet::GetTime(
     /* [in] */ const String& colName,
     /* [out] */ ITime ** sqltime)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     GetTime(col,sqltime);
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetTimeEx3(
+ECode CJDBCResultSet::GetTime(
     /* [in] */ const String& colName,
     /* [in] */ ICalendar * pCal,
     /* [out] */ ITime ** sqltime)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    GetTimeEx(col, pCal,sqltime);
+    FindColumn(colName,&col);
+    GetTime(col, pCal,sqltime);
     return NOERROR;
 }
 
@@ -668,7 +668,7 @@ ECode CJDBCResultSet::GetTimestamp(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetTimestampEx(
+ECode CJDBCResultSet::GetTimestamp(
     /* [in] */ Int32 colIndex,
     /* [in] */ ICalendar * pCal,
     /* [out] */ ITimestamp ** timestamp)
@@ -677,7 +677,7 @@ ECode CJDBCResultSet::GetTimestampEx(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetTimestampEx2(
+ECode CJDBCResultSet::GetTimestamp(
     /* [in] */ const String& colName,
     /* [out] */ ITimestamp ** timestamp)
 {
@@ -685,7 +685,7 @@ ECode CJDBCResultSet::GetTimestampEx2(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetTimestampEx3(
+ECode CJDBCResultSet::GetTimestamp(
     /* [in] */ const String& colName,
     /* [in] */ ICalendar * pCal,
     /* [out] */ ITimestamp ** timestamp)
@@ -708,12 +708,12 @@ ECode CJDBCResultSet::GetUnicodeStream(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetUnicodeStreamEx(
+ECode CJDBCResultSet::GetUnicodeStream(
     /* [in] */ const String& colName,
     /* [out] */ IInputStream ** iinputstream)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetUnicodeStream(col,iinputstream);
 }
 
@@ -753,7 +753,7 @@ ECode CJDBCResultSet::InsertRow()
         }
     }
     sb.AppendCStr(")");
-    ECode ec = ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->ExecEx(sb.ToString(),NULL,*rowbuf);
+    ECode ec = ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->Exec(sb.ToString(),NULL,*rowbuf);
     if (ec != NOERROR)
     {
         return E_SQL_EXCEPTION;
@@ -896,7 +896,7 @@ ECode CJDBCResultSet::RefreshRow()
         (*args)[i] = (*rd)[(*pkcoli)[i]];
     }
     AutoPtr<ITableResult> trnew ;
-    ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->GetTableEx3(sb.ToString(),*args,(ITableResult **)&trnew);
+    ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->GetTable(sb.ToString(),*args,(ITableResult **)&trnew);
     if (trnew == NULL)
     {
         return E_SQL_EXCEPTION;
@@ -973,12 +973,12 @@ ECode CJDBCResultSet::UpdateArray(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateArrayEx(
+ECode CJDBCResultSet::UpdateArray(
     /* [in] */ const String& colName,
     /* [in] */ IArray * x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateArray(col, x);
 }
 
@@ -990,13 +990,13 @@ ECode CJDBCResultSet::UpdateAsciiStream(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateAsciiStreamEx(
+ECode CJDBCResultSet::UpdateAsciiStream(
     /* [in] */ const String& colName,
     /* [in] */ IInputStream * x,
     /* [in] */ Int32 length)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateAsciiStream(col,x, length);
 }
 
@@ -1008,12 +1008,12 @@ ECode CJDBCResultSet::UpdateBigDecimal(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateBigDecimalEx(
+ECode CJDBCResultSet::UpdateBigDecimal(
     /* [in] */ const String& colName,
     /* [in] */ IBigDecimal * x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateBigDecimal(col, x);
 }
 
@@ -1026,13 +1026,13 @@ ECode CJDBCResultSet::UpdateBinaryStream(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateBinaryStreamEx(
+ECode CJDBCResultSet::UpdateBinaryStream(
     /* [in] */ const String& colName,
     /* [in] */ IInputStream * x,
     /* [in] */ Int32 length)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateBinaryStream(col,x, length);
 }
 
@@ -1043,12 +1043,12 @@ ECode CJDBCResultSet::UpdateBlob(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateBlobEx(
+ECode CJDBCResultSet::UpdateBlob(
     /* [in] */ const String& colName,
     /* [in] */ Elastos::Sql::IBlob * x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateBlob(col, x);
 }
 
@@ -1059,12 +1059,12 @@ ECode CJDBCResultSet::UpdateBoolean(
     return UpdateString(colIndex, x ? String("1") : String("0"));
 }
 
-ECode CJDBCResultSet::UpdateBooleanEx(
+ECode CJDBCResultSet::UpdateBoolean(
     /* [in] */ const String& colName,
     /* [in] */ Boolean x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateBoolean(col, x);
 }
 
@@ -1076,12 +1076,12 @@ ECode CJDBCResultSet::UpdateByte(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateByteEx(
+ECode CJDBCResultSet::UpdateByte(
     /* [in] */ const String& colName,
     /* [in] */ Byte x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateByte(col, x);
 }
 
@@ -1105,12 +1105,12 @@ ECode CJDBCResultSet::UpdateBytes(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateBytesEx(
+ECode CJDBCResultSet::UpdateBytes(
     /* [in] */ const String& colName,
     /* [in] */ const ArrayOf<Byte> & x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateBytes(col, x);
 }
 
@@ -1123,13 +1123,13 @@ ECode CJDBCResultSet::UpdateCharacterStream(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateCharacterStreamEx(
+ECode CJDBCResultSet::UpdateCharacterStream(
     /* [in] */ const String& colName,
     /* [in] */ IReader * reader,
     /* [in] */ Int32 length)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateCharacterStream(col,reader, length);
 }
 
@@ -1140,12 +1140,12 @@ ECode CJDBCResultSet::UpdateClob(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateClobEx(
+ECode CJDBCResultSet::UpdateClob(
     /* [in] */ const String& colName,
     /* [in] */ IClob * x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateClob(col, x);
 }
 
@@ -1165,12 +1165,12 @@ ECode CJDBCResultSet::UpdateDate(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateDateEx(
+ECode CJDBCResultSet::UpdateDate(
     /* [in] */ const String& colName,
     /* [in] */ IDate * x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateDate(col, x);
 }
 
@@ -1188,12 +1188,12 @@ ECode CJDBCResultSet::UpdateDouble(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateDoubleEx(
+ECode CJDBCResultSet::UpdateDouble(
     /* [in] */ const String& colName,
     /* [in] */ Double x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateDouble(col, x);
 }
 
@@ -1211,12 +1211,12 @@ ECode CJDBCResultSet::UpdateFloat(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateFloatEx(
+ECode CJDBCResultSet::UpdateFloat(
     /* [in] */ const String& colName,
     /* [in] */ Float x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateFloat(col, x);
 }
 
@@ -1234,12 +1234,12 @@ ECode CJDBCResultSet::UpdateInt(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateIntEx(
+ECode CJDBCResultSet::UpdateInt(
     /* [in] */ const String& colName,
     /* [in] */ Int32 x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateInt(col, x);
 }
 
@@ -1257,12 +1257,12 @@ ECode CJDBCResultSet::UpdateLong(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateLongEx(
+ECode CJDBCResultSet::UpdateLong(
     /* [in] */ const String& colName,
     /* [in] */ Int64 x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateLong(col, x);
 }
 
@@ -1279,11 +1279,11 @@ ECode CJDBCResultSet::UpdateNull(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateNullEx(
+ECode CJDBCResultSet::UpdateNull(
     /* [in] */ const String& colName)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateNull(col);
 }
 
@@ -1296,7 +1296,7 @@ ECode CJDBCResultSet::UpdateObject(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateObjectEx(
+ECode CJDBCResultSet::UpdateObject(
     /* [in] */ Int32 colIndex,
     /* [in] */ IInterface * x,
     /* [in] */ Int32 scale)
@@ -1306,23 +1306,23 @@ ECode CJDBCResultSet::UpdateObjectEx(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateObjectEx2(
+ECode CJDBCResultSet::UpdateObject(
     /* [in] */ const String& colName,
     /* [in] */ IInterface * x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateObject(col,x);
 }
 
-ECode CJDBCResultSet::UpdateObjectEx3(
+ECode CJDBCResultSet::UpdateObject(
     /* [in] */ const String& colName,
     /* [in] */ IInterface * x,
     /* [in] */ Int32 scale)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateObjectEx(col,x,scale);
+    FindColumn(colName,&col);
+    return UpdateObject(col,x,scale);
 }
 
 ECode CJDBCResultSet::UpdateRef(
@@ -1332,12 +1332,12 @@ ECode CJDBCResultSet::UpdateRef(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateRefEx(
+ECode CJDBCResultSet::UpdateRef(
     /* [in] */ const String& colName,
     /* [in] */ IRef * x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateRef(col, x);
 }
 
@@ -1382,7 +1382,7 @@ ECode CJDBCResultSet::UpdateRow()
         }
         (*args)[i] = (*rd)[(*pkcoli)[k]];
     }
-    ECode ec = ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->ExecEx(sb.ToString(),NULL,*args);
+    ECode ec = ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->Exec(sb.ToString(),NULL,*args);
     if (ec != NOERROR)
     {
         return E_SQL_EXCEPTION;
@@ -1406,12 +1406,12 @@ ECode CJDBCResultSet::UpdateShort(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateShortEx(
+ECode CJDBCResultSet::UpdateShort(
     /* [in] */ const String& colName,
     /* [in] */ Int16 x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateShort(col, x);
 }
 
@@ -1429,12 +1429,12 @@ ECode CJDBCResultSet::UpdateString(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateStringEx(
+ECode CJDBCResultSet::UpdateString(
     /* [in] */ const String& colName,
     /* [in] */ const String& x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateString(col, x);
 }
 
@@ -1454,12 +1454,12 @@ ECode CJDBCResultSet::UpdateTime(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateTimeEx(
+ECode CJDBCResultSet::UpdateTime(
     /* [in] */ const String& colName,
     /* [in] */ ITime * x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateTime(col, x);
 }
 
@@ -1479,12 +1479,12 @@ ECode CJDBCResultSet::UpdateTimestamp(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::UpdateTimestampEx(
+ECode CJDBCResultSet::UpdateTimestamp(
     /* [in] */ const String& colName,
     /* [in] */ ITimestamp * x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateTimestamp(col, x);
 }
 
@@ -1502,12 +1502,12 @@ ECode CJDBCResultSet::GetRowId(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetRowIdEx(
+ECode CJDBCResultSet::GetRowId(
     /* [in] */ const String& colName,
     /* [out] */ IRowId ** rowid)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetRowId(col, rowid);
 }
 
@@ -1518,12 +1518,12 @@ ECode CJDBCResultSet::UpdateRowId(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateRowIdEx(
+ECode CJDBCResultSet::UpdateRowId(
     /* [in] */ const String& colName,
     /* [in] */ IRowId * value)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateRowId(col, value);
 }
 
@@ -1549,12 +1549,12 @@ ECode CJDBCResultSet::UpdateNString(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateNStringEx(
+ECode CJDBCResultSet::UpdateNString(
     /* [in] */ const String& colName,
     /* [in] */ const String& nString)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateNString(col, nString);
 }
 
@@ -1565,12 +1565,12 @@ ECode CJDBCResultSet::UpdateNClob(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateNClobEx(
+ECode CJDBCResultSet::UpdateNClob(
     /* [in] */ const String& colName,
     /* [in] */ INClob * nclob)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateNClob(col, nclob);
 }
 
@@ -1581,12 +1581,12 @@ ECode CJDBCResultSet::GetNClob(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetNClobEx(
+ECode CJDBCResultSet::GetNClob(
     /* [in] */ const String& colName,
     /* [out] */ INClob ** nclob)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetNClob(col, nclob);
 }
 
@@ -1597,12 +1597,12 @@ ECode CJDBCResultSet::GetSQLXML(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetSQLXMLEx(
+ECode CJDBCResultSet::GetSQLXML(
     /* [in] */ const String& colName,
     /* [out] */ ISQLXML ** sqlxml)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetSQLXML(col, sqlxml);
 }
 
@@ -1613,12 +1613,12 @@ ECode CJDBCResultSet::UpdateSQLXML(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateSQLXMLEx(
+ECode CJDBCResultSet::UpdateSQLXML(
     /* [in] */ const String& colName,
     /* [in] */ ISQLXML * xmlObject)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateSQLXML(col, xmlObject);
 }
 
@@ -1629,12 +1629,12 @@ ECode CJDBCResultSet::GetNString(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetNStringEx(
+ECode CJDBCResultSet::GetNString(
     /* [in] */ const String& colName,
     /* [out] */ String * nstr)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetNString(col, nstr);
 }
 
@@ -1645,12 +1645,12 @@ ECode CJDBCResultSet::GetNCharacterStream(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetNCharacterStreamEx(
+ECode CJDBCResultSet::GetNCharacterStream(
     /* [in] */ const String& colName,
     /* [out] */ IReader ** reader)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetNCharacterStream(col, reader);
 }
 
@@ -1662,17 +1662,17 @@ ECode CJDBCResultSet::UpdateNCharacterStream(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateNCharacterStreamEx(
+ECode CJDBCResultSet::UpdateNCharacterStream(
     /* [in] */ const String& colName,
     /* [in] */ IReader * reader,
     /* [in] */ Int64 length)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return UpdateNCharacterStream(col,reader, length);
 }
 
-ECode CJDBCResultSet::UpdateAsciiStreamEx2(
+ECode CJDBCResultSet::UpdateAsciiStream(
     /* [in] */ Int32 colIndex,
     /* [in] */ IInputStream * x,
     /* [in] */ Int64 length)
@@ -1680,7 +1680,7 @@ ECode CJDBCResultSet::UpdateAsciiStreamEx2(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateBinaryStreamEx2(
+ECode CJDBCResultSet::UpdateBinaryStream(
     /* [in] */ Int32 colIndex,
     /* [in] */ IInputStream * x,
     /* [in] */ Int64 length)
@@ -1688,7 +1688,7 @@ ECode CJDBCResultSet::UpdateBinaryStreamEx2(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateCharacterStreamEx2(
+ECode CJDBCResultSet::UpdateCharacterStream(
     /* [in] */ Int32 colIndex,
     /* [in] */ IReader * x,
     /* [in] */ Int64 length)
@@ -1697,37 +1697,37 @@ ECode CJDBCResultSet::UpdateCharacterStreamEx2(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateAsciiStreamEx3(
+ECode CJDBCResultSet::UpdateAsciiStream(
     /* [in] */ const String& colName,
     /* [in] */ IInputStream * x,
     /* [in] */ Int64 length)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateAsciiStreamEx2(col,x,length);
+    FindColumn(colName,&col);
+    return UpdateAsciiStream(col,x,length);
 }
 
-ECode CJDBCResultSet::UpdateBinaryStreamEx3(
+ECode CJDBCResultSet::UpdateBinaryStream(
     /* [in] */ const String& colName,
     /* [in] */ IInputStream * x,
     /* [in] */ Int64 length)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateBinaryStreamEx2(col,x,length);
+    FindColumn(colName,&col);
+    return UpdateBinaryStream(col,x,length);
 }
 
-ECode CJDBCResultSet::UpdateCharacterStreamEx3(
+ECode CJDBCResultSet::UpdateCharacterStream(
     /* [in] */ const String& colName,
     /* [in] */ IReader * reader,
     /* [in] */ Int64 length)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateCharacterStreamEx2(col,reader,length);
+    FindColumn(colName,&col);
+    return UpdateCharacterStream(col,reader,length);
 }
 
-ECode CJDBCResultSet::UpdateBlobEx2(
+ECode CJDBCResultSet::UpdateBlob(
     /* [in] */ Int32 colIndex,
     /* [in] */ IInputStream * pInputStream,
     /* [in] */ Int64 length)
@@ -1735,17 +1735,17 @@ ECode CJDBCResultSet::UpdateBlobEx2(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateBlobEx3(
+ECode CJDBCResultSet::UpdateBlob(
     /* [in] */ const String& colName,
     /* [in] */ IInputStream * pInputStream,
     /* [in] */ Int64 length)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateBlobEx2(col,pInputStream,length);
+    FindColumn(colName,&col);
+    return UpdateBlob(col,pInputStream,length);
 }
 
-ECode CJDBCResultSet::UpdateClobEx2(
+ECode CJDBCResultSet::UpdateClob(
     /* [in] */ Int32 colIndex,
     /* [in] */ IReader * reader,
     /* [in] */ Int64 length)
@@ -1753,17 +1753,17 @@ ECode CJDBCResultSet::UpdateClobEx2(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateClobEx3(
+ECode CJDBCResultSet::UpdateClob(
     /* [in] */ const String& colName,
     /* [in] */ IReader * reader,
     /* [in] */ Int64 length)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateClobEx2(col,reader,length);
+    FindColumn(colName,&col);
+    return UpdateClob(col,reader,length);
 }
 
-ECode CJDBCResultSet::UpdateNClobEx2(
+ECode CJDBCResultSet::UpdateNClob(
     /* [in] */ Int64 colIndex,
     /* [in] */ IReader * reader,
     /* [in] */ Int64 length)
@@ -1771,47 +1771,47 @@ ECode CJDBCResultSet::UpdateNClobEx2(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateNClobEx3(
+ECode CJDBCResultSet::UpdateNClob(
     /* [in] */ const String& colName,
     /* [in] */ IReader * reader,
     /* [in] */ Int64 length)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateNClobEx2(col,reader,length);
+    FindColumn(colName,&col);
+    return UpdateNClob(col,reader,length);
 }
 
-ECode CJDBCResultSet::UpdateNCharacterStreamEx2(
+ECode CJDBCResultSet::UpdateNCharacterStream(
     /* [in] */ Int32 colIndex,
     /* [in] */ IReader * x)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateNCharacterStreamEx3(
+ECode CJDBCResultSet::UpdateNCharacterStream(
     /* [in] */ const String& colName,
     /* [in] */ IReader * reader)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateNCharacterStreamEx2(col, reader);
+    FindColumn(colName,&col);
+    return UpdateNCharacterStream(col, reader);
 }
 
-ECode CJDBCResultSet::UpdateAsciiStreamEx4(
+ECode CJDBCResultSet::UpdateAsciiStream(
     /* [in] */ Int32 colIndex,
     /* [in] */ IInputStream * x)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateBinaryStreamEx4(
+ECode CJDBCResultSet::UpdateBinaryStream(
     /* [in] */ Int32 colIndex,
     /* [in] */ IInputStream * x)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateCharacterStreamEx4(
+ECode CJDBCResultSet::UpdateCharacterStream(
     /* [in] */ Int32 colIndex,
     /* [in] */ IReader * px)
 {
@@ -1819,79 +1819,79 @@ ECode CJDBCResultSet::UpdateCharacterStreamEx4(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateAsciiStreamEx5(
+ECode CJDBCResultSet::UpdateAsciiStream(
     /* [in] */ const String& colName,
     /* [in] */ IInputStream * x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateAsciiStreamEx4(col,x);
+    FindColumn(colName,&col);
+    return UpdateAsciiStream(col,x);
 }
 
-ECode CJDBCResultSet::UpdateBinaryStreamEx5(
+ECode CJDBCResultSet::UpdateBinaryStream(
     /* [in] */ const String& colName,
     /* [in] */ IInputStream * x)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateBinaryStreamEx4(col,x);
+    FindColumn(colName,&col);
+    return UpdateBinaryStream(col,x);
 }
 
-ECode CJDBCResultSet::UpdateCharacterStreamEx5(
+ECode CJDBCResultSet::UpdateCharacterStream(
     /* [in] */ const String& colName,
     /* [in] */ IReader * reader)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateCharacterStreamEx4(col,reader);
+    FindColumn(colName,&col);
+    return UpdateCharacterStream(col,reader);
 }
 
-ECode CJDBCResultSet::UpdateBlobEx4(
+ECode CJDBCResultSet::UpdateBlob(
     /* [in] */ Int32 colIndex,
     /* [in] */ IInputStream * pInputStream)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateBlobEx5(
+ECode CJDBCResultSet::UpdateBlob(
     /* [in] */ const String& colName,
     /* [in] */ IInputStream * pInputStream)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateBlobEx4(col,pInputStream);
+    FindColumn(colName,&col);
+    return UpdateBlob(col,pInputStream);
 }
 
-ECode CJDBCResultSet::UpdateClobEx4(
+ECode CJDBCResultSet::UpdateClob(
     /* [in] */ Int32 colIndex,
     /* [in] */ IReader * reader)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateClobEx5(
+ECode CJDBCResultSet::UpdateClob(
     /* [in] */ const String& colName,
     /* [in] */ IReader * reader)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateClobEx4(col,reader);
+    FindColumn(colName,&col);
+    return UpdateClob(col,reader);
 }
 
-ECode CJDBCResultSet::UpdateNClobEx4(
+ECode CJDBCResultSet::UpdateNClob(
     /* [in] */ Int32 colIndex,
     /* [in] */ IReader * reader)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::UpdateNClobEx5(
+ECode CJDBCResultSet::UpdateNClob(
     /* [in] */ const String& colName,
     /* [in] */ IReader * reader)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return UpdateNClobEx4(col,reader);
+    FindColumn(colName,&col);
+    return UpdateNClob(col,reader);
 }
 
 ECode CJDBCResultSet::constructor(
@@ -1923,12 +1923,12 @@ ECode CJDBCResultSet::GetArray(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetArrayEx(
+ECode CJDBCResultSet::GetArray(
     /* [in] */ const String& colName,
     /* [out] */ IArray ** iarray)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetArray(col,iarray);
 }
 
@@ -1940,7 +1940,7 @@ ECode CJDBCResultSet::GetDate(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetDateEx(
+ECode CJDBCResultSet::GetDate(
     /* [in] */ Int32 colIndex,
     /* [in] */ ICalendar * cal,
     /* [out] */ IDate ** idate)
@@ -1949,28 +1949,28 @@ ECode CJDBCResultSet::GetDateEx(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetDateEx2(
+ECode CJDBCResultSet::GetDate(
     /* [in] */ const String& colName,
     /* [out] */ IDate ** idate)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     GetDate(col,idate);
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetDateEx3(
+ECode CJDBCResultSet::GetDate(
     /* [in] */ const String& colName,
     /* [in] */ ICalendar * cal,
     /* [out] */ IDate ** idate)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    GetDateEx(col, cal,idate);
+    FindColumn(colName,&col);
+    GetDate(col, cal,idate);
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetObjectEx(
+ECode CJDBCResultSet::GetObject(
     /* [in] */ Int32 colIndex,
     /* [in] */ IObjectStringMap * map,
     /* [out] */ IInterface ** obj)
@@ -1978,23 +1978,23 @@ ECode CJDBCResultSet::GetObjectEx(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCResultSet::GetObjectEx2(
+ECode CJDBCResultSet::GetObject(
     /* [in] */ const String& colName,
     /* [out] */ IInterface** obj)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetObject(col,obj);
 }
 
-ECode CJDBCResultSet::GetObjectEx3(
+ECode CJDBCResultSet::GetObject(
     /* [in] */ const String& colName,
     /* [in] */ IObjectStringMap * map,
     /* [out] */ IInterface** obj)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
-    return GetObjectEx(col, map, obj);
+    FindColumn(colName,&col);
+    return GetObject(col, map, obj);
 }
 
 ECode CJDBCResultSet::GetURL(
@@ -2017,12 +2017,12 @@ ECode CJDBCResultSet::GetURL(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::GetURLEx(
+ECode CJDBCResultSet::GetURL(
     /* [in] */ const String& colName,
     /* [out] */ IURL** url)
 {
     Int32 col = 0;
-    FindColumnEx(colName,&col);
+    FindColumn(colName,&col);
     return GetURL(col,url);
 }
 
@@ -2063,7 +2063,7 @@ ECode CJDBCResultSet::IsUpdatable(
                 AutoPtr<ArrayOf<String> > rd = pk->tr->rows[i];
                 (*pkcols)[i] = (*rd)[3];
                 Int32 midvalue = 0;
-                ECode ec = FindColumnEx((*pkcols)[i],&midvalue);
+                ECode ec = FindColumn((*pkcols)[i],&midvalue);
                 (*pkcoli)[i] = midvalue - 1;
                 if ( ec != NOERROR)
                 {
@@ -2099,7 +2099,7 @@ ECode CJDBCResultSet::FillRowbuf()
     return NOERROR;
 }
 
-ECode CJDBCResultSet::FindColumnEx(
+ECode CJDBCResultSet::FindColumn(
     /* [in] */ const String& colName,
     /* [out] */ Int32 * value)
 {
@@ -2155,7 +2155,7 @@ AutoPtr<ITime> CJDBCResultSet::InternalGetTime(
     lastg = (*rd)[colIndex - 1];
     if (((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mUseJulian) {
 
-        ec = CTime::New(SQLite::Database::LongFromJulianEx(lastg),(ITime **)&otime);
+        ec = CTime::New(SQLite::Database::LongFromJulian(lastg),(ITime **)&otime);
         if (ec != NOERROR)
         {
             otime = CTime::ValueOf(lastg);
@@ -2167,7 +2167,7 @@ AutoPtr<ITime> CJDBCResultSet::InternalGetTime(
             {
                 return otime;
             }else{
-                CTime::New(SQLite::Database::LongFromJulianEx(lastg),(ITime **)&otime);
+                CTime::New(SQLite::Database::LongFromJulian(lastg),(ITime **)&otime);
                 return otime;
             }
 
@@ -2191,7 +2191,7 @@ AutoPtr<ITimestamp> CJDBCResultSet::InternalGetTimestamp(
     AutoPtr<ITimestamp> otime;
     ECode ec = NOERROR;
     if (((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mUseJulian) {
-        ec = CTimestamp::New(SQLite::Database::LongFromJulianEx(lastg),(ITimestamp ** )&otime);
+        ec = CTimestamp::New(SQLite::Database::LongFromJulian(lastg),(ITimestamp ** )&otime);
         if (ec != NOERROR)
          {
             return Elastos::Sql::CTimestamp::ValueOf(lastg);
@@ -2202,7 +2202,7 @@ AutoPtr<ITimestamp> CJDBCResultSet::InternalGetTimestamp(
         {
             return otime;
         }else{
-            CTimestamp::New(SQLite::Database::LongFromJulianEx(lastg),(ITimestamp ** )&otime);
+            CTimestamp::New(SQLite::Database::LongFromJulian(lastg),(ITimestamp ** )&otime);
             return otime;
         }
     }
@@ -2224,7 +2224,7 @@ AutoPtr<IDate> CJDBCResultSet::InternalGetDate(
     AutoPtr<IDate> otime;
     ECode ec = NOERROR;
     if (((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mUseJulian) {
-        ec = CSqlDate::New(SQLite::Database::LongFromJulianEx(lastg),(IDate **)&otime);
+        ec = CSqlDate::New(SQLite::Database::LongFromJulian(lastg),(IDate **)&otime);
         if(ec != NOERROR) {
             return Elastos::Sql::CSqlDate::ValueOf(lastg);
         }
@@ -2234,7 +2234,7 @@ AutoPtr<IDate> CJDBCResultSet::InternalGetDate(
             {
                 return otime;
             }else {
-                CSqlDate::New(SQLite::Database::LongFromJulianEx(lastg),(IDate **)&otime);
+                CSqlDate::New(SQLite::Database::LongFromJulian(lastg),(IDate **)&otime);
                 return otime;
             }
     }

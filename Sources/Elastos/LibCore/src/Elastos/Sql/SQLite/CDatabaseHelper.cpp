@@ -48,11 +48,11 @@ ECode CDatabaseHelper::LongFromJulian(
     return NOERROR;
 }
 
-ECode CDatabaseHelper::LongFromJulianEx(
+ECode CDatabaseHelper::LongFromJulian(
     /* [in] */ const String& s ,
     /* [out] */ Int64 * value)
 {
-    *value = Database::LongFromJulianEx(s);
+    *value = Database::LongFromJulian(s);
     return NOERROR;
 }
 

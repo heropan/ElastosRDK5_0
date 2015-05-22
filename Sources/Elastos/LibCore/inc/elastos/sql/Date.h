@@ -54,7 +54,7 @@ public:
     CARAPI_(Int32) CompareTo(
         /* [in] */ Elastos::Utility::IDate* date);
 
-    CARAPI_(Boolean) EqualsEx(
+    CARAPI_(Boolean) Equals(
         /* [in] */ Elastos::Utility::IDate* date);
 
     CARAPI_(Boolean) Equals(
@@ -110,10 +110,10 @@ public:
         /* [in] */ Int32 month,
         /* [in] */ Int32 day);
 
-    CARAPI_(void) InitEx(
+    CARAPI_(void) Init(
         /* [in] */ Int64 milliseconds);
 
-    CARAPI_(void) InitEx2(
+    CARAPI_(void) Init(
         /* [in] */ Int32 year,
         /* [in] */ Int32 month,
         /* [in] */ Int32 day,

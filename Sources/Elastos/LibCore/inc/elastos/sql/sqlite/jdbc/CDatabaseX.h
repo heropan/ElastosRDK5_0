@@ -2,44 +2,41 @@
 #ifndef __CDATABASEX_H__
 #define __CDATABASEX_H__
 
-#include "_CDatabaseX.h"
-#include "cmdef.h"
+#include "_Elastos_Sql_SQLite_JDBC_CDatabaseX.h"
 #include "Database.h"
-#include "DatabaseMacro.h"
-#include <elastos/Object.h>
 
-using Elastos::Core::Threading::Object;
+using Elastos::Sql::SQLite::Database;
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 namespace JDBC{
 
-CarClass(CDatabaseX) , public Database
+CarClass(CDatabaseX)
+    , public Database
 {
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL()
 
-    DATABASE_METHODS_DECL()
+    CDatabaseX();
 
     CARAPI constructor();
 
-    CARAPI ExecEx2(
+    CARAPI Exec(
         /* [in] */ const String& sql,
         /* [in] */ ICallback * cb);
 
-    CARAPI ExecEx3(
+    CARAPI Exec(
         /* [in] */ const String& sql,
         /* [in] */ ICallback * cb,
         /* [in] */ const ArrayOf<String>& args);
 
-    CARAPI GetTableEx5(
+    CARAPI GetTable(
         /* [in] */ const String& sql,
         /* [in] */ const ArrayOf<String>& args,
         /* [out] */ ITableResult ** tbl);
 
-    CARAPI GetTableEx6(
+    CARAPI GetTable(
         /* [in] */ const String& sql,
         /* [in] */ const ArrayOf<String>& args,
         /* [in] */ ITableResult * tbl);
@@ -48,7 +45,7 @@ protected:
     CARAPI_(void) Wait(Int32 ms);
 
 private:
-    Object lock;
+    static AutoPtr<IObject> mLock;
 };
 
 } // namespace JDBC

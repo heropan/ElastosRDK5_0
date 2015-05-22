@@ -28,7 +28,7 @@ ECode CTableResultX::constructor()
 ECode CTableResultX::constructor(
     /* [in] */ Int32 maxrows)
 {
-    TableResult::InitEx(maxrows);
+    TableResult::Init(maxrows);
     sql_type = ArrayOf<Int32>::Alloc(ncolumns);
     for (Int32 i = 0; i < ncolumns; i++) {
         (*sql_type)[i] = ITypes::VARCHAR;

@@ -14,16 +14,16 @@ public:
     CARAPI SetResult(
         /* [in] */ const String& ret);
 
-    CARAPI SetResultEx(
+    CARAPI SetResult(
         /* [in] */ Int32 i);
 
-    CARAPI SetResultEx2(
+    CARAPI SetResult(
         /* [in] */ Double d);
 
     CARAPI SetError(
         /* [in] */ const String& err);
 
-    CARAPI SetResultEx3(
+    CARAPI SetResult(
         /* [in] */ const ArrayOf<Byte>& b);
 
     CARAPI SetResultZeroblob(

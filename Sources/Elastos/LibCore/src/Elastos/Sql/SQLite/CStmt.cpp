@@ -198,7 +198,7 @@ ECode CStmt::Bind(
     return NOERROR;
 }
 
-ECode CStmt::BindEx(
+ECode CStmt::Bind(
     /* [in] */ Int32 pos,
     /* [in] */ Int64 value)
 {
@@ -226,7 +226,7 @@ ECode CStmt::BindEx(
     return NOERROR;
 }
 
-ECode CStmt::BindEx2(
+ECode CStmt::Bind(
     /* [in] */ Int32 pos,
     /* [in] */ Double value)
 {
@@ -254,7 +254,7 @@ ECode CStmt::BindEx2(
     return NOERROR;
 }
 
-ECode CStmt::BindEx3(
+ECode CStmt::Bind(
     /* [in] */ Int32 pos,
     /* [in] */ const ArrayOf<Byte>& value)
 {
@@ -295,7 +295,7 @@ ECode CStmt::BindEx3(
     return NOERROR;
 }
 
-ECode CStmt::BindEx4(
+ECode CStmt::Bind(
     /* [in] */ Int32 pos,
     /* [in] */ const String& value)
 {
@@ -335,7 +335,7 @@ ECode CStmt::BindEx4(
     return NOERROR;
 }
 
-ECode CStmt::BindEx5(
+ECode CStmt::Bind(
     /* [in] */ Int32 pos)
 {
 #if HAVE_SQLITE3 && HAVE_SQLITE_COMPILE

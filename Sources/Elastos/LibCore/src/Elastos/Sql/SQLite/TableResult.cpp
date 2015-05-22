@@ -66,7 +66,7 @@ TableResult::TableResult()
 TableResult::TableResult(
     /* [in] */ Int32 maxrows)
 {
-    InitEx(maxrows);
+    Init(maxrows);
 }
 
 ECode TableResult::Clear()
@@ -84,7 +84,7 @@ void TableResult::Init()
     Clear();
 }
 
-void TableResult::InitEx(Int32 maxrows)
+void TableResult::Init(Int32 maxrows)
 {
     maxrows = maxrows;
     Clear();

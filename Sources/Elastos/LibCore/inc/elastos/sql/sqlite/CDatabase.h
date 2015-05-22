@@ -12,19 +12,18 @@ namespace SQLite {
 CarClass(CDatabase) , public Database
 {
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL();
 
     CARAPI Open(
         /* [in] */ const String& filename,
         /* [in] */ Int32 mode);
 
-    CARAPI OpenEx(
+    CARAPI Open(
         /* [in] */ const String& filename,
         /* [in] */ Int32 mode,
         /* [in] */ const String& vfs);
 
-    CARAPI OpenEx2(
+    CARAPI Open(
         /* [in] */ const String& filename,
         /* [in] */ Int32 mode,
         /* [in] */ const String& vfs,
@@ -41,7 +40,7 @@ public:
         /* [in] */ const String& sql,
         /* [in] */ ICallback * cb);
 
-    CARAPI ExecEx(
+    CARAPI Exec(
         /* [in] */ const String& sql,
         /* [in] */ ICallback * cb,
         /* [in] */ const ArrayOf<String> & args);
@@ -65,22 +64,22 @@ public:
         /* [in] */ Int32 maxrows,
         /* [out] */ ITableResult ** tableresult);
 
-    CARAPI GetTableEx(
+    CARAPI GetTable(
         /* [in] */ const String& sql,
         /* [out] */ ITableResult ** tableresult);
 
-    CARAPI GetTableEx2(
+    CARAPI GetTable(
         /* [in] */ const String& sql,
         /* [in] */ Int32 maxrows,
         /* [in] */ const ArrayOf<String> & args,
         /* [out] */ ITableResult ** tableresult);
 
-    CARAPI GetTableEx3(
+    CARAPI GetTable(
         /* [in] */ const String& sql,
         /* [in] */ const ArrayOf<String> & args,
         /* [out] */ ITableResult ** tableresult);
 
-    CARAPI GetTableEx4(
+    CARAPI GetTable(
         /* [in] */ const String& sql,
         /* [in] */ const ArrayOf<String> & args,
         /* [in] */ ITableResult * tbl);
@@ -139,7 +138,7 @@ public:
         /* [in] */ const String& sql,
         /* [out] */ IVm ** ivm);
 
-    CARAPI CompileEx(
+    CARAPI Compile(
         /* [in] */ const String& sql,
         /* [in] */ const ArrayOf<String>& args,
         /* [out] */ IVm ** ivm);
@@ -166,7 +165,7 @@ public:
     CARAPI Key(
         /* [in] */ const ArrayOf<Byte> & ekey);
 
-    CARAPI KeyEx(
+    CARAPI Key(
         /* [in] */ const String& skey);
 
     CARAPI_(UInt32) AddRef();

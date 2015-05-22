@@ -40,7 +40,7 @@ public:
 
     CARAPI_(void) Init();
 
-    CARAPI_(void) InitEx(
+    CARAPI_(void) Init(
         /* [in] */ Int32 maxrows);
 
 public:

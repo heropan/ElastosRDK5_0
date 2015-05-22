@@ -1,22 +1,19 @@
 
 #include "CDatabaseX.h"
+#include "CObject.h"
 
-using Elastos::Sql::SQLite::JDBC::EIID_IDatabaseX;
+using Elastos::Core::CObject;
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 namespace JDBC{
 
-DATABASE_METHODS_IMPL(CDatabaseX, Database)
+CAR_OBJECT_IMPL(CDatabaseX)
 
-PInterface CDatabaseX::Probe(
-    /* [in] */ REIID riid)
+CDatabaseX::CDatabaseX()
 {
-    if (riid == EIID_IDatabaseX) {
-        return reinterpret_cast<PInterface>((IDatabaseX*)this);
-    }
-    return _CDatabaseX::Probe(riid);
+    CObject::New((IObject**)&mLock);
 }
 
 ECode CDatabaseX::constructor()
@@ -24,62 +21,58 @@ ECode CDatabaseX::constructor()
     return NOERROR;
 }
 
-ECode CDatabaseX::ExecEx2(
+ECode CDatabaseX::Exec(
     /* [in] */ const String& sql,
     /* [in] */ ICallback * cb)
 {
     ECode ec = NOERROR;
     ec = Exec(sql, cb);
-    lock.Lock();
-    lock.NotifyAll();
-    lock.Unlock();
-    return ec;
+    mLock->Lock();
+    mLock->NotifyAll();
+    return mLock->Unlock();
 }
 
-ECode CDatabaseX::ExecEx3(
+ECode CDatabaseX::Exec(
     /* [in] */ const String& sql,
     /* [in] */ ICallback * cb,
     /* [in] */ const ArrayOf<String>& args)
 {
     ECode ec = NOERROR;
-    ec = ExecEx(sql, cb, args);
-    lock.Lock();
-    lock.NotifyAll();
-    lock.Unlock();
-    return ec;
+    ec = Exec(sql, cb, args);
+    mLock->Lock();
+    mLock->NotifyAll();
+    return mLock->Unlock();
 }
 
-ECode CDatabaseX::GetTableEx5(
+ECode CDatabaseX::GetTable(
     /* [in] */ const String& sql,
     /* [in] */ const ArrayOf<String>& args,
     /* [out] */ ITableResult ** tbl)
 {
     ECode ec = NOERROR;
-    ec = GetTableEx3(sql, args, tbl);
-    lock.Lock();
-    lock.NotifyAll();
-    lock.Unlock();
-    return ec;
+    ec = GetTable(sql, args, tbl);
+    mLock->Lock();
+    mLock->NotifyAll();
+    return mLock->Unlock();
 }
 
-ECode CDatabaseX::GetTableEx6(
+ECode CDatabaseX::GetTable(
     /* [in] */ const String& sql,
     /* [in] */ const ArrayOf<String>& args,
     /* [in] */ ITableResult * tbl)
 {
     ECode ec = NOERROR;
-    ec = GetTableEx4(sql, args, tbl);
-    lock.Lock();
-    lock.NotifyAll();
-    lock.Unlock();
-    return ec;
+    ec = GetTable(sql, args, tbl);
+    mLock->Lock();
+    mLock->NotifyAll();
+    return mLock->Unlock();
 }
 
 void CDatabaseX::Wait(Int32 ms)
 {
-    lock.Lock();
-    lock.Wait(ms);
-    lock.Unlock();
+    mLock->Lock();
+    mLock->Wait(ms);
+    mLock->Unlock();
 }
 
 } // namespace JDBC

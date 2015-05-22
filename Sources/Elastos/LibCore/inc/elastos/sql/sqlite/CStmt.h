@@ -27,23 +27,23 @@ public:
         /* [in] */ Int32 pos,
         /* [in] */ Int32 value);
 
-    CARAPI BindEx(
+    CARAPI Bind(
         /* [in] */ Int32 pos,
         /* [in] */ Int64 value);
 
-    CARAPI BindEx2(
+    CARAPI Bind(
         /* [in] */ Int32 pos,
         /* [in] */ Double value);
 
-    CARAPI BindEx3(
+    CARAPI Bind(
         /* [in] */ Int32 pos,
         /* [in] */ const ArrayOf<Byte>& value);
 
-    CARAPI BindEx4(
+    CARAPI Bind(
         /* [in] */ Int32 pos,
         /* [in] */ const String& value);
 
-    CARAPI BindEx5(
+    CARAPI Bind(
         /* [in] */ Int32 pos);
 
     CARAPI BindZeroblob(

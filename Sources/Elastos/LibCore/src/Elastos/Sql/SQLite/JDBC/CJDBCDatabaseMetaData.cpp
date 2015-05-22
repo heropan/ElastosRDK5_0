@@ -1955,7 +1955,7 @@ ECode CJDBCDatabaseMetaData::SupportsConvert(
     return NOERROR;
 }
 
-ECode CJDBCDatabaseMetaData::SupportsConvertEx(
+ECode CJDBCDatabaseMetaData::SupportsConvert(
     /* [in] */ Int32 fromType,
     /* [in] */ Int32 toType,
     /* [out] */ Boolean * isSupported)
@@ -2608,7 +2608,7 @@ void CJDBCDatabaseMetaData::InternalImportedKeys(String table, String pktable,
     }
 }
 
-IResultSet * CJDBCDatabaseMetaData::GetSchemasEx(String cat, String schema)
+IResultSet * CJDBCDatabaseMetaData::GetSchemas(String cat, String schema)
 {
     //throw new SQLException("not supported");
     return NULL;

@@ -422,7 +422,7 @@ public:
     CARAPI SupportsConvert(
         /* [out] */ Boolean * isSupported);
 
-    CARAPI SupportsConvertEx(
+    CARAPI SupportsConvert(
         /* [in] */ Int32 fromType,
         /* [in] */ Int32 toType,
         /* [out] */ Boolean * isSupported);
@@ -649,7 +649,7 @@ public:
 
     static CARAPI_(Int32) GetD(String typeStr, Int32 type);
 
-    CARAPI_(IResultSet *) GetSchemasEx(String cat, String schema);
+    CARAPI_(IResultSet *) GetSchemas(String cat, String schema);
 
     CARAPI_(Boolean) IsWrapperFor(AutoPtr<IInterface> iface);
 

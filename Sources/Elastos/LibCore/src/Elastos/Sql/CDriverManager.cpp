@@ -32,7 +32,7 @@ Boolean CDriverManager::LoadInitialDrivers()
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
 
     String theDriverList;
-    system->GetPropertyEx(String("jdbc.drivers"), String(NULL), &theDriverList);
+    system->GetProperty(String("jdbc.drivers"), String(NULL), &theDriverList);
     if (theDriverList.IsNull()) {
         return FALSE;
     }
@@ -81,10 +81,10 @@ ECode CDriverManager::GetConnection(
 {
     AutoPtr<IProperties> mprope = NULL;
     CProperties::New((IProperties **)&mprope);
-    return GetConnectionEx(url, mprope , conn);
+    return GetConnection(url, mprope , conn);
 }
 
-ECode CDriverManager::GetConnectionEx(
+ECode CDriverManager::GetConnection(
     /* [in] */ const String& url,
     /* [in] */ IProperties * info,
     /* [out] */ IConnection ** conn)
@@ -116,7 +116,7 @@ ECode CDriverManager::GetConnectionEx(
     return E_SQL_EXCEPTION;
 }
 
-ECode CDriverManager::GetConnectionEx2(
+ECode CDriverManager::GetConnection(
     /* [in] */ const String& url,
     /* [in] */ const String& user,
     /* [in] */ const String& password,
@@ -132,7 +132,7 @@ ECode CDriverManager::GetConnectionEx2(
     if (!password.IsNull()) {
         theProperties->SetProperty(String("password"), password, &temp);
     }
-    return GetConnectionEx(url, theProperties,conn);
+    return GetConnection(url, theProperties,conn);
 }
 
 ECode CDriverManager::GetDriver(

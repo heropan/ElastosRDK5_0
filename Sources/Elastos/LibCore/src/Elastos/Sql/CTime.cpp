@@ -80,14 +80,14 @@ ECode CTime::constructor(
     /* [in] */ Int32 theMinute,
     /* [in] */ Int32 theSecond)
 {
-    InitEx2(70, 0, 1, theHour, theMinute, theSecond);
+    Init(70, 0, 1, theHour, theMinute, theSecond);
     return NOERROR;
 }
 
 ECode CTime::constructor(
     /* [in] */ Int64 theTime)
 {
-    InitEx(theTime);
+    Init(theTime);
     return NOERROR;
 }
 

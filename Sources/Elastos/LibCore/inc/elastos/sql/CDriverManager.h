@@ -34,12 +34,12 @@ public:
         /* [in] */ const String& url,
         /* [out] */ IConnection ** conn);
 
-    CARAPI GetConnectionEx(
+    CARAPI GetConnection(
         /* [in] */ const String& url,
         /* [in] */ IProperties * info,
         /* [out] */ IConnection ** conn);
 
-    CARAPI GetConnectionEx2(
+    CARAPI GetConnection(
         /* [in] */ const String& url,
         /* [in] */ const String& user,
         /* [in] */ const String& password,

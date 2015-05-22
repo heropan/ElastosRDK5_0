@@ -35,7 +35,7 @@ ECode CBlobW::WriteBytes(
     return NOERROR;
 }
 
-ECode CBlobW::WriteBytesEx(
+ECode CBlobW::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& b,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)

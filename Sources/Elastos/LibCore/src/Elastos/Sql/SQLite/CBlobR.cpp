@@ -77,7 +77,7 @@ ECode CBlobR::ReadBytes(
     return NOERROR;
 }
 
-ECode CBlobR::ReadBytesEx(
+ECode CBlobR::ReadBytes(
     /* [out] */ ArrayOf<Byte> * b,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len,

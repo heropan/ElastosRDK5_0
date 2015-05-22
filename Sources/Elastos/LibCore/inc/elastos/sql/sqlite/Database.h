@@ -1,31 +1,34 @@
 #ifndef __DATABASE_H__
 #define __DATABASE_H__
 
-#include "Elastos.Core_server.h"
 #include "sqlitejni.h"
-#include <elastos/Mutex.h>
+#include "Object.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 class Database
+    : public Object
+    , public IDatabase
 {
 public:
+    CAR_INTERFACE_DECL();
+
     Database();
 
     CARAPI Open(
         /* [in] */ const String& filename,
         /* [in] */ Int32 mode);
 
-    CARAPI OpenEx(
+    CARAPI Open(
         /* [in] */ const String& filename,
         /* [in] */ Int32 mode,
         /* [in] */ const String& vfs);
 
-    CARAPI OpenEx2(
+    CARAPI Open(
         /* [in] */ const String& filename,
         /* [in] */ Int32 mode,
         /* [in] */ const String& vfs,
@@ -42,7 +45,7 @@ public:
         /* [in] */ const String& sql,
         /* [in] */ AutoPtr<ICallback> cb);
 
-    CARAPI ExecEx(
+    CARAPI Exec(
         /* [in] */ const String& sql,
         /* [in] */ AutoPtr<ICallback> cb,
         /* [in] */ const ArrayOf<String> & argsstr);
@@ -63,19 +66,19 @@ public:
         /* [in] */ const String& sql,
         /* [in] */ Int32 maxrows);
 
-    CARAPI_(AutoPtr<ITableResult>) GetTableEx(
+    CARAPI_(AutoPtr<ITableResult>) GetTable(
         /* [in] */ const String& sql);
 
-    CARAPI_(AutoPtr<ITableResult>) GetTableEx2(
+    CARAPI_(AutoPtr<ITableResult>) GetTable(
         /* [in] */ const String& sql,
         /* [in] */ Int32 maxrows,
         /* [in] */ const ArrayOf<String> & args);
 
-    CARAPI_(AutoPtr<ITableResult>) GetTableEx3(
+    CARAPI_(AutoPtr<ITableResult>) GetTable(
         /* [in] */ const String& sql,
         /* [in] */ const ArrayOf<String> & args);
 
-    CARAPI GetTableEx4(
+    CARAPI GetTable(
         /* [in] */ const String& sql,
         /* [in] */ const ArrayOf<String> & args,
         /* [in] */ AutoPtr<ITableResult> tbl);
@@ -128,7 +131,7 @@ public:
     CARAPI_(AutoPtr<IVm>) Compile(
         /* [in] */ const String& sql);
 
-    CARAPI_(AutoPtr<IVm>) CompileEx(
+    CARAPI_(AutoPtr<IVm>) Compile(
         /* [in] */ const String& sql,
         /* [in] */ const ArrayOf<String>& args);
 
@@ -151,11 +154,8 @@ public:
     CARAPI Key(
         /* [in] */ const ArrayOf<Byte> & ekey);
 
-    CARAPI KeyEx(
+    CARAPI Key(
         /* [in] */ const String& skey);
-
-    virtual PInterface Probe(
-        /* [in] */ REIID riid) = 0;
 
     static CARAPI_(Boolean) Complete(
         /* [in] */ const String& sql);
@@ -173,7 +173,7 @@ public:
     static CARAPI_(Int64) LongFromJulian(
         /* [in] */ Double d);
 
-    static CARAPI_(Int64) LongFromJulianEx(
+    static CARAPI_(Int64) LongFromJulian(
         /* [in] */ const String& s);
 
     static CARAPI_(Double) JulianFromLong(
@@ -201,7 +201,7 @@ private:
         /* [in] */ const String& sql,
         /* [in] */ AutoPtr<ICallback> cb);
 
-    CARAPI _ExecEx(
+    CARAPI _Exec(
         /* [in] */ const String& sql,
         /* [in] */ AutoPtr<ICallback> cb,
         /* [in] */ const ArrayOf<String>& args);
@@ -308,7 +308,6 @@ private:
 private:
     Int64 mHandle;
     Int32 mError_code;
-    Mutex mSyncLock;
 };
 
 } // namespace SQLite

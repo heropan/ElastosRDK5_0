@@ -1,5 +1,5 @@
-#ifndef __CINTEGER64_H__
-#define __CINTEGER64_H__
+#ifndef __COBJECT_H__
+#define __COBJECT_H__
 
 #include "_Elastos_Core_CObject.h"
 #include "Object.h"
@@ -17,4 +17,4 @@ public:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__CINTEGER64_H__
+#endif //__COBJECT_H__

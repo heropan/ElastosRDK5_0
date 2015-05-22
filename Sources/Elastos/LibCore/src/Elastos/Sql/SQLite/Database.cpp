@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Database.h"
 #include "CTableResult.h"
 #include "CVm.h"
@@ -16,22 +16,25 @@ using Elastos::Sql::SQLite::CVm;
 using Elastos::Sql::SQLite::CStmt;
 using Elastos::Sql::SQLite::EIID_IDatabase;
 
+#define synchronized(o) for(Object::Autolock l(o),*lptr=&l;lptr!=NULL;lptr=NULL)
+
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
-Database::Database():
-    mSyncLock(PTHREAD_PROCESS_SHARED,NULL)
+CAR_INTERFACE_IMPL(Database, Object, IDatabase)
+
+Database::Database()
+    : mHandle(0)
+    , mError_code(0)
 {
-    mHandle = (Int64)0;
-    mError_code = 0;
 }
 
 static void Freep(char **strp)
 {
     if (strp && *strp) {
-    free(*strp);
-    *strp = 0;
+        free(*strp);
+        *strp = 0;
     }
 }
 
@@ -265,11 +268,11 @@ ECode Database::Open(
         mode = IConstants::SQLITE_OPEN_READONLY;
 #endif
     }
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _Open4(filename, mode, String(NULL), FALSE);
 }
 
-ECode Database::OpenEx(
+ECode Database::Open(
     /* [in] */ const String& filename,
     /* [in] */ Int32 mode,
     /* [in] */ const String& vfs)
@@ -288,11 +291,11 @@ ECode Database::OpenEx(
         mode = IConstants::SQLITE_OPEN_READONLY;
 #endif
     }
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _Open4(filename, mode, vfs, FALSE);
 }
 
-ECode Database::OpenEx2(
+ECode Database::Open(
     /* [in] */ const String& filename,
     /* [in] */ Int32 mode,
     /* [in] */ const String& vfs,
@@ -312,26 +315,26 @@ ECode Database::OpenEx2(
         mode = IConstants::SQLITE_OPEN_READONLY;
 #endif
     }
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _Open4(filename, mode, vfs, ver2);
 }
 
 ECode Database::OpenAuxFile(
     /* [in] */ const String& filename)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _OpenAuxFile(filename);
 }
 
 ECode Database::Finalize()
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _Finalize();
 }
 
 ECode Database::Close()
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _Close();
 }
 
@@ -339,48 +342,48 @@ ECode Database::Exec(
     /* [in] */ const String& sql,
     /* [in] */ AutoPtr<ICallback> cb)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _Exec(sql, cb);
 }
 
-ECode Database::ExecEx(
+ECode Database::Exec(
     /* [in] */ const String& sql,
     /* [in] */ AutoPtr<ICallback> cb,
     /* [in] */ const ArrayOf<String> & args)
 {
-    Mutex::Autolock lock(mSyncLock);
-    return _ExecEx(sql, cb, args);
+    Object::Autolock lock(*this);
+    return _Exec(sql, cb, args);
 }
 
 Int64 Database::LastInsertRowid()
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _LastInsertRowid();
 }
 
 ECode Database::Interrupt()
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _Interrupt();
 }
 
 Int64 Database::Changes()
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _Changes();
 }
 
 ECode Database::BusyHandler(
     /* [in] */ AutoPtr<IBusyHandler> bh)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _BusyHandler(bh);
 }
 
 ECode Database::BusyTimeout(
     /* [in] */ Int32 ms)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _BusyTimeout(ms);
 }
 
@@ -398,7 +401,7 @@ AutoPtr<ITableResult> Database::GetTable(
             }
         }
     } else {
-        Mutex::Autolock lock(mSyncLock);
+        Object::Autolock lock(*this);
         // /* only one statement !!! */
             AutoPtr<IVm> vm;
             vm = Compile(sql);
@@ -422,13 +425,13 @@ AutoPtr<ITableResult> Database::GetTable(
     return ret;
 }
 
-AutoPtr<ITableResult> Database::GetTableEx(
+AutoPtr<ITableResult> Database::GetTable(
     /* [in] */ const String& sql)
 {
     return GetTable(sql, 0);
 }
 
-AutoPtr<ITableResult> Database::GetTableEx2(
+AutoPtr<ITableResult> Database::GetTable(
     /* [in] */ const String& sql,
     /* [in] */ Int32 maxrows,
     /* [in] */ const ArrayOf<String> & args)
@@ -436,17 +439,17 @@ AutoPtr<ITableResult> Database::GetTableEx2(
     AutoPtr<ITableResult> ret ;
     CTableResult::New(maxrows,(ITableResult **)&ret);
     if (!Is3()) {
-        ECode ec = ExecEx(sql, (ICallback *)ret.Get(), args);
+        ECode ec = Exec(sql, (ICallback *)ret.Get(), args);
         if (ec != NOERROR) {
             if (maxrows <= 0 || !((CTableResult *)ret.Get())->atmaxrows) {
                 return NULL;
             }
         }
     } else {
-        Mutex::Autolock lock(mSyncLock);
+        Object::Autolock lock(*this);
         // /* only one statement !!! */
         AutoPtr<IVm> vm;
-        vm = CompileEx(sql,args);
+        vm = Compile(sql,args);
         SetLastError(((CVm *)vm.Get())->mError_code);
         Boolean vmflag = FALSE;
         if (((CTableResult *)ret.Get())->maxrows > 0) {
@@ -467,31 +470,31 @@ AutoPtr<ITableResult> Database::GetTableEx2(
     return ret;
 }
 
-AutoPtr<ITableResult> Database::GetTableEx3(
+AutoPtr<ITableResult> Database::GetTable(
     /* [in] */ const String& sql,
     /* [in] */ const ArrayOf<String> & args)
 {
-    return GetTableEx2(sql, 0, args);
+    return GetTable(sql, 0, args);
 }
 
-ECode Database::GetTableEx4(
+ECode Database::GetTable(
     /* [in] */ const String& sql,
     /* [in] */ const ArrayOf<String> & args,
     /* [in] */ AutoPtr<ITableResult> tbl)
 {
     ((CTableResult* )(tbl.Get()))->Clear();
     if (!Is3()) {
-        ECode ec = ExecEx(sql, (ICallback *)tbl.Get(), args);
+        ECode ec = Exec(sql, (ICallback *)tbl.Get(), args);
         if (ec != NOERROR) {
             if (((CTableResult *)tbl.Get())->maxrows <= 0 || !((CTableResult *)tbl.Get())->atmaxrows) {
                 return E_SQL_EXCEPTION;
             }
         }
     } else {
-        Mutex::Autolock lock(mSyncLock);
+        Object::Autolock lock(*this);
         /* only one statement !!! */
         AutoPtr<IVm> vm;
-        vm = CompileEx(sql,args);
+        vm = Compile(sql,args);
         Boolean vmflag = FALSE;
         if (((CTableResult* )(tbl.Get()))->maxrows > 0) {
             ((CVm *)vm.Get())->Step((ICallback *)tbl.Get(),&vmflag);
@@ -555,7 +558,7 @@ ECode Database::CreateFunction(
     /* [in] */ Int32 nargs,
     /* [in] */ AutoPtr<IFunction> f)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _CreateFunction(name, nargs, f);
 }
 
@@ -564,7 +567,7 @@ ECode Database::CreateAggregate(
     /* [in] */ Int32 nargs,
     /* [in] */ AutoPtr<IFunction> f)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _CreateAggregate(name, nargs, f);
 }
 
@@ -572,7 +575,7 @@ ECode Database::FunctionType(
     /* [in] */ const String& name,
     /* [in] */ Int32 type)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _FunctionType(name, type);
 }
 
@@ -599,28 +602,28 @@ String Database::ErrorString(Int32 mError_code)
 
 String Database::ErrorMessage()
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _Errmsg();
 }
 
 ECode Database::SetEncoding(
     /* [in] */ const String& enc)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _SetEncoding(enc);
 }
 
 ECode Database::SetAuthorizer(
     /* [in] */ AutoPtr<IAuthorizer> auth)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _SetAuthorizer(auth);
 }
 
 ECode Database::Trace(
     /* [in] */ AutoPtr<ITrace> tr)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _Trace(tr);
 }
 
@@ -629,7 +632,7 @@ AutoPtr<IBackup> Database::Backup(
     /* [in] */ const String& destName,
     /* [in] */ const String& srcName)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     AutoPtr<IBackup> b;
     CBackup::New((IBackup **)&b);
     _Backup(b, dest, destName, (IDatabase *)(this->Probe(EIID_IDatabase)), srcName);
@@ -639,7 +642,7 @@ AutoPtr<IBackup> Database::Backup(
 ECode Database::Profile(
     /* [in] */ AutoPtr<IProfile> r)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _Profile(r);
 }
 
@@ -648,14 +651,14 @@ Int32 Database::DbStatus(
     /* [in] */ const ArrayOf<Int32> & info,
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _DbStatus(op, const_cast<ArrayOf<Int32> *>(&info), flag);
 }
 
 AutoPtr<IVm> Database::Compile(
     /* [in] */ const String& sql)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     AutoPtr<IVm> vm;
     CVm::New((IVm **)&vm);
     Vm_compile(sql, vm);
@@ -663,11 +666,11 @@ AutoPtr<IVm> Database::Compile(
     return vm;
 }
 
-AutoPtr<IVm> Database::CompileEx(
+AutoPtr<IVm> Database::Compile(
     /* [in] */ const String& sql,
     /* [in] */ const ArrayOf<String> & args)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     AutoPtr<IVm> vm;
     CVm::New((IVm **)&vm);
     Vm_compile_args(sql, vm, args);
@@ -677,7 +680,7 @@ AutoPtr<IVm> Database::CompileEx(
 AutoPtr<IStmt> Database::Prepare(
     /* [in] */ const String& sql)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     AutoPtr<IStmt> st;
     CStmt::New((IStmt **)&st);
     ECode ec = Stmt_prepare(sql, st);
@@ -692,7 +695,7 @@ AutoPtr<IBlob> Database::OpenBlob(
     /* [in] */ Int64 row,
     /* [in] */ Boolean rw)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     AutoPtr<CBlob> bl;
     CBlob::New((IBlob **)&bl);
     _OpenBlob(db, table, column, row, rw, bl);
@@ -728,21 +731,21 @@ ECode Database::ProgressHandler(
     /* [in] */ Int32 n,
     /* [in] */ AutoPtr<IProgressHandler> p)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _ProgressHandler(n, p);
 }
 
 ECode Database::Key(
     /* [in] */ const ArrayOf<Byte> & ekey)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     return _Key(ekey);
 }
 
-ECode Database::KeyEx(
+ECode Database::Key(
     /* [in] */ const String& skey)
 {
-    Mutex::Autolock lock(mSyncLock);
+    Object::Autolock lock(*this);
     AutoPtr<ArrayOf<Byte> > ekey;
     AutoPtr<ArrayOf<Char32> > charArray = skey.GetChars();
     Char32 c;
@@ -1189,7 +1192,7 @@ ECode Database::_Exec(
     return E_SQL_NULL_POINTER_EXCEPTION;
 }
 
-ECode Database::_ExecEx(
+ECode Database::_Exec(
     /* [in] */ const String& sql,
     /* [in] */ AutoPtr<ICallback> cb,
     /* [in] */ const ArrayOf<String>& argsstr)
@@ -2753,7 +2756,7 @@ Int64 Database::LongFromJulian(
     return (Int64)d;
 }
 
-Int64 Database::LongFromJulianEx(
+Int64 Database::LongFromJulian(
     /* [in] */ const String& s)
 {
 

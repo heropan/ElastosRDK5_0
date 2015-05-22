@@ -45,7 +45,7 @@ ECode CDBDump::Newrow(
         ECode ec = NOERROR;
         if (isflag) {
             AutoPtr<ITableResult> t ;
-            s2.db->GetTableEx3(String("PRAGMA table_info('%q')")  , *qargs,(ITableResult **)&t);
+            s2.db->GetTable(String("PRAGMA table_info('%q')")  , *qargs,(ITableResult **)&t);
             String query;
             if (t != NULL) {
                 StringBuffer sb;
@@ -64,10 +64,10 @@ ECode CDBDump::Newrow(
             else {
                 query = String("SELECT * from '%q'");
             }
-            ec = s2.db->ExecEx(query, &s2, *qargs);
+            ec = s2.db->Exec(query, &s2, *qargs);
         }
         else {
-            ec = s2.db->ExecEx(String("SELECT * from '%q'"), &s2, *qargs);
+            ec = s2.db->Exec(String("SELECT * from '%q'"), &s2, *qargs);
         }
         if (ec != NOERROR) {
             s->err->PrintStringln(String("SQL Error: ")+StringUtils::Int32ToString(ec,16));
@@ -100,7 +100,7 @@ ECode CDBDump::constructor(
         AutoPtr<ArrayOf<String> > arg = ArrayOf<String>::Alloc(1);
         for (UInt32 i = 0; i < tables.GetLength(); i++) {
             (*arg)[0] = tables[i];
-            ECode ec = s->db->ExecEx(String("SELECT name, type, sql FROM sqlite_master ") +
+            ECode ec = s->db->Exec(String("SELECT name, type, sql FROM sqlite_master ") +
                                    String("WHERE tbl_name LIKE '%q' AND type!='meta' ") +
                                    String(" AND sql NOT NULL ") +
                                    String(" ORDER BY substr(type,2,1), name"),

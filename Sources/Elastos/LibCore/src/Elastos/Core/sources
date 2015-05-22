@@ -36,9 +36,9 @@ INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Utility/Zip
 INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Utility/Regex
 INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/common
 INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Text;
-INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Sql/
-INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Sql/SQLite
-INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Sql/SQLite/JDBC
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/sql/
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/sql/sqlite
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/sql/sqlite/jdbc
 
 C_DEFINES += -DHAVE_ANDROID_PTHREAD_SETNAME_NP
 C_DEFINES += -DHAVE_GETTID
@@ -826,9 +826,9 @@ VPATH += $(MAKEDIR)/../../Math
 // SOURCES += CDriverManager.cpp
 // SOURCES += CSQLPermission.cpp
 
-// VPATH += $(MAKEDIR)/../../Sql/SQLite/JDBC
+//VPATH += $(MAKEDIR)/../../Elastos/Sql/SQLite/JDBC
 
-// SOURCES += CJDBCConnection.cpp
+//SOURCES += CJDBCConnection.cpp
 // SOURCES += CJDBCDatabaseMetaData.cpp
 // SOURCES += CJDBCPreparedStatement.cpp
 // SOURCES += CJDBCResultSetMetaData.cpp
@@ -836,16 +836,16 @@ VPATH += $(MAKEDIR)/../../Math
 // SOURCES += JDBCStatement.cpp
 // SOURCES += CJDBCStatement.cpp
 // SOURCES += CJDBCResultSet.cpp
-// SOURCES += CDatabaseX.cpp
+//SOURCES += CDatabaseX.cpp
 
-// VPATH += $(MAKEDIR)/../../Sql/SQLite
+//VPATH += $(MAKEDIR)/../../Elastos/Sql/SQLite
 
 // SOURCES += CDBDump.cpp
 // SOURCES += TableResult.cpp
 // SOURCES += CTableResult.cpp
 // SOURCES += CShell.cpp
 // SOURCES += CVm.cpp
-// SOURCES += Database.cpp
+//SOURCES += Database.cpp
 // SOURCES += CDatabase.cpp
 // SOURCES += CBlob.cpp
 // SOURCES += CBlobR.cpp

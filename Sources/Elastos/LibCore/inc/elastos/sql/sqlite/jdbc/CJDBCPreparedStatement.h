@@ -51,24 +51,24 @@ public:
         /* [in] */ IJDBCConnection * pConn,
         /* [in] */ const String& sql);
 
-    CARAPI AddBatchEx();
+    CARAPI AddBatch();
 
-    CARAPI ExecuteBatchEx(
+    CARAPI ExecuteBatch(
         /* [out] */ ArrayOf<Int32> ** outarray);
 
-    CARAPI ClearBatchEx();
+    CARAPI ClearBatch();
 
-    CARAPI CloseEx();
+    CARAPI Close();
 
     CARAPI ClearParameters();
 
-    CARAPI ExecuteEx4(
+    CARAPI Execute(
         /* [out] */ Boolean * value);
 
-    CARAPI ExecuteQueryEx(
+    CARAPI ExecuteQuery(
         /* [out] */ IResultSet ** resultset);
 
-    CARAPI ExecuteUpdateEx4(
+    CARAPI ExecuteUpdate(
         /* [out] */ Int32 * value);
 
     CARAPI GetMetaData(
@@ -124,7 +124,7 @@ public:
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IDate * theDate);
 
-    CARAPI SetDateEx(
+    CARAPI SetDate(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IDate * theDate,
         /* [in] */ ICalendar * cal);
@@ -149,7 +149,7 @@ public:
         /* [in] */ Int32 parameterIndex,
         /* [in] */ Int32 sqlType);
 
-    CARAPI SetNullEx(
+    CARAPI SetNull(
         /* [in] */ Int32 paramIndex,
         /* [in] */ Int32 sqlType,
         /* [in] */ const String& typeName);
@@ -158,12 +158,12 @@ public:
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IObject * theObject);
 
-    CARAPI SetObjectEx(
+    CARAPI SetObject(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IObject * theObject,
         /* [in] */ Int32 targetSqlType);
 
-    CARAPI SetObjectEx2(
+    CARAPI SetObject(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IObject * theObject,
         /* [in] */ Int32 targetSqlType,
@@ -185,7 +185,7 @@ public:
         /* [in] */ Int32 parameterIndex,
         /* [in] */ ITime * theTime);
 
-    CARAPI SetTimeEx(
+    CARAPI SetTime(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ ITime * theTime,
         /* [in] */ ICalendar * cal);
@@ -194,7 +194,7 @@ public:
         /* [in] */ Int32 parameterIndex,
         /* [in] */ ITimestamp * theTimestamp);
 
-    CARAPI SetTimestampEx(
+    CARAPI SetTimestamp(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ ITimestamp * theTimestamp,
         /* [in] */ ICalendar * cal);
@@ -225,17 +225,17 @@ public:
         /* [in] */ Int32 parameterIndex,
         /* [in] */ INClob * value);
 
-    CARAPI SetClobEx(
+    CARAPI SetClob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * reader,
         /* [in] */ Int64 length);
 
-    CARAPI SetBlobEx(
+    CARAPI SetBlob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IInputStream * inputStream,
         /* [in] */ Int64 length);
 
-    CARAPI SetNClobEx(
+    CARAPI SetNClob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * reader,
         /* [in] */ Int64 length);
@@ -244,46 +244,46 @@ public:
         /* [in] */ Int32 parameterIndex,
         /* [in] */ ISQLXML * xmlObject);
 
-    CARAPI SetAsciiStreamEx(
+    CARAPI SetAsciiStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IInputStream * inputStream,
         /* [in] */ Int64 length);
 
-    CARAPI SetBinaryStreamEx(
+    CARAPI SetBinaryStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IInputStream * inputStream,
         /* [in] */ Int64 length);
 
-    CARAPI SetCharacterStreamEx(
+    CARAPI SetCharacterStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * reader,
         /* [in] */ Int64 length);
 
-    CARAPI SetAsciiStreamEx2(
+    CARAPI SetAsciiStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IInputStream * inputStream);
 
-    CARAPI SetBinaryStreamEx2(
+    CARAPI SetBinaryStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IInputStream * inputStream);
 
-    CARAPI SetCharacterStreamEx2(
+    CARAPI SetCharacterStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * reader);
 
-    CARAPI SetNCharacterStreamEx(
+    CARAPI SetNCharacterStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * reader);
 
-    CARAPI SetClobEx2(
+    CARAPI SetClob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * reader);
 
-    CARAPI SetBlobEx2(
+    CARAPI SetBlob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IInputStream * inputStream);
 
-    CARAPI SetNClobEx2(
+    CARAPI SetNClob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * reader);
 
@@ -291,12 +291,12 @@ public:
         /* [in] */ const String& parameterName,
         /* [in] */ Int32 sqlType);
 
-    CARAPI RegisterOutputParameterEx(
+    CARAPI RegisterOutputParameter(
         /* [in] */ const String& parameterName,
         /* [in] */ Int32 sqlType,
         /* [in] */ Int32 scale);
 
-    CARAPI RegisterOutputParameterEx2(
+    CARAPI RegisterOutputParameter(
         /* [in] */ const String& parameterName,
         /* [in] */ Int32 sqlType,
         /* [in] */ const String& typeName);
@@ -305,108 +305,108 @@ public:
         /* [in] */ Int32 parameterIndex,
         /* [out] */ IURL ** url);
 
-    CARAPI SetNullEx2(
+    CARAPI SetNull(
         /* [in] */ const String& parameterName,
         /* [in] */ Int32 sqlType);
 
-    CARAPI SetBooleanEx(
+    CARAPI SetBoolean(
         /* [in] */ const String& parameterName,
         /* [in] */ Boolean val);
 
-    CARAPI SetByteEx(
+    CARAPI SetByte(
         /* [in] */ const String& parameterName,
         /* [in] */ Byte val);
 
-    CARAPI SetShortEx(
+    CARAPI SetShort(
         /* [in] */ const String& parameterName,
         /* [in] */ Int16 val);
 
-    CARAPI SetIntEx(
+    CARAPI SetInt(
         /* [in] */ const String& parameterName,
         /* [in] */ Int32 val);
 
-    CARAPI SetLongEx(
+    CARAPI SetLong(
         /* [in] */ const String& parameterName,
         /* [in] */ Int64 val);
 
-    CARAPI SetFloatEx(
+    CARAPI SetFloat(
         /* [in] */ const String& parameterName,
         /* [in] */ Float val);
 
-    CARAPI SetDoubleEx(
+    CARAPI SetDouble(
         /* [in] */ const String& parameterName,
         /* [in] */ Double val);
 
-    CARAPI SetBigDecimalEx(
+    CARAPI SetBigDecimal(
         /* [in] */ const String& parameterName,
         /* [in] */ IBigDecimal * val);
 
-    CARAPI SetStringEx(
+    CARAPI SetString(
         /* [in] */ const String& parameterName,
         /* [in] */ const String& val);
 
-    CARAPI SetBytesEx(
+    CARAPI SetBytes(
         /* [in] */ const String& parameterName,
         /* [in] */ const ArrayOf<Byte>& val);
 
-    CARAPI SetDateEx2(
+    CARAPI SetDate(
         /* [in] */ const String& parameterName,
         /* [in] */ IDate * val);
 
-    CARAPI SetTimeEx2(
+    CARAPI SetTime(
         /* [in] */ const String& parameterName,
         /* [in] */ ITime * val);
 
-    CARAPI SetTimestampEx2(
+    CARAPI SetTimestamp(
         /* [in] */ const String& parameterName,
         /* [in] */ ITimestamp * val);
 
-    CARAPI SetAsciiStreamEx6(
+    CARAPI SetAsciiStream(
         /* [in] */ const String& parameterName,
         /* [in] */ IInputStream * s,
         /* [in] */ Int32 length);
 
-    CARAPI SetBinaryStreamEx6(
+    CARAPI SetBinaryStream(
         /* [in] */ const String& parameterName,
         /* [in] */ IInputStream * s,
         /* [in] */ Int32 length);
 
-    CARAPI SetObjectEx3(
+    CARAPI SetObject(
         /* [in] */ const String& parameterName,
         /* [in] */ IObject * val,
         /* [in] */ Int32 tarGetSqlType,
         /* [in] */ Int32 scale);
 
-    CARAPI SetObjectEx4(
+    CARAPI SetObject(
         /* [in] */ const String& parameterName,
         /* [in] */ IObject * val,
         /* [in] */ Int32 tarGetSqlType);
 
-    CARAPI SetObjectEx5(
+    CARAPI SetObject(
         /* [in] */ const String& parameterName,
         /* [in] */ IObject * val);
 
-    CARAPI SetCharacterStreamEx7(
+    CARAPI SetCharacterStream(
         /* [in] */ const String& parameterName,
         /* [in] */ IReader * r,
         /* [in] */ Int32 length);
 
-    CARAPI SetDateEx3(
+    CARAPI SetDate(
         /* [in] */ const String& parameterName,
         /* [in] */ IDate * val,
         /* [in] */ ICalendar * cal);
 
-    CARAPI SetTimeEx3(
+    CARAPI SetTime(
         /* [in] */ const String& parameterName,
         /* [in] */ ITime * val,
         /* [in] */ ICalendar * cal);
 
-    CARAPI SetTimestampEx3(
+    CARAPI SetTimestamp(
         /* [in] */ const String& parameterName,
         /* [in] */ ITimestamp * val,
         /* [in] */ ICalendar * cal);
 
-    CARAPI SetNullEx3(
+    CARAPI SetNull(
         /* [in] */ const String& parameterName,
         /* [in] */ Int32 sqlType,
         /* [in] */ const String& typeName);
@@ -463,7 +463,7 @@ public:
         /* [in] */ const String& parameterName,
         /* [out] */ IObject ** theobject);
 
-    CARAPI GetObjectEx(
+    CARAPI GetObject(
         /* [in] */ Int32 parameterIndex,
         /* [out] */ IObject ** theobject);
 
@@ -471,12 +471,12 @@ public:
         /* [in] */ const String& parameterName,
         /* [out] */ IBigDecimal ** bigdecimal);
 
-    CARAPI GetObjectEx2(
+    CARAPI GetObject(
         /* [in] */ const String& parameterName,
         /* [in] */ IObjectMap * map,
         /* [out] */ IObject ** theobject);
 
-    CARAPI GetObjectEx3(
+    CARAPI GetObject(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IObjectMap * map,
         /* [out] */ IObject ** theobject);
@@ -485,7 +485,7 @@ public:
         /* [in] */ Int32 parameterIndex,
         /* [out] */ IRef ** iref);
 
-    CARAPI GetRefEx(
+    CARAPI GetRef(
         /* [in] */ const String& parameterName,
         /* [out] */ IRef ** iref);
 
@@ -493,7 +493,7 @@ public:
         /* [in] */ const String& parameterName,
         /* [out] */ Elastos::Sql::IBlob ** blob);
 
-    CARAPI GetBlobEx(
+    CARAPI GetBlob(
         /* [in] */ Int32 parameterIndex,
         /* [out] */ Elastos::Sql::IBlob ** blob);
 
@@ -501,7 +501,7 @@ public:
         /* [in] */ const String& parameterName,
         /* [out] */ IClob ** clob);
 
-    CARAPI GetClobEx(
+    CARAPI GetClob(
         /* [in] */ Int32 parameterIndex,
         /* [out] */ IClob ** clob);
 
@@ -509,199 +509,199 @@ public:
         /* [in] */ const String& parameterName,
         /* [out] */ IArray ** outarray);
 
-    CARAPI GetArrayEx(
+    CARAPI GetArray(
         /* [in] */ Int32 parameterIndex,
         /* [out] */ IArray ** outarray);
 
-    CARAPI GetDateEx(
+    CARAPI GetDate(
         /* [in] */ const String& parameterName,
         /* [in] */ ICalendar * cal,
         /* [out] */ IDate ** thedate);
 
-    CARAPI GetDateEx2(
+    CARAPI GetDate(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ ICalendar * cal,
         /* [out] */ IDate ** thedate);
 
-    CARAPI GetTimeEx(
+    CARAPI GetTime(
         /* [in] */ const String& parameterName,
         /* [in] */ ICalendar * cal,
         /* [out] */ ITime ** thetime);
 
-    CARAPI GetTimeEx2(
+    CARAPI GetTime(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ ICalendar * cal,
         /* [out] */ ITime ** thetime);
 
-    CARAPI GetTimestampEx(
+    CARAPI GetTimestamp(
         /* [in] */ const String& parameterName,
         /* [in] */ ICalendar * cal,
         /* [out] */ ITimestamp ** timestamp);
 
-    CARAPI GetTimestampEx2(
+    CARAPI GetTimestamp(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ ICalendar * cal,
         /* [out] */ ITimestamp ** timestamp);
 
-    CARAPI GetURLEx(
+    CARAPI GetURL(
         /* [in] */ const String& parameterName,
         /* [out] */ IURL ** url);
 
-    CARAPI SetRowIdEx(
+    CARAPI SetRowId(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IRowId * x);
 
-    CARAPI SetRowIdEx2(
+    CARAPI SetRowId(
         /* [in] */ const String& parameterName,
         /* [in] */ IRowId * x);
 
-    CARAPI SetNStringEx(
+    CARAPI SetNString(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ const String& value);
 
-    CARAPI SetNStringEx2(
+    CARAPI SetNString(
         /* [in] */ const String& parameterName,
         /* [in] */ const String& value);
 
-    CARAPI SetNCharacterStreamEx2(
+    CARAPI SetNCharacterStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetNCharacterStreamEx3(
+    CARAPI SetNCharacterStream(
         /* [in] */ const String& parameterName,
         /* [in] */ IReader * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetNClobEx8(
+    CARAPI SetNClob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ INClob * value);
 
-    CARAPI SetNClobEx3(
+    CARAPI SetNClob(
         /* [in] */ const String& parameterName,
         /* [in] */ INClob * value);
 
-    CARAPI SetClobEx3(
+    CARAPI SetClob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetClobEx4(
+    CARAPI SetClob(
         /* [in] */ const String& parameterName,
         /* [in] */ IReader * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetBlobEx3(
+    CARAPI SetBlob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IInputStream * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetBlobEx4(
+    CARAPI SetBlob(
         /* [in] */ const String& parameterName,
         /* [in] */ IInputStream * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetNClobEx4(
+    CARAPI SetNClob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetNClobEx5(
+    CARAPI SetNClob(
         /* [in] */ const String& parameterName,
         /* [in] */ IReader * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetSQLXMLEx(
+    CARAPI SetSQLXML(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ ISQLXML * xml);
 
-    CARAPI SetSQLXMLEx2(
+    CARAPI SetSQLXML(
         /* [in] */ const String& parameterName,
         /* [in] */ ISQLXML * xml);
 
-    CARAPI SetAsciiStreamEx7(
+    CARAPI SetAsciiStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IInputStream * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetAsciiStreamEx3(
+    CARAPI SetAsciiStream(
         /* [in] */ const String& parameterName,
         /* [in] */ IInputStream * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetBinaryStreamEx7(
+    CARAPI SetBinaryStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IInputStream * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetBinaryStreamEx3(
+    CARAPI SetBinaryStream(
         /* [in] */ const String& parameterName,
         /* [in] */ IInputStream * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetCharacterStreamEx3(
+    CARAPI SetCharacterStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetCharacterStreamEx4(
+    CARAPI SetCharacterStream(
         /* [in] */ const String& parameterName,
         /* [in] */ IReader * x,
         /* [in] */ Int64 len);
 
-    CARAPI SetAsciiStreamEx4(
+    CARAPI SetAsciiStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IInputStream * x);
 
-    CARAPI SetAsciiStreamEx5(
+    CARAPI SetAsciiStream(
         /* [in] */ const String& parameterName,
         /* [in] */ IInputStream * x);
 
-    CARAPI SetBinaryStreamEx4(
+    CARAPI SetBinaryStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IInputStream * x);
 
-    CARAPI SetBinaryStreamEx5(
+    CARAPI SetBinaryStream(
         /* [in] */ const String& parameterName,
         /* [in] */ IInputStream * x);
 
-    CARAPI SetCharacterStreamEx5(
+    CARAPI SetCharacterStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * x);
 
-    CARAPI SetCharacterStreamEx6(
+    CARAPI SetCharacterStream(
         /* [in] */ const String& parameterName,
         /* [in] */ IReader * x);
 
-    CARAPI SetNCharacterStreamEx4(
+    CARAPI SetNCharacterStream(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * x);
 
-    CARAPI SetNCharacterStreamEx5(
+    CARAPI SetNCharacterStream(
         /* [in] */ const String& parameterName,
         /* [in] */ IReader * x);
 
-    CARAPI SetClobEx5(
+    CARAPI SetClob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * x);
 
-    CARAPI SetClobEx6(
+    CARAPI SetClob(
         /* [in] */ const String& parameterName,
         /* [in] */ IReader * x);
 
-    CARAPI SetBlobEx5(
+    CARAPI SetBlob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IInputStream * x);
 
-    CARAPI SetBlobEx6(
+    CARAPI SetBlob(
         /* [in] */ const String& parameterName,
         /* [in] */ IInputStream * x);
 
-    CARAPI SetNClobEx6(
+    CARAPI SetNClob(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IReader * x);
 
-    CARAPI SetNClobEx7(
+    CARAPI SetNClob(
         /* [in] */ const String& parameterName,
         /* [in] */ IReader * x);
 

@@ -53,7 +53,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ IInputStream ** iinputstream);
 
-    CARAPI GetAsciiStreamEx(
+    CARAPI GetAsciiStream(
         /* [in] */ const String& colName,
         /* [out] */ IInputStream ** iinputstream);
 
@@ -61,16 +61,16 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ IBigDecimal ** bigdecimal);
 
-    CARAPI GetBigDecimalEx(
+    CARAPI GetBigDecimal(
         /* [in] */ Int32 colIndex,
         /* [in] */ Int32 scale,
         /* [out] */ IBigDecimal ** bigdecimal);
 
-    CARAPI GetBigDecimalEx2(
+    CARAPI GetBigDecimal(
         /* [in] */ const String& colName,
         /* [out] */ IBigDecimal ** bigdecimal);
 
-    CARAPI GetBigDecimalEx3(
+    CARAPI GetBigDecimal(
         /* [in] */ const String& colName,
         /* [in] */ Int32 scale,
         /* [out] */ IBigDecimal ** bigdecimal);
@@ -79,7 +79,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ IInputStream ** iinputstream);
 
-    CARAPI GetBinaryStreamEx(
+    CARAPI GetBinaryStream(
         /* [in] */ const String& colName,
         /* [out] */ IInputStream ** iinputstream);
 
@@ -87,7 +87,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ Elastos::Sql::IBlob ** oblob);
 
-    CARAPI GetBlobEx(
+    CARAPI GetBlob(
         /* [in] */ const String& colName,
         /* [out] */ Elastos::Sql::IBlob ** oblob);
 
@@ -95,7 +95,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ Boolean * value);
 
-    CARAPI GetBooleanEx(
+    CARAPI GetBoolean(
         /* [in] */ const String& colName,
         /* [out] */ Boolean * value);
 
@@ -103,7 +103,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ Byte * value);
 
-    CARAPI GetByteEx(
+    CARAPI GetByte(
         /* [in] */ const String& colName,
         /* [out] */ Byte * value);
 
@@ -111,7 +111,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out, callee] */ ArrayOf<Byte> ** oarray);
 
-    CARAPI GetBytesEx(
+    CARAPI GetBytes(
         /* [in] */ const String& colName,
         /* [out, callee] */ ArrayOf<Byte> ** oarray);
 
@@ -119,7 +119,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ IReader ** reader);
 
-    CARAPI GetCharacterStreamEx(
+    CARAPI GetCharacterStream(
         /* [in] */ const String& colName,
         /* [out] */ IReader ** reader);
 
@@ -127,7 +127,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ IClob ** oclob);
 
-    CARAPI GetClobEx(
+    CARAPI GetClob(
         /* [in] */ const String& colName,
         /* [out] */ IClob ** oclob);
 
@@ -141,7 +141,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ Double * value);
 
-    CARAPI GetDoubleEx(
+    CARAPI GetDouble(
         /* [in] */ const String& colName,
         /* [out] */ Double * value);
 
@@ -155,7 +155,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ Float * value);
 
-    CARAPI GetFloatEx(
+    CARAPI GetFloat(
         /* [in] */ const String& colName,
         /* [out] */ Float * value);
 
@@ -163,7 +163,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ Int32 * value);
 
-    CARAPI GetIntEx(
+    CARAPI GetInt(
         /* [in] */ const String& colName,
         /* [out] */ Int32 * value);
 
@@ -171,7 +171,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ Int64 * value);
 
-    CARAPI GetLongEx(
+    CARAPI GetLong(
         /* [in] */ const String& colName,
         /* [out] */ Int64 * value);
 
@@ -186,7 +186,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ IRef ** ref);
 
-    CARAPI GetRefEx(
+    CARAPI GetRef(
         /* [in] */ const String& colName,
         /* [out] */ IRef ** ref);
 
@@ -197,7 +197,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ Int16 * value);
 
-    CARAPI GetShortEx(
+    CARAPI GetShort(
         /* [in] */ const String& colName,
         /* [out] */ Int16 * value);
 
@@ -208,7 +208,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ String * value);
 
-    CARAPI GetStringEx(
+    CARAPI GetString(
         /* [in] */ const String& colName,
         /* [out] */ String * value);
 
@@ -216,16 +216,16 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ ITime ** sqltime);
 
-    CARAPI GetTimeEx(
+    CARAPI GetTime(
         /* [in] */ Int32 colIndex,
         /* [in] */ ICalendar * pCal,
         /* [out] */ ITime ** sqltime);
 
-    CARAPI GetTimeEx2(
+    CARAPI GetTime(
         /* [in] */ const String& colName,
         /* [out] */ ITime ** sqltime);
 
-    CARAPI GetTimeEx3(
+    CARAPI GetTime(
         /* [in] */ const String& colName,
         /* [in] */ ICalendar * pCal,
         /* [out] */ ITime ** sqltime);
@@ -234,16 +234,16 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ ITimestamp ** timemestamp);
 
-    CARAPI GetTimestampEx(
+    CARAPI GetTimestamp(
         /* [in] */ Int32 colIndex,
         /* [in] */ ICalendar * pCal,
         /* [out] */ ITimestamp ** timemestamp);
 
-    CARAPI GetTimestampEx2(
+    CARAPI GetTimestamp(
         /* [in] */ const String& colName,
         /* [out] */ ITimestamp ** timemestamp);
 
-    CARAPI GetTimestampEx3(
+    CARAPI GetTimestamp(
         /* [in] */ const String& colName,
         /* [in] */ ICalendar * pCal,
         /* [out] */ ITimestamp ** timemestamp);
@@ -255,7 +255,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ IInputStream ** iinputstream);
 
-    CARAPI GetUnicodeStreamEx(
+    CARAPI GetUnicodeStream(
         /* [in] */ const String& colName,
         /* [out] */ IInputStream ** iinputstream);
 
@@ -314,7 +314,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ IArray * x);
 
-    CARAPI UpdateArrayEx(
+    CARAPI UpdateArray(
         /* [in] */ const String& colName,
         /* [in] */ IArray * x);
 
@@ -323,7 +323,7 @@ public:
         /* [in] */ IInputStream * x,
         /* [in] */ Int32 length);
 
-    CARAPI UpdateAsciiStreamEx(
+    CARAPI UpdateAsciiStream(
         /* [in] */ const String& colName,
         /* [in] */ IInputStream * x,
         /* [in] */ Int32 length);
@@ -332,7 +332,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ IBigDecimal * x);
 
-    CARAPI UpdateBigDecimalEx(
+    CARAPI UpdateBigDecimal(
         /* [in] */ const String& colName,
         /* [in] */ IBigDecimal * x);
 
@@ -341,7 +341,7 @@ public:
         /* [in] */ IInputStream * x,
         /* [in] */ Int32 length);
 
-    CARAPI UpdateBinaryStreamEx(
+    CARAPI UpdateBinaryStream(
         /* [in] */ const String& colName,
         /* [in] */ IInputStream * x,
         /* [in] */ Int32 length);
@@ -350,7 +350,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ Elastos::Sql::IBlob * x);
 
-    CARAPI UpdateBlobEx(
+    CARAPI UpdateBlob(
         /* [in] */ const String& colName,
         /* [in] */ Elastos::Sql::IBlob * x);
 
@@ -358,7 +358,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ Boolean x);
 
-    CARAPI UpdateBooleanEx(
+    CARAPI UpdateBoolean(
         /* [in] */ const String& colName,
         /* [in] */ Boolean x);
 
@@ -366,7 +366,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ Byte x);
 
-    CARAPI UpdateByteEx(
+    CARAPI UpdateByte(
         /* [in] */ const String& colName,
         /* [in] */ Byte x);
 
@@ -374,7 +374,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ const ArrayOf<Byte> & x);
 
-    CARAPI UpdateBytesEx(
+    CARAPI UpdateBytes(
         /* [in] */ const String& colName,
         /* [in] */ const ArrayOf<Byte> & x);
 
@@ -383,7 +383,7 @@ public:
         /* [in] */ IReader * x,
         /* [in] */ Int32 length);
 
-    CARAPI UpdateCharacterStreamEx(
+    CARAPI UpdateCharacterStream(
         /* [in] */ const String& colName,
         /* [in] */ IReader * reader,
         /* [in] */ Int32 length);
@@ -392,7 +392,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ IClob * x);
 
-    CARAPI UpdateClobEx(
+    CARAPI UpdateClob(
         /* [in] */ const String& colName,
         /* [in] */ IClob * x);
 
@@ -400,7 +400,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ IDate * x);
 
-    CARAPI UpdateDateEx(
+    CARAPI UpdateDate(
         /* [in] */ const String& colName,
         /* [in] */ IDate * x);
 
@@ -408,7 +408,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ Double x);
 
-    CARAPI UpdateDoubleEx(
+    CARAPI UpdateDouble(
         /* [in] */ const String& colName,
         /* [in] */ Double x);
 
@@ -416,7 +416,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ Float x);
 
-    CARAPI UpdateFloatEx(
+    CARAPI UpdateFloat(
         /* [in] */ const String& colName,
         /* [in] */ Float x);
 
@@ -424,7 +424,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ Int32 x);
 
-    CARAPI UpdateIntEx(
+    CARAPI UpdateInt(
         /* [in] */ const String& colName,
         /* [in] */ Int32 x);
 
@@ -432,30 +432,30 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ Int64 x);
 
-    CARAPI UpdateLongEx(
+    CARAPI UpdateLong(
         /* [in] */ const String& colName,
         /* [in] */ Int64 x);
 
     CARAPI UpdateNull(
         /* [in] */ Int32 colIndex);
 
-    CARAPI UpdateNullEx(
+    CARAPI UpdateNull(
         /* [in] */ const String& colName);
 
     CARAPI UpdateObject(
         /* [in] */ Int32 colIndex,
         /* [in] */ IInterface * x);
 
-    CARAPI UpdateObjectEx(
+    CARAPI UpdateObject(
         /* [in] */ Int32 colIndex,
         /* [in] */ IInterface * x,
         /* [in] */ Int32 scale);
 
-    CARAPI UpdateObjectEx2(
+    CARAPI UpdateObject(
         /* [in] */ const String& colName,
         /* [in] */ IInterface * x);
 
-    CARAPI UpdateObjectEx3(
+    CARAPI UpdateObject(
         /* [in] */ const String& colName,
         /* [in] */ IInterface * x,
         /* [in] */ Int32 scale);
@@ -464,7 +464,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ IRef * x);
 
-    CARAPI UpdateRefEx(
+    CARAPI UpdateRef(
         /* [in] */ const String& colName,
         /* [in] */ IRef * x);
 
@@ -474,7 +474,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ Int16 x);
 
-    CARAPI UpdateShortEx(
+    CARAPI UpdateShort(
         /* [in] */ const String& colName,
         /* [in] */ Int16 x);
 
@@ -482,7 +482,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ const String& x);
 
-    CARAPI UpdateStringEx(
+    CARAPI UpdateString(
         /* [in] */ const String& colName,
         /* [in] */ const String& x);
 
@@ -490,7 +490,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ ITime * x);
 
-    CARAPI UpdateTimeEx(
+    CARAPI UpdateTime(
         /* [in] */ const String& colName,
         /* [in] */ ITime * x);
 
@@ -498,7 +498,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ ITimestamp * x);
 
-    CARAPI UpdateTimestampEx(
+    CARAPI UpdateTimestamp(
         /* [in] */ const String& colName,
         /* [in] */ ITimestamp * x);
 
@@ -509,7 +509,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ IRowId ** rowid);
 
-    CARAPI GetRowIdEx(
+    CARAPI GetRowId(
         /* [in] */ const String& colName,
         /* [out] */ IRowId ** rowid);
 
@@ -517,7 +517,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ IRowId * value);
 
-    CARAPI UpdateRowIdEx(
+    CARAPI UpdateRowId(
         /* [in] */ const String& colName,
         /* [in] */ IRowId * value);
 
@@ -531,7 +531,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ const String& nString);
 
-    CARAPI UpdateNStringEx(
+    CARAPI UpdateNString(
         /* [in] */ const String& colName,
         /* [in] */ const String& nString);
 
@@ -539,7 +539,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ INClob * nclob);
 
-    CARAPI UpdateNClobEx(
+    CARAPI UpdateNClob(
         /* [in] */ const String& colName,
         /* [in] */ INClob * nclob);
 
@@ -547,7 +547,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ INClob ** nclob);
 
-    CARAPI GetNClobEx(
+    CARAPI GetNClob(
         /* [in] */ const String& colName,
         /* [out] */ INClob ** nclob);
 
@@ -555,7 +555,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ ISQLXML ** sqlxml);
 
-    CARAPI GetSQLXMLEx(
+    CARAPI GetSQLXML(
         /* [in] */ const String& colName,
         /* [out] */ ISQLXML ** sqlxml);
 
@@ -563,7 +563,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [in] */ ISQLXML * xmlObject);
 
-    CARAPI UpdateSQLXMLEx(
+    CARAPI UpdateSQLXML(
         /* [in] */ const String& colName,
         /* [in] */ ISQLXML * xmlObject);
 
@@ -571,7 +571,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ String * nstr);
 
-    CARAPI GetNStringEx(
+    CARAPI GetNString(
         /* [in] */ const String& colName,
         /* [out] */ String * nstr);
 
@@ -579,7 +579,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ IReader ** reader);
 
-    CARAPI GetNCharacterStreamEx(
+    CARAPI GetNCharacterStream(
         /* [in] */ const String& colName,
         /* [out] */ IReader ** reader);
 
@@ -588,124 +588,124 @@ public:
         /* [in] */ IReader * x,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateNCharacterStreamEx(
+    CARAPI UpdateNCharacterStream(
         /* [in] */ const String& colName,
         /* [in] */ IReader * reader,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateAsciiStreamEx2(
+    CARAPI UpdateAsciiStream(
         /* [in] */ Int32 colIndex,
         /* [in] */ IInputStream * x,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateBinaryStreamEx2(
+    CARAPI UpdateBinaryStream(
         /* [in] */ Int32 colIndex,
         /* [in] */ IInputStream * x,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateCharacterStreamEx2(
+    CARAPI UpdateCharacterStream(
         /* [in] */ Int32 colIndex,
         /* [in] */ IReader * x,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateAsciiStreamEx3(
+    CARAPI UpdateAsciiStream(
         /* [in] */ const String& colName,
         /* [in] */ IInputStream * x,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateBinaryStreamEx3(
+    CARAPI UpdateBinaryStream(
         /* [in] */ const String& colName,
         /* [in] */ IInputStream * x,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateCharacterStreamEx3(
+    CARAPI UpdateCharacterStream(
         /* [in] */ const String& colName,
         /* [in] */ IReader * reader,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateBlobEx2(
+    CARAPI UpdateBlob(
         /* [in] */ Int32 colIndex,
         /* [in] */ IInputStream * pInputStream,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateBlobEx3(
+    CARAPI UpdateBlob(
         /* [in] */ const String& colName,
         /* [in] */ IInputStream * pInputStream,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateClobEx2(
+    CARAPI UpdateClob(
         /* [in] */ Int32 colIndex,
         /* [in] */ IReader * reader,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateClobEx3(
+    CARAPI UpdateClob(
         /* [in] */ const String& colName,
         /* [in] */ IReader * reader,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateNClobEx2(
+    CARAPI UpdateNClob(
         /* [in] */ Int64 colIndex,
         /* [in] */ IReader * reader,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateNClobEx3(
+    CARAPI UpdateNClob(
         /* [in] */ const String& colName,
         /* [in] */ IReader * reader,
         /* [in] */ Int64 length);
 
-    CARAPI UpdateNCharacterStreamEx2(
+    CARAPI UpdateNCharacterStream(
         /* [in] */ Int32 colIndex,
         /* [in] */ IReader * x);
 
-    CARAPI UpdateNCharacterStreamEx3(
+    CARAPI UpdateNCharacterStream(
         /* [in] */ const String& colName,
         /* [in] */ IReader * reader);
 
-    CARAPI UpdateAsciiStreamEx4(
+    CARAPI UpdateAsciiStream(
         /* [in] */ Int32 colIndex,
         /* [in] */ IInputStream * x);
 
-    CARAPI UpdateBinaryStreamEx4(
+    CARAPI UpdateBinaryStream(
         /* [in] */ Int32 colIndex,
         /* [in] */ IInputStream * x);
 
-    CARAPI UpdateCharacterStreamEx4(
+    CARAPI UpdateCharacterStream(
         /* [in] */ Int32 colIndex,
         /* [in] */ IReader * px);
 
-    CARAPI UpdateAsciiStreamEx5(
+    CARAPI UpdateAsciiStream(
         /* [in] */ const String& colName,
         /* [in] */ IInputStream * x);
 
-    CARAPI UpdateBinaryStreamEx5(
+    CARAPI UpdateBinaryStream(
         /* [in] */ const String& colName,
         /* [in] */ IInputStream * x);
 
-    CARAPI UpdateCharacterStreamEx5(
+    CARAPI UpdateCharacterStream(
         /* [in] */ const String& colName,
         /* [in] */ IReader * reader);
 
-    CARAPI UpdateBlobEx4(
+    CARAPI UpdateBlob(
         /* [in] */ Int32 colIndex,
         /* [in] */ IInputStream * pInputStream);
 
-    CARAPI UpdateBlobEx5(
+    CARAPI UpdateBlob(
         /* [in] */ const String& colName,
         /* [in] */ IInputStream * pInputStream);
 
-    CARAPI UpdateClobEx4(
+    CARAPI UpdateClob(
         /* [in] */ Int32 colIndex,
         /* [in] */ IReader * reader);
 
-    CARAPI UpdateClobEx5(
+    CARAPI UpdateClob(
         /* [in] */ const String& colName,
         /* [in] */ IReader * reader);
 
-    CARAPI UpdateNClobEx4(
+    CARAPI UpdateNClob(
         /* [in] */ Int32 colIndex,
         /* [in] */ IReader * reader);
 
-    CARAPI UpdateNClobEx5(
+    CARAPI UpdateNClob(
         /* [in] */ const String& colName,
         /* [in] */ IReader * reader);
 
@@ -721,7 +721,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ IArray ** iarray);
 
-    CARAPI GetArrayEx(
+    CARAPI GetArray(
         /* [in] */ const String& colName,
         /* [out] */ IArray ** iarray);
 
@@ -729,30 +729,30 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ IDate ** idate);
 
-    CARAPI GetDateEx(
+    CARAPI GetDate(
         /* [in] */ Int32 colIndex,
         /* [in] */ ICalendar * cal,
         /* [out] */ IDate ** idate);
 
-    CARAPI GetDateEx2(
+    CARAPI GetDate(
         /* [in] */ const String& colName,
         /* [out] */ IDate ** idate);
 
-    CARAPI GetDateEx3(
+    CARAPI GetDate(
         /* [in] */ const String& colName,
         /* [in] */ ICalendar * cal,
         /* [out] */ IDate ** idate);
 
-    CARAPI GetObjectEx(
+    CARAPI GetObject(
         /* [in] */ Int32 colIndex,
         /* [in] */ IObjectStringMap * map,
         /* [out] */ IInterface ** obj);
 
-    CARAPI GetObjectEx2(
+    CARAPI GetObject(
         /* [in] */ const String& colName,
         /* [out] */ IInterface** obj);
 
-    CARAPI GetObjectEx3(
+    CARAPI GetObject(
         /* [in] */ const String& colName,
         /* [in] */ IObjectStringMap * map,
         /* [out] */ IInterface** obj);
@@ -761,7 +761,7 @@ public:
         /* [in] */ Int32 colIndex,
         /* [out] */ IURL** url);
 
-    CARAPI GetURLEx(
+    CARAPI GetURL(
         /* [in] */ const String& colName,
         /* [out] */ IURL** url);
 
@@ -774,7 +774,7 @@ public:
 
     CARAPI FillRowbuf();
 
-    CARAPI FindColumnEx(
+    CARAPI FindColumn(
         /* [in] */ const String& colName,
         /* [out] */ Int32 * value);
 

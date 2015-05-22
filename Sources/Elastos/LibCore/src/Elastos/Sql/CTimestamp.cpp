@@ -26,7 +26,7 @@ ECode CTimestamp::CompareTo(
     /* [in] */ Elastos::Utility::IDate* date,
     /* [out] */ Int32* result)
 {
-    CompareToEx((ITimestamp *)date , result);
+    CompareTo((ITimestamp *)date , result);
     return NOERROR;
 }
 
@@ -146,7 +146,7 @@ ECode CTimestamp::Before(
     return NOERROR;
 }
 
-ECode CTimestamp::CompareToEx(
+ECode CTimestamp::CompareTo(
     /* [in] */ ITimestamp * theTimestamp,
     /* [out] */ Int32 * value)
 {
@@ -178,10 +178,10 @@ ECode CTimestamp::Equals(
 
     if (ITimestamp::Probe(pTheObject) == NULL) return NOERROR;
 
-    return EqualsEx(ITimestamp::Probe(pTheObject), value);
+    return Equals(ITimestamp::Probe(pTheObject), value);
 }
 
-ECode CTimestamp::EqualsEx(
+ECode CTimestamp::Equals(
     /* [in] */ ITimestamp * theTimestamp,
     /* [out] */ Boolean * value)
 {
@@ -228,7 +228,7 @@ ECode CTimestamp::constructor(
     /* [in] */ Int32 theSecond,
     /* [in] */ Int32 theNano)
 {
-    InitEx2(theYear, theMonth, theDate, theHour, theMinute, theSecond);
+    Init(theYear, theMonth, theDate, theHour, theMinute, theSecond);
     if (theNano < 0 || theNano > 999999999) {
         return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -239,7 +239,7 @@ ECode CTimestamp::constructor(
 ECode CTimestamp::constructor(
     /* [in] */ Int64 theTime)
 {
-    InitEx(theTime);
+    Init(theTime);
     /*
      * Now set the time for this Timestamp object - which deals with the
      * nanosecond value as well as the base time
@@ -278,7 +278,7 @@ AutoPtr<ITimestamp> CTimestamp::ValueOf(const String& str)
      */
     // AutoPtr<IDate> theDate;
 
-    // ECode ec = df->ParseEx(s, pp,(IDate **)&theDate);
+    // ECode ec = df->Parse(s, pp,(IDate **)&theDate);
     // if (ec != NOERROR ) {
     //     return NULL;
     // }

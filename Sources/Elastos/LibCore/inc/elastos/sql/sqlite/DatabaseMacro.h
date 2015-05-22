@@ -8,12 +8,12 @@
         /* [in] */ const String& filename,                        \
         /* [in] */ Int32 mode);                                   \
                                                                   \
-    CARAPI OpenEx(                                                \
+    CARAPI Open(                                                \
         /* [in] */ const String& filename,                        \
         /* [in] */ Int32 mode,                                    \
         /* [in] */ const String& vfs);                            \
                                                                   \
-    CARAPI OpenEx2(                                               \
+    CARAPI Open(                                               \
         /* [in] */ const String& filename,                        \
         /* [in] */ Int32 mode,                                    \
         /* [in] */ const String& vfs,                             \
@@ -30,7 +30,7 @@
         /* [in] */ const String& sql,                             \
         /* [in] */ ICallback * cb);                               \
                                                                   \
-    CARAPI ExecEx(                                                \
+    CARAPI Exec(                                                \
         /* [in] */ const String& sql,                             \
         /* [in] */ ICallback * cb,                                \
         /* [in] */ const ArrayOf<String> & args);                 \
@@ -54,22 +54,22 @@
         /* [in] */ Int32 maxrows,                                 \
         /* [out] */ ITableResult ** tableresult);                 \
                                                                   \
-    CARAPI GetTableEx(                                           \
+    CARAPI GetTable(                                           \
         /* [in] */ const String& sql,                             \
         /* [out] */ ITableResult ** tableresult);                 \
                                                                   \
-    CARAPI GetTableEx2(                                          \
+    CARAPI GetTable(                                          \
         /* [in] */ const String& sql,                             \
         /* [in] */ Int32 maxrows,                                 \
         /* [in] */ const ArrayOf<String> & args,                  \
         /* [out] */ ITableResult ** tableresult);                 \
                                                                   \
-    CARAPI GetTableEx3(                                          \
+    CARAPI GetTable(                                          \
         /* [in] */ const String& sql,                             \
         /* [in] */ const ArrayOf<String> & args,                  \
         /* [out] */ ITableResult ** tableresult);                 \
                                                                   \
-    CARAPI GetTableEx4(                                          \
+    CARAPI GetTable(                                          \
         /* [in] */ const String& sql,                             \
         /* [in] */ const ArrayOf<String> & args,                  \
         /* [in] */ ITableResult * tbl);                           \
@@ -128,7 +128,7 @@
         /* [in] */ const String& sql,                             \
         /* [out] */ IVm ** ivm);                                  \
                                                                   \
-    CARAPI CompileEx(                                             \
+    CARAPI Compile(                                             \
         /* [in] */ const String& sql,                             \
         /* [in] */ const ArrayOf<String>& args,                   \
         /* [out] */ IVm ** ivm);                                  \
@@ -155,7 +155,7 @@
     CARAPI Key(                                                   \
         /* [in] */ const ArrayOf<Byte> & ekey);                   \
                                                                   \
-    CARAPI KeyEx(                                                 \
+    CARAPI Key(                                                 \
         /* [in] */ const String& skey);
 
 #define DATABASE_METHODS_IMPL(className, superClass)              \
@@ -167,21 +167,21 @@ ECode className::Open(                                           \
     return superClass::Open(filename,mode);                       \
 }                                                                 \
                                                                   \
-ECode className::OpenEx(                                          \
+ECode className::Open(                                          \
         /* [in] */ const String& filename,                        \
         /* [in] */ Int32 mode,                                    \
         /* [in] */ const String& vfs)                             \
 {                                                                 \
-    return superClass::OpenEx(filename,mode,vfs);                 \
+    return superClass::Open(filename,mode,vfs);                 \
 }                                                                 \
                                                                   \
-ECode className::OpenEx2(                                         \
+ECode className::Open(                                         \
         /* [in] */ const String& filename,                        \
         /* [in] */ Int32 mode,                                    \
         /* [in] */ const String& vfs,                             \
         /* [in] */ Boolean ver2)                                  \
 {                                                                 \
-    return superClass::OpenEx2(filename,mode,vfs,ver2);           \
+    return superClass::Open(filename,mode,vfs,ver2);           \
 }                                                                 \
                                                                   \
 ECode className::OpenAuxFile(                                   \
@@ -207,12 +207,12 @@ ECode className::Exec(                                            \
     return superClass::Exec(sql,cb);                              \
 }                                                                 \
                                                                   \
-ECode className::ExecEx(                                          \
+ECode className::Exec(                                          \
         /* [in] */ const String& sql,                             \
         /* [in] */ ICallback * cb,                                \
         /* [in] */ const ArrayOf<String> & args)                  \
 {                                                                 \
-    return superClass::ExecEx(sql,cb,args);                       \
+    return superClass::Exec(sql,cb,args);                       \
 }                                                                 \
                                                                   \
 ECode className::LastInsertRowid(                               \
@@ -255,39 +255,39 @@ ECode className::GetTable(                                       \
     return NOERROR;                                               \
 }                                                                 \
                                                                   \
-ECode className::GetTableEx(                                     \
+ECode className::GetTable(                                     \
         /* [in] */ const String& sql,                             \
         /* [out] */ ITableResult ** tableresult)                  \
 {                                                                 \
-    *tableresult = superClass::GetTableEx(sql);                  \
+    *tableresult = superClass::GetTable(sql);                  \
     return NOERROR;                                               \
 }                                                                 \
                                                                   \
-ECode className::GetTableEx2(                                    \
+ECode className::GetTable(                                    \
         /* [in] */ const String& sql,                             \
         /* [in] */ Int32 maxrows,                                 \
         /* [in] */ const ArrayOf<String> & args,                  \
         /* [out] */ ITableResult ** tableresult)                  \
 {                                                                 \
-    *tableresult = superClass::GetTableEx2(sql,maxrows,args);    \
+    *tableresult = superClass::GetTable(sql,maxrows,args);    \
     return NOERROR;                                               \
 }                                                                 \
                                                                   \
-ECode className::GetTableEx3(                                    \
+ECode className::GetTable(                                    \
         /* [in] */ const String& sql,                             \
         /* [in] */ const ArrayOf<String> & args,                  \
         /* [out] */ ITableResult ** tableresult)                  \
 {                                                                 \
-    *tableresult = superClass::GetTableEx3(sql,args);            \
+    *tableresult = superClass::GetTable(sql,args);            \
     return NOERROR;                                               \
 }                                                                 \
                                                                   \
-ECode className::GetTableEx4(                                    \
+ECode className::GetTable(                                    \
         /* [in] */ const String& sql,                             \
         /* [in] */ const ArrayOf<String> & args,                  \
         /* [in] */ ITableResult * tbl)                            \
 {                                                                 \
-    return superClass::GetTableEx4(sql,args,tbl);                \
+    return superClass::GetTable(sql,args,tbl);                \
 }                                                                 \
                                                                   \
 ECode className::Dbversion(                                       \
@@ -392,12 +392,12 @@ ECode className::Compile(                                         \
     return NOERROR;                                               \
 }                                                                 \
                                                                   \
-ECode className::CompileEx(                                       \
+ECode className::Compile(                                       \
         /* [in] */ const String& sql,                             \
         /* [in] */ const ArrayOf<String>& args,                   \
         /* [out] */ IVm ** ivm)                                   \
 {                                                                 \
-    *ivm = superClass::CompileEx(sql,args);                       \
+    *ivm = superClass::Compile(sql,args);                       \
     return NOERROR;                                               \
 }                                                                 \
                                                                   \
@@ -441,10 +441,10 @@ ECode className::Key(                                             \
     return superClass::Key(ekey);                                 \
 }                                                                 \
                                                                   \
-ECode className::KeyEx(                                           \
+ECode className::Key(                                           \
         /* [in] */ const String& skey)                            \
 {                                                                 \
-    return superClass::KeyEx(skey);                               \
+    return superClass::Key(skey);                               \
 }                                                                 \
 
 #endif  //__DATABASEMACRO_H__

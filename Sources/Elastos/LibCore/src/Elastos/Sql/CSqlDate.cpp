@@ -80,7 +80,7 @@ ECode CSqlDate::constructor(
 ECode CSqlDate::constructor(
     /* [in] */ Int64 theDate)
 {
-    InitEx(NormalizeTime(theDate));
+    Init(NormalizeTime(theDate));
     return NOERROR;
 }
 
