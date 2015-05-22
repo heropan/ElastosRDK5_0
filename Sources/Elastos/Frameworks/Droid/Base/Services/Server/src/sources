@@ -72,7 +72,7 @@ INCLUDES += $(PREBUILD_INC)/hardware
 
 C_DEFINES += -DDROID_SERVER
 
-CAR_FLAGS += -u
+CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Elastos.Droid.Server.car

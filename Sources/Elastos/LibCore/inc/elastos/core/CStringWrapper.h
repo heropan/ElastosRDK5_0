@@ -2,15 +2,22 @@
 #ifndef __CSTRINGWRAPPER_H__
 #define __CSTRINGWRAPPER_H__
 
-#include "_CStringWrapper.h"
+#include "_Elastos_Core_CStringWrapper.h"
+#include "Object.h"
 
 namespace Elastos {
 namespace Core {
 
 CarClass(CStringWrapper)
+    , public Object
+    , public ICharSequence
 {
 public:
-    ~CStringWrapper() {}
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor(
+        /* [in] */ const String& str);
 
     /**
      * Returns the number of characters in this sequence.
@@ -73,9 +80,6 @@ public:
     CARAPI Equals(
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result);
-
-    CARAPI constructor(
-        /* [in] */ const String& str);
 
     CARAPI CompareTo(
         /* [in] */ IInterface* another,

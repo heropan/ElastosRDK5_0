@@ -11,3 +11,4 @@ DIRS += Org/Kxml2/IO
 DIRS += Org/Xml
 DIRS += Org/Xmlpull
 DIRS += Elastos/Droid/System
+DIRS += lib

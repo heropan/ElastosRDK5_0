@@ -4,7 +4,7 @@ TARGET_TYPE= eco
 INCLUDES += $(MAKEDIR)/../../../../inc/Org/W3c/Dom
 INCLUDES += $(MAKEDIR)/../../../../inc/common
 
-CAR_FLAGS += -u
+CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Org.W3c.Dom.car

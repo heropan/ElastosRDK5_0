@@ -15,14 +15,18 @@ module
     namespace Kxml2 {
     namespace IO {
 
-    class CKXmlParser {
-        interface IKXmlParser;
-        interface ICloseable;
+    class CDummy {
+        interface IObject;
     }
 
-    class CKXmlSerializer {
-        interface IXmlSerializer;
-    }
+    // class CKXmlParser {
+    //     interface IKXmlParser;
+    //     interface ICloseable;
+    // }
+
+    // class CKXmlSerializer {
+    //     interface IXmlSerializer;
+    // }
 
     } //namespace IO
     } //namespace Kxml2

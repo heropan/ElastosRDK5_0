@@ -1,10 +1,10 @@
 
-#include <elastos/Math.h>
+#include <Math.h>
 #include <math.h>
 #include <stdlib.h>
 #ifdef ELASTOS_CORE
 #include "Elastos.Core_server.h"
-#include "CRandom.h"
+// #include "CRandom.h"
 #else
 #include "Elastos.Core.h"
 #endif
@@ -471,7 +471,7 @@ Double Math::Tanh(
 Double Math::Random()
 {
     if (NULL == mRandom) {
-        CRandom::New((IRandom**)&mRandom);
+        // CRandom::New((IRandom**)&mRandom);
     }
 
     Double d;

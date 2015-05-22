@@ -4,7 +4,6 @@ TARGET_TYPE= eco
 IMPORTS += Elastos.Core.eco
 IMPORTS += Org.Xml.Sax.eco
 
-INCLUDES += $(MAKEDIR)/../../../../inc/common;
 INCLUDES += ./;
 INCLUDES += $(MAKEDIR)/../../../../inc/Org;
 INCLUDES += $(MAKEDIR)/../../../../inc/Org/Xmlpull/V1;
@@ -12,7 +11,7 @@ INCLUDES += $(MAKEDIR)/../../../../inc/Org/Xmlpull/V1/Sax2;
 
 VPATH := $(MAKEDIR)/Sax2
 
-CAR_FLAGS += -u
+CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Org.Xmlpull.V1.car

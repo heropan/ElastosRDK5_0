@@ -4,12 +4,12 @@
 #include "NativeThread.h"
 #include "ThreadGroup.h"
 #include <Math.h>
-#ifdef ELASTOS_CORE
-#include "CSystem.h"
-#endif
+// #ifdef ELASTOS_CORE
+// #include "CSystem.h"
+// #endif
 
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
+// using Elastos::Core::ISystem;
+// using Elastos::Core::CSystem;
 
 namespace Elastos {
 namespace Core {
@@ -39,6 +39,8 @@ const ThreadState Thread::STATE_MAP[] = {
     ThreadState_RUNNABLE        // SUSPENDED
 };
 
+CAR_INTERFACE_IMPL_WITH_CPP_CAST_2(Thread, Object, IThread, IRunnable)
+
 Thread::Thread()
     : mNativeThread(NULL)
     , mDaemon(FALSE)
@@ -51,18 +53,18 @@ Thread::Thread()
 Thread::~Thread()
 {}
 
-ECode Thread::Init()
+ECode Thread::constructor()
 {
     return Create(NULL, NULL, String(NULL), 0);
 }
 
-ECode Thread::Init(
+ECode Thread::constructor(
     /* [in] */ IRunnable* runnable)
 {
     return Create(NULL, runnable, String(NULL), 0);
 }
 
-ECode Thread::Init(
+ECode Thread::constructor(
     /* [in] */ IRunnable* runnable,
     /* [in] */ const String& threadName)
 {
@@ -74,7 +76,7 @@ ECode Thread::Init(
     return Create(NULL, runnable, threadName, 0);
 }
 
-ECode Thread::Init(
+ECode Thread::constructor(
     /* [in] */ const String& threadName)
 {
     if (threadName.IsNull()) {
@@ -85,14 +87,14 @@ ECode Thread::Init(
     return Create(NULL, NULL, threadName, 0);
 }
 
-ECode Thread::Init(
+ECode Thread::constructor(
     /* [in] */ IThreadGroup* group,
     /* [in] */ IRunnable* runnable)
 {
     return Create(group, runnable, String(NULL), 0);
 }
 
-ECode Thread::Init(
+ECode Thread::constructor(
     /* [in] */ IThreadGroup* group,
     /* [in] */ IRunnable* runnable,
     /* [in] */ const String& threadName)
@@ -105,7 +107,7 @@ ECode Thread::Init(
     return Create(group, runnable, threadName, 0);
 }
 
-ECode Thread::Init(
+ECode Thread::constructor(
     /* [in] */ IThreadGroup* group,
     /* [in] */ const String& threadName)
 {
@@ -117,7 +119,7 @@ ECode Thread::Init(
     return Create(group, NULL, threadName, 0);
 }
 
-ECode Thread::Init(
+ECode Thread::constructor(
     /* [in] */ IThreadGroup* group,
     /* [in] */ IRunnable* runnable,
     /* [in] */ const String& threadName,
@@ -130,7 +132,7 @@ ECode Thread::Init(
     return Create(group, runnable, threadName, stackSize);
 }
 
-ECode Thread::Init(
+ECode Thread::constructor(
     /* [in] */ IThreadGroup* group,
     /* [in] */ const String& name,
     /* [in] */ Int32 priority,
@@ -162,44 +164,6 @@ ECode Thread::Init(
     ThreadGroup* tg = reinterpret_cast<ThreadGroup*>(group->Probe(EIID_ThreadGroup));
     tg->AddThread((IThread*)this->Probe(EIID_IThread));
     return NOERROR;
-}
-
-PInterface Thread::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IRunnable) {
-        return (IRunnable*)this;
-    }
-    else if (riid == EIID_IThread) {
-        return (IThread*)this;
-    }
-    else return Object::Probe(riid);
-}
-
-UInt32 Thread::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Thread::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Thread::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (object == (IInterface*)(IRunnable*)this) {
-        *iid = EIID_IRunnable;
-        return NOERROR;
-    }
-    else if (object == (IInterface*)(IThread*)this) {
-        *iid = EIID_IThread;
-        return NOERROR;
-    }
-    else return Object::GetInterfaceID(object, iid);
 }
 
 ECode Thread::Create(
@@ -329,7 +293,7 @@ ECode Thread::Enumerate(
     AutoPtr<IThreadGroup> group;
     currentThread->GetThreadGroup((IThreadGroup**)&group);
 
-    return group->EnumerateThread(threads, number);
+    return group->Enumerate(threads, number);
 }
 
 //    static CARAPI_(HashMap<AutoPtr<IThread>, StackTraceElement[]>) GetAllStackTraces();
@@ -586,36 +550,37 @@ ECode Thread::Join(
         return NOERROR;
     }
 
-    AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORE
-    AutoPtr<CSystem> cs;
-    CSystem::AcquireSingletonByFriend((CSystem**)&cs);
-    system = (ISystem*)cs.Get();
-#else
-    CSystem::AcquireSingleton((ISystem**)&system);
-#endif
+// TODO luozhaohui
+//     AutoPtr<ISystem> system;
+// #ifdef ELASTOS_CORE
+//     AutoPtr<CSystem> cs;
+//     CSystem::AcquireSingletonByFriend((CSystem**)&cs);
+//     system = (ISystem*)cs.Get();
+// #else
+//     CSystem::AcquireSingleton((ISystem**)&system);
+// #endif
 
-    // guaranteed not to overflow
-    Int64 nanosToWait = millis * NANOS_PER_MILLI + nanos;
+//     // guaranteed not to overflow
+//     Int64 nanosToWait = millis * NANOS_PER_MILLI + nanos;
 
-    // wait until this thread completes or the timeout has elapsed
-    Int64 start, nanosElapsed, nanosRemaining;
-    system->GetNanoTime(&start);
-    while (TRUE) {
-        //t.wait(millis, nanos);//todo: must call
-        IsAlive(&isAlive);
-        if (!isAlive) {
-            break;
-        }
-        system->GetNanoTime(&nanosElapsed);
-        nanosElapsed -= start;
-        nanosRemaining = nanosToWait - nanosElapsed;
-        if (nanosRemaining <= 0) {
-            break;
-        }
-        millis = nanosRemaining / NANOS_PER_MILLI;
-        nanos = (Int32) (nanosRemaining - millis * NANOS_PER_MILLI);
-    }
+//     // wait until this thread completes or the timeout has elapsed
+//     Int64 start, nanosElapsed, nanosRemaining;
+//     system->GetNanoTime(&start);
+//     while (TRUE) {
+//         //t.wait(millis, nanos);//todo: must call
+//         IsAlive(&isAlive);
+//         if (!isAlive) {
+//             break;
+//         }
+//         system->GetNanoTime(&nanosElapsed);
+//         nanosElapsed -= start;
+//         nanosRemaining = nanosToWait - nanosElapsed;
+//         if (nanosRemaining <= 0) {
+//             break;
+//         }
+//         millis = nanosRemaining / NANOS_PER_MILLI;
+//         nanos = (Int32) (nanosRemaining - millis * NANOS_PER_MILLI);
+//     }
 
     return NOERROR;
 }
@@ -697,13 +662,13 @@ ECode Thread::SetName(
 void Thread::NativeNameChanged(
     /* [in] */ const String& threadName)
 {
-    Int32 threadId = -1;
+    // Int32 threadId = -1;
 
     /* get the thread's ID */
     NativeLockThreadList(NULL);
     NativeThread* thread = NativeGetThreadFromThreadObject(reinterpret_cast<Int32>(this));
     if (thread != NULL) {
-        threadId = thread->mThreadId;
+        // threadId = thread->mThreadId;
     }
     NativeUnlockThreadList();
 
@@ -920,7 +885,7 @@ ECode Thread::ParkFor(
                 mParkState = ParkState::PARKED;
                 // try {
                 ECode ec = Wait(millis, (Int32)nanos);
-                if (ec == E_INTERRUPTED_EXCEPTION) {
+                if (ec == (ECode)E_INTERRUPTED_EXCEPTION) {
                     Interrupt();
                 }
                 /*
@@ -983,28 +948,30 @@ ECode Thread::ParkUntil(
          * spuriously return for any reason, and this situation
          * can safely be construed as just such a spurious return.
          */
+// TODO luozhaohui
+//         AutoPtr<ISystem> system;
+// #ifdef ELASTOS_CORE
+//         AutoPtr<CSystem> cs;
+//         CSystem::AcquireSingletonByFriend((CSystem**)&cs);
+//         system = (ISystem*)cs.Get();
+// #else
+//         CSystem::AcquireSingleton((ISystem**)&system);
+// #endif
 
-        AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORE
-        AutoPtr<CSystem> cs;
-        CSystem::AcquireSingletonByFriend((CSystem**)&cs);
-        system = (ISystem*)cs.Get();
-#else
-        CSystem::AcquireSingleton((ISystem**)&system);
-#endif
+//         Int64 delayMillis;
+//         system->GetCurrentTimeMillis(&delayMillis);
+//         delayMillis = time - delayMillis;
 
-        Int64 delayMillis;
-        system->GetCurrentTimeMillis(&delayMillis);
-        delayMillis = time - delayMillis;
-
-        if (delayMillis <= 0) {
-            mParkState = ParkState::UNPARKED;
-            return NOERROR;
-        }
-        else {
-            return ParkFor(delayMillis * NANOS_PER_MILLI);
-        }
+//         if (delayMillis <= 0) {
+//             mParkState = ParkState::UNPARKED;
+//             return NOERROR;
+//         }
+//         else {
+//             return ParkFor(delayMillis * NANOS_PER_MILLI);
+//         }
     }
+
+    return NOERROR;
 }
 
 //static CARAPI_(Boolean) HoldsLock(Object object);
@@ -1023,7 +990,7 @@ ECode Thread::Attach(
 
     // JavaVMAttachArgs* args = (JavaVMAttachArgs*) thr_args;
     NativeThread* self;
-    Boolean result = FALSE;
+    // Boolean result = FALSE;
 
     /*
      * Return immediately if we're already one with the VM.

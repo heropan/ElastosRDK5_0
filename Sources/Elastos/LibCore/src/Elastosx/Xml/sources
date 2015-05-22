@@ -1,7 +1,7 @@
 TARGET_NAME= Elastosx.Xml
 TARGET_TYPE= eco
 
-CAR_FLAGS += -u
+CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 INCLUDES += $(MAKEDIR)/../../../inc/Elastosx/Xml/Namespace

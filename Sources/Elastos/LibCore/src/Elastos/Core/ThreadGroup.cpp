@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "ThreadGroup.h"
 #include "Thread.h"
 
@@ -10,6 +9,46 @@ namespace Threading {
 // {8BF3F538-74DA-4997-B0DC-0F8086BA8835}
 extern "C" const InterfaceID EIID_ThreadGroup =
         { 0x8bf3f538, 0x74da, 0x4997, { 0xb0, 0xdc, 0xf, 0x80, 0x86, 0xba, 0x88, 0x35 } };
+
+CAR_INTERFACE_IMPL_WITH_CPP_CAST_2(ThreadGroup, Object, IThreadGroup, IThreadUncaughtExceptionHandler)
+
+// UInt32 ThreadGroup::AddRef()
+// {
+//     return ElRefBase::AddRef();
+// }
+
+// UInt32 ThreadGroup::Release()
+// {
+//     return ElRefBase::Release();
+// }
+
+// PInterface ThreadGroup::Probe(
+//     /* [in] */ REIID riid)
+// {
+//     if (riid == EIID_IInterface) {
+//         return (IInterface*)(IThreadGroup*)this;
+//     }
+//     else if (riid == EIID_IThreadGroup) {
+//         return (IThreadGroup*)this;
+//     }
+//     else if (riid == EIID_ThreadGroup) {
+//         return reinterpret_cast<PInterface>((ThreadGroup*)this);
+//     }
+//     return Object::Probe(riid);
+// }
+
+// ECode ThreadGroup::GetInterfaceID(
+//     /* [in] */ IInterface* object,
+//     /* [out] */ InterfaceID* iid)
+// {
+//     VALIDATE_NOT_NULL(iid);
+
+//     if (object == (IInterface*)(IThreadGroup*)this) {
+//         *iid = EIID_IThreadGroup;
+//         return NOERROR;
+//     }
+//     return Object::GetInterfaceID(object, iid);
+// }
 
 ThreadGroup::ThreadGroup()
     : mNumThreads(0)
@@ -22,14 +61,22 @@ ThreadGroup::ThreadGroup()
     mChildrenGroups = ArrayOf<IThreadGroup*>::Alloc(3);
 }
 
-ECode ThreadGroup::Init()
+ECode ThreadGroup::constructor()
 {
     mName = "system";
     SetParent(NULL);
     return NOERROR;
 }
 
-ECode ThreadGroup::Init(
+ECode ThreadGroup::constructor(
+    /* [in] */ const String& name)
+{
+    AutoPtr<IThreadGroup> threadGroup;
+    Thread::GetCurrentThread()->GetThreadGroup((IThreadGroup**)&threadGroup);
+    return constructor(threadGroup, name);
+}
+
+ECode ThreadGroup::constructor(
     /* [in] */ IThreadGroup* parent,
     /* [in] */ const String& name)
 {
@@ -53,6 +100,14 @@ ECode ThreadGroup::Init(
     }
 
     return NOERROR;
+}
+
+ECode ThreadGroup::UncaughtException(
+    /* [in] */ IThread* thread,
+    /* [in] */ ECode ec)
+{
+    assert(0 && "TODO");
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode ThreadGroup::ActiveCount(
@@ -212,8 +267,8 @@ ECode ThreadGroup::Destroy()
             }
 
             if (mParent != NULL) {
-                ThreadGroup* g = (ThreadGroup*)mParent->Probe(EIID_ThreadGroup);
-                g->RemoveThreadGroup((IThreadGroup*)this->Probe(EIID_IThreadGroup));
+                ThreadGroup* g = reinterpret_cast<ThreadGroup*>(mParent->Probe(EIID_ThreadGroup));
+                g->RemoveThreadGroup(THIS_PROBE(IThreadGroup));
             }
 
             // Now that the ThreadGroup is really destroyed it can be tagged
@@ -237,16 +292,16 @@ void ThreadGroup::DestroyIfEmptyDaemon()
     }
 }
 
-ECode ThreadGroup::EnumerateThread(
+ECode ThreadGroup::Enumerate(
     /* [out] */ ArrayOf<IThread*>* threads,
     /* [out] */ Int32* number)
 {
-    return EnumerateThreadEx(TRUE, threads, number);
+    return Enumerate(threads, TRUE, number);
 }
 
-ECode ThreadGroup::EnumerateThreadEx(
-    /* [in] */ Boolean recurse,
+ECode ThreadGroup::Enumerate(
     /* [out] */ ArrayOf<IThread*>* threads,
+    /* [in] */ Boolean recurse,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
@@ -254,16 +309,16 @@ ECode ThreadGroup::EnumerateThreadEx(
     return NOERROR;
 }
 
-ECode ThreadGroup::EnumerateThreadGroup(
+ECode ThreadGroup::Enumerate(
     /* [out] */ ArrayOf<IThreadGroup*>* groups,
     /* [out] */ Int32* number)
 {
-    return EnumerateThreadGroupEx(TRUE, groups, number);
+    return Enumerate(groups, TRUE, number);
 }
 
-ECode ThreadGroup::EnumerateThreadGroupEx(
-    /* [in] */ Boolean recurse,
+ECode ThreadGroup::Enumerate(
     /* [out] */ ArrayOf<IThreadGroup*>* groups,
+    /* [in] */ Boolean recurse,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
@@ -457,7 +512,7 @@ ECode ThreadGroup::IsParentOf(
     VALIDATE_NOT_NULL(result);
     ThreadGroup* tg;
     while (g != NULL) {
-        if ((IThreadGroup*)this->Probe(EIID_IThreadGroup) == g) {
+        if (THIS_PROBE(IThreadGroup) == g) {
             *result = TRUE;
             return NOERROR;
         }
@@ -571,7 +626,7 @@ void ThreadGroup::SetParent(
 {
     if (parent != NULL) {
         ThreadGroup* tg = reinterpret_cast<ThreadGroup*>(parent->Probe(EIID_ThreadGroup));
-        tg->AddThreadGroup((IThreadGroup*)this->Probe(EIID_IThreadGroup));
+        tg->AddThreadGroup(THIS_PROBE(IThreadGroup));
     }
     mParent = parent;
 }

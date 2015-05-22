@@ -53,22 +53,20 @@ CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Elastos.Core.car
+SOURCES += Thread.cpp
+SOURCES += NativeThread.cpp
 SOURCES += Object.cpp
 SOURCES += Singleton.cpp
 SOURCES += CObject.cpp
 
-//SOURCES += Thread.cpp
-//SOURCES += NativeThread.cpp
-//SOURCES += CSystem.cpp
-
-// SOURCES += exportext.cpp
+SOURCES += exportext.cpp
 // SOURCES += listnode.cpp
 // SOURCES += treenode.cpp
 // SOURCES += quicklist.cpp
 // SOURCES += multitreenode.cpp
 // SOURCES += linknode.cpp
 // SOURCES += container.cpp
-// SOURCES += CStringWrapper.cpp
+SOURCES += CStringWrapper.cpp
 // SOURCES += CBoolean.cpp
 // SOURCES += CByte.cpp
 // SOURCES += CChar32.cpp
@@ -81,14 +79,14 @@ SOURCES += CObject.cpp
 // SOURCES += CDouble.cpp
 // SOURCES += CArrayOf.cpp
 // SOURCES += CRandom.cpp
-// SOURCES += Init.cpp
+SOURCES += Init.cpp
 
 // SOURCES += ThreadBase.cpp
-// SOURCES += ThreadGroup.cpp
-// SOURCES += CThread.cpp
-// SOURCES += CThreadGroup.cpp
+SOURCES += ThreadGroup.cpp
+SOURCES += CThread.cpp
+SOURCES += CThreadGroup.cpp
 // SOURCES += CPathClassLoader.cpp
-// SOURCES += Os.cpp
+SOURCES += Os.cpp
 // SOURCES += BlockGuard.cpp
 // SOURCES += CBlockGuard.cpp
 // SOURCES += CCloseGuard.cpp
@@ -96,9 +94,9 @@ SOURCES += CObject.cpp
 // SOURCES += Enum.cpp
 // SOURCES += CSystem.cpp
 
-// VPATH := $(MAKEDIR)/../lib
+VPATH := $(MAKEDIR)/../lib
 
-// SOURCES += Math.cpp
+SOURCES += Math.cpp
 // SOURCES += cbigint.cpp
 // SOURCES += StringUtils.cpp
 // SOURCES += ObjectUtils.cpp
@@ -114,7 +112,7 @@ SOURCES += CObject.cpp
 // SOURCES += CObjectEnumerator.cpp
 // SOURCES += CObjectContainer.cpp
 
-// VPATH += $(MAKEDIR)/../../Math
+VPATH += $(MAKEDIR)/../../Math
 
 // SOURCES += NativeBN.cpp
 // SOURCES += BigInt.cpp

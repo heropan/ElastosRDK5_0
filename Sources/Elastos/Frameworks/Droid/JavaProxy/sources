@@ -4,7 +4,7 @@ TARGET_TYPE= eco
 
 EXPORT_ALL_SYMBOLS=1
 
-CAR_FLAGS += -u
+CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 INCLUDES += $(MAKEDIR)/inc

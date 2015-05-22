@@ -2,16 +2,20 @@
 #ifndef __ELASTOS_CORE_OBJECT_H__
 #define __ELASTOS_CORE_OBJECT_H__
 
-#include <coredef.h>
 #ifdef ELASTOS_CORE
 #include "Elastos.Core_server.h"
+#include "coredef.h"
+#include "NativeThread.h"
 #else
 #include "Elastos.Core.h"
+#include <elastos/coredef.h>
+#include <elastos/core/NativeThread.h>
 #endif
-#include <NativeThread.h>
 
 using Elastos::Core::Threading::ISynchronize;
 using Elastos::Core::Threading::NativeObject;
+
+#define synchronized(obj)   for(Elastos::Core::Object::AutoLock obj##_lock(obj); obj##_lock; obj##_lock.SetUnlock())
 
 namespace Elastos {
 namespace Core {
@@ -27,18 +31,39 @@ public:
     {
     public:
         inline Autolock(
-            /* [in] */ Object& object) : mObject(object)
-        { mObject.Lock(); }
+            /* [in] */ Object& object)
+            : mObject(object)
+            , mLocked(TRUE)
+        {
+            mObject.Lock();
+        }
 
         inline Autolock(
-            /* [in] */ Object* object) : mObject(*object)
-        { mObject.Lock(); }
+            /* [in] */ Object* object)
+            : mObject(*object)
+        {
+            mObject.Lock();
+        }
 
         inline ~Autolock()
-        { mObject.Unlock(); }
+        {
+            mObject.Unlock();
+        }
 
+        // report the state of locking when used as a boolean
+        inline operator Boolean () const
+        {
+            return mLocked;
+        }
+
+        // unlock
+        inline void SetUnlock()
+        {
+            mLocked = FALSE;
+        }
     private:
         Object& mObject;
+        Boolean mLocked;
     };
 
 public:

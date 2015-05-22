@@ -85,14 +85,14 @@ module
     //     interface IClassLoader;
     // }
 
-    // class CStringWrapper {
-    //     constructor(
-    //         [in] String str);
+    class CStringWrapper {
+        constructor(
+            [in] String str);
 
-    //     interface ICharSequence;
-    //     interface IString;
-    //     interface IComparable;
-    // }
+        interface ICharSequence;
+        interface IString;
+        interface IComparable;
+    }
 
     // class CBoolean {
     //     constructor(
@@ -198,238 +198,238 @@ module
     // }
 
     // singleton class CSystem {
-    //     constructor();
+    //      constructor();
 
-    //     interface ISystem;
+    //      interface ISystem;
     // }
 
     } // namespace Core
     } // namepsace Elastos
 
-    // namespace Elastos {
-    // namespace Core {
-    // namespace Threading {
+    namespace Elastos {
+    namespace Core {
+    namespace Threading {
 
-    // class CThread {
-    //      /**
-    //      * Constructs a new {@code Thread} with no {@code Runnable} object and a
-    //      * newly generated name. The new {@code Thread} will belong to the same
-    //      * {@code ThreadGroup} as the {@code Thread} calling this constructor.
-    //      *
-    //      * @see java.lang.ThreadGroup
-    //      * @see java.lang.Runnable
-    //      */
-    //     constructor();
+    class CThread {
+         /**
+         * Constructs a new {@code Thread} with no {@code Runnable} object and a
+         * newly generated name. The new {@code Thread} will belong to the same
+         * {@code ThreadGroup} as the {@code Thread} calling this constructor.
+         *
+         * @see java.lang.ThreadGroup
+         * @see java.lang.Runnable
+         */
+        constructor();
 
-    //     /**
-    //      * Constructs a new {@code Thread} with a {@code Runnable} object and a
-    //      * newly generated name. The new {@code Thread} will belong to the same
-    //      * {@code ThreadGroup} as the {@code Thread} calling this constructor.
-    //      *
-    //      * @param runnable
-    //      *            a {@code Runnable} whose method <code>run</code> will be
-    //      *            executed by the new {@code Thread}
-    //      *
-    //      * @see java.lang.ThreadGroup
-    //      * @see java.lang.Runnable
-    //      */
-    //     constructor(
-    //         [in] IRunnable* runnable);
+        /**
+         * Constructs a new {@code Thread} with a {@code Runnable} object and a
+         * newly generated name. The new {@code Thread} will belong to the same
+         * {@code ThreadGroup} as the {@code Thread} calling this constructor.
+         *
+         * @param runnable
+         *            a {@code Runnable} whose method <code>run</code> will be
+         *            executed by the new {@code Thread}
+         *
+         * @see java.lang.ThreadGroup
+         * @see java.lang.Runnable
+         */
+        constructor(
+            [in] IRunnable* runnable);
 
-    //     /**
-    //      * Constructs a new {@code Thread} with a {@code Runnable} object and name
-    //      * provided. The new {@code Thread} will belong to the same {@code
-    //      * ThreadGroup} as the {@code Thread} calling this constructor.
-    //      *
-    //      * @param runnable
-    //      *            a {@code Runnable} whose method <code>run</code> will be
-    //      *            executed by the new {@code Thread}
-    //      * @param threadName
-    //      *            the name for the {@code Thread} being created
-    //      *
-    //      * @see java.lang.ThreadGroup
-    //      * @see java.lang.Runnable
-    //      */
-    //     constructor(
-    //         [in] IRunnable* runnable,
-    //         [in] String threadName);
+        /**
+         * Constructs a new {@code Thread} with a {@code Runnable} object and name
+         * provided. The new {@code Thread} will belong to the same {@code
+         * ThreadGroup} as the {@code Thread} calling this constructor.
+         *
+         * @param runnable
+         *            a {@code Runnable} whose method <code>run</code> will be
+         *            executed by the new {@code Thread}
+         * @param threadName
+         *            the name for the {@code Thread} being created
+         *
+         * @see java.lang.ThreadGroup
+         * @see java.lang.Runnable
+         */
+        constructor(
+            [in] IRunnable* runnable,
+            [in] String threadName);
 
-    //     /**
-    //      * Constructs a new {@code Thread} with no {@code Runnable} object and the
-    //      * name provided. The new {@code Thread} will belong to the same {@code
-    //      * ThreadGroup} as the {@code Thread} calling this constructor.
-    //      *
-    //      * @param threadName
-    //      *            the name for the {@code Thread} being created
-    //      *
-    //      * @see java.lang.ThreadGroup
-    //      * @see java.lang.Runnable
-    //      *
-    //      */
-    //     constructor(
-    //         [in] String threadName);
+        /**
+         * Constructs a new {@code Thread} with no {@code Runnable} object and the
+         * name provided. The new {@code Thread} will belong to the same {@code
+         * ThreadGroup} as the {@code Thread} calling this constructor.
+         *
+         * @param threadName
+         *            the name for the {@code Thread} being created
+         *
+         * @see java.lang.ThreadGroup
+         * @see java.lang.Runnable
+         *
+         */
+        constructor(
+            [in] String threadName);
 
-    //     /**
-    //      * Constructs a new {@code Thread} with a {@code Runnable} object and a
-    //      * newly generated name. The new {@code Thread} will belong to the {@code
-    //      * ThreadGroup} passed as parameter.
-    //      *
-    //      * @param group
-    //      *            {@code ThreadGroup} to which the new {@code Thread} will
-    //      *            belong
-    //      * @param runnable
-    //      *            a {@code Runnable} whose method <code>run</code> will be
-    //      *            executed by the new {@code Thread}
-    //      * @throws SecurityException
-    //      *             if <code>group.checkAccess()</code> fails with a
-    //      *             SecurityException
-    //      * @throws IllegalThreadStateException
-    //      *             if <code>group.destroy()</code> has already been done
-    //      * @see java.lang.ThreadGroup
-    //      * @see java.lang.Runnable
-    //      * @see java.lang.SecurityException
-    //      * @see java.lang.SecurityManager
-    //      */
-    //     constructor(
-    //         [in] IThreadGroup* group,
-    //         [in] IRunnable* runnable);
+        /**
+         * Constructs a new {@code Thread} with a {@code Runnable} object and a
+         * newly generated name. The new {@code Thread} will belong to the {@code
+         * ThreadGroup} passed as parameter.
+         *
+         * @param group
+         *            {@code ThreadGroup} to which the new {@code Thread} will
+         *            belong
+         * @param runnable
+         *            a {@code Runnable} whose method <code>run</code> will be
+         *            executed by the new {@code Thread}
+         * @throws SecurityException
+         *             if <code>group.checkAccess()</code> fails with a
+         *             SecurityException
+         * @throws IllegalThreadStateException
+         *             if <code>group.destroy()</code> has already been done
+         * @see java.lang.ThreadGroup
+         * @see java.lang.Runnable
+         * @see java.lang.SecurityException
+         * @see java.lang.SecurityManager
+         */
+        constructor(
+            [in] IThreadGroup* group,
+            [in] IRunnable* runnable);
 
-    //     /**
-    //      * Constructs a new {@code Thread} with a {@code Runnable} object, the given
-    //      * name and belonging to the {@code ThreadGroup} passed as parameter.
-    //      *
-    //      * @param group
-    //      *            ThreadGroup to which the new {@code Thread} will belong
-    //      * @param runnable
-    //      *            a {@code Runnable} whose method <code>run</code> will be
-    //      *            executed by the new {@code Thread}
-    //      * @param threadName
-    //      *            the name for the {@code Thread} being created
-    //      * @throws SecurityException
-    //      *             if <code>group.checkAccess()</code> fails with a
-    //      *             SecurityException
-    //      * @throws IllegalThreadStateException
-    //      *             if <code>group.destroy()</code> has already been done
-    //      * @see java.lang.ThreadGroup
-    //      * @see java.lang.Runnable
-    //      * @see java.lang.SecurityException
-    //      * @see java.lang.SecurityManager
-    //      */
-    //     constructor(
-    //         [in] IThreadGroup* group,
-    //         [in] IRunnable* runnable,
-    //         [in] String threadName);
+        /**
+         * Constructs a new {@code Thread} with a {@code Runnable} object, the given
+         * name and belonging to the {@code ThreadGroup} passed as parameter.
+         *
+         * @param group
+         *            ThreadGroup to which the new {@code Thread} will belong
+         * @param runnable
+         *            a {@code Runnable} whose method <code>run</code> will be
+         *            executed by the new {@code Thread}
+         * @param threadName
+         *            the name for the {@code Thread} being created
+         * @throws SecurityException
+         *             if <code>group.checkAccess()</code> fails with a
+         *             SecurityException
+         * @throws IllegalThreadStateException
+         *             if <code>group.destroy()</code> has already been done
+         * @see java.lang.ThreadGroup
+         * @see java.lang.Runnable
+         * @see java.lang.SecurityException
+         * @see java.lang.SecurityManager
+         */
+        constructor(
+            [in] IThreadGroup* group,
+            [in] IRunnable* runnable,
+            [in] String threadName);
 
-    //     /**
-    //      * Constructs a new {@code Thread} with no {@code Runnable} object, the
-    //      * given name and belonging to the {@code ThreadGroup} passed as parameter.
-    //      *
-    //      * @param group
-    //      *            {@code ThreadGroup} to which the new {@code Thread} will belong
-    //      * @param threadName
-    //      *            the name for the {@code Thread} being created
-    //      * @throws SecurityException
-    //      *             if <code>group.checkAccess()</code> fails with a
-    //      *             SecurityException
-    //      * @throws IllegalThreadStateException
-    //      *             if <code>group.destroy()</code> has already been done
-    //      * @see java.lang.ThreadGroup
-    //      * @see java.lang.Runnable
-    //      * @see java.lang.SecurityException
-    //      * @see java.lang.SecurityManager
-    //      */
-    //     constructor(
-    //         [in] IThreadGroup* group,
-    //         [in] String threadName);
+        /**
+         * Constructs a new {@code Thread} with no {@code Runnable} object, the
+         * given name and belonging to the {@code ThreadGroup} passed as parameter.
+         *
+         * @param group
+         *            {@code ThreadGroup} to which the new {@code Thread} will belong
+         * @param threadName
+         *            the name for the {@code Thread} being created
+         * @throws SecurityException
+         *             if <code>group.checkAccess()</code> fails with a
+         *             SecurityException
+         * @throws IllegalThreadStateException
+         *             if <code>group.destroy()</code> has already been done
+         * @see java.lang.ThreadGroup
+         * @see java.lang.Runnable
+         * @see java.lang.SecurityException
+         * @see java.lang.SecurityManager
+         */
+        constructor(
+            [in] IThreadGroup* group,
+            [in] String threadName);
 
-    //     /**
-    //      * Constructs a new {@code Thread} with a {@code Runnable} object, the given
-    //      * name and belonging to the {@code ThreadGroup} passed as parameter.
-    //      *
-    //      * @param group
-    //      *            {@code ThreadGroup} to which the new {@code Thread} will
-    //      *            belong
-    //      * @param runnable
-    //      *            a {@code Runnable} whose method <code>run</code> will be
-    //      *            executed by the new {@code Thread}
-    //      * @param threadName
-    //      *            the name for the {@code Thread} being created
-    //      * @param stackSize
-    //      *            a stack size for the new {@code Thread}. This has a highly
-    //      *            platform-dependent interpretation. It may even be ignored
-    //      *            completely.
-    //      * @throws SecurityException
-    //      *             if <code>group.checkAccess()</code> fails with a
-    //      *             SecurityException
-    //      * @throws IllegalThreadStateException
-    //      *             if <code>group.destroy()</code> has already been done
-    //      * @see java.lang.ThreadGroup
-    //      * @see java.lang.Runnable
-    //      * @see java.lang.SecurityException
-    //      * @see java.lang.SecurityManager
-    //      */
-    //     constructor(
-    //         [in] IThreadGroup* group,
-    //         [in] IRunnable* runnable,
-    //         [in] String threadName,
-    //         [in] Int64 stackSize);
+        /**
+         * Constructs a new {@code Thread} with a {@code Runnable} object, the given
+         * name and belonging to the {@code ThreadGroup} passed as parameter.
+         *
+         * @param group
+         *            {@code ThreadGroup} to which the new {@code Thread} will
+         *            belong
+         * @param runnable
+         *            a {@code Runnable} whose method <code>run</code> will be
+         *            executed by the new {@code Thread}
+         * @param threadName
+         *            the name for the {@code Thread} being created
+         * @param stackSize
+         *            a stack size for the new {@code Thread}. This has a highly
+         *            platform-dependent interpretation. It may even be ignored
+         *            completely.
+         * @throws SecurityException
+         *             if <code>group.checkAccess()</code> fails with a
+         *             SecurityException
+         * @throws IllegalThreadStateException
+         *             if <code>group.destroy()</code> has already been done
+         * @see java.lang.ThreadGroup
+         * @see java.lang.Runnable
+         * @see java.lang.SecurityException
+         * @see java.lang.SecurityManager
+         */
+        constructor(
+            [in] IThreadGroup* group,
+            [in] IRunnable* runnable,
+            [in] String threadName,
+            [in] Int64 stackSize);
 
-    //     /**
-    //      * Package-scope method invoked by Dalvik VM to create "internal"
-    //      * threads or attach threads created externally.
-    //      *
-    //      * Don't call Thread.currentThread(), since there may not be such
-    //      * a thing (e.g. for Main).
-    //      */
-    //     constructor(
-    //         [in] IThreadGroup* group,
-    //         [in] String name,
-    //         [in] Int32 priority,
-    //         [in] Boolean daemon);
+        /**
+         * Package-scope method invoked by Dalvik VM to create "internal"
+         * threads or attach threads created externally.
+         *
+         * Don't call Thread.currentThread(), since there may not be such
+         * a thing (e.g. for Main).
+         */
+        constructor(
+            [in] IThreadGroup* group,
+            [in] String name,
+            [in] Int32 priority,
+            [in] Boolean daemon);
 
-    //     interface IThread;
-    //     interface IRunnable;
-    // }
+        interface IThread;
+        interface IRunnable;
+    }
 
-    // class CThreadGroup {
-    //     /**
-    //      * Constructs a new {@code ThreadGroup} with the given name. The new {@code ThreadGroup}
-    //      * will be child of the {@code ThreadGroup} to which the calling thread belongs.
-    //      *
-    //      * @param name the name
-    //      * @throws SecurityException if {@code checkAccess()} for the parent
-    //      *         group fails with a SecurityException
-    //      * @see java.lang.Thread#currentThread
-    //      */
-    //     constructor(
-    //         [in] String name);
+    class CThreadGroup {
+        /**
+         * Constructs a new {@code ThreadGroup} with the given name. The new {@code ThreadGroup}
+         * will be child of the {@code ThreadGroup} to which the calling thread belongs.
+         *
+         * @param name the name
+         * @throws SecurityException if {@code checkAccess()} for the parent
+         *         group fails with a SecurityException
+         * @see java.lang.Thread#currentThread
+         */
+        constructor(
+            [in] String name);
 
-    //     /**
-    //      * Constructs a new {@code ThreadGroup} with the given name, as a child of the
-    //      * given {@code ThreadGroup}.
-    //      *
-    //      * @param parent the parent
-    //      * @param name the name
-    //      * @throws NullPointerException if {@code parent == null}
-    //      * @throws SecurityException if {@code checkAccess()} for the parent
-    //      *         group fails with a SecurityException
-    //      * @throws IllegalThreadStateException if {@code parent} has been
-    //      *         destroyed already
-    //      */
-    //      constructor(
-    //         [in] IThreadGroup* parent,
-    //         [in] String name);
+        /**
+         * Constructs a new {@code ThreadGroup} with the given name, as a child of the
+         * given {@code ThreadGroup}.
+         *
+         * @param parent the parent
+         * @param name the name
+         * @throws NullPointerException if {@code parent == null}
+         * @throws SecurityException if {@code checkAccess()} for the parent
+         *         group fails with a SecurityException
+         * @throws IllegalThreadStateException if {@code parent} has been
+         *         destroyed already
+         */
+         constructor(
+            [in] IThreadGroup* parent,
+            [in] String name);
 
-    //     /**
-    //      * Initialize the special "system" ThreadGroup. Was "main" in Harmony,
-    //      * but we have an additional group above that in Android.
-    //      */
-    //     constructor();
+        /**
+         * Initialize the special "system" ThreadGroup. Was "main" in Harmony,
+         * but we have an additional group above that in Android.
+         */
+        constructor();
 
-    //     interface IThreadGroup;
-    // }
+        interface IThreadGroup;
+    }
 
-    // } // namespace Threading
-    // } // namespace Core
-    // } // namepsace Elastos
+    } // namespace Threading
+    } // namespace Core
+    } // namepsace Elastos
 }

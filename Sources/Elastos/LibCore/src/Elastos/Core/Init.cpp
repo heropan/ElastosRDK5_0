@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Globals.h"
 #include "NativeThread.h"
 

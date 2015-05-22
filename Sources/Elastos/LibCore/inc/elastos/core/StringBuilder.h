@@ -2,8 +2,15 @@
 #ifndef __STRINGBUILDER_H__
 #define __STRINGBUILDER_H__
 
+#ifdef ELASTOS_CORE
+#include "Elastos.Core_server.h"
+#else
+#include "Elastos.Core.h"
+#endif
 #include <coredef.h>
 #include <AbstractStringBuilder.h>
+
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {

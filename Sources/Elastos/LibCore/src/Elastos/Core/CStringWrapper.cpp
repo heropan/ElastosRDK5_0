@@ -1,12 +1,24 @@
-
-#include "cmdef.h"
 #include "CStringWrapper.h"
 #include "StringBuilder.h"
-#include <elastos/ObjectUtils.h>
 #include <cutils/log.h>
 
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL(CStringWrapper, Object, ICharSequence)
+CAR_OBJECT_IMPL(CStringWrapper)
+
+ECode CStringWrapper::constructor(
+    /* [in] */ const String& str)
+{
+    if (str.IsNull()) {
+        // ALOGW("CStringWrapper: null string when create ICharSequence.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    mString = str;
+    return NOERROR;
+}
 
 ECode CStringWrapper::GetLength(
     /* [out] */ Int32* number)
@@ -66,7 +78,9 @@ ECode CStringWrapper::Equals(
     *result = FALSE;
     VALIDATE_NOT_NULL(obj)
 
-    String str = ObjectUtils::ToString(obj);
+    assert(IObject::Probe(obj) != NULL);
+    String str;
+    IObject::Probe(obj)->ToString(&str);
     *result = mString.Equals(str);
     return NOERROR;
 }
@@ -82,18 +96,6 @@ ECode CStringWrapper::GetHashCode(
         h = 5 * h + *string;
     }
     *hashCode = (Int32)h;
-    return NOERROR;
-}
-
-ECode CStringWrapper::constructor(
-    /* [in] */ const String& str)
-{
-    if (str.IsNull()) {
-        // ALOGW("CStringWrapper: null string when create ICharSequence.");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    mString = str;
     return NOERROR;
 }
 

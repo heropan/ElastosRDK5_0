@@ -7,7 +7,10 @@
 #else
 #include "Elastos.Core.h"
 #endif
-#include <Mutex.h>
+#include "Mutex.h"
+#include "Object.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Core {
@@ -17,17 +20,38 @@ extern "C" const InterfaceID EIID_ThreadGroup;
 
 class ThreadGroup
     : public Object
-    : public IThreadUncaughtExceptionHandler
+    , public IThreadGroup
+    , public IThreadUncaughtExceptionHandler
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Initialize the special "system" ThreadGroup. Was "main" in Harmony,
      * but we have an additional group above that in Android.
      */
     ThreadGroup();
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ const String& name);
+
+    CARAPI constructor(
+        /* [in] */ IThreadGroup* parent,
+        /* [in] */ const String& name);
+
+    /**
+     * The thread is being terminated by an uncaught exception. Further
+     * exceptions thrown in this method are prevent the remainder of the
+     * method from executing, but are otherwise ignored.
+     *
+     * @param thread the thread that has an uncaught exception
+     * @param ex the exception that was thrown
+     */
+    CARAPI UncaughtException(
+        /* [in] */ IThread* thread,
+        /* [in] */ ECode ec);
 
     virtual CARAPI ActiveCount(
         /* [out] */ Int32* number);
@@ -46,22 +70,22 @@ public:
 
     virtual CARAPI Destroy();
 
-    virtual CARAPI EnumerateThread(
+    virtual CARAPI Enumerate(
         /* [out] */ ArrayOf<IThread*>* threads,
         /* [out] */ Int32* number);
 
-    virtual CARAPI EnumerateThreadEx(
-        /* [in] */ Boolean recurse,
+    virtual CARAPI Enumerate(
         /* [out] */ ArrayOf<IThread*>* threads,
-        /* [out] */ Int32* number);
-
-    virtual CARAPI EnumerateThreadGroup(
-        /* [out] */ ArrayOf<IThreadGroup*>* groups,
-        /* [out] */ Int32* number);
-
-    virtual CARAPI EnumerateThreadGroupEx(
         /* [in] */ Boolean recurse,
+        /* [out] */ Int32* number);
+
+    virtual CARAPI Enumerate(
         /* [out] */ ArrayOf<IThreadGroup*>* groups,
+        /* [out] */ Int32* number);
+
+    virtual CARAPI Enumerate(
+        /* [out] */ ArrayOf<IThreadGroup*>* groups,
+        /* [in] */ Boolean recurse,
         /* [out] */ Int32* number);
 
     virtual CARAPI GetMaxPriority(
@@ -139,13 +163,6 @@ public:
     CARAPI RemoveThread(
         /* [in] */ IThread* thread);
     // END android-added
-
-protected:
-    CARAPI Init();
-
-    CARAPI Init(
-        /* [in] */ IThreadGroup* parent,
-        /* [in] */ const String& name);
 
 private:
     /**

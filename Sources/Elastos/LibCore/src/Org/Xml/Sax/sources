@@ -1,14 +1,13 @@
 TARGET_NAME= Org.Xml.Sax
 TARGET_TYPE= eco
 
-INCLUDES += $(MAKEDIR)/../../../../inc/common;
 INCLUDES += ./;
 INCLUDES += $(MAKEDIR)/../../../../inc/Org;
 INCLUDES += $(MAKEDIR)/../../../../inc/Org/Xml/Sax;
 INCLUDES += $(MAKEDIR)/../../../../inc/Org/Xml/Sax/Helpers;
 INCLUDES += $(MAKEDIR)/../../../../inc/Org/Xml/Sax/Ext;
 
-CAR_FLAGS += -u
+CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Org.Xml.Sax.car

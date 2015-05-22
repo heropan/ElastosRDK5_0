@@ -4,12 +4,11 @@ TARGET_TYPE= eco
 C_DEFINES += -DHAVE_SELINUX
 C_DEFINES += -DHAVE_ANDROID_OS
 C_DEFINES += -DHAVE_PRCTL
-CAR_FLAGS += -u
+CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 IMPORTS = Elastos.Core.eco
 
-INCLUDES += $(MAKEDIR)/../../../../inc/common;
 INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/IO;
 INCLUDES += $(MAKEDIR)/../../../../inc/Elastos/Droid/System;
 

@@ -71,8 +71,8 @@ class ThreadGroup;
 
 class Thread
     : public Object
-    , public IRunnable
     , public IThread
+    , public IRunnable
 {
 private:
     /** Park states */
@@ -91,6 +91,182 @@ private:
 
 public:
     CAR_INTERFACE_DECL()
+
+    /**
+     * Constructs a new {@code Thread} with no {@code Runnable} object and a
+     * newly generated name. The new {@code Thread} will belong to the same
+     * {@code ThreadGroup} as the {@code Thread} calling this constructor.
+     *
+     * @see java.lang.ThreadGroup
+     * @see java.lang.Runnable
+     */
+    CARAPI constructor();
+
+    /**
+     * Constructs a new {@code Thread} with a {@code Runnable} object and a
+     * newly generated name. The new {@code Thread} will belong to the same
+     * {@code ThreadGroup} as the {@code Thread} calling this constructor.
+     *
+     * @param runnable
+     *            a {@code Runnable} whose method <code>run</code> will be
+     *            executed by the new {@code Thread}
+     *
+     * @see java.lang.ThreadGroup
+     * @see java.lang.Runnable
+     */
+    CARAPI constructor(
+        /* [in] */ IRunnable* runnable);
+
+    /**
+     * Constructs a new {@code Thread} with a {@code Runnable} object and name
+     * provided. The new {@code Thread} will belong to the same {@code
+     * ThreadGroup} as the {@code Thread} calling this constructor.
+     *
+     * @param runnable
+     *            a {@code Runnable} whose method <code>run</code> will be
+     *            executed by the new {@code Thread}
+     * @param threadName
+     *            the name for the {@code Thread} being created
+     *
+     * @see java.lang.ThreadGroup
+     * @see java.lang.Runnable
+     */
+    CARAPI constructor(
+        /* [in] */ IRunnable* runnable,
+        /* [in] */ const String& threadName);
+
+    /**
+     * Constructs a new {@code Thread} with no {@code Runnable} object and the
+     * name provided. The new {@code Thread} will belong to the same {@code
+     * ThreadGroup} as the {@code Thread} calling this constructor.
+     *
+     * @param threadName
+     *            the name for the {@code Thread} being created
+     *
+     * @see java.lang.ThreadGroup
+     * @see java.lang.Runnable
+     *
+     */
+    CARAPI constructor(
+        /* [in] */ const String& threadName);
+
+    /**
+     * Constructs a new {@code Thread} with a {@code Runnable} object and a
+     * newly generated name. The new {@code Thread} will belong to the {@code
+     * ThreadGroup} passed as parameter.
+     *
+     * @param group
+     *            {@code ThreadGroup} to which the new {@code Thread} will
+     *            belong
+     * @param runnable
+     *            a {@code Runnable} whose method <code>run</code> will be
+     *            executed by the new {@code Thread}
+     * @throws SecurityException
+     *             if <code>group.checkAccess()</code> fails with a
+     *             SecurityException
+     * @throws IllegalThreadStateException
+     *             if <code>group.destroy()</code> has already been done
+     * @see java.lang.ThreadGroup
+     * @see java.lang.Runnable
+     * @see java.lang.SecurityException
+     * @see java.lang.SecurityManager
+     */
+    CARAPI constructor(
+        /* [in] */ IThreadGroup* group,
+        /* [in] */ IRunnable* runnable);
+
+    /**
+     * Constructs a new {@code Thread} with a {@code Runnable} object, the given
+     * name and belonging to the {@code ThreadGroup} passed as parameter.
+     *
+     * @param group
+     *            ThreadGroup to which the new {@code Thread} will belong
+     * @param runnable
+     *            a {@code Runnable} whose method <code>run</code> will be
+     *            executed by the new {@code Thread}
+     * @param threadName
+     *            the name for the {@code Thread} being created
+     * @throws SecurityException
+     *             if <code>group.checkAccess()</code> fails with a
+     *             SecurityException
+     * @throws IllegalThreadStateException
+     *             if <code>group.destroy()</code> has already been done
+     * @see java.lang.ThreadGroup
+     * @see java.lang.Runnable
+     * @see java.lang.SecurityException
+     * @see java.lang.SecurityManager
+     */
+    CARAPI constructor(
+        /* [in] */ IThreadGroup* group,
+        /* [in] */ IRunnable* runnable,
+        /* [in] */ const String& threadName);
+
+    /**
+     * Constructs a new {@code Thread} with no {@code Runnable} object, the
+     * given name and belonging to the {@code ThreadGroup} passed as parameter.
+     *
+     * @param group
+     *            {@code ThreadGroup} to which the new {@code Thread} will belong
+     * @param threadName
+     *            the name for the {@code Thread} being created
+     * @throws SecurityException
+     *             if <code>group.checkAccess()</code> fails with a
+     *             SecurityException
+     * @throws IllegalThreadStateException
+     *             if <code>group.destroy()</code> has already been done
+     * @see java.lang.ThreadGroup
+     * @see java.lang.Runnable
+     * @see java.lang.SecurityException
+     * @see java.lang.SecurityManager
+     */
+    CARAPI constructor(
+        /* [in] */ IThreadGroup* group,
+        /* [in] */ const String& threadName);
+
+    /**
+     * Constructs a new {@code Thread} with a {@code Runnable} object, the given
+     * name and belonging to the {@code ThreadGroup} passed as parameter.
+     *
+     * @param group
+     *            {@code ThreadGroup} to which the new {@code Thread} will
+     *            belong
+     * @param runnable
+     *            a {@code Runnable} whose method <code>run</code> will be
+     *            executed by the new {@code Thread}
+     * @param threadName
+     *            the name for the {@code Thread} being created
+     * @param stackSize
+     *            a stack size for the new {@code Thread}. This has a highly
+     *            platform-dependent interpretation. It may even be ignored
+     *            completely.
+     * @throws SecurityException
+     *             if <code>group.checkAccess()</code> fails with a
+     *             SecurityException
+     * @throws IllegalThreadStateException
+     *             if <code>group.destroy()</code> has already been done
+     * @see java.lang.ThreadGroup
+     * @see java.lang.Runnable
+     * @see java.lang.SecurityException
+     * @see java.lang.SecurityManager
+     */
+    CARAPI constructor(
+        /* [in] */ IThreadGroup* group,
+        /* [in] */ IRunnable* runnable,
+        /* [in] */ const String& threadName,
+        /* [in] */ Int64 stackSize);
+
+    /**
+     * Package-scope method invoked by Dalvik VM to create "internal"
+     * threads or attach threads created externally.
+     *
+     * Don't call Thread.currentThread(), since there may not be such
+     * a thing (e.g. for Main).
+     */
+    CARAPI constructor(
+        /* [in] */ IThreadGroup* group,
+        /* [in] */ const String& name,
+        /* [in] */ Int32 priority,
+        /* [in] */ Boolean daemon);
 
     /**
      * Returns the number of active {@code Thread}s in the running {@code
@@ -713,182 +889,6 @@ protected:
     Thread();
 
     virtual ~Thread();
-
-    /**
-     * Constructs a new {@code Thread} with no {@code Runnable} object and a
-     * newly generated name. The new {@code Thread} will belong to the same
-     * {@code ThreadGroup} as the {@code Thread} calling this constructor.
-     *
-     * @see java.lang.ThreadGroup
-     * @see java.lang.Runnable
-     */
-    CARAPI Init();
-
-    /**
-     * Constructs a new {@code Thread} with a {@code Runnable} object and a
-     * newly generated name. The new {@code Thread} will belong to the same
-     * {@code ThreadGroup} as the {@code Thread} calling this constructor.
-     *
-     * @param runnable
-     *            a {@code Runnable} whose method <code>run</code> will be
-     *            executed by the new {@code Thread}
-     *
-     * @see java.lang.ThreadGroup
-     * @see java.lang.Runnable
-     */
-    CARAPI Init(
-        /* [in] */ IRunnable* runnable);
-
-    /**
-     * Constructs a new {@code Thread} with a {@code Runnable} object and name
-     * provided. The new {@code Thread} will belong to the same {@code
-     * ThreadGroup} as the {@code Thread} calling this constructor.
-     *
-     * @param runnable
-     *            a {@code Runnable} whose method <code>run</code> will be
-     *            executed by the new {@code Thread}
-     * @param threadName
-     *            the name for the {@code Thread} being created
-     *
-     * @see java.lang.ThreadGroup
-     * @see java.lang.Runnable
-     */
-    CARAPI Init(
-        /* [in] */ IRunnable* runnable,
-        /* [in] */ const String& threadName);
-
-    /**
-     * Constructs a new {@code Thread} with no {@code Runnable} object and the
-     * name provided. The new {@code Thread} will belong to the same {@code
-     * ThreadGroup} as the {@code Thread} calling this constructor.
-     *
-     * @param threadName
-     *            the name for the {@code Thread} being created
-     *
-     * @see java.lang.ThreadGroup
-     * @see java.lang.Runnable
-     *
-     */
-    CARAPI Init(
-        /* [in] */ const String& threadName);
-
-    /**
-     * Constructs a new {@code Thread} with a {@code Runnable} object and a
-     * newly generated name. The new {@code Thread} will belong to the {@code
-     * ThreadGroup} passed as parameter.
-     *
-     * @param group
-     *            {@code ThreadGroup} to which the new {@code Thread} will
-     *            belong
-     * @param runnable
-     *            a {@code Runnable} whose method <code>run</code> will be
-     *            executed by the new {@code Thread}
-     * @throws SecurityException
-     *             if <code>group.checkAccess()</code> fails with a
-     *             SecurityException
-     * @throws IllegalThreadStateException
-     *             if <code>group.destroy()</code> has already been done
-     * @see java.lang.ThreadGroup
-     * @see java.lang.Runnable
-     * @see java.lang.SecurityException
-     * @see java.lang.SecurityManager
-     */
-    CARAPI Init(
-        /* [in] */ IThreadGroup* group,
-        /* [in] */ IRunnable* runnable);
-
-    /**
-     * Constructs a new {@code Thread} with a {@code Runnable} object, the given
-     * name and belonging to the {@code ThreadGroup} passed as parameter.
-     *
-     * @param group
-     *            ThreadGroup to which the new {@code Thread} will belong
-     * @param runnable
-     *            a {@code Runnable} whose method <code>run</code> will be
-     *            executed by the new {@code Thread}
-     * @param threadName
-     *            the name for the {@code Thread} being created
-     * @throws SecurityException
-     *             if <code>group.checkAccess()</code> fails with a
-     *             SecurityException
-     * @throws IllegalThreadStateException
-     *             if <code>group.destroy()</code> has already been done
-     * @see java.lang.ThreadGroup
-     * @see java.lang.Runnable
-     * @see java.lang.SecurityException
-     * @see java.lang.SecurityManager
-     */
-    CARAPI Init(
-        /* [in] */ IThreadGroup* group,
-        /* [in] */ IRunnable* runnable,
-        /* [in] */ const String& threadName);
-
-    /**
-     * Constructs a new {@code Thread} with no {@code Runnable} object, the
-     * given name and belonging to the {@code ThreadGroup} passed as parameter.
-     *
-     * @param group
-     *            {@code ThreadGroup} to which the new {@code Thread} will belong
-     * @param threadName
-     *            the name for the {@code Thread} being created
-     * @throws SecurityException
-     *             if <code>group.checkAccess()</code> fails with a
-     *             SecurityException
-     * @throws IllegalThreadStateException
-     *             if <code>group.destroy()</code> has already been done
-     * @see java.lang.ThreadGroup
-     * @see java.lang.Runnable
-     * @see java.lang.SecurityException
-     * @see java.lang.SecurityManager
-     */
-    CARAPI Init(
-        /* [in] */ IThreadGroup* group,
-        /* [in] */ const String& threadName);
-
-    /**
-     * Constructs a new {@code Thread} with a {@code Runnable} object, the given
-     * name and belonging to the {@code ThreadGroup} passed as parameter.
-     *
-     * @param group
-     *            {@code ThreadGroup} to which the new {@code Thread} will
-     *            belong
-     * @param runnable
-     *            a {@code Runnable} whose method <code>run</code> will be
-     *            executed by the new {@code Thread}
-     * @param threadName
-     *            the name for the {@code Thread} being created
-     * @param stackSize
-     *            a stack size for the new {@code Thread}. This has a highly
-     *            platform-dependent interpretation. It may even be ignored
-     *            completely.
-     * @throws SecurityException
-     *             if <code>group.checkAccess()</code> fails with a
-     *             SecurityException
-     * @throws IllegalThreadStateException
-     *             if <code>group.destroy()</code> has already been done
-     * @see java.lang.ThreadGroup
-     * @see java.lang.Runnable
-     * @see java.lang.SecurityException
-     * @see java.lang.SecurityManager
-     */
-    CARAPI Init(
-        /* [in] */ IThreadGroup* group,
-        /* [in] */ IRunnable* runnable,
-        /* [in] */ const String& threadName,
-        /* [in] */ Int64 stackSize);
-
-    /**
-     * Package-scope method invoked by Dalvik VM to create "internal"
-     * threads or attach threads created externally.
-     *
-     * Don't call Thread.currentThread(), since there may not be such
-     * a thing (e.g. for Main).
-     */
-    CARAPI Init(
-        /* [in] */ IThreadGroup* group,
-        /* [in] */ const String& name,
-        /* [in] */ Int32 priority,
-        /* [in] */ Boolean daemon);
 
 private:
     /**

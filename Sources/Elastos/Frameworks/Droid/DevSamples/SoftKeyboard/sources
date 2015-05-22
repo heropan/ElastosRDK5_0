@@ -6,7 +6,7 @@ include $(MAKEDIR)/../../sources.inc
 IMPORTS = Elastos.Droid.Core.eco
 IMPORTS += Elastos.Core.eco
 
-CAR_FLAGS += -u
+CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES = SoftKeyboard.car

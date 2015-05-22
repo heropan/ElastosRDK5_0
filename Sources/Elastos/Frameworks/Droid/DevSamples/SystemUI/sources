@@ -4,7 +4,7 @@ EXPORT_ALL_SYMBOLS = 1
 
 include $(MAKEDIR)/../../sources.inc
 
-CAR_FLAGS += -u
+CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 IMPORTS = Elastos.Droid.Core.eco

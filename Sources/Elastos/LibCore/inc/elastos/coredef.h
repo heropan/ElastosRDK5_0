@@ -128,6 +128,47 @@
     }
 #endif
 
+#ifndef CAR_INTERFACE_IMPL_WITH_CPP_CAST
+#define CAR_INTERFACE_IMPL_WITH_CPP_CAST(ClassName, SupperClassName, InterfaceName)       \
+    UInt32 ClassName::AddRef()                             \
+    {                                                      \
+        return ElRefBase::AddRef();                        \
+    }                                                      \
+                                                           \
+    UInt32 ClassName::Release()                            \
+    {                                                      \
+        return ElRefBase::Release();                       \
+    }                                                      \
+                                                           \
+    PInterface ClassName::Probe(                           \
+        /* [in] */ REIID riid)                             \
+    {                                                      \
+        if (riid == EIID_IInterface) {                     \
+            return (IInterface*)(InterfaceName*)this;      \
+        }                                                  \
+        else if (riid == EIID_##InterfaceName) {           \
+            return (InterfaceName*)this;                   \
+        }                                                  \
+        else if (riid == EIID_##ClassName) {               \
+            return reinterpret_cast<PInterface>((ClassName*)this); \
+        }                                                  \
+        return SupperClassName::Probe(riid);               \
+    }                                                      \
+                                                           \
+    ECode ClassName::GetInterfaceID(                       \
+        /* [in] */ IInterface* object,                     \
+        /* [out] */ InterfaceID* iid)                      \
+    {                                                      \
+        VALIDATE_NOT_NULL(iid);                            \
+                                                           \
+        if (object == (IInterface*)(InterfaceName*)this) { \
+            *iid = EIID_##InterfaceName;                   \
+            return NOERROR;                                \
+        }                                                  \
+        return SupperClassName::GetInterfaceID(object, iid); \
+    }
+#endif
+
 #ifndef CAR_INTERFACE_IMPL_LIGHT
 #define CAR_INTERFACE_IMPL_LIGHT(ClassName, SupperClassName, InterfaceName) \
     UInt32 ClassName::AddRef()                             \
@@ -189,6 +230,55 @@
         }                                                       \
         else if (riid == EIID_##Interface2) {                   \
             return (Interface2*)this;                           \
+        }                                                       \
+        return SupperClassName::Probe(riid);                    \
+    }                                                           \
+                                                                \
+    ECode ClassName::GetInterfaceID(                            \
+        /* [in] */ IInterface* object,                          \
+        /* [out] */ InterfaceID* iid)                           \
+    {                                                           \
+        VALIDATE_NOT_NULL(iid);                                 \
+                                                                \
+        if (object == (IInterface*)(Interface1*)this) {         \
+            *iid = EIID_##Interface1;                           \
+        }                                                       \
+        else if (object == (IInterface*)(Interface2*)this) {    \
+            *iid = EIID_##Interface2;                           \
+        }                                                       \
+        else {                                                  \
+            return SupperClassName::GetInterfaceID(object, iid); \
+        }                                                       \
+        return NOERROR;                                         \
+    }
+#endif
+
+#ifndef CAR_INTERFACE_IMPL_WITH_CPP_CAST_2
+#define CAR_INTERFACE_IMPL_WITH_CPP_CAST_2(ClassName, SupperClassName, Interface1, Interface2) \
+    UInt32 ClassName::AddRef()                                  \
+    {                                                           \
+        return ElRefBase::AddRef();                             \
+    }                                                           \
+                                                                \
+    UInt32 ClassName::Release()                                 \
+    {                                                           \
+        return ElRefBase::Release();                            \
+    }                                                           \
+                                                                \
+    PInterface ClassName::Probe(                                \
+        /* [in] */ REIID riid)                                  \
+    {                                                           \
+        if (riid == EIID_IInterface) {                          \
+            return (IInterface*)(Interface1*)this;              \
+        }                                                       \
+        else if (riid == EIID_##Interface1) {                   \
+            return (Interface1*)this;                           \
+        }                                                       \
+        else if (riid == EIID_##Interface2) {                   \
+            return (Interface2*)this;                           \
+        }                                                       \
+        else if (riid == EIID_##ClassName) {                    \
+            return reinterpret_cast<PInterface>((ClassName*)this); \
         }                                                       \
         return SupperClassName::Probe(riid);                    \
     }                                                           \

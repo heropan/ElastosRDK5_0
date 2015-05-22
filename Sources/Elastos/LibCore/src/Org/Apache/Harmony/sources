@@ -2,7 +2,7 @@
 TARGET_NAME= Org.Apache.Harmony
 TARGET_TYPE= eco
 
-CAR_FLAGS += -u
+CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 INCLUDES += $(MAKEDIR)/../../../../inc/common
