@@ -2,9 +2,9 @@
 #ifndef __CTABLERESULT_H__
 #define __CTABLERESULT_H__
 
-#include "_CTableResult.h"
+#include "_Elastos_Sql_SQLite_CTableResult.h"
 #include "TableResult.h"
-#include "cmdef.h"
+#include "coredef.h"
 #include <elstring.h>
 
 namespace Elastos {
@@ -33,7 +33,6 @@ public:
         /* [in] */ Int32 maxrows);
 
     CARAPI Clear();
-
 };
 
 } // namespace SQLite

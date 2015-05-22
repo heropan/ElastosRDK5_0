@@ -20,8 +20,6 @@ public:
 
     CDatabaseX();
 
-    CARAPI constructor();
-
     CARAPI Exec(
         /* [in] */ const String& sql,
         /* [in] */ ICallback * cb);
@@ -45,7 +43,7 @@ protected:
     CARAPI_(void) Wait(Int32 ms);
 
 private:
-    static AutoPtr<IObject> mLock;
+    static AutoPtr<ISynchronize> mLock;
 };
 
 } // namespace JDBC
