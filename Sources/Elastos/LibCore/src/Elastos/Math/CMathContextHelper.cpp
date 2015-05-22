@@ -6,12 +6,14 @@
 namespace Elastos {
 namespace Math {
 
+CAR_SINGLETON_IMPL(CMathContextHelper, Singleton, IMathContextHelper)
+
 ECode CMathContextHelper::GetDECIMAL32(
     /* [out] */ IMathContext** context)
 {
     VALIDATE_NOT_NULL(context);
     *context = CMathContext::DECIMAL32;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -20,7 +22,7 @@ ECode CMathContextHelper::GetDECIMAL64(
 {
     VALIDATE_NOT_NULL(context);
     *context = CMathContext::DECIMAL64;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -29,7 +31,7 @@ ECode CMathContextHelper::GetDECIMAL128(
 {
     VALIDATE_NOT_NULL(context);
     *context = CMathContext::DECIMAL128;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -38,7 +40,7 @@ ECode CMathContextHelper::GetUNLIMITED(
 {
     VALIDATE_NOT_NULL(context);
     *context = CMathContext::UNLIMITED;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 

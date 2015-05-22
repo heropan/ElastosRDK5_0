@@ -1,14 +1,19 @@
 #ifndef __MATH_CMATHCONTEXT_H__
 #define __MATH_CMATHCONTEXT_H__
 
-#include "_CMathContext.h"
+#include "__Elastos_Math__CMathContext.h"
+#include "Object.h"
 
 namespace Elastos {
 namespace Math {
 
 CarClass(CMathContext)
+    : public Object
+    , public IMathContext
 {
 public:
+    CAR_OBJECT_DECL()
+
     /**
      * Constructs a new {@code MathContext} with the specified precision and
      * with the rounding mode {@link RoundingMode#HALF_UP HALF_UP}. If the

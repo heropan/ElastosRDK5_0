@@ -1,14 +1,19 @@
 #ifndef __MATH_CBIGDECIMALHELPER_H__
 #define __MATH_CBIGDECIMALHELPER_H__
 
-#include "_CBigDecimalHelper.h"
+#include "__Elastos_Math__CBigDecimalHelper.h"
+#include "Singleton.h"
 
 namespace Elastos {
 namespace Math {
 
 CarClass(CBigDecimalHelper)
+    : public Singleton
+    , public IBigDecimalHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+
     /**
      * Returns a new {@code BigDecimal} instance whose value is equal to {@code
      * unscaledVal} 10^(-{@code scale}). The scale of the result is {@code
@@ -36,7 +41,7 @@ public:
      *            value to be converted to a {@code BigDecimal}.
      * @return {@code BigDecimal} instance with the value {@code unscaledVal}.
      */
-    CARAPI ValueOfEx(
+    CARAPI ValueOf(
         /* [in] */ Int64 unscaledVal,
         /* [out] */ IBigDecimal** result);
 
@@ -58,7 +63,7 @@ public:
      * @throws NumberFormatException
      *             if {@code val} is infinite or {@code val} is not a number
      */
-    CARAPI ValueOfEx2(
+    CARAPI ValueOf(
         /* [in] */ Double val,
         /* [out] */ IBigDecimal** result);
 

@@ -3,11 +3,13 @@
 
 #include <elastos.h>
 #include <CBigInteger.h>
+#include "Object.h"
 
 namespace Elastos {
 namespace Math {
 
-class Multiplication {
+class Multiplication : public Object
+{
 
 public:
     /**

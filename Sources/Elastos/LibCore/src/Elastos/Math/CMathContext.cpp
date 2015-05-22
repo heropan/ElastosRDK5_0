@@ -17,6 +17,8 @@ const AutoPtr<IMathContext> CMathContext::DECIMAL32 = CreateMathContext(7, Round
 const AutoPtr<IMathContext> CMathContext::DECIMAL64 = CreateMathContext(16, RoundingMode_HALF_EVEN);
 const AutoPtr<IMathContext> CMathContext::UNLIMITED = CreateMathContext(0, RoundingMode_HALF_UP);
 
+CAR_OBJECT_IMPL(CMathContext)
+
 ECode CMathContext::constructor(
     /* [in] */ Int32 precision)
 {

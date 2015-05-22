@@ -128,12 +128,12 @@ ECode BitLevel::ShiftRight(
     if (intCount >= source->mNumberLength) {
         if (source->mSign < 0) {
             *result = CBigInteger::MINUS_ONE;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
         else {
             *result = CBigInteger::ZERO;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }

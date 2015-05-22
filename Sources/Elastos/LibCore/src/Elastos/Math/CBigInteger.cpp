@@ -38,6 +38,10 @@ CBigInteger::CBigInteger()
 {
 }
 
+CAR_OBJECT_IMPL(CBigInteger)
+
+CAR_INTERFACE_IMPL_WITH_CPP_CAST_3(CBigInteger, Object, IBigInteger, INumber, IComparable)
+
 ECode CBigInteger::constructor()
 {
     return NOERROR;
@@ -236,33 +240,33 @@ ECode CBigInteger::ValueOf(
             AutoPtr<CBigInteger> bi;
             ECode ec = CBigInteger::NewByFriend(-1, -value, (CBigInteger**)&bi);
             *result = (IBigInteger*)bi.Get();
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return ec;
         }
         *result = MINUS_ONE;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else if (value == 0) {
         *result = ZERO;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else if (value == 1) {
         *result = ONE;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else if (value == 10) {
         *result = TEN;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else {
         AutoPtr<CBigInteger> bi;
         ECode ec = CBigInteger::NewByFriend(1, value, (CBigInteger**)&bi);
         *result = (IBigInteger*)bi.Get();
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return ec;
     }
 }
@@ -281,7 +285,7 @@ ECode CBigInteger::NewFromBigInt(
     CBigInteger::NewByFriend((CBigInteger**)&obj);
     obj->SetBigInt(bigInt);
     *result = (IBigInteger*)obj;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -292,7 +296,7 @@ ECode CBigInteger::Abs(
     AutoPtr<BigInt> bigInt = GetBigInt();
     if (bigInt->Sign() >= 0) {
         *result = (IBigInteger*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -311,7 +315,7 @@ ECode CBigInteger::Negate(
     Int32 sign = bigInt->Sign();
     if (sign == 0) {
         *result = (IBigInteger*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -332,12 +336,12 @@ ECode CBigInteger::Add(
     AutoPtr<BigInt> rhs = ((CBigInteger*)value)->GetBigInt();
     if (rhs->Sign() == 0) {
         *result = (IBigInteger*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     if (lhs->Sign() == 0) {
         *result = (IBigInteger*)value;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -357,7 +361,7 @@ ECode CBigInteger::Subtract(
     AutoPtr<BigInt> rhs = ((CBigInteger*)value)->GetBigInt();
     if (rhs->Sign() == 0) {
         *result = (IBigInteger*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -395,7 +399,7 @@ ECode CBigInteger::ShiftLeft(
 
     if (n == 0) {
         *result = (IBigInteger*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -403,7 +407,7 @@ ECode CBigInteger::ShiftLeft(
     GetSignum(&sign);
     if (sign == 0) {
         *result = (IBigInteger*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -431,7 +435,7 @@ ECode CBigInteger::ShiftLeftOneBit(
     GetSignum(&signum);
     if (signum == 0) {
         *result = (IBigInteger*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else {
@@ -522,7 +526,7 @@ ECode CBigInteger::SetBit(
     }
     else {
         *result = (IBigInteger*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
 
     return NOERROR;
@@ -541,7 +545,7 @@ ECode CBigInteger::ClearBit(
     }
     else {
         *result = (IBigInteger*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
 
     return NOERROR;
@@ -599,7 +603,7 @@ ECode CBigInteger::Not(
 
     AutoPtr<IBigInteger> tmp = Logical::Not(this);
     *result = tmp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -616,7 +620,7 @@ ECode CBigInteger::And(
 
     AutoPtr<IBigInteger> tmp = Logical::And(this, cValue);
     *result = tmp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -633,7 +637,7 @@ ECode CBigInteger::Or(
 
     AutoPtr<IBigInteger> tmp = Logical::Or(this, cValue);
     *result = tmp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -650,7 +654,7 @@ ECode CBigInteger::Xor(
 
     AutoPtr<IBigInteger> tmp = Logical::Xor(this, cValue);
     *result = tmp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -667,7 +671,7 @@ ECode CBigInteger::AndNot(
 
     AutoPtr<IBigInteger> tmp = Logical::AndNot(this, cValue);
     *result = tmp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -726,11 +730,11 @@ ECode CBigInteger::Min(
     CompareTo(value, &cmpResult);
     if (cmpResult == -1) {
         *result = (IBigInteger*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
     else {
         *result = value;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
 
     return NOERROR;
@@ -747,11 +751,11 @@ ECode CBigInteger::Max(
     CompareTo(value, &cmpResult);
     if (cmpResult == 1) {
         *result = (IBigInteger*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
     else {
         *result = value;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
 
     return NOERROR;
@@ -816,7 +820,7 @@ ECode CBigInteger::DivideAndRemainder(
     NewFromBigInt(quotient, &qbi);
     NewFromBigInt(remainder, &ebi);
     *bigIntegerArray = ArrayOf<IBigInteger*>::Alloc(2);
-    INTERFACE_ADDREF(*bigIntegerArray);
+    REFCOUNT_ADD(*bigIntegerArray);
     (**bigIntegerArray).Set(0, qbi);
     (**bigIntegerArray).Set(1, ebi);
 
@@ -967,7 +971,7 @@ ECode CBigInteger::TwosComplement(
     PrepareJavaRepresentation();
     if (mSign == 0) {
         *bytes = ArrayOf<Byte>::Alloc(1);
-        INTERFACE_ADDREF(*bytes);
+        REFCOUNT_ADD(*bytes);
         (**bytes)[0] = 0;
         return NOERROR;
     }
@@ -1147,7 +1151,7 @@ ECode CBigInteger::ToString(
     return NOERROR;
 }
 
-ECode CBigInteger::ToStringEx(
+ECode CBigInteger::ToString(
     /* [in] */ Int32 radix,
     /* [out] */ String* string)
 {

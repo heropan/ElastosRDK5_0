@@ -3,13 +3,14 @@
 
 #include <elastos.h>
 #include <elquintet.h>
+#include "Object.h"
 
 // see java_math_NativeBN.cpp
 //
 namespace Elastos {
 namespace Math {
 
-class NativeBN
+class NativeBN : public Object
 {
 public:
     static Int32 ERR_get_error();
@@ -67,7 +68,7 @@ public:
     static String BN_bn2dec(
         /* [in] */ Int32 a);
 
-    static String BN_bn2hex(
+    static String BN_bn2h(
         /* [in] */ Int32 a);
 
     static AutoPtr<ArrayOf<Byte> > BN_bn2bin(
@@ -172,7 +173,7 @@ public:
         /* [in] */ Int32 a,
         /* [in] */ Int32 n);
 
-    static Boolean BN_generate_prime_ex(
+    static Boolean BN_generate_prime_(
         /* [in] */ Int32 ret,
         /* [in] */ Int32 bits,
         /* [in] */ Boolean safe,
@@ -180,7 +181,7 @@ public:
         /* [in] */ Int32 rem,
         /* [in] */ Int32 cb);
 
-    static Boolean BN_is_prime_ex(
+    static Boolean BN_is_prime_(
         /* [in] */ Int32 p,
         /* [in] */ Int32 nchecks,
         /* [in] */ Int32 cb);

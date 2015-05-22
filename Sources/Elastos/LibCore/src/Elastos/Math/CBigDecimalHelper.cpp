@@ -6,6 +6,8 @@
 namespace Elastos {
 namespace Math {
 
+CAR_SINGLETON_IMPL(CBigDecimalHelper, Singleton, IBigDecimalHelper)
+
 ECode CBigDecimalHelper::ValueOf(
     /* [in] */ Int64 unscaledVal,
     /* [in] */ Int32 scale,
@@ -15,7 +17,7 @@ ECode CBigDecimalHelper::ValueOf(
     return CBigDecimal::ValueOf(unscaledVal, scale, result);
 }
 
-ECode CBigDecimalHelper::ValueOfEx(
+ECode CBigDecimalHelper::ValueOf(
     /* [in] */ Int64 unscaledVal,
     /* [out] */ IBigDecimal** result)
 {
@@ -23,7 +25,7 @@ ECode CBigDecimalHelper::ValueOfEx(
     return CBigDecimal::ValueOf(unscaledVal, result);
 }
 
-ECode CBigDecimalHelper::ValueOfEx2(
+ECode CBigDecimalHelper::ValueOf(
     /* [in] */ Double val,
     /* [out] */ IBigDecimal** result)
 {
@@ -36,7 +38,7 @@ ECode CBigDecimalHelper::GetZERO(
 {
     VALIDATE_NOT_NULL(result);
     *result = CBigDecimal::ZERO;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -45,7 +47,7 @@ ECode CBigDecimalHelper::GetONE(
 {
     VALIDATE_NOT_NULL(result);
     *result = CBigDecimal::ONE;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -54,7 +56,7 @@ ECode CBigDecimalHelper::GetTEN(
 {
     VALIDATE_NOT_NULL(result);
     *result = CBigDecimal::TEN;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

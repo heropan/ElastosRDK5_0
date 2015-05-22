@@ -50,7 +50,7 @@ ECode Primality::NextProbablePrime(
             for (i = 0; l >= Primes[i]; i++) {}
 
             *result = (*BIprimes)[i];
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }

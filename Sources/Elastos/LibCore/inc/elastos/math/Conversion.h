@@ -4,11 +4,12 @@
 #include <elastos.h>
 #include <CBigInteger.h>
 #include <elquintet.h>
+#include "Object.h"
 
 namespace Elastos {
 namespace Math {
 
-class Conversion
+class Conversion : public Object
 {
 public:
 

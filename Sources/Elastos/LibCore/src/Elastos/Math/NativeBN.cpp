@@ -218,12 +218,12 @@ String NativeBN::BN_bn2dec(Int32 ah)
     return String();
 }
 
-String NativeBN::BN_bn2hex(Int32 ah)
+String NativeBN::BN_bn2h(Int32 ah)
 {
     BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
     char* tmpStr;
     char* retStr;
-    tmpStr = ::BN_bn2hex(a);
+    tmpStr = ::BN_bn2h(a);
     if (tmpStr != NULL) {
         retStr = leadingZerosTrimmed(tmpStr);
         String returnJString(retStr);
@@ -444,21 +444,21 @@ Boolean NativeBN::BN_mod_inverse(Int32 reth, Int32 ah, Int32 nh)
     return (::BN_mod_inverse(ret, a, n, ctx.get()) != NULL);
 }
 
-Boolean NativeBN::BN_generate_prime_ex(
+Boolean NativeBN::BN_generate_prime_(
             Int32 reth, Int32 bits, Boolean safe,
             Int32 addh, Int32 remh, Int32 cb)
 {
     BIGNUM* ret = reinterpret_cast<BIGNUM*>(reth);
     BIGNUM* add = reinterpret_cast<BIGNUM*>(addh);
     BIGNUM* rem = reinterpret_cast<BIGNUM*>(remh);
-    return ::BN_generate_prime_ex(ret, bits, safe, add, rem, reinterpret_cast<BN_GENCB*>(cb));
+    return ::BN_generate_prime_(ret, bits, safe, add, rem, reinterpret_cast<BN_GENCB*>(cb));
 }
 
-Boolean NativeBN::BN_is_prime_ex(Int32 ph, Int32 nchecks, Int32 cb)
+Boolean NativeBN::BN_is_prime_(Int32 ph, Int32 nchecks, Int32 cb)
 {
     BIGNUM* p = reinterpret_cast<BIGNUM*>(ph);
     Unique_BN_CTX ctx(BN_CTX_new());
-    return ::BN_is_prime_ex(p, nchecks, ctx.get(), reinterpret_cast<BN_GENCB*>(cb));
+    return ::BN_is_prime_(p, nchecks, ctx.get(), reinterpret_cast<BN_GENCB*>(cb));
 }
 
 #define BYTES2INT(bytes, k) \

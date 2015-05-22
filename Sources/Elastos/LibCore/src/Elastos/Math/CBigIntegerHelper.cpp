@@ -6,6 +6,8 @@
 namespace Elastos {
 namespace Math {
 
+CAR_SINGLETON_IMPL(CBigIntegerHelper, Singleton, IBigIntegerHelper)
+
 ECode CBigIntegerHelper::ValueOf(
     /* [in] */ Int64 value,
     /* [out] */ IBigInteger** result)
@@ -19,7 +21,7 @@ ECode CBigIntegerHelper::GetMINUSOne(
 {
     VALIDATE_NOT_NULL(result);
     *result = CBigInteger::MINUS_ONE;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -28,7 +30,7 @@ ECode CBigIntegerHelper::GetZERO(
 {
     VALIDATE_NOT_NULL(result);
     *result = CBigInteger::ZERO;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -37,7 +39,7 @@ ECode CBigIntegerHelper::GetONE(
 {
     VALIDATE_NOT_NULL(result);
     *result = CBigInteger::ONE;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -46,7 +48,7 @@ ECode CBigIntegerHelper::GetTEN(
 {
     VALIDATE_NOT_NULL(result);
     *result = CBigInteger::TEN;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

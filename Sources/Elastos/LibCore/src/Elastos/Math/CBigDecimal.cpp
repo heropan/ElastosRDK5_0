@@ -107,6 +107,10 @@ Boolean CBigDecimal::InitStatic()
     return mIsStaticInited;
 }
 
+CAR_OBJECT_IMPL(CBigDecimal)
+
+CAR_INTERFACE_IMPL_WITH_CPP_CAST_3(CBigDecimal, Object, IBigDecimal, INumber, IComparable)
+
 CBigDecimal::CBigDecimal()
     : mBitLength(0)
     , mSmallValue(0)
@@ -267,7 +271,7 @@ ECode CBigDecimal::constructor(
         }
     }
 
-    unscaledBuffer.AppendCharsEx(in, begin, offset - begin);
+    unscaledBuffer.AppendChars(in, begin, offset - begin);
     temp = unscaledBuffer.ToString();
 
     bufLength += offset - begin;
@@ -289,7 +293,7 @@ ECode CBigDecimal::constructor(
         }
         mScale = offset - begin;
         bufLength += mScale;
-        unscaledBuffer.AppendCharsEx(in, begin, mScale);
+        unscaledBuffer.AppendChars(in, begin, mScale);
         temp = unscaledBuffer.ToString();
     } else {
         mScale = 0;
@@ -308,7 +312,7 @@ ECode CBigDecimal::constructor(
         // Accumulating all remaining digits
         StringBuilder inSB(in.GetLength());
         inSB.AppendChars(in);
-        inSB.SubstringEx(begin, last + 1 - begin, &scaleString);
+        inSB.Substring(begin, last + 1 - begin, &scaleString);
 
         // Checking if the scale is defined
         newScale = (Int64)mScale - StringUtils::ParseInt32(scaleString);
@@ -444,7 +448,7 @@ ECode CBigDecimal::ValueOf(
     if ((unscaledVal == 0) && (scale >= 0)
             && (scale < BiScaledByZeroLength)) {
         *result = (*ZeroScaledBy)[scale];
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -459,7 +463,7 @@ ECode CBigDecimal::ValueOf(
 
     if ((unscaledVal >= 0) && (unscaledVal < BiScaledByZeroLength)) {
         *result = (*BiScaledByZero)[unscaledVal];
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -497,18 +501,18 @@ ECode CBigDecimal::Add(
     if (this->IsZero()) {
         if (diffScale <= 0) {
             *result = iaugend;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
         if (augend->IsZero()) {
             *result = (IBigDecimal*)this;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     } else if (augend->IsZero()) {
         if (diffScale >= 0) {
             *result = (IBigDecimal*)this;
-             INTERFACE_ADDREF(*result);
+             REFCOUNT_ADD(*result);
              return NOERROR;
         }
     }
@@ -566,7 +570,7 @@ ECode CBigDecimal::AddAndMult10(
     }
 }
 
-ECode CBigDecimal::AddEx(
+ECode CBigDecimal::Add(
     /* [in] */ IBigDecimal* iaugend,
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
@@ -661,14 +665,14 @@ ECode CBigDecimal::Subtract(
         }
         if (subtrahend->IsZero()) {
             *result = (IBigDecimal*)this;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }
     else if (subtrahend->IsZero()) {
         if (diffScale >= 0) {
             *result = (IBigDecimal*)this;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }
@@ -719,7 +723,7 @@ ECode CBigDecimal::Subtract(
     }
 }
 
-ECode CBigDecimal::SubtractEx(
+ECode CBigDecimal::Subtract(
     /* [in] */ IBigDecimal* isubtrahend,
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
@@ -817,7 +821,7 @@ ECode CBigDecimal::Multiply(
     return NOERROR;
 }
 
-ECode CBigDecimal::MultiplyEx(
+ECode CBigDecimal::Multiply(
     /* [in] */ IBigDecimal* multiplicand,
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
@@ -1012,7 +1016,7 @@ ECode CBigDecimal::DividePrimitiveLongs(
     return ValueOf(quotient, scale, result);
 }
 
-ECode CBigDecimal::DivideEx(
+ECode CBigDecimal::Divide(
     /* [in] */ IBigDecimal* divisor,
     /* [in] */ RoundingMode roundingMode,
     /* [out] */ IBigDecimal** result)
@@ -1023,7 +1027,7 @@ ECode CBigDecimal::DivideEx(
     return Divide(divisor, mScale, roundingMode, result);
 }
 
-ECode CBigDecimal::DivideEx2(
+ECode CBigDecimal::Divide(
     /* [in] */ IBigDecimal* idivisor,
     /* [out] */ IBigDecimal** result)
 {
@@ -1132,7 +1136,7 @@ ECode CBigDecimal::DivideEx2(
     return CBigDecimal::New(p, newScale, result);
 }
 
-ECode CBigDecimal::DivideEx3(
+ECode CBigDecimal::Divide(
     /* [in] */ IBigDecimal* idivisor,
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
@@ -1149,7 +1153,7 @@ ECode CBigDecimal::DivideEx3(
 
     CBigDecimal* divisor = (CBigDecimal*)idivisor;
     if ((mcPrecision == 0) || IsZero() || (divisor->IsZero())) {
-        return DivideEx2(idivisor, result);
+        return Divide(idivisor, result);
     }
 
     /* Calculating how many zeros must be append to 'dividend'
@@ -1320,7 +1324,7 @@ ECode CBigDecimal::DivideToIntegralValue(
     }
 }
 
-ECode CBigDecimal::DivideToIntegralValueEx(
+ECode CBigDecimal::DivideToIntegralValue(
     /* [in] */ IBigDecimal* idivisor,
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
@@ -1474,7 +1478,7 @@ ECode CBigDecimal::DivideToIntegralValueEx(
     bd->mScale = iScale;
     bd->SetUnscaledValue(strippedBI);
     *result = integralValue;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1491,11 +1495,11 @@ ECode CBigDecimal::Remainder(
     FAIL_RETURN(DivideAndRemainder(divisor, (ArrayOf<IBigDecimal*>**)&quotAndRem));
 
     *result = (*quotAndRem)[1];
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-ECode CBigDecimal::RemainderEx(
+ECode CBigDecimal::Remainder(
     /* [in] */ IBigDecimal* divisor,
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
@@ -1507,10 +1511,10 @@ ECode CBigDecimal::RemainderEx(
     *result = NULL;
 
     AutoPtr<ArrayOf<IBigDecimal*> > quotAndRem;
-    FAIL_RETURN(DivideAndRemainderEx(divisor, mc, (ArrayOf<IBigDecimal*>**)&quotAndRem));
+    FAIL_RETURN(DivideAndRemainder(divisor, mc, (ArrayOf<IBigDecimal*>**)&quotAndRem));
 
     *result = (*quotAndRem)[1];
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1535,11 +1539,11 @@ ECode CBigDecimal::DivideAndRemainder(
     FAIL_RETURN(Subtract(mBD, (IBigDecimal**)&tmp));
     array->Set(1, tmp);
     *result = array;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
-ECode CBigDecimal::DivideAndRemainderEx(
+ECode CBigDecimal::DivideAndRemainder(
     /* [in] */ IBigDecimal* divisor,
     /* [in] */ IMathContext* mc,
     /* [out, callee] */ ArrayOf<IBigDecimal*>** result)
@@ -1551,7 +1555,7 @@ ECode CBigDecimal::DivideAndRemainderEx(
 
     AutoPtr<ArrayOf<IBigDecimal*> > array = ArrayOf<IBigDecimal*>::Alloc(2);
     AutoPtr<IBigDecimal> tmp;
-    FAIL_RETURN(DivideToIntegralValueEx(divisor, mc, (IBigDecimal**)&tmp));
+    FAIL_RETURN(DivideToIntegralValue(divisor, mc, (IBigDecimal**)&tmp));
     array->Set(0, tmp);
 
     AutoPtr<IBigDecimal> mBD;
@@ -1561,7 +1565,7 @@ ECode CBigDecimal::DivideAndRemainderEx(
     FAIL_RETURN(Subtract(mBD, (IBigDecimal**)&tmp));
     array->Set(1, tmp);
     *result = array;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -1578,7 +1582,7 @@ ECode CBigDecimal::Pow(
 
     if (n == 0) {
         *result = CBigDecimal::ONE;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -1597,7 +1601,7 @@ ECode CBigDecimal::Pow(
     return CBigDecimal::New(tempBI, iScale, result);
 }
 
-ECode CBigDecimal::PowEx(
+ECode CBigDecimal::Pow(
     /* [in] */ Int32 n,
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
@@ -1640,12 +1644,12 @@ ECode CBigDecimal::PowEx(
     AutoPtr<IBigDecimal> temp;
     while (oneBitMask > 0) {
         temp = NULL;
-        FAIL_RETURN(accum->MultiplyEx(accum, newPrecision, (IBigDecimal**)&temp));
+        FAIL_RETURN(accum->Multiply(accum, newPrecision, (IBigDecimal**)&temp));
         accum = temp;
 
         if ((m & oneBitMask) == oneBitMask) {
             temp = NULL;
-            FAIL_RETURN(accum->MultiplyEx((IBigDecimal*)this, newPrecision, (IBigDecimal**)&temp));
+            FAIL_RETURN(accum->Multiply((IBigDecimal*)this, newPrecision, (IBigDecimal**)&temp));
             accum = temp;
         }
         oneBitMask >>= 1;
@@ -1654,14 +1658,14 @@ ECode CBigDecimal::PowEx(
     // If 'n' is negative, the value is divided into 'ONE'
     if (n < 0) {
         temp = NULL;
-        FAIL_RETURN(ONE->DivideEx3(accum, newPrecision, (IBigDecimal**)&temp));
+        FAIL_RETURN(ONE->Divide(accum, newPrecision, (IBigDecimal**)&temp));
         accum = temp;
     }
 
     // The final value is rounded to the destination precision
     FAIL_RETURN(((CBigDecimal*)(IBigDecimal*)accum)->InplaceRound(mc));
     *result = (IBigDecimal*)accum;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1676,11 +1680,11 @@ ECode CBigDecimal::Abs(
     }
 
     *result = (IBigDecimal*)this;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-ECode CBigDecimal::AbsEx(
+ECode CBigDecimal::Abs(
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
 {
@@ -1710,7 +1714,7 @@ ECode CBigDecimal::Negate(
     return CBigDecimal::New(tempBI, mScale, result);
 }
 
-ECode CBigDecimal::NegateEx(
+ECode CBigDecimal::Negate(
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
 {
@@ -1726,11 +1730,11 @@ ECode CBigDecimal::Plus(
 {
     VALIDATE_NOT_NULL(result);
     *result = this;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-ECode CBigDecimal::PlusEx(
+ECode CBigDecimal::Plus(
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
 {
@@ -1823,7 +1827,7 @@ ECode CBigDecimal::SetScale(
     // Let be:  'this' = [u,s]
     if(diffScale == 0) {
         *result = (IBigDecimal*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -1857,7 +1861,7 @@ ECode CBigDecimal::SetScale(
             newScale, roundingMode, result);
 }
 
-ECode CBigDecimal::SetScaleEx(
+ECode CBigDecimal::SetScale(
     /* [in] */ Int32 newScale,
     /* [out] */ IBigDecimal** result)
 {
@@ -1959,7 +1963,7 @@ ECode CBigDecimal::StripTrailingZeros(
         // Preserve RI compatibility, so BigDecimal.equals (which checks
         // value *and* scale) continues to work.
         *result = (IBigDecimal*)this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -2130,7 +2134,7 @@ ECode CBigDecimal::Min(
         *result = val;
     }
 
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -2150,7 +2154,7 @@ ECode CBigDecimal::Max(
         *result = val;
     }
 
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -2194,7 +2198,7 @@ ECode CBigDecimal::ToString(
             (*array)[0] = '0';
             (*array)[1] = '.';
             result.InsertChars(begin - 1, *(ArrayOf<Char32>*)array);
-            result.InsertCharsEx(begin + 1, *(ArrayOf<Char32>*)CharZeros, 0, -(Int32)exponent - 1);
+            result.InsertChars(begin + 1, *(ArrayOf<Char32>*)CharZeros, 0, -(Int32)exponent - 1);
         }
     } else {
         if (end - begin >= 1) {
@@ -2243,7 +2247,7 @@ ECode CBigDecimal::ToEngineeringString(
             (*array)[0] = '0';
             (*array)[1] = '.';
             result.InsertChars(begin - 1, *(ArrayOf<Char32>*)array);
-            result.InsertCharsEx(begin + 1, *(ArrayOf<Char32>*)CharZeros, 0, -(Int32)exponent - 1);
+            result.InsertChars(begin + 1, *(ArrayOf<Char32>*)CharZeros, 0, -(Int32)exponent - 1);
         }
     }
     else {
@@ -2323,7 +2327,7 @@ ECode CBigDecimal::ToPlainString(
             for (; delta > CharZerosLength; delta -= CharZerosLength) {
                 result.AppendChars(*(ArrayOf<Char32>*)CharZeros);
             }
-            result.AppendCharsEx(*(ArrayOf<Char32>*)CharZeros, 0, delta);
+            result.AppendChars(*(ArrayOf<Char32>*)CharZeros, 0, delta);
 
             String subStr = intStr.Substring(begin);
             result.AppendString(subStr);
@@ -2343,7 +2347,7 @@ ECode CBigDecimal::ToPlainString(
         for (; delta < -CharZerosLength; delta += CharZerosLength) {
             result.AppendChars(*(ArrayOf<Char32>*)CharZeros);
         }
-        result.AppendCharsEx(*(ArrayOf<Char32>*)CharZeros, 0, -delta);
+        result.AppendChars(*(ArrayOf<Char32>*)CharZeros, 0, -delta);
     }
 
     result.ToString(representation);
@@ -2358,7 +2362,7 @@ ECode CBigDecimal::ToBigInteger(
     AutoPtr<IBigInteger> thisUnscaled = GetUnscaledValue();
     if ((mScale == 0) || (IsZero())) {
         *result = thisUnscaled;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else if (mScale < 0) {
@@ -2381,7 +2385,7 @@ ECode CBigDecimal::ToBigIntegerExact(
     AutoPtr<IBigInteger> thisUnscaled = GetUnscaledValue();
     if ((mScale == 0) || (IsZero())) {
         *result = thisUnscaled;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else if (mScale < 0) {
@@ -2410,7 +2414,7 @@ ECode CBigDecimal::ToBigIntegerExact(
         }
 
         *result = (*integerAndFraction)[0];
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 }

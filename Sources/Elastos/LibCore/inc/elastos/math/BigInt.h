@@ -4,6 +4,7 @@
 #include <elastos.h>
 #include <elquintet.h>
 #include <elastos/StringBuilder.h>
+#include "Object.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -15,7 +16,7 @@ namespace Math {
  * Any Bit-Operations, including Shifting, solely regard the unsigned magnitude.
  * Moreover BigInt objects are mutable and offer efficient in-place-operations.
  */
-class BigInt : public ElRefBase
+class BigInt : public Object
 {
 public:
     BigInt();

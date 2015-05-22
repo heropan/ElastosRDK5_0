@@ -3,6 +3,7 @@
 
 #include <elastos.h>
 #include <CBigInteger.h>
+#include "Object.h"
 
 namespace Elastos {
 namespace Math {
@@ -22,7 +23,8 @@ namespace Math {
  * All operations are provided in immutable way, and some in both mutable and
  * immutable.
  */
-class BitLevel {
+class BitLevel : public Object
+{
 
 public:
     /** @see BigInteger#bitLength() */

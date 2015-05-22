@@ -3,6 +3,7 @@
 
 #include <elastos.h>
 #include <CBigInteger.h>
+#include "Object.h"
 
 namespace Elastos {
 namespace Math {
@@ -18,8 +19,8 @@ namespace Math {
  * <li>xor</li>
  * </ul>
  */
-class Logical {
-
+class Logical : public Object
+{
 public:
     /** @see BigInteger#not() */
     static AutoPtr<IBigInteger> Not(
