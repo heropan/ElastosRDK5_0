@@ -3,7 +3,6 @@ module
 {
     using interface Elastos.Core.IRunnable;
     using interface Elastos.Core.Threading.IThreadUncaughtExceptionHandler;
-    using interface Elastos.Utility.IObjectContainer;
     using interface Elastos.Utility.ICollection;
     interface Elastos.Utility.Concurrent.ICallable;
     interface Elastos.Utility.Concurrent.IForkJoinWorkerThread;
