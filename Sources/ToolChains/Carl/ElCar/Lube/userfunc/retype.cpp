@@ -14,8 +14,6 @@ static char * s_elatypes[] = {
     "Int32",    "UInt32",   "PInt32",   "PUInt32",
     "Int64",    "UInt64",   "PInt64",   "PUInt64",
     "Float",    "Double",   "PFloat",   "PDouble",
-    "Flags8",   "Flags16",  "Flags32",  "Flags64",
-    "PFlags8",  "PFlags16", "PFlags32", "PFlags64",
     "Handle32", "Handle64",
     "PHandle32", "PHandle64",
     "Boolean",  "PBoolean",
@@ -29,9 +27,8 @@ static char * s_elatypes[] = {
 
     "StringBuf_",  "MemoryBuf_",   "BufferOf_","ArrayOf_",
 
-    "Encoding",    "SystemEvents",  "MemorySize",   "MemFlags", "EventState",
-    "ThreadCreationFlags",          "ModuleLoadFlags",          "MemoryMapFlags",
-    "Address",     "SystemTime",    "DateTime",     "Timestamp64",
+    "MemorySize",
+    "Address",      "DateTime",     "Timestamp64",
 
     "EventHandler",
 
@@ -41,7 +38,6 @@ static char * s_elatypes[] = {
     "PSecond64",  "PMillisecond64",  "PMicrosecond64",
 
     "EGuid",       "EMuid",         "EIID",        "ClassID",      "InterfaceID",
-    "REGuid",      "REMuid",        "REIID",       "RClassID",
 };
 
 const unsigned int c_elatypes = sizeof(s_elatypes) / sizeof(s_elatypes[0]);
