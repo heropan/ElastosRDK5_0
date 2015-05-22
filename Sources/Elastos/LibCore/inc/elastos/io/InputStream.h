@@ -20,6 +20,8 @@ class InputStream
     , public IInputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -107,7 +109,6 @@ public:
      * reached. Blocks until one byte has been read, the end of the source
      * stream is detected or an exception is thrown.
      *
-     * @return the byte read or -1 if the end of stream has been reached.
      * @throws IOException
      *             if the stream is closed or another IOException occurs.
      */
@@ -132,7 +133,7 @@ public:
      * Reads at most {@code length} bytes from this stream and stores them in
      * the byte array {@code b} starting at {@code offset}.
      *
-     * @param b
+     * @param buffer
      *            the byte array in which to store the bytes read.
      * @param offset
      *            the initial position in {@code buffer} to store the bytes read
@@ -150,8 +151,8 @@ public:
      */
     CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
 
     /**
@@ -170,19 +171,21 @@ public:
     CARAPI Reset();
 
     /**
-     * Skips at most {@code n} bytes in this stream. This method does nothing and returns
-     * 0 if {@code n} is negative.
+     * Skips at most {@code byteCount} bytes in this stream. The number of actual
+     * bytes skipped may be anywhere between 0 and {@code byteCount}. If
+     * {@code byteCount} is negative, this method does nothing and returns 0, but
+     * some subclasses may throw.
      *
-     * <p>Note the "at most" in the description of this method: this method may choose to skip
-     * fewer bytes than requested. Callers should <i>always</i> check the return value.
+     * <p>Note the "at most" in the description of this method: this method may
+     * choose to skip fewer bytes than requested. Callers should <i>always</i>
+     * check the return value.
      *
-     * <p>This default implementation reads bytes into a temporary
-     * buffer. Concrete subclasses should provide their own implementation.
+     * <p>This default implementation reads bytes into a temporary buffer. Concrete
+     * subclasses should provide their own implementation.
      *
-     * @param byteCount the number of bytes to skip.
      * @return the number of bytes actually skipped.
-     * @throws IOException
-     *             if this stream is closed or another IOException occurs.
+     * @throws IOException if this stream is closed or another IOException
+     *             occurs.
      */
     CARAPI Skip(
         /* [in] */ Int64 byteCount,

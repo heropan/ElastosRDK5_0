@@ -6,6 +6,8 @@
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL_2(HandlerBase, ICloseable, IInputStream)
+
 PInterface InputStream::Probe(
     /* [in] */ REIID riid)
 {
@@ -57,8 +59,8 @@ ECode InputStream::Read(
 
 ECode InputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 length,
+    /* [in] */ Int32 byteOffset,
+    /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
@@ -68,15 +70,15 @@ ECode InputStream::Read(
     // changed array notation to be consistent with the rest of harmony
     // END android-note
     // Force null check for b first!
-    if (offset > buffer->GetLength() || offset < 0) {
-//      throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + offset);
+    if (byteOffset > buffer->GetLength() || byteOffset < 0) {
+//      throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + byteOffset);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    if (length < 0 || length > buffer->GetLength() - offset) {
-//      throw new ArrayIndexOutOfBoundsException("Length out of bounds: " + length);
+    if (byteCount < 0 || byteCount > buffer->GetLength() - byteOffset) {
+//      throw new ArrayIndexOutOfBoundsException("Length out of bounds: " + byteCount);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    for (Int32 i = 0; i < length; i++) {
+    for (Int32 i = 0; i < byteCount; i++) {
         Int32 c;
         ECode ec = Read(&c);
         if (ec == (ECode)E_IO_EXCEPTION) {
@@ -90,9 +92,9 @@ ECode InputStream::Read(
             *number = i == 0 ? -1 : i;
             return NOERROR;
         }
-        (*buffer)[offset + i] = (Byte)c;
+        (*buffer)[byteOffset + i] = (Byte)c;
     }
-    *number = length;
+    *number = byteCount;
     return NOERROR;
 }
 
