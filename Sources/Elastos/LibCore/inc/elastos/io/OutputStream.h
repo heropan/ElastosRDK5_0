@@ -66,7 +66,7 @@ public:
     virtual CARAPI Write(
         /* [in] */ Int32 oneByte) = 0;
 
-    virtual CARAPI WriteBytes(
+    virtual CARAPI Write(
         /* [in] */ const ArrayOf<Byte>& buffer);
 
     /**
@@ -87,7 +87,7 @@ public:
      *             {@code offset + count} is bigger than the length of
      *             {@code buffer}.
      */
-    virtual CARAPI WriteBytesEx(
+    virtual CARAPI Write(
         /* [in] */ const ArrayOf<Byte> & buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);

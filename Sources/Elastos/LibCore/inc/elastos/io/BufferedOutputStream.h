@@ -9,13 +9,16 @@ namespace IO {
 
 class BufferedOutputStream
     : public FilterOutputStream
+    , public IBufferedOutputStream
 {
+public:
+    CAR_INTERFACE_DECL()
 protected:
     BufferedOutputStream();
 
     ~BufferedOutputStream();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* outs,
         /* [in] */ Int32 size);
 public:
@@ -70,7 +73,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *             If offset or count is outside of bounds.
      */
-    CARAPI WriteBytesEx(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Byte> & buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);

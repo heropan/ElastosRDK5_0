@@ -15,6 +15,7 @@ FilterOutputStream::~FilterOutputStream()
 ECode FilterOutputStream::Init(
     /* [in] */ IOutputStream* outs)
 {
+    VALIDATE_NOT_NULL(out);
     mOut = outs;
     return NOERROR;
 }
@@ -40,7 +41,7 @@ ECode FilterOutputStream::Write(
     return mOut->Write(oneByte);
 }
 
-ECode FilterOutputStream::WriteBytesEx(
+ECode FilterOutputStream::Write(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)

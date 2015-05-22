@@ -65,7 +65,7 @@ public:
      * @throws IOException
      *             if an I/O error occurs while writing to this stream.
      */
-    CARAPI WriteBytesEx(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Byte> & buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);

@@ -12,33 +12,7 @@ CarClass(CBufferedOutputStream)
     , public BufferedOutputStream
 {
 public:
-    CARAPI Close();
-
-    CARAPI Flush();
-
-    CARAPI Write(
-        /* [in] */ Int32 oneByte);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte> & buffer);
-
-    CARAPI WriteBytesEx(
-        /* [in] */ const ArrayOf<Byte> & buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 count);
-
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI constructor(
-        /* [in] */ IOutputStream* out);
-
-    CARAPI constructor(
-        /* [in] */ IOutputStream* out,
-        /* [in] */ Int32 size);
+    CAR_OBJECT_DECL()
 
     CARAPI GetLock(
         /* [out] */ IInterface** lockobj);

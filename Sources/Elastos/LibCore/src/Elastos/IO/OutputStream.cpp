@@ -29,16 +29,16 @@ ECode OutputStream::Flush()
     return NOERROR;
 }
 
-ECode OutputStream::WriteBytes(
+ECode OutputStream::Write(
     /* [in] */ const ArrayOf<Byte> & buffer)
 {
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    return WriteBytesEx(buffer, 0, buffer.GetLength());
+    return Write(buffer, 0, buffer.GetLength());
 }
 
-ECode OutputStream::WriteBytesEx(
+ECode OutputStream::Write(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
