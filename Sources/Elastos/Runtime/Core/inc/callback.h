@@ -223,7 +223,7 @@ ELAPI _Impl_CallbackSink_WaitForCallbackEvent(
             _ELASTOS Millisecond32 msTimeOut,
             WaitResult* pResult,
             _ELASTOS Boolean *pbEventOccured,
-            _ELASTOS Flags32 fPriority);
+            _ELASTOS UInt32 fPriority);
 
 ELAPI _Impl_CallbackSink_CleanupAllCallbacks(
     IInterface *pCallbackContext);

@@ -67,7 +67,7 @@ public:
 
     ECode PostCallbackEvent(
             PCallbackEvent pCallbackEvent);
-            
+
     ECode SendCallbackEvent(
             PCallbackEvent pCallbackEvent,
             Millisecond32 timeOut);
@@ -91,7 +91,7 @@ public:
         Millisecond32 msTimeOut = INFINITE,
         WaitResult *pResult = NULL,
         Boolean * pbOccured = NULL,
-        Flags32 fPriority = 0);
+        UInt32 fPriority = 0);
 
     void CancelAllCallbackEvents();
 
@@ -109,7 +109,7 @@ private:
         PVoid pHandlerThis,
         PVoid pHandlerFunc);
 
-    PCallbackEvent GetEvent(Flags32 fPriority);
+    PCallbackEvent GetEvent(UInt32 fPriority);
 
 public:
     pthread_mutex_t             m_workingLock;

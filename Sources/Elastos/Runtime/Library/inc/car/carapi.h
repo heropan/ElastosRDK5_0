@@ -74,12 +74,6 @@ ELAPI _CObject_DetachAspect(
     /* [in] */ PInterface pAggregator,
     /* [in] */ _ELASTOS RClassID rAspectClsid);
 
-ELAPI _CObject_ReleaseAtProcessExit(
-    /* [in] */ PInterface pObject);
-
-ELAPI _CObject_ReleaseAtThreadQuit(
-    /* [in] */ PInterface PInterface);
-
 ELAPI _CObject_EnterRegime(
     /* [in] */ PInterface pObj,
     /* [in] */ PRegime pRgm);

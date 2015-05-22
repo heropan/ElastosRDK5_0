@@ -145,114 +145,6 @@ ELAPI _Impl_CCallbackRendezvous_New(
 // ElAPI functions
 //
 
-static PInterface s_serviceManager;
-
-ELAPI _CSystem_RegisterServiceManager(
-    PInterface pService)
-{
-    s_serviceManager = pService;
-    s_serviceManager->AddRef();
-    return NOERROR;
-}
-
-ELAPI _CSystem_GetServiceManager(
-    PInterface *ppService)
-{
-    if (!ppService) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    *ppService = s_serviceManager;
-    if (*ppService) (*ppService)->AddRef();
-
-    return NOERROR;
-}
-
-ELAPI _CSystem_QueryPerformanceCounter(
-        _ELASTOS Int64 *pPerformanceCount)
-{
-#ifdef _win32
-	if (!pPerformanceCount) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (0 == Elastos_QueryPerformanceCounter((long long *)pPerformanceCount)) {
-        return NOERROR;
-    }
-    else {
-        return E_FAIL;
-    }
-#else
-    struct timespec tp;
-    int ret = 0;
-    long long counter = 0;
-    long long f = 0;
-
-    assert(NULL != pPerformanceCount);
-    ret = clock_gettime(CLOCK_MONOTONIC, &tp);
-    if (-1 == ret) {
-        return -1;
-    }
-
-    counter = tp.tv_sec * (1000LL * 1000 * 1000) + tp.tv_nsec;
-
-    ret = _CSystem_QueryPerformanceFrequency(&f);
-    if (-1 == ret) {
-        return -1;
-    }
-
-    //a interval spend "(1000 * 1000 * 1000) / f" nanoseconds
-    assert(0 != f);
-    assert(0 == (1000 * 1000 * 1000) % f);
-    counter /= (1000 * 1000 * 1000) / f;
-    //kdAssert(0 == (counter % ((1000 * 1000 * 1000) / f)));
-
-    *pPerformanceCount = counter;
-    return 0;
-#endif
-}
-
-ELAPI _CSystem_QueryPerformanceFrequency(
-        _ELASTOS Int64 *pFrequency)
-{
-#ifdef _win32
-	if (!pFrequency) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (0 == Elastos_QueryPerformanceCounter((long long *)pFrequency)) {
-        return NOERROR;
-    }
-    else {
-        return E_FAIL;
-    }
-#else
-    static long long s_frequency = 0;
-    struct timespec res;
-    int ret = 0;
-    long long resolution = 0;
-
-    assert(0 != pFrequency);
-
-    if (0 == s_frequency) { //first access s_frequency
-        ret = clock_getres(CLOCK_MONOTONIC, &res);
-        if (-1 == ret) {
-            //kdSetError(KD_ENOSYS);
-            return -1;
-        }
-
-        resolution = res.tv_sec * (1000LL * 1000 * 1000) + res.tv_nsec;
-        s_frequency = (1000 * 1000 * 1000) / resolution;
-        assert(0 != s_frequency);
-        assert(0 == (1000 * 1000 * 1000) % resolution);
-    }
-
-    *pFrequency = s_frequency;
-    return 0;
-#endif
-}
-
-
 pthread_key_t g_TlSystemSlots[10];
 
 EXTERN_C pthread_key_t *getTlSystemSlotBase()
@@ -284,22 +176,22 @@ ELAPI _CObject_LeaveRegime(PInterface pObject, PRegime pRegime)
     return pRegime->ObjectLeave(pObject);
 }
 
-ELAPI_(Boolean) _Impl_CheckHelperInfoFlag(Flags32 flag)
+ELAPI_(Boolean) _Impl_CheckHelperInfoFlag(UInt32 flag)
 {
-    Flags32 uFlag = 0;
+    UInt32 uFlag = 0;
 
-    uFlag = (Flags32)pthread_getspecific(TL_HELPER_INFO_SLOT);
+    uFlag = (UInt32)pthread_getspecific(TL_HELPER_INFO_SLOT);
 
     if (uFlag & flag) return TRUE;
     else return FALSE;
 }
 
-ELAPI_(void) _Impl_SetHelperInfoFlag(Flags32 flag, Boolean bValue)
+ELAPI_(void) _Impl_SetHelperInfoFlag(UInt32 flag, Boolean bValue)
 {
-    Flags32 uFlag = 0;
+    UInt32 uFlag = 0;
     ECode ec;
 
-    uFlag = (Flags32)pthread_getspecific(TL_HELPER_INFO_SLOT);
+    uFlag = (UInt32)pthread_getspecific(TL_HELPER_INFO_SLOT);
 
     if (bValue) {
         uFlag |= flag;
@@ -308,7 +200,7 @@ ELAPI_(void) _Impl_SetHelperInfoFlag(Flags32 flag, Boolean bValue)
         uFlag &= ~flag;
     }
 
-    ec = pthread_setspecific(TL_HELPER_INFO_SLOT, (TLValue)uFlag);
+    ec = pthread_setspecific(TL_HELPER_INFO_SLOT, (void*)uFlag);
     assert(SUCCEEDED(ec));
 }
 

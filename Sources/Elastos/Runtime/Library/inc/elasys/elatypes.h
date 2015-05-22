@@ -107,20 +107,6 @@ typedef Boolean *PBoolean;
 /** @addtogroup CARTypesRef
   *   @{
   */
-typedef UInt8  Flags8;
-typedef UInt16 Flags16;
-typedef UInt32 Flags32;
-typedef UInt64 Flags64;
-/** @} */
-
-typedef Flags8  *PFlag8;
-typedef Flags16 *PFlag16;
-typedef Flags32 *PFlag32;
-typedef Flags64 *PFlag64;
-
-/** @addtogroup CARTypesRef
-  *   @{
-  */
 typedef UInt32 Handle32;
 typedef UInt64 Handle64;
 /** @} */
@@ -153,19 +139,8 @@ typedef Microsecond64* PMicrosecond64;
   */
 //System Type
 typedef Int32 MemorySize;
-typedef Int32 ThreadCreationFlags;
-typedef Int32 ModuleLoadFlags;
-typedef Int32 MemoryMapFlags;
-typedef Int32 EventState;
-typedef Int32 SystemEvents;
-typedef PVoid TLValue;
 typedef UInt32 Address;
 
-typedef struct SystemTime
-{
-    Int32 seconds;
-    Int32 microseconds;
-} SystemTime, *PSystemTime;
 /** @} */
 
 /** @addtogroup SystemRef

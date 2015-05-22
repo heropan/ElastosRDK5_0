@@ -25,30 +25,6 @@
 
 #include <stdint.h>
 
-/**
- * @see CSystem::RegisterServiceManager()
- */
-ELAPI _CSystem_RegisterServiceManager(
-    PInterface pService);
-
-/**
- * @see CSystem::GetServiceManager()
- */
-ELAPI _CSystem_GetServiceManager(
-    PInterface *ppService);
-
-/**
- * @see CSystem::QueryPerformanceCounter()
- */
-ELAPI _CSystem_QueryPerformanceCounter(
-        /* [out] */ _ELASTOS Int64 *pPerformanceCount);
-
-/**
- * @see CSystem::QueryPerformanceFrequency()
- */
-ELAPI _CSystem_QueryPerformanceFrequency(
-        /* [out] */ _ELASTOS Int64 *pFrequency);
-
 /** @} */
 /** @addtogroup CARRef
   *   @{
@@ -115,13 +91,12 @@ ELAPI _CObject_ReflectInterfaceInfo(
     /* [in] */ PInterface pObj,
     /* [out] */ IInterfaceInfo **piInterfaceInfo);
 
-ELAPI _CScheme_Instantiate(
-    /* [in] */ const _ELASTOS CString uri,
-    /* [out] */ PInterface *object);
+ELAPI_(_ELASTOS Boolean) _Impl_CheckHelperInfoFlag(
+    /* [in] */ _ELASTOS UInt32 flag);
 
-ELAPI_(_ELASTOS Boolean) _Impl_CheckHelperInfoFlag(_ELASTOS Flags32 flag);
-
-ELAPI_(void) _Impl_SetHelperInfoFlag(_ELASTOS Flags32 flag, _ELASTOS Boolean bValue);
+ELAPI_(void) _Impl_SetHelperInfoFlag(
+    /* [in] */ _ELASTOS UInt32 flag,
+    /* [in] */ _ELASTOS Boolean bValue);
 
 ELAPI _Impl_EnterProtectedZone();
 
@@ -131,14 +106,14 @@ ELAPI _Impl_InsideProtectedZone();
 
 // callback helper api for making parameters
 ELAPI _Impl_CheckClsId(
-    PInterface pServerObj,
-    const _ELASTOS ClassID* pClassID,
-    PInterface *ppServerObj);
+    /* [in] */ PInterface pServerObj,
+    /* [in] */ const _ELASTOS ClassID* pClassID,
+    /* [out] */ PInterface *ppServerObj);
 
 ELAPI _Impl_AcquireCallbackHandler(
-        PInterface pServerObj,
-        _ELASTOS REIID iid,
-        PInterface *ppHandler);
+    /* [in] */ PInterface pServerObj,
+    /* [in] */ _ELASTOS REIID iid,
+    /* [out] */  PInterface *ppHandler);
 
 ELAPI _CCallbackParcel_New(
     /* [out] */ IParcel **ppObj);
@@ -161,4 +136,3 @@ ELAPI _CObject_UnmarshalInterface(
 
 #endif // __ELAPI_H__
 /** @} */
-
