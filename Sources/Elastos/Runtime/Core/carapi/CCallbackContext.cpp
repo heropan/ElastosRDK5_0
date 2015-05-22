@@ -457,7 +457,7 @@ void CCallbackContext::CancelAllCallbackEvents()
 
 }
 
-PCallbackEvent CCallbackContext::GetEvent(Flags32 fPriority)
+PCallbackEvent CCallbackContext::GetEvent(UInt32 fPriority)
 {
 again:
     struct timeval  tp;
@@ -470,7 +470,7 @@ again:
     if (fPriority) {
         while (pCallbackEvent != &m_eventQueue) {
             if ((fPriority & CallbackEventFlag_PriorityMask) <
-                ((Flags32)pCallbackEvent->m_flags & CallbackEventFlag_PriorityMask)) {
+                ((UInt32)pCallbackEvent->m_flags & CallbackEventFlag_PriorityMask)) {
                 if ((fPriority & ~CallbackEventFlag_PriorityMask)==0
                     || ((fPriority & ~CallbackEventFlag_PriorityMask)
                             & pCallbackEvent->m_flags)){
@@ -510,7 +510,7 @@ Int32 CCallbackContext::HandleCallbackEvents(
     Millisecond32 msTimeOut,
     WaitResult *pResult,
     Boolean* pbOccured,
-    Flags32 fPriority)
+    UInt32 fPriority)
 {
     Boolean bEmpty = FALSE;
     PCallbackEvent pCallbackEvent = NULL;

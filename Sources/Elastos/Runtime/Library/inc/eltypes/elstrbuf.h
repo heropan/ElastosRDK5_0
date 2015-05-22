@@ -96,15 +96,15 @@ extern "C" {
         _ELASTOS Char8 ch);
 
     _ELASTOS Int32 __cdecl _StringBuf_Append_Int8(_ELASTOS PCarQuintet pCq,
-        _ELASTOS Int8 value, _ELASTOS Flags32 fmt);
+        _ELASTOS Int8 value, _ELASTOS UInt32 fmt);
     _ELASTOS Int32 __cdecl _StringBuf_Append_Int16(_ELASTOS PCarQuintet pCq,
-        _ELASTOS Int16 value, _ELASTOS Flags32 fmt);
+        _ELASTOS Int16 value, _ELASTOS UInt32 fmt);
     _ELASTOS Int32 __cdecl _StringBuf_Append_Int32(_ELASTOS PCarQuintet pCq,
-        _ELASTOS Int32 value, _ELASTOS Flags32 fmt);
+        _ELASTOS Int32 value, _ELASTOS UInt32 fmt);
     _ELASTOS Int32 __cdecl _StringBuf_Append_Int64(_ELASTOS PCarQuintet pCq,
-        _ELASTOS Int64 value, _ELASTOS Flags32 fmt);
+        _ELASTOS Int64 value, _ELASTOS UInt32 fmt);
     _ELASTOS Int32 __cdecl _StringBuf_Append_Double(_ELASTOS PCarQuintet pCq,
-        _ELASTOS Double value, _ELASTOS Flags32 fmt);
+        _ELASTOS Double value, _ELASTOS UInt32 fmt);
 
     _ELASTOS PCarQuintet __cdecl _StringBuf_Append_DateTime(_ELASTOS PCarQuintet pCq,
         const char *fmt, const _ELASTOS PDateTime pDateTime);
@@ -183,7 +183,7 @@ extern "C" {
 
 _ELASTOS_NAMESPACE_BEGIN
 
-CAR_INLINE _ELASTOS Flags32 MakeNumberFormat(_ELASTOS Flags32 fmt,
+CAR_INLINE _ELASTOS UInt32 MakeNumberFormat(_ELASTOS UInt32 fmt,
         _ELASTOS Int32 width = 0, _ELASTOS Int32 precision = 0)
 {
     return ((fmt & 0xFFFF0000) | (width & 0xFF) | ((precision  <<  8) & 0xFF00));
@@ -462,31 +462,31 @@ public:
         }
     }
 
-    StringBuf& Append(Int8 value, Flags32 fmt = 0)
+    StringBuf& Append(Int8 value, UInt32 fmt = 0)
     {
         _StringBuf_Append_Int8(this, value, fmt);
         return *this;
     }
 
-    StringBuf& Append(Int16 value, Flags32 fmt = 0)
+    StringBuf& Append(Int16 value, UInt32 fmt = 0)
     {
         _StringBuf_Append_Int16(this, value, fmt);
         return *this;
     }
 
-    StringBuf& Append(Int32 value, Flags32 fmt = 0)
+    StringBuf& Append(Int32 value, UInt32 fmt = 0)
     {
         _StringBuf_Append_Int32(this, value, fmt);
         return *this;
     }
 
-    StringBuf& Append(Int64 value, Flags32 fmt = 0)
+    StringBuf& Append(Int64 value, UInt32 fmt = 0)
     {
         _StringBuf_Append_Int64(this, value, fmt);
         return *this;
     }
 
-    StringBuf& Append(Double value, Flags32 fmt = 0)
+    StringBuf& Append(Double value, UInt32 fmt = 0)
     {
         _StringBuf_Append_Double(this, value, fmt);
         return *this;

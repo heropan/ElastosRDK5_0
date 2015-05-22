@@ -131,7 +131,7 @@ ELAPI _Impl_CallbackSink_WaitForCallbackEvent(
     Millisecond32 msTimeOut,
     WaitResult* pResult,
     Boolean * pbEventOccured,
-    Flags32 fPriority)
+    UInt32 fPriority)
 {
     if (NULL == pCallbackContext) {
         return E_INVALID_ARGUMENT;
@@ -225,9 +225,9 @@ ELAPI_(Int32) _Impl_CallbackSink_GetStatus(
 }
 
 ECode _Impl_CheckClsId(
-        PInterface pServerObj,
-        const ClassID* pClassiD,
-        PInterface *ppServerObj)
+    PInterface pServerObj,
+    const ClassID* pClassiD,
+    PInterface *ppServerObj)
 {
     IObject *pObject;
 	char str[80];
@@ -249,9 +249,9 @@ ECode _Impl_CheckClsId(
 }
 
 ECode _Impl_AcquireCallbackHandler(
-        PInterface pServerObj,
-        REIID iid,
-        PInterface *ppHandler)
+    PInterface pServerObj,
+    REIID iid,
+    PInterface *ppHandler)
 {
     ICallbackSink *pSink = NULL;
     PInterface pHandler = NULL;

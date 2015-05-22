@@ -165,7 +165,7 @@ Int32 __cdecl _StringBuf_Append_Char8(PCarQuintet pCq, Char8 ch)
      numberInfo.type = mask; \
      numberInfo.fmt = fmt;}
 
-Int32 __cdecl _StringBuf_Append_Int8(PCarQuintet pCq, Int8 value, Flags32 fmt)
+Int32 __cdecl _StringBuf_Append_Int8(PCarQuintet pCq, Int8 value, UInt32 fmt)
 {
     if (!pCq || !pCq->m_pBuf) return -1;
     NumberInfo numberInfo;
@@ -175,7 +175,7 @@ Int32 __cdecl _StringBuf_Append_Int8(PCarQuintet pCq, Int8 value, Flags32 fmt)
 }
 
 Int32 __cdecl _StringBuf_Append_Int16(PCarQuintet pCq, Int16 value,
-    Flags32 fmt)
+    UInt32 fmt)
 {
     if (!pCq || !pCq->m_pBuf) return -1;
     NumberInfo numberInfo;
@@ -185,7 +185,7 @@ Int32 __cdecl _StringBuf_Append_Int16(PCarQuintet pCq, Int16 value,
 }
 
 Int32 __cdecl _StringBuf_Append_Int32(PCarQuintet pCq, Int32 value,
-    Flags32 fmt)
+    UInt32 fmt)
 {
     if (!pCq || !pCq->m_pBuf) return -1;
     NumberInfo numberInfo;
@@ -195,7 +195,7 @@ Int32 __cdecl _StringBuf_Append_Int32(PCarQuintet pCq, Int32 value,
 }
 
 Int32 __cdecl _StringBuf_Append_Int64(PCarQuintet pCq, Int64 value,
-    Flags32 fmt)
+    UInt32 fmt)
 {
     if (!pCq || !pCq->m_pBuf) return -1;
     NumberInfo numberInfo;
@@ -205,7 +205,7 @@ Int32 __cdecl _StringBuf_Append_Int64(PCarQuintet pCq, Int64 value,
 }
 
 Int32 __cdecl _StringBuf_Append_Double(PCarQuintet pCq, Double value,
-    Flags32 fmt)
+    UInt32 fmt)
 {
     if (!pCq || !pCq->m_pBuf) return -1;
     NumberInfo numberInfo;

@@ -18,12 +18,6 @@ EXPORTS
     ;;============================================================
     ;; Elastos Execution Engine APIs, using ordinal 1-200
     ;;
-    _CSystem_RegisterServiceManager                 @1      NONAME
-    _CSystem_GetServiceManager                      @2      NONAME
-
-    _CSystem_QueryPerformanceCounter                @16     NONAME
-    _CSystem_QueryPerformanceFrequency              @17     NONAME
-
     getTlSystemSlotBase
 
     _Impl_EnterProtectedZone                        @86     NONAME

@@ -23,17 +23,6 @@ typedef enum _StringCase
     StringCase_Insensitive       = 0x0001,
 } StringCase;
 
-typedef enum _Encoding
-{
-    Encoding_Default             = 0x0000,
-    Encoding_ASCII               = 0x0001,
-    Encoding_UTF7                = 0x0002,
-    Encoding_UTF8                = 0x0003,
-    Encoding_GB18030             = 0x0004,
-    Encoding_LATIN_1             = 0x0005,
-    Encoding_BIG5                = 0x0006,
-    Encoding_EUC_JP              = 0x0007,
-} Encoding;
 /** @} */
 
 _ELASTOS_NAMESPACE_END
