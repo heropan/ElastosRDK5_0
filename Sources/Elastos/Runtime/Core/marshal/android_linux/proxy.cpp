@@ -278,7 +278,7 @@ ECode GetRemoteClassInfo(
             _DumpGUID(clsId));
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 ALOGE("Get class info failed.\n"));
-        ec = E_REMOTE_EXCEPTION;
+        ec = E_REMOTE_FAIL;
         goto Exit;
     }
 
@@ -585,7 +585,7 @@ ECode CInterfaceProxy::ProxyEntry(UInt32 *puArgs)
             MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE("Buffer size: inSize(%d), outSize(%d)\n", uInSize, uOutSize));
             MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE("Remote invoke failed. <status: 0x%x>\n", st));
 
-            ec = E_REMOTE_EXCEPTION;
+            ec = E_REMOTE_FAIL;
             goto ProxyExit;
         }
 
