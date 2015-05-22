@@ -1,7 +1,7 @@
 TARGET_NAME = testStringBuffer
 TARGET_TYPE = ecx
 
-IMPORTS = Elastos.Core.eco
+IMPORTS = Elastos.CoreLibrary.eco
 
 SOURCES = main.cpp
 

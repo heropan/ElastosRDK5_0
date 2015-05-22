@@ -1,4 +1,5 @@
 
-DIRS = Xml
-DIRS += Xmlpull
-DIRS += Apache
+DIRS = Kxml2
+//DIRS += Xml
+//DIRS += Xmlpull
+//DIRS += Apache

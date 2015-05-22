@@ -1,7 +1,7 @@
 
 module
 {
-    importlib("Elastos.Core.eco");
+    importlib("Elastos.CoreLibrary.eco");
     importlib("Org.W3c.Dom.eco");
     importlib("Org.Xml.Sax.eco");
     importlib("Elastosx.Xml.eco");

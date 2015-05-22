@@ -3,7 +3,7 @@ module
 {
     importlib("Org.Xml.Sax.eco");
     importlib("Org.W3c.Dom.eco");
-    importlib("Elastos.Core.eco");
+    importlib("Elastos.CoreLibrary.eco");
 
     merge("../../../car/Elastosx/Xml/Parsers/IDocumentBuilder.car");
     merge("../../../car/Elastosx/Xml/Parsers/IDocumentBuilderFactory.car");

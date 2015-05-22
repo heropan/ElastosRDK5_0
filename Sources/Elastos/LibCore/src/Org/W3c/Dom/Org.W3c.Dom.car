@@ -1,7 +1,7 @@
 
 module
 {
-    importlib("Elastos.Core.eco");
+    importlib("Elastos.CoreLibrary.eco");
 
     merge("../../../../car/Org/W3c/Dom/INodeList.car");
     merge("../../../../car/Org/W3c/Dom/INode.car");

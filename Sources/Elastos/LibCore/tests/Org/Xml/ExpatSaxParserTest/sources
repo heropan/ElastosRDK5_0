@@ -3,7 +3,7 @@ TARGET_NAME = ExpatSaxParserTest
 TARGET_TYPE = ecx
 
 IMPORTS = Org.Xml.Sax.eco
-IMPORTS += Elastos.Core.eco
+IMPORTS += Elastos.CoreLibrary.eco
 
 SOURCES = test.cpp
 SOURCES += main.cpp

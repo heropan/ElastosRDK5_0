@@ -2,7 +2,7 @@
 ;; Copyright (c) 2000-20013,  Elastos, Inc.  All Rights Reserved.
 ;;==========================================================================
 
-LIBRARY Elastos.Core.eco
+LIBRARY Elastos.CoreLibrary.eco
 
 EXPORTS
     ;;ListNode

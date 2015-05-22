@@ -4,7 +4,7 @@ TARGET_NAME = testSql
 TARGET_TYPE = ecx
 
 IMPORTS = Elastos.Sql.eco
-IMPORTS += Elastos.Core.eco
+IMPORTS += Elastos.CoreLibrary.eco
 
 
 SOURCES = test.cpp

@@ -1,7 +1,7 @@
 
 module
 {
-    importlib("Elastos.Core.eco");
+    importlib("Elastos.CoreLibrary.eco");
 
     merge("../../../../car/Org/Xmlpull/V1/Exceptions.car");
     merge("../../../../car/Org/Xmlpull/V1/IXmlPullParser.car");
