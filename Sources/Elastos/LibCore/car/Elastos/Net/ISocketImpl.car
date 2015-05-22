@@ -8,7 +8,11 @@ module
     namespace Elastos{
     namespace Net{
 
-    interface ISocketImpl extends ISocketOptions {
+    /*
+     * @Involve
+     * interface ISocketOptions;
+     */
+    interface ISocketImpl {
         /**
          * Waits for an incoming request and blocks until the connection is opened
          * on the given socket.
@@ -79,7 +83,7 @@ module
          * @throws IOException
          *             if an error occurs while connecting to the remote host.
          */
-        ConnectEx(
+        Connect(
             [in] IInetAddress* address,
             [in] Int32 port);
 
@@ -199,7 +203,7 @@ module
          * @throws IOException
          *             if an error occurs while connecting.
          */
-        ConnectEx2(
+        Connect(
             [in] ISocketAddress* remoteAddr,
             [in] Int32 timeout);
 

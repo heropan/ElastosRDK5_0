@@ -8,7 +8,11 @@ module
     namespace Elastos {
     namespace Net {
 
-    interface ICookieManager extends ICookieHandler {
+    /*
+     * @Involve
+     * interface ICookieHandler;
+     */
+    interface ICookieManager {
         /**
          * Sets the cookie policy of this cookie manager.
          *

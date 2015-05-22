@@ -12,8 +12,11 @@ module
      * <p>
      * This class is responsible for connecting, getting content and input stream of
      * the file.
+     *
+     * @Involve
+     * interface IURLConnection;
      */
-    interface IFileURLConnection extends Elastos.Net.IURLConnection {
+    interface IFileURLConnection {
     }
 
     } // namespace Url

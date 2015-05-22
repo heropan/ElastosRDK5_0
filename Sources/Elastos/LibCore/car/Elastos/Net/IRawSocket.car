@@ -10,9 +10,12 @@ module
      * restricted to UDP packets for efficiency.
      *
      * @hide
+     *
+     * @Involve
+     * interface Elastos.IO.ICloseable;
      */
     [deprecated]
-    interface IRawSocket extends Elastos.IO.ICloseable {
+    interface IRawSocket {
 
         /**
          * Ethernet IP protocol type, part of the L2 header of IP packets.

@@ -86,8 +86,10 @@ module
      *
      * @sa Inet4Address
      * @sa Inet6Address
+     *
+     * @Involve
+     * interface Elastos.IO.ISerializable;
      */
-
     interface IInetAddress {
         /**
          * Returns the IP address represented by this {@code InetAddress} instance
@@ -284,7 +286,7 @@ module
          * @throws IllegalArgumentException
          *             if ttl or timeout is less than zero.
          */
-        IsReachableEx(
+        IsReachable(
             [in] INetworkInterface* networkInterface,
             [in] Int32 ttl,
             [in] Int32 timeout,
@@ -462,7 +464,7 @@ module
          * :-|:------------|
          * UnknownHostException | if {ipAddress} is null or the wrong length.
          */
-        GetByAddressEx(
+        GetByAddress(
             [in] String hostName,
             [in] ArrayOf<Byte>* ipAddress,
             [out] IInetAddress** interAddr);

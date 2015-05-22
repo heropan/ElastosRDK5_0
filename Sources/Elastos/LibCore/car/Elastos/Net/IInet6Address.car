@@ -10,8 +10,12 @@ module
      /**
      * An IPv6 address. See InetAddress.
      * @implements Elastos.Net.IInetAddress
+     *
+     * @Involve
+     * interface Elastos.IO.ISerializable;
+     * interface IInetAddress;
      */
-    interface IInet6Address extends IInetAddress {
+    interface IInet6Address {
         /**
          * Returns the scope id if this address is scoped to an interface, 0 otherwise.
          */
@@ -76,7 +80,7 @@ module
          * :-|:------------|
          * UnknownHostException | if the address is {null} or has an invalid length or the interface doesn't have a numeric scope id for the given address type.
          */
-        GetByAddressEx(
+        GetByAddress(
             [in] String host,
             [in] ArrayOf<Byte>* addr,
             [in] INetworkInterface* nif,

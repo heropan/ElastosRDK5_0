@@ -10,8 +10,11 @@ module
     /**
      * This is the handler that is responsible for reading files from the file
      * system.
+     *
+     * @Involve
+     * interface IURLStreamHandler;
      */
-    interface IFileHandler extends Elastos.Net.IURLStreamHandler {
+    interface IFileHandler {
     }
 
     } // namespace Url

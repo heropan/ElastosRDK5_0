@@ -14,8 +14,12 @@ module
      * Cache responses in a directory on the file system. Most clients should use
      * {@code android.net.HttpResponseCache}, the stable, documented front end for
      * this.
+     *
+     * @Involve
+     * interface Elastos.Net.IResponseCache;
+     * interface Elastos.Net.IExtendedResponseCache;
      */
-    interface IHttpResponseCache extends Elastos.Net.IResponseCache {
+    interface IHttpResponseCache {
 
         // public DiskLruCache getCache();
 

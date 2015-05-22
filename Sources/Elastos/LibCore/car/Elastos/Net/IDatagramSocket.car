@@ -59,7 +59,7 @@ module
          *
          * @sa #connect(SocketAddress)
          */
-        ConnectEx(
+        Connect(
             [in] IInetAddress* address,
             [in] Int32 aPort);
 

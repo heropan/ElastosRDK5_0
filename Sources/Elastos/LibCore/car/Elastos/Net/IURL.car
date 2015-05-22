@@ -111,7 +111,7 @@ module
          * IllegalArgumentException | if the argument proxy is {null} or is an invalid type.
          * UnsupportedOperationException | if the protocol handler does not support opening connections through proxies.
          */
-        OpenConnectionEx(
+        OpenConnection(
             [in] IProxy* proxy,
             [out] IURLConnection** connection);
 

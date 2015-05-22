@@ -5,7 +5,12 @@ module
     namespace Elastos{
     namespace Net{
 
-    interface ISocketInputStream extends Elastos.IO.IInputStream {
+    /*
+     * @Involve
+     * interface Elastos.IO.ICloseable;
+     * interface Elastos.IO.IInputStream;
+     */
+    interface ISocketInputStream {
     }
 
     } // namespace Net

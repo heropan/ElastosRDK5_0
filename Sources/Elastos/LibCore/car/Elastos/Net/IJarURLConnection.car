@@ -20,8 +20,11 @@ module
      * jar:http://www.example.com/applets/archive.jar!/test.class}</li>
      * <li>Directory Entry: {@code
      * jar:http://www.example.com/applets/archive.jar!/applets/}</li>
+     *
+     * @Involve
+     * interface IURLConnection;
      */
-    interface IJarURLConnection extends Elastos.Net.IURLConnection {
+    interface IJarURLConnection {
         /**
          * Returns all attributes of the {@code JarEntry} referenced by this {@code
          * JarURLConnection}.

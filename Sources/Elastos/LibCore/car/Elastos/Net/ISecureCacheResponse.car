@@ -1,13 +1,17 @@
 
 module
 {
-    interface Elastos.Utility.IObjectContainer;
+    interface Elastos.Utility.IList;
     interface Elastos.Security.IPrincipal;
 
     namespace Elastos{
     namespace Net{
 
-    interface ISecureCacheResponse extends ICacheResponse {
+    /*
+     * @Involve
+     * interface ICacheResponse;
+     */
+    interface ISecureCacheResponse {
         /**
          * Gets the cipher suite string on the connection which is originally used
          * to retrieve the network resource.
@@ -27,7 +31,7 @@ module
          *         certificate chain was sent, the method returns {@code null}.
          */
         GetLocalCertificateChain(
-            [out] IObjectContainer** certificateChain);
+            [out] IList** certificateChain);
 
         /**
          * Gets the cached server's certificate chain. As part of defining the
@@ -41,7 +45,7 @@ module
          *             if the peer is unverified.
          */
         GetServerCertificateChain(
-            [out] IObjectContainer** certificateChain);
+            [out] IList** certificateChain);
 
         /**
          * Gets the server's principle. When the original connection retrieved

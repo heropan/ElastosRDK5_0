@@ -7,7 +7,11 @@ module
     namespace Net {
     namespace Http {
 
-    interface IHttpHandler extends Elastos.Net.IURLStreamHandler {
+    /*
+     * @Involve
+     * interface Elastos.Net.IURLStreamHandler;
+     */
+    interface IHttpHandler {
     }
 
     } // namespace Http

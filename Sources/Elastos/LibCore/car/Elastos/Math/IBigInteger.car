@@ -21,9 +21,14 @@ module
      *
      * @sa BitSet
      * @implements Elastos.Math.Elastos.Core.INumber
+     *
+     * @Involve
+     * interface Elastos.IO.ISerializable;
+     * interface Elastos.Core.INumber;
+     * interface Elastos.Core.IComparable;
      */
 
-    interface IBigInteger extends Elastos.Core.INumber {
+    interface IBigInteger {
         /**
          * Returns the two's complement representation of this {BigInteger} in
          * a byte array.
@@ -497,7 +502,7 @@ module
          *
          * @param radix base to be used for the string representation.
          */
-        ToStringEx(
+        ToString(
             [in] Int32 radix,
             [out] String* string);
 

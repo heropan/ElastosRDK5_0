@@ -1,11 +1,22 @@
 
 module
 {
+    using interface Elastos.IO.ICloseable;
+    using interface Elastos.IO.IInputStream;
+
     namespace Elastos {
     namespace Net {
     namespace Http {
 
-    interface IUnknownLengthHttpInputStream extends IAbstractHttpInputStream {
+    /**
+     * An HTTP payload terminated by the end of the socket stream.
+     *
+     * @Involve
+     * interface Elastos.IO.ICloseable;
+     * interface Elastos.IO.IInputStream;
+     * interface IAbstractHttpInputStream;
+     */
+    interface IUnknownLengthHttpInputStream {
     }
 
     } // namespace Http

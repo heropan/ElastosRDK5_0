@@ -4,7 +4,13 @@ module
     namespace Elastos{
     namespace Net{
 
-    interface ISocketPermission extends IPermission {
+    /*
+     * @Involve
+     * interface IGuard;
+     * interface IPermission;
+     * interface Elastos.IO.ISerializable;
+     */
+    interface ISocketPermission {
     }
 
     } // namespace Net

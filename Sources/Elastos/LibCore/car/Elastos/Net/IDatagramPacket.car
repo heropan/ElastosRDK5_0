@@ -84,7 +84,7 @@ module
          *            store the received data.
          */
 
-        SetDataEx(
+        SetData(
             [in] ArrayOf<Byte>* buf,
             [in] Int32 anOffset,
             [in] Int32 aLength);

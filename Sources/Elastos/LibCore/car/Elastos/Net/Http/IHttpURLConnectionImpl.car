@@ -1,6 +1,7 @@
 
 module
 {
+    using interface Elastos.Net.IURLConnection;
     using interface Elastos.Net.IHttpURLConnection;
     using interface Elastos.Net.IProxy;
 
@@ -8,7 +9,11 @@ module
     namespace Net {
     namespace Http {
 
-    interface IHttpURLConnectionImpl extends Elastos.Net.IHttpURLConnection {
+    /* @Involve
+     * interface Elastos.Net.IURLConnection;
+     * interface Elastos.Net.IHttpURLConnection;
+     */
+    interface IHttpURLConnectionImpl {
         GetHttpEngine(
             [out] IHttpEngine** he);
 

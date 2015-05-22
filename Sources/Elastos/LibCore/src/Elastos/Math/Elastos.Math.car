@@ -5,6 +5,7 @@ module
     merge("../../../car/Elastos/Math/IBigInteger.car");
     merge("../../../car/Elastos/Math/RoundingMode.car");
 
+    //using interface Elastos.IO.ISerializable;
     using interface Elastos.Core.IComparable;
     using interface Elastos.Core.INumber;
 
@@ -82,6 +83,9 @@ module
     //         [in] Int64 int64Val,
     //         [in] IMathContext* mc);
 
+    //     //interface Elastos.IO.ISerializable;
+    //     interface Elastos.Core.INumber;
+    //     interface Elastos.Core.IComparable;
     //     interface IBigDecimal;
     // }
 
@@ -115,6 +119,9 @@ module
     //     constructor(
     //         [in] ArrayOf<Byte> arrValue);
 
+    //     //interface Elastos.IO.ISerializable;
+    //     interface Elastos.Core.INumber;
+    //     interface Elastos.Core.IComparable;
     //     interface IBigInteger;
     // }
 
@@ -130,6 +137,7 @@ module
     //         [in] Int32 precision,
     //         [in] RoundingMode roundingMode);
 
+    //     //interface Elastos.IO.ISerializable;
     //     interface IMathContext;
     // }
 

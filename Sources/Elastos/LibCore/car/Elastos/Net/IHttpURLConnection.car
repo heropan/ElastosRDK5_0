@@ -301,8 +301,11 @@ module
      * Each instance of HttpURLConnection may be used for one request/response pair. Instances of this class are not thread safe.</p>
      *
      * @implements Elastos.Net.IURLConnection
+     *
+     * @Involve
+     * interface IURLConnection;
      */
-    interface IHttpURLConnection extends IURLConnection {
+    interface IHttpURLConnection {
         // 2XX: generally "OK"
         // 3XX: relocation/redirect
         // 4XX: client error

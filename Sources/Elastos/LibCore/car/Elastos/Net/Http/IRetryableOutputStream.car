@@ -7,7 +7,14 @@ module
     namespace Net {
     namespace Http {
 
-    interface IRetryableOutputStream extends IAbstractHttpOutputStream {
+    /*
+     * @Involve
+     * interface Elastos.IO.ICloseable;
+     * interface Elastos.IO.IFlushable;
+     * interface Elastos.IO.IOutputStream;
+     * interface IAbstractHttpOutputStream;
+     */
+    interface IRetryableOutputStream {
         ContentLength(
             [out] Int32* value);
 

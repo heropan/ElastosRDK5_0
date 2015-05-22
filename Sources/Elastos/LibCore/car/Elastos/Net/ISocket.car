@@ -295,7 +295,7 @@ module
          * IllegalArgumentException | if the given SocketAddress is invalid or not supported or the timeout value is negative.
          * IOException | if the socket is already connected or an error occurs while connecting.
          */
-        ConnectEx(
+        Connect(
             [in] ISocketAddress* remoteAddr,
             [in] Int32 timeout);
 

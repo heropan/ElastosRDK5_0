@@ -43,7 +43,7 @@ module
          * @throws UnsupportedOperationException
          *             if the protocol handler doesn't support this method.
          */
-        OpenConnectionEx(
+        OpenConnection(
             [in] IURL* u,
             [in] IProxy* proxy,
             [out] IURLConnection** urlConnection);
@@ -124,7 +124,7 @@ module
          * @param ref
          *            the reference.
          */
-        SetURLEx(
+        SetURL(
             [in] IURL* u,
             [in] String protocol,
             [in] String host,
@@ -148,7 +148,7 @@ module
             [in] IURL* url,
             [out] String* s);
 
-        ToExternalFormEx(
+        ToExternalForm(
             [in] IURL* url,
             [in] Boolean escapeIllegalCharacters,
             [out] String* s);
@@ -165,7 +165,7 @@ module
          * @return {@code true} if the URLs are the same, {@code false} otherwise.
          * @see #hashCode
          */
-        EqualsEx(
+        Equals(
             [in] IURL* url1,
             [in] IURL* url2,
             [out] Boolean* isEquals);

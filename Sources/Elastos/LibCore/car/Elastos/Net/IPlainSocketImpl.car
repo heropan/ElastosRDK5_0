@@ -5,8 +5,12 @@ module
     namespace Elastos{
     namespace Net{
 
-    interface IPlainSocketImpl extends ISocketImpl
-    {
+    /*
+     * @Involve
+     * interface ISocketOptions;
+     * interface ISocketImpl;
+     */
+    interface IPlainSocketImpl {
         InitLocalPort(
                 [in] Int32 localPort);
 

@@ -196,7 +196,7 @@ module
          *            be resolved later on.
          * @return the created and resolved URI.
          */
-        ResolveEx(
+        Resolve(
             [in] String relative,
             [out] IURI** uri);
 

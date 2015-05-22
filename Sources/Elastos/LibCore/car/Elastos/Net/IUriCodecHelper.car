@@ -17,7 +17,7 @@ module
             [in]  String s,
             [out] String* result);
 
-       DecodeEx(
+       Decode(
             [in] String s,
             [in] Boolean convertPlus,
             [in] ICharset* charset,

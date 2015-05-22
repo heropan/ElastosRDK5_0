@@ -9,8 +9,12 @@ module
     /**
      * An IPv4 address. See InetAddress.
      * @implements Elastos.Net.IInetAddress
+     *
+     * @Involve
+     * interface Elastos.IO.ISerializable;
+     * interface IInetAddress;
      */
-    interface IInet4Address extends IInetAddress {
+    interface IInet4Address {
 
     }
 

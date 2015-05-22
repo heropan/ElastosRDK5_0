@@ -16,7 +16,6 @@ module
     /**
      * Parsed HTTP response headers.
      */
-    //[deprecated]
     interface IResponseHeaders {
         IsContentEncodingGzip(
             [out] Boolean* value);

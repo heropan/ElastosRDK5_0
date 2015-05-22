@@ -12,8 +12,12 @@ module
      * a port number. It is a concrete implementation of SocketAddress for IP.
      *
      * @implements Elastos.Net.ISocketAddress
+     *
+     * @Involve
+     * interface Elastos.IO.ISerializable;
+     * interface ISocketAddress;
      */
-    interface IInetSocketAddress extends ISocketAddress {
+    interface IInetSocketAddress {
         /**
          * Gets the port number of this socket.
          *

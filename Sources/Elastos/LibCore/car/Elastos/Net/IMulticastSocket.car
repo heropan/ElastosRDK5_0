@@ -10,7 +10,11 @@ module
     namespace Elastos{
     namespace Net{
 
-    interface IMulticastSocket extends IDatagramSocket {
+    /*
+     * @Involve
+     * interface IDatagramSocket;
+     */
+    interface IMulticastSocket {
         /**
          * Gets the network address used by this socket. This is useful on
          * multihomed machines.
@@ -90,7 +94,7 @@ module
          *                if no multicast group is specified.
          * @since 1.4
          */
-        JoinGroupEx(
+        JoinGroup(
             [in] ISocketAddress* groupAddress,
             [in] INetworkInterface* netInterface);
 
@@ -125,7 +129,7 @@ module
          *                if {@code groupAddress} is {@code null}.
          * @since 1.4
          */
-        LeaveGroupEx(
+        LeaveGroup(
             [in] ISocketAddress* groupAddress,
             [in] INetworkInterface* netInterface);
 
@@ -143,7 +147,7 @@ module
          * @deprecated use {@link #setTimeToLive}.
          */
         //@Deprecated
-        SendEx(
+        Send(
             [in] IDatagramPacket* pack,
             [in] Byte ttl);
 

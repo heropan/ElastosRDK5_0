@@ -2,6 +2,7 @@
 module
 {
     enum Elastos.Math.RoundingMode;
+
     interface Elastos.Math.IMathContext;
     interface Elastos.Math.IBigInteger;
 
@@ -23,8 +24,13 @@ module
      * @sa MathContext
      *
      * @implements Elastos.Math.Elastos.Core.INumber
+     *
+     * @Involve
+     * interface Elastos.IO.ISerializable;
+     * interface Elastos.Core.INumber;
+     * interface Elastos.Core.IComparable;
      */
-    interface IBigDecimal extends Elastos.Core.INumber {
+    interface IBigDecimal {
         /**
          * Rounding mode where positive values are rounded towards positive infinity
          * and negative values towards negative infinity.
@@ -126,7 +132,7 @@ module
          * :-|:------------|
          * NullPointerException | if {augend == null} or {mc == null}.
          */
-        AddEx(
+        Add(
             [in] IBigDecimal* augend,
             [in] IMathContext* mc,
             [out] IBigDecimal** result);
@@ -161,7 +167,7 @@ module
          * :-|:------------|
          * NullPointerException | if {subtrahend == null} or {mc == null}.
          */
-        SubtractEx(
+        Subtract(
             [in] IBigDecimal* subtrahend,
             [in] IMathContext* mc,
             [out] IBigDecimal** result);
@@ -194,7 +200,7 @@ module
          * :-|:------------|
          * NullPointerException | if {multiplicand == null} or {mc == null}.
          */
-        MultiplyEx(
+        Multiply(
             [in] IBigDecimal* multiplicand,
             [in] IMathContext* mc,
             [out] IBigDecimal** result);
@@ -246,7 +252,7 @@ module
          * ArithmeticException | if {divisor == 0}.
          * ArithmeticException | if {roundingMode == ROUND_UNNECESSARY} and rounding is necessary according to the scale of this.
          */
-        DivideEx(
+        Divide(
             [in] IBigDecimal* divisor,
             [in] RoundingMode roundingMode,
             [out] IBigDecimal** result);
@@ -268,7 +274,7 @@ module
          * ArithmeticException | if {divisor == 0}.
          * ArithmeticException | if the result cannot be represented exactly.
          */
-        DivideEx2(
+        Divide(
             [in] IBigDecimal* divisor,
             [out] IBigDecimal** result);
 
@@ -290,7 +296,7 @@ module
          * ArithmeticException | if {divisor == 0}.
          * ArithmeticException | if {mc.getRoundingMode() == UNNECESSARY} and rounding is necessary according {mc.getPrecision()}.
          */
-        DivideEx3(
+        Divide(
             [in] IBigDecimal* divisor,
             [in] IMathContext* mc,
             [out] IBigDecimal** result);
@@ -333,7 +339,7 @@ module
          * ArithmeticException | if {divisor == 0}.
          * ArithmeticException | if {mc.getPrecision() > 0} and the result requires more digits to be represented.
          */
-        DivideToIntegralValueEx(
+        DivideToIntegralValue(
             [in] IBigDecimal* divisor,
             [in] IMathContext* mc,
             [out] IBigDecimal** result);
@@ -379,7 +385,7 @@ module
          * ArithmeticException | if {divisor == 0}.
          * ArithmeticException | if {mc.getPrecision() > 0} and the result of { this.divideToIntegralValue(divisor, mc)} requires more digits to be represented.
          */
-        RemainderEx(
+        Remainder(
             [in] IBigDecimal* divisor,
             [in] IMathContext* mc,
             [out] IBigDecimal** result);
@@ -428,7 +434,7 @@ module
          * @see #divideToIntegralValue
          * @see #remainder
          */
-        DivideAndRemainderEx(
+        DivideAndRemainder(
             [in] IBigDecimal* divisor,
             [in] IMathContext* mc,
             [out, callee] ArrayOf<IBigDecimal*>* result);
@@ -471,7 +477,7 @@ module
          * :-|:------------|
          * ArithmeticException | if {n < 0} or {n > 999999999}.
          */
-        PowEx(
+        Pow(
             [in] Int32 n,
             [in] IMathContext* mc,
             [out] IBigDecimal** result);
@@ -494,7 +500,7 @@ module
          *            rounding mode and precision for the result of this operation.
          * @return {abs(this)}
          */
-        AbsEx(
+        Abs(
             [in] IMathContext* mc,
             [out] IBigDecimal** result);
 
@@ -515,7 +521,7 @@ module
          *            rounding mode and precision for the result of this operation.
          * @return {-this}
          */
-        NegateEx(
+        Negate(
             [in] IMathContext* mc,
             [out] IBigDecimal** result);
 
@@ -536,7 +542,7 @@ module
          *            rounding mode and precision for the result of this operation.
          * @return {this}, rounded
          */
-        PlusEx(
+        Plus(
             [in] IMathContext* mc,
             [out] IBigDecimal** result);
 
@@ -639,7 +645,7 @@ module
          * :-|:------------|
          * ArithmeticException | if rounding would be necessary.
          */
-        SetScaleEx(
+        SetScale(
             [in] Int32 newScale,
             [out] IBigDecimal** result);
 
@@ -902,7 +908,7 @@ module
          *            value to be converted to a {BigDecimal}.
          * @return {BigDecimal} instance with the value {unscaledVal}.
          */
-        ValueOfEx(
+        ValueOf(
             [in] Int64 unscaledVal,
             [out] IBigDecimal** newObj);
 
@@ -927,7 +933,7 @@ module
          * :-|:------------|
          * NumberFormatException | if {val} is infinite or {val} is not a number
          */
-        ValueOfEx2(
+        ValueOf(
             [in] Double val,
             [out] IBigDecimal** newObj);
 

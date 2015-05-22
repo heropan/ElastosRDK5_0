@@ -157,7 +157,7 @@ module
          *             if a security manager denies the password authentication
          *             permission.
          */
-        RequestPasswordAuthenticationEx(
+        RequestPasswordAuthentication(
             [in] String rHost,
             [in] IInetAddress* rAddr,
             [in] Int32 rPort,
@@ -193,7 +193,7 @@ module
          *             if a security manager denies the password authentication
          *             permission.
          */
-        RequestPasswordAuthenticationEx2(
+        RequestPasswordAuthentication(
             [in] String rHost,
             [in] IInetAddress* rAddr,
             [in] Int32 rPort,

@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.IO.ICloseable;
+    using interface Elastos.IO.IFlushable;
     using interface Elastos.IO.IOutputStream;
 
     namespace Elastos {
@@ -16,9 +18,13 @@ module
      * <p>A side effect of reading an HTTP response is that the response cache
      * is populated. If the stream is closed early, that cache entry will be
      * invalidated.
+     *
+     * @Involve
+     * interface Elastos.IO.ICloseable;
+     * interface Elastos.IO.IFlushable;
+     * interface Elastos.IO.IOutputStream;
      */
-    //[deprecated]
-    interface IAbstractHttpOutputStream extends Elastos.IO.IOutputStream {
+    interface IAbstractHttpOutputStream {
     }
 
     } // namespace Http

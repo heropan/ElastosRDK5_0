@@ -1,9 +1,9 @@
 
 module
 {
+    interface Elastos.Utility.IList;
     interface Elastos.Net.IURI;
     interface Elastos.Net.ISocketAddress;
-    interface Elastos.Utility.IObjectContainer;
 
     namespace Elastos {
     namespace Net {
@@ -25,7 +25,7 @@ module
          */
         Select(
             [in] IURI* uri,
-            [out] IObjectContainer** container);
+            [out] IList** container);
 
         /**
          * Notifies this {ProxySelector} that a connection to the proxy server

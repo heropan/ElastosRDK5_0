@@ -946,6 +946,8 @@ module
     //         [in] IInetAddress * pAddr,
     //         [in] Int32 port);
 
+    //     interface ISocketOptions;
+    //     interface ISocketImpl;
     //     interface IPlainSocketImpl;
     // }
 
@@ -955,6 +957,9 @@ module
     //     constructor(
     //         [in] IFileDescriptor * pFd);
 
+    //     interface ISocketOptions;
+    //     interface ISocketImpl;
+    //     interface IPlainSocketImpl;
     //     interface IPlainServerSocketImpl;
     // }
 
@@ -962,6 +967,8 @@ module
     //     constructor(
     //         [in] ISocketImpl * pImpl);
 
+    //     interface Elastos.IO.ICloseable;
+    //     interface Elastos.IO.IInputStream;
     //     interface ISocketInputStream;
     // }
 
@@ -969,8 +976,11 @@ module
     //     constructor(
     //         [in] ISocketImpl * pImpl);
 
+    //     interface Elastos.IO.ICloseable;
+    //     interface Elastos.IO.IFlushable;
+    //     interface Elastos.IO.IOutputStream;
+    //     interface Elastos.IO.IFilterOutputStream;
     //     interface ISocketOutputStream;
-    //     interface IFlushable;
     // }
 
     // class CMulticastSocket {
@@ -982,6 +992,7 @@ module
     //     constructor(
     //         [in] ISocketAddress* localAddr);
 
+    //     interface IDatagramSocket;
     //     interface IMulticastSocket;
     // }
 
@@ -990,6 +1001,7 @@ module
     //         [in] String interfaceName,
     //         [in] Int16 protocolType);
 
+    //     interface Elastos.IO.ICloseable;
     //     interface IRawSocket;
     // }
 
@@ -1000,6 +1012,7 @@ module
 
     //     constructor();
 
+    //     interface ISocketOptions;
     //     interface IDatagramSocketImpl;
     // }
 
@@ -1023,6 +1036,7 @@ module
     //         [in] ArrayOf<Byte>* ipaddress,
     //         [in] String hostName);
 
+    //     interface Elastos.IO.ISerializable;
     //     interface IInetAddress;
     // }
 
@@ -1039,6 +1053,8 @@ module
     //         [in] IHttpEngine* httpEngine,
     //         [in] ICacheRequest* cacheRequest);
 
+    //     interface Elastos.IO.ICloseable;
+    //     interface Elastos.IO.IInputStream;
     //     interface IAbstractHttpInputStream;
     // }
 
@@ -1056,6 +1072,9 @@ module
     //         [in] ICacheRequest* cacheRequest,
     //         [in] IHttpEngine* httpEngine);
 
+    //     interface Elastos.IO.ICloseable;
+    //     interface Elastos.IO.IInputStream;
+    //     interface IAbstractHttpInputStream;
     //     interface IChunkedInputStream;
     // }
 
@@ -1064,8 +1083,11 @@ module
     //         [in] IOutputStream* socketOut,
     //         [in] Int32 maxChunkLength);
 
+    //     interface Elastos.IO.ICloseable;
+    //     interface Elastos.IO.IFlushable;
+    //     interface Elastos.IO.IOutputStream;
+    //     interface IAbstractHttpOutputStream;
     //     interface IChunkedOutputStream;
-    //     interface IFlushable;
     // }
 
     // class CFixedLengthInputStream {
@@ -1075,6 +1097,9 @@ module
     //         [in] IHttpEngine* httpEngine,
     //         [in] Int32 length);
 
+    //     interface Elastos.IO.ICloseable;
+    //     interface Elastos.IO.IInputStream;
+    //     interface IAbstractHttpInputStream;
     //     interface IFixedLengthInputStream;
     // }
 
@@ -1083,8 +1108,11 @@ module
     //         [in] IOutputStream* socketOut,
     //         [in] Int32 bytesRemaining);
 
+    //     interface Elastos.IO.ICloseable;
+    //     interface Elastos.IO.IFlushable;
+    //     interface Elastos.IO.IOutputStream;
+    //     interface IAbstractHttpOutputStream;
     //     interface IFixedLengthOutputStream;
-    //     interface IFlushable;
     // }
 
     // singleton class CHeaderParserHelper{
@@ -1098,6 +1126,7 @@ module
     // class CHttpHandler {
     //     constructor();
 
+    //     interface Elastos.Net.IURLStreamHandler;
     //     interface IHttpHandler;
     // }
 
@@ -1106,13 +1135,15 @@ module
     //         [in] IFile* directory,
     //         [in] Int64 maxSize);
 
+    //     interface Elastos.Net.IResponseCache;
+    //     interface Elastos.Net.IExtendedResponseCache;
     //     interface IHttpResponseCache;
-    //     interface IExtendedResponseCache;
     // }
 
     // class CHttpsHandler {
     //     constructor();
 
+    //     interface Elastos.Net.IURLStreamHandler;
     //     interface IHttpsHandler;
     // }
 
@@ -1162,8 +1193,11 @@ module
     //     constructor(
     //         [in] Int32 limi);
 
+    //     interface Elastos.IO.ICloseable;
+    //     interface Elastos.IO.IFlushable;
+    //     interface Elastos.IO.IOutputStream;
+    //     interface IAbstractHttpOutputStream;
     //     interface IRetryableOutputStream;
-    //     interface IFlushable;
     // }
 
     // class CUnknownLengthHttpInputStream {
@@ -1172,6 +1206,9 @@ module
     //         [in] ICacheRequest* cacheRequest,
     //         [in] IHttpEngine* httpEngine);
 
+    //     interface Elastos.IO.ICloseable;
+    //     interface Elastos.IO.IInputStream;
+    //     interface IAbstractHttpInputStream;
     //     interface IUnknownLengthHttpInputStream;
     // }
 
@@ -1186,6 +1223,7 @@ module
     // class CFileHandler {
     //     constructor();
 
+    //     interface Elastos.Net.IURLStreamHandler;
     //     interface IFileHandler;
     // }
 
@@ -1193,12 +1231,14 @@ module
     //     constructor(
     //         [in] Elastos.Net.IURL* url);
 
+    //     interface Elastos.Net.IURLConnection;
     //     interface IFileURLConnection;
     // }
 
     // class CFtpHandler {
     //     constructor();
 
+    //     interface Elastos.Net.IURLStreamHandler;
     //     interface IFtpHandler;
     // }
 
@@ -1207,6 +1247,8 @@ module
     //         [in] IInputStream* is,
     //         [in] Elastos.Net.ISocket* controlSocket);
 
+    //     interface Elastos.IO.ICloseable;
+    //     interface Elastos.IO.IInputStream;
     //     interface IFtpURLInputStream;
     // }
 

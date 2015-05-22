@@ -5,8 +5,13 @@ module
     namespace Elastos{
     namespace Net{
 
-    interface IPlainServerSocketImpl extends IPlainSocketImpl
-    {
+    /*
+     * @Involve
+     * interface ISocketOptions;
+     * interface ISocketImpl;
+     * interface IPlainSocketImpl;
+     */
+    interface IPlainServerSocketImpl {
     }
 
     } // namespace Net

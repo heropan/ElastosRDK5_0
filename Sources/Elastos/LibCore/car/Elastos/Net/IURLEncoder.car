@@ -30,7 +30,7 @@ module
          *
          * @sa Charset
          */
-        EncodeEx(
+        Encode(
             [in]  String s,
             [in]  String charsetName,
             [out] String* result);

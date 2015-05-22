@@ -7,9 +7,32 @@ module
     //interface IDatagramChannel {
     //}
 
+    /*
+     * @Involve
+     * interface Elastos.IO.Channels.IScatteringByteChannel;
+     * interface Elastos.IO.Channels.IGatheringByteChannel;
+     * interface Elastos.IO.Channels.IReadableByteChannel;
+     * interface Elastos.IO.Channels.IWritableByteChannel;
+     * interface Elastos.IO.Channels.IByteChannel;
+     * interface Elastos.IO.Channels.IInterruptibleChannel;
+     * interface Elastos.IO.Closeable;
+     * interface Elastos.IO.Channels.IChannel;
+     * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
+     * interface Elastos.IO.Channels.ISelectableChannel;
+     * interface Elastos.IO.Channels.Spi.IAbstractSelectableChannel;
+     */
     interface ISocketChannel {
     }
 
+    /*
+     * @Involve
+     * interface Elastos.IO.Channels.IInterruptibleChannel;
+     * interface Elastos.IO.Closeable;
+     * interface Elastos.IO.Channels.IChannel;
+     * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
+     * interface Elastos.IO.Channels.ISelectableChannel;
+     * interface Elastos.IO.Channels.Spi.IAbstractSelectableChannel;
+     */
     interface IServerSocketChannel {
     }
 

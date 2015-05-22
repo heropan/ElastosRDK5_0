@@ -11,6 +11,9 @@ module
      * precision for the numerical operations provided by class BigDecimal.
      *
      * @sa BigDecimal
+     *
+     * @Involve
+     * interface Elastos.IO.ISerializable;
      */
     interface IMathContext {
         /**

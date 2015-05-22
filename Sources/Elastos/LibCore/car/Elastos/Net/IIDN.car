@@ -45,7 +45,7 @@ module
          * @return the ACE name
          * @throws IllegalArgumentException if {@code input} does not conform to RFC 3490
          */
-        ToASCIIEx(
+        ToASCII(
             [in] String input,
             [in] Int32 flags,
             [out] String* name);
@@ -75,7 +75,7 @@ module
          * @param flags 0, {@code ALLOW_UNASSIGNED}, {@code USE_STD3_ASCII_RULES},
          *         or {@code ALLOW_UNASSIGNED | USE_STD3_ASCII_RULES}
          */
-        ToUnicodeEx(
+        ToUnicode(
             [in] String input,
             [in] Int32 flags,
             [out] String* name);

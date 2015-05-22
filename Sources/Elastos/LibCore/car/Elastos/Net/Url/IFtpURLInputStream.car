@@ -12,8 +12,12 @@ module
      * <p>
      * This class is responsible for connecting, getting content and input stream of
      * the file.
+     *
+     * @Involve
+     * interface Elastos.IO.ICloseable;
+     * interface Elastos.IO.IInputStream;
      */
-    interface IFtpURLInputStream extends Elastos.IO.IInputStream {
+    interface IFtpURLInputStream {
     }
 
     } // namespace Url

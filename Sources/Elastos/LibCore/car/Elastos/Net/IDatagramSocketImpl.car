@@ -16,8 +16,11 @@ module
      * The abstract superclass for datagram and multicast socket implementations.
      *
      * @implements Elastos.Net.ISocketOptions
+     *
+     * @Involve
+     * interface Elastos.Net.ISocketOptions;
      */
-    interface IDatagramSocketImpl extends ISocketOptions {
+    interface IDatagramSocketImpl {
         /**
          * Binds the datagram socket to the given localhost/port. Sockets must be
          * bound prior to attempting to send or receive data.

@@ -33,7 +33,7 @@ module
          *             if an error occurred while obtaining the content.
          */
         // Class arg not generified in the spec.
-        GetContentEx(
+        GetContent(
             [in] IURLConnection* uConn,
             [in] ArrayOf<InterfaceID> types,
             [out] IInterface** obj);

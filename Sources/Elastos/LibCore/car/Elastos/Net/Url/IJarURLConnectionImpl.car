@@ -13,8 +13,12 @@ module
      *
      * This class is responsible for connecting and retrieving resources from a Jar
      * file which can be anywhere that can be referred to by an URL.
+     *
+     * @Involve
+     * interface Elastos.Net.IURLConnection;
+     * interface Elastos.Net.IJarURLConnection;
      */
-    interface IJarURLConnectionImpl extends Elastos.Net.IJarURLConnection {
+    interface IJarURLConnectionImpl {
     }
 
     interface IJarURLConnectionImplHelper {
