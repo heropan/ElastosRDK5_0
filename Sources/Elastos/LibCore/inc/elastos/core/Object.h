@@ -15,7 +15,7 @@
 using Elastos::Core::Threading::ISynchronize;
 using Elastos::Core::Threading::NativeObject;
 
-#define synchronized(obj)   for(Elastos::Core::Object::AutoLock obj##_lock(obj); obj##_lock; obj##_lock.SetUnlock())
+#define synchronized(obj)  for(Elastos::Core::Object::AutoLock obj##_lock(obj); obj##_lock; obj##_lock.SetUnlock())
 
 namespace Elastos {
 namespace Core {
@@ -41,6 +41,7 @@ public:
         inline Autolock(
             /* [in] */ Object* object)
             : mObject(*object)
+            , mLocked(TRUE)
         {
             mObject.Lock();
         }
@@ -61,6 +62,7 @@ public:
         {
             mLocked = FALSE;
         }
+
     private:
         Object& mObject;
         Boolean mLocked;

@@ -8,6 +8,7 @@ namespace Elastos {
 namespace Core {
 
 CAR_INTERFACE_IMPL_2(CBoolean, Object, ISerializable, IComparable)
+
 CAR_OBJECT_IMPL(CBoolean)
 
 ECode CBoolean::constructor(
