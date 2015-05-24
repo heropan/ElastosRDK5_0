@@ -110,7 +110,13 @@ ECode Object::ToString(
     /* [out] */ String* info)
 {
     VALIDATE_NOT_NULL(info);
-    info->AppendFormat("Object[0x%08x]", this);
+    AutoPtr<IClassInfo> classInfo;
+    _CObject_ReflectClassInfo(THIS_PROBE(IInterface), (IClassInfo**)&classInfo);
+    String className("--");
+    if (classInfo != NULL) {
+        classInfo->GetName(&className);
+    }
+    info->AppendFormat("Object[0x%08x], Class[%s]", this, className.string());
     return NOERROR;
 }
 
