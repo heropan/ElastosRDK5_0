@@ -17,8 +17,13 @@ namespace Elastos {
 namespace IO {
 
 class OutputStream
+    : public Object
+    , public ICloseable
+    , public IOutputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
     OutputStream();
 
     virtual ~OutputStream();
@@ -98,9 +103,6 @@ public:
      */
     virtual CARAPI CheckError(
         /* [out] */ Boolean* hasError);
-
-protected:
-    virtual CARAPI_(AutoPtr<IInterface>) GetLock();
 
 protected:
     AutoPtr<LockObject> mLock;

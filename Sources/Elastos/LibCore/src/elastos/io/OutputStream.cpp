@@ -4,6 +4,8 @@
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL_3(OutputStream, Object, ICloseable, IOutputStream)
+
 OutputStream::OutputStream()
 {
     mLock = new LockObject();
@@ -11,12 +13,6 @@ OutputStream::OutputStream()
 
 OutputStream::~OutputStream()
 {
-}
-
-AutoPtr<IInterface> OutputStream::GetLock()
-{
-    AutoPtr<IInterface> obj = (IInterface*)mLock.Get();
-    return obj;
 }
 
 ECode OutputStream::Close()

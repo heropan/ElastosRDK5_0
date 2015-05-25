@@ -39,7 +39,7 @@ module
         /**
          * Equivalent to write(buffer, 0, buffer.length).
          */
-        WriteBytes(
+        Write(
             [in] ArrayOf<Byte> buffer);
 
         /**
@@ -61,7 +61,7 @@ module
          *                             {offset + count} is bigger than the length of
          *                             {buffer}.
          */
-        WriteBytesEx(
+        Write(
             [in] ArrayOf<Byte> buffer,
             [in] Int32 offset,
             [in] Int32 count);
@@ -72,9 +72,6 @@ module
          */
         CheckError(
             [out] Boolean* hasError);
-
-        GetLock(
-            [out] IInterface** lockObj);
     }
 
     } // namespace IO
