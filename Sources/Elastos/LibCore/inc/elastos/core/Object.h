@@ -15,7 +15,9 @@
 using Elastos::Core::Threading::ISynchronize;
 using Elastos::Core::Threading::NativeObject;
 
+#ifdef synchronized
 #define synchronized(obj)  for(Elastos::Core::Object::AutoLock obj##_lock(obj); obj##_lock; obj##_lock.SetUnlock())
+#endif
 
 namespace Elastos {
 namespace Core {

@@ -14,6 +14,5 @@ LIBRARIES += $(XDK_LIB_PATH)/Elastos.Runtime.lib
 else
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
 LIBRARIES += -lstdc++ -lm -ldl -llog -lz -lcutils -lutils -lbinder -licuuc
 endif
