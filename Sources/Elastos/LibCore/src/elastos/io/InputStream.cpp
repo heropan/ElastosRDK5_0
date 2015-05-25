@@ -6,19 +6,7 @@
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL_2(HandlerBase, ICloseable, IInputStream)
-
-PInterface InputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_ICloseable) {
-        return (ICloseable*)this;
-    }
-    else if (riid == EIID_IInputStream) {
-        return (IInputStream*)this;
-    }
-    else return Object::Probe(riid);
-}
+CAR_INTERFACE_IMPL_3(InputStream, Object, ICloseable, IInputStream)
 
 ECode InputStream::Available(
     /* [out] */ Int32* number)
