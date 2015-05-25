@@ -6,7 +6,7 @@
 #include "ThreadBase.h"
 
 using Libcore::IO::IOs;
-using Elastos::Core::Threading::ThreadBase;
+using Elastos::Core::ThreadBase;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Utility::Concurrent::ICountDownLatch;
 

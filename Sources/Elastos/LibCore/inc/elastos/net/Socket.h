@@ -5,7 +5,7 @@
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IFileDescriptor;

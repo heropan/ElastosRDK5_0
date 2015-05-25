@@ -9,7 +9,7 @@
 #include <elastos/Mutex.h>
 
 using Elastos::Utility::List;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Sql::IResultSet;
 using Elastos::Sql::ISQLWarning;
 

@@ -11,7 +11,7 @@
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace Net {

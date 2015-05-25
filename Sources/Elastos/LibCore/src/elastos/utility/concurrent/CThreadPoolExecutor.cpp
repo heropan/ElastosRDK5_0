@@ -13,7 +13,7 @@
 #endif
 
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
 

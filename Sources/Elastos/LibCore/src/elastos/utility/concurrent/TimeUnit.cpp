@@ -3,7 +3,7 @@
 #include "TimeUnit.h"
 #include <elastos/Thread.h>
 
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace Utility {

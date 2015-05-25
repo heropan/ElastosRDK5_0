@@ -10,8 +10,8 @@
 #endif
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::IThreadGroup;
+using Elastos::Core::IThread;
+using Elastos::Core::IThreadGroup;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 
 namespace Elastos {

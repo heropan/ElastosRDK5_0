@@ -5,7 +5,6 @@
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 ELAPI_(Int32) CoreStartup();
 
@@ -135,6 +134,5 @@ fail:
     return 1;
 }
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos

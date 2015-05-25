@@ -6,7 +6,7 @@
 #include <elastos/Mutex.h>
 
 using Libcore::ICU::ILocale;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Elastos{
 namespace Utility{

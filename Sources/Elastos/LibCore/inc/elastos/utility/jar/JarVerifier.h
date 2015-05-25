@@ -13,7 +13,7 @@
 
 using Elastos::Utility::IVector;
 using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::OutputStream;
 using Elastos::Security::Cert::ICertificate;

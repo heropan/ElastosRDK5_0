@@ -10,7 +10,7 @@
 #include "CSystem.h"
 #endif
 
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Core::ISystem;
 using Elastos::Core::StringUtils;
 

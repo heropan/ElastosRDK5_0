@@ -12,8 +12,8 @@
 
 using Elastos::Utility::HashSet;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::Condition;
+using Elastos::Core::Mutex;
+using Elastos::Core::Condition;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::Concurrent::Locks::AbstractQueuedSynchronizer;
 

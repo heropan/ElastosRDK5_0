@@ -23,7 +23,7 @@
 #include <errno.h>
 #include <signal.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 /**
  * We use an intrusive doubly-linked list to keep track of blocked threads.

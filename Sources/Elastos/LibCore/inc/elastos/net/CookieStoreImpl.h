@@ -14,7 +14,7 @@
 using Elastos::Utility::List;
 using Elastos::Utility::HashMap;
 using Elastos::Utility::IList;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Net::IURI;
 
 #ifndef HASH_FUNC_FOR_AUTOPTR_IURI

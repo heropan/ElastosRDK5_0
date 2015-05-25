@@ -10,7 +10,7 @@
 #include <elastos/Mutex.h>
 #include <elrefbase.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace Utility {

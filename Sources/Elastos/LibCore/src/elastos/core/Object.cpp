@@ -2,9 +2,9 @@
 #include "Object.h"
 #include "Thread.h"
 
-using Elastos::Core::Threading::Thread;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::EIID_ISynchronize;
+using Elastos::Core::Thread;
+using Elastos::Core::IThread;
+using Elastos::Core::EIID_ISynchronize;
 
 namespace Elastos {
 namespace Core {
@@ -12,13 +12,13 @@ namespace Core {
 Object::Object()
 {
     IncrementDllLockCount();
-    mNativeObject = Threading::NativeCreateObject();
+    mNativeObject = NativeCreateObject();
     mNativeObject->mObjectObj = reinterpret_cast<Int32>(this);
 }
 
 Object::~Object()
 {
-    Threading::NativeDestroyObject(mNativeObject);
+    NativeDestroyObject(mNativeObject);
     DecrementDllLockCount();
 }
 

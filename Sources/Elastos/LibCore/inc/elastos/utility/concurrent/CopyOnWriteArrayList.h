@@ -7,7 +7,7 @@
 #include "AbstractList.h"
 #include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 using Elastos::Utility::AbstractList;

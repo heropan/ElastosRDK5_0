@@ -6,7 +6,7 @@
 #include <elastos/Mutex.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::Channels::Spi::ISelectorProvider;
 
 namespace Elastos {

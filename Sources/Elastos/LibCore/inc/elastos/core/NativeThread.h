@@ -11,7 +11,6 @@
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 typedef struct NativeObject
 {
@@ -438,7 +437,6 @@ ELAPI NativeThreadSleep(
     /* [in] */ Int64 msec,
     /* [in] */ Int32 nsec);
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos
 

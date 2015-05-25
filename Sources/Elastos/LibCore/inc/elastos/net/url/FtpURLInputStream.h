@@ -9,7 +9,7 @@
 using Elastos::IO::InputStream;
 using Elastos::IO::IInputStream;
 using Elastos::Net::ISocket;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace Net {

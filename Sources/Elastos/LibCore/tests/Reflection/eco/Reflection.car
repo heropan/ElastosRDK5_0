@@ -1,37 +1,41 @@
 
 module
 {
-    interface IFooBar {
-        GetValue(
-            [out] String* str);
+    using interface Elastos.Core.ISynchronize;
 
-        SetValue(
-            [in] String str);
+    namespace Refection {
+        interface IFooBar {
+            GetValue(
+                [out] String* str);
 
-        GetValue(
-            [out] Int32* value);
+            SetValue(
+                [in] String str);
 
-        SetValue(
-            [in] Int32 value);
+            GetValue(
+                [out] Int32* value);
 
-        GetValue(
-            [out] Int64* value);
+            SetValue(
+                [in] Int32 value);
 
-        SetValue(
-            [in] Int64 value);
+            GetValue(
+                [out] Int64* value);
 
-        SetAllValues(
-            [in] Int32 value0,
-            [in] String str,
-            [in] Int64 value1);
+            SetValue(
+                [in] Int64 value);
 
-        GetAllValues(
-            [out] Int32* value0,
-            [out] String* str,
-            [out] Int64* value1);
-    }
+            SetValue(
+                [in] Int32 value0,
+                [in] String str,
+                [in] Int64 value1);
 
-    class CFooBar {
-        interface IFooBar;
-    }
+            GetValue(
+                [out] Int32* value0,
+                [out] String* str,
+                [out] Int64* value1);
+        }
+
+        class CFooBar {
+            interface IFooBar;
+        }
+    } // Refection
 }

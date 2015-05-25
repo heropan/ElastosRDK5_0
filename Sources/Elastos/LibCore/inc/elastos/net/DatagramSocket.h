@@ -6,8 +6,8 @@
 #include <elastos/Mutex.h>
 
 using Elastos::Net::IInetAddress;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::Channels::IDatagramChannel;
 

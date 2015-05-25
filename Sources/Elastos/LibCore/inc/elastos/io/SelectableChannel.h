@@ -8,7 +8,7 @@
 #include "SelectorProvider.h"
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::Channels::Spi::ISelectorProvider;
 using Elastos::IO::Channels::Spi::AbstractInterruptibleChannel;
 

@@ -7,8 +7,8 @@
 #include "AbstractQueuedSynchronizer.h"
 #include "elastos/Thread.h"
 
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::IThread;
+using Elastos::Core::Thread;
 using Elastos::IO::IObjectInputStream;
 using Elastos::Utility::ICollection;
 using Elastos::IO::ISerializable;

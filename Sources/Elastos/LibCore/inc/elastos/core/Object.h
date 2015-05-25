@@ -12,8 +12,8 @@
 #include <elastos/core/NativeThread.h>
 #endif
 
-using Elastos::Core::Threading::ISynchronize;
-using Elastos::Core::Threading::NativeObject;
+using Elastos::Core::ISynchronize;
+using Elastos::Core::NativeObject;
 
 #ifdef synchronized
 #define synchronized(obj)  for(Elastos::Core::Object::AutoLock obj##_lock(obj); obj##_lock; obj##_lock.SetUnlock())

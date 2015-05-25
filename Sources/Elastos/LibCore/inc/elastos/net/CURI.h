@@ -8,7 +8,7 @@
 #include "UriCodec.h"
 
 using Elastos::Core::Character;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace Net {

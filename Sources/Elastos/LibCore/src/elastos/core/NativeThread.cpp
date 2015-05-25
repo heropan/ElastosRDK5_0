@@ -17,7 +17,6 @@
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 /*
  * Monitor shape field.  Used to distinguish immediate thin locks from
@@ -2680,6 +2679,5 @@ static UInt64 NativeGetRelativeTimeUsec()
     return NativeGetRelativeTimeNsec() / 1000;
 }
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos

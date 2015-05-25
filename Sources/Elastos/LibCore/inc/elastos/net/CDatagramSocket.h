@@ -6,7 +6,7 @@
 #include "_CDatagramSocket.h"
 #include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {

@@ -4,7 +4,6 @@
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 // {8BF3F538-74DA-4997-B0DC-0F8086BA8835}
 extern "C" const InterfaceID EIID_ThreadGroup =
@@ -722,6 +721,5 @@ ECode ThreadGroup::RemoveThread(
     return RemoveThreadImpl(thread);
 }
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos

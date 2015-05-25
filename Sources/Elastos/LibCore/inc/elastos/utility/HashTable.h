@@ -8,7 +8,7 @@
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectStreamField;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace Utility {

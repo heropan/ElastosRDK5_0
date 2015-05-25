@@ -11,8 +11,8 @@
 #include <elastos/Thread.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::IThread;
+using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace Utility {

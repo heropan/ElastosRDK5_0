@@ -10,7 +10,7 @@
 
 using Elastos::Utility::HashMap;
 using Elastos::Utility::List;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace Net {

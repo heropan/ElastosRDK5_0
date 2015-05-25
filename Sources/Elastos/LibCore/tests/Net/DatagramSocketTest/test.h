@@ -10,7 +10,6 @@
 
 using namespace Elastos;
 using namespace Elastos::Core;
-using namespace Elastos::Core::Threading;
 using namespace Elastos::Net;
 using namespace Elastos::Utility;
 using namespace Elastos::IO;

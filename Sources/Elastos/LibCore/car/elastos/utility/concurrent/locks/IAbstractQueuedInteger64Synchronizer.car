@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Core.Threading.IThread;
+    using interface Elastos.Core.IThread;
     using interface Elastos.Utility.ICollection;
 
     namespace Elastos {

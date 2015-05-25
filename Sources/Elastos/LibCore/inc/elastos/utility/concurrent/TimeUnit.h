@@ -9,8 +9,8 @@
 #endif
 #include <elastos/Math.h>
 
-using Elastos::Core::Threading::ISynchronize;
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::ISynchronize;
+using Elastos::Core::IThread;
 
 #define ITIMEUNIT_METHODS_DECL()                                        \
     CARAPI Convert(                                                     \

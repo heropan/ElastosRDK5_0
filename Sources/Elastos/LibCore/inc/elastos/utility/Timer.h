@@ -8,9 +8,9 @@
 
 using Elastos::Core::IClassLoader;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::Thread;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::IThread;
+using Elastos::Core::Thread;
+using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace Utility {

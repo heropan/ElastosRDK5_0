@@ -9,7 +9,6 @@
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 /*
  * Simple mutex class.  The implementation is system-dependent.
@@ -127,7 +126,6 @@ inline void RWLock::Unlock()
     pthread_rwlock_unlock(&mRWLock);
 }
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos
 

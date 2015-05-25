@@ -5,7 +5,7 @@
 #include "_CDatagramPacket.h"
 #include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace Net {

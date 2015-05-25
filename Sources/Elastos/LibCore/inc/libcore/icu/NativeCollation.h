@@ -11,7 +11,7 @@
 #include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Libcore {
 namespace ICU {

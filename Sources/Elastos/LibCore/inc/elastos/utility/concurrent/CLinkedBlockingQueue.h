@@ -8,8 +8,8 @@
 #include <elastos/Mutex.h>
 #include <elastos/Condition.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::Condition;
+using Elastos::Core::Mutex;
+using Elastos::Core::Condition;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 

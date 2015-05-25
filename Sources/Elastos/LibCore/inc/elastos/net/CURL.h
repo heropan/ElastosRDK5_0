@@ -8,7 +8,7 @@
 #include <elastos/HashMap.h>
 
 using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IInputStream;
 
 namespace Elastos {

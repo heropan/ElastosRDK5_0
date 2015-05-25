@@ -14,8 +14,8 @@
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::CThread;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::CThread;
+using Elastos::Core::Thread;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
 
 namespace Elastos {

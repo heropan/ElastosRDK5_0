@@ -3,11 +3,10 @@ module
 {
     interface Elastos.Core.IRunnable;
     interface Elastos.Core.IClassLoader;
-    interface Elastos.Core.Threading.IThreadGroup;
+    interface Elastos.Core.IThreadGroup;
 
     namespace Elastos {
     namespace Core {
-    namespace Threading {
 
     interface IThread;
 
@@ -497,7 +496,6 @@ module
         Detach();
     }
 
-    } // namespace Threading
-    } // namespace Core
+        } // namespace Core
     } // namespace Elastos
 }

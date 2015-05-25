@@ -8,7 +8,7 @@
 using Elastos::Core::ISystem;
 using Elastos::Core::Autolock;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Threading::ISynchronize;
+using Elastos::Core::ISynchronize;
 
 namespace Elastos {
 namespace Utility {

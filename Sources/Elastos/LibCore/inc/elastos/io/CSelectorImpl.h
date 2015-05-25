@@ -8,7 +8,7 @@
 #include <elastos/Mutex.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IUnsafeArrayList;
 using Elastos::IO::Channels::Spi::ISelectorProvider;

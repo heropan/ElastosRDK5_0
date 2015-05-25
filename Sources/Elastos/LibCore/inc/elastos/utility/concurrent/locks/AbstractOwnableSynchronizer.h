@@ -8,7 +8,7 @@
 #include "Elastos.CoreLibrary.h"
 #endif
 
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::IThread;
 
 namespace Elastos {
 namespace Utility {

@@ -9,8 +9,8 @@
 #include <elastos/List.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Mutex;
+using Elastos::Core::Object;
 using Elastos::Utility::List;
 
 namespace Elastos {

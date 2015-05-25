@@ -8,7 +8,6 @@
 #include <elastos/Mutex.h>
 #include <elastos/TimerTask.h>
 
-using namespace Elastos::Core::Threading;
 
 class MyTimerTask : public TimerTask
 {

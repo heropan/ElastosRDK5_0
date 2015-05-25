@@ -4,7 +4,6 @@
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 AutoPtr<IThreadGroup> CThreadGroup::sSystem;
 AutoPtr<IThreadGroup> CThreadGroup::sMain;
@@ -36,6 +35,5 @@ AutoPtr<IThreadGroup> CThreadGroup::GetMainThreadGroup()
     return sMain;
 }
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos

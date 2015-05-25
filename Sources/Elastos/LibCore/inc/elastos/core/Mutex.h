@@ -10,7 +10,6 @@
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 /*!
  @brief Simple mutex class.The implementation is system-dependent.The mutex must be unlocked
@@ -214,7 +213,6 @@ inline Int32 Mutex::TryLock()
     return pthread_mutex_trylock(&mMutex);
 }
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos
 

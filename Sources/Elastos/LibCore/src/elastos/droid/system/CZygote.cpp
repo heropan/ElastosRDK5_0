@@ -19,7 +19,7 @@
 # include <sys/prctl.h>
 #endif
 
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::Utility::Logging::Logger;

@@ -8,7 +8,6 @@
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 /*
  * Condition variable class.  The implementation is system-dependent.
@@ -122,7 +121,6 @@ inline void Condition::Broadcast()
     pthread_cond_broadcast(&mCond);
 }
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos
 

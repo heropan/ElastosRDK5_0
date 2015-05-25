@@ -4,8 +4,8 @@
 #include <elastos/Mutex.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Thread;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Thread;
+using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace IO {

@@ -130,6 +130,7 @@ CKXmlParser::CKXmlParser()
     , mIsWhitespace(FALSE)
     , mDegenerated(FALSE)
     , mAttributeCount(0)
+    , mParsedTopLevelStartTag(FALSE)
     , mUnresolved(FALSE)
 {
     mElementStack = ArrayOf<String>::Alloc(16);
@@ -415,6 +416,10 @@ ECode CKXmlParser::Next(
             }
             case DOCDECL:
                 FAIL_RETURN(ReadDoctype(justOneToken));
+                if (mParsedTopLevelStartTag) {
+                    //throw new XmlPullParserException("Unexpected token", this, null);
+                    return E_XML_PULL_PARSER_EXCEPTION;
+                }
                 break;
 
             default: {
@@ -480,7 +485,7 @@ ECode CKXmlParser::ReadUntil(
 
 search:
     while (TRUE) {
-        if (mPosition + delimiter.GetLength() >= mLimit) {
+        if (mPosition + delimiter.GetLength() > mLimit) {
             if (start < mPosition && returnText) {
                 if (result == NULL) {
                     result = new StringBuilder();
@@ -817,6 +822,11 @@ ECode CKXmlParser::ReadContentSpec()
             else if (c == ')') {
                 depth--;
             }
+            else if (c == -1) {
+                // throw new XmlPullParserException("Unterminated element content spec", this, null);
+                return E_XML_PULL_PARSER_EXCEPTION;
+            }
+
             mPosition++;
             c = PeekCharacter();
         } while (depth > 0);
@@ -940,7 +950,9 @@ ECode CKXmlParser::ReadAttributeListDeclaration()
             // TODO: does this do escaping correctly?
             String value;
             FAIL_RETURN(ReadValue((Char32)c, TRUE, TRUE, ATTRIBUTE, &value));
-            mPosition++;
+            if (PeekCharacter() == c) {
+                mPosition++;
+            }
             DefineAttributeDefault(elementName, attributeName, value);
         }
     }
@@ -1002,7 +1014,9 @@ ECode CKXmlParser::ReadEntityDeclaration()
     if (quote == '"' || quote == '\'') {
         mPosition++;
         FAIL_RETURN(ReadValue((Char32)quote, TRUE, FALSE, ENTITY_DECLARATION, &entityValue));
-        mPosition++;
+        if (PeekCharacter() == quote) {
+            mPosition++;
+        }
     }
     else {
         Boolean succeeded;
@@ -1253,7 +1267,7 @@ ECode CKXmlParser::ParseStartTag(
                     ATTRIBUTE, &temp));
             (*mAttributes)[i + 3] = temp;
 
-            if (delimiter != ' ') {
+            if (delimiter != ' ' && PeekCharacter() == delimiter) {
                 mPosition++; // end quote
             }
         }
@@ -1267,6 +1281,9 @@ ECode CKXmlParser::ParseStartTag(
     }
 
     Int32 sp = mDepth++ * 4;
+    if (mDepth == 1) {
+        mParsedTopLevelStartTag = true;
+    }
     mElementStack = EnsureCapacity(mElementStack, sp + 4);
     (*mElementStack)[sp + 3] = mName;
 
@@ -1518,9 +1535,9 @@ ECode CKXmlParser::ReadValue(
                  * the value about position and limit will be 0, but it will fail because somewhere make 'position++',
                  * we dont want that partial value
                  */
-                if (delimiter == '\'' || delimiter == '"') {
-                    CheckRelaxed(String("Illegal: \"<\" inside attribute value"));
-                }
+                // if (delimiter == '\'' || delimiter == '"') {
+                //     CheckRelaxed(String("Illegal: \"<\" inside attribute value"));
+                // }
                 *value = (result != NULL) ? result->ToString() : String("");
                 return NOERROR;
             }
@@ -1623,6 +1640,9 @@ ECode CKXmlParser::Read(
     Int32 c = PeekCharacter();
     if ((Char32)c != expected) {
         FAIL_RETURN(CheckRelaxed(String("expected: '")/* + expected + "' actual: '" + ((Char32)c) + "'"*/));
+        if (c == -1) {
+            return; // On EOF, don't move position beyond limit
+        }
     }
     mPosition++;
     return NOERROR;
@@ -1632,7 +1652,7 @@ ECode CKXmlParser::Read(
     /* [in] */ const ArrayOf<Char32>& chars)
 {
     Boolean succeeded;
-    if (mPosition + chars.GetLength() >= mLimit && (FillBuffer(chars.GetLength(), &succeeded), !succeeded)) {
+    if (mPosition + chars.GetLength() > mLimit && (FillBuffer(chars.GetLength(), &succeeded), !succeeded)) {
         return CheckRelaxed(String("expected: '") + String(chars, 0, chars.GetLength()) + "' but was EOF");
     }
 
@@ -1855,7 +1875,7 @@ ECode CKXmlParser::SetInput(
     Boolean detectCharset = charset.IsNull();
 
     if (is == NULL) {
-        //throw new IllegalArgumentException();
+        //throw new IllegalArgumentException("is == null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 

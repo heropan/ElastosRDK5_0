@@ -8,7 +8,7 @@
 #include <elastos/Mutex.h>
 
 using Elastos::Core::IArrayOf;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::HashMap;
 
 namespace Libcore {

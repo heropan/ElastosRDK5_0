@@ -1,8 +1,8 @@
 
 module
 {
-    using interface Elastos.Core.Threading.ISynchronize;
-    using interface Elastos.Core.Threading.IThread;
+    using interface Elastos.Core.ISynchronize;
+    using interface Elastos.Core.IThread;
 
     namespace Elastos {
     namespace Utility {

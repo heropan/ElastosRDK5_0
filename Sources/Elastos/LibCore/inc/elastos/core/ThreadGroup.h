@@ -14,7 +14,6 @@ using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 extern "C" const InterfaceID EIID_ThreadGroup;
 
@@ -300,7 +299,6 @@ private:
     Boolean mIsDestroyed;
 };
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos
 

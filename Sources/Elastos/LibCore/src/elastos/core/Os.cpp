@@ -9,9 +9,9 @@
 // #include <cutils/sched_policy.h>
 #include <utils/threads.h>
 
-using Elastos::Core::Threading::NTHREAD_MIN_PRIORITY;
-using Elastos::Core::Threading::NTHREAD_NORM_PRIORITY;
-using Elastos::Core::Threading::NTHREAD_MAX_PRIORITY;
+using Elastos::Core::NTHREAD_MIN_PRIORITY;
+using Elastos::Core::NTHREAD_NORM_PRIORITY;
+using Elastos::Core::NTHREAD_MAX_PRIORITY;
 
 #ifndef NELEM
 #define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))

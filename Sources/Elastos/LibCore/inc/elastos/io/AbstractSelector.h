@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace IO {

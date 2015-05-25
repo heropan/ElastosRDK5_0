@@ -1,13 +1,12 @@
 TARGET_NAME= Reflection
 TARGET_TYPE= eco
 
-IMPORTS = Elastos.CoreLibrary.eco
-
 CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Reflection.car
 SOURCES += CFooBar.cpp
+SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco

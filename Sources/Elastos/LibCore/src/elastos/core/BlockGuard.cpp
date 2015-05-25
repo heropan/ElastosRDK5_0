@@ -6,7 +6,7 @@
 #include <cutils/log.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace Core {

@@ -10,8 +10,8 @@
 #endif
 #include <elastos/Object.h>
 
-using Elastos::Core::Threading::Object;
-using Elastos::Core::Threading::LockObject;
+using Elastos::Core::Object;
+using Elastos::Core::LockObject;
 
 namespace Elastos {
 namespace IO {

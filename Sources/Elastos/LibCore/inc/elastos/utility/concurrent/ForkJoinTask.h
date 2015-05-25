@@ -11,7 +11,7 @@
 
 using Elastos::Core::IThrowable;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::ISerializable;

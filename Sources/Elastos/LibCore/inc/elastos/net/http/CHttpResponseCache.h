@@ -13,7 +13,7 @@ using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IoUtils;
 using Elastos::Utility::IMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Security::IPrincipal;
 
 namespace Elastos {

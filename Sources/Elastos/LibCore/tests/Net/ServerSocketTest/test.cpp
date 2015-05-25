@@ -1,7 +1,6 @@
 
 #include "test.h"
 
-using namespace Elastos::Core::Threading;
 
 //====================================================================
 // CTest::MyRunnable::

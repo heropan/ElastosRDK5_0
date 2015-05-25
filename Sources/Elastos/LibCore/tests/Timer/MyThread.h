@@ -6,7 +6,6 @@
 #include <elrefbase.h>
 #include <elastos/Mutex.h>
 
-using namespace Elastos::Core::Threading;
 
 class MyThread
     : public ElRefBase

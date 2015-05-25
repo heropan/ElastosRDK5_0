@@ -6,8 +6,8 @@
 #include "CSystem.h"
 
 using Elastos::Core::ISystem;
-using Elastos::Core::Threading::Thread;
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::Thread;
+using Elastos::Core::IThread;
 using Elastos::Utility::Concurrent::CForkJoinWorkerThread;
 
 namespace Elastos {

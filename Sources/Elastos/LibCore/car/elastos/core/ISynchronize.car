@@ -3,7 +3,6 @@ module
 {
     namespace Elastos {
     namespace Core {
-    namespace Threading {
 
     interface ISynchronize {
         Lock();
@@ -175,7 +174,6 @@ module
             [in] Int32 nanos);
     }
 
-    } // namespace Threading
-    } // namespace Core
+        } // namespace Core
     } // namespace Elastos
 }

@@ -2,6 +2,9 @@
 TARGET_NAME = testReflection
 TARGET_TYPE = ecx
 
+CAR_FLAGS += -n -u
+LUBE_FLAGS += -n -u
+
 INCLUDES += $(MAKEDIR)/eco
 VPATH := $(MAKEDIR)/eco/
 
@@ -13,5 +16,3 @@ LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
 LIBRARIES += -lm -lcutils
-#LIBRARIES += -lstdc++  -lm -ldl -llog -lz -lcutils -lutils -lbinder
-#LIBRARIES += -licuuc -licui18n

@@ -8,12 +8,9 @@
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 /*
- * Monitors provide:} // Threading
-} // namespace Core
-} // namespace Elastos
+ * Monitors provide:
  *  - mutually exclusive access to resources
  *  - a way for multiple threads to wait for notification
  *
@@ -688,7 +685,6 @@ struct CoreGlobals
 
 extern struct CoreGlobals gCore;
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos
 

@@ -3,6 +3,7 @@
 #include <Reflection.h>
 
 using namespace Elastos;
+using namespace Reflection;
 
 void testGetSet()
 {
@@ -11,12 +12,12 @@ void testGetSet()
     AutoPtr<IFooBar> test;
     CFooBar::New((IFooBar**)&test);
     test->SetValue0(10);
-    test->SetString(String("Elastos"));
+    test->SetValue(String("Elastos"));
 
     Int32 value0;
-    test->GetValue0(&value0);
+    test->GetValue(&value0);
     String strValue;
-    test->GetString(&strValue);
+    test->GetValue(&strValue);
 
     PFL_EX(" >> value0:%d, String:[%s]", value0, strValue.string());
 }
@@ -57,17 +58,17 @@ ECode testReflection()
         return ec;
     }
 
-    // SetString
+    // SetValue
     //
-    ec = classInfo->GetMethodInfo("SetString", (IMethodInfo**)&methodInfo);
+    ec = classInfo->GetMethodInfo("SetValue", (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
-        printf("Acquire \"SetString\" method info failed!\n");
+        printf("Acquire \"SetValue\" method info failed!\n");
         return ec;
     }
 
     ec = methodInfo->CreateArgumentList((IArgumentList**)&argumentList);
     if (FAILED(ec)) {
-        printf("Acquire \"SetString\" method info failed!\n");
+        printf("Acquire \"SetValue\" method info failed!\n");
         return ec;
     }
 
@@ -76,23 +77,23 @@ ECode testReflection()
 
     ec = methodInfo->Invoke(object, argumentList);
     if (FAILED(ec)) {
-        printf("Invoke \"SetString\" method failed!\n");
+        printf("Invoke \"SetValue\" method failed!\n");
         return ec;
     }
 
-    // GetString
+    // GetValue
     //
     methodInfo = NULL;
-    ec = classInfo->GetMethodInfo("GetString", (IMethodInfo**)&methodInfo);
+    ec = classInfo->GetMethodInfo("GetValue", (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
-        printf("Acquire \"GetString\" method info failed!\n");
+        printf("Acquire \"GetValue\" method info failed!\n");
         return ec;
     }
 
     argumentList = NULL;
     ec = methodInfo->CreateArgumentList((IArgumentList**)&argumentList);
     if (FAILED(ec)) {
-        printf("Acquire \"GetString\" method info failed!\n");
+        printf("Acquire \"GetValue\" method info failed!\n");
         return ec;
     }
 
@@ -101,34 +102,34 @@ ECode testReflection()
 
     ec = methodInfo->Invoke(object, argumentList);
     if (FAILED(ec)) {
-        printf("Invoke \"GetString\" method failed!\n");
+        printf("Invoke \"GetValue\" method failed!\n");
         return ec;
     }
 
-    printf(" >>> GetString: [%s]\n", result.string());
+    printf(" >>> GetValue: [%s]\n", result.string());
 
     // Validate
     //
     IFooBar* foobar = IFooBar::Probe(object.Get());
     assert(foobar != NULL);
     String respect;
-    foobar->GetString(&respect);
+    foobar->GetValue(&respect);
 
     assert(respect == result);
 
-    // SetAllValues
+    // SetValue
     //
     methodInfo = NULL;
-    ec = classInfo->GetMethodInfo("SetAllValues", (IMethodInfo**)&methodInfo);
+    ec = classInfo->GetMethodInfo("SetValue", (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
-        printf("Acquire \"SetAllValues\" method info failed!\n");
+        printf("Acquire \"SetValue\" method info failed!\n");
         return ec;
     }
 
     argumentList = NULL;
     ec = methodInfo->CreateArgumentList((IArgumentList**)&argumentList);
     if (FAILED(ec)) {
-        printf("Acquire \"SetAllValues\" method info failed!\n");
+        printf("Acquire \"SetValue\" method info failed!\n");
         return ec;
     }
 
@@ -139,23 +140,23 @@ ECode testReflection()
 
     ec = methodInfo->Invoke(object, argumentList);
     if (FAILED(ec)) {
-        printf("Invoke \"SetAllValues\" method failed!\n");
+        printf("Invoke \"SetValue\" method failed!\n");
         return ec;
     }
 
-    // GetAllValues
+    // GetValue
     //
     methodInfo = NULL;
-    ec = classInfo->GetMethodInfo("GetAllValues", (IMethodInfo**)&methodInfo);
+    ec = classInfo->GetMethodInfo("GetValue", (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
-        printf("Acquire \"GetAllValues\" method info failed!\n");
+        printf("Acquire \"GetValue\" method info failed!\n");
         return ec;
     }
 
     argumentList = NULL;
     ec = methodInfo->CreateArgumentList((IArgumentList**)&argumentList);
     if (FAILED(ec)) {
-        printf("Acquire \"GetAllValues\" method info failed!\n");
+        printf("Acquire \"GetValue\" method info failed!\n");
         return ec;
     }
 
@@ -169,11 +170,11 @@ ECode testReflection()
 
     ec = methodInfo->Invoke(object, argumentList);
     if (FAILED(ec)) {
-        printf("Invoke \"GetAllValues\" method failed!\n");
+        printf("Invoke \"GetValue\" method failed!\n");
         return ec;
     }
 
-    printf(" >>> GetAllValues: [%s], value0: %d, value1: %lld\n",
+    printf(" >>> GetValue: [%s], value0: %d, value1: %lld\n",
         strResult.string(), value0, value1);
     return NOERROR;
 }

@@ -6,7 +6,7 @@
 #include <elastos/Mutex.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace IO {

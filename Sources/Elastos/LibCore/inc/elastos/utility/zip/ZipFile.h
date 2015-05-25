@@ -24,7 +24,7 @@ using Elastos::IO::InputStream;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IFile;
 using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 extern "C" const InterfaceID EIID_ZipFileRAFStream;
 

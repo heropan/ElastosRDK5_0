@@ -5,7 +5,11 @@ module
     namespace Kxml2 {
     namespace IO {
 
-    interface IKXmlParser extends Org.Xmlpull.V1.IXmlPullParser {
+    /**
+      * @Involve
+      * interface Org.Xmlpull.V1.IXmlPullParser;
+      */
+    interface IKXmlParser{
         /**
          * Retains namespace attributes like {@code xmlns="http://foo"} or {@code xmlns:foo="http:foo"}
          * in pulled elements. Most applications will only be interested in the effective namespaces of

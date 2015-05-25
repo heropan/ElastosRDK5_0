@@ -7,7 +7,7 @@
 #include "AtomicReference.h"
 #include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Concurrent::Atomic::IAtomicReference;
 using Elastos::Utility::Concurrent::Atomic::AtomicReference;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;

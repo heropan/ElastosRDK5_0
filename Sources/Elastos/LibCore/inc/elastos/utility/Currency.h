@@ -9,7 +9,7 @@
 
 using Libcore::ICU::ILocale;
 using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 _ETL_NAMESPACE_BEGIN
 #ifndef DEFINE_HASH_AUTOPTR_ILOCALE_USING_HASH_CODE

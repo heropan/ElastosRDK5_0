@@ -15,7 +15,6 @@ using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 extern "C" const InterfaceID EIID_Thread;
 
@@ -1047,7 +1046,6 @@ private:
     Mutex mLock;
 };
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos
 

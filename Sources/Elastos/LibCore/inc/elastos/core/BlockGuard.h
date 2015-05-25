@@ -4,7 +4,7 @@
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos/Object.h>
 
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Core {

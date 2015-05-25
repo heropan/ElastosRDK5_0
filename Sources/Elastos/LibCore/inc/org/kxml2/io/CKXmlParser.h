@@ -3,7 +3,7 @@
 #define  __CKXMLPARSER_H__
 
 #include "_Org_Kxml2_IO_CKXmlParser.h"
-#include "Object.h"
+#include <elastos/core/Object.h>
 #include <elastos/HashMap.h>
 #include <elastos/StringBuilder.h>
 #include <Elastos.CoreLibrary.h>
@@ -25,10 +25,12 @@ namespace IO {
 CarClass(CKXmlParser)
     , public Object
     , public IKXmlParser
+    , public IXmlPullParser
     , public ICloseable
 {
 public:
     CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     /**
@@ -598,6 +600,9 @@ private:
 
     Boolean mDegenerated;
     Int32 mAttributeCount;
+
+    // true iff. we've encountered the START_TAG of an XML element at depth == 0;
+    Boolean mParsedTopLevelStartTag;
 
     /*
      * The current element's attributes arranged in groups of 4:

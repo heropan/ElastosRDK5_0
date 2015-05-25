@@ -2,12 +2,11 @@
 #ifndef __CTHREADGROUP_H__
 #define __CTHREADGROUP_H__
 
-#include "_Elastos_Core_Threading_CThreadGroup.h"
+#include "_Elastos_Core_CThreadGroup.h"
 #include "ThreadGroup.h"
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 CarClass(CThreadGroup)
     , public ThreadGroup
@@ -27,7 +26,6 @@ private:
     // END android-added
 };
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos
 

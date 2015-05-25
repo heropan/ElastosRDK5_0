@@ -18,7 +18,7 @@ using Elastos::IO::CPrintWriter;
 using Elastos::Utility::IProperties;
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::List;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::IClassLoader;
 
 namespace Elastos {

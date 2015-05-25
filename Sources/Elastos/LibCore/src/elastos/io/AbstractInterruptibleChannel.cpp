@@ -2,7 +2,7 @@
 #include <elastos/Thread.h>
 #include "cmdef.h"
 
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace IO {

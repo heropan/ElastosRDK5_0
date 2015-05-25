@@ -12,7 +12,6 @@
 
 using namespace Elastos;
 using namespace Elastos::Core;
-using namespace Elastos::Core::Threading;
 
 class MyRunnable
     : public ElRefBase

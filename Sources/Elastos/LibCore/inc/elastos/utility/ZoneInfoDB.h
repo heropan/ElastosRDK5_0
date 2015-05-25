@@ -5,7 +5,7 @@
 #include <elastos/Mutex.h>
 
 using Elastos::IO::IByteBuffer;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Elastos{
 namespace Utility{

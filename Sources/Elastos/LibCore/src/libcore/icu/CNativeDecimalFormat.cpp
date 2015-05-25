@@ -14,7 +14,7 @@
 #include "CBigDecimalHelper.h"
 #include "CBigDecimal.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::EIID_INumber;
 using Elastos::Core::EIID_IDouble;
 using Elastos::Core::EIID_IFloat;

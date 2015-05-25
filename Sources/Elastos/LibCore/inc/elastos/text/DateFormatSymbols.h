@@ -4,7 +4,7 @@
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Libcore::ICU::ILocale;
 
 namespace Elastos {

@@ -4,7 +4,7 @@
 #include "SocketImpl.h"
 #include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::ICloseGuard;
 
 namespace Elastos {

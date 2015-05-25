@@ -386,7 +386,7 @@ ECode CKXmlSerializer::SetOutput(
     /* [in] */ const String& encoding)
 {
     if (os == NULL) {
-//        throw new IllegalArgumentException();
+//        throw new IllegalArgumentException("os == NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<IWriter> writer;

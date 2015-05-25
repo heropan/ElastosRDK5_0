@@ -8,7 +8,7 @@
 #include <elastos/Mutex.h>
 #include "Elastos.CoreLibrary_server.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
 
 class MyRunnable

@@ -14,7 +14,7 @@
 using Elastos::Utility::IMap;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IProperties;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Security {

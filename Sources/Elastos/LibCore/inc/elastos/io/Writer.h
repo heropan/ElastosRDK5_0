@@ -16,8 +16,8 @@ namespace Elastos {
 namespace IO {
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Object;
-using Elastos::Core::Threading::LockObject;
+using Elastos::Core::Object;
+using Elastos::Core::LockObject;
 
 class Writer
 {

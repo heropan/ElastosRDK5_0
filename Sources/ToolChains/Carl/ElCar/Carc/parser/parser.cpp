@@ -4319,7 +4319,7 @@ void CheckClassAttribs(ClassDescriptor *pDesc)
 
     if (!(pDesc->dwAttribs & ClassAttrib_t_aspect)) {
         AddConstClassInterface("IObject", NULL, pDesc);
-        AddConstClassInterface("ISynchronize", "Elastos.Core.Threading", pDesc);
+        AddConstClassInterface("ISynchronize", "Elastos.Core", pDesc);
         AddConstClassInterface("IWeakReferenceSource", NULL, pDesc);
     }
     else {

@@ -7,7 +7,7 @@
 #include <BigInt.h>
 #include "Object.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace Math {

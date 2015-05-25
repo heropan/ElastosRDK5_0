@@ -1,6 +1,8 @@
 
 #include "CFooBar.h"
 
+namespace Refection {
+
 CFooBar::CFooBar()
     : mValue0(0)
     , mString("")
@@ -8,7 +10,7 @@ CFooBar::CFooBar()
 {
 }
 
-ECode CFooBar::GetString(
+ECode CFooBar::GetValue(
     /* [out] */ String* str)
 {
     assert(str != NULL);
@@ -16,21 +18,21 @@ ECode CFooBar::GetString(
     return NOERROR;
 }
 
-ECode CFooBar::SetString(
+ECode CFooBar::SetValue(
     /* [in] */ const String& str)
 {
     mString = str;
     return NOERROR;
 }
 
-ECode CFooBar::SetValue0(
+ECode CFooBar::SetValue(
     /* [in] */ Int32 value)
 {
     mValue0 = value;
     return NOERROR;
 }
 
-ECode CFooBar::GetValue0(
+ECode CFooBar::GetValue(
     /* [out] */ Int32* value)
 {
     assert(value != NULL);
@@ -38,14 +40,14 @@ ECode CFooBar::GetValue0(
     return NOERROR;
 }
 
-ECode CFooBar::SetValue1(
+ECode CFooBar::SetValue(
     /* [in] */ Int64 value)
 {
     mValue1 = value;
     return NOERROR;
 }
 
-ECode CFooBar::GetValue1(
+ECode CFooBar::GetValue(
     /* [out] */ Int64* value)
 {
     assert(value != NULL);
@@ -53,7 +55,7 @@ ECode CFooBar::GetValue1(
     return NOERROR;
 }
 
-ECode CFooBar::SetAllValues(
+ECode CFooBar::SetValue(
     /* [in] */ Int32 value0,
     /* [in] */ const String& str,
     /* [in] */ Int64 value1)
@@ -64,7 +66,7 @@ ECode CFooBar::SetAllValues(
     return NOERROR;
 }
 
-ECode CFooBar::GetAllValues(
+ECode CFooBar::GetValue(
     /* [out] */ Int32* value0,
     /* [out] */ String* str,
     /* [out] */ Int64* value1)
@@ -77,3 +79,5 @@ ECode CFooBar::GetAllValues(
     *value1 = mValue1;
     return NOERROR;
 }
+
+} // Refection

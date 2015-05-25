@@ -1,11 +1,10 @@
 
 module
 {
-    interface Elastos.Core.Threading.IThread;
+    interface Elastos.Core.IThread;
 
     namespace Elastos {
     namespace Core {
-    namespace Threading {
 
     /**
      * @Involve
@@ -291,7 +290,6 @@ module
         //final void removeThread(Thread thread)
     }
 
-    } // namespace Threading
-    } // namespace Core
+        } // namespace Core
     } // namespace Elastos
 }

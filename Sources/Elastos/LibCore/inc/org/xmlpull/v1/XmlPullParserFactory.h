@@ -2,7 +2,7 @@
 #ifndef __XMLPULLPARSERFACTORY_H__
 #define __XMLPULLPARSERFACTORY_H__
 
-#include "Object.h"
+#include <elastos/core/Object.h>
 #include "elastos/HashMap.h"
 #include "Org.Xmlpull.V1_server.h"
 
@@ -60,9 +60,9 @@ public:
 
 
 protected:
-    // ArrayList mParserClasses;
     String mClassNamesLocation;
 
+    // ArrayList mParserClasses;
     // ArrayList mSerializerClasses;
 
     // features are kept there

@@ -6,7 +6,7 @@
 #include <elastos/Mutex.h>
 
 using Elastos::Core::IClassLoader;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Libcore::ICU::ILocale;
 
 namespace Elastos {

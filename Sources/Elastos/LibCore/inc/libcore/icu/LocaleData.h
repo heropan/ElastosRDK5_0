@@ -7,7 +7,7 @@
 #include <elastos/Mutex.h>
 #include "CInteger32.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Utility::HashMap;

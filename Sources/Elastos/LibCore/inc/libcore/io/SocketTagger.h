@@ -5,7 +5,7 @@
 #include <elastos/Mutex.h>
 
 using Libcore::IO::ISocketTagger;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Net::ISocket;
 

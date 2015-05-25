@@ -13,7 +13,6 @@
 
 namespace Elastos {
 namespace Core {
-namespace Threading {
 
 const Int32 Thread::ParkState::UNPARKED;
 const Int32 Thread::ParkState::PREEMPTIVELY_UNPARKED;
@@ -1123,6 +1122,5 @@ ECode Thread::PopInterruptAction(
     return NOERROR;
 }
 
-} // namespace Threading
 } // namespace Core
 } // namespace Elastos

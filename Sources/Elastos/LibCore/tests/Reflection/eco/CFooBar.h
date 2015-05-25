@@ -2,38 +2,40 @@
 #ifndef __CFOOBAR_H__
 #define __CFOOBAR_H__
 
-#include "_CFooBar.h"
+#include "_Reflection_CFooBar.h"
 #include <elastos.h>
+
+namespace Refection {
 
 CarClass(CFooBar)
 {
 public:
     CFooBar();
 
-    CARAPI GetString(
+    CARAPI GetValue(
         /* [out] */ String* str);
 
-    CARAPI SetString(
+    CARAPI SetValue(
         /* [in] */ const String& str);
 
-    CARAPI GetValue0(
+    CARAPI GetValue(
         /* [out] */ Int32* value);
 
-    CARAPI SetValue0(
+    CARAPI SetValue(
         /* [in] */ Int32 value);
 
-    CARAPI GetValue1(
+    CARAPI GetValue(
         /* [out] */ Int64* value);
 
-    CARAPI SetValue1(
+    CARAPI SetValue(
         /* [in] */ Int64 value);
 
-    CARAPI SetAllValues(
+    CARAPI SetValue(
         /* [in] */ Int32 value0,
         /* [in] */ const String& str,
         /* [in] */ Int64 value1);
 
-    CARAPI GetAllValues(
+    CARAPI GetValue(
         /* [out] */ Int32* value0,
         /* [out] */ String* str,
         /* [out] */ Int64* value1);
@@ -43,5 +45,7 @@ private:
     String mString;
     Int64 mValue1;
 };
+
+} // Refection
 
 #endif //__CFOOBAR_H__
