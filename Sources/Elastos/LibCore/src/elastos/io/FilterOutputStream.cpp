@@ -4,6 +4,11 @@
 namespace Elastos {
 namespace IO {
 
+extern "C" const InterfaceID EIID_FilterOutputStream =
+    { 0x1e66b62f, 0x2203, 0x4ca0, { 0xa5, 0xff, 0xc1, 0x1c, 0x50, 0x0a, 0x31, 0x01 } };
+
+CAR_INTERFACE_IMPL(FilterOutputStream, IFilterOutputStream)
+
 FilterOutputStream::FilterOutputStream()
 {
 }
@@ -12,7 +17,7 @@ FilterOutputStream::~FilterOutputStream()
 {
 }
 
-ECode FilterOutputStream::Init(
+ECode FilterOutputStream::constructor(
     /* [in] */ IOutputStream* outs)
 {
     VALIDATE_NOT_NULL(out);
@@ -64,6 +69,24 @@ ECode FilterOutputStream::Write(
         Write(buffer[offset + i]);
     }
 
+    return NOERROR;
+}
+
+ECode FilterOutputStream::ToString(
+/* [out] */ String* s)
+{
+    assert(s != NULL);
+    *s = String("FilterOutputStream");
+    return NOERROR;
+}
+
+
+
+ECode FilterOutputStream::GetClassID(
+/* [out] */ ClassID *pCLSID)
+{
+    assert(pCLSID != NULL);
+    *pCLSID = EIID_FilterOutputStream;
     return NOERROR;
 }
 
