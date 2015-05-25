@@ -7,18 +7,23 @@
 namespace Elastos {
 namespace IO {
 
+extern "C" const InterfaceID EIID_FilterOutputStream;
+
 class FilterOutputStream
     : public OutputStream
+    , public IFilterOutputStream
 {
 protected:
     FilterOutputStream();
 
     virtual ~FilterOutputStream();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* outs);
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Closes this stream. This implementation closes the target stream.
      *
@@ -69,6 +74,14 @@ public:
         /* [in] */ const ArrayOf<Byte> & buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
+
+public:
+
+    CARAPI ToString(
+        /* [out] */ String* s);
+
+    CARAPI GetClassID(
+        /* [out] */ ClassID *pCLSID);
 
 protected:
     /**

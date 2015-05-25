@@ -12,36 +12,9 @@ CarClass(CFilterOutputStream)
     , public FilterOutputStream
 {
 public:
-    CFilterOutputStream();
 
-    ~CFilterOutputStream();
+    CAR_OBJECT_DECL()
 
-    CARAPI Close();
-
-    CARAPI Flush();
-
-    CARAPI Write(
-        /* [in] */ Int32 oneByte);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
-
-    CARAPI WriteBytesEx(
-        /* [in] */ const ArrayOf<Byte> & buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 count);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
-    CARAPI constructor(
-        /* [in] */ IOutputStream* out);
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
 };
 
 } // namespace IO
