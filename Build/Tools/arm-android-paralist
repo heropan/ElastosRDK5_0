@@ -51,7 +51,7 @@
   Elastos/LibCore/inc/Org
   Elastos/LibCore/inc
 > Elastos/LibCore/src/Elastos/Core/eco
-- Elastos/LibCore/src/Elastos/Core/lib Elastos.Core.eco
+- Elastos/LibCore/src/Elastos/Core/lib Elastos.CoreLibrary.eco
 - Elastos/LibCore/src/Elastos/Core/lib
 - Elastos/LibCore/src/Elastos/Core
 > Elastos/LibCore/src/Elastos/Math
@@ -64,13 +64,13 @@
   Elastos/LibCore/src/Org/Xmlpull/V1
   Elastos/LibCore/src/Org/Xmlpull
 - Elastos/LibCore/src/Org/W3c/Dom Org.W3c.Dom.car
-  Elastos/LibCore/src/Org/W3c/Dom Elastos.Core.eco
+  Elastos/LibCore/src/Org/W3c/Dom Elastos.CoreLibrary.eco
 > Elastos/LibCore/src/Org/W3c/Dom
-- Elastos/LibCore/src/Elastosx/Xml Elastosx.Xml.car 
-  Elastos/LibCore/src/Elastosx/Xml Elastos.Core.eco Org.Xml.Sax.eco Org.W3c.Dom.eco
+- Elastos/LibCore/src/Elastosx/Xml Elastosx.Xml.car
+  Elastos/LibCore/src/Elastosx/Xml Elastos.CoreLibrary.eco Org.Xml.Sax.eco Org.W3c.Dom.eco
 > Elastos/LibCore/src/Elastosx/Xml
 #  Elastos/LibCore/src/Org/Apache/Harmony Org.Apache.Harmony.car
-#  Elastos/LibCore/src/Org/Apache/Harmony Elastos.Core.eco
+#  Elastos/LibCore/src/Org/Apache/Harmony Elastos.CoreLibrary.eco
 #  Elastos/LibCore/src/Org/Apache/Harmony
 #> Elastos/LibCore/src/Org/Apache
   Elastos/LibCore/src/Org
@@ -83,7 +83,7 @@
 > Elastos/Frameworks/Droid/DroidRuntime
 - Elastos/Frameworks/Droid/Base/Core/inc
 - Elastos/Frameworks/Droid/Base/Core/src Elastos.Droid.Core.car
-- Elastos/Frameworks/Droid/Base/Core/src Elastos.Core.eco
+- Elastos/Frameworks/Droid/Base/Core/src Elastos.CoreLibrary.eco
 - Elastos/Frameworks/Droid/Base/Core/src Elastos.Droid.System.eco
 - Elastos/Frameworks/Droid/Base/Core/src Org.Kxml2.IO.eco
 > Elastos/Frameworks/Droid/Base/Core/src/os/storage

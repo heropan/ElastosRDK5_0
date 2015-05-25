@@ -20,6 +20,8 @@ public:
 
     CFooBar();
 
+    CARAPI constructor();
+
     CARAPI GetValue(
         /* [out] */ String* str);
 

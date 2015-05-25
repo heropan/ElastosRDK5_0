@@ -5,7 +5,7 @@
 ;          SrcFile/Folder [DestFolder]
 ;
 Elastos.Runtime.eco
-Elastos.Core.eco
+Elastos.CoreLibrary.eco
 Org.Kxml2.IO.eco
 Org.Xml.Sax.eco
 Elastos.Droid.System.eco

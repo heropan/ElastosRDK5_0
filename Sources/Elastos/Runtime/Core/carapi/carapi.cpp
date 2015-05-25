@@ -9,6 +9,7 @@
 
 #include <_pubcrt.h>
 #include <stdio.h>
+#include <utils/Log.h>
 
 #define STATUS_WIN32_ERROR(u) ((ECode)((u)|0x80070000))
 
