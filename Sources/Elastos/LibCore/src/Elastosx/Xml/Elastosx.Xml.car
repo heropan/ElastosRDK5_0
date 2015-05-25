@@ -5,13 +5,13 @@ module
     importlib("Org.W3c.Dom.eco");
     importlib("Elastos.CoreLibrary.eco");
 
-    merge("../../../car/Elastosx/Xml/Parsers/IDocumentBuilder.car");
-    merge("../../../car/Elastosx/Xml/Parsers/IDocumentBuilderFactory.car");
-    merge("../../../car/Elastosx/Xml/Parsers/ISAXParserFactory.car");
-    merge("../../../car/Elastosx/Xml/Parsers/ISAXParser.car");
-    merge("../../../car/Elastosx/Xml/Validation/ISchema.car");
-    merge("../../../car/Elastosx/Xml/IXMLConstants.car");
-    merge("../../../car/Elastosx/Xml/Namespace/IQName.car");
+    merge("../../../car/elastosx/xml/parsers/IDocumentBuilder.car");
+    merge("../../../car/elastosx/xml/parsers/IDocumentBuilderFactory.car");
+    merge("../../../car/elastosx/xml/parsers/ISAXParserFactory.car");
+    merge("../../../car/elastosx/xml/parsers/ISAXParser.car");
+    merge("../../../car/elastosx/xml/validation/ISchema.car");
+    merge("../../../car/elastosx/xml/IXMLConstants.car");
+    merge("../../../car/elastosx/xml/namespace/IQName.car");
 
     namespace Elastosx {
     namespace Xml {

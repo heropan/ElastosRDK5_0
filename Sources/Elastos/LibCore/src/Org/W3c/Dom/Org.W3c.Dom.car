@@ -3,45 +3,45 @@ module
 {
     importlib("Elastos.CoreLibrary.eco");
 
-    merge("../../../../car/Org/W3c/Dom/INodeList.car");
-    merge("../../../../car/Org/W3c/Dom/INode.car");
-    merge("../../../../car/Org/W3c/Dom/IAttr.car");
-    merge("../../../../car/Org/W3c/Dom/ICharacterData.car");
-    merge("../../../../car/Org/W3c/Dom/IText.car");
-    merge("../../../../car/Org/W3c/Dom/ICDATASection.car");
-    merge("../../../../car/Org/W3c/Dom/IComment.car");
-    merge("../../../../car/Org/W3c/Dom/IDOMConfiguration.car");
-    merge("../../../../car/Org/W3c/Dom/IDOMError.car");
-    merge("../../../../car/Org/W3c/Dom/IDOMErrorHandler.car");
-    merge("../../../../car/Org/W3c/Dom/IDOMImplementation.car");
-    merge("../../../../car/Org/W3c/Dom/IDOMImplementationList.car");
-    merge("../../../../car/Org/W3c/Dom/IDOMImplementationSource.car");
-    merge("../../../../car/Org/W3c/Dom/IDOMLocator.car");
-    merge("../../../../car/Org/W3c/Dom/IDOMStringList.car");
-    merge("../../../../car/Org/W3c/Dom/IDocument.car");
-    merge("../../../../car/Org/W3c/Dom/IDocumentFragment.car");
-    merge("../../../../car/Org/W3c/Dom/IDocumentType.car");
-    merge("../../../../car/Org/W3c/Dom/IElement.car");
-    merge("../../../../car/Org/W3c/Dom/IEntity.car");
-    merge("../../../../car/Org/W3c/Dom/IEntityReference.car");
-    merge("../../../../car/Org/W3c/Dom/INameList.car");
-    merge("../../../../car/Org/W3c/Dom/INamedNodeMap.car");
-    merge("../../../../car/Org/W3c/Dom/INotation.car");
-    merge("../../../../car/Org/W3c/Dom/IProcessingInstruction.car");
-    merge("../../../../car/Org/W3c/Dom/ITypeInfo.car");
-    merge("../../../../car/Org/W3c/Dom/IUserDataHandler.car");
+    merge("../../../../car/org/w3c/dom/INodeList.car");
+    merge("../../../../car/org/w3c/dom/INode.car");
+    merge("../../../../car/org/w3c/dom/IAttr.car");
+    merge("../../../../car/org/w3c/dom/ICharacterData.car");
+    merge("../../../../car/org/w3c/dom/IText.car");
+    merge("../../../../car/org/w3c/dom/ICDATASection.car");
+    merge("../../../../car/org/w3c/dom/IComment.car");
+    merge("../../../../car/org/w3c/dom/IDOMConfiguration.car");
+    merge("../../../../car/org/w3c/dom/IDOMError.car");
+    merge("../../../../car/org/w3c/dom/IDOMErrorHandler.car");
+    merge("../../../../car/org/w3c/dom/IDOMImplementation.car");
+    merge("../../../../car/org/w3c/dom/IDOMImplementationList.car");
+    merge("../../../../car/org/w3c/dom/IDOMImplementationSource.car");
+    merge("../../../../car/org/w3c/dom/IDOMLocator.car");
+    merge("../../../../car/org/w3c/dom/IDOMStringList.car");
+    merge("../../../../car/org/w3c/dom/IDocument.car");
+    merge("../../../../car/org/w3c/dom/IDocumentFragment.car");
+    merge("../../../../car/org/w3c/dom/IDocumentType.car");
+    merge("../../../../car/org/w3c/dom/IElement.car");
+    merge("../../../../car/org/w3c/dom/IEntity.car");
+    merge("../../../../car/org/w3c/dom/IEntityReference.car");
+    merge("../../../../car/org/w3c/dom/INameList.car");
+    merge("../../../../car/org/w3c/dom/INamedNodeMap.car");
+    merge("../../../../car/org/w3c/dom/INotation.car");
+    merge("../../../../car/org/w3c/dom/IProcessingInstruction.car");
+    merge("../../../../car/org/w3c/dom/ITypeInfo.car");
+    merge("../../../../car/org/w3c/dom/IUserDataHandler.car");
 
-    merge("../../../../car/Org/W3c/Dom/Traversal/INodeFilter.car");
-    merge("../../../../car/Org/W3c/Dom/Traversal/INodeIterator.car");
+    merge("../../../../car/org/w3c/dom/traversal/INodeFilter.car");
+    merge("../../../../car/org/w3c/dom/traversal/INodeIterator.car");
 
-    merge("../../../../car/Org/W3c/Dom/Ls/IDOMImplementationLS.car");
-    merge("../../../../car/Org/W3c/Dom/Ls/ILSInput.car");
-    merge("../../../../car/Org/W3c/Dom/Ls/ILSOutput.car");
-    merge("../../../../car/Org/W3c/Dom/Ls/ILSParser.car");
-    merge("../../../../car/Org/W3c/Dom/Ls/ILSParserFilter.car");
-    merge("../../../../car/Org/W3c/Dom/Ls/ILSResourceResolver.car");
-    merge("../../../../car/Org/W3c/Dom/Ls/ILSSerializer.car");
-    merge("../../../../car/Org/W3c/Dom/Ls/ILSSerializerFilter.car");
+    merge("../../../../car/org/w3c/dom/ls/IDOMImplementationLS.car");
+    merge("../../../../car/org/w3c/dom/ls/ILSInput.car");
+    merge("../../../../car/org/w3c/dom/ls/ILSOutput.car");
+    merge("../../../../car/org/w3c/dom/ls/ILSParser.car");
+    merge("../../../../car/org/w3c/dom/ls/ILSParserFilter.car");
+    merge("../../../../car/org/w3c/dom/ls/ILSResourceResolver.car");
+    merge("../../../../car/org/w3c/dom/ls/ILSSerializer.car");
+    merge("../../../../car/org/w3c/dom/ls/ILSSerializerFilter.car");
 
     namespace Org {
     namespace W3c {

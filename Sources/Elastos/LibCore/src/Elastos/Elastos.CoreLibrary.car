@@ -1,6 +1,6 @@
 
 module
 {
-    merge("../../car/Elastos/core.car");
+    merge("../../car/elastos/core.car");
     //merge("../Elastos/Math/Elastos.Math.car");
 }

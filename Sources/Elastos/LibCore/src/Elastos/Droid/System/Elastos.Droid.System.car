@@ -1,7 +1,7 @@
 
 module
 {
-    merge("../../../../car/Elastos/Droid/System/IZygote.car");
+    merge("../../../../car/elastos/droid/system/IZygote.car");
 
     namespace Elastos {
     namespace Droid {

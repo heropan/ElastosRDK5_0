@@ -3,10 +3,10 @@ module
 {
     importlib("Elastos.CoreLibrary.eco");
 
-    merge("../../../../car/Org/Xmlpull/V1/Exceptions.car");
-    merge("../../../../car/Org/Xmlpull/V1/IXmlPullParser.car");
-    merge("../../../../car/Org/Xmlpull/V1/IXmlSerializer.car");
-    merge("../../../../car/Org/Kxml2/IO/IKXmlParser.car");
+    merge("../../../../car/org/xmlpull/v1/Exceptions.car");
+    merge("../../../../car/org/xmlpull/v1/IXmlPullParser.car");
+    merge("../../../../car/org/xmlpull/v1/IXmlSerializer.car");
+    merge("../../../../car/org/kxml2/io/IKXmlParser.car");
 
     using interface Elastos.IO.ICloseable;
     using interface Org.Xmlpull.V1.IXmlSerializer;

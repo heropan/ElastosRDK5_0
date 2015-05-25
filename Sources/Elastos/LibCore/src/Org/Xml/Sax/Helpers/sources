@@ -1,10 +1,10 @@
 TARGET_NAME= helpers
 TARGET_TYPE= lib
 
-INCLUDES += ../;
-INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax;
-INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax/Ext;
-INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax/Helpers;
+includes += ../;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/xml/sax;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/xml/sax/ext;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/xml/sax/helpers;
 
 SOURCES = AttributesImpl.cpp
 SOURCES += CAttributesImpl.cpp

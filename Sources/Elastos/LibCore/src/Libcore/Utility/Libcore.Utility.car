@@ -1,8 +1,8 @@
 
 module
 {
-    merge("../../../car/Libcore/Utility/IBasicLruCache.car");
-    merge("../../../car/Libcore/Utility/ICollectionUtils.car");
+    merge("../../../car/libcore/utility/IBasicLruCache.car");
+    merge("../../../car/libcore/utility/ICollectionUtils.car");
 
     // namespace Libcore {
     // namespace Utility {

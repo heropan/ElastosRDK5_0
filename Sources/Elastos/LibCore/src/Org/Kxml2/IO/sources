@@ -1,7 +1,7 @@
 TARGET_NAME= Org.Kxml2.IO
 TARGET_TYPE= eco
 
-INCLUDES += $(MAKEDIR)/../../../../inc/Org/Kxml2/IO;
+INCLUDES += $(MAKEDIR)/../../../../inc/org/kxml2/io;
 
 CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u

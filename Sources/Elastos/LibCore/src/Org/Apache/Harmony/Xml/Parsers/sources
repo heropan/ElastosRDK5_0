@@ -2,8 +2,8 @@
 TARGET_NAME= parsers
 TARGET_TYPE= lib
 
-INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Xml/Parsers
+includes += ../../
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/xml/parsers
 
 SOURCES = CDocumentBuilderFactoryImpl.cpp
 SOURCES += CSAXParserFactoryImpl.cpp

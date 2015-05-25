@@ -1,13 +1,13 @@
 
 module
 {
-    merge("../../../../car/Elastos/Utility/Jar/IAttributes.car");
-    merge("../../../../car/Elastos/Utility/Jar/IJarEntry.car");
-    merge("../../../../car/Elastos/Utility/Jar/IManifest.car");
-    merge("../../../../car/Elastos/Utility/Jar/IJarFile.car");
-    merge("../../../../car/Elastos/Utility/Jar/IJarInputStream.Car");
-    merge("../../../../car/Elastos/Utility/Jar/IJarOutputStream.car");
-    merge("../../../../car/Elastos/Utility/Jar/IPack200.car");
+    merge("../../../../car/elastos/utility/jar/IAttributes.car");
+    merge("../../../../car/elastos/utility/jar/IJarEntry.car");
+    merge("../../../../car/elastos/utility/jar/IManifest.car");
+    merge("../../../../car/elastos/utility/jar/IJarFile.car");
+    merge("../../../../car/elastos/utility/jar/IJarInputStream.Car");
+    merge("../../../../car/elastos/utility/jar/IJarOutputStream.car");
+    merge("../../../../car/elastos/utility/jar/IPack200.car");
 
     // using interface Elastos.Core.ICloneable;
     // using interface Elastos.Utility.IMap;

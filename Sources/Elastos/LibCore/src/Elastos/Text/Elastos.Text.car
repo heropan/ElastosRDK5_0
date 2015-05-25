@@ -1,29 +1,29 @@
 module
 {
-    merge("../../../car/Elastos/Text/Exceptions.car");
-    merge("../../../car/Elastos/Text/IAnnotation.car");
-    merge("../../../car/Elastos/Text/IFormat.car");
-    merge("../../../car/Elastos/Text/IDateFormat.car");
-    merge("../../../car/Elastos/Text/IDateFormatSymbols.car");
-    merge("../../../car/Elastos/Text/INumberFormat.car");
-    merge("../../../car/Elastos/Text/IMessageFormat.car");
-    merge("../../../car/Elastos/Text/IChoiceFormat.car");
-    merge("../../../car/Elastos/Text/IDecimalFormat.car");
-    merge("../../../car/Elastos/Text/ISimpleDateFormat.car");
-    merge("../../../car/Elastos/Text/IBreakIterator.car");
-    merge("../../../car/Elastos/Text/ICollator.car");
-    merge("../../../car/Elastos/Text/ICollationElementIterator.car");
-    merge("../../../car/Elastos/Text/IRuleBasedCollator.car");
-    merge("../../../car/Elastos/Text/INormalizer.car");
-    merge("../../../car/Elastos/Text/IBidi.car");
-    merge("../../../car/Elastos/Text/IRuleBasedBreakIterator.car");
+    merge("../../../car/elastos/text/Exceptions.car");
+    merge("../../../car/elastos/text/IAnnotation.car");
+    merge("../../../car/elastos/text/IFormat.car");
+    merge("../../../car/elastos/text/IDateFormat.car");
+    merge("../../../car/elastos/text/IDateFormatSymbols.car");
+    merge("../../../car/elastos/text/INumberFormat.car");
+    merge("../../../car/elastos/text/IMessageFormat.car");
+    merge("../../../car/elastos/text/IChoiceFormat.car");
+    merge("../../../car/elastos/text/IDecimalFormat.car");
+    merge("../../../car/elastos/text/ISimpleDateFormat.car");
+    merge("../../../car/elastos/text/IBreakIterator.car");
+    merge("../../../car/elastos/text/ICollator.car");
+    merge("../../../car/elastos/text/ICollationElementIterator.car");
+    merge("../../../car/elastos/text/IRuleBasedCollator.car");
+    merge("../../../car/elastos/text/INormalizer.car");
+    merge("../../../car/elastos/text/IBidi.car");
+    merge("../../../car/elastos/text/IRuleBasedBreakIterator.car");
 
-    merge("../../../car/Elastos/Text/Spi/IBreakIteratorProvider.car");
-    merge("../../../car/Elastos/Text/Spi/ICollatorProvider.car");
-    merge("../../../car/Elastos/Text/Spi/IDateFormatProvider.car");
-    merge("../../../car/Elastos/Text/Spi/IDateFormatSymbolsProvider.car");
-    merge("../../../car/Elastos/Text/Spi/IDecimalFormatSymbolsProvider.car");
-    merge("../../../car/Elastos/Text/Spi/INumberFormatProvider.car");
+    merge("../../../car/elastos/text/spi/IBreakIteratorProvider.car");
+    merge("../../../car/elastos/text/spi/ICollatorProvider.car");
+    merge("../../../car/elastos/text/spi/IDateFormatProvider.car");
+    merge("../../../car/elastos/text/spi/IDateFormatSymbolsProvider.car");
+    merge("../../../car/elastos/text/spi/IDecimalFormatSymbolsProvider.car");
+    merge("../../../car/elastos/text/spi/INumberFormatProvider.car");
 
     // using interface Libcore.ICU.ILocale;
     // using interface Libcore.ICU.INativeBreakIterator;

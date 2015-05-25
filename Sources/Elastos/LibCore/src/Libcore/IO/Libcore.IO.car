@@ -1,23 +1,23 @@
 
 module
 {
-    merge("../../../car/Libcore/IO/Exceptions.car");
-    merge("../../../car/Libcore/IO/IOsConstants.car");
-    merge("../../../car/Libcore/IO/IOs.car");
-    merge("../../../car/Libcore/IO/IIoBridge.car");
-    merge("../../../car/Libcore/IO/ILibcore.car");
-    merge("../../../car/Libcore/IO/IStructAddrinfo.car");
-    merge("../../../car/Libcore/IO/IStructFlock.car");
-    merge("../../../car/Libcore/IO/IStructGroupReq.car");
-    merge("../../../car/Libcore/IO/IStructLinger.car");
-    merge("../../../car/Libcore/IO/IStructPasswd.car");
-    merge("../../../car/Libcore/IO/IStructPollfd.car");
-    merge("../../../car/Libcore/IO/IStructStat.car");
-    merge("../../../car/Libcore/IO/IStructStatFs.car");
-    merge("../../../car/Libcore/IO/IStructTimeval.car");
-    merge("../../../car/Libcore/IO/IStructUtsname.car");
-    merge("../../../car/Libcore/IO/ISocketTagger.car");
-    merge("../../../car/Libcore/IO/IBase64.car");
+    merge("../../../car/libcore/io/Exceptions.car");
+    merge("../../../car/libcore/io/IOsConstants.car");
+    merge("../../../car/libcore/io/IOs.car");
+    merge("../../../car/libcore/io/IIoBridge.car");
+    merge("../../../car/libcore/io/ILibcore.car");
+    merge("../../../car/libcore/io/IStructAddrinfo.car");
+    merge("../../../car/libcore/io/IStructFlock.car");
+    merge("../../../car/libcore/io/IStructGroupReq.car");
+    merge("../../../car/libcore/io/IStructLinger.car");
+    merge("../../../car/libcore/io/IStructPasswd.car");
+    merge("../../../car/libcore/io/IStructPollfd.car");
+    merge("../../../car/libcore/io/IStructStat.car");
+    merge("../../../car/libcore/io/IStructStatFs.car");
+    merge("../../../car/libcore/io/IStructTimeval.car");
+    merge("../../../car/libcore/io/IStructUtsname.car");
+    merge("../../../car/libcore/io/ISocketTagger.car");
+    merge("../../../car/libcore/io/IBase64.car");
 
     interface Elastos.Net.IInetAddress;
 

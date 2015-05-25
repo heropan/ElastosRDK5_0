@@ -2,8 +2,8 @@
 TARGET_NAME= x501
 TARGET_TYPE= lib
 
-INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Security/X501
+includes += ../../
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/security/x501
 
 SOURCES = CAttributeTypeAndValue.cpp
 SOURCES += CAttributeTypeAndValueComparator.cpp

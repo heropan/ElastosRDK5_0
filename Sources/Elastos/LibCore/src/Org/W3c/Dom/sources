@@ -1,7 +1,7 @@
 TARGET_NAME= Org.W3c.Dom
 TARGET_TYPE= eco
 
-INCLUDES += $(MAKEDIR)/../../../../inc/Org/W3c/Dom
+INCLUDES += $(MAKEDIR)/../../../../inc/org/w3c/dom
 INCLUDES += $(MAKEDIR)/../../../../inc/common
 
 CAR_FLAGS += -n -u

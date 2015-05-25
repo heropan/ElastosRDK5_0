@@ -2,7 +2,7 @@
 TARGET_NAME= internal
 TARGET_TYPE= lib
 
-INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Crypto/Internal
+includes += ../../
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/crypto/internal
 
 SOURCES = CNullCipherSpi.cpp

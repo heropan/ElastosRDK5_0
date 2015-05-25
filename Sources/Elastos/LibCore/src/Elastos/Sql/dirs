@@ -1,1 +1,1 @@
-DIRS += SQLite
+DIRS += sqlite

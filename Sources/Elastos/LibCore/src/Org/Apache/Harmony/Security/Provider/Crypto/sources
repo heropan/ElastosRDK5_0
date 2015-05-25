@@ -2,8 +2,8 @@
 TARGET_NAME= crypto
 TARGET_TYPE= lib
 
-INCLUDES += ../../../
-INCLUDES += $(MAKEDIR)/../../../../../../../inc/Org/Apache/Harmony/Security/Provider/Crypto
+includes += ../../../
+INCLUDES += $(MAKEDIR)/../../../../../../../inc/org/apache/harmony/security/provider/crypto
 
 SOURCES = CCryptoProvider.cpp
 SOURCES += CDSAKeyFactoryImpl.cpp

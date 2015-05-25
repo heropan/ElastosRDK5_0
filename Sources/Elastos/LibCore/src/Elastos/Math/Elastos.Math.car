@@ -1,9 +1,9 @@
 module
 {
-    merge("../../../car/Elastos/Math/IMathContext.car");
-    merge("../../../car/Elastos/Math/IBigDecimal.car");
-    merge("../../../car/Elastos/Math/IBigInteger.car");
-    merge("../../../car/Elastos/Math/RoundingMode.car");
+    merge("../../../car/elastos/math/IMathContext.car");
+    merge("../../../car/elastos/math/IBigDecimal.car");
+    merge("../../../car/elastos/math/IBigInteger.car");
+    merge("../../../car/elastos/math/RoundingMode.car");
 
     //using interface Elastos.IO.ISerializable;
     using interface Elastos.Core.IComparable;

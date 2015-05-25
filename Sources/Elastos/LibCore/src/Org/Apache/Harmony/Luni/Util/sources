@@ -2,8 +2,8 @@
 TARGET_NAME= reflect
 TARGET_TYPE= lib
 
-INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Luni/Util
+includes += ../../
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/luni/util
 
 SOURCES = CDeleteOnExit.cpp
 SOURCES += CDeleteOnExitHelper.cpp

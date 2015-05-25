@@ -2,8 +2,8 @@
 TARGET_NAME= security
 TARGET_TYPE= lib
 
-INCLUDES += ../
-INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Apache/Harmony/Security
+includes += ../
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/harmony/security
 
 SOURCES = CPrivateKeyImpl.cpp
 SOURCES += CPublicKeyImpl.cpp

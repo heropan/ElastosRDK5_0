@@ -1,19 +1,19 @@
 module
 {
-    merge("../../../car/Libcore/ICU/Exceptions.car");
-    merge("../../../car/Libcore/ICU/ICollationKeyICU.car");
-    merge("../../../car/Libcore/ICU/ILocaleData.car");
-    merge("../../../car/Libcore/ICU/IICUHelper.car");
-    merge("../../../car/Libcore/ICU/IRuleBasedCollatorICU.car");
-    merge("../../../car/Libcore/ICU/ITimeZoneNames.car");
-    merge("../../../car/Libcore/ICU/ICollationElementIteratorICU.car");
-    merge("../../../car/Libcore/ICU/INativeDecimalFormat.car");
-    merge("../../../car/Libcore/ICU/INativeBreakIterator.car");
-    merge("../../../car/Libcore/ICU/INativeCollationHelper.car");
-    merge("../../../car/Libcore/ICU/INativeIDNHelper.car");
-    merge("../../../car/Libcore/ICU/INativePluralRules.car");
-    merge("../../../car/Libcore/ICU/INativeNormalizerHelper.car");
-    merge("../../../car/Libcore/ICU/IAlphabeticIndex.car");
+    merge("../../../car/libcore/icu/Exceptions.car");
+    merge("../../../car/libcore/icu/ICollationKeyICU.car");
+    merge("../../../car/libcore/icu/ILocaleData.car");
+    merge("../../../car/libcore/icu/IICUHelper.car");
+    merge("../../../car/libcore/icu/IRuleBasedCollatorICU.car");
+    merge("../../../car/libcore/icu/ITimeZoneNames.car");
+    merge("../../../car/libcore/icu/ICollationElementIteratorICU.car");
+    merge("../../../car/libcore/icu/INativeDecimalFormat.car");
+    merge("../../../car/libcore/icu/INativeBreakIterator.car");
+    merge("../../../car/libcore/icu/INativeCollationHelper.car");
+    merge("../../../car/libcore/icu/INativeIDNHelper.car");
+    merge("../../../car/libcore/icu/INativePluralRules.car");
+    merge("../../../car/libcore/icu/INativeNormalizerHelper.car");
+    merge("../../../car/libcore/icu/IAlphabeticIndex.car");
 
     // interface Elastos.Text.IDecimalFormatSymbols;
 

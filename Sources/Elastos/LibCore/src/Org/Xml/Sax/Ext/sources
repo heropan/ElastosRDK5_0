@@ -1,10 +1,10 @@
 TARGET_NAME= ext
 TARGET_TYPE= lib
 
-INCLUDES += ../;
-INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax;
-INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax/Helpers;
-INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Xml/Sax/Ext;
+includes += ../;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/xml/sax;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/xml/sax/helpers;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/xml/sax/ext;
 
 SOURCES += CLocator2Impl.cpp
 SOURCES += CAttributes2Impl.cpp

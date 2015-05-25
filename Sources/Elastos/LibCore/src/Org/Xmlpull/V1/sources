@@ -4,10 +4,10 @@ TARGET_TYPE= eco
 IMPORTS += Elastos.CoreLibrary.eco
 IMPORTS += Org.Xml.Sax.eco
 
-INCLUDES += ./;
-INCLUDES += $(MAKEDIR)/../../../../inc/Org;
-INCLUDES += $(MAKEDIR)/../../../../inc/Org/Xmlpull/V1;
-INCLUDES += $(MAKEDIR)/../../../../inc/Org/Xmlpull/V1/Sax2;
+includes += ./;
+INCLUDES += $(MAKEDIR)/../../../../inc/org;
+INCLUDES += $(MAKEDIR)/../../../../inc/org/xmlpull/v1;
+INCLUDES += $(MAKEDIR)/../../../../inc/org/xmlpull/v1/sax2;
 
 VPATH := $(MAKEDIR)/Sax2
 
