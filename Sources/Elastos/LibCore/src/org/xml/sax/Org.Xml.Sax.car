@@ -32,8 +32,8 @@ module
     merge("../../../../../car/org/xml/sax/ext/ILocator2.car");
     merge("../../../../../car/org/xml/sax/ext/ILocator2Impl.car");
 
-    using interface Elastos.IO.IInputStream;
-    using interface Elastos.IO.IReader;
+    interface Elastos.IO.IInputStream;
+    interface Elastos.IO.IReader;
 
     interface Org.Xml.Sax.IAttributes;
     interface Org.Xml.Sax.IAttributeList;

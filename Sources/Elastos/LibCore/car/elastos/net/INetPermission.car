@@ -1,8 +1,8 @@
 
 module
 {
-    // using interface Elastos.Security.IBasicPermission;
-    // using interface Elastos.Security.IPermission;
+    // interface Elastos.Security.IBasicPermission;
+    // interface Elastos.Security.IPermission;
 
     namespace Elastos {
     namespace Net {

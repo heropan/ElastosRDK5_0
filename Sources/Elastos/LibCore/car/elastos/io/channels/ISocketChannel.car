@@ -1,8 +1,8 @@
 
 module
 {
-//    using interface Elastos.Net.ISocket;
-//    using interface Elastos.Net.ISocketAddress;
+//    interface Elastos.Net.ISocket;
+//    interface Elastos.Net.ISocketAddress;
     interface Elastos.IO.IByteBuffer;
     interface Elastos.IO.Channels.ISelectableChannel;
 

@@ -1,4 +1,137 @@
 module
 {
+    merge("../libcore/io/Exceptions.car");
+    merge("../libcore/io/IOsConstants.car");
+    merge("../libcore/io/IOs.car");
+    merge("../libcore/io/IIoBridge.car");
+    merge("../libcore/io/ILibcore.car");
+    merge("../libcore/io/IStructAddrinfo.car");
+    merge("../libcore/io/IStructFlock.car");
+    merge("../libcore/io/IStructGroupReq.car");
+    merge("../libcore/io/IStructLinger.car");
+    merge("../libcore/io/IStructPasswd.car");
+    merge("../libcore/io/IStructPollfd.car");
+    merge("../libcore/io/IStructStat.car");
+    merge("../libcore/io/IStructStatFs.car");
+    merge("../libcore/io/IStructTimeval.car");
+    merge("../libcore/io/IStructUtsname.car");
+    merge("../libcore/io/ISocketTagger.car");
+    merge("../libcore/io/IBase64.car");
 
+    merge("io/ICloseable.car");
+    merge("io/IFlushable.car");
+    merge("io/IInputStream.car");
+    merge("io/IFilterInputStream.car");
+    merge("io/IBufferedInputStream.car");
+    merge("io/IOutputStream.car");
+    merge("io/IFilterOutputStream.car");
+    merge("io/IBufferedOutputStream.car");
+    merge("io/IReadable.car");
+    merge("io/IReader.car");
+    merge("io/IBufferedReader.car");
+    merge("io/IWriter.car");
+    merge("io/IBufferedWriter.car");
+    merge("io/IByteArrayInputStream.car");
+    merge("io/IByteArrayOutputStream.car");
+    merge("io/IBufferIterator.car");
+    merge("io/ICharArrayReader.car");
+    merge("io/ICharArrayWriter.car");
+    merge("io/IDataInput.car");
+    merge("io/IDataInputStream.car");
+    merge("io/IDataOutput.car");
+    merge("io/IDataOutputStream.car");
+    merge("io/IFile.car");
+    merge("io/IFileDescriptor.car");
+    merge("io/IFileFilter.car");
+    merge("io/IFileInputStream.car");
+    merge("io/IFileOutputStream.car");
+    merge("io/IFilePermission.car");
+    merge("io/IInputStreamReader.car");
+    merge("io/IFileReader.car");
+    merge("io/IOutputStreamWriter.car");
+    merge("io/IFileWriter.car");
+    merge("io/IFilenameFilter.car");
+    merge("io/IFilterReader.car");
+    merge("io/IFilterWriter.car");
+    merge("io/ILineNumberInputStream.car");
+    merge("io/ILineNumberReader.car");
+    merge("io/IObjectInput.car");
+    merge("io/IObjectInputStream.car");
+    merge("io/IObjectInputValidation.car");
+    merge("io/IObjectOutput.car");
+    merge("io/IObjectOutputStream.car");
+    //merge("io/ISerializable.car"); moved to core.car
+    merge("io/IObjectStreamClass.car");
+    merge("io/IObjectStreamField.car");
+    merge("io/IPrintStream.car");
+    merge("io/IPrintWriter.car");
+    merge("io/IPushbackInputStream.car");
+    merge("io/IPushbackReader.car");
+    merge("io/IRandomAccessFile.car");
+    merge("io/ISequenceInputStream.car");
+    merge("io/IStreamTokenizer.car");
+    merge("io/IStringBufferInputStream.car");
+    merge("io/IStringReader.car");
+    merge("io/IStringWriter.car");
+    merge("io/IStreams.car");
+    merge("io/IMemory.car");
+    merge("io/Errors.car");
+    merge("io/Exceptions.car");
+
+    merge("io/ByteOrder.car");
+    merge("io/IBuffer.car");
+    merge("io/IByteBuffer.car");
+    merge("io/ICharBuffer.car");
+    merge("io/IDoubleBuffer.car");
+    merge("io/IFloatBuffer.car");
+    merge("io/IInt16Buffer.car");
+    merge("io/IInt32Buffer.car");
+    merge("io/IInt64Buffer.car");
+    merge("io/IIoUtils.car");
+    merge("io/IUnsafeByteSequence.car");
+    merge("io/IMappedByteBuffer.car");
+    merge("io/INIOAccess.car");
+
+    merge("io/IFileDescriptorChannel.car");
+    merge("io/ISelectorImpl.car");
+    merge("io/ISelectionKeyImpl.car");
+    merge("io/IPipeImpl.car");
+    merge("io/IFileChannelImpl.car");
+
+    merge("io/channels/IChannel.car");
+    merge("io/channels/IReadableByteChannel.car");
+    merge("io/channels/IWritableByteChannel.car");
+    merge("io/channels/IChannels.car");
+    merge("io/channels/IScatteringByteChannel.car");
+    merge("io/channels/IGatheringByteChannel.car");
+
+    merge("io/channels/IInterruptibleChannel.car");
+    merge("io/channels/IFileChannel.car");
+    merge("io/channels/spi/IAbstractInterruptibleChannel.car");
+    merge("io/channels/ISelectableChannel.car");
+    merge("io/channels/ISelectionKey.car");
+    merge("io/channels/ISelector.car");
+    merge("io/channels/ISocketChannel.car");
+    merge("io/channels/IServerSocketChannel.car");
+    merge("io/channels/spi/IAbstractSelectableChannel.car");
+
+    merge("io/channels/IDatagramChannel.car");
+    merge("io/channels/ISinkChannel.car");
+    merge("io/channels/ISourceChannel.car");
+    merge("io/channels/IPipe.car");
+    merge("io/channels/IFileLock.car");
+
+    merge("io/channels/spi/ISelectorProvider.car");
+    merge("io/channels/spi/IAbstractSelector.car");
+    merge("io/channels/spi/IAbstractSelectionKey.car");
+    merge("io/charset/ICharset.car");
+    merge("io/charset/ICoderResult.car");
+    merge("io/charset/ICharsetDecoder.car");
+    merge("io/charset/ICharsetEncoder.car");
+    merge("io/charset/ICodingErrorAction.car");
+    merge("io/charset/ICharsets.car");
+    merge("io/charset/IModifiedUtf8.car");
+    merge("io/INativeConverterHelper.car");
+
+    merge("io/charset/spi/ICharsetProvider.car");
 }

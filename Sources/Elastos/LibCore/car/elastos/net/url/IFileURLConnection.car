@@ -1,7 +1,7 @@
 
 module
 {
-    using interface Elastos.Net.IURLConnection;
+    interface Elastos.Net.IURLConnection;
 
     namespace Elastos {
     namespace Net {

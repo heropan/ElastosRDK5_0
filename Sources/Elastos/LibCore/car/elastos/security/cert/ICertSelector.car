@@ -17,7 +17,11 @@ module
      * @see CertStore
      * @see Certificate
      */
-    interface ICertSelector extends Elastos.Core.ICloneable {
+    /**
+      * @Involve
+      * interface Elastos.Core.ICloneable;
+      */
+    interface ICertSelector {
         /**
          * Checks whether the defined criteria of this instance match the specified
          * certificate.

@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Core.IRunnable;
+    interface Elastos.Core.IRunnable;
     interface Elastos.Utility.Concurrent.IRejectedExecutionHandler;
 
     namespace Elastos {

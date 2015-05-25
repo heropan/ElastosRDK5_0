@@ -1,9 +1,9 @@
 module
 {
-    using interface Elastos.IO.IInputStream;
-    using interface Elastos.IO.IOutputStream;
-    using interface Elastos.IO.IReader;
-    using interface Elastos.IO.IWriter;
+    interface Elastos.IO.IInputStream;
+    interface Elastos.IO.IOutputStream;
+    interface Elastos.IO.IReader;
+    interface Elastos.IO.IWriter;
 
     namespace Elastos {
     namespace Sql {

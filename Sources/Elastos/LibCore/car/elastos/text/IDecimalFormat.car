@@ -1,16 +1,16 @@
 module
 {
+    enum Elastos.Math.RoundingMode;
+
     interface Elastos.Text.IDecimalFormatSymbols;
-    using interface Elastos.IO.IObjectInputStream;
-    using interface Elastos.IO.IObjectOutputStream;
-    using interface Elastos.IO.IObjectStreamField;
-    using interface Elastos.Math.IBigDecimal;
-    using interface Elastos.Math.IBigInteger;
-    using interface Elastos.Math.IRoundingMode;
-    using interface Elastos.Utility.ICurrency;
-    using interface Elastos.Utility.ILocale;
-    using interface Elastos.Utility.ILocaleData;
-    using interface Libcore.ICU.INativeDecimalFormat;
+    interface Elastos.IO.IObjectInputStream;
+    interface Elastos.IO.IObjectOutputStream;
+    interface Elastos.IO.IObjectStreamField;
+    interface Elastos.Math.IBigDecimal;
+    interface Elastos.Math.IBigInteger;
+    interface Elastos.Utility.ICurrency;
+    interface Elastos.Utility.ILocale;
+    interface Libcore.ICU.INativeDecimalFormat;
 
     namespace Elastos {
     namespace Text {

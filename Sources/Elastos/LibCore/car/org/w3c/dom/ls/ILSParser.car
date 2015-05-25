@@ -1,8 +1,8 @@
 module
 {
-    using interface Org.W3c.Dom.IDOMConfiguration;
-    using interface Org.W3c.Dom.IDocument;
-    using interface Org.W3c.Dom.INode;
+    interface Org.W3c.Dom.IDOMConfiguration;
+    interface Org.W3c.Dom.IDocument;
+    interface Org.W3c.Dom.INode;
     interface Org.W3c.Dom.Ls.ILSParserFilter;
 
     namespace Org {

@@ -2,12 +2,8 @@ module
 {
     interface Elastos.IO.IObjectInputStream;
     interface Elastos.IO.IObjectOutputStream;
-    interface Elastos.IO.ISerializable;
     interface Elastos.Utility.IObjectContainer;
-    using interface Elastos.Utility.ILocale;
-    using interface Libcore.ICU.IICUHelper;
-    using interface Elastos.Utility.ILocaleData;
-    using interface Libcore.ICU.ITimeZones;
+    interface Elastos.Utility.ILocale;
 
     namespace Elastos {
     namespace Text {

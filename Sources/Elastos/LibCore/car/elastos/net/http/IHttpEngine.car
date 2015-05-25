@@ -1,10 +1,10 @@
 
 module
 {
-    using interface Elastos.IO.IInputStream;
-    using interface Elastos.IO.IOutputStream;
-    using interface Elastos.Net.ICacheResponse;
-    using interface Elastos.Net.IURI;
+    interface Elastos.IO.IInputStream;
+    interface Elastos.IO.IOutputStream;
+    interface Elastos.Net.ICacheResponse;
+    interface Elastos.Net.IURI;
 
     namespace Elastos {
     namespace Net {

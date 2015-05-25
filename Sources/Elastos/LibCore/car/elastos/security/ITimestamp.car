@@ -1,8 +1,8 @@
 
 module
 {
-    using interface Elastos.Security.Cert.ICertPath;
-    using interface Elastos.Utility.IDate;
+    interface Elastos.Security.Cert.ICertPath;
+    interface Elastos.Utility.IDate;
     namespace Elastos {
     namespace Security {
         interface ITimestamp {

@@ -25,11 +25,11 @@ module
     merge("../../../car/elastos/text/spi/IDecimalFormatSymbolsProvider.car");
     merge("../../../car/elastos/text/spi/INumberFormatProvider.car");
 
-    // using interface Libcore.ICU.ILocale;
-    // using interface Libcore.ICU.INativeBreakIterator;
-    // using interface Libcore.ICU.ICollationElementIteratorICU;
-    // using interface Libcore.ICU.IRuleBasedCollatorICU;
-    // using interface Elastos.Core.IComparator;
+    // interface Libcore.ICU.ILocale;
+    // interface Libcore.ICU.INativeBreakIterator;
+    // interface Libcore.ICU.ICollationElementIteratorICU;
+    // interface Libcore.ICU.IRuleBasedCollatorICU;
+    // interface Elastos.Core.IComparator;
     // interface Elastos.Utility.IObjectMap;
 
     // namespace Elastos {

@@ -2,7 +2,7 @@
 module
 {
     interface Elastos.Utility.ILocale;
-    using interface Elastos.Core.IAppendable;
+    interface Elastos.Core.IAppendable;
 
     namespace Elastos {
     namespace Utility {

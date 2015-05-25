@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Utility.ILocale;
+    interface Elastos.Utility.ILocale;
 
     namespace Elastos {
     namespace Utility {

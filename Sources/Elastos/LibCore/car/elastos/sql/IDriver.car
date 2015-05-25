@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Utility.IProperties;
+    interface Elastos.Utility.IProperties;
     interface Elastos.Sql.IDriverPropertyInfo;
 
     namespace Elastos {

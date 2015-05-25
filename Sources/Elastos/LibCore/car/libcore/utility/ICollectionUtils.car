@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Core.IComparator;
+    interface Elastos.Core.IComparator;
     interface Elastos.Utility.IIterable;
     interface Elastos.Utility.IList;
 

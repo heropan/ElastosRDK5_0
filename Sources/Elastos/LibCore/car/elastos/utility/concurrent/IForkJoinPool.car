@@ -1,9 +1,9 @@
 
 module
 {
-    using interface Elastos.Core.IRunnable;
-    using interface Elastos.Core.IThreadUncaughtExceptionHandler;
-    using interface Elastos.Utility.ICollection;
+    interface Elastos.Core.IRunnable;
+    interface Elastos.Core.IThreadUncaughtExceptionHandler;
+    interface Elastos.Utility.ICollection;
     interface Elastos.Utility.Concurrent.ICallable;
     interface Elastos.Utility.Concurrent.IForkJoinWorkerThread;
     interface Elastos.Utility.Concurrent.IForkJoinTask;

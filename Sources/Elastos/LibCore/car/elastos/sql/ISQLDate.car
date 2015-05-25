@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Utility.IDate;
+    interface Elastos.Utility.IDate;
 
     namespace Elastos {
     namespace Sql {

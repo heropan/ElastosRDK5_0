@@ -1,13 +1,13 @@
 module
 {
-    using interface Elastos.IO.IObjectInputStream;
-    using interface Elastos.IO.IObjectOutputStream;
-    using interface Elastos.IO.IObjectStreamField;
-    using interface Elastos.Utility.IDate;
-    using interface Elastos.Utility.ILocale;
+    interface Elastos.IO.IObjectInputStream;
+    interface Elastos.IO.IObjectOutputStream;
+    interface Elastos.IO.IObjectStreamField;
+    interface Elastos.Utility.IDate;
+    interface Elastos.Utility.ILocale;
     interface Elastos.Text.IFieldPosition;
     interface Elastos.Text.IParsePosition;
-    using interface Elastos.Core.IStringBuffer;
+    interface Elastos.Core.IStringBuffer;
 
     namespace Elastos {
     namespace Text {

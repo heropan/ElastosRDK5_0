@@ -1,5 +1,67 @@
 
 module
 {
+    merge("sql/Exceptions.car");
+    merge("sql/ITypes.car");
+    merge("sql/IClob.car");
+    merge("sql/IBlob.car");
+    merge("sql/INClob.car");
+    merge("sql/IArray.car");
+    merge("sql/IStruct.car");
+    merge("sql/IDate.car");
+    merge("sql/ITime.car");
+    merge("sql/IWrapper.car");
+    merge("sql/IParameterMetaData.car");
+    merge("sql/IRowId.car");
+    merge("sql/ITimestamp.car");
+    merge("sql/IRef.car");
+    merge("sql/ISQLStruct.car");
+    merge("sql/ISQLXML.car");
+    merge("sql/ISQLInput.car");
+    merge("sql/ISQLOutput.car");
+    merge("sql/ISQLData.car");
+    merge("sql/IStatement.car");
+    merge("sql/ISQLWarning.car");
+    merge("sql/IRowIdLifeTime.car");
+    merge("sql/IResultSetMetaData.car");
+    merge("sql/IResultSet.car");
+    merge("sql/IDatabaseMetaData.car");
+    merge("sql/IPreparedStatement.car");
+    merge("sql/ICallableStatement.car");
+    merge("sql/ISavePoint.car");
+    merge("sql/ISQLPermission.car");
+    merge("sql/IConnection.car");
+    merge("sql/IDriver.car");
+    merge("sql/IDriverManagerHelper.car");
+    merge("sql/IDataTruncation.car");
+    merge("sql/IDriverPropertyInfo.car");
 
+    merge("sql/sqlite/IStringEncoderHelper.car");
+    merge("sql/sqlite/IAuthorizer.car");
+    merge("sql/sqlite/IBlob.car");
+    merge("sql/sqlite/ICallback.car");
+    merge("sql/sqlite/IBusyHandler.car");
+    merge("sql/sqlite/ITableResult.car");
+    merge("sql/sqlite/IFunctionContext.car");
+    merge("sql/sqlite/IFunction.car");
+    merge("sql/sqlite/ITrace.car");
+    merge("sql/sqlite/IProfile.car");
+    merge("sql/sqlite/IVm.car");
+    merge("sql/sqlite/IStmt.car");
+    merge("sql/sqlite/IBackup.car");
+    merge("sql/sqlite/IProgressHandler.car");
+    merge("sql/sqlite/IDatabase.car");
+
+    merge("sql/sqlite/IMockFunction.car");
+
+    merge("sql/sqlite/IConstants.car");
+    merge("sql/sqlite/IShell.car");
+
+    merge("sql/sqlite/jdbc/IJDBCConnection.car");
+    merge("sql/sqlite/jdbc/IJDBCStatement.car");
+    merge("sql/sqlite/jdbc/IJDBCPreparedStatement.car");
+    merge("sql/sqlite/jdbc/IJDBCResultSetMetaData.car");
+    merge("sql/sqlite/jdbc/ITableResultX.car");
+    merge("sql/sqlite/jdbc/IJDBCDatabaseMetaData.car");
+    merge("sql/sqlite/jdbc/IJDBCResultSet.car");
 }

@@ -1,9 +1,9 @@
 
 module
 {
-    using interface Elastos.Core.IThrowable;
-    using interface Elastos.Core.IRunnable;
-    using interface Elastos.Utility.ICollection;
+    interface Elastos.Core.IThrowable;
+    interface Elastos.Core.IRunnable;
+    interface Elastos.Utility.ICollection;
     interface Elastos.Utility.Concurrent.IForkJoinTask;
 
     namespace Elastos {

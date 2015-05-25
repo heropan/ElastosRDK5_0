@@ -8,8 +8,8 @@ module
     merge("../../../../car/org/xmlpull/v1/IXmlSerializer.car");
     merge("../../../../car/org/kxml2/io/IKXmlParser.car");
 
-    using interface Elastos.IO.ICloseable;
-    using interface Org.Xmlpull.V1.IXmlSerializer;
+    interface Elastos.IO.ICloseable;
+    interface Org.Xmlpull.V1.IXmlSerializer;
 
     namespace Org {
     namespace Kxml2 {

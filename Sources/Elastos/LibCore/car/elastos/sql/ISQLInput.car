@@ -1,9 +1,9 @@
 module
 {
-    using interface Elastos.Math.IBigDecimal;
-    using interface Elastos.IO.IReader;
-    using interface Elastos.IO.IInputStream;
-    using interface Elastos.Net.IURL;
+    interface Elastos.Math.IBigDecimal;
+    interface Elastos.IO.IReader;
+    interface Elastos.IO.IInputStream;
+    interface Elastos.Net.IURL;
 
     namespace Elastos {
     namespace Sql {

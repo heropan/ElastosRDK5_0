@@ -59,20 +59,20 @@ module
     merge("../../../../car/elastos/utility/concurrent/IConcurrentMap.car");
     merge("../../../../car/elastos/utility/concurrent/IConcurrentHashMap.car");
 
-    // using interface Elastos.Core.IRunnable;
-    // using interface Elastos.Core.ICloneable;
-    // using interface Elastos.Core.IComparator;
-    // using interface Elastos.Core.IThreadUncaughtExceptionHandler;
-    // using interface Elastos.Utility.ICollection;
-    // using interface Elastos.Utility.ISet;
-    // using interface Elastos.Utility.IDeque;
-    // using interface Elastos.Utility.IQueue;
-    // using interface Elastos.Utility.IMap;
-    // using interface Elastos.Utility.ISortedMap;
-    // using interface Elastos.Utility.INavigableMap;
-    // using interface Elastos.Utility.ISortedSet;
-    // using interface Elastos.Utility.INavigableSet;
-    // using interface Elastos.IO.ISerializable;
+    // interface Elastos.Core.IRunnable;
+    // interface Elastos.Core.ICloneable;
+    // interface Elastos.Core.IComparator;
+    // interface Elastos.Core.IThreadUncaughtExceptionHandler;
+    // interface Elastos.Utility.ICollection;
+    // interface Elastos.Utility.ISet;
+    // interface Elastos.Utility.IDeque;
+    // interface Elastos.Utility.IQueue;
+    // interface Elastos.Utility.IMap;
+    // interface Elastos.Utility.ISortedMap;
+    // interface Elastos.Utility.INavigableMap;
+    // interface Elastos.Utility.ISortedSet;
+    // interface Elastos.Utility.INavigableSet;
+    // interface Elastos.IO.ISerializable;
 
     // namespace Elastos {
     // namespace Utility {

@@ -1,10 +1,11 @@
 module
 {
-    using interface Elastos.Core.INumber;
-    using interface Elastos.Core.IStringBuffer;
-    using interface Elastos.Math.RoundingMode;
-    using interface Elastos.Utility.ICurrency;
-    using interface Elastos.Utility.ILocale;
+    enum Elastos.Math.RoundingMode;
+
+    interface Elastos.Core.INumber;
+    interface Elastos.Core.IStringBuffer;
+    interface Elastos.Utility.ICurrency;
+    interface Elastos.Utility.ILocale;
     interface Elastos.Text.IFieldPosition;
     interface Elastos.Text.IParsePosition;
 

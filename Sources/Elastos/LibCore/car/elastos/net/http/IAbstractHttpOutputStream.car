@@ -1,9 +1,9 @@
 
 module
 {
-    using interface Elastos.IO.ICloseable;
-    using interface Elastos.IO.IFlushable;
-    using interface Elastos.IO.IOutputStream;
+    interface Elastos.IO.ICloseable;
+    interface Elastos.IO.IFlushable;
+    interface Elastos.IO.IOutputStream;
 
     namespace Elastos {
     namespace Net {

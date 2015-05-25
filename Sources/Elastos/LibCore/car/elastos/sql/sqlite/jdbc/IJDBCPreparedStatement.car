@@ -1,13 +1,13 @@
 module
 {
-    using interface Elastos.Math.IBigDecimal;
-    using interface Elastos.Utility.ICalendar;
-    using interface Elastos.Sql.IRef;
-    using interface Elastos.Sql.IClob;
-    using interface Elastos.Sql.IArray;
-    using interface Elastos.Sql.IRowId;
-    using interface Elastos.Sql.INClob;
-    using interface Elastos.Sql.ISQLXML;
+    interface Elastos.Math.IBigDecimal;
+    interface Elastos.Utility.ICalendar;
+    interface Elastos.Sql.IRef;
+    interface Elastos.Sql.IClob;
+    interface Elastos.Sql.IArray;
+    interface Elastos.Sql.IRowId;
+    interface Elastos.Sql.INClob;
+    interface Elastos.Sql.ISQLXML;
 
     namespace Elastos {
     namespace Sql {

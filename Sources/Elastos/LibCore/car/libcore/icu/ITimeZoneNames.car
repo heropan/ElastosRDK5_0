@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Core.IArrayOf;
+    interface Elastos.Core.IArrayOf;
     interface Elastos.Utility.ILocale;
 
     namespace Libcore {

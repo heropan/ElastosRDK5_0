@@ -2,9 +2,9 @@
 module
 {
     interface Elastos.Net.IInetAddress;
-    using interface Elastos.IO.IFileDescriptor;
-    using interface Elastos.IO.IOutputStream;
-    using interface Elastos.IO.IInputStream;
+    interface Elastos.IO.IFileDescriptor;
+    interface Elastos.IO.IOutputStream;
+    interface Elastos.IO.IInputStream;
     namespace Elastos{
     namespace Net{
 

@@ -1,9 +1,9 @@
 module
 {
-    using interface Elastos.IO.IOutputStream;
-    using interface Elastos.IO.IInputStream;
-    using interface Elastos.IO.IFile;
-    using interface Elastos.Utility.IProperties;
+    interface Elastos.IO.IOutputStream;
+    interface Elastos.IO.IInputStream;
+    interface Elastos.IO.IFile;
+    interface Elastos.Utility.IProperties;
 
     namespace Elastos {
     namespace Utility {

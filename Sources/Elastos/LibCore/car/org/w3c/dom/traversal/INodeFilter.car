@@ -1,6 +1,6 @@
 module
 {
-    using interface Org.W3c.Dom.INode;
+    interface Org.W3c.Dom.INode;
 
     namespace Org {
     namespace W3c {

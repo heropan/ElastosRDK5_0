@@ -5,9 +5,9 @@ module
     merge("../../../car/elastos/math/IBigInteger.car");
     merge("../../../car/elastos/math/RoundingMode.car");
 
-    //using interface Elastos.IO.ISerializable;
-    using interface Elastos.Core.IComparable;
-    using interface Elastos.Core.INumber;
+    //interface Elastos.IO.ISerializable;
+    interface Elastos.Core.IComparable;
+    interface Elastos.Core.INumber;
 
     // namespace Elastos {
     // namespace Math {

@@ -1,11 +1,12 @@
 
 module
 {
+    enum Elastos.Net.ResponseSource;
+
     interface Elastos.Utility.IDate;
     interface Elastos.Utility.ISet;
     interface Elastos.Utility.IMap;
-    using interface Elastos.Net.IURI;
-    using interface Elastos.Net.ResponseSource;
+    interface Elastos.Net.IURI;
 
     namespace Elastos {
     namespace Net {

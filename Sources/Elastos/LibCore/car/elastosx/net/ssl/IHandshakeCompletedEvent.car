@@ -15,7 +15,11 @@ module
      * The event object encapsulating the information about a completed SSL
      * handshake on a SSL connection.
      */
-    interface IHandshakeCompletedEvent extends Elastos.Utility.IEventObject {
+    /**
+      * @Involve
+      * interface Elastos.Utility.IEventObject;
+      */
+    interface IHandshakeCompletedEvent {
         /**
          * Returns the SSL session associated with this event.
          *

@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Core.ICloneable;
+
     namespace Elastos {
     namespace Security {
     namespace Cert {
@@ -15,7 +17,11 @@ module
      * @see CertStore
      * @see CRL
      */
-    interface ICRLSelector extends Elastos.Core.ICloneable {
+    /**
+      * @Involve
+      * interface Elastos.Core.ICloneable;
+      */
+    interface ICRLSelector {
         /**
          * Checks whether the defined criteria of this instance match the specified
          * CRL.

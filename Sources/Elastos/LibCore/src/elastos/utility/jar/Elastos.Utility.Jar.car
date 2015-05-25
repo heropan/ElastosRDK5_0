@@ -9,13 +9,13 @@ module
     merge("../../../../car/elastos/utility/jar/IJarOutputStream.car");
     merge("../../../../car/elastos/utility/jar/IPack200.car");
 
-    // using interface Elastos.Core.ICloneable;
-    // using interface Elastos.Utility.IMap;
-    // using interface Elastos.Utility.Zip.IZipEntry;
-    // using interface Elastos.IO.IFile;
-    // using interface Elastos.IO.IFlushable;
-    // using interface Elastos.IO.IOutputStream;
-    // using interface Elastos.IO.IInputStream;
+    // interface Elastos.Core.ICloneable;
+    // interface Elastos.Utility.IMap;
+    // interface Elastos.Utility.Zip.IZipEntry;
+    // interface Elastos.IO.IFile;
+    // interface Elastos.IO.IFlushable;
+    // interface Elastos.IO.IOutputStream;
+    // interface Elastos.IO.IInputStream;
 
     // namespace Elastos {
     // namespace Utility {

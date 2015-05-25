@@ -113,14 +113,14 @@ module
     merge("../../../car/elastosx/net/ssl/ISSLServerSocket.car");
     merge("../../../car/elastosx/net/ssl/ITrustManagerFactorySpi.car");
 
-    // using interface Elastos.IO.IFileDescriptor;
-    // using interface Elastos.IO.IInputStream;
-    // using interface Elastos.IO.IOutputStream;
-    // using interface Elastos.IO.IFile;
-    // using interface Elastos.IO.IFlushable;
-    // using interface Elastos.Net.ICacheRequest;
-    // using interface Elastos.Net.IExtendedResponseCache;
-    // using interface Elastos.Net.IURI;
+    // interface Elastos.IO.IFileDescriptor;
+    // interface Elastos.IO.IInputStream;
+    // interface Elastos.IO.IOutputStream;
+    // interface Elastos.IO.IFile;
+    // interface Elastos.IO.IFlushable;
+    // interface Elastos.Net.ICacheRequest;
+    // interface Elastos.Net.IExtendedResponseCache;
+    // interface Elastos.Net.IURI;
 
     // namespace Elastos {
     // namespace Net {

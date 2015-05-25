@@ -1,10 +1,11 @@
 
 module
 {
-    using interface Elastos.Net.IResponseCache;
-    using interface Elastos.Net.ICacheResponse;
-    using interface Elastos.Net.IHttpURLConnection;
-    using interface Elastos.Net.ResponseSource;
+    enum Elastos.Net.ResponseSource;
+
+    interface Elastos.Net.IResponseCache;
+    interface Elastos.Net.ICacheResponse;
+    interface Elastos.Net.IHttpURLConnection;
 
     namespace Elastos {
     namespace Net {

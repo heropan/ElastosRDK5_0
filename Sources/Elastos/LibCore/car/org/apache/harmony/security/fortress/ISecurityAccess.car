@@ -1,9 +1,9 @@
 
 module
 {
-    using interface Elastos.Security.IService;
-    using interface Elastos.Utility.IList;
-    using interface Elastos.Security.IProvider;
+    interface Elastos.Security.IService;
+    interface Elastos.Utility.IList;
+    interface Elastos.Security.IProvider;
 
     namespace Org {
     namespace Apache {

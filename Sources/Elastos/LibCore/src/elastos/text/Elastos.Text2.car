@@ -9,7 +9,7 @@ module
     merge("../../../car/elastos/text/IAttributedCharacterIterator.car");
     merge("../../../car/elastos/text/IAttributedString.car");
 
-    // using interface Libcore.ICU.ILocale;
+    // interface Libcore.ICU.ILocale;
     // interface Elastos.Utility.IObjectMap;
 
     // namespace Elastos {

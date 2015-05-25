@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.IO.IOutputStream;
+    interface Elastos.IO.IOutputStream;
 
     namespace Elastos {
     namespace Utility {

@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Utility.ILocale;
+    interface Elastos.Utility.ILocale;
 
     interface Org.Xml.Sax.IEntityResolver;
     interface Org.Xml.Sax.IDTDHandler;

@@ -1,8 +1,8 @@
 module
 {
     interface Libcore.ICU.ICollationElementIteratorICU;
-    using interface Elastos.Text.ICollationKey;
-    using interface Elastos.Text.ICharacterIterator;
+    interface Elastos.Text.ICollationKey;
+    interface Elastos.Text.ICharacterIterator;
 
     namespace Libcore {
     namespace ICU {

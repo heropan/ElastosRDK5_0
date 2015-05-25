@@ -1,7 +1,7 @@
 module
 {
-    using interface Elastos.Utility.ILocale;
-    using interface Elastos.Text.ICharacterIterator;
+    interface Elastos.Utility.ILocale;
+    interface Elastos.Text.ICharacterIterator;
 
     namespace Elastos {
     namespace Text {

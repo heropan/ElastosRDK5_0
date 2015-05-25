@@ -1,8 +1,8 @@
 module
 {
     interface Elastos.Text.INumberFormat;
-    using interface Elastos.Core.INumber;
-    using interface Elastos.Core.IStringBuffer;
+    interface Elastos.Core.INumber;
+    interface Elastos.Core.IStringBuffer;
     interface Elastos.Text.IFieldPosition;
 
     namespace Elastos {

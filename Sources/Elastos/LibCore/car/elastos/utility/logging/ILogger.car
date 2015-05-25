@@ -2,8 +2,8 @@ module
 {
     interface Elastos.Utility.Logging.ILogManager;
     interface Elastos.Utility.Logging.ILogRecord;
-    using interface Elastos.Utility.IResourceBundle;
-    using interface Elastos.Core.IThrowable;
+    interface Elastos.Utility.IResourceBundle;
+    interface Elastos.Core.IThrowable;
 
     namespace Elastos {
     namespace Utility {

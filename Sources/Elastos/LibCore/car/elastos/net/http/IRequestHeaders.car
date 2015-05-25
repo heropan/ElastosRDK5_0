@@ -3,7 +3,7 @@ module
 {
     interface Elastos.Utility.IDate;
     interface Elastos.Utility.IMap;
-    using interface Elastos.Net.IURI;
+    interface Elastos.Net.IURI;
 
     namespace Elastos {
     namespace Net {

@@ -1,9 +1,9 @@
 
 module
 {
-    using interface Elastos.Core.IRunnable;
-    using interface Elastos.Utility.ICollection;
-    using interface Elastos.Utility.IList;
+    interface Elastos.Core.IRunnable;
+    interface Elastos.Utility.ICollection;
+    interface Elastos.Utility.IList;
     interface Elastos.Utility.Concurrent.ICallable;
     interface Elastos.Utility.Concurrent.IFuture;
     interface Elastos.Utility.Concurrent.ITimeUnit;

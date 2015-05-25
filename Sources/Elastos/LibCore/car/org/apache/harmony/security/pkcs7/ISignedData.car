@@ -1,8 +1,8 @@
 
 module
 {
-    using interface Elastos.Utility.IList;
-    using interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
+    interface Elastos.Utility.IList;
+    interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
 
     namespace Org {
     namespace Apache {

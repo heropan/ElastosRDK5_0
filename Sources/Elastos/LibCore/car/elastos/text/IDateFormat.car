@@ -1,11 +1,11 @@
 module
 {
     interface Elastos.Text.INumberFormat;
-    using interface Elastos.Utility.IDate;
-    using interface Elastos.Utility.ICalendar;
-    using interface Elastos.Utility.ITimeZone;
-    using interface Elastos.Core.IStringBuffer;
-    using interface Elastos.Utility.ILocale;
+    interface Elastos.Utility.IDate;
+    interface Elastos.Utility.ICalendar;
+    interface Elastos.Utility.ITimeZone;
+    interface Elastos.Core.IStringBuffer;
+    interface Elastos.Utility.ILocale;
     interface Elastos.Text.IFieldPosition;
     interface Elastos.Text.IParsePosition;
 

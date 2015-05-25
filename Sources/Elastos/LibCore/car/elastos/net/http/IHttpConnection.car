@@ -1,9 +1,9 @@
 
 module
 {
-    using interface Elastos.IO.IInputStream;
-    using interface Elastos.IO.IOutputStream;
-    using interface Elastos.Net.IProxy;
+    interface Elastos.IO.IInputStream;
+    interface Elastos.IO.IOutputStream;
+    interface Elastos.Net.IProxy;
 
     namespace Elastos {
     namespace Net {

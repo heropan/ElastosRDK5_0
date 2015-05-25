@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Core.ICharSequence;
+    interface Elastos.Core.ICharSequence;
 
     namespace Libcore {
     namespace ICU {

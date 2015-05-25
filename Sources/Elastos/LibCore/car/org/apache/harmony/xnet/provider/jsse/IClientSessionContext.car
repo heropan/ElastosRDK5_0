@@ -3,7 +3,7 @@
 module
 {
     interface Org.Apache.Harmony.Xnet.Provider.Jsse.ISSLClientSessionCache;
-    using interface Elastosx.Net.Ssl.ISSLSession;
+    interface Elastosx.Net.Ssl.ISSLSession;
 
     namespace Org {
     namespace Apache {

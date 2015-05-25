@@ -1,8 +1,8 @@
 module
 {
     interface Elastos.Text.IDecimalFormatSymbols;
-    using interface Elastos.Utility.ILocale;
-    using interface Elastos.Utility.Spi.ILocaleServiceProvider;
+    interface Elastos.Utility.ILocale;
+    interface Elastos.Utility.Spi.ILocaleServiceProvider;
 
     namespace Elastos {
     namespace Text {

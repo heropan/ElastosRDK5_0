@@ -1,17 +1,15 @@
 module
 {
     interface Elastos.Text.IDateFormatSymbols;
-    using interface Elastos.IO.IObjectInputStream;
-    using interface Elastos.IO.IObjectOutputStream;
-    using interface Elastos.IO.IObjectStreamField;
-    using interface Elastos.Utility.IDate;
-    using interface Elastos.Utility.ICalendar;
-    using interface Elastos.Utility.IGregorianCalendar;
-    using interface Elastos.Utility.ISimpleTimeZone;
-    using interface Elastos.Utility.ITimeZone;
-    using interface Elastos.Utility.ILocaleData;
-    using interface Libcore.ICU.ITimeZones;
-    using interface Elastos.Utility.ILocale;
+    interface Elastos.IO.IObjectInputStream;
+    interface Elastos.IO.IObjectOutputStream;
+    interface Elastos.IO.IObjectStreamField;
+    interface Elastos.Utility.IDate;
+    interface Elastos.Utility.ICalendar;
+    interface Elastos.Utility.IGregorianCalendar;
+    interface Elastos.Utility.ISimpleTimeZone;
+    interface Elastos.Utility.ITimeZone;
+    interface Elastos.Utility.ILocale;
 
     namespace Elastos {
     namespace Text {

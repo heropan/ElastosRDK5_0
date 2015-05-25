@@ -10,8 +10,12 @@ module
      *
      * @see SecureRandom
      */
+    /**
+     * @Involve
+     * interface Elastos.IO.ISerializable;
+     */
     [deprecated]
-    interface ISecureRandomSpi extends Elastos.IO.ISerializable {
+    interface ISecureRandomSpi {
         /**
          * Reseeds this {@code SecureRandomSpi} instance with the specified {@code
          * seed}. The seed of this {@code SecureRandomSpi} instance is supplemented,

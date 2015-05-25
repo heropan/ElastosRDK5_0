@@ -9,9 +9,9 @@ module
     merge("../../../../../car/org/xmlpull/v1/IXmlPullParserFactory.car");
     merge("../../../../../car/org/xmlpull/v1/IXmlSerializer.car");
 
-    using interface Org.Xml.Sax.ILocator;
-    using interface Org.Xml.Sax.IXMLReader;
-    using interface Org.Xml.Sax.IAttributes;
+    interface Org.Xml.Sax.ILocator;
+    interface Org.Xml.Sax.IXMLReader;
+    interface Org.Xml.Sax.IAttributes;
     interface Org.Xmlpull.V1.IXmlPullParser;
 
     namespace Org {

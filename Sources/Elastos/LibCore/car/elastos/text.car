@@ -1,5 +1,37 @@
 
 module
 {
+    merge("text/ICharacterIterator.car");
+    merge("text/ICollationKey.car");
+    merge("text/IStringCharacterIterator.car");
+    merge("text/IDecimalFormatSymbols.car");
+    merge("text/IFieldPosition.car");
+    merge("text/IParsePosition.car");
+    merge("text/IAttributedCharacterIterator.car");
+    merge("text/IAttributedString.car");
 
+    merge("text/Exceptions.car");
+    merge("text/IAnnotation.car");
+    merge("text/IFormat.car");
+    merge("text/IDateFormat.car");
+    merge("text/IDateFormatSymbols.car");
+    merge("text/INumberFormat.car");
+    merge("text/IMessageFormat.car");
+    merge("text/IChoiceFormat.car");
+    merge("text/IDecimalFormat.car");
+    merge("text/ISimpleDateFormat.car");
+    merge("text/IBreakIterator.car");
+    merge("text/ICollator.car");
+    merge("text/ICollationElementIterator.car");
+    merge("text/IRuleBasedCollator.car");
+    merge("text/INormalizer.car");
+    merge("text/IBidi.car");
+    merge("text/IRuleBasedBreakIterator.car");
+
+    merge("text/spi/IBreakIteratorProvider.car");
+    merge("text/spi/ICollatorProvider.car");
+    merge("text/spi/IDateFormatProvider.car");
+    merge("text/spi/IDateFormatSymbolsProvider.car");
+    merge("text/spi/IDecimalFormatSymbolsProvider.car");
+    merge("text/spi/INumberFormatProvider.car");
 }

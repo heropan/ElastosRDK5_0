@@ -1,11 +1,13 @@
 
 module
 {
-    using interface Elastos.Utility.IProperties;
-    using interface Elastos.Utility.ISet;
+    interface Elastos.Utility.IProperties;
+    interface Elastos.Utility.ISet;
     interface Elastos.Security.IProvider;
+
     namespace Elastos {
     namespace Security {
+
         interface IService {
             /**
              * Returns the type of this {@code Service}. For example {@code
@@ -93,7 +95,11 @@ module
                 [out] String* valInString);
         }
 
-        interface IProvider extends Elastos.Utility.IProperties {
+        /**
+          * @Involve
+          * interface Elastos.Utility.IProperties;
+          */
+        interface IProvider {
             /**
              * Returns the name of this provider.
              *

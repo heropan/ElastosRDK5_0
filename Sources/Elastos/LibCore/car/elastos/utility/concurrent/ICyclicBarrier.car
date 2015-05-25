@@ -1,7 +1,7 @@
 
 module
 {
-    using interface Elastos.Utility.ICollection;
+    interface Elastos.Utility.ICollection;
 
     namespace Elastos {
     namespace Utility {

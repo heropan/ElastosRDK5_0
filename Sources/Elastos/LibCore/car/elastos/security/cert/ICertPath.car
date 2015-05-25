@@ -1,8 +1,8 @@
 
 module
 {
-    using interface Elastos.Utility.IIterator;
-    using interface Elastos.Utility.IList;
+    interface Elastos.Utility.IIterator;
+    interface Elastos.Utility.IList;
 
     namespace Elastos {
     namespace Security {

@@ -102,21 +102,21 @@ module
     merge("../../../car/elastos/utility/spi/ILocaleNameProvider.car");
     merge("../../../car/elastos/utility/spi/ITimeZoneNameProvider.car");
 
-    // using interface Libcore.ICU.ILocale;
-    // using interface Elastos.Core.ICloneable;
-    // using interface Elastos.Core.IAppendable;
-    // using interface Elastos.Core.IComparator;
-    // using interface Elastos.Core.IComparable;
-    // using interface Elastos.IO.ISerializable;
-    // using interface Elastos.IO.IFile;
-    // using interface Elastos.IO.IInputStream;
-    // using interface Elastos.IO.IOutputStream;
-    // using interface Elastos.IO.IPrintStream;
-    // using interface Elastos.IO.IFlushable;
-    // using interface Elastos.IO.ICloseable;
-    // using interface Elastos.IO.IReadable;
-    // using interface Elastos.IO.IReader;
-    // using interface Elastos.IO.Channels.IReadableByteChannel;
+    // interface Libcore.ICU.ILocale;
+    // interface Elastos.Core.ICloneable;
+    // interface Elastos.Core.IAppendable;
+    // interface Elastos.Core.IComparator;
+    // interface Elastos.Core.IComparable;
+    // interface Elastos.IO.ISerializable;
+    // interface Elastos.IO.IFile;
+    // interface Elastos.IO.IInputStream;
+    // interface Elastos.IO.IOutputStream;
+    // interface Elastos.IO.IPrintStream;
+    // interface Elastos.IO.IFlushable;
+    // interface Elastos.IO.ICloseable;
+    // interface Elastos.IO.IReadable;
+    // interface Elastos.IO.IReader;
+    // interface Elastos.IO.Channels.IReadableByteChannel;
 
     // namespace Elastos {
     // namespace Utility {

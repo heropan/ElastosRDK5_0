@@ -1,8 +1,8 @@
 
 module
 {
-    using interface Elastos.Security.Cert.ICertPath;
-    using interface Elastos.Security.ITimestamp;
+    interface Elastos.Security.Cert.ICertPath;
+    interface Elastos.Security.ITimestamp;
 
     namespace Elastos {
     namespace Security {

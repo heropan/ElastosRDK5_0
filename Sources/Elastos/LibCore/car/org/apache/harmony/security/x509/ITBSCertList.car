@@ -3,11 +3,11 @@ module
 {
     interface Org.Apache.Harmony.Security.X509.IExtensions;
     interface Org.Apache.Harmony.Security.X509.IAlgorithmIdentifier;
-    using interface Elastos.Math.IBigInteger;
-    using interface Elastos.Utility.IDate;
-    using interface Elastos.Utility.IList;
-    using interface Elastosx.Security.Auth.X500.IX500Principal;
-    using interface Elastos.Core.IStringBuilder;
+    interface Elastos.Math.IBigInteger;
+    interface Elastos.Utility.IDate;
+    interface Elastos.Utility.IList;
+    interface Elastosx.Security.Auth.X500.IX500Principal;
+    interface Elastos.Core.IStringBuilder;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
     interface Org.Apache.Harmony.Security.X501.IName;
 

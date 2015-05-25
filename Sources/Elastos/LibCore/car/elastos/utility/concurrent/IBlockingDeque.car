@@ -1,7 +1,7 @@
 
 module
 {
-    using interface Elastos.Utility.IIterator;
+    interface Elastos.Utility.IIterator;
 
     namespace Elastos {
     namespace Utility {

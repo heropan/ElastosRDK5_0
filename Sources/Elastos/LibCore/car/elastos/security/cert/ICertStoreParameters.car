@@ -11,7 +11,11 @@ module
      * The marker interface specifying the parameters used to initialize a {@code
      * CertStore} instance.
      */
-    interface ICertStoreParameters extends Elastos.Core.ICloneable {
+    /**
+      * @Involve
+      * interface Elastos.Core.ICloneable;
+      */
+    interface ICertStoreParameters {
     }
 
     } // namespace Cert

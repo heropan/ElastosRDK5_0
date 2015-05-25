@@ -1,13 +1,18 @@
 
 module
 {
-    using interface Elastos.IO.IByteBuffer;
+    interface Elastos.IO.IByteBuffer;
+    interface Elastos.Core.ICloneable;
 
     namespace Elastos {
     namespace Security {
 
+    /**
+      * @Involve
+      * interface Elastos.Core.ICloneable;
+      */
     [deprecated]
-    interface IMessageDigestSpi extends Elastos.Core.ICloneable {
+    interface IMessageDigestSpi {
         /**
          * Returns the engine digest length in bytes. If the implementation does not
          * implement this function {@code 0} is returned.

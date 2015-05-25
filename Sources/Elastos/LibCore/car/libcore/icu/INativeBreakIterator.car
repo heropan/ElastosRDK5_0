@@ -1,9 +1,9 @@
 module
 {
 
-    using interface Elastos.Text.ICharacterIterator;
+    interface Elastos.Text.ICharacterIterator;
     interface Elastos.Text.IStringCharacterIterator;
-    using interface Elastos.Utility.ILocale;
+    interface Elastos.Utility.ILocale;
 
     /**
      * @Involve

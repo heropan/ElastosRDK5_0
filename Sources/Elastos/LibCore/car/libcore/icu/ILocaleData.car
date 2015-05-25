@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Core.IInteger32;
+    interface Elastos.Core.IInteger32;
     interface Elastos.Utility.ILocale;
 
     namespace Libcore {

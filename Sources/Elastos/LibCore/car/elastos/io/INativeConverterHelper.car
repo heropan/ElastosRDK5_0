@@ -1,10 +1,10 @@
 module
 {
 
-    using interface Elastos.IO.Charset.ICharset;
-    using interface Elastos.IO.Charset.ICharsetDecoder;
-    using interface Elastos.IO.Charset.ICharsetEncoder;
-    using interface Elastos.IO.Charset.ICodingErrorAction;
+    interface Elastos.IO.Charset.ICharset;
+    interface Elastos.IO.Charset.ICharsetDecoder;
+    interface Elastos.IO.Charset.ICharsetEncoder;
+    interface Elastos.IO.Charset.ICodingErrorAction;
 
     namespace Elastos {
     namespace IO {

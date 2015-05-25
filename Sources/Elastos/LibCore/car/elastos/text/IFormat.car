@@ -4,7 +4,7 @@ module
     interface Elastos.Text.IAttributedCharacterIterator;
     interface Elastos.Text.IFieldPosition;
     interface Elastos.Text.IParsePosition;
-    using interface Elastos.Core.IStringBuffer;
+    interface Elastos.Core.IStringBuffer;
 
     namespace Elastos {
     namespace Text {

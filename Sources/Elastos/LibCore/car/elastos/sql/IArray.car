@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Utility.IMap;
+    interface Elastos.Utility.IMap;
     interface Elastos.Sql.IResultSet;
 
     namespace Elastos {

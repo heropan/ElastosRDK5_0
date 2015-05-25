@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Core.IClassLoader;
+    interface Elastos.Core.IClassLoader;
     interface Elastos.Utility.IObservable;
 
     namespace Elastos {

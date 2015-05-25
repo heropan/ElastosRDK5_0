@@ -1,8 +1,8 @@
 
 module
 {
-    using interface Elastos.Core.IRunnable;
-    using interface Elastos.Core.IThread;
+    interface Elastos.Core.IRunnable;
+    interface Elastos.Core.IThread;
 
     namespace Elastos {
     namespace Utility {

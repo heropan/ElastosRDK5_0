@@ -22,9 +22,9 @@ module
     merge("../../../../car/elastos/utility/zip/IGZIPOutputStream.car");
     merge("../../../../car/elastos/utility/zip/IZipFile.car");
 
-    // using interface Elastos.IO.IOutputStream;
-    // using interface Elastos.IO.IFile;
-    // using interface Elastos.IO.IFlushable;
+    // interface Elastos.IO.IOutputStream;
+    // interface Elastos.IO.IFile;
+    // interface Elastos.IO.IFlushable;
 
     // namespace Elastos {
     // namespace Utility {

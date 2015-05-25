@@ -1,8 +1,8 @@
 
 module
 {
-    using interface Elastos.Core.IStringBuffer;
-    using interface Elastos.Core.ICharSequence;
+    interface Elastos.Core.IStringBuffer;
+    interface Elastos.Core.ICharSequence;
 
     interface Elastos.Utility.Regex.IPattern;
     interface Elastos.Utility.Regex.IMatchResult;

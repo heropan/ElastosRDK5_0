@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Core.ICloneable;
+
     namespace Elastos {
     namespace Security {
     namespace Cert {
@@ -10,7 +12,11 @@ module
      * <p>
      * This interface is for grouping purposes of validation result implementations.
      */
-    interface ICertPathValidatorResult extends Elastos.Core.ICloneable {
+    /**
+      * @Involve
+      * interface Elastos.Core.ICloneable;
+      */
+    interface ICertPathValidatorResult {
     }
 
     } // namespace Cert

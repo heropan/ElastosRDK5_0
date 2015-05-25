@@ -1,7 +1,7 @@
 module
 {
-    using interface Elastos.Sql.SQLite.IBusyHandler;
-    using interface Elastos.Sql.SQLite.IBlob;
+    interface Elastos.Sql.SQLite.IBusyHandler;
+    interface Elastos.Sql.SQLite.IBlob;
 
     namespace Elastos {
     namespace Sql {

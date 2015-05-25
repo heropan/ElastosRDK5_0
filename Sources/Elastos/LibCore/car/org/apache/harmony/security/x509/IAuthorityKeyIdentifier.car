@@ -3,7 +3,7 @@ module
 {
     interface Org.Apache.Harmony.Security.X509.IGeneralNames;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Type;
-    using interface Elastos.Math.IBigInteger;
+    interface Elastos.Math.IBigInteger;
 
     namespace Org {
     namespace Apache {

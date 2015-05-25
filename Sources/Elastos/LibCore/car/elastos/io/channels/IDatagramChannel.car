@@ -2,8 +2,8 @@
 module
 {
     interface Elastos.IO.IByteBuffer;
-//  using interface Elastos.Net.IDatagramSocket;
-//  using interface Elastos.Net.ISocketAddress;
+//  interface Elastos.Net.IDatagramSocket;
+//  interface Elastos.Net.ISocketAddress;
 
     namespace Elastos {
     namespace IO {

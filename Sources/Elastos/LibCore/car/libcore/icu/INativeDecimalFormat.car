@@ -1,14 +1,16 @@
 module
 {
-    using interface Elastos.Math.IBigDecimal;
-    using interface Elastos.Math.IBigInteger;
-    using interface Elastos.Math.RoundingMode;
-    using interface Elastos.Core.INumber;
+    enum Elastos.Math.RoundingMode;
+
+    interface Elastos.Math.IBigDecimal;
+    interface Elastos.Math.IBigInteger;
+    interface Elastos.Core.INumber;
     interface Elastos.Text.IDecimalFormatSymbols;
     interface Elastos.Text.IFieldPosition;
     interface Elastos.Text.IParsePosition;
     interface Elastos.Text.IAttributedCharacterIterator;
     interface Elastos.Utility.ICurrency;
+    interface Libcore.ICU.ILocaleData;
 
     namespace Libcore {
     namespace ICU {

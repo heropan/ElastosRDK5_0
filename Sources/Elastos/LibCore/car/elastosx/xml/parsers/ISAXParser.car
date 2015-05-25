@@ -1,16 +1,16 @@
 
 module
 {
-    using interface Elastos.Core.IClassLoader;
+    interface Elastos.Core.IClassLoader;
     interface Elastosx.Xml.Parsers.ISAXParser;
     interface Elastosx.Xml.Validation.ISchema;
-    using interface Elastos.IO.IInputStream;
-    using interface Org.Xml.Sax.IDocumentHandler;
-    using interface Org.Xml.Sax.IDTDHandler;
-    using interface Org.Xml.Sax.IParser;
-    using interface Org.Xml.Sax.IXMLReader;
-    using interface Org.Xml.Sax.IInputSource;
-    using interface Elastos.IO.IFile;
+    interface Elastos.IO.IInputStream;
+    interface Org.Xml.Sax.IDocumentHandler;
+    interface Org.Xml.Sax.IDTDHandler;
+    interface Org.Xml.Sax.IParser;
+    interface Org.Xml.Sax.IXMLReader;
+    interface Org.Xml.Sax.IInputSource;
+    interface Elastos.IO.IFile;
 
     namespace Elastosx {
     namespace Xml {

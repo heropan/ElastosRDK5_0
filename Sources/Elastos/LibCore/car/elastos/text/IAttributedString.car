@@ -1,6 +1,6 @@
 module
 {
-    // using interface Elastos.Utility.IObjectMap;
+    // interface Elastos.Utility.IObjectMap;
 
     namespace Elastos {
     namespace Text {

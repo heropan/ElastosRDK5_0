@@ -1,9 +1,9 @@
 module
 {
-    using interface Elastos.IO.IPrintStream;
-    using interface Elastos.IO.IPrintWriter;
-    using interface Elastos.Utility.IProperties;
-    using interface Elastos.Utility.IEnumeration;
+    interface Elastos.IO.IPrintStream;
+    interface Elastos.IO.IPrintWriter;
+    interface Elastos.Utility.IProperties;
+    interface Elastos.Utility.IEnumeration;
 
     namespace Elastos {
     namespace Sql {

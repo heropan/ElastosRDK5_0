@@ -1,9 +1,15 @@
 module
 {
+    interface Elastos.Core.IComparable;
+
     namespace Elastos {
     namespace Text {
 
-    interface ICollationKey extends Elastos.Core.IComparable {
+    /**
+      * @Involve
+      * interface Elastos.Core.IComparable;
+      */
+    interface ICollationKey {
         /**
          * Returns the string from which this collation key was created.
          */

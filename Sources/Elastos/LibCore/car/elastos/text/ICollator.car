@@ -1,10 +1,9 @@
 
 module
 {
-    using interface Elastos.Utility.IComparator;
-    using interface Libcore.ICU.IRuleBasedCollatorICU;
-    using interface Elastos.Utility.ILocale;
-    using interface Libcore.ICU.IICUHelper;
+    interface Elastos.Core.IComparator;
+    interface Libcore.ICU.IRuleBasedCollatorICU;
+    interface Elastos.Utility.ILocale;
     interface Elastos.Text.ICollationKey;
 
     namespace Elastos {
