@@ -11,6 +11,8 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_OBJECT_IMPL(CShell)
+
 CARAPI CShell::constructor(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ IPrintWriter* err)

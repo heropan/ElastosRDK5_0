@@ -1,10 +1,9 @@
 
 #include "CJDBCDatabaseMetaData.h"
-#include <cmdef.h>
+#include <coredef.h>
 #include "Database.h"
-#include <elastos/StringBuffer.h>
-#include <elastos/StringUtils.h>
-#include <elastos/HashMap.h>
+#include <StringBuffer.h>
+#include <StringUtils.h>
 
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
@@ -17,6 +16,8 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 namespace JDBC{
+
+CAR_OBJECT_IMPL(CJDBCDatabaseMetaData)
 
 ECode CJDBCDatabaseMetaData::AllProceduresAreCallable(
     /* [out] */ Boolean * callable)

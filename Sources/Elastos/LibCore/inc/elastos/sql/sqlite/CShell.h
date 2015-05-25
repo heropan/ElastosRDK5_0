@@ -2,7 +2,7 @@
 #ifndef __CSHELL_H__
 #define __CSHELL_H__
 
-#include "_CShell.h"
+#include "_Elastos_Sql_SQLite_CShell.h"
 #include "CDatabase.h"
 
 using Elastos::IO::IPrintWriter;
@@ -13,8 +13,13 @@ namespace Sql {
 namespace SQLite {
 
 CarClass(CShell)
+    , public Object
+    , public IShell
+    , public ICallback
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI Columns(
         /* [in] */ const ArrayOf<String> & args);
 

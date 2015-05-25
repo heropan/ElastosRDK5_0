@@ -2,12 +2,10 @@
 #ifndef __CJDBCPREPAREDSTATEMENT_H__
 #define __CJDBCPREPAREDSTATEMENT_H__
 
-#include "_CJDBCPreparedStatement.h"
-#include "cmdef.h"
+#include "_Elastos_Sql_SQLite_JDBC_CJDBCPreparedStatement.h"
+#include "coredef.h"
 #include "JDBCStatement.h"
 #include "CJDBCStatement.h"
-#include "JDBCStatementMacro.h"
-#include <elastos/List.h>
 
 using Elastos::Net::IURL;
 using Elastos::IO::IReader;
@@ -37,13 +35,13 @@ public:
     Boolean blob;
 };
 
-CarClass(CJDBCPreparedStatement) , public JDBCStatement
+CarClass(CJDBCPreparedStatement)
+    , public JDBCStatement
+    , public IJDBCPreparedStatement
 {
 public:
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
-
-    JDBCSTATEMENT_METHODS_DECL()
 
     ~CJDBCPreparedStatement();
 

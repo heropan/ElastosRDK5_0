@@ -2,7 +2,7 @@
 #ifndef __CJDBCSTATEMENT_H__
 #define __CJDBCSTATEMENT_H__
 
-#include "_CJDBCStatement.h"
+#include "_Elastos_Sql_SQLite_JDBC_CJDBCStatement.h"
 #include "JDBCStatement.h"
 
 namespace Elastos {
@@ -13,6 +13,8 @@ namespace JDBC{
 CarClass(CJDBCStatement) , public JDBCStatement
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
