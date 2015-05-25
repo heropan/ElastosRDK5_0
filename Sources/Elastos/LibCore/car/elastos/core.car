@@ -84,12 +84,12 @@ module
 
     class CBoolean {
         constructor(
-            [in] Boolean value);
+           [in] Boolean value);
 
-        interface IBoolean;
-        interface ISerializable;
-        interface IComparable;
-     }
+       interface IBoolean;
+       interface ISerializable;
+       interface IComparable;
+    }
 
     // class CByte {
     //     constructor(

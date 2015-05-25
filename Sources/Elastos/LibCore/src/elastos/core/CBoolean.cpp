@@ -1,6 +1,6 @@
 
 #include "CBoolean.h"
-#include "StringUtils.h"
+//#include "StringUtils.h" TODO zhaohui
 
 using Elastos::IO::EIID_ISerializable;
 
@@ -72,8 +72,8 @@ ECode CBoolean::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = StringUtils::BooleanToString(mValue);
-
+    //TODO *result = StringUtils::BooleanToString(mValue);
+    *result = mValue ? String("TRUE", 4) : String("FALSE", 5);
     return NOERROR;
 }
 
