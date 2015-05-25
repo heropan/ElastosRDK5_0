@@ -1,60 +1,9 @@
 
 module
 {
-    merge("core/Errors.car");
-    merge("core/Exceptions.car");
-    merge("core/ICharSequence.car");
-    merge("core/IAppendable.car");
-    merge("core/ICloneable.car");
-    merge("core/IComparable.car");
-    merge("core/IComparator.car");
-    merge("core/IStringBuilder.car");
-    merge("core/IStringBuffer.car");
-    merge("core/IArrayOf.car");
-    merge("core/INumber.car");
-    merge("core/IBoolean.car");
-    merge("core/IByte.car");
-    merge("core/IChar32.car");
-    merge("core/IChar16.car");
-    merge("core/IChar8.car");
-    merge("core/IInteger16.car");
-    merge("core/IInteger32.car");
-    merge("core/IInteger64.car");
-    merge("core/IFloat.car");
-    merge("core/IDouble.car");
-    merge("core/IString.car");
-    merge("core/IRunnable.car");
-    merge("core/ISynchronize.car");
-    merge("core/IThread.car");
-    merge("core/IThreadGroup.car");
-    merge("core/IClassLoader.car");
-    merge("core/IRandom.car");
-    merge("core/IThrowable.car");
-    merge("core/IStackTraceElement.car");
-    merge("core/IBlockGuard.car");
-    merge("core/ICloseGuard.car");
-    merge("core/IEnum.car");
-    merge("core/ISystem.car");
-
-    merge("../../src/elastos/math/Elastos.Math.car");
-    merge("../../src/libcore/io/Libcore.IO.car");
-    merge("../../src/elastos/text/Elastos.Text2.car");
-    merge("../../src/libcore/icu/Libcore.ICU.car");
-    merge("../../src/libcore/utility/Libcore.Utility.car");
-    merge("../../src/elastos/io/Elastos.IO.car");
-    merge("../../src/elastos/utility/Elastos.Utility.car");
-    merge("../../src/elastos/net/Elastos.Net.car");
-    merge("../../src/elastos/text/Elastos.Text.car");
-    merge("../../src/elastos/security/Elastos.Security.car");
-    merge("../../src/elastos/utility/concurrent/Elastos.Utility.Concurrent.car");
-    merge("../../src/elastos/utility/zip/Elastos.Utility.Zip.car");
-    merge("../../src/elastos/utility/jar/Elastos.Utility.Jar.car");
-    merge("../../src/elastos/sql/Elastos.Sql.car");
-
     interface Elastos.Core.IRunnable;
     interface Elastos.Core.ICharSequence;
     interface Elastos.Core.Threading.ISynchronize;
-    interface Elastos.Utility.IObjectContainer;
     interface Elastos.IO.ISerializable;
 
     namespace Elastos {

@@ -1,6 +1,27 @@
 
 module
 {
+    merge("../../car/elastos/basics.car");
     merge("../../car/elastos/core.car");
-    //merge("../Elastos/Math/Elastos.Math.car");
+    merge("../../car/elastos/math.car");
+    //merge("../../car/elastos/io.car");
+    //merge("../../car/elastos/text.car");
+    //merge("../../car/elastos/utility.car");
+    //merge("../../car/elastos/net.car");
+    //merge("../../car/elastos/security.car");
+
+    //merge("../../src/elastos/math/Elastos.Math.car");
+    //merge("../../src/libcore/io/Libcore.IO.car");
+    //merge("../../src/elastos/text/Elastos.Text2.car");
+    //merge("../../src/libcore/icu/Libcore.ICU.car");
+    //merge("../../src/libcore/utility/Libcore.Utility.car");
+    //merge("../../src/elastos/io/Elastos.IO.car");
+    //merge("../../src/elastos/utility/Elastos.Utility.car");
+    //merge("../../src/elastos/net/Elastos.Net.car");
+    //merge("../../src/elastos/text/Elastos.Text.car");
+    //merge("../../src/elastos/security/Elastos.Security.car");
+    //merge("../../src/elastos/utility/concurrent/Elastos.Utility.Concurrent.car");
+    //merge("../../src/elastos/utility/zip/Elastos.Utility.Zip.car");
+    //merge("../../src/elastos/utility/jar/Elastos.Utility.Jar.car");
+    //merge("../../src/elastos/sql/Elastos.Sql.car");
 }
