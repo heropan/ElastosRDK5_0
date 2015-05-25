@@ -7,8 +7,6 @@
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_FilterOutputStream;
-
 class FilterOutputStream
     : public OutputStream
     , public IFilterOutputStream
@@ -74,14 +72,6 @@ public:
         /* [in] */ const ArrayOf<Byte> & buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
-
-public:
-
-    CARAPI ToString(
-        /* [out] */ String* s);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
 
 protected:
     /**

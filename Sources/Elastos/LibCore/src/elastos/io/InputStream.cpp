@@ -6,9 +6,6 @@
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_InputStream =
-    { 0x8ab56684, 0x81be, 0x47cc, { 0x80, 0x3f, 0xe0, 0x2c, 0xf4, 0x33, 0x1a, 0xd7 } };
-
 CAR_INTERFACE_IMPL_2(HandlerBase, ICloseable, IInputStream)
 
 PInterface InputStream::Probe(
@@ -132,22 +129,6 @@ ECode InputStream::Skip(
     }
 
     *number = skipped;
-    return NOERROR;
-}
-
-ECode InputStream::ToString(
-        /* [out] */ String* s)
-{
-    assert(s != NULL);
-    *s = String("InputStream");
-    return NOERROR;
-}
-
-ECode InputStream::GetClassID(
-        /* [out] */ ClassID *pCLSID)
-{
-    assert(pCLSID != NULL);
-    *pCLSID = EIID_InputStream;
     return NOERROR;
 }
 

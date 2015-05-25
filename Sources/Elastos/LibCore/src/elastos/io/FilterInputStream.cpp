@@ -4,9 +4,6 @@
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_FilterInputStream =
-    { 0x71a922d3, 0x24c8, 0x4f4f, { 0xac, 0x4e, 0x61, 0x22, 0x9c, 0xb8, 0xdb, 0xb7 } };
-
 CAR_INTERFACE_IMPL(FilterInputStream, IFilterInputStream)
 
 FilterInputStream::FilterInputStream()
@@ -80,22 +77,6 @@ ECode FilterInputStream::Skip(
 {
     VALIDATE_NOT_NULL(value);
     return mIn->Skip(byteCount, number);
-}
-
-ECode FilterInputStream::ToString(
-        /* [out] */ String* s)
-{
-    assert(s != NULL);
-    *s = String("FilterInputStream");
-    return NOERROR;
-}
-
-ECode FilterInputStream::GetClassID(
-        /* [out] */ ClassID *pCLSID)
-{
-    assert(pCLSID != NULL);
-    *pCLSID = EIID_FilterInputStream;
-    return NOERROR;
 }
 
 } // namespace IO

@@ -7,19 +7,11 @@
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_BufferedOutputStream;
-
 class BufferedOutputStream
     : public FilterOutputStream
     , public IBufferedOutputStream
 {
 public:
-    CARAPI ToString(
-        /* [out] */ String* s);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
-
     CAR_INTERFACE_DECL()
 
     CARAPI Close();

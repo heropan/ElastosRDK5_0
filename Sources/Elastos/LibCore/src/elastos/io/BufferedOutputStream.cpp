@@ -5,9 +5,6 @@
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_BufferedOutputStream =
-    { 0x796be381, 0xacb7, 0x464f, { 0xa6, 0xa0, 0x28, 0xf8, 0x4e, 0x16, 0xdd, 0x0c } };
-
 CAR_INTERFACE_IMPL_LIGHT(BufferedOutputStream, FilterOutputStream, IBufferedOutputStream)
 
 BufferedOutputStream::BufferedOutputStream()
@@ -116,22 +113,6 @@ ECode BufferedOutputStream::CheckNotClosed()
 {
     if(mBuf == NULL)
         return E_IO_EXCEPTION;
-    return NOERROR;
-}
-
-ECode BufferedOutputStream::ToString(
-        /* [out] */ String* s)
-{
-    assert(s != NULL);
-    *s = String("BufferedOutputStream");
-    return NOERROR;
-}
-
-ECode BufferedOutputStream::GetClassID(
-        /* [out] */ ClassID *pCLSID)
-{
-    assert(pCLSID != NULL);
-    *pCLSID = EIID_BufferedOutputStream;
     return NOERROR;
 }
 
