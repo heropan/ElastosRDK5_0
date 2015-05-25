@@ -1,5 +1,5 @@
 
-#include <cmdef.h>
+#include <coredef.h>
 #include "CTimestamp.h"
 #include <elastos/StringUtils.h>
 #include "CPatternHelper.h"

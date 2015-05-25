@@ -10,13 +10,6 @@ namespace JDBC{
 
 CAR_OBJECT_IMPL(CTableResultX)
 
-ECode CTableResultX::ToString(
-    /* [out] */ String * pStr)
-{
-    *pStr = TableResult::ToString();
-    return NOERROR;
-}
-
 ECode CTableResultX::constructor()
 {
     TableResult::Init();
@@ -25,6 +18,16 @@ ECode CTableResultX::constructor()
         (*sql_type)[i] = ITypes::VARCHAR;
     }
     return NOERROR;
+}
+
+PInterface CTableResultX::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_ITableResultX) {
+        return (PInterface)(ITableResultX*)this;
+    }
+
+    return TableResult::Probe(riid);
 }
 
 ECode CTableResultX::constructor(
@@ -59,35 +62,8 @@ ECode CTableResultX::constructor(
     return NOERROR;
 }
 
-ECode CTableResultX::Clear()
-{
-    TableResult::Clear();
-    return NOERROR;
-}
-
-ECode CTableResultX::Columns(
-    /* [in] */ const ArrayOf<String>& coldata)
-{
-    TableResult::Columns(coldata);
-    return NOERROR;
-}
-
-ECode CTableResultX::Types(
-    /* [in] */ const ArrayOf<String>& intypes)
-{
-    TableResult::Types(intypes);
-    return NOERROR;
-}
-
-ECode CTableResultX::Newrow(
-    /* [in] */ const ArrayOf<String>& rowdata,
-    /* [out] */ Boolean * value)
-{
-    *value = TableResult::Newrow(rowdata);
-    return NOERROR;
-}
-
-void CTableResultX::Sql_types(AutoPtr<ArrayOf<Int32> > types)
+void CTableResultX::Sql_types(
+    /* [in] */ ArrayOf<Int32>* types)
 {
     sql_type = types;
 }

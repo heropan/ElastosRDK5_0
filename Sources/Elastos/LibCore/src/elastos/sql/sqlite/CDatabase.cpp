@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CDatabase.h"
 
 using Elastos::Sql::SQLite::EIID_IDatabase;

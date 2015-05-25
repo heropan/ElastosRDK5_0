@@ -12,19 +12,24 @@ namespace Sql {
 namespace SQLite {
 
 class TableResult
+    : public Object
+    , public ITableResult
+    , public ICallback
 {
 public:
+    CAR_INTERFACE_DECL();
 
-    CARAPI Columns(
+    virtual CARAPI Columns(
         /* [in] */ const ArrayOf<String> & coldata);
 
-    CARAPI Types(
+    virtual CARAPI Types(
         /* [in] */ const ArrayOf<String> & intypes);
 
-    CARAPI_(Boolean) Newrow(
+    virtual CARAPI Newrow(
         /* [in] */ const ArrayOf<String> & rowdata);
 
-    CARAPI_(String) ToString();
+    virtual CARAPI ToString(
+        /* [out] */ String* value);
 
     TableResult();
 
@@ -33,7 +38,7 @@ public:
 
     // ~TableResult();
 
-    CARAPI Clear();
+    virtual CARAPI Clear();
 
     CARAPI_(void) Init();
 

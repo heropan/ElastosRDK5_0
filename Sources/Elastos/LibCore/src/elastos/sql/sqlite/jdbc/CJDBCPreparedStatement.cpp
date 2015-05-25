@@ -19,6 +19,7 @@ namespace JDBC{
 const Boolean CJDBCPreparedStatement::mNullrepl =
     SQLite::Database::Version().Compare("2.5.0") < 0;
 
+CAR_OBJECT_IMPL(CJDBCPreparedStatement)
 
 PInterface CJDBCPreparedStatement::Probe(
     /* [in] */ REIID riid)
