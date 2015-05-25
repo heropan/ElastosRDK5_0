@@ -22,9 +22,6 @@ class InputStream
 public:
     CAR_INTERFACE_DECL()
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
     /**
      * Returns an estimated number of bytes that can be read or skipped without blocking for more
      * input.
