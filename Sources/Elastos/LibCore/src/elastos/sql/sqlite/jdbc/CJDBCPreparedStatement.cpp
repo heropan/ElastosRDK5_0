@@ -19,25 +19,15 @@ namespace JDBC{
 const Boolean CJDBCPreparedStatement::mNullrepl =
     SQLite::Database::Version().Compare("2.5.0") < 0;
 
-JDBCSTATEMENT_METHODS_IMPL(CJDBCPreparedStatement, JDBCStatement)
 
 PInterface CJDBCPreparedStatement::Probe(
     /* [in] */ REIID riid)
 {
-    if (riid == EIID_IInterface) {
+    if (riid == EIID_IJDBCPreparedStatement) {
         return (PInterface)(IJDBCPreparedStatement*)this;
     }
-    else if (riid == EIID_IObject) {
-        return (IObject*)this;
-    }
-    if (riid == EIID_IJDBCPreparedStatement) {
-        return (IJDBCPreparedStatement *)this;
-    }
-    else if (riid == EIID_IJDBCStatement) {
-        return (IJDBCStatement*)this;
-    }
 
-    return NULL;
+    return JDBCStatement::Probe(riid);
 }
 
 ECode CJDBCPreparedStatement::constructor(
@@ -224,34 +214,40 @@ ECode CJDBCPreparedStatement::ClearParameters()
 ECode CJDBCPreparedStatement::Execute(
     /* [out] */ Boolean * value)
 {
-    *value = JDBCStatement::ExecuteQuery(Fixup2(sql), *mArgs, FALSE) != NULL;
+    VALIADTE_NOT_NULL(value);
+    AutoPtr<IResultSet> set;
+    JDBCStatement::ExecuteQuery(Fixup2(sql), *mArgs, FALSE, (IResultSet**)&set);
+    *value = set != NULL;
     return NOERROR;
 }
 
 ECode CJDBCPreparedStatement::ExecuteQuery(
     /* [out] */ IResultSet ** resultset)
 {
-    *resultset = JDBCStatement::ExecuteQuery(Fixup2(sql), *mArgs, FALSE);
-    return NOERROR;
+    return JDBCStatement::ExecuteQuery(Fixup2(sql), *mArgs, FALSE, resultset);
 }
 
 ECode CJDBCPreparedStatement::ExecuteUpdate(
     /* [out] */ Int32 * value)
 {
-    JDBCStatement::ExecuteQuery(Fixup2(sql), *mArgs, TRUE);
+    VALIADTE_NOT_NULL(value);
+    AutoPtr<IResultSet> set;
+    ECode ec = JDBCStatement::ExecuteQuery(Fixup2(sql), *mArgs, TRUE, (IResultSet**)&set);
     *value = updcnt;
-    return NOERROR;
+    return ec;
 }
 ECode CJDBCPreparedStatement::GetMetaData(
     /* [out] */ IResultSetMetaData ** resultsetmeta)
 {
-    rs->GetMetaData(resultsetmeta);
-    return NOERROR;
+    VALIADTE_NOT_NULL(*resultsetmeta);
+    return rs->GetMetaData(resultsetmeta);
 }
 
 ECode CJDBCPreparedStatement::GetParameterMetaData(
     /* [out] */ IParameterMetaData ** parametermeta)
 {
+    VALIADTE_NOT_NULL(*parametermeta);
+    *parametermeta = NULL;
     return E_SQL_EXCEPTION;
 }
 
@@ -267,8 +263,7 @@ ECode CJDBCPreparedStatement::SetAsciiStream(
     /* [in] */ IInputStream * theInputStream,
     /* [in] */ Int32 length)
 {
-    // TODO: Add your code here
-    return NOERROR;
+    return E_SQL_EXCEPTION;
 }
 
 ECode CJDBCPreparedStatement::SetBigDecimal(
@@ -355,15 +350,15 @@ ECode CJDBCPreparedStatement::SetBytes(
         (*mArgs)[parameterIndex - 1] = mNullrepl ? String("") : String(NULL);
     }
     else {
-            Boolean dbflag = FALSE;
-            ((CDatabaseX* )((CJDBCConnection* )conn.Get())->mDb.Get())->Is3(&dbflag);
-            if (dbflag) {
-                (*mArgs)[parameterIndex - 1] = SQLite::StringEncoder::EncodeX((ArrayOf<Byte> *)&theBytes);
-                (*mBlobs)[parameterIndex - 1] = TRUE;
-            }
-            else {
-                (*mArgs)[parameterIndex - 1] = SQLite::StringEncoder::Encode((ArrayOf<Byte> *)&theBytes);
-            }
+        Boolean dbflag = FALSE;
+        ((CDatabaseX* )((CJDBCConnection* )conn.Get())->mDb.Get())->Is3(&dbflag);
+        if (dbflag) {
+            (*mArgs)[parameterIndex - 1] = SQLite::StringEncoder::EncodeX((ArrayOf<Byte> *)&theBytes);
+            (*mBlobs)[parameterIndex - 1] = TRUE;
+        }
+        else {
+            (*mArgs)[parameterIndex - 1] = SQLite::StringEncoder::Encode((ArrayOf<Byte> *)&theBytes);
+        }
     }
     return NOERROR;
 }
@@ -424,8 +419,7 @@ ECode CJDBCPreparedStatement::SetDate(
     /* [in] */ IDate * theDate,
     /* [in] */ ICalendar * cal)
 {
-    SetDate(parameterIndex, theDate);
-    return NOERROR;
+    return SetDate(parameterIndex, theDate);
 }
 
 ECode CJDBCPreparedStatement::SetDouble(
@@ -493,8 +487,7 @@ ECode CJDBCPreparedStatement::SetNull(
     /* [in] */ Int32 sqlType,
     /* [in] */ const String& typeName)
 {
-    SetNull(paramIndex, sqlType);
-    return NOERROR;
+    return SetNull(paramIndex, sqlType);
 }
 
 ECode CJDBCPreparedStatement::SetObject(
@@ -520,7 +513,9 @@ ECode CJDBCPreparedStatement::SetObject(
             }
             (*mArgs)[parameterIndex - 1] = SQLite::StringEncoder::Encode(bx);
         } else {
-            // (*mArgs)[parameterIndex - 1] = theObject.ToString();
+            String str;
+            theobject->ToString(&str);
+            (*mArgs)[parameterIndex - 1] = str;
         }
     }
     (*mBlobs)[parameterIndex - 1] = FALSE;
@@ -551,7 +546,9 @@ ECode CJDBCPreparedStatement::SetObject(
             }
             (*mArgs)[parameterIndex - 1] = SQLite::StringEncoder::Encode(bx);
         } else {
-            // (*mArgs)[parameterIndex - 1] = theObject.ToString();
+            String str;
+            theobject->ToString(&str);
+            (*mArgs)[parameterIndex - 1] = str;
         }
     }
     (*mBlobs)[parameterIndex - 1] = FALSE;
@@ -583,7 +580,9 @@ ECode CJDBCPreparedStatement::SetObject(
             }
             (*mArgs)[parameterIndex - 1] = SQLite::StringEncoder::Encode(bx);
         } else {
-            // (*mArgs)[parameterIndex - 1] = theObject.ToString();
+            String str;
+            theobject->ToString(&str);
+            (*mArgs)[parameterIndex - 1] = str;
         }
     }
     (*mBlobs)[parameterIndex - 1] = FALSE;
@@ -687,8 +686,7 @@ ECode CJDBCPreparedStatement::SetTimestamp(
     /* [in] */ ITimestamp * theTimestamp,
     /* [in] */ ICalendar * cal)
 {
-    SetTimestamp(parameterIndex, theTimestamp);
-    return NOERROR;
+    return SetTimestamp(parameterIndex, theTimestamp);
 }
 
 ECode CJDBCPreparedStatement::SetUnicodeStream(

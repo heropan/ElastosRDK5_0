@@ -6,6 +6,8 @@ namespace Sql {
 namespace SQLite {
 namespace JDBC{
 
+CAR_OBJECT_IMPL(CJDBCStatement)
+
 PInterface CJDBCStatement::Probe(
     /* [in] */ REIID riid)
 {

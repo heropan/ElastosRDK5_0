@@ -2,9 +2,8 @@
 #ifndef __CJDBCDRIVER_H__
 #define __CJDBCDRIVER_H__
 
-#include "_CJDBCDriver.h"
-#include "cmdef.h"
-#include <elautoptr.h>
+#include "_Elastos_Sql_SQLite_CJDBCDriver.h"
+#include "coredef.h"
 
 using Elastos::Utility::IProperties;
 using Elastos::Sql::IConnection;
@@ -15,8 +14,12 @@ namespace Sql {
 namespace SQLite {
 
 CarClass(CJDBCDriver)
+    , public Object
+    , public IDriver
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI AcceptsURL(
         /* [in] */ const String& url,
         /* [out] */ Boolean * canOpen);

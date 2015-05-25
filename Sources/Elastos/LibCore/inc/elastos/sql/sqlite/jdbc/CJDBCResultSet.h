@@ -2,7 +2,7 @@
 #ifndef __CJDBCRESULTSET_H__
 #define __CJDBCRESULTSET_H__
 
-#include "_CJDBCResultSet.h"
+#include "_Elastos_Sql_SQLite_JDBC_CJDBCResultSet.h"
 #include "CTableResult.h"
 #include "Elastos.CoreLibrary_server.h"
 
@@ -27,6 +27,8 @@ namespace JDBC{
 CarClass(CJDBCResultSet)
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI Absolute(
         /* [in] */ Int32 row,
         /* [out] */ Boolean * value);

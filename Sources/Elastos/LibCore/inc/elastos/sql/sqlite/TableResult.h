@@ -2,10 +2,7 @@
 #ifndef __TABLERESULT_H__
 #define __TABLERESULT_H__
 
-#include <cmdef.h>
-#include <elastos.h>
-#include <elstring.h>
-#include <elastos/Vector.h>
+#include <coredef.h>
 
 
 using Elastos::Utility::Vector;

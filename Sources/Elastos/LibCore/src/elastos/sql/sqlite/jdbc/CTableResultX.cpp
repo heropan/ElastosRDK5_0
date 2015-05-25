@@ -8,6 +8,8 @@ namespace Sql {
 namespace SQLite {
 namespace JDBC{
 
+CAR_OBJECT_IMPL(CTableResultX)
+
 ECode CTableResultX::ToString(
     /* [out] */ String * pStr)
 {

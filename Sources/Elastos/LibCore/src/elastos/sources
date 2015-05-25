@@ -11,6 +11,9 @@ INCLUDES += $(MAKEDIR)/../../inc
 INCLUDES += $(MAKEDIR)/../../inc/elastos
 INCLUDES += $(MAKEDIR)/../../inc/elastos/core
 //INCLUDES += $(MAKEDIR)/../../inc/elastos/math
+INCLUDES += $(MAKEDIR)/../../inc/elastos/sql
+INCLUDES += $(MAKEDIR)/../../inc/elastos/sql/sqlite
+INCLUDES += $(MAKEDIR)/../../inc/elastos/sql/sqlite/jdbc
 
 SOURCES = Elastos.CoreLibrary.car
 

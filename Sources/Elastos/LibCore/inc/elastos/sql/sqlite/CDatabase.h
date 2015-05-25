@@ -2,7 +2,7 @@
 #ifndef __CDATABASE_H__
 #define __CDATABASE_H__
 
-#include "_CDatabase.h"
+#include "_Elastos_Sql_SQLite_CDatabase.h"
 #include "Database.h"
 
 namespace Elastos {

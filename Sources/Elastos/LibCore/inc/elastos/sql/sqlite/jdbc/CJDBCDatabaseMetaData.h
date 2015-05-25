@@ -2,7 +2,8 @@
 #ifndef __CJDBCDATABASEMETADATA_H__
 #define __CJDBCDATABASEMETADATA_H__
 
-#include "_CJDBCDatabaseMetaData.h"
+#include <coredef.h>
+#include "_Elastos_Sql_SQLite_JDBC_CJDBCDatabaseMetaData.h"
 #include "CJDBCConnection.h"
 #include "CJDBCDriver.h"
 #include "CJDBCStatement.h"
@@ -10,8 +11,6 @@
 #include "CTableResult.h"
 #include "CJDBCResultSet.h"
 #include "CTableResultX.h"
-#include <cmdef.h>
-#include <elastos.h>
 
 using Elastos::Sql::IResultSet;
 
@@ -21,8 +20,14 @@ namespace SQLite {
 namespace JDBC{
 
 CarClass(CJDBCDatabaseMetaData)
+    , public Object
+    , public IJDBCDatabaseMetaData
+    , public IDatabaseMetaData
+    , public IWrapper
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI AllProceduresAreCallable(
         /* [out] */ Boolean * callable);
 

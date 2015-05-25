@@ -2,7 +2,7 @@
 #ifndef __CTABLERESULTX_H__
 #define __CTABLERESULTX_H__
 
-#include "_CTableResultX.h"
+#include "_Elastos_Sql_SQLite_JDBC_CTableResultX.h"
 #include "TableResult.h"
 
 namespace Elastos {
@@ -13,6 +13,8 @@ namespace JDBC{
 CarClass(CTableResultX) , public TableResult
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI Columns(
         /* [in] */ const ArrayOf<String>& coldata);
 

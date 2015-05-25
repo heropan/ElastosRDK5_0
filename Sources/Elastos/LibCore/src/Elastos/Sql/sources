@@ -1,0 +1,62 @@
+
+TARGET_NAME= sql
+TARGET_TYPE= lib
+
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/sql
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/sql/sqlite
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/sql/sqlite/jdbc
+
+VPATH := $(MAKEDIR)/SQLite/JDBC:$(MAKEDIR)/SQLite
+SOURCES += CDatabaseX.cpp
+SOURCES += CJDBCConnection.cpp
+SOURCES += CJDBCDatabaseMetaData.cpp
+SOURCES += CJDBCPreparedStatement.cpp
+SOURCES += CJDBCResultSet.cpp
+SOURCES += CJDBCResultSetMetaData.cpp
+SOURCES += CJDBCStatement.cpp
+SOURCES += CTableResultX.cpp
+SOURCES += JDBCStatement.cpp
+
+#VPATH := $(MAKEDIR)/SQLite
+SOURCES += CDBDump.cpp
+SOURCES += CTestProgressHandler.cpp
+SOURCES += CStmt.cpp
+SOURCES += CStringEncoderHelper.cpp
+SOURCES += CShell.cpp
+SOURCES += CBackup.cpp
+SOURCES += CTableResult.cpp
+SOURCES += CDatabase.cpp
+SOURCES += CSinFunc.cpp
+SOURCES += Database.cpp
+SOURCES += CTestBusyHandler.cpp
+SOURCES += CFunctionContext.cpp
+SOURCES += CVm.cpp
+SOURCES += CDatabaseHelper.cpp
+SOURCES += CBlobW.cpp
+SOURCES += CBlob.cpp
+SOURCES += TableResult.cpp
+SOURCES += CBlobR.cpp
+SOURCES += CTestTrace.cpp
+SOURCES += CJDBCDriver.cpp
+SOURCES += CMockFunction.cpp
+SOURCES += StringEncoder.cpp
+SOURCES += CAuthorizerCallback.cpp
+
+SOURCES += CDriverPropertyInfo.cpp
+SOURCES += CSqlDate.cpp
+SOURCES += CTimestamp.cpp
+SOURCES += CSQLPermission.cpp
+SOURCES += CDataTruncation.cpp
+SOURCES += CSQLWarning.cpp
+SOURCES += CDriverManager.cpp
+SOURCES += CTime.cpp
+SOURCES += Date.cpp
+

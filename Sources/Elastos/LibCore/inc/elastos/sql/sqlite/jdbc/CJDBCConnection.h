@@ -2,8 +2,7 @@
 #ifndef __CJDBCCONNECTION_H__
 #define __CJDBCCONNECTION_H__
 
-#include "_CJDBCConnection.h"
-#include <elautoptr.h>
+#include "_Elastos_Sql_SQLite_JDBC_CJDBCConnection.h"
 
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Utility::IProperties;
@@ -25,11 +24,11 @@ namespace SQLite {
 namespace JDBC{
 
 CarClass(CJDBCConnection)
-    ,public Object
-    ,public IJDBCConnection
-    ,public IConnection;
-    ,public IWrapper;
-    ,public IBusyHandler;
+    , public Object
+    , public IJDBCConnection
+    , public IConnection
+    , public IWrapper
+    , public IBusyHandler
 {
 public:
     CAR_OBJECT_DECL();
