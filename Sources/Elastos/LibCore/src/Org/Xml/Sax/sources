@@ -1,7 +1,7 @@
 TARGET_NAME= Org.Xml.Sax
 TARGET_TYPE= eco
 
-includes += ./;
+INCLUDES += ./;
 INCLUDES += $(MAKEDIR)/../../../../inc/org;
 INCLUDES += $(MAKEDIR)/../../../../inc/org/xml/sax;
 INCLUDES += $(MAKEDIR)/../../../../inc/org/xml/sax/helpers;

@@ -2,7 +2,7 @@
 TARGET_NAME= reflect
 TARGET_TYPE= lib
 
-includes += ../../../
+INCLUDES += ../../../
 INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/luni/lang/reflect
 
 SOURCES = ListOfVariables.cpp

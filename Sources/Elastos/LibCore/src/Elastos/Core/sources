@@ -6,8 +6,8 @@ C_DEFINES += -DELASTOS_CORELIBRARY
 
 include $(MAKEDIR)/../../sources.inc
 
-includes += $(prebuild_inc)/sys;
-includes += ../
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 

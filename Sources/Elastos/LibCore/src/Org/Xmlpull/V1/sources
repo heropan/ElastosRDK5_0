@@ -4,7 +4,7 @@ TARGET_TYPE= eco
 IMPORTS += Elastos.CoreLibrary.eco
 IMPORTS += Org.Xml.Sax.eco
 
-includes += ./;
+INCLUDES += ./;
 INCLUDES += $(MAKEDIR)/../../../../inc/org;
 INCLUDES += $(MAKEDIR)/../../../../inc/org/xmlpull/v1;
 INCLUDES += $(MAKEDIR)/../../../../inc/org/xmlpull/v1/sax2;
