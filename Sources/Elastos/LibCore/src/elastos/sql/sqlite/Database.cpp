@@ -16,8 +16,6 @@ using Elastos::Sql::SQLite::CVm;
 using Elastos::Sql::SQLite::CStmt;
 using Elastos::Sql::SQLite::EIID_IDatabase;
 
-#define synchronized(o) for(Object::Autolock l(o),*lptr=&l;lptr!=NULL;lptr=NULL)
-
 namespace Elastos {
 namespace Sql {
 namespace SQLite {

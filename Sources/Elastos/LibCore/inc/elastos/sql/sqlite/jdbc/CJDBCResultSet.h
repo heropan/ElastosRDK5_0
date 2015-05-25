@@ -25,9 +25,15 @@ namespace SQLite {
 namespace JDBC{
 
 CarClass(CJDBCResultSet)
+    , public Object
+    , public IJDBCResultSet
+    , public IResultSet
+    , public IWrapper
 {
 public:
     CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
 
     CARAPI Absolute(
         /* [in] */ Int32 row,

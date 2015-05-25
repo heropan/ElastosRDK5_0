@@ -13,7 +13,9 @@ namespace Sql {
 namespace SQLite {
 namespace JDBC{
 
-CAR_OBJECT_IMPL(CJDBCConnection)
+CAR_OBJECT_IMPL(CJDBCConnection);
+
+CAR_INTERFACE_IMPL_4(CJDBCResultSet, Object, IJDBCConnection, IConnection, IWrapper, IBusyHandler);
 
 ECode CJDBCConnection::ClearWarnings()
 {

@@ -8,6 +8,8 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_INTERFACE_IMPL_2(TableResult, Object, ITableResult, ICallback)
+
 ECode TableResult::Columns(
     /* [in] */ const ArrayOf<String> & coldata)
 {
@@ -24,21 +26,28 @@ ECode TableResult::Types(
 }
 
 Boolean TableResult::Newrow(
-    /* [in] */ const ArrayOf<String> & rowdata)
+    /* [in] */ const ArrayOf<String> & rowdata,
+    /* [out] */ Boolean* value)
 {
+    VALIDATE_NOT_NULL(value);
     if (rowdata.GetLength()>0) {
         if (maxrows > 0 && nrows >= maxrows) {
-        atmaxrows = TRUE;
-        return TRUE;
+            atmaxrows = TRUE;
+            *value = TRUE;
+            return NOERROR;
         }
         rows.PushBack(const_cast<ArrayOf<String> *>(&rowdata));
         nrows++;
     }
-    return TRUE;
+
+    *value = FALSE;
+    return NOERROR;
 }
 
-String TableResult::ToString()
+ECode TableResult::ToString(
+    /* [out] */ String* value)
 {
+    VALIDATE_NOT_NULL(value);
     StringBuffer sb;
     Int32 i = 0;
     for (i = 0; i < ncolumns; i++) {
@@ -55,7 +64,8 @@ String TableResult::ToString()
         }
         sb.AppendChar('\n');
     }
-    return sb.ToString();
+    *value = sb.ToString();
+    return NOERROR;
 }
 
 TableResult::TableResult()

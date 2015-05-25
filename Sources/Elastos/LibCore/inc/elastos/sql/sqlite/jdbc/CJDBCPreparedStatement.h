@@ -40,6 +40,8 @@ CarClass(CJDBCPreparedStatement)
     , public IJDBCPreparedStatement
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 

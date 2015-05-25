@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CJDBCResultSet.h"
 #include "Database.h"
 #include "CJDBCResultSetMetaData.h"
@@ -37,7 +37,9 @@ namespace JDBC{
 const Boolean CJDBCResultSet::nullrepl =
     SQLite::Database::Version().Compare("2.5.0") < 0;
 
-CAR_OBJECT_IMPL(CJDBCResultSet)
+CAR_OBJECT_IMPL(CJDBCResultSet);
+
+CAR_INTERFACE_IMPL_3(CJDBCResultSet, Object, IJDBCResultSet, IResultSet, IWrapper);
 
 ECode CJDBCResultSet::Absolute(
     /* [in] */ Int32 row,

@@ -19,6 +19,8 @@ namespace JDBC{
 
 CAR_OBJECT_IMPL(CJDBCDatabaseMetaData)
 
+CAR_INTERFACE_IMPL_3(CJDBCResultSet, Object, IJDBCDatabaseMetaData, IDatabaseMetaData, IWrapper);
+
 ECode CJDBCDatabaseMetaData::AllProceduresAreCallable(
     /* [out] */ Boolean * callable)
 {

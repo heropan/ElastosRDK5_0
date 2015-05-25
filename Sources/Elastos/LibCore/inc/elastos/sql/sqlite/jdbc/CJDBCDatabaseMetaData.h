@@ -28,6 +28,8 @@ CarClass(CJDBCDatabaseMetaData)
 public:
     CAR_OBJECT_DECL();
 
+    CAR_INTERFACE_DECL();
+
     CARAPI AllProceduresAreCallable(
         /* [out] */ Boolean * callable);
 

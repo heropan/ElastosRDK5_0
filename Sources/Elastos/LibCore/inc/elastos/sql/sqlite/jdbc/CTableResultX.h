@@ -10,10 +10,15 @@ namespace Sql {
 namespace SQLite {
 namespace JDBC{
 
-CarClass(CTableResultX) , public TableResult
+CarClass(CTableResultX)
+    , public TableResult
+    , public ITableResultX
 {
 public:
     CAR_OBJECT_DECL();
+
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
 
     CARAPI Columns(
         /* [in] */ const ArrayOf<String>& coldata);
@@ -25,20 +30,8 @@ public:
         /* [in] */ const ArrayOf<String>& rowdata,
         /* [out] */ Boolean * value);
 
-    CARAPI ToString(
-        /* [out] */ String * pStr);
-
-    CARAPI Clear();
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ Int32 maxrows);
-
-    CARAPI constructor(
-        /* [in] */ Elastos::Sql::SQLite::ITableResult* tr);
-
-    CARAPI_(void) Sql_types(AutoPtr<ArrayOf<Int32> > types);
+    CARAPI_(void) Sql_types(
+        /* [in] */ ArrayOf<Int32>* types);
 
 public:
     AutoPtr<ArrayOf<Int32> > sql_type;

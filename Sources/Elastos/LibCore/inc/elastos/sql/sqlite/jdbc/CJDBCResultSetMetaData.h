@@ -10,8 +10,16 @@ namespace SQLite {
 namespace JDBC{
 
 CarClass(CJDBCResultSetMetaData)
+    , public Object
+    , public IJDBCResultSetMetaData
+    , public IResultSetMetaData
+    , public IWrapper
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetCatalogName(
         /* [in] */ Int32 column,
         /* [out] */ String * str);

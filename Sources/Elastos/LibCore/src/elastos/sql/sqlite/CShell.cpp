@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CShell.h"
 #include <elastos/StringBuffer.h>
 #include "CPrintWriter.h"
