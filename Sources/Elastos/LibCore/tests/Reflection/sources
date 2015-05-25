@@ -11,6 +11,8 @@ VPATH := $(MAKEDIR)/eco/
 IMPORTS = Reflection.eco
 
 SOURCES = main.cpp
+SOURCES += Reflection.cpp
+SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco

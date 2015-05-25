@@ -11,7 +11,9 @@ void testGetSet()
 
     AutoPtr<IFooBar> test;
     CFooBar::New((IFooBar**)&test);
-    test->SetValue0(10);
+    assert(test != NULL);
+
+    test->SetValue(10);
     test->SetValue(String("Elastos"));
 
     Int32 value0;
@@ -35,18 +37,18 @@ ECode testReflection()
     AutoPtr<IMethodInfo> methodInfo;
     AutoPtr<IArgumentList> argumentList;
 
-    const char* moduleName = "/data/data/com.elastos.runtime/elastos/Reflection.eco";
-    const char* klassName = "CFooBar";
+    const String moduleName("/data/data/com.elastos.runtime/elastos/Reflection.eco");
+    const String klassName("CFooBar");
 
     ECode ec = _CReflector_AcquireModuleInfo(moduleName, (IModuleInfo**)&moduleInfo);
     if (FAILED(ec)) {
-        printf("Acquire \"%s\" module info failed!\n", moduleName);
+        printf("Acquire \"%s\" module info failed!\n", moduleName.string());
         return ec;
     }
 
     ec = moduleInfo->GetClassInfo(klassName, (IClassInfo**)&classInfo);
     if (FAILED(ec)) {
-        printf("Acquire \"%s\" class info failed!\n", klassName);
+        printf("Acquire \"%s\" class info failed!\n", klassName.string());
         return ec;
     }
 

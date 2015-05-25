@@ -1,7 +1,11 @@
 
 #include "CFooBar.h"
 
-namespace Refection {
+namespace Reflection {
+
+CAR_INTERFACE_IMPL(CFooBar, Object, IFooBar)
+
+CAR_OBJECT_IMPL(CFooBar)
 
 CFooBar::CFooBar()
     : mValue0(0)
@@ -80,4 +84,4 @@ ECode CFooBar::GetValue(
     return NOERROR;
 }
 
-} // Refection
+} // Reflection

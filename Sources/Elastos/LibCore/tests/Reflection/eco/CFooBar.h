@@ -3,13 +3,21 @@
 #define __CFOOBAR_H__
 
 #include "_Reflection_CFooBar.h"
-#include <elastos.h>
+#include <elastos/core/Object.h>
 
-namespace Refection {
+using Elastos::Core::Object;
+
+namespace Reflection {
 
 CarClass(CFooBar)
+    , public Object
+    , public IFooBar
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CFooBar();
 
     CARAPI GetValue(
@@ -46,6 +54,6 @@ private:
     Int64 mValue1;
 };
 
-} // Refection
+} // Reflection
 
 #endif //__CFOOBAR_H__

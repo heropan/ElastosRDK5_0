@@ -1,9 +1,10 @@
 
 module
 {
-    using interface Elastos.Core.ISynchronize;
+    importlib("Elastos.CoreLibrary.eco");
 
-    namespace Refection {
+    namespace Reflection {
+
         interface IFooBar {
             GetValue(
                 [out] String* str);
@@ -37,5 +38,6 @@ module
         class CFooBar {
             interface IFooBar;
         }
-    } // Refection
+
+    } // Reflection
 }
