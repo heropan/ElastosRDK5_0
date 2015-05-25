@@ -7,6 +7,8 @@
 namespace Elastos {
 namespace IO {
 
+extern "C" const InterfaceID EIID_BufferedInputStream;
+
 class BufferedInputStream
     : public FilterInputStream
     , public IBufferedInputStream
@@ -147,6 +149,12 @@ public:
     CARAPI Skip(
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* number);
+
+    CARAPI ToString(
+        /* [out] */ String* s);
+
+    CARAPI GetClassID(
+        /* [out] */ ClassID *pCLSID);
 
 private:
     CARAPI StreamClosed();

@@ -5,6 +5,8 @@
 namespace Elastos {
 namespace IO {
 
+extern "C" const InterfaceID EIID_BufferedInputStream =
+    { 0x4efc652b, 0x8522, 0x43c7, { 0x9b, 0x62, 0xad, 0xb2, 0xb8, 0x0a, 0xc4, 0xf8 } };
 
 BufferedInputStream::BufferedInputStream()
     : mBuf(NULL)
@@ -355,6 +357,22 @@ ECode BufferedInputStream::Skip(
     }
     FAIL_RETURN(localIn->Skip(byteCount - read, number));
     *number = read + *number;
+    return NOERROR;
+}
+
+ECode BufferedInputStream::ToString(
+        /* [out] */ String* s)
+{
+    assert(s != NULL);
+    *s = String("BufferedInputStream");
+    return NOERROR;
+}
+
+ECode BufferedInputStream::GetClassID(
+        /* [out] */ ClassID *pCLSID)
+{
+    assert(pCLSID != NULL);
+    *pCLSID = EIID_BufferedInputStream;
     return NOERROR;
 }
 
