@@ -14,8 +14,6 @@ using Elastos::Core::Object;
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_InputStream;
-
 class InputStream
     : public Object
     , public ICloseable
@@ -192,14 +190,6 @@ public:
     CARAPI Skip(
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* number);
-
-public:
-    CARAPI ToString(
-        /* [out] */ String* s);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
-
 };
 
 } // namespace IO

@@ -6,8 +6,6 @@
 
 namespace Elastos {
 namespace IO {
-
-extern "C" const InterfaceID EIID_FilterInputStream;
 /**
  * Wraps an existing {@link InputStream} and performs some transformation on
  * the input data while it is being read. Transformations can be anything from a
@@ -155,13 +153,6 @@ public:
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* number);
 
-public:
-    CARAPI ToString(
-        /* [out] */ String* s);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
-        
 protected:
     /**
      * The source input stream that is filtered.
