@@ -1,4 +1,4 @@
 
-DIRS = ext
-DIRS += helpers
+#DIRS = ext
+#DIRS += helpers
 

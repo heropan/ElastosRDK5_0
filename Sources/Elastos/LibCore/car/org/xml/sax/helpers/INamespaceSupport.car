@@ -1,6 +1,6 @@
 module
 {
-    using Elastos::Utility::IEnumeration;
+    using interface Elastos.Utility.IEnumeration;
 
     namespace Org {
     namespace Xml {

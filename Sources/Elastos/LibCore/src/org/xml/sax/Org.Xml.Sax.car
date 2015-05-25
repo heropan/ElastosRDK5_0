@@ -3,37 +3,37 @@ module
 {
     importlib("Elastos.CoreLibrary.eco");
 
-    merge("../../../../../car/org/xml/sax/Exceptions.car");
-    merge("../../../../../car/org/xml/sax/IAttributeList.car");
-    merge("../../../../../car/org/xml/sax/IAttributes.car");
-    merge("../../../../../car/org/xml/sax/IContentHandler.car");
-    merge("../../../../../car/org/xml/sax/IDocumentHandler.car");
-    merge("../../../../../car/org/xml/sax/IDTDHandler.car");
-    merge("../../../../../car/org/xml/sax/IEntityResolver.car");
-    merge("../../../../../car/org/xml/sax/IErrorHandler.car");
-    merge("../../../../../car/org/xml/sax/IInputSource.car");
-    merge("../../../../../car/org/xml/sax/ILocator.car");
-    merge("../../../../../car/org/xml/sax/IParser.car");
-    merge("../../../../../car/org/xml/sax/IXMLReader.car");
-    merge("../../../../../car/org/xml/sax/IXMLFilter.car");
+    merge("../../../../car/org/xml/sax/Exceptions.car");
+    merge("../../../../car/org/xml/sax/IAttributeList.car");
+    merge("../../../../car/org/xml/sax/IAttributes.car");
+    merge("../../../../car/org/xml/sax/IContentHandler.car");
+    merge("../../../../car/org/xml/sax/IDocumentHandler.car");
+    merge("../../../../car/org/xml/sax/IDTDHandler.car");
+    merge("../../../../car/org/xml/sax/IEntityResolver.car");
+    merge("../../../../car/org/xml/sax/IErrorHandler.car");
+    merge("../../../../car/org/xml/sax/IInputSource.car");
+    merge("../../../../car/org/xml/sax/ILocator.car");
+    merge("../../../../car/org/xml/sax/IParser.car");
+    merge("../../../../car/org/xml/sax/IXMLReader.car");
+    merge("../../../../car/org/xml/sax/IXMLFilter.car");
 
-    merge("../../../../../car/org/xml/sax/helpers/IAttributeListImpl.car");
-    merge("../../../../../car/org/xml/sax/helpers/IAttributesImpl.car");
-    merge("../../../../../car/org/xml/sax/helpers/ILocatorImpl.car");
-    merge("../../../../../car/org/xml/sax/helpers/INamespaceSupport.car");
-    merge("../../../../../car/org/xml/sax/helpers/IParserFactory.car");
-    merge("../../../../../car/org/xml/sax/helpers/IXMLReaderFactory.car");
+    merge("../../../../car/org/xml/sax/helpers/IAttributeListImpl.car");
+    merge("../../../../car/org/xml/sax/helpers/IAttributesImpl.car");
+    merge("../../../../car/org/xml/sax/helpers/ILocatorImpl.car");
+    merge("../../../../car/org/xml/sax/helpers/INamespaceSupport.car");
+    merge("../../../../car/org/xml/sax/helpers/IParserFactory.car");
+    merge("../../../../car/org/xml/sax/helpers/IXMLReaderFactory.car");
 
-    merge("../../../../../car/org/xml/sax/ext/IAttributes2.car");
-    merge("../../../../../car/org/xml/sax/ext/IAttributes2Impl.car");
-    merge("../../../../../car/org/xml/sax/ext/IDeclHandler.car");
-    merge("../../../../../car/org/xml/sax/ext/IEntityResolver2.car");
-    merge("../../../../../car/org/xml/sax/ext/ILexicalHandler.car");
-    merge("../../../../../car/org/xml/sax/ext/ILocator2.car");
-    merge("../../../../../car/org/xml/sax/ext/ILocator2Impl.car");
+    merge("../../../../car/org/xml/sax/ext/IAttributes2.car");
+    merge("../../../../car/org/xml/sax/ext/IAttributes2Impl.car");
+    merge("../../../../car/org/xml/sax/ext/IDeclHandler.car");
+    merge("../../../../car/org/xml/sax/ext/IEntityResolver2.car");
+    merge("../../../../car/org/xml/sax/ext/ILexicalHandler.car");
+    merge("../../../../car/org/xml/sax/ext/ILocator2.car");
+    merge("../../../../car/org/xml/sax/ext/ILocator2Impl.car");
 
-    interface Elastos.IO.IInputStream;
-    interface Elastos.IO.IReader;
+    //using interface Elastos.IO.IInputStream;
+    //using interface Elastos.IO.IReader;
 
     interface Org.Xml.Sax.IAttributes;
     interface Org.Xml.Sax.IAttributeList;
@@ -54,149 +54,153 @@ module
     namespace Xml {
     namespace Sax {
 
-        class CInputSource {
-            constructor();
+    class CDummy {
+        interface IObject;
+    }
 
-            constructor(
-                [in] String str);
+    //     class CInputSource {
+    //         constructor();
 
-            constructor(
-                [in] IInputStream* inputStream);
+    //         constructor(
+    //             [in] String str);
 
-            constructor(
-                [in] IReader* reader);
+    //         constructor(
+    //             [in] IInputStream* inputStream);
 
-            interface IInputSource;
-        }
+    //         constructor(
+    //             [in] IReader* reader);
 
-        class CHandlerBase {
-            interface IEntityResolver;
-            interface IDTDHandler;
-            interface IDocumentHandler;
-            interface IErrorHandler;
-        }
+    //         interface IInputSource;
+    //     }
 
-        namespace Helpers {
+    //     class CHandlerBase {
+    //         interface IEntityResolver;
+    //         interface IDTDHandler;
+    //         interface IDocumentHandler;
+    //         interface IErrorHandler;
+    //     }
 
-            class CAttributeListImpl {
-                constructor();
+    //     namespace Helpers {
 
-                constructor(
-                    [in] IAttributeList* atts);
+    //         class CAttributeListImpl {
+    //             constructor();
 
-                interface IAttributeList;
-                interface IAttributeListImpl;
-            }
+    //             constructor(
+    //                 [in] IAttributeList* atts);
 
-            class CAttributesImpl {
-                constructor();
+    //             interface IAttributeList;
+    //             interface IAttributeListImpl;
+    //         }
 
-                constructor(
-                    [in] IAttributes* atts);
+    //         class CAttributesImpl {
+    //             constructor();
 
-                interface IAttributes;
-                interface IAttributesImpl;
-            }
+    //             constructor(
+    //                 [in] IAttributes* atts);
 
-            class CLocatorImpl {
-                constructor();
+    //             interface IAttributes;
+    //             interface IAttributesImpl;
+    //         }
 
-                constructor(
-                    [in] ILocator* locator);
+    //         class CLocatorImpl {
+    //             constructor();
 
-                interface ILocator;
-                interface ILocatorImpl;
-            }
+    //             constructor(
+    //                 [in] ILocator* locator);
 
-            class CNamespaceSupport {
-                constructor();
+    //             interface ILocator;
+    //             interface ILocatorImpl;
+    //         }
 
-                interface INamespaceSupport;
-            }
+    //         class CNamespaceSupport {
+    //             constructor();
 
-            singleton class CParserFactory {
-                interface IParserFactory;
-            }
+    //             interface INamespaceSupport;
+    //         }
 
-            singleton class CXMLReaderFactory {
-                interface IXMLReaderFactory;
-            }
+    //         singleton class CParserFactory {
+    //             interface IParserFactory;
+    //         }
 
-            class CDefaultHandler {
-                interface IEntityResolver;
-                interface IDTDHandler;
-                interface IContentHandler;
-                interface IErrorHandler;
-            }
+    //         singleton class CXMLReaderFactory {
+    //             interface IXMLReaderFactory;
+    //         }
 
-            class CXMLReaderAdapter {
-                constructor();
+    //         class CDefaultHandler {
+    //             interface IEntityResolver;
+    //             interface IDTDHandler;
+    //             interface IContentHandler;
+    //             interface IErrorHandler;
+    //         }
 
-                constructor(
-                    [in] IXMLReader* xmlReader);
+    //         class CXMLReaderAdapter {
+    //             constructor();
 
-                interface IParser;
-                interface IContentHandler;
-            }
+    //             constructor(
+    //                 [in] IXMLReader* xmlReader);
 
-            class CXMLFilterImpl {
-                constructor();
+    //             interface IParser;
+    //             interface IContentHandler;
+    //         }
 
-                constructor(
-                    [in] IXMLReader* parent);
+    //         class CXMLFilterImpl {
+    //             constructor();
 
-                interface IXMLReader;
-                interface IXMLFilter;
-                interface IEntityResolver;
-                interface IDTDHandler;
-                interface IContentHandler;
-                interface IErrorHandler;
-            }
+    //             constructor(
+    //                 [in] IXMLReader* parent);
 
-            class CParserAdapter {
-                constructor();
+    //             interface IXMLReader;
+    //             interface IXMLFilter;
+    //             interface IEntityResolver;
+    //             interface IDTDHandler;
+    //             interface IContentHandler;
+    //             interface IErrorHandler;
+    //         }
 
-                constructor(
-                    [in] IParser* parent);
+    //         class CParserAdapter {
+    //             constructor();
 
-                interface IXMLReader;
-                interface IDocumentHandler;
-            }
-        }
+    //             constructor(
+    //                 [in] IParser* parent);
 
-        namespace Ext {
-            class CLocator2Impl {
-                constructor();
+    //             interface IXMLReader;
+    //             interface IDocumentHandler;
+    //         }
+    //     }
 
-                constructor(
-                    [in] ILocator* locator);
+    //     namespace Ext {
+    //         class CLocator2Impl {
+    //             constructor();
 
-                interface ILocator;
-                interface ILocator2;
-                interface ILocator2Impl;
-            }
+    //             constructor(
+    //                 [in] ILocator* locator);
 
-            class CAttributes2Impl {
-                constructor();
+    //             interface ILocator;
+    //             interface ILocator2;
+    //             interface ILocator2Impl;
+    //         }
 
-                constructor(
-                    [in] IAttributes* atts);
+    //         class CAttributes2Impl {
+    //             constructor();
 
-                interface IAttributes;
-                interface IAttributes2;
-                interface IAttributes2Impl;
-            }
+    //             constructor(
+    //                 [in] IAttributes* atts);
 
-            class CDefaultHandler2 {
-                interface IDTDHandler;
-                interface IContentHandler;
-                interface IErrorHandler;
-                interface ILexicalHandler;
-                interface IDeclHandler;
-                interface IEntityResolver;
-                interface IEntityResolver2;
-            }
-        }
+    //             interface IAttributes;
+    //             interface IAttributes2;
+    //             interface IAttributes2Impl;
+    //         }
+
+    //         class CDefaultHandler2 {
+    //             interface IDTDHandler;
+    //             interface IContentHandler;
+    //             interface IErrorHandler;
+    //             interface ILexicalHandler;
+    //             interface IDeclHandler;
+    //             interface IEntityResolver;
+    //             interface IEntityResolver2;
+    //         }
+    //     }
 
     } // namespace Sax
     } // namespace Xml

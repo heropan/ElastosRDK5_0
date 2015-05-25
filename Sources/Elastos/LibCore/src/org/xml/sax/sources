@@ -11,8 +11,9 @@ CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Org.Xml.Sax.car
-SOURCES += CInputSource.cpp
-SOURCES += CHandlerBase.cpp
+SOURCES += CDummy.cpp
+#SOURCES += CInputSource.cpp
+#SOURCES += CHandlerBase.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
@@ -21,6 +22,6 @@ LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib
 LIBRARIES += $(PREBUILD_LIB)/libm.a
 
-LIBRARIES += Ext/ext.lib
-LIBRARIES += Helpers/helpers.lib
+#LIBRARIES += ext/ext.lib
+#LIBRARIES += helpers/helpers.lib
 LIBRARIES += -lcutils -licuuc

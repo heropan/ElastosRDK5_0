@@ -15,10 +15,11 @@ CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Org.Xmlpull.V1.car
-SOURCES += XmlPullParserFactory.cpp
-SOURCES += CXmlPullParserFactory.cpp
-SOURCES += CXmlPullParserFactoryHelper.cpp
-SOURCES += CDriver.cpp
+SOURCES += CDummy.cpp
+#SOURCES += XmlPullParserFactory.cpp
+#SOURCES += CXmlPullParserFactory.cpp
+#SOURCES += CXmlPullParserFactoryHelper.cpp
+#SOURCES += CDriver.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 SOURCES += Org.Xml.Sax.cpp
 
