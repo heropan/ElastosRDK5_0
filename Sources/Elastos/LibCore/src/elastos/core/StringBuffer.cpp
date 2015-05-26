@@ -263,27 +263,27 @@ ECode StringBuffer::LastIndexOf(
     return LastIndexOfExO(subString, start, index);
 }
 
-ECode StringBuffer::Append()
+ECode StringBuffer::AppendNull()
 {
     Mutex::Autolock lock(mLock);
     return AppendONULL();
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendChar(
     /* [in] */ const char* str)
 {
     Mutex::Autolock lock(mLock);
     return AppendOCStr(str);
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendBoolean(
     /* [in] */ Boolean b)
 {
     Mutex::Autolock lock(mLock);
     return AppendOBoolean(b);
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendChar32(
     /* [in] */ Char32 c)
 {
     Mutex::Autolock lock(mLock);
@@ -304,40 +304,40 @@ ECode StringBuffer::AppendInt64(
     return AppendOInt64(l);
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendFloat(
     /* [in] */ Float f)
 {
     Mutex::Autolock lock(mLock);
     return AppendOFloat(f);
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendDouble(
     /* [in] */ Double d)
 {
     Mutex::Autolock lock(mLock);
     return AppendODouble(d);
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendIInterface(
     /* [in] */ IInterface* obj)
 {
     Mutex::Autolock lock(mLock);
     return AppendOObject(obj);
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendString(
     /* [in] */ const String& str)
 {
     Mutex::Autolock lock(mLock);
     return AppendOString(str);
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendIStringBuffer(
     /* [in] */ IStringBuffer* sb)
 {
     Mutex::Autolock lock(mLock);
     if (NULL == sb) {
-        return Append();
+        return AppendNull();
     }
 
     String str;
@@ -345,12 +345,12 @@ ECode StringBuffer::Append(
     return AppendOString(str);
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendIStringBuilder(
     /* [in] */ IStringBuilder* sb)
 {
     Mutex::Autolock lock(mLock);
     if (NULL == sb) {
-        return Append();
+        return AppendNull();
     }
 
     String str;
@@ -358,14 +358,14 @@ ECode StringBuffer::Append(
     return AppendOString(str);
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendArrayOf(
     /* [in] */ const ArrayOf<Char32>& chars)
 {
     Mutex::Autolock lock(mLock);
     return AppendOChars(chars);
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendArrayOf(
     /* [in] */ const ArrayOf<Char32>& chars,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
@@ -374,14 +374,14 @@ ECode StringBuffer::Append(
     return AppendOCharsEx(chars, offset, length);
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendICharSequence(
     /* [in] */ ICharSequence* csq)
 {
     Mutex::Autolock lock(mLock);
     return AppendOCharSequence(csq);
 }
 
-ECode StringBuffer::Append(
+ECode StringBuffer::AppendICharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -390,7 +390,7 @@ ECode StringBuffer::Append(
     return AppendOCharSequenceEx(csq, start, end);
 }
 
-ECode StringBuffer::Insert(
+ECode StringBuffer::InsertChar32(
     /* [in] */ Int32 offset,
     /* [in] */ Char32 c)
 {
@@ -398,7 +398,7 @@ ECode StringBuffer::Insert(
     return InsertOChar(offset, c);
 }
 
-ECode StringBuffer::Insert(
+ECode StringBuffer::InsertBoolean(
     /* [in] */ Int32 offset,
     /* [in] */ Boolean b)
 {
@@ -422,7 +422,7 @@ ECode StringBuffer::InsertInt64(
     return InsertOInt64(offset, l);
 }
 
-ECode StringBuffer::Insert(
+ECode StringBuffer::InsertFloat(
     /* [in] */ Int32 offset,
     /* [in] */ Float f)
 {
@@ -430,7 +430,7 @@ ECode StringBuffer::Insert(
     return InsertOFloat(offset, f);
 }
 
-ECode StringBuffer::Insert(
+ECode StringBuffer::InsertDouble(
     /* [in] */ Int32 offset,
     /* [in] */ Double d)
 {
@@ -438,7 +438,7 @@ ECode StringBuffer::Insert(
     return InsertODouble(offset, d);
 }
 
-ECode StringBuffer::Insert(
+ECode StringBuffer::InsertIInterface(
     /* [in] */ Int32 offset,
     /* [in] */ IInterface* obj)
 {
@@ -446,7 +446,7 @@ ECode StringBuffer::Insert(
     return InsertOObject(offset, obj);
 }
 
-ECode StringBuffer::Insert(
+ECode StringBuffer::InsertString(
     /* [in] */ Int32 offset,
     /* [in] */ const String& str)
 {
@@ -454,7 +454,7 @@ ECode StringBuffer::Insert(
     return InsertOString(offset, str);
 }
 
-ECode StringBuffer::Insert(
+ECode StringBuffer::InsertArrayOf(
     /* [in] */ Int32 offset,
     /* [in] */ const ArrayOf<Char32>& chars)
 {
@@ -462,7 +462,7 @@ ECode StringBuffer::Insert(
     return InsertOChars(offset, chars);
 }
 
-ECode StringBuffer::Insert(
+ECode StringBuffer::InsertArrayOf(
     /* [in] */ Int32 offset,
     /* [in] */ const ArrayOf<Char32>& str,
     /* [in] */ Int32 strOffset,
@@ -472,7 +472,7 @@ ECode StringBuffer::Insert(
     return InsertOCharsEx(offset, str, strOffset, strLen);
 }
 
-ECode StringBuffer::Insert(
+ECode StringBuffer::InsertICharSequence(
     /* [in] */ Int32 offset,
     /* [in] */ ICharSequence* s)
 {
@@ -480,7 +480,7 @@ ECode StringBuffer::Insert(
     return InsertOCharSequence(offset, s);
 }
 
-ECode StringBuffer::Insert(
+ECode StringBuffer::InsertICharSequence(
     /* [in] */ Int32 offset,
     /* [in] */ ICharSequence* s,
     /* [in] */ Int32 start,
@@ -525,6 +525,13 @@ ECode StringBuffer::ToString(
 {
     Mutex::Autolock lock(mLock);
     return SubstringO(0, str);
+}
+
+String StringBuffer::ToString()
+{
+   String str;
+   ToString(&str);
+   return str;
 }
 
 AutoPtr<ICharSequence> StringBuffer::ToCharSequence()

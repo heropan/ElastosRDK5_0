@@ -7,6 +7,7 @@ module
     /**
      * @Involve
      * interface INumber;
+     * interface ISerializable;
      * interface IComparable;
      */
     interface IDouble {

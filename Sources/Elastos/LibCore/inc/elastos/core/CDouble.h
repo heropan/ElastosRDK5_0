@@ -2,17 +2,28 @@
 #ifndef __CDOUBLE_H__
 #define __CDOUBLE_H__
 
-#include "_CDouble.h"
+#include "_Elastos_Core_CDouble.h"
+#include "Object.h"
 
 using Elastos::Core::INumber;
 using Elastos::Core::IComparable;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {
 
-CarClass(CDouble) , public INumber, public IComparable
+CarClass(CDouble)
+    , public Object
+    , public INumber
+    , public ISerializable
+    , public IComparable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+
     CARAPI constructor(
         /* [in] */ Double value);
 

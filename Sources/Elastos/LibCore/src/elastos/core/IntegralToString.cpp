@@ -404,8 +404,8 @@ StringBuilder& IntegralToString::AppendByteAsHex(
     /* [in] */ Boolean upperCase)
 {
     const char* digits = upperCase ? UPPER_CASE_DIGITS : DIGITS;
-    sb.Append(digits[(b >> 4) & 0xf]);
-    sb.Append(digits[b & 0xf]);
+   /* sb.Append(digits[(b >> 4) & 0xf]);
+    sb.Append(digits[b & 0xf]);*/
     return sb;
 }
 

@@ -1,13 +1,13 @@
-#ifdef ELASTOS_CORE
+#ifdef ELASTOS_CORELIBRARY
 #include <coredef.h>
 #include "Character.h"
 #include "Math.h"
 #include "StringBuilder.h"
 #else
 #include <coredef.h>
-#include <elastos/Character.h>
+/*#include <elastos/Character.h>
 #include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/StringBuilder.h>*/
 #endif
 
 namespace Elastos {

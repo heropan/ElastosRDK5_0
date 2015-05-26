@@ -319,9 +319,9 @@ public:
         /* [in] */ Int32 start,
         /* [out] */ Int32* index);
 
-    CARAPI Append();
+    CARAPI AppendNull();
 
-    CARAPI Append(
+    CARAPI AppendChar(
         /* [in] */ const char* str);
 
     /**
@@ -336,7 +336,7 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(boolean)
      */
-    CARAPI Append(
+    CARAPI AppendBoolean(
         /* [in] */ Boolean b);
 
     /**
@@ -347,7 +347,7 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(char)
      */
-    CARAPI Append(
+    CARAPI AppendChar32(
         /* [in] */ Char32 c);
 
     /**
@@ -383,7 +383,7 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(float)
      */
-    CARAPI Append(
+    CARAPI AppendFloat(
         /* [in] */ Float f);
 
     /**
@@ -395,7 +395,7 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(double)
      */
-    CARAPI Append(
+    CARAPI AppendDouble(
         /* [in] */ Double d);
 
     /**
@@ -411,7 +411,7 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(Object)
      */
-    CARAPI Append(
+    CARAPI AppendIInterface(
         /* [in] */ IInterface* obj);
 
     /**
@@ -424,7 +424,7 @@ public:
      *            the string to append (may be null).
      * @return this StringBuffer.
      */
-    CARAPI Append(
+    CARAPI AppendString(
         /* [in] */ const String& str);
 
     /**
@@ -440,7 +440,7 @@ public:
      *
      * @since 1.4
      */
-    CARAPI Append(
+    CARAPI AppendIStringBuffer(
         /* [in] */ IStringBuffer* sb);
 
     /**
@@ -456,7 +456,7 @@ public:
      *
      * @since 1.4
      */
-    CARAPI Append(
+    CARAPI AppendIStringBuilder(
         /* [in] */ IStringBuilder* sb);
 
     /**
@@ -468,7 +468,7 @@ public:
      * @throws NullPointerException
      *            if {@code chars} is {@code null}.
      */
-    CARAPI Append(
+    CARAPI AppendArrayOf(
         /* [in] */ const ArrayOf<Char32>& chars);
 
     /**
@@ -487,7 +487,7 @@ public:
      * @throws NullPointerException
      *            if {@code chars} is {@code null}.
      */
-    CARAPI Append(
+    CARAPI AppendArrayOf(
         /* [in] */ const ArrayOf<Char32>& chars,
         /* [in] */ Int32 start,
         /* [in] */ Int32 length);
@@ -504,7 +504,7 @@ public:
      * @return this StringBuffer.
      * @since 1.5
      */
-    CARAPI Append(
+    CARAPI AppendICharSequence(
         /* [in] */ ICharSequence* csq);
 
     /**
@@ -526,7 +526,7 @@ public:
      *             the length of {@code s}.
      * @since 1.5
      */
-    CARAPI Append(
+    CARAPI AppendICharSequence(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -542,7 +542,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *             if {@code index < 0} or {@code index > length()}.
      */
-    CARAPI Insert(
+    CARAPI InsertChar32(
         /* [in] */ Int32 offset,
         /* [in] */ Char32 c);
 
@@ -558,7 +558,7 @@ public:
      * @throws StringIndexOutOfBoundsException
      *             if {@code index < 0} or {@code index > length()}.
      */
-    CARAPI Insert(
+    CARAPI InsertBoolean(
         /* [in] */ Int32 offset,
         /* [in] */ Boolean b);
 
@@ -606,7 +606,7 @@ public:
      * @throws StringIndexOutOfBoundsException
      *             if {@code index < 0} or {@code index > length()}.
      */
-    CARAPI Insert(
+    CARAPI InsertDouble(
         /* [in] */ Int32 offset,
         /* [in] */ Double d);
 
@@ -622,7 +622,7 @@ public:
      * @throws StringIndexOutOfBoundsException
      *             if {@code index < 0} or {@code index > length()}.
      */
-    CARAPI Insert(
+    CARAPI InsertFloat(
         /* [in] */ Int32 offset,
         /* [in] */ Float f);
 
@@ -642,7 +642,7 @@ public:
      * @throws StringIndexOutOfBoundsException
      *             if {@code index < 0} or {@code index > length()}.
      */
-    CARAPI Insert(
+    CARAPI InsertIInterface(
         /* [in] */ Int32 offset,
         /* [in] */ IInterface* obj);
 
@@ -660,7 +660,7 @@ public:
      * @throws StringIndexOutOfBoundsException
      *             if {@code index < 0} or {@code index > length()}.
      */
-    CARAPI Insert(
+    CARAPI InsertString(
         /* [in] */ Int32 offset,
         /* [in] */ const String& str);
 
@@ -677,7 +677,7 @@ public:
      * @throws NullPointerException
      *            if {@code chars} is {@code null}.
      */
-    CARAPI Insert(
+    CARAPI InsertArrayOf(
         /* [in] */ Int32 offset,
         /* [in] */ const ArrayOf<Char32>& chars);
 
@@ -701,7 +701,7 @@ public:
      *             length > chars.length}, {@code index < 0} or {@code index >
      *             length()}
      */
-    CARAPI Insert(
+    CARAPI InsertArrayOf(
         /* [in] */ Int32 offset,
         /* [in] */ const ArrayOf<Char32>& chars,
         /* [in] */ Int32 start,
@@ -723,7 +723,7 @@ public:
      *             if {@code index < 0} or {@code index > length()}.
      * @since 1.5
      */
-    CARAPI Insert(
+    CARAPI InsertICharSequence(
         /* [in] */ Int32 offset,
         /* [in] */ ICharSequence* s);
 
@@ -750,7 +750,7 @@ public:
      *             than the length of {@code s}.
      * @since 1.5
      */
-    CARAPI Insert(
+    CARAPI InsertICharSequence(
         /* [in] */ Int32 offset,
         /* [in] */ ICharSequence* s,
         /* [in] */ Int32 start,
@@ -819,6 +819,8 @@ public:
      */
     CARAPI ToString(
         /* [out] */ String* str);
+
+    CARAPI_(String) ToString();
 
     CARAPI_(AutoPtr<ICharSequence>) ToCharSequence();
     CARAPI_(Int32) GetLength();

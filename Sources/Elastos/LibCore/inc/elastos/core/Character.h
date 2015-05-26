@@ -3,11 +3,12 @@
 #define __CHARACTER_H__
 
 #include <elastos.h>
+#include <coredef.h>
 #include "unicode/uchar.h"
 #include "elastos/core/Object.h"
 
-/*using Elastos::IO::ISerializable;
-using Elastos::Core::IComparable;*/
+using Elastos::IO::ISerializable;
+using Elastos::Core::IComparable;
 using Elastos::Core::Object;
 
 namespace Elastos {
@@ -91,8 +92,8 @@ namespace Core {
  */
 class Character
     : public Object
-    /*, public ISerializable
-    , public IComparable*/
+    , public ISerializable
+    , public IComparable
 {
 public:
     /*

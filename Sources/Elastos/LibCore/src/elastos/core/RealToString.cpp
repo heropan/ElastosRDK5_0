@@ -344,7 +344,7 @@ void RealToString::LongDigitGenerator(Int64 f, Int32 e,
 void RealToString::BigIntDigitGenerator(Int64 f, Int32 e,
         Boolean isDenormalized, Int32 p)
 {
-    int RLength, SLength, TempLength, mplus_Length, mminus_Length;
+    /*int RLength, SLength, TempLength, mplus_Length, mminus_Length;
     int high, low, i;
     Int32 k, firstK, U;
 
@@ -364,14 +364,7 @@ void RealToString::BigIntDigitGenerator(Int64 f, Int32 e,
           {
             simpleShiftLeftHighPrecision (R, RM_SIZE, e + 1);
             *S = 2;
-            /*
-             * m+ = m+ << e results in 1.0e23 to be printed as
-             * 0.9999999999999999E23
-             * m+ = m+ << e+1 results in 1.0e23 to be printed as
-             * 1.0e23 (caused too much rounding)
-             *      470fffffffffffff = 2.0769187434139308E34
-             *      4710000000000000 = 2.076918743413931E34
-             */
+
             simpleShiftLeftHighPrecision (mplus, RM_SIZE, e);
           }
         else
@@ -501,7 +494,7 @@ void RealToString::BigIntDigitGenerator(Int64 f, Int32 e,
       mDigits[digitCount++] = U + 1;
 
     mDigitCount = digitCount;
-    mFirstK = firstK;
+    mFirstK = firstK;*/
 
 }
 

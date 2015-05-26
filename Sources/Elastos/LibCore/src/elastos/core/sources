@@ -34,9 +34,9 @@ SOURCES += CStringWrapper.cpp
  SOURCES += CInteger32.cpp
  SOURCES += CInteger64.cpp
  SOURCES += CFloat.cpp
-// SOURCES += CDouble.cpp
+ SOURCES += CDouble.cpp
 // SOURCES += CArrayOf.cpp
-// SOURCES += CRandom.cpp
+ SOURCES += CRandom.cpp
 SOURCES += Init.cpp
 
 // SOURCES += ThreadBase.cpp
@@ -50,7 +50,7 @@ SOURCES += Os.cpp
 // SOURCES += CCloseGuard.cpp
 // SOURCES += CCloseGuardHelper.cpp
 // SOURCES += Enum.cpp
-// SOURCES += CSystem.cpp
+ SOURCES += CSystem.cpp
 
 //VPATH := $(MAKEDIR)/../lib
 
@@ -59,11 +59,11 @@ SOURCES += Math.cpp
  SOURCES += StringUtils.cpp
 // SOURCES += ObjectUtils.cpp
 // SOURCES += HexStringParser.cpp
-// SOURCES += StringToIntegral.cpp
-// SOURCES += IntegralToString.cpp
-// SOURCES += StringToReal.cpp
-// SOURCES += RealToString.cpp
-// SOURCES += Character.cpp
+ SOURCES += StringToIntegral.cpp
+ SOURCES += IntegralToString.cpp
+ SOURCES += StringToReal.cpp
+ SOURCES += RealToString.cpp
+ SOURCES += Character.cpp
  SOURCES += AbstractStringBuilder.cpp
  SOURCES += StringBuffer.cpp
  SOURCES += StringBuilder.cpp

@@ -4,7 +4,7 @@
 #include "Elastos.CoreLibrary_server.h"
 #include <StringBuilder.h>
 #include "CStringWrapper.h"
-#include "CHashMap.h"
+/*#include "CHashMap.h"
 #include "CProperties.h"
 #include "CICUHelper.h"
 #include "CSelectorProviderHelper.h"
@@ -12,7 +12,7 @@
 #include "CFileInputStream.h"
 #include "CFileOutputStream.h"
 #include "CBufferedInputStream.h"
-#include "CPrintStream.h"
+#include "CPrintStream.h"*/
 
 #include <cutils/log.h>
 #include <unistd.h>
@@ -23,7 +23,7 @@
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::IMap;
+/*using Elastos::Utility::IMap;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::CProperties;
 using Elastos::IO::CFileDescriptor;
@@ -38,7 +38,7 @@ using Elastos::IO::Channels::Spi::ISelectorProvider;
 using Elastos::IO::Channels::Spi::ISelectorProviderHelper;
 using Elastos::IO::Channels::Spi::CSelectorProviderHelper;
 using Libcore::ICU::CICUHelper;
-using Libcore::ICU::IICUHelper;
+using Libcore::ICU::IICUHelper;*/
 
 namespace Elastos {
 namespace Core {
@@ -53,7 +53,7 @@ CAR_SINGLETON_IMPL(CSystem, Singleton, ISystem)
 
 ECode CSystem::constructor()
 {
-    AutoPtr<CFileInputStream> input;
+    /*AutoPtr<CFileInputStream> input;
     CFileInputStream::NewByFriend(CFileDescriptor::IN, (CFileInputStream**)&input);
     AutoPtr<CBufferedInputStream> bi;
     CBufferedInputStream::NewByFriend((IInputStream*)input->Probe(EIID_IInputStream), (CBufferedInputStream**)&bi);
@@ -72,7 +72,7 @@ ECode CSystem::constructor()
     //if (errPs)
     {
         mErr = (IPrintStream*)errPs->Probe(EIID_IPrintStream);
-    }
+    }*/
     return NOERROR;
 }
 
@@ -88,7 +88,7 @@ ECode CSystem::GetIn(
 {
     VALIDATE_NOT_NULL(input);
     *input = mIn;
-    INTERFACE_ADDREF(*input);
+    REFCOUNT_ADD(*input);
     return NOERROR;
 }
 
@@ -104,7 +104,7 @@ ECode CSystem::GetOut(
 {
     VALIDATE_NOT_NULL(output);
     *output = mOut;
-    INTERFACE_ADDREF(*output);
+    REFCOUNT_ADD(*output);
     return NOERROR;
 }
 
@@ -120,7 +120,7 @@ ECode CSystem::GetErr(
 {
     VALIDATE_NOT_NULL(err);
     *err = mErr;
-    INTERFACE_ADDREF(*err);
+    REFCOUNT_ADD(*err);
     return NOERROR;
 }
 
@@ -225,7 +225,7 @@ ECode CSystem::GetEnvs(
 {
     VALIDATE_NOT_NULL(map);
 
-    AutoPtr<CHashMap> hashMap;
+   /* AutoPtr<CHashMap> hashMap;
     CHashMap::NewByFriend((CHashMap**)&hashMap);
     char ** p = environ;
     Int32 index = 0;
@@ -246,7 +246,7 @@ ECode CSystem::GetEnvs(
     }
 
     *map = (IMap*)hashMap.Get();
-    INTERFACE_ADDREF(*map);
+    REFCOUNT_ADD(*map);*/
     return NOERROR;
 }
 
@@ -255,11 +255,11 @@ ECode CSystem::InheritedChannel(
 {
     VALIDATE_NOT_NULL(value);
 
-    AutoPtr<CSelectorProviderHelper> helper;
+    /*AutoPtr<CSelectorProviderHelper> helper;
     CSelectorProviderHelper::AcquireSingletonByFriend((CSelectorProviderHelper**)&helper);
     AutoPtr<ISelectorProvider> provider;
     helper->GetProvider((ISelectorProvider**)&provider);
-    provider->InheritedChannel((IChannel**)&value);
+    provider->InheritedChannel((IChannel**)&value);*/
     return NOERROR;
 }
 
@@ -272,7 +272,7 @@ ECode CSystem::GetProperties(
         InitSystemProperties();
     }
     *value = sSystemProperties;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -280,7 +280,7 @@ ECode CSystem::InitSystemProperties()
 {
     // VMRuntime runtime = VMRuntime.getRuntime();
     AutoPtr<IProperties> p;
-    CProperties::New((IProperties**)&p);
+    //CProperties::New((IProperties**)&p);
 
     String projectUrl("http://www.android.com/");
     String projectName("The Android Project");
@@ -341,7 +341,7 @@ ECode CSystem::InitSystemProperties()
         p->SetProperty(String("os.version"), String(info.release), NULL);
     }
 
-    AutoPtr<CICUHelper> icuHelper;
+    /*AutoPtr<CICUHelper> icuHelper;
     CICUHelper::AcquireSingletonByFriend((CICUHelper**)&icuHelper);
     String icuVersion, unicodeVersion;
     icuHelper->GetIcuVersion(&icuVersion);
@@ -356,7 +356,7 @@ ECode CSystem::InitSystemProperties()
     // Override built-in properties with settings from the command line.
     //TODO parsePropertyAssignments(p, runtime.properties());
 
-    CSystem::sSystemProperties = p;
+    CSystem::sSystemProperties = p;*/
     return NOERROR;
 }
 
@@ -382,7 +382,7 @@ ECode CSystem::GetPropertyEx(
 
     AutoPtr<IProperties> properties;
     GetProperties((IProperties**)&properties);
-    properties->GetPropertyEx(prop, defaultValue, value);
+    properties->GetProperty(prop, defaultValue, value);
     if ((*value).IsNull()) {
         *value = defaultValue;
     }

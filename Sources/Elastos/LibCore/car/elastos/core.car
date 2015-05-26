@@ -155,12 +155,15 @@ module
         interface IComparable;
     }
 
-    // class CDouble {
-    //     constructor(
-    //         [in] Double value);
+    class CDouble {
+        constructor(
+            [in] Double value);
 
-    //     interface IDouble;
-    // }
+        interface IDouble;
+        interface INumber;
+        interface ISerializable;
+        interface IComparable;
+    }
 
     // class CArrayOf {
     //     constructor(
@@ -170,14 +173,15 @@ module
     //     interface IArrayOf;
     // }
 
-    // class CRandom {
-    //     constructor();
+    class CRandom {
+        constructor();
 
-    //     constructor(
-    //         [in] Int64 seed);
+        constructor(
+            [in] Int64 seed);
 
-    //     interface IRandom;
-    // }
+        interface IRandom;
+        interface ISerializable;
+    }
 
     // class CObjectContainer {
     //     interface IObjectContainer;
@@ -195,11 +199,11 @@ module
     //     interface ICloseGuardHelper;
     // }
 
-    // singleton class CSystem {
-    //      constructor();
+    singleton class CSystem {
+         constructor();
 
-    //      interface ISystem;
-    // }
+         interface ISystem;
+    }
 
     } // namespace Core
     } // namepsace Elastos

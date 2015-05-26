@@ -1,13 +1,18 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CRandom.h"
 #include "CSystem.h"
-#include <elastos/Math.h>
+#include "Math.h"
 
 using Elastos::Core::CSystem;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL_2(CRandom, Object, IRandom, ISerializable)
+
+CAR_OBJECT_IMPL(CRandom)
 
 const Int64 CRandom::sMultiplier;
 
@@ -26,7 +31,7 @@ ECode CRandom::constructor()
     Int64 tm;
     system->GetCurrentTimeMillis(&tm);
     Int32 hash;
-    system->IdentityHashCode(Probe(EIID_IInterface), &hash);
+    system->IdentityHashCode(this->Probe(EIID_IInterface), &hash);
     return SetSeed(tm + hash);
 }
 
@@ -39,7 +44,7 @@ ECode CRandom::constructor(
 Int32 CRandom::Next(
     /* [in] */ Int32 bits)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     mSeed = (mSeed * sMultiplier + 0xbLL) & ((1LL << 48) - 1);
     return (Int32)(mSeed >> (48 - bits));
@@ -115,7 +120,7 @@ ECode CRandom::NextGaussian(
 {
     VALIDATE_NOT_NULL(value);
 
-    Mutex::Autolock lock(_m_syncLock);
+//    Mutex::Autolock lock(_m_syncLock);
 
     if (mHaveNextNextGaussian) {
         mHaveNextNextGaussian = FALSE;
@@ -155,7 +160,7 @@ ECode CRandom::NextInt32(
  * Returns a pseudo-random uniformly distributed {@code int}
  * in the half-open range [0, n).
  */
-ECode CRandom::NextInt32Ex(
+ECode CRandom::NextInt32(
     /* [in] */ Int32 n,
     /* [out] */ Int32* value)
 {
@@ -195,7 +200,7 @@ ECode CRandom::NextInt64(
 ECode CRandom::SetSeed(
     /* [in] */ Int64 seed)
 {
-    Mutex::Autolock lock(_m_syncLock);
+//    Mutex::Autolock lock(_m_syncLock);
 
     mSeed = (seed ^ sMultiplier) & ((1LL << 48) - 1);
     mHaveNextNextGaussian = FALSE;

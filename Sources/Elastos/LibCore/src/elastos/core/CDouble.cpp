@@ -1,11 +1,18 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CDouble.h"
-#include <Math.h>
-#include <RealToString.h>
+#include "Math.h"
+#include "RealToString.h"
+
+using Elastos::IO::EIID_ISerializable;
+using Elastos::Core::RealToString;
 
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL_4(CDouble, Object, IDouble, INumber, ISerializable, IComparable)
+
+CAR_OBJECT_IMPL(CDouble)
 
 ECode CDouble::constructor(
     /* [in] */ Double value)
@@ -140,7 +147,7 @@ ECode CDouble::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = RealToString::GetInstance()->DoubleToString(mValue);
+    //*result = RealToString::GetInstance()->DoubleToString(mValue);
 
     return NOERROR;
 }

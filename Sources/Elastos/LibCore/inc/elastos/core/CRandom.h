@@ -2,16 +2,25 @@
 #ifndef __CRANDOM_H__
 #define __CRANDOM_H__
 
-#include "_CRandom.h"
+#include "_Elastos_Core_CRandom.h"
+#include "Object.h"
 
+using Elastos::Core::IRandom;
 using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {
 
-CarClass(CRandom) , public ISerializable;
+CarClass(CRandom)
+    , public Object
+    , public IRandom
+    , public ISerializable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CRandom();
 
     CARAPI constructor();
@@ -66,7 +75,7 @@ public:
      * Returns a pseudo-random uniformly distributed {@code int}
      * in the half-open range [0, n).
      */
-    CARAPI NextInt32Ex(
+    CARAPI NextInt32(
         /* [in] */ Int32 n,
         /* [out] */ Int32* value);
 
