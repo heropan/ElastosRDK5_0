@@ -26,7 +26,11 @@ namespace IO {
  */
 class BufferedReader
     : public Reader
+    , public IBufferedReader
 {
+public:
+    CAR_INTERFACE_DECL()
+
 protected:
     BufferedReader();
 
@@ -38,7 +42,7 @@ protected:
      *
      * @param in the {@code Reader} the buffer reads from.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IReader* rin);
 
     /**
@@ -49,7 +53,7 @@ protected:
      * @param size the size of buffer in characters.
      * @throws IllegalArgumentException if {@code size <= 0}.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IReader* rin,
         /* [in] */ Int32 size);
 
@@ -113,7 +117,7 @@ public:
         /* [out] */ Int32* value);
 
     /**
-     * Reads at most {@code length} characters from this reader and stores them
+     * Reads up to {@code length} characters from this reader and stores them
      * at {@code offset} in the character array {@code buffer}. Returns the
      * number of characters actually read or -1 if the end of the source reader
      * has been reached. If all the buffered characters have been used, a mark
@@ -121,25 +125,13 @@ public:
      * this readers buffer size, BufferedReader bypasses the buffer and simply
      * places the results directly into {@code buffer}.
      *
-     * @param buffer
-     *            the character array to store the characters read.
-     * @param offset
-     *            the initial position in {@code buffer} to store the bytes read
-     *            from this reader.
-     * @param length
-     *            the maximum number of characters to read, must be
-     *            non-negative.
-     * @return number of characters read or -1 if the end of the source reader
-     *         has been reached.
      * @throws IndexOutOfBoundsException
-     *             if {@code offset < 0} or {@code length < 0}, or if
-     *             {@code offset + length} is greater than the size of
-     *             {@code buffer}.
+     *     if {@code offset < 0 || length < 0 || offset + length > buffer.length}.
      * @throws IOException
      *             if this reader is closed or some other I/O error occurs.
      */
     //@Override
-    CARAPI ReadCharsEx(
+    CARAPI Read(
         /* [out] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -188,25 +180,21 @@ public:
     CARAPI Reset();
 
     /**
-     * Skips {@code amount} characters in this reader. Subsequent
-     * {@code read()}s will not return these characters unless {@code reset()}
-     * is used. Skipping characters may invalidate a mark if {@code markLimit}
+     * Skips at most {@code charCount} chars in this stream. Subsequent calls to
+     * {@code read} will not return these chars unless {@code reset} is
+     * used.
+     *
+     * <p>Skipping characters may invalidate a mark if {@code markLimit}
      * is surpassed.
      *
-     * @param amount
-     *            the maximum number of characters to skip.
      * @return the number of characters actually skipped.
-     * @throws IllegalArgumentException
-     *             if {@code amount < 0}.
+     * @throws IllegalArgumentException if {@code charCount < 0}.
      * @throws IOException
      *             if this reader is closed or some other I/O error occurs.
-     * @see #mark(int)
-     * @see #markSupported()
-     * @see #reset()
      */
     //@Override
     CARAPI Skip(
-        /* [in] */ Int64 amount,
+        /* [in] */ Int64 charCount,
         /* [out] */ Int64* number);
 
 protected:
@@ -221,7 +209,7 @@ private:
      * Populates the buffer with data. It is an error to call this method when
      * the buffer still contains data; ie. if {@code pos < end}.
      *
-     * @return the number of bytes read into the buffer, or -1 if the end of the
+     * @return the number of chars read into the buffer, or -1 if the end of the
      *      source stream has been reached.
      */
     CARAPI FillBuf(
@@ -236,6 +224,11 @@ private:
     CARAPI_(Boolean) IsClosed();
 
     CARAPI CheckNotClosed();
+
+    CARAPI ReadChar(
+        /* [out] */ Int32* value);
+
+    CARAPI MaybeSwallowLF();
 
 private:
     AutoPtr<IReader> mIn;
@@ -269,6 +262,21 @@ private:
     Int32 mMark;
 
     Int32 mMarkLimit;
+
+    /**
+     * readLine returns a line as soon as it sees '\n' or '\r'. In the latter
+     * case, there might be a following '\n' that should be treated as part of
+     * the same line ending. Both readLine and all read methods are supposed
+     * to skip the '\n' (and clear this field) but only readLine looks for '\r'
+     * and sets it.
+     */
+    Boolean mLastWasCR;
+
+    /**
+     * We also need to keep the 'lastWasCR' state for the mark position, in case
+     * we reset to there.
+     */
+    Boolean mMarkedLastWasCR;
 };
 
 } // namespace IO

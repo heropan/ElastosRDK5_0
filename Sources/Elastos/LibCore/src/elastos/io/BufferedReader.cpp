@@ -8,6 +8,8 @@ using Elastos::Core::StringBuilder;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(BufferedReader, Reader, IBufferedReader)
+
 BufferedReader::BufferedReader()
     : mBuf(NULL)
     , mPos(0)
@@ -21,13 +23,13 @@ BufferedReader::~BufferedReader()
 {
 }
 
-ECode BufferedReader::Init(
+ECode BufferedReader::constructor(
     /* [in] */ IReader* rin)
 {
-    return Init(rin, 8192);
+    return constructor(rin, 8192);
 }
 
-ECode BufferedReader::Init(
+ECode BufferedReader::constructor(
     /* [in] */ IReader* rin,
     /* [in] */ Int32 size)
 {
@@ -69,7 +71,7 @@ ECode BufferedReader::FillBuf(
     if (mMark == -1 || (mPos - mMark >= mMarkLimit)) {
         /* mark isn't set or has exceeded its limit. use the whole buffer */
         Int32 result;
-        FAIL_RETURN(mIn->ReadCharsEx(mBuf, 0, mBuf->GetLength(), &result));
+        FAIL_RETURN(mIn->Read(mBuf, 0, mBuf->GetLength(), &result));
         if (result > 0) {
             mMark = -1;
             mPos = 0;
@@ -99,7 +101,7 @@ ECode BufferedReader::FillBuf(
 
     /* Set the new position and mark position */
     Int32 count;
-    FAIL_RETURN(mIn->ReadCharsEx(mBuf, mPos, mBuf->GetLength() - mPos, &count));
+    FAIL_RETURN(mIn->Read(mBuf, mPos, mBuf->GetLength() - mPos, &count));
     if (count != -1) {
         mEnd += count;
     }
@@ -116,7 +118,7 @@ ECode BufferedReader::Mark(
     /* [in] */ Int32 markLimit)
 {
     if (markLimit < 0) {
-//      throw new IllegalArgumentException();
+//      throw new IllegalArgumentException("markLimit < 0:" + markLimit);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Object::Autolock lock(mLock);
@@ -124,6 +126,7 @@ ECode BufferedReader::Mark(
     FAIL_RETURN(CheckNotClosed());
     mMarkLimit = markLimit;
     mMark = mPos;
+    mMarkedLastWasCR = mLastWasCR;
 
     return NOERROR;
 }
@@ -155,23 +158,28 @@ ECode BufferedReader::Read(
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
-    /* Are there buffered characters available? */
-    if (mPos < mEnd) {
+    ReadChar(value);
+    if(mLastWasCR && '\n' == value) {
+        ReadChar(value);
+    }
+    return NOERROR;
+}
+
+ECode BufferedReader::ReadChar(
+    /* [out] */ Int32* value)
+{
+    Int32 number = 0;
+
+    if (mPos < mEnd || (FillBuf(&number), -1 != number)) {
         *value = (*mBuf)[mPos++];
         return NOERROR;
     }
 
-    Int32 number = 0;
-    FAIL_RETURN(FillBuf(&number));
-    if (number != -1) {
-        *value = (*mBuf)[mPos++];
-        return NOERROR;
-    }
     *value = -1;
     return NOERROR;
 }
 
-ECode BufferedReader::ReadCharsEx(
+ECode BufferedReader::Read(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -189,11 +197,16 @@ ECode BufferedReader::ReadCharsEx(
         //         count);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
+    if (0 == length){
+        *number = 0;
+        return NOERROR;
+    }
+
+    MaybeSwallowLF();
+
     Int32 outstanding = length;
     while (outstanding > 0) {
-        /*
-         * If there are bytes in the buffer, grab those first.
-         */
+        // If there are chars in the buffer, grab those first.
         Int32 available = mEnd - mPos;
         if (available > 0) {
             Int32 count = available >= outstanding ? outstanding : available;
@@ -206,7 +219,7 @@ ECode BufferedReader::ReadCharsEx(
         /*
          * Before attempting to read from the underlying stream, make
          * sure we really, really want to. We won't bother if we're
-         * done, or if we've already got some bytes and reading from the
+         * done, or if we've already got some chars and reading from the
          * underlying stream would block.
          */
         Boolean ready;
@@ -218,13 +231,13 @@ ECode BufferedReader::ReadCharsEx(
 
         /*
          * If we're unmarked and the requested size is greater than our
-         * buffer, read the bytes directly into the caller's buffer. We
+         * buffer, read the chars directly into the caller's buffer. We
          * don't read into smaller buffers because that could result in
          * a many reads.
          */
         if ((mMark == -1 || (mPos - mMark >= mMarkLimit)) && outstanding >= mBuf->GetLength()) {
             Int32 count;
-            FAIL_RETURN(mIn->ReadCharsEx(buffer, offset, outstanding, &count));
+            FAIL_RETURN(mIn->Read(buffer, offset, outstanding, &count));
             if (count > 0) {
                 outstanding -= count;
                 mMark = -1;
@@ -240,7 +253,11 @@ ECode BufferedReader::ReadCharsEx(
     }
 
     Int32 count = length - outstanding;
-    *number = (count > 0 || count == length) ? count : -1;
+    if (count > 0){
+        *number = count;
+        return NOERROR;
+    }
+    *number = -1;
     return NOERROR;
 }
 
@@ -248,99 +265,68 @@ ECode BufferedReader::ChompNewline()
 {
     Int32 number = 0;
     if ((mPos != mEnd || (FillBuf(&number), number != -1)) && (*mBuf)[mPos] == '\n') {
-        mPos++;
+        ++mPos;
     }
     return NOERROR;
+}
+
+ECode BufferedReader::MaybeSwallowLF()
+{
+    if (mLastWasCR) {
+        ChompNewline();
+        mLastWasCR = false;
+    }
 }
 
 ECode BufferedReader::ReadLine(
     /* [out] */ String* contents)
 {
+    VALIDATE_NOT_NULL(contents);
+
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
-    /* has the underlying stream been exhausted? */
-    Int32 number;
-    if (mPos == mEnd && (FillBuf(&number), number == -1)) {
-        *contents = NULL;
-        return NOERROR;
-    }
-    for (Int32 charPos = mPos; charPos < mEnd; charPos++) {
-        Char32 ch = (*mBuf)[charPos];
-        if (ch > '\r') {
-            continue;
-        }
-        if (ch == '\n') {
-            *contents = String(*mBuf, mPos, charPos - mPos);
-            mPos = charPos + 1;
-            return NOERROR;
-        }
-        else if (ch == '\r') {
-            *contents = String(*mBuf, mPos, charPos - mPos);
-            mPos = charPos + 1;
-            if (((mPos < mEnd) || (FillBuf(&number), number != -1))
-                    && ((*mBuf)[mPos] == '\n')) {
-                mPos++;
-            }
+
+    MaybeSwallowLF();
+
+    // Do we have a whole line in the buffer?
+    for (Int32 i = mPos; i < mEnd; ++i) {
+        Char32 ch = (*mBuf)[i];
+        if ('\n' == ch || '\r' == ch) {
+            *contents = String(*mBuf, mPos, i - mPos);
+            mPos = i + 1;
+            mLastWasCR = ('\r' == ch);
             return NOERROR;
         }
     }
 
-    Char32 eol = '\0';
-    StringBuilder result(80);
-    /* Typical Line Length */
+    // Accumulate buffers in a StringBuilder until we've read a whole line.
+    StringBuilder result(mEnd - mPos + 80);
 
     result.AppendCharsEx(*mBuf, mPos, mEnd - mPos);
     while (TRUE) {
         mPos = mEnd;
+        if (FillBuf(&number), -1 == number) {
+            // If there's no more input, return what we've read so far, if anything.
+            *contents = result.GetLength() > 0 ? result.ToString() : String(NULL);
+            return NOERROR;
+        }
 
-        /* Are there buffered characters available? */
-        if (eol == '\n') {
-            *contents = result.ToString();
-            return NOERROR;
-        }
-        // attempt to fill buffer
-        FAIL_RETURN(FillBuf(&number));
-        if (number == -1) {
-            // characters or null.
-            *contents = result.GetLength() > 0 || eol != '\0'
-                    ? result.ToString() : String(NULL);
-            return NOERROR;
-        }
-        for (Int32 charPos = mPos; charPos < mEnd; charPos++) {
-            Char32 c = (*mBuf)[charPos];
-            if (eol == '\0') {
-                if ((c == '\n' || c == '\r')) {
-                    eol = c;
-                }
-            }
-            else if (eol == '\r' && c == '\n') {
-                if (charPos > mPos) {
-                    result.AppendCharsEx(*mBuf, mPos, charPos - mPos - 1);
-                }
-                mPos = charPos + 1;
-                *contents = result.ToString();
-                return NOERROR;
-            }
-            else {
-                if (charPos > mPos) {
-                    result.AppendCharsEx(*mBuf, mPos, charPos - mPos - 1);
-                }
-                mPos = charPos;
+        // Do we have a whole line in the buffer now?
+        for (Int32 i = mPos; i < mEnd; ++i) {
+            Char32 ch = (*mBuf)[i];
+            if ('\n' == ch || '\r' == ch) {
+                result.Append(*mBuf, mPos, i - mPos);
+                mPos = i + 1;
+                mLastWasCR = ('\r' == ch);
                 *contents = result.ToString();
                 return NOERROR;
             }
         }
 
-        if (eol == '\0') {
-            result.AppendCharsEx(*mBuf, mPos, mEnd - mPos);
-        }
-        else {
-            result.AppendCharsEx(*mBuf, mPos, mEnd - mPos - 1);
-        }
+        // Add this whole buffer to the line-in-progress and try again...
+        result.Append(*mBuf, mPos, mEnd - mPos);
     }
-
-    return NOERROR;
 }
 
 ECode BufferedReader::IsReady(
@@ -365,16 +351,17 @@ ECode BufferedReader::Reset()
         return E_IO_EXCEPTION;
     }
     mPos = mMark;
+    mLastWasCR = mMarkedLastWasCR;
     return NOERROR;
 }
 
 ECode BufferedReader::Skip(
-    /* [in] */ Int64 byteCount,
+    /* [in] */ Int64 charCount,
     /* [out] */ Int64* number)
 {
     assert(number != NULL);
 
-    if (byteCount < 0) {
+    if (charCount < 0) {
 //      throw new IllegalArgumentException();
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -382,35 +369,29 @@ ECode BufferedReader::Skip(
 
     FAIL_RETURN(CheckNotClosed());
 
-    if (byteCount < 1) {
-        *number = 0;
-        return NOERROR;
-    }
     if (mEnd - mPos >= byteCount) {
         mPos += byteCount;
         *number = byteCount;
         return NOERROR;
     }
-
     Int64 read = mEnd - mPos;
     mPos = mEnd;
-    while (read < byteCount) {
+    while (read < charCount) {
         Int32 num;
-        FAIL_RETURN(FillBuf(&num));
-        if (num == -1) {
+        if (FillBuf(&num), -1 == num) {
             *number = read;
             return NOERROR;
         }
-        if (mEnd - mPos >= byteCount - read) {
-            mPos += byteCount - read;
-            *number = byteCount;
+        if (mEnd - mPos >= charCount - read) {
+            mPos += charCount - read;
+            *number = charCount;
             return NOERROR;
         }
         // Couldn't get all the characters, skip what we read
         read += (mEnd - mPos);
         mPos = mEnd;
     }
-    *number = byteCount;
+    *number = charCount;
     return NOERROR;
 }
 
