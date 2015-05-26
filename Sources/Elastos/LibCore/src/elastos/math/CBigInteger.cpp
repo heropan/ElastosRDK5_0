@@ -57,6 +57,85 @@ ECode CBigInteger::constructor(
 }
 
 ECode CBigInteger::constructor(
+    /* [in] */ Int32 numBits,
+    /* [in] */ IRandom* random)
+{
+    if (numBits < 0) {
+        //throw new IllegalArgumentException("numBits < 0: " + numBits);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (numBits == 0) {
+        AutoPtr<ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(1);
+        (*temp)[0] = 0;
+        SetJavaRepresentation(0, 1, *temp);
+    } else {
+        Int32 sign = 1;
+        Int32 numberLength = (numBits + 31) >> 5;
+        AutoPtr<ArrayOf<Int32> > digits = ArrayOf<Int32>::Alloc(numberLength);
+        for (Int32 i = 0; i < numberLength; i++) {
+            random->NextInt32(&((*digits)[i]));
+        }
+        // Clear any extra bits.
+        digits[numberLength - 1] >>= (((-numBits) & 31) & 0x1F);
+        SetJavaRepresentation(sign, numberLength, *digits);
+    }
+    mJavaIsValid = TRUE;
+}
+
+ECode CBigInteger::constructor(
+    /* [in] */ Int32 bitLength,
+    /* [in] */ Int32 certainty,
+    /* [in] */ IRandom* random)
+{
+    if (bitLength < 2) {
+        //throw new ArithmeticException("bitLength < 2: " + bitLength);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (bitLength < 16) {
+        // We have to generate short primes ourselves, because OpenSSL bottoms out at 16 bits.
+        Int32 candidate;
+        Int32 temp;
+        do {
+            random->NextInt(&temp);
+            candidate = temp & ((1 << (bitLength & 0x1F)) - 1);
+            candidate |= (1 << ((bitLength - 1) & 0x1F)); // Set top bit.
+            if (bitLength > 2) {
+                candidate |= 1; // Any prime longer than 2 bits must have the bottom bit set.
+            }
+        } while (!IsSmallPrime(candidate));
+        AutoPtr<BigInt> prime = new BigInt();
+        prime->PutULongInt(candidate, FALSE);
+        SetBigInt(prime);
+    } else {
+        // We need a loop here to work around an OpenSSL bug; http://b/8588028.
+        Int32 length;
+        do {
+            AutoPtr<BigInt> prime = new BigInt();
+            BigInt::GeneratePrimeDefault(bitLength, *prime);
+            setBigInt(prime);
+        } while ((BitLength(&length), length) != bitLength);
+    }
+}
+
+Boolean CBigInteger::IsSmallPrime(
+    /* [in] */ Int32 x)
+{
+    if (x == 2) {
+        return TRUE;
+    }
+    if ((x % 2) == 0) {
+        return FALSE;
+    }
+    const Int32 max = (Int32) Elastos::Core::Math::Sqrt(x);
+    for (Int32 i = 3; i <= max; i += 2) {
+        if ((x % i) == 0) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+ECode CBigInteger::constructor(
     /* [in] */ Int32 sign,
     /* [in] */ Int64 value)
 {
@@ -896,11 +975,14 @@ ECode CBigInteger::ModPow(
     }
 
     CBigInteger* ce = (CBigInteger*)exponent;
-    Int32 ceSign;
-    ce->GetSignum(&ceSign);
+    Int32 exponentSignum;
+    ce->GetSignum(&exponentSignum);
+    if (exponentSignum == 0) { // OpenSSL gets this case wrong; http://b/8574367.
+        return ONE->Mod(m, result);
+    }
 
     AutoPtr<IBigInteger> base;
-    if (ceSign < 0) {
+    if (exponentSignum < 0) {
         ModInverse(m, (IBigInteger**)&base);
     }
     else {
@@ -961,6 +1043,16 @@ ECode CBigInteger::NextProbablePrime(
     }
 
     return Primality::NextProbablePrime(this, result);
+}
+
+ECode CBigInteger::ProbablePrime(
+    /* [in] */ Int32 bitLength,
+    /* [in] */ IRandom* random,
+    /* [out] */ IBigInteger** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    return CBigInteger::New(bitLength, 100, random, result);
 }
 
 ECode CBigInteger::TwosComplement(

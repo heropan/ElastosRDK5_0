@@ -10,185 +10,347 @@ namespace Math {
 
 using Elastos::Core::UniquePtr;
 
-struct BN_CTX_Deleter {
-    void operator()(BN_CTX* p) const {
+struct BN_CTX_Deleter
+{
+    void operator()(BN_CTX* p) const
+    {
         BN_CTX_free(p);
     }
 };
+
 typedef UniquePtr<BN_CTX, BN_CTX_Deleter> Unique_BN_CTX;
 
-Int32 NativeBN::ERR_get_error()
+BIGNUM* NativeBN::ToBigNum(
+    /* [in] */ Int64 address)
 {
-    return ::ERR_get_error();
+    return reinterpret_cast<BIGNUM*>(static_cast<uintptr_t>(address));
 }
 
-String NativeBN::ERR_error_string(Int32 e)
+Boolean NativeBN::IsValidHandle(
+    /* [in] */ Int64 handle)
 {
-    char* errStr = ::ERR_error_string(e, NULL);
-    return String(errStr);
-}
-
-Int32 NativeBN::BN_new()
-{
-    return (Int32)::BN_new();
-}
-
-void NativeBN::BN_free(Int32 ah)
-{
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    return ::BN_free(a);
-}
-
-Int32 NativeBN::BN_cmp(Int32 ah, Int32 bh)
-{
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    BIGNUM* b = reinterpret_cast<BIGNUM*>(bh);
-    return ::BN_cmp(a, b);
-}
-
-Boolean NativeBN::BN_copy(Int32 toh, Int32 fromh)
-{
-    BIGNUM* to = reinterpret_cast<BIGNUM*>(toh);
-    BIGNUM* from = reinterpret_cast<BIGNUM*>(fromh);
-    return (NULL != ::BN_copy(to, from));
-}
-
-Boolean NativeBN::PutLongInt(Int32 a, Int64 dw)
-{
-    if (dw >= 0)
-        return PutULongInt(a, dw, FALSE);
-    else
-        return PutULongInt(a, -dw, TRUE);
-}
-
-Boolean NativeBN::PutULongInt(Int32 ah, Int64 dw, Boolean neg)
-{
-    UInt32 hi = dw >> 32; // This shifts without sign extension.
-    Int32 lo = (Int32)dw; // This truncates implicitely.
-
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-
-    // cf. litEndInts2bn:
-    bn_check_top(a);
-    if (bn_wexpand(a, 2) != NULL) {
-        a->d[0] = lo;
-        a->d[1] = hi;
-        a->top = 2;
-        a->neg = neg;
-        bn_correct_top(a);
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
-Int32 NativeBN::BN_dec2bn(Int32 ah, const String& str)
-{
-    if (str.IsNull())
-        return -1;
-
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    return ::BN_dec2bn(&a, str);
-}
-
-Int32 NativeBN::BN_hex2bn(Int32 ah, const String& str)
-{
-    if (str.IsNull())
-        return -1;
-
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    return ::BN_hex2bn(&a, str);
-}
-
-Boolean NativeBN::BN_bin2bn(const ArrayOf<Byte>& bytes, Boolean neg, Int32 reth)
-{
-    Int32 len = bytes.GetLength();
-    if (len == 0) {
+    if (handle == 0) {
+        //jniThrowNullPointerException(env, message);
         return FALSE;
     }
-
-    BIGNUM* ret = reinterpret_cast<BIGNUM*>(reth);
-    Boolean success = (::BN_bin2bn(reinterpret_cast<const unsigned char*>(bytes.GetPayload()), len, ret) != NULL);
-    if (success && neg) {
-        ::BN_set_negative(ret, 1);
-    }
-    return success;
+    return TRUE;
 }
 
-Boolean NativeBN::LitEndInts2bn(const ArrayOf<Int32>& ints, Boolean neg, Int32 reth)
+Boolean NativeBN::OneValidHandle(
+    /* [in] */ Int64 a)
 {
-    Int32 len = ints.GetLength();
-    BIGNUM* ret = reinterpret_cast<BIGNUM*>(reth);
+    return IsValidHandle(a);
+}
+
+Boolean NativeBN::TwoValidHandles(
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 b)
+{
+    if (!OneValidHandle(a)) return FALSE;
+    return IsValidHandle(b);
+}
+
+Boolean NativeBN::ThreeValidHandles(
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 b,
+    /* [in] */ Int64 c)
+{
+    if (!TwoValidHandles(a, b)) return FALSE;
+    return IsValidHandle(c);
+}
+
+Boolean NativeBN::FourValidHandles(
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 b,
+    /* [in] */ Int64 c,
+    /* [in] */ Int64 d)
+{
+    if (!ThreeValidHandles(a, b, c)) return FALSE;
+    return IsValidHandle(d);
+}
+
+Int64 NativeBN::BN_new()
+{
+    return static_cast<Int64>(reinterpret_cast<uintptr_t>(::BN_new()));
+}
+
+void NativeBN::BN_free(
+    /* [in] */ Int64 a)
+{
+    if (!OneValidHandle(a)) return;
+    ::BN_free(ToBigNum(a));
+}
+
+Int32 NativeBN::BN_cmp(
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 b)
+{
+    if (!TwoValidHandles(a, b)) return 1;
+    return ::BN_cmp(ToBigNum(a), ToBigNum(b));
+}
+
+void NativeBN::BN_copy(
+    /* [in] */ Int64 to,
+    /* [in] */ Int64 from)
+{
+    if (!TwoValidHandles(to, from)) return;
+    ::BN_copy(ToBigNum(to), ToBigNum(from));
+}
+
+void NativeBN::PutULongInt(
+    /* [in] */ Int64 a0,
+    /* [in] */ Int64 java_dw,
+    /* [in] */ Boolean neg)
+{
+    if (!OneValidHandle(a0)) return;
+
+    uint64_t dw = java_dw;
+
+    // cf. litEndInts2bn:
+    BIGNUM* a = ToBigNum(a0);
+    bn_check_top(a);
+    if (bn_wexpand(a, 8/BN_BYTES) != NULL) {
+#ifdef __LP64__
+        a->d[0] = dw;
+#else
+        unsigned int hi = dw >> 32; // This shifts without sign extension.
+        int lo = (int)dw; // This truncates implicitly.
+        a->d[0] = lo;
+        a->d[1] = hi;
+#endif
+        a->top = 8 / BN_BYTES;
+        a->neg = neg;
+        bn_correct_top(a);
+    }
+    else {
+        //throwExceptionIfNecessary(env);
+    }
+}
+
+void NativeBN::PutLongInt(
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 dw)
+{
+    if (dw >= 0) {
+        PutULongInt(a, dw, FALSE);
+    } else {
+        PutULongInt(a, -dw, TRUE);
+    }
+}
+
+Int32 NativeBN::BN_dec2bn(
+    /* [in] */ Int64 a0,
+    /* [in] */ const String& str)
+{
+    if (!OneValidHandle(a0)) return -1;
+    if (str.IsNull()) return -1;
+
+    BIGNUM* a = ToBigNum(a0);
+    return ::BN_dec2bn(&a, str);
+    //throwExceptionIfNecessary(env);
+}
+
+Int32 NativeBN::BN_hex2bn(
+    /* [in] */ Int64 a0,
+    /* [in] */ const String& str)
+{
+    if (!OneValidHandle(a0)) return -1;
+    if (str.IsNull()) return -1;
+
+    BIGNUM* a = ToBigNum(a0);
+    return ::BN_hex2bn(&a, str);
+    //throwExceptionIfNecessary(env);
+}
+
+void NativeBN::BN_bin2bn(
+    /* [in] */ const ArrayOf<Byte>& arr,
+    /* [in] */ Int32 len,
+    /* [in] */ Boolean neg,
+    /* [in] */ Int64 ret)
+{
+    if (!OneValidHandle(env, ret)) return;
+    if (arr.GetLength() == 0) return;
+
+    Boolean success = (::BN_bin2bn(reinterpret_cast<const unsigned char*>(bytes.GetPayload()), len, ToBigNum(ret)) != NULL);
+    if (success && neg) {
+        ::BN_set_negative(ToBigNum(ret), 1);
+    }
+}
+
+/**
+ * Note:
+ * This procedure directly writes the internal representation of BIGNUMs.
+ * We do so as there is no direct interface based on Little Endian Integer Arrays.
+ * Also note that the same representation is used in the Cordoba Java Implementation of BigIntegers,
+ *        whereof certain functionality is still being used.
+ */
+void NativeBN::LitEndInts2bn(
+    /* [in] */ const ArrayOf<Int32>& arr,
+    /* [in] */ Int32 len,
+    /* [in] */ Boolean neg,
+    /* [in] */ Int64 ret0)
+{
+    if (!OneValidHandle(ret0)) return;
+    BIGNUM* ret = ToBigNum(ret0);
     bn_check_top(ret);
     if (len > 0) {
-        //STATIC_ASSERT(sizeof(BN_ULONG) == sizeof(jint), BN_ULONG_not_32_bit);
-        const BN_ULONG* tmpInts = reinterpret_cast<const BN_ULONG*>(ints.GetPayload());
-        if ((tmpInts != NULL) && (bn_wexpand(ret, len) != NULL)) {
-            Int32 i = len; do { i--; ret->d[i] = tmpInts[i]; } while (i > 0);
-            ret->top = len;
+        if (arr.GetLength() == 0) return;
+    #ifdef __LP64__
+        const int wlen = (len + 1) / 2;
+    #else
+        const int wlen = len;
+    #endif
+        const unsigned int* tmpInts = reinterpret_cast<const unsigned int*>(arr.GetPayload());
+        if ((tmpInts != NULL) && (bn_wexpand(ret, wlen) != NULL)) {
+        #ifdef __LP64__
+            if (len % 2) {
+                ret->d[wlen - 1] = tmpInts[--len];
+            }
+            if (len > 0) {
+                for (int i = len - 2; i >= 0; i -= 2) {
+                    ret->d[i/2] = ((unsigned long long)tmpInts[i+1] << 32) | tmpInts[i];
+                }
+            }
+        #else
+            int i = len; do { i--; ret->d[i] = tmpInts[i]; } while (i > 0);
+        #endif
+            ret->top = wlen;
             ret->neg = neg;
             // need to call this due to clear byte at top if avoiding
             // having the top bit set (-ve number)
             // Basically get rid of top zero ints:
             bn_correct_top(ret);
-            return TRUE;
         }
         else {
-            return FALSE;
+            //throwExceptionIfNecessary(env);
         }
     }
     else { // (len = 0) means value = 0 and sign will be 0, too.
-        ret->top = 0;
-        return TRUE;
+       ret->top = 0;
     }
 }
 
-Boolean NativeBN::TwosComp2bn(const ArrayOf<Byte>& bytes, Int32 reth)
-{
-    Int32 bytesLen = bytes.GetLength();
-    BIGNUM* ret = reinterpret_cast<BIGNUM*>(reth);
-    if (bytesLen == 0) {
-        return FALSE;
-    }
+#ifdef __LP64__
+#define BYTES2ULONG(bytes, k) \
+    ((bytes[k + 7] & 0xffULL)       | (bytes[k + 6] & 0xffULL) <<  8 | (bytes[k + 5] & 0xffULL) << 16 | (bytes[k + 4] & 0xffULL) << 24 | \
+     (bytes[k + 3] & 0xffULL) << 32 | (bytes[k + 2] & 0xffULL) << 40 | (bytes[k + 1] & 0xffULL) << 48 | (bytes[k + 0] & 0xffULL) << 56)
+#else
+#define BYTES2ULONG(bytes, k) \
+    ((bytes[k + 3] & 0xff) | (bytes[k + 2] & 0xff) << 8 | (bytes[k + 1] & 0xff) << 16 | (bytes[k + 0] & 0xff) << 24)
+#endif
 
-    Boolean success;
-    const unsigned char* s = reinterpret_cast<const unsigned char*>(bytes.GetPayload());
+void NativeBN::NegBigEndianBytes2bn(
+    /* [in] */ const unsigned char* bytes,
+    /* [in] */ Int32 bytesLen,
+    /* [in] */ Int64 ret0)
+{
+    BIGNUM* ret = ToBigNum(ret0);
+
+    bn_check_top(ret);
+    // FIXME: assert bytesLen > 0
+    int wLen = (bytesLen + BN_BYTES - 1) / BN_BYTES;
+    int firstNonzeroDigit = -2;
+    if (bn_wexpand(ret, wLen) != NULL) {
+        BN_ULONG* d = ret->d;
+        BN_ULONG di;
+        ret->top = wLen;
+        int highBytes = bytesLen % BN_BYTES;
+        int k = bytesLen;
+        // Put bytes to the int array starting from the end of the byte array
+        int i = 0;
+        while (k > highBytes) {
+            k -= BN_BYTES;
+            di = BYTES2ULONG(bytes, k);
+            if (di != 0) {
+                d[i] = -di;
+                firstNonzeroDigit = i;
+                i++;
+                while (k > highBytes) {
+                    k -= BN_BYTES;
+                    d[i] = ~BYTES2ULONG(bytes, k);
+                    i++;
+                }
+                break;
+            }
+            else {
+                d[i] = 0;
+                i++;
+            }
+        }
+        if (highBytes != 0) {
+            di = -1;
+            // Put the first bytes in the highest element of the int array
+            if (firstNonzeroDigit != -2) {
+                for (k = 0; k < highBytes; k++) {
+                    di = (di << 8) | (bytes[k] & 0xFF);
+                }
+                d[i] = ~di;
+            }
+            else {
+                for (k = 0; k < highBytes; k++) {
+                    di = (di << 8) | (bytes[k] & 0xFF);
+                }
+                d[i] = -di;
+            }
+        }
+        // The top may have superfluous zeros, so fix it.
+        bn_correct_top(ret);
+    }
+}
+
+void NativeBN::TwosComp2bn(
+    /* [in] */ const ArrayOf<Byte>& arr,
+    /* [in] */ Int32 bytesLen,
+    /* [in] */ Int64 ret0)
+{
+    if (!OneValidHandle(env, ret0)) return;
+    BIGNUM* ret = ToBigNum(ret0);
+
+    if (bytesLen == 0) return FALSE;
+
+    const unsigned char* s = reinterpret_cast<const unsigned char*>(arr.GetPayload());
     if ((bytes[0] & 0X80) == 0) { // Positive value!
         //
         // We can use the existing BN implementation for unsigned big endian bytes:
         //
-        success = (::BN_bin2bn(s, bytesLen, ret) != NULL);
+        ::BN_bin2bn(s, bytesLen, ret);
         ::BN_set_negative(ret, FALSE);
     }
     else { // Negative value!
         //
         // We need to apply two's complement:
         //
-        success = negBigEndianBytes2bn(s, bytesLen, reth);
+        NegBigEndianBytes2bn(s, bytesLen, ret0);
         ::BN_set_negative(ret, TRUE);
     }
-    return success;
+    //throwExceptionIfNecessary(env);
 }
 
-Int64 NativeBN::LongInt(Int32 ah)
+Int64 NativeBN::LongInt(
+    /* [in] */ Int64 a0)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
+    if (!OneValidHandle(a0)) return -1;
+
+    BIGNUM* a = ToBigNum(a0);
     bn_check_top(a);
-    Int32 intLen = a->top;
-    BN_ULONG* d = a->d;
-    switch (intLen) {
-    case 0:
+    int wLen = a->top;
+    if (wLen == 0) {
         return 0;
-    case 1:
-        if (!a->neg) return d[0] & 0X00000000FFFFFFFFLL;
-        else return -(d[0] & 0X00000000FFFFFFFFLL);
-    default:
-        if (!a->neg) return ((long long)d[1] << 32) | (d[0] & 0XFFFFFFFFLL);
-        else return -(((long long)d[1] << 32) | (d[0] & 0XFFFFFFFFLL));
     }
+
+#ifdef __LP64__
+    Int64 result = a->d[0];
+#else
+    Int64 result = static_cast<Int64>(a->d[0]) & 0xffffffff;
+    if (wLen > 1) {
+        result |= static_cast<Int64>(a->d[1]) << 32;
+    }
+#endif
+    return a->neg ? -result : result;
 }
 
-char* NativeBN::leadingZerosTrimmed(char* s)
+char* NativeBN::LeadingZerosTrimmed(
+    /* [in] */ char* s)
 {
     char* p = s;
     if (*p == '-') {
@@ -202,14 +364,15 @@ char* NativeBN::leadingZerosTrimmed(char* s)
     return p;
 }
 
-String NativeBN::BN_bn2dec(Int32 ah)
+String NativeBN::BN_bn2dec(
+    /* [in] */ Int64 a)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
+    if (!OneValidHandle(a)) return String();
     char* tmpStr;
     char* retStr;
-    tmpStr = ::BN_bn2dec(a);
+    tmpStr = ::BN_bn2dec(ToBigNum(a));
     if (tmpStr != NULL) {
-        retStr = leadingZerosTrimmed(tmpStr);
+        retStr = LeadingZerosTrimmed(tmpStr);
         String returnJString(retStr);
         OPENSSL_free(tmpStr);
         return returnJString;
@@ -218,14 +381,15 @@ String NativeBN::BN_bn2dec(Int32 ah)
     return String();
 }
 
-String NativeBN::BN_bn2h(Int32 ah)
+String NativeBN::BN_bn2hex(
+    /* [in] */ Int64 a)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
+    if (!OneValidHandle(a)) return String();
     char* tmpStr;
     char* retStr;
-    tmpStr = ::BN_bn2h(a);
+    tmpStr = ::BN_bn2hex(ToBigNum(a));
     if (tmpStr != NULL) {
-        retStr = leadingZerosTrimmed(tmpStr);
+        retStr = LeadingZerosTrimmed(tmpStr);
         String returnJString(retStr);
         OPENSSL_free(tmpStr);
         return returnJString;
@@ -234,9 +398,12 @@ String NativeBN::BN_bn2h(Int32 ah)
     return String();
 }
 
-AutoPtr<ArrayOf<Byte> > NativeBN::BN_bn2bin(Int32 ah)
+AutoPtr<ArrayOf<Byte> > NativeBN::BN_bn2bin(
+    /* [in] */ Int64 a0)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
+    if (!OneValidHandle(a0)) return NULL;
+    BIGNUM* a = toBigNum(a0);
+
     AutoPtr<ArrayOf<Byte> > result = NULL;
     Int32 size = BN_num_bytes(a);
     if (size <= 0) {
@@ -248,278 +415,244 @@ AutoPtr<ArrayOf<Byte> > NativeBN::BN_bn2bin(Int32 ah)
     return result;
 }
 
-AutoPtr<ArrayOf<Int32> > NativeBN::Bn2litEndInts(Int32 ah)
+AutoPtr<ArrayOf<Int32> > NativeBN::Bn2litEndInts(
+    /* [in] */ Int64 a0)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    AutoPtr<ArrayOf<Int32> > result = NULL;
-
-    bn_check_top(a);
-    Int32 len = a->top;
-    if (len == 0) {
-        return result;
-    }
-
-    result = ArrayOf<Int32>::Alloc(len);
-    BN_ULONG* ulongs = reinterpret_cast<BN_ULONG*>(result->GetPayload());
-    if (ulongs == NULL) {
-        return result;
-    }
-
-    Int32 i = len; do { i--; ulongs[i] = a->d[i]; } while (i > 0);
-    return result;
+  if (!OneValidHandle(env, a0)) return NULL;
+  BIGNUM* a = ToBigNum(a0);
+  bn_check_top(a);
+  int wLen = a->top;
+  if (wLen == 0) {
+    return NULL;
+  }
+  AutoPtr<ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(wLen * BN_BYTES/sizeof(unsigned int));
+  if (result == NULL) {
+    return NULL;
+  }
+  unsigned int* uints = reinterpret_cast<unsigned int*>(result->GetPayload());
+  if (uints == NULL) {
+    return NULL;
+  }
+#ifdef __LP64__
+  int i = wLen; do { i--; uints[i*2+1] = a->d[i] >> 32; uints[i*2] = a->d[i]; } while (i > 0);
+#else
+  int i = wLen; do { i--; uints[i] = a->d[i]; } while (i > 0);
+#endif
+  return result;
 }
 
-// Returns -1, 0, 1 AND NOT Boolean.
-// #define NativeBN::BN_is_negative(a) ((a)->neg != 0)
-Int32 NativeBN::Sign(Int32 ah)
+Int32 NativeBN::Sign(
+    /* [in] */ Int64 a)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    if (BN_is_zero(a)) return 0;
-    else if (BN_is_negative(a)) return -1;
-    else return 1;
+  if (!OneValidHandle(a)) return -2;
+  if (BN_is_zero(ToBigNum(a))) {
+      return 0;
+  }
+  else if (BN_is_negative(ToBigNum(a))) {
+    return -1;
+  }
+  return 1;
 }
 
-void NativeBN::BN_set_negative(Int32 ah, Int32 n)
+void NativeBN::BN_set_negative(
+    /* [in] */ Int64 b,
+    /* [in] */ Int32 n)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    ::BN_set_negative(a, n);
+    if (!OneValidHandle(b)) return;
+    ::BN_set_negative(ToBigNum(b), n);
 }
 
-Int32 NativeBN::BitLength(Int32 ah)
+Int32 NativeBN::BitLength(
+    /* [in] */ Int64 a0)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    bn_check_top(a);
-    Int32 intLen = a->top;
-    if (intLen == 0) return 0;
-    BN_ULONG* d = a->d;
-    Int32 i = intLen - 1;
-    BN_ULONG msd = d[i]; // most significant digit
-    if (a->neg) {
-        // Handle negative values correctly:
-        // i.e. decrement the msd if all other digits are 0:
-        // while ((i > 0) && (d[i] != 0)) { i--; }
-        do { i--; } while (!((i < 0) || (d[i] != 0)));
-        if (i < 0) msd--; // Only if all lower significant digits are 0 we decrement the most significant one.
-    }
-    return (intLen - 1) * 32 + ::BN_num_bits_word(msd);
+  if (!OneValidHandle(a0)) return 0; //FALSE;
+  BIGNUM* a = ToBigNum(a0);
+  bn_check_top(a);
+  int wLen = a->top;
+  if (wLen == 0) return 0;
+  BN_ULONG* d = a->d;
+  int i = wLen - 1;
+  BN_ULONG msd = d[i]; // most significant digit
+  if (a->neg) {
+    // Handle negative values correctly:
+    // i.e. decrement the msd if all other digits are 0:
+    // while ((i > 0) && (d[i] != 0)) { i--; }
+    do { i--; } while (!((i < 0) || (d[i] != 0)));
+    if (i < 0) msd--; // Only if all lower significant digits are 0 we decrement the most significant one.
+  }
+  return (wLen - 1) * BN_BYTES * 8 + ::BN_num_bits_word(msd);
 }
 
-Boolean NativeBN::BN_is_bit_set(Int32 ah, Int32 n)
+Boolean NativeBN::BN_is_bit_set(
+    /* [in] */ Int64 a,
+    /* [in] */ Int32 n)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    return ::BN_is_bit_set(a, n);
+    if (!OneValidHandle(a)) return FALSE;
+    return ::BN_is_bit_set(ToBigNum(a), n);
 }
 
-// Returns Boolean success.
-// op: 0 = reset;1 = set; -1 = flip
-// uses NativeBN::BN_set_bit(), NativeBN::BN_clear_bit() and NativeBN::BN_is_bit_set()
-Boolean NativeBN::ModifyBit(Int32 ah, Int32 n, Int32 op)
+void NativeBN::BN_shift(
+    /* [in] */ Int64 r,
+    /* [in] */ Int64 a,
+    /* [in] */ Int32 n)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    switch (op) {
-    case 1: return ::BN_set_bit(a, n);
-    case 0: return ::BN_clear_bit(a, n);
-    case -1:
-        if (::BN_is_bit_set(a, n)) return ::BN_clear_bit(a, n);
-        else return ::BN_set_bit(a, n);
-    }
-    return FALSE;
+  if (!TwoValidHandles(r, a)) return;
+  if (n >= 0) {
+    ::BN_lshift(ToBigNum(r), ToBigNum(a), n);
+  } else {
+    ::BN_rshift(ToBigNum(r), ToBigNum(a), -n);
+  }
+  //throwExceptionIfNecessary(env);
 }
 
-Boolean NativeBN::BN_shift(Int32 rh, Int32 ah, Int32 n)
+void NativeBN::BN_add_word(
+    /* [in] */ Int64 a,
+    /* [in] */ Int32 w)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    BIGNUM* r = reinterpret_cast<BIGNUM*>(rh);
-    return (n >= 0) ? ::BN_lshift(r, a, n) : ::BN_rshift(r, a, -n);
+    if (!OneValidHandle(a)) return;
+    ::BN_add_word(ToBigNum(a), w);
+    //throwExceptionIfNecessary(env);
 }
 
-Boolean NativeBN::BN_add_word(Int32 ah, Int32 w)
+void NativeBN::BN_mul_word(
+    /* [in] */ Int64 a,
+    /* [in] */ Int32 w)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    return ::BN_add_word(a, w);
+    if (!OneValidHandle(a)) return;
+    ::BN_mul_word(ToBigNum(a), w);
+    //throwExceptionIfNecessary(env);
 }
 
-Boolean NativeBN::BN_sub_word(Int32 ah, Int32 w)
+Int32 NativeBN::BN_mod_word(
+    /* [in] */ Int64 a,
+    /* [in] */ Int32 w)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    return ::BN_sub_word(a, w);
+    if (!OneValidHandle(a)) return 0;
+    return BN_mod_word(ToBigNum(a), w);
+    //throwExceptionIfNecessary(env);
 }
 
-Boolean  NativeBN::BN_mul_word(Int32 ah, Int32 w)
+void NativeBN::BN_add(
+    /* [in] */ Int64 r,
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 b)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    return ::BN_mul_word(a, w);
+    if (!ThreeValidHandles(r, a, b)) return;
+    ::BN_add(ToBigNum(r), ToBigNum(a), ToBigNum(b));
+    //throwExceptionIfNecessary(env);
 }
 
-Int32 NativeBN::BN_div_word(Int32 ah, Int32 w)
+void NativeBN::BN_sub(
+    /* [in] */ Int64 r,
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 b)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    return ::BN_div_word(a, w);
+    if (!ThreeValidHandles(r, a, b)) return;
+    ::BN_sub(ToBigNum(r), ToBigNum(a), ToBigNum(b));
+    //throwExceptionIfNecessary(env);
 }
 
-Int32 NativeBN::BN_mod_word(Int32 ah, Int32 w)
+void NativeBN::BN_gcd(
+    /* [in] */ Int64 r,
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 b)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    return ::BN_mod_word(a, w);
-}
-
-Boolean NativeBN::BN_add(Int32 rh, Int32 ah, Int32 bh)
-{
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    BIGNUM* b = reinterpret_cast<BIGNUM*>(bh);
-    BIGNUM* r = reinterpret_cast<BIGNUM*>(rh);
-    return ::BN_add(r, a, b);
-}
-
-Boolean NativeBN::BN_sub(Int32 rh, Int32 ah, Int32 bh)
-{
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    BIGNUM* b = reinterpret_cast<BIGNUM*>(bh);
-    BIGNUM* r = reinterpret_cast<BIGNUM*>(rh);
-    return ::BN_sub(r, a, b);
-}
-
-Boolean NativeBN::BN_gcd(Int32 rh, Int32 ah, Int32 bh)
-{
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    BIGNUM* b = reinterpret_cast<BIGNUM*>(bh);
-    BIGNUM* r = reinterpret_cast<BIGNUM*>(rh);
+    if (!ThreeValidHandles(r, a, b)) return;
     Unique_BN_CTX ctx(BN_CTX_new());
-    return ::BN_gcd(r, a, b, ctx.get());
+    ::BN_gcd(ToBigNum(r), ToBigNum(a), ToBigNum(b), ctx.get());
+    //throwExceptionIfNecessary(env);
 }
 
-Boolean NativeBN::BN_mul(Int32 rh, Int32 ah, Int32 bh)
+void NativeBN::BN_mul(
+    /* [in] */ Int64 r,
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 b)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    BIGNUM* b = reinterpret_cast<BIGNUM*>(bh);
-    BIGNUM* r = reinterpret_cast<BIGNUM*>(rh);
+    if (!ThreeValidHandles(r, a, b)) return;
     Unique_BN_CTX ctx(BN_CTX_new());
-    return ::BN_mul(r, a, b, ctx.get());
+    ::BN_mul(ToBigNum(r), ToBigNum(a), ToBigNum(b), ctx.get());
+    //throwExceptionIfNecessary(env);
 }
 
-Boolean NativeBN::BN_exp(Int32 rh, Int32 ah, Int32 ph)
+void NativeBN::BN_exp(
+    /* [in] */ Int64 r,
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 p)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    BIGNUM* p = reinterpret_cast<BIGNUM*>(ph);
-    BIGNUM* r = reinterpret_cast<BIGNUM*>(rh);
+    if (!ThreeValidHandles(r, a, p)) return;
     Unique_BN_CTX ctx(BN_CTX_new());
-    return ::BN_exp(r, a, p, ctx.get());
+    ::BN_exp(ToBigNum(r), ToBigNum(a), ToBigNum(p), ctx.get());
+    //throwExceptionIfNecessary(env);
 }
 
-Boolean NativeBN::BN_div(Int32 dvh, Int32 remh, Int32 mh, Int32 dh)
+void NativeBN::BN_div(
+    /* [in] */ Int64 dv,
+    /* [in] */ Int64 rem,
+    /* [in] */ Int64 m,
+    /* [in] */ Int64 d)
 {
-    BIGNUM* dv = reinterpret_cast<BIGNUM*>(dvh);
-    BIGNUM* rem = reinterpret_cast<BIGNUM*>(remh);
-    BIGNUM* m = reinterpret_cast<BIGNUM*>(mh);
-    BIGNUM* d = reinterpret_cast<BIGNUM*>(dh);
+    if (!FourValidHandles((rem ? rem : dv), (dv ? dv : rem), m, d)) return;
     Unique_BN_CTX ctx(BN_CTX_new());
-    return ::BN_div(dv, rem, m, d, ctx.get());
+    ::BN_div(ToBigNum(dv), ToBigNum(rem), ToBigNum(m), ToBigNum(d), ctx.get());
+    //throwExceptionIfNecessary(env);
 }
 
-Boolean NativeBN::BN_nnmod(Int32 rh, Int32 ah, Int32 mh)
+void NativeBN::BN_nnmod(
+    /* [in] */ Int64 r,
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 m)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    BIGNUM* m = reinterpret_cast<BIGNUM*>(mh);
-    BIGNUM* r = reinterpret_cast<BIGNUM*>(rh);
+    if (!ThreeValidHandles(env, r, a, m)) return;
     Unique_BN_CTX ctx(BN_CTX_new());
-    return ::BN_nnmod(r, a, m, ctx.get());
+    ::BN_nnmod(ToBigNum(r), ToBigNum(a), ToBigNum(m), ctx.get());
+    //throwExceptionIfNecessary(env);
 }
 
-Boolean NativeBN::BN_mod_exp(Int32 rh, Int32 ah, Int32 ph, Int32 mh)
+void NativeBN::BN_mod_exp(
+    /* [in] */ Int64 r,
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 p,
+    /* [in] */ Int64 m)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    BIGNUM* m = reinterpret_cast<BIGNUM*>(mh);
-    BIGNUM* p = reinterpret_cast<BIGNUM*>(ph);
-    BIGNUM* r = reinterpret_cast<BIGNUM*>(rh);
+    if (!FourValidHandles(r, a, p, m)) return;
     Unique_BN_CTX ctx(BN_CTX_new());
-    return ::BN_mod_exp(r, a, p, m, ctx.get());
+    ::BN_mod_exp(ToBigNum(r), ToBigNum(a), ToBigNum(p), ToBigNum(m), ctx.get());
+    //throwExceptionIfNecessary(env);
 }
 
-Boolean NativeBN::BN_mod_inverse(Int32 reth, Int32 ah, Int32 nh)
+void NativeBN::BN_mod_inverse(
+    /* [in] */ Int64 ret,
+    /* [in] */ Int64 a,
+    /* [in] */ Int64 n)
 {
-    BIGNUM* a = reinterpret_cast<BIGNUM*>(ah);
-    BIGNUM* n = reinterpret_cast<BIGNUM*>(nh);
-    BIGNUM* ret = reinterpret_cast<BIGNUM*>(reth);
+    if (!ThreeValidHandles(ret, a, n)) return;
     Unique_BN_CTX ctx(BN_CTX_new());
-    return (::BN_mod_inverse(ret, a, n, ctx.get()) != NULL);
+    ::BN_mod_inverse(ToBigNum(ret), ToBigNum(a), ToBigNum(n), ctx.get());
+    //throwExceptionIfNecessary(env);
 }
 
-Boolean NativeBN::BN_generate_prime_(
-            Int32 reth, Int32 bits, Boolean safe,
-            Int32 addh, Int32 remh, Int32 cb)
+void NativeBN::BN_generate_prime_ex(
+    /* [in] */ Int64 ret,
+    /* [in] */ Int32 bits,
+    /* [in] */ Boolean safe,
+    /* [in] */ Int64 add,
+    /* [in] */ Int64 rem,
+    /* [in] */ Int64 cb)
 {
-    BIGNUM* ret = reinterpret_cast<BIGNUM*>(reth);
-    BIGNUM* add = reinterpret_cast<BIGNUM*>(addh);
-    BIGNUM* rem = reinterpret_cast<BIGNUM*>(remh);
-    return ::BN_generate_prime_(ret, bits, safe, add, rem, reinterpret_cast<BN_GENCB*>(cb));
+  if (!OneValidHandle(ret)) return;
+  ::BN_generate_prime_ex(ToBigNum(ret), bits, safe, ToBigNum(add), ToBigNum(rem),
+                       reinterpret_cast<BN_GENCB*>(cb));
+  //throwExceptionIfNecessary(env);
 }
 
-Boolean NativeBN::BN_is_prime_(Int32 ph, Int32 nchecks, Int32 cb)
+Boolean NativeBN::BN_is_prime_ex(
+    /* [in] */ Int64 p,
+    /* [in] */ Int32 nchecks,
+    /* [in] */ Int64 cb)
 {
-    BIGNUM* p = reinterpret_cast<BIGNUM*>(ph);
-    Unique_BN_CTX ctx(BN_CTX_new());
-    return ::BN_is_prime_(p, nchecks, ctx.get(), reinterpret_cast<BN_GENCB*>(cb));
-}
-
-#define BYTES2INT(bytes, k) \
- (  (bytes[k + 3] & 0xFF) \
-  | (bytes[k + 2] & 0xFF) << 8 \
-  | (bytes[k + 1] & 0xFF) << 16 \
-  | (bytes[k + 0] & 0xFF) << 24 )
-
-Boolean NativeBN::negBigEndianBytes2bn(const unsigned char* bytes, Int32 bytesLen, Int32 reth)
-{
-    BIGNUM* ret = reinterpret_cast<BIGNUM*>(reth);
-    // We rely on: (BN_BITS2 == 32), i.e. BN_ULONG is unsigned Int32 and has 4 bytes:
-    bn_check_top(ret);
-    // FIXME: assert bytesLen > 0
-    Int32 intLen = (bytesLen + 3) / 4;
-    Int32 firstNonzeroDigit = -2;
-    if (bn_wexpand(ret, intLen) != NULL) {
-        BN_ULONG* d = ret->d;
-        BN_ULONG di;
-        ret->top = intLen;
-        Int32 highBytes = bytesLen % 4;
-        Int32 k = bytesLen;
-        // Put bytes to the int array starting from the end of the byte array
-        Int32 i = 0;
-        while (k > highBytes) {
-            k -= 4;
-            di = BYTES2INT(bytes, k);
-            if (di != 0) {
-                d[i] = -di;
-                firstNonzeroDigit = i;
-                i++;
-                while (k > highBytes) {
-                    k -= 4;
-                    d[i] = ~BYTES2INT(bytes, k);
-                    i++;
-                }
-                break;
-            } else {
-                d[i] = 0;
-                i++;
-            }
-        }
-        if (highBytes != 0) {
-            di = -1;
-            // Put the first bytes in the highest element of the int array
-            if (firstNonzeroDigit != -2) {
-                for (k = 0; k < highBytes; k++) {
-                    di = (di << 8) | (bytes[k] & 0xFF);
-                }
-                d[i] = ~di;
-            } else {
-                for (k = 0; k < highBytes; k++) {
-                    di = (di << 8) | (bytes[k] & 0xFF);
-                }
-                d[i] = -di;
-            }
-        }
-        return TRUE;
-    }
-    else
-        return FALSE;
+  if (!OneValidHandle(p)) return FALSE;
+  Unique_BN_CTX ctx(BN_CTX_new());
+  return ::BN_is_prime_ex(ToBigNum(p), nchecks, ctx.get(), reinterpret_cast<BN_GENCB*>(cb));
 }
 
 } // namespace Math

@@ -108,70 +108,68 @@ ECode Multiplication::PowerOf10(
         // To calculate:    10^exp
         return CBigInteger::TEN->Pow(intExp, result);
     }
-    else if (exp <= 1000) {
-        AutoPtr<IBigInteger> temp;
-        // To calculate:    5^exp * 2^exp
-        FAIL_RETURN((*BigFivePows)[1]->Pow(intExp, (IBigInteger**)&temp));
-        return temp->ShiftLeft(intExp, result);
-    }
 
     using Elastos::Core::Math;
 
+    AutoPtr<IBigInteger> res = NULL;
+    //try {
     // "LARGE POWERS"
-    /*
-     * To check if there is free memory to allocate a BigInteger of the
-     * estimated size, measured in bytes: 1 + [exp / log10(2)]
-     */
-    //Int64 byteArraySize = 1 + (Int64)(exp / 2.4082399653118496);
-
     if (exp <= Math::INT32_MAX_VALUE) {
-        AutoPtr<IBigInteger> temp;
         // To calculate:    5^exp * 2^exp
+        AutoPtr<IBigInteger> temp;
         FAIL_RETURN((*BigFivePows)[1]->Pow(intExp, (IBigInteger**)&temp));
-        return temp->ShiftLeft(intExp, result);
+        FAIL_RETURN(temp->ShiftLeft(intExp, (IBigInteger**)&res));
+    } else {
+        /*
+         * "HUGE POWERS"
+         *
+         * This branch probably won't be executed since the power of ten is too
+         * big.
+         */
+        // To calculate:    5^exp
+        AutoPtr<IBigInteger> powerOfFive = NULL;
+        FAIL_RETURN((*BigFivePows)[1]->Pow(Math::INT32_MAX_VALUE, (IBigInteger**)&powerOfFive));
+        res = powerOfFive;
+        Int64 longExp = exp - Math::INT32_MAX_VALUE;
+
+        intExp = (Int32) (exp % Math::INT32_MAX_VALUE);
+        while (longExp > Math::INT32_MAX_VALUE) {
+            AutoPtr<IBigInteger> temp;
+            FAIL_RETURN(res->Multiply(powerOfFive, (IBigInteger**)&temp));
+            res = temp;
+            longExp -= Math::INT32_MAX_VALUE;
+        }
+
+        AutoPtr<IBigInteger> temp1, temp2;
+        FAIL_RETURN((*BigFivePows)[1]->Pow(intExp, (IBigInteger**)&temp1));
+        FAIL_RETURN(res->Multiply(temp1, (IBigInteger**)&temp2));
+        res = temp2;
+        temp1 = NULL, temp2 = NULL;
+
+        // To calculate:    5^exp << exp
+        FAIL_RETURN(res->ShiftLeft(Math::INT32_MAX_VALUE, (IBigInteger**)&temp1));
+        res = temp1;
+        temp1 = NULL;
+
+        longExp = exp - Math::INT32_MAX_VALUE;
+        while (longExp > Math::INT32_MAX_VALUE) {
+            AutoPtr<IBigInteger> temp;
+            FAIL_RETURN(res->ShiftLeft(Math::INT32_MAX_VALUE, (IBigInteger**)&temp));
+            res = temp;
+            longExp -= Math::INT32_MAX_VALUE;
+        }
+
+        FAIL_RETURN(res->ShiftLeft(intExp, (IBigInteger**)&temp1));
+        res = temp1;
+        temp1 = NULL;
     }
-    /*
-     * "HUGE POWERS"
-     *
-     * This branch probably won't be executed since the power of ten is too
-     * big.
-     */
+    //} catch (OutOfMemoryError error) {
+    //    throw new ArithmeticException(error.getMessage());
+    //}
 
-    AutoPtr<IBigInteger> powerOfFive;
-    // To calculate:    5^exp
-    FAIL_RETURN((*BigFivePows)[1]->Pow(Math::INT32_MAX_VALUE, (IBigInteger**)&powerOfFive));
-    AutoPtr<IBigInteger> res = powerOfFive;
-    Int64 longExp = exp - Math::INT32_MAX_VALUE;
-
-    intExp = (Int32)(exp % Math::INT32_MAX_VALUE);
-    while (longExp > Math::INT32_MAX_VALUE) {
-        AutoPtr<IBigInteger> temp;
-        FAIL_RETURN(res->Multiply(powerOfFive, (IBigInteger**)&temp));
-        res = temp;
-        longExp -= Math::INT32_MAX_VALUE;
-    }
-
-    AutoPtr<IBigInteger> temp1, temp2;
-    FAIL_RETURN((*BigFivePows)[1]->Pow(intExp, (IBigInteger**)&temp1));
-
-    //res = res.multiply([1].pow(intExp));
-    FAIL_RETURN(res->Multiply(temp1, (IBigInteger**)&temp2));
-    res = temp2;
-    temp1 = NULL, temp2 = NULL;
-
-    // To calculate:    5^exp << exp
-    FAIL_RETURN(res->ShiftLeft(Math::INT32_MAX_VALUE, (IBigInteger**)&temp1));
-    res = temp1;
-    temp1 = NULL;
-
-    longExp = exp - Math::INT32_MAX_VALUE;
-    while (longExp > Math::INT32_MAX_VALUE) {
-        AutoPtr<IBigInteger> temp;
-        FAIL_RETURN(res->ShiftLeft(Math::INT32_MAX_VALUE, (IBigInteger**)&temp));
-        res = temp;
-        longExp -= Math::INT32_MAX_VALUE;
-    }
-    return res->ShiftLeft(intExp, result);
+    *result = res;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
 ECode Multiplication::MultiplyByFivePow(

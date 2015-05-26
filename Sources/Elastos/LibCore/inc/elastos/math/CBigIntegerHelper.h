@@ -19,6 +19,11 @@ public:
         /* [in] */ Int64 value,
         /* [out] */ IBigInteger** result);
 
+    CARAPI ProbablePrime(
+        /* [in] */ Int32 bitLength,
+        /* [in] */ IRandom* random,
+        /* [out] */ IBigInteger** result);
+
     CARAPI GetMINUSOne(
         /* [out] */ IBigInteger** result);
 

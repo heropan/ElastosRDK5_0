@@ -10,6 +10,10 @@ using Elastos::Core::Character;
 namespace Elastos {
 namespace Math {
 
+// 606ef7c8-001c-4b7a-8dfe-dab2d691e261
+extern "C" const InterfaceID EIID_BigInt =
+    { 0x606ef7c8, 0x001c, 0x4b7a, { 0x8d, 0xfe, 0xda, 0xb2, 0xd6, 0x91, 0xe2, 0x61 } };
+
 BigInt::BigInt()
     : mBignum(0)
 {
@@ -23,68 +27,38 @@ BigInt::~BigInt()
     }
 }
 
+ECode BigInt::GetClassID(
+    /* [out] */ ClassID* clsid)
+{
+    VALIDATE_NOT_NULL(clsid);
+
+    *clsid = EIID_BigInt;
+    return NOERROR;
+}
+
+ECode BigInt::ToString(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    result->AppendFormat("\nClass[%s]\n", String("BigInt"));
+    return NOERROR;
+}
+
 String BigInt::ToString()
 {
     return DecString();
 }
 
-Int32 BigInt::GetNativeBIGNUM()
+Int64 BigInt::GetNativeBIGNUM()
 {
     return mBignum;
-}
-
-ECode BigInt::ConsumeErrors(
-    /* [in] */ StringBuilder& sb,
-    /* [in] */ Int32* cnt)
-{
-    VALIDATE_NOT_NULL(cnt);
-
-    *cnt = 0;
-    Int32 e, reason;
-    while ((e = NativeBN::ERR_get_error()) != 0) {
-        reason = e & 255;
-        if (reason == 103) {
-            sb.AppendCStr("103: BigInteger division by zero");
-            return E_ARITHMETIC_EXCEPTION;
-        }
-        if (reason == 108) {
-            sb.AppendCStr("108: BigInteger not invertible");
-            return E_ARITHMETIC_EXCEPTION;
-        }
-        if (reason == 65) {
-            sb.AppendCStr("108: OutOfMemoryError");
-            return E_RUNTIME_EXCEPTION;
-        }
-        sb.AppendInt32(e);
-        sb.AppendCStr(": ");
-        String s = NativeBN::ERR_error_string(e);
-        sb.AppendString(s);
-        (*cnt)++;
-    }
-
-    return NOERROR;
-}
-
-ECode BigInt::Check(
-    /* [in] */ Boolean success)
-{
-    if (!success) {
-        StringBuilder sb(String("(openssl)ERR: "));
-        Int32 cnt;
-        FAIL_RETURN(ConsumeErrors(sb, &cnt));
-        if (cnt > 0) {
-            return E_ARITHMETIC_EXCEPTION;
-        }
-    }
-
-    return NOERROR;
 }
 
 ECode BigInt::MakeValid()
 {
     if (mBignum == 0) {
         mBignum = NativeBN::BN_new();
-        return Check(mBignum != 0);
     }
     return NOERROR;
 }
@@ -93,7 +67,7 @@ ECode BigInt::NewBigInt(
     /* [in] */ BigInt& bi)
 {
     bi.mBignum = NativeBN::BN_new();
-    return Check(bi.mBignum != 0);
+    return NOERROR;
 }
 
 Int32 BigInt::Cmp(
@@ -107,7 +81,7 @@ ECode BigInt::PutCopy(
     /* [in] */ const BigInt& from)
 {
     FAIL_RETURN(MakeValid());
-    FAIL_RETURN(Check(NativeBN::BN_copy(mBignum, from.mBignum)));
+    NativeBN::BN_copy(mBignum, from.mBignum);
     return NOERROR;
 }
 
@@ -121,7 +95,7 @@ ECode BigInt::PutLongInt(
     /* [in] */ Int64 val)
 {
     FAIL_RETURN(MakeValid());
-    FAIL_RETURN(Check(NativeBN::PutLongInt(mBignum, val)));
+    NativeBN::PutLongInt(mBignum, val);
     return NOERROR;
 }
 
@@ -130,7 +104,7 @@ ECode BigInt::PutULongInt(
     /* [in] */ Boolean neg)
 {
     FAIL_RETURN(MakeValid());
-    FAIL_RETURN(Check(NativeBN::PutULongInt(mBignum, val, neg)));
+    NativeBN::PutULongInt(mBignum, val, neg);
     return NOERROR;
 }
 
@@ -146,7 +120,6 @@ ECode BigInt::PutDecString(
     FAIL_RETURN(CheckString(original, 10, &s));
     FAIL_RETURN(MakeValid());
     Int32 usedLen = NativeBN::BN_dec2bn(mBignum, s);
-    FAIL_RETURN(Check((usedLen > 0)));
     if ((UInt32)usedLen < s.GetByteLength()) {
         //throw invalidBigInteger(original);
         return E_NUMBER_FORMAT_EXCEPTION;
@@ -161,7 +134,6 @@ ECode BigInt::PutHexString(
     FAIL_RETURN(CheckString(original, 16, &s));
     FAIL_RETURN(MakeValid());
     Int32 usedLen = NativeBN::BN_hex2bn(mBignum, s);
-    FAIL_RETURN(Check((usedLen > 0)));
     if ((UInt32)usedLen < s.GetByteLength()) {
         //throw invalidBigInteger(original);
         return E_NUMBER_FORMAT_EXCEPTION;
@@ -253,7 +225,7 @@ ECode BigInt::PutBigEndian(
     /* [in] */ Boolean neg)
 {
     FAIL_RETURN(MakeValid());
-    FAIL_RETURN(Check(NativeBN::BN_bin2bn(bytes, neg, mBignum)));
+    NativeBN::BN_bin2bn(bytes, neg, mBignum);
     return NOERROR;
 }
 
@@ -262,7 +234,7 @@ ECode BigInt::PutLittleEndianInts(
     /* [in] */ Boolean neg)
 {
     FAIL_RETURN(MakeValid());
-    FAIL_RETURN(Check(NativeBN::LitEndInts2bn(ints, neg, mBignum)));
+    NativeBN::LitEndInts2bn(ints, neg, mBignum);
     return NOERROR;
 }
 
@@ -270,7 +242,7 @@ ECode BigInt::PutBigEndianTwosComplement(
     /* [in] */ const ArrayOf<Byte>& bytes)
 {
     FAIL_RETURN(MakeValid());
-    FAIL_RETURN(Check(NativeBN::TwosComp2bn(bytes, mBignum)));
+    NativeBN::TwosComp2bn(bytes, mBignum);
     return NOERROR;
 }
 
@@ -342,32 +314,38 @@ ECode BigInt::Shift(
     /* [in] */ BigInt& r)
 {
     FAIL_RETURN(NewBigInt(r));
-    return Check(NativeBN::BN_shift(r.mBignum, a.mBignum, n));
+    NativeBN::BN_shift(r.mBignum, a.mBignum, n);
+    return NOERROR;
 }
 
 ECode BigInt::Shift(
     /* [in] */ Int32 n)
 {
-    return Check(NativeBN::BN_shift(mBignum, mBignum, n));
+    NativeBN::BN_shift(mBignum, mBignum, n);
+    return NOERROR;
 }
 
 ECode BigInt::AddPositiveInt(
     /* [in] */ Int32 w)
 {
-    return Check(NativeBN::BN_add_word(mBignum, w));
+    NativeBN::BN_add_word(mBignum, w);
+    return NOERROR;
 }
 
 ECode BigInt::MultiplyByPositiveInt(
     /* [in] */ Int32 w)
 {
-    return Check(NativeBN::BN_mul_word(mBignum, w));
+    NativeBN::BN_mul_word(mBignum, w);
+    return NOERROR;
 }
 
 ECode BigInt::RemainderByPositiveInt(
-    /* [in] */ const BigInt& a, Int32 w, Int32& r)
+    /* [in] */ const BigInt& a,
+    /* [in] */ Int32 w,
+    /* [in] */ Int32& r)
 {
     r = NativeBN::BN_mod_word(a.mBignum, w);
-    return Check(r != -1);
+    return NOERROR;
 }
 
 ECode BigInt::Addition(
@@ -376,13 +354,14 @@ ECode BigInt::Addition(
     /* [in] */ BigInt& r)
 {
     FAIL_RETURN(NewBigInt(r));
-    return Check(NativeBN::BN_add(r.mBignum, a.mBignum, b.mBignum));
+    NativeBN::BN_add(r.mBignum, a.mBignum, b.mBignum);
+    return NOERROR;
 }
 
 ECode BigInt::Add(
     /* [in] */ const BigInt& a)
 {
-    FAIL_RETURN(Check(NativeBN::BN_add(mBignum, mBignum, a.mBignum)));
+    NativeBN::BN_add(mBignum, mBignum, a.mBignum;
     return NOERROR;
 }
 
@@ -392,7 +371,8 @@ ECode BigInt::Subtraction(
     /* [in] */ BigInt& r)
 {
     FAIL_RETURN(NewBigInt(r));
-    return Check(NativeBN::BN_sub(r.mBignum, a.mBignum, b.mBignum));
+    NativeBN::BN_sub(r.mBignum, a.mBignum, b.mBignum);
+    return NOERROR;
 }
 
 ECode BigInt::Gcd(
@@ -401,7 +381,8 @@ ECode BigInt::Gcd(
     /* [in] */ BigInt& r)
 {
     FAIL_RETURN(NewBigInt(r));
-    return Check(NativeBN::BN_gcd(r.mBignum, a.mBignum, b.mBignum));
+    NativeBN::BN_gcd(r.mBignum, a.mBignum, b.mBignum);
+    return NOERROR;
 }
 
 ECode BigInt::Product(
@@ -410,7 +391,8 @@ ECode BigInt::Product(
     /* [in] */ BigInt& r)
 {
     FAIL_RETURN(NewBigInt(r));
-    return Check(NativeBN::BN_mul(r.mBignum, a.mBignum, b.mBignum));
+    NativeBN::BN_mul(r.mBignum, a.mBignum, b.mBignum);
+    return NOERROR;
 }
 
 ECode BigInt::BigExp(
@@ -420,7 +402,8 @@ ECode BigInt::BigExp(
 {
     // Sign of p is ignored!
     FAIL_RETURN(NewBigInt(r));
-    return Check(NativeBN::BN_exp(r.mBignum, a.mBignum, p.mBignum));
+    NativeBN::BN_exp(r.mBignum, a.mBignum, p.mBignum);
+    return NOERROR;
 }
 
 ECode BigInt::Exp(
@@ -443,7 +426,7 @@ ECode BigInt::Division(
     /* [in] */ BigInt* quotient,
     /* [in] */ BigInt* remainder)
 {
-    Int32 quot, rem;
+    Int64 quot, rem;
     if (quotient != NULL) {
         FAIL_RETURN(quotient->MakeValid());
         quot = quotient->mBignum;
@@ -458,7 +441,8 @@ ECode BigInt::Division(
     else {
         rem = 0;
     }
-    return Check(NativeBN::BN_div(quot, rem, dividend.mBignum, divisor.mBignum));
+    NativeBN::BN_div(quot, rem, dividend.mBignum, divisor.mBignum);
+    return NOERROR;
 }
 
 ECode BigInt::Modulus(
@@ -468,7 +452,8 @@ ECode BigInt::Modulus(
 {
     // Sign of p is ignored! ?
     FAIL_RETURN(NewBigInt(r));
-    return Check(NativeBN::BN_nnmod(r.mBignum, a.mBignum, m.mBignum));
+    NativeBN::BN_nnmod(r.mBignum, a.mBignum, m.mBignum);
+    return NOERROR;
 }
 
 ECode BigInt::ModExp(
@@ -479,10 +464,8 @@ ECode BigInt::ModExp(
 {
     // Sign of p is ignored!
     FAIL_RETURN(NewBigInt(r));
-    return Check(NativeBN::BN_mod_exp(r.mBignum, a.mBignum, p.mBignum, m.mBignum));
-
-    // OPTIONAL:
-    // Int32 BN_mod_sqr(BIGNUM *r, const BIGNUM *a, const BIGNUM *m, BN_CTX *ctx);
+    NativeBN::BN_mod_exp(r.mBignum, a.mBignum, p.mBignum, m.mBignum);
+    return NOERROR;
 }
 
 ECode BigInt::ModInverse(
@@ -491,7 +474,8 @@ ECode BigInt::ModInverse(
     /* [in] */ BigInt& r)
 {
     FAIL_RETURN(NewBigInt(r));
-    return Check(NativeBN::BN_mod_inverse(r.mBignum, a.mBignum, m.mBignum));
+    NativeBN::BN_mod_inverse(r.mBignum, a.mBignum, m.mBignum);
+    return NOERROR;
 }
 
 ECode BigInt::GeneratePrimeDefault(
@@ -499,7 +483,8 @@ ECode BigInt::GeneratePrimeDefault(
     /* [in] */ BigInt& r)
 {
     FAIL_RETURN(NewBigInt(r));
-    return Check(NativeBN::BN_generate_prime_(r.mBignum, bitLength, FALSE, 0, 0, 0));
+    NativeBN::BN_generate_prime_(r.mBignum, bitLength, FALSE, 0, 0, 0);
+    return NOERROR;
 }
 
 Boolean BigInt::IsPrime(

@@ -18,6 +18,21 @@ class Primality;
 class Conversion;
 class Multiplication;
 
+/**
+ * An immutable arbitrary-precision signed integer.
+ *
+ * <h3>Fast Cryptography</h3>
+ * This implementation is efficient for operations traditionally used in
+ * cryptography, such as the generation of large prime numbers and computation
+ * of the modular inverse.
+ *
+ * <h3>Slow Two's Complement Bitwise Operations</h3>
+ * This API includes operations for bitwise operations in two's complement
+ * representation. Two's complement is not the internal representation used by
+ * this implementation, so such methods may be inefficient. Use {@link
+ * java.util.BitSet} for high-performance bitwise operations on
+ * arbitrarily-large sequences of bits.
+ */
 CarClass(CBigInteger)
     : public Object
     , public IBigInteger
@@ -37,6 +52,39 @@ public:
         /* [in] */ Int32 sign,
         /* [in] */ Int32 numberLength,
         /* [in] */ const ArrayOf<Int32>& digits);
+
+    /**
+     * Constructs a random non-negative {@code BigInteger} instance in the range
+     * {@code [0, pow(2, numBits)-1]}.
+     *
+     * @param numBits maximum length of the new {@code BigInteger} in bits.
+     * @param random is the random number generator to be used.
+     * @throws IllegalArgumentException if {@code numBits} < 0.
+     */
+    CARAPI constructor(
+        /* [in] */ Int32 numBits,
+        /* [in] */ IRandom* random);
+
+    /**
+     * Constructs a random {@code BigInteger} instance in the range {@code [0,
+     * pow(2, bitLength)-1]} which is probably prime. The probability that the
+     * returned {@code BigInteger} is prime is greater than
+     * {@code 1 - 1/2<sup>certainty</sup>)}.
+     *
+     * <p><b>Note:</b> the {@code Random} argument is ignored if
+     * {@code bitLength >= 16}, where this implementation will use OpenSSL's
+     * {@code BN_generate_prime_ex} as a source of cryptographically strong pseudo-random numbers.
+     *
+     * @param bitLength length of the new {@code BigInteger} in bits.
+     * @param certainty tolerated primality uncertainty.
+     * @throws ArithmeticException if {@code bitLength < 2}.
+     * @see <a href="http://www.openssl.org/docs/crypto/BN_rand.html">
+     *      Specification of random generator used from OpenSSL library</a>
+     */
+    CARAPI constructor(
+        /* [in] */ Int32 bitLength,
+        /* [in] */ Int32 certainty,
+        /* [in] */ IRandom* random);
 
     CARAPI constructor(
         /* [in] */ Int32 sign,
@@ -424,19 +472,16 @@ public:
 
     /**
      * Returns a {@code BigInteger} whose value is {@code
-     * pow(this, exponent) mod m}. The modulus {@code m} must be positive. The
-     * result is guaranteed to be in the interval {@code [0, m)} (0 inclusive,
-     * m exclusive). If the exponent is negative, then {@code
-     * pow(this.modInverse(m), -exponent) mod m} is computed. The inverse of
-     * this only exists if {@code this} is relatively prime to m, otherwise an
-     * exception is thrown.
+     * pow(this, exponent) mod modulus}. The modulus must be positive. The
+     * result is guaranteed to be in the interval {@code [0, modulus)}.
+     * If the exponent is negative, then
+     * {@code pow(this.modInverse(modulus), -exponent) mod modulus} is computed.
+     * The inverse of this only exists if {@code this} is relatively prime to the modulus,
+     * otherwise an exception is thrown.
      *
-     * @param exponent the exponent.
-     * @param m the modulus.
-     * @throws NullPointerException if {@code m == null} or {@code exponent ==
-     *     null}.
-     * @throws ArithmeticException if {@code m < 0} or if {@code exponent<0} and
-     *     this is not relatively prime to {@code m}.
+     * @throws NullPointerException if {@code modulus == null} or {@code exponent == null}.
+     * @throws ArithmeticException if {@code modulus < 0} or if {@code exponent < 0} and
+     *     not relatively prime to {@code modulus}.
      */
     CARAPI ModPow(
         /* [in] */ IBigInteger* exponent,
@@ -461,8 +506,8 @@ public:
 
     /**
      * Tests whether this {@code BigInteger} is probably prime. If {@code true}
-     * is returned, then this is prime with a probability beyond
-     * {@code 1 - 1/pow(2, certainty)}. If {@code false} is returned, then this
+     * is returned, then this is prime with a probability greater than
+     * {@code 1 - 1/2<sup>certainty</sup>)}. If {@code false} is returned, then this
      * is definitely composite. If the argument {@code certainty} <= 0, then
      * this method returns true.
      *
@@ -477,12 +522,26 @@ public:
     /**
      * Returns the smallest integer x > {@code this} which is probably prime as
      * a {@code BigInteger} instance. The probability that the returned {@code
-     * BigInteger} is prime is beyond {@code 1 - 1/pow(2, 80)}.
+     * BigInteger} is prime is greater than {@code 1 - 1/2<sup>100</sup>}.
      *
      * @return smallest integer > {@code this} which is probably prime.
      * @throws ArithmeticException if {@code this < 0}.
      */
     CARAPI NextProbablePrime(
+        /* [out] */ IBigInteger** result);
+
+    /**
+     * Returns a random positive {@code BigInteger} instance in the range {@code
+     * [0, pow(2, bitLength)-1]} which is probably prime. The probability that
+     * the returned {@code BigInteger} is prime is greater than {@code 1 - 1/2<sup>100</sup>)}.
+     *
+     * @param bitLength length of the new {@code BigInteger} in bits.
+     * @return probably prime random {@code BigInteger} instance.
+     * @throws IllegalArgumentException if {@code bitLength < 2}.
+     */
+    static CARAPI ProbablePrime(
+        /* [in] */ Int32 bitLength,
+        /* [in] */ IRandom* random,
         /* [out] */ IBigInteger** result);
 
     /**
@@ -563,6 +622,9 @@ public:
     CARAPI_(AutoPtr<BigInt>) GetBigInt();
 
 private:
+    static CARAPI_(Boolean) IsSmallPrime(
+        /* [in] */ Int32 x);
+
     CARAPI_(void) SetBigInt(
         /* [in] */ BigInt* bigInt);
 
@@ -576,8 +638,6 @@ private:
     /**
      * Returns the two's complement representation of this BigInteger in a byte
      * array.
-     *
-     * @return two's complement representation of {@code this}
      */
     CARAPI TwosComplement(
         /* [out, callee] */ ArrayOf<Byte>** bytes);

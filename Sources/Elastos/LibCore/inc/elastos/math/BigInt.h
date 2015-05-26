@@ -11,6 +11,8 @@ using Elastos::Core::StringBuilder;
 namespace Elastos {
 namespace Math {
 
+extern "C" const InterfaceID EIID_BigInt;
+
 /*
  * In contrast to BigIntegers this class doesn't fake two's complement representation.
  * Any Bit-Operations, including Shifting, solely regard the unsigned magnitude.
@@ -23,13 +25,15 @@ public:
 
     ~BigInt();
 
+    CARAPI GetClassID(
+        /* [out] */ ClassID* clsid);
+
+    CARAPI ToString(
+        /* [out] */ String* result);
+
     CARAPI_(String) ToString();
 
-    CARAPI_(Int32) GetNativeBIGNUM();
-
-    static CARAPI ConsumeErrors(
-        /* [in] */ StringBuilder& sb,
-        /* [out] */ Int32* count);
+    CARAPI_(Int64) GetNativeBIGNUM();
 
     static CARAPI_(Int32) Cmp(
         /* [in] */ const BigInt& a,
@@ -185,9 +189,6 @@ public:
     CARAPI MakeValid();
 
 private:
-    static CARAPI Check(
-        /* [in] */ Boolean success);
-
     static CARAPI NewBigInt(
         /* [in] */ BigInt& bi);
 
@@ -200,7 +201,7 @@ private:
 
 private:
     /* Fields used for the internal representation. */
-    Int32 mBignum;
+    Int64 mBignum;
 };
 
 } // namespace Math

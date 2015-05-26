@@ -106,6 +106,15 @@ module
     //         [in] ArrayOf<Int32> digits);
 
     //     constructor(
+    //         [in] Int32 numBits,
+    //         [in] IRandom* random)
+
+    //     constructor(
+    //         [in]  Int32 bitLength,
+    //         [in]  Int32 certainty,
+    //         [in]  IRandom* random);
+
+    //     constructor(
     //         [in] String value);
 
     //     constructor(

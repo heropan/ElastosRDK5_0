@@ -333,14 +333,6 @@ ECode CBigDecimal::constructor(
         SetUnscaledValue(bi);
     }
 
-    Int32 strLength;
-    unscaledBuffer.GetLength(&strLength);
-    mPrecision = strLength - counter;
-    Char32 ch;
-    unscaledBuffer.GetCharAt(0, &ch);
-    if (ch == '-') {
-        mPrecision --;
-    }
     return NOERROR;
 }
 
@@ -856,6 +848,15 @@ ECode CBigDecimal::Divide(
     using Elastos::Core::Math;
 
     Int64 diffScale = ((Int64)mScale - divisor->mScale) - scale;
+
+    // Check whether the diffScale will fit into an int. See http://b/17393664.
+    if (BitLength(diffScale) > 32) {
+        //throw new ArithmeticException(
+        //        "Unable to perform divisor / dividend scaling: the difference in scale is too" +
+        //                " big (" + diffScale + ")");
+        return E_ARITHMETIC_EXCEPTION;
+    }
+
     if(mBitLength < 64 && divisor->mBitLength < 64 ) {
         if(diffScale == 0) {
             return DividePrimitiveLongs(mSmallValue,
@@ -1692,6 +1693,17 @@ ECode CBigDecimal::Abs(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
+    AutoPtr<IBigDecimal> result = NULL;
+    Int32 signum = 0, scale = 0;
+    GetSignum(&signum);
+    Getscale(&scale);
+    if (signum < 0) {
+        Negate((IBigDecimal**)&result);
+    }
+    else {
+        CBigDecimal::New(GetUnscaledValue(), scale, (IBigDecimal**)&result);
+    }
+
     FAIL_RETURN(Abs(result));
     return ((CBigDecimal*)(*result))->InplaceRound(mc);
 }
@@ -1771,21 +1783,20 @@ ECode CBigDecimal::GetPrecision(
     VALIDATE_NOT_NULL(precision);
     *precision = 0;
 
-    // Checking if the precision already was calculated
-    if (mPrecision > 0) {
+    // Return the cached value if we have one.
+    if (mPrecision != 0) {
         *precision = mPrecision;
         return NOERROR;
     }
 
-    Int32 bitLength = mBitLength;
-    if (bitLength == 0) {
+    if (mBitLength == 0) {
         mPrecision = 1;
     }
-    else if (bitLength < 64) {
+    else if (mBitLength < 64) {
         mPrecision = DecimalDigitsInLong(mSmallValue);
     }
     else {
-        Int32 decimalDigits = 1 + (Int32) ((bitLength - 1) * Log10_2);
+        Int32 decimalDigits = 1 + (Int32) ((mBitLength - 1) * Log10_2);
         AutoPtr<IBigInteger> tubi = GetUnscaledValue();
         AutoPtr<IBigInteger> pbi, dbi;
         FAIL_RETURN(Multiplication::PowerOf10(decimalDigits, (IBigInteger**)&pbi));

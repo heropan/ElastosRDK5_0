@@ -13,6 +13,14 @@ using Elastos::Core::IComparable;
 namespace Elastos {
 namespace Math {
 
+/**
+ * An immutable arbitrary-precision signed decimal.
+ *
+ * <p>A value is represented by an arbitrary-precision "unscaled value" and a signed 32-bit "scale",
+ * combined thus: {@code unscaled * 10<sup>-scale</sup>}. See {@link #unscaledValue} and {@link #scale}.
+ *
+ * <p>Most operations allow you to supply a {@link MathContext} to specify a desired rounding mode.
+ */
 CarClass(CBigDecimal)
     : public Object
     , public IBigDecimal
@@ -76,9 +84,6 @@ public:
      * Constructs a new {@code BigDecimal} instance from a string
      * representation.
      *
-     * @param val
-     *            string containing the string representation of this {@code
-     *            BigDecimal}.
      * @throws NumberFormatException
      *             if {@code val} does not contain a valid string representation
      *             of a big decimal.
@@ -124,10 +129,6 @@ public:
     /**
      * Constructs a new {@code BigDecimal} instance from the given big integer
      * {@code val}. The scale of the result is {@code 0}.
-     *
-     * @param val
-     *            {@code BigInteger} value to be converted to a {@code
-     *            BigDecimal} instance.
      */
     CARAPI constructor(
         /* [in] */ IBigInteger* val);
@@ -135,13 +136,8 @@ public:
     /**
      * Constructs a new {@code BigDecimal} instance from a given unscaled value
      * {@code unscaledVal} and a given scale. The value of this instance is
-     * {@code unscaledVal} 10^(-{@code scale}).
+     * {@code unscaledVal * 10<sup>-scale</sup>}).
      *
-     * @param unscaledVal
-     *            {@code BigInteger} representing the unscaled value of this
-     *            {@code BigDecimal} instance.
-     * @param scale
-     *            scale of this {@code BigDecimal} instance.
      * @throws NullPointerException
      *             if {@code unscaledVal == null}.
      */
@@ -152,14 +148,9 @@ public:
     /**
      * Constructs a new {@code BigDecimal} instance from a given unscaled value
      * {@code unscaledVal} and a given scale. The value of this instance is
-     * {@code unscaledVal} 10^(-{@code scale}). The result is rounded according
+     * {@code unscaledVal * 10<sup>-scale</sup>). The result is rounded according
      * to the specified math context.
      *
-     * @param unscaledVal
-     *            {@code BigInteger} representing the unscaled value of this
-     *            {@code BigDecimal} instance.
-     * @param scale
-     *            scale of this {@code BigDecimal} instance.
      * @param mc
      *            rounding mode and precision for the result of this operation.
      * @throws ArithmeticException
@@ -229,9 +220,6 @@ public:
      * representation. The result is rounded according to the specified math
      * context.
      *
-     * @param val
-     *            string containing the string representation of this {@code
-     *            BigDecimal}.
      * @param mc
      *            rounding mode and precision for the result of this operation.
      * @throws NumberFormatException
@@ -275,9 +263,6 @@ public:
      * Constructs a new {@code BigDecimal} instance from the given big integer
      * {@code val}. The scale of the result is {@code 0}.
      *
-     * @param val
-     *            {@code BigInteger} value to be converted to a {@code
-     *            BigDecimal} instance.
      * @param mc
      *            rounding mode and precision for the result of this operation.
      * @throws ArithmeticException
@@ -327,16 +312,8 @@ public:
 
     /**
      * Returns a new {@code BigDecimal} instance whose value is equal to {@code
-     * unscaledVal} 10^(-{@code scale}). The scale of the result is {@code
+     * unscaledVal * 10<sup>-scale</sup>}). The scale of the result is {@code
      * scale}, and its unscaled value is {@code unscaledVal}.
-     *
-     * @param unscaledVal
-     *            unscaled value to be used to construct the new {@code
-     *            BigDecimal}.
-     * @param scale
-     *            scale to be used to construct the new {@code BigDecimal}.
-     * @return {@code BigDecimal} instance with the value {@code unscaledVal}*
-     *         10^(-{@code unscaledVal}).
      */
     static CARAPI ValueOf(
         /* [in] */ Int64 unscaledVal,
@@ -710,17 +687,14 @@ public:
         /* [out, callee] */ ArrayOf<IBigDecimal*>** result);
 
     /**
-     * Returns a new {@code BigDecimal} whose value is {@code this ^ n}. The
-     * scale of the result is {@code n} times the scales of {@code this}.
-     * <p>
-     * {@code x.pow(0)} returns {@code 1}, even if {@code x == 0}.
-     * <p>
-     * Implementation Note: The implementation is based on the ANSI standard
+     * Returns a new {@code BigDecimal} whose value is {@code this<sup>n</sup>}. The
+     * scale of the result is {@code n * this.scale()}.
+     *
+     * <p>{@code x.pow(0)} returns {@code 1}, even if {@code x == 0}.
+     *
+     * <p>Implementation Note: The implementation is based on the ANSI standard
      * X3.274-1996 algorithm.
      *
-     * @param n
-     *            exponent to which {@code this} is raised.
-     * @return {@code this ^ n}.
      * @throws ArithmeticException
      *             if {@code n < 0} or {@code n > 999999999}.
      */
@@ -729,17 +703,14 @@ public:
         /* [out] */ IBigDecimal** result);
 
     /**
-     * Returns a new {@code BigDecimal} whose value is {@code this ^ n}. The
+     * Returns a new {@code BigDecimal} whose value is {@code this<sup>n</sup>}. The
      * result is rounded according to the passed context {@code mc}.
-     * <p>
-     * Implementation Note: The implementation is based on the ANSI standard
+     *
+     * <p>Implementation Note: The implementation is based on the ANSI standard
      * X3.274-1996 algorithm.
      *
-     * @param n
-     *            exponent to which {@code this} is raised.
      * @param mc
      *            rounding mode and precision for the result of this operation.
-     * @return {@code this ^ n}.
      * @throws ArithmeticException
      *             if {@code n < 0} or {@code n > 999999999}.
      */
@@ -749,22 +720,16 @@ public:
         /* [out] */ IBigDecimal** result);
 
     /**
-     * Returns a new {@code BigDecimal} whose value is the absolute value of
+     * Returns a {@code BigDecimal} whose value is the absolute value of
      * {@code this}. The scale of the result is the same as the scale of this.
-     *
-     * @return {@code abs(this)}
      */
     CARAPI Abs(
         /* [out] */ IBigDecimal** result);
 
     /**
-     * Returns a new {@code BigDecimal} whose value is the absolute value of
+     * Returns a {@code BigDecimal} whose value is the absolute value of
      * {@code this}. The result is rounded according to the passed context
      * {@code mc}.
-     *
-     * @param mc
-     *            rounding mode and precision for the result of this operation.
-     * @return {@code abs(this)}
      */
     CARAPI Abs(
         /* [in] */ IMathContext* mc,
@@ -824,8 +789,8 @@ public:
     /**
      * Returns the scale of this {@code BigDecimal}. The scale is the number of
      * digits behind the decimal point. The value of this {@code BigDecimal} is
-     * the unsignedValue * 10^(-scale). If the scale is negative, then this
-     * {@code BigDecimal} represents a big integer.
+     * the {@code unsignedValue * 10<sup>-scale</sup>}. If the scale is negative,
+     * then this {@code BigDecimal} represents a big integer.
      *
      * @return the scale of this {@code BigDecimal}.
      */
@@ -845,10 +810,8 @@ public:
 
     /**
      * Returns the unscaled value (mantissa) of this {@code BigDecimal} instance
-     * as a {@code BigInteger}. The unscaled value can be computed as {@code
-     * this} 10^(scale).
-     *
-     * @return unscaled value (this * 10^(scale)).
+     * as a {@code BigInteger}. The unscaled value can be computed as
+     * {@code this * 10<sup>scale</sup>}.
      */
     CARAPI GetUnscaledValue(
         /* [out] */ IBigInteger** unscaledValue);
@@ -926,17 +889,13 @@ public:
      * Returns a new {@code BigDecimal} instance where the decimal point has
      * been moved {@code n} places to the left. If {@code n < 0} then the
      * decimal point is moved {@code -n} places to the right.
-     * <p>
-     * The result is obtained by changing its scale. If the scale of the result
+     *
+     * <p>The result is obtained by changing its scale. If the scale of the result
      * becomes negative, then its precision is increased such that the scale is
      * zero.
-     * <p>
-     * Note, that {@code movePointLeft(0)} returns a result which is
-     * mathematically equivalent, but which has {@code scale >= 0}.
      *
-     * @param n
-     *            number of placed the decimal point has to be moved.
-     * @return {@code this * 10^(-n}).
+     * <p>Note, that {@code movePointLeft(0)} returns a result which is
+     * mathematically equivalent, but which has {@code scale >= 0}.
      */
     CARAPI MovePointLeft(
        /* [in] */ Int32 n,
@@ -946,33 +905,25 @@ public:
      * Returns a new {@code BigDecimal} instance where the decimal point has
      * been moved {@code n} places to the right. If {@code n < 0} then the
      * decimal point is moved {@code -n} places to the left.
-     * <p>
-     * The result is obtained by changing its scale. If the scale of the result
+     *
+     * <p>The result is obtained by changing its scale. If the scale of the result
      * becomes negative, then its precision is increased such that the scale is
      * zero.
-     * <p>
-     * Note, that {@code movePointRight(0)} returns a result which is
-     * mathematically equivalent, but which has scale >= 0.
      *
-     * @param n
-     *            number of placed the decimal point has to be moved.
-     * @return {@code this * 10^n}.
+     * <p>Note, that {@code movePointRight(0)} returns a result which is
+     * mathematically equivalent, but which has scale >= 0.
      */
     CARAPI MovePointRight(
        /* [in] */ Int32 n,
        /* [out] */ IBigDecimal** result);
 
     /**
-     * Returns a new {@code BigDecimal} whose value is {@code this} 10^{@code n}.
+     * Returns a new {@code BigDecimal} whose value is {@code this * 10<sup>n</sup>}.
      * The scale of the result is {@code this.scale()} - {@code n}.
      * The precision of the result is the precision of {@code this}.
-     * <p>
-     * This method has the same effect as {@link #movePointRight}, except that
-     * the precision is not changed.
      *
-     * @param n
-     *            number of places the decimal point has to be moved.
-     * @return {@code this * 10^n}
+     * <p>This method has the same effect as {@link #movePointRight}, except that
+     * the precision is not changed.
      */
     CARAPI ScaleByPowerOfTen(
         /* [in] */ Int32 n,
@@ -1014,12 +965,8 @@ public:
      * Returns {@code true} if {@code x} is a {@code BigDecimal} instance and if
      * this instance is equal to this big decimal. Two big decimals are equal if
      * their unscaled value and their scale is equal. For example, 1.0
-     * (10*10^(-1)) is not equal to 1.00 (100*10^(-2)). Similarly, zero
+     * (10*10<sup>-1</sup>) is not equal to 1.00 (100*10<sup>-2</sup>). Similarly, zero
      * instances are not equal if their scale differs.
-     *
-     * @param x
-     *            object to be compared with {@code this}.
-     * @return true if {@code x} is a {@code BigDecimal} and {@code this == x}.
      */
     CARAPI Equals(
         /* [in] */ IInterface* other,
@@ -1121,10 +1068,9 @@ public:
 
     /**
      * Returns this {@code BigDecimal} as a long value if it has no fractional
-     * part and if its value fits to the int range ([-2^{63}..2^{63}-1]). If
+     * part and if its value fits to the int range ([-2<sup>63</sup>..2<sup>63</sup>-1]). If
      * these conditions are not met, an {@code ArithmeticException} is thrown.
      *
-     * @return this {@code BigDecimal} as a long value.
      * @throws ArithmeticException
      *             if rounding is necessary or the number doesn't fit in a long.
      */
@@ -1133,25 +1079,22 @@ public:
 
     /**
      * Returns this {@code BigDecimal} as a int value if it has no fractional
-     * part and if its value fits to the int range ([-2^{31}..2^{31}-1]). If
+     * part and if its value fits to the int range ([-2<sup>31</sup>..2<sup>31</sup>-1]). If
      * these conditions are not met, an {@code ArithmeticException} is thrown.
      *
-     * @return this {@code BigDecimal} as a int value.
      * @throws ArithmeticException
-     *             if rounding is necessary or the number doesn't fit in a int.
+     *             if rounding is necessary or the number doesn't fit in an int.
      */
     CARAPI Int32ValueExact(
         /* [out] */ Int32* value);
 
     /**
      * Returns this {@code BigDecimal} as a short value if it has no fractional
-     * part and if its value fits to the short range ([-2^{15}..2^{15}-1]). If
+     * part and if its value fits to the short range ([-2<sup>15</sup>..2<sup>15</sup>-1]). If
      * these conditions are not met, an {@code ArithmeticException} is thrown.
      *
-     * @return this {@code BigDecimal} as a short value.
      * @throws ArithmeticException
-     *             if rounding is necessary of the number doesn't fit in a
-     *             short.
+     *             if rounding is necessary of the number doesn't fit in a short.
      */
     CARAPI Int16ValueExact(
         /* [out] */ Int16* value);
@@ -1161,9 +1104,8 @@ public:
      * part and if its value fits to the byte range ([-128..127]). If these
      * conditions are not met, an {@code ArithmeticException} is thrown.
      *
-     * @return this {@code BigDecimal} as a byte value.
      * @throws ArithmeticException
-     *             if TEN_POWrounding is necessary or the number doesn't fit in a byte.
+     *             if rounding is necessary or the number doesn't fit in a byte.
      */
     CARAPI ByteValueExact(
         /* [out] */ Byte* value);
@@ -1172,13 +1114,12 @@ public:
      * Returns the unit in the last place (ULP) of this {@code BigDecimal}
      * instance. An ULP is the distance to the nearest big decimal with the same
      * precision.
-     * <p>
-     * The amount of a rounding error in the evaluation of a floating-point
+     *
+     * <p>The amount of a rounding error in the evaluation of a floating-point
      * operation is often expressed in ULPs. An error of 1 ULP is often seen as
      * a tolerable error.
-     * <p>
-     * For class {@code BigDecimal}, the ULP of a number is simply 10^(-scale).
-     * <p>
+     *
+     * <p>For class {@code BigDecimal}, the ULP of a number is simply 10<sup>-scale</sup>.
      * For example, {@code new BigDecimal(0.1).ulp()} returns {@code 1E-55}.
      *
      * @return unit in the last place (ULP) of this {@code BigDecimal} instance.
@@ -1207,27 +1148,38 @@ public:
         /* [out] */  Int16* result);
 
     /**
-     * Returns this object's value as an int. Might involve rounding and/or
-     * truncating the value, so it fits into an int.
-     *
-     * @return the primitive int value of this object.
+     * Returns this {@code BigDecimal} as an int value. Any fractional part is
+     * discarded. If the integral part of {@code this} is too big to be
+     * represented as an int, then {@code this % 2<sup>32</sup>} is returned.
      */
     CARAPI Int32Value(
         /* [out] */  Int32* result);
 
     /**
-     * Returns this object's value as a long. Might involve rounding and/or
-     * truncating the value, so it fits into a long.
-     *
-     * @return the primitive long value of this object.
+     * Returns this {@code BigDecimal} as an long value. Any fractional part is
+     * discarded. If the integral part of {@code this} is too big to be
+     * represented as an long, then {@code this % 2<sup>64</sup>} is returned.
      */
     CARAPI Int64Value(
         /* [out] */  Int64* result);
 
     /**
-     * Returns this object's value as a float. Might involve rounding.
+     * Returns this {@code BigDecimal} as a float value. If {@code this} is too
+     * big to be represented as an float, then {@code Float.POSITIVE_INFINITY}
+     * or {@code Float.NEGATIVE_INFINITY} is returned.
+     * <p>
+     * Note, that if the unscaled value has more than 24 significant digits,
+     * then this decimal cannot be represented exactly in a float variable. In
+     * this case the result is rounded.
+     * <p>
+     * For example, if the instance {@code x1 = new BigDecimal("0.1")} cannot be
+     * represented exactly as a float, and thus {@code x1.equals(new
+     * BigDecimal(x1.floatValue())} returns {@code false} for this case.
+     * <p>
+     * Similarly, if the instance {@code new BigDecimal(16777217)} is converted
+     * to a float, the result is {@code 1.6777216E}7.
      *
-     * @return the primitive float value of this object.
+     * @return this {@code BigDecimal} as a float value.
      */
     CARAPI FloatValue(
         /* [out] */  Float* result);
