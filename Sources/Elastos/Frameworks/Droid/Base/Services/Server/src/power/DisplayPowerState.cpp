@@ -1,12 +1,14 @@
 
 #include "power/DisplayPowerState.h"
 #include "os/Handler.h"
+#include "os/AsyncTask.h"
 #include <elastos/Slogger.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::IPowerManager;
 using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::AsyncTask;
 using Elastos::Droid::View::IChoreographerHelper;
 using Elastos::Droid::View::CChoreographerHelper;
 using Elastos::Core::IInteger32;
@@ -261,7 +263,7 @@ Boolean DisplayPowerState::PhotonicModulator::SetState(
 
         if (!mChangeInProgress) {
             mChangeInProgress = TRUE;
-            // AsyncTask.THREAD_POOL_EXECUTOR.execute(mTask);
+            AsyncTask::THREAD_POOL_EXECUTOR->Execute(mTask);
         }
     }
     return mChangeInProgress;

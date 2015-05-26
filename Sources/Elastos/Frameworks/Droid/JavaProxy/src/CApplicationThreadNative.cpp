@@ -283,7 +283,8 @@ ECode CApplicationThreadNative::BindApplication(
     }
 
     if (instrumentationName != NULL) {
-        LOGGERE(TAG, String("BindApplication: instrumentationName not NULL!"));;
+        LOGGERE(TAG, String("BindApplication: instrumentationName not NULL!"));
+        jInstrumentationName = Util::ToJavaComponentName(env, instrumentationName);
     }
 
     if (!profileName.IsNull()) {
@@ -292,11 +293,13 @@ ECode CApplicationThreadNative::BindApplication(
     }
 
     if (profileFd != NULL) {
-        LOGGERE(TAG, String("BindApplication: profileFd not NULL!"));;
+        LOGGERE(TAG, String("BindApplication: profileFd not NULL!"));
+        jProfileFd = Util::ToJavaParcelFileDescriptor(env, profileFd);
     }
 
     if (instrumentationArgs != NULL) {
-        LOGGERE(TAG, String("BindApplication: instrumentationArgs not NULL!"));;
+        LOGGERE(TAG, String("BindApplication: instrumentationArgs not NULL!"));
+        jInstrumentationArgs = Util::ToJavaBundle(env, instrumentationArgs);
     }
 
     if (instrumentationWatcher != NULL) {

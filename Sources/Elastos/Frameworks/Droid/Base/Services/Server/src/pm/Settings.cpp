@@ -776,11 +776,13 @@ Int32 Settings::RemovePackageLPw(
             if (p->mSharedUser->mPackages.Begin() == p->mSharedUser->mPackages.End()) {
                 mSharedUsers.Erase(p->mSharedUser->mName);
                 RemoveUserIdLPw(p->mSharedUser->mUserId);
+                p->mPkg = NULL;
                 return p->mSharedUser->mUserId;
             }
         }
         else {
             RemoveUserIdLPw(p->mAppId);
+            p->mPkg = NULL;
             return p->mAppId;
         }
     }

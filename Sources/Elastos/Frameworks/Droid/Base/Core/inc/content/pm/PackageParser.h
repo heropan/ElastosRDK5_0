@@ -236,7 +236,7 @@ public:
         // Int32 mSetEnabled;
 
         // Additional data supplied by callers.
-        AutoPtr<IInterface> mExtras;
+        AutoPtr<IInterface> mExtras; //this member point to PackageSetting who has strong reference each other
 
         // Whether an operation is currently pending on this package
         Boolean mOperationPending;

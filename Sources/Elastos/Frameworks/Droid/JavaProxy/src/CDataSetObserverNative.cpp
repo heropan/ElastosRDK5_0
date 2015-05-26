@@ -30,7 +30,7 @@ ECode CDataSetObserverNative::constructor(
 
 ECode CDataSetObserverNative::OnChanged()
 {
-    LOGGERD(TAG, String("+ CContentObserverNative::OnChanged()"));
+    LOGGERD(TAG, String("+ CDataSetObserverNative::OnChanged()"));
 
     JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
@@ -46,13 +46,13 @@ ECode CDataSetObserverNative::OnChanged()
 
     env->DeleteLocalRef(c);
 
-    LOGGERD(TAG, String("- CIPackageDeleteObserverNative::OnChanged()"));
+    LOGGERD(TAG, String("- CDataSetObserverNative::OnChanged()"));
     return NOERROR;
 }
 
 ECode CDataSetObserverNative::OnInvalidated()
 {
-    LOGGERD(TAG, String("+ CContentObserverNative::OnInvalidated()"));
+    LOGGERD(TAG, String("+ CDataSetObserverNative::OnInvalidated()"));
 
     JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
@@ -68,7 +68,7 @@ ECode CDataSetObserverNative::OnInvalidated()
 
     env->DeleteLocalRef(c);
 
-    LOGGERD(TAG, String("- CIPackageDeleteObserverNative::OnInvalidated()"));
+    LOGGERD(TAG, String("- CDataSetObserverNative::OnInvalidated()"));
     return NOERROR;
 }
 

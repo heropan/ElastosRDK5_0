@@ -104,7 +104,10 @@ ECode CCursorNative::GetColumnIndexOrThrow(
     Util::CheckErrorAndLog(env, TAG, "GetMethodID: GetColumnIndexOrThrow %d", __LINE__);
 
     *columnIndex = env->CallIntMethod(mJInstance, m, jcolumnName);
-    Util::CheckErrorAndLog(env, TAG, "CallIntMethod: getColumnIndexOrThrow %d", __LINE__);
+    if (env->ExceptionCheck() != 0) {
+        *columnIndex = -1;
+        env->ExceptionClear();
+    }
 
     env->DeleteLocalRef(c);
     env->DeleteLocalRef(jcolumnName);

@@ -46,6 +46,7 @@ DateTimeView::DateTimeView()
     , mTimeMillis(0)
     , mLastDisplay(-1)
 {
+    mBroadcastReceiver = new DateTimeViewReceiver(this);
 }
 
 DateTimeView::DateTimeView(
