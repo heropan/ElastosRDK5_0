@@ -13,6 +13,14 @@ namespace Org {
 namespace Xmlpull {
 namespace V1 {
 
+/**
+ * This class is used to create implementations of XML Pull Parser defined in XMPULL V1 API.
+ *
+ * @see XmlPullParser
+ *
+ * @author <a href="http://www.extreme.indiana.edu/~aslom/">Aleksander Slominski</a>
+ * @author Stefan Haustein
+ */
 class XmlPullParserFactory
     : public Object
     , public IXmlPullParserFactory
@@ -40,13 +48,18 @@ public:
     CARAPI IsValidating(
         /* [out] */ Boolean* isValidating);
 
+    /**
+     * Creates a new instance of a XML Pull Parser
+     * using the currently configured factory features.
+     *
+     * @return A new instance of a XML Pull Parser.
+     */
     CARAPI NewPullParser(
         /* [out] */ IXmlPullParser** pullParser);
 
     CARAPI NewSerializer(
         /* [out] */ IXmlSerializer** serial);
 
-public:
     static CARAPI NewInstance(
         /* [out] */ IXmlPullParserFactory** xmlPullParserFac);
 
@@ -55,9 +68,15 @@ public:
      // /* [in] */  Class context,
         /* [out] */ IXmlPullParserFactory** xmlPullParserFac);
 
+private:
+    ECode GetParserInstance(
+        /* [out] */ IXmlPullParser** parser);
+
+    ECode GetSerializerInstance(
+        /* [out] */ IXmlSerializer** serializer);
+
 public:
     static const String PROPERTY_NAME; // = "org.xmlpull.v1.XmlPullParserFactory";
-
 
 protected:
     String mClassNamesLocation;

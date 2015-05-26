@@ -2,9 +2,9 @@
 #ifndef __ORG_SAX2_CDRIVER_H__
 #define __ORG_SAX2_CDRIVER_H__
 
-#include "Object.h"
 #include "__Org_Xmlpull_V1_Sax2_CDriver.h"
-#include "Org.Xml.Sax.h"
+#include <elastos/core/Object.h>
+#include <Org.Xml.Sax.h>
 
 using Elastos::Core::Object;
 using Org::Xml::Sax::IEntityResolver;
@@ -18,6 +18,12 @@ namespace Xmlpull {
 namespace V1 {
 namespace Sax2 {
 
+/**
+ * SAX2 Driver that pulls events from XmlPullParser
+ * and comverts them into SAX2 callbacks.
+ *
+ * @author <a href="http://www.extreme.indiana.edu/~aslom/">Aleksander Slominski</a>
+ */
 CarClass(CDriver)
     , public Object
     , public ILocator
@@ -26,6 +32,7 @@ CarClass(CDriver)
 {
 public:
     CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     CARAPI constructor();

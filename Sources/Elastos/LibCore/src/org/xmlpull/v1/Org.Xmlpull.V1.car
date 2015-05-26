@@ -4,16 +4,14 @@ module
     importlib("Elastos.CoreLibrary.eco");
     importlib("Org.Xml.Sax.eco");
 
-    // merge("../../../../../car/Org/Xmlpull/V1/Exceptions.car");
-    merge("../../../../../car/org/xmlpull/v1/IXmlPullParser.car");
-    merge("../../../../../car/org/xmlpull/v1/IXmlPullParserFactory.car");
-    merge("../../../../../car/org/xmlpull/v1/IXmlSerializer.car");
+    merge("../../../../car/org/xmlpull/v1/Exceptions.car");
+    merge("../../../../car/org/xmlpull/v1/IXmlPullParser.car");
+    merge("../../../../car/org/xmlpull/v1/IXmlPullParserFactory.car");
+    merge("../../../../car/org/xmlpull/v1/IXmlSerializer.car");
 
     using interface Org.Xml.Sax.ILocator;
     using interface Org.Xml.Sax.IXMLReader;
     using interface Org.Xml.Sax.IAttributes;
-
-    interface Org.Xmlpull.V1.IXmlPullParser;
 
     namespace Org {
     namespace Xmlpull {
