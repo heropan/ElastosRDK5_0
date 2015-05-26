@@ -2,19 +2,22 @@
 #ifndef __CAUTHORIZERCALLBACK_H__
 #define __CAUTHORIZERCALLBACK_H__
 
-#include "_CAuthorizerCallback.h"
-#include <cmdef.h>
+#include "_Elastos_Sql_SQLite_CAuthorizerCallback.h"
+#include <coredef.h>
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 CarClass(CAuthorizerCallback)
+    , public Object
+    , public IAuthorizer
+    , public ICallback
 {
 public:
+    CAR_OBJECT_DECL();
 
-    PInterface Probe(
-        /* [in] */ REIID riid);
+    CAR_INTERFACE_DECL();
 
     CARAPI Authorize(
         /* [in] */ Int32 what,
@@ -40,7 +43,6 @@ public:
 
 private:
     Boolean isAuthorizing;
-
 };
 
 } // namespace SQLite

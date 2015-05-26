@@ -4,6 +4,10 @@
 namespace Elastos {
 namespace Sql {
 
+CAR_OBJECT_IMPL(CSQLWarning);
+
+CAR_INTERFACE_IMPL(CSQLWarning, Object, ISQLWarning);
+
 ECode CSQLWarning::constructor()
 {
     // TODO: Add your code here

@@ -10,6 +10,10 @@ const String CDataTruncation::THE_SQLSTATE_READ = String("01004");
 
 const String CDataTruncation::THE_SQLSTATE_WRITE = String("22001");
 
+CAR_OBJECT_IMPL(CDataTruncation);
+
+CAR_INTERFACE_IMPL_3(CDataTruncation, Object, IDataTruncation, ISQLWarning, ISerializable);
+
 ECode CDataTruncation::constructor(
     /* [in] */ Int32 index,
     /* [in] */ Boolean parameter,
@@ -17,6 +21,7 @@ ECode CDataTruncation::constructor(
     /* [in] */ Int32 dataSize,
     /* [in] */ Int32 transferSize)
 {
+    assert(0 && "TODO");
     //super(THE_REASON, THE_SQLSTATE_READ, THE_ERROR_CODE);
     this->index = index;
     this->parameter = parameter;

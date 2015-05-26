@@ -12,17 +12,18 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
-CarClass(CBlobR), public InputStream
+CarClass(CBlobR)
+    , public InputStream
+    , public IBlobR
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI Available(
         /* [out] */ Int32* number);
 
     CARAPI Mark(
         /* [in] */ Int32 readLimit);
-
-    CARAPI IsMarkSupported(
-        /* [out] */ Boolean* supported);
 
     CARAPI Read(
          /* [out] */ Int32* value);
@@ -47,9 +48,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ Elastos::Sql::SQLite::IBlob* blob);
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
 
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);

@@ -18,7 +18,11 @@ CarClass(CShell)
     , public ICallback
 {
 public:
+    CShell();
+
     CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
 
     CARAPI Columns(
         /* [in] */ const ArrayOf<String> & args);

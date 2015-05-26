@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_OBJECT_IMPL(CVm);
+
+CAR_INTERFACE_IMPL(CVm, Object, IVm);
+
 CVm::CVm()
 {
     mHandle = 0;

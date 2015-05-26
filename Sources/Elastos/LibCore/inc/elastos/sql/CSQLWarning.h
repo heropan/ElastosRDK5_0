@@ -2,14 +2,20 @@
 #ifndef __CSQLWARNING_H__
 #define __CSQLWARNING_H__
 
-#include "_CSQLWarning.h"
+#include "_Elastos_Sql_CSQLWarning.h"
 
 namespace Elastos {
 namespace Sql {
 
 CarClass(CSQLWarning)
+    , public Object
+    , public ISQLWarning
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI constructor();
 
     CARAPI constructor(

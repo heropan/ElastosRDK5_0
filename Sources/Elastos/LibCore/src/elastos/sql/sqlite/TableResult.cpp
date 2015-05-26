@@ -69,14 +69,20 @@ ECode TableResult::ToString(
 }
 
 TableResult::TableResult()
+    : ncolumns(0)
+    , nrows(0)
+    , maxrows(0)
+    , atmaxrows(FALSE)
 {
-    Init();
 }
 
 TableResult::TableResult(
     /* [in] */ Int32 maxrows)
+    : ncolumns(0)
+    , nrows(0)
+    , maxrows(0)
+    , atmaxrows(FALSE)
 {
-    Init(maxrows);
 }
 
 ECode TableResult::Clear()
@@ -89,24 +95,16 @@ ECode TableResult::Clear()
     return NOERROR;
 }
 
-void TableResult::Init()
+ECode TableResult::Init()
 {
-    Clear();
+    return Clear();
 }
 
-void TableResult::Init(Int32 maxrows)
+ECode TableResult::Init(Int32 maxrows)
 {
     maxrows = maxrows;
-    Clear();
+    return Clear();
 }
-
-// TableResult::~TableResult()
-// {
-//     if(!rows.IsEmpty())
-//     {
-//         rows.Clear();
-//     }
-// }
 
 } // namespace SQLite
 } // namespace Sql

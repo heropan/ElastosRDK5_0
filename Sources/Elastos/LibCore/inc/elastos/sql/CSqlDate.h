@@ -2,9 +2,8 @@
 #ifndef __CSQL_CDATE_H__
 #define __CSQL_CDATE_H__
 
-#include "_CSqlDate.h"
+#include "_Elastos_Sql_CSqlDate.h"
 #include "Date.h"
-#include "DateMacro.h"
 
 namespace Elastos {
 namespace Sql {
@@ -12,8 +11,10 @@ namespace Sql {
 CarClass(CSqlDate) , public Date
 {
 public:
+    CAR_OBJECT_DECL();
 
-    SQLDATE_METHODS_DECL()
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
 
     CARAPI GetHours(
         /* [out] */ Int32 * value);
@@ -48,7 +49,7 @@ public:
         /* [in] */ Int64 theDate);
 
 public:
-    static CARAPI_(AutoPtr<IDate>) ValueOf(
+    static CARAPI_(AutoPtr<Elastos::Sql::IDate>) ValueOf(
         /* [in] */ const String& dateString);
 
 private:

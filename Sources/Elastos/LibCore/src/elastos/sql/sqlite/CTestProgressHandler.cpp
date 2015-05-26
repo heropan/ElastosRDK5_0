@@ -8,17 +8,9 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
-PInterface CTestProgressHandler::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IProgressHandler) {
-        return (IAuthorizer*)this;
-    } else if (riid == EIID_ICallback) {
-        return (ICallback*)this;
-    } else {
-        return NULL;
-    }
-}
+CAR_OBJECT_IMPL(CTestProgressHandler);
+
+CAR_INTERFACE_IMPL_2(CTestProgressHandler, Object, IDBDump, ICallback);
 
 ECode CTestProgressHandler::Progress(
     /* [out] */ Boolean* value)
@@ -51,7 +43,7 @@ ECode CTestProgressHandler::Newrow(
 
 ECode CTestProgressHandler::constructor()
 {
-    progressed = false;
+    progressed = FALSE;
     counter = 0;
     return NOERROR;
 }

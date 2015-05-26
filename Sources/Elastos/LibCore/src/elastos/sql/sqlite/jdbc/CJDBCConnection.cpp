@@ -15,7 +15,7 @@ namespace JDBC{
 
 CAR_OBJECT_IMPL(CJDBCConnection);
 
-CAR_INTERFACE_IMPL_4(CJDBCResultSet, Object, IJDBCConnection, IConnection, IWrapper, IBusyHandler);
+CAR_INTERFACE_IMPL_4(CJDBCConnection, Object, IJDBCConnection, IConnection, IWrapper, IBusyHandler);
 
 ECode CJDBCConnection::ClearWarnings()
 {

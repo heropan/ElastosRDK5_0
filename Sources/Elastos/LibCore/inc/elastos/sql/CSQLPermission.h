@@ -2,14 +2,21 @@
 #ifndef __CSQLPERMISSION_H__
 #define __CSQLPERMISSION_H__
 
-#include "_CSQLPermission.h"
+#include "_Elastos_Sql_CSQLPermission.h"
 
 namespace Elastos {
 namespace Sql {
 
 CarClass(CSQLPermission)
+    , public BasicPermission
+    , public ISQLPermission
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
     CARAPI constructor(
         /* [in] */ const String& name);
 
@@ -20,9 +27,9 @@ public:
     CARAPI GetActions(
         /* [out] */ String * str);
 
-    // CARAPI Implies(
-    //     /* [in] */ IPermission permission,
-    //     /* [out] */ Boolean * value);
+    CARAPI Implies(
+        /* [in] */ IPermission* permission,
+        /* [out] */ Boolean * value);
 
 };
 

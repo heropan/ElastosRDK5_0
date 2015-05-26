@@ -2,16 +2,22 @@
 #ifndef __CTESTBUSYHANDLER_H__
 #define __CTESTBUSYHANDLER_H__
 
-#include "_CTestBusyHandler.h"
-#include <cmdef.h>
+#include "_Elastos_Sql_SQLite_CTestBusyHandler.h"
+#include <coredef.h>
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 CarClass(CTestBusyHandler)
+    , public Object
+    , public IBusyHandler
+    , public ICallback
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
 
     CARAPI Busy(
         /* [in] */ const String& table,

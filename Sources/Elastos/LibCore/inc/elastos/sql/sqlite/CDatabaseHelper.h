@@ -1,15 +1,20 @@
 
 #ifndef __CDATABASEHELPER_H__
 #define __CDATABASEHELPER_H__
-#include "_CDatabaseHelper.h"
+
+#include "_Elastos_Sql_SQLite_CDatabaseHelper.h"
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 CarClass(CDatabaseHelper)
+    , public Object
+    , public IDatabaseHelper
 {
 public:
+    CAR_SINGLETON_DECL();
+
     CARAPI Complete(
         /* [in] */ const String& sql,
         /* [out] */ Boolean * value);

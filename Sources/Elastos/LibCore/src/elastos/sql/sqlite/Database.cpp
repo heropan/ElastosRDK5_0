@@ -385,17 +385,20 @@ ECode Database::BusyTimeout(
     return _BusyTimeout(ms);
 }
 
-AutoPtr<ITableResult> Database::GetTable(
+ECode Database::GetTable(
     /* [in] */ const String& sql,
-    /* [in] */ Int32 maxrows)
+    /* [in] */ Int32 maxrows,
+    /* [out] */ ITableResult ** tableresult)
 {
+    VALIDATE_NOT_NULL(*tableresult);
+    *tableresult = NULL;
     AutoPtr<ITableResult> ret ;
     CTableResult::New(maxrows,(ITableResult **)&ret);
     if (!Is3()) {
         ECode ec = Exec(sql, ret);
         if (ec != NOERROR) {
             if (maxrows <= 0 || !((CTableResult *)ret.Get())->atmaxrows) {
-                return NULL;
+                return NOERROR;
             }
         }
     } else {
@@ -420,27 +423,34 @@ AutoPtr<ITableResult> Database::GetTable(
             }
             ((CVm *)vm.Get())->Finalize();
     }
-    return ret;
+
+    *tableresult = ret;
+    REFCOUNT_ADD(*tableresult);
+    return NOERROR;
 }
 
-AutoPtr<ITableResult> Database::GetTable(
-    /* [in] */ const String& sql)
+ECode Database::GetTable(
+    /* [in] */ const String& sql,
+    /* [out] */ ITableResult ** tableresult)
 {
-    return GetTable(sql, 0);
+    return GetTable(sql, 0, tableresult);
 }
 
-AutoPtr<ITableResult> Database::GetTable(
+ECode Database::GetTable(
     /* [in] */ const String& sql,
     /* [in] */ Int32 maxrows,
-    /* [in] */ const ArrayOf<String> & args)
+    /* [in] */ const ArrayOf<String> & args,
+    /* [out] */ ITableResult ** tableresult)
 {
+    VALIDATE_NOT_NULL(*tableresult);
+    *tableresult = NULL;
     AutoPtr<ITableResult> ret ;
     CTableResult::New(maxrows,(ITableResult **)&ret);
     if (!Is3()) {
         ECode ec = Exec(sql, (ICallback *)ret.Get(), args);
         if (ec != NOERROR) {
             if (maxrows <= 0 || !((CTableResult *)ret.Get())->atmaxrows) {
-                return NULL;
+                return NOERROR;
             }
         }
     } else {
@@ -465,14 +475,18 @@ AutoPtr<ITableResult> Database::GetTable(
         }
         ((CVm *)vm.Get())->Finalize();
     }
-    return ret;
+
+    *tableresult = ret;
+    REFCOUNT_ADD(*tableresult);
+    return NOERROR;
 }
 
-AutoPtr<ITableResult> Database::GetTable(
+ECode Database::GetTable(
     /* [in] */ const String& sql,
-    /* [in] */ const ArrayOf<String> & args)
+    /* [in] */ const ArrayOf<String> & args,
+    /* [out] */ ITableResult ** tableresult)
 {
-    return GetTable(sql, 0, args);
+    return GetTable(sql, 0, args, tableresult);
 }
 
 ECode Database::GetTable(
@@ -527,8 +541,10 @@ String Database::Version()
 #endif
 }
 
-String Database::Dbversion()
+ECode Database::Dbversion(
+    /* [out] */ String * ver)
 {
+    VALIDATE_NOT_NULL(ver);
     handle *h = (handle *)mHandle;
 
      if (h && h->sqlite) {
@@ -536,19 +552,24 @@ String Database::Dbversion()
      Boolean isflag = FALSE;
      Is3(&isflag);
      if (isflag) {
-         return sqlite3_libversion();
+         *ver = sqlite3_libversion();
+         return NOERROR;
      } else {
-        return sqlite_libversion();
+         *ver = sqlite_libversion();
+         return NOERROR;
      }
  #else
  #if HAVE_SQLITE2
-    return sqlite_libversion();
+    *ver = sqlite_libversion();
+    return NOERROR;
  #else
-    return String(sqlite3_libversion());
+    *ver = String(sqlite3_libversion());
+    return NOERROR;
  #endif
  #endif
      }
-    return String("unknown");
+    *ver = String("unknown");
+    return NOERROR;
 }
 
 ECode Database::CreateFunction(
@@ -577,9 +598,12 @@ ECode Database::FunctionType(
     return _FunctionType(name, type);
 }
 
-Int32 Database::LastError()
+ECode Database::LastError(
+    /* [out] */ Int32 * err)
 {
-    return mError_code;
+    VALIDATE_NOT_NULL(err);
+    *err = mError_code;
+    return NOERROR;
 }
 
 ECode Database::SetLastError(
@@ -598,10 +622,15 @@ String Database::ErrorString(Int32 mError_code)
 #endif
 }
 
-String Database::ErrorMessage()
+ECode Database::ErrorMessage(
+    /* [out] */ String * str)
 {
-    Object::Autolock lock(*this);
-    return _Errmsg();
+    VALIDATE_NOT_NULL(str);
+    synchronized(this) {
+        *str = _Errmsg();
+    }
+
+    return NOERROR;
 }
 
 ECode Database::SetEncoding(
@@ -625,104 +654,145 @@ ECode Database::Trace(
     return _Trace(tr);
 }
 
-AutoPtr<IBackup> Database::Backup(
+ECode Database::Backup(
     /* [in] */ AutoPtr<IDatabase> dest,
     /* [in] */ const String& destName,
-    /* [in] */ const String& srcName)
+    /* [in] */ const String& srcName,
+    /* [out] */ IBackup ** backup)
 {
-    Object::Autolock lock(*this);
-    AutoPtr<IBackup> b;
-    CBackup::New((IBackup **)&b);
-    _Backup(b, dest, destName, (IDatabase *)(this->Probe(EIID_IDatabase)), srcName);
-    return b;
+    VALIDATE_NOT_NULL(*backup);
+    synchronized(this) {
+        AutoPtr<IBackup> b;
+        CBackup::New((IBackup **)&b);
+        _Backup(b, dest, destName, (IDatabase *)(this->Probe(EIID_IDatabase)), srcName);
+        *backup = b;
+        REFCOUNT_ADD(*backup);
+    }
+
+    return NOERROR;
 }
 
 ECode Database::Profile(
     /* [in] */ AutoPtr<IProfile> r)
 {
-    Object::Autolock lock(*this);
-    return _Profile(r);
+    ECode ec = NOERROR;
+    synchronized(this) {
+        ec = _Profile(r);
+    }
+    return ec;
 }
 
-Int32 Database::DbStatus(
+ECode Database::DbStatus(
     /* [in] */ Int32 op,
     /* [in] */ const ArrayOf<Int32> & info,
-    /* [in] */ Boolean flag)
+    /* [in] */ Boolean flag,
+    /* [out] */ Int32 * status)
 {
-    Object::Autolock lock(*this);
-    return _DbStatus(op, const_cast<ArrayOf<Int32> *>(&info), flag);
+    VALIDATE_NOT_NULL(status);
+    synchronized(this) {
+        *status = _DbStatus(op, const_cast<ArrayOf<Int32> *>(&info), flag);
+    }
+    return NOERROR;
 }
 
-AutoPtr<IVm> Database::Compile(
-    /* [in] */ const String& sql)
-{
-    Object::Autolock lock(*this);
-    AutoPtr<IVm> vm;
-    CVm::New((IVm **)&vm);
-    Vm_compile(sql, vm);
-
-    return vm;
-}
-
-AutoPtr<IVm> Database::Compile(
+ECode Database::Compile(
     /* [in] */ const String& sql,
-    /* [in] */ const ArrayOf<String> & args)
+    /* [out] */ IVm ** ivm)
 {
-    Object::Autolock lock(*this);
-    AutoPtr<IVm> vm;
-    CVm::New((IVm **)&vm);
-    Vm_compile_args(sql, vm, args);
-    return vm;
+    VALIDATE_NOT_NULL(*ivm);
+    synchronized(this) {
+        AutoPtr<IVm> vm;
+        CVm::New((IVm **)&vm);
+        Vm_compile(sql, vm);
+        *ivm = vm;
+        REFCOUNT_ADD(*ivm);
+    }
+
+    return NOERROR;
 }
 
-AutoPtr<IStmt> Database::Prepare(
-    /* [in] */ const String& sql)
+ECode Database::Compile(
+    /* [in] */ const String& sql,
+    /* [in] */ const ArrayOf<String> & args,
+    /* [out] */ IVm ** ivm)
 {
-    Object::Autolock lock(*this);
-    AutoPtr<IStmt> st;
-    CStmt::New((IStmt **)&st);
-    ECode ec = Stmt_prepare(sql, st);
-
-    return st;
+    VALIDATE_NOT_NULL(*ivm);
+    synchronized(this) {
+        AutoPtr<IVm> vm;
+        CVm::New((IVm **)&vm);
+        Vm_compile_args(sql, vm, args);
+        *ivm = vm;
+        REFCOUNT_ADD(*ivm);
+    }
+    return NOERROR;
 }
 
-AutoPtr<IBlob> Database::OpenBlob(
+ECode Database::Prepare(
+    /* [in] */ const String& sql,
+    /* [out] */ IStmt ** st)
+{
+    VALIDATE_NOT_NULL(*st);
+    synchronized(this) {
+        AutoPtr<IStmt> stmt;
+        CStmt::New((IStmt **)&stmt);
+        ECode ec = Stmt_prepare(sql, stmt);
+        *st = stmt;
+        REFCOUNT_ADD(*st);
+    }
+
+    return NOERROR;
+}
+
+ECode Database::OpenBlob(
     /* [in] */ const String& db,
     /* [in] */ const String& table,
     /* [in] */ const String& column,
     /* [in] */ Int64 row,
-    /* [in] */ Boolean rw)
+    /* [in] */ Boolean rw,
+    /* [out] */ IBlob ** blob)
 {
-    Object::Autolock lock(*this);
-    AutoPtr<CBlob> bl;
-    CBlob::New((IBlob **)&bl);
-    _OpenBlob(db, table, column, row, rw, bl);
+    VALIDATE_NOT_NULL(*blob);
 
-    return bl;
+    synchronized(this) {
+        AutoPtr<CBlob> bl;
+        CBlob::New((IBlob **)&bl);
+        _OpenBlob(db, table, column, row, rw, bl);
+        *blob = bl;
+        REFCOUNT_ADD(*blob);
+    }
+
+    return NOERROR;
 }
 
-Boolean Database::Is3()
+ECode Database::Is3(
+    /* [out] */ Boolean * value)
 {
+    VALIDATE_NOT_NULL(value);
 #if HAVE_BOTH_SQLITE
     handle *h = (handle *)mHandle);
 
     if (h) {
-        return h->is3 ? TRUE : FALSE;
+        *value = h->is3 ? TRUE : FALSE;
+        return NOERROR;
     }
     else
     {
-        return FALSE;
+        *value = FALSE;
+        return NOERROR;
     }
 #else
 #if HAVE_SQLITE2
-    return FALSE;
+    *value = FALSE;
+    return NOERROR;
 #endif
 #if HAVE_SQLITE3
-    return TRUE;
+    *value = TRUE;
+    return NOERROR;
 #endif
 #endif
 
-    return FALSE;
+    *value = FALSE;
+    return NOERROR;
 }
 
 ECode Database::ProgressHandler(

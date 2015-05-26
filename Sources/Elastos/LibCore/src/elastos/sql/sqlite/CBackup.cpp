@@ -5,6 +5,10 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_OBJECT_IMPL(CBackup);
+
+CAR_INTERFACE_IMPL(CBackup, Object, IBackup);
+
 CBackup::CBackup()
 {
     mHandle = 0;
@@ -24,30 +28,38 @@ Boolean CBackup::isinit = Internal_init();
 
 ECode CBackup::Finish()
 {
-    Mutex::Autolock lock(mSyncLock);
-    return _Finalize();
+    ECode ec = NOERROR;
+    synchronized(this) {
+        ec = _Finalize();
+    }
+    return ec;
 }
 
 ECode CBackup::Finalize()
 {
-    Mutex::Autolock lock(mSyncLock);
-    return _Finalize();
+    ECode ec = NOERROR;
+    synchronized(this) {
+        ec = _Finalize();
+    }
+    return ec;
 }
 
 ECode CBackup::Step(
     /* [in] */ Int32 n,
     /* [out] */ Boolean* isCompleted)
 {
-    Mutex::Autolock lock(mSyncLock);
-    *isCompleted = _Step(n);
+    synchronized(this) {
+        *isCompleted = _Step(n);
+    }
 
     return NOERROR;
 }
 
 ECode CBackup::Backup()
 {
-    Mutex::Autolock lock(mSyncLock);
-    _Step(-1);
+    synchronized(this) {
+        _Step(-1);
+    }
 
     return NOERROR;
 }
@@ -55,8 +67,9 @@ ECode CBackup::Backup()
 ECode CBackup::Remaining(
     /* [out] */ Int32* number)
 {
-    Mutex::Autolock lock(mSyncLock);
-    *number = _Remaining();
+    synchronized(this) {
+        *number = _Remaining();
+    }
 
     return NOERROR;
 }
@@ -64,8 +77,9 @@ ECode CBackup::Remaining(
 ECode CBackup::Pagecount(
     /* [out] */ Int32* number)
 {
-    Mutex::Autolock lock(mSyncLock);
-    *number = _Pagecount();
+    synchronized(this) {
+        *number = _Pagecount();
+    }
 
     return NOERROR;
 }

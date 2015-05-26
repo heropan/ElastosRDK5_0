@@ -12,9 +12,16 @@ namespace Sql {
 namespace SQLite {
 
 CarClass(CBlob)
+    , public Object
+    , public IBlob
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CBlob();
+
     CARAPI GetInputStream(
         /* [out] */ IInputStream** instream);
 

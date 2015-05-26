@@ -4,6 +4,10 @@
 namespace Elastos {
 namespace Sql {
 
+CAR_OBJECT_IMPL(CDriverPropertyInfo);
+
+CAR_INTERFACE_IMPL(CDriverPropertyInfo, Object, IDriverPropertyInfo);
+
 ECode CDriverPropertyInfo::constructor(
     /* [in] */ const String& name,
     /* [in] */ const String& value)

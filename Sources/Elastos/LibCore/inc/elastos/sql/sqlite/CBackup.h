@@ -2,18 +2,21 @@
 #ifndef __CBACKUP_H__
 #define __CBACKUP_H__
 
-#include "_CBackup.h"
-#include <elastos/Mutex.h>
-
-using Elastos::Core::Mutex;
+#include "_Elastos_Sql_SQLite_CBackup.h"
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 CarClass(CBackup)
+    , public Object
+    , public IBackup
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI Finish();
 
     CARAPI Finalize();
@@ -49,7 +52,6 @@ private:
 
 private:
     static Boolean isinit;
-    Mutex mSyncLock;
 };
 
 } // namespace SQLite

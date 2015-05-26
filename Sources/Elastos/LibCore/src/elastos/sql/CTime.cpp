@@ -9,7 +9,16 @@ namespace Sql {
 
 const String CTime::PADDING = String("00");
 
-SQLTIME_METHODS_IMPL(CTime, Date)
+CAR_OBJECT_IMPL(CTime);
+
+PInterface CTime::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_ITime) {
+        return (IInterface*)(ITime*)this;
+    }
+    return Date::Probe(riid);
+}
 
 ECode CTime::GetDate(
     /* [out] */ Int32 * pDate)
@@ -50,8 +59,7 @@ ECode CTime::SetMonth(
 ECode CTime::SetTime(
     /* [in] */ Int64 milliseconds)
 {
-    Date::SetTime(milliseconds);
-    return NOERROR;
+    return Date::SetTime(milliseconds);
 }
 
 ECode CTime::SetYear(
@@ -91,7 +99,8 @@ ECode CTime::constructor(
     return NOERROR;
 }
 
-ITime * CTime::ValueOf(const String& timeString)
+AutoPtr<ITime> CTime::ValueOf(
+    /* [in] */ const String& timeString)
 {
     if (timeString.IsNull()) {
             return NULL;

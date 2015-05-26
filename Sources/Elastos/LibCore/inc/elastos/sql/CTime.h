@@ -2,17 +2,21 @@
 #ifndef __CTIME_H__
 #define __CTIME_H__
 
-#include "_CTime.h"
+#include "_Elastos_Sql_CTime.h"
 #include "Date.h"
-#include "TimeMacro.h"
 
 namespace Elastos {
 namespace Sql {
 
-CarClass(CTime) , public Date
+CarClass(CTime)
+    , public Date
+    , public ITime
 {
 public:
-    SQLTIME_METHODS_DECL()
+    CAR_OBJECT_DECL();
+
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
 
     CARAPI GetDate(
         /* [out] */ Int32 * pDate);
@@ -50,7 +54,7 @@ public:
         /* [in] */ Int64 theTime);
 
 public:
-    static CARAPI_(ITime *) ValueOf(
+    static CARAPI_(AutoPtr<ITime>) ValueOf(
         /* [in] */ const String& timeString);
 
 private:

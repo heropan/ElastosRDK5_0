@@ -9,6 +9,10 @@ Boolean CMockFunction::functionCalled = FALSE;
 Boolean CMockFunction::stepCalled = FALSE;
 Boolean CMockFunction::lastStepCalled = FALSE;
 
+CAR_OBJECT_IMPL(CMockFunction);
+
+CAR_INTERFACE_IMPL_2(CMockFunction, Object, IMockFunction, IFunction);
+
 ECode CMockFunction::constructor()
 {
     return NOERROR;

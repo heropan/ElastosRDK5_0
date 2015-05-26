@@ -7,6 +7,10 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_OBJECT_IMPL(CTestTrace);
+
+CAR_INTERFACE_IMPL_2(CTestTrace, Object, ITrace, ICallback);
+
 ECode CTestTrace::Trace(
     /* [in] */ const String& stmt)
 {

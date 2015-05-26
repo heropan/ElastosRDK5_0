@@ -58,5 +58,5 @@ SOURCES += CDataTruncation.cpp
 SOURCES += CSQLWarning.cpp
 SOURCES += CDriverManager.cpp
 SOURCES += CTime.cpp
-SOURCES += Date.cpp
+#SOURCES += Date.cpp
 

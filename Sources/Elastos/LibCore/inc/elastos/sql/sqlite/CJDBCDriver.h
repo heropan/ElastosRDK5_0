@@ -20,6 +20,8 @@ CarClass(CJDBCDriver)
 public:
     CAR_OBJECT_DECL();
 
+    CAR_INTERFACE_DECL();
+
     CARAPI AcceptsURL(
         /* [in] */ const String& url,
         /* [out] */ Boolean * canOpen);

@@ -17,6 +17,8 @@ AutoPtr<IPrintStream> CDriverManager::thePrintStream;
 AutoPtr<IPrintWriter> CDriverManager::thePrintWriter;
 Boolean CDriverManager::isinitflag = FALSE;
 
+CAR_SINGLETON_IMPL(CDriverManager, Object, IDriverManagerHelper);
+
 CDriverManager::CDriverManager()
 {
     // pls use lock
