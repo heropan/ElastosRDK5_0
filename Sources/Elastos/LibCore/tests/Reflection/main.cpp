@@ -38,7 +38,7 @@ ECode testReflection()
     AutoPtr<IArgumentList> argumentList;
 
     const String moduleName("/data/data/com.elastos.runtime/elastos/Reflection.eco");
-    const String klassName("Reflection.CFooBar");
+    const String klassName("LReflection/CFooBar;");
 
     ECode ec = _CReflector_AcquireModuleInfo(moduleName, (IModuleInfo**)&moduleInfo);
     if (FAILED(ec)) {
@@ -90,7 +90,7 @@ ECode testReflection()
     }
 
     AutoPtr<IInterfaceInfo> itfInfo;
-    ec = classInfo->GetInterfaceInfo("Reflection.IFooBar", (IInterfaceInfo**)&itfInfo);
+    ec = classInfo->GetInterfaceInfo(String("LReflection/IFooBar;"), (IInterfaceInfo**)&itfInfo);
     if (FAILED(ec)) {
         printf("Acquire \"IFooBar\" interface info failed!\n");
         return ec;
