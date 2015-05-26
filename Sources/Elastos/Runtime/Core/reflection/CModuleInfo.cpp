@@ -110,7 +110,7 @@ ECode CModuleInfo::GetAllClassInfos(
 }
 
 ECode CModuleInfo::GetClassInfo(
-    /* [in] */ CString fullName,
+    /* [in] */ const String& fullName,
     /* [out] */ IClassInfo ** ppClassInfo)
 {
     if (fullName.IsNull() || NULL == ppClassInfo) {
@@ -120,7 +120,10 @@ ECode CModuleInfo::GetClassInfo(
     ECode ec = AcquireClassList();
     if (FAILED(ec)) return ec;
 
-    return m_pClassList->AcquireObjByName(fullName, (IInterface **)ppClassInfo);
+    Int32 start = fullName.IndexOf('L');
+    Int32 end = fullName.IndexOf(';');
+    String strName = fullName.Substring(start >= 0 ? start + 1 : 0, end > 0 ? end : fullName.GetLength()).Replace('/', '.');
+    return m_pClassList->AcquireObjByName(strName, (IInterface **)ppClassInfo);
 }
 
 ECode CModuleInfo::GetInterfaceCount(
@@ -160,7 +163,7 @@ ECode CModuleInfo::GetAllInterfaceInfos(
 }
 
 ECode CModuleInfo::GetInterfaceInfo(
-    /* [in] */ CString fullName,
+    /* [in] */ const String& fullName,
     /* [out] */ IInterfaceInfo ** ppInterfaceInfo)
 {
     if (fullName.IsNull() || NULL == ppInterfaceInfo) {
@@ -170,8 +173,11 @@ ECode CModuleInfo::GetInterfaceInfo(
     ECode ec = AcquireInterfaceList();
     if (FAILED(ec)) return ec;
 
+    Int32 start = fullName.IndexOf('L');
+    Int32 end = fullName.IndexOf(';');
+    String strName = fullName.Substring(start >= 0 ? start + 1 : 0, end > 0 ? end : fullName.GetLength()).Replace('/', '.');
     return m_pInterfaceList->AcquireObjByName(
-        fullName, (IInterface **)ppInterfaceInfo);
+        strName, (IInterface **)ppInterfaceInfo);
 }
 
 ECode CModuleInfo::GetStructCount(
@@ -265,7 +271,7 @@ ECode CModuleInfo::GetAllEnumInfos(
 }
 
 ECode CModuleInfo::GetEnumInfo(
-    /* [in] */ CString fullName,
+    /* [in] */ const String& fullName,
     /* [out] */ IEnumInfo ** ppEnumInfo)
 {
     if (fullName.IsNull() || !ppEnumInfo) {
@@ -279,7 +285,10 @@ ECode CModuleInfo::GetEnumInfo(
     ECode ec = AcquireEnumList();
     if (FAILED(ec)) return ec;
 
-    return m_pEnumList->AcquireObjByName(fullName, (IInterface **)ppEnumInfo);
+    Int32 start = fullName.IndexOf('L');
+    Int32 end = fullName.IndexOf(';');
+    String strName = fullName.Substring(start >= 0 ? start + 1 : 0, end > 0 ? end : fullName.GetLength()).Replace('/', '.');
+    return m_pEnumList->AcquireObjByName(strName, (IInterface **)ppEnumInfo);
 }
 
 ECode CModuleInfo::GetTypeAliasCount(

@@ -651,7 +651,7 @@ ECode CClassInfo::GetAllInterfaceInfos(
 }
 
 ECode CClassInfo::GetInterfaceInfo(
-    /* [in] */ CString fullName,
+    /* [in] */ const String& fullName,
     /* [out] */ IInterfaceInfo ** ppInterfaceInfo)
 {
     if (fullName.IsNull() || !ppInterfaceInfo) {
@@ -661,7 +661,10 @@ ECode CClassInfo::GetInterfaceInfo(
     ECode ec = AcquireInterfaceList();
     if (FAILED(ec)) return ec;
 
-    return m_pInterfaceList->AcquireObjByName(fullName,
+    Int32 start = fullName.IndexOf('L');
+    Int32 end = fullName.IndexOf(';');
+    String strName = fullName.Substring(start >= 0 ? start + 1 : 0, end > 0 ? end : fullName.GetLength()).Replace('/', '.');
+    return m_pInterfaceList->AcquireObjByName(strName,
         (IInterface **)ppInterfaceInfo);
 }
 

@@ -43,7 +43,7 @@ public:
         /* [out] */ ArrayOf<IClassInfo *> * pClassInfos);
 
     CARAPI GetClassInfo(
-        /* [in] */ CString fullName,
+        /* [in] */ const String& fullName,
         /* [out] */ IClassInfo ** ppClassInfo);
 
     CARAPI GetInterfaceCount(
@@ -53,7 +53,7 @@ public:
         /* [out] */ ArrayOf<IInterfaceInfo *> * pInterfaceInfos);
 
     CARAPI GetInterfaceInfo(
-        /* [in] */ CString fullName,
+        /* [in] */ const String& fullName,
         /* [out] */ IInterfaceInfo ** ppInterfaceInfo);
 
     CARAPI GetStructCount(
@@ -73,7 +73,7 @@ public:
         /* [out] */ ArrayOf<IEnumInfo *> * pEnumInfos);
 
     CARAPI GetEnumInfo(
-        /* [in] */ CString fullName,
+        /* [in] */ const String& fullName,
         /* [out] */ IEnumInfo ** ppEnumInfo);
 
     CARAPI GetTypeAliasCount(
