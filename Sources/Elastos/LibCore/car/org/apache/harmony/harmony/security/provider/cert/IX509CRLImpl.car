@@ -1,0 +1,81 @@
+
+module
+{
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Security {
+    namespace Provider {
+    namespace Cert {
+
+    /**
+     * This class is an implementation of X509CRL. It wraps
+     * the instance of org.apache.harmony.security.x509.CertificateList
+     * built on the base of provided ASN.1 DER encoded form of
+     * CertificateList structure (as specified in RFC 3280
+     * http://www.ietf.org/rfc/rfc3280.txt).
+     * Implementation supports work with indirect CRLs.
+     * @see org.apache.harmony.security.x509.CertificateList
+     * @see java.security.cert.X509CRL
+     */
+    interface IX509CRLImpl extends IX509CRL {
+        // ---------------------------------------------------------------------
+        // ------ java.security.cert.CRL abstract method implementations -------
+        // ---------------------------------------------------------------------
+
+        /**
+         * @see java.security.cert.CRL#isRevoked(Certificate)
+         * method documentation for more info
+         */
+        IsRevoked(
+            [in] ICertificate* cert,
+            [out] Boolean* isRevoked);
+
+        /**
+         * @see java.security.cert.CRL#toString()
+         * method documentation for more info
+         */
+        ToString(
+            [out] String* str);
+
+        // ---------------------------------------------------------------------
+        // ------ java.security.cert.X509Extension method implementations ------
+        // ---------------------------------------------------------------------
+
+        /**
+         * @see java.security.cert.X509Extension#getNonCriticalExtensionOIDs()
+         * method documentation for more info
+         */
+        GetNonCriticalExtensionOIDs(
+            [out] ISet** oids);
+
+        /**
+         * @see java.security.cert.X509Extension#getCriticalExtensionOIDs()
+         * method documentation for more info
+         */
+        GetCriticalExtensionOIDs(
+            [out] ISet** oids);
+
+        /**
+        * @see java.security.cert.X509Extension#getExtensionValue(String)
+        * method documentation for more info
+        /
+        GetExtensionValue(
+            [in] String oid,
+            [out, callee] ArrayOf<Byte>* extensionValue);
+
+        /**
+         * @see java.security.cert.X509Extension#hasUnsupportedCriticalExtension()
+         * method documentation for more info
+         */
+        HasUnsupportedCriticalExtension(
+            [out] Boolean* hasExtensions);
+    }
+
+    } // namespace Cert
+    } // namespace Provider
+    } // namespace Security
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

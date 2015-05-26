@@ -1,0 +1,49 @@
+
+module
+{
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Security {
+    namespace Pkcs10 {
+
+    /**
+     * CertificationRequestInfo ::= SEQUENCE {
+     *   version Version,
+     *   subject Name,
+     *   subjectPublicKeyInfo SubjectPublicKeyInfo,
+     *   attributes [0] IMPLICIT Attributes }
+     *
+     * Version ::= INTEGER
+     *
+     * Attributes ::= SET OF Attribute
+     */
+    interface ICertificationRequestInfo {
+        GetSubject(
+            [out] IName** name);
+
+        GetVersion(
+            [out] Int32* version);
+
+        /**
+         * Returns ASN.1 encoded form of this CertificationRequestInfo.
+         * @return a byte array containing ASN.1 encode form.
+         */
+        GetEncoded(
+            [out, callee] ArrayOf<Byte>* encoded);
+
+        ToString(
+            [out] String* str);
+    }
+
+    interface ICertificationRequestInfoHelper {
+        GetASN1(
+            [out] IASN1Sequence** asn1);
+    }
+
+    } // namespace Pkcs10
+    } // namespace Security
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

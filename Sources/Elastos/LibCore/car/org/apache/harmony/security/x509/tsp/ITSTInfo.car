@@ -4,8 +4,8 @@ module
     interface Org.Apache.Harmony.Security.X509.IExtensions;
     interface Org.Apache.Harmony.Security.X509.IGeneralName;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
-    interface Elastos.Utility.IDate;
-    interface Elastos.Math.IBigInteger;
+    using interface Elastos.Utility.IDate;
+    using interface Elastos.Math.IBigInteger;
 
     namespace Org {
     namespace Apache {

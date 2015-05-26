@@ -1,0 +1,96 @@
+
+module
+{
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Security {
+    namespace X509 {
+
+    /**
+     * The class encapsulates the ASN.1 DER encoding/decoding work
+     * with the Extension part of X.509 certificate
+     * (as specified in RFC 3280 -
+     *  Internet X.509 Public Key Infrastructure.
+     *  Certificate and Certificate Revocation List (CRL) Profile.
+     *  http://www.ietf.org/rfc/rfc3280.txt):
+     *
+     * <pre>
+     *  Extension  ::=  SEQUENCE  {
+     *       extnID      OBJECT IDENTIFIER,
+     *       critical    BOOLEAN DEFAULT FALSE,
+     *       extnValue   OCTET STRING
+     *  }
+     * </pre>
+     */
+    interface IExtension {
+        // critical constants
+        const Boolean CRITICAL = TRUE;
+        const Boolean NON_CRITICAL = FALSE;
+
+        /**
+         * Returns the value of extnID field of the structure.
+         */
+        GetExtnID(
+            [out] String* extnID);
+
+        /**
+         * Returns the value of critical field of the structure.
+         */
+        GetCritical(
+            [out] Boolean* critical);
+
+        /**
+         * Returns the value of extnValue field of the structure.
+         */
+        GetExtnValue(
+            [out, callee] ArrayOf<Byte>* extnValue);
+
+        /**
+         * Returns the raw (undecoded octet string) value of extnValue
+         * field of the structure.
+         */
+        GetRawExtnValue(
+            [out, callee] ArrayOf<Byte>* rawExtnValue);
+
+        /**
+         * Returns ASN.1 encoded form of this X.509 Extension value.
+         */
+        GetEncoded(
+            [out, callee] ArrayOf<Byte>* encode);
+
+        Equals(
+            [in] IInterface* ext,
+            [out] Boolean* result);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        GetDecodedExtensionValue(
+            [out] IExtensionValue** extensionValue);
+
+        GetKeyUsageValue(
+            [out] IKeyUsage** usageValue);
+
+        GetBasicConstraintsValue(
+            [out] IBasicConstraints** basicConstrainsValue);
+
+        DumpValue(
+            [in] IStringBuilder* sb,
+            [in] String prefix);
+    }
+
+    interface IExtensionHelper {
+        /**
+         * X.509 Extension encoder/decoder.
+         */
+        GetASN1(
+            [out] IASN1Sequence** asn1);
+    }
+
+    } // namespace X509
+    } // namespace Security
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

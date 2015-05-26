@@ -1,0 +1,17 @@
+
+module
+{
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Security {
+    namespace Asn1 {
+
+    interface IASN1Explicit extends IASN1Constructed {}
+
+    } // namespace Asn1
+    } // namespace Security
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

@@ -1,7 +1,7 @@
 
 module
 {
-    interface Elastos.Security.IPublicKey;
+    using interface Elastos.Security.IPublicKey;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
 
     namespace Org {

@@ -3,7 +3,7 @@ TARGET_NAME= fortress
 TARGET_TYPE= lib
 
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/security/fortress
+INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Security/Fortress
 
 SOURCES = CEngine.cpp
 SOURCES += CEngineHelper.cpp

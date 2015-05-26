@@ -3,7 +3,7 @@ TARGET_NAME= dom
 TARGET_TYPE= lib
 
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/xml/dom
+INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Xml/Dom
 
 SOURCES = CAttrImpl.cpp
 SOURCES += CCDATASectionImpl.cpp

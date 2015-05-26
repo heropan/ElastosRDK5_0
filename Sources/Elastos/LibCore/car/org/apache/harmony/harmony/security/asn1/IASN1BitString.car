@@ -1,0 +1,31 @@
+
+module
+{
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Security {
+    namespace Asn1 {
+
+    interface IASN1BitString extends IASN1StringType {}
+
+    interface IASN1BitStringHelper {
+        GetInstance(
+            [out] IASN1BitString** instance);
+    }
+
+    /**
+     * Default implementation for ASN.1 Named Bitstring type
+     *
+     * The default implementation works with encoding
+     * that is mapped to array of boolean.
+    */
+
+    interface IASN1NamedBitList extends IASN1BitString {}
+
+    } // namespace Asn1
+    } // namespace Security
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

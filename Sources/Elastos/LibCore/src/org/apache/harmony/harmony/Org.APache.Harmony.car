@@ -1,0 +1,1454 @@
+
+module
+{
+    importlib("Elastos.Core.eco");
+
+    merge("../../../../../car/Org/Apache/Harmony/Kernel/Vm/IStringUtils.car");
+    merge("../../../../../car/Org/Apache/Harmony/Lang/Annotation/IAnnotationFactory.car");
+    merge("../../../../../car/Org/Apache/Harmony/Lang/Annotation/IAnnotationMember.car");
+    merge("../../../../../car/Org/Apache/Harmony/Luni/Internal/Util/ITimezoneGetter.car");
+    merge("../../../../../car/Org/Apache/Harmony/Luni/Lang/Reflect/IGenericSignatureParser.car");
+    merge("../../../../../car/Org/Apache/Harmony/Luni/Lang/Reflect/IImplForArray.car");
+    merge("../../../../../car/Org/Apache/Harmony/Luni/Lang/Reflect/IImplForType.car");
+    merge("../../../../../car/Org/Apache/Harmony/Luni/Lang/Reflect/IImplForVariable.car");
+    merge("../../../../../car/Org/Apache/Harmony/Luni/Lang/Reflect/IImplForWildcard.car");
+    merge("../../../../../car/Org/Apache/Harmony/Luni/Lang/Reflect/IListOfTypes.car");
+    merge("../../../../../car/Org/Apache/Harmony/Luni/Lang/Reflect/ITypes.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Any.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1BitString.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Boolean.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Constants.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Constructed.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Enumerated.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/Exceptions.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Explicit.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1GeneralizedTime.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Implicit.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Integer.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1OctetString.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Oid.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Primitive.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Sequence.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1SequenceOf.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Set.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1SetOf.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1StringType.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Time.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1Type.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1TypeCollection.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1UTCTime.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IASN1ValueCollection.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IBerInputStream.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IBerOutputStream.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IBitString.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IDerInputStream.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IDerOutputStream.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Asn1/IObjectIdentifier.car");
+
+    merge("../../../../../car/Org/Apache/Harmony/Security/Fortress/IEngine.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Fortress/ISecurityAccess.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Fortress/IServices.car");
+
+    merge("../../../../../car/Org/Apache/Harmony/Security/Pkcs10/ICertificationRequest.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Pkcs10/ICertificationRequestInfo.car");
+
+    merge("../../../../../car/Org/Apache/Harmony/Security/Pkcs7/IAuthenticatedAttributes.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Pkcs7/IContentInfo.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Pkcs7/ISignedData.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Pkcs7/ISignerInfo.car");
+
+    merge("../../../../../car/Org/Apache/Harmony/Security/Pkcs8/IPrivateKeyInfo.car");
+
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Cert/ICache.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Cert/IDRLCertFactory.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Cert/IX509CRLEntryImpl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Cert/IX509CRLImpl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Cert/IX509CertFactoryImpl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Cert/IX509CertImpl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Cert/IX509CertPathImpl.car");
+
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Crypto/ICryptoProvider.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Crypto/IDSAKeyFactoryImpl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Crypto/IDSAPrivateKeyImpl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Crypto/IDSAPublicKeyImpl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Crypto/IRandomBitsSupplier.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Crypto/ISHA1Impl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Crypto/ISHA1PRNG_SecureRandomImpl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Crypto/ISHA1_Data.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Crypto/ISHA1_MessageDigestImpl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Provider/Crypto/ISHA1withDSA_SignatureImpl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Utils/IAlgNameMapper.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Utils/IArray.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Utils/IObjectIdentifier.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/Utils/IJarUtils.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X501/IAttributeTypeAndValue.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X501/IAttributeValue.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X501/IDirectoryString.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X501/IName.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/Tsp/IMessageImprint.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/Tsp/IPKIFailureInfo.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/Tsp/IPKIStatus.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/Tsp/IPKIStatusInfo.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/Tsp/ITSTInfo.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/Tsp/ITimeStampReq.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/Tsp/ITimeStampResp.car");
+
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IAccessDescription.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IAlgorithmIdentifier.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IAlternativeName.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IAuthorityKeyIdentifier.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IBasicConstraints.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/ICRLDistributionPoints.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/ICRLNumber.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/ICertificate.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/ICertificateIssuer.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/ICertificateList.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/ICertificatePolicies.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IDNParser.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IDistributionPoint.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IDistributionPointName.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IEDIPartyName.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IExtendedKeyUsage.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IExtension.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IExtensionValue.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IExtensions.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IGeneralName.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IGeneralNames.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IGeneralSubtree.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IGeneralSubtrees.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IInfoAccessSyntax.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IInhibitAnyPolicy.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IInvalidityDate.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IIssuingDistributionPoint.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IKeyUsage.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/INameConstraints.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IORAddress.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IOtherName.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IPolicyConstraints.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IPolicyInformation.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IPolicyQualifierInfo.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IPrivateKeyUsagePeriod.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IReasonCode.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IReasonFlags.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/ISubjectKeyIdentifier.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/ISubjectPublicKeyInfo.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/ITBSCertList.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/ITBSCertificate.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/ITimeHelper.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IValidity.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IX509PublicKey.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IPrivateKeyImpl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/IPublicKeyImpl.car");
+    merge("../../../../../car/Org/Apache/Harmony/Security/X509/ISystemScope.car");
+
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+
+    namespace Crypto {
+    namespace Internal {
+/*
+    class CNullCipherSpi {
+        interface ICipherSpi;
+    }
+*/
+    } // namespace Internal
+    } // namespace Crypto
+
+    namespace Kernel {
+    namespace Vm {
+/*
+    singleton class CStringUtils {
+        interface IStringUtils;
+    }
+*/
+    } // namespace Vm
+    } // namespace Kernel
+
+    namespace Lang {
+    namespace Annotation {
+/*
+    class CAnnotationFactory {
+        interface IAnnotationFactory;
+        interface IInvocationHandler;
+        interface ISerializable;
+    }
+
+    singleton class CAnnotationFactoryHelper {
+        interface IAnnotationFactoryHelper;
+    }
+
+    class CAnnotationMember {
+        constructor(
+            [in] String name,
+            [in] IInterface* val);
+
+        constructor(
+            [in] String name,
+            [in] IInterface* val,
+            [in] ClassID type/*,
+            [in] Method m*/);
+
+        interface IAnnotationMember;
+        interface ISerializable;
+    }
+*/
+    } // namespace Annotation
+    } // namespace Lang
+
+    namespace Luni {
+    namespace Lang {
+    namespace Reflect {
+/*
+    class CGenericSignatureParser {
+        constructor(
+            [in] IClassLoader* loader);
+
+        interface IGenericSignatureParser;
+    }
+
+    class CImplForArray {
+        constructor(
+            [in] IType* componentType);
+
+        interface IImplForArray;
+    }
+
+    class CImplForType {
+        constructor(
+            [in] IImplForType* ownerType,
+            [in] String rawTypeName,
+            [in] IListOfTypes* args,
+            [in] IClassLoader* loader);
+
+        interface IImplForType;
+    }
+
+    class CImplForVariable {
+        interface IImplForVariable;
+    }
+
+    class CImplForWildcard {
+        constructor(
+            [in] IListOfTypes* extendsBound,
+            [in] IListOfTypes* superBound);
+
+        interface IImplForWildcard;
+    }
+
+    class CListOfTypes {
+        interface IListOfTypes;
+    }
+
+    singleton class CTypes {
+        interface ITypes;
+    }
+*/
+
+    } // namespace Reflect
+    } // namespace Lang
+
+    namespace Util {
+/*
+    class CDeleteOnExit {
+        interface IDeleteOnExit;
+    }
+
+    singleton class CDeleteOnExitHelper {
+        interface IDeleteOnExitHelper;
+    }
+*/
+    } // namespace Util
+
+    } // namespace Luni
+
+    namespace Security {
+    namespace Asn1 {
+/*
+    class CASN1Any {
+        constructor();
+
+        interface IASN1Any;
+    }
+
+    class CASN1AnyHelper {
+        interface IASN1AnyHelper;
+    }
+
+    class CASN1BitString {
+        constructor();
+
+        interface IASN1BitString;
+    }
+
+    singleton class CASN1BitStringHelper {
+        interface IASN1BitStringHelper;
+    }
+
+    class CASN1NamedBitList {
+        constructor(
+            [in] Int32 minBits);
+
+        interface IASN1NamedBitList;
+    }
+
+    class CASN1Boolean {
+        constructor();
+
+        interface IASN1Boolean;
+    }
+
+    singleton class CASN1BooleanHelper {
+        interface IASN1BooleanHelper;
+    }
+
+    class CASN1Choice {
+        /**
+         * Constructs ASN.1 choice type.
+         *
+         * @param type -
+         *            an array of one or more ASN.1 type alternatives.
+         * @throws IllegalArgumentException -
+         *             type parameter is invalid
+        */
+        constructor(
+            [out, callee] ArrayOf<IASN1Type*>** type);
+
+        interface IASN1Choice;
+    }
+
+    class CASN1Enumerated {
+        constructor();
+
+        interface IASN1Enumerated;
+    }
+
+    singleton class CASN1EnumeratedHelper {
+        interface IASN1EnumeratedHelper;
+    }
+
+    class CASN1Explicit {
+        constructor(
+            [in] Int32 tagNumber,
+            [in] IASN1Type* type);
+
+        constructor(
+            [in] Int32 tagClass,
+            [in] Int32 tagNumber,
+            [in] IASN1Type* type);
+
+        interface IASN1Explicit;
+    }
+
+    class CASN1GeneralizedTime {
+        constructor();
+
+        interface IASN1GeneralizedTime;
+    }
+
+    singleton class CASN1GeneralizedTimeHelper {
+        interface IASN1GeneralizedTimeHelper;
+    }
+
+    class CASN1Implicit {
+        constructor(
+            [in] Int32 tagNumber,
+            [in] IASN1Type* type);
+
+        interface IASN1Implicit;
+    }
+
+    class CASN1Integer {
+        constructor();
+
+        interface IASN1Integer;
+    }
+
+    singleton class CASN1IntegerHelper {
+        interface IASN1IntegerHelper;
+    }
+
+    class CASN1OctetString {
+        constructor();
+
+        interface IASN1OctetString;
+    }
+
+    singleton class CASN1OctetStringHelper {
+        interface IASN1OctetStringHelper;
+    }
+
+    class CASN1Oid {
+        constructor();
+
+        interface IASN1Oid;
+    }
+
+    singleton class CASN1OidHelper {
+        interface IASN1OidHelper;
+    }
+
+    class CASN1Sequence {
+        constructor(
+            [in] ArrayOf<IASN1Type*>* type);
+
+        interface IASN1Sequence;
+    }
+
+    class CASN1SequenceOf {
+        constructor(
+            [in] ArrayOf<IASN1Type*>* type);
+
+        interface IASN1SequenceOf;
+    }
+
+    class CASN1Set {
+        constructor(
+            [in] ArrayOf<IASN1Type*>* type);
+
+        interface IASN1Set;
+    }
+
+    class CASN1SetOf {
+        constructor(
+            [in] IASN1Type* type);
+
+        interface IASN1SetOf;
+    }
+
+    class CASN1StringTypeHelper {
+        interface IASN1StringTypeHelper;
+    }
+
+    class CASN1UTCTime {
+        constructor();
+
+        interface IASN1UTCTime;
+    }
+
+    singleton class CASN1UTCTimeHelper {
+        interface IASN1UTCTimeHelper;
+    }
+
+    class CBerInputStream {
+        constructor(
+            [out, callee] ArrayOf<Byte>* encoded);
+        constructor(
+            [in] ArrayOf<Byte>* encoded,
+            [in] Int32 offset,
+            [in] Int32 expectedLength);
+        constructor(
+            [in] IInputStream* in);
+        constructor(
+            [in] IInputStream* in,
+            [in] Int32 initialSize);
+
+        interface IBerInputStream;
+    }
+
+    singleton class CBerInputStreamHelper {
+        interface IBerInputStreamHelper;
+    }
+
+    class CBerOutputStream {
+        interface IBerOutputStream;
+    }
+
+    class CBitString {
+        constructor(
+            [in] ArrayOf<Byte> bytes,
+            [in] Int32 unusedBits);
+
+        constructor(
+            [out, callee] ArrayOf<Boolean>* values);
+
+        interface IBitString;
+    }
+
+    class CDerInputStream {
+        constructor(
+            [out, callee] ArrayOf<Byte>* encoded);
+        constructor(
+            [in] ArrayOf<Byte>* encoded,
+            [in] Int32 offset,
+            [in] Int32 encodingLen);
+        constructor(
+            [in] IInputStream* in);
+
+        interface IDerInputStream;
+    }
+
+    class CDerOutputStream {
+        constructor(
+            [in] IASN1Type* asn1,
+            [in] IInterface* object);
+
+        interface IDerOutputStream;
+    }
+
+    class CObjectIdentifier {
+        /**
+         * Creates ObjectIdentifier(OID) from array of integers.
+         *
+         * @param oid array of integers
+         * @throws IllegalArgumentException if oid is invalid or null
+         */
+        constructor(
+            [in] ArrayOf<Int32>* oid);
+        constructor(
+            [in] String strOid);
+
+        interface IObjectIdentifier;
+    }
+
+    class CObjectIdentifierHelper {
+        interface IObjectIdentifierHelper;
+    }
+*/
+    } // namespace Asn1
+
+    namespace Fortress {
+/*
+    class CSpiAndProvider {
+        interface ISpiAndProvider;
+    }
+
+    class CEngine {
+        /**
+         * Creates a Engine object
+         *
+         * @param service
+         */
+        constructor(
+            [in] String service);
+
+        interface IEngine;
+    }
+
+    singleton class CEngineHelper {
+        interface IEngineHelper;
+    }
+
+    class CServicesHelper {
+        interface IServicesHelper;
+    }
+*/
+    } // namespace Fortress
+
+    namespace Pkcs10 {
+/*
+    class CCertificationRequest {
+        constructor(
+            [in] ICertificationRequestInfo* info,
+            [in] IAlgorithmIdentifier* algId,
+            [in] ArrayOf<Byte>* signature);
+
+        interface ICertificationRequest;
+    }
+
+    singleton class CCertificationRequestHelper {
+        interface ICertificationRequestHelper;
+    }
+
+    class CCertificationRequestInfo {
+        interface ICertificationRequestInfo;
+    }
+
+    singleton class CCertificationRequestInfoHelper {
+        interface ICertificationRequestInfoHelper;
+    }
+*/
+    } // namespace Pkcs10
+
+    namespace Pkcs7 {
+/*
+    class CAuthenticatedAttributes {
+        interface IAuthenticatedAttributes;
+    }
+
+    singleton class CAuthenticatedAttributesHelper {
+        interface IAuthenticatedAttributesHelper;
+    }
+
+    class CContentInfo {
+        interface IContentInfo;
+    }
+
+    singleton class CContentInfoHelper {
+        interface IContentInfoHelper;
+    }
+
+    class CSignedData {
+        interface ISignedData;
+    }
+
+    singleton class CSignedDataHelper {
+        interface ISignedDataHelper;
+    }
+
+    class CSignerInfo {
+        interface ISignerInfo;
+    }
+
+    singleton class CSignerInfoHelper {
+        interface ISignerInfoHelper;
+    }
+*/
+    } // namespace Pkcs7
+
+    namespace Pkcs8 {
+
+    class CPrivateKeyInfo {
+        interafce IPrivateKeyInfo;
+    }
+
+    class CPrivateKeyInfoHelper {
+        interface IPrivateKeyInfoHelper;
+    }
+
+    } // namespace Pkcs8
+
+    namespace Provider {
+    namespace Cert {
+/*
+    class CCache {
+        constructor(
+            [in] Int32 pref_size,
+            [in] Int32 size);
+
+        constructor(
+            [in] Int32 pref_size);
+
+        constructor();
+
+        interface ICache;
+    }
+
+    class CDRLCertFactory {
+        constructor();
+
+        interface IDRLCertFactory;
+    }
+
+    class CX509CRLEntryImpl {
+        constructor(
+            [in] IRevokedCertificate* rcert,
+            [in] IX500Principal* issuer);
+
+        interface IX509CRLEntryImpl;
+    }
+
+    class CX509CRLImpl {
+        constructor(
+            [in] ICertificateList* crl);
+        constructor(
+            [in] IInputStream* in);
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+
+        interface IX509CRLImpl;
+    }
+
+    class CX509CertFactoryImpl {
+        constructor();
+
+        interface IX509CertFactoryImpl;
+    }
+
+    class CX509CertImpl {
+        constructor(
+            [in] IInputStream* in);
+        constructor(
+            [in] ICertificate* certificate);
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+
+        interface IX509CertImpl;
+        interface IX509Extension;
+    }
+
+    class CX509CertPathImpl {
+        constructor(
+            [in] IList* certs);
+
+        interface IX509CertPathImpl;
+    }
+
+    singleton class CX509CertPathImplHelper {
+        interface IX509CertPathImplHelper;
+    }
+*/
+    } // namespace Cert
+
+    namespace Crypto {
+/*
+    class CCryptoProvider {
+        constructor();
+
+        interface ICryptoProvider;
+    }
+
+    class CDSAKeyFactoryImpl {
+        interface IDSAKeyFactoryImpl;
+    }
+
+    class CDSAPrivateKeyImpl {
+        constructor(
+            [in] IDSAPrivateKeySpec* keySpec);
+        constructor(
+            [in] IPKCS8EncodedKeySpec* keySpec);
+
+        interface IDSAPrivateKeyImpl;
+    }
+
+    class CDSAPublicKeyImpl {
+        constructor(
+            [in] IDSAPublicKeySpec* keySpec);
+        constructor(
+            [in] IX509EncodedKeySpec* keySpec);
+
+        interface IDSAPublicKeyImpl;
+    }
+
+    class CRandomBitsSupplierHelper {
+        interface IRandomBitsSupplierHelper;
+    }
+
+    class CSHA1PRNG_SecureRandomImpl {
+        interface ISHA1PRNG_SecureRandomImpl;
+        interface ISerializable;
+        interface ISHA1_Data;
+    }
+
+    class CSHA1_MessageDigestImpl {
+        constructor();
+
+        interface ISHA1_MessageDigestImpl;
+        interface ICloneable;
+        interface ISHA1_Data;
+    }
+
+    class CSHA1withDSA_SignatureImpl {
+        constructor();
+
+        interface ISHA1withDSA_SignatureImpl;
+    }
+*/
+    } // namespace Crypto
+
+    } // namespace Provider
+
+    namespace Utils {
+    /*
+
+    singleton class CAlgNameMapperHelper {
+        interface IAlgNameMapperHelper;
+    }
+
+    singleton class CArrayHelper {
+        interface IArrayHelper;
+    }
+
+    class CObjectIdentifier {
+        constructor(
+            [in] ArrayOf<Int32>* oid);
+
+        constructor(
+            [in] ArrayOf<Int32>* oid,
+            [in] String name,
+            [in] IObject* oidGroup)
+
+        interface IObjectIdentifier;
+    }
+
+    singleton class CObjectIdentifierHelper {
+        interface IObjectIdentifierHelper;
+    }
+
+    singleton class CJarUtils {
+        interface IJarUtils;
+    }
+
+    */
+
+    } // namespace Utils
+
+    namespace X501 {
+/*
+    class CAttributeTypeAndValue {
+        constructor(
+            [in] String sOid,
+            [in] IAttributeValue* value);
+
+        interface IAttributeTypeAndValue;
+    }
+
+    singleton class CAttributeTypeAndValueHelper {
+        interface IAttributeTypeAndValueHelper;
+    }
+
+    class CAttributeTypeAndValueComparator {
+        interface IComparator;
+        interface ISerializable;
+    }
+
+    class CAttributeValue {
+        constructor(
+            [in] String parsedString,
+            [in] Boolean hasQorE);
+
+        constructor(
+            [in] String hexString,
+            [in] ArrayOf<Byte>* encoded);
+
+        constructor(
+            [in] String rawString,
+            [in] ArrayOf<Byte>* encoded,
+            [in] Int32 tag);
+
+        interface IAttributeValue;
+    }
+
+    singleton class CDirectoryString {
+        interface IDirectoryString;
+    }
+
+    class CName {
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+        constructor(
+            [in] String name);
+        constructor(
+            [in] IList* rdn);
+
+        interface IName;
+    }
+
+    singleton class CNameHelper {
+        interface INameHelper;
+    }
+*/
+    } // namespace X501
+
+    namespace X509 {
+    namespace Tsp {
+/*
+    singleton class CMessageImprint {
+        constructor(
+            [in] IAlgorithmIdentifier* algId,
+            [in] ArrayOf<Byte>* hashedMessage);
+
+        interface IMessageImprint;
+    }
+
+    class CPKIStatusInfo {
+        constructor(
+            [in] IPKIStatus* pKIStatus,
+            [in] IList* statusString,
+            [in] IPKIFailureInfo* failInfo);
+
+        interface IPKIStatusInfo;
+    }
+
+    singleton class CPKIStatusInfoHelper {
+        interface IPKIStatusInfoHelper;
+    }
+
+    class CTSTInfo {
+        constructor(
+            [in] Int32 version,
+            [in] String policy,
+            [in] IMessageImprint* messageImprint,
+            [in] IBigInteger* serialNumber,
+            [in] IDate* genTime,
+            [in] ArrayOf<Int32>* accuracy,
+            [in] Boolean ordering,
+            [in] IBigInteger* nonce,
+            [in] IGeneralName* tsa,
+            [in] IExtensions* extensions);
+
+        interface ITSTInfo;
+    }
+
+    singleton class CTSTInfoHelper {
+        interface ITSTInfoHelper;
+    }
+
+    class CTimeStampReq {
+        constructor(
+            [in] Int32 version,
+            [in] IMessageImprint* messageImprint,
+            [in] String reqPolicy,
+            [in] IBigInteger* nonce,
+            [in] Boolean certReq,
+            [in] IExtensions* extensions);
+
+        interface ITimeStampReq;
+    }
+
+    singleton class CTimeStampReqHelper {
+        interface ITimeStampReqHelper;
+    }
+
+    class CTimeStampResp {
+        constructor(
+            [in] IPKIStatusInfo* status,
+            [in] IContentInfo* timeStampToken);
+
+        interface ITimeStampResp;
+    }
+
+    singleton class CTimeStampReqHelper {
+        interface ITimeStampReqHelper;
+    }
+*/
+    } // namespace Tsp
+
+/*
+    class CAccessDescription {
+        interface IAccessDescription;
+    }
+
+    singleton class CAccessDescriptionHelper {
+        interface IAccessDescriptionHelper;
+    }
+
+    class CAlgorithmIdentifier {
+        constructor(
+            [in] String algorithm);
+        constructor(
+            [in] String algorithm,
+            [in] ArrayOf<Byte>* parameters);
+
+        interface IAlgorithmIdentifier;
+    }
+
+    singleton class CAlgorithmIdentifierHelper {
+        interface IAlgorithmIdentifierHelper;
+    }
+
+    class CAlternativeName {
+        constructor(
+            [in] Boolean which,
+            [in] ArrayOf<Byte>* encoding);
+
+        interface IAlternativeName;
+    }
+
+    class CAuthorityKeyIdentifier {
+        constructor(
+            [in] ArrayOf<Byte>* keyIdentifier,
+            [in] IGeneralNames* authorityCertIssuer,
+            [in] IBigInteger* authorityCertSerialNumber);
+
+        interface IAuthorityKeyIdentifier;
+    }
+
+    singleton class CAuthorityKeyIdentifierHelper {
+        interface IAuthorityKeyIdentifierHelper;
+    }
+
+    class CBasicConstraints {
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+
+        interface IBasicConstraints;
+    }
+
+    singleton class CBasicConstraintsHelper {
+        interface IBasicConstraintsHelper;
+    }
+
+    class CCRLDistributionPoints {
+        interface ICRLDistributionPoints;
+    }
+
+    singleton class CCRLDistributionPointsHelper {
+        interface ICRLDistributionPointsHelper;
+    }
+
+    class CCRLNumber {
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+
+        interface ICRLNumber;
+    }
+
+    singleton class CCRLNumberHelper {
+        interface ICRLNumberHelper;
+    }
+
+    class CCertificate {
+        constructor(
+            [in] ITBSCertificate* tbsCertificate,
+            [in] IAlgorithmIdentifier* signatureAlgorithm,
+            [in] ArrayOf<Byte>* signatureValue);
+
+        interface ICertificate;
+    }
+
+    singleton class CCertificateHelper {
+        interface ICertificateHelper;
+    }
+
+    class CCertificateIssuer {
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+
+        interface ICertificateIssuer;
+    }
+
+    singleton class CCertificateIssuerHelper {
+        interface ICertificateIssuerHelper;
+    }
+
+    class CCertificateList {
+        constructor(
+            [in] ITBSCertList* tbsCertList,
+            [in] IAlgorithmIdentifier* signatureAlgorithm,
+            [in] ArrayOf<Byte>* signatureValue);
+
+        interface ICertificateList;
+    }
+
+    singleton class CCertificateListHelper {
+        interface ICertificateListHelper;
+    }
+
+    class CCertificatePolicies {
+        constructor();
+
+        interface ICertificatePolicies;
+    }
+
+    singleton class CCertificatePoliciesHelper {
+        interface ICertificatePoliciesHelper;
+    }
+
+    class CDNParser {
+        constructor(
+            [in] String dn);
+
+        interface IDNParser;
+    }
+
+    class CDistributionPoint {
+        constructor(
+            [in] IDistributionPointName* distributionPoint,
+            [in] IReasonFlags* reasons,
+            [in] IGeneralNames* cRLIssuer);
+
+        interface IDistributionPoint;
+    }
+
+    singleton class CDistributionPointHelper {
+        interface IDistributionPointHelper;
+    }
+
+    class CDistributionPointName {
+        constructor(
+            [in] IGeneralNames* fullName);
+        constructor(
+            [in] IName* nameRelativeToCRLIssuer);
+
+        interface IDistributionPointName;
+    }
+
+    singleton class CDistributionPointNameHelper {
+        interface IDistributionPointNameHelper;
+    }
+
+    class CEDIPartyName {
+        interface IEDIPartyName;
+    }
+
+    singleton class CEDIPartyNameHelper {
+        interface IEDIPartyNameHelper;
+    }
+
+    class CExtendedKeyUsage {
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+
+        interface IExtendedKeyUsage;
+    }
+
+    singleton class CExtendedKeyUsageHelper {
+        interface IExtendedKeyUsageHelper;
+    }
+
+    class CExtension {
+        constructor(
+            [in] String extnID,
+            [in] Boolean critical,
+            [in] IExtensionValue* extnValueObject);
+        constructor(
+            [in] String extnID,
+            [in] Boolean critical,
+            [in] ArrayOf<Byte>* extnValue);
+        constructor(
+            [in] ArrayOf<Int32>* extnID,
+            [in] Boolean critical,
+            [in] ArrayOf<Byte>* extnValue2);
+        constructor(
+            [in] String extnID,
+            [in] ArrayOf<Byte>* extnValue);
+        constructor(
+            [in] ArrayOf<Int32>* extnID,
+            [in] ArrayOf<Byte>* extnValue2);
+
+        interface IExtension;
+    }
+
+    singleton class CExtensionHelper {
+        interface IExtensionHelper;
+    }
+
+    class CExtensionValue {
+        constructor();
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+
+        interface IExtensionValue;
+    }
+
+    class CExtensions {
+        constructor();
+        constructor(
+            [in] IList* extensions);
+
+        interface IExtensions;
+    }
+
+    singleton class CExtensionsHelper {
+        interface IExtensionsHelper;
+    }
+
+    class CGeneralName {
+        constructor(
+            [in] Int32 tag,
+            [in] String name);
+        constructor(
+            [in] IOtherName* name);
+        constructor(
+            [in] IORAddress* name1);
+        constructor(
+            [in] IName* name2);
+        constructor(
+            [in] IEDIPartyName* name3);
+        constructor(
+            [in] ArrayOf<Byte>* name4);
+        constructor(
+            [in] Int32 tag,
+            [in] ArrayOf<Byte>* name1);
+
+        interface IGeneralName;
+    }
+
+    singleton class CGeneralNameHelper {
+        interface IGeneralNameHelper;
+    }
+
+    class CGeneralNames {
+        constructor();
+        constructor(
+            [in] IList** generalNames);
+
+        interface IGeneralNames;
+    }
+
+    singleton class CGeneralNamesHelper {
+        interface IGeneralNamesHelper;
+    }
+
+    class CGeneralSubtree {
+        constructor(
+            [in] IGeneralName* base,
+            [in] Int32 minimum,
+            [in] Int32 maximum);
+
+        interface IGeneralSubtree;
+    }
+
+    singleton class CGeneralSubtreeHelper {
+        interface IGeneralSubtreeHelper;
+    }
+
+    class CGeneralSubtrees {
+        constructor(
+            [in] IList* generalSubtrees);
+
+        interface IGeneralSubtrees;
+    }
+
+    singleton class CGeneralSubtreesHelper {
+        interface IGeneralSubtreesHelper;
+    }
+
+    class CInfoAccessSyntax {
+        interface IInfoAccessSyntax;
+    }
+
+    singleton class CInfoAccessSyntaxHelper {
+        interface IInfoAccessSyntaxHelper;
+    }
+
+    class CInhibitAnyPolicy {
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+
+        interface IInhibitAnyPolicy;
+    }
+
+    class CInvalidityDate {
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+
+        interface IInvalidityDate;
+    }
+
+    singleton class CInvalidityDateHelper {
+        interface IInvalidityDateHelper;
+    }
+
+    class CIssuingDistributionPoint {
+        constructor(
+            [in] IDistributionPointName* distributionPoint,
+            [in] IReasonFlags* onlySomeReasons);
+
+        interface IIssuingDistributionPoint;
+    }
+
+    singleton class CIssuingDistributionPointHelper {
+        interface IIssuingDistributionPointHelper;
+    }
+
+    class CKeyUsage {
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+
+        interface IKeyUsage;
+    }
+
+    class CNameConstraints {
+        constructor(
+            [in] IGeneralSubtrees* permittedSubtrees,
+            [in] IGeneralSubtrees* excludedSubtrees);
+
+        interface INameConstraints;
+    }
+
+    singleton class CNameConstraintsHelper {
+        interface INameConstraintsHelper;
+    }
+
+    class CORAddress {
+        interface IORAddress;
+    }
+
+    singleton class CORAddressHelper {
+        interface IORAddressHelper;
+    }
+
+    class COtherName {
+        constructor(
+            [in] String typeID,
+            [in] ArrayOf<Byte>* value);
+
+        interface IOtherName;
+    }
+
+    singleton class COtherNameHelper {
+        interface IOtherNameHelper;
+    }
+
+    class CPolicyConstraints {
+        constructor(
+            [in] IBigInteger* requireExplicitPolicy,
+            [in] IBigInteger* inhibitPolicyMapping);
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+
+        interface IExtensionValue;
+    }
+
+    singleton class CPolicyConstraintsHelper {
+        interface IPolicyConstraintsHelper;
+    }
+
+    class CPolicyInformation {
+        constructor(
+            [in] String policyIdentifier);
+
+        interface IPolicyInformation;
+    }
+
+    singleton class CPolicyInformationHelper {
+        interface IPolicyInformationHelper;
+    }
+
+    singleton class CPolicyQualifierInfoHelper {
+        interface IPolicyQualifierInfoHelper;
+    }
+
+    class CPrivateKeyUsagePeriod {
+        constructor(
+            [in] IDate* notBeforeDate,
+            [in] IDate* notAfterDate);
+
+        interface IPrivateKeyUsagePeriod;
+    }
+
+    singleton class CPrivateKeyUsagePeriodHelper {
+        interface IPrivateKeyUsagePeriodHelper;
+    }
+
+    class CReasonCode {
+        constructor(
+            [in] ArrayOf<Byte>* encoding);
+
+        interface IReasonCode;
+    }
+
+    singleton class CReasonCodeHelper {
+        interface IReasonCodeHelper;
+    }
+
+    class CReasonFlags {
+        constructor(
+            [in] ArrayOf<Boolean>* flags);
+
+        interface IReasonFlags;
+    }
+
+    singleton class CReasonFlagsHelper {
+        interface IReasonFlagsHelper;
+    }
+
+    class CSubjectKeyIdentifier {
+        constructor(
+            [in] ArrayOf<Byte>* keyIdentifier);
+
+        interface ISubjectKeyIdentifier;
+    }
+
+    singleton class CSubjectKeyIdentifierHelper {
+        interface ISubjectKeyIdentifierHelper;
+    }
+
+    class CSubjectPublicKeyInfo {
+        constructor(
+            [in] IAlgorithmIdentifier* algID,
+            [in] ArrayOf<Byte>* subjectPublicKey);
+        constructor(
+            [in] IAlgorithmIdentifier* algID,
+            [in] ArrayOf<Byte>* subjectPublicKey
+            [in] Int32 unused);
+
+        interface ISubjectPublicKeyInfo;
+    }
+
+    singleton class CSubjectPublicKeyInfoHelper {
+        interface ISubjectPublicKeyInfoHelper;
+    }
+
+    class CRevokedCertificate {
+        constructor(
+            [in] IBigInteger* userCertificate,
+            [in] IDate* revocationDate,
+            [in] IExtensions* crlEntryExtensions);
+
+        interface IRevokedCertificate;
+    }
+
+    singleton class CRevokedCertificateHelper {
+        interface IRevokedCertificateHelper;
+    }
+
+    class CTBSCertList {
+        interface ITBSCertList;
+    }
+
+    singleton class CTBSCertListHelper {
+        interface ITBSCertListHelper;
+    }
+
+    class CTBSCertificate {
+        constructor(
+            [in] Int32 version,
+            [in] IBigInteger* serialNumber,
+            [in] IAlgorithmIdentifier* signature,
+            [in] IName* issuer,
+            [in] IValidity* validity,
+            [in] IName* subject,
+            [in] ISubjectPublicKeyInfo* subjectPublicKeyInfo,
+            [in] ArrayOf<Boolean>* issuerUniqueID,
+            [in] ArrayOf<Boolean>* subjectUniqueID,
+            [in] IExtensions* extensions);
+
+        interface ITBSCertificate;
+    }
+
+    singleton class CTBSCertificateHelper {
+        interface ITBSCertificateHelper;
+    }
+
+    singleton class CTimeHelper {
+        interface ITimeHelper;
+    }
+
+    class CValidity {
+        constructor(
+            [in] IDate* notBefore,
+            [in] IDate* notAfter);
+
+        interface IValidity;
+    }
+
+    singleton class CValidityHelper {
+        interface IValidityHelper;
+    }
+
+    class CX509PublicKey {
+        constructor(
+            [in] String algorithm,
+            [in] ArrayOf<Byte>* encoded,
+            [in] ArrayOf<Byte>* keyBytes)
+
+        interface IX509PublicKey;
+    }
+*/
+
+    } // namespace X509
+
+    class CPrivateKeyImpl {
+        constructor(
+            [in] String algorithm);
+
+        interface IPrivateKeyImpl;
+    }
+
+    class CPublicKeyImpl {
+        constructor(
+            [in] String algorithm);
+
+        interface IPublicKeyImpl;
+    }
+
+    class CSystemScope {
+        constructor();
+        constructor(
+            [in] String name);
+        constructor(
+            [in] String name,
+            [in] IIdentityScope* scope);
+
+        interface IIdentityScope;
+    }
+
+    } // namespace Security
+
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

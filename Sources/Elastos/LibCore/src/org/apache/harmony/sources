@@ -2,43 +2,44 @@
 TARGET_NAME= Org.Apache.Harmony
 TARGET_TYPE= eco
 
-CAR_FLAGS += -n -u
+CAR_FLAGS += -u
 LUBE_FLAGS += -n -u
 
 INCLUDES += $(MAKEDIR)/../../../../inc/common
 
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/crypto/internal
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/kernel/vm
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/luni/internal/util
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/luni/lang/reflect
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/luni/util
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Crypto/Internal
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Kernel/Vm
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Luni/Internal/Util
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Luni/Lang/Reflect
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Luni/Util
 
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/security
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/security/asn1
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/security/fortress
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/security/pkcs10
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/security/pkcs8
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/security/pkcs7
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/security/provider/cert
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/security/provider/crypto
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/security/utils
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/security/x501
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/security/x509
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/security/x509/tsp
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Asn1
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Fortress
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Pkcs10
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Pkcs8
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Pkcs7
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Provider/Cert
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Provider/Crypto
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/Utils
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/X501
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/X509
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Security/X509/Tsp
 
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/xml/dom
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/xml/parsers
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/xml
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Xml/Dom
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Xml/Parsers
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Xml
 
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/harmony/xnet/provider/jsse
+INCLUDES += $(MAKEDIR)/../../../../inc/Org/Apache/Harmony/Xnet/Provider/Jsse
 
 
 SOURCES = Org.Apache.Harmony.car
-SOURCES += Elastos.CoreLibrary.cpp
+SOURCES += Elastos.Core.cpp
 
 LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
-LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
+LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib
 LIBRARIES += $(PREBUILD_LIB)/libm.a
 

@@ -7,14 +7,14 @@
 #include <elastos/ThreadBase.h>
 
 using Elastos::Core::IClassLoader;
-using Elastos::Core::Mutex;
+using Elastos::Core::Threading::Mutex;
 using Elastos::Core::IRunnable;
-using Elastos::Core::ThreadState;
-using Elastos::Core::IThreadGroup;
-using Elastos::Core::IThreadUncaughtExceptionHandler;
+using Elastos::Core::Threading::ThreadState;
+using Elastos::Core::Threading::IThreadGroup;
+using Elastos::Core::Threading::IThreadUncaughtExceptionHandler;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
-using Elastos::Core::ThreadBase;
+using Elastos::Core::Threading::ThreadBase;
 
 namespace Org {
 namespace Apache {

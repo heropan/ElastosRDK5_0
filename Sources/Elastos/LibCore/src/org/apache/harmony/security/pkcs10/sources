@@ -3,7 +3,7 @@ TARGET_NAME= pkcs10
 TARGET_TYPE= lib
 
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/security/pkcs10
+INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Security/Pkcs10
 
 SOURCES = CCertificationRequest.cpp
 SOURCES += CCertificationRequestHelper.cpp

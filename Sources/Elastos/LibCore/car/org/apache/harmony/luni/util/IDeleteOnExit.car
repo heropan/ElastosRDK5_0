@@ -7,7 +7,7 @@ module
     namespace Luni {
     namespace Util {
 
-    interface IDeleteOnExit /* extends Elastos.Core.IThread */ {
+    interface IDeleteOnExit /* extends Elastos.Core.Threading.IThread */ {
         /**
          * Schedules a file for deletion.
          *

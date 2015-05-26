@@ -1,8 +1,8 @@
 
 module
 {
-    interface Elastos.Security.Interfaces.IRSAPublicKey;
-    interface Elastos.Math.IBigInteger;
+    using interface Elastos.Security.Interfaces.IRSAPublicKey;
+    using interface Elastos.Math.IBigInteger;
     interface Org.Apache.Harmony.Xnet.Provider.Jsse.ISSLServerSessionCache;
 
     namespace Org {

@@ -1,8 +1,8 @@
 
 module
 {
-    interface Elastos.Security.Cert.IX509Certificate;
-    interface Elastos.Utility.IList;
+    using interface Elastos.Security.Cert.IX509Certificate;
+    using interface Elastos.Utility.IList;
 
     namespace Org {
     namespace Apache {

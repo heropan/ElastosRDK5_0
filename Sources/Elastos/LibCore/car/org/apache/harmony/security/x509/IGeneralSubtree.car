@@ -1,8 +1,8 @@
 
 module
 {
-    interface Elastos.Utility.IList;
-    interface Elastos.Core.IStringBuilder;
+    using interface Elastos.Utility.IList;
+    using interface Elastos.Core.IStringBuilder;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
 
     namespace Org {

@@ -2,10 +2,10 @@
 
 module
 {
-    interface Elastosx.Net.Ssl.ISSLEngine;
-    interface Elastosx.Net.Ssl.ISSLSocket;
-    interface Elastosx.Net.Ssl.ISSLSession;
-    interface Elastos.Core.IRunnable;
+    using interface Elastosx.Net.Ssl.ISSLEngine;
+    using interface Elastosx.Net.Ssl.ISSLSocket;
+    using interface Elastosx.Net.Ssl.ISSLSession;
+    using interface Elastos.Core.IRunnable;
     interface Org.Apache.Harmony.Xnet.Provider.Jsse.ISSLRecordProtocol;
     interface Org.Apache.Harmony.Xnet.Provider.Jsse.IMessage;
 

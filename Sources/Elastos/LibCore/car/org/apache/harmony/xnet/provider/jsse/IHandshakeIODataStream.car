@@ -2,8 +2,6 @@
 
 module
 {
-    interface Elastos.IO.IInputStream;
-
     namespace Org {
     namespace Apache {
     namespace Harmony {
@@ -46,12 +44,8 @@ module
      * For more information about TLS handshake process see
      * TLS v 1 specification at http://www.ietf.org/rfc/rfc2246.txt.
      */
-    /**
-      * @Involve
-      * interface Elastos.IO.IInputStream;
-      */
     [deprecated]
-    interface IHandshakeIODataStream {
+    interface IHandshakeIODataStream extends Elastos.IO.IInputStream {
         MarkEx();
 
         /**

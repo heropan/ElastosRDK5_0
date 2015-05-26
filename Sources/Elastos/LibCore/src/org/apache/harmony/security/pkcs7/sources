@@ -3,7 +3,7 @@ TARGET_NAME= pkcs7
 TARGET_TYPE= lib
 
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/security/pkcs7
+INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Security/Pkcs7
 
 SOURCES = AuthenticatedAttributes.cpp
 SOURCES += CContentInfo.cpp

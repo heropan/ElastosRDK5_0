@@ -1,11 +1,11 @@
 
 module
 {
-    interface Elastosx.Security.Auth.X500.IX500Principal;
-    interface Elastos.Utility.IMap;
-    interface Elastos.Security.Cert.ICertificate;
-    interface Elastos.Security.Cert.IX509Certificate;
-    interface Elastos.IO.IFileDescriptor;
+    using interface Elastosx.Security.Auth.X500.IX500Principal;
+    using interface Elastos.Utility.IMap;
+    using interface Elastos.Security.Cert.ICertificate;
+    using interface Elastos.Security.Cert.IX509Certificate;
+    using interface Elastos.IO.IFileDescriptor;
 
     namespace Org {
     namespace Apache {

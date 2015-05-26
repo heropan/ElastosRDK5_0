@@ -3,7 +3,7 @@ TARGET_NAME= jsse
 TARGET_TYPE= lib
 
 INCLUDES += ../../../
-INCLUDES += $(MAKEDIR)/../../../../../../../inc/org/apache/harmony/xnet/provider/jsse
+INCLUDES += $(MAKEDIR)/../../../../../../../inc/Org/Apache/Harmony/Xnet/Provider/Jsse
 
 SOURCES += AbstractSessionContext.cpp
 SOURCES += AlertProtocol.cpp

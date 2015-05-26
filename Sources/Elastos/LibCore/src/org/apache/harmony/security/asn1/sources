@@ -3,7 +3,7 @@ TARGET_NAME= asn1
 TARGET_TYPE= lib
 
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/security/asn1
+INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Security/Asn1
 
 SOURCES = ASN1Constructed.cpp
 SOURCES += ASN1Primitive.cpp

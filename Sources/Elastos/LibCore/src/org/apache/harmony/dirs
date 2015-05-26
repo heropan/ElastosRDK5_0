@@ -1,7 +1,7 @@
 
-DIRS = crypto/internal
-DIRS += kernel/vm
-DIRS += luni
-DIRS += security
-DIRS += xml
-DIRS += xnet/provider/jsse
+DIRS = Crypto/Internal
+DIRS += Kernel/Vm
+DIRS += Luni
+DIRS += Security
+DIRS += Xml
+DIRS += Xnet/Provider/Jsse

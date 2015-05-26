@@ -1,7 +1,7 @@
 
 module
 {
-    interface Elastosx.Security.Auth.X500.IX500Principal;
+    using interface Elastosx.Security.Auth.X500.IX500Principal;
     interface Org.Apache.Harmony.Security.Asn1.IASN1SetOf;
     interface Org.Apache.Harmony.Security.Asn1.IASN1SequenceOf;
 

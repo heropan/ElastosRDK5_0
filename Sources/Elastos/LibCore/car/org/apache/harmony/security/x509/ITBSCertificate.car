@@ -2,11 +2,11 @@
 module
 {
     interface Org.Apache.Harmony.Security.X509.IExtensions;
-    interface Elastos.Math.IBigInteger;
+    using interface Elastos.Math.IBigInteger;
     interface Org.Apache.Harmony.Security.X509.IAlgorithmIdentifier;
     interface Org.Apache.Harmony.Security.X509.IValidity;
     interface Org.Apache.Harmony.Security.X509.ISubjectPublicKeyInfo;
-    interface Elastos.Core.IStringBuilder;
+    using interface Elastos.Core.IStringBuilder;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
     interface Org.Apache.Harmony.Security.X501.IName;
 

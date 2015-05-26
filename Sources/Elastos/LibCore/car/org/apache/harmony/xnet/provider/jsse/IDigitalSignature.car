@@ -2,8 +2,8 @@
 
 module
 {
-    interface Elastos.Security.IPrivateKey;
-    interface Elastos.Security.Cert.ICertificate;
+    using interface Elastos.Security.IPrivateKey;
+    using interface Elastos.Security.Cert.ICertificate;
 
     namespace Org {
     namespace Apache {

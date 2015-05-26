@@ -1,0 +1,41 @@
+
+
+module
+{
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Xnet {
+    namespace Provider {
+    namespace Jsse {
+
+    /**
+     *
+     * Base class for handshake messages
+     */
+    interface IMessage {
+        /**
+         * Returns message length
+         * @return
+         */
+        GetLength(
+            [out] Int32* length);
+    }
+
+    /**
+     * This class provides debug logging for JSSE provider implementation
+     * TODO: Use java.util.logging
+     */
+    interface ILoggerHelper {
+        GetStream(
+            [in] String name,
+            [out] ILoggerStream** stream);
+    }
+
+    } // namespace Jsse
+    } // namespace Provider
+    } // namespace Xnet
+    } // namespace Harmony
+    } // namespace Apache
+    } // namespace Org
+}

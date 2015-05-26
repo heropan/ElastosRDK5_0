@@ -3,7 +3,7 @@ TARGET_NAME= xml
 TARGET_TYPE= lib
 
 INCLUDES += ../
-INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/harmony/xml
+INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Apache/Harmony/Xml
 
 SOURCES = CExpatReader.cpp
 SOURCES += ExpatAttributes.cpp

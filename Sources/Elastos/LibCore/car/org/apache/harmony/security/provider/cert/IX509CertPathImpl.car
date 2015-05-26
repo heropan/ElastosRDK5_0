@@ -1,8 +1,8 @@
 
 module
 {
-    interface Elastos.IO.IInputStream;
-    interface Org.Apache.Harmony.Security.Asn1.IASN1SequenceOf;
+    using interface Elastos.IO.IInputStream;
+    using interface Org.Apache.Harmony.Security.Asn1.IASN1SequenceOf;
 
     namespace Org {
     namespace Apache {

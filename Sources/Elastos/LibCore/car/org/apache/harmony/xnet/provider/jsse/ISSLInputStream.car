@@ -1,8 +1,6 @@
 
 module
 {
-    interface Elastos.IO.IInputStream;
-
     namespace Org {
     namespace Apache {
     namespace Harmony {
@@ -17,11 +15,7 @@ module
      * data types such as uint8, uint32 etc (see TLS v 1 specification
      * at http://www.ietf.org/rfc/rfc2246.txt).
      */
-    /**
-      * @Involve
-      * interface Elastos.IO.IInputStream;
-      */
-    interface ISSLInputStream {
+    interface ISSLInputStream extends Elastos.IO.IInputStream {
         /**
          * Reads and returns uint8 value.
          */
