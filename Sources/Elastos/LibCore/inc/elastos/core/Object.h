@@ -75,6 +75,10 @@ public:
 
     CAR_OBJECT_DECL();
 
+    Object();
+
+    virtual ~Object();
+
     CARAPI GetHashCode(
         /* [out] */ Int32* hashCode);
 
@@ -255,11 +259,6 @@ public:
 
     CARAPI GetWeakReference(
         /* [out] */ IWeakReference** weakReference);
-
-protected:
-    Object();
-
-    virtual ~Object();
 
 public:
     NativeObject* mNativeObject;

@@ -176,8 +176,8 @@ private:
     Int32 mStatus;
 
     volatile Boolean mIsBound;
-//    CObject* mReadLock = new CObject();
-//    CObject* mWriteLock = new CObject();
+    Object mReadLock;
+    Object mWriteLock;
 };
 
 /*

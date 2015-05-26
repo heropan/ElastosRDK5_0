@@ -4,12 +4,12 @@
 
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
 #else
 #include "Elastos.CoreLibrary.h"
+#include <elastos/core/Object.h>
 #endif
 #include "NativeThread.h"
-#include "Object.h"
-#include <Mutex.h>
 
 using Elastos::Core::Object;
 
@@ -1040,10 +1040,13 @@ private:
     /** the park state of the thread */
     Int32 mParkState;
 
-    /** The synchronization object responsible for this thread parking. */
+    /** Looked up reflectively and used by java.util.concurrent.locks.LockSupport. */
     // private Object parkBlocker;
 
-    Mutex mLock;
+    /**
+     * The synchronization object responsible for this thread's join/sleep/park operations.
+     */
+    //Object mLock;
 };
 
 } // namespace Core

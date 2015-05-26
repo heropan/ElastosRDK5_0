@@ -15,7 +15,6 @@ SOURCES += Thread.cpp
 SOURCES += NativeThread.cpp
 SOURCES += Object.cpp
 SOURCES += Singleton.cpp
-SOURCES += CObject.cpp
 
 SOURCES += exportext.cpp
 // SOURCES += listnode.cpp

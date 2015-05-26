@@ -131,7 +131,7 @@ public:
     virtual CARAPI RegisterEx(
         /* [in] */ ISelector* sel,
         /* [in] */ Int32 ops,
-        /* [in] */ CObject* arr,
+        /* [in] */ IObject* arr,
         /* [out] */ ISelectionKey** key) = 0;
 
     /**

@@ -1,17 +1,17 @@
 
 #include "CDatabaseX.h"
-#include "CObject.h"
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 namespace JDBC{
 
+Object CDatabaseX::mLock;
+
 CAR_OBJECT_IMPL(CDatabaseX)
 
 CDatabaseX::CDatabaseX()
 {
-    Elastos::Core::CObject::New((ISynchronize**)&mLock);
 }
 
 ECode CDatabaseX::Exec(
@@ -20,9 +20,9 @@ ECode CDatabaseX::Exec(
 {
     ECode ec = NOERROR;
     ec = Exec(sql, cb);
-    mLock->Lock();
-    mLock->NotifyAll();
-    mLock->Unlock();
+    mLock.Lock();
+    mLock.NotifyAll();
+    mLock.Unlock();
     return ec;
 }
 
@@ -33,9 +33,9 @@ ECode CDatabaseX::Exec(
 {
     ECode ec = NOERROR;
     ec = Exec(sql, cb, args);
-    mLock->Lock();
-    mLock->NotifyAll();
-    mLock->Unlock();
+    mLock.Lock();
+    mLock.NotifyAll();
+    mLock.Unlock();
     return ec;
 }
 
@@ -46,9 +46,9 @@ ECode CDatabaseX::GetTable(
 {
     ECode ec = NOERROR;
     ec = GetTable(sql, args, tbl);
-    mLock->Lock();
-    mLock->NotifyAll();
-    mLock->Unlock();
+    mLock.Lock();
+    mLock.NotifyAll();
+    mLock.Unlock();
     return ec;
 }
 
@@ -59,17 +59,17 @@ ECode CDatabaseX::GetTable(
 {
     ECode ec = NOERROR;
     ec = GetTable(sql, args, tbl);
-    mLock->Lock();
-    mLock->NotifyAll();
-    mLock->Unlock();
+    mLock.Lock();
+    mLock.NotifyAll();
+    mLock.Unlock();
     return ec;
 }
 
 void CDatabaseX::Wait(Int32 ms)
 {
-    mLock->Lock();
-    mLock->Wait(ms);
-    mLock->Unlock();
+    mLock.Lock();
+    mLock.Wait(ms);
+    mLock.Unlock();
 }
 
 } // namespace JDBC

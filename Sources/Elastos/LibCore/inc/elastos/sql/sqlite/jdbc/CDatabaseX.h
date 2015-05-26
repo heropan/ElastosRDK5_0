@@ -43,7 +43,7 @@ protected:
     CARAPI_(void) Wait(Int32 ms);
 
 private:
-    static AutoPtr<ISynchronize> mLock;
+    static Object mLock;
 };
 
 } // namespace JDBC

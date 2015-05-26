@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "Thread.h"
 #include "NativeThread.h"
 #include "ThreadGroup.h"
@@ -1096,8 +1095,7 @@ ECode Thread::PushInterruptAction(
     /* [in] */ IRunnable* interruptAction)
 {
     assert(0 && "TODO");
-    // {
-    //     Mutex::Autolock lock(mLock);
+    // synchronized (mLock) {
     //     interruptActions.add(interruptAction);
     // }
 
