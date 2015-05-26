@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.IO.IInputStream;
 
     namespace Elastos{
     namespace Net{

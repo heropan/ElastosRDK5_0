@@ -7,7 +7,6 @@ module
     interface Elastos.Utility.ICollection;
     interface Elastos.Security.IPrincipal;
     interface Elastosx.Security.Auth.X500.IX500Principal;
-    interface Elastos.Security.Cert.ICertificate;
 
     namespace Elastos {
     namespace Security {

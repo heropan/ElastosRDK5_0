@@ -1,7 +1,6 @@
 module
 {
 
-    interface Org.Xml.Sax.IAttributes;
 
     namespace Org {
     namespace Xml {

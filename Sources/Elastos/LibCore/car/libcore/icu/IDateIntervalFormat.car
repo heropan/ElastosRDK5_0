@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Text.ICollationKey;
 
     namespace Libcore {
     namespace ICU {

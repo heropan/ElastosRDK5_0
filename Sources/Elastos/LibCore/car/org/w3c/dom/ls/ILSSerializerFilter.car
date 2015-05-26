@@ -1,7 +1,5 @@
 module
 {
-    interface Org.W3c.Dom.Ls.ILSSerializerFilter;
-    interface Org.W3c.Dom.Traversal.INodeFilter;
 
     namespace Org {
     namespace W3c {

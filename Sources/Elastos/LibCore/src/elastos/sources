@@ -2,10 +2,9 @@
 TARGET_NAME = Elastos.CoreLibrary
 TARGET_TYPE = eco
 
-CAR_FLAGS += -n -u
-LUBE_FLAGS += -n -u
-
 C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../sources.inc
 
 INCLUDES += $(MAKEDIR)/../../inc
 INCLUDES += $(MAKEDIR)/../../inc/elastos

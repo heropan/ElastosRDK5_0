@@ -2,7 +2,6 @@ module
 {
     interface Org.W3c.Dom.IElement;
     interface Org.W3c.Dom.INode;
-    interface Org.W3c.Dom.Traversal.INodeFilter;
 
     namespace Org {
     namespace W3c {

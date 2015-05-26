@@ -3,7 +3,6 @@ module
 {
     interface Elastos.Utility.ICollection;
     interface Elastos.Security.IProvider;
-    interface Elastos.Security.Cert.ICertPathParameters;
     interface Elastos.Security.Cert.ICertSelector;
     interface Elastos.Security.Cert.ICertStoreParameters;
 

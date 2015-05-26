@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Text.IAttributedCharacterIteratorAttribute;
     interface Elastos.Text.IAttributedCharacterIterator;
     interface Elastos.Text.IFieldPosition;
     interface Elastos.Text.IParsePosition;

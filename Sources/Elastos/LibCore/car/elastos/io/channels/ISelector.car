@@ -3,7 +3,6 @@ module
 {
    // interface Elastos.Net.ISocket;
     interface Elastos.Utility.ISet;
-    interface Elastos.IO.Channels.ISelectionKey;
     interface Elastos.IO.Channels.Spi.ISelectorProvider;
 
     namespace Elastos {

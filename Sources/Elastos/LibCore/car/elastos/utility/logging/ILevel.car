@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Core.ICharSequence;
 
     namespace Elastos {
     namespace Utility {

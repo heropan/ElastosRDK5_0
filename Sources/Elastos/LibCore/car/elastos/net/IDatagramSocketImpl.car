@@ -7,7 +7,6 @@ module
     interface Elastos.Net.IInetAddress;
     interface Elastos.Net.INetworkInterface;
     interface Elastos.Net.ISocketAddress;
-    interface Elastos.Net.ISocketOptions;
 
     namespace Elastos {
     namespace Net {

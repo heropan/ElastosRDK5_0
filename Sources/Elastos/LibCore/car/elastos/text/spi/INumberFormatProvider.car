@@ -2,7 +2,6 @@ module
 {
     interface Elastos.Text.INumberFormat;
     interface Elastos.Utility.ILocale;
-    interface Elastos.Utility.Spi.ILocaleServiceProvider;
 
     namespace Elastos {
     namespace Text {

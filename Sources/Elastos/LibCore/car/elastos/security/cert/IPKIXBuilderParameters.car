@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Security.Cert.IPKIXParameters;
 
     namespace Elastos {
     namespace Security {

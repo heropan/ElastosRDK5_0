@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Net.IResponseCache;
     interface Elastos.Net.IHttpURLConnection;
 
     namespace Elastos{

@@ -1,7 +1,5 @@
 module
 {
-    interface Elastos.IO.IInt64Buffer;
-    interface Elastos.IO.IByteBuffer;
 
     namespace Elastos {
     namespace Utility {

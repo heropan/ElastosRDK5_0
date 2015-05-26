@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Utility.IEnumeration;
     interface Elastos.Security.IPrincipal;
 
     namespace Elastos {

@@ -5,7 +5,6 @@ module
     interface Elastos.Net.INetworkInterface;
     interface Elastos.Net.ISocketAddress;
     interface Elastos.Net.IDatagramPacket;
-    interface Elastos.Net.IDatagramSocket;
 
     namespace Elastos{
     namespace Net{

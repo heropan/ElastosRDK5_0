@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Math.IBigInteger;
-    interface Elastos.Security.IPrivateKey;
     interface Elastos.Security.Interfaces.IECKey;
 
     namespace Elastos {

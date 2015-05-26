@@ -6,7 +6,6 @@ module
     interface Elastos.Net.IURLConnection;
     interface Elastos.Net.IURI;
     interface Elastos.Net.IProxy;
-    interface Elastos.Net.IURLStreamHandlerFactory;
 
     namespace Elastos {
     namespace Net {

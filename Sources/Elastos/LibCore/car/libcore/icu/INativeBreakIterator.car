@@ -2,7 +2,6 @@ module
 {
 
     interface Elastos.Text.ICharacterIterator;
-    interface Elastos.Text.IStringCharacterIterator;
     interface Elastos.Utility.ILocale;
 
     /**

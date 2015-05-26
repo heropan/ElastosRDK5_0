@@ -7,7 +7,6 @@ module
     interface Elastos.IO.IWriter;
     interface Elastos.IO.Channels.IReadableByteChannel;
     interface Elastos.IO.Channels.IWritableByteChannel;
-    interface Elastos.IO.IReadable;
     interface Elastos.IO.Charset.ICharsetDecoder;
     interface Elastos.IO.Charset.ICharsetEncoder;
 

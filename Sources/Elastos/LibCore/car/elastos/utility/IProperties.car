@@ -1,14 +1,10 @@
 module
 {
-    interface Elastos.IO.IBufferedReader;
     interface Elastos.IO.IInputStream;
-    interface Elastos.IO.IInputStreamReader;
     interface Elastos.IO.IOutputStream;
-    interface Elastos.IO.IOutputStreamWriter;
     interface Elastos.IO.IPrintStream;
     interface Elastos.IO.IPrintWriter;
     interface Elastos.IO.IReader;
-    interface Elastos.IO.IStringReader;
     interface Elastos.IO.IWriter;
 
     namespace Elastos {
