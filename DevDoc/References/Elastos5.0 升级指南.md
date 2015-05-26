@@ -77,6 +77,13 @@ CAR数据类型的签名规则如下表:
 
 相应的示例可以参考Libcore/tests/Reflection下的测试程序。
 
+## CAR反射方法GetClassInfo、GetInterfaceInfo以及GetEnumInfo需使用包含命名空间的全名
+目前，通过反射中IModuleInfo的GetClassInfo、GetInterfaceInfo、GetEnumInfo方法以及IClassInfo的GetInterfaceInfo方法获取相应的反射接口时，指定名称时须使用包含命名空间的全名。
+
+类、接口以及Enum类型的完整名称即是它们的类型签名。例如，interface Elastos.Core.IThread的包含命名空间的全名是LElastos/Core/IThread，因此，需用该全名作为调用GetInterfaceInfo时的参数。
+
+相应的示例可以参考Libcore/tests/Reflection下的测试程序。
+
 ## 取消接口间的继承
 ---
 当前，我们是按照Java中类的继承关系来定义Elastos中接口间的继承。比如，IActivity接口继承IContextThemeWrapper接口。
