@@ -1,8 +1,9 @@
 
 module
 {
-    namespace Libcore {
-    namespace IO {
+    namespace Elastos {
+    namespace Droid {
+    namespace System {
 
     /**
      * Information returned/taken by fcntl(2) F_GETFL and F_SETFL. Corresponds to C's
@@ -46,6 +47,7 @@ module
             [in] Int32 pid);
     }
 
-    } // namespace IO
-    } // namespace Libcore
+    } // namespace System
+    } // namespace Droid
+    } // namespace Elastos
 }

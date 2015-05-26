@@ -5,16 +5,19 @@ module
     interface Elastos.Net.IInetAddress;
     interface Elastos.Net.ISocketAddress;
     interface Elastos.IO.IByteBuffer;
-    interface Libcore.IO.IStructFlock;
-    interface Libcore.IO.IStructStat;
-    interface Libcore.IO.IStructStatFs;
-    interface Libcore.IO.IStructAddrinfo;
-    interface Libcore.IO.IStructPasswd;
-    interface Libcore.IO.IStructLinger;
-    interface Libcore.IO.IStructTimeval;
-    interface Libcore.IO.IStructPollfd;
-    interface Libcore.IO.IStructGroupReq;
-    interface Libcore.IO.IStructUtsname;
+    interface Elastos.IO.IFileDescriptor;
+    interface Elastos.Droid.System.IStructAddrinfo;
+    interface Elastos.Droid.System.IStructFlock;
+    interface Elastos.Droid.System.IStructGroupReq;
+    interface Elastos.Droid.System.IStructGroupSourceReq;
+    interface Elastos.Droid.System.IStructLinger;
+    interface Elastos.Droid.System.IStructPasswd;
+    interface Elastos.Droid.System.IStructPollfd;
+    interface Elastos.Droid.System.IStructStat;
+    interface Elastos.Droid.System.IStructStatVfs;
+    interface Elastos.Droid.System.IStructTimeval;
+    interface Elastos.Droid.System.IStructUcred;
+    interface Elastos.Droid.System.IStructUtsname;
 
     namespace Libcore {
     namespace IO {
@@ -22,7 +25,7 @@ module
     [deprecated]
     interface IOs {
         Accept(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] IInetSocketAddress* peerAddress,
             [out] Int32* retFd);
 
@@ -31,8 +34,14 @@ module
             [in] Int32 mode,
             [out] Boolean* succeed);
 
+        Elastos_getaddrinfo(
+            [in] String node,
+            [in] IStructAddrinfo* hints,
+            [in] Int32 netId,
+            [out, callee] ArrayOf<IInetAddress*>* info);
+
         Bind(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] IInetAddress* address,
             [in] Int32 port);
 
@@ -46,10 +55,10 @@ module
             [in] Int32 gid);
 
         Close(
-            [in] Int32 fd);
+            [in] IFileDescriptor* fd);
 
         Connect(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] IInetAddress* address,
             [in] Int32 port);
 
@@ -65,58 +74,62 @@ module
         Environ(
             [out, callee] ArrayOf<String>* env);
 
+        Execv(
+            [in] String filename,
+            [in] ArrayOf<String>* argv);
+
+        Execve(
+            [in] String filename,
+            [in] ArrayOf<String>* argv,
+            [in] ArrayOf<String>* envp);
+
         Fchmod(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 mode);
 
         Fchown(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 uid,
             [in] Int32 gid);
 
         FcntlVoid(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 cmd,
             [out] Int32* result);
 
         FcntlInt64(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 cmd,
             [in] Int64 arg,
             [out] Int32* result);
 
         FcntlFlock(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 cmd,
             [in] IStructFlock* arg,
             [out] Int32* result);
 
         Fdatasync(
-            [in] Int32 fd);
+            [in] IFileDescriptor* fd);
 
         Fstat(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [out] IStructStat** stat);
 
-        Fstatfs(
-            [in] Int32 fd,
-            [out] IStructStatFs** statFs);
+        Fstatvfs(
+            [in] IFileDescriptor* fd,
+            [out] IStructStatVfs** statFs);
 
         Fsync(
-            [in] Int32 fd);
+            [in] IFileDescriptor* fd);
 
         Ftruncate(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int64 length);
 
         Gai_strerror(
             [in] Int32 error,
             [out] String* strerror);
-
-        Getaddrinfo(
-            [in] String node,
-            [in] IStructAddrinfo* hints,
-            [out, callee] ArrayOf<IInetAddress*>* addrinfo);
 
         Getegid(
             [out] Int32* egid);
@@ -137,6 +150,10 @@ module
             [in] Int32 flags,
             [out] String* nameinfo);
 
+        Getpeername(
+            [in] IFileDescriptor* fd,
+            [out] ISocketAddress** peername);
+
         Getpid(
             [out] Int32* pid);
 
@@ -152,38 +169,47 @@ module
             [out] IStructPasswd** pwuid);
 
         Getsockname(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [out] ISocketAddress** sockname);
 
         GetsockoptByte(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
             [out] Int32* sockopt);
 
         GetsockoptInAddr(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
             [out] IInetAddress** addr);
 
         GetsockoptInt(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
             [out] Int32* sockopt);
 
         GetsockoptLinger(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
             [out] IStructLinger** linger);
 
         GetsockoptTimeval(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
             [out] IStructTimeval** timeval);
+
+        GetsockoptUcred(
+            [in] IFileDescriptor* fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [out] IStructUcred** ucred);
+
+        Gettid(
+            [out] Int32* tid);
 
         Getuid(
             [out] Int32* uid);
@@ -198,19 +224,19 @@ module
             [out] IInetAddress** addr);
 
         IoctlInetAddress(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 cmd,
             [in] String interfaceName,
             [out] IInetAddress** addr);
 
         IoctlInt(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 cmd,
             [in] Int32* arg,
             [out] Int32* result);
 
         Isatty(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [out] Boolean* isatty);
 
         Kill(
@@ -222,12 +248,16 @@ module
             [in] Int32 uid,
             [in] Int32 gid);
 
+        Link(
+            [in] String oldPath,
+            [in] String newPath);
+
         Listen(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 backlog);
 
         Lseek(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int64 offset,
             [in] Int32 whence,
             [out] Int64* result);
@@ -249,12 +279,16 @@ module
             [in] Int64 address,
             [in] Int64 byteCount);
 
+        Mkfifo(
+            [in] String path,
+            [in] Int32 mode);
+
         Mmap(
             [in] Int64 address,
             [in] Int64 byteCount,
             [in] Int32 prot,
             [in] Int32 flags,
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int64 offset,
             [out] Int64* result);
 
@@ -275,7 +309,7 @@ module
             [in] String path,
             [in] Int32 flags,
             [in] Int32 mode,
-            [out] Int32* fd);
+            [out] IFileDescriptor** fd);
 
         Pipe(
             [out, callee] ArrayOf<Int32>* fds);
@@ -286,55 +320,72 @@ module
             [in] Int32 timeoutMs,
             [out] Int32* result);
 
+        Posix_fallocate(
+            [in] IFileDescriptor* fd,
+            [in] Int64 offset,
+            [in] Int64 length);
+
+        Prctl(
+            [in] Int32 option,
+            [in] Int64 arg2,
+            [in] Int64 arg3,
+            [in] Int64 arg4,
+            [in] Int64 arg5,
+            [out] Int32* prctl);
+
         Pread(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [out] ArrayOf<Byte> bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
             [in] Int64 offset,
             [out] Int32* num);
 
-        PreadEx(
-            [in] Int32 fd,
+        Pread(
+            [in] IFileDescriptor* fd,
             [in] IByteBuffer* buffer,
             [in] Int64 offset,
             [out] Int32* num);
 
         Pwrite(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] ArrayOf<Byte> bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
             [in] Int64 offset,
             [out] Int32* num);
 
-        PwriteEx(
-            [in] Int32 fd,
+        Pwrite(
+            [in] IFileDescriptor* fd,
             [in] IByteBuffer* buffer,
             [in] Int64 offset,
             [out] Int32* num);
 
         Read(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [out] ArrayOf<Byte> bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
             [out] Int32* num);
 
-        ReadEx(
-            [in] Int32 fd,
+        Read(
+            [in] IFileDescriptor* fd,
             [in] IByteBuffer* buffer,
             [out] Int32* num);
 
+        Readlink(
+            [in] String path,
+            [out] String* link);
+
         Readv(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] ArrayOf<IInterface*> buffers,
             [in] ArrayOf<Int32> offsets,
             [in] ArrayOf<Int32> byteCounts,
             [out] Int32* num);
 
         Recvfrom(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [out] ArrayOf<Byte> bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
@@ -342,8 +393,8 @@ module
             [in] IInetSocketAddress* srcAddress,
             [out] Int32* num);
 
-        RecvfromEx(
-            [in] Int32 fd,
+        Recvfrom(
+            [in] IFileDescriptor* fd,
             [in] IByteBuffer* buffer,
             [in] Int32 flags,
             [in] IInetSocketAddress* srcAddress,
@@ -357,7 +408,7 @@ module
             [in] String newPath);
 
         Sendto(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] ArrayOf<Byte> bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
@@ -366,8 +417,8 @@ module
             [in] Int32 port,
             [out] Int32* result);
 
-        SendtoEx(
-            [in] Int32 fd,
+        Sendto(
+            [in] IFileDescriptor* fd,
             [in] IByteBuffer* buffer,
             [in] Int32 flags,
             [in] IInetAddress* inetAddress,
@@ -384,6 +435,11 @@ module
         Setegid(
             [in] Int32 egid);
 
+        Setenv(
+            [in] String name,
+            [in] String value,
+            [in] Boolean overwrite);
+
         Seteuid(
             [in] Int32 euid);
 
@@ -394,43 +450,49 @@ module
             [out] Int32* sid);
 
         SetsockoptByte(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
             [in] Int32 value);
 
         SetsockoptIfreq(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
             [in] String interfaceName);
 
         SetsockoptInt(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
             [in] Int32 value);
 
         SetsockoptIpMreqn(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
             [in] Int32 value);
 
         SetsockoptGroupReq(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
             [in] IStructGroupReq* value);
 
+        SetsockoptGroupSourceReq(
+            [in] IFileDescriptor* fd,
+            [in] Int32 level,
+            [in] Int32 option,
+            [in] IStructGroupSourceReq* value);
+
         SetsockoptLinger(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
             [in] IStructLinger* value);
 
         SetsockoptTimeval(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
             [in] IStructTimeval* value);
@@ -439,30 +501,30 @@ module
             [in] Int32 uid);
 
         Shutdown(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 how);
 
         Socket(
             [in] Int32 socketDomain,
             [in] Int32 type,
             [in] Int32 protocol,
-            [out] Int32* fd);
+            [out] IFileDescriptor** fd);
 
         Socketpair(
             [in] Int32 socketDomain,
             [in] Int32 type,
             [in] Int32 protocol,
-            [out] Int32* fd1,
-            [out] Int32* fd2);
+            [out] IFileDescriptor** fd1,
+            [out] IFileDescriptor** fd2);
 
         Stat(
             [in] String path,
             [out] IStructStat** stat);
 
         /* TODO: replace statfs with statvfs. */
-        Statfs(
+        StatVfs(
             [in] String path,
-            [out] IStructStatFs** statfs);
+            [out] IStructStatVfs** statfs);
 
         Strerror(
             [in] Int32 errno,
@@ -477,7 +539,7 @@ module
             [out] Int64* result);
 
         Tcdrain(
-            [in] Int32 fd);
+            [in] IFileDescriptor* fd);
 
         Umask(
             [in] Int32 mask,
@@ -493,19 +555,19 @@ module
             [out] Int32* result);
 
         Write(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] ArrayOf<Byte> bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
             [out] Int32* num);
 
-        WriteEx(
-            [in] Int32 fd,
+        Write(
+            [in] IFileDescriptor* fd,
             [in] IByteBuffer* buffer,
             [out] Int32* num);
 
         Writev(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] ArrayOf<IInterface*> buffers,
             [in] ArrayOf<Int32> offsets,
             [in] ArrayOf<Int32> byteCounts,

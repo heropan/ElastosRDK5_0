@@ -3,8 +3,9 @@ module
 {
     interface Elastos.Net.IInetAddress;
 
-    namespace Libcore {
-    namespace IO {
+    namespace Elastos {
+    namespace Droid {
+    namespace System {
 
     /**
      * Corresponds to C's {@code struct group_req}.
@@ -20,6 +21,7 @@ module
             [out] String* str);
     }
 
-    } // namespace IO
-    } // namespace Libcore
+    } // namespace System
+    } // namespace Droid
+    } // namespace Elastos
 }

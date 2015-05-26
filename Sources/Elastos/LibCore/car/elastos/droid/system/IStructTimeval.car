@@ -1,8 +1,9 @@
 
 module
 {
-    namespace Libcore {
-    namespace IO {
+    namespace Elastos {
+    namespace Droid {
+    namespace System {
 
     /**
      * Corresponds to C's {@code struct timeval} from
@@ -27,6 +28,7 @@ module
             [out] IStructTimeval** tv);
     }
 
-    } // namespace IO
-    } // namespace Libcore
+    } // namespace System
+    } // namespace Droid
+    } // namespace Elastos
 }

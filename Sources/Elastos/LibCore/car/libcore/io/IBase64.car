@@ -10,7 +10,7 @@ module
             [in] ArrayOf<Byte>* inData,
             [out, callee] ArrayOf<Byte>* outData);
 
-        DecodeEx(
+        Decode(
             [in] ArrayOf<Byte>* inData,
             [in] Int32 len,
             [out, callee] ArrayOf<Byte>* outData);

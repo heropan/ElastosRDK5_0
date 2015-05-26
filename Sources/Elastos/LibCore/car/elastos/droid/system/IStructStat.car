@@ -1,8 +1,9 @@
 
 module
 {
-    namespace Libcore {
-    namespace IO {
+    namespace Elastos {
+    namespace Droid {
+    namespace System {
 
     /**
      * File information returned by fstat(2), lstat(2), and stat(2). Corresponds to C's
@@ -72,6 +73,7 @@ module
             [out] Int64* blocks);
     }
 
-    } // namespace IO
-    } // namespace Libcore
+    } // namespace System
+    } // namespace Droid
+    } // namespace Elastos
 }

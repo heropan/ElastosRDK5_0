@@ -1,8 +1,9 @@
 
 module
 {
-    namespace Libcore {
-    namespace IO {
+    namespace Elastos {
+    namespace Droid {
+    namespace System {
 
     /**
      * Information returned by uname(2). Corresponds to C's
@@ -31,6 +32,7 @@ module
             [out] String* machine);
     }
 
-    } // namespace IO
-    } // namespace Libcore
+    } // namespace System
+    } // namespace Droid
+    } // namespace Elastos
 }

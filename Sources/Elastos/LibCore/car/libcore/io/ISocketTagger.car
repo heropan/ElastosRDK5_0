@@ -33,10 +33,10 @@ module
         Untag(
             [in] IFileDescriptor* socketDescriptor);
 
-        TagEx(
+        Tag(
             [in] ISocket* socket);
 
-        UntagEx(
+        Untag(
             [in] ISocket* socket);
     }
 

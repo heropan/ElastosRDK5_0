@@ -10,6 +10,11 @@ module
     merge("../../car/elastos/utility.car");
     merge("../../car/elastos/security.car");
     merge("../../car/elastos/sql.car");
+    merge("../../src/elastos/droid/system/Elastos.Droid.System.car");
+
+    //merge("../../car/elastos/io.car");
+    //merge("../../car/elastos/text.car");
+    //merge("../../car/elastos/utility.car");
 
     //merge("../../src/elastos/math/Elastos.Math.car");
     //merge("../../src/libcore/io/Libcore.IO.car");

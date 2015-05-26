@@ -1,8 +1,6 @@
 
 module
 {
-    interface Libcore.IO.IOs;
-
     namespace Libcore {
     namespace IO {
 

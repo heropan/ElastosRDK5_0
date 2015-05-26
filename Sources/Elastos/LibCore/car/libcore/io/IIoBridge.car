@@ -4,39 +4,54 @@ module
     interface Elastos.Net.IInetAddress;
     interface Elastos.Net.IDatagramPacket;
     interface Elastos.IO.IByteBuffer;
+    interface Elastos.IO.IFileDescriptor;
 
     namespace Libcore {
     namespace IO {
 
     [deprecated]
     interface IIoBridge {
+        // Socket options used by java.net but not exposed in SocketOptions.
+        const Int32 JAVA_MCAST_JOIN_GROUP = 19;
+        const Int32 JAVA_MCAST_LEAVE_GROUP = 20;
+        const Int32 JAVA_MCAST_JOIN_SOURCE_GROUP = 21;
+        const Int32 JAVA_MCAST_LEAVE_SOURCE_GROUP = 22;
+        const Int32 JAVA_MCAST_BLOCK_SOURCE = 23;
+        const Int32 JAVA_MCAST_UNBLOCK_SOURCE = 24;
+        const Int32 JAVA_IP_MULTICAST_TTL = 17;
+
         Available(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [out] Int32* avail);
 
         Bind(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] IInetAddress* inetAddress,
             [in] Int32 port);
 
         Connect(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
+            [in] IInetAddress* inetAddress,
+            [in] Int32 port);
+
+        Connect(
+            [in] IFileDescriptor* fd,
             [in] IInetAddress* inetAddress,
             [in] Int32 port,
-            [out] Boolean* result);
+            [in] Int32 timeoutMs);
 
-        ConnectEx(
-            [in] Int32 fd,
-            [in] IInetAddress* inetAddress,
-            [in] Int32 port,
-            [in] Int32 timeoutMs,
-            [out] Boolean* result);
-
-        CloseSocket(
-            [in] Int32 fd);
+        /**
+         * Closes the supplied file descriptor and sends a signal to any threads are currently blocking.
+         * In order for the signal to be sent the blocked threads must have registered with
+         * the AsynchronousCloseMonitor before they entered the blocking operation.
+         *
+         * <p>This method is a no-op if passed a {@code null} or already-closed file descriptor.
+         */
+        CloseAndSignalBlockedThreads(
+            [in] IFileDescriptor* fd);
 
         IsConnected(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] IInetAddress* inetAddress,
             [in] Int32 port,
             [in] Int32 timeoutMs,
@@ -44,12 +59,12 @@ module
             [out] Boolean* isConnected);
 
         GetSocketOption(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 option,
             [out] IInterface** value);
 
         SetSocketOption(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] Int32 option,
             [in] IInterface* value);
 
@@ -62,31 +77,31 @@ module
         Open(
             [in] String path,
             [in] Int32 flags,
-            [out] Int32* fd);
+            [out] IFileDescriptor** fd);
 
-        /**
+        /**FileDescriptor*
          * java.io thinks that a read at EOF is an error and should return -1, contrary to traditional
          * Unix practice where you'd read until you got 0 bytes (and any future read would return -1).
          */
         Read(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [out] ArrayOf<Byte> bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
-            [out] Int32* count);
+            [out] IFileDescriptor** count);
 
         /**
          * java.io always writes every byte it's asked to, or fails with an error. (That is, unlike
          * Unix it never just writes as many bytes as happens to be convenient.)
          */
         Write(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] ArrayOf<Byte> bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount);
 
         Sendto(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] ArrayOf<Byte> bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
@@ -95,8 +110,8 @@ module
             [in] Int32 port,
             [out] Int32* result);
 
-        SendtoEx(
-            [in] Int32 fd,
+        Sendto(
+            [in] IFileDescriptor* fd,
             [in] IByteBuffer* buffer,
             [in] Int32 flags,
             [in] IInetAddress* inetAddress,
@@ -105,7 +120,7 @@ module
 
         Recvfrom(
             [in] Boolean isRead,
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [out] ArrayOf<Byte> bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
@@ -114,9 +129,9 @@ module
             [in] Boolean isConnected,
             [out] Int32* result);
 
-        RecvfromEx(
+        Recvfrom(
             [in] Boolean isRead,
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [in] IByteBuffer* buffer,
             [in] Int32 flags,
             [in] IDatagramPacket* packet,
@@ -125,14 +140,14 @@ module
 
         Socket(
             [in] Boolean stream,
-            [out] Int32* fd);
+            [out] IFileDescriptor** fd);
 
         GetSocketLocalAddress(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [out] IInetAddress** address);
 
         GetSocketLocalPort(
-            [in] Int32 fd,
+            [in] IFileDescriptor* fd,
             [out] Int32* port);
     }
 

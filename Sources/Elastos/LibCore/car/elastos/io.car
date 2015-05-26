@@ -1,20 +1,9 @@
 module
 {
     merge("../libcore/io/Exceptions.car");
-    merge("../libcore/io/IOsConstants.car");
     merge("../libcore/io/IOs.car");
     merge("../libcore/io/IIoBridge.car");
     merge("../libcore/io/ILibcore.car");
-    merge("../libcore/io/IStructAddrinfo.car");
-    merge("../libcore/io/IStructFlock.car");
-    merge("../libcore/io/IStructGroupReq.car");
-    merge("../libcore/io/IStructLinger.car");
-    merge("../libcore/io/IStructPasswd.car");
-    merge("../libcore/io/IStructPollfd.car");
-    merge("../libcore/io/IStructStat.car");
-    merge("../libcore/io/IStructStatFs.car");
-    merge("../libcore/io/IStructTimeval.car");
-    merge("../libcore/io/IStructUtsname.car");
     merge("../libcore/io/ISocketTagger.car");
     merge("../libcore/io/IBase64.car");
 

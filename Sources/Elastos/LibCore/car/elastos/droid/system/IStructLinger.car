@@ -1,8 +1,9 @@
 
 module
 {
-    namespace Libcore {
-    namespace IO {
+    namespace Elastos {
+    namespace Droid {
+    namespace System {
 
     /**
      * Corresponds to C's {@code struct linger} from
@@ -20,6 +21,7 @@ module
             [out] Boolean* isOn);
     }
 
-    } // namespace IO
-    } // namespace Libcore
+    } // namespace System
+    } // namespace Droid
+    } // namespace Elastos
 }
