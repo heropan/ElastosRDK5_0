@@ -3611,13 +3611,13 @@ int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
             sb.Append("I64");
             break;
         case Type_UInt16:
-            sb.Append("UI16");
+            sb.Append("U16");
             break;
         case Type_UInt32:
-            sb.Append("UI32");
+            sb.Append("U32");
             break;
         case Type_UInt64:
-            sb.Append("UI64");
+            sb.Append("U64");
             break;
         case Type_Float:
             sb.Append("F");

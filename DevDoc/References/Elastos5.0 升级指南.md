@@ -34,6 +34,49 @@ Object是所有C++类或者CAR类的子类，所以，所有CAR类都隐含实�
 
 相应的示例可以参考ISynchronize接口的声明。
 
+## CAR反射获取方法增加方法签名参数
+CAR支持接口方法重载，通过反射获取接口或者类中的方法需要同时指定方法名和方法类型签名。因此，CAR反射API中的GetMethodInfo方法增加了方法签名参数。
+
+CAR方法类型签名为**\"(\"** ***所有参数类型签名*** **\")\"** ***返回类型签名***
+
+CAR数据类型的签名规则如下表:
+
+| Types                          | Signature                  |
+|:------------------------------:|:--------------------------:|
+| Char8                          | C8                         |
+| Char16                         | C16                        |
+| Boolean                        | Z                          |
+| Byte                           | B                          |
+| Int8                           | I8                         |
+| Int16                          | I16                        |
+| Int32                          | I32                        |
+| Int64                          | I64                        |
+| UInt16                         | U16                        |
+| UInt32                         | U32                        |
+| UInt64                         | U64                        |
+| Float                          | F                          |
+| Double                         | D                          |
+| ECode                          | E                          |
+| EMuid                          | IID                        |
+| EGuid                          | CID                        |
+| String                         | LElastos/String;           |
+| CString                        | LElastos/CString;          |
+| ArrayOf<Int32\>                | [I32                       |
+| ArrayOf<String\>               | [LElastos/String;          |
+| Enum Elastos.Core.ThreadState  | LElastos/Core/ThreadState; |
+| interface Elastos.Core.IThread | LElastos/Core/IThread;     |
+
+指针类型"**Type \***"的类型签名为"***Type的签名* \***"
+指针类型"**Type \*\***"的类型签名为"***Type的签名* \*\***"
+
+举例如下：
+- 方法"CARAPI SetValue(String)"的类型签名是"(LElastos/String;)E"
+- 方法"CARAPI GetValue(String\*)"的类型签名是"(LElastos/String;\*)E"
+- 方法"CARAPI SetValue(Int32, String, Int64)"的类型签名是"(I32LElastos/String;I64)E"
+- 方法"CARAPI GetValue(Int32\*, String\*, Int64\*)"的类型签名是"(I32\*LElastos/String;\*I64\*)E"
+
+相应的示例可以参考Libcore/tests/Reflection下的测试程序。
+
 ## 取消接口间的继承
 ---
 当前，我们是按照Java中类的继承关系来定义Elastos中接口间的继承。比如，IActivity接口继承IContextThemeWrapper接口。
