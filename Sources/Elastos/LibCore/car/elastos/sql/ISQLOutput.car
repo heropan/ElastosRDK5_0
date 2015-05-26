@@ -4,6 +4,7 @@ module
     interface Elastos.IO.IReader;
     interface Elastos.IO.IInputStream;
     interface Elastos.Net.IURL;
+    interface Elastos.Sql.ISQLData;
 
 
     namespace Elastos {
