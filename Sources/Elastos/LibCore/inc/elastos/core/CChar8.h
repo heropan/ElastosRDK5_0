@@ -2,14 +2,24 @@
 #ifndef __CCHAR8_H__
 #define __CCHAR8_H__
 
-#include "_CChar8.h"
+#include "_Elastos_Core_CChar8.h"
+#include "Object.h"
+
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {
 
 CarClass(CChar8)
+    , public Object
+    , public INumber
+    , public ISerializable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ Char8 value);
 

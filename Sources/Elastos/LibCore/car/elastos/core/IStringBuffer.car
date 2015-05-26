@@ -6,7 +6,11 @@ module
     namespace Elastos {
     namespace Core {
 
-    interface IStringBuffer extends Elastos.Core.ICharSequence {
+    /**
+     * @Involve
+     * interface ICharSequence;
+     */
+    interface IStringBuffer {
 
         ToASCIILowerCase();
 

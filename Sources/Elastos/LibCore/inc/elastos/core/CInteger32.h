@@ -2,17 +2,27 @@
 #ifndef __CINTEGER32_H__
 #define __CINTEGER32_H__
 
-#include "_CInteger32.h"
+#include "_Elastos_Core_CInteger32.h"
+#include "Object.h"
 
 using Elastos::Core::INumber;
 using Elastos::Core::IComparable;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {
 
-CarClass(CInteger32) , public INumber, public IComparable
+CarClass(CInteger32)
+    , public Object
+    , public INumber
+    , public ISerializable
+    , public IComparable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ Int32 value);
 

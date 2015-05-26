@@ -1,10 +1,17 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CByte.h"
 #include "IntegralToString.h"
 
+using Elastos::IO::EIID_ISerializable;
+using Elastos::Core::IntegralToString;
+
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL_3(CByte, Object, IByte, ISerializable, IComparable)
+
+CAR_OBJECT_IMPL(CByte)
 
 ECode CByte::constructor(
     /* [in] */ Byte value)
@@ -121,7 +128,7 @@ ECode CByte::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = IntegralToString::Int32ToString(mValue);
+    //*result = IntegralToString::Int32ToString(mValue);
 
     return NOERROR;
 }

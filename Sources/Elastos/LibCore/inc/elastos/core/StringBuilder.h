@@ -4,6 +4,7 @@
 
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
 #else
 #include "Elastos.CoreLibrary.h"
 #endif

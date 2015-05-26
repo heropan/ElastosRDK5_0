@@ -1,11 +1,18 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CFloat.h"
-#include <Math.h>
-#include <RealToString.h>
+#include "Math.h"
+#include "RealToString.h"
+
+using Elastos::IO::EIID_ISerializable;
+using Elastos::Core::RealToString;
 
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL_4(CFloat, Object, IFloat, INumber, ISerializable, IComparable)
+
+CAR_OBJECT_IMPL(CFloat)
 
 ECode CFloat::constructor(
     /* [in] */ Float value)
@@ -140,7 +147,7 @@ ECode CFloat::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = RealToString::GetInstance()->FloatToString(mValue);
+    //*result = RealToString::GetInstance()->FloatToString(mValue);
 
     return NOERROR;
 }

@@ -1,10 +1,17 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CInteger64.h"
-#include <elastos/IntegralToString.h>
+#include "IntegralToString.h"
+
+using Elastos::IO::EIID_ISerializable;
+using Elastos::Core::IntegralToString;
 
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL_4(CInteger64, Object,IInteger64, INumber, ISerializable, IComparable)
+
+CAR_OBJECT_IMPL(CInteger64)
 
 ECode CInteger64::constructor(
     /* [in] */ Int64 value)
@@ -121,7 +128,7 @@ ECode CInteger64::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = IntegralToString::Int64ToString(mValue);
+//    *result = IntegralToString::Int64ToString(mValue);
 
     return NOERROR;
 }

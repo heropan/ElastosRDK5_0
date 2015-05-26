@@ -77,61 +77,82 @@ module
        interface IComparable;
     }
 
-    // class CByte {
-    //     constructor(
-    //         [in] Byte value);
+    class CByte {
+        constructor(
+            [in] Byte value);
 
-    //     interface IByte;
-    // }
+        interface IByte;
+        interface INumber;
+        interface ISerializable;
+        interface IComparable;
+    }
 
-    // class CChar32 {
-    //     constructor(
-    //         [in] Char32 value);
+    class CChar32 {
+        constructor(
+            [in] Char32 value);
 
-    //     interface IChar32;
-    // }
+        interface IChar32;
+        interface INumber;
+        interface ISerializable;
+    }
 
-    // class CChar16 {
-    //     constructor(
-    //         [in] Char16 value);
+    class CChar16 {
+        constructor(
+            [in] Char16 value);
 
-    //     interface IChar16;
-    // }
+        interface IChar16;
+        interface INumber;
+        interface ISerializable;
+    }
 
-    // class CChar8 {
-    //     constructor(
-    //         [in] Char8 value);
+    class CChar8 {
+        constructor(
+            [in] Char8 value);
 
-    //     interface IChar8;
-    // }
+        interface IChar8;
+        interface INumber;
+        interface ISerializable;
+    }
 
-    // class CInteger16 {
-    //     constructor(
-    //         [in] Int16 value);
+    class CInteger16 {
+        constructor(
+            [in] Int16 value);
 
-    //     interface IInteger16;
-    // }
+        interface IInteger16;
+        interface INumber;
+        interface ISerializable;
+        interface IComparable;
+    }
 
-    // class CInteger32 {
-    //     constructor(
-    //         [in] Int32 value);
+    class CInteger32 {
+        constructor(
+            [in] Int32 value);
 
-    //     interface IInteger32;
-    // }
+        interface IInteger32;
+        interface INumber;
+        interface ISerializable;
+        interface IComparable;
+    }
 
-    // class CInteger64 {
-    //     constructor(
-    //         [in] Int64 value);
+    class CInteger64 {
+        constructor(
+            [in] Int64 value);
 
-    //     interface IInteger64;
-    // }
+        interface IInteger64;
+        interface INumber;
+        interface ISerializable;
+        interface IComparable;
+    }
 
-    // class CFloat {
-    //     constructor(
-    //         [in] Float value);
+    class CFloat {
+        constructor(
+            [in] Float value);
 
-    //     interface IFloat;
-    // }
+        interface IFloat;
+        interface INumber;
+        interface ISerializable;
+        interface IComparable;
+    }
 
     // class CDouble {
     //     constructor(

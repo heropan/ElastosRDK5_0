@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "StringBuilder.h"
 #include "StringBuffer.h"
 #ifdef ELASTOS_CORELIBRARY
@@ -308,11 +307,11 @@ ECode StringBuilder::Append(
     /* [in] */ IStringBuffer* sb)
 {
     if (NULL == sb) {
-        return AppendNULL();
+        return Append();
     }
 
     String str;
-    sb->ToString(&str);
+    ((StringBuilder*)sb)->ToString(&str);
     return AppendOString(str);
 }
 
@@ -320,11 +319,11 @@ ECode StringBuilder::Append(
     /* [in] */ IStringBuilder* sb)
 {
     if (NULL == sb) {
-        return AppendNULL();
+        return Append();
     }
 
     String str;
-    sb->ToString(&str);
+    ((StringBuilder*)sb)->ToString(&str);
     return AppendOString(str);
 }
 
@@ -557,13 +556,17 @@ StringBuilder& StringBuilder::operator+=(IInterface* right)
 
 StringBuilder& StringBuilder::operator+=(StringBuffer& right)
 {
-    AppendOString(right.ToString());
+    String str;
+    right.ToString(&str);
+    AppendOString(str);
     return *this;
 }
 
 StringBuilder& StringBuilder::operator+=(StringBuilder& right)
 {
-    AppendOString(right.ToString());
+    String str;
+    right.ToString(&str);
+    AppendOString(str);
     return *this;
 }
 

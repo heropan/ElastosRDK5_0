@@ -2,17 +2,27 @@
 #ifndef __CFLOAT_H__
 #define __CFLOAT_H__
 
-#include "_CFloat.h"
+#include "_Elastos_Core_CFloat.h"
+#include "Object.h"
 
 using Elastos::Core::INumber;
 using Elastos::Core::IComparable;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {
 
-CarClass(CFloat) , public INumber, public IComparable
+CarClass(CFloat)
+    , public Object
+    , public INumber
+    , public ISerializable
+    , public IComparable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ Float value);
 

@@ -2,11 +2,13 @@
 #ifndef __STRINGBUFFER_H__
 #define __STRINGBUFFER_H__
 
-#include <cmdef.h>
-#include <elastos/AbstractStringBuilder.h>
-#include <elastos/Mutex.h>
+#include <coredef.h>
+#include "AbstractStringBuilder.h"
+#include "Mutex.h"
+#include "Object.h"
 
 using Elastos::Core::Mutex;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {
@@ -312,7 +314,7 @@ public:
      * @see String#lastIndexOf(String,int)
      * @since 1.4
      */
-    CARAPI LastIndexOfEx(
+    CARAPI LastIndexOf(
         /* [in] */ const String& subString,
         /* [in] */ Int32 start,
         /* [out] */ Int32* index);

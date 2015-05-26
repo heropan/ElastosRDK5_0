@@ -1,10 +1,18 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CInteger16.h"
-#include <elastos/IntegralToString.h>
+#include "IntegralToString.h"
+
+using Elastos::IO::EIID_ISerializable;
+using Elastos::Core::IntegralToString;
 
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL_4(CInteger16, Object, IInteger16, INumber, ISerializable, IComparable)
+
+CAR_OBJECT_IMPL(CInteger16)
+
 
 ECode CInteger16::constructor(
     /* [in] */ Int16 value)
@@ -121,7 +129,7 @@ ECode CInteger16::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = IntegralToString::Int32ToString(mValue);
+    //*result = IntegralToString::Int32ToString(mValue);
 
     return NOERROR;
 }

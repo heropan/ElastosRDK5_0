@@ -2,7 +2,10 @@
 #ifndef __CINTEGER16_H__
 #define __CINTEGER16_H__
 
-#include "_CInteger16.h"
+#include "_Elastos_Core_CInteger16.h"
+#include "Object.h"
+
+using Elastos::IO::ISerializable;
 
 using Elastos::Core::INumber;
 using Elastos::Core::IComparable;
@@ -10,9 +13,17 @@ using Elastos::Core::IComparable;
 namespace Elastos {
 namespace Core {
 
-CarClass(CInteger16) , public INumber, public IComparable
+CarClass(CInteger16)
+    , public Object
+    , public INumber
+    , public ISerializable
+    , public IComparable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ Int16 value);
 

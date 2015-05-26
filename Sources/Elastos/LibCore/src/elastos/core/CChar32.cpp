@@ -1,10 +1,16 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CChar32.h"
 #include "IntegralToString.h"
 
+using Elastos::IO::EIID_ISerializable;
+
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL_3(CChar32, Object, IChar32, INumber, ISerializable)
+
+CAR_OBJECT_IMPL(CChar32)
 
 ECode CChar32::constructor(
     /* [in] */ Char32 value)

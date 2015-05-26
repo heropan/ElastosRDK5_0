@@ -2,14 +2,24 @@
 #ifndef __CCHAR32_H__
 #define __CCHAR32_H__
 
-#include "_CChar32.h"
+#include "_Elastos_Core_CChar32.h"
+#include "Object.h"
+
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {
 
 CarClass(CChar32)
+    , public Object
+    , public INumber
+    , public ISerializable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ Char32 value);
 

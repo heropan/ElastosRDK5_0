@@ -2,14 +2,24 @@
 #ifndef __CCHAR16_H__
 #define __CCHAR16_H__
 
-#include "_CChar16.h"
+#include "_Elastos_Core_CChar16.h"
+#include "Object.h"
+
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {
 
 CarClass(CChar16)
+    , public Object
+    , public INumber
+    , public ISerializable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ Char16 value);
 

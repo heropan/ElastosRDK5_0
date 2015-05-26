@@ -7,7 +7,7 @@ module
     /**
      * @Involve
      * interface INumber;
-     * interface IComparable;
+     * interface ISerializable;
      */
     interface IChar32 {
         /**

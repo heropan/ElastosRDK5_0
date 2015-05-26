@@ -1,12 +1,12 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "AbstractStringBuilder.h"
 #include <elstring.h>
-#include <elastos/Math.h>
-#include <elastos/RealToString.h>
-#include <elastos/IntegralToString.h>
-#include <elastos/Character.h>
-#include <elastos/ObjectUtils.h>
+#include "Math.h"
+#include "RealToString.h"
+#include "IntegralToString.h"
+#include "Character.h"
+#include "ObjectUtils.h"
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CStringWrapper.h"

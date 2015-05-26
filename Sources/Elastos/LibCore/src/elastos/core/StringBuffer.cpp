@@ -1,6 +1,6 @@
 
 #include "StringBuffer.h"
-#include <elastos/Character.h>
+#include "Character.h"//<elastos/Character.h>
 #include <stdio.h>
 #include "StringBuilder.h"
 #ifdef ELASTOS_CORELIBRARY
@@ -337,11 +337,11 @@ ECode StringBuffer::Append(
 {
     Mutex::Autolock lock(mLock);
     if (NULL == sb) {
-        return AppendNULL();
+        return Append();
     }
 
     String str;
-    sb->ToString(&str);
+    ((StringBuffer*)sb)->ToString(&str);
     return AppendOString(str);
 }
 
@@ -350,11 +350,11 @@ ECode StringBuffer::Append(
 {
     Mutex::Autolock lock(mLock);
     if (NULL == sb) {
-        return AppendNULL();
+        return Append();
     }
 
     String str;
-    sb->ToString(&str);
+    ((StringBuffer*)sb)->ToString(&str);
     return AppendOString(str);
 }
 
@@ -622,14 +622,18 @@ StringBuffer& StringBuffer::operator+=(IInterface* right)
 StringBuffer& StringBuffer::operator+=(StringBuffer& right)
 {
     Mutex::Autolock lock(mLock);
-    AppendOString(right.ToString());
+    String str;
+    right.ToString(&str);
+    AppendOString(str);
     return *this;
 }
 
 StringBuffer& StringBuffer::operator+=(StringBuilder& right)
 {
     Mutex::Autolock lock(mLock);
-    AppendOString(right.ToString());
+    String str;
+    right.ToString(&str);
+    AppendOString(str);
     return *this;
 }
 

@@ -2,17 +2,27 @@
 #ifndef __CINTEGER64_H__
 #define __CINTEGER64_H__
 
-#include "_CInteger64.h"
+#include "_Elastos_Core_CInteger64.h"
+#include "Object.h"
 
 using Elastos::Core::INumber;
 using Elastos::Core::IComparable;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {
 
-CarClass(CInteger64) , public INumber, public IComparable
+CarClass(CInteger64)
+    , public Object
+    , public INumber
+    , public ISerializable
+    , public IComparable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ Int64 value);
 

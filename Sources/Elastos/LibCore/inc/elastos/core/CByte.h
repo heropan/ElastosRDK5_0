@@ -2,17 +2,27 @@
 #ifndef __CBYTE_H__
 #define __CBYTE_H__
 
-#include "_CByte.h"
+#include "_Elastos_Core_CByte.h"
+#include "Object.h"
 
 using Elastos::Core::INumber;
 using Elastos::Core::IComparable;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {
 
-CarClass(CByte) ,public INumber, public IComparable
+CarClass(CByte)
+     , public Object
+     , public INumber
+     , public ISerializable
+     , public IComparable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ Byte value);
 

@@ -1,10 +1,17 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CChar16.h"
 #include "IntegralToString.h"
 
+using Elastos::Core::IntegralToString;
+using Elastos::IO::EIID_ISerializable;
+
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL_3(CChar16, Object, IChar16, INumber, ISerializable)
+
+CAR_OBJECT_IMPL(CChar16)
 
 ECode CChar16::constructor(
     /* [in] */ Char16 value)
@@ -122,7 +129,7 @@ ECode CChar16::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = IntegralToString::Int32ToString((Int32)mValue);
+    //*result = IntegralToString::Int32ToString((Int32)mValue);
 
     return NOERROR;
 }
