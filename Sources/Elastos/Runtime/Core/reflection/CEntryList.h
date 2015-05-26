@@ -13,6 +13,7 @@ struct ObjElement
     UInt32   uIndex;
     void    *pDesc;
     char    *pszName;
+    char    *pszSignature;
     IInterface *pObj;
 };
 

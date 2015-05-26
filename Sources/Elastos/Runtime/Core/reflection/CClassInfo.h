@@ -145,6 +145,7 @@ public:
 
     CARAPI GetMethodInfo(
         /* [in] */ CString name,
+        /* [in] */ CString signature,
         /* [out] */ IMethodInfo ** ppMethodInfo);
 
     CARAPI GetCallbackMethodCount(

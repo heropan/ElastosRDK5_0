@@ -117,7 +117,10 @@ ECode CEntryList::InitElemList()
                         m_pIFList[i].pDesc->ppMethods, j);
                 m_pObjElement[n].pszName = adjustNameAddr(m_nBase,
                         ((MethodDescriptor *)m_pObjElement[n].pDesc)->pszName);
-                if (!m_pHTIndexs.Put(m_pObjElement[n].pszName, n)) {
+                m_pObjElement[n].pszSignature = adjustNameAddr(m_nBase,
+                        ((MethodDescriptor *)m_pObjElement[n].pDesc)->pszSignature);
+                String strKey = String(m_pObjElement[n].pszName) + String(m_pObjElement[n].pszSignature);
+                if (!m_pHTIndexs.Put(const_cast<char*>(strKey.string()), n)) {
                     return E_OUT_OF_MEMORY;
                 }
             }

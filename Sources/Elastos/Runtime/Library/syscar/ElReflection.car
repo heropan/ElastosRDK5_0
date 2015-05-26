@@ -221,6 +221,7 @@ library
 
         GetMethodInfo(
             [in] CString name,
+            [in] CString signature,
             [out] IMethodInfo** methodInfo);
     }
 
@@ -1207,6 +1208,7 @@ library
 
         GetMethodInfo(
             [in] CString name,
+            [in] CString signature,
             [out] IMethodInfo** methodInfo);
 
         GetCallbackMethodCount(
