@@ -2,7 +2,7 @@
 #ifndef __CBUFFEREDINPUTSTREAM_H__
 #define __CBUFFEREDINPUTSTREAM_H__
 
-#include "_CBufferedInputStream.h"
+#include "_Elastos_IO_CBufferedInputStream.h"
 #include "BufferedInputStream.h"
 
 namespace Elastos {

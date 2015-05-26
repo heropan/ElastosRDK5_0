@@ -2,7 +2,7 @@
 #ifndef __CBUFFEREDOUTPUTSTREAM_H__
 #define __CBUFFEREDOUTPUTSTREAM_H__
 
-#include "_CBufferedOutputStream.h"
+#include "_Elastos_IO_CBufferedOutputStream.h"
 #include "BufferedOutputStream.h"
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __CFILTERINPUTSTREAM_H__
 #define __CFILTERINPUTSTREAM_H__
 
-#include "_CFilterInputStream.h"
+#include "_Elastos_IO_CFilterInputStream.h"
 #include "FilterInputStream.h"
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __CBUFFEREDREADER_H__
 #define __CBUFFEREDREADER_H__
 
-#include "_CBufferedReader.h"
+#include "_Elastos_IO_CBufferedReader.h"
 #include "BufferedReader.h"
 
 namespace Elastos {
