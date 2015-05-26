@@ -110,17 +110,17 @@ ECode CModuleInfo::GetAllClassInfos(
 }
 
 ECode CModuleInfo::GetClassInfo(
-    /* [in] */ CString name,
+    /* [in] */ CString fullName,
     /* [out] */ IClassInfo ** ppClassInfo)
 {
-    if (name.IsNull() || NULL == ppClassInfo) {
+    if (fullName.IsNull() || NULL == ppClassInfo) {
         return E_INVALID_ARGUMENT;
     }
 
     ECode ec = AcquireClassList();
     if (FAILED(ec)) return ec;
 
-    return m_pClassList->AcquireObjByName(name, (IInterface **)ppClassInfo);
+    return m_pClassList->AcquireObjByName(fullName, (IInterface **)ppClassInfo);
 }
 
 ECode CModuleInfo::GetInterfaceCount(
@@ -160,10 +160,10 @@ ECode CModuleInfo::GetAllInterfaceInfos(
 }
 
 ECode CModuleInfo::GetInterfaceInfo(
-    /* [in] */ CString name,
+    /* [in] */ CString fullName,
     /* [out] */ IInterfaceInfo ** ppInterfaceInfo)
 {
-    if (name.IsNull() || NULL == ppInterfaceInfo) {
+    if (fullName.IsNull() || NULL == ppInterfaceInfo) {
         return E_INVALID_ARGUMENT;
     }
 
@@ -171,7 +171,7 @@ ECode CModuleInfo::GetInterfaceInfo(
     if (FAILED(ec)) return ec;
 
     return m_pInterfaceList->AcquireObjByName(
-        name, (IInterface **)ppInterfaceInfo);
+        fullName, (IInterface **)ppInterfaceInfo);
 }
 
 ECode CModuleInfo::GetStructCount(
@@ -265,10 +265,10 @@ ECode CModuleInfo::GetAllEnumInfos(
 }
 
 ECode CModuleInfo::GetEnumInfo(
-    /* [in] */ CString name,
+    /* [in] */ CString fullName,
     /* [out] */ IEnumInfo ** ppEnumInfo)
 {
-    if (name.IsNull() || !ppEnumInfo) {
+    if (fullName.IsNull() || !ppEnumInfo) {
         return E_INVALID_ARGUMENT;
     }
 
@@ -279,7 +279,7 @@ ECode CModuleInfo::GetEnumInfo(
     ECode ec = AcquireEnumList();
     if (FAILED(ec)) return ec;
 
-    return m_pEnumList->AcquireObjByName(name, (IInterface **)ppEnumInfo);
+    return m_pEnumList->AcquireObjByName(fullName, (IInterface **)ppEnumInfo);
 }
 
 ECode CModuleInfo::GetTypeAliasCount(

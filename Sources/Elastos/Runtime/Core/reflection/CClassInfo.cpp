@@ -651,17 +651,17 @@ ECode CClassInfo::GetAllInterfaceInfos(
 }
 
 ECode CClassInfo::GetInterfaceInfo(
-    /* [in] */ CString name,
+    /* [in] */ CString fullName,
     /* [out] */ IInterfaceInfo ** ppInterfaceInfo)
 {
-    if (name.IsNull() || !ppInterfaceInfo) {
+    if (fullName.IsNull() || !ppInterfaceInfo) {
         return E_INVALID_ARGUMENT;
     }
 
     ECode ec = AcquireInterfaceList();
     if (FAILED(ec)) return ec;
 
-    return m_pInterfaceList->AcquireObjByName(name,
+    return m_pInterfaceList->AcquireObjByName(fullName,
         (IInterface **)ppInterfaceInfo);
 }
 
