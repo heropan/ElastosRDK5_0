@@ -117,9 +117,9 @@ ECode CEntryList::InitElemList()
                         m_pIFList[i].pDesc->ppMethods, j);
                 m_pObjElement[n].pszName = adjustNameAddr(m_nBase,
                         ((MethodDescriptor *)m_pObjElement[n].pDesc)->pszName);
-                m_pObjElement[n].pszSignature = adjustNameAddr(m_nBase,
+                m_pObjElement[n].pszNamespaceOrSignature = adjustNameAddr(m_nBase,
                         ((MethodDescriptor *)m_pObjElement[n].pDesc)->pszSignature);
-                String strKey = String(m_pObjElement[n].pszName) + String(m_pObjElement[n].pszSignature);
+                String strKey = String(m_pObjElement[n].pszName) + String(m_pObjElement[n].pszNamespaceOrSignature);
                 if (!m_pHTIndexs.Put(const_cast<char*>(strKey.string()), n)) {
                     return E_OUT_OF_MEMORY;
                 }
@@ -131,7 +131,7 @@ ECode CEntryList::InitElemList()
 	ClassDirEntry*      pClassDir = NULL;
 	InterfaceDirEntry*  pIFDir = NULL;
 	StructDirEntry*     pStructDir = NULL;
-	EnumDirEntry*       pEmumDir = NULL;
+	EnumDirEntry*       pEnumDir = NULL;
 	ConstDirEntry*      pConstDir = NULL;
     //No EntryType_TypeAliase
     for (i = 0; i < m_uTotalCount; i++) {
@@ -146,6 +146,7 @@ ECode CEntryList::InitElemList()
                 pClassDir = getClassDirAddr(m_nBase, m_pClsMod->ppClassDir, uIndex);
                 m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
                         pClassDir->pszName);
+                m_pObjElement[i].pszNamespaceOrSignature = "";
                 break;
             case EntryType_Aggregatee:
                 uIndex =  adjustIndexsAddr(m_nBase,
@@ -153,11 +154,14 @@ ECode CEntryList::InitElemList()
                 pClassDir = getClassDirAddr(m_nBase, m_pClsMod->ppClassDir, uIndex);
                 m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
                         pClassDir->pszName);
+                m_pObjElement[i].pszNamespaceOrSignature = "";
                 break;
             case EntryType_Class:
                 pClassDir = getClassDirAddr(m_nBase, m_pClsMod->ppClassDir, i);
                 m_pObjElement[i].pszName  = adjustNameAddr(m_nBase,
                         pClassDir->pszName);
+                m_pObjElement[i].pszNamespaceOrSignature = adjustNameAddr(m_nBase,
+                        pClassDir->pszNameSpace);
                 break;
             case EntryType_ClassInterface:
                 uIndex =  m_pObjElement[i].uIndex;
@@ -165,32 +169,41 @@ ECode CEntryList::InitElemList()
                         m_pClsMod->ppInterfaceDir, uIndex);
                 m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
                         pIFDir->pszName);
+                m_pObjElement[i].pszNamespaceOrSignature = adjustNameAddr(m_nBase,
+                        pIFDir->pszNameSpace);
                 break;
             case EntryType_Interface:
                 pIFDir = getInterfaceDirAddr(m_nBase, m_pClsMod->ppInterfaceDir, i);
                 m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
                         pIFDir->pszName);
+                m_pObjElement[i].pszNamespaceOrSignature = adjustNameAddr(m_nBase,
+                        pIFDir->pszNameSpace);
                 break;
             case EntryType_Struct:
                 pStructDir = getStructDirAddr(m_nBase, m_pClsMod->ppStructDir, i);
                 m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
                         pStructDir->pszName);
+                m_pObjElement[i].pszNamespaceOrSignature = "";
                 break;
             case EntryType_Enum:
-                pEmumDir = getEnumDirAddr(m_nBase, m_pClsMod->ppEnumDir, i);
+                pEnumDir = getEnumDirAddr(m_nBase, m_pClsMod->ppEnumDir, i);
                 m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
-                        pEmumDir->pszName);
+                        pEnumDir->pszName);
+                m_pObjElement[i].pszNamespaceOrSignature = adjustNameAddr(m_nBase,
+                        pEnumDir->pszNameSpace);
                 break;
             case EntryType_Constant:
                 pConstDir = getConstDirAddr(m_nBase, m_pClsMod->ppConstDir, i);
                 m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
                         pConstDir->pszName);
+                m_pObjElement[i].pszNamespaceOrSignature = "";
                 break;
             default:
                 return E_INVALID_OPERATION;
         }
 
-        if (!m_pHTIndexs.Put(m_pObjElement[i].pszName, i)) {
+        String strKey = String(m_pObjElement[i].pszName) + String(m_pObjElement[i].pszNamespaceOrSignature);
+        if (!m_pHTIndexs.Put(const_cast<char*>(strKey.string()), i)) {
             return E_OUT_OF_MEMORY;
         }
     }

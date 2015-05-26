@@ -127,7 +127,7 @@ public:
         /* [out] */ ArrayOf<IInterfaceInfo *> * pInterfaceInfos);
 
     CARAPI GetInterfaceInfo(
-        /* [in] */ CString name,
+        /* [in] */ CString fullName,
         /* [out] */ IInterfaceInfo ** ppInterfaceInfo);
 
     CARAPI GetCallbackInterfaceCount(
