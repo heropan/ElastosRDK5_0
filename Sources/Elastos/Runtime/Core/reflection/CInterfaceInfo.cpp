@@ -104,6 +104,17 @@ ECode CInterfaceInfo::GetName(
     return NOERROR;
 }
 
+ECode CInterfaceInfo::GetNamespace(
+    /* [out] */ String * pNamespace)
+{
+    if (pNamespace == NULL) {
+        return E_INVALID_ARGUMENT;
+    }
+
+    *pNamespace = adjustNameAddr(m_nBase, m_pInterfaceDirEntry->pszNameSpace);
+    return NOERROR;
+}
+
 ECode CInterfaceInfo::GetId(
     /* [out] */ InterfaceID * pId)
 {

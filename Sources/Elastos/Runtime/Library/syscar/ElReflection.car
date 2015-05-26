@@ -104,6 +104,9 @@ library
 
     [local]
     interface IEnumInfo extends IDataTypeInfo {
+        GetNamespace(
+            [out] String* ns);
+
         GetModuleInfo(
             [out] IModuleInfo** moduleInfo);
 
@@ -198,6 +201,9 @@ library
 
     [local]
     interface IInterfaceInfo extends IDataTypeInfo {
+        GetNamespace(
+            [out] String* ns);
+
         GetId(
             [out] InterfaceID* iid);
 
@@ -1103,6 +1109,9 @@ library
     interface IClassInfo {
         GetName(
             [out] String* name);
+
+        GetNamespace(
+            [out] String* ns);
 
         GetId(
             [out] ClassID* clsid);

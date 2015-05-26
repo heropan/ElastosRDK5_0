@@ -94,6 +94,17 @@ ECode CClassInfo::GetName(
     return NOERROR;
 }
 
+ECode CClassInfo::GetNamespace(
+    /* [out] */ String * pNamespace)
+{
+    if (pNamespace == NULL) {
+        return E_INVALID_ARGUMENT;
+    }
+
+    *pNamespace = adjustNameAddr(m_nBase, m_pClassDirEntry->pszNameSpace);
+    return NOERROR;
+}
+
 ECode CClassInfo::GetId(
     /* [out] */ ClassID * pclsid)
 {

@@ -61,7 +61,7 @@ public:
         /* [in] */ EnumDirEntry *pEnumDirEntry);
 
     CARAPI AcquireDynamicEnumInfo(
-        /* [in] */ const String& name,
+        /* [in] */ const String& fullName,
         /* [in] */ ArrayOf<String>* itemNames,
         /* [in] */ ArrayOf<Int32>* itemValues,
         /* [out] */  IEnumInfo **ppEnumInfo);

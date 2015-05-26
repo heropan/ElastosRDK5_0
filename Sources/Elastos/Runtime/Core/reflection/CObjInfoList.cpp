@@ -641,12 +641,12 @@ ECode CObjInfoList::RemoveEnumInfo(
 }
 
 ECode CObjInfoList::AcquireDynamicEnumInfo(
-    /* [in] */ const String& name,
+    /* [in] */ const String& fullName,
     /* [in] */ ArrayOf<String>* itemNames,
     /* [in] */ ArrayOf<Int32>* itemValues,
     /* [out] */ IEnumInfo **ppEnumInfo)
 {
-    if (name.IsNull() || itemNames == NULL
+    if (fullName.IsNull() || itemNames == NULL
         || itemValues == NULL || !ppEnumInfo
         || itemNames->GetLength() != itemValues->GetLength()) {
         return E_INVALID_ARGUMENT;
@@ -654,6 +654,7 @@ ECode CObjInfoList::AcquireDynamicEnumInfo(
 
     InfoLinkNode *pNode = m_pEnumInfoHead;
     String enumName;
+    String enumNamespace;
     AutoPtr<CEnumInfo> pEnumInfo;
     Int32 count = 0, i = 0;
     AutoPtr< ArrayOf<String> > pItemNames;
@@ -663,8 +664,12 @@ ECode CObjInfoList::AcquireDynamicEnumInfo(
     for (; pNode; pNode = pNode->pNext) {
         pEnumInfo = (CEnumInfo *)pNode->pInfo;
         pEnumInfo->GetName(&enumName);
+        pEnumInfo->GetNamespace(&enumNamespace);
 
-        if (name.Equals(enumName)) {
+        Int32 index = fullName.LastIndexOf(".");
+        String name = index > 0 ? fullName.Substring(index + 1) : fullName;
+        String nameSpace = index > 0 ? fullName.Substring(0, index - 1) : String("");
+        if (name.Equals(enumName) && nameSpace.Equals(enumNamespace)) {
             pEnumInfo->GetItemCount(&count);
             if (count != itemNames->GetLength()) {
                 if (!name.IsEmpty()) {
@@ -711,7 +716,7 @@ ECode CObjInfoList::AcquireDynamicEnumInfo(
         return E_OUT_OF_MEMORY;
     }
 
-    ECode ec = pEnumInfo->InitDynamic(name, itemNames, itemValues);
+    ECode ec = pEnumInfo->InitDynamic(fullName, itemNames, itemValues);
     if (FAILED(ec)) {
         UnlockHashTable(EntryType_Enum);
         return ec;

@@ -32,7 +32,7 @@ public:
         /* [in] */ EnumDirEntry *pEnumDirEntry);
 
     CARAPI InitDynamic(
-        /* [in] */ const String& name,
+        /* [in] */ const String& fullName,
         /* [in] */ ArrayOf<String>* itemNames,
         /* [in] */ ArrayOf<Int32>* itemValues);
 
@@ -44,6 +44,9 @@ public:
 
     CARAPI GetName(
         /* [out] */ String * pName);
+
+    CARAPI GetNamespace(
+        /* [out] */ String * pNamespace);
 
     CARAPI GetModuleInfo(
         /* [out] */ IModuleInfo ** ppModuleInfo);
@@ -70,6 +73,7 @@ private:
     ArrayOf<IEnumItemInfo *>  *m_pItemInfos;
 
     String                     m_pName;
+    String                     m_pNamespace;
 };
 
 #endif // __CENUMINFO_H__

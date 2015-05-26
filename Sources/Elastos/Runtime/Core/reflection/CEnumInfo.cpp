@@ -80,6 +80,7 @@ ECode CEnumInfo::InitStatic(
 	Int32 nBase = m_pCClsModule->m_nBase;
     m_pEnumDirEntry = pEnumDirEntry;
     m_pName = adjustNameAddr(nBase, m_pEnumDirEntry->pszName);
+    m_pNamespace = adjustNameAddr(nBase, m_pEnumDirEntry->pszNameSpace);
     EnumDescriptor* pDesc = adjustEnumDescAddr(nBase, pEnumDirEntry->pDesc);
 
     m_pItemValues = ArrayOf<Int32>::Alloc(pDesc->cElems);
@@ -110,7 +111,7 @@ ECode CEnumInfo::InitStatic(
 }
 
 ECode CEnumInfo::InitDynamic(
-    /* [in] */ const String& name,
+    /* [in] */ const String& fullName,
     /* [in] */ ArrayOf<String>* itemNames,
     /* [in] */ ArrayOf<Int32>* itemValues)
 {
@@ -118,7 +119,9 @@ ECode CEnumInfo::InitDynamic(
         return E_INVALID_ARGUMENT;
     }
 
-    m_pName = name;
+    Int32 index = fullName.LastIndexOf('.');
+    m_pName = index > 0 ? fullName.Substring(index + 1) : fullName;
+    m_pNamespace = index > 0 ? fullName.Substring(0, index - 1) : String("");
     m_pItemNames = itemNames;
     m_pItemValues = itemValues;
 
@@ -162,6 +165,17 @@ ECode CEnumInfo::GetName(
     }
 
     *pName = m_pName;
+    return NOERROR;
+}
+
+ECode CEnumInfo::GetNamespace(
+    /* [out] */ String* pNamespace)
+{
+    if (pNamespace == NULL) {
+        return E_INVALID_ARGUMENT;
+    }
+
+    *pNamespace = m_pNamespace;
     return NOERROR;
 }
 

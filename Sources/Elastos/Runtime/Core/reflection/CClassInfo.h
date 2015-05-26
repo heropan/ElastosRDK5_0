@@ -41,6 +41,9 @@ public:
     CARAPI GetName(
         /* [out] */ String * pName);
 
+    CARAPI GetNamespace(
+        /* [out] */ String * pNamespace);
+
     CARAPI GetId(
         /* [out] */ ClassID * pclsid);
 
