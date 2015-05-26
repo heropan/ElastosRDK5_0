@@ -2,7 +2,7 @@
 #ifndef __CXMLFILTERIMPL_H__
 #define __CXMLFILTERIMPL_H__
 
-#include "__Org_Xml_Sax_Helpers_CXMLFilterImpl.h"
+#include "_Org_Xml_Sax_Helpers_CXMLFilterImpl.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

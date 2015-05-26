@@ -6,7 +6,7 @@ namespace Xml {
 namespace Sax {
 namespace Helpers {
 
-CAR_OBJECT_IMPL_4(CDefaultHandler)
+CAR_OBJECT_IMPL(CDefaultHandler)
 
 } // namespace Helpers
 } // namespace Sax

@@ -44,6 +44,7 @@ CarClass(CAttributes2Impl)
 {
 public:
     CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     CARAPI SetAttributes(
@@ -79,6 +80,19 @@ public:
     CARAPI IsSpecified(
         /* [in] */ const String& qName,
         /* [out] */ Boolean* isSpecified);
+
+    CARAPI IsDeclared(
+        /* [in] */ Int32 index,
+        /* [out] */ Boolean * isDeclared);
+
+    CARAPI IsDeclared(
+        /* [in] */ const String& uri,
+        /* [in] */ const String& localName,
+        /* [out] */ Boolean * isDeclared);
+
+    CARAPI IsDeclared(
+        /* [in] */ const String& qName,
+        /* [out] */ Boolean * isDeclared);
 
     CARAPI SetDeclared(
         /* [in] */ Int32 index,

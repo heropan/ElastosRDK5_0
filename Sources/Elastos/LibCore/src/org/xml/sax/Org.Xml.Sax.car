@@ -35,8 +35,15 @@ module
     using interface Elastos.IO.IInputStream;
     using interface Elastos.IO.IReader;
 
+    interface Org.Xml.Sax.IContentHandler;
+    interface Org.Xml.Sax.IErrorHandler;
+    interface Org.Xml.Sax.IEntityResolver;
+    interface Org.Xml.Sax.IDTDHandler;
     interface Org.Xml.Sax.IAttributes;
     interface Org.Xml.Sax.IAttributeList;
+    interface Org.Xml.Sax.ILocator;
+    interface Org.Xml.Sax.Ext.ILocator2;
+    interface Org.Xml.Sax.Ext.ILocator2Impl;
 
     namespace Org {
     namespace Xml {
@@ -110,12 +117,12 @@ module
     //             interface IXMLReaderFactory;
     //         }
 
-    //         class CDefaultHandler {
-    //             interface IEntityResolver;
-    //             interface IDTDHandler;
-    //             interface IContentHandler;
-    //             interface IErrorHandler;
-    //         }
+        class CDefaultHandler {
+            interface IEntityResolver;
+            interface IDTDHandler;
+            interface IContentHandler;
+            interface IErrorHandler;
+        }
 
     //         class CXMLReaderAdapter {
     //             constructor();
@@ -152,39 +159,39 @@ module
     //         }
     }
 
-    //     namespace Ext {
-    //         class CLocator2Impl {
-    //             constructor();
+    namespace Ext {
+        //class CLocator2Impl {
+        //    constructor();
 
-    //             constructor(
-    //                 [in] ILocator* locator);
+        //    constructor(
+        //        [in] ILocator* locator);
 
-    //             interface ILocator;
-    //             interface ILocator2;
-    //             interface ILocator2Impl;
-    //         }
+        //    interface ILocator;
+        //    interface ILocator2;
+        //    interface ILocator2Impl;
+        //}
 
-    //         class CAttributes2Impl {
-    //             constructor();
+        class CAttributes2Impl {
+            constructor();
 
-    //             constructor(
-    //                 [in] IAttributes* atts);
+            constructor(
+                [in] IAttributes* atts);
 
-    //             interface IAttributes;
-    //             interface IAttributes2;
-    //             interface IAttributes2Impl;
-    //         }
+            interface IAttributes;
+            interface IAttributes2;
+            interface IAttributes2Impl;
+        }
 
-    //         class CDefaultHandler2 {
-    //             interface IDTDHandler;
-    //             interface IContentHandler;
-    //             interface IErrorHandler;
-    //             interface ILexicalHandler;
-    //             interface IDeclHandler;
-    //             interface IEntityResolver;
-    //             interface IEntityResolver2;
-    //         }
-    //     }
+        class CDefaultHandler2 {
+            interface IDTDHandler;
+            interface IContentHandler;
+            interface IErrorHandler;
+            interface ILexicalHandler;
+            interface IDeclHandler;
+            interface IEntityResolver;
+            interface IEntityResolver2;
+        }
+    }
 
     } // namespace Sax
     } // namespace Xml

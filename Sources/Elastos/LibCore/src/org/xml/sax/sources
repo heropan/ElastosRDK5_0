@@ -24,6 +24,6 @@ LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib
 LIBRARIES += $(PREBUILD_LIB)/libm.a
 
-#LIBRARIES += ext/ext.lib
 LIBRARIES += helpers/helpers.lib
+LIBRARIES += ext/ext.lib
 LIBRARIES += -lcutils -licuuc

@@ -2,7 +2,7 @@
 #ifndef __CPARSERFACTORY_H__
 #define __CPARSERFACTORY_H__
 
-#include "__Org_Xml_Sax_Helpers_CParserFactory.h"
+#include "_Org_Xml_Sax_Helpers_CParserFactory.h"
 #include "Singleton.h"
 
 using Elastos::Core::Singleton;

@@ -5,6 +5,8 @@
 #include "_Org_Xml_Sax_Ext_CDefaultHandler2.h"
 #include "DefaultHandler.h"
 
+using Org::Xml::Sax::Helpers::DefaultHandler;
+
 namespace Org {
 namespace Xml {
 namespace Sax {
@@ -37,11 +39,11 @@ CarClass(CDefaultHandler2)
     , public DefaultHandler
     , public ILexicalHandler
     , public IDeclHandler
-    , public IEntityResolver
     , public IEntityResolver2
 {
 public:
     CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     CARAPI StartDTD(

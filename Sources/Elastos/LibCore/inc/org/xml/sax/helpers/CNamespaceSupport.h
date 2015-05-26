@@ -2,7 +2,7 @@
 #ifndef __CNAMESPACESUPPORT_H__
 #define __CNAMESPACESUPPORT_H__
 
-#include "__Org_Xml_Sax_Helpers_CNamespaceSupport.h"
+#include "_Org_Xml_Sax_Helpers_CNamespaceSupport.h"
 #include "Object.h"
 #include <elastos/HashMap.h>
 #include <elastos/List.h>

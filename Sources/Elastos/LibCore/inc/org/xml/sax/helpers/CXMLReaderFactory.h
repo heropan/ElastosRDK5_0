@@ -2,7 +2,7 @@
 #ifndef __CXMLREADERFACTORY_H__
 #define __CXMLREADERFACTORY_H__
 
-#include "__Org_Xml_Sax_Helpers_CXMLReaderFactory.h"
+#include "_Org_Xml_Sax_Helpers_CXMLReaderFactory.h"
 #include "Singleton.h"
 #include <Elastos.CoreLibrary.h>
 
