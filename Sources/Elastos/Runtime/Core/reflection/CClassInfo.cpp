@@ -632,7 +632,7 @@ ECode CClassInfo::AcquireInterfaceList()
     if (!m_pInterfaceList) {
         m_pInterfaceList = new CEntryList(EntryType_ClassInterface,
             m_pDesc, m_uIFCount, m_pCClsModule, m_pIFList, m_uIFCount);
-        if (m_pInterfaceList) {
+        if (!m_pInterfaceList) {
             ec = E_OUT_OF_MEMORY;
         }
     }
@@ -993,6 +993,7 @@ ECode CClassInfo::CreateIFList()
             pAllIFList[uListCount].uBeginNo = uBeginNo;
             pIFDir = getInterfaceDirAddr(m_nBase, m_pClsMod->ppInterfaceDir, uIndex);
             pAllIFList[uListCount].pszName = adjustNameAddr(m_nBase, pIFDir->pszName);
+            pAllIFList[uListCount].pszNameSpace = adjustNameAddr(m_nBase, pIFDir->pszNameSpace);
             pAllIFList[uListCount].pDesc = adjustInterfaceDescAddr(m_nBase,
                     pIFDir->pDesc);
 
