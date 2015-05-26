@@ -10,10 +10,12 @@ INCLUDES += $(MAKEDIR)/../../../../inc/org/xml/sax/ext;
 CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
+IMPORTS = Elastos.CoreLibrary.eco
+
 SOURCES = Org.Xml.Sax.car
-SOURCES += CDummy.cpp
-#SOURCES += CInputSource.cpp
-#SOURCES += CHandlerBase.cpp
+SOURCES += CInputSource.cpp
+SOURCES += HandlerBase.cpp
+SOURCES += CHandlerBase.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
@@ -23,5 +25,5 @@ LIBRARIES += $(XDK_USER_LIB)/crt0.lib
 LIBRARIES += $(PREBUILD_LIB)/libm.a
 
 #LIBRARIES += ext/ext.lib
-#LIBRARIES += helpers/helpers.lib
+LIBRARIES += helpers/helpers.lib
 LIBRARIES += -lcutils -licuuc

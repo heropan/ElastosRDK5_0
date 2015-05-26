@@ -6,6 +6,7 @@ namespace Xml {
 namespace Sax {
 
 CAR_INTERFACE_IMPL(CInputSource, Object, IInputSource)
+
 CAR_OBJECT_IMPL(CInputSource)
 
 ECode CInputSource::constructor()

@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "HandlerBase.h"
 
 namespace Org {

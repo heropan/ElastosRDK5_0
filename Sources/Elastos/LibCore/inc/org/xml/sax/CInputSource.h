@@ -3,7 +3,8 @@
 #define __CINPUTSOURCE_H__
 
 #include "_Org_Xml_Sax_CInputSource.h"
-#include "Object.h"
+#include <elastos/core/Object.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::Object;
 using Elastos::IO::IReader;
@@ -19,6 +20,7 @@ CarClass(CInputSource)
 {
 public:
     CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     /**

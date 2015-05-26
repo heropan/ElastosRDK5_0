@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CXMLReaderAdapter.h"
 #include "CXMLReaderFactory.h"
 #include "CInputSource.h"

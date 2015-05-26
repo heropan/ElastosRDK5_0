@@ -2,7 +2,8 @@
 #ifndef __ATTRIBUTESIMPL_H__
 #define __ATTRIBUTESIMPL_H__
 
-#include <elastos/Object.h>
+#include <elastos/core/Object.h>
+#include <Org.Xml.Sax_server.h>
 
 using Elastos::Core::Object;
 using Org::Xml::Sax::IAttributes;
@@ -56,9 +57,9 @@ public:
 
     AttributesImpl();
 
-    CARAPI constructor();
+    virtual CARAPI constructor();
 
-    CARAPI constructor(
+    virtual CARAPI constructor(
         /* [in] */ IAttributes* atts);
 
     /**

@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CXMLReaderFactory.h"
 #include "NewInstanceHelper.h"
 #include "CParserFactory.h"

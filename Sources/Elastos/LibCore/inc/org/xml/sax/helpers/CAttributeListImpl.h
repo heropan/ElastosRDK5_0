@@ -2,9 +2,8 @@
 #ifndef __CATTRIBUTELISTIMPL_H__
 #define __CATTRIBUTELISTIMPL_H__
 
-#include "__Org_Xml_Sax_Helpers_CAttributeListImpl.h"
-#include "coredef.h"
-#include <elastos/List.h>
+#include "_Org_Xml_Sax_Helpers_CAttributeListImpl.h"
+#include <elastos/utility/List.h>
 
 using Elastos::Utility::List;
 
@@ -20,6 +19,7 @@ CarClass(CAttributeListImpl)
 {
 public:
     CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     CAttributeListImpl();

@@ -3,7 +3,7 @@
 #define __CXMLFILTERIMPL_H__
 
 #include "__Org_Xml_Sax_Helpers_CXMLFilterImpl.h"
-#include <elastos/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 

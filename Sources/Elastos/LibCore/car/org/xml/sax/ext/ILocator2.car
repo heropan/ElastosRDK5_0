@@ -31,7 +31,11 @@ module
       * @Involve
       * interface Org.Xml.Sax.ILocator;
       */
-    interface ILocator2 extends Org.Xml.Sax.ILocator {
+    /**
+     * @Involve
+     * interface Org.Xml.Sax.ILocator
+     */
+    interface ILocator2 {
         /**
          * Returns the version of XML used for the entity.  This will
          * normally be the identifier from the current entity's

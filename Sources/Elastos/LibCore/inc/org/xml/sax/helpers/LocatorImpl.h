@@ -2,8 +2,7 @@
 #define __LOCATORIMPL_H__
 
 #include <elastos.h>
-#include "coredef.h"
-#include <elastos/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 

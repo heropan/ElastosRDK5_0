@@ -1,7 +1,6 @@
 
 #include "CAttributesImpl.h"
 
-
 namespace Org {
 namespace Xml {
 namespace Sax {

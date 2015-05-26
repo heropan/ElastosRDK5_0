@@ -32,75 +32,59 @@ module
     merge("../../../../car/org/xml/sax/ext/ILocator2.car");
     merge("../../../../car/org/xml/sax/ext/ILocator2Impl.car");
 
-    //using interface Elastos.IO.IInputStream;
-    //using interface Elastos.IO.IReader;
+    using interface Elastos.IO.IInputStream;
+    using interface Elastos.IO.IReader;
 
     interface Org.Xml.Sax.IAttributes;
     interface Org.Xml.Sax.IAttributeList;
-    interface Org.Xml.Sax.ILocator;
-    interface Org.Xml.Sax.IEntityResolver;
-    interface Org.Xml.Sax.IDTDHandler;
-    interface Org.Xml.Sax.IParser;
-    interface Org.Xml.Sax.IXMLFilter;
-    interface Org.Xml.Sax.IXMLReader;
-    interface Org.Xml.Sax.IContentHandler;
-    interface Org.Xml.Sax.IDocumentHandler;
-    interface Org.Xml.Sax.IErrorHandler;
-    interface Org.Xml.Sax.Ext.ILexicalHandler;
-    interface Org.Xml.Sax.Ext.IDeclHandler;
-    interface Org.Xml.Sax.Ext.IEntityResolver2;
 
     namespace Org {
     namespace Xml {
     namespace Sax {
 
-    class CDummy {
-        interface IObject;
+    class CInputSource {
+        constructor();
+
+        constructor(
+            [in] String str);
+
+        constructor(
+            [in] IInputStream* inputStream);
+
+        constructor(
+            [in] IReader* reader);
+
+        interface IInputSource;
     }
 
-    //     class CInputSource {
-    //         constructor();
+    class CHandlerBase {
+        interface IEntityResolver;
+        interface IDTDHandler;
+        interface IDocumentHandler;
+        interface IErrorHandler;
+    }
 
-    //         constructor(
-    //             [in] String str);
+    namespace Helpers {
 
-    //         constructor(
-    //             [in] IInputStream* inputStream);
+    //       class CAttributeListImpl {
+    //           constructor();
 
-    //         constructor(
-    //             [in] IReader* reader);
+    //           constructor(
+    //               [in] IAttributeList* atts);
 
-    //         interface IInputSource;
-    //     }
+    //           interface IAttributeList;
+    //           interface IAttributeListImpl;
+    //       }
 
-    //     class CHandlerBase {
-    //         interface IEntityResolver;
-    //         interface IDTDHandler;
-    //         interface IDocumentHandler;
-    //         interface IErrorHandler;
-    //     }
+        class CAttributesImpl {
+            constructor();
 
-    //     namespace Helpers {
+            constructor(
+                [in] IAttributes* atts);
 
-    //         class CAttributeListImpl {
-    //             constructor();
-
-    //             constructor(
-    //                 [in] IAttributeList* atts);
-
-    //             interface IAttributeList;
-    //             interface IAttributeListImpl;
-    //         }
-
-    //         class CAttributesImpl {
-    //             constructor();
-
-    //             constructor(
-    //                 [in] IAttributes* atts);
-
-    //             interface IAttributes;
-    //             interface IAttributesImpl;
-    //         }
+            interface IAttributes;
+            interface IAttributesImpl;
+        }
 
     //         class CLocatorImpl {
     //             constructor();
@@ -166,7 +150,7 @@ module
     //             interface IXMLReader;
     //             interface IDocumentHandler;
     //         }
-    //     }
+    }
 
     //     namespace Ext {
     //         class CLocator2Impl {

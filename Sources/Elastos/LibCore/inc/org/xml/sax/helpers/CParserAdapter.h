@@ -3,8 +3,7 @@
 #define __CPARSERADAPTER_H__
 
 #include "__Org_Xml_Sax_Helpers_CParserAdapter.h"
-#include "coredef.h"
-#include <elastos/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 

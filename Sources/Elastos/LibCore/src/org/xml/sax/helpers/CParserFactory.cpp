@@ -1,4 +1,3 @@
-#include "coredef.h"
 #include "CParserFactory.h"
 #include "NewInstanceHelper.h"
 #include <utils/Log.h>

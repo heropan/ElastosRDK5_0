@@ -1,7 +1,8 @@
-#ifndef __HANDLERBASE_H__
-#define __HANDLERBASE_H__
+#ifndef __ORG_XML_SAX_HANDLERBASE_H__
+#define __ORG_XML_SAX_HANDLERBASE_H__
 
-#include <elastos/Object.h>
+#include <Org.Xml.Sax_server.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 
@@ -293,4 +294,4 @@ private:
 } // namespace Xml
 } // namespace Org
 
-#endif // __HANDLERBASE_H__
+#endif // __ORG_XML_SAX_HANDLERBASE_H__

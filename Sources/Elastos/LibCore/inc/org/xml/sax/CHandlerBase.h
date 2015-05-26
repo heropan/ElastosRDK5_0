@@ -10,7 +10,7 @@ namespace Xml {
 namespace Sax {
 
 CarClass(CHandlerBase)
-    : public HandlerBase
+    , public HandlerBase
 {
 public:
     CAR_OBJECT_DECL()

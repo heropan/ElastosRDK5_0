@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "SaxError.h"
 #include "CXMLFilterImpl.h"
 #include "CInputSource.h"

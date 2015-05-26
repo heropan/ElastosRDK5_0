@@ -10,7 +10,8 @@ namespace Xml {
 namespace Sax {
 namespace Helpers {
 
-CarClass(CAttributesImpl), public AttributesImpl
+CarClass(CAttributesImpl)
+    , public AttributesImpl
 {
 public:
     CAR_OBJECT_DECL()

@@ -2,7 +2,7 @@
 #ifndef __DEFAULTHANDLER_H__
 #define __DEFAULTHANDLER_H__
 
-#include <elastos/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 

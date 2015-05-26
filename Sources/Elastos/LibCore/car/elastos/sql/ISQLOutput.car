@@ -6,7 +6,6 @@ module
     interface Elastos.Net.IURL;
     interface Elastos.Sql.ISQLData;
 
-
     namespace Elastos {
     namespace Sql {
 

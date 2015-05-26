@@ -1,4 +1,3 @@
-#include "coredef.h"
 #include "CLocator2Impl.h"
 
 namespace Org {
