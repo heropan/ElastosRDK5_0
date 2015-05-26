@@ -22,7 +22,11 @@ module
      *
      * @implements Elastos.Text.IFormatField
      */
-    interface IMessageFormatField extends IFormatField {
+    /**
+     * @Involve
+     * interface IFormatField
+     */
+    interface IMessageFormatField {
 
     }
 
@@ -61,8 +65,12 @@ module
      *
      * @implements Elastos.Text.IFormat
      */
+    /**
+     * @Involve
+     * interface IFormat
+     */
     [deprecated]
-    interface IMessageFormat extends IFormat {
+    interface IMessageFormat {
         /**
          * Changes this {MessageFormat} to use the specified pattern.
          */

@@ -5,7 +5,11 @@ module
     namespace Security {
     namespace Spec {
 
-    interface IPSSParameterSpec extends IAlgorithmParameterSpec {
+    /**
+     * @Involve
+     * interface IAlgorithmParameterSpec
+     */
+    interface IPSSParameterSpec {
         /**
          * Returns the length of the salt (in bits).
          *

@@ -4,7 +4,11 @@ module
     namespace Elastos {
     namespace Security {
 
-    interface IPublicKey extends IKey {
+    /**
+     * @Involve
+     * interface IKey
+     */
+    interface IPublicKey {
     }
 
     } // namespace Security

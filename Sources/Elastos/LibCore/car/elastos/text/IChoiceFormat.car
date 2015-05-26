@@ -48,8 +48,12 @@ module
      *
      * @implements Elastos.Text.INumberFormat
      */
+    /**
+     * @Involve
+     * interface INumberFormat
+     */
     [deprecated]
-    interface IChoiceFormat extends INumberFormat {
+    interface IChoiceFormat {
         /**
          * Parses the pattern to determine new strings and ranges for this
          * {ChoiceFormat}.

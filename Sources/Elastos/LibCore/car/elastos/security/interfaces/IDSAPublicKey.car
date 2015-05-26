@@ -10,7 +10,11 @@ module
     /**
      * The interface for a Digital Signature Algorithm (DSA) public key.
      */
-    interface IDSAPublicKey extends Elastos.Security.Interfaces.IDSAKey/*, Elastos.Security.IPublicKey*/ {
+    /**
+     * @Involve
+     * interface Elastos.Security.Interfaces.IDSAKey
+     */
+    interface IDSAPublicKey/*, Elastos.Security.IPublicKey*/ {
         /**
          * Returns the public key value {@code y}.
          *

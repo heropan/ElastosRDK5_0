@@ -29,7 +29,11 @@ module
      * an attribute.
      * <p>See also the <a href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407'>Document Object Model (DOM) Level 3 Core Specification</a>.
      */
-    interface IText extends ICharacterData {
+    /**
+     * @Involve
+     * interface ICharacterData
+     */
+    interface IText {
         /**
          * Breaks this node into two nodes at the specified <code>offset</code>,
          * keeping both in the tree as siblings. After being split, this node

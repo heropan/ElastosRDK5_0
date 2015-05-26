@@ -9,7 +9,11 @@ module
     namespace Auth {
     namespace X500 {
 
-        interface IX500Principal extends Elastos.Security.IPrincipal {
+        /**
+         * @Involve
+         * interface Elastos.Security.IPrincipal
+         */
+        interface IX500Principal {
             /*
              * Defines a constant for the canonical string format of distinguished
              * names.

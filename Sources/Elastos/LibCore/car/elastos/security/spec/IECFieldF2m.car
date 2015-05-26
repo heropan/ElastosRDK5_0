@@ -11,7 +11,11 @@ module
      * The parameters specifying a <i>characteristic 2 finite field</i> of an
      * elliptic curve.
      */
-    interface IECFieldF2m extends IECField {
+    /**
+     * @Involve
+     * interface IECField
+     */
+    interface IECFieldF2m {
         /**
          * Returns the prime value {@code p} for this finite field.
          *

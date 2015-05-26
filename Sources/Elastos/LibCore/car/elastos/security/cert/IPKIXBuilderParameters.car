@@ -7,7 +7,11 @@ module
     namespace Security {
     namespace Cert {
 
-    interface IPKIXBuilderParameters extends IPKIXParameters {
+    /**
+     * @Involve
+     * interface IPKIXParameters
+     */
+    interface IPKIXBuilderParameters {
         /**
          * Returns the maximum length of a certification path.
          * <p>

@@ -5,7 +5,11 @@ module
     namespace Security {
     namespace Spec {
 
-    interface IMGF1ParameterSpec extends IAlgorithmParameterSpec {
+    /**
+     * @Involve
+     * interface IAlgorithmParameterSpec
+     */
+    interface IMGF1ParameterSpec {
         /**
          * Returns the name of the message digest algorithm.
          *

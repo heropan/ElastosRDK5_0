@@ -35,7 +35,11 @@ module
      * the <code>Document</code> interface.
      * <p>See also the <a href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407'>Document Object Model (DOM) Level 3 Core Specification</a>.
      */
-    interface IEntity extends INode {
+    /**
+     * @Involve
+     * interface INode
+     */
+    interface IEntity {
         /**
          * The public identifier associated with the entity if specified, and
          * <code>null</code> otherwise.

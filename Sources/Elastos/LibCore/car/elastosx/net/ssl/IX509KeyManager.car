@@ -14,8 +14,12 @@ module
     namespace Net {
     namespace Ssl {
 
+    /**
+     * @Involve
+     * interface Elastosx.Net.Ssl.IKeyManager
+     */
     [deprecated]
-    interface IX509KeyManager extends Elastosx.Net.Ssl.IKeyManager {
+    interface IX509KeyManager {
         /**
          * Chooses an alias for the client side of an SSL connection to authenticate
          * it with the specified public key type and certificate issuers.

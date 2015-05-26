@@ -15,7 +15,11 @@ module
     namespace Security {
     namespace Cert {
 
-    interface IX509CRL extends ICRL /*, IX509Extension*/ {
+    /**
+     * @Involve
+     * interface ICRL
+     */
+    interface IX509CRL /*, IX509Extension*/ {
         /**
          * Returns whether the specified object equals to this instance.
          *

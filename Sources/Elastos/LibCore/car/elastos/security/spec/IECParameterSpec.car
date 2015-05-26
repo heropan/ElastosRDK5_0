@@ -12,7 +12,11 @@ module
     /**
      * The parameter specification used with Elliptic Curve Cryptography (ECC).
      */
-    interface IECParameterSpec extends IAlgorithmParameterSpec {
+    /**
+     * @Involve
+     * interface IAlgorithmParameterSpec
+     */
+    interface IECParameterSpec {
         /**
          * Returns the {@code cofactor}.
          *

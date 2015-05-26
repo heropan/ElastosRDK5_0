@@ -9,7 +9,11 @@ module
     namespace Net {
     namespace Ssl {
 
-    interface IX509ExtendedKeyManager extends IX509KeyManager {}
+    /**
+     * @Involve
+     * interface IX509KeyManager
+     */
+    interface IX509ExtendedKeyManager {}
 
     } // namespace Ssl
     } // namespace Crypto

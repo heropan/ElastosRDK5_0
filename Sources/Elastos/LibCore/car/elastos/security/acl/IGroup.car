@@ -13,7 +13,11 @@ module
      *
      * @see Principal
      */
-    interface IGroup extends Elastos.Security.IPrincipal {
+    /**
+     * @Involve
+     * interface Elastos.Security.IPrincipal
+     */
+    interface IGroup {
         /**
          * Adds a member to this group.
          *

@@ -168,7 +168,11 @@ module
      *
      * @implements Elastos.Text.ICollator
      */
-    interface IRuleBasedCollator extends ICollator {
+    /**
+     * @Involve
+     * interface ICollator
+     */
+    interface IRuleBasedCollator {
         /**
          * Obtains a {CollationElementIterator} for the given string.
          */

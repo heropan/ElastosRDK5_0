@@ -11,7 +11,11 @@ module
     namespace Security {
     namespace Cert {
 
-    interface IX509Certificate extends ICertificate {
+    /**
+     * @Involve
+     * interface ICertificate
+     */
+    interface IX509Certificate {
         /**
          * Checks whether the certificate is currently valid.
          * <p>

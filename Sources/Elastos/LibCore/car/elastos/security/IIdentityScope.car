@@ -8,7 +8,11 @@ module
     namespace Elastos {
     namespace Security {
 
-    interface IIdentityScope extends IIdentity {
+    /**
+     * @Involve
+     * interface IIdentity
+     */
+    interface IIdentityScope {
         /**
          * Returns the number of {@code Identity} objects in this scope.
          *

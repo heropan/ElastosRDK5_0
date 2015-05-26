@@ -22,7 +22,11 @@ module
      *
      * @implements Elastos.Text.IFormatField
      */
-    interface INumberFormatField extends IFormatField {
+    /**
+     * @Involve
+     * interface IFormatField
+     */
+    interface INumberFormatField {
     }
 
      /**
@@ -60,8 +64,12 @@ module
      *
      * @implements Elastos.Text.IFormat
      */
+    /**
+     * @Involve
+     * interface IFormat
+     */
     [deprecated]
-    interface INumberFormat extends IFormat {
+    interface INumberFormat {
         /**
          * Field constant identifying the integer part of a number.
          */

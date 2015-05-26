@@ -10,7 +10,11 @@ module
     /**
      * The key specification of an X.509 encoded key in ASN.1 format.
      */
-    interface IX509EncodedKeySpec extends IEncodedKeySpec {
+    /**
+     * @Involve
+     * interface IEncodedKeySpec
+     */
+    interface IX509EncodedKeySpec {
     }
 
     } // namespace Spec

@@ -6,7 +6,11 @@ module
     namespace Elastos {
     namespace Security {
 
-    interface IDigestOutputStream extends Elastos.IO.IFilterOutputStream {
+    /**
+     * @Involve
+     * interface Elastos.IO.IFilterOutputStream
+     */
+    interface IDigestOutputStream {
         /**
          * Returns the message digest for this stream.
          *

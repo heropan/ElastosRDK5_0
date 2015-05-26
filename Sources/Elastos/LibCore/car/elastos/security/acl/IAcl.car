@@ -39,7 +39,11 @@ module
      * Principal}, then it is interpreted as an empty list of permissions.</li>
      * </ul>
      */
-    interface IAcl extends IOwner {
+    /**
+     * @Involve
+     * interface IOwner
+     */
+    interface IAcl {
         /**
          * Sets the name of this <i>ACL</i> instance.
          *

@@ -16,7 +16,11 @@ module
      * serialization.
      * <p>See also the <a href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407'>Document Object Model (DOM) Level 3 Core Specification</a>.
      */
-    interface IProcessingInstruction extends INode {
+    /**
+     * @Involve
+     * interface INode
+     */
+    interface IProcessingInstruction {
         /**
          * The target of this processing instruction. XML defines this as being
          * the first token following the markup that begins the processing

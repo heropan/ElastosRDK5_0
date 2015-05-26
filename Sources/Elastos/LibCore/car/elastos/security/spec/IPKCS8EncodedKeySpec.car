@@ -9,7 +9,11 @@ module
      * The key specification for an encoded private key in ASN.1 format as defined
      * in the PKCS#8 standard.
      */
-    interface IPKCS8EncodedKeySpec extends IEncodedKeySpec {
+    /**
+     * @Involve
+     * interface IEncodedKeySpec
+     */
+    interface IPKCS8EncodedKeySpec {
     }
 
     } // namespace Spec

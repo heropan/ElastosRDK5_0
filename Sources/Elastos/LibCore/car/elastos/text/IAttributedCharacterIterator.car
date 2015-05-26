@@ -58,7 +58,11 @@ module
             [out] String * str);
     }
 
-    interface IAttributedCharacterIterator extends ICharacterIterator {
+    /**
+     * @Involve
+     * interface ICharacterIterator
+     */
+    interface IAttributedCharacterIterator {
         /**
          * Returns a set of attributes present in the {
          * AttributedCharacterIterator}. An empty set is returned if no attributes

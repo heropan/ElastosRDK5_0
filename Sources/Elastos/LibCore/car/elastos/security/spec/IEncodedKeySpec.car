@@ -9,7 +9,11 @@ module
      * The abstract key specification for a public or a private key in encoded
      * format.
      */
-    interface IEncodedKeySpec extends IKeySpec {
+    /**
+     * @Involve
+     * interface IKeySpec
+     */
+    interface IEncodedKeySpec {
         /**
          * Returns the encoded key bytes.
          *

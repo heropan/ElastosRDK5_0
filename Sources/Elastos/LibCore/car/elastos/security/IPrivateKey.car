@@ -9,7 +9,11 @@ module
      *
      * @see PublicKey
      */
-    interface IPrivateKey extends IKey {
+    /**
+     * @Involve
+     * interface IKey
+     */
+    interface IPrivateKey {
     }
 
     } // namespace Security

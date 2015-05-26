@@ -11,8 +11,12 @@ module
     /**
      * The abstract factory implementation to create {@code SSLSocket}s.
      */
+    /**
+     * @Involve
+     * interface Elastosx.Net.ISocketFactory
+     */
     [deprecated]
-    interface ISSLSocketFactory extends Elastosx.Net.ISocketFactory {
+    interface ISSLSocketFactory {
         /**
          * Returns the names of the cipher suites that are enabled by default.
          *

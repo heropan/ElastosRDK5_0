@@ -9,7 +9,11 @@ module
     namespace Security {
     namespace Cert {
 
-    interface IPKIXCertPathValidatorResult extends ICertPathValidatorResult {
+    /**
+     * @Involve
+     * interface ICertPathValidatorResult
+     */
+    interface IPKIXCertPathValidatorResult {
         /**
          * Returns the valid policy tree from the validation.
          *

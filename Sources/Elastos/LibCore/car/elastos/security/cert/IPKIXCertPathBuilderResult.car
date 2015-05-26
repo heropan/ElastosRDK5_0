@@ -8,7 +8,11 @@ module
     namespace Security {
     namespace Cert {
 
-    interface IPKIXCertPathBuilderResult extends IPKIXCertPathValidatorResult {
+    /**
+     * @Involve
+     * interface IPKIXCertPathValidatorResult
+     */
+    interface IPKIXCertPathBuilderResult {
         /**
          * Returns the validated certification path.
          *

@@ -21,7 +21,11 @@ module
      *
      * @implements ELastos.Text.IFormatField
      */
-    interface IDateFormatField extends IFormatField {
+    /**
+     * @Involve
+     * interface IFormatField
+     */
+    interface IDateFormatField {
         /**
          * Returns the Calendar field that this field represents.
          */
@@ -84,8 +88,12 @@ module
      *
      * @implements Elastos.Text.IFormat
      */
+    /**
+     * @Involve
+     * interface IFormat
+     */
     [deprecated]
-    interface IDateFormat extends IFormat {
+    interface IDateFormat {
         /**
          * The format style constant defining the default format style. The default
          * is MEDIUM.

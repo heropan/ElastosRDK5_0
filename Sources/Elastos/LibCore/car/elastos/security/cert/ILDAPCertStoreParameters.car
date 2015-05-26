@@ -5,7 +5,11 @@ module
     namespace Security {
     namespace Cert {
 
-    interface ILDAPCertStoreParameters extends ICertStoreParameters {
+    /**
+     * @Involve
+     * interface ICertStoreParameters
+     */
+    interface ILDAPCertStoreParameters {
         /**
          * Returns the LDAP server port.
          *

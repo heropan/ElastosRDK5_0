@@ -10,8 +10,12 @@ module
     /**
      * The factory for SSL server sockets.
      */
+    /**
+     * @Involve
+     * interface Elastosx.Net.IServerSocketFactory
+     */
     [deprecated]
-    interface ISSLServerSocketFactory extends Elastosx.Net.IServerSocketFactory {
+    interface ISSLServerSocketFactory {
         /**
          * Returns the names of the cipher suites that are enabled by default.
          *

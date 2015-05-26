@@ -13,8 +13,12 @@ module
      * The extension of {@code Socket} providing secure protocols like SSL (Secure
      * Sockets Layer) or TLS (Transport Layer Security).
      */
+    /**
+     * @Involve
+     * interface Elastos.Net.ISocket
+     */
     [deprecated]
-    interface ISSLSocket extends Elastos.Net.ISocket {
+    interface ISSLSocket {
         /**
          * Returns the names of the supported cipher suites.
          */

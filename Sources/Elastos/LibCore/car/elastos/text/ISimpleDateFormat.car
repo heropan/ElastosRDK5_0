@@ -202,7 +202,11 @@ module
      *
      * @implements Elastos.Text.IDataFormat
      */
-    interface ISimpleDateFormat extends IDateFormat {
+    /**
+     * @Involve
+     * interface IDateFormat
+     */
+    interface ISimpleDateFormat {
         /**
          * Changes the pattern of this simple date format to the specified pattern
          * which uses localized pattern characters.

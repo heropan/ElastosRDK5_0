@@ -11,7 +11,11 @@ module
      * The parameters specifying a <i>prime finite field</i> of an
      * elliptic curve.
      */
-    interface IECFieldFp extends IECField {
+    /**
+     * @Involve
+     * interface IECField
+     */
+    interface IECFieldFp {
         /**
          * Returns the prime value {@code p} for this finite field.
          *

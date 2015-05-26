@@ -10,7 +10,11 @@ module
     /**
      * The parameters specifying a DSA private key.
      */
-    interface IDSAPrivateKeySpec extends IKeySpec {
+    /**
+     * @Involve
+     * interface IKeySpec
+     */
+    interface IDSAPrivateKeySpec {
         /**
          * Returns the base {@code g}.
          *

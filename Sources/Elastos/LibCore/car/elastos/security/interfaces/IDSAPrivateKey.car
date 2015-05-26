@@ -12,7 +12,11 @@ module
     /**
      * The interface for a Digital Signature Algorithm (DSA) private key.
      */
-    interface IDSAPrivateKey extends Elastos.Security.Interfaces.IDSAKey/*,
+    /**
+     * @Involve
+     * interface Elastos.Security.Interfaces.IDSAKey
+     */
+    interface IDSAPrivateKey/*,
     Elastos.Security.IPrivateKey*/ {
         /**
          * Returns the private key value {@code x}.

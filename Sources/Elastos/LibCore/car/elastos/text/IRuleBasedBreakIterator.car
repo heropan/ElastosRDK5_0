@@ -3,7 +3,11 @@ module
     namespace Elastos {
     namespace Text {
 
-    interface IRuleBasedBreakIterator extends IBreakIterator{
+    /**
+     * @Involve
+     * interface IBreakIterator
+     */
+    interface IRuleBasedBreakIterator{
 
     }
 

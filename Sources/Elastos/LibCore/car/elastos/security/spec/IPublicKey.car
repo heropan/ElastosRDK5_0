@@ -12,7 +12,11 @@ module
      *
      * @see PublicKey
      */
-    interface IPublicKey extends Elastos.Security.IKey {
+    /**
+     * @Involve
+     * interface Elastos.Security.IKey
+     */
+    interface IPublicKey {
     }
 
     } // namespace Spec

@@ -8,7 +8,11 @@ module
     /**
      * The parameter specification used to generate elliptic curve domain parameters.
      */
-    interface IECGenParameterSpec extends IAlgorithmParameterSpec {
+    /**
+     * @Involve
+     * interface IAlgorithmParameterSpec
+     */
+    interface IECGenParameterSpec {
         /**
          * Returns the name (standard or predefined) of the to-be-generated elliptic
          * curve domain parameter.

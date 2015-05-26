@@ -7,7 +7,11 @@ module
     namespace Elastos {
     namespace Security {
 
-    interface IUnresolvedPermission extends IPermission {
+    /**
+     * @Involve
+     * interface IPermission
+     */
+    interface IUnresolvedPermission {
         GetUnresolvedName(
             [out] String* unresolvedName);
 

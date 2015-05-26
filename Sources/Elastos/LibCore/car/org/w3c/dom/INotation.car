@@ -15,7 +15,11 @@ module
      * <p>A <code>Notation</code> node does not have any parent.
      * <p>See also the <a href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407'>Document Object Model (DOM) Level 3 Core Specification</a>.
      */
-    interface INotation extends INode {
+    /**
+     * @Involve
+     * interface INode
+     */
+    interface INotation {
         /**
          * The public identifier of this notation. If the public identifier was
          * not specified, this is <code>null</code>.

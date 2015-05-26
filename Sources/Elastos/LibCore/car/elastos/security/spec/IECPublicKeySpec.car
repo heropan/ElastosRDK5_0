@@ -12,7 +12,11 @@ module
     /**
      * The parameters specifying an Elliptic Curve (EC) public key.
      */
-    interface IECPublicKeySpec extends IKeySpec {
+    /**
+     * @Involve
+     * interface IKeySpec
+     */
+    interface IECPublicKeySpec {
         /**
          * Returns the domain parameter specification.
          *

@@ -38,7 +38,11 @@ module
      *
      * @hide
      */
-    interface ILSSerializerFilter extends Org.W3c.Dom.Traversal.INodeFilter {
+    /**
+     * @Involve
+     * interface Org.W3c.Dom.Traversal.INodeFilter
+     */
+    interface ILSSerializerFilter {
         /**
          *  Tells the <code>LSSerializer</code> what types of nodes to show to the
          * filter. If a node is not shown to the filter using this attribute, it

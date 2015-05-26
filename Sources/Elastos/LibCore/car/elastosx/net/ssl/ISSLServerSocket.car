@@ -9,8 +9,12 @@ module
      * The extension of {@code ServerSocket} which provides secure server sockets
      * based on protocols like SSL, TLS, or others.
      */
+    /**
+     * @Involve
+     * interface Elastos.Net.IServerSocket
+     */
     [deprecated]
-    interface ISSLServerSocket extends Elastos.Net.IServerSocket {
+    interface ISSLServerSocket {
         /**
          * Returns the names of the enabled cipher suites to be used for new
          * connections.

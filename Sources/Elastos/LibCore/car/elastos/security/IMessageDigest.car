@@ -7,8 +7,12 @@ module
     namespace Elastos {
     namespace Security {
 
+    /**
+     * @Involve
+     * interface IMessageDigestSpi
+     */
     [deprecated]
-    interface IMessageDigest extends IMessageDigestSpi {
+    interface IMessageDigest {
         /**
          * Puts this {@code MessageDigest} back in an initial state, such that it is
          * ready to compute a one way hash value.

@@ -15,7 +15,11 @@ module
      *
      * @implements Elastos.Text.IAttributedCharacterIteratorAttribute
      */
-    interface IFormatField extends IAttributedCharacterIteratorAttribute {
+    /**
+     * @Involve
+     * interface IAttributedCharacterIteratorAttribute
+     */
+    interface IFormatField {
     }
 
     /**

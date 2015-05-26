@@ -318,7 +318,11 @@ module
      * @implements Elastos.Text.INumberFormat
      */
 
-    interface IDecimalFormat extends INumberFormat {
+    /**
+     * @Involve
+     * interface INumberFormat
+     */
+    interface IDecimalFormat {
         /**
          * Changes the pattern of this decimal format to the specified pattern which
          * uses localized pattern characters.

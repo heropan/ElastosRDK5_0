@@ -13,7 +13,11 @@ module
      * href="http://www.rsa.com/rsalabs/node.asp?id=2125">PKCS #1 v2.0 Amendment 1:
      * Multi-Prime RSA</a>.
      */
-    interface IRSAMultiPrimePrivateCrtKey extends Elastos.Security.Interfaces.IRSAPrivateKey {
+    /**
+     * @Involve
+     * interface Elastos.Security.Interfaces.IRSAPrivateKey
+     */
+    interface IRSAMultiPrimePrivateCrtKey {
         /**
          * Returns the CRT coefficient, {@code q^-1 mod p}.
          *

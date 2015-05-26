@@ -7,7 +7,11 @@ module
     namespace Security {
     namespace Cert {
 
-    interface ICollectionCertStoreParameters extends ICertStoreParameters {
+    /**
+     * @Involve
+     * interface ICertStoreParameters
+     */
+    interface ICollectionCertStoreParameters {
         /**
          * Returns the collection where the {@code Certificate}s and {@code CRL}s
          * are retrieved from.

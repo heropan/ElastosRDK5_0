@@ -18,7 +18,11 @@ module
      * indicate that indexing on CharacterData is done in 16-bit units.
      * <p>See also the <a href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407'>Document Object Model (DOM) Level 3 Core Specification</a>.
      */
-    interface ICharacterData extends INode {
+    /**
+     * @Involve
+     * interface INode
+     */
+    interface ICharacterData {
         /**
          * The character data of the node that implements this interface. The DOM
          * implementation may not put arbitrary limits on the amount of data
