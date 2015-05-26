@@ -38,7 +38,7 @@ ECode testReflection()
     AutoPtr<IArgumentList> argumentList;
 
     const String moduleName("/data/data/com.elastos.runtime/elastos/Reflection.eco");
-    const String klassName("CFooBar");
+    const String klassName("Reflection.CFooBar");
 
     ECode ec = _CReflector_AcquireModuleInfo(moduleName, (IModuleInfo**)&moduleInfo);
     if (FAILED(ec)) {
@@ -53,7 +53,9 @@ ECode testReflection()
         return ec;
     }
 
-    PFL_EX(" > classInfo: %p", classInfo.Get())
+    String ns;
+    classInfo->GetNamespace(&ns);
+    PFL_EX(" > classInfo: %p, namespace: %s", classInfo.Get(), ns.string())
 
     // show class info
     //
@@ -86,6 +88,15 @@ ECode testReflection()
         printf("Create object failed!\n");
         return ec;
     }
+
+    AutoPtr<IInterfaceInfo> itfInfo;
+    ec = classInfo->GetInterfaceInfo("Reflection.IFooBar", (IInterfaceInfo**)&itfInfo);
+    if (FAILED(ec)) {
+        printf("Acquire \"IFooBar\" interface info failed!\n");
+        return ec;
+    }
+    itfInfo->GetNamespace(&ns);
+    PFL_EX(" > interfaceInfo: %p, namespace: %s", itfInfo.Get(), ns.string());
 
     // SetValue
     //

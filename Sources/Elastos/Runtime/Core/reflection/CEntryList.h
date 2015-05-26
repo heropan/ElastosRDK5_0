@@ -28,6 +28,7 @@ struct IFIndexEntry
     UInt32               uIndex;
     UInt32               uBeginNo;
     char                *pszName;
+    char                *pszNameSpace;
     InterfaceDescriptor *pDesc;
     UInt32               attribs;
 };

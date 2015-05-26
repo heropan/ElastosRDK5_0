@@ -282,6 +282,7 @@ ECode CInterfaceInfo::CreateIFList()
         m_pIFList[j].uBeginNo = uBeginNo;
         pIFDir = getInterfaceDirAddr(m_nBase, m_pClsMod->ppInterfaceDir, uIndex);
         m_pIFList[j].pszName = adjustNameAddr(m_nBase, pIFDir->pszName);
+        m_pIFList[j].pszNameSpace = adjustNameAddr(m_nBase, pIFDir->pszNameSpace);
         m_pIFList[j].pDesc = adjustInterfaceDescAddr(m_nBase, pIFDir->pDesc);
         uBeginNo += m_pIFList[j].pDesc->cMethods;
     }
