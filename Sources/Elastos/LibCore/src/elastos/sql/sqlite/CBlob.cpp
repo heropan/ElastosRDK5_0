@@ -8,6 +8,10 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_OBJECT_IMPL(CBlob);
+
+CAR_INTERFACE_IMPL(CBlob, Object, IBlob);
+
 CBlob::CBlob()
 {
     mHandle = 0;

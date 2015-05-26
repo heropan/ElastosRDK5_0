@@ -2,7 +2,7 @@
 #ifndef __CBLOBW_H__
 #define __CBLOBW_H__
 
-#include "_CBlobW.h"
+#include "_Elastos_Sql_SQLite_CBlobW.h"
 #include "CBlob.h"
 #include <OutputStream.h>
 
@@ -12,9 +12,16 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
-CarClass(CBlobW), public OutputStream
+CarClass(CBlobW)
+    , public OutputStream
+    , public IBlobW
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
     CBlobW();
 
     CARAPI Write(
@@ -28,21 +35,10 @@ public:
         /* [in] */ Int32 off,
         /* [in] */ Int32 len);
 
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
     CARAPI Close();
 
     CARAPI constructor(
         /* [in] */ Elastos::Sql::SQLite::IBlob* blob);
-
-    CARAPI Flush();
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 private:
     AutoPtr<CBlob> mBlob;

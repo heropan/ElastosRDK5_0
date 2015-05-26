@@ -2,7 +2,7 @@
 #ifndef __SQL_DATE_H__
 #define __SQL_DATE_H__
 
-#include <cmdef.h>
+#include <coredef.h>
 #include <elastos.h>
 #include <elautoptr.h>
 #include <elastos/StringBuilder.h>

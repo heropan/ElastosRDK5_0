@@ -2,16 +2,21 @@
 #ifndef __CSINFUNC_H__
 #define __CSINFUNC_H__
 
-#include "_CSinFunc.h"
-#include <cmdef.h>
+#include "_Elastos_Sql_SQLite_CSinFunc.h"
+#include <coredef.h>
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 CarClass(CSinFunc)
+    , public Object
+    , public IFunction
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
 
     CARAPI Function(
         /* [in] */ IFunctionContext* fc,

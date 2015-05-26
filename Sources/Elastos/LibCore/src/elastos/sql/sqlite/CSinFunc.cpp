@@ -9,6 +9,10 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_OBJECT_IMPL(CSinFunc);
+
+CAR_INTERFACE_IMPL(CSinFunc, Object, IFunction);
+
 ECode CSinFunc::constructor()
 {
     testDouble = 3.0;

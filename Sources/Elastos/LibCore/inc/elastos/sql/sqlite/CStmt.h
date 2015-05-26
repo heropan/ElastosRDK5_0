@@ -2,15 +2,21 @@
 #ifndef __CSTMT_H__
 #define __CSTMT_H__
 
-#include "_CStmt.h"
+#include "_Elastos_Sql_SQLite_CStmt.h"
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 CarClass(CStmt)
+    , public Object
+    , public IStmt
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI Prepare(
         /* [out] */ Boolean* value);
 

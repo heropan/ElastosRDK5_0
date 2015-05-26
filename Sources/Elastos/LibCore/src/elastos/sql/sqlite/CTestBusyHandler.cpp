@@ -5,6 +5,10 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_OBJECT_IMPL(CTestBusyHandler);
+
+CAR_INTERFACE_IMPL_2(CTestBusyHandler, Object, IBusyHandler, ICallback);
+
 ECode CTestBusyHandler::Busy(
     /* [in] */ const String& table,
     /* [in] */ Int32 count,

@@ -2,19 +2,22 @@
 #ifndef __CTESTPROGRESSHANDLER_H__
 #define __CTESTPROGRESSHANDLER_H__
 
-#include "_CTestProgressHandler.h"
-#include <cmdef.h>
+#include "_Elastos_Sql_SQLite_CTestProgressHandler.h"
+#include <coredef.h>
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 CarClass(CTestProgressHandler)
+    , public Object
+    , public IProgressHandler
+    , public ICallback
 {
 public:
+    CAR_OBJECT_DECL();
 
-    PInterface Probe(
-        /* [in] */ REIID riid);
+    CAR_INTERFACE_DECL();
 
     CARAPI Progress(
         /* [out] */ Boolean* value);

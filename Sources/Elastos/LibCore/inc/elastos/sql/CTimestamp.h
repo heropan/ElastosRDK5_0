@@ -2,20 +2,24 @@
 #ifndef __CTIMESTAMP_H__
 #define __CTIMESTAMP_H__
 
-#include "_CTimestamp.h"
+#include "_Elastos_Sql_CTimestamp.h"
 #include "Date.h"
-#include "TimestampMacro.h"
 
 namespace Elastos {
 namespace Sql {
 
-CarClass(CTimestamp) , public Date
+CarClass(CTimestamp)
+    , public Date
+    , public ITimestamp
 {
 public:
-    SQLTIMESTAMP_METHODS_DECL()
+    CAR_OBJECT_DECL();
+
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
 
     CARAPI CompareTo(
-        /* [in] */ Elastos::Utility::IDate* date,
+        /* [in] */ IDate* date,
         /* [out] */ Int32* result);
 
     CARAPI GetTime(

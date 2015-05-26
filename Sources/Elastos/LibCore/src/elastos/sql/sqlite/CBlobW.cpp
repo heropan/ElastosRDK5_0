@@ -5,9 +5,20 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_OBJECT_IMPL(CBlobW);
+
 CBlobW::CBlobW()
     : mPos(0)
 {
+}
+
+PInterface CBlobW::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_IBlobW) {
+        return (IInterface*)(IBlobW*)this;
+    }
+    return OutputStream::Probe(riid);
 }
 
 ECode CBlobW::constructor(
@@ -51,40 +62,12 @@ ECode CBlobW::WriteBytes(
     return NOERROR;
 }
 
-ECode CBlobW::CheckError(
-    /* [out] */ Boolean* hasError)
-{
-    return OutputStream::CheckError(hasError);
-}
-
 ECode CBlobW::Close()
 {
     mBlob->Close();
     mBlob = NULL;
     mPos = 0;
     return NOERROR;
-}
-
-ECode CBlobW::Flush()
-{
-    return NOERROR;
-}
-
-ECode CBlobW::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = OutputStream::GetLock();
-    *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
-    return NOERROR;
-}
-
-PInterface CBlobW::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CBlobW::Probe(riid);
 }
 
 } // namespace SQLite

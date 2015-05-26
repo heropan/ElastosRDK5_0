@@ -2,14 +2,21 @@
 #ifndef __CDATATRUNCATION_H__
 #define __CDATATRUNCATION_H__
 
-#include "_CDataTruncation.h"
+#include "_Elastos_Sql_CDataTruncation.h"
 
 namespace Elastos {
 namespace Sql {
 
 CarClass(CDataTruncation)
+    , public Object
+    , public IDataTruncation
+    , public ISQLWarning
+    , public ISerializable
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
 
     CARAPI  constructor(
         /* [in] */ Int32 index,

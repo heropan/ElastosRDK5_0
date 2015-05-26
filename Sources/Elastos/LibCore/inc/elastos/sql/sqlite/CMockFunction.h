@@ -2,8 +2,8 @@
 #ifndef __CMOCKFUNCTION_H__
 #define __CMOCKFUNCTION_H__
 
-#include "_CMockFunction.h"
-#include <cmdef.h>
+#include "_Elastos_Sql_SQLite_CMockFunction.h"
+#include <coredef.h>
 #include <elastos/StringBuffer.h>
 
 using Elastos::Core::StringBuffer;
@@ -13,8 +13,15 @@ namespace Sql {
 namespace SQLite {
 
 CarClass(CMockFunction)
+    , public Object
+    , public IMockFunction
+    , public IFunction
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI Function(
         /* [in] */ IFunctionContext* fc,
         /* [in] */ const ArrayOf<String>& args);

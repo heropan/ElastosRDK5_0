@@ -2,17 +2,24 @@
 #ifndef __CDBDUMP_H__
 #define __CDBDUMP_H__
 
-#include "_CDBDump.h"
+#include "_Elastos_Sql_SQLite_CDBDump.h"
 #include "CShell.h"
-#include <cmdef.h>
+#include <coredef.h>
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 CarClass(CDBDump)
+    , public Object
+    , public IDBDump
+    , public ICallback
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI Columns(
         /* [in] */ const ArrayOf<String> & coldata);
 
@@ -28,7 +35,7 @@ public:
         /* [in] */ const ArrayOf<String> & tables);
 
 private:
-        AutoPtr<CShell> s;
+    AutoPtr<CShell> s;
 };
 
 } // namespace SQLite

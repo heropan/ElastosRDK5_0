@@ -1,9 +1,14 @@
+
 #include "CFunctionContext.h"
 #include "sqlitejni.h"
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
+
+CAR_OBJECT_IMPL(CFunctionContext);
+
+CAR_INTERFACE_IMPL(CFunctionContext, Object, IFunctionContext);
 
 CFunctionContext::CFunctionContext()
 {
@@ -13,8 +18,7 @@ CFunctionContext::CFunctionContext()
 
 Boolean CFunctionContext::Internal_init()
 {
-    if (!isinit)
-    {
+    if (!isinit) {
         isinit = TRUE;
     }
     return isinit;

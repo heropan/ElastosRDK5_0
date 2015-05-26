@@ -5,21 +5,15 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_OBJECT_IMPL(CBlobR);
+
 PInterface CBlobR::Probe(
     /* [in] */ REIID riid)
 {
-    return _CBlobR::Probe(riid);
-}
-
-ECode CBlobR::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = InputStream::GetLock();
-    *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
-    return NOERROR;
+    if (riid == EIID_IBlobR) {
+        return (IInterface*)(IBlobR*)this;
+    }
+    return InputStream::Probe(riid);
 }
 
 ECode CBlobR::constructor(
@@ -41,13 +35,6 @@ ECode CBlobR::Available(
 ECode CBlobR::Mark(
     /* [in] */ Int32 readLimit)
 {
-    return NOERROR;
-}
-
-ECode CBlobR::IsMarkSupported(
-    /* [out] */ Boolean* supported)
-{
-    *supported = FALSE;
     return NOERROR;
 }
 

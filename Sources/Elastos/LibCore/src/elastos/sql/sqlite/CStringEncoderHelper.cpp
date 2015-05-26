@@ -1,9 +1,12 @@
 
 #include "CStringEncoderHelper.h"
+#include "StringEncoder.h"
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
+
+CAR_SINGLETON_IMPL(CStringEncoderHelper, Object, IStringEncoderHelper)
 
 ECode CStringEncoderHelper::Encode(
     /* [in] */ const ArrayOf<Byte>& a,

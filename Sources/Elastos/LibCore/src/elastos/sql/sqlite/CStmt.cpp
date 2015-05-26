@@ -7,18 +7,21 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_OBJECT_IMPL(CStmt);
+
+CAR_INTERFACE_IMPL(CStmt, Object, IStmt);
+
 CStmt::CStmt()
 {
     mHandle = 0;
-    isinit = false;
+    isinit = FALSE;
     mError_code = 0;
 }
 
 Boolean CStmt::Internal_init()
 {
-    if (!isinit)
-    {
-        isinit = true;
+    if (!isinit) {
+        isinit = TRUE;
     }
     return isinit;
 }

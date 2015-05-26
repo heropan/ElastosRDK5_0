@@ -276,7 +276,7 @@ module
     //         interface IStmt;
     //     }
 
-    //     class CStringEncoderHelper {
+    //     singleton class CStringEncoderHelper {
     //         interface IStringEncoderHelper;
     //     }
 

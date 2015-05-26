@@ -7,6 +7,8 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
+CAR_SINGLETON_IMPL(CDatabaseHelper, Object, IDatabaseHelper);
+
 ECode CDatabaseHelper::Complete(
     /* [in] */ const String& sql,
     /* [out] */ Boolean * value)

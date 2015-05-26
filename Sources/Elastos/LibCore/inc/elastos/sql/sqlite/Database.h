@@ -63,28 +63,33 @@ public:
     CARAPI BusyTimeout(
         /* [in] */ Int32 ms);
 
-    CARAPI_(AutoPtr<ITableResult>) GetTable(
-        /* [in] */ const String& sql,
-        /* [in] */ Int32 maxrows);
-
-    CARAPI_(AutoPtr<ITableResult>) GetTable(
-        /* [in] */ const String& sql);
-
-    CARAPI_(AutoPtr<ITableResult>) GetTable(
+    virtual CARAPI GetTable(
         /* [in] */ const String& sql,
         /* [in] */ Int32 maxrows,
-        /* [in] */ const ArrayOf<String> & args);
+        /* [out] */ ITableResult ** tableresult);
 
-    CARAPI_(AutoPtr<ITableResult>) GetTable(
+    virtual CARAPI GetTable(
         /* [in] */ const String& sql,
-        /* [in] */ const ArrayOf<String> & args);
+        /* [out] */ ITableResult ** tableresult);
 
-    CARAPI GetTable(
+    virtual CARAPI GetTable(
+        /* [in] */ const String& sql,
+        /* [in] */ Int32 maxrows,
+        /* [in] */ const ArrayOf<String> & args,
+        /* [out] */ ITableResult ** tableresult);
+
+    virtual CARAPI GetTable(
+        /* [in] */ const String& sql,
+        /* [in] */ const ArrayOf<String> & args,
+        /* [out] */ ITableResult ** tableresult);
+
+    virtual CARAPI GetTable(
         /* [in] */ const String& sql,
         /* [in] */ const ArrayOf<String> & args,
         /* [in] */ AutoPtr<ITableResult> tbl);
 
-    CARAPI_(String) Dbversion();
+    virtual CARAPI Dbversion(
+        /* [out] */ String * ver);
 
     CARAPI CreateFunction(
         /* [in] */ const String& name,
@@ -100,12 +105,14 @@ public:
         /* [in] */ const String& name,
         /* [in] */ Int32 type);
 
-    CARAPI_(Int32) LastError();
+    virtual CARAPI LastError(
+        /* [out] */ Int32 * err);
 
     CARAPI SetLastError(
         /* [in] */ Int32 error_code);
 
-    CARAPI_(String) ErrorMessage();
+    virtual CARAPI ErrorMessage(
+        /* [out] */ String * str);
 
     CARAPI SetEncoding(
         /* [in] */ const String& enc);
@@ -116,7 +123,7 @@ public:
     CARAPI Trace(
         /* [in] */ AutoPtr<ITrace> tr);
 
-    CARAPI_(AutoPtr<IBackup>) Backup(
+    virtual CARAPI Backup(
         /* [in] */ AutoPtr<IDatabase> dest,
         /* [in] */ const String& destName,
         /* [in] */ const String& srcName);
@@ -124,29 +131,35 @@ public:
     CARAPI Profile(
         /* [in] */ AutoPtr<IProfile> pr);
 
-    CARAPI_(Int32) DbStatus(
+    virtual CARAPI DbStatus(
         /* [in] */ Int32 op,
         /* [in] */ const ArrayOf<Int32> & info,
-        /* [in] */ Boolean flag);
+        /* [in] */ Boolean flag,
+        /* [out] */ Int32 * status);
 
-    CARAPI_(AutoPtr<IVm>) Compile(
-        /* [in] */ const String& sql);
-
-    CARAPI_(AutoPtr<IVm>) Compile(
+    virtual CARAPI Compile(
         /* [in] */ const String& sql,
-        /* [in] */ const ArrayOf<String>& args);
+        /* [out] */ IVm ** ivm);
 
-    CARAPI_(AutoPtr<IStmt>) Prepare(
-        /* [in] */ const String& sql);
+    virtual CARAPI Compile(
+        /* [in] */ const String& sql,
+        /* [in] */ const ArrayOf<String>& args,
+        /* [out] */ IVm ** ivm);
 
-    CARAPI_(AutoPtr<IBlob>) OpenBlob(
+    virtual CARAPI Prepare(
+        /* [in] */ const String& sql,
+        /* [out] */ IStmt ** st);
+
+    virtual CARAPI OpenBlob(
         /* [in] */ const String& db,
         /* [in] */ const String& table,
         /* [in] */ const String& column,
         /* [in] */ Int64 row,
-        /* [in] */ Boolean rw);
+        /* [in] */ Boolean rw,
+        /* [out] */ IBlob ** blob);
 
-    CARAPI_(Boolean) Is3();
+    virtual CARAPI Is3(
+        /* [out] */ Boolean * value);
 
     CARAPI ProgressHandler(
         /* [in] */ Int32 n,

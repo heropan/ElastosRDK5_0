@@ -14,7 +14,9 @@ Boolean CJDBCDriver::sharedCache = FALSE;
 
 String CJDBCDriver::vfs = String(NULL);
 
-CAR_OBJECT_IMPL(CJDBCDriver)
+CAR_OBJECT_IMPL(CJDBCDriver);
+
+CAR_INTERFACE_IMPL(CJDBCDriver, Object, IDriver);
 
 Boolean CJDBCDriver::init()
 {

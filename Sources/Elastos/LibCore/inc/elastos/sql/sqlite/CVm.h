@@ -2,15 +2,21 @@
 #ifndef __CVM_H__
 #define __CVM_H__
 
-#include "_CVm.h"
+#include "_Elastos_Sql_SQLite_CVm.h"
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 CarClass(CVm)
+    , public Object
+    , public IVm
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI Step(
         /* [in] */ ICallback * cb,
         /* [out] */ Boolean * value);

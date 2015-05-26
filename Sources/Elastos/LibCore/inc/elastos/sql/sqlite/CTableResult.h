@@ -14,25 +14,12 @@ namespace SQLite {
 CarClass(CTableResult) , public TableResult
 {
 public:
-    CARAPI Columns(
-        /* [in] */ const ArrayOf<String> & coldata);
-
-    CARAPI Types(
-        /* [in] */ const ArrayOf<String> & intypes);
-
-    CARAPI Newrow(
-        /* [in] */ const ArrayOf<String> & rowdata,
-        /* [out] */ Boolean * value);
-
-    CARAPI ToString(
-        /* [out] */ String * str);
+    CAR_OBJECT_DECL();
 
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ Int32 maxrows);
-
-    CARAPI Clear();
 };
 
 } // namespace SQLite

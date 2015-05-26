@@ -9,7 +9,16 @@ namespace Sql {
 
 const String CSqlDate::PADDING = String("0000");
 
-SQLDATE_METHODS_IMPL(CSqlDate, Date)
+CAR_OBJECT_IMPL(CSqlDate);
+
+PInterface CSqlDate::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == Elastos::Sql::EIID_IDate) {
+        return (IInterface*)(Elastos::Sql::IDate*)this;
+    }
+    return Date::Probe(riid);
+}
 
 ECode CSqlDate::GetHours(
     /* [out] */ Int32 * value)
@@ -50,8 +59,7 @@ ECode CSqlDate::SetSeconds(
 ECode CSqlDate::SetTime(
     /* [in] */ Int64 milliseconds)
 {
-    Date::SetTime(NormalizeTime(milliseconds));
-    return NOERROR;
+    return Date::SetTime(NormalizeTime(milliseconds));
 }
 
 ECode CSqlDate::ToString(
@@ -84,10 +92,11 @@ ECode CSqlDate::constructor(
     return NOERROR;
 }
 
-AutoPtr<IDate> CSqlDate::ValueOf(
+AutoPtr<Elastos::Sql::IDate> CSqlDate::ValueOf(
     /* [in] */ const String& dateString)
 {
     if (dateString.IsNull()) {
+        //TODO throw new IllegalArgumentException("dateString == null");
         return NULL;
     }
     Int32 firstIndex = dateString.IndexOf('-');
@@ -99,8 +108,10 @@ AutoPtr<IDate> CSqlDate::ValueOf(
     // IllegalArgumentException to follow RI
     if (secondIndex == -1 || firstIndex == 0
             || secondIndex + 1 == dateString.GetLength()) {
+        //TODO throw new IllegalArgumentException();
         return NULL;
     }
+
     // parse each part of the string
     Int32 year = StringUtils::ParseInt32(dateString.Substring(0, firstIndex));
     Int32 month = StringUtils::ParseInt32(dateString.Substring(firstIndex + 1, secondIndex));

@@ -2,15 +2,21 @@
 #ifndef __CFUNCTIONCONTEXT_H__
 #define __CFUNCTIONCONTEXT_H__
 
-#include "_CFunctionContext.h"
+#include "_Elastos_Sql_SQLite_CFunctionContext.h"
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 CarClass(CFunctionContext)
+    , public Object
+    , public IFunctionContext
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI SetResult(
         /* [in] */ const String& ret);
 

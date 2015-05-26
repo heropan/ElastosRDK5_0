@@ -36,13 +36,11 @@ public:
     TableResult(
         /* [in] */ Int32 maxrows);
 
-    // ~TableResult();
-
     virtual CARAPI Clear();
 
-    CARAPI_(void) Init();
+    CARAPI Init();
 
-    CARAPI_(void) Init(
+    CARAPI Init(
         /* [in] */ Int32 maxrows);
 
 public:
@@ -50,7 +48,7 @@ public:
     Int32 nrows;
     AutoPtr<ArrayOf<String> > column;
     AutoPtr<ArrayOf<String> > types;
-    Int32 maxrows ;
+    Int32 maxrows;
     Vector<AutoPtr<ArrayOf<String> > > rows;
     Boolean atmaxrows;
 };

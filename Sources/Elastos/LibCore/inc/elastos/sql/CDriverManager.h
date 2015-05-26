@@ -3,7 +3,7 @@
 #define __CDRIVERMANAGER_H__
 
 #include "_CDriverManager.h"
-#include <cmdef.h>
+#include <coredef.h>
 #include <elastos.h>
 #include <elastos/List.h>
 #include <elastos/Mutex.h>
@@ -25,8 +25,12 @@ namespace Elastos {
 namespace Sql {
 
 CarClass(CDriverManager)
+    , public Object
+    , public IDriverManagerHelper
 {
 public:
+    CAR_SINGLETON_DECL();
+
     CARAPI DeregisterDriver(
         /* [in] */ IDriver * driver);
 

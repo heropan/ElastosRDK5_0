@@ -8,17 +8,9 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
-PInterface CAuthorizerCallback::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IAuthorizer) {
-        return (IAuthorizer*)this;
-    } else if (riid == EIID_ICallback) {
-        return (ICallback*)this;
-    } else {
-        return NULL;
-    }
-}
+CAR_OBJECT_IMPL(CAuthorizerCallback);
+
+CAR_INTERFACE_IMPL_2(CAuthorizerCallback, Object, IAuthorizer, ICallback);
 
 ECode CAuthorizerCallback::Authorize(
     /* [in] */ Int32 what,

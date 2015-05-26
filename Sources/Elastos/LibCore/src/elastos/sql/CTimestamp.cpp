@@ -20,14 +20,22 @@ const String CTimestamp::TIME_FORMAT_REGEX = String("[0-9]{4}-[0-9]{2}-[0-9]{2} 
 
 const String CTimestamp::PADDING = String("000000000");
 
-SQLTIMESTAMP_METHODS_IMPL(CTimestamp, Date)
+CAR_OBJECT_IMPL(CTimestamp);
+
+PInterface CTimestamp::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_ITimestamp) {
+        return (IInterface*)(ITimestamp*)this;
+    }
+    return Date::Probe(riid);
+}
 
 ECode CTimestamp::CompareTo(
-    /* [in] */ Elastos::Utility::IDate* date,
+    /* [in] */ IDate* date,
     /* [out] */ Int32* result)
 {
-    CompareTo((ITimestamp *)date , result);
-    return NOERROR;
+    return CompareTo(ITimestamp::Probe(date), result);
 }
 
 ECode CTimestamp::GetTime(
@@ -70,7 +78,7 @@ ECode CTimestamp::ToString(
     } else {
         Format(nanos, 9, sb);
         while (sb->GetChar(sb->GetLength() - 1) == '0') {
-            // sb->SetLength(sb->GetLength() - 1);
+            sb->SetLength(sb->GetLength() - 1);
         }
     }
 
@@ -150,7 +158,7 @@ ECode CTimestamp::CompareTo(
     /* [in] */ ITimestamp * theTimestamp,
     /* [out] */ Int32 * value)
 {
-    Int32 result = Date::CompareTo(theTimestamp);
+    Int32 result = Date::CompareTo(IDate::Probe(theTimestamp));
     if (result == 0) {
         Int32 thisNano = 0;
         GetNanos(&thisNano);
@@ -251,6 +259,7 @@ ECode CTimestamp::constructor(
 AutoPtr<ITimestamp> CTimestamp::ValueOf(const String& str)
 {
     if (str.IsNull()) {
+        //TODO throw new IllegalArgumentException("Argument cannot be null");
         return NULL;
     }
 
@@ -261,9 +270,11 @@ AutoPtr<ITimestamp> CTimestamp::ValueOf(const String& str)
     Boolean ispat = FALSE;
     pat->Matches(TIME_FORMAT_REGEX, s, &ispat);
     if (!ispat) {
+        //TODO throw badTimestampString(s);
         return NULL;
     }
 
+    assert(0 && "TODO");
     // AutoPtr<ISimpleDateFormat> df;
     // CSimpleDateFormat::New(String("yyyy-MM-dd HH:mm:ss"), (ISimpleDateFormat **)&df);
     // AutoPtr<IParsePosition> pp;
