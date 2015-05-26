@@ -2,7 +2,7 @@
 #ifndef __CKXMLSERIALIZER_H__
 #define __CKXMLSERIALIZER_H__
 
-#include "__Org_Kxml2_IO_CKXmlSerializer.h"
+#include "_Org_Kxml2_IO_CKXmlSerializer.h"
 #include "Object.h"
 #include <Elastos.CoreLibrary.h>
 

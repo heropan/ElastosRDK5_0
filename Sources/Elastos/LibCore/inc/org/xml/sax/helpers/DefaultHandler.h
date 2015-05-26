@@ -2,6 +2,7 @@
 #ifndef __DEFAULTHANDLER_H__
 #define __DEFAULTHANDLER_H__
 
+#include <Org.Xml.Sax_server.h>
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
@@ -57,8 +58,6 @@ class DefaultHandler
 {
 public:
     CAR_INTERFACE_DECL()
-
-    CARAPI constructor();
 
     /**
      * Resolve an external entity.

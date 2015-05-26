@@ -1,7 +1,7 @@
 #ifndef __LOCATORIMPL_H__
 #define __LOCATORIMPL_H__
 
-#include <elastos.h>
+#include <Org.Xml.Sax_server.h>
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

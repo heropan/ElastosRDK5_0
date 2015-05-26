@@ -2,7 +2,7 @@
 #ifndef __CXMLPULLPARSERFACTORYHELPER_H__
 #define __CXMLPULLPARSERFACTORYHELPER_H__
 
-#include "__Org_Xmlpull_V1_CXmlPullParserFactoryHelper.h"
+#include "_Org_Xmlpull_V1_CXmlPullParserFactoryHelper.h"
 #include "Singleton.h"
 
 using Elastos::Core::Singleton;

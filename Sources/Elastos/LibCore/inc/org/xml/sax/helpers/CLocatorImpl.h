@@ -2,7 +2,7 @@
 #ifndef __CLOCATORIMPL_H__
 #define __CLOCATORIMPL_H__
 
-#include "__Org_Xml_Sax_Helpers_CLocatorImpl.h"
+#include "_Org_Xml_Sax_Helpers_CLocatorImpl.h"
 #include "LocatorImpl.h"
 
 namespace Org {

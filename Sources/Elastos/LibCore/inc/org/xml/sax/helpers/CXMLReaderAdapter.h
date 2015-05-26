@@ -2,7 +2,7 @@
 #ifndef __CXMLREADERADAPTER_H__
 #define __CXMLREADERADAPTER_H__
 
-#include "__Org_Xml_Sax_Helpers_CXMLReaderAdapter.h"
+#include "_Org_Xml_Sax_Helpers_CXMLReaderAdapter.h"
 
 namespace Org {
 namespace Xml {

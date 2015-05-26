@@ -127,7 +127,7 @@ ECode DefaultHandler::Error(
 ECode DefaultHandler::FatalError(
     /* [in] */ ECode exception)
 {
-    return E_SAX_PARSE_EXCEPTION
+    return E_SAX_PARSE_EXCEPTION;
 }
 
 } // namespace Helpers

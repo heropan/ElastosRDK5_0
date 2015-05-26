@@ -7,6 +7,7 @@ namespace Sax {
 namespace Ext {
 
 CAR_INTERFACE_IMPL(CAttributes2Impl, AttributesImpl, IAttributes2Impl)
+
 CAR_OBJECT_IMPL(CAttributes2Impl)
 
 ECode CAttributes2Impl::SetAttributes(
@@ -110,41 +111,6 @@ ECode CAttributes2Impl::RemoveAttribute(
     }
 
     return NOERROR;
-}
-
-ECode CAttributes2Impl::SetURI(
-    /* [in] */ Int32 index,
-    /* [in] */ const String& uri)
-{
-    return AttributesImpl::SetURI(index, uri);
-}
-
-ECode CAttributes2Impl::SetLocalName(
-    /* [in] */ Int32 index,
-    /* [in] */ const String& localName)
-{
-    return AttributesImpl::SetLocalName(index, localName);
-}
-
-ECode CAttributes2Impl::SetQName(
-    /* [in] */ Int32 index,
-    /* [in] */ const String& qName)
-{
-    return AttributesImpl::SetQName(index, qName);
-}
-
-ECode CAttributes2Impl::SetType(
-    /* [in] */ Int32 index,
-    /* [in] */ const String& type)
-{
-    return AttributesImpl::SetType(index, type);
-}
-
-ECode CAttributes2Impl::SetValue(
-    /* [in] */ Int32 index,
-    /* [in] */ const String& value)
-{
-    return AttributesImpl::SetValue(index, value);
 }
 
 ECode CAttributes2Impl::IsDeclared(
