@@ -90,7 +90,7 @@ ECode testReflection()
     // SetValue
     //
     PFL_EX("SetValue String")
-    ec = classInfo->GetMethodInfo("SetValue", (IMethodInfo**)&methodInfo);
+    ec = classInfo->GetMethodInfo("SetValue", "(LElastos/String;)E", (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
         printf("Acquire \"SetValue\" method info failed!\n");
         return ec;
@@ -124,7 +124,7 @@ ECode testReflection()
     //
     PFL_EX("GetValue String")
     methodInfo = NULL;
-    ec = classInfo->GetMethodInfo("GetValue", (IMethodInfo**)&methodInfo);
+    ec = classInfo->GetMethodInfo("GetValue", "(LElastos/String;*)E", (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
         printf("Acquire \"GetValue\" method info failed!\n");
         return ec;
@@ -165,7 +165,7 @@ ECode testReflection()
     //
     PFL_EX("SetValue Int32, String, Int64")
     methodInfo = NULL;
-    ec = classInfo->GetMethodInfo("SetValue", (IMethodInfo**)&methodInfo);
+    ec = classInfo->GetMethodInfo("SetValue", "(I32LElastos/String;I64)E", (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
         printf("Acquire \"SetValue\" method info failed!\n");
         return ec;
@@ -195,7 +195,7 @@ ECode testReflection()
     //
     PFL_EX("GetValue Int32, String, Int64")
     methodInfo = NULL;
-    ec = classInfo->GetMethodInfo("GetValue", (IMethodInfo**)&methodInfo);
+    ec = classInfo->GetMethodInfo("GetValue", "(I32*LElastos/String;*I64*)E", (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
         printf("Acquire \"GetValue\" method info failed!\n");
         return ec;
