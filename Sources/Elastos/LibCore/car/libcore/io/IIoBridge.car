@@ -3,7 +3,6 @@ module
 {
     interface Elastos.Net.IInetAddress;
     interface Elastos.Net.IDatagramPacket;
-    interface Elastos.IO.IFileDescriptor;
     interface Elastos.IO.IByteBuffer;
 
     namespace Libcore {

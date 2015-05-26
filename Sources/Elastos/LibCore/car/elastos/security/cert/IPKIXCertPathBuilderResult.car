@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Security.Cert.ICertPath;
-    interface Elastos.Security.Cert.IPKIXCertPathValidatorResult;
 
     namespace Elastos {
     namespace Security {

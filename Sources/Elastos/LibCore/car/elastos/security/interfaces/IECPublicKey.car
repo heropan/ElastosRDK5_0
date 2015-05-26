@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Security.Spec.IECPoint;
-    interface Elastos.Security.IPublicKey;
     interface Elastos.Security.Interfaces.IECKey;
 
     namespace Elastos {

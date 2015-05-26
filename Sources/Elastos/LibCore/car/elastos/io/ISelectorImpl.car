@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.IO.Channels.Spi.IAbstractSelector;
 
     namespace Elastos {
     namespace IO {

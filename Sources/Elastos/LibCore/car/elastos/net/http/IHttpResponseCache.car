@@ -3,9 +3,6 @@ module
 {
     enum Elastos.Net.ResponseSource;
 
-    interface Elastos.Net.IResponseCache;
-    interface Elastos.Net.ICacheResponse;
-    interface Elastos.Net.IHttpURLConnection;
 
     namespace Elastos {
     namespace Net {

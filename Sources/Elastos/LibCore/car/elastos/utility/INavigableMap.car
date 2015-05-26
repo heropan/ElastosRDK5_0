@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Core.IComparator;
     interface Elastos.Utility.INavigableSet;
 
     namespace Elastos {

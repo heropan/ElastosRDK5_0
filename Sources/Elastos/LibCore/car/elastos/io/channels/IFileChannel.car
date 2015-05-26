@@ -8,7 +8,6 @@ module
     interface Elastos.IO.Channels.IWritableByteChannel;
 
  //   interface Elastos.IO.Channels.IFileLock {}
-    interface Elastos.IO.Channels.IInterruptibleChannel;
 
     namespace Elastos {
     namespace IO {

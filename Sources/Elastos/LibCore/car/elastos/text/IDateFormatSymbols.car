@@ -1,7 +1,5 @@
 module
 {
-    interface Elastos.IO.IObjectInputStream;
-    interface Elastos.IO.IObjectOutputStream;
     interface Elastos.Utility.IObjectContainer;
     interface Elastos.Utility.ILocale;
 

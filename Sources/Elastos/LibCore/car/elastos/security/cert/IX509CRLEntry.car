@@ -4,7 +4,6 @@ module
     interface Elastos.Math.IBigInteger;
     interface Elastos.Utility.IDate;
     interface Elastosx.Security.Auth.X500.IX500Principal;
-    interface Elastos.Security.Cert.IX509Extension;
 
     namespace Elastos {
     namespace Security {

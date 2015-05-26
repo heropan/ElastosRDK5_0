@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastosx.Security.Cert.ICertificate;
     interface Elastos.Security.IPrincipal;
     interface Elastos.Utility.IDate;
     interface Elastos.Math.IBigInteger;

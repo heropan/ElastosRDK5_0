@@ -1,7 +1,5 @@
 module
 {
-    interface Elastos.Core.IComparable;
-    interface Elastos.Utility.IObjectContainer;
     interface Elastos.Utility.ISet;
     interface Elastos.IO.Charset.ICharsetEncoder;
     interface Elastos.IO.Charset.ICharsetDecoder;

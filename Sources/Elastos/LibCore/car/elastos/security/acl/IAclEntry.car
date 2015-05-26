@@ -4,7 +4,6 @@ module
     interface Elastos.Utility.IEnumeration;
     interface Elastos.Security.IPrincipal;
     interface Elastos.Security.Acl.IPermission;
-    interface Elastos.Core.ICloneable;
 
     namespace Elastos {
     namespace Security {

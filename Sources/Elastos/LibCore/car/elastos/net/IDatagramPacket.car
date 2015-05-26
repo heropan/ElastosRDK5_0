@@ -3,7 +3,6 @@ module
 {
     interface Elastos.Net.IInetAddress;
     interface Elastos.Net.ISocketAddress;
-    interface Elastos.IO.IFileDescriptor;
 
     namespace Elastos{
     namespace Net{

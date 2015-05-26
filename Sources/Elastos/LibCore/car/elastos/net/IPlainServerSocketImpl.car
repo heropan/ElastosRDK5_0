@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Net.IPlainSocketImpl;
 
     namespace Elastos{
     namespace Net{

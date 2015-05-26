@@ -1,8 +1,5 @@
 module
 {
-    interface Elastos.Sql.IResultSet;
-    interface Elastos.Sql.IConnection;
-    interface Elastos.Sql.IWrapper;
 
     namespace Elastos {
     namespace Sql {

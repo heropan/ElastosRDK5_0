@@ -9,7 +9,6 @@ module
     interface Elastos.Text.IFieldPosition;
     interface Elastos.Text.IParsePosition;
     interface Elastos.Text.IAttributedCharacterIterator;
-    interface Elastos.Utility.ICurrency;
     interface Libcore.ICU.ILocaleData;
 
     namespace Libcore {

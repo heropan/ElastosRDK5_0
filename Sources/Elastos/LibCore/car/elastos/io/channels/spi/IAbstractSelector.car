@@ -1,14 +1,7 @@
 
 module
 {
-    interface Elastos.IO.Channels.IDatagramChannel;
-    interface Elastos.IO.Channels.IPipe;
-    interface Elastos.IO.Channels.ISelector;
-    interface Elastos.IO.Channels.IServerSocketChannel;
-    interface Elastos.IO.Channels.ISocketChannel;
-    interface Elastos.IO.Channels.IChannel;
     interface Elastos.IO.Channels.ISelectionKey;
-    interface Elastos.IO.Channels.Spi.ISelectorProvider;
 
     namespace Elastos {
     namespace IO {

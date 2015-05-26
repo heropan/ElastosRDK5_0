@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.IO.IInputStream;
-    interface Elastos.Net.IURLConnection;
 
     namespace Elastos {
     namespace Net {

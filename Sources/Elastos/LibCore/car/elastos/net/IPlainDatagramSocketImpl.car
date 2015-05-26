@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Net.IDatagramSocketImpl;
 
     namespace Elastos{
     namespace Net{

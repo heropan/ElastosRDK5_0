@@ -1,9 +1,5 @@
 module
 {
-    interface Elastos.IO.IObjectInputStream;
-    interface Elastos.IO.IObjectOutputStream;
-    interface Elastos.IO.IObjectStreamField;
-    interface Elastos.Utility.IDate;
     interface Elastos.Utility.ILocale;
     interface Elastos.Text.IFieldPosition;
     interface Elastos.Text.IParsePosition;

@@ -4,7 +4,6 @@ module
     interface Elastos.Security.IProvider;
     interface Elastos.Security.Cert.ICertPath;
     interface Elastos.Security.Cert.ICertPathParameters;
-    interface Elastos.Security.Cert.ICertPathBuilderResult;
     interface Elastos.Security.Cert.ICertPathValidatorResult;
 
     namespace Elastos {
