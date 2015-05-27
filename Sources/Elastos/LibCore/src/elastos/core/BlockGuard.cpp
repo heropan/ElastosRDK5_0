@@ -10,6 +10,14 @@ using Elastos::Core::Thread;
 namespace Elastos {
 namespace Core {
 
+//extern "C" const InterfaceID EIID_XXXXXX =
+//        { 0x5b429235, 0xec95, 0x4af7, { 0x96, 0xe0, 0x47, 0x3f, 0xef, 0xf0, 0x39, 0xfd } };
+
+extern const _ELASTOS ClassID ECLSID_LAXPOLICY = {
+    { 0x5b429235, 0xec95, 0x4af7, { 0x96, 0xe0, 0x47, 0x3f, 0xef, 0xf0, 0x39, 0xfd }},
+    "Elastos.CoreLibrary.eco",
+    0xfce9926d };
+
 CAR_INTERFACE_IMPL(BlockGuard, Singleton, IBlockGuard);
 
 AutoPtr<IBlockGuardPolicy> BlockGuard::sPolicy;
@@ -31,7 +39,7 @@ static void MakeKey()
 }
 
 CAR_INTERFACE_IMPL(BlockGuard::LAXPOLICY, Object, IBlockGuardPolicy);
-CAR_OBJECT_IMPL(BlockGuard::LAXPOLICY)
+//CAR_OBJECT_IMPL_WITH_CLSID(BlockGuard::LAXPOLICY, )
 
 BlockGuard::LAXPOLICY::~LAXPOLICY()
 {

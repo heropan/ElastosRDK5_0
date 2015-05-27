@@ -291,7 +291,7 @@ ECode StringBuilder::AppendDouble(
     return AppendODouble(d);
 }
 
-ECode StringBuilder::AppendIInterface(
+ECode StringBuilder::AppendInterface(
     /* [in] */ IInterface* obj)
 {
     return AppendOObject(obj);
@@ -303,7 +303,7 @@ ECode StringBuilder::AppendString(
     return AppendOString(str);
 }
 
-ECode StringBuilder::AppendIStringBuffer(
+ECode StringBuilder::AppendStringBuffer(
     /* [in] */ IStringBuffer* sb)
 {
     if (NULL == sb) {
@@ -315,7 +315,7 @@ ECode StringBuilder::AppendIStringBuffer(
     return AppendOString(str);
 }
 
-ECode StringBuilder::AppendIStringBuilder(
+ECode StringBuilder::AppendStringBuilder(
     /* [in] */ IStringBuilder* sb)
 {
     if (NULL == sb) {
@@ -341,13 +341,13 @@ ECode StringBuilder::AppendArrayOf(
     return AppendOCharsEx(chars, offset, length);
 }
 
-ECode StringBuilder::AppendICharSequence(
+ECode StringBuilder::AppendCharSequence(
     /* [in] */ ICharSequence* csq)
 {
     return AppendOCharSequence(csq);
 }
 
-ECode StringBuilder::AppendICharSequence(
+ECode StringBuilder::AppendCharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -397,7 +397,7 @@ ECode StringBuilder::InsertDouble(
     return InsertODouble(offset, d);
 }
 
-ECode StringBuilder::InsertIInterface(
+ECode StringBuilder::InsertInterface(
     /* [in] */ Int32 offset,
     /* [in] */ IInterface* obj)
 {
@@ -427,14 +427,14 @@ ECode StringBuilder::InsertArrayOf(
     return InsertOCharsEx(offset, str, strOffset, strLen);
 }
 
-ECode StringBuilder::InsertICharSequence(
+ECode StringBuilder::InsertCharSequence(
     /* [in] */ Int32 offset,
     /* [in] */ ICharSequence* s)
 {
     return InsertOCharSequence(offset, s);
 }
 
-ECode StringBuilder::InsertICharSequence(
+ECode StringBuilder::InsertCharSequence(
     /* [in] */ Int32 offset,
     /* [in] */ ICharSequence* s,
     /* [in] */ Int32 start,

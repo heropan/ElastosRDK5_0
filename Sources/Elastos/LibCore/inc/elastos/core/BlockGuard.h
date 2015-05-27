@@ -9,12 +9,15 @@ using Elastos::Core::Object;
 namespace Elastos {
 namespace Core {
 
+EXTERN const _ELASTOS ClassID ECLSID_LAXPOLICY;
+
 class BlockGuard
     : public Singleton
     , public IBlockGuard
 {
 public:
     CAR_INTERFACE_DECL()
+
     /**
      * The default, permissive policy that doesn't prevent any operations.
      */
