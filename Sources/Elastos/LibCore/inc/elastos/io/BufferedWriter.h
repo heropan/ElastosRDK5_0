@@ -10,8 +10,10 @@ namespace IO {
 
 class BufferedWriter
     : public Writer
+    , IBufferedWriter
 {
 public:
+    CAR_INTERFACE_DECL()
 
     BufferedWriter();
 
@@ -19,22 +21,22 @@ public:
 
     /**
      * Constructs a new {@code BufferedWriter}, providing {@code out} with a buffer
-     * of 8192 bytes.
+     * of 8192 chars.
      *
      * @param out the {@code Writer} the buffer writes to.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IWriter* wout);
 
     /**
-     * Constructs a new {@code BufferedWriter}, providing {@code out} with {@code size} bytes
+     * Constructs a new {@code BufferedWriter}, providing {@code out} with {@code size} chars
      * of buffer.
      *
      * @param out the {@code OutputStream} the buffer writes to.
-     * @param size the size of buffer in bytes.
+     * @param size the size of buffer in chars.
      * @throws IllegalArgumentException if {@code size <= 0}.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IWriter* wout,
         /* [in] */ Int32 size);
 
@@ -103,7 +105,7 @@ public:
      *             if this writer is closed or another I/O error occurs.
      */
     //@Override
-    CARAPI WriteCharsEx(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& cbuf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -129,7 +131,7 @@ public:
      *             than the length of {@code str}.
      */
     // @Override
-    CARAPI WriteStringEx(
+    CARAPI Write(
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);

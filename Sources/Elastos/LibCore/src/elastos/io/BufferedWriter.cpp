@@ -8,6 +8,8 @@ using Elastos::Core::Character;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(BufferedWriter, Writer, IBufferedWriter)　
+
 //todo:
 #ifdef _linux
 const String BufferedWriter::mLineSeparator = String("\n"); // = AccessController.doPrivileged(new PriviAction<String>("line.separator"));
@@ -24,13 +26,13 @@ BufferedWriter::~BufferedWriter()
 {
 }
 
-ECode BufferedWriter::Init(
+ECode BufferedWriter::constructor(
     /* [in] */ IWriter* wout)
 {
     return Init(wout, 8192);
 }
 
-ECode BufferedWriter::Init(
+ECode BufferedWriter::constructor(
     /* [in] */ IWriter* wout,
     /* [in] */ Int32 size)
 {
@@ -90,7 +92,7 @@ ECode BufferedWriter::CheckNotClosed()
 ECode BufferedWriter::FlushInternal()
 {
     if (mPos > 0) {
-        FAIL_RETURN(mOut->WriteCharsEx(*mBuf, 0, mPos));
+        FAIL_RETURN(mOut->Write(*mBuf, 0, mPos));
     }
     mPos = 0;
 
@@ -104,10 +106,10 @@ Boolean BufferedWriter::IsClosed()
 
 ECode BufferedWriter::NewLine()
 {
-    return WriteString(mLineSeparator);
+    return Write(mLineSeparator);
 }
 
-ECode BufferedWriter::WriteCharsEx(
+ECode BufferedWriter::Write(
     /* [in] */ const ArrayOf<Char32>& cbuf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -130,7 +132,7 @@ ECode BufferedWriter::WriteCharsEx(
 
     Int32 bufferLength = mBuf->GetLength();
     if (mPos == 0 && count >= bufferLength) {
-        return mOut->WriteCharsEx(cbuf, offset, count);
+        return mOut->Write(cbuf, offset, count);
     }
 
     Int32 available = bufferLength - mPos;
@@ -144,13 +146,13 @@ ECode BufferedWriter::WriteCharsEx(
     }
 
     if (mPos == bufferLength) {
-        FAIL_RETURN(mOut->WriteCharsEx(*mBuf, 0, bufferLength));
+        FAIL_RETURN(mOut->Write(*mBuf, 0, bufferLength));
         mPos = 0;
         if (count > available) {
             offset += available;
             available = count - available;
             if (available >= bufferLength) {
-                FAIL_RETURN(mOut->WriteCharsEx(cbuf, offset, available));
+                FAIL_RETURN(mOut->Write(cbuf, offset, available));
                 return NOERROR;
             }
 
@@ -171,7 +173,7 @@ ECode BufferedWriter::Write(
 
     Int32 bufferLength = mBuf->GetLength();
     if (mPos >= bufferLength) {
-        FAIL_RETURN(mOut->WriteCharsEx(*mBuf, 0, bufferLength));
+        FAIL_RETURN(mOut->Write(*mBuf, 0, bufferLength));
         mPos = 0;
     }
 
@@ -180,7 +182,7 @@ ECode BufferedWriter::Write(
     return NOERROR;
 }
 
-ECode BufferedWriter::WriteStringEx(
+ECode BufferedWriter::Write(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -198,7 +200,7 @@ ECode BufferedWriter::WriteStringEx(
 
     if (mPos == 0 && count >= mBuf->GetLength()) {
         AutoPtr< ArrayOf<Char32> > chars = str.GetChars(offset, offset + count);
-        mOut->WriteCharsEx(*chars, 0, count);
+        mOut->Write(*chars, 0, count);
         return NOERROR;
     }
 
@@ -214,14 +216,14 @@ ECode BufferedWriter::WriteStringEx(
     }
 
     if (mPos == mBuf->GetLength()) {
-        mOut->WriteCharsEx(*mBuf, 0, mBuf->GetLength());
+        mOut->Write(*mBuf, 0, mBuf->GetLength());
         mPos = 0;
         if (count > available) {
             offset += available;
             available = count - available;
             if (available >= mBuf->GetLength()) {
                 AutoPtr< ArrayOf<Char32> > chars = str.GetChars(offset, offset + available);
-                mOut->WriteCharsEx(*chars, 0, available);
+                mOut->Write(*chars, 0, available);
                 return NOERROR;
             }
             AutoPtr< ArrayOf<Char32> > chars = str.GetChars(offset, offset + available);
