@@ -3,17 +3,17 @@
 # Copyright (c) 2000-2013,  Elastos, Inc.  All Rights Reserved.
 #==========================================================================
 
-EXPORT_HEADERS = listnode.h
-EXPORT_HEADERS += linknode.h
-EXPORT_HEADERS += container.h
-EXPORT_HEADERS += quicklist.h
-EXPORT_HEADERS += treenode.h
-EXPORT_HEADERS += multitreenode.h
-EXPORT_HEADERS += ElUtilities.h
-EXPORT_HEADERS += CObjectEnumerator.h
-EXPORT_HEADERS += CObjectContainer.h
-EXPORT_HEADERS += elastos/Mutex.h
-EXPORT_HEADERS += elastos/RWLock.h
+#EXPORT_HEADERS = listnode.h
+#EXPORT_HEADERS += linknode.h
+#EXPORT_HEADERS += container.h
+#EXPORT_HEADERS += quicklist.h
+#EXPORT_HEADERS += treenode.h
+#EXPORT_HEADERS += multitreenode.h
+#EXPORT_HEADERS += ElUtilities.h
+#EXPORT_HEADERS += CObjectEnumerator.h
+#EXPORT_HEADERS += CObjectContainer.h
+#EXPORT_HEADERS += elastos/Mutex.h
+＃EXPORT_HEADERS += elastos/RWLock.h
 
 ifeq ("$(XDK_TARGET_PLATFORM)", $(filter "$(XDK_TARGET_PLATFORM)", "android" "linux"))
 EXPORT_HEADERS += elastos/ElRefWrapper.h
@@ -21,6 +21,7 @@ EXPORT_HEADERS += elastos/UniquePtr.h
 EXPORT_HEADERS += elastos/Autolock.h
 EXPORT_HEADERS += elastos/Condition.h
 EXPORT_HEADERS += elastos/Object.h
+EXPORT_HEADERS += elastos/Singleton.h
 EXPORT_HEADERS += elastos/Thread.h
 EXPORT_HEADERS += elastos/ThreadBase.h
 EXPORT_HEADERS += elastos/NativeThread.h

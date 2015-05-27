@@ -4,13 +4,11 @@
 
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
-#include "coredef.h"
-#include "NativeThread.h"
 #else
 #include "Elastos.CoreLibrary.h"
+#endif
 #include <elastos/coredef.h>
 #include <elastos/core/NativeThread.h>
-#endif
 
 using Elastos::Core::ISynchronize;
 using Elastos::Core::NativeObject;

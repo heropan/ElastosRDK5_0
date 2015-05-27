@@ -24,6 +24,8 @@ CarClass(CSystem)
 public:
     CARAPI constructor();
 
+    CAR_INTERFACE_DECL()
+
     CAR_SINGLETON_DECL()
 
     /**
