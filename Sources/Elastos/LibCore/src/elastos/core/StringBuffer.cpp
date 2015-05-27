@@ -318,7 +318,7 @@ ECode StringBuffer::AppendDouble(
     return AppendODouble(d);
 }
 
-ECode StringBuffer::AppendIInterface(
+ECode StringBuffer::AppendInterface(
     /* [in] */ IInterface* obj)
 {
     Mutex::Autolock lock(mLock);
@@ -332,7 +332,7 @@ ECode StringBuffer::AppendString(
     return AppendOString(str);
 }
 
-ECode StringBuffer::AppendIStringBuffer(
+ECode StringBuffer::AppendStringBuffer(
     /* [in] */ IStringBuffer* sb)
 {
     Mutex::Autolock lock(mLock);
@@ -345,7 +345,7 @@ ECode StringBuffer::AppendIStringBuffer(
     return AppendOString(str);
 }
 
-ECode StringBuffer::AppendIStringBuilder(
+ECode StringBuffer::AppendStringBuilder(
     /* [in] */ IStringBuilder* sb)
 {
     Mutex::Autolock lock(mLock);
@@ -374,14 +374,14 @@ ECode StringBuffer::AppendArrayOf(
     return AppendOCharsEx(chars, offset, length);
 }
 
-ECode StringBuffer::AppendICharSequence(
+ECode StringBuffer::AppendCharSequence(
     /* [in] */ ICharSequence* csq)
 {
     Mutex::Autolock lock(mLock);
     return AppendOCharSequence(csq);
 }
 
-ECode StringBuffer::AppendICharSequence(
+ECode StringBuffer::AppendCharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -438,7 +438,7 @@ ECode StringBuffer::InsertDouble(
     return InsertODouble(offset, d);
 }
 
-ECode StringBuffer::InsertIInterface(
+ECode StringBuffer::InsertInterface(
     /* [in] */ Int32 offset,
     /* [in] */ IInterface* obj)
 {
@@ -472,7 +472,7 @@ ECode StringBuffer::InsertArrayOf(
     return InsertOCharsEx(offset, str, strOffset, strLen);
 }
 
-ECode StringBuffer::InsertICharSequence(
+ECode StringBuffer::InsertCharSequence(
     /* [in] */ Int32 offset,
     /* [in] */ ICharSequence* s)
 {
@@ -480,7 +480,7 @@ ECode StringBuffer::InsertICharSequence(
     return InsertOCharSequence(offset, s);
 }
 
-ECode StringBuffer::InsertICharSequence(
+ECode StringBuffer::InsertCharSequence(
     /* [in] */ Int32 offset,
     /* [in] */ ICharSequence* s,
     /* [in] */ Int32 start,

@@ -286,7 +286,7 @@ module
          * @return this StringBuffer.
          * @see String#valueOf(Object)
          */
-        AppendIInterface(
+        AppendInterface(
             [in] IInterface* obj);
 
         /**
@@ -315,7 +315,7 @@ module
          *
          * @since 1.4
          */
-        AppendIStringBuffer(
+        AppendStringBuffer(
             [in] IStringBuffer* sb);
 
         /**
@@ -331,7 +331,7 @@ module
          *
          * @since 1.4
          */
-        AppendIStringBuilder(
+        AppendStringBuilder(
             [in] IStringBuilder* sb);
 
         /**
@@ -379,7 +379,7 @@ module
          * @return this StringBuffer.
          * @since 1.5
          */
-        AppendICharSequence(
+        AppendCharSequence(
             [in] ICharSequence* csq);
 
         /**
@@ -401,7 +401,7 @@ module
          *             the length of {@code s}.
          * @since 1.5
          */
-        AppendICharSequence(
+        AppendCharSequence(
             [in] ICharSequence* csq,
             [in] Int32 start,
             [in] Int32 end);
@@ -517,7 +517,7 @@ module
          * @throws StringIndexOutOfBoundsException
          *             if {@code index < 0} or {@code index > length()}.
          */
-        InsertIInterface(
+        InsertInterface(
             [in] Int32 offset,
             [in] IInterface* obj);
 
@@ -598,7 +598,7 @@ module
          *             if {@code index < 0} or {@code index > length()}.
          * @since 1.5
          */
-        InsertICharSequence(
+        InsertCharSequence(
             [in] Int32 offset,
             [in] ICharSequence* s);
 
@@ -625,7 +625,7 @@ module
          *             than the length of {@code s}.
          * @since 1.5
          */
-        InsertICharSequence(
+        InsertCharSequence(
             [in] Int32 offset,
             [in] ICharSequence* s,
             [in] Int32 start,

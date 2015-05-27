@@ -30,7 +30,7 @@ module
          * @throws IOException
          *             if an I/O error occurs.
          */
-        Append(
+        AppendChar32(
             [in] Char32 c);
 
         /**
@@ -46,7 +46,7 @@ module
          * @throws IOException
          *             if an I/O error occurs.
          */
-        Append(
+        AppendCharSequence(
             [in] ICharSequence* csq);
 
         /**
@@ -72,7 +72,7 @@ module
          * @throws IOException
          *             if an I/O error occurs.
          */
-        Append(
+        AppendCharSequence(
             [in] ICharSequence* csq,
             [in] Int32 start,
             [in] Int32 end);

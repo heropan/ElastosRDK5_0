@@ -428,7 +428,7 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(Object)
      */
-    CARAPI AppendIInterface(
+    CARAPI AppendInterface(
         /* [in] */ IInterface* obj);
 
     /**
@@ -457,7 +457,7 @@ public:
      *
      * @since 1.4
      */
-    CARAPI AppendIStringBuffer(
+    CARAPI AppendStringBuffer(
         /* [in] */ IStringBuffer* sb);
 
     /**
@@ -473,7 +473,7 @@ public:
      *
      * @since 1.4
      */
-    CARAPI AppendIStringBuilder(
+    CARAPI AppendStringBuilder(
         /* [in] */ IStringBuilder* sb);
 
     /**
@@ -521,7 +521,7 @@ public:
      * @return this StringBuffer.
      * @since 1.5
      */
-    CARAPI AppendICharSequence(
+    CARAPI AppendCharSequence(
         /* [in] */ ICharSequence* csq);
 
     /**
@@ -543,7 +543,7 @@ public:
      *             the length of {@code s}.
      * @since 1.5
      */
-    CARAPI AppendICharSequence(
+    CARAPI AppendCharSequence(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -659,7 +659,7 @@ public:
      * @throws StringIndexOutOfBoundsException
      *             if {@code index < 0} or {@code index > length()}.
      */
-    CARAPI InsertIInterface(
+    CARAPI InsertInterface(
         /* [in] */ Int32 offset,
         /* [in] */ IInterface* obj);
 
@@ -740,7 +740,7 @@ public:
      *             if {@code index < 0} or {@code index > length()}.
      * @since 1.5
      */
-    CARAPI InsertICharSequence(
+    CARAPI InsertCharSequence(
         /* [in] */ Int32 offset,
         /* [in] */ ICharSequence* s);
 
@@ -767,7 +767,7 @@ public:
      *             than the length of {@code s}.
      * @since 1.5
      */
-    CARAPI InsertICharSequence(
+    CARAPI InsertCharSequence(
         /* [in] */ Int32 offset,
         /* [in] */ ICharSequence* s,
         /* [in] */ Int32 start,

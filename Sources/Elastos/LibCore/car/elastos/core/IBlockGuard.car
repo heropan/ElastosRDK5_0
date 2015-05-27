@@ -42,8 +42,6 @@ module
         const Int32 PENALTY_DIALOG = 0x20;
         const Int32 PENALTY_DEATH = 0x40;
 
-        GetLaxPolicy(
-            [out] IBlockGuardPolicy** policy);
     }
 
     } // namespace Core
