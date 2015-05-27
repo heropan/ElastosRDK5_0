@@ -70,6 +70,7 @@ CAR数据类型的签名规则如下表:
 指针类型"**Type \*\***"的类型签名为"***Type的签名* \*\***"
 
 举例如下：
+
 - 方法"CARAPI SetValue(String)"的类型签名是"(LElastos/String;)E"
 - 方法"CARAPI GetValue(String\*)"的类型签名是"(LElastos/String;\*)E"
 - 方法"CARAPI SetValue(Int32, String, Int64)"的类型签名是"(I32LElastos/String;I64)E"
@@ -125,9 +126,255 @@ interface IActivity {
 
 * 所有的非单例 CAR 类都需要使用 <code>CAR_OBJECT_DECL/CAR_OBJECT_IMPL</code>
 * 所有的单例 CAR 类都需要使用 <code>CAR_SINGLETON_DECL/CAR_SINGLETON_IMPL</code>
-* 所有在头文件中继承 CAR 接口的类（ C++ 类或 非单例 CAR 类）都需要使用 <code>CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL</code>
+* 所有在头文件中继承 CAR 接口的类（ C++ 类或 CAR 类）都需要使用 <code>CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL</code>
 * 请参考示例了解如何使用这些宏：<code>LibCore/inc/org/xml</code> 以及 <code>LibCore/src/org/xml</code>。
 
 ### 夹壁墙类文件名包含命名空间前缀
 后台生成的夹壁墙类文件名包含命名空间前缀，如 CBoolean 类对应的夹壁墙类文件名为：<code>_Elastos_Core_CBoolean.h</code>
 
+## 范例
+---
+### HelloCar
+
+HelloCar 演示了如何编写带有继承结构的 CAR 类以及如何编写单例类，其代码路径在：
+\- <code>ElastosRDK5_0/Sources/Elastos/LibCore/tests/HelloCar</code>：
+
+    + HelloCar
+            + eco
+                - Animal.cpp
+                - Animal.h
+                - CAnimalHelper.cpp
+                - CAnimalHelper.h
+                - CCat.cpp
+                - CCat.h
+                - CDog.cpp
+                - CDog.h
+                - Elastos.HelloCar.car
+                - IAnimal.car
+                - IDlog.car
+                - sources
+            - dirs
+            - main.cpp
+            - sources
+
+HelloCar 包括两个模块：生成 Elastos.HelloCar.eco 的模块和使用这个 eco 的模块，请阅读代码与注释了解细节，下面将讲解一下升级5.0做出的一些改变与约定：
+
+* HelloCar/eco/IDog.car
+    ``` cpp
+    module
+    {
+
+        namespace Elastos {
+        namespace HelloCar {
+
+            // 基类注释说明 IDog extends IAnimal
+            /**
+             * @Involve
+             * interface IAnimal;
+             */
+            interface IDog {
+                Bark();
+            }
+
+        } // HelloCar
+        } // Elastos
+    }
+    ```
+* C++基类：HelloCar/eco/Animal.h
+
+    ``` cpp
+    #ifndef __HELLOCAR_ANIMAL_H__
+    #define __HELLOCAR_ANIMAL_H__
+
+    #include <Elastos.HelloCar_server.h>    // include 模块头文件，文件名格式：模块名称_server.h
+    #include <elastos/core/Object.h>        // include Object 基类
+
+    using Elastos::Core::Object;
+
+    namespace Elastos {
+    namespace HelloCar {
+
+    // C++ 类 Animal 作为 CCat，CDog 的基类，实现了 IAnimal 接口，并继承自基类 Object
+    class Animal
+        : public Object
+        , public IAnimal
+    {
+    public:
+        CAR_INTERFACE_DECL()    // 实现某个 CAR 接口的类都需要使用 CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL
+
+        Animal();               // 若有成员需要初始化，则需显式声明构造函数，以便使用初始化列表进行初始化
+
+        CARAPI constructor();   // 用于被子类继承的 CAR 构造函数
+
+        CARAPI constructor(     // 用于被子类继承的 CAR 构造函数
+            /* [in] */ Int32 age,
+            /* [in] */ const String& name);
+
+        // IAnimal 接口函数
+        //
+        CARAPI SetName(
+            /* [in] */ const String& name);
+
+    protected:
+        // 成员变量
+        Int32 mAge;
+        String mName;
+    };
+
+    } // HelloCar
+    } // Elastos
+
+    #endif //__HELLOCAR_ANIMAL_H__
+    ```
+
+* 只继承基类接口的子类：HelloCar/eco/CCat.h
+
+    ``` cpp
+    #ifndef __HELLOCAR_CCAT_H__
+    #define __HELLOCAR_CCAT_H__
+
+    #include "_Elastos_HelloCar_CCat.h"     // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
+    #include "Animal.h"                     // include 基类
+
+    namespace Elastos {
+    namespace HelloCar {
+
+    CarClass(CCat)
+        , public Animal
+    {
+    public:
+        CAR_OBJECT_DECL()   // 非单例 CAR 类需要使用宏 CAR_OBJECT_DECL/CAR_OBJECT_IMPL
+
+        CARAPI CanFly(
+            /* [out] */ Boolean* canFly);
+
+    };
+
+    } // HelloCar
+    } // Elastos
+
+    #endif //__HELLOCAR_CCAT_H__
+    ```
+
+* 还实现了其它接口的子类：HelloCar/eco/CDog.h
+
+    ``` cpp
+    #ifndef __HELLOCAR_CDOG_H__
+    #define __HELLOCAR_CDOG_H__
+
+    #include "_Elastos_HelloCar_CDog.h"     // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
+    #include "Animal.h"                     // include 基类
+
+    namespace Elastos {
+    namespace HelloCar {
+
+    CarClass(CDog)
+        , public Animal
+        , public IDog           // 实现　CAR 类　IDog
+    {
+    public:
+        CAR_INTERFACE_DECL()    // 实现某个 CAR 接口的类都需要使用 CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL
+
+        CAR_OBJECT_DECL()       // 非单例 CAR 类需要使用宏 CAR_OBJECT_DECL/CAR_OBJECT_IMPL
+
+        CARAPI Bark();
+    };
+
+    } // HelloCar
+    } // Elastos
+
+    #endif //__HELLOCAR_CDOG_H__
+    ```
+
+* 单例 CAR 类：HelloCar/eco/CAnimalHelper.h
+
+    ``` cpp
+    #ifndef __HELLOCAR_CANIMALHELPER_H__
+    #define __HELLOCAR_CANIMALHELPER_H__
+
+    #include "_Elastos_HelloCar_CAnimalHelper.h"    // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
+    #include <elastos/core/Singleton.h>             // include 单例基类
+
+    using Elastos::Core::Singleton;
+
+    namespace Elastos {
+    namespace HelloCar {
+
+    // CAnimalHelper 是单例 CAR 类，单例 CAR 类需要继承 Singleton，并使用宏 CAR_SINGLETON_DECL/CAR_SINGLETON_IMPL
+    CarClass(CAnimalHelper)
+        , public Singleton      // 单例 CAR 类需要继承 Singleton
+        , public IAnimalHelper  // 实现　CAR 类IAnimalHelper
+    {
+    public:
+        CAR_INTERFACE_DECL()    // 实现某个 CAR 接口的类都需要使用 CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL
+
+        CAR_SINGLETON_DECL()    // 单例 CAR 类需要使用宏 CAR_SINGLETON_DECL/CAR_SINGLETON_IMPL
+
+        CARAPI CanFly(
+            /* [in] */ IAnimal* animal,
+            /* [out] */ Boolean* canFly);
+
+    };
+
+    } // HelloCar
+    } // Elastos
+
+    #endif //__HELLOCAR_CANIMALHELPER_H__
+    ```
+
+* sources 文件的变化
+    sources 文件中请加入如下 flag:
+
+    ```
+    CAR_FLAGS += -n -u
+    LUBE_FLAGS += -n -u
+    ```
+
+### LibCore 子模块的编译
+LibCore 模块将编译成 <code>Elastos.CoreLibrary.eco</code>，并将所有导出符号放到该 eco 中，而不是生成 lib 导出．LibCore 下的子模块都将生成对应的 lib 并合并到该 eco 中．
+
+下面以 core 目录为例讲述如何编译其中的子模块．
+
+1. 加入编译路径：在<code>ElastosRDK5_0/Sources/Elastos/LibCore/inc/elastos/dirs</code>中加入要编译的子目录，如<code>core</code>：
+
+    ```
+    DIRS = core
+    #DIRS += math
+    ```
+
+2.  在子目录中添加<code>sources</code>文件，以设置编译参数与编译文件．如：<code>ElastosRDK5_0/Sources/Elastos/LibCore/src/elastos/core/soruces</code>
+
+    ```
+    TARGET_NAME= core
+    TARGET_TYPE= lib
+
+    C_DEFINES += -DELASTOS_CORELIBRARY
+
+    include $(MAKEDIR)/../../sources.inc
+
+    INCLUDES += $(PREBUILD_INC)/sys;
+    INCLUDES += ../
+    INCLUDES += $(MAKEDIR)/../../../inc/elastos;
+    INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
+
+    SOURCES += Thread.cpp
+    SOURCES += NativeThread.cpp
+    SOURCES += Object.cpp
+    SOURCES += Singleton.cpp
+    ```
+
+3. 将子模块编译结果合并到模块 eco 中：在<code>ElastosRDK5_0/Sources/Elastos/LibCore/src/soruces</code>中添加如下两行：
+
+    ```
+    INCLUDES += $(MAKEDIR)/../../inc/elastos/core
+    ...
+    LIBRARIES += core/core.lib
+    ```
+
+4. 添加子模块 CAR 类声明文件：生成<code>ElastosRDK5_0/Sources/Elastos/LibCore/car/core.car</code>，并将其合并到<code>ElastosRDK5_0/Sources/Elastos/LibCore/src/elastos/Elastos.CoreLibrary.car</code>中：
+
+    ```
+    INCLUDES += $(MAKEDIR)/../../inc/elastos/core
+    ...
+    LIBRARIES += core/core.lib
+    ```

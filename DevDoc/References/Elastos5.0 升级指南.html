@@ -1037,6 +1037,122 @@ body .markdown-body
 <p>之前，CAR接口方法不支持重载，必须给同名的方法加“Ex”、“Ex2”等后缀。这种处理方式除了对编程不友好以外，还有一个比较大的弊端。在运行Java程序时，在兼容层需要根据CAR的方法转调同名的Java方法。对于加了后缀的CAR方法，我们不太方便得到相应的Java方法（人为的去掉后缀在某些情况下可能行不通）。</p>
 <p>现在，CAR编译器已能支持方法重载，因此，我们在声明接口中的方法时不需要再添加任何后缀，完全可以与Java中的方法同名。</p>
 <p>相应的示例可以参考ISynchronize接口的声明。</p>
+<h2 id="car_1"><a name="user-content-car_1" href="#car_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>CAR反射获取方法增加方法签名参数</h2>
+<p>CAR支持接口方法重载，通过反射获取接口或者类中的方法需要同时指定方法名和方法类型签名。因此，CAR反射API中的GetMethodInfo方法增加了方法签名参数。</p>
+<p>CAR方法类型签名为<strong>"("</strong> <strong><em>所有参数类型签名</em></strong> <strong>")"</strong> <strong><em>返回类型签名</em></strong></p>
+<p>CAR数据类型的签名规则如下表:</p>
+<table>
+<thead>
+<tr>
+<th align="center">Types</th>
+<th align="center">Signature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Char8</td>
+<td align="center">C8</td>
+</tr>
+<tr>
+<td align="center">Char16</td>
+<td align="center">C16</td>
+</tr>
+<tr>
+<td align="center">Boolean</td>
+<td align="center">Z</td>
+</tr>
+<tr>
+<td align="center">Byte</td>
+<td align="center">B</td>
+</tr>
+<tr>
+<td align="center">Int8</td>
+<td align="center">I8</td>
+</tr>
+<tr>
+<td align="center">Int16</td>
+<td align="center">I16</td>
+</tr>
+<tr>
+<td align="center">Int32</td>
+<td align="center">I32</td>
+</tr>
+<tr>
+<td align="center">Int64</td>
+<td align="center">I64</td>
+</tr>
+<tr>
+<td align="center">UInt16</td>
+<td align="center">U16</td>
+</tr>
+<tr>
+<td align="center">UInt32</td>
+<td align="center">U32</td>
+</tr>
+<tr>
+<td align="center">UInt64</td>
+<td align="center">U64</td>
+</tr>
+<tr>
+<td align="center">Float</td>
+<td align="center">F</td>
+</tr>
+<tr>
+<td align="center">Double</td>
+<td align="center">D</td>
+</tr>
+<tr>
+<td align="center">ECode</td>
+<td align="center">E</td>
+</tr>
+<tr>
+<td align="center">EMuid</td>
+<td align="center">IID</td>
+</tr>
+<tr>
+<td align="center">EGuid</td>
+<td align="center">CID</td>
+</tr>
+<tr>
+<td align="center">String</td>
+<td align="center">LElastos/String;</td>
+</tr>
+<tr>
+<td align="center">CString</td>
+<td align="center">LElastos/CString;</td>
+</tr>
+<tr>
+<td align="center">ArrayOf&lt;Int32></td>
+<td align="center">[I32</td>
+</tr>
+<tr>
+<td align="center">ArrayOf&lt;String></td>
+<td align="center">[LElastos/String;</td>
+</tr>
+<tr>
+<td align="center">Enum Elastos.Core.ThreadState</td>
+<td align="center">LElastos/Core/ThreadState;</td>
+</tr>
+<tr>
+<td align="center">interface Elastos.Core.IThread</td>
+<td align="center">LElastos/Core/IThread;</td>
+</tr>
+</tbody>
+</table>
+<p>指针类型&rdquo;<strong>Type *</strong>&ldquo;的类型签名为&rdquo;<strong><em>Type的签名</em> *</strong>&ldquo;<br />
+指针类型&rdquo;<strong>Type **</strong>&ldquo;的类型签名为&rdquo;<strong><em>Type的签名</em> **</strong>&ldquo;</p>
+<p>举例如下：</p>
+<ul>
+<li>方法&rdquo;CARAPI SetValue(String)&rdquo;的类型签名是&rdquo;(LElastos/String;)E&rdquo;</li>
+<li>方法&rdquo;CARAPI GetValue(String*)&rdquo;的类型签名是&rdquo;(LElastos/String;*)E&rdquo;</li>
+<li>方法&rdquo;CARAPI SetValue(Int32, String, Int64)&rdquo;的类型签名是&rdquo;(I32LElastos/String;I64)E&rdquo;</li>
+<li>方法&rdquo;CARAPI GetValue(Int32*, String*, Int64*)&rdquo;的类型签名是&rdquo;(I32*LElastos/String;*I64*)E&rdquo;</li>
+</ul>
+<p>相应的示例可以参考Libcore/tests/Reflection下的测试程序。</p>
+<h2 id="cargetclassinfogetinterfaceinfogetenuminfo"><a name="user-content-cargetclassinfogetinterfaceinfogetenuminfo" href="#cargetclassinfogetinterfaceinfogetenuminfo" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>CAR反射方法GetClassInfo、GetInterfaceInfo以及GetEnumInfo需使用包含命名空间的全名</h2>
+<p>目前，通过反射中IModuleInfo的GetClassInfo、GetInterfaceInfo、GetEnumInfo方法以及IClassInfo的GetInterfaceInfo方法获取相应的反射接口时，指定名称时须使用包含命名空间的全名。</p>
+<p>类、接口以及Enum类型的完整名称即是它们的类型签名。例如，interface Elastos.Core.IThread的包含命名空间的全名是LElastos/Core/IThread，因此，需用该全名作为调用GetInterfaceInfo时的参数。</p>
+<p>相应的示例可以参考Libcore/tests/Reflection下的测试程序。</p>
 <h2 id="_2"><a name="user-content-_2" href="#_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>取消接口间的继承</h2>
 <hr />
 <p>当前，我们是按照Java中类的继承关系来定义Elastos中接口间的继承。比如，IActivity接口继承IContextThemeWrapper接口。</p>
@@ -1072,8 +1188,253 @@ interface IActivity {
 <p>所有的非单例 CAR 类都需要使用 <code>CAR_OBJECT_DECL/CAR_OBJECT_IMPL</code></p>
 </li>
 <li>所有的单例 CAR 类都需要使用 <code>CAR_SINGLETON_DECL/CAR_SINGLETON_IMPL</code></li>
-<li>所有在头文件中继承 CAR 接口的类（ C++ 类或 非单例 CAR 类）都需要使用 <code>CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL</code></li>
+<li>所有在头文件中继承 CAR 接口的类（ C++ 类或 CAR 类）都需要使用 <code>CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL</code></li>
 <li>请参考示例了解如何使用这些宏：<code>LibCore/inc/org/xml</code> 以及 <code>LibCore/src/org/xml</code>。</li>
 </ul>
 <h3 id="_6"><a name="user-content-_6" href="#_6" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>夹壁墙类文件名包含命名空间前缀</h3>
-<p>后台生成的夹壁墙类文件名包含命名空间前缀，如 CBoolean 类对应的夹壁墙类文件名为：<code>_Elastos_Core_CBoolean.h</code></p></article></body></html>
+<p>后台生成的夹壁墙类文件名包含命名空间前缀，如 CBoolean 类对应的夹壁墙类文件名为：<code>_Elastos_Core_CBoolean.h</code></p>
+<h2 id="_7"><a name="user-content-_7" href="#_7" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>范例</h2>
+<hr />
+<h3 id="hellocar"><a name="user-content-hellocar" href="#hellocar" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>HelloCar</h3>
+<p>HelloCar 演示了如何编写带有继承结构的 CAR 类以及如何编写单例类，其代码路径在：<br />
+- <code>ElastosRDK5_0/Sources/Elastos/LibCore/tests/HelloCar</code>：</p>
+<pre><code>+ HelloCar
+        + eco
+            - Animal.cpp
+            - Animal.h
+            - CAnimalHelper.cpp
+            - CAnimalHelper.h
+            - CCat.cpp
+            - CCat.h
+            - CDog.cpp
+            - CDog.h
+            - Elastos.HelloCar.car
+            - IAnimal.car
+            - IDlog.car
+            - sources
+        - dirs
+        - main.cpp
+        - sources
+</code></pre>
+<p>HelloCar 包括两个模块：生成 Elastos.HelloCar.eco 的模块和使用这个 eco 的模块，请阅读代码与注释了解细节，下面将讲解一下升级5.0做出的一些改变与约定：</p>
+<ul>
+<li>HelloCar/eco/IDog.car<br />
+    <pre><code class="cpp">module
+{
+
+    namespace Elastos {
+    namespace HelloCar {
+
+        // 基类注释说明 IDog extends IAnimal
+        /**
+         * @Involve
+         * interface IAnimal;
+         */
+        interface IDog {
+            Bark();
+        }
+
+    } // HelloCar
+    } // Elastos
+}
+</code></pre></li>
+<li>
+<p>C++基类：HelloCar/eco/Animal.h</p>
+<pre><code class="cpp">#ifndef __HELLOCAR_ANIMAL_H__
+#define __HELLOCAR_ANIMAL_H__
+
+#include &lt;Elastos.HelloCar_server.h&gt;    // include 模块头文件，文件名格式：模块名称_server.h
+#include &lt;elastos/core/Object.h&gt;        // include Object 基类
+
+using Elastos::Core::Object;
+
+namespace Elastos {
+namespace HelloCar {
+
+// C++ 类 Animal 作为 CCat，CDog 的基类，实现了 IAnimal 接口，并继承自基类 Object
+class Animal
+    : public Object
+    , public IAnimal
+{
+public:
+    CAR_INTERFACE_DECL()    // 实现某个 CAR 接口的类都需要使用 CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL
+
+    Animal();               // 若有成员需要初始化，则需显式声明构造函数，以便使用初始化列表进行初始化
+
+    CARAPI constructor();   // 用于被子类继承的 CAR 构造函数
+
+    CARAPI constructor(     // 用于被子类继承的 CAR 构造函数
+        /* [in] */ Int32 age,
+        /* [in] */ const String&amp; name);
+
+    // IAnimal 接口函数
+    //
+    CARAPI SetName(
+        /* [in] */ const String&amp; name);
+
+protected:
+    // 成员变量
+    Int32 mAge;
+    String mName;
+};
+
+} // HelloCar
+} // Elastos
+
+#endif //__HELLOCAR_ANIMAL_H__
+</code></pre>
+
+</li>
+<li>
+<p>只继承基类接口的子类：HelloCar/eco/CCat.h</p>
+<pre><code class="cpp">#ifndef __HELLOCAR_CCAT_H__
+#define __HELLOCAR_CCAT_H__
+
+#include &quot;_Elastos_HelloCar_CCat.h&quot;     // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
+#include &quot;Animal.h&quot;                     // include 基类
+
+namespace Elastos {
+namespace HelloCar {
+
+CarClass(CCat)
+    , public Animal
+{
+public:
+    CAR_OBJECT_DECL()   // 非单例 CAR 类需要使用宏 CAR_OBJECT_DECL/CAR_OBJECT_IMPL
+
+    CARAPI CanFly(
+        /* [out] */ Boolean* canFly);
+
+};
+
+} // HelloCar
+} // Elastos
+
+#endif //__HELLOCAR_CCAT_H__
+</code></pre>
+
+</li>
+<li>
+<p>还实现了其它接口的子类：HelloCar/eco/CDog.h</p>
+<pre><code class="cpp">#ifndef __HELLOCAR_CDOG_H__
+#define __HELLOCAR_CDOG_H__
+
+#include &quot;_Elastos_HelloCar_CDog.h&quot;     // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
+#include &quot;Animal.h&quot;                     // include 基类
+
+namespace Elastos {
+namespace HelloCar {
+
+CarClass(CDog)
+    , public Animal
+    , public IDog           // 实现　CAR 类　IDog
+{
+public:
+    CAR_INTERFACE_DECL()    // 实现某个 CAR 接口的类都需要使用 CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL
+
+    CAR_OBJECT_DECL()       // 非单例 CAR 类需要使用宏 CAR_OBJECT_DECL/CAR_OBJECT_IMPL
+
+    CARAPI Bark();
+};
+
+} // HelloCar
+} // Elastos
+
+#endif //__HELLOCAR_CDOG_H__
+</code></pre>
+
+</li>
+<li>
+<p>单例 CAR 类：HelloCar/eco/CAnimalHelper.h</p>
+<pre><code class="cpp">#ifndef __HELLOCAR_CANIMALHELPER_H__
+#define __HELLOCAR_CANIMALHELPER_H__
+
+#include &quot;_Elastos_HelloCar_CAnimalHelper.h&quot;    // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
+#include &lt;elastos/core/Singleton.h&gt;             // include 单例基类
+
+using Elastos::Core::Singleton;
+
+namespace Elastos {
+namespace HelloCar {
+
+// CAnimalHelper 是单例 CAR 类，单例 CAR 类需要继承 Singleton，并使用宏 CAR_SINGLETON_DECL/CAR_SINGLETON_IMPL
+CarClass(CAnimalHelper)
+    , public Singleton      // 单例 CAR 类需要继承 Singleton
+    , public IAnimalHelper  // 实现　CAR 类IAnimalHelper
+{
+public:
+    CAR_INTERFACE_DECL()    // 实现某个 CAR 接口的类都需要使用 CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL
+
+    CAR_SINGLETON_DECL()    // 单例 CAR 类需要使用宏 CAR_SINGLETON_DECL/CAR_SINGLETON_IMPL
+
+    CARAPI CanFly(
+        /* [in] */ IAnimal* animal,
+        /* [out] */ Boolean* canFly);
+
+};
+
+} // HelloCar
+} // Elastos
+
+#endif //__HELLOCAR_CANIMALHELPER_H__
+</code></pre>
+
+</li>
+<li>
+<p>sources 文件的变化<br />
+    sources 文件中请加入如下 flag:</p>
+<pre><code>CAR_FLAGS += -n -u
+LUBE_FLAGS += -n -u
+</code></pre>
+
+</li>
+</ul>
+<h3 id="libcore"><a name="user-content-libcore" href="#libcore" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>LibCore 子模块的编译</h3>
+<p>LibCore 模块将编译成 <code>Elastos.CoreLibrary.eco</code>，并将所有导出符号放到该 eco 中，而不是生成 lib 导出．LibCore 下的子模块都将生成对应的 lib 并合并到该 eco 中．</p>
+<p>下面以 core 目录为例讲述如何编译其中的子模块．</p>
+<ol>
+<li>
+<p>加入编译路径：在<code>ElastosRDK5_0/Sources/Elastos/LibCore/inc/elastos/dirs</code>中加入要编译的子目录，如<code>core</code>：</p>
+<pre><code>DIRS = core
+#DIRS += math
+</code></pre>
+
+</li>
+<li>
+<p>在子目录中添加<code>sources</code>文件，以设置编译参数与编译文件．如：<code>ElastosRDK5_0/Sources/Elastos/LibCore/src/elastos/core/soruces</code></p>
+<pre><code>TARGET_NAME= core
+TARGET_TYPE= lib
+
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
+
+SOURCES += Thread.cpp
+SOURCES += NativeThread.cpp
+SOURCES += Object.cpp
+SOURCES += Singleton.cpp
+</code></pre>
+
+</li>
+<li>
+<p>将子模块编译结果合并到模块 eco 中：在<code>ElastosRDK5_0/Sources/Elastos/LibCore/src/soruces</code>中添加如下两行：</p>
+<pre><code>INCLUDES += $(MAKEDIR)/../../inc/elastos/core
+...
+LIBRARIES += core/core.lib
+</code></pre>
+
+</li>
+<li>
+<p>添加子模块 CAR 类声明文件：生成<code>ElastosRDK5_0/Sources/Elastos/LibCore/car/core.car</code>，并将其合并到<code>ElastosRDK5_0/Sources/Elastos/LibCore/src/elastos/Elastos.CoreLibrary.car</code>中：</p>
+<pre><code>INCLUDES += $(MAKEDIR)/../../inc/elastos/core
+...
+LIBRARIES += core/core.lib
+</code></pre>
+
+</li>
+</ol></article></body></html>

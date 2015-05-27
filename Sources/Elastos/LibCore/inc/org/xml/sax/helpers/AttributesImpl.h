@@ -57,9 +57,9 @@ public:
 
     AttributesImpl();
 
-    virtual CARAPI constructor();
+    CARAPI constructor();
 
-    virtual CARAPI constructor(
+    CARAPI constructor(
         /* [in] */ IAttributes* atts);
 
     /**
