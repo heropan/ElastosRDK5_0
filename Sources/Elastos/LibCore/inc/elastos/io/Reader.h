@@ -13,8 +13,13 @@ namespace Elastos {
 namespace IO {
 
 class Reader
+    : public Object
+    , public IReadable
+    , public IReader
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Closes this reader. Implementations of this method should free any
      * resources associated with the reader.
@@ -71,39 +76,26 @@ public:
 
     /**
      * Reads characters from this reader and stores them in the character array
-     * {@code buf} starting at offset 0. Returns the number of characters
+     * {@code buffer} starting at offset 0. Returns the number of characters
      * actually read or -1 if the end of the reader has been reached.
      *
-     * @param buf
-     *            character array to store the characters read.
-     * @return the number of characters read or -1 if the end of the reader has
-     *         been reached.
      * @throws IOException
      *             if this reader is closed or some other I/O error occurs.
      */
-    virtual CARAPI ReadChars(
+    virtual CARAPI Read(
         /* [out] */ ArrayOf<Char32>* buffer,
         /* [out] */ Int32* number);
 
     /**
-     * Reads at most {@code count} characters from this reader and stores them
-     * at {@code offset} in the character array {@code buf}. Returns the number
+     * Reads up to {@code count} characters from this reader and stores them
+     * at {@code offset} in the character array {@code buffer}. Returns the number
      * of characters actually read or -1 if the end of the reader has been
      * reached.
      *
-     * @param buf
-     *            the character array to store the characters read.
-     * @param offset
-     *            the initial position in {@code buffer} to store the characters
-     *            read from this reader.
-     * @param count
-     *            the maximum number of characters to read.
-     * @return the number of characters read or -1 if the end of the reader has
-     *         been reached.
      * @throws IOException
      *             if this reader is closed or some other I/O error occurs.
      */
-    virtual CARAPI ReadCharsEx(
+    virtual CARAPI Read(
         /* [out] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -197,7 +189,7 @@ protected:
     Reader(
         /* [in] */ LockObject* lock);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ LockObject* lock);
 
     virtual ~Reader();

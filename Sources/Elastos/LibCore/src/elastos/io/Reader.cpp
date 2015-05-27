@@ -7,6 +7,8 @@
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL_2(HandlerBase, Object, IReadable, IReader)
+
 Reader::Reader()
     : mLock(NULL)
 {
@@ -61,7 +63,7 @@ ECode Reader::Read(
     return NOERROR;
 }
 
-ECode Reader::ReadChars(
+ECode Reader::Read(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [out] */ Int32* number)
 {
@@ -71,7 +73,7 @@ ECode Reader::ReadChars(
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    return ReadCharsEx(buffer, 0, buffer->GetLength(), number);
+    return Read(buffer, 0, buffer->GetLength(), number);
 }
 
 ECode Reader::IsReady(
@@ -107,7 +109,7 @@ ECode Reader::Skip(
     AutoPtr<ArrayOf<Char32> > charsSkipped = ArrayOf<Char32>::Alloc(toRead);
     while (skipped < count) {
         Int32 read;
-        FAIL_RETURN(ReadCharsEx(charsSkipped.Get(), 0, toRead, &read));
+        FAIL_RETURN(Read(charsSkipped.Get(), 0, toRead, &read));
 
         if (read == -1) {
             *number = skipped;
@@ -135,7 +137,7 @@ ECode Reader::ReadCharBuffer(
     Int32 length;
     target->GetLength(&length);
     AutoPtr<ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(length);
-    FAIL_RETURN(ReadChars(buf, number));
+    FAIL_RETURN(Read(buf, number));
     length = Elastos::Core::Math::Min(length, *number);
     if (length > 0) {
         target->PutCharsEx(*buf, 0, length);
@@ -145,7 +147,7 @@ ECode Reader::ReadCharBuffer(
     return NOERROR;
 }
 
-ECode Reader::Init(
+ECode Reader::constructor(
     /* [in] */ LockObject* lock)
 {
     assert(lock != NULL);
