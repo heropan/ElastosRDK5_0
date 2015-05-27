@@ -4,7 +4,7 @@ module
     namespace Elastos {
     namespace HelloCar {
 
-        interface IAnimal {
+        interface IAnimal {                 // 接口定义
             SetName(
                 [in] String name);
 
@@ -21,7 +21,7 @@ module
                 [out] Boolean* canFly);
         }
 
-        interface IAnimalHelper {
+        interface IAnimalHelper {           // 接口定义
             CanFly(
                 [in] IAnimal* animal,
                 [out] Boolean* canFly);

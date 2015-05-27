@@ -1,31 +1,31 @@
 
 module
 {
-    importlib("Elastos.CoreLibrary.eco");
+    importlib("Elastos.CoreLibrary.eco");   // import 依赖库
 
-    merge("IAnimal.car");
-    merge("IDog.car");
+    merge("IAnimal.car");                   // 合并 CAR　文件
+    merge("IDog.car");                      // 合并 CAR　文件
 
-    namespace Elastos {
+    namespace Elastos {                     // 命名空间
     namespace HelloCar {
 
-        class CDog {
-            constructor();
+        class CDog {                        // 声明 CAR 类
+            constructor();                  // 显式声明无参构造函数
 
-            constructor(
+            constructor(                    // 显式声明有参构造函数
                 [in] Int32 age,
                 [in] String name);
 
-            interface IDog;
-            interface IAnimal;
+            interface IDog;                 // 接口声明
+            interface IAnimal;              // 接口声明
         }
 
-        class CCat {
-            interface IAnimal;
+        class CCat {                        // 声明 CAR 类
+            interface IAnimal;              // 接口声明
         }
 
-        singleton class CAnimalHelper {
-            interface IAnimalHelper;
+        singleton class CAnimalHelper {     // 声明单例 CAR 类
+            interface IAnimalHelper;        // 接口声明
         }
 
     } // HelloCar
