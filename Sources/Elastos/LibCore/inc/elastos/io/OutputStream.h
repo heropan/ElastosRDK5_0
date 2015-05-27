@@ -2,7 +2,6 @@
 #ifndef __OUTPUTSTREAM_H__
 #define __OUTPUTSTREAM_H__
 
-#include <elastos.h>
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #else
@@ -19,6 +18,7 @@ namespace IO {
 class OutputStream
     : public Object
     , public ICloseable
+    , public IFlushable
     , public IOutputStream
 {
 public:
@@ -28,9 +28,6 @@ public:
 
     virtual ~OutputStream();
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
     /**
      * Closes this stream. Implementations of this method should free any
      * resources used by the stream. This implementation does nothing.
@@ -38,7 +35,7 @@ public:
      * @throws IOException
      *             if an error occurs while closing this stream.
      */
-    virtual CARAPI Close();
+    CARAPI Close();
 
     /**
      * Flushes this stream. Implementations of this method should ensure that
@@ -47,7 +44,7 @@ public:
      * @throws IOException
      *             if an error occurs while flushing this stream.
      */
-    virtual CARAPI Flush();
+    CARAPI Flush();
 
     /**
      * Writes the entire contents of the byte array {@code buffer} to this
@@ -58,20 +55,7 @@ public:
      * @throws IOException
      *             if an error occurs while writing to this stream.
      */
-
-    /**
-     * Writes a single byte to this stream. Only the least significant byte of
-     * the integer {@code oneByte} is written to the stream.
-     *
-     * @param oneByte
-     *            the byte to be written.
-     * @throws IOException
-     *             if an error occurs while writing to this stream.
-     */
-    virtual CARAPI Write(
-        /* [in] */ Int32 oneByte) = 0;
-
-    virtual CARAPI Write(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Byte>& buffer);
 
     /**
@@ -92,7 +76,7 @@ public:
      *             {@code offset + count} is bigger than the length of
      *             {@code buffer}.
      */
-    virtual CARAPI Write(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Byte> & buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -101,11 +85,8 @@ public:
      * Returns true if this writer has encountered and suppressed an error. Used
      * by PrintStreams as an alternative to checked exceptions.
      */
-    virtual CARAPI CheckError(
+    CARAPI CheckError(
         /* [out] */ Boolean* hasError);
-
-protected:
-    AutoPtr<LockObject> mLock;
 };
 
 } // namespace IO

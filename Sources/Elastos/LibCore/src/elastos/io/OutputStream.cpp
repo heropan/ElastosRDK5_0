@@ -4,16 +4,13 @@
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL_3(OutputStream, Object, ICloseable, IOutputStream)
+CAR_INTERFACE_IMPL_3(OutputStream, Object, ICloseable, IFlushable, IOutputStream)
 
 OutputStream::OutputStream()
-{
-    mLock = new LockObject();
-}
+{}
 
 OutputStream::~OutputStream()
-{
-}
+{}
 
 ECode OutputStream::Close()
 {
