@@ -49,7 +49,9 @@ AutoPtr<IInputStream> CSystem::mIn;
 AutoPtr<IPrintStream> CSystem::mOut;
 AutoPtr<IPrintStream> CSystem::mErr;
 
-CAR_SINGLETON_IMPL(CSystem, Singleton, ISystem)
+CAR_INTERFACE_IMPL(CSystem, Singleton, ISystem)
+
+CAR_SINGLETON_IMPL(CSystem)
 
 ECode CSystem::constructor()
 {
