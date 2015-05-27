@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CArrayOf.h"
 
 namespace Elastos {
@@ -43,7 +43,7 @@ ECode CArrayOf::Get(
     }
 
     *element = (*mElements)[index];
-    INTERFACE_ADDREF(*element);
+    REFCOUNT_ADD(*element);
     return NOERROR;
 }
 

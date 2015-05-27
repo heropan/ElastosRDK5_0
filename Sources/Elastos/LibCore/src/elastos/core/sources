@@ -34,7 +34,7 @@ SOURCES += CStringWrapper.cpp
  SOURCES += CInteger64.cpp
  SOURCES += CFloat.cpp
  SOURCES += CDouble.cpp
-// SOURCES += CArrayOf.cpp
+ SOURCES += CArrayOf.cpp
  SOURCES += CRandom.cpp
 SOURCES += Init.cpp
 

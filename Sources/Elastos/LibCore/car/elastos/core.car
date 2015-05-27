@@ -159,13 +159,13 @@ module
         interface IComparable;
     }
 
-    // class CArrayOf {
-    //     constructor(
-    //         [in] InterfaceID riid,
-    //         [in] Int32 size);
+    class CArrayOf {
+        constructor(
+            [in] InterfaceID riid,
+            [in] Int32 size);
 
-    //     interface IArrayOf;
-    // }
+        interface IArrayOf;
+    }
 
     class CRandom {
         constructor();

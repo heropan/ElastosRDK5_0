@@ -42,25 +42,6 @@ module
         const Int32 PENALTY_DIALOG = 0x20;
         const Int32 PENALTY_DEATH = 0x40;
 
-        /**
-         * Get the current thread's policy.
-         *
-         * @return the current thread's policy.  Never returns null.
-         *     Will return the LAX_POLICY instance if nothing else is set.
-         */
-        GetThreadPolicy(
-            [out] IBlockGuardPolicy** policy);
-
-
-        /**
-         * Sets the current thread's block guard policy.
-         *
-         * @param policy policy to set.  May not be null.  Use the public LAX_POLICY
-         *   if you want to unset the active policy.
-         */
-        SetThreadPolicy(
-            [in] IBlockGuardPolicy* policy);
-
         GetLaxPolicy(
             [out] IBlockGuardPolicy** policy);
     }

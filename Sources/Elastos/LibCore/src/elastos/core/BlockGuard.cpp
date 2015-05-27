@@ -1,8 +1,7 @@
 
-#include "cmdef.h"
 #include "BlockGuard.h"
-#include <elastos/Thread.h>
-#include <elastos/StringUtils.h>
+#include "Thread.h"
+#include "StringUtils.h"
 #include <cutils/log.h>
 
 using Elastos::Core::StringUtils;
@@ -10,6 +9,8 @@ using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL(BlockGuard, Singleton, IBlockGuard);
 
 AutoPtr<IBlockGuardPolicy> BlockGuard::sPolicy;
 Object BlockGuard::sLock;
@@ -29,7 +30,8 @@ static void MakeKey()
     ASSERT_TRUE(pthread_key_create(&BlockGuard::sTlsKey, ThreadDestructor) == 0);
 }
 
-CAR_INTERFACE_IMPL(BlockGuard::LAXPOLICY, IBlockGuardPolicy);
+CAR_INTERFACE_IMPL(BlockGuard::LAXPOLICY, Object, IBlockGuardPolicy);
+CAR_OBJECT_IMPL(BlockGuard::LAXPOLICY)
 
 BlockGuard::LAXPOLICY::~LAXPOLICY()
 {
@@ -88,7 +90,7 @@ ECode BlockGuard::GetThreadPolicy(
 
     AutoPtr<IBlockGuardPolicy> _policy = GetThreadPolicy();
     *policy = _policy;
-    INTERFACE_ADDREF(*policy);
+    REFCOUNT_ADD(*policy);
     return NOERROR;
 }
 
@@ -107,7 +109,7 @@ ECode BlockGuard::SetThreadPolicy(
 
         Object::Autolock locK(sLock);
         ASSERT_TRUE(pthread_setspecific(BlockGuard::sTlsKey, policy) == 0);
-        INTERFACE_ADDREF(policy);
+        REFCOUNT_ADD(policy);
     }
 
     return NOERROR;
@@ -122,7 +124,7 @@ CARAPI BlockGuard::GetLaxPolicy(
     assert(sPolicy.Get() != NULL);
 
     *policy = sPolicy;
-    INTERFACE_ADDREF(*policy);
+    REFCOUNT_ADD(*policy);
     return NOERROR;
 }
 

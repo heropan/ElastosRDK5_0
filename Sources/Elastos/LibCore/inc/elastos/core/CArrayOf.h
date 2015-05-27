@@ -2,12 +2,14 @@
 #ifndef __CARRAYOF_H__
 #define __CARRAYOF_H__
 
-#include "_CArrayOf.h"
+#include "_Elastos_Core_CArrayOf.h"
+#include "Object.h"
 
 namespace Elastos {
 namespace Core {
 
 CarClass(CArrayOf)
+    , public Object
 {
 public:
     CArrayOf();

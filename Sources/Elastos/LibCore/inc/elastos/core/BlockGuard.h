@@ -2,7 +2,7 @@
 #define __BLOCKGUARD_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include <elastos/Object.h>
+#include "Singleton.h"
 
 using Elastos::Core::Object;
 
@@ -10,17 +10,22 @@ namespace Elastos {
 namespace Core {
 
 class BlockGuard
+    : public Singleton
+    , public IBlockGuard
 {
 public:
+    CAR_INTERFACE_DECL()
     /**
      * The default, permissive policy that doesn't prevent any operations.
      */
     class LAXPOLICY
-        : public ElRefBase
+        : public Object
         , public IBlockGuardPolicy
     {
     public:
-        CAR_INTERFACE_DECL();
+        CAR_INTERFACE_DECL()
+
+        CAR_OBJECT_DECL()
 
         ~LAXPOLICY();
 
@@ -34,9 +39,10 @@ public:
             /* [out] */ Int32* mask);
     };
 
-public:
+protected:
     virtual ~BlockGuard();
 
+public:
     /**
      * Get the current thread's policy.
      *
@@ -65,9 +71,11 @@ public:
      * The default, permissive policy that doesn't prevent any operations.
      */
     static AutoPtr<IBlockGuardPolicy> sPolicy;
-    static Object sLock;
+
     static pthread_once_t sKeyOnce;
     static pthread_key_t sTlsKey;
+    static Object sLock;
+
 };
 
 } // namespace Core
