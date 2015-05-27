@@ -20,8 +20,13 @@ using Elastos::Core::Object;
 using Elastos::Core::LockObject;
 
 class Writer
+    : public Object
+    , public IAppendable
+    , public IWriter
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Closes this writer. Implementations of this method should free any
      * resources associated with the writer.
@@ -60,7 +65,7 @@ public:
      * @throws IOException
      *             if this writer is closed or another I/O error occurs.
      */
-    virtual CARAPI WriteChars(
+    virtual CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer);
 
     /**
@@ -79,7 +84,7 @@ public:
      * @throws IOException
      *             if this writer is closed or another I/O error occurs.
      */
-    virtual CARAPI WriteCharsEx(
+    virtual CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count) = 0;
@@ -92,7 +97,7 @@ public:
      * @throws IOException
      *             if this writer is closed or another I/O error occurs.
      */
-    virtual CARAPI WriteString(
+    virtual CARAPI Write(
         /* [in] */ const String& str);
 
     /**
@@ -111,7 +116,7 @@ public:
      *             if {@code offset < 0} or {@code count < 0}, or if {@code
      *             offset + count} is greater than the length of {@code str}.
      */
-    virtual CARAPI WriteStringEx(
+    virtual CARAPI Write(
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -126,7 +131,7 @@ public:
      * @throws IOException
      *             if this writer is closed or another I/O error occurs.
      */
-    virtual CARAPI AppendChar(
+    virtual CARAPI Append(
         /* [in] */ Char32 c);
 
     /**
@@ -141,7 +146,7 @@ public:
      * @throws IOException
      *             if this writer is closed or another I/O error occurs.
      */
-    virtual CARAPI AppendCharSequence(
+    virtual CARAPI Append(
         /* [in] */ ICharSequence* csq);
 
      /**
@@ -167,7 +172,7 @@ public:
      *             either {@code start} or {@code end} are greater or equal than
      *             the length of {@code csq}.
      */
-    virtual CARAPI AppendCharSequenceEx(
+    virtual CARAPI Append(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -198,7 +203,7 @@ protected:
     Writer(
         /* [in] */ LockObject* lock);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ LockObject* lock);
 
     virtual ~Writer();

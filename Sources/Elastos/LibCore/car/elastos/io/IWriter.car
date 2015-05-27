@@ -47,7 +47,7 @@ module
          * :-|:------------|
          * IOException | if this writer is closed or another I/O error occurs.
          */
-        WriteChars(
+        Write(
             [in] ArrayOf<Char32> buffer);
 
         /**
@@ -67,7 +67,7 @@ module
          * IndexOutOfBoundsException | if {offset < 0} or {count < 0}, or if {offset + count} is greater than the size of buf.
          * IOException | if this writer is closed or another I/O error occurs.
          */
-        WriteCharsEx(
+        Write(
             [in] ArrayOf<Char32> buffer,
             [in] Int32 offset,
             [in] Int32 count);
@@ -82,7 +82,7 @@ module
          * :-|:------------|
          * IOException | if this writer is closed or another I/O error occurs.
          */
-        WriteString(
+        Write(
             [in] String str);
 
         /**
@@ -100,7 +100,7 @@ module
          * IOException |  if this writer is closed or another I/O error occurs.
          * IndexOutOfBoundsException | if {offset < 0} or {count < 0}, or if {offset + count} is greater than the length of {str}.
          */
-        WriteStringEx(
+        Write(
             [in] String str,
             [in] Int32 offset,
             [in] Int32 count);
@@ -112,8 +112,6 @@ module
         CheckError(
             [out] Boolean* hasError);
 
-        GetLock(
-            [out] IInterface** lockObj);
     }
 
     } // namespace IO

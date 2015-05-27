@@ -7,6 +7,8 @@ using Elastos::Core::Character;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL_2(Writer, Object, IAppendable, IWriter)
+
 Writer::Writer()
 {
     mLock = new LockObject();
@@ -42,7 +44,7 @@ ECode Writer::Write(
     return WriteChars(buf);
 }
 
-ECode Writer::WriteChars(
+ECode Writer::Write(
     /* [in] */ const ArrayOf<Char32>& buffer)
 {
     // BEGIN android-note
@@ -52,13 +54,13 @@ ECode Writer::WriteChars(
     return WriteCharsEx(buffer, 0, buffer.GetLength());
 }
 
-ECode Writer::WriteString(
+ECode Writer::Write(
     /* [in] */ const String& str)
 {
     return WriteStringEx(str, 0, str.GetLength());
 }
 
-ECode Writer::WriteStringEx(
+ECode Writer::Write(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -74,13 +76,13 @@ ECode Writer::WriteStringEx(
     return WriteCharsEx(*buf, 0, buf->GetLength());
 }
 
-ECode Writer::AppendChar(
+ECode Writer::Append(
     /* [in] */ Char32 c)
 {
     return Write(c);
 }
 
-ECode Writer::AppendCharSequence(
+ECode Writer::Append(
     /* [in] */ ICharSequence* csq)
 {
     String tmp("NULL");
@@ -91,7 +93,7 @@ ECode Writer::AppendCharSequence(
     return WriteString(tmp);
 }
 
-ECode Writer::AppendCharSequenceEx(
+ECode Writer::Append(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -113,7 +115,7 @@ ECode Writer::CheckError(
     return NOERROR;
 }
 
-ECode Writer::Init(
+ECode Writer::constructor(
     /* [in] */ LockObject* lock)
 {
     assert(lock != NULL);
