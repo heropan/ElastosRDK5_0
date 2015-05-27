@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_CORE_SINGLETON_H__
 #define __ELASTOS_CORE_SINGLETON_H__
 
-#include "Object.h"
+#include <elastos/core/Object.h>
 #include <spinlock.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Core {
@@ -11,6 +13,10 @@ namespace Core {
 class Singleton : public Object
 {
 public:
+    Singleton();
+
+    virtual ~Singleton();
+
     CARAPI_(UInt32) AddRef();
 
     CARAPI_(UInt32) Release();

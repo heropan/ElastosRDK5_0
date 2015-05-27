@@ -1,0 +1,17 @@
+module
+{
+
+    namespace Elastos {
+    namespace HelloCar {
+
+        /**
+         * @Involve
+         * interface IAnimal;
+         */
+        interface IDog {
+            Bark();
+        }
+
+    } // HelloCar
+    } // Elastos
+}

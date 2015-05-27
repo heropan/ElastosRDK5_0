@@ -1,0 +1,33 @@
+
+module
+{
+    importlib("Elastos.CoreLibrary.eco");
+
+    merge("IAnimal.car");
+    merge("IDog.car");
+
+    namespace Elastos {
+    namespace HelloCar {
+
+        class CDog {
+            constructor();
+
+            constructor(
+                [in] Int32 age,
+                [in] String name);
+
+            interface IDog;
+            interface IAnimal;
+        }
+
+        class CCat {
+            interface IAnimal;
+        }
+
+        singleton class CAnimalHelper {
+            interface IAnimalHelper;
+        }
+
+    } // HelloCar
+    } // Elastos
+}

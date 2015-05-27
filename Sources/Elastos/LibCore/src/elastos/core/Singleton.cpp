@@ -4,6 +4,14 @@
 namespace Elastos {
 namespace Core {
 
+Singleton::Singleton()
+{
+}
+
+Singleton::~Singleton()
+{
+}
+
 UInt32 Singleton::AddRef()
 {
     GetSelfSpinLock().Lock();

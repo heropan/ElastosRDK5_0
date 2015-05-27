@@ -107,6 +107,21 @@ EXPORTS
     _ZThn8_N7Elastos4Core6Object9AggregateE13AggregateTypeP10IInterface
     _ZThn8_N7Elastos4Core6Object9GetDomainEPP10IInterface
 
+    ;;Singleton
+    _ZN7Elastos4Core9SingletonC1Ev
+    _ZN7Elastos4Core9SingletonC2Ev
+    _ZN7Elastos4Core9SingletonD0Ev
+    _ZN7Elastos4Core9SingletonD1Ev
+    _ZN7Elastos4Core9SingletonD2Ev
+    _ZN7Elastos4Core9Singleton6AddRefEv
+    _ZN7Elastos4Core9Singleton7ReleaseEv
+    _ZThn12_N7Elastos4Core9Singleton6AddRefEv
+    _ZThn12_N7Elastos4Core9Singleton7ReleaseEv
+    _ZThn16_N7Elastos4Core9Singleton6AddRefEv
+    _ZThn16_N7Elastos4Core9Singleton7ReleaseEv
+    _ZThn8_N7Elastos4Core9Singleton6AddRefEv
+    _ZThn8_N7Elastos4Core9Singleton7ReleaseEv
+
 #if defined(_android)
     ;;NativeThread
     NativeThreadSelf
