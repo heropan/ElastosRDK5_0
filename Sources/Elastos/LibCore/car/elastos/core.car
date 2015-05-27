@@ -199,12 +199,6 @@ module
          interface ISystem;
     }
 
-    } // namespace Core
-    } // namepsace Elastos
-
-    namespace Elastos {
-    namespace Core {
-
     class CThread {
          /**
          * Constructs a new {@code Thread} with no {@code Runnable} object and a

@@ -1,15 +1,14 @@
 
-#ifndef __THREAD_H__
-#define __THREAD_H__
+#ifndef __ELASTOS_CORE_THREAD_H__
+#define __ELASTOS_CORE_THREAD_H__
 
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
-#include "Object.h"
 #else
 #include "Elastos.CoreLibrary.h"
-#include <elastos/core/Object.h>
 #endif
-#include "NativeThread.h"
+#include <elastos/core/Object.h>
+#include <elastos/core/NativeThread.h>
 
 using Elastos::Core::Object;
 
@@ -90,6 +89,10 @@ private:
 
 public:
     CAR_INTERFACE_DECL()
+
+    Thread();
+
+    virtual ~Thread();
 
     /**
      * Constructs a new {@code Thread} with no {@code Runnable} object and a
@@ -884,11 +887,6 @@ public:
     CARAPI PopInterruptAction(
         /* [in] */ IRunnable* interruptAction);
 
-protected:
-    Thread();
-
-    virtual ~Thread();
-
 private:
     /**
      * Initializes a new, existing Thread object with a runnable object,
@@ -1052,4 +1050,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__THREAD_H__
+#endif //__ELASTOS_CORE_THREAD_H__

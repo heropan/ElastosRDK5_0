@@ -1,5 +1,5 @@
 
-#include <Math.h>
+#include <elastos/core/Math.h>
 #include <math.h>
 #include <stdlib.h>
 #ifdef ELASTOS_CORELIBRARY
@@ -471,6 +471,7 @@ Double Math::Tanh(
 Double Math::Random()
 {
     if (NULL == mRandom) {
+        // TODO upgrade
         // CRandom::New((IRandom**)&mRandom);
     }
 

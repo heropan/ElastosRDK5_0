@@ -1,8 +1,7 @@
 
 #include "Thread.h"
-#include "NativeThread.h"
 #include "ThreadGroup.h"
-#include <Math.h>
+#include <elastos/core/Math.h>
 // #ifdef ELASTOS_CORELIBRARY
 // #include "CSystem.h"
 // #endif

@@ -6,6 +6,9 @@ module
     merge("IAnimal.car");                   // 合并 CAR　文件
     merge("IDog.car");                      // 合并 CAR　文件
 
+    using interface Elastos.Core.IThread;   // using 声明
+    using interface Elastos.Core.IRunnable; // using 声明
+
     namespace Elastos {                     // 命名空间
     namespace HelloCar {
 
@@ -26,6 +29,13 @@ module
 
         singleton class CAnimalHelper {     // 声明单例 CAR 类
             interface IAnimalHelper;        // 接口声明
+        }
+
+        class CMyThread {
+            constructor();
+
+            interface IThread;
+            interface IRunnable;
         }
 
     } // HelloCar

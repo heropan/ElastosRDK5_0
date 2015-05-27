@@ -9,6 +9,7 @@ SOURCES += Animal.cpp
 SOURCES += CCat.cpp
 SOURCES += CDog.cpp
 SOURCES += CAnimalHelper.cpp
+SOURCES += CMyThread.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib

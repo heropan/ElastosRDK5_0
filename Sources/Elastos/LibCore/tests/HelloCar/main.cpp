@@ -31,12 +31,15 @@
 
 using namespace Elastos;
 
+using Elastos::Core::IThread;
+
 using Elastos::HelloCar::IAnimal;
 using Elastos::HelloCar::IDog;
 using Elastos::HelloCar::CDog;
 using Elastos::HelloCar::CCat;
 using Elastos::HelloCar::IAnimalHelper;
 using Elastos::HelloCar::CAnimalHelper;
+using Elastos::HelloCar::CMyThread;
 
 int main(int argc, char *argv[])
 {
@@ -64,6 +67,11 @@ int main(int argc, char *argv[])
     helper->CanFly(cat, &canFly);
     cat->GetName(&name);
     printf("CAnimalHelper::CanFly : %s %s!\n\n", name.string(), canFly ? "can fly" : "can not fly");
+
+    AutoPtr<IThread> thread;
+    CMyThread::New((IThread**)&thread);
+    assert(thread.Get() != NULL && "Thread is null!");
+    thread->Start();
 
     return 0;
 }
