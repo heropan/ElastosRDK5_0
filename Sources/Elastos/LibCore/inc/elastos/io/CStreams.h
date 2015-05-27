@@ -42,7 +42,7 @@ public:
      *
      * Used to implement {@link java.io.DataInputStream#readFully(byte[], int, int)}.
      */
-    CARAPI ReadFullyEx(
+    CARAPI ReadFully(
         /* [in] */ IInputStream* in,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,

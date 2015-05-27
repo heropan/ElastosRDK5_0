@@ -20,7 +20,7 @@ module
             [in] Int32              offset,
             [in] Int32              utfSize,
             [out] String*           string);
-        
+
         /*
          * Get the bytes of a string
          */
@@ -28,19 +28,19 @@ module
             [in]  String*   s,
             [in]  Boolean   shortLength,
             [out] Int64*    num);
-        
+
         Encode(
             [in]  String* s,
             [out, callee] ArrayOf<Byte>* bytes);
         /*
          * Encode the bytes corresponding to string into dst bytes.
-         */  
-        EncodeEx(
+         */
+        Encode(
             [in] ArrayOf<Byte>* dst,
             [in] Int32          offset,
             [in] String*        s);
     }
-    
+
     }
     }
     }

@@ -10,8 +10,6 @@ module
     /**
     * @Involve
     * interface Elastos.IO.Channels.IChannel;
-    * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
-    * interface Elastos.IO.Channels.Spi.IAbstractSelectableChannel;
     */
     interface ISinkChannel {
         // extended from IWritableByteChannel
@@ -25,7 +23,7 @@ module
             [out] Int64* ret);
 
         // extended from IGatheringByteChannel
-        WriteByteBuffersEx(
+        WriteByteBuffers(
             [in]  ArrayOf<IByteBuffer*> buffers,
             [in]  Int32 offset,
             [in]  Int32 length,

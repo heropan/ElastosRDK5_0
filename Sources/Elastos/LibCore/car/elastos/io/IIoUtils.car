@@ -24,7 +24,7 @@ module
         /**
          * Closes 'fd', ignoring any exceptions. Does nothing if 'fd' is null or invalid.
          */
-        CloseQuietlyEx(
+        CloseQuietly(
             [in] IFileDescriptor* fd);
 
 

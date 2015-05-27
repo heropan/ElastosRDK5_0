@@ -26,7 +26,7 @@ public:
         /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
         /* [out] */ Int64* nRead);
 
-    CARAPI ReadByteBuffersEx(
+    CARAPI ReadByteBuffers(
         /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -64,7 +64,7 @@ public:
         /* [in] */ ArrayOf<IByteBuffer*>& buffers,
         /* [out] */ Int64* nWrite);
 
-    CARAPI WriteBuffersEx(
+    CARAPI WriteBuffers(
         /* [in] */ ArrayOf<IByteBuffer*>& buffers,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

@@ -73,7 +73,7 @@ module
          *                          error regarding the format string or arguments is detected.
          * NullPointerException  |  if format == null
          */
-        FormatEx(
+        Format(
             [in] ILocale* l,
             [in] String format,
             [in] ArrayOf<IInterface*>* args,
@@ -129,7 +129,7 @@ module
          *                          error regarding the format string or arguments is detected.
          * NullPointerException  |  if format == null.
          */
-        PrintfEx(
+        Printf(
             [in] ILocale* l,
             [in] String format,
             [in] ArrayOf<IInterface*>* args,

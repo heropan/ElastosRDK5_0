@@ -2,7 +2,7 @@
 #ifndef __CHARSETENCODER_H__
 #define __CHARSETENCODER_H__
 
-#include <cmdef.h>
+#include <coredef.h>
 #include <elastos.h>
 
 using Elastos::Core::ICharSequence;
@@ -47,7 +47,7 @@ public:
         /* [in] */ Char8 c,
         /* [out] */ Boolean* result);
 
-    CARAPI CanEncodeEx(
+    CARAPI CanEncode(
         /* [in] */ ICharSequence* pSequence,
         /* [out] */ Boolean* result);
 
@@ -58,7 +58,7 @@ public:
         /* [in] */ ICharBuffer* charBuffer,
         /* [out] */ IByteBuffer** byteBuffer);
 
-    CARAPI EncodeEx(
+    CARAPI Encode(
         /* [in] */ ICharBuffer* charBuffer,
         /* [in, out] */ IByteBuffer* byteBuffer,
         /* [in] */ Boolean endOfInput,

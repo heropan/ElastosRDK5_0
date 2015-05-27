@@ -96,7 +96,7 @@ public:
      * @throws IOException
      *             if an error occurs while reading from this reader.
      */
-    CARAPI ReadCharsEx(
+    CARAPI ReadChars(
         /* [out] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,

@@ -95,7 +95,7 @@ public:
      *             if {@code offset < 0} or {@code count < 0}, or if {@code
      *             offset + count} is greater than the size of {@code buf}.
      */
-    CARAPI WriteCharsEx(
+    CARAPI WriteChars(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -124,7 +124,7 @@ public:
      *             if {@code offset < 0} or {@code count < 0}, or if {@code
      *             offset + count} is greater than the length of {@code str}.
      */
-    CARAPI WriteStringEx(
+    CARAPI WriteString(
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -174,7 +174,7 @@ public:
      *             either {@code start} or {@code end} are greater or equal than
      *             the length of {@code csq}.
      */
-    CARAPI AppendCharSequenceEx(
+    CARAPI AppendCharSequence(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);

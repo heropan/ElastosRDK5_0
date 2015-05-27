@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "ReadOnlyDoubleArrayBuffer.h"
 #include "elastos/StringBuilder.h"
 
@@ -148,7 +148,7 @@ ECode ReadOnlyDoubleArrayBuffer::GetDouble(
     return DoubleArrayBuffer::GetDouble(value);
 }
 
-ECode ReadOnlyDoubleArrayBuffer::GetDoubleEx(
+ECode ReadOnlyDoubleArrayBuffer::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
@@ -161,7 +161,7 @@ ECode ReadOnlyDoubleArrayBuffer::GetDoubles(
     return DoubleArrayBuffer::GetDoubles(dst);
 }
 
-ECode ReadOnlyDoubleArrayBuffer::GetDoublesEx(
+ECode ReadOnlyDoubleArrayBuffer::GetDoubles(
     /* [out] */ ArrayOf<Double>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 doubleCount)
@@ -182,7 +182,7 @@ ECode ReadOnlyDoubleArrayBuffer::PutDouble(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyDoubleArrayBuffer::PutDoubleEx(
+ECode ReadOnlyDoubleArrayBuffer::PutDouble(
     /* [in] */ Int32 index,
     /* [in] */ Double c)
 {
@@ -196,7 +196,7 @@ ECode ReadOnlyDoubleArrayBuffer::PutDoubles(
     return DoubleArrayBuffer::PutDoubles(src);
 }
 
-ECode ReadOnlyDoubleArrayBuffer::PutDoublesEx(
+ECode ReadOnlyDoubleArrayBuffer::PutDoubles(
     /* [in] */ const ArrayOf<Double>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 doubleCount)

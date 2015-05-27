@@ -79,14 +79,14 @@ public:
     CARAPI GetDouble(
         /* [out] */ Double* value);
 
-    CARAPI GetDoubleEx(
+    CARAPI GetDouble(
         /* [in] */ Int32 index,
         /* [out] */ Double* value);
 
     CARAPI GetDoubles(
         /* [out] */ ArrayOf<Double>* dst);
 
-    CARAPI GetDoublesEx(
+    CARAPI GetDoubles(
         /* [out] */ ArrayOf<Double>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 doubleCount);
@@ -97,14 +97,14 @@ public:
     CARAPI PutDouble(
         /* [in] */ Double d);
 
-    CARAPI PutDoubleEx(
+    CARAPI PutDouble(
         /* [in] */ Int32 index,
         /* [in] */ Double d);
 
     CARAPI PutDoubles(
         /* [in] */ const ArrayOf<Double>& src);
 
-    CARAPI PutDoublesEx(
+    CARAPI PutDoubles(
         /* [in] */ const ArrayOf<Double>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 doubleCount);

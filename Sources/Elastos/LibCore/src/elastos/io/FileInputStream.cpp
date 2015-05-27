@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "FileInputStream.h"
 #include "CFile.h"
 #include "IoUtils.h"
@@ -163,7 +163,7 @@ ECode FileInputStream::Read(
     return NOERROR;;
 }
 
-ECode FileInputStream::ReadBytesEx(
+ECode FileInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,

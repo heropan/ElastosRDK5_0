@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CStringReader.h"
 
 namespace Elastos {
@@ -42,7 +42,7 @@ ECode CStringReader::ReadChars(
     return StringReader::ReadChars(buffer, number);
 }
 
-ECode CStringReader::ReadCharsEx(
+ECode CStringReader::ReadChars(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,

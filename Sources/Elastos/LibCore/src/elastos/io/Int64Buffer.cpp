@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Int64Buffer.h"
 #include "ReadWriteInt64ArrayBuffer.h"
 
@@ -38,7 +38,7 @@ ECode Int64Buffer::WrapArray(
     return WrapArrayEx(array, 0, array->GetLength(), buf);
 }
 
-ECode Int64Buffer::WrapArrayEx(
+ECode Int64Buffer::WrapArray(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int64Count,
@@ -146,7 +146,7 @@ ECode Int64Buffer::GetInt64s(
     return GetInt64sEx(dst, 0, dst->GetLength());
 }
 
-ECode Int64Buffer::GetInt64sEx(
+ECode Int64Buffer::GetInt64s(
     /* [out] */ ArrayOf<Int64>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int64Count)
@@ -184,7 +184,7 @@ ECode Int64Buffer::PutInt64s(
     return PutInt64sEx(src, 0, src.GetLength());
 }
 
-ECode Int64Buffer::PutInt64sEx(
+ECode Int64Buffer::PutInt64s(
     /* [in] */ const ArrayOf<Int64>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int64Count)

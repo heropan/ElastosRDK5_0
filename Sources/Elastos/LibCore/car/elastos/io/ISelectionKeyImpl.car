@@ -1,13 +1,11 @@
 module
 {
-
     namespace Elastos {
     namespace IO {
 
      /**
      * @Involve
      * interface Elastos.IO.Channels.ISelectionKey;
-     * interface Elastos.IO.Channels.Spi.IAbstractSelectionKey;
      */
     interface ISelectionKeyImpl {
 

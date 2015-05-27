@@ -40,7 +40,6 @@ module
     /**
     * @Involve
     * interface Elastos.IO.Channels.IChannel;
-    * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
     * interface ISelectableChannel;
     */
     interface ISocketChannel {
@@ -226,7 +225,7 @@ module
          * IOException | if another I/O error occurs.
          * NotYetConnectedException | if this channel is not yet connected.
          */
-        ReadByteBuffersEx(
+        ReadByteBuffers(
             [in] ArrayOf<IByteBuffer*> targets,
             [out] Int64* number);
 
@@ -311,7 +310,7 @@ module
          * NotYetConnectedException | if this channel is not yet connected.
          * @see java.nio.channels.GatheringByteChannel#write(java.nio.ByteBuffer[])
          */
-        WriteByteBuffersEx(
+        WriteByteBuffers(
             [in] ArrayOf<IByteBuffer*> buffers,
             [out] Int64* number);
     }
@@ -352,7 +351,7 @@ module
          * UnsupportedAddressTypeException | if the address type is not supported.
          * IOException | if an I/O error occurs.
          */
-//        OpenEx(
+//        Open(
 //            [in] ISocketAddress* address,
 //            [out] ISocketChannel** socketChannel);
     }

@@ -84,7 +84,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code byteCount} is invalid.
      */
-    static CARAPI WrapArrayEx(
+    static CARAPI WrapArray(
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 byteCount,
@@ -311,7 +311,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if index is invalid.
      */
-    virtual CARAPI GetByteEx(
+    virtual CARAPI GetByte(
         /* [in] */ Int32 index,
         /* [out] */ Byte* value) = 0;
 
@@ -348,7 +348,7 @@ public:
      * @exception IndexOutOfBoundsException if {@code dstOffset < 0 ||  byteCount < 0}
      * @exception BufferUnderflowException if {@code byteCount > remaining()}
      */
-    virtual CARAPI GetBytesEx(
+    virtual CARAPI GetBytes(
         /* [out] */ ArrayOf<Byte>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 byteCount);
@@ -380,7 +380,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if {@code index} is invalid.
      */
-    virtual CARAPI GetCharEx(
+    virtual CARAPI GetChar(
         /* [in] */ Int32 index,
         /* [out] */ Char32* value) = 0;
 
@@ -412,7 +412,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if {@code index} is invalid.
      */
-    virtual CARAPI GetDoubleEx(
+    virtual CARAPI GetDouble(
         /* [in] */ Int32 index,
         /* [out] */ Double* value) = 0;
 
@@ -444,7 +444,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if {@code index} is invalid.
      */
-    virtual CARAPI GetFloatEx(
+    virtual CARAPI GetFloat(
         /* [in] */ Int32 index,
         /* [out] */ Float* value) = 0;
 
@@ -475,7 +475,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if {@code index} is invalid.
      */
-    virtual CARAPI GetInt32Ex(
+    virtual CARAPI GetInt32(
         /* [in] */ Int32 index,
         /* [out] */ Int32* value) = 0;
 
@@ -506,7 +506,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if {@code index} is invalid.
      */
-    virtual CARAPI GetInt64Ex(
+    virtual CARAPI GetInt64(
         /* [in] */ Int32 index,
         /* [out] */ Int64* value) = 0;
 
@@ -537,7 +537,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if {@code index} is invalid.
      */
-    virtual CARAPI GetInt16Ex(
+    virtual CARAPI GetInt16(
         /* [in] */ Int32 index,
         /* [out] */ Int16* value) = 0;
 
@@ -625,7 +625,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutByteEx(
+    virtual CARAPI PutByte(
         /* [in] */ Int32 index,
         /* [in] */ Byte b) = 0;
 
@@ -668,7 +668,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutBytesEx(
+    virtual CARAPI PutBytes(
         /* [in] */ const ArrayOf<Byte>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 byteCount);
@@ -726,7 +726,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutCharEx(
+    virtual CARAPI PutChar(
         /* [in] */ Int32 index,
         /* [in] */ Char32 value) = 0;
 
@@ -764,7 +764,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutDoubleEx(
+    virtual CARAPI PutDouble(
         /* [in] */ Int32 index,
         /* [in] */ Double value) = 0;
 
@@ -802,7 +802,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutFloatEx(
+    virtual CARAPI PutFloat(
         /* [in] */ Int32 index,
         /* [in] */ Float value) = 0;
 
@@ -840,7 +840,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt16Ex(
+    virtual CARAPI PutInt16(
         /* [in] */ Int32 index,
         /* [in] */ Int16 value) = 0;
 
@@ -878,7 +878,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt32Ex(
+    virtual CARAPI PutInt32(
         /* [in] */ Int32 index,
         /* [in] */ Int32 value) = 0;
 
@@ -916,7 +916,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt64Ex(
+    virtual CARAPI PutInt64(
         /* [in] */ Int32 index,
         /* [in] */ Int64 value) = 0;
 

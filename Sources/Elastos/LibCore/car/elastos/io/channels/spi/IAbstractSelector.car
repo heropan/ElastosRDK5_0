@@ -42,11 +42,11 @@ module
     Cancel(
         [in] ISelectionKey* key);
 
-    Register(
-        [in]  IAbstractSelectableChannel* channel,
-        [in]  Int32 operations,
-        [in]  IObject* obj,
-        [out] ISelectionKey** returnKey);
+    // Register(
+    //     [in]  IAbstractSelectableChannel* channel,
+    //     [in]  Int32 operations,
+    //     [in]  IObject* obj,
+    //     [out] ISelectionKey** returnKey);
 
     } // end interface
     } // namespace Spi

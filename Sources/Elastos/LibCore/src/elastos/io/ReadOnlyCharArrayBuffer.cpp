@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "ReadOnlyCharArrayBuffer.h"
 
 using Elastos::Core::EIID_ICharSequence;
@@ -153,7 +153,7 @@ ECode ReadOnlyCharArrayBuffer::GetChar(
     return CharArrayBuffer::GetChar(value);
 }
 
-ECode ReadOnlyCharArrayBuffer::GetCharEx(
+ECode ReadOnlyCharArrayBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -166,7 +166,7 @@ ECode ReadOnlyCharArrayBuffer::GetChars(
     return CharArrayBuffer::GetChars(dst);
 }
 
-ECode ReadOnlyCharArrayBuffer::GetCharsEx(
+ECode ReadOnlyCharArrayBuffer::GetChars(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
@@ -209,7 +209,7 @@ ECode ReadOnlyCharArrayBuffer::PutChar(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyCharArrayBuffer::PutCharEx(
+ECode ReadOnlyCharArrayBuffer::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 c)
 {
@@ -223,7 +223,7 @@ ECode ReadOnlyCharArrayBuffer::PutChars(
     return CharArrayBuffer::PutChars(src);
 }
 
-ECode ReadOnlyCharArrayBuffer::PutCharsEx(
+ECode ReadOnlyCharArrayBuffer::PutChars(
     /* [in] */ Int32 off,
     /* [in] */ Int32 len,
     /* [in] */ const ArrayOf<Char32>& src)
@@ -245,7 +245,7 @@ ECode ReadOnlyCharArrayBuffer::PutString(
     return CharArrayBuffer::PutString(str);
 }
 
-ECode ReadOnlyCharArrayBuffer::PutStringEx(
+ECode ReadOnlyCharArrayBuffer::PutString(
     /* [in] */ const String& str,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -276,7 +276,7 @@ ECode ReadOnlyCharArrayBuffer::AppendChars(
     return CharArrayBuffer::AppendChars(csq);
 }
 
-ECode ReadOnlyCharArrayBuffer::AppendCharsEx(
+ECode ReadOnlyCharArrayBuffer::AppendChars(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -412,7 +412,7 @@ ECode ReadOnlyCharArrayBuffer::Equals(
     return CharArrayBuffer::Equals(object, rst);
 }
 
-ECode ReadOnlyCharArrayBuffer::PutCharsEx(
+ECode ReadOnlyCharArrayBuffer::PutChars(
     /* [in] */ const ArrayOf<Char32>& src,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)

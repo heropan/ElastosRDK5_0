@@ -244,7 +244,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if index is invalid.
          */
-        GetByteEx(
+        GetByte(
             [in] Int32 index,
             [out] Byte* value);
 
@@ -281,7 +281,7 @@ module
          * @exception IndexOutOfBoundsException if {@code dstOffset < 0 ||  byteCount < 0}
          * @exception BufferUnderflowException if {@code byteCount > remaining()}
          */
-        GetBytesEx(
+        GetBytes(
             [out] ArrayOf<Byte> dst,
             [in] Int32 dstOffset,
             [in] Int32 byteCount);
@@ -313,7 +313,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if {index} is invalid.
          */
-        GetCharEx(
+        GetChar(
             [in] Int32 index,
             [out] Char32* value);
 
@@ -345,7 +345,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if {index} is invalid.
          */
-        GetDoubleEx(
+        GetDouble(
             [in] Int32 index,
             [out] Double* value);
 
@@ -377,7 +377,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if {index} is invalid.
          */
-        GetFloatEx(
+        GetFloat(
             [in] Int32 index,
             [out] Float* value);
 
@@ -408,7 +408,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if {index} is invalid.
          */
-        GetInt32Ex(
+        GetInt32(
             [in] Int32 index,
             [out] Int32* value);
 
@@ -439,7 +439,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if {index} is invalid.
          */
-        GetInt64Ex(
+        GetInt64(
             [in] Int32 index,
             [out] Int64* value);
 
@@ -470,7 +470,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if {index} is invalid.
          */
-        GetInt16Ex(
+        GetInt16(
             [in] Int32 index,
             [out] Int16* value);
 
@@ -531,7 +531,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutByteEx(
+        PutByte(
             [in] Int32 index,
             [in] Byte b);
 
@@ -574,7 +574,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutBytesEx(
+        PutBytes(
             [in] ArrayOf<Byte> src,
             [in] Int32 srcOffset,
             [in] Int32 byteCount);
@@ -632,7 +632,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutCharEx(
+        PutChar(
             [in] Int32 index,
             [in] Char32 value);
 
@@ -670,7 +670,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutDoubleEx(
+        PutDouble(
             [in] Int32 index,
             [in] Double value);
 
@@ -708,7 +708,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutFloatEx(
+        PutFloat(
             [in] Int32 index,
             [in] Float value);
 
@@ -746,7 +746,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt16Ex(
+        PutInt16(
             [in] Int32 index,
             [in] Int16 value);
 
@@ -784,7 +784,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt32Ex(
+        PutInt32(
             [in] Int32 index,
             [in] Int32 value);
 
@@ -822,7 +822,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt64Ex(
+        PutInt64(
             [in] Int32 index,
             [in] Int64 value);
 
@@ -909,7 +909,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if either {@code start} or {@code byteCount} is invalid.
          */
-        WrapArrayEx(
+        WrapArray(
             [in] ArrayOf<Byte>* array,
             [in] Int32 start,
             [in] Int32 byteCount,

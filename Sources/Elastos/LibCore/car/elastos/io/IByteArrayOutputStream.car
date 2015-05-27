@@ -56,7 +56,7 @@ module
          * @throws UnsupportedEncodingException
          *             if the provided encoding is not supported.
          */
-        ToStringEx(
+        ToString(
             [in] String charsetName,
             [out] String* str);
 

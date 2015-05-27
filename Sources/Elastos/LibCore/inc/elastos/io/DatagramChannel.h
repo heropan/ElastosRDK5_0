@@ -282,7 +282,7 @@ public:
      * @throws IOException
      *             some other I/O error occurs.
      */
-    CARAPI ReadByteBuffersEx(
+    CARAPI ReadByteBuffers(
         /* [in] */ const ArrayOf<IByteBuffer*>& targets,
         /* [out] */ Int64* nRead);
 
@@ -389,7 +389,7 @@ public:
      * @throws IOException
      *             some other I/O error occurs.
      */
-    CARAPI WriteByteBuffersEx(
+    CARAPI WriteByteBuffers(
         /* [in] */ const ArrayOf<IByteBuffer*>& sources,
         /* [out] */ Int64* nWrite);
 protected:

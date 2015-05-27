@@ -89,7 +89,7 @@ module
          * :-|:------------|
          * IOException | if this stream is closed or another I/O error occurs.
          */
-        ReadBytesEx(
+        ReadBytes(
             [out] ArrayOf<Byte> buffer,
             [in] Int32 offset,
             [in] Int32 count,

@@ -260,7 +260,7 @@ module
         /**
          * Used for the ByteBuffer operations that get types larger than a byte.
          */
-        // CheckIndexEx(
+        // CheckIndex(
         //    [in] Int32 index,
         //    [in] Int32 sizeOfType);
 

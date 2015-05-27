@@ -1,6 +1,6 @@
 #include "AbstractInterruptibleChannel.h"
-#include <elastos/Thread.h>
-#include "cmdef.h"
+#include <elastos/core/Thread.h>
+#include "coredef.h"
 
 using Elastos::Core::Thread;
 
@@ -8,6 +8,12 @@ namespace Elastos {
 namespace IO {
 namespace Channels {
 namespace Spi {
+
+// {da62f295-36e3-4f0c-b46d-edd00ffa9626}
+extern "C" const InterfaceID EIID_AbstractInterruptibleChannel =
+        { 0xda62f295, 0x36e3, 0x4f0c, { 0xb4, 0x6d, 0xed, 0xd0, 0x0f, 0xfa, 0x96, 0x26 } };
+
+CAR_INTERFACE_IMPL_WITH_CPP_CAST(AbstractInterruptibleChannel, Object, IChannel)
 
 class ActionRunnable
     : public ElRefBase
@@ -69,9 +75,8 @@ AbstractInterruptibleChannel::~AbstractInterruptibleChannel()
 
 Boolean AbstractInterruptibleChannel::IsOpen()
 {
-    mMutex.Lock();
+    Object::Autolock lock(mMutex);
     Boolean ret = !mClosed;
-    mMutex.Unlock();
     return ret;
 }
 
@@ -87,15 +92,12 @@ ECode AbstractInterruptibleChannel::Close()
 {
     ECode retCode = E_INTERRUPTED;
 
-    if (!mClosed)
-    {
-        mMutex.Lock();
-        if (!mClosed)
-        {
-            mClosed = true;
+    if (!mClosed) {
+        Object::Autolock lock(mMutex);
+        if (!mClosed) {
+            mClosed = TRUE;
             retCode = this->ImplCloseChannel();
         }
-        mMutex.Unlock();
     }
 
     return retCode;
@@ -110,13 +112,11 @@ ECode AbstractInterruptibleChannel::End(Boolean success)
 {
     Thread::GetCurrentThread()->PopInterruptAction(mInterruptAndCloseRunnable);
 
-    if (mInterrupted)
-    {
-        mInterrupted = false;
+    if (mInterrupted) {
+        mInterrupted = FALSE;
         return E_CLOSED_BY_INTERRUPT_EXCEPTION;
     }
-    if (!success && mClosed)
-    {
+    if (!success && mClosed) {
         return E_ASYNCHRONOUS_CLOSE_EXCEPTION;
     }
     return NOERROR;

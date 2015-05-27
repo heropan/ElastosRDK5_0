@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "ReadWriteDirectByteBuffer.h"
 #include "ReadOnlyDirectByteBuffer.h"
 #include "CByteOrderHelper.h"
@@ -219,7 +219,7 @@ ECode ReadWriteDirectByteBuffer::GetByte(
     return DirectByteBuffer::GetByte(value);
 }
 
-ECode ReadWriteDirectByteBuffer::GetByteEx(
+ECode ReadWriteDirectByteBuffer::GetByte(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
@@ -232,7 +232,7 @@ ECode ReadWriteDirectByteBuffer::GetBytes(
     return DirectByteBuffer::GetBytes(dst);
 }
 
-ECode ReadWriteDirectByteBuffer::GetBytesEx(
+ECode ReadWriteDirectByteBuffer::GetBytes(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
@@ -246,7 +246,7 @@ ECode ReadWriteDirectByteBuffer::GetChar(
     return DirectByteBuffer::GetChar(value);
 }
 
-ECode ReadWriteDirectByteBuffer::GetCharEx(
+ECode ReadWriteDirectByteBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -259,7 +259,7 @@ ECode ReadWriteDirectByteBuffer::GetDouble(
     return DirectByteBuffer::GetDouble(value);
 }
 
-ECode ReadWriteDirectByteBuffer::GetDoubleEx(
+ECode ReadWriteDirectByteBuffer::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
@@ -272,7 +272,7 @@ ECode ReadWriteDirectByteBuffer::GetFloat(
     return DirectByteBuffer::GetFloat(value);
 }
 
-ECode ReadWriteDirectByteBuffer::GetFloatEx(
+ECode ReadWriteDirectByteBuffer::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
@@ -285,7 +285,7 @@ ECode ReadWriteDirectByteBuffer::GetInt32(
     return DirectByteBuffer::GetInt32(value);
 }
 
-ECode ReadWriteDirectByteBuffer::GetInt32Ex(
+ECode ReadWriteDirectByteBuffer::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
@@ -298,7 +298,7 @@ ECode ReadWriteDirectByteBuffer::GetInt64(
     return DirectByteBuffer::GetInt64(value);
 }
 
-ECode ReadWriteDirectByteBuffer::GetInt64Ex(
+ECode ReadWriteDirectByteBuffer::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
@@ -311,7 +311,7 @@ ECode ReadWriteDirectByteBuffer::GetInt16(
     return DirectByteBuffer::GetInt16(value);
 }
 
-ECode ReadWriteDirectByteBuffer::GetInt16Ex(
+ECode ReadWriteDirectByteBuffer::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {
@@ -359,7 +359,7 @@ ECode ReadWriteDirectByteBuffer::PutByte(
     return NOERROR;
 }
 
-ECode ReadWriteDirectByteBuffer::PutByteEx(
+ECode ReadWriteDirectByteBuffer::PutByte(
     /* [in] */ Int32 index,
     /* [in] */ Byte b)
 {
@@ -374,7 +374,7 @@ ECode ReadWriteDirectByteBuffer::PutBytes(
     return DirectByteBuffer::PutBytes(src);
 }
 
-ECode ReadWriteDirectByteBuffer::PutBytesEx(
+ECode ReadWriteDirectByteBuffer::PutBytes(
     /* [in] */ const ArrayOf<Byte>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 byteCount)
@@ -501,7 +501,7 @@ ECode ReadWriteDirectByteBuffer::PutChar(
     return NOERROR;
 }
 
-ECode ReadWriteDirectByteBuffer::PutCharEx(
+ECode ReadWriteDirectByteBuffer::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 value)
 {
@@ -524,7 +524,7 @@ ECode ReadWriteDirectByteBuffer::PutDouble(
     return NOERROR;
 }
 
-ECode ReadWriteDirectByteBuffer::PutDoubleEx(
+ECode ReadWriteDirectByteBuffer::PutDouble(
     /* [in] */ Int32 index,
     /* [in] */ Double value)
 {
@@ -546,7 +546,7 @@ ECode ReadWriteDirectByteBuffer::PutFloat(
     return NOERROR;
 }
 
-ECode ReadWriteDirectByteBuffer::PutFloatEx(
+ECode ReadWriteDirectByteBuffer::PutFloat(
     /* [in] */ Int32 index,
     /* [in] */ Float value)
 {
@@ -568,7 +568,7 @@ ECode ReadWriteDirectByteBuffer::PutInt16(
     return NOERROR;
 }
 
-ECode ReadWriteDirectByteBuffer::PutInt16Ex(
+ECode ReadWriteDirectByteBuffer::PutInt16(
     /* [in] */ Int32 index,
     /* [in] */ Int16 value)
 {
@@ -590,7 +590,7 @@ ECode ReadWriteDirectByteBuffer::PutInt32(
     return NOERROR;
 }
 
-ECode ReadWriteDirectByteBuffer::PutInt32Ex(
+ECode ReadWriteDirectByteBuffer::PutInt32(
     /* [in] */ Int32 index,
     /* [in] */ Int32 value)
 {
@@ -612,7 +612,7 @@ ECode ReadWriteDirectByteBuffer::PutInt64(
     return NOERROR;
 }
 
-ECode ReadWriteDirectByteBuffer::PutInt64Ex(
+ECode ReadWriteDirectByteBuffer::PutInt64(
     /* [in] */ Int32 index,
     /* [in] */ Int64 value)
 {

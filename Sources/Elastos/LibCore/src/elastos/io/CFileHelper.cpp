@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CFileHelper.h"
 #include "CFile.h"
 
@@ -16,7 +16,7 @@ ECode CFileHelper::CreateTempFile(
     return CFile::CreateTempFile(prefix, suffix, file);
 }
 
-ECode CFileHelper::CreateTempFileEx(
+ECode CFileHelper::CreateTempFile(
     /* [in] */ const String& prefix,
     /* [in] */ const String& suffix,
     /* [in] */ IFile* directory,

@@ -2,13 +2,11 @@
 #define __ELASTOS_IO_CHANNELS_SELECTABLECHANNEL_H__
 
 #include <Elastos.CoreLibrary_server.h>
-#include <elastos/Thread.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/Thread.h>
 #include "AbstractInterruptibleChannel.h"
 #include "SelectorProvider.h"
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::IO::Channels::Spi::ISelectorProvider;
 using Elastos::IO::Channels::Spi::AbstractInterruptibleChannel;
 
@@ -128,7 +126,7 @@ public:
      * @throws CancelledKeyException
      *             if this channel is registered but its key has been canceled.
      */
-    virtual CARAPI RegisterEx(
+    virtual CARAPI Register(
         /* [in] */ ISelector* sel,
         /* [in] */ Int32 ops,
         /* [in] */ IObject* arr,

@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CLineNumberReader.h"
 
 namespace Elastos {
@@ -42,7 +42,7 @@ ECode CLineNumberReader::ReadChars(
     return LineNumberReader::ReadChars(buffer, number);
 }
 
-ECode CLineNumberReader::ReadCharsEx(
+ECode CLineNumberReader::ReadChars(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,

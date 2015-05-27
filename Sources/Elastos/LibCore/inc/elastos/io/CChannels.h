@@ -30,7 +30,7 @@ public:
         /* [in] */ IInputStream * pInputStream,
         /* [out] */ IReadableByteChannel ** ppInputChannel);
 
-    CARAPI NewChannelEx(
+    CARAPI NewChannel(
         /* [in] */ IOutputStream * pOutputStream,
         /* [out] */ IWritableByteChannel ** ppOutputChannel);
 
@@ -40,7 +40,7 @@ public:
         /* [in] */ Int32 minBufferCapacity,
         /* [out] */ IReader ** ppReader);
 
-    CARAPI NewReaderEx(
+    CARAPI NewReader(
         /* [in] */ IReadableByteChannel * pChannel,
         /* [in] */ const String& charsetName,
         /* [out] */ IReader ** ppReader);
@@ -51,7 +51,7 @@ public:
         /* [in] */ Int32 minBufferCapacity,
         /* [out] */ IWriter ** ppWriter);
 
-    CARAPI NewWriterEx(
+    CARAPI NewWriter(
         /* [in] */ IWritableByteChannel * pChannel,
         /* [in] */ const String& charsetName,
         /* [out] */ IWriter ** ppWriter);

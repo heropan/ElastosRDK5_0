@@ -1,11 +1,9 @@
 #include "AbstractSelectableChannel.h"
 #include <Elastos.CoreLibrary_server.h>
-#include <elastos/Thread.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::Thread;
-using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace IO {

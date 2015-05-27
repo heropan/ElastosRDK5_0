@@ -55,7 +55,7 @@ protected:
      * @throws IOException
      *             if an error occurs while writing to this writer.
      */
-    CARAPI WriteCharsEx(
+    CARAPI WriteChars(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -86,7 +86,7 @@ protected:
      * @throws IOException
      *             if an error occurs while writing to this writer.
      */
-    CARAPI WriteStringEx(
+    CARAPI WriteString(
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);

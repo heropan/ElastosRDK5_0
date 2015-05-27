@@ -73,14 +73,14 @@ public:
     CARAPI GetInt64(
         /* [out] */ Int64* value);
 
-    CARAPI GetInt64Ex(
+    CARAPI GetInt64(
         /* [in] */ Int32 index,
         /* [out] */ Int64* value);
 
     CARAPI GetInt64s(
         /* [out] */ ArrayOf<Int64>* dst);
 
-    CARAPI GetInt64sEx(
+    CARAPI GetInt64s(
         /* [out] */ ArrayOf<Int64>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int64Count);
@@ -91,14 +91,14 @@ public:
     CARAPI PutInt64(
         /* [in] */ Int64 d);
 
-    CARAPI PutInt64Ex(
+    CARAPI PutInt64(
         /* [in] */ Int32 index,
         /* [in] */ Int64 d);
 
     CARAPI PutInt64s(
         /* [in] */ const ArrayOf<Int64>& src);
 
-    CARAPI PutInt64sEx(
+    CARAPI PutInt64s(
         /* [in] */ const ArrayOf<Int64>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 int64Count);

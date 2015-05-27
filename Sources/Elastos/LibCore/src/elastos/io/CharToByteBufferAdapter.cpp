@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CharToByteBufferAdapter.h"
 #include "ByteBuffer.h"
 #include "DirectByteBuffer.h"
@@ -193,7 +193,7 @@ ECode CharToByteBufferAdapter::GetChar(
     return mByteBuffer->GetCharEx(mPosition++ * sizeof(Char32), value);
 }
 
-ECode CharToByteBufferAdapter::GetCharEx(
+ECode CharToByteBufferAdapter::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -207,7 +207,7 @@ ECode CharToByteBufferAdapter::GetChars(
     return CharBuffer::GetChars(dst);
 }
 
-ECode CharToByteBufferAdapter::GetCharsEx(
+ECode CharToByteBufferAdapter::GetChars(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
@@ -246,7 +246,7 @@ ECode CharToByteBufferAdapter::PutChar(
     return mByteBuffer->PutCharEx(mPosition++ * sizeof(Char32), c);
 }
 
-ECode CharToByteBufferAdapter::PutCharEx(
+ECode CharToByteBufferAdapter::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 c)
 {
@@ -260,7 +260,7 @@ ECode CharToByteBufferAdapter::PutChars(
     return CharBuffer::PutChars(src);
 }
 
-ECode CharToByteBufferAdapter::PutCharsEx(
+ECode CharToByteBufferAdapter::PutChars(
     /* [in] */ const ArrayOf<Char32>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
@@ -290,7 +290,7 @@ ECode CharToByteBufferAdapter::PutString(
     return CharBuffer::PutString(str);
 }
 
-ECode CharToByteBufferAdapter::PutStringEx(
+ECode CharToByteBufferAdapter::PutString(
     /* [in] */ const String& str,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -348,7 +348,7 @@ ECode CharToByteBufferAdapter::AppendChars(
     return CharBuffer::AppendChars(csq);
 }
 
-ECode CharToByteBufferAdapter::AppendCharsEx(
+ECode CharToByteBufferAdapter::AppendChars(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

@@ -27,7 +27,7 @@ public:
     static CARAPI CloseQuietly(
         /* [in] */ ISocket* socket);
 
-    static CARAPI CloseQuietlyEx(
+    static CARAPI CloseQuietly(
         /* [in] */ IFileDescriptor* fd);
 
     /**

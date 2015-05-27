@@ -125,7 +125,7 @@ ECode CharsetDecoder::Decode(
     return NOERROR;
 }
 
-ECode CharsetDecoder::DecodeEx(
+ECode CharsetDecoder::Decode(
     /* [in] */ IByteBuffer* byteBuffer,
     /* [in] */ ICharBuffer* charBuffer,
     /* [in] */ Boolean endOfInput,

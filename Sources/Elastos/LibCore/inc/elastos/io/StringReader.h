@@ -99,7 +99,7 @@ public:
      * @throws IOException
      *             if this reader is closed.
      */
-    CARAPI ReadCharsEx(
+    CARAPI ReadChars(
         /* [out] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

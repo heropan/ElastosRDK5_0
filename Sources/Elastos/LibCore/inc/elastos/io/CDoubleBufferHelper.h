@@ -54,7 +54,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code doubleCount} is invalid.
      */
-    CARAPI WrapArrayEx(
+    CARAPI WrapArray(
         /* [in] */ ArrayOf<Double>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 doubleCount,

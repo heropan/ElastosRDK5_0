@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CPrintStream.h"
 #include "CFile.h"
 #include "CCharsetHelper.h"
@@ -181,7 +181,7 @@ ECode CPrintStream::Format(
     return FormatEx(ouloc, format, args, pw);
 }
 
-ECode CPrintStream::FormatEx(
+ECode CPrintStream::Format(
     /* [in] */ ILocale* l,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args,
@@ -209,7 +209,7 @@ ECode CPrintStream::Printf(
     return Format(format, args, pw);
 }
 
-ECode CPrintStream::PrintfEx(
+ECode CPrintStream::Printf(
     /* [in] */ ILocale* l,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args,
@@ -413,7 +413,7 @@ ECode CPrintStream::WriteBytes(
     return FilterOutputStream::WriteBytes(buffer);
 }
 
-ECode CPrintStream::WriteBytesEx(
+ECode CPrintStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -461,7 +461,7 @@ ECode CPrintStream::AppendCharSequence(
     return NOERROR;
 }
 
-ECode CPrintStream::AppendCharSequenceEx(
+ECode CPrintStream::AppendCharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

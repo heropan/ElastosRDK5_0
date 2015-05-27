@@ -99,7 +99,7 @@ module
     * @throws IOException
     *             if an I/O error occurs.
     */
-    SelectEx(
+    Select(
         [in] Int64 timeout,
         [out] Int32*ret);
 

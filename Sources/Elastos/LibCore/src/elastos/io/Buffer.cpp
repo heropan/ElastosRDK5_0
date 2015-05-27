@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Buffer.h"
 #include "elastos/StringBuilder.h"
 

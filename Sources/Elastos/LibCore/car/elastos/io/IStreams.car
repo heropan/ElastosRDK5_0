@@ -42,7 +42,7 @@ module
          *@sa java.io.DataInputStream#readFully(byte[], int, int)
          *
          */
-        ReadFullyEx(
+        ReadFully(
             [in] IInputStream* instream,
             [in] Int32 offset,
             [in] Int32 byteCount,

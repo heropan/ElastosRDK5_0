@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "SequenceInputStream.h"
 #include "CObjectContainer.h"
 
@@ -94,7 +94,7 @@ ECode SequenceInputStream::Read(
     return -1;
 }
 
-ECode SequenceInputStream::ReadBytesEx(
+ECode SequenceInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,

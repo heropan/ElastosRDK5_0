@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CPushbackReader.h"
 
 namespace Elastos {
@@ -42,7 +42,7 @@ ECode CPushbackReader::ReadChars(
     return PushbackReader::ReadChars(buffer, number);
 }
 
-ECode CPushbackReader::ReadCharsEx(
+ECode CPushbackReader::ReadChars(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
@@ -97,7 +97,7 @@ ECode CPushbackReader::UnreadChars(
     return PushbackReader::UnreadChars(buffer);
 }
 
-ECode CPushbackReader::UnreadCharsEx(
+ECode CPushbackReader::UnreadChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)

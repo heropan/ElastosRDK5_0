@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CFileReader.h"
 #include "CFileInputStream.h"
 
@@ -75,7 +75,7 @@ ECode CFileReader::ReadChars(
     return FileReader::ReadChars(buffer, number);
 }
 
-ECode CFileReader::ReadCharsEx(
+ECode CFileReader::ReadChars(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,

@@ -36,11 +36,11 @@ public:
     CARAPI GetInt32(
         /* [out] */ Int32* value);
 
-    CARAPI GetInt32Ex(
+    CARAPI GetInt32(
         /* [in] */ Int32 index,
         /* [out] */ Int32* value);
 
-    CARAPI GetInt32sEx(
+    CARAPI GetInt32s(
         /* [out] */ ArrayOf<Int32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int32Count);

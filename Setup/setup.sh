@@ -8,8 +8,8 @@ do
   if [ `echo $i | grep SDK` ]; then
     sed "s#~/ElastosSDK/Setup#$PWD#g" -i ~/Desktop/$i
   else
-    sed "s#~/ElastosRDK4_2_2/Setup#$PWD#g" -i ~/Desktop/$i
-  fi 
+    sed "s#~/ElastosRDK5_0/Setup#$PWD#g" -i ~/Desktop/$i
+  fi
 done
 
 # create Init for env
@@ -18,6 +18,6 @@ do
   if [ `echo $i | grep SDK` ]; then
     sed "s#~/ElastosSDK/Setup#$PWD#g" -i $PWD/$i
   else
-    sed "s#~/ElastosRDK4_2_2/Setup#$PWD#g" -i $PWD/$i
-  fi 
+    sed "s#~/ElastosRDK5_0/Setup#$PWD#g" -i $PWD/$i
+  fi
 done

@@ -2,7 +2,7 @@
 #ifndef __CHARSETDECODER_H__
 #define __CHARSETDECODER_H__
 
-#include "cmdef.h"
+#include "coredef.h"
 #include <elastos.h>
 
 namespace Elastos {
@@ -157,7 +157,7 @@ public:
      *             method threw an <code>BufferUnderflowException</code> or
      *             <code>BufferOverflowException</code>.
      */
-    CARAPI DecodeEx(
+    CARAPI Decode(
         /* [in] */ IByteBuffer* byteBuffer,
         /* [in] */ ICharBuffer* charBuffer,
         /* [in] */ Boolean endOfInput,

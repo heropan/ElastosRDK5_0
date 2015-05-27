@@ -111,7 +111,7 @@ module
           * @throws CancelledKeyException
           *             if the key has already been canceled.
           */
-          InterestOpsEx(
+          InterestOps(
                [in]  Int32 ops,
                [out] ISelectionKey** key);
 

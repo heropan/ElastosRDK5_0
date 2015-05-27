@@ -19,7 +19,7 @@ ECode CDoubleBufferHelper::WrapArray(
     return DoubleBuffer::WrapArray(array, doubleBuf);
 }
 
-ECode CDoubleBufferHelper::WrapArrayEx(
+ECode CDoubleBufferHelper::WrapArray(
     /* [in] */ ArrayOf<Double>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 doubleCount,

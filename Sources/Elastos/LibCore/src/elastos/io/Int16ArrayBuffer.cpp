@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Int16ArrayBuffer.h"
 #include "CByteOrderHelper.h"
 
@@ -41,7 +41,7 @@ ECode Int16ArrayBuffer::GetInt16(
     return NOERROR;
 }
 
-ECode Int16ArrayBuffer::GetInt16Ex(
+ECode Int16ArrayBuffer::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {
@@ -51,7 +51,7 @@ ECode Int16ArrayBuffer::GetInt16Ex(
     return NOERROR;
 }
 
-ECode Int16ArrayBuffer::GetInt16sEx(
+ECode Int16ArrayBuffer::GetInt16s(
     /* [out] */ ArrayOf<Int16>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int16Count)

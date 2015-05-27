@@ -123,7 +123,7 @@ public:
      *             if this writer has already been closed or another I/O error
      *             occurs.
      */
-    CARAPI WriteCharsEx(
+    CARAPI WriteChars(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -162,7 +162,7 @@ public:
      *             {@code offset + count} is bigger than the length of
      *             {@code str}.
      */
-    CARAPI WriteStringEx(
+    CARAPI WriteString(
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);

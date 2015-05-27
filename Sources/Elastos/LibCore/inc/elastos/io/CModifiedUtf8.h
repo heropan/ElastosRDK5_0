@@ -33,7 +33,7 @@ public:
         /* [in] */          String*         s,
         /* [out, callee] */ ArrayOf<Byte>**  bytes);
 
-    CARAPI EncodeEx(
+    CARAPI Encode(
         /* [in] */ ArrayOf<Byte>* dst,
         /* [in] */ Int32          offset,
         /* [out] */ String*        s);

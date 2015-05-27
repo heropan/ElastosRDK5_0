@@ -76,7 +76,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code longCount} is invalid.
      */
-    static CARAPI WrapArrayEx(
+    static CARAPI WrapArray(
         /* [in] */ ArrayOf<Int64>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 int64Count,
@@ -184,7 +184,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if index is invalid.
      */
-    virtual CARAPI GetInt64Ex(
+    virtual CARAPI GetInt64(
         /* [in] */ Int32 index,
         /* [out] */ Int64* value) = 0;
 
@@ -223,7 +223,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code longCount} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetInt64sEx(
+    virtual CARAPI GetInt64s(
         /* [out] */ ArrayOf<Int64>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int64Count);
@@ -297,7 +297,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt64Ex(
+    virtual CARAPI PutInt64(
         /* [in] */ Int32 index,
         /* [in] */ Int64 d) = 0;
 
@@ -340,7 +340,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt64sEx(
+    virtual CARAPI PutInt64s(
         /* [in] */ const ArrayOf<Int64>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 int64Count);

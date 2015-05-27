@@ -1,6 +1,6 @@
 
 #include "ReadWriteCharArrayBuffer.h"
-#include "cmdef.h"
+#include "coredef.h"
 #include "ReadOnlyCharArrayBuffer.h"
 
 using Elastos::Core::EIID_ICharSequence;
@@ -172,7 +172,7 @@ ECode ReadWriteCharArrayBuffer::GetChar(
     return CharArrayBuffer::GetChar(value);
 }
 
-ECode ReadWriteCharArrayBuffer::GetCharEx(
+ECode ReadWriteCharArrayBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -185,7 +185,7 @@ ECode ReadWriteCharArrayBuffer::GetChars(
     return CharArrayBuffer::GetChars(dst);
 }
 
-ECode ReadWriteCharArrayBuffer::GetCharsEx(
+ECode ReadWriteCharArrayBuffer::GetChars(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
@@ -235,7 +235,7 @@ ECode ReadWriteCharArrayBuffer::PutChar(
     return NOERROR;
 }
 
-ECode ReadWriteCharArrayBuffer::PutCharEx(
+ECode ReadWriteCharArrayBuffer::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 c)
 {
@@ -250,7 +250,7 @@ ECode ReadWriteCharArrayBuffer::PutChars(
     return CharArrayBuffer::PutChars(src);
 }
 
-ECode ReadWriteCharArrayBuffer::PutCharsEx(
+ECode ReadWriteCharArrayBuffer::PutChars(
     /* [in] */ const ArrayOf<Char32>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
@@ -279,7 +279,7 @@ ECode ReadWriteCharArrayBuffer::PutString(
     return CharArrayBuffer::PutString(str);
 }
 
-ECode ReadWriteCharArrayBuffer::PutStringEx(
+ECode ReadWriteCharArrayBuffer::PutString(
     /* [in] */ const String& str,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -311,7 +311,7 @@ ECode ReadWriteCharArrayBuffer::AppendChars(
     return CharArrayBuffer::AppendChars(csq);
 }
 
-ECode ReadWriteCharArrayBuffer::AppendCharsEx(
+ECode ReadWriteCharArrayBuffer::AppendChars(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

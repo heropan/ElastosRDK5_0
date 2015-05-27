@@ -1,15 +1,13 @@
 #ifndef __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTOR_H__
 #define __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTOR_H__
 
-#include <cmdef.h>
+#include <coredef.h>
 #include <Elastos.CoreLibrary_server.h>
-#include <elastos/Thread.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/Thread.h>
 #include <Selector.h>
 #include <stdio.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace IO {

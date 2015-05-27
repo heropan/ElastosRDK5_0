@@ -175,7 +175,7 @@ public:
      * FileLockInterruptionException | if the thread is interrupted while in the state of waiting on the desired file lock.
      * IOException | if another I/O error occurs.
      */
-    virtual CARAPI LockEx(
+    virtual CARAPI Lock(
         /* [in] */ Int64 position,
         /* [in] */ Int64 size,
         /* [in] */ Boolean shared,
@@ -300,7 +300,7 @@ public:
      * IOException | if another I/O error occurs.
      * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
      */
-    virtual CARAPI ReadByteBufferEx(
+    virtual CARAPI ReadByteBuffer(
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int64 position,
         /* [out] */ Int32* number) = 0;
@@ -361,7 +361,7 @@ public:
      * IOException | if another I/O error occurs; details are in the message.
      * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
      */
-    virtual CARAPI ReadByteBuffersEx(
+    virtual CARAPI ReadByteBuffers(
         /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -521,7 +521,7 @@ public:
      * OverlappingFileLockException | if a lock is already held that overlaps this lock request or another thread is waiting to acquire a lock that will overlap with this request.
      * IOException | if any I/O error occurs.
      */
-    virtual CARAPI TryLockEx(
+    virtual CARAPI TryLock(
         /* [in] */ Int64 position,
         /* [in] */ Int64 size,
         /* [in] */ Boolean shared,
@@ -581,7 +581,7 @@ public:
      * ClosedByInterruptException | if another thread interrupts the calling thread while this operation is in progress. The interrupt state of the calling thread is set and the channel is closed.
      * IOException | if another I/O error occurs.
      */
-    virtual CARAPI WriteByteBufferEx(
+    virtual CARAPI WriteByteBuffer(
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int64 position,
         /* [out] */ Int32* number) = 0;
@@ -641,7 +641,7 @@ public:
      * IOException | if another I/O error occurs; details are in the message.
      * NonWritableChannelException | if this channel was not opened for writing.
      */
-    virtual CARAPI WriteByteBuffersEx(
+    virtual CARAPI WriteByteBuffers(
         /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

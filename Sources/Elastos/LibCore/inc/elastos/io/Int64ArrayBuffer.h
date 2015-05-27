@@ -36,11 +36,11 @@ public:
     CARAPI GetInt64(
         /* [out] */ Int64* value);
 
-    CARAPI GetInt64Ex(
+    CARAPI GetInt64(
         /* [in] */ Int32 index,
         /* [out] */ Int64* value);
 
-    CARAPI GetInt64sEx(
+    CARAPI GetInt64s(
         /* [out] */ ArrayOf<Int64>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int64Count);

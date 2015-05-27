@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CByteBufferHelper.h"
 #include "ByteBuffer.h"
 
@@ -27,7 +27,7 @@ ECode CByteBufferHelper::WrapArray(
     return ByteBuffer::WrapArray(array, byteBuf);
 }
 
-ECode CByteBufferHelper::WrapArrayEx(
+ECode CByteBufferHelper::WrapArray(
     /* [in] */ ArrayOf<Byte>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 byteCount,

@@ -71,14 +71,14 @@ public:
     CARAPI GetFloat(
         /* [out] */ Float* value);
 
-    CARAPI GetFloatEx(
+    CARAPI GetFloat(
         /* [in] */ Int32 index,
         /* [out] */ Float* value);
 
     CARAPI GetFloats(
         /* [out] */ ArrayOf<Float>* dst);
 
-    CARAPI GetFloatsEx(
+    CARAPI GetFloats(
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 floatCount);
@@ -89,14 +89,14 @@ public:
     CARAPI PutFloat(
         /* [in] */ Float d);
 
-    CARAPI PutFloatEx(
+    CARAPI PutFloat(
         /* [in] */ Int32 index,
         /* [in] */ Float d);
 
     CARAPI PutFloats(
         /* [in] */ const ArrayOf<Float>& src);
 
-    CARAPI PutFloatsEx(
+    CARAPI PutFloats(
         /* [in] */ const ArrayOf<Float>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 floatCount);

@@ -41,7 +41,7 @@ public:
         /* [in] */ IInterface* obj,
         /* [out] */ Int32* result);
 
-    CARAPI CompareToEx(
+    CARAPI CompareTo(
         /* [in] */ IFile* another,
         /* [out] */ Int32* result);
 
@@ -115,14 +115,14 @@ public:
     CARAPI List(
         /* [out, callee] */ ArrayOf<String>** files);
 
-    CARAPI ListEx(
+    CARAPI List(
         /* [in] */ IFilenameFilter* filter,
         /* [out, callee] */ ArrayOf<String>** files);
 
     CARAPI ListFiles(
         /* [out, callee] */ ArrayOf<IFile*>** files);
 
-    CARAPI ListFilesEx(
+    CARAPI ListFiles(
         /* [in] */ IFilenameFilter* filter,
         /* [out, callee] */ ArrayOf<IFile*>** files);
 
@@ -152,7 +152,7 @@ public:
         /* [in] */ Boolean ownerOnly,
         /* [out] */ Boolean* succeeded);
 
-    CARAPI SetExecutableEx(
+    CARAPI SetExecutable(
         /* [in] */ Boolean executable,
         /* [out] */ Boolean* succeeded);
 
@@ -161,7 +161,7 @@ public:
         /* [in] */ Boolean ownerOnly,
         /* [out] */ Boolean* succeeded);
 
-    CARAPI SetReadableEx(
+    CARAPI SetReadable(
         /* [in] */ Boolean readable,
         /* [out] */ Boolean* succeeded);
 
@@ -170,7 +170,7 @@ public:
         /* [in] */ Boolean ownerOnly,
         /* [out] */ Boolean* succeeded);
 
-    CARAPI SetWritableEx(
+    CARAPI SetWritable(
         /* [in] */ Boolean writable,
         /* [out] */ Boolean* succeeded);
 

@@ -10,8 +10,6 @@ module
     /**
     * @Involve
     * interface Elastos.IO.Channels.IChannel;
-    * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
-    * interface Elastos.IO.Channels.Spi.IAbstractSelectableChannel
     */
     interface ISourceChannel {
         // extended from IReadableByteChannel
@@ -24,7 +22,7 @@ module
             [out] Int64* ret);
 
         // extended from IScatteringByteChannel
-        ReadByteBuffersEx(
+        ReadByteBuffers(
             [in] ArrayOf<IByteBuffer*> buffers,
             [in] Int32 offset,
             [in] Int32 length,

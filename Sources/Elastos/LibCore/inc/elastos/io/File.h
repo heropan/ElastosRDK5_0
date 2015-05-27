@@ -77,7 +77,7 @@ public:
         /* [in] */ IInterface* obj,
         /* [out] */ Int32* result);
 
-    virtual CARAPI CompareToEx(
+    virtual CARAPI CompareTo(
         /* [in] */ IFile* another,
         /* [out] */ Int32* result);
 

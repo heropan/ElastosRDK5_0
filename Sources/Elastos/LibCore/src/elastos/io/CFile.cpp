@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CFile.h"
 
 namespace Elastos {
@@ -71,7 +71,7 @@ ECode CFile::CompareTo(
     return File::CompareTo(obj, result);
 }
 
-ECode CFile::CompareToEx(
+ECode CFile::CompareTo(
     /* [in] */ IFile* another,
     /* [out] */ Int32* result)
 {
@@ -266,7 +266,7 @@ ECode CFile::List(
     return File::List(files);
 }
 
-ECode CFile::ListEx(
+ECode CFile::List(
     /* [in] */ IFilenameFilter* filter,
     /* [out, callee] */ ArrayOf<String>** files)
 {
@@ -285,7 +285,7 @@ ECode CFile::ListFiles(
     return File::ListFiles(files);
 }
 
-ECode CFile::ListFilesEx(
+ECode CFile::ListFiles(
     /* [in] */ IFilenameFilter* filter,
     /* [out, callee] */ ArrayOf<IFile*>** files)
 {
@@ -361,7 +361,7 @@ ECode CFile::SetExecutable(
     return File::SetExecutable(executable, ownerOnly, succeeded);
 }
 
-ECode CFile::SetExecutableEx(
+ECode CFile::SetExecutable(
     /* [in] */ Boolean executable,
     /* [out] */ Boolean* succeeded)
 {
@@ -380,7 +380,7 @@ ECode CFile::SetReadable(
     return File::SetReadable(readable, ownerOnly, succeeded);
 }
 
-ECode CFile::SetReadableEx(
+ECode CFile::SetReadable(
     /* [in] */ Boolean readable,
     /* [out] */ Boolean* succeeded)
 {
@@ -399,7 +399,7 @@ ECode CFile::SetWritable(
     return File::SetWritable(writable, ownerOnly, succeeded);
 }
 
-ECode CFile::SetWritableEx(
+ECode CFile::SetWritable(
     /* [in] */ Boolean writable,
     /* [out] */ Boolean* succeeded)
 {

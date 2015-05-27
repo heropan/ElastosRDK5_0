@@ -5,7 +5,7 @@
 #define __USE_MALLOC
 #endif
 
-#include <cmdef.h>
+#include <coredef.h>
 #include <Elastos.CoreLibrary_server.h>
 #include <elastos/HashMap.h>
 #include <elastos/HashSet.h>
@@ -73,7 +73,7 @@ public:
     CARAPI DisplayName(
         /* [out] */ String* name);
 
-    CARAPI DisplayNameEx(
+    CARAPI DisplayName(
         /* [in] */ ILocale* l,
         /* [out] */ String* name);
 
@@ -87,7 +87,7 @@ public:
         /* [in] */ ICharBuffer* buffer,
         /* [out] */ IByteBuffer** byteBuffer);
 
-    CARAPI EncodeEx(
+    CARAPI Encode(
         /* [in] */ const String& s,
         /* [out] */ IByteBuffer** byteBuffer);
 

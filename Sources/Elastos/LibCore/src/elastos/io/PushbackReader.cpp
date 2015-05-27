@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "PushbackReader.h"
 #include <elastos/Character.h>
 
@@ -94,7 +94,7 @@ ECode PushbackReader::CheckNotClosed()
     return NOERROR;
 }
 
-ECode PushbackReader::ReadCharsEx(
+ECode PushbackReader::ReadChars(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
@@ -200,7 +200,7 @@ ECode PushbackReader::UnreadChars(
     return UnreadCharsEx(buffer, 0, buffer.GetLength());
 }
 
-ECode PushbackReader::UnreadCharsEx(
+ECode PushbackReader::UnreadChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)

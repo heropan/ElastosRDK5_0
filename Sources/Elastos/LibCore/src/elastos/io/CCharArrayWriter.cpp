@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CCharArrayWriter.h"
 
 namespace Elastos {
@@ -27,7 +27,7 @@ ECode CCharArrayWriter::WriteChars(
     return CharArrayWriter::WriteChars(buffer);
 }
 
-ECode CCharArrayWriter::WriteCharsEx(
+ECode CCharArrayWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -41,7 +41,7 @@ ECode CCharArrayWriter::WriteString(
     return CharArrayWriter::WriteString(str);
 }
 
-ECode CCharArrayWriter::WriteStringEx(
+ECode CCharArrayWriter::WriteString(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -61,7 +61,7 @@ ECode CCharArrayWriter::AppendCharSequence(
     return CharArrayWriter::AppendCharSequence(csq);
 }
 
-ECode CCharArrayWriter::AppendCharSequenceEx(
+ECode CCharArrayWriter::AppendCharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

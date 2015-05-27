@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CPrintWriter.h"
 
 using Elastos::Core::EIID_IAppendable;
@@ -88,7 +88,7 @@ ECode CPrintWriter::Format(
     return PrintWriter::Format(format, args);
 }
 
-ECode CPrintWriter::FormatEx(
+ECode CPrintWriter::Format(
     /* [in] */ ILocale* l,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
@@ -103,7 +103,7 @@ ECode CPrintWriter::Printf(
     return PrintWriter::Printf(format, args);
 }
 
-ECode CPrintWriter::PrintfEx(
+ECode CPrintWriter::Printf(
     /* [in] */ ILocale* l,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
@@ -238,7 +238,7 @@ ECode CPrintWriter::WriteChars(
     return PrintWriter::WriteChars(buffer);
 }
 
-ECode CPrintWriter::WriteCharsEx(
+ECode CPrintWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -252,7 +252,7 @@ ECode CPrintWriter::WriteString(
     return PrintWriter::WriteString(str);
 }
 
-ECode CPrintWriter::WriteStringEx(
+ECode CPrintWriter::WriteString(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -272,7 +272,7 @@ ECode CPrintWriter::AppendCharSequence(
     return PrintWriter::AppendCharSequence(csq);
 }
 
-ECode CPrintWriter::AppendCharSequenceEx(
+ECode CPrintWriter::AppendCharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

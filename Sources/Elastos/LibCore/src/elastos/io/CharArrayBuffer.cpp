@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CharArrayBuffer.h"
 #include "CByteOrderHelper.h"
 #include <elastos/StringBuilder.h>
@@ -45,7 +45,7 @@ ECode CharArrayBuffer::GetChar(
     return NOERROR;
 }
 
-ECode CharArrayBuffer::GetCharEx(
+ECode CharArrayBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -55,7 +55,7 @@ ECode CharArrayBuffer::GetCharEx(
     return NOERROR;
 }
 
-ECode CharArrayBuffer::GetCharsEx(
+ECode CharArrayBuffer::GetChars(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)

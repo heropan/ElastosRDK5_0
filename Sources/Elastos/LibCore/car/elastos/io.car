@@ -103,13 +103,11 @@ module
 
     merge("io/channels/IInterruptibleChannel.car");
     merge("io/channels/IFileChannel.car");
-    merge("io/channels/spi/IAbstractInterruptibleChannel.car");
     merge("io/channels/ISelectableChannel.car");
     merge("io/channels/ISelectionKey.car");
     merge("io/channels/ISelector.car");
     merge("io/channels/ISocketChannel.car");
     merge("io/channels/IServerSocketChannel.car");
-    merge("io/channels/spi/IAbstractSelectableChannel.car");
 
     merge("io/channels/IDatagramChannel.car");
     merge("io/channels/ISinkChannel.car");
@@ -119,7 +117,6 @@ module
 
     merge("io/channels/spi/ISelectorProvider.car");
     merge("io/channels/spi/IAbstractSelector.car");
-    merge("io/channels/spi/IAbstractSelectionKey.car");
     merge("io/charset/ICharset.car");
     merge("io/charset/ICoderResult.car");
     merge("io/charset/ICharsetDecoder.car");

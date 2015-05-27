@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Int64ToByteBufferAdapter.h"
 #include "ByteBuffer.h"
 #include "DirectByteBuffer.h"
@@ -189,7 +189,7 @@ ECode Int64ToByteBufferAdapter::GetInt64(
     return mByteBuffer->GetInt64Ex(mPosition++ * sizeof(Int64), value);
 }
 
-ECode Int64ToByteBufferAdapter::GetInt64Ex(
+ECode Int64ToByteBufferAdapter::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
@@ -203,7 +203,7 @@ ECode Int64ToByteBufferAdapter::GetInt64s(
     return Int64Buffer::GetInt64s(dst);
 }
 
-ECode Int64ToByteBufferAdapter::GetInt64sEx(
+ECode Int64ToByteBufferAdapter::GetInt64s(
     /* [out] */ ArrayOf<Int64>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int64Count)
@@ -236,7 +236,7 @@ ECode Int64ToByteBufferAdapter::PutInt64(
     return mByteBuffer->PutInt64Ex(mPosition++ * sizeof(Int64), c);
 }
 
-ECode Int64ToByteBufferAdapter::PutInt64Ex(
+ECode Int64ToByteBufferAdapter::PutInt64(
     /* [in] */ Int32 index,
     /* [in] */ Int64 c)
 {
@@ -250,7 +250,7 @@ ECode Int64ToByteBufferAdapter::PutInt64s(
     return Int64Buffer::PutInt64s(src);
 }
 
-ECode Int64ToByteBufferAdapter::PutInt64sEx(
+ECode Int64ToByteBufferAdapter::PutInt64s(
     /* [in] */ const ArrayOf<Int64>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int64Count)

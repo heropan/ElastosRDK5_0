@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Int32ToByteBufferAdapter.h"
 #include "ByteBuffer.h"
 #include "DirectByteBuffer.h"
@@ -189,7 +189,7 @@ ECode Int32ToByteBufferAdapter::GetInt32(
     return mByteBuffer->GetInt32Ex(mPosition++ * sizeof(Int32), value);
 }
 
-ECode Int32ToByteBufferAdapter::GetInt32Ex(
+ECode Int32ToByteBufferAdapter::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
@@ -203,7 +203,7 @@ ECode Int32ToByteBufferAdapter::GetInt32s(
     return Int32Buffer::GetInt32s(dst);
 }
 
-ECode Int32ToByteBufferAdapter::GetInt32sEx(
+ECode Int32ToByteBufferAdapter::GetInt32s(
     /* [out] */ ArrayOf<Int32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int32Count)
@@ -236,7 +236,7 @@ ECode Int32ToByteBufferAdapter::PutInt32(
     return mByteBuffer->PutInt32Ex(mPosition++ * sizeof(Int32), c);
 }
 
-ECode Int32ToByteBufferAdapter::PutInt32Ex(
+ECode Int32ToByteBufferAdapter::PutInt32(
     /* [in] */ Int32 index,
     /* [in] */ Int32 c)
 {
@@ -250,7 +250,7 @@ ECode Int32ToByteBufferAdapter::PutInt32s(
     return Int32Buffer::PutInt32s(src);
 }
 
-ECode Int32ToByteBufferAdapter::PutInt32sEx(
+ECode Int32ToByteBufferAdapter::PutInt32s(
     /* [in] */ const ArrayOf<Int32>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int32Count)

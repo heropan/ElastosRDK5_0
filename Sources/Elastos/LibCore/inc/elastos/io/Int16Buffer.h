@@ -76,7 +76,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code shortCount} is invalid.
      */
-    static CARAPI WrapArrayEx(
+    static CARAPI WrapArray(
         /* [in] */ ArrayOf<Int16>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 int16Count,
@@ -185,7 +185,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if index is invalid.
      */
-    virtual CARAPI GetInt16Ex(
+    virtual CARAPI GetInt16(
         /* [in] */ Int32 index,
         /* [out] */ Int16* value) = 0;
 
@@ -224,7 +224,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code shortCount} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetInt16sEx(
+    virtual CARAPI GetInt16s(
         /* [out] */ ArrayOf<Int16>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int16Count);
@@ -298,7 +298,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt16Ex(
+    virtual CARAPI PutInt16(
         /* [in] */ Int32 index,
         /* [in] */ Int16 d) = 0;
 
@@ -341,7 +341,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt16sEx(
+    virtual CARAPI PutInt16s(
         /* [in] */ const ArrayOf<Int16>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 int16Count);

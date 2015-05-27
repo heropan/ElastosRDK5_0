@@ -21,7 +21,7 @@ public:
             /* [in] */ Int32 offset,
             /* [in] */ Int32 length);
 
-    CARAPI WriteEx(
+    CARAPI Write(
             /* [in] */ Int32 b);
 
     CARAPI ToByteArray(

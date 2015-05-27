@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Int32Buffer.h"
 #include "ReadWriteInt32ArrayBuffer.h"
 
@@ -38,7 +38,7 @@ ECode Int32Buffer::WrapArray(
     return WrapArrayEx(array, 0, array->GetLength(), buf);
 }
 
-ECode Int32Buffer::WrapArrayEx(
+ECode Int32Buffer::WrapArray(
     /* [in] */ ArrayOf<Int32>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int32Count,
@@ -145,7 +145,7 @@ ECode Int32Buffer::GetInt32s(
     return GetInt32sEx(dst, 0, dst->GetLength());
 }
 
-ECode Int32Buffer::GetInt32sEx(
+ECode Int32Buffer::GetInt32s(
     /* [out] */ ArrayOf<Int32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int32Count)
@@ -183,7 +183,7 @@ ECode Int32Buffer::PutInt32s(
     return PutInt32sEx(src, 0, src.GetLength());
 }
 
-ECode Int32Buffer::PutInt32sEx(
+ECode Int32Buffer::PutInt32s(
     /* [in] */ const ArrayOf<Int32>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int32Count)

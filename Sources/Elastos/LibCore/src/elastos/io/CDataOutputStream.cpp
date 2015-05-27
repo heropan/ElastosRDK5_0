@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CDataOutputStream.h"
 
 namespace Elastos {
@@ -53,7 +53,7 @@ ECode CDataOutputStream::WriteBytes(
     return DataOutputStream::WriteBytes(buffer);
 }
 
-ECode CDataOutputStream::WriteBytesEx(
+ECode CDataOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)

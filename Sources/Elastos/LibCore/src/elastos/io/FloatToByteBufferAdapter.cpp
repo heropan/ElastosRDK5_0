@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "FloatToByteBufferAdapter.h"
 #include "ByteBuffer.h"
 #include "DirectByteBuffer.h"
@@ -191,7 +191,7 @@ ECode FloatToByteBufferAdapter::GetFloat(
     return mByteBuffer->GetFloatEx(mPosition++ * sizeof(Float), value);
 }
 
-ECode FloatToByteBufferAdapter::GetFloatEx(
+ECode FloatToByteBufferAdapter::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
@@ -205,7 +205,7 @@ ECode FloatToByteBufferAdapter::GetFloats(
     return FloatBuffer::GetFloats(dst);
 }
 
-ECode FloatToByteBufferAdapter::GetFloatsEx(
+ECode FloatToByteBufferAdapter::GetFloats(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 floatCount)
@@ -238,7 +238,7 @@ ECode FloatToByteBufferAdapter::PutFloat(
     return mByteBuffer->PutFloatEx(mPosition++ * sizeof(Float), c);
 }
 
-ECode FloatToByteBufferAdapter::PutFloatEx(
+ECode FloatToByteBufferAdapter::PutFloat(
     /* [in] */ Int32 index,
     /* [in] */ Float c)
 {
@@ -252,7 +252,7 @@ ECode FloatToByteBufferAdapter::PutFloats(
     return FloatBuffer::PutFloats(src);
 }
 
-ECode FloatToByteBufferAdapter::PutFloatsEx(
+ECode FloatToByteBufferAdapter::PutFloats(
     /* [in] */ const ArrayOf<Float>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 floatCount)

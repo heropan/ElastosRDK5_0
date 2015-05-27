@@ -118,7 +118,7 @@ public:
      *             if this reader is closed or another I/O error occurs while
      *             reading from this reader.
      */
-    CARAPI ReadCharsEx(
+    CARAPI ReadChars(
         /* [out] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
@@ -218,7 +218,7 @@ public:
      * @throws NullPointerException
      *             if {@code buffer} is {@code null}.
      */
-    CARAPI UnreadCharsEx(
+    CARAPI UnreadChars(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length);

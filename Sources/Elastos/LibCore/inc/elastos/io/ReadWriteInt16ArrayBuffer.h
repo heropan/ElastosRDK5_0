@@ -79,14 +79,14 @@ public:
     CARAPI GetInt16(
         /* [out] */ Int16* value);
 
-    CARAPI GetInt16Ex(
+    CARAPI GetInt16(
         /* [in] */ Int32 index,
         /* [out] */ Int16* value);
 
     CARAPI GetInt16s(
         /* [out] */ ArrayOf<Int16>* dst);
 
-    CARAPI GetInt16sEx(
+    CARAPI GetInt16s(
         /* [out] */ ArrayOf<Int16>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int16Count);
@@ -97,14 +97,14 @@ public:
     CARAPI PutInt16(
         /* [in] */ Int16 d);
 
-    CARAPI PutInt16Ex(
+    CARAPI PutInt16(
         /* [in] */ Int32 index,
         /* [in] */ Int16 d);
 
     CARAPI PutInt16s(
         /* [in] */ const ArrayOf<Int16>& src);
 
-    CARAPI PutInt16sEx(
+    CARAPI PutInt16s(
         /* [in] */ const ArrayOf<Int16>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 int16Count);

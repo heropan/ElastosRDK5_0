@@ -19,7 +19,7 @@ ECode CInt32BufferHelper::WrapArray(
     return Int32Buffer::WrapArray(array, int32Buffer);
 }
 
-ECode CInt32BufferHelper::WrapArrayEx(
+ECode CInt32BufferHelper::WrapArray(
     /* [in] */ ArrayOf<Int32>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int32Count,

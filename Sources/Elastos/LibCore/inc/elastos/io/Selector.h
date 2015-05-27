@@ -2,11 +2,9 @@
 #define __ELASTOS_IO_CHANNELS_SELECTOR_H__
 
 #include <Elastos.CoreLibrary_server.h>
-#include <elastos/Thread.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Utility::ISet;
 using Elastos::IO::Channels::Spi::ISelectorProvider;
 
@@ -95,7 +93,7 @@ public:
      * @throws IOException
      *             if an I/O error occurs.
      */
-    virtual CARAPI SelectEx(
+    virtual CARAPI Select(
         /* [in] */ Int64 timeout,
         /* [out] */ Int32* ret) = 0;
 

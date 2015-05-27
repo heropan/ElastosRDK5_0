@@ -1,6 +1,6 @@
 
 #include "CModifiedUtf8.h"
-#include <cmdef.h>
+#include <coredef.h>
 #include <stdio.h>
 
 namespace Elastos {
@@ -73,7 +73,7 @@ ECode CModifiedUtf8::CountBytes(
     return NOERROR;
 }
 
-ECode CModifiedUtf8::EncodeEx(
+ECode CModifiedUtf8::Encode(
     /* [in] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 offset,
     /* [in] */ String* s)

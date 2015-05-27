@@ -77,7 +77,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if index is invalid.
          */
-        GetFloatEx(
+        GetFloat(
             [in] Int32 index,
             [out] Float* value);
 
@@ -116,7 +116,7 @@ module
          * @exception BufferUnderflowException
          *                if {len} is greater than {remaining()}.
          */
-        GetFloatsEx(
+        GetFloats(
             [out] ArrayOf<Float> dst,
             [in] Int32 dstOffset,
             [in] Int32 floatCount);
@@ -163,7 +163,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutFloatEx(
+        PutFloat(
             [in] Int32 index,
             [in] Float f);
 
@@ -206,7 +206,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutFloatsEx(
+        PutFloats(
             [in] ArrayOf<Float> src,
             [in] Int32 srcOffset,
             [in] Int32 floatCount);
@@ -300,7 +300,7 @@ module
          * @exception NullPointerException
          *                if {array} is null.
          */
-        WrapArrayEx(
+        WrapArray(
             [in] ArrayOf<Float>* array,
             [in] Int32 start,
             [in] Int32 floatCount,

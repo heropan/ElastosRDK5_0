@@ -123,7 +123,7 @@ public:
      * @throws CancelledKeyException
      *             if the key has already been canceled.
      */
-    virtual CARAPI InterestOpsEx(
+    virtual CARAPI InterestOps(
         /* [in] */ Int32 ops,
         /* [out] */ ISelectionKey** key) = 0;
 

@@ -55,7 +55,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code shortCount} is invalid.
      */
-    CARAPI WrapArrayEx(
+    CARAPI WrapArray(
         /* [in] */ ArrayOf<Int16>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 int16Count,

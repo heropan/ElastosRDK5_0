@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "StringBufferInputStream.h"
 
 namespace Elastos {
@@ -47,7 +47,7 @@ ECode StringBufferInputStream::Read(
     return NOERROR;
 }
 
-ECode StringBufferInputStream::ReadBytesEx(
+ECode StringBufferInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,

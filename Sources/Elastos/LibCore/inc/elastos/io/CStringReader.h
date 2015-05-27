@@ -27,7 +27,7 @@ public:
         /* [out] */ ArrayOf<Char32>* buffer,
         /* [out] */ Int32* number);
 
-    CARAPI ReadCharsEx(
+    CARAPI ReadChars(
         /* [out] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,

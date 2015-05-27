@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "DoubleToByteBufferAdapter.h"
 #include "ByteBuffer.h"
 #include "DirectByteBuffer.h"
@@ -189,7 +189,7 @@ ECode DoubleToByteBufferAdapter::GetDouble(
     return mByteBuffer->GetDoubleEx(mPosition++ * sizeof(Double), value);
 }
 
-ECode DoubleToByteBufferAdapter::GetDoubleEx(
+ECode DoubleToByteBufferAdapter::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
@@ -203,7 +203,7 @@ ECode DoubleToByteBufferAdapter::GetDoubles(
     return DoubleBuffer::GetDoubles(dst);
 }
 
-ECode DoubleToByteBufferAdapter::GetDoublesEx(
+ECode DoubleToByteBufferAdapter::GetDoubles(
     /* [out] */ ArrayOf<Double>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 doubleCount)
@@ -236,7 +236,7 @@ ECode DoubleToByteBufferAdapter::PutDouble(
     return mByteBuffer->PutDoubleEx(mPosition++ * sizeof(Double), c);
 }
 
-ECode DoubleToByteBufferAdapter::PutDoubleEx(
+ECode DoubleToByteBufferAdapter::PutDouble(
     /* [in] */ Int32 index,
     /* [in] */ Double c)
 {
@@ -250,7 +250,7 @@ ECode DoubleToByteBufferAdapter::PutDoubles(
     return DoubleBuffer::PutDoubles(src);
 }
 
-ECode DoubleToByteBufferAdapter::PutDoublesEx(
+ECode DoubleToByteBufferAdapter::PutDoubles(
     /* [in] */ const ArrayOf<Double>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 doubleCount)

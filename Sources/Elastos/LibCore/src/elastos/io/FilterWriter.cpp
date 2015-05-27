@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "FilterWriter.h"
 
 namespace Elastos {
@@ -42,7 +42,7 @@ ECode FilterWriter::Flush()
     return IFlushable::Probe(mOut)->Flush();
 }
 
-ECode FilterWriter::WriteCharsEx(
+ECode FilterWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -62,7 +62,7 @@ ECode FilterWriter::Write(
     return mOut->Write(oneChar32);
 }
 
-ECode FilterWriter::WriteStringEx(
+ECode FilterWriter::WriteString(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)

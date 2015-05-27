@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "HeapByteBuffer.h"
 #include <elastos/Math.h>
 #include "Memory.h"
@@ -37,7 +37,7 @@ HeapByteBuffer::HeapByteBuffer(
     assert(offset + capacity <= backingArray->GetLength());
 }
 
-ECode HeapByteBuffer::GetBytesEx(
+ECode HeapByteBuffer::GetBytes(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
@@ -51,7 +51,7 @@ ECode HeapByteBuffer::GetBytesEx(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetCharsEx(
+ECode HeapByteBuffer::GetChars(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
@@ -70,7 +70,7 @@ ECode HeapByteBuffer::GetCharsEx(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetDoublesEx(
+ECode HeapByteBuffer::GetDoubles(
     /* [out] */ ArrayOf<Double>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 doubleCount)
@@ -89,7 +89,7 @@ ECode HeapByteBuffer::GetDoublesEx(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetFloatsEx(
+ECode HeapByteBuffer::GetFloats(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 floatCount)
@@ -108,7 +108,7 @@ ECode HeapByteBuffer::GetFloatsEx(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetInt16sEx(
+ECode HeapByteBuffer::GetInt16s(
     /* [out] */ ArrayOf<Int16>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int16Count)
@@ -127,7 +127,7 @@ ECode HeapByteBuffer::GetInt16sEx(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetInt32sEx(
+ECode HeapByteBuffer::GetInt32s(
     /* [out] */ ArrayOf<Int32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int32Count)
@@ -146,7 +146,7 @@ ECode HeapByteBuffer::GetInt32sEx(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetInt64sEx(
+ECode HeapByteBuffer::GetInt64s(
     /* [out] */ ArrayOf<Int64>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int64Count)
@@ -175,7 +175,7 @@ ECode HeapByteBuffer::GetByte(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetByteEx(
+ECode HeapByteBuffer::GetByte(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
@@ -196,7 +196,7 @@ ECode HeapByteBuffer::GetChar32(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetChar32Ex(
+ECode HeapByteBuffer::GetChar32(
     /* [in] */ Int32 index,
     /* [out] */ Char32* c)
 {
@@ -214,7 +214,7 @@ ECode HeapByteBuffer::GetDouble(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetDoubleEx(
+ECode HeapByteBuffer::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
@@ -233,7 +233,7 @@ ECode HeapByteBuffer::GetFloat(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetFloatEx(
+ECode HeapByteBuffer::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
@@ -255,7 +255,7 @@ ECode HeapByteBuffer::GetInt32(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetInt32Ex(
+ECode HeapByteBuffer::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
@@ -276,7 +276,7 @@ ECode HeapByteBuffer::GetInt64(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetInt64Ex(
+ECode HeapByteBuffer::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
@@ -297,7 +297,7 @@ ECode HeapByteBuffer::GetInt16(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetInt16Ex(
+ECode HeapByteBuffer::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {

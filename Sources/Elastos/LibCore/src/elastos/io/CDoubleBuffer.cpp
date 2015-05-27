@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CDoubleBufferHelper.h"
 
 namespace Elastos {
@@ -24,7 +24,7 @@ ECode CCharBufferHelper::WrapArray(
     return CharBuffer::WrapArray(array, charBuf);
 }
 
-ECode CCharBufferHelper::WrapArrayEx(
+ECode CCharBufferHelper::WrapArray(
     /*[in]  */ ArrayOf<Char32>* array,
     /*[in]  */ Int32 start,
     /*[in]  */ Int32 len,
@@ -40,7 +40,7 @@ ECode CCharBufferHelper::WrapSequence(
     return CharBuffer::WrapSequence(charSequence, charBuf);
 }
 
-ECode CCharBufferHelper::WrapSequenceEx(
+ECode CCharBufferHelper::WrapSequence(
     /* [in] */ ICharSequence* cs,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,

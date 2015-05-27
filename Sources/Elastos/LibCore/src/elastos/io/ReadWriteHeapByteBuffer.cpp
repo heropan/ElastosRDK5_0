@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "ReadWriteHeapByteBuffer.h"
 #include "ReadOnlyHeapByteBuffer.h"
 #include "Memory.h"
@@ -208,7 +208,7 @@ ECode ReadWriteHeapByteBuffer::GetByte(
     return HeapByteBuffer::GetByte(value);
 }
 
-ECode ReadWriteHeapByteBuffer::GetByteEx(
+ECode ReadWriteHeapByteBuffer::GetByte(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
@@ -223,7 +223,7 @@ ECode ReadWriteHeapByteBuffer::GetBytes(
     return HeapByteBuffer::GetBytes(dst);
 }
 
-ECode ReadWriteHeapByteBuffer::GetBytesEx(
+ECode ReadWriteHeapByteBuffer::GetBytes(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
@@ -239,7 +239,7 @@ ECode ReadWriteHeapByteBuffer::GetChar(
     return HeapByteBuffer::GetChar(value);
 }
 
-ECode ReadWriteHeapByteBuffer::GetCharEx(
+ECode ReadWriteHeapByteBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -254,7 +254,7 @@ ECode ReadWriteHeapByteBuffer::GetDouble(
     return HeapByteBuffer::GetDouble(value);
 }
 
-ECode ReadWriteHeapByteBuffer::GetDoubleEx(
+ECode ReadWriteHeapByteBuffer::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
@@ -269,7 +269,7 @@ ECode ReadWriteHeapByteBuffer::GetFloat(
     return HeapByteBuffer::GetFloat(value);
 }
 
-ECode ReadWriteHeapByteBuffer::GetFloatEx(
+ECode ReadWriteHeapByteBuffer::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
@@ -284,7 +284,7 @@ ECode ReadWriteHeapByteBuffer::GetInt32(
     return HeapByteBuffer::GetInt32(value);
 }
 
-ECode ReadWriteHeapByteBuffer::GetInt32Ex(
+ECode ReadWriteHeapByteBuffer::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
@@ -299,7 +299,7 @@ ECode ReadWriteHeapByteBuffer::GetInt64(
     return HeapByteBuffer::GetInt64(value);
 }
 
-ECode ReadWriteHeapByteBuffer::GetInt64Ex(
+ECode ReadWriteHeapByteBuffer::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
@@ -314,7 +314,7 @@ ECode ReadWriteHeapByteBuffer::GetInt16(
     return HeapByteBuffer::GetInt16(value);
 }
 
-ECode ReadWriteHeapByteBuffer::GetInt16Ex(
+ECode ReadWriteHeapByteBuffer::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {
@@ -371,7 +371,7 @@ ECode ReadWriteHeapByteBuffer::PutByte(
     return NOERROR;
 }
 
-ECode ReadWriteHeapByteBuffer::PutByteEx(
+ECode ReadWriteHeapByteBuffer::PutByte(
     /* [in] */ Int32 index,
     /* [in] */ Byte b)
 {
@@ -386,7 +386,7 @@ ECode ReadWriteHeapByteBuffer::PutBytes(
     return HeapByteBuffer::PutBytes(src);
 }
 
-ECode ReadWriteHeapByteBuffer::PutBytesEx(
+ECode ReadWriteHeapByteBuffer::PutBytes(
     /* [in] */ const ArrayOf<Byte>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 byteCount)
@@ -417,7 +417,7 @@ ECode ReadWriteHeapByteBuffer::PutChar(
     return NOERROR;
 }
 
-ECode ReadWriteHeapByteBuffer::PutCharEx(
+ECode ReadWriteHeapByteBuffer::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 value)
 {
@@ -432,7 +432,7 @@ ECode ReadWriteHeapByteBuffer::PutDouble(
     return PutInt64(Elastos::Core::Math::DoubleToRawInt64Bits(value));
 }
 
-ECode ReadWriteHeapByteBuffer::PutDoubleEx(
+ECode ReadWriteHeapByteBuffer::PutDouble(
     /* [in] */ Int32 index,
     /* [in] */ Double value)
 {
@@ -445,7 +445,7 @@ ECode ReadWriteHeapByteBuffer::PutFloat(
     return PutInt32(Elastos::Core::Math::FloatToRawInt32Bits(value));
 }
 
-ECode ReadWriteHeapByteBuffer::PutFloatEx(
+ECode ReadWriteHeapByteBuffer::PutFloat(
     /* [in] */ Int32 index,
     /* [in] */ Float value)
 {
@@ -465,7 +465,7 @@ ECode ReadWriteHeapByteBuffer::PutInt16(
     return NOERROR;
 }
 
-ECode ReadWriteHeapByteBuffer::PutInt16Ex(
+ECode ReadWriteHeapByteBuffer::PutInt16(
     /* [in] */ Int32 index,
     /* [in] */ Int16 value)
 {
@@ -487,7 +487,7 @@ ECode ReadWriteHeapByteBuffer::PutInt32(
     return NOERROR;
 }
 
-ECode ReadWriteHeapByteBuffer::PutInt32Ex(
+ECode ReadWriteHeapByteBuffer::PutInt32(
     /* [in] */ Int32 index,
     /* [in] */ Int32 value)
 {
@@ -509,7 +509,7 @@ ECode ReadWriteHeapByteBuffer::PutInt64(
     return NOERROR;
 }
 
-ECode ReadWriteHeapByteBuffer::PutInt64Ex(
+ECode ReadWriteHeapByteBuffer::PutInt64(
     /* [in] */ Int32 index,
     /* [in] */ Int64 value)
 {

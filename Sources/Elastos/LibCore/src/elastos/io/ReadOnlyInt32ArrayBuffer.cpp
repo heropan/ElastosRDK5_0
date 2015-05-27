@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "ReadOnlyInt32ArrayBuffer.h"
 #include "elastos/StringBuilder.h"
 
@@ -148,7 +148,7 @@ ECode ReadOnlyInt32ArrayBuffer::GetInt32(
     return Int32ArrayBuffer::GetInt32(value);
 }
 
-ECode ReadOnlyInt32ArrayBuffer::GetInt32Ex(
+ECode ReadOnlyInt32ArrayBuffer::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
@@ -161,7 +161,7 @@ ECode ReadOnlyInt32ArrayBuffer::GetInt32s(
     return Int32ArrayBuffer::GetInt32s(dst);
 }
 
-ECode ReadOnlyInt32ArrayBuffer::GetInt32sEx(
+ECode ReadOnlyInt32ArrayBuffer::GetInt32s(
     /* [out] */ ArrayOf<Int32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int32Count)
@@ -182,7 +182,7 @@ ECode ReadOnlyInt32ArrayBuffer::PutInt32(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyInt32ArrayBuffer::PutInt32Ex(
+ECode ReadOnlyInt32ArrayBuffer::PutInt32(
     /* [in] */ Int32 index,
     /* [in] */ Int32 c)
 {
@@ -196,7 +196,7 @@ ECode ReadOnlyInt32ArrayBuffer::PutInt32s(
     return Int32ArrayBuffer::PutInt32s(src);
 }
 
-ECode ReadOnlyInt32ArrayBuffer::PutInt32sEx(
+ECode ReadOnlyInt32ArrayBuffer::PutInt32s(
     /* [in] */ const ArrayOf<Int32>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int32Count)

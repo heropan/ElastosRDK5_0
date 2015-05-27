@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Int16Buffer.h"
 #include "ReadWriteInt16ArrayBuffer.h"
 
@@ -38,7 +38,7 @@ ECode Int16Buffer::WrapArray(
     return WrapArrayEx(array, 0, array->GetLength(), buf);
 }
 
-ECode Int16Buffer::WrapArrayEx(
+ECode Int16Buffer::WrapArray(
     /* [in] */ ArrayOf<Int16>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int16Count,
@@ -146,7 +146,7 @@ ECode Int16Buffer::GetInt16s(
     return GetInt16sEx(dst, 0, dst->GetLength());
 }
 
-ECode Int16Buffer::GetInt16sEx(
+ECode Int16Buffer::GetInt16s(
     /* [out] */ ArrayOf<Int16>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int16Count)
@@ -184,7 +184,7 @@ ECode Int16Buffer::PutInt16s(
     return PutInt16sEx(src, 0, src.GetLength());
 }
 
-ECode Int16Buffer::PutInt16sEx(
+ECode Int16Buffer::PutInt16s(
     /* [in] */ const ArrayOf<Int16>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int16Count)

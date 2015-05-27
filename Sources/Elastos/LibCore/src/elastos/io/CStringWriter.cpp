@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CStringWriter.h"
 
 namespace Elastos {
@@ -27,7 +27,7 @@ ECode CStringWriter::WriteChars(
     return StringWriter::WriteChars(buffer);
 }
 
-ECode CStringWriter::WriteCharsEx(
+ECode CStringWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -41,7 +41,7 @@ ECode CStringWriter::WriteString(
     return StringWriter::WriteString(str);
 }
 
-ECode CStringWriter::WriteStringEx(
+ECode CStringWriter::WriteString(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -79,7 +79,7 @@ ECode CStringWriter::AppendCharSequence(
     return StringWriter::AppendCharSequence(csq);
 }
 
-ECode CStringWriter::AppendCharSequenceEx(
+ECode CStringWriter::AppendCharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

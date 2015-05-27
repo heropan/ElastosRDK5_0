@@ -71,7 +71,7 @@ private:
          *
          * @sa #connect(SocketAddress)
          */
-        CARAPI ConnectEx(
+        CARAPI Connect(
             /* [in] */ IInetAddress* address,
             /* [in] */ Int32 aPort);
 

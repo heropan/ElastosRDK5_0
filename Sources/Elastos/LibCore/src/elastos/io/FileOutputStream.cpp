@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "FileOutputStream.h"
 #include "CFile.h"
 #include "IoUtils.h"
@@ -144,7 +144,7 @@ ECode FileOutputStream::Write(
     return WriteBytesEx(bytes, 0, 1);
 }
 
-ECode FileOutputStream::WriteBytesEx(
+ECode FileOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount)

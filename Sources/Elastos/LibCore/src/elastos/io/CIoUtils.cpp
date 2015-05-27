@@ -17,7 +17,7 @@ ECode CIoUtils::CloseQuietly(
     return IoUtils::CloseQuietly(closeable);
 }
 
-ECode CIoUtils::CloseQuietlyEx(
+ECode CIoUtils::CloseQuietly(
     /* [in] */ IFileDescriptor* fd)
 {
     return IoUtils::CloseQuietlyEx(fd);

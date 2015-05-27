@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "ReadOnlyHeapByteBuffer.h"
 #include "elastos/StringBuilder.h"
 
@@ -171,7 +171,7 @@ ECode ReadOnlyHeapByteBuffer::GetByte(
     return HeapByteBuffer::GetByte(value);
 }
 
-ECode ReadOnlyHeapByteBuffer::GetByteEx(
+ECode ReadOnlyHeapByteBuffer::GetByte(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
@@ -184,7 +184,7 @@ ECode ReadOnlyHeapByteBuffer::GetBytes(
     return HeapByteBuffer::GetBytes(dst);
 }
 
-ECode ReadOnlyHeapByteBuffer::GetBytesEx(
+ECode ReadOnlyHeapByteBuffer::GetBytes(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
@@ -198,7 +198,7 @@ ECode ReadOnlyHeapByteBuffer::GetChar(
     return HeapByteBuffer::GetChar(value);
 }
 
-ECode ReadOnlyHeapByteBuffer::GetCharEx(
+ECode ReadOnlyHeapByteBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -211,7 +211,7 @@ ECode ReadOnlyHeapByteBuffer::GetDouble(
     return HeapByteBuffer::GetDouble(value);
 }
 
-ECode ReadOnlyHeapByteBuffer::GetDoubleEx(
+ECode ReadOnlyHeapByteBuffer::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
@@ -224,7 +224,7 @@ ECode ReadOnlyHeapByteBuffer::GetFloat(
     return HeapByteBuffer::GetFloat(value);
 }
 
-ECode ReadOnlyHeapByteBuffer::GetFloatEx(
+ECode ReadOnlyHeapByteBuffer::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
@@ -237,7 +237,7 @@ ECode ReadOnlyHeapByteBuffer::GetInt32(
     return HeapByteBuffer::GetInt32(value);
 }
 
-ECode ReadOnlyHeapByteBuffer::GetInt32Ex(
+ECode ReadOnlyHeapByteBuffer::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
@@ -250,7 +250,7 @@ ECode ReadOnlyHeapByteBuffer::GetInt64(
     return HeapByteBuffer::GetInt64(value);
 }
 
-ECode ReadOnlyHeapByteBuffer::GetInt64Ex(
+ECode ReadOnlyHeapByteBuffer::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
@@ -263,7 +263,7 @@ ECode ReadOnlyHeapByteBuffer::GetInt16(
     return HeapByteBuffer::GetInt16(value);
 }
 
-ECode ReadOnlyHeapByteBuffer::GetInt16Ex(
+ECode ReadOnlyHeapByteBuffer::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {
@@ -311,7 +311,7 @@ ECode ReadOnlyHeapByteBuffer::PutByte(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyHeapByteBuffer::PutByteEx(
+ECode ReadOnlyHeapByteBuffer::PutByte(
     /* [in] */ Int32 index,
     /* [in] */ Byte b)
 {
@@ -325,7 +325,7 @@ ECode ReadOnlyHeapByteBuffer::PutBytes(
     return HeapByteBuffer::PutBytes(src);
 }
 
-ECode ReadOnlyHeapByteBuffer::PutBytesEx(
+ECode ReadOnlyHeapByteBuffer::PutBytes(
     /* [in] */ const ArrayOf<Byte>& src,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
@@ -347,7 +347,7 @@ ECode ReadOnlyHeapByteBuffer::PutChar(
     return HeapByteBuffer::PutChar(value);
 }
 
-ECode ReadOnlyHeapByteBuffer::PutCharEx(
+ECode ReadOnlyHeapByteBuffer::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 value)
 {
@@ -361,7 +361,7 @@ ECode ReadOnlyHeapByteBuffer::PutDouble(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyHeapByteBuffer::PutDoubleEx(
+ECode ReadOnlyHeapByteBuffer::PutDouble(
     /* [in] */ Int32 index,
     /* [in] */ Double value)
 {
@@ -376,7 +376,7 @@ ECode ReadOnlyHeapByteBuffer::PutFloat(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyHeapByteBuffer::PutFloatEx(
+ECode ReadOnlyHeapByteBuffer::PutFloat(
     /* [in] */ Int32 index,
     /* [in] */ Float value)
 {
@@ -391,7 +391,7 @@ ECode ReadOnlyHeapByteBuffer::PutInt16(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyHeapByteBuffer::PutInt16Ex(
+ECode ReadOnlyHeapByteBuffer::PutInt16(
     /* [in] */ Int32 index,
     /* [in] */ Int16 value)
 {
@@ -406,7 +406,7 @@ ECode ReadOnlyHeapByteBuffer::PutInt32(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyHeapByteBuffer::PutInt32Ex(
+ECode ReadOnlyHeapByteBuffer::PutInt32(
     /* [in] */ Int32 index,
     /* [in] */ Int32 value)
 {
@@ -421,7 +421,7 @@ ECode ReadOnlyHeapByteBuffer::PutInt64(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyHeapByteBuffer::PutInt64Ex(
+ECode ReadOnlyHeapByteBuffer::PutInt64(
     /* [in] */ Int32 index,
     /* [in] */ Int64 value)
 {

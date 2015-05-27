@@ -2,12 +2,10 @@
 #define __ELASTOS_IO_CHANNELS_SINKCHANNEL_H__
 
 #include <Elastos.CoreLibrary_server.h>
-#include <elastos/Thread.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/Thread.h>
 #include "AbstractSelectableChannel.h"
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::IO::Channels::Spi::ISelectorProvider;
 using Elastos::IO::Channels::Spi::AbstractSelectableChannel;
 

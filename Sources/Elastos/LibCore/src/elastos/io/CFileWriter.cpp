@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CFileWriter.h"
 #include "CFileOutputStream.h"
 
@@ -95,7 +95,7 @@ ECode CFileWriter::WriteChars(
     return FileWriter::WriteChars(buffer);
 }
 
-ECode CFileWriter::WriteCharsEx(
+ECode CFileWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -109,7 +109,7 @@ ECode CFileWriter::WriteString(
     return FileWriter::WriteString(str);
 }
 
-ECode CFileWriter::WriteStringEx(
+ECode CFileWriter::WriteString(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -129,7 +129,7 @@ ECode CFileWriter::AppendCharSequence(
     return FileWriter::AppendCharSequence(csq);
 }
 
-ECode CFileWriter::AppendCharSequenceEx(
+ECode CFileWriter::AppendCharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

@@ -97,11 +97,11 @@ public:
     CARAPI GetByte(
         /* [out] */ Byte* value);
 
-    CARAPI GetByteEx(
+    CARAPI GetByte(
         /* [in] */ Int32 index,
         /* [out] */ Byte* value);
 
-    CARAPI GetBytesEx(
+    CARAPI GetBytes(
         /* [out] */ ArrayOf<Byte>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 byteCount);
@@ -109,42 +109,42 @@ public:
     CARAPI GetChar(
         /* [out] */ Char32* value);
 
-    CARAPI GetCharEx(
+    CARAPI GetChar(
         /* [in] */ Int32 index,
         /* [out] */ Char32* value);
 
     CARAPI GetDouble(
         /* [out] */ Double* value);
 
-    CARAPI GetDoubleEx(
+    CARAPI GetDouble(
         /* [in] */ Int32 index,
         /* [out] */ Double* value);
 
     CARAPI GetFloat(
         /* [out] */ Float* value);
 
-    CARAPI GetFloatEx(
+    CARAPI GetFloat(
         /* [in] */ Int32 index,
         /* [out] */ Float* value);
 
     CARAPI GetInt32(
         /* [out] */ Int32* value);
 
-    CARAPI GetInt32Ex(
+    CARAPI GetInt32(
         /* [in] */ Int32 index,
         /* [out] */ Int32* value);
 
     CARAPI GetInt64(
         /* [out] */ Int64* value);
 
-    CARAPI GetInt64Ex(
+    CARAPI GetInt64(
         /* [in] */ Int32 index,
         /* [out] */ Int64* value);
 
     CARAPI GetInt16(
         /* [out] */ Int16* value);
 
-    CARAPI GetInt16Ex(
+    CARAPI GetInt16(
         /* [in] */ Int32 index,
         /* [out] */ Int16* value);
 
@@ -160,11 +160,11 @@ public:
     CARAPI PutByte(
         /* [in] */ Byte b);
 
-    CARAPI PutByteEx(
+    CARAPI PutByte(
         /* [in] */ Int32 index,
         /* [in] */ Byte b);
 
-    CARAPI PutBytesEx(
+    CARAPI PutBytes(
         /* [in] */ const ArrayOf<Byte>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 byteCount);
@@ -172,42 +172,42 @@ public:
     CARAPI PutChar(
         /* [in] */ Char32 value);
 
-    CARAPI PutCharEx(
+    CARAPI PutChar(
         /* [in] */ Int32 index,
         /* [in] */ Char32 value);
 
     CARAPI PutDouble(
         /* [in] */ Double value);
 
-    CARAPI PutDoubleEx(
+    CARAPI PutDouble(
         /* [in] */ Int32 index,
         /* [in] */ Double value);
 
     CARAPI PutFloat(
         /* [in] */ Float value);
 
-    CARAPI PutFloatEx(
+    CARAPI PutFloat(
         /* [in] */ Int32 index,
         /* [in] */ Float value);
 
     CARAPI PutInt32(
         /* [in] */ Int32 value);
 
-    CARAPI PutInt32Ex(
+    CARAPI PutInt32(
         /* [in] */ Int32 index,
         /* [in] */ Int32 value);
 
     CARAPI PutInt64(
         /* [in] */ Int64 value);
 
-    CARAPI PutInt64Ex(
+    CARAPI PutInt64(
         /* [in] */ Int32 index,
         /* [in] */ Int64 value);
 
     CARAPI PutInt16(
         /* [in] */ Int16 value);
 
-    CARAPI PutInt16Ex(
+    CARAPI PutInt16(
         /* [in] */ Int32 index,
         /* [in] */ Int16 value);
 

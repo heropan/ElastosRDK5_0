@@ -60,7 +60,7 @@ public:
      * @see DataOutput#write(byte[])
      * @see DataOutput#write(byte[], int, int)
      */
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -179,7 +179,7 @@ public:
      *             if {@code buffer} or the source stream are null.
      * @see java.io.DataInput#readFully(byte[], int, int)
      */
-    CARAPI ReadFullyEx(
+    CARAPI ReadFully(
         /* [out] */ ArrayOf<byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length);

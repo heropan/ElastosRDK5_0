@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CharArrayWriter.h"
 #include <elastos/Math.h>
 #include <elastos/Character.h>
@@ -131,7 +131,7 @@ ECode CharArrayWriter::Write(
     return NOERROR;
 }
 
-ECode CharArrayWriter::WriteCharsEx(
+ECode CharArrayWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -159,7 +159,7 @@ ECode CharArrayWriter::WriteCharsEx(
     return NOERROR;
 }
 
-ECode CharArrayWriter::WriteStringEx(
+ECode CharArrayWriter::WriteString(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -215,7 +215,7 @@ ECode CharArrayWriter::AppendCharSequence(
     return AppendCharSequenceEx(csq, 0, number);
 }
 
-ECode CharArrayWriter::AppendCharSequenceEx(
+ECode CharArrayWriter::AppendCharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

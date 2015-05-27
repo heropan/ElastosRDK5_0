@@ -2,14 +2,12 @@
 #define __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTABLECHANNEL_H__
 
 #include <Elastos.CoreLibrary_server.h>
-#include "cmdef.h"
-#include <elastos/Thread.h>
-#include <elastos/Mutex.h>
+#include "coredef.h"
+#include <elastos/core/Thread.h>
 #include "SelectableChannel.h"
 #include <elastos/List.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Core::Object;
 using Elastos::Utility::List;
 

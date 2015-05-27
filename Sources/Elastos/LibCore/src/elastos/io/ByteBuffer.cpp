@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "ByteBuffer.h"
 #include "ReadWriteHeapByteBuffer.h"
 #include "ReadWriteDirectByteBuffer.h"
@@ -54,7 +54,7 @@ ECode ByteBuffer::WrapArray(
     return NOERROR;
 }
 
-ECode ByteBuffer::WrapArrayEx(
+ECode ByteBuffer::WrapArray(
     /* [in] */ ArrayOf<Byte>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 byteCount,
@@ -169,7 +169,7 @@ ECode ByteBuffer::GetBytes(
     return GetBytesEx(dst, 0, dst->GetLength());
 }
 
-ECode ByteBuffer::GetBytesEx(
+ECode ByteBuffer::GetBytes(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
@@ -234,7 +234,7 @@ ECode ByteBuffer::PutBytes(
     return PutBytesEx(src, 0, src.GetLength());
 }
 
-ECode ByteBuffer::PutBytesEx(
+ECode ByteBuffer::PutBytes(
     /* [in] */ const ArrayOf<Byte>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 byteCount)

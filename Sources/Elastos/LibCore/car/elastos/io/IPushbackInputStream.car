@@ -89,7 +89,7 @@ module
          * IOException | if the free space in the internal pushback buffer is not
          *             sufficient to store the selected contents of {buffer}.
          */
-        UnreadBytesEx(
+        UnreadBytes(
             [in] ArrayOf<Byte> buffer,
             [in] Int32 offset,
             [in] Int32 length);

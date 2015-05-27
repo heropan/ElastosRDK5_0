@@ -68,7 +68,7 @@ module
          *             if {@code another} cannot be converted into something
          *             comparable to {@code this} instance.
          */
-        CompareToEx(
+        CompareTo(
             [in] IFile* another,
             [out] Int32* result);
 
@@ -338,7 +338,7 @@ module
          *            the filter to match names against, may be {null}.
          * @return an array of files or {null}.
          */
-        ListEx(
+        List(
             [in] IFilenameFilter* filter,
             [out, callee] ArrayOf<String>* files);
 
@@ -367,7 +367,7 @@ module
          *            the filter to match names against, may be {null}.
          * @return an array of files or {null}.
          */
-        ListFilesEx(
+        ListFiles(
             [in] IFilenameFilter* filter,
             [out, callee] ArrayOf<IFile*>* files);
 
@@ -510,7 +510,7 @@ module
          * @see #setExecutable(Boolean, Boolean)
          * @since 1.6
          */
-        SetExecutableEx(
+        SetExecutable(
             [in] Boolean executable,
             [out] Boolean* succeeded);
 
@@ -542,7 +542,7 @@ module
          * @see #setReadable(Boolean, Boolean)
          * @since 1.6
          */
-        SetReadableEx(
+        SetReadable(
             [in] Boolean readable,
             [out] Boolean* succeeded);
 
@@ -572,7 +572,7 @@ module
          * @see #setWritable(Boolean, Boolean)
          * @since 1.6
          */
-        SetWritableEx(
+        SetWritable(
             [in] Boolean writable,
             [out] Boolean* succeeded);
 
@@ -661,7 +661,7 @@ module
          * IllegalArgumentException | if the length of {prefix} is less than 3.
          * IOException | if an error occurs when writing the file.
          */
-        CreateTempFileEx(
+        CreateTempFile(
             [in] String prefix,
             [in] String suffix,
             [in] IFile* directory,

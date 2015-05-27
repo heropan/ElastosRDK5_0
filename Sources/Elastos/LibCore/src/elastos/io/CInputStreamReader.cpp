@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CInputStreamReader.h"
 
 namespace Elastos {
@@ -70,7 +70,7 @@ ECode CInputStreamReader::ReadChars(
     return InputStreamReader::ReadChars(buffer, number);
 }
 
-ECode CInputStreamReader::ReadCharsEx(
+ECode CInputStreamReader::ReadChars(
     /* [out] */ ArrayOf<Char32> *buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,

@@ -133,7 +133,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if index is invalid.
          */
-        GetDoubleEx(
+        GetDouble(
             [in] Int32 index,
             [out] Double* value);
 
@@ -172,7 +172,7 @@ module
          * @exception BufferUnderflowException
          *                if {@code doubleCount} is greater than {@code remaining()}.
          */
-        GetDoublesEx(
+        GetDoubles(
             [out] ArrayOf<Double> dst,
             [in] Int32 dstOffset,
             [in] Int32 doubleCount);
@@ -219,7 +219,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutDoubleEx(
+        PutDouble(
             [in] Int32 index,
             [in] Double d);
 
@@ -262,7 +262,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutDoublesEx(
+        PutDoubles(
             [in] ArrayOf<Double> src,
             [in] Int32 srcOffset,
             [in] Int32 doubleCount);
@@ -352,7 +352,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if either {@code start} or {@code doubleCount} is invalid.
          */
-        WrapArrayEx(
+        WrapArray(
             [in] ArrayOf<Double>* array,
             [in] Int32 start,
             [in] Int32 doubleCount,

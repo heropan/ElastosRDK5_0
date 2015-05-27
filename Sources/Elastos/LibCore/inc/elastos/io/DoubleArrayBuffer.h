@@ -36,11 +36,11 @@ public:
     CARAPI GetDouble(
         /* [out] */ Double* value);
 
-    CARAPI GetDoubleEx(
+    CARAPI GetDouble(
         /* [in] */ Int32 index,
         /* [out] */ Double* value);
 
-    CARAPI GetDoublesEx(
+    CARAPI GetDoubles(
         /* [out] */ ArrayOf<Double>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 doubleCount);

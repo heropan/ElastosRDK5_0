@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "NativeConverter.h"
 #include "CharsetICU.h"
 #include "elastos/UniquePtr.h"

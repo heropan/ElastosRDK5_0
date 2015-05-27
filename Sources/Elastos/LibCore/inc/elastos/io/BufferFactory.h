@@ -37,7 +37,7 @@ public:
      *            The capacity of the new buffer
      * @return A new array based byte buffer with the specified capacity.
      */
-    static CARAPI NewByteBufferEx(
+    static CARAPI NewByteBuffer(
         /* [in] */ Int32 capacity,
         /* [out] */ IByteBuffer** buf);
 
@@ -59,7 +59,7 @@ public:
      *            The char sequence
      * @return A new readonly char buffer based on the specified char sequence.
      */
-    static CARAPI NewCharBufferEx(
+    static CARAPI NewCharBuffer(
         /* [in] */ ICharSequence* chseq,
         /* [out] */ ICharBuffer** buf);
 
@@ -103,7 +103,7 @@ public:
      *            The capacity of the new buffer
      * @return A new array based double buffer with the specified capacity.
      */
-    static CARAPI NewDoubleBufferEx(
+    static CARAPI NewDoubleBuffer(
         /* [in] */ Int32 capacity,
         /* [out] */ IDoubleBuffer** buf);
 
@@ -125,7 +125,7 @@ public:
      *            The capacity of the new buffer
      * @return A new array based float buffer with the specified capacity.
      */
-    static CARAPI NewFloatBufferEx(
+    static CARAPI NewFloatBuffer(
         /* [in] */ Int32 capacity,
         /* [out] */ IFloatBuffer** buf);
 
@@ -147,7 +147,7 @@ public:
      *            The int array
      * @return A new int buffer based on the specified int array.
      */
-    static CARAPI NewInt32BufferEx(
+    static CARAPI NewInt32Buffer(
         /* [in] */ ArrayOf<Int32>* array,
         /* [out] */ IInt32Buffer** buf);
 
@@ -169,7 +169,7 @@ public:
      *            The long array
      * @return A new long buffer based on the specified long array.
      */
-    static CARAPI NewInt64BufferEx(
+    static CARAPI NewInt64Buffer(
         /* [in] */ ArrayOf<Int64>* array,
         /* [out] */ IInt64Buffer** buf);
 
@@ -191,7 +191,7 @@ public:
      *            The short array
      * @return A new short buffer based on the specified short array.
      */
-    static CARAPI NewInt16BufferEx(
+    static CARAPI NewInt16Buffer(
         /* [in] */ ArrayOf<Int16>* array,
         /* [out] */ IInt16Buffer** buf);
 };

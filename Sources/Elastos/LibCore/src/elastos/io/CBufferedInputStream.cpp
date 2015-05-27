@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CBufferedInputStream.h"
 
 namespace Elastos {

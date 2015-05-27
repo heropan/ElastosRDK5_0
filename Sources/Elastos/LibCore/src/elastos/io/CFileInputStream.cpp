@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CFileInputStream.h"
 
 namespace Elastos {
@@ -66,7 +66,7 @@ ECode CFileInputStream::ReadBytes(
     return FileInputStream::ReadBytes(buffer, number);
 }
 
-ECode CFileInputStream::ReadBytesEx(
+ECode CFileInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,

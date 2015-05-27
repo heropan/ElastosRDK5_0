@@ -74,14 +74,14 @@ public:
     CARAPI GetChar(
         /* [out] */ Char32* value);
 
-    CARAPI GetCharEx(
+    CARAPI GetChar(
         /* [in] */ Int32 index,
         /* [out] */ Char32* value);
 
     CARAPI GetChars(
         /* [out] */ ArrayOf<Char32>* dst);
 
-    CARAPI GetCharsEx(
+    CARAPI GetChars(
         /* [out] */ ArrayOf<Char32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 byteCount);
@@ -101,14 +101,14 @@ public:
     CARAPI PutChar(
         /* [in] */ Char32 c);
 
-    CARAPI PutCharEx(
+    CARAPI PutChar(
         /* [in] */ Int32 index,
         /* [in] */ Char32 c);
 
     CARAPI PutChars(
         /* [in] */ const ArrayOf<Char32>& src);
 
-    CARAPI PutCharsEx(
+    CARAPI PutChars(
         /* [in] */ Int32 off,
         /* [in] */ Int32 len,
         /* [in] */ const ArrayOf<Char32>& src);
@@ -119,7 +119,7 @@ public:
     CARAPI PutString(
         /* [in] */ const String& str);
 
-    CARAPI PutStringEx(
+    CARAPI PutString(
         /* [in] */ const String& str,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -133,7 +133,7 @@ public:
     CARAPI AppendChars(
         /* [in] */ ICharSequence* csq);
 
-    CARAPI AppendCharsEx(
+    CARAPI AppendChars(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -201,7 +201,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* rst);
 
-    CARAPI PutCharsEx(
+    CARAPI PutChars(
         /* [in] */ const ArrayOf<Char32>& src,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len);

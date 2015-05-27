@@ -1,5 +1,5 @@
 #include "SelectionKeyImpl.h"
-#include "cmdef.h"
+#include "coredef.h"
 
 namespace Elastos {
 namespace IO {
@@ -51,7 +51,7 @@ Int32 SelectionKeyImpl::InterestOpsNoCheck()
     return ret;
 }
 
-ECode SelectionKeyImpl::InterestOpsEx(
+ECode SelectionKeyImpl::InterestOps(
     /* [in] */ Int32 operations,
     /* [out] */ SelectionKey** key)
 {

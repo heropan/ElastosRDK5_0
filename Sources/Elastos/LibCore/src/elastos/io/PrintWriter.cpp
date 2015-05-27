@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "elastos/io/PrintWriter.h"
 #ifdef ELASTOS_CORELIBRARY
 #include "COutputStreamWriter.h"
@@ -196,7 +196,7 @@ ECode PrintWriter::Format(
     return FormatEx(locale, format, args);
 }
 
-ECode PrintWriter::FormatEx(
+ECode PrintWriter::Format(
     /* [in] */ ILocale* l,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
@@ -223,7 +223,7 @@ ECode PrintWriter::Printf(
     return Format(format, args);
 }
 
-ECode PrintWriter::PrintfEx(
+ECode PrintWriter::Printf(
     /* [in] */ ILocale* l,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
@@ -403,7 +403,7 @@ ECode PrintWriter::WriteChars(
     return WriteCharsEx(buffer, 0, buffer.GetLength());
 }
 
-ECode PrintWriter::WriteCharsEx(
+ECode PrintWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -449,7 +449,7 @@ ECode PrintWriter::WriteString(
     return WriteChars(*tmp);
 }
 
-ECode PrintWriter::WriteStringEx(
+ECode PrintWriter::WriteString(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -480,7 +480,7 @@ ECode PrintWriter::AppendCharSequence(
     return AppendCharSequenceEx(csq, 0, length);
 }
 
-ECode PrintWriter::AppendCharSequenceEx(
+ECode PrintWriter::AppendCharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

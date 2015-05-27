@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CCharArrayReader.h"
 
 namespace Elastos {
@@ -42,7 +42,7 @@ ECode CCharArrayReader::ReadChars(
     return CharArrayReader::ReadChars(buffer, number);
 }
 
-ECode CCharArrayReader::ReadCharsEx(
+ECode CCharArrayReader::ReadChars(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,

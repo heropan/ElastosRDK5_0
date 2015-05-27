@@ -68,7 +68,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code byteCount} is invalid.
      */
-    CARAPI WrapArrayEx(
+    CARAPI WrapArray(
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 byteCount,

@@ -56,7 +56,7 @@ public:
      * @param charBuf
      *      the char buffer interface.
      */
-    CARAPI WrapArrayEx(
+    CARAPI WrapArray(
         /* [in] */ ArrayOf<Char32>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 charCount,
@@ -95,7 +95,7 @@ public:
      * @param charBuf
      *      the char buffer interface.
      */
-    CARAPI WrapSequenceEx(
+    CARAPI WrapSequence(
         /* [in] */ ICharSequence* cs,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,

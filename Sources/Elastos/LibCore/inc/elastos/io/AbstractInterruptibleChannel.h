@@ -2,16 +2,17 @@
 #define __ELASTOS_IO_CHANNELS_ABSTRACTINTERRUPTIBLECHANNEL_H__
 
 #include <Elastos.CoreLibrary_server.h>
-#include <elastos/Thread.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace IO {
 namespace Channels {
 namespace Spi {
+
+extern "C" const InterfaceID EIID_AbstractInterruptibleChannel;
 
 /**
  * {@code AbstractInterruptibleChannel} is the root class for interruptible
@@ -24,10 +25,11 @@ namespace Spi {
  * actually completed so that any change may be visible to the invoker.
  */
 class AbstractInterruptibleChannel
+    : public Object
+    , public IChannel
 {
 public:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
 
     Boolean IsOpen();
 
@@ -105,7 +107,7 @@ private:
     volatile Boolean mClosed;
     volatile Boolean mInterrupted;
     AutoPtr<IRunnable> mInterruptAndCloseRunnable;
-    Mutex mMutex;
+    Object mMutex;
 };
 
 } // namespace Spi

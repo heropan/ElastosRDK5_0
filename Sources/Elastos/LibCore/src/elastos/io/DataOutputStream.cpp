@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "DataOutputStream.h"
 #include <elastos/Math.h>
 #include <elastos/Character.h>
@@ -69,7 +69,7 @@ ECode DataOutputStream::Write(
     return NOERROR;
 }
 
-ECode DataOutputStream::WriteBytesEx(
+ECode DataOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)

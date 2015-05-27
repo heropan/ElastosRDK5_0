@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CSequenceInputStream.h"
 
 namespace Elastos {
@@ -37,7 +37,7 @@ ECode CSequenceInputStream::Read(
     return SequenceInputStream::Read(value);
 }
 
-ECode CSequenceInputStream::ReadBytesEx(
+ECode CSequenceInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,

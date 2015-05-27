@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "IoUtils.h"
 #include "CFileDescriptor.h"
 #include "CFile.h"
@@ -70,7 +70,7 @@ ECode IoUtils::CloseQuietly(
     return NOERROR;
 }
 
-ECode IoUtils::CloseQuietlyEx(
+ECode IoUtils::CloseQuietly(
     /* [in] */ IFileDescriptor* fd)
 {
     return Close(fd);

@@ -80,7 +80,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if index is invalid.
          */
-        GetInt16Ex(
+        GetInt16(
             [in] Int32 index,
             [out] Int16* value);
 
@@ -119,7 +119,7 @@ module
          * @exception BufferUnderflowException
          *                if {@code shortCount} is greater than {@code remaining()}.
          */
-        GetInt16sEx(
+        GetInt16s(
             [out] ArrayOf<Int16> dst,
             [in] Int32 dstOffset,
             [in] Int32 int16Count);
@@ -166,7 +166,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt16Ex(
+        PutInt16(
             [in] Int32 index,
             [in] Int16 s);
 
@@ -209,7 +209,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt16sEx(
+        PutInt16s(
             [in] ArrayOf<Int16> src,
             [in] Int32 srcOffset,
             [in] Int32 int16Count);
@@ -301,7 +301,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if either {start} or {shortCount} is invalid.
          */
-        WrapArrayEx(
+        WrapArray(
             [in] ArrayOf<Int16>* array,
             [in] Int32 start,
             [in] Int32 int16Count,

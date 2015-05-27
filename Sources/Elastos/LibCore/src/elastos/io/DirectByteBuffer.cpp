@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "DirectByteBuffer.h"
 #include "CByteOrderHelper.h"
 #include <elastos/Math.h>
@@ -29,7 +29,7 @@ DirectByteBuffer::DirectByteBuffer(
     mEffectiveDirectAddress = block->ToInt32() + offset;
 }
 
-ECode DirectByteBuffer::GetBytesEx(
+ECode DirectByteBuffer::GetBytes(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
@@ -42,7 +42,7 @@ ECode DirectByteBuffer::GetBytesEx(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetCharsEx(
+ECode DirectByteBuffer::GetChars(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
@@ -59,7 +59,7 @@ ECode DirectByteBuffer::GetCharsEx(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetDoublesEx(
+ECode DirectByteBuffer::GetDoubles(
     /* [out] */ ArrayOf<Double>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 doubleCount)
@@ -76,7 +76,7 @@ ECode DirectByteBuffer::GetDoublesEx(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetFloatsEx(
+ECode DirectByteBuffer::GetFloats(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 floatCount)
@@ -93,7 +93,7 @@ ECode DirectByteBuffer::GetFloatsEx(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetInt32sEx(
+ECode DirectByteBuffer::GetInt32s(
     /* [out] */ ArrayOf<Int32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int32Count)
@@ -110,7 +110,7 @@ ECode DirectByteBuffer::GetInt32sEx(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetInt64sEx(
+ECode DirectByteBuffer::GetInt64s(
     /* [out] */ ArrayOf<Int64>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int64Count)
@@ -127,7 +127,7 @@ ECode DirectByteBuffer::GetInt64sEx(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetInt16sEx(
+ECode DirectByteBuffer::GetInt16s(
     /* [out] */ ArrayOf<Int16>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int16Count)
@@ -155,7 +155,7 @@ ECode DirectByteBuffer::GetByte(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetByteEx(
+ECode DirectByteBuffer::GetByte(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
@@ -179,7 +179,7 @@ ECode DirectByteBuffer::GetChar(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetCharEx(
+ECode DirectByteBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -203,7 +203,7 @@ ECode DirectByteBuffer::GetDouble(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetDoubleEx(
+ECode DirectByteBuffer::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
@@ -227,7 +227,7 @@ ECode DirectByteBuffer::GetFloat(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetFloatEx(
+ECode DirectByteBuffer::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
@@ -251,7 +251,7 @@ ECode DirectByteBuffer::GetInt32(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetInt32Ex(
+ECode DirectByteBuffer::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
@@ -275,7 +275,7 @@ ECode DirectByteBuffer::GetInt64(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetInt64Ex(
+ECode DirectByteBuffer::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
@@ -299,7 +299,7 @@ ECode DirectByteBuffer::GetInt16(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetInt16Ex(
+ECode DirectByteBuffer::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {

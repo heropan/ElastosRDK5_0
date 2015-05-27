@@ -188,7 +188,7 @@ module
          * FileLockInterruptionException | if the thread is interrupted while in the state of waiting on the desired file lock.
          * IOException | if another I/O error occurs.
          */
-        LockEx(
+        Lock(
             [in] Int64 position,
             [in] Int64 size,
             [in] Boolean shared,
@@ -313,7 +313,7 @@ module
          * IOException | if another I/O error occurs.
          * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
          */
-        ReadByteBufferEx(
+        ReadByteBuffer(
             [in] IByteBuffer* buffer,
             [in] Int64 position,
             [out] Int32* number);
@@ -374,7 +374,7 @@ module
          * IOException | if another I/O error occurs; details are in the message.
          * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
          */
-        ReadByteBuffersEx(
+        ReadByteBuffers(
             [in] ArrayOf<IByteBuffer*> buffers,
             [in] Int32 offset,
             [in] Int32 length,
@@ -534,7 +534,7 @@ module
          * OverlappingFileLockException | if a lock is already held that overlaps this lock request or another thread is waiting to acquire a lock that will overlap with this request.
          * IOException | if any I/O error occurs.
          */
-        TryLockEx(
+        TryLock(
             [in] Int64 position,
             [in] Int64 size,
             [in] Boolean shared,
@@ -594,7 +594,7 @@ module
          * ClosedByInterruptException | if another thread interrupts the calling thread while this operation is in progress. The interrupt state of the calling thread is set and the channel is closed.
          * IOException | if another I/O error occurs.
          */
-        WriteByteBufferEx(
+        WriteByteBuffer(
             [in] IByteBuffer* buffer,
             [in] Int64 position,
             [out] Int32* number);
@@ -654,7 +654,7 @@ module
          * IOException | if another I/O error occurs; details are in the message.
          * NonWritableChannelException | if this channel was not opened for writing.
          */
-        WriteByteBuffersEx(
+        WriteByteBuffers(
             [in] ArrayOf<IByteBuffer*> buffers,
             [in] Int32 offset,
             [in] Int32 length,

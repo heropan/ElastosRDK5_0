@@ -229,7 +229,7 @@ module
          *            a certain locale
          * @return the name of this charset for the specified locale
          */
-        DisplayNameEx(
+        DisplayName(
             [in] ILocale* l,
             [out] String* name);
 
@@ -283,7 +283,7 @@ module
          * @param s the string to be encoded.
          * @return the result of the encoding.
          */
-        EncodeEx(
+        Encode(
             [in] String s,
             [out] IByteBuffer** byteBuffer);
 

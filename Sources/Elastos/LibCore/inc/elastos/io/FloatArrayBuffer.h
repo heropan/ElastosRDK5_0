@@ -35,11 +35,11 @@ public:
     CARAPI GetFloat(
         /* [out] */ Float* value);
 
-    CARAPI GetFloatEx(
+    CARAPI GetFloat(
         /* [in] */ Int32 index,
         /* [out] */ Float* value);
 
-    CARAPI GetFloatsEx(
+    CARAPI GetFloats(
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 floatCount);

@@ -114,7 +114,7 @@ public:
      * @throws NullPointerException
      *             if {@code buffer} is {@code null}.
      */
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

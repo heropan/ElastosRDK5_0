@@ -19,7 +19,7 @@ ECode CInt16BufferHelper::WrapArray(
     return Int16Buffer::WrapArray(array, int16Buffer);
 }
 
-ECode CInt16BufferHelper::WrapArrayEx(
+ECode CInt16BufferHelper::WrapArray(
     /* [in] */ ArrayOf<Int16>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int16Count,

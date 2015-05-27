@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CSelectorImpl.h"
 #include "CLibcore.h"
 #include "IoUtils.h"
@@ -144,7 +144,7 @@ ECode CSelectorImpl::Select(
     return SelectInternal(-1, ret);
 }
 
-ECode CSelectorImpl::SelectEx(
+ECode CSelectorImpl::Select(
     /* [in] */ Int64 timeout,
     /* [out] */ Int32* ret)
 {

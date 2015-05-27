@@ -77,7 +77,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code len} is invalid.
      */
-    static CARAPI WrapArrayEx(
+    static CARAPI WrapArray(
         /* [in] */ ArrayOf<Char32>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 len,
@@ -116,7 +116,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code end} is invalid.
      */
-    static CARAPI WrapSequenceEx(
+    static CARAPI WrapSequence(
         /* [in] */ ICharSequence* chseq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -235,7 +235,7 @@ public:
     virtual CARAPI GetChar(
         /* [out] */ Char32* value) = 0;
 
-    virtual CARAPI GetCharEx(
+    virtual CARAPI GetChar(
         /* [in] */ Int32 index,
         /* [out] */ Char32* value) = 0;
 
@@ -274,7 +274,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code len} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetCharsEx(
+    virtual CARAPI GetChars(
         /* [out] */ ArrayOf<Char32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 charCount);
@@ -329,7 +329,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutCharEx(
+    virtual CARAPI PutChar(
         /* [in] */ Int32 index,
         /* [in] */ Char32 c) = 0;
 
@@ -372,7 +372,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutCharsEx(
+    virtual CARAPI PutChars(
         /* [in] */ const ArrayOf<Char32>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 charCount);
@@ -434,7 +434,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutStringEx(
+    virtual CARAPI PutString(
         /* [in] */ const String& str,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -512,7 +512,7 @@ public:
     virtual CARAPI AppendChars(
         /* [in] */ ICharSequence* csq);
 
-    virtual CARAPI AppendCharsEx(
+    virtual CARAPI AppendChars(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);

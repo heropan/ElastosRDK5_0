@@ -16,7 +16,7 @@ module
                 [in] Int32 offset,
                 [in] Int32 length);
 
-        WriteEx(
+        Write(
                 [in] Int32 b);
 
         ToByteArray(

@@ -1,5 +1,5 @@
 #include "Elastos.CoreLibrary_server.h"
-#include "cmdef.h"
+#include "coredef.h"
 #include "FileChannelImpl.h"
 #include "elastos/Math.h"
 #include "FileLock.h"
@@ -265,7 +265,7 @@ Int64 FileChannelImpl::TranslateLockLength(
     return (byteCount == Elastos::Core::Math::INT64_MAX_VALUE) ? 0 : byteCount;
 }
 
-ECode FileChannelImpl::LockEx(
+ECode FileChannelImpl::Lock(
     /* [in] */ Int64 pos,
     /* [in] */ Int64 size,
     /* [in] */ Boolean shared,
@@ -279,7 +279,7 @@ ECode FileChannelImpl::LockEx(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode FileChannelImpl::TryLockEx(
+ECode FileChannelImpl::TryLock(
     /* [in] */ Int64 position,
     /* [in] */ Int64 size,
     /* [in] */ Boolean shared,
@@ -459,7 +459,7 @@ ECode FileChannelImpl::ReadByteBuffer(
     return ReadImpl(buffer, -1, number);
 }
 
-ECode FileChannelImpl::ReadByteBufferEx(
+ECode FileChannelImpl::ReadByteBuffer(
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int64 position,
     /* [out] */ Int32* number)
@@ -481,7 +481,7 @@ ECode FileChannelImpl::ReadImpl(
 
 }
 
-ECode FileChannelImpl::ReadByteBuffersEx(
+ECode FileChannelImpl::ReadByteBuffers(
     /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -718,7 +718,7 @@ ECode FileChannelImpl::WriteByteBuffer(
     return WriteImpl(buffer, -1, number);
 }
 
-ECode FileChannelImpl::WriteByteBufferEx(
+ECode FileChannelImpl::WriteByteBuffer(
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int64 position,
     /* [out] */ Int32* number)
@@ -787,7 +787,7 @@ ECode FileChannelImpl::WriteImpl(
     return NOERROR;
 }
 
-ECode FileChannelImpl::WriteByteBuffersEx(
+ECode FileChannelImpl::WriteByteBuffers(
     /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,

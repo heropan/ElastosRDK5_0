@@ -1,4 +1,4 @@
-#include "cmdef.h"
+#include "coredef.h"
 #include "SocketChannel.h"
 
 namespace Elastos {
@@ -18,7 +18,7 @@ ECode SocketChannel::Open(
    return E_NOT_IMPLEMENTED;
 }
 
-ECode OpenEx(
+ECode Open(
     /* [in] */ ISocketAddress* addr,
     /* [out] */ ISocketChannel** channel)
 {
@@ -42,14 +42,14 @@ ECode SocketChannel::ValidOps(
     return NOERROR;
 }
 
-ECode SocketChannel::ReadByteBuffersEx(
+ECode SocketChannel::ReadByteBuffers(
     /* [in] */ const ArrayOf<IByteBuffer*>& targets,
     /* [out] */ Int64* number)
 {
     return ReadByteBuffers(targets, 0, targets.GetLength(), number);
 }
 
-ECode SocketChannel::WriteByteBuffersEx(
+ECode SocketChannel::WriteByteBuffers(
     /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
     /* [out] */ Int64* number)
 {

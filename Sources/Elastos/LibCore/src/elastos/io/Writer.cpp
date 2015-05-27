@@ -93,7 +93,11 @@ ECode Writer::Append(
     return WriteString(tmp);
 }
 
+<<<<<<< HEAD
 ECode Writer::Append(
+=======
+ECode Writer::AppendCharSequence(
+>>>>>>> review libcore.elastos.nio car file
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

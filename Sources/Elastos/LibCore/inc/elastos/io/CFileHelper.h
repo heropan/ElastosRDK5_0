@@ -52,7 +52,7 @@ public:
      * @throws IOException
      *             if an error occurs when writing the file.
      */
-    CARAPI CreateTempFileEx(
+    CARAPI CreateTempFile(
         /* [in] */ const String& prefix,
         /* [in] */ const String& suffix,
         /* [in] */ IFile* directory,

@@ -21,7 +21,6 @@ module
     /**
     * @Involve
     * interface Elastos.IO.Channels.IChannel;
-    * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
     * interface ISelectableChannel;
     */
     interface IServerSocketChannel {

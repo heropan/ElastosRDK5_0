@@ -1,7 +1,7 @@
 #ifndef __CHARSETPROVIDER_H__
 #define __CHARSETPROVIDER_H__
 
-#include <cmdef.h>
+#include <coredef.h>
 #include "Elastos.CoreLibrary_server.h"
 
 namespace Elastos {

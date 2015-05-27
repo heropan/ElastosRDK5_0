@@ -67,6 +67,7 @@ module
          * IndexOutOfBoundsException | if {offset < 0} or {count < 0}, or if {offset + count} is greater than the size of buf.
          * IOException | if this writer is closed or another I/O error occurs.
          */
+
         Write(
             [in] ArrayOf<Char32> buffer,
             [in] Int32 offset,

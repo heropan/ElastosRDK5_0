@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "InputStreamReader.h"
 #include "Charset.h"
 #include "CCoderResult.h"
@@ -137,7 +137,7 @@ ECode InputStreamReader::Read(
     return NOERROR;
 }
 
-ECode InputStreamReader::ReadCharsEx(
+ECode InputStreamReader::ReadChars(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,

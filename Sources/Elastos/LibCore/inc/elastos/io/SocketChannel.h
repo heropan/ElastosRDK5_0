@@ -56,7 +56,7 @@ public:
      * @throws IOException
      *             if an I/O error occurs.
      */
-    CARAPI static OpenEx(
+    CARAPI static Open(
         /* [in] */ ISocketAddress* addr,
         /* [out] */ ISocketChannel** channel);
 
@@ -254,7 +254,7 @@ public:
      * IOException | if another I/O error occurs.
      * NotYetConnectedException | if this channel is not yet connected.
      */
-    CARAPI ReadByteBuffersEx(
+    CARAPI ReadByteBuffers(
         /* [in] */ const ArrayOf<IByteBuffer*>& targets,
         /* [out] */ Int64* number);
 
@@ -339,7 +339,7 @@ public:
      * NotYetConnectedException | if this channel is not yet connected.
      * @see java.nio.channels.GatheringByteChannel#write(java.nio.ByteBuffer[])
      */
-    CARAPI WriteByteBuffersEx(
+    CARAPI WriteByteBuffers(
         /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
         /* [out] */ Int64* number);
 

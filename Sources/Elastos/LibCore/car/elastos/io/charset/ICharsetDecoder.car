@@ -222,7 +222,7 @@ module
          *
          * @sa #decodeLoop(ByteBuffer, CharBuffer) decodeLoop
          */
-        DecodeEx(
+        Decode(
             [in] IByteBuffer* byteBuffer,
             [in] ICharBuffer* charBuffer,
             [in] Boolean endOfInput,

@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "MemoryBlock.h"
 #include "Memory.h"
 #include <elastos/Math.h>

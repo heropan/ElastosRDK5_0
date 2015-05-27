@@ -156,7 +156,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if index is invalid.
          */
-        GetCharEx(
+        GetChar(
             [in] Int32 index,
             [out] Char32* value);
 
@@ -195,7 +195,7 @@ module
          * @exception BufferUnderflowException
          *                if {len} is greater than {remaining()}.
          */
-        GetCharsEx(
+        GetChars(
             [out] ArrayOf<Char32> dst,
             [in] Int32 dstOffset,
             [in] Int32 charCount);
@@ -261,7 +261,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutCharEx(
+        PutChar(
             [in] Int32 index,
             [in] Char32 c);
 
@@ -304,7 +304,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutCharsEx(
+        PutChars(
             [in] ArrayOf<Char32> src,
             [in] Int32 srcOffset,
             [in] Int32 charCount);
@@ -366,7 +366,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutStringEx(
+        PutString(
             [in] String str,
             [in] Int32 start,
             [in] Int32 end);
@@ -436,7 +436,7 @@ module
         AppendChars(
             [in] ICharSequence* csq);
 
-        AppendCharsEx(
+        AppendChars(
             [in] ICharSequence* csq,
             [in] Int32 start,
             [in] Int32 end);
@@ -522,7 +522,7 @@ module
          * Return the char buffer is successful, or index out of bound error
          * either 'start' or 'len' is invalid;
          */
-        WrapArrayEx(
+        WrapArray(
             [in] ArrayOf<Char32>* array,
             [in] Int32 start,
             [in] Int32 charCount,
@@ -569,7 +569,7 @@ module
          * @Return NOERROR if successful or index out of bound error when either
          * 'start' or 'end' is invalid;
          */
-        WrapSequenceEx(
+        WrapSequence(
             [in] ICharSequence* cs,
             [in] Int32 start,
             [in] Int32 end,

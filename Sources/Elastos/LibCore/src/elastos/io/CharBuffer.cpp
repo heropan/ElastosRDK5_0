@@ -1,6 +1,6 @@
 
 #include "CharBuffer.h"
-#include <cmdef.h>
+#include <coredef.h>
 #include <elastos/Math.h>
 #include <elastos/StringBuilder.h>
 #include <CharSequenceAdapter.h>
@@ -38,7 +38,7 @@ ECode CharBuffer::WrapArray(
     return WrapArrayEx(array, 0, array->GetLength(), buf);
 }
 
-ECode CharBuffer::WrapArrayEx(
+ECode CharBuffer::WrapArray(
     /* [in] */ ArrayOf<Char32>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 charCount,
@@ -72,7 +72,7 @@ ECode CharBuffer::WrapSequence(
     return NOERROR;
 }
 
-ECode CharBuffer::WrapSequenceEx(
+ECode CharBuffer::WrapSequence(
     /* [in] */ ICharSequence* chseq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -169,7 +169,7 @@ ECode CharBuffer::GetChars(
     return GetCharsEx(dst, 0, dst->GetLength());
 }
 
-ECode CharBuffer::GetCharsEx(
+ECode CharBuffer::GetChars(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
@@ -211,7 +211,7 @@ ECode CharBuffer::PutChars(
     return PutCharsEx(src, 0, src.GetLength());
 }
 
-ECode CharBuffer::PutCharsEx(
+ECode CharBuffer::PutChars(
     /* [in] */ const ArrayOf<Char32>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
@@ -264,7 +264,7 @@ ECode CharBuffer::PutString(
     return PutStringEx(str, 0, str.GetLength());
 }
 
-ECode CharBuffer::PutStringEx(
+ECode CharBuffer::PutString(
     /* [in] */ const String& str,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -319,7 +319,7 @@ ECode CharBuffer::AppendChars(
     return PutString(String("null"));
 }
 
-ECode CharBuffer::AppendCharsEx(
+ECode CharBuffer::AppendChars(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

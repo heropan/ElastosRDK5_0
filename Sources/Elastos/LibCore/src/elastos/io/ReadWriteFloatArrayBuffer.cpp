@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "ReadWriteFloatArrayBuffer.h"
 #include "ReadOnlyFloatArrayBuffer.h"
 #include "elastos/StringBuilder.h"
@@ -166,7 +166,7 @@ ECode ReadWriteFloatArrayBuffer::GetFloat(
     return FloatArrayBuffer::GetFloat(value);
 }
 
-ECode ReadWriteFloatArrayBuffer::GetFloatEx(
+ECode ReadWriteFloatArrayBuffer::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
@@ -179,7 +179,7 @@ ECode ReadWriteFloatArrayBuffer::GetFloats(
     return FloatArrayBuffer::GetFloats(dst);
 }
 
-ECode ReadWriteFloatArrayBuffer::GetFloatsEx(
+ECode ReadWriteFloatArrayBuffer::GetFloats(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 floatCount)
@@ -204,7 +204,7 @@ ECode ReadWriteFloatArrayBuffer::PutFloat(
     return NOERROR;
 }
 
-ECode ReadWriteFloatArrayBuffer::PutFloatEx(
+ECode ReadWriteFloatArrayBuffer::PutFloat(
     /* [in] */ Int32 index,
     /* [in] */ Float c)
 {
@@ -219,7 +219,7 @@ ECode ReadWriteFloatArrayBuffer::PutFloats(
     return FloatArrayBuffer::PutFloats(src);
 }
 
-ECode ReadWriteFloatArrayBuffer::PutFloatsEx(
+ECode ReadWriteFloatArrayBuffer::PutFloats(
     /* [in] */ const ArrayOf<Float>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 floatCount)

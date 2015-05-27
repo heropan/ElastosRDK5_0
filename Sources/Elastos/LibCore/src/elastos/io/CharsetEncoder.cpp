@@ -111,7 +111,7 @@ ECode CharsetEncoder::CanEncode(
     return ImplCanEncode(charBuffer.Get(), result);
 }
 
-ECode CharsetEncoder::CanEncodeEx(
+ECode CharsetEncoder::CanEncode(
     /* [in] */ ICharSequence* sequence,
     /* [out] */ Boolean* result)
 {
@@ -215,7 +215,7 @@ ECode CharsetEncoder::Encode(
     return NOERROR;
 }
 
-ECode CharsetEncoder::EncodeEx(
+ECode CharsetEncoder::Encode(
     /* [in] */ ICharBuffer* charBuffer,
     /* [in, out] */ IByteBuffer* byteBuffer,
     /* [in] */ Boolean endOfInput,

@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Int16ToByteBufferAdapter.h"
 #include "ByteBuffer.h"
 #include "DirectByteBuffer.h"
@@ -190,7 +190,7 @@ ECode Int16ToByteBufferAdapter::GetInt16(
     return mByteBuffer->GetInt16Ex(mPosition++ * sizeof(Int16), value);
 }
 
-ECode Int16ToByteBufferAdapter::GetInt16Ex(
+ECode Int16ToByteBufferAdapter::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {
@@ -204,7 +204,7 @@ ECode Int16ToByteBufferAdapter::GetInt16s(
     return Int16Buffer::GetInt16s(dst);
 }
 
-ECode Int16ToByteBufferAdapter::GetInt16sEx(
+ECode Int16ToByteBufferAdapter::GetInt16s(
     /* [out] */ ArrayOf<Int16>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int16Count)
@@ -237,7 +237,7 @@ ECode Int16ToByteBufferAdapter::PutInt16(
     return mByteBuffer->PutInt16Ex(mPosition++ * sizeof(Int16), c);
 }
 
-ECode Int16ToByteBufferAdapter::PutInt16Ex(
+ECode Int16ToByteBufferAdapter::PutInt16(
     /* [in] */ Int32 index,
     /* [in] */ Int16 c)
 {
@@ -251,7 +251,7 @@ ECode Int16ToByteBufferAdapter::PutInt16s(
     return Int16Buffer::PutInt16s(src);
 }
 
-ECode Int16ToByteBufferAdapter::PutInt16sEx(
+ECode Int16ToByteBufferAdapter::PutInt16s(
     /* [in] */ const ArrayOf<Int16>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int16Count)

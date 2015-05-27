@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "PipeImpl.h"
 #include "IoUtils.h"
 
@@ -47,7 +47,7 @@ ECode PipeSourceChannel::ReadByteBuffers(const ArrayOf<IByteBuffer*> & buffers,
     return mChannel->ReadByteBuffersEx(buffers, nRead);
 }
 
-ECode PipeSourceChannel::ReadByteBuffersEx(
+ECode PipeSourceChannel::ReadByteBuffers(
         const ArrayOf<IByteBuffer*> & buffers, Int32 offset, Int32 length,
         Int64* nRead)
 {

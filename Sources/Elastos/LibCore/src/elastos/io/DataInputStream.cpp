@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "DataInputStream.h"
 #include "CPushbackInputStream.h"
 #include <elastos/Math.h>
@@ -36,7 +36,7 @@ ECode DataInputStream::ReadBytes(
     return FilterInputStream::ReadBytes(buffer, number);
 }
 
-ECode DataInputStream::ReadBytesEx(
+ECode DataInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -138,7 +138,7 @@ ECode DataInputStream::ReadFully(
     return ReadFullyEx(buffer, 0, buffer->GetLength());
 }
 
-ECode DataInputStream::ReadFullyEx(
+ECode DataInputStream::ReadFully(
     /* [out] */ ArrayOf<byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)

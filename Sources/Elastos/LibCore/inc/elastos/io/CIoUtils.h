@@ -25,7 +25,7 @@ public:
     /**
      * Closes 'fd', ignoring any exceptions. Does nothing if 'fd' is null or invalid.
      */
-    CARAPI CloseQuietlyEx(
+    CARAPI CloseQuietly(
         /* [in] */ IFileDescriptor* fd);
 
     /**

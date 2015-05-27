@@ -111,7 +111,7 @@ public:
      * @throws NullPointerException
      *             if {@code buffer} is {@code null}.
      */
-    CARAPI WriteBytesEx(
+    CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte>& buffer,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount);

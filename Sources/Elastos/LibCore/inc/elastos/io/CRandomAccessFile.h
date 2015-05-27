@@ -52,7 +52,7 @@ public:
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -76,7 +76,7 @@ public:
     CARAPI ReadFully(
         /* [out] */ ArrayOf<byte>* buffer);
 
-    CARAPI ReadFullyEx(
+    CARAPI ReadFully(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length);
@@ -112,7 +112,7 @@ public:
     CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte>& buffer);
 
-    CARAPI WriteBytesEx(
+    CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);

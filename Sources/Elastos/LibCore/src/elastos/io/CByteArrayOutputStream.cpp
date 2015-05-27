@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CByteArrayOutputStream.h"
 
 namespace Elastos {
@@ -43,7 +43,7 @@ ECode CByteArrayOutputStream::ToString(
     return ByteArrayOutputStream::ToString(str);
 }
 
-ECode CByteArrayOutputStream::ToStringEx(
+ECode CByteArrayOutputStream::ToString(
     /* [in] */ const String& enc,
     /* [out] */ String* str)
 {
@@ -52,7 +52,7 @@ ECode CByteArrayOutputStream::ToStringEx(
     return ByteArrayOutputStream::ToStringEx(enc, str);
 }
 
-ECode CByteArrayOutputStream::WriteBytesEx(
+ECode CByteArrayOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)

@@ -103,7 +103,7 @@ module
          * IOException |if a problem occurs while reading from this stream.
          * NullPointerException | if {dst} is null.
          */
-        ReadFullyEx(
+        ReadFully(
             [out] ArrayOf<Byte> buffer,
             [in] Int32 offset,
             [in] Int32 byteCount);

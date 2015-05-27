@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "OutputStreamWriter.h"
 #include "ByteBuffer.h"
 #include "CharBuffer.h"
@@ -155,7 +155,7 @@ ECode OutputStreamWriter::Write(
     return Convert(chars);
 }
 
-ECode OutputStreamWriter::WriteCharsEx(
+ECode OutputStreamWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -175,7 +175,7 @@ ECode OutputStreamWriter::WriteCharsEx(
     return Convert(chars);
 }
 
-ECode OutputStreamWriter::WriteStringEx(
+ECode OutputStreamWriter::WriteString(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)

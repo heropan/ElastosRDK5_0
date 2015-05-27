@@ -94,17 +94,17 @@ public:
         /* [in] */ Int32 address,
         /* [out] */ Byte* value);
 
-    PeekInt32Ex(
+    PeekInt32(
         /* [in] */ Int32 address,
         /* [in] */ Boolean swap,
         /* [out] */ Int32* value);
 
-    PeekInt64Ex(
+    PeekInt64(
         /* [in] */ Int32 address,
         /* [in] */ Boolean swap,
         /* [out] */ Int64* value);
 
-    PeekInt16Ex(
+    PeekInt16(
         /* [in] */ Int32 address,
         /* [in] */ Boolean swap,
         /* [out] */ Int16* value);
@@ -161,17 +161,17 @@ public:
         /* [in] */ Int32 address,
         /* [in] */ Byte value);
 
-    PokeInt32Ex(
+    PokeInt32(
         /* [in] */ Int32 address,
         /* [in] */ Int32 value,
         /* [in] */ Boolean swap);
 
-    PokeInt64Ex(
+    PokeInt64(
         /* [in] */ Int32 address,
         /* [in] */ Int64 value,
         /* [in] */ Boolean swap);
 
-    PokeInt16Ex(
+    PokeInt16(
         /* [in] */ Int32 address,
         /* [in] */ Int16 value,
         /* [in] */ Boolean swap);

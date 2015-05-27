@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CPushbackInputStream.h"
 
 namespace Elastos {
@@ -50,7 +50,7 @@ ECode CPushbackInputStream::ReadBytes(
     return PushbackInputStream::ReadBytes(buffer, number);
 }
 
-ECode CPushbackInputStream::ReadBytesEx(
+ECode CPushbackInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -88,7 +88,7 @@ ECode CPushbackInputStream::UnreadBytes(
     return PushbackInputStream::UnreadBytes(buffer);
 }
 
-ECode CPushbackInputStream::UnreadBytesEx(
+ECode CPushbackInputStream::UnreadBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)

@@ -48,7 +48,7 @@ module
 //         * :-|:------------|
 //         * IOException | if an I/O error occurs while writing.
 //         */
-//        WriteBytesEx(
+//        WriteBytes(
 //            [in] ArrayOf<Byte> buffer,
 //            [in] Int32 offset,
 //            [in] Int32 count);

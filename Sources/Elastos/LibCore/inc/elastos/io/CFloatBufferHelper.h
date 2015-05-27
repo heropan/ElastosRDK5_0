@@ -57,7 +57,7 @@ public:
      * @exception NullPointerException
      *                if {@code array} is null.
      */
-    CARAPI WrapArrayEx(
+    CARAPI WrapArray(
         /* [in] */ ArrayOf<Float>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 floatCount,

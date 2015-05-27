@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "ReadOnlyInt64ArrayBuffer.h"
 #include "elastos/StringBuilder.h"
 
@@ -147,7 +147,7 @@ ECode ReadOnlyInt64ArrayBuffer::GetInt64(
     return Int64ArrayBuffer::GetInt64(value);
 }
 
-ECode ReadOnlyInt64ArrayBuffer::GetInt64Ex(
+ECode ReadOnlyInt64ArrayBuffer::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
@@ -160,7 +160,7 @@ ECode ReadOnlyInt64ArrayBuffer::GetInt64s(
     return Int64ArrayBuffer::GetInt64s(dst);
 }
 
-ECode ReadOnlyInt64ArrayBuffer::GetInt64sEx(
+ECode ReadOnlyInt64ArrayBuffer::GetInt64s(
     /* [out] */ ArrayOf<Int64>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int64Count)
@@ -181,7 +181,7 @@ ECode ReadOnlyInt64ArrayBuffer::PutInt64(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyInt64ArrayBuffer::PutInt64Ex(
+ECode ReadOnlyInt64ArrayBuffer::PutInt64(
     /* [in] */ Int32 index,
     /* [in] */ Int64 c)
 {
@@ -195,7 +195,7 @@ ECode ReadOnlyInt64ArrayBuffer::PutInt64s(
     return Int64ArrayBuffer::PutInt64s(src);
 }
 
-ECode ReadOnlyInt64ArrayBuffer::PutInt64sEx(
+ECode ReadOnlyInt64ArrayBuffer::PutInt64s(
     /* [in] */ const ArrayOf<Int64>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int64Count)

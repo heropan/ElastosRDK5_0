@@ -3,7 +3,7 @@
 #define __IO_CNATIVECONVERTERHELPER_H__
 
 #include "_CNativeConverterHelper.h"
-#include "cmdef.h"
+#include "coredef.h"
 
 using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICharsetDecoder;

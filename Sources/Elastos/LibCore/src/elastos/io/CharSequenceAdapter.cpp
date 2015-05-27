@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CharSequenceAdapter.h"
 #include "CByteOrderHelper.h"
 
@@ -159,7 +159,7 @@ ECode CharSequenceAdapter::GetChar(
     return mSequence->GetCharAt(mPosition++, value);
 }
 
-ECode CharSequenceAdapter::GetCharEx(
+ECode CharSequenceAdapter::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -173,7 +173,7 @@ ECode CharSequenceAdapter::GetChars(
     return CharBuffer::GetChars(dst);
 }
 
-ECode CharSequenceAdapter::GetCharsEx(
+ECode CharSequenceAdapter::GetChars(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
@@ -250,7 +250,7 @@ ECode CharSequenceAdapter::PutChar(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode CharSequenceAdapter::PutCharEx(
+ECode CharSequenceAdapter::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 c)
 {
@@ -264,7 +264,7 @@ ECode CharSequenceAdapter::PutChars(
     return CharBuffer::PutChars(src);
 }
 
-ECode CharSequenceAdapter::PutCharsEx(
+ECode CharSequenceAdapter::PutChars(
     /* [in] */ const ArrayOf<Char32>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
@@ -285,7 +285,7 @@ ECode CharSequenceAdapter::PutString(
     return CharBuffer::PutString(str);
 }
 
-ECode CharSequenceAdapter::PutStringEx(
+ECode CharSequenceAdapter::PutString(
     /* [in] */ const String& str,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -319,7 +319,7 @@ ECode CharSequenceAdapter::AppendChars(
     return CharBuffer::AppendChars(csq);
 }
 
-ECode CharSequenceAdapter::AppendCharsEx(
+ECode CharSequenceAdapter::AppendChars(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

@@ -56,7 +56,7 @@ public:
         /* [in] */ const String& format,
         /* [in] */ ArrayOf<IInterface*>* args);
 
-    CARAPI FormatEx(
+    CARAPI Format(
         /* [in] */ ILocale* l,
         /* [in] */ const String& format,
         /* [in] */ ArrayOf<IInterface*>* args);
@@ -66,7 +66,7 @@ public:
         /* [in] */ ArrayOf<IInterface*>* args);
 
 
-    CARAPI PrintfEx(
+    CARAPI Printf(
         /* [in] */ ILocale* l,
         /* [in] */ const String& format,
         /* [in] */ ArrayOf<IInterface*>* args);
@@ -133,7 +133,7 @@ public:
     CARAPI WriteChars(
         /* [in] */ const ArrayOf<Char32>& buffer);
 
-    CARAPI WriteCharsEx(
+    CARAPI WriteChars(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -141,7 +141,7 @@ public:
     CARAPI WriteString(
         /* [in] */ const String& str);
 
-    CARAPI WriteStringEx(
+    CARAPI WriteString(
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -152,7 +152,7 @@ public:
     CARAPI AppendCharSequence(
         /* [in] */ ICharSequence* csq);
 
-    CARAPI AppendCharSequenceEx(
+    CARAPI AppendCharSequence(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);

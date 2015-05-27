@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CUnsafeByteSequence.h"
 
 namespace Elastos {
@@ -43,7 +43,7 @@ ECode CUnsafeByteSequence::Write(
     return NOERROR;
 }
 
-ECode CUnsafeByteSequence::WriteEx(
+ECode CUnsafeByteSequence::Write(
     /* [in] */ Int32 b)
 {
     if (mCount == mBytes->GetLength()) {

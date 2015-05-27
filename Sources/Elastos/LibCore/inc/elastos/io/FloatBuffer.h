@@ -78,7 +78,7 @@ public:
      * @exception NullPointerException
      *                if {@code array} is null.
      */
-    static CARAPI WrapArrayEx(
+    static CARAPI WrapArray(
         /* [in] */ ArrayOf<Float>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 floatCount,
@@ -126,14 +126,14 @@ public:
     virtual CARAPI GetFloat(
         /* [out] */ Float* value) = 0;
 
-    virtual CARAPI GetFloatEx(
+    virtual CARAPI GetFloat(
         /* [in] */ Int32 index,
         /* [out] */ Float* value) = 0;
 
     virtual CARAPI GetFloats(
         /* [out] */ ArrayOf<Float>* dst);
 
-    virtual CARAPI GetFloatsEx(
+    virtual CARAPI GetFloats(
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 floatCount);
@@ -156,14 +156,14 @@ public:
     virtual CARAPI PutFloat(
         /* [in] */ Float d) = 0;
 
-    virtual CARAPI PutFloatEx(
+    virtual CARAPI PutFloat(
         /* [in] */ Int32 index,
         /* [in] */ Float d) = 0;
 
     CARAPI PutFloats(
         /* [in] */ const ArrayOf<Float>& src);
 
-    virtual CARAPI PutFloatsEx(
+    virtual CARAPI PutFloats(
         /* [in] */ const ArrayOf<Float>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 floatCount);

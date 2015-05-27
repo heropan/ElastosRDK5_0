@@ -3,7 +3,7 @@
 #include "CharsetEncoderICU.h"
 #include "NativeConverter.h"
 #include <unicode/utypes.h>
-#include <cmdef.h>
+#include <coredef.h>
 
 namespace Elastos {
 namespace IO {

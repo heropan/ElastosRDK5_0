@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "DoubleBuffer.h"
 #include "ReadWriteDoubleArrayBuffer.h"
 
@@ -38,7 +38,7 @@ ECode DoubleBuffer::WrapArray(
     return WrapArrayEx(array, 0, array->GetLength(), buf);
 }
 
-ECode DoubleBuffer::WrapArrayEx(
+ECode DoubleBuffer::WrapArray(
     /* [in] */ ArrayOf<Double>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 doubleCount,
@@ -149,7 +149,7 @@ ECode DoubleBuffer::GetDoubles(
     return GetDoublesEx(dst, 0, dst->GetLength());
 }
 
-ECode DoubleBuffer::GetDoublesEx(
+ECode DoubleBuffer::GetDoubles(
     /* [out] */ ArrayOf<Double>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 doubleCount)
@@ -187,7 +187,7 @@ ECode DoubleBuffer::PutDoubles(
     return PutDoublesEx(src, 0, src.GetLength());
 }
 
-ECode DoubleBuffer::PutDoublesEx(
+ECode DoubleBuffer::PutDoubles(
     /* [in] */ const ArrayOf<Double>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 doubleCount)

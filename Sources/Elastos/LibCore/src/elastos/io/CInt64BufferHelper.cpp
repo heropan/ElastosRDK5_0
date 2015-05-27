@@ -19,7 +19,7 @@ ECode CInt64BufferHelper::WrapArray(
     return Int64Buffer::WrapArray(array, int64Buffer);
 }
 
-ECode CInt64BufferHelper::WrapArrayEx(
+ECode CInt64BufferHelper::WrapArray(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int64Count,

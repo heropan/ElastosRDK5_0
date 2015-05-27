@@ -124,7 +124,7 @@ module
          * IndexOutOfBoundsException | if {byteOffset < 0} or {byteCount < 0}, or if {byteOffset + byteCount} is greater than the size of {buffer}.
          * IOException | if this file is closed or another I/O error occurs.
          */
-        ReadBytesEx(
+        ReadBytes(
             [out] ArrayOf<Byte> buffer,
             [in] Int32 offset,
             [in] Int32 length,
@@ -205,7 +205,7 @@ module
          * IndexOutOfBoundsException | if {byteCount < 0}, {byteOffset < 0} or {byteCount + byteOffset} is greater than the size of {buffer}.
          * IOException | if an I/O error occurs while writing to this file.
          */
-        WriteBytesEx(
+        WriteBytes(
             [in] ArrayOf<Byte> buffer,
             [in] Int32 offset,
             [in] Int32 count);

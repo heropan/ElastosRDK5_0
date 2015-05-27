@@ -23,7 +23,6 @@ module
     /**
     * @Involve
     * interface Elastos.IO.Channels.IChannel;
-    * interface Elastos.IO.Channels.Spi.IAbstractInterruptibleChannel;
     */
     interface ISelectableChannel {
 
@@ -171,7 +170,7 @@ module
      * @throws CancelledKeyException
      *             if this channel is registered but its key has been canceled.
      */
-     RegisterEx(
+     Register(
          [in]  ISelector*      sel,
          [in]  Int32           ops,
          [in]  IObject*        obj,

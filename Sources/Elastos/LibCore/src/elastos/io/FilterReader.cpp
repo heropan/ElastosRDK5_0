@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "FilterReader.h"
 
 namespace Elastos {
@@ -66,7 +66,7 @@ ECode FilterReader::Read(
     return mIn->Read(value);
 }
 
-ECode FilterReader::ReadCharsEx(
+ECode FilterReader::ReadChars(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,

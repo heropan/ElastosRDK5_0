@@ -88,7 +88,7 @@ module
          *             contents of {buffer}
          * NullPointerException | if {buffer} is {null}
          */
-        UnreadCharsEx(
+        UnreadChars(
             [in] ArrayOf<Char32> buffer,
             [in] Int32 offset,
             [in] Int32 length);

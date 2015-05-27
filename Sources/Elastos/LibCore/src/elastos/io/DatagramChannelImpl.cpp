@@ -1,4 +1,4 @@
-#include "cmdef.h"
+#include "coredef.h"
 #include "DatagramChannelImpl.h"
 #include "CIoBridge.h"
 #include "CLibcore.h"
@@ -59,7 +59,7 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::Connect(
     return DatagramSocket::Connect(peer);
 }
 
-ECode DatagramChannelImpl::DatagramSocketAdapter::ConnectEx(
+ECode DatagramChannelImpl::DatagramSocketAdapter::Connect(
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 aPort)
 {

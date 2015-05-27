@@ -74,7 +74,7 @@ public:
      * @throws UnsupportedEncodingException
      *             if the provided encoding is not supported.
      */
-    CARAPI ToStringEx(
+    CARAPI ToString(
         /* [in] */ const String& enc,
         /* [out] */ String* str);
 
@@ -107,7 +107,7 @@ public:
      *             {@code buffer}.
      */
     // synchronized
-    CARAPI WriteBytesEx(
+    CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte> & buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);

@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "LineNumberReader.h"
 #include <elastos/Character.h>
 
@@ -84,7 +84,7 @@ ECode LineNumberReader::Read(
     return NOERROR;
 }
 
-ECode LineNumberReader::ReadCharsEx(
+ECode LineNumberReader::ReadChars(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,

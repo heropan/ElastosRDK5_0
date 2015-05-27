@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CDataInputStream.h"
 
 namespace Elastos {
@@ -64,7 +64,7 @@ ECode CDataInputStream::ReadBytes(
     return DataInputStream::ReadBytes(buffer, number);
 }
 
-ECode CDataInputStream::ReadBytesEx(
+ECode CDataInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -138,7 +138,7 @@ ECode CDataInputStream::ReadFully(
     return DataInputStream::ReadFully(buffer);
 }
 
-ECode CDataInputStream::ReadFullyEx(
+ECode CDataInputStream::ReadFully(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)

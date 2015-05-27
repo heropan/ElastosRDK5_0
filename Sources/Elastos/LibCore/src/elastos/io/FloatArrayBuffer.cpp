@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "FloatArrayBuffer.h"
 #include "CByteOrderHelper.h"
 
@@ -41,7 +41,7 @@ ECode FloatArrayBuffer::GetFloat(
     return NOERROR;
 }
 
-ECode FloatArrayBuffer::GetFloatEx(
+ECode FloatArrayBuffer::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
@@ -51,7 +51,7 @@ ECode FloatArrayBuffer::GetFloatEx(
     return NOERROR;
 }
 
-ECode FloatArrayBuffer::GetFloatsEx(
+ECode FloatArrayBuffer::GetFloats(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 floatCount)

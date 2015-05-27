@@ -3,9 +3,8 @@
 #define __CCODERRESULT_H__
 
 #include "_CCoderResult.h"
-#include "cmdef.h"
+#include "coredef.h"
 #include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
 
 using Elastos::Utility::HashMap;
 

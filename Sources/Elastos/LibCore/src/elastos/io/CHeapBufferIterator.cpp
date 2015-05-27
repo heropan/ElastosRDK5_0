@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CHeapBufferIterator.h"
 #include "Memory.h"
 

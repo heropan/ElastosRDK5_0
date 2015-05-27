@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "StringReader.h"
 #include <elastos/Character.h>
 
@@ -97,7 +97,7 @@ ECode StringReader::Read(
     return NOERROR;
 }
 
-ECode StringReader::ReadCharsEx(
+ECode StringReader::ReadChars(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,

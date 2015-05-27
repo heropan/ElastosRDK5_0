@@ -39,7 +39,7 @@ public:
     static IWritableByteChannel* NewChannel(IOutputStream* outputStream);
 
     /*
-    static CARAPI NewChannelEx(
+    static CARAPI NewChannel(
         IOutputStream* outputStream,
         IWritableByteChannel** outputChannel);
     */
@@ -50,7 +50,7 @@ public:
         Int32 minBufferCapacity,
         IReader ** ppReader);
 
-    static CARAPI NewReaderEx(
+    static CARAPI NewReader(
         IReadableByteChannel * pChannel,
         const String& charsetName,
         IReader ** ppReader);
@@ -61,7 +61,7 @@ public:
         Int32 minBufferCapacity,
         IWriter ** ppWriter);
 
-    static CARAPI NewWriterEx(
+    static CARAPI NewWriter(
         IWritableByteChannel * pChannel,
         const String& charsetName,
         IWriter ** ppWriter);

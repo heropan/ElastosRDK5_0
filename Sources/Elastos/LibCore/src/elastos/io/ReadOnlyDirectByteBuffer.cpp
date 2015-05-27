@@ -1,6 +1,6 @@
 
 #include "ReadOnlyDirectByteBuffer.h"
-#include "cmdef.h"
+#include "coredef.h"
 #include "elastos/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
@@ -185,7 +185,7 @@ ECode ReadOnlyDirectByteBuffer::GetByte(
     return DirectByteBuffer::GetByte(value);
 }
 
-ECode ReadOnlyDirectByteBuffer::GetByteEx(
+ECode ReadOnlyDirectByteBuffer::GetByte(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
@@ -198,7 +198,7 @@ ECode ReadOnlyDirectByteBuffer::GetBytes(
     return DirectByteBuffer::GetBytes(dst);
 }
 
-ECode ReadOnlyDirectByteBuffer::GetBytesEx(
+ECode ReadOnlyDirectByteBuffer::GetBytes(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
@@ -212,7 +212,7 @@ ECode ReadOnlyDirectByteBuffer::GetChar(
     return DirectByteBuffer::GetChar(value);
 }
 
-ECode ReadOnlyDirectByteBuffer::GetCharEx(
+ECode ReadOnlyDirectByteBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -225,7 +225,7 @@ ECode ReadOnlyDirectByteBuffer::GetDouble(
     return DirectByteBuffer::GetDouble(value);
 }
 
-ECode ReadOnlyDirectByteBuffer::GetDoubleEx(
+ECode ReadOnlyDirectByteBuffer::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
@@ -238,7 +238,7 @@ ECode ReadOnlyDirectByteBuffer::GetFloat(
     return DirectByteBuffer::GetFloat(value);
 }
 
-ECode ReadOnlyDirectByteBuffer::GetFloatEx(
+ECode ReadOnlyDirectByteBuffer::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
@@ -251,7 +251,7 @@ ECode ReadOnlyDirectByteBuffer::GetInt32(
     return DirectByteBuffer::GetInt32(value);
 }
 
-ECode ReadOnlyDirectByteBuffer::GetInt32Ex(
+ECode ReadOnlyDirectByteBuffer::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
@@ -264,7 +264,7 @@ ECode ReadOnlyDirectByteBuffer::GetInt64(
     return DirectByteBuffer::GetInt64(value);
 }
 
-ECode ReadOnlyDirectByteBuffer::GetInt64Ex(
+ECode ReadOnlyDirectByteBuffer::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
@@ -277,7 +277,7 @@ ECode ReadOnlyDirectByteBuffer::GetInt16(
     return DirectByteBuffer::GetInt16(value);
 }
 
-ECode ReadOnlyDirectByteBuffer::GetInt16Ex(
+ECode ReadOnlyDirectByteBuffer::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {
@@ -325,7 +325,7 @@ ECode ReadOnlyDirectByteBuffer::PutByte(
 //    throw new ReadOnlyBufferException();
 }
 
-ECode ReadOnlyDirectByteBuffer::PutByteEx(
+ECode ReadOnlyDirectByteBuffer::PutByte(
     /* [in] */ Int32 index,
     /* [in] */ Byte b)
 {
@@ -339,7 +339,7 @@ ECode ReadOnlyDirectByteBuffer::PutBytes(
     return DirectByteBuffer::PutBytes(src);
 }
 
-ECode ReadOnlyDirectByteBuffer::PutBytesEx(
+ECode ReadOnlyDirectByteBuffer::PutBytes(
     /* [in] */ const ArrayOf<Byte>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 byteCount)
@@ -361,7 +361,7 @@ ECode ReadOnlyDirectByteBuffer::PutChar(
     return DirectByteBuffer::PutChar(value);
 }
 
-ECode ReadOnlyDirectByteBuffer::PutCharEx(
+ECode ReadOnlyDirectByteBuffer::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 value)
 {
@@ -375,7 +375,7 @@ ECode ReadOnlyDirectByteBuffer::PutDouble(
 //    throw new ReadOnlyBufferException();
 }
 
-ECode ReadOnlyDirectByteBuffer::PutDoubleEx(
+ECode ReadOnlyDirectByteBuffer::PutDouble(
     /* [in] */ Int32 index,
     /* [in] */ Double value)
 {
@@ -390,7 +390,7 @@ ECode ReadOnlyDirectByteBuffer::PutFloat(
 //    throw new ReadOnlyBufferException();
 }
 
-ECode ReadOnlyDirectByteBuffer::PutFloatEx(
+ECode ReadOnlyDirectByteBuffer::PutFloat(
     /* [in] */ Int32 index,
     /* [in] */ Float value)
 {
@@ -405,7 +405,7 @@ ECode ReadOnlyDirectByteBuffer::PutInt16(
 //    throw new ReadOnlyBufferException();
 }
 
-ECode ReadOnlyDirectByteBuffer::PutInt16Ex(
+ECode ReadOnlyDirectByteBuffer::PutInt16(
     /* [in] */ Int32 index,
     /* [in] */ Int16 value)
 {
@@ -420,7 +420,7 @@ ECode ReadOnlyDirectByteBuffer::PutInt32(
 //    throw new ReadOnlyBufferException();
 }
 
-ECode ReadOnlyDirectByteBuffer::PutInt32Ex(
+ECode ReadOnlyDirectByteBuffer::PutInt32(
     /* [in] */ Int32 index,
     /* [in] */ Int32 value)
 {
@@ -435,7 +435,7 @@ ECode ReadOnlyDirectByteBuffer::PutInt64(
 //    throw new ReadOnlyBufferException();
 }
 
-ECode ReadOnlyDirectByteBuffer::PutInt64Ex(
+ECode ReadOnlyDirectByteBuffer::PutInt64(
     /* [in] */ Int32 index,
     /* [in] */ Int64 value)
 {

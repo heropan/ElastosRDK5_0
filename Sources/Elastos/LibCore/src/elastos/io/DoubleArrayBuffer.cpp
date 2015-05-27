@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "DoubleArrayBuffer.h"
 #include "CByteOrderHelper.h"
 
@@ -41,7 +41,7 @@ ECode DoubleArrayBuffer::GetDouble(
     return NOERROR;
 }
 
-ECode DoubleArrayBuffer::GetDoubleEx(
+ECode DoubleArrayBuffer::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
@@ -51,7 +51,7 @@ ECode DoubleArrayBuffer::GetDoubleEx(
     return NOERROR;
 }
 
-ECode DoubleArrayBuffer::GetDoublesEx(
+ECode DoubleArrayBuffer::GetDoubles(
     /* [out] */ ArrayOf<Double>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 doubleCount)

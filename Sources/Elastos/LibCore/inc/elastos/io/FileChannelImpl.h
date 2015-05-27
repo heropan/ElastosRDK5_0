@@ -3,7 +3,7 @@
 
 #include "Elastos.CoreLibrary_server.h"
 #include "FileChannel.h"
-#include "cmdef.h"
+#include "coredef.h"
 
 using Elastos::Core::IComparator;
 using Libcore::IO::IOsConstants;
@@ -40,13 +40,13 @@ public:
     CARAPI TryLock(
         /* [out] */ IFileLock** lock);
 
-    virtual CARAPI LockEx(
+    virtual CARAPI Lock(
         /* [in] */ Int64 position,
         /* [in] */ Int64 size,
         /* [in] */ Boolean shared,
         /* [out] */ IFileLock** lock);
 
-    CARAPI TryLockEx(
+    CARAPI TryLock(
         /* [in] */ Int64 position,
         /* [in] */ Int64 size,
         /* [in] */ Boolean shared,
@@ -71,12 +71,12 @@ public:
         /* [in] */ IByteBuffer* buffer,
         /* [out] */ Int32* number);
 
-    CARAPI ReadByteBufferEx(
+    CARAPI ReadByteBuffer(
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int64 position,
         /* [out] */ Int32* number);
 
-    CARAPI ReadByteBuffersEx(
+    CARAPI ReadByteBuffers(
         /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -109,12 +109,12 @@ public:
         /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
         /* [out] */ Int64* number);
 
-    CARAPI WriteByteBufferEx(
+    CARAPI WriteByteBuffer(
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int64 position,
         /* [out] */ Int32* number);
 
-    CARAPI WriteByteBuffersEx(
+    CARAPI WriteByteBuffers(
         /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

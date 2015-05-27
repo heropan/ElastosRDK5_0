@@ -72,7 +72,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code doubleCount} is invalid.
      */
-    static CARAPI WrapArrayEx(
+    static CARAPI WrapArray(
         /* [in] */ ArrayOf<Double>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 doubleCount,
@@ -189,7 +189,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if index is invalid.
      */
-    virtual CARAPI GetDoubleEx(
+    virtual CARAPI GetDouble(
         /* [in] */ Int32 index,
         /* [out] */ Double* value) = 0;
 
@@ -228,7 +228,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code doubleCount} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetDoublesEx(
+    virtual CARAPI GetDoubles(
         /* [out] */ ArrayOf<Double>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 doubleCount);
@@ -312,7 +312,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutDoubleEx(
+    virtual CARAPI PutDouble(
         /* [in] */ Int32 index,
         /* [in] */ Double d) = 0;
 
@@ -355,7 +355,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutDoublesEx(
+    virtual CARAPI PutDoubles(
         /* [in] */ const ArrayOf<Double>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 doubleCount);

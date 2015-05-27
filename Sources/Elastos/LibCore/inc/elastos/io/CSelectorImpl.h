@@ -4,11 +4,9 @@
 #include "_CSelectorImpl.h"
 #include "AbstractSelector.h"
 #include "SelectionKeyImpl.h"
-#include <elastos/Thread.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IUnsafeArrayList;
 using Elastos::IO::Channels::Spi::ISelectorProvider;
@@ -181,7 +179,7 @@ public:
      * @throws IOException
      *             if an I/O error occurs.
      */
-    CARAPI SelectEx(
+    CARAPI Select(
         /* [in] */ Int64 timeout,
         /* [out] */ Int32*ret);
 

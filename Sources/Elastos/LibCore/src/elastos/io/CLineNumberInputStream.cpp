@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CLineNumberInputStream.h"
 
 namespace Elastos {
@@ -50,7 +50,7 @@ ECode CLineNumberInputStream::ReadBytes(
     return LineNumberInputStream::ReadBytes(buffer, number);
 }
 
-ECode CLineNumberInputStream::ReadBytesEx(
+ECode CLineNumberInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,

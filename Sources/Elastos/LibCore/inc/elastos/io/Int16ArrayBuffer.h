@@ -36,11 +36,11 @@ public:
     CARAPI GetInt16(
         /* [out] */ Int16* value);
 
-    CARAPI GetInt16Ex(
+    CARAPI GetInt16(
         /* [in] */ Int32 index,
         /* [out] */ Int16* value);
 
-    CARAPI GetInt16sEx(
+    CARAPI GetInt16s(
         /* [out] */ ArrayOf<Int16>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int16Count);

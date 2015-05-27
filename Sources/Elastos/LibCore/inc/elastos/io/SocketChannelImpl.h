@@ -74,7 +74,7 @@ public:
         /* [in] */ IByteBuffer* dst,
         /* [out] */ Int32* ret);
 
-    CARAPI ReadBytesBufferEx(
+    CARAPI ReadBytesBuffer(
         /* [in] */ ArrayOf<IByteBuffer*>& target,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 len,
@@ -83,7 +83,7 @@ public:
     CARAPI WriteByteBuffer(
         /* [in] */ IByteBuffer* src);
 
-    CARAPI WriteBytesBufferEx(
+    CARAPI WriteBytesBuffer(
         /* [in] */ ArrayOf<IByteBuffer*>& source,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 len,

@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Reader.h"
 #include <elastos/Character.h>
 #include <elastos/Math.h>

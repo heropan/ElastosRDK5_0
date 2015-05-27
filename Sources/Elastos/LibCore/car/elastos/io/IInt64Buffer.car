@@ -79,7 +79,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if index is invalid.
          */
-        GetInt64Ex(
+        GetInt64(
             [in] Int32 index,
             [out] Int64* value);
 
@@ -118,7 +118,7 @@ module
          * @exception BufferUnderflowException
          *                if {@code longCount} is greater than {@code remaining()}.
          */
-        GetInt64sEx(
+        GetInt64s(
             [out] ArrayOf<Int64> dst,
             [in] Int32 dstOffset,
             [in] Int32 int64Count);
@@ -165,7 +165,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt64Ex(
+        PutInt64(
             [in] Int32 index,
             [in] Int64 l);
 
@@ -208,7 +208,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt64sEx(
+        PutInt64s(
             [in] ArrayOf<Int64> src,
             [in] Int32 srcOffset,
             [in] Int32 int64Count);
@@ -300,7 +300,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if either {start} or {longCount} is invalid.
          */
-        WrapArrayEx(
+        WrapArray(
             [in] ArrayOf<Int64>* array,
             [in] Int32 start,
             [in] Int32 int64Count,

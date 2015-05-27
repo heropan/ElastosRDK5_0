@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CRandomAccessFile.h"
 #include "CFile.h"
 #include "IoUtils.h"
@@ -207,7 +207,7 @@ ECode CRandomAccessFile::ReadBytes(
     return ReadBytesEx(buffer, 0, buffer->GetLength(), number);
 }
 
-ECode CRandomAccessFile::ReadBytesEx(
+ECode CRandomAccessFile::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -310,7 +310,7 @@ ECode CRandomAccessFile::ReadFully(
     return ReadFullyEx(buffer, 0, buffer->GetLength());
 }
 
-ECode CRandomAccessFile::ReadFullyEx(
+ECode CRandomAccessFile::ReadFully(
     /* [out] */ ArrayOf<byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
@@ -563,7 +563,7 @@ ECode CRandomAccessFile::WriteBytes(
     return WriteBytesEx(buffer, 0, buffer.GetLength());
 }
 
-ECode CRandomAccessFile::WriteBytesEx(
+ECode CRandomAccessFile::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)

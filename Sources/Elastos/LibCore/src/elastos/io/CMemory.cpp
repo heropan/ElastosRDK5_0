@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CMemory.h"
 #include "Memory.h"
 
@@ -111,7 +111,7 @@ ECode CMemory::PeekByte(
     return NOERROR;
 }
 
-ECode CMemory::PeekInt32Ex(
+ECode CMemory::PeekInt32(
     /* [in] */ Int32 address,
     /* [in] */ Boolean swap,
     /* [out] */ Int32* value)
@@ -121,7 +121,7 @@ ECode CMemory::PeekInt32Ex(
     return NOERROR;
 }
 
-ECode CMemory::PeekInt64Ex(
+ECode CMemory::PeekInt64(
     /* [in] */ Int32 address,
     /* [in] */ Boolean swap,
     /* [out] */ Int64* value)
@@ -131,7 +131,7 @@ ECode CMemory::PeekInt64Ex(
     return NOERROR;
 }
 
-ECode CMemory::PeekInt16Ex(
+ECode CMemory::PeekInt16(
     /* [in] */ Int32 address,
     /* [in] */ Boolean swap,
     /* [out] */ Int16* value)
@@ -217,7 +217,7 @@ ECode CMemory::PokeByte(
     return Memory::PokeByte(address, value);
 }
 
-ECode CMemory::PokeInt32Ex(
+ECode CMemory::PokeInt32(
     /* [in] */ Int32 address,
     /* [in] */ Int32 value,
     /* [in] */ Boolean swap)
@@ -225,7 +225,7 @@ ECode CMemory::PokeInt32Ex(
     return Memory::PokeInt32(address, value, swap);
 }
 
-ECode CMemory::PokeInt64Ex(
+ECode CMemory::PokeInt64(
     /* [in] */ Int32 address,
     /* [in] */ Int64 value,
     /* [in] */ Boolean swap)
@@ -233,7 +233,7 @@ ECode CMemory::PokeInt64Ex(
     return Memory::PokeInt64(address, value, swap);
 }
 
-ECode CMemory::PokeInt16Ex(
+ECode CMemory::PokeInt16(
     /* [in] */ Int32 address,
     /* [in] */ Int16 value,
     /* [in] */ Boolean swap)

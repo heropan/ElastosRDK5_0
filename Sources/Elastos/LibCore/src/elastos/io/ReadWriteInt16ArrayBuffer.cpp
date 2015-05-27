@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "ReadWriteInt16ArrayBuffer.h"
 #include "ReadOnlyInt16ArrayBuffer.h"
 #include "elastos/StringBuilder.h"
@@ -167,7 +167,7 @@ ECode ReadWriteInt16ArrayBuffer::GetInt16(
     return Int16ArrayBuffer::GetInt16(value);
 }
 
-ECode ReadWriteInt16ArrayBuffer::GetInt16Ex(
+ECode ReadWriteInt16ArrayBuffer::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {
@@ -180,7 +180,7 @@ ECode ReadWriteInt16ArrayBuffer::GetInt16s(
     return Int16ArrayBuffer::GetInt16s(dst);
 }
 
-ECode ReadWriteInt16ArrayBuffer::GetInt16sEx(
+ECode ReadWriteInt16ArrayBuffer::GetInt16s(
     /* [out] */ ArrayOf<Int16>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int16Count)
@@ -205,7 +205,7 @@ ECode ReadWriteInt16ArrayBuffer::PutInt16(
     return NOERROR;
 }
 
-ECode ReadWriteInt16ArrayBuffer::PutInt16Ex(
+ECode ReadWriteInt16ArrayBuffer::PutInt16(
     /* [in] */ Int32 index,
     /* [in] */ Int16 c)
 {
@@ -220,7 +220,7 @@ ECode ReadWriteInt16ArrayBuffer::PutInt16s(
     return Int16ArrayBuffer::PutInt16s(src);
 }
 
-ECode ReadWriteInt16ArrayBuffer::PutInt16sEx(
+ECode ReadWriteInt16ArrayBuffer::PutInt16s(
     /* [in] */ const ArrayOf<Int16>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int16Count)

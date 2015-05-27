@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "Int64ArrayBuffer.h"
 #include "CByteOrderHelper.h"
 
@@ -41,7 +41,7 @@ ECode Int64ArrayBuffer::GetInt64(
     return NOERROR;
 }
 
-ECode Int64ArrayBuffer::GetInt64Ex(
+ECode Int64ArrayBuffer::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
@@ -51,7 +51,7 @@ ECode Int64ArrayBuffer::GetInt64Ex(
     return NOERROR;
 }
 
-ECode Int64ArrayBuffer::GetInt64sEx(
+ECode Int64ArrayBuffer::GetInt64s(
     /* [out] */ ArrayOf<Int64>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int64Count)

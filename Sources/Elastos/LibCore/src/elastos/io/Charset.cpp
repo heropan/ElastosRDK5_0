@@ -172,7 +172,7 @@ ECode Charset::DisplayName(
     return NOERROR;
 }
 
-ECode Charset::DisplayNameEx(
+ECode Charset::DisplayName(
     /* [in] */ ILocale* l,
     /* [out] */ String* name)
 {
@@ -225,7 +225,7 @@ ECode Charset::Encode(
     return NOERROR;
 }
 
-ECode Charset::EncodeEx(
+ECode Charset::Encode(
     /* [in] */ const String& s,
     /* [out] */ IByteBuffer** byteBuffer)
 {

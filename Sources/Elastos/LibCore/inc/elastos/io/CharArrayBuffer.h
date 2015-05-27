@@ -36,11 +36,11 @@ public:
     CARAPI GetChar(
         /* [out] */ Char32* value);
 
-    CARAPI GetCharEx(
+    CARAPI GetChar(
         /* [in] */ Int32 index,
         /* [out] */ Char32* value);
 
-    CARAPI GetCharsEx(
+    CARAPI GetChars(
         /* [out] */ ArrayOf<Char32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 charCount);

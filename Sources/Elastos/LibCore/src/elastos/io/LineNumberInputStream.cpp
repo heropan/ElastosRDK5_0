@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "LineNumberInputStream.h"
 #include <elastos/Character.h>
 
@@ -86,7 +86,7 @@ ECode LineNumberInputStream::Read(
     return NOERROR;
 }
 
-ECode LineNumberInputStream::ReadBytesEx(
+ECode LineNumberInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,

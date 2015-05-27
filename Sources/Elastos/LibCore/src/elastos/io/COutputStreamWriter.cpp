@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "COutputStreamWriter.h"
 
 namespace Elastos {
@@ -27,7 +27,7 @@ ECode COutputStreamWriter::WriteChars(
     return OutputStreamWriter::WriteChars(buffer);
 }
 
-ECode COutputStreamWriter::WriteCharsEx(
+ECode COutputStreamWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -41,7 +41,7 @@ ECode COutputStreamWriter::WriteString(
     return OutputStreamWriter::WriteString(str);
 }
 
-ECode COutputStreamWriter::WriteStringEx(
+ECode COutputStreamWriter::WriteString(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -63,7 +63,7 @@ ECode COutputStreamWriter::AppendCharSequence(
     return OutputStreamWriter::AppendCharSequence(csq);
 }
 
-ECode COutputStreamWriter::AppendCharSequenceEx(
+ECode COutputStreamWriter::AppendCharSequence(
     /* [in] */ ICharSequence *csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

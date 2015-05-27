@@ -1,7 +1,7 @@
 
 #include "CChannels.h"
 #include "Channels.h"
-#include "cmdef.h"
+#include "coredef.h"
 #include "ByteBuffer.h"
 #include "InputStream.h"
 #include "OutputStream.h"
@@ -35,7 +35,7 @@ ECode CChannels::NewChannel(
     return NOERROR;
 }
 
-ECode CChannels::NewChannelEx(
+ECode CChannels::NewChannel(
     /* [in] */ IOutputStream* outputStream,
     /* [out] */ IWritableByteChannel** outputChannel)
 {
@@ -66,7 +66,7 @@ ECode CChannels::NewReader(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CChannels::NewReaderEx(
+ECode CChannels::NewReader(
     /* [in] */ IReadableByteChannel * pChannel,
     /* [in] */ const String& charsetName,
     /* [out] */ IReader ** ppReader)
@@ -84,7 +84,7 @@ ECode CChannels::NewWriter(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CChannels::NewWriterEx(
+ECode CChannels::NewWriter(
     /* [in] */ IWritableByteChannel * pChannel,
     /* [in] */ const String& charsetName,
     /* [out] */ IWriter ** ppWriter)

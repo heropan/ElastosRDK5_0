@@ -19,7 +19,7 @@ ECode CFloatBufferHelper::WrapArray(
     return FloatBuffer::WrapArray(array, floatBuffer);
 }
 
-ECode CFloatBufferHelper::WrapArrayEx(
+ECode CFloatBufferHelper::WrapArray(
     /* [in] */ ArrayOf<Float>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 floatCount,

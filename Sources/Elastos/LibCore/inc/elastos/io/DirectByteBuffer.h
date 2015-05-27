@@ -28,37 +28,37 @@ class DirectByteBuffer
     friend class ReadOnlyDirectByteBuffer;
 
 public:
-    CARAPI GetBytesEx(
+    CARAPI GetBytes(
         /* [out] */ ArrayOf<Byte>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 byteCount);
 
-    CARAPI GetCharsEx(
+    CARAPI GetChars(
         /* [out] */ ArrayOf<Char32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 charCount);
 
-    CARAPI GetDoublesEx(
+    CARAPI GetDoubles(
         /* [out] */ ArrayOf<Double>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 doubleCount);
 
-    CARAPI GetFloatsEx(
+    CARAPI GetFloats(
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 floatCount);
 
-    CARAPI GetInt32sEx(
+    CARAPI GetInt32s(
         /* [out] */ ArrayOf<Int32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int32Count);
 
-    CARAPI GetInt64sEx(
+    CARAPI GetInt64s(
         /* [out] */ ArrayOf<Int64>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int64Count);
 
-    CARAPI GetInt16sEx(
+    CARAPI GetInt16s(
         /* [out] */ ArrayOf<Int16>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int16Count);
@@ -66,49 +66,49 @@ public:
     CARAPI GetByte(
         /* [out] */ Byte* value);
 
-    CARAPI GetByteEx(
+    CARAPI GetByte(
         /* [in] */ Int32 index,
         /* [out] */ Byte* value);
 
     CARAPI GetChar(
         /* [out] */ Char32* value);
 
-    CARAPI GetCharEx(
+    CARAPI GetChar(
         /* [in] */ Int32 index,
         /* [out] */ Char32* value);
 
     CARAPI GetDouble(
         /* [out] */ Double* value);
 
-    CARAPI GetDoubleEx(
+    CARAPI GetDouble(
         /* [in] */ Int32 index,
         /* [out] */ Double* value);
 
     CARAPI GetFloat(
         /* [out] */ Float* value);
 
-    CARAPI GetFloatEx(
+    CARAPI GetFloat(
         /* [in] */ Int32 index,
         /* [out] */ Float* value);
 
     CARAPI GetInt32(
         /* [out] */ Int32* value);
 
-    CARAPI GetInt32Ex(
+    CARAPI GetInt32(
         /* [in] */ Int32 index,
         /* [out] */ Int32* value);
 
     CARAPI GetInt64(
         /* [out] */ Int64* value);
 
-    CARAPI GetInt64Ex(
+    CARAPI GetInt64(
         /* [in] */ Int32 index,
         /* [out] */ Int64* value);
 
     CARAPI GetInt16(
         /* [out] */ Int16* value);
 
-    CARAPI GetInt16Ex(
+    CARAPI GetInt16(
         /* [in] */ Int32 index,
         /* [out] */ Int16* value);
 

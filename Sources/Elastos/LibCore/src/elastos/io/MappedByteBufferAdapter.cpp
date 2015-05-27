@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "MappedByteBufferAdapter.h"
 #include "elastos/StringBuilder.h"
 
@@ -196,14 +196,14 @@ ECode MappedByteBufferAdapter::GetByte(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::GetByteEx(
+ECode MappedByteBufferAdapter::GetByte(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
     return MappedByteBuffer::mWrapped->GetByteEx(index, value);
 }
 
-ECode MappedByteBufferAdapter::GetBytesEx(
+ECode MappedByteBufferAdapter::GetBytes(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
@@ -223,7 +223,7 @@ ECode MappedByteBufferAdapter::GetChar(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::GetCharEx(
+ECode MappedByteBufferAdapter::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -240,7 +240,7 @@ ECode MappedByteBufferAdapter::GetDouble(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::GetDoubleEx(
+ECode MappedByteBufferAdapter::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
@@ -257,7 +257,7 @@ ECode MappedByteBufferAdapter::GetFloat(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::GetFloatEx(
+ECode MappedByteBufferAdapter::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
@@ -274,7 +274,7 @@ ECode MappedByteBufferAdapter::GetInt32(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::GetInt32Ex(
+ECode MappedByteBufferAdapter::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
@@ -291,7 +291,7 @@ ECode MappedByteBufferAdapter::GetInt64(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::GetInt64Ex(
+ECode MappedByteBufferAdapter::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
@@ -308,7 +308,7 @@ ECode MappedByteBufferAdapter::GetInt16(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::GetInt16Ex(
+ECode MappedByteBufferAdapter::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {
@@ -345,7 +345,7 @@ ECode MappedByteBufferAdapter::PutByte(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::PutByteEx(
+ECode MappedByteBufferAdapter::PutByte(
     /* [in] */ Int32 index,
     /* [in] */ Byte b)
 {
@@ -353,7 +353,7 @@ ECode MappedByteBufferAdapter::PutByteEx(
     return MappedByteBuffer::mWrapped->PutByteEx(index, b);
 }
 
-ECode MappedByteBufferAdapter::PutBytesEx(
+ECode MappedByteBufferAdapter::PutBytes(
     /* [in] */ const ArrayOf<Byte>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 byteCount)
@@ -373,7 +373,7 @@ ECode MappedByteBufferAdapter::PutChar(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::PutCharEx(
+ECode MappedByteBufferAdapter::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 value)
 {
@@ -390,7 +390,7 @@ ECode MappedByteBufferAdapter::PutDouble(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::PutDoubleEx(
+ECode MappedByteBufferAdapter::PutDouble(
     /* [in] */ Int32 index,
     /* [in] */ Double value)
 {
@@ -407,7 +407,7 @@ ECode MappedByteBufferAdapter::PutFloat(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::PutFloatEx(
+ECode MappedByteBufferAdapter::PutFloat(
     /* [in] */ Int32 index,
     /* [in] */ Float value)
 {
@@ -424,7 +424,7 @@ ECode MappedByteBufferAdapter::PutInt32(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::PutInt32Ex(
+ECode MappedByteBufferAdapter::PutInt32(
     /* [in] */ Int32 index,
     /* [in] */ Int32 value)
 {
@@ -441,7 +441,7 @@ ECode MappedByteBufferAdapter::PutInt64(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::PutInt64Ex(
+ECode MappedByteBufferAdapter::PutInt64(
     /* [in] */ Int32 index,
     /* [in] */ Int64 value)
 {
@@ -458,7 +458,7 @@ ECode MappedByteBufferAdapter::PutInt16(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::PutInt16Ex(
+ECode MappedByteBufferAdapter::PutInt16(
     /* [in] */ Int32 index,
     /* [in] */ Int16 value)
 {

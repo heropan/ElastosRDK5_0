@@ -1,6 +1,6 @@
 
 #include "FileLock.h"
-#include <cmdef.h>
+#include <coredef.h>
 
 namespace Elastos {
 namespace IO {

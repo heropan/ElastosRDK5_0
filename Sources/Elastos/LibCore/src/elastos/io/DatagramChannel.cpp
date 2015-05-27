@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "DatagramChannel.h"
 #include "SelectionKey.h"
 #include "SelectorProvider.h"
@@ -35,14 +35,14 @@ Int32 DatagramChannel::ValidOps()
     return (SelectionKey::sOP_READ | SelectionKey::sOP_WRITE);
 }
 
-ECode DatagramChannel::ReadByteBuffersEx(
+ECode DatagramChannel::ReadByteBuffers(
     /* [in] */ const ArrayOf<IByteBuffer*>& targets,
     /* [out] */ Int64* nRead)
 {
     return ReadByteBuffers(targets, 0, targets.GetLength(), nRead);
 }
 
-ECode DatagramChannel::WriteByteBuffersEx(
+ECode DatagramChannel::WriteByteBuffers(
     /* [in] */ const ArrayOf<IByteBuffer*>& targets,
     /* [out] */ Int64* nWrite)
 {

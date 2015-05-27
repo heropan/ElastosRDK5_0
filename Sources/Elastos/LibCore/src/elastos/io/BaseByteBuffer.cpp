@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "BaseByteBuffer.h"
 #include "CharToByteBufferAdapter.h"
 #include "FloatToByteBufferAdapter.h"
@@ -65,7 +65,7 @@ ECode BaseByteBuffer::GetChar(
     return GetInt32((Int32*)value);
 }
 
-ECode BaseByteBuffer::GetCharEx(
+ECode BaseByteBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -78,7 +78,7 @@ ECode BaseByteBuffer::PutChar(
     return PutInt32((Int32)value);
 }
 
-ECode BaseByteBuffer::PutCharEx(
+ECode BaseByteBuffer::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 value)
 {

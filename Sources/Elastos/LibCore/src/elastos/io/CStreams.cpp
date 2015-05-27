@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "CStreams.h"
 #include <elastos/Math.h>
 #include <elastos/StringBuilder.h>
@@ -50,7 +50,7 @@ ECode CStreams::ReadFully(
 
 }
 
-ECode CStreams::ReadFullyEx(
+ECode CStreams::ReadFully(
     /* [in] */ IInputStream* in,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,

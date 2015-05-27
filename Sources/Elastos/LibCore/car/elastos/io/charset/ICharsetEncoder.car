@@ -140,7 +140,7 @@ module
          * :-|:------------|
          * IllegalStateException | if current internal status is neither RESET or FLUSH.
          */
-        CanEncodeEx(
+        CanEncode(
             [in] ICharSequence* sequence,
             [out] Boolean* result);
 
@@ -251,7 +251,7 @@ module
          *
          *@sa #encodeLoop(CharBuffer, ByteBuffer) encodeLoop
          */
-        EncodeEx(
+        Encode(
             [in] ICharBuffer* charBuffer,
             [in /*in, out*/] IByteBuffer* byteBuffer,
             [in] Boolean endOfInput,

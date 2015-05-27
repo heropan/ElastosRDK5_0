@@ -32,7 +32,7 @@ public:
 
     Int32 InterestOpsNoCheck();
 
-    CARAPI InterestOpsEx(
+    CARAPI InterestOps(
         /* [in] */ Int32 operations,
         /* [out] */ SelectionKey** key);
 

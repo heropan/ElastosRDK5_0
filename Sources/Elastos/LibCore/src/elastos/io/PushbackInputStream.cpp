@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "PushbackInputStream.h"
 #include <elastos/Character.h>
 
@@ -107,7 +107,7 @@ ECode PushbackInputStream::Read(
     return mIn->Read(value);
 }
 
-ECode PushbackInputStream::ReadBytesEx(
+ECode PushbackInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -211,7 +211,7 @@ ECode PushbackInputStream::UnreadBytes(
     return UnreadBytesEx(buffer, 0, buffer.GetLength());
 }
 
-ECode PushbackInputStream::UnreadBytesEx(
+ECode PushbackInputStream::UnreadBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)

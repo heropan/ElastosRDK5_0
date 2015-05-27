@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "StringWriter.h"
 #include <elastos/Character.h>
 
@@ -82,7 +82,7 @@ ECode StringWriter::Write(
     return NOERROR;
 }
 
-ECode StringWriter::WriteCharsEx(
+ECode StringWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -117,7 +117,7 @@ ECode StringWriter::WriteString(
     return mBuf->AppendString(str);
 }
 
-ECode StringWriter::WriteStringEx(
+ECode StringWriter::WriteString(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -142,7 +142,7 @@ ECode StringWriter::AppendCharSequence(
     return WriteString(str);
 }
 
-ECode StringWriter::AppendCharSequenceEx(
+ECode StringWriter::AppendCharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

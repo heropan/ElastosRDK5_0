@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "File.h"
 #include "CFile.h"
 #include "IoUtils.h"
@@ -410,7 +410,7 @@ ECode File::CompareTo(
     return NOERROR;
 }
 
-ECode File::CompareToEx(
+ECode File::CompareTo(
     /* [in] */ IFile* another,
     /* [out] */ Int32* result)
 {

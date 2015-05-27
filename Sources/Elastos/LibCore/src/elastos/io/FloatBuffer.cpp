@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "FloatBuffer.h"
 #include "ReadWriteFloatArrayBuffer.h"
 
@@ -38,7 +38,7 @@ ECode FloatBuffer::WrapArray(
     return WrapArrayEx(array, 0, array->GetLength(), buf);
 }
 
-ECode FloatBuffer::WrapArrayEx(
+ECode FloatBuffer::WrapArray(
     /* [in] */ ArrayOf<Float>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 floatCount,
@@ -148,7 +148,7 @@ ECode FloatBuffer::GetFloats(
     return GetFloatsEx(dst, 0, dst->GetLength());
 }
 
-ECode FloatBuffer::GetFloatsEx(
+ECode FloatBuffer::GetFloats(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 floatCount)
@@ -186,7 +186,7 @@ ECode FloatBuffer::PutFloats(
     return PutFloatsEx(src, 0, src.GetLength());
 }
 
-ECode FloatBuffer::PutFloatsEx(
+ECode FloatBuffer::PutFloats(
     /* [in] */ const ArrayOf<Float>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 floatCount)
