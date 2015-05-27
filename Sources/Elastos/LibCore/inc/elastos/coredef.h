@@ -742,24 +742,20 @@
     }
 #endif
 
+
 // Car Singleton decls and impls
 //
-#ifndef CAR_SINGLETON_DECL
-#define CAR_SINGLETON_DECL()                                                            \
+#ifndef CAR_SINGLETON_METHODS_DECL
+#define CAR_SINGLETON_METHODS_DECL()                                                    \
 private:                                                                                \
     CARAPI_(void) OnLastStrongRef(                                                      \
         /* [in] */ const void* id);                                                     \
                                                                                         \
-    CARAPI_(SpinLock&) GetSelfSpinLock();                                               \
-                                                                                        \
-public:                                                                                 \
-    CAR_INTERFACE_DECL()                                                                \
-                                                                                        \
-    CAR_OBJECT_DECL()
+    CARAPI_(SpinLock&) GetSelfSpinLock();
 #endif
 
-#ifndef CAR_SINGLETON_IMPL
-#define CAR_SINGLETON_IMPL(ClassName, SupperClassName, Interface)                       \
+#ifndef CAR_SINGLETON_METHODS_IMPL
+#define CAR_SINGLETON_METHODS_IMPL(ClassName)                                           \
     void ClassName::OnLastStrongRef(                                                    \
         /* [in] */ const void* id)                                                      \
     {                                                                                   \
@@ -769,11 +765,24 @@ public:                                                                         
     SpinLock& ClassName::GetSelfSpinLock()                                              \
     {                                                                                   \
         return _##ClassName::GetSelfSpinLock();                                         \
-    }                                                                                   \
+    }
+#endif
+
+
+#ifndef CAR_SINGLETON_DECL
+#define CAR_SINGLETON_DECL()                                                            \
+private:                                                                                \
+    CAR_SINGLETON_METHODS_DECL()                                                        \
                                                                                         \
-    CAR_INTERFACE_IMPL(ClassName, SupperClassName, Interface)                           \
+public:                                                                                 \
+    CAR_OBJECT_DECL()
+#endif
+
+#ifndef CAR_SINGLETON_IMPL
+#define CAR_SINGLETON_IMPL(ClassName)                                                   \
+    CAR_OBJECT_IMPL(ClassName)                                                          \
                                                                                         \
-    CAR_OBJECT_IMPL(ClassName)
+    CAR_SINGLETON_METHODS_IMPL(ClassName)
 #endif
 
 #endif //__ELASTOS_CORE_DEF_H__
