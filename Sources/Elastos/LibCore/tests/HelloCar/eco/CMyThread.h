@@ -19,7 +19,6 @@ public:
     CARAPI constructor();
 
     CARAPI Run();
-
 };
 
 } // HelloCar

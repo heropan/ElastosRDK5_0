@@ -12,31 +12,31 @@ module
     namespace Elastos {                     // 命名空间
     namespace HelloCar {
 
-        class CDog {                        // 声明 CAR 类
-            constructor();                  // 显式声明无参构造函数
+    class CDog {                        // 声明 CAR 类
+        constructor();                  // 显式声明无参构造函数
 
-            constructor(                    // 显式声明有参构造函数
-                [in] Int32 age,
-                [in] String name);
+        constructor(                    // 显式声明有参构造函数
+            [in] Int32 age,
+            [in] String name);
 
-            interface IDog;                 // 接口声明
-            interface IAnimal;              // 接口声明
-        }
+        interface IDog;                 // 接口声明
+        interface IAnimal;              // 接口声明
+    }
 
-        class CCat {                        // 声明 CAR 类
-            interface IAnimal;              // 接口声明
-        }
+    class CCat {                        // 声明 CAR 类
+        interface IAnimal;              // 接口声明
+    }
 
-        singleton class CAnimalHelper {     // 声明单例 CAR 类
-            interface IAnimalHelper;        // 接口声明
-        }
+    singleton class CAnimalHelper {     // 声明单例 CAR 类
+        interface IAnimalHelper;        // 接口声明
+    }
 
-        class CMyThread {
-            constructor();
+    class CMyThread {
+        constructor();
 
-            interface IThread;
-            interface IRunnable;
-        }
+        interface IThread;
+        interface IRunnable;
+    }
 
     } // HelloCar
     } // Elastos

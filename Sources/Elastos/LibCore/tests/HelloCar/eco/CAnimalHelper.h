@@ -23,7 +23,6 @@ public:
     CARAPI CanFly(
         /* [in] */ IAnimal* animal,
         /* [out] */ Boolean* canFly);
-
 };
 
 } // HelloCar

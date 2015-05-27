@@ -16,7 +16,6 @@ public:
 
     CARAPI CanFly(
         /* [out] */ Boolean* canFly);
-
 };
 
 } // HelloCar
