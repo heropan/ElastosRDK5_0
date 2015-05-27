@@ -3,6 +3,8 @@ module
 {
     merge("../libcore/utility/IBasicLruCache.car");
     merge("../libcore/utility/ICollectionUtils.car");
+    merge("../libcore/utility/IZoneInfo.car");
+    merge("../libcore/utility/IZoneInfoDB.car");
 
     //======================================================
     // Elastos.Utility
@@ -32,13 +34,11 @@ module
     merge("utility/IDeque.car");
     merge("utility/IRandomAccess.car");
     merge("utility/ITimeZone.car");
-    merge("utility/IZoneInfo.car");
     merge("utility/ISimpleTimeZone.car");
     merge("utility/ITimerTask.car");
     merge("utility/ITimer.car");
     merge("utility/ICurrency.car");
     merge("utility/IUUID.car");
-    merge("utility/IZoneInfoDB.car");
     merge("utility/ITimeZoneGetter.car");
     merge("utility/IArrayList.car");
     merge("utility/IFormattableFlags.car");

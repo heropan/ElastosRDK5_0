@@ -2,7 +2,7 @@ module
 {
     interface Elastos.Utility.ITimeZone;
 
-    namespace Elastos{
+    namespace Libcore{
     namespace Utility{
 
     interface IZoneInfoDB {
@@ -29,6 +29,6 @@ module
     }
 
     } // namespace Utility
-    } // namespace Elastos
+    } // namespace Libcore
 }
 

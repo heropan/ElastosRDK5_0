@@ -1,0 +1,31 @@
+module
+{
+    merge("droid/system/IZygote.car");
+    merge("droid/system/IStructAddrinfo.car");
+    merge("droid/system/IStructFlock.car");
+    merge("droid/system/IStructGroupReq.car");
+    merge("droid/system/IStructGroupSourceReq.car");
+    merge("droid/system/IStructLinger.car");
+    merge("droid/system/IStructPasswd.car");
+    merge("droid/system/IStructPollfd.car");
+    merge("droid/system/IStructStat.car");
+    merge("droid/system/IStructStatVfs.car");
+    merge("droid/system/IStructTimeval.car");
+    merge("droid/system/IStructUcred.car");
+    merge("droid/system/IStructUtsname.car");
+    merge("droid/system/IOsConstants.car");
+
+/*
+    namespace Elastos {
+    namespace Droid {
+    namespace System {
+
+    singleton class CZygote {
+        interface IZygote;
+    }
+
+    } // namespace System
+    } // namespace Droid
+    } // namespace Elastos
+*/
+}

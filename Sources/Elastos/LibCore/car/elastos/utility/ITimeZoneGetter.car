@@ -1,7 +1,7 @@
 module
 {
-namespace Elastos {
-namespace Utility {
+    namespace Elastos {
+    namespace Utility {
 
     interface ITimeZoneGetter {
         GetId(

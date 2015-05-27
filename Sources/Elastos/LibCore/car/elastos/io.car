@@ -6,6 +6,16 @@ module
     merge("../libcore/io/ILibcore.car");
     merge("../libcore/io/ISocketTagger.car");
     merge("../libcore/io/IBase64.car");
+    merge("../libcore/io/IMemory.car");
+    merge("../libcore/io/IBufferIterator.car");
+    merge("../libcore/io/IMemoryMappedFile.car");
+    merge("../libcore/io/ISizeOf.car");
+    merge("../libcore/io/INioBufferIterator.car");
+    merge("../libcore/io/IDeleteOnExit.car");
+    merge("../libcore/io/IDropBox.car");
+    merge("../libcore/io/IIoUtils.car");
+    merge("../libcore/io/IStreams.car");
+    merge("../libcore/io/IStrictLineReader.car");
 
     merge("io/ICloseable.car");
     merge("io/IFlushable.car");
@@ -22,7 +32,6 @@ module
     merge("io/IBufferedWriter.car");
     merge("io/IByteArrayInputStream.car");
     merge("io/IByteArrayOutputStream.car");
-    merge("io/IBufferIterator.car");
     merge("io/ICharArrayReader.car");
     merge("io/ICharArrayWriter.car");
     merge("io/IDataInput.car");
@@ -62,8 +71,6 @@ module
     merge("io/IStringBufferInputStream.car");
     merge("io/IStringReader.car");
     merge("io/IStringWriter.car");
-    merge("io/IStreams.car");
-    merge("io/IMemory.car");
     merge("io/Errors.car");
     merge("io/Exceptions.car");
 

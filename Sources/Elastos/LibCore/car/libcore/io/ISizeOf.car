@@ -1,0 +1,18 @@
+
+module
+{
+    namespace Libcore {
+    namespace IO {
+
+    interface ISizeOf {
+        const Int32 CHAR = 2;
+        const Int32 DOUBLE = 8;
+        const Int32 FLOAT = 4;
+        const Int32 INT = 4;
+        const Int32 LONG = 8;
+        const Int32 SHORT = 2;
+    }
+
+    } // namespace IO
+    } // namespace Libcore
+}

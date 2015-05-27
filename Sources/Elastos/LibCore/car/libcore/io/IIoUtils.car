@@ -46,14 +46,14 @@ module
          * Returns the contents of 'path' as a byte array.
          */
         ReadFileAsByteArray(
-            [in] String absolutePath
+            [in] String absolutePath,
             [out, callee] ArrayOf<Byte>* arr);
 
         /**
          * Returns the contents of 'path' as a string. The contents are assumed to be UTF-8.
          */
         ReadFileAsString(
-            [in] String absolutePath
+            [in] String absolutePath,
             [out] String* rst);
 
         /**
