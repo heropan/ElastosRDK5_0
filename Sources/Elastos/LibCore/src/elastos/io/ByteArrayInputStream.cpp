@@ -5,6 +5,8 @@
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(ByteArrayInputStream, InputStream, IByteArrayInputStream)
+
 ByteArrayInputStream::ByteArrayInputStream()
     : mPos(0)
     , mMark(0)
@@ -16,7 +18,7 @@ ByteArrayInputStream::~ByteArrayInputStream()
 {
 }
 
-ECode ByteArrayInputStream::Init(
+ECode ByteArrayInputStream::constructor(
     /* [in] */ ArrayOf<Byte>* buffer)
 {
     VALIDATE_NOT_NULL(buffer);
@@ -28,7 +30,7 @@ ECode ByteArrayInputStream::Init(
     return NOERROR;
 }
 
-ECode ByteArrayInputStream::Init(
+ECode ByteArrayInputStream::constructor(
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
@@ -47,6 +49,9 @@ ECode ByteArrayInputStream::Available(
     /* [out] */ Int32* number)
 {
     assert(number != NULL);
+
+    Object::Autolock lock(mLock);
+
     *number = mCount - mPos;
     return NOERROR;
 }
@@ -59,6 +64,8 @@ ECode ByteArrayInputStream::Close()
 CARAPI ByteArrayInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
+    Object::Autolock lock(mLock);
+
     mMark = mPos;
     return NOERROR;
 }
@@ -75,14 +82,18 @@ CARAPI ByteArrayInputStream::IsMarkSupported(
 CARAPI ByteArrayInputStream::Read(
     /* [out] */ Int32* value)
 {
+    VALIDATE_NOT_NULL(value);
+
+    Object::Autolock lock(mLock);
+
     *value = mPos < mCount ? (*mBuf)[mPos++] & 0xFF : -1;
     return NOERROR;
 }
 
-CARAPI ByteArrayInputStream::ReadBytesEx(
+CARAPI ByteArrayInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 length,
+    /* [in] */ Int32 byteOffset,
+    /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number)
@@ -95,12 +106,15 @@ CARAPI ByteArrayInputStream::ReadBytesEx(
 //      throw new NullPointerException("buffer == null");
         return E_NULL_POINTER_EXCEPTION;
     }
+
+    Object::Autolock lock(mLock);
+
     // avoid int overflow
     // Exception priorities (in case of multiple errors) differ from
     // RI, but are spec-compliant.
     // removed redundant check, used (offset | length) < 0 instead of
     // (offset < 0) || (length < 0) to safe one operation
-    if ((offset | length) < 0 || length > buffer->GetLength() - offset) {
+    if ((byteOffset | byteCount) < 0 || byteCount > buffer->GetLength() - byteOffset) {
 //      throw new IndexOutOfBoundsException();
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -110,13 +124,13 @@ CARAPI ByteArrayInputStream::ReadBytesEx(
         *number = -1;
         return NOERROR;
     }
-    if (length == 0) {
+    if (byteCount == 0) {
         *number = 0;
         return NOERROR;
     }
 
-    Int32 copylen = mCount - mPos < length ? mCount - mPos : length;
-    memcpy(buffer->GetPayload() + offset, mBuf->GetPayload() + mPos, copylen);
+    Int32 copylen = mCount - mPos < byteCount ? mCount - mPos : byteCount;
+    memcpy(buffer->GetPayload() + byteOffset, mBuf->GetPayload() + mPos, copylen);
 
     mPos += copylen;
     *number = copylen;
@@ -126,6 +140,8 @@ CARAPI ByteArrayInputStream::ReadBytesEx(
 
 CARAPI ByteArrayInputStream::Reset()
 {
+    Object::Autolock lock(mLock);
+
     mPos = mMark;
     return NOERROR;
 }
@@ -135,6 +151,8 @@ CARAPI ByteArrayInputStream::Skip(
     /* [out] */ Int64* number)
 {
     assert(number != NULL);
+
+    Object::Autolock lock(mLock);
 
     if (count <= 0) {
         *number = 0;

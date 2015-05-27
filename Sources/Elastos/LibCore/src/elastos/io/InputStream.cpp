@@ -39,6 +39,8 @@ ECode InputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(buffer);
+    VALIDATE_NOT_NULL(number);
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
