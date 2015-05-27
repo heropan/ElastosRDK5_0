@@ -8,16 +8,20 @@ namespace IO {
 
 class ByteArrayInputStream
     : public InputStream
+    , public IByteArrayInputStream
 {
+public:
+    CAR_INTERFACE_DECL()
+
 protected:
     ByteArrayInputStream();
 
     ~ByteArrayInputStream();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<Byte>* buffer);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length);
@@ -77,32 +81,11 @@ public:
     CARAPI Read(
         /* [out] */ Int32* value);
 
-    /**
-     * Reads at most {@code len} bytes from this stream and stores
-     * them in byte array {@code b} starting at {@code offset}. This
-     * implementation reads bytes from the source byte array.
-     *
-     * @param buffer
-     *            the byte array in which to store the bytes read.
-     * @param offset
-     *            the initial position in {@code b} to store the bytes read from
-     *            this stream.
-     * @param length
-     *            the maximum number of bytes to store in {@code b}.
-     * @return the number of bytes actually read or -1 if no bytes were read and
-     *         the end of the stream was encountered.
-     * @throws IndexOutOfBoundsException
-     *             if {@code offset < 0} or {@code length < 0}, or if
-     *             {@code offset + length} is greater than the size of
-     *             {@code b}.
-     * @throws NullPointerException
-     *             if {@code b} is {@code null}.
-     */
-    // synchronized
-    CARAPI ReadBytesEx(
+    // @Override synchronized
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
 
     /**
