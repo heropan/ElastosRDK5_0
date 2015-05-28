@@ -1,0 +1,79 @@
+
+module
+{
+
+    interface Org.Apache.Http.Utility.ICharArrayBuffer;
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Utility {
+
+    /**
+     * A resizable byte array.
+     *
+     * @author <a href="mailto:oleg@ural.ru">Oleg Kalnichevski</a>
+     *
+     * @version $Revision: 496070 $
+     *
+     * @since 4.0
+     */
+    [deprecated]
+    interface IByteArrayBuffer {
+
+        Expand(
+            [in] Int32 newlen);
+
+        Append(
+            [in] ArrayOf<Byte>* b,
+            [in] Int32 off,
+            [in] Int32 len);
+
+        Append(
+            [in] Int32 b);
+
+        Append(
+            [in] ArrayOf<Char32>* b,
+            [in] Int32 off,
+            [in] Int32 len);
+
+        Append(
+            [in] ICharArrayBuffer* b,
+            [in] Int32 off,
+            [in] Int32 len);
+
+        Clear();
+
+        ToByteArray(
+            [out, callee] ArrayOf<Byte>* byteArray);
+
+        ByteAt(
+            [in] Int32 i,
+            [out] Int32* byteAt);
+
+        Capacity(
+            [out] Int32* capacity);
+
+        Length(
+            [out] Int32* capacity);
+
+        Buffer(
+            [out, callee] ArrayOf<Byte>* byteArray);
+
+        SetLength(
+            [in] Int32 len);
+
+        IsEmpty(
+            [out] Boolean* isEmpty);
+
+        IsFull(
+            [out] Boolean* isFull);
+
+    }
+
+    } // namespace Utility
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+}

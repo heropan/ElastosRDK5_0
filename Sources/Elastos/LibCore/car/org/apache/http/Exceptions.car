@@ -1,0 +1,17 @@
+
+module
+{
+//    const FAMILY_CORE = 0x31    // http exception codes
+
+//    #define FRAMEWORK_ERROR(c)      MAKE_ECODE(SEVERITY_ERROR, FAMILY_FRAMEWORK, c)
+//    #define FRAMEWORK_SUCCESS(c)    MAKE_SUCCESS(FAMILY_FRAMEWORK, c)
+
+    //==========================================================================
+    // Elastos http exception codes (Family: 0x31)
+    const E_CONNECTION_CLOSED_EXCEPTION                     = 0xB1010000;
+    const E_HTTP_EXCEPTION                                  = 0xB1020000;
+    const E_MALFORMED_CHUNK_CODING_EXCEPTION                = 0xB1030000;
+    const E_METHOD_NOT_SUPPROTED_EXCEPTION                  = 0xB1040000;
+    const E_NO_HTTP_RESPONSE_EXCEPTION                      = 0xB1050000;
+    const E_UNSUPPORTED_HTTP_VERSION_EXCEPTION              = 0xB1060000;
+}

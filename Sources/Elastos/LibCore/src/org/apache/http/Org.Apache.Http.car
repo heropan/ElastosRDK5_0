@@ -1,0 +1,98 @@
+
+module
+{
+    importlib("Elastos.CoreLibrary.eco");
+
+    merge("../../../../car/org/apache/http/ConnectionReuseStrategy.car");
+    merge("../../../../car/org/apache/http/FormattedHeader.car");
+    merge("../../../../car/org/apache/http/Header.car");
+    merge("../../../../car/org/apache/http/HeaderElement.car");
+    merge("../../../../car/org/apache/http/HeaderElementIterator.car");
+    merge("../../../../car/org/apache/http/HeaderIterator.car");
+    merge("../../../../car/org/apache/http/HttpClientConnection.car");
+    merge("../../../../car/org/apache/http/HttpConnection.car");
+    merge("../../../../car/org/apache/http/HttpConnectionMetrics.car");
+    merge("../../../../car/org/apache/http/HttpEntity.car");
+    merge("../../../../car/org/apache/http/HttpEntityEnclosingRequest.car");
+    merge("../../../../car/org/apache/http/HttpHost.car");
+    merge("../../../../car/org/apache/http/HttpInetConnection.car");
+    merge("../../../../car/org/apache/http/HttpMessage.car");
+    merge("../../../../car/org/apache/http/HttpRequest.car");
+    merge("../../../../car/org/apache/http/HttpRequestFactory.car");
+    merge("../../../../car/org/apache/http/HttpRequestInterceptor.car");
+    merge("../../../../car/org/apache/http/HttpResponse.car");
+    merge("../../../../car/org/apache/http/HttpResponseFactory.car");
+    merge("../../../../car/org/apache/http/HttpResponseInterceptor.car");
+    merge("../../../../car/org/apache/http/HttpServerConnection.car");
+    merge("../../../../car/org/apache/http/HttpStatus.car");
+    merge("../../../../car/org/apache/http/HttpVersion.car");
+    merge("../../../../car/org/apache/http/NameValuePair.car");
+    merge("../../../../car/org/apache/http/ProtocolVersion.car");
+    merge("../../../../car/org/apache/http/ReasonPhraseCatalog.car");
+    merge("../../../../car/org/apache/http/RequestLine.car");
+    merge("../../../../car/org/apache/http/StatusLine.car");
+    merge("../../../../car/org/apache/http/TokenIterator.car");
+    merge("../../../../car/org/apache/http/Exceptions.car");
+
+    merge("../../../../car/org/apache/http/params/HttpParams.car");
+
+    merge("../../../../car/org/apache/http/protocol/HttpContext.car");
+
+    merge("../../../../car/org/apache/http/util/ByteArrayBuffer.car");
+    merge("../../../../car/org/apache/http/util/CharArrayBuffer.car");
+
+    using interface Elastos.Core.ICloneable;
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+
+    class CHttpHost {
+        constructor(
+           [in] String hostName,
+           [in] Int32 port,
+           [in] String scheme);
+
+        constructor(
+           [in] String hostName,
+           [in] Int32 port);
+
+        constructor(
+           [in] String hostName);
+
+        constructor(
+           [in] IHttpHost* httpHost);
+
+        interface IHttpHost;
+        interface ICloneable;
+    }
+
+    class CProtocolVersion {
+        constructor(
+            [in] String protocol,
+            [in] Int32 major,
+            [in] Int32 minor);
+
+        interface IProtocolVersion;
+        interface ICloneable;
+    }
+
+    class CHttpVersion {
+        constructor(
+            [in] Int32 major,
+            [in] Int32 minor);
+
+        interface IProtocolVersion;
+        interface IHttpVersion;
+        interface ICloneable;
+    }
+
+    singleton class CHttpVersionHelper {
+        interface IHttpVersionHelper;
+    }
+
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+}
