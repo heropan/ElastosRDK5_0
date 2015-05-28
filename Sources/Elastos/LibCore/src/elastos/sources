@@ -11,6 +11,7 @@ INCLUDES += $(MAKEDIR)/../../inc/elastos
 INCLUDES += $(MAKEDIR)/../../inc/elastos/core
 //INCLUDES += $(MAKEDIR)/../../inc/elastos/math
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility
+INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/regex
 INCLUDES += $(MAKEDIR)/../../inc/elastos/sql
 INCLUDES += $(MAKEDIR)/../../inc/elastos/sql/sqlite
 INCLUDES += $(MAKEDIR)/../../inc/elastos/sql/sqlite/jdbc
@@ -21,7 +22,7 @@ LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += core/core.lib
 //LIBRARIES += math/math.lib
 LIBRARIES += utility/utility.lib
-//LIBRARIES += utility/regex/regex.lib
+LIBRARIES += utility/regex/regex.lib
 
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib

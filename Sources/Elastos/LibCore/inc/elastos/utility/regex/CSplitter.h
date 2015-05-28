@@ -2,11 +2,12 @@
 #ifndef __REGEX_SPLITTER_H__
 #define __REGEX_SPLITTER_H__
 
-#include <_Elastos_Utility_CSplitter.h>
-#include <elastos/List.h>
-#include "Object.h"
+#include "_Elastos_Utility_Regex_CSplitter.h"
+//#include <elastos/List.h>
+#include <elastos/core/Singleton.h>
 
-using Elastos::Utility::List;
+//using Elastos::Utility::List;
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {
@@ -17,13 +18,13 @@ namespace Regex {
  * @hide
  */
 CarClass(CSplitter)
-    , public Object
+    , public Singleton
     , public ISplitter
 {
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
+    CAR_SINGLETON_DECL()
 
     /**
      * Returns a result equivalent to {@code s.split(separator, limit)} if it's able
@@ -44,13 +45,13 @@ public:
         /* [out, callee] */ ArrayOf<String>** array);
 
 private:
-    CARAPI FinishSplit(
-        /* [in] */ List<String>& list,
-        /* [in] */ const String& input,
-        /* [in] */ Int32 begin,
-        /* [in] */ Int32 maxSize,
-        /* [in] */ Int32 limit,
-        /* [out, callee] */ ArrayOf<String>** array);
+    // CARAPI FinishSplit(
+    //     /* [in] */ List<String>& list,
+    //     /* [in] */ const String& input,
+    //     /* [in] */ Int32 begin,
+    //     /* [in] */ Int32 maxSize,
+    //     /* [in] */ Int32 limit,
+    //     /* [out, callee] */ ArrayOf<String>** array);
 
 private:
     // The RI allows regular expressions beginning with ] or }, but that's probably a bug.
