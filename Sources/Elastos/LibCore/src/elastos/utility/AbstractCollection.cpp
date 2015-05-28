@@ -276,7 +276,7 @@ ECode AbstractCollection::ToString(
     Int32 size;
     GetSize(&size);
     StringBuilder buffer(size * 16);
-    buffer.AppendChar('[');
+    buffer.Append('[');
     AutoPtr<IIterator> it;
     GetIterator((IIterator**)&it);
     Boolean hasnext = FALSE;
@@ -284,7 +284,7 @@ ECode AbstractCollection::ToString(
         AutoPtr<IInterface> nextobject;
         it->Next((IInterface**)&nextobject);
         if (nextobject.Get() != this->Probe(EIID_IInterface)) {
-            buffer.AppendInterface(nextobject);
+            buffer.Append(nextobject);
         }
         else {
             buffer += "(this Collection)";
@@ -293,7 +293,7 @@ ECode AbstractCollection::ToString(
             buffer += ", ";
         }
     }
-    buffer.AppendChar("]");
+    buffer.Append(']');
     *result = buffer.ToString();
     return NOERROR;
 }

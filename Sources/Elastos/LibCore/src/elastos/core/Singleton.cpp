@@ -5,6 +5,7 @@ namespace Elastos {
 namespace Core {
 
 Singleton::Singleton()
+    : Object()
 {
 }
 

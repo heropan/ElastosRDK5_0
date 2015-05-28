@@ -199,14 +199,14 @@ void RealToString::FreeFormatExponential(StringBuilder& sb, Boolean positive)
         if (digitIndex >= mDigitCount) {
             break;
         }
-        sb.AppendChar((Char32) ('0' + mDigits[digitIndex++]));
+        sb.AppendChar('0' + mDigits[digitIndex++]);
     }
     if (k == exponent - 1) {
         sb.AppendChar('0');
     }
     sb.AppendChar('E');
     String expStr = IntegralToString::Int32ToString(exponent,10);
-    sb.AppendString(expStr);
+    sb.Append(expStr);
 }
 
 void RealToString::FreeFormat(StringBuilder& sb, Boolean positive)
@@ -226,7 +226,7 @@ void RealToString::FreeFormat(StringBuilder& sb, Boolean positive)
     Int32 U = mDigits[digitIndex++];
     do {
         if (U != -1) {
-            sb.AppendChar((Char32) ('0' + U));
+            sb.AppendChar('0' + U);
         } else if (k >= -1) {
             sb.AppendChar('0');
         }
