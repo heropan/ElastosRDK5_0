@@ -98,12 +98,13 @@ ECode ByteArrayOutputStream::ToString(
 }
 
 ECode ByteArrayOutputStream::ToString(
-    /* [in] */ const String& enc,
+    /* [in] */ const String* enc,
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
+    assert(enc != NULL);
 
-    *str = String((const char*)mBuf->GetPayload(), mCount) + enc;
+    *str = String((const char*)mBuf->GetPayload(), mCount) + *enc;
     return NOERROR;
 }
 
@@ -121,10 +122,11 @@ ECode ByteArrayOutputStream::Write(
 }
 
 ECode ByteArrayOutputStream::Write(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+    /* [in] */ const ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
+    assert(buffer != NULL);
     Object::Autolock lock(mLock);
 
     // avoid int overflow
@@ -134,7 +136,7 @@ ECode ByteArrayOutputStream::Write(
     // removed redundant check, made implicit null check explicit,
     // used (offset | len) < 0 instead of (offset < 0) || (len < 0)
     // to safe one operation
-    if ((offset | count) < 0 || count > buffer.GetLength() - offset) {
+    if ((offset | count) < 0 || count > buffer->GetLength() - offset) {
 //      throw new IndexOutOfBoundsException();
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -144,7 +146,7 @@ ECode ByteArrayOutputStream::Write(
     }
     /* Expand if necessary */
     Expand(count);
-    memcpy(mBuf->GetPayload() + mCount, buffer.GetPayload() + offset, count);
+    memcpy(mBuf->GetPayload() + mCount, buffer->GetPayload() + offset, count);
     mCount += count;
 
     return NOERROR;
