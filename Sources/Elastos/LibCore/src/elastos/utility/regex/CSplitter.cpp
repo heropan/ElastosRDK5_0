@@ -10,6 +10,9 @@ namespace Elastos {
 namespace Utility {
 namespace Regex {
 
+CAR_INTERFACE_IMPL(CSplitter, Object, ISplitter)
+
+CAR_OBJECT_IMPL(CSplitter)
 
 const String CSplitter::METACHARACTERS = String("\\?*+[](){}^$.|");
 

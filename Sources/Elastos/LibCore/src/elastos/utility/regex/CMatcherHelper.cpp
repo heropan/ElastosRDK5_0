@@ -6,6 +6,9 @@ namespace Elastos {
 namespace Utility {
 namespace Regex {
 
+CAR_INTERFACE_IMPL(CMatcherHelper, Singleton, IMatcherHelper)
+
+CAR_SINGLETON_IMPL(CMatcherHelper)
 
 ECode CMatcherHelper::QuoteReplacement(
     /* [in] */ const String& s,

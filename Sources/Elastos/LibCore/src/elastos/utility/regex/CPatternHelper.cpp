@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Utility {
 namespace Regex {
 
+CAR_INTERFACE_IMPL(CPatternHelper, Singleton, IPatternHelper)
+
+CAR_SINGLETON_IMPL(CPatternHelper)
+
 ECode CPatternHelper::Compile(
     /* [in] */ const String& regularExpression,
     /* [in] */ Int32 flags,

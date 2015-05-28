@@ -14,7 +14,7 @@ namespace Elastos {
 namespace Utility {
 namespace Regex {
 
-CAR_INTERFACE_IMPL(Pattern, IPattern)
+CAR_INTERFACE_IMPL(Pattern, Object, IPattern)
 
 Pattern::Pattern()
     : mNativePattern(NULL)

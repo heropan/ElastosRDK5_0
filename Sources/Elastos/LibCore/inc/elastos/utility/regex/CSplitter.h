@@ -2,9 +2,9 @@
 #ifndef __REGEX_SPLITTER_H__
 #define __REGEX_SPLITTER_H__
 
-#include <_CSplitter.h>
-#include <cmdef.h>
+#include <_Elastos_Utility_CSplitter.h>
 #include <elastos/List.h>
+#include "Object.h"
 
 using Elastos::Utility::List;
 
@@ -17,8 +17,13 @@ namespace Regex {
  * @hide
  */
 CarClass(CSplitter)
+    , public Object
+    , public ISplitter
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     /**
      * Returns a result equivalent to {@code s.split(separator, limit)} if it's able

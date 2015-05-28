@@ -4,6 +4,7 @@
 
 #include "Elastos.CoreLibrary_server.h"
 #include <unicode/regex.h>
+#include "Object.h"
 
 using Elastos::Core::ICharSequence;
 using U_ICU_NAMESPACE::RegexPattern;
@@ -13,7 +14,7 @@ namespace Utility {
 namespace Regex {
 
 class Pattern
-    : public ElRefBase
+    : public Object
     , public IPattern
 {
 public:

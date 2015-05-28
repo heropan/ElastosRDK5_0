@@ -1,5 +1,4 @@
 
-
 #include "CMatcher.h"
 #include "Pattern.h"
 #include "MatchResultImpl.h"
@@ -139,6 +138,10 @@ private:
     MatcherAccessor(const MatcherAccessor&);
     void operator=(const MatcherAccessor&);
 };
+
+CAR_INTERFACE_IMPL_2(CMatcher, Object, IMatcher, IMatchResult)
+
+CAR_OBJECT_IMPL(CMatcher)
 
 CMatcher::CMatcher()
     : mNativeMatcher(NULL)

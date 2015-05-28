@@ -2,7 +2,9 @@
 #ifndef __REGEX_CMATCHERHELPER_H__
 #define __REGEX_CMATCHERHELPER_H__
 
-#include "_CMatcherHelper.h"
+#include "_Elastos_Utility_CMatcherHelper.h"
+#include "Singleton.h"
+#include "Object.h"
 
 namespace Elastos {
 namespace Utility {
@@ -13,8 +15,14 @@ namespace Regex {
  * example uses.
  */
 CarClass(CMatcherHelper)
+    , public Singleton
+    , public IMatcherHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Returns a replacement string for the given one that has all backslashes
      * and dollar signs escaped.

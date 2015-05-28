@@ -2,8 +2,8 @@
 #ifndef __REGEX_MATCHRESULTIMPL_H__
 #define __REGEX_MATCHRESULTIMPL_H__
 
-#include <cmdef.h>
 #include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
 
 namespace Elastos {
 namespace Utility {
@@ -18,15 +18,15 @@ namespace Regex {
  * @see java.util.regex.MatchResult
  */
 class MatchResultImpl
-    : public ElRefBase
+    : public Object
     , public IMatchResult
 {
 public:
+    CAR_INTERFACE_DECL()
+
     MatchResultImpl(
         /* [in] */ const String& text,
         /* [in] */ const ArrayOf<Int32>& offsets);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI End(
         /* [out] */ Int32* index);

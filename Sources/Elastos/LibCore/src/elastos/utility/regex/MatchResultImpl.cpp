@@ -4,7 +4,7 @@ namespace Elastos {
 namespace Utility {
 namespace Regex {
 
-CAR_INTERFACE_IMPL(MatchResultImpl, IMatchResult)
+CAR_INTERFACE_IMPL(MatchResultImpl, Object, IMatchResult)
 
 MatchResultImpl::MatchResultImpl(
     /* [in] */ const String& text,

@@ -2,11 +2,12 @@
 #ifndef __REGEX_CMATCHER_H__
 #define __REGEX_CMATCHER_H__
 
-#include "_CMatcher.h"
+#include "_Elastos_Utility_CMatcher.h"
 #include <unicode/regex.h>
 #include <elastos.h>
 #include <elastos/StringBuffer.h>
 #include <Elastos.CoreLibrary_server.h>
+#include "Object.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IStringBuffer;
@@ -22,8 +23,15 @@ namespace Regex {
  * example uses.
  */
 CarClass(CMatcher)
+    , public Object
+    , public IMatcher
+    , public IMatchResult
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CMatcher();
 
     ~CMatcher();

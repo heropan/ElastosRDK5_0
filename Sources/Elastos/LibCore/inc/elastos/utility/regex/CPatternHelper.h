@@ -2,8 +2,10 @@
 #ifndef __REGEX_CPATTERNHELPER_H__
 #define __REGEX_CPATTERNHELPER_H__
 
-#include "_CPatternHelper.h"
+#include "_ELastos_Utility_CPatternHelper.h"
 #include <Elastos.CoreLibrary_server.h>
+#include "Singleton.h"
+#include "Object.h"
 
 using Elastos::Core::ICharSequence;
 
@@ -12,8 +14,14 @@ namespace Utility {
 namespace Regex {
 
 CarClass(CPatternHelper)
+    , public Singleton
+    , public IPatternHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Equivalent to {@code Pattern.compile(pattern, 0)}.
      */
