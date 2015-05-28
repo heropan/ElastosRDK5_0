@@ -121,7 +121,7 @@ ECode CJarInputStream::GetNextEntry(
     }
     mEos = FALSE;
     *entry = mJarEntry;
-    INTERFACE_ADDREF(*entry)
+    REFCOUNT_ADD(*entry)
     return NOERROR;
 }
 
@@ -130,7 +130,7 @@ ECode CJarInputStream::GetManifest(
 {
     VALIDATE_NOT_NULL(manifest)
     *manifest = mManifest;
-    INTERFACE_ADDREF(*manifest)
+    REFCOUNT_ADD(*manifest)
     return NOERROR;
 }
 
@@ -206,7 +206,7 @@ ECode CJarInputStream::GetLock(
 
     AutoPtr<IInterface> obj = ZipInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

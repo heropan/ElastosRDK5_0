@@ -54,7 +54,7 @@ ECode AbstractExecutorService::Submit(
     AutoPtr<IRunnableFuture> ftask = NewTaskFor(task, NULL);
     Execute(IRunnable::Probe(ftask));
     *future = ftask;
-    INTERFACE_ADDREF(*future);
+    REFCOUNT_ADD(*future);
     return NOERROR;
 }
 
@@ -70,7 +70,7 @@ ECode AbstractExecutorService::Submit(
     AutoPtr<IRunnableFuture> ftask = NewTaskFor(task, result);
     Execute(IRunnable::Probe(ftask));
     *future = ftask;
-    INTERFACE_ADDREF(*future);
+    REFCOUNT_ADD(*future);
     return NOERROR;
 }
 
@@ -85,7 +85,7 @@ ECode AbstractExecutorService::Submit(
     AutoPtr<IRunnableFuture> ftask = NewTaskFor(task);
     Execute(IRunnable::Probe(ftask));
     *future = ftask;
-    INTERFACE_ADDREF(*future);
+    REFCOUNT_ADD(*future);
     return NOERROR;
 }
 
@@ -267,7 +267,7 @@ ECode AbstractExecutorService::InvokeAll(
     }
     // }
     *futures = IList::Probe(res);;
-    INTERFACE_ADDREF(*futures);
+    REFCOUNT_ADD(*futures);
     return NOERROR;
 }
 
@@ -359,7 +359,7 @@ EXIT:
     }
     // }
     *futures = IList::Probe(res);;
-    INTERFACE_ADDREF(*futures);
+    REFCOUNT_ADD(*futures);
     return NOERROR;
 }
 

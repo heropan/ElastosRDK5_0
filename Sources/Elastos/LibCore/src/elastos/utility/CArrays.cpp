@@ -139,7 +139,7 @@ ECode CArrays::ArrayList::Get(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     *result = (*mA)[location];
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -202,7 +202,7 @@ ECode CArrays::ArrayList::Set(
     AutoPtr<IInterface> result = (*mA)[location];
     mA->Set(location, object);
     *preObject = result;
-    INTERFACE_ADDREF(*preObject)
+    REFCOUNT_ADD(*preObject)
     return NOERROR;
 }
 
@@ -219,7 +219,7 @@ ECode CArrays::ArrayList::ToArray(
 {
     VALIDATE_NOT_NULL(outArray)
     *outArray = mA->Clone();
-    INTERFACE_ADDREF(*outArray)
+    REFCOUNT_ADD(*outArray)
     return NOERROR;
 }
 
@@ -237,7 +237,7 @@ ECode CArrays::ArrayList::ToArray(
         array->Set(size, NULL);
     }
     *outArray = array;
-    INTERFACE_ADDREF(*outArray)
+    REFCOUNT_ADD(*outArray)
     return NOERROR;
 }
 
@@ -371,7 +371,7 @@ ECode CArrays::_AsList(
 {
     VALIDATE_NOT_NULL(outList)
     *outList = new ArrayList(array);
-    INTERFACE_ADDREF(*outList)
+    REFCOUNT_ADD(*outList)
     return NOERROR;
 }
 
@@ -2555,7 +2555,7 @@ ECode CArrays::_CopyOfRangeBoolean(
     AutoPtr<ArrayOf<Boolean> > result = ArrayOf<Boolean>::Alloc(resultLength);
     result->Copy(0, original, start, copyLength);
     *arrayCopy = result;
-    INTERFACE_ADDREF(*arrayCopy)
+    REFCOUNT_ADD(*arrayCopy)
     return NOERROR;
 }
 
@@ -2578,7 +2578,7 @@ ECode CArrays::_CopyOfRangeByte(
     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(resultLength);
     result->Copy(0, original, start, copyLength);
     *arrayCopy = result;
-    INTERFACE_ADDREF(*arrayCopy)
+    REFCOUNT_ADD(*arrayCopy)
     return NOERROR;
 }
 
@@ -2601,7 +2601,7 @@ ECode CArrays::_CopyOfRangeChar32(
     AutoPtr<ArrayOf<Char32> > result = ArrayOf<Char32>::Alloc(resultLength);
     result->Copy(0, original, start, copyLength);
     *arrayCopy = result;
-    INTERFACE_ADDREF(*arrayCopy)
+    REFCOUNT_ADD(*arrayCopy)
     return NOERROR;
 }
 
@@ -2624,7 +2624,7 @@ ECode CArrays::_CopyOfRangeDouble(
     AutoPtr<ArrayOf<Double> > result = ArrayOf<Double>::Alloc(resultLength);
     result->Copy(0, original, start, copyLength);
     *arrayCopy = result;
-    INTERFACE_ADDREF(*arrayCopy)
+    REFCOUNT_ADD(*arrayCopy)
     return NOERROR;
 }
 
@@ -2647,7 +2647,7 @@ ECode CArrays::_CopyOfRangeFloat(
     AutoPtr<ArrayOf<Float> > result = ArrayOf<Float>::Alloc(resultLength);
     result->Copy(0, original, start, copyLength);
     *arrayCopy = result;
-    INTERFACE_ADDREF(*arrayCopy)
+    REFCOUNT_ADD(*arrayCopy)
     return NOERROR;
 }
 
@@ -2670,7 +2670,7 @@ ECode CArrays::_CopyOfRangeInt32(
     AutoPtr<ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(resultLength);
     result->Copy(0, original, start, copyLength);
     *arrayCopy = result;
-    INTERFACE_ADDREF(*arrayCopy)
+    REFCOUNT_ADD(*arrayCopy)
     return NOERROR;
 }
 
@@ -2693,7 +2693,7 @@ ECode CArrays::_CopyOfRangeInt64(
     AutoPtr<ArrayOf<Int64> > result = ArrayOf<Int64>::Alloc(resultLength);
     result->Copy(0, original, start, copyLength);
     *arrayCopy = result;
-    INTERFACE_ADDREF(*arrayCopy)
+    REFCOUNT_ADD(*arrayCopy)
     return NOERROR;
 }
 
@@ -2716,7 +2716,7 @@ ECode CArrays::_CopyOfRangeInt16(
     AutoPtr<ArrayOf<Int16> > result = ArrayOf<Int16>::Alloc(resultLength);
     result->Copy(0, original, start, copyLength);
     *arrayCopy = result;
-    INTERFACE_ADDREF(*arrayCopy)
+    REFCOUNT_ADD(*arrayCopy)
     return NOERROR;
 }
 
@@ -2739,7 +2739,7 @@ ECode CArrays::_CopyOfRange(
     AutoPtr<ArrayOf<IInterface*> > result = ArrayOf<IInterface*>::Alloc(resultLength);
     result->Copy(0, original, start, copyLength);
     *arrayCopy = result;
-    INTERFACE_ADDREF(*arrayCopy)
+    REFCOUNT_ADD(*arrayCopy)
     return NOERROR;
 }
 
@@ -2762,7 +2762,7 @@ ECode CArrays::_CopyOfRange(
 //     AutoPtr<ArrayOf<T> > result = ArrayOf<T>::Alloc(resultLength);
 //     result->Copy(0, original, start, copyLength);
 //     *arrayCopy = result;
-//     INTERFACE_ADDREF(*arrayCopy)
+//     REFCOUNT_ADD(*arrayCopy)
 //     return NOERROR;
 // }
 

@@ -249,7 +249,7 @@ ECode StringBuilder::AppendNull()
     return AppendONULL();
 }
 
-ECode StringBuilder::AppendChar(
+ECode StringBuilder::AppendCStr(
     /* [in] */ const char* str)
 {
     return AppendOCStr(str);
@@ -261,7 +261,7 @@ ECode StringBuilder::AppendBoolean(
     return AppendOBoolean(b);
 }
 
-ECode StringBuilder::AppendChar32(
+ECode StringBuilder::AppendChar(
     /* [in] */ Char32 c)
 {
     return AppendOChar(c);
@@ -355,7 +355,7 @@ ECode StringBuilder::AppendCharSequence(
     return AppendOCharSequenceEx(csq, start, end);
 }
 
-ECode StringBuilder::InsertChar32(
+ECode StringBuilder::InsertChar(
     /* [in] */ Int32 offset,
     /* [in] */ Char32 c)
 {

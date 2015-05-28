@@ -9,9 +9,10 @@ include $(MAKEDIR)/../../sources.inc
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 
-//SOURCES += AbstractCollection.cpp
+SOURCES += AbstractCollection.cpp
 //SOURCES += AbstractList.cpp
 //SOURCES += AbstractMap.cpp
 //SOURCES += AbstractQueue.cpp

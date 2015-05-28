@@ -466,7 +466,7 @@ ECode CPhaser::GetParent(
 {
     VALIDATE_NOT_NULL(outphase);
     *outphase = mParent;
-    INTERFACE_ADDREF(*outphase);
+    REFCOUNT_ADD(*outphase);
     return NOERROR;
 }
 
@@ -475,7 +475,7 @@ ECode CPhaser::GetRoot(
 {
     VALIDATE_NOT_NULL(outphase);
     *outphase = mRoot;
-    INTERFACE_ADDREF(*outphase);
+    REFCOUNT_ADD(*outphase);
     return NOERROR;
 }
 

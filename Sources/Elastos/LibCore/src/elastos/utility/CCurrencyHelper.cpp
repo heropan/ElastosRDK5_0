@@ -13,7 +13,7 @@ ECode CCurrencyHelper::GetInstance(
 
     AutoPtr<ICurrency> cur = Currency::GetInstance(currencyCode);
     *outcur = cur;
-    INTERFACE_ADDREF(*outcur)
+    REFCOUNT_ADD(*outcur)
     return NOERROR;
 }
 

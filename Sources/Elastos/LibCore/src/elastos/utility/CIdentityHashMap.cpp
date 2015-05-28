@@ -193,7 +193,7 @@ ECode CIdentityHashMap::Get(
     if ((*mElementData)[index] == key) {
         AutoPtr<IInterface> result = (*mElementData)[index + 1];
         *value = MassageValue(result);
-        INTERFACE_ADDREF(*value)
+        REFCOUNT_ADD(*value)
         return NOERROR;
     }
 
@@ -301,7 +301,7 @@ ECode CIdentityHashMap::Put(
     if (oldValue) {
         AutoPtr<IInterface> res = MassageValue(result);
         *oldValue = res;
-        INTERFACE_ADDREF(*oldValue)
+        REFCOUNT_ADD(*oldValue)
     }
     else {
         MassageValue(result);
@@ -402,7 +402,7 @@ ECode CIdentityHashMap::Remove(
 
     AutoPtr<IInterface> res = MassageValue(result);
     *value = res;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -413,7 +413,7 @@ ECode CIdentityHashMap::EntrySet(
 
     AutoPtr<ISet> outent = (ISet*) new IdentityHashMapEntrySet(this);
     *entries = outent;
-    INTERFACE_ADDREF(*entries)
+    REFCOUNT_ADD(*entries)
     return NOERROR;
 }
 
@@ -426,7 +426,7 @@ ECode CIdentityHashMap::KeySet(
         mKeySet = (ISet*)new IdentityHashMapKeySet(this);
     }
     *keySet = mKeySet;
-    INTERFACE_ADDREF(*keySet);
+    REFCOUNT_ADD(*keySet);
     return NOERROR;
 }
 
@@ -440,7 +440,7 @@ ECode CIdentityHashMap::Values(
     }
 
     *value = mValuesCollection;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -496,7 +496,7 @@ ECode CIdentityHashMap::Clone(
     // System.arraycopy(mElementData, 0, cloneHashMap.mElementData, 0, mElementData->GetLength());
     cloneHashMap->mElementData->Copy(0, mElementData, 0, mElementData->GetLength());
     *object = cloneHashMap->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     // } catch (CloneNotSupportedException e) {
     //     throw new AssertionError(e);
     // }
@@ -652,7 +652,7 @@ ECode CIdentityHashMap::IdentityHashMapEntry::SetValue(
     AutoPtr<IInterface> outface1;
     FAIL_RETURN(mMap->Put(mKey, object, (IInterface**)&outface1));
     *outface = result;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -720,7 +720,7 @@ ECode CIdentityHashMap::IdentityHashMapIterator::Next(
     AutoPtr<IInterface> res;
     mType->Get(result.Get(), (IInterface**)&res);
     *outface = res;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -865,7 +865,7 @@ ECode CIdentityHashMap::IdentityHashMapEntrySet::GetIterator(
     AutoPtr<MapEntry::Type> restype = new IdentityHashMapMapEntryType();
     AutoPtr<IIterator> resiter = (IIterator*) new IdentityHashMapIterator(restype, mAssociatedMap);
     *outiter = resiter;
-    INTERFACE_ADDREF(*outiter)
+    REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 
@@ -1034,7 +1034,7 @@ ECode CIdentityHashMap::IdentityHashMapKeySet::GetIterator(
     AutoPtr<MapEntry::Type> restype = new IdentityHashMapKeySetMapEntryType();
     AutoPtr<IIterator> resiter = (IIterator*) new IdentityHashMapIterator(restype, mAssociatedMap);
     *outiter = resiter;
-    INTERFACE_ADDREF(*outiter)
+    REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 
@@ -1203,7 +1203,7 @@ ECode CIdentityHashMap::IdentityHashMapValues::GetIterator(
     AutoPtr<MapEntry::Type> restype = new IdentityHashMapValuesMapEntryType();
     AutoPtr<IIterator> resiter = (IIterator*) new IdentityHashMapIterator(restype, mAssociatedMap);
     *outiter = resiter;
-    INTERFACE_ADDREF(*outiter)
+    REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 
@@ -1291,7 +1291,7 @@ ECode CIdentityHashMap::IdentityHashMapMapEntryType::Get(
     VALIDATE_NOT_NULL(outface)
 
     *outface = entry;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -1308,7 +1308,7 @@ ECode CIdentityHashMap::IdentityHashMapKeySetMapEntryType::Get(
     AutoPtr<IInterface> keyface;
     FAIL_RETURN(entry->GetKey((IInterface**)&keyface));
     *outface = keyface;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -1325,7 +1325,7 @@ ECode CIdentityHashMap::IdentityHashMapValuesMapEntryType::Get(
     AutoPtr<IInterface> valueface;
     FAIL_RETURN(entry->GetValue((IInterface**)&valueface));
     *outface = valueface;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 

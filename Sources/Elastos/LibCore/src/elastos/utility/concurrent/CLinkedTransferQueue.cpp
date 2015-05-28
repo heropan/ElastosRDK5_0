@@ -451,7 +451,7 @@ ECode CLinkedTransferQueue::Itr::Next(
     AutoPtr<IInterface> e = mNextItem;
     Advance(p);
     *object = e;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -670,7 +670,7 @@ ECode CLinkedTransferQueue::Take(
     AutoPtr<IInterface> e = Xfer(NULL, FALSE, SYNC, 0);
     if (e != NULL) {
         *res = e;
-        INTERFACE_ADDREF(*res);
+        REFCOUNT_ADD(*res);
         return NOERROR;
     }
     Thread::Interrupted();
@@ -688,7 +688,7 @@ ECode CLinkedTransferQueue::Poll(
     AutoPtr<IInterface> res = Xfer(NULL, FALSE, TIMED, nanos);
     if (res != NULL || !Thread::Interrupted()) {
         *e = res;
-        INTERFACE_ADDREF(*e);
+        REFCOUNT_ADD(*e);
         return NOERROR;
     }
     return E_INTERRUPTED_EXCEPTION;
@@ -700,7 +700,7 @@ ECode CLinkedTransferQueue::Poll(
     VALIDATE_NOT_NULL(e);
     AutoPtr<IInterface> res = Xfer(NULL, FALSE, NOW, 0);
     *e = res.Get();
-    INTERFACE_ADDREF(*e);
+    REFCOUNT_ADD(*e);
     return NOERROR;
 }
 
@@ -749,7 +749,7 @@ ECode CLinkedTransferQueue::GetIterator(
     VALIDATE_NOT_NULL(it);
     AutoPtr<IIterator> p = new Itr(this);
     *it = p.Get();
-    INTERFACE_ADDREF(*it);
+    REFCOUNT_ADD(*it);
     return NOERROR;
 }
 
@@ -759,7 +759,7 @@ ECode CLinkedTransferQueue::Peek(
     VALIDATE_NOT_NULL(e);
     AutoPtr<IInterface> p = FirstDataItem();
     *e = p.Get();
-    INTERFACE_ADDREF(*e);
+    REFCOUNT_ADD(*e);
     return NOERROR;
 }
 

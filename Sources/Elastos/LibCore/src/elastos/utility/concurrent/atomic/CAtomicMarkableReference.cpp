@@ -22,7 +22,7 @@ ECode CAtomicMarkableReference::GetReference(
     VALIDATE_NOT_NULL(outface)
 
     *outface = mPair->mReference;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -43,7 +43,7 @@ ECode CAtomicMarkableReference::Get(
 
     (*markHolder)[0] = mPair->mMark;
     *outface = mPair->mReference;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 

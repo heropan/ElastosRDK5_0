@@ -126,7 +126,7 @@ ECode CExecutorCompletionService::Submit(
     AutoPtr<IRunnable> r = new QueueingFuture(f, this);
     mExecutor->Execute(r);
     *future = (IFuture*)f.Get();
-    INTERFACE_ADDREF(*future);
+    REFCOUNT_ADD(*future);
     return NOERROR;
 }
 
@@ -141,7 +141,7 @@ ECode CExecutorCompletionService::Submit(
     AutoPtr<IRunnable> r = new QueueingFuture(f, this);
     mExecutor->Execute(r);
     *future = (IFuture*)f.Get();
-    INTERFACE_ADDREF(*future);
+    REFCOUNT_ADD(*future);
     return NOERROR;
 }
 
@@ -152,7 +152,7 @@ ECode CExecutorCompletionService::Take(
     AutoPtr<IInterface> e;
     FAIL_RETURN(mCompletionQueue->Take((IInterface**)&e));
     *future = IFuture::Probe(e);
-    INTERFACE_ADDREF(*future);
+    REFCOUNT_ADD(*future);
     return NOERROR;
 }
 
@@ -163,7 +163,7 @@ ECode CExecutorCompletionService::Poll(
     AutoPtr<IInterface> e;
     FAIL_RETURN(mCompletionQueue->Poll((IInterface**)&e));
     *future = IFuture::Probe(e);
-    INTERFACE_ADDREF(*future);
+    REFCOUNT_ADD(*future);
     return NOERROR;
 }
 
@@ -176,7 +176,7 @@ ECode CExecutorCompletionService::Poll(
     AutoPtr<IInterface> e;
     FAIL_RETURN(mCompletionQueue->Poll(timeout, unit, (IInterface**)&e));
     *future = IFuture::Probe(e);
-    INTERFACE_ADDREF(*future);
+    REFCOUNT_ADD(*future);
     return NOERROR;
 }
 

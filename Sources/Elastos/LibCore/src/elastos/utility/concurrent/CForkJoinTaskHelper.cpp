@@ -34,7 +34,7 @@ ECode CForkJoinTaskHelper::InvokeAll(
     VALIDATE_NOT_NULL(outcol);
     AutoPtr<ICollection> p = ForkJoinTask::InvokeAll(tasks);
     *outcol = p.Get();
-    INTERFACE_ADDREF(*outcol);
+    REFCOUNT_ADD(*outcol);
     return NOERROR;
 }
 
@@ -50,7 +50,7 @@ ECode CForkJoinTaskHelper::GetPool(
     VALIDATE_NOT_NULL(outpool);
     AutoPtr<IForkJoinPool> p = ForkJoinTask::GetPool();
     *outpool = p.Get();
-    INTERFACE_ADDREF(*outpool);
+    REFCOUNT_ADD(*outpool);
     return NOERROR;
 }
 
@@ -85,7 +85,7 @@ ECode CForkJoinTaskHelper::Adapt(
     VALIDATE_NOT_NULL(outjoin);
     AutoPtr<IForkJoinTask> res = ForkJoinTask::Adapt(runnable);
     *outjoin = res.Get();
-    INTERFACE_ADDREF(*outjoin);
+    REFCOUNT_ADD(*outjoin);
     return NOERROR;
 }
 
@@ -97,7 +97,7 @@ ECode CForkJoinTaskHelper::Adapt(
     VALIDATE_NOT_NULL(outjoin);
     AutoPtr<IForkJoinTask> res = ForkJoinTask::Adapt(runnable, result);
     *outjoin = res.Get();
-    INTERFACE_ADDREF(*outjoin);
+    REFCOUNT_ADD(*outjoin);
     return NOERROR;
 }
 
@@ -108,7 +108,7 @@ ECode CForkJoinTaskHelper::Adapt(
     VALIDATE_NOT_NULL(outjoin);
     AutoPtr<IForkJoinTask> res = ForkJoinTask::Adapt(callable);
     *outjoin = res.Get();
-    INTERFACE_ADDREF(*outjoin);
+    REFCOUNT_ADD(*outjoin);
     return NOERROR;
 }
 

@@ -70,7 +70,7 @@ ECode CAttributes::Clone(
     FAIL_RETURN(CAttributes::New((IAttributes*)IAttributes::Probe(this),
         (IAttributes**)&clone))
     *object = clone;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

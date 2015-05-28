@@ -76,7 +76,7 @@ ECode CInflaterOutputStream::GetLock(
 
     AutoPtr<IInterface> obj = InflaterOutputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

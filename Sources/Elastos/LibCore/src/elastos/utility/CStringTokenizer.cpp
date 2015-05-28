@@ -117,7 +117,7 @@ ECode CStringTokenizer::NextElement(
     AutoPtr<ICharSequence> sq;
     CStringWrapper::New(str, (ICharSequence**)&sq);
     *inter = sq;
-    INTERFACE_ADDREF(*inter)
+    REFCOUNT_ADD(*inter)
     return NOERROR;
 }
 

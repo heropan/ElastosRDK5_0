@@ -152,7 +152,7 @@ ECode CJarEntry::GetAttributes(
     VALIDATE_NOT_NULL(attrib)
     if (mAttributes != NULL || !mParentJar) {
         *attrib = mAttributes;
-        INTERFACE_ADDREF(*attrib)
+        REFCOUNT_ADD(*attrib)
         return NOERROR;
     }
     AutoPtr<IManifest> manifest;
@@ -166,7 +166,7 @@ ECode CJarEntry::GetAttributes(
     mAttributes = NULL;
     FAIL_RETURN(manifest->GetAttributes(name, (IAttributes**)&mAttributes));
     *attrib = mAttributes;
-    INTERFACE_ADDREF(*attrib)
+    REFCOUNT_ADD(*attrib)
     return NOERROR;
 }
 
@@ -251,7 +251,7 @@ ECode CJarEntry::GetCodeSigners(
     AutoPtr<ArrayOf<ICodeSigner*> > tmp = ArrayOf<ICodeSigner*>::Alloc(mSigners->GetLength());
     tmp->Copy(mSigners);
     *codeSigner = tmp;
-    INTERFACE_ADDREF(*codeSigner)
+    REFCOUNT_ADD(*codeSigner)
     return NOERROR;
 }
 
@@ -318,7 +318,7 @@ ECode CJarEntry::GetCodeSigners(
         tmp->Set(iIndex++, *it);
     }
     *codeSigners = tmp;
-    INTERFACE_ADDREF(tmp)
+    REFCOUNT_ADD(tmp)
     return NOERROR;
 }
 

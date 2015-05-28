@@ -238,7 +238,7 @@ ECode CScanner::Next(
     AutoPtr<ICharSequence> sq;
     CStringWrapper::New(str, (ICharSequence**)&sq);
     *object = sq;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -270,7 +270,7 @@ ECode CScanner::Delimiter(
     VALIDATE_NOT_NULL(outpat)
 
     *outpat = mDelimiter;
-    INTERFACE_ADDREF(*outpat)
+    REFCOUNT_ADD(*outpat)
     return NOERROR;
 }
 
@@ -807,7 +807,7 @@ ECode CScanner::GetLocale(
     VALIDATE_NOT_NULL(locale)
 
     *locale = mLocale;
-    INTERFACE_ADDREF(*locale)
+    REFCOUNT_ADD(*locale)
     return NOERROR;
 }
 
@@ -866,7 +866,7 @@ ECode CScanner::NextBigDecimal(
     if (IBigDecimal::Probe(obj)) {
         mFindStartIndex = mCachehasNextIndex;
         *outbig = IBigDecimal::Probe(obj);
-        INTERFACE_ADDREF(*outbig);
+        REFCOUNT_ADD(*outbig);
         return NOERROR;
     }
     AutoPtr<IPattern> floatPattern = GetFloatPattern();
@@ -885,7 +885,7 @@ ECode CScanner::NextBigDecimal(
     }
     // }
     *outbig = bigDecimalValue;
-    INTERFACE_ADDREF(*outbig)
+    REFCOUNT_ADD(*outbig)
     return NOERROR;
 }
 
@@ -907,7 +907,7 @@ ECode CScanner::NextBigInteger(
     if (IBigInteger::Probe(obj)) {
         mFindStartIndex = mCachehasNextIndex;
         *outbig = IBigInteger::Probe(obj);
-        INTERFACE_ADDREF(*outbig);
+        REFCOUNT_ADD(*outbig);
         return NOERROR;
     }
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
@@ -926,7 +926,7 @@ ECode CScanner::NextBigInteger(
     }
     // }
     *outbig = bigIntegerValue;
-    INTERFACE_ADDREF(*outbig)
+    REFCOUNT_ADD(*outbig)
     return NOERROR;
 }
 
@@ -1244,7 +1244,7 @@ ECode CScanner::Skip(
         }
     }
     *outscan = (IScanner*) this->Probe(EIID_IScanner);
-    INTERFACE_ADDREF(*outscan)
+    REFCOUNT_ADD(*outscan)
     return NOERROR;
 }
 
@@ -1280,7 +1280,7 @@ ECode CScanner::UseDelimiter(
 
     mDelimiter = pattern;
     *outscan = (IScanner*) this->Probe(EIID_IScanner);
-    INTERFACE_ADDREF(*outscan)
+    REFCOUNT_ADD(*outscan)
     return NOERROR;
 }
 
@@ -1305,7 +1305,7 @@ ECode CScanner::UseLocale(
     }
     mLocale = l;
     *outscan = (IScanner*) this->Probe(EIID_IScanner);
-    INTERFACE_ADDREF(*outscan)
+    REFCOUNT_ADD(*outscan)
     return NOERROR;
 }
 
@@ -1318,7 +1318,7 @@ ECode CScanner::UseRadix(
     FAIL_RETURN(CheckRadix(radix));
     mIntegerRadix = radix;
     *outscan = (IScanner*) this->Probe(EIID_IScanner);
-    INTERFACE_ADDREF(*outscan)
+    REFCOUNT_ADD(*outscan)
     return NOERROR;
 }
 
@@ -1331,7 +1331,7 @@ ECode CScanner::Reset(
     mLocale = CLocale::GetDefault();
     mIntegerRadix = 10;
     *outscan = (IScanner*) this->Probe(EIID_IScanner);
-    INTERFACE_ADDREF(*outscan)
+    REFCOUNT_ADD(*outscan)
     return NOERROR;
 }
 

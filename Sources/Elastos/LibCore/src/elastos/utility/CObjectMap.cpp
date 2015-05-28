@@ -27,7 +27,7 @@ ECode CObjectMap::Get(
     HashMap<AutoPtr<IInterface>, AutoPtr<IInterface> >::Iterator it = mMap.Find(key);
     if (it != mMap.End()) {
         *value = it->mSecond;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     *value = NULL;
@@ -78,7 +78,7 @@ ECode CObjectMap::GetKeys(
         outinter->Set(i, iter->mFirst);
     }
     *keys = outinter;
-    INTERFACE_ADDREF(*keys)
+    REFCOUNT_ADD(*keys)
 
     return NOERROR;
 }
@@ -101,7 +101,7 @@ ECode CObjectMap::GetValues(
         obj->Add(iter->mSecond);
     }
     *values = obj;
-    INTERFACE_ADDREF(*values)
+    REFCOUNT_ADD(*values)
 
     return NOERROR;
 }
@@ -131,8 +131,8 @@ ECode CObjectMap::GetAllItems(
     }
     *keys = outinter;
     *values = obj;
-    INTERFACE_ADDREF(*keys)
-    INTERFACE_ADDREF(*values)
+    REFCOUNT_ADD(*keys)
+    REFCOUNT_ADD(*values)
 
     return NOERROR;
 }

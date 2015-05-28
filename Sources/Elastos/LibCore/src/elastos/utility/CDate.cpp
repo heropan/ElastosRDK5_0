@@ -146,7 +146,7 @@ ECode CDate::Clone(
     AutoPtr<IDate> temp;
     FAIL_RETURN(CDate::New(mMilliseconds,(IDate**)&temp));
     *date = temp;
-    INTERFACE_ADDREF(*date);
+    REFCOUNT_ADD(*date);
     return NOERROR;
 }
 

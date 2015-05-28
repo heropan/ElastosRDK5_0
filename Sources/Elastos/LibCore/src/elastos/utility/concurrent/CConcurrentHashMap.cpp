@@ -564,7 +564,7 @@ ECode CConcurrentHashMap::KeyIterator::Next(
 
     AutoPtr<HashEntry> res = NextEntry();
     *object = res->mKey;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -575,7 +575,7 @@ ECode CConcurrentHashMap::KeyIterator::NextElement(
 
     AutoPtr<HashEntry> res = NextEntry();
     *object = res->mKey;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -615,7 +615,7 @@ ECode CConcurrentHashMap::ValueIterator::Next(
 
     AutoPtr<HashEntry> res = NextEntry();
     *object = res->mValue;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -626,7 +626,7 @@ ECode CConcurrentHashMap::ValueIterator::NextElement(
 
     AutoPtr<HashEntry> res = NextEntry();
     *object = res->mValue;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -660,7 +660,7 @@ ECode CConcurrentHashMap::WriteThroughEntry::SetValue(
     AutoPtr<IInterface> outface2;
     mHost->Put(key, value, (IInterface**)&outface2);
     *outface = v;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -695,7 +695,7 @@ ECode CConcurrentHashMap::EntryIterator::Next(
     AutoPtr<HashEntry> e = NextEntry();
     AutoPtr<WriteThroughEntry> res = new WriteThroughEntry(e->mKey, e->mValue, mHost);
     *object = res->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -717,7 +717,7 @@ ECode CConcurrentHashMap::_KeySet::GetIterator(
 
     AutoPtr<IIterator> res = new KeyIterator(mHost);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -837,7 +837,7 @@ ECode CConcurrentHashMap::_Values::GetIterator(
 
     AutoPtr<IIterator> res = new ValueIterator(mHost);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -958,7 +958,7 @@ ECode CConcurrentHashMap::_EntrySet::GetIterator(
 
     AutoPtr<IIterator> res = new EntryIterator(mHost);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -1177,7 +1177,7 @@ ECode CConcurrentHashMap::PutIfAbsent(
     //      (mSegments, (j << SSHIFT) + SBASE)) == NULL)
     //     s = ensureSegment(j);
     *outface = s->Put(key, hash, value, TRUE);
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -1227,7 +1227,7 @@ ECode CConcurrentHashMap::Replace(
     }
     AutoPtr<Segment> s = SegmentForHash(hash);
     *result = s == NULL ? NULL : s->Replace(key, hash, value);
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -1337,7 +1337,7 @@ ECode CConcurrentHashMap::EntrySet(
 
     AutoPtr<ISet> es = mEntrySet;
     *entries = (es != NULL) ? es : (mEntrySet = (ISet*) new _EntrySet(this));
-    INTERFACE_ADDREF(*entries)
+    REFCOUNT_ADD(*entries)
     return NOERROR;
 }
 
@@ -1432,7 +1432,7 @@ ECode CConcurrentHashMap::KeySet(
 
     AutoPtr<ISet> ks = mKeySet;
     *keySet = (ks != NULL) ? ks : (mKeySet = (ISet*) new _KeySet(this));
-    INTERFACE_ADDREF(*keySet)
+    REFCOUNT_ADD(*keySet)
     return NOERROR;
 }
 
@@ -1459,7 +1459,7 @@ ECode CConcurrentHashMap::Put(
     if (oldValue) {
         AutoPtr<IInterface> obj = s->Put(key, hash, value, FALSE);
         *oldValue = obj;
-        INTERFACE_ADDREF(*oldValue)
+        REFCOUNT_ADD(*oldValue)
     }
     else {
         s->Put(key, hash, value, FALSE);
@@ -1498,7 +1498,7 @@ ECode CConcurrentHashMap::Remove(
     Int32 hash = Hash(ObjectUtils::GetHashCode(key));
     AutoPtr<Segment> s = SegmentForHash(hash);
     *value = s == NULL ? NULL : s->Remove(key, hash, NULL);
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -1550,7 +1550,7 @@ ECode CConcurrentHashMap::Values(
 
     AutoPtr<ICollection> vs = mValues;
     *value = (vs != NULL) ? vs : (mValues = (ICollection*) new _Values(this));
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -1561,7 +1561,7 @@ ECode CConcurrentHashMap::Keys(
 
     AutoPtr<KeyIterator> res = new KeyIterator(this);
     *outenum = (IEnumeration*) res->Probe(EIID_IEnumeration);
-    INTERFACE_ADDREF(*outenum)
+    REFCOUNT_ADD(*outenum)
     return NOERROR;
 }
 
@@ -1572,7 +1572,7 @@ ECode CConcurrentHashMap::Elements(
 
     AutoPtr<ValueIterator> res = new ValueIterator(this);
     *outenum = (IEnumeration*) res->Probe(EIID_IEnumeration);
-    INTERFACE_ADDREF(*outenum)
+    REFCOUNT_ADD(*outenum)
     return NOERROR;
 }
 

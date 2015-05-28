@@ -99,7 +99,7 @@ ECode CVector::Clone(
     CVector::NewByFriend((CVector**)&v);
     _Vector::Clone(v);
     *object = (IVector*)v;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
     // } catch (CloneNotSupportedException e) {
     //     throw new AssertionError(e);

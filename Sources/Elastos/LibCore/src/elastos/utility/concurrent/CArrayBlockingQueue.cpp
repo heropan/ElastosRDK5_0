@@ -193,7 +193,7 @@ ECode CArrayBlockingQueue::Poll(
     if (mCount != 0) {
         AutoPtr<IInterface> obj = Dequeue();
         *e = obj;
-        INTERFACE_ADDREF(*e);
+        REFCOUNT_ADD(*e);
     }
     // } finally {
     lock->UnLock();
@@ -215,7 +215,7 @@ ECode CArrayBlockingQueue::Take(
     }
     AutoPtr<IInterface> obj = Dequeue();
     *e = obj;
-    INTERFACE_ADDREF(*e);
+    REFCOUNT_ADD(*e);
     // } finally {
     lock->UnLock();
     // }
@@ -246,7 +246,7 @@ ECode CArrayBlockingQueue::Poll(
 
     AutoPtr<IInterface> obj = Dequeue();
     *e = obj;
-    INTERFACE_ADDREF(*e);
+    REFCOUNT_ADD(*e);
     lock->UnLock();
     // } finally {
     //     lock->UnLock();
@@ -266,7 +266,7 @@ ECode CArrayBlockingQueue::Peek(
     if (mCount != 0) {
         AutoPtr<IInterface> obj = ItemAt(mTakeIndex);
         *e = obj;
-        INTERFACE_ADDREF(*e);
+        REFCOUNT_ADD(*e);
     }
     // } finally {
     lock->UnLock();
@@ -440,7 +440,7 @@ ECode CArrayBlockingQueue::ToArray(
         a->Set(k, (*items)[i]);
     }
     *array = a;
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     // } finally {
     lock->UnLock();
     // }
@@ -475,7 +475,7 @@ ECode CArrayBlockingQueue::ToArray(
     }
 
     *outArray = r;
-    INTERFACE_ADDREF(*outArray);
+    REFCOUNT_ADD(*outArray);
     // } finally {
     lock->UnLock();
     // }
@@ -630,7 +630,7 @@ ECode CArrayBlockingQueue::GetIterator(
     VALIDATE_NOT_NULL(it);
     AutoPtr<IIterator> iter = new Itr(this);
     *it = iter;
-    INTERFACE_ADDREF(*it);
+    REFCOUNT_ADD(*it);
     return NOERROR;
 }
 
@@ -993,7 +993,7 @@ ECode CArrayBlockingQueue::Itr::Next(
     lock->UnLock();
     // }
     *object = x;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 

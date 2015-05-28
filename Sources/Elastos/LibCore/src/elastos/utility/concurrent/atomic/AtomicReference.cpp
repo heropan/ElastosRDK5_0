@@ -28,7 +28,7 @@ ECode AtomicReference::Get(
     VALIDATE_NOT_NULL(outface)
 
     *outface = mValue;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -79,7 +79,7 @@ ECode AtomicReference::GetAndSet(
         Boolean isflag = FALSE;
         if (CompareAndSet(x, newValue, &isflag), isflag) {
             *outface = x;
-            INTERFACE_ADDREF(*outface)
+            REFCOUNT_ADD(*outface)
             return NOERROR;
         }
     }

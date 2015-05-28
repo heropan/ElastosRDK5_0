@@ -31,7 +31,7 @@ ECode _Vector::Enumeration::NextElement(
     if (mPos < mOwner->mElementCount) {
         AutoPtr< ArrayOf<IInterface*> > a = mOwner->mElementData;
         *out = (*a)[mPos++];
-        INTERFACE_ADDREF(*out)
+        REFCOUNT_ADD(*out)
         return NOERROR;
     }
     return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -227,7 +227,7 @@ ECode _Vector::ElementAt(
     Mutex::Autolock lock(GetSelfLock());
     if (location >= 0 && location < mElementCount) {
         *outface = (*mElementData)[location];
-        INTERFACE_ADDREF(*outface)
+        REFCOUNT_ADD(*outface)
         return NOERROR;
     }
     return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -238,7 +238,7 @@ ECode _Vector::Elements(
 {
     VALIDATE_NOT_NULL(enu)
     *enu = new Enumeration(this);
-    INTERFACE_ADDREF(*enu)
+    REFCOUNT_ADD(*enu)
     return NOERROR;
 }
 
@@ -302,7 +302,7 @@ ECode _Vector::FirstElement(
     Mutex::Autolock lock(GetSelfLock());
     if (mElementCount > 0) {
         *outface = (*mElementData)[0];
-        INTERFACE_ADDREF(*outface)
+        REFCOUNT_ADD(*outface)
         return NOERROR;
     }
     *outface = NULL;
@@ -464,7 +464,7 @@ ECode _Vector::LastElement(
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
     *outface = (*mElementData)[mElementCount - 1];
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -522,7 +522,7 @@ ECode _Vector::Remove(
         mElementData->Set(mElementCount, NULL);
         mModCount++;
         *object = result;
-        INTERFACE_ADDREF(*object)
+        REFCOUNT_ADD(*object)
         return NOERROR;
     }
     return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -638,7 +638,7 @@ ECode _Vector::Set(
         AutoPtr<IInterface> result = (*mElementData)[location];
         mElementData->Set(location, object);
         *prevObject = result;
-        INTERFACE_ADDREF(*prevObject)
+        REFCOUNT_ADD(*prevObject)
         return NOERROR;
     }
     return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -693,7 +693,7 @@ ECode _Vector::SubList(
     AutoPtr<IList> ssList;
     AbstractList::SubList(start, end, (IList**)&ssList);
     *subList = new CCollections::SynchronizedRandomAccessList(ssList, GetSelfLock());
-    INTERFACE_ADDREF(*subList);
+    REFCOUNT_ADD(*subList);
     return NOERROR;
 }
 
@@ -705,7 +705,7 @@ ECode _Vector::ToArray(
     AutoPtr< ArrayOf<IInterface*> > result = ArrayOf<IInterface*>::Alloc(mElementCount);
     result->Copy(mElementData, mElementCount);
     *array = result;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -724,7 +724,7 @@ ECode _Vector::ToArray(
         contents->Set(mElementCount, NULL);
     }
     *outArray = contents;
-    INTERFACE_ADDREF(*outArray)
+    REFCOUNT_ADD(*outArray)
     return NOERROR;
 }
 

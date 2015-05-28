@@ -886,7 +886,7 @@ ECode CForkJoinPool::Submit(
         return E_NULL_POINTER_EXCEPTION;
     ForkOrSubmit(task);
     *outfork = task;
-    INTERFACE_ADDREF(*outfork);
+    REFCOUNT_ADD(*outfork);
     return NOERROR;
 }
 
@@ -900,7 +900,7 @@ ECode CForkJoinPool::Submit(
     AutoPtr<IForkJoinTask> job = ForkJoinTask::Adapt(task);
     ForkOrSubmit(job);
     *outfork = (IFuture*)job->Probe(EIID_IFuture);
-    INTERFACE_ADDREF(*outfork);
+    REFCOUNT_ADD(*outfork);
     return NOERROR;
 }
 
@@ -915,7 +915,7 @@ ECode CForkJoinPool::Submit(
     AutoPtr<IForkJoinTask> job = ForkJoinTask::Adapt(task, result);
     ForkOrSubmit(job);
     *outfork = (IFuture*)job->Probe(EIID_IFuture);
-    INTERFACE_ADDREF(*outfork);
+    REFCOUNT_ADD(*outfork);
     return NOERROR;
 }
 
@@ -933,7 +933,7 @@ ECode CForkJoinPool::Submit(
         job = ForkJoinTask::Adapt(task, NULL);
     ForkOrSubmit(job);
     *outfork = (IFuture*)job->Probe(EIID_IFuture);
-    INTERFACE_ADDREF(*outfork);
+    REFCOUNT_ADD(*outfork);
     return NOERROR;
 }
 
@@ -959,7 +959,7 @@ ECode CForkJoinPool::InvokeAll(
 //    Invoke(p);
     AutoPtr<IList> l = (IList*) forkJoinTasks->Probe(EIID_IList);
     *futures = l;
-    INTERFACE_ADDREF(*futures);
+    REFCOUNT_ADD(*futures);
     return NOERROR;
 }
 
@@ -1018,7 +1018,7 @@ ECode CForkJoinPool::GetFactory(
 {
     VALIDATE_NOT_NULL(res);
     *res = mFactory;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -1027,7 +1027,7 @@ ECode CForkJoinPool::GetUncaughtExceptionHandler(
 {
     VALIDATE_NOT_NULL(res);
     *res = mUeh;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 

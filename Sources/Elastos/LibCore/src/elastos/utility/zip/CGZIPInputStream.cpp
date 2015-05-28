@@ -27,7 +27,7 @@ ECode CGZIPInputStream::GetLock(
 
     AutoPtr<IInterface> obj = InflaterInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

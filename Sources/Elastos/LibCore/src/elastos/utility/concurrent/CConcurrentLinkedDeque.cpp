@@ -712,7 +712,7 @@ ECode CConcurrentLinkedDeque::PeekFirst(
         AutoPtr<IInterface> item = p->mItem;
         if (item != NULL) {
             *e = item;
-            INTERFACE_ADDREF(*e);
+            REFCOUNT_ADD(*e);
             return NOERROR;
         }
     }
@@ -729,7 +729,7 @@ ECode CConcurrentLinkedDeque::PeekLast(
         AutoPtr<IInterface> item = p->mItem;
         if (item != NULL) {
             *e = item;
-            INTERFACE_ADDREF(*e);
+            REFCOUNT_ADD(*e);
             return NOERROR;
         }
     }
@@ -765,7 +765,7 @@ ECode CConcurrentLinkedDeque::PollFirst(
         if (item != NULL && p->CasItem(item, NULL)) {
             Unlink(p);
             *e = item;
-            INTERFACE_ADDREF(*e);
+            REFCOUNT_ADD(*e);
             return NOERROR;
         }
     }
@@ -783,7 +783,7 @@ ECode CConcurrentLinkedDeque::PollLast(
         if (item != NULL && p->CasItem(item, NULL)) {
             Unlink(p);
             *e = item;
-            INTERFACE_ADDREF(*e);
+            REFCOUNT_ADD(*e);
             return NOERROR;
         }
     }
@@ -1056,7 +1056,7 @@ ECode CConcurrentLinkedDeque::GetIterator(
     VALIDATE_NOT_NULL(iterator)
     AutoPtr<Itr> p = new Itr(this);
     *iterator = (IIterator*)p->Probe(EIID_IIterator);
-    INTERFACE_ADDREF(*iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 
@@ -1066,7 +1066,7 @@ ECode CConcurrentLinkedDeque::GetDescendingIterator(
     VALIDATE_NOT_NULL(outiter);
     AutoPtr<DescendingItr> p = new DescendingItr(this);
     *outiter = (IIterator*)p->Probe(EIID_IIterator);
-    INTERFACE_ADDREF(*outiter);
+    REFCOUNT_ADD(*outiter);
     return NOERROR;
 }
 
@@ -1141,7 +1141,7 @@ ECode CConcurrentLinkedDeque::AbstractItr::Next(
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     Advance();
     *object = item;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 

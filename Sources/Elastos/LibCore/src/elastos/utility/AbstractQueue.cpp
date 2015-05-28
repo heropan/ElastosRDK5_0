@@ -35,7 +35,7 @@ ECode AbstractQueue::Remove(
     }
 
     *obj = x;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
@@ -52,7 +52,7 @@ ECode AbstractQueue::Element(
     }
 
     *obj = x;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 

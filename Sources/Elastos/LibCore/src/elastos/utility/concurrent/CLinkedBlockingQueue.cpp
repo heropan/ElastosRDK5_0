@@ -61,7 +61,7 @@ ECode CLinkedBlockingQueue::Itr::Next(
     mCurrentElement = (mCurrent == NULL) ? NULL : mCurrent->mItem;
     mOwner->FullyUnlock();
     *object = x;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -310,7 +310,7 @@ ECode CLinkedBlockingQueue::Take(
         SignalNotFull();
     }
     *e = x;
-    INTERFACE_ADDREF(*e);
+    REFCOUNT_ADD(*e);
     return NOERROR;
 }
 
@@ -346,7 +346,7 @@ ECode CLinkedBlockingQueue::Poll(
         SignalNotFull();
     }
     *e = x;
-    INTERFACE_ADDREF(*e);
+    REFCOUNT_ADD(*e);
     return NOERROR;
 }
 
@@ -375,7 +375,7 @@ ECode CLinkedBlockingQueue::Poll(
         SignalNotFull();
     }
     *e = x;
-    INTERFACE_ADDREF(*e);
+    REFCOUNT_ADD(*e);
     return NOERROR;
 }
 
@@ -398,7 +398,7 @@ ECode CLinkedBlockingQueue::Peek(
         }
         else {
             *e = first->mItem;
-            INTERFACE_ADDREF(*e);
+            REFCOUNT_ADD(*e);
             return NOERROR;
         }
     }
@@ -585,7 +585,7 @@ ECode CLinkedBlockingQueue::GetIterator(
 {
     VALIDATE_NOT_NULL(it);
     *it = (IIterator*)new Itr(this);
-    INTERFACE_ADDREF(*it);
+    REFCOUNT_ADD(*it);
     return NOERROR;
 }
 

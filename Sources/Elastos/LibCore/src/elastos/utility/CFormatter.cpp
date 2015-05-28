@@ -296,7 +296,7 @@ ECode CFormatter::GetLocale(
 
     FAIL_RETURN(CheckNotClosed());
     *outlocale = mLocale;
-    INTERFACE_ADDREF(*outlocale)
+    REFCOUNT_ADD(*outlocale)
 
     return NOERROR;
 }
@@ -308,7 +308,7 @@ ECode CFormatter::GetOut(
 
     FAIL_RETURN(CheckNotClosed());
     *outapp = mOut;
-    INTERFACE_ADDREF(*outapp)
+    REFCOUNT_ADD(*outapp)
 
     return NOERROR;
 }
@@ -481,12 +481,12 @@ ECode CFormatter::GetArgument(
 
     if (index == FormatToken::LAST_ARGUMENT_INDEX) {
         *argument = lastArgument;
-        INTERFACE_ADDREF(*argument);
+        REFCOUNT_ADD(*argument);
         return NOERROR;
     }
 
     *argument = (*mArgs)[index];
-    INTERFACE_ADDREF(*argument);
+    REFCOUNT_ADD(*argument);
     return NOERROR;
 }
 

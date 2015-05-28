@@ -11,7 +11,7 @@ ECode CTimeUnitHelper::GetNANOSECONDS(
 {
     VALIDATE_NOT_NULL(unit);
     *unit = new NANOSECONDS();
-    INTERFACE_ADDREF(*unit);
+    REFCOUNT_ADD(*unit);
     return NOERROR;
 }
 
@@ -20,7 +20,7 @@ ECode CTimeUnitHelper::GetMICROSECONDS(
 {
     VALIDATE_NOT_NULL(unit);
     *unit = new MICROSECONDS();
-    INTERFACE_ADDREF(*unit);
+    REFCOUNT_ADD(*unit);
     return NOERROR;
 }
 
@@ -29,7 +29,7 @@ ECode CTimeUnitHelper::GetMILLISECONDS(
 {
     VALIDATE_NOT_NULL(unit);
     *unit = new MILLISECONDS();
-    INTERFACE_ADDREF(*unit);
+    REFCOUNT_ADD(*unit);
     return NOERROR;
 }
 
@@ -38,7 +38,7 @@ ECode CTimeUnitHelper::GetSECONDS(
 {
     VALIDATE_NOT_NULL(unit);
     *unit = new SECONDS();
-    INTERFACE_ADDREF(*unit);
+    REFCOUNT_ADD(*unit);
     return NOERROR;
 }
 
@@ -47,7 +47,7 @@ ECode CTimeUnitHelper::GetMINUTES(
 {
     VALIDATE_NOT_NULL(unit);
     *unit = new MINUTES();
-    INTERFACE_ADDREF(*unit);
+    REFCOUNT_ADD(*unit);
     return NOERROR;
 }
 
@@ -56,7 +56,7 @@ ECode CTimeUnitHelper::GetHOURS(
 {
     VALIDATE_NOT_NULL(unit);
     *unit = new HOURS();
-    INTERFACE_ADDREF(*unit);
+    REFCOUNT_ADD(*unit);
     return NOERROR;
 }
 
@@ -65,7 +65,7 @@ ECode CTimeUnitHelper::GetDAYS(
 {
     VALIDATE_NOT_NULL(unit);
     *unit = new DAYS();
-    INTERFACE_ADDREF(*unit);
+    REFCOUNT_ADD(*unit);
     return NOERROR;
 }
 

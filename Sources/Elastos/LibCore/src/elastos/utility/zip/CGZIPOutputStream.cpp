@@ -106,7 +106,7 @@ ECode CGZIPOutputStream::GetLock(
 
     AutoPtr<IInterface> obj = DeflaterOutputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

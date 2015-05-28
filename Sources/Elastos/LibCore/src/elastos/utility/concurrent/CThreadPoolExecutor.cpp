@@ -666,7 +666,7 @@ ECode CThreadPoolExecutor::ShutdownNow(
         AutoPtr<IList> t = DrainQueue();
         if (tasks != NULL) {
             *tasks = t;
-            INTERFACE_ADDREF(*tasks);
+            REFCOUNT_ADD(*tasks);
         }
     }
 
@@ -743,7 +743,7 @@ ECode CThreadPoolExecutor::GetThreadFactory(
 {
     VALIDATE_NOT_NULL(threadFactory);
     *threadFactory = mThreadFactory;
-    INTERFACE_ADDREF(*threadFactory);
+    REFCOUNT_ADD(*threadFactory);
     return NOERROR;
 }
 
@@ -762,7 +762,7 @@ ECode CThreadPoolExecutor::GetRejectedExecutionHandler(
 {
     VALIDATE_NOT_NULL(handler);
     *handler = mHandler;
-    INTERFACE_ADDREF(*handler);
+    REFCOUNT_ADD(*handler);
     return NOERROR;
 }
 
@@ -924,7 +924,7 @@ ECode CThreadPoolExecutor::GetQueue(
 {
     VALIDATE_NOT_NULL(queue);
     *queue = mWorkQueue;
-    INTERFACE_ADDREF(*queue);
+    REFCOUNT_ADD(*queue);
     return NOERROR;
 }
 

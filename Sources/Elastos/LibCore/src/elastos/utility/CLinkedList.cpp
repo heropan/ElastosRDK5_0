@@ -99,7 +99,7 @@ ECode CLinkedList::LinkIterator::Next(
             mLastLink = mLink = next;
             mPos++;
             *object = mLink->mData;
-            INTERFACE_ADDREF(*object);
+            REFCOUNT_ADD(*object);
             return NOERROR;
         }
         return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -125,7 +125,7 @@ ECode CLinkedList::LinkIterator::Previous(
             mLink = mLink->mPrevious;
             mPos--;
             *object = mLastLink->mData;
-            INTERFACE_ADDREF(*object);
+            REFCOUNT_ADD(*object);
             return NOERROR;
         }
         return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -218,7 +218,7 @@ ECode CLinkedList::ReverseLinkIterator::Next(
             mLink = mLink->mPrevious;
             mCanRemove = TRUE;
             *object = mLink->mData;
-            INTERFACE_ADDREF(*object);
+            REFCOUNT_ADD(*object);
             return NOERROR;
         }
         return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -501,7 +501,7 @@ ECode CLinkedList::Clone(
     Boolean flag = FALSE;
     FAIL_RETURN(l->AddAll(this, &flag));
     *object = l.Get();
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
     // } catch (CloneNotSupportedException e) {
         // throw new AssertionError(e);
@@ -554,7 +554,7 @@ ECode CLinkedList::Get(
             }
         }
         *object = link->mData;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -573,7 +573,7 @@ ECode CLinkedList::GetFirstImpl(
     AutoPtr<Link> first = mVoidLink->mNext;
     if (first != mVoidLink) {
         *object = first->mData;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -586,7 +586,7 @@ ECode CLinkedList::GetLast(
     AutoPtr<Link> last = mVoidLink->mPrevious;
     if (last != mVoidLink) {
         *object = last->mData;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -660,7 +660,7 @@ ECode CLinkedList::GetListIterator(
 {
     VALIDATE_NOT_NULL(it);
     *it = new LinkIterator(this, location);
-    INTERFACE_ADDREF(*it);
+    REFCOUNT_ADD(*it);
     return NOERROR;
 }
 
@@ -688,7 +688,7 @@ ECode CLinkedList::Remove(
         mSize--;
         mModCount++;
         *object = link->mData;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -719,7 +719,7 @@ ECode CLinkedList::RemoveFirstImpl(
         next->mPrevious = mVoidLink;
         mSize--;
         *object = first->mData;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -743,7 +743,7 @@ ECode CLinkedList::RemoveLastImpl(
         mSize--;
         mModCount++;
         *object = last->mData;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -754,7 +754,7 @@ ECode CLinkedList::GetDescendingIterator(
 {
     VALIDATE_NOT_NULL(iterator);
     *iterator = new ReverseLinkIterator(this);
-    INTERFACE_ADDREF(*iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 
@@ -787,7 +787,7 @@ ECode CLinkedList::PeekLast(
     VALIDATE_NOT_NULL(object);
     AutoPtr<Link> last = mVoidLink->mPrevious;
     *object = (last == mVoidLink) ? NULL : last->mData;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -891,7 +891,7 @@ ECode CLinkedList::Set(
             }
         }
         *prevObject = link->mData;
-        INTERFACE_ADDREF(*prevObject);
+        REFCOUNT_ADD(*prevObject);
         link->mData = object;
         return NOERROR;
     }
@@ -945,7 +945,7 @@ ECode CLinkedList::PeekFirstImpl(
     AutoPtr<Link> first = mVoidLink->mNext;
     if (first != mVoidLink) {
         *object = first->mData;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     *object = NULL;
@@ -971,7 +971,7 @@ ECode CLinkedList::ToArray(
         link = link->mNext;
     }
     *array = contents;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -996,7 +996,7 @@ ECode CLinkedList::ToArray(
         contents->Set(index, NULL);
     }
     *outArray = contents;
-    INTERFACE_ADDREF(*outArray)
+    REFCOUNT_ADD(*outArray)
     return NOERROR;
 }
 

@@ -83,7 +83,7 @@ ECode CLinkedHashMap::Eldest(
     AutoPtr<LinkedEntry> eldest = mHeader->mNxt;
     AutoPtr<IMapEntry> entry = eldest != mHeader ? IMapEntry::Probe(eldest) : NULL;
     *outent = entry;
-    INTERFACE_ADDREF(*outent)
+    REFCOUNT_ADD(*outent)
     return NOERROR;
 }
 
@@ -163,7 +163,7 @@ ECode CLinkedHashMap::Get(
         if (mAccessOrder)
             MakeTail((LinkedEntry*)e.Get());
         *value = e->mValue;
-        INTERFACE_ADDREF(*value)
+        REFCOUNT_ADD(*value)
         return NOERROR;
     }
 
@@ -181,7 +181,7 @@ ECode CLinkedHashMap::Get(
                 MakeTail((LinkedEntry*)e.Get());
             }
             *value = e->mValue;
-            INTERFACE_ADDREF(*value)
+            REFCOUNT_ADD(*value)
             return NOERROR;
         }
     }
@@ -394,7 +394,7 @@ ECode CLinkedHashMap::Clone(
     result->ConstructorPutAll((IMap*)this->Probe(EIID_IMap)); // Calls method overridden in subclass!!
     AutoPtr<IMap> outmap = (IMap*) result->Probe(EIID_IMap);
     *object = outmap;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -470,7 +470,7 @@ ECode CLinkedHashMap::KeyIterator::Next(
 
     AutoPtr<LinkedEntry> res = NextEntry();
     *outface = res->mKey;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -491,7 +491,7 @@ ECode CLinkedHashMap::ValueIterator::Next(
 
     AutoPtr<LinkedEntry> res = NextEntry();
     *outface = res->mValue;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -512,7 +512,7 @@ ECode CLinkedHashMap::EntryIterator::Next(
 
     AutoPtr<LinkedEntry> res = NextEntry();
     *outface = IMapEntry::Probe(res);
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 

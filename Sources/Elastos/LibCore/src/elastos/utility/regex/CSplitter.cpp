@@ -49,7 +49,7 @@ ECode CSplitter::FastSplit(
     // array, Java returns an array containing the empty string.
     if (input.IsEmpty()) {
         *array = ArrayOf<String>::Alloc(1);
-        INTERFACE_ADDREF(*array);
+        REFCOUNT_ADD(*array);
         (**array)[0] = String("");
         return NOERROR;
     }
@@ -81,7 +81,7 @@ ECode CSplitter::Split(
     FAIL_RETURN(FastSplit(regularExpression, input, limit, (ArrayOf<String>**)&splitResult));
     if (splitResult) {
         *array = splitResult;
-        INTERFACE_ADDREF(*array);
+        REFCOUNT_ADD(*array);
         return NOERROR;
     }
 
@@ -89,7 +89,7 @@ ECode CSplitter::Split(
     // array, Java returns an array containing the empty string.
     if (input.IsEmpty()) {
         *array = ArrayOf<String>::Alloc(1);
-        INTERFACE_ADDREF(*array);
+        REFCOUNT_ADD(*array);
         (**array)[0] = String("");
         return NOERROR;
     }

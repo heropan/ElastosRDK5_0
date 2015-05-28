@@ -404,7 +404,7 @@ ECode ForkJoinTask::Fork(
     AutoPtr<IForkJoinTask> p = (IForkJoinTask*)this->Probe(EIID_IForkJoinTask);
     ft->PushTask(this);
     *outtask = this;
-    INTERFACE_ADDREF(*outtask);
+    REFCOUNT_ADD(*outtask);
     return NOERROR;
 }
 
@@ -415,7 +415,7 @@ ECode ForkJoinTask::Join(
     if (DoJoin() != NORMAL) {
         AutoPtr<IInterface> p = ReportResult();
         *outface = p;
-        INTERFACE_ADDREF(*outface);
+        REFCOUNT_ADD(*outface);
         return NOERROR;
     }
     else
@@ -429,7 +429,7 @@ ECode ForkJoinTask::Invoke(
     if (DoInvoke() != NORMAL) {
         AutoPtr<IInterface> p = ReportResult();
         *outface = p;
-        INTERFACE_ADDREF(*outface);
+        REFCOUNT_ADD(*outface);
         return NOERROR;
     }
     else
@@ -850,7 +850,7 @@ ECode AdaptedRunnable::GetRawResult(
     /* [out] */ IInterface** outface)
 {
     *outface = mResult;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -890,7 +890,7 @@ ECode AdaptedCallable::GetRawResult(
     /* [out] */ IInterface** outface)
 {
     *outface = mResult;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 

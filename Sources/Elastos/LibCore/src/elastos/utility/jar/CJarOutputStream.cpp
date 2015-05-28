@@ -109,7 +109,7 @@ ECode CJarOutputStream::GetLock(
 
     AutoPtr<IInterface> obj = ZipOutputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

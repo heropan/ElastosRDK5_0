@@ -170,7 +170,7 @@ ECode ZipFile::RAFStream::GetLock(
 
     AutoPtr<IInterface> obj = InputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 
@@ -227,7 +227,7 @@ ECode ZipFile::ZipInflaterInputStream::GetLock(
 
     AutoPtr<IInterface> obj = InflaterInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 
@@ -388,7 +388,7 @@ ECode ZipFile::GetEntry(
     }
     if (it != mEntries.End()) {
         *entry = it->mSecond;
-        INTERFACE_ADDREF(*entry)
+        REFCOUNT_ADD(*entry)
     }
     return NOERROR;
 }
@@ -445,7 +445,7 @@ ECode ZipFile::GetInputStream(
         *is = (IInputStream*)rafstrm;
     }
 
-    INTERFACE_ADDREF(*is);
+    REFCOUNT_ADD(*is);
     return NOERROR;
 }
 

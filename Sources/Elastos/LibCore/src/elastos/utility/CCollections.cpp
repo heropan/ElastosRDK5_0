@@ -187,7 +187,7 @@ ECode CCollections::CopiesList::Get(
     VALIDATE_NOT_NULL(object)
     if (location >= 0 && location < mN) {
         *object = mElement;
-        INTERFACE_ADDREF(*object)
+        REFCOUNT_ADD(*object)
         return NOERROR;
     }
     return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -660,7 +660,7 @@ ECode CCollections::EmptySet::GetIterator(
 {
     VALIDATE_NOT_NULL(it)
     *it = EMPTY_ITERATOR;
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -825,7 +825,7 @@ ECode CCollections::EmptyMap::EntrySet(
 {
     VALIDATE_NOT_NULL(entries)
     *entries = EMPTY_SET;
-    INTERFACE_ADDREF(*entries)
+    REFCOUNT_ADD(*entries)
     return NOERROR;
 }
 
@@ -843,7 +843,7 @@ ECode CCollections::EmptyMap::KeySet(
 {
     VALIDATE_NOT_NULL(keySet)
     *keySet = EMPTY_SET;
-    INTERFACE_ADDREF(*keySet)
+    REFCOUNT_ADD(*keySet)
     return NOERROR;
 }
 
@@ -852,7 +852,7 @@ ECode CCollections::EmptyMap::Values(
 {
     VALIDATE_NOT_NULL(value)
     *value = EMPTY_LIST;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -1016,7 +1016,7 @@ ECode CCollections::SingletonSet::Iterator::Next(
     if (mHasNext) {
         mHasNext = FALSE;
         *object = mOwner->mElement;
-        INTERFACE_ADDREF(*object)
+        REFCOUNT_ADD(*object)
         return NOERROR;
     }
     return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -1115,7 +1115,7 @@ ECode CCollections::SingletonSet::GetIterator(
 {
     VALIDATE_NOT_NULL(it)
     *it = new Iterator(this);
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -1279,7 +1279,7 @@ ECode CCollections::SingletonList::Get(
     VALIDATE_NOT_NULL(object)
     if (location == 0) {
         *object = mElement;
-        INTERFACE_ADDREF(*object)
+        REFCOUNT_ADD(*object)
         return NOERROR;
     }
     return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -1491,7 +1491,7 @@ ECode CCollections::SingletonMap::MySet::Iterator::Next(
     mHasNext = FALSE;
     AutoPtr<IMapEntry> p = new MyMapEntry(mOwner->mOwner->mK, mOwner->mOwner->mV);
     *object = IMapEntry::Probe(p);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -1595,7 +1595,7 @@ ECode CCollections::SingletonMap::MySet::GetIterator(
 {
     VALIDATE_NOT_NULL(*it)
     *it = new Iterator(this);
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -1776,7 +1776,7 @@ ECode CCollections::SingletonMap::Get(
     Boolean b;
     if ((ContainsKey(key, &b), b)) {
         *value = mV;
-        INTERFACE_ADDREF(*value)
+        REFCOUNT_ADD(*value)
         return NOERROR;
     }
     *value = NULL;
@@ -1796,7 +1796,7 @@ ECode CCollections::SingletonMap::EntrySet(
 {
     VALIDATE_NOT_NULL(entries)
     *entries = new MySet(this);
-    INTERFACE_ADDREF(*entries)
+    REFCOUNT_ADD(*entries)
     return NOERROR;
 }
 
@@ -2129,7 +2129,7 @@ ECode CCollections::SynchronizedRandomAccessList::SubList(
     AutoPtr<IList> sub;
     mList->SubList(start, end, (IList**)&sub);
     *subList = new SynchronizedRandomAccessList(sub, mMutex);
-    INTERFACE_ADDREF(*subList)
+    REFCOUNT_ADD(*subList)
     return NOERROR;
 }
 
@@ -2364,7 +2364,7 @@ ECode CCollections::SynchronizedList::SubList(
     mList->SubList(start, end, (IList**)&sub);
     AutoPtr<IList> res = new SynchronizedList(sub, mMutex);
     *subList = res;
-    INTERFACE_ADDREF(*subList)
+    REFCOUNT_ADD(*subList)
     return NOERROR;
 }
 
@@ -2571,7 +2571,7 @@ ECode CCollections::SynchronizedMap::EntrySet(
     mM->EntrySet((ISet**)&entry);
     AutoPtr<ISet> res = new SynchronizedSet(entry, mMutex);
     *entries = res;
-    INTERFACE_ADDREF(*entries)
+    REFCOUNT_ADD(*entries)
     return NOERROR;
 }
 
@@ -2617,7 +2617,7 @@ ECode CCollections::SynchronizedMap::KeySet(
     AutoPtr<ISet> key;
     mM->KeySet((ISet**)&key);
     *keySet = new SynchronizedSet(key, mMutex);
-    INTERFACE_ADDREF(*keySet)
+    REFCOUNT_ADD(*keySet)
     return NOERROR;
 }
 
@@ -2663,7 +2663,7 @@ ECode CCollections::SynchronizedMap::Values(
     mM->Values((ICollection**)&v);
     AutoPtr<ICollection> res = new SynchronizedCollection(v, mMutex);
     *value = res;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -2939,7 +2939,7 @@ ECode CCollections::SynchronizedSortedMap::HeadMap(
     mSm->HeadMap(endKey, (ISortedMap**)&map);
     AutoPtr<ISortedMap> res = new SynchronizedSortedMap(map, mMutex);
     *sortmap = res;
-    INTERFACE_ADDREF(*sortmap)
+    REFCOUNT_ADD(*sortmap)
     return NOERROR;
 }
 
@@ -2962,7 +2962,7 @@ ECode CCollections::SynchronizedSortedMap::SubMap(
     mSm->SubMap(startKey, endKey, (ISortedMap**)&map);
     AutoPtr<ISortedMap> res = new SynchronizedSortedMap(map, mMutex);
     *sortmap = res;
-    INTERFACE_ADDREF(*sortmap)
+    REFCOUNT_ADD(*sortmap)
     return NOERROR;
 }
 
@@ -2976,7 +2976,7 @@ ECode CCollections::SynchronizedSortedMap::TailMap(
     mSm->TailMap(startKey, (ISortedMap**)&map);
     AutoPtr<ISortedMap> res = new SynchronizedSortedMap(map, mMutex);
     *sortmap = res;
-    INTERFACE_ADDREF(*sortmap)
+    REFCOUNT_ADD(*sortmap)
     return NOERROR;
 }
 
@@ -3154,7 +3154,7 @@ ECode CCollections::SynchronizedSortedSet::HeadSet(
     mSs->HeadSet(end, (ISortedSet**)&sort);
     AutoPtr<ISortedSet> res = new SynchronizedSortedSet(sort, mMutex);
     *outsort = res;
-    INTERFACE_ADDREF(*outsort)
+    REFCOUNT_ADD(*outsort)
     return NOERROR;
 }
 
@@ -3177,7 +3177,7 @@ ECode CCollections::SynchronizedSortedSet::SubSet(
     mSs->SubSet(start, end, (ISortedSet**)&set);
     AutoPtr<ISortedSet> res = new SynchronizedSortedSet(set, mMutex);
     *outsort = res;
-    INTERFACE_ADDREF(*outsort)
+    REFCOUNT_ADD(*outsort)
     return NOERROR;
 }
 
@@ -3190,7 +3190,7 @@ ECode CCollections::SynchronizedSortedSet::TailSet(
     mSs->TailSet(start, (ISortedSet**)&set);
     AutoPtr<ISortedSet> res = new SynchronizedSortedSet(set, mMutex);
     *outsort = res;
-    INTERFACE_ADDREF(*outsort)
+    REFCOUNT_ADD(*outsort)
     return NOERROR;
 }
 
@@ -3434,7 +3434,7 @@ ECode CCollections::UnmodifiableCollection::GetIterator(
     VALIDATE_NOT_NULL(it)
     AutoPtr<IIterator> res = new Iterator(this);
     *it = res;
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -3561,7 +3561,7 @@ ECode CCollections::UnmodifiableRandomAccessList::SubList(
     mList->SubList(start, end, (IList**)&l);
     AutoPtr<IList> res = new UnmodifiableRandomAccessList(l);
     *subList = res;
-    INTERFACE_ADDREF(*subList)
+    REFCOUNT_ADD(*subList)
     return NOERROR;
 }
 
@@ -3810,7 +3810,7 @@ ECode CCollections::UnmodifiableList::GetListIterator(
     VALIDATE_NOT_NULL(it)
     AutoPtr<IListIterator> res = new ListIterator(this, location);
     *it = res;
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -3841,7 +3841,7 @@ ECode CCollections::UnmodifiableList::SubList(
     mList->SubList(start, end, (IList**)&sub);
     AutoPtr<IList> res = new UnmodifiableList(sub);
     *subList = res;
-    INTERFACE_ADDREF(*subList)
+    REFCOUNT_ADD(*subList)
     return NOERROR;
 }
 
@@ -4025,7 +4025,7 @@ ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::Iterator::Next(
     mIterator->Next((IMapEntry**)&o);
     AutoPtr<IMapEntry> res = new UnmodifiableMapEntry(o);
     *object = res;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -4036,7 +4036,7 @@ ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::Iterator::Next(
     AutoPtr<IMapEntry> o;
     Next((IMapEntry**)&o);
     *object = o->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -4061,7 +4061,7 @@ ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::GetIterator(
     VALIDATE_NOT_NULL(result)
     AutoPtr<IIterator> res = new Iterator(this);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -4078,7 +4078,7 @@ ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::ToArray(
         it->Next(&(*result)[i]);
     }
     *array = result;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -4103,7 +4103,7 @@ ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::ToArray(
         inArray->Set(index, NULL);
     }
     *outArray = inArray;
-    INTERFACE_ADDREF(*outArray)
+    REFCOUNT_ADD(*outArray)
     return NOERROR;
 }
 
@@ -4196,7 +4196,7 @@ ECode CCollections::UnmodifiableMap::EntrySet(
     mM->EntrySet((ISet**)&set);
     AutoPtr<ISet> res = new UnmodifiableEntrySet(set);
     *entries = res;
-    INTERFACE_ADDREF(*entries)
+    REFCOUNT_ADD(*entries)
     return NOERROR;
 }
 
@@ -4238,7 +4238,7 @@ ECode CCollections::UnmodifiableMap::KeySet(
     mM->KeySet((ISet**)&set);
     AutoPtr<ISet> res = new UnmodifiableSet(set);
     *keySet = res;
-    INTERFACE_ADDREF(*keySet)
+    REFCOUNT_ADD(*keySet)
     return NOERROR;
 }
 
@@ -4278,7 +4278,7 @@ ECode CCollections::UnmodifiableMap::Values(
     mM->Values((ICollection**)&v);
     AutoPtr<ICollection> res = new UnmodifiableCollection(v);
     *value = res;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -4993,7 +4993,7 @@ ECode CCollections::_NewEnumeration(
     AutoPtr<ICollection> c = collection;
     AutoPtr<IEnumeration> res = new MyEnumeration2(c);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5033,7 +5033,7 @@ ECode CCollections::_Max(
         }
     }
     *result = max;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5061,7 +5061,7 @@ ECode CCollections::_Max(
         }
     }
     *result = max;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5085,7 +5085,7 @@ ECode CCollections::_Min(
         }
     }
     *result = min;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5114,7 +5114,7 @@ ECode CCollections::_Min(
         }
     }
     *result = min;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5126,7 +5126,7 @@ ECode CCollections::_NCopies(
     VALIDATE_NOT_NULL(result)
     AutoPtr<IList> res = new CopiesList(length, object);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5155,7 +5155,7 @@ ECode CCollections::_ReverseOrder(
 {
     VALIDATE_NOT_NULL(result)
     *result = ReverseComparator::INSTANCE;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5170,12 +5170,12 @@ ECode CCollections::_ReverseOrder(
     AutoPtr<IComparator> p = IComparator::Probe(c);
     if (p != NULL) { // ???
         *result = ((ReverseComparator2*)p.Get())->mCmp;
-        INTERFACE_ADDREF(*result)
+        REFCOUNT_ADD(*result)
         return NOERROR;
     }
     AutoPtr<ReverseComparator2> res = new ReverseComparator2(c);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5237,7 +5237,7 @@ ECode CCollections::_NewSingleton(
     VALIDATE_NOT_NULL(result)
     AutoPtr<ISet> res = new SingletonSet(object);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5248,7 +5248,7 @@ ECode CCollections::_NewSingletonList(
     VALIDATE_NOT_NULL(result)
     AutoPtr<IList> res = new SingletonList(object);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5260,7 +5260,7 @@ ECode CCollections::_NewSingletonMap(
     VALIDATE_NOT_NULL(result)
     AutoPtr<IMap> res = new SingletonMap(key, value);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5560,7 +5560,7 @@ ECode CCollections::_NewList(
         list->Add(o, &modified);
     }
     *result = list;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5574,7 +5574,7 @@ ECode CCollections::_NewSynchronizedCollection(
     }
     AutoPtr<ICollection> res = new SynchronizedCollection(collection);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5589,12 +5589,12 @@ ECode CCollections::_NewSynchronizedList(
     if (IRandomAccess::Probe(list) != NULL) {
         AutoPtr<IList> res = new SynchronizedRandomAccessList(list);
         *result = res;
-        INTERFACE_ADDREF(*result)
+        REFCOUNT_ADD(*result)
         return NOERROR;
     }
     AutoPtr<IList> res = new SynchronizedList(list);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5608,7 +5608,7 @@ ECode CCollections::_NewSynchronizedMap(
     }
     AutoPtr<IMap> res = new SynchronizedMap(map);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5622,7 +5622,7 @@ ECode CCollections::_NewSynchronizedSet(
     }
     AutoPtr<ISet> res = new SynchronizedSet(set);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5636,7 +5636,7 @@ ECode CCollections::_NewSynchronizedSortedMap(
     }
     AutoPtr<ISortedMap> res = new SynchronizedSortedMap(map);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5650,7 +5650,7 @@ ECode CCollections::_NewSynchronizedSortedSet(
     }
     AutoPtr<ISortedSet> res = new SynchronizedSortedSet(set);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5664,7 +5664,7 @@ ECode CCollections::_NewUnmodifiableCollection(
     }
     AutoPtr<ICollection> res = new UnmodifiableCollection(collection);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5679,12 +5679,12 @@ ECode CCollections::_NewUnmodifiableList(
     if (IRandomAccess::Probe(list) != NULL) {
         AutoPtr<IList> res = new UnmodifiableRandomAccessList(list);
         *result = res;
-        INTERFACE_ADDREF(*result)
+        REFCOUNT_ADD(*result)
         return NOERROR;
     }
     AutoPtr<IList> res = new UnmodifiableList(list);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5698,7 +5698,7 @@ ECode CCollections::_NewUnmodifiableMap(
     }
     AutoPtr<IMap> res = new UnmodifiableMap(map);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5712,7 +5712,7 @@ ECode CCollections::_NewUnmodifiableSet(
     }
     AutoPtr<ISet> res = new UnmodifiableSet(set);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5726,7 +5726,7 @@ ECode CCollections::_NewUnmodifiableSortedMap(
     }
     AutoPtr<ISortedMap> res = new UnmodifiableSortedMap(map);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5740,7 +5740,7 @@ ECode CCollections::_NewUnmodifiableSortedSet(
     }
     AutoPtr<ISortedSet> res = new UnmodifiableSortedSet(set);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5777,7 +5777,7 @@ ECode CCollections::_GetEmptyList(
 {
     VALIDATE_NOT_NULL(result)
     *result = EMPTY_LIST;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5786,7 +5786,7 @@ ECode CCollections::_GetEmptySet(
 {
     VALIDATE_NOT_NULL(result)
     *result = EMPTY_SET;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5795,7 +5795,7 @@ ECode CCollections::_GetEmptyMap(
 {
     VALIDATE_NOT_NULL(result)
     *result = EMPTY_MAP;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5804,7 +5804,7 @@ ECode CCollections::_GetEmptyEnumeration(
 {
     VALIDATE_NOT_NULL(result)
     *result = EMPTY_ENUMERATION;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5813,7 +5813,7 @@ ECode CCollections::_GetEmptyIterator(
 {
     VALIDATE_NOT_NULL(result)
     *result = EMPTY_ITERATOR;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5834,7 +5834,7 @@ ECode CCollections::_NewCheckedCollection(
     VALIDATE_NOT_NULL(result)
     AutoPtr<ICollection> res = new CheckedCollection(c, type);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5847,7 +5847,7 @@ ECode CCollections::_NewCheckedMap(
     VALIDATE_NOT_NULL(result)
     AutoPtr<IMap> res = new CheckedMap(m, keyType, valueType);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5860,12 +5860,12 @@ ECode CCollections::_NewCheckedList(
     if (IRandomAccess::Probe(list) != NULL) {
         AutoPtr<IList> res = new CheckedRandomAccessList(list, type);
         *result = res;
-        INTERFACE_ADDREF(*result)
+        REFCOUNT_ADD(*result)
         return NOERROR;
     }
     AutoPtr<IList> res = new CheckedList(list, type);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5877,7 +5877,7 @@ ECode CCollections::_NewCheckedSet(
     VALIDATE_NOT_NULL(result)
     AutoPtr<ISet> res = new CheckedSet(s, type);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5890,7 +5890,7 @@ ECode CCollections::_NewCheckedSortedMap(
     VALIDATE_NOT_NULL(result)
     AutoPtr<ISortedMap> res = new CheckedSortedMap(m, keyType, valueType);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5902,7 +5902,7 @@ ECode CCollections::_NewCheckedSortedSet(
     VALIDATE_NOT_NULL(result)
     AutoPtr<ISortedSet> res = new CheckedSortedSet(s, type);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -5974,7 +5974,7 @@ ECode CCollections::_NewSetFromMap(
     if ((map->IsEmpty(&isEmpty), isEmpty)) {
         AutoPtr<ISet> res = new SetFromMap(map);
         *result = res;
-        INTERFACE_ADDREF(*result)
+        REFCOUNT_ADD(*result)
         return NOERROR;
     }
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -5987,7 +5987,7 @@ ECode CCollections::_NewAsLifoQueue(
     VALIDATE_NOT_NULL(result)
     AutoPtr<IQueue> res = new AsLIFOQueue(deque);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -6915,7 +6915,7 @@ ECode CCollections::CheckedCollection::GetIterator(
         i = new CheckedListIterator(res, mType);
     }
     *result = i;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -7270,7 +7270,7 @@ ECode CCollections::CheckedList::GetListIterator(
     mL->GetListIterator((IListIterator**)&iterator);
     AutoPtr<IListIterator> res = new CheckedListIterator(iterator, mType);
     *it = res;
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -7283,7 +7283,7 @@ ECode CCollections::CheckedList::GetListIterator(
     mL->GetListIterator(location, (IListIterator**)&iterator);
     AutoPtr<IListIterator> res = new CheckedListIterator(iterator, mType);
     *it = res;
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -7297,7 +7297,7 @@ ECode CCollections::CheckedList::SubList(
     mL->SubList(start, end, (IList**)&l);
     CheckedList(l, mType);
     *subList = l;
-    INTERFACE_ADDREF(*subList)
+    REFCOUNT_ADD(*subList)
     return NOERROR;
 }
 
@@ -7693,7 +7693,7 @@ ECode CCollections::CheckedMap::CheckedEntrySet::CheckedEntryIterator::Next(
     mI->Next((IInterface**)&o);
     AutoPtr<IMapEntry> res = new CheckedEntry(IMapEntry::Probe(o), mValueType);
     *object = res;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -7704,7 +7704,7 @@ ECode CCollections::CheckedMap::CheckedEntrySet::CheckedEntryIterator::Next(
     AutoPtr<IMapEntry> res;
     Next((IMapEntry**)&res);
     *object = res->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -7772,7 +7772,7 @@ ECode CCollections::CheckedMap::CheckedEntrySet::GetIterator(
     mS->GetIterator((IIterator**)&it);
     AutoPtr<IIterator> res = new CheckedEntryIterator(it, mValueType);
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -7791,7 +7791,7 @@ ECode CCollections::CheckedMap::CheckedEntrySet::ToArray(
         arr->Set(i, o);
     }
     *array = arr;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -7816,7 +7816,7 @@ ECode CCollections::CheckedMap::CheckedEntrySet::ToArray(
         inArray->Set(thisSize, NULL);
     }
     *outArray = inArray;
-    INTERFACE_ADDREF(*outArray)
+    REFCOUNT_ADD(*outArray)
     return NOERROR;
 }
 
@@ -8105,7 +8105,7 @@ ECode CCollections::CheckedMap::EntrySet(
     mM->EntrySet((ISet**)&set);
     AutoPtr<ISet> res = new CheckedEntrySet(set, mValueType);
     *entries = res;
-    INTERFACE_ADDREF(*entries)
+    REFCOUNT_ADD(*entries)
     return NOERROR;
 }
 
@@ -8197,7 +8197,7 @@ ECode CCollections::CheckedSortedSet::SubSet(
     mSs->SubSet(start, end, (ISortedSet**)&set);
     AutoPtr<ISortedSet> res = new CheckedSortedSet(set, mType);
     *outsort = res;
-    INTERFACE_ADDREF(*outsort)
+    REFCOUNT_ADD(*outsort)
     return NOERROR;
 }
 
@@ -8210,7 +8210,7 @@ ECode CCollections::CheckedSortedSet::HeadSet(
     mSs->HeadSet(end, (ISortedSet**)&set);
     AutoPtr<ISortedSet> res = new CheckedSortedSet(set, mType);
     *outsort = res;
-    INTERFACE_ADDREF(*outsort)
+    REFCOUNT_ADD(*outsort)
     return NOERROR;
 }
 
@@ -8223,7 +8223,7 @@ ECode CCollections::CheckedSortedSet::TailSet(
     mSs->TailSet(start, (ISortedSet**)&set);
     AutoPtr<ISortedSet> res = new CheckedSortedSet(set, mType);
     *outsort = res;
-    INTERFACE_ADDREF(*outsort)
+    REFCOUNT_ADD(*outsort)
     return NOERROR;
 }
 
@@ -8401,7 +8401,7 @@ ECode CCollections::CheckedSortedMap::SubMap(
     mSm->SubMap(startKey, endKey, (ISortedMap**)&map);
     AutoPtr<ISortedMap> res = new CheckedSortedMap(map, mKeyType, mValueType);
     *sortmap = res;
-    INTERFACE_ADDREF(*sortmap)
+    REFCOUNT_ADD(*sortmap)
     return NOERROR;
 }
 
@@ -8414,7 +8414,7 @@ ECode CCollections::CheckedSortedMap::HeadMap(
     mSm->HeadMap(endKey, (ISortedMap**)&map);
     AutoPtr<ISortedMap> res = new CheckedSortedMap(map, mKeyType, mValueType);
     *sortmap = res;
-    INTERFACE_ADDREF(*sortmap)
+    REFCOUNT_ADD(*sortmap)
     return NOERROR;
 }
 
@@ -8427,7 +8427,7 @@ ECode CCollections::CheckedSortedMap::TailMap(
     mSm->TailMap(startKey, (ISortedMap**)&map);
     AutoPtr<ISortedMap> res = new CheckedSortedMap(map, mKeyType, mValueType);
     *sortmap = res;
-    INTERFACE_ADDREF(*sortmap)
+    REFCOUNT_ADD(*sortmap)
     return NOERROR;
 }
 

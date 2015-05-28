@@ -178,7 +178,7 @@ ECode _HashMap::Clone(
     result->ConstructorPutAll((IMap*)this->Probe(EIID_IMap)); // Calls method overridden in subclass!!
     AutoPtr<IMap> outmap = (IMap*) result->Probe(EIID_IMap);
     *object = outmap;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -214,7 +214,7 @@ ECode _HashMap::Get(
     if (key == NULL) {
         AutoPtr<HashMapEntry> e = mEntryForNullKey;
         *value = e == NULL ? NULL : e->mValue;
-        INTERFACE_ADDREF(*value)
+        REFCOUNT_ADD(*value)
         return NOERROR;
     }
 
@@ -228,7 +228,7 @@ ECode _HashMap::Get(
         AutoPtr<IInterface> eKey = e->mKey;
         if (eKey.Get() == key || (e->mHash == hash && ObjectUtils::Equals(key, eKey))) {
             *value = e->mValue;
-            INTERFACE_ADDREF(*value)
+            REFCOUNT_ADD(*value)
             return NOERROR;
         }
     }
@@ -307,7 +307,7 @@ ECode _HashMap::Put(
         if (oldValue) {
             AutoPtr<IInterface> outface = PutValueForNullKey(value);
             *oldValue = outface;
-            INTERFACE_ADDREF(*oldValue)
+            REFCOUNT_ADD(*oldValue)
         }
         else {
             PutValueForNullKey(value);
@@ -324,7 +324,7 @@ ECode _HashMap::Put(
             PreModify(e);
             if (oldValue) {
                 *oldValue = e->mValue;
-                INTERFACE_ADDREF(*oldValue)
+                REFCOUNT_ADD(*oldValue)
             }
             e->mValue = value;
             return NOERROR;
@@ -535,7 +535,7 @@ ECode _HashMap::Remove(
 
     if (key == NULL) {
         *value = RemoveNullKey();
-        INTERFACE_ADDREF(*value)
+        REFCOUNT_ADD(*value)
         return NOERROR;
     }
     Int32 keyhash = ObjectUtils::GetHashCode(key);
@@ -556,7 +556,7 @@ ECode _HashMap::Remove(
             mSize--;
             PostRemove(e);
             *value = e->mValue;
-            INTERFACE_ADDREF(*value)
+            REFCOUNT_ADD(*value)
             return NOERROR;
         }
     }
@@ -605,13 +605,13 @@ ECode _HashMap::KeySet(
     AutoPtr<ISet> ks = mKeySet;
     if (ks != NULL) {
         *keySet = ks;
-        INTERFACE_ADDREF(*keySet);
+        REFCOUNT_ADD(*keySet);
         return NOERROR;
     }
     else {
         mKeySet = (ISet*) new _KeySet(this);
         *keySet = mKeySet;
-        INTERFACE_ADDREF(*keySet);
+        REFCOUNT_ADD(*keySet);
         return NOERROR;
     }
 }
@@ -623,7 +623,7 @@ ECode _HashMap::Values(
 
     AutoPtr<ICollection> vs = mValues;
     *value = (vs != NULL) ? vs : (mValues = (ICollection*) new _HashMap::_Values(this));
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -635,13 +635,13 @@ ECode _HashMap::EntrySet(
     AutoPtr<ISet> es = mEntrySet;
     if (es != NULL) {
         *entries = es;
-        INTERFACE_ADDREF(*entries)
+        REFCOUNT_ADD(*entries)
         return NOERROR;
     }
     else {
         mEntrySet = (ISet*) new _EntrySet(this);
         *entries = mEntrySet;
-        INTERFACE_ADDREF(*entries)
+        REFCOUNT_ADD(*entries)
         return NOERROR;
     }
 }
@@ -838,7 +838,7 @@ ECode _HashMap::HashMapEntry::GetKey(
     VALIDATE_NOT_NULL(key)
 
     *key = mKey;
-    INTERFACE_ADDREF(*key)
+    REFCOUNT_ADD(*key)
     return NOERROR;
 }
 
@@ -848,7 +848,7 @@ ECode _HashMap::HashMapEntry::GetValue(
     VALIDATE_NOT_NULL(key)
 
     *key = mValue;
-    INTERFACE_ADDREF(*key)
+    REFCOUNT_ADD(*key)
     return NOERROR;
 }
 
@@ -861,7 +861,7 @@ ECode _HashMap::HashMapEntry::SetValue(
     AutoPtr<IInterface> oldValue = mValue;
     mValue = value;
     *valueReplacee = oldValue;
-    INTERFACE_ADDREF(*valueReplacee)
+    REFCOUNT_ADD(*valueReplacee)
     return NOERROR;
 }
 
@@ -999,7 +999,7 @@ ECode _HashMap::KeyIterator::Next(
 
     AutoPtr<HashMapEntry> res = NextEntry();
     *object = res->mKey;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -1033,7 +1033,7 @@ ECode _HashMap::ValueIterator::Next(
 
     AutoPtr<HashMapEntry> res = NextEntry();
     *object = res->mValue;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -1067,7 +1067,7 @@ ECode _HashMap::EntryIterator::Next(
 
     AutoPtr<HashMapEntry> outhash = NextEntry();
     *object = outhash;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -1143,7 +1143,7 @@ ECode _HashMap::_KeySet::GetIterator(
 
     AutoPtr<IIterator> res = mHost->NewKeyIterator();
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -1312,7 +1312,7 @@ ECode _HashMap::_Values::GetIterator(
 
     AutoPtr<IIterator> outiter = mHost->NewValueIterator();
     *result = outiter;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -1480,7 +1480,7 @@ ECode _HashMap::_EntrySet::GetIterator(
 
     AutoPtr<IIterator> res = mHost->NewEntryIterator();
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

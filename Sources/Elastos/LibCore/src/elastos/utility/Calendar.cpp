@@ -349,7 +349,7 @@ ECode Calendar::GetInstance(
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend((CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
-    INTERFACE_ADDREF(*calendar);
+    REFCOUNT_ADD(*calendar);
     return NOERROR;
 }
 
@@ -363,7 +363,7 @@ ECode Calendar::GetInstance(
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(locale, (CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
-    INTERFACE_ADDREF(*calendar);
+    REFCOUNT_ADD(*calendar);
     return NOERROR;
 }
 
@@ -377,7 +377,7 @@ ECode Calendar::GetInstance(
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(timezone, (CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
-    INTERFACE_ADDREF(*calendar);
+    REFCOUNT_ADD(*calendar);
     return NOERROR;
 }
 
@@ -392,7 +392,7 @@ ECode Calendar::GetInstance(
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(timezone, locale, (CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
-    INTERFACE_ADDREF(*calendar);
+    REFCOUNT_ADD(*calendar);
     return NOERROR;
 }
 
@@ -430,7 +430,7 @@ ECode Calendar::GetTimeZone(
 {
     VALIDATE_NOT_NULL(ppZone);
     *ppZone = mZone;
-    INTERFACE_ADDREF(*ppZone);
+    REFCOUNT_ADD(*ppZone);
     return NOERROR;
 }
 
@@ -682,7 +682,7 @@ ECode Calendar::GetDisplayNameArray(
             }
     }
     *array = result;
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 
@@ -728,7 +728,7 @@ ECode Calendar::GetDisplayNames(
     array->GetSize(&size);
     if (size > 0) {
         *result = array;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
 
     return NOERROR;

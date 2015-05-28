@@ -37,7 +37,7 @@ ECode HashTable::HashtableEntry::GetKey(
     VALIDATE_NOT_NULL(outface)
 
     *outface = mKey;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -47,7 +47,7 @@ ECode HashTable::HashtableEntry::GetValue(
     VALIDATE_NOT_NULL(outface)
 
     *outface = mValue;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -64,7 +64,7 @@ ECode HashTable::HashtableEntry::SetValue(
     AutoPtr<IInterface> oldValue = mValue;
     mValue = value;
     *outface = oldValue;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -212,7 +212,7 @@ ECode HashTable::KeyIterator::Next(
 
     AutoPtr<HashtableEntry> res = NextEntry();
     *outface = res->mKey;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -246,7 +246,7 @@ ECode HashTable::ValueIterator::Next(
 
     AutoPtr<HashtableEntry> res = NextEntry();
     *outface = res->mValue;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -280,7 +280,7 @@ ECode HashTable::EntryIterator::Next(
 
     AutoPtr<HashtableEntry> res = NextEntry();
     *outface = res->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -320,7 +320,7 @@ ECode HashTable::KeyEnumeration::NextElement(
 
     AutoPtr<HashtableEntry> res = NextEntryNotFailFast();
     *inter = res->mKey;
-    INTERFACE_ADDREF(*inter)
+    REFCOUNT_ADD(*inter)
     return NOERROR;
 }
 
@@ -349,7 +349,7 @@ ECode HashTable::ValueEnumeration::NextElement(
 
     AutoPtr<HashtableEntry> res = NextEntryNotFailFast();
     *inter = res->mValue;
-    INTERFACE_ADDREF(*inter)
+    REFCOUNT_ADD(*inter)
     return NOERROR;
 }
 
@@ -414,7 +414,7 @@ ECode HashTable::_KeySet::GetIterator(
 
     AutoPtr<IIterator> res = (IIterator*) new KeyIterator(mHost);
     *outiter = res;
-    INTERFACE_ADDREF(*outiter)
+    REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 
@@ -590,7 +590,7 @@ ECode HashTable::_Values::GetIterator(
 
     AutoPtr<IIterator> res = (IIterator*) new ValueIterator(mHost);
     *outiter = res;
-    INTERFACE_ADDREF(*outiter)
+    REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 
@@ -761,7 +761,7 @@ ECode HashTable::_EntrySet::GetIterator(
 
     AutoPtr<IIterator> res = (IIterator*) new EntryIterator(mHost);
     *outiter = res;
-    INTERFACE_ADDREF(*outiter)
+    REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 
@@ -1038,7 +1038,7 @@ ECode HashTable::Clone(
 
     result->ConstructorPutAll((IMap*)this->Probe(EIID_IMap));
     *object = result->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -1080,7 +1080,7 @@ ECode HashTable::Get(
         AutoPtr<IInterface> eKey = e->mKey;
         if (eKey.Get() == key || (e->mHash == hash && ObjectUtils::Equals(key, eKey))) {
             *outface = e->mValue;
-            INTERFACE_ADDREF(*outface)
+            REFCOUNT_ADD(*outface)
             return NOERROR;
         }
     }
@@ -1171,7 +1171,7 @@ ECode HashTable::Put(
         if (e->mHash == hash && ObjectUtils::Equals(key, e->mKey)) {
             if (outface) {
                 *outface = e->mValue;;
-                INTERFACE_ADDREF(*outface)
+                REFCOUNT_ADD(*outface)
             }
 
             e->mValue = value;
@@ -1368,7 +1368,7 @@ ECode HashTable::Remove(
             mModCount++;
             mSize--;
             *outface = e->mValue;
-            INTERFACE_ADDREF(*outface)
+            REFCOUNT_ADD(*outface)
             return NOERROR;
         }
     }
@@ -1398,7 +1398,7 @@ ECode HashTable::KeySet(
     Mutex::Autolock lock(GetSelfLock());
     AutoPtr<ISet> ks = mKeySet;
     *keySet = ks != NULL ? ks : (mKeySet = (ISet*) new _KeySet(this));
-    INTERFACE_ADDREF(*keySet)
+    REFCOUNT_ADD(*keySet)
     return NOERROR;
 }
 
@@ -1410,7 +1410,7 @@ ECode HashTable::Values(
     Mutex::Autolock lock(GetSelfLock());
     AutoPtr<ICollection> vs = mValues;
     *value = vs != NULL ? vs : (mValues = (ICollection*) new _Values(this));
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -1422,7 +1422,7 @@ ECode HashTable::EntrySet(
     Mutex::Autolock lock(GetSelfLock());
     AutoPtr<ISet> es = mEntrySet;
     *entries = (es != NULL) ? es : (mEntrySet = (ISet*) new _EntrySet(this));
-    INTERFACE_ADDREF(*entries)
+    REFCOUNT_ADD(*entries)
     return NOERROR;
 }
 
@@ -1434,7 +1434,7 @@ ECode HashTable::Keys(
     Mutex::Autolock lock(GetSelfLock());
     AutoPtr<IEnumeration> res = (IEnumeration*) new KeyEnumeration(this);
     *enm = res;
-    INTERFACE_ADDREF(*enm)
+    REFCOUNT_ADD(*enm)
     return NOERROR;
 }
 
@@ -1446,7 +1446,7 @@ ECode HashTable::Elements(
     Mutex::Autolock lock(GetSelfLock());
     AutoPtr<IEnumeration> res = (IEnumeration*) new ValueEnumeration(this);
     *enm = res;
-    INTERFACE_ADDREF(*enm)
+    REFCOUNT_ADD(*enm)
     return NOERROR;
 }
 

@@ -11,7 +11,7 @@ ECode CTimeZoneGetterHelper::GetInstance(
     VALIDATE_NOT_NULL(instance);
     AutoPtr<ITimeZoneGetter> getter = TimeZoneGetter::GetInstance();
     *instance = getter;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 

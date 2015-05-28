@@ -222,7 +222,7 @@ module
          * @return this StringBuffer.
          * @see String#valueOf(char)
          */
-        AppendChar32(
+        AppendChar(
             [in] Char32 c);
 
         /**
@@ -417,7 +417,7 @@ module
          * @throws ArrayIndexOutOfBoundsException
          *             if {@code index < 0} or {@code index > length()}.
          */
-        InsertChar32(
+        InsertChar(
             [in] Int32 offset,
             [in] Char32 c);
 
