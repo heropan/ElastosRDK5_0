@@ -180,7 +180,7 @@ ECode CMatcher::AppendReplacement(
     Int32 index;
     Start(&index);
     String subStr = mInput.Substring(mAppendPos, index);
-    buffer->AppendString(subStr);
+    buffer->Append(subStr);
 //    AppendEvaluated((StringBuffer*)buffer, replacement);
     return End(&mAppendPos);
 }
@@ -211,7 +211,7 @@ ECode CMatcher::AppendReplacement(
 //         else if (c >= '0' && c <= '9' && dollar) {
 //             Group((c - '0'), &text);
 
-//             buffer->AppendString(text);
+//             buffer->Append(text);
 //             dollar = FALSE;
 //         }
 //         else {
@@ -325,7 +325,7 @@ ECode CMatcher::AppendTail(
 
     if (mAppendPos < mRegionEnd) {
         String subStr = mInput.Substring(mAppendPos, mRegionEnd);
-        buffer->AppendString(subStr);
+        buffer->Append(subStr);
     }
 
     return NOERROR;

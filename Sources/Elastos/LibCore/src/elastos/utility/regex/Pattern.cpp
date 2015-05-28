@@ -182,16 +182,16 @@ String Pattern::Quote(
     /* [in] */ const String& string)
 {
     AutoPtr<StringBuilder> sb = new StringBuilder();
-    sb->AppendCStr("\\Q");
+    sb->Append("\\Q");
     Int32 apos = 0;
     Int32 k;
     while ((k = string.IndexOf("\\E", apos)) >= 0) {
-        sb->AppendString(string.Substring(apos, k + 2));
-        sb->AppendCStr("\\\\E\\Q");
+        sb->Append(string.Substring(apos, k + 2));
+        sb->Append("\\\\E\\Q");
         apos = k + 2;
     }
-    sb->AppendString(string.Substring(apos));
-    sb->AppendCStr("\\E");
+    sb->Append(string.Substring(apos));
+    sb->Append("\\E");
     return sb->ToString();
 }
 
