@@ -2,7 +2,6 @@
 #ifndef __REENTRANTLOCK_H__
 #define __REENTRANTLOCK_H__
 
-#include "cmdef.h"
 #include "AbstractQueuedSynchronizer.h"
 
 using Elastos::IO::IObjectInputStream;
@@ -304,7 +303,7 @@ public:
      * @throws NullPointerException if the time unit is null
      *
      */
-    CARAPI TryLockEx(
+    CARAPI TryLock(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ Boolean* result);

@@ -199,7 +199,7 @@ ECode CSemaphore::TryAcquire(
     return NOERROR;
 }
 
-ECode CSemaphore::TryAcquireEx(
+ECode CSemaphore::TryAcquire(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ Boolean* value)
@@ -215,7 +215,7 @@ ECode CSemaphore::ToRelease()
     return mSync->ReleaseShared(1);
 }
 
-ECode CSemaphore::AcquireEx(
+ECode CSemaphore::Acquire(
     /* [in] */ Int32 permits)
 {
     if (permits < 0) {
@@ -224,7 +224,7 @@ ECode CSemaphore::AcquireEx(
     return mSync->AcquireSharedInterruptibly(permits);
 }
 
-ECode CSemaphore::AcquireUninterruptiblyEx(
+ECode CSemaphore::AcquireUninterruptibly(
     /* [in] */ Int32 permits)
 {
     if (permits < 0) {
@@ -233,7 +233,7 @@ ECode CSemaphore::AcquireUninterruptiblyEx(
     return mSync->AcquireShared(permits);
 }
 
-ECode CSemaphore::TryAcquireEx2(
+ECode CSemaphore::TryAcquire(
     /* [in] */ Int32 permits,
     /* [out] */ Boolean* value)
 {
@@ -247,7 +247,7 @@ ECode CSemaphore::TryAcquireEx2(
     return NOERROR;
 }
 
-ECode CSemaphore::TryAcquireEx3(
+ECode CSemaphore::TryAcquire(
     /* [in] */ Int32 permits,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
@@ -262,7 +262,7 @@ ECode CSemaphore::TryAcquireEx3(
     return mSync->TryAcquireSharedNanos(permits, res, value);
 }
 
-ECode CSemaphore::ToReleaseEx(
+ECode CSemaphore::ToRelease(
     /* [in] */ Int32 permits)
 {
     if (permits < 0) {

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CAtomicReferenceArray.h"
 #include "elastos/StringBuilder.h"
 

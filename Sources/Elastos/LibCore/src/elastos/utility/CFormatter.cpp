@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CFormatter.h"
 #include "CNativeDecimalFormat.h"
 #include "CLocale.h"
@@ -371,10 +370,10 @@ ECode CFormatter::Format(
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* mArgs)
 {
-    return FormatEx(mLocale, format, mArgs);
+    return Format(mLocale, format, mArgs);
 }
 
-ECode CFormatter::FormatEx(
+ECode CFormatter::Format(
     /* [in] */ ILocale* l,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* mArgs)
@@ -447,7 +446,7 @@ void CFormatter::OutputCharSequence(
     /* [in] */ Int32 end)
 {
     // try {
-    ECode ec = mOut->AppendCharSequenceEx(cs, start, end);
+    ECode ec = mOut->AppendCharSequence(cs, start, end);
     if (ec != NOERROR) {
         mLastIOException = ec;
     }
@@ -658,7 +657,7 @@ AutoPtr<ICharSequence> CFormatter::InsertGrouping(
     if (headLength == 0) {
         headLength = 3;
     }
-    result->AppendCharSequenceEx(s, i, i + headLength);
+    result->AppendCharSequence(s, i, i + headLength);
     i += headLength;
 
     // Append the remaining groups.
@@ -667,7 +666,7 @@ AutoPtr<ICharSequence> CFormatter::InsertGrouping(
         Char32 groupingSeparator;
         mLocaleData->GetGroupingSeparator(&groupingSeparator);
         result->AppendChar(groupingSeparator);
-        result->AppendCharSequenceEx(s, i, i + 3);
+        result->AppendCharSequence(s, i, i + 3);
     }
     return result;
 }
@@ -975,7 +974,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromBigInteger()
 
     if (currentConversionType == 'd') {
         String str;
-        bigInt->ToStringEx(10, &str);
+        bigInt->ToString(10, &str);
         AutoPtr<ICharSequence> digits;
         CStringWrapper::New(str, (ICharSequence**)&digits);
         if (mFormatToken->mFlagComma) {
@@ -986,13 +985,13 @@ AutoPtr<ICharSequence> CFormatter::TransformFromBigInteger()
     else if (currentConversionType == 'o') {
         // convert BigInteger to a string presentation using radix 8
         String str;
-        bigInt->ToStringEx(8, &str);
+        bigInt->ToString(8, &str);
         result->AppendString(str);
     }
     else {
         // convert BigInteger to a string presentation using radix 16
         String str;
-        bigInt->ToStringEx(16, &str);
+        bigInt->ToString(16, &str);
         result->AppendString(str);
     }
     if (mFormatToken->mFlagSharp) {
@@ -1201,7 +1200,7 @@ Boolean CFormatter::AppendT(
             calendar->GetTime((IDate**)&adate);
             timeZone->InDaylightTime(adate, &isflag);
             String str;
-            timeZone->GetDisplayNameEx3(isflag, ITimeZone::SHORT, mLocale, &str);
+            timeZone->GetDisplayName(isflag, ITimeZone::SHORT, mLocale, &str);
             result->AppendString(str);
             return TRUE;
         }
@@ -1349,7 +1348,7 @@ void CFormatter::AppendLocalized(
         return;
     }
     if (zeroDigit == '0') {
-        result->InsertCharsEx(paddingIndex, *ZEROS, 0, zeroCount);
+        result->InsertChars(paddingIndex, *ZEROS, 0, zeroCount);
     }
     else {
         for (Int32 i = 0; i < zeroCount; ++i) {
@@ -1725,7 +1724,7 @@ AutoPtr<INativeDecimalFormat> CFormatter::CachedDecimalFormat::Update(
         mCurrentPattern = pattern;
     }
     if (localeData != mCurrentLocaleData) {
-        mDecimalFormat->SetDecimalFormatSymbolsEx(localeData);
+        mDecimalFormat->SetDecimalFormatSymbols(localeData);
         mCurrentLocaleData = localeData;
     }
     return mDecimalFormat;

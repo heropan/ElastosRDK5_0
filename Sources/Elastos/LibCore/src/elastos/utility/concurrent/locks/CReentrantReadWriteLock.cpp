@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CReentrantReadWriteLock.h"
 #include "elastos/StringUtils.h"
 
@@ -632,7 +631,7 @@ ECode CReentrantReadWriteLock::CReadLock::TryLock(
     return mSync->TryReadLock();
 }
 
-ECode CReentrantReadWriteLock::CReadLock::TryLockEx(
+ECode CReentrantReadWriteLock::CReadLock::TryLock(
   /* [in] */ Int64 time,
   /* [in] */ ITimeUnit* unit,
   /* [out] */ Boolean* value)
@@ -697,7 +696,7 @@ ECode CReentrantReadWriteLock::CWriteLock::TryLock(
     return NOERROR;
 }
 
-ECode CReentrantReadWriteLock::CWriteLock::TryLockEx(
+ECode CReentrantReadWriteLock::CWriteLock::TryLock(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ Boolean* value)

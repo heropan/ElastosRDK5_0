@@ -64,7 +64,7 @@ public:
      * @throws IOException
      *             If an error occurs during writing.
      */
-    virtual CARAPI WriteBytesEx(
+    virtual CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);

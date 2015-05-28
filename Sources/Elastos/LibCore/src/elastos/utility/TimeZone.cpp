@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "TimeZone.h"
 #include "CSimpleTimeZone.h"
 #include "ZoneInfoDB.h"
@@ -86,18 +85,18 @@ ECode TimeZone::GetDisplayName(
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
     AutoPtr<ILocale> locale;
     localeHelper->GetDefault((ILocale**)&locale);
-    return GetDisplayNameEx3(FALSE, ITimeZone::LONG, locale, name);
+    return GetDisplayName(FALSE, ITimeZone::LONG, locale, name);
 }
 
-ECode TimeZone::GetDisplayNameEx(
+ECode TimeZone::GetDisplayName(
     /* [in] */ ILocale* locale,
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
-    return GetDisplayNameEx3(FALSE, ITimeZone::LONG, locale, name);
+    return GetDisplayName(FALSE, ITimeZone::LONG, locale, name);
 }
 
-ECode TimeZone::GetDisplayNameEx2(
+ECode TimeZone::GetDisplayName(
     /* [in] */ Boolean daylightTime,
     /* [in] */ Int32 style,
     /* [out] */ String* name)
@@ -108,10 +107,10 @@ ECode TimeZone::GetDisplayNameEx2(
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
     AutoPtr<ILocale> locale;
     localeHelper->GetDefault((ILocale**)&locale);
-    return GetDisplayNameEx3(daylightTime, style, locale, name);
+    return GetDisplayName(daylightTime, style, locale, name);
 }
 
-ECode TimeZone::GetDisplayNameEx3(
+ECode TimeZone::GetDisplayName(
     /* [in] */ Boolean daylightTime,
     /* [in] */ Int32 style,
     /* [in] */ ILocale* locale,
@@ -274,9 +273,9 @@ AutoPtr<ITimeZone> TimeZone::GetCustomTimeZone(
     Int32 hour = 0;
     Int32 minute = 0;
     String grstr;
-    m->GroupEx(1 , &grstr);
+    m->Group(1 , &grstr);
     hour = StringUtils::ParseInt32(grstr);
-    m->GroupEx(3, &grstr);
+    m->Group(3, &grstr);
     if (!grstr.IsNull()) {
         minute = StringUtils::ParseInt32(grstr);
     }

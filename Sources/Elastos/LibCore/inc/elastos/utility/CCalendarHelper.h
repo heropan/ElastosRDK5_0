@@ -18,15 +18,15 @@ public:
     CARAPI GetInstance(
         /* [out] */ ICalendar ** ppCalenar);
 
-    CARAPI GetInstanceEx(
+    CARAPI GetInstance(
         /* [in] */ ILocale * pLocale,
         /* [out] */ ICalendar ** ppCalenar);
 
-    CARAPI GetInstanceEx2(
+    CARAPI GetInstance(
         /* [in] */ ITimeZone * pTimezone,
         /* [out] */ ICalendar ** ppCalenar);
 
-    CARAPI GetInstanceEx3(
+    CARAPI GetInstance(
         /* [in] */ ITimeZone * pTimezone,
         /* [in] */ ILocale * pLocale,
         /* [out] */ ICalendar ** ppCalenar);

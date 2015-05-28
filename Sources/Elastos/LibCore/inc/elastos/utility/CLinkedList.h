@@ -117,7 +117,7 @@ public:
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
-    CARAPI AddEx(
+    CARAPI Add(
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object);
 
@@ -125,7 +125,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
 
-    CARAPI AddAllEx(
+    CARAPI AddAll(
         /* [in] */ Int32 location,
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* result);
@@ -174,11 +174,11 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Int32* index);
 
-    CARAPI GetListIteratorEx(
+    CARAPI GetListIterator(
         /* [in] */ Int32 location,
         /* [out] */ IListIterator** it);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [in] */ Int32 location,
         /* [out] */ IInterface** object);
 
@@ -244,7 +244,7 @@ public:
     CARAPI Poll(
         /* [out] */ IInterface** object);
 
-    CARAPI RemoveEx2(
+    CARAPI Remove(
         /* [out] */ IInterface** object);
 
     CARAPI Peek(
@@ -256,7 +256,7 @@ public:
     CARAPI ToArray(
         /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* contents,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 

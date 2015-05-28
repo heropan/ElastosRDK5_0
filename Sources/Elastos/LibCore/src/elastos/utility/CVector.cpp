@@ -44,11 +44,11 @@ UInt32 CVector::Release()
     return _CVector::Release();
 }
 
-ECode CVector::AddEx(
+ECode CVector::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
-    return _Vector::AddEx(location, object);
+    return _Vector::Add(location, object);
 }
 
 ECode CVector::Add(
@@ -58,12 +58,12 @@ ECode CVector::Add(
     return _Vector::Add(object, modified);
 }
 
-ECode CVector::AddAllEx(
+ECode CVector::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    return _Vector::AddAllEx(location, collection, modified);
+    return _Vector::AddAll(location, collection, modified);
 }
 
 ECode CVector::AddAll(
@@ -178,12 +178,12 @@ ECode CVector::IndexOf(
     return _Vector::IndexOf(object, index);
 }
 
-ECode CVector::IndexOfEx(
+ECode CVector::IndexOf(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 location,
     /* [out] */ Int32* value)
 {
-    return _Vector::IndexOfEx(object, location, value);
+    return _Vector::IndexOf(object, location, value);
 }
 
 ECode CVector::InsertElementAt(
@@ -212,19 +212,19 @@ ECode CVector::LastIndexOf(
     return _Vector::LastIndexOf(object, index);
 }
 
-ECode CVector::LastIndexOfEx(
+ECode CVector::LastIndexOf(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 location,
     /* [out] */ Int32* value)
 {
-    return _Vector::LastIndexOfEx(object, location, value);
+    return _Vector::LastIndexOf(object, location, value);
 }
 
-ECode CVector::RemoveEx(
+ECode CVector::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
-    return _Vector::RemoveEx(location, object);
+    return _Vector::Remove(location, object);
 }
 
 ECode CVector::Remove(
@@ -307,11 +307,11 @@ ECode CVector::ToArray(
     return _Vector::ToArray(array);
 }
 
-ECode CVector::ToArrayEx(
+ECode CVector::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return _Vector::ToArrayEx(inArray, outArray);
+    return _Vector::ToArray(inArray, outArray);
 }
 
 CARAPI CVector::ToString(
@@ -337,11 +337,11 @@ ECode CVector::GetListIterator(
     return _Vector::GetListIterator(it);
 }
 
-ECode CVector::GetListIteratorEx(
+ECode CVector::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
-    return _Vector::GetListIteratorEx(location, it);
+    return _Vector::GetListIterator(location, it);
 }
 
 Mutex* CVector::GetSelfLock()

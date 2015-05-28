@@ -30,7 +30,7 @@ public:
     static CARAPI Sort(
         /* [in] */ const ArrayOf<IInterface*>& a);
 
-    static CARAPI SortEx(
+    static CARAPI Sort(
         /* [in] */ const ArrayOf<IInterface*>& a,
         /* [in] */ Int32 lo,
         /* [in] */ Int32 hi);

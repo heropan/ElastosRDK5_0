@@ -56,11 +56,11 @@ public:
     virtual CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid) = 0;
 
-    virtual CARAPI SubmitEx2(
+    virtual CARAPI Submit(
         /* [in] */ IRunnable* task,
         /* [out] */ IFuture** future);
 
-    virtual CARAPI SubmitEx(
+    virtual CARAPI Submit(
         /* [in] */ IRunnable* task,
         /* [in] */ IInterface* result,
         /* [out] */ IFuture** future);
@@ -73,7 +73,7 @@ public:
         /* [in] */ ICollection* tasks,
         /* [out] */ IInterface** result);
 
-    virtual CARAPI InvokeAnyEx(
+    virtual CARAPI InvokeAny(
         /* [in] */ ICollection* tasks,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
@@ -83,7 +83,7 @@ public:
         /* [in] */ ICollection* tasks,
         /* [out] */ IList** futures);
 
-    virtual CARAPI InvokeAllEx(
+    virtual CARAPI InvokeAll(
         /* [in] */ ICollection* tasks,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,

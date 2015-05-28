@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CFutureTask.h"
 
 namespace Elastos {
@@ -54,13 +53,13 @@ ECode CFutureTask::Get(
     return FutureTask::Get(result);
 }
 
-ECode CFutureTask::GetEx(
+ECode CFutureTask::Get(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result);
-    return FutureTask::GetEx(timeout, unit, result);
+    return FutureTask::Get(timeout, unit, result);
 }
 
 ECode CFutureTask::Run()

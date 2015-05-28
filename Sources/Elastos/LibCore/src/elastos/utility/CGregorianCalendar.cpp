@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CGregorianCalendar.h"
 #include "TimeZone.h"
 #include "CSystem.h"
@@ -70,7 +69,7 @@ ECode CGregorianCalendar::constructor(
     AutoPtr<ITimeZone> timezone = TimeZone::GetDefault();
     AutoPtr<ILocale> locale = GetDefaultLocale();
     FAIL_RETURN(Calendar::Init(timezone, locale));
-    return SetEx(year, month, day);
+    return Set(year, month, day);
 }
 
 ECode CGregorianCalendar::constructor(
@@ -83,7 +82,7 @@ ECode CGregorianCalendar::constructor(
     AutoPtr<ITimeZone> timezone = TimeZone::GetDefault();
     AutoPtr<ILocale> locale = GetDefaultLocale();
     FAIL_RETURN(Calendar::Init(timezone, locale));
-    return SetEx2(year, month, day, hour, minute);
+    return Set(year, month, day, hour, minute);
 }
 
 ECode CGregorianCalendar::constructor(
@@ -97,7 +96,7 @@ ECode CGregorianCalendar::constructor(
     AutoPtr<ITimeZone> timezone = TimeZone::GetDefault();
     AutoPtr<ILocale> locale = GetDefaultLocale();
     FAIL_RETURN(Calendar::Init(timezone, locale));
-    return SetEx3(year, month, day, hour, minute, second);
+    return Set(year, month, day, hour, minute, second);
 }
 
 ECode CGregorianCalendar::constructor(
@@ -321,7 +320,7 @@ void CGregorianCalendar::FullFieldsCalc(
     else {
         AutoPtr<ITimeZone> tz;
         GetTimeZone((ITimeZone**)&tz);
-        tz->GetOffsetEx(IGregorianCalendar::AD,(*mFields)[YEAR], month, date,
+        tz->GetOffset(IGregorianCalendar::AD,(*mFields)[YEAR], month, date,
                 (*mFields)[DAY_OF_WEEK], millis, &dstOffset);
     }
     if ((*mFields)[YEAR] > 0) {
@@ -761,7 +760,7 @@ Int32 CGregorianCalendar::DaysInYear(
     return sDaysInYear[month];
 }
 
-ECode CGregorianCalendar::EqualsEx(
+ECode CGregorianCalendar::Equals(
     /* [in] */ ICalendar* other,
     /* [out] */ Boolean* isEqual)
 {
@@ -777,7 +776,7 @@ ECode CGregorianCalendar::EqualsEx(
         *isEqual = TRUE;
         return NOERROR;
     }
-    Calendar::EqualsEx(other, isEqual);
+    Calendar::Equals(other, isEqual);
     if (*isEqual) {
         *isEqual = (mGregorianCutover == ((CGregorianCalendar*)gc)->mGregorianCutover);
     }
@@ -792,7 +791,7 @@ ECode CGregorianCalendar::Equals(
     *isEqual = FALSE;
     VALIDATE_NOT_NULL(other);
 
-    CGregorianCalendar::EqualsEx(ICalendar::Probe(other), isEqual);
+    CGregorianCalendar::Equals(ICalendar::Probe(other), isEqual);
     return NOERROR;
 }
 
@@ -988,7 +987,7 @@ Int32 CGregorianCalendar::GetOffset(
     }
     Int32 dayOfWeek = Mod7(dayCount - 3) + 1;
     Int32 offset;
-    timeZone->GetOffsetEx(AD, year, month, date, dayOfWeek,
+    timeZone->GetOffset(AD, year, month, date, dayOfWeek,
             millis, &offset);
     return offset;
 }
@@ -1159,7 +1158,7 @@ ECode CGregorianCalendar::Roll(
     return NOERROR;
 }
 
-ECode CGregorianCalendar::RollEx(
+ECode CGregorianCalendar::Roll(
     /* [in] */ Int32 field,
     /* [in] */ Boolean increment)
 {
@@ -1228,10 +1227,10 @@ ECode CGregorianCalendar::SetTimeZone(
     return Calendar::SetTimeZone(tz);
 }
 
-ECode CGregorianCalendar::ClearEx(
+ECode CGregorianCalendar::Clear(
     /* [in] */ Int32 field)
 {
-    return Calendar::ClearEx(field);
+    return Calendar::Clear(field);
 }
 
 ECode CGregorianCalendar::Get(
@@ -1292,25 +1291,25 @@ ECode CGregorianCalendar::Set(
     return Calendar::Set(field, value);
 }
 
-ECode CGregorianCalendar::SetEx(
+ECode CGregorianCalendar::Set(
     /* [in] */ Int32 year,
     /* [in] */ Int32 month,
     /* [in] */ Int32 day)
 {
-    return Calendar::SetEx(year, month, day);
+    return Calendar::Set(year, month, day);
 }
 
-ECode CGregorianCalendar::SetEx2(
+ECode CGregorianCalendar::Set(
     /* [in] */ Int32 year,
     /* [in] */ Int32 month,
     /* [in] */ Int32 day,
     /* [in] */ Int32 hourOfDay,
     /* [in] */ Int32 minute)
 {
-    return Calendar::SetEx2(year, month, day, hourOfDay, minute);
+    return Calendar::Set(year, month, day, hourOfDay, minute);
 }
 
-ECode CGregorianCalendar::SetEx3(
+ECode CGregorianCalendar::Set(
     /* [in] */ Int32 year,
     /* [in] */ Int32 month,
     /* [in] */ Int32 day,
@@ -1318,7 +1317,7 @@ ECode CGregorianCalendar::SetEx3(
     /* [in] */ Int32 minute,
     /* [in] */ Int32 second)
 {
-    return Calendar::SetEx3(year, month, day, hourOfDay, minute, second);
+    return Calendar::Set(year, month, day, hourOfDay, minute, second);
 }
 
 ECode CGregorianCalendar::SetFirstDayOfWeek(

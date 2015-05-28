@@ -1,4 +1,3 @@
-#include "cmdef.h"
 #include "AbstractQueue.h"
 
 namespace Elastos {
@@ -23,7 +22,7 @@ ECode AbstractQueue::Add(
     return NOERROR;
 }
 
-ECode AbstractQueue::RemoveEx(
+ECode AbstractQueue::Remove(
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);

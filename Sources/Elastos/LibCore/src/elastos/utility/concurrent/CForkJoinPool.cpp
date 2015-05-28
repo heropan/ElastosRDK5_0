@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CForkJoinPool.h"
 #include "CForkJoinWorkerThread.h"
 #include "LockSupport.h"
@@ -855,7 +854,7 @@ void CForkJoinPool::ForkOrSubmit(
         AddSubmission(task);
 }
 
-ECode CForkJoinPool::ExecuteEx(
+ECode CForkJoinPool::Execute(
     /* [in] */ IForkJoinTask* task)
 {
     if (task == NULL)
@@ -873,12 +872,12 @@ ECode CForkJoinPool::Execute(
     if (task->Probe(EIID_IForkJoinTask) != NULL) // avoid re-wrap
         job = (IForkJoinTask*) task;
     else
-        job = ForkJoinTask::AdaptEx(task, NULL);
+        job = ForkJoinTask::Adapt(task, NULL);
     ForkOrSubmit(job);
     return NOERROR;
 }
 
-ECode CForkJoinPool::SubmitEx3(
+ECode CForkJoinPool::Submit(
     /* [in] */ IForkJoinTask* task,
     /* [out] */ IForkJoinTask** outfork)
 {
@@ -898,14 +897,14 @@ ECode CForkJoinPool::Submit(
     VALIDATE_NOT_NULL(outfork);
     if (task == NULL)
         return E_NULL_POINTER_EXCEPTION;
-    AutoPtr<IForkJoinTask> job = ForkJoinTask::AdaptEx2(task);
+    AutoPtr<IForkJoinTask> job = ForkJoinTask::Adapt(task);
     ForkOrSubmit(job);
     *outfork = (IFuture*)job->Probe(EIID_IFuture);
     INTERFACE_ADDREF(*outfork);
     return NOERROR;
 }
 
-ECode CForkJoinPool::SubmitEx(
+ECode CForkJoinPool::Submit(
     /* [in] */ IRunnable* task,
     /* [in] */ IInterface* result,
     /* [out] */ IFuture** outfork)
@@ -913,14 +912,14 @@ ECode CForkJoinPool::SubmitEx(
     VALIDATE_NOT_NULL(outfork);
     if (task == NULL)
         return E_NULL_POINTER_EXCEPTION;
-    AutoPtr<IForkJoinTask> job = ForkJoinTask::AdaptEx(task, result);
+    AutoPtr<IForkJoinTask> job = ForkJoinTask::Adapt(task, result);
     ForkOrSubmit(job);
     *outfork = (IFuture*)job->Probe(EIID_IFuture);
     INTERFACE_ADDREF(*outfork);
     return NOERROR;
 }
 
-ECode CForkJoinPool::SubmitEx2(
+ECode CForkJoinPool::Submit(
     /* [in] */ IRunnable* task,
     /* [out] */ IFuture** outfork)
 {
@@ -931,7 +930,7 @@ ECode CForkJoinPool::SubmitEx2(
     if (task->Probe(EIID_IForkJoinTask) != NULL) // avoid re-wrap
         job = (IForkJoinTask*) task;
     else
-        job = ForkJoinTask::AdaptEx(task, NULL);
+        job = ForkJoinTask::Adapt(task, NULL);
     ForkOrSubmit(job);
     *outfork = (IFuture*)job->Probe(EIID_IFuture);
     INTERFACE_ADDREF(*outfork);
@@ -953,7 +952,7 @@ ECode CForkJoinPool::InvokeAll(
         AutoPtr<IInterface> p = (*arr)[i];
         AutoPtr<ICallable> task = (ICallable*)p->Probe(EIID_ICallable);
         Boolean b = FALSE;
-        forkJoinTasks->Add(ForkJoinTask::AdaptEx2(task), &b);
+        forkJoinTasks->Add(ForkJoinTask::Adapt(task), &b);
     }
     assert(0 && "TODO");
 //    AutoPtr<_InvokeAll> p = new _InvokeAll(this, forkJoinTasks);
@@ -964,14 +963,14 @@ ECode CForkJoinPool::InvokeAll(
     return NOERROR;
 }
 
-ECode CForkJoinPool::InvokeAllEx(
+ECode CForkJoinPool::InvokeAll(
     /* [in] */ ICollection* tasks,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IList** futures)
 {
     VALIDATE_NOT_NULL(futures);
-    return AbstractExecutorService::InvokeAllEx(tasks, timeout, unit, futures);
+    return AbstractExecutorService::InvokeAll(tasks, timeout, unit, futures);
 }
 
 ECode CForkJoinPool::InvokeAny(
@@ -982,14 +981,14 @@ ECode CForkJoinPool::InvokeAny(
     return AbstractExecutorService::InvokeAny(tasks, result);
 }
 
-ECode CForkJoinPool::InvokeAnyEx(
+ECode CForkJoinPool::InvokeAny(
     /* [in] */ ICollection* tasks,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result);
-    return AbstractExecutorService::InvokeAnyEx(tasks, timeout, unit, result);
+    return AbstractExecutorService::InvokeAny(tasks, timeout, unit, result);
 }
 
 //====================================================================
@@ -1311,7 +1310,7 @@ AutoPtr<IRunnableFuture> CForkJoinPool::NewTaskFor(
     /* [in] */ IRunnable* runnable,
     /* [in] */ IInterface* value)
 {
-    AutoPtr<IForkJoinTask> p = ForkJoinTask::AdaptEx(runnable, value);
+    AutoPtr<IForkJoinTask> p = ForkJoinTask::Adapt(runnable, value);
     AutoPtr<IFuture> pf = (IFuture*)p->Probe(EIID_IFuture);
     return (IRunnableFuture*)pf.Get();
 }
@@ -1319,7 +1318,7 @@ AutoPtr<IRunnableFuture> CForkJoinPool::NewTaskFor(
 AutoPtr<IRunnableFuture> CForkJoinPool::NewTaskFor(
     /* [in] */ ICallable* callable)
 {
-    AutoPtr<IForkJoinTask> p = ForkJoinTask::AdaptEx2(callable);
+    AutoPtr<IForkJoinTask> p = ForkJoinTask::Adapt(callable);
     AutoPtr<IFuture> pf = (IFuture*)p->Probe(EIID_IFuture);
     return (IRunnableFuture*)pf.Get();
 }

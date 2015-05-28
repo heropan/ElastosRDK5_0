@@ -9,7 +9,6 @@
 #include "Elastos.CoreLibrary.h"
 #endif
 
-#include "cmdef.h"
 #include "DeflaterOutputStream.h"
 #include "CZipEntry.h"
 #include "CCRC32.h"
@@ -113,7 +112,7 @@ public:
      *                If an error occurs writing to the stream
      */
     //@Override
-    CARAPI WriteBytesEx(
+    CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);

@@ -1,5 +1,4 @@
 #include <elastos.h>
-#include "cmdef.h"
 #include "JarVerifier.h"
 #include "CName.h"
 #include "CAttributes.h"
@@ -55,12 +54,12 @@ ECode JarVerifier::VerifierEntry::WriteBytes(
     return OutputStream::WriteBytes(buffer);
 }
 
-ECode JarVerifier::VerifierEntry::WriteBytesEx(
+ECode JarVerifier::VerifierEntry::WriteBytes(
     /* in */ const ArrayOf<Byte>& buf,
     /* in */ Int32 off,
     /* in */ Int32 nbytes)
 {
-    return mDigest->UpdateEx(buf, off, nbytes);
+    return mDigest->Update(buf, off, nbytes);
 }
 
 ECode JarVerifier::VerifierEntry::Verify()
@@ -73,7 +72,7 @@ ECode JarVerifier::VerifierEntry::Verify()
     AutoPtr<IBase64> bs64;
     CBase64::AcquireSingleton((IBase64**)&bs64);
     AutoPtr<ArrayOf<Byte> > rst;
-    bs64->DecodeEx(mHash, 0, (ArrayOf<Byte>**)&rst);
+    bs64->Decode(mHash, 0, (ArrayOf<Byte>**)&rst);
     helper->IsEqual(d, rst, &isEqual);
     if (!isEqual) {
         return E_SECURITY_EXCEPTION;
@@ -199,7 +198,7 @@ ECode JarVerifier::InitEntry(
     }
 
     String algorithms;
-    attributes->GetValueEx(String("Digest-Algorithms"), &algorithms);
+    attributes->GetValue(String("Digest-Algorithms"), &algorithms);
     if (algorithms.IsNull()) {
         algorithms = "SHA SHA1";
     }
@@ -207,7 +206,7 @@ ECode JarVerifier::InitEntry(
     while (tokens->HasMoreTokens()) {
         String algorithm = (String)(const char*)tokens->NextToken();
         String hash;
-        attributes->GetValueEx(algorithm + "-Digest", &hash);
+        attributes->GetValue(algorithm + "-Digest", &hash);
         if (hash.IsNull()) {
             continue;
         }
@@ -396,7 +395,7 @@ ECode JarVerifier::VerifyCertificate(
 
     Boolean createdBySigntool = FALSE;
     String createdBy;
-    FAIL_RETURN(attributes->GetValueEx(String("Created-By"), &createdBy))
+    FAIL_RETURN(attributes->GetValue(String("Created-By"), &createdBy))
     if (createdBy != NULL) {
         createdBySigntool = createdBy.IndexOf("signtool") != -1;
     }
@@ -453,7 +452,7 @@ ECode JarVerifier::Verify(
 {
     VALIDATE_NOT_NULL(result)
     String algorithms;
-    attributes->GetValueEx(String("Digest-Algorithms"), &algorithms);
+    attributes->GetValue(String("Digest-Algorithms"), &algorithms);
     if (algorithms == NULL) {
         algorithms = "SHA SHA1";
     }
@@ -461,7 +460,7 @@ ECode JarVerifier::Verify(
     while (tokens->HasMoreTokens()) {
         String algorithm = (String)(const char*)tokens->NextToken();
         String hash;
-        attributes->GetValueEx(algorithm + entry, &hash);
+        attributes->GetValue(algorithm + entry, &hash);
         if (hash == NULL) {
             continue;
         }
@@ -477,10 +476,10 @@ ECode JarVerifier::Verify(
         FAIL_RETURN(ec)
         if (ignoreSecondEndline && (*data)[end - 1] == '\n'
             && (*data)[end - 2] == '\n') {
-            md->UpdateEx(data, start, end - 1 - start);
+            md->Update(data, start, end - 1 - start);
         }
         else {
-            md->UpdateEx(data, start, end - start);
+            md->Update(data, start, end - start);
         }
         AutoPtr<ArrayOf<Byte> > b;
         md->Digest((ArrayOf<Byte>**)&b);

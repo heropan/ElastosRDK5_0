@@ -293,7 +293,7 @@ PInterface CLinkedList::Probe(
     return _CLinkedList::Probe(riid);
 }
 
-ECode CLinkedList::AddEx(
+ECode CLinkedList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
@@ -345,7 +345,7 @@ ECode CLinkedList::AddLastImpl(
     return NOERROR;
 }
 
-ECode CLinkedList::AddAllEx(
+ECode CLinkedList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
@@ -654,7 +654,7 @@ ECode CLinkedList::LastIndexOf(
     return NOERROR;
 }
 
-ECode CLinkedList::GetListIteratorEx(
+ECode CLinkedList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
@@ -664,7 +664,7 @@ ECode CLinkedList::GetListIteratorEx(
     return NOERROR;
 }
 
-ECode CLinkedList::RemoveEx(
+ECode CLinkedList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
@@ -925,7 +925,7 @@ ECode CLinkedList::Poll(
     return NOERROR;
 }
 
-ECode CLinkedList::RemoveEx2(
+ECode CLinkedList::Remove(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
@@ -975,7 +975,7 @@ ECode CLinkedList::ToArray(
     return NOERROR;
 }
 
-ECode CLinkedList::ToArrayEx(
+ECode CLinkedList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {

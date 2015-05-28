@@ -32,7 +32,7 @@ public:
     /**
      * Equivalent to {@code getDisplayName(false, TimeZone.LONG, locale)}.
      */
-    virtual CARAPI GetDisplayNameEx(
+    virtual CARAPI GetDisplayName(
         /* [in] */ ILocale* locale,
         /* [out] */ String* name);
 
@@ -40,7 +40,7 @@ public:
      * Equivalent to {@code getDisplayName(daylightTime, style, Locale.getDefault())}.
      * <a href="../util/Locale.html#default_locale">Be wary of the default locale</a>.
      */
-    virtual CARAPI GetDisplayNameEx2(
+    virtual CARAPI GetDisplayName(
         /* [in] */ Boolean daylightTime,
         /* [in] */ Int32 style,
         /* [out] */ String* name);
@@ -55,7 +55,7 @@ public:
      * @param style either {@link TimeZone#LONG} or {@link TimeZone#SHORT}.
      * @param locale the display locale.
      */
-    virtual CARAPI GetDisplayNameEx3(
+    virtual CARAPI GetDisplayName(
         /* [in] */ Boolean daylightTime,
         /* [in] */ Int32 style,
         /* [in] */ ILocale* locale,
@@ -112,7 +112,7 @@ public:
      *
      * @param time the date in milliseconds since January 1, 1970 00:00:00 UTC
      */
-    virtual CARAPI GetOffsetEx(
+    virtual CARAPI GetOffset(
         /* [in] */ Int32 era,
         /* [in] */ Int32 year,
         /* [in] */ Int32 month,

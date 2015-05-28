@@ -2,7 +2,6 @@
 #ifndef __COBJECTMAP_H__
 #define __COBJECTMAP_H__
 
-#include "cmdef.h"
 #include "_CObjectMap.h"
 #include <elastos/HashMap.h>
 

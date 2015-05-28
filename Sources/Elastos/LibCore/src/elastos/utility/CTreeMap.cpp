@@ -821,7 +821,7 @@ ECode CTreeMap::NavigableKeySet(
     return NOERROR;
 }
 
-ECode CTreeMap::SubMapEx(
+ECode CTreeMap::SubMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toKey,
@@ -852,7 +852,7 @@ ECode CTreeMap::SubMap(
     return NOERROR;
 }
 
-ECode CTreeMap::HeadMapEx(
+ECode CTreeMap::HeadMap(
     /* [in] */ IInterface* toKey,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableMap** outnav)
@@ -879,7 +879,7 @@ ECode CTreeMap::HeadMap(
     return NOERROR;
 }
 
-ECode CTreeMap::TailMapEx(
+ECode CTreeMap::TailMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableMap** outnav)
@@ -1410,11 +1410,11 @@ ECode CTreeMap::_EntrySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CTreeMap::_EntrySet::ToArrayEx(
+ECode CTreeMap::_EntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 //==========================================================
@@ -1601,7 +1601,7 @@ ECode CTreeMap::_KeySet::PollLast(
     return NOERROR;
 }
 
-ECode CTreeMap::_KeySet::SubSetEx(
+ECode CTreeMap::_KeySet::SubSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toElement,
@@ -1609,7 +1609,7 @@ ECode CTreeMap::_KeySet::SubSetEx(
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<INavigableMap> res;
-    mHost->SubMapEx(fromElement, fromInclusive, toElement, toInclusive, (INavigableMap**)&res);
+    mHost->SubMap(fromElement, fromInclusive, toElement, toInclusive, (INavigableMap**)&res);
     return res->NavigableKeySet(outnav);
 }
 
@@ -1619,17 +1619,17 @@ ECode CTreeMap::_KeySet::SubSet(
     /* [out] */ ISortedSet** outsort)
 {
     AutoPtr<INavigableMap> res;
-    mHost->SubMapEx(start, TRUE, end, FALSE, (INavigableMap**)&res);
+    mHost->SubMap(start, TRUE, end, FALSE, (INavigableMap**)&res);
     return res->NavigableKeySet((INavigableSet**)outsort);
 }
 
-ECode CTreeMap::_KeySet::HeadSetEx(
+ECode CTreeMap::_KeySet::HeadSet(
     /* [in] */ IInterface* toElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<INavigableMap> res;
-    mHost->HeadMapEx(toElement, inclusive, (INavigableMap**)&res);
+    mHost->HeadMap(toElement, inclusive, (INavigableMap**)&res);
     return res->NavigableKeySet(outnav);
 }
 
@@ -1638,17 +1638,17 @@ ECode CTreeMap::_KeySet::HeadSet(
     /* [out] */ ISortedSet** outsort)
 {
     AutoPtr<INavigableMap> res;
-    mHost->HeadMapEx(end, FALSE, (INavigableMap**)&res);
+    mHost->HeadMap(end, FALSE, (INavigableMap**)&res);
     return res->NavigableKeySet((INavigableSet**)outsort);
 }
 
-ECode CTreeMap::_KeySet::TailSetEx(
+ECode CTreeMap::_KeySet::TailSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<INavigableMap> res;
-    mHost->TailMapEx(fromElement, inclusive, (INavigableMap**)&res);
+    mHost->TailMap(fromElement, inclusive, (INavigableMap**)&res);
     return res->NavigableKeySet(outnav);
 }
 
@@ -1657,7 +1657,7 @@ ECode CTreeMap::_KeySet::TailSet(
     /* [out] */ ISortedSet** outsort)
 {
     AutoPtr<INavigableMap> res;
-    mHost->TailMapEx(start, TRUE, (INavigableMap**)&res);
+    mHost->TailMap(start, TRUE, (INavigableMap**)&res);
     return res->NavigableKeySet((INavigableSet**)outsort);
 }
 
@@ -1728,11 +1728,11 @@ ECode CTreeMap::_KeySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CTreeMap::_KeySet::ToArrayEx(
+ECode CTreeMap::_KeySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 
@@ -1945,11 +1945,11 @@ ECode CTreeMap::BoundedMap::BoundedEntrySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CTreeMap::BoundedMap::BoundedEntrySet::ToArrayEx(
+ECode CTreeMap::BoundedMap::BoundedEntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(contents, outArray);
+    return AbstractSet::ToArray(contents, outArray);
 }
 
 ECode CTreeMap::BoundedMap::BoundedEntrySet::Equals(
@@ -2187,7 +2187,7 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::Comparator(
     return mHost->Comparator(outcom);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::SubSetEx(
+ECode CTreeMap::BoundedMap::BoundedKeySet::SubSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toElement,
@@ -2195,7 +2195,7 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::SubSetEx(
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<INavigableMap> res;
-    mHost->SubMapEx(fromElement, fromInclusive, toElement, toInclusive, (INavigableMap**)&res);
+    mHost->SubMap(fromElement, fromInclusive, toElement, toInclusive, (INavigableMap**)&res);
     return res->NavigableKeySet(outnav);
 }
 
@@ -2209,13 +2209,13 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::SubSet(
     return INavigableMap::Probe(res)->NavigableKeySet((INavigableSet**)outsort);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::HeadSetEx(
+ECode CTreeMap::BoundedMap::BoundedKeySet::HeadSet(
     /* [in] */ IInterface* toElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<INavigableMap> res;
-    mHost->HeadMapEx(toElement, inclusive, (INavigableMap**)&res);
+    mHost->HeadMap(toElement, inclusive, (INavigableMap**)&res);
     return res->NavigableKeySet(outnav);
 }
 
@@ -2228,13 +2228,13 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::HeadSet(
     return INavigableMap::Probe(res)->NavigableKeySet((INavigableSet**)outsort);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::TailSetEx(
+ECode CTreeMap::BoundedMap::BoundedKeySet::TailSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<INavigableMap> res;
-    mHost->TailMapEx(fromElement, inclusive, (INavigableMap**)&res);
+    mHost->TailMap(fromElement, inclusive, (INavigableMap**)&res);
     return res->NavigableKeySet(outnav);
 }
 
@@ -2302,11 +2302,11 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::ToArrayEx(
+ECode CTreeMap::BoundedMap::BoundedKeySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(contents, outArray);
+    return AbstractSet::ToArray(contents, outArray);
 }
 
 ECode CTreeMap::BoundedMap::BoundedKeySet::Equals(
@@ -2820,7 +2820,7 @@ ECode CTreeMap::BoundedMap::Comparator(
         return NOERROR;
     }
     else {
-        return CCollections::_ReverseOrderEx(forward, comp);
+        return CCollections::_ReverseOrder(forward, comp);
     }
 }
 
@@ -2879,7 +2879,7 @@ ECode CTreeMap::BoundedMap::DescendingKeySet(
     return res->NavigableKeySet(outnav);
 }
 
-ECode CTreeMap::BoundedMap::SubMapEx(
+ECode CTreeMap::BoundedMap::SubMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toKey,
@@ -2909,7 +2909,7 @@ ECode CTreeMap::BoundedMap::SubMap(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::HeadMapEx(
+ECode CTreeMap::BoundedMap::HeadMap(
     /* [in] */ IInterface* toKey,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableMap** outnav)
@@ -2935,7 +2935,7 @@ ECode CTreeMap::BoundedMap::HeadMap(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::TailMapEx(
+ECode CTreeMap::BoundedMap::TailMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableMap** outnav)

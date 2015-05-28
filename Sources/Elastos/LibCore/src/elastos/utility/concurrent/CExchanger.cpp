@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CExchanger.h"
 #include "LockSupport.h"
 #include "Thread.h"
@@ -385,7 +384,7 @@ ECode CExchanger::Exchange(
     return E_INTERRUPTED_EXCEPTION;
 }
 
-ECode CExchanger::ExchangeEx(
+ECode CExchanger::Exchange(
     /* [in] */ IInterface* x,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,

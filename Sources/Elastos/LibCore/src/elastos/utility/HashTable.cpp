@@ -524,12 +524,12 @@ ECode HashTable::_KeySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode HashTable::_KeySet::ToArrayEx(
+ECode HashTable::_KeySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     Mutex::Autolock lock(mHost->GetSelfLock());
-    return AbstractSet::ToArrayEx(contents, outArray);
+    return AbstractSet::ToArray(contents, outArray);
 }
 
 
@@ -692,12 +692,12 @@ ECode HashTable::_Values::ToArray(
     return AbstractCollection::ToArray(array);
 }
 
-ECode HashTable::_Values::ToArrayEx(
+ECode HashTable::_Values::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     Mutex::Autolock lock(mHost->GetSelfLock());
-    return AbstractCollection::ToArrayEx(contents, outArray);
+    return AbstractCollection::ToArray(contents, outArray);
 }
 
 
@@ -884,12 +884,12 @@ ECode HashTable::_EntrySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode HashTable::_EntrySet::ToArrayEx(
+ECode HashTable::_EntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     Mutex::Autolock lock(mHost->GetSelfLock());
-    return AbstractSet::ToArrayEx(contents, outArray);
+    return AbstractSet::ToArray(contents, outArray);
 }
 
 //==========================================================

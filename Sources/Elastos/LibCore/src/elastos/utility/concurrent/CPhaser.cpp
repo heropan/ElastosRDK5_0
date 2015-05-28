@@ -381,7 +381,7 @@ ECode CPhaser::AwaitAdvanceInterruptibly(
     return NOERROR;
 }
 
-ECode CPhaser::AwaitAdvanceInterruptiblyEx(
+ECode CPhaser::AwaitAdvanceInterruptibly(
     /* [in] */ Int32 phase,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,

@@ -2,7 +2,6 @@
 #ifndef __CSEMAPHORE_H__
 #define __CSEMAPHORE_H__
 
-#include "cmdef.h"
 #include "_CSemaphore.h"
 #include "AbstractQueuedSynchronizer.h"
 
@@ -102,30 +101,30 @@ public:
     CARAPI TryAcquire(
         /* [out] */ Boolean* value);
 
-    CARAPI TryAcquireEx(
+    CARAPI TryAcquire(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ Boolean* value);
 
     CARAPI ToRelease();
 
-    CARAPI AcquireEx(
+    CARAPI Acquire(
         /* [in] */ Int32 permits);
 
-    CARAPI AcquireUninterruptiblyEx(
+    CARAPI AcquireUninterruptibly(
         /* [in] */ Int32 permits);
 
-    CARAPI TryAcquireEx2(
+    CARAPI TryAcquire(
         /* [in] */ Int32 permits,
         /* [out] */ Boolean* value);
 
-    CARAPI TryAcquireEx3(
+    CARAPI TryAcquire(
         /* [in] */ Int32 permits,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ Boolean* value);
 
-    CARAPI ToReleaseEx(
+    CARAPI ToRelease(
         /* [in] */ Int32 permits);
 
     CARAPI AvailablePermits(

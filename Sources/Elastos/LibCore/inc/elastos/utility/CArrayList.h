@@ -2,7 +2,6 @@
 #define __UTILITY_CARRAYLIST_H__
 
 #include "_CArrayList.h"
-#include "cmdef.h"
 #include "AbstractList.h"
 
 using Elastos::Utility::AbstractList;
@@ -73,7 +72,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* modified);
 
-    CARAPI AddEx(
+    CARAPI Add(
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object);
 
@@ -81,7 +80,7 @@ public:
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* modified);
 
-    CARAPI AddAllEx(
+    CARAPI AddAll(
         /* [in] */ Int32 location,
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* modified);
@@ -116,7 +115,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Int32* index);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [in] */ Int32 location,
         /* [out] */ IInterface** object);
 
@@ -132,7 +131,7 @@ public:
     CARAPI ToArray(
         /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* inArray,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -163,7 +162,7 @@ public:
     CARAPI GetListIterator(
         /* [out] */ IListIterator** it);
 
-    CARAPI GetListIteratorEx(
+    CARAPI GetListIterator(
         /* [in] */ Int32 location,
         /* [out] */ IListIterator** it);
 

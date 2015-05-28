@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CCollections.h"
 #include "CBoolean.h"
 #include "CArrays.h"
@@ -266,26 +265,26 @@ ECode CCollections::CopiesList::ToArray(
     return AbstractList::ToArray(array);
 }
 
-ECode CCollections::CopiesList::ToArrayEx(
+ECode CCollections::CopiesList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractList::ToArrayEx(inArray, outArray);
+    return AbstractList::ToArray(inArray, outArray);
 }
 
-ECode CCollections::CopiesList::AddEx(
+ECode CCollections::CopiesList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
-    return AbstractList::AddEx(location, object);
+    return AbstractList::Add(location, object);
 }
 
-ECode CCollections::CopiesList::AddAllEx(
+ECode CCollections::CopiesList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    return AbstractList::AddAllEx(location, collection, modified);
+    return AbstractList::AddAll(location, collection, modified);
 }
 
 ECode CCollections::CopiesList::IndexOf(
@@ -308,18 +307,18 @@ ECode CCollections::CopiesList::GetListIterator(
     return AbstractList::GetListIterator(it);
 }
 
-ECode CCollections::CopiesList::GetListIteratorEx(
+ECode CCollections::CopiesList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
-    return AbstractList::GetListIteratorEx(location, it);
+    return AbstractList::GetListIterator(location, it);
 }
 
-ECode CCollections::CopiesList::RemoveEx(
+ECode CCollections::CopiesList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
-    return AbstractList::RemoveEx(location, object);
+    return AbstractList::Remove(location, object);
 }
 
 ECode CCollections::CopiesList::Set(
@@ -516,26 +515,26 @@ ECode CCollections::EmptyList::ToArray(
     return AbstractList::ToArray(array);
 }
 
-ECode CCollections::EmptyList::ToArrayEx(
+ECode CCollections::EmptyList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractList::ToArrayEx(contents, outArray);
+    return AbstractList::ToArray(contents, outArray);
 }
 
-ECode CCollections::EmptyList::AddEx(
+ECode CCollections::EmptyList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
-    return AbstractList::AddEx(location, object);
+    return AbstractList::Add(location, object);
 }
 
-ECode CCollections::EmptyList::AddAllEx(
+ECode CCollections::EmptyList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
-    return AbstractList::AddAllEx(location, collection, result);
+    return AbstractList::AddAll(location, collection, result);
 }
 
 ECode CCollections::EmptyList::IndexOf(
@@ -566,18 +565,18 @@ ECode CCollections::EmptyList::SubList(
     return AbstractList::SubList(start, end, subList);
 }
 
-ECode CCollections::EmptyList::GetListIteratorEx(
+ECode CCollections::EmptyList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** listiterator)
 {
-    return AbstractList::GetListIteratorEx(location, listiterator);
+    return AbstractList::GetListIterator(location, listiterator);
 }
 
-ECode CCollections::EmptyList::RemoveEx(
+ECode CCollections::EmptyList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
-    return AbstractList::RemoveEx(location, object);
+    return AbstractList::Remove(location, object);
 }
 
 AutoPtr<IInterface> CCollections::EmptyList::ReadResolve()
@@ -737,11 +736,11 @@ ECode CCollections::EmptySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CCollections::EmptySet::ToArrayEx(
+ECode CCollections::EmptySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 AutoPtr<IInterface> CCollections::EmptySet::ReadResolve()
@@ -1192,11 +1191,11 @@ ECode CCollections::SingletonSet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CCollections::SingletonSet::ToArrayEx(
+ECode CCollections::SingletonSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 //====================================================================
@@ -1366,26 +1365,26 @@ ECode CCollections::SingletonList::ToArray(
     return AbstractList::ToArray(array);
 }
 
-ECode CCollections::SingletonList::ToArrayEx(
+ECode CCollections::SingletonList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractList::ToArrayEx(inArray, outArray);
+    return AbstractList::ToArray(inArray, outArray);
 }
 
-ECode CCollections::SingletonList::AddEx(
+ECode CCollections::SingletonList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
-    return AbstractList::AddEx(location, object);
+    return AbstractList::Add(location, object);
 }
 
-ECode CCollections::SingletonList::AddAllEx(
+ECode CCollections::SingletonList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    return AbstractList::AddAllEx(location, collection, modified);
+    return AbstractList::AddAll(location, collection, modified);
 }
 
 ECode CCollections::SingletonList::IndexOf(
@@ -1408,18 +1407,18 @@ ECode CCollections::SingletonList::GetListIterator(
     return AbstractList::GetListIterator(it);
 }
 
-ECode CCollections::SingletonList::GetListIteratorEx(
+ECode CCollections::SingletonList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
-    return AbstractList::GetListIteratorEx(location, it);
+    return AbstractList::GetListIterator(location, it);
 }
 
-ECode CCollections::SingletonList::RemoveEx(
+ECode CCollections::SingletonList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
-    return AbstractList::RemoveEx(location, object);
+    return AbstractList::Remove(location, object);
 }
 
 ECode CCollections::SingletonList::Set(
@@ -1672,11 +1671,11 @@ ECode CCollections::SingletonMap::MySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CCollections::SingletonMap::MySet::ToArrayEx(
+ECode CCollections::SingletonMap::MySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 //====================================================================
@@ -2039,13 +2038,13 @@ ECode CCollections::SynchronizedCollection::ToString(
     return NOERROR;
 }
 
-ECode CCollections::SynchronizedCollection::ToArrayEx(
+ECode CCollections::SynchronizedCollection::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     VALIDATE_NOT_NULL(outArray)
     Mutex::Autolock lock(mMutex);
-    return mC->ToArrayEx(inArray, outArray);
+    return mC->ToArray(inArray, outArray);
 }
 
 ECode CCollections::SynchronizedCollection::Equals(
@@ -2209,22 +2208,22 @@ CCollections::SynchronizedList::SynchronizedList(
     mList = l;
 }
 
-ECode CCollections::SynchronizedList::AddEx(
+ECode CCollections::SynchronizedList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
     Mutex::Autolock lock(mMutex);
-    return mList->AddEx(location, object);
+    return mList->Add(location, object);
 }
 
-ECode CCollections::SynchronizedList::AddAllEx(
+ECode CCollections::SynchronizedList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
     VALIDATE_NOT_NULL(modified)
     Mutex::Autolock lock(mMutex);
-    return mList->AddAllEx(location, collection, modified);
+    return mList->AddAll(location, collection, modified);
 }
 
 ECode CCollections::SynchronizedList::Equals(
@@ -2327,22 +2326,22 @@ ECode CCollections::SynchronizedList::GetListIterator(
     return mList->GetListIterator(it);
 }
 
-ECode CCollections::SynchronizedList::GetListIteratorEx(
+ECode CCollections::SynchronizedList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
     VALIDATE_NOT_NULL(it)
     Mutex::Autolock lock(mMutex);
-    return mList->GetListIteratorEx(location, it);
+    return mList->GetListIterator(location, it);
 }
 
-ECode CCollections::SynchronizedList::RemoveEx(
+ECode CCollections::SynchronizedList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
     Mutex::Autolock lock(mMutex);
-    return mList->RemoveEx(location, object);
+    return mList->Remove(location, object);
 }
 
 ECode CCollections::SynchronizedList::Set(
@@ -2454,11 +2453,11 @@ ECode CCollections::SynchronizedList::ToArray(
     return SynchronizedCollection::ToArray(array);
 }
 
-ECode CCollections::SynchronizedList::ToArrayEx(
+ECode CCollections::SynchronizedList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return SynchronizedCollection::ToArrayEx(inArray, outArray);
+    return SynchronizedCollection::ToArray(inArray, outArray);
 }
 
 AutoPtr<IInterface> CCollections::SynchronizedList::ReadResolve()
@@ -2849,11 +2848,11 @@ ECode CCollections::SynchronizedSet::ToArray(
     return SynchronizedCollection::ToArray(array);
 }
 
-ECode CCollections::SynchronizedSet::ToArrayEx(
+ECode CCollections::SynchronizedSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return SynchronizedCollection::ToArrayEx(inArray, outArray);
+    return SynchronizedCollection::ToArray(inArray, outArray);
 }
 
 ECode CCollections::SynchronizedSet::WriteObject(
@@ -3286,11 +3285,11 @@ ECode CCollections::SynchronizedSortedSet::ToArray(
     return SynchronizedSet::ToArray(array);
 }
 
-ECode CCollections::SynchronizedSortedSet::ToArrayEx(
+ECode CCollections::SynchronizedSortedSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return SynchronizedSet::ToArrayEx(inArray, outArray);
+    return SynchronizedSet::ToArray(inArray, outArray);
 }
 
 ECode CCollections::SynchronizedSortedSet::WriteObject(
@@ -3474,12 +3473,12 @@ ECode CCollections::UnmodifiableCollection::ToArray(
     return mC->ToArray(array);
 }
 
-ECode CCollections::UnmodifiableCollection::ToArrayEx(
+ECode CCollections::UnmodifiableCollection::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     VALIDATE_NOT_NULL(outArray)
-    return mC->ToArrayEx(inArray, outArray);
+    return mC->ToArray(inArray, outArray);
 }
 
 ECode CCollections::UnmodifiableCollection::ToString(
@@ -3621,7 +3620,7 @@ CCollections::UnmodifiableList::ListIterator::ListIterator(
     /* [in] */ UnmodifiableList* owner,
     /* [in] */ Int32 location)
 {
-    owner->mList->GetListIteratorEx(location, (IListIterator**)&mIterator);
+    owner->mList->GetListIterator(location, (IListIterator**)&mIterator);
 }
 
 ECode CCollections::UnmodifiableList::ListIterator::Add(
@@ -3801,10 +3800,10 @@ ECode CCollections::UnmodifiableList::GetListIterator(
     /* [out] */ IListIterator** it)
 {
     VALIDATE_NOT_NULL(it)
-    return GetListIteratorEx(0, it);
+    return GetListIterator(0, it);
 }
 
-ECode CCollections::UnmodifiableList::GetListIteratorEx(
+ECode CCollections::UnmodifiableList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
@@ -3815,7 +3814,7 @@ ECode CCollections::UnmodifiableList::GetListIteratorEx(
     return NOERROR;
 }
 
-ECode CCollections::UnmodifiableList::RemoveEx(
+ECode CCollections::UnmodifiableList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
@@ -3910,21 +3909,21 @@ ECode CCollections::UnmodifiableList::ToArray(
     return UnmodifiableCollection::ToArray(array);
 }
 
-ECode CCollections::UnmodifiableList::ToArrayEx(
+ECode CCollections::UnmodifiableList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return UnmodifiableCollection::ToArrayEx(inArray, outArray);
+    return UnmodifiableCollection::ToArray(inArray, outArray);
 }
 
-ECode CCollections::UnmodifiableList::AddEx(
+ECode CCollections::UnmodifiableList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
-ECode CCollections::UnmodifiableList::AddAllEx(
+ECode CCollections::UnmodifiableList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
@@ -4083,7 +4082,7 @@ ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::ToArray(
     return NOERROR;
 }
 
-ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::ToArrayEx(
+ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
@@ -4449,11 +4448,11 @@ ECode CCollections::UnmodifiableSet::ToArray(
     return UnmodifiableCollection::ToArray(array);
 }
 
-ECode CCollections::UnmodifiableSet::ToArrayEx(
+ECode CCollections::UnmodifiableSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return UnmodifiableCollection::ToArrayEx(inArray, outArray);
+    return UnmodifiableCollection::ToArray(inArray, outArray);
 }
 
 //====================================================================
@@ -4802,11 +4801,11 @@ ECode CCollections::UnmodifiableSortedSet::ToArray(
     return UnmodifiableCollection::ToArray(array);
 }
 
-ECode CCollections::UnmodifiableSortedSet::ToArrayEx(
+ECode CCollections::UnmodifiableSortedSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return UnmodifiableCollection::ToArrayEx(inArray, outArray);
+    return UnmodifiableCollection::ToArray(inArray, outArray);
 }
 
 ECode CCollections::UnmodifiableSortedSet::Equals(
@@ -4897,7 +4896,7 @@ ECode CCollections::_BinarySearch(
     return NOERROR;
 }
 
-ECode CCollections::_BinarySearchEx(
+ECode CCollections::_BinarySearch(
     /* [in] */ IList* list,
     /* [in] */ IInterface* object,
     /* [in] */ IComparator* comparator,
@@ -5038,7 +5037,7 @@ ECode CCollections::_Max(
     return NOERROR;
 }
 
-ECode CCollections::_MaxEx(
+ECode CCollections::_Max(
     /* [in] */ ICollection* collection,
     /* [in] */ IComparator* comparator,
     /* [out] */ IInterface** result)
@@ -5090,7 +5089,7 @@ ECode CCollections::_Min(
     return NOERROR;
 }
 
-ECode CCollections::_MinEx(
+ECode CCollections::_Min(
     /* [in] */ ICollection* collection,
     /* [in] */ IComparator* comparator,
     /* [out] */ IInterface** result)
@@ -5139,7 +5138,7 @@ ECode CCollections::_Reverse(
     AutoPtr<IListIterator> front;
     list->GetListIterator((IListIterator**)&front);
     AutoPtr<IListIterator> back;
-    list->GetListIteratorEx(size, (IListIterator**)&back);
+    list->GetListIterator(size, (IListIterator**)&back);
     for (Int32 i = 0; i < size / 2; i++) {
         AutoPtr<IInterface> frontNext;
         front->Next((IInterface**)&frontNext);
@@ -5160,7 +5159,7 @@ ECode CCollections::_ReverseOrder(
     return NOERROR;
 }
 
-ECode CCollections::_ReverseOrderEx(
+ECode CCollections::_ReverseOrder(
     /* [in] */ IComparator* c,
     /* [out] */ IComparator** result)
 {
@@ -5185,10 +5184,10 @@ ECode CCollections::_Shuffle(
 {
     AutoPtr<IRandom> r;
     CRandom::New((IRandom**)&r);
-    return _ShuffleEx(list, r);
+    return _Shuffle(list, r);
 }
 
-ECode CCollections::_ShuffleEx(
+ECode CCollections::_Shuffle(
     /* [in] */ IList* list,
     /* [in] */ IRandom* random)
 {
@@ -5199,7 +5198,7 @@ ECode CCollections::_ShuffleEx(
         objectList->GetSize(&i);
         for (i = i - 1; i > 0; i--) {
             Int32 index;
-            random->NextInt32Ex(i + 1, &index);
+            random->NextInt32(i + 1, &index);
             AutoPtr<IInterface> o;
             objectList->Get(index, (IInterface**)&o);
             AutoPtr<IInterface> pre, pre2;
@@ -5212,7 +5211,7 @@ ECode CCollections::_ShuffleEx(
         objectList->ToArray((ArrayOf<IInterface*>**)&array);
         for (Int32 i = array->GetLength() - 1; i > 0; i--) {
             Int32 index;
-            random->NextInt32Ex(i + 1, &index);
+            random->NextInt32(i + 1, &index);
             AutoPtr<IInterface> temp = (*array)[i];
             array->Set(i, (*array)[index]);
             array->Set(index, temp);
@@ -5283,7 +5282,7 @@ ECode CCollections::_Sort(
     return NOERROR;
 }
 
-ECode CCollections::_SortEx(
+ECode CCollections::_Sort(
     /* [in] */ IList* list,
     /* [in] */ IComparator* comparator)
 {
@@ -5291,7 +5290,7 @@ ECode CCollections::_SortEx(
     list->GetSize(&num);
     AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(num);
     AutoPtr<ArrayOf<IInterface*> > array;
-    list->ToArrayEx(arr, (ArrayOf<IInterface*>**)&array);
+    list->ToArray(arr, (ArrayOf<IInterface*>**)&array);
     CArrays::_Sort(array, comparator);
     AutoPtr<IListIterator> it;
     list->GetListIterator((IListIterator**)&it);
@@ -5436,7 +5435,7 @@ ECode CCollections::_IndexOfSubList(
 
     while (index < size && (size - index >= sublistSize)) {
         AutoPtr<IListIterator> listIt;
-        list->GetListIteratorEx(index, (IListIterator**)&listIt);
+        list->GetListIterator(index, (IListIterator**)&listIt);
 
         AutoPtr<IInterface> o;
         listIt->Next((IInterface**)&o);
@@ -5445,7 +5444,7 @@ ECode CCollections::_IndexOfSubList(
             // iterate through the elements in sublist to see
             // if they are included in the same order in the list
             AutoPtr<IListIterator> sublistIt;
-            sublist->GetListIteratorEx(1, (IListIterator**)&sublistIt);
+            sublist->GetListIterator(1, (IListIterator**)&sublistIt);
             Boolean difFound = FALSE, subHasNext, listHasNext;
             while ((sublistIt->HasNext(&subHasNext), subHasNext)) {
                 AutoPtr<IInterface> element;
@@ -5505,7 +5504,7 @@ ECode CCollections::_LastIndexOfSubList(
 
     while ((index > -1) && (index + 1 >= sublistSize)) {
         AutoPtr<IListIterator> listIt;
-        list->GetListIteratorEx(index + 1, (IListIterator**)&listIt);
+        list->GetListIterator(index + 1, (IListIterator**)&listIt);
 
         AutoPtr<IInterface> o;
         listIt->Previous((IInterface**)&o);
@@ -5513,7 +5512,7 @@ ECode CCollections::_LastIndexOfSubList(
             // iterate through the elements in sublist to see
             // if they are included in the same order in the list
             AutoPtr<IListIterator> sublistIt;
-            sublist->GetListIteratorEx(sublistSize - 1, (IListIterator**)&sublist);
+            sublist->GetListIterator(sublistSize - 1, (IListIterator**)&sublist);
             Boolean difFound = FALSE;
             Boolean subPrevious, listPrevious;
             while ((sublistIt->HasPrevious(&subPrevious), subPrevious)) {
@@ -6000,13 +5999,13 @@ ECode CCollections::BinarySearch(
     return _BinarySearch(list, object, index);
 }
 
-ECode CCollections::BinarySearchEx(
+ECode CCollections::BinarySearch(
     /* [in] */ IList* list,
     /* [in] */ IInterface* object,
     /* [in] */ IComparator* comparator,
     /* [out] */ Int32* index)
 {
-    return _BinarySearchEx(list, object, comparator, index);
+    return _BinarySearch(list, object, comparator, index);
 }
 
 ECode CCollections::Copy(
@@ -6037,12 +6036,12 @@ ECode CCollections::Max(
     return _Max(collection, result);
 }
 
-ECode CCollections::MaxEx(
+ECode CCollections::Max(
     /* [in] */ ICollection* collection,
     /* [in] */ IComparator* comparator,
     /* [out] */ IInterface** result)
 {
-    return _MaxEx(collection, comparator, result);
+    return _Max(collection, comparator, result);
 }
 
 ECode CCollections::Min(
@@ -6052,12 +6051,12 @@ ECode CCollections::Min(
     return _Min(collection, result);
 }
 
-ECode CCollections::MinEx(
+ECode CCollections::Min(
     /* [in] */ ICollection* collection,
     /* [in] */ IComparator* comparator,
     /* [out] */ IInterface** result)
 {
-    return _MinEx(collection, comparator, result);
+    return _Min(collection, comparator, result);
 }
 
 ECode CCollections::NCopies(
@@ -6080,11 +6079,11 @@ ECode CCollections::ReverseOrder(
     return _ReverseOrder(result);
 }
 
-ECode CCollections::ReverseOrderEx(
+ECode CCollections::ReverseOrder(
     /* [in] */ IComparator* c,
     /* [out] */ IComparator** result)
 {
-    return _ReverseOrderEx(c, result);
+    return _ReverseOrder(c, result);
 }
 
 ECode CCollections::Shuffle(
@@ -6093,11 +6092,11 @@ ECode CCollections::Shuffle(
     return _Shuffle(list);
 }
 
-ECode CCollections::ShuffleEx(
+ECode CCollections::Shuffle(
     /* [in] */ IList* list,
     /* [in] */ IRandom* random)
 {
-    return _ShuffleEx(list, random);
+    return _Shuffle(list, random);
 }
 
 ECode CCollections::NewSingleton(
@@ -6128,11 +6127,11 @@ ECode CCollections::Sort(
     return _Sort(list);
 }
 
-ECode CCollections::SortEx(
+ECode CCollections::Sort(
     /* [in] */ IList* list,
     /* [in] */ IComparator* comparator)
 {
-    return _SortEx(list, comparator);
+    return _Sort(list, comparator);
 }
 
 ECode CCollections::Swap(
@@ -6553,12 +6552,12 @@ ECode CCollections::SetFromMap::ToArray(
     return mBackingSet->ToArray(array);
 }
 
-ECode CCollections::SetFromMap::ToArrayEx(
+ECode CCollections::SetFromMap::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     VALIDATE_NOT_NULL(outArray)
-    return mBackingSet->ToArrayEx(contents, outArray);
+    return mBackingSet->ToArray(contents, outArray);
 }
 
 ECode CCollections::SetFromMap::GetIterator(
@@ -6711,7 +6710,7 @@ ECode CCollections::AsLIFOQueue::Element(
     return mQ->GetFirst(object);
 }
 
-ECode CCollections::AsLIFOQueue::RemoveEx(
+ECode CCollections::AsLIFOQueue::Remove(
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj)
@@ -6772,12 +6771,12 @@ ECode CCollections::AsLIFOQueue::ToArray(
     return mQ->ToArray(array);
 }
 
-ECode CCollections::AsLIFOQueue::ToArrayEx(
+ECode CCollections::AsLIFOQueue::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     VALIDATE_NOT_NULL(outArray)
-    return mQ->ToArrayEx(contents, outArray);
+    return mQ->ToArray(contents, outArray);
 }
 
 ECode CCollections::AsLIFOQueue::ToString(
@@ -6927,12 +6926,12 @@ ECode CCollections::CheckedCollection::ToArray(
     return mC->ToArray(array);
 }
 
-ECode CCollections::CheckedCollection::ToArrayEx(
+ECode CCollections::CheckedCollection::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     VALIDATE_NOT_NULL(outArray)
-    return mC->ToArrayEx(inArray, outArray);
+    return mC->ToArray(inArray, outArray);
 }
 
 ECode CCollections::CheckedCollection::Add(
@@ -7199,7 +7198,7 @@ CCollections::CheckedList::CheckedList(
     mL = l;
 }
 
-ECode CCollections::CheckedList::AddAllEx(
+ECode CCollections::CheckedList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
@@ -7210,7 +7209,7 @@ ECode CCollections::CheckedList::AddAllEx(
         AutoPtr<IInterface> o = (*array)[i];
         FAIL_RETURN(CCollections::_CheckType(o, mType));
     }
-    return mL->AddAllEx(location, collection, modified);
+    return mL->AddAll(location, collection, modified);
 }
 
 ECode CCollections::CheckedList::Get(
@@ -7231,20 +7230,20 @@ ECode CCollections::CheckedList::Set(
     return mL->Set(location, object, prevObject);
 }
 
-ECode CCollections::CheckedList::AddEx(
+ECode CCollections::CheckedList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
     FAIL_RETURN(CCollections::_CheckType(object, mType));
-    return mL->AddEx(location, object);
+    return mL->Add(location, object);
 }
 
-ECode CCollections::CheckedList::RemoveEx(
+ECode CCollections::CheckedList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
-    return mL->RemoveEx(location, object);
+    return mL->Remove(location, object);
 }
 
 ECode CCollections::CheckedList::IndexOf(
@@ -7275,13 +7274,13 @@ ECode CCollections::CheckedList::GetListIterator(
     return NOERROR;
 }
 
-ECode CCollections::CheckedList::GetListIteratorEx(
+ECode CCollections::CheckedList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
     VALIDATE_NOT_NULL(it)
     AutoPtr<IListIterator> iterator;
-    mL->GetListIteratorEx(location, (IListIterator**)&iterator);
+    mL->GetListIterator(location, (IListIterator**)&iterator);
     AutoPtr<IListIterator> res = new CheckedListIterator(iterator, mType);
     *it = res;
     INTERFACE_ADDREF(*it)
@@ -7395,11 +7394,11 @@ ECode CCollections::CheckedList::ToArray(
     return CheckedCollection::ToArray(array);
 }
 
-ECode CCollections::CheckedList::ToArrayEx(
+ECode CCollections::CheckedList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return CheckedCollection::ToArrayEx(inArray, outArray);
+    return CheckedCollection::ToArray(inArray, outArray);
 }
 
 
@@ -7599,11 +7598,11 @@ ECode CCollections::CheckedSet::ToArray(
     return CheckedCollection::ToArray(array);
 }
 
-ECode CCollections::CheckedSet::ToArrayEx(
+ECode CCollections::CheckedSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return CheckedCollection::ToArrayEx(inArray, outArray);
+    return CheckedCollection::ToArray(inArray, outArray);
 }
 
 //====================================================================
@@ -7796,7 +7795,7 @@ ECode CCollections::CheckedMap::CheckedEntrySet::ToArray(
     return NOERROR;
 }
 
-ECode CCollections::CheckedMap::CheckedEntrySet::ToArrayEx(
+ECode CCollections::CheckedMap::CheckedEntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
@@ -8254,11 +8253,11 @@ ECode CCollections::CheckedSortedSet::ToArray(
     return CheckedSet::ToArray(array);
 }
 
-ECode CCollections::CheckedSortedSet::ToArrayEx(
+ECode CCollections::CheckedSortedSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return CheckedSet::ToArrayEx(inArray, outArray);
+    return CheckedSet::ToArray(inArray, outArray);
 }
 
 ECode CCollections::CheckedSortedSet::RetainAll(

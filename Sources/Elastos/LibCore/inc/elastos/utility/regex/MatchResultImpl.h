@@ -31,21 +31,21 @@ public:
     CARAPI End(
         /* [out] */ Int32* index);
 
-    CARAPI EndEx(
+    CARAPI End(
         /* [in] */ Int32 group,
         /* [out] */ Int32* index);
 
     CARAPI Group(
         /* [out] */ String* text);
 
-    CARAPI GroupEx(
+    CARAPI Group(
         /* [in] */ Int32 group,
         /* [out] */ String* text);
 
     CARAPI GroupCount(
         /* [out] */ Int32* count);
 
-    CARAPI StartEx(
+    CARAPI Start(
         /* [in] */ Int32 group,
         /* [out] */ Int32* index);
 

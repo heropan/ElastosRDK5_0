@@ -2,7 +2,6 @@
 #ifndef __CREENTRANTLOCK_H__
 #define __CREENTRANTLOCK_H__
 
-#include "cmdef.h"
 #include "_CReentrantLock.h"
 #include "ReentrantLock.h"
 #include "AbstractQueuedSynchronizer.h"
@@ -198,7 +197,7 @@ public:
      * @throws NullPointerException if the time unit is null
      *
      */
-    CARAPI TryLockEx(
+    CARAPI TryLock(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ Boolean* result);

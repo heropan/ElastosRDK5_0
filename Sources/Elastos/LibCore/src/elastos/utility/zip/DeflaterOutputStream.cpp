@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "DeflaterOutputStream.h"
 
 using Elastos::IO::IStreams;
@@ -26,7 +25,7 @@ ECode DeflaterOutputStream::Deflate()
 {
     Int32 byteCount;
     while (mDef->Deflate(mBuf, &byteCount), byteCount != 0) {
-        FAIL_RETURN(mOut->WriteBytesEx(*mBuf, 0, byteCount));
+        FAIL_RETURN(mOut->WriteBytes(*mBuf, 0, byteCount));
     }
     return NOERROR;
 }
@@ -53,7 +52,7 @@ ECode DeflaterOutputStream::Finish()
     while (mDef->Finished(&finished), !finished) {
         Int32 byteCount;
         FAIL_RETURN(mDef->Deflate(mBuf, &byteCount));
-        FAIL_RETURN(mOut->WriteBytesEx(*mBuf, 0, byteCount));
+        FAIL_RETURN(mOut->WriteBytes(*mBuf, 0, byteCount));
     }
     mDone = TRUE;
     return NOERROR;
@@ -67,7 +66,7 @@ ECode DeflaterOutputStream::Write(
     return streams->WriteSingleByte(THIS_PROBE(IOutputStream), i);
 }
 
-ECode DeflaterOutputStream::WriteBytesEx(
+ECode DeflaterOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
@@ -89,7 +88,7 @@ ECode DeflaterOutputStream::WriteBytesEx(
         return E_IO_EXCEPTION;
 //        throw new IOException();
     }
-    mDef->SetInputEx(buffer, offset, byteCount);
+    mDef->SetInput(buffer, offset, byteCount);
     return Deflate();
 }
 
@@ -97,9 +96,9 @@ ECode DeflaterOutputStream::Flush()
 {
     if (mSyncFlush) {
         Int32 byteCount;
-        while (mDef->DeflateEx2(mBuf, 0, mBuf->GetLength(),
+        while (mDef->Deflate(mBuf, 0, mBuf->GetLength(),
             CDeflater::SYNC_FLUSH, &byteCount), byteCount != 0) {
-            FAIL_RETURN(mOut->WriteBytesEx(*mBuf, 0, byteCount));
+            FAIL_RETURN(mOut->WriteBytes(*mBuf, 0, byteCount));
         }
     }
     //return mOut->Flush();
@@ -181,7 +180,7 @@ ECode DeflaterOutputStream::WriteBytes(
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    return WriteBytesEx(buffer, 0, buffer.GetLength());
+    return WriteBytes(buffer, 0, buffer.GetLength());
 }
 
 

@@ -2,7 +2,6 @@
 #ifndef __CARRAYBLOCKINGQUEUE_H__
 #define __CARRAYBLOCKINGQUEUE_H__
 
-#include "cmdef.h"
 #include "_CArrayBlockingQueue.h"
 #include "AbstractQueue.h"
 
@@ -404,7 +403,7 @@ public:
      * @throws InterruptedException {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
-    CARAPI OfferEx(
+    CARAPI Offer(
         /* [in] */ IInterface* e,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
@@ -416,7 +415,7 @@ public:
     CARAPI Take(
         /* [out] */ IInterface** e);
 
-    CARAPI PollEx(
+    CARAPI Poll(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ IInterface** e);
@@ -534,7 +533,7 @@ public:
         /* [in] */ IInterface* o,
         /* [out] */ Boolean* modified);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [out] */ IInterface** e);
 
     /**
@@ -654,7 +653,7 @@ public:
      * @throws NullPointerException if the specified array is null
      */
     // @SuppressWarnings("unchecked")
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* a,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -709,7 +708,7 @@ public:
      * @throws NullPointerException          {@inheritDoc}
      * @throws IllegalArgumentException      {@inheritDoc}
      */
-    CARAPI DrainToEx(
+    CARAPI DrainTo(
         /* [in] */ ICollection* c,
         /* [in] */ Int32 maxElements,
         /* [out] */ Int32* number);

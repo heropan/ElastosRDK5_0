@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "TimSort.h"
 #include "CArrays.h"
 #include <elastos/Math.h>
@@ -66,7 +65,7 @@ ECode TimSort::Sort(
     /* [in] */ IComparator* c)
 {
     if (c == NULL) {
-        return CArrays::_SortObjectEx(a, lo, hi);
+        return CArrays::_SortObject(a, lo, hi);
     }
 
     VALIDATE_NOT_NULL(CArrays::_CheckStartAndEnd(a->GetLength(), lo, hi));

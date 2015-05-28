@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "DualPivotQuicksort.h"
 #include "CArrays.h"
 #include <elastos/Math.h>

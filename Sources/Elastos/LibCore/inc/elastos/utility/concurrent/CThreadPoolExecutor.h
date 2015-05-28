@@ -2,7 +2,6 @@
 #ifndef __CTHREADPOOLEXECUTOR_H__
 #define __CTHREADPOOLEXECUTOR_H__
 
-#include "cmdef.h"
 #include "_CThreadPoolExecutor.h"
 #include "AbstractExecutorService.h"
 #include "AbstractQueuedSynchronizer.h"
@@ -781,12 +780,12 @@ public:
         /* [in] */ ICallable* task,
         /* [out] */ IFuture** future);
 
-    CARAPI SubmitEx(
+    CARAPI Submit(
         /* [in] */ IRunnable* task,
         /* [in] */ IInterface* result,
         /* [out] */ IFuture** future);
 
-    CARAPI SubmitEx2(
+    CARAPI Submit(
         /* [in] */ IRunnable* task,
         /* [out] */ IFuture** future);
 
@@ -794,7 +793,7 @@ public:
         /* [in] */ ICollection* tasks,
         /* [out] */ IInterface** result);
 
-    CARAPI InvokeAnyEx(
+    CARAPI InvokeAny(
         /* [in] */ ICollection* tasks,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
@@ -804,7 +803,7 @@ public:
         /* [in] */ ICollection* tasks,
         /* [out] */ IList** futures);
 
-    CARAPI InvokeAllEx(
+    CARAPI InvokeAll(
         /* [in] */ ICollection* tasks,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,

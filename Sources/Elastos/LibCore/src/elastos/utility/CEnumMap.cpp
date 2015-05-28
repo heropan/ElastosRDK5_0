@@ -772,11 +772,11 @@ ECode CEnumMap::EnumMapKeySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CEnumMap::EnumMapKeySet::ToArrayEx(
+ECode CEnumMap::EnumMapKeySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 //==========================================================
@@ -967,11 +967,11 @@ ECode CEnumMap::EnumMapValueCollection::ToArray(
     return AbstractCollection::ToArray(array);
 }
 
-ECode CEnumMap::EnumMapValueCollection::ToArrayEx(
+ECode CEnumMap::EnumMapValueCollection::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractCollection::ToArrayEx(inArray, outArray);
+    return AbstractCollection::ToArray(inArray, outArray);
 }
 
 
@@ -1199,10 +1199,10 @@ ECode CEnumMap::EnumMapEntrySet::ToArray(
     Int32 len = 0;
     mEnumMap->GetSize(&len);
     AutoPtr< ArrayOf<IInterface*> > entryArray = ArrayOf<IInterface*>::Alloc(len);
-    return ToArrayEx(entryArray, array);
+    return ToArray(entryArray, array);
 }
 
-ECode CEnumMap::EnumMapEntrySet::ToArrayEx(
+ECode CEnumMap::EnumMapEntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {

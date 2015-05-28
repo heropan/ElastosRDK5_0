@@ -250,7 +250,7 @@ public:
     virtual CARAPI ToArray(
         /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-    virtual CARAPI ToArrayEx(
+    virtual CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* contents,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 

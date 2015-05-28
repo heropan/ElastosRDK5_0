@@ -1,7 +1,6 @@
 #ifndef __UTILITY_HASHTABLE_H__
 #define __UTILITY_HASHTABLE_H__
 
-#include "cmdef.h"
 #include "AbstractSet.h"
 #include "elastos/Mutex.h"
 
@@ -256,7 +255,7 @@ private:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* contents,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -327,7 +326,7 @@ private:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* contents,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -398,7 +397,7 @@ private:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* contents,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 

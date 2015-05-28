@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "AbstractCollection.h"
 #include <elastos/StringBuilder.h>
 #include <elastos/ObjectUtils.h>
@@ -218,7 +217,7 @@ ECode AbstractCollection::ToArray(
     return NOERROR;
 }
 
-ECode AbstractCollection::ToArrayEx(
+ECode AbstractCollection::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {

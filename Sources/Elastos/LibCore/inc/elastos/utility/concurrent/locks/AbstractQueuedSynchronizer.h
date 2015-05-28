@@ -376,7 +376,7 @@ public:
          * <li> If timed out while blocked in step 4, return false, else true.
          * </ol>
          */
-        CARAPI AwaitEx(
+        CARAPI Await(
             /* [in] */ Int64 time,
             /* [in] */ ITimeUnit* unit,
             /* [out] */ Boolean* value);

@@ -27,7 +27,7 @@ public:
         /* [in] */ IName* name,
         /* [out] */ String* value);
 
-    CARAPI GetValueEx(
+    CARAPI GetValue(
         /* [in] */ const String& name,
         /* [out] */ String* value);
 

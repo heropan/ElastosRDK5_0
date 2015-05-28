@@ -112,10 +112,10 @@ ECode Currency::GetCurrencyCode(
 ECode Currency::GetDisplayName(
     /* [out] */ String* str)
 {
-    return GetDisplayNameEx(CLocale::GetDefault(), str);
+    return GetDisplayName(CLocale::GetDefault(), str);
 }
 
-ECode Currency::GetDisplayNameEx(
+ECode Currency::GetDisplayName(
     /* [in] */ ILocale* locale,
     /* [out] */ String* str)
 {
@@ -130,10 +130,10 @@ ECode Currency::GetDisplayNameEx(
 ECode Currency::GetSymbol(
     /* [out] */ String* str)
 {
-    return GetSymbolEx(CLocale::GetDefault(), str);
+    return GetSymbol(CLocale::GetDefault(), str);
 }
 
-ECode Currency::GetSymbolEx(
+ECode Currency::GetSymbol(
     /* [in] */ ILocale* locale,
     /* [out] */ String* str)
 {

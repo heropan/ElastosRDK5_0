@@ -18,10 +18,10 @@ ECode MatchResultImpl::End(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
-    return EndEx(0, index);
+    return End(0, index);
 }
 
-ECode MatchResultImpl::EndEx(
+ECode MatchResultImpl::End(
     /* [in] */ Int32 group,
     /* [out] */ Int32* index)
 {
@@ -41,7 +41,7 @@ ECode MatchResultImpl::Group(
     return NOERROR;
 }
 
-ECode MatchResultImpl::GroupEx(
+ECode MatchResultImpl::Group(
     /* [in] */ Int32 group,
     /* [out] */ String* text)
 {
@@ -65,7 +65,7 @@ ECode MatchResultImpl::GroupCount(
     return NOERROR;
 }
 
-ECode MatchResultImpl::StartEx(
+ECode MatchResultImpl::Start(
     /* [in] */ Int32 group,
     /* [out] */ Int32* index)
 {
@@ -78,7 +78,7 @@ ECode MatchResultImpl::Start(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
-    return StartEx(0, index);
+    return Start(0, index);
 }
 
 } // namespace Regex

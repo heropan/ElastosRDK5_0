@@ -57,7 +57,7 @@ public:
      *             if an IO error has occurred.
      */
     //@Override
-    CARAPI WriteBytesEx(
+    CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte>& buf,
         /* [in] */ Int32 off,
         /* [in] */ Int32 nbytes);
@@ -115,7 +115,7 @@ public:
      *             if an IO error has occurred.
      */
     //@Override
-    CARAPI WriteBytesEx(
+    CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte>& buf,
         /* [in] */ Int32 off,
         /* [in] */ Int32 nbytes);

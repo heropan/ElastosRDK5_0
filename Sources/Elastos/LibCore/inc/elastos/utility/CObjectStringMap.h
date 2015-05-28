@@ -2,7 +2,6 @@
 #ifndef __COBJECTSTRINGMAP_H__
 #define __COBJECTSTRINGMAP_H__
 
-#include "cmdef.h"
 #include "_CObjectStringMap.h"
 #include <elastos/HashMap.h>
 

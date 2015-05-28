@@ -161,7 +161,7 @@ ECode Calendar::Clear()
     return NOERROR;
 }
 
-ECode Calendar::ClearEx(
+ECode Calendar::Clear(
     /* [in] */ Int32 field)
 {
     (*mFields)[field] = 0;
@@ -191,10 +191,10 @@ ECode Calendar::Equals(
     *result = FALSE;
     VALIDATE_NOT_NULL(other);
 
-    return EqualsEx(ICalendar::Probe(other), result);
+    return Equals(ICalendar::Probe(other), result);
 }
 
-ECode Calendar::EqualsEx(
+ECode Calendar::Equals(
     /* [in] */ ICalendar* other,
     /* [out] */ Boolean* result)
 {
@@ -472,7 +472,7 @@ ECode Calendar::Roll(
     Boolean increment = value >= 0;
     Int32 count = increment ? value : -value;
     for (Int32 i = 0; i < count; i++) {
-        RollEx(field, increment);
+        Roll(field, increment);
     }
     return NOERROR;
 }
@@ -501,7 +501,7 @@ ECode Calendar::Set(
     return NOERROR;
 }
 
-ECode Calendar::SetEx(
+ECode Calendar::Set(
     /* [in] */ Int32 year,
     /* [in] */ Int32 month,
     /* [in] */ Int32 day)
@@ -512,20 +512,20 @@ ECode Calendar::SetEx(
     return NOERROR;
 }
 
-ECode Calendar::SetEx2(
+ECode Calendar::Set(
     /* [in] */ Int32 year,
     /* [in] */ Int32 month,
     /* [in] */ Int32 day,
     /* [in] */ Int32 hourOfDay,
     /* [in] */ Int32 minute)
 {
-    SetEx(year, month, day);
+    Set(year, month, day);
     Set(ICalendar::HOUR_OF_DAY, hourOfDay);
     Set(ICalendar::MINUTE, minute);
     return NOERROR;
 }
 
-ECode Calendar::SetEx3(
+ECode Calendar::Set(
     /* [in] */ Int32 year,
     /* [in] */ Int32 month,
     /* [in] */ Int32 day,
@@ -533,7 +533,7 @@ ECode Calendar::SetEx3(
     /* [in] */ Int32 minute,
     /* [in] */ Int32 second)
 {
-    SetEx2(year, month, day, hourOfDay, minute);
+    Set(year, month, day, hourOfDay, minute);
     Set(ICalendar::SECOND, second);
     return NOERROR;
 }
@@ -659,7 +659,7 @@ ECode Calendar::GetDisplayNameArray(
     AutoPtr<IDateFormatSymbols> dfs;
     AutoPtr<IDateFormatSymbolsHelper> dfsh;
     FAIL_RETURN(CDateFormatSymbolsHelper::AcquireSingleton((IDateFormatSymbolsHelper**)&dfsh));
-    dfsh->GetInstanceEx(locale, (IDateFormatSymbols**)&dfs);
+    dfsh->GetInstance(locale, (IDateFormatSymbols**)&dfs);
     AutoPtr< ArrayOf<String> > result;
     switch (field) {
         case ICalendar::AM_PM:

@@ -17,10 +17,10 @@ public:
         /* [in] */ IForkJoinTask* t1,
         /* [in] */ IForkJoinTask* t2);
 
-    CARAPI InvokeAllEx(
+    CARAPI InvokeAll(
         /* [in] */ ArrayOf<IForkJoinTask*>* tasks);
 
-    CARAPI InvokeAllEx2(
+    CARAPI InvokeAll(
         /* [in] */ ICollection* tasks,
         /* [out] */ ICollection** outcol);
 
@@ -42,12 +42,12 @@ public:
         /* [in] */ IRunnable* runnable,
         /* [out] */ IForkJoinTask** outjoin);
 
-    CARAPI AdaptEx(
+    CARAPI Adapt(
         /* [in] */ IRunnable* runnable,
         /* [in] */ IInterface* result,
         /* [out] */ IForkJoinTask** outjoin);
 
-    CARAPI AdaptEx2(
+    CARAPI Adapt(
         /* [in] */ ICallable* callable,
         /* [out] */ IForkJoinTask** outjoin);
 };

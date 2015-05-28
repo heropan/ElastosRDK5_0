@@ -113,11 +113,11 @@ ECode CCopyOnWriteArrayList::ToArray(
     return CopyOnWriteArrayList::ToArray(array);
 }
 
-ECode CCopyOnWriteArrayList::ToArrayEx(
+ECode CCopyOnWriteArrayList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return CopyOnWriteArrayList::ToArrayEx(inArray, outArray);
+    return CopyOnWriteArrayList::ToArray(inArray, outArray);
 }
 
 ECode CCopyOnWriteArrayList::GetIterator(
@@ -126,19 +126,19 @@ ECode CCopyOnWriteArrayList::GetIterator(
     return CopyOnWriteArrayList::GetIterator(it);
 }
 
-ECode CCopyOnWriteArrayList::AddEx(
+ECode CCopyOnWriteArrayList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
-    return CopyOnWriteArrayList::AddEx(location, object);
+    return CopyOnWriteArrayList::Add(location, object);
 }
 
-ECode CCopyOnWriteArrayList::AddAllEx(
+ECode CCopyOnWriteArrayList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    return CopyOnWriteArrayList::AddAllEx(location, collection, modified);
+    return CopyOnWriteArrayList::AddAll(location, collection, modified);
 }
 
 ECode CCopyOnWriteArrayList::Get(
@@ -168,18 +168,18 @@ ECode CCopyOnWriteArrayList::GetListIterator(
     return CopyOnWriteArrayList::GetListIterator(it);
 }
 
-ECode CCopyOnWriteArrayList::GetListIteratorEx(
+ECode CCopyOnWriteArrayList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
-    return CopyOnWriteArrayList::GetListIteratorEx(location, it);
+    return CopyOnWriteArrayList::GetListIterator(location, it);
 }
 
-ECode CCopyOnWriteArrayList::RemoveEx(
+ECode CCopyOnWriteArrayList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
-    return CopyOnWriteArrayList::RemoveEx(location, object);
+    return CopyOnWriteArrayList::Remove(location, object);
 }
 
 ECode CCopyOnWriteArrayList::Set(
@@ -198,20 +198,20 @@ ECode CCopyOnWriteArrayList::SubList(
     return CopyOnWriteArrayList::SubList(start, end, subList);
 }
 
-ECode CCopyOnWriteArrayList::IndexOfEx(
+ECode CCopyOnWriteArrayList::IndexOf(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 from,
     /* [out] */ Int32* value)
 {
-    return CopyOnWriteArrayList::IndexOfEx(object, from, value);
+    return CopyOnWriteArrayList::IndexOf(object, from, value);
 }
 
-ECode CCopyOnWriteArrayList::LastIndexOfEx(
+ECode CCopyOnWriteArrayList::LastIndexOf(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 to,
     /* [out] */ Int32* value)
 {
-    return CopyOnWriteArrayList::LastIndexOfEx(object, to, value);
+    return CopyOnWriteArrayList::LastIndexOf(object, to, value);
 }
 
 ECode CCopyOnWriteArrayList::AddAllAbsent(

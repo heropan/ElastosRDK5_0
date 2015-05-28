@@ -35,7 +35,7 @@ public:
     CARAPI Get(
         /* [out] */ IInterface** result);
 
-    CARAPI GetEx(
+    CARAPI Get(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ IInterface** result);

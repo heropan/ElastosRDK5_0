@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CDate.h"
 #include "CSystem.h"
 #include <elastos/Character.h>
@@ -67,7 +66,7 @@ ECode CDate::constructor(
 {
     AutoPtr<CGregorianCalendar> cal;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(FALSE, (CGregorianCalendar**)&cal));
-    FAIL_RETURN(cal->SetEx(1900 + year, month, day));
+    FAIL_RETURN(cal->Set(1900 + year, month, day));
     FAIL_RETURN(cal->GetTimeInMillis(&mMilliseconds));
     return NOERROR;
 }
@@ -81,7 +80,7 @@ ECode CDate::constructor(
 {
     AutoPtr<CGregorianCalendar> cal;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(FALSE, (CGregorianCalendar**)&cal));
-    FAIL_RETURN(cal->SetEx2(1900 + year, month, day, hour, minute));
+    FAIL_RETURN(cal->Set(1900 + year, month, day, hour, minute));
     FAIL_RETURN(cal->GetTimeInMillis(&mMilliseconds));
     return NOERROR;
 }
@@ -96,7 +95,7 @@ ECode CDate::constructor(
 {
     AutoPtr<CGregorianCalendar> cal;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(FALSE, (CGregorianCalendar**)&cal));
-    FAIL_RETURN(cal->SetEx3(1900 + year, month, day, hour, minute, second));
+    FAIL_RETURN(cal->Set(1900 + year, month, day, hour, minute, second));
     FAIL_RETURN(cal->GetTimeInMillis(&mMilliseconds));
     return NOERROR;
 }
@@ -692,7 +691,7 @@ ECode CDate::ToString(
     String displayName;
     Boolean isIn;
     tz->InDaylightTime((IDate*)this, &isIn);
-    tz->GetDisplayNameEx2(isIn, ITimeZone::SHORT, &displayName);
+    tz->GetDisplayName(isIn, ITimeZone::SHORT, &displayName);
     result.AppendString(displayName);
     result.AppendChar(' ');
     cal->Get(ICalendar::YEAR, &temp);
@@ -723,7 +722,7 @@ Int64 CDate::UTC(
     CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timezoneHelper);
     timezoneHelper->GetTimeZone(String("GMT"), (ITimeZone**)&timezone);
     cal->SetTimeZone(timezone);
-    cal->SetEx3(1900 + year, month, day, hour, minute, second);
+    cal->Set(1900 + year, month, day, hour, minute, second);
     Int64 time;
     cal->GetTimeInMillis(&time);
     return time;

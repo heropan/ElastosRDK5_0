@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "AbstractList.h"
 #include <elastos/ObjectUtils.h>
 
@@ -61,7 +60,7 @@ ECode AbstractList::SimpleListIterator::Remove()
 
     // try {
     AutoPtr<IInterface> object;
-    ECode ec = mOwner->RemoveEx(mLastPosition, (IInterface**)&object);
+    ECode ec = mOwner->Remove(mLastPosition, (IInterface**)&object);
     if (FAILED(ec)) return E_CONCURRENT_MODIFICATION_EXCEPTION;
     // } catch (IndexOutOfBoundsException e) {
         // throw new ConcurrentModificationException();
@@ -98,7 +97,7 @@ ECode AbstractList::FullListIterator::Add(
 {
     if (mExpectedModeCount == mOwner->mModCount) {
         // try {
-        ECode ec = mOwner->AddEx(mPos + 1, object);
+        ECode ec = mOwner->Add(mPos + 1, object);
         if (FAILED(ec)) {
             return E_NO_SUCH_ELEMENT_EXCEPTION;
         }
@@ -166,7 +165,7 @@ ECode AbstractList::FullListIterator::Set(
 {
     if (mExpectedModeCount == mOwner->mModCount) {
         // try {
-        ECode ec = mOwner->SetEx(mLastPosition, object);
+        ECode ec = mOwner->Set(mLastPosition, object);
         if (FAILED(ec)) {
             return E_ILLEGAL_STATE_EXCEPTION;
         }
@@ -317,13 +316,13 @@ SubAbstractList::SubAbstractList(
 
 CAR_INTERFACE_IMPL(SubAbstractList, IList);
 
-ECode SubAbstractList::AddEx(
+ECode SubAbstractList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
     if (mModCount == mFulllist->mModCount) {
         if (location >= 0 && location <= mSize) {
-            mFulllist->AddEx(location + mOffset, object);
+            mFulllist->Add(location + mOffset, object);
             mSize++;
             mModCount = mFulllist->mModCount;
             return NOERROR;
@@ -337,7 +336,7 @@ ECode SubAbstractList::AddEx(
     }
 }
 
-ECode SubAbstractList::AddAllEx(
+ECode SubAbstractList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
@@ -347,7 +346,7 @@ ECode SubAbstractList::AddAllEx(
     if (mModCount == mFulllist->mModCount) {
         if (location >= 0 && location <= mSize) {
             *result = FALSE;
-            mFulllist->AddAllEx(location + mOffset, collection, result);
+            mFulllist->AddAll(location + mOffset, collection, result);
             if (*result) {
                 Int32 collectionsize;
                 collection->GetSize(&collectionsize);
@@ -368,7 +367,7 @@ ECode SubAbstractList::AddAll(
     VALIDATE_NOT_NULL(result);
     if (mModCount == mFulllist->mModCount) {
         *result = FALSE;
-        mFulllist->AddAllEx(mOffset + mSize, collection, result);
+        mFulllist->AddAll(mOffset + mSize, collection, result);
         if (*result) {
             Int32 collectionsize;
             collection->GetSize(&collectionsize);
@@ -399,13 +398,13 @@ ECode SubAbstractList::GetIterator(
 {
     VALIDATE_NOT_NULL(it);
     AutoPtr<IListIterator> listit;
-    GetListIteratorEx(0, (IListIterator**)&listit);
+    GetListIterator(0, (IListIterator**)&listit);
     *it = listit;
     INTERFACE_ADDREF(*it);
     return NOERROR;
 }
 
-ECode SubAbstractList::GetListIteratorEx(
+ECode SubAbstractList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** listiterator)
 {
@@ -413,7 +412,7 @@ ECode SubAbstractList::GetListIteratorEx(
     if (mModCount == mFulllist->mModCount) {
         if (location >= 0 && location <= mSize) {
             AutoPtr<IListIterator> listiteratorex;
-            mFulllist->GetListIteratorEx(location + mOffset, (IListIterator**)&listiteratorex);
+            mFulllist->GetListIterator(location + mOffset, (IListIterator**)&listiteratorex);
             AutoPtr<SubAbstractListIterator> subabstractlistiterator =
                       new SubAbstractListIterator(listiteratorex, this, mOffset, mSize);
             *listiterator = subabstractlistiterator;
@@ -425,14 +424,14 @@ ECode SubAbstractList::GetListIteratorEx(
     return E_CONCURRENT_MODIFICATION_EXCEPTION;
 }
 
-ECode SubAbstractList::RemoveEx(
+ECode SubAbstractList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
     if (mModCount == mFulllist->mModCount) {
         if (location >= 0 && location < mSize) {
-            mFulllist->RemoveEx(location + mOffset, object);
+            mFulllist->Remove(location + mOffset, object);
             mSize--;
             mModCount =  mFulllist->mModCount;
             return NOERROR;
@@ -553,12 +552,12 @@ ECode SubAbstractList::ToArray(
     return AbstractList::ToArray(array);
 }
 
-ECode SubAbstractList::ToArrayEx(
+ECode SubAbstractList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     VALIDATE_NOT_NULL(outArray);
-    return AbstractList::ToArrayEx(contents, outArray);
+    return AbstractList::ToArray(contents, outArray);
 }
 
 ECode SubAbstractList::ToString(
@@ -628,7 +627,7 @@ ECode SubAbstractList::SubList(
     return AbstractList::SubList(start, end, subList);
 }
 
-ECode AbstractList::AddEx(
+ECode AbstractList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
@@ -642,12 +641,12 @@ ECode AbstractList::Add(
     VALIDATE_NOT_NULL(result);
     Int32 size;
     GetSize(&size);
-    FAIL_RETURN(AddEx(size, object));
+    FAIL_RETURN(Add(size, object));
     *result = TRUE;
     return NOERROR;
 }
 
-ECode AbstractList::AddAllEx(
+ECode AbstractList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
@@ -660,7 +659,7 @@ ECode AbstractList::AddAllEx(
     while ((it->HasNext(&hasnext), hasnext)) {
         AutoPtr<IInterface> nextobject;
         it->Next((IInterface**)&nextobject);
-        FAIL_RETURN(AddEx(location++, nextobject));
+        FAIL_RETURN(Add(location++, nextobject));
     }
     Boolean flag = FALSE;
     collection->IsEmpty(&flag);
@@ -793,7 +792,7 @@ ECode AbstractList::LastIndexOf(
     Int32 size;
     GetSize(&size);
     AutoPtr<IListIterator> it;
-    GetListIteratorEx(size, (IListIterator**)&it);
+    GetListIterator(size, (IListIterator**)&it);
     Boolean hasprevious = FALSE;
     if (object != NULL) {
         while((it->HasPrevious(&hasprevious), hasprevious)) {
@@ -827,10 +826,10 @@ ECode AbstractList::GetListIterator(
     /* [out] */ IListIterator** listiterator)
 {
     VALIDATE_NOT_NULL(listiterator);
-    return GetListIteratorEx(0, listiterator);
+    return GetListIterator(0, listiterator);
 }
 
-ECode AbstractList::GetListIteratorEx(
+ECode AbstractList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** listiterator)
 {
@@ -841,7 +840,7 @@ ECode AbstractList::GetListIteratorEx(
     return NOERROR;
 }
 
-ECode AbstractList::RemoveEx(
+ECode AbstractList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
@@ -854,7 +853,7 @@ ECode AbstractList::RemoveRange(
 {
     AutoPtr<IIterator> it;
     AutoPtr<IListIterator> listit;
-    GetListIteratorEx(start, (IListIterator**)&listit);
+    GetListIterator(start, (IListIterator**)&listit);
     it = listit;
     for (Int32 i = start; i < end; i++) {
         AutoPtr<IInterface> nextobject;
@@ -864,7 +863,7 @@ ECode AbstractList::RemoveRange(
     return NOERROR;
 }
 
-ECode AbstractList::SetEx(
+ECode AbstractList::Set(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CAtomicReference.h"
 
 namespace Elastos {

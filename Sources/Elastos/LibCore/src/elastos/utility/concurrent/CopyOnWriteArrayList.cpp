@@ -58,7 +58,7 @@ ECode CopyOnWriteArrayList::AddAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    return AddAllEx(mElements->GetLength(), collection, modified);
+    return AddAll(mElements->GetLength(), collection, modified);
 }
 
 ECode CopyOnWriteArrayList::Clear()
@@ -153,7 +153,7 @@ ECode CopyOnWriteArrayList::Remove(
         return NOERROR;
     }
     AutoPtr<IInterface> outface;
-    RemoveEx(index, (IInterface**)&outface);
+    Remove(index, (IInterface**)&outface);
     *modified = TRUE;
     return NOERROR;
 }
@@ -200,7 +200,7 @@ ECode CopyOnWriteArrayList::ToArray(
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::ToArrayEx(
+ECode CopyOnWriteArrayList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
@@ -234,7 +234,7 @@ ECode CopyOnWriteArrayList::GetIterator(
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::AddEx(
+ECode CopyOnWriteArrayList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
@@ -247,7 +247,7 @@ ECode CopyOnWriteArrayList::AddEx(
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::AddAllEx(
+ECode CopyOnWriteArrayList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
@@ -309,7 +309,7 @@ ECode CopyOnWriteArrayList::GetListIterator(
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::GetListIteratorEx(
+ECode CopyOnWriteArrayList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
@@ -327,7 +327,7 @@ ECode CopyOnWriteArrayList::GetListIteratorEx(
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::RemoveEx(
+ECode CopyOnWriteArrayList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
@@ -376,7 +376,7 @@ ECode CopyOnWriteArrayList::SubList(
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::IndexOfEx(
+ECode CopyOnWriteArrayList::IndexOf(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 from,
     /* [out] */ Int32* value)
@@ -387,7 +387,7 @@ ECode CopyOnWriteArrayList::IndexOfEx(
     return IndexOf(object, *snapshot, from, snapshot->GetLength(), value);
 }
 
-ECode CopyOnWriteArrayList::LastIndexOfEx(
+ECode CopyOnWriteArrayList::LastIndexOf(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 to,
     /* [out] */ Int32* value)
@@ -695,19 +695,19 @@ CopyOnWriteArrayList::CowSubList::CowSubList(
     mHost = host;
 }
 
-ECode CopyOnWriteArrayList::CowSubList::AddEx(
+ECode CopyOnWriteArrayList::CowSubList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
     Mutex::Autolock lock(mHost->mLock);
     FAIL_RETURN(mSlice->CheckPositionIndex(location));
     FAIL_RETURN(mSlice->CheckConcurrentModification(mHost->mElements));
-    mHost->AddEx(location + mSlice->mFrom, object);
+    mHost->Add(location + mSlice->mFrom, object);
     mSlice = new Slice(mHost->mElements, mSlice->mFrom, mSlice->mTo + 1);
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::CowSubList::AddAllEx(
+ECode CopyOnWriteArrayList::CowSubList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
@@ -719,7 +719,7 @@ ECode CopyOnWriteArrayList::CowSubList::AddAllEx(
     FAIL_RETURN(mSlice->CheckConcurrentModification(mHost->mElements));
     Int32 oldSize = mHost->mElements->GetLength();
     Boolean isflag = FALSE;
-    mHost->AddAllEx(location + mSlice->mFrom, collection, &isflag);
+    mHost->AddAll(location + mSlice->mFrom, collection, &isflag);
     mSlice = new Slice(mHost->mElements, mSlice->mFrom, mSlice->mTo + (mHost->mElements->GetLength() - oldSize));
     *result = isflag;
     return NOERROR;
@@ -734,7 +734,7 @@ ECode CopyOnWriteArrayList::CowSubList::AddAll(
     Mutex::Autolock lock(mHost->mLock);
     Int32 length = 0;
     GetSize(&length);
-    return AddAllEx(length, collection, result);
+    return AddAll(length, collection, result);
 }
 
 ECode CopyOnWriteArrayList::CowSubList::Get(
@@ -758,13 +758,13 @@ ECode CopyOnWriteArrayList::CowSubList::GetIterator(
     VALIDATE_NOT_NULL(it)
 
     AutoPtr<IListIterator> outlist;
-    FAIL_RETURN(GetListIteratorEx(0, (IListIterator**)&outlist));
+    FAIL_RETURN(GetListIterator(0, (IListIterator**)&outlist));
     *it = IIterator::Probe(outlist);
     INTERFACE_ADDREF(*it)
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::CowSubList::GetListIteratorEx(
+ECode CopyOnWriteArrayList::CowSubList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** listiterator)
 {
@@ -781,7 +781,7 @@ ECode CopyOnWriteArrayList::CowSubList::GetListIteratorEx(
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::CowSubList::RemoveEx(
+ECode CopyOnWriteArrayList::CowSubList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
@@ -791,7 +791,7 @@ ECode CopyOnWriteArrayList::CowSubList::RemoveEx(
     FAIL_RETURN(mSlice->CheckElementIndex(location));
     FAIL_RETURN(mSlice->CheckConcurrentModification(mHost->mElements));
     AutoPtr<IInterface> removed;
-    mHost->RemoveEx(mSlice->mFrom + location, (IInterface**)&removed);
+    mHost->Remove(mSlice->mFrom + location, (IInterface**)&removed);
     mSlice = new Slice(mHost->mElements, mSlice->mFrom, mSlice->mTo - 1);
     *object = removed;
     INTERFACE_ADDREF(*object)
@@ -881,7 +881,7 @@ ECode CopyOnWriteArrayList::CowSubList::Remove(
         return NOERROR;
     }
     AutoPtr<IInterface> outface;
-    RemoveEx(index, (IInterface**)&outface);
+    Remove(index, (IInterface**)&outface);
     *result = TRUE;
     return NOERROR;
 }
@@ -920,11 +920,11 @@ ECode CopyOnWriteArrayList::CowSubList::ToArray(
     return AbstractList::ToArray(array);
 }
 
-ECode CopyOnWriteArrayList::CowSubList::ToArrayEx(
+ECode CopyOnWriteArrayList::CowSubList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractList::ToArrayEx(contents, outArray);
+    return AbstractList::ToArray(contents, outArray);
 }
 
 ECode CopyOnWriteArrayList::CowSubList::ToString(
@@ -942,7 +942,7 @@ ECode CopyOnWriteArrayList::CowSubList::Add(
     VALIDATE_NOT_NULL(modified)
 
     Mutex::Autolock lock(mHost->mLock);
-    FAIL_RETURN(AddEx(mSlice->mTo - mSlice->mFrom, object));
+    FAIL_RETURN(Add(mSlice->mTo - mSlice->mFrom, object));
     *modified = TRUE;
     return NOERROR;
 }
@@ -1002,7 +1002,7 @@ ECode CopyOnWriteArrayList::CowSubList::LastIndexOf(
 ECode CopyOnWriteArrayList::CowSubList::GetListIterator(
     /* [out] */ IListIterator** it)
 {
-    return GetListIteratorEx(0, it);
+    return GetListIterator(0, it);
 }
 
 ECode CopyOnWriteArrayList::CowSubList::SubList(

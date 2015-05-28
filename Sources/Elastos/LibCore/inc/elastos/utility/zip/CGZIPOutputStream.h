@@ -34,7 +34,7 @@ public:
      * to the underlying stream in GZIP format.
      */
     //@Override
-    CARAPI WriteBytesEx(
+    CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte>& buffer,
         /* [in] */ Int32 off,
         /* [in] */ Int32 nbytes);

@@ -54,14 +54,14 @@ public:
     CARAPI GetDisplayName(
         /* [out] */ String* str);
 
-    CARAPI GetDisplayNameEx(
+    CARAPI GetDisplayName(
         /* [in] */ ILocale* locale,
         /* [out] */ String* str);
 
     CARAPI GetSymbol(
         /* [out] */ String* str);
 
-    CARAPI GetSymbolEx(
+    CARAPI GetSymbol(
         /* [in] */ ILocale* locale,
         /* [out] */ String* str);
 

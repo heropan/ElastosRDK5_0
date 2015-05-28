@@ -2,7 +2,6 @@
 #define __UTILITY_ABSTRACTSET_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include "cmdef.h"
 #include "AbstractCollection.h"
 
 using Elastos::Utility::ICollection;

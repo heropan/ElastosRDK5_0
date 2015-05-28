@@ -2,7 +2,6 @@
 #define __UTILITY_CSTACK_H__
 
 #include "_CPriorityQueue.h"
-#include "cmdef.h"
 #include "AbstractQueue.h"
 
 using Elastos::Core::IComparator;
@@ -159,7 +158,7 @@ public:
      * @return the head of this queue
      * @throws NoSuchElementException if this queue is empty
      */
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [out] */ IInterface** e);
 
     /**
@@ -469,7 +468,7 @@ public:
      *                if the type of an element in this {@code Collection} cannot be
      *                stored in the type of the specified array.
      */
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* inArray,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 

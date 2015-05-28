@@ -51,7 +51,7 @@ public:
      *             if {@code fromIndex} or {@code toIndex} is negative, or if
      *             {@code toIndex} is smaller than {@code fromIndex}.
      */
-    CARAPI GetEx(
+    CARAPI Get(
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex,
         /* [out] */ IBitSet** bs);
@@ -69,7 +69,7 @@ public:
      *
      * @throws IndexOutOfBoundsException if {@code index < 0}.
      */
-    CARAPI SetEx(
+    CARAPI Set(
         /* [in] */ Int32 index,
         /* [in] */ Boolean state);
 
@@ -80,7 +80,7 @@ public:
      *             if {@code fromIndex} or {@code toIndex} is negative, or if
      *             {@code toIndex} is smaller than {@code fromIndex}.
      */
-    CARAPI SetEx2(
+    CARAPI Set(
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
 
@@ -91,7 +91,7 @@ public:
      *             if {@code fromIndex} or {@code toIndex} is negative, or if
      *             {@code toIndex} is smaller than {@code fromIndex}.
      */
-    CARAPI SetEx3(
+    CARAPI Set(
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex,
         /* [in] */ Boolean state);
@@ -111,7 +111,7 @@ public:
      *             if {@code fromIndex} or {@code toIndex} is negative, or if
      *             {@code toIndex} is smaller than {@code fromIndex}.
      */
-    CARAPI ClearEx(
+    CARAPI Clear(
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
 
@@ -120,7 +120,7 @@ public:
      * Use {@code clear} if you want to reuse this {@code BitSet} with the same capacity, but
      * create a new {@code BitSet} if you're trying to potentially reclaim memory.
      */
-    CARAPI ClearEx3();
+    CARAPI Clear();
 
     /**
      * Flips the bit at index {@code index}.
@@ -137,7 +137,7 @@ public:
      *             if {@code fromIndex} or {@code toIndex} is negative, or if
      *             {@code toIndex} is smaller than {@code fromIndex}.
      */
-    CARAPI FlipEx(
+    CARAPI Flip(
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
 

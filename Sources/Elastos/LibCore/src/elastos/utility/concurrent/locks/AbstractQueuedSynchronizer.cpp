@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "AbstractQueuedSynchronizer.h"
 #include "LockSupport.h"
 #include <elastos/Thread.h>
@@ -275,7 +274,7 @@ ECode AbstractQueuedSynchronizer::ConditionObject::AwaitUntil(
     return NOERROR;
 }
 
-ECode AbstractQueuedSynchronizer::ConditionObject::AwaitEx(
+ECode AbstractQueuedSynchronizer::ConditionObject::Await(
     /* [in] */ Int64 time,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ Boolean* value)

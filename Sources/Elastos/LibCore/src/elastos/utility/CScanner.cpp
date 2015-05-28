@@ -225,7 +225,7 @@ ECode CScanner::constructor(
 ECode CScanner::HasNext(
     /* [out] */ Boolean* result)
 {
-    return HasNextEx(ANY_PATTERN, result);
+    return HasNext(ANY_PATTERN, result);
 }
 
 ECode CScanner::Next(
@@ -234,7 +234,7 @@ ECode CScanner::Next(
     VALIDATE_NOT_NULL(object)
 
     String str;
-    FAIL_RETURN(NextEx(ANY_PATTERN, &str));
+    FAIL_RETURN(Next(ANY_PATTERN, &str));
     AutoPtr<ICharSequence> sq;
     CStringWrapper::New(str, (ICharSequence**)&sq);
     *object = sq;
@@ -364,7 +364,7 @@ ECode CScanner::FindInLine(
     return NOERROR;
 }
 
-ECode CScanner::FindInLineEx(
+ECode CScanner::FindInLine(
     /* [in] */ const String& pattern,
     /* [out] */ String* str)
 {
@@ -443,7 +443,7 @@ ECode CScanner::FindWithinHorizon(
     return NOERROR;
 }
 
-ECode CScanner::FindWithinHorizonEx(
+ECode CScanner::FindWithinHorizon(
     /* [in] */ const String& pattern,
     /* [in] */ Int32 horizon,
     /* [out] */ String* str)
@@ -453,7 +453,7 @@ ECode CScanner::FindWithinHorizonEx(
     return FindWithinHorizon(outpat, horizon, str);
 }
 
-ECode CScanner::HasNextEx(
+ECode CScanner::HasNext(
     /* [in] */ IPattern* pattern,
     /* [out] */ Boolean* value)
 {
@@ -483,13 +483,13 @@ ECode CScanner::HasNextEx(
     return NOERROR;
 }
 
-ECode CScanner::HasNextEx2(
+ECode CScanner::HasNext(
     /* [in] */ const String& pattern,
     /* [out] */ Boolean* value)
 {
     AutoPtr<IPattern> outpat;
     Pattern::Compile(pattern, (IPattern**)&outpat);
-    return HasNextEx(outpat, value);
+    return HasNext(outpat, value);
 }
 
 ECode CScanner::HasNextBigDecimal(
@@ -497,7 +497,7 @@ ECode CScanner::HasNextBigDecimal(
 {
     AutoPtr<IPattern> floatPattern = GetFloatPattern();
     Boolean isBigDecimalValue = FALSE;
-    if (HasNextEx(floatPattern, &isBigDecimalValue), isBigDecimalValue) {
+    if (HasNext(floatPattern, &isBigDecimalValue), isBigDecimalValue) {
         String floatString;
         mMatcher->Group(&floatString);
         floatString = RemoveLocaleInfoFromFloat(floatString);
@@ -522,10 +522,10 @@ ECode CScanner::HasNextBigDecimal(
 ECode CScanner::HasNextBigInteger(
     /* [out] */ Boolean* value)
 {
-    return HasNextBigIntegerEx(mIntegerRadix, value);
+    return HasNextBigInteger(mIntegerRadix, value);
 }
 
-ECode CScanner::HasNextBigIntegerEx(
+ECode CScanner::HasNextBigInteger(
     /* [in] */ Int32 radix,
     /* [out] */ Boolean* value)
 {
@@ -533,7 +533,7 @@ ECode CScanner::HasNextBigIntegerEx(
 
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     Boolean isBigIntegerValue = FALSE;
-    if (HasNextEx(integerPattern, &isBigIntegerValue), isBigIntegerValue) {
+    if (HasNext(integerPattern, &isBigIntegerValue), isBigIntegerValue) {
         String intString;
         mMatcher->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
@@ -558,22 +558,22 @@ ECode CScanner::HasNextBigIntegerEx(
 ECode CScanner::HasNextBoolean(
     /* [out] */ Boolean* value)
 {
-    return HasNextEx(BOOLEAN_PATTERN, value);
+    return HasNext(BOOLEAN_PATTERN, value);
 }
 
 ECode CScanner::HasNextByte(
     /* [out] */ Boolean* value)
 {
-    return HasNextByteEx(mIntegerRadix, value);
+    return HasNextByte(mIntegerRadix, value);
 }
 
-ECode CScanner::HasNextByteEx(
+ECode CScanner::HasNextByte(
     /* [in] */ Int32 radix,
     /* [out] */ Boolean* value)
 {
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     Boolean isByteValue = FALSE;
-    if (HasNextEx(integerPattern, &isByteValue), isByteValue) {
+    if (HasNext(integerPattern, &isByteValue), isByteValue) {
         String intString;
         mMatcher->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
@@ -603,7 +603,7 @@ ECode CScanner::HasNextDouble(
 
     AutoPtr<IPattern> floatPattern = GetFloatPattern();
     Boolean isDoubleValue = FALSE;
-    if (HasNextEx(floatPattern, &isDoubleValue), isDoubleValue) {
+    if (HasNext(floatPattern, &isDoubleValue), isDoubleValue) {
         String floatString;
         mMatcher->Group(&floatString);
         floatString = RemoveLocaleInfoFromFloat(floatString);
@@ -632,7 +632,7 @@ ECode CScanner::HasNextFloat(
 
     AutoPtr<IPattern> floatPattern = GetFloatPattern();
     Boolean isFloatValue = FALSE;
-    if (HasNextEx(floatPattern, &isFloatValue), isFloatValue) {
+    if (HasNext(floatPattern, &isFloatValue), isFloatValue) {
         String floatString;
         mMatcher->Group(&floatString);
         floatString = RemoveLocaleInfoFromFloat(floatString);
@@ -657,10 +657,10 @@ ECode CScanner::HasNextFloat(
 ECode CScanner::HasNextInt32(
     /* [out] */ Boolean* value)
 {
-    return HasNextInt32Ex(mIntegerRadix, value);
+    return HasNextInt32(mIntegerRadix, value);
 }
 
-ECode CScanner::HasNextInt32Ex(
+ECode CScanner::HasNextInt32(
     /* [in] */ Int32 radix,
     /* [out] */ Boolean* value)
 {
@@ -668,7 +668,7 @@ ECode CScanner::HasNextInt32Ex(
 
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     Boolean isIntValue = FALSE;
-    if (HasNextEx(integerPattern, &isIntValue), isIntValue) {
+    if (HasNext(integerPattern, &isIntValue), isIntValue) {
         String intString;
         mMatcher->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
@@ -727,10 +727,10 @@ ECode CScanner::HasNextLine(
 ECode CScanner::HasNextInt64(
     /* [out] */ Boolean* value)
 {
-    return HasNextInt64Ex(mIntegerRadix, value);
+    return HasNextInt64(mIntegerRadix, value);
 }
 
-ECode CScanner::HasNextInt64Ex(
+ECode CScanner::HasNextInt64(
     /* [in] */ Int32 radix,
     /* [out] */ Boolean* value)
 {
@@ -738,7 +738,7 @@ ECode CScanner::HasNextInt64Ex(
 
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     Boolean isLongValue = FALSE;
-    if (HasNextEx(integerPattern, &isLongValue), isLongValue) {
+    if (HasNext(integerPattern, &isLongValue), isLongValue) {
         String intString;
         mMatcher->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
@@ -763,10 +763,10 @@ ECode CScanner::HasNextInt64Ex(
 ECode CScanner::HasNextInt16(
     /* [out] */ Boolean* value)
 {
-    return HasNextInt16Ex(mIntegerRadix, value);
+    return HasNextInt16(mIntegerRadix, value);
 }
 
-ECode CScanner::HasNextInt16Ex(
+ECode CScanner::HasNextInt16(
     /* [in] */ Int32 radix,
     /* [out] */ Boolean* value)
 {
@@ -774,7 +774,7 @@ ECode CScanner::HasNextInt16Ex(
 
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     Boolean isShortValue = FALSE;
-    if (HasNextEx(integerPattern, &isShortValue), isShortValue) {
+    if (HasNext(integerPattern, &isShortValue), isShortValue) {
         String intString;
         mMatcher->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
@@ -821,7 +821,7 @@ ECode CScanner::GetMatch(
     return mMatcher->ToMatchResult(outmatch);
 }
 
-ECode CScanner::NextEx(
+ECode CScanner::Next(
     /* [in] */ IPattern* pattern,
     /* [out] */ String* str)
 {
@@ -846,13 +846,13 @@ ECode CScanner::NextEx(
     return mMatcher->Group(str);
 }
 
-ECode CScanner::NextEx2(
+ECode CScanner::Next(
     /* [in] */ const String& pattern,
     /* [out] */ String* str)
 {
     AutoPtr<IPattern> outpat;
     Pattern::Compile(pattern, (IPattern**)&outpat);
-    return NextEx(outpat, str);
+    return Next(outpat, str);
 }
 
 ECode CScanner::NextBigDecimal(
@@ -871,7 +871,7 @@ ECode CScanner::NextBigDecimal(
     }
     AutoPtr<IPattern> floatPattern = GetFloatPattern();
     String floatString;
-    NextEx(floatPattern, &floatString);
+    Next(floatPattern, &floatString);
     floatString = RemoveLocaleInfoFromFloat(floatString);
     AutoPtr<IBigDecimal> bigDecimalValue;
     // try {
@@ -892,10 +892,10 @@ ECode CScanner::NextBigDecimal(
 ECode CScanner::NextBigInteger(
     /* [out] */ IBigInteger** outbig)
 {
-    return NextBigIntegerEx(mIntegerRadix, outbig);
+    return NextBigInteger(mIntegerRadix, outbig);
 }
 
-ECode CScanner::NextBigIntegerEx(
+ECode CScanner::NextBigInteger(
     /* [in] */ Int32 radix,
     /* [out] */ IBigInteger** outbig)
 {
@@ -912,7 +912,7 @@ ECode CScanner::NextBigIntegerEx(
     }
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     String intString;
-    NextEx(integerPattern, &intString);
+    Next(integerPattern, &intString);
     intString = RemoveLocaleInfo(intString, INT);
     AutoPtr<IBigInteger> bigIntegerValue;
     // try {
@@ -934,7 +934,7 @@ ECode CScanner::NextBoolean(
     /* [out] */ Boolean* value)
 {
     String outstr;
-    NextEx(BOOLEAN_PATTERN, &outstr);
+    Next(BOOLEAN_PATTERN, &outstr);
     *value = String("true").EqualsIgnoreCase(outstr);
     return NOERROR;
 }
@@ -942,10 +942,10 @@ ECode CScanner::NextBoolean(
 ECode CScanner::NextByte(
     /* [out] */ Byte* value)
 {
-    return NextByteEx(mIntegerRadix, value);
+    return NextByte(mIntegerRadix, value);
 }
 
-ECode CScanner::NextByteEx(
+ECode CScanner::NextByte(
     /* [in] */ Int32 radix,
     /* [out] */ Byte* value)
 {
@@ -960,7 +960,7 @@ ECode CScanner::NextByteEx(
     }
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     String intString;
-    NextEx(integerPattern, &intString);
+    Next(integerPattern, &intString);
     intString = RemoveLocaleInfo(intString, INT);
     // try {
     Int32 byteValue = 0;
@@ -991,7 +991,7 @@ ECode CScanner::NextDouble(
     }
     AutoPtr<IPattern> floatPattern = GetFloatPattern();
     String floatString;
-    NextEx(floatPattern, &floatString);
+    Next(floatPattern, &floatString);
     floatString = RemoveLocaleInfoFromFloat(floatString);
     Double doubleValue = 0;
     // try {
@@ -1020,7 +1020,7 @@ ECode CScanner::NextFloat(
     }
     AutoPtr<IPattern> floatPattern = GetFloatPattern();
     String floatString;
-    NextEx(floatPattern, &floatString);
+    Next(floatPattern, &floatString);
     floatString = RemoveLocaleInfoFromFloat(floatString);
     Float floatValue = 0;
     // try {
@@ -1040,10 +1040,10 @@ ECode CScanner::NextFloat(
 ECode CScanner::NextInt32(
     /* [out] */ Int32* value)
 {
-    return NextInt32Ex(mIntegerRadix, value);
+    return NextInt32(mIntegerRadix, value);
 }
 
-ECode CScanner::NextInt32Ex(
+ECode CScanner::NextInt32(
     /* [in] */ Int32 radix,
     /* [out] */ Int32* value)
 {
@@ -1058,7 +1058,7 @@ ECode CScanner::NextInt32Ex(
     }
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     String intString;
-    NextEx(integerPattern, &intString);
+    Next(integerPattern, &intString);
     intString = RemoveLocaleInfo(intString, INT);
     Int32 intValue = 0;
     // try {
@@ -1126,10 +1126,10 @@ ECode CScanner::NextLine(
 ECode CScanner::NextInt64(
     /* [out] */ Int64* value)
 {
-    return NextInt64Ex(mIntegerRadix, value);
+    return NextInt64(mIntegerRadix, value);
 }
 
-ECode CScanner::NextInt64Ex(
+ECode CScanner::NextInt64(
     /* [in] */ Int32 radix,
     /* [out] */ Int64* value)
 {
@@ -1144,7 +1144,7 @@ ECode CScanner::NextInt64Ex(
     }
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     String intString;
-    NextEx(integerPattern, &intString);
+    Next(integerPattern, &intString);
     intString = RemoveLocaleInfo(intString, INT);
     Int64 longValue = 0;
     // try {
@@ -1164,10 +1164,10 @@ ECode CScanner::NextInt64Ex(
 ECode CScanner::NextInt16(
     /* [out] */ Int16* value)
 {
-    return NextInt16Ex(mIntegerRadix, value);
+    return NextInt16(mIntegerRadix, value);
 }
 
-ECode CScanner::NextInt16Ex(
+ECode CScanner::NextInt16(
     /* [in] */ Int32 radix,
     /* [out] */ Int16* value)
 {
@@ -1182,7 +1182,7 @@ ECode CScanner::NextInt16Ex(
     }
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     String intString;
-    NextEx(integerPattern, &intString);
+    Next(integerPattern, &intString);
     intString = RemoveLocaleInfo(intString, INT);
     Int16 shortValue = 0;
     // try {
@@ -1248,7 +1248,7 @@ ECode CScanner::Skip(
     return NOERROR;
 }
 
-ECode CScanner::SkipEx(
+ECode CScanner::Skip(
     /* [in] */ const String& pattern,
     /* [out] */ IScanner** outscan)
 {
@@ -1284,7 +1284,7 @@ ECode CScanner::UseDelimiter(
     return NOERROR;
 }
 
-ECode CScanner::UseDelimiterEx(
+ECode CScanner::UseDelimiter(
     /* [in] */ const String& pattern,
     /* [out] */ IScanner** outscan)
 {
@@ -1383,7 +1383,7 @@ ECode CScanner::ResetMatcher()
     else {
         AutoPtr<ICharSequence> sq;
         CStringWrapper::New(outstr, (ICharSequence**)&sq);
-        mMatcher->ResetEx(sq);
+        mMatcher->Reset(sq);
     }
     mMatcher->Region(mFindStartIndex, mBufferLength);
     return NOERROR;
@@ -1891,7 +1891,7 @@ ECode CScanner::ExpandBuffer()
     AutoPtr< ArrayOf<Char32> > outarr;
     mBuffer->GetArray((ArrayOf<Char32>**)&outarr);
     newBuffer->Copy(0, outarr, 0, oldLimit);
-    CharBuffer::WrapArrayEx(newBuffer, 0, newCapacity, (ICharBuffer**)&mBuffer);
+    CharBuffer::WrapArray(newBuffer, 0, newCapacity, (ICharBuffer**)&mBuffer);
     mBuffer->SetPosition(oldPosition);
     mBuffer->SetLimit(oldLimit);
     return NOERROR;

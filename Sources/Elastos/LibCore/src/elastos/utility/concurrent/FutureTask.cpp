@@ -166,7 +166,7 @@ ECode FutureTask::Get(
     return Report(s, result);
 }
 
-ECode FutureTask::GetEx(
+ECode FutureTask::Get(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** result)

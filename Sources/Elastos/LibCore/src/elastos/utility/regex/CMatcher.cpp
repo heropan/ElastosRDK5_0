@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 
 #include "CMatcher.h"
 #include "Pattern.h"
@@ -164,7 +163,7 @@ ECode CMatcher::constructor(
     /* [in] */ ICharSequence* input)
 {
     FAIL_RETURN(UsePattern(pattern));
-    return ResetEx(input);
+    return Reset(input);
 }
 
 ECode CMatcher::AppendReplacement(
@@ -208,7 +207,7 @@ ECode CMatcher::AppendEvaluated(
             dollar = TRUE;
         }
         else if (c >= '0' && c <= '9' && dollar) {
-            GroupEx((c - '0'), &text);
+            Group((c - '0'), &text);
 
             buffer->AppendString(text);
             dollar = FALSE;
@@ -234,20 +233,20 @@ ECode CMatcher::Reset()
     AutoPtr<ICharSequence> charSeq;
     CStringWrapper::New(mInput, (ICharSequence**)&charSeq);
 
-    return ResetEx2(charSeq, 0, mInput.GetLength());
+    return Reset(charSeq, 0, mInput.GetLength());
 }
 
-ECode CMatcher::ResetEx(
+ECode CMatcher::Reset(
     /* [in] */ ICharSequence* input)
 {
     VALIDATE_NOT_NULL(input);
 
     Int32 length;
     input->GetLength(&length);
-    return ResetEx2(input, 0, length);
+    return Reset(input, 0, length);
 }
 
-ECode CMatcher::ResetEx2(
+ECode CMatcher::Reset(
     /* [in] */ ICharSequence* input,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -314,7 +313,7 @@ ECode CMatcher::Region(
     AutoPtr<ICharSequence> charSeq;
     CStringWrapper::New(mInput, (ICharSequence**)&charSeq);
 
-    return ResetEx2(charSeq, start, end);
+    return Reset(charSeq, start, end);
 }
 
 ECode CMatcher::AppendTail(
@@ -377,10 +376,10 @@ ECode CMatcher::Pattern(
 ECode CMatcher::Group(
     /* [out] */ String* text)
 {
-    return GroupEx(0, text);
+    return Group(0, text);
 }
 
-ECode CMatcher::GroupEx(
+ECode CMatcher::Group(
     /* [in] */ Int32 group,
     /* [out] */ String* text)
 {
@@ -411,7 +410,7 @@ ECode CMatcher::Find(
     return NOERROR;
 }
 
-ECode CMatcher::FindEx(
+ECode CMatcher::Find(
     /* [in] */ Int32 start,
     /* [out] */ Boolean* found)
 {
@@ -448,7 +447,7 @@ ECode CMatcher::Matches(
     return NOERROR;
 }
 
-ECode CMatcher::StartEx(
+ECode CMatcher::Start(
     /* [in] */ Int32 group,
     /* [out] */ Int32* index)
 {
@@ -459,7 +458,7 @@ ECode CMatcher::StartEx(
     return NOERROR;
 }
 
-ECode CMatcher::EndEx(
+ECode CMatcher::End(
     /* [in] */ Int32 group,
     /* [out] */ Int32* index)
 {
@@ -490,7 +489,7 @@ ECode CMatcher::Start(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
-    return StartEx(0, index);
+    return Start(0, index);
 }
 
 ECode CMatcher::GroupCount(
@@ -505,7 +504,7 @@ ECode CMatcher::End(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
-    return EndEx(0, index);
+    return End(0, index);
 }
 
 ECode CMatcher::ToMatchResult(

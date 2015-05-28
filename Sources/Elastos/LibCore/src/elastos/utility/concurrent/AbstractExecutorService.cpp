@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "AbstractExecutorService.h"
 #include "CFutureTask.h"
 #include "TimeUnit.h"
@@ -44,7 +43,7 @@ AutoPtr<IRunnableFuture> AbstractExecutorService::NewTaskFor(
     return task;
 }
 
-ECode AbstractExecutorService::SubmitEx2(
+ECode AbstractExecutorService::Submit(
     /* [in] */ IRunnable* task,
     /* [out] */ IFuture** future)
 {
@@ -59,7 +58,7 @@ ECode AbstractExecutorService::SubmitEx2(
     return NOERROR;
 }
 
-ECode AbstractExecutorService::SubmitEx(
+ECode AbstractExecutorService::Submit(
     /* [in] */ IRunnable* task,
     /* [in] */ IInterface* result,
     /* [out] */ IFuture** future)
@@ -151,7 +150,7 @@ ECode AbstractExecutorService::DoInvokeAny(
             else if (active == 0) break;
             else if (timed) {
                 AutoPtr<ITimeUnit> unit = TimeUnit::GetNANOSECONDS();
-                ecs->PollEx(nanos, unit, (IFuture**)&f);
+                ecs->Poll(nanos, unit, (IFuture**)&f);
                 if (f == NULL) {
                     ec = E_TIMEOUT_EXCEPTION;
                     goto EXIT;
@@ -205,7 +204,7 @@ ECode AbstractExecutorService::InvokeAny(
     // }
 }
 
-ECode AbstractExecutorService::InvokeAnyEx(
+ECode AbstractExecutorService::InvokeAny(
     /* [in] */ ICollection* tasks,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
@@ -272,7 +271,7 @@ ECode AbstractExecutorService::InvokeAll(
     return NOERROR;
 }
 
-ECode AbstractExecutorService::InvokeAllEx(
+ECode AbstractExecutorService::InvokeAll(
     /* [in] */ ICollection* tasks,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
@@ -333,7 +332,7 @@ ECode AbstractExecutorService::InvokeAllEx(
             // try {
             AutoPtr<ITimeUnit> unit = TimeUnit::GetNANOSECONDS();
             AutoPtr<IInterface> result;
-            ECode ec = f->GetEx(nanos, unit, (IInterface**)&result);
+            ECode ec = f->Get(nanos, unit, (IInterface**)&result);
             if (FAILED(ec)) goto EXIT;
             // } catch (CancellationException ignore) {
             // } catch (ExecutionException ignore) {

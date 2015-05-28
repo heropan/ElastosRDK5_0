@@ -64,7 +64,7 @@ private:
         CARAPI ToArray(
             /* [out] */ ArrayOf<IInterface* >** outArray);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface* >* contents,
             /* [out] */ ArrayOf<IInterface* >** outArray);
 
@@ -107,11 +107,11 @@ private:
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
 
-        CARAPI AddEx(
+        CARAPI Add(
             /* [in] */ Int32 location,
             /* [in] */ IInterface* object);
 
-        CARAPI AddAllEx(
+        CARAPI AddAll(
             /* [in] */ Int32 location,
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
@@ -119,11 +119,11 @@ private:
         CARAPI GetListIterator(
             /* [out] */ IListIterator** it);
 
-        CARAPI GetListIteratorEx(
+        CARAPI GetListIterator(
             /* [in] */ Int32 location,
             /* [out] */ IListIterator** it);
 
-        CARAPI RemoveEx(
+        CARAPI Remove(
             /* [in] */ Int32 location,
             /* [out] */ IInterface** object);
 
@@ -146,7 +146,7 @@ public:
         /* [in] */ Byte value,
         /* [out] */ Int32* index);
 
-    CARAPI BinarySearchByteEx(
+    CARAPI BinarySearchByte(
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -158,7 +158,7 @@ public:
         /* [in] */ Char32 value,
         /* [out] */ Int32* index);
 
-    CARAPI BinarySearchChar32Ex(
+    CARAPI BinarySearchChar32(
         /* [in] */ ArrayOf<Char32>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -170,7 +170,7 @@ public:
         /* [in] */ Double value,
         /* [out] */ Int32* index);
 
-    CARAPI BinarySearchDoubleEx(
+    CARAPI BinarySearchDouble(
         /* [in] */ ArrayOf<Double>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -182,7 +182,7 @@ public:
         /* [in] */ Float value,
         /* [out] */ Int32* index);
 
-    CARAPI BinarySearchFloatEx(
+    CARAPI BinarySearchFloat(
         /* [in] */ ArrayOf<Float>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -194,7 +194,7 @@ public:
         /* [in] */ Int32 value,
         /* [out] */ Int32* index);
 
-    CARAPI BinarySearchInt32Ex(
+    CARAPI BinarySearchInt32(
         /* [in] */ ArrayOf<Int32>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -206,7 +206,7 @@ public:
         /* [in] */ Int64 value,
         /* [out] */ Int32* index);
 
-    CARAPI BinarySearchInt64Ex(
+    CARAPI BinarySearchInt64(
         /* [in] */ ArrayOf<Int64>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -218,7 +218,7 @@ public:
         /* [in] */ IInterface* value,
         /* [out] */ Int32* index);
 
-    CARAPI BinarySearchObjectEx(
+    CARAPI BinarySearchObject(
         /* [in] */ ArrayOf<IInterface* >* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -231,7 +231,7 @@ public:
         /* [in] */ IComparator* comparator,
         /* [out] */ Int32* index);
 
-    CARAPI BinarySearchEx(
+    CARAPI BinarySearch(
         /* [in] */ ArrayOf<IInterface* >* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -244,7 +244,7 @@ public:
         /* [in] */ Int16 value,
         /* [out] */ Int32* index);
 
-    CARAPI BinarySearchInt16Ex(
+    CARAPI BinarySearchInt16(
         /* [in] */ ArrayOf<Int16>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -255,7 +255,7 @@ public:
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Byte value);
 
-    CARAPI FillByteEx(
+    CARAPI FillByte(
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -265,7 +265,7 @@ public:
         /* [in] */ ArrayOf<Int16>* array,
         /* [in] */ Int16 value);
 
-    CARAPI FillInt16Ex(
+    CARAPI FillInt16(
         /* [in] */ ArrayOf<Int16>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -275,7 +275,7 @@ public:
         /* [in] */ ArrayOf<Char32>* array,
         /* [in] */ Char32 value);
 
-    CARAPI FillChar32Ex(
+    CARAPI FillChar32(
         /* [in] */ ArrayOf<Char32>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -285,7 +285,7 @@ public:
         /* [in] */ ArrayOf<Int32>* array,
         /* [in] */ Int32 value);
 
-    CARAPI FillInt32Ex(
+    CARAPI FillInt32(
         /* [in] */ ArrayOf<Int32>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -295,7 +295,7 @@ public:
         /* [in] */ ArrayOf<Int64>* array,
         /* [in] */ Int64 value);
 
-    CARAPI FillInt64Ex(
+    CARAPI FillInt64(
         /* [in] */ ArrayOf<Int64>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -305,7 +305,7 @@ public:
         /* [in] */ ArrayOf<Float>* array,
         /* [in] */ Float value);
 
-    CARAPI FillFloatEx(
+    CARAPI FillFloat(
         /* [in] */ ArrayOf<Float>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -315,7 +315,7 @@ public:
         /* [in] */ ArrayOf<Double>* array,
         /* [in] */ Double value);
 
-    CARAPI FillDoubleEx(
+    CARAPI FillDouble(
         /* [in] */ ArrayOf<Double>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -325,7 +325,7 @@ public:
         /* [in] */ ArrayOf<Boolean>* array,
         /* [in] */ Boolean value);
 
-    CARAPI FillBooleanEx(
+    CARAPI FillBoolean(
         /* [in] */ ArrayOf<Boolean>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -335,7 +335,7 @@ public:
         /* [in] */ ArrayOf<IInterface* >* array,
         /* [in] */ IInterface* value);
 
-    CARAPI FillObjectEx(
+    CARAPI FillObject(
         /* [in] */ ArrayOf<IInterface* >* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -434,7 +434,7 @@ public:
     CARAPI SortByte(
         /* [in] */ ArrayOf<Byte>* array);
 
-    CARAPI SortByteEx(
+    CARAPI SortByte(
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -452,7 +452,7 @@ public:
     CARAPI SortChar32(
         /* [in] */ ArrayOf<Char32>* array);
 
-    CARAPI SortChar32Ex(
+    CARAPI SortChar32(
         /* [in] */ ArrayOf<Char32>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -460,7 +460,7 @@ public:
     CARAPI SortDouble(
         /* [in] */ ArrayOf<Double>* array);
 
-    CARAPI SortDoubleEx(
+    CARAPI SortDouble(
         /* [in] */ ArrayOf<Double>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -468,7 +468,7 @@ public:
     CARAPI SortFloat(
         /* [in] */ ArrayOf<Float>* array);
 
-    CARAPI SortFloatEx(
+    CARAPI SortFloat(
         /* [in] */ ArrayOf<Float>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -476,7 +476,7 @@ public:
     CARAPI SortInt32(
         /* [in] */ ArrayOf<Int32>* array);
 
-    CARAPI SortInt32Ex(
+    CARAPI SortInt32(
         /* [in] */ ArrayOf<Int32>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -484,7 +484,7 @@ public:
     CARAPI SortInt64(
         /* [in] */ ArrayOf<Int64>* array);
 
-    CARAPI SortInt64Ex(
+    CARAPI SortInt64(
         /* [in] */ ArrayOf<Int64>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -492,7 +492,7 @@ public:
     CARAPI SortInt16(
         /* [in] */ ArrayOf<Int16>* array);
 
-    CARAPI SortInt16Ex(
+    CARAPI SortInt16(
         /* [in] */ ArrayOf<Int16>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -500,12 +500,12 @@ public:
     CARAPI SortObject(
         /* [in] */ ArrayOf<IInterface* >* array);
 
-    CARAPI SortObjectEx(
+    CARAPI SortObject(
         /* [in] */ ArrayOf<IInterface* >* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI SortEx(
+    CARAPI Sort(
         /* [in] */ ArrayOf<IInterface* >* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -600,7 +600,7 @@ public:
         /* [in] */ int newLength,
         /* [out, callee] */ ArrayOf<IInterface* >** result);
 
-    // CARAPI CopyOfEx(
+    // CARAPI CopyOf(
     //     /* [in] */ U[] original,
     //     /* [in] */ int newLength,
     //     /* [in] */ Class<? extends T[]> newType,
@@ -660,7 +660,7 @@ public:
         /* [in] */ Int32 end,
         /* [out, callee] */ ArrayOf<IInterface* >** arrayCopy);
 
-    // static CARAPI CopyOfRangeEx(
+    // static CARAPI CopyOfRange(
     //     /* [in] */ U[] original,
     //     /* [in] */ Int32 start,
     //     /* [in] */ Int32 end,
@@ -677,7 +677,7 @@ public:
         /* [in] */ Byte value,
         /* [out] */ Int32* index);
 
-    static CARAPI _BinarySearchByteEx(
+    static CARAPI _BinarySearchByte(
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -689,7 +689,7 @@ public:
         /* [in] */ Char32 value,
         /* [out] */ Int32* index);
 
-    static CARAPI _BinarySearchChar32Ex(
+    static CARAPI _BinarySearchChar32(
         /* [in] */ ArrayOf<Char32>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -701,7 +701,7 @@ public:
         /* [in] */ Double value,
         /* [out] */ Int32* index);
 
-    static CARAPI _BinarySearchDoubleEx(
+    static CARAPI _BinarySearchDouble(
         /* [in] */ ArrayOf<Double>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -713,7 +713,7 @@ public:
         /* [in] */ Float value,
         /* [out] */ Int32* index);
 
-    static CARAPI _BinarySearchFloatEx(
+    static CARAPI _BinarySearchFloat(
         /* [in] */ ArrayOf<Float>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -725,7 +725,7 @@ public:
         /* [in] */ Int32 value,
         /* [out] */ Int32* index);
 
-    static CARAPI _BinarySearchInt32Ex(
+    static CARAPI _BinarySearchInt32(
         /* [in] */ ArrayOf<Int32>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -737,7 +737,7 @@ public:
         /* [in] */ Int64 value,
         /* [out] */ Int32* index);
 
-    static CARAPI _BinarySearchInt64Ex(
+    static CARAPI _BinarySearchInt64(
         /* [in] */ ArrayOf<Int64>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -749,7 +749,7 @@ public:
         /* [in] */ IInterface* value,
         /* [out] */ Int32* index);
 
-    static CARAPI _BinarySearchObjectEx(
+    static CARAPI _BinarySearchObject(
         /* [in] */ ArrayOf<IInterface* >* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -762,7 +762,7 @@ public:
         /* [in] */ IComparator* comparator,
         /* [out] */ Int32* index);
 
-    static CARAPI _BinarySearchEx(
+    static CARAPI _BinarySearch(
         /* [in] */ ArrayOf<IInterface* >* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -775,7 +775,7 @@ public:
         /* [in] */ Int16 value,
         /* [out] */ Int32* index);
 
-    static CARAPI _BinarySearchInt16Ex(
+    static CARAPI _BinarySearchInt16(
         /* [in] */ ArrayOf<Int16>* array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -786,7 +786,7 @@ public:
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Byte value);
 
-    static CARAPI _FillByteEx(
+    static CARAPI _FillByte(
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -796,7 +796,7 @@ public:
         /* [in] */ ArrayOf<Int16>* array,
         /* [in] */ Int16 value);
 
-    static CARAPI _FillInt16Ex(
+    static CARAPI _FillInt16(
         /* [in] */ ArrayOf<Int16>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -806,7 +806,7 @@ public:
         /* [in] */ ArrayOf<Char32>* array,
         /* [in] */ Char32 value);
 
-    static CARAPI _FillChar32Ex(
+    static CARAPI _FillChar32(
         /* [in] */ ArrayOf<Char32>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -816,7 +816,7 @@ public:
         /* [in] */ ArrayOf<Int32>* array,
         /* [in] */ Int32 value);
 
-    static CARAPI _FillInt32Ex(
+    static CARAPI _FillInt32(
         /* [in] */ ArrayOf<Int32>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -826,7 +826,7 @@ public:
         /* [in] */ ArrayOf<Int64>* array,
         /* [in] */ Int64 value);
 
-    static CARAPI _FillInt64Ex(
+    static CARAPI _FillInt64(
         /* [in] */ ArrayOf<Int64>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -836,7 +836,7 @@ public:
         /* [in] */ ArrayOf<Float>* array,
         /* [in] */ Float value);
 
-    static CARAPI _FillFloatEx(
+    static CARAPI _FillFloat(
         /* [in] */ ArrayOf<Float>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -846,7 +846,7 @@ public:
         /* [in] */ ArrayOf<Double>* array,
         /* [in] */ Double value);
 
-    static CARAPI _FillDoubleEx(
+    static CARAPI _FillDouble(
         /* [in] */ ArrayOf<Double>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -856,7 +856,7 @@ public:
         /* [in] */ ArrayOf<Boolean>* array,
         /* [in] */ Boolean value);
 
-    static CARAPI _FillBooleanEx(
+    static CARAPI _FillBoolean(
         /* [in] */ ArrayOf<Boolean>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -866,7 +866,7 @@ public:
         /* [in] */ ArrayOf<IInterface* >* array,
         /* [in] */ IInterface* value);
 
-    static CARAPI _FillObjectEx(
+    static CARAPI _FillObject(
         /* [in] */ ArrayOf<IInterface* >* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -965,7 +965,7 @@ public:
     static CARAPI _SortByte(
         /* [in] */ ArrayOf<Byte>* array);
 
-    static CARAPI _SortByteEx(
+    static CARAPI _SortByte(
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -983,7 +983,7 @@ public:
     static CARAPI _SortChar32(
         /* [in] */ ArrayOf<Char32>* array);
 
-    static CARAPI _SortChar32Ex(
+    static CARAPI _SortChar32(
         /* [in] */ ArrayOf<Char32>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -991,7 +991,7 @@ public:
     static CARAPI _SortDouble(
         /* [in] */ ArrayOf<Double>* array);
 
-    static CARAPI _SortDoubleEx(
+    static CARAPI _SortDouble(
         /* [in] */ ArrayOf<Double>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -999,7 +999,7 @@ public:
     static CARAPI _SortFloat(
         /* [in] */ ArrayOf<Float>* array);
 
-    static CARAPI _SortFloatEx(
+    static CARAPI _SortFloat(
         /* [in] */ ArrayOf<Float>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -1007,7 +1007,7 @@ public:
     static CARAPI _SortInt32(
         /* [in] */ ArrayOf<Int32>* array);
 
-    static CARAPI _SortInt32Ex(
+    static CARAPI _SortInt32(
         /* [in] */ ArrayOf<Int32>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -1015,7 +1015,7 @@ public:
     static CARAPI _SortInt64(
         /* [in] */ ArrayOf<Int64>* array);
 
-    static CARAPI _SortInt64Ex(
+    static CARAPI _SortInt64(
         /* [in] */ ArrayOf<Int64>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -1023,7 +1023,7 @@ public:
     static CARAPI _SortInt16(
         /* [in] */ ArrayOf<Int16>* array);
 
-    static CARAPI _SortInt16Ex(
+    static CARAPI _SortInt16(
         /* [in] */ ArrayOf<Int16>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -1031,12 +1031,12 @@ public:
     static CARAPI _SortObject(
         /* [in] */ ArrayOf<IInterface* >* array);
 
-    static CARAPI _SortObjectEx(
+    static CARAPI _SortObject(
         /* [in] */ ArrayOf<IInterface* >* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    static CARAPI _SortEx(
+    static CARAPI _Sort(
         /* [in] */ ArrayOf<IInterface* >* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1131,7 +1131,7 @@ public:
         /* [in] */ int newLength,
         /* [out, callee] */ ArrayOf<IInterface* >** result);
 
-    // static CARAPI _CopyOfEx(
+    // static CARAPI _CopyOf(
     //     /* [in] */ U[] original,
     //     /* [in] */ int newLength,
     //     /* [in] */ Class<? extends T[]> newType,
@@ -1191,7 +1191,7 @@ public:
         /* [in] */ Int32 end,
         /* [out, callee] */ ArrayOf<IInterface* >** arrayCopy);
 
-    // static CARAPI _CopyOfRangeEx(
+    // static CARAPI _CopyOfRange(
     //     /* [in] */ U[] original,
     //     /* [in] */ Int32 start,
     //     /* [in] */ Int32 end,

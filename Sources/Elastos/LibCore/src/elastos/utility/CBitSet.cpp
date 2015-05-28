@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CBitSet.h"
 #include "CByteBufferHelper.h"
 #include <elastos/Math.h>
@@ -250,7 +249,7 @@ ECode CBitSet::CheckRange(
  *             if {@code fromIndex} or {@code toIndex} is negative, or if
  *             {@code toIndex} is smaller than {@code fromIndex}.
  */
-ECode CBitSet::GetEx(
+ECode CBitSet::Get(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex,
     /* [out] */ IBitSet** bs)
@@ -320,7 +319,7 @@ ECode CBitSet::GetEx(
  *
  * @throws IndexOutOfBoundsException if {@code index < 0}.
  */
-ECode CBitSet::SetEx(
+ECode CBitSet::Set(
     /* [in] */ Int32 index,
     /* [in] */ Boolean state)
 {
@@ -339,16 +338,16 @@ ECode CBitSet::SetEx(
  *             if {@code fromIndex} or {@code toIndex} is negative, or if
  *             {@code toIndex} is smaller than {@code fromIndex}.
  */
-ECode CBitSet::SetEx3(
+ECode CBitSet::Set(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex,
     /* [in] */ Boolean state)
 {
     if (state) {
-        return SetEx2(fromIndex, toIndex);
+        return Set(fromIndex, toIndex);
     }
     else {
-        return ClearEx(fromIndex, toIndex);
+        return Clear(fromIndex, toIndex);
     }
 }
 
@@ -357,7 +356,7 @@ ECode CBitSet::SetEx3(
  * Use {@code clear} if you want to reuse this {@code BitSet} with the same capacity, but
  * create a new {@code BitSet} if you're trying to potentially reclaim memory.
  */
-ECode CBitSet::ClearEx3()
+ECode CBitSet::Clear()
 {
     for (Int32 i = 0; i < mInt64Count; ++i) {
         (*mBits)[i] = 0LL;
@@ -373,7 +372,7 @@ ECode CBitSet::ClearEx3()
  *             if {@code fromIndex} or {@code toIndex} is negative, or if
  *             {@code toIndex} is smaller than {@code fromIndex}.
  */
-ECode CBitSet::SetEx2(
+ECode CBitSet::Set(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
 {
@@ -411,7 +410,7 @@ ECode CBitSet::SetEx2(
  *             if {@code fromIndex} or {@code toIndex} is negative, or if
  *             {@code toIndex} is smaller than {@code fromIndex}.
  */
-ECode CBitSet::ClearEx(
+ECode CBitSet::Clear(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
 {
@@ -453,7 +452,7 @@ ECode CBitSet::ClearEx(
  *             if {@code fromIndex} or {@code toIndex} is negative, or if
  *             {@code toIndex} is smaller than {@code fromIndex}.
  */
-ECode CBitSet::FlipEx(
+ECode CBitSet::Flip(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
 {
@@ -792,7 +791,7 @@ ECode CBitSet::ValueOfInt64Buffer(
     int64Arr->GetPosition(&position);
     for (Int32 i = 0; i < size; ++i) {
         Int64 value;
-        int64Arr->GetInt64Ex(position + i, &value);
+        int64Arr->GetInt64(position + i, &value);
         (*int64s)[i] = value;
     }
     return ValueOfInt64Array(*int64s, bs);

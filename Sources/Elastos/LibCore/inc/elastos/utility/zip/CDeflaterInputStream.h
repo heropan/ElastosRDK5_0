@@ -28,7 +28,7 @@ public:
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

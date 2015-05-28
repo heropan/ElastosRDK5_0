@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CCRC32.h"
 #include <zlib.h>
 
@@ -54,17 +53,17 @@ ECode CCRC32::Update(
  * @param buf
  *            the buffer holding the data to update the checksum with.
  */
-ECode CCRC32::UpdateEx(
+ECode CCRC32::Update(
     /* [in] */ const ArrayOf<Byte>& buf)
 {
-    return UpdateEx2(buf, 0, buf.GetLength());
+    return Update(buf, 0, buf.GetLength());
 }
 
 /**
  * Update this {@code CRC32} checksum with the contents of {@code buf},
  * starting from {@code offset} and reading {@code byteCount} bytes of data.
  */
-ECode CCRC32::UpdateEx2(
+ECode CCRC32::Update(
     /* [in] */ const ArrayOf<Byte>& buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)

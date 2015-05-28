@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CDelayQueue.h"
 #include <Math.h>
 #include <elastos/ObjectUtils.h>
@@ -71,7 +70,7 @@ ECode CDelayQueue::Put(
     return Offer(e, &b);
 }
 
-ECode CDelayQueue::OfferEx(
+ECode CDelayQueue::Offer(
     /* [in] */ IInterface* e,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
@@ -152,7 +151,7 @@ ECode CDelayQueue::Take(
     return NOERROR;
 }
 
-ECode CDelayQueue::PollEx(
+ECode CDelayQueue::Poll(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** e)
@@ -285,7 +284,7 @@ ECode CDelayQueue::DrainTo(
     return NOERROR;
 }
 
-ECode CDelayQueue::DrainToEx(
+ECode CDelayQueue::DrainTo(
     /* [in] */ ICollection* c,
     /* [in] */ Int32 maxElements,
     /* [out] */ Int32* number)
@@ -345,14 +344,14 @@ ECode CDelayQueue::ToArray(
     return ec;
 }
 
-ECode CDelayQueue::ToArrayEx(
+ECode CDelayQueue::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     VALIDATE_NOT_NULL(outArray);
     AutoPtr<IReentrantLock> lock = mLock;
     lock->Lock();
-    ECode ec = mQ->ToArrayEx(inArray, outArray);
+    ECode ec = mQ->ToArray(inArray, outArray);
     lock->UnLock();
     return ec;
 }
@@ -443,10 +442,10 @@ ECode CDelayQueue::RetainAll(
     return AbstractQueue::RetainAll(collection, modified);
 }
 
-ECode CDelayQueue::RemoveEx(
+ECode CDelayQueue::Remove(
     /* [out] */ IInterface** e)
 {
-    return AbstractQueue::RemoveEx(e);
+    return AbstractQueue::Remove(e);
 }
 
 ECode CDelayQueue::Element(

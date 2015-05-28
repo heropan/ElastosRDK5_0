@@ -2,7 +2,6 @@
 #ifndef __REGEX_PATTERN_H__
 #define __REGEX_PATTERN_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
 #include <unicode/regex.h>
 
@@ -34,7 +33,7 @@ public:
         /* [in] */ const String& input,
         /* [out] */ IMatcher** matcher);
 
-    CARAPI MatcherEx(
+    CARAPI Matcher(
         /* [in] */ ICharSequence* input,
         /* [out] */ IMatcher** matcher);
 
@@ -70,19 +69,19 @@ public:
         /* [in] */ const String& input,
         /* [out, callee]*/ ArrayOf<String>** result);
 
-    CARAPI SplitEx(
+    CARAPI Split(
         /* [in] */ ICharSequence* input,
         /* [out, callee]*/ ArrayOf<String>** result);
 
     /**
      * Equivalent to {@code split(input, 0)}.
      */
-    CARAPI SplitEx2(
+    CARAPI Split(
         /* [in] */ ICharSequence* input,
         /* [in] */ Int32 limit,
         /* [out, callee]*/ ArrayOf<String>** result);
 
-    CARAPI SplitEx3(
+    CARAPI Split(
         /* [in] */ const String& input,
         /* [in] */ Int32 limit,
         /* [out, callee]*/ ArrayOf<String>** result);

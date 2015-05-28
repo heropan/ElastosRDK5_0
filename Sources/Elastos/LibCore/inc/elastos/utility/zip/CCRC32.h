@@ -41,14 +41,14 @@ public:
      * @param buf
      *            the buffer holding the data to update the checksum with.
      */
-    CARAPI UpdateEx(
+    CARAPI Update(
         /* [in] */ const ArrayOf<Byte>& buf);
 
     /**
      * Update this {@code CRC32} checksum with the contents of {@code buf},
      * starting from {@code offset} and reading {@code byteCount} bytes of data.
      */
-    CARAPI UpdateEx2(
+    CARAPI Update(
         /* [in] */ const ArrayOf<Byte>& buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);

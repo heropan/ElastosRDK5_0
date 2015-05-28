@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CCheckedInputStream.h"
 #include <elastos/Math.h>
 
@@ -41,7 +40,7 @@ ECode CCheckedInputStream::Read(
     return NOERROR;
 }
 
-ECode CCheckedInputStream::ReadBytesEx(
+ECode CCheckedInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes,
@@ -50,9 +49,9 @@ ECode CCheckedInputStream::ReadBytesEx(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    FAIL_RETURN(mIn->ReadBytesEx(buffer, off, nbytes, number));
+    FAIL_RETURN(mIn->ReadBytes(buffer, off, nbytes, number));
     if (*number != -1) {
-        mCheck->UpdateEx2(*buffer, off, *number);
+        mCheck->Update(*buffer, off, *number);
     }
     return NOERROR;
 }
@@ -115,7 +114,7 @@ ECode CCheckedInputStream::ReadBytes(
 {
     VALIDATE_NOT_NULL(number);
     VALIDATE_NOT_NULL(buffer);
-    return ReadBytesEx(buffer, 0, buffer->GetLength(), number);
+    return ReadBytes(buffer, 0, buffer->GetLength(), number);
 }
 
 /**

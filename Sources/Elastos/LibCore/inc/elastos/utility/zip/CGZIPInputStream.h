@@ -43,7 +43,7 @@ public:
      * Reads and decompresses GZIP data from the underlying stream into the
      * given buffer.
      */
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,

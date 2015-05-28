@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "Timer.h"
 #include "CSystem.h"
 #include <elastos/Autolock.h>
@@ -275,17 +274,17 @@ ECode Timer::TimerImpl::Join()
     return Thread::Join();
 }
 
-ECode Timer::TimerImpl::JoinEx(
+ECode Timer::TimerImpl::Join(
     /* [in] */ Int64 millis)
 {
-    return Thread::JoinEx(millis);
+    return Thread::Join(millis);
 }
 
-ECode Timer::TimerImpl::JoinEx2(
+ECode Timer::TimerImpl::Join(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {
-    return Thread::JoinEx2(millis, nanos);
+    return Thread::Join(millis, nanos);
 }
 
 ECode Timer::TimerImpl::Resume()
@@ -373,13 +372,13 @@ ECode Timer::TimerImpl::Wait()
     return Thread::Wait();
 }
 
-ECode Timer::TimerImpl::WaitEx(
+ECode Timer::TimerImpl::Wait(
     /* [in] */ Int64 millis)
 {
     return Thread::Wait(millis);
 }
 
-ECode Timer::TimerImpl::WaitEx2(
+ECode Timer::TimerImpl::Wait(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {
@@ -441,7 +440,7 @@ ECode Timer::TimerImpl::Run()
             if (timeToSleep > 0) {
                 // sleep!
                 // try {
-                WaitEx(timeToSleep);
+                Wait(timeToSleep);
                 // } catch (InterruptedException ignored) {
                 // }
                 continue;

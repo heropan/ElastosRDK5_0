@@ -3,7 +3,6 @@
 #define __CEXCHANGER_H__
 
 #include "_CExchanger.h"
-#include "cmdef.h"
 #include "AtomicReference.h"
 #include <elastos/Mutex.h>
 
@@ -144,7 +143,7 @@ public:
         /* [in] */ IInterface* x,
         /* [out] */ IInterface** outface);
 
-    CARAPI ExchangeEx(
+    CARAPI Exchange(
         /* [in] */ IInterface* x,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,

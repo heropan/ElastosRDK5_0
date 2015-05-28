@@ -1,7 +1,6 @@
 #ifndef __UTILITY_CARRAYDEQUE_H__
 #define __UTILITY_CARRAYDEQUE_H__
 
-#include "cmdef.h"
 #include "_CArrayDeque.h"
 #include "AbstractCollection.h"
 
@@ -161,7 +160,7 @@ public:
         /* [in] */ IInterface* e,
         /* [out] */ Boolean* value);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [out] */ IInterface** e);
 
     CARAPI Poll(
@@ -204,7 +203,7 @@ public:
     CARAPI ToArray(
         /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* a,
         /* [out, callee] */ ArrayOf<IInterface*>** array);
 

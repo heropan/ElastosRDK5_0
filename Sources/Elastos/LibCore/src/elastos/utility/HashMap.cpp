@@ -1231,11 +1231,11 @@ ECode _HashMap::_KeySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode _HashMap::_KeySet::ToArrayEx(
+ECode _HashMap::_KeySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(contents, outArray);
+    return AbstractSet::ToArray(contents, outArray);
 }
 
 ECode _HashMap::_KeySet::Equals(
@@ -1396,11 +1396,11 @@ ECode _HashMap::_Values::ToArray(
     return AbstractCollection::ToArray(array);
 }
 
-ECode _HashMap::_Values::ToArrayEx(
+ECode _HashMap::_Values::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractCollection::ToArrayEx(contents, outArray);
+    return AbstractCollection::ToArray(contents, outArray);
 }
 
 ECode _HashMap::_Values::Equals(
@@ -1599,11 +1599,11 @@ ECode _HashMap::_EntrySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode _HashMap::_EntrySet::ToArrayEx(
+ECode _HashMap::_EntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 } // namespace Utility

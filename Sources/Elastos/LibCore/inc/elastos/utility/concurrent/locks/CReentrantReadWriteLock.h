@@ -2,7 +2,6 @@
 #ifndef __CREENTRANTREADWRITELOCK_H__
 #define __CREENTRANTREADWRITELOCK_H__
 
-#include "cmdef.h"
 #include "_CReentrantReadWriteLock.h"
 #include "AbstractQueuedSynchronizer.h"
 #include "elastos/Thread.h"
@@ -474,7 +473,7 @@ public:
          * @throws NullPointerException if the time unit is null
          *
          */
-        CARAPI TryLockEx(
+        CARAPI TryLock(
           /* [in] */ Int64 time,
           /* [in] */ ITimeUnit* unit,
           /* [out] */ Boolean* value);
@@ -715,7 +714,7 @@ public:
          * @throws NullPointerException if the time unit is null
          *
          */
-        CARAPI TryLockEx(
+        CARAPI TryLock(
             /* [in] */ Int64 timeout,
             /* [in] */ ITimeUnit* unit,
             /* [out] */ Boolean* value);

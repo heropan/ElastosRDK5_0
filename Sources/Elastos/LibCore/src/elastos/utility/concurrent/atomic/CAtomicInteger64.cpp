@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CAtomicInteger64.h"
 #include <cutils/atomic.h>
 #include <cutils/atomic-inline.h>

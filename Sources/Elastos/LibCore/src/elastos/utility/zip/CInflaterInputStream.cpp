@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CInflaterInputStream.h"
 
 namespace Elastos {
@@ -65,14 +64,14 @@ ECode CInflaterInputStream::ReadBytes(
     return InflaterInputStream::ReadBytes(buffer, number);
 }
 
-ECode CInflaterInputStream::ReadBytesEx(
+ECode CInflaterInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    return InflaterInputStream::ReadBytesEx(buffer, offset, length, number);
+    return InflaterInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CInflaterInputStream::Reset()

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CGZIPInputStream.h"
 
 using Elastos::IO::IMemory;
@@ -44,7 +43,7 @@ ECode CGZIPInputStream::Close()
     return InflaterInputStream::Close();
 }
 
-ECode CGZIPInputStream::ReadBytesEx(
+ECode CGZIPInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
@@ -69,11 +68,11 @@ ECode CGZIPInputStream::ReadBytesEx(
     }
 
     Int32 bytesRead;
-    InflaterInputStream::ReadBytesEx(buffer, offset, byteCount, &bytesRead);
+    InflaterInputStream::ReadBytes(buffer, offset, byteCount, &bytesRead);
     mEos = mEof;
 
     if (bytesRead != -1) {
-        mCrc->UpdateEx2(*buffer, offset, bytesRead);
+        mCrc->Update(*buffer, offset, bytesRead);
     }
 
     if (mEos) {
@@ -126,7 +125,7 @@ ECode CGZIPInputStream::ReadFully(
 {
     Int32 result;
     while (length > 0) {
-        FAIL_RETURN(mIn->ReadBytesEx(buffer, offset, length, &result));
+        FAIL_RETURN(mIn->ReadBytes(buffer, offset, length, &result));
         if (result == -1) {
 //            throw new EOFException();
             return E_EOF_EXCEPTION;
@@ -254,12 +253,12 @@ ECode CGZIPInputStream::constructor(
     Int32 flags = (*header)[3];
     Boolean hcrc = (flags & FHCRC) != 0;
     if (hcrc) {
-        mCrc->UpdateEx2(*header, 0, header->GetLength());
+        mCrc->Update(*header, 0, header->GetLength());
     }
     if ((flags & FEXTRA) != 0) {
         FAIL_RETURN(ReadFully(0, 2, header));
         if (hcrc) {
-            mCrc->UpdateEx2(*header, 0, 2);
+            mCrc->Update(*header, 0, 2);
         }
         Int16 temp;
         memory->PeekInt16(*header, 0, ByteOrder_LITTLE_ENDIAN, &temp);
@@ -267,13 +266,13 @@ ECode CGZIPInputStream::constructor(
         while (length > 0) {
             Int32 max = length > mBuf->GetLength() ? mBuf->GetLength() : length;
             Int32 result;
-            FAIL_RETURN(mIn->ReadBytesEx(mBuf, 0, max, &result));
+            FAIL_RETURN(mIn->ReadBytes(mBuf, 0, max, &result));
             if (result == -1) {
     //            throw new EOFException();
                 return E_EOF_EXCEPTION;
             }
             if (hcrc) {
-                mCrc->UpdateEx2(*mBuf, 0, result);
+                mCrc->Update(*mBuf, 0, result);
             }
             length -= result;
         }

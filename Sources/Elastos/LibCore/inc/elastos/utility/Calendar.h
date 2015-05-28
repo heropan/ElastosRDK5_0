@@ -112,7 +112,7 @@ public:
      * @param field
      *            the field to clear.
      */
-    CARAPI ClearEx(
+    CARAPI Clear(
         /* [in] */ Int32 field);
 
     /**
@@ -125,7 +125,7 @@ public:
      * @return {@code true} if the specified object is equal to this {@code Calendar}, {@code false}
      *         otherwise.
      */
-    virtual CARAPI EqualsEx(
+    virtual CARAPI Equals(
         /* [in] */ ICalendar* other,
         /* [out] */ Boolean* result);
 
@@ -324,7 +324,7 @@ public:
      * @param increment
      *            {@code true} to increment the field, {@code false} to decrement.
      */
-    virtual CARAPI RollEx(
+    virtual CARAPI Roll(
         /* [in] */ Int32 field,
         /* [in] */ Boolean increment) = 0;
 
@@ -351,7 +351,7 @@ public:
      * @param day
      *            the day of the month.
      */
-    CARAPI SetEx(
+    CARAPI Set(
         /* [in] */ Int32 year,
         /* [in] */ Int32 month,
         /* [in] */ Int32 day);
@@ -371,7 +371,7 @@ public:
      * @param minute
      *            the minute.
      */
-    CARAPI SetEx2(
+    CARAPI Set(
         /* [in] */ Int32 year,
         /* [in] */ Int32 month,
         /* [in] */ Int32 day,
@@ -395,7 +395,7 @@ public:
      * @param second
      *            the second.
      */
-    CARAPI SetEx3(
+    CARAPI Set(
         /* [in] */ Int32 year,
         /* [in] */ Int32 month,
         /* [in] */ Int32 day,

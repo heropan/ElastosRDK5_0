@@ -59,10 +59,10 @@ ECode CObservable::HasChanged(
 
 ECode CObservable::NotifyObservers()
 {
-    return NotifyObserversEx(NULL);
+    return NotifyObservers(NULL);
 }
 
-ECode CObservable::NotifyObserversEx(
+ECode CObservable::NotifyObservers(
     /* [in] */ IInterface* data)
 {
     Int32 size = 0;

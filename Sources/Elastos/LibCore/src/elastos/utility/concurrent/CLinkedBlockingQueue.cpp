@@ -221,7 +221,7 @@ ECode CLinkedBlockingQueue::Put(
     return NOERROR;
 }
 
-ECode CLinkedBlockingQueue::OfferEx(
+ECode CLinkedBlockingQueue::Offer(
     /* [in] */ IInterface* e,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
@@ -314,7 +314,7 @@ ECode CLinkedBlockingQueue::Take(
     return NOERROR;
 }
 
-ECode CLinkedBlockingQueue::PollEx(
+ECode CLinkedBlockingQueue::Poll(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** e)
@@ -487,7 +487,7 @@ ECode CLinkedBlockingQueue::ToArray(
     return NOERROR;
 }
 
-ECode CLinkedBlockingQueue::ToArrayEx(
+ECode CLinkedBlockingQueue::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
@@ -534,10 +534,10 @@ ECode CLinkedBlockingQueue::DrainTo(
     /* [in] */ ICollection* c,
     /* [out] */ Int32* number)
 {
-    return DrainToEx(c, Elastos::Core::Math::INT32_MAX_VALUE, number);
+    return DrainTo(c, Elastos::Core::Math::INT32_MAX_VALUE, number);
 }
 
-ECode CLinkedBlockingQueue::DrainToEx(
+ECode CLinkedBlockingQueue::DrainTo(
     /* [in] */ ICollection* c,
     /* [in] */ Int32 maxElements,
     /* [out] */ Int32* number)
@@ -598,7 +598,7 @@ ECode CLinkedBlockingQueue::Add(
     else return E_ILLEGAL_STATE_EXCEPTION;
 }
 
-ECode CLinkedBlockingQueue::RemoveEx(
+ECode CLinkedBlockingQueue::Remove(
     /* [out] */ IInterface** e)
 {
     FAIL_RETURN(Poll(e));

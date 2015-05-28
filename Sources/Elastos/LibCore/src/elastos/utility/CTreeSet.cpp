@@ -266,7 +266,7 @@ ECode CTreeSet::DescendingSet(
     return NOERROR;
 }
 
-ECode CTreeSet::SubSetEx(
+ECode CTreeSet::SubSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toElement,
@@ -290,7 +290,7 @@ ECode CTreeSet::SubSetEx(
     if (compare <= 0) {
         AutoPtr<CTreeSet> outset;
         AutoPtr<INavigableMap> resmap;
-        mBackingMap->SubMapEx(fromElement, fromInclusive, toElement, toInclusive, (INavigableMap**)&resmap);
+        mBackingMap->SubMap(fromElement, fromInclusive, toElement, toInclusive, (INavigableMap**)&resmap);
         FAIL_RETURN(CTreeSet::NewByFriend(resmap, (CTreeSet**)&outset));
         *outnav = INavigableSet::Probe(outset);
         INTERFACE_ADDREF(*outnav)
@@ -299,7 +299,7 @@ ECode CTreeSet::SubSetEx(
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
-ECode CTreeSet::HeadSetEx(
+ECode CTreeSet::HeadSet(
     /* [in] */ IInterface* toElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
@@ -321,14 +321,14 @@ ECode CTreeSet::HeadSetEx(
     }
     AutoPtr<CTreeSet> resset;
     AutoPtr<INavigableMap> resmap;
-    mBackingMap->HeadMapEx(toElement, inclusive, (INavigableMap**)&resmap);
+    mBackingMap->HeadMap(toElement, inclusive, (INavigableMap**)&resmap);
     FAIL_RETURN(CTreeSet::NewByFriend(resmap, (CTreeSet**)&resset));
     *outnav = INavigableSet::Probe(resset);
     INTERFACE_ADDREF(*outnav)
     return NOERROR;
 }
 
-ECode CTreeSet::TailSetEx(
+ECode CTreeSet::TailSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
@@ -350,7 +350,7 @@ ECode CTreeSet::TailSetEx(
     }
     AutoPtr<INavigableMap> resmap;
     AutoPtr<CTreeSet> resset;
-    mBackingMap->TailMapEx(fromElement, inclusive, (INavigableMap**)&resmap);
+    mBackingMap->TailMap(fromElement, inclusive, (INavigableMap**)&resmap);
     FAIL_RETURN(CTreeSet::NewByFriend(resmap, (CTreeSet**)&resset));
     *outnav = INavigableSet::Probe(resset);
     INTERFACE_ADDREF(*outnav)
@@ -362,21 +362,21 @@ ECode CTreeSet::SubSet(
     /* [in] */ IInterface* end,
     /* [out] */ ISortedSet** outsort)
 {
-    return SubSetEx(start, TRUE, end, FALSE, (INavigableSet**)outsort);
+    return SubSet(start, TRUE, end, FALSE, (INavigableSet**)outsort);
 }
 
 ECode CTreeSet::HeadSet(
     /* [in] */ IInterface* end,
     /* [out] */ ISortedSet** outsort)
 {
-    return HeadSetEx(end, FALSE, (INavigableSet**)outsort);
+    return HeadSet(end, FALSE, (INavigableSet**)outsort);
 }
 
 ECode CTreeSet::TailSet(
     /* [in] */ IInterface* start,
     /* [out] */ ISortedSet** outsort)
 {
-    return TailSetEx(start, TRUE, (INavigableSet**)outsort);
+    return TailSet(start, TRUE, (INavigableSet**)outsort);
 }
 
 void CTreeSet::WriteObject(
@@ -470,11 +470,11 @@ ECode CTreeSet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CTreeSet::ToArrayEx(
+ECode CTreeSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 } // namespace Utility

@@ -1,4 +1,3 @@
-#include "cmdef.h"
 #include "elastos/List.h"
 #include "CJarEntry.h"
 #include "CJarFile.h"
@@ -68,7 +67,7 @@ ECode CJarFile::JarFileInputStream::ReadBytes(
     return FilterInputStream::ReadBytes(buffer, number);
 }
 
-ECode CJarFile::JarFileInputStream::ReadBytesEx(
+ECode CJarFile::JarFileInputStream::ReadBytes(
     /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes,
@@ -80,13 +79,13 @@ ECode CJarFile::JarFileInputStream::ReadBytesEx(
         return NOERROR;
     }
     if (mCount > 0) {
-        FAIL_RETURN(FilterInputStream::ReadBytesEx(buf, off, nbytes, val))
+        FAIL_RETURN(FilterInputStream::ReadBytes(buf, off, nbytes, val))
         if (*val != -1) {
             Int32 size = *val;
             if (mCount < size) {
                 size = (Int32) mCount;
             }
-            FAIL_RETURN(mEntry->WriteBytesEx(*buf, off, size))
+            FAIL_RETURN(mEntry->WriteBytes(*buf, off, size))
             mCount -= size;
         } else {
             mCount = 0;

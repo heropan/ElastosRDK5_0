@@ -43,7 +43,7 @@ public:
      *
      * @param time the date in milliseconds since January 1, 1970 00:00:00 UTC
      */
-    CARAPI GetOffsetEx(
+    CARAPI GetOffset(
             /* [in] */ Int32 era,
             /* [in] */ Int32 year,
             /* [in] */ Int32 month,
@@ -123,16 +123,16 @@ public:
     CARAPI GetDisplayName(
         /* [out] */ String* name);
 
-    CARAPI GetDisplayNameEx(
+    CARAPI GetDisplayName(
         /* [in] */ ILocale* locale,
         /* [out] */ String* name);
 
-    CARAPI GetDisplayNameEx2(
+    CARAPI GetDisplayName(
         /* [in] */ Boolean daylightTime,
         /* [in] */ Int32 style,
         /* [out] */ String* name);
 
-    CARAPI GetDisplayNameEx3(
+    CARAPI GetDisplayName(
         /* [in] */ Boolean daylightTime,
         /* [in] */ Int32 style,
         /* [in] */ ILocale* locale,

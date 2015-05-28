@@ -147,11 +147,11 @@ ECode CLinkedHashSet::ToArray(
     return HashSet::ToArray(array);
 }
 
-ECode CLinkedHashSet::ToArrayEx(
+ECode CLinkedHashSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return HashSet::ToArrayEx(inArray, outArray);
+    return HashSet::ToArray(inArray, outArray);
 }
 
 ECode CLinkedHashSet::GetIterator(

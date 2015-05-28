@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CConcurrentLinkedQueue.h"
 #include "CArrayList.h"
 #include <Math.h>
@@ -414,7 +413,7 @@ ECode CConcurrentLinkedQueue::ToArray(
     return al->ToArray(array);
 }
 
-ECode CConcurrentLinkedQueue::ToArrayEx(
+ECode CConcurrentLinkedQueue::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
@@ -447,7 +446,7 @@ ECode CConcurrentLinkedQueue::ToArrayEx(
             al->Add(item, &b);
         }
     }
-    return al->ToArrayEx(inArray, outArray);
+    return al->ToArray(inArray, outArray);
 }
 
 ECode CConcurrentLinkedQueue::GetIterator(
@@ -486,10 +485,10 @@ ECode CConcurrentLinkedQueue::Clear()
     return AbstractQueue::Clear();
 }
 
-ECode CConcurrentLinkedQueue::RemoveEx(
+ECode CConcurrentLinkedQueue::Remove(
     /* [out] */ IInterface** e)
 {
-    return AbstractQueue::RemoveEx(e);
+    return AbstractQueue::Remove(e);
 }
 
 ECode CConcurrentLinkedQueue::Element(

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CDeflaterOutputStream.h"
 
 namespace Elastos {
@@ -35,12 +34,12 @@ ECode CDeflaterOutputStream::WriteBytes(
     return DeflaterOutputStream::WriteBytes(buffer);
 }
 
-ECode CDeflaterOutputStream::WriteBytesEx(
+ECode CDeflaterOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return DeflaterOutputStream::WriteBytesEx(buffer, offset, count);
+    return DeflaterOutputStream::WriteBytes(buffer, offset, count);
 }
 
 ECode CDeflaterOutputStream::Flush()

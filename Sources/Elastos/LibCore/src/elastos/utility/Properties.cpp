@@ -132,7 +132,7 @@ ECode Properties::GetProperty(
     return  NOERROR;
 }
 
-ECode Properties::GetPropertyEx(
+ECode Properties::GetProperty(
     /* [in] */ const String& name,
     /* [in] */ const String& defaultValue,
     /* [out] */ String* str)
@@ -157,7 +157,7 @@ ECode Properties::List(
     return ListToAppendable(IAppendable::Probe(outstream));
 }
 
-ECode Properties::ListEx(
+ECode Properties::List(
     /* [in] */ IPrintWriter* outwriter)
 {
     return ListToAppendable(IAppendable::Probe(outwriter));
@@ -222,10 +222,10 @@ ECode Properties::Load(
     }
     AutoPtr<IInputStreamReader> inreader;
     FAIL_RETURN(CInputStreamReader::New(instream,String("ISO-8859-1"), (IInputStreamReader**)&inreader));
-    return LoadEx(inreader);
+    return Load(inreader);
 }
 
-ECode Properties::LoadEx(
+ECode Properties::Load(
     /* [in] */ IReader* inreader)
 {
     Mutex::Autolock lock(GetSelfLock());
@@ -478,10 +478,10 @@ ECode Properties::Store(
 {
     AutoPtr<IOutputStreamWriter> outwriter;
     FAIL_RETURN(COutputStreamWriter::New(outstream,String("ISO-8859-1"), (IOutputStreamWriter**)&outwriter));
-    return StoreEx(outwriter, comment);
+    return Store(outwriter, comment);
 }
 
-ECode Properties::StoreEx(
+ECode Properties::Store(
     /* [in] */ IWriter* writer,
     /* [in] */ const String& comment)
 {
@@ -613,10 +613,10 @@ ECode Properties::StoreToXML(
     /* [in] */ IOutputStream* os,
     /* [in] */ const String& comment)
 {
-    return StoreToXMLEx(os, comment, String("UTF-8"));
+    return StoreToXML(os, comment, String("UTF-8"));
 }
 
-ECode Properties::StoreToXMLEx(
+ECode Properties::StoreToXML(
     /* [in] */ IOutputStream* os,
     /* [in] */ const String& comment,
     /* [in] */ const String& encoding)

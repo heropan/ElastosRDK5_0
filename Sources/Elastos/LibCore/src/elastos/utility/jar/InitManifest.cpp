@@ -1,4 +1,3 @@
-#include "cmdef.h"
 #include "elastos/HashMap.h"
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"

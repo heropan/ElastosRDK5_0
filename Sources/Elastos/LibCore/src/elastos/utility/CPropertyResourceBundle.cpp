@@ -104,7 +104,7 @@ ECode CPropertyResourceBundle::constructor(
     /* [in] */ IReader* reader)
 {
     FAIL_RETURN(CProperties::New((IProperties**)&mResources));
-    return mResources->LoadEx(reader);
+    return mResources->Load(reader);
 }
 
 ECode CPropertyResourceBundle::GetKeys(

@@ -64,7 +64,7 @@ public:
      *         stream has been reached.
      */
     //@Override
-    virtual CARAPI ReadBytesEx(
+    virtual CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* b,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len,

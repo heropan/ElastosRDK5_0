@@ -164,11 +164,11 @@ ECode CCopyOnWriteArraySet::ToArray(
     return mAl->ToArray(array);
 }
 
-ECode CCopyOnWriteArraySet::ToArrayEx(
+ECode CCopyOnWriteArraySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return mAl->ToArrayEx(inArray, outArray);
+    return mAl->ToArray(inArray, outArray);
 }
 
 ECode CCopyOnWriteArraySet::GetIterator(

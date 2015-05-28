@@ -138,7 +138,7 @@ ECode CArrayList::Add(
     return NOERROR;
 }
 
-ECode CArrayList::AddEx(
+ECode CArrayList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
@@ -201,7 +201,7 @@ ECode CArrayList::AddAll(
     return NOERROR;
 }
 
-ECode CArrayList::AddAllEx(
+ECode CArrayList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
@@ -394,7 +394,7 @@ ECode CArrayList::LastIndexOf(
     return NOERROR;
 }
 
-ECode CArrayList::RemoveEx(
+ECode CArrayList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
@@ -516,7 +516,7 @@ ECode CArrayList::ToArray(
     return NOERROR;
 }
 
-ECode CArrayList::ToArrayEx(
+ECode CArrayList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
@@ -695,12 +695,12 @@ ECode CArrayList::GetListIterator(
     return AbstractList::GetListIterator(it);
 }
 
-ECode CArrayList::GetListIteratorEx(
+ECode CArrayList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
     VALIDATE_NOT_NULL(it);
-    return AbstractList::GetListIteratorEx(location, it);
+    return AbstractList::GetListIterator(location, it);
 }
 
 ECode CArrayList::SubList(

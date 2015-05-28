@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CInflaterOutputStream.h"
 
 namespace Elastos {
@@ -29,12 +28,12 @@ ECode CInflaterOutputStream::WriteBytes(
     return InflaterOutputStream::WriteBytes(buffer);
 }
 
-ECode CInflaterOutputStream::WriteBytesEx(
+ECode CInflaterOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return InflaterOutputStream::WriteBytesEx(buffer, offset, count);
+    return InflaterOutputStream::WriteBytes(buffer, offset, count);
 }
 
 ECode CInflaterOutputStream::Finish()

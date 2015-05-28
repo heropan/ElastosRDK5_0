@@ -190,7 +190,7 @@ ECode ReentrantLock::TryLock(
     return NOERROR;
 }
 
-ECode ReentrantLock::TryLockEx(
+ECode ReentrantLock::TryLock(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ Boolean* result)

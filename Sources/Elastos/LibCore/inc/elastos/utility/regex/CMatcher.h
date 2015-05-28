@@ -67,7 +67,7 @@ public:
      *
      * @return the {@code Matcher} itself.
      */
-    CARAPI ResetEx(
+    CARAPI Reset(
         /* [in] */ ICharSequence* input);
 
     /**
@@ -176,7 +176,7 @@ public:
      * @throws IllegalStateException
      *             if no successful match has been made.
      */
-    CARAPI GroupEx(
+    CARAPI Group(
         /* [in] */ Int32 group,
         /* [out] */ String* text);
 
@@ -197,7 +197,7 @@ public:
      *
      * @throws IndexOutOfBoundsException if {@code start < 0 || start > input.length()}
      */
-    CARAPI FindEx(
+    CARAPI Find(
         /* [in] */ Int32 start,
         /* [out] */ Boolean* found);
 
@@ -231,7 +231,7 @@ public:
      *
      * @return the character index.
      */
-    CARAPI StartEx(
+    CARAPI Start(
         /* [in] */ Int32 group,
         /* [out] */ Int32* index);
 
@@ -246,7 +246,7 @@ public:
      * @throws IllegalStateException
      *             if no successful match has been made.
      */
-    CARAPI EndEx(
+    CARAPI End(
         /* [in] */ Int32 group,
         /* [out] */ Int32* index);
 
@@ -431,7 +431,7 @@ private:
      *
      * @return the matcher itself.
      */
-    CARAPI ResetEx2(
+    CARAPI Reset(
         /* [in] */ ICharSequence* input,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);

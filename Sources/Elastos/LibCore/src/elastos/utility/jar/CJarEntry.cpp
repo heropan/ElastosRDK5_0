@@ -1,6 +1,5 @@
 
 #include "CJarEntry.h"
-#include "cmdef.h"
 #include "CCodeSigner.h"
 #include "CCertificateFactory.h"
 #include "CCertificateFactoryHelper.h"
@@ -347,8 +346,8 @@ ECode CJarEntry::AddCodeSigner(
     FAIL_RETURN(CLinkedList::New((IList**)&lst))
     List<AutoPtr<ICertificate> >::Iterator it = list->Begin();
     for (Int32 i = 0; it != list->End(); ++it, ++i)
-    lst->AddEx(i, (*it).Get());
-    ECode ec = mFactory->GenerateCertPathEx2(lst, (ICertPath**)&certPath);
+    lst->Add(i, (*it).Get());
+    ECode ec = mFactory->GenerateCertPath(lst, (ICertPath**)&certPath);
     if (ec == E_CERTIFICATE_EXCEPTION) {
     } else if( FAILED(ec)) {
         return ec;

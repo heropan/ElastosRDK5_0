@@ -87,7 +87,7 @@ ECode ZipInputStream::CloseEntry()
     Int32 diff = mEntryIn - inB;
     // Pushback any required bytes
     if (diff != 0) {
-        IPushbackInputStream::Probe(mIn)->UnreadBytesEx(*mBuf, mLen - diff, diff);
+        IPushbackInputStream::Probe(mIn)->UnreadBytes(*mBuf, mLen - diff, diff);
     }
 
     ECode newec = ReadAndVerifyDataDescriptor(inB, out);
@@ -108,7 +108,7 @@ ECode ZipInputStream::ReadAndVerifyDataDescriptor(
     if (mHasDD) {
         AutoPtr<IStreams> streams;
         CStreams::AcquireSingleton((IStreams**)&streams);
-        FAIL_RETURN(streams->ReadFullyEx(mIn, 0, IZipConstants::EXTHDR, mHdrBuf));
+        FAIL_RETURN(streams->ReadFully(mIn, 0, IZipConstants::EXTHDR, mHdrBuf));
         AutoPtr<IMemory> memory;
         CMemory::AcquireSingleton((IMemory**)&memory);
         Int32 sig;
@@ -158,7 +158,7 @@ ECode ZipInputStream::GetNextEntry(
     // Read the signature to see whether there's another local file header.
     AutoPtr<IStreams> streams;
     CStreams::AcquireSingleton((IStreams**)&streams);
-    FAIL_RETURN(streams->ReadFullyEx(mIn, 0, 4, mHdrBuf));
+    FAIL_RETURN(streams->ReadFully(mIn, 0, 4, mHdrBuf));
 
     Int32 hdr;
     memory->PeekInt32(*mHdrBuf, 0, ByteOrder_LITTLE_ENDIAN, &hdr);
@@ -171,7 +171,7 @@ ECode ZipInputStream::GetNextEntry(
     }
 
     // Read the local file header.
-    FAIL_RETURN(streams->ReadFullyEx(mIn, 0, (IZipConstants::LOCHDR - IZipConstants::LOCVER), mHdrBuf));
+    FAIL_RETURN(streams->ReadFully(mIn, 0, (IZipConstants::LOCHDR - IZipConstants::LOCVER), mHdrBuf));
     Int32 version = PeekShort(memory, 0) & 0xff;
     if (version > ZIPLocalHeaderVersionNeeded) {
         return E_ZIP_EXCEPTION;
@@ -209,7 +209,7 @@ ECode ZipInputStream::GetNextEntry(
         // equal to the number of bytes. It's fine if this buffer is too long.
         //charBuf = new char[nameLength];
     }
-    FAIL_RETURN(streams->ReadFullyEx(mIn, 0, nameLength, mNameBuf));
+    FAIL_RETURN(streams->ReadFully(mIn, 0, nameLength, mNameBuf));
     //mCurrentEntry = createZipEntry(ModifiedUtf8.decode(nameBuf, charBuf, 0, nameLength));
     String zipEntryName((const char *)mNameBuf->GetPayload(), nameLength);
     mCurrentEntry = CreateZipEntry(zipEntryName);
@@ -224,7 +224,7 @@ ECode ZipInputStream::GetNextEntry(
 
     if (extraLength > 0) {
         AutoPtr<ArrayOf<Byte> > extraData = ArrayOf<Byte>::Alloc(extraLength);
-        FAIL_RETURN(streams->ReadFullyEx(mIn, 0, extraLength, extraData));
+        FAIL_RETURN(streams->ReadFully(mIn, 0, extraLength, extraData));
         mCurrentEntry->SetExtra(extraData);
     }
 
@@ -242,7 +242,7 @@ Int32 ZipInputStream::PeekShort(
     return (value & 0xffff);
 }
 
-ECode ZipInputStream::ReadBytesEx(
+ECode ZipInputStream::ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
@@ -288,7 +288,7 @@ ECode ZipInputStream::ReadBytesEx(
         memcpy(buffer->GetPayload() + offset, mBuf->GetPayload() + mLastRead, toRead);
         mLastRead += toRead;
         mInRead += toRead;
-        mCrc->UpdateEx2(*buffer, offset, toRead);
+        mCrc->Update(*buffer, offset, toRead);
         *number = toRead;
         return NOERROR;
     }
@@ -301,7 +301,7 @@ ECode ZipInputStream::ReadBytesEx(
         }
     }
     Int32 read;
-    if (FAILED(mInf->InflateEx(buffer, offset, byteCount, &read))) {
+    if (FAILED(mInf->Inflate(buffer, offset, byteCount, &read))) {
         return E_ZIP_EXCEPTION;
     }
     mInf->Finished(&value);
@@ -309,7 +309,7 @@ ECode ZipInputStream::ReadBytesEx(
         *number = -1;
         return NOERROR;
     }
-    mCrc->UpdateEx2(*buffer, offset, read);
+    mCrc->Update(*buffer, offset, read);
     *number = read;
     return NOERROR;
 }

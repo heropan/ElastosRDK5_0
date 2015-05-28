@@ -1,7 +1,6 @@
 #ifndef __UTILITY_MAPENTRY_H__
 #define __UTILITY_MAPENTRY_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
 
 namespace Elastos {

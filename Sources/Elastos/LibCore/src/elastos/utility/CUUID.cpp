@@ -1,5 +1,4 @@
 #include "CUUID.h"
-#include "cmdef.h"
 #include <elastos/StringUtils.h>
 #include <elastos/StringBuilder.h>
 #include "CMemory.h"

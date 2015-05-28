@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CZipInputStream.h"
 
 namespace Elastos {
@@ -64,14 +63,14 @@ ECode CZipInputStream::ReadBytes(
     return ZipInputStream::ReadBytes(buffer, number);
 }
 
-ECode CZipInputStream::ReadBytesEx(
+ECode CZipInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    return ZipInputStream::ReadBytesEx(buffer, offset, length, number);
+    return ZipInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CZipInputStream::Reset()
