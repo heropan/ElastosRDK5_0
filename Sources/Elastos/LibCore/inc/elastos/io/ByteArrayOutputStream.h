@@ -13,7 +13,7 @@ class ByteArrayOutputStream
 {
 public:
     CAR_INTERFACE_DECL()
-    
+
     ByteArrayOutputStream();
 
     ~ByteArrayOutputStream();
@@ -111,7 +111,7 @@ public:
      */
     // synchronized
     CARAPI Write(
-        /* [in] */ const ArrayOf<Byte> & buffer,
+        /* [in] */ const ArrayOf<Byte> * buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
