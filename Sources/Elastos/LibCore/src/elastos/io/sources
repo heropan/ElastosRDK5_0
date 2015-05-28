@@ -12,16 +12,9 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 
+SOURCES = InputStream.cpp
+SOURCES += FilterInputStream.cpp
+SOURCES += BufferedInputStream.cpp
+SOURCES += CBufferedInputStream.cpp
 #SOURCES += AbstractInterruptibleChannel.cpp
 #SOURCES += AbstractSelectableChannel.cpp
-SOURCES += CBufferedInputStream.cpp
-SOURCES += BufferedInputStream.cpp
-SOURCES += FilterInputStream.cpp
-SOURCES += InputStream.cpp
-#SOURCES += Elastos.CoreLibrary.cpp
-
-LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
-LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
-LIBRARIES += $(XDK_USER_LIB)/crt0.lib
-#LIBRARIES += -llog -lcutils
