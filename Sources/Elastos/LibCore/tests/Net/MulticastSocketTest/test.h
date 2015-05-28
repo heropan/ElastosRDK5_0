@@ -7,7 +7,6 @@
 #include <elautoptr.h>
 #include <elquintet.h>
 #include <elastos/StringUtils.h>
-#include <elastos/ObjectUtils.h>
 #include <elastos/Mutex.h>
 #include <elastos/ThreadBase.h>
 

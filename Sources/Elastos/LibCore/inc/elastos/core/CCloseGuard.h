@@ -2,7 +2,8 @@
 #ifndef __CCLOSEGUARD_H__
 #define __CCLOSEGUARD_H__
 
-#include "_CCloseGuard.h"
+#include "_Elastos_Core_CCloseGuard.h"
+#include "Object.h"
 
 namespace Elastos {
 namespace Core {
@@ -10,17 +11,22 @@ namespace Core {
 using Elastos::Core::ICloseGuardReporter;
 
 CarClass(CCloseGuard)
+    , public Object
+    , public ICloseGuard
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
     /**
      * Default Reporter which reports CloseGuard violations to the log.
      */
     class DefaultReporter
-        : public ElRefBase
+        : public Object
         , public ICloseGuardReporter
     {
     public:
-        CAR_INTERFACE_DECL();
+        CAR_INTERFACE_DECL()
 
         CARAPI Report (
             /* [in] */ const String& message/*,

@@ -1,11 +1,14 @@
 
-#include "cmdef.h"
 #include "CCloseGuardHelper.h"
 #include "CCloseGuard.h"
 #include <elastos.h>
 
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL(CCloseGuardHelper, Object, ICloseGuardHelper)
+
+CAR_OBJECT_IMPL(CCloseGuardHelper)
 
 ECode CCloseGuardHelper::Get(
     /* [out] */ ICloseGuard** guard)
@@ -14,7 +17,7 @@ ECode CCloseGuardHelper::Get(
 
     AutoPtr<ICloseGuard> res = CCloseGuard::Get();
     *guard = res;
-    INTERFACE_ADDREF(*guard)
+    REFCOUNT_ADD(*guard)
     return NOERROR;
 }
 
@@ -37,7 +40,7 @@ ECode CCloseGuardHelper::GetReporter(
 
     AutoPtr<ICloseGuardReporter> res = CCloseGuard::GetReporter();
     *report = res;
-    INTERFACE_ADDREF(*report)
+    REFCOUNT_ADD(*report)
     return NOERROR;
 }
 

@@ -3,6 +3,7 @@
 #define __ENUM_H__
 
 #include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
 
 using Elastos::IO::ISerializable;
 using Elastos::Core::IComparable;

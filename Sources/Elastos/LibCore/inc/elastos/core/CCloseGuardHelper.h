@@ -2,14 +2,21 @@
 #ifndef __CCLOSEGUARDHELPER_H__
 #define __CCLOSEGUARDHELPER_H__
 
-#include "_CCloseGuardHelper.h"
+#include "_Elastos_Core_CCloseGuardHelper.h"
+#include "Object.h"
 
 namespace Elastos {
 namespace Core {
 
 CarClass(CCloseGuardHelper)
+    , public Object
+    , public ICloseGuardHelper
 {
 public:
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
     /**
      * Returns a CloseGuard instance. If CloseGuard is enabled, {@code
      * #open(String)} can be used to set up the instance to warn on

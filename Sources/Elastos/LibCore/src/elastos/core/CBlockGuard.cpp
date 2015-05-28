@@ -1,9 +1,10 @@
 
-#include "cmdef.h"
 #include "CBlockGuard.h"
 
 namespace Elastos {
 namespace Core {
+
+CAR_SINGLETON_METHODS_IMPL(CBlockGuard)
 
 ECode CBlockGuard::GetThreadPolicy(
     /* [out] */ IBlockGuardPolicy** policy)

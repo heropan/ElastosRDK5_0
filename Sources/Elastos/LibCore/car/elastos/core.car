@@ -47,12 +47,12 @@ module
     namespace Elastos {
     namespace Core {
 
-    // class CPathClassLoader {
-    //     constructor (
-    //         [in] String path);
+    class CPathClassLoader {
+        constructor (
+            [in] String path);
 
-    //     interface IClassLoader;
-    // }
+        interface IClassLoader;
+    }
 
     class CStringWrapper {
         constructor(
@@ -181,17 +181,17 @@ module
     //     interface IObjectContainer;
     // }
 
-    // singleton class CBlockGuard {
-    //     interface IBlockGuard;
-    // }
+    singleton class CBlockGuard {
+         interface IBlockGuard;
+    }
 
-    // class CCloseGuard {
-    //     interface ICloseGuard;
-    // }
+    class CCloseGuard {
+        interface ICloseGuard;
+    }
 
-    // singleton class CCloseGuardHelper {
-    //     interface ICloseGuardHelper;
-    // }
+    singleton class CCloseGuardHelper {
+        interface ICloseGuardHelper;
+    }
 
     singleton class CSystem {
          constructor();

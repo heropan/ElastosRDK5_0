@@ -1,9 +1,12 @@
 
-#include "cmdef.h"
 #include "CPathClassLoader.h"
 
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL(CPathClassLoader, Object, IClassLoader)
+
+CAR_OBJECT_IMPL(CPathClassLoader)
 
 ECode CPathClassLoader::constructor(
     /* [in] */ const String& path)
@@ -33,7 +36,7 @@ ECode CPathClassLoader::LoadClass(
     //     sname.string(), className.string(), mPath.string());
     AutoPtr<IModuleInfo> moduleInfo;
     if (sname == "CFragmentOne") {
-        FAIL_RETURN(CReflector::AcquireModuleInfo("FragmentDemo.eco", (IModuleInfo**)&moduleInfo));
+        FAIL_RETURN(CReflector::AcquireModuleInfo(String("FragmentDemo.eco"), (IModuleInfo**)&moduleInfo));
     }
     else {
         FAIL_RETURN(CReflector::AcquireModuleInfo(mPath, (IModuleInfo**)&moduleInfo));

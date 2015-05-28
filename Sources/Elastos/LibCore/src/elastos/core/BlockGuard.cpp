@@ -38,8 +38,9 @@ static void MakeKey()
     ASSERT_TRUE(pthread_key_create(&BlockGuard::sTlsKey, ThreadDestructor) == 0);
 }
 
-CAR_INTERFACE_IMPL(BlockGuard::LAXPOLICY, Object, IBlockGuardPolicy);
-//CAR_OBJECT_IMPL_WITH_CLSID(BlockGuard::LAXPOLICY, )
+CAR_INTERFACE_IMPL(BlockGuard::LAXPOLICY, Object, IBlockGuardPolicy)
+
+//CAR_OBJECT_IMPL_WITH_CLSID(BlockGuard::LAXPOLICY, ECLSID_LAXPOLICY)
 
 BlockGuard::LAXPOLICY::~LAXPOLICY()
 {

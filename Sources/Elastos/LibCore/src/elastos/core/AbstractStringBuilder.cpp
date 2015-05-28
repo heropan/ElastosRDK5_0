@@ -6,7 +6,6 @@
 #include "RealToString.h"
 #include "IntegralToString.h"
 #include "Character.h"
-#include "ObjectUtils.h"
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CStringWrapper.h"

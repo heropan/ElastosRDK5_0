@@ -1,10 +1,13 @@
 
-#include "cmdef.h"
 #include "CCloseGuard.h"
 #include <elastos.h>
 
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL(CCloseGuard, Object, ICloseGuard)
+
+CAR_OBJECT_IMPL(CCloseGuard)
 
 static AutoPtr<ICloseGuard> initNOOP()
 {
@@ -24,7 +27,7 @@ Boolean CCloseGuard::ENABLED = TRUE;
 const AutoPtr<ICloseGuard> CCloseGuard::NOOP = initNOOP();
 AutoPtr<ICloseGuardReporter> CCloseGuard::REPORTER = initREPORTER();
 
-CAR_INTERFACE_IMPL(CCloseGuard::DefaultReporter, ICloseGuardReporter);
+CAR_INTERFACE_IMPL(CCloseGuard::DefaultReporter, Object, ICloseGuardReporter)
 
 ECode CCloseGuard::DefaultReporter::Report (
     /* [in] */ const String& message/*,

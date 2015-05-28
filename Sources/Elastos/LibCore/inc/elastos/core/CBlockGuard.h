@@ -2,15 +2,18 @@
 #ifndef __CBLOCKGUARD_H__
 #define __CBLOCKGUARD_H__
 
-#include "_CBlockGuard.h"
+#include "_Elastos_Core_CBlockGuard.h"
 #include "BlockGuard.h"
 
 namespace Elastos {
 namespace Core {
 
-CarClass(CBlockGuard) , public BlockGuard
+CarClass(CBlockGuard)
+    , public BlockGuard
 {
 public:
+    CAR_SINGLETON_METHODS_DECL()
+
     /**
      * Get the current thread's policy.
      *

@@ -1,16 +1,23 @@
 #ifndef __CPATHCLASSLOADER_H__
 #define __CPATHCLASSLOADER_H__
 
-#include "_CPathClassLoader.h"
+#include "_Elastos_Core_CPathClassLoader.h"
+#include "Object.h"
 
 using Elastos::Core::IClassLoader;
 
 namespace Elastos {
 namespace Core {
 
-CarClass(CPathClassLoader) , public IClassLoader
+CarClass(CPathClassLoader)
+    , public Object
+    , public IClassLoader
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ const String& path);
 
