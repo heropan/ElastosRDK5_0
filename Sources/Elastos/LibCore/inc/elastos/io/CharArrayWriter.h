@@ -9,15 +9,19 @@ namespace IO {
 
 class CharArrayWriter
     : public Writer
+    , public ICharArrayWriter
 {
+public:
+    CAR_INTERFACE_DECL()
+
 protected:
     CharArrayWriter();
 
     ~CharArrayWriter();
 
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 initialSize);
 
 public:
@@ -95,8 +99,8 @@ public:
      *             if {@code offset < 0} or {@code len < 0}, or if
      *             {@code offset + len} is bigger than the size of {@code c}.
      */
-    CARAPI WriteChars(
-        /* [in] */ const ArrayOf<Char32>& buffer,
+    CARAPI Write(
+        /* [in] */ const ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
@@ -117,8 +121,8 @@ public:
      *             {@code offset + len} is bigger than the length of
      *             {@code str}.
      */
-    CARAPI WriteString(
-        /* [in] */ const String& str,
+    CARAPI Write(
+        /* [in] */ const String* str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
@@ -146,7 +150,7 @@ public:
      * @return this CharArrayWriter.
      */
 
-    CARAPI AppendChar(
+    CARAPI Append(
         /* [in] */ Char32 c);
 
     /**
@@ -159,7 +163,7 @@ public:
      *            CharArrayWriter}, may be {@code null}.
      * @return this CharArrayWriter.
      */
-    CARAPI AppendCharSequence(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq);
 
     /**
@@ -185,7 +189,7 @@ public:
      *             if {@code start < 0}, {@code end < 0}, {@code start > end},
      *             or if {@code end} is greater than the length of {@code csq}.
      */
-    CARAPI AppendCharSequence(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);

@@ -12,6 +12,8 @@ using Elastos::Core::Math;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(CharArrayWriter, Writer, ICharArrayWriter)
+
 CharArrayWriter::CharArrayWriter()
     : mCount(0)
 {
@@ -22,7 +24,7 @@ CharArrayWriter::~CharArrayWriter()
 {
 }
 
-ECode CharArrayWriter::Init()
+ECode CharArrayWriter::constructor()
 {
     mBuf = ArrayOf<Char32>::Alloc(32);
     if (mBuf == NULL)
@@ -32,7 +34,7 @@ ECode CharArrayWriter::Init()
     return NOERROR;
 }
 
-ECode CharArrayWriter::Init(
+ECode CharArrayWriter::constructor(
     /* [in] */ Int32 initialSize)
 {
     if (initialSize < 0) {
@@ -85,6 +87,8 @@ ECode CharArrayWriter::Reset()
 ECode CharArrayWriter::GetSize(
     /* [out] */Int32* size)
 {
+    assert(size != NULL);
+
     Object::Autolock lock(mLock);
 
     *size = mCount;
@@ -131,8 +135,8 @@ ECode CharArrayWriter::Write(
     return NOERROR;
 }
 
-ECode CharArrayWriter::WriteChars(
-    /* [in] */ const ArrayOf<Char32>& buffer,
+ECode CharArrayWriter::Write(
+    /* [in] */ const ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
@@ -145,7 +149,7 @@ ECode CharArrayWriter::WriteChars(
     // added null check, used (offset | len) < 0 instead of
     // (offset < 0) || (len < 0) to safe one operation
 
-    if ((offset | count) < 0 || count > buffer.GetLength() - offset) {
+    if ((offset | count) < 0 || count > buffer->GetLength() - offset) {
 //      throw new IndexOutOfBoundsException();
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -153,14 +157,14 @@ ECode CharArrayWriter::WriteChars(
     Object::Autolock lock(mLock);
 
     Expand(count);
-    mBuf->Copy(mCount, &buffer, offset, count);
+    mBuf->Copy(mCount, buffer, offset, count);
     mCount += count;
 
     return NOERROR;
 }
 
-ECode CharArrayWriter::WriteString(
-    /* [in] */ const String& str,
+ECode CharArrayWriter::Write(
+    /* [in] */ const String* str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
@@ -171,14 +175,14 @@ ECode CharArrayWriter::WriteString(
     // removed redundant check, used (offset | len) < 0
     // instead of (offset < 0) || (len < 0) to safe one operation
 
-    if ((offset | count) < 0 || offset > str.GetLength() - count) {
+    if ((offset | count) < 0 || offset > str->GetLength() - count) {
 //      throw new StringIndexOutOfBoundsException();
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     // END android-changed
     Object::Autolock lock(mLock);
 
-    AutoPtr<ArrayOf<Char32> > charArray = str.GetChars(offset, offset + count);
+    AutoPtr<ArrayOf<Char32> > charArray = str->GetChars(offset, offset + count);
     count = charArray->GetLength();
     if (count > 0) {
         Expand(count);
@@ -197,13 +201,13 @@ ECode CharArrayWriter::WriteTo(
     return out->WriteCharsEx(*mBuf, 0, mCount);
 }
 
-ECode CharArrayWriter::AppendChar(
+ECode CharArrayWriter::Append(
     /* [in] */ Char32 c)
 {
     return Write(c);
 }
 
-ECode CharArrayWriter::AppendCharSequence(
+ECode CharArrayWriter::Append(
     /* [in] */ ICharSequence* csq)
 {
     if (NULL == csq) {
@@ -215,7 +219,7 @@ ECode CharArrayWriter::AppendCharSequence(
     return AppendCharSequenceEx(csq, 0, number);
 }
 
-ECode CharArrayWriter::AppendCharSequence(
+ECode CharArrayWriter::Append(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
