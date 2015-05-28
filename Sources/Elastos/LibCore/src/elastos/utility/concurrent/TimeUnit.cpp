@@ -1,6 +1,6 @@
 
 #include "TimeUnit.h"
-#include <elastos/Thread.h>
+#include "Thread.h"
 
 using Elastos::Core::Thread;
 
@@ -20,6 +20,8 @@ const Int64 TimeUnit::MAX = Elastos::Core::Math::INT64_MAX_VALUE;
 //=============================================================
 // TimeUnit
 //=============================================================
+CAR_INTERFACE_IMPL(TimeUnit, Object, ITimeUnit);
+
 Int64 TimeUnit::X(
     /* [in] */ Int64 d,
     /* [in] */ Int64 m,
@@ -117,7 +119,6 @@ AutoPtr<ITimeUnit> TimeUnit::GetDAYS()
 //=============================================================
 // NANOSECONDS
 //=============================================================
-CAR_INTERFACE_IMPL(NANOSECONDS, ITimeUnit)
 
 ECode NANOSECONDS::Convert(
     /* [in] */ Int64 sourceDuration,
@@ -201,31 +202,9 @@ ECode NANOSECONDS::ExcessNanos(
     return NOERROR;
 }
 
-ECode NANOSECONDS::TimedWait(
-    /* [in] */ ISynchronize* obj,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedWait(obj, timeout);
-}
-
-ECode NANOSECONDS::TimedJoin(
-    /* [in] */ IThread* thread,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedJoin(thread, timeout);
-}
-
-ECode NANOSECONDS::Sleep(
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::Sleep(timeout);
-}
-
-
 //=============================================================
 // MICROSECONDS
 //=============================================================
-CAR_INTERFACE_IMPL(MICROSECONDS, ITimeUnit)
 
 ECode MICROSECONDS::Convert(
     /* [in] */ Int64 sourceDuration,
@@ -309,31 +288,9 @@ ECode MICROSECONDS::ExcessNanos(
     return NOERROR;
 }
 
-ECode MICROSECONDS::TimedWait(
-    /* [in] */ ISynchronize* obj,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedWait(obj, timeout);
-}
-
-ECode MICROSECONDS::TimedJoin(
-    /* [in] */ IThread* thread,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedJoin(thread, timeout);
-}
-
-ECode MICROSECONDS::Sleep(
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::Sleep(timeout);
-}
-
-
 //=============================================================
 // MILLISECONDS
 //=============================================================
-CAR_INTERFACE_IMPL(MILLISECONDS, ITimeUnit)
 
 ECode MILLISECONDS::Convert(
     /* [in] */ Int64 sourceDuration,
@@ -417,31 +374,9 @@ ECode MILLISECONDS::ExcessNanos(
     return NOERROR;
 }
 
-ECode MILLISECONDS::TimedWait(
-    /* [in] */ ISynchronize* obj,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedWait(obj, timeout);
-}
-
-ECode MILLISECONDS::TimedJoin(
-    /* [in] */ IThread* thread,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedJoin(thread, timeout);
-}
-
-ECode MILLISECONDS::Sleep(
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::Sleep(timeout);
-}
-
-
 //=============================================================
 // SECONDS
 //=============================================================
-CAR_INTERFACE_IMPL(SECONDS, ITimeUnit)
 
 ECode SECONDS::Convert(
     /* [in] */ Int64 sourceDuration,
@@ -525,31 +460,9 @@ ECode SECONDS::ExcessNanos(
     return NOERROR;
 }
 
-ECode SECONDS::TimedWait(
-    /* [in] */ ISynchronize* obj,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedWait(obj, timeout);
-}
-
-ECode SECONDS::TimedJoin(
-    /* [in] */ IThread* thread,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedJoin(thread, timeout);
-}
-
-ECode SECONDS::Sleep(
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::Sleep(timeout);
-}
-
-
 //=============================================================
 // MINUTES
 //=============================================================
-CAR_INTERFACE_IMPL(MINUTES, ITimeUnit)
 
 ECode MINUTES::Convert(
     /* [in] */ Int64 sourceDuration,
@@ -633,31 +546,9 @@ ECode MINUTES::ExcessNanos(
     return NOERROR;
 }
 
-ECode MINUTES::TimedWait(
-    /* [in] */ ISynchronize* obj,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedWait(obj, timeout);
-}
-
-ECode MINUTES::TimedJoin(
-    /* [in] */ IThread* thread,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedJoin(thread, timeout);
-}
-
-ECode MINUTES::Sleep(
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::Sleep(timeout);
-}
-
-
 //=============================================================
 // HOURS
 //=============================================================
-CAR_INTERFACE_IMPL(HOURS, ITimeUnit)
 
 ECode HOURS::Convert(
     /* [in] */ Int64 sourceDuration,
@@ -741,31 +632,9 @@ ECode HOURS::ExcessNanos(
     return NOERROR;
 }
 
-ECode HOURS::TimedWait(
-    /* [in] */ ISynchronize* obj,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedWait(obj, timeout);
-}
-
-ECode HOURS::TimedJoin(
-    /* [in] */ IThread* thread,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedJoin(thread, timeout);
-}
-
-ECode HOURS::Sleep(
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::Sleep(timeout);
-}
-
-
 //=============================================================
 // DAYS
 //=============================================================
-CAR_INTERFACE_IMPL(DAYS, ITimeUnit)
 
 ECode DAYS::Convert(
     /* [in] */ Int64 sourceDuration,
@@ -847,26 +716,6 @@ ECode DAYS::ExcessNanos(
     VALIDATE_NOT_NULL(result);
     *result = 0;
     return NOERROR;
-}
-
-ECode DAYS::TimedWait(
-    /* [in] */ ISynchronize* obj,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedWait(obj, timeout);
-}
-
-ECode DAYS::TimedJoin(
-    /* [in] */ IThread* thread,
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::TimedJoin(thread, timeout);
-}
-
-ECode DAYS::Sleep(
-    /* [in] */ Int64 timeout)
-{
-    return TimeUnit::Sleep(timeout);
 }
 
 } // namespace Concurrent

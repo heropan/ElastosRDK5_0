@@ -1,14 +1,16 @@
 
-#ifndef __TIMEUNIT_H__
-#define __TIMEUNIT_H__
+#ifndef __ELASTOS_UTILITY_CONCURRENT_TIMEUNIT_H__
+#define __ELASTOS_UTILITY_CONCURRENT_TIMEUNIT_H__
 
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #else
 #include "Elastos.CoreLibrary.h"
 #endif
-#include <elastos/Math.h>
+#include <elastos/core/Object.h>
+#include "Math.h"
 
+using Elastos::Core::Object;
 using Elastos::Core::ISynchronize;
 using Elastos::Core::IThread;
 
@@ -50,17 +52,6 @@ using Elastos::Core::IThread;
         /* [in] */ Int64 d,                                             \
         /* [in] */ Int64 m,                                             \
         /* [out] */ Int32* result);                                     \
-                                                                        \
-    CARAPI TimedWait(                                                   \
-        /* [in] */ ISynchronize* obj,                                   \
-        /* [in] */ Int64 timeout);                                      \
-                                                                        \
-    CARAPI TimedJoin(                                                   \
-        /* [in] */ IThread* thread,                                     \
-        /* [in] */ Int64 timeout);                                      \
-                                                                        \
-    CARAPI Sleep(                                                       \
-        /* [in] */ Int64 timeout);                                      \
 
 
 namespace Elastos {
@@ -68,8 +59,12 @@ namespace Utility {
 namespace Concurrent {
 
 class TimeUnit
+    : public Object
+    , public ITimeUnit
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Scale d by m, checking for overflow.
      * This has a short name to make above code more readable.
@@ -156,78 +151,64 @@ public:
 };
 
 class NANOSECONDS
-    : public ElRefBase
-    , public ITimeUnit
-    , public TimeUnit
+    : public TimeUnit
 {
 public:
-    CAR_INTERFACE_DECL();
+//    CAR_INTERFACE_DECL();
 
     ITIMEUNIT_METHODS_DECL();
 };
 
 class MICROSECONDS
-    : public ElRefBase
-    , public ITimeUnit
-    , public TimeUnit
+    : public TimeUnit
 {
 public:
-    CAR_INTERFACE_DECL();
+//    CAR_INTERFACE_DECL();
 
     ITIMEUNIT_METHODS_DECL();
 };
 
 class MILLISECONDS
-    : public ElRefBase
-    , public ITimeUnit
-    , public TimeUnit
+    : public TimeUnit
 {
 public:
-    CAR_INTERFACE_DECL();
+//    CAR_INTERFACE_DECL();
 
     ITIMEUNIT_METHODS_DECL();
 };
 
 class SECONDS
-    : public ElRefBase
-    , public ITimeUnit
-    , public TimeUnit
+    : public TimeUnit
 {
 public:
-    CAR_INTERFACE_DECL();
+//    CAR_INTERFACE_DECL();
 
     ITIMEUNIT_METHODS_DECL();
 };
 
 class MINUTES
-    : public ElRefBase
-    , public ITimeUnit
-    , public TimeUnit
+    : public TimeUnit
 {
 public:
-    CAR_INTERFACE_DECL();
+//    CAR_INTERFACE_DECL();
 
     ITIMEUNIT_METHODS_DECL();
 };
 
 class HOURS
-    : public ElRefBase
-    , public ITimeUnit
-    , public TimeUnit
+    : public TimeUnit
 {
 public:
-    CAR_INTERFACE_DECL();
+//    CAR_INTERFACE_DECL();
 
     ITIMEUNIT_METHODS_DECL();
 };
 
 class DAYS
-    : public ElRefBase
-    , public ITimeUnit
-    , public TimeUnit
+    : public TimeUnit
 {
 public:
-    CAR_INTERFACE_DECL();
+//    CAR_INTERFACE_DECL();
 
     ITIMEUNIT_METHODS_DECL();
 };
@@ -236,4 +217,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__TIMEUNIT_H__
+#endif //__ELASTOS_UTILITY_CONCURRENT_TIMEUNIT_H__

@@ -2,3 +2,6 @@
 DIRS += concurrent
 DIRS += etl
 DIRS += logging
+DIRS += jar
+DIRS += regex
+DIRS += zip
