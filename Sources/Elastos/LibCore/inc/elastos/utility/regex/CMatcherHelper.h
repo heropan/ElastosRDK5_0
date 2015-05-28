@@ -2,9 +2,10 @@
 #ifndef __REGEX_CMATCHERHELPER_H__
 #define __REGEX_CMATCHERHELPER_H__
 
-#include "_Elastos_Utility_CMatcherHelper.h"
-#include "Singleton.h"
-#include "Object.h"
+#include "_Elastos_Utility_Regex_CMatcherHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {

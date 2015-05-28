@@ -12,9 +12,9 @@ INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/regex;
 
-//SOURCES += CMatcher.cpp
-//SOURCES += CMatcherHelper.cpp
-//SOURCES += CPatternHelper.cpp
-//SOURCES += CSplitter.cpp
-//SOURCES += MatchResultImpl.cpp
-//SOURCES += Pattern.cpp
+SOURCES += CMatcher.cpp
+SOURCES += CMatcherHelper.cpp
+SOURCES += CPatternHelper.cpp
+SOURCES += CSplitter.cpp
+SOURCES += MatchResultImpl.cpp
+SOURCES += Pattern.cpp

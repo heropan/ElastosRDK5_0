@@ -2,13 +2,13 @@
 #ifndef __REGEX_MATCHRESULTIMPL_H__
 #define __REGEX_MATCHRESULTIMPL_H__
 
-#include "Elastos.CoreLibrary_server.h"
-#include "Object.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
 namespace Regex {
-
 
 /**
  * Holds the results of a successful match of a regular expression against a

@@ -2,17 +2,17 @@
 #ifndef __REGEX_CMATCHER_H__
 #define __REGEX_CMATCHER_H__
 
-#include "_Elastos_Utility_CMatcher.h"
+#include "_Elastos_Utility_Regex_CMatcher.h"
+#include <elastos/core/Object.h>
 #include <unicode/regex.h>
 #include <elastos.h>
-#include <elastos/StringBuffer.h>
-#include <Elastos.CoreLibrary_server.h>
-#include "Object.h"
+//#include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IStringBuffer;
-using Elastos::Core::StringBuffer;
+//using Elastos::Core::StringBuffer;
 using U_ICU_NAMESPACE::RegexMatcher;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
@@ -419,9 +419,9 @@ private:
      * @param s
      *            the string to append.
      */
-    CARAPI AppendEvaluated(
-        /* [in] */ StringBuffer* s,
-        /* [in] */ const String& result);
+    // CARAPI AppendEvaluated(
+    //     /* [in] */ StringBuffer* s,
+    //     /* [in] */ const String& result);
 
     /**
      * Resets the Matcher. A new input sequence and a new region can be

@@ -2,12 +2,12 @@
 #ifndef __REGEX_PATTERN_H__
 #define __REGEX_PATTERN_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include <unicode/regex.h>
-#include "Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 using U_ICU_NAMESPACE::RegexPattern;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {

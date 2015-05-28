@@ -1102,47 +1102,47 @@ module
     // } // namespace Elastos
 
 
-    // namespace Elastos {
-    // namespace Utility {
-    // namespace Regex {
+    namespace Elastos {
+    namespace Utility {
+    namespace Regex {
 
-    // /**
-    //  * The result of applying a {@code Pattern} to a given input. See {@link Pattern} for
-    //  * example uses.
-    //  */
-    // class CMatcher {
-    //     /**
-    //      * Creates a matcher for a given combination of pattern and input. Both
-    //      * elements can be changed later on.
-    //      *
-    //      * @param pattern
-    //      *            the pattern to use.
-    //      * @param input
-    //      *            the input to use.
-    //      */
-    //     constructor(
-    //         [in] IPattern* pattern,
-    //         [in] Elastos.Core.ICharSequence* inputSeq);
+    /**
+     * The result of applying a {@code Pattern} to a given input. See {@link Pattern} for
+     * example uses.
+     */
+    class CMatcher {
+        /**
+         * Creates a matcher for a given combination of pattern and input. Both
+         * elements can be changed later on.
+         *
+         * @param pattern
+         *            the pattern to use.
+         * @param input
+         *            the input to use.
+         */
+        constructor(
+            [in] IPattern* pattern,
+            [in] Elastos.Core.ICharSequence* inputSeq);
 
-    //     interface IMatcher;
-    //     interface IMatchResult;
-    // }
+        interface IMatcher;
+        interface IMatchResult;
+    }
 
-    // singleton class CMatcherHelper {
-    //     interface IMatcherHelper;
-    // }
+    singleton class CMatcherHelper {
+        interface IMatcherHelper;
+    }
 
-    // singleton class CSplitter {
-    //     interface ISplitter;
-    // }
+    singleton class CSplitter {
+        interface ISplitter;
+    }
 
-    // singleton class CPatternHelper {
-    //     interface IPatternHelper;
-    // }
+    singleton class CPatternHelper {
+        interface IPatternHelper;
+    }
 
-    // } // namespace Regex
-    // } // namesapce Utility
-    // } // namespace Elastos
+    } // namespace Regex
+    } // namesapce Utility
+    } // namespace Elastos
 
 
     // interface Elastos.IO.IOutputStream;
