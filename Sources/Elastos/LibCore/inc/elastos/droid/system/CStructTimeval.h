@@ -2,18 +2,27 @@
 #ifndef __CSTRUCTTIMEVAL_H__
 #define __CSTRUCTTIMEVAL_H__
 
-#include "_CStructTimeval.h"
+#include "coredef.h"
+#include "core/Object.h"
+#include "_Elastos_Droid_System_CStructTimeval.h"
 
-namespace Libcore {
-namespace IO {
+using Elastos::Core::Object;
+
+namespace Elastos {
+namespace Droid {
+namespace System {
 
 /**
  * Corresponds to C's {@code struct timeval} from
  * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_time.h.html">&lt;sys/time.h&gt;</a>
  */
-CarClass(CStructTimeval)
+CarClass(CStructTimeval) , public Object
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetSec(
         /* [out] */ Int64* sec);
 
@@ -39,7 +48,8 @@ private:
     Int64 tv_usec;
 };
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __CSTRUCTTIMEVAL_H__

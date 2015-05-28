@@ -2,19 +2,28 @@
 #ifndef __CSTRUCTUTSNAME_H__
 #define __CSTRUCTUTSNAME_H__
 
-#include "_CStructUtsname.h"
+#include "coredef.h"
+#include "core/Object.h"
+#include "_Elastos_Droid_System_CStructUtsname.h"
 
-namespace Libcore {
-namespace IO {
+using Elastos::Core::Object;
+
+namespace Elastos {
+namespace Droid {
+namespace System {
 
 /**
  * Information returned by uname(2). Corresponds to C's
  * {@code struct utsname} from
  * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_utsname.h.html">&lt;sys/utsname.h&gt;</a>
  */
-CarClass(CStructUtsname)
+CarClass(CStructUtsname) , public Object
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetSysname(
         /* [out] */ String* sysname);
 
@@ -54,7 +63,8 @@ private:
     String mMachine;
 };
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __CSTRUCTUTSNAME_H__

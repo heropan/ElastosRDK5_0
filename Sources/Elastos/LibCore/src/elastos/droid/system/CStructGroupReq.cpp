@@ -1,12 +1,16 @@
 
-#include "cmdef.h"
 #include "CStructGroupReq.h"
-#include "StringUtils.h"
+#include "core/StringUtils.h"
 
 using Elastos::Core::StringUtils;
 
-namespace Libcore {
-namespace IO {
+namespace Elastos {
+namespace Droid {
+namespace System {
+
+CAR_OBJECT_IMPL(CStructGroupReq)
+
+CAR_INTERFACE_IMPL(CStructGroupReq, Object, IStructGroupReq)
 
 ECode CStructGroupReq::constructor(
     /* [in] */ Int32 gr_interface,
@@ -32,7 +36,7 @@ ECode CStructGroupReq::GetGrGroup(
     VALIDATE_NOT_NULL(grGroup)
 
     *grGroup = mGr_group;
-    INTERFACE_ADDREF(*grGroup)
+    REFCOUNT_ADD(*grGroup)
     return NOERROR;
 }
 
@@ -42,14 +46,16 @@ ECode CStructGroupReq::ToString(
     VALIDATE_NOT_NULL(str)
 
     String outstr;
-    mGr_group->ToString(&outstr);
+    IObject* obj = IObject::Probe(mGr_group);
+    obj->ToString(&outstr);
     *str = String("StructGroupReq[gr_interface=")
-            + StringUtils::Int32ToString(mGr_interface)
+            // + StringUtils::Int32ToString(mGr_interface)
             + String(",gr_group=")
             + outstr
             + String("]");
     return NOERROR;
 }
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos

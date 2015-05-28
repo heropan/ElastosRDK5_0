@@ -1,11 +1,16 @@
 
-#ifndef __CSTRUCTSTATFS_H__
-#define __CSTRUCTSTATFS_H__
+#ifndef __CStructStatVfs_H__
+#define __CStructStatVfs_H__
 
-#include "_CStructStatFs.h"
+#include "coredef.h"
+#include "core/Object.h"
+#include "_Elastos_Droid_System_CStructStatVfs.h"
 
-namespace Libcore {
-namespace IO {
+using Elastos::Core::Object;
+
+namespace Elastos {
+namespace Droid {
+namespace System {
 
 /**
  * File information returned by fstatfs(2) and statfs(2).
@@ -13,9 +18,13 @@ namespace IO {
  * TODO: this should be {@code struct statvfs}, but Bionic doesn't support that yet.
  * @hide until the TODO is fixed.
  */
-CarClass(CStructStatFs)
+CarClass(CStructStatVfs) , public Object
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetBsize(
         /* [out] */ Int64* bsize);
 
@@ -36,6 +45,15 @@ public:
 
     CARAPI GetNamemax(
         /* [out] */ Int64* namemax);
+
+    CARAPI GetFavail(
+        /* [out] */ Int64* favail);
+
+    CARAPI GetFsid(
+        /* [out] */ Int64* fsid);
+
+    CARAPI GetFlag(
+        /* [out] */ Int64* flag);
 
     CARAPI GetFrsize(
         /* [out] */ Int64* frsize);
@@ -72,11 +90,20 @@ private:
     /** Maximum filename length. */
     Int64 f_namemax; /*unsigned long*/
 
+    Int64 f_favail; /*fsfilcnt_t*/
+
+  /** File system id. */
+    Int64 f_fsid; /*unsigned long*/
+
+  /** Bit mask of ST_* flags. */
+    Int64 f_flag; /*unsigned long*/
+
     /** Fundamental file system block size. */
     Int64 f_frsize; /*unsigned long*/
 };
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos
 
-#endif // __CSTRUCTSTATFS_H__
+#endif // __CStructStatVfs_H__

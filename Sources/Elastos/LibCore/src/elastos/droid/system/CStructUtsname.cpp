@@ -1,9 +1,13 @@
 
-#include "cmdef.h"
 #include "CStructUtsname.h"
 
-namespace Libcore {
-namespace IO {
+namespace Elastos {
+namespace Droid {
+namespace System {
+
+CAR_OBJECT_IMPL(CStructUtsname)
+
+CAR_INTERFACE_IMPL(CStructUtsname, Object, IStructUtsname)
 
 ECode CStructUtsname::GetSysname(
     /* [out] */ String* sysname)
@@ -65,5 +69,6 @@ ECode CStructUtsname::constructor(
     return NOERROR;
 }
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos

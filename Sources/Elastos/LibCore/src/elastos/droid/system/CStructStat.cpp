@@ -1,9 +1,12 @@
 
-#include "cmdef.h"
 #include "CStructStat.h"
 
-namespace Libcore {
-namespace IO {
+namespace Elastos {
+namespace Droid {
+namespace System {
+CAR_OBJECT_IMPL(CStructStat)
+
+CAR_INTERFACE_IMPL(CStructStat, Object, IStructStat)
 
 ECode CStructStat::GetDev(
     /* [out] */ Int64* dev)
@@ -153,5 +156,6 @@ ECode CStructStat::constructor(
     return NOERROR;
 }
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos

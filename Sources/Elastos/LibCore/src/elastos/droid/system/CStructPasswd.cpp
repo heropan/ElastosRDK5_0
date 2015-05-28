@@ -1,9 +1,12 @@
 
-#include "cmdef.h"
 #include "CStructPasswd.h"
 
-namespace Libcore {
-namespace IO {
+namespace Elastos {
+namespace Droid {
+namespace System {
+CAR_OBJECT_IMPL(CStructPasswd)
+
+CAR_INTERFACE_IMPL(CStructPasswd, Object, IStructPasswd)
 
 ECode CStructPasswd::GetName(
     /* [out] */ String* name)
@@ -65,5 +68,6 @@ ECode CStructPasswd::constructor(
     return NOERROR;
 }
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos

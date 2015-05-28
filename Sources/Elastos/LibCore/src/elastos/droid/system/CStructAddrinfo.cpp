@@ -1,12 +1,15 @@
 
-#include <cmdef.h>
 #include <CStructAddrinfo.h>
 
-using Elastos::Net::EIID_IInet4Address;
-using Elastos::Net::EIID_IInet6Address;
+// using Elastos::Net::EIID_IInet4Address;
+// using Elastos::Net::EIID_IInet6Address;
 
-namespace Libcore {
-namespace IO {
+namespace Elastos {
+namespace Droid {
+namespace System {
+CAR_OBJECT_IMPL(CStructAddrinfo)
+
+CAR_INTERFACE_IMPL(CStructAddrinfo, Object, IStructAddrinfo)
 
 ECode CStructAddrinfo::constructor()
 {
@@ -83,16 +86,16 @@ ECode CStructAddrinfo::SetProtocol(
 ECode CStructAddrinfo::GetAddrlen(
     /* [out] */ Int32* addrlen)
 {
-    VALIDATE_NOT_NULL(addrlen);
-    if(ai_addr->Probe(EIID_IInet4Address))
-    {
-        *addrlen = 4;
-    }else if(ai_addr->Probe(EIID_IInet6Address))
-    {
-        *addrlen = 16;
-    }else{
-        *addrlen = 0;
-    }
+    // VALIDATE_NOT_NULL(addrlen);
+    // if(ai_addr->Probe(EIID_IInet4Address))
+    // {
+    //     *addrlen = 4;
+    // }else if(ai_addr->Probe(EIID_IInet6Address))
+    // {
+    //     *addrlen = 16;
+    // }else{
+    //     *addrlen = 0;
+    // }
     return NOERROR;
 }
 
@@ -101,7 +104,6 @@ ECode CStructAddrinfo::GetAddr(
 {
     VALIDATE_NOT_NULL(addr);
     *addr = ai_addr;
-    INTERFACE_ADDREF(*addr);
     return NOERROR;
 }
 
@@ -117,7 +119,7 @@ ECode CStructAddrinfo::GetNext(
 {
     VALIDATE_NOT_NULL(next);
     *next = ai_next;
-    INTERFACE_ADDREF(*next);
+    REFCOUNT_ADD(*next);
     return NOERROR;
 }
 
@@ -128,5 +130,6 @@ ECode CStructAddrinfo::SetNext(
     return NOERROR;
 }
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos

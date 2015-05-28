@@ -2,13 +2,16 @@
 #ifndef __CZYGOTE_H__
 #define __CZYGOTE_H__
 
-#include "_CZygote.h"
+#include "_Elastos_Droid_System_CZygote.h"
+#include "core/Singleton.h"
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
 namespace System {
 
-CarClass(CZygote)
+CarClass(CZygote) , public Singleton
 {
 public:
     /**
@@ -34,6 +37,10 @@ public:
      * @return 0 if this is the child, pid of the child
      * if this is the parent, or -1 on error.
      */
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI ForkAndSpecialize(
         /* [in] */ Int32 uid,
         /* [in] */ Int32 gid,

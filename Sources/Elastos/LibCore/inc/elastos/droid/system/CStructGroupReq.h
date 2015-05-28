@@ -2,19 +2,27 @@
 #ifndef __CSTRUCTGROUPREQ_H__
 #define __CSTRUCTGROUPREQ_H__
 
-#include "_CStructGroupReq.h"
+#include "coredef.h"
+#include "core/Object.h"
+#include "_Elastos_Droid_System_CStructGroupReq.h"
 
-using Elastos::Net::IInetAddress;
+using Elastos::Core::Object;
+// using Elastos::Net::IInetAddress;
 
-namespace Libcore {
-namespace IO {
+namespace Elastos {
+namespace Droid {
+namespace System {
 
 /**
  * Corresponds to C's {@code struct group_req}.
  */
-CarClass(CStructGroupReq)
+CarClass(CStructGroupReq) , public Object
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor(
         /* [in] */ Int32 gr_interface,
         /* [in] */ IInetAddress* gr_group);
@@ -33,7 +41,8 @@ public:
     AutoPtr<IInetAddress> mGr_group;
 };
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __CSTRUCTGROUPREQ_H__

@@ -1,9 +1,12 @@
 
-#include "cmdef.h"
 #include "CStructPollfd.h"
 
-namespace Libcore {
-namespace IO {
+namespace Elastos {
+namespace Droid {
+namespace System {
+CAR_OBJECT_IMPL(CStructPollfd)
+
+CAR_INTERFACE_IMPL(CStructPollfd, Object, IStructPollfd)
 
 ECode CStructPollfd::GetFd(
     /* [out] */ Int32* fd)
@@ -59,7 +62,7 @@ ECode CStructPollfd::GetUserData(
     VALIDATE_NOT_NULL(userData);
 
     *userData = mUserData;
-    INTERFACE_ADDREF(*userData);
+    REFCOUNT_ADD(*userData);
     return NOERROR;
 }
 
@@ -70,5 +73,6 @@ ECode CStructPollfd::SetUserData(
     return NOERROR;
 }
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos

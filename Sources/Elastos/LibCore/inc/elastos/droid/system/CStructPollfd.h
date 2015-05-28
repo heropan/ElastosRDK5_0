@@ -2,18 +2,27 @@
 #ifndef __CSTRUCTPOLLFD_H__
 #define __CSTRUCTPOLLFD_H__
 
-#include "_CStructPollfd.h"
+#include "coredef.h"
+#include "core/Object.h"
+#include "_Elastos_Droid_System_CStructPollfd.h"
 
-namespace Libcore {
-namespace IO {
+using Elastos::Core::Object;
+
+namespace Elastos {
+namespace Droid {
+namespace System {
 
 /**
  * Corresponds to C's {@code struct pollfd} from
  * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/poll.h.html">&lt;poll.h&gt;</a>
  */
-CarClass(CStructPollfd)
+CarClass(CStructPollfd) , public Object
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /** The file descriptor to poll. */
     CARAPI GetFd(
         /* [out] */ Int32* fd);
@@ -70,7 +79,8 @@ private:
     AutoPtr<IInterface> mUserData;
 };
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos
 
 #endif //__CSTRUCTPOLLFD_H__

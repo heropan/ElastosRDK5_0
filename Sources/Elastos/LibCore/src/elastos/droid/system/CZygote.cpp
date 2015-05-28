@@ -1,8 +1,7 @@
 
-#include "cmdef.h"
 #include "CZygote.h"
-#include <elastos/Logger.h>
-#include <elastos/Thread.h>
+#include "core/Thread.h"
+#include "logging/Logger.h"
 #include <Elastos.CoreLibrary.h>
 #ifdef HAVE_SELINUX
 #include <selinux/android.h>
@@ -21,7 +20,7 @@
 
 using Elastos::Core::Thread;
 using Elastos::IO::IFile;
-using Elastos::IO::CFile;
+// using Elastos::IO::CFile;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -34,6 +33,10 @@ static const String TAG("CZygote");
 Boolean CZygote::sSystemInSafeMode = FALSE;
 static const Boolean DEBUG = FALSE;
 
+CAR_SINGLETON_IMPL(CZygote)
+
+CAR_INTERFACE_IMPL(CZygote, Object, IZygote)
+
 void CZygote::PreFork()
 {
     // Daemons.stop();
@@ -43,7 +46,7 @@ void CZygote::PreFork()
 void CZygote::WaitUntilAllThreadsStopped()
 {
     AutoPtr<IFile> tasks;
-    CFile::New(String("/proc/self/task"), (IFile**)&tasks);
+    // CFile::New(String("/proc/self/task"), (IFile**)&tasks);
     AutoPtr< ArrayOf<String> > files;
     tasks->List((ArrayOf<String>**)&files);
     while (files != NULL && files->GetLength() > 1) {
@@ -128,34 +131,34 @@ static void sigchldHandler(int s)
            become unsafe. */
         if (WIFEXITED(status)) {
             if (WEXITSTATUS(status)) {
-                Logger::D(TAG, "Process %d exited cleanly (%d)",
-                    (int)pid, WEXITSTATUS(status));
+                // Logger::D(TAG, "Process %d exited cleanly (%d)",
+                //     (int)pid, WEXITSTATUS(status));
             }
             else {
                 if (DEBUG) {
-                    Logger::V(TAG,
-                        "Process %d exited cleanly (%d)",
-                        (int)pid, WEXITSTATUS(status));
+                    // Logger::V(TAG,
+                    //     "Process %d exited cleanly (%d)",
+                    //     (int)pid, WEXITSTATUS(status));
                 }
             }
         }
         else if (WIFSIGNALED(status)) {
             if (WTERMSIG(status) != SIGKILL) {
-                Logger::D(TAG,
-                    "Process %d terminated by signal (%d)",
-                    (int)pid, WTERMSIG(status));
+                // Logger::D(TAG,
+                //     "Process %d terminated by signal (%d)",
+                //     (int)pid, WTERMSIG(status));
             }
             else {
                 if (DEBUG) {
-                    Logger::V(TAG,
-                        "Process %d terminated by signal (%d)",
-                        (int)pid, WTERMSIG(status));
+                    // Logger::V(TAG,
+                    //     "Process %d terminated by signal (%d)",
+                    //     (int)pid, WTERMSIG(status));
                 }
             }
 #ifdef WCOREDUMP
             if (WCOREDUMP(status)) {
-                Logger::V(TAG, "Process %d dumped core",
-                    (int)pid);
+                // Logger::V(TAG, "Process %d dumped core",
+                //     (int)pid);
             }
 #endif /* ifdef WCOREDUMP */
         }
@@ -166,16 +169,16 @@ static void sigchldHandler(int s)
          * from there.
          */
         if (pid == sSystemServerPid) {
-            Logger::V(TAG,
-                "Exit zygote because system server (%d) has terminated",
-                (int)pid);
+            // Logger::V(TAG,
+            //     "Exit zygote because system server (%d) has terminated",
+            //     (int)pid);
             kill(getpid(), SIGKILL);
         }
     }
 
     if (pid < 0) {
-        Logger::W(TAG,
-            "Zygote SIGCHLD error in waitpid: %s", strerror(errno));
+        // Logger::W(TAG,
+        //     "Zygote SIGCHLD error in waitpid: %s", strerror(errno));
     }
 }
 
@@ -200,7 +203,7 @@ static void SetSignalHandler()
    err = sigaction(SIGCHLD, &sa, NULL);
 
    if (err < 0) {
-       Logger::W(TAG, "Error setting SIGCHLD handler: %s", strerror(errno));
+       // Logger::W(TAG, "Error setting SIGCHLD handler: %s", strerror(errno));
    }
 }
 
@@ -219,7 +222,7 @@ static void UnsetSignalHandler()
    err = sigaction(SIGCHLD, &sa, NULL);
 
    if (err < 0) {
-       Logger::W(TAG, "Error unsetting SIGCHLD handler: %s", strerror(errno));
+       // Logger::W(TAG, "Error unsetting SIGCHLD handler: %s", strerror(errno));
    }
 }
 
@@ -496,7 +499,7 @@ static int SetCapabilities(
     capdata.effective = effective;
     capdata.permitted = permitted;
 
-    Logger::V(TAG, "CAPSET perm=%llx eff=%llx", permitted, effective);
+    // Logger::V(TAG, "CAPSET perm=%llx eff=%llx", permitted, effective);
     if (capset(&capheader, &capdata) != 0)
         return errno;
 #endif /*HAVE_ANDROID_OS*/
@@ -583,7 +586,7 @@ static pid_t ForkAndSpecializeCommon(
             err = prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0);
 
             if (err < 0) {
-                Logger::E(TAG, "cannot PR_SET_KEEPCAPS: %s", strerror(errno));
+                // Logger::E(TAG, "cannot PR_SET_KEEPCAPS: %s", strerror(errno));
                 // dvmAbort();
             }
         }
@@ -593,7 +596,7 @@ static pid_t ForkAndSpecializeCommon(
         if (mountMode != MOUNT_EXTERNAL_NONE) {
             err = MountEmulatedStorage(uid, mountMode);
             if (err < 0) {
-                Logger::E(TAG, "cannot mountExternalStorage(): %s", strerror(errno));
+                // Logger::E(TAG, "cannot mountExternalStorage(): %s", strerror(errno));
 
                 if (errno == ENOTCONN || errno == EROFS) {
                     // When device is actively encrypting, we get ENOTCONN here
@@ -610,51 +613,51 @@ static pid_t ForkAndSpecializeCommon(
 
         err = SetgroupsIntarray(gids);
         if (err < 0) {
-            Logger::E(TAG, "cannot setgroups(): %s", strerror(errno));
+            // Logger::E(TAG, "cannot setgroups(): %s", strerror(errno));
             // dvmAbort();
         }
 
         err = SetrlimitsFromArray(rlimits);
         if (err < 0) {
-            Logger::E(TAG, "cannot setrlimit(): %s", strerror(errno));
+            // Logger::E(TAG, "cannot setrlimit(): %s", strerror(errno));
             // dvmAbort();
         }
 
         err = setgid(gid);
         if (err < 0) {
-            Logger::E(TAG, "cannot setgid(%d): %s", gid, strerror(errno));
+            // Logger::E(TAG, "cannot setgid(%d): %s", gid, strerror(errno));
             // dvmAbort();
         }
 
         err = setuid(uid);
         if (err < 0) {
-            Logger::E(TAG, "cannot setuid(%d): %s", uid, strerror(errno));
+            // Logger::E(TAG, "cannot setuid(%d): %s", uid, strerror(errno));
             // dvmAbort();
         }
 
         int current = personality(0xffffFFFF);
         int success = personality((ADDR_NO_RANDOMIZE | current));
         if (success == -1) {
-            Logger::W(TAG, "Personality switch failed. current=%d error=%d\n", current, errno);
+            // Logger::W(TAG, "Personality switch failed. current=%d error=%d\n", current, errno);
         }
 
         err = SetCapabilities(permittedCapabilities, effectiveCapabilities);
         if (err != 0) {
-            Logger::E(TAG, "cannot set capabilities (%llx,%llx): %s",
-                permittedCapabilities, effectiveCapabilities, strerror(err));
+            // Logger::E(TAG, "cannot set capabilities (%llx,%llx): %s",
+            //     permittedCapabilities, effectiveCapabilities, strerror(err));
             // dvmAbort();
         }
 
         err = set_sched_policy(0, SP_DEFAULT);
         if (err < 0) {
-            Logger::E(TAG, "cannot set_sched_policy(0, SP_DEFAULT): %s", strerror(-err));
+            // Logger::E(TAG, "cannot set_sched_policy(0, SP_DEFAULT): %s", strerror(-err));
             // dvmAbort();
         }
 
 #ifdef HAVE_SELINUX
         err = SetSELinuxContext(uid, true, seInfo, niceName);
         if (err < 0) {
-            Logger::E(TAG, "cannot set SELinux context: %s\n", strerror(errno));
+            // Logger::E(TAG, "cannot set SELinux context: %s\n", strerror(errno));
             // dvmAbort();
         }
         // These free(3) calls are safe because we know we're only ever forking
@@ -754,14 +757,14 @@ Int32 CZygote::NativeForkSystemServer(
     if (pid > 0) {
         int status;
 
-        Logger::I(TAG, "System server process %d has been created", pid);
+        // Logger::I(TAG, "System server process %d has been created", pid);
         sSystemServerPid = pid;
         /* There is a slight window that the system server process has crashed
          * but it went unnoticed because we haven't published its pid yet. So
          * we recheck here just to make sure that all is well.
          */
         if (waitpid(pid, &status, WNOHANG) == pid) {
-            Logger::E(TAG, "System server process %d has died. Restarting Zygote!", pid);
+            // Logger::E(TAG, "System server process %d has died. Restarting Zygote!", pid);
             kill(getpid(), SIGKILL);
         }
     }

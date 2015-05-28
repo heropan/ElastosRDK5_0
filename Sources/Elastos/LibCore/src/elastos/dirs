@@ -7,3 +7,4 @@ DIRS += io
 #DIRS += sql
 #DIRS += text
 DIRS += utility
+DIRS += droid/system

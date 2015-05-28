@@ -2,19 +2,28 @@
 #ifndef __CSTRUCTSTAT_H__
 #define __CSTRUCTSTAT_H__
 
-#include "_CStructStat.h"
+#include "coredef.h"
+#include "core/Object.h"
+#include "_Elastos_Droid_System_CStructStat.h"
 
-namespace Libcore {
-namespace IO {
+using Elastos::Core::Object;
+
+namespace Elastos {
+namespace Droid {
+namespace System {
 
 /**
  * File information returned by fstat(2), lstat(2), and stat(2). Corresponds to C's
  * {@code struct stat} from
  * <a href="http://www.opengroup.org/onlinepubs/000095399/basedefs/sys/stat.h.html">&lt;stat.h&gt;</a>
  */
-CarClass(CStructStat)
+CarClass(CStructStat) , public Object
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetDev(
         /* [out] */ Int64* dev);
 
@@ -119,7 +128,8 @@ private:
     Int64 st_blocks; /*blkcnt_t*/
 };
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __CSTRUCTSTAT_H__

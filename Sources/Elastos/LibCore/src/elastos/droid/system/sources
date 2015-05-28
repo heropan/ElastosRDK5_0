@@ -1,23 +1,26 @@
-TARGET_NAME= Elastos.Droid.System
-TARGET_TYPE= eco
 
-C_DEFINES += -DHAVE_SELINUX
-C_DEFINES += -DHAVE_ANDROID_OS
-C_DEFINES += -DHAVE_PRCTL
-CAR_FLAGS += -n -u
-LUBE_FLAGS += -n -u
+TARGET_NAME= system
+TARGET_TYPE= lib
 
-IMPORTS = Elastos.CoreLibrary.eco
+C_DEFINES += -DELASTOS_CORELIBRARY
 
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/io;
+include $(MAKEDIR)/../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/system;
 
-SOURCES = Elastos.Droid.System.car
-SOURCES += CZygote.cpp
-SOURCES += Elastos.CoreLibrary.cpp
-
-LIBRARIES = $(XDK_TARGETS)/Elastos.Runtime.eco
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
-LIBRARIES += $(XDK_USER_LIB)/crt0.lib
-LIBRARIES += -lm -llog -lcutils -lselinux -lstdc++ -licuuc -licui18n
+SOURCES = CZygote.cpp
+SOURCES += CStructAddrinfo.cpp
+SOURCES += CStructGroupReq.cpp
+SOURCES += CStructLinger.cpp
+SOURCES += CStructPasswd.cpp
+SOURCES += CStructPollfd.cpp
+SOURCES += CStructStat.cpp
+SOURCES += CStructStatVfs.cpp
+SOURCES += CStructTimeval.cpp
+SOURCES += CStructUtsname.cpp
+SOURCES += CStructGroupSourceReq.cpp

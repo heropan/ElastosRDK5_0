@@ -1,9 +1,12 @@
 
-#include "cmdef.h"
 #include "CStructTimeval.h"
 
-namespace Libcore {
-namespace IO {
+namespace Elastos {
+namespace Droid {
+namespace System {
+CAR_OBJECT_IMPL(CStructTimeval)
+
+CAR_INTERFACE_IMPL(CStructTimeval, Object, IStructTimeval)
 
 ECode CStructTimeval::GetSec(
     /* [out] */ Int64* sec)
@@ -52,5 +55,6 @@ ECode CStructTimeval::FromMillis(
     return CStructTimeval::New(tv_sec, tv_usec, tv);
 }
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos

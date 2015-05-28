@@ -1,3 +1,5 @@
 DIRS = core
-DIRS += droid
+DIRS += math
+DIRS += io
 DIRS += utility
+DIRS += droid

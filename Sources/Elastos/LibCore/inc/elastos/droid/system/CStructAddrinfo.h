@@ -1,16 +1,23 @@
 #ifndef __CSTRUCTADDRINFO_H__
 #define __CSTRUCTADDRINFO_H__
 
-#include <_CStructAddrinfo.h>
+#include "coredef.h"
+#include "core/Object.h"
+#include "_Elastos_Droid_System_CStructAddrinfo.h"
 
-using Elastos::Net::IInetAddress;
+using Elastos::Core::Object;
 
-namespace Libcore{
-namespace IO{
+namespace Elastos {
+namespace Droid {
+namespace System {
 
-CarClass(CStructAddrinfo)
+CarClass(CStructAddrinfo) , public Object
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor();
 
     CARAPI GetFlags(
@@ -69,7 +76,8 @@ private:
     AutoPtr<IStructAddrinfo> ai_next;
 };
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos
 
 #endif

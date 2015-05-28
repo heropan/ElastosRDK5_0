@@ -2,18 +2,27 @@
 #ifndef __CSTRUCTLINGER_H__
 #define __CSTRUCTLINGER_H__
 
-#include "_CStructLinger.h"
+#include "coredef.h"
+#include "core/Object.h"
+#include "_Elastos_Droid_System_CStructLinger.h"
 
-namespace Libcore {
-namespace IO {
+using Elastos::Core::Object;
+
+namespace Elastos {
+namespace Droid {
+namespace System {
 
 /**
  * Corresponds to C's {@code struct linger} from
  * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_socket.h.html">&lt;sys/socket.h&gt;</a>
  */
-CarClass(CStructLinger)
+CarClass(CStructLinger) , public Object
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetOnoff(
         /* [out] */ Int32* onoff);
 
@@ -35,7 +44,8 @@ private:
     Int32 mLinger;
 };
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __CSTRUCTLINGER_H__

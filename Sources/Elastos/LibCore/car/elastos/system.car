@@ -15,7 +15,6 @@ module
     merge("droid/system/IStructUtsname.car");
     merge("droid/system/IOsConstants.car");
 
-/*
     namespace Elastos {
     namespace Droid {
     namespace System {
@@ -24,8 +23,64 @@ module
         interface IZygote;
     }
 
+    class CStructAddrinfo {
+        interface IStructAddrinfo;
+    }
+
+    class CStructGroupReq {
+        interface IStructGroupReq;
+    }
+
+    class CStructLinger {
+        interface IStructLinger;
+    }
+
+    class CStructPasswd {
+        interface IStructPasswd;
+    }
+
+    class CStructPollfd {
+        interface IStructPollfd;
+    }
+
+    class CStructStat {
+        interface IStructStat;
+    }
+
+    class CStructStatVfs {
+        interface IStructStatVfs;
+    }
+
+    class CStructTimeval {
+        constructor(
+            [in] Int64 sec,
+            [in] Int64 usec);
+
+        interface IStructTimeval;
+    }
+
+    class CStructUtsname {
+        constructor(
+            [in] String sysname,
+            [in] String nodename,
+            [in] String release,
+            [in] String ver,
+            [in] String machine);
+
+        interface IStructUtsname;
+    }
+
+    class CStructGroupSourceReq {
+        constructor(
+            [in] Int32 itf,
+            [in] IInetAddress* group,
+            [in] IInetAddress* source);
+
+        interface IStructGroupSourceReq;
+    }
+
     } // namespace System
     } // namespace Droid
     } // namespace Elastos
-*/
+
 }

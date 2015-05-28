@@ -1,9 +1,13 @@
 
-#include "cmdef.h"
 #include "CStructLinger.h"
 
-namespace Libcore {
-namespace IO {
+namespace Elastos {
+namespace Droid {
+namespace System {
+
+CAR_OBJECT_IMPL(CStructLinger)
+
+CAR_INTERFACE_IMPL(CStructLinger, Object, IStructLinger)
 
 ECode CStructLinger::GetOnoff(
     /* [out] */ Int32* onoff)
@@ -41,5 +45,6 @@ ECode CStructLinger::constructor(
     return NOERROR;
 }
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos

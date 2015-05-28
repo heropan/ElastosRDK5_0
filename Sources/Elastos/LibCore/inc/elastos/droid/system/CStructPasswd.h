@@ -2,19 +2,28 @@
 #ifndef __CSTRUCTPASSWD_H__
 #define __CSTRUCTPASSWD_H__
 
-#include "_CStructPasswd.h"
+#include "coredef.h"
+#include "core/Object.h"
+#include "_Elastos_Droid_System_CStructPasswd.h"
 
-namespace Libcore {
-namespace IO {
+using Elastos::Core::Object;
+
+namespace Elastos {
+namespace Droid {
+namespace System {
 
 /**
  * Information returned by getpwnam(3) and getpwuid(3). Corresponds to C's
  * {@code struct passwd} from
  * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/pwd.h.html">&lt;pwd.h&gt;</a>
  */
-CarClass(CStructPasswd)
+CarClass(CStructPasswd) , public Object
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetName(
         /* [out] */ String* name);
 
@@ -45,7 +54,8 @@ private:
     String pw_shell;
 };
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __CSTRUCTPASSWD_H__

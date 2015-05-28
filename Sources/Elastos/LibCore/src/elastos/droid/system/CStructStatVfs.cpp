@@ -1,11 +1,14 @@
 
-#include "cmdef.h"
-#include "CStructStatFs.h"
+#include "CStructStatVfs.h"
 
-namespace Libcore {
-namespace IO {
+namespace Elastos {
+namespace Droid {
+namespace System {
+CAR_OBJECT_IMPL(CStructStatVfs)
 
-ECode CStructStatFs::GetBsize(
+CAR_INTERFACE_IMPL(CStructStatVfs, Object, IStructStatVfs)
+
+ECode CStructStatVfs::GetBsize(
     /* [out] */ Int64* bsize)
 {
     VALIDATE_NOT_NULL(bsize);
@@ -14,7 +17,7 @@ ECode CStructStatFs::GetBsize(
     return NOERROR;
 }
 
-ECode CStructStatFs::GetBlocks(
+ECode CStructStatVfs::GetBlocks(
     /* [out] */ Int64* blocks)
 {
     VALIDATE_NOT_NULL(blocks);
@@ -23,7 +26,7 @@ ECode CStructStatFs::GetBlocks(
     return NOERROR;
 }
 
-ECode CStructStatFs::GetBfree(
+ECode CStructStatVfs::GetBfree(
     /* [out] */ Int64* bfree)
 {
     VALIDATE_NOT_NULL(bfree);
@@ -32,7 +35,7 @@ ECode CStructStatFs::GetBfree(
     return NOERROR;
 }
 
-ECode CStructStatFs::GetBavail(
+ECode CStructStatVfs::GetBavail(
     /* [out] */ Int64* bavail)
 {
     VALIDATE_NOT_NULL(bavail);
@@ -41,7 +44,7 @@ ECode CStructStatFs::GetBavail(
     return NOERROR;
 }
 
-ECode CStructStatFs::GetFiles(
+ECode CStructStatVfs::GetFiles(
     /* [out] */ Int64* files)
 {
     VALIDATE_NOT_NULL(files);
@@ -50,7 +53,7 @@ ECode CStructStatFs::GetFiles(
     return NOERROR;
 }
 
-ECode CStructStatFs::GetFfree(
+ECode CStructStatVfs::GetFfree(
     /* [out] */ Int64* ffree)
 {
     VALIDATE_NOT_NULL(ffree);
@@ -59,7 +62,7 @@ ECode CStructStatFs::GetFfree(
     return NOERROR;
 }
 
-ECode CStructStatFs::GetNamemax(
+ECode CStructStatVfs::GetNamemax(
     /* [out] */ Int64* namemax)
 {
     VALIDATE_NOT_NULL(namemax);
@@ -68,7 +71,7 @@ ECode CStructStatFs::GetNamemax(
     return NOERROR;
 }
 
-ECode CStructStatFs::GetFrsize(
+ECode CStructStatVfs::GetFrsize(
     /* [out] */ Int64* frsize)
 {
     VALIDATE_NOT_NULL(frsize);
@@ -77,7 +80,28 @@ ECode CStructStatFs::GetFrsize(
     return NOERROR;
 }
 
-ECode CStructStatFs::constructor(
+ECode CStructStatVfs::GetFavail(
+    /* [out] */ Int64* favail)
+{
+    *favail = f_favail;
+    return NOERROR;
+}
+
+ECode CStructStatVfs::GetFsid(
+    /* [out] */ Int64* fsid)
+{
+    *fsid = f_fsid;
+    return NOERROR;
+}
+
+ECode CStructStatVfs::GetFlag(
+    /* [out] */ Int64* flag)
+{
+    *flag = f_flag;
+    return NOERROR;
+}
+
+ECode CStructStatVfs::constructor(
     /* [in] */ Int64 bsize,
     /* [in] */ Int64 blocks,
     /* [in] */ Int64 bfree,
@@ -98,5 +122,6 @@ ECode CStructStatFs::constructor(
     return NOERROR;
 }
 
-} // namespace IO
-} // namespace Libcore
+} // namespace System
+} // namespace Droid
+} // namespace Elastos

@@ -20,12 +20,15 @@ INCLUDES += $(MAKEDIR)/../../inc/elastos/sql/sqlite/jdbc
 //INCLUDES += $(MAKEDIR)/../../inc/elastos/text
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/regex
+INCLUDES += $(MAKEDIR)/../../inc/elastos/droid/system
 
 SOURCES = Elastos.CoreLibrary.car
 
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += core/core.lib
 //LIBRARIES += droid/droid.lib
+LIBRARIES += io/io.lib
+LIBRARIES += droid/system/system.lib
 //LIBRARIES += math/math.lib
 LIBRARIES += io/io.lib
 //LIBRARIES += net/net.lib
