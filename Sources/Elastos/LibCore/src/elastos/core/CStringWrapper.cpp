@@ -28,7 +28,7 @@ ECode CStringWrapper::GetLength(
     return NOERROR;
 }
 
-ECode CStringWrapper::GetCharAt(
+ECode CStringWrapper::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* c)
 {

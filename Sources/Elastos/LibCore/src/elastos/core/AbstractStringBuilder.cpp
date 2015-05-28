@@ -7,10 +7,7 @@
 #include "IntegralToString.h"
 #include "Character.h"
 #ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
 #include "CStringWrapper.h"
-#else
-#include "Elastos.CoreLibrary.h"
 #endif
 
 #if defined(_DEBUG) || defined(_ELASTOS_DEBUG)
@@ -19,8 +16,13 @@
 
 #define DEFAULT_STEP 16
 
+
+using Elastos::IO::EIID_ISerializable;
+
 namespace Elastos {
 namespace Core {
+
+CAR_INTERFACE_IMPL_3(AbstractStringBuilder, Object, IAppendable, ISerializable, ICharSequence)
 
 AbstractStringBuilder::AbstractStringBuilder()
     :mByteCount(0)
@@ -89,7 +91,7 @@ ECode AbstractStringBuilder::EnlargeBuffer(
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::EnsureCapacityO(
+ECode AbstractStringBuilder::EnsureCapacity(
     /* [in] */ Int32 min)
 {
     if (min > mCapacity) {
@@ -100,7 +102,7 @@ ECode AbstractStringBuilder::EnsureCapacityO(
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::TrimToSizeO()
+ECode AbstractStringBuilder::TrimToSize()
 {
     if (mByteCount < mCapacity && mCapacity > DEFAULT_STEP) {
         mCapacity = Math::Max(DEFAULT_STEP, mByteCount + 1);
@@ -113,7 +115,7 @@ ECode AbstractStringBuilder::TrimToSizeO()
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::SetLengthO(
+ECode AbstractStringBuilder::SetLength(
     /* [in] */ Int32 length)
 {
     if (length < 0) {
@@ -128,7 +130,7 @@ ECode AbstractStringBuilder::SetLengthO(
         return NOERROR;
     }
 
-    Int32 charCount = GetLengthO();
+    Int32 charCount = GetLength();
     if (length == charCount) {
         return NOERROR;
     }
@@ -136,7 +138,7 @@ ECode AbstractStringBuilder::SetLengthO(
     if (length > charCount) {
         Int32 diff = length - charCount;
         mByteCount += diff;
-        EnsureCapacityO(mByteCount);
+        EnsureCapacity(mByteCount);
     }
     else {
         CString cstr(mString);
@@ -156,7 +158,7 @@ ECode AbstractStringBuilder::SetLengthO(
     return NOERROR;
 }
 
-Int32 AbstractStringBuilder::GetLengthO()
+Int32 AbstractStringBuilder::GetLength()
 {
     if (!mIsCounted) {
         mIsCounted = TRUE;
@@ -167,23 +169,23 @@ Int32 AbstractStringBuilder::GetLengthO()
     return mCharCount;
 }
 
-Int32 AbstractStringBuilder::GetByteCountO()
+Int32 AbstractStringBuilder::GetByteCount()
 {
     return mByteCount;
 }
 
-Int32 AbstractStringBuilder::GetCapacityO()
+Int32 AbstractStringBuilder::GetCapacity()
 {
     return mCapacity;
 }
 
-ECode AbstractStringBuilder::GetCharO(
+ECode AbstractStringBuilder::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* result)
 {
     VALIDATE_NOT_NULL(result);
 
-    Int32 charCount = GetLengthO();
+    Int32 charCount = GetLength();
     if (index < 0 || index >= charCount) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -206,7 +208,7 @@ ECode AbstractStringBuilder::GetCharsO(
     return Character::ToChar32s(cstr, start, end - start, dst, dstStart);
 }
 
-ECode AbstractStringBuilder::AppendONULL()
+ECode AbstractStringBuilder::AppendNULL()
 {
     return AppendOCStr("NULL");
 }
@@ -215,7 +217,7 @@ ECode AbstractStringBuilder::AppendOCStr(
     /* [in] */ char const* str)
 {
     if (NULL == str) {
-        return AppendONULL();
+        return AppendNULL();
     }
 
     String temp(str);
@@ -307,7 +309,7 @@ ECode AbstractStringBuilder::AppendOString(
     /* [in] */ const String& str)
 {
     if (str.IsNull()) {
-        return AppendONULL();
+        return AppendNULL();
     }
 
     Int32 length = str.GetByteLength();
@@ -324,7 +326,7 @@ ECode AbstractStringBuilder::AppendOCharSequence(
     /* [in] */ ICharSequence* csq)
 {
     if (csq == NULL) {
-        return AppendONULL();
+        return AppendNULL();
     }
 
     Int32 length = 0;
@@ -332,7 +334,7 @@ ECode AbstractStringBuilder::AppendOCharSequence(
 
     AutoPtr< ArrayOf<Char32> > charArray = ArrayOf<Char32>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
-        csq->GetCharAt(i, &(*charArray)[i]);
+        csq->GetChar(i, &(*charArray)[i]);
     }
 
     return AppendOChars(*charArray);
@@ -344,7 +346,7 @@ ECode AbstractStringBuilder::AppendOCharSequenceEx(
     /* [in] */ Int32 end)
 {
     if (csq == NULL) {
-        return AppendONULL();
+        return AppendNULL();
     }
 
     if ((start | end) < 0 || start > end) {
@@ -367,7 +369,7 @@ ECode AbstractStringBuilder::AppendOCharSequenceEx(
 
     AutoPtr< ArrayOf<Char32> > charArray = ArrayOf<Char32>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
-        csq->GetCharAt(start + i, &(*charArray)[i]);
+        csq->GetChar(start + i, &(*charArray)[i]);
     }
 
     return AppendOChars(*charArray);
@@ -390,7 +392,7 @@ ECode AbstractStringBuilder::AppendOObject(
         }
     }
 
-    return AppendONULL();
+    return AppendNULL();
 }
 
 ECode AbstractStringBuilder::InsertOBoolean(
@@ -512,7 +514,7 @@ ECode AbstractStringBuilder::InsertOCharsEx(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    Int32 charCount = GetLengthO();
+    Int32 charCount = GetLength();
     if (offset > charCount) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -566,7 +568,7 @@ ECode AbstractStringBuilder::InsertOString(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    Int32 charCount = GetLengthO();
+    Int32 charCount = GetLength();
     if (offset > charCount) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -653,7 +655,7 @@ ECode AbstractStringBuilder::InsertOCharSequenceEx(
     Int32 charsLength = end - start;
     AutoPtr< ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(charsLength);
     for (Int32 i = start; i < end; ++i) {
-        seq->GetCharAt(i, &ch);
+        seq->GetChar(i, &ch);
         (*chars)[i - start] = ch;
     }
 
@@ -692,7 +694,7 @@ ECode AbstractStringBuilder::ReplaceO(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    Int32 charCount = GetLengthO();
+    Int32 charCount = GetLength();
     if (end > charCount) {
         end = charCount;
     }
@@ -742,7 +744,7 @@ ECode AbstractStringBuilder::ReverseO()
     mIsCounted = TRUE;
     CString prevStr(prev);
 
-    Int32 charCount = GetLengthO();
+    Int32 charCount = GetLength();
     Int32 len = prevStr.GetLength();
     Character::GetCharCount(prevStr, 0, len, &charCount);
     AutoPtr< ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(charCount);
@@ -756,7 +758,7 @@ ECode AbstractStringBuilder::ReverseO()
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::SetCharAtO(
+ECode AbstractStringBuilder::SetChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 ch)
 {
@@ -764,7 +766,7 @@ ECode AbstractStringBuilder::SetCharAtO(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    Int32 charCount = GetLengthO();
+    Int32 charCount = GetLength();
     if (index >= charCount) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -797,7 +799,7 @@ ECode AbstractStringBuilder::DeleteO(
     if (start < 0 || end < 0) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    Int32 charCount = GetLengthO();
+    Int32 charCount = GetLength();
     if (start >= charCount) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -835,7 +837,7 @@ ECode AbstractStringBuilder::SubstringO(
     /* [in] */ Int32 start,
     /* [out] */ String* str)
 {
-    Int32 charCount = GetLengthO();
+    Int32 charCount = GetLength();
     return SubstringExO(start, charCount, str);
 }
 
@@ -846,7 +848,7 @@ ECode AbstractStringBuilder::SubstringExO(
 {
     VALIDATE_NOT_NULL(str);
 
-    Int32 charCount = GetLengthO();
+    Int32 charCount = GetLength();
     if (start < 0 || end < 0 || start > end || start > charCount ) {
         *str = String(NULL);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -938,7 +940,7 @@ ECode AbstractStringBuilder::IndexOfExO(
         start = 0;
     }
 
-    Int32 charLength = GetLengthO();
+    Int32 charLength = GetLength();
     if (start >= charLength) {
         return NOERROR;
     }
@@ -1037,7 +1039,7 @@ ECode AbstractStringBuilder::LastIndexOfO(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
-    Int32 charCount = GetLengthO();
+    Int32 charCount = GetLength();
     return LastIndexOfExO(subString, charCount - 1, index);
 }
 
@@ -1054,7 +1056,7 @@ ECode AbstractStringBuilder::LastIndexOfExO(
         return NOERROR;
     }
 
-    Int32 charLength = GetLengthO();
+    Int32 charLength = GetLength();
     if (start >= charLength) {
         start = charLength - 1;
     }
@@ -1209,7 +1211,7 @@ void AbstractStringBuilder::DbgPrint()
     printf(" >> AbstractStringBuilder::DbgPrint()\n");
     printf("    mCapacity: %d\n", mCapacity);
     printf("    mByteCount: %d\n", mByteCount);
-    printf("    mCharCount: %d\n", GetLengthO());
+    printf("    mCharCount: %d\n", GetLength());
     printf("    mString: %s\n", mString);
 #endif
 }

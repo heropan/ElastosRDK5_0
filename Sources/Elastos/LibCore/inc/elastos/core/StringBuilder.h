@@ -2,10 +2,7 @@
 #ifndef __ELASTOS_CORE_STRINGBUILDER_H__
 #define __ELASTOS_CORE_STRINGBUILDER_H__
 
-#include <elastos/core/Object.h>
 #include <elastos/core/AbstractStringBuilder.h>
-
-using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {
@@ -32,12 +29,8 @@ class StringBuffer;
  * @since 1.5
  */
 class StringBuilder
-    : public Object
+    : public AbstractStringBuilder
     , public IStringBuilder
-    , public AbstractStringBuilder
-    , public IAppendable
-    , public ISerializable
-    , public ICharSequence
 {
 public:
     CAR_INTERFACE_DECL()
@@ -93,6 +86,8 @@ public:
     CARAPI GetLength(
         /* [out] */ Int32* length);
 
+    using AbstractStringBuilder::GetLength;
+
     /**
      * The number of bytes.
      *
@@ -100,6 +95,8 @@ public:
      */
     CARAPI GetByteCount(
         /* [out] */ Int32* byteLength);
+
+    using AbstractStringBuilder::GetByteCount;
 
     /**
      * Returns the number of bytes that can be held without growing.
@@ -110,6 +107,8 @@ public:
      */
     CARAPI GetCapacity(
         /* [out] */ Int32* capacity);
+
+    using AbstractStringBuilder::GetCapacity;
 
     /**
      * Ensures that this object has a minimum capacity available before
@@ -162,7 +161,7 @@ public:
      * @see Character#codePointAt(char[], int, int)
      * @since 1.5
      */
-    CARAPI GetCharAt(
+    CARAPI GetChar(
         /* [in] */ Int32 index,
         /* [out] */ Char32* c);
 
@@ -330,9 +329,9 @@ public:
         /* [in] */ Int32 start,
         /* [out] */ Int32* index);
 
-    CARAPI AppendNull();
+    CARAPI AppendNULL();
 
-    CARAPI AppendCStr(
+    CARAPI Append(
         /* [in] */ const char* str);
 
     /**
@@ -347,19 +346,8 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(boolean)
      */
-    CARAPI AppendBoolean(
+    CARAPI Append(
         /* [in] */ Boolean b);
-
-    /**
-     * Adds the specified character to the end of this buffer.
-     *
-     * @param ch
-     *            the character to append.
-     * @return this StringBuffer.
-     * @see String#valueOf(char)
-     */
-    CARAPI AppendChar(
-        /* [in] */ Char32 c);
 
     /**
      * Adds the string representation of the specified integer to the end of
@@ -370,7 +358,7 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(int)
      */
-    CARAPI AppendInt32(
+    CARAPI Append(
         /* [in] */ Int32 i);
 
     /**
@@ -382,7 +370,7 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(long)
      */
-    CARAPI AppendInt64(
+    CARAPI Append(
         /* [in] */ Int64 l);
 
     /**
@@ -394,7 +382,7 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(float)
      */
-    CARAPI AppendFloat(
+    CARAPI Append(
         /* [in] */ Float f);
 
     /**
@@ -406,8 +394,19 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(double)
      */
-    CARAPI AppendDouble(
+    CARAPI Append(
         /* [in] */ Double d);
+
+    /**
+     * Adds the specified character to the end of this buffer.
+     *
+     * @param ch
+     *            the character to append.
+     * @return this StringBuffer.
+     * @see String#valueOf(char)
+     */
+    CARAPI AppendChar(
+        /* [in] */ Char32 c);
 
     /**
      * Adds the string representation of the specified object to the end of this
@@ -422,7 +421,7 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(Object)
      */
-    CARAPI AppendInterface(
+    CARAPI Append(
         /* [in] */ IInterface* obj);
 
     /**
@@ -435,7 +434,7 @@ public:
      *            the string to append (may be null).
      * @return this StringBuffer.
      */
-    CARAPI AppendString(
+    CARAPI Append(
         /* [in] */ const String& str);
 
     /**
@@ -451,7 +450,7 @@ public:
      *
      * @since 1.4
      */
-    CARAPI AppendStringBuffer(
+    CARAPI Append(
         /* [in] */ IStringBuffer* sb);
 
     /**
@@ -467,7 +466,7 @@ public:
      *
      * @since 1.4
      */
-    CARAPI AppendStringBuilder(
+    CARAPI Append(
         /* [in] */ IStringBuilder* sb);
 
     /**
@@ -479,7 +478,7 @@ public:
      * @throws NullPointerException
      *            if {@code chars} is {@code null}.
      */
-    CARAPI AppendArrayOf(
+    CARAPI Append(
         /* [in] */ const ArrayOf<Char32>& chars);
 
     /**
@@ -498,7 +497,7 @@ public:
      * @throws NullPointerException
      *            if {@code chars} is {@code null}.
      */
-    CARAPI AppendArrayOf(
+    CARAPI Append(
         /* [in] */ const ArrayOf<Char32>& chars,
         /* [in] */ Int32 start,
         /* [in] */ Int32 length);
@@ -515,7 +514,7 @@ public:
      * @return this StringBuffer.
      * @since 1.5
      */
-    CARAPI AppendCharSequence(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq);
 
     /**
@@ -537,10 +536,91 @@ public:
      *             the length of {@code s}.
      * @since 1.5
      */
-    CARAPI AppendCharSequence(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
+
+    /**
+     * Inserts the string representation of the specified boolean into this
+     * buffer at the specified offset.
+     *
+     * @param index
+     *            the index at which to insert.
+     * @param b
+     *            the boolean to insert.
+     * @return this buffer.
+     * @throws StringIndexOutOfBoundsException
+     *             if {@code index < 0} or {@code index > length()}.
+     */
+    CARAPI Insert(
+        /* [in] */ Int32 offset,
+        /* [in] */ Boolean b);
+
+    /**
+     * Inserts the string representation of the specified integer into this
+     * buffer at the specified offset.
+     *
+     * @param index
+     *            the index at which to insert.
+     * @param i
+     *            the integer to insert.
+     * @return this buffer.
+     * @throws StringIndexOutOfBoundsException
+     *             if {@code index < 0} or {@code index > length()}.
+     */
+    CARAPI Insert(
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 i);
+
+    /**
+     * Inserts the string representation of the specified long into this buffer
+     * at the specified offset.
+     *
+     * @param index
+     *            the index at which to insert.
+     * @param l
+     *            the long to insert.
+     * @return this buffer.
+     * @throws StringIndexOutOfBoundsException
+     *             if {@code index < 0} or {@code index > length()}.
+     */
+    CARAPI Insert(
+        /* [in] */ Int32 offset,
+        /* [in] */ Int64 l);
+
+    /**
+     * Inserts the string representation of the specified into this buffer
+     * double at the specified offset.
+     *
+     * @param index
+     *            the index at which to insert.
+     * @param d
+     *            the double to insert.
+     * @return this buffer.
+     * @throws StringIndexOutOfBoundsException
+     *             if {@code index < 0} or {@code index > length()}.
+     */
+    CARAPI Insert(
+        /* [in] */ Int32 offset,
+        /* [in] */ Double d);
+
+    /**
+     * Inserts the string representation of the specified float into this buffer
+     * at the specified offset.
+     *
+     * @param index
+     *            the index at which to insert.
+     * @param f
+     *            the float to insert.
+     * @return this buffer.
+     * @throws StringIndexOutOfBoundsException
+     *             if {@code index < 0} or {@code index > length()}.
+     */
+    CARAPI Insert(
+        /* [in] */ Int32 offset,
+        /* [in] */ Float f);
+
 
     /**
      * Inserts the character into this buffer at the specified offset.
@@ -558,86 +638,6 @@ public:
         /* [in] */ Char32 c);
 
     /**
-     * Inserts the string representation of the specified boolean into this
-     * buffer at the specified offset.
-     *
-     * @param index
-     *            the index at which to insert.
-     * @param b
-     *            the boolean to insert.
-     * @return this buffer.
-     * @throws StringIndexOutOfBoundsException
-     *             if {@code index < 0} or {@code index > length()}.
-     */
-    CARAPI InsertBoolean(
-        /* [in] */ Int32 offset,
-        /* [in] */ Boolean b);
-
-    /**
-     * Inserts the string representation of the specified integer into this
-     * buffer at the specified offset.
-     *
-     * @param index
-     *            the index at which to insert.
-     * @param i
-     *            the integer to insert.
-     * @return this buffer.
-     * @throws StringIndexOutOfBoundsException
-     *             if {@code index < 0} or {@code index > length()}.
-     */
-    CARAPI InsertInt32(
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 i);
-
-    /**
-     * Inserts the string representation of the specified long into this buffer
-     * at the specified offset.
-     *
-     * @param index
-     *            the index at which to insert.
-     * @param l
-     *            the long to insert.
-     * @return this buffer.
-     * @throws StringIndexOutOfBoundsException
-     *             if {@code index < 0} or {@code index > length()}.
-     */
-    CARAPI InsertInt64(
-        /* [in] */ Int32 offset,
-        /* [in] */ Int64 l);
-
-    /**
-     * Inserts the string representation of the specified into this buffer
-     * double at the specified offset.
-     *
-     * @param index
-     *            the index at which to insert.
-     * @param d
-     *            the double to insert.
-     * @return this buffer.
-     * @throws StringIndexOutOfBoundsException
-     *             if {@code index < 0} or {@code index > length()}.
-     */
-    CARAPI InsertDouble(
-        /* [in] */ Int32 offset,
-        /* [in] */ Double d);
-
-    /**
-     * Inserts the string representation of the specified float into this buffer
-     * at the specified offset.
-     *
-     * @param index
-     *            the index at which to insert.
-     * @param f
-     *            the float to insert.
-     * @return this buffer.
-     * @throws StringIndexOutOfBoundsException
-     *             if {@code index < 0} or {@code index > length()}.
-     */
-    CARAPI InsertFloat(
-        /* [in] */ Int32 offset,
-        /* [in] */ Float f);
-
-    /**
      * Inserts the string representation of the specified object into this
      * buffer at the specified offset.
      * <p>
@@ -653,7 +653,7 @@ public:
      * @throws StringIndexOutOfBoundsException
      *             if {@code index < 0} or {@code index > length()}.
      */
-    CARAPI InsertInterface(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ IInterface* obj);
 
@@ -671,7 +671,7 @@ public:
      * @throws StringIndexOutOfBoundsException
      *             if {@code index < 0} or {@code index > length()}.
      */
-    CARAPI InsertString(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ const String& str);
 
@@ -688,7 +688,7 @@ public:
      * @throws NullPointerException
      *            if {@code chars} is {@code null}.
      */
-    CARAPI InsertArrayOf(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ const ArrayOf<Char32>& chars);
 
@@ -712,7 +712,7 @@ public:
      *             length > chars.length}, {@code index < 0} or {@code index >
      *             length()}
      */
-    CARAPI InsertArrayOf(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ const ArrayOf<Char32>& chars,
         /* [in] */ Int32 start,
@@ -734,7 +734,7 @@ public:
      *             if {@code index < 0} or {@code index > length()}.
      * @since 1.5
      */
-    CARAPI InsertCharSequence(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ ICharSequence* s);
 
@@ -761,7 +761,7 @@ public:
      *             than the length of {@code s}.
      * @since 1.5
      */
-    CARAPI InsertCharSequence(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ ICharSequence* s,
         /* [in] */ Int32 start,
@@ -804,7 +804,7 @@ public:
      * @throws StringIndexOutOfBoundsException
      *             if {@code location < 0} or {@code location >= length()}
      */
-    CARAPI DeleteChar(
+    CARAPI Delete(
         /* [in] */ Int32 location);
 
     /**
@@ -834,10 +834,10 @@ public:
     CARAPI_(String) ToString();
 
     CARAPI_(AutoPtr<ICharSequence>) ToCharSequence();
-    CARAPI_(Int32) GetLength();
-    CARAPI_(Int32) GetByteCount();
+
     CARAPI_(String) Substring(
         /* [in] */ Int32 start);
+
     CARAPI_(String) Substring(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);

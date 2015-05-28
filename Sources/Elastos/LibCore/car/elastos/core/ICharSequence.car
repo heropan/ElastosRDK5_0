@@ -28,7 +28,7 @@ module
          *             if {@code index < 0} or {@code index} is greater than the
          *             length of this sequence.
          */
-        GetCharAt(
+        GetChar(
             [in] Int32 index,
             [out] Char32* c);
 

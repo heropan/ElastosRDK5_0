@@ -14,6 +14,7 @@ CarClass(CStringWrapper)
 {
 public:
     CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
@@ -38,7 +39,7 @@ public:
      *             if {@code index < 0} or {@code index} is greater than the
      *             length of this sequence.
      */
-    CARAPI GetCharAt(
+    CARAPI GetChar(
         /* [in] */ Int32 index,
         /* [out] */ Char32* c);
 

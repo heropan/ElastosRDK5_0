@@ -1,11 +1,9 @@
 #ifndef __ABSTRACTSTRINGBUILDER_H__
 #define __ABSTRACTSTRINGBUILDER_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include <elastos/core/Object.h>
+
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Core {
@@ -23,8 +21,16 @@ class IntegralToString;
  *
  */
 class AbstractStringBuilder
+    : public Object
+    , public IAppendable
+    , public ISerializable
+    , public ICharSequence
 {
+public:
+    CAR_INTERFACE_DECL()
+
 protected:
+
     AbstractStringBuilder();
 
     AbstractStringBuilder(
@@ -35,28 +41,28 @@ protected:
 
     virtual ~AbstractStringBuilder();
 
-    CARAPI SetLengthO(
+    CARAPI SetLength(
         /* [in] */ Int32 length);
 
-    CARAPI_(Int32) GetLengthO();
+    CARAPI_(Int32) GetLength();
 
-    CARAPI_(Int32) GetByteCountO();
+    CARAPI_(Int32) GetByteCount();
 
-    CARAPI_(Int32) GetCapacityO();
+    CARAPI_(Int32) GetCapacity();
 
-    CARAPI EnsureCapacityO(
+    CARAPI EnsureCapacity(
         /* [in] */ Int32 min);
 
     CARAPI EnlargeBuffer(
         /* [in] */ Int32 min);
 
-    CARAPI TrimToSizeO();
+    CARAPI TrimToSize();
 
-    CARAPI SetCharAtO(
+    CARAPI SetChar(
         /* [in] */ Int32 index,
         /* [in] */ Char32 ch);
 
-    CARAPI GetCharO(
+    CARAPI GetChar(
         /* [in] */ Int32 index,
         /* [out] */ Char32* result);
 
@@ -98,7 +104,7 @@ protected:
         /* [in] */ Int32 start,
         /* [out] */ Int32* index);
 
-    CARAPI AppendONULL();
+    CARAPI AppendNULL();
 
     CARAPI AppendOCStr(
         /* [in] */ char const* cstr);
