@@ -16,7 +16,7 @@ ECode CFencesHelper::OrderReads(
 
     Int32 ignore = sTheVolatile;
     *outface = ref;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -28,7 +28,7 @@ ECode CFencesHelper::OrderWrites(
 
     sTheVolatile = 0;
     *outface = ref;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -40,7 +40,7 @@ ECode CFencesHelper::OrderAccesses(
 
     sTheVolatile = 0;
     *outface = ref;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 

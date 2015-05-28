@@ -111,7 +111,7 @@ ECode CTreeSet::Clone(
         clone->mBackingMap = resmap;
     }
     *object = outset;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     // } catch (CloneNotSupportedException e) {
     //     throw new AssertionError(e);
     // }
@@ -262,7 +262,7 @@ ECode CTreeSet::DescendingSet(
         CTreeSet::New(res, (INavigableSet**)&mDescendingSet);
     }
     *outnav = mDescendingSet;
-    INTERFACE_ADDREF(*outnav)
+    REFCOUNT_ADD(*outnav)
     return NOERROR;
 }
 
@@ -293,7 +293,7 @@ ECode CTreeSet::SubSet(
         mBackingMap->SubMap(fromElement, fromInclusive, toElement, toInclusive, (INavigableMap**)&resmap);
         FAIL_RETURN(CTreeSet::NewByFriend(resmap, (CTreeSet**)&outset));
         *outnav = INavigableSet::Probe(outset);
-        INTERFACE_ADDREF(*outnav)
+        REFCOUNT_ADD(*outnav)
         return NOERROR;
     }
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -324,7 +324,7 @@ ECode CTreeSet::HeadSet(
     mBackingMap->HeadMap(toElement, inclusive, (INavigableMap**)&resmap);
     FAIL_RETURN(CTreeSet::NewByFriend(resmap, (CTreeSet**)&resset));
     *outnav = INavigableSet::Probe(resset);
-    INTERFACE_ADDREF(*outnav)
+    REFCOUNT_ADD(*outnav)
     return NOERROR;
 }
 
@@ -353,7 +353,7 @@ ECode CTreeSet::TailSet(
     mBackingMap->TailMap(fromElement, inclusive, (INavigableMap**)&resmap);
     FAIL_RETURN(CTreeSet::NewByFriend(resmap, (CTreeSet**)&resset));
     *outnav = INavigableSet::Probe(resset);
-    INTERFACE_ADDREF(*outnav)
+    REFCOUNT_ADD(*outnav)
     return NOERROR;
 }
 

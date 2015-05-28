@@ -93,7 +93,7 @@ ECode CEnumMap::Clone(
     FAIL_RETURN(CEnumMap::NewByFriend((CEnumMap**)&enumMap));
     enumMap->Initialization((IEnumMap*)this->Probe(EIID_IEnumMap));
     *object = (IEnumMap*) enumMap->Probe(EIID_IEnumMap);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     // } catch (CloneNotSupportedException e) {
     //     throw new AssertionError(e);
     // }
@@ -151,7 +151,7 @@ ECode CEnumMap::EntrySet(
         mEntrySet = new EnumMapEntrySet(this);
     }
     *entries = (ISet*)mEntrySet->Probe(EIID_ISet);
-    INTERFACE_ADDREF(*entries)
+    REFCOUNT_ADD(*entries)
     return NOERROR;
 }
 
@@ -198,7 +198,7 @@ ECode CEnumMap::Get(
     Int32 keyOrdinal = 0;
     IEnum::Probe(key)->Ordinal(&keyOrdinal);
     *value = (*mValues)[keyOrdinal];
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -211,7 +211,7 @@ ECode CEnumMap::KeySet(
         mKeySet = new EnumMapKeySet(this);
     }
     *keySet = mKeySet;
-    INTERFACE_ADDREF(*keySet)
+    REFCOUNT_ADD(*keySet)
     return NOERROR;
 }
 
@@ -248,7 +248,7 @@ ECode CEnumMap::Remove(
     AutoPtr<IInterface> oldValue = (*mValues)[keyOrdinal];
     mValues->Set(keyOrdinal, NULL);
     *value = oldValue;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -270,7 +270,7 @@ ECode CEnumMap::Values(
         mValuesCollection = new EnumMapValueCollection(this);
     }
     *value = (ICollection*) mValuesCollection->Probe(EIID_ICollection);
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -397,7 +397,7 @@ ECode CEnumMap::PutImpl(
 
     if (oldValue) {
         *oldValue = (*mValues)[keyOrdinal];
-        INTERFACE_ADDREF(*oldValue);
+        REFCOUNT_ADD(*oldValue);
     }
 
     mValues->Set(keyOrdinal, value);
@@ -482,7 +482,7 @@ ECode CEnumMap::EnumMapEntry::GetKey(
 
     FAIL_RETURN(CheckEntryStatus());
     *outface = (*mEnumMap->mKeys)[mOrdinal];
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -493,7 +493,7 @@ ECode CEnumMap::EnumMapEntry::GetValue(
 
     FAIL_RETURN(CheckEntryStatus());
     *outface = (*mEnumMap->mValues)[mOrdinal];
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -685,7 +685,7 @@ ECode CEnumMap::EnumMapKeySet::GetIterator(
     AutoPtr<MapEntry::Type> restype = new EnumMapKeySetType();
     AutoPtr<IIterator> outres = (IIterator*) new EnumMapIterator(restype, mEnumMap);
     *outiter = outres;
-    INTERFACE_ADDREF(*outiter)
+    REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 
@@ -861,7 +861,7 @@ ECode CEnumMap::EnumMapValueCollection::GetIterator(
     AutoPtr<MapEntry::Type> outtype = new EnumMapValueCollectionType();
     AutoPtr<IIterator> resiter = (IIterator*) new EnumMapIterator(outtype, mEnumMap);
     *outiter = resiter;
-    INTERFACE_ADDREF(*outiter)
+    REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 
@@ -1108,7 +1108,7 @@ ECode CEnumMap::EnumMapEntrySet::GetIterator(
     AutoPtr<MapEntry::Type> outtype = new EnumMapEntrySetType();
     AutoPtr<IIterator> outres = (IIterator*) new EnumMapEntryIterator(outtype, mEnumMap);
     *outiter = outres;
-    INTERFACE_ADDREF(*outiter)
+    REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 
@@ -1234,7 +1234,7 @@ ECode CEnumMap::EnumMapEntrySet::ToArray(
         (*entryArray)[index] = NULL;
     }
     *outArray = entryArray;
-    INTERFACE_ADDREF(*outArray)
+    REFCOUNT_ADD(*outArray)
     return NOERROR;
 }
 
@@ -1250,7 +1250,7 @@ ECode CEnumMap::EnumMapEntrySetType::Get(
     VALIDATE_NOT_NULL(outface)
 
     *outface = entry;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 

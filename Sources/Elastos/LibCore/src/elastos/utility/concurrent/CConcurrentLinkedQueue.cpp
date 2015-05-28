@@ -204,7 +204,7 @@ ECode CConcurrentLinkedQueue::Poll(
                 if (p != h) // hop two nodes at a time
                     UpdateHead(h, ((q = p->mNext) != NULL) ? q : p);
                 *e = item;
-                INTERFACE_ADDREF(*e);
+                REFCOUNT_ADD(*e);
                 return NOERROR;
             }
             else if ((q = p->mNext) == NULL) {
@@ -232,7 +232,7 @@ ECode CConcurrentLinkedQueue::Peek(
             if (item != NULL || (q = p->mNext) == NULL) {
                 UpdateHead(h, p);
                 *e = item;
-                INTERFACE_ADDREF(*e);
+                REFCOUNT_ADD(*e);
                 return NOERROR;
             }
             else if (p == q)
@@ -432,7 +432,7 @@ ECode CConcurrentLinkedQueue::ToArray(
         if (k < inArray->GetLength())
             inArray->Set(k, NULL);
         *outArray = inArray;
-        INTERFACE_ADDREF(*outArray);
+        REFCOUNT_ADD(*outArray);
         return NOERROR;
     }
 
@@ -455,7 +455,7 @@ ECode CConcurrentLinkedQueue::GetIterator(
     VALIDATE_NOT_NULL(*iterator);
     AutoPtr<Itr> p = new Itr(this);
     *iterator = (IIterator*)p->Probe(EIID_IIterator);
-    INTERFACE_ADDREF(*iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 
@@ -640,7 +640,7 @@ ECode CConcurrentLinkedQueue::Itr::Next(
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     AutoPtr<IInterface> p = Advance();
     *object = p.Get();
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 

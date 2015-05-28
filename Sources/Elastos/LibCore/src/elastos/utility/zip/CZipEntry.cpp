@@ -36,7 +36,7 @@ ECode CZipEntry::GetExtra(
     VALIDATE_NOT_NULL(extra);
     AutoPtr<ArrayOf<Byte> > temp = ZipEntry::GetExtra();
     *extra = temp;
-    INTERFACE_ADDREF(*extra)
+    REFCOUNT_ADD(*extra)
     return NOERROR;
 }
 

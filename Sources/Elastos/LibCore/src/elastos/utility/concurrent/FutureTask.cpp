@@ -82,7 +82,7 @@ ECode FutureTask::Report(
     AutoPtr<IInterface> x = mOutcome;
     if (s == NORMAL) {
         *result = x;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     if (s >= CANCELLED) return E_CANCELLATION_EXCEPTION;
@@ -117,7 +117,7 @@ static Boolean CompareAndSwapObject(volatile int32_t* address, IInterface* expec
     int ret = android_atomic_release_cas((int32_t)expect,
             (int32_t)update, address);
     if (ret == 0) {
-        INTERFACE_ADDREF(update)
+        REFCOUNT_ADD(update)
     }
     return (ret == 0);
 }

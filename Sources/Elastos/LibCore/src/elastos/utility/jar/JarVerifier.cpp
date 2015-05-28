@@ -98,7 +98,7 @@ ECode JarVerifier::VerifierEntry::GetLock(
     VALIDATE_NOT_NULL(lockobj);
     AutoPtr<IInterface> obj = OutputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 
@@ -227,7 +227,7 @@ ECode JarVerifier::InitEntry(
         AutoPtr<VerifierEntry> ret = new VerifierEntry(name, md,
             hashBytes, certificatesArray, this);
         *entry = ret;
-        INTERFACE_ADDREF(*entry)
+        REFCOUNT_ADD(*entry)
         delete tokens;
         return NOERROR;
     }
@@ -517,7 +517,7 @@ ECode JarVerifier::GetCertificates(
         return NOERROR;
     }
     *certificates = verifiedCerts->Clone();
-    INTERFACE_ADDREF(*certificates)
+    REFCOUNT_ADD(*certificates)
     return NOERROR;
 }
 
@@ -565,7 +565,7 @@ ECode JarVerifier::GetSignerCertificates(
         }
     }
     *certs = result;
-    INTERFACE_ADDREF(*certs)
+    REFCOUNT_ADD(*certs)
     return NOERROR;
 }
 

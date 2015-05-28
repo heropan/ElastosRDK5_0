@@ -20,7 +20,7 @@ ECode CAtomicStampedReference::GetReference(
     VALIDATE_NOT_NULL(outface)
 
     *outface = mPair->mReference;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -42,7 +42,7 @@ ECode CAtomicStampedReference::Get(
     Pair* pair = mPair;
     (*stampHolder)[0] = pair->mStamp;
     *outface = mPair->mReference;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 

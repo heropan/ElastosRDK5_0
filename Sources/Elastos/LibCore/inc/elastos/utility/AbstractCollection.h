@@ -1,18 +1,30 @@
 #ifndef __UTILITY_ABSTRACTCOLLECTION_H__
 #define __UTILITY_ABSTRACTCOLLECTION_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
 
 class AbstractCollection
+    : public Object
+    , public ICollection
+    , public IIterable
 {
-public:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+protected:
+    /**
+     * Constructs a new instance of this AbstractCollection.
+     */
+    AbstractCollection();
 
-    virtual CARAPI Add(
+    virtual ~AbstractCollection();
+
+public:
+    CAR_INTERFACE_DECL()
+
+    CARAPI Add(
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* modified);
 
@@ -45,7 +57,7 @@ public:
      *                {@code null} elements and this {@code Collection} does not support
      *                such elements.
      */
-    virtual CARAPI AddAll(
+    CARAPI AddAll(
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* modified);
 
@@ -65,7 +77,7 @@ public:
      * @see #isEmpty
      * @see #size
      */
-    virtual CARAPI Clear();
+    CARAPI Clear();
 
     /**
      * Tests whether this {@code Collection} contains the specified object. This
@@ -86,7 +98,7 @@ public:
      *                if the object to look for is {@code null} and this
      *                {@code Collection} doesn't support {@code null} elements.
      */
-    virtual CARAPI Contains(
+    CARAPI Contains(
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
 
@@ -110,7 +122,7 @@ public:
      * @throws NullPointerException
      *                if {@code collection} is {@code null}.
      */
-    virtual CARAPI ContainsAll(
+    CARAPI ContainsAll(
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* result);
 
@@ -123,7 +135,7 @@ public:
      *
      * @see #size
      */
-    virtual CARAPI IsEmpty(
+    CARAPI IsEmpty(
         /* [out] */ Boolean* result);
 
     /**
@@ -164,7 +176,7 @@ public:
      *                if {@code object} is {@code null} and this {@code Collection}
      *                doesn't support {@code null} elements.
      */
-    virtual CARAPI Remove(
+    CARAPI Remove(
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
 
@@ -197,7 +209,7 @@ public:
      * @throws NullPointerException
      *                if {@code collection} is {@code null}.
      */
-    virtual CARAPI RemoveAll(
+    CARAPI RemoveAll(
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* result);
 
@@ -230,7 +242,7 @@ public:
      * @throws NullPointerException
      *                if {@code collection} is {@code null}.
      */
-    virtual CARAPI RetainAll(
+    CARAPI RetainAll(
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* result);
 
@@ -247,10 +259,10 @@ public:
     virtual CARAPI GetSize(
         /* [out] */ Int32* size) = 0;
 
-    virtual CARAPI ToArray(
+    CARAPI ToArray(
         /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-    virtual CARAPI ToArray(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* contents,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -261,7 +273,7 @@ public:
      *
      * @return the string representation of this {@code Collection}.
      */
-    virtual CARAPI ToString(
+    CARAPI ToString(
         /* [out] */ String* result);
 };
 

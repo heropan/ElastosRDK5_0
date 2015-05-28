@@ -10,7 +10,7 @@ ECode CheckedOutputStream::GetChecksum(
 {
     VALIDATE_NOT_NULL(checksum);
     *checksum = mCheck;
-    INTERFACE_ADDREF(*checksum);
+    REFCOUNT_ADD(*checksum);
     return NOERROR;
 }
 
@@ -126,7 +126,7 @@ ECode CCheckedOutputStream::GetLock(
 
     AutoPtr<IInterface> obj = CheckedOutputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

@@ -44,7 +44,7 @@ ECode AbstractQueuedSynchronizer::Node::Predecessor(
     }
     else {
         *node = p;
-        INTERFACE_ADDREF(*node);
+        REFCOUNT_ADD(*node);
         return NOERROR;
     }
 }
@@ -892,7 +892,7 @@ Boolean AbstractQueuedSynchronizer::CompareAndSetHead(
     int result = android_atomic_release_cas((int32_t)NULL,
             (int32_t)update, address);
     // dvmWriteBarrierField(obj, address);
-    if (result == 0) INTERFACE_ADDREF(mHead);
+    if (result == 0) REFCOUNT_ADD(mHead);
     return result == 0;
 }
 
@@ -908,7 +908,7 @@ Boolean AbstractQueuedSynchronizer::CompareAndSetTail(
     // dvmWriteBarrierField(obj, address);
     if (result == 0) {
         if (expect != NULL) expect->Release();
-        INTERFACE_ADDREF(mTail);
+        REFCOUNT_ADD(mTail);
     }
     return result == 0;
 }
@@ -939,7 +939,7 @@ Boolean AbstractQueuedSynchronizer::CompareAndSetNext(
     // dvmWriteBarrierField(obj, address);
     if (result == 0) {
         if (expect != NULL) expect->Release();
-        INTERFACE_ADDREF(node->mNext);
+        REFCOUNT_ADD(node->mNext);
     }
     return result == 0;
 }

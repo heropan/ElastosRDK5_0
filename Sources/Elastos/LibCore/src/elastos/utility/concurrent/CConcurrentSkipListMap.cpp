@@ -962,7 +962,7 @@ ECode CConcurrentSkipListMap::Clone(
     cRes->Initialize();
     cRes->BuildFromSorted(this);
     *res = clone->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -1147,7 +1147,7 @@ ECode CConcurrentSkipListMap::Get(
 {
     VALIDATE_NOT_NULL(value);
     *value = DoGet(key);
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -1160,7 +1160,7 @@ ECode CConcurrentSkipListMap::Put(
     if (value == NULL)
         return E_NULL_POINTER_EXCEPTION;
     *oldValue = DoPut(key, value, FALSE);
-    INTERFACE_ADDREF(*oldValue);
+    REFCOUNT_ADD(*oldValue);
     return NOERROR;
 }
 
@@ -1170,7 +1170,7 @@ ECode CConcurrentSkipListMap::Remove(
 {
     VALIDATE_NOT_NULL(value);
     *value = DoRemove(key, NULL);
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -1226,7 +1226,7 @@ ECode CConcurrentSkipListMap::KeySet(
     VALIDATE_NOT_NULL(res);
     AutoPtr<_KeySet> ks = mKeySet;
     *res = (ks != NULL) ? ks : (mKeySet = new _KeySet(this));
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -1236,7 +1236,7 @@ ECode CConcurrentSkipListMap::NavigableKeySet(
     VALIDATE_NOT_NULL(res);
     AutoPtr<_KeySet> ks = mKeySet;
     *res = (ks != NULL) ? ks : (mKeySet = new _KeySet(this));
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -1246,7 +1246,7 @@ ECode CConcurrentSkipListMap::Values(
     VALIDATE_NOT_NULL(value);
     AutoPtr<_Values> vs = mValues;
     *value = (vs != NULL) ? vs : (mValues = new _Values(this));
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -1256,7 +1256,7 @@ ECode CConcurrentSkipListMap::EntrySet(
     VALIDATE_NOT_NULL(entries);
     AutoPtr<_EntrySet> es = mEntrySet;
     *entries = (es != NULL) ? es : (mEntrySet = new _EntrySet(this));
-    INTERFACE_ADDREF(*entries);
+    REFCOUNT_ADD(*entries);
     return NOERROR;
 }
 
@@ -1266,7 +1266,7 @@ ECode CConcurrentSkipListMap::DescendingMap(
     VALIDATE_NOT_NULL(res);
     AutoPtr<INavigableMap> dm = mDescendingMap;
     *res = (dm != NULL) ? dm : (mDescendingMap = new _SubMap(this, NULL, FALSE, NULL, FALSE, TRUE));
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -1348,7 +1348,7 @@ ECode CConcurrentSkipListMap::PutIfAbsent(
     if (value == NULL)
         return E_NULL_POINTER_EXCEPTION;
     *out = DoPut(key, value, TRUE);
-    INTERFACE_ADDREF(*out);
+    REFCOUNT_ADD(*out);
     return NOERROR;
 }
 
@@ -1414,7 +1414,7 @@ ECode CConcurrentSkipListMap::Replace(
         AutoPtr<IInterface> v = n->mValue;
         if (v != NULL && n->CasValue(v, value)) {
             *res = v;
-            INTERFACE_ADDREF(*res);
+            REFCOUNT_ADD(*res);
             return NOERROR;
         }
     }
@@ -1427,7 +1427,7 @@ ECode CConcurrentSkipListMap::Comparator(
 {
     VALIDATE_NOT_NULL(comp);
     *comp = mComparator;
-    INTERFACE_ADDREF(*comp);
+    REFCOUNT_ADD(*comp);
     return NOERROR;
 }
 
@@ -1439,7 +1439,7 @@ ECode CConcurrentSkipListMap::FirstKey(
     if (n == NULL)
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     *outface = n->mKey;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -1451,7 +1451,7 @@ ECode CConcurrentSkipListMap::LastKey(
     if (n == NULL)
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     *outface = n->mKey;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -1467,7 +1467,7 @@ ECode CConcurrentSkipListMap::SubMap(
         return E_NULL_POINTER_EXCEPTION;
     AutoPtr<_SubMap> p = new _SubMap(this, fromKey, fromInclusive, toKey, toInclusive, FALSE);
     *res = (INavigableMap*)p->Probe(EIID_INavigableMap);
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -1481,7 +1481,7 @@ ECode CConcurrentSkipListMap::HeadMap(
         return E_NULL_POINTER_EXCEPTION;
     AutoPtr<_SubMap> p = new _SubMap(this, NULL, FALSE, toKey, inclusive, FALSE);
     *res = (INavigableMap*)p->Probe(EIID_INavigableMap);
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -1495,7 +1495,7 @@ ECode CConcurrentSkipListMap::TailMap(
         return E_NULL_POINTER_EXCEPTION;
     AutoPtr<_SubMap> p = new _SubMap(this, fromKey, inclusive, NULL, FALSE, FALSE);
     *res = (INavigableMap*)p->Probe(EIID_INavigableMap);
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -1509,7 +1509,7 @@ ECode CConcurrentSkipListMap::SubMap(
     ECode ec = SubMap(fromKey, TRUE, toKey, FALSE, (INavigableMap**)&p);
     if (p != NULL) {
         *res = (ISortedMap*)p->Probe(EIID_ISortedMap);
-        INTERFACE_ADDREF(*res);
+        REFCOUNT_ADD(*res);
     }
     return ec;
 }
@@ -1523,7 +1523,7 @@ ECode CConcurrentSkipListMap::HeadMap(
     ECode ec = HeadMap(toKey, FALSE, (INavigableMap**)&p);
     if (p != NULL) {
         *res = (ISortedMap*)p->Probe(EIID_ISortedMap);
-        INTERFACE_ADDREF(*res);
+        REFCOUNT_ADD(*res);
     }
     return ec;
 }
@@ -1537,7 +1537,7 @@ ECode CConcurrentSkipListMap::TailMap(
     ECode ec = TailMap(fromKey, TRUE, (INavigableMap**)&p);
     if (p != NULL) {
         *res = (ISortedMap*)p->Probe(EIID_ISortedMap);
-        INTERFACE_ADDREF(*res);
+        REFCOUNT_ADD(*res);
     }
     return ec;
 }
@@ -1550,7 +1550,7 @@ ECode CConcurrentSkipListMap::LowerEntry(
 {
     VALIDATE_NOT_NULL(outent);
     *outent = GetNear(key, sLT);
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -1561,7 +1561,7 @@ ECode CConcurrentSkipListMap::LowerKey(
     VALIDATE_NOT_NULL(outface);
     AutoPtr<Node> n = FindNear(key, sLT);
     *outface = (n == NULL) ? NULL : n->mKey;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -1571,7 +1571,7 @@ ECode CConcurrentSkipListMap::FloorEntry(
 {
     VALIDATE_NOT_NULL(outent);
     *outent = GetNear(key, sLT|sEQ);
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -1582,7 +1582,7 @@ ECode CConcurrentSkipListMap::FloorKey(
     VALIDATE_NOT_NULL(outface);
     AutoPtr<Node> n = FindNear(key, sLT|sEQ);
     *outface = (n == NULL) ? NULL : n->mKey;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -1592,7 +1592,7 @@ ECode CConcurrentSkipListMap::CeilingEntry(
 {
     VALIDATE_NOT_NULL(outent);
     *outent = GetNear(key, sGT|sEQ);
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -1603,7 +1603,7 @@ ECode CConcurrentSkipListMap::CeilingKey(
     VALIDATE_NOT_NULL(outface);
     AutoPtr<Node> n = FindNear(key, sGT|sEQ);
     *outface = (n == NULL) ? NULL : n->mKey;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -1613,7 +1613,7 @@ ECode CConcurrentSkipListMap::HigherEntry(
 {
     VALIDATE_NOT_NULL(outent);
     *outent = GetNear(key, sGT);
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -1624,7 +1624,7 @@ ECode CConcurrentSkipListMap::HigherKey(
     VALIDATE_NOT_NULL(outface);
     AutoPtr<Node> n = FindNear(key, sGT);
     *outface = (n == NULL) ? NULL : n->mKey;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -1641,7 +1641,7 @@ ECode CConcurrentSkipListMap::FirstEntry(
         AutoPtr<SimpleImmutableEntry> e = n->CreateSnapshot();
         if (e != NULL) {
             *outent = e;
-            INTERFACE_ADDREF(*outent);
+            REFCOUNT_ADD(*outent);
             return NOERROR;
         }
     }
@@ -1660,7 +1660,7 @@ ECode CConcurrentSkipListMap::LastEntry(
         AutoPtr<SimpleImmutableEntry> e = n->CreateSnapshot();
         if (e != NULL) {
             *outent = e;
-            INTERFACE_ADDREF(*outent);
+            REFCOUNT_ADD(*outent);
             return NOERROR;
         }
     }
@@ -1671,7 +1671,7 @@ ECode CConcurrentSkipListMap::PollFirstEntry(
 {
     VALIDATE_NOT_NULL(outent);
     *outent = DoRemoveFirstEntry();
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -1680,7 +1680,7 @@ ECode CConcurrentSkipListMap::PollLastEntry(
 {
     VALIDATE_NOT_NULL(outent);
     *outent = DoRemoveLastEntry();
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -1760,7 +1760,7 @@ ECode CConcurrentSkipListMap::_ValueIterator::Next(
     AutoPtr<IInterface> v = mNextValue;
     Advance();
     *object = v;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -1779,7 +1779,7 @@ ECode CConcurrentSkipListMap::_KeyIterator::Next(
     AutoPtr<Node> n = mNext;
     Advance();
     *object = n->mKey;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -1800,7 +1800,7 @@ ECode CConcurrentSkipListMap::_EntryIterator::Next(
     Advance();
     AutoPtr<SimpleImmutableEntry> p = new SimpleImmutableEntry(n->mKey, v);
     *object = p->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -1993,13 +1993,13 @@ ECode CConcurrentSkipListMap::_KeySet::GetIterator(
     if (p != NULL) {
         AutoPtr<CConcurrentSkipListMap> res = (CConcurrentSkipListMap*)p.Get();
         *it = res->KeyIterator();
-        INTERFACE_ADDREF(*it);
+        REFCOUNT_ADD(*it);
         return NOERROR;
     }
     else {
         AutoPtr<_SubMap> res = (_SubMap*)mM.Get();
         *it = res->KeyIterator();
-        INTERFACE_ADDREF(*it);
+        REFCOUNT_ADD(*it);
         return NOERROR;
     }
 }
@@ -2065,7 +2065,7 @@ ECode CConcurrentSkipListMap::_KeySet::SubSet(
     mM->SubMap(fromElement, fromInclusive,
                 toElement, toInclusive, (INavigableMap**)&m);
     *outnav = new _KeySet(m);
-    INTERFACE_ADDREF(*outnav);
+    REFCOUNT_ADD(*outnav);
     return NOERROR;
 }
 
@@ -2078,7 +2078,7 @@ ECode CConcurrentSkipListMap::_KeySet::HeadSet(
     AutoPtr<INavigableMap> m;
     mM->HeadMap(toElement, inclusive, (INavigableMap**)&m);
     *outnav = new _KeySet(m);
-    INTERFACE_ADDREF(*outnav);
+    REFCOUNT_ADD(*outnav);
     return NOERROR;
 }
 
@@ -2091,7 +2091,7 @@ ECode CConcurrentSkipListMap::_KeySet::TailSet(
     AutoPtr<INavigableMap> m;
     mM->TailMap(fromElement, inclusive, (INavigableMap**)&m);
     *outnav = new _KeySet(m);
-    INTERFACE_ADDREF(*outnav);
+    REFCOUNT_ADD(*outnav);
     return NOERROR;
 }
 
@@ -2105,7 +2105,7 @@ ECode CConcurrentSkipListMap::_KeySet::SubSet(
     SubSet(start, TRUE, end, FALSE, (INavigableSet**)&p);
     AutoPtr<ISortedSet> res = (ISortedSet*)p->Probe(EIID_ISortedSet);
     *outsort = res;
-    INTERFACE_ADDREF(*outsort);
+    REFCOUNT_ADD(*outsort);
     return NOERROR;
 }
 
@@ -2118,7 +2118,7 @@ ECode CConcurrentSkipListMap::_KeySet::HeadSet(
     HeadSet(end, FALSE, (INavigableSet**)&p);
     AutoPtr<ISortedSet> res = (ISortedSet*)p->Probe(EIID_ISortedSet);
     *outsort = res;
-    INTERFACE_ADDREF(*outsort);
+    REFCOUNT_ADD(*outsort);
     return NOERROR;
 }
 
@@ -2131,7 +2131,7 @@ ECode CConcurrentSkipListMap::_KeySet::TailSet(
     TailSet(start, TRUE, (INavigableSet**)&p);
     AutoPtr<ISortedSet> res = (ISortedSet*)p->Probe(EIID_ISortedSet);
     *outsort = res;
-    INTERFACE_ADDREF(*outsort);
+    REFCOUNT_ADD(*outsort);
     return NOERROR;
 }
 
@@ -2144,7 +2144,7 @@ ECode CConcurrentSkipListMap::_KeySet::DescendingSet(
     AutoPtr<INavigableMap> p = (INavigableMap*)m->Probe(EIID_INavigableMap);
     AutoPtr<_KeySet> res = new _KeySet(p);
     *outnav = (INavigableSet*)res->Probe(EIID_INavigableSet);
-    INTERFACE_ADDREF(*outnav);
+    REFCOUNT_ADD(*outnav);
     return NOERROR;
 }
 
@@ -2209,14 +2209,14 @@ ECode CConcurrentSkipListMap::_Values::GetIterator(
         AutoPtr<CConcurrentSkipListMap> cp = (CConcurrentSkipListMap*)p.Get();
         AutoPtr<IIterator> res = cp->ValueIterator();
         *it = res;
-        INTERFACE_ADDREF(*it);
+        REFCOUNT_ADD(*it);
         return NOERROR;
     }
     else {
         AutoPtr<_SubMap> p2 = (_SubMap*)mM.Get();
         AutoPtr<IIterator> res = p2->ValueIterator();
         *it = res;
-        INTERFACE_ADDREF(*it);
+        REFCOUNT_ADD(*it);
         return NOERROR;
     }
 }
@@ -2338,14 +2338,14 @@ ECode CConcurrentSkipListMap::_EntrySet::GetIterator(
         AutoPtr<CConcurrentSkipListMap> cp = (CConcurrentSkipListMap*)p.Get();
         AutoPtr<IIterator> res = cp->EntryIterator();
         *it = res;
-        INTERFACE_ADDREF(*it);
+        REFCOUNT_ADD(*it);
         return NOERROR;
     }
     else {
         AutoPtr<_SubMap> p2 = (_SubMap*)mM.Get();
         AutoPtr<IIterator> res = p2->EntryIterator();
         *it = res;
-        INTERFACE_ADDREF(*it);
+        REFCOUNT_ADD(*it);
         return NOERROR;
     }
 }
@@ -2915,7 +2915,7 @@ ECode CConcurrentSkipListMap::_SubMap::Comparator(
     }
     else {
         *comp = cmp;
-        INTERFACE_ADDREF(*comp);
+        REFCOUNT_ADD(*comp);
         return NOERROR;
     }
 }
@@ -2973,7 +2973,7 @@ ECode CConcurrentSkipListMap::_SubMap::SubMap(
         return E_NULL_POINTER_EXCEPTION;
     AutoPtr<_SubMap> p = NewSubMap(fromKey, fromInclusive, toKey, toInclusive);
     *res = (INavigableMap*)p->Probe(EIID_INavigableMap);
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -2987,7 +2987,7 @@ ECode CConcurrentSkipListMap::_SubMap::HeadMap(
         return E_NULL_POINTER_EXCEPTION;
     AutoPtr<_SubMap> p = NewSubMap(NULL, FALSE, toKey, inclusive);
     *res = (INavigableMap*)p->Probe(EIID_INavigableMap);
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -3001,7 +3001,7 @@ ECode CConcurrentSkipListMap::_SubMap::TailMap(
         return E_NULL_POINTER_EXCEPTION;
     AutoPtr<_SubMap> p = NewSubMap(fromKey, inclusive, NULL, FALSE);
     *res = (INavigableMap*)p->Probe(EIID_INavigableMap);
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -3015,7 +3015,7 @@ ECode CConcurrentSkipListMap::_SubMap::SubMap(
     ECode ec = SubMap(fromKey, TRUE, toKey, FALSE, (INavigableMap**)&p);
     if (p != NULL) {
         *res = (ISortedMap*)p->Probe(EIID_ISortedMap);
-        INTERFACE_ADDREF(*res);
+        REFCOUNT_ADD(*res);
     }
     return ec;
 }
@@ -3029,7 +3029,7 @@ ECode CConcurrentSkipListMap::_SubMap::HeadMap(
     ECode ec = HeadMap(toKey, FALSE, (INavigableMap**)&p);
     if (p != NULL) {
         *res = (ISortedMap*)p->Probe(EIID_ISortedMap);
-        INTERFACE_ADDREF(*res);
+        REFCOUNT_ADD(*res);
     }
     return ec;
 }
@@ -3043,7 +3043,7 @@ ECode CConcurrentSkipListMap::_SubMap::TailMap(
     ECode ec = TailMap(fromKey, TRUE, (INavigableMap**)&p);
     if (p != NULL) {
         *res = (ISortedMap*)p->Probe(EIID_ISortedMap);
-        INTERFACE_ADDREF(*res);
+        REFCOUNT_ADD(*res);
     }
     return ec;
 }
@@ -3055,7 +3055,7 @@ ECode CConcurrentSkipListMap::_SubMap::DescendingMap(
     AutoPtr<_SubMap> p = new _SubMap(mM, mLo, mLoInclusive,
                         mHi, mHiInclusive, !mIsDescending);
     *res = (INavigableMap*)p->Probe(EIID_INavigableMap);
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -3068,7 +3068,7 @@ ECode CConcurrentSkipListMap::_SubMap::CeilingEntry(
     VALIDATE_NOT_NULL(outent);
     AutoPtr<IMapEntry> p = GetNearEntry(key, sGT|sEQ);
     *outent = p.Get();
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -3079,7 +3079,7 @@ ECode CConcurrentSkipListMap::_SubMap::CeilingKey(
     VALIDATE_NOT_NULL(outface);
     AutoPtr<IInterface> p = GetNearKey(key, sGT|sEQ);
     *outface = p.Get();
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -3090,7 +3090,7 @@ ECode CConcurrentSkipListMap::_SubMap::LowerEntry(
     VALIDATE_NOT_NULL(outent);
     AutoPtr<IMapEntry> p = GetNearEntry(key, sLT);
     *outent = p.Get();
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -3101,7 +3101,7 @@ ECode CConcurrentSkipListMap::_SubMap::LowerKey(
     VALIDATE_NOT_NULL(outface);
     AutoPtr<IInterface> p = GetNearKey(key, sLT);
     *outface = p.Get();
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -3112,7 +3112,7 @@ ECode CConcurrentSkipListMap::_SubMap::FloorEntry(
     VALIDATE_NOT_NULL(outent);
     AutoPtr<IMapEntry> p = GetNearEntry(key, sLT|sEQ);
     *outent = p.Get();
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -3123,7 +3123,7 @@ ECode CConcurrentSkipListMap::_SubMap::FloorKey(
     VALIDATE_NOT_NULL(outface);
     AutoPtr<IInterface> p = GetNearKey(key, sLT|sEQ);
     *outface = p.Get();
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -3134,7 +3134,7 @@ ECode CConcurrentSkipListMap::_SubMap::HigherEntry(
     VALIDATE_NOT_NULL(outent);
     AutoPtr<IMapEntry> p = GetNearEntry(key, sGT);
     *outent = p.Get();
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -3145,7 +3145,7 @@ ECode CConcurrentSkipListMap::_SubMap::HigherKey(
     VALIDATE_NOT_NULL(outface);
     AutoPtr<IInterface> p = GetNearKey(key, sGT);
     *outface = p.Get();
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -3155,7 +3155,7 @@ ECode CConcurrentSkipListMap::_SubMap::FirstKey(
     VALIDATE_NOT_NULL(outface);
     AutoPtr<IInterface> p = mIsDescending ? HighestKey() : LowestKey();
     *outface = p.Get();
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -3165,7 +3165,7 @@ ECode CConcurrentSkipListMap::_SubMap::LastKey(
     VALIDATE_NOT_NULL(outface);
     AutoPtr<IInterface> p = mIsDescending ? LowestKey() : HighestKey();
     *outface = p.Get();
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -3175,7 +3175,7 @@ ECode CConcurrentSkipListMap::_SubMap::FirstEntry(
     VALIDATE_NOT_NULL(outent);
     AutoPtr<IMapEntry> p = mIsDescending ? HighestEntry() : LowestEntry();
     *outent = p.Get();
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -3185,7 +3185,7 @@ ECode CConcurrentSkipListMap::_SubMap::LastEntry(
     VALIDATE_NOT_NULL(outent);
     AutoPtr<IMapEntry> p = mIsDescending ? LowestEntry() : HighestEntry();
     *outent = p.Get();
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -3195,7 +3195,7 @@ ECode CConcurrentSkipListMap::_SubMap::PollFirstEntry(
     VALIDATE_NOT_NULL(outent);
     AutoPtr<IMapEntry> p = mIsDescending ? RemoveHighest() : RemoveLowest();
     *outent = p.Get();
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -3205,7 +3205,7 @@ ECode CConcurrentSkipListMap::_SubMap::PollLastEntry(
     VALIDATE_NOT_NULL(outent);
     AutoPtr<IMapEntry> p = mIsDescending ? RemoveLowest() : RemoveHighest();
     *outent = p.Get();
-    INTERFACE_ADDREF(*outent);
+    REFCOUNT_ADD(*outent);
     return NOERROR;
 }
 
@@ -3217,7 +3217,7 @@ ECode CConcurrentSkipListMap::_SubMap::KeySet(
     VALIDATE_NOT_NULL(res);
     AutoPtr<_KeySet> ks = mKeySetView;
     *res = (ks != NULL) ? ks : (mKeySetView = new _KeySet(this));
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -3227,7 +3227,7 @@ ECode CConcurrentSkipListMap::_SubMap::NavigableKeySet(
     VALIDATE_NOT_NULL(res);
     AutoPtr<_KeySet> ks = mKeySetView;
     *res = (ks != NULL) ? ks : (mKeySetView = new _KeySet(this));
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -3237,7 +3237,7 @@ ECode CConcurrentSkipListMap::_SubMap::Values(
     VALIDATE_NOT_NULL(value);
     AutoPtr<ICollection> vs = mValuesView;
     *value = (vs != NULL) ? vs : (mValuesView = new _Values(this));
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -3247,7 +3247,7 @@ ECode CConcurrentSkipListMap::_SubMap::EntrySet(
     VALIDATE_NOT_NULL(entries);
     AutoPtr<ISet> es = mEntrySetView;
     *entries = (es != NULL) ? es : (mEntrySetView = new _EntrySet(this));
-    INTERFACE_ADDREF(*entries);
+    REFCOUNT_ADD(*entries);
     return NOERROR;
 }
 
@@ -3401,7 +3401,7 @@ ECode CConcurrentSkipListMap::_SubMap::SubMapValueIterator::Next(
     AutoPtr<IInterface> v = mNextValue;
     Advance();
     *object = v;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -3420,7 +3420,7 @@ ECode CConcurrentSkipListMap::_SubMap::SubMapKeyIterator::Next(
     AutoPtr<Node> n = mNext;
     Advance();
     *object = n->mKey;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -3441,7 +3441,7 @@ ECode CConcurrentSkipListMap::_SubMap::SubMapEntryIterator::Next(
     Advance();
     AutoPtr<SimpleImmutableEntry> p = new SimpleImmutableEntry(n->mKey, v);
     *object = p->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 

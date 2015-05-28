@@ -55,7 +55,7 @@ ECode Currency::GetInstance(
     AutoPtr<ICurrency> currency = sLocalesToCurrencies[locale];
     if (currency != NULL) {
         *instance = currency;
-        INTERFACE_ADDREF(*instance)
+        REFCOUNT_ADD(*instance)
         return NOERROR;
     }
     String country;
@@ -80,7 +80,7 @@ ECode Currency::GetInstance(
     AutoPtr<ICurrency> result = GetInstance(currencyCode);
     sLocalesToCurrencies[locale] = result;
     *instance = result;
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 

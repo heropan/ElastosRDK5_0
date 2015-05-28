@@ -1,13 +1,23 @@
 
 #include "AbstractCollection.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/ObjectUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include "ObjectUtils.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ObjectUtils;
 
 namespace Elastos {
 namespace Utility {
+
+CAR_INTERFACE_IMPL_2(AbstractCollection, Object, ICollection, IIterable)
+
+AbstractCollection::AbstractCollection()
+{
+}
+
+AbstractCollection::~AbstractCollection()
+{
+}
 
 ECode AbstractCollection::Add(
     /* [in] */ IInterface* object,
@@ -20,11 +30,16 @@ ECode AbstractCollection::AddAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    VALIDATE_NOT_NULL(collection);
-    VALIDATE_NOT_NULL(modified);
+    VALIDATE_NOT_NULL(modified)
+    *modified = FALSE;
+    VALIDATE_NOT_NULL(collection)
+
+    IIterable* iterable = IIterable::Probe(collection);
+    VALIDATE_NOT_NULL(iterable)
+
     Boolean result = FALSE;
     AutoPtr<IIterator> it;
-    collection->GetIterator((IIterator**)&it);
+    iterable->GetIterator((IIterator**)&it);
     Boolean hasnext = FALSE;
     while ((it->HasNext(&hasnext), hasnext)) {
         AutoPtr<IInterface> nextobject;
@@ -88,15 +103,20 @@ ECode AbstractCollection::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(collection);
     VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    VALIDATE_NOT_NULL(collection);
+
+    IIterable* iterable = IIterable::Probe(collection);
+    VALIDATE_NOT_NULL(iterable)
+
     AutoPtr<IIterator> it;
-    collection->GetIterator((IIterator**)&it);
+    iterable->GetIterator((IIterator**)&it);
     Boolean hasnext = FALSE;
+    Boolean flag = FALSE;
     while ((it->HasNext(&hasnext), hasnext)) {
             AutoPtr<IInterface> nextobject;
             it->Next((IInterface**)&nextobject);
-            Boolean flag = FALSE;
             Contains(nextobject, &flag);
             if (!flag) {
                 *result = FALSE;
@@ -213,7 +233,7 @@ ECode AbstractCollection::ToArray(
         sparray->Set(index++, nextobject);
     }
     *array = sparray;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -239,7 +259,7 @@ ECode AbstractCollection::ToArray(
         array->Set(index, NULL);
     }
     *outArray = array;
-    INTERFACE_ADDREF(*outArray)
+    REFCOUNT_ADD(*outArray)
     return NOERROR;
 }
 
@@ -264,16 +284,16 @@ ECode AbstractCollection::ToString(
         AutoPtr<IInterface> nextobject;
         it->Next((IInterface**)&nextobject);
         if (nextobject.Get() != this->Probe(EIID_IInterface)) {
-            buffer.AppendObject(nextobject);
+            buffer.AppendInterface(nextobject);
         }
         else {
-            buffer.AppendCStr("(this Collection)");
+            buffer += "(this Collection)";
         }
         if ((it->HasNext(&hasnext), hasnext)) {
-            buffer.AppendCStr(", ");
+            buffer += ", ";
         }
     }
-    buffer.AppendChar(']');
+    buffer.AppendChar("]");
     *result = buffer.ToString();
     return NOERROR;
 }

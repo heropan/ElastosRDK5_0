@@ -50,7 +50,7 @@ ECode MapEntry::GetKey(
     VALIDATE_NOT_NULL(key)
 
     *key = mKey;
-    INTERFACE_ADDREF(*key)
+    REFCOUNT_ADD(*key)
     return NOERROR;
 }
 
@@ -60,7 +60,7 @@ ECode MapEntry::GetValue(
     VALIDATE_NOT_NULL(value)
 
     *value = mValue;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -83,7 +83,7 @@ ECode MapEntry::SetValue(
     AutoPtr<IInterface> result = mValue;
     mValue = object;
     *oldObject = result;
-    INTERFACE_ADDREF(*oldObject)
+    REFCOUNT_ADD(*oldObject)
     return NOERROR;
 }
 

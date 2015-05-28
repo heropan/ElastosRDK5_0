@@ -1369,7 +1369,7 @@ ECode CGregorianCalendar::Clone(
     CGregorianCalendar::NewByFriend((CGregorianCalendar**)&temp);
     FAIL_RETURN(Calendar::Clone(temp));
     *cloned = (IGregorianCalendar*)temp;
-    INTERFACE_ADDREF(*cloned);
+    REFCOUNT_ADD(*cloned);
     return NOERROR;
 }
 

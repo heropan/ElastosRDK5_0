@@ -369,7 +369,7 @@ ECode CMatcher::Pattern(
 {
     VALIDATE_NOT_NULL(pattern);
     *pattern = mPattern;
-    INTERFACE_ADDREF(*pattern);
+    REFCOUNT_ADD(*pattern);
     return NOERROR;
 }
 
@@ -513,7 +513,7 @@ ECode CMatcher::ToMatchResult(
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(EnsureMatch());
     *result = (IMatchResult*)new MatchResultImpl(mInput, *mMatchOffsets);
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

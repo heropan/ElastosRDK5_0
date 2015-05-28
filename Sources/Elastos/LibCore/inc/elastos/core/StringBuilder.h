@@ -1,15 +1,9 @@
 
-#ifndef __STRINGBUILDER_H__
-#define __STRINGBUILDER_H__
+#ifndef __ELASTOS_CORE_STRINGBUILDER_H__
+#define __ELASTOS_CORE_STRINGBUILDER_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#include "Object.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
-#include <coredef.h>
-#include <AbstractStringBuilder.h>
+#include <elastos/core/Object.h>
+#include <elastos/core/AbstractStringBuilder.h>
 
 using Elastos::IO::ISerializable;
 
@@ -338,7 +332,7 @@ public:
 
     CARAPI AppendNull();
 
-    CARAPI AppendChar(
+    CARAPI AppendCStr(
         /* [in] */ const char* str);
 
     /**
@@ -364,7 +358,7 @@ public:
      * @return this StringBuffer.
      * @see String#valueOf(char)
      */
-    CARAPI AppendChar32(
+    CARAPI AppendChar(
         /* [in] */ Char32 c);
 
     /**
@@ -559,7 +553,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *             if {@code index < 0} or {@code index > length()}.
      */
-    CARAPI InsertChar32(
+    CARAPI InsertChar(
         /* [in] */ Int32 offset,
         /* [in] */ Char32 c);
 
@@ -870,4 +864,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__STRINGBUILDER_H__
+#endif //__ELASTOS_CORE_STRINGBUILDER_H__

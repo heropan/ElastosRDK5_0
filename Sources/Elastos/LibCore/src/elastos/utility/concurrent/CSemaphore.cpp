@@ -324,7 +324,7 @@ ECode CSemaphore::GetQueuedThreads(
     VALIDATE_NOT_NULL(out)
     AutoPtr<ICollection> c = mSync->GetQueuedThreads();
     *out = c;
-    INTERFACE_ADDREF(*out);
+    REFCOUNT_ADD(*out);
     return NOERROR;
 }
 

@@ -52,7 +52,7 @@ ECode CForkJoinWorkerThread::GetPool(
 {
     VALIDATE_NOT_NULL(outpool);
     *outpool = mPool;
-    INTERFACE_ADDREF(*outpool);
+    REFCOUNT_ADD(*outpool);
     return NOERROR;
 }
 
@@ -193,7 +193,7 @@ ECode CForkJoinWorkerThread::DeqTask(
         UNSAFE.compareAndSwapObject(q, (i << ASHIFT) + ABASE, t, NULL)*/) {
         mQueueBase = b + 1;
         *outtask = t;
-        INTERFACE_ADDREF(*outtask);
+        REFCOUNT_ADD(*outtask);
         return NOERROR;
     }
     *outtask = NULL;
@@ -216,7 +216,7 @@ ECode CForkJoinWorkerThread::LocallyDeqTask(
                                             t, NULL)*/) {
                 mQueueBase = b + 1;
                 *outtask = t;
-                INTERFACE_ADDREF(*outtask);
+                REFCOUNT_ADD(*outtask);
                 return NOERROR;
             }
         }
@@ -277,7 +277,7 @@ ECode CForkJoinWorkerThread::PeekTask(
     }
     Int32 i = mLocallyFifo ? mQueueBase : (mQueueTop - 1);
     *outtask = (*q)[i & m];
-    INTERFACE_ADDREF(*outtask);
+    REFCOUNT_ADD(*outtask);
     return NOERROR;
 }
 
@@ -358,7 +358,7 @@ ECode CForkJoinWorkerThread::PollLocalTask(
     else
         p = PopTask();
     *outtask = p.Get();
-    INTERFACE_ADDREF(*outtask);
+    REFCOUNT_ADD(*outtask);
     return NOERROR;
 }
 
@@ -372,7 +372,7 @@ ECode CForkJoinWorkerThread::PollTask(
     AutoPtr<CForkJoinPool> cpool = (CForkJoinPool*)mPool.Get();
     if (t != NULL || (ws = cpool->mWorkers) == NULL) {
         *outtask = t;
-        INTERFACE_ADDREF(*outtask);
+        REFCOUNT_ADD(*outtask);
         return NOERROR;
     }
     Int32 n = ws->GetLength(); // cheap version of FJP.scan
@@ -387,7 +387,7 @@ ECode CForkJoinWorkerThread::PollTask(
             w->DeqTask((IForkJoinTask**)&t);
             if (t != NULL) {
                 *outtask = t;
-                INTERFACE_ADDREF(*outtask);
+                REFCOUNT_ADD(*outtask);
                 return NOERROR;
             }
             i = 0;

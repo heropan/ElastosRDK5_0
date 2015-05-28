@@ -15,7 +15,7 @@ ECode CZoneInfoDB::GetAvailableIDs(
     VALIDATE_NOT_NULL(array);
     AutoPtr<ArrayOf<String> > tmp = ZoneInfoDB::GetAvailableIDs();
     *array = tmp;
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 
@@ -26,7 +26,7 @@ ECode CZoneInfoDB::GetAvailableIDs(
     VALIDATE_NOT_NULL(array);
     AutoPtr<ArrayOf<String> > tmp = ZoneInfoDB::GetAvailableIDs(rawOffset);
     *array = tmp;
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 
@@ -36,7 +36,7 @@ ECode CZoneInfoDB::GetSystemDefault(
     VALIDATE_NOT_NULL(tz);
     AutoPtr<ITimeZone> tmp = ZoneInfoDB::GetSystemDefault();
     *tz = tmp;
-    INTERFACE_ADDREF(*tz);
+    REFCOUNT_ADD(*tz);
     return NOERROR;
 }
 
@@ -47,7 +47,7 @@ ECode CZoneInfoDB::GetTimeZone(
     VALIDATE_NOT_NULL(tz);
     AutoPtr<ITimeZone> tmp = ZoneInfoDB::GetTimeZone(id);
     *tz = tmp;
-    INTERFACE_ADDREF(*tz);
+    REFCOUNT_ADD(*tz);
     return NOERROR;
 }
 
@@ -66,7 +66,7 @@ ECode CZoneInfoDB::MakeTimeZone(
     VALIDATE_NOT_NULL(tz);
     AutoPtr<ITimeZone> tmp = ZoneInfoDB::MakeTimeZone(id);
     *tz = tmp;
-    INTERFACE_ADDREF(*tz);
+    REFCOUNT_ADD(*tz);
     return NOERROR;
 }
 

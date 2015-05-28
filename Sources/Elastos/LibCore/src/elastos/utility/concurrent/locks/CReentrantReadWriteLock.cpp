@@ -36,7 +36,7 @@ ECode CReentrantReadWriteLock::ReadLock(
     VALIDATE_NOT_NULL(outlock)
 
     *outlock = (ILock*) mReaderLock->Probe(EIID_ILock);
-    INTERFACE_ADDREF(*outlock)
+    REFCOUNT_ADD(*outlock)
     return NOERROR;
 }
 
@@ -46,7 +46,7 @@ ECode CReentrantReadWriteLock::WriteLock(
     VALIDATE_NOT_NULL(outlock)
 
     *outlock = (ILock*) mWriterLock->Probe(EIID_ILock);
-    INTERFACE_ADDREF(*outlock)
+    REFCOUNT_ADD(*outlock)
     return NOERROR;
 }
 
@@ -722,7 +722,7 @@ ECode CReentrantReadWriteLock::CWriteLock::NewCondition(
 
     AutoPtr<ICondition> res = mSync->NewCondition();
     *con = res;
-    INTERFACE_ADDREF(*con)
+    REFCOUNT_ADD(*con)
     return NOERROR;
 }
 

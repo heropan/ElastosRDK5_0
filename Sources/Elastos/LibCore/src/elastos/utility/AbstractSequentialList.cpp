@@ -62,7 +62,7 @@ ECode AbstractSequentialList::GetIterator(
     AutoPtr<IListIterator> listiterator;
     GetListIterator(0, (IListIterator**)&listiterator);
     *result = listiterator;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

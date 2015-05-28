@@ -400,7 +400,7 @@ ECode SubAbstractList::GetIterator(
     AutoPtr<IListIterator> listit;
     GetListIterator(0, (IListIterator**)&listit);
     *it = listit;
-    INTERFACE_ADDREF(*it);
+    REFCOUNT_ADD(*it);
     return NOERROR;
 }
 
@@ -416,7 +416,7 @@ ECode SubAbstractList::GetListIterator(
             AutoPtr<SubAbstractListIterator> subabstractlistiterator =
                       new SubAbstractListIterator(listiteratorex, this, mOffset, mSize);
             *listiterator = subabstractlistiterator;
-            INTERFACE_ADDREF(*listiterator);
+            REFCOUNT_ADD(*listiterator);
             return NOERROR;
         }
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -780,7 +780,7 @@ ECode AbstractList::GetIterator(
     AutoPtr<SimpleListIterator> simplelistiterator =
         new AbstractList::SimpleListIterator(this);
     *it = simplelistiterator;
-    INTERFACE_ADDREF(*it);
+    REFCOUNT_ADD(*it);
     return NOERROR;
 }
 
@@ -836,7 +836,7 @@ ECode AbstractList::GetListIterator(
     VALIDATE_NOT_NULL(listiterator);
     AutoPtr<FullListIterator> full = new FullListIterator(location, this);
     *listiterator = full;
-    INTERFACE_ADDREF(*listiterator);
+    REFCOUNT_ADD(*listiterator);
     return NOERROR;
 }
 
@@ -883,12 +883,12 @@ ECode AbstractList::SubList(
             if (THIS_PROBE(IRandomAccess)) {
                 AutoPtr<SubAbstractListRandomAccess> sublistrandom = new SubAbstractListRandomAccess(this, start, end);
                 *list = sublistrandom;
-                INTERFACE_ADDREF(*list);
+                REFCOUNT_ADD(*list);
                 return NOERROR;
             }
             AutoPtr<SubAbstractList> sublist = new SubAbstractList(this, start, end);
             *list = sublist;
-            INTERFACE_ADDREF(*list);
+            REFCOUNT_ADD(*list);
             return NOERROR;
         }
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

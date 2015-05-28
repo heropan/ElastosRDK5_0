@@ -216,7 +216,7 @@ ECode ReentrantLock::NewCondition(
     VALIDATE_NOT_NULL(condition);
     AutoPtr<ICondition> c = mSync->NewCondition();
     *condition = c;
-    INTERFACE_ADDREF(*condition);
+    REFCOUNT_ADD(*condition);
     return NOERROR;
 }
 

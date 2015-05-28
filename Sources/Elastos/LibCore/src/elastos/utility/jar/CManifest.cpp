@@ -92,7 +92,7 @@ ECode CManifest::GetEntries(
 {
     VALIDATE_NOT_NULL(entries)
     *entries = mEntries;
-    INTERFACE_ADDREF(*entries)
+    REFCOUNT_ADD(*entries)
     return NOERROR;
 }
 
@@ -101,7 +101,7 @@ ECode CManifest::GetMainAttributes(
 {
     VALIDATE_NOT_NULL(attrib)
     *attrib = mMainAttributes;
-    INTERFACE_ADDREF(*attrib)
+    REFCOUNT_ADD(*attrib)
     return NOERROR;
 }
 
@@ -150,7 +150,7 @@ ECode CManifest::Clone(
 {
     VALIDATE_NOT_NULL(object)
     CManifest::New(this, (IManifest**)&object);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -292,7 +292,7 @@ ECode CManifest::GetChunk(
     CStringWrapper::New(name, (ICharSequence**)&cs);
     mChunks->Get(cs.Get(), (IInterface**)&value);
     *chunk = value.Get();
-    INTERFACE_ADDREF(*chunk)
+    REFCOUNT_ADD(*chunk)
     return NOERROR;
 }
 

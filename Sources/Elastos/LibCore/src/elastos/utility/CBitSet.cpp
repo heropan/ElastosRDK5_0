@@ -82,7 +82,7 @@ ECode CBitSet::Clone(
     clone->mBits = mBits->Clone();
     clone->ShrinkSize();
     *object = (IBitSet*)clone;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
 
     return NOERROR;
 }

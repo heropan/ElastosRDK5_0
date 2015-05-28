@@ -31,7 +31,7 @@ label: \
         return ec; \
     } \
     *var = (var_type*)var_type::Probe(object.Get()); \
-    INTERFACE_ADDREF(*var) \
+    REFCOUNT_ADD(*var) \
 } while(0);
 
 ECode CPack200Helper::NewPacker(

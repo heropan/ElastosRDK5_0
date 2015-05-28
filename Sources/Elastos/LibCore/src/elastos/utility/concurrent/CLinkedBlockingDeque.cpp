@@ -85,7 +85,7 @@ ECode CLinkedBlockingDeque::AbstractItr::Next(
     AutoPtr<IInterface> x = mNextItem;
     Advance();
     *object = x;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -422,7 +422,7 @@ ECode CLinkedBlockingDeque::RemoveFirst(
     PollFirst((IInterface**)&x);
     if (x == NULL) return E_NO_SUCH_ELEMENT_EXCEPTION;
     *res = x;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -434,7 +434,7 @@ ECode CLinkedBlockingDeque::RemoveLast(
     PollLast((IInterface**)&x);
     if (x == NULL) return E_NO_SUCH_ELEMENT_EXCEPTION;
     *res = x;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -446,7 +446,7 @@ ECode CLinkedBlockingDeque::PollFirst(
     lock->Lock();
     AutoPtr<IInterface> p = UnlinkFirst();
     *res = p.Get();
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     lock->UnLock();
     return NOERROR;
 }
@@ -459,7 +459,7 @@ ECode CLinkedBlockingDeque::PollLast(
     lock->Lock();
     AutoPtr<IInterface> p = UnlinkLast();
     *res = p.Get();
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     lock->UnLock();
     return NOERROR;
 }
@@ -474,7 +474,7 @@ ECode CLinkedBlockingDeque::TakeFirst(
     while ( (x = UnlinkFirst()) == NULL)
         mNotEmpty->Await();
     *outface = x;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     lock->UnLock();
     return NOERROR;
 }
@@ -489,7 +489,7 @@ ECode CLinkedBlockingDeque::TakeLast(
     while ( (x = UnlinkLast()) == NULL)
         mNotEmpty->Await();
     *outface = x;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     lock->UnLock();
     return NOERROR;
 }
@@ -514,7 +514,7 @@ ECode CLinkedBlockingDeque::PollFirst(
         mNotEmpty->AwaitNanos(nanos, &nanos);
     }
     *outface = x;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     lock->UnLock();
     return NOERROR;
 }
@@ -539,7 +539,7 @@ ECode CLinkedBlockingDeque::PollLast(
         mNotEmpty->AwaitNanos(nanos, &nanos);
     }
     *outface = x;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     lock->UnLock();
     return NOERROR;
 }
@@ -552,7 +552,7 @@ ECode CLinkedBlockingDeque::GetFirst(
     PeekFirst((IInterface**)&x);
     if (x == NULL) return E_NO_SUCH_ELEMENT_EXCEPTION;
     *res = x;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -564,7 +564,7 @@ ECode CLinkedBlockingDeque::GetLast(
     PeekLast((IInterface**)&x);
     if (x == NULL) return E_NO_SUCH_ELEMENT_EXCEPTION;
     *res = x;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -575,7 +575,7 @@ ECode CLinkedBlockingDeque::PeekFirst(
     AutoPtr<IReentrantLock> lock = mLock;
     lock->Lock();
     *res = (mFirst == NULL) ? NULL : mFirst->mItem;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     lock->UnLock();
     return NOERROR;
 }
@@ -587,7 +587,7 @@ ECode CLinkedBlockingDeque::PeekLast(
     AutoPtr<IReentrantLock> lock = mLock;
     lock->Lock();
     *res = (mLast == NULL) ? NULL : mLast->mItem;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     lock->UnLock();
     return NOERROR;
 }
@@ -829,7 +829,7 @@ ECode CLinkedBlockingDeque::ToArray(
     for (AutoPtr<Node> p = mFirst; p != NULL; p = p->mNext)
         (*a)[k++] = p->mItem;
     *array = a;
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     lock->UnLock();
     return NOERROR;
 }
@@ -851,7 +851,7 @@ ECode CLinkedBlockingDeque::ToArray(
     if (inArray->GetLength() > k)
         (*inArray)[k] = NULL;
     *outArray = inArray;
-    INTERFACE_ADDREF(*outArray);
+    REFCOUNT_ADD(*outArray);
     lock->UnLock();
     return NOERROR;
 }
@@ -908,7 +908,7 @@ ECode CLinkedBlockingDeque::GetIterator(
 {
     VALIDATE_NOT_NULL(it);
     *it = new Itr(this);
-    INTERFACE_ADDREF(*it);
+    REFCOUNT_ADD(*it);
     return NOERROR;
 }
 
@@ -917,7 +917,7 @@ ECode CLinkedBlockingDeque::GetDescendingIterator(
 {
     VALIDATE_NOT_NULL(iterator);
     *iterator = new DescendingItr(this);
-    INTERFACE_ADDREF(*iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 

@@ -397,7 +397,7 @@ ECode CDelayQueue::GetIterator(
     GetWeakReference((IWeakReference**)&wr);
     AutoPtr<Itr> p = new Itr(wr.Get(), arr);
     *it = (IIterator*)p.Get();
-    INTERFACE_ADDREF(*it);
+    REFCOUNT_ADD(*it);
     return NOERROR;
 }
 
@@ -482,7 +482,7 @@ ECode CDelayQueue::Itr::Next(
         return E_NO_SUCH_METHOD_EXCEPTION;
     mLastRet = mCursor;
     *res = (*mArray)[mCursor++];
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 

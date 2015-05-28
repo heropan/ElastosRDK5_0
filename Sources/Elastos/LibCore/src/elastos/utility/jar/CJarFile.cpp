@@ -152,7 +152,7 @@ ECode CJarFile::JarFileInputStream::GetLock(
     VALIDATE_NOT_NULL(lockobj);
     AutoPtr<IInterface> obj = FilterInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 
@@ -188,7 +188,7 @@ ECode CJarFile::GetEntry(
     FAIL_RETURN(CJarEntry::New((IZipEntry*)ze.Get(), (IJarEntry**)&je));
     ((CJarEntry*)je.Get())->mParentJar = THIS_PROBE(IJarFile);
     *entry = je.Get();
-    INTERFACE_ADDREF(*entry)
+    REFCOUNT_ADD(*entry)
     return NOERROR;
 }
 
@@ -237,7 +237,7 @@ ECode CJarFile::GetInputStream(
     Int64 size;
     if (mVerifier == NULL || (ze->GetSize(&size), size) == -1) {
         *is = in;
-        INTERFACE_ADDREF(*is)
+        REFCOUNT_ADD(*is)
         return NOERROR;
     }
 
@@ -247,13 +247,13 @@ ECode CJarFile::GetInputStream(
     mVerifier->InitEntry(name, (JarVerifier::VerifierEntry**)&entry);
     if (entry == NULL) {
         *is = in;
-        INTERFACE_ADDREF(*is)
+        REFCOUNT_ADD(*is)
         return NOERROR;
     }
 
     AutoPtr<IInputStream> ret = (IInputStream*)new CJarFile::JarFileInputStream(in, ze, entry);
     *is = ret;
-    INTERFACE_ADDREF(*is)
+    REFCOUNT_ADD(*is)
     return NOERROR;
 }
 
@@ -279,7 +279,7 @@ ECode CJarFile::GetJarEntry(
     AutoPtr<IZipEntry> ze;
     FAIL_RETURN(GetEntry(name, (IZipEntry**)&ze))
     *jarEntry = ze.Get();
-    INTERFACE_ADDREF(*jarEntry)
+    REFCOUNT_ADD(*jarEntry)
     return NOERROR;
 }
 
@@ -294,7 +294,7 @@ ECode CJarFile::GetManifest(
     }
     if (mManifest != NULL) {
         *manifest = mManifest;
-        INTERFACE_ADDREF(*manifest)
+        REFCOUNT_ADD(*manifest)
         return NOERROR;
     }
 
@@ -314,7 +314,7 @@ ECode CJarFile::GetManifest(
     }
 
     mManifest = CManifest::Create(is, mVerifier != NULL);
-    INTERFACE_ADDREF(mManifest)
+    REFCOUNT_ADD(mManifest)
     ECode ec = is->Close();
     FAIL_GOTO(ec, label)
     mManifestEntry = NULL;
@@ -328,7 +328,7 @@ label:
     }
 
     *manifest = mManifest;
-    INTERFACE_ADDREF(*manifest)
+    REFCOUNT_ADD(*manifest)
     return ec;
 }
 

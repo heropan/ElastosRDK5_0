@@ -305,7 +305,7 @@ ECode CZoneInfo::Clone(
     FAIL_RETURN(CZoneInfo::NewByFriend(mID, mTransitions->Clone(), mTypes->Clone(), offsets, mIsDsts->Clone(),
             (CZoneInfo**)&info));
     *newObj = (ITimeZone*)info.Get();
-    INTERFACE_ADDREF(*newObj);
+    REFCOUNT_ADD(*newObj);
     return NOERROR;
 }
 
@@ -428,7 +428,7 @@ ECode CZoneInfo::Clone(
     AutoPtr<ITimeZone> timeZone;
     FAIL_RETURN(Clone((ITimeZone**)&timeZone));
     *newObj = timeZone->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*newObj)
+    REFCOUNT_ADD(*newObj)
     return NOERROR;
 }
 

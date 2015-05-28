@@ -24,7 +24,7 @@ ECode CCheckedInputStream::GetLock(
 
     AutoPtr<IInterface> obj = FilterInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 
@@ -62,7 +62,7 @@ ECode CCheckedInputStream::GetChecksum(
     VALIDATE_NOT_NULL(checksum);
 
     *checksum = mCheck;
-    INTERFACE_ADDREF(*checksum);
+    REFCOUNT_ADD(*checksum);
     return NOERROR;
 }
 

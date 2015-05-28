@@ -180,7 +180,7 @@ ECode AbstractMap::Get(
                 AutoPtr<IInterface> entvalue;
                 entry->GetValue((IInterface**)&entvalue);
                 *value = entvalue;
-                INTERFACE_ADDREF(*value)
+                REFCOUNT_ADD(*value)
                 return NOERROR;
             }
         }
@@ -196,7 +196,7 @@ ECode AbstractMap::Get(
                 AutoPtr<IInterface> entvalue;
                 entry->GetValue((IInterface**)&entvalue);
                 *value = entvalue;
-                INTERFACE_ADDREF(*value)
+                REFCOUNT_ADD(*value)
                 return NOERROR;
             }
         }
@@ -248,7 +248,7 @@ ECode AbstractMap::KeySet(
     }
 
     *keySet = mKeySet;
-    INTERFACE_ADDREF(*keySet)
+    REFCOUNT_ADD(*keySet)
     return NOERROR;
 }
 
@@ -303,7 +303,7 @@ ECode AbstractMap::Remove(
                 AutoPtr<IInterface> entvalue;
                 entry->GetValue((IInterface**)&entvalue);
                 *value = entvalue;
-                INTERFACE_ADDREF(*value)
+                REFCOUNT_ADD(*value)
                 return NOERROR;
             }
         }
@@ -320,7 +320,7 @@ ECode AbstractMap::Remove(
                 AutoPtr<IInterface> entvalue;
                 entry->GetValue((IInterface**)&entvalue);
                 *value = entvalue;
-                INTERFACE_ADDREF(*value)
+                REFCOUNT_ADD(*value)
                 return NOERROR;
             }
         }
@@ -394,7 +394,7 @@ ECode AbstractMap::Values(
         mValuesCollection = (ICollection*) new AbstractMapValues(this);
     }
     *value = mValuesCollection;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -442,7 +442,7 @@ ECode AbstractMap::SimpleImmutableEntry::GetKey(
     VALIDATE_NOT_NULL(key)
 
     *key = mKey;
-    INTERFACE_ADDREF(*key)
+    REFCOUNT_ADD(*key)
     return NOERROR;
 }
 
@@ -452,7 +452,7 @@ ECode AbstractMap::SimpleImmutableEntry::GetValue(
     VALIDATE_NOT_NULL(value)
 
     *value = mValue;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -534,7 +534,7 @@ ECode AbstractMap::SimpleEntry::GetKey(
     VALIDATE_NOT_NULL(key)
 
     *key = mKey;
-    INTERFACE_ADDREF(*key)
+    REFCOUNT_ADD(*key)
     return NOERROR;
 }
 
@@ -544,7 +544,7 @@ ECode AbstractMap::SimpleEntry::GetValue(
     VALIDATE_NOT_NULL(value)
 
     *value = mValue;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -557,7 +557,7 @@ ECode AbstractMap::SimpleEntry::SetValue(
     AutoPtr<IInterface> result = mValue;
     mValue = valueReplacer;
     *valueReplacee = result;
-    INTERFACE_ADDREF(*valueReplacee)
+    REFCOUNT_ADD(*valueReplacee)
     return NOERROR;
 }
 
@@ -648,7 +648,7 @@ ECode AbstractMap::AbstractMapKeySet::GetIterator(
 
     AutoPtr<IIterator> res = (IIterator*) new AbstractMapKeySetIterator(mMap);
     *outiter = res;
-    INTERFACE_ADDREF(*outiter)
+    REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 
@@ -802,7 +802,7 @@ ECode AbstractMap::AbstractMapValues::GetIterator(
 
     AutoPtr<IIterator> res = (IIterator*) new AbstractMapValuesIterator(mMap);
     *outiter = res;
-    INTERFACE_ADDREF(*outiter)
+    REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 

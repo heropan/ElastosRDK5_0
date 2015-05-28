@@ -19,7 +19,7 @@ ECode CZipInputStream::GetLock(
 
     AutoPtr<IInterface> obj = ZipInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

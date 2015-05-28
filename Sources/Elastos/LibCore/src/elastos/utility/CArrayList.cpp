@@ -38,7 +38,7 @@ ECode CArrayList::ArrayListIterator::Next(
     }
     mRemaining = rem - 1;
     *object = (*mOwner->mArray)[mRemovalIndex = mOwner->mSize - rem];
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -261,7 +261,7 @@ ECode CArrayList::Clone(
     result->mArray = mArray->Clone();
     result->mSize = mSize;
     *outarray = (IArrayList*) result.Get();
-    INTERFACE_ADDREF(*outarray)
+    REFCOUNT_ADD(*outarray)
     // } catch (CloneNotSupportedException e) {
     //    throw new AssertionError();
     // }
@@ -291,7 +291,7 @@ ECode CArrayList::Get(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     *object = (*mArray)[location];
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -412,7 +412,7 @@ ECode CArrayList::Remove(
     mSize = s;
     mModCount++;
     *object = result;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -499,7 +499,7 @@ ECode CArrayList::Set(
     AutoPtr<IInterface> result = (*a)[location];
     a->Set(location, object);
     *prevObject = result;
-    INTERFACE_ADDREF(*prevObject)
+    REFCOUNT_ADD(*prevObject)
     return NOERROR;
 }
 
@@ -561,7 +561,7 @@ ECode CArrayList::GetIterator(
 
     AutoPtr<IIterator> outiter = new ArrayListIterator(this);
     *it = outiter;
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 

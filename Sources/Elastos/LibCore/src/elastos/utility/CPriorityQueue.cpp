@@ -46,7 +46,7 @@ ECode CPriorityQueue::PriorityIterator::Next(
     }
     mAllowRemove = TRUE;
     *outinter = (*mHost->mElements)[++mCurrentIndex];
-    INTERFACE_ADDREF(*outinter)
+    REFCOUNT_ADD(*outinter)
     return NOERROR;
 }
 
@@ -139,7 +139,7 @@ ECode CPriorityQueue::Comparator(
     *outcom = NULL;
 
     *outcom = mComparator;
-    INTERFACE_ADDREF(*outcom)
+    REFCOUNT_ADD(*outcom)
     return NOERROR;
 }
 
@@ -178,7 +178,7 @@ ECode CPriorityQueue::Poll(
     AutoPtr<IInterface> result = (*mElements)[0];
     RemoveAt(0);
     *e = result;
-    INTERFACE_ADDREF(*e)
+    REFCOUNT_ADD(*e)
     return NOERROR;
 }
 
@@ -200,7 +200,7 @@ ECode CPriorityQueue::Peek(
         return NOERROR;
     }
     *e = (*mElements)[0];
-    INTERFACE_ADDREF(*e)
+    REFCOUNT_ADD(*e)
     return NOERROR;
 }
 
@@ -327,7 +327,7 @@ ECode CPriorityQueue::GetIterator(
 
     AutoPtr<IIterator> outit = (IIterator*) new PriorityIterator(this);
     *it = outit;
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 

@@ -54,7 +54,7 @@ ECode CPropertyResourceBundle::_Enumeration::NextElement(
         AutoPtr<ICharSequence> sq;
         CStringWrapper::New(result, (ICharSequence**)&sq);
         *inter = sq;
-        INTERFACE_ADDREF(*inter)
+        REFCOUNT_ADD(*inter)
         return NOERROR;
     }
     // Cause an exception
@@ -116,12 +116,12 @@ ECode CPropertyResourceBundle::GetKeys(
     if (mParent == NULL) {
         AutoPtr<IEnumeration> outenu = GetLocalKeys();
         *enu = outenu;
-        INTERFACE_ADDREF(*enu)
+        REFCOUNT_ADD(*enu)
         return NOERROR;
     }
     AutoPtr<IEnumeration> outenu = (IEnumeration*) new _Enumeration(this);
     *enu = outenu;
-    INTERFACE_ADDREF(*enu)
+    REFCOUNT_ADD(*enu)
     return NOERROR;
 }
 

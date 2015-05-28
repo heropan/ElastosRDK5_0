@@ -107,7 +107,7 @@ ECode Pattern::Compile(
 {
     VALIDATE_NOT_NULL(obj);
     *obj = (IPattern*)new Pattern(regularExpression, flags);
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 

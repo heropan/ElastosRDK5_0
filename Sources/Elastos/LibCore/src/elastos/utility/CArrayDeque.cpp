@@ -38,7 +38,7 @@ ECode CArrayDeque::DeqIterator::Next(
     mLastRet = mCursor;
     mCursor = (mCursor + 1) & (mOwner->mElements->GetLength() - 1);
     *object = result;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -87,7 +87,7 @@ ECode CArrayDeque::DescendingIterator::Next(
     }
     mLastRet = mCursor;
     *object = result;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -268,7 +268,7 @@ ECode CArrayDeque::RemoveFirst(
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
     *e = x;
-    INTERFACE_ADDREF(*e)
+    REFCOUNT_ADD(*e)
     return NOERROR;
 }
 
@@ -284,7 +284,7 @@ ECode CArrayDeque::RemoveLast(
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
     *e = x;
-    INTERFACE_ADDREF(*e)
+    REFCOUNT_ADD(*e)
     return NOERROR;
 }
 
@@ -304,7 +304,7 @@ ECode CArrayDeque::PollFirst(
     mElements->Set(h, NULL);    // Must null out slot
     mHead = (h + 1) & (mElements->GetLength() - 1);
     *e = result;
-    INTERFACE_ADDREF(*e)
+    REFCOUNT_ADD(*e)
     return NOERROR;
 }
 
@@ -323,7 +323,7 @@ ECode CArrayDeque::PollLast(
     mElements->Set(t, NULL);
     mTail = t;
     *e = result;
-    INTERFACE_ADDREF(*e)
+    REFCOUNT_ADD(*e)
     return NOERROR;
 }
 
@@ -339,7 +339,7 @@ ECode CArrayDeque::GetFirst(
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
     *e = result;
-    INTERFACE_ADDREF(*e)
+    REFCOUNT_ADD(*e)
     return NOERROR;
 }
 
@@ -356,7 +356,7 @@ ECode CArrayDeque::GetLast(
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
     (*e) = result;
-    INTERFACE_ADDREF(*e)
+    REFCOUNT_ADD(*e)
 
     return NOERROR;
 }
@@ -370,7 +370,7 @@ ECode CArrayDeque::PeekFirst(
     AutoPtr<IInterface> result = (*mElements)[mHead];
     // elements[head] is null if deque empty
     *e = result;
-    INTERFACE_ADDREF(*e)
+    REFCOUNT_ADD(*e)
 
     return NOERROR;
 }
@@ -384,7 +384,7 @@ ECode CArrayDeque::PeekLast(
     // E result = (E) elements[(tail - 1) & (elements.length - 1)];
     AutoPtr<IInterface> result = (*mElements)[(mTail - 1) & (mElements->GetLength() - 1)];
     *e = result;
-    INTERFACE_ADDREF(*e)
+    REFCOUNT_ADD(*e)
 
     return NOERROR;
 }
@@ -581,7 +581,7 @@ ECode CArrayDeque::GetIterator(
 
     AutoPtr<IIterator> res = new DeqIterator(this);
     *it = res;
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -592,7 +592,7 @@ ECode CArrayDeque::GetDescendingIterator(
 
     AutoPtr<IIterator> res = new DescendingIterator(this);
     *it = res;
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -652,7 +652,7 @@ ECode CArrayDeque::ToArray(
     GetSize(&value);
     AutoPtr<ArrayOf<IInterface*> > res = ArrayOf<IInterface*>::Alloc(value);
     *array = CopyElements(res);
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -672,7 +672,7 @@ ECode CArrayDeque::ToArray(
         a->Set(size, NULL);
     }
     *array = a;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -687,7 +687,7 @@ ECode CArrayDeque::Clone(
     FAIL_RETURN(CArrayDeque::NewByFriend((CArrayDeque**)&result));
     result->mElements->Copy(mElements, mElements->GetLength());
     *outarray = result->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*outarray)
+    REFCOUNT_ADD(*outarray)
 
     // } catch (CloneNotSupportedException e) {
     //     throw new AssertionError();

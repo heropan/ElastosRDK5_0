@@ -376,7 +376,7 @@ ECode CExchanger::Exchange(
         }
         if (!ObjectUtils::Equals(v, sCANCEL->Probe(EIID_IInterface))) {
             *outface = v;
-            INTERFACE_ADDREF(*outface);
+            REFCOUNT_ADD(*outface);
             return NOERROR;
         }
         Thread::Interrupted(); // Clear interrupt status on IE throw
@@ -402,7 +402,7 @@ ECode CExchanger::Exchange(
         }
         if (!ObjectUtils::Equals(v, sCANCEL->Probe(EIID_IInterface))) {
             *outface = v;
-            INTERFACE_ADDREF(*outface);
+            REFCOUNT_ADD(*outface);
             return NOERROR;
         }
         if (!Thread::Interrupted())

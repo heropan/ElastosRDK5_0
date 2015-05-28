@@ -30,7 +30,7 @@ module
          * @throws IOException
          *             if an I/O error occurs.
          */
-        AppendChar32(
+        AppendChar(
             [in] Char32 c);
 
         /**

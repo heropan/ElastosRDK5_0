@@ -250,7 +250,7 @@ ECode TimeZone::GetTimeZone(
     // We never return null; on failure we return the equivalent of "GMT".
     if (zone != NULL) {
         *timeZone = zone;
-        INTERFACE_ADDREF(*timeZone);
+        REFCOUNT_ADD(*timeZone);
         return NOERROR;
     }
 

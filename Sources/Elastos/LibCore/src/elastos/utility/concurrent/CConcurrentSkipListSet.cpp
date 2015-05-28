@@ -70,7 +70,7 @@ ECode CConcurrentSkipListSet::Clone(
     CConcurrentSkipListMap::New(mM, (INavigableMap**)&map);
     p->SetMap(map);
     *res = p->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -290,7 +290,7 @@ ECode CConcurrentSkipListSet::SubSet(
     AutoPtr<INavigableSet> p;
     CConcurrentSkipListSet::New(map, (INavigableSet**)&p);
     *outnav = p.Get();
-    INTERFACE_ADDREF(*outnav);
+    REFCOUNT_ADD(*outnav);
     return NOERROR;
 }
 
@@ -305,7 +305,7 @@ ECode CConcurrentSkipListSet::HeadSet(
     AutoPtr<INavigableSet> p;
     CConcurrentSkipListSet::New(map, (INavigableSet**)&p);
     *outnav = p.Get();
-    INTERFACE_ADDREF(*outnav);
+    REFCOUNT_ADD(*outnav);
     return NOERROR;
 }
 
@@ -320,7 +320,7 @@ ECode CConcurrentSkipListSet::TailSet(
     AutoPtr<INavigableSet> p;
     CConcurrentSkipListSet::New(map, (INavigableSet**)&p);
     *outnav = p.Get();
-    INTERFACE_ADDREF(*outnav);
+    REFCOUNT_ADD(*outnav);
     return NOERROR;
 }
 
@@ -334,7 +334,7 @@ ECode CConcurrentSkipListSet::SubSet(
     SubSet(start, TRUE, end, FALSE, (INavigableSet**)&s);
     AutoPtr<ISortedSet> p = (ISortedSet*)s->Probe(EIID_ISortedSet);
     *outsort = p;
-    INTERFACE_ADDREF(*outsort);
+    REFCOUNT_ADD(*outsort);
     return NOERROR;
 }
 
@@ -347,7 +347,7 @@ ECode CConcurrentSkipListSet::HeadSet(
     HeadSet(end, FALSE, (INavigableSet**)&s);
     AutoPtr<ISortedSet> p = (ISortedSet*)s->Probe(EIID_ISortedSet);
     *outsort = p;
-    INTERFACE_ADDREF(*outsort);
+    REFCOUNT_ADD(*outsort);
     return NOERROR;
 }
 
@@ -360,7 +360,7 @@ ECode CConcurrentSkipListSet::TailSet(
     TailSet(start, TRUE, (INavigableSet**)&s);
     AutoPtr<ISortedSet> p = (ISortedSet*)s->Probe(EIID_ISortedSet);
     *outsort = p;
-    INTERFACE_ADDREF(*outsort);
+    REFCOUNT_ADD(*outsort);
     return NOERROR;
 }
 
@@ -373,7 +373,7 @@ ECode CConcurrentSkipListSet::DescendingSet(
     AutoPtr<INavigableSet> p;
     CConcurrentSkipListSet::New(map, (INavigableSet**)&p);
     *outnav = p.Get();
-    INTERFACE_ADDREF(*outnav);
+    REFCOUNT_ADD(*outnav);
     return NOERROR;
 }
 

@@ -154,7 +154,7 @@ ECode ResourceBundle::Control::GetCandidateLocales(
     }
     retList->Add(CLocale::ROOT, &isflag);
     *obj = retList;
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
@@ -170,7 +170,7 @@ ECode ResourceBundle::Control::GetFormats(
         return E_NULL_POINTER_EXCEPTION;
     }
     *obj = mFormat;
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
@@ -194,7 +194,7 @@ ECode ResourceBundle::Control::GetFallbackLocale(
     Boolean isflag = FALSE;
     if (inloc->Equals(locale, &isflag), isflag) {
         *loc = inloc;
-        INTERFACE_ADDREF(*loc);
+        REFCOUNT_ADD(*loc);
         return NOERROR;
     }
     *loc = NULL;
@@ -244,7 +244,7 @@ ECode ResourceBundle::Control::NewBundle(
                 assert(0 && "TODO");
                 // bundle->SetLocale(locale);
                 *resbun = bundle;
-                INTERFACE_ADDREF(*resbun)
+                REFCOUNT_ADD(*resbun)
                 return NOERROR;
             }
         }
@@ -658,7 +658,7 @@ ECode ResourceBundle::GetBundle(
         }
     }
     *outrb = bundle;
-    INTERFACE_ADDREF(*outrb)
+    REFCOUNT_ADD(*outrb)
     return NOERROR;
 }
 
@@ -740,7 +740,7 @@ ECode ResourceBundle::GetBundle(
         assert(0 && "TODO");
         // ret.lastLoadTime = System.currentTimeMillis();
         *outrb = ret;
-        INTERFACE_ADDREF(*outrb)
+        REFCOUNT_ADD(*outrb)
         return NOERROR;
     }
     assert(0 && "TODO");
@@ -756,7 +756,7 @@ ECode ResourceBundle::GetLocale(
     *outlocale = NULL;
 
     *outlocale = mLocale;
-    INTERFACE_ADDREF(*outlocale)
+    REFCOUNT_ADD(*outlocale)
     return NOERROR;
 }
 
@@ -820,7 +820,7 @@ ECode ResourceBundle::GetStringArray(
     AutoPtr< ArrayOf<String> > arrout = ArrayOf<String>::Alloc(1);
     (*arrout)[0] = outstr;
     *arrstr = arrout;
-    INTERFACE_ADDREF(*arrstr)
+    REFCOUNT_ADD(*arrstr)
     return NOERROR;
 }
 
@@ -859,7 +859,7 @@ ECode ResourceBundle::KeySet(
         ret->Add(outface, &isflag);
     }
     *outset = ret;
-    INTERFACE_ADDREF(*outset)
+    REFCOUNT_ADD(*outset)
     return NOERROR;
 }
 
@@ -913,7 +913,7 @@ ECode ResourceBundle::HandleKeySet(
         }
     }
     *outset = ret;
-    INTERFACE_ADDREF(*outset)
+    REFCOUNT_ADD(*outset)
     return NOERROR;
 }
 

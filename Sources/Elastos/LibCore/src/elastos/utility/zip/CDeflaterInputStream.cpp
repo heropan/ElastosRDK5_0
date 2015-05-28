@@ -19,7 +19,7 @@ ECode CDeflaterInputStream::GetLock(
 
     AutoPtr<IInterface> obj = DeflaterInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

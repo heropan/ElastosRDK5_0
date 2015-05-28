@@ -196,7 +196,7 @@ ECode CopyOnWriteArrayList::ToArray(
 
     AutoPtr< ArrayOf<IInterface*> > outarr = mElements->Clone();
     *array = outarr;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -210,7 +210,7 @@ ECode CopyOnWriteArrayList::ToArray(
     if (snapshot->GetLength() > inArray->GetLength()) {
         AutoPtr< ArrayOf<IInterface*> > outarr = snapshot->Clone();
         *outArray = outarr;
-        INTERFACE_ADDREF(*outArray)
+        REFCOUNT_ADD(*outArray)
         return NOERROR;
     }
     inArray->Copy(0, snapshot, 0, snapshot->GetLength());
@@ -218,7 +218,7 @@ ECode CopyOnWriteArrayList::ToArray(
         (*inArray)[snapshot->GetLength()] = NULL;
     }
     *outArray = inArray;
-    INTERFACE_ADDREF(*outArray)
+    REFCOUNT_ADD(*outArray)
     return NOERROR;
 }
 
@@ -230,7 +230,7 @@ ECode CopyOnWriteArrayList::GetIterator(
     AutoPtr< ArrayOf<IInterface*> > snapshot = mElements;
     AutoPtr<IIterator> outit = (IIterator*) new CowIterator(snapshot, 0, snapshot->GetLength());
     *it = outit;
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -273,7 +273,7 @@ ECode CopyOnWriteArrayList::Get(
     VALIDATE_NOT_NULL(object)
 
     *object = (*mElements)[index];
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -305,7 +305,7 @@ ECode CopyOnWriteArrayList::GetListIterator(
     AutoPtr< ArrayOf<IInterface*> > snapshot = mElements;
     AutoPtr<IListIterator> outit = (IListIterator*) new CowIterator(snapshot, 0, snapshot->GetLength());
     *it = outit;
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -323,7 +323,7 @@ ECode CopyOnWriteArrayList::GetListIterator(
     AutoPtr<CowIterator> result = new CowIterator(snapshot, 0, snapshot->GetLength());
     result->mIndex = location;
     *it = (IListIterator*)result.Get();
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -337,7 +337,7 @@ ECode CopyOnWriteArrayList::Remove(
     AutoPtr<IInterface> removed = (*mElements)[location];
     RemoveRange(location, location + 1);
     *object = removed;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -353,7 +353,7 @@ ECode CopyOnWriteArrayList::Set(
     newElements->Set(index, object);
     mElements = newElements;
     *prevObject = result;
-    INTERFACE_ADDREF(*prevObject)
+    REFCOUNT_ADD(*prevObject)
     return NOERROR;
 }
 
@@ -372,7 +372,7 @@ ECode CopyOnWriteArrayList::SubList(
     }
     AutoPtr<IList> outlist = (IList*) new CowSubList(snapshot, start, end, this);
     *subList = outlist;
-    INTERFACE_ADDREF(*subList)
+    REFCOUNT_ADD(*subList)
     return NOERROR;
 }
 
@@ -449,7 +449,7 @@ ECode CopyOnWriteArrayList::GetArray(
 
     // CopyOnWriteArraySet needs this.
     *outarr = mElements;
-    INTERFACE_ADDREF(*outarr)
+    REFCOUNT_ADD(*outarr)
     return NOERROR;
 }
 
@@ -463,7 +463,7 @@ ECode CopyOnWriteArrayList::Clone(
     CCopyOnWriteArrayList::NewByFriend((CCopyOnWriteArrayList**)&result);
     result->mElements = mElements->Clone();
     *object = result->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     // } catch (CloneNotSupportedException e) {
     //     throw new AssertionError(e);
     // }
@@ -748,7 +748,7 @@ ECode CopyOnWriteArrayList::CowSubList::Get(
     FAIL_RETURN(mSlice->CheckElementIndex(location));
     FAIL_RETURN(mSlice->CheckConcurrentModification(snapshot));
     *object = (*snapshot)[location + slice->mFrom];
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -760,7 +760,7 @@ ECode CopyOnWriteArrayList::CowSubList::GetIterator(
     AutoPtr<IListIterator> outlist;
     FAIL_RETURN(GetListIterator(0, (IListIterator**)&outlist));
     *it = IIterator::Probe(outlist);
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -777,7 +777,7 @@ ECode CopyOnWriteArrayList::CowSubList::GetListIterator(
     AutoPtr<CowIterator> result = new CowIterator(snapshot, slice->mFrom, slice->mTo);
     result->mIndex = slice->mFrom + location;
     *listiterator = (IListIterator*) result->Probe(EIID_IListIterator);
-    INTERFACE_ADDREF(*listiterator)
+    REFCOUNT_ADD(*listiterator)
     return NOERROR;
 }
 
@@ -794,7 +794,7 @@ ECode CopyOnWriteArrayList::CowSubList::Remove(
     mHost->Remove(mSlice->mFrom + location, (IInterface**)&removed);
     mSlice = new Slice(mHost->mElements, mSlice->mFrom, mSlice->mTo - 1);
     *object = removed;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -812,7 +812,7 @@ ECode CopyOnWriteArrayList::CowSubList::Set(
     mHost->Set(location + mSlice->mFrom, inobject, (IInterface**)&result);
     mSlice = new Slice(mHost->mElements, mSlice->mFrom, mSlice->mTo);
     *outobject = result;
-    INTERFACE_ADDREF(*outobject)
+    REFCOUNT_ADD(*outobject)
     return NOERROR;
 }
 
@@ -1023,7 +1023,7 @@ ECode CopyOnWriteArrayList::CowSubList::SubList(
     AutoPtr<IList> res = (IList*) new CowSubList(mSlice->mExpectedElements, mSlice->mFrom + start,
                                                 mSlice->mFrom + end, mHost);
     *subList = res;
-    INTERFACE_ADDREF(*subList)
+    REFCOUNT_ADD(*subList)
     return NOERROR;
 }
 
@@ -1077,7 +1077,7 @@ ECode CopyOnWriteArrayList::CowIterator::Previous(
     if (mIndex > mFrom) {
         AutoPtr<IInterface> res = (*mSnapshot)[--mIndex];
         *object = res;
-        INTERFACE_ADDREF(*object)
+        REFCOUNT_ADD(*object)
         return NOERROR;
     }
     else {
@@ -1120,7 +1120,7 @@ ECode CopyOnWriteArrayList::CowIterator::Next(
     if (mIndex < mTo) {
         AutoPtr<IInterface> res = (*mSnapshot)[mIndex++];
         *object = res;
-        INTERFACE_ADDREF(*object)
+        REFCOUNT_ADD(*object)
         return NOERROR;
     }
     else {

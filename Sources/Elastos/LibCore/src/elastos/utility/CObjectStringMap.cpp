@@ -42,7 +42,7 @@ ECode CObjectStringMap::Get(
         HashMap<String, AutoPtr<IInterface> >::Iterator it = mMap.Find(key);
         if (it != mMap.End()) {
             *value = it->mSecond;
-            INTERFACE_ADDREF(*value);
+            REFCOUNT_ADD(*value);
             return NOERROR;
         }
     }

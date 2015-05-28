@@ -185,7 +185,7 @@ ECode CUUID::FromString(
     AutoPtr<CUUID> outuid;
     FAIL_RETURN(CUUID::NewByFriend(msb, lsb, (CUUID**)&outuid));
     *uuid = (IUUID*) outuid.Get();
-    INTERFACE_ADDREF(*uuid)
+    REFCOUNT_ADD(*uuid)
     return NOERROR;
 }
 

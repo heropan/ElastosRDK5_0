@@ -82,7 +82,7 @@ ECode CStack::Clone(
     CStack::NewByFriend((CStack**)&stack);
     FAIL_RETURN(_Vector::Clone(stack));
     *object = (IVector*)stack;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -342,7 +342,7 @@ ECode CStack::Peek(
     }
 
     *outface = (*mElementData)[mElementCount - 1];
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
 
     return NOERROR;
 }
@@ -360,7 +360,7 @@ ECode CStack::Pop(
     mElementData->Set(index, NULL);
     mModCount++;
     *outface = obj;
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 

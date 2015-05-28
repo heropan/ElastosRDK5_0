@@ -48,7 +48,7 @@ ECode CAtomicReferenceArray::Get(
     VALIDATE_NOT_NULL(outface)
 
     *outface = GetRaw(CheckedByteOffset(i));
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -82,7 +82,7 @@ ECode CAtomicReferenceArray::GetAndSet(
         AutoPtr<IInterface> current = GetRaw(offset);
         if (CompareAndSetRaw(offset, current, newValue)) {
             *outface = current;
-            INTERFACE_ADDREF(*outface)
+            REFCOUNT_ADD(*outface)
             return NOERROR;
         }
     }

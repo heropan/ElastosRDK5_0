@@ -81,7 +81,7 @@ ECode HashSet::Clone(
     AutoPtr<CHashSet> clone;
     FAIL_RETURN(CHashSet::NewByFriend(mBackingMap, (CHashSet**)&clone));
     *outface = ISet::Probe(clone);
-    INTERFACE_ADDREF(*outface)
+    REFCOUNT_ADD(*outface)
     // } catch (CloneNotSupportedException e) {
     //     throw new AssertionError(e);
     // }

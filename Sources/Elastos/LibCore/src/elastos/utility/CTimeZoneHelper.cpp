@@ -11,7 +11,7 @@ ECode CTimeZoneHelper::GetAvailableIDs(
     VALIDATE_NOT_NULL(array);
     AutoPtr<ArrayOf<String> > ids = TimeZone::GetAvailableIDs();
     *array = ids;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -22,7 +22,7 @@ ECode CTimeZoneHelper::GetAvailableIDs(
     VALIDATE_NOT_NULL(array);
     AutoPtr<ArrayOf<String> > ids = TimeZone::GetAvailableIDs(offsetMillis);
     *array = ids;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -32,7 +32,7 @@ ECode CTimeZoneHelper::GetDefault(
     VALIDATE_NOT_NULL(timezone);
     AutoPtr<ITimeZone> tz = TimeZone::GetDefault();
     *timezone = tz;
-    INTERFACE_ADDREF(*timezone);
+    REFCOUNT_ADD(*timezone);
 
     return NOERROR;
 }
@@ -57,7 +57,7 @@ ECode CTimeZoneHelper::GetGMT(
     VALIDATE_NOT_NULL(timezone);
     AutoPtr<ITimeZone> tz = TimeZone::GMT();
     *timezone = tz;
-    INTERFACE_ADDREF(*timezone);
+    REFCOUNT_ADD(*timezone);
     return NOERROR;
 }
 
@@ -67,7 +67,7 @@ ECode CTimeZoneHelper::GetUTC(
     VALIDATE_NOT_NULL(timezone);
     AutoPtr<ITimeZone> tz = TimeZone::UTC();
     *timezone = tz;
-    INTERFACE_ADDREF(*timezone);
+    REFCOUNT_ADD(*timezone);
     return NOERROR;
 }
 

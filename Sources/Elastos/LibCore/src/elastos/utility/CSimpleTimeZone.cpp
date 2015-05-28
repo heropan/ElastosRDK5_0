@@ -131,7 +131,7 @@ ECode CSimpleTimeZone::Clone(
             mEndMonth, mEndDay, mEndDayOfWeek, mEndTime, mEndMode, mDstSavings,
             (CSimpleTimeZone**)&st));
     *newObj = (ITimeZone*) st->Probe(EIID_ITimeZone);
-    INTERFACE_ADDREF(*newObj);
+    REFCOUNT_ADD(*newObj);
     return NOERROR;
 }
 
@@ -703,7 +703,7 @@ ECode CSimpleTimeZone::Clone(
     AutoPtr<ITimeZone> timeZone;
     FAIL_RETURN(Clone((ITimeZone**)&timeZone));
     *newObj = timeZone->Probe(EIID_IInterface);
-    INTERFACE_ADDREF(*newObj)
+    REFCOUNT_ADD(*newObj)
     return NOERROR;
 }
 

@@ -229,7 +229,7 @@ ECode ZipInputStream::GetNextEntry(
     }
 
     *entry = (IZipEntry*)mCurrentEntry.Get();
-    INTERFACE_ADDREF(*entry);
+    REFCOUNT_ADD(*entry);
     return NOERROR;
 }
 

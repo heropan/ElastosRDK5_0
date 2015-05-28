@@ -33,7 +33,7 @@ ECode Executors::RunnableAdapter::Call(
     VALIDATE_NOT_NULL(result);
     ECode ec = mTask->Run();
     *result = mResult;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return ec;
 }
 
@@ -104,7 +104,7 @@ ECode Executors::Callable(
 {
     if (task == NULL) return E_NULL_POINTER_EXCEPTION;
     *object = new RunnableAdapter(task, result);
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 

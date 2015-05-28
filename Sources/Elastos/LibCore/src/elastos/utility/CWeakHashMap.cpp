@@ -38,7 +38,7 @@ ECode CWeakHashMap::Entry::GetValue(
     VALIDATE_NOT_NULL(value);
 
     *value = mValue;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -51,7 +51,7 @@ ECode CWeakHashMap::Entry::SetValue(
     AutoPtr<IInterface> result = mValue;
     mValue = object;
     *oldObject = result;
-    INTERFACE_ADDREF(*oldObject)
+    REFCOUNT_ADD(*oldObject)
     return NOERROR;
 }
 
@@ -184,7 +184,7 @@ ECode CWeakHashMap::_EntrySet::Type::Get(
     VALIDATE_NOT_NULL(value)
 
     *value = entry;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -296,7 +296,7 @@ ECode CWeakHashMap::_EntrySet::GetIterator(
     AutoPtr<MapEntry::Type> type = new _EntrySet::Type();
     AutoPtr<IIterator> iterator = new HashIterator(type, mOwner);
     *result = iterator;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -469,7 +469,7 @@ ECode CWeakHashMap::_KeySet::GetIterator(
     AutoPtr<MapEntry::Type> type = new _KeySet::Type();
     AutoPtr<IIterator> iterator = new HashIterator(type, mOwner);
     *result = iterator;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -657,7 +657,7 @@ ECode CWeakHashMap::_Values::GetIterator(
     AutoPtr<MapEntry::Type> type = new _Values::Type();
     AutoPtr<IIterator> iterator = (IIterator*) new HashIterator(type, mOwner);
     *result = iterator;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -847,7 +847,7 @@ ECode CWeakHashMap::EntrySet(
     Poll();
     AutoPtr<ISet> result = (ISet*)new _EntrySet(this);
     *ret = result;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -861,7 +861,7 @@ ECode CWeakHashMap::KeySet(
         mKeySet = (ISet*)new _KeySet(this);
     }
     *ret = mKeySet;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -875,7 +875,7 @@ ECode CWeakHashMap::Values(
         mValuesCollection = (ICollection*)new _Values(this);
     }
     *collection = mValuesCollection;
-    INTERFACE_ADDREF(*collection)
+    REFCOUNT_ADD(*collection)
     return NOERROR;
 }
 
@@ -1089,7 +1089,7 @@ ECode CWeakHashMap::Put(
     entry->mValue = value;
     if (oldValue) {
         *oldValue = result;
-        INTERFACE_ADDREF(*oldValue)
+        REFCOUNT_ADD(*oldValue)
     }
     return NOERROR;
 }
@@ -1160,7 +1160,7 @@ ECode CWeakHashMap::Remove(
         }
         mElementCount--;
         *value = entry->mValue;
-        INTERFACE_ADDREF(*value)
+        REFCOUNT_ADD(*value)
         return NOERROR;
     }
     *value = NULL;

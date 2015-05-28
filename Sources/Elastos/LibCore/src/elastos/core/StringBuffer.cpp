@@ -269,7 +269,7 @@ ECode StringBuffer::AppendNull()
     return AppendONULL();
 }
 
-ECode StringBuffer::AppendChar(
+ECode StringBuffer::AppendCStr(
     /* [in] */ const char* str)
 {
     Mutex::Autolock lock(mLock);
@@ -283,7 +283,7 @@ ECode StringBuffer::AppendBoolean(
     return AppendOBoolean(b);
 }
 
-ECode StringBuffer::AppendChar32(
+ECode StringBuffer::AppendChar(
     /* [in] */ Char32 c)
 {
     Mutex::Autolock lock(mLock);
@@ -390,7 +390,7 @@ ECode StringBuffer::AppendCharSequence(
     return AppendOCharSequenceEx(csq, start, end);
 }
 
-ECode StringBuffer::InsertChar32(
+ECode StringBuffer::InsertChar(
     /* [in] */ Int32 offset,
     /* [in] */ Char32 c)
 {
