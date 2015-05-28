@@ -53,7 +53,7 @@ ECode Reader::Read(
 
     ArrayOf_<Char32, 1> buf;
     Int32 number;
-    FAIL_RETURN(ReadCharsEx(&buf, 0, 1, &number));
+    FAIL_RETURN(ReadChars(&buf, 0, 1, &number));
     if (number != -1) {
         *value = buf[0];
     }
@@ -140,7 +140,7 @@ ECode Reader::ReadCharBuffer(
     FAIL_RETURN(Read(buf, number));
     length = Elastos::Core::Math::Min(length, *number);
     if (length > 0) {
-        target->PutCharsEx(*buf, 0, length);
+        target->PutChars(*buf, 0, length);
     }
     *number = length;
 

@@ -24,7 +24,7 @@ ECode ByteBuffer::Allocate(
     }
     AutoPtr<ReadWriteHeapByteBuffer> bufObj = new ReadWriteHeapByteBuffer(capacity);
     *buf = bufObj->Probe(EIID_IByteBuffer);
-    INTERFACE_ADDREF(*buf);
+    REFCOUNT_ADD(*buf);
     return NOERROR;
 }
 
@@ -39,7 +39,7 @@ ECode ByteBuffer::AllocateDirect(
     }
     AutoPtr<ReadWriteDirectByteBuffer> bufObj = new ReadWriteDirectByteBuffer(capacity);
     *buf = bufObj->Probe(EIID_IByteBuffer);
-    INTERFACE_ADDREF(*buf);
+    REFCOUNT_ADD(*buf);
     return NOERROR;
 }
 
@@ -50,7 +50,7 @@ ECode ByteBuffer::WrapArray(
     VALIDATE_NOT_NULL(buf);
     AutoPtr<ReadWriteHeapByteBuffer> bufObj = new ReadWriteHeapByteBuffer(array);
     *buf = bufObj->Probe(EIID_IByteBuffer);
-    INTERFACE_ADDREF(*buf);
+    REFCOUNT_ADD(*buf);
     return NOERROR;
 }
 
@@ -73,7 +73,7 @@ ECode ByteBuffer::WrapArray(
     bufObj->mPosition = start;
     bufObj->mLimit = start + byteCount;
     *buf = bufObj->Probe(EIID_IByteBuffer);
-    INTERFACE_ADDREF(*buf);
+    REFCOUNT_ADD(*buf);
     return NOERROR;
 }
 
@@ -114,8 +114,8 @@ ECode ByteBuffer::CompareTo(
     other->GetPosition(&otherPos);
     Byte thisByte, otherByte;
     while (compareRemaining > 0) {
-        this->GetByteEx(thisPos, &thisByte);
-        other->GetByteEx(otherPos, &otherByte);
+        this->GetByte(thisPos, &thisByte);
+        other->GetByte(otherPos, &otherByte);
         if (thisByte != otherByte) {
             *result = thisByte < otherByte ? -1 : 1;
             return NOERROR;
@@ -154,8 +154,8 @@ ECode ByteBuffer::Equals(
     Boolean equalSoFar = TRUE;
     while (equalSoFar && (myPosition < mLimit)) {
         Byte value, otherValue;
-        GetByteEx(myPosition++, &value);
-        otherObj->GetByteEx(otherPosition++, &otherValue);
+        GetByte(myPosition++, &value);
+        otherObj->GetByte(otherPosition++, &otherValue);
         equalSoFar = (value == otherValue);
     }
 
@@ -166,7 +166,7 @@ ECode ByteBuffer::Equals(
 ECode ByteBuffer::GetBytes(
     /* [out] */ ArrayOf<Byte>* dst)
 {
-    return GetBytesEx(dst, 0, dst->GetLength());
+    return GetBytes(dst, 0, dst->GetLength());
 }
 
 ECode ByteBuffer::GetBytes(
@@ -231,7 +231,7 @@ ECode ByteBuffer::SetOrderImpl(
 ECode ByteBuffer::PutBytes(
     /* [in] */ const ArrayOf<Byte>& src)
 {
-    return PutBytesEx(src, 0, src.GetLength());
+    return PutBytes(src, 0, src.GetLength());
 }
 
 ECode ByteBuffer::PutBytes(

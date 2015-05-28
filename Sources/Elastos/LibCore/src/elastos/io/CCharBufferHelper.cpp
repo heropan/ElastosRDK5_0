@@ -27,7 +27,7 @@ ECode CCharBufferHelper::WrapArray(
     /* [in] */ Int32 charCount,
     /* [out] */ ICharBuffer** charBuf)
 {
-    return CharBuffer::WrapArrayEx(array, start, charCount, charBuf);
+    return CharBuffer::WrapArray(array, start, charCount, charBuf);
 }
 
 ECode CCharBufferHelper::WrapSequence(
@@ -43,7 +43,7 @@ ECode CCharBufferHelper::WrapSequence(
     /* [in] */ Int32 end,
     /* [out] */ ICharBuffer** charBuf)
 {
-    return CharBuffer::WrapSequenceEx(cs, start, end, charBuf);
+    return CharBuffer::WrapSequence(cs, start, end, charBuf);
 }
 
 } // namespace IO

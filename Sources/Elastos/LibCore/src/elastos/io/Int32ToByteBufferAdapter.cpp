@@ -32,7 +32,7 @@ ECode Int32ToByteBufferAdapter::AsInt32Buffer(
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
     slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *int32Buffer = (IInt32Buffer*) new Int32ToByteBufferAdapter(slice);
-    INTERFACE_ADDREF(*int32Buffer);
+    REFCOUNT_ADD(*int32Buffer);
     return NOERROR;
 }
 
@@ -134,7 +134,7 @@ ECode Int32ToByteBufferAdapter::AsReadOnlyBuffer(
     buf->mMark = mMark;
     buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IInt32Buffer*)buf->Probe(EIID_IInt32Buffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -175,7 +175,7 @@ ECode Int32ToByteBufferAdapter::Duplicate(
     buf->mPosition = mPosition;
     buf->mMark = mMark;
     *buffer = (IInt32Buffer*)buf->Probe(EIID_IInt32Buffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -186,7 +186,7 @@ ECode Int32ToByteBufferAdapter::GetInt32(
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->GetInt32Ex(mPosition++ * sizeof(Int32), value);
+    return mByteBuffer->GetInt32(mPosition++ * sizeof(Int32), value);
 }
 
 ECode Int32ToByteBufferAdapter::GetInt32(
@@ -194,7 +194,7 @@ ECode Int32ToByteBufferAdapter::GetInt32(
     /* [out] */ Int32* value)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->GetInt32Ex(index * sizeof(Int32), value);
+    return mByteBuffer->GetInt32(index * sizeof(Int32), value);
 }
 
 ECode Int32ToByteBufferAdapter::GetInt32s(
@@ -211,10 +211,10 @@ ECode Int32ToByteBufferAdapter::GetInt32s(
     mByteBuffer->SetLimit(mLimit * sizeof(Int32));
     mByteBuffer->SetPosition(mPosition * sizeof(Int32));
     if (mByteBuffer->Probe(EIID_DirectByteBuffer) != NULL) {
-        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetInt32sEx(dst, dstOffset, int32Count))
+        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetInt32s(dst, dstOffset, int32Count))
     }
     else {
-        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetInt32sEx(dst, dstOffset, int32Count))
+        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetInt32s(dst, dstOffset, int32Count))
     }
     mPosition += int32Count;
     return NOERROR;
@@ -233,7 +233,7 @@ ECode Int32ToByteBufferAdapter::PutInt32(
         // throw new BufferOverflowException();
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->PutInt32Ex(mPosition++ * sizeof(Int32), c);
+    return mByteBuffer->PutInt32(mPosition++ * sizeof(Int32), c);
 }
 
 ECode Int32ToByteBufferAdapter::PutInt32(
@@ -241,7 +241,7 @@ ECode Int32ToByteBufferAdapter::PutInt32(
     /* [in] */ Int32 c)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->PutInt32Ex(index * sizeof(Int32), c);
+    return mByteBuffer->PutInt32(index * sizeof(Int32), c);
 }
 
 ECode Int32ToByteBufferAdapter::PutInt32s(
@@ -284,7 +284,7 @@ ECode Int32ToByteBufferAdapter::Slice(
     FAIL_RETURN(mByteBuffer->Slice((IByteBuffer**)&bb))
     bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IInt32Buffer*) new Int32ToByteBufferAdapter(bb);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     mByteBuffer->Clear();
     return NOERROR;
 }

@@ -129,7 +129,7 @@ ECode ReadWriteInt32ArrayBuffer::AsReadOnlyBuffer(
     VALIDATE_NOT_NULL(buffer);
     AutoPtr<ReadOnlyInt32ArrayBuffer> buf = ReadOnlyInt32ArrayBuffer::Copy((Int32ArrayBuffer*)this, mMark);
     *buffer = (IInt32Buffer*)buf.Get();
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -156,7 +156,7 @@ ECode ReadWriteInt32ArrayBuffer::Duplicate(
 {
     VALIDATE_NOT_NULL(buffer);
     *buffer = (IInt32Buffer*)Copy((Int32ArrayBuffer*)this, mMark);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -170,7 +170,7 @@ ECode ReadWriteInt32ArrayBuffer::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
-    return Int32ArrayBuffer::GetInt32Ex(index, value);
+    return Int32ArrayBuffer::GetInt32(index, value);
 }
 
 ECode ReadWriteInt32ArrayBuffer::GetInt32s(
@@ -184,7 +184,7 @@ ECode ReadWriteInt32ArrayBuffer::GetInt32s(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int32Count)
 {
-    return Int32ArrayBuffer::GetInt32sEx(dst, dstOffset, int32Count);
+    return Int32ArrayBuffer::GetInt32s(dst, dstOffset, int32Count);
 }
 
 ECode ReadWriteInt32ArrayBuffer::GetOrder(
@@ -249,7 +249,7 @@ ECode ReadWriteInt32ArrayBuffer::Slice(
     GetRemaining(&remaining);
     *buffer = (IInt32Buffer*)new ReadWriteInt32ArrayBuffer(remaining, mBackingArray,
             mOffset + mPosition);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -300,7 +300,7 @@ CARAPI ReadWriteInt32ArrayBuffer::ProtectedArray(
 {
     VALIDATE_NOT_NULL(array);
     *array = mBackingArray;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 

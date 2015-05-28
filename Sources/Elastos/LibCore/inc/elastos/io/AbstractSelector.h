@@ -1,11 +1,12 @@
 #ifndef __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTOR_H__
 #define __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTOR_H__
 
-#include <coredef.h>
 #include <Elastos.CoreLibrary_server.h>
 #include <elastos/core/Thread.h>
 #include <Selector.h>
 #include <stdio.h>
+#include "AbstractSelectableChannel.h"
+#include "AbstractSelectionKey.h"
 
 using Elastos::Core::IRunnable;
 
@@ -57,18 +58,18 @@ public:
         /* [out] */ ISelectorProvider** provider)
     {
         *provider = mSelectorProvider;
-        INTERFACE_ADDREF(*provider);
+        REFCOUNT_ADD(*provider);
         return NOERROR;
     }
 
     virtual CARAPI Register(
-        /* [in] */ IAbstractSelectableChannel* channel,
+        /* [in] */ AbstractSelectableChannel* channel,
         /* [in] */ Int32 operations,
         /* [in] */ IObject* obj,
         /* [out] */ ISelectionKey** returnKey) = 0;
 
     CARAPI Deregister(
-        /* [in] */ IAbstractSelectionKey* key);
+        /* [in] */ AbstractSelectionKey* key);
 
 protected:
     virtual CARAPI ImplCloseSelector() = 0;

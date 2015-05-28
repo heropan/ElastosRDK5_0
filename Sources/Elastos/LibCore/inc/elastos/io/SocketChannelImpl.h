@@ -229,7 +229,7 @@ public:
             return E_ALREADY_CONNECTED_EXCEPTION;
         }
 
-        Socket::ConnectEx(remoteAddr, timeout);
+        Socket::Connect(remoteAddr, timeout);
         mChannel->InitLocalAddressAndPort();
         Socket::IsConnected(&bRet);
         if (bRet)
@@ -345,7 +345,7 @@ public:
         return mChannel->Close();
     }
 
-    ECode WriteBytesBufferEx(ArrayOf<IByteBuffer*> & buffer, Int32 offset,
+    ECode WriteBytesBuffer(ArrayOf<IByteBuffer*> & buffer, Int32 offset,
             Int32 byteCount)
     {
         printf("ERROR: Not Implemented Yet\n");
@@ -389,7 +389,7 @@ public:
         return E_NOT_IMPLEMENTED;
     }
 
-    ECode ReadBytesBufferEx(ArrayOf<IByteBuffer*> & buffer, Int32 offset, Int32 byteCount, Int32* ret)
+    ECode ReadBytesBuffer(ArrayOf<IByteBuffer*> & buffer, Int32 offset, Int32 byteCount, Int32* ret)
     {
         printf("ERROR: Not Implemented Yet\n");
         return E_NOT_IMPLEMENTED;

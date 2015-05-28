@@ -137,7 +137,7 @@ ECode FileInputStream::GetChannel(
         mChannel = NioUtils::NewFileChannel(THIS_PROBE(IObject), mFd, COsConstants::sO_RDONLY);
     }
     *channel = mChannel;
-    INTERFACE_ADDREF(*channel)
+    REFCOUNT_ADD(*channel)
     return NOERROR;
 }
 
@@ -147,7 +147,7 @@ ECode FileInputStream::GetFD(
     VALIDATE_NOT_NULL(fd)
 
     *fd = (IFileDescriptor*)mFd.Get();
-    INTERFACE_ADDREF(*fd);
+    REFCOUNT_ADD(*fd);
     return NOERROR;
 }
 
@@ -158,7 +158,7 @@ ECode FileInputStream::Read(
 
     ArrayOf_<Byte, 1> readed;
     Int32 result;
-    FAIL_RETURN(ReadBytesEx(&readed, 0, 1, &result));
+    FAIL_RETURN(ReadBytes(&readed, 0, 1, &result));
     *value = result != -1 ? readed[0] & 0xff : -1;
     return NOERROR;;
 }

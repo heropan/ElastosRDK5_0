@@ -138,7 +138,7 @@ ECode ReadOnlyFloatArrayBuffer::Duplicate(
     VALIDATE_NOT_NULL(buffer)
     AutoPtr<ReadOnlyFloatArrayBuffer> buf = Copy((FloatArrayBuffer*)this, mMark);
     *buffer = (IFloatBuffer*)buf.Get();
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -152,7 +152,7 @@ ECode ReadOnlyFloatArrayBuffer::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
-    return FloatArrayBuffer::GetFloatEx(index, value);
+    return FloatArrayBuffer::GetFloat(index, value);
 }
 
 ECode ReadOnlyFloatArrayBuffer::GetFloats(
@@ -166,7 +166,7 @@ ECode ReadOnlyFloatArrayBuffer::GetFloats(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 floatCount)
 {
-    return FloatArrayBuffer::GetFloatsEx(dst, dstOffset, floatCount);
+    return FloatArrayBuffer::GetFloats(dst, dstOffset, floatCount);
 }
 
 ECode ReadOnlyFloatArrayBuffer::GetOrder(
@@ -219,7 +219,7 @@ ECode ReadOnlyFloatArrayBuffer::Slice(
     Int32 remaining = 0;
     GetRemaining(&remaining);
     *buffer = (IFloatBuffer*)new ReadOnlyFloatArrayBuffer(remaining, mBackingArray, mOffset + mPosition);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 

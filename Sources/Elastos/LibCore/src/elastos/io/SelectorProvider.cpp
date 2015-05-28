@@ -27,7 +27,7 @@ ECode SelectorProvider::Provider(
     }
 
     *provider = sProvider;
-    INTERFACE_ADDREF(*provider);
+    REFCOUNT_ADD(*provider);
     return NOERROR;
 }
 

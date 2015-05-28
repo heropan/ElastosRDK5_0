@@ -124,7 +124,7 @@ ECode CSelectorImpl::Keys(
 
     FAIL_RETURN(CheckClosed());
     *keySet = mUnmodifiableKeys;
-    INTERFACE_ADDREF(*keySet);
+    REFCOUNT_ADD(*keySet);
     return NOERROR;
 }
 
@@ -353,7 +353,7 @@ ECode CSelectorImpl::SelectedKeys(
 
     FAIL_RETURN(CheckClosed());
     *keySet = mSelectedKeys;
-    INTERFACE_ADDREF(*keySet);
+    REFCOUNT_ADD(*keySet);
     return NOERROR;
 }
 
@@ -393,7 +393,7 @@ ECode CSelectorImpl::Wakeup(
     (*inbyte)[0] = 1;
     FAIL_RETURN(CLibcore::sOs->Write(fd, *inbyte, 0, 1, &nWrite));
     *selector = THIS_PROBE(ISelector);
-    INTERFACE_ADDREF(*selector);
+    REFCOUNT_ADD(*selector);
     return NOERROR;
 }
 

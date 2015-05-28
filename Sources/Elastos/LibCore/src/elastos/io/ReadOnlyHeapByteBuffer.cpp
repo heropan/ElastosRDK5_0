@@ -138,7 +138,7 @@ ECode ReadOnlyHeapByteBuffer::AsReadOnlyBuffer(
 {
     VALIDATE_NOT_NULL(buffer);
     *buffer = (IByteBuffer*)Copy((HeapByteBuffer*)this, mMark);
-    INTERFACE_ADDREF(*buffer);
+    REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 
@@ -161,7 +161,7 @@ ECode ReadOnlyHeapByteBuffer::Duplicate(
     VALIDATE_NOT_NULL(buffer);
     AutoPtr<ReadOnlyHeapByteBuffer> buf = Copy((HeapByteBuffer*)this, mMark);
     *buffer = (IByteBuffer*)buf.Get();
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -175,7 +175,7 @@ ECode ReadOnlyHeapByteBuffer::GetByte(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
-    return HeapByteBuffer::GetByteEx(index, value);
+    return HeapByteBuffer::GetByte(index, value);
 }
 
 ECode ReadOnlyHeapByteBuffer::GetBytes(
@@ -189,7 +189,7 @@ ECode ReadOnlyHeapByteBuffer::GetBytes(
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
 {
-    return HeapByteBuffer::GetBytesEx(dst, off, len);
+    return HeapByteBuffer::GetBytes(dst, off, len);
 }
 
 ECode ReadOnlyHeapByteBuffer::GetChar(
@@ -202,7 +202,7 @@ ECode ReadOnlyHeapByteBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
-    return HeapByteBuffer::GetCharEx(index, value);
+    return HeapByteBuffer::GetChar(index, value);
 }
 
 ECode ReadOnlyHeapByteBuffer::GetDouble(
@@ -215,7 +215,7 @@ ECode ReadOnlyHeapByteBuffer::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
-    return HeapByteBuffer::GetDoubleEx(index, value);
+    return HeapByteBuffer::GetDouble(index, value);
 }
 
 ECode ReadOnlyHeapByteBuffer::GetFloat(
@@ -228,7 +228,7 @@ ECode ReadOnlyHeapByteBuffer::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
-    return HeapByteBuffer::GetFloatEx(index, value);
+    return HeapByteBuffer::GetFloat(index, value);
 }
 
 ECode ReadOnlyHeapByteBuffer::GetInt32(
@@ -241,7 +241,7 @@ ECode ReadOnlyHeapByteBuffer::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
-    return HeapByteBuffer::GetInt32Ex(index, value);
+    return HeapByteBuffer::GetInt32(index, value);
 }
 
 ECode ReadOnlyHeapByteBuffer::GetInt64(
@@ -254,7 +254,7 @@ ECode ReadOnlyHeapByteBuffer::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
-    return HeapByteBuffer::GetInt64Ex(index, value);
+    return HeapByteBuffer::GetInt64(index, value);
 }
 
 ECode ReadOnlyHeapByteBuffer::GetInt16(
@@ -267,7 +267,7 @@ ECode ReadOnlyHeapByteBuffer::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {
-    return HeapByteBuffer::GetInt16Ex(index, value);
+    return HeapByteBuffer::GetInt16(index, value);
 }
 
 ECode ReadOnlyHeapByteBuffer::GetOrder(
@@ -351,7 +351,7 @@ ECode ReadOnlyHeapByteBuffer::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 value)
 {
-    return HeapByteBuffer::PutCharEx(index, value);
+    return HeapByteBuffer::PutChar(index, value);
 }
 
 ECode ReadOnlyHeapByteBuffer::PutDouble(
@@ -437,7 +437,7 @@ ECode ReadOnlyHeapByteBuffer::Slice(
     GetRemaining(&remaining);
     *buffer = (IByteBuffer*)new ReadOnlyHeapByteBuffer(mBackingArray,
             remaining, mOffset + mPosition);
-    INTERFACE_ADDREF(*buffer);
+    REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 

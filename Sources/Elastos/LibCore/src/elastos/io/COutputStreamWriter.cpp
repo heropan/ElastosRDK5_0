@@ -32,7 +32,7 @@ ECode COutputStreamWriter::WriteChars(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return OutputStreamWriter::WriteCharsEx(buffer, offset, count);
+    return OutputStreamWriter::WriteChars(buffer, offset, count);
 }
 
 ECode COutputStreamWriter::WriteString(
@@ -46,7 +46,7 @@ ECode COutputStreamWriter::WriteString(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return OutputStreamWriter::WriteStringEx(str, offset, count);
+    return OutputStreamWriter::WriteString(str, offset, count);
 }
 
 ECode COutputStreamWriter::AppendChar(
@@ -70,7 +70,7 @@ ECode COutputStreamWriter::AppendCharSequence(
 {
     VALIDATE_NOT_NULL(csq);
 
-    return OutputStreamWriter::AppendCharSequenceEx(csq, start, end);
+    return OutputStreamWriter::AppendCharSequence(csq, start, end);
 }
 
 ECode COutputStreamWriter::CheckError(
@@ -109,7 +109,7 @@ ECode COutputStreamWriter::GetLock(
 
     AutoPtr<IInterface> obj = OutputStreamWriter::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

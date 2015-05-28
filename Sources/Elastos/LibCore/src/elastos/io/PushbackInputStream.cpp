@@ -148,7 +148,7 @@ ECode PushbackInputStream::ReadBytes(
         return NOERROR;
     }
     Int32 inCopied;
-    FAIL_RETURN(mIn->ReadBytesEx(buffer, newOffset, length - copiedBytes, &inCopied));
+    FAIL_RETURN(mIn->ReadBytes(buffer, newOffset, length - copiedBytes, &inCopied));
     if (inCopied > 0) {
         *number = inCopied + copiedBytes;
         return NOERROR;
@@ -208,7 +208,7 @@ ECode PushbackInputStream::Unread(
 ECode PushbackInputStream::UnreadBytes(
     /* [in] */ const ArrayOf<Byte>& buffer)
 {
-    return UnreadBytesEx(buffer, 0, buffer.GetLength());
+    return UnreadBytes(buffer, 0, buffer.GetLength());
 }
 
 ECode PushbackInputStream::UnreadBytes(

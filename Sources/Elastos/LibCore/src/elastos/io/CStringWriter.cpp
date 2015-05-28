@@ -32,7 +32,7 @@ ECode CStringWriter::WriteChars(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return StringWriter::WriteCharsEx(buffer, offset, count);
+    return StringWriter::WriteChars(buffer, offset, count);
 }
 
 ECode CStringWriter::WriteString(
@@ -46,7 +46,7 @@ ECode CStringWriter::WriteString(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return StringWriter::WriteStringEx(str, offset, count);
+    return StringWriter::WriteString(str, offset, count);
 }
 
 ECode CStringWriter::GetBuffer(
@@ -86,7 +86,7 @@ ECode CStringWriter::AppendCharSequence(
 {
     VALIDATE_NOT_NULL(csq);
 
-    return StringWriter::AppendCharSequenceEx(csq, start, end);
+    return StringWriter::AppendCharSequence(csq, start, end);
 }
 
 ECode CStringWriter::CheckError(
@@ -115,7 +115,7 @@ ECode CStringWriter::GetLock(
 
     AutoPtr<IInterface> obj = StringWriter::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

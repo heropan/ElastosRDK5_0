@@ -69,7 +69,7 @@ ECode BaseByteBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
-    return GetInt32Ex(index, (Int32*)value);
+    return GetInt32(index, (Int32*)value);
 }
 
 ECode BaseByteBuffer::PutChar(
@@ -82,7 +82,7 @@ ECode BaseByteBuffer::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 value)
 {
-    return PutInt32Ex(index, (Int32)value);
+    return PutInt32(index, (Int32)value);
 }
 
 } // namespace IO

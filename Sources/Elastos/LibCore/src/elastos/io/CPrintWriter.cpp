@@ -93,7 +93,7 @@ ECode CPrintWriter::Format(
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
 {
-    return PrintWriter::FormatEx(l, format, args);
+    return PrintWriter::Format(l, format, args);
 }
 
 ECode CPrintWriter::Printf(
@@ -108,7 +108,7 @@ ECode CPrintWriter::Printf(
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
 {
-    return PrintWriter::PrintfEx(l, format, args);
+    return PrintWriter::Printf(l, format, args);
 }
 
 ECode CPrintWriter::PrintChars(
@@ -243,7 +243,7 @@ ECode CPrintWriter::WriteChars(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return PrintWriter::WriteCharsEx(buffer, offset, count);
+    return PrintWriter::WriteChars(buffer, offset, count);
 }
 
 ECode CPrintWriter::WriteString(
@@ -257,7 +257,7 @@ ECode CPrintWriter::WriteString(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return PrintWriter::WriteStringEx(str, offset, count);
+    return PrintWriter::WriteString(str, offset, count);
 }
 
 ECode CPrintWriter::AppendChar(
@@ -277,7 +277,7 @@ ECode CPrintWriter::AppendCharSequence(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return PrintWriter::AppendCharSequenceEx(csq, start, end);
+    return PrintWriter::AppendCharSequence(csq, start, end);
 }
 
 ECode CPrintWriter::GetLock(
@@ -286,7 +286,7 @@ ECode CPrintWriter::GetLock(
     VALIDATE_NOT_NULL(lockobj);
     AutoPtr<IInterface> obj = PrintWriter::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

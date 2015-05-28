@@ -296,7 +296,7 @@ ECode CFile::ListFiles(
     return File::ListFiles(filter, files);
 }
 
-ECode CFile::ListFilesEx2(
+ECode CFile::ListFiles(
     /* [in] */ IFileFilter* filter,
     /* [out, callee] */ ArrayOf<IFile*>** files)
 {

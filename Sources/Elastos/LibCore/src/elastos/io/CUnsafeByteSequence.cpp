@@ -62,14 +62,14 @@ ECode CUnsafeByteSequence::ToByteArray(
 {
     if (mCount == mBytes->GetLength()) {
         *result = mBytes;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
     AutoPtr<ArrayOf<Byte> > newBytes = ArrayOf<Byte>::Alloc(mCount);
     newBytes->Copy(mBytes, 0, mCount);
     *result = newBytes;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

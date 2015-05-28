@@ -51,7 +51,7 @@ ECode CFileOutputStream::WriteBytes(
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount)
 {
-    return FileOutputStream::WriteBytesEx(buffer, byteOffset, byteCount);
+    return FileOutputStream::WriteBytes(buffer, byteOffset, byteCount);
 }
 
 ECode CFileOutputStream::CheckError(
@@ -107,7 +107,7 @@ ECode CFileOutputStream::GetLock(
 
     AutoPtr<IInterface> obj = FileOutputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

@@ -145,7 +145,7 @@ ECode MappedByteBufferAdapter::AsReadOnlyBuffer(
     result->mPosition = mPosition;
     result->mMark = mMark;
     *buffer = (IByteBuffer*)result->Probe(EIID_IByteBuffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -182,7 +182,7 @@ ECode MappedByteBufferAdapter::Duplicate(
     result->mPosition = mPosition;
     result->mMark = mMark;
     *buffer = (IByteBuffer*)result->Probe(EIID_IByteBuffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -200,7 +200,7 @@ ECode MappedByteBufferAdapter::GetByte(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
-    return MappedByteBuffer::mWrapped->GetByteEx(index, value);
+    return MappedByteBuffer::mWrapped->GetByte(index, value);
 }
 
 ECode MappedByteBufferAdapter::GetBytes(
@@ -208,7 +208,7 @@ ECode MappedByteBufferAdapter::GetBytes(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
 {
-    ASSERT_SUCCEEDED(MappedByteBuffer::mWrapped->GetBytesEx(dst, dstOffset, byteCount))
+    ASSERT_SUCCEEDED(MappedByteBuffer::mWrapped->GetBytes(dst, dstOffset, byteCount))
     mPosition += byteCount;
     return NOERROR;
 }
@@ -227,7 +227,7 @@ ECode MappedByteBufferAdapter::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
-    return MappedByteBuffer::mWrapped->GetCharEx(index, value);
+    return MappedByteBuffer::mWrapped->GetChar(index, value);
 }
 
 ECode MappedByteBufferAdapter::GetDouble(
@@ -244,7 +244,7 @@ ECode MappedByteBufferAdapter::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
-    return MappedByteBuffer::mWrapped->GetDoubleEx(index, value);
+    return MappedByteBuffer::mWrapped->GetDouble(index, value);
 }
 
 ECode MappedByteBufferAdapter::GetFloat(
@@ -261,7 +261,7 @@ ECode MappedByteBufferAdapter::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
-    return MappedByteBuffer::mWrapped->GetFloatEx(index, value);
+    return MappedByteBuffer::mWrapped->GetFloat(index, value);
 }
 
 ECode MappedByteBufferAdapter::GetInt32(
@@ -278,7 +278,7 @@ ECode MappedByteBufferAdapter::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
-    return MappedByteBuffer::mWrapped->GetInt32Ex(index, value);
+    return MappedByteBuffer::mWrapped->GetInt32(index, value);
 }
 
 ECode MappedByteBufferAdapter::GetInt64(
@@ -295,7 +295,7 @@ ECode MappedByteBufferAdapter::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
-    return MappedByteBuffer::mWrapped->GetInt64Ex(index, value);
+    return MappedByteBuffer::mWrapped->GetInt64(index, value);
 }
 
 ECode MappedByteBufferAdapter::GetInt16(
@@ -312,7 +312,7 @@ ECode MappedByteBufferAdapter::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {
-    return MappedByteBuffer::mWrapped->GetInt16Ex(index, value);
+    return MappedByteBuffer::mWrapped->GetInt16(index, value);
 }
 
 ECode MappedByteBufferAdapter::IsDirect(
@@ -350,7 +350,7 @@ ECode MappedByteBufferAdapter::PutByte(
     /* [in] */ Byte b)
 {
     MappedByteBuffer::mWrapped->SetPosition(mPosition);
-    return MappedByteBuffer::mWrapped->PutByteEx(index, b);
+    return MappedByteBuffer::mWrapped->PutByte(index, b);
 }
 
 ECode MappedByteBufferAdapter::PutBytes(
@@ -359,7 +359,7 @@ ECode MappedByteBufferAdapter::PutBytes(
     /* [in] */ Int32 byteCount)
 {
     MappedByteBuffer::mWrapped->SetPosition(mPosition);
-    ASSERT_SUCCEEDED(MappedByteBuffer::mWrapped->PutBytesEx(src, srcOffset, byteCount))
+    ASSERT_SUCCEEDED(MappedByteBuffer::mWrapped->PutBytes(src, srcOffset, byteCount))
     mPosition += byteCount;
     return NOERROR;
 }
@@ -378,7 +378,7 @@ ECode MappedByteBufferAdapter::PutChar(
     /* [in] */ Char32 value)
 {
     MappedByteBuffer::mWrapped->SetPosition(mPosition);
-    return MappedByteBuffer::mWrapped->PutCharEx(index, value);
+    return MappedByteBuffer::mWrapped->PutChar(index, value);
 }
 
 ECode MappedByteBufferAdapter::PutDouble(
@@ -395,7 +395,7 @@ ECode MappedByteBufferAdapter::PutDouble(
     /* [in] */ Double value)
 {
     MappedByteBuffer::mWrapped->SetPosition(mPosition);
-    return MappedByteBuffer::mWrapped->PutDoubleEx(index, value);
+    return MappedByteBuffer::mWrapped->PutDouble(index, value);
 }
 
 ECode MappedByteBufferAdapter::PutFloat(
@@ -412,7 +412,7 @@ ECode MappedByteBufferAdapter::PutFloat(
     /* [in] */ Float value)
 {
     MappedByteBuffer::mWrapped->SetPosition(mPosition);
-    return MappedByteBuffer::mWrapped->PutFloatEx(index, value);
+    return MappedByteBuffer::mWrapped->PutFloat(index, value);
 }
 
 ECode MappedByteBufferAdapter::PutInt32(
@@ -429,7 +429,7 @@ ECode MappedByteBufferAdapter::PutInt32(
     /* [in] */ Int32 value)
 {
     MappedByteBuffer::mWrapped->SetPosition(mPosition);
-    return MappedByteBuffer::mWrapped->PutInt32Ex(index, value);
+    return MappedByteBuffer::mWrapped->PutInt32(index, value);
 }
 
 ECode MappedByteBufferAdapter::PutInt64(
@@ -446,7 +446,7 @@ ECode MappedByteBufferAdapter::PutInt64(
     /* [in] */ Int64 value)
 {
     MappedByteBuffer::mWrapped->SetPosition(mPosition);
-    return MappedByteBuffer::mWrapped->PutInt64Ex(index, value);
+    return MappedByteBuffer::mWrapped->PutInt64(index, value);
 }
 
 ECode MappedByteBufferAdapter::PutInt16(
@@ -463,7 +463,7 @@ ECode MappedByteBufferAdapter::PutInt16(
     /* [in] */ Int16 value)
 {
     MappedByteBuffer::mWrapped->SetPosition(mPosition);
-    return MappedByteBuffer::mWrapped->PutInt16Ex(index, value);
+    return MappedByteBuffer::mWrapped->PutInt16(index, value);
 }
 
 ECode MappedByteBufferAdapter::Slice(
@@ -476,7 +476,7 @@ ECode MappedByteBufferAdapter::Slice(
     AutoPtr<MappedByteBufferAdapter> result = new MappedByteBufferAdapter(byteBuf);
     MappedByteBuffer::mWrapped->Clear();
     *buffer = (IByteBuffer*)result->Probe(EIID_IByteBuffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 

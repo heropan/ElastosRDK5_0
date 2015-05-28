@@ -51,7 +51,7 @@ ECode CLineNumberReader::ReadChars(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    return LineNumberReader::ReadCharsEx(buffer, offset, count, number);
+    return LineNumberReader::ReadChars(buffer, offset, count, number);
 }
 
 ECode CLineNumberReader::IsReady(
@@ -127,7 +127,7 @@ ECode CLineNumberReader::GetLock(
 
     AutoPtr<IInterface> obj = LineNumberReader::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

@@ -129,7 +129,7 @@ ECode ReadWriteDoubleArrayBuffer::AsReadOnlyBuffer(
     VALIDATE_NOT_NULL(buffer);
     AutoPtr<ReadOnlyDoubleArrayBuffer> buf = ReadOnlyDoubleArrayBuffer::Copy((DoubleArrayBuffer*)this, mMark);
     *buffer = (IDoubleBuffer*)buf.Get();
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -156,7 +156,7 @@ ECode ReadWriteDoubleArrayBuffer::Duplicate(
 {
     VALIDATE_NOT_NULL(buffer);
     *buffer = (IDoubleBuffer*)Copy((DoubleArrayBuffer*)this, mMark);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -170,7 +170,7 @@ ECode ReadWriteDoubleArrayBuffer::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
-    return DoubleArrayBuffer::GetDoubleEx(index, value);
+    return DoubleArrayBuffer::GetDouble(index, value);
 }
 
 ECode ReadWriteDoubleArrayBuffer::GetDoubles(
@@ -184,7 +184,7 @@ ECode ReadWriteDoubleArrayBuffer::GetDoubles(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 doubleCount)
 {
-    return DoubleArrayBuffer::GetDoublesEx(dst, dstOffset, doubleCount);
+    return DoubleArrayBuffer::GetDoubles(dst, dstOffset, doubleCount);
 }
 
 ECode ReadWriteDoubleArrayBuffer::GetOrder(
@@ -249,7 +249,7 @@ ECode ReadWriteDoubleArrayBuffer::Slice(
     GetRemaining(&remaining);
     *buffer = (IDoubleBuffer*)new ReadWriteDoubleArrayBuffer(remaining, mBackingArray,
             mOffset + mPosition);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -300,7 +300,7 @@ CARAPI ReadWriteDoubleArrayBuffer::ProtectedArray(
 {
     VALIDATE_NOT_NULL(array);
     *array = mBackingArray;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 

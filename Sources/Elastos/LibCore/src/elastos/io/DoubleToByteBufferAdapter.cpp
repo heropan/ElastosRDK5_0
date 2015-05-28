@@ -32,7 +32,7 @@ ECode DoubleToByteBufferAdapter::AsDoubleBuffer(
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
     slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *doubleBuffer = (IDoubleBuffer*) new DoubleToByteBufferAdapter(slice);
-    INTERFACE_ADDREF(*doubleBuffer);
+    REFCOUNT_ADD(*doubleBuffer);
     return NOERROR;
 }
 
@@ -134,7 +134,7 @@ ECode DoubleToByteBufferAdapter::AsReadOnlyBuffer(
     buf->mMark = mMark;
     buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IDoubleBuffer*)buf->Probe(EIID_IDoubleBuffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -175,7 +175,7 @@ ECode DoubleToByteBufferAdapter::Duplicate(
     buf->mPosition = mPosition;
     buf->mMark = mMark;
     *buffer = (IDoubleBuffer*)buf->Probe(EIID_IDoubleBuffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -186,7 +186,7 @@ ECode DoubleToByteBufferAdapter::GetDouble(
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->GetDoubleEx(mPosition++ * sizeof(Double), value);
+    return mByteBuffer->GetDouble(mPosition++ * sizeof(Double), value);
 }
 
 ECode DoubleToByteBufferAdapter::GetDouble(
@@ -194,7 +194,7 @@ ECode DoubleToByteBufferAdapter::GetDouble(
     /* [out] */ Double* value)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->GetDoubleEx(index * sizeof(Double), value);
+    return mByteBuffer->GetDouble(index * sizeof(Double), value);
 }
 
 ECode DoubleToByteBufferAdapter::GetDoubles(
@@ -211,10 +211,10 @@ ECode DoubleToByteBufferAdapter::GetDoubles(
     mByteBuffer->SetLimit(mLimit * sizeof(Double));
     mByteBuffer->SetPosition(mPosition * sizeof(Double));
     if (mByteBuffer->Probe(EIID_DirectByteBuffer) != NULL) {
-        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetDoublesEx(dst, dstOffset, doubleCount))
+        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetDoubles(dst, dstOffset, doubleCount))
     }
     else {
-        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetDoublesEx(dst, dstOffset, doubleCount))
+        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetDoubles(dst, dstOffset, doubleCount))
     }
     mPosition += doubleCount;
     return NOERROR;
@@ -233,7 +233,7 @@ ECode DoubleToByteBufferAdapter::PutDouble(
         // throw new BufferOverflowException();
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->PutDoubleEx(mPosition++ * sizeof(Double), c);
+    return mByteBuffer->PutDouble(mPosition++ * sizeof(Double), c);
 }
 
 ECode DoubleToByteBufferAdapter::PutDouble(
@@ -241,7 +241,7 @@ ECode DoubleToByteBufferAdapter::PutDouble(
     /* [in] */ Double c)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->PutDoubleEx(index * sizeof(Double), c);
+    return mByteBuffer->PutDouble(index * sizeof(Double), c);
 }
 
 ECode DoubleToByteBufferAdapter::PutDoubles(
@@ -284,7 +284,7 @@ ECode DoubleToByteBufferAdapter::Slice(
     FAIL_RETURN(mByteBuffer->Slice((IByteBuffer**)&bb))
     bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IDoubleBuffer*) new DoubleToByteBufferAdapter(bb);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     mByteBuffer->Clear();
     return NOERROR;
 }

@@ -58,7 +58,7 @@ ECode CDataOutputStream::WriteBytes(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return DataOutputStream::WriteBytesEx(buffer, offset, count);
+    return DataOutputStream::WriteBytes(buffer, offset, count);
 }
 
 ECode CDataOutputStream::CheckError(
@@ -142,7 +142,7 @@ ECode CDataOutputStream::GetLock(
 
     AutoPtr<IInterface> obj = DataOutputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

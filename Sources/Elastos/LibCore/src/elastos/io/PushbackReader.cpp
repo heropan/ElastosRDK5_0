@@ -142,7 +142,7 @@ ECode PushbackReader::ReadChars(
         return NOERROR;
     }
     Int32 inCopied;
-    FAIL_RETURN(mIn->ReadCharsEx(buffer, newOffset, count - copiedChars, &inCopied));
+    FAIL_RETURN(mIn->ReadChars(buffer, newOffset, count - copiedChars, &inCopied));
     if (inCopied > 0) {
         *number = inCopied + copiedChars;
         return NOERROR;
@@ -197,7 +197,7 @@ ECode PushbackReader::Unread(
 ECode PushbackReader::UnreadChars(
     /* [in] */ const ArrayOf<Char32>& buffer)
 {
-    return UnreadCharsEx(buffer, 0, buffer.GetLength());
+    return UnreadChars(buffer, 0, buffer.GetLength());
 }
 
 ECode PushbackReader::UnreadChars(

@@ -73,7 +73,7 @@ ECode CDataInputStream::ReadBytes(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    return DataInputStream::ReadBytesEx(buffer, offset, length, number);
+    return DataInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CDataInputStream::Reset()
@@ -145,7 +145,7 @@ ECode CDataInputStream::ReadFully(
 {
     VALIDATE_NOT_NULL(buffer);
 
-    return DataInputStream::ReadFullyEx(buffer, offset, length);
+    return DataInputStream::ReadFully(buffer, offset, length);
 }
 
 ECode CDataInputStream::ReadInt32(
@@ -224,7 +224,7 @@ ECode CDataInputStream::GetLock(
 
     AutoPtr<IInterface> obj = DataInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

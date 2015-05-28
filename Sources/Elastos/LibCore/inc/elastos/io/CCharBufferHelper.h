@@ -28,7 +28,7 @@ public:
      * Creates a char buffer by wrapping the given char array.
      * <p>
      * Calling this method has the same effect as
-     * WrapEx();
+     * Wrap();
      *
      * @param array
      *      the char array which the new buffer will be based on.
@@ -66,7 +66,7 @@ public:
      * Creates a char buffer by wrapping the given char sequence.
      * <p>
      * Calling this method has the same effect as
-     * WrapEx();
+     * Wrap();
      *
      * @param chseq
      *      the char sequence which the new buffer will be based on.

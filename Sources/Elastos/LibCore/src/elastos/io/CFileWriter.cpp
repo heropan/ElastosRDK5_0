@@ -100,7 +100,7 @@ ECode CFileWriter::WriteChars(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return FileWriter::WriteCharsEx(buffer, offset, count);
+    return FileWriter::WriteChars(buffer, offset, count);
 }
 
 ECode CFileWriter::WriteString(
@@ -114,7 +114,7 @@ ECode CFileWriter::WriteString(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return FileWriter::WriteStringEx(str, offset, count);
+    return FileWriter::WriteString(str, offset, count);
 }
 
 ECode CFileWriter::AppendChar(
@@ -134,7 +134,7 @@ ECode CFileWriter::AppendCharSequence(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return FileWriter::AppendCharSequenceEx(csq, start, end);
+    return FileWriter::AppendCharSequence(csq, start, end);
 }
 
 ECode CFileWriter::CheckError(
@@ -156,7 +156,7 @@ ECode CFileWriter::GetLock(
 
     AutoPtr<IInterface> obj = FileWriter::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

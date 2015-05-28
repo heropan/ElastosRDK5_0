@@ -7,7 +7,7 @@
 #else
 #include "Elastos.CoreLibrary.h"
 #endif
-#include <elastos/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 using Elastos::Core::LockObject;

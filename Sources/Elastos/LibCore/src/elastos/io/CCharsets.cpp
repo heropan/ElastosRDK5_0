@@ -79,7 +79,7 @@ ECode CCharsets::GetISO_8859_1(
 {
     VALIDATE_NOT_NULL(charset);
     *charset = ISO_8859_1;
-    INTERFACE_ADDREF(*charset)
+    REFCOUNT_ADD(*charset)
     return NOERROR;
 }
 
@@ -88,7 +88,7 @@ ECode CCharsets::GetUS_ASCII(
 {
     VALIDATE_NOT_NULL(charset);
     *charset = US_ASCII;
-    INTERFACE_ADDREF(*charset)
+    REFCOUNT_ADD(*charset)
     return NOERROR;
 }
 
@@ -97,7 +97,7 @@ ECode CCharsets::GetUTF_8(
 {
     VALIDATE_NOT_NULL(charset);
     *charset = UTF_8;
-    INTERFACE_ADDREF(*charset)
+    REFCOUNT_ADD(*charset)
     return NOERROR;
 }
 
@@ -217,7 +217,7 @@ ECode CCharsets::ToBigEndianUtf16Bytes(
     }
 
     *bytes = result;
-    INTERFACE_ADDREF(*bytes);
+    REFCOUNT_ADD(*bytes);
     return NOERROR;
 }
 
@@ -230,7 +230,7 @@ ECode CCharsets::AsciiBytesToChars(
     VALIDATE_NOT_NULL(chars);
 
     *chars = ArrayOf<Char32>::Alloc(length);
-    INTERFACE_ADDREF(*chars);
+    REFCOUNT_ADD(*chars);
 
     const Byte* src = &bytes[offset];
     Char32* dst = (*chars)->GetPayload();
@@ -251,7 +251,7 @@ ECode CCharsets::IsoLatin1BytesToChars(
     VALIDATE_NOT_NULL(chars);
 
     *chars = ArrayOf<Char32>::Alloc(length);
-    INTERFACE_ADDREF(*chars);
+    REFCOUNT_ADD(*chars);
 
     const Byte* src = &bytes[offset];
     Char32* dst = (*chars)->GetPayload();
@@ -272,7 +272,7 @@ ECode CCharsets::CharsToBytes(
     VALIDATE_NOT_NULL(bytes);
 
     *bytes = ArrayOf<Byte>::Alloc(length);
-    INTERFACE_ADDREF(*bytes);
+    REFCOUNT_ADD(*bytes);
 
     const Char32* src = &chars[offset];
     Byte* dst = (*bytes)->GetPayload();

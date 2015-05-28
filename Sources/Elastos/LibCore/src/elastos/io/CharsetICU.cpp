@@ -27,7 +27,7 @@ ECode CharsetICU::NewEncoder(
     AutoPtr<CharsetEncoderICU> encoderICU;
     FAIL_RETURN(CharsetEncoderICU::NewInstance((ICharset*)this, mIcuCanonicalName, (CharsetEncoderICU**)&encoderICU));
     *charsetEncoder = ICharsetEncoder::Probe(encoderICU.Get());
-    INTERFACE_ADDREF(*charsetEncoder);
+    REFCOUNT_ADD(*charsetEncoder);
     return NOERROR;
 }
 
@@ -38,7 +38,7 @@ ECode CharsetICU::NewDecoder(
     AutoPtr<CharsetDecoderICU> decoderICU;
     FAIL_RETURN(CharsetDecoderICU::NewInstance((ICharset*)this, mIcuCanonicalName, (CharsetDecoderICU**)&decoderICU));
     *charsetDecoder = ICharsetDecoder::Probe(decoderICU.Get());
-    INTERFACE_ADDREF(*charsetDecoder);
+    REFCOUNT_ADD(*charsetDecoder);
     return NOERROR;
 }
 

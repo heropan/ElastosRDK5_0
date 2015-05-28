@@ -12,9 +12,17 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 
+
 SOURCES = InputStream.cpp
 SOURCES += FilterInputStream.cpp
 SOURCES += BufferedInputStream.cpp
 SOURCES += CBufferedInputStream.cpp
-#SOURCES += AbstractInterruptibleChannel.cpp
-#SOURCES += AbstractSelectableChannel.cpp
+SOURCES += AbstractInterruptibleChannel.cpp
+SOURCES += AbstractSelector.cpp
+SOURCES += SelectableChannel.cpp
+SOURCES += AbstractSelectableChannel.cpp
+SOURCES += AbstractSelectionKey.cpp
+SOURCES += SelectorProvider.cpp
+SOURCES += CSelectorProviderImpl.cpp
+#SOURCES += CChannels.cpp
+#SOURCES += CStreams.cpp

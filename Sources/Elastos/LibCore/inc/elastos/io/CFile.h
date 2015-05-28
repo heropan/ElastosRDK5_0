@@ -126,7 +126,7 @@ public:
         /* [in] */ IFilenameFilter* filter,
         /* [out, callee] */ ArrayOf<IFile*>** files);
 
-    CARAPI ListFilesEx2(
+    CARAPI ListFiles(
         /* [in] */ IFileFilter* filter,
         /* [out, callee] */ ArrayOf<IFile*>** files);
 

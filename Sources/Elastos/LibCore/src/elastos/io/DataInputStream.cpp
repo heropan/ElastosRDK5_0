@@ -45,7 +45,7 @@ ECode DataInputStream::ReadBytes(
     assert(buffer != NULL);
     assert(number != NULL);
 
-    return mIn->ReadBytesEx(buffer, offset, length, number);
+    return mIn->ReadBytes(buffer, offset, length, number);
 }
 
 ECode DataInputStream::ReadBoolean(
@@ -102,7 +102,7 @@ ECode DataInputStream::ReadToBuff(
 
     Int32 offset = 0;
     while(offset < count) {
-        FAIL_RETURN(ReadBytesEx(mBuff, offset, count - offset, number));
+        FAIL_RETURN(ReadBytes(mBuff, offset, count - offset, number));
         if(*number == -1) return NOERROR;
         offset += *number;
     }
@@ -135,7 +135,7 @@ ECode DataInputStream::ReadFloat(
 ECode DataInputStream::ReadFully(
     /* [out] */ ArrayOf<byte> * buffer)
 {
-    return ReadFullyEx(buffer, 0, buffer->GetLength());
+    return ReadFully(buffer, 0, buffer->GetLength());
 }
 
 ECode DataInputStream::ReadFully(
@@ -165,7 +165,7 @@ ECode DataInputStream::ReadFully(
     // END android-changed
     Int32 number;
     while (length > 0) {
-        FAIL_RETURN(mIn->ReadBytesEx(buffer, offset, length, &number));
+        FAIL_RETURN(mIn->ReadBytes(buffer, offset, length, &number));
         if (number < 0) return E_EOF_EXCEPTION;
         offset += number;
         length -= number;
@@ -345,7 +345,7 @@ String DataInputStream::DecodeUTF(
 {
     AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(utfSize);
     AutoPtr< ArrayOf<Char32> > charbuf = ArrayOf<Char32>::Alloc(utfSize);
-    in->ReadFullyEx(*buf, 0, utfSize);
+    in->ReadFully(*buf, 0, utfSize);
     for (Int32 i = 0; i < utfSize; ++i) {
         (*charbuf)[i] = (*buf)[i];
     }

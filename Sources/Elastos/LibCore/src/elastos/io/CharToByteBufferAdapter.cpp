@@ -31,7 +31,7 @@ ECode CharToByteBufferAdapter::AsCharBuffer(
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
     slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *charBuffer = (ICharBuffer*) new CharToByteBufferAdapter(slice);
-    INTERFACE_ADDREF(*charBuffer);
+    REFCOUNT_ADD(*charBuffer);
     return NOERROR;
 }
 
@@ -138,7 +138,7 @@ ECode CharToByteBufferAdapter::AsReadOnlyBuffer(
     buf->mMark = mMark;
     buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (ICharBuffer*)buf->Probe(EIID_ICharBuffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -179,7 +179,7 @@ ECode CharToByteBufferAdapter::Duplicate(
     buf->mPosition = mPosition;
     buf->mMark = mMark;
     *buffer = (ICharBuffer*)buf->Probe(EIID_ICharBuffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -190,7 +190,7 @@ ECode CharToByteBufferAdapter::GetChar(
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->GetCharEx(mPosition++ * sizeof(Char32), value);
+    return mByteBuffer->GetChar(mPosition++ * sizeof(Char32), value);
 }
 
 ECode CharToByteBufferAdapter::GetChar(
@@ -198,7 +198,7 @@ ECode CharToByteBufferAdapter::GetChar(
     /* [out] */ Char32* value)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->GetCharEx(index * sizeof(Char32), value);
+    return mByteBuffer->GetChar(index * sizeof(Char32), value);
 }
 
 ECode CharToByteBufferAdapter::GetChars(
@@ -215,10 +215,10 @@ ECode CharToByteBufferAdapter::GetChars(
     mByteBuffer->SetLimit(mLimit * sizeof(Char32));
     mByteBuffer->SetPosition(mPosition * sizeof(Char32));
     if (mByteBuffer->Probe(EIID_DirectByteBuffer) != NULL) {
-        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetCharsEx(dst, dstOffset, charCount))
+        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetChars(dst, dstOffset, charCount))
     }
     else {
-        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetCharsEx(dst, dstOffset, charCount))
+        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetChars(dst, dstOffset, charCount))
     }
     mPosition += charCount;
     return NOERROR;
@@ -243,7 +243,7 @@ ECode CharToByteBufferAdapter::PutChar(
         // throw new BufferOverflowException();
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->PutCharEx(mPosition++ * sizeof(Char32), c);
+    return mByteBuffer->PutChar(mPosition++ * sizeof(Char32), c);
 }
 
 ECode CharToByteBufferAdapter::PutChar(
@@ -251,7 +251,7 @@ ECode CharToByteBufferAdapter::PutChar(
     /* [in] */ Char32 c)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->PutCharEx(index * sizeof(Char32), c);
+    return mByteBuffer->PutChar(index * sizeof(Char32), c);
 }
 
 ECode CharToByteBufferAdapter::PutChars(
@@ -295,7 +295,7 @@ ECode CharToByteBufferAdapter::PutString(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return CharBuffer::PutStringEx(str, start, end);
+    return CharBuffer::PutString(str, start, end);
 }
 
 ECode CharToByteBufferAdapter::Slice(
@@ -308,7 +308,7 @@ ECode CharToByteBufferAdapter::Slice(
     FAIL_RETURN(mByteBuffer->Slice((IByteBuffer**)&bb))
     bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (ICharBuffer*) new CharToByteBufferAdapter(bb);
-    INTERFACE_ADDREF(*buffer);
+    REFCOUNT_ADD(*buffer);
     mByteBuffer->Clear();
     return NOERROR;
 }
@@ -332,7 +332,7 @@ ECode CharToByteBufferAdapter::SubSequence(
     result->SetLimit(mPosition + end);
     result->SetPosition(mPosition + start);
     *csq = (ICharSequence*)result->Probe(EIID_ICharSequence);
-    INTERFACE_ADDREF(*csq)
+    REFCOUNT_ADD(*csq)
     return NOERROR;
 }
 
@@ -353,7 +353,7 @@ ECode CharToByteBufferAdapter::AppendChars(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return CharBuffer::AppendCharsEx(csq, start, end);
+    return CharBuffer::AppendChars(csq, start, end);
 }
 
 ECode CharToByteBufferAdapter::Read(

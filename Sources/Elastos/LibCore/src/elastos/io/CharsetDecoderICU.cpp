@@ -62,7 +62,7 @@ ECode CharsetDecoderICU::NewInstance(
         result->UpdateCallback();
 
         *decoderICU = result;
-        INTERFACE_ADDREF(*decoderICU)
+        REFCOUNT_ADD(*decoderICU)
     }
 EXIT:
     if (address != 0) {
@@ -253,7 +253,7 @@ ECode CharsetDecoderICU::GetArray(
         // Copy the input buffer into the allocated array.
         Int32 pos = 0;
         inBuffer->GetPosition(&pos);
-        inBuffer->GetBytesEx(mAllocatedInput, 0, mInEnd);
+        inBuffer->GetBytes(mAllocatedInput, 0, mInEnd);
         inBuffer->SetPosition(pos);
         // The array's start position is 0.
         mInput = mAllocatedInput;
@@ -275,7 +275,7 @@ ECode CharsetDecoderICU::SetPosition(
         outBuffer->SetPosition(pos + (*mData)[OUTPUT_OFFSET] - offset);
     }
     else {
-        outBuffer->PutCharsEx(*mOutput, 0, (*mData)[OUTPUT_OFFSET]);
+        outBuffer->PutChars(*mOutput, 0, (*mData)[OUTPUT_OFFSET]);
     }
     // release reference to output array, which may not be ours
     mOutput = NULL;

@@ -303,7 +303,7 @@ ECode BufferedReader::ReadLine(
     // Accumulate buffers in a StringBuilder until we've read a whole line.
     StringBuilder result(mEnd - mPos + 80);
 
-    result.AppendCharsEx(*mBuf, mPos, mEnd - mPos);
+    result.AppendChars(*mBuf, mPos, mEnd - mPos);
     while (TRUE) {
         mPos = mEnd;
         if (FillBuf(&number), -1 == number) {

@@ -4,7 +4,7 @@
 #include "CFile.h"
 #include "IoUtils.h"
 #include "ToStringArray_S.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Vector.h>
 #include <elastos/StringBuilder.h>
 #include <elastos/CSystem.h>
@@ -17,7 +17,7 @@
 #include "COsConstants.h"
 #include "CLibcore.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Vector;
 using Elastos::Core::CRandom;
 using Elastos::Core::StringBuilder;
@@ -335,7 +335,7 @@ ECode File::ListRoots(
     AutoPtr< ArrayOf<IFile*> > files = ArrayOf<IFile*>::Alloc(1);
     files->Set(0, file);
     *roots = files;
-    INTERFACE_ADDREF(*roots);
+    REFCOUNT_ADD(*roots);
     return NOERROR;
 }
 
@@ -879,7 +879,7 @@ ECode File::List(
     assert(files != NULL);
     AutoPtr< ArrayOf<String> > arr = ListImpl(mPath);
     *files = arr;
-    INTERFACE_ADDREF(*files);
+    REFCOUNT_ADD(*files);
     return NOERROR;
 }
 
@@ -971,7 +971,7 @@ ECode File::List(
     AutoPtr< ArrayOf<String> > filenames = ListImpl(mPath);
     if (filter == NULL || filenames == NULL) {
         *files = filenames;
-        INTERFACE_ADDREF(*files);
+        REFCOUNT_ADD(*files);
         return NOERROR;
     }
     Elastos::Utility::List<String> result;
@@ -990,7 +990,7 @@ ECode File::List(
         (*_files)[index] = *it;
     }
     *files = _files;
-    INTERFACE_ADDREF(*files);
+    REFCOUNT_ADD(*files);
     return NOERROR;
 }
 
@@ -1002,7 +1002,7 @@ ECode File::ListFiles(
     AutoPtr< ArrayOf<String> > filenames = ListImpl(mPath);
     AutoPtr< ArrayOf<IFile*> > _files = FilenamesToFiles(filenames);
     *files = _files;
-    INTERFACE_ADDREF(*files);
+    REFCOUNT_ADD(*files);
     return NOERROR;
 }
 
@@ -1016,7 +1016,7 @@ ECode File::ListFiles(
     List(filter, (ArrayOf<String>**)&filenames);
     AutoPtr< ArrayOf<IFile*> > _files = FilenamesToFiles(filenames);
     *files = _files;
-    INTERFACE_ADDREF(*files);
+    REFCOUNT_ADD(*files);
     return NOERROR;
 }
 
@@ -1028,7 +1028,7 @@ ECode File::ListFiles(
     ListFiles((ArrayOf<IFile*>**)&_files);
     if (filter == NULL || _files == NULL) {
         *files = _files;
-        INTERFACE_ADDREF(*files);
+        REFCOUNT_ADD(*files);
         return NOERROR;
     }
     Elastos::Utility::List< AutoPtr<IFile> > result;
@@ -1046,7 +1046,7 @@ ECode File::ListFiles(
         _files->Set(index, *it);
     }
     *files = _files;
-    INTERFACE_ADDREF(*files);
+    REFCOUNT_ADD(*files);
     return NOERROR;
 }
 
@@ -1186,7 +1186,7 @@ ECode File::CreateTempFile(
         Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
 
         String tmpDir;
-        system->GetPropertyEx(String("elastos.io.tmpdir"), String("."), &tmpDir);
+        system->GetProperty(String("elastos.io.tmpdir"), String("."), &tmpDir);
         CFile::New(tmpDir, (IFile**)&tmpDirFile);
     }
     AutoPtr<IFile> result;
@@ -1202,7 +1202,7 @@ ECode File::CreateTempFile(
         CFile::New(tmpDirFile, sb.ToString(), (IFile**)&result);
     } while (result->CreateNewFile(&succeeded), !succeeded);
     *file = result;
-    INTERFACE_ADDREF(*file);
+    REFCOUNT_ADD(*file);
     return NOERROR;
 }
 

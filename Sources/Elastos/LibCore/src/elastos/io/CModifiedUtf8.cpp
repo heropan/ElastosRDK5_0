@@ -118,7 +118,7 @@ ECode CModifiedUtf8::Encode(
     memcpy(dstPtr, srcPtr, size);
 
     *bytes = buf;
-    INTERFACE_ADDREF(*bytes);
+    REFCOUNT_ADD(*bytes);
     return NOERROR;
 }
 

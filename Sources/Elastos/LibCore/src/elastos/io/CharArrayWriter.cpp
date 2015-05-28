@@ -105,7 +105,7 @@ ECode CharArrayWriter::ToCharArray(
     if (*str == NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
-    INTERFACE_ADDREF(*str);
+    REFCOUNT_ADD(*str);
     return NOERROR;
 }
 
@@ -198,7 +198,7 @@ ECode CharArrayWriter::WriteTo(
 {
     Object::Autolock lock(mLock);
 
-    return out->WriteCharsEx(*mBuf, 0, mCount);
+    return out->WriteChars(*mBuf, 0, mCount);
 }
 
 ECode CharArrayWriter::Append(
@@ -216,7 +216,7 @@ ECode CharArrayWriter::Append(
 
     Int32 number;
     FAIL_RETURN(csq->GetLength(&number));
-    return AppendCharSequenceEx(csq, 0, number);
+    return AppendCharSequence(csq, 0, number);
 }
 
 ECode CharArrayWriter::Append(

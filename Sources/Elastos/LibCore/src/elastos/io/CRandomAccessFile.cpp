@@ -133,7 +133,7 @@ ECode CRandomAccessFile::GetChannel(
     }
     // END android-added
     *channel = mChannel;
-    INTERFACE_ADDREF(*channel)
+    REFCOUNT_ADD(*channel)
     return NOERROR;
 }
 
@@ -143,7 +143,7 @@ ECode CRandomAccessFile::GetFD(
     VALIDATE_NOT_NULL(fd);
 
     *fd = mFd;
-    INTERFACE_ADDREF(*fd);
+    REFCOUNT_ADD(*fd);
     return NOERROR;
 }
 
@@ -191,7 +191,7 @@ ECode CRandomAccessFile::Read(
     VALIDATE_NOT_NULL(value);
 
     Int32 byteCount;
-    FAIL_RETURN(ReadBytesEx(mScratch, 0, 1, &byteCount))
+    FAIL_RETURN(ReadBytes(mScratch, 0, 1, &byteCount))
     *value = byteCount != -1 ? (*mScratch)[0] & 0xff : -1;
 
     return NOERROR;
@@ -204,7 +204,7 @@ ECode CRandomAccessFile::ReadBytes(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    return ReadBytesEx(buffer, 0, buffer->GetLength(), number);
+    return ReadBytes(buffer, 0, buffer->GetLength(), number);
 }
 
 ECode CRandomAccessFile::ReadBytes(
@@ -307,7 +307,7 @@ ECode CRandomAccessFile::ReadFloat(
 ECode CRandomAccessFile::ReadFully(
     /* [out] */ ArrayOf<Byte>* buffer)
 {
-    return ReadFullyEx(buffer, 0, buffer->GetLength());
+    return ReadFully(buffer, 0, buffer->GetLength());
 }
 
 ECode CRandomAccessFile::ReadFully(
@@ -332,7 +332,7 @@ ECode CRandomAccessFile::ReadFully(
     // END android-changed
     Int32 number;
     while (length > 0) {
-        FAIL_RETURN(ReadBytesEx(buffer, offset, length, &number));
+        FAIL_RETURN(ReadBytes(buffer, offset, length, &number));
         if (number < 0) {
             // throw new EOFException();
             return E_EOF_EXCEPTION;
@@ -352,7 +352,7 @@ ECode CRandomAccessFile::ReadInt32(
     //
     // readFully(scratch, 0, SizeOf.INT);
     // return Memory.peekInt(scratch, 0, ByteOrder.BIG_ENDIAN);
-    FAIL_RETURN(ReadFullyEx(mScratch, 0, sizeof(Int32)));
+    FAIL_RETURN(ReadFully(mScratch, 0, sizeof(Int32)));
     *value = (((*mScratch)[0] & 0xff) << 24) + (((*mScratch)[1] & 0xff) << 16)
             + (((*mScratch)[2] & 0xff) << 8) + ((*mScratch)[3] & 0xff);
     return NOERROR;
@@ -413,7 +413,7 @@ ECode CRandomAccessFile::ReadInt64(
     // readFully(scratch, 0, SizeOf.LONG);
     // return Memory.peekLong(scratch, 0, ByteOrder.BIG_ENDIAN);
 
-    FAIL_RETURN(ReadFullyEx(mScratch, 0, sizeof(Int64)));
+    FAIL_RETURN(ReadFully(mScratch, 0, sizeof(Int64)));
 
     *value = ((Int64)((((*mScratch)[0] & 0xff) << 24) + (((*mScratch)[1] & 0xff) << 16)
             + (((*mScratch)[2] & 0xff) << 8) + ((*mScratch)[3] & 0xff)) << 32)
@@ -434,7 +434,7 @@ ECode CRandomAccessFile::ReadInt16(
     // readFully(scratch, 0, SizeOf.SHORT);
     // return Memory.peekLong(scratch, 0, ByteOrder.BIG_ENDIAN);
 
-    FAIL_RETURN(ReadFullyEx(mScratch, 0, sizeof(Int16)));
+    FAIL_RETURN(ReadFully(mScratch, 0, sizeof(Int16)));
 
     *value = (Int16)((((*mScratch)[0] & 0xff) << 8) + ((*mScratch)[1] & 0xff));
     return NOERROR;
@@ -472,7 +472,7 @@ ECode CRandomAccessFile::ReadUTF(
     }
     AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(utfSize);
     Int32 readsize = 0;
-    ReadBytesEx(buf, 0, buf->GetLength(), &readsize);
+    ReadBytes(buf, 0, buf->GetLength(), &readsize);
     if (readsize != buf->GetLength()) {
         // throw new EOFException();
         return E_EOF_EXCEPTION;
@@ -560,7 +560,7 @@ ECode CRandomAccessFile::SkipBytes(
 ECode CRandomAccessFile::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer)
 {
-    return WriteBytesEx(buffer, 0, buffer.GetLength());
+    return WriteBytes(buffer, 0, buffer.GetLength());
 }
 
 ECode CRandomAccessFile::WriteBytes(
@@ -585,7 +585,7 @@ ECode CRandomAccessFile::Write(
     /* [in] */ Int32 oneByte)
 {
     (*mScratch)[0] = (Byte)(oneByte & 0xFF);
-    return WriteBytesEx(*mScratch, 0, 1);
+    return WriteBytes(*mScratch, 0, 1);
 }
 
 ECode CRandomAccessFile::WriteBoolean(
@@ -617,7 +617,7 @@ ECode CRandomAccessFile::WriteChar(
     ArrayOf_<Byte, 4> buffer;
     Int32 len;
     Character::ToChars((Char32)value, *(ArrayOf<Char8>*)&buffer, 0, &len);
-    return WriteBytesEx(buffer, 0, len);
+    return WriteBytes(buffer, 0, len);
 }
 
 ECode CRandomAccessFile::WriteChars(
@@ -655,7 +655,7 @@ ECode CRandomAccessFile::WriteInt32(
     (*mScratch)[2] = (Byte)(value >> 8);
     (*mScratch)[3] = (Byte)value;
 
-    return WriteBytesEx(*mScratch, 0, sizeof(Int32));
+    return WriteBytes(*mScratch, 0, sizeof(Int32));
 }
 
 ECode CRandomAccessFile::WriteInt64(
@@ -676,7 +676,7 @@ ECode CRandomAccessFile::WriteInt64(
     (*mScratch)[6] = (Byte)(value >> 8);
     (*mScratch)[7] = (Byte)value;
 
-    return WriteBytesEx(*mScratch, 0, sizeof(Int64));
+    return WriteBytes(*mScratch, 0, sizeof(Int64));
 }
 
 ECode CRandomAccessFile::WriteInt16(
@@ -690,7 +690,7 @@ ECode CRandomAccessFile::WriteInt16(
     (*mScratch)[0] = (Byte)(value >> 8);
     (*mScratch)[1] = (Byte)value;
 
-    return WriteBytesEx(*mScratch, 0, sizeof(Int32));
+    return WriteBytes(*mScratch, 0, sizeof(Int32));
 }
 
 ECode CRandomAccessFile::WriteUTF(

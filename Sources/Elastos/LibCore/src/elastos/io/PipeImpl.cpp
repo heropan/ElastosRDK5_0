@@ -44,7 +44,7 @@ ECode PipeSourceChannel::ReadByteBuffer(IByteBuffer* buffer, Int32* nRead)
 ECode PipeSourceChannel::ReadByteBuffers(const ArrayOf<IByteBuffer*> & buffers,
         Int64* nRead)
 {
-    return mChannel->ReadByteBuffersEx(buffers, nRead);
+    return mChannel->ReadByteBuffers(buffers, nRead);
 }
 
 ECode PipeSourceChannel::ReadByteBuffers(
@@ -57,7 +57,7 @@ ECode PipeSourceChannel::ReadByteBuffers(
 ECode PipeSourceChannel::GetFD(IFileDescriptor** descriptor)
 {
     *descriptor = mFd.Get();
-    INTERFACE_ADDREF(*descriptor);
+    REFCOUNT_ADD(*descriptor);
     return NOERROR;
 }
 // end PipeSourceChannel;
@@ -95,10 +95,10 @@ ECode PipeSinkChannel::WriteBuffer(IByteBuffer* buffer, Int32* nWrite)
 
 ECode PipeSinkChannel::WriteBuffers(ArrayOf<IByteBuffer*> & buffers, Int64* nWrite)
 {
-    return mChannel->WriteByteBuffersEx(buffers, nWrite);
+    return mChannel->WriteByteBuffers(buffers, nWrite);
 }
 
-ECode PipeSinkChannel::WriteBuffersEx(ArrayOf<IByteBuffer*> & buffers,
+ECode PipeSinkChannel::WriteBuffers(ArrayOf<IByteBuffer*> & buffers,
         Int32 offset, Int32 length, Int64* nWrite)
 {
     return mChannel->WriteByteBuffers(buffers, offset, length, nWrite);
@@ -107,7 +107,7 @@ ECode PipeSinkChannel::WriteBuffersEx(ArrayOf<IByteBuffer*> & buffers,
 ECode PipeSinkChannel::GetFD(IFileDescriptor** descriptor)
 {
     *descriptor = mFd.Get();
-    INTERFACE_ADDREF(*descriptor);
+    REFCOUNT_ADD(*descriptor);
 
     return NOERROR;
 }

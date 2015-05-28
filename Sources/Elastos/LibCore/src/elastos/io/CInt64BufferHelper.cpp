@@ -25,7 +25,7 @@ ECode CInt64BufferHelper::WrapArray(
     /* [in] */ Int32 int64Count,
     /* [out] */ IInt64Buffer** int64Buffer)
 {
-    return Int64Buffer::WrapArrayEx(array, start, int64Count, int64Buffer);
+    return Int64Buffer::WrapArray(array, start, int64Count, int64Buffer);
 }
 
 } // namespace IO

@@ -100,7 +100,7 @@ ECode CharArrayBuffer::SubSequence(
     result->SetLimit(mPosition + end);
     result->SetPosition(mPosition + start);
     *csq = ICharSequence::Probe(result);
-    INTERFACE_ADDREF(*csq);
+    REFCOUNT_ADD(*csq);
     return NOERROR;
 }
 

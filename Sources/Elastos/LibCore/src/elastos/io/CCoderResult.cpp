@@ -39,7 +39,7 @@ ECode CCoderResult::GetUNDERFLOW(
 {
     VALIDATE_NOT_NULL(result);
     *result = UNDERFLOW.Get();
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -48,7 +48,7 @@ ECode CCoderResult::GetOVERFLOW(
 {
     VALIDATE_NOT_NULL(result);
     *result = OVERFLOW.Get();
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -81,7 +81,7 @@ ECode CCoderResult::MalformedForLength(
         else {
             *result = iter->mSecond;
         }
-        INTERFACE_ADDREF(*result)
+        REFCOUNT_ADD(*result)
         return NOERROR;
     }
     // throw new IllegalArgumentException("length <= 0: " + length);
@@ -117,7 +117,7 @@ ECode CCoderResult::UnmappableForLength(
         else {
             *result = iter->mSecond;
         }
-        INTERFACE_ADDREF(*result)
+        REFCOUNT_ADD(*result)
 
     }
     // throw new IllegalArgumentException("length <= 0: " + length);

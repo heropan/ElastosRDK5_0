@@ -134,7 +134,7 @@ ECode CharsetEncoder::Charset(
 {
     VALIDATE_NOT_NULL(charset);
     *charset = mCs;
-    INTERFACE_ADDREF(*charset);
+    REFCOUNT_ADD(*charset);
     return NOERROR;
 }
 
@@ -165,7 +165,7 @@ ECode CharsetEncoder::Encode(
 
     while (TRUE) {
         result = NULL;
-        FAIL_RETURN(EncodeEx(charBuffer, output.Get(), FALSE, (ICoderResult**)&result));
+        FAIL_RETURN(Encode(charBuffer, output.Get(), FALSE, (ICoderResult**)&result));
         if (_CObject_Compare(result.Get(), UNDERFLOW)) {
             break;
         } else if (_CObject_Compare(result.Get(), UNDERFLOW)) {
@@ -178,7 +178,7 @@ ECode CharsetEncoder::Encode(
     }
 
     result = NULL;
-    FAIL_RETURN(EncodeEx(charBuffer, output.Get(), TRUE, (ICoderResult**)&result));
+    FAIL_RETURN(Encode(charBuffer, output.Get(), TRUE, (ICoderResult**)&result));
     FAIL_RETURN(CheckCoderResult(result.Get()));
 
     while (TRUE) {
@@ -211,7 +211,7 @@ ECode CharsetEncoder::Encode(
     mStatus = READY;
     mFinished = TRUE;
     *byteBuffer = output;
-    INTERFACE_ADDREF(*byteBuffer)
+    REFCOUNT_ADD(*byteBuffer)
     return NOERROR;
 }
 
@@ -254,18 +254,18 @@ ECode CharsetEncoder::Encode(
                     FAIL_RETURN(CCoderResult::MalformedForLength(remaining, (ICoderResult**)&res));
                 } else {
                     *result = res;
-                    INTERFACE_ADDREF(*result)
+                    REFCOUNT_ADD(*result)
                     return NOERROR;
                 }
             } else {
                 *result = res;
-                INTERFACE_ADDREF(*result)
+                REFCOUNT_ADD(*result)
                 return NOERROR;
             }
         } else if (_CObject_Compare(res, OVERFLOW)) {
             mStatus = endOfInput ? END : ONGOING;
             *result = res;
-            INTERFACE_ADDREF(*result)
+            REFCOUNT_ADD(*result)
             return NOERROR;
         }
         AutoPtr<ICodingErrorAction> action = mMalformedInputAction;
@@ -289,14 +289,14 @@ ECode CharsetEncoder::Encode(
             FAIL_RETURN(byteBuffer->GetRemaining(&remaining));
             if (remaining < mReplacementBytes->GetLength()) {
                 *result = OVERFLOW;
-                INTERFACE_ADDREF(*result)
+                REFCOUNT_ADD(*result)
                 return NOERROR;
             }
             byteBuffer->PutBytes(*mReplacementBytes);
         } else {
             if (action != IGNORE) {
                 *result = res;
-                INTERFACE_ADDREF(*result)
+                REFCOUNT_ADD(*result)
                 return NOERROR;
             }
         }
@@ -332,7 +332,7 @@ ECode CharsetEncoder::Flush(
     }
 
     *result = res;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -364,7 +364,7 @@ ECode CharsetEncoder::IsLegalReplacement(
     mDecoder->MaxCharsPerByte(&maxNum);
     FAIL_RETURN(CharBuffer::Allocate((Int32) (replacement->GetLength() * maxNum), (ICharBuffer**)&out));
     AutoPtr<ICoderResult> res;
-    FAIL_RETURN(mDecoder->DecodeEx(in.Get(), out, TRUE, (ICoderResult**)&res));
+    FAIL_RETURN(mDecoder->Decode(in.Get(), out, TRUE, (ICoderResult**)&res));
 
     Boolean err = FALSE;
     res->IsError(&err);
@@ -378,7 +378,7 @@ ECode CharsetEncoder::MalformedInputAction(
 {
     VALIDATE_NOT_NULL(errorAction);
     *errorAction = mMalformedInputAction;
-    INTERFACE_ADDREF(*errorAction)
+    REFCOUNT_ADD(*errorAction)
     return NOERROR;
 }
 
@@ -400,7 +400,7 @@ ECode CharsetEncoder::OnMalformedInput(
     ECode ec = ImplOnMalformedInput(newAction);
     if (SUCCEEDED(ec)) {
         *encoder = (ICharsetEncoder*)this;
-        INTERFACE_ADDREF(*encoder)
+        REFCOUNT_ADD(*encoder)
     }
     return ec;
 }
@@ -415,7 +415,7 @@ ECode CharsetEncoder::OnUnmappableCharacter(
     ECode ec = ImplOnUnmappableCharacter(newAction);
     if (SUCCEEDED(ec)) {
         *encoder = (ICharsetEncoder*)this;
-        INTERFACE_ADDREF(*encoder)
+        REFCOUNT_ADD(*encoder)
     }
     return ec;
 }
@@ -425,7 +425,7 @@ ECode CharsetEncoder::Replacement(
 {
     VALIDATE_NOT_NULL(replace);
     *replace = mReplacementBytes;
-    INTERFACE_ADDREF(*replace);
+    REFCOUNT_ADD(*replace);
     return NOERROR;
 }
 
@@ -458,7 +458,7 @@ ECode CharsetEncoder::ReplaceWith(
     mReplacementBytes = replacement;
     FAIL_RETURN(ImplReplaceWith(mReplacementBytes));
     *encoder = (ICharsetEncoder*)this;
-    INTERFACE_ADDREF(*encoder)
+    REFCOUNT_ADD(*encoder)
     return NOERROR;
 }
 
@@ -469,7 +469,7 @@ ECode CharsetEncoder::Reset(
     mStatus = INIT;
     FAIL_RETURN(ImplReset());
     *encoder = (ICharsetEncoder*)this;
-    INTERFACE_ADDREF(*encoder)
+    REFCOUNT_ADD(*encoder)
     return NOERROR;
 }
 
@@ -478,7 +478,7 @@ ECode CharsetEncoder::UnmappableCharacterAction(
 {
     VALIDATE_NOT_NULL(errorAction);
     *errorAction = mUnmappableCharacterAction;
-    INTERFACE_ADDREF(*errorAction)
+    REFCOUNT_ADD(*errorAction)
     return NOERROR;
 }
 
@@ -608,7 +608,7 @@ ECode CharsetEncoder::GetMalformedInputAction(
 {
     VALIDATE_NOT_NULL(errorAction);
     *errorAction = mMalformedInputAction;
-    INTERFACE_ADDREF(*errorAction);
+    REFCOUNT_ADD(*errorAction);
     return NOERROR;
 }
 
@@ -625,7 +625,7 @@ ECode CharsetEncoder::GetReplacement(
 {
     VALIDATE_NOT_NULL(replace);
     *replace = mReplacementBytes;
-    INTERFACE_ADDREF(*replace);
+    REFCOUNT_ADD(*replace);
     return NOERROR;
 }
 
@@ -634,7 +634,7 @@ ECode CharsetEncoder::GetUnmappableCharacterAction(
 {
     VALIDATE_NOT_NULL(errorAction);
     *errorAction = mUnmappableCharacterAction;
-    INTERFACE_ADDREF(*errorAction);
+    REFCOUNT_ADD(*errorAction);
     return NOERROR;
 }
 

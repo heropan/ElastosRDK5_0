@@ -138,7 +138,7 @@ ECode ReadOnlyDoubleArrayBuffer::Duplicate(
     VALIDATE_NOT_NULL(buffer)
     AutoPtr<ReadOnlyDoubleArrayBuffer> buf = Copy((DoubleArrayBuffer*)this, mMark);
     *buffer = (IDoubleBuffer*)buf.Get();
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -152,7 +152,7 @@ ECode ReadOnlyDoubleArrayBuffer::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
-    return DoubleArrayBuffer::GetDoubleEx(index, value);
+    return DoubleArrayBuffer::GetDouble(index, value);
 }
 
 ECode ReadOnlyDoubleArrayBuffer::GetDoubles(
@@ -166,7 +166,7 @@ ECode ReadOnlyDoubleArrayBuffer::GetDoubles(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 doubleCount)
 {
-    return DoubleArrayBuffer::GetDoublesEx(dst, dstOffset, doubleCount);
+    return DoubleArrayBuffer::GetDoubles(dst, dstOffset, doubleCount);
 }
 
 ECode ReadOnlyDoubleArrayBuffer::GetOrder(
@@ -219,7 +219,7 @@ ECode ReadOnlyDoubleArrayBuffer::Slice(
     Int32 remaining = 0;
     GetRemaining(&remaining);
     *buffer = (IDoubleBuffer*)new ReadOnlyDoubleArrayBuffer(remaining, mBackingArray, mOffset + mPosition);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 

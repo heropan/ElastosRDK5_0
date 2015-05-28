@@ -1,8 +1,8 @@
 
 #include "AbstractSelector.h"
-#include "CHashSet.h"
+// #include "CHashSet.h"
 
-using Elastos::Utility::CHashSet;
+// using Elastos::Utility::CHashSet;
 
 namespace Elastos {
 namespace IO {
@@ -14,7 +14,8 @@ class WakeupRunnable
     , public IRunnable
 {
 public:
-    WakeupRunnable(AbstractSelector* selector)
+    WakeupRunnable(
+        /* [in] */ AbstractSelector* selector)
     {
         this->mSelector = selector;
     }
@@ -31,14 +32,14 @@ public:
     }
 
     CARAPI_(PInterface) Probe(
-    /* [in] */REIID riid)
+        /* [in] */ REIID riid)
     {
         return NULL;
     }
 
     CARAPI GetInterfaceID(
-            /* [in] */IInterface *pObject,
-            /* [out] */InterfaceID *pIID)
+        /* [in] */ IInterface *pObject,
+        /* [out] */ InterfaceID *pIID)
     {
         return E_NOT_IMPLEMENTED;
     }
@@ -61,16 +62,19 @@ AbstractSelector::AbstractSelector()
 {
 }
 
-AbstractSelector::AbstractSelector(ISelectorProvider* provider)
+AbstractSelector::AbstractSelector(
+    /* [in] */ ISelectorProvider* provider)
 {
     Init(provider);
 }
 
-AbstractSelector::Init(ISelectorProvider* provider)
+AbstractSelector::Init(
+    /* [in] */ ISelectorProvider* provider)
 {
     mIsOpen = TRUE;
     mSelectorProvider = provider;
-    CHashSet::New((ISet**)&mCancelledKeySet);
+    assert(0 && "TODO"); // wanguangming
+    // CHashSet::New((ISet**)&mCancelledKeySet);
     mWakeupRunnable = new WakeupRunnable(this);
     assert(NULL != mWakeupRunnable);
 }
@@ -79,14 +83,15 @@ AbstractSelector::~AbstractSelector()
 {
 }
 
-ECode AbstractSelector::Deregister(IAbstractSelectionKey* key)
+ECode AbstractSelector::Deregister(
+    /* [in] */ AbstractSelectionKey* key)
 {
     VALIDATE_NOT_NULL(key);
 
     AutoPtr<ISelectableChannel> channel;
     FAIL_RETURN(key->Channel((ISelectableChannel**)&channel));
-    AutoPtr<IAbstractSelectableChannel> asc = IAbstractSelectableChannel::Probe(channel);
-    if (asc) asc->Deregister(key);
+    AbstractSelectableChannel* asc = (AbstractSelectableChannel*)channel.Get();
+    if (asc) asc->Deregister((ISelectionKey*)key);
     return NOERROR;
 }
 

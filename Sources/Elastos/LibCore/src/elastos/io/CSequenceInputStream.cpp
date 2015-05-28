@@ -45,7 +45,7 @@ ECode CSequenceInputStream::ReadBytes(
 {
     VALIDATE_NOT_NULL(number);
     VALIDATE_NOT_NULL(buffer);
-    return SequenceInputStream::ReadBytesEx(buffer, offset, length, number);
+    return SequenceInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CSequenceInputStream::Mark(
@@ -70,7 +70,7 @@ ECode CSequenceInputStream::ReadBytes(
     // END android-note
     assert(buffer != NULL);
     assert(number != NULL);
-    return ReadBytesEx(buffer, 0, buffer->GetLength(), number);
+    return ReadBytes(buffer, 0, buffer->GetLength(), number);
 }
 
 ECode CSequenceInputStream::Reset()
@@ -99,7 +99,7 @@ ECode CSequenceInputStream::GetLock(
 
     AutoPtr<IInterface> obj = SequenceInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

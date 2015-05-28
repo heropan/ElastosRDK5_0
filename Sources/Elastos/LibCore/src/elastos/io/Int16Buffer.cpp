@@ -27,7 +27,7 @@ ECode Int16Buffer::Allocate(
     }
 
     *buf = (IInt16Buffer*)new ReadWriteInt16ArrayBuffer(capacity);
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -35,7 +35,7 @@ ECode Int16Buffer::WrapArray(
     /* [in] */ ArrayOf<Int16>* array,
     /* [out] */ IInt16Buffer** buf)
 {
-    return WrapArrayEx(array, 0, array->GetLength(), buf);
+    return WrapArray(array, 0, array->GetLength(), buf);
 }
 
 ECode Int16Buffer::WrapArray(
@@ -56,7 +56,7 @@ ECode Int16Buffer::WrapArray(
     rwBuf->mPosition = start;
     rwBuf->mLimit = start + int16Count;
     *buf = (IInt16Buffer*)rwBuf.Get();
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -89,8 +89,8 @@ ECode Int16Buffer::CompareTo(
     Int16 thisInt16 = 0;
     Int16 otherInt16 = 0;
     while (compareRemaining > 0) {
-        GetInt16Ex(thisPos, &thisInt16);
-        otherBuffer->GetInt16Ex(otherPos, &otherInt16);
+        GetInt16(thisPos, &thisInt16);
+        otherBuffer->GetInt16(otherPos, &otherInt16);
         // checks for Int16 and NaN inequality
         if (thisInt16 != otherInt16) {
             *result = thisInt16 < otherInt16 ? -1 : 1;
@@ -132,8 +132,8 @@ ECode Int16Buffer::Equals(
     Int16 thisValue = 0;
     Int16 otherValue = 0;
     while (equalSoFar && (myPosition < mLimit)) {
-        FAIL_RETURN(GetInt16Ex(myPosition++, &thisValue))
-        FAIL_RETURN(otherBuffer->GetInt16Ex(otherPosition++, &otherValue))
+        FAIL_RETURN(GetInt16(myPosition++, &thisValue))
+        FAIL_RETURN(otherBuffer->GetInt16(otherPosition++, &otherValue))
         equalSoFar = thisValue == otherValue;
     }
     *rst = equalSoFar;
@@ -143,7 +143,7 @@ ECode Int16Buffer::Equals(
 ECode Int16Buffer::GetInt16s(
     /* [out] */ ArrayOf<Int16>* dst)
 {
-    return GetInt16sEx(dst, 0, dst->GetLength());
+    return GetInt16s(dst, 0, dst->GetLength());
 }
 
 ECode Int16Buffer::GetInt16s(
@@ -181,7 +181,7 @@ ECode Int16Buffer::HasArray(
 ECode Int16Buffer::PutInt16s(
     /* [in] */ const ArrayOf<Int16>& src)
 {
-    return PutInt16sEx(src, 0, src.GetLength());
+    return PutInt16s(src, 0, src.GetLength());
 }
 
 ECode Int16Buffer::PutInt16s(

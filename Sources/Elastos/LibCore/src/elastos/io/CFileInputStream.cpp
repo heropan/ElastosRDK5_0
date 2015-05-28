@@ -75,7 +75,7 @@ ECode CFileInputStream::ReadBytes(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    return FileInputStream::ReadBytesEx(buffer, byteOffset, byteCount, number);
+    return FileInputStream::ReadBytes(buffer, byteOffset, byteCount, number);
 }
 
 ECode CFileInputStream::Reset()
@@ -127,7 +127,7 @@ ECode CFileInputStream::GetLock(
 
     AutoPtr<IInterface> obj = FileInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

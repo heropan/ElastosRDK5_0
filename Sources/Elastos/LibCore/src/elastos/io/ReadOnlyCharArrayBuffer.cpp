@@ -143,7 +143,7 @@ ECode ReadOnlyCharArrayBuffer::Duplicate(
     VALIDATE_NOT_NULL(buffer)
     AutoPtr<ReadOnlyCharArrayBuffer> buf = Copy((CharArrayBuffer*)this, mMark);
     *buffer = (ICharBuffer*)buf.Get();
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -157,7 +157,7 @@ ECode ReadOnlyCharArrayBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
-    return CharArrayBuffer::GetCharEx(index, value);
+    return CharArrayBuffer::GetChar(index, value);
 }
 
 ECode ReadOnlyCharArrayBuffer::GetChars(
@@ -171,7 +171,7 @@ ECode ReadOnlyCharArrayBuffer::GetChars(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
 {
-    return CharArrayBuffer::GetCharsEx(dst, dstOffset, byteCount);
+    return CharArrayBuffer::GetChars(dst, dstOffset, byteCount);
 }
 
 ECode ReadOnlyCharArrayBuffer::GetOrder(
@@ -250,7 +250,7 @@ ECode ReadOnlyCharArrayBuffer::PutString(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return CharArrayBuffer::PutStringEx(str, start, end);
+    return CharArrayBuffer::PutString(str, start, end);
 }
 
 ECode ReadOnlyCharArrayBuffer::Slice(
@@ -260,7 +260,7 @@ ECode ReadOnlyCharArrayBuffer::Slice(
     Int32 remaining = 0;
     GetRemaining(&remaining);
     *buffer = (ICharBuffer*)new ReadOnlyCharArrayBuffer(remaining, mBackingArray, mOffset + mPosition);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -281,7 +281,7 @@ ECode ReadOnlyCharArrayBuffer::AppendChars(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return CharArrayBuffer::AppendCharsEx(csq, start, end);
+    return CharArrayBuffer::AppendChars(csq, start, end);
 }
 
 ECode ReadOnlyCharArrayBuffer::Read(
@@ -417,7 +417,7 @@ ECode ReadOnlyCharArrayBuffer::PutChars(
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
 {
-    return CharArrayBuffer::PutCharsEx(src, off, len);
+    return CharArrayBuffer::PutChars(src, off, len);
 }
 
 } // namespace IO

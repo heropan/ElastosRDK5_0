@@ -6,7 +6,7 @@
 #include "InputStream.h"
 #include "OutputStream.h"
 #include "CStreams.h"
-#include "elastos/Math.h"
+#include "elastos/core/Math.h"
 
 using Elastos::IO::InputStream;
 using Elastos::IO::OutputStream;
@@ -127,10 +127,10 @@ public:
         return nRead;
     }
 
-    ECode ReadEx(ArrayOf<Byte> *target, Int32 offset, Int32 length)
+    ECode Read(ArrayOf<Byte> *target, Int32 offset, Int32 length)
     {
         IByteBuffer *buffer;
-        ByteBuffer::WrapArrayEx(target, offset, length, &buffer);
+        ByteBuffer::WrapArray(target, offset, length, &buffer);
         CheckBlocking(mChannel);
         Int32 nRead;
         mChannel->ReadByteBuffer(buffer, &nRead);
@@ -176,7 +176,7 @@ public:
         IChannelOutputStream(IWritableByteChannel *channel)
         {
             assert(channel != NULL);
-            INTERFACE_ADDREF(channel);
+            REFCOUNT_ADD(channel);
             mChannel = channel;
         }
 
@@ -198,10 +198,10 @@ public:
             return NOERROR;
         }
 
-        ECode WriteEx(ArrayOf<Byte>* source, Int32 offset, Int32 length)
+        ECode Write(ArrayOf<Byte>* source, Int32 offset, Int32 length)
         {
             AutoPtr<IByteBuffer> buffer;
-            ByteBuffer::WrapArrayEx(source, offset, length, (IByteBuffer **)&buffer);
+            ByteBuffer::WrapArray(source, offset, length, (IByteBuffer **)&buffer);
             CheckBlocking(mChannel);
             Int32 total = 0;
             Int32 nWrite = 0;

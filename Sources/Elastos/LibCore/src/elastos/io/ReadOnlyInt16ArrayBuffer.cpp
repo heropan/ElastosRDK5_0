@@ -138,7 +138,7 @@ ECode ReadOnlyInt16ArrayBuffer::Duplicate(
     VALIDATE_NOT_NULL(buffer);
     AutoPtr<ReadOnlyInt16ArrayBuffer> buf = Copy((Int16ArrayBuffer*)this, mMark);
     *buffer = (IInt16Buffer*)buf.Get();
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -152,7 +152,7 @@ ECode ReadOnlyInt16ArrayBuffer::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {
-    return Int16ArrayBuffer::GetInt16Ex(index, value);
+    return Int16ArrayBuffer::GetInt16(index, value);
 }
 
 ECode ReadOnlyInt16ArrayBuffer::GetInt16s(
@@ -166,7 +166,7 @@ ECode ReadOnlyInt16ArrayBuffer::GetInt16s(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int16Count)
 {
-    return Int16ArrayBuffer::GetInt16sEx(dst, dstOffset, int16Count);
+    return Int16ArrayBuffer::GetInt16s(dst, dstOffset, int16Count);
 }
 
 ECode ReadOnlyInt16ArrayBuffer::GetOrder(
@@ -220,7 +220,7 @@ ECode ReadOnlyInt16ArrayBuffer::Slice(
     GetRemaining(&remaining);
     *buffer = (IInt16Buffer*)new ReadOnlyInt16ArrayBuffer(remaining, mBackingArray,
             mOffset + mPosition);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 

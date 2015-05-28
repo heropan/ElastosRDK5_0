@@ -193,7 +193,7 @@ ECode PrintWriter::Format(
     FAIL_RETURN(CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper))
     AutoPtr<ILocale> locale;
     FAIL_RETURN(helper->GetDefault((ILocale**)&locale))
-    return FormatEx(locale, format, args);
+    return Format(locale, format, args);
 }
 
 ECode PrintWriter::Format(
@@ -228,7 +228,7 @@ ECode PrintWriter::Printf(
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
 {
-    return FormatEx(l, format, args);
+    return Format(l, format, args);
 }
 
 ECode PrintWriter::PrintChars(
@@ -400,7 +400,7 @@ void PrintWriter::SetError()
 ECode PrintWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer)
 {
-    return WriteCharsEx(buffer, 0, buffer.GetLength());
+    return WriteChars(buffer, 0, buffer.GetLength());
 }
 
 ECode PrintWriter::WriteChars(
@@ -431,7 +431,7 @@ ECode PrintWriter::DoWrite(
         String info(buf);
         Slogger::D("PrintWriter", " >> %s", info.string());
 #endif
-        if (FAILED(mOut->WriteCharsEx(buf, offset, count))) {
+        if (FAILED(mOut->WriteChars(buf, offset, count))) {
             SetError();
         }
     }
@@ -473,11 +473,11 @@ ECode PrintWriter::AppendCharSequence(
         AutoPtr<ICharSequence> _csq;
         CStringWrapper::New(String("NULL"), (ICharSequence**)&_csq);
         FAIL_RETURN(_csq->GetLength(&length))
-        return AppendCharSequenceEx(_csq, 0, length);
+        return AppendCharSequence(_csq, 0, length);
     }
 
     FAIL_RETURN(csq->GetLength(&length))
-    return AppendCharSequenceEx(csq, 0, length);
+    return AppendCharSequence(csq, 0, length);
 }
 
 ECode PrintWriter::AppendCharSequence(
@@ -490,7 +490,7 @@ ECode PrintWriter::AppendCharSequence(
         csq->ToString(&str);
     }
 
-    return WriteStringEx(str, start, end - start);
+    return WriteString(str, start, end - start);
 }
 
 } // namespace IO

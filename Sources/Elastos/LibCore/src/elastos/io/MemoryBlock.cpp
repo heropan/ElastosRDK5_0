@@ -30,7 +30,7 @@ ECode MemoryBlock::Mmap(
     if (size == 0) {
         // You can't mmap(2) a zero-length region, but Java allows it.
         *mb = new MemoryBlock(0, 0);
-        INTERFACE_ADDREF(*mb);
+        REFCOUNT_ADD(*mb);
         return NOERROR;
     }
     // Check just those errors mmap(2) won't detect.
@@ -72,7 +72,7 @@ ECode MemoryBlock::Mmap(
     os->Mmap(0LL, size, prot, flags, _fd, offset, &result);
     Int32 address = (Int32)result;
     *mb = new MemoryMappedBlock(address, size);
-    INTERFACE_ADDREF(*mb);
+    REFCOUNT_ADD(*mb);
     return NOERROR;
     // } catch (ErrnoException errnoException) {
     //     throw errnoException.rethrowAsIOException();

@@ -10,10 +10,10 @@ SelectionKeyImpl::SelectionKeyImpl(
     /* [in] */ IObject* attachment,
     /* [in] */ ISelectorImpl* selector)
 {
-    INTERFACE_ADDREF(channel);
+    REFCOUNT_ADD(channel);
     this->mChannel = channel;
     this->mInterestOps = ops;
-    INTERFACE_ADDREF(selector);
+    REFCOUNT_ADD(selector);
     this->mSelector = selector;
     AutoPtr<IObject> tempObj;
     Attach(attachment, (IObject**)&tempObj);
@@ -23,7 +23,7 @@ ECode SelectionKeyImpl::Channel(
     /* [in] */ ISelectableChannel** channel)
 {
     *channel = mChannel;
-    INTERFACE_ADDREF(*channel);
+    REFCOUNT_ADD(*channel);
     return NOERROR;
 }
 
@@ -95,7 +95,7 @@ ECode SelectionKeyImpl::Selector(
     /* [out] */ ISelector** selector)
 {
       *selector = mSelector;
-      INTERFACE_ADDREF(*selector);
+      REFCOUNT_ADD(*selector);
       return NOERROR;
 }
 

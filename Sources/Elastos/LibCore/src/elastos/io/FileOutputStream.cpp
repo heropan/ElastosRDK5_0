@@ -117,7 +117,7 @@ ECode FileOutputStream::GetChannel(
     //     channel = NioUtils.newFileChannel(this, fd, mode);
     // }
     *channel = mChannel;
-    INTERFACE_ADDREF(*channel);
+    REFCOUNT_ADD(*channel);
     return NOERROR;
 }
 
@@ -127,7 +127,7 @@ ECode FileOutputStream::GetFD(
     VALIDATE_NOT_NULL(fd)
 
     *fd = mFd;
-    INTERFACE_ADDREF(*fd);
+    REFCOUNT_ADD(*fd);
     return NOERROR;
 }
 
@@ -141,7 +141,7 @@ ECode FileOutputStream::Write(
 {
     ArrayOf_<Byte, 1> bytes;
     (bytes)[0] = (Byte)oneByte;
-    return WriteBytesEx(bytes, 0, 1);
+    return WriteBytes(bytes, 0, 1);
 }
 
 ECode FileOutputStream::WriteBytes(

@@ -180,7 +180,7 @@ ECode ReadWriteDirectByteBuffer::AsReadOnlyBuffer(
     VALIDATE_NOT_NULL(buffer);
     AutoPtr<ReadOnlyDirectByteBuffer> buf = ReadOnlyDirectByteBuffer::Copy((DirectByteBuffer*)this, mMark);
     *buffer = (IByteBuffer*)buf.Get();
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -209,7 +209,7 @@ ECode ReadWriteDirectByteBuffer::Duplicate(
 {
     VALIDATE_NOT_NULL(buffer);
     *buffer = (IByteBuffer*)Copy((DirectByteBuffer*)this, mMark);
-    INTERFACE_ADDREF(*buffer);
+    REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 
@@ -223,7 +223,7 @@ ECode ReadWriteDirectByteBuffer::GetByte(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
-    return DirectByteBuffer::GetByteEx(index, value);
+    return DirectByteBuffer::GetByte(index, value);
 }
 
 ECode ReadWriteDirectByteBuffer::GetBytes(
@@ -237,7 +237,7 @@ ECode ReadWriteDirectByteBuffer::GetBytes(
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
 {
-    return DirectByteBuffer::GetBytesEx(dst, off, len);
+    return DirectByteBuffer::GetBytes(dst, off, len);
 }
 
 ECode ReadWriteDirectByteBuffer::GetChar(
@@ -250,7 +250,7 @@ ECode ReadWriteDirectByteBuffer::GetChar(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
-    return DirectByteBuffer::GetCharEx(index, value);
+    return DirectByteBuffer::GetChar(index, value);
 }
 
 ECode ReadWriteDirectByteBuffer::GetDouble(
@@ -263,7 +263,7 @@ ECode ReadWriteDirectByteBuffer::GetDouble(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
-    return DirectByteBuffer::GetDoubleEx(index, value);
+    return DirectByteBuffer::GetDouble(index, value);
 }
 
 ECode ReadWriteDirectByteBuffer::GetFloat(
@@ -276,7 +276,7 @@ ECode ReadWriteDirectByteBuffer::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
-    return DirectByteBuffer::GetFloatEx(index, value);
+    return DirectByteBuffer::GetFloat(index, value);
 }
 
 ECode ReadWriteDirectByteBuffer::GetInt32(
@@ -289,7 +289,7 @@ ECode ReadWriteDirectByteBuffer::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
-    return DirectByteBuffer::GetInt32Ex(index, value);
+    return DirectByteBuffer::GetInt32(index, value);
 }
 
 ECode ReadWriteDirectByteBuffer::GetInt64(
@@ -302,7 +302,7 @@ ECode ReadWriteDirectByteBuffer::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
-    return DirectByteBuffer::GetInt64Ex(index, value);
+    return DirectByteBuffer::GetInt64(index, value);
 }
 
 ECode ReadWriteDirectByteBuffer::GetInt16(
@@ -315,7 +315,7 @@ ECode ReadWriteDirectByteBuffer::GetInt16(
     /* [in] */ Int32 index,
     /* [out] */ Int16* value)
 {
-    return DirectByteBuffer::GetInt16Ex(index, value);
+    return DirectByteBuffer::GetInt16(index, value);
 }
 
 ECode ReadWriteDirectByteBuffer::GetOrder(
@@ -628,7 +628,7 @@ ECode ReadWriteDirectByteBuffer::Slice(
     Int32 num = 0;
     GetRemaining(&num);
     *buffer = (IByteBuffer*)new ReadWriteDirectByteBuffer(mBlock, num, mOffset + mPosition);
-    INTERFACE_ADDREF(*buffer);
+    REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 

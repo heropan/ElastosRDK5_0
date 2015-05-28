@@ -403,7 +403,7 @@ ECode FileChannelImpl::Map(
 
     AutoPtr<IMappedByteBuffer> mbb = new MappedByteBufferAdapter(block, (Int32)size, offset, mode);
     *buffer = mbb;
-    INTERFACE_ADDREF(*buffer);
+    REFCOUNT_ADD(*buffer);
 
     return NOERROR;
 }
@@ -576,7 +576,7 @@ ECode FileChannelImpl::TransferFrom(
         if(NOERROR != ecRet)
             return ecRet;
 
-        ecRet = WriteByteBufferEx(buffer, position, (Int32*)number);
+        ecRet = WriteByteBuffer(buffer, position, (Int32*)number);
         NioUtils::FreeDirectBuffer((ByteBuffer*)buffer->Probe(EIID_ByteBuffer));
         return ecRet;
     }
@@ -586,7 +586,7 @@ ECode FileChannelImpl::TransferFrom(
     Int32 nRead;
     src->ReadByteBuffer(buffer, &nRead);
     buffer->Flip();
-    return WriteByteBufferEx(buffer, position, (Int32*)number);
+    return WriteByteBuffer(buffer, position, (Int32*)number);
 }
 
 ECode FileChannelImpl::TransferTo(
@@ -706,7 +706,7 @@ ECode FileChannelImpl::Truncate(
     }
 
     *channel = this;
-    INTERFACE_ADDREF(*channel)
+    REFCOUNT_ADD(*channel)
 
     return ecRet;
 }
@@ -763,10 +763,10 @@ ECode FileChannelImpl::WriteImpl(
         Int32 fd;
         mFd->GetDescriptor(&fd);
         if (-1 == position) {
-            ecRet = CLibcore::sOs->WriteEx(fd, buffer, &bytesWritten);
+            ecRet = CLibcore::sOs->Write(fd, buffer, &bytesWritten);
         }
         else {
-            ecRet = CLibcore::sOs->PwriteEx(fd, buffer, position, &bytesWritten);
+            ecRet = CLibcore::sOs->Pwrite(fd, buffer, position, &bytesWritten);
         }
 
         completed = TRUE;
@@ -830,7 +830,7 @@ ECode FileChannelImpl::GetFD(
     VALIDATE_NOT_NULL(descriptor)
 
     (*descriptor) = mFd;
-    INTERFACE_ADDREF(*descriptor)
+    REFCOUNT_ADD(*descriptor)
 
     return NOERROR;
 }

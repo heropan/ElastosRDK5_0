@@ -267,7 +267,7 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::GetChannel(
 
     assert(0 && "TODO");
     // *channel = mChannelImpl->Probe(EIID_IDatagramChannel);
-    INTERFACE_ADDREF(*channel)
+    REFCOUNT_ADD(*channel)
     return NOERROR;
 }
 
@@ -329,7 +329,7 @@ ECode DatagramChannelImpl::GetSocket(
     }
 
     (*socket) = mSocket;
-    INTERFACE_ADDREF(*socket);
+    REFCOUNT_ADD(*socket);
     return NOERROR;
 }
 
@@ -428,7 +428,7 @@ ECode DatagramChannelImpl::Receive(
             break;
         }
 
-        INTERFACE_ADDREF(*address);
+        REFCOUNT_ADD(*address);
     } while (0);
 
     End((*address) != NULL);
@@ -483,7 +483,7 @@ ECode DatagramChannelImpl::ReceiveImpl(
                 }
                 else {
                     // copy the data of received packet
-                    target->PutBytesEx(*bytearr, 0, received);
+                    target->PutBytes(*bytearr, 0, received);
                 }
             }
             receivePacket->GetSocketAddress((ISocketAddress**)&retAddr);
@@ -491,7 +491,7 @@ ECode DatagramChannelImpl::ReceiveImpl(
         }
     } while (loop);
     *addr = retAddr;
-    INTERFACE_ADDREF(*addr)
+    REFCOUNT_ADD(*addr)
     return NOERROR;
 }
 

@@ -500,7 +500,7 @@ ECode NativeConverter::CharsetForName(
     AutoPtr<CharsetICU> charsetICU = new CharsetICU();
     charsetICU->Init(canonicalName, String(icuCanonicalName), aliases);
     *charset = (ICharset*)charsetICU->Probe(Elastos::IO::Charset::EIID_ICharset);
-    INTERFACE_ADDREF(*charset);
+    REFCOUNT_ADD(*charset);
     return NOERROR;
 }
 

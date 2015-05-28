@@ -2,14 +2,13 @@
 #define __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTABLECHANNEL_H__
 
 #include <Elastos.CoreLibrary_server.h>
-#include "coredef.h"
 #include <elastos/core/Thread.h>
+#include <elastos/utility/etl/List.h>
 #include "SelectableChannel.h"
-#include <elastos/List.h>
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::Object;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace IO {

@@ -31,7 +31,7 @@ ECode CFilePermission::NewPermissionCollection(
 
     AutoPtr<IPermissionCollection> res = (IPermissionCollection*) new AllPermissionCollection();
     *object = res;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

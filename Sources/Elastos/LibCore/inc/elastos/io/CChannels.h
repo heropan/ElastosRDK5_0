@@ -2,7 +2,7 @@
 #ifndef __CCHANNELS_H__
 #define __CCHANNELS_H__
 
-#include "_CChannels.h"
+#include "_Elastos_IO_Channels_CChannels.h"
 
 using Elastos::IO::Charset::ICharsetEncoder;
 using Elastos::IO::Charset::ICharsetDecoder;

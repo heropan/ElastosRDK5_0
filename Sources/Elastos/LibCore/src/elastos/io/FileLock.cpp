@@ -24,7 +24,7 @@ ECode FileLock::Channel(
     /* [out] */ IFileChannel** channel )
 {
     *channel = mChannel;
-    INTERFACE_ADDREF(*channel);
+    REFCOUNT_ADD(*channel);
     return NOERROR;
 }
 

@@ -25,7 +25,7 @@ ECode CDoubleBufferHelper::WrapArray(
     /* [in] */ Int32 doubleCount,
     /* [out] */ IDoubleBuffer** doubleBuf)
 {
-    return DoubleBuffer::WrapArrayEx(array, start, doubleCount, doubleBuf);
+    return DoubleBuffer::WrapArray(array, start, doubleCount, doubleBuf);
 }
 
 } // namespace IO

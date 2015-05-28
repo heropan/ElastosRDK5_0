@@ -180,7 +180,7 @@ public:
         /* [in] */ Int32 operations,
         /* [out] */ ISelectionKey** key)
     {
-        return RegisterEx(selector, operations, NULL, key);
+        return Register(selector, operations, NULL, key);
     }
 
 };

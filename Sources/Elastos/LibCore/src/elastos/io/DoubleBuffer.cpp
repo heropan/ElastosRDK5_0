@@ -27,7 +27,7 @@ ECode DoubleBuffer::Allocate(
     }
 
     *buf = (IDoubleBuffer*)new ReadWriteDoubleArrayBuffer(capacity);
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -35,7 +35,7 @@ ECode DoubleBuffer::WrapArray(
     /* [in] */ ArrayOf<Double>* array,
     /* [out] */ IDoubleBuffer** buf)
 {
-    return WrapArrayEx(array, 0, array->GetLength(), buf);
+    return WrapArray(array, 0, array->GetLength(), buf);
 }
 
 ECode DoubleBuffer::WrapArray(
@@ -55,7 +55,7 @@ ECode DoubleBuffer::WrapArray(
     rwbuf->mPosition = start;
     rwbuf->mLimit = start + doubleCount;
     *buf = (IDoubleBuffer*)rwbuf.Get();
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -89,8 +89,8 @@ ECode DoubleBuffer::CompareTo(
     otherBuffer->GetPosition(&otherPos);
     Double thisDouble, otherDouble;
     while (compareRemaining > 0) {
-        GetDoubleEx(thisPos, &thisDouble);
-        otherBuffer->GetDoubleEx(otherPos, &otherDouble);
+        GetDouble(thisPos, &thisDouble);
+        otherBuffer->GetDouble(otherPos, &otherDouble);
         if ((thisDouble != otherDouble)
                 && ((thisDouble == thisDouble) || (otherDouble == otherDouble))) {
             *result = thisDouble < otherDouble ? -1 : 1;
@@ -133,8 +133,8 @@ ECode DoubleBuffer::Equals(
     Double thisValue = 0.0;
     Double otherValue = 0.0;
     while (equalSoFar && (mPosition < mLimit)) {
-        this->GetDoubleEx(myPosition++, &thisValue);
-        otherObj->GetDoubleEx(otherPosition++, &otherValue);
+        this->GetDouble(myPosition++, &thisValue);
+        otherObj->GetDouble(otherPosition++, &otherValue);
         equalSoFar = (thisValue == otherValue) ||
                      (thisValue != thisValue && otherValue != otherValue);
     }
@@ -146,7 +146,7 @@ ECode DoubleBuffer::Equals(
 ECode DoubleBuffer::GetDoubles(
     /* [out] */ ArrayOf<Double>* dst)
 {
-    return GetDoublesEx(dst, 0, dst->GetLength());
+    return GetDoubles(dst, 0, dst->GetLength());
 }
 
 ECode DoubleBuffer::GetDoubles(
@@ -184,7 +184,7 @@ ECode DoubleBuffer::HasArray(
 ECode DoubleBuffer::PutDoubles(
     /* [in] */ const ArrayOf<Double>& src)
 {
-    return PutDoublesEx(src, 0, src.GetLength());
+    return PutDoubles(src, 0, src.GetLength());
 }
 
 ECode DoubleBuffer::PutDoubles(

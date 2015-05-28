@@ -33,7 +33,7 @@ ECode CByteBufferHelper::WrapArray(
     /* [in] */ Int32 byteCount,
     /* [out] */ IByteBuffer** byteBuf)
 {
-    return ByteBuffer::WrapArrayEx(array, start, byteCount, byteBuf);
+    return ByteBuffer::WrapArray(array, start, byteCount, byteBuf);
 }
 
 } // namespace IO

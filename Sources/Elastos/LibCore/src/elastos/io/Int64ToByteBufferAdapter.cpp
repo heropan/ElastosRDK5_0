@@ -32,7 +32,7 @@ ECode Int64ToByteBufferAdapter::AsInt64Buffer(
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
     slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *int64Buffer = (IInt64Buffer*) new Int64ToByteBufferAdapter(slice);
-    INTERFACE_ADDREF(*int64Buffer);
+    REFCOUNT_ADD(*int64Buffer);
     return NOERROR;
 }
 
@@ -134,7 +134,7 @@ ECode Int64ToByteBufferAdapter::AsReadOnlyBuffer(
     buf->mMark = mMark;
     buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IInt64Buffer*)buf->Probe(EIID_IInt64Buffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -175,7 +175,7 @@ ECode Int64ToByteBufferAdapter::Duplicate(
     buf->mPosition = mPosition;
     buf->mMark = mMark;
     *buffer = (IInt64Buffer*)buf->Probe(EIID_IInt64Buffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -186,7 +186,7 @@ ECode Int64ToByteBufferAdapter::GetInt64(
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->GetInt64Ex(mPosition++ * sizeof(Int64), value);
+    return mByteBuffer->GetInt64(mPosition++ * sizeof(Int64), value);
 }
 
 ECode Int64ToByteBufferAdapter::GetInt64(
@@ -194,7 +194,7 @@ ECode Int64ToByteBufferAdapter::GetInt64(
     /* [out] */ Int64* value)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->GetInt64Ex(index * sizeof(Int64), value);
+    return mByteBuffer->GetInt64(index * sizeof(Int64), value);
 }
 
 ECode Int64ToByteBufferAdapter::GetInt64s(
@@ -211,10 +211,10 @@ ECode Int64ToByteBufferAdapter::GetInt64s(
     mByteBuffer->SetLimit(mLimit * sizeof(Int64));
     mByteBuffer->SetPosition(mPosition * sizeof(Int64));
     if (mByteBuffer->Probe(EIID_DirectByteBuffer) != NULL) {
-        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetInt64sEx(dst, dstOffset, int64Count))
+        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetInt64s(dst, dstOffset, int64Count))
     }
     else {
-        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetInt64sEx(dst, dstOffset, int64Count))
+        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetInt64s(dst, dstOffset, int64Count))
     }
     mPosition += int64Count;
     return NOERROR;
@@ -233,7 +233,7 @@ ECode Int64ToByteBufferAdapter::PutInt64(
         // throw new BufferOverflowException();
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->PutInt64Ex(mPosition++ * sizeof(Int64), c);
+    return mByteBuffer->PutInt64(mPosition++ * sizeof(Int64), c);
 }
 
 ECode Int64ToByteBufferAdapter::PutInt64(
@@ -241,7 +241,7 @@ ECode Int64ToByteBufferAdapter::PutInt64(
     /* [in] */ Int64 c)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->PutInt64Ex(index * sizeof(Int64), c);
+    return mByteBuffer->PutInt64(index * sizeof(Int64), c);
 }
 
 ECode Int64ToByteBufferAdapter::PutInt64s(
@@ -284,7 +284,7 @@ ECode Int64ToByteBufferAdapter::Slice(
     FAIL_RETURN(mByteBuffer->Slice((IByteBuffer**)&bb))
     bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IInt64Buffer*) new Int64ToByteBufferAdapter(bb);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     mByteBuffer->Clear();
     return NOERROR;
 }

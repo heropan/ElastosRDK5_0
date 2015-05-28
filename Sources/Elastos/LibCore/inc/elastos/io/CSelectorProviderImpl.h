@@ -2,31 +2,42 @@
 #ifndef __CSELECTORPROVIDERIMPL_H__
 #define __CSELECTORPROVIDERIMPL_H__
 
-#include "_CSelectorProviderImpl.h"
+#include "_Elastos_IO_CSelectorProviderImpl.h"
+#include "Object.h"
+
+using Elastos::Core::Object;
+using Elastos::IO::Channels::IDatagramChannel;
+using Elastos::IO::Channels::IPipe;
+using Elastos::IO::Channels::Spi::IAbstractSelector;
+using Elastos::IO::Channels::IServerSocketChannel;
+using Elastos::IO::Channels::ISocketChannel;
+using Elastos::IO::Channels::IChannel;
 
 namespace Elastos {
 namespace IO {
 
-CarClass(CSelectorProviderImpl)
+CarClass(CSelectorProviderImpl), public Object
 {
 public:
+    CAR_OBJECT_DECL()
+
     CARAPI OpenDatagramChannel(
-        /* [out] */ Elastos::IO::Channels::IDatagramChannel ** ppChannel);
+        /* [out] */ IDatagramChannel ** ppChannel);
 
     CARAPI OpenPipe(
-        /* [out] */ Elastos::IO::Channels::IPipe ** ppPipe);
+        /* [out] */ IPipe ** ppPipe);
 
     CARAPI OpenSelector(
-        /* [out] */ Elastos::IO::Channels::Spi::IAbstractSelector ** ppSelector);
+        /* [out] */ IAbstractSelector ** ppSelector);
 
     CARAPI OpenServerSocketChannel(
-        /* [out] */ Elastos::IO::Channels::IServerSocketChannel ** ppChannel);
+        /* [out] */ IServerSocketChannel ** ppChannel);
 
     CARAPI OpenSocketChannel(
-        /* [out] */ Elastos::IO::Channels::ISocketChannel ** ppSocketChannel);
+        /* [out] */ ISocketChannel ** ppSocketChannel);
 
     CARAPI InheritedChannel(
-        /* [out] */ Elastos::IO::Channels::IChannel ** ppChanel);
+        /* [out] */ IChannel ** ppChanel);
 
     CARAPI constructor();
 

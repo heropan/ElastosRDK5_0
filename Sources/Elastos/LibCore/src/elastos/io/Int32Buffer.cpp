@@ -27,7 +27,7 @@ ECode Int32Buffer::Allocate(
     }
 
     *buf = (IInt32Buffer*)new ReadWriteInt32ArrayBuffer(capacity);
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -35,7 +35,7 @@ ECode Int32Buffer::WrapArray(
     /* [in] */ ArrayOf<Int32>* array,
     /* [out] */ IInt32Buffer** buf)
 {
-    return WrapArrayEx(array, 0, array->GetLength(), buf);
+    return WrapArray(array, 0, array->GetLength(), buf);
 }
 
 ECode Int32Buffer::WrapArray(
@@ -56,7 +56,7 @@ ECode Int32Buffer::WrapArray(
     rwBuf->mPosition = start;
     rwBuf->mLimit = start + int32Count;
     *buf = (IInt32Buffer*)rwBuf.Get();
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -88,8 +88,8 @@ ECode Int32Buffer::CompareTo(
     otherBuffer->GetPosition(&otherPos);
     Int32 thisInt32, otherInt32;
     while (compareRemaining > 0) {
-        GetInt32Ex(thisPos, &thisInt32);
-        otherBuffer->GetInt32Ex(otherPos, &otherInt32);
+        GetInt32(thisPos, &thisInt32);
+        otherBuffer->GetInt32(otherPos, &otherInt32);
         // checks for Int32 and NaN inequality
         if (thisInt32 != otherInt32) {
             *result = thisInt32 < otherInt32 ? -1 : 1;
@@ -131,8 +131,8 @@ ECode Int32Buffer::Equals(
     Int32 thisValue = 0;
     Int32 otherValue = 0;
     while (equalSoFar && (myPosition < mLimit)) {
-        FAIL_RETURN(GetInt32Ex(myPosition++, &thisValue))
-        FAIL_RETURN(otherBuffer->GetInt32Ex(otherPosition++, &otherValue))
+        FAIL_RETURN(GetInt32(myPosition++, &thisValue))
+        FAIL_RETURN(otherBuffer->GetInt32(otherPosition++, &otherValue))
         equalSoFar = thisValue == otherValue;
     }
     *rst = equalSoFar;
@@ -142,7 +142,7 @@ ECode Int32Buffer::Equals(
 ECode Int32Buffer::GetInt32s(
     /* [out] */ ArrayOf<Int32>* dst)
 {
-    return GetInt32sEx(dst, 0, dst->GetLength());
+    return GetInt32s(dst, 0, dst->GetLength());
 }
 
 ECode Int32Buffer::GetInt32s(
@@ -180,7 +180,7 @@ ECode Int32Buffer::HasArray(
 ECode Int32Buffer::PutInt32s(
     /* [in] */ const ArrayOf<Int32>& src)
 {
-    return PutInt32sEx(src, 0, src.GetLength());
+    return PutInt32s(src, 0, src.GetLength());
 }
 
 ECode Int32Buffer::PutInt32s(

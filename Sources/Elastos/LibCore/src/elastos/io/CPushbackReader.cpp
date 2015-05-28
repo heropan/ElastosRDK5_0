@@ -51,7 +51,7 @@ ECode CPushbackReader::ReadChars(
     VALIDATE_NOT_NULL(number);
     VALIDATE_NOT_NULL(number);
 
-    return PushbackReader::ReadCharsEx(buffer, offset, count, number);
+    return PushbackReader::ReadChars(buffer, offset, count, number);
 }
 
 ECode CPushbackReader::IsReady(
@@ -102,7 +102,7 @@ ECode CPushbackReader::UnreadChars(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
-    return PushbackReader::UnreadCharsEx(buffer, offset, length);
+    return PushbackReader::UnreadChars(buffer, offset, length);
 }
 
 ECode CPushbackReader::constructor(
@@ -125,7 +125,7 @@ ECode CPushbackReader::GetLock(
 
     AutoPtr<IInterface> obj = PushbackReader::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

@@ -144,7 +144,7 @@ ECode CharSequenceAdapter::Duplicate(
     VALIDATE_NOT_NULL(buffer);
     AutoPtr<CharSequenceAdapter> buf = Copy(this);
     *buffer = (ICharBuffer*)buf.Get();
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -303,7 +303,7 @@ ECode CharSequenceAdapter::Slice(
     Int32 len = 0;
     seq->GetLength(&len);
     *buffer = (ICharBuffer*)new CharSequenceAdapter(len, seq);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -324,7 +324,7 @@ ECode CharSequenceAdapter::AppendChars(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return CharBuffer::AppendCharsEx(csq, start, end);
+    return CharBuffer::AppendChars(csq, start, end);
 }
 
 ECode CharSequenceAdapter::Read(
@@ -447,7 +447,7 @@ ECode CharSequenceAdapter::SubSequence(
     result->mPosition = mPosition + start;
     result->mLimit = mPosition + end;
     *csq = (ICharSequence*)result.Get();
-    INTERFACE_ADDREF(*csq)
+    REFCOUNT_ADD(*csq)
     return NOERROR;
 }
 

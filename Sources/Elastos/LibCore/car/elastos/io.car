@@ -128,6 +128,10 @@ module
 
     merge("io/charset/spi/ICharsetProvider.car");
 
+    interface Elastos.IO.Channels.Spi.ISelectorProvider;
+    interface Elastos.IO.Channels.IChannels;
+    interface Libcore.IO.IStreams;
+
     namespace Elastos {
     namespace IO {
 
@@ -141,7 +145,27 @@ module
         interface IFilterInputStream;
     }
 
+    class CSelectorProviderImpl {
+        constructor();
+
+        interface ISelectorProvider;
     }
-    }
+
+    // singleton class CStreams {
+    //     interface IStreams;
+    // }
+
+    // namespace Channels {
+
+    //     class CChannels {
+    //         constructor();
+
+    //         interface IChannels;
+    //     }
+
+    // } // namespace Channels
+
+    } // namespace IO
+    } // namespace Elastos
 
 }

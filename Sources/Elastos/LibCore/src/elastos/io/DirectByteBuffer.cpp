@@ -333,7 +333,7 @@ ECode DirectByteBuffer::ProtectedArray(
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
     *array = arr;
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 

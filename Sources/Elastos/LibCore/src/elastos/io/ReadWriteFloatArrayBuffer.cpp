@@ -129,7 +129,7 @@ ECode ReadWriteFloatArrayBuffer::AsReadOnlyBuffer(
     VALIDATE_NOT_NULL(buffer);
     AutoPtr<ReadOnlyFloatArrayBuffer> buf = ReadOnlyFloatArrayBuffer::Copy((FloatArrayBuffer*)this, mMark);
     *buffer = (IFloatBuffer*)buf.Get();
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -156,7 +156,7 @@ ECode ReadWriteFloatArrayBuffer::Duplicate(
 {
     VALIDATE_NOT_NULL(buffer);
     *buffer = (IFloatBuffer*)Copy((FloatArrayBuffer*)this, mMark);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -170,7 +170,7 @@ ECode ReadWriteFloatArrayBuffer::GetFloat(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
-    return FloatArrayBuffer::GetFloatEx(index, value);
+    return FloatArrayBuffer::GetFloat(index, value);
 }
 
 ECode ReadWriteFloatArrayBuffer::GetFloats(
@@ -184,7 +184,7 @@ ECode ReadWriteFloatArrayBuffer::GetFloats(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 floatCount)
 {
-    return FloatArrayBuffer::GetFloatsEx(dst, dstOffset, floatCount);
+    return FloatArrayBuffer::GetFloats(dst, dstOffset, floatCount);
 }
 
 ECode ReadWriteFloatArrayBuffer::GetOrder(
@@ -249,7 +249,7 @@ ECode ReadWriteFloatArrayBuffer::Slice(
     GetRemaining(&remaining);
     *buffer = (IFloatBuffer*)new ReadWriteFloatArrayBuffer(remaining, mBackingArray,
             mOffset + mPosition);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -300,7 +300,7 @@ CARAPI ReadWriteFloatArrayBuffer::ProtectedArray(
 {
     VALIDATE_NOT_NULL(array);
     *array = mBackingArray;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 

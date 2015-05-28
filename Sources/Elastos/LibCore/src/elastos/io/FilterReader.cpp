@@ -77,7 +77,7 @@ ECode FilterReader::ReadChars(
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
-    return mIn->ReadCharsEx(buffer, offset, count, number);
+    return mIn->ReadChars(buffer, offset, count, number);
 }
 
 ECode FilterReader::IsReady(

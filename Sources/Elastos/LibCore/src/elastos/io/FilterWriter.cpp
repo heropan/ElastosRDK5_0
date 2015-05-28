@@ -50,7 +50,7 @@ ECode FilterWriter::WriteChars(
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
-    return mOut->WriteCharsEx(buffer, offset, count);
+    return mOut->WriteChars(buffer, offset, count);
 }
 
 ECode FilterWriter::Write(
@@ -70,7 +70,7 @@ ECode FilterWriter::WriteString(
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
-    return mOut->WriteStringEx(str, offset, count);
+    return mOut->WriteString(str, offset, count);
 }
 
 } // namespace IO

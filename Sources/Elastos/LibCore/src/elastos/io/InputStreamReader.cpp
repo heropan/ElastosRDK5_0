@@ -131,7 +131,7 @@ ECode InputStreamReader::Read(
     }
     ArrayOf_<Char32, 1> buf;
     Int32 number;
-    FAIL_RETURN(ReadCharsEx(&buf, 0, 1, &number));
+    FAIL_RETURN(ReadChars(&buf, 0, 1, &number));
     *value = number != -1 ? buf[0] : -1;
 
     return NOERROR;
@@ -171,7 +171,7 @@ ECode InputStreamReader::ReadChars(
     }
 
     AutoPtr<ICharBuffer> out;
-    FAIL_RETURN(CharBuffer::WrapArrayEx(buffer, offset, count, (ICharBuffer**)&out));
+    FAIL_RETURN(CharBuffer::WrapArray(buffer, offset, count, (ICharBuffer**)&out));
     AutoPtr<ICoderResult> result, resultTmp;
     CCoderResult::GetUNDERFLOW((ICoderResult**)&result);
     resultTmp = result;
@@ -203,7 +203,7 @@ ECode InputStreamReader::ReadChars(
             Int32 off = arrayOffset + limit;
             AutoPtr<ArrayOf<Byte> > buf;
             mBytes->GetArray((ArrayOf<Byte>**)&buf);
-            mIn->ReadBytesEx(buf, off, to_read, &was_red);
+            mIn->ReadBytes(buf, off, to_read, &was_red);
             if (was_red == -1) {
                 mEndOfInput = TRUE;
                 break;
@@ -217,7 +217,7 @@ ECode InputStreamReader::ReadChars(
 
         // decode bytes
         result = NULL;
-        mDecoder->DecodeEx(mBytes, out, FALSE, (ICoderResult**)&result);
+        mDecoder->Decode(mBytes, out, FALSE, (ICoderResult**)&result);
         Boolean isUnderflow;
         if (result->IsUnderflow(&isUnderflow), isUnderflow) {
             Int32 capacity, limit, pos;
@@ -239,7 +239,7 @@ ECode InputStreamReader::ReadChars(
 
     if (_CObject_Compare(result, resultTmp) && mEndOfInput) {
         result = NULL;
-        mDecoder->DecodeEx(mBytes, out, TRUE, (ICoderResult**)&result);
+        mDecoder->Decode(mBytes, out, TRUE, (ICoderResult**)&result);
         AutoPtr<ICoderResult> resultFlush;
         mDecoder->Flush(out, (ICoderResult**)&resultFlush);
         mDecoder->Reset();

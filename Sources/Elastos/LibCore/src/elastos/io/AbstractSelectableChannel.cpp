@@ -1,6 +1,5 @@
 #include "AbstractSelectableChannel.h"
-#include <Elastos.CoreLibrary_server.h>
-#include <elastos/core/Thread.h>
+#include "AbstractSelector.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::Thread;
@@ -26,7 +25,7 @@ ECode AbstractSelectableChannel::Provider(
 {
     VALIDATE_NOT_NULL(provider);
     *provider = mProvider;
-    INTERFACE_ADDREF(*provider);
+    REFCOUNT_ADD(*provider);
     return NOERROR;
 }
 
@@ -57,7 +56,7 @@ ECode AbstractSelectableChannel::KeyFor(
             selKey->Selector((ISelector**)&sel);
             if (sel.Get() == selector) {
                 *key = selKey;
-                INTERFACE_ADDREF(*key);
+                REFCOUNT_ADD(*key);
                 return NOERROR;
             }
         }
@@ -106,8 +105,8 @@ ECode AbstractSelectableChannel::Register(
     AutoPtr<ISelectionKey> key;
     KeyFor(selector, (ISelectionKey**)&key);
     if (NULL == key) {
-        IAbstractSelector* absSel = IAbstractSelector::Probe(selector);
-        absSel->Register(THIS_PROBE(IAbstractSelectableChannel), interestSet, obj, (ISelectionKey**)&key);
+        AbstractSelector* absSel = (AbstractSelector*)selector;
+        absSel->Register(this, interestSet, obj, (ISelectionKey**)&key);
         mKeyList.PushBack(key);
     }
     else {
@@ -116,12 +115,12 @@ ECode AbstractSelectableChannel::Register(
         if (!isValid) {
             return E_CANCELLED_KEY_EXCEPTION;
         }
-        key->InterestOpsEx(interestSet, NULL);
+        key->InterestOps(interestSet, NULL);
         key->Attach(obj, NULL);
     }
 
     *result = key;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -158,7 +157,7 @@ ECode AbstractSelectableChannel::ConfigureBlocking(
 
     if (mIsBlocking == blockingMode) {
         *channel = THIS_PROBE(ISelectableChannel);
-        INTERFACE_ADDREF(*channel);
+        REFCOUNT_ADD(*channel);
         return NOERROR;
     }
 
@@ -170,7 +169,7 @@ ECode AbstractSelectableChannel::ConfigureBlocking(
     ImplConfigureBlocking(blockingMode);
 
     *channel = THIS_PROBE(ISelectableChannel);
-    INTERFACE_ADDREF(*channel);
+    REFCOUNT_ADD(*channel);
     return NOERROR;
 }
 

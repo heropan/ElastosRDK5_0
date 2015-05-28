@@ -79,7 +79,7 @@ ECode CInputStreamReader::ReadChars(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    return InputStreamReader::ReadCharsEx(buffer, offset, count, number);
+    return InputStreamReader::ReadChars(buffer, offset, count, number);
 }
 
 ECode CInputStreamReader::IsReady(
@@ -120,7 +120,7 @@ ECode CInputStreamReader::GetLock(
 
     AutoPtr<IInterface> obj = InputStreamReader::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

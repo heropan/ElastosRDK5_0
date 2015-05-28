@@ -51,7 +51,7 @@ ECode CStringReader::ReadChars(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    return StringReader::ReadCharsEx(buffer, offset, count, number);
+    return StringReader::ReadChars(buffer, offset, count, number);
 }
 
 ECode CStringReader::IsReady(
@@ -98,7 +98,7 @@ ECode CStringReader::GetLock(
 
     AutoPtr<IInterface> obj = StringReader::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

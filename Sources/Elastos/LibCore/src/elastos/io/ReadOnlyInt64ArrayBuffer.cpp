@@ -137,7 +137,7 @@ ECode ReadOnlyInt64ArrayBuffer::Duplicate(
     VALIDATE_NOT_NULL(buffer);
     AutoPtr<ReadOnlyInt64ArrayBuffer> buf = Copy((Int64ArrayBuffer*)this, mMark);
     *buffer = (IInt64Buffer*)buf.Get();
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -151,7 +151,7 @@ ECode ReadOnlyInt64ArrayBuffer::GetInt64(
     /* [in] */ Int32 index,
     /* [out] */ Int64* value)
 {
-    return Int64ArrayBuffer::GetInt64Ex(index, value);
+    return Int64ArrayBuffer::GetInt64(index, value);
 }
 
 ECode ReadOnlyInt64ArrayBuffer::GetInt64s(
@@ -165,7 +165,7 @@ ECode ReadOnlyInt64ArrayBuffer::GetInt64s(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int64Count)
 {
-    return Int64ArrayBuffer::GetInt64sEx(dst, dstOffset, int64Count);
+    return Int64ArrayBuffer::GetInt64s(dst, dstOffset, int64Count);
 }
 
 ECode ReadOnlyInt64ArrayBuffer::GetOrder(
@@ -219,7 +219,7 @@ ECode ReadOnlyInt64ArrayBuffer::Slice(
     GetRemaining(&remaining);
     *buffer = (IInt64Buffer*)new ReadOnlyInt64ArrayBuffer(remaining, mBackingArray,
             mOffset + mPosition);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 

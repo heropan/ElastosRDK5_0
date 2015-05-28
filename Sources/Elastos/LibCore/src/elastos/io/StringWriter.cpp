@@ -60,7 +60,7 @@ ECode StringWriter::GetBuffer(
     VALIDATE_NOT_NULL(buf)
 
     *buf = mBuf;
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
 
     return NOERROR;
 }
@@ -152,7 +152,7 @@ ECode StringWriter::AppendCharSequence(
         csq->ToString(&str);
     }
 
-    return WriteStringEx(str, start, end - start);
+    return WriteString(str, start, end - start);
 }
 
 } // namespace IO

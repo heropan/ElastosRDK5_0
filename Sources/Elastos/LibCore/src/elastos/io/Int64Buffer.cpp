@@ -27,7 +27,7 @@ ECode Int64Buffer::Allocate(
     }
 
     *buf = (IInt64Buffer*)new ReadWriteInt64ArrayBuffer(capacity);
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -35,7 +35,7 @@ ECode Int64Buffer::WrapArray(
     /* [in] */ ArrayOf<Int64>* array,
     /* [out] */ IInt64Buffer** buf)
 {
-    return WrapArrayEx(array, 0, array->GetLength(), buf);
+    return WrapArray(array, 0, array->GetLength(), buf);
 }
 
 ECode Int64Buffer::WrapArray(
@@ -56,7 +56,7 @@ ECode Int64Buffer::WrapArray(
     rwBuf->mPosition = start;
     rwBuf->mLimit = start + int64Count;
     *buf = (IInt64Buffer*)rwBuf.Get();
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -89,8 +89,8 @@ ECode Int64Buffer::CompareTo(
     Int64 thisInt64 = 0;
     Int64 otherInt64 = 0;
     while (compareRemaining > 0) {
-        GetInt64Ex(thisPos, &thisInt64);
-        otherBuffer->GetInt64Ex(otherPos, &otherInt64);
+        GetInt64(thisPos, &thisInt64);
+        otherBuffer->GetInt64(otherPos, &otherInt64);
         // checks for Int64 and NaN inequality
         if (thisInt64 != otherInt64) {
             *result = thisInt64 < otherInt64 ? -1 : 1;
@@ -132,8 +132,8 @@ ECode Int64Buffer::Equals(
     Int64 thisValue = 0;
     Int64 otherValue = 0;
     while (equalSoFar && (myPosition < mLimit)) {
-        FAIL_RETURN(GetInt64Ex(myPosition++, &thisValue))
-        FAIL_RETURN(otherBuffer->GetInt64Ex(otherPosition++, &otherValue))
+        FAIL_RETURN(GetInt64(myPosition++, &thisValue))
+        FAIL_RETURN(otherBuffer->GetInt64(otherPosition++, &otherValue))
         equalSoFar = thisValue == otherValue;
     }
     *rst = equalSoFar;
@@ -143,7 +143,7 @@ ECode Int64Buffer::Equals(
 ECode Int64Buffer::GetInt64s(
     /* [out] */ ArrayOf<Int64>* dst)
 {
-    return GetInt64sEx(dst, 0, dst->GetLength());
+    return GetInt64s(dst, 0, dst->GetLength());
 }
 
 ECode Int64Buffer::GetInt64s(
@@ -181,7 +181,7 @@ ECode Int64Buffer::HasArray(
 ECode Int64Buffer::PutInt64s(
     /* [in] */ const ArrayOf<Int64>& src)
 {
-    return PutInt64sEx(src, 0, src.GetLength());
+    return PutInt64s(src, 0, src.GetLength());
 }
 
 ECode Int64Buffer::PutInt64s(

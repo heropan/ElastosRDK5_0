@@ -89,7 +89,7 @@ ECode Charset::ForName(
         HashMap<String, AutoPtr<ICharset> >::Iterator it = CACHED_CHARSETS->Find(charsetName);
         if (it != CACHED_CHARSETS->End()) {
             *charset = it->mSecond;
-            INTERFACE_ADDREF(*charset)
+            REFCOUNT_ADD(*charset)
             return NOERROR;
         }
     }
@@ -281,7 +281,7 @@ ECode Charset::DefaultCharset(
 {
     VALIDATE_NOT_NULL(charset);
     *charset = GetDefaultCharset();
-    INTERFACE_ADDREF(*charset)
+    REFCOUNT_ADD(*charset)
     return NOERROR;
 }
 
@@ -358,7 +358,7 @@ ECode Charset::CacheCharset(
     }
 
     *charset = canonicalCharset;
-    INTERFACE_ADDREF(*charset)
+    REFCOUNT_ADD(*charset)
     return NOERROR;
 }
 
@@ -376,7 +376,7 @@ AutoPtr<ICharset> Charset::GetDefaultCharset()
 #endif
 
         String encoding;
-        system->GetPropertyEx(String("file.encoding"), String("UTF-8"), &encoding);
+        system->GetProperty(String("file.encoding"), String("UTF-8"), &encoding);
         AutoPtr<ICharset> result;
         ECode ec = ForName(encoding, (ICharset**)&result);
         if (result == NULL || ec == E_UNSUPPORTED_CHARSET_EXCEPTION) {

@@ -27,7 +27,7 @@ ECode FloatBuffer::Allocate(
     }
 
     *buf = (IFloatBuffer*)new ReadWriteFloatArrayBuffer(capacity);
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -35,7 +35,7 @@ ECode FloatBuffer::WrapArray(
     /* [in] */ ArrayOf<Float>* array,
     /* [out] */ IFloatBuffer** buf)
 {
-    return WrapArrayEx(array, 0, array->GetLength(), buf);
+    return WrapArray(array, 0, array->GetLength(), buf);
 }
 
 ECode FloatBuffer::WrapArray(
@@ -57,7 +57,7 @@ ECode FloatBuffer::WrapArray(
     rwBuf->mPosition = start;
     rwBuf->mLimit = start + floatCount;
     *buf = (IFloatBuffer*)rwBuf.Get();
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -90,8 +90,8 @@ ECode FloatBuffer::CompareTo(
     Float thisFloat = 0.0f;
     Float otherFloat = 0.0f;
     while (compareRemaining > 0) {
-        GetFloatEx(thisPos, &thisFloat);
-        otherBuffer->GetFloatEx(otherPos, &otherFloat);
+        GetFloat(thisPos, &thisFloat);
+        otherBuffer->GetFloat(otherPos, &otherFloat);
         // checks for Float and NaN inequality
         if ((thisFloat != otherFloat)
                 && ((thisFloat == thisFloat) || (otherFloat == otherFloat))) {
@@ -134,8 +134,8 @@ ECode FloatBuffer::Equals(
     Float thisValue = 0.0f;
     Float otherValue = 0.0f;
     while (equalSoFar && (myPosition < mLimit)) {
-        FAIL_RETURN(GetFloatEx(myPosition++, &thisValue))
-        FAIL_RETURN(otherBuffer->GetFloatEx(otherPosition++, &otherValue))
+        FAIL_RETURN(GetFloat(myPosition++, &thisValue))
+        FAIL_RETURN(otherBuffer->GetFloat(otherPosition++, &otherValue))
         equalSoFar = thisValue == otherValue || (thisValue != thisValue && otherValue != otherValue);
     }
     *rst = equalSoFar;
@@ -145,7 +145,7 @@ ECode FloatBuffer::Equals(
 ECode FloatBuffer::GetFloats(
     /* [out] */ ArrayOf<Float>* dst)
 {
-    return GetFloatsEx(dst, 0, dst->GetLength());
+    return GetFloats(dst, 0, dst->GetLength());
 }
 
 ECode FloatBuffer::GetFloats(
@@ -183,7 +183,7 @@ ECode FloatBuffer::HasArray(
 ECode FloatBuffer::PutFloats(
     /* [in] */ const ArrayOf<Float>& src)
 {
-    return PutFloatsEx(src, 0, src.GetLength());
+    return PutFloats(src, 0, src.GetLength());
 }
 
 ECode FloatBuffer::PutFloats(

@@ -96,7 +96,7 @@ ECode LineNumberReader::ReadChars(
     Object::Autolock lock(mLock);
 
     Int32 read;
-    FAIL_RETURN(BufferedReader::ReadCharsEx(buffer, offset, length, &read));
+    FAIL_RETURN(BufferedReader::ReadChars(buffer, offset, length, &read));
     if (read == -1) {
         *number = -1;
         return NOERROR;

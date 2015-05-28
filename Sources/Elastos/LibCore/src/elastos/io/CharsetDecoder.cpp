@@ -66,7 +66,7 @@ ECode CharsetDecoder::Charset(
 {
     VALIDATE_NOT_NULL(charset)
     *charset = mCs;
-    INTERFACE_ADDREF(*charset)
+    REFCOUNT_ADD(*charset)
     return NOERROR;
 }
 
@@ -86,7 +86,7 @@ ECode CharsetDecoder::Decode(
 
     while (TRUE) {
         result = NULL;
-        FAIL_RETURN(DecodeEx(byteBuffer, output, FALSE, (ICoderResult**)&result))
+        FAIL_RETURN(Decode(byteBuffer, output, FALSE, (ICoderResult**)&result))
         FAIL_RETURN(CheckCoderResult(result))
         Boolean ret = FALSE;
         if ((result->IsUnderflow(&ret), ret)) {
@@ -100,7 +100,7 @@ ECode CharsetDecoder::Decode(
     }
 
     result = NULL;
-    FAIL_RETURN(DecodeEx(byteBuffer, output, TRUE, (ICoderResult**)&result))
+    FAIL_RETURN(Decode(byteBuffer, output, TRUE, (ICoderResult**)&result))
     FAIL_RETURN(CheckCoderResult(result))
 
     while (TRUE) {
@@ -121,7 +121,7 @@ ECode CharsetDecoder::Decode(
     output->Flip();
     mStatus = FLUSH;
     *charBuffer = output;
-    INTERFACE_ADDREF(*charBuffer)
+    REFCOUNT_ADD(*charBuffer)
     return NOERROR;
 }
 
@@ -254,7 +254,7 @@ ECode CharsetDecoder::MalformedInputAction(
 {
     VALIDATE_NOT_NULL(codingErrorAction)
     *codingErrorAction = mMalformedInputAction;
-    INTERFACE_ADDREF(*codingErrorAction)
+    REFCOUNT_ADD(*codingErrorAction)
     return NOERROR;
 }
 
@@ -275,7 +275,7 @@ ECode CharsetDecoder::OnMalformedInput(
     mMalformedInputAction = newAction;
     ImplOnMalformedInput(newAction);
     *decoder = (ICharsetDecoder*)this;
-    INTERFACE_ADDREF(*decoder)
+    REFCOUNT_ADD(*decoder)
     return NOERROR;
 }
 
@@ -288,7 +288,7 @@ ECode CharsetDecoder::OnUnmappableCharacter(
     mUnmappableCharacterAction = newAction;
     ImplOnUnmappableCharacter(newAction);
     *decoder = (ICharsetDecoder*)this;
-    INTERFACE_ADDREF(*decoder)
+    REFCOUNT_ADD(*decoder)
     return NOERROR;
 }
 
@@ -330,7 +330,7 @@ ECode CharsetDecoder::UnmappableCharacterAction(
 {
     VALIDATE_NOT_NULL(codingErrorAction)
     *codingErrorAction = mUnmappableCharacterAction;
-    INTERFACE_ADDREF(*codingErrorAction)
+    REFCOUNT_ADD(*codingErrorAction)
     return NOERROR;
 }
 

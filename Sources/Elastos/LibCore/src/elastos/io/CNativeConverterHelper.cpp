@@ -76,7 +76,7 @@ ECode CNativeConverterHelper::GetSubstitutionBytes(
 
     AutoPtr<ArrayOf<Byte> > ans = NativeConverter::GetSubstitutionBytes(converterHandle);
     *outarray = ans;
-    INTERFACE_ADDREF(*outarray);
+    REFCOUNT_ADD(*outarray);
     return NOERROR;
 }
 
@@ -149,7 +149,7 @@ ECode CNativeConverterHelper::GetAvailableCharsetNames(
 
     AutoPtr<ArrayOf<String> > ans = NativeConverter::GetAvailableCharsetNames();
     *outarray = ans;
-    INTERFACE_ADDREF(*outarray);
+    REFCOUNT_ADD(*outarray);
     return NOERROR;
 }
 

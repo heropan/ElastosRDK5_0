@@ -25,7 +25,7 @@ ECode CFloatBufferHelper::WrapArray(
     /* [in] */ Int32 floatCount,
     /* [out] */ IFloatBuffer** floatBuffer)
 {
-    return FloatBuffer::WrapArrayEx(array, start, floatCount, floatBuffer);
+    return FloatBuffer::WrapArray(array, start, floatCount, floatBuffer);
 }
 
 } // namespace IO

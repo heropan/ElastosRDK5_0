@@ -59,7 +59,7 @@ ECode CLineNumberInputStream::ReadBytes(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    return LineNumberInputStream::ReadBytesEx(buffer, offset, length, number);
+    return LineNumberInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CLineNumberInputStream::Reset()
@@ -109,7 +109,7 @@ ECode CLineNumberInputStream::GetLock(
 
     AutoPtr<IInterface> obj = LineNumberInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

@@ -81,7 +81,7 @@ ECode CFileReader::ReadChars(
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
-    return FileReader::ReadCharsEx(buffer, offset, count, number);
+    return FileReader::ReadChars(buffer, offset, count, number);
 }
 
 ECode CFileReader::IsReady(
@@ -124,7 +124,7 @@ ECode CFileReader::GetLock(
 
     AutoPtr<IInterface> obj = FileReader::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

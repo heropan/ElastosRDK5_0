@@ -33,7 +33,7 @@ ECode FloatToByteBufferAdapter::AsFloatBuffer(
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
     slice->SetOrder((reinterpret_cast<ByteBuffer*>(byteBuffer->Probe(EIID_ByteBuffer)))->mOrder);
     *floatBuffer = (IFloatBuffer*) new FloatToByteBufferAdapter(slice);
-    INTERFACE_ADDREF(*floatBuffer);
+    REFCOUNT_ADD(*floatBuffer);
     return NOERROR;
 }
 
@@ -136,7 +136,7 @@ ECode FloatToByteBufferAdapter::AsReadOnlyBuffer(
     buf->mMark = mMark;
     buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IFloatBuffer*)buf->Probe(EIID_IFloatBuffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -177,7 +177,7 @@ ECode FloatToByteBufferAdapter::Duplicate(
     buf->mPosition = mPosition;
     buf->mMark = mMark;
     *buffer = (IFloatBuffer*)buf->Probe(EIID_IFloatBuffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -188,7 +188,7 @@ ECode FloatToByteBufferAdapter::GetFloat(
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->GetFloatEx(mPosition++ * sizeof(Float), value);
+    return mByteBuffer->GetFloat(mPosition++ * sizeof(Float), value);
 }
 
 ECode FloatToByteBufferAdapter::GetFloat(
@@ -196,7 +196,7 @@ ECode FloatToByteBufferAdapter::GetFloat(
     /* [out] */ Float* value)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->GetFloatEx(index * sizeof(Float), value);
+    return mByteBuffer->GetFloat(index * sizeof(Float), value);
 }
 
 ECode FloatToByteBufferAdapter::GetFloats(
@@ -213,10 +213,10 @@ ECode FloatToByteBufferAdapter::GetFloats(
     mByteBuffer->SetLimit(mLimit * sizeof(Float));
     mByteBuffer->SetPosition(mPosition * sizeof(Float));
     if (mByteBuffer->Probe(EIID_DirectByteBuffer) != NULL) {
-        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetFloatsEx(dst, dstOffset, floatCount))
+        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetFloats(dst, dstOffset, floatCount))
     }
     else {
-        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetFloatsEx(dst, dstOffset, floatCount))
+        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetFloats(dst, dstOffset, floatCount))
     }
     mPosition += floatCount;
     return NOERROR;
@@ -235,7 +235,7 @@ ECode FloatToByteBufferAdapter::PutFloat(
         // throw new BufferOverflowException();
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->PutFloatEx(mPosition++ * sizeof(Float), c);
+    return mByteBuffer->PutFloat(mPosition++ * sizeof(Float), c);
 }
 
 ECode FloatToByteBufferAdapter::PutFloat(
@@ -243,7 +243,7 @@ ECode FloatToByteBufferAdapter::PutFloat(
     /* [in] */ Float c)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->PutFloatEx(index * sizeof(Float), c);
+    return mByteBuffer->PutFloat(index * sizeof(Float), c);
 }
 
 ECode FloatToByteBufferAdapter::PutFloats(
@@ -287,7 +287,7 @@ ECode FloatToByteBufferAdapter::Slice(
     FAIL_RETURN(mByteBuffer->Slice((IByteBuffer**)&bb))
     bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IFloatBuffer*) new FloatToByteBufferAdapter(bb);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     mByteBuffer->Clear();
     return NOERROR;
 }

@@ -138,7 +138,7 @@ ECode ReadOnlyInt32ArrayBuffer::Duplicate(
     VALIDATE_NOT_NULL(buffer);
     AutoPtr<ReadOnlyInt32ArrayBuffer> buf = Copy((Int32ArrayBuffer*)this, mMark);
     *buffer = (IInt32Buffer*)buf.Get();
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -152,7 +152,7 @@ ECode ReadOnlyInt32ArrayBuffer::GetInt32(
     /* [in] */ Int32 index,
     /* [out] */ Int32* value)
 {
-    return Int32ArrayBuffer::GetInt32Ex(index, value);
+    return Int32ArrayBuffer::GetInt32(index, value);
 }
 
 ECode ReadOnlyInt32ArrayBuffer::GetInt32s(
@@ -166,7 +166,7 @@ ECode ReadOnlyInt32ArrayBuffer::GetInt32s(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int32Count)
 {
-    return Int32ArrayBuffer::GetInt32sEx(dst, dstOffset, int32Count);
+    return Int32ArrayBuffer::GetInt32s(dst, dstOffset, int32Count);
 }
 
 ECode ReadOnlyInt32ArrayBuffer::GetOrder(
@@ -220,7 +220,7 @@ ECode ReadOnlyInt32ArrayBuffer::Slice(
     GetRemaining(&remaining);
     *buffer = (IInt32Buffer*)new ReadOnlyInt32ArrayBuffer(remaining, mBackingArray,
             mOffset + mPosition);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 

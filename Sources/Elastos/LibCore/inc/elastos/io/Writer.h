@@ -5,7 +5,7 @@
 #include <elastos.h>
 #include <elrefbase.h>
 #include "coredef.h"
-#include <elastos/Object.h>
+#include <elastos/core/Object.h>
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #else
@@ -117,11 +117,7 @@ public:
      *             if {@code offset < 0} or {@code count < 0}, or if {@code
      *             offset + count} is greater than the length of {@code str}.
      */
-<<<<<<< HEAD
     virtual CARAPI Write(
-=======
-    virtual CARAPI WriteString(
->>>>>>> review libcore.elastos.nio car file
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -177,11 +173,7 @@ public:
      *             either {@code start} or {@code end} are greater or equal than
      *             the length of {@code csq}.
      */
-<<<<<<< HEAD
     virtual CARAPI Append(
-=======
-    virtual CARAPI AppendCharSequence(
->>>>>>> review libcore.elastos.nio car file
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);

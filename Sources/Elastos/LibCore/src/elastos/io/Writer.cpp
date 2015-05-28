@@ -51,13 +51,13 @@ ECode Writer::Write(
     // changed array notation to be consistent with the rest of harmony
     // END android-note
 
-    return WriteCharsEx(buffer, 0, buffer.GetLength());
+    return WriteChars(buffer, 0, buffer.GetLength());
 }
 
 ECode Writer::Write(
     /* [in] */ const String& str)
 {
-    return WriteStringEx(str, 0, str.GetLength());
+    return WriteString(str, 0, str.GetLength());
 }
 
 ECode Writer::Write(
@@ -73,7 +73,7 @@ ECode Writer::Write(
     Object::Autolock lock(mLock);
 
     AutoPtr<ArrayOf<Char32> > buf = str.GetChars(offset, offset + count);
-    return WriteCharsEx(*buf, 0, buf->GetLength());
+    return WriteChars(*buf, 0, buf->GetLength());
 }
 
 ECode Writer::Append(
@@ -93,11 +93,7 @@ ECode Writer::Append(
     return WriteString(tmp);
 }
 
-<<<<<<< HEAD
 ECode Writer::Append(
-=======
-ECode Writer::AppendCharSequence(
->>>>>>> review libcore.elastos.nio car file
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

@@ -59,7 +59,7 @@ ECode CStringBufferInputStream::ReadBytes(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    return StringBufferInputStream::ReadBytesEx(buffer, offset, length, number);
+    return StringBufferInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CStringBufferInputStream::Reset()
@@ -95,7 +95,7 @@ ECode CStringBufferInputStream::GetLock(
 
     AutoPtr<IInterface> obj = StringBufferInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

@@ -85,14 +85,17 @@ private:
             }
 
             int bytesRemain;
-            targetPtr->GetRemaining(&bytesRemain);
+            IBuffer* res = ((IBuffer*)targetPtr->Probe(EIID_IBuffer));
+            if (res) {
+                res->GetRemaining(&bytesRemain);
+            }
             AutoPtr<ArrayOf<Byte> > buff = ArrayOf<Byte>::Alloc(bytesRemain);
             int readCount = 0;
-            mInputStreamPtr->ReadBytes(buff, &readCount);
+            mInputStreamPtr->Read(buff, &readCount);
 
             if (readCount > 0) {
-                // targetPtr->PutBytesEx(0, readCount, *buff);
-                targetPtr->PutBytesEx(*buff, 0, readCount);
+                // targetPtr->PutBytes(0, readCount, *buff);
+                targetPtr->PutBytes(*buff, 0, readCount);
             }
             return readCount;
         }
@@ -101,7 +104,8 @@ private:
         // @Override
         virtual ECode ImplCloseChannel()
         {
-            mInputStreamPtr->Close();
+            AutoPtr<ICloseable> res = (ICloseable*) mInputStreamPtr->Probe(EIID_ICloseable);
+            if(res) res->Close();
             return NOERROR;
         }
 
@@ -126,7 +130,10 @@ private:
                 return -1;
             }
             int bytesRemain;
-            source->GetRemaining(&bytesRemain);
+            IBuffer* res = ((IBuffer*)source->Probe(EIID_IBuffer));
+            if (res) {
+                res->GetRemaining(&bytesRemain);
+            }
 
             if (bytesRemain == 0) {
                 return 0;
@@ -134,7 +141,7 @@ private:
 
             AutoPtr<ArrayOf<Byte> > buff = ArrayOf<Byte>::Alloc(bytesRemain);
             source->GetByte(buff->GetPayload());
-            mOutputStream->WriteBytesEx(*buff, 0, bytesRemain);
+            mOutputStream->Write(*buff, 0, bytesRemain);
 
             return bytesRemain;
         }
@@ -142,7 +149,8 @@ private:
         protected:
         ECode ImplCloseChannel()
         {
-            mOutputStream->Close();
+            AutoPtr<ICloseable> res = (ICloseable*) mOutputStream->Probe(EIID_ICloseable);
+            if(res) res->Close();
             return NOERROR;
         }
 
@@ -158,5 +166,3 @@ private:
 } // namespace Elastos
 
 #endif // __CHANNELS_H__
-
-

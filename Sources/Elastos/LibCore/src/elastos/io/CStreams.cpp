@@ -11,6 +11,10 @@ using Elastos::Core::StringBuilder;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(CStreams, Singleton, IStreams)
+
+CAR_SINGLETON_IMPL(CStreams)
+
 AutoPtr<ArrayOf<Byte> > CStreams::mSkipBuffer = NULL;
 
 ECode CStreams::ReadSingleByte(
@@ -22,7 +26,7 @@ ECode CStreams::ReadSingleByte(
 
     AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(1);
     Int32 result;
-    FAIL_RETURN(in->ReadBytesEx(buffer.Get(), 0, 1, &result));
+    FAIL_RETURN(in->ReadBytes(buffer.Get(), 0, 1, &result));
     *singleByte = (result != -1) ? (*buffer)[0] & 0xff : -1;
     return NOERROR;
 }
@@ -73,7 +77,7 @@ ECode CStreams::ReadFully(
 
     Int32 bytesRead;
     while (byteCount > 0) {
-        FAIL_RETURN(in->ReadBytesEx(dst, offset, byteCount, &bytesRead));
+        FAIL_RETURN(in->ReadBytes(dst, offset, byteCount, &bytesRead));
         if (bytesRead < 0) {
             return E_EOF_EXCEPTION;
         }
@@ -111,7 +115,7 @@ ECode CStreams::ReadFullyNoClose(
     Int32 count;
     FAIL_RETURN(in->ReadBytes(buffer, &count));
     while (count != -1) {
-        FAIL_RETURN(bytes->WriteBytesEx(*buffer.Get(), 0, count));
+        FAIL_RETURN(bytes->WriteBytes(*buffer.Get(), 0, count));
         FAIL_RETURN(in->ReadBytes(buffer, &count));
     }
     return bytes->ToByteArray(byteArray);
@@ -137,7 +141,7 @@ ECode CStreams::ReadFullyFromReader(
         goto finally;
     }
     while (count != -1) {
-        ec = writer->WriteCharsEx(*buffer.Get(), 0, count);
+        ec = writer->WriteChars(*buffer.Get(), 0, count);
         if (FAILED(ec)) {
             goto finally;
         }
@@ -195,8 +199,8 @@ ECode CStreams::SkipByReading(
     ECode ec = NOERROR;
     while (skipped < byteCount) {
         toRead = (Int32)Min((Int64)(byteCount - skipped), skipBufferLength);
-        // FAIL_RETURN(in->ReadBytesEx(mSkipBuffer, 0, toRead, &read));
-        in->ReadBytesEx(mSkipBuffer, 0, toRead, &read);
+        // FAIL_RETURN(in->ReadBytes(mSkipBuffer, 0, toRead, &read));
+        in->ReadBytes(mSkipBuffer, 0, toRead, &read);
         if (read == -1) {
             break;
         }
@@ -225,7 +229,7 @@ ECode CStreams::Copy(
     FAIL_RETURN(in->ReadBytes(&buffer, &c));
     while (c != -1) {
         total += c;
-        FAIL_RETURN(out->WriteBytesEx(buffer, 0, c));
+        FAIL_RETURN(out->WriteBytes(buffer, 0, c));
         FAIL_RETURN(in->ReadBytes(&buffer, &c));
     }
 

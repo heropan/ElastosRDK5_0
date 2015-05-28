@@ -50,7 +50,7 @@ ECode OutputStreamWriter::FlushBytes(
         mBytes->GetArray((ArrayOf<Byte>**)&buf);
         Int32 offset;
         mBytes->GetArrayOffset(&offset);
-        mOut->WriteBytesEx(*buf, offset, position);
+        mOut->WriteBytes(*buf, offset, position);
         mBytes->Clear();
     }
 
@@ -171,7 +171,7 @@ ECode OutputStreamWriter::WriteChars(
     }
 
     AutoPtr<ICharBuffer> chars;
-    CharBuffer::WrapArrayEx(const_cast<ArrayOf<Char32>*>(&buffer), offset, count, (ICharBuffer**)&chars);
+    CharBuffer::WrapArray(const_cast<ArrayOf<Char32>*>(&buffer), offset, count, (ICharBuffer**)&chars);
     return Convert(chars);
 }
 
@@ -198,7 +198,7 @@ ECode OutputStreamWriter::WriteString(
     AutoPtr<ICharSequence> charSeq;
     CStringWrapper::New(String(str), (ICharSequence**)&charSeq);
     AutoPtr<ICharBuffer> chars;
-    CharBuffer::WrapSequenceEx(charSeq, offset, count + offset, (ICharBuffer**)&chars);
+    CharBuffer::WrapSequence(charSeq, offset, count + offset, (ICharBuffer**)&chars);
     return Convert(chars);
 }
 

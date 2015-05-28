@@ -12,7 +12,7 @@ ECode CFileDescriptorHelper::GetInFile(
     VALIDATE_NOT_NULL(inFile);
 
     *inFile = CFileDescriptor::IN;
-    INTERFACE_ADDREF(*inFile);
+    REFCOUNT_ADD(*inFile);
     return NOERROR;
 }
 
@@ -22,7 +22,7 @@ ECode CFileDescriptorHelper::GetOutFile(
     VALIDATE_NOT_NULL(outFile);
 
     *outFile = CFileDescriptor::OUT;
-    INTERFACE_ADDREF(*outFile);
+    REFCOUNT_ADD(*outFile);
     return NOERROR;
 }
 
@@ -32,7 +32,7 @@ ECode CFileDescriptorHelper::GetErrFile(
     VALIDATE_NOT_NULL(errFile);
 
     *errFile = CFileDescriptor::ERR;
-    INTERFACE_ADDREF(*errFile);
+    REFCOUNT_ADD(*errFile);
     return NOERROR;
 }
 

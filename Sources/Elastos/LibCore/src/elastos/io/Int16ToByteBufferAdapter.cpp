@@ -33,7 +33,7 @@ ECode Int16ToByteBufferAdapter::AsInt16Buffer(
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
     slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *int16Buffer = (IInt16Buffer*) new Int16ToByteBufferAdapter(slice);
-    INTERFACE_ADDREF(*int16Buffer);
+    REFCOUNT_ADD(*int16Buffer);
     return NOERROR;
 }
 
@@ -135,7 +135,7 @@ ECode Int16ToByteBufferAdapter::AsReadOnlyBuffer(
     buf->mMark = mMark;
     buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IInt16Buffer*)buf->Probe(EIID_IInt16Buffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -176,7 +176,7 @@ ECode Int16ToByteBufferAdapter::Duplicate(
     buf->mPosition = mPosition;
     buf->mMark = mMark;
     *buffer = (IInt16Buffer*)buf->Probe(EIID_IInt16Buffer);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -187,7 +187,7 @@ ECode Int16ToByteBufferAdapter::GetInt16(
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->GetInt16Ex(mPosition++ * sizeof(Int16), value);
+    return mByteBuffer->GetInt16(mPosition++ * sizeof(Int16), value);
 }
 
 ECode Int16ToByteBufferAdapter::GetInt16(
@@ -195,7 +195,7 @@ ECode Int16ToByteBufferAdapter::GetInt16(
     /* [out] */ Int16* value)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->GetInt16Ex(index * sizeof(Int16), value);
+    return mByteBuffer->GetInt16(index * sizeof(Int16), value);
 }
 
 ECode Int16ToByteBufferAdapter::GetInt16s(
@@ -212,10 +212,10 @@ ECode Int16ToByteBufferAdapter::GetInt16s(
     mByteBuffer->SetLimit(mLimit * sizeof(Int16));
     mByteBuffer->SetPosition(mPosition * sizeof(Int16));
     if (mByteBuffer->Probe(EIID_DirectByteBuffer) != NULL) {
-        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetInt16sEx(dst, dstOffset, int16Count))
+        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetInt16s(dst, dstOffset, int16Count))
     }
     else {
-        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetInt16sEx(dst, dstOffset, int16Count))
+        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetInt16s(dst, dstOffset, int16Count))
     }
     mPosition += int16Count;
     return NOERROR;
@@ -234,7 +234,7 @@ ECode Int16ToByteBufferAdapter::PutInt16(
         // throw new BufferOverflowException();
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->PutInt16Ex(mPosition++ * sizeof(Int16), c);
+    return mByteBuffer->PutInt16(mPosition++ * sizeof(Int16), c);
 }
 
 ECode Int16ToByteBufferAdapter::PutInt16(
@@ -242,7 +242,7 @@ ECode Int16ToByteBufferAdapter::PutInt16(
     /* [in] */ Int16 c)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->PutInt16Ex(index * sizeof(Int16), c);
+    return mByteBuffer->PutInt16(index * sizeof(Int16), c);
 }
 
 ECode Int16ToByteBufferAdapter::PutInt16s(
@@ -285,7 +285,7 @@ ECode Int16ToByteBufferAdapter::Slice(
     FAIL_RETURN(mByteBuffer->Slice((IByteBuffer**)&bb))
     bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IInt16Buffer*) new Int16ToByteBufferAdapter(bb);
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     mByteBuffer->Clear();
     return NOERROR;
 }

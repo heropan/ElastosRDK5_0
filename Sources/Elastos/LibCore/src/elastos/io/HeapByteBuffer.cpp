@@ -219,7 +219,7 @@ ECode HeapByteBuffer::GetDouble(
     /* [out] */ Double* value)
 {
     Int64 val = 0;
-    FAIL_RETURN(GetInt64Ex(index, &val));
+    FAIL_RETURN(GetInt64(index, &val));
     *value = Elastos::Core::Math::Int64BitsToDouble(val);
     return NOERROR;
 }
@@ -238,7 +238,7 @@ ECode HeapByteBuffer::GetFloat(
     /* [out] */ Float* value)
 {
     Int32 val = 0;
-    FAIL_RETURN(GetInt32Ex(index, &val));
+    FAIL_RETURN(GetInt32(index, &val));
     *value = Elastos::Core::Math::Int32BitsToFloat(val);
     return NOERROR;
 }

@@ -4,7 +4,7 @@
 
 #include <elastos.h>
 #include "Elastos.CoreLibrary_server.h"
-#include <elastos/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 using Elastos::Core::LockObject;

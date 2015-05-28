@@ -1,15 +1,20 @@
 #ifndef __IO_STREAMS_H__
 #define __IO_STREAMS_H__
 
-#include <elastos.h>
-#include "_CStreams.h"
+#include "_Elastos_IO_CStreams.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace IO {
 
 CarClass(CStreams)
+    , public Singleton
+    , public IStreams
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     /**
      * Implements InputStream.read(int) in terms of InputStream.read(byte[], int, int).

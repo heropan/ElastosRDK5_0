@@ -120,7 +120,7 @@ ECode SequenceInputStream::ReadBytes(
     }
     // END android-changed
     while (mIn != NULL) {
-        mIn->ReadBytesEx(buffer, offset, count, number);
+        mIn->ReadBytes(buffer, offset, count, number);
         if ((*number) >= 0) {
             return NOERROR;
         }

@@ -70,7 +70,7 @@ public:
      *            The capacity of the new buffer
      * @return A new array based char buffer with the specified capacity.
      */
-    static CARAPI NewCharBufferEx2(
+    static CARAPI NewCharBuffer(
         /* [in] */ Int32 capacity,
         /* [out] */ ICharBuffer** buf);
 

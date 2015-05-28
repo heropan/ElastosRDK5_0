@@ -20,7 +20,7 @@ ECode CIoUtils::CloseQuietly(
 ECode CIoUtils::CloseQuietly(
     /* [in] */ IFileDescriptor* fd)
 {
-    return IoUtils::CloseQuietlyEx(fd);
+    return IoUtils::CloseQuietly(fd);
 }
 
 ECode CIoUtils::SetBlocking(

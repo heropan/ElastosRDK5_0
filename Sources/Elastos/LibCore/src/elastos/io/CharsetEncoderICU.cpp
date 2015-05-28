@@ -100,7 +100,7 @@ ECode CharsetEncoderICU::NewInstance(
         result->Init(cs, averageBytesPerChar, maxBytesPerChar, (*replacement), address);
 
         *encoderICU = result;
-        INTERFACE_ADDREF(*encoderICU);
+        REFCOUNT_ADD(*encoderICU);
 
         address = 0; // CharsetEncoderICU has taken ownership; its finalizer will do the free.
         // } finally {
@@ -253,12 +253,12 @@ ECode CharsetEncoderICU::MakeReplacement(
     }
     if (replacement != NULL) {
         *resultArray = replacement->Clone();
-        INTERFACE_ADDREF(*resultArray)
+        REFCOUNT_ADD(*resultArray)
         return NOERROR;
     }
     // ...but fall back to asking ICU.
     *resultArray = NativeConverter::GetSubstitutionBytes(address);
-    INTERFACE_ADDREF(*resultArray);
+    REFCOUNT_ADD(*resultArray);
     return NOERROR;
 }
 
@@ -328,7 +328,7 @@ ECode CharsetEncoderICU::GetArray(
         // Copy the input buffer into the allocated array.
         Int32 pos = 0;
         inBuffer->GetPosition(&pos);
-        inBuffer->GetCharsEx(mAllocatedInput, 0, mInEnd);
+        inBuffer->GetChars(mAllocatedInput, 0, mInEnd);
         inBuffer->SetPosition(pos);
         // The array's start position is 0.
         mInput = mAllocatedInput;
@@ -350,7 +350,7 @@ ECode CharsetEncoderICU::SetPosition(
         outBuffer->SetPosition(pos + (*mData)[OUTPUT_OFFSET] - offset);
     }
     else {
-        outBuffer->PutBytesEx(*mOutput, 0, (*mData)[OUTPUT_OFFSET]);
+        outBuffer->PutBytes(*mOutput, 0, (*mData)[OUTPUT_OFFSET]);
     }
     // release reference to output array, which may not be ours
     mOutput = NULL;

@@ -29,7 +29,7 @@ ECode CCodingErrorAction::GetIGNORE(
 {
     VALIDATE_NOT_NULL(ignore);
     *ignore = IGNORE;
-    INTERFACE_ADDREF(*ignore);
+    REFCOUNT_ADD(*ignore);
     return NOERROR;
 }
 
@@ -38,7 +38,7 @@ ECode CCodingErrorAction::GetREPLACE(
 {
     VALIDATE_NOT_NULL(replace);
     *replace = REPLACE;
-    INTERFACE_ADDREF(*replace);
+    REFCOUNT_ADD(*replace);
     return NOERROR;
 }
 
@@ -47,7 +47,7 @@ ECode CCodingErrorAction::GetREPORT(
 {
     VALIDATE_NOT_NULL(report);
     *report = REPORT;
-    INTERFACE_ADDREF(*report);
+    REFCOUNT_ADD(*report);
     return NOERROR;
 }
 

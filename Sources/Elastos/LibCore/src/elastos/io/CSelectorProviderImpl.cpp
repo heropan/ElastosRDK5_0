@@ -4,6 +4,8 @@
 namespace Elastos {
 namespace IO {
 
+CAR_OBJECT_IMPL(CSelectorProviderImpl)
+
 ECode CSelectorProviderImpl::OpenDatagramChannel(
     /* [out] */ Elastos::IO::Channels::IDatagramChannel** ppChannel)
 {

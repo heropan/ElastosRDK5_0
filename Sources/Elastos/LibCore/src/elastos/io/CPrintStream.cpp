@@ -178,7 +178,7 @@ ECode CPrintStream::Format(
     /* [out] */ IPrintStream** pw)
 {
     AutoPtr<ILocale> ouloc = CLocale::GetDefault();
-    return FormatEx(ouloc, format, args, pw);
+    return Format(ouloc, format, args, pw);
 }
 
 ECode CPrintStream::Format(
@@ -197,7 +197,7 @@ ECode CPrintStream::Format(
     FAIL_RETURN(CFormatter::New(THIS_PROBE(IAppendable), l, (IFormatter**)&res));
     res->Format(format, args);
     *pw = THIS_PROBE(IPrintStream);
-    INTERFACE_ADDREF(*pw)
+    REFCOUNT_ADD(*pw)
     return NOERROR;
 }
 
@@ -215,7 +215,7 @@ ECode CPrintStream::Printf(
     /* [in] */ ArrayOf<IInterface*>* args,
     /* [out] */ IPrintStream** ps)
 {
-    return FormatEx(l, format, args, ps);
+    return Format(l, format, args, ps);
 }
 
 ECode CPrintStream::Newline()
@@ -433,7 +433,7 @@ ECode CPrintStream::WriteBytes(
         return NOERROR;
     }
 
-    if(NOERROR != mOut->WriteBytesEx(buffer, offset, count)) {
+    if(NOERROR != mOut->WriteBytes(buffer, offset, count)) {
         SetError();
     }
     else if (mAutoFlush) {
@@ -480,7 +480,7 @@ ECode CPrintStream::GetLock(
 
     AutoPtr<IInterface> obj = FilterOutputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

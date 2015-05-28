@@ -25,7 +25,7 @@ ECode CInt16BufferHelper::WrapArray(
     /* [in] */ Int32 int16Count,
     /* [out] */ IInt16Buffer** int16Buffer)
 {
-    return Int16Buffer::WrapArrayEx(array, start, int16Count, int16Buffer);
+    return Int16Buffer::WrapArray(array, start, int16Count, int16Buffer);
 }
 
 } // namespace IO

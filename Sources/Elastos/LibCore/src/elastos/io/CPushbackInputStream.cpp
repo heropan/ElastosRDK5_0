@@ -59,7 +59,7 @@ ECode CPushbackInputStream::ReadBytes(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    return PushbackInputStream::ReadBytesEx(buffer, offset, length, number);
+    return PushbackInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CPushbackInputStream::Reset()
@@ -93,7 +93,7 @@ ECode CPushbackInputStream::UnreadBytes(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
-    return PushbackInputStream::UnreadBytesEx(buffer, offset, length);
+    return PushbackInputStream::UnreadBytes(buffer, offset, length);
 }
 
 ECode CPushbackInputStream::constructor(
@@ -122,7 +122,7 @@ ECode CPushbackInputStream::GetLock(
 
     AutoPtr<IInterface> obj = PushbackInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

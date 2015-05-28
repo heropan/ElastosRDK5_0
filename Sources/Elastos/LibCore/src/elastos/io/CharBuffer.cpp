@@ -27,7 +27,7 @@ ECode CharBuffer::Allocate(
     }
 
     *buf = (ICharBuffer*)new ReadWriteCharArrayBuffer(capacity);
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -35,7 +35,7 @@ ECode CharBuffer::WrapArray(
     /* [in] */ ArrayOf<Char32>* array,
     /* [out] */ ICharBuffer** buf)
 {
-    return WrapArrayEx(array, 0, array->GetLength(), buf);
+    return WrapArray(array, 0, array->GetLength(), buf);
 }
 
 ECode CharBuffer::WrapArray(
@@ -56,7 +56,7 @@ ECode CharBuffer::WrapArray(
     buffer->mPosition = start;
     buffer->mLimit = start + charCount;
     *buf = (ICharBuffer*)buffer.Get();
-    INTERFACE_ADDREF(*buf);
+    REFCOUNT_ADD(*buf);
     return NOERROR;
 }
 
@@ -68,7 +68,7 @@ ECode CharBuffer::WrapSequence(
     Int32 len = 0;
     chseq->GetLength(&len);
     *buf = (ICharBuffer*)new CharSequenceAdapter(len, chseq);
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -89,7 +89,7 @@ ECode CharBuffer::WrapSequence(
     result->mPosition = start;
     result->mLimit = end;
     *buf = (ICharBuffer*)result.Get();
-    INTERFACE_ADDREF(*buf)
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -123,7 +123,7 @@ ECode CharBuffer::GetCharAt(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    return GetCharEx(mPosition + index, value);
+    return GetChar(mPosition + index, value);
 }
 
 ECode CharBuffer::CompareTo(
@@ -147,8 +147,8 @@ ECode CharBuffer::CompareTo(
     Char32 thisByte;
     Char32 otherByte;
     while (compareRemaining > 0) {
-        GetCharEx(thisPos, &thisByte);
-        otherBuffer->GetCharEx(otherPos, &otherByte);
+        GetChar(thisPos, &thisByte);
+        otherBuffer->GetChar(otherPos, &otherByte);
         if (thisByte != otherByte) {
             *result = thisByte < otherByte ? -1 : 1;
             return NOERROR;
@@ -166,7 +166,7 @@ ECode CharBuffer::CompareTo(
 ECode CharBuffer::GetChars(
     /* [out] */ ArrayOf<Char32>* dst)
 {
-    return GetCharsEx(dst, 0, dst->GetLength());
+    return GetChars(dst, 0, dst->GetLength());
 }
 
 ECode CharBuffer::GetChars(
@@ -208,7 +208,7 @@ ECode CharBuffer::GetLength(
 ECode CharBuffer::PutChars(
     /* [in] */ const ArrayOf<Char32>& src)
 {
-    return PutCharsEx(src, 0, src.GetLength());
+    return PutChars(src, 0, src.GetLength());
 }
 
 ECode CharBuffer::PutChars(
@@ -261,7 +261,7 @@ ECode CharBuffer::PutCharBuffer(
 ECode CharBuffer::PutString(
     /* [in] */ const String& str)
 {
-    return PutStringEx(str, 0, str.GetLength());
+    return PutString(str, 0, str.GetLength());
 }
 
 ECode CharBuffer::PutString(
@@ -296,7 +296,7 @@ ECode CharBuffer::ToString(
     StringBuilder result(mLimit - mPosition);
     Char32 c;
     for (Int32 i = mPosition; i < mLimit; i++) {
-        FAIL_RETURN(GetCharEx(i, &c))
+        FAIL_RETURN(GetChar(i, &c))
         result += c;
     }
     return result.ToString(str);
@@ -402,8 +402,8 @@ ECode CharBuffer::Equals(
     Char32 thisChar;
     Char32 otherChar;
     while (equalSoFar && (myPosition < mLimit)) {
-        FAIL_RETURN(GetCharEx(myPosition++, &thisChar))
-        FAIL_RETURN(otherBuffer->GetCharEx(otherPosition++, &otherChar))
+        FAIL_RETURN(GetChar(myPosition++, &thisChar))
+        FAIL_RETURN(otherBuffer->GetChar(otherPosition++, &otherChar))
         equalSoFar = thisChar == otherChar;
     }
     *rst = equalSoFar;

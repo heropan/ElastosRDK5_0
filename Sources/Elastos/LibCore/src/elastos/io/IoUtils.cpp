@@ -153,7 +153,7 @@ ECode IoUtils::ReadFileAsBytes(
 
         if (byteCount == -1) {
             *usbs = bytes;
-            INTERFACE_ADDREF(*usbs);
+            REFCOUNT_ADD(*usbs);
             return NOERROR;
         }
 
