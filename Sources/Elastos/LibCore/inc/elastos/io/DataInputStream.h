@@ -40,26 +40,7 @@ public:
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
-    /**
-     * Reads at most {@code length} bytes from this stream and stores them in
-     * the byte array {@code buffer} starting at {@code offset}. Returns the
-     * number of bytes that have been read or -1 if no bytes have been read and
-     * the end of the stream has been reached.
-     *
-     * @param buffer
-     *            the byte array in which to store the bytes read.
-     * @param offset
-     *            the initial position in {@code buffer} to store the bytes
-     *            read from this stream.
-     * @param length
-     *            the maximum number of bytes to store in {@code buffer}.
-     * @return the number of bytes that have been read or -1 if the end of the
-     *         stream has been reached.
-     * @throws IOException
-     *             if a problem occurs while reading from this stream.
-     * @see DataOutput#write(byte[])
-     * @see DataOutput#write(byte[], int, int)
-     */
+    // @Override
     CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
@@ -199,17 +180,10 @@ public:
         /* [out] */ Int32* value);
 
     /**
-     * Returns a string that contains the next line of text available from the
-     * source stream. A line is represented by zero or more characters followed
-     * by {@code '\n'}, {@code '\r'}, {@code "\r\n"} or the end of the stream.
-     * The string does not include the newline sequence.
-     *
-     * @return the contents of the line or {@code null} if no characters were
-     *         read before the end of the source stream has been reached.
-     * @throws IOException
-     *             if a problem occurs while reading from this stream.
-     * @deprecated Use {@link BufferedReader}
+     * @deprecated This method cannot be trusted to convert bytes to characters correctly.
+     * Wrap this stream with a {@link BufferedReader} instead.
      */
+    // @Deprecated
     CARAPI ReadLine(
          /* [out] */ String* value);
 

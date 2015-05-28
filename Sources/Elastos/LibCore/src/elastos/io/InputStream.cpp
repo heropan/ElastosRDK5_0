@@ -1,7 +1,6 @@
 
-#include "coredef.h"
 #include "InputStream.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace IO {

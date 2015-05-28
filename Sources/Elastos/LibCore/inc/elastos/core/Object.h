@@ -13,8 +13,8 @@
 using Elastos::Core::ISynchronize;
 using Elastos::Core::NativeObject;
 
-#ifdef synchronized
-#define synchronized(obj)  for(Elastos::Core::Object::AutoLock obj##_lock(obj); obj##_lock; obj##_lock.SetUnlock())
+#ifndef synchronized
+#define synchronized(obj)  for(Elastos::Core::Object::Autolock obj##_lock(obj); obj##_lock; obj##_lock.SetUnlock())
 #endif
 
 namespace Elastos {

@@ -2,12 +2,7 @@
 #ifndef __INPUTSTREAM_H__
 #define __INPUTSTREAM_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include <Elastos.CoreLibrary_server.h>
-#else
-#include <Elastos.CoreLibrary.h>
-#endif
-#include <elastos/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 
@@ -101,6 +96,18 @@ public:
         /* [out] */ Boolean* supported);
 
     /**
+     * Reads a single byte from this stream and returns it as an integer in the
+     * range from 0 to 255. Returns -1 if the end of the stream has been
+     * reached. Blocks until one byte has been read, the end of the source
+     * stream is detected or an exception is thrown.
+     *
+     * @throws IOException
+     *             if the stream is closed or another IOException occurs.
+     */
+    virtual CARAPI Read(
+        /* [out] */ Int32* value) = 0;
+
+    /**
      * Reads bytes from this stream and stores them in the byte array {@code b}.
      *
      * @param b
@@ -175,6 +182,7 @@ public:
     CARAPI Skip(
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* number);
+
 };
 
 } // namespace IO

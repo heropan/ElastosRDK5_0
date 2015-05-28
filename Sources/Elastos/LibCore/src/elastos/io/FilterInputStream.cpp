@@ -4,7 +4,7 @@
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL(FilterInputStream, IFilterInputStream)
+CAR_INTERFACE_IMPL(FilterInputStream, InputStream, IFilterInputStream)
 
 FilterInputStream::FilterInputStream()
 {
@@ -30,13 +30,13 @@ ECode FilterInputStream::Available(
 
 ECode FilterInputStream::Close()
 {
-    return mIn->Close();
+    return ICloseable::Probe(mIn)->Close();
 }
 
 ECode FilterInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
     return mIn->Mark(readLimit);
 }
 
@@ -67,7 +67,7 @@ ECode FilterInputStream::Read(
 
 ECode FilterInputStream::Reset()
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
     return mIn->Reset();
 }
 
@@ -75,7 +75,7 @@ ECode FilterInputStream::Skip(
     /* [in] */ Int64 byteCount,
     /* [out] */ Int64* number)
 {
-    VALIDATE_NOT_NULL(value);
+    VALIDATE_NOT_NULL(number);
     return mIn->Skip(byteCount, number);
 }
 

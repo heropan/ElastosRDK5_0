@@ -11,7 +11,9 @@ class BufferedInputStream
     : public FilterInputStream
     , public IBufferedInputStream
 {
-protected:
+public:
+    CAR_INTERFACE_DECL()
+
     BufferedInputStream();
 
     ~BufferedInputStream();

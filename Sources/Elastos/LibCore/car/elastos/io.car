@@ -127,4 +127,21 @@ module
     merge("io/INativeConverterHelper.car");
 
     merge("io/charset/spi/ICharsetProvider.car");
+
+    namespace Elastos {
+    namespace IO {
+
+    class CBufferedInputStream {
+        constructor(
+            [in] IInputStream* is,
+            [in] Int32 size);
+
+        interface ICloseable;
+        interface IInputStream;
+        interface IFilterInputStream;
+    }
+
+    }
+    }
+
 }

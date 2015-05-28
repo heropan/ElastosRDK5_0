@@ -5,6 +5,7 @@
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(BufferedInputStream, FilterInputStream, IBufferedInputStream)
 
 BufferedInputStream::BufferedInputStream()
     : mBuf(NULL)
@@ -34,7 +35,7 @@ ECode BufferedInputStream::Available(
     /* [out] */ Int32* number)
 {
     assert(number != NULL);
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
 
     AutoPtr<IInputStream> localIn = mIn; // 'in' could be invalidated by close()
     if (mBuf == NULL || localIn == NULL) {
@@ -60,7 +61,7 @@ ECode BufferedInputStream::Close()
     AutoPtr<IInputStream> localIn = mIn;
     mIn = NULL;
     if (localIn != NULL) {
-        return localIn->Close();
+        return ICloseable::Probe(localIn)->Close();
     }
     return NOERROR;
 }
@@ -117,7 +118,7 @@ ECode BufferedInputStream::Fillbuf(
 ECode BufferedInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
 
     mMarklimit = readLimit;
     mMarkpos = mPos;
@@ -136,7 +137,7 @@ ECode BufferedInputStream::Read(
     /* [out] */ Int32* value)
 {
     assert(value != NULL);
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
 
     // Use local refs since buf and in may be invalidated by an
     // unsynchronized close()
@@ -181,7 +182,7 @@ ECode BufferedInputStream::Read(    // change from ReadBytesEx
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
     *number = 0;
 
     if (buffer == NULL) {
@@ -282,7 +283,7 @@ ECode BufferedInputStream::Read(    // change from ReadBytesEx
 
 ECode BufferedInputStream::Reset()
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
     // BEGIN android-changed
     /*
      * These exceptions get thrown in some "normalish" circumstances,
@@ -308,7 +309,7 @@ ECode BufferedInputStream::Skip(
 {
     assert(number != NULL);
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
 
     // Use local refs since buf and in may be invalidated by an
     // unsynchronized close()
