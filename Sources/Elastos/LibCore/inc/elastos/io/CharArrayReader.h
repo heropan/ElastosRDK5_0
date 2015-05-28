@@ -9,16 +9,19 @@ namespace IO {
 
 class CharArrayReader
     : public Reader
+    , public ICharArrayReader
 {
 public:
+    CAR_INTERFACE_DECL()
+    
     CharArrayReader();
 
     ~CharArrayReader();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<Char32>* buf);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<Char32>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length);
@@ -70,31 +73,20 @@ public:
         /* [out] */ Int32* number);
 
     /**
-     * Reads at most {@code count} characters from this CharArrayReader and
-     * stores them at {@code offset} in the character array {@code buf}.
+     * Reads up to {@code count} characters from this CharArrayReader and
+     * stores them at {@code offset} in the character array {@code buffer}.
      * Returns the number of characters actually read or -1 if the end of reader
      * was encountered.
      *
-     * @param buffer
-     *            the character array to store the characters read.
-     * @param offset
-     *            the initial position in {@code buffer} to store the characters
-     *            read from this reader.
-     * @param len
-     *            the maximum number of characters to read.
-     * @return number of characters read or -1 if the end of the reader has been
-     *         reached.
      * @throws IndexOutOfBoundsException
-     *             if {@code offset < 0} or {@code len < 0}, or if
-     *             {@code offset + len} is bigger than the size of
-     *             {@code buffer}.
+     * if {@code offset < 0 || count < 0 || offset + count > buffer.length}.
      * @throws IOException
      *             if this reader is closed.
      */
-    CARAPI ReadChars(
+    CARAPI Read(
         /* [out] */ ArrayOf<Char32> * buffer,
         /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
+        /* [in] */ Int32 count,
         /* [out] */ Int32* number);
 
     /**

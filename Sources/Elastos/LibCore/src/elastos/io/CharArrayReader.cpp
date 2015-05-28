@@ -8,6 +8,8 @@ using Elastos::Core::Character;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(CharArrayReader, Reader, ICharArrayReader)
+
 CharArrayReader::CharArrayReader()
     : mPos(0)
     , mMarkedPos(-1)
@@ -19,7 +21,7 @@ CharArrayReader::~CharArrayReader()
 {
 }
 
-ECode CharArrayReader::Init(
+ECode CharArrayReader::constructor(
     /* [in] */ ArrayOf<Char32>* buf)
 {
     VALIDATE_NOT_NULL(buf);
@@ -30,7 +32,7 @@ ECode CharArrayReader::Init(
     return NOERROR;
 }
 
-ECode CharArrayReader::Init(
+ECode CharArrayReader::constructor(
     /* [in] */ ArrayOf<Char32>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
@@ -127,10 +129,10 @@ ECode CharArrayReader::Read(
     return NOERROR;
 }
 
-ECode CharArrayReader::ReadChars(
+ECode CharArrayReader::Read(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
-    /* [in] */ Int32 length,
+    /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
     assert(number != NULL);
@@ -143,7 +145,7 @@ ECode CharArrayReader::ReadChars(
 //      throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + offset);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    if (length < 0 || length > buffer->GetLength() - offset) {
+    if (count < 0 || count > buffer->GetLength() - offset) {
 //      throw new ArrayIndexOutOfBoundsException("Length out of bounds: " + len);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -152,7 +154,7 @@ ECode CharArrayReader::ReadChars(
 
     FAIL_RETURN(CheckNotClosed());
     if (mPos < mCount) {
-        Int32 bytesRead = mPos + length > mCount ? mCount - mPos : length;
+        Int32 bytesRead = mPos + count > mCount ? mCount - mPos : count;
         buffer->Copy(offset, mBuf, mPos, bytesRead);
         mPos += bytesRead;
         *number = bytesRead;
