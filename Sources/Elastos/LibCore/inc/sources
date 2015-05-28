@@ -7,7 +7,17 @@ EXPORT_HEADERS += elastos/core/Object.h
 EXPORT_HEADERS += elastos/core/Singleton.h
 EXPORT_HEADERS += elastos/core/Thread.h
 EXPORT_HEADERS += elastos/core/Math.h
-#EXPORT_HEADERS += elastos/core/StringUtils.h
+EXPORT_HEADERS += elastos/core/Character.h
+EXPORT_HEADERS += elastos/core/StringUtils.h
+EXPORT_HEADERS += elastos/core/HexStringParser.h
+EXPORT_HEADERS += elastos/core/StringToIntegral.h
+EXPORT_HEADERS += elastos/core/IntegralToString.h
+EXPORT_HEADERS += elastos/core/StringToReal.h
+EXPORT_HEADERS += elastos/core/RealToString.h
+EXPORT_HEADERS += elastos/core/AbstractStringBuilder.h
+EXPORT_HEADERS += elastos/core/StringBuilder.h
+EXPORT_HEADERS += elastos/core/StringBuffer.h
+
 
 EXPORT_HEADERS += elastos/utility/etl/Algorithm.h
 EXPORT_HEADERS += elastos/utility/etl/ConceptCheck.h

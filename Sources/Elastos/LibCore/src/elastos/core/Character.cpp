@@ -4,7 +4,6 @@
 #include "Math.h"
 #include "StringBuilder.h"
 #else
-#include <coredef.h>
 /*#include <elastos/Character.h>
 #include <elastos/Math.h>
 #include <elastos/StringBuilder.h>*/

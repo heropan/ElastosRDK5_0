@@ -1,14 +1,14 @@
 #ifndef __HEXSTRINGPARSER_H__
 #define __HEXSTRINGPARSER_H__
 
-#include <elastos.h>
-#include <elstring.h>
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #else
 #include "Elastos.CoreLibrary.h"
 #endif
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Regex::IPattern;
 
 namespace Elastos {

@@ -2,10 +2,8 @@
 #ifndef __CHARACTER_H__
 #define __CHARACTER_H__
 
-#include <elastos.h>
-#include <coredef.h>
 #include "unicode/uchar.h"
-#include "elastos/core/Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::ISerializable;
 using Elastos::Core::IComparable;

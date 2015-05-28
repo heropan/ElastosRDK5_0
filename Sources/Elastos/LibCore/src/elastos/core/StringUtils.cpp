@@ -290,7 +290,7 @@ ECode StringUtils::Split(
         FAIL_RETURN(helper->Compile(regularExpression, (IPattern**)&pattern));
         AutoPtr<ICharSequence> seq;
         FAIL_RETURN(CStringWrapper::New(input, (ICharSequence**)&seq));
-        return pattern->SplitEx2(seq, limit, array);*/
+        return pattern->Split(seq, limit, array);*/
     }
 }
 

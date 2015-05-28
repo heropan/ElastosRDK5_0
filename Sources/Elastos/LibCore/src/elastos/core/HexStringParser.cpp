@@ -6,19 +6,15 @@
 #include "StringUtils.h"
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
-#include "Pattern.h"
 #else
 #include "Elastos.CoreLibrary.h"
 #endif
 
 using Elastos::Core::Math;
 using Elastos::Utility::Regex::IMatcher;
-#ifdef ELASTOS_CORELIBRARY
-using Elastos::Utility::Regex::Pattern;
-#else
+using Elastos::Utility::Regex::IMatchResult;
 using Elastos::Utility::Regex::IPatternHelper;
-using Elastos::Utility::Regex::CPatternHelper;
-#endif
+//using Elastos::Utility::Regex::CPatternHelper;
 
 namespace Elastos {
 namespace Core {
@@ -36,13 +32,17 @@ static String InitHEX_PATTERN()
 static AutoPtr<IPattern> InitPATTERN()
 {
     AutoPtr<IPattern> pattern;
-#ifdef ELASTOS_CORELIBRARY
-    Pattern::Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
-#else
-    AutoPtr<IPatternHelper> helper;
-    CPatternHelper::AcquireSingleton((IPatternHelper**)&helper);
-    helper->Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
-#endif
+// #ifdef ELASTOS_CORELIBRARY
+//     AutoPtr<CPatternHelper> helper;
+//     CPatternHelper::AcquireSingletonByFriend((CPatternHelper**)&helper);
+//     helper->Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
+
+//     //Pattern::Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
+// #else
+//     AutoPtr<IPatternHelper> helper;
+//     CPatternHelper::AcquireSingleton((IPatternHelper**)&helper);
+//     helper->Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
+// #endif
     return pattern;
 }
 
@@ -144,11 +144,12 @@ ECode HexStringParser::Parse(
         return E_NUMBER_FORMAT_EXCEPTION;
     }
 
+    IMatchResult* mr = IMatchResult::Probe(matcher);
     String signStr, significantStr, exponentStr;
 
-    matcher->GroupEx(1, &signStr);
-    matcher->GroupEx(2, &significantStr);
-    matcher->GroupEx(3, &exponentStr);
+    mr->Group(1, &signStr);
+    mr->Group(2, &significantStr);
+    mr->Group(3, &exponentStr);
 
     ParseHexSign(signStr);
     ParseExponent(exponentStr);

@@ -12,7 +12,6 @@ module
      * index, with the first index being zero. Normally, {@code List}s allow duplicate
      * elements, as compared to Sets, where elements have to be unique.
      */
-
     /**
      * @Involve
      * interface IIterable;
