@@ -9,13 +9,16 @@ namespace IO {
 
 class ByteArrayOutputStream
     : public OutputStream
+    , public IByteArrayOutputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+    
     ByteArrayOutputStream();
 
     ~ByteArrayOutputStream();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 size);
 
     /**
@@ -107,7 +110,7 @@ public:
      *             {@code buffer}.
      */
     // synchronized
-    CARAPI WriteBytes(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Byte> & buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
