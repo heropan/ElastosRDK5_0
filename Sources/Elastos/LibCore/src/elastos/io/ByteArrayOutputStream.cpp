@@ -5,6 +5,8 @@
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(ByteArrayOutputStream, OutputStream, IByteArrayOutputStream)
+
 ByteArrayOutputStream::ByteArrayOutputStream()
     : mCount(0)
 {
@@ -14,7 +16,7 @@ ByteArrayOutputStream::~ByteArrayOutputStream()
 {
 }
 
-ECode ByteArrayOutputStream::Init(
+ECode ByteArrayOutputStream::constructor(
     /* [in] */ Int32 size)
 {
     if (size < 0) {
@@ -57,6 +59,8 @@ ECode ByteArrayOutputStream::Expand(
 
 ECode ByteArrayOutputStream::Reset()
 {
+    Object::Autolock lock(mLock);
+
     mCount = 0;
     return NOERROR;
 }
@@ -74,6 +78,8 @@ ECode ByteArrayOutputStream::ToByteArray(
     /* [out, callee] */ ArrayOf<Byte>** byteArray)
 {
     VALIDATE_NOT_NULL(byteArray)
+
+    Object::Autolock lock(mLock);
 
     AutoPtr< ArrayOf<Byte> > newArray = ArrayOf<Byte>::Alloc(mCount);
     newArray->Copy(mBuf, mCount);
@@ -104,6 +110,8 @@ ECode ByteArrayOutputStream::ToString(
 ECode ByteArrayOutputStream::Write(
     /* [in] */ Int32 oneByte)
 {
+    Object::Autolock lock(mLock);
+
     if (mCount == mBuf->GetLength()){
         Expand(1);
     }
@@ -112,11 +120,13 @@ ECode ByteArrayOutputStream::Write(
     return NOERROR;
 }
 
-ECode ByteArrayOutputStream::WriteBytes(
+ECode ByteArrayOutputStream::Write(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
+    Object::Autolock lock(mLock);
+
     // avoid int overflow
     // BEGIN android-changed
     // Exception priorities (in case of multiple errors) differ from
@@ -143,6 +153,10 @@ ECode ByteArrayOutputStream::WriteBytes(
 ECode ByteArrayOutputStream::WriteTo(
     /* [in] */ IOutputStream* out)
 {
+    VALIDATE_NOT_NULL(os);
+
+    Object::Autolock lock(mLock);
+
     return out->WriteBytesEx(*mBuf, 0, mCount);
 }
 

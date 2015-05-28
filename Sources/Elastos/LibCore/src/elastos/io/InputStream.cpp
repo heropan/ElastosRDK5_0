@@ -6,7 +6,7 @@
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL_3(InputStream, Object, ICloseable, IInputStream)
+CAR_INTERFACE_IMPL_2(InputStream, Object, ICloseable, IInputStream)
 
 ECode InputStream::Available(
     /* [out] */ Int32* number)

@@ -25,6 +25,8 @@ ECode OutputStream::Flush()
 ECode OutputStream::Write(
     /* [in] */ const ArrayOf<Byte> & buffer)
 {
+    Object::Autolock lock(mLock);
+
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note

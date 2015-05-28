@@ -2,7 +2,7 @@
 #ifndef __CBYTEARRAYOUTPUTSTREAM_H__
 #define __CBYTEARRAYOUTPUTSTREAM_H__
 
-#include "_CByteArrayOutputStream.h"
+#include "_Elastos_IO_CByteArrayOutputStream.h"
 #include "ByteArrayOutputStream.h"
 
 namespace Elastos {
@@ -12,52 +12,9 @@ CarClass(CByteArrayOutputStream)
     , public ByteArrayOutputStream
 {
 public:
-    CARAPI Close();
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
 
-    CARAPI Flush();
-
-    CARAPI Write(
-        /* [in] */ Int32 oneByte);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte> & buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 count);
-
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
-    CARAPI Reset();
-
-    CARAPI GetSize(
-        /* [out] */ Int32* size);
-
-    CARAPI ToByteArray(
-        /* [out, callee] */ ArrayOf<Byte>** bytes);
-
-    CARAPI ToString(
-        /* [out] */ String* str);
-
-    CARAPI ToString(
-        /* [in] */ const String& enc,
-        /* [out] */ String* str);
-
-    CARAPI WriteTo(
-        /* [in] */ IOutputStream* os);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ Int32 size);
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
 };
 
 } // namespace IO
