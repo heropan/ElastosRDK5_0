@@ -12,7 +12,6 @@ CarClass(CBufferedReader)
     , public BufferedReader
 {
 public:
-    CAR_INTERFACE_DECL()
     CAR_OBJECT_DECL()
 };
 

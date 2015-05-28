@@ -12,7 +12,6 @@ CarClass(CBufferedWriter)
     ,public BufferedWriter
 {
 public:
-    CAR_INTERFACE_DECL()
     CAR_OBJECT_DECL()
 };
 

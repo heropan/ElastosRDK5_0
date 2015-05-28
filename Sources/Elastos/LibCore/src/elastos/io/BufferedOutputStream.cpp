@@ -5,7 +5,7 @@
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL_LIGHT(BufferedOutputStream, FilterOutputStream, IBufferedOutputStream)
+CAR_INTERFACE_IMPL(BufferedOutputStream, FilterOutputStream, IBufferedOutputStream)
 
 BufferedOutputStream::BufferedOutputStream()
     : mCount(0)
