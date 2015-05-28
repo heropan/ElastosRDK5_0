@@ -17,7 +17,7 @@ ECode CCurrencyHelper::GetInstance(
     return NOERROR;
 }
 
-ECode CCurrencyHelper::GetInstanceEx(
+ECode CCurrencyHelper::GetInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ ICurrency** outcur)
 {

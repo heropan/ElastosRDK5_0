@@ -21,21 +21,21 @@ ECode CCalendarHelper::GetInstance(
     return Calendar::GetInstance(ppCalenar);
 }
 
-ECode CCalendarHelper::GetInstanceEx(
+ECode CCalendarHelper::GetInstance(
     /* [in] */ ILocale * pLocale,
     /* [out] */ ICalendar ** ppCalenar)
 {
     return Calendar::GetInstance(pLocale, ppCalenar);
 }
 
-ECode CCalendarHelper::GetInstanceEx2(
+ECode CCalendarHelper::GetInstance(
     /* [in] */ ITimeZone * pTimezone,
     /* [out] */ ICalendar ** ppCalenar)
 {
     return Calendar::GetInstance(pTimezone, ppCalenar);
 }
 
-ECode CCalendarHelper::GetInstanceEx3(
+ECode CCalendarHelper::GetInstance(
     /* [in] */ ITimeZone * pTimezone,
     /* [in] */ ILocale * pLocale,
     /* [out] */ ICalendar ** ppCalenar)

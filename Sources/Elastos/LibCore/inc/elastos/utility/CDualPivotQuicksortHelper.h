@@ -34,7 +34,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    CARAPI SortInt32Ex(
+    CARAPI SortInt32(
         /* [in] */ ArrayOf<Int32>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
@@ -60,7 +60,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    CARAPI SortInt64Ex(
+    CARAPI SortInt64(
         /* [in] */ ArrayOf<Int64>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
@@ -86,7 +86,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    CARAPI SortInt16Ex(
+    CARAPI SortInt16(
         /* [in] */ ArrayOf<Int16>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
@@ -112,7 +112,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    CARAPI SortCharEx(
+    CARAPI SortChar(
         /* [in] */ ArrayOf<Char32>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
@@ -138,7 +138,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    CARAPI SortByteEx(
+    CARAPI SortByte(
         /* [in] */ ArrayOf<Byte>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
@@ -180,7 +180,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    CARAPI SortFloatEx(
+    CARAPI SortFloat(
         /* [in] */ ArrayOf<Float>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
@@ -222,7 +222,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    CARAPI SortDoubleEx(
+    CARAPI SortDouble(
         /* [in] */ ArrayOf<Double>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);

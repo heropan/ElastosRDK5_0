@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "TimeUnit.h"
 #include <elastos/Thread.h>
 
@@ -40,7 +39,7 @@ ECode TimeUnit::TimedWait(
         ToMillis(timeout, &ms);
         Int32 ns;
         FAIL_RETURN(ExcessNanos(timeout, ms, &ns));
-        return obj->WaitEx2(ms, ns);
+        return obj->Wait(ms, ns);
     }
     return NOERROR;
 }
@@ -54,7 +53,7 @@ ECode TimeUnit::TimedJoin(
         ToMillis(timeout, &ms);
         Int32 ns;
         FAIL_RETURN(ExcessNanos(timeout, ms, &ns));
-        return thread->JoinEx2(ms, ns);
+        return thread->Join(ms, ns);
     }
     return NOERROR;
 }

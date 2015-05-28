@@ -141,19 +141,19 @@ public:
     CARAPI Last(
         /* [out] */ IInterface** outface);
 
-    CARAPI SubSetEx(
+    CARAPI SubSet(
         /* [in] */ IInterface* fromElement,
         /* [in] */ Boolean fromInclusive,
         /* [in] */ IInterface* toElement,
         /* [in] */ Boolean toInclusive,
         /* [out] */ INavigableSet** outnav);
 
-    CARAPI HeadSetEx(
+    CARAPI HeadSet(
         /* [in] */ IInterface* toElement,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableSet** outnav);
 
-    CARAPI TailSetEx(
+    CARAPI TailSet(
         /* [in] */ IInterface* fromElement,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableSet** outnav);
@@ -189,7 +189,7 @@ public:
     CARAPI ToArray(
         /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* inArray,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CConcurrentSkipListSet.h"
 #include <elastos/ObjectUtils.h>
 #include "CBoolean.h"
@@ -121,7 +120,7 @@ ECode CConcurrentSkipListSet::Remove(
     AutoPtr<IBoolean> b;
     CBoolean::New(TRUE, (IBoolean**)&b);
     AutoPtr<IConcurrentMap> map = (IConcurrentMap*)mM->Probe(EIID_IConcurrentMap);
-    return map->RemoveEx(object, b, modified);
+    return map->Remove(object, b, modified);
 }
 
 ECode CConcurrentSkipListSet::Clear()
@@ -277,7 +276,7 @@ ECode CConcurrentSkipListSet::Last(
     return mM->LastKey(outface);
 }
 
-ECode CConcurrentSkipListSet::SubSetEx(
+ECode CConcurrentSkipListSet::SubSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toElement,
@@ -286,7 +285,7 @@ ECode CConcurrentSkipListSet::SubSetEx(
 {
     VALIDATE_NOT_NULL(outnav);
     AutoPtr<INavigableMap> map;
-    mM->SubMapEx(fromElement, fromInclusive,
+    mM->SubMap(fromElement, fromInclusive,
                 toElement, toInclusive, (INavigableMap**)&map);
     AutoPtr<INavigableSet> p;
     CConcurrentSkipListSet::New(map, (INavigableSet**)&p);
@@ -295,14 +294,14 @@ ECode CConcurrentSkipListSet::SubSetEx(
     return NOERROR;
 }
 
-ECode CConcurrentSkipListSet::HeadSetEx(
+ECode CConcurrentSkipListSet::HeadSet(
     /* [in] */ IInterface* toElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
 {
     VALIDATE_NOT_NULL(outnav);
     AutoPtr<INavigableMap> map;
-    mM->HeadMapEx(toElement, inclusive, (INavigableMap**)&map);
+    mM->HeadMap(toElement, inclusive, (INavigableMap**)&map);
     AutoPtr<INavigableSet> p;
     CConcurrentSkipListSet::New(map, (INavigableSet**)&p);
     *outnav = p.Get();
@@ -310,14 +309,14 @@ ECode CConcurrentSkipListSet::HeadSetEx(
     return NOERROR;
 }
 
-ECode CConcurrentSkipListSet::TailSetEx(
+ECode CConcurrentSkipListSet::TailSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
 {
     VALIDATE_NOT_NULL(outnav);
     AutoPtr<INavigableMap> map;
-    mM->TailMapEx(fromElement, inclusive, (INavigableMap**)&map);
+    mM->TailMap(fromElement, inclusive, (INavigableMap**)&map);
     AutoPtr<INavigableSet> p;
     CConcurrentSkipListSet::New(map, (INavigableSet**)&p);
     *outnav = p.Get();
@@ -332,7 +331,7 @@ ECode CConcurrentSkipListSet::SubSet(
 {
     VALIDATE_NOT_NULL(outsort);
     AutoPtr<INavigableSet> s;
-    SubSetEx(start, TRUE, end, FALSE, (INavigableSet**)&s);
+    SubSet(start, TRUE, end, FALSE, (INavigableSet**)&s);
     AutoPtr<ISortedSet> p = (ISortedSet*)s->Probe(EIID_ISortedSet);
     *outsort = p;
     INTERFACE_ADDREF(*outsort);
@@ -345,7 +344,7 @@ ECode CConcurrentSkipListSet::HeadSet(
 {
     VALIDATE_NOT_NULL(outsort);
     AutoPtr<INavigableSet> s;
-    HeadSetEx(end, FALSE, (INavigableSet**)&s);
+    HeadSet(end, FALSE, (INavigableSet**)&s);
     AutoPtr<ISortedSet> p = (ISortedSet*)s->Probe(EIID_ISortedSet);
     *outsort = p;
     INTERFACE_ADDREF(*outsort);
@@ -358,7 +357,7 @@ ECode CConcurrentSkipListSet::TailSet(
 {
     VALIDATE_NOT_NULL(outsort);
     AutoPtr<INavigableSet> s;
-    TailSetEx(start, TRUE, (INavigableSet**)&s);
+    TailSet(start, TRUE, (INavigableSet**)&s);
     AutoPtr<ISortedSet> p = (ISortedSet*)s->Probe(EIID_ISortedSet);
     *outsort = p;
     INTERFACE_ADDREF(*outsort);
@@ -405,11 +404,11 @@ ECode CConcurrentSkipListSet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CConcurrentSkipListSet::ToArrayEx(
+ECode CConcurrentSkipListSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 void CConcurrentSkipListSet::SetMap(

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "DeflaterInputStream.h"
 #include <elastos/Math.h>
 
@@ -39,7 +38,7 @@ ECode DeflaterInputStream::Read(
     return streams->ReadSingleByte(THIS_PROBE(IInputStream), value);
 }
 
-ECode DeflaterInputStream::ReadBytesEx(
+ECode DeflaterInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
@@ -75,11 +74,11 @@ ECode DeflaterInputStream::ReadBytesEx(
                 mDef->Finish();
             }
             else {
-                mDef->SetInputEx(*mBuf, 0, bytesRead);
+                mDef->SetInput(*mBuf, 0, bytesRead);
             }
         }
         Int32 bytesDeflated;
-        mDef->DeflateEx(mBuf, 0, Elastos::Core::Math::Min(mBuf->GetLength(), byteCount - count),
+        mDef->Deflate(mBuf, 0, Elastos::Core::Math::Min(mBuf->GetLength(), byteCount - count),
                 &bytesDeflated);
         if (bytesDeflated == -1) {
             break;
@@ -147,7 +146,7 @@ ECode DeflaterInputStream::ReadBytes(
 {
     VALIDATE_NOT_NULL(number);
     VALIDATE_NOT_NULL(buffer);
-    return ReadBytesEx(buffer, 0, buffer->GetLength(), number);
+    return ReadBytes(buffer, 0, buffer->GetLength(), number);
 }
 
 ECode DeflaterInputStream::Init(

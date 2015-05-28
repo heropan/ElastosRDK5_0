@@ -107,7 +107,7 @@ public:
      * @throws IndexOutOfBoundsException
      *                if {@code location < 0 || location > size()}
      */
-    virtual CARAPI AddEx(
+    virtual CARAPI Add(
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object);
 
@@ -150,7 +150,7 @@ public:
      * @throws IndexOutOfBoundsException
      *             if {@code location < 0 || location > size()}
      */
-    virtual CARAPI AddAllEx(
+    virtual CARAPI AddAll(
         /* [in] */ Int32 location,
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* result);
@@ -262,7 +262,7 @@ public:
      *             if {@code location < 0 || location > size()}
      * @see ListIterator
      */
-    virtual CARAPI GetListIteratorEx(
+    virtual CARAPI GetListIterator(
         /* [in] */ Int32 location,
         /* [out] */ IListIterator** listiterator);
 
@@ -277,7 +277,7 @@ public:
      * @throws IndexOutOfBoundsException
      *             if {@code location < 0 || location >= size()}
      */
-    virtual CARAPI RemoveEx(
+    virtual CARAPI Remove(
         /* [in] */ Int32 location,
         /* [out] */ IInterface** object);
 
@@ -299,7 +299,7 @@ public:
      * @throws IndexOutOfBoundsException
      *             if {@code location < 0 || location >= size()}
      */
-    virtual CARAPI SetEx(
+    virtual CARAPI Set(
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object);
 
@@ -452,11 +452,11 @@ public:
 
     CAR_INTERFACE_DECL();
 
-    CARAPI AddEx(
+    CARAPI Add(
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object);
 
-    CARAPI AddAllEx(
+    CARAPI AddAll(
         /* [in] */ Int32 location,
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* result);
@@ -472,11 +472,11 @@ public:
     CARAPI GetIterator(
         /* [out] */ IIterator** it);
 
-    CARAPI GetListIteratorEx(
+    CARAPI GetListIterator(
         /* [in] */ Int32 location,
         /* [out] */ IListIterator** listiterator);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [in] */ Int32 location,
         /* [out] */ IInterface** object);
 
@@ -521,7 +521,7 @@ public:
     CARAPI ToArray(
         /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* contents,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 

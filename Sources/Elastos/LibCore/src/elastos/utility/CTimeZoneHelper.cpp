@@ -15,7 +15,7 @@ ECode CTimeZoneHelper::GetAvailableIDs(
     return NOERROR;
 }
 
-ECode CTimeZoneHelper::GetAvailableIDsEx(
+ECode CTimeZoneHelper::GetAvailableIDs(
     /* [in] */ Int32 offsetMillis,
     /* [out, callee] */ ArrayOf<String> ** array)
 {

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CConcurrentLinkedDeque.h"
 #include "CArrayList.h"
 #include <Math.h>
@@ -833,7 +832,7 @@ ECode CConcurrentLinkedDeque::Poll(
     return PollFirst(e);
 }
 
-ECode CConcurrentLinkedDeque::RemoveEx(
+ECode CConcurrentLinkedDeque::Remove(
     /* [out] */ IInterface** e)
 {
     VALIDATE_NOT_NULL(e)
@@ -1043,12 +1042,12 @@ ECode CConcurrentLinkedDeque::ToArray(
     return ToArrayList()->ToArray(array);
 }
 
-ECode CConcurrentLinkedDeque::ToArrayEx(
+ECode CConcurrentLinkedDeque::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     VALIDATE_NOT_NULL(outArray)
-    return ToArrayList()->ToArrayEx(inArray, outArray);
+    return ToArrayList()->ToArray(inArray, outArray);
 }
 
 ECode CConcurrentLinkedDeque::GetIterator(

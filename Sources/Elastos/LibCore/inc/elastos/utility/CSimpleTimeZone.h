@@ -270,7 +270,7 @@ public:
      *            the time of day in milliseconds standard time on which
      *            daylight savings time ends.
      */
-    CARAPI SetEndRuleEx(
+    CARAPI SetEndRule(
         /* [in] */ Int32 month,
         /* [in] */ Int32 day,
         /* [in] */ Int32 dayOfWeek,
@@ -292,7 +292,7 @@ public:
      * @param after
      *            selects the day after or before the day of month.
      */
-    CARAPI SetEndRuleEx2(
+    CARAPI SetEndRule(
         /* [in] */ Int32 month,
         /* [in] */ Int32 day,
         /* [in] */ Int32 dayOfWeek,
@@ -331,7 +331,7 @@ public:
      *            the time of day in milliseconds on which daylight savings time
      *            starts.
      */
-    CARAPI SetStartRuleEx(
+    CARAPI SetStartRule(
         /* [in] */ Int32 month,
         /* [in] */ Int32 day,
         /* [in] */ Int32 dayOfWeek,
@@ -353,7 +353,7 @@ public:
      * @param after
      *            selects the day after or before the day of month.
      */
-    CARAPI SetStartRuleEx2(
+    CARAPI SetStartRule(
         /* [in] */ Int32 month,
         /* [in] */ Int32 day,
         /* [in] */ Int32 dayOfWeek,
@@ -384,7 +384,7 @@ public:
         /* [in] */ Int64 time,
         /* [out] */ Int32* pOffset);
 
-    CARAPI GetOffsetEx(
+    CARAPI GetOffset(
         /* [in] */ Int32 era,
         /* [in] */ Int32 year,
         /* [in] */ Int32 month,
@@ -419,16 +419,16 @@ public:
     CARAPI GetDisplayName(
         /* [out] */ String* name);
 
-    CARAPI GetDisplayNameEx(
+    CARAPI GetDisplayName(
         /* [in] */ ILocale* locale,
         /* [out] */ String* name);
 
-    CARAPI GetDisplayNameEx2(
+    CARAPI GetDisplayName(
         /* [in] */ Boolean daylightTime,
         /* [in] */ Int32 style,
         /* [out] */ String* name);
 
-    CARAPI GetDisplayNameEx3(
+    CARAPI GetDisplayName(
         /* [in] */ Boolean daylightTime,
         /* [in] */ Int32 style,
         /* [in] */ ILocale* locale,

@@ -512,7 +512,7 @@ public:
      * @throws FormatterClosedException
      *             if the {@code Formatter} has been closed.
      */
-    CARAPI FormatEx(
+    CARAPI Format(
         /* [in] */ ILocale* l,
         /* [in] */ const String& format,
         /* [in] */ ArrayOf<IInterface*>* args);

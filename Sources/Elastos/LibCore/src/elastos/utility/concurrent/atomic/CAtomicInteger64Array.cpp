@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CAtomicInteger64Array.h"
 #include "elastos/StringBuilder.h"
 

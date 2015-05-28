@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "ForkJoinTask.h"
 #include <elastos/Thread.h>
 #include "CForkJoinWorkerThread.h"
@@ -534,7 +533,7 @@ ECode ForkJoinTask::Get(
     return GetRawResult(res);
 }
 
-ECode ForkJoinTask::GetEx(
+ECode ForkJoinTask::Get(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** res)
@@ -621,7 +620,7 @@ void ForkJoinTask::InvokeAll(
     t2->Join((IInterface**)&p3);
 }
 
-void ForkJoinTask::InvokeAllEx(
+void ForkJoinTask::InvokeAll(
     /* [in] */ ArrayOf<IForkJoinTask*>* tasks)
 {
     AutoPtr<IThrowable> ex = NULL;
@@ -656,7 +655,7 @@ void ForkJoinTask::InvokeAllEx(
     //     SneakyThrow.sneakyThrow(ex); // android-changed
 }
 
-AutoPtr<ICollection> ForkJoinTask::InvokeAllEx2(
+AutoPtr<ICollection> ForkJoinTask::InvokeAll(
     /* [in] */ ICollection* tasks)
 {
     if ((tasks->Probe(EIID_IRandomAccess) == NULL) || (tasks->Probe(EIID_IList) == NULL)) {
@@ -664,8 +663,8 @@ AutoPtr<ICollection> ForkJoinTask::InvokeAllEx2(
         tasks->GetSize(&size);
         AutoPtr<ArrayOf<IForkJoinTask*> > arr = ArrayOf<IForkJoinTask*>::Alloc(size);
         AutoPtr<ArrayOf<IForkJoinTask*> > arrOut;
-        tasks->ToArrayEx((ArrayOf<IInterface*>*)arr.Get(), (ArrayOf<IInterface*>**)&arrOut);
-        InvokeAllEx(arrOut);
+        tasks->ToArray((ArrayOf<IInterface*>*)arr.Get(), (ArrayOf<IInterface*>**)&arrOut);
+        InvokeAll(arrOut);
         return tasks;
     }
     AutoPtr<IList> ts = (IList*)tasks->Probe(EIID_IList);
@@ -766,7 +765,7 @@ AutoPtr<IForkJoinTask> ForkJoinTask::Adapt(
     return res;
 }
 
-AutoPtr<IForkJoinTask> ForkJoinTask::AdaptEx(
+AutoPtr<IForkJoinTask> ForkJoinTask::Adapt(
     /* [in] */ IRunnable* runnable,
     /* [in] */ IInterface* result)
 {
@@ -775,7 +774,7 @@ AutoPtr<IForkJoinTask> ForkJoinTask::AdaptEx(
     return res;
 }
 
-AutoPtr<IForkJoinTask> ForkJoinTask::AdaptEx2(
+AutoPtr<IForkJoinTask> ForkJoinTask::Adapt(
     /* [in] */ ICallable* callable)
 {
     AutoPtr<AdaptedCallable> p = new AdaptedCallable(callable);

@@ -268,7 +268,7 @@ AutoPtr<IInterface> CLinkedTransferQueue::AwaitMatch(
         else if (spins > 0) {             // spin
             --spins;
             Int32 num = 0;
-            if ((randomYields->NextInt32Ex(CHAINED_SPINS, &num), num == 0))
+            if ((randomYields->NextInt32(CHAINED_SPINS, &num), num == 0))
                 Thread::Yield();           // occasionally yield
         }
         else if (s->mWaiter == NULL) {
@@ -592,7 +592,7 @@ ECode CLinkedTransferQueue::Put(
     return NOERROR;
 }
 
-ECode CLinkedTransferQueue::OfferEx(
+ECode CLinkedTransferQueue::Offer(
     /* [in] */ IInterface* e,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
@@ -643,7 +643,7 @@ ECode CLinkedTransferQueue::Transfer(
     return NOERROR;
 }
 
-ECode CLinkedTransferQueue::TryTransferEx(
+ECode CLinkedTransferQueue::TryTransfer(
     /* [in] */ IInterface* e,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
@@ -677,7 +677,7 @@ ECode CLinkedTransferQueue::Take(
     return E_INTERRUPTED_EXCEPTION;
 }
 
-ECode CLinkedTransferQueue::PollEx(
+ECode CLinkedTransferQueue::Poll(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** e)
@@ -723,7 +723,7 @@ ECode CLinkedTransferQueue::DrainTo(
     return NOERROR;
 }
 
-ECode CLinkedTransferQueue::DrainToEx(
+ECode CLinkedTransferQueue::DrainTo(
     /* [in] */ ICollection* c,
     /* [in] */ Int32 maxElements,
     /* [out] */ Int32* number)
@@ -888,19 +888,19 @@ ECode CLinkedTransferQueue::ToArray(
     return AbstractQueue::ToArray(array);
 }
 
-ECode CLinkedTransferQueue::ToArrayEx(
+ECode CLinkedTransferQueue::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     VALIDATE_NOT_NULL(outArray);
-    return AbstractQueue::ToArrayEx(inArray, outArray);
+    return AbstractQueue::ToArray(inArray, outArray);
 }
 
-ECode CLinkedTransferQueue::RemoveEx(
+ECode CLinkedTransferQueue::Remove(
     /* [out] */ IInterface** e)
 {
     VALIDATE_NOT_NULL(e);
-    return AbstractQueue::RemoveEx(e);
+    return AbstractQueue::Remove(e);
 }
 
 ECode CLinkedTransferQueue::Element(

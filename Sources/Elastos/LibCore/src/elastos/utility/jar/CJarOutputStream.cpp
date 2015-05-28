@@ -30,12 +30,12 @@ ECode CJarOutputStream::WriteBytes(
     return ZipOutputStream::WriteBytes(buffer);
 }
 
-ECode CJarOutputStream::WriteBytesEx(
+ECode CJarOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return ZipOutputStream::WriteBytesEx(buffer, offset, count);
+    return ZipOutputStream::WriteBytes(buffer, offset, count);
 }
 
 ECode CJarOutputStream::CheckError(

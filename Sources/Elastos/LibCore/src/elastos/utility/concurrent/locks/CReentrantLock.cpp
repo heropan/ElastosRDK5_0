@@ -37,12 +37,12 @@ ECode CReentrantLock::TryLock(
     return ReentrantLock::TryLock(result);
 }
 
-ECode CReentrantLock::TryLockEx(
+ECode CReentrantLock::TryLock(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ Boolean* result)
 {
-    return ReentrantLock::TryLockEx(timeout, unit, result);
+    return ReentrantLock::TryLock(timeout, unit, result);
 }
 
 ECode CReentrantLock::UnLock()

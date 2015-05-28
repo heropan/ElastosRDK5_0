@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CExecutorCompletionService.h"
 #include "CLinkedBlockingQueue.h"
 #include "CFutureTask.h"
@@ -49,13 +48,13 @@ ECode CExecutorCompletionService::QueueingFuture::Get(
     return FutureTask::Get(result);
 }
 
-ECode CExecutorCompletionService::QueueingFuture::GetEx(
+ECode CExecutorCompletionService::QueueingFuture::Get(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result);
-    return FutureTask::GetEx(timeout, unit, result);
+    return FutureTask::Get(timeout, unit, result);
 }
 
 ECode CExecutorCompletionService::QueueingFuture::Run()
@@ -131,7 +130,7 @@ ECode CExecutorCompletionService::Submit(
     return NOERROR;
 }
 
-ECode CExecutorCompletionService::SubmitEx(
+ECode CExecutorCompletionService::Submit(
     /* [in] */ IRunnable* task,
     /* [in] */ IInterface* result,
     /* [out] */ IFuture** future)
@@ -168,14 +167,14 @@ ECode CExecutorCompletionService::Poll(
     return NOERROR;
 }
 
-ECode CExecutorCompletionService::PollEx(
+ECode CExecutorCompletionService::Poll(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IFuture** future)
 {
     VALIDATE_NOT_NULL(future)
     AutoPtr<IInterface> e;
-    FAIL_RETURN(mCompletionQueue->PollEx(timeout, unit, (IInterface**)&e));
+    FAIL_RETURN(mCompletionQueue->Poll(timeout, unit, (IInterface**)&e));
     *future = IFuture::Probe(e);
     INTERFACE_ADDREF(*future);
     return NOERROR;

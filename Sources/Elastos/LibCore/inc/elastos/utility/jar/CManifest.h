@@ -1,7 +1,6 @@
 
 #ifndef __CMANIFEST_H__
 #define __CMANIFEST_H__
-#include "cmdef.h"
 #include "_CManifest.h"
 #include "elastos/Object.h"
 

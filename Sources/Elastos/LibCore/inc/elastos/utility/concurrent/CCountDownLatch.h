@@ -116,7 +116,7 @@ public:
      * @throws InterruptedException if the current thread is interrupted
      *         while waiting
      */
-    CARAPI AwaitEx(
+    CARAPI Await(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ Boolean* result);

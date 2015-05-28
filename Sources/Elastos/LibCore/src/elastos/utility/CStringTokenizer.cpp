@@ -172,7 +172,7 @@ ECode CStringTokenizer::NextToken(
     return E_NO_SUCH_ELEMENT_EXCEPTION;
 }
 
-ECode CStringTokenizer::NextTokenEx(
+ECode CStringTokenizer::NextToken(
     /* [in] */ const String& delims,
     /* [out] */ String* str)
 {

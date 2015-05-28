@@ -86,7 +86,7 @@ AutoPtr<ArrayOf<IInterface*> > _Vector::NewElementArray(
     return array;
 }
 
-ECode _Vector::AddEx(
+ECode _Vector::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
@@ -108,7 +108,7 @@ ECode _Vector::Add(
     return NOERROR;
 }
 
-ECode _Vector::AddAllEx(
+ECode _Vector::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
@@ -152,7 +152,7 @@ ECode _Vector::AddAll(
     /* [out] */ Boolean* modified)
 {
     VALIDATE_NOT_NULL(modified)
-    return AddAllEx(mElementCount, collection, modified);
+    return AddAll(mElementCount, collection, modified);
 }
 
 ECode _Vector::AddElement(
@@ -196,7 +196,7 @@ ECode _Vector::Contains(
 {
     VALIDATE_NOT_NULL(result)
     Int32 val;
-    FAIL_RETURN(IndexOfEx(object, 0, &val));
+    FAIL_RETURN(IndexOf(object, 0, &val));
     *result = (val != -1);
     return NOERROR;
 }
@@ -390,10 +390,10 @@ ECode _Vector::IndexOf(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return IndexOfEx(object, 0, index);
+    return IndexOf(object, 0, index);
 }
 
-ECode _Vector::IndexOfEx(
+ECode _Vector::IndexOf(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 location,
     /* [out] */ Int32* value)
@@ -473,10 +473,10 @@ ECode _Vector::LastIndexOf(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return LastIndexOfEx(object, mElementCount - 1, index);
+    return LastIndexOf(object, mElementCount - 1, index);
 }
 
-ECode _Vector::LastIndexOfEx(
+ECode _Vector::LastIndexOf(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 location,
     /* [out] */ Int32* value)
@@ -506,7 +506,7 @@ ECode _Vector::LastIndexOfEx(
     return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 }
 
-ECode _Vector::RemoveEx(
+ECode _Vector::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
@@ -563,7 +563,7 @@ ECode _Vector::RemoveElement(
     VALIDATE_NOT_NULL(value)
     Mutex::Autolock lock(GetSelfLock());
     Int32 index;
-    IndexOfEx(object, 0, &index);
+    IndexOf(object, 0, &index);
     if (index == -1) {
         *value = FALSE;
         return NOERROR;
@@ -667,7 +667,7 @@ ECode _Vector::SetSize(
     AutoPtr<IArrays> arraysHelper;
     CArrays::AcquireSingleton((IArrays**)&arraysHelper);
     if (mElementCount > length) {
-        FAIL_RETURN(arraysHelper->FillObjectEx(mElementData.Get(), length, mElementCount, NULL));
+        FAIL_RETURN(arraysHelper->FillObject(mElementData.Get(), length, mElementCount, NULL));
     }
     mElementCount = length;
     mModCount++;
@@ -709,7 +709,7 @@ ECode _Vector::ToArray(
     return NOERROR;
 }
 
-ECode _Vector::ToArrayEx(
+ECode _Vector::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {

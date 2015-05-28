@@ -2,7 +2,6 @@
 #ifndef __COPYONWRITEARRAYLIST_H__
 #define __COPYONWRITEARRAYLIST_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
 #include "AbstractList.h"
 #include <elastos/Mutex.h>
@@ -76,11 +75,11 @@ protected:
 
         CAR_INTERFACE_DECL();
 
-        CARAPI AddEx(
+        CARAPI Add(
             /* [in] */ Int32 location,
             /* [in] */ IInterface* object);
 
-        CARAPI AddAllEx(
+        CARAPI AddAll(
             /* [in] */ Int32 location,
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* result);
@@ -96,11 +95,11 @@ protected:
         CARAPI GetIterator(
             /* [out] */ IIterator** it);
 
-        CARAPI GetListIteratorEx(
+        CARAPI GetListIterator(
             /* [in] */ Int32 location,
             /* [out] */ IListIterator** listiterator);
 
-        CARAPI RemoveEx(
+        CARAPI Remove(
             /* [in] */ Int32 location,
             /* [out] */ IInterface** object);
 
@@ -142,7 +141,7 @@ protected:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* contents,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -537,7 +536,7 @@ public:
      *                if the type of an element in this {@code Collection} cannot be
      *                stored in the type of the specified array.
      */
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* inArray,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -571,7 +570,7 @@ public:
      * @throws IndexOutOfBoundsException
      *                if {@code location < 0 || location > size()}
      */
-    CARAPI AddEx(
+    CARAPI Add(
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object);
 
@@ -596,7 +595,7 @@ public:
      * @throws IndexOutOfBoundsException
      *                if {@code location < 0 || location > size()}
      */
-    CARAPI AddAllEx(
+    CARAPI AddAll(
         /* [in] */ Int32 location,
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* modified);
@@ -663,7 +662,7 @@ public:
      *                if {@code location < 0 || location > size()}
      * @see ListIterator
      */
-    CARAPI GetListIteratorEx(
+    CARAPI GetListIterator(
         /* [in] */ Int32 location,
         /* [out] */ IListIterator** it);
 
@@ -678,7 +677,7 @@ public:
      * @throws IndexOutOfBoundsException
      *                if {@code location < 0 || location >= size()}
      */
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [in] */ Int32 location,
         /* [out] */ IInterface** object);
 
@@ -731,7 +730,7 @@ public:
      *
      * @return the index or -1 if the object was not found.
      */
-    CARAPI IndexOfEx(
+    CARAPI IndexOf(
         /* [in] */ IInterface* object,
         /* [in] */ Int32 from,
         /* [out] */ Int32* value);
@@ -742,7 +741,7 @@ public:
      *
      * @return the index or -1 if the object was not found.
      */
-    CARAPI LastIndexOfEx(
+    CARAPI LastIndexOf(
         /* [in] */ IInterface* object,
         /* [in] */ Int32 to,
         /* [out] */ Int32* value);

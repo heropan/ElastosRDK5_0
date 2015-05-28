@@ -13,7 +13,7 @@ public:
     CARAPI GetAvailableIDs(
         /* [out, callee] */ ArrayOf<String>** ppArray);
 
-    CARAPI GetAvailableIDsEx(
+    CARAPI GetAvailableIDs(
         /* [in] */ Int32 offsetMillis,
         /* [out, callee] */ ArrayOf<String>** ppArray);
 

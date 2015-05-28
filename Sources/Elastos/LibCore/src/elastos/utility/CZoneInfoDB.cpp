@@ -1,5 +1,4 @@
 #include "CZoneInfoDB.h"
-#include "cmdef.h"
 #include "ZoneInfoDB.h"
 
 namespace Elastos{
@@ -20,7 +19,7 @@ ECode CZoneInfoDB::GetAvailableIDs(
     return NOERROR;
 }
 
-ECode CZoneInfoDB::GetAvailableIDsEx(
+ECode CZoneInfoDB::GetAvailableIDs(
     /* [in] */ Int32 rawOffset,
     /* [out, callee] */ ArrayOf<String>** array)
 {

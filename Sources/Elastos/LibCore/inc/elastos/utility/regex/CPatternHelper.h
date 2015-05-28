@@ -36,7 +36,7 @@ public:
      * @see #UNICODE_CASE
      * @see #UNIX_LINES
      */
-    CARAPI CompileEx(
+    CARAPI Compile(
         /* [in] */ const String& regularExpression,
         /* [in] */ Int32 flags,
         /* [out] */ IPattern** result);
@@ -55,7 +55,7 @@ public:
         /* [in] */ const String& input,
         /* [out] */ Boolean* isMatche);
 
-    CARAPI MatchesEx(
+    CARAPI Matches(
         /* [in] */ const String& regularExpression,
         /* [in] */ ICharSequence* input,
         /* [out] */ Boolean* isMatche);

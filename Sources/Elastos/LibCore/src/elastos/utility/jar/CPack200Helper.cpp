@@ -1,6 +1,5 @@
 
 #include "CPack200Helper.h"
-#include "cmdef.h"
 #include "CSystem.h"
 
 using Elastos::Core::ISystem;
@@ -43,7 +42,7 @@ ECode CPack200Helper::NewPacker(
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
 
     String className;
-    system->GetPropertyEx(SYSTEM_PROPERTY_PACKER,
+    system->GetProperty(SYSTEM_PROPERTY_PACKER,
         String("org.apache.harmony.pack200.Pack200PackerAdapter"), &className);
     LOAD_CLASS(packer, IPacker)
     return NOERROR;
@@ -57,7 +56,7 @@ ECode CPack200Helper::NewUnpacker(
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
 
     String className;
-    system->GetPropertyEx(SYSTEM_PROPERTY_UNPACKER,
+    system->GetProperty(SYSTEM_PROPERTY_UNPACKER,
         String("org.apache.harmony.unpack200.Pack200UnpackerAdapter"), &className);
     LOAD_CLASS(unpacker, IUnpacker)
     return NOERROR;

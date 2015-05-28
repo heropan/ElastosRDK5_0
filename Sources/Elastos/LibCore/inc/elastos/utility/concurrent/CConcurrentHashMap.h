@@ -101,7 +101,7 @@ public:
         CARAPI TryLock(
             /* [out] */ Boolean* result);
 
-        CARAPI TryLockEx(
+        CARAPI TryLock(
             /* [in] */ Int64 timeout,
             /* [in] */ ITimeUnit* unit,
             /* [out] */ Boolean* result);
@@ -462,7 +462,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* contents,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -530,7 +530,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* contents,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -604,7 +604,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -742,7 +742,7 @@ public:
      *         and this map does not permit null keys or values
      *         (<a href="../Collection.html#optional-restrictions">optional</a>)
      */
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value,
         /* [out] */ Boolean* result);
@@ -805,7 +805,7 @@ public:
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    CARAPI ReplaceEx(
+    CARAPI Replace(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value,
         /* [out] */ IInterface** result);

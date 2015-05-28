@@ -2,7 +2,6 @@
 #define __UTILITY_RESOURCEBUNDLE_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include "cmdef.h"
 #include <elastos/Mutex.h>
 
 using Elastos::Core::IClassLoader;

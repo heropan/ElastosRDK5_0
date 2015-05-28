@@ -1,7 +1,6 @@
 #ifndef __UTILITY_CENUMMAP_H__
 #define __UTILITY_CENUMMAP_H__
 
-#include "cmdef.h"
 #include "_CEnumMap.h"
 #include "AbstractMap.h"
 #include "AbstractSet.h"
@@ -171,7 +170,7 @@ private:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -254,7 +253,7 @@ private:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -351,7 +350,7 @@ private:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 

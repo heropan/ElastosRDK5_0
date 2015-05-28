@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CConcurrentHashMap.h"
 #include "ObjectUtils.h"
 #include <elastos/Math.h>
@@ -375,12 +374,12 @@ ECode CConcurrentHashMap::Segment::TryLock(
     return ReentrantLock::TryLock(result);
 }
 
-ECode CConcurrentHashMap::Segment::TryLockEx(
+ECode CConcurrentHashMap::Segment::TryLock(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ Boolean* result)
 {
-    return ReentrantLock::TryLockEx(timeout, unit, result);
+    return ReentrantLock::TryLock(timeout, unit, result);
 }
 
 ECode CConcurrentHashMap::Segment::UnLock()
@@ -799,11 +798,11 @@ ECode CConcurrentHashMap::_KeySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CConcurrentHashMap::_KeySet::ToArrayEx(
+ECode CConcurrentHashMap::_KeySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(contents, outArray);
+    return AbstractSet::ToArray(contents, outArray);
 }
 
 ECode CConcurrentHashMap::_KeySet::Equals(
@@ -914,11 +913,11 @@ ECode CConcurrentHashMap::_Values::ToArray(
     return AbstractCollection::ToArray(array);
 }
 
-ECode CConcurrentHashMap::_Values::ToArrayEx(
+ECode CConcurrentHashMap::_Values::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractCollection::ToArrayEx(contents, outArray);
+    return AbstractCollection::ToArray(contents, outArray);
 }
 
 ECode CConcurrentHashMap::_Values::Equals(
@@ -1000,7 +999,7 @@ ECode CConcurrentHashMap::_EntrySet::Remove(
     AutoPtr<IInterface> outface;
     e->GetKey((IInterface**)&keyface);
     e->GetValue((IInterface**)&valueface);
-    return mHost->RemoveEx(keyface, valueface, result);
+    return mHost->Remove(keyface, valueface, result);
 }
 
 ECode CConcurrentHashMap::_EntrySet::GetSize(
@@ -1074,11 +1073,11 @@ ECode CConcurrentHashMap::_EntrySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CConcurrentHashMap::_EntrySet::ToArrayEx(
+ECode CConcurrentHashMap::_EntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 //===============================================================================
@@ -1182,7 +1181,7 @@ ECode CConcurrentHashMap::PutIfAbsent(
     return NOERROR;
 }
 
-ECode CConcurrentHashMap::RemoveEx(
+ECode CConcurrentHashMap::Remove(
     /* [in] */ IInterface* key,
     /* [in] */ IInterface* value,
     /* [out] */ Boolean* result)
@@ -1214,7 +1213,7 @@ ECode CConcurrentHashMap::Replace(
     return NOERROR;
 }
 
-ECode CConcurrentHashMap::ReplaceEx(
+ECode CConcurrentHashMap::Replace(
     /* [in] */ IInterface* key,
     /* [in] */ IInterface* value,
     /* [out] */ IInterface** result)

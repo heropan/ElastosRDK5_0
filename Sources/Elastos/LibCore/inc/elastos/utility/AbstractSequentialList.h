@@ -1,7 +1,6 @@
 #ifndef __UTILITY_ABSTRACTSEQUENTIALLIST_H__
 #define __UTILITY_ABSTRACTSEQUENTIALLIST_H__
 
-#include "cmdef.h"
 #include "AbstractList.h"
 
 namespace Elastos {
@@ -10,11 +9,11 @@ namespace Utility {
 class AbstractSequentialList : public AbstractList
 {
 public:
-    CARAPI AddEx(
+    CARAPI Add(
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object);
 
-    CARAPI AddAllEx(
+    CARAPI AddAll(
         /* [in] */ Int32 location,
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* result);
@@ -26,11 +25,11 @@ public:
     CARAPI GetIterator(
         /* [out] */ IIterator** result);
 
-    virtual CARAPI GetListIteratorEx(
+    virtual CARAPI GetListIterator(
         /* [in] */ Int32 location,
         /* [out] */ IListIterator** it) = 0;
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [in] */ Int32 location,
         /* [out] */ IInterface** object);
 

@@ -712,11 +712,11 @@ ECode AbstractMap::AbstractMapKeySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode AbstractMap::AbstractMapKeySet::ToArrayEx(
+ECode AbstractMap::AbstractMapKeySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 
@@ -872,11 +872,11 @@ ECode AbstractMap::AbstractMapValues::ToArray(
     return AbstractCollection::ToArray(array);
 }
 
-ECode AbstractMap::AbstractMapValues::ToArrayEx(
+ECode AbstractMap::AbstractMapValues::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractCollection::ToArrayEx(inArray, outArray);
+    return AbstractCollection::ToArray(inArray, outArray);
 }
 
 

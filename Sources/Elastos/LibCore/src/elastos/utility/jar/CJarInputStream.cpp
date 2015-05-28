@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CJarInputStream.h"
 #include "CJarFile.h"
 #include "CByteArrayOutputStream.h"
@@ -61,7 +60,7 @@ ECode CJarInputStream::ReadBytes(
     return ZipInputStream::ReadBytes(buffer, number);
 }
 
-ECode CJarInputStream::ReadBytesEx(
+ECode CJarInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -69,7 +68,7 @@ ECode CJarInputStream::ReadBytesEx(
 {
     VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(number)
-    return ZipInputStream::ReadBytesEx(buffer, offset, length, number);
+    return ZipInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CJarInputStream::Reset()

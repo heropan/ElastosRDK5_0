@@ -39,7 +39,7 @@ ECode Pattern::Matcher(
     return CMatcher::New((IPattern*)this, seq, matcher);
 }
 
-ECode Pattern::MatcherEx(
+ECode Pattern::Matcher(
     /* [in] */ ICharSequence* input,
     /* [out] */ IMatcher** matcher)
 {
@@ -52,18 +52,18 @@ ECode Pattern::Split(
     /* [out, callee]*/ ArrayOf<String>** result)
 {
     VALIDATE_NOT_NULL(result);
-    return SplitEx3(inputString, 0, result);
+    return Split(inputString, 0, result);
 }
 
-ECode Pattern::SplitEx(
+ECode Pattern::Split(
     /* [in] */ ICharSequence* input,
     /* [out, callee]*/ ArrayOf<String>** result)
 {
     VALIDATE_NOT_NULL(result);
-    return SplitEx2(input, 0, result);
+    return Split(input, 0, result);
 }
 
-ECode Pattern::SplitEx2(
+ECode Pattern::Split(
     /* [in] */ ICharSequence* input,
     /* [in] */ Int32 limit,
     /* [out, callee]*/ ArrayOf<String>** result)
@@ -71,10 +71,10 @@ ECode Pattern::SplitEx2(
     VALIDATE_NOT_NULL(input);
     String s;
     input->ToString(&s);
-    return SplitEx3(s, limit, result);
+    return Split(s, limit, result);
 }
 
-ECode Pattern::SplitEx3(
+ECode Pattern::Split(
     /* [in] */ const String& input,
     /* [in] */ Int32 limit,
     /* [out, callee]*/ ArrayOf<String>** result)

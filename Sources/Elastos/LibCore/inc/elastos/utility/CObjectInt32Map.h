@@ -2,7 +2,6 @@
 #ifndef __COBJECTInt32MAP_H__
 #define __COBJECTInt32MAP_H__
 
-#include "cmdef.h"
 #include "_CObjectInt32Map.h"
 #include <elastos/HashMap.h>
 

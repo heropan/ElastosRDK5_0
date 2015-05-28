@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CDeflaterInputStream.h"
 
 namespace Elastos {
@@ -64,14 +63,14 @@ ECode CDeflaterInputStream::ReadBytes(
     return DeflaterInputStream::ReadBytes(buffer, number);
 }
 
-ECode CDeflaterInputStream::ReadBytesEx(
+ECode CDeflaterInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    return DeflaterInputStream::ReadBytesEx(buffer, offset, length, number);
+    return DeflaterInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CDeflaterInputStream::Reset()

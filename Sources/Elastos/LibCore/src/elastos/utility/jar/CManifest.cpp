@@ -423,7 +423,7 @@ ECode CManifest::WriteEntry(
     while (TRUE) {
         AutoPtr<ICoderResult> r, underflow;
         AutoPtr<ICoderResultHelper> helper;
-        encoder->EncodeEx(cBuf, bBuf, TRUE, (ICoderResult**)&r);
+        encoder->Encode(cBuf, bBuf, TRUE, (ICoderResult**)&r);
         CCoderResultHelper::AcquireSingleton((ICoderResultHelper**)&helper);
         helper->GetUNDERFLOW((ICoderResult**)&underflow);
         if (underflow == r) {
@@ -435,7 +435,7 @@ ECode CManifest::WriteEntry(
         bBuf->GetArray((ArrayOf<Byte>**)&bBufArray);
         bBuf->GetArrayOffset(&arrayOffset);
         bBuf->GetPosition(&position);
-        os->WriteBytesEx(*bBufArray, arrayOffset, position);
+        os->WriteBytes(*bBufArray, arrayOffset, position);
         os->WriteBytes(*LINE_SEPARATOR);
         if (underflow == r) {
             break;

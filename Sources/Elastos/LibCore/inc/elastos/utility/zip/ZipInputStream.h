@@ -10,7 +10,6 @@
 #include "Elastos.CoreLibrary.h"
 #endif
 
-#include "cmdef.h"
 #include "InflaterInputStream.h"
 #include "CZipEntry.h"
 #include "CCRC32.h"
@@ -84,7 +83,7 @@ public:
      * @return the number of bytes read
      */
     //@Override
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,

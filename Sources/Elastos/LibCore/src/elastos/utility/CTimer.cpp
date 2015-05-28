@@ -47,14 +47,14 @@ ECode CTimer::Schedule(
     return Timer::Schedule(task, when);
 }
 
-ECode CTimer::ScheduleEx(
+ECode CTimer::Schedule(
     /* [in] */ ITimerTask* task,
     /* [in] */ Int64 delay)
 {
     return Timer::Schedule(task, delay);
 }
 
-ECode CTimer::ScheduleEx2(
+ECode CTimer::Schedule(
     /* [in] */ ITimerTask* task,
     /* [in] */ Int64 delay,
     /* [in] */ Int64 period)
@@ -62,7 +62,7 @@ ECode CTimer::ScheduleEx2(
     return Timer::Schedule(task, delay, period);
 }
 
-ECode CTimer::ScheduleEx3(
+ECode CTimer::Schedule(
     /* [in] */ ITimerTask* task,
     /* [in] */ IDate* when,
     /* [in] */ Int64 period)
@@ -78,7 +78,7 @@ ECode CTimer::ScheduleAtFixedRate(
     return Timer::ScheduleAtFixedRate(task, delay, period);
 }
 
-ECode CTimer::scheduleAtFixedRateEx(
+ECode CTimer::scheduleAtFixedRate(
     /* [in] */ ITimerTask* task,
     /* [in] */ IDate* when,
     /* [in] */ Int64 period)

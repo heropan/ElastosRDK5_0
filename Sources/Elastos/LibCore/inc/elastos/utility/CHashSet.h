@@ -293,7 +293,7 @@ public:
      *                if the type of an element in this {@code Collection} cannot be
      *                stored in the type of the specified array.
      */
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* inArray,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 

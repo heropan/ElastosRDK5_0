@@ -52,7 +52,7 @@ public:
      *             if this stream is closed or some I/O error occurs.
      */
     //@Override
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 off,
         /* [in] */ Int32 nbytes,

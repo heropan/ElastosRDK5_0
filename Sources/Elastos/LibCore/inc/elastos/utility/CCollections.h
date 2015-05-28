@@ -80,7 +80,7 @@ public:
         CARAPI ToString(
             /* [out] */ String* str);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -114,11 +114,11 @@ public:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI AddEx(
+        CARAPI Add(
             /* [in] */ Int32 location,
             /* [in] */ IInterface* object);
 
-        CARAPI AddAllEx(
+        CARAPI AddAll(
             /* [in] */ Int32 location,
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
@@ -145,11 +145,11 @@ public:
         CARAPI GetListIterator(
             /* [out] */ IListIterator** it);
 
-        CARAPI GetListIteratorEx(
+        CARAPI GetListIterator(
             /* [in] */ Int32 location,
             /* [out] */ IListIterator** it);
 
-        CARAPI RemoveEx(
+        CARAPI Remove(
             /* [in] */ Int32 location,
             /* [out] */ IInterface** object);
 
@@ -205,7 +205,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -305,7 +305,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -564,7 +564,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -691,15 +691,15 @@ private:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
-        CARAPI AddEx(
+        CARAPI Add(
             /* [in] */ Int32 location,
             /* [in] */ IInterface* object);
 
-        CARAPI AddAllEx(
+        CARAPI AddAll(
             /* [in] */ Int32 location,
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
@@ -715,11 +715,11 @@ private:
         CARAPI GetListIterator(
             /* [out] */ IListIterator** it);
 
-        CARAPI GetListIteratorEx(
+        CARAPI GetListIterator(
             /* [in] */ Int32 location,
             /* [out] */ IListIterator** it);
 
-        CARAPI RemoveEx(
+        CARAPI Remove(
             /* [in] */ Int32 location,
             /* [out] */ IInterface** object);
 
@@ -808,15 +808,15 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* contents,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
-        CARAPI AddEx(
+        CARAPI Add(
             /* [in] */ Int32 location,
             /* [in] */ IInterface* object);
 
-        CARAPI AddAllEx(
+        CARAPI AddAll(
             /* [in] */ Int32 location,
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* result);
@@ -837,11 +837,11 @@ public:
             /* [in] */ Int32 end,
             /* [out] */ IList** subList);
 
-        CARAPI GetListIteratorEx(
+        CARAPI GetListIterator(
             /* [in] */ Int32 location,
             /* [out] */ IListIterator** listiterator);
 
-        CARAPI RemoveEx(
+        CARAPI Remove(
             /* [in] */ Int32 location,
             /* [out] */ IInterface** object);
 
@@ -907,7 +907,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -1106,7 +1106,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -1176,15 +1176,15 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
-        CARAPI AddEx(
+        CARAPI Add(
             /* [in] */ Int32 location,
             /* [in] */ IInterface* object);
 
-        CARAPI AddAllEx(
+        CARAPI AddAll(
             /* [in] */ Int32 location,
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
@@ -1200,11 +1200,11 @@ public:
         CARAPI GetListIterator(
             /* [out] */ IListIterator** it);
 
-        CARAPI GetListIteratorEx(
+        CARAPI GetListIterator(
             /* [in] */ Int32 location,
             /* [out] */ IListIterator** it);
 
-        CARAPI RemoveEx(
+        CARAPI Remove(
             /* [in] */ Int32 location,
             /* [out] */ IInterface** object);
 
@@ -1331,7 +1331,7 @@ public:
             CARAPI ToArray(
                 /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-            CARAPI ToArrayEx(
+            CARAPI ToArray(
                 /* [in] */ ArrayOf<IInterface*>* inArray,
                 /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -1472,7 +1472,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -1570,11 +1570,11 @@ public:
         CARAPI GetListIterator(
             /* [out] */ IListIterator** it);
 
-        CARAPI GetListIteratorEx(
+        CARAPI GetListIterator(
             /* [in] */ Int32 location,
             /* [out] */ IListIterator** it);
 
-        CARAPI RemoveEx(
+        CARAPI Remove(
             /* [in] */ Int32 location,
             /* [out] */ IInterface** object);
 
@@ -1622,15 +1622,15 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
-        CARAPI AddEx(
+        CARAPI Add(
             /* [in] */ Int32 location,
             /* [in] */ IInterface* object);
 
-        CARAPI AddAllEx(
+        CARAPI AddAll(
             /* [in] */ Int32 location,
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
@@ -1720,7 +1720,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
     };
@@ -1803,7 +1803,7 @@ public:
             CARAPI ToArray(
                 /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-            CARAPI ToArrayEx(
+            CARAPI ToArray(
                 /* [in] */ ArrayOf<IInterface*>* inArray,
                 /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -2024,7 +2024,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -2087,7 +2087,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* contents,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -2149,7 +2149,7 @@ public:
         CARAPI Element(
             /* [out] */ IInterface** object);
 
-        CARAPI RemoveEx(
+        CARAPI Remove(
             /* [out] */ IInterface** obj);
 
         CARAPI Contains(
@@ -2178,7 +2178,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* contents,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -2227,7 +2227,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -2325,7 +2325,7 @@ public:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI AddAllEx(
+        CARAPI AddAll(
             /* [in] */ Int32 location,
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
@@ -2339,11 +2339,11 @@ public:
             /* [in] */ IInterface* object,
             /* [out] */ IInterface** prevObject);
 
-        CARAPI AddEx(
+        CARAPI Add(
             /* [in] */ Int32 location,
             /* [in] */ IInterface* object);
 
-        CARAPI RemoveEx(
+        CARAPI Remove(
             /* [in] */ Int32 location,
             /* [out] */ IInterface** object);
 
@@ -2358,7 +2358,7 @@ public:
         CARAPI GetListIterator(
             /* [out] */ IListIterator** it);
 
-        CARAPI GetListIteratorEx(
+        CARAPI GetListIterator(
             /* [in] */ Int32 location,
             /* [out] */ IListIterator** it);
 
@@ -2416,7 +2416,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -2502,7 +2502,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
     };
@@ -2598,7 +2598,7 @@ public:
             CARAPI ToArray(
                 /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-            CARAPI ToArrayEx(
+            CARAPI ToArray(
                 /* [in] */ ArrayOf<IInterface*>* inArray,
                 /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -2756,7 +2756,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -2900,7 +2900,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Int32* index);
 
-    CARAPI BinarySearchEx(
+    CARAPI BinarySearch(
         /* [in] */ IList* list,
         /* [in] */ IInterface* object,
         /* [in] */ IComparator* comparator,
@@ -2922,7 +2922,7 @@ public:
         /* [in] */ ICollection* collection,
         /* [out] */ IInterface** result);
 
-    CARAPI MaxEx(
+    CARAPI Max(
         /* [in] */ ICollection* collection,
         /* [in] */ IComparator* comparator,
         /* [out] */ IInterface** result);
@@ -2931,7 +2931,7 @@ public:
         /* [in] */ ICollection* collection,
         /* [out] */ IInterface** result);
 
-    CARAPI MinEx(
+    CARAPI Min(
         /* [in] */ ICollection* collection,
         /* [in] */ IComparator* comparator,
         /* [out] */ IInterface** result);
@@ -2947,14 +2947,14 @@ public:
     CARAPI ReverseOrder(
         /* [out] */ IComparator** result);
 
-    CARAPI ReverseOrderEx(
+    CARAPI ReverseOrder(
         /* [in] */ IComparator* c,
         /* [out] */ IComparator** result);
 
     CARAPI Shuffle(
         /* [in] */ IList* list);
 
-    CARAPI ShuffleEx(
+    CARAPI Shuffle(
         /* [in] */ IList* list,
         /* [in] */ IRandom* random);
 
@@ -2974,7 +2974,7 @@ public:
     CARAPI Sort(
         /* [in] */ IList* list);
 
-    CARAPI SortEx(
+    CARAPI Sort(
         /* [in] */ IList* list,
         /* [in] */ IComparator* comparator);
 
@@ -3138,7 +3138,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Int32* index);
 
-    static CARAPI _BinarySearchEx(
+    static CARAPI _BinarySearch(
         /* [in] */ IList* list,
         /* [in] */ IInterface* object,
         /* [in] */ IComparator* comparator,
@@ -3160,7 +3160,7 @@ public:
         /* [in] */ ICollection* collection,
         /* [out] */ IInterface** result);
 
-    static CARAPI _MaxEx(
+    static CARAPI _Max(
         /* [in] */ ICollection* collection,
         /* [in] */ IComparator* comparator,
         /* [out] */ IInterface** result);
@@ -3169,7 +3169,7 @@ public:
         /* [in] */ ICollection* collection,
         /* [out] */ IInterface** result);
 
-    static CARAPI _MinEx(
+    static CARAPI _Min(
         /* [in] */ ICollection* collection,
         /* [in] */ IComparator* comparator,
         /* [out] */ IInterface** result);
@@ -3185,14 +3185,14 @@ public:
     static CARAPI _ReverseOrder(
         /* [out] */ IComparator** result);
 
-    static CARAPI _ReverseOrderEx(
+    static CARAPI _ReverseOrder(
         /* [in] */ IComparator* c,
         /* [out] */ IComparator** result);
 
     static CARAPI _Shuffle(
         /* [in] */ IList* list);
 
-    static CARAPI _ShuffleEx(
+    static CARAPI _Shuffle(
         /* [in] */ IList* list,
         /* [in] */ IRandom* random);
 
@@ -3212,7 +3212,7 @@ public:
     static CARAPI _Sort(
         /* [in] */ IList* list);
 
-    static CARAPI _SortEx(
+    static CARAPI _Sort(
         /* [in] */ IList* list,
         /* [in] */ IComparator* comparator);
 

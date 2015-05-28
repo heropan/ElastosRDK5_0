@@ -42,7 +42,7 @@ public:
      * @return the number of bytes of compressed data written to {@code buf}.
      */
     // synchronized
-    CARAPI DeflateEx(
+    CARAPI Deflate(
         /* [out] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
@@ -66,7 +66,7 @@ public:
      * @since 1.7
      */
     // synchronized
-    CARAPI DeflateEx2(
+    CARAPI Deflate(
         /* [out] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
@@ -191,7 +191,7 @@ public:
      * @see Deflater#Deflater(int, boolean)
      */
     // synchronized
-    CARAPI SetDictionaryEx(
+    CARAPI SetDictionary(
         /* [in] */ const ArrayOf<Byte>& buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);
@@ -218,7 +218,7 @@ public:
      *            the length of the data.
      */
     // synchronized
-    CARAPI SetInputEx(
+    CARAPI SetInput(
         /* [in] */ const ArrayOf<Byte>& buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);

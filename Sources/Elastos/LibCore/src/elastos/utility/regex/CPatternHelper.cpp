@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CPatternHelper.h"
 #include "Pattern.h"
 
@@ -7,7 +6,7 @@ namespace Elastos {
 namespace Utility {
 namespace Regex {
 
-ECode CPatternHelper::CompileEx(
+ECode CPatternHelper::Compile(
     /* [in] */ const String& regularExpression,
     /* [in] */ Int32 flags,
     /* [out] */ IPattern** obj)
@@ -34,7 +33,7 @@ ECode CPatternHelper::Matches(
     return NOERROR;
 }
 
-ECode CPatternHelper::MatchesEx(
+ECode CPatternHelper::Matches(
     /* [in] */ const String& regularExpression,
     /* [in] */ ICharSequence* input,
     /* [out] */ Boolean* isMatch)

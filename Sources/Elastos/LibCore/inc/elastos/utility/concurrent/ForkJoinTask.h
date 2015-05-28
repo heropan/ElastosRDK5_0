@@ -111,7 +111,7 @@ public:
     virtual CARAPI Get(
         /* [out] */ IInterface** res);
 
-    virtual CARAPI GetEx(
+    virtual CARAPI Get(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ IInterface** res);
@@ -129,10 +129,10 @@ public:
         /* [in] */ IForkJoinTask* t1,
         /* [in] */ IForkJoinTask* t2);
 
-    static CARAPI_(void) InvokeAllEx(
+    static CARAPI_(void) InvokeAll(
         /* [in] */ ArrayOf<IForkJoinTask*>* tasks);
 
-    static CARAPI_(AutoPtr<ICollection>) InvokeAllEx2(
+    static CARAPI_(AutoPtr<ICollection>) InvokeAll(
         /* [in] */ ICollection* tasks);
 
     static CARAPI_(void) HelpQuiesce();
@@ -148,11 +148,11 @@ public:
     static CARAPI_(AutoPtr<IForkJoinTask>) Adapt(
         /* [in] */ IRunnable* runnable);
 
-    static CARAPI_(AutoPtr<IForkJoinTask>) AdaptEx(
+    static CARAPI_(AutoPtr<IForkJoinTask>) Adapt(
         /* [in] */ IRunnable* runnable,
         /* [in] */ IInterface* result);
 
-    static CARAPI_(AutoPtr<IForkJoinTask>) AdaptEx2(
+    static CARAPI_(AutoPtr<IForkJoinTask>) Adapt(
         /* [in] */ ICallable* callable);
 
     /**

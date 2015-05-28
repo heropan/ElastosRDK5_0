@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CSimpleTimeZone.h"
 #include "Grego.h"
 #include "Calendar.h"
@@ -183,7 +182,7 @@ ECode CSimpleTimeZone::GetDSTSavings(
     return NOERROR;
 }
 
-ECode CSimpleTimeZone::GetOffsetEx(
+ECode CSimpleTimeZone::GetOffset(
     /* [in] */ Int32 era,
     /* [in] */ Int32 year,
     /* [in] */ Int32 month,
@@ -352,7 +351,7 @@ ECode CSimpleTimeZone::GetOffset(
     }
 
     AutoPtr<ArrayOf<Int32> >fields = Grego::TimeToFields(time + mRawOffset, NULL);
-    return GetOffsetEx(IGregorianCalendar::AD, (*fields)[0], (*fields)[1], (*fields)[2],
+    return GetOffset(IGregorianCalendar::AD, (*fields)[0], (*fields)[1], (*fields)[2],
             (*fields)[3], (*fields)[5], pOffset);
 }
 
@@ -534,7 +533,7 @@ ECode CSimpleTimeZone::SetEndRule(
     return SetEndMode();
 }
 
-ECode CSimpleTimeZone::SetEndRuleEx(
+ECode CSimpleTimeZone::SetEndRule(
     /* [in] */ Int32 month,
     /* [in] */ Int32 day,
     /* [in] */ Int32 dayOfWeek,
@@ -548,7 +547,7 @@ ECode CSimpleTimeZone::SetEndRuleEx(
     return SetEndMode();
 }
 
-ECode CSimpleTimeZone::SetEndRuleEx2(
+ECode CSimpleTimeZone::SetEndRule(
     /* [in] */ Int32 month,
     /* [in] */ Int32 day,
     /* [in] */ Int32 dayOfWeek,
@@ -620,7 +619,7 @@ ECode CSimpleTimeZone::SetStartRule(
     return SetStartMode();
 }
 
-ECode CSimpleTimeZone::SetStartRuleEx(
+ECode CSimpleTimeZone::SetStartRule(
     /* [in] */ Int32 month,
     /* [in] */ Int32 day,
     /* [in] */ Int32 dayOfWeek,
@@ -634,7 +633,7 @@ ECode CSimpleTimeZone::SetStartRuleEx(
     return SetStartMode();
 }
 
-ECode CSimpleTimeZone::SetStartRuleEx2(
+ECode CSimpleTimeZone::SetStartRule(
     /* [in] */ Int32 month,
     /* [in] */ Int32 day,
     /* [in] */ Int32 dayOfWeek,
@@ -734,28 +733,28 @@ ECode CSimpleTimeZone::GetDisplayName(
     return TimeZone::GetDisplayName(name);
 }
 
-ECode CSimpleTimeZone::GetDisplayNameEx(
+ECode CSimpleTimeZone::GetDisplayName(
     /* [in] */ ILocale* locale,
     /* [out] */ String* name)
 {
-    return TimeZone::GetDisplayNameEx(locale, name);
+    return TimeZone::GetDisplayName(locale, name);
 }
 
-ECode CSimpleTimeZone::GetDisplayNameEx2(
+ECode CSimpleTimeZone::GetDisplayName(
     /* [in] */ Boolean daylightTime,
     /* [in] */ Int32 style,
     /* [out] */ String* name)
 {
-    return TimeZone::GetDisplayNameEx2(daylightTime, style, name);
+    return TimeZone::GetDisplayName(daylightTime, style, name);
 }
 
-ECode CSimpleTimeZone::GetDisplayNameEx3(
+ECode CSimpleTimeZone::GetDisplayName(
     /* [in] */ Boolean daylightTime,
     /* [in] */ Int32 style,
     /* [in] */ ILocale* locale,
     /* [out] */ String* name)
 {
-    return TimeZone::GetDisplayNameEx3(daylightTime, style, locale, name);
+    return TimeZone::GetDisplayName(daylightTime, style, locale, name);
 }
 
 // private void writeObject(ObjectOutputStream stream) throws IOException {

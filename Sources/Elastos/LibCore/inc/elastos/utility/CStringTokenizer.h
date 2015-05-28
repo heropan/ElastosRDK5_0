@@ -2,7 +2,6 @@
 #define __UTILITY_CSTINGTOKENIZER_H__
 
 #include "_CStringTokenizer.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Utility {
@@ -109,7 +108,7 @@ public:
      * @throws NoSuchElementException
      *                if no tokens remain.
      */
-    CARAPI NextTokenEx(
+    CARAPI NextToken(
         /* [in] */ const String& delims,
         /* [out] */ String* str);
 

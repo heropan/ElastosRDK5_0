@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CForkJoinWorkerThread.h"
 #include "CForkJoinPool.h"
 #include "ForkJoinTask.h"
@@ -737,17 +736,17 @@ ECode CForkJoinWorkerThread::Join()
     return Thread::Join();
 }
 
-ECode CForkJoinWorkerThread::JoinEx(
+ECode CForkJoinWorkerThread::Join(
     /* [in] */ Int64 millis)
 {
-    return Thread::JoinEx(millis);
+    return Thread::Join(millis);
 }
 
-ECode CForkJoinWorkerThread::JoinEx2(
+ECode CForkJoinWorkerThread::Join(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {
-    return Thread::JoinEx2(millis, nanos);
+    return Thread::Join(millis, nanos);
 }
 
 ECode CForkJoinWorkerThread::Resume()
@@ -859,13 +858,13 @@ ECode CForkJoinWorkerThread::Wait()
     return Thread::Wait();
 }
 
-ECode CForkJoinWorkerThread::WaitEx(
+ECode CForkJoinWorkerThread::Wait(
     /* [in] */ Int64 millis)
 {
     return Thread::Wait(millis);
 }
 
-ECode CForkJoinWorkerThread::WaitEx2(
+ECode CForkJoinWorkerThread::Wait(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {

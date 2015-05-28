@@ -461,7 +461,7 @@ ECode CArrayDeque::Offer(
     return OfferLast(e, value);
 }
 
-ECode CArrayDeque::RemoveEx(
+ECode CArrayDeque::Remove(
     /* [out] */ IInterface** e)
 {
     return RemoveFirst(e);
@@ -656,7 +656,7 @@ ECode CArrayDeque::ToArray(
     return NOERROR;
 }
 
-ECode CArrayDeque::ToArrayEx(
+ECode CArrayDeque::ToArray(
     /* [in] */ ArrayOf<IInterface*>* _a,
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {

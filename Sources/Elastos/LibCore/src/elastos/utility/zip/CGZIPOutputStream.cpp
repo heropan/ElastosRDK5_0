@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CGZIPOutputStream.h"
 
 namespace Elastos {
@@ -21,13 +20,13 @@ ECode CGZIPOutputStream::Finish()
     return NOERROR;
 }
 
-ECode CGZIPOutputStream::WriteBytesEx(
+ECode CGZIPOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes)
 {
-    FAIL_RETURN(DeflaterOutputStream::WriteBytesEx(buffer, off, nbytes));
-    return mCrc->UpdateEx2(buffer, off, nbytes);
+    FAIL_RETURN(DeflaterOutputStream::WriteBytes(buffer, off, nbytes));
+    return mCrc->Update(buffer, off, nbytes);
 }
 
 Int64 CGZIPOutputStream::WriteInt64(

@@ -114,7 +114,7 @@ public:
      * @return the number of bytes inflated.
      */
     // synchronized
-    CARAPI InflateEx(
+    CARAPI Inflate(
         /* [out] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
@@ -158,7 +158,7 @@ public:
      * #needsDictionary} for details.
      */
     // synchronized
-    CARAPI SetDictionaryEx(
+    CARAPI SetDictionary(
         /* [in] */ const ArrayOf<Byte>& buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);
@@ -175,7 +175,7 @@ public:
      * called if {@link #needsInput} returns {@code true}.
      */
     // synchronized
-    CARAPI SetInputEx(
+    CARAPI SetInput(
         /* [in] */ const ArrayOf<Byte>& buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);

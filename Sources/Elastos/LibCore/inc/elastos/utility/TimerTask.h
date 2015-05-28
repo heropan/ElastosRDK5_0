@@ -1,7 +1,6 @@
 #ifndef __TIMERTASK_H__
 #define __TIMERTASK_H__
 
-#include "cmdef.h"
 #ifdef DELASTOS_CORE
 #include "Elastos.CoreLibrary_server.h"
 #else

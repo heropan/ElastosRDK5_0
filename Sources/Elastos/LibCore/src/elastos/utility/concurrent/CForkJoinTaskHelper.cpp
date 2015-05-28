@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CForkJoinTaskHelper.h"
 #include "ForkJoinTask.h"
 
@@ -21,19 +20,19 @@ ECode CForkJoinTaskHelper::InvokeAll(
     return NOERROR;
 }
 
-ECode CForkJoinTaskHelper::InvokeAllEx(
+ECode CForkJoinTaskHelper::InvokeAll(
     /* [in] */ ArrayOf<IForkJoinTask*>* tasks)
 {
-    ForkJoinTask::InvokeAllEx(tasks);
+    ForkJoinTask::InvokeAll(tasks);
     return NOERROR;
 }
 
-ECode CForkJoinTaskHelper::InvokeAllEx2(
+ECode CForkJoinTaskHelper::InvokeAll(
     /* [in] */ ICollection* tasks,
     /* [out] */ ICollection** outcol)
 {
     VALIDATE_NOT_NULL(outcol);
-    AutoPtr<ICollection> p = ForkJoinTask::InvokeAllEx2(tasks);
+    AutoPtr<ICollection> p = ForkJoinTask::InvokeAll(tasks);
     *outcol = p.Get();
     INTERFACE_ADDREF(*outcol);
     return NOERROR;
@@ -90,24 +89,24 @@ ECode CForkJoinTaskHelper::Adapt(
     return NOERROR;
 }
 
-ECode CForkJoinTaskHelper::AdaptEx(
+ECode CForkJoinTaskHelper::Adapt(
     /* [in] */ IRunnable* runnable,
     /* [in] */ IInterface* result,
     /* [out] */ IForkJoinTask** outjoin)
 {
     VALIDATE_NOT_NULL(outjoin);
-    AutoPtr<IForkJoinTask> res = ForkJoinTask::AdaptEx(runnable, result);
+    AutoPtr<IForkJoinTask> res = ForkJoinTask::Adapt(runnable, result);
     *outjoin = res.Get();
     INTERFACE_ADDREF(*outjoin);
     return NOERROR;
 }
 
-ECode CForkJoinTaskHelper::AdaptEx2(
+ECode CForkJoinTaskHelper::Adapt(
     /* [in] */ ICallable* callable,
     /* [out] */ IForkJoinTask** outjoin)
 {
     VALIDATE_NOT_NULL(outjoin);
-    AutoPtr<IForkJoinTask> res = ForkJoinTask::AdaptEx2(callable);
+    AutoPtr<IForkJoinTask> res = ForkJoinTask::Adapt(callable);
     *outjoin = res.Get();
     INTERFACE_ADDREF(*outjoin);
     return NOERROR;

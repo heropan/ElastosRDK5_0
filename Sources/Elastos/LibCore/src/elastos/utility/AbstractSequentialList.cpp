@@ -3,16 +3,16 @@
 namespace Elastos {
 namespace Utility {
 
-ECode AbstractSequentialList::AddEx(
+ECode AbstractSequentialList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
     AutoPtr<IListIterator> it;
-    GetListIteratorEx(location, (IListIterator**)&it);
+    GetListIterator(location, (IListIterator**)&it);
     return it->Add(object);
 }
 
-ECode AbstractSequentialList::AddAllEx(
+ECode AbstractSequentialList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
@@ -20,7 +20,7 @@ ECode AbstractSequentialList::AddAllEx(
     VALIDATE_NOT_NULL(collection);
     VALIDATE_NOT_NULL(result);
     AutoPtr<IListIterator> it;
-    GetListIteratorEx(0, (IListIterator**)&it);
+    GetListIterator(0, (IListIterator**)&it);
     AutoPtr<IIterator> colIt;
     collection->GetIterator((IIterator**)&colIt);
     Int32 next;
@@ -44,7 +44,7 @@ ECode AbstractSequentialList::Get(
     VALIDATE_NOT_NULL(object);
     // try {
     AutoPtr<IListIterator> listiterator;
-    GetListIteratorEx(location, (IListIterator**)&listiterator);
+    GetListIterator(location, (IListIterator**)&listiterator);
     ECode ec = listiterator->Next(object);
     if (FAILED(ec)) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -60,20 +60,20 @@ ECode AbstractSequentialList::GetIterator(
 {
     VALIDATE_NOT_NULL(result);
     AutoPtr<IListIterator> listiterator;
-    GetListIteratorEx(0, (IListIterator**)&listiterator);
+    GetListIterator(0, (IListIterator**)&listiterator);
     *result = listiterator;
     INTERFACE_ADDREF(*result);
     return NOERROR;
 }
 
-ECode AbstractSequentialList::RemoveEx(
+ECode AbstractSequentialList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
     // try {
     AutoPtr<IListIterator> it;
-    GetListIteratorEx(location, (IListIterator**)&it);
+    GetListIterator(location, (IListIterator**)&it);
     ECode ec = it->Next(object);
     if (FAILED(ec)) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -91,7 +91,7 @@ ECode AbstractSequentialList::Set(
 {
     VALIDATE_NOT_NULL(prevObject);
     AutoPtr<IListIterator> it;
-    GetListIteratorEx(location, (IListIterator**)&it);
+    GetListIterator(location, (IListIterator**)&it);
     Boolean hasnext = FALSE;
     it->HasNext(&hasnext);
     if (!hasnext) {

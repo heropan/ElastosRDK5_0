@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "ZipOutputStream.h"
 #include "CZipFile.h"
 #include <elastos/Algorithm.h>
@@ -363,7 +362,7 @@ Int32 ZipOutputStream::WriteInt16(
 
 }
 
-ECode ZipOutputStream::WriteBytesEx(
+ECode ZipOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
@@ -383,12 +382,12 @@ ECode ZipOutputStream::WriteBytesEx(
     Int32 method;
     mCurrentEntry->GetMethod(&method);
     if (method == IZipOutputStream::STORED) {
-        FAIL_RETURN(mOut->WriteBytesEx(buffer, offset, byteCount));
+        FAIL_RETURN(mOut->WriteBytes(buffer, offset, byteCount));
     }
     else {
-        FAIL_RETURN(DeflaterOutputStream::WriteBytesEx(buffer, offset, byteCount));
+        FAIL_RETURN(DeflaterOutputStream::WriteBytes(buffer, offset, byteCount));
     }
-    return mCrc->UpdateEx2(buffer, offset, byteCount);
+    return mCrc->Update(buffer, offset, byteCount);
 }
 
 Int32 ZipOutputStream::GetUtf8Count(

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CIdentityHashMap.h"
 #include "CSystem.h"
 #include "elastos/ObjectUtils.h"
@@ -930,11 +929,11 @@ ECode CIdentityHashMap::IdentityHashMapEntrySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CIdentityHashMap::IdentityHashMapEntrySet::ToArrayEx(
+ECode CIdentityHashMap::IdentityHashMapEntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 
@@ -1099,11 +1098,11 @@ ECode CIdentityHashMap::IdentityHashMapKeySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CIdentityHashMap::IdentityHashMapKeySet::ToArrayEx(
+ECode CIdentityHashMap::IdentityHashMapKeySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(inArray, outArray);
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 //==========================================================
@@ -1274,11 +1273,11 @@ ECode CIdentityHashMap::IdentityHashMapValues::ToArray(
     return AbstractCollection::ToArray(array);
 }
 
-ECode CIdentityHashMap::IdentityHashMapValues::ToArrayEx(
+ECode CIdentityHashMap::IdentityHashMapValues::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractCollection::ToArrayEx(inArray, outArray);
+    return AbstractCollection::ToArray(inArray, outArray);
 }
 
 //==========================================================

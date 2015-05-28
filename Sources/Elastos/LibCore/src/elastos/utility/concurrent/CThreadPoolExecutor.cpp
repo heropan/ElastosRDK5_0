@@ -532,7 +532,7 @@ RETRY:
         AutoPtr<IInterface> obj;
         if (timed) {
             AutoPtr<ITimeUnit> nanos = TimeUnit::GetNANOSECONDS();
-            ec = mWorkQueue->PollEx(mKeepAliveTime, nanos, (IInterface**)&obj);
+            ec = mWorkQueue->Poll(mKeepAliveTime, nanos, (IInterface**)&obj);
         }
         else {
             ec = mWorkQueue->Take((IInterface**)&obj);
@@ -1085,21 +1085,21 @@ ECode CThreadPoolExecutor::Submit(
     return AbstractExecutorService::Submit(task, future);
 }
 
-ECode CThreadPoolExecutor::SubmitEx(
+ECode CThreadPoolExecutor::Submit(
     /* [in] */ IRunnable* task,
     /* [in] */ IInterface* result,
     /* [out] */ IFuture** future)
 {
     VALIDATE_NOT_NULL(future);
-    return AbstractExecutorService::SubmitEx(task, result, future);
+    return AbstractExecutorService::Submit(task, result, future);
 }
 
-ECode CThreadPoolExecutor::SubmitEx2(
+ECode CThreadPoolExecutor::Submit(
     /* [in] */ IRunnable* task,
     /* [out] */ IFuture** future)
 {
     VALIDATE_NOT_NULL(future);
-    return AbstractExecutorService::SubmitEx2(task, future);
+    return AbstractExecutorService::Submit(task, future);
 }
 
 ECode CThreadPoolExecutor::InvokeAny(
@@ -1110,14 +1110,14 @@ ECode CThreadPoolExecutor::InvokeAny(
     return AbstractExecutorService::InvokeAny(tasks, result);
 }
 
-ECode CThreadPoolExecutor::InvokeAnyEx(
+ECode CThreadPoolExecutor::InvokeAny(
     /* [in] */ ICollection* tasks,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result);
-    return AbstractExecutorService::InvokeAnyEx(tasks, timeout, unit, result);
+    return AbstractExecutorService::InvokeAny(tasks, timeout, unit, result);
 }
 
 ECode CThreadPoolExecutor::InvokeAll(
@@ -1128,14 +1128,14 @@ ECode CThreadPoolExecutor::InvokeAll(
     return AbstractExecutorService::InvokeAll(tasks, futures);
 }
 
-ECode CThreadPoolExecutor::InvokeAllEx(
+ECode CThreadPoolExecutor::InvokeAll(
     /* [in] */ ICollection* tasks,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IList** futures)
 {
     VALIDATE_NOT_NULL(futures);
-    return AbstractExecutorService::InvokeAllEx(tasks, timeout, unit, futures);
+    return AbstractExecutorService::InvokeAll(tasks, timeout, unit, futures);
 }
 
 } // namespace Concurrent

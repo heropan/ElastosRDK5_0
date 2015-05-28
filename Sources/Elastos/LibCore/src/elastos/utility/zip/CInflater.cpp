@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CInflater.h"
 #include <elastos/Math.h>
 #include <unistd.h>
@@ -199,10 +198,10 @@ ECode CInflater::Inflate(
     VALIDATE_NOT_NULL(buf);
     VALIDATE_NOT_NULL(number);
 
-    return InflateEx(buf, 0, buf->GetLength(), number);
+    return Inflate(buf, 0, buf->GetLength(), number);
 }
 
-ECode CInflater::InflateEx(
+ECode CInflater::Inflate(
     /* [out] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
@@ -335,10 +334,10 @@ ECode CInflater::ResetImplLocked(
 ECode CInflater::SetDictionary(
     /* [in] */ const ArrayOf<Byte>& buf)
 {
-    return SetDictionaryEx(buf, 0, buf.GetLength());
+    return SetDictionary(buf, 0, buf.GetLength());
 }
 
-ECode CInflater::SetDictionaryEx(
+ECode CInflater::SetDictionary(
     /* [in] */ const ArrayOf<Byte>& buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
@@ -370,10 +369,10 @@ void CInflater::SetDictionaryImplLocked(
 ECode CInflater::SetInput(
     /* [in] */ const ArrayOf<Byte>& buf)
 {
-    return SetInputEx(buf, 0, buf.GetLength());
+    return SetInput(buf, 0, buf.GetLength());
 }
 
-ECode CInflater::SetInputEx(
+ECode CInflater::SetInput(
     /* [in] */ const ArrayOf<Byte>& buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
@@ -383,12 +382,12 @@ ECode CInflater::SetInputEx(
     FAIL_RETURN(CheckOpen());
 
     Int32 arrayLength = buf.GetLength();
-    if ((offset | byteCount) < 0 || offset > arrayLength || arrayLength - offset < byteCount) 
+    if ((offset | byteCount) < 0 || offset > arrayLength || arrayLength - offset < byteCount)
     {
 //        throw new ArrayIndexOutOfBoundsException();
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
- 
+
     mInRead = 0;
     mInLength = byteCount;
     SetInputImplLocked(buf, offset, byteCount, mStreamHandle);

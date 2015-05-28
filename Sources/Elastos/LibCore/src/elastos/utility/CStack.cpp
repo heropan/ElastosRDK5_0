@@ -28,11 +28,11 @@ UInt32 CStack::Release()
     return ElRefBase::Release();
 }
 
-ECode CStack::AddEx(
+ECode CStack::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
-    return _Vector::AddEx(location, object);
+    return _Vector::Add(location, object);
 }
 
 ECode CStack::Add(
@@ -42,12 +42,12 @@ ECode CStack::Add(
     return _Vector::Add(object, modified);
 }
 
-ECode CStack::AddAllEx(
+ECode CStack::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    return _Vector::AddAllEx(location, collection, modified);
+    return _Vector::AddAll(location, collection, modified);
 }
 
 ECode CStack::AddAll(
@@ -158,12 +158,12 @@ ECode CStack::IndexOf(
     return _Vector::IndexOf(object, index);
 }
 
-ECode CStack::IndexOfEx(
+ECode CStack::IndexOf(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 location,
     /* [out] */ Int32* value)
 {
-    return _Vector::IndexOfEx(object, location, value);
+    return _Vector::IndexOf(object, location, value);
 }
 
 ECode CStack::InsertElementAt(
@@ -192,19 +192,19 @@ ECode CStack::LastIndexOf(
     return _Vector::LastIndexOf(object, index);
 }
 
-ECode CStack::LastIndexOfEx(
+ECode CStack::LastIndexOf(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 location,
     /* [out] */ Int32* value)
 {
-    return _Vector::LastIndexOfEx(object, location, value);
+    return _Vector::LastIndexOf(object, location, value);
 }
 
-ECode CStack::RemoveEx(
+ECode CStack::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
-    return _Vector::RemoveEx(location, object);
+    return _Vector::Remove(location, object);
 }
 
 ECode CStack::Remove(
@@ -287,11 +287,11 @@ ECode CStack::ToArray(
     return _Vector::ToArray(array);
 }
 
-ECode CStack::ToArrayEx(
+ECode CStack::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return _Vector::ToArrayEx(inArray, outArray);
+    return _Vector::ToArray(inArray, outArray);
 }
 
 CARAPI CStack::ToString(
@@ -317,11 +317,11 @@ ECode CStack::GetListIterator(
     return _Vector::GetListIterator(it);
 }
 
-ECode CStack::GetListIteratorEx(
+ECode CStack::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
-    return _Vector::GetListIteratorEx(location, it);
+    return _Vector::GetListIterator(location, it);
 }
 
 ECode CStack::Empty(

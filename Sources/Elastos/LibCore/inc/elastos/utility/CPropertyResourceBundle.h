@@ -2,7 +2,6 @@
 #define __UTILITY_CPROPERTY_RESOURCE_BUNDLE_H__
 
 #include "_CPropertyResourceBundle.h"
-#include "cmdef.h"
 #include "ResourceBundle.h"
 
 using Elastos::IO::IInputStream;

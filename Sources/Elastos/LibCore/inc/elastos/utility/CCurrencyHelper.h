@@ -16,7 +16,7 @@ public:
         /* [in] */ const String& currencyCode,
         /* [out] */ ICurrency** outcur);
 
-    CARAPI GetInstanceEx(
+    CARAPI GetInstance(
         /* [in] */ ILocale* locale,
         /* [out] */ ICurrency** outcur);
 

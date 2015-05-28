@@ -75,7 +75,7 @@ public:
         CARAPI Read(
             /* [out] */ Int32* value);
 
-        CARAPI ReadBytesEx(
+        CARAPI ReadBytes(
             /* [out] */ ArrayOf<Byte>* buffer,
             /* [in] */ Int32 offset,
             /* [in] */ Int32 length,
@@ -134,7 +134,7 @@ public:
             /* [out] */ InterfaceID *pIID);
 
         //@Override
-        CARAPI ReadBytesEx(
+        CARAPI ReadBytes(
             /* [out] */ ArrayOf<Byte>* buffer,
             /* [in] */ Int32 off,
             /* [in] */ Int32 nbytes,

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "ZipEntry.h"
 
 using Elastos::IO::IStreams;
@@ -74,7 +73,7 @@ Int64 ZipEntry::GetTime()
         AutoPtr<IGregorianCalendar> cal;
         CGregorianCalendar::New((IGregorianCalendar**)&cal);
         cal->Set(ICalendar::MILLISECOND, 0);
-        cal->SetEx3(1980 + ((mModDate >> 9) & 0x7f), ((mModDate >> 5) & 0xf) - 1,
+        cal->Set(1980 + ((mModDate >> 9) & 0x7f), ((mModDate >> 5) & 0xf) - 1,
                 mModDate & 0x1f, (mTime >> 11) & 0x1f, (mTime >> 5) & 0x3f,
                 (mTime & 0x1f) << 1);
         AutoPtr<IDate> d;
@@ -232,7 +231,7 @@ ECode ZipEntry::Init(
     ArrayOf<Byte>* buf = const_cast<ArrayOf<Byte>* >(&hdrBuf);
     AutoPtr<IStreams> streams;
     CStreams::AcquireSingleton((IStreams**)&streams);
-    FAIL_RETURN(streams->ReadFullyEx(in, 0, buf->GetLength(), buf));
+    FAIL_RETURN(streams->ReadFully(in, 0, buf->GetLength(), buf));
 
     AutoPtr<IHeapBufferIterator> it;
     CHeapBufferIterator::New(buf, 0, buf->GetLength(), ByteOrder_LITTLE_ENDIAN,
@@ -277,21 +276,21 @@ ECode ZipEntry::Init(
     mLocalHeaderRelOffset = ((Int64) temp) & 0xffffffffll;
 
     AutoPtr< ArrayOf<Byte> > nameBytes = ArrayOf<Byte>::Alloc(mNameLength);
-    FAIL_RETURN(streams->ReadFullyEx(in, 0, mNameLength, nameBytes));
+    FAIL_RETURN(streams->ReadFully(in, 0, mNameLength, nameBytes));
     mName = String((const char *)nameBytes->GetPayload(), mNameLength);
 
     // The RI has always assumed UTF-8. (If GPBF_UTF8_FLAG isn't set, the encoding is
     // actually IBM-437.)
     if (commentLength > 0) {
         AutoPtr< ArrayOf<Byte> > commentBytes = ArrayOf<Byte>::Alloc(commentLength);
-        FAIL_RETURN(streams->ReadFullyEx(in, 0, commentLength, commentBytes));
+        FAIL_RETURN(streams->ReadFully(in, 0, commentLength, commentBytes));
         mComment = String((const char *)commentBytes->GetPayload(),
                 commentBytes->GetLength());
     }
 
     if (extraLength > 0) {
         mExtra = ArrayOf<Byte>::Alloc(extraLength);
-        streams->ReadFullyEx(in, 0, extraLength, mExtra);
+        streams->ReadFully(in, 0, extraLength, mExtra);
     }
 
     return NOERROR;

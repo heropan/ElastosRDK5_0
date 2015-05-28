@@ -27,12 +27,12 @@ ECode CProperties::GetProperty(
     return  Properties::GetProperty(name,str);
 }
 
-ECode CProperties::GetPropertyEx(
+ECode CProperties::GetProperty(
     /* [in] */ const String& name,
     /* [in] */ const String& defaultValue,
     /* [out] */ String* str)
 {
-    return  Properties::GetPropertyEx(name,defaultValue,str);
+    return  Properties::GetProperty(name,defaultValue,str);
 }
 
 ECode CProperties::List(
@@ -41,10 +41,10 @@ ECode CProperties::List(
     return  Properties::List(outstream);
 }
 
-ECode CProperties::ListEx(
+ECode CProperties::List(
     /* [in] */ IPrintWriter* outwriter)
 {
-    return  Properties::ListEx(outwriter);
+    return  Properties::List(outwriter);
 }
 
 ECode CProperties::Load(
@@ -53,10 +53,10 @@ ECode CProperties::Load(
     return  Properties::Load(instream);
 }
 
-ECode CProperties::LoadEx(
+ECode CProperties::Load(
     /* [in] */ IReader* inreader)
 {
-    return  Properties::LoadEx(inreader);
+    return  Properties::Load(inreader);
 }
 
 ECode CProperties::PropertyNames(
@@ -93,11 +93,11 @@ ECode CProperties::Store(
     return  Properties::Store(outstream , comment);
 }
 
-ECode CProperties::StoreEx(
+ECode CProperties::Store(
     /* [in] */ IWriter* writer,
     /* [in] */ const String& comment)
 {
-    return  Properties::StoreEx(writer, comment);
+    return  Properties::Store(writer, comment);
 }
 
 ECode CProperties::LoadFromXML(
@@ -113,12 +113,12 @@ ECode CProperties::StoreToXML(
     return  Properties::StoreToXML(os,comment);
 }
 
-ECode CProperties::StoreToXMLEx(
+ECode CProperties::StoreToXML(
     /* [in] */ IOutputStream* os,
     /* [in] */ const String& comment,
     /* [in] */ const String& encoding)
 {
-    return  Properties::StoreToXMLEx(os,comment,encoding);
+    return  Properties::StoreToXML(os,comment,encoding);
 }
 
 ECode CProperties::Clear()

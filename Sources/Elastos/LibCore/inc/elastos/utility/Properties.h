@@ -22,7 +22,7 @@ public:
         /* [in] */ const String& name,
         /* [out] */ String* str);
 
-    CARAPI GetPropertyEx(
+    CARAPI GetProperty(
         /* [in] */ const String& name,
         /* [in] */ const String& defaultValue,
         /* [out] */ String* str);
@@ -30,13 +30,13 @@ public:
     CARAPI List(
         /* [in] */ IPrintStream* outstream);
 
-    CARAPI ListEx(
+    CARAPI List(
         /* [in] */ IPrintWriter* outwriter);
 
     CARAPI Load(
         /* [in] */ IInputStream* instream);
 
-    CARAPI LoadEx(
+    CARAPI Load(
         /* [in] */ IReader* inreader);
 
     CARAPI PropertyNames(
@@ -58,7 +58,7 @@ public:
         /* [in] */ IOutputStream* outstream,
         /* [in] */ const String& comment);
 
-    CARAPI StoreEx(
+    CARAPI Store(
         /* [in] */ IWriter* writer,
         /* [in] */ const String& comment);
 
@@ -69,7 +69,7 @@ public:
         /* [in] */ IOutputStream* os,
         /* [in] */ const String& comment);
 
-    CARAPI StoreToXMLEx(
+    CARAPI StoreToXML(
         /* [in] */ IOutputStream* os,
         /* [in] */ const String& comment,
         /* [in] */ const String& encoding);

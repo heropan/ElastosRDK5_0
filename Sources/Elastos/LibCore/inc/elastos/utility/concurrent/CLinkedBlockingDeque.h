@@ -2,7 +2,6 @@
 #ifndef __CLINKEDBLOCKINGDEQUE_H__
 #define __CLINKEDBLOCKINGDEQUE_H__
 
-#include "cmdef.h"
 #include "_CLinkedBlockingDeque.h"
 #include "AbstractQueue.h"
 
@@ -200,13 +199,13 @@ public:
     CARAPI PutLast(
         /* [in] */ IInterface* e);
 
-    CARAPI OfferFirstEx(
+    CARAPI OfferFirst(
         /* [in] */ IInterface* e,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ Boolean* value);
 
-    CARAPI OfferLastEx(
+    CARAPI OfferLast(
         /* [in] */ IInterface* e,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
@@ -230,12 +229,12 @@ public:
     CARAPI TakeLast(
         /* [out] */ IInterface** outface);
 
-    CARAPI PollFirstEx(
+    CARAPI PollFirst(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ IInterface** outface);
 
-    CARAPI PollLastEx(
+    CARAPI PollLast(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ IInterface** outface);
@@ -273,13 +272,13 @@ public:
     CARAPI Put(
         /* [in] */ IInterface* e);
 
-    CARAPI OfferEx(
+    CARAPI Offer(
         /* [in] */ IInterface* e,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ Boolean* result);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [out] */ PInterface* object);
 
     CARAPI Poll(
@@ -288,7 +287,7 @@ public:
     CARAPI Take(
         /* [out] */ IInterface** e);
 
-    CARAPI PollEx(
+    CARAPI Poll(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ IInterface** e);
@@ -306,7 +305,7 @@ public:
         /* [in] */ ICollection* c,
         /* [out] */ Int32* number);
 
-    CARAPI DrainToEx(
+    CARAPI DrainTo(
         /* [in] */ ICollection* c,
         /* [in] */ Int32 maxElements,
         /* [out] */ Int32* number);
@@ -377,7 +376,7 @@ public:
     CARAPI ToArray(
         /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* inArray,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 

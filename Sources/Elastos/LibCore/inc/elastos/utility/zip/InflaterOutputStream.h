@@ -72,7 +72,7 @@ public:
      * @throws IndexOutOfBoundsException if {@code off < 0 || len < 0 || off + len > b.length}
      */
     //@Override
-    virtual CARAPI WriteBytesEx(
+    virtual CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte>& bytes,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);

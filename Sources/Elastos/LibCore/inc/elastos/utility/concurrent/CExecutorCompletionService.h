@@ -47,7 +47,7 @@ private:
         CARAPI Get(
             /* [out] */ IInterface** result);
 
-        CARAPI GetEx(
+        CARAPI Get(
             /* [in] */ Int64 timeout,
             /* [in] */ ITimeUnit* unit,
             /* [out] */ IInterface** result);
@@ -74,7 +74,7 @@ public:
         /* [in] */ ICallable* task,
         /* [out] */ IFuture** future);
 
-    CARAPI SubmitEx(
+    CARAPI Submit(
         /* [in] */ IRunnable* task,
         /* [in] */ IInterface* result,
         /* [out] */ IFuture** future);
@@ -85,7 +85,7 @@ public:
     CARAPI Poll(
         /* [out] */ IFuture** future);
 
-    CARAPI PollEx(
+    CARAPI Poll(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ IFuture** future);

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CAdler32.h"
 #include <zlib.h>
 
@@ -33,13 +32,13 @@ ECode CAdler32::Update(
     return NOERROR;
 }
 
-ECode CAdler32::UpdateEx(
+ECode CAdler32::Update(
     /* [in] */ const ArrayOf<Byte>& buf)
 {
-    return UpdateEx2(buf, 0, buf.GetLength());
+    return Update(buf, 0, buf.GetLength());
 }
 
-ECode CAdler32::UpdateEx2(
+ECode CAdler32::Update(
     /* [in] */ const ArrayOf<Byte>& buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)

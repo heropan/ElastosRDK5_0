@@ -2,7 +2,6 @@
 #define __UTILITY_ABSTRACTMAP_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include "cmdef.h"
 #include "AbstractSet.h"
 
 using Elastos::Utility::ICollection;
@@ -193,7 +192,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -284,7 +283,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 

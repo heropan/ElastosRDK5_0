@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CDeflater.h"
 
 namespace Elastos {
@@ -46,10 +45,10 @@ ECode CDeflater::Deflate(
     VALIDATE_NOT_NULL(buf);
     VALIDATE_NOT_NULL(number);
 
-    return DeflateEx(buf, 0, buf->GetLength(), number);
+    return Deflate(buf, 0, buf->GetLength(), number);
 }
 
-ECode CDeflater::DeflateEx(
+ECode CDeflater::Deflate(
     /* [out] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
@@ -63,7 +62,7 @@ ECode CDeflater::DeflateEx(
     return DeflateImplLocked(offset, byteCount, mFlushParm, buf, number);
 }
 
-ECode CDeflater::DeflateEx2(
+ECode CDeflater::Deflate(
     /* [out] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
@@ -291,10 +290,10 @@ ECode CDeflater::ResetImplLocked(
 ECode CDeflater::SetDictionary(
     /* [in] */ const ArrayOf<Byte>& buf)
 {
-    return SetDictionaryEx(buf, 0, buf.GetLength());
+    return SetDictionary(buf, 0, buf.GetLength());
 }
 
-ECode CDeflater::SetDictionaryEx(
+ECode CDeflater::SetDictionary(
     /* [in] */ const ArrayOf<Byte>& buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
@@ -324,10 +323,10 @@ void CDeflater::SetDictionaryImplLocked(
 ECode CDeflater::SetInput(
     /* [in] */ const ArrayOf<Byte>& buf)
 {
-    return SetInputEx(buf, 0, buf.GetLength());
+    return SetInput(buf, 0, buf.GetLength());
 }
 
-ECode CDeflater::SetInputEx(
+ECode CDeflater::SetInput(
     /* [in] */ const ArrayOf<Byte>& buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)

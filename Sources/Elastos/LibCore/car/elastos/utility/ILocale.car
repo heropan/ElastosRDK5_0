@@ -145,7 +145,7 @@ module
          * Returns the empty string if this locale does not correspond to a specific
          * country.
          */
-        GetDisplayCountryEx(
+        GetDisplayCountry(
             [in] ILocale* locale,
             [out] String* country);
 
@@ -159,7 +159,7 @@ module
          * Returns the name of this locale's language, localized to {locale}.
          * If the language name is unknown, the language code is returned.
          */
-        GetDisplayLanguageEx(
+        GetDisplayLanguage(
             [in] ILocale* locale,
             [out] String* language);
 
@@ -177,7 +177,7 @@ module
          * States,Computer)}, {anglais (&#x00c9;tats-Unis)}, {anglais
          * (&#x00c9;tats-Unis,informatique)}.
          */
-        GetDisplayNameEx(
+        GetDisplayName(
             [in] ILocale* locale,
             [out] String* name);
 
@@ -314,7 +314,7 @@ module
          *            the {Locale} for which the display name is retrieved.
          * @return a variant name.
          */
-        GetDisplayVariantEx(
+        GetDisplayVariant(
             [in] ILocale* locale,
             [out] String* displayVariant);
 

@@ -224,7 +224,7 @@ public:
     CARAPI Poll(
         /* [out] */ IInterface** e);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [out] */ IInterface** e);
 
     CARAPI Peek(
@@ -270,7 +270,7 @@ public:
     CARAPI ToArray(
         /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* inArray,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 

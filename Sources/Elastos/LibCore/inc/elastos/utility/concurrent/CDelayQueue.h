@@ -75,7 +75,7 @@ public:
     CARAPI Put(
         /* [in] */ IInterface* e);
 
-    CARAPI OfferEx(
+    CARAPI Offer(
         /* [in] */ IInterface* e,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
@@ -87,7 +87,7 @@ public:
     CARAPI Take(
         /* [out] */ IInterface** e);
 
-    CARAPI PollEx(
+    CARAPI Poll(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ IInterface** e);
@@ -102,7 +102,7 @@ public:
         /* [in] */ ICollection* c,
         /* [out] */ Int32* number);
 
-    CARAPI DrainToEx(
+    CARAPI DrainTo(
         /* [in] */ ICollection* c,
         /* [in] */ Int32 maxElements,
         /* [out] */ Int32* number);
@@ -115,7 +115,7 @@ public:
     CARAPI ToArray(
         /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* inArray,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -149,7 +149,7 @@ public:
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* modified);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [out] */ IInterface** e);
 
     CARAPI Element(

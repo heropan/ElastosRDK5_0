@@ -32,16 +32,16 @@ public:
         /* [in] */ ITimerTask* task,
         /* [in] */ IDate* when);
 
-    CARAPI ScheduleEx(
+    CARAPI Schedule(
         /* [in] */ ITimerTask* task,
         /* [in] */ Int64 delay);
 
-    CARAPI ScheduleEx2(
+    CARAPI Schedule(
         /* [in] */ ITimerTask* task,
         /* [in] */ Int64 delay,
         /* [in] */ Int64 period);
 
-    CARAPI ScheduleEx3(
+    CARAPI Schedule(
         /* [in] */ ITimerTask* task,
         /* [in] */ IDate* when,
         /* [in] */ Int64 period);
@@ -51,7 +51,7 @@ public:
         /* [in] */ Int64 delay,
         /* [in] */ Int64 period);
 
-    CARAPI scheduleAtFixedRateEx(
+    CARAPI scheduleAtFixedRate(
         /* [in] */ ITimerTask* task,
         /* [in] */ IDate* when,
         /* [in] */ Int64 period);

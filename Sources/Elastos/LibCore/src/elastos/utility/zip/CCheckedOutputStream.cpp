@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CCheckedOutputStream.h"
 
 namespace Elastos {
@@ -22,13 +21,13 @@ ECode CheckedOutputStream::Write(
     return mCheck->Update(val);
 }
 
-ECode CheckedOutputStream::WriteBytesEx(
+ECode CheckedOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buf,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes)
 {
-    FAIL_RETURN(mOut->WriteBytesEx(buf, off, nbytes));
-    return mCheck->UpdateEx2(buf, off, nbytes);
+    FAIL_RETURN(mOut->WriteBytes(buf, off, nbytes));
+    return mCheck->Update(buf, off, nbytes);
 }
 
 ECode CheckedOutputStream::Close()
@@ -50,7 +49,7 @@ ECode CheckedOutputStream::Flush()
 ECode CheckedOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte> & buffer)
 {
-    return WriteBytesEx(buffer, 0, buffer.GetLength());
+    return WriteBytes(buffer, 0, buffer.GetLength());
 }
 
 ECode CheckedOutputStream::CheckError(
@@ -83,12 +82,12 @@ ECode CCheckedOutputStream::Write(
     return CheckedOutputStream::Write(val);
 }
 
-ECode CCheckedOutputStream::WriteBytesEx(
+ECode CCheckedOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buf,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes)
 {
-    return CheckedOutputStream::WriteBytesEx(buf, off, nbytes);
+    return CheckedOutputStream::WriteBytes(buf, off, nbytes);
 }
 
 ECode CCheckedOutputStream::Close()

@@ -218,7 +218,7 @@ public:
      *             if the {@code Scanner} is closed.
      * @see #findInLine(Pattern)
      */
-    CARAPI FindInLineEx(
+    CARAPI FindInLine(
         /* [in] */ const String& pattern,
         /* [out] */ String* str);
 
@@ -276,7 +276,7 @@ public:
      *             if {@code horizon} is less than zero.
      * @see #findWithinHorizon(Pattern, int)
      */
-    CARAPI FindWithinHorizonEx(
+    CARAPI FindWithinHorizon(
         /* [in] */ const String& pattern,
         /* [in] */ Int32 horizon,
         /* [out] */ String* str);
@@ -293,7 +293,7 @@ public:
      * @throws IllegalStateException
      *             if the {@code Scanner} has been closed.
      */
-    CARAPI HasNextEx(
+    CARAPI HasNext(
         /* [in] */ IPattern* pattern,
         /* [out] */ Boolean* value);
 
@@ -310,7 +310,7 @@ public:
      * @throws IllegalStateException
      *             if the {@code Scanner} has been closed.
      */
-    CARAPI HasNextEx2(
+    CARAPI HasNext(
         /* [in] */ const String& pattern,
         /* [out] */ Boolean* value);
 
@@ -350,7 +350,7 @@ public:
      * @throws IllegalStateException
      *             if the {@code Scanner} has been closed.
      */
-    CARAPI HasNextBigIntegerEx(
+    CARAPI HasNextBigInteger(
         /* [in] */ Int32 radix,
         /* [out] */ Boolean* value);
 
@@ -390,7 +390,7 @@ public:
      * @throws IllegalStateException
      *             if the {@code Scanner} has been closed.
      */
-    CARAPI HasNextByteEx(
+    CARAPI HasNextByte(
         /* [in] */ Int32 radix,
         /* [out] */ Boolean* value);
 
@@ -443,7 +443,7 @@ public:
      * @throws IllegalStateException
      *             if the {@code Scanner} has been closed.
      */
-    CARAPI HasNextInt32Ex(
+    CARAPI HasNextInt32(
         /* [in] */ Int32 radix,
         /* [out] */ Boolean* value);
 
@@ -483,7 +483,7 @@ public:
      * @throws IllegalStateException
      *             if the {@code Scanner} has been closed.
      */
-    CARAPI HasNextInt64Ex(
+    CARAPI HasNextInt64(
         /* [in] */ Int32 radix,
         /* [out] */ Boolean* value);
 
@@ -511,7 +511,7 @@ public:
      * @throws IllegalStateException
      *             if the {@code Scanner} has been closed.
      */
-    CARAPI HasNextInt16Ex(
+    CARAPI HasNextInt16(
         /* [in] */ Int32 radix,
         /* [out] */ Boolean* value);
 
@@ -561,7 +561,7 @@ public:
      * @throws InputMismatchException
      *             if the next token does not match the pattern given.
      */
-    CARAPI NextEx(
+    CARAPI Next(
         /* [in] */ IPattern* pattern,
         /* [out] */ String* str);
 
@@ -582,7 +582,7 @@ public:
      * @throws InputMismatchException
      *             if the next token does not match the pattern given.
      */
-    CARAPI NextEx2(
+    CARAPI Next(
         /* [in] */ const String& pattern,
         /* [out] */ String* str);
 
@@ -647,7 +647,7 @@ public:
      *             if the next token can not be translated into a valid
      *             {@code BigInteger}.
      */
-    CARAPI NextBigIntegerEx(
+    CARAPI NextBigInteger(
         /* [in] */ Int32 radix,
         /* [out] */ IBigInteger** outbig);
 
@@ -706,7 +706,7 @@ public:
      *             {@code byte} value.
      */
     // @SuppressWarnings("boxing")
-    CARAPI NextByteEx(
+    CARAPI NextByte(
         /* [in] */ Int32 radix,
         /* [out] */ Byte* value);
 
@@ -800,7 +800,7 @@ public:
      *             {@code int} value.
      */
     // @SuppressWarnings("boxing")
-    CARAPI NextInt32Ex(
+    CARAPI NextInt32(
         /* [in] */ Int32 radix,
         /* [out] */ Int32* value);
 
@@ -860,7 +860,7 @@ public:
      *             {@code long} value.
      */
     // @SuppressWarnings("boxing")
-    CARAPI NextInt64Ex(
+    CARAPI NextInt64(
         /* [in] */ Int32 radix,
         /* [out] */ Int64* value);
 
@@ -904,7 +904,7 @@ public:
      *             {@code short} value.
      */
     // @SuppressWarnings("boxing")
-    CARAPI NextInt16Ex(
+    CARAPI NextInt16(
         /* [in] */ Int32 radix,
         /* [out] */ Int16* value);
 
@@ -949,7 +949,7 @@ public:
      * @throws IllegalStateException
      *             if the {@code Scanner} is closed.
      */
-    CARAPI SkipEx(
+    CARAPI Skip(
         /* [in] */ const String& pattern,
         /* [out] */ IScanner** outscan);
 
@@ -981,7 +981,7 @@ public:
      *            a string from which a {@code Pattern} can be compiled.
      * @return this {@code Scanner}.
      */
-    CARAPI UseDelimiterEx(
+    CARAPI UseDelimiter(
         /* [in] */ const String& pattern,
         /* [out] */ IScanner** outscan);
 

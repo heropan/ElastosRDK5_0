@@ -2,7 +2,6 @@
 #ifndef __CPHASER_H__
 #define __CPHASER_H__
 
-#include "cmdef.h"
 #include "_CPhaser.h"
 
 using Elastos::Utility::Concurrent::Atomic::IAtomicReference;
@@ -117,7 +116,7 @@ public:
         /* [in] */ Int32 phase,
         /* [out] */ Int32* value);
 
-    CARAPI AwaitAdvanceInterruptiblyEx(
+    CARAPI AwaitAdvanceInterruptibly(
         /* [in] */ Int32 phase,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,

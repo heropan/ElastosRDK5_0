@@ -1,5 +1,4 @@
 #include "CAttributes.h"
-#include "cmdef.h"
 #include "CHashMap.h"
 #include "CStringWrapper.h"
 #include "CName.h"
@@ -26,7 +25,7 @@ ECode CAttributes::GetValue(
     return NOERROR;
 }
 
-ECode CAttributes::GetValueEx(
+ECode CAttributes::GetValue(
     /* [in] */ const String& name,
     /* [out] */ String* value)
 {

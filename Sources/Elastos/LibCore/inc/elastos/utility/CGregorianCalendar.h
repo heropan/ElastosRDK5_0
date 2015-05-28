@@ -172,7 +172,7 @@ public:
      * @return {@code true} if the specified object is equal to this {@code Calendar}, {@code false}
      *         otherwise.
      */
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ ICalendar* other,
         /* [out] */ Boolean* isEqual);
 
@@ -284,7 +284,7 @@ public:
      *                if an invalid field is specified.
      */
     //@Override
-    CARAPI RollEx(
+    CARAPI Roll(
         /* [in] */ Int32 field,
         /* [in] */ Boolean increment);
 
@@ -304,7 +304,7 @@ public:
     CARAPI SetTimeZone(
         /* [in] */ ITimeZone* tz);
 
-    CARAPI ClearEx(
+    CARAPI Clear(
         /* [in] */ Int32 field);
 
     CARAPI Get(
@@ -334,19 +334,19 @@ public:
         /* [in] */ Int32 field,
         /* [in] */ Int32 value);
 
-    CARAPI SetEx(
+    CARAPI Set(
         /* [in] */ Int32 year,
         /* [in] */ Int32 month,
         /* [in] */ Int32 day);
 
-    CARAPI SetEx2(
+    CARAPI Set(
         /* [in] */ Int32 year,
         /* [in] */ Int32 month,
         /* [in] */ Int32 day,
         /* [in] */ Int32 hourOfDay,
         /* [in] */ Int32 minute);
 
-    CARAPI SetEx3(
+    CARAPI Set(
         /* [in] */ Int32 year,
         /* [in] */ Int32 month,
         /* [in] */ Int32 day,

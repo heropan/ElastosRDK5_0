@@ -107,7 +107,7 @@ public:
         /* [in] */ IForkJoinTask* task,
         /* [out] */ IInterface** outface);
 
-    CARAPI ExecuteEx(
+    CARAPI Execute(
         /* [in] */ IForkJoinTask* task);
 
     // AbstractExecutorService methods
@@ -115,7 +115,7 @@ public:
     CARAPI Execute(
         /* [in] */ IRunnable* command);
 
-    CARAPI SubmitEx3(
+    CARAPI Submit(
         /* [in] */ IForkJoinTask* task,
         /* [out] */ IForkJoinTask** outfork);
 
@@ -123,12 +123,12 @@ public:
         /* [in] */ ICallable* task,
         /* [out] */ IFuture** outfork);
 
-    CARAPI SubmitEx(
+    CARAPI Submit(
         /* [in] */ IRunnable* task,
         /* [in] */ IInterface* result,
         /* [out] */ IFuture** outfork);
 
-    CARAPI SubmitEx2(
+    CARAPI Submit(
         /* [in] */ IRunnable* task,
         /* [out] */ IFuture** outfork);
 
@@ -208,7 +208,7 @@ public:
         /* [in] */ ICollection* tasks,
         /* [out] */ IList** futures);
 
-    CARAPI InvokeAllEx(
+    CARAPI InvokeAll(
         /* [in] */ ICollection* tasks,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
@@ -218,7 +218,7 @@ public:
         /* [in] */ ICollection* tasks,
         /* [out] */ IInterface** result);
 
-    CARAPI InvokeAnyEx(
+    CARAPI InvokeAny(
         /* [in] */ ICollection* tasks,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,

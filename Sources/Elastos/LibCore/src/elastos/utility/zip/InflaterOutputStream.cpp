@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "InflaterOutputStream.h"
 
 namespace Elastos {
@@ -47,10 +46,10 @@ ECode InflaterOutputStream::Write(
 {
     ArrayOf_<Byte, 1> buf;
     buf[0] = (Byte)b;
-    return WriteBytesEx(buf, 0, 1);
+    return WriteBytes(buf, 0, 1);
 }
 
-ECode InflaterOutputStream::WriteBytesEx(
+ECode InflaterOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& bytes,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
@@ -63,7 +62,7 @@ ECode InflaterOutputStream::WriteBytesEx(
 //        throw new ArrayIndexOutOfBoundsException(arrayLength, offset, byteCount);
     }
 
-    FAIL_RETURN(mInf->SetInputEx(bytes, offset, byteCount));
+    FAIL_RETURN(mInf->SetInput(bytes, offset, byteCount));
     return Write();
 }
 
@@ -75,7 +74,7 @@ ECode InflaterOutputStream::Write()
         if (ec == E_DATA_FORMAT_EXCEPTION) return E_ZIP_EXCEPTION;
     }
     while (inflated > 0) {
-        FAIL_RETURN(mOut->WriteBytesEx(*mBuf, 0, inflated));
+        FAIL_RETURN(mOut->WriteBytes(*mBuf, 0, inflated));
         ec = mInf->Inflate(mBuf, &inflated);
         if (FAILED(ec)) {
             if (ec == E_DATA_FORMAT_EXCEPTION) return E_ZIP_EXCEPTION;
@@ -99,7 +98,7 @@ ECode InflaterOutputStream::WriteBytes(
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    return WriteBytesEx(buffer, 0, buffer.GetLength());
+    return WriteBytes(buffer, 0, buffer.GetLength());
 }
 
 ECode InflaterOutputStream::CheckError(

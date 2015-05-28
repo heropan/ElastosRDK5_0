@@ -2,7 +2,6 @@
 #define __UTILITY_CSTACK_H__
 
 #include "_CStack.h"
-#include "cmdef.h"
 #include "Vector.h"
 
 namespace Elastos {
@@ -20,7 +19,7 @@ public:
 
     CARAPI_(UInt32) Release();
 
-    CARAPI AddEx(
+    CARAPI Add(
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object);
 
@@ -28,7 +27,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* modified);
 
-    CARAPI AddAllEx(
+    CARAPI AddAll(
         /* [in] */ Int32 location,
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* modified);
@@ -87,7 +86,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Int32* index);
 
-    CARAPI IndexOfEx(
+    CARAPI IndexOf(
         /* [in] */ IInterface* object,
         /* [in] */ Int32 location,
         /* [out] */ Int32* value);
@@ -106,12 +105,12 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Int32* index);
 
-    CARAPI LastIndexOfEx(
+    CARAPI LastIndexOf(
         /* [in] */ IInterface* object,
         /* [in] */ Int32 location,
         /* [out] */ Int32* value);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [in] */ Int32 location,
         /* [out] */ IInterface** object);
 
@@ -159,7 +158,7 @@ public:
     CARAPI ToArray(
         /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-    CARAPI ToArrayEx(
+    CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* inArray,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -174,7 +173,7 @@ public:
     CARAPI GetListIterator(
         /* [out] */ IListIterator** it);
 
-    CARAPI GetListIteratorEx(
+    CARAPI GetListIterator(
         /* [in] */ Int32 location,
         /* [out] */ IListIterator** it);
 

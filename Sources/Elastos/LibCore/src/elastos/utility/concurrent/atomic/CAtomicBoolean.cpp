@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CAtomicBoolean.h"
 #include <cutils/atomic.h>
 #include <cutils/atomic-inline.h>

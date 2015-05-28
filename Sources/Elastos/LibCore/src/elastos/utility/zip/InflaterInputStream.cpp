@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "InflaterInputStream.h"
 #include "CZipFile.h"
 
@@ -34,7 +33,7 @@ ECode InflaterInputStream::Read(
     return streams->ReadSingleByte(THIS_PROBE(IInputStream), value);
 }
 
-ECode InflaterInputStream::ReadBytesEx(
+ECode InflaterInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
@@ -72,7 +71,7 @@ ECode InflaterInputStream::ReadBytesEx(
 
         // Invariant: if reading returns -1 or throws, eof must be true.
         // It may also be true if the next read() should return -1.
-        ec = mInf->InflateEx(buffer, offset, byteCount, &result);
+        ec = mInf->Inflate(buffer, offset, byteCount, &result);
         if (ec == E_DATA_FORMAT_EXCEPTION) goto _EXIT_;
 
         ec = mInf->Finished(&mEof);
@@ -129,7 +128,7 @@ ECode InflaterInputStream::Fill()
     else {
         mIn->ReadBytes(mBuf, &mLen);
         if (mLen > 0) {
-            mInf->SetInputEx(*mBuf, 0, mLen);
+            mInf->SetInput(*mBuf, 0, mLen);
         }
     }
     return NOERROR;
@@ -210,7 +209,7 @@ ECode InflaterInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
-    return ReadBytesEx(buffer,0, buffer->GetLength(), number);
+    return ReadBytes(buffer,0, buffer->GetLength(), number);
 }
 
 ECode InflaterInputStream::Init(

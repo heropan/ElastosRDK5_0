@@ -158,10 +158,10 @@ ECode CPriorityQueue::Offer(
     return NOERROR;
 }
 
-ECode CPriorityQueue::RemoveEx(
+ECode CPriorityQueue::Remove(
     /* [out] */ IInterface** e)
 {
-    return AbstractQueue::RemoveEx(e);
+    return AbstractQueue::Remove(e);
 }
 
 ECode CPriorityQueue::Poll(
@@ -312,11 +312,11 @@ ECode CPriorityQueue::ToArray(
     return AbstractQueue::ToArray(array);
 }
 
-ECode CPriorityQueue::ToArrayEx(
+ECode CPriorityQueue::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractQueue::ToArrayEx(inArray, outArray);
+    return AbstractQueue::ToArray(inArray, outArray);
 }
 
 ECode CPriorityQueue::GetIterator(

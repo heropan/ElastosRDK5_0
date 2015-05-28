@@ -2,7 +2,6 @@
 #ifndef __FUTURETASK_H__
 #define __FUTURETASK_H__
 
-#include "cmdef.h"
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #else
@@ -119,7 +118,7 @@ public:
     virtual CARAPI Get(
         /* [out] */ IInterface** result);
 
-    virtual CARAPI GetEx(
+    virtual CARAPI Get(
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* unit,
         /* [out] */ IInterface** result);

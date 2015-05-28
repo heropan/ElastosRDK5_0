@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CArrayBlockingQueue.h"
 #include "CReentrantLock.h"
 #include <elastos/StringBuilder.h>
@@ -147,7 +146,7 @@ ECode CArrayBlockingQueue::Put(
     return NOERROR;
 }
 
-ECode CArrayBlockingQueue::OfferEx(
+ECode CArrayBlockingQueue::Offer(
     /* [in] */ IInterface* e,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
@@ -223,7 +222,7 @@ ECode CArrayBlockingQueue::Take(
     return NOERROR;
 }
 
-ECode CArrayBlockingQueue::PollEx(
+ECode CArrayBlockingQueue::Poll(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** e)
@@ -375,10 +374,10 @@ ECode CArrayBlockingQueue::Remove(
     return NOERROR;
 }
 
-ECode CArrayBlockingQueue::RemoveEx(
+ECode CArrayBlockingQueue::Remove(
     /* [out] */ IInterface** e)
 {
-    return AbstractQueue::RemoveEx(e);
+    return AbstractQueue::Remove(e);
 }
 
 ECode CArrayBlockingQueue::RemoveAll(
@@ -448,7 +447,7 @@ ECode CArrayBlockingQueue::ToArray(
     return NOERROR;
 }
 
-ECode CArrayBlockingQueue::ToArrayEx(
+ECode CArrayBlockingQueue::ToArray(
     /* [in] */ ArrayOf<IInterface*>* a,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
@@ -564,10 +563,10 @@ ECode CArrayBlockingQueue::DrainTo(
     /* [in] */ ICollection* c,
     /* [out] */ Int32* number)
 {
-    return DrainToEx(c, Elastos::Core::Math::INT32_MAX_VALUE, number);
+    return DrainTo(c, Elastos::Core::Math::INT32_MAX_VALUE, number);
 }
 
-ECode CArrayBlockingQueue::DrainToEx(
+ECode CArrayBlockingQueue::DrainTo(
     /* [in] */ ICollection* c,
     /* [in] */ Int32 maxElements,
     /* [out] */ Int32* number)

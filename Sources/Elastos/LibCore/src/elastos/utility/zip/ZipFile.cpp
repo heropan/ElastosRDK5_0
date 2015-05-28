@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "ZipFile.h"
 #include "CInflater.h"
 #include <elastos/Math.h>
@@ -95,7 +94,7 @@ ECode ZipFile::RAFStream::Read(
     return streams->ReadSingleByte(THIS_PROBE(IInputStream), value);
 }
 
-ECode ZipFile::RAFStream::ReadBytesEx(
+ECode ZipFile::RAFStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -109,7 +108,7 @@ ECode ZipFile::RAFStream::ReadBytesEx(
     if (length > mLength - mOffset) {
         length = (Int32)(mLength - mOffset);
     }
-    FAIL_RETURN(mSharedRaf->ReadBytesEx(buffer, offset, length, number));
+    FAIL_RETURN(mSharedRaf->ReadBytes(buffer, offset, length, number));
     if (*number > 0) {
         mOffset += *number;
     }
@@ -156,7 +155,7 @@ ECode ZipFile::RAFStream::ReadBytes(
 {
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
-    return ReadBytesEx(buffer, 0, buffer->GetLength(), number);
+    return ReadBytes(buffer, 0, buffer->GetLength(), number);
 }
 
 ECode ZipFile::RAFStream::Reset()
@@ -233,14 +232,14 @@ ECode ZipFile::ZipInflaterInputStream::GetLock(
 }
 
 //@Override
-ECode ZipFile::ZipInflaterInputStream::ReadBytesEx(
+ECode ZipFile::ZipInflaterInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    FAIL_RETURN(InflaterInputStream::ReadBytesEx(buffer, off, nbytes, number));
+    FAIL_RETURN(InflaterInputStream::ReadBytes(buffer, off, nbytes, number));
     if (*number != -1) {
         mBytesRead += *number;
     }
@@ -303,7 +302,7 @@ ECode ZipFile::ZipInflaterInputStream::ReadBytes(
 {
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
-    return ReadBytesEx(buffer, 0, buffer->GetLength(), number);
+    return ReadBytes(buffer, 0, buffer->GetLength(), number);
 }
 
 ECode ZipFile::ZipInflaterInputStream::Skip(
@@ -510,7 +509,7 @@ ECode ZipFile::ReadCentralDir()
     // Read the End Of Central Directory. We could use ENDHDR instead of the magic number 18,
     // but we don't actually need all the header.
     AutoPtr<ArrayOf<Byte> > eocd = ArrayOf<Byte>::Alloc(18);
-    di->ReadFullyEx(eocd, 0, eocd->GetLength());
+    di->ReadFully(eocd, 0, eocd->GetLength());
 
     // Pull out the information we need.
     AutoPtr<IHeapBufferIterator> it;

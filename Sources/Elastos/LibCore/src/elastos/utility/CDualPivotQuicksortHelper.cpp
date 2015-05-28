@@ -11,7 +11,7 @@ ECode CDualPivotQuicksortHelper::SortInt32(
     return DualPivotQuicksort::Sort(a);
 }
 
-ECode CDualPivotQuicksortHelper::SortInt32Ex(
+ECode CDualPivotQuicksortHelper::SortInt32(
     /* [in] */ ArrayOf<Int32>* a,
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
@@ -25,7 +25,7 @@ ECode CDualPivotQuicksortHelper::SortInt64(
     return DualPivotQuicksort::Sort(a);
 }
 
-ECode CDualPivotQuicksortHelper::SortInt64Ex(
+ECode CDualPivotQuicksortHelper::SortInt64(
     /* [in] */ ArrayOf<Int64>* a,
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
@@ -39,7 +39,7 @@ ECode CDualPivotQuicksortHelper::SortInt16(
     return DualPivotQuicksort::Sort(a);
 }
 
-ECode CDualPivotQuicksortHelper::SortInt16Ex(
+ECode CDualPivotQuicksortHelper::SortInt16(
     /* [in] */ ArrayOf<Int16>* a,
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
@@ -53,7 +53,7 @@ ECode CDualPivotQuicksortHelper::SortChar(
     return DualPivotQuicksort::Sort(a);
 }
 
-ECode CDualPivotQuicksortHelper::SortCharEx(
+ECode CDualPivotQuicksortHelper::SortChar(
     /* [in] */ ArrayOf<Char32>* a,
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
@@ -67,7 +67,7 @@ ECode CDualPivotQuicksortHelper::SortByte(
     return DualPivotQuicksort::Sort(a);
 }
 
-ECode CDualPivotQuicksortHelper::SortByteEx(
+ECode CDualPivotQuicksortHelper::SortByte(
     /* [in] */ ArrayOf<Byte>* a,
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
@@ -81,7 +81,7 @@ ECode CDualPivotQuicksortHelper::SortFloat(
     return DualPivotQuicksort::Sort(a);
 }
 
-ECode CDualPivotQuicksortHelper::SortFloatEx(
+ECode CDualPivotQuicksortHelper::SortFloat(
     /* [in] */ ArrayOf<Float>* a,
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
@@ -95,7 +95,7 @@ ECode CDualPivotQuicksortHelper::SortDouble(
     return DualPivotQuicksort::Sort(a);
 }
 
-ECode CDualPivotQuicksortHelper::SortDoubleEx(
+ECode CDualPivotQuicksortHelper::SortDouble(
     /* [in] */ ArrayOf<Double>* a,
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)

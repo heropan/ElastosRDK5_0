@@ -262,7 +262,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -331,19 +331,19 @@ public:
         CARAPI DescendingIterator(
             /* [out] */ IIterator** outiter);
 
-        CARAPI SubSetEx(
+        CARAPI SubSet(
             /* [in] */ IInterface* fromElement,
             /* [in] */ Boolean fromInclusive,
             /* [in] */ IInterface* toElement,
             /* [in] */ Boolean toInclusive,
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI HeadSetEx(
+        CARAPI HeadSet(
             /* [in] */ IInterface* toElement,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI TailSetEx(
+        CARAPI TailSet(
             /* [in] */ IInterface* fromElement,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableSet** outnav);
@@ -397,7 +397,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -577,7 +577,7 @@ public:
             CARAPI ToArray(
                 /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-            CARAPI ToArrayEx(
+            CARAPI ToArray(
                 /* [in] */ ArrayOf<IInterface*>* contents,
                 /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -678,19 +678,19 @@ public:
             CARAPI DescendingIterator(
                 /* [out] */ IIterator** outiter);
 
-            CARAPI SubSetEx(
+            CARAPI SubSet(
                 /* [in] */ IInterface* fromElement,
                 /* [in] */ Boolean fromInclusive,
                 /* [in] */ IInterface* toElement,
                 /* [in] */ Boolean toInclusive,
                 /* [out] */ INavigableSet** outnav);
 
-            CARAPI HeadSetEx(
+            CARAPI HeadSet(
                 /* [in] */ IInterface* toElement,
                 /* [in] */ Boolean inclusive,
                 /* [out] */ INavigableSet** outnav);
 
-            CARAPI TailSetEx(
+            CARAPI TailSet(
                 /* [in] */ IInterface* fromElement,
                 /* [in] */ Boolean inclusive,
                 /* [out] */ INavigableSet** outnav);
@@ -737,7 +737,7 @@ public:
             CARAPI ToArray(
                 /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-            CARAPI ToArrayEx(
+            CARAPI ToArray(
                 /* [in] */ ArrayOf<IInterface*>* contents,
                 /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -885,19 +885,19 @@ public:
         CARAPI DescendingKeySet(
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI SubMapEx(
+        CARAPI SubMap(
             /* [in] */ IInterface* fromKey,
             /* [in] */ Boolean fromInclusive,
             /* [in] */ IInterface* toKey,
             /* [in] */ Boolean toInclusive,
             /* [out] */ INavigableMap** outnav);
 
-        CARAPI HeadMapEx(
+        CARAPI HeadMap(
             /* [in] */ IInterface* toKey,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableMap** outnav);
 
-        CARAPI TailMapEx(
+        CARAPI TailMap(
             /* [in] */ IInterface* fromKey,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableMap** outnav);
@@ -1791,7 +1791,7 @@ public:
      *         range, and {@code fromKey} or {@code toKey} lies
      *         outside the bounds of the range
      */
-    CARAPI SubMapEx(
+    CARAPI SubMap(
         /* [in] */ IInterface* fromKey,
         /* [in] */ Boolean fromInclusive,
         /* [in] */ IInterface* toKey,
@@ -1825,7 +1825,7 @@ public:
      *         restricted range, and {@code toKey} lies outside the
      *         bounds of the range
      */
-    CARAPI HeadMapEx(
+    CARAPI HeadMap(
         /* [in] */ IInterface* toKey,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableMap** outnav);
@@ -1857,7 +1857,7 @@ public:
      *         restricted range, and {@code fromKey} lies outside the
      *         bounds of the range
      */
-    CARAPI TailMapEx(
+    CARAPI TailMap(
         /* [in] */ IInterface* fromKey,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableMap** outnav);

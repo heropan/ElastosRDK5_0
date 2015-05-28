@@ -363,7 +363,7 @@ ECode CLinkedBlockingDeque::PutLast(
     return NOERROR;
 }
 
-ECode CLinkedBlockingDeque::OfferFirstEx(
+ECode CLinkedBlockingDeque::OfferFirst(
     /* [in] */ IInterface* e,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
@@ -388,7 +388,7 @@ ECode CLinkedBlockingDeque::OfferFirstEx(
     return NOERROR;
 }
 
-ECode CLinkedBlockingDeque::OfferLastEx(
+ECode CLinkedBlockingDeque::OfferLast(
     /* [in] */ IInterface* e,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
@@ -494,7 +494,7 @@ ECode CLinkedBlockingDeque::TakeLast(
     return NOERROR;
 }
 
-ECode CLinkedBlockingDeque::PollFirstEx(
+ECode CLinkedBlockingDeque::PollFirst(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** outface)
@@ -519,7 +519,7 @@ ECode CLinkedBlockingDeque::PollFirstEx(
     return NOERROR;
 }
 
-ECode CLinkedBlockingDeque::PollLastEx(
+ECode CLinkedBlockingDeque::PollLast(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** outface)
@@ -664,17 +664,17 @@ ECode CLinkedBlockingDeque::Put(
     return PutLast(e);
 }
 
-ECode CLinkedBlockingDeque::OfferEx(
+ECode CLinkedBlockingDeque::Offer(
     /* [in] */ IInterface* e,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return OfferLastEx(e, timeout, unit, result);
+    return OfferLast(e, timeout, unit, result);
 }
 
-ECode CLinkedBlockingDeque::RemoveEx(
+ECode CLinkedBlockingDeque::Remove(
         /* [out] */ PInterface* object)
 {
     VALIDATE_NOT_NULL(object);
@@ -695,13 +695,13 @@ ECode CLinkedBlockingDeque::Take(
     return TakeFirst(e);
 }
 
-ECode CLinkedBlockingDeque::PollEx(
+ECode CLinkedBlockingDeque::Poll(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** e)
 {
     VALIDATE_NOT_NULL(e);
-    return PollFirstEx(timeout, unit, e);
+    return PollFirst(timeout, unit, e);
 }
 
 ECode CLinkedBlockingDeque::Element(
@@ -734,10 +734,10 @@ ECode CLinkedBlockingDeque::DrainTo(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    return DrainToEx(c, Elastos::Core::Math::INT32_MAX_VALUE, number);
+    return DrainTo(c, Elastos::Core::Math::INT32_MAX_VALUE, number);
 }
 
-ECode CLinkedBlockingDeque::DrainToEx(
+ECode CLinkedBlockingDeque::DrainTo(
     /* [in] */ ICollection* c,
     /* [in] */ Int32 maxElements,
     /* [out] */ Int32* number)
@@ -834,7 +834,7 @@ ECode CLinkedBlockingDeque::ToArray(
     return NOERROR;
 }
 
-ECode CLinkedBlockingDeque::ToArrayEx(
+ECode CLinkedBlockingDeque::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {

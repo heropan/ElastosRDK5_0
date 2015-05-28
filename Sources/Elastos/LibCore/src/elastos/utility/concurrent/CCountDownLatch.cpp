@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CCountDownLatch.h"
 
 namespace Elastos {
@@ -56,7 +55,7 @@ ECode CCountDownLatch::Await()
     return mSync->AcquireSharedInterruptibly(1);
 }
 
-ECode CCountDownLatch::AwaitEx(
+ECode CCountDownLatch::Await(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ Boolean* result)

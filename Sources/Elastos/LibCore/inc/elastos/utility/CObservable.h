@@ -2,7 +2,6 @@
 #define __UTILITY_COBSERVABLE_H__
 
 #include "_CObservable.h"
-#include "cmdef.h"
 #include <elastos/Mutex.h>
 
 using Elastos::Core::Mutex;
@@ -74,7 +73,7 @@ public:
      * @param data
      *            the argument passed to {@code update()}.
      */
-    CARAPI NotifyObserversEx(
+    CARAPI NotifyObservers(
         /* [in] */ IInterface* data);
 
     /**

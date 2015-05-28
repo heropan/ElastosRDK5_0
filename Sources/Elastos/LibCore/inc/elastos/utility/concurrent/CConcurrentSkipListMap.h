@@ -306,26 +306,26 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
         CARAPI DescendingIterator(
             /* [out] */ IIterator** outiter);
 
-        CARAPI SubSetEx(
+        CARAPI SubSet(
             /* [in] */ IInterface* fromElement,
             /* [in] */ Boolean fromInclusive,
             /* [in] */ IInterface* toElement,
             /* [in] */ Boolean toInclusive,
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI HeadSetEx(
+        CARAPI HeadSet(
             /* [in] */ IInterface* toElement,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI TailSetEx(
+        CARAPI TailSet(
             /* [in] */ IInterface* fromElement,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableSet** outnav);
@@ -402,7 +402,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -477,7 +477,7 @@ public:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -626,7 +626,7 @@ public:
             /* [in] */ PInterface value,
             /* [out] */ PInterface* out);
 
-        CARAPI RemoveEx(
+        CARAPI Remove(
             /* [in] */ PInterface key,
             /* [in] */ PInterface value,
             /* [out] */ Boolean* res);
@@ -637,7 +637,7 @@ public:
             /* [in] */ PInterface newValue,
             /* [out] */ Boolean* res);
 
-        CARAPI ReplaceEx(
+        CARAPI Replace(
             /* [in] */ PInterface key,
             /* [in] */ PInterface value,
             /* [out] */ PInterface* res);
@@ -647,19 +647,19 @@ public:
         CARAPI Comparator(
             /* [out] */ IComparator** comp);
 
-        CARAPI SubMapEx(
+        CARAPI SubMap(
             /* [in] */ PInterface fromKey,
             /* [in] */ Boolean fromInclusive,
             /* [in] */ PInterface toKey,
             /* [in] */ Boolean toInclusive,
             /* [out] */ INavigableMap** res);
 
-        CARAPI HeadMapEx(
+        CARAPI HeadMap(
             /* [in] */ PInterface toKey,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableMap** res);
 
-        CARAPI TailMapEx(
+        CARAPI TailMap(
             /* [in] */ PInterface fromKey,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableMap** res);
@@ -965,7 +965,7 @@ public:
         /* [in] */ PInterface value,
         /* [out] */ PInterface* out);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [in] */ PInterface key,
         /* [in] */ PInterface value,
         /* [out] */ Boolean* res);
@@ -976,7 +976,7 @@ public:
         /* [in] */ PInterface newValue,
         /* [out] */ Boolean* res);
 
-    CARAPI ReplaceEx(
+    CARAPI Replace(
         /* [in] */ PInterface key,
         /* [in] */ PInterface value,
         /* [out] */ PInterface* res);
@@ -992,19 +992,19 @@ public:
     CARAPI LastKey(
         /* [out] */ IInterface** outface);
 
-    CARAPI SubMapEx(
+    CARAPI SubMap(
         /* [in] */ PInterface fromKey,
         /* [in] */ Boolean fromInclusive,
         /* [in] */ PInterface toKey,
         /* [in] */ Boolean toInclusive,
         /* [out] */ INavigableMap** res);
 
-    CARAPI HeadMapEx(
+    CARAPI HeadMap(
         /* [in] */ PInterface toKey,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableMap** res);
 
-    CARAPI TailMapEx(
+    CARAPI TailMap(
         /* [in] */ PInterface fromKey,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableMap** res);

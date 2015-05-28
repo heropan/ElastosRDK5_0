@@ -139,7 +139,7 @@ ECode CZoneInfo::constructor(
     return NOERROR;
 }
 
-ECode CZoneInfo::GetOffsetEx(
+ECode CZoneInfo::GetOffset(
     /* [in] */ Int32 era,
     /* [in] */ Int32 year,
     /* [in] */ Int32 month,
@@ -450,28 +450,28 @@ ECode CZoneInfo::GetDisplayName(
     return TimeZone::GetDisplayName(name);
 }
 
-ECode CZoneInfo::GetDisplayNameEx(
+ECode CZoneInfo::GetDisplayName(
     /* [in] */ ILocale* locale,
     /* [out] */ String* name)
 {
-    return TimeZone::GetDisplayNameEx(locale, name);
+    return TimeZone::GetDisplayName(locale, name);
 }
 
-ECode CZoneInfo::GetDisplayNameEx2(
+ECode CZoneInfo::GetDisplayName(
     /* [in] */ Boolean daylightTime,
     /* [in] */ Int32 style,
     /* [out] */ String* name)
 {
-    return TimeZone::GetDisplayNameEx2(daylightTime, style, name);
+    return TimeZone::GetDisplayName(daylightTime, style, name);
 }
 
-ECode CZoneInfo::GetDisplayNameEx3(
+ECode CZoneInfo::GetDisplayName(
     /* [in] */ Boolean daylightTime,
     /* [in] */ Int32 style,
     /* [in] */ ILocale* locale,
     /* [out] */ String* name)
 {
-    return TimeZone::GetDisplayNameEx3(daylightTime, style, locale, name);
+    return TimeZone::GetDisplayName(daylightTime, style, locale, name);
 }
 
 

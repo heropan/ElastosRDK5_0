@@ -347,11 +347,11 @@ ECode CWeakHashMap::_EntrySet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CWeakHashMap::_EntrySet::ToArrayEx(
+ECode CWeakHashMap::_EntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(contents, outArray);
+    return AbstractSet::ToArray(contents, outArray);
 }
 
 ECode CWeakHashMap::_EntrySet::Equals(
@@ -496,7 +496,7 @@ ECode CWeakHashMap::_KeySet::ToArray(
     return coll->ToArray(array);
 }
 
-ECode CWeakHashMap::_KeySet::ToArrayEx(
+ECode CWeakHashMap::_KeySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
@@ -517,7 +517,7 @@ ECode CWeakHashMap::_KeySet::ToArrayEx(
         Boolean result;
         coll->Add(value, &result);
     }
-    return coll->ToArrayEx(contents, outArray);
+    return coll->ToArray(contents, outArray);
 }
 
 ECode CWeakHashMap::_KeySet::IsEmpty(
@@ -715,11 +715,11 @@ ECode CWeakHashMap::_Values::ToArray(
     return AbstractCollection::ToArray(array);
 }
 
-ECode CWeakHashMap::_Values::ToArrayEx(
+ECode CWeakHashMap::_Values::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractCollection::ToArrayEx(contents, outArray);
+    return AbstractCollection::ToArray(contents, outArray);
 }
 
 ECode CWeakHashMap::_Values::Equals(
