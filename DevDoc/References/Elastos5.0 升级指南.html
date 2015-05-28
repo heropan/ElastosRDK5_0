@@ -1189,7 +1189,7 @@ interface IActivity {
 </li>
 <li>所有的单例 CAR 类都需要使用 <code>CAR_SINGLETON_DECL/CAR_SINGLETON_IMPL</code></li>
 <li>所有在头文件中继承 CAR 接口的类（ C++ 类或 CAR 类）都需要使用 <code>CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL</code></li>
-<li>请参考示例了解如何使用这些宏：<code>LibCore/inc/org/xml</code> 以及 <code>LibCore/src/org/xml</code>。</li>
+<li>请参考下面的范例 <code>HelloCar</code> 了解如何使用这些宏。</li>
 </ul>
 <h3 id="_6"><a name="user-content-_6" href="#_6" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>夹壁墙类文件名包含命名空间前缀</h3>
 <p>后台生成的夹壁墙类文件名包含命名空间前缀，如 CBoolean 类对应的夹壁墙类文件名为：<code>_Elastos_Core_CBoolean.h</code></p>
@@ -1431,9 +1431,7 @@ LIBRARIES += core/core.lib
 </li>
 <li>
 <p>添加子模块 CAR 类声明文件：生成<code>ElastosRDK5_0/Sources/Elastos/LibCore/car/core.car</code>，并将其合并到<code>ElastosRDK5_0/Sources/Elastos/LibCore/src/elastos/Elastos.CoreLibrary.car</code>中：</p>
-<pre><code>INCLUDES += $(MAKEDIR)/../../inc/elastos/core
-...
-LIBRARIES += core/core.lib
+<pre><code>merge(&quot;../../car/elastos/core.car&quot;);
 </code></pre>
 
 </li>

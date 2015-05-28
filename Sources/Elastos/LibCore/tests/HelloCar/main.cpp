@@ -28,10 +28,15 @@
 
 #include <elautoptr.h>
 #include <Elastos.HelloCar.h>
+#include <elastos/coredef.h>
+ #include <elastos/core/Math.h>
+#include <elastos/utility/etl/List.h>
 
 using namespace Elastos;
 
 using Elastos::Core::IThread;
+using Elastos::Core::Math;
+using Elastos::Utility::Etl::List;
 
 using Elastos::HelloCar::IAnimal;
 using Elastos::HelloCar::IDog;
@@ -40,6 +45,16 @@ using Elastos::HelloCar::CCat;
 using Elastos::HelloCar::IAnimalHelper;
 using Elastos::HelloCar::CAnimalHelper;
 using Elastos::HelloCar::CMyThread;
+
+void testEtl()
+{
+    List<String> animals;
+    animals.PushBack(String("cat"));
+    animals.PushBack(String("dog"));
+
+    Double value = Elastos::Core::Math::Cos(90);
+    printf("Math::Cos(90) %.2f\n", value);
+}
 
 int main(int argc, char *argv[])
 {

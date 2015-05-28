@@ -32,10 +32,10 @@ module
     }
 
     class CMyThread {
-        constructor();
+        constructor();                  // 实现 IThread 的 CAR 类必须显式声明 constructor()
 
         interface IThread;
-        interface IRunnable;
+        interface IRunnable;            // 实现 IThread 的 CAR 类必须同时实现 IRunnable
     }
 
     } // HelloCar

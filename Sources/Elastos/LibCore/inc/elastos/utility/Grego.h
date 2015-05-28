@@ -4,8 +4,8 @@
 
 #include <elastos.h>
 
-namespace Elastos{
-namespace Utility{
+namespace Elastos {
+namespace Utility {
 
 // android-changed: com.ibm.icu.impl (ICU4J 4.2)
 
