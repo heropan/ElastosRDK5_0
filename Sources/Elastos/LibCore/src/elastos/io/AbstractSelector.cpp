@@ -68,7 +68,7 @@ AbstractSelector::AbstractSelector(
     Init(provider);
 }
 
-AbstractSelector::Init(
+ECode AbstractSelector::Init(
     /* [in] */ ISelectorProvider* provider)
 {
     mIsOpen = TRUE;
@@ -77,6 +77,7 @@ AbstractSelector::Init(
     // CHashSet::New((ISet**)&mCancelledKeySet);
     mWakeupRunnable = new WakeupRunnable(this);
     assert(NULL != mWakeupRunnable);
+    return NOERROR;
 }
 
 AbstractSelector::~AbstractSelector()

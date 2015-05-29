@@ -34,4 +34,21 @@ module
     merge("text/spi/IDateFormatSymbolsProvider.car");
     merge("text/spi/IDecimalFormatSymbolsProvider.car");
     merge("text/spi/INumberFormatProvider.car");
+
+    interface Elastos.Text.IAnnotation;
+
+    namespace Elastos {
+    namespace Text {
+
+    class CAnnotation {
+        constructor(
+            [in] IInterface* attribute);
+
+        interface IAnnotation;
+    }
+
+
+    } // Text
+    } // Elastos
+
 }

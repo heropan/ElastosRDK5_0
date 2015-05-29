@@ -5,6 +5,6 @@ DIRS += io
 #DIRS += net
 #DIRS += security
 #DIRS += sql
-#DIRS += text
+DIRS += text
 DIRS += utility
 DIRS += droid/system
