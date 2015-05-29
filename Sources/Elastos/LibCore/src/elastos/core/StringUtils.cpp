@@ -1,6 +1,6 @@
+#include "coredef.h"
 #include "StringUtils.h"
 #include "Character.h"
-#include <coredef.h>
 #include "StringToIntegral.h"
 #include "StringToReal.h"
 #include "IntegralToString.h"
@@ -8,8 +8,8 @@
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CStringWrapper.h"
-//#include "CPatternHelper.h"
-//#include "CSplitter.h"
+#include "CPatternHelper.h"
+#include "CSplitter.h"
 #else
 #include "Elastos.CoreLibrary.h"
 #endif
@@ -17,17 +17,17 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::Character;
-//using Elastos::Utility::Regex::IPatternHelper;
-//using Elastos::Utility::Regex::CPatternHelper;
-//using Elastos::Utility::Regex::ISplitter;
-//using Elastos::Utility::Regex::CSplitter;
-//using Elastos::Utility::Regex::IPattern;
-//using Elastos::Utility::Regex::IMatcher;
+using Elastos::Utility::Regex::IPatternHelper;
+using Elastos::Utility::Regex::CPatternHelper;
+using Elastos::Utility::Regex::ISplitter;
+using Elastos::Utility::Regex::CSplitter;
+using Elastos::Utility::Regex::IPattern;
+using Elastos::Utility::Regex::IMatcher;
 
 namespace Elastos {
 namespace Core {
 
-Int16 StringUtils::ParseInt16(
+Int16 StringUtils::Parse(
     /* [in] */ const String& input,
     /* [in] */ Int32 radix,
     /* [in] */ Int16 defValue)
@@ -44,7 +44,7 @@ Int16 StringUtils::ParseInt16(
     return value;
 }
 
-Int32 StringUtils::ParseInt32(
+Int32 StringUtils::Parse(
     /* [in] */ const String& input,
     /* [in] */ Int32 radix,
     /* [in] */ Int32 defValue)
@@ -61,7 +61,7 @@ Int32 StringUtils::ParseInt32(
     return value;
 }
 
-Int64 StringUtils::ParseInt64(
+Int64 StringUtils::Parse(
     /* [in] */ const String& input,
     /* [in] */ Int32 radix,
     /* [in] */ Int64 defValue)
@@ -78,7 +78,7 @@ Int64 StringUtils::ParseInt64(
     return value;
 }
 
-Float StringUtils::ParseFloat(
+Float StringUtils::Parse(
     /* [in] */ const String& input,
     /* [in] */ Float defValue)
 {
@@ -94,7 +94,7 @@ Float StringUtils::ParseFloat(
     return value;
 }
 
-Double StringUtils::ParseDouble(
+Double StringUtils::Parse(
     /* [in] */ const String& input,
     /* [in] */ Double defValue)
 {
@@ -110,28 +110,28 @@ Double StringUtils::ParseDouble(
     return value;
 }
 
-ECode StringUtils::ParseInt16(
+ECode StringUtils::Parse(
     /* [in] */ const String& input,
     /* [out] */ Int16* result)
 {
     return StringToIntegral::Parse(input, 10, result);
 }
 
-ECode StringUtils::ParseInt32(
+ECode StringUtils::Parse(
     /* [in] */ const String& input,
     /* [out] */ Int32* result)
 {
     return StringToIntegral::Parse(input, 10, result);
 }
 
-ECode StringUtils::ParseInt64(
+ECode StringUtils::Parse(
     /* [in] */ const String& input,
     /* [out] */ Int64* result)
 {
     return StringToIntegral::Parse(input, 10, result);
 }
 
-ECode StringUtils::ParseInt16(
+ECode StringUtils::Parse(
     /* [in] */ const String& input,
     /* [in] */ Int32 radix,
     /* [out] */ Int16* result)
@@ -139,7 +139,7 @@ ECode StringUtils::ParseInt16(
     return StringToIntegral::Parse(input, radix, result);
 }
 
-ECode StringUtils::ParseInt32(
+ECode StringUtils::Parse(
     /* [in] */ const String& input,
     /* [in] */ Int32 radix,
     /* [out] */ Int32* result)
@@ -147,7 +147,7 @@ ECode StringUtils::ParseInt32(
     return StringToIntegral::Parse(input, radix, result);
 }
 
-ECode StringUtils::ParseInt64(
+ECode StringUtils::Parse(
     /* [in] */ const String& input,
     /* [in] */ Int32 radix,
     /* [out] */ Int64* result)
@@ -155,14 +155,14 @@ ECode StringUtils::ParseInt64(
     return StringToIntegral::Parse(input, radix, result);
 }
 
-ECode StringUtils::ParseFloat(
+ECode StringUtils::Parse(
     /* [in] */ const String& input,
     /* [out] */ Float* result)
 {
     return StringToReal::Parse(input, result);
 }
 
-ECode StringUtils::ParseDouble(
+ECode StringUtils::Parse(
     /* [in] */ const String& input,
     /* [out] */ Double* result)
 {
@@ -178,86 +178,86 @@ String StringUtils::BooleanToString(
 /**
  * Equivalent to Integer.toString(i, radix).
  */
-String StringUtils::Int32ToString(
+String StringUtils::ToString(
     /* [in] */ Int32 i,
     /* [in] */ Int32 radix)
 {
-    return IntegralToString::Int32ToString(i, radix);
+    return IntegralToString::ToString(i, radix);
 }
 
 /**
  * Equivalent to Long.toString(v, radix).
  */
-String StringUtils::Int64ToString(
+String StringUtils::ToString(
     /* [in] */ Int64 v,
     /* [in] */ Int32 radix)
 {
-    return IntegralToString::Int64ToString(v, radix);
+    return IntegralToString::ToString(v, radix);
 }
 
-String StringUtils::Int32ToBinaryString(
+String StringUtils::ToBinaryString(
     /* [in] */ Int32 i)
 {
-    return IntegralToString::Int32ToBinaryString(i);
+    return IntegralToString::ToBinaryString(i);
 }
 
-String StringUtils::Int64ToBinaryString(
+String StringUtils::ToBinaryString(
     /* [in] */ Int64 v)
 {
-    return IntegralToString::Int64ToBinaryString(v);
+    return IntegralToString::ToBinaryString(v);
 }
 
-String StringUtils::ByteToHexString(
+String StringUtils::ToHexString(
     /* [in] */ Byte b,
     /* [in] */ Boolean upperCase)
 {
-    return IntegralToString::ByteToHexString(b, upperCase);
+    return IntegralToString::ToHexString(b, upperCase);
 }
 
-String StringUtils::BytesToHexString(
+String StringUtils::ToHexString(
     /* [in] */ ArrayOf<Byte>& bytes,
     /* [in] */ Boolean upperCase)
 {
-    return IntegralToString::BytesToHexString(bytes, upperCase);
+    return IntegralToString::ToHexString(bytes, upperCase);
 }
 
-String StringUtils::Int32ToHexString(
+String StringUtils::ToHexString(
     /* [in] */ Int32 i,
     /* [in] */ Boolean upperCase,
     /* [in] */ Int32 minWidth)
 {
-    return IntegralToString::Int32ToHexString(i, upperCase, minWidth);
+    return IntegralToString::ToHexString(i, upperCase, minWidth);
 }
 
-String StringUtils::Int64ToHexString(
+String StringUtils::ToHexString(
     /* [in] */ Int64 v,
     /* [in] */ Boolean upperCase)
 {
-    return IntegralToString::Int64ToHexString(v, upperCase);
+    return IntegralToString::ToHexString(v, upperCase);
 }
 
-String StringUtils::Int32ToOctalString(
+String StringUtils::ToOctalString(
     /* [in] */ Int32 i)
 {
-    return IntegralToString::Int32ToOctalString(i);
+    return IntegralToString::ToOctalString(i);
 }
 
-String StringUtils::Int64ToOctalString(
+String StringUtils::ToOctalString(
     /* [in] */ Int64 v)
 {
-    return IntegralToString::Int64ToOctalString(v);
+    return IntegralToString::ToOctalString(v);
 }
 
-String StringUtils::DoubleToString(
+String StringUtils::ToString(
     /* [in] */ Double d)
 {
-    return RealToString::GetInstance()->DoubleToString(d);
+    return RealToString::GetInstance()->ToString(d);
 }
 
-String StringUtils::FloatToString(
+String StringUtils::ToString(
     /* [in] */ Float f)
 {
-    return RealToString::GetInstance()->FloatToString(f);
+    return RealToString::GetInstance()->ToString(f);
 }
 
 ECode StringUtils::Split(
@@ -277,20 +277,20 @@ ECode StringUtils::Split(
     VALIDATE_NOT_NULL(array);
     *array = NULL;
 
-    /*AutoPtr<ISplitter> splitter;
+    AutoPtr<ISplitter> splitter;
     CSplitter::AcquireSingleton((ISplitter**)&splitter);
-    splitter->FastSplit(regularExpression, input, limit, array);*/
+    splitter->FastSplit(regularExpression, input, limit, array);
     if (*array != NULL){
         return NOERROR;
     }
     else{
-        /*AutoPtr<IPatternHelper> helper;
+        AutoPtr<IPatternHelper> helper;
         FAIL_RETURN(CPatternHelper::AcquireSingleton((IPatternHelper**)&helper));
         AutoPtr<IPattern> pattern;
         FAIL_RETURN(helper->Compile(regularExpression, (IPattern**)&pattern));
         AutoPtr<ICharSequence> seq;
         FAIL_RETURN(CStringWrapper::New(input, (ICharSequence**)&seq));
-        return pattern->Split(seq, limit, array);*/
+        return pattern->Split(seq, limit, array);
     }
 }
 
@@ -303,14 +303,14 @@ ECode StringUtils::ReplaceFirst(
     VALIDATE_NOT_NULL(result);
     *result = String(NULL);
 
-    /*AutoPtr<IPatternHelper> helper;
+    AutoPtr<IPatternHelper> helper;
     FAIL_RETURN(CPatternHelper::AcquireSingleton((IPatternHelper**)&helper));
     AutoPtr<IPattern> pattern;
     FAIL_RETURN(helper->Compile(regularExpression, (IPattern**)&pattern));
 
     AutoPtr<IMatcher> matcher;
     FAIL_RETURN(pattern->Matcher(input, (IMatcher**)&matcher));
-    return matcher->ReplaceFirst(replacement, result);*/
+    return matcher->ReplaceFirst(replacement, result);
 }
 
 ECode StringUtils::ReplaceAll(
@@ -322,14 +322,14 @@ ECode StringUtils::ReplaceAll(
     VALIDATE_NOT_NULL(result);
     *result = String(NULL);
 
-    /*AutoPtr<IPatternHelper> helper;
+    AutoPtr<IPatternHelper> helper;
     FAIL_RETURN(CPatternHelper::AcquireSingleton((IPatternHelper**)&helper));
     AutoPtr<IPattern> pattern;
     FAIL_RETURN(helper->Compile(regularExpression, (IPattern**)&pattern));
 
     AutoPtr<IMatcher> matcher;
     FAIL_RETURN(pattern->Matcher(input, (IMatcher**)&matcher));
-    return matcher->ReplaceAll(replacement, result);*/
+    return matcher->ReplaceAll(replacement, result);
 }
 
 ECode StringUtils::Matches(
@@ -337,10 +337,10 @@ ECode StringUtils::Matches(
     /* [in] */ const String& regularExpression,
     /*[out] */ Boolean* result)
 {
-   /* VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result);
     AutoPtr<IPatternHelper> helper;
     FAIL_RETURN(CPatternHelper::AcquireSingleton((IPatternHelper**)&helper));
-    return helper->Matches(regularExpression, input, result);*/
+    return helper->Matches(regularExpression, input, result);
 }
 
 ECode StringUtils::Split(

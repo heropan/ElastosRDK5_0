@@ -8,8 +8,6 @@ using Elastos::IO::ISerializable;
 namespace Elastos {
 namespace Core {
 
-class IntegralToString;
-
 /**
  * A modifiable {@link CharSequence sequence of characters} for use in creating
  * and modifying Strings. This class is intended as a base class for
@@ -217,6 +215,7 @@ protected:
 
     CARAPI ToASCIICaseString(
         /* [in] */ Boolean isUpperCase);
+
 private:
     /**
      * @brief constracts AbstractStringBuilder with s.
@@ -260,7 +259,6 @@ private:
     }
 
 private:
-    friend class IntegralToString;
 
     /**
      * @var mByteCount

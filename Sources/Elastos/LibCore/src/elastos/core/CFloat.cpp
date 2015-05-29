@@ -147,7 +147,7 @@ ECode CFloat::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    //*result = RealToString::GetInstance()->FloatToString(mValue);
+    //*result = RealToString::GetInstance()->ToString(mValue);
 
     return NOERROR;
 }

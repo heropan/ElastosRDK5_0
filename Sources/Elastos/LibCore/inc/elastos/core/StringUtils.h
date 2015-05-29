@@ -12,63 +12,63 @@ class StringUtils
 public:
     // From String without error code
     //
-    static CARAPI_(Int16) ParseInt16(
+    static CARAPI_(Int16) Parse(
         /* [in] */ const String& input,
         /* [in] */ Int32 radix = 10,
         /* [in] */ Int16 defValue = 0);
 
-    static CARAPI_(Int32) ParseInt32(
+    static CARAPI_(Int32) Parse(
         /* [in] */ const String& input,
         /* [in] */ Int32 radix = 10,
         /* [in] */ Int32 defValue = 0);
 
-    static CARAPI_(Int64) ParseInt64(
+    static CARAPI_(Int64) Parse(
         /* [in] */ const String& input,
         /* [in] */ Int32 radix = 10,
         /* [in] */ Int64 defValue = 0);
 
-    static CARAPI_(Float) ParseFloat(
+    static CARAPI_(Float) Parse(
         /* [in] */ const String& input,
         /* [in] */ Float defValue = 0.0);
 
-    static CARAPI_(Double) ParseDouble(
+    static CARAPI_(Double) Parse(
         /* [in] */ const String& input,
         /* [in] */ Double defValue = 0.0);
 
     // From string with error code
     //
-    static CARAPI ParseInt16(
+    static CARAPI Parse(
         /* [in] */ const String& input,
         /* [out] */ Int16* result);
 
-    static CARAPI ParseInt32(
+    static CARAPI Parse(
         /* [in] */ const String& input,
         /* [out] */ Int32* result);
 
-    static CARAPI ParseInt64(
+    static CARAPI Parse(
         /* [in] */ const String& input,
         /* [out] */ Int64* result);
 
-    static CARAPI ParseInt16(
+    static CARAPI Parse(
         /* [in] */ const String& input,
         /* [in] */ Int32 radix,
         /* [out] */ Int16* result);
 
-    static CARAPI ParseInt32(
+    static CARAPI Parse(
         /* [in] */ const String& input,
         /* [in] */ Int32 radix,
         /* [out] */ Int32* result);
 
-    static CARAPI ParseInt64(
+    static CARAPI Parse(
         /* [in] */ const String& input,
         /* [in] */ Int32 radix,
         /* [out] */ Int64* result);
 
-    static CARAPI ParseFloat(
+    static CARAPI Parse(
         /* [in] */ const String& input,
         /* [out] */ Float* result);
 
-    static CARAPI ParseDouble(
+    static CARAPI Parse(
         /* [in] */ const String& input,
         /* [out] */ Double* result);
 
@@ -80,50 +80,50 @@ public:
     /**
      * Equivalent to Integer.toString(i, radix).
      */
-    static CARAPI_(String) Int32ToString(
+    static CARAPI_(String) ToString(
         /* [in] */ Int32 i,
         /* [in] */ Int32 radix = 10);
 
     /**
      * Equivalent to Long.toString(v, radix).
      */
-    static CARAPI_(String) Int64ToString(
+    static CARAPI_(String) ToString(
         /* [in] */ Int64 v,
         /* [in] */ Int32 radix = 10);
 
-    static CARAPI_(String) Int32ToBinaryString(
+    static CARAPI_(String) ToBinaryString(
         /* [in] */ Int32 i);
 
-    static CARAPI_(String) Int64ToBinaryString(
+    static CARAPI_(String) ToBinaryString(
         /* [in] */ Int64 v);
 
-    static CARAPI_(String) ByteToHexString(
+    static CARAPI_(String) ToHexString(
         /* [in] */ Byte b,
         /* [in] */ Boolean upperCase = TRUE);
 
-    static CARAPI_(String) BytesToHexString(
+    static CARAPI_(String) ToHexString(
         /* [in] */ ArrayOf<Byte>& bytes,
         /* [in] */ Boolean upperCase = TRUE);
 
-    static CARAPI_(String) Int32ToHexString(
+    static CARAPI_(String) ToHexString(
         /* [in] */ Int32 i,
         /* [in] */ Boolean upperCase = TRUE,
         /* [in] */ Int32 minWidth = 0);
 
-    static CARAPI_(String) Int64ToHexString(
+    static CARAPI_(String) ToHexString(
         /* [in] */ Int64 v,
         /* [in] */ Boolean upperCase = TRUE);
 
-    static CARAPI_(String) Int32ToOctalString(
+    static CARAPI_(String) ToOctalString(
         /* [in] */ Int32 i);
 
-    static CARAPI_(String) Int64ToOctalString(
+    static CARAPI_(String) ToOctalString(
         /* [in] */ Int64 v);
 
-    static CARAPI_(String) DoubleToString(
+    static CARAPI_(String) ToString(
         /* [in] */ Double d);
 
-    static CARAPI_(String) FloatToString(
+    static CARAPI_(String) ToString(
         /* [in] */ Float f);
 
     static CARAPI Split(

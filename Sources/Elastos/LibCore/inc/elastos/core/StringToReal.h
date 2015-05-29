@@ -61,6 +61,7 @@ public:
     static CARAPI Parse(
         /* [in] */ const String& string,
         /* [out] */ Double* result);
+
     /**
      * Takes a String and an integer exponent. The String should hold a positive
      * integer value (or zero). The exponent will be used to calculate the

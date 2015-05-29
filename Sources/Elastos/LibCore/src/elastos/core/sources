@@ -10,6 +10,7 @@ INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility/regex;
 
 SOURCES += Thread.cpp
 SOURCES += NativeThread.cpp

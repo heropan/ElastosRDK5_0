@@ -15,11 +15,11 @@ class RealToString
 public:
     static RealToString* GetInstance();
 
-    CARAPI_(String) DoubleToString(Double d);
-    CARAPI_(String) ConvertDouble(Double inputNumber);
+    CARAPI_(String) ToString(Double d);
+    CARAPI_(String) Convert(Double inputNumber);
 
-    CARAPI_(String) FloatToString(Float f);
-    CARAPI_(String) ConvertFloat(Float inputNumber);
+    CARAPI_(String) ToString(Float f);
+    CARAPI_(String) Convert(Float inputNumber);
 
 private:
     RealToString();

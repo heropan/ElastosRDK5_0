@@ -1,13 +1,13 @@
-#ifdef ELASTOS_CORELIBRARY
-#include <coredef.h>
-#include "Character.h"
-#include "Math.h"
-#include "StringBuilder.h"
-#else
-/*#include <elastos/Character.h>
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>*/
-#endif
+#include <elastos/coredef.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+
+template <>
+struct Conversion<Elastos::Core::Character::UnicodeBlock*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
 
 namespace Elastos {
 namespace Core {
@@ -77,261 +77,284 @@ const Byte Character::DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE = 17;
 const Byte Character::DIRECTIONALITY_POP_DIRECTIONAL_FORMAT = 18;
 
 
-const Character::UnicodeBlock* Character::UnicodeBlock::SURROGATES_AREA = new Character::UnicodeBlock(String("SURROGATES_AREA"), 0X0, 0X0);
-const Character::UnicodeBlock* Character::UnicodeBlock::BASIC_LATIN = new Character::UnicodeBlock(String("BASIC_LATIN"), 0x0, 0x7f);
-const Character::UnicodeBlock* Character::UnicodeBlock::LATIN_1_SUPPLEMENT = new Character::UnicodeBlock(String("LATIN_1_SUPPLEMENT"), 0x80, 0xff);
-const Character::UnicodeBlock* Character::UnicodeBlock::LATIN_EXTENDED_A = new Character::UnicodeBlock(String("LATIN_EXTENDED_A"), 0x100, 0x17f);
-const Character::UnicodeBlock* Character::UnicodeBlock::LATIN_EXTENDED_B = new Character::UnicodeBlock(String("LATIN_EXTENDED_B"), 0x180, 0x24f);
-const Character::UnicodeBlock* Character::UnicodeBlock::IPA_EXTENSIONS = new Character::UnicodeBlock(String("IPA_EXTENSIONS"), 0x250, 0x2af);
-const Character::UnicodeBlock* Character::UnicodeBlock::SPACING_MODIFIER_LETTERS = new Character::UnicodeBlock(String("SPACING_MODIFIER_LETTERS"), 0x2b0, 0x2ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::COMBINING_DIACRITICAL_MARKS = new Character::UnicodeBlock(String("COMBINING_DIACRITICAL_MARKS"), 0x300, 0x36f);
-const Character::UnicodeBlock* Character::UnicodeBlock::GREEK = new Character::UnicodeBlock(String("GREEK"), 0x370, 0x3ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::CYRILLIC = new Character::UnicodeBlock(String("CYRILLIC"), 0x400, 0x4ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::CYRILLIC_SUPPLEMENTARY = new Character::UnicodeBlock(String("CYRILLIC_SUPPLEMENTARY"), 0x500, 0x52f);
-const Character::UnicodeBlock* Character::UnicodeBlock::ARMENIAN = new Character::UnicodeBlock(String("ARMENIAN"), 0x530, 0x58f);
-const Character::UnicodeBlock* Character::UnicodeBlock::HEBREW = new Character::UnicodeBlock(String("HEBREW"), 0x590, 0x5ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::ARABIC = new Character::UnicodeBlock(String("ARABIC"), 0x600, 0x6ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::SYRIAC = new Character::UnicodeBlock(String("SYRIAC"), 0x700, 0x74f);
-const Character::UnicodeBlock* Character::UnicodeBlock::THAANA = new Character::UnicodeBlock(String("THAANA"), 0x780, 0x7bf);
-const Character::UnicodeBlock* Character::UnicodeBlock::DEVANAGARI = new Character::UnicodeBlock(String("DEVANAGARI"), 0x900, 0x97f);
-const Character::UnicodeBlock* Character::UnicodeBlock::BENGALI = new Character::UnicodeBlock(String("BENGALI"), 0x980, 0x9ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::GURMUKHI = new Character::UnicodeBlock(String("GURMUKHI"), 0xa00, 0xa7f);
-const Character::UnicodeBlock* Character::UnicodeBlock::GUJARATI = new Character::UnicodeBlock(String("GUJARATI"), 0xa80, 0xaff);
-const Character::UnicodeBlock* Character::UnicodeBlock::ORIYA = new Character::UnicodeBlock(String("ORIYA"), 0xb00, 0xb7f);
-const Character::UnicodeBlock* Character::UnicodeBlock::TAMIL = new Character::UnicodeBlock(String("TAMIL"), 0xb80, 0xbff);
-const Character::UnicodeBlock* Character::UnicodeBlock::TELUGU = new Character::UnicodeBlock(String("TELUGU"), 0xc00, 0xc7f);
-const Character::UnicodeBlock* Character::UnicodeBlock::KANNADA = new Character::UnicodeBlock(String("KANNADA"), 0xc80, 0xcff);
-const Character::UnicodeBlock* Character::UnicodeBlock::MALAYALAM = new Character::UnicodeBlock(String("MALAYALAM"), 0xd00, 0xd7f);
-const Character::UnicodeBlock* Character::UnicodeBlock::SINHALA = new Character::UnicodeBlock(String("SINHALA"), 0xd80, 0xdff);
-const Character::UnicodeBlock* Character::UnicodeBlock::THAI = new Character::UnicodeBlock(String("THAI"), 0xe00, 0xe7f);
-const Character::UnicodeBlock* Character::UnicodeBlock::LAO = new Character::UnicodeBlock(String("LAO"), 0xe80, 0xeff);
-const Character::UnicodeBlock* Character::UnicodeBlock::TIBETAN = new Character::UnicodeBlock(String("TIBETAN"), 0xf00, 0xfff);
-const Character::UnicodeBlock* Character::UnicodeBlock::MYANMAR = new Character::UnicodeBlock(String("MYANMAR"), 0x1000, 0x109f);
-const Character::UnicodeBlock* Character::UnicodeBlock::GEORGIAN = new Character::UnicodeBlock(String("GEORGIAN"), 0x10a0, 0x10ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::HANGUL_JAMO = new Character::UnicodeBlock(String("HANGUL_JAMO"), 0x1100, 0x11ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::ETHIOPIC = new Character::UnicodeBlock(String("ETHIOPIC"), 0x1200, 0x137f);
-const Character::UnicodeBlock* Character::UnicodeBlock::CHEROKEE = new Character::UnicodeBlock(String("CHEROKEE"), 0x13a0, 0x13ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS = new Character::UnicodeBlock(String("UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS"), 0x1400, 0x167f);
-const Character::UnicodeBlock* Character::UnicodeBlock::OGHAM = new Character::UnicodeBlock(String("OGHAM"), 0x1680, 0x169f);
-const Character::UnicodeBlock* Character::UnicodeBlock::RUNIC = new Character::UnicodeBlock(String("RUNIC"), 0x16a0, 0x16ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::TAGALOG = new Character::UnicodeBlock(String("TAGALOG"), 0x1700, 0x171f);
-const Character::UnicodeBlock* Character::UnicodeBlock::HANUNOO = new Character::UnicodeBlock(String("HANUNOO"), 0x1720, 0x173f);
-const Character::UnicodeBlock* Character::UnicodeBlock::BUHID = new Character::UnicodeBlock(String("BUHID"), 0x1740, 0x175f);
-const Character::UnicodeBlock* Character::UnicodeBlock::TAGBANWA = new Character::UnicodeBlock(String("TAGBANWA"), 0x1760, 0x177f);
-const Character::UnicodeBlock* Character::UnicodeBlock::KHMER = new Character::UnicodeBlock(String("KHMER"), 0x1780, 0x17ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::MONGOLIAN = new Character::UnicodeBlock(String("MONGOLIAN"), 0x1800, 0x18af);
-const Character::UnicodeBlock* Character::UnicodeBlock::LIMBU = new Character::UnicodeBlock(String("LIMBU"), 0x1900, 0x194f);
-const Character::UnicodeBlock* Character::UnicodeBlock::TAI_LE = new Character::UnicodeBlock(String("TAI_LE"), 0x1950, 0x197f);
-const Character::UnicodeBlock* Character::UnicodeBlock::KHMER_SYMBOLS = new Character::UnicodeBlock(String("KHMER_SYMBOLS"), 0x19e0, 0x19ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::PHONETIC_EXTENSIONS = new Character::UnicodeBlock(String("PHONETIC_EXTENSIONS"), 0x1d00, 0x1d7f);
-const Character::UnicodeBlock* Character::UnicodeBlock::LATIN_EXTENDED_ADDITIONAL = new Character::UnicodeBlock(String("LATIN_EXTENDED_ADDITIONAL"), 0x1e00, 0x1eff);
-const Character::UnicodeBlock* Character::UnicodeBlock::GREEK_EXTENDED = new Character::UnicodeBlock(String("GREEK_EXTENDED"), 0x1f00, 0x1fff);
-const Character::UnicodeBlock* Character::UnicodeBlock::GENERAL_PUNCTUATION = new Character::UnicodeBlock(String("GENERAL_PUNCTUATION"), 0x2000, 0x206f);
-const Character::UnicodeBlock* Character::UnicodeBlock::SUPERSCRIPTS_AND_SUBSCRIPTS = new Character::UnicodeBlock(String("SUPERSCRIPTS_AND_SUBSCRIPTS"), 0x2070, 0x209f);
-const Character::UnicodeBlock* Character::UnicodeBlock::CURRENCY_SYMBOLS = new Character::UnicodeBlock(String("CURRENCY_SYMBOLS"), 0x20a0, 0x20cf);
-const Character::UnicodeBlock* Character::UnicodeBlock::COMBINING_MARKS_FOR_SYMBOLS = new Character::UnicodeBlock(String("COMBINING_MARKS_FOR_SYMBOLS"), 0x20d0, 0x20ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::LETTERLIKE_SYMBOLS = new Character::UnicodeBlock(String("LETTERLIKE_SYMBOLS"), 0x2100, 0x214f);
-const Character::UnicodeBlock* Character::UnicodeBlock::NUMBER_FORMS = new Character::UnicodeBlock(String("NUMBER_FORMS"), 0x2150, 0x218f);
-const Character::UnicodeBlock* Character::UnicodeBlock::ARROWS = new Character::UnicodeBlock(String("ARROWS"), 0x2190, 0x21ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::MATHEMATICAL_OPERATORS = new Character::UnicodeBlock(String("MATHEMATICAL_OPERATORS"), 0x2200, 0x22ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::MISCELLANEOUS_TECHNICAL = new Character::UnicodeBlock(String("MISCELLANEOUS_TECHNICAL"), 0x2300, 0x23ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::CONTROL_PICTURES = new Character::UnicodeBlock(String("CONTROL_PICTURES"), 0x2400, 0x243f);
-const Character::UnicodeBlock* Character::UnicodeBlock::OPTICAL_CHARACTER_RECOGNITION = new Character::UnicodeBlock(String("OPTICAL_CHARACTER_RECOGNITION"), 0x2440, 0x245f);
-const Character::UnicodeBlock* Character::UnicodeBlock::ENCLOSED_ALPHANUMERICS = new Character::UnicodeBlock(String("ENCLOSED_ALPHANUMERICS"), 0x2460, 0x24ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::BOX_DRAWING = new Character::UnicodeBlock(String("BOX_DRAWING"), 0x2500, 0x257f);
-const Character::UnicodeBlock* Character::UnicodeBlock::BLOCK_ELEMENTS = new Character::UnicodeBlock(String("BLOCK_ELEMENTS"), 0x2580, 0x259f);
-const Character::UnicodeBlock* Character::UnicodeBlock::GEOMETRIC_SHAPES = new Character::UnicodeBlock(String("GEOMETRIC_SHAPES"), 0x25a0, 0x25ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::MISCELLANEOUS_SYMBOLS = new Character::UnicodeBlock(String("MISCELLANEOUS_SYMBOLS"), 0x2600, 0x26ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::DINGBATS = new Character::UnicodeBlock(String("DINGBATS"), 0x2700, 0x27bf);
-const Character::UnicodeBlock* Character::UnicodeBlock::MISCELLANEOUS_MATHEMATICAL_SYMBOLS_A = new Character::UnicodeBlock(String("MISCELLANEOUS_MATHEMATICAL_SYMBOLS_A"), 0x27c0, 0x27ef);
-const Character::UnicodeBlock* Character::UnicodeBlock::SUPPLEMENTAL_ARROWS_A = new Character::UnicodeBlock(String("SUPPLEMENTAL_ARROWS_A"), 0x27f0, 0x27ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::BRAILLE_PATTERNS = new Character::UnicodeBlock(String("BRAILLE_PATTERNS"), 0x2800, 0x28ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::SUPPLEMENTAL_ARROWS_B = new Character::UnicodeBlock(String("SUPPLEMENTAL_ARROWS_B"), 0x2900, 0x297f);
-const Character::UnicodeBlock* Character::UnicodeBlock::MISCELLANEOUS_MATHEMATICAL_SYMBOLS_B = new Character::UnicodeBlock(String("MISCELLANEOUS_MATHEMATICAL_SYMBOLS_B"), 0x2980, 0x29ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::SUPPLEMENTAL_MATHEMATICAL_OPERATORS = new Character::UnicodeBlock(String("SUPPLEMENTAL_MATHEMATICAL_OPERATORS"), 0x2a00, 0x2aff);
-const Character::UnicodeBlock* Character::UnicodeBlock::MISCELLANEOUS_SYMBOLS_AND_ARROWS = new Character::UnicodeBlock(String("MISCELLANEOUS_SYMBOLS_AND_ARROWS"), 0x2b00, 0x2bff);
-const Character::UnicodeBlock* Character::UnicodeBlock::CJK_RADICALS_SUPPLEMENT = new Character::UnicodeBlock(String("CJK_RADICALS_SUPPLEMENT"), 0x2e80, 0x2eff);
-const Character::UnicodeBlock* Character::UnicodeBlock::KANGXI_RADICALS = new Character::UnicodeBlock(String("KANGXI_RADICALS"), 0x2f00, 0x2fdf);
-const Character::UnicodeBlock* Character::UnicodeBlock::IDEOGRAPHIC_DESCRIPTION_CHARACTERS = new Character::UnicodeBlock(String("IDEOGRAPHIC_DESCRIPTION_CHARACTERS"), 0x2ff0, 0x2fff);
-const Character::UnicodeBlock* Character::UnicodeBlock::CJK_SYMBOLS_AND_PUNCTUATION = new Character::UnicodeBlock(String("CJK_SYMBOLS_AND_PUNCTUATION"), 0x3000, 0x303f);
-const Character::UnicodeBlock* Character::UnicodeBlock::HIRAGANA = new Character::UnicodeBlock(String("HIRAGANA"), 0x3040, 0x309f);
-const Character::UnicodeBlock* Character::UnicodeBlock::KATAKANA = new Character::UnicodeBlock(String("KATAKANA"), 0x30a0, 0x30ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::BOPOMOFO = new Character::UnicodeBlock(String("BOPOMOFO"), 0x3100, 0x312f);
-const Character::UnicodeBlock* Character::UnicodeBlock::HANGUL_COMPATIBILITY_JAMO = new Character::UnicodeBlock(String("HANGUL_COMPATIBILITY_JAMO"), 0x3130, 0x318f);
-const Character::UnicodeBlock* Character::UnicodeBlock::KANBUN = new Character::UnicodeBlock(String("KANBUN"), 0x3190, 0x319f);
-const Character::UnicodeBlock* Character::UnicodeBlock::BOPOMOFO_EXTENDED = new Character::UnicodeBlock(String("BOPOMOFO_EXTENDED"), 0x31a0, 0x31bf);
-const Character::UnicodeBlock* Character::UnicodeBlock::KATAKANA_PHONETIC_EXTENSIONS = new Character::UnicodeBlock(String("KATAKANA_PHONETIC_EXTENSIONS"), 0x31f0, 0x31ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::ENCLOSED_CJK_LETTERS_AND_MONTHS = new Character::UnicodeBlock(String("ENCLOSED_CJK_LETTERS_AND_MONTHS"), 0x3200, 0x32ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::CJK_COMPATIBILITY = new Character::UnicodeBlock(String("CJK_COMPATIBILITY"), 0x3300, 0x33ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A = new Character::UnicodeBlock(String("CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A"), 0x3400, 0x4dbf);
-const Character::UnicodeBlock* Character::UnicodeBlock::YIJING_HEXAGRAM_SYMBOLS = new Character::UnicodeBlock(String("YIJING_HEXAGRAM_SYMBOLS"), 0x4dc0, 0x4dff);
-const Character::UnicodeBlock* Character::UnicodeBlock::CJK_UNIFIED_IDEOGRAPHS = new Character::UnicodeBlock(String("CJK_UNIFIED_IDEOGRAPHS"), 0x4e00, 0x9fff);
-const Character::UnicodeBlock* Character::UnicodeBlock::YI_SYLLABLES = new Character::UnicodeBlock(String("YI_SYLLABLES"), 0xa000, 0xa48f);
-const Character::UnicodeBlock* Character::UnicodeBlock::YI_RADICALS = new Character::UnicodeBlock(String("YI_RADICALS"), 0xa490, 0xa4cf);
-const Character::UnicodeBlock* Character::UnicodeBlock::HANGUL_SYLLABLES = new Character::UnicodeBlock(String("HANGUL_SYLLABLES"), 0xac00, 0xd7af);
-const Character::UnicodeBlock* Character::UnicodeBlock::HIGH_SURROGATES = new Character::UnicodeBlock(String("HIGH_SURROGATES"), 0xd800, 0xdb7f);
-const Character::UnicodeBlock* Character::UnicodeBlock::HIGH_PRIVATE_USE_SURROGATES = new Character::UnicodeBlock(String("HIGH_PRIVATE_USE_SURROGATES"), 0xdb80, 0xdbff);
-const Character::UnicodeBlock* Character::UnicodeBlock::LOW_SURROGATES = new Character::UnicodeBlock(String("LOW_SURROGATES"), 0xdc00, 0xdfff);
-const Character::UnicodeBlock* Character::UnicodeBlock::PRIVATE_USE_AREA = new Character::UnicodeBlock(String("PRIVATE_USE_AREA"), 0xe000, 0xf8ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::CJK_COMPATIBILITY_IDEOGRAPHS = new Character::UnicodeBlock(String("CJK_COMPATIBILITY_IDEOGRAPHS"), 0xf900, 0xfaff);
-const Character::UnicodeBlock* Character::UnicodeBlock::ALPHABETIC_PRESENTATION_FORMS = new Character::UnicodeBlock(String("ALPHABETIC_PRESENTATION_FORMS"), 0xfb00, 0xfb4f);
-const Character::UnicodeBlock* Character::UnicodeBlock::ARABIC_PRESENTATION_FORMS_A = new Character::UnicodeBlock(String("ARABIC_PRESENTATION_FORMS_A"), 0xfb50, 0xfdff);
-const Character::UnicodeBlock* Character::UnicodeBlock::VARIATION_SELECTORS = new Character::UnicodeBlock(String("VARIATION_SELECTORS"), 0xfe00, 0xfe0f);
-const Character::UnicodeBlock* Character::UnicodeBlock::COMBINING_HALF_MARKS = new Character::UnicodeBlock(String("COMBINING_HALF_MARKS"), 0xfe20, 0xfe2f);
-const Character::UnicodeBlock* Character::UnicodeBlock::CJK_COMPATIBILITY_FORMS = new Character::UnicodeBlock(String("CJK_COMPATIBILITY_FORMS"), 0xfe30, 0xfe4f);
-const Character::UnicodeBlock* Character::UnicodeBlock::SMALL_FORM_VARIANTS = new Character::UnicodeBlock(String("SMALL_FORM_VARIANTS"), 0xfe50, 0xfe6f);
-const Character::UnicodeBlock* Character::UnicodeBlock::ARABIC_PRESENTATION_FORMS_B = new Character::UnicodeBlock(String("ARABIC_PRESENTATION_FORMS_B"), 0xfe70, 0xfeff);
-const Character::UnicodeBlock* Character::UnicodeBlock::HALFWIDTH_AND_FULLWIDTH_FORMS = new Character::UnicodeBlock(String("HALFWIDTH_AND_FULLWIDTH_FORMS"), 0xff00, 0xffef);
-const Character::UnicodeBlock* Character::UnicodeBlock::SPECIALS = new Character::UnicodeBlock(String("SPECIALS"), 0xfff0, 0xffff);
-const Character::UnicodeBlock* Character::UnicodeBlock::LINEAR_B_SYLLABARY = new Character::UnicodeBlock(String("LINEAR_B_SYLLABARY"), 0x10000, 0x1007f);
-const Character::UnicodeBlock* Character::UnicodeBlock::LINEAR_B_IDEOGRAMS = new Character::UnicodeBlock(String("LINEAR_B_IDEOGRAMS"), 0x10080, 0x100ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::AEGEAN_NUMBERS = new Character::UnicodeBlock(String("AEGEAN_NUMBERS"), 0x10100, 0x1013f);
-const Character::UnicodeBlock* Character::UnicodeBlock::OLD_ITALIC = new Character::UnicodeBlock(String("OLD_ITALIC"), 0x10300, 0x1032f);
-const Character::UnicodeBlock* Character::UnicodeBlock::GOTHIC = new Character::UnicodeBlock(String("GOTHIC"), 0x10330, 0x1034f);
-const Character::UnicodeBlock* Character::UnicodeBlock::UGARITIC = new Character::UnicodeBlock(String("UGARITIC"), 0x10380, 0x1039f);
-const Character::UnicodeBlock* Character::UnicodeBlock::DESERET = new Character::UnicodeBlock(String("DESERET"), 0x10400, 0x1044f);
-const Character::UnicodeBlock* Character::UnicodeBlock::SHAVIAN = new Character::UnicodeBlock(String("SHAVIAN"), 0x10450, 0x1047f);
-const Character::UnicodeBlock* Character::UnicodeBlock::OSMANYA = new Character::UnicodeBlock(String("OSMANYA"), 0x10480, 0x104af);
-const Character::UnicodeBlock* Character::UnicodeBlock::CYPRIOT_SYLLABARY = new Character::UnicodeBlock(String("CYPRIOT_SYLLABARY"), 0x10800, 0x1083f);
-const Character::UnicodeBlock* Character::UnicodeBlock::BYZANTINE_MUSICAL_SYMBOLS = new Character::UnicodeBlock(String("BYZANTINE_MUSICAL_SYMBOLS"), 0x1d000, 0x1d0ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::MUSICAL_SYMBOLS = new Character::UnicodeBlock(String("MUSICAL_SYMBOLS"), 0x1d100, 0x1d1ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::TAI_XUAN_JING_SYMBOLS = new Character::UnicodeBlock(String("TAI_XUAN_JING_SYMBOLS"), 0x1d300, 0x1d35f);
-const Character::UnicodeBlock* Character::UnicodeBlock::MATHEMATICAL_ALPHANUMERIC_SYMBOLS = new Character::UnicodeBlock(String("MATHEMATICAL_ALPHANUMERIC_SYMBOLS"), 0x1d400, 0x1d7ff);
-const Character::UnicodeBlock* Character::UnicodeBlock::CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B = new Character::UnicodeBlock(String("CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B"), 0x20000, 0x2a6df);
-const Character::UnicodeBlock* Character::UnicodeBlock::CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT = new Character::UnicodeBlock(String("CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT"), 0x2f800, 0x2fa1f);
-const Character::UnicodeBlock* Character::UnicodeBlock::TAGS = new Character::UnicodeBlock(String("TAGS"), 0xe0000, 0xe007f);
-const Character::UnicodeBlock* Character::UnicodeBlock::VARIATION_SELECTORS_SUPPLEMENT = new Character::UnicodeBlock(String("VARIATION_SELECTORS_SUPPLEMENT"), 0xe0100, 0xe01ef);
-const Character::UnicodeBlock* Character::UnicodeBlock::SUPPLEMENTARY_PRIVATE_USE_AREA_A = new Character::UnicodeBlock(String("SUPPLEMENTARY_PRIVATE_USE_AREA_A"), 0xf0000, 0xfffff);
-const Character::UnicodeBlock* Character::UnicodeBlock::SUPPLEMENTARY_PRIVATE_USE_AREA_B = new Character::UnicodeBlock(String("SUPPLEMENTARY_PRIVATE_USE_AREA_B"), 0x100000, 0x10ffff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SURROGATES_AREA = new Character::UnicodeBlock(String("SURROGATES_AREA"), 0X0, 0X0);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BASIC_LATIN = new Character::UnicodeBlock(String("BASIC_LATIN"), 0x0, 0x7f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LATIN_1_SUPPLEMENT = new Character::UnicodeBlock(String("LATIN_1_SUPPLEMENT"), 0x80, 0xff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LATIN_EXTENDED_A = new Character::UnicodeBlock(String("LATIN_EXTENDED_A"), 0x100, 0x17f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LATIN_EXTENDED_B = new Character::UnicodeBlock(String("LATIN_EXTENDED_B"), 0x180, 0x24f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::IPA_EXTENSIONS = new Character::UnicodeBlock(String("IPA_EXTENSIONS"), 0x250, 0x2af);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SPACING_MODIFIER_LETTERS = new Character::UnicodeBlock(String("SPACING_MODIFIER_LETTERS"), 0x2b0, 0x2ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::COMBINING_DIACRITICAL_MARKS = new Character::UnicodeBlock(String("COMBINING_DIACRITICAL_MARKS"), 0x300, 0x36f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::GREEK = new Character::UnicodeBlock(String("GREEK"), 0x370, 0x3ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CYRILLIC = new Character::UnicodeBlock(String("CYRILLIC"), 0x400, 0x4ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CYRILLIC_SUPPLEMENTARY = new Character::UnicodeBlock(String("CYRILLIC_SUPPLEMENTARY"), 0x500, 0x52f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ARMENIAN = new Character::UnicodeBlock(String("ARMENIAN"), 0x530, 0x58f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::HEBREW = new Character::UnicodeBlock(String("HEBREW"), 0x590, 0x5ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ARABIC = new Character::UnicodeBlock(String("ARABIC"), 0x600, 0x6ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SYRIAC = new Character::UnicodeBlock(String("SYRIAC"), 0x700, 0x74f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::THAANA = new Character::UnicodeBlock(String("THAANA"), 0x780, 0x7bf);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::DEVANAGARI = new Character::UnicodeBlock(String("DEVANAGARI"), 0x900, 0x97f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BENGALI = new Character::UnicodeBlock(String("BENGALI"), 0x980, 0x9ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::GURMUKHI = new Character::UnicodeBlock(String("GURMUKHI"), 0xa00, 0xa7f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::GUJARATI = new Character::UnicodeBlock(String("GUJARATI"), 0xa80, 0xaff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ORIYA = new Character::UnicodeBlock(String("ORIYA"), 0xb00, 0xb7f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::TAMIL = new Character::UnicodeBlock(String("TAMIL"), 0xb80, 0xbff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::TELUGU = new Character::UnicodeBlock(String("TELUGU"), 0xc00, 0xc7f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::KANNADA = new Character::UnicodeBlock(String("KANNADA"), 0xc80, 0xcff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MALAYALAM = new Character::UnicodeBlock(String("MALAYALAM"), 0xd00, 0xd7f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SINHALA = new Character::UnicodeBlock(String("SINHALA"), 0xd80, 0xdff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::THAI = new Character::UnicodeBlock(String("THAI"), 0xe00, 0xe7f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LAO = new Character::UnicodeBlock(String("LAO"), 0xe80, 0xeff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::TIBETAN = new Character::UnicodeBlock(String("TIBETAN"), 0xf00, 0xfff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MYANMAR = new Character::UnicodeBlock(String("MYANMAR"), 0x1000, 0x109f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::GEORGIAN = new Character::UnicodeBlock(String("GEORGIAN"), 0x10a0, 0x10ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::HANGUL_JAMO = new Character::UnicodeBlock(String("HANGUL_JAMO"), 0x1100, 0x11ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ETHIOPIC = new Character::UnicodeBlock(String("ETHIOPIC"), 0x1200, 0x137f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CHEROKEE = new Character::UnicodeBlock(String("CHEROKEE"), 0x13a0, 0x13ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS = new Character::UnicodeBlock(String("UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS"), 0x1400, 0x167f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::OGHAM = new Character::UnicodeBlock(String("OGHAM"), 0x1680, 0x169f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::RUNIC = new Character::UnicodeBlock(String("RUNIC"), 0x16a0, 0x16ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::TAGALOG = new Character::UnicodeBlock(String("TAGALOG"), 0x1700, 0x171f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::HANUNOO = new Character::UnicodeBlock(String("HANUNOO"), 0x1720, 0x173f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BUHID = new Character::UnicodeBlock(String("BUHID"), 0x1740, 0x175f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::TAGBANWA = new Character::UnicodeBlock(String("TAGBANWA"), 0x1760, 0x177f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::KHMER = new Character::UnicodeBlock(String("KHMER"), 0x1780, 0x17ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MONGOLIAN = new Character::UnicodeBlock(String("MONGOLIAN"), 0x1800, 0x18af);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LIMBU = new Character::UnicodeBlock(String("LIMBU"), 0x1900, 0x194f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::TAI_LE = new Character::UnicodeBlock(String("TAI_LE"), 0x1950, 0x197f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::KHMER_SYMBOLS = new Character::UnicodeBlock(String("KHMER_SYMBOLS"), 0x19e0, 0x19ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::PHONETIC_EXTENSIONS = new Character::UnicodeBlock(String("PHONETIC_EXTENSIONS"), 0x1d00, 0x1d7f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LATIN_EXTENDED_ADDITIONAL = new Character::UnicodeBlock(String("LATIN_EXTENDED_ADDITIONAL"), 0x1e00, 0x1eff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::GREEK_EXTENDED = new Character::UnicodeBlock(String("GREEK_EXTENDED"), 0x1f00, 0x1fff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::GENERAL_PUNCTUATION = new Character::UnicodeBlock(String("GENERAL_PUNCTUATION"), 0x2000, 0x206f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SUPERSCRIPTS_AND_SUBSCRIPTS = new Character::UnicodeBlock(String("SUPERSCRIPTS_AND_SUBSCRIPTS"), 0x2070, 0x209f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CURRENCY_SYMBOLS = new Character::UnicodeBlock(String("CURRENCY_SYMBOLS"), 0x20a0, 0x20cf);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::COMBINING_MARKS_FOR_SYMBOLS = new Character::UnicodeBlock(String("COMBINING_MARKS_FOR_SYMBOLS"), 0x20d0, 0x20ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LETTERLIKE_SYMBOLS = new Character::UnicodeBlock(String("LETTERLIKE_SYMBOLS"), 0x2100, 0x214f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::NUMBER_FORMS = new Character::UnicodeBlock(String("NUMBER_FORMS"), 0x2150, 0x218f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ARROWS = new Character::UnicodeBlock(String("ARROWS"), 0x2190, 0x21ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MATHEMATICAL_OPERATORS = new Character::UnicodeBlock(String("MATHEMATICAL_OPERATORS"), 0x2200, 0x22ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MISCELLANEOUS_TECHNICAL = new Character::UnicodeBlock(String("MISCELLANEOUS_TECHNICAL"), 0x2300, 0x23ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CONTROL_PICTURES = new Character::UnicodeBlock(String("CONTROL_PICTURES"), 0x2400, 0x243f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::OPTICAL_CHARACTER_RECOGNITION = new Character::UnicodeBlock(String("OPTICAL_CHARACTER_RECOGNITION"), 0x2440, 0x245f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ENCLOSED_ALPHANUMERICS = new Character::UnicodeBlock(String("ENCLOSED_ALPHANUMERICS"), 0x2460, 0x24ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BOX_DRAWING = new Character::UnicodeBlock(String("BOX_DRAWING"), 0x2500, 0x257f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BLOCK_ELEMENTS = new Character::UnicodeBlock(String("BLOCK_ELEMENTS"), 0x2580, 0x259f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::GEOMETRIC_SHAPES = new Character::UnicodeBlock(String("GEOMETRIC_SHAPES"), 0x25a0, 0x25ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MISCELLANEOUS_SYMBOLS = new Character::UnicodeBlock(String("MISCELLANEOUS_SYMBOLS"), 0x2600, 0x26ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::DINGBATS = new Character::UnicodeBlock(String("DINGBATS"), 0x2700, 0x27bf);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MISCELLANEOUS_MATHEMATICAL_SYMBOLS_A = new Character::UnicodeBlock(String("MISCELLANEOUS_MATHEMATICAL_SYMBOLS_A"), 0x27c0, 0x27ef);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SUPPLEMENTAL_ARROWS_A = new Character::UnicodeBlock(String("SUPPLEMENTAL_ARROWS_A"), 0x27f0, 0x27ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BRAILLE_PATTERNS = new Character::UnicodeBlock(String("BRAILLE_PATTERNS"), 0x2800, 0x28ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SUPPLEMENTAL_ARROWS_B = new Character::UnicodeBlock(String("SUPPLEMENTAL_ARROWS_B"), 0x2900, 0x297f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MISCELLANEOUS_MATHEMATICAL_SYMBOLS_B = new Character::UnicodeBlock(String("MISCELLANEOUS_MATHEMATICAL_SYMBOLS_B"), 0x2980, 0x29ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SUPPLEMENTAL_MATHEMATICAL_OPERATORS = new Character::UnicodeBlock(String("SUPPLEMENTAL_MATHEMATICAL_OPERATORS"), 0x2a00, 0x2aff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MISCELLANEOUS_SYMBOLS_AND_ARROWS = new Character::UnicodeBlock(String("MISCELLANEOUS_SYMBOLS_AND_ARROWS"), 0x2b00, 0x2bff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CJK_RADICALS_SUPPLEMENT = new Character::UnicodeBlock(String("CJK_RADICALS_SUPPLEMENT"), 0x2e80, 0x2eff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::KANGXI_RADICALS = new Character::UnicodeBlock(String("KANGXI_RADICALS"), 0x2f00, 0x2fdf);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::IDEOGRAPHIC_DESCRIPTION_CHARACTERS = new Character::UnicodeBlock(String("IDEOGRAPHIC_DESCRIPTION_CHARACTERS"), 0x2ff0, 0x2fff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CJK_SYMBOLS_AND_PUNCTUATION = new Character::UnicodeBlock(String("CJK_SYMBOLS_AND_PUNCTUATION"), 0x3000, 0x303f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::HIRAGANA = new Character::UnicodeBlock(String("HIRAGANA"), 0x3040, 0x309f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::KATAKANA = new Character::UnicodeBlock(String("KATAKANA"), 0x30a0, 0x30ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BOPOMOFO = new Character::UnicodeBlock(String("BOPOMOFO"), 0x3100, 0x312f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::HANGUL_COMPATIBILITY_JAMO = new Character::UnicodeBlock(String("HANGUL_COMPATIBILITY_JAMO"), 0x3130, 0x318f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::KANBUN = new Character::UnicodeBlock(String("KANBUN"), 0x3190, 0x319f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BOPOMOFO_EXTENDED = new Character::UnicodeBlock(String("BOPOMOFO_EXTENDED"), 0x31a0, 0x31bf);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::KATAKANA_PHONETIC_EXTENSIONS = new Character::UnicodeBlock(String("KATAKANA_PHONETIC_EXTENSIONS"), 0x31f0, 0x31ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ENCLOSED_CJK_LETTERS_AND_MONTHS = new Character::UnicodeBlock(String("ENCLOSED_CJK_LETTERS_AND_MONTHS"), 0x3200, 0x32ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CJK_COMPATIBILITY = new Character::UnicodeBlock(String("CJK_COMPATIBILITY"), 0x3300, 0x33ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A = new Character::UnicodeBlock(String("CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A"), 0x3400, 0x4dbf);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::YIJING_HEXAGRAM_SYMBOLS = new Character::UnicodeBlock(String("YIJING_HEXAGRAM_SYMBOLS"), 0x4dc0, 0x4dff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CJK_UNIFIED_IDEOGRAPHS = new Character::UnicodeBlock(String("CJK_UNIFIED_IDEOGRAPHS"), 0x4e00, 0x9fff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::YI_SYLLABLES = new Character::UnicodeBlock(String("YI_SYLLABLES"), 0xa000, 0xa48f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::YI_RADICALS = new Character::UnicodeBlock(String("YI_RADICALS"), 0xa490, 0xa4cf);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::HANGUL_SYLLABLES = new Character::UnicodeBlock(String("HANGUL_SYLLABLES"), 0xac00, 0xd7af);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::HIGH_SURROGATES = new Character::UnicodeBlock(String("HIGH_SURROGATES"), 0xd800, 0xdb7f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::HIGH_PRIVATE_USE_SURROGATES = new Character::UnicodeBlock(String("HIGH_PRIVATE_USE_SURROGATES"), 0xdb80, 0xdbff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LOW_SURROGATES = new Character::UnicodeBlock(String("LOW_SURROGATES"), 0xdc00, 0xdfff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::PRIVATE_USE_AREA = new Character::UnicodeBlock(String("PRIVATE_USE_AREA"), 0xe000, 0xf8ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CJK_COMPATIBILITY_IDEOGRAPHS = new Character::UnicodeBlock(String("CJK_COMPATIBILITY_IDEOGRAPHS"), 0xf900, 0xfaff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ALPHABETIC_PRESENTATION_FORMS = new Character::UnicodeBlock(String("ALPHABETIC_PRESENTATION_FORMS"), 0xfb00, 0xfb4f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ARABIC_PRESENTATION_FORMS_A = new Character::UnicodeBlock(String("ARABIC_PRESENTATION_FORMS_A"), 0xfb50, 0xfdff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::VARIATION_SELECTORS = new Character::UnicodeBlock(String("VARIATION_SELECTORS"), 0xfe00, 0xfe0f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::COMBINING_HALF_MARKS = new Character::UnicodeBlock(String("COMBINING_HALF_MARKS"), 0xfe20, 0xfe2f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CJK_COMPATIBILITY_FORMS = new Character::UnicodeBlock(String("CJK_COMPATIBILITY_FORMS"), 0xfe30, 0xfe4f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SMALL_FORM_VARIANTS = new Character::UnicodeBlock(String("SMALL_FORM_VARIANTS"), 0xfe50, 0xfe6f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ARABIC_PRESENTATION_FORMS_B = new Character::UnicodeBlock(String("ARABIC_PRESENTATION_FORMS_B"), 0xfe70, 0xfeff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::HALFWIDTH_AND_FULLWIDTH_FORMS = new Character::UnicodeBlock(String("HALFWIDTH_AND_FULLWIDTH_FORMS"), 0xff00, 0xffef);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SPECIALS = new Character::UnicodeBlock(String("SPECIALS"), 0xfff0, 0xffff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LINEAR_B_SYLLABARY = new Character::UnicodeBlock(String("LINEAR_B_SYLLABARY"), 0x10000, 0x1007f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LINEAR_B_IDEOGRAMS = new Character::UnicodeBlock(String("LINEAR_B_IDEOGRAMS"), 0x10080, 0x100ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::AEGEAN_NUMBERS = new Character::UnicodeBlock(String("AEGEAN_NUMBERS"), 0x10100, 0x1013f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::OLD_ITALIC = new Character::UnicodeBlock(String("OLD_ITALIC"), 0x10300, 0x1032f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::GOTHIC = new Character::UnicodeBlock(String("GOTHIC"), 0x10330, 0x1034f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::UGARITIC = new Character::UnicodeBlock(String("UGARITIC"), 0x10380, 0x1039f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::DESERET = new Character::UnicodeBlock(String("DESERET"), 0x10400, 0x1044f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SHAVIAN = new Character::UnicodeBlock(String("SHAVIAN"), 0x10450, 0x1047f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::OSMANYA = new Character::UnicodeBlock(String("OSMANYA"), 0x10480, 0x104af);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CYPRIOT_SYLLABARY = new Character::UnicodeBlock(String("CYPRIOT_SYLLABARY"), 0x10800, 0x1083f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BYZANTINE_MUSICAL_SYMBOLS = new Character::UnicodeBlock(String("BYZANTINE_MUSICAL_SYMBOLS"), 0x1d000, 0x1d0ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MUSICAL_SYMBOLS = new Character::UnicodeBlock(String("MUSICAL_SYMBOLS"), 0x1d100, 0x1d1ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::TAI_XUAN_JING_SYMBOLS = new Character::UnicodeBlock(String("TAI_XUAN_JING_SYMBOLS"), 0x1d300, 0x1d35f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MATHEMATICAL_ALPHANUMERIC_SYMBOLS = new Character::UnicodeBlock(String("MATHEMATICAL_ALPHANUMERIC_SYMBOLS"), 0x1d400, 0x1d7ff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B = new Character::UnicodeBlock(String("CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B"), 0x20000, 0x2a6df);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT = new Character::UnicodeBlock(String("CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT"), 0x2f800, 0x2fa1f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::TAGS = new Character::UnicodeBlock(String("TAGS"), 0xe0000, 0xe007f);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::VARIATION_SELECTORS_SUPPLEMENT = new Character::UnicodeBlock(String("VARIATION_SELECTORS_SUPPLEMENT"), 0xe0100, 0xe01ef);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SUPPLEMENTARY_PRIVATE_USE_AREA_A = new Character::UnicodeBlock(String("SUPPLEMENTARY_PRIVATE_USE_AREA_A"), 0xf0000, 0xfffff);
+const AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SUPPLEMENTARY_PRIVATE_USE_AREA_B = new Character::UnicodeBlock(String("SUPPLEMENTARY_PRIVATE_USE_AREA_B"), 0x100000, 0x10ffff);
 
-Character::UnicodeBlock const * Character::UnicodeBlock::BLOCKS[126] = {
-    NULL,
-    BASIC_LATIN,
-    LATIN_1_SUPPLEMENT,
-    LATIN_EXTENDED_A,
-    LATIN_EXTENDED_B,
-    IPA_EXTENSIONS,
-    SPACING_MODIFIER_LETTERS,
-    COMBINING_DIACRITICAL_MARKS,
-    GREEK,
-    CYRILLIC,
-    ARMENIAN,
-    HEBREW,
-    ARABIC,
-    SYRIAC,
-    THAANA,
-    DEVANAGARI,
-    BENGALI,
-    GURMUKHI,
-    GUJARATI,
-    ORIYA,
-    TAMIL,
-    TELUGU,
-    KANNADA,
-    MALAYALAM,
-    SINHALA,
-    THAI,
-    LAO,
-    TIBETAN,
-    MYANMAR,
-    GEORGIAN,
-    HANGUL_JAMO,
-    ETHIOPIC,
-    CHEROKEE,
-    UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS,
-    OGHAM,
-    RUNIC,
-    KHMER,
-    MONGOLIAN,
-    LATIN_EXTENDED_ADDITIONAL,
-    GREEK_EXTENDED,
-    GENERAL_PUNCTUATION,
-    SUPERSCRIPTS_AND_SUBSCRIPTS,
-    CURRENCY_SYMBOLS,
-    COMBINING_MARKS_FOR_SYMBOLS,
-    LETTERLIKE_SYMBOLS,
-    NUMBER_FORMS,
-    ARROWS,
-    MATHEMATICAL_OPERATORS,
-    MISCELLANEOUS_TECHNICAL,
-    CONTROL_PICTURES,
-    OPTICAL_CHARACTER_RECOGNITION,
-    ENCLOSED_ALPHANUMERICS,
-    BOX_DRAWING,
-    BLOCK_ELEMENTS,
-    GEOMETRIC_SHAPES,
-    MISCELLANEOUS_SYMBOLS,
-    DINGBATS,
-    BRAILLE_PATTERNS,
-    CJK_RADICALS_SUPPLEMENT,
-    KANGXI_RADICALS,
-    IDEOGRAPHIC_DESCRIPTION_CHARACTERS,
-    CJK_SYMBOLS_AND_PUNCTUATION,
-    HIRAGANA,
-    KATAKANA,
-    BOPOMOFO,
-    HANGUL_COMPATIBILITY_JAMO,
-    KANBUN,
-    BOPOMOFO_EXTENDED,
-    ENCLOSED_CJK_LETTERS_AND_MONTHS,
-    CJK_COMPATIBILITY,
-    CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A,
-    CJK_UNIFIED_IDEOGRAPHS,
-    YI_SYLLABLES,
-    YI_RADICALS,
-    HANGUL_SYLLABLES,
-    HIGH_SURROGATES,
-    HIGH_PRIVATE_USE_SURROGATES,
-    LOW_SURROGATES,
-    PRIVATE_USE_AREA,
-    CJK_COMPATIBILITY_IDEOGRAPHS,
-    ALPHABETIC_PRESENTATION_FORMS,
-    ARABIC_PRESENTATION_FORMS_A,
-    COMBINING_HALF_MARKS,
-    CJK_COMPATIBILITY_FORMS,
-    SMALL_FORM_VARIANTS,
-    ARABIC_PRESENTATION_FORMS_B,
-    SPECIALS,
-    HALFWIDTH_AND_FULLWIDTH_FORMS,
-    OLD_ITALIC,
-    GOTHIC,
-    DESERET,
-    BYZANTINE_MUSICAL_SYMBOLS,
-    MUSICAL_SYMBOLS,
-    MATHEMATICAL_ALPHANUMERIC_SYMBOLS,
-    CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
-    CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT,
-    TAGS,
-    CYRILLIC_SUPPLEMENTARY,
-    TAGALOG,
-    HANUNOO,
-    BUHID,
-    TAGBANWA,
-    MISCELLANEOUS_MATHEMATICAL_SYMBOLS_A,
-    SUPPLEMENTAL_ARROWS_A,
-    SUPPLEMENTAL_ARROWS_B,
-    MISCELLANEOUS_MATHEMATICAL_SYMBOLS_B,
-    SUPPLEMENTAL_MATHEMATICAL_OPERATORS,
-    KATAKANA_PHONETIC_EXTENSIONS,
-    VARIATION_SELECTORS,
-    SUPPLEMENTARY_PRIVATE_USE_AREA_A,
-    SUPPLEMENTARY_PRIVATE_USE_AREA_B,
-    LIMBU,
-    TAI_LE,
-    KHMER_SYMBOLS,
-    PHONETIC_EXTENSIONS,
-    MISCELLANEOUS_SYMBOLS_AND_ARROWS,
-    YIJING_HEXAGRAM_SYMBOLS,
-    LINEAR_B_SYLLABARY,
-    LINEAR_B_IDEOGRAMS,
-    AEGEAN_NUMBERS,
-    UGARITIC,
-    SHAVIAN,
-    OSMANYA,
-    CYPRIOT_SYLLABARY,
-    TAI_XUAN_JING_SYMBOLS,
-    VARIATION_SELECTORS_SUPPLEMENT
-};
+AutoPtr<ArrayOf<Character::UnicodeBlock*> > Character::UnicodeBlock::BLOCKS;
+
+Character::Subset::Subset(
+    /* [in]*/ const String& string)
+    : mName(string)
+{}
+
+Character::Subset::~Subset()
+{}
+
+ECode Character::Subset::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = mName;
+    return NOERROR;
+}
+
+void Character::UnicodeBlock::InitBlocks()
+{
+    if (BLOCKS == NULL) {
+        BLOCKS = ArrayOf<UnicodeBlock*>::Alloc(126);
+
+        BLOCKS->Set(0, NULL);
+        BLOCKS->Set(1, BASIC_LATIN);
+        BLOCKS->Set(2, LATIN_1_SUPPLEMENT);
+        BLOCKS->Set(3, LATIN_EXTENDED_A);
+        BLOCKS->Set(4, LATIN_EXTENDED_B);
+        BLOCKS->Set(5, IPA_EXTENSIONS);
+        BLOCKS->Set(6, SPACING_MODIFIER_LETTERS);
+        BLOCKS->Set(7, COMBINING_DIACRITICAL_MARKS);
+        BLOCKS->Set(8, GREEK);
+        BLOCKS->Set(9, CYRILLIC);
+        BLOCKS->Set(10, ARMENIAN);
+        BLOCKS->Set(11, HEBREW);
+        BLOCKS->Set(12, ARABIC);
+        BLOCKS->Set(13, SYRIAC);
+        BLOCKS->Set(14, THAANA);
+        BLOCKS->Set(15, DEVANAGARI);
+        BLOCKS->Set(16, BENGALI);
+        BLOCKS->Set(17, GURMUKHI);
+        BLOCKS->Set(18, GUJARATI);
+        BLOCKS->Set(19, ORIYA);
+        BLOCKS->Set(20, TAMIL);
+        BLOCKS->Set(21, TELUGU);
+        BLOCKS->Set(22, KANNADA);
+        BLOCKS->Set(23, MALAYALAM);
+        BLOCKS->Set(24, SINHALA);
+        BLOCKS->Set(25, THAI);
+        BLOCKS->Set(26, LAO);
+        BLOCKS->Set(27, TIBETAN);
+        BLOCKS->Set(28, MYANMAR);
+        BLOCKS->Set(29, GEORGIAN);
+        BLOCKS->Set(30, HANGUL_JAMO);
+        BLOCKS->Set(31, ETHIOPIC);
+        BLOCKS->Set(32, CHEROKEE);
+        BLOCKS->Set(33, UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS);
+        BLOCKS->Set(34, OGHAM);
+        BLOCKS->Set(35, RUNIC);
+        BLOCKS->Set(36, KHMER);
+        BLOCKS->Set(37, MONGOLIAN);
+        BLOCKS->Set(38, LATIN_EXTENDED_ADDITIONAL);
+        BLOCKS->Set(39, GREEK_EXTENDED);
+        BLOCKS->Set(40, GENERAL_PUNCTUATION);
+        BLOCKS->Set(41, SUPERSCRIPTS_AND_SUBSCRIPTS);
+        BLOCKS->Set(42, CURRENCY_SYMBOLS);
+        BLOCKS->Set(43, COMBINING_MARKS_FOR_SYMBOLS);
+        BLOCKS->Set(44, LETTERLIKE_SYMBOLS);
+        BLOCKS->Set(45, NUMBER_FORMS);
+        BLOCKS->Set(46, ARROWS);
+        BLOCKS->Set(47, MATHEMATICAL_OPERATORS);
+        BLOCKS->Set(47, MISCELLANEOUS_TECHNICAL);
+        BLOCKS->Set(49, CONTROL_PICTURES);
+        BLOCKS->Set(50, OPTICAL_CHARACTER_RECOGNITION);
+        BLOCKS->Set(51, ENCLOSED_ALPHANUMERICS);
+        BLOCKS->Set(52, BOX_DRAWING);
+        BLOCKS->Set(53, BLOCK_ELEMENTS);
+        BLOCKS->Set(54, GEOMETRIC_SHAPES);
+        BLOCKS->Set(55, MISCELLANEOUS_SYMBOLS);
+        BLOCKS->Set(56, DINGBATS);
+        BLOCKS->Set(57, BRAILLE_PATTERNS);
+        BLOCKS->Set(58, CJK_RADICALS_SUPPLEMENT);
+        BLOCKS->Set(59, KANGXI_RADICALS);
+        BLOCKS->Set(60, IDEOGRAPHIC_DESCRIPTION_CHARACTERS);
+        BLOCKS->Set(61, CJK_SYMBOLS_AND_PUNCTUATION);
+        BLOCKS->Set(62, HIRAGANA);
+        BLOCKS->Set(63, KATAKANA);
+        BLOCKS->Set(64, BOPOMOFO);
+        BLOCKS->Set(65, HANGUL_COMPATIBILITY_JAMO);
+        BLOCKS->Set(66, KANBUN);
+        BLOCKS->Set(67, BOPOMOFO_EXTENDED);
+        BLOCKS->Set(68, ENCLOSED_CJK_LETTERS_AND_MONTHS);
+        BLOCKS->Set(69, CJK_COMPATIBILITY);
+        BLOCKS->Set(70, CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A);
+        BLOCKS->Set(71, CJK_UNIFIED_IDEOGRAPHS);
+        BLOCKS->Set(72, YI_SYLLABLES);
+        BLOCKS->Set(73, YI_RADICALS);
+        BLOCKS->Set(74, HANGUL_SYLLABLES);
+        BLOCKS->Set(75, HIGH_SURROGATES);
+        BLOCKS->Set(76, HIGH_PRIVATE_USE_SURROGATES);
+        BLOCKS->Set(77, LOW_SURROGATES);
+        BLOCKS->Set(78, PRIVATE_USE_AREA);
+        BLOCKS->Set(79, CJK_COMPATIBILITY_IDEOGRAPHS);
+        BLOCKS->Set(80, ALPHABETIC_PRESENTATION_FORMS);
+        BLOCKS->Set(81, ARABIC_PRESENTATION_FORMS_A);
+        BLOCKS->Set(82, COMBINING_HALF_MARKS);
+        BLOCKS->Set(83, CJK_COMPATIBILITY_FORMS);
+        BLOCKS->Set(84, SMALL_FORM_VARIANTS);
+        BLOCKS->Set(85, ARABIC_PRESENTATION_FORMS_B);
+        BLOCKS->Set(86, SPECIALS);
+        BLOCKS->Set(87, HALFWIDTH_AND_FULLWIDTH_FORMS);
+        BLOCKS->Set(88, OLD_ITALIC);
+        BLOCKS->Set(89, GOTHIC);
+        BLOCKS->Set(90, DESERET);
+        BLOCKS->Set(91, BYZANTINE_MUSICAL_SYMBOLS);
+        BLOCKS->Set(92, MUSICAL_SYMBOLS);
+        BLOCKS->Set(93, MATHEMATICAL_ALPHANUMERIC_SYMBOLS);
+        BLOCKS->Set(94, CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B);
+        BLOCKS->Set(95, CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT);
+        BLOCKS->Set(96, TAGS);
+        BLOCKS->Set(97, CYRILLIC_SUPPLEMENTARY);
+        BLOCKS->Set(98, TAGALOG);
+        BLOCKS->Set(99, HANUNOO);
+        BLOCKS->Set(100, BUHID);
+        BLOCKS->Set(101, TAGBANWA);
+        BLOCKS->Set(102, MISCELLANEOUS_MATHEMATICAL_SYMBOLS_A);
+        BLOCKS->Set(103, SUPPLEMENTAL_ARROWS_A);
+        BLOCKS->Set(104, SUPPLEMENTAL_ARROWS_B);
+        BLOCKS->Set(105, MISCELLANEOUS_MATHEMATICAL_SYMBOLS_B);
+        BLOCKS->Set(106, SUPPLEMENTAL_MATHEMATICAL_OPERATORS);
+        BLOCKS->Set(107, KATAKANA_PHONETIC_EXTENSIONS);
+        BLOCKS->Set(108, VARIATION_SELECTORS);
+        BLOCKS->Set(109, SUPPLEMENTARY_PRIVATE_USE_AREA_A);
+        BLOCKS->Set(110, SUPPLEMENTARY_PRIVATE_USE_AREA_B);
+        BLOCKS->Set(111, LIMBU);
+        BLOCKS->Set(112, TAI_LE);
+        BLOCKS->Set(113, KHMER_SYMBOLS);
+        BLOCKS->Set(114, PHONETIC_EXTENSIONS);
+        BLOCKS->Set(115, MISCELLANEOUS_SYMBOLS_AND_ARROWS);
+        BLOCKS->Set(116, YIJING_HEXAGRAM_SYMBOLS);
+        BLOCKS->Set(117, LINEAR_B_SYLLABARY);
+        BLOCKS->Set(118, LINEAR_B_IDEOGRAMS);
+        BLOCKS->Set(119, AEGEAN_NUMBERS);
+        BLOCKS->Set(120, UGARITIC);
+        BLOCKS->Set(121, SHAVIAN);
+        BLOCKS->Set(122, OSMANYA);
+        BLOCKS->Set(123, CYPRIOT_SYLLABARY);
+        BLOCKS->Set(124, TAI_XUAN_JING_SYMBOLS);
+        BLOCKS->Set(125, VARIATION_SELECTORS_SUPPLEMENT);
+    }
+}
 
 const Byte Character::DIRECTIONALITY[] = {
     DIRECTIONALITY_LEFT_TO_RIGHT, DIRECTIONALITY_RIGHT_TO_LEFT,
@@ -370,9 +393,9 @@ static const Char32 kFirstByteMark[] = {
 };
 
 
-const Character::UnicodeBlock*
+AutoPtr<Character::UnicodeBlock>
 Character::UnicodeBlock::ForName(
-    /* [in] */ CString blockName)
+    /* [in] */ const String& blockName)
 {
     assert(!blockName.IsNull());
     Int32 block = Character::ForNameImpl(blockName);
@@ -390,22 +413,28 @@ Character::UnicodeBlock::ForName(
         }
         return NULL;
     }
-    return BLOCKS[block];
+
+    InitBlocks();
+    return (*BLOCKS)[block];
 }
 
-const Character::UnicodeBlock*
+AutoPtr<Character::UnicodeBlock>
 Character::UnicodeBlock::Of(
     /* [in] */ Char32 c)
 {
     if (!IsValidChar(c)) {
         return NULL;
     }
+
+    InitBlocks();
+
     Int32 block = Character::OfImpl((Int32)c);
-    Int32 len = sizeof(BLOCKS) / sizeof(UnicodeBlock*);
-    if(block == -1 || block >= len) {
+    Int32 len = BLOCKS->GetLength();
+    if (block == -1 || block >= len) {
         return NULL;
     }
-    return BLOCKS[block];
+
+    return (*BLOCKS)[block];
 }
 
 Character::UnicodeBlock::UnicodeBlock(
@@ -413,6 +442,10 @@ Character::UnicodeBlock::UnicodeBlock(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
     :Subset(blockName)
+{
+}
+
+Character::UnicodeBlock::~UnicodeBlock()
 {
 }
 
@@ -472,7 +505,7 @@ ECode Character::GetCharAt(
 }
 
 ECode Character::GetCharAt(
-    /* [in] */ CString seq,
+    /* [in] */ const String& seq,
     /* [in] */ Int32 index,
     /* [out] */ Char32* c,
     /* [out] */ Int32* nextIndex)
@@ -519,7 +552,7 @@ ECode Character::GetCharBefore(
 }
 
 ECode Character::GetCharBefore(
-    /*[in]*/ CString seq,
+    /*[in]*/ const String& seq,
     /*[in]*/ Int32 index,
     /* [out] */ Char32* c)
 {
@@ -615,7 +648,7 @@ ECode Character::ToChars(
 }
 
 ECode Character::ToChar32s(
-    /* [in] */ CString src,
+    /* [in] */ const String& src,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
     /* [in] */ ArrayOf<Char32>* dst,
@@ -623,7 +656,7 @@ ECode Character::ToChar32s(
 {
     VALIDATE_NOT_NULL(dst);
 
-    if (offset < 0 || count < 0 || offset > src.GetCharCount() - count)
+    if (offset < 0 || count < 0 || offset > src.GetLength() - count)
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
     if (count > dst->GetLength() - dstOffset)
@@ -665,7 +698,7 @@ ECode Character::GetCharCount(
 }
 
 ECode Character::GetCharCount(
-    /*[in]*/ CString seq,
+    /*[in]*/ const String& seq,
     /*[in]*/ Int32 offset,
     /*[in]*/ Int32 count,
     /* [out] */ Int32* number)
@@ -815,7 +848,7 @@ ECode Character::GetOffsetByChars(
 }
 
 ECode Character::GetOffsetByChars(
-    /*[in]*/ CString seq,
+    /*[in]*/ const String& seq,
     /*[in]*/ Int32 index,
     /*[in]*/ Int32 charOffset,
     /* [out] */ Int32* offset)
@@ -1289,12 +1322,12 @@ Boolean Character::IsMirroredImpl(
 }
 
 Int32 Character::ForNameImpl(
-    /* [in] */ CString blockName)
+    /* [in] */ const String& blockName)
 {
     if (blockName.IsNull()) {
         return 0;
     }
-    return u_getPropertyValueEnum(UCHAR_BLOCK, (const char*)blockName);
+    return u_getPropertyValueEnum(UCHAR_BLOCK, (const char*)blockName.string());
 }
 
 Boolean Character::IsDefinedImpl(

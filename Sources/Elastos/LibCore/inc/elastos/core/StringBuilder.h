@@ -70,7 +70,7 @@ public:
     StringBuilder(
         /* [in] */ const char* str);
 
-    ~StringBuilder();
+    virtual ~StringBuilder();
 
     CARAPI ToASCIILowerCase();
 

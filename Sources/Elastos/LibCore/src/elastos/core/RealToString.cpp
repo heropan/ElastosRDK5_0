@@ -46,12 +46,12 @@ RealToString::RealToString()
     memset(mDigits, 0, sizeof(Int32) * DIGITS_LENGTH);
 }
 
-String RealToString::DoubleToString(Double d)
+String RealToString::ToString(Double d)
 {
-    return ConvertDouble(d);
+    return Convert(d);
 }
 
-String RealToString::ConvertDouble(Double inputNumber)
+String RealToString::Convert(Double inputNumber)
 {
     Int64 inputNumberBits = Math::DoubleToRawInt64Bits(inputNumber);
     Boolean positive = (inputNumberBits & Math::DOUBLE_SIGN_MASK) == 0;
@@ -118,12 +118,12 @@ String RealToString::ConvertDouble(Double inputNumber)
     return dst.ToString();
 }
 
-String RealToString::FloatToString(Float f)
+String RealToString::ToString(Float f)
 {
-    return ConvertFloat(f);
+    return Convert(f);
 }
 
-String RealToString::ConvertFloat(Float inputNumber)
+String RealToString::Convert(Float inputNumber)
 {
     Int32 inputNumberBits = Math::FloatToRawInt32Bits(inputNumber);
     Boolean positive = (inputNumberBits & Math::FLOAT_SIGN_MASK) == 0;
@@ -205,7 +205,7 @@ void RealToString::FreeFormatExponential(StringBuilder& sb, Boolean positive)
         sb.AppendChar('0');
     }
     sb.AppendChar('E');
-    String expStr = IntegralToString::Int32ToString(exponent,10);
+    String expStr = IntegralToString::ToString(exponent,10);
     sb.Append(expStr);
 }
 

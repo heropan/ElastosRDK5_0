@@ -18,7 +18,6 @@ EXPORT_HEADERS += elastos/core/AbstractStringBuilder.h
 EXPORT_HEADERS += elastos/core/StringBuilder.h
 EXPORT_HEADERS += elastos/core/StringBuffer.h
 
-
 EXPORT_HEADERS += elastos/utility/etl/Algorithm.h
 EXPORT_HEADERS += elastos/utility/etl/ConceptCheck.h
 EXPORT_HEADERS += elastos/utility/etl/etl_algo.h
