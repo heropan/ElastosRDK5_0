@@ -1,6 +1,6 @@
-#include <IntegralToString.h>
-#include <Character.h>
-#include <StringBuilder.h>
+#include "IntegralToString.h"
+#include <elastos/core/Character.h>
+#include <elastos/core/StringBuilder.h>
 #include <stdlib.h>
 
 namespace Elastos {
@@ -61,7 +61,7 @@ const char IntegralToString::UPPER_CASE_DIGITS[DIGITS_LENGTH] = {
 AutoPtr<ArrayOf<String> > IntegralToString::SMALL_NONNEGATIVE_VALUES;
 AutoPtr<ArrayOf<String> > IntegralToString::SMALL_NEGATIVE_VALUES;
 
-String IntegralToString::Int32ToString(
+String IntegralToString::ToString(
     /* [in] */ Int32 i,
     /* [in] */ Int32 radix)
 {
@@ -107,7 +107,7 @@ String IntegralToString::Int32ToString(
 String IntegralToString::ConvertInt32(
     /* [in] */ Int32 i)
 {
-    /*Boolean negative = FALSE;
+    Boolean negative = FALSE;
     String quickResult;
     if (i < 0) {
         negative = TRUE;
@@ -197,16 +197,16 @@ String IntegralToString::ConvertInt32(
     }
 
     quickResult = String(buf->GetPayload() + cursor, bufLen - cursor);
-    return quickResult;*/
+    return quickResult;
 }
 
-String IntegralToString::Int64ToString(
+String IntegralToString::ToString(
     /* [in] */ Int64 v,
     /* [in] */ Int32 radix)
 {
     Int32 i = (Int32) v;
     if (i == v) {
-        return Int32ToString(i, radix);
+        return ToString(i, radix);
     }
 
     if (radix < Character::MIN_RADIX || radix > Character::MAX_RADIX) {
@@ -282,7 +282,7 @@ String IntegralToString::ConvertInt64(
      * "exact division" is done as per the online addendum to Hank Warren's
      * "Hacker's Delight" 10-20, http://www.hackersdelight.org/divcMore.pdf
      */
-    Int64 newN = (n - low) / 1000000000;
+    //Int64 newN = (n - low) / 1000000000;
     n = (((UInt64)(n - low)) >> 9) * 0x8E47CE423A2E9C6DL;
 
     /*
@@ -361,7 +361,7 @@ Int32 IntegralToString::Int32IntoCharArray(
     return cursor;
 }
 
-String IntegralToString::Int32ToBinaryString(
+String IntegralToString::ToBinaryString(
     /* [in] */ Int32 i)
 {
     Int32 bufLen = 32;  // Max number of binary digits in an int
@@ -377,12 +377,12 @@ String IntegralToString::Int32ToBinaryString(
     return str;
 }
 
-String IntegralToString::Int64ToBinaryString(
+String IntegralToString::ToBinaryString(
     /* [in] */ Int64 v)
 {
     Int32 i = (Int32) v;
     if (v >= 0 && i == v) {
-        return Int32ToBinaryString(i);
+        return ToBinaryString(i);
     }
 
     Int32 bufLen = 64;  // Max number of binary digits in a long
@@ -404,24 +404,24 @@ StringBuilder& IntegralToString::AppendByteAsHex(
     /* [in] */ Boolean upperCase)
 {
     const char* digits = upperCase ? UPPER_CASE_DIGITS : DIGITS;
-   /* sb.Append(digits[(b >> 4) & 0xf]);
-    sb.Append(digits[b & 0xf]);*/
+    sb.Append(digits[(b >> 4) & 0xf]);
+    sb.Append(digits[b & 0xf]);
     return sb;
 }
 
-String IntegralToString::ByteToHexString(
+String IntegralToString::ToHexString(
     /* [in] */ Byte b,
     /* [in] */ Boolean upperCase)
 {
-   /* const char* digits = upperCase ? UPPER_CASE_DIGITS : DIGITS;
+    const char* digits = upperCase ? UPPER_CASE_DIGITS : DIGITS;
     StringBuilder sb(2);
     sb.AppendChar(digits[(b >> 4) & 0xf]);
     sb.AppendChar(digits[b & 0xf]);
 
-    return sb.ToString();*/
+    return sb.ToString();
 }
 
-String IntegralToString::BytesToHexString(
+String IntegralToString::ToHexString(
     /* [in] */ ArrayOf<Byte>& bytes,
     /* [in] */ Boolean upperCase)
 {
@@ -442,7 +442,7 @@ String IntegralToString::BytesToHexString(
     return String(buf);
 }
 
-String IntegralToString::Int32ToHexString(
+String IntegralToString::ToHexString(
     /* [in] */ Int32 i,
     /* [in] */ Boolean upperCase,
     /* [in] */ Int32 minWidth)
@@ -459,13 +459,13 @@ String IntegralToString::Int32ToHexString(
     return String(buf + cursor, bufLen - cursor);
 }
 
-String IntegralToString::Int64ToHexString(
+String IntegralToString::ToHexString(
     /* [in] */ Int64 v,
     /* [in] */ Boolean upperCase)
 {
     Int32 i = (Int32) v;
     if (v >= 0 && i == v) {
-        return Int32ToHexString(i, upperCase, 0);
+        return ToHexString(i, upperCase, 0);
     }
 
     int bufLen = 16;  // Max number of hex digits in a long
@@ -480,7 +480,7 @@ String IntegralToString::Int64ToHexString(
     return String(buf + cursor, bufLen - cursor);
 }
 
-String IntegralToString::Int32ToOctalString(
+String IntegralToString::ToOctalString(
     /* [in] */ Int32 i)
 {
     Int32 bufLen = 11;  // Max number of octal digits in an Int32
@@ -494,12 +494,12 @@ String IntegralToString::Int32ToOctalString(
     return String(buf + cursor, bufLen - cursor);
 }
 
-String IntegralToString::Int64ToOctalString(
+String IntegralToString::ToOctalString(
     /* [in] */ Int64 v)
 {
     Int32 i = (Int32) v;
     if (v >= 0 && i == v) {
-        return Int32ToOctalString(i);
+        return ToOctalString(i);
     }
 
     Int32 bufLen = 22;  // Max number of octal digits in a long

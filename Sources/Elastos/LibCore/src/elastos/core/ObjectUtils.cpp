@@ -41,7 +41,7 @@ String ObjectUtils::ToString(
 {
     AutoPtr<IObject> obj = IObject::Probe(first);
     if (obj == NULL) {
-        return StringUtils::Int32ToHexString((Int32)first);
+        return StringUtils::ToHexString((Int32)first);
     }
     String str;
     obj->ToString(&str);

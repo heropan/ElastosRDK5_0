@@ -1,11 +1,12 @@
 #include "HexStringParser.h"
-#include <Character.h>
-#include <Math.h>
+#include "Character.h"
+#include "Math.h"
 #include "StringBuilder.h"
 #include "StringToIntegral.h"
 #include "StringUtils.h"
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
+#include "CPatternHelper.h"
 #else
 #include "Elastos.CoreLibrary.h"
 #endif
@@ -14,7 +15,7 @@ using Elastos::Core::Math;
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::Regex::IMatchResult;
 using Elastos::Utility::Regex::IPatternHelper;
-//using Elastos::Utility::Regex::CPatternHelper;
+using Elastos::Utility::Regex::CPatternHelper;
 
 namespace Elastos {
 namespace Core {
@@ -32,17 +33,15 @@ static String InitHEX_PATTERN()
 static AutoPtr<IPattern> InitPATTERN()
 {
     AutoPtr<IPattern> pattern;
-// #ifdef ELASTOS_CORELIBRARY
-//     AutoPtr<CPatternHelper> helper;
-//     CPatternHelper::AcquireSingletonByFriend((CPatternHelper**)&helper);
-//     helper->Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
-
-//     //Pattern::Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
-// #else
-//     AutoPtr<IPatternHelper> helper;
-//     CPatternHelper::AcquireSingleton((IPatternHelper**)&helper);
-//     helper->Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
-// #endif
+#ifdef ELASTOS_CORELIBRARY
+    AutoPtr<CPatternHelper> helper;
+    CPatternHelper::AcquireSingletonByFriend((CPatternHelper**)&helper);
+    helper->Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
+#else
+    AutoPtr<IPatternHelper> helper;
+    CPatternHelper::AcquireSingleton((IPatternHelper**)&helper);
+    helper->Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
+#endif
     return pattern;
 }
 

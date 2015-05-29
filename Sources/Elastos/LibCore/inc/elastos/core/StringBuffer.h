@@ -3,9 +3,7 @@
 #define __ELASTOS_CORE_STRINGBUFFER_H__
 
 #include <elastos/core/AbstractStringBuilder.h>
-#include "Mutex.h"
 
-using Elastos::Core::Mutex;
 using Elastos::IO::ISerializable;
 
 namespace Elastos {
@@ -74,7 +72,7 @@ public:
     StringBuffer(
         /* [in] */ const char* str);
 
-    ~StringBuffer();
+    virtual ~StringBuffer();
 
     CARAPI ToASCIILowerCase();
 
@@ -819,10 +817,14 @@ public:
     CARAPI_(String) ToString();
 
     CARAPI_(AutoPtr<ICharSequence>) ToCharSequence();
+
     CARAPI_(Int32) GetLength();
+
     CARAPI_(Int32) GetByteCount();
+
     CARAPI_(String) Substring(
         /* [in] */ Int32 start);
+
     CARAPI_(String) Substring(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -843,9 +845,6 @@ public:
 private:
     StringBuffer(const StringBuffer&);
     StringBuffer& operator=(const StringBuffer&);
-
-private:
-    Mutex mLock;
 };
 
 } // namespace Core

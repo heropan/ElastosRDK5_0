@@ -34,31 +34,31 @@ public:
     /**
      * Equivalent to Integer.toString(i, radix).
      */
-    static CARAPI_(String) Int32ToString(Int32 i, Int32 radix = 10);
+    static CARAPI_(String) ToString(Int32 i, Int32 radix = 10);
 
     /**
      * Equivalent to Long.toString(v, radix).
      */
-    static CARAPI_(String) Int64ToString(Int64 v, Int32 radix = 10);
+    static CARAPI_(String) ToString(Int64 v, Int32 radix = 10);
 
-    static CARAPI_(String) Int32ToBinaryString(Int32 i);
+    static CARAPI_(String) ToBinaryString(Int32 i);
 
-    static CARAPI_(String) Int64ToBinaryString(Int64 v);
+    static CARAPI_(String) ToBinaryString(Int64 v);
 
     static CARAPI_(StringBuilder&) AppendByteAsHex(
             StringBuilder& sb, Byte b, Boolean upperCase = TRUE);
 
-    static CARAPI_(String) ByteToHexString(Byte b, Boolean upperCase = TRUE);
+    static CARAPI_(String) ToHexString(Byte b, Boolean upperCase = TRUE);
 
-    static CARAPI_(String) BytesToHexString(ArrayOf<Byte>& bytes, Boolean upperCase = TRUE);
+    static CARAPI_(String) ToHexString(ArrayOf<Byte>& bytes, Boolean upperCase = TRUE);
 
-    static CARAPI_(String) Int32ToHexString(Int32 i, Boolean upperCase = TRUE, Int32 minWidth = 0);
+    static CARAPI_(String) ToHexString(Int32 i, Boolean upperCase = TRUE, Int32 minWidth = 0);
 
-    static CARAPI_(String) Int64ToHexString(Int64 v, Boolean upperCase = TRUE);
+    static CARAPI_(String) ToHexString(Int64 v, Boolean upperCase = TRUE);
 
-    static CARAPI_(String) Int32ToOctalString(Int32 i);
+    static CARAPI_(String) ToOctalString(Int32 i);
 
-    static CARAPI_(String) Int64ToOctalString(Int64 v);
+    static CARAPI_(String) ToOctalString(Int64 v);
 
 private:
     /**

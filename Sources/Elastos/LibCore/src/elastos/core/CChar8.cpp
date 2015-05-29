@@ -128,7 +128,7 @@ ECode CChar8::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    //*result = IntegralToString::Int32ToString((Int32)mValue);
+    //*result = IntegralToString::ToString((Int32)mValue);
 
     return NOERROR;
 }

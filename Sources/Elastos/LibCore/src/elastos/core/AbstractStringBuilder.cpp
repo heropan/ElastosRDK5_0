@@ -141,7 +141,7 @@ ECode AbstractStringBuilder::SetLength(
         EnsureCapacity(mByteCount);
     }
     else {
-        CString cstr(mString);
+        String cstr(mString);
         Int32 byteIndex = 0, nextByteIndex = 0;
         Char32 ch;
         Character::GetOffsetByChars(cstr, 0, length - 1, &byteIndex);
@@ -190,7 +190,7 @@ ECode AbstractStringBuilder::GetChar(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    CString cstr(mString);
+    String cstr(mString);
     Int32 byteIndex = 0;
     Character::GetOffsetByChars(cstr, 0, index, &byteIndex);
     return Character::GetCharAt(cstr, byteIndex, result);
@@ -204,7 +204,7 @@ ECode AbstractStringBuilder::GetChars(
 {
     VALIDATE_NOT_NULL(dst);
 
-    CString cstr(mString);
+    String cstr(mString);
     return Character::ToChar32s(cstr, start, end - start, dst, dstStart);
 }
 
@@ -233,28 +233,28 @@ ECode AbstractStringBuilder::Append(
 ECode AbstractStringBuilder::Append(
     /* [in] */ Int32 i)
 {
-    String str = IntegralToString::Int32ToString(i);
+    String str = IntegralToString::ToString(i);
     return Append(str);
 }
 
 ECode AbstractStringBuilder::Append(
     /* [in] */ Int64 l)
 {
-    String str = IntegralToString::Int64ToString(l);
+    String str = IntegralToString::ToString(l);
     return Append(str);
 }
 
 ECode AbstractStringBuilder::Append(
     /* [in] */ Float f)
 {
-    String str = RealToString::GetInstance()->FloatToString(f);
+    String str = RealToString::GetInstance()->ToString(f);
     return Append(str);
 }
 
 ECode AbstractStringBuilder::Append(
     /* [in] */ Double d)
 {
-    String str = RealToString::GetInstance()->DoubleToString(d);
+    String str = RealToString::GetInstance()->ToString(d);
     return Append(str);
 }
 
@@ -441,7 +441,7 @@ ECode AbstractStringBuilder::Insert(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    String str = RealToString::GetInstance()->FloatToString(f);
+    String str = RealToString::GetInstance()->ToString(f);
     return Insert(offset, str);
 }
 
@@ -453,7 +453,7 @@ ECode AbstractStringBuilder::Insert(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    String str = RealToString::GetInstance()->DoubleToString(d);
+    String str = RealToString::GetInstance()->ToString(d);
     return Insert(offset, str);
 }
 
@@ -533,7 +533,7 @@ ECode AbstractStringBuilder::Insert(
             end = charsLength ;
         }
 
-        CString cstr(mString);
+        String cstr(mString);
         AutoPtr< ArrayOf<Char32> > oldChars = ArrayOf<Char32>::Alloc(charCount);
         Character::ToChar32s(cstr, 0, charCount, oldChars, 0);
 
@@ -592,7 +592,7 @@ ECode AbstractStringBuilder::Insert(
         return NOERROR;
     }
 
-    CString cstr(mString);
+    String cstr(mString);
     AutoPtr< ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(charCount);
     Character::ToChar32s(cstr, 0, charCount, chars, 0);
 
@@ -700,7 +700,7 @@ ECode AbstractStringBuilder::Replace(
     }
 
     if (end > start) {
-        CString cstr(mString);
+        String cstr(mString);
         AutoPtr< ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(charCount);
         Character::ToChar32s(cstr, 0, charCount, chars, 0);
 
@@ -742,7 +742,7 @@ ECode AbstractStringBuilder::Reverse()
     mByteCount = 0;
     mCharCount = 0;
     mIsCounted = TRUE;
-    CString prevStr(prev);
+    String prevStr(prev);
 
     Int32 charCount = GetLength();
     Int32 len = prevStr.GetLength();
@@ -771,7 +771,7 @@ ECode AbstractStringBuilder::SetChar(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    CString cstr(mString);
+    String cstr(mString);
     AutoPtr< ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(charCount);
     Character::ToChar32s(cstr, 0, charCount, chars, 0);
     Char32 oldCh = (*chars)[index];
@@ -807,7 +807,7 @@ ECode AbstractStringBuilder::Delete(
         end = charCount;
     }
 
-    CString cstr(mString);
+    String cstr(mString);
     AutoPtr< ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(charCount);
     Character::ToChar32s(cstr, 0, charCount, chars, 0);
 

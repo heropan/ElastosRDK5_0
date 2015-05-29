@@ -128,7 +128,7 @@ ECode CInteger32::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    //*result = IntegralToString::Int32ToString(mValue);
+    //*result = IntegralToString::ToString(mValue);
 
     return NOERROR;
 }
