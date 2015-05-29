@@ -66,153 +66,153 @@ protected:
         /* [in] */ Int32 index,
         /* [out] */ Char32* result);
 
-    CARAPI GetCharsO(
+    CARAPI GetChars(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ ArrayOf<Char32>* dst,
         /* [in] */ Int32 dstStart);
 
-    CARAPI SubstringO(
+    CARAPI Substring(
         /* [in] */ Int32 start,
         /* [out] */ String* string);
 
-    CARAPI SubstringExO(
+    CARAPI Substring(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ String* string);
 
-    CARAPI SubSequenceO(
+    CARAPI SubSequence(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ ICharSequence** seq);
 
-    CARAPI IndexOfO(
+    CARAPI IndexOf(
         /* [in] */ const String& string,
         /* [out] */ Int32* index);
 
-    CARAPI IndexOfExO(
+    CARAPI IndexOf(
         /* [in] */ const String& string,
         /* [in] */ Int32 start,
         /* [out] */ Int32* index);
 
-    CARAPI LastIndexOfO(
+    CARAPI LastIndexOf(
         /* [in] */ const String& string,
         /* [out] */ Int32* index);
 
-    CARAPI LastIndexOfExO(
+    CARAPI LastIndexOf(
         /* [in] */ const String& string,
         /* [in] */ Int32 start,
         /* [out] */ Int32* index);
 
     CARAPI AppendNULL();
 
-    CARAPI AppendOCStr(
+    CARAPI Append(
         /* [in] */ char const* cstr);
 
-    CARAPI AppendOBoolean(
+    CARAPI Append(
         /* [in] */ Boolean b);
 
-    CARAPI AppendOInt32(
+    CARAPI Append(
         /* [in] */ Int32 i);
 
-    CARAPI AppendOInt64(
+    CARAPI Append(
         /* [in] */ Int64 l);
 
-    CARAPI AppendOFloat(
+    CARAPI Append(
         /* [in] */ Float f);
 
-    CARAPI AppendODouble(
+    CARAPI Append(
         /* [in] */ Double d);
 
-    CARAPI AppendOChars(
+    CARAPI Append(
         /* [in] */ const ArrayOf<Char32>& chars);
 
-    CARAPI AppendOCharsEx(
+    CARAPI Append(
         /* [in] */ const ArrayOf<Char32>& chars,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length);
 
-    CARAPI AppendOChar(
+    CARAPI AppendChar(
         /* [in] */ Char32 ch);
 
-    CARAPI AppendOString(
+    CARAPI Append(
         /* [in] */ const String& string);
 
-    CARAPI AppendOCharSequence(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq);
 
-    CARAPI AppendOCharSequenceEx(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI AppendOObject(
+    CARAPI Append(
         /* [in] */ IInterface* obj);
 
-    CARAPI InsertOBoolean(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ Boolean b);
 
-    CARAPI InsertOInt32(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ Int32 i);
 
-    CARAPI InsertOInt64(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ Int64 l);
 
-    CARAPI InsertOFloat(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ Float f);
 
-    CARAPI InsertODouble(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ Double d);
 
-    CARAPI InsertOChar(
+    CARAPI InsertChar(
         /* [in] */ Int32 offset,
         /* [in] */ Char32 c);
 
-    CARAPI InsertOChars(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ const ArrayOf<Char32>& chars);
 
-    CARAPI InsertOCharsEx(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ const ArrayOf<Char32>& chars,
         /* [in] */ Int32 start,
         /* [in] */ Int32 length);
 
-    CARAPI InsertOString(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ const String& str);
 
-    CARAPI InsertOCharSequence(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ ICharSequence* s);
 
-    CARAPI InsertOCharSequenceEx(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ ICharSequence* s,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI InsertOObject(
+    CARAPI Insert(
         /* [in] */ Int32 offset,
         /* [in] */ IInterface* obj);
 
-    CARAPI ReplaceO(
+    CARAPI Replace(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ const String& string);
 
-    CARAPI ReverseO();
+    CARAPI Reverse();
 
-    CARAPI DeleteO(
+    CARAPI Delete(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI DeleteOChar(
+    CARAPI Delete(
         /* [in] */ Int32 index);
 
     CARAPI ToASCIICaseString(

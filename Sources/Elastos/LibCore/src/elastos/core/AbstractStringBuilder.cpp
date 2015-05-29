@@ -196,7 +196,7 @@ ECode AbstractStringBuilder::GetChar(
     return Character::GetCharAt(cstr, byteIndex, result);
 }
 
-ECode AbstractStringBuilder::GetCharsO(
+ECode AbstractStringBuilder::GetChars(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ ArrayOf<Char32>* dst,
@@ -210,10 +210,10 @@ ECode AbstractStringBuilder::GetCharsO(
 
 ECode AbstractStringBuilder::AppendNULL()
 {
-    return AppendOCStr("NULL");
+    return Append("NULL");
 }
 
-ECode AbstractStringBuilder::AppendOCStr(
+ECode AbstractStringBuilder::Append(
     /* [in] */ char const* str)
 {
     if (NULL == str) {
@@ -221,50 +221,50 @@ ECode AbstractStringBuilder::AppendOCStr(
     }
 
     String temp(str);
-    return AppendOString(temp);
+    return Append(temp);
 }
 
-ECode AbstractStringBuilder::AppendOBoolean(
+ECode AbstractStringBuilder::Append(
     /* [in] */ Boolean b)
 {
-    return AppendOCStr(b ? "TRUE" : "FALSE");
+    return Append(b ? "TRUE" : "FALSE");
 }
 
-ECode AbstractStringBuilder::AppendOInt32(
+ECode AbstractStringBuilder::Append(
     /* [in] */ Int32 i)
 {
     String str = IntegralToString::Int32ToString(i);
-    return AppendOString(str);
+    return Append(str);
 }
 
-ECode AbstractStringBuilder::AppendOInt64(
+ECode AbstractStringBuilder::Append(
     /* [in] */ Int64 l)
 {
     String str = IntegralToString::Int64ToString(l);
-    return AppendOString(str);
+    return Append(str);
 }
 
-ECode AbstractStringBuilder::AppendOFloat(
+ECode AbstractStringBuilder::Append(
     /* [in] */ Float f)
 {
     String str = RealToString::GetInstance()->FloatToString(f);
-    return AppendOString(str);
+    return Append(str);
 }
 
-ECode AbstractStringBuilder::AppendODouble(
+ECode AbstractStringBuilder::Append(
     /* [in] */ Double d)
 {
     String str = RealToString::GetInstance()->DoubleToString(d);
-    return AppendOString(str);
+    return Append(str);
 }
 
-ECode AbstractStringBuilder::AppendOChars(
+ECode AbstractStringBuilder::Append(
     /* [in] */ const ArrayOf<Char32>& chars)
 {
-    return AppendOCharsEx(chars, 0, chars.GetLength());
+    return Append(chars, 0, chars.GetLength());
 }
 
-ECode AbstractStringBuilder::AppendOCharsEx(
+ECode AbstractStringBuilder::Append(
     /* [in] */ const ArrayOf<Char32>& chars,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
@@ -281,13 +281,13 @@ ECode AbstractStringBuilder::AppendOCharsEx(
     Break(appendSize);
 
     for (Int32 i = 0; i < length; ++i) {
-        AppendOChar(chars[offset + i]);
+        AppendChar(chars[offset + i]);
     }
 
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::AppendOChar(
+ECode AbstractStringBuilder::AppendChar(
     /* [in] */ Char32 ch)
 {
     ArrayOf_<Char8, 5> buf;
@@ -305,7 +305,7 @@ ECode AbstractStringBuilder::AppendOChar(
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::AppendOString(
+ECode AbstractStringBuilder::Append(
     /* [in] */ const String& str)
 {
     if (str.IsNull()) {
@@ -322,7 +322,7 @@ ECode AbstractStringBuilder::AppendOString(
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::AppendOCharSequence(
+ECode AbstractStringBuilder::Append(
     /* [in] */ ICharSequence* csq)
 {
     if (csq == NULL) {
@@ -337,10 +337,10 @@ ECode AbstractStringBuilder::AppendOCharSequence(
         csq->GetChar(i, &(*charArray)[i]);
     }
 
-    return AppendOChars(*charArray);
+    return Append(*charArray);
 }
 
-ECode AbstractStringBuilder::AppendOCharSequenceEx(
+ECode AbstractStringBuilder::Append(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -372,30 +372,30 @@ ECode AbstractStringBuilder::AppendOCharSequenceEx(
         csq->GetChar(start + i, &(*charArray)[i]);
     }
 
-    return AppendOChars(*charArray);
+    return Append(*charArray);
 }
 
-ECode AbstractStringBuilder::AppendOObject(
+ECode AbstractStringBuilder::Append(
     /* [in] */ IInterface* obj)
 {
     if (obj) {
         ICharSequence * seq = ICharSequence::Probe(obj);
         if (seq) {
-            return AppendOCharSequence(seq);
+            return Append(seq);
         }
 
         IObject * des = IObject::Probe(obj);
         if (des) {
             String str;
             des->ToString(&str);
-            return AppendOString(str);
+            return Append(str);
         }
     }
 
     return AppendNULL();
 }
 
-ECode AbstractStringBuilder::InsertOBoolean(
+ECode AbstractStringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Boolean b)
 {
@@ -404,10 +404,10 @@ ECode AbstractStringBuilder::InsertOBoolean(
     }
 
     String str(b? "TRUE" : "FALSE");
-    return InsertOString(offset, str);
+    return Insert(offset, str);
 }
 
-ECode AbstractStringBuilder::InsertOInt32(
+ECode AbstractStringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 i)
 {
@@ -417,10 +417,10 @@ ECode AbstractStringBuilder::InsertOInt32(
 
     char str[12];
     sprintf(str, "%d", i);
-    return InsertOString(offset, String(str));
+    return Insert(offset, String(str));
 }
 
-ECode AbstractStringBuilder::InsertOInt64(
+ECode AbstractStringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Int64 l)
 {
@@ -430,10 +430,10 @@ ECode AbstractStringBuilder::InsertOInt64(
 
     char str[24];
     sprintf(str, "%lld", l);
-    return InsertOString(offset, String(str));
+    return Insert(offset, String(str));
 }
 
-ECode AbstractStringBuilder::InsertOFloat(
+ECode AbstractStringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Float f)
 {
@@ -442,10 +442,10 @@ ECode AbstractStringBuilder::InsertOFloat(
     }
 
     String str = RealToString::GetInstance()->FloatToString(f);
-    return InsertOString(offset, str);
+    return Insert(offset, str);
 }
 
-ECode AbstractStringBuilder::InsertODouble(
+ECode AbstractStringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Double d)
 {
@@ -454,10 +454,10 @@ ECode AbstractStringBuilder::InsertODouble(
     }
 
     String str = RealToString::GetInstance()->DoubleToString(d);
-    return InsertOString(offset, str);
+    return Insert(offset, str);
 }
 
-ECode AbstractStringBuilder::InsertOChar(
+ECode AbstractStringBuilder::InsertChar(
     /* [in] */ Int32 offset,
     /* [in] */ Char32 c)
 {
@@ -474,10 +474,10 @@ ECode AbstractStringBuilder::InsertOChar(
         str[i] = (*char8s)[i];
     }
     str[length] = '\0';
-    return InsertOString(offset, String(str));
+    return Insert(offset, String(str));
 }
 
-ECode AbstractStringBuilder::InsertOChars(
+ECode AbstractStringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ const ArrayOf<Char32>& chars)
 {
@@ -485,7 +485,7 @@ ECode AbstractStringBuilder::InsertOChars(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    return InsertOCharsEx(offset, chars, 0, chars.GetLength());
+    return Insert(offset, chars, 0, chars.GetLength());
 }
 
 void AbstractStringBuilder::GenerateNewBuffer(
@@ -504,7 +504,7 @@ void AbstractStringBuilder::GenerateNewBuffer(
     mShared = FALSE;
 }
 
-ECode AbstractStringBuilder::InsertOCharsEx(
+ECode AbstractStringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ const ArrayOf<Char32>& chars,
     /* [in] */ Int32 start,
@@ -525,7 +525,7 @@ ECode AbstractStringBuilder::InsertOCharsEx(
     }
 
     if (offset == charCount) {
-        return AppendOCharsEx(chars, start, length);
+        return Append(chars, start, length);
     }
     else {
         Int32 end = start + length;
@@ -545,22 +545,22 @@ ECode AbstractStringBuilder::InsertOCharsEx(
         GenerateNewBuffer(mByteCount + insertSize + 1);
 
         for(Int32 i = 0; i < offset; ++i) {
-            AppendOChar((*oldChars)[i]);
+            AppendChar((*oldChars)[i]);
         }
 
         for (Int32 i = start; i < end; ++i) {
-            AppendOChar(chars[i]);
+            AppendChar(chars[i]);
         }
 
         for (Int32 i = offset; i < charCount; ++i) {
-            AppendOChar((*oldChars)[i]);
+            AppendChar((*oldChars)[i]);
         }
     }
 
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::InsertOString(
+ECode AbstractStringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ const String& str)
 {
@@ -574,7 +574,7 @@ ECode AbstractStringBuilder::InsertOString(
     }
 
     if (offset == charCount) {
-        return AppendOString(str);
+        return Append(str);
     }
     else if (offset == 0) {
         Int32 strLength = str.GetByteLength();
@@ -600,38 +600,38 @@ ECode AbstractStringBuilder::InsertOString(
     GenerateNewBuffer(mByteCount + strLength + 1);
 
     for(Int32 i = 0; i < offset; ++i) {
-        AppendOChar((*chars)[i]);
+        AppendChar((*chars)[i]);
     }
 
-    AppendOString(str);
+    Append(str);
 
     for (Int32 i = offset; i < charCount; ++i) {
-        AppendOChar((*chars)[i]);
+        AppendChar((*chars)[i]);
     }
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::InsertOCharSequence(
+ECode AbstractStringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ ICharSequence* seq)
 {
     if (seq == NULL) {
-        return InsertOString(offset, String("NULL"));
+        return Insert(offset, String("NULL"));
     }
 
     Int32 seqLen;
     seq->GetLength(&seqLen);
-    return InsertOCharSequenceEx(offset, seq, 0, seqLen);
+    return Insert(offset, seq, 0, seqLen);
 }
 
-ECode AbstractStringBuilder::InsertOCharSequenceEx(
+ECode AbstractStringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ ICharSequence* seq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
     if (seq == NULL) {
-        return InsertOString(offset, String("NULL"));
+        return Insert(offset, String("NULL"));
     }
 
     if (offset < 0 || offset > mByteCount || start < 0 || end < 0 || start > end) {
@@ -659,31 +659,31 @@ ECode AbstractStringBuilder::InsertOCharSequenceEx(
         (*chars)[i - start] = ch;
     }
 
-    return InsertOChars(offset, *chars);
+    return Insert(offset, *chars);
 }
 
-ECode AbstractStringBuilder::InsertOObject(
+ECode AbstractStringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ IInterface* obj)
 {
     if (obj) {
         ICharSequence * seq = ICharSequence::Probe(obj);
         if (seq) {
-            return AppendOCharSequence(seq);
+            return Append(seq);
         }
 
         IObject * des = IObject::Probe(obj);
         if (des) {
             String str;
             des->ToString(&str);
-            return InsertOString(offset, str);
+            return Insert(offset, str);
         }
     }
 
-    return InsertOString(offset, String("NULL"));
+    return Insert(offset, String("NULL"));
 }
 
-ECode AbstractStringBuilder::ReplaceO(
+ECode AbstractStringBuilder::Replace(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ const String& string)
@@ -714,26 +714,26 @@ ECode AbstractStringBuilder::ReplaceO(
         GenerateNewBuffer(mCapacity);
 
         for(Int32 i = 0; i < start; ++i) {
-            AppendOChar((*chars)[i]);
+            AppendChar((*chars)[i]);
         }
 
-        AppendOString(string);
+        Append(string);
 
         for (Int32 i = end; i < charCount; ++i) {
-            AppendOChar((*chars)[i]);
+            AppendChar((*chars)[i]);
         }
         return NOERROR;;
     }
 
     if (end == start) {
-        return InsertOString(start, string);
+        return Insert(start, string);
     }
 
     // end < start
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
-ECode AbstractStringBuilder::ReverseO()
+ECode AbstractStringBuilder::Reverse()
 {
     const char* prev = mString;
     mString = new char[mCapacity];
@@ -751,7 +751,7 @@ ECode AbstractStringBuilder::ReverseO()
     Character::ToChar32s(prevStr, 0, charCount, chars, 0);
 
     for (Int32 i = charCount - 1; i >= 0; --i) {
-        AppendOChar((*chars)[i]);
+        AppendChar((*chars)[i]);
     }
 
     delete [] prev;
@@ -784,12 +784,12 @@ ECode AbstractStringBuilder::SetChar(
     GenerateNewBuffer(mCapacity);
 
     for(Int32 i = 0; i < charCount; i++) {
-        AppendOChar((*chars)[i]);
+        AppendChar((*chars)[i]);
     }
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::DeleteO(
+ECode AbstractStringBuilder::Delete(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
@@ -819,29 +819,29 @@ ECode AbstractStringBuilder::DeleteO(
     GenerateNewBuffer(mCapacity - deleteSize);
 
     for(Int32 i = 0; i < start; ++i) {
-        AppendOChar((*chars)[i]);
+        AppendChar((*chars)[i]);
     }
     for (Int32 i = end; i < charCount; ++i) {
-        AppendOChar((*chars)[i]);
+        AppendChar((*chars)[i]);
     }
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::DeleteOChar(
+ECode AbstractStringBuilder::Delete(
     /* [in] */ Int32 index)
 {
-    return DeleteO(index, index + 1);
+    return Delete(index, index + 1);
 }
 
-ECode AbstractStringBuilder::SubstringO(
+ECode AbstractStringBuilder::Substring(
     /* [in] */ Int32 start,
     /* [out] */ String* str)
 {
     Int32 charCount = GetLength();
-    return SubstringExO(start, charCount, str);
+    return Substring(start, charCount, str);
 }
 
-ECode AbstractStringBuilder::SubstringExO(
+ECode AbstractStringBuilder::Substring(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ String* str)
@@ -905,7 +905,7 @@ ECode AbstractStringBuilder::SubstringExO(
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::SubSequenceO(
+ECode AbstractStringBuilder::SubSequence(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ ICharSequence** seq)
@@ -914,20 +914,20 @@ ECode AbstractStringBuilder::SubSequenceO(
     *seq = NULL;
 
     String str;
-    FAIL_RETURN(SubstringExO(start, end, &str));
+    FAIL_RETURN(Substring(start, end, &str));
     FAIL_RETURN(CStringWrapper::New(str, seq));
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::IndexOfO(
+ECode AbstractStringBuilder::IndexOf(
     /* [in] */ const String& subString,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
-    return IndexOfExO(subString, 0, index);
+    return IndexOf(subString, 0, index);
 }
 
-ECode AbstractStringBuilder::IndexOfExO(
+ECode AbstractStringBuilder::IndexOf(
     /* [in] */ const String& subString,
     /* [in] */ Int32 start,
     /* [out] */ Int32* index)
@@ -1034,16 +1034,16 @@ ECode AbstractStringBuilder::IndexOfExO(
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::LastIndexOfO(
+ECode AbstractStringBuilder::LastIndexOf(
     /* [in] */ const String& subString,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
     Int32 charCount = GetLength();
-    return LastIndexOfExO(subString, charCount - 1, index);
+    return LastIndexOf(subString, charCount - 1, index);
 }
 
-ECode AbstractStringBuilder::LastIndexOfExO(
+ECode AbstractStringBuilder::LastIndexOf(
     /* [in] */ const String& subString,
     /* [in] */ Int32 start,
     /* [out] */ Int32* index)

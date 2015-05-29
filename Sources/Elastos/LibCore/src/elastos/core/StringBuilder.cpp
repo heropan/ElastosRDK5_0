@@ -113,7 +113,7 @@ ECode StringBuilder::GetChars(
     /* [in, out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstStart)
 {
-    return AbstractStringBuilder::GetCharsO(start, end, dst, dstStart);
+    return AbstractStringBuilder::GetChars(start, end, dst, dstStart);
 }
 
 ECode StringBuilder::SetLength(
@@ -126,7 +126,7 @@ ECode StringBuilder::Substring(
     /* [in] */ Int32 start,
     /* [out] */ String* str)
 {
-    return AbstractStringBuilder::SubstringO(start, str);
+    return AbstractStringBuilder::Substring(start, str);
 }
 
 ECode StringBuilder::Substring(
@@ -134,14 +134,14 @@ ECode StringBuilder::Substring(
     /* [in] */ Int32 end,
     /* [out] */ String* str)
 {
-    return AbstractStringBuilder::SubstringExO(start, end, str);
+    return AbstractStringBuilder::Substring(start, end, str);
 }
 
 String StringBuilder::Substring(
     /* [in] */ Int32 start)
 {
     String str;
-    AbstractStringBuilder::SubstringO(start, &str);
+    AbstractStringBuilder::Substring(start, &str);
     return str;
 }
 
@@ -150,7 +150,7 @@ String StringBuilder::Substring(
     /* [in] */ Int32 end)
 {
     String str;
-    AbstractStringBuilder::SubstringExO(start, end, &str);
+    AbstractStringBuilder::Substring(start, end, &str);
     return str;
 }
 
@@ -159,14 +159,14 @@ ECode StringBuilder::SubSequence(
     /* [in] */ Int32 end,
     /* [out] */ ICharSequence** seq)
 {
-    return AbstractStringBuilder::SubSequenceO(start, end, seq);
+    return AbstractStringBuilder::SubSequence(start, end, seq);
 }
 
 ECode StringBuilder::IndexOf(
     /* [in] */ const String& string,
     /* [out] */ Int32* index)
 {
-    return AbstractStringBuilder::IndexOfO(string, index);
+    return AbstractStringBuilder::IndexOf(string, index);
 }
 
 ECode StringBuilder::IndexOf(
@@ -174,14 +174,14 @@ ECode StringBuilder::IndexOf(
     /* [in] */ Int32 start,
     /* [out] */ Int32* index)
 {
-    return AbstractStringBuilder::IndexOfExO(subString, start, index);
+    return AbstractStringBuilder::IndexOf(subString, start, index);
 }
 
 ECode StringBuilder::LastIndexOf(
     /* [in] */ const String& string,
     /* [out] */ Int32* index)
 {
-    return AbstractStringBuilder::LastIndexOfO(string, index);
+    return AbstractStringBuilder::LastIndexOf(string, index);
 }
 
 ECode StringBuilder::LastIndexOf(
@@ -189,7 +189,7 @@ ECode StringBuilder::LastIndexOf(
     /* [in] */ Int32 start,
     /* [out] */ Int32* index)
 {
-    return AbstractStringBuilder::LastIndexOfExO(subString, start, index);
+    return AbstractStringBuilder::LastIndexOf(subString, start, index);
 }
 
 ECode StringBuilder::AppendNULL()
@@ -200,55 +200,55 @@ ECode StringBuilder::AppendNULL()
 ECode StringBuilder::Append(
     /* [in] */ const char* str)
 {
-    return AbstractStringBuilder::AppendOCStr(str);
+    return AbstractStringBuilder::Append(str);
 }
 
 ECode StringBuilder::Append(
     /* [in] */ Boolean b)
 {
-    return AbstractStringBuilder::AppendOBoolean(b);
+    return AbstractStringBuilder::Append(b);
 }
 
 ECode StringBuilder::AppendChar(
     /* [in] */ Char32 c)
 {
-    return AbstractStringBuilder::AppendOChar(c);
+    return AbstractStringBuilder::AppendChar(c);
 }
 
 ECode StringBuilder::Append(
     /* [in] */ Int32 i)
 {
-    return AbstractStringBuilder::AppendOInt32(i);
+    return AbstractStringBuilder::Append(i);
 }
 
 ECode StringBuilder::Append(
     /* [in] */ Int64 l)
 {
-    return AbstractStringBuilder::AppendOInt64(l);
+    return AbstractStringBuilder::Append(l);
 }
 
 ECode StringBuilder::Append(
     /* [in] */ Float f)
 {
-    return AbstractStringBuilder::AppendOFloat(f);
+    return AbstractStringBuilder::Append(f);
 }
 
 ECode StringBuilder::Append(
     /* [in] */ Double d)
 {
-    return AbstractStringBuilder::AppendODouble(d);
+    return AbstractStringBuilder::Append(d);
 }
 
 ECode StringBuilder::Append(
     /* [in] */ IInterface* obj)
 {
-    return AbstractStringBuilder::AppendOObject(obj);
+    return AbstractStringBuilder::Append(obj);
 }
 
 ECode StringBuilder::Append(
     /* [in] */ const String& str)
 {
-    return AbstractStringBuilder::AppendOString(str);
+    return AbstractStringBuilder::Append(str);
 }
 
 ECode StringBuilder::Append(
@@ -260,7 +260,7 @@ ECode StringBuilder::Append(
 
     String str;
     ((StringBuilder*)sb)->ToString(&str);
-    return AbstractStringBuilder::AppendOString(str);
+    return AbstractStringBuilder::Append(str);
 }
 
 ECode StringBuilder::Append(
@@ -272,13 +272,13 @@ ECode StringBuilder::Append(
 
     String str;
     ((StringBuilder*)sb)->ToString(&str);
-    return AbstractStringBuilder::AppendOString(str);
+    return AbstractStringBuilder::Append(str);
 }
 
 ECode StringBuilder::Append(
     /* [in] */ const ArrayOf<Char32>& chars)
 {
-    return AbstractStringBuilder::AppendOChars(chars);
+    return AbstractStringBuilder::Append(chars);
 }
 
 ECode StringBuilder::Append(
@@ -286,13 +286,13 @@ ECode StringBuilder::Append(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
-    return AbstractStringBuilder::AppendOCharsEx(chars, offset, length);
+    return AbstractStringBuilder::Append(chars, offset, length);
 }
 
 ECode StringBuilder::Append(
     /* [in] */ ICharSequence* csq)
 {
-    return AbstractStringBuilder::AppendOCharSequence(csq);
+    return AbstractStringBuilder::Append(csq);
 }
 
 ECode StringBuilder::Append(
@@ -300,70 +300,70 @@ ECode StringBuilder::Append(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return AbstractStringBuilder::AppendOCharSequenceEx(csq, start, end);
+    return AbstractStringBuilder::Append(csq, start, end);
 }
 
 ECode StringBuilder::InsertChar(
     /* [in] */ Int32 offset,
     /* [in] */ Char32 c)
 {
-    return AbstractStringBuilder::InsertOChar(offset, c);
+    return AbstractStringBuilder::InsertChar(offset, c);
 }
 
 ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Boolean b)
 {
-    return AbstractStringBuilder::InsertOBoolean(offset, b);
+    return AbstractStringBuilder::Insert(offset, b);
 }
 
 ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 i)
 {
-    return AbstractStringBuilder::InsertOInt32(offset, i);
+    return AbstractStringBuilder::Insert(offset, i);
 }
 
 ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Int64 l)
 {
-    return AbstractStringBuilder::InsertOInt64(offset, l);
+    return AbstractStringBuilder::Insert(offset, l);
 }
 
 ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Float f)
 {
-    return AbstractStringBuilder::InsertOFloat(offset, f);
+    return AbstractStringBuilder::Insert(offset, f);
 }
 
 ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ Double d)
 {
-    return AbstractStringBuilder::InsertODouble(offset, d);
+    return AbstractStringBuilder::Insert(offset, d);
 }
 
 ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ IInterface* obj)
 {
-    return AbstractStringBuilder::InsertOObject(offset, obj);
+    return AbstractStringBuilder::Insert(offset, obj);
 }
 
 ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ const String& str)
 {
-    return AbstractStringBuilder::InsertOString(offset, str);
+    return AbstractStringBuilder::Insert(offset, str);
 }
 
 ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ const ArrayOf<Char32>& chars)
 {
-    return AbstractStringBuilder::InsertOChars(offset, chars);
+    return AbstractStringBuilder::Insert(offset, chars);
 }
 
 ECode StringBuilder::Insert(
@@ -372,14 +372,14 @@ ECode StringBuilder::Insert(
     /* [in] */ Int32 strOffset,
     /* [in] */ Int32 strLen)
 {
-    return AbstractStringBuilder::InsertOCharsEx(offset, str, strOffset, strLen);
+    return AbstractStringBuilder::Insert(offset, str, strOffset, strLen);
 }
 
 ECode StringBuilder::Insert(
     /* [in] */ Int32 offset,
     /* [in] */ ICharSequence* s)
 {
-    return AbstractStringBuilder::InsertOCharSequence(offset, s);
+    return AbstractStringBuilder::Insert(offset, s);
 }
 
 ECode StringBuilder::Insert(
@@ -388,7 +388,7 @@ ECode StringBuilder::Insert(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return AbstractStringBuilder::InsertOCharSequenceEx(offset, s, start, end);
+    return AbstractStringBuilder::Insert(offset, s, start, end);
 }
 
 ECode StringBuilder::Replace(
@@ -396,31 +396,31 @@ ECode StringBuilder::Replace(
     /* [in] */ Int32 end,
     /* [in] */ const String& string)
 {
-    return AbstractStringBuilder::ReplaceO(start, end, string);
+    return AbstractStringBuilder::Replace(start, end, string);
 }
 
 ECode StringBuilder::Reverse()
 {
-    return AbstractStringBuilder::ReverseO();
+    return AbstractStringBuilder::Reverse();
 }
 
 ECode StringBuilder::Delete(
     /* [in] */ Int32 location)
 {
-    return AbstractStringBuilder::DeleteOChar(location);
+    return AbstractStringBuilder::Delete(location);
 }
 
 ECode StringBuilder::Delete(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return AbstractStringBuilder::DeleteO(start, end);
+    return AbstractStringBuilder::Delete(start, end);
 }
 
 ECode StringBuilder::ToString(
     /* [out] */ String* str)
 {
-    return AbstractStringBuilder::SubstringO(0, str);
+    return AbstractStringBuilder::Substring(0, str);
 }
 
 String StringBuilder::ToString()
@@ -433,7 +433,7 @@ String StringBuilder::ToString()
 AutoPtr<ICharSequence> StringBuilder::ToCharSequence()
 {
     String str;
-    AbstractStringBuilder::SubstringO(0, &str);
+    AbstractStringBuilder::Substring(0, &str);
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(str, (ICharSequence**)&seq);
     return seq;
@@ -441,61 +441,61 @@ AutoPtr<ICharSequence> StringBuilder::ToCharSequence()
 
 StringBuilder& StringBuilder::operator+=(const Boolean right)
 {
-    AbstractStringBuilder::AppendOBoolean(right);
+    AbstractStringBuilder::Append(right);
     return *this;
 }
 
 StringBuilder& StringBuilder::operator+=(const char right)
 {
-    AbstractStringBuilder::AppendOChar(right);
+    AbstractStringBuilder::AppendChar(right);
     return *this;
 }
 
 StringBuilder& StringBuilder::operator+=(const Char32 right)
 {
-    AbstractStringBuilder::AppendOChar(right);
+    AbstractStringBuilder::AppendChar(right);
     return *this;
 }
 
 StringBuilder& StringBuilder::operator+=(const Int32 right)
 {
-    AbstractStringBuilder::AppendOInt32(right);
+    AbstractStringBuilder::Append(right);
     return *this;
 }
 
 StringBuilder& StringBuilder::operator+=(const Int64 right)
 {
-    AbstractStringBuilder::AppendOInt64(right);
+    AbstractStringBuilder::Append(right);
     return *this;
 }
 
 StringBuilder& StringBuilder::operator+=(const Float right)
 {
-    AbstractStringBuilder::AppendOFloat(right);
+    AbstractStringBuilder::Append(right);
     return *this;
 }
 
 StringBuilder& StringBuilder::operator+=(const Double right)
 {
-    AbstractStringBuilder::AppendODouble(right);
+    AbstractStringBuilder::Append(right);
     return *this;
 }
 
 StringBuilder& StringBuilder::operator+=(const char* right)
 {
-    AbstractStringBuilder::AppendOCStr(right);
+    AbstractStringBuilder::Append(right);
     return *this;
 }
 
 StringBuilder& StringBuilder::operator+=(const String& right)
 {
-    AbstractStringBuilder::AppendOString(right);
+    AbstractStringBuilder::Append(right);
     return *this;
 }
 
 StringBuilder& StringBuilder::operator+=(IInterface* right)
 {
-    AbstractStringBuilder::AppendOObject(right);
+    AbstractStringBuilder::Append(right);
     return *this;
 }
 
@@ -503,7 +503,7 @@ StringBuilder& StringBuilder::operator+=(StringBuffer& right)
 {
     String str;
     right.ToString(&str);
-    AbstractStringBuilder::AppendOString(str);
+    AbstractStringBuilder::Append(str);
     return *this;
 }
 
@@ -511,7 +511,7 @@ StringBuilder& StringBuilder::operator+=(StringBuilder& right)
 {
     String str;
     right.ToString(&str);
-    AbstractStringBuilder::AppendOString(str);
+    AbstractStringBuilder::Append(str);
     return *this;
 }
 

@@ -9,22 +9,29 @@ include $(MAKEDIR)/../sources.inc
 INCLUDES += $(MAKEDIR)/../../inc
 INCLUDES += $(MAKEDIR)/../../inc/elastos
 INCLUDES += $(MAKEDIR)/../../inc/elastos/core
+//INCLUDES += $(MAKEDIR)/../../inc/elastos/droid
+INCLUDES += $(MAKEDIR)/../../inc/elastos/io
 //INCLUDES += $(MAKEDIR)/../../inc/elastos/math
-INCLUDES += $(MAKEDIR)/../../inc/elastos/io
-INCLUDES += $(MAKEDIR)/../../inc/elastos/utility
-INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/regex
-INCLUDES += $(MAKEDIR)/../../inc/elastos/io
+//INCLUDES += $(MAKEDIR)/../../inc/elastos/net
+//INCLUDES += $(MAKEDIR)/../../inc/elastos/security
 INCLUDES += $(MAKEDIR)/../../inc/elastos/sql
 INCLUDES += $(MAKEDIR)/../../inc/elastos/sql/sqlite
 INCLUDES += $(MAKEDIR)/../../inc/elastos/sql/sqlite/jdbc
+//INCLUDES += $(MAKEDIR)/../../inc/elastos/text
+INCLUDES += $(MAKEDIR)/../../inc/elastos/utility
+INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/regex
 
 SOURCES = Elastos.CoreLibrary.car
 
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += core/core.lib
-LIBRARIES += io/io.lib
+//LIBRARIES += droid/droid.lib
 //LIBRARIES += math/math.lib
 LIBRARIES += io/io.lib
+//LIBRARIES += net/net.lib
+//LIBRARIES += security/security.lib
+//LIBRARIES += sql/sql.lib
+//LIBRARIES += text/text.lib
 LIBRARIES += utility/utility.lib
 LIBRARIES += utility/regex/regex.lib
 

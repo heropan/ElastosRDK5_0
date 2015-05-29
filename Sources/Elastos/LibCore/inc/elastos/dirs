@@ -1,5 +1,10 @@
 
 DIRS = core
-DIRS += math
+DIRS += droid
 DIRS += io
+DIRS += math
+DIRS += net
+DIRS += security
+DIRS += sql
+DIRS += text
 DIRS += utility
