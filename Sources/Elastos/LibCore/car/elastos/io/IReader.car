@@ -169,8 +169,6 @@ module
             [in] ICharBuffer* target,
             [out] Int32* number);
 
-        GetLock(
-            [out] IInterface** lockObj);
     }
 
     } // namespace IO

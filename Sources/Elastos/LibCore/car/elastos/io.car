@@ -195,6 +195,14 @@ module
         interface IOutputStream;
     }
 
+    class CBufferedReader {
+        constructor(
+        [in] IReader* rin);
+
+        interface IBufferedReader;
+        interface IReadable;
+        interface IReader;
+    }
     } // namespace IO
     } // namespace Elastos
 

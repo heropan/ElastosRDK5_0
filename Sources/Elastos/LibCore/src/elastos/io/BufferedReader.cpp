@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "BufferedReader.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 
@@ -35,10 +35,7 @@ ECode BufferedReader::constructor(
 {
     VALIDATE_NOT_NULL(rin);
 
-    AutoPtr<IInterface> obj;
-    rin->GetLock((IInterface**)&obj);
-    LockObject* lockobj = (LockObject*)obj.Get();
-    Reader::Init(lockobj);
+    Reader::constructor(IObject::Probe(rin));
 
     if (size <= 0) {
 //      throw new IllegalArgumentException("size <= 0");
@@ -159,7 +156,7 @@ ECode BufferedReader::Read(
 
     FAIL_RETURN(CheckNotClosed());
     ReadChar(value);
-    if(mLastWasCR && '\n' == value) {
+    if(mLastWasCR && '\n' == *value) {
         ReadChar(value);
     }
     return NOERROR;
@@ -276,6 +273,7 @@ ECode BufferedReader::MaybeSwallowLF()
         ChompNewline();
         mLastWasCR = false;
     }
+    return NOERROR;
 }
 
 ECode BufferedReader::ReadLine(
@@ -303,9 +301,10 @@ ECode BufferedReader::ReadLine(
     // Accumulate buffers in a StringBuilder until we've read a whole line.
     StringBuilder result(mEnd - mPos + 80);
 
-    result.AppendChars(*mBuf, mPos, mEnd - mPos);
+    result.Append(*mBuf, mPos, mEnd - mPos);
     while (TRUE) {
         mPos = mEnd;
+        Int32 number;
         if (FillBuf(&number), -1 == number) {
             // If there's no more input, return what we've read so far, if anything.
             *contents = result.GetLength() > 0 ? result.ToString() : String(NULL);
@@ -369,9 +368,9 @@ ECode BufferedReader::Skip(
 
     FAIL_RETURN(CheckNotClosed());
 
-    if (mEnd - mPos >= byteCount) {
-        mPos += byteCount;
-        *number = byteCount;
+    if (mEnd - mPos >= charCount) {
+        mPos += charCount;
+        *number = charCount;
         return NOERROR;
     }
     Int64 read = mEnd - mPos;

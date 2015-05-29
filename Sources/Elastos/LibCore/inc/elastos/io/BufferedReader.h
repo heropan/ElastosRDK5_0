@@ -36,6 +36,7 @@ protected:
 
     ~BufferedReader();
 
+public:
     /**
      * Constructs a new {@code BufferedReader}, providing {@code in} with a buffer
      * of 8192 characters.

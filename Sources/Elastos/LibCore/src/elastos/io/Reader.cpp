@@ -1,30 +1,34 @@
 
 #include "coredef.h"
 #include "Reader.h"
-#include <elastos/Character.h>
-#include <elastos/Math.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL_2(HandlerBase, Object, IReadable, IReader)
+CAR_INTERFACE_IMPL_2(Reader, Object, IReadable, IReader)
 
 Reader::Reader()
-    : mLock(NULL)
+    : mLock(this->Probe(EIID_IObject))
 {
-    mLock = new LockObject();
 }
 
 Reader::Reader(
-    /* [in] */ LockObject* lock)
+    /* [in] */ IObject* lock)
+    : mLock(NULL)
 {
     assert(lock != NULL);
     mLock = lock;
+    mLock->AddRef();
 }
 
 Reader::~Reader()
 {
-    mLock = NULL;
+    if (mLock != this->Probe(EIID_IObject)) {
+        mLock->Release();
+        mLock = NULL;
+    }
 }
 
 ECode Reader::Mark(
@@ -47,13 +51,12 @@ ECode Reader::Read(
     /* [out] */ Int32* value)
 {
     assert(value != NULL);
-    assert(mLock != NULL);
 
     Object::Autolock lock(mLock);
 
     ArrayOf_<Char32, 1> buf;
     Int32 number;
-    FAIL_RETURN(ReadChars(&buf, 0, 1, &number));
+    FAIL_RETURN(Read(&buf, 0, 1, &number));
     if (number != -1) {
         *value = buf[0];
     }
@@ -101,7 +104,6 @@ ECode Reader::Skip(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
     Int64 skipped = 0;
@@ -148,17 +150,13 @@ ECode Reader::ReadCharBuffer(
 }
 
 ECode Reader::constructor(
-    /* [in] */ LockObject* lock)
+    /* [in] */ IObject* lock)
 {
     assert(lock != NULL);
-
+    assert(lock != this->Probe(EIID_IObject));
     mLock = lock;
+    mLock->AddRef();
     return NOERROR;
-}
-
-AutoPtr<LockObject> Reader::GetLock()
-{
-    return mLock;
 }
 
 } // namespace IO

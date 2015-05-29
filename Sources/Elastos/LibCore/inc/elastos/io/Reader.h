@@ -7,7 +7,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
-using Elastos::Core::LockObject;
 
 namespace Elastos {
 namespace IO {
@@ -187,17 +186,16 @@ protected:
      *             if {@code lock} is {@code null}.
      */
     Reader(
-        /* [in] */ LockObject* lock);
+        /* [in] */ IObject* lock);
 
     CARAPI constructor(
-        /* [in] */ LockObject* lock);
+        /* [in] */ IObject* lock);
 
     virtual ~Reader();
 
-    virtual CARAPI_(AutoPtr<LockObject>) GetLock();
 
 protected:
-    AutoPtr<LockObject> mLock;
+    IObject* mLock; // May be equal to this. Can not use AutoPtr.
 };
 
 } // namespace IO

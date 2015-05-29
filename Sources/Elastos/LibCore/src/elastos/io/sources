@@ -37,3 +37,7 @@ SOURCES += CBufferedOutputStream.cpp
 
 #SOURCES += AbstractInterruptibleChannel.cpp
 #SOURCES += AbstractSelectableChannel.cpp
+
+SOURCES += Reader.cpp
+SOURCES += BufferedReader.cpp
+SOURCES += CBufferedReader.cpp
