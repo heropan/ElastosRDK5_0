@@ -1,6 +1,6 @@
 
-#ifndef __ELREFWRAPPER_H__
-#define __ELREFWRAPPER_H__
+#ifndef __ELASTOS_CORE_ELREFWRAPPER_H__
+#define __ELASTOS_CORE_ELREFWRAPPER_H__
 
 #include <elastos.h>
 #include <cutils/atomic.h>
@@ -1139,4 +1139,4 @@ void WeakPtr<T>::Clear()
 } // namespace Core
 } // namespace Elastos
 
-#endif //__ELREFWRAPPER_H__
+#endif //__ELASTOS_CORE_ELREFWRAPPER_H__

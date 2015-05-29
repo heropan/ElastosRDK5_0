@@ -1,6 +1,6 @@
 
-#ifndef __CHARACTER_H__
-#define __CHARACTER_H__
+#ifndef __ELASTOS_CORE_CHARACTER_H__
+#define __ELASTOS_CORE_CHARACTER_H__
 
 #include "unicode/uchar.h"
 #include <elastos/core/Object.h>
@@ -2086,4 +2086,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__CHARACTER_H__
+#endif //__ELASTOS_CORE_CHARACTER_H__

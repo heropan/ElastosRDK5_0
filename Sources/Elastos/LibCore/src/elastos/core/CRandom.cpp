@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CRandom.h"
 #include "CSystem.h"
 #include "Math.h"

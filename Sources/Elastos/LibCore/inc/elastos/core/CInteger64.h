@@ -1,6 +1,6 @@
 
-#ifndef __CINTEGER64_H__
-#define __CINTEGER64_H__
+#ifndef __ELASTOS_CORE_CINTEGER64_H__
+#define __ELASTOS_CORE_CINTEGER64_H__
 
 #include "_Elastos_Core_CInteger64.h"
 #include "Object.h"
@@ -102,4 +102,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__CINTEGER64_H__
+#endif //__ELASTOS_CORE_CINTEGER64_H__

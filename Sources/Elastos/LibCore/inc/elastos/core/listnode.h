@@ -6,8 +6,8 @@
 #pragma once
 #endif
 
-#if !defined(__LISTNODE_H__)
-#define __LISTNODE_H__
+#if !defined(__ELASTOS_CORE_LISTNODE_H__)
+#define __ELASTOS_CORE_LISTNODE_H__
 
 #ifdef __cplusplus
 /*!
@@ -245,4 +245,4 @@ CAR_INLINE ListNode* ListNode::Next()
 #endif //__cplusplus
 
 
-#endif // __LISTNODE_H__
+#endif // __ELASTOS_CORE_LISTNODE_H__

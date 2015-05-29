@@ -1,6 +1,6 @@
 
-#ifndef __CCHAR8_H__
-#define __CCHAR8_H__
+#ifndef __ELASTOS_CORE_CCHAR8_H__
+#define __ELASTOS_CORE_CCHAR8_H__
 
 #include "_Elastos_Core_CChar8.h"
 #include "Object.h"
@@ -99,4 +99,4 @@ private:
 } // Core
 } // Elastos
 
-#endif //__CCHAR32_H__
+#endif //__ELASTOS_CORE_CCHAR32_H__

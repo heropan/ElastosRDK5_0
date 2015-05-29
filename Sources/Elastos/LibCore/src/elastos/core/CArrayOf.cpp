@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CArrayOf.h"
 
 namespace Elastos {

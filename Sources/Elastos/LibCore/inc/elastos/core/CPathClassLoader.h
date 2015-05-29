@@ -1,5 +1,5 @@
-#ifndef __CPATHCLASSLOADER_H__
-#define __CPATHCLASSLOADER_H__
+#ifndef __ELASTOS_CORE_CPATHCLASSLOADER_H__
+#define __ELASTOS_CORE_CPATHCLASSLOADER_H__
 
 #include "_Elastos_Core_CPathClassLoader.h"
 #include "Object.h"
@@ -32,4 +32,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__CPATHCLASSLOADER_H__
+#endif //__ELASTOS_CORE_CPATHCLASSLOADER_H__

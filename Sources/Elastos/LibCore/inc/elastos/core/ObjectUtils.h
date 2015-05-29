@@ -1,5 +1,5 @@
-#ifndef __OBJECTUTILS_H__
-#define __OBJECTUTILS_H__
+#ifndef __ELASTOS_CORE_OBJECTUTILS_H__
+#define __ELASTOS_CORE_OBJECTUTILS_H__
 
 #include <elastos.h>
 
@@ -32,4 +32,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif // __OBJECTUTILS_H__
+#endif // __ELASTOS_CORE_OBJECTUTILS_H__

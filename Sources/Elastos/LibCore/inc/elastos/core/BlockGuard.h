@@ -1,15 +1,12 @@
-#ifndef __BLOCKGUARD_H__
-#define __BLOCKGUARD_H__
+#ifndef __ELASTOS_CORE_BLOCKGUARD_H__
+#define __ELASTOS_CORE_BLOCKGUARD_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "Singleton.h"
 
 using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Core {
-
-EXTERN const _ELASTOS ClassID ECLSID_LAXPOLICY;
 
 class BlockGuard
     : public Singleton
@@ -27,8 +24,6 @@ public:
     {
     public:
         CAR_INTERFACE_DECL()
-
-        //CAR_OBJECT_DECL()
 
         ~LAXPOLICY();
 
@@ -84,4 +79,4 @@ public:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__BLOCKGUARD_H__
+#endif //__ELASTOS_CORE_BLOCKGUARD_H__

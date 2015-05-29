@@ -1,8 +1,7 @@
 
-#ifndef __MATH_H__
-#define __MATH_H__
+#ifndef __ELASTOS_CORE_MATH_H__
+#define __ELASTOS_CORE_MATH_H__
 
-#include <elastos.h>
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #else
@@ -1456,4 +1455,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__MATH_H__
+#endif //__ELASTOS_CORE_MATH_H__

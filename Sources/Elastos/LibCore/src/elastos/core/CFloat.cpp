@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CFloat.h"
 #include "Math.h"
 #include "RealToString.h"

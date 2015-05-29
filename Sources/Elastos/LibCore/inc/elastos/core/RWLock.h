@@ -1,5 +1,5 @@
-#ifndef __RWLOCK_H__
-#define __RWLOCK_H__
+#ifndef __ELASTOS_CORE_RWLOCK_H__
+#define __ELASTOS_CORE_RWLOCK_H__
 
 #include <pthread.h>
 #ifdef _win32
@@ -129,4 +129,4 @@ inline void RWLock::Unlock()
 } // namespace Core
 } // namespace Elastos
 
-#endif //__RWLOCK_H__
+#endif //__ELASTOS_CORE_RWLOCK_H__

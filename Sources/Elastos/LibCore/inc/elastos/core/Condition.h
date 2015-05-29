@@ -1,6 +1,6 @@
 
-#ifndef __CONDITION_H__
-#define __CONDITION_H__
+#ifndef __ELASTOS_CORE_CONDITION_H__
+#define __ELASTOS_CORE_CONDITION_H__
 
 #include <pthread.h>
 #include <time.h>
@@ -124,4 +124,4 @@ inline void Condition::Broadcast()
 } // namespace Core
 } // namespace Elastos
 
-#endif // __CONDITION_H__
+#endif // __ELASTOS_CORE_CONDITION_H__

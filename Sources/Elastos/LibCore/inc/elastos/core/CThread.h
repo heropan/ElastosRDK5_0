@@ -1,6 +1,6 @@
 
-#ifndef __CTHREAD_H__
-#define __CTHREAD_H__
+#ifndef __ELASTOS_CORE_CTHREAD_H__
+#define __ELASTOS_CORE_CTHREAD_H__
 
 #include "_Elastos_Core_CThread.h"
 #include "Thread.h"
@@ -18,4 +18,4 @@ public:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__CTHREAD_H__
+#endif //__ELASTOS_CORE_CTHREAD_H__

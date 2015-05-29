@@ -1,6 +1,6 @@
 
-#ifndef __INTEGRAL_TO_STRING_H__
-#define __INTEGRAL_TO_STRING_H__
+#ifndef __ELASTOS_CORE_INTEGRAL_TO_STRING_H__
+#define __ELASTOS_CORE_INTEGRAL_TO_STRING_H__
 
 #include <elastos.h>
 #include <elstring.h>
@@ -114,4 +114,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__INTEGRAL_TO_STRING_H__
+#endif //__ELASTOS_CORE_INTEGRAL_TO_STRING_H__

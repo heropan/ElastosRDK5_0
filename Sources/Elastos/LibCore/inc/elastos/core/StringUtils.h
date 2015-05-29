@@ -1,5 +1,5 @@
-#ifndef __STRINGUTILS_H__
-#define __STRINGUTILS_H__
+#ifndef __ELASTOS_CORE_STRINGUTILS_H__
+#define __ELASTOS_CORE_STRINGUTILS_H__
 
 #include <elastos.h>
 #include <elstring.h>
@@ -199,4 +199,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif // __STRINGUTILS_H__
+#endif // __ELASTOS_CORE_STRINGUTILS_H__

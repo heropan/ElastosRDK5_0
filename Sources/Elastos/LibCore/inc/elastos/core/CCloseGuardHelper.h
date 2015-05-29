@@ -1,6 +1,6 @@
 
-#ifndef __CCLOSEGUARDHELPER_H__
-#define __CCLOSEGUARDHELPER_H__
+#ifndef __ELASTOS_CORE_CCLOSEGUARDHELPER_H__
+#define __ELASTOS_CORE_CCLOSEGUARDHELPER_H__
 
 #include "_Elastos_Core_CCloseGuardHelper.h"
 #include "Object.h"
@@ -50,4 +50,4 @@ public:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__CCLOSEGUARDHELPER_H__
+#endif //__ELASTOS_CORE_CCLOSEGUARDHELPER_H__

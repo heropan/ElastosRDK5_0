@@ -1,5 +1,5 @@
-#ifndef __ABSTRACTSTRINGBUILDER_H__
-#define __ABSTRACTSTRINGBUILDER_H__
+#ifndef __ELASTOS_CORE_ABSTRACTSTRINGBUILDER_H__
+#define __ELASTOS_CORE_ABSTRACTSTRINGBUILDER_H__
 
 #include <elastos/core/Object.h>
 
@@ -298,4 +298,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif // __ABSTRACTSTRINGBUILDER_H__
+#endif // __ELASTOS_CORE_ABSTRACTSTRINGBUILDER_H__

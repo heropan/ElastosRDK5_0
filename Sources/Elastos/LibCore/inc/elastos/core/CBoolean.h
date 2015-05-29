@@ -1,6 +1,6 @@
 
-#ifndef __CBOOLEAN_H__
-#define __CBOOLEAN_H__
+#ifndef __ELASTOS_CORE_CBOOLEAN_H__
+#define __ELASTOS_CORE_CBOOLEAN_H__
 
 #include "_Elastos_Core_CBoolean.h"
 #include "Object.h"
@@ -47,4 +47,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__CBOOLEAN_H__
+#endif //__ELASTOS_CORE_CBOOLEAN_H__

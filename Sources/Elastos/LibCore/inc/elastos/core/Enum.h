@@ -1,8 +1,7 @@
 
-#ifndef __ENUM_H__
-#define __ENUM_H__
+#ifndef __ELASTOS_CORE_ENUM_H__
+#define __ELASTOS_CORE_ENUM_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "Object.h"
 
 using Elastos::IO::ISerializable;
@@ -188,4 +187,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__ENUM_H__
+#endif //__ELASTOS_CORE_ENUM_H__

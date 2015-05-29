@@ -1,6 +1,6 @@
 
-#ifndef __MUTEX_H__
-#define __MUTEX_H__
+#ifndef __ELASTOS_CORE_MUTEX_H__
+#define __ELASTOS_CORE_MUTEX_H__
 
 #include <pthread.h>
 #ifdef _win32
@@ -216,4 +216,4 @@ inline Int32 Mutex::TryLock()
 } // namespace Core
 } // namespace Elastos
 
-#endif //__MUTEX_H__
+#endif //__ELASTOS_CORE_MUTEX_H__

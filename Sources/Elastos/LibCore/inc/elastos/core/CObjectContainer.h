@@ -1,6 +1,6 @@
 
-#ifndef __COBJECTCONTAINER_H__
-#define __COBJECTCONTAINER_H__
+#ifndef __ELASTOS_CORE_COBJECTCONTAINER_H__
+#define __ELASTOS_CORE_COBJECTCONTAINER_H__
 
 #include "_CObjectContainer.h"
 #include <elastos.h>
@@ -47,4 +47,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__COBJECTCONTAINER_H__
+#endif //__ELASTOS_CORE_COBJECTCONTAINER_H__

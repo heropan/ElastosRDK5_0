@@ -1,6 +1,6 @@
 
-#ifndef __COBJECTENUMERATOR_H__
-#define __COBJECTENUMERATOR_H__
+#ifndef __ELASTOS_CORE_COBJECTENUMERATOR_H__
+#define __ELASTOS_CORE_COBJECTENUMERATOR_H__
 
 #include <elastos.h>
 #include <container.h>
@@ -81,4 +81,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__COBJECTENUMERATOR_H__
+#endif //__ELASTOS_CORE_COBJECTENUMERATOR_H__

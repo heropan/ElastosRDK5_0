@@ -1,21 +1,16 @@
 
-#include "coredef.h"
 #include "AbstractStringBuilder.h"
-#include <elstring.h>
 #include "Math.h"
 #include "RealToString.h"
 #include "IntegralToString.h"
 #include "Character.h"
-#ifdef ELASTOS_CORELIBRARY
 #include "CStringWrapper.h"
-#endif
 
 #if defined(_DEBUG) || defined(_ELASTOS_DEBUG)
 #include <stdio.h>
 #endif
 
 #define DEFAULT_STEP 16
-
 
 using Elastos::IO::EIID_ISerializable;
 

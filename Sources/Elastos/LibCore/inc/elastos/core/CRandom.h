@@ -1,6 +1,6 @@
 
-#ifndef __CRANDOM_H__
-#define __CRANDOM_H__
+#ifndef __ELASTOS_CORE_CRANDOM_H__
+#define __ELASTOS_CORE_CRANDOM_H__
 
 #include "_Elastos_Core_CRandom.h"
 #include "Object.h"
@@ -130,4 +130,4 @@ private:
 } // namespace Elastos
 } // namespace Core
 
-#endif //__CRANDOM_H__
+#endif //__ELASTOS_CORE_CRANDOM_H__

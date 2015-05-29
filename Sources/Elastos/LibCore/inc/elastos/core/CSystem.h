@@ -1,8 +1,7 @@
 
-#ifndef __CSYSTEM_H__
-#define __CSYSTEM_H__
+#ifndef __ELASTOS_CORE_CSYSTEM_H__
+#define __ELASTOS_CORE_CSYSTEM_H__
 
-#include "coredef.h"
 #include "_Elastos_Core_CSystem.h"
 #include "Singleton.h"
 #include "Object.h"

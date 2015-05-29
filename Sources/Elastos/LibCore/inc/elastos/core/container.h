@@ -2,8 +2,9 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#ifndef __CONTAINER_H__
-#define __CONTAINER_H__
+#ifndef __ELASTOS_CORE_CONTAINER_H__
+#define __ELASTOS_CORE_CONTAINER_H__
+
 #include <elautoptr.h>
 #include <eltypes.h>
 #include <linknode.h>
@@ -346,4 +347,4 @@ CAR_INLINE _ELASTOS ECode ObjectContainer::Remove(
     return ObjectContainerRemove(this, object);
 }
 
-#endif // __CONTAINER_H__
+#endif // __ELASTOS_CORE_CONTAINER_H__

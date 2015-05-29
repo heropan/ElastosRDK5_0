@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CChar16.h"
 #include "IntegralToString.h"
 

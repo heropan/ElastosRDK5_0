@@ -1,6 +1,6 @@
 
-#ifndef __GLOBALS_H__
-#define __GLOBALS_H__
+#ifndef __ELASTOS_CORE_GLOBALS_H__
+#define __ELASTOS_CORE_GLOBALS_H__
 
 #include "NativeThread.h"
 #include <elastos.h>
@@ -688,4 +688,4 @@ extern struct CoreGlobals gCore;
 } // namespace Core
 } // namespace Elastos
 
-#endif //__GLOBALS_H__
+#endif //__ELASTOS_CORE_GLOBALS_H__

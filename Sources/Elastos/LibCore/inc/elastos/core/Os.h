@@ -1,6 +1,6 @@
 
-#ifndef __OS_H__
-#define __OS_H__
+#ifndef __ELASTOS_CORE_OS_H__
+#define __ELASTOS_CORE_OS_H__
 
 /*
  * Returns the thread priority for the current thread by querying the system.
@@ -10,4 +10,4 @@
  */
 int os_getThreadPriorityFromSystem();
 
-#endif //__OS_H__
+#endif //__ELASTOS_CORE_OS_H__

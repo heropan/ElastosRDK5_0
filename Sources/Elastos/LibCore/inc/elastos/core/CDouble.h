@@ -1,6 +1,6 @@
 
-#ifndef __CDOUBLE_H__
-#define __CDOUBLE_H__
+#ifndef __ELASTOS_CORE_CDOUBLE_H__
+#define __ELASTOS_CORE_CDOUBLE_H__
 
 #include "_Elastos_Core_CDouble.h"
 #include "Object.h"
@@ -121,4 +121,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__CDOUBLE_H__
+#endif //__ELASTOS_CORE_CDOUBLE_H__

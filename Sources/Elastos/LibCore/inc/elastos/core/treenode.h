@@ -6,12 +6,12 @@
 #pragma once
 #endif
 
-#if !defined(__TREENODE_H__)
-#define __TREENODE_H__
+#if !defined(__ELASTOS_CORE_TREENODE_H__)
+#define __ELASTOS_CORE_TREENODE_H__
 
 #ifdef __cplusplus
 /*!
- @brief 
+ @brief
  @since
  @sa
  */
@@ -30,24 +30,24 @@ public:
  @since
  @sa
  */
-    void AddLeft(TreeNode* child); 
+    void AddLeft(TreeNode* child);
 /*!
  @brief remove the current tree node from the tree.returns null if
- tree become empty,or a replacement node.if the current node is the 
+ tree become empty,or a replacement node.if the current node is the
  root,return the new root.
  @return
  @since
  @sa
  */
-    TreeNode* Detach();     
+    TreeNode* Detach();
 /*!
- @brief remove the closer tree node from the tree to the root.returns 
+ @brief remove the closer tree node from the tree to the root.returns
  true if the current node is turning into root.
  @return
  @since
  @sa
  */
-    _ELASTOS Boolean MoveCloserToRoot();                        
+    _ELASTOS Boolean MoveCloserToRoot();
 /*!
  @brief return the parent node of the current tree node.
  @return
@@ -60,26 +60,26 @@ public:
  @return
  @since
  @sa
- */	
+ */
     TreeNode * Left()       { return (TreeNode *) m_left; }
 /*!
  @brief return the right child node of the current tree node.
  @return
  @since
  @sa
- */	
+ */
     TreeNode * Right()      { return (TreeNode *) m_right; }
 /*!
  @brief Initialise this tree,make its parent node ,left child node and right child
  are null.
  @since
  @sa
- */	
+ */
     void Init() { m_parent = m_left = m_right = NULL; }
 /*!
- @brief creates a null TreeNode instance. its parent node ,left child node and right 
+ @brief creates a null TreeNode instance. its parent node ,left child node and right
  child are null.
- */	
+ */
     TreeNode() : m_parent(NULL), m_left(NULL), m_right(NULL) { }
 /*!
  @brief the destructor of TreeNode.
@@ -90,22 +90,22 @@ public:
 /*!
  @brief parent node.
  */
-    TreeNode* m_parent;    
+    TreeNode* m_parent;
 /*!
  @brief children that are less than the current node.
  */
-    TreeNode* m_left;       
+    TreeNode* m_left;
 /*!
  @brief children that are bigger than the current node.
- */	
-    TreeNode* m_right;      
+ */
+    TreeNode* m_right;
 
 public://protected:
 /*!
  @brief Replace the current node with the replacement @a replacement.
- 
+
  if the current node has no left child,the the replacement is its right
- child;if the current node has no right child,the the replacement is 
+ child;if the current node has no right child,the the replacement is
  its left child;or its replacement is the node @a replaceNode;if the node
  @a replaceNode is null,then use the right child node of the current node
  as its replacement.
@@ -115,7 +115,7 @@ public://protected:
  @sa
  */
     TreeNode* RemoveWithReplacement(TreeNode *replacement);
-                           
+
 };
 
 #else //!__cplusplus
@@ -154,9 +154,9 @@ ELAPI_(void) TreeNodeAddRight(TreeNode*pThis,TreeNode* child);
 ELAPI_(void) TreeNodeAddLeft(TreeNode*pThis,TreeNode * child);
 /*!
  @brief Replace the current node @a pThis with the replacement @a replaceNode.
- 
+
  if the current node @a pThis has no left child,the the replacement is its right
- child;if the current node @a pThis has no right child,the the replacement is 
+ child;if the current node @a pThis has no right child,the the replacement is
  its left child;or its replacement is the node @a replaceNode;if the node @a replaceNode
  is null,then use the right child node of the current node @a pThis as its replacement.
  @param pThis pointer pointed to the current node.
@@ -205,4 +205,4 @@ CAR_INLINE TreeNode* TreeNode::Detach()
 
 #endif //__cplusplus
 
-#endif // __TREENODE_H__
+#endif // __ELASTOS_CORE_TREENODE_H__

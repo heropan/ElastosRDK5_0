@@ -4,8 +4,8 @@
 #include <elatypes.h>
 #include <assert.h>
 
-#ifndef __LINKNODE_H__
-#define __LINKNODE_H__
+#ifndef __ELASTOS_CORE_LINKNODE_H__
+#define __ELASTOS_CORE_LINKNODE_H__
 
 #define INVALID_ADDRVALUE           ((virtaddr_t)(0xcccccccc))
 
@@ -32,8 +32,8 @@
 
 #define FOR_EACH_SLINKNODE(t, p, h) \
         ForEachSLinkNode(t, p, h)
-        
-#endif // ForEachSLinkNode        
+
+#endif // ForEachSLinkNode
 
 /*!
  * @brief Double Link Node -- For double link circular list with head-node.
@@ -54,7 +54,7 @@ public:
  * @brief Initializes the current instance 's previous node equals to the next node.
  * @since
  * @sa
- */   
+ */
     void Initialize()
     {
         mPrev = mNext = this;
@@ -79,7 +79,7 @@ public:
  * @return
  * @since
  * @sa
- */    
+ */
     DoubleLinkNode* First() const;
 /*!
  * @brief  Return the last node of list.
@@ -112,7 +112,7 @@ public:
  * @return
  * @since
  * @sa
- */   
+ */
     DoubleLinkNode* InsertFirst(DoubleLinkNode *firstNode);
 /*!
  * @brief  Insert a new node as the last of list.  Return the new last node.
@@ -120,21 +120,21 @@ public:
  * @return
  * @since
  * @sa
- */        
+ */
     DoubleLinkNode* InsertLast(DoubleLinkNode *lastNode);
 /*!
  * @brief  Remove current node from list. Return current node.
  * @return
  * @since
  * @sa
- */     
+ */
     DoubleLinkNode* Detach();
 /*!
  * @brief  If current node is NULL then returns true;false otherwise.
  * @return
  * @since
  * @sa
- */       
+ */
     _ELASTOS Boolean IsEmpty() const;
 
 public:
@@ -150,10 +150,10 @@ public:
 
 typedef DoubleLinkNode DLinkNode;
 /*!
- * @brief insert a link node @a prevNode into the double link before the current node 
+ * @brief insert a link node @a prevNode into the double link before the current node
  * @a currNode.
  * @param currNode  pointer pointed to the current node.
- * @param prevNode  pointer pointed to the node to be inserted. 
+ * @param prevNode  pointer pointed to the node to be inserted.
  * @return
  * @since
  * @sa
@@ -162,10 +162,10 @@ typedef DoubleLinkNode DLinkNode;
 ELAPI_(DoubleLinkNode*) DoubleLinkNodeInsertPrev(
     DoubleLinkNode *currNode, DoubleLinkNode *prevNode);
 /*!
- * @brief insert a link node @a nextNode into the double link after the current node 
+ * @brief insert a link node @a nextNode into the double link after the current node
  * @a currNode.
  * @param currNode  pointer pointed to the current node.
- * @param nextNode  pointer pointed to the node to be inserted. 
+ * @param nextNode  pointer pointed to the node to be inserted.
  * @return
  * @since
  * @sa
@@ -182,7 +182,7 @@ ELAPI_(DoubleLinkNode*) DoubleLinkNodeInsertNext(
  * @relates
  */
 ELAPI_(DoubleLinkNode*) DoubleLinkNodeDetach(
-    DoubleLinkNode *currNode); 
+    DoubleLinkNode *currNode);
 
 CAR_INLINE DoubleLinkNode* DoubleLinkNode::Prev() const
 {
@@ -195,13 +195,13 @@ CAR_INLINE DoubleLinkNode* DoubleLinkNode::Next() const
 }
 
 CAR_INLINE DoubleLinkNode* DoubleLinkNode::First() const
-{ 
-    return Next(); 
+{
+    return Next();
 }
 
 CAR_INLINE DoubleLinkNode* DoubleLinkNode::Last() const
-{ 
-    return Prev(); 
+{
+    return Prev();
 }
 
 CAR_INLINE DoubleLinkNode* DoubleLinkNode::InsertPrev(DoubleLinkNode *prevNode)
@@ -230,8 +230,8 @@ CAR_INLINE DoubleLinkNode *DoubleLinkNode::Detach()
 }
 
 CAR_INLINE _ELASTOS Boolean DoubleLinkNode::IsEmpty() const
-{ 
-    return this == mNext; 
+{
+    return this == mNext;
 }
 
 /*!
@@ -252,9 +252,9 @@ public:
  * @since
  * @sa
  */
-    void Initialize() 
-    { 
-        mNext = this; 
+    void Initialize()
+    {
+        mNext = this;
     }
 /*!
  * @brief Return the next node.
@@ -285,7 +285,7 @@ public:
  * @return
  * @since
  * @sa
- */    
+ */
     _ELASTOS Boolean IsEmpty() const;
 
 public:
@@ -319,7 +319,7 @@ ELAPI_(SingleLinkNode*) SingleLinkNodeInsertNext(
  * @relates
  */
 ELAPI_(SingleLinkNode*) SingleLinkNodeDetach(
-    SingleLinkNode *currNode, SingleLinkNode *prevNode);    
+    SingleLinkNode *currNode, SingleLinkNode *prevNode);
 
 CAR_INLINE SingleLinkNode *SingleLinkNode::Next()
 {
@@ -337,8 +337,8 @@ CAR_INLINE SingleLinkNode *SingleLinkNode::Detach(SingleLinkNode *prevNode)
 }
 
 CAR_INLINE _ELASTOS Boolean SingleLinkNode::IsEmpty() const
-{   
-    return this == mNext; 
+{
+    return this == mNext;
 }
 
-#endif //__LINKNODE_H__
+#endif //__ELASTOS_CORE_LINKNODE_H__

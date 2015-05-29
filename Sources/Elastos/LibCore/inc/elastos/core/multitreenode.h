@@ -6,14 +6,14 @@
 #pragma once
 #endif
 
-#if !defined(__MULTITREENODE_H__)
-#define __MULTITREENODE_H__
+#if !defined(__ELASTOS_CORE_MULTITREENODE_H__)
+#define __ELASTOS_CORE_MULTITREENODE_H__
 
 #ifdef __cplusplus
 /*!
  * @brief A MultiTree controls multiple children of the same level, instead of at
  * most two kids, e.g., in a binary tree.  There are two kinds of  MultiTreeNode,
- * subtree or leaf.  Roughly speaking, a directory in a file system corresponds to 
+ * subtree or leaf.  Roughly speaking, a directory in a file system corresponds to
  * a subtree whileas a file corresponds to a leaf.
  * @since
  * @sa
@@ -32,7 +32,7 @@ public:
  * @param pChild <b>[in]</b> the multiTree node to be deleted.
  * @since
  * @sa
- */	
+ */
     void DetachChild(MultiTreeNode* pChild); // no recursion
 /*!
  * @brief Judge the current node is a leaf node or not.return a boolean value,
@@ -96,7 +96,7 @@ public:
  */
     void AddPrev(MultiTreeNode *pNode);
 /*!
- * @brief Add a multiTree node @a pChild and all of its younger siblings as the children 
+ * @brief Add a multiTree node @a pChild and all of its younger siblings as the children
  * of the current multiTree node.
  * @param pChild <b>[in]</b> the multiTree node to be added.
  * @since
@@ -104,7 +104,7 @@ public:
  */
     void AddChildren(MultiTreeNode *pChild);
  /*!
- * @brief Add a multiTree node @a pNode and all of its elder siblings as the siblings 
+ * @brief Add a multiTree node @a pNode and all of its elder siblings as the siblings
  * of the current multiTree node.
  * @param pNode <b>[in]</b> pointer pointed to the multiTree node to be added.
  * @since
@@ -112,7 +112,7 @@ public:
  */
     void AddSiblingsAfter(MultiTreeNode *pNode);
 /*!
- * @brief Add a multiTree node @a pNode and all of its younger siblings as the siblings 
+ * @brief Add a multiTree node @a pNode and all of its younger siblings as the siblings
  * of the current multiTree node.
  * @param pNode <b>[in]</b> pointer pointed to the multiTree node to be added.
  * @since
@@ -121,7 +121,7 @@ public:
     void AddSiblingsBefore(MultiTreeNode *pNode);
  /*!
  * @brief remove the child node of the current node and all of the siblings of this child
- * @a pChild ,the nodes number to remove must less than @a numToDetach.save the nodes number 
+ * @a pChild ,the nodes number to remove must less than @a numToDetach.save the nodes number
  * that has been removed in @a numDetached.
  * @param pChild <b>[in]</b> the child node of the current node.
  * @param numToDetach <b>[in]</b> the largest nodes number to remove.
@@ -133,7 +133,7 @@ public:
     MultiTreeNode * DetachChildAndSiblings(
                 MultiTreeNode* pChild, int numToDetach, int* numDetached);
 /*!
- * @brief remove the current node itself and all of its siblings,the nodes number to remove 
+ * @brief remove the current node itself and all of its siblings,the nodes number to remove
  * must less than @a numToDetach.save the nodes number that has been removed in @a numDetached.
  * @param numToDetach <b>[in]</b> the largest nodes number to remove.
  * @param numDetached <b>[out]</b> the nodes number that has been removed .
@@ -143,23 +143,23 @@ public:
  */
     MultiTreeNode * DetachSelfAndSiblings(int numToDetach, int* numDetached);
 /*!
- * @brief the destructor of the multitreenode. 
+ * @brief the destructor of the multitreenode.
  */
     ~MultiTreeNode()            { assert(m_pSubtree == NULL); }
 
 public:
 /*!
- * @brief the siblings nodes list.it is a list to link all siblings. 
+ * @brief the siblings nodes list.it is a list to link all siblings.
  */
-    ListNode m_siblings;           
+    ListNode m_siblings;
 /*!
- * @brief  the parent node.everyone has a parent except root. 
+ * @brief  the parent node.everyone has a parent except root.
  */
-    MultiTreeNode* m_pParent;      
+    MultiTreeNode* m_pParent;
 /*!
- * @brief the subtree node.the value of @a m_pSubtree is NULL, if this is a leaf node. 
+ * @brief the subtree node.the value of @a m_pSubtree is NULL, if this is a leaf node.
  */
-    MultiTreeNode* m_pSubtree;      
+    MultiTreeNode* m_pSubtree;
 };
 
 #else //!__cplusplus
@@ -174,7 +174,7 @@ struct MultiTreeNode {
 
 #endif //__cplusplus
 /*!
- * @brief Add a multiTree node @a pChild as the child of the current multiTree 
+ * @brief Add a multiTree node @a pChild as the child of the current multiTree
  * node @a pThis.
  * @param pThis  the current multiTree node.
  * @param pChild the multiTree node to be added.
@@ -193,7 +193,7 @@ ELAPI_(void) MultiTreeNodeAddChild(
  * @since
  * @sa
  * @relates
- */							
+ */
 ELAPI_(void) MultiTreeNodeDetachChild(  // no recursion
                             MultiTreeNode * pThis,MultiTreeNode* pChild);
 ELAPI_(MultiTreeNode*) MultiTreeNodeFirstChild(
@@ -223,7 +223,7 @@ ELAPI_(void) MultiTreeNodeAddNext(
 ELAPI_(void) MultiTreeNodeAddPrev(
                             MultiTreeNode * pThis,MultiTreeNode *pNode);
 /*!
- * @brief Add a multiTree node @a pChild and all of its younger siblings as the children 
+ * @brief Add a multiTree node @a pChild and all of its younger siblings as the children
  * of the current multiTree node @a pThis.
  * @param pThis  the current multiTree node.
  * @param pChild the multiTree node to be added.
@@ -235,7 +235,7 @@ ELAPI_(void) MultiTreeNodeAddPrev(
 ELAPI_(void) MultiTreeNodeAddChildren(
                             MultiTreeNode * pThis,MultiTreeNode *pChild);
 /*!
- * @brief Add a multiTree node @a pNode and all of its elder siblings as the siblings 
+ * @brief Add a multiTree node @a pNode and all of its elder siblings as the siblings
  * of the current multiTree node @a pThis.
  * @param pThis  pointer pointed to the current multiTree node.
  * @param pNode pointer pointed to the multiTree node to be added.
@@ -247,7 +247,7 @@ ELAPI_(void) MultiTreeNodeAddChildren(
 ELAPI_(void) MultiTreeNodeAddSiblingsAfter(
                             MultiTreeNode * pThis,MultiTreeNode *pNode);
 /*!
- * @brief Add a multiTree node @a pNode and all of its younger siblings as the siblings 
+ * @brief Add a multiTree node @a pNode and all of its younger siblings as the siblings
  * of the current multiTree node @a pThis.
  * @param pThis  pointer pointed to the current multiTree node.
  * @param pNode pointer pointed to the multiTree node to be added.
@@ -275,7 +275,7 @@ ELAPI_(MultiTreeNode*) MultiTreeNodeDetachChildAndSiblings(
                             MultiTreeNode * pThis,
                 MultiTreeNode* pChild, int numToDetach, int* numDetached);
 /*!
- * @brief remove the current node @a pThis and all of its siblings,the nodes number to remove 
+ * @brief remove the current node @a pThis and all of its siblings,the nodes number to remove
  * must less than @a numToDetach.save the nodes number that has been removed in @a numDetached.
  * @param pThis the current node.
  * @param numToDetach the largest nodes number to remove.
@@ -349,4 +349,4 @@ CAR_INLINE MultiTreeNode * MultiTreeNode::DetachSelfAndSiblings(
 
 #endif //__cplusplus
 
-#endif // __MULTITREENODE_H__
+#endif // __ELASTOS_CORE_MULTITREENODE_H__

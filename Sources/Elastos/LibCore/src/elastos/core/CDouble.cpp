@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CDouble.h"
 #include "Math.h"
 #include "RealToString.h"

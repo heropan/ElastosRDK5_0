@@ -15,8 +15,8 @@
  *  limitations under the License.
  */
 
-#if !defined(cbigint_h)
-#define cbigint_h
+#ifndef __ELASTOS_CORE_CBIGINT_H__
+#define __ELASTOS_CORE_CBIGINT_H__
 
 #include <sys/types.h>
 #include <sys/param.h>
@@ -102,4 +102,4 @@ uint32_t floatMantissa(float z);
 int32_t simpleAddHighPrecision(uint64_t* arg1, int32_t length, uint64_t arg2);
 int32_t floatExponent(float z);
 
-#endif                          /* cbigint_h */
+#endif                          /* __ELASTOS_CORE_CBIGINT_H__ */

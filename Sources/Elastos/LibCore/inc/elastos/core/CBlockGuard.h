@@ -1,6 +1,6 @@
 
-#ifndef __CBLOCKGUARD_H__
-#define __CBLOCKGUARD_H__
+#ifndef __ELASTOS_CORE_CBLOCKGUARD_H__
+#define __ELASTOS_CORE_CBLOCKGUARD_H__
 
 #include "_Elastos_Core_CBlockGuard.h"
 #include "BlockGuard.h"
@@ -40,4 +40,4 @@ public:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__CBLOCKGUARD_H__
+#endif //__ELASTOS_CORE_CBLOCKGUARD_H__

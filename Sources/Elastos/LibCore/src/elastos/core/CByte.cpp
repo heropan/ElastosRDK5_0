@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CByte.h"
 #include "IntegralToString.h"
 

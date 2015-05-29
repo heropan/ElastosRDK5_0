@@ -1,4 +1,4 @@
-#include <elastos/coredef.h>
+
 #include <elastos/core/Character.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>

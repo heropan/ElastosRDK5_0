@@ -1,11 +1,6 @@
-#ifndef __HEXSTRINGPARSER_H__
-#define __HEXSTRINGPARSER_H__
+#ifndef __ELASTOS_CORE_HEXSTRINGPARSER_H__
+#define __ELASTOS_CORE_HEXSTRINGPARSER_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
@@ -161,4 +156,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__HEXSTRINGPARSER_H__
+#endif //__ELASTOS_CORE_HEXSTRINGPARSER_H__

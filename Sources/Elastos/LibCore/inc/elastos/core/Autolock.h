@@ -1,6 +1,6 @@
 
-#ifndef __AUTOLOCK_H__
-#define __AUTOLOCK_H__
+#ifndef __ELASTOS_CORE_AUTOLOCK_H__
+#define __ELASTOS_CORE_AUTOLOCK_H__
 
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
@@ -36,4 +36,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__AUTOLOCK_H__
+#endif //__ELASTOS_CORE_AUTOLOCK_H__

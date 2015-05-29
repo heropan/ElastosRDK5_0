@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __UNIQUE_PTR_H__
-#define __UNIQUE_PTR_H__
+#ifndef __ELASTOS_CORE_UNIQUE_PTR_H__
+#define __ELASTOS_CORE_UNIQUE_PTR_H__
 
 #include <cstdlib> // For NULL.
 
@@ -236,4 +236,4 @@ int main(int argc, char* argv[]) {
 } // namespace Core
 } // namespace Elastos
 
-#endif  // UNIQUE_PTR_H_included
+#endif  // __ELASTOS_CORE_UNIQUE_PTR_H__

@@ -1,6 +1,6 @@
 
-#ifndef __STRING_TO_REAL_H__
-#define __STRING_TO_REAL_H__
+#ifndef __ELASTOS_CORE_STRING_TO_REAL_H__
+#define __ELASTOS_CORE_STRING_TO_REAL_H__
 
 #include <elastos.h>
 #include <elstring.h>
@@ -112,4 +112,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__STRING_TO_REAL_H__
+#endif //__ELASTOS_CORE_STRING_TO_REAL_H__

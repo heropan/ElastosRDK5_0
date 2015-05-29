@@ -1,7 +1,6 @@
 
 #include "CSystem.h"
 #include <stdlib.h>
-#include "Elastos.CoreLibrary_server.h"
 #include <StringBuilder.h>
 #include "CStringWrapper.h"
 /*#include "CHashMap.h"

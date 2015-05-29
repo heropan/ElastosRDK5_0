@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CInteger16.h"
 #include "IntegralToString.h"
 
