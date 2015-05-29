@@ -131,6 +131,8 @@ module
     interface Elastos.IO.Channels.Spi.ISelectorProvider;
     interface Elastos.IO.Channels.IChannels;
     interface Libcore.IO.IStreams;
+    interface Elastos.Core.IAppendable;
+
 
     namespace Elastos {
     namespace IO {
@@ -197,7 +199,7 @@ module
 
     class CBufferedReader {
         constructor(
-        [in] IReader* rin);
+            [in] IReader* rin);
 
         interface IBufferedReader;
         interface IReadable;
@@ -207,11 +209,12 @@ module
     class CBufferedWriter {
         constructor(
             [in] IWriter* wout);
+
         constructor(
             [in] IWriter* wout,
             [in] Int32 size);
 
-        interface Elastos.Core.IAppendable;
+        interface IAppendable;
         interface IWriter;
         interface IBufferedWriter;
     }
