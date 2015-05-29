@@ -28,7 +28,6 @@ public:
     CAR_INTERFACE_DECL()
 
 protected:
-
     AbstractStringBuilder();
 
     AbstractStringBuilder(
@@ -241,6 +240,7 @@ private:
 
     // see UTF8.cpp
     inline Boolean IsASCII(char c) { return !(c & ~0x7F); }
+
     inline Int32 UTF8SequenceLengthNonASCII(char b0)
     {
         if ((b0 & 0xC0) != 0xC0)
@@ -253,6 +253,7 @@ private:
             return 4;
         return 0;
     }
+
     inline Int32 UTF8SequenceLength(char b0)
     {
         return IsASCII(b0) ? 1 : UTF8SequenceLengthNonASCII(b0);

@@ -30,10 +30,14 @@
 #include <Elastos.HelloCar.h>
 #include <elastos/coredef.h>            // include ETL 头文件之前必须先 include 该头文件以便ETL使用其中定义的宏
 #include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/List.h>
 
 using namespace Elastos;
 
+using Elastos::Core::StringUtils;
+using Elastos::Core::StringBuilder;
 using Elastos::Core::IThread;
 using Elastos::Core::Math;
 using Elastos::Utility::Etl::List;
@@ -46,14 +50,41 @@ using Elastos::HelloCar::IAnimalHelper;
 using Elastos::HelloCar::CAnimalHelper;
 using Elastos::HelloCar::CMyThread;
 
+void testThread()
+{
+    AutoPtr<IThread> thread;
+    CMyThread::New((IThread**)&thread);
+    assert(thread.Get() != NULL && "Thread is null!");
+    thread->Start();
+}
+
 void testEtl()
 {
     List<String> animals;
     animals.PushBack(String("cat"));
     animals.PushBack(String("dog"));
+}
 
+void testCoreExports()
+{
     Double value = Elastos::Core::Math::Cos(90);
     printf("Math::Cos(90) %.2f\n", value);
+
+    String str = StringUtils::ToString((Int32)100, 10);
+    printf("100 StringUtils::ToString : %s\n", str.string());
+
+    StringBuilder sb(20);
+    sb.AppendChar('A');
+    sb.Append(" = ");
+    sb.Append(str);
+    printf("StringBuilder.ToString() %s\n", sb.ToString().string());
+}
+
+void otherTests()
+{
+    //testThread
+    //testEtl()
+    testCoreExports();
 }
 
 int main(int argc, char *argv[])
@@ -83,10 +114,7 @@ int main(int argc, char *argv[])
     cat->GetName(&name);
     printf("CAnimalHelper::CanFly : %s %s!\n\n", name.string(), canFly ? "can fly" : "can not fly");
 
-    AutoPtr<IThread> thread;
-    CMyThread::New((IThread**)&thread);
-    assert(thread.Get() != NULL && "Thread is null!");
-    thread->Start();
-
+    // other tests
+    otherTests();
     return 0;
 }
