@@ -1,8 +1,9 @@
 
 #include "Writer.h"
-#include "elastos/Character.h"
+#include "elastos/core/Character.h"
 
 using Elastos::Core::Character;
+using Elastos::Core::EIID_IAppendable;
 
 namespace Elastos {
 namespace IO {
@@ -11,25 +12,25 @@ CAR_INTERFACE_IMPL_2(Writer, Object, IAppendable, IWriter)
 
 Writer::Writer()
 {
-    mLock = new LockObject();
+    mLock = this->Probe(EIID_IObject);
+    mLock->AddRef();
 }
 
 Writer::Writer(
-    /* [in] */ LockObject* lock)
+    /* [in] */ IObject* lock)
 {
     assert(lock != NULL);
     mLock = lock;
+    mLock->AddRef();
 }
 
 Writer::~Writer()
 {
-    mLock = NULL;
-}
-
-AutoPtr<IInterface> Writer::GetLock()
-{
-    AutoPtr<IInterface> obj = (IInterface*)mLock.Get();
-    return obj;
+    if(mLock != this->Probe(EIID_IObject))
+    {
+        mLock->Release();
+        mLock = NULL;
+    }
 }
 
 ECode Writer::Write(
@@ -41,7 +42,7 @@ ECode Writer::Write(
     ArrayOf_<Char32, 1> buf;
     buf[0] = oneChar32;
 
-    return WriteChars(buf);
+    return Write(buf);
 }
 
 ECode Writer::Write(
@@ -51,13 +52,13 @@ ECode Writer::Write(
     // changed array notation to be consistent with the rest of harmony
     // END android-note
 
-    return WriteChars(buffer, 0, buffer.GetLength());
+    return Write(buffer, 0, buffer.GetLength());
 }
 
 ECode Writer::Write(
     /* [in] */ const String& str)
 {
-    return WriteString(str, 0, str.GetLength());
+    return Write(str, 0, str.GetLength());
 }
 
 ECode Writer::Write(
@@ -73,10 +74,10 @@ ECode Writer::Write(
     Object::Autolock lock(mLock);
 
     AutoPtr<ArrayOf<Char32> > buf = str.GetChars(offset, offset + count);
-    return WriteChars(*buf, 0, buf->GetLength());
+    return Write(*buf, 0, buf->GetLength());
 }
 
-ECode Writer::Append(
+ECode Writer::AppendChar(
     /* [in] */ Char32 c)
 {
     return Write(c);
@@ -90,7 +91,7 @@ ECode Writer::Append(
         csq->ToString(&tmp);
     }
 
-    return WriteString(tmp);
+    return Write(tmp);
 }
 
 ECode Writer::Append(
@@ -103,7 +104,7 @@ ECode Writer::Append(
         csq->ToString(&tmp);
     }
 
-    return WriteString(tmp.Substring(start, end));
+    return Write(tmp.Substring(start, end));
 }
 
 ECode Writer::CheckError(
@@ -116,7 +117,7 @@ ECode Writer::CheckError(
 }
 
 ECode Writer::constructor(
-    /* [in] */ LockObject* lock)
+    /* [in] */ IObject* lock)
 {
     assert(lock != NULL);
     mLock = lock;

@@ -1,14 +1,14 @@
 
 #include "coredef.h"
 #include "BufferedWriter.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL(BufferedWriter, Writer, IBufferedWriter)　
+CAR_INTERFACE_IMPL(BufferedWriter, Writer, IBufferedWriter)
 
 //todo:
 #ifdef _linux
@@ -29,7 +29,7 @@ BufferedWriter::~BufferedWriter()
 ECode BufferedWriter::constructor(
     /* [in] */ IWriter* wout)
 {
-    return Init(wout, 8192);
+    return constructor(wout, 8192);
 }
 
 ECode BufferedWriter::constructor(
@@ -41,10 +41,7 @@ ECode BufferedWriter::constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<IInterface> obj;
-    wout->GetLock((IInterface**)&obj);
-    LockObject* lockObj = (LockObject*)obj.Get();
-    Writer::Init(lockObj);
+    Writer::constructor(wout->Probe(EIID_IObject));
 
     mOut = wout;
     mBuf = ArrayOf<Char32>::Alloc(size);

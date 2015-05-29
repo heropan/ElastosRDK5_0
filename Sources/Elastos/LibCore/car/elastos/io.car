@@ -203,6 +203,19 @@ module
         interface IReadable;
         interface IReader;
     }
+
+    class CBufferedWriter {
+        constructor(
+            [in] IWriter* wout);
+        constructor(
+            [in] IWriter* wout,
+            [in] Int32 size);
+
+        interface Elastos.Core.IAppendable;
+        interface IWriter;
+        interface IBufferedWriter;
+    }
+
     } // namespace IO
     } // namespace Elastos
 

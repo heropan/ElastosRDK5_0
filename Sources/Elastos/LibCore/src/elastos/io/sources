@@ -41,3 +41,7 @@ SOURCES += CBufferedOutputStream.cpp
 SOURCES += Reader.cpp
 SOURCES += BufferedReader.cpp
 SOURCES += CBufferedReader.cpp
+
+SOURCES += Writer.cpp
+SOURCES += BufferedWriter.cpp
+SOURCES += CBufferedWriter.cpp

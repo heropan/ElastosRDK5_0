@@ -17,7 +17,7 @@ namespace IO {
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Object;
-using Elastos::Core::LockObject;
+using Elastos::Core::IAppendable;
 
 class Writer
     : public Object
@@ -132,7 +132,7 @@ public:
      * @throws IOException
      *             if this writer is closed or another I/O error occurs.
      */
-    virtual CARAPI Append(
+    virtual CARAPI AppendChar(
         /* [in] */ Char32 c);
 
     /**
@@ -202,17 +202,15 @@ protected:
      *             if {@code lock} is {@code null}.
      */
     Writer(
-        /* [in] */ LockObject* lock);
+        /* [in] */ IObject* lock);
 
     CARAPI constructor(
-        /* [in] */ LockObject* lock);
+        /* [in] */ IObject* lock);
 
     virtual ~Writer();
 
-    virtual CARAPI_(AutoPtr<IInterface>) GetLock();
-
 protected:
-    AutoPtr<LockObject> mLock;
+    IObject* mLock; // May equal to this. Can not use AutoPtr.
 };
 
 } // namespace IO

@@ -5,7 +5,7 @@
 namespace Elastos {
 namespace IO {
 
-CAR_OBJECT_IMPL(CBufferedWriter)　
+CAR_OBJECT_IMPL(CBufferedWriter)
 
 } // namespace IO
 } // namespace Elastos
