@@ -357,7 +357,7 @@ ECode Bidi::CreateLineBidi(
     Ubidi_setLine(parent, lineStart, lineLimit, &line);
     ASSERT_SUCCEEDED(CBidi::New(line, (IBidi**)&temp));
     *lineBidi = temp;
-    INTERFACE_ADDREF(*lineBidi);
+    REFCOUNT_ADD(*lineBidi);
     return NOERROR;
 }
 
@@ -375,7 +375,7 @@ ECode Bidi::CreateEmptyLineBidi(
     result->mUnidirectional = TRUE;
 
     *lineBidi = (IBidi*)result->Probe(EIID_IBidi);
-    INTERFACE_ADDREF(*lineBidi);
+    REFCOUNT_ADD(*lineBidi);
     return NOERROR;
 }
 
@@ -682,7 +682,7 @@ ECode Bidi::Ubidi_getLevels(
     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(len);
     memcpy(result->GetPayload(), reinterpret_cast<const Byte*>(levels), len);
     *levelsByte = result;
-    INTERFACE_ADDREF(*levelsByte)
+    REFCOUNT_ADD(*levelsByte)
 
     return NOERROR;
 }
@@ -728,7 +728,7 @@ ECode Bidi::Ubidi_getRuns(
     }
 
     *runs = temp;
-    INTERFACE_ADDREF(*runs)
+    REFCOUNT_ADD(*runs)
     return NOERROR;
 }
 

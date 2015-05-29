@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "DateFormat.h"
 #include <elastos/StringBuffer.h>
 #include "AttributedCharacterIteratorAttribute.h"
@@ -126,7 +125,7 @@ ECode DateFormat::Field::OfCalendarField(
     HashMap<Int32, AutoPtr<IDateFormatField> >::Iterator it = sTable.Find(calendarField);
     if (it != sTable.End()) {
         *field = it->mSecond;
-        INTERFACE_ADDREF(*field);
+        REFCOUNT_ADD(*field);
     }
     return NOERROR;
 }
@@ -190,7 +189,7 @@ ECode DateFormat::GetCalendar(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = mCalendar;
-    INTERFACE_ADDREF(*calendar);
+    REFCOUNT_ADD(*calendar);
     return NOERROR;
 }
 
@@ -235,7 +234,7 @@ ECode DateFormat::GetDateInstanceEx2(
     AutoPtr<ISimpleDateFormat> f;
     FAIL_RETURN(CSimpleDateFormat::New(format, locale, (ISimpleDateFormat**)&f));
     *instance = IDateFormat::Probe(f.Get());
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -287,7 +286,7 @@ ECode DateFormat::GetDateTimeInstanceEx2(
     AutoPtr<ISimpleDateFormat> f;
     FAIL_RETURN(CSimpleDateFormat::New(pattern, locale, (ISimpleDateFormat**)&f));
     *instance = IDateFormat::Probe(f);
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -302,7 +301,7 @@ ECode DateFormat::GetNumberFormat(
 {
     VALIDATE_NOT_NULL(numberFormat);
     *numberFormat = mNumberFormat;
-    INTERFACE_ADDREF(*numberFormat);
+    REFCOUNT_ADD(*numberFormat);
     return NOERROR;
 }
 
@@ -346,7 +345,7 @@ ECode DateFormat::GetTimeInstanceEx2(
     AutoPtr<ISimpleDateFormat> f;
     FAIL_RETURN(CSimpleDateFormat::New(timeFormat, locale, (ISimpleDateFormat**)&f));
     *instance = IDateFormat::Probe(f.Get());
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -371,7 +370,7 @@ ECode DateFormat::Parse(
     AutoPtr<IParsePosition> position;
     CParsePosition::New(0, (IParsePosition**)&position);
     FAIL_RETURN(ParseEx(string, position, date));
-    INTERFACE_ADDREF(*date);
+    REFCOUNT_ADD(*date);
     Int32 index;
     position->GetIndex(&index);
     if (index == 0) {

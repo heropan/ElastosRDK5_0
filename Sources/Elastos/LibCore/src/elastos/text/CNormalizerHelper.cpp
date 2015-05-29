@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CNormalizerHelper.h"
 #include "CNativeNormalizerHelper.h"
 

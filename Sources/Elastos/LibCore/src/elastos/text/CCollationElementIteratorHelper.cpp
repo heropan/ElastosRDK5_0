@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CCollationElementIteratorHelper.h"
 #include "CCollationElementIteratorICUHelper.h"
 

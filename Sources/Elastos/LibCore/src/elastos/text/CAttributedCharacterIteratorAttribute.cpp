@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CAttributedCharacterIteratorAttribute.h"
 
 namespace Elastos {

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "NumberFormat.h"
 #include "CNumberFormatField.h"
 #include "CDecimalFormat.h"
@@ -194,7 +193,7 @@ ECode NumberFormat::GetIntegerInstance(
     if (SUCCEEDED(ec) && format.Get()) {
         format->SetParseIntegerOnly(TRUE);
         *instance = format;
-        INTERFACE_ADDREF(*instance);
+        REFCOUNT_ADD(*instance);
     }
     return ec;
 }
@@ -223,7 +222,7 @@ ECode NumberFormat::GetInstance(
     AutoPtr<IDecimalFormat> format;
     FAIL_RETURN(CDecimalFormat::New(pattern, locale, (IDecimalFormat**)&format));
     *instance = format;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 

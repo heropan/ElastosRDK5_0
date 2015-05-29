@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CFieldPosition.h"
 
 using Elastos::Text::EIID_IFieldPosition;
@@ -76,7 +75,7 @@ ECode CFieldPosition::GetFieldAttribute(
     VALIDATE_NOT_NULL(attribute);
 
     *attribute = mMyAttribute;
-    INTERFACE_ADDREF(*attribute);
+    REFCOUNT_ADD(*attribute);
     return NOERROR;
 }
 

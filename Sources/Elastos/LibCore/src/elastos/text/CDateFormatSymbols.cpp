@@ -1,5 +1,4 @@
 #include "CDateFormatSymbols.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Text {

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "AttributedString.h"
 #include <elastos/StringBuffer.h>
 #include <elastos/Map.h>
@@ -202,7 +201,7 @@ ECode AttributedString::AttributedIterator::GetAllAttributeKeys(
     AutoPtr<IObjectContainer> container;
     CObjectContainer::New((IObjectContainer**)&container);
     *allAttributedKeys = container;
-    INTERFACE_ADDREF(*allAttributedKeys);
+    REFCOUNT_ADD(*allAttributedKeys);
 
     AttributeRangeMapIterator it = mAttrString->mAttributeMap.Begin();
     if (mBegin == 0 && mEnd == (Int32)mAttrString->mText.GetLength()
@@ -258,7 +257,7 @@ ECode AttributedString::AttributedIterator::GetAttribute(
     ranges = it->mSecond;
     AutoPtr<IInterface> temp = CurrentValue(ranges);
     *instance = temp;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -283,7 +282,7 @@ ECode AttributedString::AttributedIterator::GetAttributes(
     }
 
     *attributes = result;
-    INTERFACE_ADDREF(*attributes);
+    REFCOUNT_ADD(*attributes);
     return NOERROR;
 }
 
@@ -833,7 +832,7 @@ ECode AttributedString::GetIterator(
 {
     VALIDATE_NOT_NULL(iterator);
     *iterator = (IAttributedCharacterIterator*) new AttributedIterator(this);
-    INTERFACE_ADDREF(*iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 
@@ -844,7 +843,7 @@ ECode AttributedString::GetIteratorEx(
     VALIDATE_NOT_NULL(iterator);
     *iterator = (IAttributedCharacterIterator*)new AttributedIterator(
             this, attributes, 0, mText.GetLength());
-    INTERFACE_ADDREF(*iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 
@@ -857,7 +856,7 @@ ECode AttributedString::GetIteratorEx2(
     VALIDATE_NOT_NULL(iterator);
     *iterator = (IAttributedCharacterIterator*)new AttributedIterator(
             this, attributes, start, end);
-    INTERFACE_ADDREF(*iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 

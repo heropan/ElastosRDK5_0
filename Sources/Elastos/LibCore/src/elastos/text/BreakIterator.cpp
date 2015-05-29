@@ -61,7 +61,7 @@ ECode BreakIterator::GetCharacterInstance(
     AutoPtr<IRuleBasedBreakIterator> rbbi;
     CRuleBasedBreakIterator::New(iter,(IRuleBasedBreakIterator **)&rbbi);
     *instance = rbbi;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
 
     return NOERROR;
 }
@@ -91,7 +91,7 @@ ECode BreakIterator::GetLineInstance(
     AutoPtr<IRuleBasedBreakIterator> rbbi;
     CRuleBasedBreakIterator::New(iter,(IRuleBasedBreakIterator **)&rbbi);
     *instance = rbbi;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -120,7 +120,7 @@ ECode BreakIterator::GetSentenceInstance(
     AutoPtr<IRuleBasedBreakIterator> rbbi;
     CRuleBasedBreakIterator::New(iter,(IRuleBasedBreakIterator **)&rbbi);
     *instance = rbbi;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -149,7 +149,7 @@ ECode BreakIterator::GetWordInstance(
     AutoPtr<IRuleBasedBreakIterator> rbbi;
     FAIL_RETURN(CRuleBasedBreakIterator::New(iter,(IRuleBasedBreakIterator **)&rbbi));
     *instance = rbbi;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 

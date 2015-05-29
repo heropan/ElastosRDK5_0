@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "DateFormatSymbols.h"
 #include "CDateFormatSymbols.h"
 #include "CStringWrapper.h"
@@ -134,7 +133,7 @@ ECode DateFormatSymbols::Clone(
     outfs->SetWeekdays(*mWeekdays);
     // outfs->SetZoneStrings(mZoneStrings);
     *instance = outfs;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -422,7 +421,7 @@ ECode DateFormatSymbols::Clone2dStringArray(
     }
 
     *outArray = result;
-    INTERFACE_ADDREF(*outArray)
+    REFCOUNT_ADD(*outArray)
     return NOERROR;
 }
 

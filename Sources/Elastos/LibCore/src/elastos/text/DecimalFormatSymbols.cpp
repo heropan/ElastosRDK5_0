@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "DecimalFormatSymbols.h"
 #include "CDecimalFormatSymbols.h"
 #include "CLocaleHelper.h"
@@ -124,7 +123,7 @@ ECode DecimalFormatSymbols::Clone(
     outdec->SetPerMill(mPerMill);
     outdec->SetZeroDigit(mZeroDigit);
     *object = outdec;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
 
     return NOERROR;
 }
@@ -133,7 +132,7 @@ ECode DecimalFormatSymbols::GetCurrency(
     /* [out] */ ICurrency** currency)
 {
     *currency = mCurrency;
-    INTERFACE_ADDREF(*currency);
+    REFCOUNT_ADD(*currency);
     return NOERROR;
 }
 

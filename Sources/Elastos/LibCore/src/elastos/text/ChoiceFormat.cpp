@@ -142,7 +142,7 @@ ECode ChoiceFormat::Clone(
     FAIL_RETURN(CChoiceFormat::New(*mChoiceLimits,*mChoiceFormats,(IChoiceFormat **)&clone));
 
     *outface = clone;
-    INTERFACE_ADDREF(*outface);
+    REFCOUNT_ADD(*outface);
     return NOERROR;
 }
 
@@ -181,7 +181,7 @@ ECode ChoiceFormat::FormatDoubleEx(
         if ((*mChoiceLimits)[i] <= value) {
             inbuffer->AppendString((*mChoiceFormats)[i]);
             *outbuffer = inbuffer;
-            INTERFACE_ADDREF(*outbuffer);
+            REFCOUNT_ADD(*outbuffer);
             return NOERROR;
         }
     }
@@ -190,7 +190,7 @@ ECode ChoiceFormat::FormatDoubleEx(
         inbuffer->AppendString((*mChoiceFormats)[0]);
     }
     *outbuffer = inbuffer;
-    INTERFACE_ADDREF(*outbuffer);
+    REFCOUNT_ADD(*outbuffer);
     return NOERROR;
 }
 
@@ -227,7 +227,7 @@ ECode ChoiceFormat::GetFormats(
         temp->Set(i , (IInterface*)cs.Get());
     }
     *arrayOfFormattedString = temp;
-    INTERFACE_ADDREF(*arrayOfFormattedString)
+    REFCOUNT_ADD(*arrayOfFormattedString)
     return NOERROR;
 }
 
@@ -236,7 +236,7 @@ ECode ChoiceFormat::GetChoiceFormats(
 {
     VALIDATE_NOT_NULL(formats)
     *formats = mChoiceFormats;
-    INTERFACE_ADDREF(*formats)
+    REFCOUNT_ADD(*formats)
     return NOERROR;
 }
 
@@ -245,7 +245,7 @@ ECode ChoiceFormat::GetLimits(
 {
     VALIDATE_NOT_NULL(arrayOfDoubles);
     *arrayOfDoubles = mChoiceLimits;
-    INTERFACE_ADDREF(*arrayOfDoubles)
+    REFCOUNT_ADD(*arrayOfDoubles)
     return NOERROR;
 }
 
@@ -291,7 +291,7 @@ ECode ChoiceFormat::ParseEx(
             AutoPtr<IDouble> outdouble;
             FAIL_RETURN(CDouble::New((*mChoiceLimits)[i],(IDouble **)&outdouble))
             *value = outdouble;
-            INTERFACE_ADDREF(*value);
+            REFCOUNT_ADD(*value);
             return NOERROR;
         }
     }
@@ -299,7 +299,7 @@ ECode ChoiceFormat::ParseEx(
     AutoPtr<IDouble> outdouble;
     FAIL_RETURN(CDouble::New(Elastos::Core::Math::DOUBLE_NAN,(IDouble **)&outdouble))
     *value = outdouble;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 

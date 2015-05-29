@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include <elastos/StringBuilder.h>
 #include "AttributedCharacterIteratorAttribute.h"
 #include "CAttributedCharacterIteratorAttribute.h"
@@ -107,19 +106,19 @@ ECode AttributedCharacterIteratorAttribute::ReadResolve(
     INPUT_METHOD_SEGMENT->GetName(&name);
     if (mName.Equals(name)) {
         *resolve = INPUT_METHOD_SEGMENT;
-        INTERFACE_ADDREF(*resolve);
+        REFCOUNT_ADD(*resolve);
         return NOERROR;
     }
     LANGUAGE->GetName(&name);
     if (mName.Equals(name)) {
         *resolve = LANGUAGE;
-        INTERFACE_ADDREF(*resolve);
+        REFCOUNT_ADD(*resolve);
         return NOERROR;
     }
     READING->GetName(&name);
     if (mName.Equals(name)) {
         *resolve = READING;
-        INTERFACE_ADDREF(*resolve);
+        REFCOUNT_ADD(*resolve);
         return NOERROR;
     }
     //throw new InvalidObjectException("Unknown attribute");

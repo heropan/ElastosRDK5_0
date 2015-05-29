@@ -270,7 +270,7 @@ ECode MessageFormat::FormatImpl(
     }
 
     *value = buffer;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -372,7 +372,7 @@ ECode MessageFormat::GetFormatsByArgumentIndex(
         answer->Set((*mArgumentNumbers)[i], (*mFormats)[i]);
     }
     *arrayOfInstances = answer;
-    INTERFACE_ADDREF(*arrayOfInstances)
+    REFCOUNT_ADD(*arrayOfInstances)
     return NOERROR;
 }
 
@@ -406,7 +406,7 @@ ECode MessageFormat::GetLocale(
 {
     VALIDATE_NOT_NULL(locale);
     *locale = mLocale;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 
@@ -430,7 +430,7 @@ ECode MessageFormat::Parse(
 
     if (result) {
         *value = result;
-        INTERFACE_ADDREF(*value)
+        REFCOUNT_ADD(*value)
     }
     return NOERROR;
 }
@@ -513,7 +513,7 @@ ECode MessageFormat::ParseEx(
     position->SetIndex(offset);
 
     *value = result;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -535,7 +535,7 @@ ECode MessageFormat::ParseObjectEx(
         }
 
         *result = bc->Probe(EIID_IInterface);
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
 
     return NOERROR;
@@ -644,7 +644,7 @@ ECode MessageFormat::ParseVariable(
             }
 
             *value = dv;
-            INTERFACE_ADDREF(*value);
+            REFCOUNT_ADD(*value);
             return NOERROR;
         }
         (*tokens2)[0] = String("full");
@@ -662,7 +662,7 @@ ECode MessageFormat::ParseVariable(
             buffer.SubstringEx(0, buffer.GetLength(),&outstr);
             CSimpleDateFormat::New(outstr, mLocale.Get(), (ISimpleDateFormat**)&sdf);
             *value = sdf.Get();
-            INTERFACE_ADDREF(*value);
+            REFCOUNT_ADD(*value);
             return NOERROR;
         }
 
@@ -688,7 +688,7 @@ ECode MessageFormat::ParseVariable(
             DateFormat::GetTimeInstanceEx2(dateStyle, mLocale.Get(), (IDateFormat**)&dv);
         }
         *value = dv;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
 
     case 2: // number
@@ -712,7 +712,7 @@ ECode MessageFormat::ParseVariable(
             buffer.SubstringEx(0, buffer.GetLength(),&outstr);
             CDecimalFormat::New(outstr, dfs, (IDecimalFormat**)&df);
             *value = df.Get();
-            INTERFACE_ADDREF(*value);
+            REFCOUNT_ADD(*value);
             return NOERROR;
         }
 
@@ -728,7 +728,7 @@ ECode MessageFormat::ParseVariable(
                 break;
         }
         *value = nv.Get();
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
 
@@ -739,7 +739,7 @@ ECode MessageFormat::ParseVariable(
     buffer.SubstringEx(0, buffer.GetLength(), &outstr);
     CChoiceFormat::New(outstr, (IChoiceFormat**)&cf);
     *value = cf.Get();
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 

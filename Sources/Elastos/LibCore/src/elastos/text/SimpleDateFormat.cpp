@@ -683,7 +683,7 @@ ECode SimpleDateFormat::FormatDateEx(
     result.ToString(&str);
     AutoPtr<IStringBuffer> outsb = new StringBuffer(str);
     *formatString = outsb;
-    INTERFACE_ADDREF(*formatString);
+    REFCOUNT_ADD(*formatString);
     return NOERROR;
 }
 
@@ -978,7 +978,7 @@ ECode SimpleDateFormat::ParseEx(
     position->SetIndex(offset);
     mCalendar->SetTimeZone(zone);
     *date = d;
-    INTERFACE_ADDREF(*date);
+    REFCOUNT_ADD(*date);
     return NOERROR;
 }
 
@@ -1035,7 +1035,7 @@ ECode SimpleDateFormat::ParseNumber(
             }
         }
         *number = n;
-        INTERFACE_ADDREF(*number);
+        REFCOUNT_ADD(*number);
         return NOERROR;
     }
 
@@ -1058,7 +1058,7 @@ ECode SimpleDateFormat::ParseNumber(
     AutoPtr<INumber> outn;
     CInteger32::New(result,(IInteger32 **)&outn);
     *number = outn;
-    INTERFACE_ADDREF(*number);
+    REFCOUNT_ADD(*number);
     //return Integer.valueOf(result);
     return NOERROR;
 }

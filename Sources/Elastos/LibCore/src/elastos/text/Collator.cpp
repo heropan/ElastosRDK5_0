@@ -127,7 +127,7 @@ ECode Collator::GetInstance(
     CRuleBasedCollatorICU::New(locale, (IRuleBasedCollatorICU**)&icuCollator);
     FAIL_RETURN(CRuleBasedCollator::New(icuCollator, (IRuleBasedCollator**)&rbc));
     *instance = (ICollator*)rbc->Probe(EIID_ICollator);
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -235,7 +235,7 @@ ECode Collator::GetICUCollator(
 {
     VALIDATE_NOT_NULL(icuCollator);
     *icuCollator = mICUColl;
-    INTERFACE_ADDREF(*icuCollator);
+    REFCOUNT_ADD(*icuCollator);
     return NOERROR;
 }
 

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "Format.h"
 #include "CAttributedString.h"
 #include "CFieldPosition.h"

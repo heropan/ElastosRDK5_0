@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CParsePosition.h"
 
 namespace Elastos {

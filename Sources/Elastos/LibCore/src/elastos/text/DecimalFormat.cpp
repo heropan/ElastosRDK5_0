@@ -193,7 +193,7 @@ ECode DecimalFormat::FormatDoubleEx(
         buffer->AppendChar((*v.Get())[i]);
     }
     *result = buffer;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -216,7 +216,7 @@ ECode DecimalFormat::FormatInt64Ex(
     }
 
     *result = buffer;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -247,7 +247,7 @@ ECode DecimalFormat::FormatObjectEx(
             buffer->AppendChar((*chars.Get())[i]);
         }
         *value = buffer;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     } else if (object->Probe(EIID_IBigDecimal)) {
         AutoPtr<ArrayOf<Char32> > chars;
@@ -257,7 +257,7 @@ ECode DecimalFormat::FormatObjectEx(
             buffer->AppendChar((*chars.Get())[i]);
         }
         *value = buffer;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     return NumberFormat::FormatObjectEx(object, buffer, field ,value);
@@ -359,7 +359,7 @@ ECode DecimalFormat::ParseEx(
             AutoPtr<IBigDecimal> Inum;
             FAIL_RETURN(CBigDecimal::New(lnum,(IBigDecimal **)&Inum));
             *value = (INumber *)Inum->Probe(EIID_INumber);
-            INTERFACE_ADDREF(*value);
+            REFCOUNT_ADD(*value);
             return NOERROR;
         }
         AutoPtr<IDouble> Idou = (IDouble *)number->Probe(EIID_IDouble);
@@ -370,7 +370,7 @@ ECode DecimalFormat::ParseEx(
             AutoPtr<IBigDecimal> Inum;
             FAIL_RETURN(CBigDecimal::New(str,(IBigDecimal **)&Inum));
             *value = (INumber *)Inum->Probe(EIID_INumber);
-            INTERFACE_ADDREF(*value);
+            REFCOUNT_ADD(*value);
             return NOERROR;
 
         }
@@ -381,11 +381,11 @@ ECode DecimalFormat::ParseEx(
             AutoPtr<IBigDecimal> Inum;
             FAIL_RETURN(CBigDecimal::New(str,(IBigDecimal **)&Inum));
             *value = (INumber *)Inum->Probe(EIID_INumber);
-            INTERFACE_ADDREF(*value);
+            REFCOUNT_ADD(*value);
             return NOERROR;
         }
         *value = number;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     if (number->Probe(EIID_IBigDecimal) || number->Probe(EIID_IBigInteger))
@@ -395,7 +395,7 @@ ECode DecimalFormat::ParseEx(
         AutoPtr<IDouble> Inum;
         FAIL_RETURN(CDouble::New(lnum,(IDouble **)&Inum));
         *value = Inum;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
 
@@ -408,12 +408,12 @@ ECode DecimalFormat::ParseEx(
             AutoPtr<IInteger64> Inum;
             FAIL_RETURN(CInteger64::New(0L,(IInteger64 **)&Inum));
             *value = Inum;
-            INTERFACE_ADDREF(*value);
+            REFCOUNT_ADD(*value);
             return NOERROR;
         }
     }
     *value = number;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -615,7 +615,7 @@ ECode DecimalFormat::GetNdf(
 {
     VALIDATE_NOT_NULL(ndf)
     *ndf = mNdf;
-    INTERFACE_ADDREF(*ndf);
+    REFCOUNT_ADD(*ndf);
     return NOERROR;
 }
 
