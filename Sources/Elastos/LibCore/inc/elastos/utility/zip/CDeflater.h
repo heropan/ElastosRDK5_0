@@ -1,17 +1,26 @@
 
-#ifndef __CDEFLATER_H__
-#define __CDEFLATER_H__
+#ifndef __ELASTOS_UTILITY_CDEFLATER_H__
+#define __ELASTOS_UTILITY_CDEFLATER_H__
 
-#include "_CDeflater.h"
+#include "_Elastos_Utility_Zip_CDeflater.h"
 #include "Zip.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
 namespace Zip {
 
 CarClass(CDeflater)
+    , public Object
+    , public IDeflater
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CDeflater();
 
     ~CDeflater();
@@ -419,10 +428,12 @@ private:
     Int32 mInLength;
 
     //CloseGuard guard = CloseGuard.get();
+
+    static Object sLock;
 };
 
 } // namespace Zip
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CDEFLATER_H__
+#endif //__ELASTOS_UTILITY_CDEFLATER_H__

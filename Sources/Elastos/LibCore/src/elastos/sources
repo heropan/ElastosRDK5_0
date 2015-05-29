@@ -20,6 +20,7 @@ INCLUDES += $(MAKEDIR)/../../inc/elastos/sql/sqlite/jdbc
 //INCLUDES += $(MAKEDIR)/../../inc/elastos/text
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/regex
+INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/zip
 INCLUDES += $(MAKEDIR)/../../inc/elastos/droid/system
 
 SOURCES = Elastos.CoreLibrary.car
@@ -30,13 +31,13 @@ LIBRARIES += core/core.lib
 LIBRARIES += io/io.lib
 LIBRARIES += droid/system/system.lib
 //LIBRARIES += math/math.lib
-LIBRARIES += io/io.lib
 //LIBRARIES += net/net.lib
 //LIBRARIES += security/security.lib
 //LIBRARIES += sql/sql.lib
 //LIBRARIES += text/text.lib
 LIBRARIES += utility/utility.lib
 LIBRARIES += utility/regex/regex.lib
+LIBRARIES += utility/zip/zip.lib
 
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib

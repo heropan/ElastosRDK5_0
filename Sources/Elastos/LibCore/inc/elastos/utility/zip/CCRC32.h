@@ -1,16 +1,26 @@
 
-#ifndef __CCRC32_H__
-#define __CCRC32_H__
+#ifndef __ELASTOS_UTILITY_CCRC32_H__
+#define __ELASTOS_UTILITY_CCRC32_H__
 
-#include "_CCRC32.h"
+#include "_Elastos_Utility_Zip_CCRC32.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
 namespace Zip {
 
 CarClass(CCRC32)
+    , public Object
+    , public ICRC32
+    , public IChecksum
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CCRC32();
 
     /**
@@ -75,4 +85,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CCRC32_H__
+#endif //__ELASTOS_UTILITY_CCRC32_H__

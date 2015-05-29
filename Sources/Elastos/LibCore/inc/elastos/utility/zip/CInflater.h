@@ -1,10 +1,12 @@
 
-#ifndef __CINFLATER_H__
-#define __CINFLATER_H__
+#ifndef __ELASTOS_UTILITY_CINFLATER_H__
+#define __ELASTOS_UTILITY_CINFLATER_H__
 
-#include "_CInflater.h"
+#include "_Elastos_Utility_Zip_CInflater.h"
 #include "Zip.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {
@@ -12,8 +14,14 @@ namespace Utility {
 namespace Zip {
 
 CarClass(CInflater)
+    , public Object
+    , public IInflater
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CInflater();
 
     ~CInflater();
@@ -261,10 +269,12 @@ private:
     NativeZipStream* mStreamHandle;
 
     //CloseGuard guard = CloseGuard.get();
+
+    static Object sLock;
 };
 
 } // namespace Zip
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CINFLATER_H__
+#endif //__ELASTOS_UTILITY_CINFLATER_H__

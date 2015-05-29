@@ -216,9 +216,9 @@ module
 
 
     // interface Elastos.IO.ISerializable;
-    // interface Elastos.IO.IFilterInputStream;
+    interface Elastos.IO.IFilterInputStream;
     // interface Elastos.IO.IFilterOutputStream;
-    // interface Elastos.IO.ICloseable;
+    interface Elastos.IO.ICloseable;
     // interface Elastos.Core.IThread;
     // interface Elastos.Core.IRunnable;
     // interface Elastos.Core.ICloneable;
@@ -1149,146 +1149,146 @@ module
     // interface Elastos.IO.IFile;
     // interface Elastos.IO.IFlushable;
 
-    // namespace Elastos {
-    // namespace Utility {
-    // namespace Zip {
+    namespace Elastos {
+    namespace Utility {
+    namespace Zip {
 
-    // /**
-    //  * The Adler-32 class is used to compute the {@code Adler32} checksum from a set
-    //  * of data. Compared to {@link CRC32} it trades reliability for speed.
-    //  * Refer to RFC 1950 for the specification.
-    //  */
-    // class CAdler32 {
-    //     interface IAdler32;
-    //     interface IChecksum;
-    // }
+    /**
+     * The Adler-32 class is used to compute the {@code Adler32} checksum from a set
+     * of data. Compared to {@link CRC32} it trades reliability for speed.
+     * Refer to RFC 1950 for the specification.
+     */
+    class CAdler32 {
+        interface IAdler32;
+        interface IChecksum;
+    }
 
-    // /**
-    //  * The CRC32 class is used to compute a CRC32 checksum from data provided as
-    //  * input value.
-    //  */
-    // class CCRC32 {
-    //     interface ICRC32;
-    //     interface IChecksum;
-    // }
+    /**
+     * The CRC32 class is used to compute a CRC32 checksum from data provided as
+     * input value.
+     */
+    class CCRC32 {
+        interface ICRC32;
+        interface IChecksum;
+    }
 
-    // /**
-    //  * This class decompresses data that was compressed using the <i>DEFLATE</i>
-    //  * algorithm (see <a href="http://www.gzip.org/algorithm.txt">specification</a>).
-    //  *
-    //  * <p>It is usually more convenient to use {@link InflaterInputStream}.
-    //  *
-    //  * <p>To decompress an in-memory {@code byte[]} to another in-memory {@code byte[]} manually:
-    //  * <pre>
-    //  *     byte[] compressedBytes = ...
-    //  *     int decompressedByteCount = ... // From your format's metadata.
-    //  *     Inflater inflater = new Inflater();
-    //  *     inflater.setInput(compressedBytes, 0, compressedBytes.length);
-    //  *     byte[] decompressedBytes = new byte[decompressedByteCount];
-    //  *     if (inflater.inflate(decompressedBytes) != decompressedByteCount) {
-    //  *         throw new AssertionError();
-    //  *     }
-    //  *     inflater.end();
-    //  * </pre>
-    //  * <p>In situations where you don't have all the input in one array (or have so much
-    //  * input that you want to feed it to the inflater in chunks), it's possible to call
-    //  * {@link #setInput} repeatedly, but you're much better off using {@link InflaterInputStream}
-    //  * to handle all this for you.
-    //  *
-    //  * <p>If you don't know how big the decompressed data will be, you can call {@link #inflate}
-    //  * repeatedly on a temporary buffer, copying the bytes to a {@link java.io.ByteArrayOutputStream},
-    //  * but this is probably another sign you'd be better off using {@link InflaterInputStream}.
-    //  */
-    // class CInflater {
-    //     /**
-    //      * This constructor creates an inflater that expects a header from the input
-    //      * stream. Use {@code Inflater(boolean)} if the input comes without a ZLIB
-    //      * header.
-    //      */
-    //     constructor();
+    /**
+     * This class decompresses data that was compressed using the <i>DEFLATE</i>
+     * algorithm (see <a href="http://www.gzip.org/algorithm.txt">specification</a>).
+     *
+     * <p>It is usually more convenient to use {@link InflaterInputStream}.
+     *
+     * <p>To decompress an in-memory {@code byte[]} to another in-memory {@code byte[]} manually:
+     * <pre>
+     *     byte[] compressedBytes = ...
+     *     int decompressedByteCount = ... // From your format's metadata.
+     *     Inflater inflater = new Inflater();
+     *     inflater.setInput(compressedBytes, 0, compressedBytes.length);
+     *     byte[] decompressedBytes = new byte[decompressedByteCount];
+     *     if (inflater.inflate(decompressedBytes) != decompressedByteCount) {
+     *         throw new AssertionError();
+     *     }
+     *     inflater.end();
+     * </pre>
+     * <p>In situations where you don't have all the input in one array (or have so much
+     * input that you want to feed it to the inflater in chunks), it's possible to call
+     * {@link #setInput} repeatedly, but you're much better off using {@link InflaterInputStream}
+     * to handle all this for you.
+     *
+     * <p>If you don't know how big the decompressed data will be, you can call {@link #inflate}
+     * repeatedly on a temporary buffer, copying the bytes to a {@link java.io.ByteArrayOutputStream},
+     * but this is probably another sign you'd be better off using {@link InflaterInputStream}.
+     */
+    class CInflater {
+        /**
+         * This constructor creates an inflater that expects a header from the input
+         * stream. Use {@code Inflater(boolean)} if the input comes without a ZLIB
+         * header.
+         */
+        constructor();
 
-    //     /**
-    //      * This constructor allows to create an inflater that expects no header from
-    //      * the input stream.
-    //      *
-    //      * @param noHeader
-    //      *            {@code true} indicates that no ZLIB header comes with the
-    //      *            input.
-    //      */
-    //     constructor(
-    //         [in] Boolean noHeader);
+        /**
+         * This constructor allows to create an inflater that expects no header from
+         * the input stream.
+         *
+         * @param noHeader
+         *            {@code true} indicates that no ZLIB header comes with the
+         *            input.
+         */
+        constructor(
+            [in] Boolean noHeader);
 
-    //     interface IInflater;
-    // }
+        interface IInflater;
+    }
 
-    // /**
-    //  * This class compresses data using the <i>DEFLATE</i> algorithm (see <a
-    //  * href="http://www.gzip.org/algorithm.txt">specification</a>).
-    //  *
-    //  * <p>It is usually more convenient to use {@link DeflaterOutputStream}.
-    //  *
-    //  * <p>To compress an in-memory {@code byte[]} to another in-memory {@code byte[]} manually:
-    //  * <pre>
-    //  *     byte[] originalBytes = ...
-    //  *
-    //  *     Deflater deflater = new Deflater();
-    //  *     deflater.setInput(originalBytes);
-    //  *     deflater.finish();
-    //  *
-    //  *     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    //  *     byte[] buf = new byte[8192];
-    //  *     while (!deflater.finished()) {
-    //  *         int byteCount = deflater.deflate(buf);
-    //  *         baos.write(buf, 0, byteCount);
-    //  *     }
-    //  *     deflater.end();
-    //  *
-    //  *     byte[] compressedBytes = baos.toByteArray();
-    //  * </pre>
-    //  * <p>In situations where you don't have all the input in one array (or have so much
-    //  * input that you want to feed it to the deflater in chunks), it's possible to call
-    //  * {@link #setInput setInput} repeatedly, but you're much better off using
-    //  * {@link DeflaterOutputStream} to handle all this for you. {@link DeflaterOutputStream} also helps
-    //  * minimize memory requirements&nbsp;&mdash; the sample code above is very expensive.
-    //  */
-    // class CDeflater {
-    //     /**
-    //      * Constructs a new {@code Deflater} instance using the default compression
-    //      * level. The strategy can be specified with {@link #setStrategy}. A
-    //      * header is added to the output by default; use {@link
-    //      * #Deflater(int, boolean)} if you need to omit the header.
-    //      */
-    //     constructor();
+    /**
+     * This class compresses data using the <i>DEFLATE</i> algorithm (see <a
+     * href="http://www.gzip.org/algorithm.txt">specification</a>).
+     *
+     * <p>It is usually more convenient to use {@link DeflaterOutputStream}.
+     *
+     * <p>To compress an in-memory {@code byte[]} to another in-memory {@code byte[]} manually:
+     * <pre>
+     *     byte[] originalBytes = ...
+     *
+     *     Deflater deflater = new Deflater();
+     *     deflater.setInput(originalBytes);
+     *     deflater.finish();
+     *
+     *     ByteArrayOutputStream baos = new ByteArrayOutputStream();
+     *     byte[] buf = new byte[8192];
+     *     while (!deflater.finished()) {
+     *         int byteCount = deflater.deflate(buf);
+     *         baos.write(buf, 0, byteCount);
+     *     }
+     *     deflater.end();
+     *
+     *     byte[] compressedBytes = baos.toByteArray();
+     * </pre>
+     * <p>In situations where you don't have all the input in one array (or have so much
+     * input that you want to feed it to the deflater in chunks), it's possible to call
+     * {@link #setInput setInput} repeatedly, but you're much better off using
+     * {@link DeflaterOutputStream} to handle all this for you. {@link DeflaterOutputStream} also helps
+     * minimize memory requirements&nbsp;&mdash; the sample code above is very expensive.
+     */
+    class CDeflater {
+        /**
+         * Constructs a new {@code Deflater} instance using the default compression
+         * level. The strategy can be specified with {@link #setStrategy}. A
+         * header is added to the output by default; use {@link
+         * #Deflater(int, boolean)} if you need to omit the header.
+         */
+        constructor();
 
-    //     /**
-    //      * Constructs a new {@code Deflater} instance using compression
-    //      * level {@code level}. The strategy can be specified with {@link #setStrategy}.
-    //      * A header is added to the output by default; use
-    //      * {@link #Deflater(int, boolean)} if you need to omit the header.
-    //      *
-    //      * @param level
-    //      *            the compression level in the range between 0 and 9.
-    //      */
-    //     constructor(
-    //         [in] Int32 level);
+        /**
+         * Constructs a new {@code Deflater} instance using compression
+         * level {@code level}. The strategy can be specified with {@link #setStrategy}.
+         * A header is added to the output by default; use
+         * {@link #Deflater(int, boolean)} if you need to omit the header.
+         *
+         * @param level
+         *            the compression level in the range between 0 and 9.
+         */
+        constructor(
+            [in] Int32 level);
 
-    //     /**
-    //      * Constructs a new {@code Deflater} instance with a specific compression
-    //      * level. If {@code noHeader} is true, no ZLIB header is added to the
-    //      * output. In a ZIP archive every entry (compressed file) comes with such a
-    //      * header. The strategy can be specified using {@link #setStrategy}.
-    //      *
-    //      * @param level
-    //      *            the compression level in the range between 0 and 9.
-    //      * @param noHeader
-    //      *            {@code true} indicates that no ZLIB header should be written.
-    //      */
-    //     constructor(
-    //         [in] Int32 level,
-    //         [in] Boolean noHeader);
+        /**
+         * Constructs a new {@code Deflater} instance with a specific compression
+         * level. If {@code noHeader} is true, no ZLIB header is added to the
+         * output. In a ZIP archive every entry (compressed file) comes with such a
+         * header. The strategy can be specified using {@link #setStrategy}.
+         *
+         * @param level
+         *            the compression level in the range between 0 and 9.
+         * @param noHeader
+         *            {@code true} indicates that no ZLIB header should be written.
+         */
+        constructor(
+            [in] Int32 level,
+            [in] Boolean noHeader);
 
-    //     interface IDeflater;
-    // }
+        interface IDeflater;
+    }
 
     // /**
     //  * This class provides an implementation of {@code FilterInputStream} that
@@ -1902,9 +1902,9 @@ module
     //     interface IZipConstants;
     // }
 
-    // } // namespace Zip
-    // } // namesapce Utility
-    // } // namespace Elastos
+    } // namespace Zip
+    } // namesapce Utility
+    } // namespace Elastos
 
 
 }

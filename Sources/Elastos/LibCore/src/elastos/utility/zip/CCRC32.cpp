@@ -6,6 +6,9 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
+CAR_INTERFACE_IMPL_2(CCRC32, Object, ICRC32, IChecksum)
+
+CAR_OBJECT_IMPL(CCRC32)
 
 CCRC32::CCRC32()
     : mTbytes(0ll)

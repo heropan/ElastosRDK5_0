@@ -1,16 +1,26 @@
 
-#ifndef __CADLER32_H__
-#define __CADLER32_H__
+#ifndef __ELASTOS_UTILITY_CADLER32_H__
+#define __ELASTOS_UTILITY_CADLER32_H__
 
-#include "_CAdler32.h"
+#include "_Elastos_Utility_Zip_CAdler32.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
 namespace Zip {
 
 CarClass(CAdler32)
+    , public Object
+    , public IAdler32
+    , public IChecksum
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CAdler32();
 
     /**
@@ -73,4 +83,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CADLER32_H__
+#endif //__ELASTOS_UTILITY_CADLER32_H__

@@ -3,4 +3,4 @@
 #DIRS += jar
 #DIRS += logging
 DIRS += regex
-#DIRS += zip
+DIRS += zip

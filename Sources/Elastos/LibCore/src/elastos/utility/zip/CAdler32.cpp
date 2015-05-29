@@ -6,6 +6,9 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
+CAR_INTERFACE_IMPL_2(CAdler32, Object, IAdler32, IChecksum)
+
+CAR_OBJECT_IMPL(CAdler32)
 
 CAdler32::CAdler32()
     : mAdler(1ll)

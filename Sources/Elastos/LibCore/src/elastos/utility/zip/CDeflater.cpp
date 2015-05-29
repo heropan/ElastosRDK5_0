@@ -10,6 +10,11 @@ const Int32 CDeflater::NO_FLUSH;
 const Int32 CDeflater::SYNC_FLUSH;
 const Int32 CDeflater::FULL_FLUSH;
 const Int32 CDeflater::FINISH;
+Object CDeflater::sLock;
+
+CAR_INTERFACE_IMPL(CDeflater, Object, IDeflater)
+
+CAR_OBJECT_IMPL(CDeflater)
 
 CDeflater::CDeflater()
     : mFlushParm(NO_FLUSH)
@@ -57,7 +62,7 @@ ECode CDeflater::Deflate(
     VALIDATE_NOT_NULL(buf);
     VALIDATE_NOT_NULL(number);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     return DeflateImplLocked(offset, byteCount, mFlushParm, buf, number);
 }
@@ -72,7 +77,7 @@ ECode CDeflater::Deflate(
     VALIDATE_NOT_NULL(buf);
     VALIDATE_NOT_NULL(number);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     if (flush != NO_FLUSH && flush != SYNC_FLUSH && flush != FULL_FLUSH) {
 //        throw new IllegalArgumentException();
@@ -158,7 +163,7 @@ void CDeflater::EndImplLocked(
 
 ECode CDeflater::End()
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
 //    guard.close();
     EndImplLocked();
@@ -176,7 +181,7 @@ void CDeflater::EndImplLocked()
 
 ECode CDeflater::Finish()
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     mFlushParm = FINISH;
     return NOERROR;
@@ -187,7 +192,7 @@ ECode CDeflater::Finished(
 {
     VALIDATE_NOT_NULL(finished);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
     *finished = mFinished;
     return NOERROR;
 }
@@ -197,7 +202,7 @@ ECode CDeflater::GetAdler(
 {
     VALIDATE_NOT_NULL(checksum);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
 
@@ -216,7 +221,7 @@ ECode CDeflater::GetTotalIn(
 {
     VALIDATE_NOT_NULL(number);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
 
@@ -235,7 +240,7 @@ ECode CDeflater::GetTotalOut(
 {
     VALIDATE_NOT_NULL(number);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
 
@@ -254,7 +259,7 @@ ECode CDeflater::NeedsInput(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     if (mInputBuffer == NULL) {
         *result = TRUE;
@@ -266,7 +271,7 @@ ECode CDeflater::NeedsInput(
 
 ECode CDeflater::Reset()
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
 
@@ -298,7 +303,7 @@ ECode CDeflater::SetDictionary(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
     //Arrays.checkOffsetAndCount(buf.length, offset, byteCount);
@@ -331,7 +336,7 @@ ECode CDeflater::SetInput(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
     //Arrays.checkOffsetAndCount(buf.length, offset, byteCount);
@@ -384,7 +389,7 @@ void CDeflater::SetInputImplLocked(
 ECode CDeflater::SetLevel(
     /* [in] */ Int32 level)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     if (level < DEFAULT_COMPRESSION ||
             level > BEST_COMPRESSION) {
@@ -402,7 +407,7 @@ ECode CDeflater::SetLevel(
 ECode CDeflater::SetStrategy(
     /* [in] */ Int32 strategy)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     if (strategy < DEFAULT_STRATEGY ||
         strategy > HUFFMAN_ONLY) {
@@ -422,7 +427,7 @@ ECode CDeflater::GetBytesRead(
 {
     VALIDATE_NOT_NULL(number);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
     *number = GetTotalInImplLocked(mStreamHandle);
@@ -434,7 +439,7 @@ ECode CDeflater::GetBytesWritten(
 {
     VALIDATE_NOT_NULL(number);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
     *number = GetTotalOutImplLocked(mStreamHandle);

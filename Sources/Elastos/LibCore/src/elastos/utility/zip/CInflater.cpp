@@ -1,6 +1,6 @@
 
 #include "CInflater.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -9,6 +9,12 @@ using Elastos::Core::Math;
 namespace Elastos {
 namespace Utility {
 namespace Zip {
+
+Object CInflater::sLock;
+
+CAR_INTERFACE_IMPL(CInflater, Object, IInflater)
+
+CAR_OBJECT_IMPL(CInflater)
 
 CInflater::CInflater()
     : mInLength(0)
@@ -66,7 +72,7 @@ ECode CInflater::CreateStream(
 
 ECode CInflater::End()
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     //guard.close();
     if (mStreamHandle != NULL) {
@@ -91,7 +97,7 @@ ECode CInflater::Finished(
 {
     VALIDATE_NOT_NULL(finished);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     *finished = mFinished;
     return NOERROR;
@@ -102,7 +108,7 @@ ECode CInflater::GetAdler(
 {
     VALIDATE_NOT_NULL(checksum);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
     *checksum = GetAdlerImplLocked(mStreamHandle);
@@ -121,7 +127,7 @@ ECode CInflater::GetBytesRead(
 {
     VALIDATE_NOT_NULL(number);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
     *number = GetTotalInImplLocked(mStreamHandle);
@@ -134,7 +140,7 @@ ECode CInflater::GetBytesWritten(
 {
     VALIDATE_NOT_NULL(number);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
     *number = GetTotalOutImplLocked(mStreamHandle);
@@ -146,7 +152,7 @@ ECode CInflater::GetRemaining(
 {
     VALIDATE_NOT_NULL(number);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     *number = mInLength - mInRead;
 
@@ -158,7 +164,7 @@ ECode CInflater::GetTotalIn(
 {
     VALIDATE_NOT_NULL(number);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
     *number = (Int32)Elastos::Core::Math::Min(
@@ -177,7 +183,7 @@ ECode CInflater::GetTotalOut(
 {
     VALIDATE_NOT_NULL(number);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
     *number = (Int32)Elastos::Core::Math::Min(
@@ -211,7 +217,7 @@ ECode CInflater::Inflate(
     *number = -1;
     VALIDATE_NOT_NULL(buf);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     Int32 arrayLength = buf->GetLength();
     if ((offset | byteCount) < 0 || offset > arrayLength || arrayLength - offset < byteCount) {
@@ -292,7 +298,7 @@ ECode CInflater::NeedsDictionary(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     *result = mNeedsDictionary;
     return NOERROR;
@@ -303,7 +309,7 @@ ECode CInflater::NeedsInput(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     *result = mInRead == mInLength;
     return NOERROR;
@@ -311,7 +317,7 @@ ECode CInflater::NeedsInput(
 
 ECode CInflater::Reset()
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
     mFinished = FALSE;
@@ -342,7 +348,7 @@ ECode CInflater::SetDictionary(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
 //    Arrays.checkOffsetAndCount(dictionary.length, offset, byteCount);
@@ -377,7 +383,7 @@ ECode CInflater::SetInput(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
 
@@ -399,7 +405,7 @@ Int32 CInflater::SetFileInput(
     /* [in] */ Int64 offset,
     /* [in] */ Int32 byteCount)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
     mInRead = 0;
