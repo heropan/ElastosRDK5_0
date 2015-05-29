@@ -10,7 +10,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
-using Elastos::Core::LockObject;
 
 namespace Elastos {
 namespace IO {
@@ -80,6 +79,21 @@ public:
         /* [in] */ const ArrayOf<Byte> & buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
+
+    /**
+     * Writes a single byte to this stream. Only the least significant byte of
+     * the integer oneByte is written to the stream.
+     *
+     * @param oneByte
+     *            the byte to be written.
+     * @return ECode = NOERROR(0) if success, else as follows:
+     * Value | Meaning |
+     * :-|:------------|
+     * IOException | if an error occurs while writing to this stream.
+     */
+    CARAPI Write(
+        /* [in] */ Int32 oneByte)=0;
+
 
     /**
      * Returns true if this writer has encountered and suppressed an error. Used

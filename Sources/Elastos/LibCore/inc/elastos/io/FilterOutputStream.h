@@ -11,16 +11,17 @@ class FilterOutputStream
     : public OutputStream
     , public IFilterOutputStream
 {
+public:
+    CAR_INTERFACE_DECL()
+
 protected:
     FilterOutputStream();
 
     virtual ~FilterOutputStream();
 
+public:
     CARAPI constructor(
         /* [in] */ IOutputStream* outs);
-
-public:
-    CAR_INTERFACE_DECL()
 
     /**
      * Closes this stream. This implementation closes the target stream.

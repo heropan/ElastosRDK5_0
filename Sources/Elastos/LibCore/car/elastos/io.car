@@ -140,6 +140,7 @@ module
             [in] IInputStream* is,
             [in] Int32 size);
 
+        interface IBufferedInputStream;
         interface ICloseable;
         interface IInputStream;
         interface IFilterInputStream;
@@ -164,6 +165,35 @@ module
     //     }
 
     // } // namespace Channels
+
+    class CFilterInputStream {
+        constructor(
+            [in] IInputStream* is);
+
+        interface IFilterInputStream;
+        interface ICloseable;
+        interface IInputStream;
+    }
+
+    class CBufferedOutputStream {
+        constructor(
+            [in] IOutputStream* outs,
+            [in] Int32 size);
+
+        interface IBufferedOutputStream;
+        interface ICloseable;
+        interface IOutputStream;
+        interface IFilterOutputStream;
+    }
+
+    class CFilterOutputStream {
+        constructor(
+            [in] IOutputStream* outs);
+
+        interface IFilterOutputStream;
+        interface ICloseable;
+        interface IOutputStream;
+    }
 
     } // namespace IO
     } // namespace Elastos

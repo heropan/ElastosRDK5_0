@@ -14,15 +14,16 @@ class BufferedInputStream
 public:
     CAR_INTERFACE_DECL()
 
+protected:
     BufferedInputStream();
 
     ~BufferedInputStream();
 
+public:
     CARAPI constructor(
         /* [in] */ IInputStream* in,
         /* [in] */ Int32 size);
 
-public:
     /**
      * Returns an estimated number of bytes that can be read or skipped without blocking for more
      * input. This method returns the number of bytes available in the buffer

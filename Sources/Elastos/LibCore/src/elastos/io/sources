@@ -15,8 +15,10 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 
 SOURCES = InputStream.cpp
 SOURCES += FilterInputStream.cpp
+SOURCES += CFilterInputStream.cpp
 SOURCES += BufferedInputStream.cpp
 SOURCES += CBufferedInputStream.cpp
+
 SOURCES += AbstractInterruptibleChannel.cpp
 SOURCES += AbstractSelector.cpp
 SOURCES += SelectableChannel.cpp
@@ -26,3 +28,12 @@ SOURCES += SelectorProvider.cpp
 SOURCES += CSelectorProviderImpl.cpp
 #SOURCES += CChannels.cpp
 #SOURCES += CStreams.cpp
+
+SOURCES += OutputStream.cpp
+SOURCES += FilterOutputStream.cpp
+SOURCES += CFilterOutputStream.cpp
+SOURCES += BufferedOutputStream.cpp
+SOURCES += CBufferedOutputStream.cpp
+
+#SOURCES += AbstractInterruptibleChannel.cpp
+#SOURCES += AbstractSelectableChannel.cpp

@@ -70,14 +70,14 @@ public:
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
+    CARAPI constructor(
+        /* [in] */ IOutputStream* outs,
+        /* [in] */ Int32 size);
+
 protected:
     BufferedOutputStream();
 
     ~BufferedOutputStream();
-
-    CARAPI constructor(
-        /* [in] */ IOutputStream* outs,
-        /* [in] */ Int32 size);
 
 private:
     CARAPI FlushInternal();

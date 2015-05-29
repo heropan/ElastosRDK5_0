@@ -20,7 +20,7 @@ ECode BufferedOutputStream::constructor(
     /* [in] */ IOutputStream* outs,
     /* [in] */ Int32 size)
 {
-    VALIDATE_NOT_NULL(out);
+    VALIDATE_NOT_NULL(outs);
     FAIL_RETURN(FilterOutputStream::constructor(outs));
     if (size <= 0) {
 //      throw new IllegalArgumentException("size <= 0");
@@ -35,7 +35,7 @@ ECode BufferedOutputStream::constructor(
 
 ECode BufferedOutputStream::Close()
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
     if (mBuf != NULL) {
         FilterOutputStream::Close();
         mBuf = NULL;
@@ -45,7 +45,7 @@ ECode BufferedOutputStream::Close()
 
 ECode BufferedOutputStream::Flush()
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
     FAIL_RETURN(CheckNotClosed());
     FAIL_RETURN(FlushInternal());
     return IFlushable::Probe(mOut)->Flush();
@@ -54,7 +54,7 @@ ECode BufferedOutputStream::Flush()
 ECode BufferedOutputStream::Write(
     /* [in] */ Int32 oneByte)
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
     FAIL_RETURN(CheckNotClosed());
 
     if (mCount == mBuf->GetLength()) {
@@ -70,7 +70,7 @@ ECode BufferedOutputStream::Write(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
     FAIL_RETURN(CheckNotClosed());
 
     ArrayOf<Byte>* localBuf = mBuf;

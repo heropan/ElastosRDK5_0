@@ -22,11 +22,13 @@ class FilterInputStream
 {
 public:
     CAR_INTERFACE_DECL()
+
 protected:
     FilterInputStream();
 
     virtual ~FilterInputStream();
 
+public:
     /**
      * Constructs a new {@code FilterInputStream} with the specified input
      * stream as source.

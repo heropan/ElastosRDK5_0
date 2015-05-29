@@ -12,7 +12,6 @@ CarClass(CFilterOutputStream)
     , public FilterOutputStream
 {
 public:
-
     CAR_OBJECT_DECL()
 
 };

@@ -4,7 +4,7 @@
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL(FilterOutputStream, IFilterOutputStream)
+CAR_INTERFACE_IMPL(FilterOutputStream, OutputStream, IFilterOutputStream)
 
 FilterOutputStream::FilterOutputStream()
 {
@@ -17,7 +17,7 @@ FilterOutputStream::~FilterOutputStream()
 ECode FilterOutputStream::constructor(
     /* [in] */ IOutputStream* outs)
 {
-    VALIDATE_NOT_NULL(out);
+    VALIDATE_NOT_NULL(outs);
     mOut = outs;
     return NOERROR;
 }
