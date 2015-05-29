@@ -13,7 +13,7 @@
 namespace Elastos {
 namespace Core {
 
-CAR_INTERFACE_IMPL(StringBuilder, AbstractStringBuilder, IStringBuffer)
+CAR_INTERFACE_IMPL(StringBuffer, AbstractStringBuilder, IStringBuffer)
 
 StringBuffer::StringBuffer()
     :AbstractStringBuilder()
