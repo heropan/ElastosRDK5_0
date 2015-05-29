@@ -254,7 +254,7 @@ ECode DateFormatSymbols::GetLongStandAloneMonths(
     VALIDATE_NOT_NULL(longStandAloneMonths)
 
     *longStandAloneMonths = mLongStandAloneMonths->Clone();
-    ARRAYOF_ADDREF(*longStandAloneMonths)
+    REFCOUNT_ADD(*longStandAloneMonths)
     return NOERROR;
 }
 
@@ -264,7 +264,7 @@ ECode DateFormatSymbols::GetShortStandAloneMonths(
     VALIDATE_NOT_NULL(shortStandAloneMonths)
 
     *shortStandAloneMonths = mShortStandAloneMonths->Clone();
-    ARRAYOF_ADDREF(*shortStandAloneMonths)
+    REFCOUNT_ADD(*shortStandAloneMonths)
     return NOERROR;
 }
 
@@ -274,7 +274,7 @@ ECode DateFormatSymbols::GetLongStandAloneWeekdays(
     VALIDATE_NOT_NULL(longStandAloneWeekdays)
 
     *longStandAloneWeekdays = mLongStandAloneWeekdays->Clone();
-    ARRAYOF_ADDREF(*longStandAloneWeekdays)
+    REFCOUNT_ADD(*longStandAloneWeekdays)
     return NOERROR;
 }
 
@@ -284,7 +284,7 @@ ECode DateFormatSymbols::GetShortStandAloneWeekdays(
     VALIDATE_NOT_NULL(shortStandAloneWeekdays)
 
     *shortStandAloneWeekdays = mShortStandAloneWeekdays->Clone();
-    ARRAYOF_ADDREF(*shortStandAloneWeekdays)
+    REFCOUNT_ADD(*shortStandAloneWeekdays)
     return NOERROR;
 }
 
@@ -303,7 +303,7 @@ ECode DateFormatSymbols::GetLocale(
     VALIDATE_NOT_NULL(locale)
 
     *locale = (ILocale*)mLocale;
-    ARRAYOF_ADDREF(*locale)
+    REFCOUNT_ADD(*locale)
     return NOERROR;
 }
 
@@ -314,7 +314,7 @@ ECode DateFormatSymbols::GetAmPmStrings(
 
     AutoPtr<ArrayOf<String> > ans = mAmpms->Clone();
     *arrayOfStrings = ans;
-    ARRAYOF_ADDREF(*arrayOfStrings)
+    REFCOUNT_ADD(*arrayOfStrings)
     return NOERROR;
 }
 
@@ -324,7 +324,7 @@ ECode DateFormatSymbols::GetEras(
     VALIDATE_NOT_NULL(arrayOfStrings)
 
     *arrayOfStrings = mEras->Clone();
-    ARRAYOF_ADDREF(*arrayOfStrings)
+    REFCOUNT_ADD(*arrayOfStrings)
     return NOERROR;
 }
 
@@ -343,7 +343,7 @@ ECode DateFormatSymbols::GetMonths(
     VALIDATE_NOT_NULL(arrayOfStrings)
 
     *arrayOfStrings = mMonths->Clone();
-    ARRAYOF_ADDREF(*arrayOfStrings)
+    REFCOUNT_ADD(*arrayOfStrings)
     return NOERROR;
 }
 
@@ -353,7 +353,7 @@ ECode DateFormatSymbols::GetShortMonths(
     VALIDATE_NOT_NULL(arrayOfStrings)
 
     *arrayOfStrings = mShortMonths->Clone();
-    ARRAYOF_ADDREF(*arrayOfStrings)
+    REFCOUNT_ADD(*arrayOfStrings)
     return NOERROR;
 }
 
@@ -363,7 +363,7 @@ ECode DateFormatSymbols::GetShortWeekdays(
     VALIDATE_NOT_NULL(arrayOfStrings)
 
     *arrayOfStrings = mShortWeekdays->Clone();
-    ARRAYOF_ADDREF(*arrayOfStrings)
+    REFCOUNT_ADD(*arrayOfStrings)
     return NOERROR;
 }
 
@@ -373,7 +373,7 @@ ECode DateFormatSymbols::GetWeekdays(
     VALIDATE_NOT_NULL(arrayOfStrings)
 
     *arrayOfStrings = mWeekdays->Clone();
-    ARRAYOF_ADDREF(*arrayOfStrings)
+    REFCOUNT_ADD(*arrayOfStrings)
     return NOERROR;
 }
 

@@ -512,7 +512,7 @@ ECode CArrayList::ToArray(
     AutoPtr< ArrayOf<IInterface*> > result = ArrayOf<IInterface*>::Alloc(s);
     result->Copy(mArray, s);
     *array = result;
-    ARRAYOF_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -532,7 +532,7 @@ ECode CArrayList::ToArray(
         contents->Set(s, NULL);
     }
     *outArray = contents;
-    ARRAYOF_ADDREF(*outArray)
+    REFCOUNT_ADD(*outArray)
     return NOERROR;
 }
 

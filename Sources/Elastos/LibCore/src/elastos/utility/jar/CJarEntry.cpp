@@ -60,7 +60,7 @@ ECode CJarEntry::GetExtra(
 {
     VALIDATE_NOT_NULL(extra)
     *extra = ZipEntry::GetExtra();
-    ARRAYOF_ADDREF(*extra)
+    REFCOUNT_ADD(*extra)
     return NOERROR;
 }
 

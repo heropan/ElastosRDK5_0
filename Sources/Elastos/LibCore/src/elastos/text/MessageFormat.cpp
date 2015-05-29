@@ -359,7 +359,7 @@ ECode MessageFormat::GetFormats(
 {
     VALIDATE_NOT_NULL(arrayOfInstances);
     *arrayOfInstances = mFormats->Clone();
-    ARRAYOF_ADDREF(*arrayOfInstances);
+    REFCOUNT_ADD(*arrayOfInstances);
     return NOERROR;
 }
 
@@ -994,7 +994,7 @@ ECode MessageFormat::GetArgumentNumbers(
 {
     VALIDATE_NOT_NULL(*argumentNumbers)
     *argumentNumbers = mArgumentNumbers->Clone();
-    ARRAYOF_ADDREF(*argumentNumbers);
+    REFCOUNT_ADD(*argumentNumbers);
     return NOERROR;
 }
 
@@ -1003,7 +1003,7 @@ ECode MessageFormat::GetStrings(
 {
     VALIDATE_NOT_NULL(*strings)
     *strings = mStrings->Clone();
-    ARRAYOF_ADDREF(*strings);
+    REFCOUNT_ADD(*strings);
     return NOERROR;
 }
 

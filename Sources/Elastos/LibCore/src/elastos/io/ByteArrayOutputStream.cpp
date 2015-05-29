@@ -84,7 +84,7 @@ ECode ByteArrayOutputStream::ToByteArray(
     AutoPtr< ArrayOf<Byte> > newArray = ArrayOf<Byte>::Alloc(mCount);
     newArray->Copy(mBuf, mCount);
     *byteArray = newArray;
-    ARRAYOF_ADDREF(*byteArray);
+    REFCOUNT_ADD(*byteArray);
     return NOERROR;
 }
 

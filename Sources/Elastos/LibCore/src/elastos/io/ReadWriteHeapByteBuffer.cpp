@@ -341,7 +341,7 @@ ECode ReadWriteHeapByteBuffer::ProtectedArray(
 {
     VALIDATE_NOT_NULL(array);
     *array = mBackingArray;
-    ARRAYOF_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 

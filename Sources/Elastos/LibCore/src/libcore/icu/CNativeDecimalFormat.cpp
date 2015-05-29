@@ -445,7 +445,7 @@ ECode CNativeDecimalFormat::FormatBigDecimal(
         FAIL_RETURN(FieldPositionIterator::SetFieldPosition(fpi, field));
     }
     *result = out;
-    ARRAYOF_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -463,7 +463,7 @@ ECode CNativeDecimalFormat::FormatBigInteger(
         FAIL_RETURN(FieldPositionIterator::SetFieldPosition(fpi, field));
     }
     *result = out;
-    ARRAYOF_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

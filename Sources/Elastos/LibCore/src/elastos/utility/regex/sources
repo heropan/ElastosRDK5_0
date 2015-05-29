@@ -9,6 +9,7 @@ include $(MAKEDIR)/../../../sources.inc
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/regex;
 

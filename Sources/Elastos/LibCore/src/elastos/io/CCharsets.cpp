@@ -190,7 +190,7 @@ ECode CCharsets::ToUtf8Bytes(
     }
     byteArray = out->ToByteArray();
     *bytes = byteArray;
-    ARRAYOF_ADDREF(*bytes);
+    REFCOUNT_ADD(*bytes);
 
 Exit:
     if (out != NULL) {

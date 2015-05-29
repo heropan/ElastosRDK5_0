@@ -483,7 +483,7 @@ ECode CLinkedBlockingQueue::ToArray(
     }
     FullyUnlock();
     *array = a;
-    ARRAYOF_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 
@@ -509,7 +509,7 @@ ECode CLinkedBlockingQueue::ToArray(
     }
     FullyUnlock();
     *outArray = a;
-    ARRAYOF_ADDREF(*outArray);
+    REFCOUNT_ADD(*outArray);
     return NOERROR;
 }
 

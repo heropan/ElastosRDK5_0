@@ -6,6 +6,7 @@ namespace Elastos {
 namespace Core {
 
 CAR_INTERFACE_IMPL(CStringWrapper, Object, ICharSequence)
+
 CAR_OBJECT_IMPL(CStringWrapper)
 
 ECode CStringWrapper::constructor(

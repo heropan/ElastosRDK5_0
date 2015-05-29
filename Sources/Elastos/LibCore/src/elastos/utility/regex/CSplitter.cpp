@@ -1,10 +1,10 @@
 
 #include "CSplitter.h"
 #include "CMatcher.h"
-//#include "CStringWrapper.h"
+#include "CStringWrapper.h"
 #include <elastos/core/Math.h>
 
-//using Elastos::Core::CStringWrapper;
+using Elastos::Core::CStringWrapper;
 using Elastos::Core::Math;
 
 namespace Elastos {
@@ -15,7 +15,7 @@ CAR_INTERFACE_IMPL(CSplitter, Singleton, ISplitter)
 
 CAR_SINGLETON_IMPL(CSplitter)
 
-const String CSplitter::METACHARACTERS = String("\\?*+[](){}^$.|");
+const String CSplitter::METACHARACTERS("\\?*+[](){}^$.|");
 
 ECode CSplitter::FastSplit(
     /* [in] */ const String& regularExpression,
@@ -59,16 +59,16 @@ ECode CSplitter::FastSplit(
     }
 
     // Collect text preceding each occurrence of the separator, while there's enough space.
-    // List<String> list;
+    List<String> list;
 
-    // UInt32 maxSize = limit <= 0 ? Elastos::Core::Math::INT32_MAX_VALUE : limit;
-    // Int32 begin = 0, end = 0;
-    // while ((end = input.IndexOf(ch, begin)) != -1 && list.GetSize() + 1 < maxSize) {
-    //     String subStr = input.Substring(begin, end);
-    //     list.PushBack(subStr);
-    //     begin = end + 1;
-    // }
-//    return FinishSplit(list, input, begin, maxSize, limit, array);
+    UInt32 maxSize = limit <= 0 ? Elastos::Core::Math::INT32_MAX_VALUE : limit;
+    Int32 begin = 0, end = 0;
+    while ((end = input.IndexOf(ch, begin)) != -1 && list.GetSize() + 1 < maxSize) {
+        String subStr = input.Substring(begin, end);
+        list.PushBack(subStr);
+        begin = end + 1;
+    }
+    return FinishSplit(list, input, begin, maxSize, limit, array);
 }
 
 ECode CSplitter::Split(
@@ -99,73 +99,73 @@ ECode CSplitter::Split(
     }
 
     // Collect text preceding each occurrence of the separator, while there's enough space.
-//     List<String> list;
+    List<String> list;
 
-//     UInt32 maxSize = limit <= 0 ? Elastos::Core::Math::INT32_MAX_VALUE : limit;
-//     AutoPtr<CMatcher> matcher;
-//     AutoPtr<ICharSequence> inputSeq;
-// //    FAIL_RETURN(CStringWrapper::New(input, (ICharSequence**)&inputSeq));
-//     FAIL_RETURN(CMatcher::NewByFriend(pattern, inputSeq, (CMatcher**)&matcher));
+    UInt32 maxSize = limit <= 0 ? Elastos::Core::Math::INT32_MAX_VALUE : limit;
+    AutoPtr<CMatcher> matcher;
+    AutoPtr<ICharSequence> inputSeq;
+   FAIL_RETURN(CStringWrapper::New(input, (ICharSequence**)&inputSeq));
+    FAIL_RETURN(CMatcher::NewByFriend(pattern, inputSeq, (CMatcher**)&matcher));
 
-//     Int32 begin = 0, end, size = 0;
-//     Boolean result;
-//     String subStr;
-//     while ((matcher->Find(&result), result) && size + 1 < maxSize) {
-//         matcher->Start(&end);
-//         subStr = input.Substring(begin, end);
-//         list.PushBack(subStr);
-//         matcher->End(&begin);
-//         ++size;
-//     }
+    Int32 begin = 0, end, size = 0;
+    Boolean result;
+    String subStr;
+    while ((matcher->Find(&result), result) && size + 1 < maxSize) {
+        matcher->Start(&end);
+        subStr = input.Substring(begin, end);
+        list.PushBack(subStr);
+        matcher->End(&begin);
+        ++size;
+    }
 
-//    return FinishSplit(list, input, begin, maxSize, limit, array);
+   return FinishSplit(list, input, begin, maxSize, limit, array);
 }
 
-// ECode CSplitter::FinishSplit(
-//     /* [in] */ List<String>& list,
-//     /* [in] */ const String& input,
-//     /* [in] */ Int32 begin,
-//     /* [in] */ Int32 maxSize,
-//     /* [in] */ Int32 limit,
-//     /* [out, callee] */ ArrayOf<String>** array)
-// {
-//     VALIDATE_NOT_NULL(array);
-//     *array = NULL;
+ECode CSplitter::FinishSplit(
+    /* [in] */ List<String>& list,
+    /* [in] */ const String& input,
+    /* [in] */ Int32 begin,
+    /* [in] */ Int32 maxSize,
+    /* [in] */ Int32 limit,
+    /* [out, callee] */ ArrayOf<String>** array)
+{
+    VALIDATE_NOT_NULL(array);
+    *array = NULL;
 
-//     // Add trailing text.
-//     if ((UInt32)begin < input.GetLength()) {
-//         list.PushBack(input.Substring(begin));
-//     }
-//     else if (limit != 0) { // No point adding the empty string if limit == 0, just to remove it below.
-//         list.PushBack(String(""));
-//     }
+    // Add trailing text.
+    if ((UInt32)begin < input.GetLength()) {
+        list.PushBack(input.Substring(begin));
+    }
+    else if (limit != 0) { // No point adding the empty string if limit == 0, just to remove it below.
+        list.PushBack(String(""));
+    }
 
-//     // Remove all trailing empty matches in the limit == 0 case.
-//     if (limit == 0) {
-//         List<String>::ReverseIterator rit = list.RBegin();
-//         while (rit != list.REnd()) {
-//             if ((*rit).IsNullOrEmpty()) {
-//                 rit = List<String>::ReverseIterator(list.Erase(--(rit.GetBase())));
-//             }
-//             else {
-//                 ++rit;
-//             }
-//         }
-//     }
+    // Remove all trailing empty matches in the limit == 0 case.
+    if (limit == 0) {
+        List<String>::ReverseIterator rit = list.RBegin();
+        while (rit != list.REnd()) {
+            if ((*rit).IsNullOrEmpty()) {
+                rit = List<String>::ReverseIterator(list.Erase(--(rit.GetBase())));
+            }
+            else {
+                ++rit;
+            }
+        }
+    }
 
-//     if (list.IsEmpty() == FALSE) {
-//         // Convert to an array.
-//         *array = ArrayOf<String>::Alloc(list.GetSize());
-//         List<String>::Iterator it = list.Begin();
-//         for (Int32 i = 0; it != list.End(); ++i, ++it) {
-//             (**array)[i] = *it;
-//         }
-//         list.Clear();
+    if (list.IsEmpty() == FALSE) {
+        // Convert to an array.
+        *array = ArrayOf<String>::Alloc(list.GetSize());
+        List<String>::Iterator it = list.Begin();
+        for (Int32 i = 0; it != list.End(); ++i, ++it) {
+            (**array)[i] = *it;
+        }
+        list.Clear();
 
-//     }
-//     ARRAYOF_ADDREF(*array);
-//     return NOERROR;
-// }
+    }
+    REFCOUNT_ADD(*array);
+    return NOERROR;
+}
 
 
 } // namespace Regex

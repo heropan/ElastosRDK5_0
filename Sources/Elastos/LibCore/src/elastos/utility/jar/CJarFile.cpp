@@ -487,7 +487,7 @@ ECode CJarFile::GetMetaEntriesImpl (
         result->Set(index++, *it);
     }
     *zipEntries = result;
-    ARRAYOF_ADDREF(*zipEntries)
+    REFCOUNT_ADD(*zipEntries)
     return NOERROR;
 }
 

@@ -2,10 +2,10 @@
 #include "Pattern.h"
 #include "CMatcher.h"
 #include "CSplitter.h"
-//#include <elastos/core/CStringWrapper.h>
-#include <elastos/core/StringBuilder.h>
+#include "CStringWrapper.h"
+#include "StringBuilder.h"
 
-//using Elastos::Core::CStringWrapper;
+using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
 
@@ -34,7 +34,7 @@ ECode Pattern::Matcher(
     VALIDATE_NOT_NULL(matcher);
     *matcher = NULL;
     AutoPtr<ICharSequence> seq;
-//    FAIL_RETURN(CStringWrapper::New(inputString, (ICharSequence**)&seq));
+    FAIL_RETURN(CStringWrapper::New(inputString, (ICharSequence**)&seq));
     return CMatcher::New((IPattern*)this, seq, matcher);
 }
 
@@ -171,7 +171,7 @@ Boolean Pattern::Matches(
     /* [in] */ const String& inputString)
 {
     AutoPtr<ICharSequence> input;
-    ECode ec;// = CStringWrapper::New(inputString, (ICharSequence**)&input);
+    ECode ec = CStringWrapper::New(inputString, (ICharSequence**)&input);
     if (FAILED(ec))
         return FALSE;
 

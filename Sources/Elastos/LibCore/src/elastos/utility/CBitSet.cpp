@@ -865,7 +865,7 @@ ECode CBitSet::ToInt64Array(
     AutoPtr< ArrayOf<Int64> > arr = ArrayOf<Int64>::Alloc(mInt64Count);
     arr->Copy(mBits, mInt64Count);
     *int64Arr = arr;
-    ARRAYOF_ADDREF(*int64Arr);
+    REFCOUNT_ADD(*int64Arr);
     return NOERROR;
 }
 
@@ -888,7 +888,7 @@ ECode CBitSet::ToByteArray(
         (*result)[i] = (Byte)(((UInt64)(*mBits)[arrayIndex]) >> (lowBit & 0x3F));
     }
     *byteArr = result;
-    ARRAYOF_ADDREF(*byteArr);
+    REFCOUNT_ADD(*byteArr);
     return NOERROR;
 }
 

@@ -233,7 +233,7 @@ ECode CManifest::ExposeByteArrayInputStreamBytes(
         FAIL_RETURN(bais->Skip(available, &actual))
     }
     *ret = buffer;
-    ARRAYOF_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 

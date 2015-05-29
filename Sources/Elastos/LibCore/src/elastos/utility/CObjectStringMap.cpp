@@ -92,7 +92,7 @@ ECode CObjectStringMap::GetKeys(
     }
 
     *keys = ArrayOf<String>::Alloc(size);
-    ARRAYOF_ADDREF(*keys)
+    REFCOUNT_ADD(*keys)
 
     HashMap<String, AutoPtr<IInterface> >::Iterator iter = mMap.Begin();
     for (Int32 i=0; iter!=mMap.End(); ++iter, ++i) {
@@ -137,7 +137,7 @@ ECode CObjectStringMap::GetAllItems(
     }
 
     *keys = ArrayOf<String>::Alloc(size);
-    ARRAYOF_ADDREF(*keys)
+    REFCOUNT_ADD(*keys)
     ASSERT_SUCCEEDED(CObjectContainer::New(values));
 
     HashMap<String, AutoPtr<IInterface> >::Iterator iter = mMap.Begin();

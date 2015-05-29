@@ -3,12 +3,13 @@
 #include "Pattern.h"
 #include "MatchResultImpl.h"
 #include "eldebugdef.h"
-//#include "CStringWrapper.h"
-#include "elastos/core/StringBuilder.h"
+#include "CStringWrapper.h"
+#include "StringBuilder.h"
 #include "unicode/parseerr.h"
 #include "unicode/regex.h"
 
-//using Elastos::Core::CStringWrapper;
+using Elastos::Core::CStringWrapper;
+using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {
@@ -181,59 +182,59 @@ ECode CMatcher::AppendReplacement(
     Start(&index);
     String subStr = mInput.Substring(mAppendPos, index);
     buffer->Append(subStr);
-//    AppendEvaluated((StringBuffer*)buffer, replacement);
+    AppendEvaluated((StringBuffer*)buffer, replacement);
     return End(&mAppendPos);
 }
 
-// ECode CMatcher::AppendEvaluated(
-//     /* [in] */ StringBuffer* buffer,
-//     /* [in] */ const String& s)
-// {
-//     VALIDATE_NOT_NULL(buffer);
-//     if (s.IsNull()) {
-//         return NOERROR;
-//     }
+ECode CMatcher::AppendEvaluated(
+    /* [in] */ StringBuffer* buffer,
+    /* [in] */ const String& s)
+{
+    VALIDATE_NOT_NULL(buffer);
+    if (s.IsNull()) {
+        return NOERROR;
+    }
 
-//     Boolean escape = FALSE;
-//     Boolean dollar = FALSE;
+    Boolean escape = FALSE;
+    Boolean dollar = FALSE;
 
-//     Char32 c;
-//     String text;
-//     AutoPtr<ArrayOf<Char32> > array = s.GetChars();
-//     for (UInt32 i = 0; i < array->GetLength(); i++) {
-//         c = (*array)[i];
-//         if (c == '\\' && !escape) {
-//             escape = TRUE;
-//         }
-//         else if (c == '$' && !escape) {
-//             dollar = TRUE;
-//         }
-//         else if (c >= '0' && c <= '9' && dollar) {
-//             Group((c - '0'), &text);
+    Char32 c;
+    String text;
+    AutoPtr<ArrayOf<Char32> > array = s.GetChars();
+    for (UInt32 i = 0; i < array->GetLength(); i++) {
+        c = (*array)[i];
+        if (c == '\\' && !escape) {
+            escape = TRUE;
+        }
+        else if (c == '$' && !escape) {
+            dollar = TRUE;
+        }
+        else if (c >= '0' && c <= '9' && dollar) {
+            Group((c - '0'), &text);
 
-//             buffer->Append(text);
-//             dollar = FALSE;
-//         }
-//         else {
-//             buffer->AppendChar(c);
-//             dollar = FALSE;
-//             escape = FALSE;
-//         }
-//     }
+            buffer->Append(text);
+            dollar = FALSE;
+        }
+        else {
+            buffer->AppendChar(c);
+            dollar = FALSE;
+            escape = FALSE;
+        }
+    }
 
-//     // This seemingly stupid piece of code reproduces a JDK bug.
-//     if (escape) {
-//         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-// //        throw new ArrayIndexOutOfBoundsException(s.length());
-//     }
+    // This seemingly stupid piece of code reproduces a JDK bug.
+    if (escape) {
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+//        throw new ArrayIndexOutOfBoundsException(s.length());
+    }
 
-//     return NOERROR;
-// }
+    return NOERROR;
+}
 
 ECode CMatcher::Reset()
 {
     AutoPtr<ICharSequence> charSeq;
-//    CStringWrapper::New(mInput, (ICharSequence**)&charSeq);
+    CStringWrapper::New(mInput, (ICharSequence**)&charSeq);
 
     return Reset(charSeq, 0, mInput.GetLength());
 }
@@ -313,7 +314,7 @@ ECode CMatcher::Region(
     /* [in] */ Int32 end)
 {
     AutoPtr<ICharSequence> charSeq;
-//    CStringWrapper::New(mInput, (ICharSequence**)&charSeq);
+    CStringWrapper::New(mInput, (ICharSequence**)&charSeq);
 
     return Reset(charSeq, start, end);
 }
@@ -339,14 +340,14 @@ ECode CMatcher::ReplaceFirst(
 
     Reset();
 
-    // StringBuffer buffer(mInput.GetByteLength());
-    // Boolean found;
-    // Find(&found);
-    // if (found) {
-    //     AppendReplacement(&buffer, replacement);
-    // }
-    // AppendTail((IStringBuffer*)&buffer);
-    // return buffer.ToString(result);
+    StringBuffer buffer(mInput.GetByteLength());
+    Boolean found;
+    Find(&found);
+    if (found) {
+        AppendReplacement(&buffer, replacement);
+    }
+    AppendTail((IStringBuffer*)&buffer);
+    return buffer.ToString(result);
 }
 
 ECode CMatcher::ReplaceAll(
@@ -357,13 +358,13 @@ ECode CMatcher::ReplaceAll(
 
     Reset();
 
-    // StringBuffer buffer(mInput.GetByteLength());
-    // Boolean found;
-    // while (Find(&found), found) {
-    //     AppendReplacement(&buffer, replacement);
-    // }
-    // AppendTail((IStringBuffer*)&buffer);
-    // return buffer.ToString(result);
+    StringBuffer buffer(mInput.GetByteLength());
+    Boolean found;
+    while (Find(&found), found) {
+        AppendReplacement(&buffer, replacement);
+    }
+    AppendTail((IStringBuffer*)&buffer);
+    return buffer.ToString(result);
 }
 
 ECode CMatcher::Pattern(

@@ -26,8 +26,9 @@ ECode CNormalizerHelper::Normalize(
     /* [in] */ NormalizerForm form,
     /* [out] */ String* normalizeString)
 {
-    VALIDATE_NOT_NULL(src)
     VALIDATE_NOT_NULL(normalizeString)
+    *normalizeString = String(NULL);
+    VALIDATE_NOT_NULL(src)
 
     AutoPtr<INativeNormalizerHelper> normhelper;
     FAIL_RETURN(CNativeNormalizerHelper::AcquireSingleton((INativeNormalizerHelper **)&normhelper));

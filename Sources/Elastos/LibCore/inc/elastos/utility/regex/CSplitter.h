@@ -3,10 +3,10 @@
 #define __REGEX_SPLITTER_H__
 
 #include "_Elastos_Utility_Regex_CSplitter.h"
-//#include <elastos/List.h>
 #include <elastos/core/Singleton.h>
+#include <elastos/utility/etl/List.h>
 
-//using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::Singleton;
 
 namespace Elastos {
@@ -45,13 +45,13 @@ public:
         /* [out, callee] */ ArrayOf<String>** array);
 
 private:
-    // CARAPI FinishSplit(
-    //     /* [in] */ List<String>& list,
-    //     /* [in] */ const String& input,
-    //     /* [in] */ Int32 begin,
-    //     /* [in] */ Int32 maxSize,
-    //     /* [in] */ Int32 limit,
-    //     /* [out, callee] */ ArrayOf<String>** array);
+    CARAPI FinishSplit(
+        /* [in] */ List<String>& list,
+        /* [in] */ const String& input,
+        /* [in] */ Int32 begin,
+        /* [in] */ Int32 maxSize,
+        /* [in] */ Int32 limit,
+        /* [out, callee] */ ArrayOf<String>** array);
 
 private:
     // The RI allows regular expressions beginning with ] or }, but that's probably a bug.
