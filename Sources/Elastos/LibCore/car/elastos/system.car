@@ -51,6 +51,10 @@ module
         interface IStructStatVfs;
     }
 
+    class CStructFlock {
+        interface IStructFlock;
+    }
+
     class CStructTimeval {
         constructor(
             [in] Int64 sec,

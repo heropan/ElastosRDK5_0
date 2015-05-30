@@ -4,269 +4,266 @@ namespace Elastos {
 namespace Droid {
 namespace System {
 
-}// namespace System
-}// namespace Droid
-}// namespace Elastos
-CARAPI Accept(
+ECode Os::Accept(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetSocketAddress* peerAddress,
     /* [out] */ Int32* retFd);
 
-CARAPI Access(
+ECode Os::Access(
     /* [in] */ const String& path,
     /* [in] */ Int32 mode,
     /* [out] */ Boolean* succeed);
 
-CARAPI Elastos_getaddrinfo(
+ECode Os::Elastos_getaddrinfo(
     /* [in] */ const String& node,
     /* [in] */ IStructAddrinfo* hints,
     /* [in] */ Int32 netId,
     /* [out, callee] */ ArrayOf<IInetAddress*>** info);
 
-CARAPI Bind(
+ECode Os::Bind(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 port);
 
-CARAPI Chmod(
+ECode Os::Chmod(
     /* [in] */ const String& path,
     /* [in] */ Int32 mode);
 
-CARAPI Chown(
+ECode Os::Chown(
     /* [in] */ const String& path,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 gid);
 
-CARAPI Close(
+ECode Os::Close(
     /* [in] */ IFileDescriptor* fd);
 
-CARAPI Connect(
+ECode Os::Connect(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 port);
 
-CARAPI Dup(
+ECode Os::Dup(
     /* [in] */ Int32 oldFd,
     /* [out] */ Int32* retFd);
 
-CARAPI Dup2(
+ECode Os::Dup2(
     /* [in] */ Int32 oldFd,
     /* [in] */ Int32 newFd,
     /* [out] */ Int32* retFd);
 
-CARAPI Environ(
+ECode Os::Environ(
     /* [out, callee] */ ArrayOf<String>** env);
 
-CARAPI Execv(
+ECode Os::Execv(
     /* [in] */ const String& filename,
     /* [in] */ ArrayOf<String>* argv);
 
-CARAPI Execve(
+ECode Os::Execve(
     /* [in] */ const String& filename,
     /* [in] */ ArrayOf<String>* argv,
     /* [in] */ ArrayOf<String>* envp);
 
-CARAPI Fchmod(
+ECode Os::Fchmod(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 mode);
 
-CARAPI Fchown(
+ECode Os::Fchown(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 gid);
 
-CARAPI FcntlVoid(
+ECode Os::FcntlVoid(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [out] */ Int32* result);
 
-CARAPI FcntlInt64(
+ECode Os::FcntlInt64(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [in] */ Int64 arg,
     /* [out] */ Int32* result);
 
-CARAPI FcntlFlock(
+ECode Os::FcntlFlock(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [in] */ IStructFlock* arg,
     /* [out] */ Int32* result);
 
-CARAPI Fdatasync(
+ECode Os::Fdatasync(
     /* [in] */ IFileDescriptor* fd);
 
-CARAPI Fstat(
+ECode Os::Fstat(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ IStructStat** stat);
 
-CARAPI Fstatvfs(
+ECode Os::Fstatvfs(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ IStructStatVfs** statFs);
 
-CARAPI Fsync(
+ECode Os::Fsync(
     /* [in] */ IFileDescriptor* fd);
 
-CARAPI Ftruncate(
+ECode Os::Ftruncate(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 length);
 
-CARAPI Gai_strerror(
+ECode Os::Gai_strerror(
     /* [in] */ Int32 error,
     /* [out] */ String* strerror);
 
-CARAPI Getegid(
+ECode Os::Getegid(
     /* [out] */ Int32* egid);
 
-CARAPI Geteuid(
+ECode Os::Geteuid(
     /* [out] */ Int32* euid);
 
-CARAPI Getgid(
+ECode Os::Getgid(
     /* [out] */ Int32* gid);
 
-CARAPI Getenv(
+ECode Os::Getenv(
     /* [in] */ const String& name,
     /* [out] */ String* env);
 
 /* TODO: break into getnameinfoHost and getnameinfoService? */
-CARAPI Getnameinfo(
+ECode Os::Getnameinfo(
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 flags,
     /* [out] */ String* nameinfo);
 
-CARAPI Getpeername(
+ECode Os::Getpeername(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ ISocketAddress** peername);
 
-CARAPI Getpid(
+ECode Os::Getpid(
     /* [out] */ Int32* pid);
 
-CARAPI Getppid(
+ECode Os::Getppid(
     /* [out] */ Int32* ppid);
 
-CARAPI Getpwnam(
+ECode Os::Getpwnam(
     /* [in] */ const String& name,
     /* [out] */ IStructPasswd** pwnam);
 
-CARAPI Getpwuid(
+ECode Os::Getpwuid(
     /* [in] */ Int32 uid,
     /* [out] */ IStructPasswd** pwuid);
 
-CARAPI Getsockname(
+ECode Os::Getsockname(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ ISocketAddress** sockname);
 
-CARAPI GetsockoptByte(
+ECode Os::GetsockoptByte(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [out] */ Int32* sockopt);
 
-CARAPI GetsockoptInAddr(
+ECode Os::GetsockoptInAddr(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [out] */ IInetAddress** addr);
 
-CARAPI GetsockoptInt(
+ECode Os::GetsockoptInt(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [out] */ Int32* sockopt);
 
-CARAPI GetsockoptLinger(
+ECode Os::GetsockoptLinger(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [out] */ IStructLinger** linger);
 
-CARAPI GetsockoptTimeval(
+ECode Os::GetsockoptTimeval(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [out] */ IStructTimeval** timeval);
 
-CARAPI GetsockoptUcred(
+ECode Os::GetsockoptUcred(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [out] */ IStructUcred** ucred);
 
-CARAPI Gettid(
+ECode Os::Gettid(
     /* [out] */ Int32* tid);
 
-CARAPI Getuid(
+ECode Os::Getuid(
     /* [out] */ Int32* uid);
 
-CARAPI If_indextoname(
+ECode Os::If_indextoname(
     /* [in] */ Int32 index,
     /* [out] */ String* name);
 
-CARAPI Inet_pton(
+ECode Os::Inet_pton(
     /* [in] */ Int32 family,
     /* [in] */ const String& address,
     /* [out] */ IInetAddress** addr);
 
-CARAPI IoctlInetAddress(
+ECode Os::IoctlInetAddress(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [in] */ const String& interfaceName,
     /* [out] */ IInetAddress** addr);
 
-CARAPI IoctlInt(
+ECode Os::IoctlInt(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [in] */ Int32* arg,
     /* [out] */ Int32* result);
 
-CARAPI Isatty(
+ECode Os::Isatty(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ Boolean* isatty);
 
-CARAPI Kill(
+ECode Os::Kill(
     /* [in] */ Int32 pid,
     /* [in] */ Int32 signal);
 
-CARAPI Lchown(
+ECode Os::Lchown(
     /* [in] */ const String& path,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 gid);
 
-CARAPI Link(
+ECode Os::Link(
     /* [in] */ const String& oldPath,
     /* [in] */ const String& newPath);
 
-CARAPI Listen(
+ECode Os::Listen(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 backlog);
 
-CARAPI Lseek(
+ECode Os::Lseek(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int32 whence,
     /* [out] */ Int64* result);
 
-CARAPI Lstat(
+ECode Os::Lstat(
     /* [in] */ const String& path,
     /* [out] */ IStructStat** stat);
 
-CARAPI Mincore(
+ECode Os::Mincore(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount,
     /* [in] */ ArrayOf<Byte>* vector);
 
-CARAPI Mkdir(
+ECode Os::Mkdir(
     /* [in] */ const String& path,
     /* [in] */ Int32 mode);
 
-CARAPI Mlock(
+ECode Os::Mlock(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount);
 
-CARAPI Mkfifo(
+ECode Os::Mkfifo(
     /* [in] */ const String& path,
     /* [in] */ Int32 mode);
 
-CARAPI Mmap(
+ECode Os::Mmap(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount,
     /* [in] */ Int32 prot,
@@ -275,40 +272,40 @@ CARAPI Mmap(
     /* [in] */ Int64 offset,
     /* [out] */ Int64* result);
 
-CARAPI Msync(
+ECode Os::Msync(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount,
     /* [in] */ Int32 flags);
 
-CARAPI Munlock(
+ECode Os::Munlock(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount);
 
-CARAPI Munmap(
+ECode Os::Munmap(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount);
 
-CARAPI Open(
+ECode Os::Open(
     /* [in] */ const String& path,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 mode,
     /* [out] */ IFileDescriptor** fd);
 
-CARAPI Pipe(
+ECode Os::Pipe(
     /* [out, callee] */ ArrayOf<Int32>** fds);
 
 /* TODO: if we used the non-standard ppoll(2) behind the scenes, we could take a long timeout. */
-CARAPI Poll(
+ECode Os::Poll(
     /* [in] */ ArrayOf<IStructPollfd*>* fds,
     /* [in] */ Int32 timeoutMs,
     /* [out] */ Int32* result);
 
-CARAPI Posix_fallocate(
+ECode Os::Posix_fallocate(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length);
 
-CARAPI Prctl(
+ECode Os::Prctl(
     /* [in] */ Int32 option,
     /* [in] */ Int64 arg2,
     /* [in] */ Int64 arg3,
@@ -316,7 +313,7 @@ CARAPI Prctl(
     /* [in] */ Int64 arg5,
     /* [out] */ Int32* prctl);
 
-CARAPI Pread(
+ECode Os::Pread(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
@@ -324,13 +321,13 @@ CARAPI Pread(
     /* [in] */ Int64 offset,
     /* [out] */ Int32* num);
 
-CARAPI Pread(
+ECode Os::Pread(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int64 offset,
     /* [out] */ Int32* num);
 
-CARAPI Pwrite(
+ECode Os::Pwrite(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
@@ -338,36 +335,36 @@ CARAPI Pwrite(
     /* [in] */ Int64 offset,
     /* [out] */ Int32* num);
 
-CARAPI Pwrite(
+ECode Os::Pwrite(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int64 offset,
     /* [out] */ Int32* num);
 
-CARAPI Read(
+ECode Os::Read(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* num);
 
-CARAPI Read(
+ECode Os::Read(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [out] */ Int32* num);
 
-CARAPI Readlink(
+ECode Os::Readlink(
     /* [in] */ const String& path,
     /* [out] */ String* link);
 
-CARAPI Readv(
+ECode Os::Readv(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<IInterface*>* buffers,
     /* [in] */ ArrayOf<Int32>* offsets,
     /* [in] */ ArrayOf<Int32>* byteCounts,
     /* [out] */ Int32* num);
 
-CARAPI Recvfrom(
+ECode Os::Recvfrom(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
@@ -376,21 +373,21 @@ CARAPI Recvfrom(
     /* [in] */ IInetSocketAddress* srcAddress,
     /* [out] */ Int32* num);
 
-CARAPI Recvfrom(
+ECode Os::Recvfrom(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 flags,
     /* [in] */ IInetSocketAddress* srcAddress,
     /* [out] */ Int32* num);
 
-CARAPI Remove(
+ECode Os::Remove(
     /* [in] */ const String& path);
 
-CARAPI Rename(
+ECode Os::Rename(
     /* [in] */ const String& oldPath,
     /* [in] */ const String& newPath);
 
-CARAPI Sendto(
+ECode Os::Sendto(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
@@ -400,7 +397,7 @@ CARAPI Sendto(
     /* [in] */ Int32 port,
     /* [out] */ Int32* result);
 
-CARAPI Sendto(
+ECode Os::Sendto(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 flags,
@@ -408,148 +405,148 @@ CARAPI Sendto(
     /* [in] */ Int32 port,
     /* [out] */ Int32* result);
 
-CARAPI Sendfile(
+ECode Os::Sendfile(
     /* [in] */ Int32 outFd,
     /* [in] */ Int32 inFd,
     [in/*, out */] Int64* inOffset,
     /* [in] */ Int64 byteCount,
     /* [out] */ Int64* result);
 
-CARAPI Setegid(
+ECode Os::Setegid(
     /* [in] */ Int32 egid);
 
-CARAPI Setenv(
+ECode Os::Setenv(
     /* [in] */ const String& name,
     /* [in] */ const String& value,
     /* [in] */ Boolean overwrite);
 
-CARAPI Seteuid(
+ECode Os::Seteuid(
     /* [in] */ Int32 euid);
 
-CARAPI Setgid(
+ECode Os::Setgid(
     /* [in] */ Int32 gid);
 
-CARAPI Setsid(
+ECode Os::Setsid(
     /* [out] */ Int32* sid);
 
-CARAPI SetsockoptByte(
+ECode Os::SetsockoptByte(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ Int32 value);
 
-CARAPI SetsockoptIfreq(
+ECode Os::SetsockoptIfreq(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ const String& interfaceName);
 
-CARAPI SetsockoptInt(
+ECode Os::SetsockoptInt(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ Int32 value);
 
-CARAPI SetsockoptIpMreqn(
+ECode Os::SetsockoptIpMreqn(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ Int32 value);
 
-CARAPI SetsockoptGroupReq(
+ECode Os::SetsockoptGroupReq(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ IStructGroupReq* value);
 
-CARAPI SetsockoptGroupSourceReq(
+ECode Os::SetsockoptGroupSourceReq(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ IStructGroupSourceReq* value);
 
-CARAPI SetsockoptLinger(
+ECode Os::SetsockoptLinger(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ IStructLinger* value);
 
-CARAPI SetsockoptTimeval(
+ECode Os::SetsockoptTimeval(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ IStructTimeval* value);
 
-CARAPI Setuid(
+ECode Os::Setuid(
     /* [in] */ Int32 uid);
 
-CARAPI Shutdown(
+ECode Os::Shutdown(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 how);
 
-CARAPI Socket(
+ECode Os::Socket(
     /* [in] */ Int32 socketDomain,
     /* [in] */ Int32 type,
     /* [in] */ Int32 protocol,
     /* [out] */ IFileDescriptor** fd);
 
-CARAPI Socketpair(
+ECode Os::Socketpair(
     /* [in] */ Int32 socketDomain,
     /* [in] */ Int32 type,
     /* [in] */ Int32 protocol,
     /* [out] */ IFileDescriptor** fd1,
     /* [out] */ IFileDescriptor** fd2);
 
-CARAPI Stat(
+ECode Os::Stat(
     /* [in] */ const String& path,
     /* [out] */ IStructStat** stat);
 
 /* TODO: replace statfs with statvfs. */
-CARAPI StatVfs(
+ECode Os::StatVfs(
     /* [in] */ const String& path,
     /* [out] */ IStructStatVfs** statfs);
 
-CARAPI Strerror(
+ECode Os::Strerror(
     /* [in] */ Int32 errno,
     /* [out] */ String* strerr);
 
-CARAPI Symlink(
+ECode Os::Symlink(
     /* [in] */ const String& oldPath,
     /* [in] */ const String& newPath);
 
-CARAPI Sysconf(
+ECode Os::Sysconf(
     /* [in] */ Int32 name,
     /* [out] */ Int64* result);
 
-CARAPI Tcdrain(
+ECode Os::Tcdrain(
     /* [in] */ IFileDescriptor* fd);
 
-CARAPI Umask(
+ECode Os::Umask(
     /* [in] */ Int32 mask,
     /* [out] */ Int32* result);
 
-CARAPI Uname(
+ECode Os::Uname(
     /* [out] */ IStructUtsname** uname);
 
-CARAPI Waitpid(
+ECode Os::Waitpid(
     /* [in] */ Int32 pid,
     [in/*, out */] Int32* status,
     /* [in] */ Int32 options,
     /* [out] */ Int32* result);
 
-CARAPI Write(
+ECode Os::Write(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* num);
 
-CARAPI Write(
+ECode Os::Write(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [out] */ Int32* num);
 
-CARAPI Writev(
+ECode Os::Writev(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<IInterface*>* buffers,
     /* [in] */ ArrayOf<Int32>* offsets,

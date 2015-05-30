@@ -13,7 +13,7 @@ ECode CStructStatVfs::GetBsize(
 {
     VALIDATE_NOT_NULL(bsize);
 
-    *bsize = f_bsize;
+    *bsize = mF_bsize;
     return NOERROR;
 }
 
@@ -22,7 +22,7 @@ ECode CStructStatVfs::GetBlocks(
 {
     VALIDATE_NOT_NULL(blocks);
 
-    *blocks = f_blocks;
+    *blocks = mF_blocks;
     return NOERROR;
 }
 
@@ -31,7 +31,7 @@ ECode CStructStatVfs::GetBfree(
 {
     VALIDATE_NOT_NULL(bfree);
 
-    *bfree = f_bfree;
+    *bfree = mF_bfree;
     return NOERROR;
 }
 
@@ -40,7 +40,7 @@ ECode CStructStatVfs::GetBavail(
 {
     VALIDATE_NOT_NULL(bavail);
 
-    *bavail = f_bavail;
+    *bavail = mF_bavail;
     return NOERROR;
 }
 
@@ -49,7 +49,7 @@ ECode CStructStatVfs::GetFiles(
 {
     VALIDATE_NOT_NULL(files);
 
-    *files = f_files;
+    *files = mF_files;
     return NOERROR;
 }
 
@@ -58,7 +58,7 @@ ECode CStructStatVfs::GetFfree(
 {
     VALIDATE_NOT_NULL(ffree);
 
-    *ffree = f_ffree;
+    *ffree = mF_ffree;
     return NOERROR;
 }
 
@@ -67,7 +67,7 @@ ECode CStructStatVfs::GetNamemax(
 {
     VALIDATE_NOT_NULL(namemax);
 
-    *namemax = f_namemax;
+    *namemax = mF_namemax;
     return NOERROR;
 }
 
@@ -76,28 +76,28 @@ ECode CStructStatVfs::GetFrsize(
 {
     VALIDATE_NOT_NULL(frsize);
 
-    *frsize = f_frsize;
+    *frsize = mF_frsize;
     return NOERROR;
 }
 
 ECode CStructStatVfs::GetFavail(
     /* [out] */ Int64* favail)
 {
-    *favail = f_favail;
+    *favail = mF_favail;
     return NOERROR;
 }
 
 ECode CStructStatVfs::GetFsid(
     /* [out] */ Int64* fsid)
 {
-    *fsid = f_fsid;
+    *fsid = mF_fsid;
     return NOERROR;
 }
 
 ECode CStructStatVfs::GetFlag(
     /* [out] */ Int64* flag)
 {
-    *flag = f_flag;
+    *flag = mF_flag;
     return NOERROR;
 }
 
@@ -111,14 +111,14 @@ ECode CStructStatVfs::constructor(
     /* [in] */ Int64 namemax,
     /* [in] */ Int64 frsize)
 {
-    f_bsize = bsize;
-    f_blocks = blocks;
-    f_bfree = bfree;
-    f_bavail = bavail;
-    f_files = files;
-    f_ffree = ffree;
-    f_namemax = namemax;
-    f_frsize = frsize;
+    mF_bsize = bsize;
+    mF_blocks = blocks;
+    mF_bfree = bfree;
+    mF_bavail = bavail;
+    mF_files = files;
+    mF_ffree = ffree;
+    mF_namemax = namemax;
+    mF_frsize = frsize;
     return NOERROR;
 }
 

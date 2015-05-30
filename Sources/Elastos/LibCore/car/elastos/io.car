@@ -1,22 +1,5 @@
 module
 {
-    merge("../libcore/io/Exceptions.car");
-    merge("../libcore/io/IOs.car");
-    merge("../libcore/io/IIoBridge.car");
-    merge("../libcore/io/ILibcore.car");
-    merge("../libcore/io/ISocketTagger.car");
-    merge("../libcore/io/IBase64.car");
-    merge("../libcore/io/IMemory.car");
-    merge("../libcore/io/IBufferIterator.car");
-    merge("../libcore/io/IMemoryMappedFile.car");
-    merge("../libcore/io/ISizeOf.car");
-    merge("../libcore/io/INioBufferIterator.car");
-    merge("../libcore/io/IDeleteOnExit.car");
-    merge("../libcore/io/IDropBox.car");
-    merge("../libcore/io/IIoUtils.car");
-    merge("../libcore/io/IStreams.car");
-    merge("../libcore/io/IStrictLineReader.car");
-
     merge("io/ICloseable.car");
     merge("io/IFlushable.car");
     merge("io/IInputStream.car");

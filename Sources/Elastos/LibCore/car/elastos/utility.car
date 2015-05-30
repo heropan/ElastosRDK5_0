@@ -1,11 +1,6 @@
 
 module
 {
-    merge("../libcore/utility/IBasicLruCache.car");
-    merge("../libcore/utility/ICollectionUtils.car");
-    merge("../libcore/utility/IZoneInfo.car");
-    merge("../libcore/utility/IZoneInfoDB.car");
-
     //======================================================
     // Elastos.Utility
     //======================================================

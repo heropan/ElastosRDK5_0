@@ -16,12 +16,12 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _ASMARM_SIGNAL_H
-#define _ASMARM_SIGNAL_H
+#ifndef _UAPI_ASMARM_SIGNAL_H
+#define _UAPI_ASMARM_SIGNAL_H
 #include <linux/types.h>
 struct siginfo;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define NSIG 32
+#define _KERNEL_NSIG 32
 typedef unsigned long sigset_t;
 #define SIGHUP 1
 #define SIGINT 2
@@ -66,8 +66,8 @@ typedef unsigned long sigset_t;
 #define SIGSYS 31
 #define SIGUNUSED 31
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define SIGRTMIN 32
-#define SIGRTMAX _NSIG
+#define __SIGRTMIN 32
+#define __SIGRTMAX _KERNEL__NSIG
 #define SIGSWI 32
 #define SA_NOCLDSTOP 0x00000001
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
@@ -83,31 +83,29 @@ typedef unsigned long sigset_t;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define SA_NOMASK SA_NODEFER
 #define SA_ONESHOT SA_RESETHAND
-#define SS_ONSTACK 1
-#define SS_DISABLE 2
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define MINSIGSTKSZ 2048
 #define SIGSTKSZ 8192
-#include <asm-generic/signal.h>
-struct sigaction {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#include <asm-generic/signal-defs.h>
+struct sigaction {
  union {
  __sighandler_t _sa_handler;
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  void (*_sa_sigaction)(int, struct siginfo *, void *);
  } _u;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  sigset_t sa_mask;
  unsigned long sa_flags;
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  void (*sa_restorer)(void);
 };
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define sa_handler _u._sa_handler
 #define sa_sigaction _u._sa_sigaction
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 typedef struct sigaltstack {
  void __user *ss_sp;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  int ss_flags;
  size_t ss_size;
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 } stack_t;
 #endif
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+

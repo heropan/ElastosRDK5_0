@@ -2,7 +2,6 @@
 module
 {
     merge("../../car/elastos/core.car");
-    merge("../../car/elastos/icu.car");
     merge("../../car/elastos/io.car");
     merge("../../car/elastos/math.car");
     merge("../../car/elastos/net.car");
@@ -11,6 +10,7 @@ module
     merge("../../car/elastos/security.car");
     merge("../../car/elastos/sql.car");
     merge("../../car/elastos/system.car");
+    merge("../../src/libcore/Libcore.car");
 
     //merge("../../car/elastos/io.car");
     //merge("../../car/elastos/text.car");

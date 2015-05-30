@@ -40,12 +40,14 @@
 class AsynchronousSocketCloseMonitor
 {
 public:
-    AsynchronousSocketCloseMonitor(int fd);
+    AsynchronousSocketCloseMonitor(
+        /* [in] */ Int32 fd);
     ~AsynchronousSocketCloseMonitor();
 
-    static void init();
+    static void Init();
 
-    static void signalBlockedThreads(int fd);
+    static void SignalBlockedThreads(
+        /* [in] */ Int32 fd);
 
 private:
     AsynchronousSocketCloseMonitor* mPrev;

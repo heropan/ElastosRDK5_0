@@ -70,36 +70,36 @@ public:
 
 private:
     /** File system block size (used for block counts). */
-    Int64 f_bsize; /*unsigned long*/
+    Int64 mF_bsize; /*unsigned long*/
 
     /** Total block count. */
-    Int64 f_blocks; /*fsblkcnt_t*/
+    Int64 mF_blocks; /*fsblkcnt_t*/
 
     /** Free block count. */
-    Int64 f_bfree; /*fsblkcnt_t*/
+    Int64 mF_bfree; /*fsblkcnt_t*/
 
     /** Free block count available to non-root. */
-    Int64 f_bavail; /*fsblkcnt_t*/
+    Int64 mF_bavail; /*fsblkcnt_t*/
 
     /** Total file (inode) count. */
-    Int64 f_files; /*fsfilcnt_t*/
+    Int64 mF_files; /*fsfilcnt_t*/
 
     /** Free file (inode) count. */
-    Int64 f_ffree; /*fsfilcnt_t*/
+    Int64 mF_ffree; /*fsfilcnt_t*/
 
     /** Maximum filename length. */
-    Int64 f_namemax; /*unsigned long*/
+    Int64 mF_namemax; /*unsigned long*/
 
-    Int64 f_favail; /*fsfilcnt_t*/
+    Int64 mF_favail; /*fsfilcnt_t*/
 
   /** File system id. */
-    Int64 f_fsid; /*unsigned long*/
+    Int64 mF_fsid; /*unsigned long*/
 
   /** Bit mask of ST_* flags. */
-    Int64 f_flag; /*unsigned long*/
+    Int64 mF_flag; /*unsigned long*/
 
     /** Fundamental file system block size. */
-    Int64 f_frsize; /*unsigned long*/
+    Int64 mF_frsize; /*unsigned long*/
 };
 
 } // namespace System

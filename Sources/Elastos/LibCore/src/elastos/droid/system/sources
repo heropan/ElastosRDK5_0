@@ -24,3 +24,5 @@ SOURCES += CStructStatVfs.cpp
 SOURCES += CStructTimeval.cpp
 SOURCES += CStructUtsname.cpp
 SOURCES += CStructGroupSourceReq.cpp
+SOURCES += OsConstants.cpp
+SOURCES += CStructFlock.cpp

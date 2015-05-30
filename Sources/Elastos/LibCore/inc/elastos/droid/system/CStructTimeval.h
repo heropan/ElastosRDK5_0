@@ -42,10 +42,10 @@ public:
 
 private:
     /** Seconds. */
-    Int64 tv_sec;
+    Int64 mTv_sec;
 
     /** Microseconds. */
-    Int64 tv_usec;
+    Int64 mTv_usec;
 };
 
 } // namespace System

@@ -13,7 +13,7 @@ ECode CStructTimeval::GetSec(
 {
     VALIDATE_NOT_NULL(sec);
 
-    *sec = tv_sec;
+    *sec = mTv_sec;
     return NOERROR;
 }
 
@@ -22,7 +22,7 @@ ECode CStructTimeval::GetUsec(
 {
     VALIDATE_NOT_NULL(usec);
 
-    *usec = tv_usec;
+    *usec = mTv_usec;
     return NOERROR;
 }
 
@@ -31,7 +31,7 @@ ECode CStructTimeval::ToMillis(
 {
     VALIDATE_NOT_NULL(millis);
 
-    *millis = (tv_sec * 1000) + (tv_usec / 1000);
+    *millis = (mTv_sec * 1000) + (mTv_usec / 1000);
     return NOERROR;
 }
 
@@ -39,8 +39,8 @@ ECode CStructTimeval::constructor(
     /* [in] */ Int64 sec,
     /* [in] */ Int64 usec)
 {
-    tv_sec = sec;
-    tv_usec = usec;
+    mTv_sec = sec;
+    mTv_usec = usec;
     return NOERROR;
 }
 
@@ -50,9 +50,9 @@ ECode CStructTimeval::FromMillis(
 {
     VALIDATE_NOT_NULL(tv);
 
-    Int64 tv_sec = millis / 1000;
-    Int64 tv_usec = (millis - (tv_sec * 1000)) * 1000;
-    return CStructTimeval::New(tv_sec, tv_usec, tv);
+    Int64 mTv_sec = millis / 1000;
+    Int64 mTv_usec = (millis - (mTv_sec * 1000)) * 1000;
+    return CStructTimeval::New(mTv_sec, mTv_usec, tv);
 }
 
 } // namespace System

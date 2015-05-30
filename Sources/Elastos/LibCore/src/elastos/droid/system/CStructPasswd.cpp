@@ -13,7 +13,7 @@ ECode CStructPasswd::GetName(
 {
     VALIDATE_NOT_NULL(name);
 
-    *name = pw_name;
+    *name = mPw_name;
     return NOERROR;
 }
 
@@ -22,7 +22,7 @@ ECode CStructPasswd::GetUid(
 {
     VALIDATE_NOT_NULL(uid);
 
-    *uid = pw_uid;
+    *uid = mPw_uid;
     return NOERROR;
 }
 
@@ -31,7 +31,7 @@ ECode CStructPasswd::GetGid(
 {
     VALIDATE_NOT_NULL(gid);
 
-    *gid = pw_gid;
+    *gid = mPw_gid;
     return NOERROR;
 }
 
@@ -40,7 +40,7 @@ ECode CStructPasswd::GetDir(
 {
     VALIDATE_NOT_NULL(dir);
 
-    *dir = pw_dir;
+    *dir = mPw_dir;
     return NOERROR;
 }
 
@@ -49,7 +49,7 @@ ECode CStructPasswd::GetShell(
 {
     VALIDATE_NOT_NULL(shell);
 
-    *shell = pw_shell;
+    *shell = mPw_shell;
     return NOERROR;
 }
 
@@ -60,11 +60,11 @@ ECode CStructPasswd::constructor(
     /* [in] */ const String& dir,
     /* [in] */ const String& shell)
 {
-    pw_name = name;
-    pw_uid = uid;
-    pw_gid = gid;
-    pw_dir = dir;
-    pw_shell = shell;
+    mPw_name = name;
+    mPw_uid = uid;
+    mPw_gid = gid;
+    mPw_dir = dir;
+    mPw_shell = shell;
     return NOERROR;
 }
 

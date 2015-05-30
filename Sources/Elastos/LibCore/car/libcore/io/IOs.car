@@ -269,7 +269,7 @@ module
         Mincore(
             [in] Int64 address,
             [in] Int64 byteCount,
-            [in] ArrayOf<Byte> vector);
+            [in] ArrayOf<Byte>* vector);
 
         Mkdir(
             [in] String path,
@@ -316,7 +316,7 @@ module
 
         /* TODO: if we used the non-standard ppoll(2) behind the scenes, we could take a long timeout. */
         Poll(
-            [in] ArrayOf<IStructPollfd*> fds,
+            [in] ArrayOf<IStructPollfd*>* fds,
             [in] Int32 timeoutMs,
             [out] Int32* result);
 
@@ -335,7 +335,7 @@ module
 
         Pread(
             [in] IFileDescriptor* fd,
-            [out] ArrayOf<Byte> bytes,
+            [in] ArrayOf<Byte>* bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
             [in] Int64 offset,
@@ -349,7 +349,7 @@ module
 
         Pwrite(
             [in] IFileDescriptor* fd,
-            [in] ArrayOf<Byte> bytes,
+            [in] ArrayOf<Byte>* bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
             [in] Int64 offset,
@@ -363,7 +363,7 @@ module
 
         Read(
             [in] IFileDescriptor* fd,
-            [out] ArrayOf<Byte> bytes,
+            [in] ArrayOf<Byte>* bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
             [out] Int32* num);
@@ -379,14 +379,14 @@ module
 
         Readv(
             [in] IFileDescriptor* fd,
-            [in] ArrayOf<IInterface*> buffers,
-            [in] ArrayOf<Int32> offsets,
-            [in] ArrayOf<Int32> byteCounts,
+            [in] ArrayOf<IInterface*>* buffers,
+            [in] ArrayOf<Int32>* offsets,
+            [in] ArrayOf<Int32>* byteCounts,
             [out] Int32* num);
 
         Recvfrom(
             [in] IFileDescriptor* fd,
-            [out] ArrayOf<Byte> bytes,
+            [in] ArrayOf<Byte>* bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
             [in] Int32 flags,
@@ -409,7 +409,7 @@ module
 
         Sendto(
             [in] IFileDescriptor* fd,
-            [in] ArrayOf<Byte> bytes,
+            [in] ArrayOf<Byte>* bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
             [in] Int32 flags,
@@ -556,7 +556,7 @@ module
 
         Write(
             [in] IFileDescriptor* fd,
-            [in] ArrayOf<Byte> bytes,
+            [in] ArrayOf<Byte>* bytes,
             [in] Int32 byteOffset,
             [in] Int32 byteCount,
             [out] Int32* num);
@@ -568,9 +568,9 @@ module
 
         Writev(
             [in] IFileDescriptor* fd,
-            [in] ArrayOf<IInterface*> buffers,
-            [in] ArrayOf<Int32> offsets,
-            [in] ArrayOf<Int32> byteCounts,
+            [in] ArrayOf<IInterface*>* buffers,
+            [in] ArrayOf<Int32>* offsets,
+            [in] ArrayOf<Int32>* byteCounts,
             [out] Int32* result);
     }
 

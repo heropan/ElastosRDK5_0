@@ -1,0 +1,18 @@
+
+module
+{
+    merge("icu/Exceptions.car");
+    merge("icu/ICollationKeyICU.car");
+    merge("icu/ILocaleData.car");
+    merge("icu/IICUHelper.car");
+    merge("icu/IRuleBasedCollatorICU.car");
+    merge("icu/ITimeZoneNames.car");
+    merge("icu/ICollationElementIteratorICU.car");
+    merge("icu/INativeDecimalFormat.car");
+    merge("icu/INativeBreakIterator.car");
+    merge("icu/INativeCollationHelper.car");
+    merge("icu/INativeIDNHelper.car");
+    merge("icu/INativePluralRules.car");
+    merge("icu/INativeNormalizerHelper.car");
+    merge("icu/IAlphabeticIndex.car");
+}

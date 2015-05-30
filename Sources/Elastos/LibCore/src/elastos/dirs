@@ -8,3 +8,4 @@ DIRS += io
 DIRS += text
 DIRS += utility
 DIRS += droid/system
+DIRS += ../libcore/io

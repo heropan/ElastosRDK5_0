@@ -1,0 +1,6 @@
+module {
+    merge("utility/IBasicLruCache.car");
+    merge("utility/ICollectionUtils.car");
+    merge("utility/IZoneInfo.car");
+    merge("utility/IZoneInfoDB.car");
+}

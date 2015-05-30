@@ -36,7 +36,7 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
-public:
+private:
     Int32 mGr_interface;
     AutoPtr<IInetAddress> mGr_group;
 };

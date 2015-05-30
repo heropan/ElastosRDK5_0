@@ -80,25 +80,25 @@ public:
 
 private:
     /** Device ID of device containing file. */
-    Int64 st_dev; /*dev_t*/
+    Int64 mSt_dev; /*dev_t*/
 
     /** File serial number (inode). */
-    Int64 st_ino; /*ino_t*/
+    Int64 mSt_ino; /*ino_t*/
 
     /** Mode (permissions) of file. */
-    Int32 st_mode; /*mode_t*/
+    Int32 mSt_mode; /*mode_t*/
 
     /** Number of hard links to the file. */
-    Int64 st_nlink; /*nlink_t*/
+    Int64 mSt_nlink; /*nlink_t*/
 
     /** User ID of file. */
-    Int32 st_uid; /*uid_t*/
+    Int32 mSt_uid; /*uid_t*/
 
     /** Group ID of file. */
-    Int32 st_gid; /*gid_t*/
+    Int32 mSt_gid; /*gid_t*/
 
     /** Device ID (if file is character or block special). */
-    Int64 st_rdev; /*dev_t*/
+    Int64 mSt_rdev; /*dev_t*/
 
     /**
      * For regular files, the file size in bytes.
@@ -107,25 +107,25 @@ private:
      * For a typed memory object, the length in bytes.
      * For other file types, the use of this field is unspecified.
      */
-    Int64 st_size; /*off_t*/
+    Int64 mSt_size; /*off_t*/
 
     /** Time of last access. */
-    Int64 st_atime; /*time_t*/
+    Int64 mSt_atime; /*time_t*/
 
     /** Time of last data modification. */
-    Int64 st_mtime; /*time_t*/
+    Int64 mSt_mtime; /*time_t*/
 
     /** Time of last status change. */
-    Int64 st_ctime; /*time_t*/
+    Int64 mSt_ctime; /*time_t*/
 
     /**
      * A file system-specific preferred I/O block size for this object.
      * For some file system types, this may vary from file to file.
      */
-    Int64 st_blksize; /*blksize_t*/
+    Int64 mSt_blksize; /*blksize_t*/
 
     /** Number of blocks allocated for this object. */
-    Int64 st_blocks; /*blkcnt_t*/
+    Int64 mSt_blocks; /*blkcnt_t*/
 };
 
 } // namespace System

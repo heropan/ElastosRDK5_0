@@ -13,7 +13,7 @@ ECode CStructStat::GetDev(
 {
     VALIDATE_NOT_NULL(dev);
 
-    *dev = st_dev;
+    *dev = mSt_dev;
     return NOERROR;
 }
 
@@ -22,7 +22,7 @@ ECode CStructStat::GetIno(
 {
     VALIDATE_NOT_NULL(ino);
 
-    *ino = st_ino;
+    *ino = mSt_ino;
     return NOERROR;
 }
 
@@ -31,7 +31,7 @@ ECode CStructStat::GetMode(
 {
     VALIDATE_NOT_NULL(mode);
 
-    *mode = st_mode;
+    *mode = mSt_mode;
     return NOERROR;
 }
 
@@ -40,7 +40,7 @@ ECode CStructStat::GetNlink(
 {
     VALIDATE_NOT_NULL(nlink);
 
-    *nlink = st_nlink;
+    *nlink = mSt_nlink;
     return NOERROR;
 }
 
@@ -49,7 +49,7 @@ ECode CStructStat::GetUid(
 {
     VALIDATE_NOT_NULL(uid);
 
-    *uid = st_uid;
+    *uid = mSt_uid;
     return NOERROR;
 }
 
@@ -58,7 +58,7 @@ ECode CStructStat::GetGid(
 {
     VALIDATE_NOT_NULL(gid);
 
-    *gid = st_gid;
+    *gid = mSt_gid;
     return NOERROR;
 }
 
@@ -67,7 +67,7 @@ ECode CStructStat::GetRdev(
 {
     VALIDATE_NOT_NULL(rdev);
 
-    *rdev = st_rdev;
+    *rdev = mSt_rdev;
     return NOERROR;
 }
 
@@ -76,7 +76,7 @@ ECode CStructStat::GetSize(
 {
     VALIDATE_NOT_NULL(size);
 
-    *size = st_size;
+    *size = mSt_size;
     return NOERROR;
 }
 
@@ -85,7 +85,7 @@ ECode CStructStat::GetAtime(
 {
     VALIDATE_NOT_NULL(atime);
 
-    *atime = st_atime;
+    *atime = mSt_atime;
     return NOERROR;
 }
 
@@ -94,7 +94,7 @@ ECode CStructStat::GetMtime(
 {
     VALIDATE_NOT_NULL(mtime);
 
-    *mtime = st_mtime;
+    *mtime = mSt_mtime;
     return NOERROR;
 }
 
@@ -103,7 +103,7 @@ ECode CStructStat::GetCtime(
 {
     VALIDATE_NOT_NULL(ctime);
 
-    *ctime = st_ctime;
+    *ctime = mSt_ctime;
     return NOERROR;
 }
 
@@ -112,7 +112,7 @@ ECode CStructStat::GetBlksize(
 {
     VALIDATE_NOT_NULL(blksize);
 
-    *blksize = st_blksize;
+    *blksize = mSt_blksize;
     return NOERROR;
 }
 
@@ -121,7 +121,7 @@ ECode CStructStat::GetBlocks(
 {
     VALIDATE_NOT_NULL(blocks);
 
-    *blocks = st_blocks;
+    *blocks = mSt_blocks;
     return NOERROR;
 }
 
@@ -140,19 +140,19 @@ ECode CStructStat::constructor(
     /* [in] */ Int64 blksize,
     /* [in] */ Int64 blocks)
 {
-    st_dev = dev;
-    st_ino = ino;
-    st_mode = mode;
-    st_nlink = nlink;
-    st_uid = uid;
-    st_gid = gid;
-    st_rdev = rdev;
-    st_size = size;
-    st_atime = atime;
-    st_mtime = mtime;
-    st_ctime = ctime;
-    st_blksize = blksize;
-    st_blocks = blocks;
+    mSt_dev = dev;
+    mSt_ino = ino;
+    mSt_mode = mode;
+    mSt_nlink = nlink;
+    mSt_uid = uid;
+    mSt_gid = gid;
+    mSt_rdev = rdev;
+    mSt_size = size;
+    mSt_atime = atime;
+    mSt_mtime = mtime;
+    mSt_ctime = ctime;
+    mSt_blksize = blksize;
+    mSt_blocks = blocks;
     return NOERROR;
 }
 

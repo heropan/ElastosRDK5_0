@@ -47,11 +47,11 @@ public:
         /* [in] */ const String& shell);
 
 private:
-    String pw_name;
-    Int32 pw_uid; /* uid_t */
-    Int32 pw_gid; /* gid_t */
-    String pw_dir;
-    String pw_shell;
+    String mPw_name;
+    Int32 mPw_uid; /* uid_t */
+    Int32 mPw_gid; /* gid_t */
+    String mPw_dir;
+    String mPw_shell;
 };
 
 } // namespace System
