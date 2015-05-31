@@ -16,7 +16,7 @@ module
          */
         Decode(
             [in] ArrayOf<Byte>*     inBytes,
-            [in] ArrayOf<Char8>*    outChars,
+            [in] ArrayOf<Char32>*    outChars,
             [in] Int32              offset,
             [in] Int32              utfSize,
             [out] String*           string);

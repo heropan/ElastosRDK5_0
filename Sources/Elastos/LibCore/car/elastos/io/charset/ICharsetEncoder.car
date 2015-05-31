@@ -118,7 +118,7 @@ module
          * IllegalStateException | if another encode process is ongoing so that the current internal status is neither RESET or FLUSH.
          */
         CanEncode(
-            [in] Char8 c,
+            [in] Char32 c,
             [out] Boolean* result);
 
         /**

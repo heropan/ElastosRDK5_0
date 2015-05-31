@@ -16,8 +16,6 @@ module
     merge("core/IBoolean.car");
     merge("core/IByte.car");
     merge("core/IChar32.car");
-    merge("core/IChar16.car");
-    merge("core/IChar8.car");
     merge("core/IInteger16.car");
     merge("core/IInteger32.car");
     merge("core/IInteger64.car");
@@ -87,24 +85,6 @@ module
             [in] Char32 value);
 
         interface IChar32;
-        interface INumber;
-        interface ISerializable;
-    }
-
-    class CChar16 {
-        constructor(
-            [in] Char16 value);
-
-        interface IChar16;
-        interface INumber;
-        interface ISerializable;
-    }
-
-    class CChar8 {
-        constructor(
-            [in] Char8 value);
-
-        interface IChar8;
         interface INumber;
         interface ISerializable;
     }
