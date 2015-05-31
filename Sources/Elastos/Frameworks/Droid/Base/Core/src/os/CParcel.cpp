@@ -69,6 +69,12 @@ ECode CParcel::ReadChar16(
     return mData->ReadChar16(value);
 }
 
+ECode CParcel::ReadChar32(
+    /* [out] */ Char32* value)
+{
+    return mData->ReadChar32(value);
+}
+
 ECode CParcel::ReadInt16(
     /* [out] */ Int16* value)
 {
@@ -303,6 +309,12 @@ ECode CParcel::WriteChar16(
     /* [in] */ Char16 value)
 {
     return mData->WriteChar16(value);
+}
+
+ECode CParcel::WriteChar32(
+    /* [in] */ Char32 value)
+{
+    return mData->WriteChar32(value);
 }
 
 ECode CParcel::WriteInt16(

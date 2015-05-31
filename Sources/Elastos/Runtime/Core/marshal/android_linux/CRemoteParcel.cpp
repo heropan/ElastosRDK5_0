@@ -61,7 +61,8 @@ enum Type {
     Type_InterfacePtrPtr    = 37,
     Type_BufferOfPtr        = 38,
     Type_Fd                 = 39,
-    Type_Fd_Dup             = 40
+    Type_Fd_Dup             = 40,
+    Type_Char32             = 41
 };
 
 CRemoteParcel::CRemoteParcel(
@@ -207,6 +208,10 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
 
         case Type_Char16:
             *(Char16*)pValue = (Char16)m_pData->readInt32();
+            break;
+
+        case Type_Char32:
+            *(Char32*)pValue = (Char32)m_pData->readInt32();
             break;
 
         case Type_Int16:
@@ -602,6 +607,7 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             m_pData->writeInt32(*((Int16*)pValue));
             break;
 
+        case Type_Char32:
         case Type_Int32:
             m_pData->writeInt32(*((Int32*)pValue));
             break;
@@ -905,6 +911,14 @@ ECode CRemoteParcel::ReadChar16(
     return ReadValue((PVoid)pValue, Type_Char16);
 }
 
+ECode CRemoteParcel::ReadChar32(
+    /* [out] */ Char32 *pValue)
+{
+    if (pValue == NULL) return E_INVALID_ARGUMENT;
+
+    return ReadValue((PVoid)pValue, Type_Char32);
+}
+
 ECode CRemoteParcel::ReadInt16(
     /* [out] */ Int16 *pValue)
 {
@@ -1158,6 +1172,12 @@ ECode CRemoteParcel::WriteChar16(
     /* [in] */ Char16 value)
 {
     return WriteValue((PVoid)&value, Type_Char16, 4);
+}
+
+ECode CRemoteParcel::WriteChar32(
+    /* [in] */ Char32 value)
+{
+    return WriteValue((PVoid)&value, Type_Char32, 4);
 }
 
 ECode CRemoteParcel::WriteInt16(Int16 value)

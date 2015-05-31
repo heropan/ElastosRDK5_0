@@ -512,6 +512,7 @@ Restart:
     switch (pType->type) {
         case Type_Char8:
         case Type_Char16:
+        case Type_Char32:
         case Type_Int8:
         case Type_Int16:
         case Type_Int32:
@@ -1209,6 +1210,7 @@ IMPL_USERFUNC(PrefixingNameByName)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         TYPE_CASE(Type_Boolean, NULL, "p", NULL)
         TYPE_CASE(Type_Char8, NULL, "p", NULL)
         TYPE_CASE(Type_Char16, NULL, "p", NULL)
+        TYPE_CASE(Type_Char32, NULL, "p", NULL)
         TYPE_CASE(Type_PVoid, "p", "pp", NULL)
         TYPE_CASE(Type_CString, NULL, "p", NULL)
         TYPE_CASE(Type_String, NULL, "p", NULL)
@@ -1287,6 +1289,7 @@ IMPL_USERFUNC(PrefixingName)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         TYPE_CASE(Type_Boolean, NULL, "p", NULL)
         TYPE_CASE(Type_Char8, NULL, "p", NULL)
         TYPE_CASE(Type_Char16, NULL, "p", NULL)
+        TYPE_CASE(Type_Char32, NULL, "p", NULL)
         TYPE_CASE(Type_PVoid, "p", "pp", NULL)
         TYPE_CASE(Type_CString, NULL, "p", NULL)
         TYPE_CASE(Type_String, NULL, "p", NULL)
@@ -3054,6 +3057,21 @@ Restart:
             }
             else {
                 pCtx->PutString("pParams->WriteChar16Ptr((Handle32)");
+                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
+                pCtx->PutString(");");
+            }
+            break;
+
+        case Type_Char32:
+            assert(1 >= pType->nPointer);
+
+            if (0 == pType->nPointer) {
+                pCtx->PutString("pParams->WriteChar32(");
+                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
+                pCtx->PutString(");");
+            }
+            else {
+                pCtx->PutString("pParams->WriteChar32Ptr((Handle32)");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
             }

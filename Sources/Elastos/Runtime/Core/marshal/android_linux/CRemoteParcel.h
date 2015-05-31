@@ -74,6 +74,12 @@ public:
     CARAPI WriteChar16(
         /* [in] */ Char16 value);
 
+    CARAPI ReadChar32(
+        /* [out] */ Char32 *pValue);
+
+    CARAPI WriteChar32(
+        /* [in] */ Char32 value);
+
     CARAPI ReadInt16(
         /* [out] */ Int16 *pValue);
 

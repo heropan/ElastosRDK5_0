@@ -50,22 +50,23 @@ library
         CarDataType_Double      = 6,
         CarDataType_Char8       = 7,
         CarDataType_Char16      = 8,
-        CarDataType_CString     = 9,
-        CarDataType_String      = 10,
-        CarDataType_Boolean     = 11,
-        CarDataType_EMuid       = 12,
-        CarDataType_EGuid       = 13,
-        CarDataType_ECode       = 14,
-        CarDataType_LocalPtr    = 15,
-        CarDataType_LocalType   = 16,
-        CarDataType_Enum        = 17,
-        CarDataType_StringBuf   = 18,
-        CarDataType_ArrayOf     = 19,
-        CarDataType_BufferOf    = 20,
-        CarDataType_MemoryBuf   = 21,
-        CarDataType_CppVector   = 22,
-        CarDataType_Struct      = 23,
-        CarDataType_Interface   = 24
+        CarDataType_Char32      = 9,
+        CarDataType_CString     = 10,
+        CarDataType_String      = 11,
+        CarDataType_Boolean     = 12,
+        CarDataType_EMuid       = 13,
+        CarDataType_EGuid       = 14,
+        CarDataType_ECode       = 15,
+        CarDataType_LocalPtr    = 16,
+        CarDataType_LocalType   = 17,
+        CarDataType_Enum        = 18,
+        CarDataType_StringBuf   = 19,
+        CarDataType_ArrayOf     = 20,
+        CarDataType_BufferOf    = 21,
+        CarDataType_MemoryBuf   = 22,
+        CarDataType_CppVector   = 23,
+        CarDataType_Struct      = 24,
+        CarDataType_Interface   = 25
     }
 
     enum ParamIOAttribute {
@@ -346,6 +347,10 @@ library
             [in] Int32 index,
             [in] Char16 value);
 
+        SetInputArgumentOfChar32(
+            [in] Int32 index,
+            [in] Char32 value);
+
         SetInputArgumentOfCString(
             [in] Int32 index,
             [in] CString value);
@@ -425,6 +430,10 @@ library
         SetOutputArgumentOfChar16Ptr(
             [in] Int32 index,
             [out] Char16* value);
+
+        SetOutputArgumentOfChar32Ptr(
+            [in] Int32 index,
+            [out] Char32* value);
 
         SetOutputArgumentOfStringPtr(
             [in] Int32 index,
@@ -573,6 +582,10 @@ library
             [in] Int32 index,
             [in] Char16 value);
 
+        SetChar32Element(
+            [in] Int32 index,
+            [in] Char32 value);
+
         SetCStringElement(
             [in] Int32 index,
             [in] CString value);
@@ -653,6 +666,10 @@ library
         GetChar16Element(
             [in] Int32 index,
             [out] Char16* value);
+
+        GetChar32Element(
+            [in] Int32 index,
+            [out] Char32* value);
 
         GetCStringElement(
             [in] Int32 index,
@@ -753,6 +770,10 @@ library
             [in] CString name,
             [in] Char16 value);
 
+        SetChar32Field(
+            [in] CString name,
+            [in] Char32 value);
+
         SetBooleanField(
             [in] CString name,
             [in] Boolean value);
@@ -823,6 +844,10 @@ library
         GetChar16Field(
             [in] CString name,
             [out] Char16* value);
+
+        GetChar32Field(
+            [in] CString name,
+            [out] Char32* value);
 
         GetBooleanField(
             [in] CString name,
@@ -901,6 +926,10 @@ library
             [in] Int32 index,
             [in] Char16 value);
 
+        SetChar32Element(
+            [in] Int32 index,
+            [in] Char32 value);
+
         SetBooleanElement(
             [in] Int32 index,
             [in] Boolean value);
@@ -977,6 +1006,10 @@ library
         GetChar16Element(
             [in] Int32 index,
             [out] Char16* value);
+
+        GetChar32Element(
+            [in] Int32 index,
+            [out] Char32* value);
 
         GetBooleanElement(
             [in] Int32 index,
@@ -1338,6 +1371,10 @@ library
         GetChar16Argument(
             [in] Int32 index,
             [out] Char16* value);
+
+        GetChar32Argument(
+            [in] Int32 index,
+            [out] Char32* value);
 
         GetCStringArgument(
             [in] Int32 index,

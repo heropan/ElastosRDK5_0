@@ -84,6 +84,10 @@ public:
         /* [in] */ CString name,
         /* [in] */ Char16 value);
 
+    CARAPI SetChar32Field(
+        /* [in] */ CString name,
+        /* [in] */ Char32 value);
+
     CARAPI SetBooleanField(
         /* [in] */ CString name,
         /* [in] */ Boolean value);
@@ -158,6 +162,10 @@ public:
     CARAPI GetChar16Field(
         /* [in] */ CString name,
         /* [out] */ Char16 * pValue);
+
+    CARAPI GetChar32Field(
+        /* [in] */ CString name,
+        /* [out] */ Char32 * pValue);
 
     CARAPI GetBooleanField(
         /* [in] */ CString name,

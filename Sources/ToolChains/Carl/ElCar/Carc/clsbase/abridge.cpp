@@ -145,6 +145,7 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
             *pStackSize += 1;
             return pType->nPointer ? Param_Type_puint16:Param_Type_uint16;
 
+        case Type_Char32:
         case Type_Int32:
         case Type_UInt32:
         case Type_Float:

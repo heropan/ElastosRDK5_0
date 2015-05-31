@@ -12,7 +12,7 @@
 enum Type {
     Type_Unknown = 0,
 
-    Type_Byte, Type_Boolean, Type_Char8, Type_Char16,
+    Type_Byte, Type_Boolean, Type_Char8, Type_Char16, Type_Char32,
     Type_Int16, Type_Int32, Type_Int64, Type_Float, Type_Double,
     Type_String, Type_CString, Type_Struct, Type_EMuid, Type_EGuid,
     Type_ArrayOf, Type_ArrayOfCString, Type_ArrayOfString,
@@ -188,6 +188,7 @@ ECode CCallbackParcel::GrowDataBuffer(int minSize)
             case Type_Boolean:
             case Type_Char8:
             case Type_Char16:
+            case Type_Char32:
             case Type_Int16:
             case Type_Int32:
             case Type_Float:
@@ -331,6 +332,7 @@ ECode CCallbackParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             m_elemPtr += 4;
             break;
 
+        case Type_Char32:
         case Type_Int32:
         case Type_Float:
             *(Int32*)(m_elemPtr) = *(Int32*)pValue;
@@ -619,6 +621,7 @@ ECode CCallbackParcel::Clone(
                 pSrcElemPtr += 4;
                 break;
 
+            case Type_Char32:
             case Type_Int32:
             case Type_Float:
             case Type_InterfacePtr:
@@ -740,6 +743,12 @@ ECode CCallbackParcel::ReadChar8(
 
 ECode CCallbackParcel::ReadChar16(
     /* [out] */ Char16 *pValue)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CCallbackParcel::ReadChar32(
+    /* [out] */ Char32 *pValue)
 {
     return E_NOT_IMPLEMENTED;
 }
@@ -973,6 +982,12 @@ ECode CCallbackParcel::WriteChar16(
     /* [in] */ Char16 value)
 {
     return WriteValue((PVoid)&value, Type_Char16, sizeof(Char16));
+}
+
+ECode CCallbackParcel::WriteChar32(
+    /* [in] */ Char32 value)
+{
+    return WriteValue((PVoid)&value, Type_Char32, sizeof(Char32));
 }
 
 ECode CCallbackParcel::WriteInt16(Int16 value)

@@ -64,6 +64,9 @@ CarDataType GetCarDataType(CARDataType type)
         case Type_Char16:
             dataType = CarDataType_Char16;
             break;
+        case Type_Char32:
+            dataType = CarDataType_Char32;
+            break;
         case Type_CString:
             dataType = CarDataType_CString;
             break;
@@ -174,6 +177,9 @@ UInt32 GetDataTypeSize(const CClsModule *pCClsModule, TypeDescriptor *pTypeDesc)
             break;
         case Type_Char16:
             uSize = sizeof(Char16);
+            break;
+        case Type_Char32:
+            uSize = sizeof(Char32);
             break;
         case Type_Int8:
             uSize = sizeof(Int8);
@@ -373,6 +379,9 @@ CarQuintetFlag DataTypeToFlag(CarDataType type)
             break;
         case CarDataType_Char16:
             flag = CarQuintetFlag_Type_Char16;
+            break;
+        case CarDataType_Char32:
+            flag = CarQuintetFlag_Type_Char32;
             break;
         case CarDataType_CString:
             flag = CarQuintetFlag_Type_CString;

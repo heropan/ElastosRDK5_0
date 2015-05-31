@@ -25,6 +25,9 @@ void dump_param_type(ParamDescriptor* paramDesc)
     case Type_Char16:
         printf("Char16");
         break;
+    case Type_Char32:
+        printf("Char32");
+        break;
     case Type_Boolean:
         printf("Boolean");
         break;

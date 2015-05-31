@@ -13,9 +13,6 @@ library
 
     typedef [dummytype] Int32 MemorySize;
 
-    typedef [dummytype] Int32 Char32;
-    typedef [dummytype] Char32* PChar32;
-
     typedef [dummytype] Int32 Second32;
     typedef [dummytype] Int32 Millisecond32;
     typedef [dummytype] Int32 Microsecond32;

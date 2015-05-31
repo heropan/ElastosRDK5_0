@@ -76,6 +76,10 @@ public:
         /* [in] */ Int32 index,
         /* [out] */ Char16 * pValue);
 
+    CARAPI GetChar32Argument(
+        /* [in] */ Int32 index,
+        /* [out] */ Char32 * pValue);
+
     CARAPI GetCStringArgument(
         /* [in] */ Int32 index,
         /* [out] */ CString* value);

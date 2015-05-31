@@ -45,6 +45,9 @@ void GenerateTypeString(
         case Type_Char16:
             strcat(pszBuf, "Char16");
             break;
+        case Type_Char32:
+            strcat(pszBuf, "Char32");
+            break;
         case Type_Byte:
             strcat(pszBuf, "Byte");
             break;
@@ -246,6 +249,9 @@ void GenerateTypeStringForParam(
             break;
         case Type_Char16:
             strcat(pszBuf, "Char16");
+            break;
+        case Type_Char32:
+            strcat(pszBuf, "Char32");
             break;
         case Type_Byte:
             strcat(pszBuf, "Byte");

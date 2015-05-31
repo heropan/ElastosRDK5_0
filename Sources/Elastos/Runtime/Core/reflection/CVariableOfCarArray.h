@@ -86,6 +86,10 @@ public:
         /* [in] */ Int32 index,
         /* [in] */ Char16 value);
 
+    CARAPI SetChar32Element(
+        /* [in] */ Int32 index,
+        /* [in] */ Char32 value);
+
     CARAPI SetCStringElement(
         /* [in] */ Int32 index,
         /* [in] */ CString value);
@@ -166,6 +170,10 @@ public:
     CARAPI GetChar16Element(
         /* [in] */ Int32 index,
         /* [out] */ Char16 * pValue);
+
+    CARAPI GetChar32Element(
+        /* [in] */ Int32 index,
+        /* [out] */ Char32 * pValue);
 
     CARAPI GetCStringElement(
         /* [in] */ Int32 index,

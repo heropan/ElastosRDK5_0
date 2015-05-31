@@ -287,6 +287,13 @@ ECode CVariableOfStruct::SetChar16Field(
     return SetFieldValueByName(name, &value, CarDataType_Char16);
 }
 
+ECode CVariableOfStruct::SetChar32Field(
+    /* [in] */ CString name,
+    /* [in] */ Char32 value)
+{
+    return SetFieldValueByName(name, &value, CarDataType_Char32);
+}
+
 ECode CVariableOfStruct::SetBooleanField(
     /* [in] */ CString name,
     /* [in] */ Boolean value)
@@ -458,6 +465,13 @@ ECode CVariableOfStruct::GetChar16Field(
     /* [out] */ Char16 * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Char16);
+}
+
+ECode CVariableOfStruct::GetChar32Field(
+    /* [in] */ CString name,
+    /* [out] */ Char32 * pValue)
+{
+    return GetFieldValueByName(name, pValue, CarDataType_Char32);
 }
 
 ECode CVariableOfStruct::GetBooleanField(

@@ -258,6 +258,12 @@ ECode CRemoteParcel::WriteChar16(
     return WriteInt32((Int32)value);
 }
 
+ECode CRemoteParcel::WriteChar32(
+    /* [in] */ Char32 value)
+{
+    return WriteInt32((Int32)value);
+}
+
 ECode CRemoteParcel::WriteInt16(
     /* [in] */ Int16 value)
 {
@@ -733,6 +739,17 @@ ECode CRemoteParcel::ReadChar16(
     Int32 i;
     ECode ec = ReadInt32(&i);
     *pValue = SUCCEEDED(ec) ? (Char16)i : 0;
+    return ec;
+}
+
+ECode CRemoteParcel::ReadChar32(
+    /* [out] */ Char32* pValue)
+{
+    if (pValue == NULL) return E_INVALID_ARGUMENT;
+
+    Int32 i;
+    ECode ec = ReadInt32(&i);
+    *pValue = SUCCEEDED(ec) ? (Char32)i : 0;
     return ec;
 }
 

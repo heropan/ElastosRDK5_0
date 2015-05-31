@@ -858,6 +858,9 @@ int P_BaseType(CARToken token, TypeDescriptor *pType)
         case Token_K_Char16:
             pType->type = Type_Char16;
             break;
+        case Token_K_Char32:
+            pType->type = Type_Char32;
+            break;
         case Token_K_Float:
             pType->type = Type_Float;
             break;
@@ -2979,11 +2982,6 @@ int P_InterfaceConstChar32(InterfaceDescriptor *pDesc)
     CARToken token;
     int r;
 
-    if (strcmp("Char32", g_szCurrentToken)) {
-        ErrorReport(CAR_E_ExpectSymbol, "Char32");
-        return Ret_AbortOnError;
-    }
-
     if (GetToken(s_pFile) != Token_ident) {
         ErrorReport(CAR_E_ExpectConstName);
         return Ret_AbortOnError;
@@ -3550,7 +3548,7 @@ int P_InterfaceConst(InterfaceDirEntry *pItfDirEntry)
         case Token_K_Boolean:
             return P_InterfaceConstBoolean(pDesc);
 
-        case Token_ident:
+        case Token_K_Char32:
             return P_InterfaceConstChar32(pDesc);
 
         case Token_K_Byte:

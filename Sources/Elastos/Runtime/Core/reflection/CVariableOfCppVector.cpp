@@ -172,6 +172,13 @@ ECode CVariableOfCppVector::SetChar16Element(
     return SetElementValue(index, &value, CarDataType_Char16);
 }
 
+ECode CVariableOfCppVector::SetChar32Element(
+    /* [in] */ Int32 index,
+    /* [in] */ Char32 value)
+{
+    return SetElementValue(index, &value, CarDataType_Char32);
+}
+
 ECode CVariableOfCppVector::SetBooleanElement(
     /* [in] */ Int32 index,
     /* [in] */ Boolean value)
@@ -370,6 +377,13 @@ ECode CVariableOfCppVector::GetChar16Element(
     /* [out] */ Char16 * pValue)
 {
     return GetElementValue(index, pValue, CarDataType_Char16);
+}
+
+ECode CVariableOfCppVector::GetChar32Element(
+    /* [in] */ Int32 index,
+    /* [out] */ Char32 * pValue)
+{
+    return GetElementValue(index, pValue, CarDataType_Char32);
 }
 
 ECode CVariableOfCppVector::GetBooleanElement(

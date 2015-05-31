@@ -69,6 +69,10 @@ public:
         /* [in] */ Int32 index,
         /* [in] */ Char16 value);
 
+    CARAPI SetInputArgumentOfChar32(
+        /* [in] */ Int32 index,
+        /* [in] */ Char32 value);
+
     CARAPI SetInputArgumentOfCString(
         /* [in] */ Int32 index,
         /* [in] */ CString value);
@@ -148,6 +152,10 @@ public:
     CARAPI SetOutputArgumentOfChar16Ptr(
         /* [in] */ Int32 index,
         /* [out] */ Char16 * pValue);
+
+    CARAPI SetOutputArgumentOfChar32Ptr(
+        /* [in] */ Int32 index,
+        /* [out] */ Char32 * pValue);
 
     CARAPI SetOutputArgumentOfStringPtr(
         /* [in] */ Int32 index,

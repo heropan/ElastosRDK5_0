@@ -18,7 +18,7 @@ ECode GetRemoteClassInfo(
 enum Type {
     Type_Unknown = 0,
 
-    Type_Byte, Type_Boolean, Type_Char8, Type_Char16,
+    Type_Byte, Type_Boolean, Type_Char8, Type_Char16, Type_Char32,
     Type_Int16, Type_Int32, Type_Int64, Type_Float, Type_Double,
     Type_CString, Type_String, Type_Struct, Type_EMuid, Type_EGuid,
     Type_ArrayOf, Type_ArrayOfCString, Type_ArrayOfString,
@@ -174,6 +174,11 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
 
         case Type_Char16:
             *(Char16*)pValue = *(Char16*)m_elemPtr;
+            m_elemPtr++;
+            break;
+
+        case Type_Char32:
+            *(Char32*)pValue = *(Char32*)m_elemPtr;
             m_elemPtr++;
             break;
 
@@ -584,6 +589,7 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             m_elemPtr++;
             break;
 
+        case Type_Char32:
         case Type_Int32:
         case Type_Float:
             *m_elemPtr = *(Int32*)pValue;
@@ -871,6 +877,14 @@ ECode CRemoteParcel::ReadChar16(
     return ReadValue((PVoid)pValue, Type_Char16);
 }
 
+ECode CRemoteParcel::ReadChar32(
+    /* [out] */ Char32 *pValue)
+{
+    if (pValue == NULL) return E_INVALID_ARGUMENT;
+
+    return ReadValue((PVoid)pValue, Type_Char32);
+}
+
 ECode CRemoteParcel::ReadInt16(
     /* [out] */ Int16 *pValue)
 {
@@ -1118,6 +1132,12 @@ ECode CRemoteParcel::WriteChar16(
     /* [in] */ Char16 value)
 {
     return WriteValue((PVoid)&value, Type_Char16, 4);
+}
+
+ECode CRemoteParcel::WriteChar32(
+    /* [in] */ Char32 value)
+{
+    return WriteValue((PVoid)&value, Type_Char32, 4);
 }
 
 ECode CRemoteParcel::WriteInt16(Int16 value)

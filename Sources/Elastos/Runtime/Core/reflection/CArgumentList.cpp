@@ -196,6 +196,14 @@ ECode CArgumentList::SetInputArgumentOfChar16(
     return SetParamValue(index, &nParam, CarDataType_Char16, ParamIOAttribute_In);
 }
 
+ECode CArgumentList::SetInputArgumentOfChar32(
+    /* [in] */ Int32 index,
+    /* [in] */ Char32 value)
+{
+    UInt32 nParam = value;
+    return SetParamValue(index, &nParam, CarDataType_Char32, ParamIOAttribute_In);
+}
+
 ECode CArgumentList::SetInputArgumentOfCString(
     /* [in] */ Int32 index,
     /* [in] */ CString value)
@@ -377,6 +385,14 @@ ECode CArgumentList::SetOutputArgumentOfChar16Ptr(
     /* [out] */ Char16 * pValue)
 {
     return SetParamValue(index, &pValue, CarDataType_Char16,
+        ParamIOAttribute_CallerAllocOut, 1);
+}
+
+ECode CArgumentList::SetOutputArgumentOfChar32Ptr(
+    /* [in] */ Int32 index,
+    /* [out] */ Char32 * pValue)
+{
+    return SetParamValue(index, &pValue, CarDataType_Char32,
         ParamIOAttribute_CallerAllocOut, 1);
 }
 
