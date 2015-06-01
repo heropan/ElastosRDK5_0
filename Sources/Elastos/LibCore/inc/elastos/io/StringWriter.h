@@ -96,7 +96,7 @@ public:
      *             offset + count} is greater than the size of {@code buf}.
      */
     CARAPI Write(
-        /* [in] */ const ArrayOf<Char32>& buffer,
+        /* [in] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 

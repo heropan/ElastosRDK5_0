@@ -269,6 +269,32 @@ module
         interface IByteArrayInputStream;
     }
 
+    [deprecated]
+    class CCharArrayReader {
+        constructor(
+            [in] ArrayOf<Char32>* buf);
+
+        constructor(
+            [in] ArrayOf<Char32>* buf,
+            [in] Int32 offset,
+            [in] Int32 length);
+
+        interface IReadable;
+        interface IReader;
+        interface ICharArrayReader;
+    }
+
+    class CCharArrayWriter {
+        constructor();
+
+        constructor(
+            [in] Int32 initialSize);
+
+        interface IAppendable;
+        interface IWriter;
+        interface ICharArrayWriter;
+    }
+
     } // namespace IO
     } // namespace Elastos
 

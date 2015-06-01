@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "CharArrayWriter.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 #include "CStringWrapper.h"
 
@@ -17,7 +17,7 @@ CAR_INTERFACE_IMPL(CharArrayWriter, Writer, ICharArrayWriter)
 CharArrayWriter::CharArrayWriter()
     : mCount(0)
 {
-    mBufLock = new LockObject();
+    mBufLock = new Object();
 }
 
 CharArrayWriter::~CharArrayWriter()
@@ -30,7 +30,7 @@ ECode CharArrayWriter::constructor()
     if (mBuf == NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
-    mLock = mBufLock;
+    mLock = mBufLock->Probe(EIID_IObject);
     return NOERROR;
 }
 
@@ -45,7 +45,7 @@ ECode CharArrayWriter::constructor(
     if (mBuf == NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
-    mLock = mBufLock;
+    mLock = mBufLock->Probe(EIID_IObject);
     return NOERROR;
 }
 
@@ -136,7 +136,7 @@ ECode CharArrayWriter::Write(
 }
 
 ECode CharArrayWriter::Write(
-    /* [in] */ const ArrayOf<Char32>* buffer,
+    /* [in] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
@@ -216,7 +216,7 @@ ECode CharArrayWriter::Append(
 
     Int32 number;
     FAIL_RETURN(csq->GetLength(&number));
-    return AppendCharSequence(csq, 0, number);
+    return Append(csq, 0, number);
 }
 
 ECode CharArrayWriter::Append(
@@ -229,7 +229,7 @@ ECode CharArrayWriter::Append(
         csq->ToString(&str);
     }
 
-    return WriteString(str.Substring(start, end));
+    return Write(str.Substring(start, end));
 }
 
 } // namespace IO

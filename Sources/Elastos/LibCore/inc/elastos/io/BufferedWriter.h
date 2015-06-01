@@ -106,7 +106,7 @@ public:
      */
     //@Override
     CARAPI Write(
-        /* [in] */ const ArrayOf<Char32>& cbuf,
+        /* [in] */ ArrayOf<Char32>* cbuf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 

@@ -22,6 +22,7 @@ module
      * @Involve
      * interface Elastos.Core.IAppendable;
      */
+    [deprecated]
     interface IWriter {
         /**
          * Writes one character to the target. Only the two least significant bytes
@@ -69,7 +70,7 @@ module
          */
 
         Write(
-            [in] ArrayOf<Char32> buffer,
+            [in] ArrayOf<Char32>* buffer,
             [in] Int32 offset,
             [in] Int32 count);
 

@@ -32,7 +32,7 @@ ECode CStringWriter::Write(
 }
 
 ECode CStringWriter::Write(
-    /* [in] */ const ArrayOf<Char32>& buffer,
+    /* [in] */ const ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {

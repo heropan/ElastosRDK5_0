@@ -80,7 +80,7 @@ public:
      */
 
     virtual CARAPI Write(
-        /* [in] */ const ArrayOf<Char32>& buffer,
+        /* [in] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count) = 0;
 

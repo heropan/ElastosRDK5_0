@@ -5,7 +5,7 @@
 namespace Elastos {
 namespace IO {
 
-CAR_OBJECT_IMPL(CCharArrayReader)　
+CAR_OBJECT_IMPL(CCharArrayReader)
 
 } // namespace IO
 } // namespace Elastos

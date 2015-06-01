@@ -14,15 +14,15 @@ class CharArrayWriter
 public:
     CAR_INTERFACE_DECL()
 
-protected:
-    CharArrayWriter();
-
-    ~CharArrayWriter();
-
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ Int32 initialSize);
+
+protected:
+    CharArrayWriter();
+
+    ~CharArrayWriter();
 
 public:
 
@@ -100,7 +100,7 @@ public:
      *             {@code offset + len} is bigger than the size of {@code c}.
      */
     CARAPI Write(
-        /* [in] */ const ArrayOf<Char32>* buffer,
+        /* [in] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
@@ -203,7 +203,7 @@ private:
      * The buffer for characters.
      */
     AutoPtr<ArrayOf<Char32> > mBuf;
-    AutoPtr<LockObject> mBufLock;
+    AutoPtr<Object> mBufLock;
 
     /**
      * The ending index of the buffer.

@@ -107,7 +107,7 @@ ECode BufferedWriter::NewLine()
 }
 
 ECode BufferedWriter::Write(
-    /* [in] */ const ArrayOf<Char32>& cbuf,
+    /* [in] */ ArrayOf<Char32>* cbuf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
@@ -121,7 +121,7 @@ ECode BufferedWriter::Write(
     // instead of (offset < 0) || (count < 0) to safe one operation
     //assert(cbuf != NULL);
 
-    if ((offset | count) < 0 || offset > cbuf.GetLength() - count) {
+    if ((offset | count) < 0 || offset > cbuf->GetLength() - count) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
@@ -129,7 +129,7 @@ ECode BufferedWriter::Write(
 
     Int32 bufferLength = mBuf->GetLength();
     if (mPos == 0 && count >= bufferLength) {
-        return mOut->Write(cbuf, offset, count);
+        return mOut->Write(*cbuf, offset, count);
     }
 
     Int32 available = bufferLength - mPos;
@@ -138,7 +138,7 @@ ECode BufferedWriter::Write(
     }
 
     if (available > 0) {
-        mBuf->Copy(mPos, &cbuf, offset, available);
+        mBuf->Copy(mPos, cbuf, offset, available);
         mPos += available;
     }
 
@@ -149,11 +149,11 @@ ECode BufferedWriter::Write(
             offset += available;
             available = count - available;
             if (available >= bufferLength) {
-                FAIL_RETURN(mOut->Write(cbuf, offset, available));
+                FAIL_RETURN(mOut->Write(*cbuf, offset, available));
                 return NOERROR;
             }
 
-            mBuf->Copy(mPos, &cbuf, offset, available);
+            mBuf->Copy(mPos, cbuf, offset, available);
             mPos += available;
         }
     }

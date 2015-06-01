@@ -83,7 +83,7 @@ ECode StringWriter::Write(
 }
 
 ECode StringWriter::Write(
-    /* [in] */ const ArrayOf<Char32>& buffer,
+    /* [in] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
@@ -93,7 +93,7 @@ ECode StringWriter::Write(
     // RI, but are spec-compliant.
     // removed redundant check, added null check, used (offset | count) < 0
     // instead of (offset < 0) || (count < 0) to safe one operation
-    if ((offset | count) < 0 || count > buffer.GetLength() - offset) {
+    if ((offset | count) < 0 || count > buffer->GetLength() - offset) {
 //      throw new IndexOutOfBoundsException();
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -104,7 +104,7 @@ ECode StringWriter::Write(
 
     AutoPtr<ArrayOf<Char8> > dst;
     Int32 dstOffset = 0;
-    FAIL_RETURN(Character::ToChars(buffer, offset, count, (ArrayOf<Char8>**)&dst, &dstOffset));
+    FAIL_RETURN(Character::ToChars(*buffer, offset, count, (ArrayOf<Char8>**)&dst, &dstOffset));
 
     mBuf->Append(String(dst->GetPayload()));
 

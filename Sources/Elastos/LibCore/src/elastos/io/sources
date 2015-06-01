@@ -49,3 +49,9 @@ SOURCES += CByteArrayInputStream.cpp
 
 SOURCES += ByteArrayOutputStream.cpp
 SOURCES += CByteArrayOutputStream.cpp
+
+SOURCES += CharArrayReader.cpp
+SOURCES += CCharArrayReader.cpp
+
+SOURCES += CharArrayWriter.cpp
+SOURCES += CCharArrayWriter.cpp
