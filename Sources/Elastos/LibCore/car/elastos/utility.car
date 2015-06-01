@@ -212,7 +212,7 @@ module
 
     // interface Elastos.IO.ISerializable;
     interface Elastos.IO.IFilterInputStream;
-    // interface Elastos.IO.IFilterOutputStream;
+    interface Elastos.IO.IFilterOutputStream;
     interface Elastos.IO.ICloseable;
     // interface Elastos.Core.IThread;
     // interface Elastos.Core.IRunnable;
@@ -1142,7 +1142,7 @@ module
 
     // interface Elastos.IO.IOutputStream;
     // interface Elastos.IO.IFile;
-    // interface Elastos.IO.IFlushable;
+    interface Elastos.IO.IFlushable;
 
     namespace Elastos {
     namespace Utility {
@@ -1343,55 +1343,55 @@ module
     //     interface ICloseable;
     // }
 
-    // /**
-    //  * An {@code OutputStream} filter to decompress data. Callers write
-    //  * compressed data in the "deflate" format, and uncompressed data is
-    //  * written to the underlying stream.
-    //  * @since 1.6
-    //  */
-    // class CInflaterOutputStream {
-    //     /**
-    //      * Constructs an {@code InflaterOutputStream} with a new {@code Inflater} and an
-    //      * implementation-defined default internal buffer size. {@code out} is a destination
-    //      * for uncompressed data, and compressed data will be written to this stream.
-    //      *
-    //      * @param out the destination {@code OutputStream}
-    //      */
-    //     constructor(
-    //         [in] IOutputStream* os);
+    /**
+     * An {@code OutputStream} filter to decompress data. Callers write
+     * compressed data in the "deflate" format, and uncompressed data is
+     * written to the underlying stream.
+     * @since 1.6
+     */
+    class CInflaterOutputStream {
+        /**
+         * Constructs an {@code InflaterOutputStream} with a new {@code Inflater} and an
+         * implementation-defined default internal buffer size. {@code out} is a destination
+         * for uncompressed data, and compressed data will be written to this stream.
+         *
+         * @param out the destination {@code OutputStream}
+         */
+        constructor(
+            [in] IOutputStream* os);
 
-    //     /**
-    //      * Constructs an {@code InflaterOutputStream} with the given {@code Inflater} and an
-    //      * implementation-defined default internal buffer size. {@code out} is a destination
-    //      * for uncompressed data, and compressed data will be written to this stream.
-    //      *
-    //      * @param out the destination {@code OutputStream}
-    //      * @param inf the {@code Inflater} to be used for decompression
-    //      */
-    //     constructor(
-    //         [in] IOutputStream* os,
-    //         [in] IInflater* inf);
+        /**
+         * Constructs an {@code InflaterOutputStream} with the given {@code Inflater} and an
+         * implementation-defined default internal buffer size. {@code out} is a destination
+         * for uncompressed data, and compressed data will be written to this stream.
+         *
+         * @param out the destination {@code OutputStream}
+         * @param inf the {@code Inflater} to be used for decompression
+         */
+        constructor(
+            [in] IOutputStream* os,
+            [in] IInflater* inf);
 
-    //     /**
-    //      * Constructs an {@code InflaterOutputStream} with the given {@code Inflater} and
-    //      * given internal buffer size. {@code out} is a destination
-    //      * for uncompressed data, and compressed data will be written to this stream.
-    //      *
-    //      * @param out the destination {@code OutputStream}
-    //      * @param inf the {@code Inflater} to be used for decompression
-    //      * @param bufferSize the length in bytes of the internal buffer
-    //      */
-    //     constructor(
-    //         [in] IOutputStream* os,
-    //         [in] IInflater* inf,
-    //         [in] Int32 bufferSize);
+        /**
+         * Constructs an {@code InflaterOutputStream} with the given {@code Inflater} and
+         * given internal buffer size. {@code out} is a destination
+         * for uncompressed data, and compressed data will be written to this stream.
+         *
+         * @param out the destination {@code OutputStream}
+         * @param inf the {@code Inflater} to be used for decompression
+         * @param bufferSize the length in bytes of the internal buffer
+         */
+        constructor(
+            [in] IOutputStream* os,
+            [in] IInflater* inf,
+            [in] Int32 bufferSize);
 
-    //     interface IInflaterOutputStream;
-    //     interface IFilterOutputStream;
-    //     interface IOutputStream;
-    //     interface ICloseable;
-    //     interface IFlushable;
-    // }
+        interface IInflaterOutputStream;
+        interface IFilterOutputStream;
+        interface IOutputStream;
+        interface ICloseable;
+        interface IFlushable;
+    }
 
     // /**
     //  * An {@code InputStream} filter to compress data. Callers read
