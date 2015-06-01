@@ -111,6 +111,8 @@ ECode BufferedWriter::Write(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
+    VALIDATE_NOT_NULL(cbuf)
+
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
