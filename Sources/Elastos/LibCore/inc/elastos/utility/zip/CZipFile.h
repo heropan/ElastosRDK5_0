@@ -1,8 +1,8 @@
 
-#ifndef __CZIPFILE_H__
-#define __CZIPFILE_H__
+#ifndef __ELASTOS_UTILITY_CZIPFILE_H__
+#define __ELASTOS_UTILITY_CZIPFILE_H__
 
-#include "_CZipFile.h"
+#include "_Elastos_Utility_Zip_CZipFile.h"
 #include "ZipFile.h"
 
 namespace Elastos {
@@ -12,24 +12,7 @@ namespace Zip {
 CarClass(CZipFile) , public ZipFile
 {
 public:
-    CARAPI Close();
-
-    CARAPI GetEntries(
-        /* [out] */ IObjectContainer** entries);
-
-    CARAPI GetEntry(
-        /* [in] */ const String& entryName,
-        /* [out] */ IZipEntry** entry);
-
-    CARAPI GetInputStream(
-        /* [in] */ IZipEntry* entry,
-        /* [out] */ IInputStream** is);
-
-    CARAPI GetName(
-        /* [out] */ String* name);
-
-    CARAPI GetSize(
-        /* [out] */ Int32* size);
+    CAR_OBJECT_DECL()
 
     /**
      * Constructs a new {@code ZipFile} with the specified file.
@@ -76,4 +59,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CZIPFILE_H__
+#endif //__ELASTOS_UTILITY_CZIPFILE_H__

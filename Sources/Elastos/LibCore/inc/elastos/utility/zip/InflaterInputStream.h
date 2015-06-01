@@ -9,7 +9,7 @@
 #endif
 
 #include "CInflater.h"
-#include "elastos/io/FilterInputStream.h"
+#include "FilterInputStream.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::FilterInputStream;

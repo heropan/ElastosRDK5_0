@@ -1,15 +1,14 @@
 
 #include "ZipFile.h"
 #include "CInflater.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <cutils/log.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::Math;
-using Elastos::Core::CObjectContainer;
 using Elastos::IO::EIID_IInputStream;
-using Elastos::IO::IStreams;
-using Elastos::IO::CStreams;
+//using Elastos::IO::IStreams;
+//using Elastos::IO::CStreams;
 using Elastos::IO::EIID_IFilterInputStream;
 using Elastos::IO::IDataInputStream;
 using Elastos::IO::CDataInputStream;
@@ -35,6 +34,8 @@ extern "C" const InterfaceID EIID_ZipFileRAFStream =
 const Int32 ZipFile::GPBF_DATA_DESCRIPTOR_FLAG = 1 << 3;
 const Int32 ZipFile::GPBF_UTF8_FLAG = 1 << 11;
 
+Object ZipFile::RAFStream::sLock;
+
 ZipFile::RAFStream::RAFStream(
     /* [in] */ IRandomAccessFile* raf,
     /* [in] */ Int64 pos)
@@ -43,38 +44,6 @@ ZipFile::RAFStream::RAFStream(
     , mLength(0)
 {
     raf->GetLength(&mLength);
-}
-
-PInterface ZipFile::RAFStream::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IInputStream*)this;
-    }
-    else if (riid == EIID_IInputStream) {
-        return (IInputStream*)this;
-    }
-    else if (riid == EIID_ZipFileRAFStream) {
-        return this;
-    }
-    return NULL;
-}
-
-UInt32 ZipFile::RAFStream::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ZipFile::RAFStream::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ZipFile::RAFStream::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode ZipFile::RAFStream::Available(
@@ -103,6 +72,7 @@ ECode ZipFile::RAFStream::ReadBytes(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
     Mutex::Autolock lock(mSharedRafLock);
+    Object::Autolock locK(sLock);
 
     mSharedRaf->Seek(mOffset);
     if (length > mLength - mOffset) {
@@ -174,6 +144,8 @@ ECode ZipFile::RAFStream::GetLock(
     return NOERROR;
 }
 
+Object ZipFile::ZipInflaterInputStream::sLock;
+
 ZipFile::ZipInflaterInputStream::ZipInflaterInputStream(
     /* [in] */ IInputStream* is,
     /* [in] */ IInflater* inf,
@@ -183,41 +155,6 @@ ZipFile::ZipInflaterInputStream::ZipInflaterInputStream(
     , mBytesRead(0)
 {
     ASSERT_SUCCEEDED(InflaterInputStream::Init(is, inf, bsize));
-}
-
-PInterface ZipFile::ZipInflaterInputStream::Probe(
-/* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)this;
-    }
-    else if (riid == EIID_IInflaterInputStream) {
-        return (IInflaterInputStream*)this;
-    }
-    else if (riid == EIID_IFilterInputStream) {
-        return (IFilterInputStream*)this;
-    }
-    else if (riid == EIID_IInputStream) {
-        return (IInputStream *)this;
-    }
-    return NULL;
-}
-
-UInt32 ZipFile::ZipInflaterInputStream::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ZipFile::ZipInflaterInputStream::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ZipFile::ZipInflaterInputStream::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode ZipFile::ZipInflaterInputStream::GetLock(
@@ -267,51 +204,40 @@ ECode ZipFile::ZipInflaterInputStream::Available(
     return NOERROR;
 }
 
-ECode ZipFile::ZipInflaterInputStream::Close()
+//====================================================================
+// ZipFile::Enumeration::
+//====================================================================
+CAR_INTERFACE_IMPL(ZipFile::Enumeration, Object, IEnumeration)
+
+ZipFile::Enumeration::Enumeration(
+    /* [in] */ IIterator* it)
 {
-    return InflaterInputStream::Close();
+    mIt = it;
 }
 
-ECode ZipFile::ZipInflaterInputStream::Mark(
-    /* [in] */ Int32 mark)
-{
-    return InflaterInputStream::Mark(mark);
-}
-
-ECode ZipFile::ZipInflaterInputStream::IsMarkSupported(
-    /* [in] */ Boolean *isMark)
-{
-    return InflaterInputStream::IsMarkSupported(isMark);
-}
-
-ECode ZipFile::ZipInflaterInputStream::Reset()
-{
-    return InflaterInputStream::Reset();
-}
-
-ECode ZipFile::ZipInflaterInputStream::Read(
-    /* [out] */ Int32* value)
+ECode ZipFile::Enumeration::HasMoreElements(
+    /* [out] */ Boolean * value)
 {
     VALIDATE_NOT_NULL(value);
-    return InflaterInputStream::Read(value);
+    CheckNotClosed();
+    return mIt->HasNext(value);
 }
 
-ECode ZipFile::ZipInflaterInputStream::ReadBytes(
-    /* [in] */ ArrayOf<Byte>* buffer,
-    /* [out] */ Int32* number)
+ECode ZipFile::Enumeration::NextElement(
+    /* [out] */ IInterface ** inter)
 {
-    VALIDATE_NOT_NULL(buffer);
-    VALIDATE_NOT_NULL(number);
-    return ReadBytes(buffer, 0, buffer->GetLength(), number);
+    VALIDATE_NOT_NULL(inter);
+    CheckNotClosed();
+    return mIt->Next(inter);
 }
 
-ECode ZipFile::ZipInflaterInputStream::Skip(
-    /* [in] */ Int64 offset,
-    /* [out] */ Int64* number)
-{
-    VALIDATE_NOT_NULL(number);
-    return InflaterInputStream::Skip(offset, number);
-}
+//====================================================================
+// ZipFile::
+//====================================================================
+
+Object ZipFile::sLock;
+
+CAR_INTERFACE_IMPL(ZipFile, Object, IZipFile)
 
 ZipFile::ZipFile()
 {
@@ -332,7 +258,7 @@ ECode ZipFile::Close()
 
     if (raf != NULL) { // Only close initialized instances
         {
-            Mutex::Autolock lock(mRafLock);
+            Object::Autolock locK(sLock);
             mRaf = NULL;
             raf->Close();
         }
@@ -355,18 +281,19 @@ ECode ZipFile::CheckNotClosed()
 }
 
 ECode ZipFile::GetEntries(
-    /* [out] */ IObjectContainer** entries)
+    /* [out] */ IEnumeration** entries)
 {
     VALIDATE_NOT_NULL(entries);
     FAIL_RETURN(CheckNotClosed());
 
-    FAIL_RETURN(CObjectContainer::New(entries));
-
-    HashMap<String, AutoPtr<IZipEntry> >::Iterator it = mEntries.Begin();
-    for (; it != mEntries.End(); ++it) {
-        AutoPtr<IZipEntry> p = it->mSecond;
-        (*entries)->Add(p.Get());
-    }
+    AutoPtr<ICollection> vals;
+    mEntries->Values((ICollection**)&vals);
+    AutoPtr<IIterable> p = (IIterable*)vals->Probe(EIID_IIterable);
+    AutoPtr<IIterator> iterator;
+    p->GetIterator((IIterator**)&iterator);
+    AutoPtr<Enumeration> res = new Enumeration(iterator);
+    *entries = res.Get();
+    REFCOUNT_ADD(*entries);
     return NOERROR;
 }
 
@@ -382,7 +309,7 @@ ECode ZipFile::GetEntry(
 //         throw new NullPointerException("entryName == null");
     }
 
-    HashMap<String, AutoPtr<IZipEntry> >::Iterator it = mEntries.Find(entryName);
+    _HashMap<String, AutoPtr<IZipEntry> >::Iterator it = mEntries.Find(entryName);
     if (it == mEntries.End()) {
         it = mEntries.Find(entryName + "/");
     }
@@ -413,7 +340,7 @@ ECode ZipFile::GetInputStream(
 
     // Create an InputStream at the right part of the file.
     AutoPtr<IRandomAccessFile> raf = mRaf;
-    Mutex::Autolock lock(mRafLock);
+    Object::Autolock locK(sLock);
     // We don't know the entry data's start position. All we have is the
     // position of the entry's local header. At position 28 we find the
     // length of the extra data. In some cases this length differs from
