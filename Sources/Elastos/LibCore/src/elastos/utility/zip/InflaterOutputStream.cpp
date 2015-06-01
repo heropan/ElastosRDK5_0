@@ -48,10 +48,10 @@ ECode InflaterOutputStream::Write(
 {
     ArrayOf_<Byte, 1> buf;
     buf[0] = (Byte)b;
-    return WriteBytes(buf, 0, 1);
+    return Write(buf, 0, 1);
 }
 
-ECode InflaterOutputStream::WriteBytes(
+ECode InflaterOutputStream::Write(
     /* [in] */ const ArrayOf<Byte>& bytes,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
@@ -94,13 +94,13 @@ ECode InflaterOutputStream::CheckClosed()
     return NOERROR;
 }
 
-ECode InflaterOutputStream::WriteBytes(
+ECode InflaterOutputStream::Write(
     /* [in] */ const ArrayOf<Byte>& buffer)
 {
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    return WriteBytes(buffer, 0, buffer.GetLength());
+    return Write(buffer, 0, buffer.GetLength());
 }
 
 ECode InflaterOutputStream::CheckError(

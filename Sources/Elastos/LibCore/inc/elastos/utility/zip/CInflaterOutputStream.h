@@ -1,38 +1,18 @@
 
-#ifndef __CINFLATEROUTPUTSTREAM_H__
-#define __CINFLATEROUTPUTSTREAM_H__
+#ifndef __ELASTOS_UTILITY_CINFLATEROUTPUTSTREAM_H__
+#define __ELASTOS_UTILITY_CINFLATEROUTPUTSTREAM_H__
 
-
-#include "_CInflaterOutputStream.h"
+#include "_Elastos_Utility_Zip_CInflaterOutputStream.h"
 #include "InflaterOutputStream.h"
 
 namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-CarClass(CInflaterOutputStream) , public InflaterOutputStream
+CarClass(CInflaterOutputStream)
+    , public InflaterOutputStream
 {
 public:
-    CARAPI Close();
-
-    CARAPI Flush();
-
-    CARAPI Write(
-        /* [in] */ Int32 oneByte);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 count);
-
-    CARAPI Finish();
-
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
     /**
      * Constructs an {@code InflaterOutputStream} with a new {@code Inflater} and an
      * implementation-defined default internal buffer size. {@code out} is a destination
@@ -69,15 +49,12 @@ public:
         /* [in] */ IInflater* inf,
         /* [in] */ Int32 bufferSize);
 
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    // CARAPI GetLock(
+    //      [out]  IInterface** lockobj);
 };
 
 } // namespace Zip
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CINFLATEROUTPUTSTREAM_H__
+#endif //__ELASTOS_UTILITY_CINFLATEROUTPUTSTREAM_H__
