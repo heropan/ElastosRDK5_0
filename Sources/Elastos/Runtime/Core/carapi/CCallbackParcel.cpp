@@ -12,16 +12,11 @@
 enum Type {
     Type_Unknown = 0,
 
-    Type_Byte, Type_Boolean, Type_Char8, Type_Char16, Type_Char32,
+    Type_Byte, Type_Boolean, Type_Char32,
     Type_Int16, Type_Int32, Type_Int64, Type_Float, Type_Double,
     Type_String, Type_CString, Type_Struct, Type_EMuid, Type_EGuid,
     Type_ArrayOf, Type_ArrayOfCString, Type_ArrayOfString,
-    Type_BufferOf, Type_BufferOfCString, Type_BufferOfString,
-    Type_StringBuf, Type_MemoryBuf, Type_InterfacePtr,
-
-    Type_BytePtr, Type_BooleanPtr, Type_Char8Ptr,  Type_Char16Ptr,
-    Type_Int16Ptr, Type_Int32Ptr,  Type_Int64Ptr, Type_FloatPtr,  Type_DoublePtr,
-    Type_StringPtr, Type_InterfacePtrPtr,
+    Type_InterfacePtr,
 };
 
 CCallbackParcel::CCallbackParcel()
@@ -186,23 +181,11 @@ ECode CCallbackParcel::GrowDataBuffer(int minSize)
         switch(type) {
             case Type_Byte:
             case Type_Boolean:
-            case Type_Char8:
-            case Type_Char16:
             case Type_Char32:
             case Type_Int16:
             case Type_Int32:
             case Type_Float:
-            case Type_BytePtr:
-            case Type_BooleanPtr:
-            case Type_Char8Ptr:
-            case Type_Char16Ptr:
-            case Type_Int16Ptr:
-            case Type_Int32Ptr:
-            case Type_Int64Ptr:
-            case Type_FloatPtr:
-            case Type_DoublePtr:
             case Type_InterfacePtr:
-            case Type_InterfacePtrPtr:
                 elemPtr += 4;
                 break;
 
@@ -232,9 +215,6 @@ ECode CCallbackParcel::GrowDataBuffer(int minSize)
                 break;
 
             case Type_ArrayOf:
-            case Type_BufferOf:
-            case Type_MemoryBuf:
-            case Type_StringBuf:
                 offset1 = *(Byte**)elemPtr - orgDataBuf;
                 offset2 = (Byte*)(*(CarQuintet**)(elemPtr))->m_pBuf - orgDataBuf;
                 *(Byte**)elemPtr = m_dataBuf + offset1;
@@ -253,24 +233,6 @@ ECode CCallbackParcel::GrowDataBuffer(int minSize)
                     if ((**(ArrayOf<String>**)elemPtr)[i]) {
                         offset3 = (Byte*)(const char*)((**(ArrayOf<String>**)elemPtr)[i]) - orgDataBuf;
                         (*(ArrayOf<String>*)tmpPtr)[i] = (char*)(m_dataBuf + offset3);
-                    }
-                    else (*(ArrayOf<String>*)tmpPtr)[i] = NULL;
-                }
-                *(Byte**)elemPtr = tmpPtr;
-                elemPtr += 4;
-                break;
-
-            case Type_BufferOfString:
-                offset1 = *(Byte**)elemPtr - orgDataBuf;
-                offset2 = (Byte*)(*(CarQuintet**)(elemPtr))->m_pBuf - orgDataBuf;
-                tmpPtr = m_dataBuf + offset1;
-                ((CarQuintet*)tmpPtr)->m_pBuf = m_dataBuf + offset2;
-                used = (*(BufferOf<String>**)elemPtr)->GetUsed();
-
-                for(Int32 i = 0; i < used; i++) {
-                    if ((**(BufferOf<String>**)elemPtr)[i]) {
-                        offset3 = (Byte*)(const char*)(**(BufferOf<String>**)elemPtr)[i] - orgDataBuf;
-                        (*(BufferOf<String>*)tmpPtr)[i] = (char*)(m_dataBuf + offset3);
                     }
                     else (*(ArrayOf<String>*)tmpPtr)[i] = NULL;
                 }
@@ -320,13 +282,11 @@ ECode CCallbackParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
     switch(type) {
         case Type_Byte:
         case Type_Boolean:
-        case Type_Char8:
             *(Int32*)(m_elemPtr) = *((Byte*)pValue);
             m_elemPtr += 4;
 
             break;
 
-        case Type_Char16:
         case Type_Int16:
             *(Int32*)(m_elemPtr) = *((Int16*)pValue);
             m_elemPtr += 4;
@@ -389,21 +349,6 @@ ECode CCallbackParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             m_elemPtr += 4;
             break;
 
-        case Type_BytePtr:
-        case Type_BooleanPtr:
-        case Type_Char8Ptr:
-        case Type_Char16Ptr:
-        case Type_Int16Ptr:
-        case Type_Int32Ptr:
-        case Type_Int64Ptr:
-        case Type_FloatPtr:
-        case Type_DoublePtr:
-        case Type_StringPtr:
-        case Type_InterfacePtrPtr:
-            *(Handle32*)(m_elemPtr) = (Handle32)pValue;
-            m_elemPtr += 4;
-            break;
-
         case Type_Struct:
             if (m_dataPtr - m_dataBuf + ROUND4(size) + 4 > m_dataBufCapacity) {
                 ec = GrowDataBuffer(ROUND4(size) + 4);
@@ -442,9 +387,6 @@ ECode CCallbackParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             break;
 
         case Type_ArrayOf:
-        case Type_BufferOf:
-        case Type_MemoryBuf:
-        case Type_StringBuf:
             if (pValue == NULL) {
                 *(Byte**)(m_elemPtr) = NULL;
                 m_elemPtr += 4;
@@ -524,64 +466,6 @@ ECode CCallbackParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             }
             break;
 
-        case Type_BufferOfCString:
-            used = ((BufferOf<CString>*)pValue)->GetUsed();
-            if (m_dataPtr - m_dataBuf + ROUND4(size) + 4> m_dataBufCapacity) {
-                ec = GrowDataBuffer(ROUND4(size) + 4);
-                if (FAILED(ec)) return ec;
-            }
-
-            *(Int32*)m_dataPtr = size;
-            m_dataPtr += 4;
-            *(Byte**)(m_elemPtr) = m_dataPtr;
-            m_elemPtr += 4;
-
-            memcpy(m_dataPtr, pValue, sizeof(CarQuintet));
-            m_dataPtr += ROUND4(sizeof(CarQuintet));
-            (*(CarQuintet**)(m_elemPtr - 4))->m_pBuf = (PVoid)(m_dataPtr);
-            m_dataPtr += ROUND4(((CarQuintet*)pValue)->m_size);
-
-            for(Int32 i = 0; i < used; i++) {
-                (**(BufferOf<CString>**)(m_elemPtr - 4))[i] = (const char*)m_dataPtr;
-                if ((*(BufferOf<CString>*)pValue)[i]) {
-                    len = (strlen((*(BufferOf<CString>*)pValue)[i]) + 1);
-                    memcpy((void*)(const char*)(**(BufferOf<CString>**)(m_elemPtr - 4))[i],
-                            (*(BufferOf<CString>*)pValue)[i], len);
-                    m_dataPtr += ROUND4(len);
-                }
-                else (**(BufferOf<CString>**)(m_elemPtr - 4))[i] = NULL;
-            }
-            break;
-
-        case Type_BufferOfString:
-            used = ((BufferOf<String>*)pValue)->GetUsed();
-            if (m_dataPtr - m_dataBuf + ROUND4(size) + 4> m_dataBufCapacity) {
-                ec = GrowDataBuffer(ROUND4(size) + 4);
-                if (FAILED(ec)) return ec;
-            }
-
-            *(Int32*)m_dataPtr = size;
-            m_dataPtr += 4;
-            *(Byte**)(m_elemPtr) = m_dataPtr;
-            m_elemPtr += 4;
-
-            memcpy(m_dataPtr, pValue, sizeof(CarQuintet));
-            m_dataPtr += ROUND4(sizeof(CarQuintet));
-            (*(CarQuintet**)(m_elemPtr - 4))->m_pBuf = (PVoid)(m_dataPtr);
-            m_dataPtr += ROUND4(((CarQuintet*)pValue)->m_size);
-
-            for(Int32 i = 0; i < used; i++) {
-                (**(BufferOf<String>**)(m_elemPtr - 4))[i] = (const char*)m_dataPtr;
-                if ((*(BufferOf<String>*)pValue)[i]) {
-                    len = (strlen((*(BufferOf<String>*)pValue)[i]) + 1);
-                    memcpy((void*)(const char*)(**(BufferOf<String>**)(m_elemPtr - 4))[i],
-                            (*(BufferOf<String>*)pValue)[i], len);
-                    m_dataPtr += ROUND4(len);
-                }
-                else (**(BufferOf<String>**)(m_elemPtr - 4))[i] = NULL;
-            }
-            break;
-
         default:
             assert(0);
             break;
@@ -608,13 +492,11 @@ ECode CCallbackParcel::Clone(
         switch(type) {
             case Type_Byte:
             case Type_Boolean:
-            case Type_Char8:
                 bv = *pSrcElemPtr;
                 WriteValue((PVoid)&bv, type, sizeof(Byte));
                 pSrcElemPtr += 4;
                 break;
 
-            case Type_Char16:
             case Type_Int16:
                 i16v = *(Int16*)pSrcElemPtr;
                 WriteValue((PVoid)&i16v, type, sizeof(Int16));
@@ -639,36 +521,6 @@ ECode CCallbackParcel::Clone(
                 i64v = (i64v << 32) | *(UInt32*)pSrcElemPtr;
                 WriteValue((PVoid)&i64v, type, sizeof(Int64));
                 pSrcElemPtr += 8;
-                break;
-
-            case Type_BytePtr:
-            case Type_Char8Ptr:
-            case Type_BooleanPtr:
-                pbv = *(Byte**)pSrcElemPtr;
-                WriteValue((PVoid)pbv, type, sizeof(Byte));
-                pSrcElemPtr += 4;
-                break;
-
-            case Type_Char16Ptr:
-            case Type_Int16Ptr:
-                pi16v = *(Int16**)pSrcElemPtr;
-                WriteValue((PVoid)pi16v, type, sizeof(Int16));
-                pSrcElemPtr += 4;
-                break;
-
-            case Type_Int32Ptr:
-            case Type_FloatPtr:
-            case Type_InterfacePtrPtr:
-                pi32v = *(Int32**)pSrcElemPtr;
-                WriteValue((PVoid)pi32v, type, sizeof(Int32*));
-                pSrcElemPtr += 4;
-                break;
-
-            case Type_Int64Ptr:
-            case Type_DoublePtr:
-                pi64v = *(Int64**)pSrcElemPtr;
-                WriteValue((PVoid)pi64v, type, sizeof(Int64*));
-                pSrcElemPtr += 4;
                 break;
 
             case Type_CString:
@@ -701,13 +553,8 @@ ECode CCallbackParcel::Clone(
                 break;
 
             case Type_ArrayOf:
-            case Type_BufferOf:
-            case Type_MemoryBuf:
-            case Type_StringBuf:
             case Type_ArrayOfCString:
             case Type_ArrayOfString:
-            case Type_BufferOfCString:
-            case Type_BufferOfString:
                 size = *(Int32*)(*(Byte**)pSrcElemPtr - 4);
                 WriteValue((PVoid)(*(CarQuintet**)pSrcElemPtr), type, size);
                 pSrcElemPtr += 4;
@@ -735,19 +582,7 @@ ECode CCallbackParcel::ReadBoolean(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CCallbackParcel::ReadChar8(
-    /* [out] */ Char8 *pValue)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadChar16(
-    /* [out] */ Char16 *pValue)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadChar32(
+ECode CCallbackParcel::ReadChar(
     /* [out] */ Char32 *pValue)
 {
     return E_NOT_IMPLEMENTED;
@@ -835,126 +670,6 @@ ECode CCallbackParcel::ReadArrayOfString(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CCallbackParcel::ReadBufferOf(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadBufferOfCString(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadBufferOfString(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadMemoryBuf(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadStringBuf(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadBytePtr(
-    /* [out] */ Handle32 *bypp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadBooleanPtr(
-    /* [out] */ Handle32 *bopp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadChar8Ptr(
-    /* [out] */ Handle32 *c8pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadChar16Ptr(
-    /* [out] */ Handle32 *c16pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadInt16Ptr(
-    /* [out] */ Handle32 *i16pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadInt32Ptr(
-    /* [out] */ Handle32 *i32pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadInt64Ptr(
-    /* [out] */ Handle32 *i64pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadFloatPtr(
-    /* [out] */ Handle32 *fpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadDoublePtr(
-    /* [out] */ Handle32 *dpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadStringPtr(
-    /* [out] */ Handle32 *spp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadStructPtr(
-    /* [out] */ Handle32 *idpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadEMuidPtr(
-    /* [out] */ Handle32 *idpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadEGuidPtr(
-    /* [out] */ Handle32 *idpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadInterfacePtrPtr(
-    /* [out] */ Handle32 *itfpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::ReadBufferOfPtr(
-    /* [out] */ Handle32 *idpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
 ECode CCallbackParcel::ReadFileDescriptor(
     /* [out] */ Int32* fd)
 {
@@ -972,19 +687,7 @@ ECode CCallbackParcel::WriteBoolean(
     return WriteValue((PVoid)&value, Type_Boolean, sizeof(Boolean));
 }
 
-ECode CCallbackParcel::WriteChar8(
-    /* [in] */ Char8 value)
-{
-    return WriteValue((PVoid)&value, Type_Char8, sizeof(Char8));
-}
-
-ECode CCallbackParcel::WriteChar16(
-    /* [in] */ Char16 value)
-{
-    return WriteValue((PVoid)&value, Type_Char16, sizeof(Char16));
-}
-
-ECode CCallbackParcel::WriteChar32(
+ECode CCallbackParcel::WriteChar(
     /* [in] */ Char32 value)
 {
     return WriteValue((PVoid)&value, Type_Char32, sizeof(Char32));
@@ -1040,66 +743,6 @@ ECode CCallbackParcel::WriteString(const String& str)
     return WriteValue((PVoid)&str, Type_String, sizeof(String));
 }
 
-ECode CCallbackParcel::WriteBytePtr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_BytePtr, sizeof(Byte*));
-}
-
-ECode CCallbackParcel::WriteBooleanPtr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_BooleanPtr, sizeof(Boolean*));
-}
-
-ECode CCallbackParcel::WriteChar8Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_Char8Ptr, sizeof(Char8*));
-}
-
-ECode CCallbackParcel::WriteChar16Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_Char16Ptr, sizeof(Char16*));
-}
-
-ECode CCallbackParcel::WriteInt16Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_Int16Ptr, sizeof(Int16*));
-}
-
-ECode CCallbackParcel::WriteInt32Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_Int32Ptr, sizeof(Int32*));
-}
-
-ECode CCallbackParcel::WriteInt64Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_Int64Ptr, sizeof(Int64*));
-}
-
-ECode CCallbackParcel::WriteFloatPtr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_FloatPtr, sizeof(float*));
-}
-
-ECode CCallbackParcel::WriteDoublePtr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_DoublePtr, sizeof(double*));
-}
-
-ECode CCallbackParcel::WriteStringPtr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_StringPtr, sizeof(String*));
-}
-
 ECode CCallbackParcel::WriteStruct(Handle32 pValue, Int32 size)
 {
     return WriteValue((PVoid)pValue, Type_Struct, size);
@@ -1113,18 +756,6 @@ ECode CCallbackParcel::WriteEMuid(const EMuid& id)
 ECode CCallbackParcel::WriteEGuid(const EGuid& id)
 {
     return WriteValue((PVoid)&id, Type_EGuid, sizeof(EGuid) + strlen(id.pUunm) + 1);
-}
-
-ECode CCallbackParcel::WriteEMuidPtr(
-    /* [in] */ Handle32 idPtr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CCallbackParcel::WriteEGuidPtr(
-    /* [in] */ Handle32 idPtr)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::WriteInterfacePtr(IInterface* pValue)
@@ -1165,61 +796,6 @@ ECode CCallbackParcel::WriteArrayOfString(
     }
 
     return WriteValue((PVoid)array, Type_ArrayOfString, size);
-}
-
-ECode CCallbackParcel::WriteBufferOf(
-    /* [in] */ Handle32 pBuffer)
-{
-    Int32 size = sizeof(CarQuintet) + ((CarQuintet*)pBuffer)->m_size;
-    return WriteValue((PVoid)pBuffer, Type_BufferOf, size);
-}
-
-ECode CCallbackParcel::WriteBufferOfCString(
-    /* [in] */ const BufferOf<CString> & pBuffer)
-{
-    Int32 size = sizeof(CarQuintet) + pBuffer.m_size;
-    Int32 used = pBuffer.GetUsed();
-
-    for (Int32 i = 0; i < used; i++) {
-        if(!pBuffer[i].IsNull())
-            size += strlen(pBuffer[i]) + 1;
-    }
-
-    return WriteValue((PVoid)&pBuffer, Type_BufferOfCString, size);
-}
-
-ECode CCallbackParcel::WriteBufferOfString(
-    /* [in] */ const BufferOf<String> & pBuffer)
-{
-    Int32 size = sizeof(CarQuintet) + pBuffer.m_size;
-    Int32 used = pBuffer.GetUsed();
-
-    for (Int32 i = 0; i < used; i++) {
-        if(!pBuffer[i].IsNull())
-            size += strlen(pBuffer[i]) + 1;
-    }
-
-    return WriteValue((PVoid)&pBuffer, Type_BufferOfString, size);
-}
-
-ECode CCallbackParcel::WriteMemoryBuf(
-    /* [in] */ Handle32 pBuffer)
-{
-    Int32 size = sizeof(CarQuintet) + ((CarQuintet*)pBuffer)->m_size;
-    return WriteValue((PVoid)pBuffer, Type_MemoryBuf, size);
-}
-
-ECode CCallbackParcel::WriteStringBuf(
-    /* [in] */ Handle32 pBuffer)
-{
-    Int32 size = sizeof(CarQuintet) + ((CarQuintet*)pBuffer)->m_used;
-    return WriteValue((PVoid)pBuffer, Type_StringBuf, size);
-}
-
-ECode CCallbackParcel::WriteInterfacePtrPtr(
-    /* [in] */ Handle32 addr2)
-{
-    return WriteValue((PVoid)addr2, Type_InterfacePtrPtr, sizeof(IInterface*));
 }
 
 ECode CCallbackParcel::WriteFileDescriptor(

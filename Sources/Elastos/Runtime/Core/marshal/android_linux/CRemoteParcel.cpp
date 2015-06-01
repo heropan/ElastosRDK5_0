@@ -23,46 +23,23 @@ enum Type {
     Type_Unknown            = 0,
     Type_Byte               = 1,
     Type_Boolean            = 2,
-    Type_Char8              = 3,
-    Type_Char16             = 4,
-    Type_Int16              = 5,
-    Type_Int32              = 6,
-    Type_Int64              = 7,
-    Type_Float              = 8,
-    Type_Double             = 9,
-    Type_CString            = 10,
-    Type_String             = 11,
-    Type_Struct             = 12,
-    Type_EMuid              = 13,
-    Type_EGuid              = 14,
-    Type_ArrayOf            = 15,
-    Type_ArrayOfCString     = 16,
-    Type_ArrayOfString      = 17,
-    Type_BufferOf           = 18,
-    Type_BufferOfCString    = 19,
-    Type_BufferOfString     = 20,
-    Type_StringBuf          = 21,
-    Type_MemoryBuf          = 22,
-    Type_InterfacePtr       = 23,
-
-    Type_BytePtr            = 24,
-    Type_BooleanPtr         = 25,
-    Type_Char8Ptr           = 26,
-    Type_Char16Ptr          = 27,
-    Type_Int16Ptr           = 28,
-    Type_Int32Ptr           = 29,
-    Type_Int64Ptr           = 30,
-    Type_FloatPtr           = 31,
-    Type_DoublePtr          = 32,
-    Type_StringPtr          = 33,
-    Type_StructPtr          = 34,
-    Type_EMuidPtr           = 35,
-    Type_EGuidPtr           = 36,
-    Type_InterfacePtrPtr    = 37,
-    Type_BufferOfPtr        = 38,
-    Type_Fd                 = 39,
-    Type_Fd_Dup             = 40,
-    Type_Char32             = 41
+    Type_Char32             = 3,
+    Type_Int16              = 4,
+    Type_Int32              = 5,
+    Type_Int64              = 6,
+    Type_Float              = 7,
+    Type_Double             = 8,
+    Type_CString            = 9,
+    Type_String             = 10,
+    Type_Struct             = 11,
+    Type_EMuid              = 12,
+    Type_EGuid              = 13,
+    Type_ArrayOf            = 14,
+    Type_ArrayOfCString     = 15,
+    Type_ArrayOfString      = 16,
+    Type_InterfacePtr       = 17,
+    Type_Fd                 = 18,
+    Type_Fd_Dup             = 19
 };
 
 CRemoteParcel::CRemoteParcel(
@@ -202,14 +179,6 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
             *(Boolean*)pValue = (Boolean)m_pData->readInt32();
             break;
 
-        case Type_Char8:
-            *(Char8*)pValue = (Char8)m_pData->readInt32();
-            break;
-
-        case Type_Char16:
-            *(Char16*)pValue = (Char16)m_pData->readInt32();
-            break;
-
         case Type_Char32:
             *(Char32*)pValue = (Char32)m_pData->readInt32();
             break;
@@ -257,21 +226,6 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
             }
             break;
 
-        case Type_StringPtr:
-            {
-                Int32 tag = m_pData->readInt32();
-                if (tag != MSH_NULL) {
-                    const char* cstr = m_pData->readCString();
-                    String* str = new String(cstr);
-                    *(String**)pValue = str;
-                }
-                else {
-                    String* str = new String(NULL);
-                    *(String**)pValue = str;
-                }
-            }
-            break;
-
         case Type_Struct:
             {
                 Int32 tag = (Int32)m_pData->readInt32();
@@ -281,19 +235,6 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
                 }
                 else {
                     pValue = NULL;
-                }
-            }
-            break;
-
-        case Type_StructPtr:
-            {
-                Int32 tag = (Int32)m_pData->readInt32();
-                if (tag != MSH_NULL) {
-                    Int32 len = (Int32)m_pData->readInt32();
-                    *(UInt32**)pValue = (UInt32*)m_pData->readInplace(len);
-                }
-                else {
-                    *(UInt32**)pValue = NULL;
                 }
             }
             break;
@@ -314,35 +255,7 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
             }
             break;
 
-        case Type_EMuidPtr:
-            {
-                Int32 tag = (Int32)m_pData->readInt32();
-                if (tag != MSH_NULL) {
-                    *(EMuid**)pValue = (EMuid*)m_pData->readInplace(sizeof(EMuid));
-                }
-                else {
-                    *(EMuid**)pValue = NULL;
-                }
-            }
-            break;
-
-        case Type_EGuidPtr:
-            {
-                Int32 tag = (Int32)m_pData->readInt32();
-                if (tag != MSH_NULL) {
-                    EGuid* guid = new EGuid();
-                    m_pData->read((void*)guid, sizeof(EGuid));
-                    guid->pUunm = (char*)m_pData->readCString();
-                    *(EGuid**)pValue = guid;
-                }
-                else {
-                    *(EGuid**)pValue = NULL;
-                }
-            }
-            break;
-
         case Type_ArrayOf:
-        case Type_BufferOf:
             {
                 Int32 tag = (Int32)m_pData->readInt32();
                 if (tag != MSH_NULL) {
@@ -500,85 +413,6 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
             }
             break;
 
-        case Type_Int32Ptr:
-            {
-                Int32 tag = (Int32)m_pData->readInt32();
-                if (tag != MSH_NULL) {
-                    Int32* pv = (Int32*)malloc(sizeof(Int32));
-                    *pv = m_pData->readInt32();
-                    *(Int32**)pValue = pv;
-                }
-                else {
-                    *(Int32**)pValue = NULL;
-                }
-            }
-            break;
-
-        case Type_Int64Ptr:
-            {
-                Int32 tag = (Int32)m_pData->readInt32();
-                if (tag != MSH_NULL) {
-                    Int64* pv = (Int64*)malloc(sizeof(Int64));
-                    *pv = m_pData->readInt64();
-                    *(Int64**)pValue = pv;
-                }
-                else {
-                    *(Int64**)pValue = NULL;
-                }
-            }
-            break;
-
-        case Type_InterfacePtrPtr:
-            {
-                Int32 tag = (Int32)m_pData->readInt32();
-                if (tag != MSH_NULL) {
-                    tag = (Int32)m_pData->readInt32();
-                    if (tag != MSH_NULL) {
-                        InterfacePack ipack;
-                        CIClassInfo *pClassInfo = NULL;
-                        IParcelable *pParcelable = NULL;
-                        ClassID classId;
-                        InterfaceID iid;
-                        ECode ec;
-
-                        android::sp<android::IBinder> binder = m_pData->readStrongBinder();
-                        m_pData->read((void *)&ipack, sizeof(InterfacePack));
-                        assert(ipack.m_pBinder == NULL);
-                        ipack.m_pBinder = binder;
-                        if (IsParcelable(&ipack, &pClassInfo)) {
-                            classId.clsid = ipack.m_clsid;
-                            classId.pUunm = pClassInfo->pszUunm;
-                            iid = pClassInfo->interfaces[ipack.m_uIndex]->iid;
-                            ec = _CObject_CreateInstance(classId, RGM_SAME_DOMAIN,
-                                    EIID_IParcelable, (IInterface**)&pParcelable);
-                            if (FAILED(ec)) return ec;
-
-                            ((IParcelable*)pParcelable)->ReadFromParcel(this);
-                            *((IInterface**)&pParcelable) = ((IParcelable*)pParcelable)->Probe(iid);
-                        }
-                        else {
-                            ec = StdUnmarshalInterface(
-                                    UnmarshalFlag_Noncoexisting,
-                                    &ipack,
-                                    (IInterface **)pParcelable);
-                            if (FAILED(ec)) {
-                                MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
-                                        "MshProc: unmsh interface, ec = %x\n", ec));
-                                return ec;
-                            }
-                        }
-                        *(UInt32*)pValue = (UInt32)pParcelable;
-                    }
-                    else {
-                        *(UInt32*)pValue = NULL;
-                    }
-                }
-                else {
-                    *(IInterface**)pValue = NULL;
-                }
-            }
-            break;
-
         case Type_Fd:
             *(Int32*)pValue = (Int32)m_pData->readFileDescriptor();
             break;
@@ -598,11 +432,9 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
     switch(type) {
         case Type_Byte:
         case Type_Boolean:
-        case Type_Char8:
             m_pData->writeInt32(*((Byte*)pValue));
             break;
 
-        case Type_Char16:
         case Type_Int16:
             m_pData->writeInt32(*((Int16*)pValue));
             break;
@@ -660,61 +492,6 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             }
             break;
 
-        case Type_BytePtr:
-        case Type_BooleanPtr:
-        case Type_Char8Ptr:
-        case Type_Char16Ptr:
-        case Type_Int16Ptr:
-        case Type_Int32Ptr:
-        case Type_FloatPtr:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
-
-            if (pValue) {
-                m_pData->writeInt32(*(UInt32*)pValue);
-            }
-            break;
-
-        case Type_Int64Ptr:
-        case Type_DoublePtr:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
-
-            if (pValue) {
-                m_pData->writeInt64(*(Int64*)pValue);
-            }
-            break;
-
-        case Type_StringPtr:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
-
-            if (pValue) {
-                m_pData->writeCString((const char*)pValue);
-            }
-            break;
-
-        case Type_InterfacePtrPtr:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
-
-            if (*(IInterface**)pValue) {
-                InterfacePack itfPack;
-                ec = StdMarshalInterface(
-                        *(IInterface**)pValue,
-                        &itfPack);
-                if (FAILED(ec)) return ec;
-
-                m_pData->writeInt32(MSH_NOT_NULL);
-                m_pData->writeStrongBinder(itfPack.m_pBinder);
-                itfPack.m_pBinder = NULL;
-                m_pData->write((void*)&itfPack, sizeof(itfPack));
-
-                IParcelable *pParcelable = \
-                        (IParcelable*)(*(IInterface**)pValue)->Probe(EIID_IParcelable);
-                if (pParcelable != NULL) pParcelable->WriteToParcel(this);
-            }
-            else {
-                m_pData->writeInt32(MSH_NULL);
-            }
-            break;
-
         case Type_Struct:
             m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
 
@@ -736,27 +513,7 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             }
             break;
 
-        case Type_EMuidPtr:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
-
-            if (pValue) {
-                m_pData->write(pValue, sizeof(EMuid));
-            }
-            break;
-
-        case Type_EGuidPtr:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
-
-            if (pValue) {
-                m_pData->write(pValue, sizeof(EGuid));
-                m_pData->writeCString(((EGuid *)pValue)->pUunm);
-            }
-            break;
-
         case Type_ArrayOf:
-        case Type_BufferOf:
-        case Type_MemoryBuf:
-        case Type_StringBuf:
             m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
 
             if (pValue) {
@@ -842,27 +599,6 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             }
             break;
 
-        case Type_BufferOfString:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
-
-            if (pValue) {
-                m_pData->write(pValue, sizeof(CarQuintet));
-
-                Int32 used = ((PCARQUINTET)pValue)->m_used
-                            / sizeof(String);
-                String *pBuf = (String*)((PCARQUINTET)pValue)->m_pBuf;
-                for (Int32 i = 0; i < used; i++) {
-                    if (!pBuf[i].IsNull()) {
-                        m_pData->writeInt32(MSH_NOT_NULL);
-                        m_pData->writeCString(pBuf[i].string());
-                    }
-                    else {  // null pointer
-                        m_pData->writeInt32(MSH_NULL);
-                    }
-                }
-            }
-            break;
-
         case Type_Fd:
             m_pData->writeFileDescriptor(*((Int32*)pValue));
             break;
@@ -895,23 +631,7 @@ ECode CRemoteParcel::ReadBoolean(
     return ReadValue((PVoid)pValue, Type_Boolean);
 }
 
-ECode CRemoteParcel::ReadChar8(
-    /* [out] */ Char8 *pValue)
-{
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
-
-    return ReadValue((PVoid)pValue, Type_Char8);
-}
-
-ECode CRemoteParcel::ReadChar16(
-    /* [out] */ Char16 *pValue)
-{
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
-
-    return ReadValue((PVoid)pValue, Type_Char16);
-}
-
-ECode CRemoteParcel::ReadChar32(
+ECode CRemoteParcel::ReadChar(
     /* [out] */ Char32 *pValue)
 {
     if (pValue == NULL) return E_INVALID_ARGUMENT;
@@ -1019,128 +739,6 @@ ECode CRemoteParcel::ReadArrayOfString(
     return ReadValue((PVoid)ppArray, Type_ArrayOfString);
 }
 
-ECode CRemoteParcel::ReadBufferOf(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return ReadValue((PVoid)ppBuffer, Type_BufferOf);
-}
-
-ECode CRemoteParcel::ReadBufferOfCString(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadBufferOfString(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadMemoryBuf(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadStringBuf(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadBytePtr(
-    /* [out] */ Handle32 *bypp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadBooleanPtr(
-    /* [out] */ Handle32 *bopp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadChar8Ptr(
-    /* [out] */ Handle32 *c8pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadChar16Ptr(
-    /* [out] */ Handle32 *c16pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadInt16Ptr(
-    /* [out] */ Handle32 *i16pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadInt32Ptr(
-    /* [out] */ Handle32 *i32pp)
-{
-    return ReadValue((PVoid)i32pp, Type_Int32Ptr);
-}
-
-ECode CRemoteParcel::ReadInt64Ptr(
-    /* [out] */ Handle32 *i64pp)
-{
-    return ReadValue((PVoid)i64pp, Type_Int64Ptr);
-}
-
-ECode CRemoteParcel::ReadFloatPtr(
-    /* [out] */ Handle32 *fpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadDoublePtr(
-    /* [out] */ Handle32 *dpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadStringPtr(
-    /* [out] */ Handle32 *spp)
-{
-    if (spp == NULL) return E_INVALID_ARGUMENT;
-
-    return ReadValue((PVoid)spp, Type_StringPtr);
-}
-
-ECode CRemoteParcel::ReadStructPtr(
-    /* [out] */ Handle32 *paddr)
-{
-    return ReadValue((PVoid)paddr, Type_StructPtr);
-}
-
-ECode CRemoteParcel::ReadEMuidPtr(
-    /* [out] */ Handle32 *idpp)
-{
-    return ReadValue((PVoid)idpp, Type_EMuidPtr);
-}
-
-ECode CRemoteParcel::ReadEGuidPtr(
-    /* [out] */ Handle32 *idpp)
-{
-    return ReadValue((PVoid)idpp, Type_EGuidPtr);
-}
-
-ECode CRemoteParcel::ReadInterfacePtrPtr(
-    /* [out] */ Handle32 *itfpp)
-{
-    return ReadValue((PVoid)itfpp, Type_InterfacePtrPtr);
-}
-
-ECode CRemoteParcel::ReadBufferOfPtr(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return ReadValue((PVoid)ppBuffer, Type_BufferOfPtr);
-}
-
 // Retrieve a file descriptor from the parcel.  This returns the raw fd
 // in the parcel, which you do not own -- use dup() to get your own copy.
 ECode CRemoteParcel::ReadFileDescriptor(
@@ -1162,19 +760,7 @@ ECode CRemoteParcel::WriteBoolean(
     return WriteValue((PVoid)&value, Type_Boolean, 4);
 }
 
-ECode CRemoteParcel::WriteChar8(
-    /* [in] */ Char8 value)
-{
-    return WriteValue((PVoid)&value, Type_Char8, 4);
-}
-
-ECode CRemoteParcel::WriteChar16(
-    /* [in] */ Char16 value)
-{
-    return WriteValue((PVoid)&value, Type_Char16, 4);
-}
-
-ECode CRemoteParcel::WriteChar32(
+ECode CRemoteParcel::WriteChar(
     /* [in] */ Char32 value)
 {
     return WriteValue((PVoid)&value, Type_Char32, 4);
@@ -1270,135 +856,6 @@ ECode CRemoteParcel::WriteArrayOfString(
 {
     Int32 size = array != NULL ? sizeof(UInt32) + sizeof(CarQuintet) + array->m_size : sizeof(UInt32);
     return WriteValue((PVoid)array, Type_ArrayOfString, size);
-}
-
-ECode CRemoteParcel::WriteBufferOf(
-    /* [in] */ Handle32 pBuffer)
-{
-    Int32 size = pBuffer != 0 ? sizeof(UInt32) + sizeof(CarQuintet) + ((CarQuintet*)pBuffer)->m_size
-        : sizeof(UInt32);
-    return WriteValue((PVoid)pBuffer, Type_BufferOf, size);
-}
-
-ECode CRemoteParcel::WriteBufferOfCString(
-    /* [in] */ const BufferOf<CString> & pBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteBufferOfString(
-    /* [in] */ const BufferOf<String> & pBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteMemoryBuf(
-    /* [in] */ Handle32 pBuffer)
-{
-    Int32 size = sizeof(UInt32) + sizeof(CarQuintet) + ((CarQuintet*)pBuffer)->m_size;
-    return WriteValue((PVoid)pBuffer, Type_MemoryBuf, size);
-}
-
-ECode CRemoteParcel::WriteStringBuf(
-    /* [in] */ Handle32 pBuffer)
-{
-    Int32 size = pBuffer != 0 ? sizeof(UInt32) + sizeof(CarQuintet) + ((CarQuintet*)pBuffer)->m_size
-        : sizeof(UInt32);
-    return WriteValue((PVoid)pBuffer, Type_StringBuf, size);
-}
-
-ECode CRemoteParcel::WriteBytePtr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_BytePtr, sizeof(Byte*));
-}
-
-ECode CRemoteParcel::WriteBooleanPtr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_BooleanPtr, sizeof(Boolean*));
-}
-
-ECode CRemoteParcel::WriteChar8Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_Char8Ptr, sizeof(Char8*));
-}
-
-ECode CRemoteParcel::WriteChar16Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_Char16Ptr, sizeof(Char16*));
-}
-
-ECode CRemoteParcel::WriteInt16Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_Int16Ptr, sizeof(Int16*));
-}
-
-ECode CRemoteParcel::WriteInt32Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_Int32Ptr, sizeof(Int32*) + sizeof(Int32));
-}
-
-ECode CRemoteParcel::WriteInt64Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_Int64Ptr, sizeof(Int64*) + sizeof(Int64));
-}
-
-ECode CRemoteParcel::WriteFloatPtr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_FloatPtr, sizeof(float*));
-}
-
-ECode CRemoteParcel::WriteDoublePtr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_DoublePtr, sizeof(double*));
-}
-
-ECode CRemoteParcel::WriteStringPtr(
-    /* [in] */ Handle32 addr)
-{
-    return WriteValue((PVoid)addr, Type_StringPtr, sizeof(String*));
-}
-
-ECode CRemoteParcel::WriteEMuidPtr(
-    /* [in] */ Handle32 idPtr)
-{
-    Int32 size = sizeof(UInt32*);
-
-    if (idPtr) size += sizeof(EMuid);
-
-    return WriteValue((PVoid)idPtr, Type_EMuidPtr, size);
-}
-
-ECode CRemoteParcel::WriteEGuidPtr(
-    /* [in] */ Handle32 idPtr)
-{
-    Int32 size = sizeof(UInt32*);
-
-    if (idPtr) size += sizeof(EMuid) + MSH_ALIGN_4(strlen(((EGuid*)idPtr)->pUunm) + 1) +
-                       sizeof(UInt32) * 2;
-
-    return WriteValue((PVoid)idPtr, Type_EGuidPtr, size);
-}
-
-ECode CRemoteParcel::WriteInterfacePtrPtr(
-    /* [in] */ Handle32 itfpp)
-{
-    Int32 size = sizeof(UInt32);
-
-    if (itfpp) {
-        if (*(IInterface**)itfpp) size += sizeof(InterfacePack);
-        else size += sizeof(UInt32);
-    }
-
-    return WriteValue((PVoid)itfpp, Type_InterfacePtrPtr, size);
 }
 
 // Place a file descriptor into the parcel.  The given fd must remain

@@ -141,11 +141,11 @@ ECode CNsdServiceInfo::ReadFromParcel(
     AutoPtr<IInterface> obj;
     FAIL_RETURN(source->ReadString(&mServiceName));
     FAIL_RETURN(source->ReadString(&mServiceType));
-    FAIL_RETURN(source->ReadInterfacePtrPtr((Handle32*)&obj));
+    FAIL_RETURN(source->ReadInterfacePtr((Handle32*)&obj));
     mTxtRecord = IDnsSdTxtRecord::Probe(obj);
 
     obj = NULL;
-    FAIL_RETURN(source->ReadInterfacePtrPtr((Handle32*)&obj));
+    FAIL_RETURN(source->ReadInterfacePtr((Handle32*)&obj));
     mHost = IInetAddress::Probe(obj);
 
     FAIL_RETURN(source->ReadInt32(&mPort));

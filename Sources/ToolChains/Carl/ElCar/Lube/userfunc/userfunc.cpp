@@ -3026,9 +3026,7 @@ Restart:
                 pCtx->PutString(");");
             }
             else {
-                pCtx->PutString("pParams->WriteBytePtr((Handle32)");
-                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-                pCtx->PutString(");");
+                assert(0);
             }
             break;
 
@@ -3041,9 +3039,7 @@ Restart:
                 pCtx->PutString(");");
             }
             else {
-                pCtx->PutString("pParams->WriteChar8Ptr((Handle32)");
-                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-                pCtx->PutString(");");
+                assert(0);
             }
             break;
 
@@ -3056,9 +3052,7 @@ Restart:
                 pCtx->PutString(");");
             }
             else {
-                pCtx->PutString("pParams->WriteChar16Ptr((Handle32)");
-                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-                pCtx->PutString(");");
+                assert(0);
             }
             break;
 
@@ -3103,9 +3097,7 @@ Restart:
                 pCtx->PutString(");");
             }
             else {
-                pCtx->PutString("pParams->WriteBooleanPtr((Handle32)");
-                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-                pCtx->PutString(");");
+                assert(0);
             }
             break;
 
@@ -3118,9 +3110,7 @@ Restart:
                 pCtx->PutString(");");
             }
             else {
-                pCtx->PutString("pParams->WriteInt32Ptr((Handle32)");
-                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-                pCtx->PutString(");");
+                assert(0);
             }
             break;
 
@@ -3133,9 +3123,7 @@ Restart:
                 pCtx->PutString(");");
             }
             else {
-                pCtx->PutString("pParams->WriteInt16Ptr((Handle32)");
-                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-                pCtx->PutString(");");
+                assert(0);
             }
             break;
 
@@ -3148,9 +3136,7 @@ Restart:
                 pCtx->PutString(");");
             }
             else {
-                pCtx->PutString("pParams->WriteInt32Ptr((Handle32)");
-                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-                pCtx->PutString(");");
+                assert(0);
             }
             break;
 
@@ -3163,9 +3149,7 @@ Restart:
                 pCtx->PutString(");");
             }
             else {
-                pCtx->PutString("pParams->WriteInt64Ptr((Handle32)");
-                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-                pCtx->PutString(");");
+                assert(0);
             }
             break;
 
@@ -3178,9 +3162,7 @@ Restart:
                 pCtx->PutString(");");
             }
             else {
-                pCtx->PutString("pParams->WriteFloatPtr((Handle32)");
-                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-                pCtx->PutString(");");
+                assert(0);
             }
             break;
 
@@ -3193,9 +3175,7 @@ Restart:
                 pCtx->PutString(");");
             }
             else {
-                pCtx->PutString("pParams->WriteDoublePtr((Handle32)");
-                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-                pCtx->PutString(");");
+                assert(0);
             }
             break;
 
@@ -3208,9 +3188,7 @@ Restart:
                 pCtx->PutString(");");
             }
             else {
-                pCtx->PutString("pParams->WriteInt32Ptr((Handle32)");
-                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-                pCtx->PutString(");");
+                assert(0);
             }
             break;
 
@@ -3245,20 +3223,14 @@ Restart:
                 pCtx->PutString(");");
             }
             else if (2 == pType->nPointer) {
-                pCtx->PutString("pParams->WriteInterfacePtrPtr((Handle32)");
-                UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-                pCtx->PutString(");");
+                assert(0);
             }
             else assert(0);
 
             break;
 
         case Type_StringBuf:
-            assert(0 == pType->nPointer);
-
-            pCtx->PutString("pParams->WriteStringBuf((Handle32)&");
-            UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-            pCtx->PutString(");");
+            assert(0);
             break;
 
         case Type_ArrayOf:
@@ -3283,26 +3255,11 @@ Restart:
             break;
 
         case Type_BufferOf:
-            assert(0 == pType->nPointer);
-
-            if (Type_CString == pType->pNestedType->type) {
-                pCtx->PutString("pParams->WriteBufferOfCString(");
-            }
-            else if (Type_String == pType->pNestedType->type) {
-                pCtx->PutString("pParams->WriteBufferOfString(");
-            }
-            else {
-                pCtx->PutString("pParams->WriteBufferOf((Handle32)&");
-            }
-            UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-            pCtx->PutString(");");
+            assert(0);
             break;
 
         case Type_MemoryBuf:
-            assert(0 == pType->nPointer);
-            pCtx->PutString("pParams->WriteMemoryBuf((Handle32)&");
-            UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-            pCtx->PutString(");");
+            assert(0);
             break;
 
         default:

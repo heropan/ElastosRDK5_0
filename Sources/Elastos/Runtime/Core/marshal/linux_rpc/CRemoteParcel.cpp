@@ -246,19 +246,7 @@ ECode CRemoteParcel::WriteBoolean(
     return WriteInt32((Int32)value);
 }
 
-ECode CRemoteParcel::WriteChar8(
-    /* [in] */ Char8 value)
-{
-    return WriteInt32((Int32)value);
-}
-
-ECode CRemoteParcel::WriteChar16(
-    /* [in] */ Char16 value)
-{
-    return WriteInt32((Int32)value);
-}
-
-ECode CRemoteParcel::WriteChar32(
+ECode CRemoteParcel::WriteChar(
     /* [in] */ Char32 value)
 {
     return WriteInt32((Int32)value);
@@ -377,36 +365,6 @@ ECode CRemoteParcel::WriteArrayOfString(
         }
     }
     return NOERROR;
-}
-
-ECode CRemoteParcel::WriteBufferOf(
-    /* [in] */ Handle32 pBuffer)
-{
-    return WriteArrayOfInner((PCARQUINTET)pBuffer);
-}
-
-ECode CRemoteParcel::WriteBufferOfCString(
-    /* [in] */ const BufferOf<CString> & pBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteBufferOfString(
-    /* [in] */ const BufferOf<String> & pBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteStringBuf(
-    /* [in] */ Handle32 pBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteMemoryBuf(
-    /* [in] */ Handle32 pBuffer)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode CRemoteParcel::WriteArrayOfInner(
@@ -534,84 +492,6 @@ restart_write:
     goto restart_write;
 }
 
-ECode CRemoteParcel::WriteBytePtr(
-    /* [in] */ Handle32 addr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteBooleanPtr(
-    /* [in] */ Handle32 addr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteChar8Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteChar16Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteInt16Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteInt32Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteInt64Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteFloatPtr(
-    /* [in] */ Handle32 addr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteDoublePtr(
-    /* [in] */ Handle32 addr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteStringPtr(
-    /* [in] */ Handle32 addr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteEMuidPtr(
-    /* [in] */ Handle32 idPtr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteEGuidPtr(
-    /* [in] */ Handle32 idPtr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::WriteInterfacePtrPtr(
-    /* [in] */ Handle32 itfpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
 ECode CRemoteParcel::WriteFileDescriptor(
     /* [in] */ Int32 fd)
 {
@@ -720,29 +600,7 @@ ECode CRemoteParcel::ReadBoolean(
     return ec;
 }
 
-ECode CRemoteParcel::ReadChar8(
-    /* [out] */ Char8* pValue)
-{
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
-
-    Int32 i;
-    ECode ec = ReadInt32(&i);
-    *pValue = SUCCEEDED(ec) ? (Char8)i : 0;
-    return ec;
-}
-
-ECode CRemoteParcel::ReadChar16(
-    /* [out] */ Char16* pValue)
-{
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
-
-    Int32 i;
-    ECode ec = ReadInt32(&i);
-    *pValue = SUCCEEDED(ec) ? (Char16)i : 0;
-    return ec;
-}
-
-ECode CRemoteParcel::ReadChar32(
+ECode CRemoteParcel::ReadChar(
     /* [out] */ Char32* pValue)
 {
     if (pValue == NULL) return E_INVALID_ARGUMENT;
@@ -910,38 +768,6 @@ ECode CRemoteParcel::ReadArrayOfString(
         strArray->AddRef();
     }
     return NOERROR;
-}
-
-ECode CRemoteParcel::ReadBufferOf(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    if (ppBuffer == NULL) return E_INVALID_ARGUMENT;
-
-    return ReadArrayOfInner((PCARQUINTET*)ppBuffer);
-}
-
-ECode CRemoteParcel::ReadBufferOfCString(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadBufferOfString(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadStringBuf(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadMemoryBuf(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode CRemoteParcel::ReadArrayOfInner(
@@ -1133,96 +959,6 @@ ECode CRemoteParcel::ReadInterfacePtr(
     }
     *pItfPtr = 0;
     return NOERROR;
-}
-
-ECode CRemoteParcel::ReadBytePtr(
-    /* [out] */ Handle32 *bypp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadBooleanPtr(
-    /* [out] */ Handle32 *bopp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadChar8Ptr(
-    /* [out] */ Handle32 *c8pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadChar16Ptr(
-    /* [out] */ Handle32 *c16pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadInt16Ptr(
-    /* [out] */ Handle32 *i16pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadInt32Ptr(
-    /* [out] */ Handle32 *i32pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadInt64Ptr(
-    /* [out] */ Handle32 *i64pp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadFloatPtr(
-    /* [out] */ Handle32 *fpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadDoublePtr(
-    /* [out] */ Handle32 *dpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadStringPtr(
-    /* [out] */ Handle32 *spp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadStructPtr(
-    /* [out] */ Handle32 *paddr)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadEMuidPtr(
-    /* [out] */ Handle32 *idpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadEGuidPtr(
-    /* [out] */ Handle32 *idpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadInterfacePtrPtr(
-    /* [out] */ Handle32 *itfpp)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadBufferOfPtr(
-    /* [out] */ Handle32 *ppBuffer)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode CRemoteParcel::ReadFileDescriptor(

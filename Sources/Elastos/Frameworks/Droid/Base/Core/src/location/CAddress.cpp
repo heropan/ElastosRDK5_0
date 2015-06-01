@@ -479,7 +479,7 @@ ECode CAddress::ReadFromParcel(
     source->ReadString(&(a->mUrl));
 
     AutoPtr<IInterface> info;
-    source->ReadInterfacePtrPtr((Handle32*)&info);
+    source->ReadInterfacePtr((Handle32*)&info);
     a->mExtras = (info != NULL)? (IBundle*)
             info->Probe(Elastos::Droid::Os::EIID_IBundle) : NULL;
 

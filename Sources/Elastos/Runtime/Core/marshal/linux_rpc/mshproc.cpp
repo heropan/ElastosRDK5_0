@@ -289,13 +289,6 @@ ECode Proxy_ProcessMsh_In(
                     puArgs++;
                     break;
 
-                case BT_TYPE_PUINT8:
-                case BT_TYPE_PUINT16:
-                case BT_TYPE_PUINT32:
-                    pParcel->WriteInt32Ptr((Handle32)*puArgs);
-                    puArgs++;
-                    break;
-
                 case BT_TYPE_UINT64:
 #ifdef _mips
                     // Adjust for 64bits align on mips
@@ -308,8 +301,11 @@ ECode Proxy_ProcessMsh_In(
                     puArgs += 2;
                     break;
 
+                case BT_TYPE_PUINT8:
+                case BT_TYPE_PUINT16:
+                case BT_TYPE_PUINT32:
                 case BT_TYPE_PUINT64:
-                    pParcel->WriteInt64Ptr((Handle32)*puArgs);
+                    assert(0);
                     puArgs++;
                     break;
 
@@ -330,22 +326,10 @@ ECode Proxy_ProcessMsh_In(
                     break;
 
                 case BT_TYPE_PEMUID:
-                    pParcel->WriteEMuidPtr((Handle32)*puArgs);
-                    puArgs++;
-                    break;
-
                 case BT_TYPE_PEGUID:
-                    pParcel->WriteEGuidPtr((Handle32)*puArgs);
-                    puArgs++;
-                    break;
-
                 case BT_TYPE_STRINGBUF:
-                    pParcel->WriteStringBuf((Handle32)*puArgs);
-                    puArgs++;
-                    break;
-
                 case BT_TYPE_BUFFEROF:
-                    pParcel->WriteBufferOf((Handle32)*puArgs);
+                    assert(0);
                     puArgs++;
                     break;
 
@@ -370,12 +354,7 @@ ECode Proxy_ProcessMsh_In(
                     break;
 
                 case BT_TYPE_PINTERFACE:
-                    ec = pParcel->WriteInterfacePtrPtr((Handle32)*puArgs);
-                    if (FAILED(ec)) {
-                        MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
-                                "MshProc: marshal interface, ec = %x param index: %d\n", ec, n));
-                        return ec;
-                    }
+                    assert(0);
                     puArgs++;
                     break;
 
@@ -462,14 +441,14 @@ ECode Proxy_ProcessUnmsh_Out(
                     case BT_TYPE_ARRAYOF:
                         if (!BT_IS_CALLEE(pParams[n])) {
                             PCARQUINTET p;
-                            pParcel->ReadBufferOf((Handle32*)&p);
+                            pParcel->ReadArrayOf((Handle32*)&p);
                             PCARQUINTET qArg = (PCARQUINTET)*puArgs;
                             qArg->m_used = p->m_used;
                             memcpy(qArg->m_pBuf, p->m_pBuf, p->m_size);
                             _CarQuintet_Release(p);
                         }
                         else {
-                            pParcel->ReadBufferOf((Handle32*)*puArgs);
+                            pParcel->ReadArrayOf((Handle32*)*puArgs);
                         }
                         break;
 
@@ -641,13 +620,6 @@ ECode Stub_ProcessUnmsh_In(
                     puArgs++;
                     break;
 
-                case BT_TYPE_PUINT8:
-                case BT_TYPE_PUINT16:
-                case BT_TYPE_PUINT32:
-                    pParcel->ReadInt32Ptr((Handle32*)puArgs);
-                    puArgs++;
-                    break;
-
                 case BT_TYPE_UINT64:
 #ifdef _mips
                     // Adjust for 64bits align on mips
@@ -662,8 +634,11 @@ ECode Stub_ProcessUnmsh_In(
                     puArgs += 2;
                     break;
 
+                case BT_TYPE_PUINT8:
+                case BT_TYPE_PUINT16:
+                case BT_TYPE_PUINT32:
                 case BT_TYPE_PUINT64:
-                    pParcel->ReadInt64Ptr((Handle32*)puArgs);
+                    assert(0);
                     puArgs++;
                     break;
 
@@ -679,32 +654,27 @@ ECode Stub_ProcessUnmsh_In(
                     break;
 
                 case BT_TYPE_PEMUID:
-                    pParcel->ReadEMuidPtr((Handle32*)puArgs);
-                    puArgs++;
-                    break;
-
                 case BT_TYPE_PEGUID:
-                    pParcel->ReadEGuidPtr((Handle32*)puArgs);
-                    puArgs++;
-                    break;
-
                 case BT_TYPE_STRUCT:
                 case BT_TYPE_PSTRUCT:
-                    pParcel->ReadStructPtr((Handle32*)puArgs);
+                    assert(0);
                     puArgs++;
                     break;
 
                 case BT_TYPE_STRINGBUF:
                 case BT_TYPE_BUFFEROF:
                 case BT_TYPE_ARRAYOF:
-                    pParcel->ReadBufferOf((Handle32*)puArgs);
+                    pParcel->ReadArrayOf((Handle32*)puArgs);
                     puArgs++;
                     break;
 
-                case BT_TYPE_STRING:
-                    pParcel->ReadStringPtr((Handle32*)puArgs);
+                case BT_TYPE_STRING: {
+                    String str;
+                    pParcel->ReadString(&str);
+                    *(String**)puArgs = new String(str);
                     puArgs++;
                     break;
+                }
 
                 case BT_TYPE_INTERFACE:
                     ec = pParcel->ReadInterfacePtr((Handle32*)puArgs);
@@ -717,12 +687,7 @@ ECode Stub_ProcessUnmsh_In(
                     break;
 
                 case BT_TYPE_PINTERFACE:
-                    ec = pParcel->ReadInterfacePtrPtr((Handle32*)puArgs);
-                    if (FAILED(ec)) {
-                        MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
-                                "MshProc: unmsh interface, ec = %x, param index: %d\n", ec, n));
-                        return ec;
-                    }
+                    assert(0);
                     puArgs++;
                     break;
 
@@ -793,20 +758,12 @@ ECode Stub_ProcessMsh_Out(
                         break;
 
                     case BT_TYPE_STRINGBUF:
-                        pParcel->WriteStringBuf((Handle32)*puOutBuffer);
-                        if (!BT_IS_CALLEE(pParams[n])) {
-                            PCARQUINTET p = (PCARQUINTET)*puOutBuffer;
-                            free(p->m_pBuf);
-                            free(p);
-                        }
+                        assert(0);
                         puOutBuffer++;
                         break;
 
                     case BT_TYPE_BUFFEROF:
-                        pParcel->WriteBufferOf((Handle32)puOutBuffer);
-                        puOutBuffer = (UInt32 *)((Byte *)puOutBuffer +
-                            MSH_ALIGN_4(sizeof(CarQuintet)
-                            + ((PCARQUINTET)((Byte *)puOutBuffer))->m_size));
+                        assert(0);
                         break;
 
                     case BT_TYPE_ARRAYOF:
