@@ -1,8 +1,8 @@
 
-#ifndef __CCODINGERRORACTION_H__
-#define __CCODINGERRORACTION_H__
+#ifndef __ELASTOS_IO_CCODINGERRORACTION_H__
+#define __ELASTOS_IO_CCODINGERRORACTION_H__
 
-#include "_CCodingErrorAction.h"
+#include "_Elastos_IO_CCodingErrorAction.h"
 
 namespace Elastos {
 namespace IO {
@@ -41,4 +41,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CCODINGERRORACTION_H__
+#endif // __ELASTOS_IO_CCODINGERRORACTION_H__

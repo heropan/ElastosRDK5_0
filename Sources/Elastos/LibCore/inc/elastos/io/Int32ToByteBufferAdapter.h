@@ -1,5 +1,5 @@
-#ifndef __INT32TOBYTEBUFFERADAPTER_H__
-#define __INT32TOBYTEBUFFERADAPTER_H__
+#ifndef __ELASTOS_IO_INT32TOBYTEBUFFERADAPTER_H__
+#define __ELASTOS_IO_INT32TOBYTEBUFFERADAPTER_H__
 
 #include "Int32Buffer.h"
 
@@ -169,4 +169,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __INT32TOBYTEBUFFERADAPTER_H__
+#endif // __ELASTOS_IO_INT32TOBYTEBUFFERADAPTER_H__

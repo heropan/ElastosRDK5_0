@@ -1,5 +1,5 @@
-#ifndef __CHARBUFFER_H__
-#define __CHARBUFFER_H__
+#ifndef __ELASTOS_IO_CHARBUFFER_H__
+#define __ELASTOS_IO_CHARBUFFER_H__
 
 #include "Buffer.h"
 
@@ -592,4 +592,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CHARBUFFER_H__
+#endif // __ELASTOS_IO_CHARBUFFER_H__

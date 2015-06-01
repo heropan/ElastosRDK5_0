@@ -1,6 +1,6 @@
 
-#ifndef __CFILTEROUTPUTSTREAM_H__
-#define __CFILTEROUTPUTSTREAM_H__
+#ifndef __ELASTOS_IO_CFILTEROUTPUTSTREAM_H__
+#define __ELASTOS_IO_CFILTEROUTPUTSTREAM_H__
 
 #include "_Elastos_IO_CFilterOutputStream.h"
 #include "FilterOutputStream.h"
@@ -19,4 +19,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CFILTEROUTPUTSTREAM_H__
+#endif // __ELASTOS_IO_CFILTEROUTPUTSTREAM_H__

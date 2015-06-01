@@ -1,6 +1,6 @@
 
-#ifndef __PUSHBACKINPUTSTREAM_H__
-#define __PUSHBACKINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_PUSHBACKINPUTSTREAM_H__
+#define __ELASTOS_IO_PUSHBACKINPUTSTREAM_H__
 
 #include "FilterInputStream.h"
 
@@ -241,4 +241,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__PUSHBACKINPUTSTREAM_H__
+#endif //__ELASTOS_IO_PUSHBACKINPUTSTREAM_H__

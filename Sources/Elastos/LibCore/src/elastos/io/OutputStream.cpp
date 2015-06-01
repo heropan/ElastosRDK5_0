@@ -23,7 +23,7 @@ ECode OutputStream::Flush()
 }
 
 ECode OutputStream::Write(
-    /* [in] */ const ArrayOf<Byte> & buffer)
+    /* [in] */ const ArrayOf<Byte>& buffer)
 {
     Object::Autolock lock(*this);
 
@@ -54,7 +54,7 @@ ECode OutputStream::Write(
     }
     // END android-changed
     for (Int32 i = offset; i < offset + count; i++) {
-        Write(buffer[i]);
+        Write((Int32)buffer[i]);
     }
     return NOERROR;
 }

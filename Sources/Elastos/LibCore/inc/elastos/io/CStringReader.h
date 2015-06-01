@@ -1,8 +1,8 @@
 
-#ifndef __CSTRINGREADER_H__
-#define __CSTRINGREADER_H__
+#ifndef __ELASTOS_IO_CSTRINGREADER_H__
+#define __ELASTOS_IO_CSTRINGREADER_H__
 
-#include "_CStringReader.h"
+#include "_Elastos_IO_CStringReader.h"
 #include "StringReader.h"
 
 namespace Elastos {
@@ -56,4 +56,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CSTRINGREADER_H__
+#endif // __ELASTOS_IO_CSTRINGREADER_H__

@@ -1,5 +1,5 @@
-#ifndef __FILECHANNELIMPL_H__
-#define __FILECHANNELIMPL_H__
+#ifndef __ELASTOS_IO_FILECHANNELIMPL_H__
+#define __ELASTOS_IO_FILECHANNELIMPL_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include "FileChannel.h"
@@ -186,4 +186,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __BUFFER_H__
+#endif // __ELASTOS_IO_BUFFER_H__

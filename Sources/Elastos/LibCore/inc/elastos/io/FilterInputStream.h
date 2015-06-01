@@ -1,6 +1,6 @@
 
-#ifndef __FILTERINPUTSTREAM_H__
-#define __FILTERINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_FILTERINPUTSTREAM_H__
+#define __ELASTOS_IO_FILTERINPUTSTREAM_H__
 
 #include "InputStream.h"
 

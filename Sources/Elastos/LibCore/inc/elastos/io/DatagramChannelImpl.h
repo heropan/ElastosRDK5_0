@@ -1,5 +1,5 @@
-#ifndef __DATAGRAMCHANNELIMPL_H__
-#define __DATAGRAMCHANNELIMPL_H__
+#ifndef __ELASTOS_IO_DATAGRAMCHANNELIMPL_H__
+#define __ELASTOS_IO_DATAGRAMCHANNELIMPL_H__
 
 #include "DatagramChannel.h"
 #include "DatagramSocket.h"
@@ -458,4 +458,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __DATAGRAMCHANNELIMPL_H__
+#endif // __ELASTOS_IO_DATAGRAMCHANNELIMPL_H__

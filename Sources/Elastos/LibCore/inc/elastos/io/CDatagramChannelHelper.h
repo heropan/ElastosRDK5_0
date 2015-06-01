@@ -1,7 +1,7 @@
-#ifndef __CDATAGRAMCHANNELHELPER_H__
-#define __CDATAGRAMCHANNELHELPER_H__
+#ifndef __ELASTOS_IO_CDATAGRAMCHANNELHELPER_H__
+#define __ELASTOS_IO_CDATAGRAMCHANNELHELPER_H__
 
-#include "_CDatagramChannelHelper.h"
+#include "_Elastos_IO_CDatagramChannelHelper.h"
 
 namespace Elastos {
 namespace IO {
@@ -30,4 +30,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CDATAGRAMCHANNELHELPER_H__
+#endif // __ELASTOS_IO_CDATAGRAMCHANNELHELPER_H__

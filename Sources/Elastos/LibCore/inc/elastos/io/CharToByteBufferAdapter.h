@@ -1,5 +1,5 @@
-#ifndef __CHARTOBYTEBUFFERADAPTER_H__
-#define __CHARTOBYTEBUFFERADAPTER_H__
+#ifndef __ELASTOS_IO_CHARTOBYTEBUFFERADAPTER_H__
+#define __ELASTOS_IO_CHARTOBYTEBUFFERADAPTER_H__
 
 #include "CharBuffer.h"
 #include <Elastos.CoreLibrary_server.h>
@@ -212,4 +212,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CHARTOBYTEBUFFERADAPTER_H__
+#endif // __ELASTOS_IO_CHARTOBYTEBUFFERADAPTER_H__

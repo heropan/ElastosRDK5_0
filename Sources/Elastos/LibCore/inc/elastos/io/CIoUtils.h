@@ -1,7 +1,7 @@
-#ifndef __CIOUTILS_H__
-#define __CIOUTILS_H__
+#ifndef __ELASTOS_IO_CIOUTILS_H__
+#define __ELASTOS_IO_CIOUTILS_H__
 
-#include "_CIoUtils.h"
+#include "_Elastos_IO_CIoUtils.h"
 
 namespace Elastos {
 namespace IO {

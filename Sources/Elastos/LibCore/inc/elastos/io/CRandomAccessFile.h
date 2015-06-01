@@ -1,8 +1,8 @@
 
-#ifndef __CRANDOMACCESSFILE_H__
-#define __CRANDOMACCESSFILE_H__
+#ifndef __ELASTOS_IO_CRANDOMACCESSFILE_H__
+#define __ELASTOS_IO_CRANDOMACCESSFILE_H__
 
-#include "_CRandomAccessFile.h"
+#include "_Elastos_IO_CRandomAccessFile.h"
 #include "CFileDescriptor.h"
 
 using Elastos::IO::Channels::IFileChannel;
@@ -129,7 +129,7 @@ public:
     CARAPI WriteChar(
         /* [in] */ Int32 value);
 
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const String& str);
 
     CARAPI WriteDouble(
@@ -172,4 +172,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CRANDOMACCESSFILE_H__
+#endif //__ELASTOS_IO_CRANDOMACCESSFILE_H__

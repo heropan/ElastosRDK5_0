@@ -1,6 +1,6 @@
 
-#ifndef __NATIVECONVERTER_H__
-#define __NATIVECONVERTER_H__
+#ifndef __ELASTOS_IO_NATIVECONVERTER_H__
+#define __ELASTOS_IO_NATIVECONVERTER_H__
 
 #include "Elastos.CoreLibrary_server.h"
 
@@ -107,4 +107,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__NATIVECONVERTER_H__
+#endif //__ELASTOS_IO_NATIVECONVERTER_H__

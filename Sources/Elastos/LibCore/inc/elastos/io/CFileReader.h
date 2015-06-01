@@ -1,8 +1,8 @@
 
-#ifndef __CFILEREADER_H__
-#define __CFILEREADER_H__
+#ifndef __ELASTOS_IO_CFILEREADER_H__
+#define __ELASTOS_IO_CFILEREADER_H__
 
-#include "_CFileReader.h"
+#include "_Elastos_IO_CFileReader.h"
 #include "FileReader.h"
 
 namespace Elastos {
@@ -89,4 +89,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CFILEREADER_H__
+#endif //__ELASTOS_IO_CFILEREADER_H__

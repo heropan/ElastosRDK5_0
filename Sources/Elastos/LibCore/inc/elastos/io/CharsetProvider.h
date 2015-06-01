@@ -1,5 +1,5 @@
-#ifndef __CHARSETPROVIDER_H__
-#define __CHARSETPROVIDER_H__
+#ifndef __ELASTOS_IO_CHARSETPROVIDER_H__
+#define __ELASTOS_IO_CHARSETPROVIDER_H__
 
 #include <coredef.h>
 #include "Elastos.CoreLibrary_server.h"
@@ -30,4 +30,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CHARSETPROVIDER_H__
+#endif //__ELASTOS_IO_CHARSETPROVIDER_H__

@@ -1,8 +1,8 @@
 
-#ifndef __CFLOATBUFFERHELPER_H__
-#define __CFLOATBUFFERHELPER_H__
+#ifndef __ELASTOS_IO_CFLOATBUFFERHELPER_H__
+#define __ELASTOS_IO_CFLOATBUFFERHELPER_H__
 
-#include "_CFloatBufferHelper.h"
+#include "_Elastos_IO_CFloatBufferHelper.h"
 
 namespace Elastos {
 namespace IO {
@@ -70,4 +70,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CFLOATBUFFERHELPER_H__
+#endif // __ELASTOS_IO_CFLOATBUFFERHELPER_H__

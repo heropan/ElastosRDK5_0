@@ -1,5 +1,5 @@
-#ifndef __DOUBLETOBYTEBUFFERADAPTER_H__
-#define __DOUBLETOBYTEBUFFERADAPTER_H__
+#ifndef __ELASTOS_IO_DOUBLETOBYTEBUFFERADAPTER_H__
+#define __ELASTOS_IO_DOUBLETOBYTEBUFFERADAPTER_H__
 
 #include "DoubleBuffer.h"
 
@@ -173,4 +173,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __DOUBLETOBYTEBUFFERADAPTER_H__
+#endif // __ELASTOS_IO_DOUBLETOBYTEBUFFERADAPTER_H__

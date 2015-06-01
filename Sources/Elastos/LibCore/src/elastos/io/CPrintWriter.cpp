@@ -232,18 +232,18 @@ ECode CPrintWriter::Write(
     return PrintWriter::Write(oneChar32);
 }
 
-ECode CPrintWriter::WriteChars(
+ECode CPrintWriter::Write(
     /* [in] */ const ArrayOf<Char32>& buffer)
 {
-    return PrintWriter::WriteChars(buffer);
+    return PrintWriter::Write(buffer);
 }
 
-ECode CPrintWriter::WriteChars(
+ECode CPrintWriter::Write(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return PrintWriter::WriteChars(buffer, offset, count);
+    return PrintWriter::Write(buffer, offset, count);
 }
 
 ECode CPrintWriter::WriteString(

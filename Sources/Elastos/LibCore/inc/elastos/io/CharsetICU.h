@@ -1,5 +1,5 @@
-#ifndef __CHARSETICU_H__
-#define __CHARSETICU_H__
+#ifndef __ELASTOS_IO_CHARSETICU_H__
+#define __ELASTOS_IO_CHARSETICU_H__
 
 #include "Charset.h"
 
@@ -39,4 +39,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CHARSETICU_H__
+#endif //__ELASTOS_IO_CHARSETICU_H__

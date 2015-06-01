@@ -1,6 +1,6 @@
 
-#ifndef __BUFFERFACTORY_H__
-#define __BUFFERFACTORY_H__
+#ifndef __ELASTOS_IO_BUFFERFACTORY_H__
+#define __ELASTOS_IO_BUFFERFACTORY_H__
 
 #include <elastos.h>
 #include <Elastos.CoreLibrary_server.h>
@@ -199,4 +199,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __BUFFERFACTORY_H__
+#endif // __ELASTOS_IO_BUFFERFACTORY_H__

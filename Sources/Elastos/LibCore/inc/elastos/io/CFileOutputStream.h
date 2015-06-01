@@ -1,8 +1,8 @@
 
-#ifndef __CFILEOUTPUTSTREAM_H__
-#define __CFILEOUTPUTSTREAM_H__
+#ifndef __ELASTOS_IO_CFILEOUTPUTSTREAM_H__
+#define __ELASTOS_IO_CFILEOUTPUTSTREAM_H__
 
-#include "_CFileOutputStream.h"
+#include "_Elastos_IO_CFileOutputStream.h"
 #include "FileOutputStream.h"
 
 namespace Elastos {
@@ -65,4 +65,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CFILEOUTPUTSTREAM_H__
+#endif // __ELASTOS_IO_CFILEOUTPUTSTREAM_H__

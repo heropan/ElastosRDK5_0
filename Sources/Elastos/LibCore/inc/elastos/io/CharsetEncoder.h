@@ -1,6 +1,6 @@
 
-#ifndef __CHARSETENCODER_H__
-#define __CHARSETENCODER_H__
+#ifndef __ELASTOS_IO_CHARSETENCODER_H__
+#define __ELASTOS_IO_CHARSETENCODER_H__
 
 #include <coredef.h>
 #include <elastos.h>
@@ -232,4 +232,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CHARSETENCODER_H__
+#endif // __ELASTOS_IO_CHARSETENCODER_H__

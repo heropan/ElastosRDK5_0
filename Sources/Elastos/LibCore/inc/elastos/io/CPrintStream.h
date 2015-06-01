@@ -1,8 +1,8 @@
 
-#ifndef __CPRINTSTREAM_H__
-#define __CPRINTSTREAM_H__
+#ifndef __ELASTOS_IO_CPRINTSTREAM_H__
+#define __ELASTOS_IO_CPRINTSTREAM_H__
 
-#include "_CPrintStream.h"
+#include "_Elastos_IO_CPrintStream.h"
 #include "FilterOutputStream.h"
 
 using Elastos::Core::ICharSequence;
@@ -184,4 +184,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CPRINTSTREAM_H__
+#endif //__ELASTOS_IO_CPRINTSTREAM_H__

@@ -1,7 +1,7 @@
-#ifndef __CDOUBLEBUFFERHELPER_H__
-#define __CDOUBLEBUFFERHELPER_H__
+#ifndef __ELASTOS_IO_CDOUBLEBUFFERHELPER_H__
+#define __ELASTOS_IO_CDOUBLEBUFFERHELPER_H__
 
-#include "_CDoubleBufferHelper.h"
+#include "_Elastos_IO_CDoubleBufferHelper.h"
 
 namespace Elastos {
 namespace IO {
@@ -65,4 +65,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CCHARBUFFERHELPER_H__
+#endif // __ELASTOS_IO_CCHARBUFFERHELPER_H__

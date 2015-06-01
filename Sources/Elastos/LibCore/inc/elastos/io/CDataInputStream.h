@@ -1,8 +1,8 @@
 
-#ifndef __CDATAINPUTSTREAM_H__
-#define __CDATAINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_CDATAINPUTSTREAM_H__
+#define __ELASTOS_IO_CDATAINPUTSTREAM_H__
 
-#include "_CDataInputStream.h"
+#include "_Elastos_IO_CDataInputStream.h"
 #include "DataInputStream.h"
 
 namespace Elastos {
@@ -107,4 +107,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CDATAINPUTSTREAM_H__
+#endif //__ELASTOS_IO_CDATAINPUTSTREAM_H__

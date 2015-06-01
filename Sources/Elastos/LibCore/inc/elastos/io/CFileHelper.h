@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_IO_CFILEHELPER_H__
 #define __ELASTOS_IO_CFILEHELPER_H__
 
-#include "_CFileHelper.h"
+#include "_Elastos_IO_CFileHelper.h"
 
 namespace Elastos {
 namespace IO {

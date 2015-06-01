@@ -1,8 +1,8 @@
 
-#ifndef __CCHARBUFFERHELPER_H__
-#define __CCHARBUFFERHELPER_H__
+#ifndef __ELASTOS_IO_CCHARBUFFERHELPER_H__
+#define __ELASTOS_IO_CCHARBUFFERHELPER_H__
 
-#include "_CCharBufferHelper.h"
+#include "_Elastos_IO_CCharBufferHelper.h"
 
 using Elastos::Core::ICharSequence;
 
@@ -105,4 +105,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CCHARBUFFERHELPER_H__
+#endif // __ELASTOS_IO_CCHARBUFFERHELPER_H__

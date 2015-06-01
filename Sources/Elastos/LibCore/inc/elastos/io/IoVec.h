@@ -1,5 +1,5 @@
-#ifndef __IOVEC_H__
-#define __IOVEC_H__
+#ifndef __ELASTOS_IO_IOVEC_H__
+#define __ELASTOS_IO_IOVEC_H__
 
 #include "ByteBuffer.h"
 
@@ -48,4 +48,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__IOVEC_H__
+#endif //__ELASTOS_IO_IOVEC_H__

@@ -1,6 +1,6 @@
 
-#ifndef __PUSHBACKREADER_H__
-#define __PUSHBACKREADER_H__
+#ifndef __ELASTOS_IO_PUSHBACKREADER_H__
+#define __ELASTOS_IO_PUSHBACKREADER_H__
 
 #include "FilterReader.h"
 
@@ -259,4 +259,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__PUSHBACKREADER_H__
+#endif //__ELASTOS_IO_PUSHBACKREADER_H__

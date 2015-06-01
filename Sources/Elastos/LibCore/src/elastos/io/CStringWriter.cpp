@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL_3(CStringWriter, Object, IStringWriter, ICloseable, IFlushable)
+
+CAR_OBJECT_IMPL(CStringWriter)
+
 ECode CStringWriter::Close()
 {
     return StringWriter::Close();
@@ -21,18 +25,18 @@ ECode CStringWriter::Write(
     return StringWriter::Write(oneChar32);
 }
 
-ECode CStringWriter::WriteChars(
+ECode CStringWriter::Write(
     /* [in] */ const ArrayOf<Char32> &buffer)
 {
-    return StringWriter::WriteChars(buffer);
+    return StringWriter::Write(buffer);
 }
 
-ECode CStringWriter::WriteChars(
+ECode CStringWriter::Write(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return StringWriter::WriteChars(buffer, offset, count);
+    return StringWriter::Write(buffer, offset, count);
 }
 
 ECode CStringWriter::WriteString(
@@ -113,7 +117,7 @@ ECode CStringWriter::GetLock(
 {
     VALIDATE_NOT_NULL(lockobj);
 
-    AutoPtr<IInterface> obj = StringWriter::GetLock();
+    AutoPtr<IInterface> obj = mLock;
     *lockobj = obj;
     REFCOUNT_ADD(*lockobj);
     return NOERROR;

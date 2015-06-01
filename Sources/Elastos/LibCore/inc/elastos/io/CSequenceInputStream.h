@@ -1,8 +1,8 @@
 
-#ifndef __CSEQUENCEINPUTSTREAM_H__
-#define __CSEQUENCEINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_CSEQUENCEINPUTSTREAM_H__
+#define __ELASTOS_IO_CSEQUENCEINPUTSTREAM_H__
 
-#include "_CSequenceInputStream.h"
+#include "_Elastos_IO_CSequenceInputStream.h"
 #include "SequenceInputStream.h"
 
 namespace Elastos {
@@ -58,4 +58,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CSEQUENCEINPUTSTREAM_H__
+#endif //__ELASTOS_IO_CSEQUENCEINPUTSTREAM_H__

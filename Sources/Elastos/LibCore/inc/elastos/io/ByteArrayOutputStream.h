@@ -1,6 +1,6 @@
 
-#ifndef __BYTEARRAYOUTPUTSTREAM_H__
-#define __BYTEARRAYOUTPUTSTREAM_H__
+#ifndef __ELASTOS_IO_BYTEARRAYOUTPUTSTREAM_H__
+#define __ELASTOS_IO_BYTEARRAYOUTPUTSTREAM_H__
 
 #include "OutputStream.h"
 
@@ -17,6 +17,8 @@ public:
     ByteArrayOutputStream();
 
     ~ByteArrayOutputStream();
+
+    CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ Int32 size);
@@ -146,4 +148,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__BYTEARRAYOUTPUTSTREAM_H__
+#endif //__ELASTOS_IO_BYTEARRAYOUTPUTSTREAM_H__

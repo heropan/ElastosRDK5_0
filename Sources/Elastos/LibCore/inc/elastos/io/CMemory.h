@@ -1,8 +1,8 @@
-#ifndef __IO_MEMORY_H__
-#define __IO_MEMORY_H__
+#ifndef __ELASTOS_IO_MEMORY_H__
+#define __ELASTOS_IO_MEMORY_H__
 
 #include <elastos.h>
-#include "_CMemory.h"
+#include "_Elastos_IO_CMemory.h"
 
 namespace Elastos {
 namespace IO {
@@ -228,4 +228,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__IO_MEMORY_H__
+#endif //__ELASTOS_IO_MEMORY_H__

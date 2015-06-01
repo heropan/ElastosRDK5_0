@@ -1,6 +1,6 @@
 
-#ifndef __INPUTSTREAM_H__
-#define __INPUTSTREAM_H__
+#ifndef __ELASTOS_IO_INPUTSTREAM_H__
+#define __ELASTOS_IO_INPUTSTREAM_H__
 
 #include <elastos/core/Object.h>
 

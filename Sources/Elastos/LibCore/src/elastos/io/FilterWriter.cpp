@@ -42,7 +42,7 @@ ECode FilterWriter::Flush()
     return IFlushable::Probe(mOut)->Flush();
 }
 
-ECode FilterWriter::WriteChars(
+ECode FilterWriter::Write(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -50,7 +50,7 @@ ECode FilterWriter::WriteChars(
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
-    return mOut->WriteChars(buffer, offset, count);
+    return mOut->Write(buffer, offset, count);
 }
 
 ECode FilterWriter::Write(

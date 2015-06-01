@@ -1,6 +1,6 @@
 
-#ifndef __DATAOUTPUTSTREAM_H__
-#define __DATAOUTPUTSTREAM_H__
+#ifndef __ELASTOS_IO_DATAOUTPUTSTREAM_H__
+#define __ELASTOS_IO_DATAOUTPUTSTREAM_H__
 
 #include "FilterOutputStream.h"
 
@@ -144,7 +144,7 @@ public:
      *             if an I/O error occurs while writing.
      * @see DataInput#readChar()
      */
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const String& str);
 
     /**

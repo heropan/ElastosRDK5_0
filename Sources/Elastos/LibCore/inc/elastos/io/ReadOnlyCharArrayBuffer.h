@@ -1,5 +1,5 @@
-#ifndef __READONLYCHARARRAYBUFFER_H__
-#define __READONLYCHARARRAYBUFFER_H__
+#ifndef __ELASTOS_IO_READONLYCHARARRAYBUFFER_H__
+#define __ELASTOS_IO_READONLYCHARARRAYBUFFER_H__
 
 #include "CharArrayBuffer.h"
 
@@ -213,4 +213,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __READONLYCHARARRAYBUFFER_H__
+#endif // __ELASTOS_IO_READONLYCHARARRAYBUFFER_H__

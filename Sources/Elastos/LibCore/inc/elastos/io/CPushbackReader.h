@@ -1,8 +1,8 @@
 
-#ifndef __CPUSHBACKREADER_H__
-#define __CPUSHBACKREADER_H__
+#ifndef __ELASTOS_IO_CPUSHBACKREADER_H__
+#define __ELASTOS_IO_CPUSHBACKREADER_H__
 
-#include "_CPushbackReader.h"
+#include "_Elastos_IO_CPushbackReader.h"
 #include "PushbackReader.h"
 
 namespace Elastos {
@@ -71,4 +71,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CPUSHBACKREADER_H__
+#endif // __ELASTOS_IO_CPUSHBACKREADER_H__

@@ -2,7 +2,7 @@
 #include "coredef.h"
 #include "DataOutputStream.h"
 #include <elastos/Math.h>
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::Math;
@@ -127,7 +127,7 @@ ECode DataOutputStream::WriteChar(
     return NOERROR;
 }
 
-ECode DataOutputStream::WriteChars(
+ECode DataOutputStream::Write(
     /* [in] */ const String& str)
 {
     if (str.IsNullOrEmpty())

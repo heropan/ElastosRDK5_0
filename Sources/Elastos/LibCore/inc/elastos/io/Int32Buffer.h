@@ -1,5 +1,5 @@
-#ifndef __INT32BUFFER_H__
-#define __INT32BUFFER_H__
+#ifndef __ELASTOS_IO_INT32BUFFER_H__
+#define __ELASTOS_IO_INT32BUFFER_H__
 
 #include "Buffer.h"
 
@@ -385,4 +385,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __INT32BUFFER_H__
+#endif // __ELASTOS_IO_INT32BUFFER_H__

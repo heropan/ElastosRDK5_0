@@ -1,5 +1,5 @@
-#ifndef __FLOATTOBYTEBUFFERADAPTER_H__
-#define __FLOATTOBYTEBUFFERADAPTER_H__
+#ifndef __ELASTOS_IO_FLOATTOBYTEBUFFERADAPTER_H__
+#define __ELASTOS_IO_FLOATTOBYTEBUFFERADAPTER_H__
 
 #include "FloatBuffer.h"
 
@@ -167,4 +167,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __FLOATTOBYTEBUFFERADAPTER_H__
+#endif // __ELASTOS_IO_FLOATTOBYTEBUFFERADAPTER_H__

@@ -1,5 +1,5 @@
-#ifndef __CHARARRAYBUFFER_H__
-#define __CHARARRAYBUFFER_H__
+#ifndef __ELASTOS_IO_CHARARRAYBUFFER_H__
+#define __ELASTOS_IO_CHARARRAYBUFFER_H__
 
 #include "CharBuffer.h"
 
@@ -68,4 +68,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CHARARRAYBUFFER_H__
+#endif // __ELASTOS_IO_CHARARRAYBUFFER_H__

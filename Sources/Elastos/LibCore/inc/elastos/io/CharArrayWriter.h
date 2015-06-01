@@ -1,6 +1,6 @@
 
-#ifndef __CHARARRAYWRITER_H__
-#define __CHARARRAYWRITER_H__
+#ifndef __ELASTOS_IO_CHARARRAYWRITER_H__
+#define __ELASTOS_IO_CHARARRAYWRITER_H__
 
 #include "Writer.h"
 
@@ -215,4 +215,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CHARARRAYWRITER_H__
+#endif //__ELASTOS_IO_CHARARRAYWRITER_H__

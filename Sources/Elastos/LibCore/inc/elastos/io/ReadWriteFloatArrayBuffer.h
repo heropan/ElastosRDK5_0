@@ -1,5 +1,5 @@
-#ifndef __READWRITEFLOATARRAYBUFFER_H__
-#define __READWRITEFLOATARRAYBUFFER_H__
+#ifndef __ELASTOS_IO_READWRITEFLOATARRAYBUFFER_H__
+#define __ELASTOS_IO_READWRITEFLOATARRAYBUFFER_H__
 
 #include "FloatArrayBuffer.h"
 
@@ -174,4 +174,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __READWRITEFLOATARRAYBUFFER_H__
+#endif // __ELASTOS_IO_READWRITEFLOATARRAYBUFFER_H__

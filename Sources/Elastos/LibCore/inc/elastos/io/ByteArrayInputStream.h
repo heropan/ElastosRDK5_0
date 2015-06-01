@@ -1,5 +1,5 @@
-#ifndef __BYTEARRAYINPUTSTREAM_H__
-#define __BYTEARRAYINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_BYTEARRAYINPUTSTREAM_H__
+#define __ELASTOS_IO_BYTEARRAYINPUTSTREAM_H__
 
 #include "InputStream.h"
 
@@ -140,4 +140,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __BYTEARRAYINPUTSTREAM_H__
+#endif // __ELASTOS_IO_BYTEARRAYINPUTSTREAM_H__

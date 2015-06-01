@@ -1,5 +1,5 @@
-#ifndef __READONLYINT64ARRAYBUFFER_H__
-#define __READONLYINT64ARRAYBUFFER_H__
+#ifndef __ELASTOS_IO_READONLYINT64ARRAYBUFFER_H__
+#define __ELASTOS_IO_READONLYINT64ARRAYBUFFER_H__
 
 #include "Int64ArrayBuffer.h"
 
@@ -168,4 +168,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __READONLYINT64ARRAYBUFFER_H__
+#endif // __ELASTOS_IO_READONLYINT64ARRAYBUFFER_H__

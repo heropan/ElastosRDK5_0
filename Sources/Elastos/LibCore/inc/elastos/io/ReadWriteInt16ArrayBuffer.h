@@ -1,5 +1,5 @@
-#ifndef __READWRITEInt16ARRAYBUFFER_H__
-#define __READWRITEInt16ARRAYBUFFER_H__
+#ifndef __ELASTOS_IO_READWRITEInt16ARRAYBUFFER_H__
+#define __ELASTOS_IO_READWRITEInt16ARRAYBUFFER_H__
 
 #include "Int16ArrayBuffer.h"
 
@@ -174,4 +174,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __READWRITEInt16ARRAYBUFFER_H__
+#endif // __ELASTOS_IO_READWRITEInt16ARRAYBUFFER_H__

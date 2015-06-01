@@ -1,6 +1,6 @@
 
-#ifndef __READER_H__
-#define __READER_H__
+#ifndef __ELASTOS_IO_READER_H__
+#define __ELASTOS_IO_READER_H__
 
 #include <elastos.h>
 #include "Elastos.CoreLibrary_server.h"
@@ -201,4 +201,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __READER_H__
+#endif // __ELASTOS_IO_READER_H__

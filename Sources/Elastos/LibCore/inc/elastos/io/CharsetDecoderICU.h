@@ -1,5 +1,5 @@
-#ifndef __CHARSETDECODERICU_H__
-#define __CHARSETDECODERICU_H__
+#ifndef __ELASTOS_IO_CHARSETDECODERICU_H__
+#define __ELASTOS_IO_CHARSETDECODERICU_H__
 
 #include "CharsetDecoder.h"
 
@@ -97,4 +97,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CHARSETDECODERICU_H__
+#endif //__ELASTOS_IO_CHARSETDECODERICU_H__

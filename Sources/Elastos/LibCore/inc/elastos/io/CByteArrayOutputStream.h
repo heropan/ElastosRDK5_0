@@ -1,6 +1,6 @@
 
-#ifndef __CBYTEARRAYOUTPUTSTREAM_H__
-#define __CBYTEARRAYOUTPUTSTREAM_H__
+#ifndef __ELASTOS_IO_CBYTEARRAYOUTPUTSTREAM_H__
+#define __ELASTOS_IO_CBYTEARRAYOUTPUTSTREAM_H__
 
 #include "_Elastos_IO_CByteArrayOutputStream.h"
 #include "ByteArrayOutputStream.h"
@@ -19,4 +19,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CBYTEARRAYOUTPUTSTREAM_H__
+#endif // __ELASTOS_IO_CBYTEARRAYOUTPUTSTREAM_H__

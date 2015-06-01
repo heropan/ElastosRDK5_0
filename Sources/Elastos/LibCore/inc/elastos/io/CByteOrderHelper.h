@@ -1,10 +1,10 @@
-#ifndef __CBYTEORDERHELPER_H__
-#define __CBYTEORDERHELPER_H__
+#ifndef __ELASTOS_IO_CBYTEORDERHELPER_H__
+#define __ELASTOS_IO_CBYTEORDERHELPER_H__
 
 #include <elastos.h>
 #include <Elastos.CoreLibrary_server.h>
 
-#include "_CByteOrderHelper.h"
+#include "_Elastos_IO_CByteOrderHelper.h"
 
 namespace Elastos {
 namespace IO {
@@ -49,4 +49,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CBYTEORDERHELPER_H__
+#endif //__ELASTOS_IO_CBYTEORDERHELPER_H__

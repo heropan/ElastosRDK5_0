@@ -1,6 +1,6 @@
 
-#ifndef __IOUTILS_H__
-#define __IOUTILS_H__
+#ifndef __ELASTOS_IO_IOUTILS_H__
+#define __ELASTOS_IO_IOUTILS_H__
 
 #include "Elastos.CoreLibrary_server.h"
 
@@ -62,4 +62,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__IOUTILS_H__
+#endif //__ELASTOS_IO_IOUTILS_H__

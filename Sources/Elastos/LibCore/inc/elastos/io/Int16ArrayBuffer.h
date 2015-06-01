@@ -1,5 +1,5 @@
-#ifndef __INT16ARRAYBUFFER_H__
-#define __INT16ARRAYBUFFER_H__
+#ifndef __ELASTOS_IO_INT16ARRAYBUFFER_H__
+#define __ELASTOS_IO_INT16ARRAYBUFFER_H__
 
 #include "Int16Buffer.h"
 
@@ -60,4 +60,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __INT16ARRAYBUFFER_H__
+#endif // __ELASTOS_IO_INT16ARRAYBUFFER_H__

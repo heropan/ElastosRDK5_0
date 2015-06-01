@@ -1,9 +1,11 @@
 
-#ifndef __CCHANNELS_H__
-#define __CCHANNELS_H__
+#ifndef __ELASTOS_IO_CCHANNELS_H__
+#define __ELASTOS_IO_CCHANNELS_H__
 
 #include "_Elastos_IO_Channels_CChannels.h"
+#include "Object.h"
 
+using Elastos::Core::Object;
 using Elastos::IO::Charset::ICharsetEncoder;
 using Elastos::IO::Charset::ICharsetDecoder;
 
@@ -12,8 +14,14 @@ namespace IO {
 namespace Channels{
 
 CarClass(CChannels)
+    , public Object
+    , public IChannels
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CChannels();
 
     ~CChannels();
@@ -66,4 +74,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CCHANNELS_H__
+#endif // __ELASTOS_IO_CCHANNELS_H__

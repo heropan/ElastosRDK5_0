@@ -2,7 +2,7 @@
 #include "coredef.h"
 #include "CharArrayWriter.h"
 #include <elastos/Math.h>
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 #include "CStringWrapper.h"
 
 using Elastos::Core::Character;
@@ -198,7 +198,7 @@ ECode CharArrayWriter::WriteTo(
 {
     Object::Autolock lock(mLock);
 
-    return out->WriteChars(*mBuf, 0, mCount);
+    return out->Write(*mBuf, 0, mCount);
 }
 
 ECode CharArrayWriter::Append(

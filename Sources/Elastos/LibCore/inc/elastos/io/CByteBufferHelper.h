@@ -1,7 +1,7 @@
-#ifndef __CBYTEBUFFERHELPER_H__
-#define __CBYTEBUFFERHELPER_H__
+#ifndef __ELASTOS_IO_CBYTEBUFFERHELPER_H__
+#define __ELASTOS_IO_CBYTEBUFFERHELPER_H__
 
-#include "_CByteBufferHelper.h"
+#include "_Elastos_IO_CByteBufferHelper.h"
 
 namespace Elastos {
 namespace IO {
@@ -78,4 +78,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CBYTEBUFFERHELPER_H__
+#endif // __ELASTOS_IO_CBYTEBUFFERHELPER_H__

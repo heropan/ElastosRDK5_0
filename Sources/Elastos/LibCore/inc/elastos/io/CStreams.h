@@ -1,8 +1,11 @@
-#ifndef __IO_STREAMS_H__
-#define __IO_STREAMS_H__
+#ifndef __ELASTOS_IO_STREAMS_H__
+#define __ELASTOS_IO_STREAMS_H__
 
 #include "_Elastos_IO_CStreams.h"
 #include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
+using Libcore::IO::IStreams;
 
 namespace Elastos {
 namespace IO {
@@ -120,4 +123,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__IO_STREAMS_H__
+#endif //__ELASTOS_IO_STREAMS_H__

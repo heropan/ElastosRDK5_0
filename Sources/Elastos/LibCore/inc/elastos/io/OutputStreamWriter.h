@@ -123,7 +123,7 @@ public:
      *             if this writer has already been closed or another I/O error
      *             occurs.
      */
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);

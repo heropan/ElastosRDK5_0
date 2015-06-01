@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "PushbackReader.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 namespace Elastos{
 namespace IO{

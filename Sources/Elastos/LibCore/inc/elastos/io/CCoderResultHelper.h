@@ -1,7 +1,7 @@
-#ifndef __CCODERRESULTHELPER_H__
-#define __CCODERRESULTHELPER_H__
+#ifndef __ELASTOS_IO_CCODERRESULTHELPER_H__
+#define __ELASTOS_IO_CCODERRESULTHELPER_H__
 
-#include "_CCoderResultHelper.h"
+#include "_Elastos_IO_CCoderResultHelper.h"
 
 namespace Elastos {
 namespace IO {
@@ -30,4 +30,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CCODERRESULTHELPER_H__
+#endif //__ELASTOS_IO_CCODERRESULTHELPER_H__

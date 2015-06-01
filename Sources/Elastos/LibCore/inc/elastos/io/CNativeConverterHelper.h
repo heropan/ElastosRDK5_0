@@ -1,8 +1,8 @@
 
-#ifndef __IO_CNATIVECONVERTERHELPER_H__
-#define __IO_CNATIVECONVERTERHELPER_H__
+#ifndef __ELASTOS_IO_CNATIVECONVERTERHELPER_H__
+#define __ELASTOS_IO_CNATIVECONVERTERHELPER_H__
 
-#include "_CNativeConverterHelper.h"
+#include "_Elastos_IO_CNativeConverterHelper.h"
 #include "coredef.h"
 
 using Elastos::IO::Charset::ICharset;
@@ -105,4 +105,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__IO_CNATIVECONVERTERHELPER_H__
+#endif //__ELASTOS_IO_CNATIVECONVERTERHELPER_H__

@@ -1,23 +1,17 @@
 
-#ifndef __WRITER_H__
-#define __WRITER_H__
+#ifndef __ELASTOS_IO_WRITER_H__
+#define __ELASTOS_IO_WRITER_H__
 
 #include <elastos.h>
 #include <elrefbase.h>
-#include "coredef.h"
 #include <elastos/core/Object.h>
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
 
 namespace Elastos {
 namespace IO {
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Object;
 using Elastos::Core::IAppendable;
+using Elastos::Core::Object;
 
 class Writer
     : public Object
@@ -211,9 +205,10 @@ protected:
 
 protected:
     IObject* mLock; // May equal to this. Can not use AutoPtr.
+
 };
 
 } // namespace IO
 } // namespace Elastos
 
-#endif //__WRITER_H__
+#endif //__ELASTOS_IO_WRITER_H__

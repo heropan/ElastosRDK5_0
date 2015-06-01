@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "PushbackInputStream.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 namespace Elastos{
 namespace IO{

@@ -1,8 +1,8 @@
 
-#ifndef __CINT64BUFFERHELPER_H__
-#define __CINT64BUFFERHELPER_H__
+#ifndef __ELASTOS_IO_CINT64BUFFERHELPER_H__
+#define __ELASTOS_IO_CINT64BUFFERHELPER_H__
 
-#include "_CInt64BufferHelper.h"
+#include "_Elastos_IO_CInt64BufferHelper.h"
 
 namespace Elastos {
 namespace IO {
@@ -68,4 +68,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CINT64BUFFERHELPER_H__
+#endif // __ELASTOS_IO_CINT64BUFFERHELPER_H__

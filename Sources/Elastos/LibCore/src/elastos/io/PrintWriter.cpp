@@ -11,7 +11,7 @@
 #include "CFormatter.h"
 #include <elastos/CSystem.h>
 #endif
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 #include <elastos/StringUtils.h>
 #include <elastos/Slogger.h>
 
@@ -397,13 +397,13 @@ void PrintWriter::SetError()
     mIoError = TRUE;
 }
 
-ECode PrintWriter::WriteChars(
+ECode PrintWriter::Write(
     /* [in] */ const ArrayOf<Char32>& buffer)
 {
-    return WriteChars(buffer, 0, buffer.GetLength());
+    return Write(buffer, 0, buffer.GetLength());
 }
 
-ECode PrintWriter::WriteChars(
+ECode PrintWriter::Write(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -431,7 +431,7 @@ ECode PrintWriter::DoWrite(
         String info(buf);
         Slogger::D("PrintWriter", " >> %s", info.string());
 #endif
-        if (FAILED(mOut->WriteChars(buf, offset, count))) {
+        if (FAILED(mOut->Write(buf, offset, count))) {
             SetError();
         }
     }
@@ -446,7 +446,7 @@ ECode PrintWriter::WriteString(
     /* [in] */ const String& str)
 {
     AutoPtr<ArrayOf<Char32> > tmp = str.GetChars();
-    return WriteChars(*tmp);
+    return Write(*tmp);
 }
 
 ECode PrintWriter::WriteString(

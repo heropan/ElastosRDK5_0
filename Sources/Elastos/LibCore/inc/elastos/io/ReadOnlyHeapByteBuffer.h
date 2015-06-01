@@ -1,5 +1,5 @@
-#ifndef __READONLYHEAPBYTEBUFFER_H__
-#define __READONLYHEAPBYTEBUFFER_H__
+#ifndef __ELASTOS_IO_READONLYHEAPBYTEBUFFER_H__
+#define __ELASTOS_IO_READONLYHEAPBYTEBUFFER_H__
 
 #include "HeapByteBuffer.h"
 
@@ -277,4 +277,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __READONLYHEAPBYTEBUFFER_H__
+#endif // __ELASTOS_IO_READONLYHEAPBYTEBUFFER_H__

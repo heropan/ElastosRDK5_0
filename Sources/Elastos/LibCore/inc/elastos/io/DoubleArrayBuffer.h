@@ -1,5 +1,5 @@
-#ifndef __DOUBLEARRAYBUFFER_H__
-#define __DOUBLEARRAYBUFFER_H__
+#ifndef __ELASTOS_IO_DOUBLEARRAYBUFFER_H__
+#define __ELASTOS_IO_DOUBLEARRAYBUFFER_H__
 
 #include "DoubleBuffer.h"
 
@@ -60,4 +60,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __DOUBLEARRAYBUFFER_H__
+#endif // __ELASTOS_IO_DOUBLEARRAYBUFFER_H__

@@ -1,8 +1,8 @@
 
-#ifndef __CSTRINGBUFFERINPUTSTREAM_H__
-#define __CSTRINGBUFFERINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_CSTRINGBUFFERINPUTSTREAM_H__
+#define __ELASTOS_IO_CSTRINGBUFFERINPUTSTREAM_H__
 
-#include "_CStringBufferInputStream.h"
+#include "_Elastos_IO_CStringBufferInputStream.h"
 #include "StringBufferInputStream.h"
 
 namespace Elastos {
@@ -55,4 +55,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CSTRINGBUFFERINPUTSTREAM_H__
+#endif // __ELASTOS_IO_CSTRINGBUFFERINPUTSTREAM_H__

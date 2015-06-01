@@ -1,6 +1,6 @@
 
-#ifndef __FILTERWRITER_H__
-#define __FILTERWRITER_H__
+#ifndef __ELASTOS_IO_FILTERWRITER_H__
+#define __ELASTOS_IO_FILTERWRITER_H__
 
 #include "elastos/io/Writer.h"
 
@@ -55,7 +55,7 @@ protected:
      * @throws IOException
      *             if an error occurs while writing to this writer.
      */
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -101,4 +101,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__FILTERWRITER_H__
+#endif //__ELASTOS_IO_FILTERWRITER_H__

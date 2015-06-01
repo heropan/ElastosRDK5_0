@@ -1,7 +1,7 @@
-#ifndef __CSELECTORPROVIDERHELPER_H__
-#define __CSELECTORPROVIDERHELPER_H__
+#ifndef __ELASTOS_IO_CSELECTORPROVIDERHELPER_H__
+#define __ELASTOS_IO_CSELECTORPROVIDERHELPER_H__
 
-#include "_CSelectorProviderHelper.h"
+#include "_Elastos_IO_CSelectorProviderHelper.h"
 
 namespace Elastos {
 namespace IO {
@@ -38,4 +38,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CDATAGRAMCHANNELHELPER_H__
+#endif // __ELASTOS_IO_CDATAGRAMCHANNELHELPER_H__

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_IO_CHARSET_CMODIFIEDUTF8_H__
 #define __ELASTOS_IO_CHARSET_CMODIFIEDUTF8_H__
 
-#include "_CModifiedUtf8.h"
+#include "_Elastos_IO_CModifiedUtf8.h"
 
 namespace Elastos {
 namespace IO {

@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "StringWriter.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 
@@ -10,7 +10,7 @@ namespace IO {
 
 StringWriter::StringWriter()
 {
-    mBufLock = new LockObject();
+    mBufLock = new Object();
 }
 
 StringWriter::~StringWriter()
@@ -82,7 +82,7 @@ ECode StringWriter::Write(
     return NOERROR;
 }
 
-ECode StringWriter::WriteChars(
+ECode StringWriter::Write(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -106,7 +106,7 @@ ECode StringWriter::WriteChars(
     Int32 dstOffset = 0;
     FAIL_RETURN(Character::ToChars(buffer, offset, count, (ArrayOf<Char8>**)&dst, &dstOffset));
 
-    mBuf->AppendString(String(dst->GetPayload()));
+    mBuf->Append(String(dst->GetPayload()));
 
     return NOERROR;
 }
@@ -114,7 +114,7 @@ ECode StringWriter::WriteChars(
 ECode StringWriter::WriteString(
     /* [in] */ const String& str)
 {
-    return mBuf->AppendString(str);
+    return mBuf->Append(str);
 }
 
 ECode StringWriter::WriteString(
@@ -122,7 +122,7 @@ ECode StringWriter::WriteString(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return mBuf->AppendString(str.Substring(offset, offset + count));
+    return mBuf->Append(str.Substring(offset, offset + count));
 }
 
 ECode StringWriter::AppendChar(

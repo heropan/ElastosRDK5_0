@@ -1,6 +1,6 @@
 
-#ifndef __INPUTSTREAMREADER_H__
-#define __INPUTSTREAMREADER_H__
+#ifndef __ELASTOS_IO_INPUTSTREAMREADER_H__
+#define __ELASTOS_IO_INPUTSTREAMREADER_H__
 
 #include "Reader.h"
 
@@ -157,4 +157,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__INPUTSTREAMREADER_H__
+#endif //__ELASTOS_IO_INPUTSTREAMREADER_H__

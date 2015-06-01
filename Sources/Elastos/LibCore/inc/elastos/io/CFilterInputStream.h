@@ -1,6 +1,6 @@
 
-#ifndef __CFILTERINPUTSTREAM_H__
-#define __CFILTERINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_CFILTERINPUTSTREAM_H__
+#define __ELASTOS_IO_CFILTERINPUTSTREAM_H__
 
 #include "_Elastos_IO_CFilterInputStream.h"
 #include "FilterInputStream.h"
@@ -18,4 +18,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CFILTERINPUTSTREAM_H__
+#endif // __ELASTOS_IO_CFILTERINPUTSTREAM_H__

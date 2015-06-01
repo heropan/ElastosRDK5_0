@@ -5,7 +5,7 @@
 #include "ByteBuffer.h"
 #include "InputStream.h"
 #include "OutputStream.h"
-#include "CStreams.h"
+// #include "CStreams.h"
 #include "elastos/core/Math.h"
 
 using Elastos::IO::InputStream;
@@ -17,6 +17,10 @@ namespace Channels{
 
 class IChannelInputStream;
 class IChannelOutputStream;
+
+CAR_INTERFACE_IMPL(CChannels, Object, IChannels)
+
+CAR_OBJECT_IMPL(CChannels)
 
 CChannels::CChannels() {}
 
@@ -121,9 +125,10 @@ public:
     ECode Read()
     {
         Int32 nRead;
-        AutoPtr<IStreams> stream;
-        CStreams::AcquireSingleton((IStreams**)&stream);
-        stream->ReadSingleByte(this, &nRead);
+        assert(0 && "TODO"); //wangguangming
+        // AutoPtr<IStreams> stream;
+        // CStreams::AcquireSingleton((IStreams**)&stream);
+        // stream->ReadSingleByte(this, &nRead);
         return nRead;
     }
 
@@ -131,7 +136,7 @@ public:
     {
         IByteBuffer *buffer;
         ByteBuffer::WrapArray(target, offset, length, &buffer);
-        CheckBlocking(mChannel);
+        CheckBlocking(IChannel::Probe(mChannel));
         Int32 nRead;
         mChannel->ReadByteBuffer(buffer, &nRead);
         return nRead;
@@ -160,7 +165,7 @@ public:
 
     ECode Close()
     {
-        mChannel->Close();
+        ICloseable::Probe(mChannel)->Close();
         return NOERROR;
     }
 
@@ -170,7 +175,7 @@ class IChannelOutputStream : public IOutputStream
 {
 private:
         IWritableByteChannel *mChannel;
-        Mutex mLock;
+        Object mLock;
 
 public:
         IChannelOutputStream(IWritableByteChannel *channel)
@@ -202,7 +207,7 @@ public:
         {
             AutoPtr<IByteBuffer> buffer;
             ByteBuffer::WrapArray(source, offset, length, (IByteBuffer **)&buffer);
-            CheckBlocking(mChannel);
+            CheckBlocking(IChannel::Probe(mChannel));
             Int32 total = 0;
             Int32 nWrite = 0;
             while(total < length)
@@ -215,7 +220,7 @@ public:
 
         ECode Close()
         {
-            mChannel->Close();
+            ICloseable::Probe(mChannel)->Close();
             return NOERROR;
         }
 };

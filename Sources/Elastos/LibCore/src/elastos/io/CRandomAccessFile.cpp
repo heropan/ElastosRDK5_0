@@ -5,7 +5,7 @@
 #include "IoUtils.h"
 #include "NioUtils.h"
 #include <elastos/Math.h>
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 #include <elastos/StringBuilder.h>
 #include "COsConstants.h"
 #include "CIoBridge.h"
@@ -620,7 +620,7 @@ ECode CRandomAccessFile::WriteChar(
     return WriteBytes(buffer, 0, len);
 }
 
-ECode CRandomAccessFile::WriteChars(
+ECode CRandomAccessFile::Write(
     /* [in] */ const String& str)
 {
     if (str.IsNullOrEmpty())

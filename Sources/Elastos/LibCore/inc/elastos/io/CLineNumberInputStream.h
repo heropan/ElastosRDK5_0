@@ -1,8 +1,8 @@
 
-#ifndef __CLINENUMBERINPUTSTREAM_H__
-#define __CLINENUMBERINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_CLINENUMBERINPUTSTREAM_H__
+#define __ELASTOS_IO_CLINENUMBERINPUTSTREAM_H__
 
-#include "_CLineNumberInputStream.h"
+#include "_Elastos_IO_CLineNumberInputStream.h"
 #include "LineNumberInputStream.h"
 
 namespace Elastos {
@@ -60,4 +60,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CLINENUMBERINPUTSTREAM_H__
+#endif // __ELASTOS_IO_CLINENUMBERINPUTSTREAM_H__

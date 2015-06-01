@@ -1,8 +1,8 @@
 
-#ifndef __CDATAOUTPUTSTREAM_H__
-#define __CDATAOUTPUTSTREAM_H__
+#ifndef __ELASTOS_IO_CDATAOUTPUTSTREAM_H__
+#define __ELASTOS_IO_CDATAOUTPUTSTREAM_H__
 
-#include "_CDataOutputStream.h"
+#include "_Elastos_IO_CDataOutputStream.h"
 #include "DataOutputStream.h"
 
 namespace Elastos {
@@ -55,7 +55,7 @@ public:
     CARAPI WriteChar(
         /* [in] */ Int32 val);
 
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const String& str);
 
     CARAPI WriteDouble(

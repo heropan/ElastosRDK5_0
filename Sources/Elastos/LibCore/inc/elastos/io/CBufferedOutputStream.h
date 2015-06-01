@@ -1,6 +1,6 @@
 
-#ifndef __CBUFFEREDOUTPUTSTREAM_H__
-#define __CBUFFEREDOUTPUTSTREAM_H__
+#ifndef __ELASTOS_IO_CBUFFEREDOUTPUTSTREAM_H__
+#define __ELASTOS_IO_CBUFFEREDOUTPUTSTREAM_H__
 
 #include "_Elastos_IO_CBufferedOutputStream.h"
 #include "BufferedOutputStream.h"
@@ -19,4 +19,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CBUFFEREDOUTPUTSTREAM_H__
+#endif // __ELASTOS_IO_CBUFFEREDOUTPUTSTREAM_H__

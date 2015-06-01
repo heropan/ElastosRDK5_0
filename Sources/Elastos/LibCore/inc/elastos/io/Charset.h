@@ -1,5 +1,5 @@
-#ifndef __CHAARSET_H__
-#define __CHAARSET_H__
+#ifndef __ELASTOS_IO_CHAARSET_H__
+#define __ELASTOS_IO_CHAARSET_H__
 
 #ifndef __USE_MALLOC
 #define __USE_MALLOC
@@ -134,4 +134,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CHAARSET_H__
+#endif //__ELASTOS_IO_CHAARSET_H__

@@ -1,5 +1,5 @@
-#ifndef __DOUBLEBUFFER_H__
-#define __DOUBLEBUFFER_H__
+#ifndef __ELASTOS_IO_DOUBLEBUFFER_H__
+#define __ELASTOS_IO_DOUBLEBUFFER_H__
 
 #include "Buffer.h"
 
@@ -414,4 +414,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __DOUBLEBUFFER_H__
+#endif // __ELASTOS_IO_DOUBLEBUFFER_H__

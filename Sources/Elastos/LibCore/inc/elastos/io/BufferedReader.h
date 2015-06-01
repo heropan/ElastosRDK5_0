@@ -1,6 +1,6 @@
 
-#ifndef __BUFFEREDREADER_H__
-#define __BUFFEREDREADER_H__
+#ifndef __ELASTOS_IO_BUFFEREDREADER_H__
+#define __ELASTOS_IO_BUFFEREDREADER_H__
 
 #include "Reader.h"
 
@@ -283,4 +283,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__BUFFEREDREADER_H__
+#endif //__ELASTOS_IO_BUFFEREDREADER_H__

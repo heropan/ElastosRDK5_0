@@ -1,5 +1,5 @@
-#ifndef __CUNSAFEBYTESEQUENCE_H__
-#define __CUNSAFEBYTESEQUENCE_H__
+#ifndef __ELASTOS_IO_CUNSAFEBYTESEQUENCE_H__
+#define __ELASTOS_IO_CUNSAFEBYTESEQUENCE_H__
 
 #include <_CUnsafeByteSequence.h>
 

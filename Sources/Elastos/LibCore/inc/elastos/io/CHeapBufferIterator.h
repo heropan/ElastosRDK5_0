@@ -1,7 +1,7 @@
-#ifndef __IO_HEAP_BUFFER_ITERATOR_H__
-#define __IO_HEAP_BUFFER_ITERATOR_H__
+#ifndef __ELASTOS_IO_HEAP_BUFFER_ITERATOR_H__
+#define __ELASTOS_IO_HEAP_BUFFER_ITERATOR_H__
 
-#include "_CHeapBufferIterator.h"
+#include "_Elastos_IO_CHeapBufferIterator.h"
 
 namespace Elastos {
 namespace IO {
@@ -74,4 +74,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__IO_HEAP_BUFFER_ITERATOR_H__
+#endif //__ELASTOS_IO_HEAP_BUFFER_ITERATOR_H__

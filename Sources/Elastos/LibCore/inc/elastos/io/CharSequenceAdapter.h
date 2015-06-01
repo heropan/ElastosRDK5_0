@@ -1,5 +1,5 @@
-#ifndef __CHARSEQUENCEADAPTER_H__
-#define __CHARSEQUENCEADAPTER_H__
+#ifndef __ELASTOS_IO_CHARSEQUENCEADAPTER_H__
+#define __ELASTOS_IO_CHARSEQUENCEADAPTER_H__
 
 #include "CharBuffer.h"
 #include <elastos.h>
@@ -209,4 +209,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CHARSEQUENCEADAPTER_H__
+#endif // __ELASTOS_IO_CHARSEQUENCEADAPTER_H__

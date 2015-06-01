@@ -1,5 +1,5 @@
-#ifndef __BASEBYTEBUFFER_H__
-#define __BASEBYTEBUFFER_H__
+#ifndef __ELASTOS_IO_BASEBYTEBUFFER_H__
+#define __ELASTOS_IO_BASEBYTEBUFFER_H__
 
 #include "ByteBuffer.h"
 #include "MemoryBlock.h"
@@ -56,4 +56,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __BASEBYTEBUFFER_H__
+#endif // __ELASTOS_IO_BASEBYTEBUFFER_H__

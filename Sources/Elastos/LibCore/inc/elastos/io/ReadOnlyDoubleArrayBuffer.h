@@ -1,5 +1,5 @@
-#ifndef __READONLYDOUBLEARRAYBUFFER_H__
-#define __READONLYDOUBLEARRAYBUFFER_H__
+#ifndef __ELASTOS_IO_READONLYDOUBLEARRAYBUFFER_H__
+#define __ELASTOS_IO_READONLYDOUBLEARRAYBUFFER_H__
 
 #include "DoubleArrayBuffer.h"
 
@@ -173,4 +173,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __READONLYDOUBLEARRAYBUFFER_H__
+#endif // __ELASTOS_IO_READONLYDOUBLEARRAYBUFFER_H__

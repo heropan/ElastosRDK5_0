@@ -1,5 +1,5 @@
-#ifndef __MAPPEDBYTEBUFFERADAPTER_H__
-#define __MAPPEDBYTEBUFFERADAPTER_H__
+#ifndef __ELASTOS_IO_MAPPEDBYTEBUFFERADAPTER_H__
+#define __ELASTOS_IO_MAPPEDBYTEBUFFERADAPTER_H__
 
 #include "MappedByteBuffer.h"
 
@@ -307,4 +307,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __MAPPEDBYTEBUFFERADAPTER_H__
+#endif // __ELASTOS_IO_MAPPEDBYTEBUFFERADAPTER_H__

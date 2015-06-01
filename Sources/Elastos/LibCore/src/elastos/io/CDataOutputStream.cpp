@@ -93,10 +93,10 @@ ECode CDataOutputStream::WriteChar(
     return DataOutputStream::WriteChar(val);
 }
 
-ECode CDataOutputStream::WriteChars(
+ECode CDataOutputStream::Write(
     /* [in] */ const String& str)
 {
-    return DataOutputStream::WriteChars(str);
+    return DataOutputStream::Write(str);
 }
 
 ECode CDataOutputStream::WriteDouble(

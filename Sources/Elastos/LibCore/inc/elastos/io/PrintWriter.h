@@ -1,6 +1,6 @@
 
-#ifndef __PRINTWRITR_H__
-#define __PRINTWRITR_H__
+#ifndef __ELASTOS_IO_PRINTWRITR_H__
+#define __ELASTOS_IO_PRINTWRITR_H__
 
 #include <elastos.h>
 #ifdef ELASTOS_CORELIBRARY
@@ -106,10 +106,10 @@ public:
     CARAPI PrintBooleanln(
         /* [in] */ Boolean result);
 
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer);
 
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -200,4 +200,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__PRINTWRITR_H__
+#endif //__ELASTOS_IO_PRINTWRITR_H__

@@ -1,5 +1,5 @@
-#ifndef __MAPPEDBYTEBUFFER_H__
-#define __MAPPEDBYTEBUFFER_H__
+#ifndef __ELASTOS_IO_MAPPEDBYTEBUFFER_H__
+#define __ELASTOS_IO_MAPPEDBYTEBUFFER_H__
 
 #include "ByteBuffer.h"
 #include "DirectByteBuffer.h"
@@ -73,4 +73,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __MAPPEDBYTEBUFFER_H__
+#endif // __ELASTOS_IO_MAPPEDBYTEBUFFER_H__

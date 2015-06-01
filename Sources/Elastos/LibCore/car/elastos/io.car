@@ -141,15 +141,67 @@ module
     //     interface IStreams;
     // }
 
-    // namespace Channels {
+    class CByteArrayOutputStream {
+        /**
+         * Constructs a new ByteArrayOutputStream with a default size of 32 bytes.
+         * If more than 32 bytes are written to this instance, the underlying byte
+         * array will expand.
+         */
+        constructor();
 
-    //     class CChannels {
-    //         constructor();
+        /**
+         * Constructs a new {@code ByteArrayOutputStream} with a default size of
+         * {@code size} bytes. If more than {@code size} bytes are written to this
+         * instance, the underlying byte array will expand.
+         *
+         * @param size
+         *            initial size for the underlying byte array, must be
+         *            non-negative.
+         * @throws IllegalArgumentException
+         *             if {@code size} < 0.
+         */
+        constructor(
+            [in] Int32 size);
 
-    //         interface IChannels;
-    //     }
+        interface IByteArrayOutputStream;
+        interface IFlushable;
+    }
 
-    // } // namespace Channels
+    class CStringWriter {
+        /**
+         * Constructs a new {@code StringWriter} which has a {@link StringBuffer}
+         * allocated with the default size of 16 characters. The {@code
+         * StringBuffer} is also the {@code lock} used to synchronize access to this
+         * writer.
+         */
+        constructor();
+
+        /**
+         * Constructs a new {@code StringWriter} which has a {@link StringBuffer}
+         * allocated with a size of {@code initialSize} characters. The {@code
+         * StringBuffer} is also the {@code lock} used to synchronize access to this
+         * writer.
+         *
+         * @param initialSize
+         *            the intial size of the target string buffer.
+         */
+        constructor(
+            [in] Int32 initialSize);
+
+        interface IStringWriter;
+        interface ICloseable;
+        interface IFlushable;
+    }
+
+    namespace Channels {
+
+        class CChannels {
+            constructor();
+
+            interface IChannels;
+        }
+
+    } // namespace Channels
 
     class CFilterInputStream {
         constructor(

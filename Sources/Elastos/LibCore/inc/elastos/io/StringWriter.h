@@ -1,9 +1,9 @@
 
-#ifndef __STRINGWRITER_H__
-#define __STRINGWRITER_H__
+#ifndef __ELASTOS_IO_STRINGWRITER_H__
+#define __ELASTOS_IO_STRINGWRITER_H__
 
-#include "elastos/io/Writer.h"
-#include <elastos/StringBuffer.h>
+#include "Writer.h"
+#include <elastos/core/StringBuffer.h>
 
 namespace Elastos {
 namespace IO {
@@ -95,7 +95,7 @@ public:
      *             if {@code offset < 0} or {@code count < 0}, or if {@code
      *             offset + count} is greater than the size of {@code buf}.
      */
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -181,10 +181,10 @@ public:
 
 private:
     AutoPtr<StringBuffer> mBuf;
-    AutoPtr<LockObject> mBufLock;
+    AutoPtr<Object> mBufLock;
 };
 
 } // namespace IO
 } // namespace Elastos
 
-#endif //__STRINGWRITER_H__
+#endif // __ELASTOS_IO_STRINGWRITER_H__

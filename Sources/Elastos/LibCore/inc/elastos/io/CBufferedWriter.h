@@ -1,6 +1,6 @@
 
-#ifndef __CBUFFEREDWRITER_H__
-#define __CBUFFEREDWRITER_H__
+#ifndef __ELASTOS_IO_CBUFFEREDWRITER_H__
+#define __ELASTOS_IO_CBUFFEREDWRITER_H__
 
 #include "_Elastos_IO_CBufferedWriter.h"
 #include "BufferedWriter.h"
@@ -18,4 +18,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CBUFFEREDWRITER_H__
+#endif // __ELASTOS_IO_CBUFFEREDWRITER_H__

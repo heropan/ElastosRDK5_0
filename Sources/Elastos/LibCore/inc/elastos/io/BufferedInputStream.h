@@ -1,6 +1,6 @@
 
-#ifndef __BUFFEREDINPUTSTREAM_H__
-#define __BUFFEREDINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_BUFFEREDINPUTSTREAM_H__
+#define __ELASTOS_IO_BUFFEREDINPUTSTREAM_H__
 
 #include "FilterInputStream.h"
 
@@ -190,4 +190,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__BUFFEREDINPUTSTREAM_H__
+#endif //__ELASTOS_IO_BUFFEREDINPUTSTREAM_H__

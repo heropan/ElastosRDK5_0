@@ -89,18 +89,18 @@ ECode CFileWriter::Write(
     return FileWriter::Write(oneChar32);
 }
 
-ECode CFileWriter::WriteChars(
+ECode CFileWriter::Write(
     /* [in] */ const ArrayOf<Char32>& buffer)
 {
-    return FileWriter::WriteChars(buffer);
+    return FileWriter::Write(buffer);
 }
 
-ECode CFileWriter::WriteChars(
+ECode CFileWriter::Write(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return FileWriter::WriteChars(buffer, offset, count);
+    return FileWriter::Write(buffer, offset, count);
 }
 
 ECode CFileWriter::WriteString(

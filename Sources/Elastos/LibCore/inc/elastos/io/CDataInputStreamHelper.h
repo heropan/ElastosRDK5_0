@@ -1,8 +1,8 @@
 
-#ifndef __CDATAINPUTSTREAMHELPER_H__
-#define __CDATAINPUTSTREAMHELPER_H__
+#ifndef __ELASTOS_IO_CDATAINPUTSTREAMHELPER_H__
+#define __ELASTOS_IO_CDATAINPUTSTREAMHELPER_H__
 
-#include "_CDataInputStreamHelper.h"
+#include "_Elastos_IO_CDataInputStreamHelper.h"
 
 namespace Elastos {
 namespace IO {
@@ -18,4 +18,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CDATAINPUTSTREAMHELPER_H__
+#endif //__ELASTOS_IO_CDATAINPUTSTREAMHELPER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __FILEWRITER_H__
-#define __FILEWRITER_H__
+#ifndef __ELASTOS_IO_FILEWRITER_H__
+#define __ELASTOS_IO_FILEWRITER_H__
 
 #include "OutputStreamWriter.h"
 
@@ -15,4 +15,4 @@ class FileWriter
 } // namespace IO
 } // namespace Elastos
 
-#endif //__FILEWRITER_H__
+#endif //__ELASTOS_IO_FILEWRITER_H__

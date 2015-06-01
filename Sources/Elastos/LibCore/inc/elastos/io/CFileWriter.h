@@ -1,8 +1,8 @@
 
-#ifndef __CFILEWRITER_H__
-#define __CFILEWRITER_H__
+#ifndef __ELASTOS_IO_CFILEWRITER_H__
+#define __ELASTOS_IO_CFILEWRITER_H__
 
-#include "_CFileWriter.h"
+#include "_Elastos_IO_CFileWriter.h"
 #include "FileWriter.h"
 
 namespace Elastos {
@@ -36,10 +36,10 @@ public:
     CARAPI Write(
         /* [in] */ Int32 oneChar32);
 
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer);
 
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -76,4 +76,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CFILEWRITER_H__
+#endif //__ELASTOS_IO_CFILEWRITER_H__

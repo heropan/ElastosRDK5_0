@@ -155,7 +155,7 @@ ECode OutputStreamWriter::Write(
     return Convert(chars);
 }
 
-ECode OutputStreamWriter::WriteChars(
+ECode OutputStreamWriter::Write(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)

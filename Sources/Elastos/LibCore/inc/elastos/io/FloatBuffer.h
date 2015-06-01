@@ -1,5 +1,5 @@
-#ifndef __FLOATBUFFER_H__
-#define __FLOATBUFFER_H__
+#ifndef __ELASTOS_IO_FLOATBUFFER_H__
+#define __ELASTOS_IO_FLOATBUFFER_H__
 
 #include "Buffer.h"
 
@@ -177,4 +177,4 @@ public:
 };
 } // namespace IO
 } // namespace Elastos
-#endif // __FLOATBUFFER_H__
+#endif // __ELASTOS_IO_FLOATBUFFER_H__

@@ -116,4 +116,3 @@ private:
 } // namespace Elastos
 
 #endif
-

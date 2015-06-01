@@ -6,7 +6,7 @@
 #include "CFileOutputStream.h"
 #include "CLocale.h"
 #include "CFormatter.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 #include <elastos/StringUtils.h>
 
 using Elastos::Core::Character;

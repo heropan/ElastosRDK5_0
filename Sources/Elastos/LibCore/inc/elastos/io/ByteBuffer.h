@@ -1,6 +1,6 @@
 
-#ifndef __BYTEBUFFER_H__
-#define __BYTEBUFFER_H__
+#ifndef __ELASTOS_IO_BYTEBUFFER_H__
+#define __ELASTOS_IO_BYTEBUFFER_H__
 
 #include "Buffer.h"
 
@@ -986,4 +986,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __BYTEBUFFER_H__
+#endif // __ELASTOS_IO_BYTEBUFFER_H__

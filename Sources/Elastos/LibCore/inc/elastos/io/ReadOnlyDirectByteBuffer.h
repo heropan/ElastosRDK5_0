@@ -1,5 +1,5 @@
-#ifndef __READONLYDIRECTBYTEBUFFER_H__
-#define __READONLYDIRECTBYTEBUFFER_H__
+#ifndef __ELASTOS_IO_READONLYDIRECTBYTEBUFFER_H__
+#define __ELASTOS_IO_READONLYDIRECTBYTEBUFFER_H__
 
 #include "DirectByteBuffer.h"
 #include "MemoryBlock.h"
@@ -278,4 +278,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __READONLYDIRECTBYTEBUFFER_H__
+#endif // __ELASTOS_IO_READONLYDIRECTBYTEBUFFER_H__

@@ -1,5 +1,5 @@
-#ifndef __HEAPBYTEBUFFER_H__
-#define __HEAPBYTEBUFFER_H__
+#ifndef __ELASTOS_IO_HEAPBYTEBUFFER_H__
+#define __ELASTOS_IO_HEAPBYTEBUFFER_H__
 
 #include "BaseByteBuffer.h"
 
@@ -131,4 +131,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __HEAPBYTEBUFFER_H__
+#endif // __ELASTOS_IO_HEAPBYTEBUFFER_H__

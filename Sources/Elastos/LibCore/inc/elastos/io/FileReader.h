@@ -1,6 +1,6 @@
 
-#ifndef __FILEREADER_H__
-#define __FILEREADER_H__
+#ifndef __ELASTOS_IO_FILEREADER_H__
+#define __ELASTOS_IO_FILEREADER_H__
 
 #include "InputStreamReader.h"
 
@@ -15,4 +15,4 @@ class FileReader
 } // namespace IO
 } // namespace Elastos
 
-#endif //__FILEREADER_H__
+#endif //__ELASTOS_IO_FILEREADER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __FILTERREADER_H__
-#define __FILTERREADER_H__
+#ifndef __ELASTOS_IO_FILTERREADER_H__
+#define __ELASTOS_IO_FILTERREADER_H__
 
 #include "Reader.h"
 
@@ -160,4 +160,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__FILTERREADER_H__
+#endif //__ELASTOS_IO_FILTERREADER_H__

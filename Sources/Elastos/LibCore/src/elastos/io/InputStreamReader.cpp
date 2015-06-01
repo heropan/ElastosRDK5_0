@@ -7,7 +7,7 @@
 #include "ByteBuffer.h"
 #include "CCodingErrorAction.h"
 #include <elastos/Math.h>
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::IO::Charset::CCoderResult;

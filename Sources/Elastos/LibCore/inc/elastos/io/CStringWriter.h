@@ -1,7 +1,7 @@
-#ifndef __CSTRINGWRITER_H__
-#define __CSTRINGWRITER_H__
+#ifndef __ELASTOS_IO_CSTRINGWRITER_H__
+#define __ELASTOS_IO_CSTRINGWRITER_H__
 
-#include "_CStringWriter.h"
+#include "_Elastos_IO_CStringWriter.h"
 #include "StringWriter.h"
 
 namespace Elastos {
@@ -9,8 +9,15 @@ namespace IO {
 
 CarClass(CStringWriter)
     , public StringWriter
+    , public IStringWriter
+    , public ICloseable
+    , public IFlushable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI Close();
 
     CARAPI Flush();
@@ -18,10 +25,10 @@ public:
     CARAPI Write(
         /* [in] */ Int32 oneChar32);
 
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32> &buffer);
 
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -66,4 +73,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CSTRINGWRITER_H__
+#endif // __ELASTOS_IO_CSTRINGWRITER_H__

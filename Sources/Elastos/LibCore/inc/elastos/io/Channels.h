@@ -1,5 +1,5 @@
-#ifndef __CHANNELS_H__
-#define __CHANNELS_H__
+#ifndef __ELASTOS_IO_CHANNELS_H__
+#define __ELASTOS_IO_CHANNELS_H__
 
 #include <Elastos.CoreLibrary_server.h>
 #include "AbstractInterruptibleChannel.h"
@@ -165,4 +165,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CHANNELS_H__
+#endif // __ELASTOS_IO_CHANNELS_H__

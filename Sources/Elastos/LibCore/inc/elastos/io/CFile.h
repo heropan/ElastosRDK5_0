@@ -1,7 +1,7 @@
-#ifndef __CFILE_H__
-#define __CFILE_H__
+#ifndef __ELASTOS_IO_CFILE_H__
+#define __ELASTOS_IO_CFILE_H__
 
-#include "_CFile.h"
+#include "_Elastos_IO_CFile.h"
 #include "File.h"
 
 namespace Elastos {
@@ -187,4 +187,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CFILE_H__
+#endif // __ELASTOS_IO_CFILE_H__

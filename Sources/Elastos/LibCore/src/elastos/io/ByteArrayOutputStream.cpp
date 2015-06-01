@@ -16,6 +16,11 @@ ByteArrayOutputStream::~ByteArrayOutputStream()
 {
 }
 
+ECode ByteArrayOutputStream::constructor()
+{
+    mBuf = ArrayOf<Byte>::Alloc(32);
+}
+
 ECode ByteArrayOutputStream::constructor(
     /* [in] */ Int32 size)
 {
@@ -98,7 +103,7 @@ ECode ByteArrayOutputStream::ToString(
 }
 
 ECode ByteArrayOutputStream::ToString(
-    /* [in] */ const String* enc,
+    /* [in] */ const String& enc,
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
@@ -155,11 +160,11 @@ ECode ByteArrayOutputStream::Write(
 ECode ByteArrayOutputStream::WriteTo(
     /* [in] */ IOutputStream* out)
 {
-    VALIDATE_NOT_NULL(os);
+    VALIDATE_NOT_NULL(out);
 
     Object::Autolock lock(mLock);
 
-    return out->WriteBytesEx(*mBuf, 0, mCount);
+    return out->Write(*mBuf, 0, mCount);
 }
 
 } // namespace IO

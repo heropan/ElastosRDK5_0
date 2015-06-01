@@ -1,6 +1,6 @@
 
-#ifndef __CHARSETDECODER_H__
-#define __CHARSETDECODER_H__
+#ifndef __ELASTOS_IO_CHARSETDECODER_H__
+#define __ELASTOS_IO_CHARSETDECODER_H__
 
 #include "coredef.h"
 #include <elastos.h>
@@ -498,4 +498,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CHARSETDECODER_H__
+#endif // __ELASTOS_IO_CHARSETDECODER_H__

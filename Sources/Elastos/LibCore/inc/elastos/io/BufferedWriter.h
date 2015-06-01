@@ -1,7 +1,7 @@
 
 
-#ifndef __BUFFEREDWRITER_H__
-#define __BUFFEREDWRITER_H__
+#ifndef __ELASTOS_IO_BUFFEREDWRITER_H__
+#define __ELASTOS_IO_BUFFEREDWRITER_H__
 
 #include "Writer.h"
 

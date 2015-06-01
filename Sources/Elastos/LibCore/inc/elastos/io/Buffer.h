@@ -1,5 +1,5 @@
-#ifndef __BUFFER_H__
-#define __BUFFER_H__
+#ifndef __ELASTOS_IO_BUFFER_H__
+#define __ELASTOS_IO_BUFFER_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include "MemoryBlock.h"
@@ -321,4 +321,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __BUFFER_H__
+#endif // __ELASTOS_IO_BUFFER_H__

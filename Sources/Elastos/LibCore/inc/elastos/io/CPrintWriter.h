@@ -1,8 +1,8 @@
 
-#ifndef __CPRINTWRITR_H__
-#define __CPRINTWRITR_H__
+#ifndef __ELASTOS_IO_CPRINTWRITR_H__
+#define __ELASTOS_IO_CPRINTWRITR_H__
 
-#include "_CPrintWriter.h"
+#include "_Elastos_IO_CPrintWriter.h"
 #include "elastos/io/PrintWriter.h"
 #include <elastos.h>
 
@@ -130,10 +130,10 @@ public:
     CARAPI Write(
         /* [in] */ Int32 oneChar32);
 
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer);
 
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -164,4 +164,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CPRINTWRITR_H__
+#endif //__ELASTOS_IO_CPRINTWRITR_H__

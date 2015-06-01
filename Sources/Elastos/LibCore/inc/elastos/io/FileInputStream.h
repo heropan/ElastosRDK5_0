@@ -1,6 +1,6 @@
 
-#ifndef __FILEINPUTSTREAM_H__
-#define __FILEINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_FILEINPUTSTREAM_H__
+#define __ELASTOS_IO_FILEINPUTSTREAM_H__
 
 #include "InputStream.h"
 #include "CFileDescriptor.h"
@@ -197,4 +197,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__FILEINPUTSTREAM_H__
+#endif //__ELASTOS_IO_FILEINPUTSTREAM_H__

@@ -1,7 +1,7 @@
-#ifndef __CCHARSETHELPER_H__
-#define __CCHARSETHELPER_H__
+#ifndef __ELASTOS_IO_CCHARSETHELPER_H__
+#define __ELASTOS_IO_CCHARSETHELPER_H__
 
-#include "_CCharsetHelper.h"
+#include "_Elastos_IO_CCharsetHelper.h"
 
 namespace Elastos {
 namespace IO {
@@ -29,4 +29,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__CCHARSETHELPER_H__
+#endif //__ELASTOS_IO_CCHARSETHELPER_H__

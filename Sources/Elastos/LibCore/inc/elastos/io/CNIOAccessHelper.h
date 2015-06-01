@@ -1,7 +1,7 @@
-#ifndef __CNIOACCESSHELPER_H__
-#define __CNIOACCESSHELPER_H__
+#ifndef __ELASTOS_IO_CNIOACCESSHELPER_H__
+#define __ELASTOS_IO_CNIOACCESSHELPER_H__
 
-#include "_CNIOAccessHelper.h"
+#include "_Elastos_IO_CNIOAccessHelper.h"
 
 namespace Elastos {
 namespace IO {

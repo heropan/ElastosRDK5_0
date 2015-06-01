@@ -1,8 +1,8 @@
 
-#ifndef __CCHARSETS_H__
-#define __CCHARSETS_H__
+#ifndef __ELASTOS_IO_CCHARSETS_H__
+#define __ELASTOS_IO_CCHARSETS_H__
 
-#include "_CCharsets.h"
+#include "_Elastos_IO_CCharsets.h"
 
 namespace Elastos {
 namespace IO {
@@ -159,4 +159,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CCHARSETS_H__
+#endif // __ELASTOS_IO_CCHARSETS_H__

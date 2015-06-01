@@ -1,5 +1,5 @@
-#ifndef __NIOAccess_H__
-#define __NIOAccess_H__
+#ifndef __ELASTOS_IO_NIOAccess_H__
+#define __ELASTOS_IO_NIOAccess_H__
 
 #include <elastos.h>
 #include <Elastos.CoreLibrary_server.h>
@@ -64,4 +64,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __NIOAccess_H__
+#endif // __ELASTOS_IO_NIOAccess_H__

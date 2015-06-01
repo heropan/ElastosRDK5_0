@@ -21,18 +21,18 @@ ECode COutputStreamWriter::Write(
     return OutputStreamWriter::Write(oneChar32);
 }
 
-ECode COutputStreamWriter::WriteChars(
+ECode COutputStreamWriter::Write(
     /* [in] */ const ArrayOf<Char32> &buffer)
 {
-    return OutputStreamWriter::WriteChars(buffer);
+    return OutputStreamWriter::Write(buffer);
 }
 
-ECode COutputStreamWriter::WriteChars(
+ECode COutputStreamWriter::Write(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return OutputStreamWriter::WriteChars(buffer, offset, count);
+    return OutputStreamWriter::Write(buffer, offset, count);
 }
 
 ECode COutputStreamWriter::WriteString(

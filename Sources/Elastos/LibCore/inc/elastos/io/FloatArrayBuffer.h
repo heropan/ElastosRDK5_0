@@ -1,5 +1,5 @@
-#ifndef __FLOATARRAYBUFFER_H__
-#define __FLOATARRAYBUFFER_H__
+#ifndef __ELASTOS_IO_FLOATARRAYBUFFER_H__
+#define __ELASTOS_IO_FLOATARRAYBUFFER_H__
 
 #include "FloatBuffer.h"
 
@@ -57,4 +57,4 @@ public:
 };
 } // namespace IO
 } // namespace Elastos
-#endif // __FLOATARRAYBUFFER_H__
+#endif // __ELASTOS_IO_FLOATARRAYBUFFER_H__

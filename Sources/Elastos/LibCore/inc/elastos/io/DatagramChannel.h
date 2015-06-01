@@ -1,5 +1,5 @@
-#ifndef __DATAGRAMCHANNEL_H__
-#define __DATAGRAMCHANNEL_H__
+#ifndef __ELASTOS_IO_DATAGRAMCHANNEL_H__
+#define __ELASTOS_IO_DATAGRAMCHANNEL_H__
 
 #include "ByteBuffer.h"
 #include "SelectorProvider.h"

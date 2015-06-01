@@ -1,8 +1,8 @@
 
-#ifndef __COUTPUTSTREAMWRITER_H__
-#define __COUTPUTSTREAMWRITER_H__
+#ifndef __ELASTOS_IO_COUTPUTSTREAMWRITER_H__
+#define __ELASTOS_IO_COUTPUTSTREAMWRITER_H__
 
-#include "_COutputStreamWriter.h"
+#include "_Elastos_IO_COutputStreamWriter.h"
 #include "OutputStreamWriter.h"
 
 namespace Elastos {
@@ -19,10 +19,10 @@ public:
     CARAPI Write(
         /* [in] */ Int32 oneChar32);
 
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32> &buffer);
 
-    CARAPI WriteChars(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Char32>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -66,4 +66,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __COUTPUTSTREAMWRITER_H__
+#endif // __ELASTOS_IO_COUTPUTSTREAMWRITER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CSELECTORPROVIDERIMPL_H__
-#define __CSELECTORPROVIDERIMPL_H__
+#ifndef __ELASTOS_IO_CSELECTORPROVIDERIMPL_H__
+#define __ELASTOS_IO_CSELECTORPROVIDERIMPL_H__
 
 #include "_Elastos_IO_CSelectorProviderImpl.h"
 #include "Object.h"
@@ -48,4 +48,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CSELECTORPROVIDERIMPL_H__
+#endif // __ELASTOS_IO_CSELECTORPROVIDERIMPL_H__

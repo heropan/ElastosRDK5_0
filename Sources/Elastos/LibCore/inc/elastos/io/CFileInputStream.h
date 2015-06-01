@@ -1,8 +1,8 @@
 
-#ifndef __CFILEINPUTSTREAM_H__
-#define __CFILEINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_CFILEINPUTSTREAM_H__
+#define __ELASTOS_IO_CFILEINPUTSTREAM_H__
 
-#include "_CFileInputStream.h"
+#include "_Elastos_IO_CFileInputStream.h"
 #include "FileInputStream.h"
 
 namespace Elastos {
@@ -68,4 +68,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CFILEINPUTSTREAM_H__
+#endif // __ELASTOS_IO_CFILEINPUTSTREAM_H__

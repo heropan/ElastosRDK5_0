@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_IO_CFILEPERMISSION_H__
 #define __ELASTOS_IO_CFILEPERMISSION_H__
 
-#include "_CFilePermission.h"
+#include "_Elastos_IO_CFilePermission.h"
 
 namespace Elastos {
 namespace IO {

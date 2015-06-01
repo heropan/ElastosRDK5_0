@@ -1,8 +1,8 @@
 
-#ifndef __CCODERRESULT_H__
-#define __CCODERRESULT_H__
+#ifndef __ELASTOS_IO_CCODERRESULT_H__
+#define __ELASTOS_IO_CCODERRESULT_H__
 
-#include "_CCoderResult.h"
+#include "_Elastos_IO_CCoderResult.h"
 #include "coredef.h"
 #include <elastos/HashMap.h>
 
@@ -192,4 +192,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CCODERRESULT_H__
+#endif // __ELASTOS_IO_CCODERRESULT_H__

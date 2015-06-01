@@ -1,12 +1,13 @@
 
 #include "coredef.h"
 #include "CStreams.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 #include <CByteArrayOutputStream.h>
 #include <CStringWriter.h>
 
 using Elastos::Core::StringBuilder;
+using Libcore::IO::EIID_IStreams;
 
 namespace Elastos {
 namespace IO {
@@ -26,7 +27,7 @@ ECode CStreams::ReadSingleByte(
 
     AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(1);
     Int32 result;
-    FAIL_RETURN(in->ReadBytes(buffer.Get(), 0, 1, &result));
+    FAIL_RETURN(in->Read(buffer.Get(), 0, 1, &result));
     *singleByte = (result != -1) ? (*buffer)[0] & 0xff : -1;
     return NOERROR;
 }
@@ -39,7 +40,7 @@ ECode CStreams::WriteSingleByte(
 
     AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(1);
     (*buffer)[0] = (Byte)(b & 0xff);
-    return out->WriteBytes(*(buffer.Get()));
+    return out->Write(*(buffer.Get()));
 }
 
 ECode CStreams::ReadFully(
@@ -49,7 +50,7 @@ ECode CStreams::ReadFully(
     VALIDATE_NOT_NULL(in);
     VALIDATE_NOT_NULL(dst);
     ECode ec = ReadFullyNoClose(in, dst);
-    FAIL_RETURN(in->Close())
+    FAIL_RETURN(ICloseable::Probe(in)->Close())
     return ec;
 
 }
@@ -77,7 +78,7 @@ ECode CStreams::ReadFully(
 
     Int32 bytesRead;
     while (byteCount > 0) {
-        FAIL_RETURN(in->ReadBytes(dst, offset, byteCount, &bytesRead));
+        FAIL_RETURN(in->Read(dst, offset, byteCount, &bytesRead));
         if (bytesRead < 0) {
             return E_EOF_EXCEPTION;
         }
@@ -97,7 +98,7 @@ ECode CStreams::ReadFullyCloseWhenDone(
     VALIDATE_NOT_NULL(in);
 
     ECode ec = ReadFullyNoClose(in, bytes);
-    in->Close();
+    ICloseable::Probe(in)->Close();
     return ec;
 }
 
@@ -113,10 +114,10 @@ ECode CStreams::ReadFullyNoClose(
     CByteArrayOutputStream::New((IByteArrayOutputStream**)&bytes);
     AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(1024);
     Int32 count;
-    FAIL_RETURN(in->ReadBytes(buffer, &count));
+    FAIL_RETURN(in->Read(buffer, &count));
     while (count != -1) {
-        FAIL_RETURN(bytes->WriteBytes(*buffer.Get(), 0, count));
-        FAIL_RETURN(in->ReadBytes(buffer, &count));
+        FAIL_RETURN(IOutputStream::Probe(bytes)->Write(*buffer.Get(), 0, count));
+        FAIL_RETURN(in->Read(buffer, &count));
     }
     return bytes->ToByteArray(byteArray);
 }
@@ -136,16 +137,16 @@ ECode CStreams::ReadFullyFromReader(
     AutoPtr<ArrayOf<Char32> > buffer = ArrayOf<Char32>::Alloc(1024);
     AutoPtr<IStringBuffer> strBuf;
     Int32 count;
-    ECode ec = reader->ReadChars(buffer.Get(), &count);
+    ECode ec = reader->Read(buffer.Get(), &count);
     if (FAILED(ec)) {
         goto finally;
     }
     while (count != -1) {
-        ec = writer->WriteChars(*buffer.Get(), 0, count);
+        ec = IWriter::Probe(writer)->Write(*buffer.Get(), 0, count);
         if (FAILED(ec)) {
             goto finally;
         }
-        ec = reader->ReadChars(buffer, &count);
+        ec = reader->Read(buffer, &count);
         if (FAILED(ec)) {
             goto finally;
         }
@@ -156,7 +157,7 @@ ECode CStreams::ReadFullyFromReader(
         goto finally;
     }
 
-    ec = strBuf->ToString(result);
+    ec = ICharSequence::Probe(strBuf)->ToString(result);
 
 finally:
     if (ic != NULL) {
@@ -199,8 +200,8 @@ ECode CStreams::SkipByReading(
     ECode ec = NOERROR;
     while (skipped < byteCount) {
         toRead = (Int32)Min((Int64)(byteCount - skipped), skipBufferLength);
-        // FAIL_RETURN(in->ReadBytes(mSkipBuffer, 0, toRead, &read));
-        in->ReadBytes(mSkipBuffer, 0, toRead, &read);
+        // FAIL_RETURN(in->Read(mSkipBuffer, 0, toRead, &read));
+        in->Read(mSkipBuffer, 0, toRead, &read);
         if (read == -1) {
             break;
         }
@@ -226,11 +227,11 @@ ECode CStreams::Copy(
     Int32 total = 0;
     ArrayOf_<Byte, 8192> buffer;
     Int32 c;
-    FAIL_RETURN(in->ReadBytes(&buffer, &c));
+    FAIL_RETURN(in->Read(&buffer, &c));
     while (c != -1) {
         total += c;
-        FAIL_RETURN(out->WriteBytes(buffer, 0, c));
-        FAIL_RETURN(in->ReadBytes(&buffer, &c));
+        FAIL_RETURN(out->Write(buffer, 0, c));
+        FAIL_RETURN(in->Read(&buffer, &c));
     }
 
     *number = total;
@@ -264,7 +265,7 @@ ECode CStreams::ReadAsciiLine(
     if (length > 0) {
         Char32 ch = result.GetChar(length - 1);
         if (ch == '\r') {
-            result.DeleteChar(length - 1);
+            result.Delete(length - 1);
         }
     }
 

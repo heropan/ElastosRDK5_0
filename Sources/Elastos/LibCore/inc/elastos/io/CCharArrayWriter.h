@@ -1,6 +1,6 @@
 
-#ifndef __CCHARARRAYWRITER_H__
-#define __CCHARARRAYWRITER_H__
+#ifndef __ELASTOS_IO_CCHARARRAYWRITER_H__
+#define __ELASTOS_IO_CCHARARRAYWRITER_H__
 
 #include "_Elastos_IO_CCharArrayWriter.h"
 #include "CharArrayWriter.h"
@@ -19,4 +19,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CCHARARRAYWRITER_H__
+#endif // __ELASTOS_IO_CCHARARRAYWRITER_H__

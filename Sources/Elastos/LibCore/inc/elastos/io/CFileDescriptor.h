@@ -1,7 +1,7 @@
-#ifndef __CFILEDESCRIPTOR_H__
-#define __CFILEDESCRIPTOR_H__
+#ifndef __ELASTOS_IO_CFILEDESCRIPTOR_H__
+#define __ELASTOS_IO_CFILEDESCRIPTOR_H__
 
-#include "_CFileDescriptor.h"
+#include "_Elastos_IO_CFileDescriptor.h"
 
 namespace Elastos {
 namespace IO {
@@ -66,4 +66,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __CFILEDESCRIPTOR_H__
+#endif // __ELASTOS_IO_CFILEDESCRIPTOR_H__
