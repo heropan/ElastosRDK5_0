@@ -19,7 +19,6 @@ Writer::Writer(
     /* [in] */ IObject* lock)
 {
     assert(lock != NULL);
-    assert(lock != this->Probe(EIID_IObject));
     mLock = lock;
 }
 
