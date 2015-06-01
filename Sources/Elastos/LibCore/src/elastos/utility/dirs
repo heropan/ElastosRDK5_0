@@ -1,6 +1,6 @@
 
 #DIRS += concurrent
 #DIRS += jar
-#DIRS += logging
+DIRS += logging
 DIRS += regex
 DIRS += zip

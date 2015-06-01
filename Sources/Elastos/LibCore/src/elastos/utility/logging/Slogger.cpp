@@ -1,16 +1,16 @@
 
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 namespace Elastos {
 namespace Utility {
 namespace Logging {
 
-extern ECode __PrintlnImpl(Int32 bufID, Int32 priority, CString tag, const char *msgBuf);
+extern ECode __PrintlnImpl(Int32 bufID, Int32 priority, const char * tag, const char *msgBuf);
 
 #define MSG_BUF_SIZE    1024
 
-ECode Slogger::D(CString tag, const char *fmt, ...)
+ECode Slogger::D(const char * tag, const char *fmt, ...)
 {
     char msgBuf[MSG_BUF_SIZE];
     va_list args;
@@ -24,7 +24,7 @@ ECode Slogger::D(CString tag, const char *fmt, ...)
 /**
  * Send an ERROR log message.
  */
-ECode Slogger::E(CString tag, const char *fmt, ...)
+ECode Slogger::E(const char * tag, const char *fmt, ...)
 {
     char msgBuf[MSG_BUF_SIZE];
     va_list args;
@@ -38,7 +38,7 @@ ECode Slogger::E(CString tag, const char *fmt, ...)
 /**
  * Send an INFO log message.
  */
-ECode Slogger::I(CString tag, const char *fmt, ...)
+ECode Slogger::I(const char * tag, const char *fmt, ...)
 {
     char msgBuf[MSG_BUF_SIZE];
     va_list args;
@@ -52,7 +52,7 @@ ECode Slogger::I(CString tag, const char *fmt, ...)
 /**
  * Send an VERBOSE log message.
  */
-ECode Slogger::V(CString tag, const char *fmt, ...)
+ECode Slogger::V(const char * tag, const char *fmt, ...)
 {
     char msgBuf[MSG_BUF_SIZE];
     va_list args;
@@ -66,7 +66,7 @@ ECode Slogger::V(CString tag, const char *fmt, ...)
 /**
  * Send a WARN log message.
  */
-ECode Slogger::W(CString tag, const char *fmt, ...)
+ECode Slogger::W(const char * tag, const char *fmt, ...)
 {
     char msgBuf[MSG_BUF_SIZE];
     va_list args;
@@ -80,7 +80,7 @@ ECode Slogger::W(CString tag, const char *fmt, ...)
 /**
  * Low-level logging call.
  */
-ECode Slogger::Println(Int32 priority, CString tag, const char *fmt, ...)
+ECode Slogger::Println(Int32 priority, const char * tag, const char *fmt, ...)
 {
     char msgBuf[MSG_BUF_SIZE];
     va_list args;

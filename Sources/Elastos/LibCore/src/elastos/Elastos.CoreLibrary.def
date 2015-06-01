@@ -1013,3 +1013,31 @@ EXPORTS
     _ZThn8_N7Elastos4Core12StringBuffer6AddRefEv
     _ZThn8_N7Elastos4Core12StringBuffer7ReleaseEv
     _ZThn8_N7Elastos4Core12StringBuffer8ToStringEPNS_6StringE
+
+    ;;Logger
+    _ZN7Elastos7Utility7Logging6Logger10IsLoggableEPKci
+    _ZN7Elastos7Utility7Logging6Logger11LOG_ID_MAINE
+    _ZN7Elastos7Utility7Logging6Logger11PrintlnImplEiiPKcS4_z
+    _ZN7Elastos7Utility7Logging6Logger12LOG_ID_RADIOE
+    _ZN7Elastos7Utility7Logging6Logger13LOG_ID_EVENTSE
+    _ZN7Elastos7Utility7Logging6Logger13LOG_ID_SYSTEME
+    _ZN7Elastos7Utility7Logging6Logger1DEPKcS4_z
+    _ZN7Elastos7Utility7Logging6Logger1EEPKcS4_z
+    _ZN7Elastos7Utility7Logging6Logger1IEPKcS4_z
+    _ZN7Elastos7Utility7Logging6Logger1VEPKcS4_z
+    _ZN7Elastos7Utility7Logging6Logger1WEPKcS4_z
+    _ZN7Elastos7Utility7Logging6Logger4INFOE
+    _ZN7Elastos7Utility7Logging6Logger4WARNE
+    _ZN7Elastos7Utility7Logging6Logger5ERRORE
+    _ZN7Elastos7Utility7Logging6Logger6ASSERTE
+    _ZN7Elastos7Utility7Logging6Logger7PrintlnEiPKcS4_z
+    _ZN7Elastos7Utility7Logging6Logger7VERBOSEE
+    _ZN7Elastos7Utility7Logging6Logger8___DEBUGE
+
+    ;;Slogger
+    _ZN7Elastos7Utility7Logging7Slogger1DEPKcS4_z
+    _ZN7Elastos7Utility7Logging7Slogger1EEPKcS4_z
+    _ZN7Elastos7Utility7Logging7Slogger1IEPKcS4_z
+    _ZN7Elastos7Utility7Logging7Slogger1VEPKcS4_z
+    _ZN7Elastos7Utility7Logging7Slogger1WEPKcS4_z
+    _ZN7Elastos7Utility7Logging7Slogger7PrintlnEiPKcS4_z
