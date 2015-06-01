@@ -19,6 +19,11 @@ class Reader
 public:
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IObject* lock);
+
     /**
      * Closes this reader. Implementations of this method should free any
      * resources associated with the reader.
@@ -165,7 +170,7 @@ public:
      * @throws ReadOnlyBufferException
      *             if {@code target} is read-only.
      */
-    virtual CARAPI ReadCharBuffer(
+    virtual CARAPI Read(
         /* [in] */ ICharBuffer* target,
         /* [out] */ Int32* number);
 
@@ -188,14 +193,12 @@ protected:
     Reader(
         /* [in] */ IObject* lock);
 
-    CARAPI constructor(
-        /* [in] */ IObject* lock);
-
     virtual ~Reader();
 
 
 protected:
-    AutoPtr<IObject> mLock;
+    Object* mLock;
+    Boolean mIsStrongLock;
 };
 
 } // namespace IO

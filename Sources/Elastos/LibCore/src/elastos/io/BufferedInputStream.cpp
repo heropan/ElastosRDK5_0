@@ -1,6 +1,7 @@
 
 #include "coredef.h"
 #include "BufferedInputStream.h"
+#include <utils/Log.h>
 
 namespace Elastos {
 namespace IO {
@@ -8,8 +9,10 @@ namespace IO {
 CAR_INTERFACE_IMPL(BufferedInputStream, FilterInputStream, IBufferedInputStream)
 
 BufferedInputStream::BufferedInputStream()
-    : mBuf(NULL)
+    : mCount(0)
+    , mMarklimit(0)
     , mMarkpos(-1)
+    , mPos(0)
 {
 }
 
@@ -23,9 +26,10 @@ ECode BufferedInputStream::constructor(
 {
     FAIL_RETURN(FilterInputStream::constructor(in));
     if (size <= 0) {
-//        throw new IllegalArgumentException("size <= 0");
+        ALOGE("BufferedInputStream::constructor: IllegalArgumentException, size <= 0");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
     mBuf = ArrayOf<Byte>::Alloc(size);
     if (mBuf == NULL) return E_OUT_OF_MEMORY_ERROR;
     return NOERROR;
@@ -34,8 +38,8 @@ ECode BufferedInputStream::constructor(
 ECode BufferedInputStream::Available(
     /* [out] */ Int32* number)
 {
-    assert(number != NULL);
-    Object::Autolock lock(*this);
+    VALIDATE_NOT_NULL(number)
+    Object::Autolock lock(this);
 
     AutoPtr<IInputStream> localIn = mIn; // 'in' could be invalidated by close()
     if (mBuf == NULL || localIn == NULL) {
@@ -49,7 +53,7 @@ ECode BufferedInputStream::Available(
 
 ECode BufferedInputStream::StreamClosed()
 {
-//    throw new IOException("BufferedInputStream is closed");
+    ALOGE("BufferedInputStream::StreamClosed: IOException, BufferedInputStream is closed");
     return E_IO_EXCEPTION;
 }
 
@@ -71,6 +75,10 @@ ECode BufferedInputStream::Fillbuf(
     /* [in, out] */ ArrayOf<Byte>** localBuf,
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
+    *number = 0;
+    VALIDATE_NOT_NULL(localBuf)
+
     if (mMarkpos == -1 || (mPos - mMarkpos >= mMarklimit)) {
         /* Mark position not set or exceeded readlimit */
         Int32 result;
@@ -97,7 +105,9 @@ ECode BufferedInputStream::Fillbuf(
         // Reassign buf, which will invalidate any local references
         // FIXME: what if buf was null?
         mBuf = newbuf;
+        REFCOUNT_RELEASE(*localBuf)
         *localBuf = newbuf;
+        REFCOUNT_ADD(*localBuf)
     }
     else if (mMarkpos > 0) {
         memmove((*localBuf)->GetPayload(),
@@ -118,7 +128,7 @@ ECode BufferedInputStream::Fillbuf(
 ECode BufferedInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
 
     mMarklimit = readLimit;
     mMarkpos = mPos;
@@ -128,7 +138,7 @@ ECode BufferedInputStream::Mark(
 ECode BufferedInputStream::IsMarkSupported(
     /* [out] */ Boolean* supported)
 {
-    assert(supported != NULL);
+    VALIDATE_NOT_NULL(supported)
     *supported = TRUE;
     return NOERROR;
 }
@@ -136,12 +146,14 @@ ECode BufferedInputStream::IsMarkSupported(
 ECode BufferedInputStream::Read(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
-    Object::Autolock lock(*this);
+    VALIDATE_NOT_NULL(value)
+    *value = '\0';
+
+    Object::Autolock lock(this);
 
     // Use local refs since buf and in may be invalidated by an
     // unsynchronized close()
-    ArrayOf<Byte>* localBuf = mBuf;
+    AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
     AutoPtr<IInputStream> localIn = mIn;
     if (localBuf == NULL || localIn == NULL) {
         return StreamClosed();
@@ -150,7 +162,7 @@ ECode BufferedInputStream::Read(
     /* Are there buffered bytes available? */
     if (mPos >= mCount) {
         Int32 number;
-        FAIL_RETURN(Fillbuf(localIn, &localBuf, &number));
+        FAIL_RETURN(Fillbuf(localIn, (ArrayOf<Byte>**)&localBuf, &number));
         if (number == -1) {
             *value = -1;
             return NOERROR; /* no, fill buffer */
@@ -174,16 +186,16 @@ ECode BufferedInputStream::Read(
     return NOERROR;
 }
 
-ECode BufferedInputStream::Read(    // change from ReadBytesEx
-    /* [out] */ ArrayOf<Byte>* buffer,
+ECode BufferedInputStream::Read(
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-
-    Object::Autolock lock(*this);
     *number = 0;
+
+    Object::Autolock lock(this);
 
     if (buffer == NULL) {
 //      throw new NullPointerException("buffer == null");
@@ -192,7 +204,7 @@ ECode BufferedInputStream::Read(    // change from ReadBytesEx
 
     // Use local ref since buf may be invalidated by an unsynchronized
     // close()
-    ArrayOf<Byte>* localBuf = mBuf;
+    AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
     if (localBuf == NULL) {
         return StreamClosed();
     }
@@ -247,7 +259,7 @@ ECode BufferedInputStream::Read(    // change from ReadBytesEx
                 return NOERROR;
             }
         } else {
-            FAIL_RETURN(Fillbuf(localIn, &localBuf, &read));
+            FAIL_RETURN(Fillbuf(localIn, (ArrayOf<Byte>**)&localBuf, &read));
 
             if (read == -1) {
                 *number = required == byteCount ? -1 : byteCount - required;
@@ -283,7 +295,7 @@ ECode BufferedInputStream::Read(    // change from ReadBytesEx
 
 ECode BufferedInputStream::Reset()
 {
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
     // BEGIN android-changed
     /*
      * These exceptions get thrown in some "normalish" circumstances,
@@ -307,13 +319,14 @@ ECode BufferedInputStream::Skip(
     /* [in] */ Int64 byteCount,
     /* [out] */ Int64* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
+    *number = 0;
 
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
 
     // Use local refs since buf and in may be invalidated by an
     // unsynchronized close()
-    ArrayOf<Byte>* localBuf = mBuf;
+    AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
     AutoPtr<IInputStream> localIn = mIn;
     if (localBuf == NULL) {
         return StreamClosed();
@@ -337,7 +350,7 @@ ECode BufferedInputStream::Skip(
     if (mMarkpos != -1) {
         if (byteCount <= mMarklimit) {
             Int32 fillnum;
-            FAIL_RETURN(Fillbuf(localIn, &localBuf, &fillnum));
+            FAIL_RETURN(Fillbuf(localIn, (ArrayOf<Byte>**)&localBuf, &fillnum));
             if (fillnum == -1) {
                 *number = read;
                 return NOERROR;

@@ -11,12 +11,16 @@ namespace IO {
 using Elastos::Core::StringBuffer;
 using Elastos::Core::IStringBuffer;
 
-class StringWriter : public Writer
+class StringWriter
+    : public Writer
+    , public IStringWriter
 {
-protected:
+public:
+    CAR_INTERFACE_DECL()
+
     StringWriter();
 
-    ~StringWriter();
+    virtual ~StringWriter();
 
     /**
      * Constructs a new {@code StringWriter} which has a {@link StringBuffer}
@@ -24,7 +28,7 @@ protected:
      * StringBuffer} is also the {@code lock} used to synchronize access to this
      * writer.
      */
-    CARAPI Init();
+    CARAPI constructor();
 
     /**
      * Constructs a new {@code StringWriter} which has a {@link StringBuffer}
@@ -35,7 +39,7 @@ protected:
      * @param initialSize
      *            the intial size of the target string buffer.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 initialSize);
 
 public:
@@ -107,7 +111,7 @@ public:
      * @param str
      *            the non-null string containing the characters to write.
      */
-    CARAPI WriteString(
+    CARAPI Write(
         /* [in] */ const String& str);
 
     /**
@@ -124,7 +128,7 @@ public:
      *             if {@code offset < 0} or {@code count < 0}, or if {@code
      *             offset + count} is greater than the length of {@code str}.
      */
-    CARAPI WriteString(
+    CARAPI Write(
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -150,7 +154,7 @@ public:
      *            the character sequence appended to the target.
      * @return this writer.
      */
-    CARAPI AppendCharSequence(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq);
 
     /**
@@ -174,7 +178,7 @@ public:
      *             either {@code start} or {@code end} are greater or equal than
      *             the length of {@code csq}.
      */
-    CARAPI AppendCharSequence(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);

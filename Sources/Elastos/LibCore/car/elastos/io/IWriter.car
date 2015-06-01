@@ -49,7 +49,7 @@ module
          * IOException | if this writer is closed or another I/O error occurs.
          */
         Write(
-            [in] ArrayOf<Char32> buffer);
+            [in] ArrayOf<Char32>* buffer);
 
         /**
          * Writes {count} characters starting at {offset} in {buf}

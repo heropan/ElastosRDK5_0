@@ -2,8 +2,6 @@
 #ifndef __ELASTOS_IO_WRITER_H__
 #define __ELASTOS_IO_WRITER_H__
 
-#include <elastos.h>
-#include <elrefbase.h>
 #include <elastos/core/Object.h>
 
 namespace Elastos {
@@ -15,11 +13,16 @@ using Elastos::Core::Object;
 
 class Writer
     : public Object
-    , public IAppendable
     , public IWriter
+    , public IAppendable
+    , public ICloseable
+    , public IFlushable
 {
 public:
     CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
+        /* [in] */ IObject* lock);
 
     /**
      * Closes this writer. Implementations of this method should free any
@@ -60,7 +63,7 @@ public:
      *             if this writer is closed or another I/O error occurs.
      */
     virtual CARAPI Write(
-        /* [in] */ const ArrayOf<Char32>& buffer);
+        /* [in] */ ArrayOf<Char32>* buffer);
 
     /**
      * Writes {@code count} characters starting at {@code offset} in {@code buf}
@@ -198,13 +201,11 @@ protected:
     Writer(
         /* [in] */ IObject* lock);
 
-    CARAPI constructor(
-        /* [in] */ IObject* lock);
-
     virtual ~Writer();
 
 protected:
-    AutoPtr<IObject> mLock;
+    Object* mLock;
+    Boolean mIsStrongLock;
 };
 
 } // namespace IO

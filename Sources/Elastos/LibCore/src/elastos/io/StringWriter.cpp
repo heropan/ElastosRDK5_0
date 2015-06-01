@@ -8,27 +8,28 @@ using Elastos::Core::Character;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(StringWriter, Writer, IStringWriter)
+
 StringWriter::StringWriter()
 {
-    mBufLock = new Object();
 }
 
 StringWriter::~StringWriter()
 {
 }
 
-ECode StringWriter::Init()
+ECode StringWriter::constructor()
 {
     mBuf = new StringBuffer(16);
     if (mBuf == NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
-    mLock = mBufLock;
+    mLock = mBuf;
 
     return NOERROR;
 }
 
-ECode StringWriter::Init(
+ECode StringWriter::constructor(
     /* [in] */ Int32 initialSize)
 {
     if (initialSize < 0) {
@@ -39,7 +40,7 @@ ECode StringWriter::Init(
     if (mBuf == NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
-    mLock = mBufLock;
+    mLock = mBuf;
 
     return NOERROR;
 }
@@ -87,6 +88,8 @@ ECode StringWriter::Write(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
+    VALIDATE_NOT_NULL(buffer)
+
     // avoid int overflow
     // BEGIN android-changed
     // Exception priorities (in case of multiple errors) differ from
@@ -111,13 +114,13 @@ ECode StringWriter::Write(
     return NOERROR;
 }
 
-ECode StringWriter::WriteString(
+ECode StringWriter::Write(
     /* [in] */ const String& str)
 {
     return mBuf->Append(str);
 }
 
-ECode StringWriter::WriteString(
+ECode StringWriter::Write(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -131,7 +134,7 @@ ECode StringWriter::AppendChar(
     return Write(c);
 }
 
-ECode StringWriter::AppendCharSequence(
+ECode StringWriter::Append(
     /* [in] */ ICharSequence* csq)
 {
     String str("NULL");
@@ -139,10 +142,10 @@ ECode StringWriter::AppendCharSequence(
         csq->ToString(&str);
     }
 
-    return WriteString(str);
+    return Write(str);
 }
 
-ECode StringWriter::AppendCharSequence(
+ECode StringWriter::Append(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -152,7 +155,7 @@ ECode StringWriter::AppendCharSequence(
         csq->ToString(&str);
     }
 
-    return WriteString(str, start, end - start);
+    return Write(str, start, end - start);
 }
 
 } // namespace IO

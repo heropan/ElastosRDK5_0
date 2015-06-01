@@ -16,19 +16,17 @@ namespace IO {
  *
  * @see FilterOutputStream
  */
-class FilterInputStream 
+class FilterInputStream
     : public InputStream
     , public IFilterInputStream
 {
 public:
     CAR_INTERFACE_DECL()
 
-protected:
     FilterInputStream();
 
     virtual ~FilterInputStream();
 
-public:
     /**
      * Constructs a new {@code FilterInputStream} with the specified input
      * stream as source.
@@ -42,7 +40,6 @@ public:
     CARAPI constructor(
         /* [in] */ IInputStream* in);
 
-public:
     CARAPI Available(
         /* [out] */ Int32* number);
 

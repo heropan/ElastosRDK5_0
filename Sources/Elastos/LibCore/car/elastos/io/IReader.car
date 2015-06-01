@@ -22,6 +22,7 @@ module
      * @Involve
      * interface IReadable;
      */
+    [deprecated]
     interface IReader {
         /**
          * Sets a mark position in this reader. The parameter readLimit
@@ -80,7 +81,7 @@ module
          *             if this reader is closed or some other I/O error occurs.
          */
         Read(
-            [out] ArrayOf<Char32> buffer,
+            [in] ArrayOf<Char32>* buffer,
             [out] Int32* number);
 
         /**
@@ -93,7 +94,7 @@ module
          *             if this reader is closed or some other I/O error occurs.
          */
         Read(
-            [out] ArrayOf<Char32> buffer,
+            [in] ArrayOf<Char32>* buffer,
             [in] Int32 offset,
             [in] Int32 count,
             [out] Int32* number);
@@ -165,7 +166,7 @@ module
          * NullPointerException | if {target} is {null}.
          * ReadOnlyBufferException | if {target} is read-only.
          */
-        ReadCharBuffer(
+        Read(
             [in] ICharBuffer* target,
             [out] Int32* number);
 

@@ -66,7 +66,7 @@ public:
      *             If offset or count is outside of bounds.
      */
     CARAPI Write(
-        /* [in] */ const ArrayOf<Byte> & buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
@@ -77,7 +77,7 @@ public:
 protected:
     BufferedOutputStream();
 
-    ~BufferedOutputStream();
+    virtual ~BufferedOutputStream();
 
 private:
     CARAPI FlushInternal();

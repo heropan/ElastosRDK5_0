@@ -1,11 +1,11 @@
 #ifndef __ELASTOS_IO_CHANNELS_ABSTRACTINTERRUPTIBLECHANNEL_H__
 #define __ELASTOS_IO_CHANNELS_ABSTRACTINTERRUPTIBLECHANNEL_H__
 
-#include <Elastos.CoreLibrary_server.h>
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::Object;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace IO {
@@ -27,6 +27,7 @@ extern "C" const InterfaceID EIID_AbstractInterruptibleChannel;
 class AbstractInterruptibleChannel
     : public Object
     , public IChannel
+    , public ICloseable
 {
 public:
     CAR_INTERFACE_DECL()
@@ -54,7 +55,8 @@ public:
      */
     CARAPI Close();
 
-    void SetInterrupted(Boolean value)
+    void SetInterrupted(
+        /* [in] */ Boolean value)
     {
         mInterrupted = value;
     }

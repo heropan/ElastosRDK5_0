@@ -1,11 +1,18 @@
 
 #include "InputStream.h"
 #include <elastos/core/Math.h>
+#include <utils/Log.h>
 
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL_2(InputStream, Object, ICloseable, IInputStream)
+CAR_INTERFACE_IMPL_2(InputStream, Object, IInputStream, ICloseable)
+
+InputStream::InputStream()
+{}
+
+InputStream::~InputStream()
+{}
 
 ECode InputStream::Available(
     /* [out] */ Int32* number)
@@ -35,11 +42,14 @@ ECode InputStream::IsMarkSupported(
 }
 
 ECode InputStream::Read(
-    /* [out] */ ArrayOf<Byte>* buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
+    *number = -1;
+    assert(buffer != NULL);
+    VALIDATE_NOT_NULL(buffer);
+
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
@@ -47,28 +57,31 @@ ECode InputStream::Read(
 }
 
 ECode InputStream::Read(
-    /* [out] */ ArrayOf<Byte>* buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
+    *number = -1;
     assert(buffer != NULL);
+    VALIDATE_NOT_NULL(buffer);
 
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
     // Force null check for b first!
     if (byteOffset > buffer->GetLength() || byteOffset < 0) {
-//      throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + byteOffset);
+        ALOGE("InputStream::Read ArrayIndexOutOfBoundsException: Offset out of bounds: %d", byteOffset);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     if (byteCount < 0 || byteCount > buffer->GetLength() - byteOffset) {
-//      throw new ArrayIndexOutOfBoundsException("Length out of bounds: " + byteCount);
+        ALOGE("InputStream::Read ArrayIndexOutOfBoundsException: Length out of bounds: %d", byteCount);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
+
+    Int32 c;
     for (Int32 i = 0; i < byteCount; i++) {
-        Int32 c;
         ECode ec = Read(&c);
         if (ec == (ECode)E_IO_EXCEPTION) {
             if (i != 0) {

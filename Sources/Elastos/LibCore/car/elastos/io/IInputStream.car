@@ -26,6 +26,7 @@ module
      * @Involve
      * interface Elastos.IO.ICloseable;
      */
+    [deprecated]
     interface IInputStream {
         /**
          * Returns an estimated number of bytes that can be read or skipped without blocking for more
@@ -121,7 +122,7 @@ module
          * Equivalent to {read(buffer, 0, buffer.length)}.
          */
         Read(
-            [out] ArrayOf<Byte> buffer,
+            [in] ArrayOf<Byte>* buffer,
             [out] Int32* number);
 
         /**
@@ -144,7 +145,7 @@ module
          * IOException | if the stream is closed or another IOException occurs.
          */
         Read(
-            [out] ArrayOf<Byte> buffer,
+            [in] ArrayOf<Byte>* buffer,
             [in] Int32 offset,
             [in] Int32 length,
             [out] Int32* number);

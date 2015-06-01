@@ -122,9 +122,11 @@ public:
      *             {@code str}.
      */
     CARAPI Write(
-        /* [in] */ const String* str,
+        /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
+
+    using Writer::Write;
 
     /**
      * Writes the contents of this {@code CharArrayWriter} to another {@code

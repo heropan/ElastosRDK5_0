@@ -21,6 +21,7 @@ module
      * @Involve
      * interface ICloseable;
      */
+    [deprecated]
     interface IOutputStream {
         /**
          * Writes a single byte to this stream. Only the least significant byte of
@@ -40,7 +41,7 @@ module
          * Equivalent to write(buffer, 0, buffer.length).
          */
         Write(
-            [in] ArrayOf<Byte> buffer);
+            [in] ArrayOf<Byte>* buffer);
 
         /**
          * Writes count bytes from the byte array buffer starting at
@@ -62,7 +63,7 @@ module
          *                             {buffer}.
          */
         Write(
-            [in] ArrayOf<Byte> buffer,
+            [in] ArrayOf<Byte>* buffer,
             [in] Int32 offset,
             [in] Int32 count);
 

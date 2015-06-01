@@ -446,7 +446,7 @@ ECode PrintWriter::WriteString(
     /* [in] */ const String& str)
 {
     AutoPtr<ArrayOf<Char32> > tmp = str.GetChars();
-    return Write(*tmp);
+    return Write(tmp);
 }
 
 ECode PrintWriter::WriteString(

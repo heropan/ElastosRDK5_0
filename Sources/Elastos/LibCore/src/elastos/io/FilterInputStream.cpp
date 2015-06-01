@@ -24,7 +24,6 @@ ECode FilterInputStream::constructor(
 ECode FilterInputStream::Available(
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(number);
     return mIn->Available(number);
 }
 
@@ -36,32 +35,31 @@ ECode FilterInputStream::Close()
 ECode FilterInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
     return mIn->Mark(readLimit);
 }
 
 ECode FilterInputStream::IsMarkSupported(
     /* [out] */ Boolean* supported)
 {
-    VALIDATE_NOT_NULL(supported);
     return mIn->IsMarkSupported(supported);
 }
 
 ECode FilterInputStream::Read(
     /* [out] */ Int32* value)
 {
-    VALIDATE_NOT_NULL(value);
     return mIn->Read(value);
 }
 
 ECode FilterInputStream::Read(
-    /* [out] */ ArrayOf<Byte>* buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
+    *number = -1;
+    VALIDATE_NOT_NULL(buffer);
     return mIn->Read(buffer, byteOffset, byteCount, number);
 }
 
@@ -75,7 +73,6 @@ ECode FilterInputStream::Skip(
     /* [in] */ Int64 byteCount,
     /* [out] */ Int64* number)
 {
-    VALIDATE_NOT_NULL(number);
     return mIn->Skip(byteCount, number);
 }
 

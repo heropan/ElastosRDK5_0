@@ -1,6 +1,6 @@
 
 #include "Writer.h"
-#include "elastos/core/Character.h"
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::EIID_IAppendable;
@@ -8,47 +8,61 @@ using Elastos::Core::EIID_IAppendable;
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL_2(Writer, Object, IAppendable, IWriter)
+CAR_INTERFACE_IMPL_4(Writer, Object, IWriter, IAppendable, ICloseable, IFlushable)
+
+ECode Writer::constructor(
+    /* [in] */ IObject* lock)
+{
+    assert(lock != NULL);
+    VALIDATE_NOT_NULL(lock)
+    mLock = lock;
+
+    if (mLock && mLock != (Object*)this) {
+        REFCOUNT_ADD(mLock)
+        mIsStrongLock = TRUE;
+    }
+    return NOERROR;
+}
 
 Writer::Writer()
-: mLock(NULL)
+    : mLock(NULL)
+    , mIsStrongLock(FALSE)
 {
 }
 
 Writer::Writer(
     /* [in] */ IObject* lock)
+    : mIsStrongLock(FALSE)
 {
     assert(lock != NULL);
-    mLock = lock;
+    mLock = (Object *)lock;
 }
 
 Writer::~Writer()
 {
-    mLock = NULL;
+    if (mIsStrongLock) {
+        REFCOUNT_RELEASE(mLock)
+    }
 }
 
 ECode Writer::Write(
     /* [in] */ Int32 oneChar32)
 {
-    if(mLock == NULL)
-        Object::Autolock lock(*this);
-    else
-        Object::Autolock lock(mLock);
+    Object::Autolock lock(mLock);
 
-    ArrayOf_<Char32, 1> buf;
-    buf[0] = oneChar32;
-
+    AutoPtr<ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(1);
+    (*buf)[0] = oneChar32;
     return Write(buf);
 }
 
 ECode Writer::Write(
-    /* [in] */ const ArrayOf<Char32>& buffer)
+    /* [in] */ ArrayOf<Char32>* buffer)
 {
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
 
-    return Write(buffer, 0, buffer.GetLength());
+    return Write(buffer, 0, buffer->GetLength());
 }
 
 ECode Writer::Write(
@@ -66,13 +80,11 @@ ECode Writer::Write(
 //      throw new StringIndexOutOfBoundsException();
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    if(mLock == NULL)
-        Object::Autolock lock(*this);
-    else
-        Object::Autolock lock(mLock);
+
+    Object::Autolock lock(mLock);
 
     AutoPtr<ArrayOf<Char32> > buf = str.GetChars(offset, offset + count);
-    return Write(*buf, 0, buf->GetLength());
+    return Write(buf, 0, buf->GetLength());
 }
 
 ECode Writer::AppendChar(
@@ -108,18 +120,9 @@ ECode Writer::Append(
 ECode Writer::CheckError(
     /* [out] */ Boolean* hasError)
 {
-    assert(hasError != NULL);
+    VALIDATE_NOT_NULL(hasError)
 
     *hasError = FALSE;
-    return NOERROR;
-}
-
-ECode Writer::constructor(
-    /* [in] */ IObject* lock)
-{
-    assert(lock != NULL);
-    assert(lock != this->Probe(EIID_IObject));
-    mLock = lock;
     return NOERROR;
 }
 

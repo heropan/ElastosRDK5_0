@@ -76,7 +76,7 @@ ECode InflaterOutputStream::Write()
         if (ec == E_DATA_FORMAT_EXCEPTION) return E_ZIP_EXCEPTION;
     }
     while (inflated > 0) {
-        FAIL_RETURN(mOut->Write(*mBuf, 0, inflated));
+        FAIL_RETURN(mOut->Write(mBuf, 0, inflated));
         ec = mInf->Inflate(mBuf, &inflated);
         if (FAILED(ec)) {
             if (ec == E_DATA_FORMAT_EXCEPTION) return E_ZIP_EXCEPTION;

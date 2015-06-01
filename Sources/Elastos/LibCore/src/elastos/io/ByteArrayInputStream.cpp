@@ -50,7 +50,7 @@ ECode ByteArrayInputStream::Available(
 {
     assert(number != NULL);
 
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
 
     *number = mCount - mPos;
     return NOERROR;
@@ -64,7 +64,7 @@ ECode ByteArrayInputStream::Close()
 CARAPI ByteArrayInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
 
     mMark = mPos;
     return NOERROR;
@@ -84,14 +84,14 @@ CARAPI ByteArrayInputStream::Read(
 {
     VALIDATE_NOT_NULL(value);
 
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
 
     *value = mPos < mCount ? (*mBuf)[mPos++] & 0xFF : -1;
     return NOERROR;
 }
 
 CARAPI ByteArrayInputStream::Read(
-    /* [out] */ ArrayOf<Byte>* buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
@@ -107,7 +107,7 @@ CARAPI ByteArrayInputStream::Read(
         return E_NULL_POINTER_EXCEPTION;
     }
 
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
 
     // avoid int overflow
     // Exception priorities (in case of multiple errors) differ from
@@ -140,7 +140,7 @@ CARAPI ByteArrayInputStream::Read(
 
 CARAPI ByteArrayInputStream::Reset()
 {
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
 
     mPos = mMark;
     return NOERROR;
@@ -152,7 +152,7 @@ CARAPI ByteArrayInputStream::Skip(
 {
     assert(number != NULL);
 
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
 
     if (count <= 0) {
         *number = 0;

@@ -11,19 +11,36 @@ CAR_INTERFACE_IMPL_2(Reader, Object, IReadable, IReader)
 
 Reader::Reader()
     : mLock(NULL)
+    , mIsStrongLock(FALSE)
 {
 }
 
 Reader::Reader(
     /* [in] */ IObject* lock)
+    : mIsStrongLock(FALSE)
 {
     assert(lock != NULL);
-    mLock = lock;
+    mLock = (Object *)lock;
 }
 
 Reader::~Reader()
 {
-    mLock = NULL;
+    if (mIsStrongLock) {
+        REFCOUNT_RELEASE(mLock)
+    }
+}
+
+ECode Reader::constructor(
+    /* [in] */ IObject* lock)
+{
+    VALIDATE_NOT_NULL(lock)
+
+    mLock = (Object *)lock;
+    if (mLock && mLock != (Object *)this) {
+        REFCOUNT_ADD(mLock)
+        mIsStrongLock = TRUE;
+    }
+    return NOERROR;
 }
 
 ECode Reader::Mark(
@@ -36,8 +53,7 @@ ECode Reader::Mark(
 ECode Reader::IsMarkSupported(
     /* [out] */ Boolean* supported)
 {
-    assert(supported != NULL);
-
+    VALIDATE_NOT_NULL(supported)
     *supported = FALSE;
     return NOERROR;
 }
@@ -45,12 +61,9 @@ ECode Reader::IsMarkSupported(
 ECode Reader::Read(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
-    if(mLock == NULL)
-        Object::Autolock lock(*this);
-    else
-        Object::Autolock lock(mLock);
+    Object::Autolock lock(mLock);
 
     ArrayOf_<Char32, 1> buf;
     Int32 number;
@@ -65,11 +78,13 @@ ECode Reader::Read(
 }
 
 ECode Reader::Read(
-    /* [out] */ ArrayOf<Char32>* buffer,
+    /* [in] */ ArrayOf<Char32>* buffer,
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
+    *number = -1;
     assert(buffer != NULL);
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(buffer)
 
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
@@ -80,8 +95,7 @@ ECode Reader::Read(
 ECode Reader::IsReady(
     /* [out] */ Boolean* ready)
 {
-    assert(ready != NULL);
-
+    VALIDATE_NOT_NULL(ready)
     *ready = FALSE;
     return NOERROR;
 }
@@ -95,29 +109,27 @@ ECode Reader::Skip(
     /* [in] */ Int64 count,
     /* [out] */ Int64* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
+    *number = 0;
 
     if (count < 0) {
 //      throw new IllegalArgumentException();
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if(mLock == NULL)
-        Object::Autolock lock(*this);
-    else
-        Object::Autolock lock(mLock);
+    Object::Autolock lock(mLock);
 
     Int64 skipped = 0;
     Int32 toRead = count < 512 ? (Int32)count : 512;
     AutoPtr<ArrayOf<Char32> > charsSkipped = ArrayOf<Char32>::Alloc(toRead);
+    Int32 read;
     while (skipped < count) {
-        Int32 read;
-        FAIL_RETURN(Read(charsSkipped.Get(), 0, toRead, &read));
-
+        FAIL_RETURN(Read(charsSkipped, 0, toRead, &read));
         if (read == -1) {
             *number = skipped;
             return NOERROR;
         }
+
         skipped += read;
         if (read < toRead) {
             *number = skipped;
@@ -131,11 +143,11 @@ ECode Reader::Skip(
     return NOERROR;
 }
 
-ECode Reader::ReadCharBuffer(
+ECode Reader::Read(
     /* [in] */ ICharBuffer* target,
     /* [out] */ Int32* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
 
     Int32 length;
     target->GetLength(&length);
@@ -147,15 +159,6 @@ ECode Reader::ReadCharBuffer(
     }
     *number = length;
 
-    return NOERROR;
-}
-
-ECode Reader::constructor(
-    /* [in] */ IObject* lock)
-{
-    assert(lock != NULL);
-    assert(lock != this->Probe(EIID_IObject));
-    mLock = lock;
     return NOERROR;
 }
 

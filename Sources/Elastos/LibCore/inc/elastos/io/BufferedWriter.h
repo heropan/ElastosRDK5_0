@@ -10,7 +10,7 @@ namespace IO {
 
 class BufferedWriter
     : public Writer
-    , IBufferedWriter
+    , public IBufferedWriter
 {
 public:
     CAR_INTERFACE_DECL()

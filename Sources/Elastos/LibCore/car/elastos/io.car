@@ -188,6 +188,7 @@ module
         constructor(
             [in] Int32 initialSize);
 
+        interface IWriter;
         interface IStringWriter;
         interface ICloseable;
         interface IFlushable;

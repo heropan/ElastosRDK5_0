@@ -1,6 +1,5 @@
 #include "AbstractInterruptibleChannel.h"
 #include <elastos/core/Thread.h>
-#include "coredef.h"
 
 using Elastos::Core::Thread;
 

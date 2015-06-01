@@ -11,11 +11,12 @@ namespace IO {
 CAR_INTERFACE_IMPL(BufferedReader, Reader, IBufferedReader)
 
 BufferedReader::BufferedReader()
-    : mBuf(NULL)
-    , mPos(0)
+    : mPos(0)
     , mEnd(0)
     , mMark(-1)
     , mMarkLimit(-1)
+    , mLastWasCR(FALSE)
+    , mMarkedLastWasCR(FALSE)
 {
 }
 
@@ -61,7 +62,8 @@ ECode BufferedReader::Close()
 ECode BufferedReader::FillBuf(
     /* [out] */ Int32* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
+    *number = -1;
 
     // assert(pos == end);
 
@@ -165,6 +167,8 @@ ECode BufferedReader::Read(
 ECode BufferedReader::ReadChar(
     /* [out] */ Int32* value)
 {
+    VALIDATE_NOT_NULL(value)
+
     Int32 number = 0;
 
     if (mPos < mEnd || (FillBuf(&number), -1 != number)) {
@@ -177,13 +181,15 @@ ECode BufferedReader::ReadChar(
 }
 
 ECode BufferedReader::Read(
-    /* [out] */ ArrayOf<Char32>* buffer,
+    /* [in] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(number)
+    *number = -1;
+    assert(buffer != NULL);
+    VALIDATE_NOT_NULL(buffer)
 
     Object::Autolock lock(mLock);
 
@@ -331,7 +337,7 @@ ECode BufferedReader::ReadLine(
 ECode BufferedReader::IsReady(
     /* [out] */ Boolean* ready)
 {
-    assert(ready != NULL);
+    VALIDATE_NOT_NULL(ready)
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
@@ -358,7 +364,7 @@ ECode BufferedReader::Skip(
     /* [in] */ Int64 charCount,
     /* [out] */ Int64* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
 
     if (charCount < 0) {
 //      throw new IllegalArgumentException();

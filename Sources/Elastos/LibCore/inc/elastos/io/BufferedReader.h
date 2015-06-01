@@ -34,7 +34,7 @@ public:
 protected:
     BufferedReader();
 
-    ~BufferedReader();
+    virtual ~BufferedReader();
 
 public:
     /**
@@ -133,7 +133,7 @@ public:
      */
     //@Override
     CARAPI Read(
-        /* [out] */ ArrayOf<Char32>* buffer,
+        /* [in] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [out] */ Int32* number);

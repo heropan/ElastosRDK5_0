@@ -14,12 +14,10 @@ class BufferedInputStream
 public:
     CAR_INTERFACE_DECL()
 
-protected:
     BufferedInputStream();
 
-    ~BufferedInputStream();
+    virtual ~BufferedInputStream();
 
-public:
     CARAPI constructor(
         /* [in] */ IInputStream* in,
         /* [in] */ Int32 size);
@@ -90,7 +88,7 @@ public:
         /* [out] */ Int32* value);
 
     // 4.2.2->5.0 delete the annotation below
-    /** 
+    /**
      * Reads at most {@code length} bytes from this stream and stores them in
      * byte array {@code buffer} starting at offset {@code offset}. Returns the
      * number of bytes actually read or -1 if no bytes were read and the end of
@@ -116,8 +114,8 @@ public:
      *             occurs.
      */
     // synchronized
-    CARAPI Read(    // name changed from ReadBytesEx to Read
-        /* [out] */ ArrayOf<Byte>* buffer,
+    CARAPI Read(
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 length,
         /* [out] */ Int32* number);

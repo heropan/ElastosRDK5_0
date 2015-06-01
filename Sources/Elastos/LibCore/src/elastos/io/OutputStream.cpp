@@ -1,5 +1,6 @@
 
 #include "OutputStream.h"
+#include <utils/Log.h>
 
 namespace Elastos {
 namespace IO {
@@ -23,21 +24,25 @@ ECode OutputStream::Flush()
 }
 
 ECode OutputStream::Write(
-    /* [in] */ const ArrayOf<Byte>& buffer)
+    /* [in] */ ArrayOf<Byte>* buffer)
 {
-    Object::Autolock lock(*this);
+    VALIDATE_NOT_NULL(buffer)
+
+    Object::Autolock lock(this);
 
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    return Write(buffer, 0, buffer.GetLength());
+    return Write(buffer, 0, buffer->GetLength());
 }
 
 ECode OutputStream::Write(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
+    VALIDATE_NOT_NULL(buffer)
+
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
@@ -48,13 +53,15 @@ ECode OutputStream::Write(
     // removed redundant check, made implicit null check explicit,
     // used (offset | count) < 0 instead of (offset < 0) || (count < 0)
     // to safe one operation
-    if ((offset | count) < 0 || count > buffer.GetLength() - offset) {
-//      throw new IndexOutOfBoundsException();
+    if ((offset | count) < 0 || count > buffer->GetLength() - offset) {
+        ALOGE("OutputStream::Write IndexOutOfBoundsException: offset: %d, count: %d", offset, count);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     // END android-changed
+
+    Byte* p = (Byte*)buffer->GetPayload();
     for (Int32 i = offset; i < offset + count; i++) {
-        Write((Int32)buffer[i]);
+        Write((Int32)(*(p + i)));
     }
     return NOERROR;
 }
@@ -62,7 +69,7 @@ ECode OutputStream::Write(
 ECode OutputStream::CheckError(
     /* [out] */ Boolean* hasError)
 {
-    assert(hasError != NULL);
+    VALIDATE_NOT_NULL(hasError)
     *hasError = FALSE;
     return NOERROR;
 }

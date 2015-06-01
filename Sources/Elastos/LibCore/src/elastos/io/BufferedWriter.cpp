@@ -89,7 +89,7 @@ ECode BufferedWriter::CheckNotClosed()
 ECode BufferedWriter::FlushInternal()
 {
     if (mPos > 0) {
-        FAIL_RETURN(mOut->Write(*mBuf, 0, mPos));
+        FAIL_RETURN(mOut->Write(mBuf, 0, mPos));
     }
     mPos = 0;
 
@@ -131,7 +131,7 @@ ECode BufferedWriter::Write(
 
     Int32 bufferLength = mBuf->GetLength();
     if (mPos == 0 && count >= bufferLength) {
-        return mOut->Write(*cbuf, offset, count);
+        return mOut->Write(cbuf, offset, count);
     }
 
     Int32 available = bufferLength - mPos;
@@ -145,13 +145,13 @@ ECode BufferedWriter::Write(
     }
 
     if (mPos == bufferLength) {
-        FAIL_RETURN(mOut->Write(*mBuf, 0, bufferLength));
+        FAIL_RETURN(mOut->Write(mBuf, 0, bufferLength));
         mPos = 0;
         if (count > available) {
             offset += available;
             available = count - available;
             if (available >= bufferLength) {
-                FAIL_RETURN(mOut->Write(*cbuf, offset, available));
+                FAIL_RETURN(mOut->Write(cbuf, offset, available));
                 return NOERROR;
             }
 
@@ -172,7 +172,7 @@ ECode BufferedWriter::Write(
 
     Int32 bufferLength = mBuf->GetLength();
     if (mPos >= bufferLength) {
-        FAIL_RETURN(mOut->Write(*mBuf, 0, bufferLength));
+        FAIL_RETURN(mOut->Write(mBuf, 0, bufferLength));
         mPos = 0;
     }
 
@@ -199,7 +199,7 @@ ECode BufferedWriter::Write(
 
     if (mPos == 0 && count >= mBuf->GetLength()) {
         AutoPtr< ArrayOf<Char32> > chars = str.GetChars(offset, offset + count);
-        mOut->Write(*chars, 0, count);
+        mOut->Write(chars, 0, count);
         return NOERROR;
     }
 
@@ -215,14 +215,14 @@ ECode BufferedWriter::Write(
     }
 
     if (mPos == mBuf->GetLength()) {
-        mOut->Write(*mBuf, 0, mBuf->GetLength());
+        mOut->Write(mBuf, 0, mBuf->GetLength());
         mPos = 0;
         if (count > available) {
             offset += available;
             available = count - available;
             if (available >= mBuf->GetLength()) {
                 AutoPtr< ArrayOf<Char32> > chars = str.GetChars(offset, offset + available);
-                mOut->Write(*chars, 0, available);
+                mOut->Write(chars, 0, available);
                 return NOERROR;
             }
             AutoPtr< ArrayOf<Char32> > chars = str.GetChars(offset, offset + available);

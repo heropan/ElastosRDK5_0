@@ -1,6 +1,6 @@
 
-#ifndef __OUTPUTSTREAM_H__
-#define __OUTPUTSTREAM_H__
+#ifndef __ELASTOS_IO_OUTPUTSTREAM_H__
+#define __ELASTOS_IO_OUTPUTSTREAM_H__
 
 #include <elastos/core/Object.h>
 
@@ -50,7 +50,7 @@ public:
      *             if an error occurs while writing to this stream.
      */
     CARAPI Write(
-        /* [in] */ const ArrayOf<Byte>& buffer);
+        /* [in] */ ArrayOf<Byte>* buffer);
 
     /**
      * Writes {@code count} bytes from the byte array {@code buffer} starting at
@@ -71,7 +71,7 @@ public:
      *             {@code buffer}.
      */
     CARAPI Write(
-        /* [in] */ const ArrayOf<Byte> & buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
@@ -84,12 +84,9 @@ public:
      */
     CARAPI CheckError(
         /* [out] */ Boolean* hasError);
-
-protected:
-    Object mLock;
 };
 
 } // namespace IO
 } // namespace Elastos
 
-#endif //__OUTPUTSTREAM_H__
+#endif //__ELASTOS_IO_OUTPUTSTREAM_H__

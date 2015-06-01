@@ -25,7 +25,7 @@ ECode CSocketOutputStream::Write(
     (*buffer)[0] = (Byte) (oneByte & 0xFF);
 
     Int32 number;
-    return mSocket->Write(*buffer, 0, 1, &number);
+    return mSocket->Write(buffer, 0, 1, &number);
 }
 
 ECode CSocketOutputStream::WriteBytes(

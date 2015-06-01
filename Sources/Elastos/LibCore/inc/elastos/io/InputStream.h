@@ -17,6 +17,10 @@ class InputStream
 public:
     CAR_INTERFACE_DECL()
 
+    InputStream();
+
+    virtual ~InputStream();
+
     /**
      * Returns an estimated number of bytes that can be read or skipped without blocking for more
      * input.
@@ -118,7 +122,7 @@ public:
      *             if this stream is closed or another IOException occurs.
      */
     CARAPI Read(
-        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
     /**
@@ -142,7 +146,7 @@ public:
      *             if the stream is closed or another IOException occurs.
      */
     CARAPI Read(
-        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);

@@ -826,7 +826,7 @@ ECode HttpEngine::WriteRequestHeaders(
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     mSentRequestMillis;
     system->GetCurrentTimeMillis(&mSentRequestMillis);
-    return mRequestOut->Write(*bytes);
+    return mRequestOut->Write(bytes);
 }
 
 void HttpEngine::PrepareRawRequestHeaders()

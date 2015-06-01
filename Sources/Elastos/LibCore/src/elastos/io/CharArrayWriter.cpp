@@ -30,7 +30,7 @@ ECode CharArrayWriter::constructor()
     if (mBuf == NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
-    mLock = mBufLock->Probe(EIID_IObject);
+    mLock = mBufLock;
     return NOERROR;
 }
 
@@ -45,7 +45,7 @@ ECode CharArrayWriter::constructor(
     if (mBuf == NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
-    mLock = mBufLock->Probe(EIID_IObject);
+    mLock = mBufLock;
     return NOERROR;
 }
 
@@ -164,7 +164,7 @@ ECode CharArrayWriter::Write(
 }
 
 ECode CharArrayWriter::Write(
-    /* [in] */ const String* str,
+    /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
@@ -175,14 +175,14 @@ ECode CharArrayWriter::Write(
     // removed redundant check, used (offset | len) < 0
     // instead of (offset < 0) || (len < 0) to safe one operation
 
-    if ((offset | count) < 0 || offset > str->GetLength() - count) {
+    if ((offset | count) < 0 || offset > str.GetLength() - count) {
 //      throw new StringIndexOutOfBoundsException();
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     // END android-changed
     Object::Autolock lock(mLock);
 
-    AutoPtr<ArrayOf<Char32> > charArray = str->GetChars(offset, offset + count);
+    AutoPtr<ArrayOf<Char32> > charArray = str.GetChars(offset, offset + count);
     count = charArray->GetLength();
     if (count > 0) {
         Expand(count);
@@ -198,7 +198,7 @@ ECode CharArrayWriter::WriteTo(
 {
     Object::Autolock lock(mLock);
 
-    return out->Write(*mBuf, 0, mCount);
+    return out->Write(mBuf, 0, mCount);
 }
 
 ECode CharArrayWriter::Append(
@@ -229,7 +229,8 @@ ECode CharArrayWriter::Append(
         csq->ToString(&str);
     }
 
-    return Write(str.Substring(start, end));
+    String subStr = str.Substring(start, end);
+    return Write(subStr);
 }
 
 } // namespace IO

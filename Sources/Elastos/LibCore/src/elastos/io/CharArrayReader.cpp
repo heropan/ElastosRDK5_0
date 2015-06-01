@@ -130,7 +130,7 @@ ECode CharArrayReader::Read(
 }
 
 ECode CharArrayReader::Read(
-    /* [out] */ ArrayOf<Char32>* buffer,
+    /* [in] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)

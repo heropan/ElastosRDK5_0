@@ -35,7 +35,7 @@ ECode BufferedOutputStream::constructor(
 
 ECode BufferedOutputStream::Close()
 {
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
     if (mBuf != NULL) {
         FilterOutputStream::Close();
         mBuf = NULL;
@@ -45,7 +45,7 @@ ECode BufferedOutputStream::Close()
 
 ECode BufferedOutputStream::Flush()
 {
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
     FAIL_RETURN(CheckNotClosed());
     FAIL_RETURN(FlushInternal());
     return IFlushable::Probe(mOut)->Flush();
@@ -54,11 +54,11 @@ ECode BufferedOutputStream::Flush()
 ECode BufferedOutputStream::Write(
     /* [in] */ Int32 oneByte)
 {
-    Object::Autolock lock(*this);
+    Object::Autolock lock(this);
     FAIL_RETURN(CheckNotClosed());
 
     if (mCount == mBuf->GetLength()) {
-        mOut->Write(*mBuf, 0, mCount);
+        mOut->Write(mBuf, 0, mCount);
         mCount = 0;
     }
     (*mBuf)[mCount++] = (Byte)oneByte;
@@ -66,20 +66,22 @@ ECode BufferedOutputStream::Write(
 }
 
 ECode BufferedOutputStream::Write(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    Object::Autolock lock(*this);
+    VALIDATE_NOT_NULL(buffer)
+
+    Object::Autolock lock(this);
     FAIL_RETURN(CheckNotClosed());
 
-    ArrayOf<Byte>* localBuf = mBuf;
+    AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
     if (count >= localBuf->GetLength()) {
         FAIL_RETURN(FlushInternal());
         return mOut->Write(buffer, offset, count);
     }
 
-    if (offset < 0 || offset > buffer.GetLength() - count) {
+    if (offset < 0 || offset > buffer->GetLength() - count) {
 //      throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + offset);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -94,7 +96,7 @@ ECode BufferedOutputStream::Write(
     }
 
     // the length is always less than (internalBuffer.length - count) here so arraycopy is safe
-    memcpy(localBuf->GetPayload() + mCount, buffer.GetPayload() + offset, count);
+    localBuf->Copy(mCount, buffer, offset, count);
     mCount += count;
 
     return NOERROR;
@@ -103,7 +105,7 @@ ECode BufferedOutputStream::Write(
 ECode BufferedOutputStream::FlushInternal()
 {
     if (mCount > 0) {
-        FAIL_RETURN(mOut->Write(*mBuf, 0, mCount));
+        FAIL_RETURN(mOut->Write(mBuf, 0, mCount));
         mCount = 0;
     }
     return NOERROR;

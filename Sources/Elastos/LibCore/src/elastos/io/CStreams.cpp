@@ -40,7 +40,7 @@ ECode CStreams::WriteSingleByte(
 
     AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(1);
     (*buffer)[0] = (Byte)(b & 0xff);
-    return out->Write(*(buffer.Get()));
+    return out->Write(buffer);
 }
 
 ECode CStreams::ReadFully(
@@ -116,7 +116,7 @@ ECode CStreams::ReadFullyNoClose(
     Int32 count;
     FAIL_RETURN(in->Read(buffer, &count));
     while (count != -1) {
-        FAIL_RETURN(IOutputStream::Probe(bytes)->Write(*buffer.Get(), 0, count));
+        FAIL_RETURN(IOutputStream::Probe(bytes)->Write(buffer, 0, count));
         FAIL_RETURN(in->Read(buffer, &count));
     }
     return bytes->ToByteArray(byteArray);
@@ -142,7 +142,7 @@ ECode CStreams::ReadFullyFromReader(
         goto finally;
     }
     while (count != -1) {
-        ec = IWriter::Probe(writer)->Write(*buffer.Get(), 0, count);
+        ec = IWriter::Probe(writer)->Write(buffer, 0, count);
         if (FAILED(ec)) {
             goto finally;
         }
