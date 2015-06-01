@@ -1,17 +1,18 @@
-#ifndef __ATTRIBUTEDSTRING_H__
-#define __ATTRIBUTEDSTRING_H__
+#ifndef __ELASTOS_TEXT_ATTRIBUTEDSTRING_H__
+#define __ELASTOS_TEXT_ATTRIBUTEDSTRING_H__
 
-#include "cmdef.h"
-#include "Elastos.CoreLibrary_server.h"
-#include <elastos.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
-#include <elastos/HashSet.h>
+#include <elastos/core/Object.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashSet;
-using Elastos::Utility::HashMap;
-// using Elastos::Utility::IObjectMap;
+using Elastos::Core::Object;
+using Elastos::Core::ICloneable;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IMap;
 using Elastos::Text::IAttributedCharacterIteratorAttribute;
 
 _ETL_NAMESPACE_BEGIN
@@ -32,9 +33,12 @@ typedef HashMap<AutoPtr<IAttributedCharacterIteratorAttribute>, AutoPtr<IInterfa
 typedef typename AttributeObjectMap::Iterator AttributeObjectMapIterator;
 
 class AttributedString
+    : public Object
+    , public IAttributedString
 {
 public:
-    class Range : public ElRefBase
+    class Range
+        : public ElRefBase
     {
     public:
         Range(
@@ -52,10 +56,14 @@ public:
     };
 
     class AttributedIterator
-            : public ElRefBase
+            : public Object
             , public IAttributedCharacterIterator
+            , public ICharacterIterator
+            , public ICloneable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         AttributedIterator(
             /* [in] */ AttributedString* attrString);
 
@@ -67,19 +75,8 @@ public:
 
         ~AttributedIterator();
 
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
-
         CARAPI Clone(
-            /* [out] */ ICharacterIterator** copy);
+            /* [out] */ IInterface** copy);
 
         CARAPI Current(
             /* [out] */ Char32* value);
@@ -97,14 +94,14 @@ public:
             /* [out] */ Int32* index);
 
         CARAPI GetAllAttributeKeys(
-            /* [out] */ IObjectContainer** allAttributedKeys);
+            /* [out] */ ISet** allAttributedKeys);
 
         CARAPI GetAttribute(
             /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
             /* [out] */ IInterface** instance);
 
         CARAPI GetAttributes(
-                /* [out, callee] */ AttributeObjectMap** attributes);
+            /* [out] */ IMap** attributes);
 
         CARAPI GetRunLimit(
             /* [out] */ Int32* index);
@@ -114,7 +111,7 @@ public:
             /* [out] */ Int32* index);
 
         CARAPI GetRunLimit(
-            /* [in] */ IObjectContainer* attributes,
+            /* [in] */ ISet* attributes,
             /* [out] */ Int32* index);
 
         CARAPI GetRunStart(
@@ -125,7 +122,7 @@ public:
             /* [out] */ Int32* index);
 
         CARAPI GetRunStart(
-            /* [in] */ IObjectContainer* attributes,
+            /* [in] */ ISet* attributes,
             /* [out] */ Int32* index);
 
         CARAPI Last(
@@ -168,63 +165,65 @@ public:
     };
 
 public:
-    ~AttributedString();
+    CAR_INTERFACE_DECL()
 
-    CARAPI Init(
+    virtual ~AttributedString();
+
+    CARAPI constructor(
         /* [in] */ IAttributedCharacterIterator* iterator);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IAttributedCharacterIterator* iterator,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IAttributedCharacterIterator* iterator,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& value);
 
-    // CARAPI Init(
-    //     /* [in] */ const String& value,
-    //     /* [in] */ IObjectMap * attributes);
+    CARAPI constructor(
+        /* [in] */ const String& value,
+        /* [in] */ IMap * attributes);
 
-    virtual CARAPI AddAttribute(
+    CARAPI AddAttribute(
         /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
         /* [in] */ IInterface* value);
 
-    virtual CARAPI AddAttribute(
+    CARAPI AddAttribute(
         /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
         /* [in] */ IInterface* value,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    virtual CARAPI AddAttributes(
+    CARAPI AddAttributes(
         /* [in] */ AttributeObjectMap* attributes,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    virtual CARAPI GetIterator(
+    CARAPI GetIterator(
         /* [out] */ IAttributedCharacterIterator** iterator);
 
-    virtual CARAPI GetIterator(
+    CARAPI GetIterator(
         /* [in] */ ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes,
         /* [out] */ IAttributedCharacterIterator** iterator);
 
-    virtual CARAPI GetIterator(
+    CARAPI GetIterator(
         /* [in] */ ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ IAttributedCharacterIterator** iterator);
 
 private:
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IAttributedCharacterIterator* iterator,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
-        /* [in] */ IObjectContainer* attributes);
+        /* [in] */ ISet* attributes);
 
 public:
     String mText;
@@ -238,4 +237,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__ATTRIBUTEDSTRING_H__
+#endif //__ELASTOS_TEXT_ATTRIBUTEDSTRING_H__

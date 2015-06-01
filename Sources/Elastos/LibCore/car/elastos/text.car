@@ -35,6 +35,8 @@ module
     merge("text/spi/INumberFormatProvider.car");
 
     interface Elastos.Text.IAnnotation;
+    interface Elastos.Text.IAttributedCharacterIteratorAttribute;
+    interface Elastos.IO.ISerializable;
 
     namespace Elastos {
     namespace Text {
@@ -46,6 +48,13 @@ module
         interface IAnnotation;
     }
 
+    class CAttributedCharacterIteratorAttribute {
+        constructor(
+            [in] String name);
+
+        interface IAttributedCharacterIteratorAttribute;
+        interface ISerializable;
+    }
 
     } // Text
     } // Elastos

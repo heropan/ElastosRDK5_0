@@ -1,18 +1,22 @@
 
 #include "AttributedString.h"
-#include <elastos/StringBuffer.h>
-#include <elastos/Map.h>
-#include <CObjectContainer.h>
+#include <elastos/core/StringBuffer.h>
+#include <utils/Log.h>
 
-using Elastos::Core::CObjectContainer;
 using Elastos::Core::StringBuffer;
-using Elastos::Utility::Pair;
+using Elastos::Core::EIID_ICloneable;
+using Elastos::Utility::Etl::Pair;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IIterable;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IMapEntry;
 
 namespace Elastos {
 namespace Text {
 
-// const RBTreeColorType S_RBTreeRed = FALSE;
-// const RBTreeColorType S_RBTreeBlack = TRUE;
+//========================================================================
+// AttributedString::Range
+//========================================================================
 
 AttributedString::Range::Range(
     /* [in] */ Int32 s,
@@ -32,6 +36,11 @@ AttributedString::Range& AttributedString::Range::operator = (
     return *this;
 }
 
+//========================================================================
+// AttributedString::AttributedIterator
+//========================================================================
+CAR_INTERFACE_IMPL_3(AttributedString::AttributedIterator, Object, IAttributedCharacterIterator, ICharacterIterator, ICloneable)
+
 AttributedString::AttributedIterator::AttributedIterator(
     /* [in] */ AttributedString* attrString)
     : mBegin(0)
@@ -48,6 +57,7 @@ AttributedString::AttributedIterator::AttributedIterator(
     /* [in] */ Int32 end)
 {
     if (begin < 0 || end > (Int32)mAttrString->mText.GetLength() || begin > end) {
+        ALOGE("AttributedString::AttributedIterator(): IllegalArgumentException.");
         //throw new IllegalArgumentException();
         assert(0);
     }
@@ -70,39 +80,10 @@ AttributedString::AttributedIterator::~AttributedIterator()
     mAttributesAllowed.Clear();
 }
 
-PInterface AttributedString::AttributedIterator::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
-    }
-    else if (riid == EIID_IAttributedCharacterIterator) {
-        return (IAttributedCharacterIterator*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 AttributedString::AttributedIterator::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 AttributedString::AttributedIterator::Release()
-{
-    return ElRefBase::Release();
-}
-
-AttributedString::AttributedIterator::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
 ECode AttributedString::AttributedIterator::Clone(
-    /* [out] */ ICharacterIterator** copy)
+    /* [out] */ IInterface** copy)
 {
+    assert(0 && "TODO");
     // try {
     //     AttributedIterator clone = (AttributedIterator) super.clone();
     //     if (attributesAllowed != null) {
@@ -168,7 +149,7 @@ ECode AttributedString::AttributedIterator::GetIndex(
 Boolean AttributedString::AttributedIterator::InRange(
     /* [in] */ Range* range)
 {
-    if (range->mValue->Probe(EIID_IAnnotation) == NULL) {
+    if (IAnnotation::Probe(range->mValue) == NULL) {
         return TRUE;
     }
     return range->mStart >= mBegin && range->mStart < mEnd
@@ -182,11 +163,11 @@ Boolean AttributedString::AttributedIterator::InRange(
     for (it = ranges->Begin(); it != ranges->End(); ++it) {
         Range* range = *it;
         if (range->mStart >= mBegin && range->mStart < mEnd) {
-            return (range->mValue->Probe(EIID_IAnnotation) == NULL)
+            return (IAnnotation::Probe(range->mValue) == NULL)
                     || (range->mEnd > mBegin && range->mEnd <= mEnd);
         }
         else if (range->mEnd > mBegin && range->mEnd <= mEnd) {
-            return (range->mValue->Probe(EIID_IAnnotation) == NULL)
+            return (IAnnotation::Probe(range->mValue) == NULL)
                     || (range->mStart >= mBegin && range->mStart < mEnd);
         }
     }
@@ -194,20 +175,22 @@ Boolean AttributedString::AttributedIterator::InRange(
 }
 
 ECode AttributedString::AttributedIterator::GetAllAttributeKeys(
-    /* [out] */ IObjectContainer** allAttributedKeys)
+    /* [out] */ ISet** allAttributedKeys)
 {
     VALIDATE_NOT_NULL(allAttributedKeys);
 
-    AutoPtr<IObjectContainer> container;
-    CObjectContainer::New((IObjectContainer**)&container);
-    *allAttributedKeys = container;
+    AutoPtr<ISet> result;
+    //TODO CHashSet::New((ISet**)&result);
+    ICollection* ci = ICollection::Probe(result);
+
+    *allAttributedKeys = result;
     REFCOUNT_ADD(*allAttributedKeys);
 
     AttributeRangeMapIterator it = mAttrString->mAttributeMap.Begin();
     if (mBegin == 0 && mEnd == (Int32)mAttrString->mText.GetLength()
             && mAttributesAllowed.IsEmpty()) {
         for(; it != mAttrString->mAttributeMap.End(); ++it) {
-            container->Add(it->mFirst);
+            ci->Add(it->mFirst);
         }
         return NOERROR;
     }
@@ -216,7 +199,7 @@ ECode AttributedString::AttributedIterator::GetAllAttributeKeys(
         if (mAttributesAllowed.Find(it->mFirst) != mAttributesAllowed.End()) {
             AutoPtr<List<AutoPtr<Range> > > ranges = it->mSecond;
             if (InRange(ranges)) {
-                container->Add(it->mFirst);
+                ci->Add(it->mFirst);
             }
         }
     }
@@ -243,17 +226,17 @@ ECode AttributedString::AttributedIterator::GetAttribute(
     /* [out] */ IInterface** instance)
 {
     VALIDATE_NOT_NULL(instance);
+    *instance = NULL;
 
     if (mAttributesAllowed.Find(attribute) == mAttributesAllowed.End()) {
-        *instance = NULL;
         return NOERROR;
     }
     AutoPtr<List<AutoPtr<Range> > > ranges;
     AttributeRangeMapIterator it = mAttrString->mAttributeMap.Find(attribute);
     if (it == mAttrString->mAttributeMap.End()) {
-        *instance = NULL;
         return NOERROR;
     }
+
     ranges = it->mSecond;
     AutoPtr<IInterface> temp = CurrentValue(ranges);
     *instance = temp;
@@ -262,12 +245,15 @@ ECode AttributedString::AttributedIterator::GetAttribute(
 }
 
 ECode AttributedString::AttributedIterator::GetAttributes(
-    /* [out, callee] */ AttributeObjectMap** attributes)
+    /* [out] */ IMap** attributes)
 {
     VALIDATE_NOT_NULL(attributes);
 
-    AutoPtr<AttributeObjectMap> result =
-        new AttributeObjectMap((mAttrString->mAttributeMap.GetSize() * 4 / 3) + 1);
+    Int32 size = (mAttrString->mAttributeMap.GetSize() * 4 / 3) + 1;
+    AutoPtr<IMap> result;
+    //TODO CHashMap::New(size, (IMap**)&result);
+    *attributes = result;
+    REFCOUNT_ADD(*attributes);
 
     AttributeRangeMapIterator it = mAttrString->mAttributeMap.Begin();
     AttributeRangeMapIterator itnext = ++mAttrString->mAttributeMap.Begin();
@@ -276,13 +262,11 @@ ECode AttributedString::AttributedIterator::GetAttributes(
             || mAttributesAllowed.Find(itnext->mFirst) != mAttributesAllowed.End()) {
             AutoPtr<IInterface> value = CurrentValue(itnext->mSecond);
             if (value != NULL) {
-                result->Insert(Pair<AutoPtr<IAttributedCharacterIteratorAttribute>, AutoPtr<IInterface> >(itnext->mFirst, value));
+                result->Put(itnext->mFirst->Probe(EIID_IInterface), value);
             }
         }
     }
 
-    *attributes = result;
-    REFCOUNT_ADD(*attributes);
     return NOERROR;
 }
 
@@ -290,8 +274,8 @@ ECode AttributedString::AttributedIterator::GetRunLimit(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    AutoPtr<IObjectContainer> allAttributedKeys;
-    GetAllAttributeKeys((IObjectContainer**)&allAttributedKeys);
+    AutoPtr<ISet> allAttributedKeys;
+    GetAllAttributeKeys((ISet**)&allAttributedKeys);
     return GetRunLimit(allAttributedKeys, index);
 }
 
@@ -343,19 +327,28 @@ ECode AttributedString::AttributedIterator::GetRunLimit(
 }
 
 ECode AttributedString::AttributedIterator::GetRunLimit(
-    /* [in] */ IObjectContainer* attributes,
+    /* [in] */ ISet* attributes,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
+    *index = -1;
+    VALIDATE_NOT_NULL(attributes);
+
+    IIterable* iterable = IIterable::Probe(attributes);
+    assert(iterable != NULL);
+
+    AutoPtr<IIterator> it;
+    iterable->GetIterator((IIterator**)&it);
 
     Int32 limit = mEnd;
-    AutoPtr<IObjectEnumerator> enumerator;
-    attributes->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
+    Int32 newLimit;
     Boolean hasNext;
-    while(enumerator->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IAttributedCharacterIteratorAttribute> attr;
-        enumerator->Current((IInterface**)&attr);
-        Int32 newLimit;
+    IAttributedCharacterIteratorAttribute* attr;
+    while(it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->Next((IInterface**)&obj);
+        attr = IAttributedCharacterIteratorAttribute::Probe(obj);
+
         GetRunLimit(attr, &newLimit);
         if (newLimit < limit) {
             limit = newLimit;
@@ -370,8 +363,8 @@ ECode AttributedString::AttributedIterator::GetRunStart(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
-    AutoPtr<IObjectContainer> allAttributedKeys;
-    GetAllAttributeKeys((IObjectContainer**)&allAttributedKeys);
+    AutoPtr<ISet> allAttributedKeys;
+    GetAllAttributeKeys((ISet**)&allAttributedKeys);
     return GetRunStart(allAttributedKeys, index);
 }
 
@@ -420,19 +413,28 @@ ECode AttributedString::AttributedIterator::GetRunStart(
 }
 
 ECode AttributedString::AttributedIterator::GetRunStart(
-    /* [in] */ IObjectContainer* attributes,
+    /* [in] */ ISet* attributes,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
+    *index = -1;
+    VALIDATE_NOT_NULL(attributes);
+
+    IIterable* iterable = IIterable::Probe(attributes);
+    assert(iterable != NULL);
+
+    AutoPtr<IIterator> it;
+    iterable->GetIterator((IIterator**)&it);
 
     Int32 start = mBegin;
-    AutoPtr<IObjectEnumerator> enumerator;
-    attributes->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
+    Int32 newStart;
     Boolean hasNext;
-    while(enumerator->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IAttributedCharacterIteratorAttribute> attr;
-        enumerator->Current((IInterface**)&attr);
-        Int32 newStart;
+    IAttributedCharacterIteratorAttribute* attr;
+    while(it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->Next((IInterface**)&obj);
+        attr = IAttributedCharacterIteratorAttribute::Probe(obj);
+
         GetRunStart(attr, &newStart);
         if (newStart > start) {
             start = newStart;
@@ -502,71 +504,84 @@ ECode AttributedString::AttributedIterator::SetIndex(
     return NOERROR;
 }
 
+//========================================================================
+// AttributedString
+//========================================================================
+CAR_INTERFACE_IMPL(AttributedString, Object, IAttributedString)
+
 AttributedString::~AttributedString()
 {
     mAttributeMap.Clear();
 }
 
-ECode AttributedString::Init(
+ECode AttributedString::constructor(
     /* [in] */ IAttributedCharacterIterator* iterator)
 {
+    VALIDATE_NOT_NULL(iterator)
+    ICharacterIterator* ci = ICharacterIterator::Probe(iterator);
+
     Int32 bi, ei;
-    iterator->GetBeginIndex(&bi);
-    iterator->GetEndIndex(&ei);
+    ci->GetBeginIndex(&bi);
+    ci->GetEndIndex(&ei);
     if (bi > ei) {
+        ALOGE("AttributedString::constructor(): IllegalArgumentException, invalid substring range.");
         //throw new IllegalArgumentException("Invalid substring range");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
     StringBuffer buffer;
     for (Int32 i = bi; i < ei; i++) {
         Char32 cv, nv;
-        iterator->Current(&cv);
+        ci->Current(&cv);
         buffer += cv;
-        iterator->Next(&nv);
+        ci->Next(&nv);
     }
     buffer.ToString(&mText);
 
-    AutoPtr<IObjectContainer> attributes;
-    iterator->GetAllAttributeKeys((IObjectContainer**)&attributes);
+    AutoPtr<ISet> attributes;
+    iterator->GetAllAttributeKeys((ISet**)&attributes);
     if (attributes == NULL) {
         return NOERROR;
     }
 
-    AutoPtr<IObjectEnumerator> enumerator;
-    attributes->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
+    AutoPtr<IIterator> it;
+    IIterable::Probe(attributes)->GetIterator((IIterator**)&it);
     Boolean hasNext;
-    while(enumerator->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IAttributedCharacterIteratorAttribute> attr;
-        enumerator->Current((IInterface**)&attr);
-        Char32 ch;
-        iterator->SetIndex(0, &ch);
-        Char32 cv;
-        while (iterator->Current(&cv), cv != (Char32)ICharacterIterator::DONE) {
-            Int32 start;
+    IAttributedCharacterIteratorAttribute* attr;
+    Char32 ch, cv;
+    Int32 start, limit;
+    while(it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->Next((IInterface**)&obj);
+        attr = IAttributedCharacterIteratorAttribute::Probe(obj);
+
+        ci->SetIndex(0, &ch);
+        while (ci->Current(&cv), cv != (Char32)ICharacterIterator::DONE) {
             iterator->GetRunStart(attr, &start);
-            Int32 limit;
             iterator->GetRunLimit(attr, &limit);
             AutoPtr<IInterface> value;
             iterator->GetAttribute(attr, (IInterface**)&value);
             if (value != NULL) {
                 AddAttribute(attr, value, start, limit);
             }
-            iterator->SetIndex(limit, &ch);
+            ci->SetIndex(limit, &ch);
         }
     }
 
     return NOERROR;
 }
 
-ECode AttributedString::Init(
+ECode AttributedString::constructor(
     /* [in] */ IAttributedCharacterIterator* iterator,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
-    /* [in] */ IObjectContainer* attributes)
+    /* [in] */ ISet* attributes)
 {
+    VALIDATE_NOT_NULL(iterator)
+    ICharacterIterator* ci = ICharacterIterator::Probe(iterator);
     Int32 beginIndex, endIndex;
-    iterator->GetBeginIndex(&beginIndex);
-    iterator->GetEndIndex(&endIndex);
+    ci->GetBeginIndex(&beginIndex);
+    ci->GetEndIndex(&endIndex);
     if (start < beginIndex || end > endIndex || start > end) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 //        throw new IllegalArgumentException();
@@ -578,75 +593,77 @@ ECode AttributedString::Init(
 
     StringBuffer buffer;
     Char32 newIndex;
-    iterator->SetIndex(start, &newIndex);
+    ci->SetIndex(start, &newIndex);
     Int32 index;
-    while (iterator->GetIndex(&index) ,index < end) {
+    while (ci->GetIndex(&index) ,index < end) {
         Char32 c;
-        iterator->Current(&c);
+        ci->Current(&c);
         buffer += c;
         Char32 nextC;
-        iterator->Next(&nextC);
+        ci->Next(&nextC);
     }
     buffer.ToString(&mText);
 
-    AutoPtr<IObjectEnumerator> enumerator;
-    attributes->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
+    AutoPtr<IIterator> it;
+    IIterable::Probe(attributes)->GetIterator((IIterator**)&it);
     Boolean hasNext;
-    while(enumerator->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IAttributedCharacterIteratorAttribute> attr;
-        enumerator->Current((IInterface**)&attr);
-        Char32 c;
-        iterator->SetIndex(start, &c);
-        Int32 id;
-        while (iterator->GetIndex(&id) ,index < end) {
+    IAttributedCharacterIteratorAttribute* attr;
+    Char32 c, newChar;
+    Int32 id, runStart, limit;
+    while(it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->Next((IInterface**)&obj);
+        attr = IAttributedCharacterIteratorAttribute::Probe(obj);
+
+        ci->SetIndex(start, &c);
+        while (ci->GetIndex(&id) ,index < end) {
             AutoPtr<IInterface> value;
             iterator->GetAttribute(attr, (IInterface**)&value);
-            Int32 runStart;
             iterator->GetRunStart(attr, &runStart);
-            Int32 limit;
             iterator->GetRunLimit(attr, &limit);
-            if ((value->Probe(EIID_IAnnotation) != NULL
+            if ((IAnnotation::Probe(value) != NULL
                     && runStart >= start && limit <= end)
-                        || (value != NULL && (value->Probe(EIID_IAnnotation) == NULL))) {
-                AddAttribute(attr, value, (runStart < start ? start
-                        : runStart)
-                        - start, (limit > end ? end : limit) - start);
+                        || (value != NULL && (IAnnotation::Probe(value) == NULL))) {
+                AddAttribute(attr, value,
+                    (runStart < start ? start : runStart) - start, (limit > end ? end : limit) - start);
             }
-            Char32 newChar;
-            iterator->SetIndex(limit, &newChar);
+            ci->SetIndex(limit, &newChar);
         }
     }
 
     return NOERROR;
 }
 
-ECode AttributedString::Init(
+ECode AttributedString::constructor(
     /* [in] */ IAttributedCharacterIterator* iterator,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    AutoPtr<IObjectContainer> container;
-    iterator->GetAllAttributeKeys((IObjectContainer**)&container);
-    return Init(iterator, start, end, container);
+    AutoPtr<ISet> container;
+    iterator->GetAllAttributeKeys((ISet**)&container);
+    return constructor(iterator, start, end, container);
 }
 
-ECode AttributedString::Init(
+ECode AttributedString::constructor(
     /* [in] */ IAttributedCharacterIterator* iterator,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes)
 {
-    AutoPtr<IObjectContainer> container;
-    // CObjectContainer::New((IObjectContainer**)&container);
+    AutoPtr<ISet> container;
+    assert(0 && "TODO");
+    // CSet::New((ISet**)&container);
     if (attributes != NULL) {
+        Boolean modified;
+        ICollection* collection = ICollection::Probe(container);
         for (Int32 i = 0; i < attributes->GetLength(); ++i) {
-            container->Add((*attributes)[i]);
+            collection->Add((*attributes)[i], &modified);
         }
     }
-    return Init(iterator, start, end, container);
+    return constructor(iterator, start, end, container);
 }
 
-ECode AttributedString::Init(
+ECode AttributedString::constructor(
     /* [in] */ const String& value)
 {
     if (value.IsNull()) {
@@ -657,31 +674,52 @@ ECode AttributedString::Init(
     return NOERROR;
 }
 
-// ECode AttributedString::Init(
-//     /* [in] */ const String& value,
-//     /* [in] */ IObjectMap * attributes)
-// {
-//     if (value.IsNull()) {
-//         // throw new NullPointerException("value == null");
-//         return E_NULL_POINTER_EXCEPTION;
-//     }
-//     // if (value.GetLength() == 0 && !attributes->IsEmpty()) {
-//     //     throw new IllegalArgumentException("Cannot add attributes to empty string");
-//     // }
-//     Int32 len(0);
-//     attributes->GetSize(&len);
-//     mAttributeMap = new AttributeRangeMap(
-//             (len * 4 / 3) + 1);
-//     // Iterator<?> it = attributes.entrySet().iterator();
-//     // while (it.hasNext()) {
-//     //     Map.Entry<?, ?> entry = (Map.Entry<?, ?>) it.next();
-//     //     ArrayList<Range> ranges = new ArrayList<Range>(1);
-//     //     ranges.add(new Range(0, value.GetLength(), entry.getValue()));
-//     //     attributeMap.put((AttributedCharacterIterator.Attribute) entry
-//     //             .getKey(), ranges);
-//     // }
-//     return E_NOT_IMPLEMENTED;
-// }
+ECode AttributedString::constructor(
+    /* [in] */ const String& value,
+    /* [in] */ IMap* attributes)
+{
+    VALIDATE_NOT_NULL(attributes);
+
+    if (value.IsNull()) {
+        // throw new NullPointerException("value == null");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ICollection* c = ICollection::Probe(attributes);
+    assert(c != NULL);
+    Boolean empty;
+    c->IsEmpty(&empty);
+    if (value.IsEmpty() && !empty) {
+        // throw new IllegalArgumentException("Cannot add attributes to empty string");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    mText = value;
+
+    AutoPtr<IIterator> it;
+    IIterable::Probe(attributes)->GetIterator((IIterator**)&it);
+    AutoPtr<List<AutoPtr<Range> > > ranges;
+    IAttributedCharacterIteratorAttribute* attr;
+    Boolean hasNext;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;;
+        it->Next((IMapEntry**)&obj);
+        IMapEntry* entry = IMapEntry::Probe(obj);
+
+        AutoPtr<IInterface> val;
+        entry->GetValue((IInterface**)&val);
+        AutoPtr<IInterface> key;
+        entry->GetKey((IInterface**)&key);
+
+        ranges = new List<AutoPtr<Range> >(1);
+        AutoPtr<Range> range = new Range(0, value.GetLength(), val);
+        ranges->PushBack(range);
+        attr = IAttributedCharacterIteratorAttribute::Probe(key);
+        mAttributeMap[attr] = ranges;
+    }
+
+    return NOERROR;
+}
 
 ECode AttributedString::AddAttribute(
     /* [in] */ IAttributedCharacterIteratorAttribute* attribute,

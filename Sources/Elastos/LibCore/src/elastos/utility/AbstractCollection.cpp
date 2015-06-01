@@ -30,6 +30,13 @@ ECode AbstractCollection::Add(
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
+ECode AbstractCollection::Add(
+    /* [in] */ IInterface* object)
+{
+    Boolean result;
+    return Add(object, &result);
+}
+
 ECode AbstractCollection::AddAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
@@ -56,6 +63,13 @@ ECode AbstractCollection::AddAll(
     }
     *modified = result;
     return NOERROR;
+}
+
+ECode AbstractCollection::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    Boolean result;
+    return AddAll(collection, &result);
 }
 
 ECode AbstractCollection::Clear()
@@ -175,6 +189,13 @@ ECode AbstractCollection::Remove(
     return NOERROR;
 }
 
+ECode AbstractCollection::Remove(
+    /* [in] */ IInterface* object)
+{
+    Boolean result;
+    return Remove(object, &result);
+}
+
 ECode AbstractCollection::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
@@ -196,6 +217,13 @@ ECode AbstractCollection::RemoveAll(
         }
     }
     return NOERROR;
+}
+
+ECode AbstractCollection::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    Boolean result;
+    return RemoveAll(collection, &result);
 }
 
 ECode  AbstractCollection::RetainAll(

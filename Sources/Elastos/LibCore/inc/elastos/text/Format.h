@@ -1,13 +1,14 @@
-#ifndef __FORMAT_H_
-#define __FORMAT_H_
+#ifndef __ELASTOS_TEXT_FORMAT_H_
+#define __ELASTOS_TEXT_FORMAT_H_
 
-#include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
+#include <elastos/core/StringBuffer.h>
 #include "AttributedCharacterIteratorAttribute.h"
-#include <elastos/StringBuffer.h>
 
 using Elastos::Text::IAttributedCharacterIterator;;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::IParsePosition;
+using Elastos::Core::Object;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::IStringBuffer;
 
@@ -15,6 +16,9 @@ namespace Elastos {
 namespace Text {
 
 class Format
+    : public Object
+    , public ISerializable
+    , public ICloneable
 {
 public:
     class Field : public AttributedCharacterIteratorAttribute
@@ -93,4 +97,4 @@ protected:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__FORMAT_H_
+#endif //__ELASTOS_TEXT_FORMAT_H_

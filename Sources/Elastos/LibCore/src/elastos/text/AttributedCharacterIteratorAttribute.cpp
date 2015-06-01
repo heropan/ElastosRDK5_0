@@ -1,15 +1,17 @@
 
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "AttributedCharacterIteratorAttribute.h"
 #include "CAttributedCharacterIteratorAttribute.h"
+#include <utils/Log.h>
 
 using Elastos::Core::StringBuilder;
+using Elastos::IO::EIID_ISerializable;
 using Elastos::Text::CAttributedCharacterIteratorAttribute;
 
 namespace Elastos {
 namespace Text {
 
-static AutoPtr<IAttributedCharacterIteratorAttribute> sInit(const String& name)
+static AutoPtr<IAttributedCharacterIteratorAttribute> InitAttribute(const String& name)
 {
     AutoPtr<CAttributedCharacterIteratorAttribute> attribute;
     ASSERT_SUCCEEDED(CAttributedCharacterIteratorAttribute::NewByFriend(
@@ -18,11 +20,27 @@ static AutoPtr<IAttributedCharacterIteratorAttribute> sInit(const String& name)
 }
 
 const AutoPtr<IAttributedCharacterIteratorAttribute> AttributedCharacterIteratorAttribute::INPUT_METHOD_SEGMENT =
-        sInit(String("input_method_segment"));
+        InitAttribute(String("input_method_segment"));
 const AutoPtr<IAttributedCharacterIteratorAttribute> AttributedCharacterIteratorAttribute::LANGUAGE =
-        sInit(String("language"));
+        InitAttribute(String("language"));
 const AutoPtr<IAttributedCharacterIteratorAttribute> AttributedCharacterIteratorAttribute::READING =
-        sInit(String("reading"));
+        InitAttribute(String("reading"));
+
+CAR_INTERFACE_IMPL_2(AttributedCharacterIteratorAttribute, Object, IAttributedCharacterIteratorAttribute, ISerializable)
+
+ECode AttributedCharacterIteratorAttribute::GetClassID(
+    /* [out] */ ClassID* clsid)
+{
+    assert(0 && "Not a CAR class!");
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode AttributedCharacterIteratorAttribute::constructor(
+    /* [in] */ const String& name)
+{
+    mName = name;
+    return NOERROR;
+}
 
 ECode AttributedCharacterIteratorAttribute::Equals(
     /* [in] */ IInterface * obj,
@@ -42,88 +60,64 @@ ECode AttributedCharacterIteratorAttribute::Equals(
 ECode AttributedCharacterIteratorAttribute::GetHashCode(
     /* [out] */ Int32 * value)
 {
-    // return super.hashCode();
     VALIDATE_NOT_NULL(value)
-    *value = 0 ;
-    return NOERROR;
+    return Object::GetHashCode(value);
 }
 
 ECode AttributedCharacterIteratorAttribute::ToString(
     /* [out] */ String * str)
 {
-    // return getClass().getName() + '(' + getName() + ')';
     VALIDATE_NOT_NULL(str)
-    return NOERROR;
-}
-
-ECode AttributedCharacterIteratorAttribute::Init(
-    /* [in] */ const String& name)
-{
-    mName = name;
+    StringBuilder sb("AttributedCharacterIteratorAttribute(");
+    sb += mName;
+    sb += ")";
+    *str = sb.ToString();
     return NOERROR;
 }
 
 ECode AttributedCharacterIteratorAttribute::GetName(
     /* [out] */ String * str)
 {
+    VALIDATE_NOT_NULL(str)
     *str = mName;
     return NOERROR;
 }
 
 ECode AttributedCharacterIteratorAttribute::ReadResolve(
-    /* [out] */ IInterface ** outface)
+    /* [out] */ IInterface ** obj)
 {
-    /*
-     * This class is used like Java enums, where all instances are
-     * defined as fields of their own class. To preserve identity
-     * equality, resolve to the canonical instance when deserialized.
-     */
-    /*
-            try {
-                for (Field field : getClass().getFields()) {
-                    if (field.getType() == getClass() && Modifier.isStatic(field.getModifiers())) {
-                        Attribute candidate = (Attribute) field.get(null);
-                        if (name.equals(candidate.name)) {
-                            return candidate;
-                        }
-                    }
-                }
-            } catch (IllegalAccessException e) {
-            }
-            throw new InvalidObjectException("Failed to resolve " + this);
-    */
-    return NOERROR;
-/* former code:
+    VALIDATE_NOT_NULL(obj);
+    *obj = NULL;
 
     ClassID clsid;
     GetClassID(&clsid);
     if (clsid != ECLSID_CAttributedCharacterIteratorAttribute) {
-    //    throw new InvalidObjectException("cannot resolve subclasses");
+        ALOGE("AttributedCharacterIteratorAttribute::ReadResolve: cannot resolve subclasses");
         return E_INVALID_OBJECT_EXCEPTION;
     }
 
     String name;
     INPUT_METHOD_SEGMENT->GetName(&name);
     if (mName.Equals(name)) {
-        *resolve = INPUT_METHOD_SEGMENT;
-        REFCOUNT_ADD(*resolve);
+        *obj = INPUT_METHOD_SEGMENT;
+        REFCOUNT_ADD(*obj);
         return NOERROR;
     }
     LANGUAGE->GetName(&name);
     if (mName.Equals(name)) {
-        *resolve = LANGUAGE;
-        REFCOUNT_ADD(*resolve);
+        *obj = LANGUAGE;
+        REFCOUNT_ADD(*obj);
         return NOERROR;
     }
     READING->GetName(&name);
     if (mName.Equals(name)) {
-        *resolve = READING;
-        REFCOUNT_ADD(*resolve);
+        *obj = READING;
+        REFCOUNT_ADD(*obj);
         return NOERROR;
     }
-    //throw new InvalidObjectException("Unknown attribute");
+
+    ALOGE("AttributedCharacterIteratorAttribute::ReadResolve: Unknown attribute");
     return E_INVALID_OBJECT_EXCEPTION;
-*/
 }
 
 } // namespace Text

@@ -75,6 +75,9 @@ module
             [in] IInterface* object,
             [out] Boolean* modified);
 
+        Add(
+            [in] IInterface* object);
+
         /**
          * Attempts to add all of the objects contained in {@code Collection}
          * to the contents of this {@code Collection} (optional). If the passed {@code Collection}
@@ -100,6 +103,9 @@ module
         AddAll(
             [in] ICollection* collection,
             [out] Boolean* modified);
+
+        AddAll(
+            [in] ICollection* collection);
 
         /**
          * Removes all elements from this {@code Collection}, leaving it empty (optional).
@@ -214,6 +220,9 @@ module
             [in] IInterface* object,
             [out] Boolean* modified);
 
+        Remove(
+            [in] IInterface* object);
+
         /**
          * Removes all occurrences in this {@code Collection} of each object in the
          * specified {@code Collection} (optional). After this method returns none of the
@@ -240,6 +249,9 @@ module
         RemoveAll(
             [in] ICollection* collection,
             [out] Boolean* modified);
+
+        RemoveAll(
+            [in] ICollection* collection);
 
         /**
          * Removes all objects from this {@code Collection} that are not also found in the

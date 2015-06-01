@@ -189,6 +189,10 @@ module
             [in] IInterface* value,
             [out] IInterface** oldValue);
 
+        Put(
+            [in] IInterface* key,
+            [in] IInterface* value);
+
         /**
          * Copies every mapping in the specified {@code Map} to this {@code Map}.
          *
@@ -221,6 +225,9 @@ module
         Remove(
             [in] IInterface* key,
             [out] IInterface** value);
+
+        Remove(
+            [in] IInterface* key);
 
         /**
          * Returns the number of mappings in this {@code Map}.

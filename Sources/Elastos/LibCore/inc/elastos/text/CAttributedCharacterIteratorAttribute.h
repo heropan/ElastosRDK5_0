@@ -1,43 +1,21 @@
 
-#ifndef __CATTRIBUTEDCHARACTERITERATORATTRIBUTE_H__
-#define __CATTRIBUTEDCHARACTERITERATORATTRIBUTE_H__
+#ifndef __ELASTOS_TEXT_CATTRIBUTEDCHARACTERITERATORATTRIBUTE_H__
+#define __ELASTOS_TEXT_CATTRIBUTEDCHARACTERITERATORATTRIBUTE_H__
 
-#include "_CAttributedCharacterIteratorAttribute.h"
+#include "_Elastos_Text_CAttributedCharacterIteratorAttribute.h"
 #include "AttributedCharacterIteratorAttribute.h"
 
 namespace Elastos {
 namespace Text {
 
-CarClass(CAttributedCharacterIteratorAttribute) , public AttributedCharacterIteratorAttribute
+CarClass(CAttributedCharacterIteratorAttribute)
+    , public AttributedCharacterIteratorAttribute
 {
 public:
-    CARAPI constructor(
-        /* [in] */ const String& name);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID* clsid);
-
-    CARAPI GetName(
-        /* [out] */ String* name);
-
-    CARAPI Equals(
-        /* [in] */ IInterface * obj,
-        /* [out] */ Boolean * value);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32 * value);
-
-    CARAPI ReadResolve(
-        /* [out] */ IInterface** resolve);
-
-    CARAPI ToString(
-        /* [out] */ String * str);
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CATTRIBUTEDCHARACTERITERATORATTRIBUTE_H__
+#endif // __ELASTOS_TEXT_CATTRIBUTEDCHARACTERITERATORATTRIBUTE_H__

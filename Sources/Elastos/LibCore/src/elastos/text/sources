@@ -13,3 +13,7 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/text;
 
 SOURCES = CAnnotation.cpp
+SOURCES += AttributedCharacterIteratorAttribute.cpp
+SOURCES += CAttributedCharacterIteratorAttribute.cpp
+SOURCES +=  AttributedString.cpp
+#SOURCES += Format.cpp
