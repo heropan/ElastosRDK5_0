@@ -1,12 +1,6 @@
 
-#ifndef __INFLATERINPUTSTREAM_H__
-#define __INFLATERINPUTSTREAM_H__
-
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#ifndef __ELASTOS_UTILITY_INFLATERINPUTSTREAM_H__
+#define __ELASTOS_UTILITY_INFLATERINPUTSTREAM_H__
 
 #include "CInflater.h"
 #include "FilterInputStream.h"
@@ -28,9 +22,13 @@ namespace Zip {
  * @see Inflater
  * @see DeflaterOutputStream
  */
-class InflaterInputStream : public FilterInputStream
+class InflaterInputStream
+    : public FilterInputStream
+    , public IInflaterInputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
     InflaterInputStream();
 
     virtual ~InflaterInputStream();
@@ -226,4 +224,4 @@ protected:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__INFLATERINPUTSTREAM_H__
+#endif //__ELASTOS_UTILITY_INFLATERINPUTSTREAM_H__

@@ -8,6 +8,7 @@ namespace Zip {
 
 const Int32 InflaterOutputStream::DEFAULT_BUFFER_SIZE;
 
+CAR_INTERFACE_IMPL(InflaterOutputStream, FilterOutputStream, IInflaterOutputStream)
 
 InflaterOutputStream::InflaterOutputStream()
     : mClosed(FALSE)
@@ -22,7 +23,8 @@ ECode InflaterOutputStream::Close()
     if (!mClosed) {
         FAIL_RETURN(Finish());
         FAIL_RETURN(mInf->End());
-        FAIL_RETURN(mOut->Close());
+        AutoPtr<ICloseable> cls = (ICloseable*)mOut->Probe(Elastos::IO::EIID_ICloseable);
+        FAIL_RETURN(cls->Close());
         mClosed = TRUE;
     }
     return NOERROR;
@@ -74,7 +76,7 @@ ECode InflaterOutputStream::Write()
         if (ec == E_DATA_FORMAT_EXCEPTION) return E_ZIP_EXCEPTION;
     }
     while (inflated > 0) {
-        FAIL_RETURN(mOut->WriteBytes(*mBuf, 0, inflated));
+        FAIL_RETURN(mOut->Write(*mBuf, 0, inflated));
         ec = mInf->Inflate(mBuf, &inflated);
         if (FAILED(ec)) {
             if (ec == E_DATA_FORMAT_EXCEPTION) return E_ZIP_EXCEPTION;
