@@ -1,30 +1,22 @@
 
-#ifndef __ZIPFILE_H__
-#define __ZIPFILE_H__
+#ifndef __ELASTOS_UTILITY_ZIPFILE_H__
+#define __ELASTOS_UTILITY_ZIPFILE_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#include "CObjectContainer.h"
-#include "CDataInputStream.h"
+#include <elastos/core/Object.h>
+//#include "CDataInputStream.h"
 #include "CBufferedInputStream.h"
-#include "CRandomAccessFile.h"
-#include "CFile.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
-#include "CZipEntry.h"
+//#include "CRandomAccessFile.h"
+//#include "CFile.h"
+//#include "CZipEntry.h"
 #include "InflaterInputStream.h"
-#include <cmdef.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <HashMap.h>
 #include <InputStream.h>
 
 using Elastos::IO::IRandomAccessFile;
 using Elastos::IO::InputStream;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IFile;
-using Elastos::Utility::HashMap;
-using Elastos::Core::Mutex;
+using Elastos::Utility::_HashMap;
 
 extern "C" const InterfaceID EIID_ZipFileRAFStream;
 
@@ -47,8 +39,12 @@ namespace Zip {
  * @see ZipOutputStream
  */
 class ZipFile
+    : public Object
+    , public IZipFile
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Wrap a stream around a RandomAccessFile.  The RandomAccessFile is shared
      * among all streams returned by getInputStream(), so we have to synchronize
@@ -58,13 +54,9 @@ public:
      * <p>We could support mark/reset, but we don't currently need them.
      */
     class RAFStream
-        : public ElRefBase
-        , public IInputStream
         , public InputStream
     {
     public:
-        CAR_INTERFACE_DECL()
-
         RAFStream(
             /* [in] */ IRandomAccessFile* raf,
             /* [in] */ Int64 pos);
@@ -104,16 +96,13 @@ public:
 
     public:
         AutoPtr<IRandomAccessFile> mSharedRaf;
-        Mutex mSharedRafLock;
-        Mutex mLock;
         Int64 mOffset;
         Int64 mLength;
+        static Object sLock;
     };
 
     class ZipInflaterInputStream
-        : public ElRefBase
         , public InflaterInputStream
-        , public IInflaterInputStream
     {
     public:
         ZipInflaterInputStream(
@@ -121,17 +110,6 @@ public:
             /* [in] */ IInflater* inf,
             /* [in] */ Int32 bsize,
             /* [in] */ CZipEntry* entry);
-
-        CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         //@Override
         CARAPI ReadBytes(
@@ -144,34 +122,30 @@ public:
         CARAPI Available(
             /* [out] */ Int32* number);
 
-        CARAPI Close();
-
-        CARAPI Mark(
-            /* [in] */ Int32 mark);
-
-        CARAPI IsMarkSupported(
-            /* [out] */  Boolean* isMark);
-
-        CARAPI Read(
-            /* [out */ Int32* value);
-
-        CARAPI ReadBytes(
-            /* [out] */ ArrayOf<Byte>* buffer,
-            /* [out] */ Int32 *number);
-
-        CARAPI Reset();
-
-        CARAPI Skip(
-            /* [in] */ Int64 offset,
-            /* [out] */ Int64* number);
-
-        CARAPI GetLock(
-            /* [out] */ IInterface** lockobj);
-
     public:
         AutoPtr<CZipEntry> mEntry;
         Int64 mBytesRead;
-        Mutex mLock;
+        static Object sLock;
+    };
+
+    class Enumeration
+        : public Object
+        , public IEnumeration
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        Enumeration(
+            /* [in] */ IIterator* it);
+
+        CARAPI HasMoreElements(
+            /* [out] */ Boolean * value);
+
+        CARAPI NextElement(
+            /* [out] */ IInterface ** inter);
+
+    public:
+        AutoPtr<IIterator> mIt;
     };
 
 public:
@@ -195,7 +169,7 @@ public:
      * @throws IllegalStateException if this ZIP file has been closed.
      */
     virtual CARAPI GetEntries(
-        /* [out] */ IObjectContainer** entries);
+        /* [out] */ IEnumeration** entries);
 
     /**
      * Gets the ZIP entry with the specified name from this {@code ZipFile}.
@@ -282,7 +256,7 @@ protected:
     CARAPI Init(
         /* [in] */ const String& name);
 
-private:
+protected:
     CARAPI CheckNotClosed();
 
     /**
@@ -328,9 +302,9 @@ private:
     AutoPtr<IFile> mFileToDeleteOnClose;
 
     AutoPtr<IRandomAccessFile> mRaf;
-    Mutex mRafLock;
+    static Object sLock;
 
-    HashMap<String, AutoPtr<IZipEntry> > mEntries;
+    _HashMap<String, AutoPtr<IZipEntry> > mEntries;
 
 //    CloseGuard guard = CloseGuard.get();
 };
@@ -339,4 +313,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ZIPFILE_H__
+#endif //__ELASTOS_UTILITY_ZIPFILE_H__

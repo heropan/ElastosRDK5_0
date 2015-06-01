@@ -11,7 +11,7 @@ INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/zip;
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/io;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/io;
 
 SOURCES += CAdler32.cpp
 SOURCES += CCRC32.cpp

@@ -1,15 +1,9 @@
 
-#ifndef __CCHECKEDINPUTSTREAM_H__
-#define __CCHECKEDINPUTSTREAM_H__
+#ifndef __ELASTOS_UTILITY_CCHECKEDINPUTSTREAM_H__
+#define __ELASTOS_UTILITY_CCHECKEDINPUTSTREAM_H__
 
-#include "_CCheckedInputStream.h"
-
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
+#include "_Elastos_Utility_Zip_CCheckedInputStream.h"
 #include "CStreams.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
 #include <FilterInputStream.h>
 
 using Elastos::IO::FilterInputStream;
@@ -21,6 +15,8 @@ namespace Zip {
 CarClass(CCheckedInputStream), FilterInputStream
 {
 public:
+    CAR_OBJECT_DECL()
+
     /**
      * Reads one byte of data from the underlying input stream and updates the
      * checksum with the byte data.
@@ -81,19 +77,6 @@ public:
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* number);
 
-    CARAPI Available(
-        /* [out] */ Int32* number);
-
-    CARAPI Close();
-
-    CARAPI Mark(
-        /* [in] */ Int32 readLimit);
-
-    CARAPI Reset();
-
-    CARAPI IsMarkSupported(
-        /* [out] */ Boolean* supported);
-
     CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
@@ -118,8 +101,6 @@ public:
     CARAPI GetLock(
         /* [out] */ IInterface** lockobj);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 private:
     AutoPtr<IChecksum> mCheck;
 };
@@ -128,4 +109,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CCHECKEDINPUTSTREAM_H__
+#endif //__ELASTOS_UTILITY_CCHECKEDINPUTSTREAM_H__

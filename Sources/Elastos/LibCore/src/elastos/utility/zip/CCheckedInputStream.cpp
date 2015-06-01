@@ -11,11 +11,7 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-PInterface CCheckedInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CCheckedInputStream::Probe(riid);
-}
+CAR_OBJECT_IMPL(CCheckedInputStream)
 
 ECode CCheckedInputStream::GetLock(
     /* [out] */ IInterface** lockobj)
@@ -74,38 +70,6 @@ ECode CCheckedInputStream::Skip(
     AutoPtr<IStreams> streams;
     CStreams::AcquireSingleton((IStreams**)&streams);
     return streams->SkipByReading(THIS_PROBE(IInputStream), byteCount, number);
-}
-
-ECode CCheckedInputStream::Available(
-    /* [out] */ Int32* number)
-{
-    return FilterInputStream::Available(number);
-}
-
-ECode CCheckedInputStream::Close()
-{
-    return FilterInputStream::Close();
-}
-
-ECode CCheckedInputStream::Mark(
-    /* [in] */ Int32 readLimit)
-{
-    Object::Autolock lock(mLock);
-
-    return FilterInputStream::Mark(readLimit);
-}
-
-ECode CCheckedInputStream::Reset()
-{
-    Object::Autolock lock(mLock);
-
-    return FilterInputStream::Reset();
-}
-
-ECode CCheckedInputStream::IsMarkSupported(
-    /* [out] */ Boolean* supported)
-{
-    return FilterInputStream::IsMarkSupported(supported);
 }
 
 ECode CCheckedInputStream::ReadBytes(
