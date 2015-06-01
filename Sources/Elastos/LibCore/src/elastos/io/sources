@@ -35,6 +35,7 @@ SOURCES += BufferedReader.cpp
 SOURCES += CBufferedReader.cpp
 SOURCES += BufferedWriter.cpp
 SOURCES += CBufferedWriter.cpp
+
 SOURCES += CChannels.cpp
 #SOURCES += CStreams.cpp
 SOURCES += ByteArrayOutputStream.cpp
@@ -42,3 +43,9 @@ SOURCES += CByteArrayOutputStream.cpp
 SOURCES += Writer.cpp
 SOURCES += StringWriter.cpp
 SOURCES += CStringWriter.cpp
+
+SOURCES += ByteArrayInputStream.cpp
+SOURCES += CByteArrayInputStream.cpp
+
+SOURCES += ByteArrayOutputStream.cpp
+SOURCES += CByteArrayOutputStream.cpp

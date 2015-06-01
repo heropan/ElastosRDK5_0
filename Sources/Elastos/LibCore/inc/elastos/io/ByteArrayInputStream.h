@@ -13,11 +13,6 @@ class ByteArrayInputStream
 public:
     CAR_INTERFACE_DECL()
 
-protected:
-    ByteArrayInputStream();
-
-    ~ByteArrayInputStream();
-
     CARAPI constructor(
         /* [in] */ ArrayOf<Byte>* buffer);
 
@@ -25,6 +20,11 @@ protected:
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length);
+
+protected:
+    ByteArrayInputStream();
+
+    ~ByteArrayInputStream();
 
 public:
     /**

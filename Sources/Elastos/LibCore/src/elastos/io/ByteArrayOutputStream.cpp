@@ -64,7 +64,7 @@ ECode ByteArrayOutputStream::Expand(
 
 ECode ByteArrayOutputStream::Reset()
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
 
     mCount = 0;
     return NOERROR;
@@ -84,7 +84,7 @@ ECode ByteArrayOutputStream::ToByteArray(
 {
     VALIDATE_NOT_NULL(byteArray)
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
 
     AutoPtr< ArrayOf<Byte> > newArray = ArrayOf<Byte>::Alloc(mCount);
     newArray->Copy(mBuf, mCount);
@@ -107,16 +107,15 @@ ECode ByteArrayOutputStream::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    assert(enc != NULL);
 
-    *str = String((const char*)mBuf->GetPayload(), mCount) + *enc;
+    *str = String((const char*)mBuf->GetPayload(), mCount) + enc;
     return NOERROR;
 }
 
 ECode ByteArrayOutputStream::Write(
     /* [in] */ Int32 oneByte)
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
 
     if (mCount == mBuf->GetLength()){
         Expand(1);
@@ -132,7 +131,7 @@ ECode ByteArrayOutputStream::Write(
     /* [in] */ Int32 count)
 {
     assert(buffer != NULL);
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
 
     // avoid int overflow
     // BEGIN android-changed
@@ -162,7 +161,7 @@ ECode ByteArrayOutputStream::WriteTo(
 {
     VALIDATE_NOT_NULL(out);
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(*this);
 
     return out->Write(*mBuf, 0, mCount);
 }

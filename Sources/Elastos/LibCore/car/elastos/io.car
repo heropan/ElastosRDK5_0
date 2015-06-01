@@ -254,6 +254,21 @@ module
         interface IBufferedWriter;
     }
 
+    [deprecated]
+    class CByteArrayInputStream {
+        constructor(
+            [in] ArrayOf<Byte>* buffer);
+
+        constructor(
+            [in] ArrayOf<Byte>* buffer,
+            [in] Int32 offset,
+            [in] Int32 length);
+
+        interface ICloseable;
+        interface IInputStream;
+        interface IByteArrayInputStream;
+    }
+
     } // namespace IO
     } // namespace Elastos
 
