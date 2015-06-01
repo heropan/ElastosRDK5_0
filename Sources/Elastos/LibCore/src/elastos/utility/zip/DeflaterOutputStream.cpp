@@ -9,8 +9,9 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-
 const Int32 DeflaterOutputStream::BUF_SIZE;
+
+CAR_INTERFACE_IMPL(DeflaterOutputStream, FilterOutputStream, IDeflaterOutputStream)
 
 DeflaterOutputStream::DeflaterOutputStream()
     : mDone(FALSE)
@@ -25,7 +26,7 @@ ECode DeflaterOutputStream::Deflate()
 {
     Int32 byteCount;
     while (mDef->Deflate(mBuf, &byteCount), byteCount != 0) {
-        FAIL_RETURN(mOut->WriteBytes(*mBuf, 0, byteCount));
+        FAIL_RETURN(mOut->Write(*mBuf, 0, byteCount));
     }
     return NOERROR;
 }
@@ -52,7 +53,7 @@ ECode DeflaterOutputStream::Finish()
     while (mDef->Finished(&finished), !finished) {
         Int32 byteCount;
         FAIL_RETURN(mDef->Deflate(mBuf, &byteCount));
-        FAIL_RETURN(mOut->WriteBytes(*mBuf, 0, byteCount));
+        FAIL_RETURN(mOut->Write(*mBuf, 0, byteCount));
     }
     mDone = TRUE;
     return NOERROR;
@@ -66,7 +67,7 @@ ECode DeflaterOutputStream::Write(
     return streams->WriteSingleByte(THIS_PROBE(IOutputStream), i);
 }
 
-ECode DeflaterOutputStream::WriteBytes(
+ECode DeflaterOutputStream::Write(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
@@ -98,7 +99,7 @@ ECode DeflaterOutputStream::Flush()
         Int32 byteCount;
         while (mDef->Deflate(mBuf, 0, mBuf->GetLength(),
             CDeflater::SYNC_FLUSH, &byteCount), byteCount != 0) {
-            FAIL_RETURN(mOut->WriteBytes(*mBuf, 0, byteCount));
+            FAIL_RETURN(mOut->Write(*mBuf, 0, byteCount));
         }
     }
     //return mOut->Flush();
@@ -159,7 +160,7 @@ ECode DeflaterOutputStream::Init(
     /* [in] */ Int32 bsize,
     /* [in] */ Boolean syncFlush)
 {
-    FilterOutputStream::Init(os);
+    FilterOutputStream::constructor(os);
     if (os == NULL || def == NULL) {
 //        throw new NullPointerException();
         return E_NULL_POINTER_EXCEPTION;
@@ -174,13 +175,13 @@ ECode DeflaterOutputStream::Init(
     return NOERROR;
 }
 
-ECode DeflaterOutputStream::WriteBytes(
+ECode DeflaterOutputStream::Write(
     /* [in] */ const ArrayOf<Byte> & buffer)
 {
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    return WriteBytes(buffer, 0, buffer.GetLength());
+    return Write(buffer, 0, buffer.GetLength());
 }
 
 

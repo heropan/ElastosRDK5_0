@@ -14,11 +14,9 @@ const Int32 CGZIPInputStream::FEXTRA;
 const Int32 CGZIPInputStream::FHCRC;
 const Int32 CGZIPInputStream::FNAME;
 
-PInterface CGZIPInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CGZIPInputStream::Probe(riid);
-}
+CAR_INTERFACE_IMPL(CGZIPInputStream, InflaterInputStream, IGZIPInputStream)
+
+CAR_OBJECT_IMPL(CGZIPInputStream)
 
 ECode CGZIPInputStream::GetLock(
     /* [out] */ IInterface** lockobj)
@@ -43,7 +41,7 @@ ECode CGZIPInputStream::Close()
     return InflaterInputStream::Close();
 }
 
-ECode CGZIPInputStream::ReadBytes(
+ECode CGZIPInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
@@ -68,7 +66,7 @@ ECode CGZIPInputStream::ReadBytes(
     }
 
     Int32 bytesRead;
-    InflaterInputStream::ReadBytes(buffer, offset, byteCount, &bytesRead);
+    InflaterInputStream::Read(buffer, offset, byteCount, &bytesRead);
     mEos = mEof;
 
     if (bytesRead != -1) {
@@ -125,7 +123,7 @@ ECode CGZIPInputStream::ReadFully(
 {
     Int32 result;
     while (length > 0) {
-        FAIL_RETURN(mIn->ReadBytes(buffer, offset, length, &result));
+        FAIL_RETURN(mIn->Read(buffer, offset, length, &result));
         if (result == -1) {
 //            throw new EOFException();
             return E_EOF_EXCEPTION;
@@ -156,54 +154,6 @@ ECode CGZIPInputStream::ReadZeroTerminated(
         mCrc->Update(result);
     }
     return NOERROR;
-}
-
-ECode CGZIPInputStream::Skip(
-    /* [in] */ Int64 nbytes,
-    /* [out] */ Int64* number)
-{
-    VALIDATE_NOT_NULL(number);
-    return InflaterInputStream::Skip(nbytes, number);
-}
-
-ECode CGZIPInputStream::Available(
-    /* [out] */ Int32* number)
-{
-    VALIDATE_NOT_NULL(number);
-    return InflaterInputStream::Available(number);
-}
-
-ECode CGZIPInputStream::Mark(
-    /* [in] */ Int32 readLimit)
-{
-    return InflaterInputStream::Mark(readLimit);
-}
-
-ECode CGZIPInputStream::Reset()
-{
-    return InflaterInputStream::Reset();
-}
-
-ECode CGZIPInputStream::IsMarkSupported(
-    /* [out] */ Boolean* supported)
-{
-    VALIDATE_NOT_NULL(supported);
-    return InflaterInputStream::IsMarkSupported(supported);
-}
-
-ECode CGZIPInputStream::Read(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-    return InflaterInputStream::Read(val);
-}
-
-ECode CGZIPInputStream::ReadBytes(
-    /* [out] */ ArrayOf<Byte>* buffer,
-    /* [out] */ Int32* number)
-{
-    VALIDATE_NOT_NULL(number);
-    return InflaterInputStream::ReadBytes(buffer, number);
 }
 
 /**
@@ -266,7 +216,7 @@ ECode CGZIPInputStream::constructor(
         while (length > 0) {
             Int32 max = length > mBuf->GetLength() ? mBuf->GetLength() : length;
             Int32 result;
-            FAIL_RETURN(mIn->ReadBytes(mBuf, 0, max, &result));
+            FAIL_RETURN(mIn->Read(mBuf, 0, max, &result));
             if (result == -1) {
     //            throw new EOFException();
                 return E_EOF_EXCEPTION;

@@ -1,6 +1,6 @@
 
 #include "DeflaterInputStream.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::Math;
 using Elastos::IO::IStreams;
@@ -11,8 +11,9 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-
 const Int32 DeflaterInputStream::DEFAULT_BUFFER_SIZE;
+
+CAR_INTERFACE_IMPL(DeflaterInputStream, FilterInputStream, IDeflaterInputStream)
 
 DeflaterInputStream::DeflaterInputStream()
     : mClosed(FALSE)
@@ -169,7 +170,7 @@ ECode DeflaterInputStream::Init(
     /* [in] */ IDeflater* deflater,
     /* [in] */ Int32 bufferSize)
 {
-    FilterInputStream::Init(in);
+    FilterInputStream::constructor(in);
     if (in == NULL || deflater == NULL) {
 //        throw new NullPointerException();
         return E_NULL_POINTER_EXCEPTION;

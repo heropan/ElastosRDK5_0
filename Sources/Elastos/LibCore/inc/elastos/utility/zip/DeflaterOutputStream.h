@@ -1,14 +1,8 @@
 
-#ifndef __DEFLATEROUTPUTSTREAM_H__
-#define __DEFLATEROUTPUTSTREAM_H__
+#ifndef __ELASTOS_UTILITY_DEFLATEROUTPUTSTREAM_H__
+#define __ELASTOS_UTILITY_DEFLATEROUTPUTSTREAM_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#include "CStreams.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
-
+//#include "CStreams.h"
 #include "CDeflater.h"
 #include <FilterOutputStream.h>
 
@@ -26,9 +20,13 @@ namespace Zip {
  *
  * @see Deflater
  */
-class DeflaterOutputStream : public FilterOutputStream
+class DeflaterOutputStream
+    : public FilterOutputStream
+    , public IDeflaterOutputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
     DeflaterOutputStream();
 
     virtual ~DeflaterOutputStream();
@@ -64,7 +62,7 @@ public:
      * @throws IOException
      *             If an error occurs during writing.
      */
-    virtual CARAPI WriteBytes(
+    virtual CARAPI Write(
         /* [in] */ const ArrayOf<Byte>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);
@@ -82,7 +80,7 @@ public:
     virtual CARAPI Flush();
 
     //inherit frome super class
-    virtual CARAPI WriteBytes(
+    virtual CARAPI Write(
         /* [in] */ const ArrayOf<Byte>& buffer);
 
     virtual CARAPI CheckError(
@@ -197,4 +195,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__DEFLATEROUTPUTSTREAM_H__
+#endif //__ELASTOS_UTILITY_DEFLATEROUTPUTSTREAM_H__

@@ -5,6 +5,10 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
+CAR_INTERFACE_IMPL(CGZIPOutputStream, DeflaterOutputStream, IGZIPOutputStream)
+
+CAR_OBJECT_IMPL(CGZIPOutputStream)
+
 CGZIPOutputStream::CGZIPOutputStream()
 {
     CCRC32::NewByFriend((CCRC32**)&mCrc);
@@ -20,12 +24,12 @@ ECode CGZIPOutputStream::Finish()
     return NOERROR;
 }
 
-ECode CGZIPOutputStream::WriteBytes(
+ECode CGZIPOutputStream::Write(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes)
 {
-    FAIL_RETURN(DeflaterOutputStream::WriteBytes(buffer, off, nbytes));
+    FAIL_RETURN(DeflaterOutputStream::Write(buffer, off, nbytes));
     return mCrc->Update(buffer, off, nbytes);
 }
 
@@ -47,35 +51,6 @@ Int32 CGZIPOutputStream::WriteInt32(
     mOut->Write(i & 0xFF);
     mOut->Write((i >> 8) & 0xFF);
     return i;
-}
-
-ECode CGZIPOutputStream::Close()
-{
-    return DeflaterOutputStream::Close();
-}
-
-ECode CGZIPOutputStream::Flush()
-{
-    return DeflaterOutputStream::Flush();
-}
-
-ECode CGZIPOutputStream::Write(
-    /* [in] */ Int32 val)
-{
-    return DeflaterOutputStream::Write(val);
-}
-
-ECode CGZIPOutputStream::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer)
-{
-    return DeflaterOutputStream::WriteBytes(buffer);
-}
-
-ECode CGZIPOutputStream::CheckError(
-    /* [out] */ Boolean* hasError)
-{
-    VALIDATE_NOT_NULL(hasError);
-    return DeflaterOutputStream::CheckError(hasError);
 }
 
 ECode CGZIPOutputStream::constructor(
@@ -104,16 +79,10 @@ ECode CGZIPOutputStream::GetLock(
 {
     VALIDATE_NOT_NULL(lockobj);
 
-    AutoPtr<IInterface> obj = DeflaterOutputStream::GetLock();
+    AutoPtr<IInterface> obj;// = DeflaterOutputStream::GetLock();
     *lockobj = obj;
     REFCOUNT_ADD(*lockobj);
     return NOERROR;
-}
-
-PInterface CGZIPOutputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CGZIPOutputStream::Probe(riid);
 }
 
 } // namespace Zip
