@@ -16,7 +16,6 @@ module
     merge("../../../car/elastos/text/IRuleBasedCollator.car");
     merge("../../../car/elastos/text/INormalizer.car");
     merge("../../../car/elastos/text/IBidi.car");
-    merge("../../../car/elastos/text/IRuleBasedBreakIterator.car");
 
     merge("../../../car/elastos/text/spi/IBreakIteratorProvider.car");
     merge("../../../car/elastos/text/spi/ICollatorProvider.car");
@@ -71,7 +70,7 @@ module
     //         constructor(
     //             [in] INativeBreakIterator * iterator);
 
-    //         interface IRuleBasedBreakIterator;
+    //         interface IBreakIterator;
     //     }
 
     //     class CNumberFormatField {

@@ -11,7 +11,7 @@ ECode CDecimalFormatSymbolsHelper::GetInstance(
     return DecimalFormatSymbols::GetInstance(instance);
 }
 
-ECode CDecimalFormatSymbolsHelper::GetInstanceEx(
+ECode CDecimalFormatSymbolsHelper::GetInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ IDecimalFormatSymbols** instance)
 {

@@ -58,7 +58,7 @@ ECode RuleBasedBreakIterator::ValidateOffset(
         bufMsg += j;
         bufMsg += "]";
         String message;
-        bufMsg.SubstringEx(0, bufMsg.GetLength(),&message);
+        bufMsg.Substring(0, bufMsg.GetLength(),&message);
         //throw new IllegalArgumentException(message);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -83,10 +83,10 @@ ECode RuleBasedBreakIterator::Next(
     /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position);
-    return mWrapped->NextEx(position);
+    return mWrapped->Next(position);
 }
 
-ECode RuleBasedBreakIterator::NextEx(
+ECode RuleBasedBreakIterator::Next(
     /* [in] */ Int32 n,
     /* [out] */ Int32* position)
 {
@@ -107,7 +107,7 @@ ECode RuleBasedBreakIterator::SetText(
     return BreakIterator::SetText(newText);
 }
 
-ECode RuleBasedBreakIterator::SetTextEx(
+ECode RuleBasedBreakIterator::SetText(
     /* [in] */ ICharacterIterator* newText)
 {
     // call a method to check if null pointer

@@ -21,19 +21,19 @@ CarClass(CDecimalFormat) , public DecimalFormat
 public:
     NUMBERFORMAT_METHODS_DECL()
 
-    CARAPI FormatDoubleEx(
+    CARAPI FormatDouble(
         /* [in] */ Double value,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
         /* [out] */ IStringBuffer ** result);
 
-    CARAPI FormatInt64Ex(
+    CARAPI FormatInt64(
         /* [in] */ Int64 value,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
         /* [out] */ IStringBuffer ** result);
 
-    CARAPI ParseEx(
+    CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ INumber** value);

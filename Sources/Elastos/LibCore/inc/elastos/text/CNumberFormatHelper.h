@@ -19,35 +19,35 @@ public:
     CARAPI GetCurrencyInstance(
         /* [out] */ INumberFormat** instance);
 
-    CARAPI GetCurrencyInstanceEx(
+    CARAPI GetCurrencyInstance(
         /* [in] */ ILocale* locale,
         /* [out] */ INumberFormat** instance);
 
     CARAPI GetIntegerInstance(
         /* [out] */ INumberFormat** instance);
 
-    CARAPI GetIntegerInstanceEx(
+    CARAPI GetIntegerInstance(
         /* [in] */ ILocale* locale,
         /* [out] */ INumberFormat** instance);
 
     CARAPI GetInstance(
         /* [out] */ INumberFormat** instance);
 
-    CARAPI GetInstanceEx(
+    CARAPI GetInstance(
         /* [in] */ ILocale* locale,
         /* [out] */ INumberFormat** instance);
 
     CARAPI GetNumberInstance(
         /* [out] */ INumberFormat** instance);
 
-    CARAPI GetNumberInstanceEx(
+    CARAPI GetNumberInstance(
         /* [in] */ ILocale* locale,
         /* [out] */ INumberFormat** instance);
 
     CARAPI GetPercentInstance(
         /* [out] */ INumberFormat** instance);
 
-    CARAPI GetPercentInstanceEx(
+    CARAPI GetPercentInstance(
         /* [in] */ ILocale* locale,
         /* [out] */ INumberFormat** instance);
 

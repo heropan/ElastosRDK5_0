@@ -61,7 +61,7 @@ ECode NumberFormat::FormatDouble(
     CFieldPosition::New(0, (IFieldPosition**)&position);
     AutoPtr<IStringBuffer> sb = new StringBuffer();
     AutoPtr<IStringBuffer> outsb;
-    FormatDoubleEx(value, sb, position, (IStringBuffer **)&outsb);
+    FormatDouble(value, sb, position, (IStringBuffer **)&outsb);
     return outsb->ToString(result);
 }
 
@@ -75,11 +75,11 @@ ECode NumberFormat::FormatInt64(
     CFieldPosition::New(0, (IFieldPosition**)&position);
     AutoPtr<IStringBuffer> sb = new StringBuffer();
     AutoPtr<IStringBuffer> outsb;
-    FormatInt64Ex(value, sb, position, (IStringBuffer **)&outsb);
+    FormatInt64(value, sb, position, (IStringBuffer **)&outsb);
     return outsb->ToString(result);
 }
 
-ECode NumberFormat::FormatObjectEx(
+ECode NumberFormat::FormatObject(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
@@ -102,12 +102,12 @@ ECode NumberFormat::FormatObjectEx(
         || (outint != NULL && bitlen < 64)) {
         Int64 lv(0);
         INumber::Probe(object)->Int64Value(&lv);
-        return FormatInt64Ex(lv, buffer, field, value);
+        return FormatInt64(lv, buffer, field, value);
     }
     else if (INumber::Probe(object) != NULL) {
         Double dv(0);
         INumber::Probe(object)->DoubleValue(&dv);
-        return FormatDoubleEx(dv, buffer, field, value);
+        return FormatDouble(dv, buffer, field, value);
     }
 
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -341,7 +341,7 @@ ECode NumberFormat::Parse(
 
     AutoPtr<IParsePosition> pos;
     CParsePosition::New(0, (IParsePosition**)&pos);
-    FAIL_RETURN(ParseEx(string, pos, number));
+    FAIL_RETURN(Parse(string, pos, number));
     Int32 index;
     pos->GetIndex(&index);
     if (index == 0) {
@@ -350,12 +350,12 @@ ECode NumberFormat::Parse(
     return NOERROR;
 }
 
-ECode NumberFormat::ParseObjectEx(
+ECode NumberFormat::ParseObject(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out] */ IInterface** object)
 {
-    return ParseEx(string, position, (INumber**)object);
+    return Parse(string, position, (INumber**)object);
 }
 
 ECode NumberFormat::SetCurrency(

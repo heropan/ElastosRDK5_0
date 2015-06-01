@@ -28,7 +28,7 @@ ECode Format::FormatObject(
     FAIL_RETURN(CFieldPosition::New(0, (IFieldPosition**)&field));
     AutoPtr<IStringBuffer> sb = new StringBuffer();
     AutoPtr<IStringBuffer> outsb;
-    FormatObjectEx(object, sb, field, (IStringBuffer **)&outsb);
+    FormatObject(object, sb, field, (IStringBuffer **)&outsb);
     return outsb->ToString(value);
 }
 
@@ -55,7 +55,7 @@ ECode Format::ParseObject(
 
     AutoPtr<IParsePosition> position;
     CParsePosition::New(0, (IParsePosition**)&position);
-    FAIL_RETURN(ParseObjectEx(string, position, object));
+    FAIL_RETURN(ParseObject(string, position, object));
     Int32 index;
     position->GetIndex(&index);
     if (index == 0) {

@@ -19,7 +19,7 @@ public:
     CARAPI GetInstance(
         /* [out] */ ICollator** instance);
 
-    CARAPI GetInstanceEx(
+    CARAPI GetInstance(
         /* [in] */ ILocale* locale,
         /* [out] */ ICollator** instance);
 };

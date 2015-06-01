@@ -75,30 +75,30 @@ ECode CChoiceFormat::GetHashCode(
     return ChoiceFormat::GetHashCode(value);
 }
 
-ECode CChoiceFormat::ParseEx(
+ECode CChoiceFormat::Parse(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out] */ INumber** value)
 {
-    return ChoiceFormat::ParseEx(string,position,value);
+    return ChoiceFormat::Parse(string,position,value);
 }
 
-ECode CChoiceFormat::FormatDoubleEx(
+ECode CChoiceFormat::FormatDouble(
     /* [in] */ Double value,
     /* [in] */ IStringBuffer * inbuffer,
     /* [in] */ IFieldPosition * field,
     /* [out] */ IStringBuffer ** outbuffer)
 {
-    return ChoiceFormat::FormatDoubleEx(value ,inbuffer ,field , outbuffer);
+    return ChoiceFormat::FormatDouble(value ,inbuffer ,field , outbuffer);
 }
 
-ECode CChoiceFormat::FormatInt64Ex(
+ECode CChoiceFormat::FormatInt64(
     /* [in] */ Int64 value,
     /* [in] */ IStringBuffer * inbuffer,
     /* [in] */ IFieldPosition * field ,
     /* [out] */ IStringBuffer ** outbuffer)
 {
-    return ChoiceFormat::FormatInt64Ex(value , inbuffer , field , outbuffer);
+    return ChoiceFormat::FormatInt64(value , inbuffer , field , outbuffer);
 }
 
 PInterface CChoiceFormat::Probe(

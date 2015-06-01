@@ -46,7 +46,7 @@ public:
         /* [out] */ Int32* nextValue);
 
     //@Override
-    CARAPI NextEx(
+    CARAPI Next(
         /* [in] */ Int32 n,
         /* [out] */ Int32* nextValue);
 
@@ -58,7 +58,7 @@ public:
         /* [in] */ const String& newText);
 
     //@Override
-    CARAPI SetTextEx(
+    CARAPI SetText(
         /* [in] */ ICharacterIterator* newText);
 
     //@Override

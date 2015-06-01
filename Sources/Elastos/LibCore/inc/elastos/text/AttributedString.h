@@ -109,22 +109,22 @@ public:
         CARAPI GetRunLimit(
             /* [out] */ Int32* index);
 
-        CARAPI GetRunLimitEx(
+        CARAPI GetRunLimit(
             /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
             /* [out] */ Int32* index);
 
-        CARAPI GetRunLimitEx2(
+        CARAPI GetRunLimit(
             /* [in] */ IObjectContainer* attributes,
             /* [out] */ Int32* index);
 
         CARAPI GetRunStart(
             /* [out] */ Int32* index);
 
-        CARAPI GetRunStartEx(
+        CARAPI GetRunStart(
             /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
             /* [out] */ Int32* index);
 
-        CARAPI GetRunStartEx2(
+        CARAPI GetRunStart(
             /* [in] */ IObjectContainer* attributes,
             /* [out] */ Int32* index);
 
@@ -195,7 +195,7 @@ public:
         /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
         /* [in] */ IInterface* value);
 
-    virtual CARAPI AddAttributeEx(
+    virtual CARAPI AddAttribute(
         /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
         /* [in] */ IInterface* value,
         /* [in] */ Int32 start,
@@ -209,11 +209,11 @@ public:
     virtual CARAPI GetIterator(
         /* [out] */ IAttributedCharacterIterator** iterator);
 
-    virtual CARAPI GetIteratorEx(
+    virtual CARAPI GetIterator(
         /* [in] */ ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes,
         /* [out] */ IAttributedCharacterIterator** iterator);
 
-    virtual CARAPI GetIteratorEx2(
+    virtual CARAPI GetIterator(
         /* [in] */ ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,

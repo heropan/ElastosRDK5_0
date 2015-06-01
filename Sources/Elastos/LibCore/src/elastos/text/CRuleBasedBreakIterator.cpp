@@ -28,11 +28,11 @@ ECode CRuleBasedBreakIterator::Next(
     return RuleBasedBreakIterator::Next(postion);
 }
 
-ECode CRuleBasedBreakIterator::NextEx(
+ECode CRuleBasedBreakIterator::Next(
     /* [in] */ Int32 n,
     /* [out] */ Int32* postion)
 {
-    return RuleBasedBreakIterator::NextEx(n,postion);
+    return RuleBasedBreakIterator::Next(n,postion);
 }
 
 ECode CRuleBasedBreakIterator::Preceding(
@@ -67,10 +67,10 @@ ECode CRuleBasedBreakIterator::SetText(
     return RuleBasedBreakIterator::SetText(newText);
 }
 
-ECode CRuleBasedBreakIterator::SetTextEx(
+ECode CRuleBasedBreakIterator::SetText(
     /* [in] */ ICharacterIterator* newText)
 {
-    return RuleBasedBreakIterator::SetTextEx(newText);
+    return RuleBasedBreakIterator::SetText(newText);
 }
 
 ECode CRuleBasedBreakIterator::Current(

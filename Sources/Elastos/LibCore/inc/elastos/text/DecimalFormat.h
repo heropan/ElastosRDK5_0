@@ -40,21 +40,21 @@ public:
         /* [out] */ IAttributedCharacterIterator** characterIterator);
 
     //@Override
-    CARAPI FormatDoubleEx(
+    CARAPI FormatDouble(
         /* [in] */ Double value,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
         /* [out] */ IStringBuffer ** result);
 
     //@Override
-    CARAPI FormatInt64Ex(
+    CARAPI FormatInt64(
         /* [in] */ Int64 value,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
         /* [out] */ IStringBuffer ** result);
 
     //@Override
-    CARAPI FormatObjectEx(
+    CARAPI FormatObject(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
@@ -103,7 +103,7 @@ public:
         /* [out] */ Boolean* isParseIntegerOnly);
 
     //@Override
-    CARAPI ParseEx(
+    CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ INumber** value);

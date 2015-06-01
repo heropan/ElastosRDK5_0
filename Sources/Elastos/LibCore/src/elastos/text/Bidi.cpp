@@ -122,7 +122,7 @@ ECode Bidi::Init(
                 paragraph->Next(&(*text)[i]);
             }
         }
-        // paragraph->GetRunLimitEx(
+        // paragraph->GetRunLimit(
         //     (IAttributedCharacterIteratorAttribute*)TextAttribute::BIDI_EMBEDDING->Probe(EIID_IAttributedCharacterIteratorAttribute),
         //     &textLimit);
         textLimit = textLimit - begin + 1;
@@ -135,7 +135,7 @@ ECode Bidi::Init(
     //     (IInterface**)&numericShaper);
     // if (numericShaper != NULL && numericShaper->Probe(EIID_INumericShaper) != NULL ) {
     //     AutoPtr<INumericShaper> ns = (INumericShaper*)numericShaper->Probe(EIID_INumericShaper);
-    //     ns->ShapeEx(text, 0, length);
+    //     ns->Shape(text, 0, length);
     // }
 
     Int64 ubidi = 0ll;

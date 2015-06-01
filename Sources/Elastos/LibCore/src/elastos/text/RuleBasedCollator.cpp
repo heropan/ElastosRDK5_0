@@ -38,7 +38,7 @@ ECode RuleBasedCollator::Init(
     return NOERROR;
 }
 
-ECode RuleBasedCollator::GetCollationElementIteratorEx(
+ECode RuleBasedCollator::GetCollationElementIterator(
     /* [in] */ ICharacterIterator* source,
     /* [out] */ ICollationElementIterator** collationElementIterator)
 {
@@ -47,7 +47,7 @@ ECode RuleBasedCollator::GetCollationElementIteratorEx(
     }
 
     AutoPtr<ICollationElementIteratorICU> icuCollationElementIterator;
-    mICUColl->GetCollationElementIteratorEx(source,
+    mICUColl->GetCollationElementIterator(source,
             (ICollationElementIteratorICU**)&icuCollationElementIterator);
     return CCollationElementIterator::New(icuCollationElementIterator,
             collationElementIterator);
@@ -74,7 +74,7 @@ ECode RuleBasedCollator::GetRules(
     return mICUColl->GetRules(rules);
 }
 
-ECode RuleBasedCollator::CompareEx(
+ECode RuleBasedCollator::Compare(
     /* [in] */ const String& source,
     /* [in] */ const String& target,
     /* [out] */ Int32* value)
@@ -107,12 +107,12 @@ ECode RuleBasedCollator::Equals(
     return Collator::Equals(object, result);
 }
 
-ECode RuleBasedCollator::EqualsEx(
+ECode RuleBasedCollator::Equals(
     /* [in] */ const String& string1,
     /* [in] */ const String& string2,
     /* [out] */ Boolean* result)
 {
-    return Collator::EqualsEx(string1,string2,result);
+    return Collator::Equals(string1,string2,result);
 }
 
 } // namespace Text

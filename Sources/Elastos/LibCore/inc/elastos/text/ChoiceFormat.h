@@ -37,13 +37,13 @@ public:
         /* [in] */ IInterface * object,
         /* [out] */ Boolean * value);
 
-    CARAPI FormatDoubleEx(
+    CARAPI FormatDouble(
         /* [in] */ Double value,
         /* [in] */ IStringBuffer * inbuffer,
         /* [in] */ IFieldPosition * field,
         /* [out] */ IStringBuffer ** outbuffer);
 
-    CARAPI FormatInt64Ex(
+    CARAPI FormatInt64(
         /* [in] */ Int64 value,
         /* [in] */ IStringBuffer * inbuffer,
         /* [in] */ IFieldPosition * field ,
@@ -69,7 +69,7 @@ public:
         /* [in] */ Boolean increment);
 
     //@Override
-    CARAPI ParseEx(
+    CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ INumber** value);

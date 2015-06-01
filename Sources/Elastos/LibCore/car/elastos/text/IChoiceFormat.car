@@ -64,7 +64,7 @@ module
         GetFormats(
             [out, callee] ArrayOf<IInterface*>* formats);
 
-        GetChoiceFormats(
+        GetFormats(
             [out, callee] ArrayOf<String>* formats);
 
         /**
@@ -118,7 +118,7 @@ module
          *            get the previous smaller value.
          * @return the next larger or smaller double value.
          */
-        NextDoubleEx(
+        NextDouble(
             [in] Double value,
             [in] Boolean increment,
             [out] Double* nextValue);

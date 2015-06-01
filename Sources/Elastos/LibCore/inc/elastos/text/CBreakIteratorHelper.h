@@ -19,28 +19,28 @@ public:
     CARAPI GetCharacterInstance(
         /* [out] */ IBreakIterator** instance);
 
-    CARAPI GetCharacterInstanceEx(
+    CARAPI GetCharacterInstance(
         /* [in] */ ILocale* where,
         /* [out] */ IBreakIterator** instance);
 
     CARAPI GetLineInstance(
         /* [out] */ IBreakIterator** instance);
 
-    CARAPI GetLineInstanceEx(
+    CARAPI GetLineInstance(
         /* [in] */ ILocale* where,
         /* [out] */ IBreakIterator** instance);
 
     CARAPI GetSentenceInstance(
         /* [out] */ IBreakIterator** instance);
 
-    CARAPI GetSentenceInstanceEx(
+    CARAPI GetSentenceInstance(
         /* [in] */ ILocale* where,
         /* [out] */ IBreakIterator** instance);
 
     CARAPI GetWordInstance(
         /* [out] */ IBreakIterator** instance);
 
-    CARAPI GetWordInstanceEx(
+    CARAPI GetWordInstance(
         /* [in] */ ILocale* where,
         /* [out] */ IBreakIterator** instance);
 };

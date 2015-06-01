@@ -23,7 +23,6 @@ module
      * interface IFormatField
      */
     interface IMessageFormatField {
-
     }
 
     /**
@@ -82,7 +81,7 @@ module
          * this field position is set to the location of the first occurrence of a
          * message format argument. Otherwise, the {FieldPosition} is ignored.
          */
-        FormatObjects(
+        Format(
             [in] ArrayOf<IInterface*>* objects,
             [in] IStringBuffer * buffer,
             [in] IFieldPosition* field,
@@ -114,7 +113,7 @@ module
          * Sets the formats used for each argument. The {formats} array
          * elements should be in the order of the argument indices.
          */
-        SetFormatsByArgumentIndexEx(
+        SetFormatsByArgumentIndex(
             [in] ArrayOf<IFormat*>* formats);
 
         /**
@@ -139,7 +138,7 @@ module
          * error index of {ParsePosition} is set to the index where the error
          * occurred.
          */
-        ParseEx(
+        Parse(
             [in] String string,
             [in] IParsePosition* position,
             [out, callee] ArrayOf<IInterface*>* result);
@@ -175,10 +174,10 @@ module
             [out] Int32* maxOffset);
 
         GetArgumentNumbers(
-            [out,callee] ArrayOf<Int32>* argumentNumbers);
+            [out, callee] ArrayOf<Int32>* argumentNumbers);
 
         GetStrings(
-            [out,callee] ArrayOf<String>* strings);
+            [out, callee] ArrayOf<String>* strings);
     }
 
     } // namespace Text

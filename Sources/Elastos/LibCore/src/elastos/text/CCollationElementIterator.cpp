@@ -50,10 +50,10 @@ ECode CCollationElementIterator::SetOffset(
 ECode CCollationElementIterator::SetText(
     /* [in] */ ICharacterIterator* source)
 {
-    return mIcuIterator->SetTextEx(source);
+    return mIcuIterator->SetText(source);
 }
 
-ECode CCollationElementIterator::SetTextEx(
+ECode CCollationElementIterator::SetText(
     /* [in] */ const String& source)
 {
     return mIcuIterator->SetText(source);

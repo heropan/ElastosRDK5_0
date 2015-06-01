@@ -292,7 +292,7 @@ ECode AttributedString::AttributedIterator::GetRunLimit(
     VALIDATE_NOT_NULL(index)
     AutoPtr<IObjectContainer> allAttributedKeys;
     GetAllAttributeKeys((IObjectContainer**)&allAttributedKeys);
-    return GetRunLimitEx2(allAttributedKeys, index);
+    return GetRunLimit(allAttributedKeys, index);
 }
 
 Int32 AttributedString::AttributedIterator::RunLimit(
@@ -318,7 +318,7 @@ Int32 AttributedString::AttributedIterator::RunLimit(
     return result;
 }
 
-ECode AttributedString::AttributedIterator::GetRunLimitEx(
+ECode AttributedString::AttributedIterator::GetRunLimit(
     /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
     /* [out] */ Int32* index)
 {
@@ -342,7 +342,7 @@ ECode AttributedString::AttributedIterator::GetRunLimitEx(
 
 }
 
-ECode AttributedString::AttributedIterator::GetRunLimitEx2(
+ECode AttributedString::AttributedIterator::GetRunLimit(
     /* [in] */ IObjectContainer* attributes,
     /* [out] */ Int32* index)
 {
@@ -356,7 +356,7 @@ ECode AttributedString::AttributedIterator::GetRunLimitEx2(
         AutoPtr<IAttributedCharacterIteratorAttribute> attr;
         enumerator->Current((IInterface**)&attr);
         Int32 newLimit;
-        GetRunLimitEx(attr, &newLimit);
+        GetRunLimit(attr, &newLimit);
         if (newLimit < limit) {
             limit = newLimit;
         }
@@ -372,7 +372,7 @@ ECode AttributedString::AttributedIterator::GetRunStart(
     VALIDATE_NOT_NULL(index);
     AutoPtr<IObjectContainer> allAttributedKeys;
     GetAllAttributeKeys((IObjectContainer**)&allAttributedKeys);
-    return GetRunStartEx2(allAttributedKeys, index);
+    return GetRunStart(allAttributedKeys, index);
 }
 
 Int32 AttributedString::AttributedIterator::RunStart(
@@ -398,7 +398,7 @@ Int32 AttributedString::AttributedIterator::RunStart(
     return result;
 }
 
-ECode AttributedString::AttributedIterator::GetRunStartEx(
+ECode AttributedString::AttributedIterator::GetRunStart(
     /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
     /* [out] */ Int32* index)
 {
@@ -419,7 +419,7 @@ ECode AttributedString::AttributedIterator::GetRunStartEx(
     return NOERROR;
 }
 
-ECode AttributedString::AttributedIterator::GetRunStartEx2(
+ECode AttributedString::AttributedIterator::GetRunStart(
     /* [in] */ IObjectContainer* attributes,
     /* [out] */ Int32* index)
 {
@@ -433,7 +433,7 @@ ECode AttributedString::AttributedIterator::GetRunStartEx2(
         AutoPtr<IAttributedCharacterIteratorAttribute> attr;
         enumerator->Current((IInterface**)&attr);
         Int32 newStart;
-        GetRunStartEx(attr, &newStart);
+        GetRunStart(attr, &newStart);
         if (newStart > start) {
             start = newStart;
         }
@@ -543,13 +543,13 @@ ECode AttributedString::Init(
         Char32 cv;
         while (iterator->Current(&cv), cv != (Char32)ICharacterIterator::DONE) {
             Int32 start;
-            iterator->GetRunStartEx(attr, &start);
+            iterator->GetRunStart(attr, &start);
             Int32 limit;
-            iterator->GetRunLimitEx(attr, &limit);
+            iterator->GetRunLimit(attr, &limit);
             AutoPtr<IInterface> value;
             iterator->GetAttribute(attr, (IInterface**)&value);
             if (value != NULL) {
-                AddAttributeEx(attr, value, start, limit);
+                AddAttribute(attr, value, start, limit);
             }
             iterator->SetIndex(limit, &ch);
         }
@@ -602,13 +602,13 @@ ECode AttributedString::Init(
             AutoPtr<IInterface> value;
             iterator->GetAttribute(attr, (IInterface**)&value);
             Int32 runStart;
-            iterator->GetRunStartEx(attr, &runStart);
+            iterator->GetRunStart(attr, &runStart);
             Int32 limit;
-            iterator->GetRunLimitEx(attr, &limit);
+            iterator->GetRunLimit(attr, &limit);
             if ((value->Probe(EIID_IAnnotation) != NULL
                     && runStart >= start && limit <= end)
                         || (value != NULL && (value->Probe(EIID_IAnnotation) == NULL))) {
-                AddAttributeEx(attr, value, (runStart < start ? start
+                AddAttribute(attr, value, (runStart < start ? start
                         : runStart)
                         - start, (limit > end ? end : limit) - start);
             }
@@ -711,7 +711,7 @@ ECode AttributedString::AddAttribute(
     return NOERROR;
 }
 
-ECode AttributedString::AddAttributeEx(
+ECode AttributedString::AddAttribute(
     /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
     /* [in] */ IInterface* value,
     /* [in] */ Int32 start,
@@ -821,7 +821,7 @@ ECode AttributedString::AddAttributes(
 {
     AttributeObjectMapIterator itnext = attributes->Begin();
     while (itnext != attributes->End()) {
-        AddAttributeEx( itnext->mFirst, itnext->mSecond, start, end);
+        AddAttribute( itnext->mFirst, itnext->mSecond, start, end);
         ++attributes;
     }
     return NOERROR;
@@ -836,7 +836,7 @@ ECode AttributedString::GetIterator(
     return NOERROR;
 }
 
-ECode AttributedString::GetIteratorEx(
+ECode AttributedString::GetIterator(
     /* [in] */ ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes,
     /* [out] */ IAttributedCharacterIterator** iterator)
 {
@@ -847,7 +847,7 @@ ECode AttributedString::GetIteratorEx(
     return NOERROR;
 }
 
-ECode AttributedString::GetIteratorEx2(
+ECode AttributedString::GetIterator(
     /* [in] */ ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,

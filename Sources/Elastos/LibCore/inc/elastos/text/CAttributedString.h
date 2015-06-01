@@ -38,7 +38,7 @@ public:
         /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
         /* [in] */ IInterface* value);
 
-    CARAPI AddAttributeEx(
+    CARAPI AddAttribute(
         /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
         /* [in] */ IInterface* value,
         /* [in] */ Int32 start,
@@ -47,11 +47,11 @@ public:
     CARAPI GetIterator(
         /* [out] */ IAttributedCharacterIterator** iterator);
 
-    CARAPI GetIteratorEx(
+    CARAPI GetIterator(
         /* [in] */ ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes,
         /* [out] */ IAttributedCharacterIterator** iterator);
 
-    CARAPI GetIteratorEx2(
+    CARAPI GetIterator(
         /* [in] */ ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,

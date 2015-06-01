@@ -133,7 +133,7 @@ ECode DateFormat::Field::OfCalendarField(
 DateFormat::DateFormat()
 {}
 
-ECode DateFormat::FormatObjectEx(
+ECode DateFormat::FormatObject(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
@@ -146,7 +146,7 @@ ECode DateFormat::FormatObjectEx(
 
     IDate* date = IDate::Probe(object);
     if (date != NULL) {
-        return FormatDateEx(date, buffer, field, value);
+        return FormatDate(date, buffer, field, value);
     }
 
     INumber* number = INumber::Probe(object) ;
@@ -155,7 +155,7 @@ ECode DateFormat::FormatObjectEx(
         number->Int64Value(&v);
         AutoPtr<IDate> dateObj;
         CDate::New(v, (IDate**)&dateObj);
-        return FormatDateEx(dateObj, buffer, field, value);
+        return FormatDate(dateObj, buffer, field, value);
     }
 
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -171,7 +171,7 @@ ECode DateFormat::FormatDate(
     CFieldPosition::New(0, (IFieldPosition**)&field);
     AutoPtr<IStringBuffer> sb = new StringBuffer();
     AutoPtr<IStringBuffer> outsb;
-    FormatDateEx(date, sb, field, (IStringBuffer **)&outsb);
+    FormatDate(date, sb, field, (IStringBuffer **)&outsb);
     return outsb->ToString(value);
 }
 
@@ -196,10 +196,10 @@ ECode DateFormat::GetCalendar(
 ECode DateFormat::GetDateInstance(
     /* [out] */ IDateFormat** instance)
 {
-    return GetDateInstanceEx(IDateFormat::DEFAULT, instance);
+    return GetDateInstance(IDateFormat::DEFAULT, instance);
 }
 
-ECode DateFormat::GetDateInstanceEx(
+ECode DateFormat::GetDateInstance(
     /* [in] */ Int32 style,
     /* [out] */ IDateFormat** instance)
 {
@@ -212,10 +212,10 @@ ECode DateFormat::GetDateInstanceEx(
     AutoPtr<ILocale> locale;
     FAIL_RETURN(localeHelper->GetDefault((ILocale**)&locale));
 
-    return GetDateInstanceEx2(style, locale, instance);
+    return GetDateInstance(style, locale, instance);
 }
 
-ECode DateFormat::GetDateInstanceEx2(
+ECode DateFormat::GetDateInstance(
     /* [in] */ Int32 style,
     /* [in] */ ILocale* locale,
     /* [out] */ IDateFormat** instance)
@@ -241,10 +241,10 @@ ECode DateFormat::GetDateInstanceEx2(
 ECode DateFormat::GetDateTimeInstance(
     /* [out] */ IDateFormat** instance)
 {
-    return GetDateTimeInstanceEx(IDateFormat::DEFAULT, IDateFormat::DEFAULT, instance);
+    return GetDateTimeInstance(IDateFormat::DEFAULT, IDateFormat::DEFAULT, instance);
 }
 
-ECode DateFormat::GetDateTimeInstanceEx(
+ECode DateFormat::GetDateTimeInstance(
     /* [in] */ Int32 dateStyle,
     /* [in] */ Int32 timeStyle,
     /* [out] */ IDateFormat** instance)
@@ -259,10 +259,10 @@ ECode DateFormat::GetDateTimeInstanceEx(
     AutoPtr<ILocale> locale;
     localeHelper->GetDefault((ILocale**)&locale);
 
-    return GetDateTimeInstanceEx2(dateStyle, timeStyle, locale, instance);
+    return GetDateTimeInstance(dateStyle, timeStyle, locale, instance);
 }
 
-ECode DateFormat::GetDateTimeInstanceEx2(
+ECode DateFormat::GetDateTimeInstance(
     /* [in] */ Int32 dateStyle,
     /* [in] */ Int32 timeStyle,
     /* [in] */ ILocale* locale,
@@ -293,7 +293,7 @@ ECode DateFormat::GetDateTimeInstanceEx2(
 ECode DateFormat::GetInstance(
     /* [out] */ IDateFormat** instance)
 {
-    return GetDateTimeInstanceEx(IDateFormat::SHORT, IDateFormat::SHORT, instance);
+    return GetDateTimeInstance(IDateFormat::SHORT, IDateFormat::SHORT, instance);
 }
 
 ECode DateFormat::GetNumberFormat(
@@ -308,10 +308,10 @@ ECode DateFormat::GetNumberFormat(
 ECode DateFormat::GetTimeInstance(
     /* [out] */ IDateFormat** instance)
 {
-    return GetTimeInstanceEx(IDateFormat::DEFAULT, instance);
+    return GetTimeInstance(IDateFormat::DEFAULT, instance);
 }
 
-ECode DateFormat::GetTimeInstanceEx(
+ECode DateFormat::GetTimeInstance(
     /* [in] */ Int32 style,
     /* [out] */ IDateFormat** instance)
 {
@@ -323,10 +323,10 @@ ECode DateFormat::GetTimeInstanceEx(
     AutoPtr<ILocale> locale;
     FAIL_RETURN(localeHelper->GetDefault((ILocale**)&locale));
 
-    return GetTimeInstanceEx2(style, locale, instance);
+    return GetTimeInstance(style, locale, instance);
 }
 
-ECode DateFormat::GetTimeInstanceEx2(
+ECode DateFormat::GetTimeInstance(
     /* [in] */ Int32 style,
     /* [in] */ ILocale* locale,
     /* [out] */ IDateFormat** instance)
@@ -369,7 +369,7 @@ ECode DateFormat::Parse(
 
     AutoPtr<IParsePosition> position;
     CParsePosition::New(0, (IParsePosition**)&position);
-    FAIL_RETURN(ParseEx(string, position, date));
+    FAIL_RETURN(Parse(string, position, date));
     REFCOUNT_ADD(*date);
     Int32 index;
     position->GetIndex(&index);
@@ -380,12 +380,12 @@ ECode DateFormat::Parse(
     return NOERROR;
 }
 
-ECode DateFormat::ParseObjectEx(
+ECode DateFormat::ParseObject(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out] */ IInterface** object)
 {
-    return ParseEx(string, position, (IDate**)object);
+    return Parse(string, position, (IDate**)object);
 }
 
 ECode DateFormat::SetCalendar(

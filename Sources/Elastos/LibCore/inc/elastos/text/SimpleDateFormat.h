@@ -52,7 +52,7 @@ public:
         /* [out] */ IAttributedCharacterIterator** charactorIterator);
 
     //@Override
-    CARAPI FormatDateEx(
+    CARAPI FormatDate(
         /* [in] */ IDate* date,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* fieldPos,
@@ -65,7 +65,7 @@ public:
         /* [out] */ IDateFormatSymbols** symbols);
 
     //@Override
-    CARAPI ParseEx(
+    CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ IDate** date);

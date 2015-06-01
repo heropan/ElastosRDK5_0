@@ -90,7 +90,7 @@ public:
         /* [out] */ IStringBuffer ** value);
 
     //@Override
-    CARAPI FormatObjectEx(
+    CARAPI FormatObject(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
@@ -108,7 +108,7 @@ public:
         /* [in] */ Int32 argIndex,
         /* [in] */ IFormat* format);
 
-    virtual CARAPI SetFormatsByArgumentIndexEx(
+    virtual CARAPI SetFormatsByArgumentIndex(
         /* [in] */ ArrayOf< IFormat* >* formats);
 
     virtual CARAPI GetLocale(
@@ -121,13 +121,13 @@ public:
         /* [in] */ const String& string,
         /* [out, callee] */ ArrayOf< IInterface* >** results);
 
-    virtual CARAPI ParseEx(
+    virtual CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out, callee] */ ArrayOf< IInterface* >** result);
 
     //@Override
-    CARAPI ParseObjectEx(
+    CARAPI ParseObject(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ IInterface** arrayOfObjects);

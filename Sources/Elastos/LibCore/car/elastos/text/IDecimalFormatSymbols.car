@@ -16,7 +16,11 @@ module
      * @sa Locale
      * @sa DecimalFormat
      */
-
+    /**
+     * @Involve
+     * interface ISerializable;
+     * interface ICloneable;
+     */
     interface IDecimalFormatSymbols {
         /**
          * Returns the currency.
@@ -200,20 +204,13 @@ module
          */
         SetExponentSeparator(
             [in] String value);
-
-        Clone(
-            [out] IDecimalFormatSymbols** obj);
-
-        Equals(
-            [in] IInterface* object,
-            [out] Boolean* res);
     }
 
     interface IDecimalFormatSymbolsHelper {
         GetInstance(
             [out] IDecimalFormatSymbols** instance);
 
-        GetInstanceEx(
+        GetInstance(
             [in] ILocale* locale,
             [out] IDecimalFormatSymbols** instance);
 

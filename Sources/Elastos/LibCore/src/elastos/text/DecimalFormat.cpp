@@ -150,7 +150,7 @@ ECode DecimalFormat::CheckBufferAndFieldPosition(
     return NOERROR;
 }
 
-ECode DecimalFormat::FormatDoubleEx(
+ECode DecimalFormat::FormatDouble(
     /* [in] */ Double value,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
@@ -168,7 +168,7 @@ ECode DecimalFormat::FormatDoubleEx(
         CFieldPosition::New(0, (IFieldPosition**)&fp);
         AutoPtr<IStringBuffer> sb = new StringBuffer();
         AutoPtr<IStringBuffer> outsb;
-        FormatDoubleEx(value, sb, fp, (IStringBuffer **)&outsb);
+        FormatDouble(value, sb, fp, (IStringBuffer **)&outsb);
         String upResult;
         outsb->ToString(&upResult);
 
@@ -176,7 +176,7 @@ ECode DecimalFormat::FormatDoubleEx(
         AutoPtr<IFieldPosition> fpx;
         CFieldPosition::New(0, (IFieldPosition**)&fpx);
         String downResult;
-        FormatDoubleEx(value, sb, fp, (IStringBuffer **)&outsb);
+        FormatDouble(value, sb, fp, (IStringBuffer **)&outsb);
         outsb->ToString(&downResult);
         if (!upResult.Equals(downResult)) {
             //throw new ArithmeticException("rounding mode UNNECESSARY but rounding required");
@@ -197,7 +197,7 @@ ECode DecimalFormat::FormatDoubleEx(
     return NOERROR;
 }
 
-ECode DecimalFormat::FormatInt64Ex(
+ECode DecimalFormat::FormatInt64(
     /* [in] */ Int64 value,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
@@ -220,7 +220,7 @@ ECode DecimalFormat::FormatInt64Ex(
     return NOERROR;
 }
 
-ECode DecimalFormat::FormatObjectEx(
+ECode DecimalFormat::FormatObject(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
@@ -260,7 +260,7 @@ ECode DecimalFormat::FormatObjectEx(
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    return NumberFormat::FormatObjectEx(object, buffer, field ,value);
+    return NumberFormat::FormatObject(object, buffer, field ,value);
 }
 
 ECode DecimalFormat::GetDecimalFormatSymbols(
@@ -338,7 +338,7 @@ ECode DecimalFormat::IsParseIntegerOnly(
     return mNdf->IsParseIntegerOnly(isParseIntegerOnly);
 }
 
-ECode DecimalFormat::ParseEx(
+ECode DecimalFormat::Parse(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out] */ INumber** value)

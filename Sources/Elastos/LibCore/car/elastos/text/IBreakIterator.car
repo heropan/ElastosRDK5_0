@@ -175,13 +175,54 @@ module
      *
      * @sa CharacterIterator
      */
-
+     /**
+      * @Involve
+      * interface ICloneable
+      */
     interface IBreakIterator {
+
         /**
          * This constant is returned by iterate methods like {previous()} or
          * {next()} if they have returned all valid boundaries.
          */
         const Int32 DONE = -1;
+
+        /**
+         * Indicates whether the given offset is a boundary position. If this method
+         * returns true, the current iteration position is set to the given
+         * position; if the function returns false, the current iteration position
+         * is set as though following(int) had been called.
+         *
+         * @sa #following(int)
+         */
+        IsBoundary(
+            [in] Int32 offset,
+            [out] Boolean* isBoundary);
+
+        /**
+         * Returns the position of last boundary preceding the given offset, and
+         * sets the current position to the returned value, or {DONE} if the
+         * given offset specifies the starting position.
+         */
+        Preceding(
+            [in] Int32 offset,
+            [out] Int32* postion);
+
+        /**
+         * Sets the new text string to be analyzed, the current position will be
+         * reset to the beginning of this new string, and the old string will be
+         * lost.
+         */
+        SetText(
+            [in] String newText);
+
+        /**
+         * Returns this iterator's current position.
+         *
+         * @return this iterator's current position.
+         */
+        Current(
+            [out] Int32 * value);
 
         /**
          * Sets this iterator's current position to the first boundary and returns
@@ -198,6 +239,16 @@ module
         Following(
             [in] Int32 offset,
             [out] Int32* postion);
+
+        /**
+         * Returns a {CharacterIterator} which represents the text being
+         * analyzed. Please note that the returned value is probably the internal
+         * iterator used by this object. If the invoker wants to modify the status
+         * of the returned iterator, it is recommended to first create a clone of
+         * the iterator returned.
+         */
+        GetText(
+            [out] ICharacterIterator** text);
 
         /**
          * Sets this iterator's current position to the last boundary and returns
@@ -221,17 +272,8 @@ module
          * given position, and returns that position. Returns {DONE} if no
          * boundary was found after the given position.
          */
-        NextEx(
+        Next(
             [in] Int32 n,
-            [out] Int32* postion);
-
-        /**
-         * Returns the position of last boundary preceding the given offset, and
-         * sets the current position to the returned value, or {DONE} if the
-         * given offset specifies the starting position.
-         */
-        Preceding(
-            [in] Int32 offset,
             [out] Int32* postion);
 
         /**
@@ -245,57 +287,12 @@ module
             [out] Int32* postion);
 
         /**
-         * Returns a {CharacterIterator} which represents the text being
-         * analyzed. Please note that the returned value is probably the internal
-         * iterator used by this object. If the invoker wants to modify the status
-         * of the returned iterator, it is recommended to first create a clone of
-         * the iterator returned.
-         */
-        GetText(
-            [out] ICharacterIterator** text);
-
-        /**
-         * Indicates whether the given offset is a boundary position. If this method
-         * returns true, the current iteration position is set to the given
-         * position; if the function returns false, the current iteration position
-         * is set as though following(int) had been called.
-         *
-         * @sa #following(int)
-         */
-        IsBoundary(
-            [in] Int32 offset,
-            [out] Boolean* isBoundary);
-
-        /**
-         * Sets the new text string to be analyzed, the current position will be
-         * reset to the beginning of this new string, and the old string will be
-         * lost.
-         */
-        SetText(
-            [in] String newText);
-
-        /**
          * Sets the new text to be analyzed by the given {CharacterIterator}.
          * The position will be reset to the beginning of the new text, and other
          * status information of this iterator will be kept.
          */
-        SetTextEx(
+        SetText(
             [in] ICharacterIterator* newText);
-
-        /**
-         * Returns this iterator's current position.
-         *
-         * @return this iterator's current position.
-         */
-        Current(
-            [out] Int32 * value);
-
-        /**
-         * Returns a copy of this iterator.
-         */
-        // @Override
-        Clone(
-            [out] IInterface ** outface);
     }
 
     interface IBreakIteratorHelper {
@@ -324,7 +321,7 @@ module
          *            the given locale.
          * @return a new instance of {BreakIterator} using the given locale.
          */
-        GetCharacterInstanceEx(
+        GetCharacterInstance(
             [in] ILocale* where,
             [out] IBreakIterator** instance);
 
@@ -349,7 +346,7 @@ module
          * :-|:------------|
          * NullPointerException | if {where} is {null}.
          */
-        GetLineInstanceEx(
+        GetLineInstance(
             [in] ILocale* where,
             [out] IBreakIterator** instance);
 
@@ -374,7 +371,7 @@ module
          * :-|:------------|
          * NullPointerException | if {where} is {null}.
          */
-        GetSentenceInstanceEx(
+        GetSentenceInstance(
             [in] ILocale* where,
             [out] IBreakIterator** instance);
 
@@ -399,7 +396,7 @@ module
          * :-|:------------|
          * NullPointerException | if {where} is {null}.
          */
-        GetWordInstanceEx(
+        GetWordInstance(
             [in] ILocale* where,
             [out] IBreakIterator** instance);
     }

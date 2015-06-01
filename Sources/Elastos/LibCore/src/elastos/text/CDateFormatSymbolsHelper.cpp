@@ -11,7 +11,7 @@ ECode CDateFormatSymbolsHelper::GetInstance(
     return DateFormatSymbols::GetInstance(instance);
 }
 
-ECode CDateFormatSymbolsHelper::GetInstanceEx(
+ECode CDateFormatSymbolsHelper::GetInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ IDateFormatSymbols** instance)
 {

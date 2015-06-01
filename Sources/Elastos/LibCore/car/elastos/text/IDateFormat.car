@@ -272,8 +272,12 @@ module
 
         /**
          * Formats the specified date using the rules of this date format.
+         *
+         * @param date
+         *            the date to format.
+         * @return the formatted string.
          */
-        FormatDate(
+        Format(
             [in] IDate* date,
             [out] String* result);
 
@@ -281,12 +285,21 @@ module
          * Formats the specified date as a string using the pattern of this date
          * format and appends the string to the specified string buffer.
          * <p>
-         * If the {field} member of {field} contains a value specifying
-         * a format field, then its {beginIndex} and {endIndex} members
+         * If the {@code field} member of {@code field} contains a value specifying
+         * a format field, then its {@code beginIndex} and {@code endIndex} members
          * will be updated with the position of the first occurrence of this field
          * in the formatted text.
+         *
+         * @param date
+         *            the date to format.
+         * @param buffer
+         *            the target string buffer to append the formatted date/time to.
+         * @param field
+         *            on input: an optional alignment field; on output: the offsets
+         *            of the alignment field in the formatted text.
+         * @return the string buffer.
          */
-        FormatDateEx(
+        Format(
             [in] IDate* date,
             [in] IStringBuffer * buffer,
             [in] IFieldPosition* field,
@@ -340,7 +353,7 @@ module
          * parse succeeds. Clients may insist on strict adherence to the format by
          * calling {setLenient(false)}.
          */
-        ParseEx(
+        Parse(
             [in] String string,
             [in] IParsePosition* position,
             [out] IDate** date);
@@ -381,11 +394,11 @@ module
         GetDateInstance(
             [out] IDateFormat** instance);
 
-        GetDateInstanceEx(
+        GetDateInstance(
             [in] Int32 style,
             [out] IDateFormat** instance);
 
-        GetDateInstanceEx2(
+        GetDateInstance(
             [in] Int32 style,
             [in] ILocale* locale,
             [out] IDateFormat** instance);
@@ -393,12 +406,12 @@ module
         GetDateTimeInstance(
             [out] IDateFormat** instance);
 
-        GetDateTimeInstanceEx(
+        GetDateTimeInstance(
             [in] Int32 dateStyle,
             [in] Int32 timeStyle,
             [out] IDateFormat** instance);
 
-        GetDateTimeInstanceEx2(
+        GetDateTimeInstance(
             [in] Int32 dateStyle,
             [in] Int32 timeStyle,
             [in] ILocale* locale,
@@ -410,11 +423,11 @@ module
         GetTimeInstance(
             [out] IDateFormat** instance);
 
-        GetTimeInstanceEx(
+        GetTimeInstance(
             [in] Int32 style,
             [out] IDateFormat** instance);
 
-        GetTimeInstanceEx2(
+        GetTimeInstance(
             [in] Int32 style,
             [in] ILocale* locale,
             [out] IDateFormat** instance);

@@ -37,7 +37,7 @@ public:
     CARAPI SetText(
         /* [in] */ ICharacterIterator* source);
 
-    CARAPI SetTextEx(
+    CARAPI SetText(
         /* [in] */ const String& source);
 
 private:

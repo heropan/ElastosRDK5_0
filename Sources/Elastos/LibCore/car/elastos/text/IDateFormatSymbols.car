@@ -1,6 +1,6 @@
 module
 {
-    interface Elastos.Utility.IObjectContainer;
+    interface Elastos.Utility.IVector;
     interface Elastos.Utility.ILocale;
 
     namespace Elastos {
@@ -26,26 +26,13 @@ module
      * @sa DateFormat
      * @sa SimpleDateForma
      */
+    /**
+     * @Involve
+     * interface ISerializable;
+     * interface ICloneable;
+     */
     [deprecated]
     interface IDateFormatSymbols {
-
-        GetLongStandAloneMonths(
-            [out, callee] ArrayOf<String>* longStandAloneMonths);
-
-        GetShortStandAloneMonths(
-            [out, callee] ArrayOf<String>* shortStandAloneMonths);
-
-        GetLongStandAloneWeekdays(
-            [out, callee] ArrayOf<String>* longStandAloneWeekdays);
-
-        GetShortStandAloneWeekdays(
-            [out, callee] ArrayOf<String>* shortStandAloneWeekdays);
-
-        GetCustomZoneStrings(
-            [out] Boolean * customZoneStrings);
-
-        GetLocale(
-            [out] ILocale ** locale);
 
         /**
          * Returns the array of strings which represent AM and PM. Use the
@@ -129,7 +116,7 @@ module
          * </ul>
          */
         GetZoneStrings(
-            [out, callee] ArrayOf<IObjectContainer*>* outarray);
+            [out, callee] ArrayOf<IVector*>* outarray);
 
         /**
          * Sets the array of strings which represent AM and PM. Use the
@@ -212,15 +199,7 @@ module
          * NullPointerException | if {zoneStrings == null}.
          */
         SetZoneStrings(
-            [in] ArrayOf<IObjectContainer*>* zoneStrings);
-
-        // @Override
-        Clone(
-            [out] IDateFormatSymbols** instance);
-
-        Equals(
-            [in] IInterface* object,
-            [out] Boolean* res);
+            [in] ArrayOf<IVector*>* zoneStrings);
     }
 
     interface IDateFormatSymbolsHelper
@@ -228,7 +207,7 @@ module
         GetInstance(
             [out] IDateFormatSymbols** instance);
 
-        GetInstanceEx(
+        GetInstance(
             [in] ILocale* locale,
             [out] IDateFormatSymbols** instance);
 

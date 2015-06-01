@@ -26,7 +26,6 @@ module
     merge("text/IRuleBasedCollator.car");
     merge("text/INormalizer.car");
     merge("text/IBidi.car");
-    merge("text/IRuleBasedBreakIterator.car");
 
     merge("text/spi/IBreakIteratorProvider.car");
     merge("text/spi/ICollatorProvider.car");

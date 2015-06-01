@@ -16,7 +16,7 @@ public:
     CARAPI GetInstance(
         /* [out] */ IDateFormatSymbols** instance);
 
-    CARAPI GetInstanceEx(
+    CARAPI GetInstance(
         /* [in] */ ILocale* locale,
         /* [out] */ IDateFormatSymbols** instance);
 

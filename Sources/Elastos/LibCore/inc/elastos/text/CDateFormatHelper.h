@@ -18,11 +18,11 @@ public:
     CARAPI GetDateInstance(
         /* [out] */ IDateFormat** instance);
 
-    CARAPI GetDateInstanceEx(
+    CARAPI GetDateInstance(
         /* [in] */ Int32 style,
         /* [out] */ IDateFormat** instance);
 
-    CARAPI GetDateInstanceEx2(
+    CARAPI GetDateInstance(
         /* [in] */ Int32 style,
         /* [in] */ ILocale* locale,
         /* [out] */ IDateFormat** instance);
@@ -30,12 +30,12 @@ public:
     CARAPI GetDateTimeInstance(
         /* [out] */ IDateFormat** instance);
 
-    CARAPI GetDateTimeInstanceEx(
+    CARAPI GetDateTimeInstance(
         /* [in] */ Int32 dateStyle,
         /* [in] */ Int32 timeStyle,
         /* [out] */ IDateFormat** instance);
 
-    CARAPI GetDateTimeInstanceEx2(
+    CARAPI GetDateTimeInstance(
         /* [in] */ Int32 dateStyle,
         /* [in] */ Int32 timeStyle,
         /* [in] */ ILocale* locale,
@@ -47,11 +47,11 @@ public:
     CARAPI GetTimeInstance(
         /* [out] */ IDateFormat** instance);
 
-    CARAPI GetTimeInstanceEx(
+    CARAPI GetTimeInstance(
         /* [in] */ Int32 style,
         /* [out] */ IDateFormat** instance);
 
-    CARAPI GetTimeInstanceEx2(
+    CARAPI GetTimeInstance(
         /* [in] */ Int32 style,
         /* [in] */ ILocale* locale,
         /* [out] */ IDateFormat** instance);

@@ -7,7 +7,7 @@
         /* [in] */ IInterface* object,                                              \
         /* [out] */ String* value);                                                 \
                                                                                     \
-    CARAPI FormatObjectEx(                                                          \
+    CARAPI FormatObject(                                                          \
         /* [in] */ IInterface* object,                                              \
         /* [in] */ IStringBuffer * buffer,                                          \
         /* [in] */ IFieldPosition* field,                                     \
@@ -21,7 +21,7 @@
         /* [in] */ const String& string,                                            \
         /* [out] */ IInterface** object);                                           \
                                                                                     \
-    CARAPI ParseObjectEx(                                                           \
+    CARAPI ParseObject(                                                           \
         /* [in] */ const String& string,                                            \
         /* [in] */ IParsePosition* position,                                  \
         /* [out] */ IInterface** object);                                           \
@@ -95,13 +95,13 @@
         return superClass::FormatObject(object,value);                              \
     }                                                                               \
                                                                                     \
-    ECode className::FormatObjectEx(                                                \
+    ECode className::FormatObject(                                                \
             /* [in] */ IInterface* object,                                          \
             /* [in] */ IStringBuffer * buffer,                                      \
             /* [in] */ IFieldPosition* field,                                 \
             /* [out] */ IStringBuffer ** value)                                     \
     {                                                                               \
-        return superClass::FormatObjectEx(object,buffer,field,value);               \
+        return superClass::FormatObject(object,buffer,field,value);               \
     }                                                                               \
                                                                                     \
     ECode className::FormatToCharacterIterator(                                     \
@@ -118,12 +118,12 @@
         return superClass::ParseObject(string,object);                              \
     }                                                                               \
                                                                                     \
-    ECode className::ParseObjectEx(                                                 \
+    ECode className::ParseObject(                                                 \
             /* [in] */ const String& string,                                        \
             /* [in] */ IParsePosition* position,                              \
             /* [out] */ IInterface** object)                                        \
     {                                                                               \
-        return superClass::ParseObjectEx(string,position,object);                   \
+        return superClass::ParseObject(string,position,object);                   \
     }                                                                               \
                                                                                     \
     ECode className::FormatDouble(                                                  \

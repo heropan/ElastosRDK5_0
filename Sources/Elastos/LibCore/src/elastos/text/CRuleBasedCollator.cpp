@@ -24,12 +24,12 @@ ECode CRuleBasedCollator::Compare(
     return Collator::Compare(object1, object2, result);
 }
 
-ECode CRuleBasedCollator::CompareEx(
+ECode CRuleBasedCollator::Compare(
     /* [in] */ const String& string1,
     /* [in] */ const String& string2,
     /* [out] */ Int32* value)
 {
-    return RuleBasedCollator::CompareEx(string1, string2, value);
+    return RuleBasedCollator::Compare(string1, string2, value);
 }
 
 ECode CRuleBasedCollator::Equals(
@@ -39,12 +39,12 @@ ECode CRuleBasedCollator::Equals(
     return RuleBasedCollator::Equals(object, result);
 }
 
-ECode CRuleBasedCollator::EqualsEx(
+ECode CRuleBasedCollator::Equals(
     /* [in] */ const String& string1,
     /* [in] */ const String& string2,
     /* [out] */ Boolean* result)
 {
-    return RuleBasedCollator::EqualsEx(string1, string2, result);
+    return RuleBasedCollator::Equals(string1, string2, result);
 }
 
 ECode CRuleBasedCollator::GetCollationKey(
@@ -78,11 +78,11 @@ ECode CRuleBasedCollator::SetStrength(
     return RuleBasedCollator::SetStrength(value);
 }
 
-ECode CRuleBasedCollator::GetCollationElementIteratorEx(
+ECode CRuleBasedCollator::GetCollationElementIterator(
     /* [in] */ ICharacterIterator* source,
     /* [out] */ ICollationElementIterator** collationElementIterator)
 {
-    return RuleBasedCollator::GetCollationElementIteratorEx(source, collationElementIterator);
+    return RuleBasedCollator::GetCollationElementIterator(source, collationElementIterator);
 }
 
 ECode CRuleBasedCollator::GetCollationElementIterator(

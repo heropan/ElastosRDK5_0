@@ -8,28 +8,16 @@ module
      * iteration starts at the begin index in the group of characters and continues
      * to one index before the end index.
      */
+    /**
+     * @Involve
+     * interface ICloneable
+     */
     interface ICharacterIterator {
         /**
          * A constant which indicates that there is no character at the current
          * index.
          */
-        const Int32 DONE = 0xffffffff;
-
-        /**
-         * Returns the begin index.
-         *
-         * @return the index of the first character of the iteration.
-         */
-        GetBeginIndex(
-            [out] Int32* index);
-
-        /**
-         * Returns a new {CharacterIterator} with the same properties.
-         *
-         * @return a shallow copy of this character iterator.
-         */
-        Clone(
-            [out] ICharacterIterator** copy);
+        const Char32 DONE = 0xffffffff; // '\uffff';
 
         /**
          * Returns the character at the current index.
@@ -41,14 +29,6 @@ module
             [out] Char32* character);
 
         /**
-         * Returns the end index.
-         *
-         * @return the index one past the last character of the iteration.
-         */
-        GetEndIndex(
-            [out] Int32* index);
-
-        /**
          * Sets the current position to the begin index and returns the character at
          * the new position.
          *
@@ -56,6 +36,22 @@ module
          */
         First(
             [out] Char32* character);
+
+        /**
+         * Returns the begin index.
+         *
+         * @return the index of the first character of the iteration.
+         */
+        GetBeginIndex(
+            [out] Int32* index);
+
+        /**
+         * Returns the end index.
+         *
+         * @return the index one past the last character of the iteration.
+         */
+        GetEndIndex(
+            [out] Int32* index);
 
         /**
          * Returns the current index.

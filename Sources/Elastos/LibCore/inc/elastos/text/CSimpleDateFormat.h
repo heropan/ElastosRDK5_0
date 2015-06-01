@@ -21,25 +21,25 @@ CarClass(CSimpleDateFormat) , public SimpleDateFormat
 public:
     DATEFORMAT_METHODS_DECL()
 
-    CARAPI FormatObjectEx(
+    CARAPI FormatObject(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
         /* [out] */ IStringBuffer ** value);
 
-    CARAPI ParseObjectEx(
+    CARAPI ParseObject(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ IInterface** object);
 
-    CARAPI FormatDateEx(
+    CARAPI FormatDate(
         /* [in] */ IDate* date,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
         /* [out] */ IStringBuffer ** result);
 
 
-    CARAPI ParseEx(
+    CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ IDate** date);

@@ -261,7 +261,7 @@ ECode SimpleDateFormat::FormatToCharacterIteratorImpl(
     // create and AttributedString with the formatted buffer
     AutoPtr<IAttributedString> as;
     String outstr;
-    buffer.SubstringEx(0, buffer.GetLength(),&outstr);
+    buffer.Substring(0, buffer.GetLength(),&outstr);
     CAttributedString::New(outstr, (IAttributedString**)&as);
 
     // add DateFormat field attributes to the AttributedString
@@ -276,7 +276,7 @@ ECode SimpleDateFormat::FormatToCharacterIteratorImpl(
         object = attribute->Probe(EIID_IInterface);
         pos->GetBeginIndex(&bi);
         pos->GetEndIndex(&ei);
-        as->AddAttributeEx(attribute, object, bi, ei);
+        as->AddAttribute(attribute, object, bi, ei);
     }
 
     // return the CharacterIterator from AttributedString
@@ -559,7 +559,7 @@ ECode SimpleDateFormat::AppendTimeZone(
             String name;
             AutoPtr<ILocale> locale;
             mFormatData->GetLocale((ILocale**)&locale);
-            tz->GetDisplayNameEx3(daylight, style, (ILocale*)locale, &name);
+            tz->GetDisplayName(daylight, style, (ILocale*)locale, &name);
             (*buffer) += name;
             return NOERROR;
         }
@@ -644,7 +644,7 @@ ECode SimpleDateFormat::AppendNumber(
     CFieldPosition::New(0, (IFieldPosition**)&fp);
     String result("");
     AutoPtr<IStringBuffer> outsb;
-    FAIL_RETURN(mNumberFormat->FormatInt64Ex(value, buffer, fp, (IStringBuffer **)&outsb));
+    FAIL_RETURN(mNumberFormat->FormatInt64(value, buffer, fp, (IStringBuffer **)&outsb));
     outsb->ToString(&result);
     mNumberFormat->SetMinimumIntegerDigits(minimumIntegerDigits);
     buffer->Reset();
@@ -666,7 +666,7 @@ ECode SimpleDateFormat::Error(
     return NOERROR;
 }
 
-ECode SimpleDateFormat::FormatDateEx(
+ECode SimpleDateFormat::FormatDate(
     /* [in] */ IDate* date,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* fieldPos,
@@ -890,7 +890,7 @@ ECode SimpleDateFormat::ParseMonth(
     return NOERROR;
 }
 
-ECode SimpleDateFormat::ParseEx(
+ECode SimpleDateFormat::Parse(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out] */ IDate** date)
@@ -1004,7 +1004,7 @@ ECode SimpleDateFormat::ParseNumber(
     if (max == 0) {
         position->SetIndex(index);
         AutoPtr<INumber> n;
-        mNumberFormat->ParseEx(string, position, (INumber **)&n);
+        mNumberFormat->Parse(string, position, (INumber **)&n);
 
         // In RTL locales, NumberFormat might have parsed "2012-" in an ISO date as the
         // negative number -2012.
@@ -1168,7 +1168,7 @@ ECode SimpleDateFormat::ParseTimeZone(
         AutoPtr<IParsePosition> position;
         CParsePosition::New(offset + 1, (IParsePosition**)&position);
         AutoPtr<INumber> result;
-        mNumberFormat->ParseEx(string, position, (INumber**)&result);
+        mNumberFormat->Parse(string, position, (INumber**)&result);
         if (result == NULL) {
             Int32 ei;
             position->GetErrorIndex(&ei);
@@ -1183,7 +1183,7 @@ ECode SimpleDateFormat::ParseTimeZone(
         if (index < charArray->GetLength() && (*charArray)[index] == ':') {
             position->SetIndex(index + 1);
             result = NULL;
-            mNumberFormat->ParseEx(string, position, (INumber**)&result);
+            mNumberFormat->Parse(string, position, (INumber**)&result);
             if (result == NULL) {
                 Int32 ei;
                 position->GetErrorIndex(&ei);
@@ -1327,7 +1327,7 @@ ECode SimpleDateFormat::ConvertPattern(
     if (quote) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    output.SubstringEx(0, output.GetLength(), patterns);
+    output.Substring(0, output.GetLength(), patterns);
     return NOERROR;
 }
 

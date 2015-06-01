@@ -11,13 +11,13 @@ ECode CMessageFormat::FormatObject(
     return MessageFormat::FormatObject(object,value);
 }
 
-ECode CMessageFormat::FormatObjectEx(
+ECode CMessageFormat::FormatObject(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
     /* [out] */ IStringBuffer ** value)
 {
-    return MessageFormat::FormatObjectEx(object,buffer,field,value);
+    return MessageFormat::FormatObject(object,buffer,field,value);
 }
 
 ECode CMessageFormat::FormatToCharacterIterator(
@@ -34,12 +34,12 @@ ECode CMessageFormat::ParseObject(
     return MessageFormat::ParseObject(string,object);
 }
 
-ECode CMessageFormat::ParseObjectEx(
+ECode CMessageFormat::ParseObject(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out] */ IInterface** object)
 {
-    return MessageFormat::ParseObjectEx(string,position,object);
+    return MessageFormat::ParseObject(string,position,object);
 }
 
 ECode CMessageFormat::constructor(
@@ -89,10 +89,10 @@ ECode CMessageFormat::SetFormatByArgumentIndex(
     return MessageFormat::SetFormatByArgumentIndex(argIndex,format);
 }
 
-ECode CMessageFormat::SetFormatsByArgumentIndexEx(
+ECode CMessageFormat::SetFormatsByArgumentIndex(
     /* [in] */ ArrayOf<IFormat*>* formats)
 {
-    return MessageFormat::SetFormatsByArgumentIndexEx(formats);
+    return MessageFormat::SetFormatsByArgumentIndex(formats);
 }
 
 ECode CMessageFormat::GetLocale(
@@ -108,12 +108,12 @@ ECode CMessageFormat::Parse(
     return MessageFormat::Parse(string,result);
 }
 
-ECode CMessageFormat::ParseEx(
+ECode CMessageFormat::Parse(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out, callee] */ ArrayOf<IInterface*>** result)
 {
-    return MessageFormat::ParseEx(string,position,result);
+    return MessageFormat::Parse(string,position,result);
 }
 
 ECode CMessageFormat::SetFormat(

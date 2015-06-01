@@ -127,7 +127,7 @@ module
          * Sets a new source string for iteration, and resets the offset to the
          * beginning of the text.
          */
-        SetTextEx(
+        SetText(
             [in] String source);
     }
 

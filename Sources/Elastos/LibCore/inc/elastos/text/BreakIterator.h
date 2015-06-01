@@ -76,14 +76,14 @@ public:
     virtual CARAPI Next(
         /* [out] */ Int32* position) = 0;
 
-    virtual CARAPI NextEx(
+    virtual CARAPI Next(
         /* [in] */ Int32 n,
         /* [out] */ Int32* position) = 0;
 
     virtual CARAPI Previous(
         /* [out] */ Int32* position) = 0;
 
-    virtual CARAPI SetTextEx(
+    virtual CARAPI SetText(
         /* [in] */ ICharacterIterator* newText) = 0;
 
 protected:

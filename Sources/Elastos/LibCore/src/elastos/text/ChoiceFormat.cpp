@@ -86,7 +86,7 @@ ECode ChoiceFormat::ApplyPattern(
 
         position->SetIndex(index);
         AutoPtr<INumber> value;
-        format->ParseEx(tem, position, (INumber**)&value);
+        format->Parse(tem, position, (INumber**)&value);
         position->GetIndex(&index);
         index = SkipWhitespace(tem, index);
         position->GetErrorIndex(&errorIndex);
@@ -168,7 +168,7 @@ ECode ChoiceFormat::Equals(
             && mChoiceFormats->Equals(formats);
 }
 
-ECode ChoiceFormat::FormatDoubleEx(
+ECode ChoiceFormat::FormatDouble(
     /* [in] */ Double value,
     /* [in] */ IStringBuffer * inbuffer,
     /* [in] */ IFieldPosition * field,
@@ -194,13 +194,13 @@ ECode ChoiceFormat::FormatDoubleEx(
     return NOERROR;
 }
 
-ECode ChoiceFormat::FormatInt64Ex(
+ECode ChoiceFormat::FormatInt64(
     /* [in] */ Int64 value,
     /* [in] */ IStringBuffer * inbuffer,
     /* [in] */ IFieldPosition * field ,
     /* [out] */ IStringBuffer ** outbuffer)
 {
-    return FormatDoubleEx((Double)value,inbuffer,field,outbuffer);
+    return FormatDouble((Double)value,inbuffer,field,outbuffer);
 }
 
 ECode ChoiceFormat::GetHashCode(
@@ -274,7 +274,7 @@ Double ChoiceFormat::NextDouble(
     return increment ? NextDouble(value) : PreviousDouble(value);
 }
 
-ECode ChoiceFormat::ParseEx(
+ECode ChoiceFormat::Parse(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out] */ INumber** value)

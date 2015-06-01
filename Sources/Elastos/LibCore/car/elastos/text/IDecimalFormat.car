@@ -311,164 +311,177 @@ module
      * @implements Elastos.Text.INumberFormat
      */
 
-    /**
-     * @Involve
-     * interface INumberFormat
-     */
-    interface IDecimalFormat {
-        /**
-         * Changes the pattern of this decimal format to the specified pattern which
-         * uses localized pattern characters.
-         */
-        ApplyLocalizedPattern(
-            [in] String pattern);
+     /**
+      * @Involve
+      * interface INumberFormat
+      */
+     interface IDecimalFormat {
+          /**
+           * Changes the pattern of this decimal format to the specified pattern which
+           * uses localized pattern characters.
+           */
+          ApplyLocalizedPattern(
+               [in] String pattern);
 
-        /**
-         * Changes the pattern of this decimal format to the specified pattern which
-         * uses non-localized pattern characters.
-         */
-        ApplyPattern(
-            [in] String pattern);
+          /**
+           * Changes the pattern of this decimal format to the specified pattern which
+           * uses non-localized pattern characters.
+           */
+          ApplyPattern(
+               [in] String pattern);
 
-        /**
-         * Returns the {DecimalFormatSymbols} used by this decimal format.
-         */
-        GetDecimalFormatSymbols(
-            [out] IDecimalFormatSymbols** symbols);
+          /**
+           * Returns the {DecimalFormatSymbols} used by this decimal format.
+           */
+          GetDecimalFormatSymbols(
+               [out] IDecimalFormatSymbols** symbols);
 
-        /**
-         * Returns the number of digits grouped together by the grouping separator.
-         * This only allows to get the primary grouping size. There is no API to get
-         * the secondary grouping size.
-         */
-        GetGroupingSize(
-            [out] Int32* size);
+          /**
+           * Returns the number of digits grouped together by the grouping separator.
+           * This only allows to get the primary grouping size. There is no API to get
+           * the secondary grouping size.
+           */
+          GetGroupingSize(
+               [out] Int32* size);
 
-        /**
-         * Returns the multiplier which is applied to the number before formatting
-         * or after parsing.
-         */
-        GetMultiplier(
-            [out] Int32* multiplier);
+          /**
+           * Returns the prefix which is formatted or parsed before a negative number.
+           */
+          GetNegativePrefix(
+               [out] String* prefix);
 
-        /**
-         * Returns the prefix which is formatted or parsed before a negative number.
-         */
-        GetNegativePrefix(
-            [out] String* prefix);
+          /**
+           * Returns the suffix which is formatted or parsed after a negative number.
+           */
+          GetNegativeSuffix(
+               [out] String* suffix);
 
-        /**
-         * Returns the suffix which is formatted or parsed after a negative number.
-         */
-        GetNegativeSuffix(
-            [out] String* suffix);
+          /**
+           * Returns the prefix which is formatted or parsed before a positive number.
+           */
+          GetPositivePrefix(
+               [out] String* prefix);
 
-        /**
-         * Returns the prefix which is formatted or parsed before a positive number.
-         */
-        GetPositivePrefix(
-            [out] String* prefix);
+          /**
+           * Returns the suffix which is formatted or parsed after a positive number.
+           */
+          GetPositiveSuffix(
+               [out] String* suffix);
 
+          /**
+           * Indicates whether the decimal separator is shown when there are no
+           * fractional digits.
+           */
+          IsDecimalSeparatorAlwaysShown(
+               [out] Boolean* shown);
 
-        /**
-         * Returns the suffix which is formatted or parsed after a positive number.
-         */
-        GetPositiveSuffix(
-            [out] String* suffix);
+          /**
+           * This value indicates whether the return object of the parse operation is
+           * of type {BigDecimal}. This value defaults to {false}.
+           *
+           * @return {true} if parse always returns {BigDecimals},
+           *         {false} if the type of the result is {Long} or
+           *         {Double}.
+           */
+          IsParseBigDecimal(
+               [out] Boolean* isBigDecimal);
 
-        /**
-         * Indicates whether the decimal separator is shown when there are no
-         * fractional digits.
-         */
-        IsDecimalSeparatorAlwaysShown(
-            [out] Boolean* shown);
+          /**
+           * Sets the {DecimalFormatSymbols} used by this decimal format.
+           */
+          SetDecimalFormatSymbols(
+               [in] IDecimalFormatSymbols* value);
 
-        /**
-         * This value indicates whether the return object of the parse operation is
-         * of type {BigDecimal}. This value defaults to {false}.
-         *
-         * @return {true} if parse always returns {BigDecimals},
-         *         {false} if the type of the result is {Long} or
-         *         {Double}.
-         */
-        IsParseBigDecimal(
-            [out] Boolean* isBigDecimal);
+          /**
+           * Sets whether the decimal separator is shown when there are no fractional
+           * digits.
+           */
+          SetDecimalSeparatorAlwaysShown(
+               [in] Boolean value);
 
-        /**
-         * Sets the {DecimalFormatSymbols} used by this decimal format.
-         */
-        SetDecimalFormatSymbols(
-            [in] IDecimalFormatSymbols* value);
+          /**
+           * Sets the number of digits grouped together by the grouping separator.
+           * This only allows to set the primary grouping size; the secondary grouping
+           * size can only be set with a pattern.
+           */
+          SetGroupingSize(
+               [in] Int32 value);
 
-        /**
-         * Sets whether the decimal separator is shown when there are no fractional
-         * digits.
-         */
-        SetDecimalSeparatorAlwaysShown(
-            [in] Boolean value);
+          /**
+           * Returns the multiplier which is applied to the number before formatting
+           * or after parsing.
+           */
+          GetMultiplier(
+               [out] Int32* multiplier);
 
-        /**
-         * Sets the number of digits grouped together by the grouping separator.
-         * This only allows to set the primary grouping size; the secondary grouping
-         * size can only be set with a pattern.
-         */
-        SetGroupingSize(
-            [in] Int32 value);
+          /**
+           * Sets the multiplier which is applied to the number before formatting or
+           * after parsing.
+           */
+          SetMultiplier(
+               [in] Int32 value);
 
-        /**
-         * Sets the multiplier which is applied to the number before formatting or
-         * after parsing.
-         */
-        SetMultiplier(
-            [in] Int32 value);
+          /**
+           * Sets the prefix which is formatted or parsed before a negative number.
+           */
+          SetNegativePrefix(
+               [in] String value);
 
-        /**
-         * Sets the prefix which is formatted or parsed before a negative number.
-         */
-        SetNegativePrefix(
-            [in] String value);
+          /**
+           * Sets the suffix which is formatted or parsed after a negative number.
+           */
+          SetNegativeSuffix(
+               [in] String value);
 
-        /**
-         * Sets the suffix which is formatted or parsed after a negative number.
-         */
-        SetNegativeSuffix(
-            [in] String value);
+          /**
+           * Sets the prefix which is formatted or parsed before a positive number.
+           */
+          SetPositivePrefix(
+               [in] String value);
 
-        /**
-         * Sets the prefix which is formatted or parsed before a positive number.
-         */
-        SetPositivePrefix(
-            [in] String value);
+          /**
+           * Sets the suffix which is formatted or parsed after a positive number.
+           */
+          SetPositiveSuffix(
+               [in] String value);
 
-        /**
-         * Sets the suffix which is formatted or parsed after a positive number.
-         */
-        SetPositiveSuffix(
-            [in] String value);
+          /**
+           * Sets the behaviour of the parse method. If set to {true} then all
+           * the returned objects will be of type {BigDecimal}.
+           */
+          SetParseBigDecimal(
+               [in] Boolean newValue);
 
-        /**
-         * Sets the behaviour of the parse method. If set to {true} then all
-         * the returned objects will be of type {BigDecimal}.
-         */
-        SetParseBigDecimal(
-            [in] Boolean newValue);
+          /**
+           * Returns the pattern of this decimal format using localized pattern
+           * characters.
+           */
+          ToLocalizedPattern(
+               [out] String* localizedPattern);
 
-        /**
-         * Returns the pattern of this decimal format using localized pattern
-         * characters.
-         */
-        ToLocalizedPattern(
-            [out] String* localizedPattern);
+          /**
+           * Returns the pattern of this decimal format using non-localized pattern
+           * characters.
+           */
+          ToPattern(
+               [out] String* pattern);
 
-        /**
-         * Returns the pattern of this decimal format using non-localized pattern
-         * characters.
-         */
-        ToPattern(
-            [out] String* pattern);
+         /**
+          * Returns the {@code RoundingMode} used by this {@code NumberFormat}.
+          * @since 1.6
+          */
+          GetRoundingMode(
+               [out] RoundingMode* mode);
 
-        GetNdf(
-            [out] INativeDecimalFormat** ndf);
+         /**
+          * Sets the {@code RoundingMode} used by this {@code NumberFormat}.
+          * @since 1.6
+          */
+          SetRoundingMode(
+               [in] RoundingMode mode);
+
+          GetNdf(
+               [out] INativeDecimalFormat** ndf);
     }
 
     } // namespace Text

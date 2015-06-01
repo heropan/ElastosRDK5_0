@@ -14,7 +14,7 @@ public:
         /* [in] */ Double value,
         /* [out] */ Double* nextValue);
 
-    CARAPI NextDoubleEx(
+    CARAPI NextDouble(
         /* [in] */ Double value,
         /* [in] */ Boolean increment,
         /* [out] */ Double* nextValue);

@@ -27,7 +27,7 @@ public:
         /* [in] */ IInterface* object2,
         /* [out] */ Int32* result);
 
-    CARAPI CompareEx(
+    CARAPI Compare(
         /* [in] */ const String& string1,
         /* [in] */ const String& string2,
         /* [out] */ Int32* value);
@@ -36,7 +36,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ const String& string1,
         /* [in] */ const String& string2,
         /* [out] */ Boolean* result);
@@ -57,7 +57,7 @@ public:
     CARAPI SetStrength(
         /* [in] */ Int32 value);
 
-    CARAPI GetCollationElementIteratorEx(
+    CARAPI GetCollationElementIterator(
         /* [in] */ ICharacterIterator * pSource,
         /* [out] */ ICollationElementIterator ** ppCollationElementIterator);
 

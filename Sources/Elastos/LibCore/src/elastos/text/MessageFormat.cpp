@@ -132,7 +132,7 @@ ECode MessageFormat::ApplyPattern(
         }
 
         String outstr;
-        buffer.SubstringEx(0, buffer.GetLength(), &outstr);
+        buffer.Substring(0, buffer.GetLength(), &outstr);
         localStrings.PushBack(outstr);
         buffer.Reset();
         position->GetIndex(&index);
@@ -176,13 +176,13 @@ ECode MessageFormat::FormatToCharacterIterator(
     // create an AttributedString with the formatted buffer
     AutoPtr<IAttributedString> as;
     String outstr;
-    buffer.SubstringEx(0, buffer.GetLength(),&outstr);
+    buffer.Substring(0, buffer.GetLength(),&outstr);
     CAttributedString::New(outstr, (IAttributedString**)&as);
 
     // add MessageFormat field attributes and values to the AttributedString
     List<AutoPtr<FieldContainer> >::Iterator fc = fields.Begin();
     for ( ; fc != fields.End(); ++fc) {
-        FAIL_RETURN(as->AddAttributeEx((*fc)->mAttribute, (*fc)->mValue, (*fc)->mStart, (*fc)->mEnd));
+        FAIL_RETURN(as->AddAttribute((*fc)->mAttribute, (*fc)->mValue, (*fc)->mStart, (*fc)->mEnd));
     }
 
     // return the CharacterIterator from AttributedString
@@ -260,7 +260,7 @@ ECode MessageFormat::FormatImpl(
         }
         else {
             AutoPtr<IStringBuffer> outres;
-            format->FormatObjectEx(arg, buffer, passedField, (IStringBuffer **)&outres);
+            format->FormatObject(arg, buffer, passedField, (IStringBuffer **)&outres);
             HandleArgumentField(begin, buffer->GetLength(), (*mArgumentNumbers)[i], position, fields);
             HandleFormat(format, arg, begin, fields);
         }
@@ -345,7 +345,7 @@ ECode MessageFormat::HandleFormat(
     return NOERROR;
 }
 
-ECode MessageFormat::FormatObjectEx(
+ECode MessageFormat::FormatObject(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
@@ -388,7 +388,7 @@ ECode MessageFormat::SetFormatByArgumentIndex(
     return NOERROR;
 }
 
-ECode MessageFormat::SetFormatsByArgumentIndexEx(
+ECode MessageFormat::SetFormatsByArgumentIndex(
     /* [in] */ ArrayOf< IFormat* >* formats)
 {
     for (Int32 j = 0; j < mFormats->GetLength(); j++) {
@@ -420,7 +420,7 @@ ECode MessageFormat::Parse(
     AutoPtr<IParsePosition> position;
     CParsePosition::New(0, (IParsePosition**)&position);
     AutoPtr<ArrayOf< IInterface* > > result;
-    ParseEx(string, position, (ArrayOf<IInterface*>**)&result);
+    Parse(string, position, (ArrayOf<IInterface*>**)&result);
 
     Int32 index;
     position->GetIndex(&index);
@@ -435,7 +435,7 @@ ECode MessageFormat::Parse(
     return NOERROR;
 }
 
-ECode MessageFormat::ParseEx(
+ECode MessageFormat::Parse(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out, callee] */ ArrayOf< IInterface* >** value)
@@ -488,7 +488,7 @@ ECode MessageFormat::ParseEx(
         }
         else {
             internalPos->SetIndex(offset);
-            format->ParseObjectEx(string, internalPos, (IInterface**)&parse);
+            format->ParseObject(string, internalPos, (IInterface**)&parse);
             internalPos->GetErrorIndex(&errorIndex);
             if (errorIndex != -1) {
                 position->SetErrorIndex(offset);
@@ -517,7 +517,7 @@ ECode MessageFormat::ParseEx(
     return NOERROR;
 }
 
-ECode MessageFormat::ParseObjectEx(
+ECode MessageFormat::ParseObject(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out] */ IInterface** result)
@@ -526,7 +526,7 @@ ECode MessageFormat::ParseObjectEx(
     *result = NULL;
 
     AutoPtr<ArrayOf<IInterface*> > objects;
-    FAIL_RETURN(ParseEx(string, position, (ArrayOf<IInterface*>**)&objects));
+    FAIL_RETURN(Parse(string, position, (ArrayOf<IInterface*>**)&objects));
     if (objects != NULL) {
         AutoPtr<IObjectContainer> bc;
         CObjectContainer::New((IObjectContainer**)&bc);
@@ -635,11 +635,11 @@ ECode MessageFormat::ParseVariable(
     case 1: // date
         if (ch == '}') {
             if (type == 1) {
-                DateFormat::GetDateInstanceEx2(
+                DateFormat::GetDateInstance(
                     IDateFormat::DEFAULT, mLocale, (IDateFormat**)&dv);
             }
             else {
-                DateFormat::GetTimeInstanceEx2(
+                DateFormat::GetTimeInstance(
                     IDateFormat::DEFAULT, mLocale, (IDateFormat**)&dv);
             }
 
@@ -659,7 +659,7 @@ ECode MessageFormat::ParseVariable(
             Format::UpToWithQuotes(string, position, buffer, '}', '{', &succeeded);
             AutoPtr<ISimpleDateFormat> sdf;
             String outstr;
-            buffer.SubstringEx(0, buffer.GetLength(),&outstr);
+            buffer.Substring(0, buffer.GetLength(),&outstr);
             CSimpleDateFormat::New(outstr, mLocale.Get(), (ISimpleDateFormat**)&sdf);
             *value = sdf.Get();
             REFCOUNT_ADD(*value);
@@ -682,10 +682,10 @@ ECode MessageFormat::ParseVariable(
         }
 
         if (type == 1) {
-            DateFormat::GetDateInstanceEx2(dateStyle, mLocale.Get(), (IDateFormat**)&dv);
+            DateFormat::GetDateInstance(dateStyle, mLocale.Get(), (IDateFormat**)&dv);
         }
         else {
-            DateFormat::GetTimeInstanceEx2(dateStyle, mLocale.Get(), (IDateFormat**)&dv);
+            DateFormat::GetTimeInstance(dateStyle, mLocale.Get(), (IDateFormat**)&dv);
         }
         *value = dv;
         REFCOUNT_ADD(*value);
@@ -709,7 +709,7 @@ ECode MessageFormat::ParseVariable(
             CDecimalFormatSymbols::New(mLocale, (IDecimalFormatSymbols**)&dfs);
             AutoPtr<IDecimalFormat> df;
             String outstr;
-            buffer.SubstringEx(0, buffer.GetLength(),&outstr);
+            buffer.Substring(0, buffer.GetLength(),&outstr);
             CDecimalFormat::New(outstr, dfs, (IDecimalFormat**)&df);
             *value = df.Get();
             REFCOUNT_ADD(*value);
@@ -736,7 +736,7 @@ ECode MessageFormat::ParseVariable(
     Format::UpToWithQuotes(string, position, buffer, '}', '{', &succeeded);
     AutoPtr<IChoiceFormat> cf;
     String outstr;
-    buffer.SubstringEx(0, buffer.GetLength(), &outstr);
+    buffer.Substring(0, buffer.GetLength(), &outstr);
     CChoiceFormat::New(outstr, (IChoiceFormat**)&cf);
     *value = cf.Get();
     REFCOUNT_ADD(*value);
@@ -847,14 +847,14 @@ ECode MessageFormat::DecodeSimpleDateFormat(
     IDateFormat* dateFormat = IDateFormat::Probe(format);
 
     AutoPtr<IDateFormat> dft, dft2, dft3, dft4, dfd, dfd2, dfd3, dfd4;
-    DateFormat::GetTimeInstanceEx2(IDateFormat::DEFAULT, mLocale, (IDateFormat**)&dft);
-    DateFormat::GetDateInstanceEx2(IDateFormat::DEFAULT, mLocale, (IDateFormat**)&dfd);
-    DateFormat::GetTimeInstanceEx2(IDateFormat::SHORT, mLocale, (IDateFormat**)&dft2);
-    DateFormat::GetDateInstanceEx2(IDateFormat::SHORT, mLocale, (IDateFormat**)&dfd2);
-    DateFormat::GetTimeInstanceEx2(IDateFormat::LONG, mLocale, (IDateFormat**)&dft3);
-    DateFormat::GetDateInstanceEx2(IDateFormat::LONG, mLocale, (IDateFormat**)&dfd3);
-    DateFormat::GetTimeInstanceEx2(IDateFormat::FULL, mLocale, (IDateFormat**)&dft4);
-    DateFormat::GetDateInstanceEx2(IDateFormat::FULL, mLocale, (IDateFormat**)&dfd4);
+    DateFormat::GetTimeInstance(IDateFormat::DEFAULT, mLocale, (IDateFormat**)&dft);
+    DateFormat::GetDateInstance(IDateFormat::DEFAULT, mLocale, (IDateFormat**)&dfd);
+    DateFormat::GetTimeInstance(IDateFormat::SHORT, mLocale, (IDateFormat**)&dft2);
+    DateFormat::GetDateInstance(IDateFormat::SHORT, mLocale, (IDateFormat**)&dfd2);
+    DateFormat::GetTimeInstance(IDateFormat::LONG, mLocale, (IDateFormat**)&dft3);
+    DateFormat::GetDateInstance(IDateFormat::LONG, mLocale, (IDateFormat**)&dfd3);
+    DateFormat::GetTimeInstance(IDateFormat::FULL, mLocale, (IDateFormat**)&dft4);
+    DateFormat::GetDateInstance(IDateFormat::FULL, mLocale, (IDateFormat**)&dfd4);
 
     Boolean result = FALSE;
     if (dateFormat->Equals(dft, &result), result) {
@@ -952,7 +952,7 @@ ECode MessageFormat::ToPattern(
     if (mMaxOffset + 1 < mStrings->GetLength()) {
         AppendQuoted(&buffer, (*mStrings)[mMaxOffset + 1]);
     }
-    buffer.SubstringEx(0, buffer.GetLength(),value);
+    buffer.Substring(0, buffer.GetLength(),value);
     return NOERROR;
 }
 

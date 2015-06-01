@@ -20,7 +20,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ String* value);
 
-    CARAPI FormatObjectEx(
+    CARAPI FormatObject(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
@@ -34,7 +34,7 @@ public:
         /* [in] */ const String& string,
         /* [out] */ IInterface** object);
 
-    CARAPI ParseObjectEx(
+    CARAPI ParseObject(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ IInterface** object);
@@ -65,7 +65,7 @@ public:
         /* [in] */ Int32 argIndex,
         /* [in] */ IFormat* format);
 
-    CARAPI SetFormatsByArgumentIndexEx(
+    CARAPI SetFormatsByArgumentIndex(
         /* [in] */ ArrayOf<IFormat*>* formats);
 
     CARAPI GetLocale(
@@ -75,7 +75,7 @@ public:
         /* [in] */ const String& string,
         /* [out, callee] */ ArrayOf<IInterface*>** result);
 
-    CARAPI ParseEx(
+    CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out, callee] */ ArrayOf<IInterface*>** result);

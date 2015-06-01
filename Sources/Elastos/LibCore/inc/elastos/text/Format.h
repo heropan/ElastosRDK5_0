@@ -48,7 +48,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ String* value);
 
-    virtual CARAPI FormatObjectEx(
+    virtual CARAPI FormatObject(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
@@ -62,7 +62,7 @@ public:
         /* [in] */ const String& string,
         /* [out] */ IInterface** object);
 
-    virtual CARAPI ParseObjectEx(
+    virtual CARAPI ParseObject(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ IInterface** object) = 0;

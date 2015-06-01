@@ -83,7 +83,7 @@ module
         /**
          * Formats the specified double using the rules of this number format.
          */
-        FormatDouble(
+        Format(
             [in] Double value,
             [out] String* format);
 
@@ -96,7 +96,7 @@ module
          * {endIndex} members will be updated with the position of the first
          * occurrence of this field in the formatted text.
          */
-        FormatDoubleEx(
+        Format(
             [in] Double value,
             [in] IStringBuffer * inbuffer,
             [in] IFieldPosition * field,
@@ -105,7 +105,7 @@ module
         /**
          * Formats the specified long using the rules of this number format.
          */
-        FormatInt64(
+        Format(
             [in] Int64 value,
             [out] String* format);
 
@@ -118,7 +118,7 @@ module
          * {endIndex} members will be updated with the position of the first
          * occurrence of this field in the formatted text.
          */
-        FormatInt64Ex(
+        Format(
             [in] Int64 value,
             [in] IStringBuffer * inbuffer,
             [in] IFieldPosition * field ,
@@ -193,7 +193,7 @@ module
          * the parsed text. On error, the index is unchanged and the error index of
          * {ParsePosition} is set to the index where the error occurred.
          */
-        ParseEx(
+        Parse(
             [in] String string,
             [in] IParsePosition* position,
             [out] INumber** value);
@@ -285,35 +285,35 @@ module
         GetCurrencyInstance(
             [out] INumberFormat** instance);
 
-        GetCurrencyInstanceEx(
+        GetCurrencyInstance(
             [in] ILocale* locale,
             [out] INumberFormat** instance);
 
         GetIntegerInstance(
             [out] INumberFormat** instance);
 
-        GetIntegerInstanceEx(
+        GetIntegerInstance(
             [in] ILocale* locale,
             [out] INumberFormat** instance);
 
         GetInstance(
             [out] INumberFormat** instance);
 
-        GetInstanceEx(
+        GetInstance(
             [in] ILocale* locale,
             [out] INumberFormat** instance);
 
         GetNumberInstance(
             [out] INumberFormat** instance);
 
-        GetNumberInstanceEx(
+        GetNumberInstance(
             [in] ILocale* locale,
             [out] INumberFormat** instance);
 
         GetPercentInstance(
             [out] INumberFormat** instance);
 
-        GetPercentInstanceEx(
+        GetPercentInstance(
             [in] ILocale* locale,
             [out] INumberFormat** instance);
     }

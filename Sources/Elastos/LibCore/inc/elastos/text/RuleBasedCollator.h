@@ -22,7 +22,7 @@ protected:
         /* [in] */ const String& rules);
 
 public:
-    virtual CARAPI GetCollationElementIteratorEx(
+    virtual CARAPI GetCollationElementIterator(
         /* [in] */ ICharacterIterator* source,
         /* [out] */ ICollationElementIterator** collationElementIterator);
 
@@ -34,7 +34,7 @@ public:
         /* [out] */ String* rules);
 
     //@Override
-    CARAPI CompareEx(
+    CARAPI Compare(
         /* [in] */ const String& source,
         /* [in] */ const String& target,
         /* [out] */ Int32* value);
@@ -49,7 +49,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ const String& string1,
         /* [in] */ const String& string2,
         /* [out] */ Boolean* result);

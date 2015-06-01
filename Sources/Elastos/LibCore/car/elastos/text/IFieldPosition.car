@@ -1,6 +1,6 @@
 module
 {
-    interface Elastos.Text.IAttributedCharacterIteratorAttribute;
+    interface Elastos.Text.IFormatField;
 
     namespace Elastos {
     namespace Text {
@@ -21,22 +21,6 @@ module
     interface IFieldPosition {
 
         Clear();
-
-        /**
-         * Compares the specified object to this field position and indicates if
-         * they are equal. In order to be equal, {@code object} must be an instance
-         * of {@code FieldPosition} with the same field, begin index and end index.
-         *
-         * @param object
-         *            the object to compare with this object.
-         * @return {@code true} if the specified object is equal to this field
-         *         position; {@code false} otherwise.
-         * @see #hashCode
-         */
-        // @Override
-        Equals(
-            [in] IInterface * object,
-            [out] Boolean * value);
 
         /**
          * Returns the index of the beginning of the field.
@@ -60,11 +44,7 @@ module
          * Returns the attribute which is being identified.
          */
         GetFieldAttribute(
-            [out] IAttributedCharacterIteratorAttribute** attribute);
-
-        // @Override
-        GetHashCode(
-            [out] Int32 * value);
+            [out] IFormatField** attribute);
 
         /**
          * Sets the index of the beginning of the field.

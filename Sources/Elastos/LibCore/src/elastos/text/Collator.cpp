@@ -48,7 +48,7 @@ ECode Collator::Compare(
         cs = (ICharSequence*)object2->Probe(EIID_ICharSequence);
         cs->ToString(&s2);
     }
-    return CompareEx(s1, s2, result);
+    return Compare(s1, s2, result);
 }
 
 ECode Collator::Equals(
@@ -73,14 +73,14 @@ ECode Collator::Equals(
     }
 }
 
-ECode Collator::EqualsEx(
+ECode Collator::Equals(
     /* [in] */ const String& string1,
     /* [in] */ const String& string2,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
     Int32 i;
-    CompareEx(string1, string2, &i);
+    Compare(string1, string2, &i);
     *result = i == 0;
     return  NOERROR;
 }

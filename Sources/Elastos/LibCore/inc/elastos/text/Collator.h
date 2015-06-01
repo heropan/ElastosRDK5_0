@@ -20,7 +20,7 @@ public:
         /* [in] */ IInterface* object2,
         /* [out] */ Int32* result);
 
-    virtual CARAPI CompareEx(
+    virtual CARAPI Compare(
         /* [in] */ const String& string1,
         /* [in] */ const String& string2,
         /* [out] */ Int32* result) = 0;
@@ -30,7 +30,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
 
-    virtual CARAPI EqualsEx(
+    virtual CARAPI Equals(
         /* [in] */ const String& string1,
         /* [in] */ const String& string2,
         /* [out] */ Boolean* result);

@@ -17,7 +17,7 @@ ECode CBreakIteratorHelper::GetCharacterInstance(
     return BreakIterator::GetCharacterInstance(instance);
 }
 
-ECode CBreakIteratorHelper::GetCharacterInstanceEx(
+ECode CBreakIteratorHelper::GetCharacterInstance(
     /* [in] */ ILocale* where,
     /* [out] */ IBreakIterator** instance)
 {
@@ -30,7 +30,7 @@ ECode CBreakIteratorHelper::GetLineInstance(
     return BreakIterator::GetLineInstance(instance);
 }
 
-ECode CBreakIteratorHelper::GetLineInstanceEx(
+ECode CBreakIteratorHelper::GetLineInstance(
     /* [in] */ ILocale* where,
     /* [out] */ IBreakIterator** instance)
 {
@@ -43,7 +43,7 @@ ECode CBreakIteratorHelper::GetSentenceInstance(
     return BreakIterator::GetSentenceInstance(instance);
 }
 
-ECode CBreakIteratorHelper::GetSentenceInstanceEx(
+ECode CBreakIteratorHelper::GetSentenceInstance(
     /* [in] */ ILocale* where,
     /* [out] */ IBreakIterator** instance)
 {
@@ -56,7 +56,7 @@ ECode CBreakIteratorHelper::GetWordInstance(
     return BreakIterator::GetWordInstance(instance);
 }
 
-ECode CBreakIteratorHelper::GetWordInstanceEx(
+ECode CBreakIteratorHelper::GetWordInstance(
     /* [in] */ ILocale* where,
     /* [out] */ IBreakIterator** instance)
 {

@@ -17,7 +17,7 @@ public:
     CARAPI GetInstance(
         /* [out] */ IDecimalFormatSymbols** instance);
 
-    CARAPI GetInstanceEx(
+    CARAPI GetInstance(
         /* [in] */ ILocale* locale,
         /* [out] */ IDecimalFormatSymbols** instance);
 

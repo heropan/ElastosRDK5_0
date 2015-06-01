@@ -185,7 +185,7 @@ module
          * {CharacterIterator}. The source iterator's integrity will be
          * preserved since a new copy will be created for use.
          */
-        GetCollationElementIteratorEx(
+        GetCollationElementIterator(
             [in] ICharacterIterator* source,
             [out] ICollationElementIterator** iterator);
 

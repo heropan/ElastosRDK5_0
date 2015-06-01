@@ -97,7 +97,7 @@ public:
 
 public:
     //@Override
-    CARAPI FormatObjectEx(
+    CARAPI FormatObject(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
@@ -107,7 +107,7 @@ public:
         /* [in] */ IDate* date,
         /* [out] */ String* result);
 
-    virtual CARAPI FormatDateEx(
+    virtual CARAPI FormatDate(
         /* [in] */ IDate* date,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
@@ -122,11 +122,11 @@ public:
     static CARAPI GetDateInstance(
         /* [out] */ IDateFormat** instance);
 
-    static CARAPI GetDateInstanceEx(
+    static CARAPI GetDateInstance(
         /* [in] */ Int32 style,
         /* [out] */ IDateFormat** instance);
 
-    static CARAPI GetDateInstanceEx2(
+    static CARAPI GetDateInstance(
         /* [in] */ Int32 style,
         /* [in] */ ILocale* locale,
         /* [out] */ IDateFormat** instance);
@@ -134,12 +134,12 @@ public:
     static CARAPI GetDateTimeInstance(
         /* [out] */ IDateFormat** instance);
 
-    static CARAPI GetDateTimeInstanceEx(
+    static CARAPI GetDateTimeInstance(
         /* [in] */ Int32 dateStyle,
         /* [in] */ Int32 timeStyle,
         /* [out] */ IDateFormat** instance);
 
-    static CARAPI GetDateTimeInstanceEx2(
+    static CARAPI GetDateTimeInstance(
         /* [in] */ Int32 dateStyle,
         /* [in] */ Int32 timeStyle,
         /* [in] */ ILocale* locale,
@@ -154,11 +154,11 @@ public:
     static CARAPI GetTimeInstance(
         /* [out] */ IDateFormat** instance);
 
-    static CARAPI GetTimeInstanceEx(
+    static CARAPI GetTimeInstance(
         /* [in] */ Int32 style,
         /* [out] */ IDateFormat** instance);
 
-    static CARAPI GetTimeInstanceEx2(
+    static CARAPI GetTimeInstance(
         /* [in] */ Int32 style,
         /* [in] */ ILocale* locale,
         /* [out] */ IDateFormat** instance);
@@ -173,13 +173,13 @@ public:
         /* [in] */ const String& string,
         /* [out] */ IDate** date);
 
-    virtual CARAPI ParseEx(
+    virtual CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ IDate** date) = 0;
 
     //@Override
-    CARAPI ParseObjectEx(
+    CARAPI ParseObject(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ IInterface** object);

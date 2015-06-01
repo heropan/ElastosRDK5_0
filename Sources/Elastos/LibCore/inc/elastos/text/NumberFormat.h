@@ -59,7 +59,7 @@ public:
         /* [in] */ Double value,
         /* [out] */ String* result);
 
-    virtual CARAPI FormatDoubleEx(
+    virtual CARAPI FormatDouble(
         /* [in] */ Double value,
         /* [in] */ IStringBuffer * inbuffer,
         /* [in] */ IFieldPosition * field,
@@ -69,14 +69,14 @@ public:
         /* [in] */ Int64 value,
         /* [out] */ String* result);
 
-    virtual CARAPI FormatInt64Ex(
+    virtual CARAPI FormatInt64(
         /* [in] */ Int64 value,
         /* [in] */ IStringBuffer * inbuffer,
         /* [in] */ IFieldPosition * field ,
         /* [out] */ IStringBuffer ** outbuffer) = 0;
 
     //@Override
-    CARAPI FormatObjectEx(
+    CARAPI FormatObject(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
@@ -148,13 +148,13 @@ public:
         /* [in] */ const String& string,
         /* [out] */ INumber** value);
 
-    virtual CARAPI ParseEx(
+    virtual CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ INumber** value) = 0;
 
     //@Override
-    CARAPI ParseObjectEx(
+    CARAPI ParseObject(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ IInterface** object);

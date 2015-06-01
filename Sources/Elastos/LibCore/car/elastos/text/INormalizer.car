@@ -41,9 +41,6 @@ module
      */
 
     interface INormalizer {
-    }
-
-    interface INormalizerHelper {
         /**
          * Check whether the given character sequence <code>src</code> is normalized
          * according to the normalization method <code>form</code>.

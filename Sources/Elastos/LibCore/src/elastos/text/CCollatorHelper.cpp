@@ -17,7 +17,7 @@ ECode CCollatorHelper::GetInstance(
     return Collator::GetInstance(instance);
 }
 
-ECode CCollatorHelper::GetInstanceEx(
+ECode CCollatorHelper::GetInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ ICollator** instance)
 {

@@ -13,7 +13,7 @@ ECode CChoiceFormatHelper::NextDouble(
     return NOERROR;
 }
 
-ECode CChoiceFormatHelper::NextDoubleEx(
+ECode CChoiceFormatHelper::NextDouble(
     /* [in] */ Double value,
     /* [in] */ Boolean increment,
     /* [out] */ Double* nextValue)

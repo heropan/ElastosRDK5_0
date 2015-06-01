@@ -16,7 +16,7 @@ ECode CNumberFormatHelper::GetCurrencyInstance(
     return NumberFormat::GetCurrencyInstance(instance);
 }
 
-ECode CNumberFormatHelper::GetCurrencyInstanceEx(
+ECode CNumberFormatHelper::GetCurrencyInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ INumberFormat** instance)
 {
@@ -29,7 +29,7 @@ ECode CNumberFormatHelper::GetIntegerInstance(
     return NumberFormat::GetIntegerInstance(instance);
 }
 
-ECode CNumberFormatHelper::GetIntegerInstanceEx(
+ECode CNumberFormatHelper::GetIntegerInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ INumberFormat** instance)
 {
@@ -42,7 +42,7 @@ ECode CNumberFormatHelper::GetInstance(
     return NumberFormat::GetInstance(instance);
 }
 
-ECode CNumberFormatHelper::GetInstanceEx(
+ECode CNumberFormatHelper::GetInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ INumberFormat** instance)
 {
@@ -55,7 +55,7 @@ ECode CNumberFormatHelper::GetNumberInstance(
     return NumberFormat::GetNumberInstance(instance);
 }
 
-ECode CNumberFormatHelper::GetNumberInstanceEx(
+ECode CNumberFormatHelper::GetNumberInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ INumberFormat** instance)
 {
@@ -68,7 +68,7 @@ ECode CNumberFormatHelper::GetPercentInstance(
     return NumberFormat::GetPercentInstance(instance);
 }
 
-ECode CNumberFormatHelper::GetPercentInstanceEx(
+ECode CNumberFormatHelper::GetPercentInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ INumberFormat** instance)
 {

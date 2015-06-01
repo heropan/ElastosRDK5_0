@@ -29,7 +29,7 @@ public:
     CARAPI Next(
         /* [out] */ Int32* postion);
 
-    CARAPI NextEx(
+    CARAPI Next(
         /* [in] */ Int32 n,
         /* [out] */ Int32* postion);
 
@@ -50,7 +50,7 @@ public:
     CARAPI SetText(
         /* [in] */ const String& newText);
 
-    CARAPI SetTextEx(
+    CARAPI SetText(
         /* [in] */ ICharacterIterator* newText);
 
     CARAPI Current(

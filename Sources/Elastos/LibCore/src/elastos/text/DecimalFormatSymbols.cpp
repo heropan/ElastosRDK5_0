@@ -49,7 +49,7 @@ ECode DecimalFormatSymbols::Init(
     mLocale = locale;
     ECode ec = Currency::GetInstance(locale, (ICurrency**)&mCurrency);
     if (SUCCEEDED(ec)) {
-        mCurrency->GetSymbolEx(locale, &mCurrencySymbol);
+        mCurrency->GetSymbol(locale, &mCurrencySymbol);
         mCurrency->GetCurrencyCode(&mIntlCurrencySymbol);
     }
     else {
@@ -246,7 +246,7 @@ ECode DecimalFormatSymbols::SetCurrency(
     }
     mCurrency = currency;
     currency->GetCurrencyCode(&mIntlCurrencySymbol);
-    currency->GetSymbolEx(mLocale, &mCurrencySymbol);
+    currency->GetSymbol(mLocale, &mCurrencySymbol);
     return NOERROR;
 }
 
@@ -264,7 +264,7 @@ ECode DecimalFormatSymbols::SetInternationalCurrencySymbol(
     }
 
     mCurrency = Currency::GetInstance(value);
-    ECode ec = mCurrency->GetSymbolEx(mLocale, &mCurrencySymbol);
+    ECode ec = mCurrency->GetSymbol(mLocale, &mCurrencySymbol);
     if (FAILED(ec)) {
         mCurrency = NULL;
     }

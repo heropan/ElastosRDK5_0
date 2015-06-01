@@ -6,30 +6,30 @@ namespace Text {
 
 NUMBERFORMAT_METHODS_IMPL(CDecimalFormat, DecimalFormat)
 
-ECode CDecimalFormat::FormatDoubleEx(
+ECode CDecimalFormat::FormatDouble(
     /* [in] */ Double value,
     /* [in] */ IStringBuffer *buffer,
     /* [in] */ IFieldPosition* field,
     /* [out] */ IStringBuffer ** result)
 {
-    return DecimalFormat::FormatDoubleEx(value,buffer,field,result);
+    return DecimalFormat::FormatDouble(value,buffer,field,result);
 }
 
-ECode CDecimalFormat::FormatInt64Ex(
+ECode CDecimalFormat::FormatInt64(
     /* [in] */ Int64 value,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
     /* [out] */ IStringBuffer ** result)
 {
-    return DecimalFormat::FormatInt64Ex(value,buffer,field,result);
+    return DecimalFormat::FormatInt64(value,buffer,field,result);
 }
 
-ECode CDecimalFormat::ParseEx(
+ECode CDecimalFormat::Parse(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out] */ INumber** value)
 {
-    return DecimalFormat::ParseEx(string,position,value);
+    return DecimalFormat::Parse(string,position,value);
 }
 
 ECode CDecimalFormat::ApplyLocalizedPattern(

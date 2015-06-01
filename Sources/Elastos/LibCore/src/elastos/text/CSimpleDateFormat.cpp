@@ -6,38 +6,38 @@ namespace Text {
 
 DATEFORMAT_METHODS_IMPL(CSimpleDateFormat,DateFormat)
 
-ECode CSimpleDateFormat::FormatObjectEx(
+ECode CSimpleDateFormat::FormatObject(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
     /* [out] */ IStringBuffer ** value)
 {
-    return SimpleDateFormat::FormatObjectEx(object,buffer,field,value);
+    return SimpleDateFormat::FormatObject(object,buffer,field,value);
 }
 
-ECode CSimpleDateFormat::ParseObjectEx(
+ECode CSimpleDateFormat::ParseObject(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out] */ IInterface** object)
 {
-    return SimpleDateFormat::ParseObjectEx(string,position,object);
+    return SimpleDateFormat::ParseObject(string,position,object);
 }
 
-ECode CSimpleDateFormat::FormatDateEx(
+ECode CSimpleDateFormat::FormatDate(
     /* [in] */ IDate* date,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
     /* [out] */ IStringBuffer ** result)
 {
-    return SimpleDateFormat::FormatDateEx(date,buffer,field,result);
+    return SimpleDateFormat::FormatDate(date,buffer,field,result);
 }
 
-ECode CSimpleDateFormat::ParseEx(
+ECode CSimpleDateFormat::Parse(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [out] */ IDate** date)
 {
-    return SimpleDateFormat::ParseEx(string,position,date);
+    return SimpleDateFormat::Parse(string,position,date);
 }
 
 ECode CSimpleDateFormat::ApplyLocalizedPattern(
