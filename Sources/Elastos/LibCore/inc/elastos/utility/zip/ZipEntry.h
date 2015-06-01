@@ -1,18 +1,15 @@
 
-#ifndef __ZIPENTRY_H__
-#define __ZIPENTRY_H__
+#ifndef __ELASTOS_UTILITY_ZIPENTRY_H__
+#define __ELASTOS_UTILITY_ZIPENTRY_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
 #include "CGregorianCalendar.h"
 #include "CDate.h"
 #include "CStreams.h"
 #include "CHeapBufferIterator.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include <elastos/io/Object.h>
 
 using Elastos::IO::IInputStream;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
@@ -21,8 +18,12 @@ namespace Zip {
 extern "C" const InterfaceID EIID_ZipEntry;
 
 class ZipEntry
+    : public Object
+    , public IZipEntry
 {
 public:
+    CAR_INTERFACE_DECL()
+
     ZipEntry();
 
     virtual ~ZipEntry();
@@ -219,4 +220,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ZIPENTRY_H__
+#endif //__ELASTOS_UTILITY_ZIPENTRY_H__

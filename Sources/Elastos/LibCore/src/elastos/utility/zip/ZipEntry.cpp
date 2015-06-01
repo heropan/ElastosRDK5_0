@@ -15,6 +15,8 @@ namespace Zip {
 extern "C" const InterfaceID EIID_ZipEntry =
         { 0x2BFF7AA8, 0x6021, 0x6956, { 0x0E, 0xB4, 0x0A, 0xAC, 0xAD, 0xF7, 0x36, 0x8B } };
 
+CAR_INTERFACE_IMPL(ZipEntry, Object, IZipEntry)
+
 ZipEntry::ZipEntry()
     : mCompressedSize(-1)
     , mCrc(-1)

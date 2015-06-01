@@ -1533,33 +1533,33 @@ module
     //     interface ICloseable;
     // }
 
-    // /**
-    //  * The {@code CheckedOutputStream} class is used to maintain a running checksum
-    //  * of all data written to a stream. The purpose of this checksum is to establish
-    //  * data integrity, by publishing the checksum to other parties wanting to read
-    //  * the non corrupted data.
-    //  */
-    // class CCheckedOutputStream {
-    //     /**
-    //      * Constructs a new {@code CheckedOutputStream} on {@code OutputStream}
-    //      * {@code os}. The checksum is calculated using the algorithm implemented
-    //      * by {@code csum}.
-    //      *
-    //      * @param os
-    //      *            the output stream to calculate checksum for.
-    //      * @param cs
-    //      *            an entity implementing the checksum algorithm.
-    //      */
-    //     constructor(
-    //         [in] IOutputStream* os,
-    //         [in] IChecksum* cs);
+    /**
+     * The {@code CheckedOutputStream} class is used to maintain a running checksum
+     * of all data written to a stream. The purpose of this checksum is to establish
+     * data integrity, by publishing the checksum to other parties wanting to read
+     * the non corrupted data.
+     */
+    class CCheckedOutputStream {
+        /**
+         * Constructs a new {@code CheckedOutputStream} on {@code OutputStream}
+         * {@code os}. The checksum is calculated using the algorithm implemented
+         * by {@code csum}.
+         *
+         * @param os
+         *            the output stream to calculate checksum for.
+         * @param cs
+         *            an entity implementing the checksum algorithm.
+         */
+        constructor(
+            [in] IOutputStream* os,
+            [in] IChecksum* cs);
 
-    //     interface ICheckedOutputStream;
-    //     interface IFilterOutputStream;
-    //     interface IOutputStream;
-    //     interface ICloseable;
-    //     interface IFlushable;
-    // }
+        interface ICheckedOutputStream;
+        interface IFilterOutputStream;
+        interface IOutputStream;
+        interface ICloseable;
+        interface IFlushable;
+    }
 
     // /**
     //  * The {@code GZIPInputStream} class is used to read data stored in the GZIP

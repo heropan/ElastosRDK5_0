@@ -12,9 +12,13 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-CarClass(CCheckedInputStream), FilterInputStream
+CarClass(CCheckedInputStream)
+    , public FilterInputStream
+    , public ICheckedInputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     /**
