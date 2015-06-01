@@ -1,14 +1,8 @@
 
-#ifndef __DEFLATERINPUTSTREAM_H__
-#define __DEFLATERINPUTSTREAM_H__
+#ifndef __ELASTOS_UTILITY_DEFLATERINPUTSTREAM_H__
+#define __ELASTOS_UTILITY_DEFLATERINPUTSTREAM_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
 #include "CStreams.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
-
 #include "CDeflater.h"
 #include "FilterInputStream.h"
 
@@ -25,9 +19,13 @@ namespace Zip {
  * underlying stream.
  * @since 1.6
  */
-class DeflaterInputStream : public FilterInputStream
+class DeflaterInputStream
+    : public FilterInputStream
+    , public IDeflaterInputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
     DeflaterInputStream();
 
     virtual ~DeflaterInputStream();
@@ -179,4 +177,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__DEFLATERINPUTSTREAM_H__
+#endif //__ELASTOS_UTILITY_DEFLATERINPUTSTREAM_H__

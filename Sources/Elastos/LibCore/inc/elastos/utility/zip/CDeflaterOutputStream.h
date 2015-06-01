@@ -1,40 +1,19 @@
 
-#ifndef __CDEFLATEROUTPUTSTREAM_H__
-#define __CDEFLATEROUTPUTSTREAM_H__
+#ifndef __ELASTOS_UTILITY_CDEFLATEROUTPUTSTREAM_H__
+#define __ELASTOS_UTILITY_CDEFLATEROUTPUTSTREAM_H__
 
-
-#include "_CDeflaterOutputStream.h"
+#include "_Elastos_Utility_Zip_CDeflaterOutputStream.h"
 #include "DeflaterOutputStream.h"
 
 namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-CarClass(CDeflaterOutputStream) , public DeflaterOutputStream
+CarClass(CDeflaterOutputStream)
+    , public DeflaterOutputStream
 {
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI Close();
-
-    CARAPI Finish();
-
-    CARAPI Write(
-        /* [in] */ Int32 oneByte);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 count);
-
-    CARAPI Flush();
-
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
+    CAR_OBJECT_DECL()
 
     /**
      * This is the most basic constructor. You only need to pass the {@code
@@ -90,4 +69,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CDEFLATEROUTPUTSTREAM_H__
+#endif //__ELASTOS_UTILITY_CDEFLATEROUTPUTSTREAM_H__

@@ -1,15 +1,9 @@
 
-#ifndef __CGZIPINPUTSTREAM_H__
-#define __CGZIPINPUTSTREAM_H__
+#ifndef __ELASTOS_UTILITY_CGZIPINPUTSTREAM_H__
+#define __ELASTOS_UTILITY_CGZIPINPUTSTREAM_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
 #include "CMemory.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
-
-#include "_CGZIPInputStream.h"
+#include "_Elastos_Utility_Zip_CGZIPInputStream.h"
 #include "InflaterInputStream.h"
 #include "CCRC32.h"
 
@@ -22,14 +16,17 @@ namespace Zip {
  * format, reading and decompressing GZIP data from the underlying stream into
  * its buffer.
  */
-CarClass(CGZIPInputStream) , public InflaterInputStream
+CarClass(CGZIPInputStream)
+    , public InflaterInputStream
+    , public IGZIPInputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI GetLock(
         /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CGZIPInputStream();
 
@@ -43,32 +40,10 @@ public:
      * Reads and decompresses GZIP data from the underlying stream into the
      * given buffer.
      */
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
-        /* [out] */ Int32* number);
-
-    CARAPI Skip(
-        /* [in] */ Int64 nbytes,
-        /* [out] */ Int64* number);
-
-    CARAPI Available(
-        /* [out] */ Int32* number);
-
-    CARAPI Mark(
-        /* [in] */ Int32 readLimit);
-
-    CARAPI Reset();
-
-    CARAPI IsMarkSupported(
-        /* [out] */ Boolean* supported);
-
-    CARAPI Read(
-        /* [out] */ Int32* val);
-
-    CARAPI ReadBytes(
-        /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
     /**
@@ -135,4 +110,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CGZIPINPUTSTREAM_H__
+#endif //__ELASTOS_UTILITY_CGZIPINPUTSTREAM_H__

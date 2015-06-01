@@ -1,8 +1,8 @@
 
-#ifndef __CGZIPOUTPUTSTREAM_H__
-#define __CGZIPOUTPUTSTREAM_H__
+#ifndef __ELASTOS_UTILITY_CGZIPOUTPUTSTREAM_H__
+#define __ELASTOS_UTILITY_CGZIPOUTPUTSTREAM_H__
 
-#include "_CGZIPOutputStream.h"
+#include "_Elastos_Utility_Zip_CGZIPOutputStream.h"
 #include "DeflaterOutputStream.h"
 #include "CCRC32.h"
 
@@ -14,9 +14,15 @@ namespace Zip {
  * The {@code GZIPOutputStream} class is used to write data to a stream in the
  * GZIP storage format.
  */
-CarClass(CGZIPOutputStream) , public DeflaterOutputStream
+CarClass(CGZIPOutputStream)
+    , public DeflaterOutputStream
+    , public IGZIPOutputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CGZIPOutputStream();
 
     /**
@@ -34,23 +40,10 @@ public:
      * to the underlying stream in GZIP format.
      */
     //@Override
-    CARAPI WriteBytes(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Byte>& buffer,
         /* [in] */ Int32 off,
         /* [in] */ Int32 nbytes);
-
-    CARAPI Close();
-
-    CARAPI Flush();
-
-    CARAPI Write(
-        /* [in] */ Int32 val);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte> & buffer);
-
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
 
     /**
      * Construct a new {@code GZIPOutputStream} to write data in GZIP format to
@@ -83,9 +76,6 @@ public:
     CARAPI GetLock(
         /* [out] */ IInterface** lockobj);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
 private:
     CARAPI_(Int64) WriteInt64(
         /* [in] */ Int64 i);
@@ -104,4 +94,4 @@ protected:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CGZIPOUTPUTSTREAM_H__
+#endif //__ELASTOS_UTILITY_CGZIPOUTPUTSTREAM_H__

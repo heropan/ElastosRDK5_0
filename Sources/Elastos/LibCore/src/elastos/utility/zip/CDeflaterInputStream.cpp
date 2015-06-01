@@ -5,85 +5,17 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-
-PInterface CDeflaterInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CDeflaterInputStream::Probe(riid);
-}
+CAR_OBJECT_IMPL(CDeflaterInputStream)
 
 ECode CDeflaterInputStream::GetLock(
     /* [out] */ IInterface** lockobj)
 {
     VALIDATE_NOT_NULL(lockobj);
 
-    AutoPtr<IInterface> obj = DeflaterInputStream::GetLock();
+    AutoPtr<IInterface> obj;// = DeflaterInputStream::GetLock();
     *lockobj = obj;
     REFCOUNT_ADD(*lockobj);
     return NOERROR;
-}
-
-ECode CDeflaterInputStream::Available(
-    /* [out] */ Int32* number)
-{
-    VALIDATE_NOT_NULL(number);
-    return DeflaterInputStream::Available(number);
-}
-
-ECode CDeflaterInputStream::Close()
-{
-    return DeflaterInputStream::Close();
-}
-
-ECode CDeflaterInputStream::Mark(
-    /* [in] */ Int32 readLimit)
-{
-    return DeflaterInputStream::Mark(readLimit);
-}
-
-ECode CDeflaterInputStream::IsMarkSupported(
-    /* [out] */ Boolean* supported)
-{
-    VALIDATE_NOT_NULL(supported);
-    return DeflaterInputStream::IsMarkSupported(supported);
-}
-
-ECode CDeflaterInputStream::Read(
-    /* [out] */ Int32* value)
-{
-    VALIDATE_NOT_NULL(value);
-    return DeflaterInputStream::Read(value);
-}
-
-ECode CDeflaterInputStream::ReadBytes(
-    /* [out] */ ArrayOf<Byte>* buffer,
-    /* [out] */ Int32* number)
-{
-    VALIDATE_NOT_NULL(number);
-    return DeflaterInputStream::ReadBytes(buffer, number);
-}
-
-ECode CDeflaterInputStream::ReadBytes(
-    /* [out] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 length,
-    /* [out] */ Int32* number)
-{
-    VALIDATE_NOT_NULL(number);
-    return DeflaterInputStream::ReadBytes(buffer, offset, length, number);
-}
-
-ECode CDeflaterInputStream::Reset()
-{
-    return DeflaterInputStream::Reset();
-}
-
-ECode CDeflaterInputStream::Skip(
-    /* [in] */ Int64 count,
-    /* [out] */ Int64* number)
-{
-    VALIDATE_NOT_NULL(number);
-    return DeflaterInputStream::Skip(count, number);
 }
 
 ECode CDeflaterInputStream::constructor(
