@@ -5,6 +5,8 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
+CAR_INTERFACE_IMPL(CheckedOutputStream, FilterOutputStream, ICheckedOutputStream)
+
 ECode CheckedOutputStream::GetChecksum(
     /* [out] */ IChecksum** checksum)
 {
@@ -21,19 +23,20 @@ ECode CheckedOutputStream::Write(
     return mCheck->Update(val);
 }
 
-ECode CheckedOutputStream::WriteBytes(
+ECode CheckedOutputStream::Write(
     /* [in] */ const ArrayOf<Byte>& buf,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes)
 {
-    FAIL_RETURN(mOut->WriteBytes(buf, off, nbytes));
+    FAIL_RETURN(mOut->Write(buf, off, nbytes));
     return mCheck->Update(buf, off, nbytes);
 }
 
 ECode CheckedOutputStream::Close()
 {
     ECode ec = Flush();
-    ECode ec2 = mOut->Close();
+    AutoPtr<ICloseable> cls = (ICloseable*)mOut->Probe(Elastos::IO::EIID_ICloseable);
+    ECode ec2 = cls->Close();
     if(ec != NOERROR || ec2 != NOERROR){
         return ec != NOERROR ? ec : ec2;
     }
@@ -46,10 +49,10 @@ ECode CheckedOutputStream::Flush()
     //return mOut->Flush();
 }
 
-ECode CheckedOutputStream::WriteBytes(
+ECode CheckedOutputStream::Write(
     /* [in] */ const ArrayOf<Byte> & buffer)
 {
-    return WriteBytes(buffer, 0, buffer.GetLength());
+    return Write(buffer, 0, buffer.GetLength());
 }
 
 ECode CheckedOutputStream::CheckError(
@@ -64,53 +67,13 @@ ECode CheckedOutputStream::Init(
     /* [in] */ IOutputStream* os,
     /* [in] */ IChecksum* cs)
 {
-    FilterOutputStream::Init(os);
+    FilterOutputStream::constructor(os);
     mCheck = cs;
     return NOERROR;
 }
 
 //======================================================
-ECode CCheckedOutputStream::GetChecksum(
-    /* [out] */ IChecksum** checksum)
-{
-    return CheckedOutputStream::GetChecksum(checksum);
-}
-
-ECode CCheckedOutputStream::Write(
-    /* [in] */ Int32 val)
-{
-    return CheckedOutputStream::Write(val);
-}
-
-ECode CCheckedOutputStream::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buf,
-    /* [in] */ Int32 off,
-    /* [in] */ Int32 nbytes)
-{
-    return CheckedOutputStream::WriteBytes(buf, off, nbytes);
-}
-
-ECode CCheckedOutputStream::Close()
-{
-    return CheckedOutputStream::Close();
-}
-
-ECode CCheckedOutputStream::Flush()
-{
-    return CheckedOutputStream::Flush();
-}
-
-ECode CCheckedOutputStream::WriteBytes(
-    /* [in] */ const ArrayOf<Byte> & buffer)
-{
-    return CheckedOutputStream::WriteBytes(buffer);
-}
-
-ECode CCheckedOutputStream::CheckError(
-    /* [out] */ Boolean* hasError)
-{
-    return CheckedOutputStream::CheckError(hasError);
-}
+CAR_OBJECT_IMPL(CCheckedOutputStream)
 
 ECode CCheckedOutputStream::constructor(
     /* [in] */ IOutputStream* os,
@@ -124,16 +87,10 @@ ECode CCheckedOutputStream::GetLock(
 {
     VALIDATE_NOT_NULL(lockobj);
 
-    AutoPtr<IInterface> obj = CheckedOutputStream::GetLock();
+    AutoPtr<IInterface> obj;// = CheckedOutputStream::GetLock();
     *lockobj = obj;
     REFCOUNT_ADD(*lockobj);
     return NOERROR;
-}
-
-PInterface CCheckedOutputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CCheckedOutputStream::Probe(riid);
 }
 
 } // namespace Zip

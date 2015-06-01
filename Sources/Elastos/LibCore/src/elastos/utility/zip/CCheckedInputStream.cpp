@@ -11,6 +11,8 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
+CAR_INTERFACE_IMPL(CCheckedInputStream, FilterInputStream, ICheckedInputStream)
+
 CAR_OBJECT_IMPL(CCheckedInputStream)
 
 ECode CCheckedInputStream::GetLock(
