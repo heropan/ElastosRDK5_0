@@ -11,33 +11,30 @@ namespace IO {
 CAR_INTERFACE_IMPL_2(Writer, Object, IAppendable, IWriter)
 
 Writer::Writer()
+: mLock(NULL)
 {
-    mLock = this->Probe(EIID_IObject);
-    mLock->AddRef();
 }
 
 Writer::Writer(
     /* [in] */ IObject* lock)
 {
     assert(lock != NULL);
+    assert(lock != this->Probe(EIID_IObject));
     mLock = lock;
-    mLock->AddRef();
 }
 
 Writer::~Writer()
 {
-    if(mLock != this->Probe(EIID_IObject))
-    {
-        mLock->Release();
-        mLock = NULL;
-    }
+    mLock = NULL;
 }
 
 ECode Writer::Write(
     /* [in] */ Int32 oneChar32)
 {
-    assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    if(mLock == NULL)
+        Object::Autolock lock(*this);
+    else
+        Object::Autolock lock(mLock);
 
     ArrayOf_<Char32, 1> buf;
     buf[0] = oneChar32;
@@ -70,8 +67,10 @@ ECode Writer::Write(
 //      throw new StringIndexOutOfBoundsException();
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    if(mLock == NULL)
+        Object::Autolock lock(*this);
+    else
+        Object::Autolock lock(mLock);
 
     AutoPtr<ArrayOf<Char32> > buf = str.GetChars(offset, offset + count);
     return Write(*buf, 0, buf->GetLength());
@@ -120,6 +119,7 @@ ECode Writer::constructor(
     /* [in] */ IObject* lock)
 {
     assert(lock != NULL);
+    assert(lock != this->Probe(EIID_IObject));
     mLock = lock;
     return NOERROR;
 }

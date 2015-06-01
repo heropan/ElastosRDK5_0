@@ -204,8 +204,7 @@ protected:
     virtual ~Writer();
 
 protected:
-    IObject* mLock; // May equal to this. Can not use AutoPtr.
-
+    AutoPtr<IObject> mLock;
 };
 
 } // namespace IO

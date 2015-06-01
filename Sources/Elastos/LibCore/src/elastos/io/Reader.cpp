@@ -10,25 +10,21 @@ namespace IO {
 CAR_INTERFACE_IMPL_2(Reader, Object, IReadable, IReader)
 
 Reader::Reader()
-    : mLock(this->Probe(EIID_IObject))
+    : mLock(NULL)
 {
 }
 
 Reader::Reader(
     /* [in] */ IObject* lock)
-    : mLock(NULL)
 {
     assert(lock != NULL);
+    assert(lock != this->Probe(EIID_IObject));
     mLock = lock;
-    mLock->AddRef();
 }
 
 Reader::~Reader()
 {
-    if (mLock != this->Probe(EIID_IObject)) {
-        mLock->Release();
-        mLock = NULL;
-    }
+    mLock = NULL;
 }
 
 ECode Reader::Mark(
@@ -52,7 +48,10 @@ ECode Reader::Read(
 {
     assert(value != NULL);
 
-    Object::Autolock lock(mLock);
+    if(mLock == NULL)
+        Object::Autolock lock(*this);
+    else
+        Object::Autolock lock(mLock);
 
     ArrayOf_<Char32, 1> buf;
     Int32 number;
@@ -104,7 +103,10 @@ ECode Reader::Skip(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Object::Autolock lock(mLock);
+    if(mLock == NULL)
+        Object::Autolock lock(*this);
+    else
+        Object::Autolock lock(mLock);
 
     Int64 skipped = 0;
     Int32 toRead = count < 512 ? (Int32)count : 512;
@@ -155,7 +157,6 @@ ECode Reader::constructor(
     assert(lock != NULL);
     assert(lock != this->Probe(EIID_IObject));
     mLock = lock;
-    mLock->AddRef();
     return NOERROR;
 }
 

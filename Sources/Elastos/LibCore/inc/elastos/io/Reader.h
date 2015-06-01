@@ -195,7 +195,7 @@ protected:
 
 
 protected:
-    IObject* mLock; // May be equal to this. Can not use AutoPtr.
+    AutoPtr<IObject> mLock;
 };
 
 } // namespace IO
