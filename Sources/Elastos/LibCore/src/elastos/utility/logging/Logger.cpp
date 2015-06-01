@@ -4,7 +4,7 @@
 #else
 #include <android/log.h>
 #endif
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <errno.h>
 
 namespace Elastos {
@@ -47,9 +47,9 @@ int __android_log_buf_print(int bufID, int prio, const char *tag, const char *fm
     }
 #endif // _openkode
 
-ECode __PrintlnImpl(Int32 bufID, Int32 priority, CString tag, const char *msgBuf)
+ECode __PrintlnImpl(Int32 bufID, Int32 priority, const char * tag, const char *msgBuf)
 {
-    if (bufID < Logger::LOG_ID_MAIN || bufID > Logger::LOG_ID_SYSTEM || tag.IsNull()
+    if (bufID < Logger::LOG_ID_MAIN || bufID > Logger::LOG_ID_SYSTEM || tag == NULL
             || msgBuf == NULL || priority < Logger::VERBOSE || priority > Logger::ASSERT) {
         return E_INVALID_ARGUMENT;
     }
@@ -99,7 +99,7 @@ const Int32 Logger::LOG_ID_SYSTEM;
 
 #define MSG_BUF_SIZE    1024
 
-ECode Logger::D(CString tag, const char *fmt, ...)
+ECode Logger::D(const char * tag, const char *fmt, ...)
 {
     char msgBuf[MSG_BUF_SIZE];
     va_list args;
@@ -110,7 +110,7 @@ ECode Logger::D(CString tag, const char *fmt, ...)
     return __PrintlnImpl(LOG_ID_MAIN, ANDROID_LOG_DEBUG, tag, msgBuf);
 }
 
-ECode Logger::E(CString tag, const char *fmt, ...)
+ECode Logger::E(const char * tag, const char *fmt, ...)
 {
     char msgBuf[MSG_BUF_SIZE];
     va_list args;
@@ -121,7 +121,7 @@ ECode Logger::E(CString tag, const char *fmt, ...)
     return __PrintlnImpl(LOG_ID_MAIN, ANDROID_LOG_ERROR, tag, msgBuf);
 }
 
-ECode Logger::I(CString tag, const char *fmt, ...)
+ECode Logger::I(const char * tag, const char *fmt, ...)
 {
     char msgBuf[MSG_BUF_SIZE];
     va_list args;
@@ -132,7 +132,7 @@ ECode Logger::I(CString tag, const char *fmt, ...)
     return __PrintlnImpl(LOG_ID_MAIN, ANDROID_LOG_INFO, tag, msgBuf);
 }
 
-ECode Logger::V(CString tag, const char *fmt, ...)
+ECode Logger::V(const char * tag, const char *fmt, ...)
 {
     char msgBuf[MSG_BUF_SIZE];
     va_list args;
@@ -143,7 +143,7 @@ ECode Logger::V(CString tag, const char *fmt, ...)
     return __PrintlnImpl(LOG_ID_MAIN, ANDROID_LOG_VERBOSE, tag, msgBuf);
 }
 
-ECode Logger::W(CString tag, const char *fmt, ...)
+ECode Logger::W(const char * tag, const char *fmt, ...)
 {
     char msgBuf[MSG_BUF_SIZE];
     va_list args;
@@ -154,12 +154,12 @@ ECode Logger::W(CString tag, const char *fmt, ...)
     return __PrintlnImpl(LOG_ID_MAIN, ANDROID_LOG_WARN, tag, msgBuf);
 }
 
-Boolean Logger::IsLoggable(CString tag, Int32 level)
+Boolean Logger::IsLoggable(const char * tag, Int32 level)
 {
     return TRUE;
 }
 
-ECode Logger::Println(Int32 priority, CString tag, const char *fmt, ...)
+ECode Logger::Println(Int32 priority, const char * tag, const char *fmt, ...)
 {
     char msgBuf[MSG_BUF_SIZE];
     va_list args;
@@ -170,9 +170,9 @@ ECode Logger::Println(Int32 priority, CString tag, const char *fmt, ...)
     return __PrintlnImpl(LOG_ID_MAIN, priority, tag, msgBuf);
 }
 
-ECode Logger::PrintlnImpl(Int32 bufID, Int32 priority, CString tag, const char *fmt, ...)
+ECode Logger::PrintlnImpl(Int32 bufID, Int32 priority, const char * tag, const char *fmt, ...)
 {
-    if (bufID < LOG_ID_MAIN || bufID > LOG_ID_SYSTEM || tag.IsNull()
+    if (bufID < LOG_ID_MAIN || bufID > LOG_ID_SYSTEM || tag == NULL
             || fmt == NULL || priority < VERBOSE || priority > ASSERT) {
         return E_INVALID_ARGUMENT;
     }

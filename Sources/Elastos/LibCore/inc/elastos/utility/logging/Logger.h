@@ -1,5 +1,5 @@
-#ifndef __UTILITY_LOGGER_H__
-#define __UTILITY_LOGGER_H__
+#ifndef __ELASTOS_UTILITY_LOGGER_H__
+#define __ELASTOS_UTILITY_LOGGER_H__
 
 #include <elastos.h>
 
@@ -55,35 +55,35 @@ public:
      * @param tag
      * @param msg
      */
-    static CARAPI D(CString tag, const char *fmt, ...);
+    static CARAPI D(const char * tag, const char *fmt, ...);
 
     /*!
      * @brief Send an ERROR log message.
      * @param tag
      * @param msg
      */
-    static CARAPI E(CString tag, const char *fmt, ...);
+    static CARAPI E(const char * tag, const char *fmt, ...);
 
     /*!
      * @brief Send an INFO log message.
      * @param tag
      * @param msg
      */
-    static CARAPI I(CString tag, const char *fmt, ...);
+    static CARAPI I(const char * tag, const char *fmt, ...);
 
     /*!
      * @brief Send an VERBOSE log message.
      * @param tag
      * @param msg
      */
-    static CARAPI V(CString tag, const char *fmt, ...);
+    static CARAPI V(const char * tag, const char *fmt, ...);
 
     /*!
      * @brief Send a WARN log message.
      * @param tag
      * @param msg
      */
-    static CARAPI W(CString tag, const char *fmt, ...);
+    static CARAPI W(const char * tag, const char *fmt, ...);
 
     /*!
      * @brief Checks to see whether or not a log for the specified tag is
@@ -92,7 +92,7 @@ public:
      * @param level
      * @param pIsLoggable
      */
-    static Boolean IsLoggable(CString tag, Int32 level);
+    static Boolean IsLoggable(const char * tag, Int32 level);
 
     /*!
      * @brief Low-level logging call.
@@ -100,7 +100,7 @@ public:
      * @param tag
      * @param msg
      */
-    static CARAPI Println(Int32 priority, CString tag, const char *fmt, ...);
+    static CARAPI Println(Int32 priority, const char * tag, const char *fmt, ...);
 
     /*!
      * @brief
@@ -118,6 +118,7 @@ public:
      * @brief
      */
     static const Int32 LOG_ID_SYSTEM = 3;
+
     /*!
      * @brief According the Logger's priority,output corresponding infomation.
      * @param bufID
@@ -125,11 +126,15 @@ public:
      * @param tag
      * @param msg
      */
-    static CARAPI PrintlnImpl(Int32 bufID, Int32 priority, CString tag, const char *fmt, ...);
+    static CARAPI PrintlnImpl(Int32 bufID, Int32 priority, const char * tag, const char *fmt, ...);
+
+private:
+    Logger();
+    Logger(const Logger&);
 };
 
 } // Logging
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_LOGGER_H__
+#endif // __ELASTOS_UTILITY_LOGGER_H__

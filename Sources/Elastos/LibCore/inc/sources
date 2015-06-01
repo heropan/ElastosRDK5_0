@@ -63,3 +63,6 @@ EXPORT_HEADERS += elastos/utility/etl/Stack.h
 EXPORT_HEADERS += elastos/utility/etl/Queue.h
 EXPORT_HEADERS += elastos/utility/etl/BlockingQueue.h
 
+EXPORT_HEADERS += elastos/utility/logging/Logger.h
+EXPORT_HEADERS += elastos/utility/logging/Slogger.h
+
