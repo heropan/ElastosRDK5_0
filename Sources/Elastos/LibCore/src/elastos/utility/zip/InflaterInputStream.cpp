@@ -13,6 +13,7 @@ namespace Zip {
 
 const Int32 InflaterInputStream::BUF_SIZE;
 
+CAR_INTERFACE_IMPL(InflaterInputStream, FilterInputStream, IInflaterInputStream)
 
 InflaterInputStream::InflaterInputStream()
     : mClosed(FALSE)
