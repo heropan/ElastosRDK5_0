@@ -22,7 +22,7 @@ ECode AbstractSequentialList::AddAll(
     AutoPtr<IListIterator> it;
     GetListIterator(0, (IListIterator**)&it);
     AutoPtr<IIterator> colIt;
-    collection->GetIterator((IIterator**)&colIt);
+    (IIterable::Probe(collection))->GetIterator((IIterator**)&colIt);
     Int32 next;
     it->NextIndex(&next);
     Boolean hasnext = FALSE;
@@ -45,7 +45,7 @@ ECode AbstractSequentialList::Get(
     // try {
     AutoPtr<IListIterator> listiterator;
     GetListIterator(location, (IListIterator**)&listiterator);
-    ECode ec = listiterator->Next(object);
+    ECode ec = (IIterator::Probe(listiterator))->Next(object);
     if (FAILED(ec)) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -61,7 +61,7 @@ ECode AbstractSequentialList::GetIterator(
     VALIDATE_NOT_NULL(result);
     AutoPtr<IListIterator> listiterator;
     GetListIterator(0, (IListIterator**)&listiterator);
-    *result = listiterator;
+    *result = IIterator::Probe(listiterator);
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
@@ -74,11 +74,11 @@ ECode AbstractSequentialList::Remove(
     // try {
     AutoPtr<IListIterator> it;
     GetListIterator(location, (IListIterator**)&it);
-    ECode ec = it->Next(object);
+    ECode ec = (IIterator::Probe(it))->Next(object);
     if (FAILED(ec)) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    return it->Remove();
+    return (IIterator::Probe(it))->Remove();
     // } catch (NoSuchElementException e) {
         // throw new IndexOutOfBoundsException();
     // }
@@ -93,11 +93,11 @@ ECode AbstractSequentialList::Set(
     AutoPtr<IListIterator> it;
     GetListIterator(location, (IListIterator**)&it);
     Boolean hasnext = FALSE;
-    it->HasNext(&hasnext);
+    (IIterator::Probe(it))->HasNext(&hasnext);
     if (!hasnext) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    it->Next(prevObject);
+    (IIterator::Probe(it))->Next(prevObject);
     return it->Set(object);
 }
 

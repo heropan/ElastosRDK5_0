@@ -1,21 +1,28 @@
 #ifndef __UTILITY_CARRAYLIST_H__
 #define __UTILITY_CARRAYLIST_H__
 
-#include "_CArrayList.h"
+#include "_Elastos_Utility_CArrayList.h"
 #include "AbstractList.h"
 
-using Elastos::Utility::AbstractList;
+using Elastos::Core::ICloneable;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
+using Elastos::IO::ISerializable;
+using Elastos::Utility::AbstractList;
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CArrayList) , public AbstractList
+CarClass(CArrayList)
+    , public AbstractList
+    , public IArrayList
+    , public ICloneable
+    , public ISerializable
+    , public IRandomAccess
 {
 private:
     class ArrayListIterator
-        : public ElRefBase
+        : public Object
         , public IIterator
     {
     public:
@@ -51,6 +58,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CArrayList();
 
     CARAPI constructor();
@@ -60,13 +71,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ ICollection* collection);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
 
     CARAPI Add(
         /* [in] */ IInterface* object,

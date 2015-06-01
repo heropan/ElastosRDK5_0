@@ -1,41 +1,34 @@
 #ifndef __UTILITY_CARRAYS_H__
 #define __UTILITY_CARRAYS_H__
 
-#include "_CArrays.h"
+#include "_Elastos_Utility_CArrays.h"
 #include "AbstractList.h"
-#include <elastos/StringBuilder.h>
+#include "StringBuilder.h"
+#include "Singleton.h"
 
 using Elastos::Core::IComparator;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::Singleton;
 using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
 
 CarClass(CArrays)
+    , public Singleton
+    , public IArrays
 {
 private:
     class ArrayList
         : public AbstractList
-        , public IList
         , public ISerializable
         , public IRandomAccess
-        , public ElRefBase
     {
     public:
+        CAR_INTERFACE_DECL()
+
         ArrayList(
             /* [in] */ ArrayOf<IInterface* >* storage);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID);
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *object,
-            /* [out] */ InterfaceID *pIID);
 
         CARAPI Contains(
             /* [in] */ IInterface* object,
@@ -68,75 +61,15 @@ private:
             /* [in] */ ArrayOf<IInterface* >* contents,
             /* [out] */ ArrayOf<IInterface* >** outArray);
 
-        CARAPI GetIterator(
-            /* [out] */ IIterator** it);
-
-        CARAPI Add(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* modified);
-
-        CARAPI AddAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI Clear();
-
-        CARAPI ContainsAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* res);
-
-        CARAPI Equals(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* res);
-
-        CARAPI GetHashCode(
-            /* [in] */ Int32* hashCode);
-
-        CARAPI IsEmpty(
-            /* [out] */ Boolean* res);
-
-        CARAPI Remove(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* modified);
-
-        CARAPI RemoveAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI RetainAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI Add(
-            /* [in] */ Int32 location,
-            /* [in] */ IInterface* object);
-
-        CARAPI AddAll(
-            /* [in] */ Int32 location,
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI GetListIterator(
-            /* [out] */ IListIterator** it);
-
-        CARAPI GetListIterator(
-            /* [in] */ Int32 location,
-            /* [out] */ IListIterator** it);
-
-        CARAPI Remove(
-            /* [in] */ Int32 location,
-            /* [out] */ IInterface** object);
-
-        CARAPI SubList(
-            /* [in] */ Int32 start,
-            /* [in] */ Int32 end,
-            /* [out] */ IList** subList);
-
     private:
         AutoPtr<ArrayOf<IInterface*> > mA;
     };
 
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI AsList(
         /* [in] */ ArrayOf<IInterface*>* array,
         /* [out] */ IList** outList);

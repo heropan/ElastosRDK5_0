@@ -1,7 +1,9 @@
 #ifndef __UTILITY_DUALPIVOTQUICKSORT_H__
 #define __UTILITY_DUALPIVOTQUICKSORT_H__
 
-#include <Elastos.CoreLibrary_server.h>
+#include "Singleton.h"
+
+using Elastos::Core::Singleton;
 
 namespace Elastos{
 namespace Utility{
@@ -231,7 +233,7 @@ private:
     /**
      * Prevents instantiation.
      */
-    DualPivotQuicksort() {}
+    DualPivotQuicksort();
 
     /**
      * Sorts the specified range of the array into ascending order. This
@@ -490,10 +492,6 @@ private:
         /* [in] */ Int32 right);
 
 private:
-    /*
-     * Tuning parameters.
-     */
-
     /**
      * If the length of an array to be sorted is less than this
      * constant, insertion sort is used in preference to Quicksort.

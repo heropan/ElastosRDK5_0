@@ -1,10 +1,13 @@
 
 #include "CArrayList.h"
-#include <elastos/ObjectUtils.h>
-#include "elastos/ObjectUtils.h"
+#include "ObjectUtils.h"
 
 using Elastos::Core::ObjectUtils;
+using Elastos::Core::EIID_ICloneable;
 using Elastos::IO::IObjectOutputStreamPutField;
+using Elastos::IO::EIID_ISerializable;
+using Elastos::IO::IOutputStream;
+using Elastos::IO::IInputStream;
 
 namespace Elastos {
 namespace Utility {
@@ -13,7 +16,11 @@ namespace Utility {
 //====================================================================
 // CArrayList::ArrayListIterator
 //====================================================================
-CAR_INTERFACE_IMPL(CArrayList::ArrayListIterator, IIterator)
+
+CAR_INTERFACE_IMPL_4(CArrayList, AbstractList, IArrayList, ICloneable, ISerializable, IRandomAccess)
+CAR_OBJECT_IMPL(CArrayList)
+
+CAR_INTERFACE_IMPL(CArrayList::ArrayListIterator, Object, IIterator)
 
 ECode CArrayList::ArrayListIterator::HasNext(
     /* [out] */ Boolean* result)
@@ -99,22 +106,6 @@ ECode CArrayList::constructor(
     mArray = a;
     mSize = a->GetLength();
     return NOERROR;
-}
-
-PInterface CArrayList::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CArrayList::Probe(riid);
-}
-
-UInt32 CArrayList::AddRef()
-{
-    return _CArrayList::AddRef();
-}
-
-UInt32 CArrayList::Release()
-{
-    return _CArrayList::Release();
 }
 
 ECode CArrayList::Add(
@@ -597,7 +588,7 @@ ECode CArrayList::Equals(
     AutoPtr<IList> that = IList::Probe(object);
     Int32 s = mSize;
     Int32 length = 0;
-    if ((that->GetSize(&length), length) != s) {
+    if (((ICollection::Probe(that))->GetSize(&length), length) != s) {
         *result = FALSE;
         return NOERROR;
     }
@@ -615,7 +606,7 @@ ECode CArrayList::Equals(
     }
     else {  // Argument list is not random access; use its iterator
         AutoPtr<IIterator> it;
-        that->GetIterator((IIterator**)&it);
+        (IIterable::Probe(that))->GetIterator((IIterator**)&it);
         for (Int32 i = 0; i < s; i++) {
             AutoPtr<IInterface> eThis = (*a)[i];
             AutoPtr<IInterface> eThat;
@@ -634,7 +625,7 @@ ECode CArrayList::WriteObject(
     /* [in] */ IObjectOutputStream* stream)
 {
     stream->DefaultWriteObject();
-    stream->Write(mArray->GetLength());
+    (IOutputStream::Probe(stream))->Write(mArray->GetLength());
     for (Int32 i = 0; i < mSize; i++) {
         assert(0 && "TODO");
         // stream->WriteObject((*mArray)[i]);
@@ -647,7 +638,7 @@ ECode CArrayList::ReadObject(
 {
     stream->DefaultReadObject();
     Int32 cap = 0;
-    stream->Read(&cap);
+    (IInputStream::Probe(stream))->Read(&cap);
     if (cap < mSize) {
         // throw new InvalidObjectException("Capacity: " + cap + " < size: " + size);
         return E_INVALID_OBJECT_EXCEPTION;

@@ -6,7 +6,8 @@
 namespace Elastos {
 namespace Utility {
 
-class AbstractSequentialList : public AbstractList
+class AbstractSequentialList
+    : public AbstractList
 {
 public:
     CARAPI Add(

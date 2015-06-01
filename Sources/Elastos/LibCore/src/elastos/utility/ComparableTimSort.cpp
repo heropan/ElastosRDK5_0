@@ -1,7 +1,7 @@
 
-#include "cmdef.h"
+#include "coredef.h"
 #include "ComparableTimSort.h"
-#include "elastos/Math.h"
+#include "Math.h"
 
 using Elastos::Core::IComparable;
 using Elastos::Core::EIID_IComparable;
@@ -18,10 +18,10 @@ const Boolean ComparableTimSort::DEBUG = FALSE;
 ECode ComparableTimSort::Sort(
     /* [in] */ const ArrayOf<IInterface*>& a)
 {
-    return SortEx(a, 0, a.GetLength());
+    return Sort(a, 0, a.GetLength());
 }
 
-ECode ComparableTimSort::SortEx(
+ECode ComparableTimSort::Sort(
     /* [in] */ const ArrayOf<IInterface*>& a,
     /* [in] */ Int32 lo,
     /* [in] */ Int32 hi)

@@ -1,6 +1,6 @@
 
 #include "AbstractSet.h"
-#include <elastos/ObjectUtils.h>
+#include "ObjectUtils.h"
 
 using Elastos::Core::ObjectUtils;
 using Elastos::Utility::ISet;
@@ -8,6 +8,8 @@ using Elastos::Utility::EIID_ISet;
 
 namespace Elastos {
 namespace Utility {
+
+CAR_INTERFACE_IMPL(AbstractSet, Object, ISet)
 
 ECode AbstractSet::Equals(
     /* [in] */ IInterface* object,
@@ -25,9 +27,9 @@ ECode AbstractSet::Equals(
         Int32 value1 = 0;
         Int32 value2 = 0;
         GetSize(&value1);
-        s->GetSize(&value2);
+        (ICollection::Probe(s))->GetSize(&value2);
         Boolean isflag = FALSE;
-        *value = value1 == value2 && (ContainsAll(s, &isflag), isflag);
+        *value = value1 == value2 && (ContainsAll(ICollection::Probe(s), &isflag), isflag);
         return NOERROR;
         // } catch (NullPointerException ignored) {
         //     return false;
@@ -81,7 +83,7 @@ ECode AbstractSet::RemoveAll(
     }
     else {
         AutoPtr<IIterator> it;
-        collection->GetIterator((IIterator**)&it);
+        (IIterable::Probe(collection))->GetIterator((IIterator**)&it);
         Boolean isflag = FALSE;
         while (it->HasNext(&isflag), isflag) {
             AutoPtr<IInterface> next;

@@ -1,7 +1,7 @@
 
 #include "DualPivotQuicksort.h"
 #include "CArrays.h"
-#include <elastos/Math.h>
+#include "Math.h"
 
 namespace Elastos{
 namespace Utility{

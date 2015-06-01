@@ -3,6 +3,8 @@
 namespace Elastos {
 namespace Utility {
 
+CAR_INTERFACE_IMPL(AbstractQueue, Object, IQueue)
+
 AbstractQueue::AbstractQueue()
 {}
 
@@ -80,7 +82,7 @@ ECode AbstractQueue::AddAll(
 
     Boolean modified = FALSE;
     AutoPtr<IIterator> it;
-    c->GetIterator((IIterator**)&it);
+    (IIterable::Probe(c))->GetIterator((IIterator**)&it);
     Boolean hasNext, added;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;

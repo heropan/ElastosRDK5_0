@@ -4,8 +4,8 @@
 #include "DualPivotQuicksort.h"
 #include "ComparableTimSort.h"
 #include "TimSort.h"
-#include <elastos/Math.h>
-#include <elastos/ObjectUtils.h>
+#include "Math.h"
+#include "ObjectUtils.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::IArrayOf;
@@ -28,6 +28,7 @@ using Elastos::Core::IDouble;
 using Elastos::Core::EIID_IInteger16;
 using Elastos::Core::IInteger16;
 using Elastos::Core::ObjectUtils;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -35,62 +36,7 @@ namespace Utility {
 //====================================================================
 // CArrays::ArrayList
 //====================================================================
-
-UInt32 CArrays::ArrayList::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CArrays::ArrayList::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CArrays::ArrayList::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(IList*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(IList*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(IList*)this;
-    }
-    else if (EIID_IList == riid) {
-        return (IList*)this;
-    }
-    else if (Elastos::IO::EIID_ISerializable == riid) {
-        return (ISerializable*)this;
-    }
-    else if (EIID_IRandomAccess == riid) {
-        return (IRandomAccess*)this;
-    }
-
-    return NULL;
-}
-
-ECode CArrays::ArrayList::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(IList*)this) {
-        *pIID = EIID_IList;
-    }
-    else if (pObject == (IInterface*)(ISerializable*)this) {
-        *pIID = Elastos::IO::EIID_ISerializable;
-    }
-    else if (pObject == (IInterface*)(IRandomAccess*)this) {
-        *pIID = EIID_IRandomAccess;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_2(CArrays::ArrayList, AbstractList, ISerializable, IRandomAccess)
 
 CArrays::ArrayList::ArrayList(
     /* [in] */ ArrayOf<IInterface* >* storage)
@@ -241,129 +187,18 @@ ECode CArrays::ArrayList::ToArray(
     return NOERROR;
 }
 
-ECode CArrays::ArrayList::GetIterator(
-            /* [out] */ IIterator** it)
-{
-    return AbstractList::GetIterator(it);
-}
-
-ECode CArrays::ArrayList::Add(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractList::Add(object, modified);
-}
-
-ECode CArrays::ArrayList::AddAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractList::AddAll(collection, modified);
-}
-
-ECode CArrays::ArrayList::Clear()
-{
-    return AbstractList::Clear();
-}
-
-ECode CArrays::ArrayList::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* res)
-{
-    return AbstractList::ContainsAll(collection, res);
-}
-
-ECode CArrays::ArrayList::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* res)
-{
-    return AbstractList::Equals(object, res);
-}
-
-ECode CArrays::ArrayList::GetHashCode(
-    /* [in] */ Int32* hashCode)
-{
-    return AbstractList::GetHashCode(hashCode);
-}
-
-ECode CArrays::ArrayList::IsEmpty(
-    /* [out] */ Boolean* res)
-{
-    return AbstractList::IsEmpty(res);
-}
-
-ECode CArrays::ArrayList::Remove(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractList::Remove(object, modified);
-}
-
-ECode CArrays::ArrayList::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractList::RemoveAll(collection, modified);
-}
-
-ECode CArrays::ArrayList::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractList::RetainAll(collection, modified);
-}
-
-ECode CArrays::ArrayList::Add(
-    /* [in] */ Int32 location,
-    /* [in] */ IInterface* object)
-{
-    return AbstractList::Add(location, object);
-}
-
-ECode CArrays::ArrayList::AddAll(
-    /* [in] */ Int32 location,
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractList::AddAll(location, collection, modified);
-}
-
-ECode CArrays::ArrayList::GetListIterator(
-    /* [out] */ IListIterator** it)
-{
-    return AbstractList::GetListIterator(it);
-}
-
-ECode CArrays::ArrayList::GetListIterator(
-    /* [in] */ Int32 location,
-    /* [out] */ IListIterator** it)
-{
-    return AbstractList::GetListIterator(location, it);
-}
-
-ECode CArrays::ArrayList::Remove(
-    /* [in] */ Int32 location,
-    /* [out] */ IInterface** object)
-{
-    return AbstractList::Remove(location, object);
-}
-
-ECode CArrays::ArrayList::SubList(
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out] */ IList** subList)
-{
-    return AbstractList::SubList(start, end, subList);
-}
-
 //====================================================================
-// CArrays::
+// CArrays
 //====================================================================
 
 // CArrays::CArrays()
 // {
 //     /* empty */
 // }
+
+CAR_SINGLETON_IMPL(CArrays)
+
+CAR_INTERFACE_IMPL(CArrays, Singleton, IArrays)
 
 ECode CArrays::_AsList(
     /* [in] */ ArrayOf<IInterface*>* array,
@@ -1998,10 +1833,10 @@ ECode CArrays::_ToStringBoolean(
     }
     StringBuilder sb(array->GetLength() * 7);
     sb.AppendChar('[');
-    sb.AppendBoolean((*array)[0]);
+    sb.Append((*array)[0]);
     for (Int32 i = 1; i < array->GetLength(); i++) {
-        sb.AppendCStr(", ");
-        sb.AppendBoolean((*array)[i]);
+        sb.Append(", ");
+        sb.Append((*array)[i]);
     }
     sb.AppendChar(']');
     *str = sb.ToString();
@@ -2023,10 +1858,10 @@ ECode CArrays::_ToStringByte(
     }
     StringBuilder sb(array->GetLength() * 6);
     sb.AppendChar('[');
-    sb.AppendInt32((*array)[0]);
+    sb.Append((*array)[0]);
     for (Int32 i = 1; i < array->GetLength(); i++) {
-        sb.AppendCStr(", ");
-        sb.AppendInt32((*array)[i]);
+        sb.Append(", ");
+        sb.Append((*array)[i]);
     }
     sb.AppendChar(']');
     *str = sb.ToString();
@@ -2050,7 +1885,7 @@ ECode CArrays::_ToStringChar32(
     sb.AppendChar('[');
     sb.AppendChar((*array)[0]);
     for (Int32 i = 1; i < array->GetLength(); i++) {
-        sb.AppendCStr(", ");
+        sb.Append(", ");
         sb.AppendChar((*array)[i]);
     }
     sb.AppendChar(']');
@@ -2073,10 +1908,10 @@ ECode CArrays::_ToStringDouble(
     }
     StringBuilder sb(array->GetLength() * 7);
     sb.AppendChar('[');
-    sb.AppendDouble((*array)[0]);
+    sb.Append((*array)[0]);
     for (Int32 i = 1; i < array->GetLength(); i++) {
-        sb.AppendCStr(", ");
-        sb.AppendDouble((*array)[i]);
+        sb.Append(", ");
+        sb.Append((*array)[i]);
     }
     sb.AppendChar(']');
     *str = sb.ToString();
@@ -2098,10 +1933,10 @@ ECode CArrays::_ToStringFloat(
     }
     StringBuilder sb(array->GetLength() * 7);
     sb.AppendChar('[');
-    sb.AppendFloat((*array)[0]);
+    sb.Append((*array)[0]);
     for (Int32 i = 1; i < array->GetLength(); i++) {
-        sb.AppendCStr(", ");
-        sb.AppendFloat((*array)[i]);
+        sb.Append(", ");
+        sb.Append((*array)[i]);
     }
     sb.AppendChar(']');
     *str = sb.ToString();
@@ -2123,10 +1958,10 @@ ECode CArrays::_ToStringInt32(
     }
     StringBuilder sb(array->GetLength() * 6);
     sb.AppendChar('[');
-    sb.AppendInt32((*array)[0]);
+    sb.Append((*array)[0]);
     for (Int32 i = 1; i < array->GetLength(); i++) {
-        sb.AppendCStr(", ");
-        sb.AppendInt32((*array)[i]);
+        sb.Append(", ");
+        sb.Append((*array)[i]);
     }
     sb.AppendChar(']');
     *str = sb.ToString();
@@ -2148,10 +1983,10 @@ ECode CArrays::_ToStringInt64(
     }
     StringBuilder sb(array->GetLength() * 6);
     sb.AppendChar('[');
-    sb.AppendInt64((*array)[0]);
+    sb.Append((*array)[0]);
     for (Int32 i = 1; i < array->GetLength(); i++) {
-        sb.AppendCStr(", ");
-        sb.AppendInt64((*array)[i]);
+        sb.Append(", ");
+        sb.Append((*array)[i]);
     }
     sb.AppendChar(']');
     *str = sb.ToString();
@@ -2172,13 +2007,13 @@ ECode CArrays::_ToStringInt16(
         return NOERROR;
     }
     StringBuilder sb(array->GetLength() * 6);
-    sb.AppendChar('[');
-    sb.AppendInt32((*array)[0]);
+    sb.Append('[');
+    sb.Append((*array)[0]);
     for (Int32 i = 1; i < array->GetLength(); i++) {
-        sb.AppendCStr(", ");
-        sb.AppendInt32((*array)[i]);
+        sb.Append(", ");
+        sb.Append((*array)[i]);
     }
-    sb.AppendChar(']');
+    sb.Append(']');
     *str = sb.ToString();
     return NOERROR;
 }
@@ -2197,13 +2032,13 @@ ECode CArrays::_ToStringObject(
         return NOERROR;
     }
     StringBuilder sb(array->GetLength() * 7);
-    sb.AppendChar('[');
-    sb.AppendObject((*array)[0]);
+    sb.Append('[');
+    sb.Append((*array)[0]);
     for (Int32 i = 1; i < array->GetLength(); i++) {
-        sb.AppendCStr(", ");
-        sb.AppendObject((*array)[i]);
+        sb.Append(", ");
+        sb.Append((*array)[i]);
     }
-    sb.AppendChar(']');
+    sb.Append(']');
     *str = sb.ToString();
     return NOERROR;
 }
@@ -2238,7 +2073,7 @@ void CArrays::DeepToStringImpl(
     /* [in] */ StringBuilder* sb)
 {
     if (array == NULL) {
-        sb->AppendCStr("NULL");
+        sb->Append("NULL");
         return;
     }
 
@@ -2246,13 +2081,13 @@ void CArrays::DeepToStringImpl(
 
     for (Int32 i = 0; i < array->GetLength(); i++) {
         if (i != 0) {
-            sb->AppendCStr(", ");
+            sb->Append(", ");
         }
         // establish current element
         AutoPtr<IInterface> elem = (*array)[i];
         if (elem == NULL) {
             // element is null
-            sb->AppendCStr("NULL");
+            sb->Append("NULL");
         }
         else {
             // get the Class of the current element
@@ -2277,7 +2112,7 @@ void CArrays::DeepToStringImpl(
                         tmpArray->Set(i, content);
                     }
                     _ToStringBoolean((ArrayOf<Boolean>*) tmpArray, &str);
-                    sb->AppendString(str);
+                    sb->Append(str);
                 }
                 else if (riid == EIID_IByte) {
                     AutoPtr<ArrayOf<Byte> > tmpArray = ArrayOf<Byte>::Alloc(length);
@@ -2289,7 +2124,7 @@ void CArrays::DeepToStringImpl(
                         tmpArray->Set(i, content);
                     }
                     _ToStringByte((ArrayOf<Byte>*) tmpArray, &str);
-                    sb->AppendString(str);
+                    sb->Append(str);
                 }
                 else if (riid == EIID_IChar32) {
                     AutoPtr<ArrayOf<Char32> > tmpArray = ArrayOf<Char32>::Alloc(length);
@@ -2301,7 +2136,7 @@ void CArrays::DeepToStringImpl(
                         tmpArray->Set(i, content);
                     }
                     _ToStringChar32((ArrayOf<Char32>*) tmpArray, &str);
-                    sb->AppendString(str);
+                    sb->Append(str);
                 }
                 else if (riid == EIID_IDouble) {
                     AutoPtr<ArrayOf<Double> > tmpArray = ArrayOf<Double>::Alloc(length);
@@ -2313,7 +2148,7 @@ void CArrays::DeepToStringImpl(
                         tmpArray->Set(i, content);
                     }
                     _ToStringDouble((ArrayOf<Double>*) tmpArray, &str);
-                    sb->AppendString(str);
+                    sb->Append(str);
                 }
                 else if (riid == EIID_IFloat) {
                     AutoPtr<ArrayOf<Float> > tmpArray = ArrayOf<Float>::Alloc(length);
@@ -2325,7 +2160,7 @@ void CArrays::DeepToStringImpl(
                         tmpArray->Set(i, content);
                     }
                     _ToStringFloat((ArrayOf<Float>*) tmpArray, &str);
-                    sb->AppendString(str);
+                    sb->Append(str);
                 }
                 else if (riid == EIID_IInteger32) {
                     AutoPtr<ArrayOf<Int32> > tmpArray = ArrayOf<Int32>::Alloc(length);
@@ -2337,7 +2172,7 @@ void CArrays::DeepToStringImpl(
                         tmpArray->Set(i, content);
                     }
                     _ToStringInt32((ArrayOf<Int32>*) tmpArray, &str);
-                    sb->AppendString(str);
+                    sb->Append(str);
                 }
                 else if (riid == EIID_IInteger64) {
                     AutoPtr<ArrayOf<Int64> > tmpArray = ArrayOf<Int64>::Alloc(length);
@@ -2349,7 +2184,7 @@ void CArrays::DeepToStringImpl(
                         tmpArray->Set(i, content);
                     }
                     _ToStringInt64((ArrayOf<Int64>*) tmpArray, &str);
-                    sb->AppendString(str);
+                    sb->Append(str);
                 }
                 else if (riid == EIID_IInteger16) {
                     AutoPtr<ArrayOf<Int16> > tmpArray = ArrayOf<Int16>::Alloc(length);
@@ -2361,13 +2196,13 @@ void CArrays::DeepToStringImpl(
                         tmpArray->Set(i, content);
                     }
                     _ToStringInt16((ArrayOf<Int16>*) tmpArray, &str);
-                    sb->AppendString(str);
+                    sb->Append(str);
                 }
                 else if (riid == EIID_IInterface) {
                     // element is an Object[], so we assert that
                     //assert elem instanceof Object[];
                     if (DeepToStringImplContains(origArrays, elem)) {
-                        sb->AppendCStr("[...]");
+                        sb->Append("[...]");
                     }
                     else {
                         AutoPtr<ArrayOf<IInterface*> > newArray = ArrayOf<IInterface*>::Alloc(length);
@@ -2389,7 +2224,7 @@ void CArrays::DeepToStringImpl(
                 // }
             }
             else { // element is NOT an array, just an Object
-                sb->AppendObject((*array)[i]);
+                sb->Append((*array)[i]);
             }
         }
     }

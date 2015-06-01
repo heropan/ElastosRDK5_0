@@ -12,8 +12,6 @@ namespace Utility {
 class TimSort
 {
 public:
-    TimSort();
-
     /*
      * The next two methods (which are package private and static) constitute
      * the entire API of this class.  Each of these methods obeys the contract

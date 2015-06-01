@@ -1,20 +1,27 @@
 #ifndef __UTILITY_CARRAYDEQUE_H__
 #define __UTILITY_CARRAYDEQUE_H__
 
-#include "_CArrayDeque.h"
+#include "_Elastos_Utility_CArrayDeque.h"
 #include "AbstractCollection.h"
 
+using Elastos::Core::ICloneable;
+using Elastos::IO::ISerializable;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CArrayDeque) , public AbstractCollection
+CarClass(CArrayDeque)
+    , public AbstractCollection
+    , public IArrayDeque
+    , public IDeque
+    , public ICloneable
+    , public ISerializable
 {
 private:
     class DeqIterator
-        : public ElRefBase
+        : public Object
         , public IIterator
     {
     public:
@@ -58,7 +65,7 @@ private:
     };
 
     class DescendingIterator
-        : public ElRefBase
+        : public Object
         , public IIterator
     {
     public:
@@ -93,6 +100,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL()
+
     CArrayDeque();
 
     CARAPI constructor();
@@ -102,9 +113,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ ICollection* c);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI AddFirst(
         /* [in] */ IInterface* e);

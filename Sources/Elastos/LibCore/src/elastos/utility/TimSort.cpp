@@ -1,7 +1,7 @@
 
 #include "TimSort.h"
 #include "CArrays.h"
-#include <elastos/Math.h>
+#include "Math.h"
 
 namespace Elastos {
 namespace Utility {
@@ -14,11 +14,6 @@ const Int32 TimSort::INITIAL_TMP_STORAGE_LENGTH;
 
 const Boolean TimSort::DEBUG;
 
-TimSort::TimSort()
-    : mMinGallop(MIN_GALLOP)
-    , mStackSize(0)
-{
-}
 
 TimSort::TimSort(
     /* [in] */ ArrayOf<IInterface*>* a,

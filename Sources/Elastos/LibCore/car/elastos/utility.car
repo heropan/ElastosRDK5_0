@@ -40,8 +40,6 @@ module
     merge("utility/IFormatter.car");
     merge("utility/IFormattable.car");
     merge("utility/IArrayDeque.car");
-    merge("utility/IComparableTimSort.car");
-    merge("utility/IDualPivotQuicksort.car");
     merge("utility/IEventListener.car");
     merge("utility/IEventListenerProxy.car");
     merge("utility/IEventObject.car");
@@ -210,17 +208,17 @@ module
     merge("utility/jar/IPack200.car");
 
 
-    // interface Elastos.IO.ISerializable;
+    interface Elastos.IO.ISerializable;
     interface Elastos.IO.IFilterInputStream;
     interface Elastos.IO.IFilterOutputStream;
     interface Elastos.IO.ICloseable;
     // interface Elastos.Core.IThread;
     // interface Elastos.Core.IRunnable;
-    // interface Elastos.Core.ICloneable;
+    interface Elastos.Core.ICloneable;
     // interface Elastos.Core.IComparator;
     // interface Elastos.Core.ISynchronize;
     // interface Elastos.Core.IThreadUncaughtExceptionHandler;
-    // interface Elastos.Utility.ICollection;
+    interface Elastos.Utility.ICollection;
     // interface Elastos.Utility.ISet;
     // interface Elastos.Utility.IDeque;
     // interface Elastos.Utility.IQueue;
@@ -236,6 +234,49 @@ module
     // interface Elastos.Utility.Zip.IZipOutputStream;
     // interface Elastos.Utility.Zip.IInflaterInputStream;
     // interface Elastos.Utility.Zip.IDeflaterOutputStream;
+
+    namespace Elastos {
+    namespace Utility {
+
+        class CArrayDeque {
+            constructor();
+
+            constructor(
+                [in] Int32 numElements);
+
+            constructor(
+                [in] ICollection* c);
+
+            interface IArrayDeque;
+            interface ICollection;
+            interface IIterable;
+            interface IDeque;
+            interface ICloneable;
+            interface ISerializable;
+        }
+
+        class CArrayList {
+            constructor();
+
+            constructor(
+                [in] Int32 capacity);
+
+            constructor(
+                [in] ICollection* c);
+
+            interface IArrayList;
+            interface ICloneable;
+            interface ISerializable;
+            interface IRandomAccess;
+        }
+
+        singleton class CArrays {
+
+            interface IArrays;
+        }
+
+    } // namespace Utility
+    } // namespace Elastos
 
     // namespace Elastos {
     // namespace Utility {

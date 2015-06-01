@@ -16,9 +16,13 @@ namespace Utility {
  *
  * @since 1.2
  */
-class AbstractSet : public AbstractCollection
+class AbstractSet
+    : public AbstractCollection
+    , public ISet
 {
 public:
+
+    CAR_INTERFACE_DECL()
     /**
      * Compares the specified object to this Set and returns true if they are
      * equal. The object must be an instance of Set and contain the same

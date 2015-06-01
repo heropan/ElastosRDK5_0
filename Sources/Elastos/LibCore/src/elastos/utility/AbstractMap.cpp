@@ -1,10 +1,11 @@
 
 #include "AbstractMap.h"
-#include "elastos/StringBuilder.h"
-#include <elastos/ObjectUtils.h>
+#include "StringBuilder.h"
+#include "ObjectUtils.h"
 
 using Elastos::Core::ObjectUtils;
 using Elastos::Core::StringBuilder;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -12,11 +13,13 @@ namespace Utility {
 //==========================================================
 //       AbstractMap
 //==========================================================
+CAR_INTERFACE_IMPL(AbstractMap, Object, IMap)
+
 ECode AbstractMap::Clear()
 {
     AutoPtr<ISet> outset;
     EntrySet((ISet**)&outset);
-    return outset->Clear();
+    return (ICollection::Probe(outset))->Clear();
 }
 
 ECode AbstractMap::ContainsKey(
@@ -28,7 +31,7 @@ ECode AbstractMap::ContainsKey(
     AutoPtr<ISet> outset;
     EntrySet((ISet**)&outset);
     AutoPtr<IIterator> it;
-    outset->GetIterator((IIterator**)&it);
+    (IIterable::Probe(outset))->GetIterator((IIterator**)&it);
     Boolean isflag = FALSE;
     if (key != NULL) {
         while ((it->HasNext(&isflag), isflag)) {
@@ -69,7 +72,7 @@ ECode AbstractMap::ContainsValue(
     AutoPtr<ISet> entries;
     EntrySet((ISet**)&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator((IIterator**)&it);
+    (IIterable::Probe(entries))->GetIterator((IIterator**)&it);
     Boolean isflag = FALSE;
     if (value != NULL) {
         while ((it->HasNext(&isflag), isflag)) {
@@ -125,7 +128,7 @@ ECode AbstractMap::Equals(
         AutoPtr< ArrayOf<IInterface*> > entries;
         AutoPtr<ISet> outset;
         EntrySet((ISet**)&outset);
-        outset->ToArray((ArrayOf<IInterface*>**)&entries);
+        (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&entries);
         for (Int32 i = 0; i < entries->GetLength(); i++) {
             AutoPtr<IMapEntry> entry = IMapEntry::Probe((*entries)[i]);
             AutoPtr<IInterface> key;
@@ -167,7 +170,7 @@ ECode AbstractMap::Get(
     AutoPtr<ISet> entries;
     EntrySet((ISet**)&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator((IIterator**)&it);
+    (IIterable::Probe(entries))->GetIterator((IIterator**)&it);
     Boolean isflag = FALSE;
     if (key != NULL) {
         while (it->HasNext(&isflag), isflag) {
@@ -214,7 +217,7 @@ ECode AbstractMap::GetHashCode(
     AutoPtr<ISet> entries;
     EntrySet((ISet**)&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator((IIterator**)&it);
+    (IIterable::Probe(entries))->GetIterator((IIterator**)&it);
     Boolean isflag = FALSE;
     while (it->HasNext(&isflag), isflag) {
         Int32 codevalue = 0;
@@ -267,7 +270,7 @@ ECode AbstractMap::PutAll(
     AutoPtr< ArrayOf<IInterface*> > entries;
     AutoPtr<ISet> outset;
     map->EntrySet((ISet**)&outset);
-    outset->ToArray((ArrayOf<IInterface*>**)&entries);
+    (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&entries);
     for (Int32 i = 0; i < entries->GetLength(); i++) {
         AutoPtr<IMapEntry> entry = IMapEntry::Probe((*entries)[i]);
         AutoPtr<IInterface> entkey;
@@ -289,7 +292,7 @@ ECode AbstractMap::Remove(
     AutoPtr<ISet> entries;
     EntrySet((ISet**)&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator((IIterator**)&it);
+    (IIterable::Probe(entries))->GetIterator((IIterator**)&it);
     Boolean isflag = FALSE;
     if (key != NULL) {
         while (it->HasNext(&isflag), isflag) {
@@ -336,7 +339,7 @@ ECode AbstractMap::GetSize(
 
     AutoPtr<ISet> entries;
     EntrySet((ISet**)&entries);
-    return entries->GetSize(size);
+    return (ICollection::Probe(entries))->GetSize(size);
 }
 
 ECode AbstractMap::ToString(
@@ -355,7 +358,7 @@ ECode AbstractMap::ToString(
     AutoPtr<ISet> entries;
     EntrySet((ISet**)&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator((IIterator**)&it);
+    (IIterable::Probe(entries))->GetIterator((IIterator**)&it);
     while (it->HasNext(&isflag), isflag) {
         AutoPtr<IInterface> outface;
         it->Next((IInterface**)&outface);
@@ -363,25 +366,25 @@ ECode AbstractMap::ToString(
         AutoPtr<IInterface> key;
         entry->GetKey((IInterface**)&key);
         if (key.Get() != this->Probe(EIID_IInterface)) {
-            buffer.AppendObject(key);
+            buffer.Append(key);
         }
         else {
-            buffer.AppendCStr("(this Map)");
+            buffer.Append("(this Map)");
         }
-        buffer.AppendChar('=');
+        buffer.Append('=');
         AutoPtr<IInterface> value;
         entry->GetValue((IInterface**)&value);
         if (value.Get() != this->Probe(EIID_IInterface)) {
-            buffer.AppendObject(value);
+            buffer.Append(value);
         }
         else {
-            buffer.AppendCStr("(this Map)");
+            buffer.Append("(this Map)");
         }
         if (it->HasNext(&isflag), isflag) {
-            buffer.AppendCStr(", ");
+            buffer.Append(", ");
         }
     }
-    buffer.AppendChar('}');
+    buffer.Append('}');
     return buffer.ToString(str);
 }
 
@@ -419,7 +422,7 @@ ECode AbstractMap::Clone(
 //==========================================================
 //       AbstractMap::SimpleImmutableEntry
 //==========================================================
-CAR_INTERFACE_IMPL(AbstractMap::SimpleImmutableEntry, IMapEntry)
+CAR_INTERFACE_IMPL_2(AbstractMap::SimpleImmutableEntry, Object, IMapEntry, ISerializable)
 
 AbstractMap::SimpleImmutableEntry::SimpleImmutableEntry(
     /* [in] */ IInterface* theKey,
@@ -511,7 +514,7 @@ ECode AbstractMap::SimpleImmutableEntry::ToString(
 //==========================================================
 //       AbstractMap::SimpleEntry
 //==========================================================
-CAR_INTERFACE_IMPL(AbstractMap::SimpleEntry, IMapEntry)
+CAR_INTERFACE_IMPL_2(AbstractMap::SimpleEntry, Object, IMapEntry, ISerializable)
 
 AbstractMap::SimpleEntry::SimpleEntry(
     /* [in] */ IInterface* theKey,
@@ -608,7 +611,6 @@ ECode AbstractMap::SimpleEntry::ToString(
 //==========================================================
 //       AbstractMap::AbstractMapKeySet
 //==========================================================
-CAR_INTERFACE_IMPL(AbstractMap::AbstractMapKeySet, ISet);
 
 AbstractMap::AbstractMapKeySet::AbstractMapKeySet(
     /* [in] */ AbstractMap* hm)
@@ -723,7 +725,7 @@ ECode AbstractMap::AbstractMapKeySet::ToArray(
 //==========================================================
 //       AbstractMap::AbstractMapKeySetIterator
 //==========================================================
-CAR_INTERFACE_IMPL(AbstractMap::AbstractMapKeySetIterator, IIterator)
+CAR_INTERFACE_IMPL(AbstractMap::AbstractMapKeySetIterator, Object, IIterator)
 
 AbstractMap::AbstractMapKeySetIterator::AbstractMapKeySetIterator(
     /* [in] */ AbstractMap* hm)
@@ -731,7 +733,7 @@ AbstractMap::AbstractMapKeySetIterator::AbstractMapKeySetIterator(
     mMap = hm;
     AutoPtr<ISet> outset;
     mMap->EntrySet((ISet**)&outset);
-    outset->GetIterator((IIterator**)&mSetIterator);
+    (IIterable::Probe(outset))->GetIterator((IIterator**)&mSetIterator);
 }
 
 ECode AbstractMap::AbstractMapKeySetIterator::HasNext(
@@ -762,7 +764,6 @@ ECode AbstractMap::AbstractMapKeySetIterator::Remove()
 //==========================================================
 //       AbstractMap::AbstractMapValues
 //==========================================================
-CAR_INTERFACE_IMPL(AbstractMap::AbstractMapValues, ICollection);
 
 AbstractMap::AbstractMapValues::AbstractMapValues(
     /* [in] */ AbstractMap* hm)
@@ -883,7 +884,7 @@ ECode AbstractMap::AbstractMapValues::ToArray(
 //==========================================================
 //       AbstractMap::AbstractMapValuesIterator
 //==========================================================
-CAR_INTERFACE_IMPL(AbstractMap::AbstractMapValuesIterator, IIterator)
+CAR_INTERFACE_IMPL(AbstractMap::AbstractMapValuesIterator, Object, IIterator)
 
 AbstractMap::AbstractMapValuesIterator::AbstractMapValuesIterator(
     /* [in] */ AbstractMap* hm)
@@ -891,7 +892,7 @@ AbstractMap::AbstractMapValuesIterator::AbstractMapValuesIterator(
     mMap = hm;
     AutoPtr<ISet> outset;
     mMap->EntrySet((ISet**)&outset);
-    outset->GetIterator((IIterator**)&mSetIterator);
+    (IIterable::Probe(outset))->GetIterator((IIterator**)&mSetIterator);
 }
 
 ECode AbstractMap::AbstractMapValuesIterator::HasNext(

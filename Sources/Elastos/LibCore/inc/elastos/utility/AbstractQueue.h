@@ -30,9 +30,13 @@ namespace Utility {
  */
 // public abstract class AbstractQueue<E> extends AbstractCollection<E> implements Queue<E> {
 
-class AbstractQueue : public AbstractCollection
+class AbstractQueue
+    : public AbstractCollection
+    , public IQueue
 {
 public:
+
+    CAR_INTERFACE_DECL()
     /**
      * Inserts the specified element into this queue if it is possible to do so
      * immediately without violating capacity restrictions, returning

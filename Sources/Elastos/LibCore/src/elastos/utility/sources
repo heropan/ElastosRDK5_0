@@ -15,6 +15,14 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 
 SOURCES += AbstractCollection.cpp
 SOURCES += AbstractList.cpp
-//SOURCES += AbstractMap.cpp
-//SOURCES += AbstractQueue.cpp
-//SOURCES += AbstractSequentialList.cpp
+SOURCES += AbstractMap.cpp
+SOURCES += AbstractQueue.cpp
+SOURCES += AbstractSequentialList.cpp
+SOURCES += AbstractSet.cpp
+SOURCES += CArrayDeque.cpp
+SOURCES += CArrayList.cpp
+SOURCES += CArrays.cpp
+SOURCES += DualPivotQuicksort.cpp
+SOURCES += ComparableTimSort.cpp
+SOURCES += TimSort.cpp
+//SOURCES += CBitSet

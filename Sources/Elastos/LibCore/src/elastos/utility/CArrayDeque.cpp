@@ -3,6 +3,10 @@
 #include "ObjectUtils.h"
 
 using Elastos::Core::ObjectUtils;
+using Elastos::Core::EIID_ICloneable;
+using Elastos::IO::EIID_ISerializable;
+using Elastos::IO::IOutputStream;
+using Elastos::IO::IInputStream;
 
 namespace Elastos {
 namespace Utility {
@@ -10,7 +14,12 @@ namespace Utility {
 //====================================================================
 // CArrayDeque::DeqIterator
 //====================================================================
-CAR_INTERFACE_IMPL(CArrayDeque::DeqIterator, IIterator)
+
+CAR_INTERFACE_IMPL_4(CArrayDeque, AbstractCollection, IArrayDeque, IDeque, ICloneable, ISerializable)
+
+CAR_OBJECT_IMPL(CArrayDeque)
+
+CAR_INTERFACE_IMPL(CArrayDeque::DeqIterator, Object, IIterator)
 
 ECode CArrayDeque::DeqIterator::HasNext(
     /* [out] */ Boolean* value)
@@ -61,7 +70,7 @@ ECode CArrayDeque::DeqIterator::Remove()
 //====================================================================
 // CArrayDeque::DescendingIterator
 //====================================================================
-CAR_INTERFACE_IMPL(CArrayDeque::DescendingIterator, IIterator)
+CAR_INTERFACE_IMPL(CArrayDeque::DescendingIterator, Object, IIterator)
 
 ECode CArrayDeque::DescendingIterator::HasNext(
     /* [out] */ Boolean* value)
@@ -140,12 +149,6 @@ ECode CArrayDeque::constructor(
     Boolean isflag = FALSE;
     AddAll(c, &isflag);
     return NOERROR;
-}
-
-PInterface CArrayDeque::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CArrayDeque::Probe(riid);
 }
 
 void CArrayDeque::AllocateElements(
@@ -748,7 +751,7 @@ ECode CArrayDeque::WriteObject(
     // Write out size
     Int32 value = 0;
     GetSize(&value);
-    stream->Write(value);
+    (IOutputStream::Probe(stream))->Write(value);
 
     // Write out elements in order.
     Int32 mask = mElements->GetLength() - 1;
@@ -766,7 +769,7 @@ ECode CArrayDeque::ReadObject(
 
     // Read in size and allocate array
     Int32 size = 0;
-    stream->Read(&size);
+    (IInputStream::Probe(stream))->Read(&size);
     AllocateElements(size);
     mHead = 0;
     mTail = size;

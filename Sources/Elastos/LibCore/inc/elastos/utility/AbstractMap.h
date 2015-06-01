@@ -25,8 +25,12 @@ namespace Utility {
  * @since 1.2
  */
 class AbstractMap
+    : public Object
+    , public IMap
 {
 public:
+
+    CAR_INTERFACE_DECL()
     /**
      * An immutable key-value mapping. Despite the name, this class is non-final
      * and its subclasses may be mutable.
@@ -34,7 +38,7 @@ public:
      * @since 1.6
      */
     class SimpleImmutableEntry
-        : public ElRefBase
+        : public Object
         , public IMapEntry
         , public ISerializable
     {
@@ -86,7 +90,7 @@ public:
      * @since 1.6
      */
     class SimpleEntry
-        : public ElRefBase
+        : public Object
         , public IMapEntry
         , public ISerializable
     {
@@ -133,9 +137,7 @@ public:
     };
 
     class AbstractMapKeySet
-        : public ElRefBase
-        , public ISet
-        , public AbstractSet
+        : public AbstractSet
     {
     public:
         AbstractMapKeySet(
@@ -201,7 +203,7 @@ public:
     };
 
     class AbstractMapKeySetIterator
-        : public ElRefBase
+        : public Object
         , public IIterator
     {
     public:
@@ -224,9 +226,7 @@ public:
     };
 
     class AbstractMapValues
-        : public ElRefBase
-        , public ICollection
-        , public AbstractSet
+        : public AbstractCollection
     {
     public:
         AbstractMapValues(
@@ -292,7 +292,7 @@ public:
     };
 
     class AbstractMapValuesIterator
-        : public ElRefBase
+        : public Object
         , public IIterator
     {
     public:
@@ -314,8 +314,6 @@ public:
         AutoPtr<IIterator> mSetIterator;
     };
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     virtual CARAPI Clear();
 

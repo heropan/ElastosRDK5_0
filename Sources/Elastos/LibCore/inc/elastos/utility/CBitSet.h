@@ -2,15 +2,22 @@
 #ifndef __CBITSET_H__
 #define __CBITSET_H__
 
-#include "_CBitSet.h"
+#include "_Elastos_Utility_CBitSet.h"
+#include "Object.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::IO::IInt64Buffer;
 using Elastos::IO::IByteBuffer;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
 
 CarClass(CBitSet)
+    , public Object
+    , public IBitSet
+    , public ISerializable
+    , public ICloneable
 {
 public:
     CBitSet();
