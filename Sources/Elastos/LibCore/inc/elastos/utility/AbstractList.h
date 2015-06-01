@@ -2,6 +2,7 @@
 #define __UTILITY_ABSTRACTLIST_H__
 
 #include "AbstractCollection.h"
+#include "Object.h"
 
 using Elastos::Utility::IIterator;
 using Elastos::Utility::ICollection;
@@ -12,18 +13,20 @@ using Elastos::Utility::IRandomAccess;
 namespace Elastos {
 namespace Utility {
 
-class AbstractList : public AbstractCollection
+class AbstractList
+    : public AbstractCollection
+    , public IList
 {
 private:
     class SimpleListIterator
-        : public ElRefBase
+        : public Object
         , public IIterator
     {
     public:
         SimpleListIterator(
             /* [in] */ AbstractList* owner);
 
-        CAR_INTERFACE_DECL();
+        CAR_INTERFACE_DECL()
 
         CARAPI HasNext(
             /* [out] */ Boolean* result);
@@ -45,11 +48,12 @@ private:
         , public IListIterator
     {
     public:
+
+        CAR_INTERFACE_DECL();
+
         FullListIterator(
             /* [in] */ Int32 start,
             /* [in] */ AbstractList* owner);
-
-        CAR_INTERFACE_DECL();
 
         CARAPI Add(
             /* [in] */ IInterface* object);
@@ -79,9 +83,8 @@ private:
     };
 
 public:
-    virtual CARAPI_(UInt32) AddRef() = 0;
 
-    virtual CARAPI_(UInt32) Release() = 0;
+    CAR_INTERFACE_DECL()
 
     /**
      * Inserts the specified object into this List at the specified location.
@@ -277,6 +280,8 @@ public:
      * @throws IndexOutOfBoundsException
      *             if {@code location < 0 || location >= size()}
      */
+
+    using AbstractCollection::Remove;
     virtual CARAPI Remove(
         /* [in] */ Int32 location,
         /* [out] */ IInterface** object);
@@ -390,14 +395,13 @@ public:
 };
 
 class SubAbstractList
-    : public ElRefBase
-    , public AbstractList
-    , public IList
+    : public AbstractList
 {
 private:
     class SubAbstractListIterator
-        : public ElLightRefBase
+        : public Object
         , public IListIterator
+        , public IIterator
     {
     public:
         SubAbstractListIterator(
@@ -449,8 +453,6 @@ public:
         /* [in] */ AbstractList* list,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
-
-    CAR_INTERFACE_DECL();
 
     CARAPI Add(
         /* [in] */ Int32 location,

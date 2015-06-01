@@ -14,7 +14,7 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 
 SOURCES += AbstractCollection.cpp
-//SOURCES += AbstractList.cpp
+SOURCES += AbstractList.cpp
 //SOURCES += AbstractMap.cpp
 //SOURCES += AbstractQueue.cpp
 //SOURCES += AbstractSequentialList.cpp

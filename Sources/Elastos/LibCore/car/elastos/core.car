@@ -157,10 +157,6 @@ module
         interface ISerializable;
     }
 
-    // class CObjectContainer {
-    //     interface IObjectContainer;
-    // }
-
     singleton class CBlockGuard {
          interface IBlockGuard;
     }

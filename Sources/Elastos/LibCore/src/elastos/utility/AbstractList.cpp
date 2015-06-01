@@ -1,6 +1,6 @@
 
 #include "AbstractList.h"
-#include <elastos/ObjectUtils.h>
+#include "ObjectUtils.h"
 
 using Elastos::Core::ObjectUtils;
 using Elastos::Utility::IList;
@@ -19,7 +19,7 @@ AbstractList::SimpleListIterator::SimpleListIterator(
     , mOwner(owner)
 {}
 
-CAR_INTERFACE_IMPL(AbstractList::SimpleListIterator, IIterator);
+CAR_INTERFACE_IMPL(AbstractList::SimpleListIterator, Object, IIterator);
 
 ECode AbstractList::SimpleListIterator::HasNext(
     /* [out] */ Boolean* result)
@@ -78,10 +78,13 @@ ECode AbstractList::SimpleListIterator::Remove()
 //=================================================
 // AbstractList::FullListIterator
 //=================================================
+
+CAR_INTERFACE_IMPL(AbstractList::FullListIterator, SimpleListIterator, IListIterator);
+
 AbstractList::FullListIterator::FullListIterator(
     /* [in] */ Int32 start,
     /* [in] */ AbstractList* owner)
-    :SimpleListIterator(owner)
+    : SimpleListIterator(owner)
 {
     Int32 size;
     mOwner->GetSize(&size);
@@ -89,8 +92,6 @@ AbstractList::FullListIterator::FullListIterator(
         mPos = start - 1;
     }
 }
-
-CAR_INTERFACE_IMPL(AbstractList::FullListIterator, IListIterator);
 
 ECode AbstractList::FullListIterator::Add(
     /* [in] */ IInterface* object)
@@ -210,7 +211,7 @@ SubAbstractList::SubAbstractListIterator::SubAbstractListIterator(
 {
 }
 
-CAR_INTERFACE_IMPL_LIGHT(SubAbstractList::SubAbstractListIterator, IListIterator);
+CAR_INTERFACE_IMPL_2(SubAbstractList::SubAbstractListIterator, Object, IListIterator, IIterator)
 
 ECode SubAbstractList::SubAbstractListIterator::Add(
     /* [in] */ IInterface* object)
@@ -248,7 +249,8 @@ ECode SubAbstractList::SubAbstractListIterator::Next(
     Int32 index;
     mIterator->NextIndex(&index);
     if (index < mEnd) {
-        return mIterator->Next(object);
+        IIterator* iterator = IIterator::Probe(mIterator);
+        iterator->Next(object);
     }
     return E_NO_SUCH_ELEMENT_EXCEPTION;
 }
@@ -291,7 +293,8 @@ ECode SubAbstractList::SubAbstractListIterator::PreviousIndex(
 
 ECode SubAbstractList::SubAbstractListIterator::Remove()
 {
-    mIterator->Remove();
+    IIterator* iterator = IIterator::Probe(mIterator);
+    iterator->Remove();
     mSubList->SizeChanged(FALSE);
     mEnd--;
     return NOERROR;
@@ -313,8 +316,6 @@ SubAbstractList::SubAbstractList(
 {
     mModCount = mFulllist->mModCount;
 }
-
-CAR_INTERFACE_IMPL(SubAbstractList, IList);
 
 ECode SubAbstractList::Add(
     /* [in] */ Int32 location,
@@ -399,7 +400,7 @@ ECode SubAbstractList::GetIterator(
     VALIDATE_NOT_NULL(it);
     AutoPtr<IListIterator> listit;
     GetListIterator(0, (IListIterator**)&listit);
-    *it = listit;
+    *it = IIterator::Probe(listit);
     REFCOUNT_ADD(*it);
     return NOERROR;
 }
@@ -654,7 +655,7 @@ ECode AbstractList::AddAll(
     VALIDATE_NOT_NULL(collection);
     VALIDATE_NOT_NULL(result);
     AutoPtr<IIterator> it;
-    collection->GetIterator((IIterator**)&it);
+    (IIterable::Probe(collection))->GetIterator((IIterator**)&it);
     Boolean hasnext = FALSE;
     while ((it->HasNext(&hasnext), hasnext)) {
         AutoPtr<IInterface> nextobject;
@@ -690,7 +691,7 @@ ECode AbstractList::Equals(
     }
 
     Int32 listsize;
-    list->GetSize(&listsize);
+    (ICollection::Probe(list))->GetSize(&listsize);
     Int32 size;
     GetSize(&size);
     if (listsize != size) {
@@ -698,9 +699,9 @@ ECode AbstractList::Equals(
         return NOERROR;
     }
     AutoPtr<IIterator> it1;
-    GetIterator((IIterator**)&it1);
+    (IIterable::Probe(this))->GetIterator((IIterator**)&it1);
     AutoPtr<IIterator> it2;
-    list->GetIterator((IIterator**)&it2);
+    (IIterable::Probe(list))->GetIterator((IIterator**)&it2);
     Boolean hasnext = FALSE;
     while ((it1->HasNext(&hasnext), hasnext)) {
         AutoPtr<IInterface> e1;
@@ -747,9 +748,9 @@ ECode AbstractList::IndexOf(
     GetListIterator((IListIterator**)&it);
     Boolean hasnext = FALSE;
     if (object != NULL) {
-        while ((it->HasNext(&hasnext), hasnext)) {
+        while (((IIterator::Probe(it))->HasNext(&hasnext), hasnext)) {
             AutoPtr<IInterface> nextobject;
-            it->Next((IInterface**)&nextobject);
+            (IIterator::Probe(it))->Next((IInterface**)&nextobject);
             if (ObjectUtils::Equals(object, nextobject)) {
                 Int32 previousindex;
                 it->PreviousIndex(&previousindex);
@@ -758,9 +759,9 @@ ECode AbstractList::IndexOf(
             }
         }
     } else {
-        while ((it->HasNext(&hasnext), hasnext)) {
+        while (((IIterator::Probe(it))->HasNext(&hasnext), hasnext)) {
             AutoPtr<IInterface> nextobject;
-            it->Next((IInterface**)&nextobject);
+            (IIterator::Probe(it))->Next((IInterface**)&nextobject);
             if (nextobject == NULL) {
                 Int32 previousindex;
                 it->PreviousIndex(&previousindex);
@@ -854,7 +855,7 @@ ECode AbstractList::RemoveRange(
     AutoPtr<IIterator> it;
     AutoPtr<IListIterator> listit;
     GetListIterator(start, (IListIterator**)&listit);
-    it = listit;
+    it = IIterator::Probe(listit);
     for (Int32 i = start; i < end; i++) {
         AutoPtr<IInterface> nextobject;
         it->Next((IInterface**)&nextobject);
@@ -882,7 +883,7 @@ ECode AbstractList::SubList(
         if (start <= end) {
             if (THIS_PROBE(IRandomAccess)) {
                 AutoPtr<SubAbstractListRandomAccess> sublistrandom = new SubAbstractListRandomAccess(this, start, end);
-                *list = sublistrandom;
+                *list = IList::Probe(sublistrandom);
                 REFCOUNT_ADD(*list);
                 return NOERROR;
             }
@@ -904,7 +905,9 @@ SubAbstractListRandomAccess::SubAbstractListRandomAccess(
 {
 }
 
-CAR_INTERFACE_IMPL(SubAbstractListRandomAccess, IList);
+CAR_INTERFACE_IMPL(SubAbstractListRandomAccess, SubAbstractList, IRandomAccess);
+
+CAR_INTERFACE_IMPL(AbstractList, AbstractCollection, IList)
 
 } // Utility
 } // Elastos

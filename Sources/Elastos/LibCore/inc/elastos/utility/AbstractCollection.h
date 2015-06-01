@@ -2,11 +2,14 @@
 #define __UTILITY_ABSTRACTCOLLECTION_H__
 
 #include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
+
+EXTERN const _ELASTOS ClassID ECLSID_AbstractCollection;
 
 class AbstractCollection
     : public Object
