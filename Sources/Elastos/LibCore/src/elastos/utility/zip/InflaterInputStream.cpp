@@ -34,7 +34,7 @@ ECode InflaterInputStream::Read(
     return streams->ReadSingleByte(THIS_PROBE(IInputStream), value);
 }
 
-ECode InflaterInputStream::ReadBytes(
+ECode InflaterInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
@@ -127,7 +127,7 @@ ECode InflaterInputStream::Fill()
         is->Skip(cnt, &result);
     }
     else {
-        mIn->ReadBytes(mBuf, &mLen);
+        mIn->Read(mBuf, &mLen);
         if (mLen > 0) {
             mInf->SetInput(*mBuf, 0, mLen);
         }
@@ -206,11 +206,11 @@ ECode InflaterInputStream::CheckClosed()
     return NOERROR;
 }
 
-ECode InflaterInputStream::ReadBytes(
+ECode InflaterInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
-    return ReadBytes(buffer,0, buffer->GetLength(), number);
+    return Read(buffer,0, buffer->GetLength(), number);
 }
 
 ECode InflaterInputStream::Init(

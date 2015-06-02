@@ -1,52 +1,22 @@
 
-#ifndef __CINFLATERINPUTSTREAM_H__
-#define __CINFLATERINPUTSTREAM_H__
+#ifndef __ELASTOS_UTILITY_CINFLATERINPUTSTREAM_H__
+#define __ELASTOS_UTILITY_CINFLATERINPUTSTREAM_H__
 
-#include "_CInflaterInputStream.h"
+#include "_Elastos_Utility_Zip_CInflaterInputStream.h"
 #include "InflaterInputStream.h"
 
 namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-CarClass(CInflaterInputStream) , public InflaterInputStream
+CarClass(CInflaterInputStream)
+    , public InflaterInputStream
 {
 public:
+    CAR_OBJECT_DECL()
+
     CARAPI GetLock(
         /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI Available(
-        /* [out] */ Int32* number);
-
-    CARAPI Close();
-
-    CARAPI Mark(
-        /* [in] */ Int32 readLimit);
-
-    CARAPI IsMarkSupported(
-        /* [out] */ Boolean* supported);
-
-    CARAPI Read(
-        /* [out] */ Int32* value);
-
-    CARAPI ReadBytes(
-        /* [out] */ ArrayOf<Byte>* buffer,
-        /* [out] */ Int32* number);
-
-    CARAPI ReadBytes(
-        /* [out] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
-        /* [out] */ Int32* number);
-
-    CARAPI Reset();
-
-    CARAPI Skip(
-        /* [in] */ Int64 count,
-        /* [out] */ Int64* number);
 
     /**
      * This is the most basic constructor. You only need to pass the {@code
@@ -94,4 +64,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CINFLATERINPUTSTREAM_H__
+#endif //__ELASTOS_UTILITY_CINFLATERINPUTSTREAM_H__

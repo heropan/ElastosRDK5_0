@@ -11,8 +11,9 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-
 const Int32 ZipOutputStream::ZIPLocalHeaderVersionNeeded;
+
+CAR_INTERFACE_IMPL(ZipOutputStream, DeflaterOutputStream, IZipOutputStream)
 
 ZipOutputStream::ZipOutputStream()
     : mCompressMethod(IDeflater::DEFLATED)
@@ -143,14 +144,14 @@ ECode ZipOutputStream::CloseEntry()
     WriteInt16(mCDir, 0); // Internal File Attributes
     WriteInt64(mCDir, 0); // External File Attributes
     WriteInt64(mCDir, mOffset);
-    mCDir->WriteBytes(*mNameBytes);
+    mCDir->Write(*mNameBytes);
     mNameBytes = NULL;
     if (mCurrentEntry->mExtra != NULL) {
-        mCDir->WriteBytes(*mCurrentEntry->mExtra);
+        mCDir->Write(*mCurrentEntry->mExtra);
     }
     mOffset +=mCurOffset;
     if (!c.IsNull()) {
-        mCDir->WriteBytes(ArrayOf<Byte>(
+        mCDir->Write(ArrayOf<Byte>(
             reinterpret_cast<Byte*>(const_cast<char*>((const char*)c)), c.GetByteLength()));
     }
     mCurrentEntry = NULL;
@@ -189,7 +190,7 @@ ECode ZipOutputStream::Finish()
     WriteInt64(mCDir, mOffset); // Offset of central dir
     if (!mComment.IsNull()) {
         WriteInt16(mCDir, mComment.GetLength());
-        mCDir->WriteBytes(ArrayOf<Byte>(
+        mCDir->Write(ArrayOf<Byte>(
                 reinterpret_cast<Byte*>(const_cast<char*>((const char*)mComment)),
                 mComment.GetByteLength()));
     }
@@ -199,7 +200,7 @@ ECode ZipOutputStream::Finish()
     // Write the central dir
     AutoPtr<ArrayOf<Byte> > bytes;
     mCDir->ToByteArray((ArrayOf<Byte> **)&bytes);
-    mOut->WriteBytes(*bytes);
+    mOut->Write(*bytes);
     mCDir = NULL;
     return NOERROR;
 }
@@ -298,9 +299,9 @@ ECode ZipOutputStream::PutNextEntry(
         WriteInt16(mOut, 0);
     }
     mNameBytes = ToUTF8Bytes(mCurrentEntry->mName, mNameLength);
-    mOut->WriteBytes(*mNameBytes);
+    mOut->Write(*mNameBytes);
     if (mCurrentEntry->mExtra != NULL) {
-        mOut->WriteBytes(*mCurrentEntry->mExtra);
+        mOut->Write(*mCurrentEntry->mExtra);
     }
     return NOERROR;
 }
@@ -362,7 +363,7 @@ Int32 ZipOutputStream::WriteInt16(
 
 }
 
-ECode ZipOutputStream::WriteBytes(
+ECode ZipOutputStream::Write(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
@@ -382,10 +383,10 @@ ECode ZipOutputStream::WriteBytes(
     Int32 method;
     mCurrentEntry->GetMethod(&method);
     if (method == IZipOutputStream::STORED) {
-        FAIL_RETURN(mOut->WriteBytes(buffer, offset, byteCount));
+        FAIL_RETURN(mOut->Write(buffer, offset, byteCount));
     }
     else {
-        FAIL_RETURN(DeflaterOutputStream::WriteBytes(buffer, offset, byteCount));
+        FAIL_RETURN(DeflaterOutputStream::Write(buffer, offset, byteCount));
     }
     return mCrc->Update(buffer, offset, byteCount);
 }

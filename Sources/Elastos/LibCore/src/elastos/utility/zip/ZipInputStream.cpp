@@ -1,7 +1,7 @@
 
 #include "ZipInputStream.h"
 #include "CZipFile.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::Math;
 using Elastos::IO::IStreams;
@@ -17,6 +17,8 @@ namespace Utility {
 namespace Zip {
 
 const Int32 ZipInputStream::ZIPLocalHeaderVersionNeeded;
+
+CAR_INTERFACE_IMPL(ZipInputStream, InflaterInputStream, IZipInputStream)
 
 ZipInputStream::ZipInputStream()
     : mEntriesEnd(FALSE)
@@ -242,7 +244,7 @@ Int32 ZipInputStream::PeekShort(
     return (value & 0xffff);
 }
 
-ECode ZipInputStream::ReadBytes(
+ECode ZipInputStream::Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
@@ -273,7 +275,7 @@ ECode ZipInputStream::ReadBytes(
         }
         if (mLastRead >= mLen) {
             mLastRead = 0;
-            FAIL_RETURN(mIn->ReadBytes(mBuf, &mLen));
+            FAIL_RETURN(mIn->Read(mBuf, &mLen));
             if (mLen == -1) {
                 mEof = TRUE;
                 *number = -1;
