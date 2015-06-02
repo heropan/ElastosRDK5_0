@@ -5,7 +5,6 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-
 const Int32 CDeflater::NO_FLUSH;
 const Int32 CDeflater::SYNC_FLUSH;
 const Int32 CDeflater::FULL_FLUSH;

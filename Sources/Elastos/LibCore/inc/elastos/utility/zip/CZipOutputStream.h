@@ -14,16 +14,6 @@ CarClass(CZipOutputStream) , public ZipOutputStream
 public:
     CAR_OBJECT_DECL()
 
-    /**
-     * Constructs a new {@code ZipOutputStream} with the specified output
-     * stream.
-     *
-     * @param p1
-     *            the {@code OutputStream} to write the data to.
-     */
-    CARAPI constructor(
-        /* [in] */ IOutputStream* os);
-
     CARAPI GetLock(
         /* [out] */ IInterface** lockobj);
 };

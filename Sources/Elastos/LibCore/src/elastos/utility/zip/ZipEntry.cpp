@@ -194,7 +194,7 @@ ECode ZipEntry::SetTime(
     return NOERROR;
 }
 
-ECode ZipEntry::Init(
+ECode ZipEntry::constructor(
     /* [in] */ const String& name)
 {
     if (name.IsNull()) {
@@ -209,7 +209,7 @@ ECode ZipEntry::Init(
     return NOERROR;
 }
 
-ECode ZipEntry::Init(
+ECode ZipEntry::constructor(
     /* [in] */ ZipEntry* ze)
 {
     mName = ze->mName;
@@ -226,7 +226,7 @@ ECode ZipEntry::Init(
     return NOERROR;
 }
 
-ECode ZipEntry::Init(
+ECode ZipEntry::constructor(
     /* in */ const ArrayOf<Byte>& hdrBuf,
     /* in */ IInputStream* in)
 {

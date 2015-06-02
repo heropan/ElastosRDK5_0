@@ -342,7 +342,7 @@ ECode ZipInputStream::CheckClosed()
     return NOERROR;
 }
 
-ECode ZipInputStream::Init(
+ECode ZipInputStream::constructor(
     /* [in] */ IInputStream* stream)
 {
     if (stream == NULL) {
@@ -354,7 +354,7 @@ ECode ZipInputStream::Init(
     FAIL_RETURN(CPushbackInputStream::New(stream, BUF_SIZE, (IPushbackInputStream**)&is));
     AutoPtr<CInflater> inflater;
     CInflater::NewByFriend(TRUE, (CInflater**)&inflater);
-    return InflaterInputStream::Init(is.Get(), (IInflater*)inflater.Get());
+    return InflaterInputStream::constructor(is.Get(), (IInflater*)inflater.Get());
 }
 
 } // namespace Zip

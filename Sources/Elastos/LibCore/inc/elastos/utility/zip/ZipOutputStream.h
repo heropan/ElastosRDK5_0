@@ -130,7 +130,7 @@ protected:
      * @param p1
      *            the {@code OutputStream} to write the data to.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* p1);
 
 private:

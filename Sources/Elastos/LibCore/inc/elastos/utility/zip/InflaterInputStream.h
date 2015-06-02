@@ -144,7 +144,7 @@ protected:
      * @param is
      *            the {@code InputStream} to read data from.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* is);
 
     /**
@@ -156,7 +156,7 @@ protected:
      * @param inflater
      *            the specific {@code Inflater} for uncompressing data.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* is,
         /* [in] */ IInflater* inflater);
 
@@ -171,7 +171,7 @@ protected:
      * @param bsize
      *            the size to be used for the internal buffer.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* is,
         /* [in] */ IInflater* inflater,
         /* [in] */ Int32 bsize);

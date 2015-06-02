@@ -71,7 +71,6 @@ ECode ZipFile::RAFStream::Read(
 {
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
-    Mutex::Autolock lock(mSharedRafLock);
     Object::Autolock locK(sLock);
 
     mSharedRaf->Seek(mOffset);
@@ -154,7 +153,7 @@ ZipFile::ZipInflaterInputStream::ZipInflaterInputStream(
     : mEntry(entry)
     , mBytesRead(0)
 {
-    ASSERT_SUCCEEDED(InflaterInputStream::Init(is, inf, bsize));
+    ASSERT_SUCCEEDED(InflaterInputStream::constructor(is, inf, bsize));
 }
 
 ECode ZipFile::ZipInflaterInputStream::GetLock(
@@ -480,13 +479,13 @@ ECode ZipFile::ReadCentralDir()
     return NOERROR;
 }
 
-ECode ZipFile::Init(
+ECode ZipFile::constructor(
     /* [in] */ IFile* file)
 {
-    return Init(file, IZipFile::OPEN_READ);
+    return constructor(file, IZipFile::OPEN_READ);
 }
 
-ECode ZipFile::Init(
+ECode ZipFile::constructor(
     /* [in] */ IFile* file,
     /* [in] */ Int32 mode)
 {
@@ -510,12 +509,12 @@ ECode ZipFile::Init(
 //    guard.open("close");
 }
 
-ECode ZipFile::Init(
+ECode ZipFile::constructor(
     /* [in] */ const String& name)
 {
     AutoPtr<IFile> file;
     FAIL_RETURN(CFile::New(name, (IFile**)&file));
-    return Init(file, IZipFile::OPEN_READ);
+    return constructor(file, IZipFile::OPEN_READ);
 }
 
 

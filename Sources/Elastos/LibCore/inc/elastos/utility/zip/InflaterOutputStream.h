@@ -91,7 +91,7 @@ protected:
      *
      * @param out the destination {@code OutputStream}
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* out);
 
     /**
@@ -102,7 +102,7 @@ protected:
      * @param out the destination {@code OutputStream}
      * @param inf the {@code Inflater} to be used for decompression
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* out,
         /* [in] */ IInflater* inf);
 
@@ -115,7 +115,7 @@ protected:
      * @param inf the {@code Inflater} to be used for decompression
      * @param bufferSize the length in bytes of the internal buffer
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* out,
         /* [in] */ IInflater* inf,
         /* [in] */ Int32 bufferSize);

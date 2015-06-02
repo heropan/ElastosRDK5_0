@@ -226,7 +226,7 @@ protected:
      * @throws IOException
      *             if an {@code IOException} occurs.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IFile* file);
 
     /**
@@ -241,7 +241,7 @@ protected:
      * @throws IOException
      *             if an {@code IOException} occurs.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IFile* file,
         /* [in] */ Int32 mode);
 
@@ -253,7 +253,7 @@ protected:
      * @throws IOException
      *             if an IOException occurs.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& name);
 
 protected:

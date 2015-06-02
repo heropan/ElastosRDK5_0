@@ -63,7 +63,7 @@ ECode CheckedOutputStream::CheckError(
     return NOERROR;
 }
 
-ECode CheckedOutputStream::Init(
+ECode CheckedOutputStream::constructor(
     /* [in] */ IOutputStream* os,
     /* [in] */ IChecksum* cs)
 {
@@ -74,13 +74,6 @@ ECode CheckedOutputStream::Init(
 
 //======================================================
 CAR_OBJECT_IMPL(CCheckedOutputStream)
-
-ECode CCheckedOutputStream::constructor(
-    /* [in] */ IOutputStream* os,
-    /* [in] */ IChecksum* cs)
-{
-    return CheckedOutputStream::Init(os, cs);
-}
 
 ECode CCheckedOutputStream::GetLock(
     /* [out] */ IInterface** lockobj)

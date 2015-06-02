@@ -117,7 +117,7 @@ ECode InflaterInputStream::Fill()
 
     if (mNativeEndBufSize > 0) {
         CZipFile::RAFStream* is = (CZipFile::RAFStream*)mIn->Probe(EIID_ZipFileRAFStream);
-        Mutex::Autolock lock(is->mSharedRafLock);
+        Object::Autolock locK(is->sLock);
         Int64 len = is->mLength - is->mOffset;
         if (len > mNativeEndBufSize) len = mNativeEndBufSize;
         AutoPtr<IFileDescriptor> fd;
@@ -213,22 +213,22 @@ ECode InflaterInputStream::Read(
     return Read(buffer,0, buffer->GetLength(), number);
 }
 
-ECode InflaterInputStream::Init(
+ECode InflaterInputStream::constructor(
     /* [in] */ IInputStream* is)
 {
     AutoPtr<CInflater> inflater;
     CInflater::NewByFriend((CInflater**)&inflater);
-    return Init(is, (IInflater*)inflater.Get(), BUF_SIZE);
+    return constructor(is, (IInflater*)inflater.Get(), BUF_SIZE);
 }
 
-ECode InflaterInputStream::Init(
+ECode InflaterInputStream::constructor(
     /* [in] */ IInputStream* is,
     /* [in] */ IInflater* inflater)
 {
-    return Init(is, inflater, BUF_SIZE);
+    return constructor(is, inflater, BUF_SIZE);
 }
 
-ECode InflaterInputStream::Init(
+ECode InflaterInputStream::constructor(
     /* [in] */ IInputStream* is,
     /* [in] */ IInflater* inflater,
     /* [in] */ Int32 bsize)

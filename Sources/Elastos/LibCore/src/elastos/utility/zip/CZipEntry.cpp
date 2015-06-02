@@ -81,25 +81,6 @@ ECode CZipEntry::IsDirectory(
     return NOERROR;
 }
 
-ECode CZipEntry::constructor(
-    /* [in] */ const String& name)
-{
-    return ZipEntry::Init(name);
-}
-
-ECode CZipEntry::constructor(
-    /* [in] */ IZipEntry* ze)
-{
-    return ZipEntry::Init((CZipEntry*)ze);
-}
-
-ECode CZipEntry::constructor(
-    /* in */ const ArrayOf<Byte>& hdrBuf,
-    /* in */ IInputStream* in)
-{
-    return ZipEntry::Init(hdrBuf, in);
-}
-
 } // namespace Zip
 } // namespace Utility
 } // namespace Elastos

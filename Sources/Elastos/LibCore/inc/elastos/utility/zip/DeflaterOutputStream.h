@@ -107,7 +107,7 @@ protected:
      *            is the specific {@code Deflater} that is used to compress
      *            data.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* os,
         /* [in] */ IDeflater* def);
 
@@ -121,7 +121,7 @@ protected:
      * @param os
      *            is the OutputStream where to write the compressed data to.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* os);
 
     /**
@@ -137,7 +137,7 @@ protected:
      * @param bsize
      *            is the size to be used for the internal buffer.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* os,
         /* [in] */ IDeflater* def,
         /* [in] */ Int32 bsize);
@@ -146,7 +146,7 @@ protected:
      * @hide
      * @since 1.7
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* os,
         /* [in] */ Boolean syncFlush);
 
@@ -154,7 +154,7 @@ protected:
      * @hide
      * @since 1.7
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* os,
         /* [in] */ IDeflater* def,
         /* [in] */ Boolean syncFlush);
@@ -163,7 +163,7 @@ protected:
      * @hide
      * @since 1.7
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* os,
         /* [in] */ IDeflater* def,
         /* [in] */ Int32 bsize,

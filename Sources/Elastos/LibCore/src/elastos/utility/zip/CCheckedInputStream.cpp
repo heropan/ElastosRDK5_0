@@ -38,7 +38,7 @@ ECode CCheckedInputStream::Read(
     return NOERROR;
 }
 
-ECode CCheckedInputStream::ReadBytes(
+ECode CCheckedInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes,
@@ -47,7 +47,7 @@ ECode CCheckedInputStream::ReadBytes(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    FAIL_RETURN(mIn->ReadBytes(buffer, off, nbytes, number));
+    FAIL_RETURN(mIn->Read(buffer, off, nbytes, number));
     if (*number != -1) {
         mCheck->Update(*buffer, off, *number);
     }
@@ -74,13 +74,13 @@ ECode CCheckedInputStream::Skip(
     return streams->SkipByReading(THIS_PROBE(IInputStream), byteCount, number);
 }
 
-ECode CCheckedInputStream::ReadBytes(
+ECode CCheckedInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
     VALIDATE_NOT_NULL(buffer);
-    return ReadBytes(buffer, 0, buffer->GetLength(), number);
+    return Read(buffer, 0, buffer->GetLength(), number);
 }
 
 /**
@@ -100,7 +100,7 @@ ECode CCheckedInputStream::constructor(
     /* [in] */ IInputStream* is,
     /* [in] */ IChecksum* csum)
 {
-    FilterInputStream::Init(is);
+    FilterInputStream::constructor(is);
     mCheck = csum;
     return NOERROR;
 }
