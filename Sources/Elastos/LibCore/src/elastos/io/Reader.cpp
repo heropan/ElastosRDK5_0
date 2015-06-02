@@ -155,7 +155,7 @@ ECode Reader::Read(
     FAIL_RETURN(Read(buf, number));
     length = Elastos::Core::Math::Min(length, *number);
     if (length > 0) {
-        target->PutChars(*buf, 0, length);
+        target->Put(buf, 0, length);
     }
     *number = length;
 

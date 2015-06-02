@@ -51,7 +51,7 @@ module
          * @throws IOException
          *             another IO exception occurs, details are in the message.
          */
-        WriteByteBuffer(
+        Write(
             [in] IByteBuffer* buffer,
             [out] Int32* number);
     }

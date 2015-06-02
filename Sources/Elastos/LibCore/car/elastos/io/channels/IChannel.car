@@ -16,6 +16,10 @@ module
      * Particular implementations or sub-interfaces of Channel dicate whether they are
      * thread safe or not.
      */
+     /**
+     * @Involve
+     * interface ICloseable;
+     */
     interface IChannel {
         /**
          * Returns true if this channel is open.

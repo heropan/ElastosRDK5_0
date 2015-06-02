@@ -12,17 +12,25 @@ module
     namespace IO {
 
     /**
-     * A buffer for bytes
-     * A byte buffer can be created by either one of following ways:
-     * allocate(int) allcoate a new byte array and create a buffer base on it;
-     * allocateDirect() allocate a memory block and create a direct buffer base on it;
-     * wrap(byte[]) wrap an existing byte array to create a new buffer;
-     * @implement Elastos.IO.IBuffer
+     * A buffer for bytes.
+     * <p>
+     * A byte buffer can be created in either one of the following ways:
+     * <ul>
+     * <li>{@link #allocate(int) Allocate} a new byte array and create a buffer
+     * based on it;</li>
+     * <li>{@link #allocateDirect(int) Allocate} a memory block and create a direct
+     * buffer based on it;</li>
+     * <li>{@link #wrap(byte[]) Wrap} an existing byte array to create a new
+     * buffer.</li>
+     * </ul>
+     *
      */
-     /**
+    /**
      * @Involve
      * interface IBuffer;
+     * interface IComparable
      */
+    [deprecated]
     interface IByteBuffer {
         /**
          * Returns the byte array which this buffer is based on, if there is one.
@@ -35,25 +43,6 @@ module
          */
         GetArray(
             [out, callee] ArrayOf<Byte>* array);
-
-        /**
-         * Returns the offset into the array returned by {array} of the first
-         * element of the buffer (optional operation). The backing array (if there is one)
-         * is not necessarily the same size as the buffer, and position 0 in the buffer is
-         * not necessarily the 0th element in the array. Use
-         * {buffer.array()[offset + buffer.arrayOffset()} to access element {//offset}
-         * in {buffer}.
-         *
-         * <p>Use {hasArray} to ensure this method won't throw.
-         * (A separate call to {isReadOnly} is not necessary.)
-         *
-         * @return the offset
-         * @return ECode = NOERROR(0) if success, else as follows:
-         * Value | Meaning |
-         * :-|:------------|
-         * ReadOnlyBufferException | if the buffer is read-only UnsupportedOperationException if the buffer does not expose an array
-         * @since 1.6
-         */
 
         /**
          * Returns a char buffer which is based on the remaining content of this
@@ -232,7 +221,7 @@ module
          * @exception BufferUnderflowException
          *                if the position is equal or greater than limit.
          */
-        GetByte(
+        Get(
             [out] Byte* value);
 
         /**
@@ -244,7 +233,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if index is invalid.
          */
-        GetByte(
+        Get(
             [in] Int32 index,
             [out] Byte* value);
 
@@ -261,8 +250,8 @@ module
          * @exception BufferUnderflowException
          *                if {dst.length} is greater than {remaining()}.
          */
-        GetBytes(
-            [out] ArrayOf<Byte> dst);
+        Get(
+            [in] ArrayOf<Byte>* dst);
 
         /**
          * Reads bytes from the current position into the specified byte array,
@@ -281,8 +270,8 @@ module
          * @exception IndexOutOfBoundsException if {@code dstOffset < 0 ||  byteCount < 0}
          * @exception BufferUnderflowException if {@code byteCount > remaining()}
          */
-        GetBytes(
-            [out] ArrayOf<Byte> dst,
+        Get(
+            [in] ArrayOf<Byte>* dst,
             [in] Int32 dstOffset,
             [in] Int32 byteCount);
 
@@ -514,7 +503,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutByte(
+        Put(
             [in] Byte b);
 
         /**
@@ -531,7 +520,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutByte(
+        Put(
             [in] Int32 index,
             [in] Byte b);
 
@@ -550,8 +539,8 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutBytes(
-            [in] ArrayOf<Byte> src);
+        Put(
+            [in] ArrayOf<Byte>* src);
 
         /**
          * Writes bytes in the given byte array, starting from the specified offset,
@@ -574,8 +563,8 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutBytes(
-            [in] ArrayOf<Byte> src,
+        Put(
+            [in] ArrayOf<Byte>* src,
             [in] Int32 srcOffset,
             [in] Int32 byteCount);
 
@@ -595,7 +584,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutByteBuffer(
+        Put(
             [in] IByteBuffer* src);
 
         /**
@@ -887,7 +876,7 @@ module
          *            the byte array which the new buffer will be based on
          * @return the created byte buffer.
          */
-        WrapArray(
+        Wrap(
             [in] ArrayOf<Byte>* array,
             [out] IByteBuffer** byteBuf);
 
@@ -909,7 +898,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if either {@code start} or {@code byteCount} is invalid.
          */
-        WrapArray(
+        Wrap(
             [in] ArrayOf<Byte>* array,
             [in] Int32 start,
             [in] Int32 byteCount,

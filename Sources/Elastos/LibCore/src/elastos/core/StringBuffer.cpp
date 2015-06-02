@@ -2,10 +2,7 @@
 #include "StringBuffer.h"
 #include "StringBuilder.h"
 #include "Character.h"
-#ifdef ELASTOS_CORELIBRARY
 #include "CStringWrapper.h"
-#endif
-
 #include <stdio.h>
 
 #define DEFAULT_STEP 16
@@ -98,29 +95,29 @@ ECode StringBuffer::TrimToSize()
     return AbstractStringBuilder::TrimToSize();
 }
 
-ECode StringBuffer::SetChar(
+ECode StringBuffer::SetCharAt(
     /* [in] */ Int32 index,
     /* [in] */ Char32 ch)
 {
     Object::Autolock lock(this);
-    return AbstractStringBuilder::SetChar(index, ch);
+    return AbstractStringBuilder::SetCharAt(index, ch);
 }
 
-Char32 StringBuffer::GetChar(
+Char32 StringBuffer::GetCharAt(
     /* [in] */ Int32 index)
 {
     Object::Autolock lock(this);
     Char32 ch;
-    AbstractStringBuilder::GetChar(index, &ch);
+    AbstractStringBuilder::GetCharAt(index, &ch);
     return ch;
 }
 
-ECode StringBuffer::GetChar(
+ECode StringBuffer::GetCharAt(
     /* [in] */ Int32 index,
     /* [out] */ Char32* c)
 {
     Object::Autolock lock(this);
-    return AbstractStringBuilder::GetChar(index, c);
+    return AbstractStringBuilder::GetCharAt(index, c);
 }
 
 ECode StringBuffer::GetChars(
@@ -454,11 +451,11 @@ ECode StringBuffer::Reverse()
     return AbstractStringBuilder::Reverse();
 }
 
-ECode StringBuffer::Delete(
+ECode StringBuffer::DeleteCharAt(
     /* [in] */ Int32 location)
 {
     Object::Autolock lock(this);
-    return AbstractStringBuilder::Delete(location);
+    return AbstractStringBuilder::DeleteCharAt(location);
 }
 
 ECode StringBuffer::Delete(

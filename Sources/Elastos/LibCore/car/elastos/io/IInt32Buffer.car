@@ -3,14 +3,25 @@ module
 {
     namespace Elastos {
     namespace IO {
-    /**
-    * @implement Elastos.IO.IBuffer
-    */
 
-     /**
+    /**
+     * A buffer of ints.
+     * <p>
+     * A int buffer can be created in either of the following ways:
+     * <ul>
+     * <li>{@link #allocate(int) Allocate} a new int array and create a buffer
+     * based on it;</li>
+     * <li>{@link #wrap(int[]) Wrap} an existing int array to create a new buffer;</li>
+     * <li>Use {@link java.nio.ByteBuffer#asIntBuffer() ByteBuffer.asIntBuffer} to
+     * create a int buffer based on a byte buffer.</li>
+     * </ul>
+     */
+    /**
      * @Involve
      * interface IBuffer;
+     * interface IComparable;
      */
+    [deprecated]
     interface IInt32Buffer {
         GetArray(
             [out, callee] ArrayOf<Int32>* array);
@@ -67,7 +78,7 @@ module
          * @exception BufferUnderflowException
          *                if the position is equal or greater than limit.
          */
-        GetInt32(
+        Get(
             [out] Int32* value);
 
         /**
@@ -79,7 +90,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if index is invalid.
          */
-        GetInt32(
+        Get(
             [in] Int32 index,
             [out] Int32* value);
 
@@ -96,8 +107,8 @@ module
          * @exception BufferUnderflowException
          *                if {dst.length} is greater than {remaining()}.
          */
-        GetInt32s(
-            [out] ArrayOf<Int32> dst);
+        Get(
+            [in] ArrayOf<Int32>* dst);
 
         /**
          * Reads ints from the current position into the specified int array,
@@ -118,8 +129,8 @@ module
          * @exception BufferUnderflowException
          *                if {@code intCount} is greater than {@code remaining()}.
          */
-        GetInt32s(
-            [out] ArrayOf<Int32> dst,
+        Get(
+            [in] ArrayOf<Int32>* dst,
             [in] Int32 dstOffset,
             [in] Int32 int32Count);
 
@@ -148,7 +159,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt32(
+        Put(
             [in] Int32 i);
 
         /**
@@ -165,7 +176,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt32(
+        Put(
             [in] Int32 index,
             [in] Int32 i);
 
@@ -184,8 +195,8 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt32s(
-            [in] ArrayOf<Int32> src);
+        Put(
+            [in] ArrayOf<Int32>* src);
 
         /**
          * Writes ints from the given int array, starting from the specified offset,
@@ -208,8 +219,8 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt32s(
-            [in] ArrayOf<Int32> src,
+        Put(
+            [in] ArrayOf<Int32>* src,
             [in] Int32 srcOffset,
             [in] Int32 int32Count);
 
@@ -229,7 +240,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt32Buffer(
+        Put(
             [in] IInt32Buffer* src);
 
         /**
@@ -278,7 +289,7 @@ module
          *            the int array which the new buffer will be based on.
          * @return the created int buffer.
          */
-        WrapArray(
+        Wrap(
             [in] ArrayOf<Int32>* array,
             [out] IInt32Buffer** int32Buffer);
 
@@ -300,7 +311,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if either {start} or {intCount} is invalid.
          */
-        WrapArray(
+        Wrap(
             [in] ArrayOf<Int32>* array,
             [in] Int32 start,
             [in] Int32 int32Count,

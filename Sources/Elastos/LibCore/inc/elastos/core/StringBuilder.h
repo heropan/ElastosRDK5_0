@@ -144,7 +144,7 @@ public:
      *             if {@code index} is negative or greater than or equal to the
      *             current {@link #length()}.
      */
-    CARAPI SetChar(
+    CARAPI SetCharAt(
         /* [in] */ Int32 index,
         /* [in] */ Char32 ch);
 
@@ -161,11 +161,11 @@ public:
      * @see Character#codePointAt(char[], int, int)
      * @since 1.5
      */
-    CARAPI GetChar(
+    CARAPI GetCharAt(
         /* [in] */ Int32 index,
         /* [out] */ Char32* c);
 
-    CARAPI_(Char32) GetChar(
+    CARAPI_(Char32) GetCharAt(
         /* [in] */ Int32 index);
 
     /**
@@ -804,7 +804,7 @@ public:
      * @throws StringIndexOutOfBoundsException
      *             if {@code location < 0} or {@code location >= length()}
      */
-    CARAPI Delete(
+    CARAPI DeleteCharAt(
         /* [in] */ Int32 location);
 
     /**

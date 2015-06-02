@@ -53,7 +53,7 @@ module
          * @throws NonReadableChannelException
          *             if the channel was not opened for reading.
          */
-        ReadByteBuffer(
+        Read(
             [in] IByteBuffer* buffer,
             [out] Int32* number);
     }

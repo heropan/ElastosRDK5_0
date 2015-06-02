@@ -55,8 +55,8 @@ module
          *         UnsupportedOperationException if the buffer does not expose an array
          * @since 1.6
          */
-        GetPrimitiveArray(
-            [out] Handle32* offset);
+        //GetArray(
+        //    [out] IInterface** array);
 
         /**
          * Returns the offset into the array returned by {@code array} of the first
@@ -247,29 +247,6 @@ module
          */
         GetEffectiveDirectAddress(
             [out] Int32* effectiveDirectAddress);
-
-        ToString(
-            [out] String* str);
-
-        /**
-         * Used for the scalar get/put operations.
-         */
-        //CheckIndex(
-        //    [in] Int32 index);
-
-        /**
-         * Used for the ByteBuffer operations that get types larger than a byte.
-         */
-        // CheckIndex(
-        //    [in] Int32 index,
-        //    [in] Int32 sizeOfType);
-
-        //CheckGetBounds(
-        //    [in]  Int32 bytesPerElement,
-        //    [in]  Int32 length,
-        //    [in]  Int32 offset,
-        //    [in]  Int32 count,
-        //    [out] Int32* byteCount);
     }
 
     } // namespace IO

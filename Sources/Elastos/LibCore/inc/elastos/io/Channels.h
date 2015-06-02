@@ -95,7 +95,7 @@ private:
 
             if (readCount > 0) {
                 // targetPtr->PutBytes(0, readCount, *buff);
-                targetPtr->PutBytes(*buff, 0, readCount);
+                targetPtr->Put(buff, 0, readCount);
             }
             return readCount;
         }
@@ -140,8 +140,8 @@ private:
             }
 
             AutoPtr<ArrayOf<Byte> > buff = ArrayOf<Byte>::Alloc(bytesRemain);
-            source->GetByte(buff->GetPayload());
-            mOutputStream->Write(*buff, 0, bytesRemain);
+            source->Get(buff);
+            mOutputStream->Write(buff, 0, bytesRemain);
 
             return bytesRemain;
         }
@@ -149,8 +149,8 @@ private:
         protected:
         ECode ImplCloseChannel()
         {
-            AutoPtr<ICloseable> res = (ICloseable*) mOutputStream->Probe(EIID_ICloseable);
-            if(res) res->Close();
+            AutoPtr<ICloseable> res = ICloseable::Probe(mOutputStream);
+            if (res) res->Close();
             return NOERROR;
         }
 

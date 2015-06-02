@@ -17,10 +17,9 @@ module
      * another thread or process at any time. If this happens, the behavior of the
      * {@code MappedByteBuffer} is undefined.
      */
-     /**
+    /**
      * @Involve
      * interface IBuffer;
-     * interface Elastos.IO.IByteBuffer;
      */
     interface IMappedByteBuffer {
         /**
@@ -46,7 +45,6 @@ module
          * @return this buffer.
          */
         Force();
-
     }
 
     } // namespace IO

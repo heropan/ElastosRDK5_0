@@ -85,26 +85,26 @@ ECode StringBuilder::TrimToSize()
     return AbstractStringBuilder::TrimToSize();
 }
 
-ECode StringBuilder::SetChar(
+ECode StringBuilder::SetCharAt(
     /* [in] */ Int32 index,
     /* [in] */ Char32 ch)
 {
-    return AbstractStringBuilder::SetChar(index, ch);
+    return AbstractStringBuilder::SetCharAt(index, ch);
 }
 
-Char32 StringBuilder::GetChar(
+Char32 StringBuilder::GetCharAt(
     /* [in] */ Int32 index)
 {
     Char32 ch;
-    AbstractStringBuilder::GetChar(index, &ch);
+    AbstractStringBuilder::GetCharAt(index, &ch);
     return ch;
 }
 
-ECode StringBuilder::GetChar(
+ECode StringBuilder::GetCharAt(
     /* [in] */ Int32 index,
     /* [out] */ Char32* c)
 {
-    return AbstractStringBuilder::GetChar(index, c);
+    return AbstractStringBuilder::GetCharAt(index, c);
 }
 
 ECode StringBuilder::GetChars(
@@ -404,10 +404,10 @@ ECode StringBuilder::Reverse()
     return AbstractStringBuilder::Reverse();
 }
 
-ECode StringBuilder::Delete(
+ECode StringBuilder::DeleteCharAt(
     /* [in] */ Int32 location)
 {
-    return AbstractStringBuilder::Delete(location);
+    return AbstractStringBuilder::DeleteCharAt(location);
 }
 
 ECode StringBuilder::Delete(

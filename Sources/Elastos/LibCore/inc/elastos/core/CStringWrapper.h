@@ -39,7 +39,7 @@ public:
      *             if {@code index < 0} or {@code index} is greater than the
      *             length of this sequence.
      */
-    CARAPI GetChar(
+    CARAPI GetCharAt(
         /* [in] */ Int32 index,
         /* [out] */ Char32* c);
 

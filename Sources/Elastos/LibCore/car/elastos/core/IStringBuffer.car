@@ -73,9 +73,13 @@ module
          *             if {@code index} is negative or greater than or equal to the
          *             current {@link #length()}.
          */
-        SetChar(
+        SetCharAt(
             [in] Int32 index,
             [in] Char32 ch);
+
+        GetCharAt(
+            [in] Int32 index,
+            [out] Char32* c);
 
         /**
          * Copies the requested sequence of characters into {@code dst} passed
@@ -676,7 +680,7 @@ module
          * @throws StringIndexOutOfBoundsException
          *             if {@code location < 0} or {@code location >= length()}
          */
-        Delete(
+        DeleteCharAt(
             [in] Int32 location);
 
         /**

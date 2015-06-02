@@ -5,10 +5,7 @@
 #include "IntegralToString.h"
 #include "Character.h"
 #include "CStringWrapper.h"
-
-#if defined(_DEBUG) || defined(_ELASTOS_DEBUG)
-#include <stdio.h>
-#endif
+#include <utils/Log.h>
 
 #define DEFAULT_STEP 16
 
@@ -174,7 +171,7 @@ Int32 AbstractStringBuilder::GetCapacity()
     return mCapacity;
 }
 
-ECode AbstractStringBuilder::GetChar(
+ECode AbstractStringBuilder::GetCharAt(
     /* [in] */ Int32 index,
     /* [out] */ Char32* result)
 {
@@ -329,7 +326,7 @@ ECode AbstractStringBuilder::Append(
 
     AutoPtr< ArrayOf<Char32> > charArray = ArrayOf<Char32>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
-        csq->GetChar(i, &(*charArray)[i]);
+        csq->GetCharAt(i, &(*charArray)[i]);
     }
 
     return Append(*charArray);
@@ -364,7 +361,7 @@ ECode AbstractStringBuilder::Append(
 
     AutoPtr< ArrayOf<Char32> > charArray = ArrayOf<Char32>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
-        csq->GetChar(start + i, &(*charArray)[i]);
+        csq->GetCharAt(start + i, &(*charArray)[i]);
     }
 
     return Append(*charArray);
@@ -650,7 +647,7 @@ ECode AbstractStringBuilder::Insert(
     Int32 charsLength = end - start;
     AutoPtr< ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(charsLength);
     for (Int32 i = start; i < end; ++i) {
-        seq->GetChar(i, &ch);
+        seq->GetCharAt(i, &ch);
         (*chars)[i - start] = ch;
     }
 
@@ -753,7 +750,7 @@ ECode AbstractStringBuilder::Reverse()
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::SetChar(
+ECode AbstractStringBuilder::SetCharAt(
     /* [in] */ Int32 index,
     /* [in] */ Char32 ch)
 {
@@ -822,7 +819,7 @@ ECode AbstractStringBuilder::Delete(
     return NOERROR;
 }
 
-ECode AbstractStringBuilder::Delete(
+ECode AbstractStringBuilder::DeleteCharAt(
     /* [in] */ Int32 index)
 {
     return Delete(index, index + 1);

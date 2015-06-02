@@ -3,14 +3,26 @@ module
 {
     namespace Elastos {
     namespace IO {
-    /**
-    * @implement Elastos.IO.IBuffer
-    */
 
-     /**
+    /**
+     * A buffer of shorts.
+     * <p>
+     * A short buffer can be created in either of the following ways:
+     * <ul>
+     * <li>{@link #allocate(int) Allocate} a new short array and create a buffer
+     * based on it;</li>
+     * <li>{@link #wrap(short[]) Wrap} an existing short array to create a new
+     * buffer;</li>
+     * <li>Use {@link java.nio.ByteBuffer#asShortBuffer() ByteBuffer.asShortBuffer}
+     * to create a short buffer based on a byte buffer.</li>
+     * </ul>
+     */
+    /**
      * @Involve
      * interface IBuffer;
+     * interface IComparable;
      */
+    [deprecated]
     interface IInt16Buffer {
         GetArray(
             [out, callee] ArrayOf<Int16>* array);
@@ -68,7 +80,7 @@ module
          * @exception BufferUnderflowException
          *                if the position is equal or greater than limit.
          */
-        GetInt16(
+        Get(
             [out] Int16* value);
 
         /**
@@ -80,7 +92,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if index is invalid.
          */
-        GetInt16(
+        Get(
             [in] Int32 index,
             [out] Int16* value);
 
@@ -97,8 +109,8 @@ module
          * @exception BufferUnderflowException
          *                if {dst.length} is greater than {remaining()}.
          */
-        GetInt16s(
-            [out] ArrayOf<Int16> dst);
+        Get(
+            [in] ArrayOf<Int16> dst);
 
         /**
          * Reads shorts from the current position into the specified short array,
@@ -119,8 +131,8 @@ module
          * @exception BufferUnderflowException
          *                if {@code shortCount} is greater than {@code remaining()}.
          */
-        GetInt16s(
-            [out] ArrayOf<Int16> dst,
+        Get(
+            [in] ArrayOf<Int16> dst,
             [in] Int32 dstOffset,
             [in] Int32 int16Count);
 
@@ -149,7 +161,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt16(
+        Put(
             [in] Int16 s);
 
         /**
@@ -166,7 +178,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt16(
+        Put(
             [in] Int32 index,
             [in] Int16 s);
 
@@ -185,8 +197,8 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt16s(
-            [in] ArrayOf<Int16> src);
+        Put(
+            [in] ArrayOf<Int16>* src);
 
         /**
          * Writes shorts from the given short array, starting from the specified
@@ -209,8 +221,8 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt16s(
-            [in] ArrayOf<Int16> src,
+        Put(
+            [in] ArrayOf<Int16>* src,
             [in] Int32 srcOffset,
             [in] Int32 int16Count);
 
@@ -230,7 +242,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutInt16Buffer(
+        Put(
             [in] IInt16Buffer* src);
 
         /**
@@ -279,7 +291,7 @@ module
          *            the short array which the new buffer will be based on.
          * @return the created short buffer.
          */
-        WrapArray(
+        Wrap(
             [in] ArrayOf<Int16>* array,
             [out] IInt16Buffer** int16Buffer);
 
@@ -301,7 +313,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if either {start} or {shortCount} is invalid.
          */
-        WrapArray(
+        Wrap(
             [in] ArrayOf<Int16>* array,
             [in] Int32 start,
             [in] Int32 int16Count,

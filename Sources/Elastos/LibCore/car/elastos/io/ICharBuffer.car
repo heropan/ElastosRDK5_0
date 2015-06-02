@@ -35,7 +35,11 @@ module
      /**
      * @Involve
      * interface IBuffer;
+     * interface IComparable;
+     * interface ICharSequence;
+     * interface IAppendable;
      */
+    [deprecated]
     interface ICharBuffer {
 
         GetArray(
@@ -88,25 +92,6 @@ module
         Compact();
 
         /**
-         * Compare the remaining chars of this buffer to another char
-         * buffer's remaining chars.
-         *
-         * @param otherBuffer
-         *      another char buffer.
-         *
-         * @param result
-         *      return a negative value if this is less than {@code otherBuffer}; 0 if
-         *      this equals to {@code otherBuffer}; a positive value if this is
-         *      greater than {@code otherBuffer}.
-         *
-         * @return NOERROR is successful, or  ClassCastException
-         *                if {@code otherBuffer} is not a char buffer.
-         */
-        CompareTo(
-            [in]  ICharBuffer* otherBuffer,
-            [out] Int32* result);
-
-        /**
          * Returns a duplicated buffer that shares its content with this buffer.
          * <p>
          * The duplicated buffer's initial position, limit, capacity and mark are
@@ -123,28 +108,13 @@ module
             [out] ICharBuffer** buffer);
 
         /**
-         * Checks whether this buf is equal to another object.
-         *
-         * If other is not a char buffer then false is returned. Two
-         * char buffers are equal if and only if their remaining chars are
-         * exactly the same. Position, limit, capacity and mark are not considerd.
-         *
-         * @param other
-         *      the object to compare with this char buffer.
-         * return true if this char buffer is equal to other, false otherwise.
-         */
-        Equals(
-            [in] IInterface* other,
-            [out] Boolean* rst);
-
-        /**
          * Returns the char at the current position and increases the position by 1.
          *
          * @return the char at the current position.
          * @exception BufferUnderflowException
          *                if the position is equal or greater than limit.
          */
-        GetChar(
+        Get(
             [out] Char32* value);
 
         /**
@@ -156,7 +126,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if index is invalid.
          */
-        GetChar(
+        Get(
             [in] Int32 index,
             [out] Char32* value);
 
@@ -173,8 +143,8 @@ module
          * @exception BufferUnderflowException
          *                if {dst.length} is greater than {remaining()}.
          */
-        GetChars(
-            [out] ArrayOf<Char32> dst);
+        Get(
+            [in] ArrayOf<Char32>* dst);
 
         /**
          * Reads chars from the current position into the specified char array,
@@ -195,8 +165,8 @@ module
          * @exception BufferUnderflowException
          *                if {len} is greater than {remaining()}.
          */
-        GetChars(
-            [out] ArrayOf<Char32> dst,
+        Get(
+            [in] ArrayOf<Char32>* dst,
             [in] Int32 dstOffset,
             [in] Int32 charCount);
 
@@ -244,7 +214,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutChar(
+        Put(
             [in] Char32 c);
 
         /**
@@ -261,7 +231,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutChar(
+        Put(
             [in] Int32 index,
             [in] Char32 c);
 
@@ -280,8 +250,8 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutChars(
-            [in] ArrayOf<Char32> src);
+        Put(
+            [in] ArrayOf<Char32>* src);
 
         /**
          * Writes chars from the given char array, starting from the specified offset,
@@ -304,8 +274,8 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutChars(
-            [in] ArrayOf<Char32> src,
+        Put(
+            [in] ArrayOf<Char32>* src,
             [in] Int32 srcOffset,
             [in] Int32 charCount);
 
@@ -325,7 +295,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutCharBuffer(
+        Put(
             [in] ICharBuffer* src);
 
         /**
@@ -429,14 +399,18 @@ module
          * @param c
          *      the char to write.
          * @return this buffer.
+         * implements ICharSequence::AppendChar, same as Append(Char32 c)
          */
         AppendChar(
             [in] Char32 c);
 
-        AppendChars(
+        Append(
+            [in] Char32 c);
+
+        Append(
             [in] ICharSequence* csq);
 
-        AppendChars(
+        Append(
             [in] ICharSequence* csq,
             [in] Int32 start,
             [in] Int32 end);
@@ -498,7 +472,7 @@ module
          *
          * @Return NOERROR if successful;
          */
-        WrapArray(
+        Wrap(
             [in] ArrayOf<Char32>* array,
             [out] ICharBuffer** charBuf);
 
@@ -522,7 +496,7 @@ module
          * Return the char buffer is successful, or index out of bound error
          * either 'start' or 'len' is invalid;
          */
-        WrapArray(
+        Wrap(
             [in] ArrayOf<Char32>* array,
             [in] Int32 start,
             [in] Int32 charCount,
@@ -542,7 +516,7 @@ module
 
          * @Return NOERROR;
          */
-        WrapSequence(
+        Wrap(
             [in] ICharSequence* charSequence,
             [out] ICharBuffer** charBuf);
 
@@ -569,7 +543,7 @@ module
          * @Return NOERROR if successful or index out of bound error when either
          * 'start' or 'end' is invalid;
          */
-        WrapSequence(
+        Wrap(
             [in] ICharSequence* cs,
             [in] Int32 start,
             [in] Int32 end,

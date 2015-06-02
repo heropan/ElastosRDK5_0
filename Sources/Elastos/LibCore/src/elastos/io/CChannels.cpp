@@ -138,7 +138,7 @@ public:
         ByteBuffer::WrapArray(target, offset, length, &buffer);
         CheckBlocking(IChannel::Probe(mChannel));
         Int32 nRead;
-        mChannel->ReadByteBuffer(buffer, &nRead);
+        mChannel->Read(buffer, &nRead);
         return nRead;
     }
 
@@ -212,7 +212,7 @@ public:
             Int32 nWrite = 0;
             while(total < length)
             {
-               mChannel->WriteByteBuffer(buffer, &nWrite);
+               mChannel->Write(buffer, &nWrite);
                total += nWrite;
             }
             return NOERROR;

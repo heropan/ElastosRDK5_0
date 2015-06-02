@@ -55,11 +55,11 @@ protected:
 
     CARAPI TrimToSize();
 
-    CARAPI SetChar(
+    CARAPI SetCharAt(
         /* [in] */ Int32 index,
         /* [in] */ Char32 ch);
 
-    CARAPI GetChar(
+    CARAPI GetCharAt(
         /* [in] */ Int32 index,
         /* [out] */ Char32* result);
 
@@ -209,7 +209,7 @@ protected:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI Delete(
+    CARAPI DeleteCharAt(
         /* [in] */ Int32 index);
 
     CARAPI ToASCIICaseString(

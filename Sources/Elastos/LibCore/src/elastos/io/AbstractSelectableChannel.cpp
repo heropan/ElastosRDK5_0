@@ -53,7 +53,7 @@ ECode AbstractSelectableChannel::KeyFor(
         selKey = *it;
         if (selKey) {
             sel = NULL;
-            selKey->Selector((ISelector**)&sel);
+            selKey->GetSelector((ISelector**)&sel);
             if (sel.Get() == selector) {
                 *key = selKey;
                 REFCOUNT_ADD(*key);
@@ -115,7 +115,7 @@ ECode AbstractSelectableChannel::Register(
         if (!isValid) {
             return E_CANCELLED_KEY_EXCEPTION;
         }
-        key->InterestOps(interestSet, NULL);
+        key->GetInterestOps(interestSet, NULL);
         key->Attach(obj, NULL);
     }
 

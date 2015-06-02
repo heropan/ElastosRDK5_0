@@ -5,27 +5,29 @@ module
     namespace IO {
 
     /**
-     * A buffer of chars.
+     * A buffer of doubles.
      * <p>
-     * A char buffer can be created in either one of the following ways:
+     * A double buffer can be created in either one of the following ways:
      * <ul>
-     * <li>{@link #allocate(int) Allocate} a new char array and create a buffer
+     * <li>{@link #allocate(int) Allocate} a new double array and create a buffer
      * based on it;</li>
-     * <li>{@link #wrap(char[]) Wrap} an existing char array to create a new
+     * <li>{@link #wrap(double[]) Wrap} an existing double array to create a new
      * buffer;</li>
-     * <li>{@link #wrap(CharSequence) Wrap} an existing char sequence to create a
-     * new buffer;</li>
-     * <li>Use {@link java.nio.ByteBuffer#asDoubleBuffer() ByteBuffer.asDoubleBuffer}
-     * to create a char buffer based on a byte buffer.</li>
+     * <li>Use
+     * {@link java.nio.ByteBuffer#asDoubleBuffer() ByteBuffer.asDoubleBuffer} to
+     * create a double buffer based on a byte buffer.</li>
      * </ul>
      */
     /**
-    * implement Elastos.IO.IBuffer
-    */
+     * @Involve
+     * interface IBuffer
+     * interface IComparable
+     */
      /**
      * @Involve
      * interface IBuffer;
      */
+    [deprecated]
     interface IDoubleBuffer {
 
         GetArray(
@@ -61,22 +63,6 @@ module
         Compact();
 
         /**
-         * Compare the remaining doubles of this buffer to another double buffer's
-         * remaining doubles.
-         *
-         * @param otherBuffer
-         *            another double buffer.
-         * @return a negative value if this is less than {@code other}; 0 if this
-         *         equals to {@code other}; a positive value if this is greater
-         *         than {@code other}.
-         * @exception ClassCastException
-         *                if {@code other} is not a double buffer.
-         */
-        CompareTo(
-            [in] IDoubleBuffer* otherBuffer,
-            [out] Int32* result);
-
-        /**
          * Returns a duplicated buffer that shares its content with this buffer.
          * <p>
          * The duplicated buffer's position, limit, capacity and mark are the same
@@ -93,27 +79,6 @@ module
             [out] IDoubleBuffer** buffer);
 
         /**
-         * Checks whether this double buffer is equal to another object. If {@code
-         * other} is not a {@code DoubleBuffer} then {@code false} is returned.
-         *
-         * <p>Two double buffers are equal if their remaining doubles are equal.
-         * Position, limit, capacity and mark are not considered.
-         *
-         * <p>This method considers two doubles {@code a} and {@code b} to be equal
-         * if {@code a == b} or if {@code a} and {@code b} are both {@code NaN}.
-         * Unlike {@link Double#equals}, this method considers {@code -0.0} and
-         * {@code +0.0} to be equal.
-         *
-         * @param other
-         *            the object to compare with this double buffer.
-         * @return {@code true} if this double buffer is equal to {@code other},
-         *         {@code false} otherwise.
-         */
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* result);
-
-        /**
          * Returns the double at the current position and increases the position by
          * 1.
          *
@@ -121,7 +86,7 @@ module
          * @exception BufferUnderflowException
          *                if the position is equal or greater than limit.
          */
-        GetDouble(
+        Get(
             [out] Double* value);
 
         /**
@@ -133,7 +98,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if index is invalid.
          */
-        GetDouble(
+        Get(
             [in] Int32 index,
             [out] Double* value);
 
@@ -150,8 +115,8 @@ module
          * @exception BufferUnderflowException
          *                if {@code dst.length} is greater than {@code remaining()}.
          */
-        GetDoubles(
-            [out] ArrayOf<Double> dst);
+        Get(
+            [in] ArrayOf<Double>* dst);
 
         /**
          * Reads doubles from the current position into the specified double array,
@@ -172,8 +137,8 @@ module
          * @exception BufferUnderflowException
          *                if {@code doubleCount} is greater than {@code remaining()}.
          */
-        GetDoubles(
-            [out] ArrayOf<Double> dst,
+        Get(
+            [in] ArrayOf<Double>* dst,
             [in] Int32 dstOffset,
             [in] Int32 doubleCount);
 
@@ -202,7 +167,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutDouble(
+        Put(
             [in] Double d);
 
         /**
@@ -219,7 +184,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutDouble(
+        Put(
             [in] Int32 index,
             [in] Double d);
 
@@ -238,7 +203,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutDoubles(
+        Put(
             [in] ArrayOf<Double> src);
 
         /**
@@ -262,7 +227,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutDoubles(
+        Put(
             [in] ArrayOf<Double> src,
             [in] Int32 srcOffset,
             [in] Int32 doubleCount);
@@ -283,7 +248,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutDoubleBuffer(
+        Put(
             [in] IDoubleBuffer* src);
 
         /**
@@ -330,7 +295,7 @@ module
          *            the byte array which the new buffer will be based on
          * @return the created byte buffer.
          */
-        WrapArray(
+        Wrap(
             [in] ArrayOf<Double>* array,
             [out] IDoubleBuffer** doubleBuf);
 
@@ -352,7 +317,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if either {@code start} or {@code doubleCount} is invalid.
          */
-        WrapArray(
+        Wrap(
             [in] ArrayOf<Double>* array,
             [in] Int32 start,
             [in] Int32 doubleCount,
