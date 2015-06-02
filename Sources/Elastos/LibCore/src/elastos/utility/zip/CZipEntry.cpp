@@ -5,6 +5,7 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
+CAR_OBJECT_IMPL(CZipEntry)
 
 ECode CZipEntry::GetComment(
     /* [out] */ String* comment)
@@ -80,48 +81,6 @@ ECode CZipEntry::IsDirectory(
     return NOERROR;
 }
 
-ECode CZipEntry::SetComment(
-    /* [in] */ const String& comment)
-{
-    return ZipEntry::SetComment(comment);
-}
-
-ECode CZipEntry::SetCompressedSize(
-    /* [in] */ Int64 size)
-{
-    return ZipEntry::SetCompressedSize(size);
-}
-
-ECode CZipEntry::SetCrc(
-    /* [in] */ Int64 checksum)
-{
-    return ZipEntry::SetCrc(checksum);
-}
-
-ECode CZipEntry::SetExtra(
-    /* [in] */ ArrayOf<Byte>* data)
-{
-    return ZipEntry::SetExtra(data);
-}
-
-ECode CZipEntry::SetMethod(
-    /* [in] */ Int32 method)
-{
-    return ZipEntry::SetMethod(method);
-}
-
-ECode CZipEntry::SetSize(
-    /* [in] */ Int64 size)
-{
-    return ZipEntry::SetSize(size);
-}
-
-ECode CZipEntry::SetTime(
-    /* [in] */ Int64 time)
-{
-    return ZipEntry::SetTime(time);
-}
-
 ECode CZipEntry::constructor(
     /* [in] */ const String& name)
 {
@@ -139,16 +98,6 @@ ECode CZipEntry::constructor(
     /* in */ IInputStream* in)
 {
     return ZipEntry::Init(hdrBuf, in);
-}
-
-PInterface CZipEntry::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_ZipEntry) {
-        return reinterpret_cast<PInterface>((ZipEntry*)this);
-    }
-
-    return _CZipEntry::Probe(riid);
 }
 
 } // namespace Zip

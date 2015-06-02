@@ -1,14 +1,8 @@
 
-#ifndef __ZIPOUTPUTSTREAM_H__
-#define __ZIPOUTPUTSTREAM_H__
+#ifndef __ELASTOS_UTILITY_ZIPOUTPUTSTREAM_H__
+#define __ELASTOS_UTILITY_ZIPOUTPUTSTREAM_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
 #include "CByteArrayOutputStream.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
-
 #include "DeflaterOutputStream.h"
 #include "CZipEntry.h"
 #include "CCRC32.h"
@@ -22,9 +16,13 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-class ZipOutputStream : public DeflaterOutputStream
+class ZipOutputStream
+    : public DeflaterOutputStream
+    , public IZipOutputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
     ZipOutputStream();
 
     virtual ~ZipOutputStream();
@@ -112,7 +110,7 @@ public:
      *                If an error occurs writing to the stream
      */
     //@Override
-    CARAPI WriteBytes(
+    CARAPI Write(
         /* [in] */ const ArrayOf<Byte>& buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);
@@ -175,4 +173,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ZIPOUTPUTSTREAM_H__
+#endif //__ELASTOS_UTILITY_ZIPOUTPUTSTREAM_H__

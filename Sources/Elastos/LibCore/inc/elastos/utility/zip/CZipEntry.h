@@ -1,8 +1,8 @@
 
-#ifndef __CZIPENTRY_H__
-#define __CZIPENTRY_H__
+#ifndef __ELASTOS_UTILITY_CZIPENTRY_H__
+#define __ELASTOS_UTILITY_CZIPENTRY_H__
 
-#include "_CZipEntry.h"
+#include "_Elastos_Utility_Zip_CZipEntry.h"
 #include "ZipEntry.h"
 
 namespace Elastos {
@@ -12,6 +12,8 @@ namespace Zip {
 CarClass(CZipEntry) , public ZipEntry
 {
 public:
+    CAR_OBJECT_DECL()
+
     /**
      * Gets the comment for this {@code ZipEntry}.
      *
@@ -93,79 +95,6 @@ public:
         /* [out] */ Boolean* isDirectory);
 
     /**
-     * Sets the comment for this {@code ZipEntry}.
-     *
-     * @param string
-     *            the comment for this entry.
-     */
-    CARAPI SetComment(
-        /* [in] */ const String& comment);
-
-    /**
-     * Sets the compressed size for this {@code ZipEntry}.
-     *
-     * @param value
-     *            the compressed size (in bytes).
-     */
-    CARAPI SetCompressedSize(
-        /* [in] */ Int64 size);
-
-    /**
-     * Sets the checksum for this {@code ZipEntry}.
-     *
-     * @param value
-     *            the checksum for this entry.
-     * @throws IllegalArgumentException
-     *             if {@code value} is < 0 or > 0xFFFFFFFFL.
-     */
-    CARAPI SetCrc(
-        /* [in] */ Int64 checksum);
-
-    /**
-     * Sets the extra information for this {@code ZipEntry}.
-     *
-     * @param data
-     *            a byte array containing the extra information.
-     * @throws IllegalArgumentException
-     *             when the length of data is greater than 0xFFFF bytes.
-     */
-    CARAPI SetExtra(
-        /* [in] */ ArrayOf<Byte>* data);
-
-    /**
-     * Sets the compression method for this {@code ZipEntry}.
-     *
-     * @param value
-     *            the compression method, either {@code DEFLATED} or {@code
-     *            STORED}.
-     * @throws IllegalArgumentException
-     *             when value is not {@code DEFLATED} or {@code STORED}.
-     */
-    CARAPI SetMethod(
-        /* [in] */ Int32 method);
-
-    /**
-     * Sets the uncompressed size of this {@code ZipEntry}.
-     *
-     * @param value
-     *            the uncompressed size for this entry.
-     * @throws IllegalArgumentException
-     *             if {@code value} < 0 or {@code value} > 0xFFFFFFFFL.
-     */
-    CARAPI SetSize(
-        /* [in] */ Int64 size);
-
-    /**
-     * Sets the modification time of this {@code ZipEntry}.
-     *
-     * @param value
-     *            the modification time as the number of milliseconds since Jan.
-     *            1, 1970.
-     */
-    CARAPI SetTime(
-        /* [in] */ Int64 time);
-
-    /**
      * Constructs a new {@code ZipEntry} with the specified name.
      *
      * @param name
@@ -196,13 +125,10 @@ public:
     CARAPI constructor (
         /* [in] */ const ArrayOf<Byte>& hdrBuf,
         /* [in] */ IInputStream *in);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 };
 
 } // namespace Zip
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CZIPENTRY_H__
+#endif //__ELASTOS_UTILITY_CZIPENTRY_H__

@@ -67,7 +67,7 @@ public:
         CARAPI Read(
             /* [out] */ Int32* value);
 
-        CARAPI ReadBytes(
+        CARAPI Read(
             /* [out] */ ArrayOf<Byte>* buffer,
             /* [in] */ Int32 offset,
             /* [in] */ Int32 length,
@@ -85,7 +85,7 @@ public:
         CARAPI IsMarkSupported(
             /* [out] */ Boolean* supported);
 
-        CARAPI ReadBytes(
+        CARAPI Read(
             /* [out] */ ArrayOf<Byte>* buffer,
             /* [out] */ Int32* number);
 
@@ -112,7 +112,7 @@ public:
             /* [in] */ CZipEntry* entry);
 
         //@Override
-        CARAPI ReadBytes(
+        CARAPI Read(
             /* [out] */ ArrayOf<Byte>* buffer,
             /* [in] */ Int32 off,
             /* [in] */ Int32 nbytes,

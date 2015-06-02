@@ -7,8 +7,8 @@
 
 using Elastos::Core::Math;
 using Elastos::IO::EIID_IInputStream;
-//using Elastos::IO::IStreams;
-//using Elastos::IO::CStreams;
+using Elastos::IO::IStreams;
+using Elastos::IO::CStreams;
 using Elastos::IO::EIID_IFilterInputStream;
 using Elastos::IO::IDataInputStream;
 using Elastos::IO::CDataInputStream;
@@ -63,7 +63,7 @@ ECode ZipFile::RAFStream::Read(
     return streams->ReadSingleByte(THIS_PROBE(IInputStream), value);
 }
 
-ECode ZipFile::RAFStream::ReadBytes(
+ECode ZipFile::RAFStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -78,7 +78,7 @@ ECode ZipFile::RAFStream::ReadBytes(
     if (length > mLength - mOffset) {
         length = (Int32)(mLength - mOffset);
     }
-    FAIL_RETURN(mSharedRaf->ReadBytes(buffer, offset, length, number));
+    FAIL_RETURN(mSharedRaf->Read(buffer, offset, length, number));
     if (*number > 0) {
         mOffset += *number;
     }
@@ -119,13 +119,13 @@ ECode ZipFile::RAFStream::IsMarkSupported(
     return NOERROR;
 }
 
-ECode ZipFile::RAFStream::ReadBytes(
+ECode ZipFile::RAFStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
-    return ReadBytes(buffer, 0, buffer->GetLength(), number);
+    return Read(buffer, 0, buffer->GetLength(), number);
 }
 
 ECode ZipFile::RAFStream::Reset()
@@ -169,14 +169,14 @@ ECode ZipFile::ZipInflaterInputStream::GetLock(
 }
 
 //@Override
-ECode ZipFile::ZipInflaterInputStream::ReadBytes(
+ECode ZipFile::ZipInflaterInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    FAIL_RETURN(InflaterInputStream::ReadBytes(buffer, off, nbytes, number));
+    FAIL_RETURN(InflaterInputStream::Read(buffer, off, nbytes, number));
     if (*number != -1) {
         mBytesRead += *number;
     }

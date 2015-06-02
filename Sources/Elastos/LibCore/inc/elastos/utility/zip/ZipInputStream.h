@@ -1,15 +1,9 @@
 
-#ifndef __ZIPINPUTSTREAM_H__
-#define __ZIPINPUTSTREAM_H__
+#ifndef __ELASTOS_UTILITY_ZIPINPUTSTREAM_H__
+#define __ELASTOS_UTILITY_ZIPINPUTSTREAM_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
 #include "CMemory.h"
 #include "CPushbackInputStream.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
-
 #include "InflaterInputStream.h"
 #include "CZipEntry.h"
 #include "CCRC32.h"
@@ -37,15 +31,16 @@ namespace Zip {
  * @see ZipEntry
  * @see ZipFile
  */
-class ZipInputStream : public InflaterInputStream
+class ZipInputStream
+    : public InflaterInputStream
+    , public IZipInputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
     ZipInputStream();
 
     virtual ~ZipInputStream();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     /**
      * Closes this {@code ZipInputStream}.
@@ -83,7 +78,7 @@ public:
      * @return the number of bytes read
      */
     //@Override
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
@@ -150,5 +145,5 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ZIPINPUTSTREAM_H__
+#endif //__ELASTOS_UTILITY_ZIPINPUTSTREAM_H__
 

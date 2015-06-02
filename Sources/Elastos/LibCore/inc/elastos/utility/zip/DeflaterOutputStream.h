@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_UTILITY_DEFLATEROUTPUTSTREAM_H__
 #define __ELASTOS_UTILITY_DEFLATEROUTPUTSTREAM_H__
 
-//#include "CStreams.h"
+#include "CStreams.h"
 #include "CDeflater.h"
 #include <FilterOutputStream.h>
 

@@ -51,7 +51,7 @@ public:
      * @return Number of uncompressed bytes read
      */
     //@Override
-    virtual CARAPI ReadBytes(
+    virtual CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
@@ -130,7 +130,7 @@ public:
     virtual CARAPI IsMarkSupported(
         /* [out] */ Boolean* supported);
 
-    virtual CARAPI ReadBytes(
+    virtual CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
