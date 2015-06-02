@@ -121,7 +121,7 @@ public:
      * @throws IOException
      *             if an I/O error occurs while writing.
      */
-    CARAPI WriteBytesFromString(
+    CARAPI WriteBytes(
         /* [in] */ const String& str);
 
     /**
