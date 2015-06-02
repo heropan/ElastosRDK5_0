@@ -1,7 +1,7 @@
 
 #include "CHttpHost.h"
 #include "CCharArrayBuffer.h"
-#include "CLangUtils.h"
+#include "LangUtils.h"
 #include <elastos/Logger.h>
 #include <elastos/StringUtils.h>
 
@@ -11,7 +11,6 @@ using Libcore::ICU::ILocale;
 using Org::Apache::Http::Util::ICharArrayBuffer;
 using Org::Apache::Http::Util::CCharArrayBuffer;
 using Org::Apache::Http::Util::ILangUtils;
-using Org::Apache::Http::Util::CLangUtils;
 
 namespace Org {
 namespace Apache {
@@ -123,11 +122,9 @@ ECode CHttpHost::GetHashCode(
     VALIDATE_NOT_NULL(hashCode)
 
     Int32 hash = ILangUtils::HASH_SEED;
-    AutoPtr<ILangUtils> langUtils;
-    CLangUtils::AcquireSingleton((ILangUtils**)&langUtils);
-    langUtils->HashCode(hash, mLcHostname, &hash);
-    langUtils->HashCode(hash, mPort, &hash);
-    langUtils->HashCode(hash, mSchemeName, &hash);
+    hash = LangUtils::HashCode(hash, mLcHostname);
+    hash = LangUtils::HashCode(hash, mPort);
+    hash = LangUtils::HashCode(hash, mSchemeName);
 
     *hashCode = hash;
     return NOERROR;

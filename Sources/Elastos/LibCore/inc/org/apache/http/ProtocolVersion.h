@@ -1,6 +1,6 @@
 
-#ifndef __PROTOCOLVERSION_H__
-#define __PROTOCOLVERSION_H__
+#ifndef __ORG_APACHE_HTTP_PROTOCOLVERSION_H__
+#define __ORG_APACHE_HTTP_PROTOCOLVERSION_H__
 
 #include <Org.Apache.Http_server.h>
 #include <elastos/core/Object.h>
@@ -214,4 +214,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CPROTOCOLVERSION_H__
+#endif // __ORG_APACHE_HTTP_PROTOCOLVERSION_H__

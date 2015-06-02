@@ -1,6 +1,6 @@
 
-#ifndef __CHTTPHOST_H_
-#define __CHTTPHOST_H_
+#ifndef __ORG_APACHE_HTTP_CHTTPHOST_H_
+#define __ORG_APACHE_HTTP_CHTTPHOST_H_
 
 
 #include "_Org_Apache_Http_CHttpHost.h"
@@ -157,4 +157,4 @@ protected:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CHTTPHOST_H_
+#endif // __ORG_APACHE_HTTP_CHTTPHOST_H_

@@ -1,6 +1,6 @@
 
-#ifndef __CHTTPVERSION_H__
-#define __CHTTPVERSION_H__
+#ifndef __ORG_APACHE_HTTP_CHTTPVERSION_H__
+#define __ORG_APACHE_HTTP_CHTTPVERSION_H__
 
 #include "_Org_Apache_Http_CHttpVersion.h"
 #include "ProtocolVersion.h"
@@ -67,4 +67,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CHTTPVERSION_H__
+#endif // __ORG_APACHE_HTTP_CHTTPVERSION_H__

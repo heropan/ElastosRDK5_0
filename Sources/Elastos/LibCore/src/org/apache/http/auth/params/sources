@@ -1,0 +1,10 @@
+
+TARGET_NAME= params
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/auth/params
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/params
+
+SOURCES = CAuthParamBean.cpp
+SOURCES += AuthParams.cpp
+SOURCES += CAuthParams.cpp

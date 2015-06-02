@@ -1,6 +1,6 @@
 
-#ifndef __CPROTOCOLVERSION_H__
-#define __CPROTOCOLVERSION_H__
+#ifndef __ORG_APACHE_HTTP_CPROTOCOLVERSION_H__
+#define __ORG_APACHE_HTTP_CPROTOCOLVERSION_H__
 
 #include "_Org_Apache_Http_CProtocolVersion.h"
 #include "ProtocolVersion.h"
@@ -49,4 +49,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CPROTOCOLVERSION_H__
+#endif // __ORG_APACHE_HTTP_CPROTOCOLVERSION_H__

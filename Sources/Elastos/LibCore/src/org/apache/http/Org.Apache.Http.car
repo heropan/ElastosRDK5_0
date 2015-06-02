@@ -34,6 +34,22 @@ module
     merge("../../../../car/org/apache/http/TokenIterator.car");
     merge("../../../../car/org/apache/http/Exceptions.car");
 
+    merge("../../../../car/org/apache/http/auth/AUTH.car");
+    merge("../../../../car/org/apache/http/auth/AuthScheme.car");
+    merge("../../../../car/org/apache/http/auth/AuthSchemeFactory.car");
+    merge("../../../../car/org/apache/http/auth/AuthSchemeRegistry.car");
+    merge("../../../../car/org/apache/http/auth/AuthScope.car");
+    merge("../../../../car/org/apache/http/auth/AuthState.car");
+    merge("../../../../car/org/apache/http/auth/BasicUserPrincipal.car");
+    merge("../../../../car/org/apache/http/auth/Credentials.car");
+    merge("../../../../car/org/apache/http/auth/NTCredentials.car");
+    merge("../../../../car/org/apache/http/auth/NTUserPrincipal.car");
+    merge("../../../../car/org/apache/http/auth/UsernamePasswordCredentials.car");
+
+    merge("../../../../car/org/apache/http/auth/params/AuthParamBean.car");
+    merge("../../../../car/org/apache/http/auth/params/AuthParams.car");
+    merge("../../../../car/org/apache/http/auth/params/AuthPNames.car");
+
     merge("../../../../car/org/apache/http/params/HttpParams.car");
 
     merge("../../../../car/org/apache/http/protocol/HttpContext.car");
@@ -91,6 +107,166 @@ module
         interface IHttpVersionHelper;
     }
 
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Auth {
+
+    class CAuthSchemeRegistry {
+        constructor();
+
+        interface IAuthSchemeRegistry;
+    }
+
+    class CAuthScope {
+        /** Creates a new credentials scope for the given
+         * <tt>host</tt>, <tt>port</tt>, <tt>realm</tt>, and
+         * <tt>authentication scheme</tt>.
+         *
+         * @param host the host the credentials apply to. May be set
+         *   to <tt>null</tt> if credenticals are applicable to
+         *   any host.
+         * @param port the port the credentials apply to. May be set
+         *   to negative value if credenticals are applicable to
+         *   any port.
+         * @param realm the realm the credentials apply to. May be set
+         *   to <tt>null</tt> if credenticals are applicable to
+         *   any realm.
+         * @param scheme the authentication scheme the credentials apply to.
+         *   May be set to <tt>null</tt> if credenticals are applicable to
+         *   any authentication scheme.
+         */
+        constructor(
+            [in] String host,
+            [in] Int32 port,
+            [in] String realm,
+            [in] String scheme);
+
+        /** Creates a new credentials scope for the given
+         * <tt>host</tt>, <tt>port</tt>, <tt>realm</tt>, and any
+         * authentication scheme.
+         *
+         * @param host the host the credentials apply to. May be set
+         *   to <tt>null</tt> if credenticals are applicable to
+         *   any host.
+         * @param port the port the credentials apply to. May be set
+         *   to negative value if credenticals are applicable to
+         *   any port.
+         * @param realm the realm the credentials apply to. May be set
+         *   to <tt>null</tt> if credenticals are applicable to
+         *   any realm.
+         */
+        constructor(
+            [in] String host,
+            [in] Int32 port,
+            [in] String realm);
+
+        /** Creates a new credentials scope for the given
+         * <tt>host</tt>, <tt>port</tt>, any realm name, and any
+         * authentication scheme.
+         *
+         * @param host the host the credentials apply to. May be set
+         *   to <tt>null</tt> if credenticals are applicable to
+         *   any host.
+         * @param port the port the credentials apply to. May be set
+         *   to negative value if credenticals are applicable to
+         *   any port.
+         */
+        constructor(
+            [in] String host,
+            [in] Int32 port);
+
+        /**
+         * Creates a copy of the given credentials scope.
+         */
+        constructor(
+            [in] IAuthScope* authscope);
+
+        interface IAuthScope;
+    }
+
+    singleton class CAuthScopeHelper {
+        interface IAuthScopeHelper;
+    }
+
+    class CAuthState {
+        constructor();
+
+        interface IAuthState;
+    }
+
+    class CBasicUserPrincipal {
+        constructor(
+            [in] String username);
+
+        interface IBasicUserPrincipal;
+        interface IPrincipal;
+    }
+
+    class CNTCredentials {
+        constructor(
+            [in] String usernamePassword);
+
+        constructor(
+            [in] String userName,
+            [in] String password,
+            [in] String workstation,
+            [in] String domain);
+
+        interface INTCredentials;
+        interface ICredentials;
+    }
+
+    class CNTUserPrincipal {
+        constructor(
+            [in] String domain,
+            [in] String username);
+
+        interface INTUserPrincipal;
+        interface IPrincipal;
+    }
+
+    class CUsernamePasswordCredentials {
+        constructor(
+            [in] String usernamePassword);
+
+        constructor(
+            [in] String userName,
+            [in] String password);
+
+        interface IUsernamePasswordCredentials;
+        interface ICredentials;
+    }
+
+    } // namespace Auth
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Auth {
+    namespace Params {
+
+    class CAuthParamBean {
+        constructor(
+            [in] IHttpParams* params);
+
+        interface IAuthParamBean;
+    }
+
+    singleton class CAuthParams {
+        interface IAuthParams;
+    }
+
+    } // namespace Params
+    } // namespace Auth
     } // namespace Http
     } // namespace Apache
     } // namespace Org

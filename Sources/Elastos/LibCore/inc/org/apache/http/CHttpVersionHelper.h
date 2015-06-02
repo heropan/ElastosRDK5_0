@@ -1,6 +1,6 @@
 
-#ifndef __CHTTPVERSIONHELPER_H__
-#define __CHTTPVERSIONHELPER_H__
+#ifndef __ORG_APACHE_HTTP_CHTTPVERSIONHELPER_H__
+#define __ORG_APACHE_HTTP_CHTTPVERSIONHELPER_H__
 
 #include "_Org_Apache_Http_CHttpVersionHelper.h"
 #include <elastos/core/Object.h>
@@ -41,4 +41,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CHTTPVERSION_H__
+#endif // __ORG_APACHE_HTTP_CHTTPVERSION_H__
