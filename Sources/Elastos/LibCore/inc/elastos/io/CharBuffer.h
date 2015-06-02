@@ -55,7 +55,7 @@ public:
      *            the char array which the new buffer will be based on.
      * @return the created char buffer.
      */
-    static CARAPI WrapArray(
+    static CARAPI Wrap(
         /* [in] */ ArrayOf<Char32>* array,
         /* [out] */ ICharBuffer** buffer);
 
@@ -77,7 +77,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code len} is invalid.
      */
-    static CARAPI WrapArray(
+    static CARAPI Wrap(
         /* [in] */ ArrayOf<Char32>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 len,

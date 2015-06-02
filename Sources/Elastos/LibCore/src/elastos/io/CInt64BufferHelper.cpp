@@ -12,20 +12,20 @@ ECode CInt64BufferHelper::Allocate(
     return Int64Buffer::Allocate(capacity, int64Buffer);
 }
 
-ECode CInt64BufferHelper::WrapArray(
+ECode CInt64BufferHelper::Wrap(
     /* [in] */ ArrayOf<Int64>* array,
     /* [out] */ IInt64Buffer** int64Buffer)
 {
-    return Int64Buffer::WrapArray(array, int64Buffer);
+    return Int64Buffer::Wrap(array, int64Buffer);
 }
 
-ECode CInt64BufferHelper::WrapArray(
+ECode CInt64BufferHelper::Wrap(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int64Count,
     /* [out] */ IInt64Buffer** int64Buffer)
 {
-    return Int64Buffer::WrapArray(array, start, int64Count, int64Buffer);
+    return Int64Buffer::Wrap(array, start, int64Count, int64Buffer);
 }
 
 } // namespace IO

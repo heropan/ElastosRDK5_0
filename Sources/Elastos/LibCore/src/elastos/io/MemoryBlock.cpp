@@ -2,15 +2,14 @@
 #include "coredef.h"
 #include "MemoryBlock.h"
 #include "Memory.h"
-#include <elastos/Math.h>
+#include "Math.h"
 #include "CByteOrderHelper.h"
-#include "COsConstants.h"
-#include "CLibcore.h"
+#include "OsConstants.h"
+// #include "CLibcore.h"
 
-using Libcore::IO::IOsConstants;
-using Libcore::IO::COsConstants;
+using Elastos::Droid::System::OsConstants;
 using Libcore::IO::ILibcore;
-using Libcore::IO::CLibcore;
+// using Libcore::IO::CLibcore;
 using Libcore::IO::IOs;
 using Elastos::IO::IByteOrderHelper;
 using Elastos::IO::CByteOrderHelper;
@@ -27,6 +26,7 @@ ECode MemoryBlock::Mmap(
     /* [in] */ FileChannelMapMode mapMode,
     /* [out] */ MemoryBlock** mb)
 {
+    VALIDATE_NOT_NULL(mb)
     if (size == 0) {
         // You can't mmap(2) a zero-length region, but Java allows it.
         *mb = new MemoryBlock(0, 0);
@@ -38,41 +38,34 @@ ECode MemoryBlock::Mmap(
         // throw new IllegalArgumentException("offset=" + offset + " size=" + size);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<COsConstants> osObj;
-    COsConstants::AcquireSingletonByFriend((COsConstants**)&osObj);
-    AutoPtr<IOsConstants> osConstans = (IOsConstants*)osObj.Get();
-    Int32 protRead, protWrite, mapPrivate, mapShared;
-    osConstans->GetOsConstant(String("PROT_READ"), &protRead);
-    osConstans->GetOsConstant(String("PROT_WRITE"), &protWrite);
-    osConstans->GetOsConstant(String("MAP_PRIVATE"), &mapPrivate);
-    osConstans->GetOsConstant(String("MAP_SHARED"), &mapShared);
+
     int prot;
     int flags;
     if (mapMode == FileChannelMapMode_PRIVATE) {
-        prot = protRead | protWrite;
-        flags = mapPrivate;
+        prot = OsConstants::_PROT_READ | OsConstants::_PROT_WRITE;
+        flags = OsConstants::_MAP_PRIVATE;
     }
     else if (mapMode == FileChannelMapMode_READ_ONLY) {
-        prot = protRead;
-        flags = mapShared;
+        prot = OsConstants::_PROT_READ;
+        flags = OsConstants::_MAP_SHARED;
     }
     else { // mapMode == FileChannelMapMode_READ_WRITE
-        prot = protRead | protWrite;
-        flags = mapShared;
+        prot = OsConstants::_PROT_READ | OsConstants::_PROT_WRITE;
+        flags = OsConstants::_MAP_SHARED;
     }
     // try {
-    AutoPtr<CLibcore> lcObj;
-    CLibcore::AcquireSingletonByFriend((CLibcore**)&lcObj);
-    AutoPtr<ILibcore> libcore = (ILibcore*)lcObj.Get();
-    AutoPtr<IOs> os;
-    libcore->GetOs((IOs**)&os);
-    Int32 _fd;
-    fd->GetDescriptor(&_fd);
-    Int64 result;
-    os->Mmap(0LL, size, prot, flags, _fd, offset, &result);
-    Int32 address = (Int32)result;
-    *mb = new MemoryMappedBlock(address, size);
-    REFCOUNT_ADD(*mb);
+    // AutoPtr<CLibcore> lcObj;
+    // //TODO upgrade CLibcore::AcquireSingletonByFriend((CLibcore**)&lcObj);
+    // AutoPtr<ILibcore> libcore = (ILibcore*)lcObj.Get();
+    // AutoPtr<IOs> os;
+    // libcore->GetOs((IOs**)&os);
+    // Int32 _fd;
+    // fd->GetDescriptor(&_fd);
+    // Int64 result;
+    // os->Mmap(0LL, size, prot, flags, _fd, offset, &result);
+    // Int32 address = (Int32)result;
+    // *mb = new MemoryMappedBlock(address, size);
+    // REFCOUNT_ADD(*mb);
     return NOERROR;
     // } catch (ErrnoException errnoException) {
     //     throw errnoException.rethrowAsIOException();
@@ -327,7 +320,7 @@ Int32 MemoryBlock::ToInt32()
 String MemoryBlock::ToString()
 {
     // return getClass().getName() + "[" + address + "]";
-    return String(NULL);
+    return String("MemoryBlock");
 }
 
 Int64 MemoryBlock::GetSize()
@@ -340,12 +333,12 @@ ECode MemoryMappedBlock::Free()
 {
     if (mAddress != 0) {
 //        try {
-        AutoPtr<CLibcore> lcObj;
-        CLibcore::AcquireSingletonByFriend((CLibcore**)&lcObj);
-        AutoPtr<ILibcore> libcore = (ILibcore*)lcObj.Get();
-        AutoPtr<IOs> os;
-        libcore->GetOs((IOs**)&os);
-        os->Munmap(mAddress, mSize);
+        // AutoPtr<CLibcore> lcObj;
+        // //TODO upgrade CLibcore::AcquireSingletonByFriend((CLibcore**)&lcObj);
+        // AutoPtr<ILibcore> libcore = (ILibcore*)lcObj.Get();
+        // AutoPtr<IOs> os;
+        // libcore->GetOs((IOs**)&os);
+        // os->Munmap(mAddress, mSize);
 //        } catch (ErrnoException errnoException) {
 //            // The RI doesn't throw, presumably on the assumption that you can't get into
 //            // a state where munmap(2) could return an error.

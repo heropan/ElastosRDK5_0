@@ -31,14 +31,14 @@ ECode Int16Buffer::Allocate(
     return NOERROR;
 }
 
-ECode Int16Buffer::WrapArray(
+ECode Int16Buffer::Wrap(
     /* [in] */ ArrayOf<Int16>* array,
     /* [out] */ IInt16Buffer** buf)
 {
-    return WrapArray(array, 0, array->GetLength(), buf);
+    return Wrap(array, 0, array->GetLength(), buf);
 }
 
-ECode Int16Buffer::WrapArray(
+ECode Int16Buffer::Wrap(
     /* [in] */ ArrayOf<Int16>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int16Count,

@@ -77,6 +77,8 @@ module
     merge("io/IPipeImpl.car");
     merge("io/IFileChannelImpl.car");
 
+    merge("io/INativeConverterHelper.car");
+
     merge("io/channels/IChannel.car");
     merge("io/channels/IReadableByteChannel.car");
     merge("io/channels/IWritableByteChannel.car");
@@ -100,6 +102,7 @@ module
 
     merge("io/channels/spi/ISelectorProvider.car");
     merge("io/channels/spi/IAbstractSelector.car");
+
     merge("io/charset/ICharset.car");
     merge("io/charset/ICoderResult.car");
     merge("io/charset/ICharsetDecoder.car");
@@ -107,15 +110,21 @@ module
     merge("io/charset/ICodingErrorAction.car");
     merge("io/charset/ICharsets.car");
     merge("io/charset/IModifiedUtf8.car");
-    merge("io/INativeConverterHelper.car");
 
     merge("io/charset/spi/ICharsetProvider.car");
+
+    interface Elastos.Core.IAppendable;
+    interface Elastos.Core.IComparable;
 
     interface Elastos.IO.Channels.Spi.ISelectorProvider;
     interface Elastos.IO.Channels.IChannels;
     interface Libcore.IO.IStreams;
-    interface Elastos.Core.IAppendable;
     interface Elastos.IO.ICloseable;
+
+    //
+    // nio releated classes
+    //
+    interface Elastos.IO.IByteOrderHelper;
 
     namespace Elastos {
     namespace IO {
@@ -322,7 +331,7 @@ module
 
     class CDataOutputStream {
         constructor(
-        [in] IOutputStream* os);
+            [in] IOutputStream* os);
 
         interface ICloseable;
         interface IOutputStream;
@@ -330,7 +339,31 @@ module
         interface IDataOutputStream;
     }
 
+    //
+    // nio relasted classes
+    //
+    singleton class CByteOrderHelper {
+        interface IByteOrderHelper;
+    }
+
+    [deprecated]
+    class CByteArrayBuffer {
+        constructor(
+            [in] ArrayOf<Byte>* backingArray);
+
+        constructor(
+            [in] Int32 capacity,
+            [in] ArrayOf<Byte>* backingArray,
+            [in] Int32 arrayOffset,
+            [in] Boolean isReadOnly);
+
+        interface IByteBuffer;
+        interface IBuffer;
+        interface IComparable;
+
+    }
+
+
     } // namespace IO
     } // namespace Elastos
-
 }

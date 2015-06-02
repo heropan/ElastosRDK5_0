@@ -135,7 +135,7 @@ public:
     ECode Read(ArrayOf<Byte> *target, Int32 offset, Int32 length)
     {
         IByteBuffer *buffer;
-        ByteBuffer::WrapArray(target, offset, length, &buffer);
+        ByteBuffer::Wrap(target, offset, length, &buffer);
         CheckBlocking(IChannel::Probe(mChannel));
         Int32 nRead;
         mChannel->Read(buffer, &nRead);
@@ -206,7 +206,7 @@ public:
         ECode Write(ArrayOf<Byte>* source, Int32 offset, Int32 length)
         {
             AutoPtr<IByteBuffer> buffer;
-            ByteBuffer::WrapArray(source, offset, length, (IByteBuffer **)&buffer);
+            ByteBuffer::Wrap(source, offset, length, (IByteBuffer **)&buffer);
             CheckBlocking(IChannel::Probe(mChannel));
             Int32 total = 0;
             Int32 nWrite = 0;

@@ -21,11 +21,11 @@ public:
     CARAPI Write(
         /* [in] */ Int32 oneByte);
 
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* buffer);
 
-    CARAPI WriteBytesEx(
-        /* [in] */ const ArrayOf<Byte>& buffer,
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 

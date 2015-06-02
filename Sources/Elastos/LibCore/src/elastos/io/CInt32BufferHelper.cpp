@@ -12,20 +12,20 @@ ECode CInt32BufferHelper::Allocate(
     return Int32Buffer::Allocate(capacity, int32Buffer);
 }
 
-ECode CInt32BufferHelper::WrapArray(
+ECode CInt32BufferHelper::Wrap(
     /* [in] */ ArrayOf<Int32>* array,
     /* [out] */ IInt32Buffer** int32Buffer)
 {
-    return Int32Buffer::WrapArray(array, int32Buffer);
+    return Int32Buffer::Wrap(array, int32Buffer);
 }
 
-ECode CInt32BufferHelper::WrapArray(
+ECode CInt32BufferHelper::Wrap(
     /* [in] */ ArrayOf<Int32>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int32Count,
     /* [out] */ IInt32Buffer** int32Buffer)
 {
-    return Int32Buffer::WrapArray(array, start, int32Count, int32Buffer);
+    return Int32Buffer::Wrap(array, start, int32Count, int32Buffer);
 }
 
 } // namespace IO

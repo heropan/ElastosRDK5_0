@@ -171,7 +171,7 @@ ECode InputStreamReader::ReadChars(
     }
 
     AutoPtr<ICharBuffer> out;
-    FAIL_RETURN(CharBuffer::WrapArray(buffer, offset, count, (ICharBuffer**)&out));
+    FAIL_RETURN(CharBuffer::Wrap(buffer, offset, count, (ICharBuffer**)&out));
     AutoPtr<ICoderResult> result, resultTmp;
     CCoderResult::GetUNDERFLOW((ICoderResult**)&result);
     resultTmp = result;

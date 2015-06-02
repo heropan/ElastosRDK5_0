@@ -42,7 +42,7 @@ ECode CJarFile::JarFileInputStream::Read(
     if (mCount > 0) {
         FilterInputStream::Read(val);
         if (*val != -1) {
-            FAIL_RETURN(mEntry->Write(*val))
+            FAIL_RETURN(mEntry->Write(val))
             mCount--;
         } else {
             mCount = 0;

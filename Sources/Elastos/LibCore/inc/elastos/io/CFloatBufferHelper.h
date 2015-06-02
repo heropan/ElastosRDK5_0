@@ -33,7 +33,7 @@ public:
      *            the float array which the new buffer will be based on.
      * @return the created float buffer.
      */
-    CARAPI WrapArray(
+    CARAPI Wrap(
         /* [in] */ ArrayOf<Float>* array,
         /* [out] */ IFloatBuffer** floatBuffer);
 
@@ -57,7 +57,7 @@ public:
      * @exception NullPointerException
      *                if {@code array} is null.
      */
-    CARAPI WrapArray(
+    CARAPI Wrap(
         /* [in] */ ArrayOf<Float>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 floatCount,

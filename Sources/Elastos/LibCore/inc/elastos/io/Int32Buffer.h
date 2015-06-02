@@ -52,7 +52,7 @@ public:
      *            the int array which the new buffer will be based on.
      * @return the created int buffer.
      */
-    static CARAPI WrapArray(
+    static CARAPI Wrap(
         /* [in] */ ArrayOf<Int32>* array,
         /* [out] */ IInt32Buffer** buf);
 
@@ -74,7 +74,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code intCount} is invalid.
      */
-    static CARAPI WrapArray(
+    static CARAPI Wrap(
         /* [in] */ ArrayOf<Int32>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 int32Count,

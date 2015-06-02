@@ -12,20 +12,20 @@ ECode CFloatBufferHelper::Allocate(
     return FloatBuffer::Allocate(capacity, floatBuffer);
 }
 
-ECode CFloatBufferHelper::WrapArray(
+ECode CFloatBufferHelper::Wrap(
     /* [in] */ ArrayOf<Float>* array,
     /* [out] */ IFloatBuffer** floatBuffer)
 {
-    return FloatBuffer::WrapArray(array, floatBuffer);
+    return FloatBuffer::Wrap(array, floatBuffer);
 }
 
-ECode CFloatBufferHelper::WrapArray(
+ECode CFloatBufferHelper::Wrap(
     /* [in] */ ArrayOf<Float>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 floatCount,
     /* [out] */ IFloatBuffer** floatBuffer)
 {
-    return FloatBuffer::WrapArray(array, start, floatCount, floatBuffer);
+    return FloatBuffer::Wrap(array, start, floatCount, floatBuffer);
 }
 
 } // namespace IO

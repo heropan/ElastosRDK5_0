@@ -31,14 +31,14 @@ ECode Int32Buffer::Allocate(
     return NOERROR;
 }
 
-ECode Int32Buffer::WrapArray(
+ECode Int32Buffer::Wrap(
     /* [in] */ ArrayOf<Int32>* array,
     /* [out] */ IInt32Buffer** buf)
 {
-    return WrapArray(array, 0, array->GetLength(), buf);
+    return Wrap(array, 0, array->GetLength(), buf);
 }
 
-ECode Int32Buffer::WrapArray(
+ECode Int32Buffer::Wrap(
     /* [in] */ ArrayOf<Int32>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int32Count,

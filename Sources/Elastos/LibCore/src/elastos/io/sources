@@ -11,6 +11,7 @@ INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/droid/system/;
 
 
 SOURCES = InputStream.cpp
@@ -64,3 +65,14 @@ SOURCES += CPushbackInputStream.cpp
 
 SOURCES += DataOutputStream.cpp
 SOURCES += CDataOutputStream.cpp
+
+
+
+#
+# nio related classes
+#
+SOURCES += CByteOrderHelper.cpp
+SOURCES += MemoryBlock.cpp
+SOURCES += Buffer.cpp
+SOURCES += ByteBuffer.cpp
+SOURCES += CByteArrayBuffer.cpp

@@ -12,20 +12,20 @@ ECode CDoubleBufferHelper::Allocate(
     return DoubleBuffer::Allocate(capacity, doubleBuf);
 }
 
-ECode CDoubleBufferHelper::WrapArray(
+ECode CDoubleBufferHelper::Wrap(
     /* [in] */ ArrayOf<Double>* array,
     /* [out] */ IDoubleBuffer** doubleBuf)
 {
-    return DoubleBuffer::WrapArray(array, doubleBuf);
+    return DoubleBuffer::Wrap(array, doubleBuf);
 }
 
-ECode CDoubleBufferHelper::WrapArray(
+ECode CDoubleBufferHelper::Wrap(
     /* [in] */ ArrayOf<Double>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 doubleCount,
     /* [out] */ IDoubleBuffer** doubleBuf)
 {
-    return DoubleBuffer::WrapArray(array, start, doubleCount, doubleBuf);
+    return DoubleBuffer::Wrap(array, start, doubleCount, doubleBuf);
 }
 
 } // namespace IO

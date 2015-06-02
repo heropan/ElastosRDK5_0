@@ -31,14 +31,14 @@ ECode CharBuffer::Allocate(
     return NOERROR;
 }
 
-ECode CharBuffer::WrapArray(
+ECode CharBuffer::Wrap(
     /* [in] */ ArrayOf<Char32>* array,
     /* [out] */ ICharBuffer** buf)
 {
-    return WrapArray(array, 0, array->GetLength(), buf);
+    return Wrap(array, 0, array->GetLength(), buf);
 }
 
-ECode CharBuffer::WrapArray(
+ECode CharBuffer::Wrap(
     /* [in] */ ArrayOf<Char32>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 charCount,

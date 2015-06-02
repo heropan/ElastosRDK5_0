@@ -31,14 +31,14 @@ ECode DoubleBuffer::Allocate(
     return NOERROR;
 }
 
-ECode DoubleBuffer::WrapArray(
+ECode DoubleBuffer::Wrap(
     /* [in] */ ArrayOf<Double>* array,
     /* [out] */ IDoubleBuffer** buf)
 {
-    return WrapArray(array, 0, array->GetLength(), buf);
+    return Wrap(array, 0, array->GetLength(), buf);
 }
 
-ECode DoubleBuffer::WrapArray(
+ECode DoubleBuffer::Wrap(
     /* [in] */ ArrayOf<Double>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 doubleCount,

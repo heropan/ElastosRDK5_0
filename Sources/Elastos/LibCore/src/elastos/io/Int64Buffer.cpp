@@ -31,14 +31,14 @@ ECode Int64Buffer::Allocate(
     return NOERROR;
 }
 
-ECode Int64Buffer::WrapArray(
+ECode Int64Buffer::Wrap(
     /* [in] */ ArrayOf<Int64>* array,
     /* [out] */ IInt64Buffer** buf)
 {
-    return WrapArray(array, 0, array->GetLength(), buf);
+    return Wrap(array, 0, array->GetLength(), buf);
 }
 
-ECode Int64Buffer::WrapArray(
+ECode Int64Buffer::Wrap(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int64Count,

@@ -20,6 +20,16 @@ class CheckedOutputStream
 public:
     CAR_INTERFACE_DECL()
 
+    /**
+     * Constructs a new {@code CheckedOutputStream} on {@code OutputStream}
+     * {@code os}. The checksum is calculated using the algorithm implemented
+     * by {@code csum}.
+     *
+     * @param os
+     *            the output stream to calculate checksum for.
+     * @param cs
+     *            an entity implementing the checksum algorithm.
+     */
     CARAPI constructor(
         /* [in] */ IOutputStream* os,
         /* [in] */ IChecksum* cs);
@@ -61,7 +71,7 @@ public:
      */
     //@Override
     CARAPI Write(
-        /* [in] */ const ArrayOf<Byte>& buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 off,
         /* [in] */ Int32 nbytes);
 
@@ -70,7 +80,7 @@ public:
     CARAPI Flush();
 
     CARAPI Write(
-        /* [in] */ const ArrayOf<Byte>& buffer);
+        /* [in] */ ArrayOf<Byte>* buffer);
 
     CARAPI CheckError(
         /* [out] */ Boolean* hasError);
@@ -79,13 +89,11 @@ private:
     AutoPtr<IChecksum> mCheck;
 };
 
-CarClass(CCheckedOutputStream), public CheckedOutputStream
+CarClass(CCheckedOutputStream)
+    , public CheckedOutputStream
 {
 public:
     CAR_OBJECT_DECL()
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
 };
 
 

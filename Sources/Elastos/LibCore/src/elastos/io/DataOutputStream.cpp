@@ -124,7 +124,7 @@ ECode DataOutputStream::WriteChar(
 {
     Int32 len = CountUTFBytes((Char32)val);
     WriteUTFBytesToBuffer(mBuff->GetPayload(), (Char32)val, len);
-    FAIL_RETURN(mOut->Write(*mBuff, 0, len));
+    FAIL_RETURN(mOut->Write(mBuff, 0, len));
     mWritten += len;
     return NOERROR;
 }
@@ -158,7 +158,7 @@ ECode DataOutputStream::WriteInt32(
     (*mBuff)[1] = (Byte)(val >> 16);
     (*mBuff)[2] = (Byte)(val >> 8);
     (*mBuff)[3] = (Byte)val;
-    FAIL_RETURN(mOut->Write(*mBuff, 0, 4));
+    FAIL_RETURN(mOut->Write(mBuff, 0, 4));
     mWritten += 4;
     return NOERROR;
 }
@@ -174,7 +174,7 @@ ECode DataOutputStream::WriteInt64(
     (*mBuff)[5] = (Byte)(val >> 16);
     (*mBuff)[6] = (Byte)(val >> 8);
     (*mBuff)[7] = (Byte)val;
-    FAIL_RETURN(mOut->Write(*mBuff, 0, 8));
+    FAIL_RETURN(mOut->Write(mBuff, 0, 8));
     mWritten += 8;
     return NOERROR;
 }
@@ -184,7 +184,7 @@ ECode DataOutputStream::WriteInt16(
 {
     (*mBuff)[0] = (Byte)(val >> 8);
     (*mBuff)[1] = (Byte)val;
-    FAIL_RETURN(mOut->Write(*mBuff, 0, 2));
+    FAIL_RETURN(mOut->Write(mBuff, 0, 2));
     mWritten += 2;
     return NOERROR;
 }

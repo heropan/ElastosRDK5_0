@@ -46,7 +46,7 @@ public:
      *            the byte array which the new buffer will be based on
      * @return the created byte buffer.
      */
-    CARAPI WrapArray(
+    CARAPI Wrap(
         /* [in] */ ArrayOf<Byte>* array,
         /* [out] */ IByteBuffer** byteBuf);
 
@@ -68,7 +68,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code byteCount} is invalid.
      */
-    CARAPI WrapArray(
+    CARAPI Wrap(
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 byteCount,

@@ -703,7 +703,7 @@ ECode AttributedString::constructor(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;;
-        it->Next((IMapEntry**)&obj);
+        it->Next((IInterface**)&obj);
         IMapEntry* entry = IMapEntry::Probe(obj);
 
         AutoPtr<IInterface> val;

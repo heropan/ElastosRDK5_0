@@ -23,9 +23,13 @@ extern "C" const InterfaceID EIID_ByteBuffer;
  * </ul>
  *
  */
-class ByteBuffer : public Buffer
+class ByteBuffer
+    : public Buffer
+    , public IByteBuffer
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Creates a byte buffer based on a newly allocated byte array.
      *
@@ -62,7 +66,7 @@ public:
      *            the byte array which the new buffer will be based on
      * @return the created byte buffer.
      */
-    static CARAPI WrapArray(
+    static CARAPI Wrap(
         /* [in] */ ArrayOf<Byte>* array,
         /* [out] */ IByteBuffer** buf);
 
@@ -84,14 +88,11 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code byteCount} is invalid.
      */
-    static CARAPI WrapArray(
+    static CARAPI Wrap(
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 byteCount,
         /* [out] */ IByteBuffer** buf);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     /**
      * Returns the byte array which this buffer is based on, if there is one.
@@ -299,7 +300,7 @@ public:
      * @exception BufferUnderflowException
      *                if the position is equal or greater than limit.
      */
-    virtual CARAPI GetByte(
+    virtual CARAPI Get(
         /* [out] */ Byte* value) = 0;
 
     /**
@@ -311,7 +312,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if index is invalid.
      */
-    virtual CARAPI GetByte(
+    virtual CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Byte* value) = 0;
 
@@ -328,8 +329,8 @@ public:
      * @exception BufferUnderflowException
      *                if {@code dst.length} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetBytes(
-        /* [out] */ ArrayOf<Byte>* dst);
+    virtual CARAPI Get(
+        /* [in] */ ArrayOf<Byte>* dst);
 
     /**
      * Reads bytes from the current position into the specified byte array,
@@ -348,8 +349,8 @@ public:
      * @exception IndexOutOfBoundsException if {@code dstOffset < 0 ||  byteCount < 0}
      * @exception BufferUnderflowException if {@code byteCount > remaining()}
      */
-    virtual CARAPI GetBytes(
-        /* [out] */ ArrayOf<Byte>* dst,
+    virtual CARAPI Get(
+        /* [in] */ ArrayOf<Byte>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 byteCount);
 
@@ -608,7 +609,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutByte(
+    virtual CARAPI Put(
         /* [in] */ Byte b) = 0;
 
     /**
@@ -625,7 +626,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutByte(
+    virtual CARAPI Put(
         /* [in] */ Int32 index,
         /* [in] */ Byte b) = 0;
 
@@ -644,8 +645,8 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    CARAPI PutBytes(
-        /* [in] */ const ArrayOf<Byte>& src);
+    CARAPI Put(
+        /* [in] */ ArrayOf<Byte>* src);
 
     /**
      * Writes bytes in the given byte array, starting from the specified offset,
@@ -668,8 +669,8 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutBytes(
-        /* [in] */ const ArrayOf<Byte>& src,
+    virtual CARAPI Put(
+        /* [in] */ ArrayOf<Byte>* src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 byteCount);
 
@@ -689,7 +690,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutByteBuffer(
+    virtual CARAPI Put(
         /* [in] */ IByteBuffer* src);
 
     /**
@@ -950,22 +951,28 @@ public:
         /* [out] */ Boolean* hasArray);
 
     /**
-      * Checks whether this byte buffer is equal to another object.
-      * <p>
-      * If {@code other} is not a byte buffer then {@code false} is returned. Two
-      * byte buffers are equal if and only if their remaining bytes are exactly
-      * the same. Position, limit, capacity and mark are not considered.
-      *
-      * @param other
-      *            the object to compare with this byte buffer.
-      * @return {@code true} if this byte buffer is equal to {@code other},
-      *         {@code false} otherwise.
-      */
-    virtual CARAPI Equals(
+     * Checks whether this byte buffer is equal to another object.
+     * <p>
+     * If {@code other} is not a byte buffer then {@code false} is returned. Two
+     * byte buffers are equal if and only if their remaining bytes are exactly
+     * the same. Position, limit, capacity and mark are not considered.
+     *
+     * @param other
+     *            the object to compare with this byte buffer.
+     * @return {@code true} if this byte buffer is equal to {@code other},
+     *         {@code false} otherwise.
+     */
+    CARAPI Equals(
         /* [in] */ IInterface* other,
         /* [out] */ Boolean* isEquals);
 
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
+
 protected:
+
+    ByteBuffer();
+
     /**
      * Constructs a {@code ByteBuffer} with given capacity.
      *

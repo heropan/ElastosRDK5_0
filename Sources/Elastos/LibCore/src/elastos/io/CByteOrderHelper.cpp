@@ -1,7 +1,5 @@
 
-#include "coredef.h"
 #include "CByteOrderHelper.h"
-#include <stdio.h>
 
 namespace Elastos {
 namespace IO {
@@ -9,26 +7,12 @@ namespace IO {
 ByteOrder CByteOrderHelper::sNativeOrder;
 ByteOrder CByteOrderHelper::sBigEndian;
 ByteOrder CByteOrderHelper::sLittleEndian;
-Boolean CByteOrderHelper::sIsLittleEndian;
-Boolean CByteOrderHelper::sIsInited = CByteOrderHelper::Init();
+Boolean CByteOrderHelper::sIsLittleEndian = FALSE;
+Boolean CByteOrderHelper::sIsInited = FALSE;
 
-ECode CByteOrderHelper::GetNativeOrder(
-        /* [out] */ByteOrder* nativeOrder)
-{
-    VALIDATE_NOT_NULL(nativeOrder);
-    *nativeOrder = sNativeOrder;
+CAR_INTERFACE_IMPL(CByteOrderHelper, Singleton, IByteOrderHelper)
 
-    return NOERROR;
-}
-
-Boolean CByteOrderHelper::Init()
-{
-    sIsLittleEndian = IsLittleEndian();
-    sBigEndian      = ByteOrder_BIG_ENDIAN;
-    sLittleEndian   = ByteOrder_LITTLE_ENDIAN;
-    sNativeOrder    = sIsLittleEndian ? sLittleEndian : sBigEndian;
-    return TRUE;
-}
+CAR_SINGLETON_IMPL(CByteOrderHelper)
 
 Boolean CByteOrderHelper::IsLittleEndian()
 {
@@ -36,11 +20,38 @@ Boolean CByteOrderHelper::IsLittleEndian()
     return *reinterpret_cast<Byte*>(&i) == 1;
 }
 
+void CByteOrderHelper::Init()
+{
+    if (sIsInited == FALSE) {
+        sIsInited = TRUE;
+
+        sIsLittleEndian = IsLittleEndian();
+        sBigEndian      = ByteOrder_BIG_ENDIAN;
+        sLittleEndian   = ByteOrder_LITTLE_ENDIAN;
+        sNativeOrder    = sIsLittleEndian ? sLittleEndian : sBigEndian;
+    }
+}
+
+ECode CByteOrderHelper::GetNativeOrder(
+        /* [out] */ByteOrder* nativeOrder)
+{
+    VALIDATE_NOT_NULL(nativeOrder);
+
+    Init();
+
+    *nativeOrder = sNativeOrder;
+
+    return NOERROR;
+}
+
 ECode CByteOrderHelper::IsNeedsSwap(
     /* [in] */ ByteOrder order,
     /* [out] */ Boolean* isNeedsSwap)
 {
     VALIDATE_NOT_NULL(isNeedsSwap)
+
+    Init();
+
     if (order == ByteOrder_BIG_ENDIAN) {
         *isNeedsSwap = sIsLittleEndian;
         return NOERROR;

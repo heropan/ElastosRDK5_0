@@ -54,7 +54,7 @@ public:
      *            the short array which the new buffer will be based on.
      * @return the created short buffer.
      */
-    static CARAPI WrapArray(
+    static CARAPI Wrap(
         /* [in] */ ArrayOf<Int16>* array,
         /* [out] */ IInt16Buffer** buf);
 
@@ -76,7 +76,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code shortCount} is invalid.
      */
-    static CARAPI WrapArray(
+    static CARAPI Wrap(
         /* [in] */ ArrayOf<Int16>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 int16Count,

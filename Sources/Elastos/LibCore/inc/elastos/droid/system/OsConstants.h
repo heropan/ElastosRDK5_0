@@ -1,5 +1,5 @@
-#ifndef __OSCONSTANTS_H__
-#define __OSCONSTANTS_H__
+#ifndef __ELASTOS_DROID_SYSTEM_OSCONSTANTS_H__
+#define __ELASTOS_DROID_SYSTEM_OSCONSTANTS_H__
 
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"

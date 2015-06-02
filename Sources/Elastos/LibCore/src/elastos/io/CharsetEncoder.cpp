@@ -107,7 +107,7 @@ ECode CharsetEncoder::CanEncode(
     AutoPtr<ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(1);
     (*chars)[0] = c;
     AutoPtr<ICharBuffer> charBuffer;
-    CharBuffer::WrapArray(chars, (ICharBuffer**)&charBuffer);
+    CharBuffer::Wrap(chars, (ICharBuffer**)&charBuffer);
     return ImplCanEncode(charBuffer.Get(), result);
 }
 
@@ -358,7 +358,7 @@ ECode CharsetEncoder::IsLegalReplacement(
         FAIL_RETURN(mDecoder->OnUnmappableCharacter(REPORT.Get(), (ICharsetDecoder**)&decoder));
     }
     AutoPtr<IByteBuffer> in;
-    FAIL_RETURN(ByteBuffer::WrapArray(replacement, (IByteBuffer**)&in));
+    FAIL_RETURN(ByteBuffer::Wrap(replacement, (IByteBuffer**)&in));
     AutoPtr<ICharBuffer> out;
     Float maxNum = 0.0f;
     mDecoder->MaxCharsPerByte(&maxNum);

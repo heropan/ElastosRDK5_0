@@ -54,7 +54,7 @@ public:
      *            the long array which the new buffer will be based on.
      * @return the created long buffer.
      */
-    static CARAPI WrapArray(
+    static CARAPI Wrap(
         /* [in] */ ArrayOf<Int64>* array,
         /* [out] */ IInt64Buffer** buf);
 
@@ -76,7 +76,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code longCount} is invalid.
      */
-    static CARAPI WrapArray(
+    static CARAPI Wrap(
         /* [in] */ ArrayOf<Int64>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 int64Count,

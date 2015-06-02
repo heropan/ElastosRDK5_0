@@ -1,10 +1,10 @@
 #ifndef __ELASTOS_IO_CBYTEORDERHELPER_H__
 #define __ELASTOS_IO_CBYTEORDERHELPER_H__
 
-#include <elastos.h>
-#include <Elastos.CoreLibrary_server.h>
-
 #include "_Elastos_IO_CByteOrderHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace IO {
@@ -13,8 +13,14 @@ namespace IO {
  * Defines byte order constants
  */
 CarClass(CByteOrderHelper)
+    , public Singleton
+    , public IByteOrderHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Returns the current platform byte order.
      *
@@ -35,7 +41,8 @@ public:
         /* [out] */ Boolean* isNeedsSwap);
 
 private:
-    static Boolean Init();
+    static void Init();
+
     static Boolean IsLittleEndian();
 
 private:

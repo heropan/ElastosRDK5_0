@@ -14,20 +14,20 @@ ECode CCharBufferHelper::Allocate(
     return CharBuffer::Allocate(capacity, charBuf);
 }
 
-ECode CCharBufferHelper::WrapArray(
+ECode CCharBufferHelper::Wrap(
     /* [in] */ ArrayOf<Char32>* array,
     /* [out] */ ICharBuffer** charBuf)
 {
-    return CharBuffer::WrapArray(array, charBuf);
+    return CharBuffer::Wrap(array, charBuf);
 }
 
-ECode CCharBufferHelper::WrapArray(
+ECode CCharBufferHelper::Wrap(
     /* [in] */ ArrayOf<Char32>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 charCount,
     /* [out] */ ICharBuffer** charBuf)
 {
-    return CharBuffer::WrapArray(array, start, charCount, charBuf);
+    return CharBuffer::Wrap(array, start, charCount, charBuf);
 }
 
 ECode CCharBufferHelper::WrapSequence(

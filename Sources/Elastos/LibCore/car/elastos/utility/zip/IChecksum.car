@@ -11,6 +11,7 @@ module
      * @sa Adler32
      * @sa CRC32
      */
+    [deprecated]
     interface IChecksum {
         /**
          * Returns the current calculated checksum value.
@@ -42,7 +43,7 @@ module
          *            the buffer holding the data to update the checksum with.
          */
         Update(
-            [in] ArrayOf<Byte> buf);
+            [in] ArrayOf<Byte>* buffer);
 
         /**
          * Updates the checksum with the given bytes.
@@ -55,7 +56,7 @@ module
          *            the number of bytes to read from {buf}.
          */
         Update(
-            [in] ArrayOf<Byte> buf,
+            [in] ArrayOf<Byte>* buf,
             [in] Int32 off,
             [in] Int32 nbytes);
     }

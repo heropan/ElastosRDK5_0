@@ -50,7 +50,7 @@ public:
      *            the double array which the new buffer will be based on.
      * @return the created double buffer.
      */
-    static CARAPI WrapArray(
+    static CARAPI Wrap(
         /* [in] */ ArrayOf<Double>* array,
         /* [out] */ IDoubleBuffer** buf);
 
@@ -72,7 +72,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code doubleCount} is invalid.
      */
-    static CARAPI WrapArray(
+    static CARAPI Wrap(
         /* [in] */ ArrayOf<Double>* array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 doubleCount,

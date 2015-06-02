@@ -36,18 +36,20 @@ ECode CAdler32::Update(
 }
 
 ECode CAdler32::Update(
-    /* [in] */ const ArrayOf<Byte>& buf)
+    /* [in] */ ArrayOf<Byte>* buf)
 {
-    return Update(buf, 0, buf.GetLength());
+    VALIDATE_NOT_NULL(buf)
+    return Update(buf, 0, buf->GetLength());
 }
 
 ECode CAdler32::Update(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
-    if ((offset | byteCount) < 0 || offset > buf.GetLength()
-            || buf.GetLength() - offset < byteCount) {
+    VALIDATE_NOT_NULL(buf)
+    if ((offset | byteCount) < 0 || offset > buf->GetLength()
+            || buf->GetLength() - offset < byteCount) {
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 //        throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
 //                count);
@@ -58,12 +60,12 @@ ECode CAdler32::Update(
 }
 
 Int64 CAdler32::UpdateImpl(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
     /* [in] */ Int64 adler)
 {
-    return adler32(adler, reinterpret_cast<const Bytef*>(buf.GetPayload() + offset),
+    return adler32(adler, reinterpret_cast<const Bytef*>(buf->GetPayload() + offset),
             byteCount);
 }
 

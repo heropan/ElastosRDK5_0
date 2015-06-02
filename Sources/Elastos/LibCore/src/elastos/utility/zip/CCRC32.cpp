@@ -57,9 +57,10 @@ ECode CCRC32::Update(
  *            the buffer holding the data to update the checksum with.
  */
 ECode CCRC32::Update(
-    /* [in] */ const ArrayOf<Byte>& buf)
+    /* [in] */ ArrayOf<Byte>* buf)
 {
-    return Update(buf, 0, buf.GetLength());
+    VALIDATE_NOT_NULL(buf)
+    return Update(buf, 0, buf->GetLength());
 }
 
 /**
@@ -67,12 +68,13 @@ ECode CCRC32::Update(
  * starting from {@code offset} and reading {@code byteCount} bytes of data.
  */
 ECode CCRC32::Update(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
-    if ((offset | byteCount) < 0 || offset > buf.GetLength()
-            || buf.GetLength() - offset < byteCount) {
+    VALIDATE_NOT_NULL(buf)
+    if ((offset | byteCount) < 0 || offset > buf->GetLength()
+            || buf->GetLength() - offset < byteCount) {
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 //        throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
 //                count);
@@ -83,12 +85,13 @@ ECode CCRC32::Update(
 }
 
 Int64 CCRC32::UpdateImpl(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
     /* [in] */ Int64 crc)
 {
-    return crc32(crc, reinterpret_cast<const Bytef*>(buf.GetPayload() + offset), byteCount);
+    assert(buf != NULL);
+    return crc32(crc, reinterpret_cast<const Bytef*>(buf->GetPayload() + offset), byteCount);
 }
 
 Int64 CCRC32::UpdateByteImpl(

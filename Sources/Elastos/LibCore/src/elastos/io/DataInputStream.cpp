@@ -349,7 +349,7 @@ String DataInputStream::DecodeUTF(
 {
     AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(utfSize);
     AutoPtr< ArrayOf<Char32> > charbuf = ArrayOf<Char32>::Alloc(utfSize);
-    in->ReadFully(*buf, 0, utfSize);
+    in->ReadFully(buf, 0, utfSize);
     for (Int32 i = 0; i < utfSize; ++i) {
         (*charbuf)[i] = (*buf)[i];
     }

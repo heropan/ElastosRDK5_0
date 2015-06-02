@@ -151,7 +151,7 @@ ECode OutputStreamWriter::Write(
     AutoPtr<ArrayOf<Char32> > c = ArrayOf<Char32>::Alloc(1);
     (*c)[0] = (Char32)oneChar32;
     AutoPtr<ICharBuffer> chars;
-    CharBuffer::WrapArray(c, (ICharBuffer**)&chars);
+    CharBuffer::Wrap(c, (ICharBuffer**)&chars);
     return Convert(chars);
 }
 
@@ -171,7 +171,7 @@ ECode OutputStreamWriter::Write(
     }
 
     AutoPtr<ICharBuffer> chars;
-    CharBuffer::WrapArray(const_cast<ArrayOf<Char32>*>(&buffer), offset, count, (ICharBuffer**)&chars);
+    CharBuffer::Wrap(const_cast<ArrayOf<Char32>*>(&buffer), offset, count, (ICharBuffer**)&chars);
     return Convert(chars);
 }
 

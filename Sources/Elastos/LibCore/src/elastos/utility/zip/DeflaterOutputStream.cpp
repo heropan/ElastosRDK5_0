@@ -26,7 +26,7 @@ ECode DeflaterOutputStream::Deflate()
 {
     Int32 byteCount;
     while (mDef->Deflate(mBuf, &byteCount), byteCount != 0) {
-        FAIL_RETURN(mOut->Write(*mBuf, 0, byteCount));
+        FAIL_RETURN(mOut->Write(mBuf, 0, byteCount));
     }
     return NOERROR;
 }
@@ -53,7 +53,7 @@ ECode DeflaterOutputStream::Finish()
     while (mDef->Finished(&finished), !finished) {
         Int32 byteCount;
         FAIL_RETURN(mDef->Deflate(mBuf, &byteCount));
-        FAIL_RETURN(mOut->Write(*mBuf, 0, byteCount));
+        FAIL_RETURN(mOut->Write(mBuf, 0, byteCount));
     }
     mDone = TRUE;
     return NOERROR;
@@ -99,7 +99,7 @@ ECode DeflaterOutputStream::Flush()
         Int32 byteCount;
         while (mDef->Deflate(mBuf, 0, mBuf->GetLength(),
             CDeflater::SYNC_FLUSH, &byteCount), byteCount != 0) {
-            FAIL_RETURN(mOut->Write(*mBuf, 0, byteCount));
+            FAIL_RETURN(mOut->Write(mBuf, 0, byteCount));
         }
     }
     //return mOut->Flush();

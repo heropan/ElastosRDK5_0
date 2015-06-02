@@ -53,20 +53,20 @@ public:
      *            bytes to update checksum with.
      */
     CARAPI Update(
-        /* [in] */ const ArrayOf<Byte>& buf);
+        /* [in] */ ArrayOf<Byte>* buf);
 
     /**
      * Update this {@code Adler32} checksum with the contents of {@code buf},
      * starting from {@code offset} and reading {@code byteCount} bytes of data.
      */
     CARAPI Update(
-        /* [in] */ const ArrayOf<Byte>& buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);
 
 private:
     CARAPI_(Int64) UpdateImpl(
-        /* [in] */ const ArrayOf<Byte>& buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [in] */ Int64 adler);

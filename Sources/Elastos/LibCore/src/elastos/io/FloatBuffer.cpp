@@ -31,14 +31,14 @@ ECode FloatBuffer::Allocate(
     return NOERROR;
 }
 
-ECode FloatBuffer::WrapArray(
+ECode FloatBuffer::Wrap(
     /* [in] */ ArrayOf<Float>* array,
     /* [out] */ IFloatBuffer** buf)
 {
-    return WrapArray(array, 0, array->GetLength(), buf);
+    return Wrap(array, 0, array->GetLength(), buf);
 }
 
-ECode FloatBuffer::WrapArray(
+ECode FloatBuffer::Wrap(
     /* [in] */ ArrayOf<Float>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 floatCount,

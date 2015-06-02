@@ -144,10 +144,10 @@ ECode ZipOutputStream::CloseEntry()
     WriteInt16(mCDir, 0); // Internal File Attributes
     WriteInt64(mCDir, 0); // External File Attributes
     WriteInt64(mCDir, mOffset);
-    mCDir->Write(*mNameBytes);
+    mCDir->Write(mNameBytes);
     mNameBytes = NULL;
     if (mCurrentEntry->mExtra != NULL) {
-        mCDir->Write(*mCurrentEntry->mExtra);
+        mCDir->Write(mCurrentEntry->mExtra);
     }
     mOffset +=mCurOffset;
     if (!c.IsNull()) {
@@ -200,7 +200,7 @@ ECode ZipOutputStream::Finish()
     // Write the central dir
     AutoPtr<ArrayOf<Byte> > bytes;
     mCDir->ToByteArray((ArrayOf<Byte> **)&bytes);
-    mOut->Write(*bytes);
+    mOut->Write(bytes);
     mCDir = NULL;
     return NOERROR;
 }
@@ -299,9 +299,9 @@ ECode ZipOutputStream::PutNextEntry(
         WriteInt16(mOut, 0);
     }
     mNameBytes = ToUTF8Bytes(mCurrentEntry->mName, mNameLength);
-    mOut->Write(*mNameBytes);
+    mOut->Write(mNameBytes);
     if (mCurrentEntry->mExtra != NULL) {
-        mOut->Write(*mCurrentEntry->mExtra);
+        mOut->Write(mCurrentEntry->mExtra);
     }
     return NOERROR;
 }

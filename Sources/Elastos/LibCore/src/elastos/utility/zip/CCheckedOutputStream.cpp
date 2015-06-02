@@ -24,7 +24,7 @@ ECode CheckedOutputStream::Write(
 }
 
 ECode CheckedOutputStream::Write(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes)
 {
@@ -35,7 +35,7 @@ ECode CheckedOutputStream::Write(
 ECode CheckedOutputStream::Close()
 {
     ECode ec = Flush();
-    AutoPtr<ICloseable> cls = (ICloseable*)mOut->Probe(Elastos::IO::EIID_ICloseable);
+    AutoPtr<ICloseable> cls = ICloseable::Probe(mOut);
     ECode ec2 = cls->Close();
     if(ec != NOERROR || ec2 != NOERROR){
         return ec != NOERROR ? ec : ec2;
@@ -50,9 +50,9 @@ ECode CheckedOutputStream::Flush()
 }
 
 ECode CheckedOutputStream::Write(
-    /* [in] */ const ArrayOf<Byte> & buffer)
+    /* [in] */ ArrayOf<Byte>* buffer)
 {
-    return Write(buffer, 0, buffer.GetLength());
+    return Write(buffer, 0, buffer->GetLength());
 }
 
 ECode CheckedOutputStream::CheckError(
@@ -67,7 +67,7 @@ ECode CheckedOutputStream::constructor(
     /* [in] */ IOutputStream* os,
     /* [in] */ IChecksum* cs)
 {
-    FilterOutputStream::constructor(os);
+    FAIL_RETURN(FilterOutputStream::constructor(os));
     mCheck = cs;
     return NOERROR;
 }
@@ -75,16 +75,6 @@ ECode CheckedOutputStream::constructor(
 //======================================================
 CAR_OBJECT_IMPL(CCheckedOutputStream)
 
-ECode CCheckedOutputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj;// = CheckedOutputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
 
 } // namespace Zip
 } // namespace Utility

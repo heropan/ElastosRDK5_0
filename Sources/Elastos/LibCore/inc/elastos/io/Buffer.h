@@ -1,8 +1,10 @@
 #ifndef __ELASTOS_IO_BUFFER_H__
 #define __ELASTOS_IO_BUFFER_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
 #include "MemoryBlock.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace IO {
@@ -38,9 +40,12 @@ extern "C" const InterfaceID EIID_Buffer;
  * synchronization issues.
  */
 class Buffer
-    : public ElRefBase
+    : public Object
+    , public IBuffer
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Returns the offset into the array returned by {@code array} of the first
      * element of the buffer (optional operation). The backing array (if there is one)
@@ -220,6 +225,9 @@ public:
     CARAPI CheckWritable();
 
 protected:
+
+    Buffer();
+
     /**
      * Construct a buffer with the specified capacity.
      */
@@ -227,6 +235,8 @@ protected:
         /* [in] */ Int32 elementSizeShift,
         /* [in] */ Int32 capacity,
         /* [in] */ MemoryBlock* block);
+
+    virtual ~Buffer();
 
     /**
      * Used for the scalar get/put operations.
