@@ -115,7 +115,7 @@ module
     interface Elastos.IO.Channels.IChannels;
     interface Libcore.IO.IStreams;
     interface Elastos.Core.IAppendable;
-
+    interface Elastos.IO.ICloseable;
 
     namespace Elastos {
     namespace IO {
@@ -294,6 +294,30 @@ module
         interface IAppendable;
         interface IWriter;
         interface ICharArrayWriter;
+    }
+
+    class CDataInputStream {
+        constructor(
+            [in] IInputStream* is);
+
+        interface ICloseable;
+        interface IInputStream;
+        interface IFilterInputStream;
+        interface IDataInputStream;
+    }
+
+    class CPushbackInputStream {
+        constructor(
+            [in] IInputStream* is);
+
+        constructor(
+            [in] IInputStream* is,
+            [in] Int32 size);
+
+        interface ICloseable;
+        interface IInputStream;
+        interface IFilterInputStream;
+        interface IPushbackInputStream;
     }
 
     } // namespace IO

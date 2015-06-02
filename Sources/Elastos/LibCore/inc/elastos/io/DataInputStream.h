@@ -9,14 +9,18 @@ namespace IO {
 
 class DataInputStream
     : public FilterInputStream
+    , public IDataInputStream
 {
+public:
+    CAR_INTERFACE_DECL()
+    
+    CARAPI constructor(
+        /* [in] */ IInputStream* is);
+
 protected:
     DataInputStream();
 
     ~DataInputStream();
-
-    CARAPI Init(
-        /* [in] */ IInputStream* is);
 
     CARAPI DecodeUTF(
         /* [in] */ Int32 utfSize,
@@ -36,15 +40,15 @@ public:
      * @see DataOutput#write(byte[])
      * @see DataOutput#write(byte[], int, int)
      */
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
     // @Override
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
 
     /**

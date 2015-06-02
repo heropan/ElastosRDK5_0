@@ -2,14 +2,16 @@
 #include "coredef.h"
 #include "DataInputStream.h"
 #include "CPushbackInputStream.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;
 
 namespace Elastos {
 namespace IO {
+
+CAR_INTERFACE_IMPL(DataInputStream, FilterInputStream, IDataInputStream)
 
 DataInputStream::DataInputStream()
 {
@@ -21,31 +23,31 @@ DataInputStream::~DataInputStream()
 {
 }
 
-ECode DataInputStream::Init(
+ECode DataInputStream::constructor(
     /* [in] */ IInputStream* in)
 {
-    return FilterInputStream::Init(in);
+    return FilterInputStream::constructor(in);
 }
 
-ECode DataInputStream::ReadBytes(
+ECode DataInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
     assert(buffer != NULL);
     assert(number != NULL);
-    return FilterInputStream::ReadBytes(buffer, number);
+    return Read(buffer, number);
 }
 
-ECode DataInputStream::ReadBytes(
+ECode DataInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 length,
+    /* [in] */ Int32 byteOffset,
+    /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
     assert(buffer != NULL);
     assert(number != NULL);
 
-    return mIn->ReadBytes(buffer, offset, length, number);
+    return mIn->Read(buffer, byteOffset, byteCount, number);
 }
 
 ECode DataInputStream::ReadBoolean(
@@ -102,7 +104,7 @@ ECode DataInputStream::ReadToBuff(
 
     Int32 offset = 0;
     while(offset < count) {
-        FAIL_RETURN(ReadBytes(mBuff, offset, count - offset, number));
+        FAIL_RETURN(Read(mBuff, offset, count - offset, number));
         if(*number == -1) return NOERROR;
         offset += *number;
     }
@@ -135,6 +137,7 @@ ECode DataInputStream::ReadFloat(
 ECode DataInputStream::ReadFully(
     /* [out] */ ArrayOf<byte> * buffer)
 {
+    assert(buffer != NULL);
     return ReadFully(buffer, 0, buffer->GetLength());
 }
 
@@ -143,6 +146,7 @@ ECode DataInputStream::ReadFully(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
+    assert(buffer != NULL);
     // BEGIN android-removed
     // if (length < 0) {
     //     throw new IndexOutOfBoundsException();
@@ -165,7 +169,7 @@ ECode DataInputStream::ReadFully(
     // END android-changed
     Int32 number;
     while (length > 0) {
-        FAIL_RETURN(mIn->ReadBytes(buffer, offset, length, &number));
+        FAIL_RETURN(mIn->Read(buffer, offset, length, &number));
         if (number < 0) return E_EOF_EXCEPTION;
         offset += number;
         length -= number;
@@ -217,7 +221,7 @@ ECode DataInputStream::ReadLine(
                 if (!IPushbackInputStream::Probe(mIn)) {
                     AutoPtr<IPushbackInputStream> in;
                     CPushbackInputStream::New(mIn, (IPushbackInputStream**)&in);
-                    mIn = in;
+                    mIn = IInputStream::Probe(in);
                 }
                 break;
             case (Byte)'\n':

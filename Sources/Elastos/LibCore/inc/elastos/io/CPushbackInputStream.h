@@ -60,11 +60,6 @@ public:
         /* [in] */ IInputStream* is,
         /* [in] */ Int32 size);
 
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 };
 
 } // namespace IO

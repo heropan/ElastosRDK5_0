@@ -55,3 +55,9 @@ SOURCES += CCharArrayReader.cpp
 
 SOURCES += CharArrayWriter.cpp
 SOURCES += CCharArrayWriter.cpp
+
+SOURCES += DataInputStream.cpp
+SOURCES += CDataInputStream.cpp
+
+SOURCES += PushbackInputStream.cpp
+SOURCES += CPushbackInputStream.cpp

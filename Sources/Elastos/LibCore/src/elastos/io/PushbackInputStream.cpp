@@ -18,7 +18,7 @@ PushbackInputStream::~PushbackInputStream()
 ECode PushbackInputStream::Init(
     /* [in] */ IInputStream* in)
 {
-    FAIL_RETURN(FilterInputStream::Init(in));
+    FAIL_RETURN(FilterInputStream::constructor(in));
     if(in != NULL) {
         mBuf = ArrayOf<Byte>::Alloc(1);
         if (mBuf == NULL)
@@ -33,7 +33,7 @@ ECode PushbackInputStream::Init(
     /* [in] */ IInputStream* in,
     /* [in] */ Int32 size)
 {
-    FAIL_RETURN(FilterInputStream::Init(in));
+    FAIL_RETURN(FilterInputStream::constructor(in));
     if (size <= 0) {
 //      throw new IllegalArgumentException("size <= 0");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -70,7 +70,8 @@ ECode PushbackInputStream::Available(
 ECode PushbackInputStream::Close()
 {
     if (mIn != NULL) {
-        FAIL_RETURN(mIn->Close());
+        ICloseable* c = ICloseable::Probe(mIn);
+        FAIL_RETURN(c->Close());
         mIn = NULL;
         mBuf = NULL;
     }
@@ -148,7 +149,7 @@ ECode PushbackInputStream::ReadBytes(
         return NOERROR;
     }
     Int32 inCopied;
-    FAIL_RETURN(mIn->ReadBytes(buffer, newOffset, length - copiedBytes, &inCopied));
+    FAIL_RETURN(mIn->Read(buffer, newOffset, length - copiedBytes, &inCopied));
     if (inCopied > 0) {
         *number = inCopied + copiedBytes;
         return NOERROR;

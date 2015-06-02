@@ -47,7 +47,7 @@ ECode CPushbackInputStream::ReadBytes(
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    return PushbackInputStream::ReadBytes(buffer, number);
+    return InputStream::Read(buffer, number);
 }
 
 ECode CPushbackInputStream::ReadBytes(
@@ -107,23 +107,6 @@ ECode CPushbackInputStream::constructor(
     /* [in] */ Int32 size)
 {
     return PushbackInputStream::Init(is, size);
-}
-
-PInterface CPushbackInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CPushbackInputStream::Probe(riid);
-}
-
-ECode CPushbackInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = PushbackInputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
 }
 
 } // namespace IO
