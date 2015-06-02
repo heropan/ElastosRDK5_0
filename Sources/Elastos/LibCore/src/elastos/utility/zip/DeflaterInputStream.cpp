@@ -39,7 +39,7 @@ ECode DeflaterInputStream::Read(
     return streams->ReadSingleByte(THIS_PROBE(IInputStream), value);
 }
 
-ECode DeflaterInputStream::ReadBytes(
+ECode DeflaterInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
@@ -70,7 +70,7 @@ ECode DeflaterInputStream::ReadBytes(
         if (needs) {
             // read data from input stream
             Int32 bytesRead;
-            mIn->ReadBytes(mBuf, &bytesRead);
+            mIn->Read(mBuf, &bytesRead);
             if (bytesRead == -1) {
                 mDef->Finish();
             }
@@ -141,31 +141,31 @@ ECode DeflaterInputStream::CheckClosed()
     return NOERROR;
 }
 
-ECode DeflaterInputStream::ReadBytes(
+ECode DeflaterInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
     VALIDATE_NOT_NULL(buffer);
-    return ReadBytes(buffer, 0, buffer->GetLength(), number);
+    return Read(buffer, 0, buffer->GetLength(), number);
 }
 
-ECode DeflaterInputStream::Init(
+ECode DeflaterInputStream::constructor(
     /* [in] */ IInputStream* in)
 {
     AutoPtr<CDeflater> deflater;
     CDeflater::NewByFriend((CDeflater**)&deflater);
-    return Init(in, (IDeflater*)deflater.Get(), DEFAULT_BUFFER_SIZE);
+    return constructor(in, (IDeflater*)deflater.Get(), DEFAULT_BUFFER_SIZE);
 }
 
-ECode DeflaterInputStream::Init(
+ECode DeflaterInputStream::constructor(
     /* [in] */ IInputStream* in,
     /* [in] */ IDeflater* deflater)
 {
-    return Init(in, deflater, DEFAULT_BUFFER_SIZE);
+    return constructor(in, deflater, DEFAULT_BUFFER_SIZE);
 }
 
-ECode DeflaterInputStream::Init(
+ECode DeflaterInputStream::constructor(
     /* [in] */ IInputStream* in,
     /* [in] */ IDeflater* deflater,
     /* [in] */ Int32 bufferSize)

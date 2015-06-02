@@ -62,7 +62,7 @@ public:
      *         stream has been reached.
      */
     //@Override
-    virtual CARAPI ReadBytes(
+    virtual CARAPI Read(
         /* [out] */ ArrayOf<Byte>* b,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len,
@@ -118,7 +118,7 @@ public:
     //@Override
     virtual CARAPI Reset();
 
-    virtual CARAPI ReadBytes(
+    virtual CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
@@ -130,7 +130,7 @@ protected:
      *
      * @param in the source {@code InputStream}
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* in);
 
     /**
@@ -141,7 +141,7 @@ protected:
      * @param in the source {@code InputStream}
      * @param deflater the {@code Deflater} to be used for compression
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* in,
         /* [in] */ IDeflater* deflater);
 
@@ -154,7 +154,7 @@ protected:
      * @param deflater the {@code Deflater} to be used for compression
      * @param bufferSize the length in bytes of the internal buffer
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* in,
         /* [in] */ IDeflater* deflater,
         /* [in] */ Int32 bufferSize);

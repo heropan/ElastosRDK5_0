@@ -95,7 +95,7 @@ protected:
      * @param stream
      *            the input stream to representing a ZIP archive.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* stream);
 
     /**

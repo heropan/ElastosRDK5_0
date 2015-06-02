@@ -111,22 +111,22 @@ ECode InflaterOutputStream::CheckError(
     return NOERROR;
 }
 
-ECode InflaterOutputStream::Init(
+ECode InflaterOutputStream::constructor(
     /* [in] */ IOutputStream* out)
 {
     AutoPtr<CInflater> inflater;
     CInflater::NewByFriend((CInflater**)&inflater);
-    return Init(out, (IInflater*)inflater.Get());
+    return constructor(out, (IInflater*)inflater.Get());
 }
 
-ECode InflaterOutputStream::Init(
+ECode InflaterOutputStream::constructor(
     /* [in] */ IOutputStream* out,
     /* [in] */ IInflater* inf)
 {
-    return Init(out, inf, DEFAULT_BUFFER_SIZE);
+    return constructor(out, inf, DEFAULT_BUFFER_SIZE);
 }
 
-ECode InflaterOutputStream::Init(
+ECode InflaterOutputStream::constructor(
     /* [in] */ IOutputStream* out,
     /* [in] */ IInflater* inf,
     /* [in] */ Int32 bufferSize)

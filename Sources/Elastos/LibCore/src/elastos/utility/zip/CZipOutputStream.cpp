@@ -7,12 +7,6 @@ namespace Zip {
 
 CAR_OBJECT_IMPL(CZipOutputStream)
 
-ECode CZipOutputStream::constructor(
-    /* [in] */ IOutputStream* os)
-{
-    return ZipOutputStream::Init(os);
-}
-
 ECode CZipOutputStream::GetLock(
     /* [out] */ IInterface** lockobj)
 {

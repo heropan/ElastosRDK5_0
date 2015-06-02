@@ -17,15 +17,6 @@ public:
 
     CARAPI GetLock(
         /* [out] */ IInterface** lockobj);
-
-    /**
-     * Constructs a new {@code ZipInputStream} from the specified input stream.
-     *
-     * @param stream
-     *            the input stream to representing a ZIP archive.
-     */
-    CARAPI constructor(
-        /* [in] */ IInputStream* stream);
 };
 
 } // namespace Zip

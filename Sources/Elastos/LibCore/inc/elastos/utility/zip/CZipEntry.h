@@ -93,38 +93,6 @@ public:
      */
     CARAPI IsDirectory(
         /* [out] */ Boolean* isDirectory);
-
-    /**
-     * Constructs a new {@code ZipEntry} with the specified name.
-     *
-     * @param name
-     *            the name of the ZIP entry.
-     * @throws IllegalArgumentException
-     *             if the name length is outside the range (> 0xFFFF).
-     */
-    CARAPI constructor(
-        /* [in] */ const String& name);
-
-    /**
-     * Constructs a new {@code ZipEntry} using the values obtained from {@code
-     * ze}.
-     *
-     * @param ze
-     *            the {@code ZipEntry} from which to obtain values.
-     */
-    CARAPI constructor(
-        /* [in] */ IZipEntry* ze);
-
-    /*
-     * Internal constructor.  Creates a new ZipEntry by reading the
-     * Central Directory Entry from "in", which must be positioned at
-     * the CDE signature.
-     *
-     * On exit, "in" will be positioned at the start of the next entry.
-     */
-    CARAPI constructor (
-        /* [in] */ const ArrayOf<Byte>& hdrBuf,
-        /* [in] */ IInputStream *in);
 };
 
 } // namespace Zip

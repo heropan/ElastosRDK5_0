@@ -18,27 +18,6 @@ ECode CInflaterInputStream::GetLock(
     return NOERROR;
 }
 
-ECode CInflaterInputStream::constructor(
-    /* [in] */ IInputStream* is)
-{
-    return InflaterInputStream::Init(is);
-}
-
-ECode CInflaterInputStream::constructor(
-    /* [in] */ IInputStream* is,
-    /* [in] */ IInflater* inflater)
-{
-    return InflaterInputStream::Init(is, inflater);
-}
-
-ECode CInflaterInputStream::constructor(
-    /* [in] */ IInputStream* is,
-    /* [in] */ IInflater* inflater,
-    /* [in] */ Int32 bsize)
-{
-    return InflaterInputStream::Init(is, inflater, bsize);
-}
-
 } // namespace Zip
 } // namespace Utility
 } // namespace Elastos

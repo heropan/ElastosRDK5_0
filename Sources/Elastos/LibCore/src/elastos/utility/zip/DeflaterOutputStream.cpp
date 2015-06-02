@@ -114,47 +114,47 @@ ECode DeflaterOutputStream::CheckError(
     return NOERROR;
 }
 
-ECode DeflaterOutputStream::Init(
+ECode DeflaterOutputStream::constructor(
     /* [in] */ IOutputStream* os,
     /* [in] */ IDeflater* def)
 {
-    return Init(os, def, BUF_SIZE, FALSE);
+    return constructor(os, def, BUF_SIZE, FALSE);
 }
 
-ECode DeflaterOutputStream::Init(
+ECode DeflaterOutputStream::constructor(
     /* [in] */ IOutputStream* os)
 {
     AutoPtr<CDeflater> deflater;
     CDeflater::NewByFriend((CDeflater**)&deflater);
-    return Init(os, (IDeflater*)deflater.Get(), BUF_SIZE, FALSE);
+    return constructor(os, (IDeflater*)deflater.Get(), BUF_SIZE, FALSE);
 }
 
-ECode DeflaterOutputStream::Init(
+ECode DeflaterOutputStream::constructor(
     /* [in] */ IOutputStream* os,
     /* [in] */ IDeflater* def,
     /* [in] */ Int32 bsize)
 {
-    return Init(os, def, bsize, FALSE);
+    return constructor(os, def, bsize, FALSE);
 }
 
-ECode DeflaterOutputStream::Init(
+ECode DeflaterOutputStream::constructor(
     /* [in] */ IOutputStream* os,
     /* [in] */ Boolean syncFlush)
 {
     AutoPtr<CDeflater> deflater;
     CDeflater::NewByFriend((CDeflater**)&deflater);
-    return Init(os, (IDeflater*)deflater.Get(), BUF_SIZE, syncFlush);
+    return constructor(os, (IDeflater*)deflater.Get(), BUF_SIZE, syncFlush);
 }
 
-ECode DeflaterOutputStream::Init(
+ECode DeflaterOutputStream::constructor(
     /* [in] */ IOutputStream* os,
     /* [in] */ IDeflater* def,
     /* [in] */ Boolean syncFlush)
 {
-    return Init(os, def, BUF_SIZE, syncFlush);
+    return constructor(os, def, BUF_SIZE, syncFlush);
 }
 
-ECode DeflaterOutputStream::Init(
+ECode DeflaterOutputStream::constructor(
     /* [in] */ IOutputStream* os,
     /* [in] */ IDeflater* def,
     /* [in] */ Int32 bsize,

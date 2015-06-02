@@ -23,7 +23,7 @@ ECode CGZIPInputStream::GetLock(
 {
     VALIDATE_NOT_NULL(lockobj);
 
-    AutoPtr<IInterface> obj = InflaterInputStream::GetLock();
+    AutoPtr<IInterface> obj;// = InflaterInputStream::GetLock();
     *lockobj = obj;
     REFCOUNT_ADD(*lockobj);
     return NOERROR;

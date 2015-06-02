@@ -18,12 +18,6 @@ ECode CZipInputStream::GetLock(
     return NOERROR;
 }
 
-ECode CZipInputStream::constructor(
-    /* [in] */ IInputStream* stream)
-{
-    return ZipInputStream::Init(stream);
-}
-
 } // namespace Zip
 } // namespace Utility
 } // namespace Elastos

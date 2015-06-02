@@ -181,7 +181,7 @@ protected:
      * @throws IllegalArgumentException
      *             if the name length is outside the range (> 0xFFFF).
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& name);
 
     /**
@@ -191,10 +191,10 @@ protected:
      * @param ze
      *            the {@code ZipEntry} from which to obtain values.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in]*/ ZipEntry* ze);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const ArrayOf<Byte>& hdrBuf,
         /* [in] */ IInputStream* is);
 

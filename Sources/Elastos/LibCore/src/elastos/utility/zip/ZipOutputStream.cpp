@@ -38,12 +38,12 @@ ZipOutputStream::~ZipOutputStream()
  * @param p1
  *            the {@code OutputStream} to write the data to.
  */
-ECode ZipOutputStream::Init(
+ECode ZipOutputStream::constructor(
     /* [in] */ IOutputStream* p1)
 {
     AutoPtr<CDeflater> deflater;
     CDeflater::NewByFriend(IDeflater::DEFAULT_COMPRESSION, TRUE, (CDeflater**)&deflater);
-    return DeflaterOutputStream::Init(p1, (IDeflater*)deflater.Get());
+    return DeflaterOutputStream::constructor(p1, (IDeflater*)deflater.Get());
 }
 
 ECode ZipOutputStream::Close()
