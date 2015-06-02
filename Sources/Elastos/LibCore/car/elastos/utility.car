@@ -1390,49 +1390,49 @@ module
      * written to the underlying stream.
      * @since 1.6
      */
-    class CInflaterOutputStream {
-        /**
-         * Constructs an {@code InflaterOutputStream} with a new {@code Inflater} and an
-         * implementation-defined default internal buffer size. {@code out} is a destination
-         * for uncompressed data, and compressed data will be written to this stream.
-         *
-         * @param out the destination {@code OutputStream}
-         */
-        constructor(
-            [in] IOutputStream* os);
+    // class CInflaterOutputStream {
+    //     /**
+    //      * Constructs an {@code InflaterOutputStream} with a new {@code Inflater} and an
+    //      * implementation-defined default internal buffer size. {@code out} is a destination
+    //      * for uncompressed data, and compressed data will be written to this stream.
+    //      *
+    //      * @param out the destination {@code OutputStream}
+    //      */
+    //     constructor(
+    //         [in] IOutputStream* os);
 
-        /**
-         * Constructs an {@code InflaterOutputStream} with the given {@code Inflater} and an
-         * implementation-defined default internal buffer size. {@code out} is a destination
-         * for uncompressed data, and compressed data will be written to this stream.
-         *
-         * @param out the destination {@code OutputStream}
-         * @param inf the {@code Inflater} to be used for decompression
-         */
-        constructor(
-            [in] IOutputStream* os,
-            [in] IInflater* inf);
+    //     *
+    //      * Constructs an {@code InflaterOutputStream} with the given {@code Inflater} and an
+    //      * implementation-defined default internal buffer size. {@code out} is a destination
+    //      * for uncompressed data, and compressed data will be written to this stream.
+    //      *
+    //      * @param out the destination {@code OutputStream}
+    //      * @param inf the {@code Inflater} to be used for decompression
 
-        /**
-         * Constructs an {@code InflaterOutputStream} with the given {@code Inflater} and
-         * given internal buffer size. {@code out} is a destination
-         * for uncompressed data, and compressed data will be written to this stream.
-         *
-         * @param out the destination {@code OutputStream}
-         * @param inf the {@code Inflater} to be used for decompression
-         * @param bufferSize the length in bytes of the internal buffer
-         */
-        constructor(
-            [in] IOutputStream* os,
-            [in] IInflater* inf,
-            [in] Int32 bufferSize);
+    //     constructor(
+    //         [in] IOutputStream* os,
+    //         [in] IInflater* inf);
 
-        interface IInflaterOutputStream;
-        interface IFilterOutputStream;
-        interface IOutputStream;
-        interface ICloseable;
-        interface IFlushable;
-    }
+    //     /**
+    //      * Constructs an {@code InflaterOutputStream} with the given {@code Inflater} and
+    //      * given internal buffer size. {@code out} is a destination
+    //      * for uncompressed data, and compressed data will be written to this stream.
+    //      *
+    //      * @param out the destination {@code OutputStream}
+    //      * @param inf the {@code Inflater} to be used for decompression
+    //      * @param bufferSize the length in bytes of the internal buffer
+    //      */
+    //     constructor(
+    //         [in] IOutputStream* os,
+    //         [in] IInflater* inf,
+    //         [in] Int32 bufferSize);
+
+    //     interface IInflaterOutputStream;
+    //     interface IFilterOutputStream;
+    //     interface IOutputStream;
+    //     interface ICloseable;
+    //     interface IFlushable;
+    // }
 
     // /**
     //  * An {@code InputStream} filter to compress data. Callers read
