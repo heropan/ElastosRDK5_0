@@ -30,7 +30,7 @@ ECode SelectionKeyImpl::Channel(
 ECode SelectionKeyImpl::InterestOps(
     /* [out] */ Int32* opts)
 {
-    assert(NULL != opts);
+    VALIDATE_NOT_NULL(opts)
     ECode ecRet = CheckValid();
     if(NOERROR != ecRet)
     {
@@ -81,7 +81,7 @@ ECode SelectionKeyImpl::InterestOps(
 ECode SelectionKeyImpl::ReadyOps(
     /* [out] */ Int32* ret)
 {
-    assert(NULL != ret);
+    VALIDATE_NOT_NULL(ret)
     ECode ecRet = CheckValid();
     if(NOERROR != ecRet)
     {
@@ -120,7 +120,7 @@ ECode SelectionKeyImpl::CheckValid()
 ECode SelectionKeyImpl::IsConnected(
     /* [out] */ Boolean* isConnected)
 {
-    assert(NULL != isConnected);
+    VALIDATE_NOT_NULL(isConnected)
     if (ISocketChannel::Probe(mChannel) == NULL)
     {
         *isConnected = TRUE;

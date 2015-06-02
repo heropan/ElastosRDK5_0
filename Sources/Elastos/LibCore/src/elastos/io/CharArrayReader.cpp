@@ -107,7 +107,7 @@ ECode CharArrayReader::CheckNotClosed()
 ECode CharArrayReader::IsMarkSupported(
     /*[out]*/ Boolean* IsMarkSupported)
 {
-    assert(IsMarkSupported != NULL);
+    VALIDATE_NOT_NULL(IsMarkSupported)
 
     *IsMarkSupported = TRUE;
     return NOERROR;
@@ -116,7 +116,7 @@ ECode CharArrayReader::IsMarkSupported(
 ECode CharArrayReader::Read(
     /*[out]*/ Int32* character)
 {
-    assert(character != NULL);
+    VALIDATE_NOT_NULL(character)
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
@@ -135,8 +135,8 @@ ECode CharArrayReader::Read(
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
-    assert(number != NULL);
-    assert(buffer != NULL);
+    VALIDATE_NOT_NULL(number)
+    VALIDATE_NOT_NULL(buffer)
 
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
@@ -168,7 +168,7 @@ ECode CharArrayReader::Read(
 ECode CharArrayReader::IsReady(
     /*[out]*/ Boolean* isReady)
 {
-    assert(isReady != NULL);
+    VALIDATE_NOT_NULL(isReady)
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
@@ -191,7 +191,7 @@ ECode CharArrayReader::Skip(
     /* [in] */Int64 n,
     /* [out] */ Int64* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());

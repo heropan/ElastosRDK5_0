@@ -40,7 +40,7 @@ ECode SequenceInputStream::Init(
 ECode SequenceInputStream::Available(
     /* [out] */ Int32* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
     if (mEnum != NULL && mIn != NULL) {
         return mIn->Available(number);
     }
@@ -83,7 +83,7 @@ ECode SequenceInputStream::NextStream()
 ECode SequenceInputStream::Read(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
     while (mIn != NULL) {
         mIn->Read(value);
         if ((*value) >= 0) {
@@ -100,8 +100,8 @@ ECode SequenceInputStream::ReadBytes(
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
-    assert(buffer != NULL);
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(buffer)
+    VALIDATE_NOT_NULL(number)
     if (mIn == NULL) {
         *number = -1;
         return NOERROR;

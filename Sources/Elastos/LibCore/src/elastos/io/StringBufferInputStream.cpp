@@ -27,7 +27,7 @@ ECode StringBufferInputStream::Init(
 ECode StringBufferInputStream::Available(
     /* [out] */ Int32* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
 
     Object::Autolock lock(mLock);
 
@@ -39,7 +39,7 @@ ECode StringBufferInputStream::Available(
 ECode StringBufferInputStream::Read(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
     Object::Autolock lock(mLock);
 
@@ -53,8 +53,8 @@ ECode StringBufferInputStream::ReadBytes(
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
-    assert(buffer != NULL);
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(buffer)
+    VALIDATE_NOT_NULL(number)
 
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
@@ -103,7 +103,7 @@ ECode StringBufferInputStream::Skip(
     /* [in] */ Int64 count,
     /* [out] */ Int64* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
 
     Object::Autolock lock(mLock);
 

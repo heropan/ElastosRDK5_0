@@ -36,7 +36,7 @@ ECode LineNumberReader::Init(
 ECode LineNumberReader::GetLineNumber(
     /* [out] */ Int32* lineNumber)
 {
-    assert(lineNumber != NULL);
+    VALIDATE_NOT_NULL(lineNumber)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -61,7 +61,7 @@ ECode LineNumberReader::Mark(
 ECode LineNumberReader::Read(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -90,8 +90,8 @@ ECode LineNumberReader::ReadChars(
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
-    assert(buffer != NULL);
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(buffer)
+    VALIDATE_NOT_NULL(number)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -126,7 +126,7 @@ ECode LineNumberReader::ReadChars(
 ECode LineNumberReader::ReadLine(
     /* [out] */ String* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -171,7 +171,7 @@ ECode LineNumberReader::Skip(
     /* [in] */ Int64 count,
     /* [out] */ Int64* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
 
     if (count < 0) {
 //      throw new IllegalArgumentException();

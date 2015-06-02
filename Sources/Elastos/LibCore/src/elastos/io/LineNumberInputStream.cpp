@@ -29,7 +29,7 @@ ECode LineNumberInputStream::Init(
 ECode LineNumberInputStream::Available(
     /* [out] */ Int32* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
 
     FAIL_RETURN(mIn->Available(number));
     *number = *number / 2 + (mLastChar == -1 ? 0 : 1);
@@ -40,7 +40,7 @@ ECode LineNumberInputStream::Available(
 ECode LineNumberInputStream::GetLineNumber(
     /* [out] */ Int32* lineNumber)
 {
-    assert(lineNumber != NULL);
+    VALIDATE_NOT_NULL(lineNumber)
 
     *lineNumber = mLineNumber;
 
@@ -60,7 +60,7 @@ ECode LineNumberInputStream::Mark(
 ECode LineNumberInputStream::Read(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
     Int32 currentChar = mLastChar;
     if (currentChar == -1) {
@@ -92,8 +92,8 @@ ECode LineNumberInputStream::ReadBytes(
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
-    assert(buffer != NULL);
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(buffer)
+    VALIDATE_NOT_NULL(number)
 
     if (offset > buffer->GetLength() || offset < 0) {
 //      throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + offset);
@@ -147,7 +147,7 @@ ECode LineNumberInputStream::Skip(
     //TODO:
     //
     //return Streams.skipByReading(this, byteCount);
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
 
     if (count <= 0) {
         *number = 0;

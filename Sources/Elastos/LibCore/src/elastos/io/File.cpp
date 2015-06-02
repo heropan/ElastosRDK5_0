@@ -329,7 +329,7 @@ ECode File::CheckURI(
 ECode File::ListRoots(
     /* [out, callee] */ ArrayOf<IFile*>** roots)
 {
-    assert(roots != NULL);
+    VALIDATE_NOT_NULL(roots)
     AutoPtr<IFile> file;
     CFile::New(String("/"), (IFile**)&file);
     AutoPtr< ArrayOf<IFile*> > files = ArrayOf<IFile*>::Alloc(1);
@@ -342,7 +342,7 @@ ECode File::ListRoots(
 ECode File::CanExecute(
     /* [out] */ Boolean* canExecute)
 {
-    assert(canExecute != NULL);
+    VALIDATE_NOT_NULL(canExecute)
 
     AutoPtr<IOsConstants> osConstans;
     COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
@@ -355,7 +355,7 @@ ECode File::CanExecute(
 ECode File::CanRead(
     /* [out] */ Boolean* canRead)
 {
-    assert(canRead != NULL);
+    VALIDATE_NOT_NULL(canRead)
 
     AutoPtr<IOsConstants> osConstans;
     COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
@@ -368,7 +368,7 @@ ECode File::CanRead(
 ECode File::CanWrite(
     /* [out] */ Boolean* canWrite)
 {
-    assert(canWrite != NULL);
+    VALIDATE_NOT_NULL(canWrite)
 
     AutoPtr<IOsConstants> osConstans;
     COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
@@ -400,7 +400,7 @@ ECode File::CompareTo(
     /* [in] */ IInterface* obj,
     /* [out] */ Int32* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
     String anotherPath;
     if (IFile::Probe(obj) == NULL) return NOERROR;
 
@@ -462,7 +462,7 @@ ECode File::Equals(
 ECode File::Exists(
     /* [out] */ Boolean* isExist)
 {
-    assert(isExist != NULL);
+    VALIDATE_NOT_NULL(isExist)
 
     AutoPtr<IOsConstants> osConstans;
     COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
@@ -496,7 +496,7 @@ ECode File::GetAbsolutePath(
 ECode File::GetAbsoluteFile(
     /* [out] */ IFile** file)
 {
-    assert(file != NULL);
+    VALIDATE_NOT_NULL(file)
 
     String absolutePath;
     GetAbsolutePath(&absolutePath);
@@ -506,7 +506,7 @@ ECode File::GetAbsoluteFile(
 ECode File::GetCanonicalPath(
     /* [out] */ String* path)
 {
-    assert(path != NULL);
+    VALIDATE_NOT_NULL(path)
 
     String absolutePath;
     GetAbsolutePath(&absolutePath);
@@ -547,7 +547,7 @@ String File::Readlink(
 ECode File::GetCanonicalFile(
     /* [out] */ IFile** file)
 {
-    assert(file != NULL);
+    VALIDATE_NOT_NULL(file)
     String path;
     GetCanonicalPath(&path);
     return CFile::New(path, file);
@@ -556,7 +556,7 @@ ECode File::GetCanonicalFile(
 ECode File::GetName(
     /* [out] */ String* name)
 {
-    assert(name != NULL);
+    VALIDATE_NOT_NULL(name)
     Int32 separatorIndex = mPath.LastIndexOf(sSeparator);
     *name = (separatorIndex < 0) ?
             mPath : mPath.Substring(separatorIndex + 1, mPath.GetLength());
@@ -566,7 +566,7 @@ ECode File::GetName(
 ECode File::GetParent(
     /* [out] */ String* parent)
 {
-    assert(parent != NULL);
+    VALIDATE_NOT_NULL(parent)
     Int32 length = mPath.GetLength(), firstInPath = 0;
     if (sSeparatorChar == '\\' && length > 2 && mPath.GetChar(1) == ':') {
         firstInPath = 2;
@@ -591,7 +591,7 @@ ECode File::GetParent(
 ECode File::GetParentFile(
     /* [out] */ IFile** file)
 {
-    assert(file != NULL);
+    VALIDATE_NOT_NULL(file)
     String tempParent;
     GetParent(&tempParent);
     if (tempParent.IsNull()) {
@@ -604,7 +604,7 @@ ECode File::GetParentFile(
 ECode File::GetPath(
     /* [out] */ String* path)
 {
-    assert(path != NULL);
+    VALIDATE_NOT_NULL(path)
     *path = mPath;
     return NOERROR;
 }
@@ -612,7 +612,7 @@ ECode File::GetPath(
 ECode File::GetHashCode(
     /* [out] */ Int32* code)
 {
-    assert(code != NULL);
+    VALIDATE_NOT_NULL(code)
 ////  return getPath().hashCode() ^ 1234321;
     *code = mPath.GetHashCode();
     return NOERROR;
@@ -621,7 +621,7 @@ ECode File::GetHashCode(
 ECode File::IsAbsolute(
     /* [out] */ Boolean* isAbsolute)
 {
-    assert(isAbsolute != NULL);
+    VALIDATE_NOT_NULL(isAbsolute)
     *isAbsolute = mPath.GetLength() > 0 && mPath.GetChar(0) == sSeparatorChar;
     return NOERROR;
 }
@@ -629,7 +629,7 @@ ECode File::IsAbsolute(
 ECode File::IsDirectory(
     /* [out] */ Boolean* isDirectory)
 {
-    assert(isDirectory != NULL);
+    VALIDATE_NOT_NULL(isDirectory)
 
     // try {
     AutoPtr<ILibcore> libcore;
@@ -655,7 +655,7 @@ ECode File::IsDirectory(
 ECode File::IsFile(
     /* [out] */ Boolean* isFile)
 {
-    assert(isFile != NULL);
+    VALIDATE_NOT_NULL(isFile)
     // try {
     AutoPtr<ILibcore> libcore;
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
@@ -680,7 +680,7 @@ ECode File::IsFile(
 ECode File::IsHidden(
     /* [out] */ Boolean* isHidden)
 {
-    assert(isHidden != NULL);
+    VALIDATE_NOT_NULL(isHidden)
     if (mPath.IsEmpty()) {
         *isHidden = FALSE;
         return NOERROR;
@@ -694,7 +694,7 @@ ECode File::IsHidden(
 ECode File::LastModified(
     /* [out] */ Int64* time)
 {
-    assert(time != NULL);
+    VALIDATE_NOT_NULL(time)
     // try {
     AutoPtr<ILibcore> libcore;
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
@@ -719,7 +719,7 @@ ECode File::SetLastModified(
     /* [in] */ Int64 time,
     /* [out] */ Boolean* succeeded)
 {
-    assert(succeeded != NULL);
+    VALIDATE_NOT_NULL(succeeded)
     if (time < 0) {
 //        throw new IllegalArgumentException("time < 0");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -760,7 +760,7 @@ ECode File::SetExecutable(
     /* [in] */ Boolean ownerOnly,
     /* [out] */ Boolean* succeeded)
 {
-    assert(succeeded != NULL);
+    VALIDATE_NOT_NULL(succeeded)
     AutoPtr<IOsConstants> osConstans;
     COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
     Int32 mdS_IXUSR, mdS_IXGRP, mdS_IXOTH;
@@ -783,7 +783,7 @@ ECode File::SetReadable(
     /* [in] */ Boolean ownerOnly,
     /* [out] */ Boolean* succeeded)
 {
-    assert(succeeded != NULL);
+    VALIDATE_NOT_NULL(succeeded)
     AutoPtr<IOsConstants> osConstans;
     COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
     Int32 mdS_IRUSR, mdS_IRGRP, mdS_IROTH;
@@ -806,7 +806,7 @@ ECode File::SetWritable(
     /* [in] */ Boolean ownerOnly,
     /* [out] */ Boolean* succeeded)
 {
-    assert(succeeded != NULL);
+    VALIDATE_NOT_NULL(succeeded)
     AutoPtr<IOsConstants> osConstans;
     COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
     Int32 mdS_IWUSR, mdS_IWGRP, mdS_IWOTH;
@@ -852,7 +852,7 @@ Boolean File::DoChmod(
 ECode File::GetLength(
     /* [out] */ Int64* length)
 {
-    assert(length != NULL);
+    VALIDATE_NOT_NULL(length)
     // try {
     AutoPtr<ILibcore> libcore;
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
@@ -876,7 +876,7 @@ ECode File::GetLength(
 ECode File::List(
     /* [out, callee] */ ArrayOf<String>** files)
 {
-    assert(files != NULL);
+    VALIDATE_NOT_NULL(files)
     AutoPtr< ArrayOf<String> > arr = ListImpl(mPath);
     *files = arr;
     REFCOUNT_ADD(*files);
@@ -997,7 +997,7 @@ ECode File::List(
 ECode File::ListFiles(
     /* [out, callee] */ ArrayOf<IFile*>** files)
 {
-    assert(files != NULL);
+    VALIDATE_NOT_NULL(files)
 
     AutoPtr< ArrayOf<String> > filenames = ListImpl(mPath);
     AutoPtr< ArrayOf<IFile*> > _files = FilenamesToFiles(filenames);
@@ -1010,7 +1010,7 @@ ECode File::ListFiles(
     /* [in] */ IFilenameFilter* filter,
     /* [out, callee] */ ArrayOf<IFile*>** files)
 {
-    assert(files != NULL);
+    VALIDATE_NOT_NULL(files)
 
     AutoPtr< ArrayOf<String> > filenames;
     List(filter, (ArrayOf<String>**)&filenames);
@@ -1070,7 +1070,7 @@ AutoPtr< ArrayOf<IFile*> > File::FilenamesToFiles(
 ECode File::Mkdir(
     /* [out] */ Boolean* succeeded)
 {
-    assert(succeeded != NULL);
+    VALIDATE_NOT_NULL(succeeded)
     // try {
     *succeeded = SUCCEEDED(MkdirErrno()) ? TRUE : FALSE;
     return NOERROR;
@@ -1096,7 +1096,7 @@ ECode File::MkdirErrno()
 ECode File::Mkdirs(
     /* [out] */ Boolean* succeeded)
 {
-    assert(succeeded != NULL);
+    VALIDATE_NOT_NULL(succeeded)
     *succeeded = Mkdirs(FALSE);
     return NOERROR;
 }
@@ -1125,7 +1125,7 @@ Boolean File::Mkdirs(
 ECode File::CreateNewFile(
     /* [out] */ Boolean* succeeded)
 {
-    assert(succeeded != NULL);
+    VALIDATE_NOT_NULL(succeeded)
     // try {
     // On Android, we don't want default permissions to allow global access.
     AutoPtr<IOsConstants> osConstans;
@@ -1161,7 +1161,7 @@ ECode File::CreateTempFile(
     /* [in] */ const String& suffix,
     /* [out] */ IFile** file)
 {
-    assert(file != NULL);
+    VALIDATE_NOT_NULL(file)
     return CreateTempFile(prefix, suffix, NULL, file);
 }
 
@@ -1210,8 +1210,8 @@ ECode File::RenameTo(
     /* [in] */ IFile* newPath,
     /* [out] */ Boolean* succeeded)
 {
-    assert(newPath != NULL);
-    assert(succeeded != NULL);
+    VALIDATE_NOT_NULL(newPath)
+    VALIDATE_NOT_NULL(succeeded)
 
     // try {
     String path;
@@ -1230,7 +1230,7 @@ ECode File::RenameTo(
 ECode File::ToString(
     /* [out] */ String* path)
 {
-    assert(path != NULL);
+    VALIDATE_NOT_NULL(path)
     *path = mPath;
     return NOERROR;
 }
@@ -1290,7 +1290,7 @@ ECode File::ToString(
 ECode File::GetTotalSpace(
     /* [out] */ Int64* space)
 {
-    assert(space != NULL);
+    VALIDATE_NOT_NULL(space)
     // try {
     AutoPtr<ILibcore> libcore;
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
@@ -1314,7 +1314,7 @@ ECode File::GetTotalSpace(
 ECode File::GetUsableSpace(
     /* [out] */ Int64* space)
 {
-    assert(space != NULL);
+    VALIDATE_NOT_NULL(space)
     // try {
     AutoPtr<ILibcore> libcore;
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
@@ -1338,7 +1338,7 @@ ECode File::GetUsableSpace(
 ECode File::GetFreeSpace(
     /* [out] */ Int64* space)
 {
-    assert(space != NULL);
+    VALIDATE_NOT_NULL(space)
     // try {
     AutoPtr<ILibcore> libcore;
     CLibcore::AcquireSingleton((ILibcore**)&libcore);

@@ -9,7 +9,7 @@ namespace IO {
 Int64 NIOAccess::GetBasePointer(
     /* [in] */ IBuffer* b)
 {
-    assert(b != NULL);
+    VALIDATE_NOT_NULL(b)
     Buffer* buf = reinterpret_cast<Buffer*>(b->Probe(EIID_Buffer));
     if (buf == NULL || buf->mEffectiveDirectAddress == 0)
     {
@@ -29,7 +29,7 @@ Int64 NIOAccess::GetBasePointer(
 Int32 NIOAccess::GetRemainingBytes(
     /* [in] */ IBuffer* b)
 {
-    assert(b);
+    VALIDATE_NOT_NULL(b)
     Buffer* buf = NULL;
     if (b->Probe(EIID_Buffer) != NULL) {
         buf = reinterpret_cast<Buffer*>(b->Probe(EIID_Buffer));
@@ -62,7 +62,7 @@ Int32 NIOAccess::GetRemainingBytes(
 Int32 NIOAccess::GetBaseArrayOffset(
     /* [in] */ IBuffer* b)
 {
-    assert(b);
+    VALIDATE_NOT_NULL(b)
     Boolean hasArray;
     b->HasArray(&hasArray);
     Buffer* buf = reinterpret_cast<Buffer*>(b->Probe(EIID_Buffer));

@@ -39,7 +39,7 @@ ECode CHeapBufferIterator::ReadByteArray(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
 {
-    assert(dst != NULL);
+    VALIDATE_NOT_NULL(assert)
     dst->Copy(dstOffset, mBuffer, mOffset + mPosition, byteCount);
     mPosition += byteCount;
     return NOERROR;
@@ -68,7 +68,7 @@ ECode CHeapBufferIterator::ReadInt32Array(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 intCount)
 {
-    assert(dst != NULL);
+    VALIDATE_NOT_NULL(dst)
     Int32 byteCount = intCount * sizeof(Int32);
     // TODO:
     Memory::UnsafeBulkGet((Byte*)dst->GetPayload(), dstOffset, byteCount,

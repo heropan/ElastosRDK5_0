@@ -191,7 +191,7 @@ ECode CharsetEncoderICU::EncodeLoop(
     /* [out] */ ICoderResult** result)
 {
     VALIDATE_NOT_NULL(result)
-    assert(charBuffer != NULL);
+    VALIDATE_NOT_NULL(charBuffer)
     Boolean ret = FALSE;
 
     if (!(charBuffer->HasRemaining(&ret), ret)) {
@@ -273,7 +273,7 @@ ECode CharsetEncoderICU::GetArray(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-    assert(outBuffer != NULL);
+    VALIDATE_NOT_NULL(outBuffer)
     Boolean has = FALSE;
     if ((outBuffer->HasArray(&has), has)) {
         mOutput = NULL;
@@ -305,7 +305,7 @@ ECode CharsetEncoderICU::GetArray(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-    assert(inBuffer != NULL);
+    VALIDATE_NOT_NULL(inBuffer)
     Boolean has = FALSE;
     if ((inBuffer->HasArray(&has), has)) {
         mInput = NULL;
@@ -340,7 +340,7 @@ ECode CharsetEncoderICU::GetArray(
 ECode CharsetEncoderICU::SetPosition(
     /* [in] */ IByteBuffer* outBuffer)
 {
-    assert(outBuffer != NULL);
+    VALIDATE_NOT_NULL(outBuffer)
     Boolean has = FALSE;
     if ((outBuffer->HasArray(&has), has)) {
         Int32 pos = 0;
@@ -360,7 +360,7 @@ ECode CharsetEncoderICU::SetPosition(
 ECode CharsetEncoderICU::SetPosition(
     /* [in] */ ICharBuffer* inBuffer)
 {
-    assert(inBuffer != NULL);
+    VALIDATE_NOT_NULL(inBuffer)
     Int32 pos = 0;
     inBuffer->GetPosition(&pos);
     inBuffer->SetPosition(pos + (*mData)[INPUT_OFFSET] - (*mData)[INVALID_CHARS]);

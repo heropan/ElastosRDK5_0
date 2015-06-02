@@ -16,7 +16,7 @@ SourceChannel::SourceChannel(
 ECode SourceChannel::ValidOps(
     /* [out] */ Int32* ret)
 {
-    assert(NULL != ret);
+    VALIDATE_NOT_NULL(ret)
     *ret = ISelectionKey::OP_READ;
     return NOERROR;
 }

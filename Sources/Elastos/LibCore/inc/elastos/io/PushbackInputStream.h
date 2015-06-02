@@ -7,13 +7,19 @@
 namespace Elastos {
 namespace IO {
 
-class PushbackInputStream : public FilterInputStream
+class PushbackInputStream 
+    : public FilterInputStream
+    , public IPushbackInputStream
 {
+public:
+    CAR_INTERFACE_DECL()
+    
 protected:
     PushbackInputStream();
 
     ~PushbackInputStream();
 
+public:
     /**
      * Constructs a new {@code PushbackInputStream} with the specified input
      * stream as source. The size of the pushback buffer is set to the default
@@ -26,7 +32,7 @@ protected:
      * @param in
      *            the source input stream.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* is);
 
     /**
@@ -44,11 +50,10 @@ protected:
      * @throws IllegalArgumentException
      *             if {@code size} is negative.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* is,
         /* [in] */ Int32 size);
 
-public:
     CARAPI Available(
         /* [out] */ Int32* number);
 
@@ -90,35 +95,26 @@ public:
         /* [out] */ Int32* value);
 
     /**
-     * Reads at most {@code length} bytes from this stream and stores them in
-     * the byte array {@code buffer} starting at {@code offset}. Bytes are read
+     * Reads up to {@code byteCount} bytes from this stream and stores them in
+     * the byte array {@code buffer} starting at {@code byteOffset}. Bytes are read
      * from the pushback buffer first, then from the source stream if more bytes
-     * are required. Blocks until {@code count} bytes have been read, the end of
-     * the source stream is detected or an exception is thrown.
+     * are required. Blocks until {@code byteCount} bytes have been read, the end of
+     * the source stream is detected or an exception is thrown. Returns the number of bytes read,
+     * or -1 if the end of the source stream has been reached.
      *
-     * @param buffer
-     *            the array in which to store the bytes read from this stream.
-     * @param offset
-     *            the initial position in {@code buffer} to store the bytes read
-     *            from this stream.
-     * @param length
-     *            the maximum number of bytes to store in {@code buffer}.
-     * @return the number of bytes read or -1 if the end of the source stream
-     *         has been reached.
      * @throws IndexOutOfBoundsException
-     *             if {@code offset < 0} or {@code length < 0}, or if
-     *             {@code offset + length} is greater than the length of
-     *             {@code buffer}.
+     *     if {@code byteOffset < 0 || byteCount < 0 || byteOffset + byteCount > buffer.length}.
      * @throws IOException
      *             if this stream is closed or another I/O error occurs while
      *             reading from this stream.
      * @throws NullPointerException
-     *             if {@code buffer} is {@code null}.
+     *             if {@code buffer == null}.
      */
-    CARAPI ReadBytes(
+    // @Override
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
 
     /**
@@ -169,8 +165,8 @@ public:
      *             if the free space in the internal pushback buffer is not
      *             sufficient to store the contents of {@code buffer}.
      */
-    CARAPI UnreadBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
+    CARAPI Unread(
+        /* [in] */ ArrayOf<Byte>* buffer);
 
     /**
      * Pushes a subset of the bytes in {@code buffer} back to this stream. The
@@ -198,8 +194,8 @@ public:
      *             if the free space in the internal pushback buffer is not
      *             sufficient to store the selected contents of {@code buffer}.
      */
-    CARAPI UnreadBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer,
+    CARAPI Unread(
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length);
 

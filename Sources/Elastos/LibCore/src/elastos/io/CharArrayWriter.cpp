@@ -87,7 +87,7 @@ ECode CharArrayWriter::Reset()
 ECode CharArrayWriter::GetSize(
     /* [out] */Int32* size)
 {
-    assert(size != NULL);
+    VALIDATE_NOT_NULL(size)
 
     Object::Autolock lock(mLock);
 
@@ -98,7 +98,7 @@ ECode CharArrayWriter::GetSize(
 ECode CharArrayWriter::ToCharArray(
     /* [out] */ ArrayOf<Char32>** str)
 {
-    assert(str != NULL);
+    VALIDATE_NOT_NULL(str)
     Object::Autolock lock(mLock);
 
     *str = mBuf->Clone();
@@ -112,7 +112,7 @@ ECode CharArrayWriter::ToCharArray(
 ECode CharArrayWriter::ToString(
     /* [out] */ String* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
     Object::Autolock lock(mLock);
 
     AutoPtr<ArrayOf<Char8> > dst;

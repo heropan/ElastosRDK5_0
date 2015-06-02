@@ -57,7 +57,7 @@ ECode CSequenceInputStream::Mark(
 ECode CSequenceInputStream::IsMarkSupported(
     /* [out] */ Boolean* supported)
 {
-    assert(supported != NULL);
+    VALIDATE_NOT_NULL(supported)
     return SequenceInputStream::IsMarkSupported(supported);
 }
 
@@ -68,8 +68,8 @@ ECode CSequenceInputStream::ReadBytes(
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    assert(buffer != NULL);
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(buffer)
+    VALIDATE_NOT_NULL(number)
     return ReadBytes(buffer, 0, buffer->GetLength(), number);
 }
 
@@ -82,7 +82,7 @@ ECode CSequenceInputStream::Skip(
     /* [in] */ Int64 count,
     /* [out] */ Int64* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
     return SequenceInputStream::Skip(count, number);
 }
 

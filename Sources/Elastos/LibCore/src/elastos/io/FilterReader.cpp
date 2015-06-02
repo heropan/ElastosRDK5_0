@@ -48,7 +48,7 @@ ECode FilterReader::Mark(
 ECode FilterReader::IsMarkSupported(
     /* [out] */ Boolean* supported)
 {
-    assert(supported != NULL);
+    VALIDATE_NOT_NULL(supported)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -58,7 +58,7 @@ ECode FilterReader::IsMarkSupported(
 ECode FilterReader::Read(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -72,8 +72,8 @@ ECode FilterReader::ReadChars(
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
-    assert(buffer != NULL);
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(buffer)
+    VALIDATE_NOT_NULL(number)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -83,7 +83,7 @@ ECode FilterReader::ReadChars(
 ECode FilterReader::IsReady(
     /* [out] */ Boolean* ready)
 {
-    assert(ready != NULL);
+    VALIDATE_NOT_NULL(ready)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -102,7 +102,7 @@ ECode FilterReader:: Skip(
     /* [in] */ Int64 count,
     /* [out] */ Int64* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 

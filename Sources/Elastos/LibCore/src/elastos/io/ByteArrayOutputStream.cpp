@@ -130,7 +130,7 @@ ECode ByteArrayOutputStream::Write(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    assert(buffer != NULL);
+    VALIDATE_NOT_NULL(buffer)
     Object::Autolock lock(this);
 
     // avoid int overflow

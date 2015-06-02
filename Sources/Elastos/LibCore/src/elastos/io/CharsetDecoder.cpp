@@ -77,7 +77,7 @@ ECode CharsetDecoder::Decode(
     VALIDATE_NOT_NULL(charBuffer)
     Reset();
     Int32 remaining = 0;
-    assert(byteBuffer != NULL);
+    VALIDATE_NOT_NULL((byteBuffer))
     FAIL_RETURN(byteBuffer->GetRemaining(&remaining))
     Int32 length = (Int32) (remaining * mAverageCharsPerByte);
     AutoPtr<ICharBuffer> output;
@@ -373,7 +373,7 @@ ECode CharsetDecoder::ImplReset()
 ECode CharsetDecoder::CheckCoderResult(
     /* [in] */ ICoderResult* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
     Boolean ret = FALSE;
     AutoPtr<ICodingErrorAction> action;
     FAIL_RETURN(CCodingErrorAction::New((ICodingErrorAction**)&action))

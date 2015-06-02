@@ -16,7 +16,7 @@ SinkChannel::SinkChannel(
 ECode SinkChannel::ValidOps(
     /* [out] */ Int32* ret)
 {
-    assert(NULL != ret);
+	VALIDATE_NOT_NULL(ret)
     *ret = ISelectionKey::OP_WRITE;
     return NOERROR;
 }

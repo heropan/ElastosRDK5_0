@@ -60,8 +60,8 @@ ECode ByteBuffer::WrapArray(
     /* [in] */ Int32 byteCount,
     /* [out] */ IByteBuffer** buf)
 {
-    VALIDATE_NOT_NULL(buf);
-    assert(array != NULL);
+    VALIDATE_NOT_NULL(buf)
+    VALIDATE_NOT_NULL(array)
 
     Int32 arrayLength = array->GetLength();
     if ((start | byteCount) < 0 || start > arrayLength || arrayLength - start < byteCount) {
@@ -100,8 +100,8 @@ ECode ByteBuffer::CompareTo(
     /* [in] */ IByteBuffer* other,
     /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(result);
-    assert(other != NULL);
+    VALIDATE_NOT_NULL(result)
+    VALIDATE_NOT_NULL(other)
 
     Int32 thisRemaining = 0;
     Int32 otherRemaining = 0;
@@ -174,7 +174,7 @@ ECode ByteBuffer::GetBytes(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
 {
-    assert(dst != NULL);
+    VALIDATE_NOT_NULL(dst)
     Int32 arrayLength = dst->GetLength();
     if ((dstOffset | byteCount) < 0 || dstOffset > arrayLength || arrayLength - dstOffset < byteCount) {
         // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
@@ -259,7 +259,7 @@ ECode ByteBuffer::PutBytes(
 ECode ByteBuffer::PutByteBuffer(
     /* [in] */ IByteBuffer* src)
 {
-    assert(src != NULL);
+    VALIDATE_NOT_NULL(src)
     if (src == (IByteBuffer*)(this->Probe(EIID_IByteBuffer))) {
         // throw new IllegalArgumentException("src == this");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

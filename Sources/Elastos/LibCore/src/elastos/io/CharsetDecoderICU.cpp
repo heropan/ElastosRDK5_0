@@ -146,7 +146,7 @@ ECode CharsetDecoderICU::DecodeLoop(
 {
     ECode ec = NOERROR;
     VALIDATE_NOT_NULL(result)
-    assert(byteBuffer != NULL);
+    VALIDATE_NOT_NULL(byteBuffer)
     Boolean ret = FALSE;
     if (!(byteBuffer->HasRemaining(&ret), ret)) {
         CCoderResult::GetUNDERFLOW(result);
@@ -198,7 +198,7 @@ ECode CharsetDecoderICU::GetArray(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-    assert(outBuffer != NULL);
+    VALIDATE_NOT_NULL(outBuffer)
     Boolean has = FALSE;
     if ((outBuffer->HasArray(&has), has)) {
         mOutput = NULL;
@@ -230,7 +230,7 @@ ECode CharsetDecoderICU::GetArray(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-    assert(inBuffer != NULL);
+    VALIDATE_NOT_NULL(inBuffer)
     Boolean has = FALSE;
     if ((inBuffer->HasArray(&has), has)) {
         mInput = NULL;
@@ -265,7 +265,7 @@ ECode CharsetDecoderICU::GetArray(
 ECode CharsetDecoderICU::SetPosition(
     /* [in] */ ICharBuffer* outBuffer)
 {
-    assert(outBuffer != NULL);
+    VALIDATE_NOT_NULL(outBuffer)
     Boolean has = FALSE;
     if ((outBuffer->HasArray(&has), has)) {
         Int32 pos = 0;
@@ -285,7 +285,7 @@ ECode CharsetDecoderICU::SetPosition(
 ECode CharsetDecoderICU::SetPosition(
     /* [in] */ IByteBuffer* inBuffer)
 {
-    assert(inBuffer != NULL);
+    VALIDATE_NOT_NULL(inBuffer)
     Int32 pos = 0;
     inBuffer->GetPosition(&pos);
     inBuffer->SetPosition(pos + (*mData)[INPUT_OFFSET]);

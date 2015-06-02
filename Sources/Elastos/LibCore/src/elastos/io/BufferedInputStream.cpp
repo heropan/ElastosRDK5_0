@@ -38,7 +38,7 @@ ECode BufferedInputStream::constructor(
 ECode BufferedInputStream::Available(
     /* [out] */ Int32* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
     Object::Autolock lock(this);
 
     AutoPtr<IInputStream> localIn = mIn; // 'in' could be invalidated by close()

@@ -19,6 +19,7 @@ module
      * interface IInputStream;
      * interface IFilterInputStream;
      */
+    [deprecated]
     interface IPushbackInputStream {
         /**
          * Pushes the specified byte oneByte back to this stream. Only the
@@ -56,8 +57,8 @@ module
          * :-|:------------|
          * IOException | if the free space in the internal pushback buffer is not sufficient to store the contents of buffer.
          */
-        UnreadBytes(
-            [in] ArrayOf<Byte> buffer);
+        Unread(
+            [in] ArrayOf<Byte>* buffer);
 
         /**
          * Pushes a subset of the bytes in buffer back to this stream. The
@@ -89,8 +90,8 @@ module
          * IOException | if the free space in the internal pushback buffer is not
          *             sufficient to store the selected contents of {buffer}.
          */
-        UnreadBytes(
-            [in] ArrayOf<Byte> buffer,
+        Unread(
+            [in] ArrayOf<Byte>* buffer,
             [in] Int32 offset,
             [in] Int32 length);
     }

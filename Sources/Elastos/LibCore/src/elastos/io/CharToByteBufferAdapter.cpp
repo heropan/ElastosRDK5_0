@@ -26,7 +26,7 @@ ECode CharToByteBufferAdapter::AsCharBuffer(
     /* [out] */ ICharBuffer** charBuffer)
 {
     VALIDATE_NOT_NULL(charBuffer)
-    assert(byteBuffer != NULL);
+    VALIDATE_NOT_NULL(byteBuffer)
     AutoPtr<IByteBuffer> slice;
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
     slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);

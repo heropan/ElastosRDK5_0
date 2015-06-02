@@ -6,6 +6,8 @@
 namespace Elastos{
 namespace IO{
 
+CAR_INTERFACE_IMPL(PushbackInputStream, FilterInputStream, IPushbackInputStream)
+
 PushbackInputStream::PushbackInputStream()
     : mPos(0)
 {
@@ -15,7 +17,7 @@ PushbackInputStream::~PushbackInputStream()
 {
 }
 
-ECode PushbackInputStream::Init(
+ECode PushbackInputStream::constructor(
     /* [in] */ IInputStream* in)
 {
     FAIL_RETURN(FilterInputStream::constructor(in));
@@ -29,7 +31,7 @@ ECode PushbackInputStream::Init(
     return NOERROR;
 }
 
-ECode PushbackInputStream::Init(
+ECode PushbackInputStream::constructor(
     /* [in] */ IInputStream* in,
     /* [in] */ Int32 size)
 {
@@ -53,7 +55,7 @@ ECode PushbackInputStream::Init(
 ECode PushbackInputStream::Available(
     /* [out] */ Int32* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number);
 
     if (mBuf == NULL) {
 //      throw new IOException();
@@ -82,7 +84,7 @@ ECode PushbackInputStream::Close()
 ECode PushbackInputStream::IsMarkSupported(
     /* [out] */ Boolean* supported)
 {
-    assert(supported != NULL);
+    VALIDATE_NOT_NULL(supported);
 
     *supported = FALSE;
 
@@ -92,7 +94,7 @@ ECode PushbackInputStream::IsMarkSupported(
 ECode PushbackInputStream::Read(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value);
 
     if (mBuf == NULL) {
 //      throw new IOException();
@@ -108,10 +110,10 @@ ECode PushbackInputStream::Read(
     return mIn->Read(value);
 }
 
-ECode PushbackInputStream::ReadBytes(
+ECode PushbackInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 length,
+    /* [in] */ Int32 byteOffset,
+    /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
@@ -123,19 +125,19 @@ ECode PushbackInputStream::ReadBytes(
         return E_IO_EXCEPTION;
     }
     // Force buffer null check first!
-    if (offset > buffer->GetLength() || offset < 0) {
-//        throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + offset);
+    if (byteOffset > buffer->GetLength() || byteOffset < 0) {
+//        throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + byteOffset);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    if (length < 0 || length > buffer->GetLength() - offset) {
-//      throw new ArrayIndexOutOfBoundsException("Length out of bounds: " + length);
+    if (byteCount < 0 || byteCount > buffer->GetLength() - byteOffset) {
+//      throw new ArrayIndexOutOfBoundsException("Length out of bounds: " + byteCount);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    Int32 copiedBytes = 0, copyLength = 0, newOffset = offset;
+    Int32 copiedBytes = 0, copyLength = 0, newOffset = byteOffset;
     // Are there pushback bytes available?
     if (mPos < mBuf->GetLength()) {
-        copyLength = (mBuf->GetLength() - mPos >= length) ? length : mBuf->GetLength()
+        copyLength = (mBuf->GetLength() - mPos >= byteCount) ? byteCount : mBuf->GetLength()
                 - mPos;
         memcpy(buffer->GetPayload() + newOffset, mBuf->GetPayload() + mPos, copyLength);
         newOffset += copyLength;
@@ -144,12 +146,12 @@ ECode PushbackInputStream::ReadBytes(
         mPos += copyLength;
     }
     // Have we copied enough?
-    if (copyLength == length) {
-        *number = length;
+    if (copyLength == byteCount) {
+        *number = byteCount;
         return NOERROR;
     }
     Int32 inCopied;
-    FAIL_RETURN(mIn->Read(buffer, newOffset, length - copiedBytes, &inCopied));
+    FAIL_RETURN(mIn->Read(buffer, newOffset, byteCount - copiedBytes, &inCopied));
     if (inCopied > 0) {
         *number = inCopied + copiedBytes;
         return NOERROR;
@@ -166,7 +168,7 @@ ECode PushbackInputStream::Skip(
     /* [in] */ Int64 count,
     /* [out] */ Int64* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number);
 
     if (mIn == NULL) {
 //      throw streamClosed();
@@ -206,26 +208,28 @@ ECode PushbackInputStream::Unread(
     return NOERROR;
 }
 
-ECode PushbackInputStream::UnreadBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer)
+ECode PushbackInputStream::Unread(
+    /* [in] */ ArrayOf<Byte>* buffer)
 {
-    return UnreadBytes(buffer, 0, buffer.GetLength());
+    VALIDATE_NOT_NULL(buffer);
+    return Unread(buffer, 0, buffer->GetLength());
 }
 
-ECode PushbackInputStream::UnreadBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+ECode PushbackInputStream::Unread(
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
+    VALIDATE_NOT_NULL(buffer);
     if (length > mPos) {
 //      throw new IOException("Pushback buffer full");
         return E_IO_EXCEPTION;
     }
-    if (offset > buffer.GetLength() || offset < 0) {
+    if (offset > buffer->GetLength() || offset < 0) {
 //      throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + offset);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    if (length < 0 || length > buffer.GetLength() - offset) {
+    if (length < 0 || length > buffer->GetLength() - offset) {
 //      throw new ArrayIndexOutOfBoundsException("Length out of bounds: " + length);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -234,7 +238,7 @@ ECode PushbackInputStream::UnreadBytes(
         return E_IO_EXCEPTION;
     }
 
-    memcpy(mBuf->GetPayload() + mPos - length, buffer.GetPayload() + offset, length);
+    memcpy(mBuf->GetPayload() + mPos - length, buffer->GetPayload() + offset, length);
     mPos = mPos - length;
 
     return NOERROR;

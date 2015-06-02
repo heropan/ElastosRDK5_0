@@ -188,7 +188,6 @@ ECode BufferedReader::Read(
 {
     VALIDATE_NOT_NULL(number)
     *number = -1;
-    assert(buffer != NULL);
     VALIDATE_NOT_NULL(buffer)
 
     Object::Autolock lock(mLock);

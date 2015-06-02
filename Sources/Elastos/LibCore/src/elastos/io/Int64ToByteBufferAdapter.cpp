@@ -27,7 +27,7 @@ ECode Int64ToByteBufferAdapter::AsInt64Buffer(
     /* [out] */ IInt64Buffer** int64Buffer)
 {
     VALIDATE_NOT_NULL(int64Buffer)
-    assert(byteBuffer != NULL);
+    VALIDATE_NOT_NULL(byteBuffer)
     AutoPtr<IByteBuffer> slice;
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
     slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);

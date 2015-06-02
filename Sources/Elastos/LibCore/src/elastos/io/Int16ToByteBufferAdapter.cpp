@@ -28,7 +28,7 @@ ECode Int16ToByteBufferAdapter::AsInt16Buffer(
     /* [out] */ IInt16Buffer** int16Buffer)
 {
     VALIDATE_NOT_NULL(int16Buffer)
-    assert(byteBuffer != NULL);
+    VALIDATE_NOT_NULL(byteBuffer)
     AutoPtr<IByteBuffer> slice;
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
     slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);

@@ -60,7 +60,7 @@ ECode PushbackReader::Mark(
 ECode PushbackReader::IsMarkSupported(
     /* [out] */ Boolean* supported)
 {
-    assert(supported != NULL);
+    VALIDATE_NOT_NULL(supported)
 
     *supported = FALSE;
 
@@ -70,7 +70,7 @@ ECode PushbackReader::IsMarkSupported(
 ECode PushbackReader::Read(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -100,8 +100,8 @@ ECode PushbackReader::ReadChars(
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
-    assert(buffer != NULL);
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(buffer)
+    VALIDATE_NOT_NULL(number)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -159,7 +159,7 @@ ECode PushbackReader::ReadChars(
 ECode PushbackReader::IsReady(
     /* [out] */ Boolean* ready)
 {
-    assert(ready != NULL);
+    VALIDATE_NOT_NULL(ready)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -234,7 +234,7 @@ ECode PushbackReader::Skip(
     /* [in] */ Int64 count,
     /* [out] */ Int64* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
 
     if (count < 0) {
 //      throw new IllegalArgumentException();

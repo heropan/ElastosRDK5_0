@@ -72,7 +72,7 @@ ECode StringReader::CheckNotClosed()
 ECode StringReader::IsMarkSupported(
     /* [out] */ Boolean* supported)
 {
-    assert(supported != NULL);
+    VALIDATE_NOT_NULL(supported)
 
     *supported = TRUE;
 
@@ -82,7 +82,7 @@ ECode StringReader::IsMarkSupported(
 ECode StringReader::Read(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
     assert(mLock != NULL);
 
     Object::Autolock lock(mLock);
@@ -106,8 +106,8 @@ ECode StringReader::ReadChars(
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    assert(buffer != NULL);
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(buffer)
+    VALIDATE_NOT_NULL(number)
     assert(mLock != NULL);
 
     Object::Autolock lock(mLock);
@@ -145,7 +145,7 @@ ECode StringReader::ReadChars(
 ECode StringReader::IsReady(
     /* [out] */ Boolean* ready)
 {
-    assert(ready != NULL);
+    VALIDATE_NOT_NULL(ready)
     assert(mLock != NULL);
 
     Object::Autolock lock(mLock);
@@ -172,7 +172,7 @@ ECode StringReader::Skip(
     /* [in] */ Int64 count,
     /* [out] */ Int64* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
     assert(mLock != NULL);
 
     Object::Autolock lock(mLock);

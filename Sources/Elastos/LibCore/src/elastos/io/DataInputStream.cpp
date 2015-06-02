@@ -33,8 +33,8 @@ ECode DataInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
-    assert(buffer != NULL);
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(buffer)
+    VALIDATE_NOT_NULL(number)
     return Read(buffer, number);
 }
 
@@ -44,8 +44,8 @@ ECode DataInputStream::Read(
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
-    assert(buffer != NULL);
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(buffer)
+    VALIDATE_NOT_NULL(number)
 
     return mIn->Read(buffer, byteOffset, byteCount, number);
 }
@@ -53,7 +53,7 @@ ECode DataInputStream::Read(
 ECode DataInputStream::ReadBoolean(
     /* [out] */ Boolean* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
     Int32 temp;
     FAIL_RETURN(mIn->Read(&temp));
@@ -68,7 +68,7 @@ ECode DataInputStream::ReadBoolean(
 ECode DataInputStream::ReadByte(
     /* [out] */ Byte* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
     Int32 temp;
     FAIL_RETURN(mIn->Read(&temp));
@@ -83,7 +83,7 @@ ECode DataInputStream::ReadByte(
 ECode DataInputStream::ReadChar(
     /* [out] */ Char32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
     Int32 number;
     FAIL_RETURN(ReadToBuff(4, &number));
@@ -100,7 +100,7 @@ ECode DataInputStream::ReadToBuff(
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
 
     Int32 offset = 0;
     while(offset < count) {
@@ -115,7 +115,7 @@ ECode DataInputStream::ReadToBuff(
 ECode DataInputStream::ReadDouble(
     /* [out] */ Double* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
     Int64 int64Value;
     FAIL_RETURN(ReadInt64(&int64Value));
@@ -126,7 +126,7 @@ ECode DataInputStream::ReadDouble(
 ECode DataInputStream::ReadFloat(
     /* [out] */ Float* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
     Int32 int32Value;
     FAIL_RETURN(ReadInt32(&int32Value));
@@ -137,7 +137,7 @@ ECode DataInputStream::ReadFloat(
 ECode DataInputStream::ReadFully(
     /* [out] */ ArrayOf<byte> * buffer)
 {
-    assert(buffer != NULL);
+    VALIDATE_NOT_NULL(buffer)
     return ReadFully(buffer, 0, buffer->GetLength());
 }
 
@@ -146,7 +146,7 @@ ECode DataInputStream::ReadFully(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
-    assert(buffer != NULL);
+    VALIDATE_NOT_NULL(buffer)
     // BEGIN android-removed
     // if (length < 0) {
     //     throw new IndexOutOfBoundsException();
@@ -180,7 +180,7 @@ ECode DataInputStream::ReadFully(
 ECode DataInputStream::ReadInt32(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
     Int32 number;
     FAIL_RETURN(ReadToBuff(4, &number));
@@ -194,7 +194,7 @@ ECode DataInputStream::ReadInt32(
 ECode DataInputStream::ReadLine(
     /* [out] */ String* str)
 {
-    assert(str != NULL);
+    VALIDATE_NOT_NULL(str)
 
     AutoPtr<StringBuilder> line = new StringBuilder(80);
     Boolean foundTerminator = FALSE;
@@ -242,7 +242,7 @@ ECode DataInputStream::ReadLine(
 ECode DataInputStream::ReadInt64(
     /* [out] */ Int64* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
     Int32 number;
     FAIL_RETURN(ReadToBuff(8, &number));
@@ -260,7 +260,7 @@ ECode DataInputStream::ReadInt64(
 ECode DataInputStream::ReadInt16(
     /* [out] */ Int16* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
     Int32 number;
 
@@ -274,7 +274,7 @@ ECode DataInputStream::ReadInt16(
 ECode DataInputStream::ReadUnsignedByte(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
     FAIL_RETURN(mIn->Read(value));
     return *value < 0? E_EOF_EXCEPTION : NOERROR;
@@ -283,7 +283,7 @@ ECode DataInputStream::ReadUnsignedByte(
 ECode DataInputStream::ReadUnsignedInt16(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value)
 
     Int32 number;
     FAIL_RETURN(ReadToBuff(2, &number));
@@ -306,7 +306,7 @@ ECode DataInputStream::SkipBytes(
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
 
     Int32 skipped = 0;
     Int64 skip;

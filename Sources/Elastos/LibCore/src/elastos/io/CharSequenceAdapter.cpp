@@ -18,7 +18,7 @@ CharSequenceAdapter::CharSequenceAdapter(
 AutoPtr<CharSequenceAdapter> CharSequenceAdapter::Copy(
     /* [in] */ CharSequenceAdapter* other)
 {
-    assert(other != NULL);
+    VALIDATE_NOT_NULL(other);
     Int32 len = 0;
     other->mSequence->GetLength(&len);
     AutoPtr<CharSequenceAdapter> buf = new CharSequenceAdapter(len, other->mSequence);

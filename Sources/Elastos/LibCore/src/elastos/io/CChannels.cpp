@@ -118,7 +118,7 @@ private:
 public:
     IChannelInputStream(IReadableByteChannel *channel)
     {
-        assert(channel != NULL);
+        assert(NULL != channel);
         mChannel = channel;
     }
 
@@ -180,7 +180,7 @@ private:
 public:
         IChannelOutputStream(IWritableByteChannel *channel)
         {
-            assert(channel != NULL);
+            assert(NULL != channel);
             REFCOUNT_ADD(channel);
             mChannel = channel;
         }

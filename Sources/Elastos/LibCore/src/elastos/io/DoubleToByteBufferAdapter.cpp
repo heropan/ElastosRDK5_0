@@ -27,7 +27,7 @@ ECode DoubleToByteBufferAdapter::AsDoubleBuffer(
     /* [out] */ IDoubleBuffer** doubleBuffer)
 {
     VALIDATE_NOT_NULL(doubleBuffer)
-    assert(byteBuffer != NULL);
+    VALIDATE_NOT_NULL(byteBuffer)
     AutoPtr<IByteBuffer> slice;
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
     slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);

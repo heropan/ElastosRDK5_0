@@ -55,7 +55,7 @@ AutoPtr<ReadOnlyDirectByteBuffer> ReadOnlyDirectByteBuffer::Copy(
     /* [in] */ DirectByteBuffer* other,
     /* [in] */ Int32 markOfOther)
 {
-    assert(other != NULL);
+    VALIDATE_NOT_NULL(other)
     AutoPtr<ReadOnlyDirectByteBuffer> buf = new ReadOnlyDirectByteBuffer(
             other->mBlock, other->mCapacity, other->mOffset);
     buf->mLimit = other->mLimit;
