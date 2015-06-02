@@ -108,7 +108,7 @@ ECode DataOutputStream::WriteBytes(
     return NOERROR;
 }
 
-ECode DataOutputStream::WriteBytesFromString(
+ECode DataOutputStream::WriteBytes(
     /* [in] */ const String& str)
 {
     if (str.IsNullOrEmpty())
@@ -192,7 +192,7 @@ ECode DataOutputStream::WriteInt16(
 ECode DataOutputStream::WriteUTF(
     /* [in] */ const String& str)
 {
-    return WriteBytesFromString(str);
+    return WriteBytes(str);
 }
 
 // Return number of utf8 bytes required for the character.
