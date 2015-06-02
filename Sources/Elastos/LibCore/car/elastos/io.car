@@ -320,6 +320,16 @@ module
         interface IPushbackInputStream;
     }
 
+    class CDataOutputStream {
+        constructor(
+        [in] IOutputStream* os);
+
+        interface ICloseable;
+        interface IOutputStream;
+        interface IFilterOutputStream;
+        interface IDataOutputStream;
+    }
+
     } // namespace IO
     } // namespace Elastos
 

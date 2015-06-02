@@ -9,16 +9,19 @@ namespace IO {
 
 class DataOutputStream
     : public FilterOutputStream
+    , public IDataOutputStream
 {
+public:
+    CAR_INTERFACE_DECL()
 protected:
     DataOutputStream();
 
     ~DataOutputStream();
 
-    CARAPI Init(
+public:
+    CARAPI constructor(
         /* [in] */ IOutputStream* out);
 
-public:
     /**
      * Flushes this stream to ensure all pending data is sent out to the target
      * stream. This implementation then also flushes the target stream.
@@ -66,8 +69,8 @@ public:
      * @see DataInputStream#readFully(byte[])
      * @see DataInputStream#readFully(byte[], int, int)
      */
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte> & buffer,
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
@@ -108,7 +111,7 @@ public:
      * @see DataInputStream#readFully(byte[],int,int)
      */
     CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
+        /* [in] */ ArrayOf<Byte>* buffer);
 
     /**
      * Writes the low order 8-bit bytes from the specified string.

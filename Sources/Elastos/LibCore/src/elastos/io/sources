@@ -61,3 +61,6 @@ SOURCES += CDataInputStream.cpp
 
 SOURCES += PushbackInputStream.cpp
 SOURCES += CPushbackInputStream.cpp
+
+SOURCES += DataOutputStream.cpp
+SOURCES += CDataOutputStream.cpp

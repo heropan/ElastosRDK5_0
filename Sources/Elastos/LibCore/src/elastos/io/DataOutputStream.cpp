@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "DataOutputStream.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
@@ -9,6 +9,8 @@ using Elastos::Core::Math;
 
 namespace Elastos {
 namespace IO {
+
+CAR_INTERFACE_IMPL(DataOutputStream, FilterOutputStream, IDataOutputStream)
 
 static const Char32 kByteMask = 0x000000BF;
 static const Char32 kByteMark = 0x00000080;
@@ -38,10 +40,10 @@ DataOutputStream::~DataOutputStream()
 {
 }
 
-ECode DataOutputStream::Init(
+ECode DataOutputStream::constructor(
     /* [in] */ IOutputStream* outs)
 {
-    return FilterOutputStream::Init(outs);
+    return FilterOutputStream::constructor(outs);
 }
 
 ECode DataOutputStream::Flush()
@@ -52,7 +54,7 @@ ECode DataOutputStream::Flush()
 ECode DataOutputStream::GetSize(
     /* [out] */ Int32* value)
 {
-    assert(value != NULL);
+    VALIDATE_NOT_NULL(value);
 
     if (mWritten < 0) {
         mWritten = Elastos::Core::Math::INT32_MAX_VALUE;
@@ -69,15 +71,15 @@ ECode DataOutputStream::Write(
     return NOERROR;
 }
 
-ECode DataOutputStream::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+ECode DataOutputStream::Write(
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    FAIL_RETURN(mOut->WriteBytes(buffer, offset, count));
+    FAIL_RETURN(mOut->Write(buffer, offset, count));
     mWritten += count;
     return NOERROR;
 }
@@ -99,10 +101,10 @@ ECode DataOutputStream::WriteByte(
 }
 
 ECode DataOutputStream::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer)
+    /* [in] */ ArrayOf<Byte>* buffer)
 {
-    FAIL_RETURN(mOut->WriteBytes(buffer));
-    mWritten += buffer.GetLength();
+    FAIL_RETURN(mOut->Write(buffer));
+    mWritten += buffer->GetLength();
     return NOERROR;
 }
 
@@ -114,7 +116,7 @@ ECode DataOutputStream::WriteBytesFromString(
     AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(str.GetByteLength());
     memcpy(bytes->GetPayload(), (const char*)str, str.GetByteLength());
 
-    return mOut->WriteBytes(*bytes);
+    return mOut->Write(bytes);
 }
 
 ECode DataOutputStream::WriteChar(
@@ -122,7 +124,7 @@ ECode DataOutputStream::WriteChar(
 {
     Int32 len = CountUTFBytes((Char32)val);
     WriteUTFBytesToBuffer(mBuff->GetPayload(), (Char32)val, len);
-    FAIL_RETURN(mOut->WriteBytes(*mBuff, 0, len));
+    FAIL_RETURN(mOut->Write(*mBuff, 0, len));
     mWritten += len;
     return NOERROR;
 }
@@ -134,7 +136,7 @@ ECode DataOutputStream::Write(
         return NOERROR;
 
     AutoPtr<ArrayOf<Char32> > chs = str.GetChars();
-    return mOut->WriteBytes(*(ArrayOf<Byte>*)chs.Get());
+    return mOut->Write((ArrayOf<Byte>*)chs.Get());
 }
 
 ECode DataOutputStream::WriteDouble(
@@ -156,7 +158,7 @@ ECode DataOutputStream::WriteInt32(
     (*mBuff)[1] = (Byte)(val >> 16);
     (*mBuff)[2] = (Byte)(val >> 8);
     (*mBuff)[3] = (Byte)val;
-    FAIL_RETURN(mOut->WriteBytes(*mBuff, 0, 4));
+    FAIL_RETURN(mOut->Write(*mBuff, 0, 4));
     mWritten += 4;
     return NOERROR;
 }
@@ -172,7 +174,7 @@ ECode DataOutputStream::WriteInt64(
     (*mBuff)[5] = (Byte)(val >> 16);
     (*mBuff)[6] = (Byte)(val >> 8);
     (*mBuff)[7] = (Byte)val;
-    FAIL_RETURN(mOut->WriteBytes(*mBuff, 0, 8));
+    FAIL_RETURN(mOut->Write(*mBuff, 0, 8));
     mWritten += 8;
     return NOERROR;
 }
@@ -182,7 +184,7 @@ ECode DataOutputStream::WriteInt16(
 {
     (*mBuff)[0] = (Byte)(val >> 8);
     (*mBuff)[1] = (Byte)val;
-    FAIL_RETURN(mOut->WriteBytes(*mBuff, 0, 2));
+    FAIL_RETURN(mOut->Write(*mBuff, 0, 2));
     mWritten += 2;
     return NOERROR;
 }
