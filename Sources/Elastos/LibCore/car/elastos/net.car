@@ -28,8 +28,6 @@ module
     merge("net/IHttpCookie.car");
     merge("net/IIDN.car");
     merge("net/IInetAddress.car");
-    merge("net/IInet4Address.car");
-    merge("net/IInet6Address.car");
     merge("net/ISocketAddress.car");
     merge("net/IInetSocketAddress.car");
     merge("net/IInterfaceAddress.car");
@@ -107,4 +105,28 @@ module
     merge("../elastosx/net/ssl/IKeyManagerFactorySpi.car");
     merge("../elastosx/net/ssl/ISSLServerSocket.car");
     merge("../elastosx/net/ssl/ITrustManagerFactorySpi.car");
+
+
+    interface Elastos.IO.ISerializable;
+
+    namespace Elastos {
+    namespace Net {
+
+    singleton class CIDN {
+        interface IIDN;
+    }
+
+    [deprecated]
+    class CInet4Address {
+        constructor(
+            [in] ArrayOf<Byte>* address,
+            [in] String name);
+
+        interface IInet4Address;
+        interface IInetAddress;
+        interface ISerializable;
+    }
+
+    } //Net
+    } // Elastos
 }

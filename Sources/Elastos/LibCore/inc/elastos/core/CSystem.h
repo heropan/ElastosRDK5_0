@@ -4,7 +4,6 @@
 
 #include "_Elastos_Core_CSystem.h"
 #include "Singleton.h"
-#include "Object.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;

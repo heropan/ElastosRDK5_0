@@ -73,6 +73,10 @@
 #define THIS_PROBE(Interface) ((Interface *)this->Probe(EIID_##Interface))
 #endif
 
+#ifndef TO_IINTERFACE
+#define TO_IINTERFACE(obj) ((obj) == NULL ? NULL : (obj)->Probe(EIID_IInterface))
+#endif
+
 // Car interface decls and impls
 //
 #ifndef CAR_INTERFACE_DECL

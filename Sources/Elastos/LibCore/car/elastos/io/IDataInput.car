@@ -3,6 +3,7 @@ module
     namespace Elastos {
     namespace IO {
 
+    [deprecated]
     interface IDataInput {
         /**
          * Reads a boolean.
@@ -78,7 +79,7 @@ module
          * Equivalent to {readFully(dst, 0, dst.length);}.
          */
         ReadFully(
-           [out] ArrayOf<Byte> buffer);
+           [in] ArrayOf<Byte>* buffer);
 
         /**
          * Reads {byteCount} bytes from this stream and stores them in the byte
@@ -104,7 +105,7 @@ module
          * NullPointerException | if {dst} is null.
          */
         ReadFully(
-            [out] ArrayOf<Byte> buffer,
+            [in] ArrayOf<Byte>* buffer,
             [in] Int32 offset,
             [in] Int32 byteCount);
 

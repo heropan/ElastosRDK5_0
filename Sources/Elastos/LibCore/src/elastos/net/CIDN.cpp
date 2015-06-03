@@ -1,33 +1,38 @@
 
-#include "IDN.h"
+#include "CIDN.h"
 #include <unicode/ucat.h>
 #include <unicode/uidna.h>
 
 namespace Elastos {
 namespace Net {
 
-ECode IDN::ToASCII(
+CAR_INTERFACE_IMPL(CIDN, Singleton, IIDN)
+
+CAR_SINGLETON_IMPL(CIDN)
+
+ECode CIDN::ToASCII(
     /* [in] */ const String& input,
     /* [in] */ Int32 flags,
     /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(result);
     return Convert(input, flags, TRUE, result);
 }
 
-ECode IDN::ToASCII(
+ECode CIDN::ToASCII(
     /* [in] */ const String& input,
     /* [out] */ String* result)
 {
     return ToASCII(input, 0, result);
 }
 
-ECode IDN::ToUnicode(
+ECode CIDN::ToUnicode(
     /* [in] */ const String& input,
     /* [in] */ Int32 flags,
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = String(NULL);
+
     // try {
     ECode ec = Convert(input, flags, FALSE, result);
     if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
@@ -43,14 +48,14 @@ ECode IDN::ToUnicode(
     // }
 }
 
-ECode IDN::ToUnicode(
+ECode CIDN::ToUnicode(
     /* [in] */ const String& input,
     /* [out] */ String* result)
 {
     return ToUnicode(input, 0, result);
 }
 
-ECode IDN::Convert(
+ECode CIDN::Convert(
     /* [in] */ const String& s,
     /* [in] */ Int32 flags,
     /* [in] */ Boolean toAscii,
@@ -75,12 +80,15 @@ static Boolean IsLabelSeparator(const UChar ch)
     }
 }
 
-ECode IDN::NativeConvert(
+ECode CIDN::NativeConvert(
     /* [in] */ const String& s,
     /* [in] */ Int32 flags,
     /* [in] */ Boolean toAscii,
     /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = String(NULL);
+
     UnicodeString sus = UnicodeString::fromUTF8(s.string());
     const UChar* src = sus.getBuffer();
     const size_t srcLength = sus.length();
@@ -91,7 +99,6 @@ ECode IDN::NativeConvert(
             : uidna_IDNToUnicode(src, srcLength, &dst[0], sizeof(dst), flags, NULL, &status);
     if (U_FAILURE(status)) {
         // jniThrowException(env, "java/lang/IllegalArgumentException", u_errorName(status));
-        *result = NULL;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (!toAscii) {

@@ -1,63 +1,124 @@
 
-#ifndef __ADDRESSCACHE_H__
-#define __ADDRESSCACHE_H__
+#ifndef __ELASTOS_NET_ADDRESSCACHE_H__
+#define __ELASTOS_NET_ADDRESSCACHE_H__
 
-#include "Elastos.CoreLibrary_server.h"
-#include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Object;
+using Libcore::Utility::IBasicLruCache;
 
 namespace Elastos {
 namespace Net {
 
-class AddressCache : public ElRefBase
+class AddressCacheEntry : public Object
+{
+public:
+    AddressCacheEntry(
+        /* [in] */ ArrayOf<IInetAddress*>* value);
+
+    AddressCacheEntry(
+        /* [in] */ const String& value);
+
+    ~AddressCacheEntry();
+
+    // Either an InetAddress[] for a positive entry,
+    // or a String detail message for a negative entry.
+    AutoPtr< ArrayOf<IInetAddress*> > mValue;
+    String mStringValue;
+
+    /**
+     * The absolute expiry time in nanoseconds. Nanoseconds from System.nanoTime is ideal
+     * because -- unlike System.currentTimeMillis -- it can never go backwards.
+     *
+     * We don't need to worry about overflow with a TTL_NANOS of 2s.
+     */
+    Int64 mExpiryNanos;
+};
+
+/**
+ * Implements caching for {@code InetAddress}. We use a unified cache for both positive and negative
+ * cache entries.
+ *
+ * TODO: benchmark and optimize InetAddress until we get to the point where we can just rely on
+ * the C library level caching. The main thing caching at this level buys us is avoiding repeated
+ * conversions from 'struct sockaddr's to InetAddress[].
+ */
+class AddressCache : public Object
 {
 private:
-    class AddressCacheEntry : public ElRefBase
+    class AddressCacheKey : public Object
     {
     public:
-        AddressCacheEntry(
-            /* [in] */ ArrayOf<IInetAddress*>* value);
-    public:
-        AutoPtr< ArrayOf<IInetAddress*> > mValue;
+        AddressCacheKey(
+            /* [in] */ const String& hostname,
+            /* [in] */ Int32 netId);
 
-        Int64 mExpiryNanos;
+        CARAPI Equals(
+            /* [in] */ IInterface* other,
+            /* [out] */ Boolean* result);
+
+        CARAPI GetHashCode(
+            /* [out] */ Int32* hashcode);
+
+        private:
+            String mHostname;
+            Int32 mNetId;
     };
 
 public:
-    AddressCache()
-        : mCache(MAX_ENTRIES)
-    {}
+    AddressCache();
 
     ~AddressCache();
 
+    /**
+     * Removes all entries from the cache.
+     */
     CARAPI_(void) Clear();
 
-    CARAPI_(AutoPtr< ArrayOf<IInetAddress*> >) Get(
-        /* [in] */ const String& hostname);
+    /**
+     * Returns the cached InetAddress[] for 'hostname' on network 'netId'. Returns null
+     * if nothing is known about 'hostname'. Returns a String suitable for use as an
+     * UnknownHostException detail message if 'hostname' is known not to exist.
+     */
+    CARAPI_(AutoPtr<AddressCacheEntry>) Get(
+        /* [in] */ const String& hostname,
+        /* [in] */ Int32 netId);
 
+    /**
+     * Associates the given 'addresses' with 'hostname'. The association will expire after a
+     * certain length of time.
+     */
     CARAPI_(void) Put(
         /* [in] */ const String& hostname,
+        /* [in] */ Int32 netId,
         /* [in] */ ArrayOf<IInetAddress*>* addresses);
 
+    /**
+     * Records that 'hostname' is known not to have any associated addresses. (I.e. insert a
+     * negative cache entry.)
+     */
     CARAPI_(void) PutUnknownHost(
         /* [in] */ const String& hostname,
+        /* [in] */ Int32 netId,
         /* [in] */ const String& detailMessage);
 
-public:
-    static const AutoPtr< ArrayOf<IInetAddress*> > UNKNOWN_ADDRESS;
-
 private:
-    static const Int32 MAX_ENTRIES = 16;
+    friend class AddressCacheEntry;
+
+    /**
+     * When the cache contains more entries than this, we start dropping the oldest ones.
+     * This should be a power of two to avoid wasted space in our custom map.
+     */
+    static const Int32 MAX_ENTRIES;
 
 	//The TTL for the Java-level cache is short ,just 2s.
-    static const Int64 TTL_NANOS = 2 * 1000000000ll;
+    static const Int64 TTL_NANOS;
 
     // The actual cache.
-    HashMap<String, AutoPtr<AddressCacheEntry> > mCache;
+    AutoPtr<IBasicLruCache> mCache;
 };
 
 } // namespace Net
 } // namespace Elastos
 
-#endif //__ADDRESSCACHE_H__
+#endif //__ELASTOS_NET_ADDRESSCACHE_H__

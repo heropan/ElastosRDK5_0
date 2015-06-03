@@ -1,0 +1,22 @@
+TARGET_NAME= net
+TARGET_TYPE= lib
+
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/net;
+INCLUDES += $(MAKEDIR)/../../../inc/libcore/utility;
+INCLUDES += $(MAKEDIR)/../../../inc/droid/system;
+
+SOURCES = CIDN.cpp
+SOURCES += AddressCache.cpp
+SOURCES += InetAddress.cpp
+SOURCES += Inet4Address.cpp
+#SOURCES += Inet6Address.cpp
+SOURCES += net.cpp

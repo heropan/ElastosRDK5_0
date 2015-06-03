@@ -313,7 +313,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutString(
+        Put(
             [in] String str);
 
         /**
@@ -336,7 +336,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutString(
+        Put(
             [in] String str,
             [in] Int32 start,
             [in] Int32 end);

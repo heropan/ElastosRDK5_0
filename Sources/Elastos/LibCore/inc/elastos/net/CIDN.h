@@ -1,36 +1,43 @@
 
-#ifndef __IDN_H__
-#define __IDN_H__
+#ifndef __ELASTOS_NET_CIDN_H__
+#define __ELASTOS_NET_CIDN_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include "_Elastos_Net_CIDN.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {
 
-class IDN
+CarClass(CIDN)
+    , public Singleton
+    , public IIDN
 {
 public:
-    static CARAPI ToASCII(
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
+    CARAPI ToASCII(
         /* [in] */ const String& input,
         /* [in] */ Int32 flags,
         /* [out] */ String* result);
 
-    static CARAPI ToASCII(
+    CARAPI ToASCII(
         /* [in] */ const String& input,
         /* [out] */ String* result);
 
-    static CARAPI ToUnicode(
+    CARAPI ToUnicode(
         /* [in] */ const String& input,
         /* [in] */ Int32 flags,
         /* [out] */ String* result);
 
-    static CARAPI ToUnicode(
+    CARAPI ToUnicode(
         /* [in] */ const String& input,
         /* [out] */ String* result);
 
 private:
-    IDN() {}
-
     static CARAPI Convert(
         /* [in] */ const String& s,
         /* [in] */ Int32 flags,
@@ -47,4 +54,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__IDN_H__
+#endif //__ELASTOS_NET_CIDN_H__

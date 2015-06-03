@@ -9,12 +9,12 @@ module
         /**
          * When set, allows IDN to process unassigned unicode points.
          */
-        const Int32 IDN_ALLOW_UNASSIGNED = 1;
+        const Int32 ALLOW_UNASSIGNED = 1;
 
         /**
          * When set, ASCII strings are checked against RFC 1122 & RFC 1123.
          */
-        const Int32 IDN_USE_STD3_ASCII_RULES = 2;
+        const Int32 USE_STD3_ASCII_RULES = 2;
 
         /**
          * Equivalent to {@code toASCII(input, 0)}.

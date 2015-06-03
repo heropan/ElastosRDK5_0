@@ -31,7 +31,7 @@ module
          */
         ReadFully(
             [in] IInputStream* instream,
-            [out, callee] ArrayOf<Byte>* dst);
+            [in] ArrayOf<Byte>* dst);
 
         /**
          * Reads exactly 'byteCount' bytes from 'in' (into 'dst' at offset 'offset'), and throws
@@ -44,16 +44,9 @@ module
          */
         ReadFully(
             [in] IInputStream* instream,
+            [in] ArrayOf<Byte>* dst,
             [in] Int32 offset,
-            [in] Int32 byteCount,
-            [out] ArrayOf<Byte> dst);
-
-        /**
-         * Returns a byte[] containing the remainder of 'in', closing it when done.
-        */
-        ReadFullyCloseWhenDone(
-            [in] IInputStream* instream,
-            [out, callee] ArrayOf<Byte>* bytes);
+            [in] Int32 byteCount);
 
         /**
          * Returns a byte[] containing the remainder of 'in'.

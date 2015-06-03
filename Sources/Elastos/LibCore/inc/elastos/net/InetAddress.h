@@ -1,59 +1,62 @@
-#ifndef __INETADDRESS_H__
-#define __INETADDRESS_H__
+#ifndef __ELASTOS_NET_INETADDRESS_H__
+#define __ELASTOS_NET_INETADDRESS_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "AddressCache.h"
-#include "ThreadBase.h"
+#include "Thread.h"
 
+using Elastos::Core::Thread;
 using Libcore::IO::IOs;
-using Elastos::Core::ThreadBase;
+using Elastos::IO::ISerializable;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Utility::Concurrent::ICountDownLatch;
 
 namespace Elastos {
 namespace Net {
 
-extern const InterfaceID EIID_InetAddress;
-
 class InetAddress
+    : public Object
+    , public IInetAddress
+    , public ISerializable
 {
 protected:
-    class _InetAddressThread : public ThreadBase
-    {
-    public:
-        _InetAddressThread(
-            /* [in] */ InetAddress* host,
-            /* [in] */ IInetAddress* sourceAddress,
-            /* [in] */ Int32 timeout,
-            /* [in] */ ICountDownLatch* latch,
-            /* [in] */ IAtomicBoolean* isReachable);
+    // class _InetAddressThread : public ThreadBase
+    // {
+    // public:
+    //     _InetAddressThread(
+    //         /* [in] */ InetAddress* host,
+    //         /* [in] */ IInetAddress* sourceAddress,
+    //         /* [in] */ Int32 timeout,
+    //         /* [in] */ ICountDownLatch* latch,
+    //         /* [in] */ IAtomicBoolean* isReachable);
 
-        CARAPI Run();
+    //     CARAPI Run();
 
-    private:
-        InetAddress* mHost;
-        AutoPtr<IInetAddress> mSourceAddress;
-        AutoPtr<ICountDownLatch> mLatch;
-        AutoPtr<IAtomicBoolean> mIsReachable;
-        Int32 mTimeout;
-    };
+    // private:
+    //     InetAddress* mHost;
+    //     AutoPtr<IInetAddress> mSourceAddress;
+    //     AutoPtr<ICountDownLatch> mLatch;
+    //     AutoPtr<IAtomicBoolean> mIsReachable;
+    //     Int32 mTimeout;
+    // };
 
 public:
+    CAR_INTERFACE_DECL()
+
     InetAddress(
         /* [in] */ Int32 family,
         /* [in] */ ArrayOf<Byte>* ipaddress,
-        /* [in] */ const String& hostName);
+        /* [in] */ const String& hostname);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 family,
         /* [in] */ ArrayOf<Byte>* ipaddress,
-        /* [in] */ const String& hostName);
+        /* [in] */ const String& hostname);
 
-    virtual CARAPI Equals(
+    CARAPI Equals(
         /* [in] */IInterface* obj,
         /* [out] */Boolean* result);
 
-    virtual CARAPI GetAddress(
+    CARAPI GetAddress(
         /* [out, callee] */ ArrayOf<Byte>** address);
 
     static CARAPI GetAllByName(
@@ -68,16 +71,19 @@ public:
         /* [in] */ const String& host,
         /* [out] */ IInetAddress** address);
 
-    virtual CARAPI GetHostAddress(
+    CARAPI GetHostAddress(
         /* [out] */ String* address);
 
-    virtual CARAPI GetHostName(
+    CARAPI GetHostName(
         /* [out] */ String* name);
 
-    virtual CARAPI GetCanonicalHostName(
+    CARAPI GetCanonicalHostName(
         /* [out] */ String* canonicalName);
 
-    virtual CARAPI GetHashCode(
+    CARAPI GetFamily(
+        /* [out] */ Int32* family);
+
+    CARAPI GetHashCode(
         /* [out] */ Int32* hashCode);
 
     static CARAPI GetLocalHost(
@@ -85,7 +91,7 @@ public:
 
     static CARAPI ClearDnsCache();
 
-    virtual CARAPI IsMulticastAddress(
+    CARAPI IsMulticastAddress(
         /* [out] */ Boolean* isMulticastAddress);
 
     CARAPI ToString(
@@ -102,38 +108,38 @@ public:
     static CARAPI GetLoopbackAddress(
         /* [out] */ IInetAddress** address);
 
-    virtual CARAPI IsLoopbackAddress(
+    CARAPI IsLoopbackAddress(
         /* [out] */ Boolean* isLoopbackAddress);
 
-    virtual CARAPI IsLinkLocalAddress(
+    CARAPI IsLinkLocalAddress(
         /* [out] */ Boolean* isLinkLocalAddress);
 
-    virtual CARAPI IsSiteLocalAddress(
+    CARAPI IsSiteLocalAddress(
         /* [out] */ Boolean* isSiteLocalAddress);
 
-    virtual CARAPI IsMCGlobal(
+    CARAPI IsMCGlobal(
         /* [out] */ Boolean* isMCGlobal);
 
-    virtual CARAPI IsMCNodeLocal(
+    CARAPI IsMCNodeLocal(
         /* [out] */ Boolean* isMCNodeLocal);
 
-    virtual CARAPI IsMCLinkLocal(
+    CARAPI IsMCLinkLocal(
         /* [out] */ Boolean* isMCLinkLocal);
 
-    virtual CARAPI IsMCSiteLocal(
+    CARAPI IsMCSiteLocal(
         /* [out] */ Boolean* isMCSiteLocal);
 
-    virtual CARAPI IsMCOrgLocal(
+    CARAPI IsMCOrgLocal(
         /* [out] */ Boolean* isMCOrgLocal);
 
-    virtual CARAPI IsAnyLocalAddress(
+    CARAPI IsAnyLocalAddress(
         /* [out] */ Boolean* isAnyLocalAddress);
 
-    virtual CARAPI IsReachable(
+    CARAPI IsReachable(
         /* [in] */ Int32 timeout,
         /* [out] */ Boolean* isReachable);
 
-    virtual CARAPI IsReachable(
+    CARAPI IsReachable(
         /* [in] */ INetworkInterface* networkInterface,
         /* [in] */ Int32 ttl,
         /* [in] */ Int32 timeout,
@@ -144,22 +150,22 @@ public:
         /* [out] */ IInetAddress** address);
 
     static CARAPI GetByAddress(
-        /* [in] */ const String& hostName,
+        /* [in] */ const String& hostname,
         /* [in] */ ArrayOf<Byte>* ipAddress,
         /* [out] */ IInetAddress** address);
 
     static CARAPI GetByAddress(
-        /* [in] */ const String& hostName,
+        /* [in] */ const String& hostname,
         /* [in] */ ArrayOf<Byte>* ipaddress,
         /* [in] */ Int32 scopeId,
         /* [out] */ IInetAddress** address);
 
 protected:
-    InetAddress() : mFamily(0) {}
+    InetAddress();
 
     static CARAPI BytesToInetAddresses(
         /* [in] */ ArrayOf<ByteArray>* rawAddresses,
-        /* [in] */ const String& hostName,
+        /* [in] */ const String& hostname,
         /* [out, callee] */ ArrayOf<IInetAddress*>** addresses);
 
     static CARAPI GetHostByAddrImpl(
@@ -169,9 +175,6 @@ protected:
     static CARAPI_(Int32) BytesToInt32(
         /* [in] */ const ArrayOf<Byte>& bytes,
         /* [in] */ Int32 start);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
 private:
     static CARAPI LookupHostByName(
@@ -196,7 +199,7 @@ private:
 
     static CARAPI MakeInetAddress(
         /* [in] */ ArrayOf<Byte>* bytes,
-        /* [in] */ const String& hostName,
+        /* [in] */ const String& hostname,
         /* [out] */ IInetAddress** address);
 
     static CARAPI_(AutoPtr<IInetAddress>) DisallowDeprecatedFormats(
@@ -210,7 +213,7 @@ private:
         /* [out] */ ArrayOf<IInetAddress*>** result);
 
 public:
-    String mHostName;
+    String mHostname;
     Int32 mFamily;
     AutoPtr<ArrayOf<Byte> > mIpAddress;
 
