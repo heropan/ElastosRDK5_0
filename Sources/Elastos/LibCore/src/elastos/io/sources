@@ -11,11 +11,8 @@ INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
-<<<<<<< HEAD
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/droid/system/;
-=======
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;
->>>>>>> Change interface IFile pause, waiting for other module.
 
 
 SOURCES = InputStream.cpp
