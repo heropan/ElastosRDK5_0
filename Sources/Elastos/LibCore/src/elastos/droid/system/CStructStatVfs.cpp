@@ -102,23 +102,29 @@ ECode CStructStatVfs::GetFlag(
 }
 
 ECode CStructStatVfs::constructor(
-    /* [in] */ Int64 bsize,
-    /* [in] */ Int64 blocks,
-    /* [in] */ Int64 bfree,
-    /* [in] */ Int64 bavail,
-    /* [in] */ Int64 files,
-    /* [in] */ Int64 ffree,
-    /* [in] */ Int64 namemax,
-    /* [in] */ Int64 frsize)
+    /* [in] */ Int64 f_bsize,
+    /* [in] */ Int64 f_frsize,
+    /* [in] */ Int64 f_blocks,
+    /* [in] */ Int64 f_bfree,
+    /* [in] */ Int64 f_bavail,
+    /* [in] */ Int64 f_files,
+    /* [in] */ Int64 f_ffree,
+    /* [in] */ Int64 f_favail,
+    /* [in] */ Int64 f_fsid,
+    /* [in] */ Int64 f_flag,
+    /* [in] */ Int64 f_namemax)
 {
-    mF_bsize = bsize;
-    mF_blocks = blocks;
-    mF_bfree = bfree;
-    mF_bavail = bavail;
-    mF_files = files;
-    mF_ffree = ffree;
-    mF_namemax = namemax;
-    mF_frsize = frsize;
+    mF_bsize = f_bsize;
+    mF_frsize = f_frsize;
+    mF_blocks = f_blocks;
+    mF_bfree = f_bfree;
+    mF_bavail = f_bavail;
+    mF_files = f_files;
+    mF_ffree = f_ffree;
+    mF_favail = f_favail;
+    mF_fsid = f_fsid;
+    mF_flag = f_flag;
+    mF_namemax = f_namemax;
     return NOERROR;
 }
 

@@ -67,16 +67,16 @@ public:
         /* [in] */ Int32 port);
 
     CARAPI Dup(
-        /* [in] */ Int32 oldFd,
-        /* [out] */ Int32* retFd);
+        /* [in] */ IFileDescriptor* oldFd,
+        /* [out] */ IFileDescriptor** retFd);
 
     CARAPI Dup2(
-        /* [in] */ Int32 oldFd,
+        /* [in] */ IFileDescriptor* oldFd,
         /* [in] */ Int32 newFd,
-        /* [out] */ Int32* retFd);
+        /* [out] */ IFileDescriptor** retFd);
 
     CARAPI Environ(
-        /* [out, callee] */ ArrayOf<String>* env);
+        /* [out, callee] */ ArrayOf<String>** env);
 
     CARAPI Execv(
         /* [in] */ String filename,
@@ -188,7 +188,7 @@ public:
         /* [in] */ Int32 option,
         /* [out] */ IInetAddress** addr);
 
-    CARAPI GetsockoptInt(
+    CARAPI GetsockoptInt32(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 level,
         /* [in] */ Int32 option,
@@ -430,8 +430,8 @@ public:
         /* [out] */ Int32* result);
 
     CARAPI Sendfile(
-        /* [in] */ Int32 outFd,
-        /* [in] */ Int32 inFd,
+        /* [in] */ IFileDescriptor* outFd,
+        /* [in] */ IFileDescriptor* inFd,
         /* [out] */ Int64* inOffset,
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* result);

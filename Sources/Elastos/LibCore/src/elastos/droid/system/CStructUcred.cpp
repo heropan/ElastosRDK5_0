@@ -1,13 +1,13 @@
-#include "CStructoUcred.h"
+#include "CStructUcred.h"
 
 namespace Elastos {
 namespace Droid {
 namespace System {
-CAR_OBJECT_IMPL(CStructoUcred)
+CAR_OBJECT_IMPL(CStructUcred)
 
-CAR_INTERFACE_IMPL(CStructoUcred, Object, IStructUcred)
+CAR_INTERFACE_IMPL(CStructUcred, Object, IStructUcred)
 
-ECode CStructoUcred::constructor(
+ECode CStructUcred::constructor(
     /* [in] */ Int32 pid,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 gid)
@@ -18,21 +18,21 @@ ECode CStructoUcred::constructor(
     return NOERROR;
 }
 
-ECode CStructoUcred::GetPid(
+ECode CStructUcred::GetPid(
     /* [out] */ Int32* pid)
 {
     *pid = mPid;
     return NOERROR;
 }
 
-ECode CStructoUcred::GetUid(
+ECode CStructUcred::GetUid(
     /* [out] */ Int32* uid)
 {
     *uid = mUid;
     return NOERROR;
 }
 
-ECode CStructoUcred::GetGid(
+ECode CStructUcred::GetGid(
     /* [out] */ Int32* gid)
 {
     *gid = mGid;

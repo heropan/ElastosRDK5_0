@@ -60,37 +60,41 @@ public:
         /* [out] */ Int64* frsize);
 
     CARAPI constructor(
-        /* [in] */ Int64 bsize,
-        /* [in] */ Int64 blocks,
-        /* [in] */ Int64 bfree,
-        /* [in] */ Int64 bavail,
-        /* [in] */ Int64 files,
-        /* [in] */ Int64 ffree,
-        /* [in] */ Int64 namemax,
-        /* [in] */ Int64 frsize);
+        /* [in] */ Int64 f_bsize,
+        /* [in] */ Int64 f_frsize,
+        /* [in] */ Int64 f_blocks,
+        /* [in] */ Int64 f_bfree,
+        /* [in] */ Int64 f_bavail,
+        /* [in] */ Int64 f_files,
+        /* [in] */ Int64 f_ffree,
+        /* [in] */ Int64 f_favail,
+        /* [in] */ Int64 f_fsid,
+        /* [in] */ Int64 f_flag,
+        /* [in] */ Int64 f_namemax);
 
 private:
-    /** File system block size (used for block counts). */
+  /** File system block size (used for block counts). */
     Int64 mF_bsize; /*unsigned long*/
 
-    /** Total block count. */
+  /** Fundamental file system block size. */
+    Int64 mF_frsize; /*unsigned long*/
+
+  /** Total block count. */
     Int64 mF_blocks; /*fsblkcnt_t*/
 
-    /** Free block count. */
+  /** Free block count. */
     Int64 mF_bfree; /*fsblkcnt_t*/
 
-    /** Free block count available to non-root. */
+  /** Free block count available to non-root. */
     Int64 mF_bavail; /*fsblkcnt_t*/
 
-    /** Total file (inode) count. */
+  /** Total file (inode) count. */
     Int64 mF_files; /*fsfilcnt_t*/
 
-    /** Free file (inode) count. */
+  /** Free file (inode) count. */
     Int64 mF_ffree; /*fsfilcnt_t*/
 
-    /** Maximum filename length. */
-    Int64 mF_namemax; /*unsigned long*/
-
+  /** Free file (inode) count available to non-root. */
     Int64 mF_favail; /*fsfilcnt_t*/
 
   /** File system id. */
@@ -99,8 +103,8 @@ private:
   /** Bit mask of ST_* flags. */
     Int64 mF_flag; /*unsigned long*/
 
-    /** Fundamental file system block size. */
-    Int64 mF_frsize; /*unsigned long*/
+  /** Maximum filename length. */
+    Int64 mF_namemax; /*unsigned long*/
 };
 
 } // namespace System
