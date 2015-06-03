@@ -255,8 +255,8 @@ public:
      * to the internal representation.
      * @hide 1.7
      */
-    static CARAPI ValueOfInt64Array(
-        /* [in] */ const ArrayOf<Int64>& int64Arr,
+    static CARAPI ValueOf(
+        /* [in] */ ArrayOf<Int64>* int64Arr,
         /* [out] */ IBitSet** bs);
 
     /**
@@ -264,7 +264,7 @@ public:
      * sequence of bits. This method does not alter the {@code LongBuffer}.
      * @hide 1.7
      */
-    static CARAPI ValueOfInt64Buffer(
+    static CARAPI ValueOf(
         /* [in] */ IInt64Buffer* int64Arr,
         /* [out] */ IBitSet** bs);
 
@@ -272,8 +272,8 @@ public:
      * Equivalent to {@code BitSet.valueOf(ByteBuffer.wrap(bytes))}.
      * @hide 1.7
      */
-    static CARAPI ValueOfByteArray(
-        /* [in] */ const ArrayOf<Byte>& byteArr,
+    static CARAPI ValueOf(
+        /* [in] */ ArrayOf<Byte>* byteArr,
         /* [out] */ IBitSet** bs);
 
     /**
@@ -281,7 +281,7 @@ public:
      * sequence of bits. This method does not alter the {@code ByteBuffer}.
      * @hide 1.7
      */
-    static CARAPI ValueOfByteBuffer(
+    static CARAPI ValueOf(
         /* [in] */ IByteBuffer* byteArr,
         /* [out] */ IBitSet** bs);
 

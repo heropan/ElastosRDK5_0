@@ -246,6 +246,7 @@ module
             [out] String* value);
     }
 
+    [deprecated]
     interface IBitSetHelper {
         /**
          * Equivalent to {@code BitSet.valueOf(LongBuffer.wrap(longs))}, but likely to be faster.
@@ -254,7 +255,7 @@ module
          * @hide 1.7
          */
         ValueOf(
-            [in] ArrayOf<Int64> int64Arr,
+            [in] ArrayOf<Int64>* int64Arr,
             [out] IBitSet** bs);
 
         /**
@@ -271,7 +272,7 @@ module
          * @hide 1.7
          */
         ValueOf(
-            [in] ArrayOf<Byte> byteArr,
+            [in] ArrayOf<Byte>* byteArr,
             [out] IBitSet** bs);
 
         /**

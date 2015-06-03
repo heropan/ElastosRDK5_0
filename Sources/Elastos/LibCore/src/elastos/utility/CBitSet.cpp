@@ -763,12 +763,12 @@ ECode CBitSet::Cardinality(
  * to the internal representation.
  * @hide 1.7
  */
-ECode CBitSet::ValueOfInt64Array(
-    /* [in] */ const ArrayOf<Int64>& int64Arr,
+ECode CBitSet::ValueOf(
+    /* [in] */ ArrayOf<Int64>* int64Arr,
     /* [out] */ IBitSet** bs)
 {
     VALIDATE_NOT_NULL(bs);
-    return CBitSet::New(int64Arr.Clone(), bs);
+    return CBitSet::New(int64Arr, bs);
 }
 
 /**
@@ -776,7 +776,7 @@ ECode CBitSet::ValueOfInt64Array(
  * sequence of bits. This method does not alter the {@code LongBuffer}.
  * @hide 1.7
  */
-ECode CBitSet::ValueOfInt64Buffer(
+ECode CBitSet::ValueOf(
     /* [in] */ IInt64Buffer* int64Arr,
     /* [out] */ IBitSet** bs)
 {
@@ -791,18 +791,18 @@ ECode CBitSet::ValueOfInt64Buffer(
     (IBuffer::Probe(int64Arr))->GetPosition(&position);
     for (Int32 i = 0; i < size; ++i) {
         Int64 value;
-        int64Arr->GetInt64(position + i, &value);
+        int64Arr->Get(position + i, &value);
         (*int64s)[i] = value;
     }
-    return ValueOfInt64Array(*int64s, bs);
+    return ValueOf(int64s, bs);
 }
 
 /**
  * Equivalent to {@code BitSet.valueOf(ByteBuffer.wrap(bytes))}.
  * @hide 1.7
  */
-ECode CBitSet::ValueOfByteArray(
-    /* [in] */ const ArrayOf<Byte>& byteArr,
+ECode CBitSet::ValueOf(
+    /* [in] */ ArrayOf<Byte>* byteArr,
     /* [out] */ IBitSet** bs)
 {
     /*VALIDATE_NOT_NULL(bs);
@@ -811,7 +811,7 @@ ECode CBitSet::ValueOfByteArray(
     CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&helper);
     AutoPtr<IByteBuffer> byteBuffer;
     helper->WrapArray((ArrayOf<Byte>*)&byteArr, (IByteBuffer**)&byteBuffer);
-    return ValueOfByteBuffer(byteBuffer, bs);*/
+    return ValueOf(byteBuffer, bs);*/
 }
 
 /**
@@ -819,7 +819,7 @@ ECode CBitSet::ValueOfByteArray(
  * sequence of bits. This method does not alter the {@code ByteBuffer}.
  * @hide 1.7
  */
-ECode CBitSet::ValueOfByteBuffer(
+ECode CBitSet::ValueOf(
     /* [in] */ IByteBuffer* byteArr,
     /* [out] */ IBitSet** bs)
 {
@@ -843,13 +843,13 @@ ECode CBitSet::ValueOfByteBuffer(
     (IBuffer::Probe(byteBuffer))->HasRemaining(&hasRemaining);
     for (Int32 j = 0; hasRemaining; ++j) {
         Byte byte;
-        byteBuffer->GetByte(&byte);
+        byteBuffer->Get(&byte);
         (*longs)[i] |= (((Int64)byte & 0xff << ((8 * j) & 0x3F)));
 
         (IBuffer::Probe(byteBuffer))->HasRemaining(&hasRemaining);
     }
 
-   return CBitSet::ValueOfInt64Array(*longs, bs);
+   return CBitSet::ValueOf(longs, bs);
 }
 
 /**
@@ -920,13 +920,13 @@ ECode CBitSet::ToString(
 }
 
 ECode CBitSet::ToArray(
-        /* [out] */ ArrayOf<Int64>** arr)
+    /* [out] */ ArrayOf<Int64>** arr)
 {
     return NOERROR;
 }
 
 ECode CBitSet::ToArray(
-        /* [out] */ ArrayOf<Byte>** int64Arr)
+    /* [out] */ ArrayOf<Byte>** int64Arr)
 {
     return NOERROR;
 }

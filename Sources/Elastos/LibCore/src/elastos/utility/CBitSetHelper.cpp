@@ -5,11 +5,11 @@
 namespace Elastos {
 namespace Utility {
 
-ECode CBitSetHelper::ValueOfInt64Array(
-    /* [in] */ const ArrayOf<Int64>& int64Arr,
+ECode CBitSetHelper::ValueOf(
+    /* [in] */ ArrayOf<Int64>* int64Arr,
     /* [out] */ IBitSet** bs)
 {
-    return CBitSet::ValueOfInt64Array(int64Arr, bs);
+    return CBitSet::ValueOf(int64Arr, bs);
 }
 
 /**
@@ -17,22 +17,22 @@ ECode CBitSetHelper::ValueOfInt64Array(
  * sequence of bits. This method does not alter the {@code LongBuffer}.
  * @hide 1.7
  */
-ECode CBitSetHelper::ValueOfInt64Buffer(
+ECode CBitSetHelper::ValueOf(
     /* [in] */ IInt64Buffer* int64Arr,
     /* [out] */ IBitSet** bs)
 {
-    return CBitSet::ValueOfInt64Buffer(int64Arr, bs);
+    return CBitSet::ValueOf(int64Arr, bs);
 }
 
 /**
  * Equivalent to {@code BitSet.valueOf(ByteBuffer.wrap(bytes))}.
  * @hide 1.7
  */
-ECode CBitSetHelper::ValueOfByteArray(
-    /* [in] */ const ArrayOf<Byte>& byteArr,
+ECode CBitSetHelper::ValueOf(
+    /* [in] */ ArrayOf<Byte>* byteArr,
     /* [out] */ IBitSet** bs)
 {
-    return CBitSet::ValueOfByteArray(byteArr, bs);
+    return CBitSet::ValueOf(byteArr, bs);
 }
 
 /**
@@ -40,11 +40,11 @@ ECode CBitSetHelper::ValueOfByteArray(
  * sequence of bits. This method does not alter the {@code ByteBuffer}.
  * @hide 1.7
  */
-ECode CBitSetHelper::ValueOfByteBuffer(
+ECode CBitSetHelper::ValueOf(
     /* [in] */ IByteBuffer* byteArr,
     /* [out] */ IBitSet** bs)
 {
-    return CBitSet::ValueOfByteBuffer(byteArr, bs);
+    return CBitSet::ValueOf(byteArr, bs);
 }
 
 } // namespace Utility
