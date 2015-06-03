@@ -69,10 +69,10 @@ SOURCES += CPushbackInputStream.cpp
 SOURCES += DataOutputStream.cpp
 SOURCES += CDataOutputStream.cpp
 
-<<<<<<< HEAD
 SOURCES += CFileDescriptor.cpp
 
-
+#SOURCES += File.cpp
+#SOURCES += CFile.cpp
 
 #
 # nio related classes
@@ -84,7 +84,3 @@ SOURCES += ByteBuffer.cpp
 SOURCES += CByteBufferHelper.cpp
 SOURCES += CByteArrayBuffer.cpp
 
-=======
-#SOURCES += File.cpp
-#SOURCES += CFile.cpp
->>>>>>> Change interface IFile pause, waiting for other module.
