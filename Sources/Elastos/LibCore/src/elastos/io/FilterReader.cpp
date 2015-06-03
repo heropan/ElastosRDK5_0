@@ -5,6 +5,8 @@
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(FilterReader, Reader, IFilterReader)
+
 FilterReader::FilterReader()
 {
 }
@@ -13,15 +15,12 @@ FilterReader::~FilterReader()
 {
 }
 
-ECode FilterReader::Init(
+ECode FilterReader::constructor(
     /* [in] */ IReader* in)
 {
     VALIDATE_NOT_NULL(in);
 
-    AutoPtr<IInterface> obj;
-    in->GetLock((IInterface**)&obj);
-    LockObject* lockobj = (LockObject*)obj.Get();
-    Reader::Init(lockobj);
+    Reader::constructor(IObject::Probe(in));
 
     mIn = in;
 
@@ -66,7 +65,7 @@ ECode FilterReader::Read(
     return mIn->Read(value);
 }
 
-ECode FilterReader::ReadChars(
+ECode FilterReader::Read(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
@@ -77,7 +76,7 @@ ECode FilterReader::ReadChars(
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
-    return mIn->ReadChars(buffer, offset, count, number);
+    return mIn->Read(buffer, offset, count, number);
 }
 
 ECode FilterReader::IsReady(

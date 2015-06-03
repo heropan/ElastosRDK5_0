@@ -21,6 +21,7 @@ Reader::Reader(
 {
     assert(lock != NULL);
     mLock = (Object *)lock;
+    REFCOUNT_ADD(mLock);
 }
 
 Reader::~Reader()

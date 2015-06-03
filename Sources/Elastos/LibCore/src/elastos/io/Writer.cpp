@@ -36,6 +36,7 @@ Writer::Writer(
 {
     assert(lock != NULL);
     mLock = (Object *)lock;
+    REFCOUNT_ADD(mLock);
 }
 
 Writer::~Writer()
