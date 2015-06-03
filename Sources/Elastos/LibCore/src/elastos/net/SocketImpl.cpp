@@ -1,7 +1,6 @@
 
-#include "cmdef.h"
 #include "SocketImpl.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 
@@ -25,7 +24,7 @@ ECode SocketImpl::GetFD(
     VALIDATE_NOT_NULL(fileDescriptor)
 
     *fileDescriptor = mFd;
-    INTERFACE_ADDREF(*fileDescriptor)
+    REFCOUNT_ADD(*fileDescriptor)
     return NOERROR;
 }
 
@@ -50,7 +49,7 @@ ECode SocketImpl::GetFileDescriptor(
     VALIDATE_NOT_NULL(fileDescriptor);
 
     *fileDescriptor = mFd;
-    INTERFACE_ADDREF(*fileDescriptor);
+    REFCOUNT_ADD(*fileDescriptor);
     return NOERROR;
 }
 
@@ -60,7 +59,7 @@ ECode SocketImpl::GetInetAddress(
     VALIDATE_NOT_NULL(netAddress);
 
     *netAddress = mAddress;
-    INTERFACE_ADDREF(*netAddress);
+    REFCOUNT_ADD(*netAddress);
     return NOERROR;
 }
 

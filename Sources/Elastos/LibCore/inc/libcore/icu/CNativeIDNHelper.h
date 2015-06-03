@@ -3,7 +3,6 @@
 #define __ICU_CNATIVEIDNHELPER_H__
 
 #include "_CNativeIDNHelper.h"
-#include "cmdef.h"
 
 using Elastos::Core::ICharSequence;
 

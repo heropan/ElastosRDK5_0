@@ -1,6 +1,5 @@
 
 #include "X509CertificateX.h"
-#include "cmdef.h"
 #include "CByteArrayInputStream.h"
 
 using Elastos::IO::IByteArrayInputStream;

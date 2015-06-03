@@ -20,14 +20,14 @@ ECode CUriCodecHelper::Decode(
     return UriCodec::Decode(s,result);
 }
 
-ECode CUriCodecHelper::DecodeEx(
+ECode CUriCodecHelper::Decode(
     /* [in] */ const String& s,
     /* [in] */ Boolean convertPlus,
     /* [in] */ ICharset* charset,
     /* [in] */ Boolean throwOnFailure,
     /* [out] */ String* decodedString)
 {
-	return UriCodec::DecodeEx(s,convertPlus,charset,throwOnFailure,decodedString);
+	return UriCodec::Decode(s,convertPlus,charset,throwOnFailure,decodedString);
 }
 
 } // namespace Net

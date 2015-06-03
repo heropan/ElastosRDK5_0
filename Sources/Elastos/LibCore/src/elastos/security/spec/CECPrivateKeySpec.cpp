@@ -1,6 +1,5 @@
 
 #include "CECPrivateKeySpec.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -12,7 +11,7 @@ ECode CECPrivateKeySpec::GetParams(
 {
     VALIDATE_NOT_NULL(params)
     *params = mParams;
-    INTERFACE_ADDREF(*params)
+    REFCOUNT_ADD(*params)
     return NOERROR;
 }
 
@@ -21,7 +20,7 @@ ECode CECPrivateKeySpec::GetS(
 {
     VALIDATE_NOT_NULL(s)
     *s = mS;
-    INTERFACE_ADDREF(*s)
+    REFCOUNT_ADD(*s)
     return NOERROR;
 }
 

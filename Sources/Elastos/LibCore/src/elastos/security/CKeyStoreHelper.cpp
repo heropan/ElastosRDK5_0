@@ -1,7 +1,6 @@
 
 #include "CKeyStoreHelper.h"
 #include "KeyStore.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {

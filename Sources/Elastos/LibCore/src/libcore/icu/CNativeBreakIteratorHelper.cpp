@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CNativeBreakIteratorHelper.h"
 #include "NativeBreakIterator.h"
 
@@ -14,7 +13,7 @@ ECode CNativeBreakIteratorHelper::GetCharacterInstance(
 
     AutoPtr<INativeBreakIterator> nbi = NativeBreakIterator::GetCharacterInstance(where);
     *outiter = nbi;
-    INTERFACE_ADDREF(*outiter);
+    REFCOUNT_ADD(*outiter);
     return NOERROR;
 }
 
@@ -26,7 +25,7 @@ ECode CNativeBreakIteratorHelper::GetLineInstance(
 
     AutoPtr<INativeBreakIterator> nbi = NativeBreakIterator::GetLineInstance(where);
     *outiter = nbi;
-    INTERFACE_ADDREF(*outiter);
+    REFCOUNT_ADD(*outiter);
     return NOERROR;
 }
 
@@ -38,7 +37,7 @@ ECode CNativeBreakIteratorHelper::GetSentenceInstance(
 
     AutoPtr<INativeBreakIterator> nbi = NativeBreakIterator::GetSentenceInstance(where);
     *outiter = nbi;
-    INTERFACE_ADDREF(*outiter);
+    REFCOUNT_ADD(*outiter);
     return NOERROR;
 }
 
@@ -50,7 +49,7 @@ ECode CNativeBreakIteratorHelper::GetWordInstance(
 
     AutoPtr<INativeBreakIterator> nbi = NativeBreakIterator::GetWordInstance(where);
     *outiter = nbi;
-    INTERFACE_ADDREF(*outiter);
+    REFCOUNT_ADD(*outiter);
     return NOERROR;
 }
 

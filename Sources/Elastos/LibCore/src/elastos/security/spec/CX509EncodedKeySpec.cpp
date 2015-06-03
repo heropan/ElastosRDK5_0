@@ -1,6 +1,5 @@
 
 #include "CX509EncodedKeySpec.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {

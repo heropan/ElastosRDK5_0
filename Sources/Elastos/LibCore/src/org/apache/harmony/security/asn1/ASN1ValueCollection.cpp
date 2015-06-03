@@ -32,7 +32,7 @@ ECode ASN1ValueCollection::GetValues(
 {
     VALIDATE_NOT_NULL(values)
     *values = ICollection::Probe(object);
-    INTERFACE_ADDREF(*values)
+    REFCOUNT_ADD(*values)
     return NOERROR;
 }
 

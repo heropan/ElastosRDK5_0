@@ -1,7 +1,6 @@
 
 #include "CertPathValidator.h"
 #include "CSecurity.h"
-#include "cmdef.h"
 
 using Elastos::Security::ISecurity;
 using Elastos::Security::CSecurity;

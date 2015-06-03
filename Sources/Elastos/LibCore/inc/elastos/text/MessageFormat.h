@@ -1,16 +1,15 @@
 #ifndef __MESSAGEFORMAT_H__
 #define __MESSAGEFORMAT_H__
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos.h>
 #include <elastos/StringBuffer.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Character.h>
 #include "Format.h"
 #include "NumberFormat.h"
 #include "DateFormat.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Text::IAttributedCharacterIteratorAttribute;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::IParsePosition;

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CHttpDate.h"
 #include "CSimpleDateFormat.h"
 #include "CLocale.h"
@@ -66,7 +65,7 @@ ECode CHttpDate::_Parse(
             AutoPtr<IDate> outdate;
             sdf->Parse(value, (IDate**)&adate);
             *adate = outdate;
-            INTERFACE_ADDREF(*adate)
+            REFCOUNT_ADD(*adate)
             return NOERROR;
         }
         // } catch (ParseException ignore) {

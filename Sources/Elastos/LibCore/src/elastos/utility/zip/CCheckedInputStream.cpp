@@ -15,17 +15,6 @@ CAR_INTERFACE_IMPL(CCheckedInputStream, FilterInputStream, ICheckedInputStream)
 
 CAR_OBJECT_IMPL(CCheckedInputStream)
 
-ECode CCheckedInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = FilterInputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
-
 ECode CCheckedInputStream::Read(
     /* [out] */ Int32* value)
 {

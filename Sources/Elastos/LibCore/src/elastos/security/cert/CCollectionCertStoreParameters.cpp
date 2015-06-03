@@ -1,6 +1,5 @@
 
 #include "CCollectionCertStoreParameters.h"
-#include "cmdef.h"
 #include "StringBuilder.h"
 #include "elastos/ObjectUtils.h"
 
@@ -20,7 +19,7 @@ ECode CCollectionCertStoreParameters::Clone(
     AutoPtr<ICollectionCertStoreParameters> obj;
     FAIL_RETURN(CCollectionCertStoreParameters::New((ICollectionCertStoreParameters**)&obj))
     *object = obj.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -29,7 +28,7 @@ ECode CCollectionCertStoreParameters::GetCollection(
 {
     VALIDATE_NOT_NULL(collection)
     *collection = mCollection;
-    INTERFACE_ADDREF(*collection)
+    REFCOUNT_ADD(*collection)
     return NOERROR;
 }
 

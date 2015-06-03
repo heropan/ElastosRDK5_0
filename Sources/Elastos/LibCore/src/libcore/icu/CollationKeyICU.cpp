@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CollationKeyICU.h"
 #include <elastos/Math.h>
 
@@ -139,7 +138,7 @@ ECode CollationKeyICU::ToByteArray(
         return NOERROR;
     }
     *array = mBytes->Clone();
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 

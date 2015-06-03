@@ -67,7 +67,7 @@ ECode CPlainServerSocketImpl::Connect(
     return PlainServerSocketImpl::Connect(host, port);
 }
 
-ECode CPlainServerSocketImpl::ConnectEx(
+ECode CPlainServerSocketImpl::Connect(
     /* [in] */ IInetAddress * pAddress,
     /* [in] */ Int32 port)
 {
@@ -132,7 +132,7 @@ ECode CPlainServerSocketImpl::ShutdownOutput()
     return PlainServerSocketImpl::ShutdownOutput();
 }
 
-ECode CPlainServerSocketImpl::ConnectEx2(
+ECode CPlainServerSocketImpl::Connect(
     /* [in] */ ISocketAddress * pRemoteAddr,
     /* [in] */ Int32 timeout)
 {

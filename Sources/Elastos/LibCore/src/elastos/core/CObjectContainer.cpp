@@ -81,7 +81,7 @@ ECode CObjectContainer::GetObjectEnumerator(
     if (NULL == pEnum) return E_OUT_OF_MEMORY;
 
     *ppEnumerator = (IObjectEnumerator *)pEnum;
-    INTERFACE_ADDREF(*ppEnumerator);
+    REFCOUNT_ADD(*ppEnumerator);
 
     return NOERROR;
 }

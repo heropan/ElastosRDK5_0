@@ -81,7 +81,7 @@ ECode CCache::Get(
         Int32 i = (Int32)((*mHashes_idx)[idx] & INDEX_MASK) - 1;
         if (encoding->Equals((*mEncodings)[i])) {
             *object = (*mCache)[i];
-            INTERFACE_ADDREF(*object)
+            REFCOUNT_ADD(*object)
             return NOERROR;
         }
         idx++;

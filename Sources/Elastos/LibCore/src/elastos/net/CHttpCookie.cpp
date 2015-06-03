@@ -3,8 +3,8 @@
 #include "CHttpDate.h"
 #include "CArrays.h"
 #include "CStringWrapper.h"
-#include <elastos/Character.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/CSystem.h>
 
 using Elastos::Core::ISystem;
@@ -703,7 +703,7 @@ ECode CHttpCookie::Clone(
     cResult->mSecure = this->mSecure;
     cResult->mVersion = this->mVersion;
     *result = reshtt;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
 
     return NOERROR;
 }

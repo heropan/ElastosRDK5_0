@@ -17,12 +17,12 @@ ECode CFtpHandler::OpenConnection(
     return FtpHandler::OpenConnection(u, urlConnection);
 }
 
-ECode CFtpHandler::OpenConnectionEx(
+ECode CFtpHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [in] */ IProxy* proxy,
     /* [out] */ IURLConnection** urlConnection)
 {
-    return FtpHandler::OpenConnectionEx(u, proxy, urlConnection);
+    return FtpHandler::OpenConnection(u, proxy, urlConnection);
 }
 
 ECode CFtpHandler::ParseURL(
@@ -45,7 +45,7 @@ ECode CFtpHandler::SetURL(
     return FtpHandler::SetURL(u, protocol, host, port, file, ref);
 }
 
-ECode CFtpHandler::SetURLEx(
+ECode CFtpHandler::SetURL(
     /* [in] */ IURL* u,
     /* [in] */ const String& protocol,
     /* [in] */ const String& host,
@@ -56,15 +56,15 @@ ECode CFtpHandler::SetURLEx(
     /* [in] */ const String& query,
     /* [in] */ const String& ref)
 {
-    return FtpHandler::SetURLEx(u, protocol, host, port, authority, userInfo, file, query, ref);
+    return FtpHandler::SetURL(u, protocol, host, port, authority, userInfo, file, query, ref);
 }
 
-ECode CFtpHandler::ToExternalFormEx(
+ECode CFtpHandler::ToExternalForm(
     /* [in] */ IURL* url,
     /* [in] */ Boolean escapeIllegalCharacters,
     /* [out] */ String* s)
 {
-    return FtpHandler::ToExternalFormEx(url, escapeIllegalCharacters, s);
+    return FtpHandler::ToExternalForm(url, escapeIllegalCharacters, s);
 }
 
 ECode CFtpHandler::ToExternalForm(
@@ -74,12 +74,12 @@ ECode CFtpHandler::ToExternalForm(
     return FtpHandler::ToExternalForm(url, s);
 }
 
-ECode CFtpHandler::EqualsEx(
+ECode CFtpHandler::Equals(
     /* [in] */ IURL* url1,
     /* [in] */ IURL* url2,
     /* [out] */ Boolean* isEquals)
 {
-    return FtpHandler::EqualsEx(url1, url2, isEquals);
+    return FtpHandler::Equals(url1, url2, isEquals);
 }
 
 ECode CFtpHandler::GetDefaultPort(

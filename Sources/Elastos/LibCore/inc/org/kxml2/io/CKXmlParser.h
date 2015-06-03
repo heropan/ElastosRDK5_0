@@ -4,13 +4,13 @@
 
 #include "_Org_Kxml2_IO_CKXmlParser.h"
 #include <elastos/core/Object.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <elastos/StringBuilder.h>
 #include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IBoolean;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IReader;
 using Elastos::IO::IInputStream;
 

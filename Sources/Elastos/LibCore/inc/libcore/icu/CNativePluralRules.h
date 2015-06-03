@@ -3,7 +3,6 @@
 #define __ICU_CNATIVEPLURALRULES_H__
 
 #include "_CNativePluralRules.h"
-#include "cmdef.h"
 
 namespace Libcore {
 namespace ICU {

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CPasswordAuthentication.h"
 
 namespace Elastos {
@@ -24,7 +23,7 @@ ECode CPasswordAuthentication::GetPassword(
 {
     VALIDATE_NOT_NULL(password);
     *password = mPassword->Clone();
-    INTERFACE_ADDREF(*password);
+    REFCOUNT_ADD(*password);
     return NOERROR;
 }
 

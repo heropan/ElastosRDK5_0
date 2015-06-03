@@ -1,7 +1,7 @@
 #include <elautoptr.h>
-#include <elrefbase.h>
+
 #include "CManifest.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::IO::IUnsafeByteSequence;
 using Elastos::Core::ICharSequence;

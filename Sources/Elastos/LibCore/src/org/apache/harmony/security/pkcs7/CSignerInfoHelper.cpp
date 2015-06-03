@@ -14,7 +14,7 @@ ECode CSignerInfoHelper::GetIssuerAndSerialNumber(
 {
     VALIDATE_NOT_NULL(issuerAndSerialNumber)
     *issuerAndSerialNumber = CSignerInfo::ISSUER_AND_SERIAL_NUMBER;
-    INTERFACE_ADDREF(*issuerAndSerialNumber)
+    REFCOUNT_ADD(*issuerAndSerialNumber)
     return NOERROR;
 }
 
@@ -23,7 +23,7 @@ ECode CSignerInfoHelper::GetAsn1(
 {
     VALIDATE_NOT_NULL(asn1)
     *asn1 = CSignerInfo::ASN1;
-    INTERFACE_ADDREF(*asn1)
+    REFCOUNT_ADD(*asn1)
     return NOERROR;
 }
 

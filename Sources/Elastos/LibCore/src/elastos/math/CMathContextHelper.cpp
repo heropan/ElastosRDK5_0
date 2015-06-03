@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CMathContextHelper.h"
 #include "CMathContext.h"
 

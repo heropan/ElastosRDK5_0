@@ -1,6 +1,5 @@
 
 #include "CX509CertSelector.h"
-#include "cmdef.h"
 #include "StringUtils.h"
 #include "CX500Principal.h"
 #include "CHashSet.h"
@@ -37,7 +36,7 @@ ECode CX509CertSelector::GetCertificate(
 {
     VALIDATE_NOT_NULL(certificate)
     *certificate = mCertificateEquals;
-    INTERFACE_ADDREF(*certificate)
+    REFCOUNT_ADD(*certificate)
     return NOERROR;
 }
 
@@ -53,7 +52,7 @@ ECode CX509CertSelector::GetSerialNumber(
 {
     VALIDATE_NOT_NULL(serialNumber)
     *serialNumber = mSerialNumber;
-    INTERFACE_ADDREF(*serialNumber)
+    REFCOUNT_ADD(*serialNumber)
     return NOERROR;
 }
 
@@ -71,7 +70,7 @@ ECode CX509CertSelector::GetIssuer(
 {
     VALIDATE_NOT_NULL(issuer)
     *issuer = mIssuer;
-    INTERFACE_ADDREF(*issuer)
+    REFCOUNT_ADD(*issuer)
     return NOERROR;
 }
 
@@ -143,7 +142,7 @@ ECode CX509CertSelector::GetIssuerAsBytes(
     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(mIssuerBytes->GetLength());
     result->Copy(0, mIssuerBytes, 0, mIssuerBytes->GetLength());
     *issuerDN = result;
-    INTERFACE_ADDREF(*issuerDN)
+    REFCOUNT_ADD(*issuerDN)
     return NOERROR;
 }
 
@@ -159,7 +158,7 @@ ECode CX509CertSelector::GetSubject(
 {
     VALIDATE_NOT_NULL(subject)
     *subject = mSubject;
-    INTERFACE_ADDREF(*subject)
+    REFCOUNT_ADD(*subject)
     return NOERROR;
 }
 
@@ -237,7 +236,7 @@ ECode CX509CertSelector::GetSubjectKeyIdentifier(
     AutoPtr<ArrayOf<Byte> > res = ArrayOf<Byte>::Alloc(mSubjectKeyIdentifier->GetLength());
     res->Copy(0, mSubjectKeyIdentifier, 0, res->GetLength());
     *subjectKeyIdentifier = res;
-    INTERFACE_ADDREF(*subjectKeyIdentifier)
+    REFCOUNT_ADD(*subjectKeyIdentifier)
     return NOERROR;
 }
 
@@ -262,7 +261,7 @@ ECode CX509CertSelector::GetAuthorityKeyIdentifier(
     AutoPtr<ArrayOf<Byte> > res = ArrayOf<Byte>::Alloc(mAuthorityKeyIdentifier->GetLength());
     res->Copy(0, mAuthorityKeyIdentifier, 0, res->GetLength());
     *authorityKeyIdentifier = res;
-    INTERFACE_ADDREF(*authorityKeyIdentifier);
+    REFCOUNT_ADD(*authorityKeyIdentifier);
     return NOERROR;
 }
 
@@ -288,7 +287,7 @@ ECode CX509CertSelector::GetCertificateValid(
         AutoPtr<IInterface> clobj;
         ICloneable::Probe(mCertificateValid)->Clone((IInterface**)&clobj);
         *certificateValid = IDate::Probe(clobj.Get());
-        INTERFACE_ADDREF(*certificateValid)
+        REFCOUNT_ADD(*certificateValid)
     }
     return NOERROR;
 }
@@ -314,7 +313,7 @@ ECode CX509CertSelector::GetPrivateKeyValid(
         AutoPtr<IInterface> clobj;
         ICloneable::Probe(mPrivateKeyValid)->Clone((IInterface**)&clobj);
         *privateKeyValid = IDate::Probe(clobj.Get());
-        INTERFACE_ADDREF(*privateKeyValid)
+        REFCOUNT_ADD(*privateKeyValid)
     }
     return NOERROR;
 }
@@ -396,7 +395,7 @@ ECode CX509CertSelector::GetSubjectPublicKey(
 {
     VALIDATE_NOT_NULL(key)
     *key = mSubjectPublicKeyImpl;
-    INTERFACE_ADDREF(*key)
+    REFCOUNT_ADD(*key)
     return NOERROR;
 }
 
@@ -419,7 +418,7 @@ ECode CX509CertSelector::GetKeyUsage(
         AutoPtr<ArrayOf<Boolean> > result = ArrayOf<Boolean>::Alloc(mKeyUsage->GetLength());
         result->Copy(0, mKeyUsage, 0, mKeyUsage->GetLength());
         *keyUsage = result;
-        INTERFACE_ADDREF(*keyUsage)
+        REFCOUNT_ADD(*keyUsage)
     }
     return NOERROR;
 }
@@ -461,7 +460,7 @@ ECode CX509CertSelector::GetExtendedKeyUsage(
         (*keyUsage)->Add(elem.Get(), &assist);
     }
 
-    INTERFACE_ADDREF(*keyUsage)
+    REFCOUNT_ADD(*keyUsage)
     return NOERROR;
 }
 
@@ -639,7 +638,7 @@ ECode CX509CertSelector::GetPolicy(
 {
     VALIDATE_NOT_NULL(policies)
     *policies = mPolicies;
-    INTERFACE_ADDREF(*policies)
+    REFCOUNT_ADD(*policies)
     return NOERROR;
 }
 

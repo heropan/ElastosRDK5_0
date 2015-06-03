@@ -140,7 +140,7 @@ ECode LocaleData::GetFirstDayOfWeek(
 {
     VALIDATE_NOT_NULL(day);
     *day = mFirstDayOfWeek;
-    INTERFACE_ADDREF(*day);
+    REFCOUNT_ADD(*day);
     return NOERROR;
 }
 
@@ -149,7 +149,7 @@ ECode LocaleData::GetMinimalDaysInFirstWeek(
 {
     VALIDATE_NOT_NULL(days);
     *days = mMinimalDaysInFirstWeek;
-    INTERFACE_ADDREF(*days);
+    REFCOUNT_ADD(*days);
     return NOERROR;
 }
 
@@ -158,7 +158,7 @@ ECode LocaleData::GetAmPm(
 {
     VALIDATE_NOT_NULL(amPm);
     *amPm = mAmPm;
-    INTERFACE_ADDREF(*amPm)
+    REFCOUNT_ADD(*amPm)
     return NOERROR;
 }
 
@@ -167,7 +167,7 @@ ECode LocaleData::GetEras(
 {
     VALIDATE_NOT_NULL(eras);
     *eras = mEras;
-    INTERFACE_ADDREF(*eras)
+    REFCOUNT_ADD(*eras)
     return NOERROR;
 }
 
@@ -176,7 +176,7 @@ ECode LocaleData::GetLongMonthNames(
 {
     VALIDATE_NOT_NULL(names);
     *names = mLongMonthNames;
-    INTERFACE_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 
@@ -185,7 +185,7 @@ ECode LocaleData::GetShortMonthNames(
 {
     VALIDATE_NOT_NULL(names);
     *names = mShortMonthNames;
-    INTERFACE_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 
@@ -194,7 +194,7 @@ ECode LocaleData::GetLongStandAloneMonthNames(
 {
     VALIDATE_NOT_NULL(names);
     *names = mLongStandAloneMonthNames;
-    INTERFACE_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 
@@ -203,7 +203,7 @@ ECode LocaleData::GetTinyMonthNames(
 {
     VALIDATE_NOT_NULL(names);
     *names = mTinyMonthNames;
-    INTERFACE_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 
@@ -212,7 +212,7 @@ ECode LocaleData::GetShortStandAloneMonthNames(
 {
     VALIDATE_NOT_NULL(names);
     *names = mShortStandAloneMonthNames;
-    INTERFACE_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 
@@ -221,7 +221,7 @@ ECode LocaleData::GetTinyStandAloneMonthNames(
 {
     VALIDATE_NOT_NULL(names);
     *names = mTinyStandAloneMonthNames;
-    INTERFACE_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 
@@ -230,7 +230,7 @@ ECode LocaleData::GetLongWeekdayNames(
 {
     VALIDATE_NOT_NULL(names);
     *names = mLongWeekdayNames;
-    INTERFACE_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 
@@ -239,7 +239,7 @@ ECode LocaleData::GetShortWeekdayNames(
 {
     VALIDATE_NOT_NULL(names);
     *names = mShortWeekdayNames;
-    INTERFACE_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 
@@ -248,7 +248,7 @@ ECode LocaleData::GetTinyWeekdayNames(
 {
     VALIDATE_NOT_NULL(names);
     *names = mTinyWeekdayNames;
-    INTERFACE_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 
@@ -257,7 +257,7 @@ ECode LocaleData::GetLongStandAloneWeekdayNames(
 {
     VALIDATE_NOT_NULL(names);
     *names = mLongStandAloneWeekdayNames;
-    INTERFACE_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 
@@ -266,7 +266,7 @@ ECode LocaleData::GetShortStandAloneWeekdayNames(
 {
     VALIDATE_NOT_NULL(names);
     *names = mShortStandAloneWeekdayNames;
-    INTERFACE_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 
@@ -275,7 +275,7 @@ ECode LocaleData::GetTinyStandAloneWeekdayNames(
 {
     VALIDATE_NOT_NULL(names);
     *names = mTinyStandAloneWeekdayNames;
-    INTERFACE_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 

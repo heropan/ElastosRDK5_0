@@ -7,7 +7,6 @@
 #else
 #include "Elastos.CoreLibrary.h"
 #endif
-#include "cmdef.h"
 
 using Elastos::Utility::IList;
 using Elastos::Utility::IIterator;

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CPosix.h"
 #include "AsynchronousSocketCloseMonitor.h"
 #include "ToStringArray.h"
@@ -628,7 +627,7 @@ ECode CPosix::Environ(
 
     AutoPtr<ArrayOf<String> > obj = ToStringArray(environ);
     *env = obj;
-    INTERFACE_ADDREF(*env)
+    REFCOUNT_ADD(*env)
     return NOERROR;
 }
 
@@ -736,7 +735,7 @@ ECode CPosix::Fstat(
     }
     AutoPtr<IStructStat> obj = MakeStructStat(sb);
     *stat = obj;
-    INTERFACE_ADDREF(*stat);
+    REFCOUNT_ADD(*stat);
     return NOERROR;
 }
 
@@ -754,7 +753,7 @@ ECode CPosix::Fstatfs(
     }
     AutoPtr<IStructStatFs> obj = MakeStructStatFs(sb);
     *statFs = obj;
-    INTERFACE_ADDREF(*statFs);
+    REFCOUNT_ADD(*statFs);
     return NOERROR;
 }
 
@@ -861,7 +860,7 @@ ECode CPosix::Getaddrinfo(
         ++index;
     }
     *info = result;
-    INTERFACE_ADDREF(*info)
+    REFCOUNT_ADD(*info)
     return NOERROR;
 }
 
@@ -967,7 +966,7 @@ ECode CPosix::Getpwnam(
     }
     AutoPtr<IStructPasswd> obj = Passwd().getpwnam(name.string());
     *pwnam = obj;
-    INTERFACE_ADDREF(*pwnam);
+    REFCOUNT_ADD(*pwnam);
     return NOERROR;
 }
 
@@ -979,7 +978,7 @@ ECode CPosix::Getpwuid(
 
     AutoPtr<IStructPasswd> obj = Passwd().getpwuid(uid);
     *pwuid = obj;
-    INTERFACE_ADDREF(*pwuid);
+    REFCOUNT_ADD(*pwuid);
     return NOERROR;
 }
 
@@ -1001,7 +1000,7 @@ ECode CPosix::Getsockname(
 
     AutoPtr<ISocketAddress> obj = MakeSocketAddress(&ss);
     *sockname = obj;
-    INTERFACE_ADDREF(*sockname);
+    REFCOUNT_ADD(*sockname);
     return NOERROR;
 }
 
@@ -1044,7 +1043,7 @@ ECode CPosix::GetsockoptInAddr(
     }
     AutoPtr<IInetAddress> obj = SockaddrToInetAddress(&ss, NULL);
     *addr = obj;
-    INTERFACE_ADDREF(*addr);
+    REFCOUNT_ADD(*addr);
     return NOERROR;
 }
 
@@ -1084,7 +1083,7 @@ ECode CPosix::GetsockoptLinger(
     }
     AutoPtr<IStructLinger> obj = MakeStructLinger(l);
     *linger = obj;
-    INTERFACE_ADDREF(*linger);
+    REFCOUNT_ADD(*linger);
     return NOERROR;
 }
 
@@ -1106,7 +1105,7 @@ ECode CPosix::GetsockoptTimeval(
     }
     AutoPtr<IStructTimeval> obj = MakeStructTimeval(tv);
     *timeval = obj;
-    INTERFACE_ADDREF(*timeval);
+    REFCOUNT_ADD(*timeval);
     return NOERROR;
 }
 
@@ -1155,7 +1154,7 @@ ECode CPosix::Inet_pton(
     ss.ss_family = family;
     AutoPtr<IInetAddress> obj = SockaddrToInetAddress(&ss, NULL);
     *addr = obj;
-    INTERFACE_ADDREF(*addr);
+    REFCOUNT_ADD(*addr);
     return NOERROR;
 }
 
@@ -1180,7 +1179,7 @@ ECode CPosix::IoctlInetAddress(
     AutoPtr<IInetAddress> obj = SockaddrToInetAddress(
             reinterpret_cast<sockaddr_storage*>(&req.ifr_addr), NULL);
     *addr = obj;
-    INTERFACE_ADDREF(*addr);
+    REFCOUNT_ADD(*addr);
     return NOERROR;
 }
 
@@ -1271,7 +1270,7 @@ ECode CPosix::Lstat(
 
     AutoPtr<IStructStat> obj = DoStat(path, TRUE);
     *stat = obj;
-    INTERFACE_ADDREF(*stat);
+    REFCOUNT_ADD(*stat);
     return obj != NULL ? NOERROR : E_LIBCORE_IO_EXCEPTION;
 }
 
@@ -1409,7 +1408,7 @@ ECode CPosix::Pipe(
         return E_OUT_OF_MEMORY_ERROR;
     }
 
-    INTERFACE_ADDREF(*fdArray);
+    REFCOUNT_ADD(*fdArray);
     for (int i = 0; i < 2; ++i) {
         (**fdArray)[i] = fds[i];
     }
@@ -1877,7 +1876,7 @@ ECode CPosix::Stat(
 
     AutoPtr<IStructStat> obj = DoStat(path, FALSE);
     *stat = obj;
-    INTERFACE_ADDREF(*stat);
+    REFCOUNT_ADD(*stat);
     return obj != NULL ? NOERROR : E_LIBCORE_IO_EXCEPTION;
 }
 
@@ -1899,7 +1898,7 @@ ECode CPosix::Statfs(
     }
     AutoPtr<IStructStatFs> obj = MakeStructStatFs(sb);
     *statFs = obj;
-    INTERFACE_ADDREF(*statFs);
+    REFCOUNT_ADD(*statFs);
     return NOERROR;
 }
 
@@ -1979,7 +1978,7 @@ ECode CPosix::Uname(
     }
     AutoPtr<IStructUtsname> obj = MakeStructUtsname(buf);
     *utsname = obj;
-    INTERFACE_ADDREF(*utsname);
+    REFCOUNT_ADD(*utsname);
     return NOERROR;
 }
 

@@ -1,6 +1,5 @@
 
 #include "CX500Principal.h"
-#include "cmdef.h"
 #include "CStringWrapper.h"
 #include <StringBuilder.h>
 

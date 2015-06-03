@@ -71,7 +71,7 @@ ECode BerInputStream::GetContent(
 {
     VALIDATE_NOT_NULL(content)
     *content = mContent;
-    INTERFACE_ADDREF(*content)
+    REFCOUNT_ADD(*content)
     return NOERROR;
 }
 
@@ -264,7 +264,7 @@ ECode BerInputStream::GetTimes(
 {
     VALIDATE_NOT_NULL(times)
     *times = mTimes;
-    INTERFACE_ADDREF(*times)
+    REFCOUNT_ADD(*times)
     return NOERROR;
 }
 
@@ -684,7 +684,7 @@ ECode BerInputStream::GetEncoded(
     AutoPtr<ArrayOf<Byte> > enc = ArrayOf<Byte>::Alloc(mOffset - mTagOffset);
     enc->Copy(0, mBuffer, mTagOffset, enc->GetLength());
     *encoded = enc;
-    INTERFACE_ADDREF(*encoded)
+    REFCOUNT_ADD(*encoded)
     return NOERROR;
 }
 
@@ -693,7 +693,7 @@ ECode BerInputStream::GetBuffer(
 {
     VALIDATE_NOT_NULL(buffer)
     *buffer = mBuffer;
-    INTERFACE_ADDREF(*buffer)
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -847,7 +847,7 @@ ECode BerInputStream::Get(
         if (((*mPool)[0]->Get(i, (IInterface**)&tmp), tmp) == key) {
             tmp = NULL;
             *entry = ((*mPool)[1]->Get(i, (IInterface**)&tmp), tmp);
-            INTERFACE_ADDREF(*entry)
+            REFCOUNT_ADD(*entry)
             return NOERROR;
         }
     }

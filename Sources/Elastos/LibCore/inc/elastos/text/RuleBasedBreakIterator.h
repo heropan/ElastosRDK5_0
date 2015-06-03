@@ -1,7 +1,6 @@
 #ifndef __RULEBASEDBREAKITERATOR_H__
 #define __RULEBASEDBREAKITERATOR_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos.h>
 #include "BreakIterator.h"

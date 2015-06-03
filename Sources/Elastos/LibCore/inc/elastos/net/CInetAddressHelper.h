@@ -38,7 +38,7 @@ public:
         /* [in] */ ArrayOf<Byte>* ipAddress,
         /* [out] */ IInetAddress** interAddr);
 
-    CARAPI GetByAddressEx(
+    CARAPI GetByAddress(
         /* [in] */ const String& hostName,
         /* [in] */ ArrayOf<Byte>* ipAddress,
         /* [out] */ IInetAddress** interAddr);

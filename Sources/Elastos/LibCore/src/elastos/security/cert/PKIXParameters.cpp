@@ -1,6 +1,5 @@
 
 #include "PKIXParameters.h"
-#include "cmdef.h"
 #include "CPKIXParameters.h"
 #include "CPKIXBuilderParameters.h"
 #include "CTrustAnchor.h"
@@ -35,7 +34,7 @@ using Elastos::Utility::CDate;
         ((PKIXParameters*)(CLASS_NAME*)clonedObj.Get())->mCertPathCheckers = al; \
     } \
     *obj = clonedObj.Get(); \
-    INTERFACE_ADDREF(*obj) \
+    REFCOUNT_ADD(*obj) \
 } while(0);
 
 namespace Elastos {
@@ -231,7 +230,7 @@ ECode PKIXParameters::GetDate(
         AutoPtr<IInterface> clonedObj;
         Elastos::Core::ICloneable::Probe(mDate)->Clone((IInterface**)&clonedObj);
         *date = IDate::Probe(clonedObj);
-        INTERFACE_ADDREF(*date)
+        REFCOUNT_ADD(*date)
     }
     return NOERROR;
 }
@@ -375,7 +374,7 @@ ECode PKIXParameters::GetTargetCertConstraints(
         mTargetCertConstraints->Clone((IInterface**)&cs);
     }
     *targetCertConstraints = ICertSelector::Probe(cs);
-    INTERFACE_ADDREF(*targetCertConstraints)
+    REFCOUNT_ADD(*targetCertConstraints)
     return NOERROR;
 }
 

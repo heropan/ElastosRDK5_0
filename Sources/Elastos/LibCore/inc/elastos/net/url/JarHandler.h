@@ -20,7 +20,7 @@ class JarHandler
 public:
     CAR_INTERFACE_DECL();
 
-    virtual CARAPI OpenConnectionEx(
+    virtual CARAPI OpenConnection(
         /* [in] */ IURL* u,
         /* [in] */ IProxy* proxy,
         /* [out] */ IURLConnection** urlConnection);
@@ -33,7 +33,7 @@ public:
         /* [in] */ const String& file,
         /* [in] */ const String& ref);
 
-    virtual CARAPI SetURLEx(
+    virtual CARAPI SetURL(
         /* [in] */ IURL* u,
         /* [in] */ const String& protocol,
         /* [in] */ const String& host,
@@ -44,12 +44,12 @@ public:
         /* [in] */ const String& query,
         /* [in] */ const String& ref);
 
-    virtual CARAPI ToExternalFormEx(
+    virtual CARAPI ToExternalForm(
         /* [in] */ IURL* url,
         /* [in] */ Boolean escapeIllegalCharacters,
         /* [out] */ String* s);
 
-    virtual CARAPI EqualsEx(
+    virtual CARAPI Equals(
         /* [in] */ IURL* url1,
         /* [in] */ IURL* url2,
         /* [out] */ Boolean* isEquals);

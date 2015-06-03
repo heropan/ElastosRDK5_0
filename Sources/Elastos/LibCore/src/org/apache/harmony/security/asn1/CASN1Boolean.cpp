@@ -20,7 +20,7 @@ ECode CASN1Boolean::GetInstance(
 {
     VALIDATE_NOT_NULL(instance)
     *instance = sASN1;
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 
@@ -117,7 +117,7 @@ ECode CASN1Boolean::GetDecodedObject(
     AutoPtr<IBoolean> ret;
     CBoolean::New(val, (IBoolean**)&ret);
     *object = ret.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

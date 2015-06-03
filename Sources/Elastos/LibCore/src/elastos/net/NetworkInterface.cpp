@@ -5,8 +5,8 @@
 #include "IoUtils.h"
 #include "CBufferedReader.h"
 #include "CFileReader.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/ObjectUtils.h>
 #include <CInet4Address.h>
 #include <CInet6Address.h>
@@ -201,7 +201,7 @@ ECode NetworkInterface::GetByName(
     *networkInterface = (INetworkInterface*)(
         new NetworkInterface(interfaceName, interfaceIndex,
             addresses, interfaceAddresses));
-    INTERFACE_ADDREF(*networkInterface);
+    REFCOUNT_ADD(*networkInterface);
     return NOERROR;
 }
 
@@ -229,7 +229,7 @@ ECode NetworkInterface::GetChildren(
 {
     VALIDATE_NOT_NULL(children);
     *children = mChildren;
-    INTERFACE_ADDREF(*children);
+    REFCOUNT_ADD(*children);
     return NOERROR;
 }
 
@@ -238,7 +238,7 @@ ECode NetworkInterface::GetAddresses(
 {
     VALIDATE_NOT_NULL(addresses);
     *addresses = mAddresses;
-    INTERFACE_ADDREF(*addresses);
+    REFCOUNT_ADD(*addresses);
     return NOERROR;
 }
 
@@ -262,7 +262,7 @@ ECode NetworkInterface::GetByInetAddress(
         net->GetAddresses((IList**)&outlist);
         if(outlist->Contains(address, &found), found) {
             *networkInterface = net;
-            INTERFACE_ADDREF(*networkInterface);
+            REFCOUNT_ADD(*networkInterface);
             return NOERROR;
         }
     }
@@ -379,7 +379,7 @@ ECode NetworkInterface::GetInterfaceAddresses(
 {
     VALIDATE_NOT_NULL(addresses);
     *addresses = mInterfaceAddresses;
-    INTERFACE_ADDREF(*addresses)
+    REFCOUNT_ADD(*addresses)
 
     return NOERROR;
 }
@@ -397,7 +397,7 @@ ECode NetworkInterface::GetParent(
 {
     VALIDATE_NOT_NULL(parent);
     *parent = mParent;
-    INTERFACE_ADDREF(*parent);
+    REFCOUNT_ADD(*parent);
     return NOERROR;
 }
 
@@ -449,7 +449,7 @@ ECode NetworkInterface::GetHardwareAddress(
     for (int i = 0; i < result->GetLength(); ++i) {
         if ((*result)[i] != 0) {
             *address = result;
-            INTERFACE_ADDREF(*address);
+            REFCOUNT_ADD(*address);
             return NOERROR;
         }
     }

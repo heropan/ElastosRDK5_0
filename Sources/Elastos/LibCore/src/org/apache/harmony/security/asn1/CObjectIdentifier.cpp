@@ -232,7 +232,7 @@ ECode CObjectIdentifier::ToIntArray(
     }
 
     *ret = oid;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 

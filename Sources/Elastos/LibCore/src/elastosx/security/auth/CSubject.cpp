@@ -1,6 +1,5 @@
 
 #include "CSubject.h"
-#include "cmdef.h"
 #include "CAuthPermission.h"
 #include "CAccessController.h"
 #include "CAccessControlContext.h"
@@ -204,7 +203,7 @@ ECode CSubject::GetPrivateCredentials(
 {
     VALIDATE_NOT_NULL(credentials)
     *credentials = mPrivateCredentials;
-    INTERFACE_ADDREF(*credentials)
+    REFCOUNT_ADD(*credentials)
     return NOERROR;
 }
 
@@ -269,7 +268,7 @@ ECode CSubject::GetPublicCredentials(
 {
     VALIDATE_NOT_NULL(credentials)
     *credentials = mPublicCredentials;
-    INTERFACE_ADDREF(*credentials)
+    REFCOUNT_ADD(*credentials)
     return NOERROR;
 }
 
@@ -535,13 +534,13 @@ ECode CSubject::SecureSet::GetIterator(
         AutoPtr<IIterator> iter;
         mElements->GetIterator((IIterator**)&iter);
         *it = new SecureIteratorEx(iter, mHost);
-        INTERFACE_ADDREF(*it)
+        REFCOUNT_ADD(*it)
         return NOERROR;
     }
     AutoPtr<IIterator> iter;
     mElements->GetIterator((IIterator**)&iter);
     *it = new SecureIterator(iter, mHost);
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 

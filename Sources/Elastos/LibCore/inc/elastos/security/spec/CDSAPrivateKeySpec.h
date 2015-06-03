@@ -3,7 +3,6 @@
 #define __CDSAPRIVATEKEYSPEC_H__
 
 #include "_CDSAPrivateKeySpec.h"
-#include "cmdef.h"
 
 using Elastos::Math::IBigInteger;
 

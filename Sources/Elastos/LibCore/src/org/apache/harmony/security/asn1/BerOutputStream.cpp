@@ -24,7 +24,7 @@ ECode CBerOutputStream::GetEncoded(
 {
     VALIDATE_NOT_NULL(encoded)
     *encoded = mEncoded;
-    INTERFACE_ADDREF(*encoded)
+    REFCOUNT_ADD(*encoded)
     return NOERROR;
 }
 
@@ -55,7 +55,7 @@ ECode CBerOutputStream::GetContent(
 {
     VALIDATE_NOT_NULL(content)
     *content = mContent;
-    INTERFACE_ADDREF(*content)
+    REFCOUNT_ADD(*content)
     return NOERROR;
 }
 

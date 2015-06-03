@@ -17,12 +17,12 @@ ECode CFileHandler::OpenConnection(
     return FileHandler::OpenConnection(u, urlConnection);
 }
 
-ECode CFileHandler::OpenConnectionEx(
+ECode CFileHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [in] */ IProxy* proxy,
     /* [out] */ IURLConnection** urlConnection)
 {
-    return FileHandler::OpenConnectionEx(u, proxy, urlConnection);
+    return FileHandler::OpenConnection(u, proxy, urlConnection);
 }
 
 ECode CFileHandler::ParseURL(
@@ -45,7 +45,7 @@ ECode CFileHandler::SetURL(
     return FileHandler::SetURL(u, protocol, host, port, file, ref);
 }
 
-ECode CFileHandler::SetURLEx(
+ECode CFileHandler::SetURL(
     /* [in] */ IURL* u,
     /* [in] */ const String& protocol,
     /* [in] */ const String& host,
@@ -56,15 +56,15 @@ ECode CFileHandler::SetURLEx(
     /* [in] */ const String& query,
     /* [in] */ const String& ref)
 {
-    return FileHandler::SetURLEx(u, protocol, host, port, authority, userInfo, file, query, ref);
+    return FileHandler::SetURL(u, protocol, host, port, authority, userInfo, file, query, ref);
 }
 
-ECode CFileHandler::ToExternalFormEx(
+ECode CFileHandler::ToExternalForm(
     /* [in] */ IURL* url,
     /* [in] */ Boolean escapeIllegalCharacters,
     /* [out] */ String* s)
 {
-    return FileHandler::ToExternalFormEx(url,escapeIllegalCharacters, s);
+    return FileHandler::ToExternalForm(url,escapeIllegalCharacters, s);
 }
 
 ECode CFileHandler::ToExternalForm(
@@ -74,12 +74,12 @@ ECode CFileHandler::ToExternalForm(
     return FileHandler::ToExternalForm(url, s);
 }
 
-ECode CFileHandler::EqualsEx(
+ECode CFileHandler::Equals(
     /* [in] */ IURL* url1,
     /* [in] */ IURL* url2,
     /* [out] */ Boolean* isEquals)
 {
-    return FileHandler::EqualsEx(url1, url2, isEquals);
+    return FileHandler::Equals(url1, url2, isEquals);
 }
 
 ECode CFileHandler::GetDefaultPort(

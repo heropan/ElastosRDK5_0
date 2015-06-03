@@ -1,7 +1,6 @@
 #ifndef __RULEBASEDCOLLATOR_H__
 #define __RULEBASEDCOLLATOR_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
 #include "Collator.h"
 

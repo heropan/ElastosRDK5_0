@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CCookieHandlerHelper.h"
 
 namespace Elastos {
@@ -11,7 +10,7 @@ ECode CCookieHandlerHelper::GetDefault(
     VALIDATE_NOT_NULL(handler)
 
     *handler = mSystemWideCookieHandler;
-    INTERFACE_ADDREF(*handler)
+    REFCOUNT_ADD(*handler)
     return NOERROR;
 }
 

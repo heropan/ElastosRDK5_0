@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CChallenge.h"
 
 namespace Elastos {

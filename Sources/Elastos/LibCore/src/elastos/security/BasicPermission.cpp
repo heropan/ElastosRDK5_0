@@ -1,6 +1,5 @@
 
 #include "BasicPermission.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {

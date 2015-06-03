@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CLocale.h"
 #include "ICUUtil.h"
 #include <elastos/StringBuilder.h>

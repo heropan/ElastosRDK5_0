@@ -159,7 +159,7 @@ ECode CX509CertPathImpl::ASN1SequenceOfDerived::GetDecodedObject(
     AutoPtr<ArrayOf<Byte> > encoded;
     bis->GetEncoded((ArrayOf<Byte>**)&encoded);
     *object = new CX509CertPathImpl(certificates.Get(), PKI_PATH, encoded);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -193,7 +193,7 @@ ECode CX509CertPathImpl::ASN1SequenceOfDerived::GetValues(
         AutoPtr<IArrayList> arrList;
         CArrayList::New((IArrayList**)&arrList);
         *values = ICollection::Probe(arrList.Get());
-        INTERFACE_ADDREF(*values)
+        REFCOUNT_ADD(*values)
         return NOERROR;
     }
     Int32 size;
@@ -221,7 +221,7 @@ ECode CX509CertPathImpl::ASN1SequenceOfDerived::GetValues(
         encodings->Add(arr.Get(), &ret);
     }
     *values = ICollection::Probe(encodings.Get());
-    INTERFACE_ADDREF(*values)
+    REFCOUNT_ADD(*values)
 ERROR_PROCESS:
     if (ec == E_CERTIFICATE_ENCODING_EXCEPTION) {
         ec = E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -290,7 +290,7 @@ ECode CX509CertPathImpl::GetInstance(
     ECode ec;
     FAIL_GOTO(ec = ASN1->DecodeEx2(is, (IInterface**)&tmp), ERROR_PROCESS)
     *instance = IX509CertPathImpl::Probe(tmp);
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
 ERROR_PROCESS:
     if (E_IO_EXCEPTION == ec) {
         ec = E_CERTIFICATE_EXCEPTION;
@@ -316,7 +316,7 @@ ECode CX509CertPathImpl::GetInstance(
         AutoPtr<IInterface> tmp;
         ASN1->DecodeEx2(is.Get(), (IInterface**)&tmp);
         *instance = IX509CertPathImpl::Probe(tmp);
-        INTERFACE_ADDREF(*instance)
+        REFCOUNT_ADD(*instance)
         return NOERROR;
     }
     else {
@@ -353,7 +353,7 @@ ECode CX509CertPathImpl::GetInstance(
         AutoPtr<ArrayOf<Byte> > arg2;
         ci->GetEncoded((ArrayOf<Byte>**)&arg2);
         *instance = new CX509CertPathImpl(result, PKCS7, arg2);
-        INTERFACE_ADDREF(*instance)
+        REFCOUNT_ADD(*instance)
         return NOERROR;
     }
 }
@@ -367,7 +367,7 @@ ECode CX509CertPathImpl::GetInstance(
     ECode ec;
     FAIL_GOTO(ec = ASN1->DecodeEx2(inp, (IInterface**)&tmp), ERROR_PROCESS)
     *instance = I509CertPathImpl::Probe(tmp);
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return ec;
 ERROR_PROCESS:
     if (ec == E_IO_EXCEPTION) {
@@ -394,7 +394,7 @@ ECode CX509CertPathImpl::GetInstance(
         AutoPtr<IInterface> tmp;
         FAIL_RETURN(ASN1->DecodeEx2(inp, (IInterface**)&tmp))
         *instance = IX509CertPathImpl::Probe(tmp);
-        INTERFACE_ADDREF(*instance)
+        REFCOUNT_ADD(*instance)
         return NOERROR;
     }
     else {
@@ -430,7 +430,7 @@ ECode CX509CertPathImpl::GetInstance(
         AutoPtr<ArrayOf<Byte> > bytes;
         FAIL_RETURN(ci->GetEncoded((ArrayOf<Byte>**)&bytes))
         *instance = new CX509CertPathImpl(result, PKCS7, bytes);
-        INTERFACE_ADDREF(*instance)
+        REFCOUNT_ADD(*instance)
         return NOERROR;
     }
 }
@@ -482,7 +482,7 @@ ECode CX509CertPathImpl::GetEncoded(
     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(mPkiPathEncoding->GetLength());
     result->Copy(0, mPkiPathEncoding, 0, mPkiPathEncoding->GetLength());
     *encoded = result;
-    INTERFACE_ADDREF(*encoded)
+    REFCOUNT_ADD(*encoded)
     return NOERROR;
 }
 
@@ -510,7 +510,7 @@ ECode CX509CertPathImpl::GetEncodedEx(
         AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(mPkcs7Encoding->GetLength());
         result->Copy(0, mPkcs7Encoding, 0, mPkcs7Encoding->GetLength());
         *encoded = result;
-        INTERFACE_ADDREF(*encoded)
+        REFCOUNT_ADD(*encoded)
         return NOERROR;
     }
 }

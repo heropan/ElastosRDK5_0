@@ -63,7 +63,7 @@ ECode HttpConnection::Address::GetProxy(
     VALIDATE_NOT_NULL(outproxy)
 
     *outproxy = mProxy;
-    INTERFACE_ADDREF(*outproxy)
+    REFCOUNT_ADD(*outproxy)
 
     return NOERROR;
 }
@@ -114,7 +114,7 @@ ECode HttpConnection::Address::Connect(
 
     AutoPtr<IHttpConnection> httc = (IHttpConnection*) new HttpConnection((IHttpConnectionAddress*)this->Probe(EIID_IHttpConnectionAddress), connectTimeout);
     *hc = httc;
-    INTERFACE_ADDREF(*hc)
+    REFCOUNT_ADD(*hc)
 
     return NOERROR;
 }
@@ -190,7 +190,7 @@ ECode HttpConnection::GetAddress(
     VALIDATE_NOT_NULL(hca)
 
     *hca = mAddress;
-    INTERFACE_ADDREF(*hca)
+    REFCOUNT_ADD(*hca)
 
     return NOERROR;
 }
@@ -331,7 +331,7 @@ HttpConnection::HttpConnection(
         AutoPtr<IInetSocketAddress> inetscok;
         assert(0 && "TODO");
         // CInetSocketAddress::New((IInetAddress*)(*addresses)[i], ((Address*)config)->mSocketPort);
-        socketCandidate->ConnectEx(inetscok, connectTimeout);
+        socketCandidate->Connect(inetscok, connectTimeout);
         break;
         // } catch (IOException e) {
         //     if (i == addresses.length - 1) {

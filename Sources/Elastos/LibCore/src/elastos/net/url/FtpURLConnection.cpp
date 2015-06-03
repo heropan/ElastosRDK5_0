@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "FtpURLConnection.h"
 #include "ProxySelector.h"
 #include "elastos/List.h"
@@ -133,7 +132,7 @@ ECode FtpURLConnection::GetInputStream(
         FAIL_RETURN(Connect());
     }
     *is = mInputStream;
-    INTERFACE_ADDREF(*is)
+    REFCOUNT_ADD(*is)
 
     return NOERROR;
 }
@@ -149,7 +148,7 @@ ECode FtpURLConnection::GetOutputStream(
     AutoPtr<IOutputStream> output;
     mDataSocket->GetOutputStream((IOutputStream**)&output);
     *os = output;
-    INTERFACE_ADDREF(*os)
+    REFCOUNT_ADD(*os)
 
     return NOERROR;
 }
@@ -265,7 +264,7 @@ ECode FtpURLConnection::ConnectInternal()
     }
     AutoPtr<IInetSocketAddress> addr;
     FAIL_RETURN(CInetSocketAddress::New(mHostName, port, (IInetSocketAddress**)&addr));
-    mControlSocket->ConnectEx(addr, connectTimeout);
+    mControlSocket->Connect(addr, connectTimeout);
     mConnected = TRUE;
     mCtrlOutput = NULL;
     mControlSocket->GetOutputStream((IOutputStream**)&mCtrlOutput);

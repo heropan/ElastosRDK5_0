@@ -2,9 +2,8 @@
 #ifndef __DEFAULTFILENAMEMAP_H__
 #define __DEFAULTFILENAMEMAP_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
-#include <elrefbase.h>
+
 
 namespace Elastos {
 namespace Net {

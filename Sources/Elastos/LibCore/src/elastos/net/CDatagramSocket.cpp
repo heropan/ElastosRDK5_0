@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CDatagramSocket.h"
 
 namespace Elastos {
@@ -10,7 +9,7 @@ ECode CDatagramSocket::Close()
     return DatagramSocket::Close();
 }
 
-ECode CDatagramSocket::ConnectEx(
+ECode CDatagramSocket::Connect(
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 aPort)
 {

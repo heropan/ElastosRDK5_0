@@ -1,6 +1,5 @@
 
 #include "CRSAPublicKeySpec.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -11,7 +10,7 @@ ECode CRSAPublicKeySpec::GetModulus(
 {
     VALIDATE_NOT_NULL(modulus)
     *modulus = mModulus;
-    INTERFACE_ADDREF(*modulus)
+    REFCOUNT_ADD(*modulus)
     return NOERROR;
 }
 
@@ -20,7 +19,7 @@ ECode CRSAPublicKeySpec::GetPublicExponent(
 {
     VALIDATE_NOT_NULL(exponent)
     *exponent = mPublicExponent;
-    INTERFACE_ADDREF(*exponent)
+    REFCOUNT_ADD(*exponent)
     return NOERROR;
 }
 

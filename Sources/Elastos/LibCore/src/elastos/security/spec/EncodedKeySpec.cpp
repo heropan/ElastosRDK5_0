@@ -1,6 +1,5 @@
 
 #include "EncodedKeySpec.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -32,7 +31,7 @@ ECode EncodedKeySpec::GetEncoded(
     AutoPtr<ArrayOf<Byte> > ret = ArrayOf<Byte>::Alloc(mEncodedKey->GetLength());
     ret->Copy(0, mEncodedKey, 0, ret->GetLength());
     *encodedKey = ret;
-    INTERFACE_ADDREF(*encodedKey)
+    REFCOUNT_ADD(*encodedKey)
     return NOERROR;
 }
 

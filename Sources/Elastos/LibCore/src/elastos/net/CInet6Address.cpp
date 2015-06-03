@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CInet6Address.h"
 #include "NetworkInterface.h"
 
@@ -339,14 +338,14 @@ ECode CInet6Address::IsReachable(
     return InetAddress::IsReachable(timeout, isReachable);
 }
 
-ECode CInet6Address::IsReachableEx(
+ECode CInet6Address::IsReachable(
     /* [in] */ INetworkInterface* networkInterface,
     /* [in] */ Int32 ttl,
     /* [in] */ Int32 timeout,
     /* [out] */ Boolean* isReachable)
 {
     VALIDATE_NOT_NULL(isReachable);
-    return InetAddress::IsReachableEx(networkInterface, ttl, timeout, isReachable);
+    return InetAddress::IsReachable(networkInterface, ttl, timeout, isReachable);
 }
 
 ECode CInet6Address::GetScopeId(
@@ -454,7 +453,7 @@ ECode CInet6Address::GetANY(
 {
     VALIDATE_NOT_NULL(result);
     *result = ANY;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -463,7 +462,7 @@ ECode CInet6Address::GetLOOPBACK(
 {
     VALIDATE_NOT_NULL(result);
     *result = LOOPBACK;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

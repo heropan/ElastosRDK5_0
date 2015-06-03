@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CFixedLengthInputStream.h"
 #include <elastos/Math.h>
 
@@ -60,7 +59,7 @@ ECode CFixedLengthInputStream::ReadBytes(
     return AbstractHttpInputStream::ReadBytes(buffer, number);
 }
 
-ECode CFixedLengthInputStream::ReadBytesEx(
+ECode CFixedLengthInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -81,7 +80,7 @@ ECode CFixedLengthInputStream::ReadBytesEx(
         return NOERROR;
     }
     Int32 read = 0;
-    mIn->ReadBytesEx(buffer, offset, Elastos::Core::Math::Min(length, mBytesRemaining), &read);
+    mIn->ReadBytes(buffer, offset, Elastos::Core::Math::Min(length, mBytesRemaining), &read);
     if (read == -1) {
         AbstractHttpInputStream::UnexpectedEndOfInput(); // the server didn't supply the promised content length
         // throw new IOException("unexpected end of stream");
@@ -120,22 +119,6 @@ ECode CFixedLengthInputStream::Close()
     return NOERROR;
 }
 
-PInterface CFixedLengthInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CFixedLengthInputStream::Probe(riid);
-}
-
-ECode CFixedLengthInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = AbstractHttpInputStream::GetLock();
-    *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
-    return NOERROR;
-}
 
 } // namespace Http
 } // namespace Net

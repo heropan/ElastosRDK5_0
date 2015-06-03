@@ -3,7 +3,6 @@
 #define __CRESPONSEHEADERS_H__
 
 #include "_CResponseHeaders.h"
-#include "cmdef.h"
 #include "CHeaderParserHelper.h"
 
 using Elastos::Utility::IDate;

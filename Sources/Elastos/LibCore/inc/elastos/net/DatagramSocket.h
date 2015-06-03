@@ -3,11 +3,11 @@
 #define __DATAGRAMSOCKET_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include <elastos/Mutex.h>
+
 
 using Elastos::Net::IInetAddress;
-using Elastos::Core::Mutex;
-using Elastos::Core::Mutex;
+
+
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::Channels::IDatagramChannel;
 

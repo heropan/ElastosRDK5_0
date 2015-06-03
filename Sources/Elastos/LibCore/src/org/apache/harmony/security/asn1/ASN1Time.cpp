@@ -44,7 +44,7 @@ ECode ASN1Time::GetDecodedObject(
     AutoPtr<IDate> date;
     c->GetDate((IDate**)&date);
     *object = date.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

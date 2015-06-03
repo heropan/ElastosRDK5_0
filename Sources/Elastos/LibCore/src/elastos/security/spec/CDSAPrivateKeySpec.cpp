@@ -1,6 +1,5 @@
 
 #include "CDSAPrivateKeySpec.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -12,7 +11,7 @@ ECode CDSAPrivateKeySpec::GetG(
 {
     VALIDATE_NOT_NULL(g)
     *g = mG;
-    INTERFACE_ADDREF(*g)
+    REFCOUNT_ADD(*g)
     return NOERROR;
 }
 
@@ -21,7 +20,7 @@ ECode CDSAPrivateKeySpec::GetP(
 {
     VALIDATE_NOT_NULL(p)
     *p = mP;
-    INTERFACE_ADDREF(*p)
+    REFCOUNT_ADD(*p)
     return NOERROR;
 }
 
@@ -30,7 +29,7 @@ ECode CDSAPrivateKeySpec::GetQ(
 {
     VALIDATE_NOT_NULL(q)
     *q = mQ;
-    INTERFACE_ADDREF(*q)
+    REFCOUNT_ADD(*q)
     return NOERROR;
 }
 
@@ -39,7 +38,7 @@ ECode CDSAPrivateKeySpec::GetX(
 {
     VALIDATE_NOT_NULL(x)
     *x = mX;
-    INTERFACE_ADDREF(*x)
+    REFCOUNT_ADD(*x)
     return NOERROR;
 }
 

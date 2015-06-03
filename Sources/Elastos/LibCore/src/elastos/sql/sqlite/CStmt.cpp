@@ -674,7 +674,7 @@ ECode CStmt::Column(
             }
             break;
     }
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 

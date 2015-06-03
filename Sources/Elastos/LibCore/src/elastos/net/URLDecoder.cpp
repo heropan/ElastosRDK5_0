@@ -19,7 +19,7 @@ ECode URLDecoder::Decode(
     AutoPtr<ICharsetHelper> charsetHelper;
     CCharsetHelper::AcquireSingleton((ICharsetHelper**)&charsetHelper);
     charsetHelper->DefaultCharset((ICharset**)&charset);
-    return UriCodec::DecodeEx(s, TRUE, charset, TRUE, decodedS);
+    return UriCodec::Decode(s, TRUE, charset, TRUE, decodedS);
 }
 
 ECode URLDecoder::Decode(
@@ -32,7 +32,7 @@ ECode URLDecoder::Decode(
     AutoPtr<ICharsetHelper> charsetHelper;
     CCharsetHelper::AcquireSingleton((ICharsetHelper**)&charsetHelper);
     charsetHelper->ForName(encoding, (ICharset**)&charset);
-    return UriCodec::DecodeEx(s, TRUE, charset, TRUE, decodedS);
+    return UriCodec::Decode(s, TRUE, charset, TRUE, decodedS);
 }
 
 } // namespace Net

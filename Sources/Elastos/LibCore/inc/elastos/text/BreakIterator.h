@@ -1,7 +1,6 @@
 #ifndef __BREAKITERATOR_H__
 #define __BREAKITERATOR_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos.h>
 

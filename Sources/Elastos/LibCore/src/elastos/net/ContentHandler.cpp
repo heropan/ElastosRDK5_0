@@ -1,11 +1,10 @@
 
-#include "cmdef.h"
 #include "ContentHandler.h"
 
 namespace Elastos {
 namespace Net {
 
-ECode ContentHandler::GetContentEx(
+ECode ContentHandler::GetContent(
     /* [in] */ IURLConnection* uConn,
     /* [in] */ const ArrayOf<InterfaceID>& types,
     /* [out] */ IInterface** obj)
@@ -17,7 +16,7 @@ ECode ContentHandler::GetContentEx(
     for (Int32 i = 0; i < types.GetLength(); i++) {
         if (content->Probe(types[i]) != NULL) {
             *obj = content;
-            INTERFACE_ADDREF(*obj);
+            REFCOUNT_ADD(*obj);
             return NOERROR;
         }
     }

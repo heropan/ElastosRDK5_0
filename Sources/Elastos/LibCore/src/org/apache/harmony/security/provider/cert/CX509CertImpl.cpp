@@ -35,7 +35,7 @@ ECode CX509CertImpl::GetEncoded(
     AutoPtr<ArrayOf<Byte> > bytes;
     GetEncodedInternal((ArrayOf<Byte>**)&bytes);
     encoded = bytes->Clone();
-    INTERFACE_ADDREF(encoded)
+    REFCOUNT_ADD(encoded)
     return NOERROR;
 }
 
@@ -49,7 +49,7 @@ ECode CX509CertImpl::GetEncodedInternal(
         mEncoding = result;
     }
     *ret = result;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -136,7 +136,7 @@ ECode CX509CertImpl::GetPublicKey(
         mPublicKey = result;
     }
     *key = result;
-    INTERFACE_ADDREF(*key)
+    REFCOUNT_ADD(*key)
     return NOERROR;
 }
 
@@ -196,7 +196,7 @@ ECode CX509CertImpl::GetSerialNumber(
         mSerialNumber = result;
     }
     *number = result;
-    INTERFACE_ADDREF(*number)
+    REFCOUNT_ADD(*number)
     return NOERROR;
 }
 
@@ -219,7 +219,7 @@ ECode CX509CertImpl::GetIssuerX500Principal(
         mIssuer = result;
     }
     *issuerName = result;
-    INTERFACE_ADDREF(*issuerName)
+    REFCOUNT_ADD(*issuerName)
     return NOERROR;
 }
 
@@ -242,7 +242,7 @@ ECode CX509CertImpl::GetSubjectX500Principal(
         mSubject = result;
     }
     *subject = result;
-    INTERFACE_ADDREF(*subject)
+    REFCOUNT_ADD(*subject)
     return NOERROR;
 }
 
@@ -303,7 +303,7 @@ ECode CX509CertImpl::GetTBSCertificate(
     AutoPtr<ArrayOf<Byte> > bytes;
     GetTbsCertificateInternal((ArrayOf<Byte>**)&bytes);
     *tbsCertificate = bytes->Clone();
-    INTERFACE_ADDREF(*tbsCertificate)
+    REFCOUNT_ADD(*tbsCertificate)
     return NOERROR;
 }
 
@@ -316,7 +316,7 @@ ECode CX509CertImpl::GetTbsCertificateInternal(
         mTbsCertificate = result;
     }
     *ret = result;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -327,7 +327,7 @@ ECode CX509CertImpl::GetSignature(
     AutoPtr<ArrayOf<Byte> > bytes;
     GetSignatureInternal((ArrayOf<Byte>**)&bytes);
     *signature = bytes->Clone();
-    INTERFACE_ADDREF(*signature)
+    REFCOUNT_ADD(*signature)
     return NOERROR;
 }
 
@@ -341,7 +341,7 @@ ECode CX509CertImpl::GetSignatureInternal(
         mSignature = result;
     }
     *ret = result;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -400,7 +400,7 @@ ECode CX509CertImpl::GetSigAlgParams(
         mSigAlgParams = result;
     }
     *sigAlgParams = result;
-    INTERFACE_ADDREF(*sigAlgParams)
+    REFCOUNT_ADD(*sigAlgParams)
     return NOERROR;
 }
 

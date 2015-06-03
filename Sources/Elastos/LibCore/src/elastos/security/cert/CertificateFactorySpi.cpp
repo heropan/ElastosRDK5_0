@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CertificateFactorySpi.h"
 
 namespace Elastos {

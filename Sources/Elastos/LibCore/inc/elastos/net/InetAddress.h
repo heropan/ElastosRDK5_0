@@ -133,7 +133,7 @@ public:
         /* [in] */ Int32 timeout,
         /* [out] */ Boolean* isReachable);
 
-    virtual CARAPI IsReachableEx(
+    virtual CARAPI IsReachable(
         /* [in] */ INetworkInterface* networkInterface,
         /* [in] */ Int32 ttl,
         /* [in] */ Int32 timeout,
@@ -143,7 +143,7 @@ public:
         /* [in] */ ArrayOf<Byte>* ipAddress,
         /* [out] */ IInetAddress** address);
 
-    static CARAPI GetByAddressEx(
+    static CARAPI GetByAddress(
         /* [in] */ const String& hostName,
         /* [in] */ ArrayOf<Byte>* ipAddress,
         /* [out] */ IInetAddress** address);

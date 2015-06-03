@@ -1,6 +1,5 @@
 
 #include "CPolicyQualifierInfo.h"
-#include "cmdef.h"
 #include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
@@ -16,7 +15,7 @@ ECode CPolicyQualifierInfo::GetEncoded(
     AutoPtr<ArrayOf<Byte> > ret = ArrayOf<Byte>::Alloc(mEncoded->GetLength());
     ret->Copy(0, mEncoded, 0, mEncoded->GetLength());
     *encoded = ret;
-    INTERFACE_ADDREF(*encoded)
+    REFCOUNT_ADD(*encoded)
     return NOERROR;
 }
 
@@ -39,7 +38,7 @@ ECode CPolicyQualifierInfo::GetPolicyQualifier(
     AutoPtr<ArrayOf<Byte> > ret = ArrayOf<Byte>::Alloc(mPolicyQualifier->GetLength());
     ret->Copy(0, mPolicyQualifier, 0, mPolicyQualifier->GetLength());
     *qualifier = ret;
-    INTERFACE_ADDREF(*qualifier)
+    REFCOUNT_ADD(*qualifier)
     return NOERROR;
 }
 

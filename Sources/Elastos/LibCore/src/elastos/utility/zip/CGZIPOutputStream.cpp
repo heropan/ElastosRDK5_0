@@ -74,17 +74,6 @@ ECode CGZIPOutputStream::constructor(
     return mOut->Write(0); // operating system
 }
 
-ECode CGZIPOutputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj;// = DeflaterOutputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
-
 } // namespace Zip
 } // namespace Utility
 } // namespace Elastos

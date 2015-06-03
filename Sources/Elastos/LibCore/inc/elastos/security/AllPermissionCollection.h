@@ -3,7 +3,6 @@
 #define __ALLPERMISSIONCOLLECTION_H__
 
 #include "PermissionCollection.h"
-#include "cmdef.h"
 
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"

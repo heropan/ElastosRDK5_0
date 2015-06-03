@@ -113,7 +113,7 @@ ECode CPlainDatagramSocketImpl::GetOption(
     mFd->GetDescriptor(&value);
     FAIL_RETURN(CIoBridge::_GetSocketOption(value, option, (IInterface**)&socketOption));
     *result = socketOption;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

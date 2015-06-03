@@ -176,7 +176,7 @@ ECode CCertificationRequest::ASN1SequenceDerived::GetDecodedObject(
     AutoPtr<ArrayOf<Byte> > arg4;
     bis->GetEncoded((ArrayOf<Byte>**)&arg4);
     *object = new CCertificationRequest(arg1, arg2, bytes, arg4);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -258,7 +258,7 @@ ECode CCertificationRequest::GetSignature(
     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(mSignature->GetLength());
     result->Copy(0, mSignature, 0, mSignature->GetLength());
     *signature = result;
-    INTERFACE_ADDREF(*signature)
+    REFCOUNT_ADD(*signature)
     return NOERROR;
 }
 
@@ -274,7 +274,7 @@ ECode CCertificationRequest::GetEncoded(
         seq->Encode(this, (ArrayOf<Byte>**)&mEncoding);
     }
     *encoded = mEncoding;
-    INTERFACE_ADDREF(*encoded)
+    REFCOUNT_ADD(*encoded)
     return NOERROR;
 }
 
@@ -283,7 +283,7 @@ ECode CCertificationRequest::GetAlgorithmIdentifier(
 {
     VALIDATE_NOT_NULL(algId)
     *algId = mAlgId;
-    INTERFACE_ADDREF(algId);
+    REFCOUNT_ADD(algId);
     return NOERROR;
 }
 

@@ -56,12 +56,12 @@ ECode CInetAddressHelper::GetByAddress(
     return InetAddress::GetByAddress(ipAddress, interAddr);
 }
 
-ECode CInetAddressHelper::GetByAddressEx(
+ECode CInetAddressHelper::GetByAddress(
     /* [in] */ const String& hostName,
     /* [in] */ ArrayOf<Byte>* ipAddress,
     /* [out] */ IInetAddress** interAddr)
 {
-    return InetAddress::GetByAddressEx(hostName, ipAddress, interAddr);
+    return InetAddress::GetByAddress(hostName, ipAddress, interAddr);
 }
 
 } // namespace Net

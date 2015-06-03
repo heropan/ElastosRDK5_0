@@ -73,9 +73,6 @@ public:
         /* [in] */ IOutputStream* os,
         /* [in] */ Int32 size);
 
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
 private:
     CARAPI_(Int64) WriteInt64(
         /* [in] */ Int64 i);

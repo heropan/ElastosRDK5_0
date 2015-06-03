@@ -88,7 +88,7 @@ ECode AuthenticatedAttributes::ASN1SetOfDerived::GetDecodedObject(
     bis->GetContent((IInterface**)&tmp);
     AutoPtr<IList> lst = IList::Probe(tmp);
     *object = new AuthenticatedAttributes(encoded, lst);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -167,7 +167,7 @@ ECode AuthenticatedAttributes::GetAttributes(
 {
     VALIDATE_NOT_NULL(attributes)
     *attributes = mAuthenticatedAttributes;
-    INTERFACE_ADDREF(*attributes)
+    REFCOUNT_ADD(*attributes)
     return NOERROR;
 
 ECode AuthenticatedAttributes::GetEncoded(
@@ -178,7 +178,7 @@ ECode AuthenticatedAttributes::GetEncoded(
         ASN1->Encode(THIS_PROBE(IInterface), (ArrayOf<Byte>**)&mEncoding);
     }
     *encoded = mEncoding;
-    INTERFACE_ADDREF(*encoded)
+    REFCOUNT_ADD(*encoded)
     return NOERROR;
 }
 

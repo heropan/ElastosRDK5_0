@@ -1,6 +1,5 @@
 
 #include "CSSLParameters.h"
-#include "cmdef.h"
 
 namespace Elastosx {
 namespace Net {
@@ -14,7 +13,7 @@ ECode CSSLParameters::GetCipherSuites(
         return NOERROR;
     }
     *suites = mCipherSuites->Clone();
-    INTERFACE_ADDREF(*suites)
+    REFCOUNT_ADD(*suites)
     return NOERROR;
 }
 
@@ -34,7 +33,7 @@ ECode CSSLParameters::GetProtocols(
         return NOERROR;
     }
     *protocols = mProtocols->Clone();
-    INTERFACE_ADDREF(*protocols);
+    REFCOUNT_ADD(*protocols);
     return NOERROR;
 }
 

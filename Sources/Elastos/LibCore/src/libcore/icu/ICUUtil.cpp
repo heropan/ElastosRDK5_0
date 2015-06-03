@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "ElStringByteSink.h"
 #include "ICUUtil.h"
 #include "CLocale.h"
@@ -88,7 +87,7 @@ ECode ICUUtil::GetISOLanguages(
         sIsoLanguages = GetISOLanguagesNative();
     }
     *languages = sIsoLanguages->Clone();
-    INTERFACE_ADDREF(*languages);
+    REFCOUNT_ADD(*languages);
     return NOERROR;
 }
 
@@ -101,7 +100,7 @@ ECode ICUUtil::GetISOCountries(
         sIsoCountries = GetISOCountriesNative();
     }
     *countries = sIsoCountries->Clone();
-    INTERFACE_ADDREF(*countries);
+    REFCOUNT_ADD(*countries);
     return NOERROR;
 }
 
@@ -132,7 +131,7 @@ ECode ICUUtil::LocaleFromString(
     }
 
     *locale = (ILocale*) outloc.Get();
-    INTERFACE_ADDREF(*locale)
+    REFCOUNT_ADD(*locale)
     return NOERROR;
 }
 
@@ -147,7 +146,7 @@ ECode ICUUtil::LocalesFromStrings(
         FAIL_RETURN(LocaleFromString(localeNames[i], &(*temp)[i]));
     }
     *locales = temp;
-    INTERFACE_ADDREF(*locales)
+    REFCOUNT_ADD(*locales)
     return NOERROR;
 }
 
@@ -166,7 +165,7 @@ ECode ICUUtil::GetAvailableLocales(
         temp->Set(i, (*sAvailableLocalesCache)[i]);
     }
     *locales = temp;
-    INTERFACE_ADDREF(*locales)
+    REFCOUNT_ADD(*locales)
     return NOERROR;
 }
 
@@ -302,7 +301,7 @@ static ECode getAvailableLocales(
 
     Int32 count = (*counter)();
     *locales = ArrayOf<String>::Alloc(count);
-    INTERFACE_ADDREF(*locales);
+    REFCOUNT_ADD(*locales);
     for (int32_t i = 0; i < count; ++i) {
         (**locales)[i] = (*getter)(i);
     }
@@ -692,7 +691,7 @@ static void getStringArrayField(
         (*result)[i] = str;
     }
     *field = result;
-    INTERFACE_ADDREF(*field);
+    REFCOUNT_ADD(*field);
 }
 
 static void getCharField(

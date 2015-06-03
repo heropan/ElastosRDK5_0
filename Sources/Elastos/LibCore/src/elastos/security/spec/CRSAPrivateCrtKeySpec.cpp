@@ -1,6 +1,5 @@
 
 #include "CRSAPrivateCrtKeySpec.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -24,7 +23,7 @@ ECode CRSAPrivateCrtKeySpec::GetCrtCoefficient(
 {
     VALIDATE_NOT_NULL(coefficient)
     *coefficient = mCrtCoefficient;
-    INTERFACE_ADDREF(*coefficient)
+    REFCOUNT_ADD(*coefficient)
     return NOERROR;
 }
 
@@ -33,7 +32,7 @@ ECode CRSAPrivateCrtKeySpec::GetPrimeExponentP(
 {
     VALIDATE_NOT_NULL(p)
     *p = mPrimeExponentP;
-    INTERFACE_ADDREF(*p)
+    REFCOUNT_ADD(*p)
     return NOERROR;
 }
 
@@ -42,7 +41,7 @@ ECode CRSAPrivateCrtKeySpec::GetPrimeExponentQ(
 {
     VALIDATE_NOT_NULL(q)
     *q = mPrimeExponentQ;
-    INTERFACE_ADDREF(*q)
+    REFCOUNT_ADD(*q)
     return NOERROR;
 }
 
@@ -51,7 +50,7 @@ ECode CRSAPrivateCrtKeySpec::GetPrimeP(
 {
     VALIDATE_NOT_NULL(p)
     *p = mPrimeP;
-    INTERFACE_ADDREF(*p)
+    REFCOUNT_ADD(*p)
     return NOERROR;
 }
 
@@ -60,7 +59,7 @@ ECode CRSAPrivateCrtKeySpec::GetPrimeQ(
 {
     VALIDATE_NOT_NULL(q)
     *q = mPrimeQ;
-    INTERFACE_ADDREF(*q)
+    REFCOUNT_ADD(*q)
     return NOERROR;
 }
 
@@ -69,7 +68,7 @@ ECode CRSAPrivateCrtKeySpec::GetPublicExponent(
 {
     VALIDATE_NOT_NULL(pubExponent)
     *pubExponent = mPublicExponent;
-    INTERFACE_ADDREF(*pubExponent)
+    REFCOUNT_ADD(*pubExponent)
     return NOERROR;
 }
 

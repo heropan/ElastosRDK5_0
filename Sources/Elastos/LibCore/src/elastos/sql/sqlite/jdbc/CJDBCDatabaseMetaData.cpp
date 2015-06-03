@@ -283,7 +283,7 @@ ECode CJDBCDatabaseMetaData::GetColumnPrivileges(
     AutoPtr<IJDBCResultSet> rs;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL ,(IJDBCResultSet **)&rs));
     *resultSet = (IResultSet *)rs.Get();
-    INTERFACE_ADDREF(*resultSet);
+    REFCOUNT_ADD(*resultSet);
     return NOERROR;
 }
 
@@ -411,7 +411,7 @@ ECode CJDBCDatabaseMetaData::GetColumns(
         }
     }
     *resultSet = (IResultSet *)rs.Get();
-    INTERFACE_ADDREF(*resultSet);
+    REFCOUNT_ADD(*resultSet);
     return NOERROR;
 }
 
@@ -495,7 +495,7 @@ ECode CJDBCDatabaseMetaData::GetCrossReference(
         InternalImportedKeys(foreignTable, pktable, rs0, tr);
     }
     *resultSet = (IResultSet *)rs.Get();
-    INTERFACE_ADDREF(*resultSet);
+    REFCOUNT_ADD(*resultSet);
     return NOERROR;
 }
 
@@ -607,7 +607,7 @@ ECode CJDBCDatabaseMetaData::GetExportedKeys(
     AutoPtr<CJDBCResultSet> rs ;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL,(IJDBCResultSet **)&rs));
     *resultSet = (IResultSet *)rs.Get();
-    INTERFACE_ADDREF(*resultSet);
+    REFCOUNT_ADD(*resultSet);
     return NOERROR;
 }
 
@@ -690,7 +690,7 @@ ECode CJDBCDatabaseMetaData::GetImportedKeys(
         InternalImportedKeys(table, String(NULL), rs0, tr);
     }
     *resultSet = (IResultSet *)rs.Get();
-    INTERFACE_ADDREF(*resultSet);
+    REFCOUNT_ADD(*resultSet);
     return NOERROR;
 }
 
@@ -1070,7 +1070,7 @@ ECode CJDBCDatabaseMetaData::GetPrimaryKeys(
     if (tr->nrows > 0) {
 
         *resultSet = (IResultSet *)rs.Get();
-        INTERFACE_ADDREF(*resultSet);
+        REFCOUNT_ADD(*resultSet);
         return NOERROR;
     }
     AutoPtr<CJDBCStatement> s1;
@@ -1115,7 +1115,7 @@ ECode CJDBCDatabaseMetaData::GetPrimaryKeys(
         }
     }
     *resultSet = (IResultSet *)rs.Get();
-    INTERFACE_ADDREF(*resultSet);
+    REFCOUNT_ADD(*resultSet);
     return NOERROR;
 }
 
@@ -1265,7 +1265,7 @@ ECode CJDBCDatabaseMetaData::GetTablePrivileges(
     AutoPtr<IJDBCResultSet> rs;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL ,(IJDBCResultSet **)&rs));
     *resultSet = (IResultSet *)rs.Get();
-    INTERFACE_ADDREF(*resultSet);
+    REFCOUNT_ADD(*resultSet);
     return NOERROR;
 }
 
@@ -1632,7 +1632,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     tr->Newrow(*row12,&rowflag);
 
     *resultSet = (IResultSet *)rs.Get();
-    INTERFACE_ADDREF(*resultSet);
+    REFCOUNT_ADD(*resultSet);
     return NOERROR;
 }
 
@@ -1694,7 +1694,7 @@ ECode CJDBCDatabaseMetaData::GetVersionColumns(
     AutoPtr<IJDBCResultSet> rs;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL ,(IJDBCResultSet **)&rs));
     *resultSet = (IResultSet *)rs.Get();
-    INTERFACE_ADDREF(*resultSet);
+    REFCOUNT_ADD(*resultSet);
     return NOERROR;
 }
 

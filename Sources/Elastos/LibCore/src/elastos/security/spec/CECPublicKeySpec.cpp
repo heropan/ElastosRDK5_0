@@ -1,6 +1,5 @@
 
 #include "CECPublicKeySpec.h"
-#include "cmdef.h"
 #include "CECPoint.h"
 
 namespace Elastos {
@@ -13,7 +12,7 @@ ECode CECPublicKeySpec::GetParams(
 {
     VALIDATE_NOT_NULL(params)
     *params = mParams;
-    INTERFACE_ADDREF(*params)
+    REFCOUNT_ADD(*params)
     return NOERROR;
 }
 
@@ -22,7 +21,7 @@ ECode CECPublicKeySpec::GetW(
 {
     VALIDATE_NOT_NULL(w)
     *w = mW;
-    INTERFACE_ADDREF(*w)
+    REFCOUNT_ADD(*w)
     return NOERROR;
 }
 

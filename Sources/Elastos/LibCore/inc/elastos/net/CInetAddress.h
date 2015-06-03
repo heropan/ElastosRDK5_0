@@ -221,7 +221,7 @@ public:
      * @throws IllegalArgumentException
      *             if ttl or timeout is less than zero.
      */
-    CARAPI IsReachableEx(
+    CARAPI IsReachable(
         /* [in] */ INetworkInterface* networkInterface,
         /* [in] */ Int32 ttl,
         /* [in] */ Int32 timeout,

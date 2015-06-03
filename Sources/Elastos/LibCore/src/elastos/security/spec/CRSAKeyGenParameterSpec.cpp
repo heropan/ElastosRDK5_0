@@ -1,6 +1,5 @@
 
 #include "CRSAKeyGenParameterSpec.h"
-#include "cmdef.h"
 #include "CBigInteger.h"
 
 using Elastos::Math::CBigInteger;
@@ -34,7 +33,7 @@ ECode CRSAKeyGenParameterSpec::GetPublicExponent(
 {
     VALIDATE_NOT_NULL(pubExponent)
     *pubExponent = mPublicExponent;
-    INTERFACE_ADDREF(*pubExponent)
+    REFCOUNT_ADD(*pubExponent)
     return NOERROR;
 }
 

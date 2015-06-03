@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CCollectionUtils.h"
 #include "CCollections.h"
 
@@ -50,7 +49,7 @@ ECode CCollectionUtils::_Iterator::Next(
     mRemoveIsOkay = TRUE;
     mNext = NULL;
     *object = result;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -97,7 +96,7 @@ ECode CCollectionUtils::_Iterable::GetIterator(
 
     AutoPtr<IIterator> res = (IIterator*) new _Iterator(mIter, mTrim);
     *it = res;
-    INTERFACE_ADDREF(*it)
+    REFCOUNT_ADD(*it)
     return NOERROR;
 }
 
@@ -129,7 +128,7 @@ ECode CCollectionUtils::_DereferenceIterable(
 
     AutoPtr<IIterable> res = (IIterable*) new _Iterable(iterable, trim);
     *outiter = res;
-    INTERFACE_ADDREF(*outiter)
+    REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 

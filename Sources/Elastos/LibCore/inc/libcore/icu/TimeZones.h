@@ -2,14 +2,13 @@
 #ifndef __ICU_TIMEZONES_H__
 #define __ICU_TIMEZONES_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <elastos/Mutex.h>
 
 using Elastos::Core::IArrayOf;
 using Elastos::Core::Mutex;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Libcore {
 namespace ICU {

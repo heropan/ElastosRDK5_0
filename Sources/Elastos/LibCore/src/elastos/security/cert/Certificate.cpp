@@ -1,4 +1,3 @@
-#include "cmdef.h"
 #include "Certificate.h"
 #include "CByteArrayInputStream.h"
 #include "CCertificateFactoryHelper.h"
@@ -85,7 +84,7 @@ CARAPI Certificate::WriteReplace(
         E_CERTIFICATE_ENCODING_EXCEPTION, E_NOT_SERIALIZABLE_EXCEPTION)
     AutoPtr<CertificateRep> cr = new CertificateRep(mType, encoded);
     *object = cr.Get();
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -122,7 +121,7 @@ CARAPI Certificate::CertificateRep::ReadResolve(
     AutoPtr<ICertPath> cp;
     FAIL_RETURN(cf->GenerateCertPath(is, (ICertPath**)&cp))
     *object = cp.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

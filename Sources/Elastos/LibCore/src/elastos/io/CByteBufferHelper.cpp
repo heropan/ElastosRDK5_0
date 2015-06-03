@@ -1,10 +1,12 @@
-
-#include "coredef.h"
 #include "CByteBufferHelper.h"
 #include "ByteBuffer.h"
 
 namespace Elastos {
 namespace IO {
+
+CAR_INTERFACE_IMPL(CByteBufferHelper, Singleton, IByteBufferHelper)
+
+CAR_SINGLETON_IMPL(CByteBufferHelper)
 
 ECode CByteBufferHelper::Allocate(
     /* [in] */ Int32 capacity,

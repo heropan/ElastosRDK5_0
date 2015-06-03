@@ -5,11 +5,11 @@
 #include "_CThreadPoolExecutor.h"
 #include "AbstractExecutorService.h"
 #include "AbstractQueuedSynchronizer.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 #include <elastos/Mutex.h>
 #include <elastos/Condition.h>
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::IRunnable;
 using Elastos::Core::Mutex;
 using Elastos::Core::Condition;

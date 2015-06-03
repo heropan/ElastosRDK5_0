@@ -135,7 +135,7 @@ ECode CSignerInfo::ASN1SequenceDerived2::GetDecodedObject(
     AutoPtr<IList> arg7 = IList::Probe(val0);
 
     *object = new CSignerInfo(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -211,7 +211,7 @@ ECode CSignerInfo::GetIssuer(
 {
     VALIDATE_NOT_NULL(issuer)
     *issuer = mIssuer;
-    INTERFACE_ADDREF(*issuer);
+    REFCOUNT_ADD(*issuer);
     return NOERROR;
 }
 
@@ -220,7 +220,7 @@ ECode CSignerInfo::GetSerialNumber(
 {
     VALIDATE_NOT_NULL(serialNumber)
     *serialNumber = mSerialNumber;
-    INTERFACE_ADDREF(*serialNumber)
+    REFCOUNT_ADD(*serialNumber)
     return NOERROR;
 }
 
@@ -259,7 +259,7 @@ ECode CSignerInfo::GetEncryptedDigest(
 {
     VALIDATE_NOT_NULL(encryptedDigest)
     *encryptedDigest = mEncryptedDigest;
-    INTERFACE_ADDREF(*encryptedDigest)
+    REFCOUNT_ADD(*encryptedDigest)
     return NOERROR;
 }
 

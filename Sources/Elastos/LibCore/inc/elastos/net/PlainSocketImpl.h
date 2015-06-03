@@ -2,9 +2,9 @@
 #define __PLAINSOCKETIMPL_H__
 
 #include "SocketImpl.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Mutex;
+
+
 using Elastos::Core::ICloseGuard;
 
 namespace Elastos {

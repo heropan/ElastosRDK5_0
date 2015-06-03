@@ -18,17 +18,6 @@ CAR_INTERFACE_IMPL(CGZIPInputStream, InflaterInputStream, IGZIPInputStream)
 
 CAR_OBJECT_IMPL(CGZIPInputStream)
 
-ECode CGZIPInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj;// = InflaterInputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
-
 CGZIPInputStream::CGZIPInputStream()
     : mEos(FALSE)
 {
@@ -48,6 +37,7 @@ ECode CGZIPInputStream::Read(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
+    *number = -1;
     VALIDATE_NOT_NULL(buffer);
 
     if (mClosed) {
@@ -55,7 +45,6 @@ ECode CGZIPInputStream::Read(
         return E_IO_EXCEPTION;
     }
     if (mEos) {
-        *number = -1;
         return NOERROR;
     }
     //Arrays.checkOffsetAndCount(buffer.length, offset, byteCount);

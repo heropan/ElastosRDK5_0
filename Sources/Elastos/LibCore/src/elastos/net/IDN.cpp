@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "IDN.h"
 #include <unicode/ucat.h>
 #include <unicode/uidna.h>

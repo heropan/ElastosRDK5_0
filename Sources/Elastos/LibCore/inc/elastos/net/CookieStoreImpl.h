@@ -2,19 +2,18 @@
 #ifndef __COOKIESTOREIMPL_H__
 #define __COOKIESTOREIMPL_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
-#include <elautoptr.h>
-#include <elrefbase.h>
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
-#include "CObjectContainer.h"
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
+
+
+
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IList;
-using Elastos::Core::Mutex;
+
 using Elastos::Net::IURI;
 
 #ifndef HASH_FUNC_FOR_AUTOPTR_IURI

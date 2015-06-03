@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CMathContext.h"
 
 namespace Elastos {

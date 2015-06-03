@@ -3,7 +3,7 @@
 #define __COOKIEHANDLER_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include <elautoptr.h>
+
 
 using Elastos::Utility::IMap;
 using Elastos::Net::ICookieHandler;

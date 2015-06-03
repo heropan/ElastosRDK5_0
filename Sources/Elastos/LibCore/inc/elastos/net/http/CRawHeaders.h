@@ -3,16 +3,15 @@
 #define __CRAWHEADERS_H__
 
 #include "_CRawHeaders.h"
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
-#include "elastos/List.h"
+#include <elastos/utility/etl/List.h>
 #include "CCollections.h"
 #include "CArrayList.h"
 #include "CTreeMap.h"
 
 using Elastos::Core::IComparator;
 using Elastos::Utility::IMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IList;
 using Elastos::Utility::CArrayList;

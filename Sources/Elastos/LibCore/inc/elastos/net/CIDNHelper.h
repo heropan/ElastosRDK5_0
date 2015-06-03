@@ -10,7 +10,7 @@ namespace Net {
 CarClass(CIDNHelper)
 {
 public:
-    CARAPI ToASCIIEx(
+    CARAPI ToASCII(
         /* [in] */ const String& input,
         /* [in] */ Int32 flags,
         /* [out] */ String* result);
@@ -19,7 +19,7 @@ public:
         /* [in] */ const String& input,
         /* [out] */ String* result);
 
-    CARAPI ToUnicodeEx(
+    CARAPI ToUnicode(
         /* [in] */ const String& input,
         /* [in] */ Int32 flags,
         /* [out] */ String* result);

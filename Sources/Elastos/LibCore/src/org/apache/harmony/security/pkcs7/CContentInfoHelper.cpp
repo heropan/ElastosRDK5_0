@@ -15,7 +15,7 @@ ECode CContentInfoHelper::GetData(
 {
     VALIDATE_NOT_NULL(data)
     *data = CContentInfo::DATA;
-    INTERFACE_ADDREF(*data)
+    REFCOUNT_ADD(*data)
     return NOERROR;
 }
 
@@ -24,7 +24,7 @@ ECode CContentInfoHelper::GetSignedData(
 {
     VALIDATE_NOT_NULL(signedData)
     *signedData = CContentInfo::SIGNED_DATA;
-    INTERFACE_ADDREF(*signedData)
+    REFCOUNT_ADD(*signedData)
     return NOERROR;
 }
 
@@ -33,7 +33,7 @@ ECode CContentInfoHelper::GetEnvelopedData(
 {
     VALIDATE_NOT_NULL(envelopedData)
     *envelopedData = CContentInfo::ENVELOPED_DATA;
-    INTERFACE_ADDREF(*envelopedData)
+    REFCOUNT_ADD(*envelopedData)
     return NOERROR;
 }
 
@@ -42,7 +42,7 @@ ECode CContentInfoHelper::GetSignedAndEnvelopedData(
 {
     VALIDATE_NOT_NULL(signedAndEnvelopedData)
     *signedAndEnvelopedData = CContentInfo::SIGNED_AND_ENVELOPED_DATA;
-    INTERFACE_ADDREF(*signedAndEnvelopedData)
+    REFCOUNT_ADD(*signedAndEnvelopedData)
     return NOERROR;
 }
 
@@ -51,7 +51,7 @@ ECode CContentInfoHelper::GetDigestedData(
 {
     VALIDATE_NOT_NULL(digestedData)
     *digestedData = CContentInfo::DIGESTED_DATA;
-    INTERFACE_ADDREF(*digestedData)
+    REFCOUNT_ADD(*digestedData)
     return NOERROR;
 }
 
@@ -60,7 +60,7 @@ ECode CContentInfoHelper::GetEncryptedData(
 {
     VALIDATE_NOT_NULL(encryptedData)
     *encryptedData = CContentInfo::ENCRYPTED_DATA;
-    INTERFACE_ADDREF(*encryptedData)
+    REFCOUNT_ADD(*encryptedData)
     return NOERROR;
 }
 
@@ -69,7 +69,7 @@ ECode CContentInfoHelper::GetASN1(
 {
     VALIDATE_NOT_NULL(asn1)
     *asn1 = CContentInfo::ASN1;
-    INTERFACE_ADDREF(*asn1)
+    REFCOUNT_ADD(*asn1)
     return NOERROR;
 }
 

@@ -284,7 +284,7 @@ ECode TimeZones::GetZoneStrings(
         resarr->Set(i, arrof);
     }
     *outarray = resarr;
-    INTERFACE_ADDREF(*outarray);
+    REFCOUNT_ADD(*outarray);
 
     return NOERROR;
 }
@@ -300,7 +300,7 @@ ECode TimeZones::ForLocale(
     locale->GetCountry(&country);
     AutoPtr<ArrayOf<String> > res = ForCountryCode(country);
     *outarray = res;
-    INTERFACE_ADDREF(*outarray);
+    REFCOUNT_ADD(*outarray);
     return NOERROR;
 }
 

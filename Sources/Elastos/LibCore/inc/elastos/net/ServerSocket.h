@@ -42,7 +42,7 @@ public:
     virtual CARAPI Bind(
         /* [in] */ ISocketAddress* localAddr);
 
-    virtual CARAPI BindEx(
+    virtual CARAPI Bind(
         /* [in] */ ISocketAddress* localAddr,
         /* [in] */ Int32 backlog);
 

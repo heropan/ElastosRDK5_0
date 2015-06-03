@@ -1,27 +1,10 @@
 
-#include "cmdef.h"
 #include "CUnknownLengthHttpInputStream.h"
 
 namespace Elastos {
 namespace Net {
 namespace Http {
 
-PInterface CUnknownLengthHttpInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CUnknownLengthHttpInputStream::Probe(riid);
-}
-
-ECode CUnknownLengthHttpInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = AbstractHttpInputStream::GetLock();
-    *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
-    return NOERROR;
-}
 
 ECode CUnknownLengthHttpInputStream::constructor(
     /* [in] */ IInputStream* is,
@@ -67,7 +50,7 @@ ECode CUnknownLengthHttpInputStream::ReadBytes(
     return AbstractHttpInputStream::ReadBytes(buffer, number);
 }
 
-ECode CUnknownLengthHttpInputStream::ReadBytesEx(
+ECode CUnknownLengthHttpInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -87,7 +70,7 @@ ECode CUnknownLengthHttpInputStream::ReadBytesEx(
         return NOERROR;
     }
     Int32 read = 0;
-    mIn->ReadBytesEx(buffer, offset, length, &read);
+    mIn->ReadBytes(buffer, offset, length, &read);
     if (read == -1) {
         mInputExhausted = TRUE;
         EndOfInput(FALSE);

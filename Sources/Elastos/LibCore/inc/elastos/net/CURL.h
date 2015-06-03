@@ -2,13 +2,12 @@
 #ifndef __CURL_H__
 #define __CURL_H__
 
-#include "cmdef.h"
 #include "_CURL.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Mutex;
+#include <elastos/utility/etl/HashMap.h>
+
+using Elastos::Utility::Etl::HashMap;
+
 using Elastos::IO::IInputStream;
 
 namespace Elastos {
@@ -73,7 +72,7 @@ public:
     CARAPI OpenConnection(
         /* [out] */ IURLConnection** connection);
 
-    CARAPI OpenConnectionEx(
+    CARAPI OpenConnection(
         /* [in] */ IProxy* proxy,
         /* [out] */ IURLConnection** connection);
 

@@ -1,6 +1,5 @@
 
 #include "CAccessController.h"
-#include "cmdef.h"
 #include "CAccessControlContext.h"
 
 namespace Elastos {

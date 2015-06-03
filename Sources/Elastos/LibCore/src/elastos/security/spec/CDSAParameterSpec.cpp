@@ -1,6 +1,5 @@
 
 #include "CDSAParameterSpec.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -11,7 +10,7 @@ ECode CDSAParameterSpec::GetG(
 {
     VALIDATE_NOT_NULL(base)
     *base = mG;
-    INTERFACE_ADDREF(*base)
+    REFCOUNT_ADD(*base)
     return NOERROR;
 }
 
@@ -20,7 +19,7 @@ ECode CDSAParameterSpec::GetP(
 {
     VALIDATE_NOT_NULL(prime)
     *prime = mP;
-    INTERFACE_ADDREF(*prime)
+    REFCOUNT_ADD(*prime)
     return NOERROR;
 }
 
@@ -29,7 +28,7 @@ ECode CDSAParameterSpec::GetQ(
 {
     VALIDATE_NOT_NULL(subprime)
     *subprime = mQ;
-    INTERFACE_ADDREF(*subprime)
+    REFCOUNT_ADD(*subprime)
     return NOERROR;
 }
 

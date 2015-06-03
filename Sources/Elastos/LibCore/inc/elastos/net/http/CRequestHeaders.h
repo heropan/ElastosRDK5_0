@@ -3,7 +3,6 @@
 #define __CREQUESTHEADERS_H__
 
 #include "_CRequestHeaders.h"
-#include "cmdef.h"
 #include "CHeaderParserHelper.h"
 
 using Elastos::Utility::IMap;

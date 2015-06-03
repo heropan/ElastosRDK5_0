@@ -4,12 +4,12 @@
 
 #include "Elastos.CoreLibrary_server.h"
 #include "InputStream.h"
-#include "elastos/Mutex.h"
+
 
 using Elastos::IO::InputStream;
 using Elastos::IO::IInputStream;
 using Elastos::Net::ISocket;
-using Elastos::Core::Mutex;
+
 
 namespace Elastos {
 namespace Net {
@@ -36,7 +36,7 @@ public:
     CARAPI Read(
         /* [out] */ Int32* value);
 
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

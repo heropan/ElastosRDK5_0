@@ -12,7 +12,7 @@ ECode CURLDecoder::Decode(
     return URLDecoder::Decode(s, result);
 }
 
-ECode CURLDecoder::DecodeEx(
+ECode CURLDecoder::Decode(
     /* [in] */ const String& s,
     /* [in] */ const String& charsetName,
     /* [out] */ String* result)

@@ -82,7 +82,7 @@ public:
         /* [in] */ Int32 timeout,
         /* [out] */ Boolean* isReachable);
 
-    CARAPI IsReachableEx(
+    CARAPI IsReachable(
         /* [in] */ INetworkInterface* networkInterface,
         /* [in] */ Int32 ttl,
         /* [in] */ Int32 timeout,

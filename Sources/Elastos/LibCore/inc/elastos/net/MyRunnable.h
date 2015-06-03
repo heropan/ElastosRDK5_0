@@ -5,10 +5,10 @@
 #include <elastos.h>
 #include <eltypes.h>
 #include <stdio.h>
-#include <elastos/Mutex.h>
+
 #include "Elastos.CoreLibrary_server.h"
 
-using Elastos::Core::Mutex;
+
 using Elastos::Core::IRunnable;
 
 class MyRunnable

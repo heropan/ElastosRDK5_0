@@ -36,18 +36,18 @@ public:
     CARAPI JoinGroup(
         /* [in] */ IInetAddress* groupAddr);
 
-    CARAPI JoinGroupEx(
+    CARAPI JoinGroup(
         /* [in] */ ISocketAddress* groupAddress,
         /* [in] */ INetworkInterface* netInterface);
 
     CARAPI LeaveGroup(
         /* [in] */ IInetAddress* groupAddr);
 
-    CARAPI LeaveGroupEx(
+    CARAPI LeaveGroup(
         /* [in] */ ISocketAddress* groupAddress,
         /* [in] */ INetworkInterface* netInterface);
 
-    CARAPI SendEx(
+    CARAPI Send(
         /* [in] */ IDatagramPacket* pack,
         /* [in] */ Byte ttl);
 
@@ -75,7 +75,7 @@ public:
 
     CARAPI Close();
 
-    CARAPI ConnectEx(
+    CARAPI Connect(
         /* [in] */ IInetAddress* address,
         /* [in] */ Int32 aPort);
 

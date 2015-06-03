@@ -6,7 +6,7 @@
 #include "elastos/HashMap.h"
 #include "Org.Xmlpull.V1_server.h"
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Org::Xmlpull::V1::IXmlPullParserFactory;
 
 namespace Org {

@@ -1,6 +1,5 @@
 
 #include "CCertificateFactory.h"
-#include "cmdef.h"
 #include "CSecurity.h"
 
 using Elastos::Security::CSecurity;

@@ -1,7 +1,6 @@
 #ifndef __STRINGCHARACTERITERATOR_H__
 #define __STRINGCHARACTERITERATOR_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos.h>
 

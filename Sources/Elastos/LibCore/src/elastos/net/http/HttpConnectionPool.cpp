@@ -49,7 +49,7 @@ ECode HttpConnectionPool::Get(
     //             AutoPtr<ISocket> socket = ((HttpConnection*)connection)->GetSocket();
     //             SocketTagger.get().tag(socket);
     //             *hc = connection;
-    //             INTERFACE_ADDREF(*hc)
+    //             REFCOUNT_ADD(*hc)
     //             return NOERROR;
     //         }
     //     }
@@ -62,7 +62,7 @@ ECode HttpConnectionPool::Get(
     AutoPtr<IHttpConnection> httc;
     address->Connect(connectTimeout, (IHttpConnection**)&httc);
     *hc = httc;
-    INTERFACE_ADDREF(*hc)
+    REFCOUNT_ADD(*hc)
 
     return NOERROR;
 }

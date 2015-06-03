@@ -3,15 +3,14 @@
 #define __CHTTPCOOKIE_H__
 
 #include "_CHttpCookie.h"
-#include "cmdef.h"
-#include <elastos/HashSet.h>
-#include <elastos/List.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringBuilder.h>
 #include "InetAddress.h"
 
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::List;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::IDate;
 
 namespace Elastos {

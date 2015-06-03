@@ -20,7 +20,7 @@ public :
         /* [in] */ const String& s,
         /* [out] */ String* result);
 
-    CARAPI DecodeEx(
+    CARAPI Decode(
         /* [in] */ const String& s,
         /* [in] */ Boolean convertPlus,
         /* [in] */ ICharset* charset,

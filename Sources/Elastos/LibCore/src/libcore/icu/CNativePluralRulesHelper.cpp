@@ -13,7 +13,7 @@ ECode CNativePluralRulesHelper::ForLocale(
 
     AutoPtr<INativePluralRules> ans = CNativePluralRules::ForLocale(locale);
     *outrules = ans;
-    INTERFACE_ADDREF(*outrules);
+    REFCOUNT_ADD(*outrules);
     return NOERROR;
 }
 

@@ -127,7 +127,7 @@ ECode CertPath::WriteReplace(
     }
     ret = new CertPathRep(mType, encode);
     *object = (PInterface)(ISerializable*)ret.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -153,7 +153,7 @@ ECode CertPath::CertPathRep::ReadResolve(
     AutoPtr<ICertPath> cp;
     FAIL_RETURN(cf->GenerateCertPath(is, (ICertPath**)&cp))
     *object = cp.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

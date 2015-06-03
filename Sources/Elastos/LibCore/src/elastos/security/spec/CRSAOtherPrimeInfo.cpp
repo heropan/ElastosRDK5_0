@@ -1,6 +1,5 @@
 
 #include "CRSAOtherPrimeInfo.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -12,7 +11,7 @@ ECode CRSAOtherPrimeInfo::GetCrtCoefficient(
 {
     VALIDATE_NOT_NULL(crtCoefficient)
     *crtCoefficient = mCrtCoefficient;
-    INTERFACE_ADDREF(*crtCoefficient)
+    REFCOUNT_ADD(*crtCoefficient)
     return NOERROR;
 }
 
@@ -21,7 +20,7 @@ ECode CRSAOtherPrimeInfo::GetPrime(
 {
     VALIDATE_NOT_NULL(prime)
     *prime = mPrime;
-    INTERFACE_ADDREF(*prime)
+    REFCOUNT_ADD(*prime)
     return NOERROR;
 }
 
@@ -30,7 +29,7 @@ ECode CRSAOtherPrimeInfo::GetExponent(
 {
     VALIDATE_NOT_NULL(exponent)
     *exponent = mPrimeExponent;
-    INTERFACE_ADDREF(*exponent)
+    REFCOUNT_ADD(*exponent)
     return NOERROR;
 }
 

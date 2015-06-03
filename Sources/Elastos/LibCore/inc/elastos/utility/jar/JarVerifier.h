@@ -12,7 +12,7 @@
 #include <elastos/Object.h>
 
 using Elastos::Utility::IVector;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::Object;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::OutputStream;
@@ -78,8 +78,6 @@ public:
 
         CARAPI Close();
 
-        CARAPI GetLock(
-            /* [out] */ IInterface** lockobj);
     private:
         String mName;
 

@@ -1,6 +1,5 @@
 
 #include "CPrivateCredentialPermission.h"
-#include "cmdef.h"
 
 namespace Elastosx {
 namespace Security {

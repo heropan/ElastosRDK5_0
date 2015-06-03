@@ -58,7 +58,7 @@ ECode HttpURLConnectionImpl::GetErrorStream(
         AutoPtr<IInputStream> is;
         response->GetResponseBody((IInputStream**)&is);
         *stream = is;
-        INTERFACE_ADDREF(*stream)
+        REFCOUNT_ADD(*stream)
         return NOERROR;
     }
     *stream = NULL;
@@ -91,7 +91,7 @@ ECode HttpURLConnectionImpl::GetHeaderField(
 //     return new SocketPermission(connectToAddress, "connect, resolve");
 // }
 
-ECode HttpURLConnectionImpl::GetHeaderFieldEx(
+ECode HttpURLConnectionImpl::GetHeaderField(
     /* [in] */ const String& fieldName,
     /* [out] */ String* str)
 {
@@ -144,7 +144,7 @@ ECode HttpURLConnectionImpl::GetHeaderFields(
     AutoPtr<IMap> osm;
     ECode ec = rawHeaders->ToMultimap((IMap**)&osm);
     *strmap = osm;
-    INTERFACE_ADDREF(*strmap)
+    REFCOUNT_ADD(*strmap)
     // } catch (IOException e) {
     //     return null;
     // }
@@ -163,7 +163,7 @@ ECode HttpURLConnectionImpl::GetRequestProperties(
     AutoPtr<IMap> osm;
     ECode ec = mRawRequestHeaders->ToMultimap((IMap**)&osm);
     *strmap = osm;
-    INTERFACE_ADDREF(*strmap);
+    REFCOUNT_ADD(*strmap);
     return ec;
 }
 
@@ -198,7 +198,7 @@ ECode HttpURLConnectionImpl::GetInputStream(
         return E_IO_EXCEPTION;
     }
     *is = result;
-    INTERFACE_ADDREF(*is)
+    REFCOUNT_ADD(*is)
 
     return NOERROR;
 }
@@ -220,7 +220,7 @@ ECode HttpURLConnectionImpl::GetOutputStream(
     }
 
     *os = result;
-    INTERFACE_ADDREF(*os)
+    REFCOUNT_ADD(*os)
 
     return NOERROR;
 }
@@ -306,7 +306,7 @@ ECode HttpURLConnectionImpl::GetHttpEngine(
     VALIDATE_NOT_NULL(he)
 
     *he = mHttpEngine;
-    INTERFACE_ADDREF(*he)
+    REFCOUNT_ADD(*he)
 
     return NOERROR;
 }
@@ -582,7 +582,7 @@ HttpURLConnectionImpl::Retry HttpURLConnectionImpl::ProcessResponseHeaders()
                 assert(0 && "Too many redirects!!!\n");
             }
             String location;
-            GetHeaderFieldEx(String("Location"), &location);
+            GetHeaderField(String("Location"), &location);
             if (location.IsNull()) {
                 return NONE;
             }

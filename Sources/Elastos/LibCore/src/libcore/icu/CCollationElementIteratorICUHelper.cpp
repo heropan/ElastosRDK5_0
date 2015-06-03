@@ -40,7 +40,7 @@ ECode CCollationElementIteratorICUHelper::GetInstance(
     VALIDATE_NOT_NULL(outiterICU)
     AutoPtr<ICollationElementIteratorICU> icu = CollationElementIteratorICU::GetInstance(collatorAddress,source);
     *outiterICU = icu;
-    INTERFACE_ADDREF(*outiterICU);
+    REFCOUNT_ADD(*outiterICU);
     return NOERROR;
 }
 

@@ -1,7 +1,6 @@
 
-#include "cmdef.h"
 #include "CProxy.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 namespace Elastos {
 namespace Net {
@@ -52,7 +51,7 @@ ECode CProxy::GetAddress(
 {
     VALIDATE_NOT_NULL(address);
     *address = mAddress;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 
@@ -61,7 +60,7 @@ ECode CProxy::GetNO_PROXY(
 {
     VALIDATE_NOT_NULL(proxy);
     *proxy = NO_PROXY;
-    INTERFACE_ADDREF(*proxy);
+    REFCOUNT_ADD(*proxy);
     return NOERROR;
 }
 

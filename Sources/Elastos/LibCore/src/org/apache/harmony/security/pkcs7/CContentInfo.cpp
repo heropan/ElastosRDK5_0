@@ -193,7 +193,7 @@ ECode CContentInfo::ASN1SequenceDerived::GetDecodedObject(
             bis->GetEncoded((ArrayOf<Byte>**)&arg3);
             AutoPtr<IContentInfo> ret = new CContentInfo(oid, arg2, arg3);
             *object = ret.Get();
-            INTERFACE_ADDREF(*object)
+            REFCOUNT_ADD(*object)
             return NOERROR;
         }
         else {
@@ -201,7 +201,7 @@ ECode CContentInfo::ASN1SequenceDerived::GetDecodedObject(
             bis->GetEncoded((ArrayOf<Byte>**)&arg3);
             AutoPtr<IContentInfo> ret = new CContentInfo(oid, NULL, arg3);
             *object = ret.Get();
-            INTERFACE_ADDREF(*object)
+            REFCOUNT_ADD(*object)
             return NOERROR;
         }
     }
@@ -229,7 +229,7 @@ ECode CContentInfo::ASN1SequenceDerived::GetDecodedObject(
         bis->GetEncoded((ArrayOf<Byte>**)&arg3);
         AutoPtr<IContentInfo> ret = new CContentInfo(oid, decodedRet, arg3);
         *object = ret.Get();
-        INTERFACE_ADDREF(*object)
+        REFCOUNT_ADD(*object)
         return NOERROR;
     }
     AutoPtr<IInterface> val1;
@@ -238,7 +238,7 @@ ECode CContentInfo::ASN1SequenceDerived::GetDecodedObject(
     bis->GetEncoded((ArrayOf<Byte>**)&arg3);
     AutoPtr<IContentInfo> ret = new CContentInfo(oid, val1, arg3);
     *object = ret.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -369,7 +369,7 @@ ECode CContentInfo::GetSignedData(
     VALIDATE_NOT_NULL(signedData)
     if (mOid->Equals(SIGNED_DATA)) {
         *signedData = ISignedData::Probe(mContent);
-        INTERFACE_ADDREF(*signedData)
+        REFCOUNT_ADD(*signedData)
     }
     return NOERROR;
 }
@@ -379,7 +379,7 @@ ECode CContentInfo::GetContent(
 {
     VALIDATE_NOT_NULL(content)
     *content = mContent;
-    INTERFACE_ADDREF(*content)
+    REFCOUNT_ADD(*content)
     return NOERROR;
 }
 
@@ -388,7 +388,7 @@ ECode CContentInfo::GetContentType(
 {
     VALIDATE_NOT_NULL(contentType)
     *contentType = mOid;
-    INTERFACE_ADDREF(*contentType)
+    REFCOUNT_ADD(*contentType)
     return NOERROR;
 }
 
@@ -400,7 +400,7 @@ ECode CContentInfo::GetEncoded(
         ASN1->Encode(this, (ArrayOf<Byte>**)&mEncoding);
     }
     *encoded = mEncoding;
-    INTERFACE_ADDREF(*encoded);
+    REFCOUNT_ADD(*encoded);
     return NOERROR;
 }
 

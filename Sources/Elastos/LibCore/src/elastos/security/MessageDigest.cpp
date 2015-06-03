@@ -190,7 +190,7 @@ ECode MessageDigest::GetProvider(
 {
     VALIDATE_NOT_NULL(provider)
     *provider = mProvider;
-    INTERFACE_ADDREF(*provider)
+    REFCOUNT_ADD(*provider)
     return NOERROR;
 }
 
@@ -386,7 +386,7 @@ ECode MessageDigest::MessageDigestImpl::Clone(
         String algo;
         GetAlgorithm(&algo);
         *object = (IMessageDigestSpi*)new MessageDigestImpl(spi, pro, algo);
-        INTERFACE_ADDREF(*object)
+        REFCOUNT_ADD(*object)
         return NOERROR;
     }
     return E_CLONE_NOT_SUPPORTED_EXCEPTION;

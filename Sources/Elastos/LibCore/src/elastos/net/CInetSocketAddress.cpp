@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CInetSocketAddress.h"
 #include "CInet4Address.h"
 #include "InetAddress.h"
@@ -118,7 +117,7 @@ ECode CInetSocketAddress::GetAddress(
     VALIDATE_NOT_NULL(address);
 
     *address = mAddr;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
 
     return NOERROR;
 }

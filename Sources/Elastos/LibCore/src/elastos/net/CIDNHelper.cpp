@@ -1,12 +1,11 @@
 
-#include "cmdef.h"
 #include "CIDNHelper.h"
 #include "IDN.h"
 
 namespace Elastos {
 namespace Net {
 
-ECode CIDNHelper::ToASCIIEx(
+ECode CIDNHelper::ToASCII(
     /* [in] */ const String& input,
     /* [in] */ Int32 flags,
     /* [out] */ String* result)
@@ -25,7 +24,7 @@ ECode CIDNHelper::ToASCII(
     /* [in] */ const String& input,
     /* [out] */ String* result)
 {
-    return ToASCIIEx(input, 0, result);
+    return ToASCII(input, 0, result);
 }
 
  /**
@@ -43,7 +42,7 @@ ECode CIDNHelper::ToASCII(
  * @param flags 0, {@code ALLOW_UNASSIGNED}, {@code USE_STD3_ASCII_RULES},
  *         or {@code ALLOW_UNASSIGNED | USE_STD3_ASCII_RULES}
  */
-ECode CIDNHelper::ToUnicodeEx(
+ECode CIDNHelper::ToUnicode(
     /* [in] */ const String& input,
     /* [in] */ Int32 flags,
     /* [out] */ String* result)
@@ -61,7 +60,7 @@ ECode CIDNHelper::ToUnicode(
     /* [in] */ const String& input,
     /* [out] */ String* result)
 {
-    return ToUnicodeEx(input, 0, result);
+    return ToUnicode(input, 0, result);
 }
 
 } // namespace Net

@@ -1,7 +1,6 @@
 #ifndef __CURLENCODER_H__
 #define __CURLENCODER_H__
 
-#include "cmdef.h"
 #include "_CURLEncoder.h"
 #include "UriCodec.h"
 
@@ -15,7 +14,7 @@ public:
         /* [in] */ const String& s,
         /* [out] */ String* result);
 
-    CARAPI EncodeEx(
+    CARAPI Encode(
         /* [in] */ const String& s,
         /* [in] */ const String& charsetName,
         /* [out] */ String* result);

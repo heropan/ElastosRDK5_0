@@ -1,6 +1,5 @@
 
 #include "CPKIXCertPathBuilderResult.h"
-#include "cmdef.h"
 #include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
@@ -52,7 +51,7 @@ ECode CPKIXCertPathBuilderResult::GetCertPath(
 {
     VALIDATE_NOT_NULL(certPath)
     *certPath = mCertPath;
-    INTERFACE_ADDREF(*certPath)
+    REFCOUNT_ADD(*certPath)
     return NOERROR;
 }
 

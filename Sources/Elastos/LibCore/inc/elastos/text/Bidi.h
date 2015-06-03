@@ -1,10 +1,9 @@
 #ifndef __BIDI_H__
 #define __BIDI_H__
 
-#include "cmdef.h"
 #include <Elastos.CoreLibrary_server.h>
 #include <elastos.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Text::IAttributedCharacterIterator;;
 

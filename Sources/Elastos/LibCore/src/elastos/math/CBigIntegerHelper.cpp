@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CBigIntegerHelper.h"
 #include "CBigInteger.h"
 

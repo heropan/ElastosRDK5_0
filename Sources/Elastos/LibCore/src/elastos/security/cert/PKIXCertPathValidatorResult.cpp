@@ -1,6 +1,5 @@
 
 #include "PKIXCertPathValidatorResult.h"
-#include "cmdef.h"
 #include "StringBuilder.h"
 #include "CPKIXCertPathValidatorResult.h"
 #include "CPKIXCertPathBuilderResult.h"
@@ -35,7 +34,7 @@ ECode PKIXCertPathValidatorResult::GetPolicyTree(
 {
     VALIDATE_NOT_NULL(node)
     *node = mPolicyTree;
-    INTERFACE_ADDREF(*node)
+    REFCOUNT_ADD(*node)
     return NOERROR;
 }
 
@@ -44,7 +43,7 @@ ECode PKIXCertPathValidatorResult::GetPublicKey(
 {
     VALIDATE_NOT_NULL(key)
     *key = mSubjectPublicKey;
-    INTERFACE_ADDREF(*key)
+    REFCOUNT_ADD(*key)
     return NOERROR;
 }
 
@@ -53,7 +52,7 @@ ECode PKIXCertPathValidatorResult::GetTrustAnchor(
 {
     VALIDATE_NOT_NULL(anchor)
     *anchor = mTrustAnchor;
-    INTERFACE_ADDREF(*anchor)
+    REFCOUNT_ADD(*anchor)
     return NOERROR;
 }
 
@@ -65,7 +64,7 @@ ECode PKIXCertPathValidatorResult::Clone(
         AutoPtr<IPKIXCertPathValidatorResult> result;
         FAIL_RETURN(CPKIXCertPathValidatorResult::New(NULL, NULL, NULL, (IPKIXCertPathValidatorResult**)&result))
         *obj = result.Get();
-        INTERFACE_ADDREF(*obj)
+        REFCOUNT_ADD(*obj)
         return NOERROR;
     }
     else if (this->Probe(EIID_IPKIXCertPathBuilderResult)) {
@@ -73,7 +72,7 @@ ECode PKIXCertPathValidatorResult::Clone(
         FAIL_RETURN(CPKIXCertPathBuilderResult::New(
             NULL, NULL, NULL, NULL, (IPKIXCertPathBuilderResult**)&result))
         *obj = result.Get();
-        INTERFACE_ADDREF(*obj)
+        REFCOUNT_ADD(*obj)
         return NOERROR;
     }
     return E_RUNTIME_EXCEPTION;

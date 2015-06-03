@@ -1,6 +1,5 @@
 
 #include "CSecurity.h"
-#include "cmdef.h"
 #include "CProperties.h"
 #include "CStringWrapper.h"
 #include "CHashMap.h"
@@ -459,7 +458,7 @@ ECode CSecurity::GetAlgorithms(
     // compatibility with RI
     if (serviceName.IsNull()) {
         *algs = result;
-        INTERFACE_ADDREF(*algs)
+        REFCOUNT_ADD(*algs)
         return NOERROR;
     }
     AutoPtr<ArrayOf<IProvider*> > providers;
@@ -484,7 +483,7 @@ ECode CSecurity::GetAlgorithms(
         }
     }
     *algs = result;
-    INTERFACE_ADDREF(*algs)
+    REFCOUNT_ADD(*algs)
     return NOERROR;
 }
 

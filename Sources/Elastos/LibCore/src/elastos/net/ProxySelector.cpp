@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "ProxySelector.h"
 // #include "CNetPermission.h"
 #include "ProxySelectorImpl.h"
@@ -37,7 +36,7 @@ ECode ProxySelector::GetDefault(
     }
 
     *defaultSelector = sDefaultSelector;
-    INTERFACE_ADDREF(*defaultSelector);
+    REFCOUNT_ADD(*defaultSelector);
     return NOERROR;
 }
 

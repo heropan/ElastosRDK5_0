@@ -1,6 +1,5 @@
 
 #include "CKeyStorePrivateKeyEntry.h"
-#include "cmdef.h"
 #include "StringBuilder.h"
 #include "StringUtils.h"
 
@@ -17,7 +16,7 @@ ECode CKeyStorePrivateKeyEntry::GetPrivateKey(
 {
     VALIDATE_NOT_NULL(privateKey)
     *privateKey = mPrivateKey;
-    INTERFACE_ADDREF(*privateKey)
+    REFCOUNT_ADD(*privateKey)
     return NOERROR;
 }
 
@@ -26,7 +25,7 @@ ECode CKeyStorePrivateKeyEntry::GetCertificateChain(
 {
     VALIDATE_NOT_NULL(cc)
     *cc = mChain->Clone();
-    INTERFACE_ADDREF(*cc)
+    REFCOUNT_ADD(*cc)
     return NOERROR;
 }
 
@@ -35,7 +34,7 @@ ECode CKeyStorePrivateKeyEntry::GetCertificate(
 {
     VALIDATE_NOT_NULL(cert)
     *cert = (*mChain)[0];
-    INTERFACE_ADDREF(*cert)
+    REFCOUNT_ADD(*cert)
     return NOERROR;
 }
 

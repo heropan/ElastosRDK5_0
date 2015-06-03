@@ -123,13 +123,13 @@ ECode CInetAddress::IsReachable(
     return InetAddress::IsReachable(timeout, isReachable);
 }
 
-ECode CInetAddress::IsReachableEx(
+ECode CInetAddress::IsReachable(
     /* [in] */ INetworkInterface* networkInterface,
     /* [in] */ Int32 ttl,
     /* [in] */ Int32 timeout,
     /* [out] */ Boolean* isReachable)
 {
-    return InetAddress::IsReachableEx(networkInterface, ttl, timeout, isReachable);
+    return InetAddress::IsReachable(networkInterface, ttl, timeout, isReachable);
 }
 
 ECode CInetAddress::Equals(

@@ -1,6 +1,5 @@
 
 #include "CKeyStoreSecretKeyEntry.h"
-#include "cmdef.h"
 #include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
@@ -15,7 +14,7 @@ ECode CKeyStoreSecretKeyEntry::GetSecretKey(
     // TODO: Add your code here
     VALIDATE_NOT_NULL(key)
     *key = mSecretKey;
-    INTERFACE_ADDREF(*key)
+    REFCOUNT_ADD(*key)
     return NOERROR;
 }
 

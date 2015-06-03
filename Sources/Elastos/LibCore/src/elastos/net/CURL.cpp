@@ -7,7 +7,7 @@
 #include "CHttpHandler.h"
 #include "CHttpsHandler.h"
 #include <elastos/CSystem.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -475,7 +475,7 @@ ECode CURL::ToURI(
     return CURI::New(url, uri);
 }
 
-ECode CURL::OpenConnectionEx(
+ECode CURL::OpenConnection(
     /* [in] */ IProxy* proxy,
     /* [out] */ IURLConnection** connection)
 {
@@ -486,7 +486,7 @@ ECode CURL::OpenConnectionEx(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    return mStreamHandler->OpenConnectionEx((IURL*)this, proxy, connection);
+    return mStreamHandler->OpenConnection((IURL*)this, proxy, connection);
 }
 
 ECode CURL::ToExternalForm(
@@ -598,7 +598,7 @@ ECode CURL::ToURILenient(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String handlerStr;
-    mStreamHandler->ToExternalFormEx((IURL*)this, TRUE, &handlerStr);
+    mStreamHandler->ToExternalForm((IURL*)this, TRUE, &handlerStr);
     return CURI::New(handlerStr, uri);
 }
 

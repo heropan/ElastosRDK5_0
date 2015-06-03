@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CLocaleDataHelper.h"
 #include "LocaleData.h"
 
@@ -14,7 +13,7 @@ ECode CLocaleDataHelper::Get(
 
     AutoPtr<ILocaleData> temp = LocaleData::Get(locale);
     *localeData = temp;
-    INTERFACE_ADDREF(*localeData);
+    REFCOUNT_ADD(*localeData);
 
     return NOERROR;
 }

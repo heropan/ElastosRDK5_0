@@ -245,7 +245,7 @@ ECode CX509CertFactoryImpl::EngineGenerateCertificates(
                 // so keep it in the stream
                 inStream->Reset();
                 *cert = result;
-                INTERFACE_ADDREF(*cert)
+                REFCOUNT_ADD(*cert)
                 result NOERROR;
             }
         }
@@ -276,7 +276,7 @@ ECode CX509CertFactoryImpl::EngineGenerateCertificates(
                 // it can be trailing user data,
                 // so return what we already read
                 *cert = result;
-                INTERFACE_ADDREF(*cert)
+                REFCOUNT_ADD(*cert)
                 return NOERROR;
             }
         } else {
@@ -298,7 +298,7 @@ ECode CX509CertFactoryImpl::EngineGenerateCertificates(
     if (sz != 0) {
         // some Certificates have been read
         *cert = result;
-        INTERFACE_ADDREF(*cert)
+        REFCOUNT_ADD(*cert)
         return NOERROR;
     } else if (ch == -1) {
         //throw new CertificateException("There is no data in the stream");
@@ -339,7 +339,7 @@ ECode CX509CertFactoryImpl::EngineGenerateCertificates(
             }
         }
         *col = result;
-        INTERFACE_ADDREF(*col)
+        REFCOUNT_ADD(*col)
         return NOERROR;
     }
     return NOERROR;
@@ -423,7 +423,7 @@ ECode CX509CertFactoryImpl::EngineGenerateCRLs(
                 inStream->Reset();
                 //return result;
                 *crls = result;
-                INTERFACE_ADDREF(*crls)
+                REFCOUNT_ADD(*crls)
                 return NOERROR;
             }
         }
@@ -454,7 +454,7 @@ ECode CX509CertFactoryImpl::EngineGenerateCRLs(
                 // it can be trailing user data,
                 // so return what we already read
                 *crls = result;
-                INTERFACE_ADDREF(*crls)
+                REFCOUNT_ADD(*crls)
                 return NOERROR;
             }
         } else {
@@ -475,7 +475,7 @@ ECode CX509CertFactoryImpl::EngineGenerateCRLs(
     if (rs != 0) {
         // the stream was read out
         *crls = result;
-        INTERFACE_ADDREF(*crls)
+        REFCOUNT_ADD(*crls)
         return NOERROR;
     } else if (ch == -1) {
         //throw new CRLException("There is no data in the stream");
@@ -516,7 +516,7 @@ ECode CX509CertFactoryImpl::EngineGenerateCRLs(
             }
         }
         *crls = result;
-        INTERFACE_ADDREF(*crls)
+        REFCOUNT_ADD(*crls)
         return NOERROR;
     }
     // else: Unknown data format
@@ -699,7 +699,7 @@ ECode CX509CertFactoryImpl::DecodePEM(
         return E_IO_EXCEPTION;
     }
     *decoded = buff;
-    INTERFACE_ADDREF(*decoded)
+    REFCOUNT_ADD(*decoded)
     return NOERROR;
 }
 
@@ -718,7 +718,7 @@ ECode CX509CertFactoryImpl::ReadBytes(
         (*result)[i] = (Byte) bytik;
     }
     *bytes = result;
-    INTERFACE_ADDREF(*bytes)
+    REFCOUNT_ADD(*bytes)
     return NOERROR;
 }
 
@@ -742,7 +742,7 @@ ECode CX509CertFactoryImpl::GetCertificate(
             if (res != NULL) {
                 //return res;
                 *cert = res;
-                INTERFACE_ADDREF(*cert)
+                REFCOUNT_ADD(*cert)
                 return NOERROR;
             }
         }
@@ -750,7 +750,7 @@ ECode CX509CertFactoryImpl::GetCertificate(
         CX509CertImpl::New(encoding, (ICertificate**)&res);
         CERT_CACHE->Put(hash, encoding, res.Get());
         *cert = res;
-        INTERFACE_ADDREF(*cert)
+        REFCOUNT_ADD(*cert)
         return NOERROR;
     }
 }
@@ -789,13 +789,13 @@ ECode CX509CertFactoryImpl::GetCertificate(
             CERT_CACHE->Get(hash, encoding, (ICertificate**)&res);
             if (res != NULL) {
                 *cert = res;
-                INTERFACE_ADDREF(*cert)
+                REFCOUNT_ADD(*cert)
                 return NOERROR;
             }
             CX509CertImpl::New(encoding, (ICertificate**)&res);
             CERT_CACHE->Put(hash, encoding, res);
             *cert = res;
-            INTERFACE_ADDREF(*cert)
+            REFCOUNT_ADD(*cert)
             return NOERROR;
         } else {
             inStream->Reset();
@@ -805,7 +805,7 @@ ECode CX509CertFactoryImpl::GetCertificate(
             res->GetEncoded((ArrayOf<Byte>**)&encoding);
             CERT_CACHE->Put(hash, encoding, res);
             *cert = res;
-            INTERFACE_ADDREF(*cert)
+            REFCOUNT_ADD(*cert)
             return NOERROR;
         }
     }
@@ -831,7 +831,7 @@ ECode CX509CertFactoryImpl::GetCRL(
             //X509CRL res = (X509CRL) CRL_CACHE.get(hash, encoding);
             if (res != NULL) {
                 *crl = res;
-                INTERFACE_ADDREF(*crl)
+                REFCOUNT_ADD(*crl)
                 return NOERROR;
             }
         }
@@ -839,7 +839,7 @@ ECode CX509CertFactoryImpl::GetCRL(
         CX509CRLImpl::New(encoding, (IX509CRL**)&res);
         CRL_CACHE->Put(hash, encoding, res.Get());
         *crl = res;
-        INTERFACE_ADDREF(*crl)
+        REFCOUNT_ADD(*crl)
         return NOERROR;
     }
 }
@@ -877,7 +877,7 @@ ECode CX509CertFactoryImpl::GetCRL(
         AutoPtr<ICRL> res = ICRL::Probe(tmp);
         if (res != NULL) {
             *crl = res.Get();
-            INTERFACE_ADDREF(*crl)
+            REFCOUNT_ADD(*crl)
             return NOERROR;
         }
         res = NULL;
@@ -886,7 +886,7 @@ ECode CX509CertFactoryImpl::GetCRL(
         res = impl.Get();
         CRL_CACHE->Put(hash, encoding, res.Get());
         *crl = res.Get();
-        INTERFACE_ADDREF(*crl)
+        REFCOUNT_ADD(*crl)
         return NOERROR;
     } else {
         AutoPtr<IX509CRL> res;
@@ -895,7 +895,7 @@ ECode CX509CertFactoryImpl::GetCRL(
         res->GetEncoded((ArrayOf<Byte>**)&bytes);
         CRL_CACHE->Put(hash, bytes, res.Get());
         *crl = res.Get();
-        INTERFACE_ADDREF(*crl)
+        REFCOUNT_ADD(*crl)
         return NOERROR;
     }
 }

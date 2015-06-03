@@ -40,7 +40,7 @@ ECode CBitString::GetBytes(
 {
     VALIDATE_NOT_NULL(bytes)
     *bytes = mBytes;
-    INTERFACE_ADDREF(*bytes)
+    REFCOUNT_ADD(*bytes)
     return NOERROR;
 }
 
@@ -94,7 +94,7 @@ ECode CBitString::ToBooleanArray(
         GetBit(i, &(*result)[i]);
     }
     *array = result;
-    INTERFACE_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 

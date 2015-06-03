@@ -1,6 +1,6 @@
 #include "UriCodec.h"
 #include <Elastos.CoreLibrary_server.h>
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 #include <elastos/IntegralToString.h>
 #include "CCharBufferHelper.h"
 #include "CByteArrayOutputStream.h"
@@ -83,10 +83,10 @@ ECode UriCodec:: AppendEncoded(
     /* [in] */ const String& s) const
 {
     AutoPtr<ICharset> charset = GetDefaultCharset();
-    return AppendEncodedEx(builder, s, charset, FALSE);
+    return AppendEncoded(builder, s, charset, FALSE);
 }
 
-ECode UriCodec::AppendEncodedEx(
+ECode UriCodec::AppendEncoded(
     /* [in] */ StringBuilder& builder,
     /* [in] */ const String& s,
     /* [in] */ ICharset* charset,
@@ -105,7 +105,7 @@ ECode UriCodec::AppendEncodedEx(
                 || IsRetained(c)
                 || (c == '%') && isPartiallyEncoded) {
             if (escapeStart != -1) {
-                AppendHexEx(builder, s.Substring(escapeStart, i), charset);
+                AppendHex(builder, s.Substring(escapeStart, i), charset);
                 escapeStart = -1;
             }
 
@@ -126,7 +126,7 @@ ECode UriCodec::AppendEncodedEx(
     }
 
     if (escapeStart != -1) {
-        AppendHexEx(builder, s.Substring(escapeStart, s.GetLength()), charset);
+        AppendHex(builder, s.Substring(escapeStart, s.GetLength()), charset);
     }
     return NOERROR;
 }
@@ -138,7 +138,7 @@ ECode UriCodec::Encode(
 {
     // Guess a bit larger for encoded form
     StringBuilder builder(s.GetByteLength() + 16);
-    AppendEncodedEx(builder, s, charset, FALSE);
+    AppendEncoded(builder, s, charset, FALSE);
     *result = builder.ToString();
     return NOERROR;
 }
@@ -148,7 +148,7 @@ ECode UriCodec::AppendPartiallyEncoded(
     /* [in] */ const String& s)
 {
     AutoPtr<ICharset> charset = GetDefaultCharset();
-    AppendEncodedEx(builder, s, charset, TRUE);
+    AppendEncoded(builder, s, charset, TRUE);
     return NOERROR;
 }
 
@@ -158,7 +158,7 @@ ECode UriCodec::Decode(
 {
     VALIDATE_NOT_NULL(result);
     AutoPtr<ICharset> charset = GetDefaultCharset();
-    return DecodeEx(s, FALSE, charset, TRUE, result);
+    return Decode(s, FALSE, charset, TRUE, result);
 }
 
 AutoPtr<ArrayOf<Byte> > UriCodec::GetBytes(
@@ -202,7 +202,7 @@ AutoPtr<ArrayOf<Byte> > UriCodec::GetBytes(
     return byteArray;
 }
 
-ECode UriCodec::DecodeEx(
+ECode UriCodec::Decode(
     /* [in] */ const String& s,
     /* [in] */ Boolean convertPlus,
     /* [in] */ ICharset* charset,
@@ -235,7 +235,7 @@ ECode UriCodec::DecodeEx(
                 else {
                     char* chars = "\ufffd";
                     AutoPtr<ArrayOf<Byte> > replacement = GetBytes(chars, charset);
-                    out->WriteBytesEx(*replacement, 0, replacement->GetLength());
+                    out->WriteBytes(*replacement, 0, replacement->GetLength());
                 }
                 i += 3;
             } while (i < s.GetLength() && (*char32Array)[i] == '%');
@@ -281,7 +281,7 @@ ECode UriCodec::AppendHex(
     return NOERROR;
 }
 
-ECode UriCodec::AppendHexEx(
+ECode UriCodec::AppendHex(
     /* [in] */ StringBuilder& builder,
     /* [in] */ const String& s,
     /* [in] */ ICharset* charset)

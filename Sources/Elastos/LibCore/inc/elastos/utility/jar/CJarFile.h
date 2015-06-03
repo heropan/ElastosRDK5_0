@@ -66,10 +66,6 @@ public:
 
         CARAPI Close();
 
-    protected:
-        CARAPI GetLock(
-            /* [out] */ IInterface** lockobj);
-
     private:
         Int64 mCount;
         AutoPtr<IZipEntry> mZipEntry;

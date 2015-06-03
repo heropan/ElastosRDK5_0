@@ -2,16 +2,13 @@
 #ifndef __URLCONNECTION_H__
 #define __URLCONNECTION_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
-#include <elautoptr.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
-using Elastos::Utility::HashMap;
-using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
+
 
 namespace Elastos {
 namespace Net {
@@ -41,7 +38,7 @@ public:
             /* [in] */ IURLConnection* uConn,
             /* [out] */ IInterface** obj);
 
-        CARAPI GetContentEx(
+        CARAPI GetContent(
             /* [in] */ IURLConnection* uConn,
             /* [in] */ const ArrayOf<InterfaceID>& types,
             /* [out] */ IInterface** obj);

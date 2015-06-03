@@ -157,7 +157,7 @@ ECode CASN1NamedBitList::GetDecodedObject(
     if (bitsNumber == 0) {
         // empty bit string
         *object = value;
-        INTERFACE_ADDREF(*object)
+        REFCOUNT_ADD(*object)
         return NOERROR;
     }
 
@@ -179,7 +179,7 @@ ECode CASN1NamedBitList::GetDecodedObject(
     }
 
     *object = value;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

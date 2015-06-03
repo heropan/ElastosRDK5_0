@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CBasicLruCache.h"
 
 namespace Libcore {

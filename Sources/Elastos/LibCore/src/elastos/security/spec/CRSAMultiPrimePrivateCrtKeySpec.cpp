@@ -1,6 +1,5 @@
 
 #include "CRSAMultiPrimePrivateCrtKeySpec.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -23,7 +22,7 @@ ECode CRSAMultiPrimePrivateCrtKeySpec::GetCrtCoefficient(
 {
     VALIDATE_NOT_NULL(crtCoefficient)
     *crtCoefficient = mCrtCoefficient;
-    INTERFACE_ADDREF(*crtCoefficient)
+    REFCOUNT_ADD(*crtCoefficient)
     return NOERROR;
 }
 
@@ -41,7 +40,7 @@ ECode CRSAMultiPrimePrivateCrtKeySpec::GetOtherPrimeInfo(
             ArrayOf<IRSAOtherPrimeInfo*>::Alloc(mOtherPrimeInfo->GetLength());
         ret->Copy(0, mOtherPrimeInfo, 0, ret->GetLength());
         *primeInfo = ret;
-        INTERFACE_ADDREF(*primeInfo)
+        REFCOUNT_ADD(*primeInfo)
         return NOERROR;
     }
 }
@@ -51,7 +50,7 @@ ECode CRSAMultiPrimePrivateCrtKeySpec::GetPrimeExponentP(
 {
     VALIDATE_NOT_NULL(p)
     *p = mPrimeExponentP;
-    INTERFACE_ADDREF(*p)
+    REFCOUNT_ADD(*p)
     return NOERROR;
 }
 
@@ -60,7 +59,7 @@ ECode CRSAMultiPrimePrivateCrtKeySpec::GetPrimeExponentQ(
 {
     VALIDATE_NOT_NULL(q)
     *q = mPrimeExponentQ;
-    INTERFACE_ADDREF(*q)
+    REFCOUNT_ADD(*q)
     return NOERROR;
 }
 
@@ -69,7 +68,7 @@ ECode CRSAMultiPrimePrivateCrtKeySpec::GetPrimeP(
 {
     VALIDATE_NOT_NULL(p)
     *p = mPrimeP;
-    INTERFACE_ADDREF(*p)
+    REFCOUNT_ADD(*p)
     return NOERROR;
 }
 
@@ -78,7 +77,7 @@ ECode CRSAMultiPrimePrivateCrtKeySpec::GetPrimeQ(
 {
     VALIDATE_NOT_NULL(q)
     *q = mPrimeQ;
-    INTERFACE_ADDREF(*q)
+    REFCOUNT_ADD(*q)
     return NOERROR;
 }
 
@@ -87,7 +86,7 @@ ECode CRSAMultiPrimePrivateCrtKeySpec::GetPublicExponent(
 {
     VALIDATE_NOT_NULL(pubExponent)
     *pubExponent = mPublicExponent;
-    INTERFACE_ADDREF(*pubExponent)
+    REFCOUNT_ADD(*pubExponent)
     return NOERROR;
 }
 

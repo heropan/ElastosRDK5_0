@@ -30,7 +30,7 @@ ECode CASN1Integer::GetInstance(
 {
     VALIDATE_NOT_NULL(instance)
     *instance = ASN1;
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 
@@ -89,7 +89,7 @@ ECode CASN1Integer::FromIntValue(
         arr->Put(i, bt.Get());
     }
     *fromIntValue = arr.Get();
-    INTERFACE_ADDREF(*fromIntValue)
+    REFCOUNT_ADD(*fromIntValue)
     return NOERROR;
 }
 
@@ -185,7 +185,7 @@ ECode CASN1Integer::GetDecodedObject(
         arr->Put(i, bt.Get());
     }
     *object = arr.Get();
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 

@@ -74,12 +74,6 @@ public:
     CARAPI constructor(
         /* [in] */ IInputStream* stream);
 
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
 private:
     AutoPtr<IManifest> mManifest;
 

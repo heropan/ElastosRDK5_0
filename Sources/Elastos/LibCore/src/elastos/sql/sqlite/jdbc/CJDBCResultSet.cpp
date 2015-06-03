@@ -300,7 +300,7 @@ ECode CJDBCResultSet::GetBytes(
     if (lastg != NULL) {
         AutoPtr<ArrayOf<Byte> > array = SQLite::StringEncoder::Decode(lastg);
         *oarray = array;
-        INTERFACE_ADDREF(*oarray);
+        REFCOUNT_ADD(*oarray);
     }
     return NOERROR;
 }
@@ -490,7 +490,7 @@ ECode CJDBCResultSet::GetMetaData(
         FAIL_RETURN(CJDBCResultSetMetaData::New((IJDBCResultSet *)this,(IJDBCResultSetMetaData **)&md));
     }
     *metaData = (IResultSetMetaData *)md.Get();
-    INTERFACE_ADDREF(*metaData);
+    REFCOUNT_ADD(*metaData);
     return NOERROR;
 }
 
@@ -541,7 +541,7 @@ ECode CJDBCResultSet::GetObject(
     }
 
     *obj = temp;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 

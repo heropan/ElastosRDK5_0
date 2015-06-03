@@ -1,8 +1,7 @@
 
-#include "cmdef.h"
 #include "CChunkedInputStream.h"
 #include <elastos/Math.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include <CStreams.h>
 
 using Elastos::IO::IStreams;
@@ -68,7 +67,7 @@ ECode CChunkedInputStream::ReadBytes(
     return AbstractHttpInputStream::ReadBytes(buffer, number);
 }
 
-ECode CChunkedInputStream::ReadBytesEx(
+ECode CChunkedInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -96,7 +95,7 @@ ECode CChunkedInputStream::ReadBytesEx(
         }
     }
     Int32 read = 0;
-    mIn->ReadBytesEx(buffer, offset, Elastos::Core::Math::Min(length, mBytesRemainingInChunk), &read);
+    mIn->ReadBytes(buffer, offset, Elastos::Core::Math::Min(length, mBytesRemainingInChunk), &read);
     if (read == -1) {
         UnexpectedEndOfInput(); // the server didn't supply the promised chunk length
         // throw new IOException("unexpected end of stream");
@@ -174,22 +173,6 @@ void CChunkedInputStream::ReadChunkSize()
     }
 }
 
-PInterface CChunkedInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CChunkedInputStream::Probe(riid);
-}
-
-ECode CChunkedInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = AbstractHttpInputStream::GetLock();
-    *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
-    return NOERROR;
-}
 
 } // namespace Http
 } // namespace Net

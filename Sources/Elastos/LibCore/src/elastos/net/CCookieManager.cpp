@@ -4,8 +4,8 @@
 #include "CHttpCookie.h"
 #include "CCookiePolicyHelper.h"
 #include "CCollections.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/Math.h>
 
 using Elastos::Core::StringUtils;
@@ -244,7 +244,7 @@ ECode CCookieManager::GetCookieStore(
     VALIDATE_NOT_NULL(cookieStore);
 
     *cookieStore = mStore;
-    INTERFACE_ADDREF(*cookieStore);
+    REFCOUNT_ADD(*cookieStore);
     return NOERROR;
 }
 

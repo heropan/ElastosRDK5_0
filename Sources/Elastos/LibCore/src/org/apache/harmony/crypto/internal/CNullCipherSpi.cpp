@@ -45,7 +45,7 @@ ECode CNullCipherSpi::EngineGetIV(
 {
     VALIDATE_NOT_NULL(iv)
     *iv = ArrayOf<Byte>::Alloc(8);
-    INTERFACE_ADDREF(*iv)
+    REFCOUNT_ADD(*iv)
     return NOERROR;
 }
 
@@ -99,7 +99,7 @@ ECode CNullCipherSpi::EngineUpdate(
     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(inputLen);
     result->Copy(0, input, inputOffset, inputLen);
     *op = result;
-    INTERFACE_ADDREF(*op)
+    REFCOUNT_ADD(*op)
     return NOERROR;
 }
 

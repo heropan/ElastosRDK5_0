@@ -87,7 +87,7 @@ ECode CServicesHelper::GetProviders(
         ret->Set(i, IProvider::Probe((*tmp2)[i]));
     }
     *providers = ret;
-    INTERFACE_ADDREF(*providers)
+    REFCOUNT_ADD(*providers)
     return NOERROR;
 }
 
@@ -113,7 +113,7 @@ ECode CServicesHelper::GetProvider(
     CStringWrapper::New(name, (ICharSequence**)&cs);
     sProvidersNames->Get(cs.Get(), (IInterface**)&ret);
     *provider = IProvider::Probe(ret);
-    INTERFACE_ADDREF(*provider)
+    REFCOUNT_ADD(*provider)
     return NOERROR;
 }
 
@@ -230,7 +230,7 @@ ECode CServicesHelper::GetService(
     AutoPtr<IInterface> ret;
     sServices->Get(cs.Get(), (IInterface**)&ret);
     *service = IService::Probe(ret);
-    INTERFACE_ADDREF(*service)
+    REFCOUNT_ADD(*service)
     return NOERROR;
 }
 
@@ -241,7 +241,7 @@ ECode CServicesHelper::GetSecureRandomService(
     VALIDATE_NOT_NULL(service)
     GetCacheVersion(); // used for side effect of updating cache if needed
     *service = sCachedSecureRandomService;
-    INTERFACE_ADDREF(*service);
+    REFCOUNT_ADD(*service);
     return NOERROR;
 }
 

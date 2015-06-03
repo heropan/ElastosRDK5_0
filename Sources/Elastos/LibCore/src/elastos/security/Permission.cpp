@@ -1,6 +1,5 @@
 
 #include "Permission.h"
-#include "cmdef.h"
 #include "AllPermissionCollection.h"
 
 namespace Elastos {
@@ -31,7 +30,7 @@ ECode Permission::NewPermissionCollection(
 {
     VALIDATE_NOT_NULL(coll)
     *coll = new AllPermissionCollection;
-    INTERFACE_ADDREF(*coll)
+    REFCOUNT_ADD(*coll)
     return NOERROR;
 }
 

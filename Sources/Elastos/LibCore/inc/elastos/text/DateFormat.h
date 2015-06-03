@@ -8,7 +8,7 @@
 
 #include "Elastos.CoreLibrary_server.h"
 #include "Format.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "AttributedCharacterIteratorAttributeMacro.h"
 
 using Elastos::Utility::IDate;
@@ -17,7 +17,7 @@ using Elastos::Utility::ITimeZone;
 using Libcore::ICU::ILocale;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::IParsePosition;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Text {

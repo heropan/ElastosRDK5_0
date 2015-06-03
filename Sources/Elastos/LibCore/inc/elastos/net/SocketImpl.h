@@ -41,7 +41,7 @@ protected:
         /* [in] */ const String& host,
         /* [in] */ Int32 port) = 0;
 
-    virtual CARAPI ConnectEx(
+    virtual CARAPI Connect(
         /* [in] */ IInetAddress* address,
         /* [in] */ Int32 port) = 0;
 
@@ -73,7 +73,7 @@ protected:
 
     virtual CARAPI ShutdownOutput();
 
-    virtual CARAPI ConnectEx2(
+    virtual CARAPI Connect(
         /* [in] */ ISocketAddress* remoteAddr,
         /* [in] */ Int32 timeout) = 0;
 

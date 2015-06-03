@@ -18,7 +18,7 @@ ECode CASN1Explicit::GetType(
 {
     VALIDATE_NOT_NULL(type)
     *type = mType;
-    INTERFACE_ADDREF(*type)
+    REFCOUNT_ADD(*type)
     return NOERROR;
 }
 

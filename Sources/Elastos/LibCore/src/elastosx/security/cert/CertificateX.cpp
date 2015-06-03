@@ -1,6 +1,5 @@
 
 #include "CertificateX.h"
-#include "cmdef.h"
 
 namespace Elastosx {
 namespace Security {

@@ -1,6 +1,5 @@
 
 #include "CPSSParameterSpec.h"
-#include "cmdef.h"
 #include "CMGF1ParameterSpec.h"
 
 namespace Elastos {
@@ -45,7 +44,7 @@ ECode CPSSParameterSpec::GetMGFParameters(
 {
     VALIDATE_NOT_NULL(mgfParams)
     *mgfParams = mMgfSpec;
-    INTERFACE_ADDREF(*mgfParams)
+    REFCOUNT_ADD(*mgfParams)
     return NOERROR;
 }
 

@@ -3,9 +3,8 @@
 #define __CHTTPRESPONSECACHE_H__
 
 #include "_CHttpResponseCache.h"
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
-#include "elastos/Mutex.h"
+
 #include "IoUtils.h"
 
 using Elastos::IO::IFile;
@@ -13,7 +12,7 @@ using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IoUtils;
 using Elastos::Utility::IMap;
-using Elastos::Core::Mutex;
+
 using Elastos::Security::IPrincipal;
 
 namespace Elastos {

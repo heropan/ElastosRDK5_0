@@ -1,7 +1,6 @@
 
 #include "CCertPathBuilderHelper.h"
 #include "CertPathBuilder.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {

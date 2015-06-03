@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "ServerSocket.h"
 #include "CInet4Address.h"
 #include "CInetSocketAddress.h"
@@ -111,7 +110,7 @@ ECode ServerSocket::GetImpl(
 {
     VALIDATE_NOT_NULL(impl);
     *impl = mImpl;
-    INTERFACE_ADDREF(*impl);
+    REFCOUNT_ADD(*impl);
     return NOERROR;
 }
 
@@ -143,7 +142,7 @@ ECode ServerSocket::Accept(
     //    throw e;
     // }
     *socket = socketObj;
-    INTERFACE_ADDREF(*socket);
+    REFCOUNT_ADD(*socket);
     return NOERROR;
 }
 
@@ -281,10 +280,10 @@ ECode ServerSocket::SetSoTimeout(
 ECode ServerSocket::Bind(
     /* [in] */ ISocketAddress* localAddr)
 {
-    return BindEx(localAddr, DefaultBacklog());
+    return Bind(localAddr, DefaultBacklog());
 }
 
-ECode ServerSocket::BindEx(
+ECode ServerSocket::Bind(
     /* [in] */ ISocketAddress* localAddr,
     /* [in] */ Int32 backlog)
 {

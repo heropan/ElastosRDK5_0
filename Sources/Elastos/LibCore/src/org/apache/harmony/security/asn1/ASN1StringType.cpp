@@ -397,7 +397,7 @@ ECode ASN1StringType::ASN1StringTypeOfDerived::GetDecodedObject(
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(str, (ICharSequence**)&cs);
     *object = cs.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -469,7 +469,7 @@ ECode ASN1StringType::GetDecodedObject(
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(str, (ICharSequence**)&cs);
     *object = cs.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

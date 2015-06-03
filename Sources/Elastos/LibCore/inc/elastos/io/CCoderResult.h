@@ -4,9 +4,9 @@
 
 #include "_Elastos_IO_CCoderResult.h"
 #include "coredef.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace IO {

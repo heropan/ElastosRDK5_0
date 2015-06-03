@@ -1,6 +1,5 @@
 
 #include "CFtpURLInputStream.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Net {
@@ -49,13 +48,13 @@ ECode CFtpURLInputStream::ReadBytes(
     return FtpURLInputStream::ReadBytes(buffer, number);
 }
 
-ECode CFtpURLInputStream::ReadBytesEx(
+ECode CFtpURLInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
-    return FtpURLInputStream::ReadBytesEx(buffer, offset, length, number);
+    return FtpURLInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CFtpURLInputStream::Reset()
@@ -70,22 +69,6 @@ ECode CFtpURLInputStream::Skip(
     return FtpURLInputStream::Skip(byteCount, number);
 }
 
-PInterface CFtpURLInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CFtpURLInputStream::Probe(riid);
-}
-
-ECode CFtpURLInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = FtpURLInputStream::GetLock();
-    *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
-    return NOERROR;
-}
 
 } // namespace Url
 } // namespace Net

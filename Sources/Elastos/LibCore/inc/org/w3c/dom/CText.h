@@ -2,7 +2,6 @@
 #ifndef __CTEXT_H__
 #define __CTEXT_H__
 
-#include "cmdef.h"
 #include "_CText.h"
 #include "Elastos.CoreLibrary.h"
 

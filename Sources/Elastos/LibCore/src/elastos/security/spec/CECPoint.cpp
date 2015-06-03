@@ -1,6 +1,5 @@
 
 #include "CECPoint.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -20,7 +19,7 @@ ECode CECPoint::GetAffineX(
 {
     VALIDATE_NOT_NULL(affineX)
     *affineX = mAffineX;
-    INTERFACE_ADDREF(*affineX)
+    REFCOUNT_ADD(*affineX)
     return NOERROR;
 }
 
@@ -29,7 +28,7 @@ ECode CECPoint::GetAffineY(
 {
     VALIDATE_NOT_NULL(affineY)
     *affineY = mAffineY;
-    INTERFACE_ADDREF(*affineY)
+    REFCOUNT_ADD(*affineY)
     return NOERROR;
 }
 

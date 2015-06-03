@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CSocks4Message.h"
 
 namespace Elastos {
@@ -90,7 +89,7 @@ ECode CSocks4Message::GetBytes(
 
     AutoPtr<ArrayOf<Byte> > outbyte = Socks4Message::GetBytes();
     *bytes = outbyte;
-    INTERFACE_ADDREF(*bytes)
+    REFCOUNT_ADD(*bytes)
     return NOERROR;
 }
 

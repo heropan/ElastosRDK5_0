@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "JarHandler.h"
 #include "UrlUtils.h"
 #include "CURL.h"
@@ -65,7 +64,7 @@ ECode JarHandler::ParseURL(
     // } catch (MalformedURLException e) {
     //     throw new NullPointerException(e.toString());
     // }
-    return SetURLEx(url, String("jar"), String(""), -1, String(NULL), String(NULL), file, String(NULL), String(NULL));
+    return SetURL(url, String("jar"), String(""), -1, String(NULL), String(NULL), file, String(NULL), String(NULL));
 }
 
 ECode JarHandler::ToExternalForm(
@@ -89,12 +88,12 @@ ECode JarHandler::ToExternalForm(
 }
 
 
-ECode JarHandler::OpenConnectionEx(
+ECode JarHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [in] */ IProxy* proxy,
     /* [out] */ IURLConnection** urlConnection)
 {
-    return URLStreamHandler::OpenConnectionEx(u, proxy, urlConnection);
+    return URLStreamHandler::OpenConnection(u, proxy, urlConnection);
 }
 
 ECode JarHandler::SetURL(
@@ -108,7 +107,7 @@ ECode JarHandler::SetURL(
     return URLStreamHandler::SetURL(u, protocol, host, port, file, ref);
 }
 
-ECode JarHandler::SetURLEx(
+ECode JarHandler::SetURL(
     /* [in] */ IURL* u,
     /* [in] */ const String& protocol,
     /* [in] */ const String& host,
@@ -119,23 +118,23 @@ ECode JarHandler::SetURLEx(
     /* [in] */ const String& query,
     /* [in] */ const String& ref)
 {
-    return URLStreamHandler::SetURLEx(u, protocol, host, port, authority, userInfo, file, query, ref);
+    return URLStreamHandler::SetURL(u, protocol, host, port, authority, userInfo, file, query, ref);
 }
 
-ECode JarHandler::ToExternalFormEx(
+ECode JarHandler::ToExternalForm(
     /* [in] */ IURL* url,
     /* [in] */ Boolean escapeIllegalCharacters,
     /* [out] */ String* s)
 {
-    return URLStreamHandler::ToExternalFormEx(url, escapeIllegalCharacters, s);
+    return URLStreamHandler::ToExternalForm(url, escapeIllegalCharacters, s);
 }
 
-ECode JarHandler::EqualsEx(
+ECode JarHandler::Equals(
     /* [in] */ IURL* url1,
     /* [in] */ IURL* url2,
     /* [out] */ Boolean* isEquals)
 {
-    return URLStreamHandler::EqualsEx(url1, url2, isEquals);
+    return URLStreamHandler::Equals(url1, url2, isEquals);
 }
 
 ECode JarHandler::GetDefaultPort(

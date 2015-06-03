@@ -1,6 +1,5 @@
 
 #include "CKeyStorePasswordProtection.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -18,7 +17,7 @@ ECode CKeyStorePasswordProtection::GetPassword(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     *pwd = mPassword;
-    INTERFACE_ADDREF(*pwd)
+    REFCOUNT_ADD(*pwd)
     return NOERROR;
 }
 

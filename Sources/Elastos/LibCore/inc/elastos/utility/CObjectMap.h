@@ -3,9 +3,9 @@
 #define __COBJECTMAP_H__
 
 #include "_CObjectMap.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 _ETL_NAMESPACE_BEGIN
 

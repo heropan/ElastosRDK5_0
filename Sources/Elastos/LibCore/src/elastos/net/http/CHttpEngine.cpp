@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CHttpEngine.h"
 
 namespace Elastos {

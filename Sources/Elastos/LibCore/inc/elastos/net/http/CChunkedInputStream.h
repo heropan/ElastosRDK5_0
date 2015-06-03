@@ -33,7 +33,7 @@ public:
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -47,11 +47,7 @@ public:
 
     CARAPI Close();
 
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+Delete(
 
 private:
     CARAPI_(void) ReadChunkSize();

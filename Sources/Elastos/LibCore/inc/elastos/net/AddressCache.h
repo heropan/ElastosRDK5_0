@@ -2,11 +2,10 @@
 #ifndef __ADDRESSCACHE_H__
 #define __ADDRESSCACHE_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Net {

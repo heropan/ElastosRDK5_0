@@ -14,7 +14,7 @@ ECode CPrivateKeyInfoHelper::GetASN1(
 {
     VALIDATE_NOT_NULL(asn1)
     *asn1 = CPrivateKeyInfo::ASN1.Get();
-    INTERFACE_ADDREF(*asn1)
+    REFCOUNT_ADD(*asn1)
     return NOERROR;
 }
 

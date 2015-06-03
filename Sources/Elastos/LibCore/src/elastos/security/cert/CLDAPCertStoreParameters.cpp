@@ -1,6 +1,5 @@
 
 #include "CLDAPCertStoreParameters.h"
-#include "cmdef.h"
 #include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
@@ -18,7 +17,7 @@ ECode CLDAPCertStoreParameters::Clone(
     AutoPtr<ILDAPCertStoreParameters> clonedObj;
     FAIL_RETURN(CLDAPCertStoreParameters::New((ILDAPCertStoreParameters**)&clonedObj))
     *object = clonedObj;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

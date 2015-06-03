@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include <elastos/Map.h>
 
 namespace Elastos

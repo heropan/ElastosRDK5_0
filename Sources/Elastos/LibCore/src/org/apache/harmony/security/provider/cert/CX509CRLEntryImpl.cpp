@@ -79,7 +79,7 @@ ECode CX509CRLEntryImpl::GetEncoded(
     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(mEncoding->GetLength());
     result->Copy(0, mEncoding, 0, mEncoding->GetLength());
     *encoded = result;
-    INTERFACE_ADDREF(*encoded)
+    REFCOUNT_ADD(*encoded)
     return NOERROR;
 }
 
@@ -94,7 +94,7 @@ ECode CX509CRLEntryImpl::GetCertificateIssuer(
 {
     VALIDATE_NOT_NULL(issuer)
     *issuer = mIssuer;
-    INTERFACE_ADDREF(*issuer)
+    REFCOUNT_ADD(*issuer)
     return NOERROR;
 }
 

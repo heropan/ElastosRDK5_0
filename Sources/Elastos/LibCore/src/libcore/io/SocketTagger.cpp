@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "SocketTagger.h"
 
 using Elastos::IO::IFileDescriptor;
@@ -75,7 +74,7 @@ ECode SocketTagger::Get(
 
     Mutex::Autolock lock(sLock);
     *tagger = sTagger;
-    INTERFACE_ADDREF(*tagger);
+    REFCOUNT_ADD(*tagger);
     return NOERROR;
 }
 

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CIoBridge.h"
 #include "CLibcore.h"
 #include "COsConstants.h"
@@ -305,7 +304,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         CLibcore::sOs->GetsockoptInAddr(fd,
                 COsConstants::sIPPROTO_IP, COsConstants::sIP_MULTICAST_IF, (IInetAddress**)&iObj);
         *value = iObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case ISocketOptions::IP_MULTICAST_IF2:
@@ -317,7 +316,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IInteger32> iObj;
         CInteger32::New(socketopt, (IInteger32**)&iObj);
         *value = iObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case ISocketOptions::IP_MULTICAST_LOOP:
@@ -331,7 +330,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IBoolean> bObj;
         CBoolean::New(b, (IBoolean**)&bObj);
         *value = bObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case IP_MULTICAST_TTL:
@@ -344,7 +343,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IInteger32> iObj;
         CInteger32::New(socketopt, (IInteger32**)&iObj);
         *value = iObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case ISocketOptions::IP_TOS:
@@ -357,7 +356,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IInteger32> iObj;
         CInteger32::New(socketopt, (IInteger32**)&iObj);
         *value = iObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case ISocketOptions::_SO_BROADCAST:
@@ -369,7 +368,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IBoolean> bObj;
         CBoolean::New(b, (IBoolean**)&bObj);
         *value = bObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case ISocketOptions::SO_KEEPALIVE:
@@ -381,7 +380,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IBoolean> bObj;
         CBoolean::New(b, (IBoolean**)&bObj);
         *value = bObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case ISocketOptions::SO_LINGER:
@@ -394,7 +393,7 @@ ECode CIoBridge::GetSocketOptionErrno(
             AutoPtr<IBoolean> bObj;
             CBoolean::New(FALSE, (IBoolean**)&bObj);
             *value = bObj;
-            INTERFACE_ADDREF(*value);
+            REFCOUNT_ADD(*value);
             return NOERROR;
         }
         Int32 l;
@@ -402,7 +401,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IInteger32> iObj;
         CInteger32::New(l, (IInteger32**)&iObj);
         *value = iObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case ISocketOptions::SO_OOBINLINE:
@@ -414,7 +413,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IBoolean> bObj;
         CBoolean::New(b, (IBoolean**)&bObj);
         *value = bObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case ISocketOptions::SO_RCVBUF:
@@ -425,7 +424,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IInteger32> iObj;
         CInteger32::New(socketopt, (IInteger32**)&iObj);
         *value = iObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case ISocketOptions::SO_REUSEADDR:
@@ -437,7 +436,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IBoolean> bObj;
         CBoolean::New(b, (IBoolean**)&bObj);
         *value = bObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case ISocketOptions::SO_SNDBUF:
@@ -448,7 +447,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IInteger32> iObj;
         CInteger32::New(socketopt, (IInteger32**)&iObj);
         *value = iObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case ISocketOptions::SO_TIMEOUT:
@@ -461,7 +460,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IInteger32> iObj;
         CInteger32::New((Int32)millis, (IInteger32**)&iObj);
         *value = iObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     case ISocketOptions::TCP_NODELAY:
@@ -473,7 +472,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         AutoPtr<IBoolean> bObj;
         CBoolean::New(b, (IBoolean**)&bObj);
         *value = bObj;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     default:

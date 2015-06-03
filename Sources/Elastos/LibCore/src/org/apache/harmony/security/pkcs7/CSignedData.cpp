@@ -190,7 +190,7 @@ ECode CSignedData::ASN1SequenceDerived::GetDecodedObject(
     values->Get(5, (IInterface**)&elem0);
     arg5 = IList::Probe(elem0);
     *object = new CSignedData(arg0, arg1, arg2, arg3, arg4, arg5);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -287,7 +287,7 @@ ECode CSignedData::GetCertificates(
 {
     VALIDATE_NOT_NULL(*certificate)
     *certificate = mCertificates;
-    INTERFACE_ADDREF(*certificate)
+    REFCOUNT_ADD(*certificate)
     return NOERROR;
 }
 
@@ -296,7 +296,7 @@ ECode CSignedData::GetCRLs(
 {
     VALIDATE_NOT_NULL(*crls)
     *crls = mCrls;
-    INTERFACE_ADDREF(*crls)
+    REFCOUNT_ADD(*crls)
     return NOERROR;
 }
 
@@ -305,7 +305,7 @@ ECode CSignedData::GetSignerInfos(
 {
     VALIDATE_NOT_NULL(*signerInfo)
     *signerInfo = mSignerInfos;
-    INTERFACE_ADDREF(*signerInfo)
+    REFCOUNT_ADD(*signerInfo)
     return NOERROR;
 }
 

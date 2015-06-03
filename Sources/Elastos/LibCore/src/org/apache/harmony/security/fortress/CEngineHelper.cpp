@@ -21,7 +21,7 @@ ECode CEngineHelper::GetDoor(
 {
     VALIDATE_NOT_NULL(door)
     *door = CEngine::mDoor;
-    INTERFACE_ADDREF(*door)
+    REFCOUNT_ADD(*door)
     return NOERROR;
 }
 

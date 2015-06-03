@@ -169,7 +169,7 @@ ECode CResponseHeaders::GetUri(
     VALIDATE_NOT_NULL(url)
 
     *url = mUri;
-    INTERFACE_ADDREF(*url)
+    REFCOUNT_ADD(*url)
     return NOERROR;
 }
 
@@ -179,7 +179,7 @@ ECode CResponseHeaders::GetHeaders(
     VALIDATE_NOT_NULL(rh)
 
     *rh = mHeaders;
-    INTERFACE_ADDREF(*rh)
+    REFCOUNT_ADD(*rh)
     return NOERROR;
 }
 
@@ -189,7 +189,7 @@ ECode CResponseHeaders::GetServedDate(
     VALIDATE_NOT_NULL(adate)
 
     *adate = mServedDate;
-    INTERFACE_ADDREF(*adate)
+    REFCOUNT_ADD(*adate)
     return NOERROR;
 }
 
@@ -199,7 +199,7 @@ ECode CResponseHeaders::GetLastModified(
     VALIDATE_NOT_NULL(adate)
 
     *adate = mLastModified;
-    INTERFACE_ADDREF(*adate)
+    REFCOUNT_ADD(*adate)
     return NOERROR;
 }
 
@@ -209,7 +209,7 @@ ECode CResponseHeaders::GetExpires(
     VALIDATE_NOT_NULL(adate)
 
     *adate = mExpires;
-    INTERFACE_ADDREF(*adate)
+    REFCOUNT_ADD(*adate)
     return NOERROR;
 }
 
@@ -282,7 +282,7 @@ ECode CResponseHeaders::GetVaryFields(
     VALIDATE_NOT_NULL(obj)
 
     *obj = mVaryFields;
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
@@ -539,7 +539,7 @@ ECode CResponseHeaders::Combine(
     AutoPtr<CResponseHeaders> outrh;
     FAIL_RETURN(CResponseHeaders::NewByFriend(mUri, result, (CResponseHeaders**)&outrh));
     *outres = (IResponseHeaders*) outrh.Get();
-    INTERFACE_ADDREF(*outres)
+    REFCOUNT_ADD(*outres)
 
     return NOERROR;
 }

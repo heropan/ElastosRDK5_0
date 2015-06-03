@@ -1,6 +1,5 @@
 
 #include "CPKCS8EncodedKeySpec.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {

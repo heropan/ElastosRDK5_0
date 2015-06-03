@@ -1,4 +1,3 @@
-#include "cmdef.h"
 #include "ForwardingOs.h"
 
 namespace Libcore {

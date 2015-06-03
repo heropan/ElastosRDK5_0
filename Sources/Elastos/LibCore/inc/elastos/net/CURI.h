@@ -3,12 +3,12 @@
 #define __CURI_H__
 
 #include "_CURI.h"
-#include <elastos/Mutex.h>
+
 #include <elastos/Character.h>
 #include "UriCodec.h"
 
 using Elastos::Core::Character;
-using Elastos::Core::Mutex;
+
 
 namespace Elastos {
 namespace Net {
@@ -131,7 +131,7 @@ public:
         /* [in] */ IURI* relative,
         /* [out] */ IURI** uri);
 
-    CARAPI ResolveEx(
+    CARAPI Resolve(
         /* [in] */ const String& relative,
         /* [out] */ IURI** uri);
 

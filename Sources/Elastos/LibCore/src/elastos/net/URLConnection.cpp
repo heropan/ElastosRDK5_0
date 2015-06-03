@@ -1,12 +1,11 @@
 
-#include "cmdef.h"
 #include "URLConnection.h"
 #include "DefaultFileNameMap.h"
 #include "CDateHelper.h"
 #include "CSystem.h"
-#include <elastos/Character.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
 
 namespace Elastos {
 namespace Net {
@@ -56,7 +55,7 @@ ECode URLConnection::DefaultContentHandler::GetContent(
     return uConn->GetInputStream((IInputStream**)obj);
 }
 
-ECode URLConnection::DefaultContentHandler::GetContentEx(
+ECode URLConnection::DefaultContentHandler::GetContent(
     /* [in] */ IURLConnection* uConn,
     /* [in] */ const ArrayOf<InterfaceID>& types,
     /* [out] */ IInterface** obj)
@@ -169,7 +168,7 @@ ECode URLConnection::GetContentHandler(
     HashMap<String, AutoPtr<IContentHandler> >::Iterator it = sContentHandlers.Find(type);
     if (it != sContentHandlers.End()) {
         *contentHandler = it->mSecond;
-        INTERFACE_ADDREF(*contentHandler);
+        REFCOUNT_ADD(*contentHandler);
         return NOERROR;
     }
 
@@ -178,7 +177,7 @@ ECode URLConnection::GetContentHandler(
         sContentHandlerFactory->CreateContentHandler(type, (IContentHandler**)&cHandler);
         sContentHandlers[type] = cHandler;
         *contentHandler = cHandler;
-        INTERFACE_ADDREF(*contentHandler);
+        REFCOUNT_ADD(*contentHandler);
         return NOERROR;
     }
 
@@ -237,12 +236,12 @@ ECode URLConnection::GetContentHandler(
         sContentHandlers[type] = cHandler; // if we got the handler,
         // cache it for next time
         *contentHandler = cHandler;
-        INTERFACE_ADDREF(*contentHandler);
+        REFCOUNT_ADD(*contentHandler);
         return NOERROR;
     }
 
     *contentHandler = mDefaultHandler;
-    INTERFACE_ADDREF(*contentHandler);
+    REFCOUNT_ADD(*contentHandler);
     return NOERROR;
 }
 
@@ -468,7 +467,7 @@ ECode URLConnection::GetURL(
     VALIDATE_NOT_NULL(url)
 
     *url = mUrl;
-    INTERFACE_ADDREF(*url);
+    REFCOUNT_ADD(*url);
     return NOERROR;
 }
 

@@ -7,7 +7,7 @@
 #include "Elastos.CoreLibrary.h"
 #endif
 #include <elastos/Mutex.h>
-#include <elrefbase.h>
+
 
 using Elastos::Core::Mutex;
 

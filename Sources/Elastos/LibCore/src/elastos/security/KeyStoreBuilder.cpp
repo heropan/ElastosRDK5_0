@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "KeyStoreBuilder.h"
 #include "CIoUtils.h"
 #include "CFileInputStream.h"
@@ -36,7 +35,7 @@ ECode KeyStoreBuilder::NewInstance(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     (*instance) = new KeyStoreBuilderImpl(keyStore, protectionParameter, NULL, String(), NULL);
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 
@@ -69,7 +68,7 @@ ECode KeyStoreBuilder::NewInstance(
     }
     // create new instance
     (*instance) = new KeyStoreBuilderImpl(NULL, protectionParameter, file, type, provider);
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 
@@ -87,7 +86,7 @@ ECode KeyStoreBuilder::NewInstance(
         return E_NULL_POINTER_EXCEPTION;
     }
     (*instance) = new KeyStoreBuilderImpl(NULL, protectionParameter, NULL, type, provider);
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 
@@ -122,7 +121,7 @@ ECode KeyStoreBuilder::KeyStoreBuilderImpl::GetKeyStore(
     if (mKeyStore) {
         mIsGetKeyStore = TRUE;
         *keyStore = mKeyStore;
-        INTERFACE_ADDREF(*keyStore)
+        REFCOUNT_ADD(*keyStore)
         return NOERROR;
     }
     // get KeyStore instance using type or type and provider
@@ -164,7 +163,7 @@ ERROR_PROCESS:
     }
     mIsGetKeyStore = TRUE;
     *keyStore = ks;
-    INTERFACE_ADDREF(*keyStore)
+    REFCOUNT_ADD(*keyStore)
     return NOERROR;
 
 }
@@ -182,7 +181,7 @@ ECode KeyStoreBuilder::KeyStoreBuilderImpl::GetProtectionParameter(
         return E_NULL_POINTER_EXCEPTION;
     }
     *protectionParameter = mProtParameter;
-    INTERFACE_ADDREF(*protectionParameter)
+    REFCOUNT_ADD(*protectionParameter)
     return NOERROR;
 }
 
@@ -198,7 +197,7 @@ ECode KeyStoreBuilder::KeyStoreTmpLSParameter::GetProtectionParameter(
 {
     VALIDATE_NOT_NULL(protectionParameter)
     *protectionParameter = mProtPar;
-    INTERFACE_ADDREF(*protectionParameter)
+    REFCOUNT_ADD(*protectionParameter)
     return NOERROR;
 }
 

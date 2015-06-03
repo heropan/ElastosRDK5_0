@@ -1,6 +1,5 @@
 
 #include "CertStore.h"
-#include "cmdef.h"
 
 #ifdef ELASTOS_CORELIBRARY
 #include "CSecurity.h"
@@ -136,7 +135,7 @@ ECode CertStore::GetCertStoreParameters(
         AutoPtr<IInterface> clonedObj;
         mCertStoreParams->Clone((IInterface**)&clonedObj);
         *parameters = clonedObj;
-        INTERFACE_ADDREF(*parameters)
+        REFCOUNT_ADD(*parameters)
         return NOERROR;
     }
 }

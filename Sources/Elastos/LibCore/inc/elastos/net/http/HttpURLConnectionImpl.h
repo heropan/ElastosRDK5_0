@@ -2,7 +2,7 @@
 #ifndef __HTTPURLCONNECTIONIMPL_H__
 #define __HTTPURLCONNECTIONIMPL_H__
 
-#include <cmdef.h>
+
 #include <Elastos.CoreLibrary_server.h>
 #include <HttpURLConnection.h>
 
@@ -33,7 +33,7 @@ public:
 
     // Permission getPermission();
 
-    CARAPI GetHeaderFieldEx(
+    CARAPI GetHeaderField(
         /* [in] */ const String& fieldName,
         /* [out] */ String* str);
 

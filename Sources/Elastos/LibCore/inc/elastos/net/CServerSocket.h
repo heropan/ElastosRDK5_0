@@ -48,7 +48,7 @@ public:
     CARAPI Bind(
         /* [in] */ ISocketAddress* localAddr);
 
-    CARAPI BindEx(
+    CARAPI Bind(
         /* [in] */ ISocketAddress* localAddr,
         /* [in] */ Int32 backlog);
 

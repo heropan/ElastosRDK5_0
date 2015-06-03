@@ -74,6 +74,6 @@ SOURCES += CByteOrderHelper.cpp
 SOURCES += MemoryBlock.cpp
 SOURCES += Buffer.cpp
 SOURCES += ByteBuffer.cpp
-SOURCES += CByteArrayBuffer.cpp
-SOURCES += CFileDescriptor.cpp
+SOURCES += CByteBufferHelper.cpp
+SOURCES += CByteArrayBuffer.cppSOURCES += CFileDescriptor.cpp
 

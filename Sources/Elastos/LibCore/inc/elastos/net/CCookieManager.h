@@ -3,13 +3,10 @@
 #define __CCOOKIEMANAGER_H__
 
 #include "_CCookieManager.h"
-#include "cmdef.h"
-#include <elautoptr.h>
-#include <elastos/List.h>
-#include "CObjectContainer.h"
+#include <elastos/utility/etl/List.h>
 #include "CStringWrapper.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::IMap;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;

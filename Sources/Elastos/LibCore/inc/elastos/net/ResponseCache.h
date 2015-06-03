@@ -2,7 +2,6 @@
 #ifndef __RESPONSECACHE_H__
 #define __RESPONSECACHE_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Utility::IObjectStringMap;

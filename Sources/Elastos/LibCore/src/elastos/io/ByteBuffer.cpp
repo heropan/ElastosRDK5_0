@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "ByteBuffer.h"
-//#include "ByteArrayBuffer.h"
+#include "CByteArrayBuffer.h"
 //#include "DirectByteBuffer.h"
 #include "NioUtils.h"
 #include "Memory.h"
@@ -20,13 +20,18 @@ ECode ByteBuffer::Allocate(
     /* [out] */ IByteBuffer** buf)
 {
     VALIDATE_NOT_NULL(buf);
+    *buf = NULL;
+
     if (capacity < 0) {
         // throw new IllegalArgumentException("capacity < 0: " + capacity);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    // AutoPtr<ByteArrayBuffer> bufObj = new ByteArrayBuffer(capacity);
-    // *buf = bufObj->Probe(EIID_IByteBuffer);
-    // REFCOUNT_ADD(*buf);
+
+    AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(capacity);
+    AutoPtr<CByteArrayBuffer> bb;
+    CByteArrayBuffer::NewByFriend(bytes, (CByteArrayBuffer**)&bb);
+    *buf = bb->Probe(EIID_IByteBuffer);
+    REFCOUNT_ADD(*buf);
     return NOERROR;
 }
 
@@ -50,9 +55,10 @@ ECode ByteBuffer::Wrap(
     /* [out] */ IByteBuffer** buf)
 {
     VALIDATE_NOT_NULL(buf);
-    // AutoPtr<ByteArrayBuffer> bufObj = new ByteArrayBuffer(array);
-    // *buf = bufObj->Probe(EIID_IByteBuffer);
-    // REFCOUNT_ADD(*buf);
+    AutoPtr<CByteArrayBuffer> bb;
+    CByteArrayBuffer::NewByFriend(array, (CByteArrayBuffer**)&bb);
+    *buf = bb->Probe(EIID_IByteBuffer);
+    REFCOUNT_ADD(*buf);
     return NOERROR;
 }
 
@@ -71,11 +77,12 @@ ECode ByteBuffer::Wrap(
         //         count);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    // AutoPtr<ByteArrayBuffer> bufObj = new ByteArrayBuffer(array);
-    // bufObj->mPosition = start;
-    // bufObj->mLimit = start + byteCount;
-    // *buf = bufObj->Probe(EIID_IByteBuffer);
-    // REFCOUNT_ADD(*buf);
+    AutoPtr<CByteArrayBuffer> bb;
+    CByteArrayBuffer::NewByFriend(array, (CByteArrayBuffer**)&bb);
+    bb->mPosition = start;
+    bb->mLimit = start + byteCount;
+    *buf = bb->Probe(EIID_IByteBuffer);;
+    REFCOUNT_ADD(*buf);
     return NOERROR;
 }
 

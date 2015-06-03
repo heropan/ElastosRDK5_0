@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "HttpEngine.h"
 #include "IoUtils.h"
 #include "HttpConnectionPool.h"
@@ -98,7 +97,7 @@ ECode HttpEngine::GetUri(
     VALIDATE_NOT_NULL(url)
 
     *url = mUri;
-    INTERFACE_ADDREF(*url)
+    REFCOUNT_ADD(*url)
 
     return NOERROR;
 }
@@ -158,7 +157,7 @@ ECode HttpEngine::GetRequestBody(
     }
 
     *os = mRequestBodyOut;
-    INTERFACE_ADDREF(*os)
+    REFCOUNT_ADD(*os)
 
     return NOERROR;
 }
@@ -178,7 +177,7 @@ ECode HttpEngine::GetRequestHeaders(
     VALIDATE_NOT_NULL(requesh)
 
     *requesh = mRequestHeaders;
-    INTERFACE_ADDREF(*requesh)
+    REFCOUNT_ADD(*requesh)
 
     return NOERROR;
 }
@@ -194,7 +193,7 @@ ECode HttpEngine::GetResponseHeaders(
     }
 
     *rponh = mResponseHeaders;
-    INTERFACE_ADDREF(*rponh)
+    REFCOUNT_ADD(*rponh)
 
     return NOERROR;
 }
@@ -225,7 +224,7 @@ ECode HttpEngine::GetResponseBody(
     }
 
     *is = mResponseBodyIn;
-    INTERFACE_ADDREF(*is)
+    REFCOUNT_ADD(*is)
 
     return NOERROR;
 }
@@ -236,7 +235,7 @@ ECode HttpEngine::GetCacheResponse(
     VALIDATE_NOT_NULL(cr)
 
     *cr = mCacheResponse;
-    INTERFACE_ADDREF(*cr)
+    REFCOUNT_ADD(*cr)
 
     return NOERROR;
 }
@@ -247,7 +246,7 @@ ECode HttpEngine::GetConnection(
     VALIDATE_NOT_NULL(hc)
 
     *hc = mConnection;
-    INTERFACE_ADDREF(*hc)
+    REFCOUNT_ADD(*hc)
 
     return NOERROR;
 }

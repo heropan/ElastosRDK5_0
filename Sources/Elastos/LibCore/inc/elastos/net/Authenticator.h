@@ -3,10 +3,10 @@
 #define __AUTHENTICATOR_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include <elautoptr.h>
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Mutex;
+
+
+
 
 namespace Elastos {
 namespace Net {
@@ -47,7 +47,7 @@ public:
     static CARAPI_(void) SetDefault(
         /* [in] */ IAuthenticator* a);
 
-    static CARAPI RequestPasswordAuthenticationEx(
+    static CARAPI RequestPasswordAuthentication(
         /* [in] */ const String& rHost,
         /* [in] */ IInetAddress* rAddr,
         /* [in] */ Int32 rPort,
@@ -56,7 +56,7 @@ public:
         /* [in] */ const String& rScheme,
         /* [out] */ IPasswordAuthentication** passwordAuthentication);
 
-    static CARAPI RequestPasswordAuthenticationEx2(
+    static CARAPI RequestPasswordAuthentication(
         /* [in] */ const String& rHost,
         /* [in] */ IInetAddress* rAddr,
         /* [in] */ Int32 rPort,

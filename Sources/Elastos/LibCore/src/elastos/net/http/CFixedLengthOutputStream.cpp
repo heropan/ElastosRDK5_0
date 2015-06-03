@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CFixedLengthOutputStream.h"
 
 namespace Elastos {
@@ -28,7 +27,7 @@ ECode CFixedLengthOutputStream::WriteBytes(
     return AbstractHttpOutputStream::WriteBytes(buffer);
 }
 
-ECode CFixedLengthOutputStream::WriteBytesEx(
+ECode CFixedLengthOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -46,7 +45,7 @@ ECode CFixedLengthOutputStream::WriteBytesEx(
         // throw new IOException("expected " + bytesRemaining + " bytes but received " + count);
         return E_IO_EXCEPTION;
     }
-    mSocketOut->WriteBytesEx(buffer, offset, count);
+    mSocketOut->WriteBytes(buffer, offset, count);
     mBytesRemaining -= count;
     return NOERROR;
 }
@@ -79,22 +78,6 @@ ECode CFixedLengthOutputStream::Flush()
     return NOERROR;
 }
 
-ECode CFixedLengthOutputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = AbstractHttpOutputStream::GetLock();
-    *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
-    return NOERROR;
-}
-
-PInterface CFixedLengthOutputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CFixedLengthOutputStream::Probe(riid);
-}
 
 } // namespace Http
 } // namespace Net

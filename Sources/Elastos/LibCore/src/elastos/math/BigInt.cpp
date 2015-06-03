@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include <BigInt.h>
 #include <elastos/Character.h>
 #include <Elastos.CoreLibrary_server.h>

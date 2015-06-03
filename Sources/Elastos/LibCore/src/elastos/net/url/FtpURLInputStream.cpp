@@ -51,13 +51,13 @@ ECode FtpURLInputStream::Read(
     return mIs->Read(value);
 }
 
-ECode FtpURLInputStream::ReadBytesEx(
+ECode FtpURLInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
-    return mIs->ReadBytesEx(buffer, offset, length, number);
+    return mIs->ReadBytes(buffer, offset, length, number);
 }
 
 ECode FtpURLInputStream::Reset()

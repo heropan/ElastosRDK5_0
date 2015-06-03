@@ -1,6 +1,5 @@
 
 #include "RSAPrivateKeySpec.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -12,7 +11,7 @@ ECode RSAPrivateKeySpec::GetModulus(
 {
     VALIDATE_NOT_NULL(modulus)
     *modulus = mModulus;
-    INTERFACE_ADDREF(*modulus)
+    REFCOUNT_ADD(*modulus)
     return NOERROR;
 }
 
@@ -21,7 +20,7 @@ ECode RSAPrivateKeySpec::GetPrivateExponent(
 {
     VALIDATE_NOT_NULL(exponent)
     *exponent = mPrivateExponent;
-    INTERFACE_ADDREF(*exponent)
+    REFCOUNT_ADD(*exponent)
     return NOERROR;
 }
 

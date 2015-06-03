@@ -3,8 +3,8 @@
 #define __INTERFACEADDRESS_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include <elautoptr.h>
-#include <elrefbase.h>
+
+
 
 namespace Elastos {
 namespace Net {

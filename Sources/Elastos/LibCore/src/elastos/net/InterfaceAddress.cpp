@@ -1,8 +1,7 @@
 
-#include "cmdef.h"
 #include "InterfaceAddress.h"
 #include "CInet4Address.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 
@@ -80,7 +79,7 @@ ECode InterfaceAddress::GetAddress(
 {
     VALIDATE_NOT_NULL(address);
     *address = mAddress;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 
@@ -89,7 +88,7 @@ ECode InterfaceAddress::GetBroadcast(
 {
     VALIDATE_NOT_NULL(broadcast);
     *broadcast = mBroadcastAddress;
-    INTERFACE_ADDREF(*broadcast);
+    REFCOUNT_ADD(*broadcast);
     return NOERROR;
 }
 

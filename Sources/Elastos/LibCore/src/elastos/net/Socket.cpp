@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "Socket.h"
 #include "CInet4Address.h"
 #include "InetAddress.h"
@@ -258,7 +257,7 @@ ECode Socket::GetLocalAddress(
     VALIDATE_NOT_NULL(address);
 
     *address = mLocalAddress;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 
@@ -509,7 +508,7 @@ ECode Socket::StartupSocket(
     }
 
     mIsBound = TRUE;
-    ec = mImpl->ConnectEx(dstAddress, dstPort);
+    ec = mImpl->Connect(dstAddress, dstPort);
     if (FAILED(ec)) {
         mImpl->Close();
         return ec;
@@ -710,10 +709,10 @@ ECode Socket::Bind(
 ECode Socket::Connect(
     /* [in] */ ISocketAddress* remoteAddr)
 {
-    return ConnectEx(remoteAddr, 0);
+    return Connect(remoteAddr, 0);
 }
 
-ECode Socket::ConnectEx(
+ECode Socket::Connect(
     /* [in] */ ISocketAddress* remoteAddr,
     /* [in] */ Int32 timeout)
 {
@@ -767,7 +766,7 @@ ECode Socket::ConnectEx(
         }
         mIsBound = TRUE;
     }
-    ec = mImpl->ConnectEx2(remoteAddr, timeout);
+    ec = mImpl->Connect(remoteAddr, timeout);
     if (FAILED(ec)) {
         mImpl->Close();
         return ec;

@@ -1,11 +1,10 @@
 
-#include "cmdef.h"
 #include "ProxySelectorImpl.h"
 #include "CProxy.h"
 #include "CInetSocketAddress.h"
 // #include <Com.Kortide.Platform.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
 #include <CObjectContainer.h>
 
 using Elastos::Core::CObjectContainer;

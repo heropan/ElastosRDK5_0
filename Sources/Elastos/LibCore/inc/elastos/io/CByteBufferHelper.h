@@ -2,13 +2,21 @@
 #define __ELASTOS_IO_CBYTEBUFFERHELPER_H__
 
 #include "_Elastos_IO_CByteBufferHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace IO {
 
 CarClass(CByteBufferHelper)
+    , public Singleton
+    , public IByteBufferHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     /**
      * Creates a byte buffer based on a newly allocated byte array.

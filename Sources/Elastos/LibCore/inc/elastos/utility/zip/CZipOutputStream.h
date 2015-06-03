@@ -13,9 +13,6 @@ CarClass(CZipOutputStream) , public ZipOutputStream
 {
 public:
     CAR_OBJECT_DECL()
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
 };
 
 } // namespace Zip

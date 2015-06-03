@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CLocaleHelper.h"
 #include "CLocale.h"
 
@@ -21,7 +20,7 @@ ECode CLocaleHelper::GetDefault(
 
     AutoPtr<ILocale> l = CLocale::GetDefault();
     *locale = l;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
 
     return NOERROR;
 }
@@ -91,7 +90,7 @@ ECode CLocaleHelper::GetLocale(
         temp = CLocale::US;
     }
     *locale = temp;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 
@@ -125,7 +124,7 @@ ECode CLocaleHelper::GetCANADA(
 {
     VALIDATE_NOT_NULL(locale);
     *locale = CLocale::CANADA;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 
@@ -137,7 +136,7 @@ ECode CLocaleHelper::GetCANADA_FRENCH(
 {
     VALIDATE_NOT_NULL(locale);
     *locale = CLocale::CANADA_FRENCH;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -147,7 +146,7 @@ ECode CLocaleHelper::GetCHINA(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::CHINA;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -157,7 +156,7 @@ ECode CLocaleHelper::GetCHINESE(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::CHINESE;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -167,7 +166,7 @@ ECode CLocaleHelper::GetENGLISH(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::ENGLISH;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -177,7 +176,7 @@ ECode CLocaleHelper::GetFRANCE(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::FRANCE;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -187,7 +186,7 @@ ECode CLocaleHelper::GetFRENCH(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::FRENCH;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -197,7 +196,7 @@ ECode CLocaleHelper::GetGERMAN(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::GERMAN;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -207,7 +206,7 @@ ECode CLocaleHelper::GetGERMANY(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::GERMANY;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -217,7 +216,7 @@ ECode CLocaleHelper::GetITALIAN(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::ITALIAN;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -227,7 +226,7 @@ ECode CLocaleHelper::GetITALY(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::ITALY;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -237,7 +236,7 @@ ECode CLocaleHelper::GetJAPAN(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::JAPAN;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -247,7 +246,7 @@ ECode CLocaleHelper::GetJAPANESE(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::JAPANESE;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -257,7 +256,7 @@ ECode CLocaleHelper::GetKOREA(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::KOREA;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -267,7 +266,7 @@ ECode CLocaleHelper::GetKOREAN(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::KOREAN;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -277,7 +276,7 @@ ECode CLocaleHelper::GetPRC(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::PRC;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -290,7 +289,7 @@ ECode CLocaleHelper::GetROOT(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::ROOT;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -300,7 +299,7 @@ ECode CLocaleHelper::GetSIMPLIFIED_CHINESE(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::SIMPLIFIED_CHINESE;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -310,7 +309,7 @@ ECode CLocaleHelper::GetTAIWAN(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::TAIWAN;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -320,7 +319,7 @@ ECode CLocaleHelper::GetTRADITIONAL_CHINESE(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::TRADITIONAL_CHINESE;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -330,7 +329,7 @@ ECode CLocaleHelper::GetUK(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::UK;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 /**
@@ -340,7 +339,7 @@ ECode CLocaleHelper::GetUS(
     /* [out] */ ILocale** locale)
 {
     *locale = CLocale::US;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 

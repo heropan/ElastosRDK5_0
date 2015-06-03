@@ -137,7 +137,7 @@ ECode ASN1SequenceOf::GetType(
 {
     VALIDATE_NOT_NULL(type)
     *type = mType;
-    INTERFACE_ADDREF(*type)
+    REFCOUNT_ADD(*type)
     return NOERROR;
 }
 
@@ -147,7 +147,7 @@ ECode ASN1SequenceOf::GetValues(
 {
     VALIDATE_NOT_NULL(values)
     *values = ICollection::Probe(object);
-    INTERFACE_ADDREF(*values)
+    REFCOUNT_ADD(*values)
     return NOERROR;
 }
 

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CNativeDecimalFormat.h"
 #include "CAttributedString.h"
 #include "ElStringByteSink.h"
@@ -213,7 +212,7 @@ ECode CNativeDecimalFormat::FieldPositionIterator::Field(
     VALIDATE_NOT_NULL(field);
     FAIL_RETURN(CheckValid());
     *field = (*sFields)[(*mData)[mPos]];
-    INTERFACE_ADDREF(*field);
+    REFCOUNT_ADD(*field);
     return NOERROR;
 }
 
@@ -481,7 +480,7 @@ ECode CNativeDecimalFormat::FormatInt64(
         FAIL_RETURN(FieldPositionIterator::SetFieldPosition(fpi, field));
     }
     *array = result;
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 
@@ -499,7 +498,7 @@ ECode CNativeDecimalFormat::FormatDouble(
         FAIL_RETURN(FieldPositionIterator::SetFieldPosition(fpi, field));
     }
     *array = result;
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 
@@ -608,7 +607,7 @@ ECode CNativeDecimalFormat::Parse(
     VALIDATE_NOT_NULL(number);
     AutoPtr<INumber> temp = Parse(mAddress, string, position, mParseBigDecimal);
     *number = temp;
-    INTERFACE_ADDREF(*number);
+    REFCOUNT_ADD(*number);
     return NOERROR;
 }
 

@@ -16,7 +16,7 @@ ECode CInet6AddressHelper::GetByAddress(
     return CInet6Address::GetByAddress(host, addr, scope_id, address);
 }
 
-ECode CInet6AddressHelper::GetByAddressEx(
+ECode CInet6AddressHelper::GetByAddress(
     /* [in] */ const String& host,
     /* [in] */ ArrayOf<Byte>* addr,
     /* [in] */ INetworkInterface* nif,

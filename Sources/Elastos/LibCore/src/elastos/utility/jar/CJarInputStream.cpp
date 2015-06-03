@@ -193,23 +193,6 @@ ECode CJarInputStream::constructor(
     return constructor(stream, TRUE);
 }
 
-PInterface CJarInputStream::Probe(
-        /* in */ REIID id)
-{
-    return _CJarInputStream::Probe(id);
-}
-
-ECode CJarInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = ZipInputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
-
 } // namespace Jar
 } // namespace Utility
 } // namespace Elastos

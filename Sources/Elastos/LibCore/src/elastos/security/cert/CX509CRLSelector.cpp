@@ -1,6 +1,5 @@
 
 #include "CX509CRLSelector.h"
-#include "cmdef.h"
 #include "CArrayList.h"
 #include "CX500Principal.h"
 #include "CStringWrapper.h"
@@ -244,7 +243,7 @@ ECode CX509CRLSelector::GetMinCRL(
 {
     VALIDATE_NOT_NULL(minCrl)
     *minCrl = mMinCRL;
-    INTERFACE_ADDREF(*minCrl)
+    REFCOUNT_ADD(*minCrl)
     return NOERROR;
 }
 
@@ -253,7 +252,7 @@ ECode CX509CRLSelector::GetMaxCRL(
 {
     VALIDATE_NOT_NULL(maxCrl)
     *maxCrl = mMaxCRL;
-    INTERFACE_ADDREF(*maxCrl)
+    REFCOUNT_ADD(*maxCrl)
     return NOERROR;
 }
 
@@ -271,7 +270,7 @@ ECode CX509CRLSelector::GetCertificateChecking(
 {
     VALIDATE_NOT_NULL(checking)
     *checking = mCertificateChecking;
-    INTERFACE_ADDREF(*checking)
+    REFCOUNT_ADD(*checking)
     return NOERROR;
 }
 
@@ -392,7 +391,7 @@ ECode CX509CRLSelector::Clone(
         CArrayList::New(mIssuerNames, (IArrayList**)&(((CX509CRLSelector*)result.Get())->mIssuerNames));
     }
     *obj = result.Get();
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 

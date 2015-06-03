@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CMulticastSocket.h"
 #include "InetAddress.h"
 #include "CInet6Address.h"
@@ -63,7 +62,7 @@ ECode CMulticastSocket::GetInterface(
                         if (nextAddress != NULL &&
                                 IInet6Address::Probe(nextAddress.Get()) != NULL) {
                             *address = nextAddress;
-                            INTERFACE_ADDREF(*address);
+                            REFCOUNT_ADD(*address);
                             return NOERROR;
                         }
                     }
@@ -71,11 +70,11 @@ ECode CMulticastSocket::GetInterface(
             }
         }
         *address = ipvXaddress;
-        INTERFACE_ADDREF(*address);
+        REFCOUNT_ADD(*address);
         return NOERROR;
     }
     *address = mSetAddress;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 
@@ -108,7 +107,7 @@ ECode CMulticastSocket::GetNetworkInterface(
 
     AutoPtr<INetworkInterface> res = NetworkInterface::ForUnboundMulticastSocket();
     *networkInterface = res;
-    INTERFACE_ADDREF(*networkInterface)
+    REFCOUNT_ADD(*networkInterface)
     return NOERROR;
 }
 
@@ -137,7 +136,7 @@ ECode CMulticastSocket::JoinGroup(
     return mImpl->Join(groupAddr);
 }
 
-ECode CMulticastSocket::JoinGroupEx(
+ECode CMulticastSocket::JoinGroup(
     /* [in] */ ISocketAddress* groupAddress,
     /* [in] */ INetworkInterface* netInterface)
 {
@@ -152,7 +151,7 @@ ECode CMulticastSocket::LeaveGroup(
     return mImpl->Leave(groupAddr);
 }
 
-ECode CMulticastSocket::LeaveGroupEx(
+ECode CMulticastSocket::LeaveGroup(
     /* [in] */ ISocketAddress* groupAddress,
     /* [in] */ INetworkInterface* netInterface)
 {
@@ -224,7 +223,7 @@ ECode CMulticastSocket::CheckJoinOrLeave(
     return NOERROR;
 }
 
-ECode CMulticastSocket::SendEx(
+ECode CMulticastSocket::Send(
     /* [in] */ IDatagramPacket* pack,
     /* [in] */ Byte ttl)
 {
@@ -422,7 +421,7 @@ ECode CMulticastSocket::Close()
     return DatagramSocket::Close();
 }
 
-ECode CMulticastSocket::ConnectEx(
+ECode CMulticastSocket::Connect(
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 aPort)
 {

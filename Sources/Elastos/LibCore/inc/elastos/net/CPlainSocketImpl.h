@@ -61,7 +61,7 @@ public:
         /* [in] */ const String& host,
         /* [in] */ Int32 port);
 
-    CARAPI ConnectEx(
+    CARAPI Connect(
         /* [in] */ IInetAddress * pAddress,
         /* [in] */ Int32 port);
 
@@ -93,7 +93,7 @@ public:
 
     CARAPI ShutdownOutput();
 
-    CARAPI ConnectEx2(
+    CARAPI Connect(
         /* [in] */ ISocketAddress * pRemoteAddr,
         /* [in] */ Int32 timeout);
 

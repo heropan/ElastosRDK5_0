@@ -1,13 +1,12 @@
 #ifndef __CHOICEFORMAT_H__
 #define __CHOICEFORMAT_H__
 
-#include "cmdef.h"
 #include <elastos.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "Elastos.CoreLibrary_server.h"
 #include "NumberFormat.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::IStringBuffer;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::IParsePosition;

@@ -27,7 +27,7 @@ ECode CASN1UTCTime::GetInstance(
 {
     VALIDATE_NOT_NULL(instance)
     *instance = ASN1;
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 

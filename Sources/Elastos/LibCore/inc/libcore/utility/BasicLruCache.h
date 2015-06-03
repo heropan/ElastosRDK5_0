@@ -2,7 +2,6 @@
 #ifndef __BASICLRUCACHE_H__
 #define __BASICLRUCACHE_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Utility::IMap;

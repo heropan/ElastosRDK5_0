@@ -4,9 +4,9 @@
 
 #include "DatagramSocket.h"
 #include "_CDatagramSocket.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Mutex;
+
+
 using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {
@@ -20,7 +20,7 @@ public:
     CARAPI Connect(
         /* [in] */ ISocketAddress* peer);
 
-    CARAPI ConnectEx(
+    CARAPI Connect(
         /* [in] */ IInetAddress* address,
         /* [in] */ Int32 aPort);
 

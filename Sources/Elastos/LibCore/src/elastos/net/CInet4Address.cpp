@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CInet4Address.h"
 
 namespace Elastos {
@@ -228,14 +227,14 @@ ECode CInet4Address::IsReachable(
     return InetAddress::IsReachable(timeout, isReachable);
 }
 
-ECode CInet4Address::IsReachableEx(
+ECode CInet4Address::IsReachable(
     /* [in] */ INetworkInterface* networkInterface,
     /* [in] */ Int32 ttl,
     /* [in] */ Int32 timeout,
     /* [out] */ Boolean* isReachable)
 {
     VALIDATE_NOT_NULL(isReachable);
-    return InetAddress::IsReachableEx(networkInterface, ttl, timeout, isReachable);
+    return InetAddress::IsReachable(networkInterface, ttl, timeout, isReachable);
 }
 
 ECode CInet4Address::constructor(
@@ -266,7 +265,7 @@ ECode CInet4Address::GetANY(
 {
     VALIDATE_NOT_NULL(result);
     *result = ANY;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -275,7 +274,7 @@ ECode CInet4Address::GetLOOPBACK(
 {
     VALIDATE_NOT_NULL(result);
     *result = LOOPBACK;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -284,7 +283,7 @@ ECode CInet4Address::GetALL(
 {
     VALIDATE_NOT_NULL(result);
     *result = ALL;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

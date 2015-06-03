@@ -1,6 +1,5 @@
 
 #include "CAuthPermission.h"
-#include "cmdef.h"
 #include "AllPermissionCollection.h"
 
 using Elastos::Security::AllPermissionCollection;
@@ -28,7 +27,7 @@ ECode CAuthPermission::NewPermissionCollection(
 {
     VALIDATE_NOT_NULL(permissions)
     *permissions = new AllPermissionCollection();
-    INTERFACE_ADDREF(*permissions)
+    REFCOUNT_ADD(*permissions)
     return NOERROR;
 }
 

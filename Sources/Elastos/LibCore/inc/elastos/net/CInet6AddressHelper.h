@@ -15,7 +15,7 @@ CarClass(CInet6AddressHelper)
         /* [in] */ Int32 scope_id,
         /* [out] */ IInet6Address** address);
 
-    CARAPI GetByAddressEx(
+    CARAPI GetByAddress(
         /* [in] */ const String& host,
         /* [in] */ ArrayOf<Byte>* addr,
         /* [in] */ INetworkInterface* nif,

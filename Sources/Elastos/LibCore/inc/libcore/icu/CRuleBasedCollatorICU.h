@@ -3,7 +3,6 @@
 #define __ICU_CRULEBASEDCOLLATORICU_H__
 
 #include "_CRuleBasedCollatorICU.h"
-#include "cmdef.h"
 
 using Elastos::Text::ICollationKey;
 using Elastos::Text::ICharacterIterator;

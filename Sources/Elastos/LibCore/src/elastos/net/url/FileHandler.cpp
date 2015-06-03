@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "FileHandler.h"
 #include "CURL.h"
 #include "CFileURLConnection.h"
@@ -12,10 +11,10 @@ ECode FileHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [out] */ IURLConnection** urlConnection)
 {
-    return OpenConnectionEx(u, NULL, urlConnection);
+    return OpenConnection(u, NULL, urlConnection);
 }
 
-ECode FileHandler::OpenConnectionEx(
+ECode FileHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [in] */ IProxy* proxy,
     /* [out] */ IURLConnection** urlConnection)
@@ -33,7 +32,7 @@ ECode FileHandler::OpenConnectionEx(
         AutoPtr<IFileURLConnection> furl;
         CFileURLConnection::New(u, (IFileURLConnection**)&furl);
         *urlConnection = furl;
-        INTERFACE_ADDREF(*urlConnection)
+        REFCOUNT_ADD(*urlConnection)
         return NOERROR;
     }
 
@@ -44,8 +43,8 @@ ECode FileHandler::OpenConnectionEx(
     AutoPtr<IURLConnection> outurl;
     *urlConnection = (proxy == NULL)
                     ? (ftpURL->OpenConnection((IURLConnection**)&outurl), outurl)
-                    : (ftpURL->OpenConnectionEx(proxy, (IURLConnection**)&outurl), outurl);
-    INTERFACE_ADDREF(*urlConnection)
+                    : (ftpURL->OpenConnection(proxy, (IURLConnection**)&outurl), outurl);
+    REFCOUNT_ADD(*urlConnection)
 
     return NOERROR;
 }

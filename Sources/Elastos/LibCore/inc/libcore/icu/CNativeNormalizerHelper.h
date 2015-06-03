@@ -3,7 +3,6 @@
 #define __ICU_CNATIVENORMALIZERHELPER_H__
 
 #include "_CNativeNormalizerHelper.h"
-#include "cmdef.h"
 
 using Elastos::Core::ICharSequence;
 

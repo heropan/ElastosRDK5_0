@@ -346,6 +346,10 @@ module
         interface IByteOrderHelper;
     }
 
+    singleton class CByteBufferHelper {
+        interface IByteBufferHelper;
+    }
+
     [deprecated]
     class CByteArrayBuffer {
         constructor(

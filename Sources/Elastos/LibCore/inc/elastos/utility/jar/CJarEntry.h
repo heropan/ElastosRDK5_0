@@ -11,7 +11,7 @@
 #include "ZipEntry.h"
 #include "elastos/List.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Zip::IZipEntry;
 using Elastos::Utility::Zip::ZipEntry;
 using Elastos::Security::ICodeSigner;

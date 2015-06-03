@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "AbstractHttpInputStream.h"
 #include "CStreams.h"
 
@@ -64,7 +63,7 @@ void AbstractHttpInputStream::CacheWrite(
     /* [in] */ Int32 count)
 {
     if (mCacheBody != NULL) {
-        mCacheBody->WriteBytesEx(*buffer, offset, count);
+        mCacheBody->WriteBytes(*buffer, offset, count);
     }
 }
 

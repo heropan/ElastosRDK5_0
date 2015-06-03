@@ -1,6 +1,5 @@
 
 #include "PermissionCollection.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {

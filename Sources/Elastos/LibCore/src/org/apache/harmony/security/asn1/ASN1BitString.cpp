@@ -21,7 +21,7 @@ ECode ASN1BitString::GetInstance(
 {
     VALIDATE_NOT_NULL(instance)
     *instance = sASN1;
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 
@@ -112,7 +112,7 @@ ECode ASN1BitString::GetDecodedObject(
     AutoPtr<IBitString> obj;
     CBitString::New(bytes, (*buffer)[contentOffset], (IBitString**)&obj);
     *object = obj.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

@@ -1,6 +1,5 @@
 
 #include "CPasswordCallback.h"
-#include "cmdef.h"
 
 namespace Elastosx {
 namespace Security {
@@ -50,7 +49,7 @@ ECode CPasswordCallback::GetPassword(
         AutoPtr<ArrayOf<Char32> > tmp = ArrayOf<Char32>::Alloc(mInputPassword->GetLength());
         tmp->Copy(0, mInputPassword, 0, tmp->GetLength());
         *password = tmp;
-        INTERFACE_ADDREF(*password)
+        REFCOUNT_ADD(*password)
     }
     return NOERROR;
 }

@@ -25,9 +25,6 @@ public:
 
     CAR_OBJECT_DECL()
 
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
     CGZIPInputStream();
 
     /**

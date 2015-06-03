@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "DatagramSocketImpl.h"
 #include "CIoBridge.h"
 
@@ -18,7 +17,7 @@ ECode DatagramSocketImpl::GetFileDescriptor(
 {
     VALIDATE_NOT_NULL(fileDescriptor);
     *fileDescriptor = mFd;
-    INTERFACE_ADDREF(*fileDescriptor);
+    REFCOUNT_ADD(*fileDescriptor);
     return NOERROR;
 }
 

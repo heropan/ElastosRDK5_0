@@ -1,6 +1,5 @@
 
 #include "KeyStore.h"
-#include "cmdef.h"
 #include "CSecurity.h"
 
 namespace Elastos {
@@ -116,7 +115,7 @@ ECode KeyStore::GetProvider(
 {
     VALIDATE_NOT_NULL(provider)
     *provider = mProvider;
-    INTERFACE_ADDREF(*provider)
+    REFCOUNT_ADD(*provider)
     return NOERROR;
 }
 

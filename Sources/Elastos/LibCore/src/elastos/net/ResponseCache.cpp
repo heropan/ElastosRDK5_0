@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "ResponseCache.h"
 
 namespace Elastos {
@@ -16,7 +15,7 @@ ECode ResponseCache::GetDefault(
     //     sm.checkPermission(new NetPermission("getResponseCache"));
     // }
     *responseCache = sDefaultResponseCache;
-    INTERFACE_ADDREF(*responseCache);
+    REFCOUNT_ADD(*responseCache);
     return NOERROR;
 }
 

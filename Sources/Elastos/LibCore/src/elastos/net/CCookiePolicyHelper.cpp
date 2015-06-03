@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CCookiePolicyHelper.h"
 #include "CHttpCookie.h"
 
@@ -182,7 +181,7 @@ ECode CCookiePolicyHelper::GetCookiePolicy(
     if (_policy == NULL) return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
     *policy = _policy.Get();
-    INTERFACE_ADDREF(*policy);
+    REFCOUNT_ADD(*policy);
 
     return NOERROR;
 }

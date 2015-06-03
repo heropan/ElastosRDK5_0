@@ -1,6 +1,5 @@
 
 #include "CECParameterSpec.h"
-#include "cmdef.h"
 #include "CBigIntegerHelper.h"
 
 using Elastos::Math::IBigIntegerHelper;

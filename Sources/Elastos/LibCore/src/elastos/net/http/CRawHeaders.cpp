@@ -179,9 +179,9 @@ ECode CRawHeaders::RemoveAll(
     for (Int32 i = 0; i < size; i += 2) {
         if (fieldName.EqualsIgnoreCase(GetStringByIndex(i))) {
             AutoPtr<IInterface> objFieldName;
-            mNamesAndValues->RemoveEx(i, (IInterface**)&objFieldName); // field name
+            mNamesAndValues->Remove(i, (IInterface**)&objFieldName); // field name
             AutoPtr<IInterface> objValue;
-            mNamesAndValues->RemoveEx(i, (IInterface**)&objValue); // value
+            mNamesAndValues->Remove(i, (IInterface**)&objValue); // value
         }
     }
     return NOERROR;
@@ -288,7 +288,7 @@ ECode CRawHeaders::GetAll(
         }
     }
     *rh = (IRawHeaders*) result.Get();
-    INTERFACE_ADDREF(*rh)
+    REFCOUNT_ADD(*rh)
     return NOERROR;
 }
 
@@ -391,7 +391,7 @@ ECode CRawHeaders::FromMultimap(
         }
     }
     *rh = result;
-    INTERFACE_ADDREF(*rh);
+    REFCOUNT_ADD(*rh);
     return NOERROR;
 }
 

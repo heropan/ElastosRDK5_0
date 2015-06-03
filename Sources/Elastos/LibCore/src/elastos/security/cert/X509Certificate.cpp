@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "X509Certificate.h"
 #include "CByteArrayInputStream.h"
 #include "CCertificateFactoryHelper.h"

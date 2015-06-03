@@ -19,7 +19,7 @@ protected:
         /* [in] */ IURL* u,
         /* [out] */ IURLConnection** urlConnection);
 
-    CARAPI OpenConnectionEx(
+    CARAPI OpenConnection(
         /* [in] */ IURL* u,
         /* [in] */ IProxy* proxy,
         /* [out] */ IURLConnection** urlConnection);

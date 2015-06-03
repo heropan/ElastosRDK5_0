@@ -1,4 +1,3 @@
-#include "cmdef.h"
 #include "CObjectEnumerator.h"
 
 namespace Elastos{
@@ -118,7 +117,7 @@ ECode CObjectEnumerator::Current(
     }
 
     *ppObj = mCurrent->mObject;
-    INTERFACE_ADDREF(*ppObj);
+    REFCOUNT_ADD(*ppObj);
     return NOERROR;
 }
 

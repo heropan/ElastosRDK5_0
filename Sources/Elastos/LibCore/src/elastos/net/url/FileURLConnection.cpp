@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "elastos/Math.h"
 #include "FileURLConnection.h"
 #include "UriCodec.h"
@@ -139,7 +138,7 @@ ECode FileURLConnection::GetInputStream(
         Connect();
     }
     *is = mIs;
-    INTERFACE_ADDREF(*is)
+    REFCOUNT_ADD(*is)
     return NOERROR;
 }
 

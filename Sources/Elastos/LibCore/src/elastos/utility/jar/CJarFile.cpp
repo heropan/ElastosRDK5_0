@@ -146,16 +146,6 @@ ECode CJarFile::JarFileInputStream::Close()
     return FilterInputStream::Close();
 }
 
-ECode CJarFile::JarFileInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-    AutoPtr<IInterface> obj = FilterInputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
-
 CJarFile::CJarFile()
     : mClosed(FALSE)
 {}

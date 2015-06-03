@@ -1,11 +1,10 @@
 
-#include "cmdef.h"
 #include "URLStreamHandler.h"
 //#include "CURL.h"
 #include "InetAddress.h"
 //#include <Com.Kortide.Platform.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/Math.h>
 //#include <Elastos.Security.h>
 #include <UrlUtils.h>
@@ -21,7 +20,7 @@ using Elastos::Core::Math;
 const InterfaceID EIID_URLStreamHandler =
     { 0x99e0a5eb, 0xddd7, 0x4ab4, { 0x82, 0xe, 0x7b, 0x92, 0x6c, 0xa, 0x70, 0x36 } };
 
-ECode URLStreamHandler::OpenConnectionEx(
+ECode URLStreamHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [in] */ IProxy* proxy,
     /* [out] */ IURLConnection** urlConnection)
@@ -150,7 +149,7 @@ ECode URLStreamHandler::ParseURL(
 
     String protocol;
     url->GetProtocol(&protocol);
-    SetURLEx(url, protocol, host, port, authority, userInfo, path, query, ref);
+    SetURL(url, protocol, host, port, authority, userInfo, path, query, ref);
     return NOERROR;
 }
 
@@ -173,7 +172,7 @@ ECode URLStreamHandler::SetURL(
     return NOERROR;
 }
 
-ECode URLStreamHandler::SetURLEx(
+ECode URLStreamHandler::SetURL(
     /* [in] */ IURL* u,
     /* [in] */ const String& protocol,
     /* [in] */ const String& host,
@@ -195,7 +194,7 @@ ECode URLStreamHandler::SetURLEx(
     return NOERROR;
 }
 
-ECode URLStreamHandler::ToExternalFormEx(
+ECode URLStreamHandler::ToExternalForm(
     /* [in] */ IURL* url,
     /* [in] */ Boolean escapeIllegalCharacters,
     /* [out] */ String* s)
@@ -247,10 +246,10 @@ ECode URLStreamHandler::ToExternalForm(
     /* [in] */ IURL* url,
     /* [out] */ String* s)
 {
-    return ToExternalFormEx(url, FALSE, s);
+    return ToExternalForm(url, FALSE, s);
 }
 
-ECode URLStreamHandler::EqualsEx(
+ECode URLStreamHandler::Equals(
     /* [in] */ IURL* url1,
     /* [in] */ IURL* url2,
     /* [out] */ Boolean* isEquals)

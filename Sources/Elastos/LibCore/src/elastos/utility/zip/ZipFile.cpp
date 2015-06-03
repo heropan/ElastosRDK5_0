@@ -132,17 +132,6 @@ ECode ZipFile::RAFStream::Reset()
     return E_IO_EXCEPTION;
 }
 
-ECode ZipFile::RAFStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = InputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
-
 Object ZipFile::ZipInflaterInputStream::sLock;
 
 ZipFile::ZipInflaterInputStream::ZipInflaterInputStream(
@@ -154,17 +143,6 @@ ZipFile::ZipInflaterInputStream::ZipInflaterInputStream(
     , mBytesRead(0)
 {
     ASSERT_SUCCEEDED(InflaterInputStream::constructor(is, inf, bsize));
-}
-
-ECode ZipFile::ZipInflaterInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = InflaterInputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
 }
 
 //@Override

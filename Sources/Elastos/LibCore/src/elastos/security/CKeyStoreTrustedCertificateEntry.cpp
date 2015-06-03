@@ -1,6 +1,5 @@
 
 #include "CKeyStoreTrustedCertificateEntry.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -11,7 +10,7 @@ ECode CKeyStoreTrustedCertificateEntry::GetTrustedCertificate(
 {
     VALIDATE_NOT_NULL(cert)
     *cert = mTrustCertificate;
-    INTERFACE_ADDREF(*cert)
+    REFCOUNT_ADD(*cert)
     return NOERROR;
 }
 

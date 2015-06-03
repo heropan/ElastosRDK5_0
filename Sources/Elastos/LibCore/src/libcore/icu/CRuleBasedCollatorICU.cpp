@@ -63,7 +63,7 @@ ECode CRuleBasedCollatorICU::Clone(
     FAIL_RETURN(NativeCollation::SafeClone(mAddress, &value));
     ans =  new CRuleBasedCollatorICU(value);
     *outruleicu = ans;
-    INTERFACE_ADDREF(*outruleicu);
+    REFCOUNT_ADD(*outruleicu);
 
     return NOERROR;
 }
@@ -137,7 +137,7 @@ ECode CRuleBasedCollatorICU::GetCollationKey(
             AutoPtr<ICollationKeyICU> ans;
             FAIL_RETURN(CCollationKeyICU::New(source, *key ,(ICollationKeyICU **)&ans));
             *outkey = ans;
-            INTERFACE_ADDREF(*outkey);
+            REFCOUNT_ADD(*outkey);
         }
     }
     return NOERROR;
@@ -160,7 +160,7 @@ ECode CRuleBasedCollatorICU::GetCollationElementIterator(
 
     AutoPtr<ICollationElementIteratorICU> ans = CollationElementIteratorICU::GetInstance(mAddress, source);
     *outicu = ans;
-    INTERFACE_ADDREF(*outicu);
+    REFCOUNT_ADD(*outicu);
 
     return NOERROR;
 }

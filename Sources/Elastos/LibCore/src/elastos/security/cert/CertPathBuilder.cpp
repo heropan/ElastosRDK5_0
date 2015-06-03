@@ -1,6 +1,5 @@
 
 #include "CertPathBuilder.h"
-#include "cmdef.h"
 #ifdef ELASTOS_CORELIBRARY
 #include "CSecurity.h"
 #endif
@@ -38,7 +37,7 @@ ECode CertPathBuilder::GetProvider(
 {
     VALIDATE_NOT_NULL(provider)
     *provider = mProvider;
-    INTERFACE_ADDREF(*provider)
+    REFCOUNT_ADD(*provider)
     return NOERROR;
 }
 

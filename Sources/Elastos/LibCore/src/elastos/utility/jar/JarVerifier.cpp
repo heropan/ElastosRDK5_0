@@ -92,16 +92,6 @@ ECode JarVerifier::VerifierEntry::Close()
     return OutputStream::Close();
 }
 
-ECode JarVerifier::VerifierEntry::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-    AutoPtr<IInterface> obj = OutputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
-
 JarVerifier::JarVerifier()
     : mMainAttributesEnd(0)
     , mMetaEntries(new HashMap<String, AutoPtr<ArrayOf<Byte> > >(5))

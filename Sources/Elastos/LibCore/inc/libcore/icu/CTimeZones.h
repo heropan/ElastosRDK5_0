@@ -2,7 +2,6 @@
 #ifndef __ICU_CTIMEZONES_H__
 #define __ICU_CTIMEZONES_H__
 
-#include "cmdef.h"
 #include "_CTimeZones.h"
 
 using Elastos::Core::IArrayOf;

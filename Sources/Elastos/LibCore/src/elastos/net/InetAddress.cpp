@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "InetAddress.h"
 #include "CInetAddress.h"
 #include "CInet4Address.h"
@@ -80,7 +79,7 @@ ECode InetAddress::GetAddress(
 
     if (mIpAddress) {
         *address = mIpAddress->Clone();
-        INTERFACE_ADDREF(*address);
+        REFCOUNT_ADD(*address);
     }
     return NOERROR;
 }
@@ -94,7 +93,7 @@ ECode InetAddress::GetAllByName(
     AutoPtr< ArrayOf<IInetAddress*> > addrs;
     FAIL_RETURN(GetAllByNameImpl(host, (ArrayOf<IInetAddress*>**)&addrs));
     *addresses = addrs->Clone();
-    INTERFACE_ADDREF(*addresses);
+    REFCOUNT_ADD(*addresses);
     return NOERROR;
 }
 
@@ -118,14 +117,14 @@ ECode InetAddress::GetAllByNameImpl(
         AutoPtr< ArrayOf<IInetAddress*> > addrs = ArrayOf<IInetAddress*>::Alloc(1);
         addrs->Set(0, result);
         *addresses = addrs;
-        INTERFACE_ADDREF(*addresses);
+        REFCOUNT_ADD(*addresses);
         return NOERROR;
     }
 
     AutoPtr< ArrayOf<IInetAddress*> > addrs;
     FAIL_RETURN(LookupHostByName(host, (ArrayOf<IInetAddress*>**)&addrs));
     *addresses = addrs->Clone();
-    INTERFACE_ADDREF(*addresses);
+    REFCOUNT_ADD(*addresses);
     return NOERROR;
 }
 
@@ -138,7 +137,7 @@ ECode InetAddress::GetByName(
     AutoPtr< ArrayOf<IInetAddress*> > addresses;
     FAIL_RETURN(GetAllByNameImpl(host, (ArrayOf<IInetAddress*>**)&addresses));
     *address = (*addresses)[0];
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 
@@ -207,7 +206,7 @@ ECode InetAddress::GetLocalHost(
     AutoPtr<ArrayOf<IInetAddress*> > addresses;
     FAIL_RETURN(LookupHostByName(host, (ArrayOf<IInetAddress*>**)&addresses));
     *address = (*addresses)[0];
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 
@@ -270,7 +269,7 @@ ECode InetAddress::ParseNumericAddress(
 
     if (numericAddress.IsNullOrEmpty()) {
         *result = CInet6Address::LOOPBACK;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     AutoPtr<IInetAddress> resultTemp = ParseNumericAddressNoThrow(numericAddress);
@@ -279,7 +278,7 @@ ECode InetAddress::ParseNumericAddress(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     *result = resultTemp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -289,7 +288,7 @@ ECode InetAddress::GetLoopbackAddress(
     VALIDATE_NOT_NULL(address);
 
     *address = CInet6Address::LOOPBACK;
-    INTERFACE_ADDREF(*address)
+    REFCOUNT_ADD(*address)
     return NOERROR;
 }
 
@@ -380,10 +379,10 @@ ECode InetAddress::IsReachable(
 {
     VALIDATE_NOT_NULL(isReachable);
 
-    return IsReachableEx(NULL, 0, timeout, isReachable);
+    return IsReachable(NULL, 0, timeout, isReachable);
 }
 
-ECode InetAddress::IsReachableEx(
+ECode InetAddress::IsReachable(
     /* [in] */ INetworkInterface* networkInterface,
     /* [in] */ Int32 ttl,
     /* [in] */ Int32 timeout,
@@ -450,7 +449,7 @@ ECode InetAddress::GetByAddress(
     return GetByAddress(String(NULL), ipAddress, 0, address);
 }
 
-ECode InetAddress::GetByAddressEx(
+ECode InetAddress::GetByAddress(
     /* [in] */ const String& hostName,
     /* [in] */ ArrayOf<Byte>* ipAddress,
     /* [out] */ IInetAddress** address)
@@ -475,7 +474,7 @@ ECode InetAddress::BytesToInetAddresses(
         returnedAddresses->Set(i, addr);
     }
     *addresses = returnedAddresses;
-    INTERFACE_ADDREF(*addresses);
+    REFCOUNT_ADD(*addresses);
     return NOERROR;
 }
 
@@ -558,7 +557,7 @@ ECode InetAddress::LookupHostByName(
     if(cachedResult != NULL) {
         if (cachedResult != AddressCache::UNKNOWN_ADDRESS) {
             *addresses = cachedResult;
-            INTERFACE_ADDREF(*addresses);
+            REFCOUNT_ADD(*addresses);
             return NOERROR;
         }
         else {
@@ -590,7 +589,7 @@ ECode InetAddress::LookupHostByName(
 
     ADDRESS_CACHE->Put(host, structAddresses);
     *addresses = structAddresses;
-    INTERFACE_ADDREF(*addresses);
+    REFCOUNT_ADD(*addresses);
     return NOERROR;
 }
 
@@ -610,7 +609,7 @@ Boolean InetAddress::IsReachable(
         }
     }
 
-    if (FAILED(ioBridge->ConnectEx(fd, (IInetAddress*)destination->Probe(EIID_IInetAddress), 7, timeout, &reached))) {
+    if (FAILED(ioBridge->Connect(fd, (IInetAddress*)destination->Probe(EIID_IInetAddress), 7, timeout, &reached))) {
         return FALSE;
     }
     return TRUE;
@@ -640,7 +639,7 @@ ECode InetAddress::IPv4MappedToIPv4(
     VALIDATE_NOT_NULL(ipv4Address);
 
     *ipv4Address = ArrayOf<Byte>::Alloc(4);
-    INTERFACE_ADDREF(*ipv4Address);
+    REFCOUNT_ADD(*ipv4Address);
     for(Int32 i=0; i < 4; i++) {
         (**ipv4Address)[i] = (*mappedAddress)[12 + i];
     }
@@ -743,7 +742,7 @@ ECode InetAddress::LoopbackAddresses(
     addrs->Set(0, CInet6Address::LOOPBACK);
     addrs->Set(1, CInet4Address::LOOPBACK);
     *result = addrs;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CDatagramPacket.h"
 #include "CInetSocketAddress.h"
 
@@ -29,7 +28,7 @@ ECode CDatagramPacket::constructor(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
-    return SetDataEx(data, offset, length);
+    return SetData(data, offset, length);
 }
 
 ECode CDatagramPacket::constructor(
@@ -80,7 +79,7 @@ ECode CDatagramPacket::GetAddress(
     Mutex::Autolock lock(_m_syncLock);
 
     *address = mAddress;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 
@@ -91,7 +90,7 @@ ECode CDatagramPacket::GetData(
     Mutex::Autolock lock(_m_syncLock);
 
     *data = mData;
-    INTERFACE_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 
@@ -147,7 +146,7 @@ ECode CDatagramPacket::SetAddress(
     return NOERROR;
 }
 
-ECode CDatagramPacket::SetDataEx(
+ECode CDatagramPacket::SetData(
     /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 anOffset,
     /* [in] */ Int32 aLength)
@@ -219,7 +218,7 @@ ECode CDatagramPacket::GetSocketAddress(
     AutoPtr<IInetSocketAddress> sa;
     FAIL_RETURN(CInetSocketAddress::New(addr, port, (IInetSocketAddress**)&sa));
     *sockAddr = ISocketAddress::Probe(sa);
-    INTERFACE_ADDREF(*sockAddr);
+    REFCOUNT_ADD(*sockAddr);
     return NOERROR;
 }
 

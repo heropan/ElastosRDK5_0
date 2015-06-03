@@ -88,7 +88,7 @@ ECode CJDBCConnection::CreateStatement(
     AutoPtr<IJDBCStatement> s;
     CJDBCStatement::New((IJDBCConnection*)this, (IJDBCStatement**)&s);
     *ppStatement = IStatement::Probe(s);
-    INTERFACE_ADDREF(*ppStatement);
+    REFCOUNT_ADD(*ppStatement);
     return NOERROR;
 }
 
@@ -579,7 +579,7 @@ ECode CJDBCConnection::Open(
     }
 
     *db = dbx;
-    INTERFACE_ADDREF(*db);
+    REFCOUNT_ADD(*db);
     return NOERROR;
 }
 
@@ -588,7 +588,7 @@ ECode CJDBCConnection::GetSQLiteDatabase(
 {
     VALIDATE_NOT_NULL(ppDb);
     *ppDb = mDb;
-    INTERFACE_ADDREF(*ppDb);
+    REFCOUNT_ADD(*ppDb);
     return NOERROR;
 }
 

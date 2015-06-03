@@ -4,9 +4,9 @@
 
 #include "_CSocket.h"
 #include "Socket.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Mutex;
+
+
 
 namespace Elastos {
 namespace Net {
@@ -99,7 +99,7 @@ public:
     CARAPI Connect(
         /* [in] */ ISocketAddress* remoteAddr);
 
-    CARAPI ConnectEx(
+    CARAPI Connect(
         /* [in] */ ISocketAddress* remoteAddr,
         /* [in] */ Int32 timeout);
 

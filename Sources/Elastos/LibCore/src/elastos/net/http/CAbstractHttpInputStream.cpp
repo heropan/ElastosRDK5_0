@@ -45,13 +45,13 @@ ECode CAbstractHttpInputStream::ReadBytes(
     return AbstractHttpInputStream::ReadBytes(buffer, number);
 }
 
-ECode CAbstractHttpInputStream::ReadBytesEx(
+ECode CAbstractHttpInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
-    return AbstractHttpInputStream::ReadBytesEx(buffer, offset, length, number);
+    return AbstractHttpInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CAbstractHttpInputStream::Reset()
@@ -71,22 +71,6 @@ ECode CAbstractHttpInputStream::Close()
     return AbstractHttpInputStream::Close();
 }
 
-PInterface CAbstractHttpInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CAbstractHttpInputStream::Probe(riid);
-}
-
-ECode CAbstractHttpInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = AbstractHttpInputStream::GetLock();
-    *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
-    return NOERROR;
-}
 
 } // namespace Http
 } // namespace Net

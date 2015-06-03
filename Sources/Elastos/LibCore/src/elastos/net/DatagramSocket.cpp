@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "DatagramSocket.h"
 #include "CInet4Address.h"
 #include "CDatagramPacket.h"
@@ -158,7 +157,7 @@ ECode DatagramSocket::GetInetAddress(
     VALIDATE_NOT_NULL(address);
 
     *address = mAddress;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 
@@ -176,13 +175,13 @@ ECode DatagramSocket::GetLocalAddress(
     Boolean isBound = FALSE;
     if (IsBound(&isBound), !isBound) {
         *address = CInet4Address::ANY;
-        INTERFACE_ADDREF(*address);
+        REFCOUNT_ADD(*address);
         return NOERROR;
     }
     AutoPtr<IInetAddress> anAddr;
     mImpl->GetLocalAddress((IInetAddress**)&anAddr);
     *address = anAddr;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 

@@ -192,7 +192,7 @@ ECode CCertificationRequestInfo::ASN1SequenceDerived::GetDecodedObject(
     AutoPtr<ArrayOf<Byte> > arg5;
     bis->GetEncoded((ArrayOf<Byte>**)&arg5);
     *object = new CCertificationRequestInfo(arg1, arg2, arg3, arg4, arg5);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -278,7 +278,7 @@ ECode CCertificationRequestInfo::GetSubject(
 {
     VALIDATE_NOT_NULL(name)
     *name = mSubject;
-    INTERFACE_ADDREF(*name)
+    REFCOUNT_ADD(*name)
     return NOERROR;
 }
 
@@ -298,7 +298,7 @@ ECode CCertificationRequestInfo::GetEncoded(
         ASN1->Encode(this, (ArrayOf<Byte>**)&mEncoding);
     }
     *encoded = mEncoding;
-    INTERFACE_ADDREF(*encoded)
+    REFCOUNT_ADD(*encoded)
     return NOERROR;
 }
 
@@ -343,7 +343,7 @@ ECode CCertificationRequestInfo::GetAttributes(
 {
     VALIDATE_NOT_NULL(attri)
     *attri = mAttributes;
-    INTERFACE_ADDREF(*attri)
+    REFCOUNT_ADD(*attri)
     return NOERROR;
 }
 
@@ -352,7 +352,7 @@ CARAPI GetSubjectPublicKeyInfo(
 {
     VALIDATE_NOT_NULL(info)
     *info = mSubjectPublicKeyInfo;
-    INTERFACE_ADDREF(*info)
+    REFCOUNT_ADD(*info)
     return NOERROR;
 }
 

@@ -102,22 +102,6 @@ ECode CJarOutputStream::constructor(
     return ZipOutputStream::Init(os);
 }
 
-ECode CJarOutputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = ZipOutputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
-
-PInterface CJarOutputStream::Probe(
-        /* in */ REIID id)
-{
-    return _CJarOutputStream::Probe(id);
-}
 
 } // namespace Jar
 } // namespace Utility

@@ -1,6 +1,5 @@
 
 #include "CECFieldFp.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -18,7 +17,7 @@ ECode CECFieldFp::GetP(
 {
     VALIDATE_NOT_NULL(p)
     *p = mP;
-    INTERFACE_ADDREF(*p)
+    REFCOUNT_ADD(*p)
     return NOERROR;
 }
 

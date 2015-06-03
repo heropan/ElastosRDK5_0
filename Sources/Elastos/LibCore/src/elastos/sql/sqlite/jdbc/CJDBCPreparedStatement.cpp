@@ -157,7 +157,7 @@ ECode CJDBCPreparedStatement::ExecuteBatch(
 {
     if (mBatch == NULL) {
         *outarray = ArrayOf<Int32>::Alloc(0);
-        INTERFACE_ADDREF(*outarray);
+        REFCOUNT_ADD(*outarray);
         return NOERROR;
     }
 
@@ -184,7 +184,7 @@ ECode CJDBCPreparedStatement::ExecuteBatch(
         return E_SQL_SQLITE_JDBC_BATCHUPDATE_EXCEPTION;
     }
     *outarray = ret;
-    INTERFACE_ADDREF(*outarray)
+    REFCOUNT_ADD(*outarray)
     return NOERROR;
 }
 

@@ -5,7 +5,7 @@
 #include "_Org_Xml_Sax_Helpers_CAttributeListImpl.h"
 #include <elastos/utility/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 
 namespace Org {
 namespace Xml {

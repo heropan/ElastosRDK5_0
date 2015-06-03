@@ -108,7 +108,7 @@ ECode CRequestHeaders::GetHeaders(
     VALIDATE_NOT_NULL(rh)
 
     *rh = mHeaders;
-    INTERFACE_ADDREF(*rh)
+    REFCOUNT_ADD(*rh)
 
     return NOERROR;
 }

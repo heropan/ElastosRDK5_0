@@ -3,9 +3,9 @@
 #define __CDATAGRAMPACKET_H__
 
 #include "_CDatagramPacket.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Mutex;
+
+
 
 namespace Elastos {
 namespace Net {
@@ -76,7 +76,7 @@ public:
     CARAPI SetData(
         /* [in] */ ArrayOf<Byte>* buf);
 
-    CARAPI SetDataEx(
+    CARAPI SetData(
         /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 anOffset,
         /* [in] */ Int32 aLength);

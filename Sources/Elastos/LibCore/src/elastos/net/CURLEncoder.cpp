@@ -1,7 +1,7 @@
 
 #include "CURLEncoder.h"
 #include "CCharsetHelper.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 using Elastos::IO::Charset::ICharsetHelper;
 using Elastos::IO::Charset::CCharsetHelper;
@@ -18,7 +18,7 @@ ECode CURLEncoder::Encode(
     return NOERROR;
 }
 
-ECode CURLEncoder::EncodeEx(
+ECode CURLEncoder::Encode(
     /* [in] */ const String& s,
     /* [in] */ const String& charsetName,
     /* [out] */ String* result)

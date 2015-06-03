@@ -1,12 +1,11 @@
 
-#include "cmdef.h"
 #include "CURI.h"
 #include "InetAddress.h"
 #include "CURL.h"
 #include "UrlUtils.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Character.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Character.h>
 
 namespace Elastos {
 namespace Net {
@@ -627,7 +626,7 @@ ECode CURI::Create(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     *obj = (IURI*)outuri.Get();
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return ec;
 //    } catch (URISyntaxException e) {
 //        throw new IllegalArgumentException(e.getMessage());
@@ -1030,14 +1029,14 @@ ECode CURI::Normalize(
 
     if (mOpaque) {
         *uri = (IURI*)this;
-        INTERFACE_ADDREF(*uri);
+        REFCOUNT_ADD(*uri);
         return NOERROR;
     }
     String normalizedPath = Normalize(mPath, FALSE);
     // if the path is already normalized, return this
     if (mPath.Equals(normalizedPath)) {
         *uri = (IURI*)this;
-        INTERFACE_ADDREF(*uri);
+        REFCOUNT_ADD(*uri);
         return NOERROR;
     }
     // get an exact copy of the URI re-calculate the scheme specific part
@@ -1046,7 +1045,7 @@ ECode CURI::Normalize(
     ((CURI*)result.Get())->mPath = normalizedPath;
     ((CURI*)result.Get())->SetSchemeSpecificPart();
     *uri = result;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -1059,7 +1058,7 @@ ECode CURI::ParseServerAuthority(
         ParseAuthority(TRUE);
     }
     *uri = (CURI*)this;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -1072,21 +1071,21 @@ ECode CURI::Relativize(
     CURI* relativeObj = (CURI*)relative;
     if (relativeObj->mOpaque || mOpaque) {
         *uri = relative;
-        INTERFACE_ADDREF(*uri);
+        REFCOUNT_ADD(*uri);
         return NOERROR;
     }
 
     if (mScheme.IsNull() ? !relativeObj->mScheme.IsNull() : !mScheme
             .Equals(relativeObj->mScheme)) {
         *uri = relative;
-        INTERFACE_ADDREF(*uri);
+        REFCOUNT_ADD(*uri);
         return NOERROR;
     }
 
     if (mAuthority.IsNull() ? !relativeObj->mAuthority.IsNull() : !mAuthority
             .Equals(relativeObj->mAuthority)) {
         *uri = relative;
-        INTERFACE_ADDREF(*uri);
+        REFCOUNT_ADD(*uri);
         return NOERROR;
     }
 
@@ -1108,7 +1107,7 @@ ECode CURI::Relativize(
          */
         if (!relativePath.StartWith(thisPath)) {
             *uri = relative;
-            INTERFACE_ADDREF(*uri);
+            REFCOUNT_ADD(*uri);
             return NOERROR;
         }
     }
@@ -1121,7 +1120,7 @@ ECode CURI::Relativize(
     result->mPath = relativePath.Substring(thisPath.GetLength());
     result->SetSchemeSpecificPart();
     *uri = (IURI*)result.Get();
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
 
     return NOERROR;
 }
@@ -1135,7 +1134,7 @@ ECode CURI::Resolve(
     CURI* relativeObj = (CURI*)relative;
     if (relativeObj->mAbsolute || mOpaque) {
         *uri = relative;
-        INTERFACE_ADDREF(*uri);
+        REFCOUNT_ADD(*uri);
         return NOERROR;
     }
 
@@ -1147,7 +1146,7 @@ ECode CURI::Resolve(
         cResult->mScheme = mScheme;
         cResult->mAbsolute = mAbsolute;
         *uri = result;
-        INTERFACE_ADDREF(*uri);
+        REFCOUNT_ADD(*uri);
         return NOERROR;
     }
 
@@ -1157,7 +1156,7 @@ ECode CURI::Resolve(
         CURI* cResult = (CURI*)result.Get();
         cResult->mFragment = relativeObj->mFragment;
         *uri = result;
-        INTERFACE_ADDREF(*uri);
+        REFCOUNT_ADD(*uri);
         return NOERROR;
     }
 
@@ -1180,7 +1179,7 @@ ECode CURI::Resolve(
     cResult->mPath = UrlUtils::AuthoritySafePath(cResult->mAuthority, Normalize(resolvedPath, TRUE));
     cResult->SetSchemeSpecificPart();
     *uri = result;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -1202,7 +1201,7 @@ void CURI::SetSchemeSpecificPart()
     mString = NULL;
 }
 
-ECode CURI::ResolveEx(
+ECode CURI::Resolve(
     /* [in] */ const String& relative,
     /* [out] */ IURI** uri)
 {

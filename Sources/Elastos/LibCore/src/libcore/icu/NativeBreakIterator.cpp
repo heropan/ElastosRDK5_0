@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "NativeBreakIterator.h"
 #include "unicode/ubrk.h"
 #include "ElStringByteSink.h"
@@ -51,7 +50,7 @@ ECode NativeBreakIterator::Clone(
     // The RI doesn't clone the CharacterIterator.
     clone->SetText(mCharIter);
     *outiter = clone;
-    INTERFACE_ADDREF(*outiter);
+    REFCOUNT_ADD(*outiter);
 
     return NOERROR;
 }
@@ -124,7 +123,7 @@ ECode NativeBreakIterator::GetText(
     Char32 c;
     mCharIter->SetIndex(newLoc, &c);
     *outiter = mCharIter;
-    INTERFACE_ADDREF(*outiter);
+    REFCOUNT_ADD(*outiter);
 
     return NOERROR;
 }

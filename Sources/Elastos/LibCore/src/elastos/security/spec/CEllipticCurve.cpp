@@ -1,6 +1,5 @@
 
 #include "CEllipticCurve.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -12,7 +11,7 @@ ECode CEllipticCurve::GetA(
 {
     VALIDATE_NOT_NULL(a)
     *a = mA;
-    INTERFACE_ADDREF(*a)
+    REFCOUNT_ADD(*a)
     return NOERROR;
 }
 
@@ -21,7 +20,7 @@ ECode CEllipticCurve::GetB(
 {
     VALIDATE_NOT_NULL(b)
     *b = mB;
-    INTERFACE_ADDREF(*b)
+    REFCOUNT_ADD(*b)
     return NOERROR;
 }
 
@@ -30,7 +29,7 @@ ECode CEllipticCurve::GetField(
 {
     VALIDATE_NOT_NULL(field)
     *field = mField;
-    INTERFACE_ADDREF(*field)
+    REFCOUNT_ADD(*field)
     return NOERROR;
 }
 
@@ -47,7 +46,7 @@ ECode CEllipticCurve::GetSeed(
         AutoPtr<ArrayOf<Byte> > ret = ArrayOf<Byte>::Alloc(mSeed->GetLength());
         ret->Copy(0, mSeed, 0, ret->GetLength());
         *seed = ret;
-        INTERFACE_ADDREF(*seed)
+        REFCOUNT_ADD(*seed)
         return NOERROR;
     }
 }

@@ -1,6 +1,5 @@
 
 #include "CTrustAnchor.h"
-#include "cmdef.h"
 #include "StringBuilder.h"
 #include "CX500Principal.h"
 
@@ -21,7 +20,7 @@ ECode CTrustAnchor::GetNameConstraints(
     AutoPtr<ArrayOf<Byte> > ret = ArrayOf<Byte>::Alloc(mNameConstraints->GetLength());
     ret->Copy(0, mNameConstraints, 0, mNameConstraints->GetLength());
     *nameConstraints = ret;
-    INTERFACE_ADDREF(*nameConstraints)
+    REFCOUNT_ADD(*nameConstraints)
     return NOERROR;
 }
 
@@ -30,7 +29,7 @@ ECode CTrustAnchor::GetTrustedCert(
 {
     VALIDATE_NOT_NULL(cert)
     *cert = mTrustedCert;
-    INTERFACE_ADDREF(*cert)
+    REFCOUNT_ADD(*cert)
     return NOERROR;
 }
 
@@ -39,7 +38,7 @@ ECode CTrustAnchor::GetCA(
 {
     VALIDATE_NOT_NULL(ca)
     *ca = mCaPrincipal;
-    INTERFACE_ADDREF(*ca)
+    REFCOUNT_ADD(*ca)
     return NOERROR;
 }
 
@@ -56,7 +55,7 @@ ECode CTrustAnchor::GetCAPublicKey(
 {
     VALIDATE_NOT_NULL(key)
     *key = mCaPublicKey;
-    INTERFACE_ADDREF(*key)
+    REFCOUNT_ADD(*key)
     return NOERROR;
 }
 

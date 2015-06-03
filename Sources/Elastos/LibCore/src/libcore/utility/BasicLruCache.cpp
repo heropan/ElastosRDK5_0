@@ -45,7 +45,7 @@ ECode BasicLruCache::Get(
     mMap->Get(key, (IInterface**)&result);
     if (result != NULL) {
         *ouface = result;
-        INTERFACE_ADDREF(*ouface)
+        REFCOUNT_ADD(*ouface)
         return NOERROR;
     }
 
@@ -57,7 +57,7 @@ ECode BasicLruCache::Get(
         TrimToSize(mMaxSize);
     }
     *ouface = result;
-    INTERFACE_ADDREF(*ouface)
+    REFCOUNT_ADD(*ouface)
     return NOERROR;
 }
 
@@ -87,7 +87,7 @@ ECode BasicLruCache::Snapshot(
     AutoPtr<IMap> res;
     FAIL_RETURN(CLinkedHashMap::New(mMap, (IMap**)&res));
     *outmap = res;
-    INTERFACE_ADDREF(*outmap)
+    REFCOUNT_ADD(*outmap)
     return NOERROR;
 }
 

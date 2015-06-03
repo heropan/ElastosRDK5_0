@@ -14,7 +14,7 @@ public:
         /* [in] */ IURLConnection* uConn,
         /* [out] */ IInterface** obj) = 0;
 
-    virtual CARAPI GetContentEx(
+    virtual CARAPI GetContent(
         /* [in] */ IURLConnection* uConn,
         /* [in] */ const ArrayOf<InterfaceID>& types,
         /* [out] */ IInterface** obj);

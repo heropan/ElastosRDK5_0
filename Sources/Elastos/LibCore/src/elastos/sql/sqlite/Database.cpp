@@ -1700,9 +1700,9 @@ static ECode Mkfunc_common(handle * ihandle,AutoPtr<IDatabase> obj,Int32 isagg, 
     f->fc = fc;
     f->fi = fi;
     f->db = obj;
-    INTERFACE_ADDREF(f->fc);
-    INTERFACE_ADDREF(f->fi);
-    INTERFACE_ADDREF(f->db);
+    REFCOUNT_ADD(f->fc);
+    REFCOUNT_ADD(f->fi);
+    REFCOUNT_ADD(f->db);
     f->h = h;
     f->next = h->funcs;
     h->funcs = f;
@@ -2096,7 +2096,7 @@ Int32 Database::_Status(
         (*jdata)[0] = data[0];
         (*jdata)[1] = data[1];
         info = jdata;
-        INTERFACE_ADDREF(info);
+        REFCOUNT_ADD(info);
     }
 #endif
 #endif

@@ -3,9 +3,9 @@
 #define __SOCKET_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Mutex;
+
+
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IFileDescriptor;
@@ -101,7 +101,7 @@ public:
     CARAPI Connect(
         /* [in] */ ISocketAddress* remoteAddr);
 
-    CARAPI ConnectEx(
+    CARAPI Connect(
         /* [in] */ ISocketAddress* remoteAddr,
         /* [in] */ Int32 timeout);
 

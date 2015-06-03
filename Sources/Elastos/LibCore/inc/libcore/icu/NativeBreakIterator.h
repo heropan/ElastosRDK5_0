@@ -5,7 +5,7 @@
 #include <cmdef.h>
 #include <elastos.h>
 #include <eltypes.h>
-#include <elrefbase.h>
+
 #include <Elastos.CoreLibrary_server.h>
 
 using Elastos::ElRefBase;

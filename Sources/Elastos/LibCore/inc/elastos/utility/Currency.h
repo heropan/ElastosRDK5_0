@@ -4,11 +4,11 @@
 
 #include <cmdef.h>
 #include <Elastos.CoreLibrary_server.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <elastos/Mutex.h>
 
 using Libcore::ICU::ILocale;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::Mutex;
 
 _ETL_NAMESPACE_BEGIN

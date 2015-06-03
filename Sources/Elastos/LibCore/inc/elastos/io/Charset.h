@@ -7,12 +7,12 @@
 
 #include <coredef.h>
 #include <Elastos.CoreLibrary_server.h>
-#include <elastos/HashMap.h>
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
 #include <elastos/Set.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Set;
 using Libcore::ICU::ILocale;
 

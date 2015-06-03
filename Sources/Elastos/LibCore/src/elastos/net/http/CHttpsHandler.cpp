@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CHttpsHandler.h"
 
 namespace Elastos {
@@ -20,7 +19,7 @@ ECode CHttpsHandler::OpenConnection(
     return NOERROR;
 }
 
-ECode CHttpsHandler::OpenConnectionEx(
+ECode CHttpsHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [in] */ IProxy* proxy,
     /* [out] */ IURLConnection** urlConnection)
@@ -54,7 +53,7 @@ ECode CHttpsHandler::SetURL(
     return URLStreamHandler::SetURL(u, protocol, host, port, file, ref);
 }
 
-ECode CHttpsHandler::SetURLEx(
+ECode CHttpsHandler::SetURL(
     /* [in] */ IURL* u,
     /* [in] */ const String& protocol,
     /* [in] */ const String& host,
@@ -65,15 +64,15 @@ ECode CHttpsHandler::SetURLEx(
     /* [in] */ const String& query,
     /* [in] */ const String& ref)
 {
-    return URLStreamHandler::SetURLEx(u, protocol, host, port, authority, userInfo, file, query, ref);
+    return URLStreamHandler::SetURL(u, protocol, host, port, authority, userInfo, file, query, ref);
 }
 
-ECode CHttpsHandler::ToExternalFormEx(
+ECode CHttpsHandler::ToExternalForm(
     /* [in] */ IURL* url,
     /* [in] */ Boolean escapeIllegalCharacters,
     /* [out] */ String* s)
 {
-    return URLStreamHandler::ToExternalFormEx(url, escapeIllegalCharacters, s);
+    return URLStreamHandler::ToExternalForm(url, escapeIllegalCharacters, s);
 }
 
 ECode CHttpsHandler::ToExternalForm(
@@ -83,12 +82,12 @@ ECode CHttpsHandler::ToExternalForm(
     return URLStreamHandler::ToExternalForm(url, s);
 }
 
-ECode CHttpsHandler::EqualsEx(
+ECode CHttpsHandler::Equals(
     /* [in] */ IURL* url1,
     /* [in] */ IURL* url2,
     /* [out] */ Boolean* isEquals)
 {
-    return URLStreamHandler::EqualsEx(url1, url2, isEquals);
+    return URLStreamHandler::Equals(url1, url2, isEquals);
 }
 
 ECode CHttpsHandler::GetDefaultPort(

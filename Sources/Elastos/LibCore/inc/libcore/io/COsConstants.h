@@ -2,7 +2,6 @@
 #ifndef __COSCONSTANTS_H__
 #define __COSCONSTANTS_H__
 
-#include "cmdef.h"
 #include "_COsConstants.h"
 #include <elastos/HashMap.h>
 

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CServerSocket.h"
 
 namespace Elastos {
@@ -82,11 +81,11 @@ ECode CServerSocket::Bind(
     return ServerSocket::Bind(localAddr);
 }
 
-ECode CServerSocket::BindEx(
+ECode CServerSocket::Bind(
     /* [in] */ ISocketAddress* localAddr,
     /* [in] */ Int32 backlog)
 {
-    return ServerSocket::BindEx(localAddr, backlog);
+    return ServerSocket::Bind(localAddr, backlog);
 }
 
 ECode CServerSocket::GetLocalSocketAddress(

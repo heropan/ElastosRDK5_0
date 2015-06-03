@@ -121,7 +121,7 @@ ECode CBase64::DecodeEx(
     // create the resulting array
     *outData = ArrayOf<Byte>::Alloc(outIndex);
     (*outData)->Copy(0, out, 0, outIndex);
-    INTERFACE_ADDREF(*outData)
+    REFCOUNT_ADD(*outData)
     return NOERROR;
 }
 

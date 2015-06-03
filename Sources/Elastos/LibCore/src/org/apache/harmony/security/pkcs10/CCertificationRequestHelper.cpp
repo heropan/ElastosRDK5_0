@@ -15,7 +15,7 @@ ECode CCertificationRequestHelper::GetASN1(
 {
     VALIDATE_NOT_NULL(asn1)
     *asn1 = CCertificationRequest::ASN1;
-    INTERFACE_ADDREF(*asn1)
+    REFCOUNT_ADD(*asn1)
     return NOERROR;
 }
 

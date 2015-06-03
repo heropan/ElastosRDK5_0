@@ -33,7 +33,7 @@ ECode CX509CRLImpl::GetEncoded(
     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(mEncoding->GetLength());
     result->Copy(0, mEncoding, 0, mEncoding->GetLength());
     *encoded = result;
-    INTERFACE_ADDREF(*encoded)
+    REFCOUNT_ADD(*encoded)
     return NOERROR;
 }
 
@@ -93,7 +93,7 @@ ECode CX509CRLImpl::GetVersion(
 ECode CX509CRLImpl::GetIssuerDN(
     /* [out] */ IPrincipal** issuer)
 {
-    INTERFACE_ADDREF(*issuer)
+    REFCOUNT_ADD(*issuer)
     if (mIssuer == NULL) {
         AutoPtr<IName> name;
         AutoPtr<IX500Principal> ret;
@@ -102,14 +102,14 @@ ECode CX509CRLImpl::GetIssuerDN(
         name->GetX500Principal((IX500Principal**)&mIssuer);
     }
     *issuer = mIssuer.Get();
-    INTERFACE_ADDREF(*issuer)
+    REFCOUNT_ADD(*issuer)
     return NOERROR;
 }
 
 ECode CX509CRLImpl::GetIssuerX500Principal(
     /* [out] */ IX500Principal** issuer)
 {
-    INTERFACE_ADDREF(*issuer)
+    REFCOUNT_ADD(*issuer)
     if (mIssuer == NULL) {
         AutoPtr<IName> name;
         AutoPtr<IX500Principal> ret;
@@ -118,7 +118,7 @@ ECode CX509CRLImpl::GetIssuerX500Principal(
         name->GetX500Principal((IX500Principal**)&mIssuer);
     }
     *issuer = mIssuer.Get();
-    INTERFACE_ADDREF(*issuer)
+    REFCOUNT_ADD(*issuer)
     return NOERROR;
 }
 
@@ -188,7 +188,7 @@ ECode CX509CRLImpl::GetRevokedCertificate(
         entry->GetSerialNumber((IBigInteger**)&sn);
         if (serialNumber->Equals(sn.Get(), &isEqual), isEqual) {
             *crlEntry = entry;
-            INTERFACE_ADDREF(*crlEntry)
+            REFCOUNT_ADD(*crlEntry)
             return NOERROR;
         }
     }
@@ -240,13 +240,13 @@ ECode CX509CRLImpl::GetRevokedCertificateEx(
                     // check issuers for equality
                     if (certIssuer->Equals(iss.Get(), &isEqual), isEqual) {
                         *crlEntry = entry;
-                        INTERFACE_ADDREF(*crlEntry)
+                        REFCOUNT_ADD(*crlEntry)
                         return NOERROR;
                     }
                 } else if (iss == NULL) {
                     // both certificates was issued by CRL issuer
                     *crlEntry = entry;
-                    INTERFACE_ADDREF(*crlEntry)
+                    REFCOUNT_ADD(*crlEntry)
                     return NOERROR;
                 }
             }
@@ -261,7 +261,7 @@ ECode CX509CRLImpl::GetRevokedCertificateEx(
             entry->GetSerialNumber((IBigInteger**)&sn);
             if (serialN->Equals(sn.Get(), &isEqual), isEqual) {
                 *crlEntry = entry;
-                INTERFACE_ADDREF(*crlEntry)
+                REFCOUNT_ADD(*crlEntry)
                 return NOERROR;
             }
         }
@@ -291,7 +291,7 @@ ECode CX509CRLImpl::GetTBSCertList(
     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(mTbsCertListEncoding->GetLength());
     result->Copy(0, mTbsCertListEncoding, 0, mTbsCertListEncoding->GetLength());
     *tbsCertList = result;
-    INTERFACE_ADDREF(*tbsCertList)
+    REFCOUNT_ADD(*tbsCertList)
     return NOERROR;
 }
 
@@ -305,7 +305,7 @@ ECode CX509CRLImpl::GetSignature(
     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(mSignature->GetLength());
     result->Copy(0, mSignature, 0, mSignature->GetLength());
     *signature = result;
-    INTERFACE_ADDREF(*signature)
+    REFCOUNT_ADD(*signature)
     return NOERROR;
 }
 
@@ -364,7 +364,7 @@ ECode CX509CRLImpl::GetSigAlgParams(
         }
     }
     *sigAlgParams = mSigAlgParams;
-    INTERFACE_ADDREF(*sigAlgParams)
+    REFCOUNT_ADD(*sigAlgParams)
     return NOERROR;
 }
 

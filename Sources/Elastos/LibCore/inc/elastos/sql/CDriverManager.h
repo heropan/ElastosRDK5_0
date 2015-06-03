@@ -5,7 +5,7 @@
 #include "_CDriverManager.h"
 #include <coredef.h>
 #include <elastos.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Mutex.h>
 #include "CPrintStream.h"
 #include "CPrintWriter.h"
@@ -17,7 +17,7 @@ using Elastos::IO::CPrintStream;
 using Elastos::IO::CPrintWriter;
 using Elastos::Utility::IProperties;
 using Elastos::Utility::IEnumeration;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::Mutex;
 using Elastos::Core::IClassLoader;
 

@@ -1,6 +1,5 @@
 
 #include "CCodeSigner.h"
-#include "cmdef.h"
 #include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;

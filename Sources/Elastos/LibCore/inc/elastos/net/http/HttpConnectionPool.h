@@ -2,15 +2,13 @@
 #ifndef __HTTPCONNECTIONPOOL_H__
 #define __HTTPCONNECTIONPOOL_H__
 
-#include "cmdef.h"
 #include "Elastos.CoreLibrary_server.h"
-#include "elastos/HashMap.h"
-#include "elastos/List.h"
-#include "elastos/Mutex.h"
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
-using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
+
 
 namespace Elastos {
 namespace Net {

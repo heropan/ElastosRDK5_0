@@ -69,7 +69,7 @@ ECode CPrivateKeyInfo::ASN1SequenceDerived::GetDecodedObject(
     AutoPtr<ArrayOf<Byte> > arg4;
     bis->GetEncoded((ArrayOf<Byte>**)&arg4);
     *object = new PrivateKeyInfo(arg0, arg1, arg2, arg3, arg4);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -121,7 +121,7 @@ ECode CPrivateKeyInfo::GetAlgorithmIdentifier(
 {
     VALIDATE_NOT_NULL(identifier)
     *identifier = mPrivateKeyAlgorithm;
-    INTERFACE_ADDREF(*identifier)
+    REFCOUNT_ADD(*identifier)
     return NOERROR;
 }
 
@@ -130,7 +130,7 @@ ECode CPrivateKeyInfo::GetAttributes(
 {
     VALIDATE_NOT_NULL(attributes)
     *attributes = mAttributes;
-    INTERFACE_ADDREF(*attributes)
+    REFCOUNT_ADD(*attributes)
     return NOERROR;
 }
 
@@ -139,7 +139,7 @@ ECode CPrivateKeyInfo::GetPrivateKey(
 {
     VALIDATE_NOT_NULL(privateKey)
     *privateKey = mPrivateKey;
-    INTERFACE_ADDREF(*privateKey)
+    REFCOUNT_ADD(*privateKey)
     return NOERROR;
 }
 
@@ -151,7 +151,7 @@ ECode CPrivateKeyInfo::GetEncoded(
         ASN1->Encode(this, (ArrayOf<Byte>**)&mEncoding);
     }
     *encoded = mEncoding;
-    INTERFACE_ADDREF(*encoded)
+    REFCOUNT_ADD(*encoded)
     return NOERROR;
 }
 

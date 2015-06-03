@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CSocketOutputStream.h"
 
 namespace Elastos {
@@ -36,7 +35,7 @@ ECode CSocketOutputStream::WriteBytes(
     return mSocket->Write(buffer, 0, buffer.GetLength(), &number);
 }
 
-ECode CSocketOutputStream::WriteBytesEx(
+ECode CSocketOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte> & buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -70,23 +69,6 @@ ECode CSocketOutputStream::constructor(
     return NOERROR;
 }
 
-ECode CSocketOutputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-    *lockobj = NULL;
-
-    AutoPtr<IInterface> obj = OutputStream::GetLock();
-    *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
-    return NOERROR;
-}
-
-PInterface CSocketOutputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CSocketOutputStream::Probe(riid);
-}
 
 } // namespace Net
 } // namespace Elastos

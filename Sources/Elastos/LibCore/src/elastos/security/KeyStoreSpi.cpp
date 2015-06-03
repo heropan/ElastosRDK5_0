@@ -1,6 +1,5 @@
 
 #include "KeyStoreSpi.h"
-#include "cmdef.h"
 #include "CSecurity.h"
 #include "CKeyStoreSecretKeyEntry.h"
 #include "CKeyStorePrivateKeyEntry.h"
@@ -63,7 +62,7 @@ ECode KeyStoreSpi::EngineGetEntry(
         AutoPtr<IKeyStoreTrustedCertificateEntry> tce;
         CKeyStoreTrustedCertificateEntry::New(cert, (IKeyStoreTrustedCertificateEntry**)&tce);
         *entry = tce.Get();
-        INTERFACE_ADDREF(*entry)
+        REFCOUNT_ADD(*entry)
         return NOERROR;
     }
     AutoPtr<ArrayOf<Char32> > passW;
@@ -94,14 +93,14 @@ ERROR_PROCESS:
             AutoPtr<IKeyStorePrivateKeyEntry> pke;
             CKeyStorePrivateKeyEntry::New(IPrivateKey::Probe(key.Get()), cert, (IKeyStorePrivateKeyEntry**)&pke);
             *entry = pke.Get();
-            INTERFACE_ADDREF(*entry)
+            REFCOUNT_ADD(*entry)
             return NOERROR;
         }
         if (ISecretKey::Probe(key.Get())) {
             AutoPtr<IKeyStoreSecretKeyEntry> ske;
             CKeyStoreSecretKeyEntry::New(ISecretKey::Probe(key.Get()), (IKeyStoreSecretKeyEntry**)&ske);
             *entry = ske.Get();
-            INTERFACE_ADDREF(*entry)
+            REFCOUNT_ADD(*entry)
             return NOERROR;
         }
     }

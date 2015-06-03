@@ -2,9 +2,9 @@
 #define __ELASTOS_IO_CHARSETENCODERICU_H__
 
 #include "CharsetEncoder.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace IO {

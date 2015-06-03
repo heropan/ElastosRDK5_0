@@ -1,7 +1,6 @@
 #ifndef __CURLDCODER_H__
 #define __CURLDCODER_H__
 
-#include "cmdef.h"
 #include "_CURLDecoder.h"
 
 namespace Elastos {
@@ -14,7 +13,7 @@ public:
         /* [in] */ const String& s,
         /* [out] */ String* result);
 
-    CARAPI DecodeEx(
+    CARAPI Decode(
         /* [in] */ const String& s,
         /* [in] */ const String& charsetName,
         /* [out] */ String* result);

@@ -1,7 +1,6 @@
 #ifndef __CPLAINDATAGRAMSOCKETIMPL_H__
 #define __CPLAINDATAGRAMSOCKETIMPL_H__
 
-#include "cmdef.h"
 #include "_CPlainDatagramSocketImpl.h"
 #include "DatagramSocketImpl.h"
 

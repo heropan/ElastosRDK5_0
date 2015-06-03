@@ -91,9 +91,6 @@ public:
 
         CARAPI Reset();
 
-        CARAPI GetLock(
-            /* [out] */ IInterface** lockobj);
-
     public:
         AutoPtr<IRandomAccessFile> mSharedRaf;
         Int64 mOffset;

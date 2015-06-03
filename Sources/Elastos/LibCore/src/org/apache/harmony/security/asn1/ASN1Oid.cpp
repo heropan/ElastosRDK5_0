@@ -89,7 +89,7 @@ ECode ASN1Oid::DerivedASN1Oid::GetDecodedObject(
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(str, (ICharSequence**)&cs);
     *object = cs.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -113,7 +113,7 @@ ECode ASN1Oid::DerivedASN1Oid::SetEncodingContent(
         arrayOf->Put(i, i32.Get());
     }
     *object = arrayOf.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     bos->SetContent(arrayOf.Get());
     return ASN1Oid::SetEncodingContent(bos);
 }
@@ -132,7 +132,7 @@ ECode CASN1Oid::GetInstance(
 {
     VALIDATE_NOT_NULL(instance)
     *instance = ASN1;
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 
@@ -141,7 +141,7 @@ ECode ASN1Oid::GetInstanceForString(
 {
     VALIDATE_NOT_NULL(instance)
     *instance = STRING_OID;
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 
@@ -196,7 +196,7 @@ ECode ASN1Oid::GetDecodedObject(
         arrayOf->Put(i, i32.Get());
     }
     *object = arrayOf.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

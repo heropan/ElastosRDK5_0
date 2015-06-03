@@ -20,7 +20,7 @@ ECode CASN1Any::GetInstance(
 {
     VALIDATE_NOT_NULL(instance)
     *instance = sASN1;
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 
@@ -112,7 +112,7 @@ ECode CASN1Any::GetDecodedObject(
     AutoPtr<ArrayOf<Byte> > bytesEncoded = ArrayOf<Byte>::Alloc(offset- tagOffset);
     bytesEncoded->Copy(0, bis, tagOffset, bytesEncoded->GetLength());
     *object = bytesEncoded;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

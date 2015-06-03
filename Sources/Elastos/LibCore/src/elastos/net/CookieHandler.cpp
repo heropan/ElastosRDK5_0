@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CookieHandler.h"
 
 namespace Elastos {
@@ -17,7 +16,7 @@ ECode CookieHandler::GetDefault(
     //     sm.checkPermission(getCookieHandlerPermission);
     // }
     *handler = sSystemWideCookieHandler;
-    INTERFACE_ADDREF(*handler);
+    REFCOUNT_ADD(*handler);
 
     return NOERROR;
 }

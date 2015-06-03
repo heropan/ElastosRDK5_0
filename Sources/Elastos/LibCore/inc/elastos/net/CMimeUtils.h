@@ -1,11 +1,10 @@
 #ifndef _CMIMEUTILS_H__
 #define _CMIMEUTILS_H__
 
-#include "cmdef.h"
 #include "_CMimeUtils.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IInputStream;
 
 namespace Elastos {

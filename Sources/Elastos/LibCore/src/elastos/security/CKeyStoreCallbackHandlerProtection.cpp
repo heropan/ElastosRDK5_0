@@ -1,6 +1,5 @@
 
 #include "CKeyStoreCallbackHandlerProtection.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {
@@ -10,7 +9,7 @@ ECode CKeyStoreCallbackHandlerProtection::GetCallbackHandler(
 {
     VALIDATE_NOT_NULL(handler)
     *handler = mCallbackHandler;
-    INTERFACE_ADDREF(*handler)
+    REFCOUNT_ADD(*handler)
     return NOERROR;
 }
 

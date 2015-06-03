@@ -1,6 +1,5 @@
 
 #include "CECFieldF2m.h"
-#include "cmdef.h"
 #include "CBigIntegerHelper.h"
 
 using Elastos::Math::IBigIntegerHelper;
@@ -77,7 +76,7 @@ ECode CECFieldF2m::GetMidTermsOfReductionPolynomial(
         AutoPtr<ArrayOf<Int32> > ret = ArrayOf<Int32>::Alloc(mKs->GetLength());
         ret->Copy(0, mKs, 0, ret->GetLength());
         *terms = ret;
-        INTERFACE_ADDREF(*terms)
+        REFCOUNT_ADD(*terms)
     }
     return NOERROR;
 }
@@ -87,7 +86,7 @@ ECode CECFieldF2m::GetReductionPolynomial(
 {
     VALIDATE_NOT_NULL(rp)
     *rp = mRp;
-    INTERFACE_ADDREF(*rp)
+    REFCOUNT_ADD(*rp)
     return NOERROR;
 }
 

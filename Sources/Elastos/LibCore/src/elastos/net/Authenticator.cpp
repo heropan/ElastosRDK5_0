@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "Authenticator.h"
 
 namespace Elastos {
@@ -41,7 +40,7 @@ ECode Authenticator::GetRequestingSite(
     VALIDATE_NOT_NULL(address)
 
     *address = mAddr;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 
@@ -116,7 +115,7 @@ void Authenticator::SetDefault(
     sThisAuthenticator = a == NULL ? NULL : (Authenticator*)a->Probe(EIID_Authenticator);
 }
 
-ECode Authenticator::RequestPasswordAuthenticationEx(
+ECode Authenticator::RequestPasswordAuthentication(
     /* [in] */ const String& rHost,
     /* [in] */ IInetAddress* rAddr,
     /* [in] */ Int32 rPort,
@@ -161,7 +160,7 @@ ECode Authenticator::GetRequestingHost(
     return NOERROR;
 }
 
-ECode Authenticator::RequestPasswordAuthenticationEx2(
+ECode Authenticator::RequestPasswordAuthentication(
     /* [in] */ const String& rHost,
     /* [in] */ IInetAddress* rAddr,
     /* [in] */ Int32 rPort,
@@ -207,7 +206,7 @@ ECode Authenticator::GetRequestingURL(
     VALIDATE_NOT_NULL(url)
 
     *url = mUrl;
-    INTERFACE_ADDREF(*url);
+    REFCOUNT_ADD(*url);
     return NOERROR;
 }
 

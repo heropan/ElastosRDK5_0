@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CSocketTaggerHelper.h"
 
 namespace Libcore {

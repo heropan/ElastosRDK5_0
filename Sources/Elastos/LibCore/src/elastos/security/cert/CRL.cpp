@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #else

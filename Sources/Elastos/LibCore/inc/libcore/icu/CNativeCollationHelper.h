@@ -3,7 +3,6 @@
 #define __ICU_CNATIVECOLLATIONHELPER_H__
 
 #include "_CNativeCollationHelper.h"
-#include "cmdef.h"
 
 namespace Libcore {
 namespace ICU {

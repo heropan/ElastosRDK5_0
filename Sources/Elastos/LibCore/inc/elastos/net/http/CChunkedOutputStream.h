@@ -36,11 +36,7 @@ public:
 
     CARAPI Flush();
 
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+Delete(
 
 private:
     CARAPI_(Int32) DataLength(

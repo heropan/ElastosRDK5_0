@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "FtpHandler.h"
 
 using Elastos::Net::IURLConnection;
@@ -17,7 +16,7 @@ ECode FtpHandler::OpenConnection(
     return NOERROR;
 }
 
-ECode FtpHandler::OpenConnectionEx(
+ECode FtpHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [in] */ IProxy* proxy,
     /* [out] */ IURLConnection** urlConnection)

@@ -57,7 +57,7 @@ ECode CEngine::GetInstance(
     AutoPtr<IProvider> pro;
     service->GetProvider((IProvider**)&pro);
     *instance = new SpiAndProvider(spi, pro);
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CLibcore.h"
 #include "CPosix.h"
 
@@ -22,7 +21,7 @@ ECode CLibcore::GetOs(
     VALIDATE_NOT_NULL(os);
 
     *os = sOs;
-    INTERFACE_ADDREF(*os);
+    REFCOUNT_ADD(*os);
 
     return NOERROR;
 }

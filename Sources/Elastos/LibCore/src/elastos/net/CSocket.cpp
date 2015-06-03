@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CSocket.h"
 
 namespace Elastos {
@@ -263,11 +262,11 @@ ECode CSocket::Connect(
     return Socket::Connect(remoteAddr);
 }
 
-ECode CSocket::ConnectEx(
+ECode CSocket::Connect(
     /* [in] */ ISocketAddress* remoteAddr,
     /* [in] */ Int32 timeout)
 {
-    return Socket::ConnectEx(remoteAddr, timeout);
+    return Socket::Connect(remoteAddr, timeout);
 }
 
 ECode CSocket::IsInputShutdown(

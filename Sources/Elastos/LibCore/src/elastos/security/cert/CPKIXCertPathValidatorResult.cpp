@@ -1,6 +1,5 @@
 
 #include "CPKIXCertPathValidatorResult.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {

@@ -2,8 +2,8 @@
 #define __NETWORKINTERFACE_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include <elautoptr.h>
-#include <elrefbase.h>
+
+
 
 using Elastos::Utility::IList;
 using Elastos::Utility::IEnumeration;

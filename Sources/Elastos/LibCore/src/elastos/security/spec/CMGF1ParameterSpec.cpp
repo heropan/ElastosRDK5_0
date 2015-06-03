@@ -1,6 +1,5 @@
 
 #include "CMGF1ParameterSpec.h"
-#include "cmdef.h"
 
 namespace Elastos {
 namespace Security {

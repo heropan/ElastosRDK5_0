@@ -2,7 +2,7 @@
 #define __URICODEC_H__
 
 #include <elatypes.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::IO::Charset::ICharset;
@@ -41,7 +41,7 @@ public :
         /* [in] */ const String& s,
         /* [out] */ String* result);
 
-    static CARAPI DecodeEx(
+    static CARAPI Decode(
         /* [in] */ const String& s,
         /* [in] */ Boolean convertPlus,
         /* [in] */ ICharset* charset,
@@ -51,7 +51,7 @@ public :
     static CARAPI_(AutoPtr<ICharset>) GetDefaultCharset();
 
 private:
-    CARAPI AppendEncodedEx(
+    CARAPI AppendEncoded(
         /* [in] */ StringBuilder& builder,
         /* [in] */ const String& s,
         /* [in] */ ICharset* charset,
@@ -68,7 +68,7 @@ private:
         /* [in] */ StringBuilder& builder,
         /* [in] */ Byte b);
 
-    static CARAPI AppendHexEx(
+    static CARAPI AppendHex(
         /* [in] */ StringBuilder& builder,
         /* [in] */ const String& s,
         /* [in] */ ICharset* charset);

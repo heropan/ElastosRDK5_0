@@ -4,14 +4,14 @@
 
 #include "_Org_Xml_Sax_Helpers_CNamespaceSupport.h"
 #include "Object.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::Object;
 using Elastos::Utility::IEnumeration;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 
 namespace Org {
 namespace Xml {

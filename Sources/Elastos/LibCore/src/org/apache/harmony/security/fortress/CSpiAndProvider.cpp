@@ -21,7 +21,7 @@ ECode CSpiAndProvider::GetSpi(
 {
     VALIDATE_NOT_NULL(spi)
     *spi = mSpi;
-    INTERFACE_ADDREF(*spi)
+    REFCOUNT_ADD(*spi)
     return NOERROR;
 }
 
@@ -37,7 +37,7 @@ ECode CSpiAndProvider::GetProvider(
 {
     VALIDATE_NOT_NULL(provider)
     *provider = mProvider;
-    INTERFACE_ADDREF(*provider)
+    REFCOUNT_ADD(*provider)
     return NOERROR;
 }
 

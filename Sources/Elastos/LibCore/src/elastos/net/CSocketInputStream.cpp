@@ -46,10 +46,10 @@ ECode CSocketInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte> * buffer,
     /* [out] */ Int32* number)
 {
-    return ReadBytesEx(buffer, 0, buffer->GetLength(), number);
+    return ReadBytes(buffer, 0, buffer->GetLength(), number);
 }
 
-ECode CSocketInputStream::ReadBytesEx(
+ECode CSocketInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte> * buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -98,22 +98,6 @@ ECode CSocketInputStream::constructor(
     return NOERROR;
 }
 
-PInterface CSocketInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CSocketInputStream::Probe(riid);
-}
-
-ECode CSocketInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = InputStream::GetLock();
-    *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
-    return NOERROR;
-}
 
 } // namespace Net
 } // namespace Elastos

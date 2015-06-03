@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "COsConstants.h"
 
 #include <errno.h>

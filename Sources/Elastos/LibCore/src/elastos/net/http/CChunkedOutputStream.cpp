@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CChunkedOutputStream.h"
 #include <elastos/Math.h>
 #include <CByteArrayOutputStream.h>
@@ -48,7 +47,7 @@ ECode CChunkedOutputStream::WriteBytes(
     return AbstractHttpOutputStream::WriteBytes(buffer);
 }
 
-ECode CChunkedOutputStream::WriteBytesEx(
+ECode CChunkedOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -68,7 +67,7 @@ ECode CChunkedOutputStream::WriteBytesEx(
             // fill the buffered chunk and then maybe write that to the stream
             numBytesWritten = Elastos::Core::Math::Min(count, mMaxChunkLength - bufsize);
             // TODO: skip unnecessary copies from buffer->bufferedChunk?
-            mBufferedChunk->WriteBytesEx(buffer, offset, numBytesWritten);
+            mBufferedChunk->WriteBytes(buffer, offset, numBytesWritten);
             if (bufsize == mMaxChunkLength) {
                 WriteBufferedChunkToSocket();
             }
@@ -77,7 +76,7 @@ ECode CChunkedOutputStream::WriteBytesEx(
             // write a single chunk of size maxChunkLength to the stream
             numBytesWritten = mMaxChunkLength;
             WriteHex(numBytesWritten);
-            mSocketOut->WriteBytesEx(buffer, offset, numBytesWritten);
+            mSocketOut->WriteBytes(buffer, offset, numBytesWritten);
             mSocketOut->Write((Int32)CRLF);
         }
 
@@ -136,7 +135,7 @@ void CChunkedOutputStream::WriteHex(
     for (Int32 i = 0; i < res->GetLength(); ++i) {
         (*res)[i] = mHex[i];
     }
-    mSocketOut->WriteBytesEx(*res, cursor, res->GetLength() - cursor);
+    mSocketOut->WriteBytes(*res, cursor, res->GetLength() - cursor);
 }
 
 void CChunkedOutputStream::WriteBufferedChunkToSocket()
@@ -153,22 +152,6 @@ void CChunkedOutputStream::WriteBufferedChunkToSocket()
     mSocketOut->Write((Int32)CRLF);
 }
 
-ECode CChunkedOutputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = AbstractHttpOutputStream::GetLock();
-    *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
-    return NOERROR;
-}
-
-PInterface CChunkedOutputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CChunkedOutputStream::Probe(riid);
-}
 
 } // namespace Http
 } // namespace Net

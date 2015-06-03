@@ -5,9 +5,9 @@
 #include "CFileInputStream.h"
 #include "CBufferedReader.h"
 #include "CInputStreamReader.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "CSystem.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 namespace Elastos {
 namespace Net {

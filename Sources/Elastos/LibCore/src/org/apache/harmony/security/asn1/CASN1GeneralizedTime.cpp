@@ -25,7 +25,7 @@ ECode CASN1GeneralizedTime::GetInstance(
 {
     VALIDATE_NOT_NULL(instance)
     *instance = sASN1;
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 

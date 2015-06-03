@@ -1,7 +1,7 @@
 
 #include <cmdef.h>
 #include <CHeaderParserHelper.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/Math.h>
 #include <CObjectContainer.h>
 #include <CChallenge.h>
@@ -114,7 +114,7 @@ ECode CHeaderParserHelper::ParseChallenges(
     }
 
     *obj = result;
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
 
     return NOERROR;
 }

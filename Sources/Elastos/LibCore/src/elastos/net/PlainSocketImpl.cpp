@@ -303,7 +303,7 @@ ECode PlainSocketImpl::GetInputStream(
     AutoPtr<CSocketInputStream> inS;
     FAIL_RETURN(CSocketInputStream::NewByFriend((ISocketImpl*)this, (CSocketInputStream**)&inS));
     *in = (IInputStream*) inS->Probe(EIID_IInputStream);
-    INTERFACE_ADDREF(*in)
+    REFCOUNT_ADD(*in)
     return NOERROR;
 }
 
@@ -318,7 +318,7 @@ ECode PlainSocketImpl::GetOption(
     mFd->GetDescriptor(&fd);
     CIoBridge::_GetSocketOption(fd, option, (IInterface**)&out);
     *res = out;
-    INTERFACE_ADDREF(*res)
+    REFCOUNT_ADD(*res)
     return NOERROR;
 }
 
@@ -331,7 +331,7 @@ ECode PlainSocketImpl::GetOutputStream(
     AutoPtr<CSocketOutputStream> res;
     CSocketOutputStream::NewByFriend((ISocketImpl*)this, (CSocketOutputStream**)&res);
     *out = (IOutputStream*) res->Probe(EIID_IOutputStream);
-    INTERFACE_ADDREF(*out)
+    REFCOUNT_ADD(*out)
     return NOERROR;
 }
 
@@ -524,7 +524,7 @@ ECode PlainSocketImpl::SocksSendRequest(
 
     AutoPtr<IOutputStream> out;
     GetOutputStream((IOutputStream**)&out);
-    return out->WriteBytesEx(*(request.GetBytes()), 0, request.GetLength());;
+    return out->WriteBytes(*(request.GetBytes()), 0, request.GetLength());;
 }
 
 ECode PlainSocketImpl::SocksReadReply(
@@ -539,7 +539,7 @@ ECode PlainSocketImpl::SocksReadReply(
         GetInputStream((IInputStream**)&in);
         AutoPtr<ArrayOf<Byte> > bytes;
         reply->GetBytes((ArrayOf<Byte>**)&bytes);
-        in->ReadBytesEx(bytes, bytesRead, Socks4Message::REPLY_LENGTH - bytesRead, &count);
+        in->ReadBytes(bytes, bytesRead, Socks4Message::REPLY_LENGTH - bytesRead, &count);
         if (-1 == count) {
             break;
         }
@@ -550,7 +550,7 @@ ECode PlainSocketImpl::SocksReadReply(
     }
 
     *ppMessage = reply;
-    INTERFACE_ADDREF(*ppMessage)
+    REFCOUNT_ADD(*ppMessage)
     return NOERROR;
 }
 

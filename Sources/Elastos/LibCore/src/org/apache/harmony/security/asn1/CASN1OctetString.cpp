@@ -28,7 +28,7 @@ ECode CASN1OctetString::GetInstance(
 {
     VALIDATE_NOT_NULL(instance)
     *instance = ASN1;
-    INTERFACE_ADDREF(*instance)
+    REFCOUNT_ADD(*instance)
     return NOERROR;
 }
 
@@ -124,7 +124,7 @@ ECode CASN1OctetString::GetDecodedObject(
         arrayOf->Put(i, bt.Get());
     }
     *object = arrayOf.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

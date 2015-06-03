@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CSocketPermission.h"
 #include "SocketPermissionCollection.h"
 #include "InetAddress.h"
@@ -148,7 +147,7 @@ ECode CSocketPermission::NewPermissionCollection(
     VALIDATE_NOT_NULL(permissionCollection);
 
     *permissionCollection = new SocketPermissionCollection();
-    INTERFACE_ADDREF(*permissionCollection);
+    REFCOUNT_ADD(*permissionCollection);
     return NOERROR;
 }
 

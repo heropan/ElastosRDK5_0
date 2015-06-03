@@ -16,11 +16,7 @@ namespace Http {
 CarClass(CUnknownLengthHttpInputStream), public AbstractHttpInputStream
 {
 public:
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+Delete(
 
     CARAPI constructor(
         /* [in] */ IInputStream* is,
@@ -43,7 +39,7 @@ public:
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

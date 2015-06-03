@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CRetryableOutputStream.h"
 #include "CByteArrayOutputStream.h"
 
@@ -36,7 +35,7 @@ ECode CRetryableOutputStream::WriteBytes(
     return AbstractHttpOutputStream::WriteBytes(buffer);
 }
 
-ECode CRetryableOutputStream::WriteBytesEx(
+ECode CRetryableOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -54,7 +53,7 @@ ECode CRetryableOutputStream::WriteBytesEx(
         // throw new IOException("exceeded content-length limit of " + limit + " bytes");
         return E_IO_EXCEPTION;
     }
-    return mContent->WriteBytesEx(buffer, offset, count);
+    return mContent->WriteBytes(buffer, offset, count);
 }
 
 ECode CRetryableOutputStream::CheckError(
@@ -97,22 +96,6 @@ ECode CRetryableOutputStream::WriteToSocket(
     return mContent->WriteTo(socketOut);
 }
 
-ECode CRetryableOutputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = AbstractHttpOutputStream::GetLock();
-    *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
-    return NOERROR;
-}
-
-PInterface CRetryableOutputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CRetryableOutputStream::Probe(riid);
-}
 
 } // namespace Http
 } // namespace Net

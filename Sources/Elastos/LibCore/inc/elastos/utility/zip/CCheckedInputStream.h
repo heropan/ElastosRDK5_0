@@ -102,9 +102,6 @@ public:
         /* [in] */ IInputStream* is,
         /* [in] */ IChecksum* csum);
 
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
 private:
     AutoPtr<IChecksum> mCheck;
 };

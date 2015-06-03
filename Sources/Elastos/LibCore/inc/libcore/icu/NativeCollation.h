@@ -6,11 +6,11 @@
 #include <eltypes.h>
 #include <cmdef.h>
 #include <unicode/unistr.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <elastos/Mutex.h>
 #include "Elastos.CoreLibrary_server.h"
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::Mutex;
 
 namespace Libcore {

@@ -1,5 +1,4 @@
 
-#include "cmdef.h"
 #include "CHttpHandler.h"
 #include "HttpURLConnectionImpl.h"
 
@@ -22,11 +21,11 @@ ECode CHttpHandler::OpenConnection(
     GetDefaultPort(&portnum);
     AutoPtr<IHttpURLConnectionImpl> outres = (IHttpURLConnectionImpl*) new HttpURLConnectionImpl(u, portnum);
     *urlConnection = IURLConnection::Probe(outres);
-    INTERFACE_ADDREF(*urlConnection);
+    REFCOUNT_ADD(*urlConnection);
     return NOERROR;
 }
 
-ECode CHttpHandler::OpenConnectionEx(
+ECode CHttpHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [in] */ IProxy* proxy,
     /* [out] */ IURLConnection** urlConnection)
@@ -41,7 +40,7 @@ ECode CHttpHandler::OpenConnectionEx(
     GetDefaultPort(&portnum);
     AutoPtr<IHttpURLConnectionImpl> outres = (IHttpURLConnectionImpl*) new HttpURLConnectionImpl(u, portnum, proxy);
     *urlConnection = IURLConnection::Probe(outres);
-    INTERFACE_ADDREF(*urlConnection);
+    REFCOUNT_ADD(*urlConnection);
     return NOERROR;
 }
 
@@ -65,7 +64,7 @@ ECode CHttpHandler::SetURL(
     return URLStreamHandler::SetURL(u, protocol, host, port, file, ref);
 }
 
-ECode CHttpHandler::SetURLEx(
+ECode CHttpHandler::SetURL(
     /* [in] */ IURL* u,
     /* [in] */ const String& protocol,
     /* [in] */ const String& host,
@@ -76,15 +75,15 @@ ECode CHttpHandler::SetURLEx(
     /* [in] */ const String& query,
     /* [in] */ const String& ref)
 {
-    return URLStreamHandler::SetURLEx(u, protocol, host, port, authority, userInfo, file, query, ref);
+    return URLStreamHandler::SetURL(u, protocol, host, port, authority, userInfo, file, query, ref);
 }
 
-ECode CHttpHandler::ToExternalFormEx(
+ECode CHttpHandler::ToExternalForm(
     /* [in] */ IURL* url,
     /* [in] */ Boolean escapeIllegalCharacters,
     /* [out] */ String* s)
 {
-    return URLStreamHandler::ToExternalFormEx(url, escapeIllegalCharacters, s);
+    return URLStreamHandler::ToExternalForm(url, escapeIllegalCharacters, s);
 }
 
 ECode CHttpHandler::ToExternalForm(
@@ -94,12 +93,12 @@ ECode CHttpHandler::ToExternalForm(
     return URLStreamHandler::ToExternalForm(url, s);
 }
 
-ECode CHttpHandler::EqualsEx(
+ECode CHttpHandler::Equals(
     /* [in] */ IURL* url1,
     /* [in] */ IURL* url2,
     /* [out] */ Boolean* isEquals)
 {
-    return URLStreamHandler::EqualsEx(url1, url2, isEquals);
+    return URLStreamHandler::Equals(url1, url2, isEquals);
 }
 
 ECode CHttpHandler::GetDefaultPort(
