@@ -23,7 +23,6 @@ module
     merge("net/IResponseCache.car");
     merge("net/IURLConnection.car");
     merge("net/IHttpURLConnection.car");
-    merge("net/IExtendedResponseCache.car");
     merge("net/IFileNameMap.car");
     merge("net/IMimeUtils.car");
     merge("net/IHttpCookie.car");
@@ -47,14 +46,10 @@ module
     merge("net/IServerSocket.car");
     merge("net/ISocket.car");
     merge("net/ISocketImplFactory.car");
-    merge("net/ISocketInputStream.car");
-    merge("net/ISocketOutputStream.car");
     merge("net/ISocks4Message.car");
     merge("net/IURLEncoder.car");
     merge("net/IURLDecoder.car");
     merge("net/IUriCodecHelper.car");
-    merge("net/NotUsed.car");
-    merge("net/IRawSocket.car");
     merge("net/IJarURLConnection.car");
     merge("net/INetPermission.car");
 

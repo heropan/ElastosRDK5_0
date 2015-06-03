@@ -5,6 +5,7 @@ module
 
     namespace Elastos {
     namespace Net {
+
     /**
      * Identifies one of a network interface's addresses. These are passed back
      * from the JNI behind NetworkInterface.getNetworkInterfaces. Multiple addresses
@@ -31,27 +32,6 @@ module
          */
         GetNetworkPrefixLength(
             [out] Int16* length);
-
-        /**
-         * Tests whether this object is equal to another one. Returns true if
-         * the address, broadcast address and prefix length are all equal.
-         *
-         * @param obj the object to be compared.
-         * @return true if 'obj' is equal to this InterfaceAddress, false otherwise.
-         */
-
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* equals);
-
-        /**
-         * Returns a string containing this interface's address, prefix length, and broadcast address.
-         * For example: {@code "/172.18.103.112/23 [/172.18.103.255]"} or
-         * {@code "/0:0:0:0:0:0:0:1%1/128 [null]"}.
-         */
-
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Net

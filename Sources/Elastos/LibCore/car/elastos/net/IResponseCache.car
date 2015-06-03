@@ -14,19 +14,20 @@ module
         /**
          * Return the response from the cache immediately.
          */
-        CACHE,
+        ResponseSource_CACHE,
 
         /**
          * Make a conditional request to the host, returning the cache response if
          * the cache is valid and the network response otherwise.
          */
-        CONDITIONAL_CACHE,
+        ResponseSource_CONDITIONAL_CACHE,
 
         /**
          * Return the response from the network.
          */
-        NETWORK
+        ResponseSource_NETWORK
     }
+
     interface IResponseCache {
         /**
          * Returns the cached response corresponding to the given request.

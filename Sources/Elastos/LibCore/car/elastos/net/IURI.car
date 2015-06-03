@@ -10,16 +10,12 @@ module
      * A Uniform Resource Identifier that identifies an abstract or physical resource,
      *  as specified by RFC 2396.
      */
-
+    /**
+     * @Involve
+     * interface IComparable
+     * interface ISerializable
+     */
     interface IURI {
-        /**
-         * Compares the string representation of this Uri with that of
-         * another.
-         */
-        CompareTo(
-                [in] IURI* other,
-                [out]Int32* result);
-
         /**
          * Returns the scheme of this URI, or null if this URI has no scheme. This
          * is also known as the protocol.
@@ -220,16 +216,6 @@ module
          */
         ToURL(
             [out] IURL** uri);
-
-        ToString(
-            [out] String* s);
-
-        Equals(
-            [in] IInterface* o,
-            [out] Boolean* result);
-
-        GetHashCode(
-            [out] Int32* hash);
     }
 
     interface IURIHelper {

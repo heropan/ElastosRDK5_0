@@ -21,7 +21,10 @@ module
      * @sa DatagramPacket
      * @sa DatagramSocketImplFactory
      */
-
+    /**
+     * @Involve
+     * interface ICloseable;
+     */
     interface IDatagramSocket {
         /**
          * Closes this UDP datagram socket and all possibly associated channels.
@@ -29,6 +32,14 @@ module
         // In the documentation jdk1.1.7a/guide/net/miscNet.html, this method is
         // noted as not being synchronized.
         Close();
+
+        /**
+         * Sets the DatagramSocket and its related DatagramSocketImpl state as if a successful close()
+         * took place, without actually performing an OS close().
+         *
+         * @hide used in java.nio
+         */
+         OnClose();
 
         /**
          * Connects this datagram socket to the address and port specified by {peer}.
@@ -64,10 +75,28 @@ module
             [in] Int32 aPort);
 
         /**
+         * Sets the DatagramSocket and its related DatagramSocketImpl state as if a successful connect()
+         * took place, without actually performing an OS connect().
+         *
+         * @hide used in java.nio
+         */
+        OnConnect(
+            [in] IInetAddress* remoteAddress,
+            [in] Int32 remotePort);
+
+        /**
          * Disconnects this UDP datagram socket from the remote host. This method
          * called on an unconnected socket does nothing.
          */
         Disconnect();
+
+        /**
+         * Sets the DatagramSocket and its related DatagramSocketImpl state as if a successful
+         * disconnect() took place, without actually performing a disconnect().
+         *
+         * @hide used in java.nio
+         */
+        OnDisconnect();
 
         /**
          * Gets the {InetAddress} instance representing the remote address to
@@ -226,6 +255,16 @@ module
          */
         Bind(
             [in] ISocketAddress* localAddr);
+
+        /**
+         * Sets the DatagramSocket and its related DatagramSocketImpl state as if a successful bind()
+         * took place, without actually performing an OS bind().
+         *
+         * @hide used in java.nio
+         */
+        OnBind(
+            [in] IInetAddress* localAddress,
+            [in] Int32 localPort);
 
         /**
          * Returns true if this socket is bound to a local address. See bind.

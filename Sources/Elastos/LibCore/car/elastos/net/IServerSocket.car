@@ -1,10 +1,10 @@
 
 module
 {
+    interface Elastos.IO.Channels.IServerSocketChannel;
     interface Elastos.Net.ISocket;
     interface Elastos.Net.IInetAddress;
     interface Elastos.Net.ISocketAddress;
-    interface Elastos.Net.IServerSocketChannel;
     interface Elastos.Net.ISocketImplFactory;
 
     namespace Elastos {

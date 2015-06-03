@@ -190,16 +190,6 @@ module
          */
         IsVirtual(
             [out] Boolean* isVirtual);
-
-        FindAddress(
-            [in] IInetAddress* address,
-            [out] Boolean* found);
-
-        GetChildren(
-            [out] IList** children);
-
-        GetAddresses(
-            [out] IList** addresses);
     }
 
     interface INetworkInterfaceHelper {

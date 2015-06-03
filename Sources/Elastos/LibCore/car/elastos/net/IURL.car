@@ -6,6 +6,7 @@ module
     interface Elastos.Net.IURLConnection;
     interface Elastos.Net.IURI;
     interface Elastos.Net.IProxy;
+    interface Elastos.Net.IURLStreamHandlerFactory;
 
     namespace Elastos {
     namespace Net {
@@ -13,6 +14,10 @@ module
     /**
      * A Uniform Resource Locator that identifies the location of an Internet
      * resource as specified by RFC 1738.
+     */
+    /**
+     * @Involve
+     * interface ISerializable
      */
     interface IURL {
         /**
@@ -194,14 +199,28 @@ module
         GetPort(
             [out] Int32* port);
 
-        GetPath(
-            [out] String* path);
+        /**
+         * Gets the default port number of the protocol used by this URL. If no
+         * default port is defined by the protocol or the {URLStreamHandler},
+         * {-1} will be returned.
+         *
+         * @return the default port number according to the protocol of this URL.
+         * @see URLStreamHandler#getDefaultPort
+         */
+        GetDefaultPort(
+            [out] Int32* port);
 
         /**
          * Returns the file of this URL.
          */
         GetFile(
                 [out]String* file);
+
+        /**
+         * Returns the path part of this URL.
+         */
+        GetPath(
+            [out] String* path);
 
         /**
          * Gets the value of the query part of this URL.
@@ -217,19 +236,17 @@ module
          */
         GetRef(
             [out] String* ref);
+    }
 
+    interface IURLHelper {
         /**
-         * Gets the default port number of the protocol used by this URL. If no
-         * default port is defined by the protocol or the {URLStreamHandler},
-         * {-1} will be returned.
+         * Sets the stream handler factory for this VM.
          *
-         * @return the default port number according to the protocol of this URL.
-         * @see URLStreamHandler#getDefaultPort
+         * @throws Error if a URLStreamHandlerFactory has already been installed
+         *     for the current VM.
          */
-        GetDefaultPort(
-            [out] Int32* port);
-
-
+        SetURLStreamHandlerFactory(
+            [in] IURLStreamHandlerFactory* factory);
     }
 
     } // namespace Net

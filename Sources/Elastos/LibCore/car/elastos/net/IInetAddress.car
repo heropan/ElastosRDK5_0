@@ -121,16 +121,13 @@ module
         GetCanonicalHostName(
             [out] String* hostName);
 
+        GetFamily(
+            [out] Int32* family);
+
         /**
          * Returns whether this is the IPv6 unspecified wildcard address {@code ::}
          * or the IPv4 "any" address, {@code 0.0.0.0}.
          */
-        GetHashCode(
-            [out] Int32* hashCode);
-
-        GetFamily(
-            [out] Int32* family);
-
         IsAnyLocalAddress(
             [out] Boolean* isAnyLocalAddress);
 
@@ -294,34 +291,17 @@ module
             [in] Int32 ttl,
             [in] Int32 timeout,
             [out] Boolean* isReachable);
-
-        /**
-         * Compares this {@code InetAddress} instance against the specified address
-         * in {@code obj}. Two addresses are equal if their address byte arrays have
-         * the same length and if the bytes in the arrays are equal.
-         *
-         * @param obj
-         *            the object to be tested for equality.
-         * @return {@code true} if both objects are equal, {@code false} otherwise.
-         */
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* result);
-
-        /**
-         * Returns a string containing the host name (if available) and host address.
-         * For example: {@code "www.google.com/74.125.224.115"} or {@code "/127.0.0.1"}.
-         *
-         * <p>IPv6 addresses may additionally include an interface name or scope id.
-         * For example: {@code "www.google.com/2001:4860:4001:803::1013%eth0"} or
-         * {@code "/2001:4860:4001:803::1013%2"}.
-         */
-        ToString(
-            [out] String* result);
     }
 
     [deprecated]
     interface IInetAddressHelper {
+        /**
+         * Used by the DatagramSocket.disconnect implementation.
+         * @hide internal use only
+         */
+        GetUNSPECIFIED(
+            [out] IInetAddress** addr);
+
         /**
          * Gets all IP addresses associated with the given {@code host} identified
          * by name or literal IP address. The IP address is resolved by the
@@ -400,7 +380,6 @@ module
          * cache, nor any caching DNS servers between you and the canonical server.
          * @hide
          */
-
         ClearDnsCache();
 
         /**
@@ -471,13 +450,6 @@ module
             [in] String hostName,
             [in] ArrayOf<Byte>* ipAddress,
             [out] IInetAddress** interAddr);
-
-        /**
-         * Removes all entries from the VM's DNS cache. This does not affect the C library's DNS
-         * cache, nor any caching DNS servers between you and the canonical server.
-         * @hide
-         */
-
     }
 
     } // namespace Net

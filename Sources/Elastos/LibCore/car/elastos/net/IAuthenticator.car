@@ -19,6 +19,7 @@ module
          */
         AuthenticatorRequestorType_SERVER
     }
+
     namespace Elastos {
     namespace Net {
 

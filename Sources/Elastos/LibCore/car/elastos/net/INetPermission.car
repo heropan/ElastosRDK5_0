@@ -12,12 +12,6 @@ module
      * interface IBasicPermission
      */
     interface INetPermission {
-        GetActions(
-            [out] String* str);
-
-        // Implies(
-        //     [in] IPermission* permission,
-        //     [out] Boolean* value);
     }
 
     } // namespace Net

@@ -861,9 +861,9 @@ module
     //     interface IUriCodecHelper;
     // }
 
-    // singleton class CIDNHelper
+    // singleton class CIDN
     // {
-    //     interface IIDNHelper;
+    //     interface IIDN;
     // }
 
     // class CSocket {

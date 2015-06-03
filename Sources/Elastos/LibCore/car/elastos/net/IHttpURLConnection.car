@@ -601,18 +601,24 @@ module
             [in] Boolean followRedirects);
 
         /**
-         * If the length of a HTTP request body is known ahead, sets fixed length to
-         * enable streaming without buffering. Sets after connection will cause an
-         * exception.
+         * Configures this connection to stream the request body with the known
+         * fixed byte count of {@code contentLength}.
          *
          * @see #setChunkedStreamingMode
          * @param contentLength
          *            the fixed length of the HTTP request body.
-         * @return ECode = NOERROR(0) if success, else as follows:
-         * Value | Meaning |
-         * :-|:------------|
-         * IllegalStateException | if already connected or another mode already set.
-         * IllegalArgumentException | if {contentLength} is less than zero.
+         * @throws IllegalStateException
+         *             if already connected or another mode already set.
+         * @throws IllegalArgumentException
+         *             if {@code contentLength} is less than zero.
+         * @since 1.7
+         */
+        SetFixedLengthStreamingMode(
+            [in] Int64 contentLength);
+
+        /**
+         * Equivalent to {@code setFixedLengthStreamingMode((long) contentLength)},
+         * but available on earlier versions of Android and limited to 2 GiB.
          */
         SetFixedLengthStreamingMode(
             [in] Int32 contentLength);

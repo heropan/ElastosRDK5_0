@@ -4,10 +4,10 @@ module
     interface Elastos.IO.IInputStream;
     interface Elastos.IO.IOutputStream;
     interface Elastos.IO.IFileDescriptor;
+    interface Elastos.IO.Channels.ISocketChannel;
 
     interface Elastos.Net.IInetAddress;
     interface Elastos.Net.ISocketAddress;
-    interface Elastos.Net.ISocketChannel;
 
     namespace Elastos {
     namespace Net {
@@ -15,18 +15,27 @@ module
     /**
      * Provides a client-side TCP socket.
      */
-
+    /**
+     * @Involve
+     * interface ICloseable
+     */
     interface ISocket {
         /**
          * Closes the socket. It is not possible to reconnect or rebind to this
          * socket thereafter which means a new socket instance has to be created.
          *
-         * @return ECode = NOERROR(0) if success, else as follows:
-         * Value | Meaning |
-         * :-|:------------|
-         * IOException | if an error occurs while closing the socket.
+         * @throws IOException
+         *             if an error occurs while closing the socket.
          */
         Close();
+
+        /**
+         * Sets the Socket and its related SocketImpl state as if a successful close() took place,
+         * without actually performing an OS close().
+         *
+         * @hide used in java.nio
+         */
+        OnClose();
 
         /**
          * Returns the IP address of the target host this socket is connected to, or null if this
@@ -264,6 +273,16 @@ module
             [in] ISocketAddress* localAddr);
 
         /**
+         * Sets the Socket and its related SocketImpl state as if a successful bind() took place,
+         * without actually performing an OS bind().
+         *
+         * @hide used in java.nio
+         */
+        OnBind(
+            [in] ISocketAddress* localAddr,
+            [in] Int32 localPort);
+
+        /**
          * Connects this socket to the given remote host address and port specified
          * by the SocketAddress {remoteAddr}.
          *
@@ -296,6 +315,16 @@ module
          * IOException | if the socket is already connected or an error occurs while connecting.
          */
         Connect(
+            [in] ISocketAddress* remoteAddr,
+            [in] Int32 timeout);
+
+        /**
+         * Sets the Socket and its related SocketImpl state as if a successful connect() took place,
+         * without actually performing an OS connect().
+         *
+         * @hide internal use only
+         */
+        OnConnect(
             [in] ISocketAddress* remoteAddr,
             [in] Int32 timeout);
 

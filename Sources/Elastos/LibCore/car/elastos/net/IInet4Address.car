@@ -18,17 +18,6 @@ module
 
     }
 
-    interface IInet4AddressHelper {
-        GetANY(
-            [out] IInetAddress** result);
-
-        GetLOOPBACK(
-            [out] IInetAddress** result);
-
-        GetALL(
-            [out] IInetAddress** result);
-    }
-
     } // namespace Net
     } // namespace Elastos
 }

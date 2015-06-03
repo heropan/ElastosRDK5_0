@@ -2,6 +2,8 @@ module
 {
     interface Elastos.IO.IInputStream;
     interface Elastos.IO.IOutputStream;
+    interface Elastos.Utility.IMap;
+    interface Elastos.Security.IPermission;
     interface Elastos.Net.IURL;
     interface Elastos.Net.IFileNameMap;
     interface Elastos.Net.IContentHandlerFactory;
@@ -237,7 +239,8 @@ module
          * @return the response-header representing generic map.
          * @since 1.4
          */
-    //    public Map<String, List<String>> getHeaderFields()
+        GetHeaderFields(
+            [out] IMap** headerFields);
 
          /**
          * Returns an unchangeable map of general request properties used by this
@@ -247,7 +250,8 @@ module
          * @return the request-property representing generic map.
          * @since 1.4
          */
-    //    public Map<String, List<String>> getRequestProperties()
+        GetRequestProperties(
+            [out] IMap** properties);
 
         /**
          * Adds the given property to the request header. Existing properties with
@@ -281,7 +285,7 @@ module
          *            the name of the header field.
          * @return the value of the header field.
          */
-        GetHeaderFieldByKey(
+        GetHeaderField(
             [in] String key,
             [out] String* value);
 
@@ -398,7 +402,8 @@ module
          * :-|:------------|
          * IOException | if an I/O error occurs while creating the permission object.
          */
-//        public java.security.Permission getPermission();
+        GetPermission(
+            [out] IPermission** perm);
 
         /**
          * Returns the value of the request header property specified by {code field}

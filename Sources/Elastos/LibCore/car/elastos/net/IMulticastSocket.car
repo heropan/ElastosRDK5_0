@@ -165,6 +165,15 @@ module
             [in] IInetAddress* addr);
 
         /**
+         * Sets the outgoing network interface used by this socket to the given
+         * {@code networkInterface}.
+         *
+         * @throws SocketException if an error occurs.
+         */
+        SetNetworkInterface(
+            [in] INetworkInterface* ni);
+
+        /**
          * Sets the time-to-live (TTL) for multicast packets sent on this socket.
          * Valid TTL values are between 0 and 255 inclusive.
          *

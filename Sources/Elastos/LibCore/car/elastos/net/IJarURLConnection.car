@@ -1,6 +1,11 @@
 
 module
 {
+    interface Elastos.Security.Cert.ICertificate;
+    interface Elastos.Utility.Jar.IAttributes;
+    interface Elastos.Utility.Jar.IJarEntry;
+    interface Elastos.Utility.Jar.IJarFile;
+    interface Elastos.Utility.Jar.IManifest;
 
     namespace Elastos {
     namespace Net {
@@ -33,7 +38,8 @@ module
          *                if an I/O exception occurs while retrieving the
          *                JAR-entries.
          */
-        // public Attributes getAttributes();
+        GetAttributes(
+            [out] IAttributes** attr);
 
         /**
          * Returns all certificates of the {@code JarEntry} referenced by this
@@ -45,7 +51,8 @@ module
          *                if there is an I/O exception occurs while getting the
          *                {@code JarEntry}.
          */
-        // public Certificate[] getCertificates();
+        GetCertificates(
+            [out, callee] ArrayOf<ICertificate *> * certs);
 
         /**
          * Gets the name of the entry referenced by this {@code JarURLConnection}.
@@ -66,7 +73,8 @@ module
          * @throws IOException
          *             if an error occurs while getting the file or file-entry.
          */
-        // public JarEntry getJarEntry();
+        GetJarEntry(
+            [out] IJarEntry** entry);
 
         /**
          * Gets the manifest file associated with this JAR-URL.
@@ -75,7 +83,8 @@ module
          * @throws IOException
          *             if an error occurs while getting the manifest file.
          */
-        // public Manifest getManifest();
+        GetManifest(
+            [out] IManifest** manifest);
 
         /**
          * Gets the {@code JarFile} object referenced by this {@code
@@ -85,7 +94,8 @@ module
          * @throws IOException
          *                if an I/O exception occurs while retrieving the JAR-file.
          */
-        // public abstract JarFile getJarFile();
+        GetJarFile(
+            [out] IJarFile** file);
 
         /**
          * Gets the URL to the JAR-file referenced by this {@code JarURLConnection}.
@@ -93,7 +103,8 @@ module
          * @return the URL to the JAR-file or {@code null} if there was an error
          *         retrieving the URL.
          */
-        // public URL getJarFileURL();
+        GetJarFileURL(
+            [out] IURL** url);
 
         /**
          * Gets all attributes of the manifest file referenced by this {@code
@@ -105,7 +116,8 @@ module
          *                if an I/O exception occurs while retrieving the {@code
          *                JarFile}.
          */
-        // public Attributes getMainAttributes();
+        GetMainAttributes(
+            [out] IAttributes** attr);
     }
 
     } // namespace Net

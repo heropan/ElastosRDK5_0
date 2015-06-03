@@ -85,12 +85,6 @@ module
             [in] ArrayOf<Byte>* addr,
             [in] INetworkInterface* nif,
             [out] IInet6Address** address);
-
-        GetANY(
-            [out] IInetAddress** result);
-
-        GetLOOPBACK(
-            [out] IInetAddress** result);
     }
 
     } // namespace Net

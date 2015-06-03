@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Utility.IList;
+
     namespace Elastos{
     namespace Net{
 
@@ -149,16 +151,22 @@ module
          */
         SetVersion(
             [in] Int32 v);
+    }
 
-        Clone(
-            [out] IHttpCookie** rsult);
-
-        Equals(
-            [in] IInterface* object,
-            [out] Boolean* equals);
-
-        ToString(
-            [out] String* str);
+    interface IHttpCookieHelper {
+        /**
+         * Returns true if {@code host} matches the domain pattern {@code domain}.
+         *
+         * @param domainPattern a host name (like {@code android.com} or {@code
+         *     localhost}), or a pattern to match subdomains of a domain name (like
+         *     {@code .android.com}). A special case pattern is {@code .local},
+         *     which matches all hosts without a TLD (like {@code localhost}).
+         * @param host the host name or IP address from an HTTP request.
+         */
+        IsDomainMatches(
+            [in] String domainPattern,
+            [in] String host,
+            [out] Boolean* match);
     }
 
     } // namespace Net

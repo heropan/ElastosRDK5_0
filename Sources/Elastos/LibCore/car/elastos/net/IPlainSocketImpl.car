@@ -10,13 +10,6 @@ module
      * interface ISocketImpl;
      */
     interface IPlainSocketImpl {
-        InitLocalPort(
-                [in] Int32 localPort);
-
-        InitRemoteAddressAndPort(
-                [in] IInetAddress* remoteAddress,
-                [in] Int32 remotePort);
-
         SocksAccept();
     }
 
