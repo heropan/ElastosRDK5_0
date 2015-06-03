@@ -120,9 +120,21 @@ module
     class CInet4Address {
         constructor(
             [in] ArrayOf<Byte>* address,
-            [in] String name);
+            [in] String hostName);
 
         interface IInet4Address;
+        interface IInetAddress;
+        interface ISerializable;
+    }
+
+    [deprecated]
+    class CInet6Address {
+        constructor(
+            [in] ArrayOf<Byte>* address,
+            [in] String hostName,
+            [in] Int32 scope_id);
+
+        interface IInet6Address;
         interface IInetAddress;
         interface ISerializable;
     }

@@ -13,6 +13,10 @@ class Inet4Address
 public:
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor(
+        /* [in] */ ArrayOf<Byte>* address,
+        /* [in] */ const String& name);
+
     CARAPI IsAnyLocalAddress(
         /* [out] */ Boolean* isAnyLocalAddress);
 

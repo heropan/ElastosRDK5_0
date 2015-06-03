@@ -1,5 +1,8 @@
 #include "Inet4Address.h"
 #include "CInet4Address.h"
+#include "droid/system/OsConstants.h"
+
+using Elastos::Droid::System::OsConstants;
 
 namespace Elastos {
 namespace Net {
@@ -7,10 +10,6 @@ namespace Net {
 static AutoPtr<IInetAddress> InitANY()
 {
     AutoPtr<ArrayOf<Byte> > ipAddress = ArrayOf<Byte>::Alloc(4);
-    (*ipAddress)[0] = 0;
-    (*ipAddress)[1] = 0;
-    (*ipAddress)[2] = 0;
-    (*ipAddress)[3] = 0;
     AutoPtr<CInet4Address> ipv4Addr;
     CInet4Address::NewByFriend(ipAddress, String(NULL), (CInet4Address**)&ipv4Addr);
     AutoPtr<IInetAddress> addr = IInetAddress::Probe(ipv4Addr);
@@ -48,6 +47,13 @@ AutoPtr<IInetAddress> Inet4Address::ALL = InitALL();
 AutoPtr<IInetAddress> Inet4Address::LOOPBACK = InitLOOPBACK();
 
 CAR_INTERFACE_IMPL(Inet4Address, InetAddress, IInet4Address)
+
+ECode Inet4Address::constructor(
+    /* [in] */ ArrayOf<Byte>* address,
+    /* [in] */ const String& name)
+{
+    return InetAddress::constructor(OsConstants::_AF_INET, address, name);
+}
 
 ECode Inet4Address::IsAnyLocalAddress(
     /* [out] */ Boolean* isAnyLocalAddress)

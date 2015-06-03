@@ -13,10 +13,6 @@ CarClass(CInet4Address)
 {
 public:
     CAR_OBJECT_DECL()
-
-    CARAPI constructor(
-        /* [in] */ ArrayOf<Byte>* address,
-        /* [in] */ const String& name);
 };
 
 } // namespace Net

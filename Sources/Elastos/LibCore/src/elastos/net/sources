@@ -18,5 +18,5 @@ SOURCES = CIDN.cpp
 SOURCES += AddressCache.cpp
 SOURCES += InetAddress.cpp
 SOURCES += Inet4Address.cpp
-#SOURCES += Inet6Address.cpp
+SOURCES += Inet6Address.cpp
 SOURCES += net.cpp

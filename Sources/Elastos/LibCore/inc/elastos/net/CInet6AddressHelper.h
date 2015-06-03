@@ -20,13 +20,6 @@ CarClass(CInet6AddressHelper)
         /* [in] */ ArrayOf<Byte>* addr,
         /* [in] */ INetworkInterface* nif,
         /* [out] */ IInet6Address** address);
-
-    CARAPI GetANY(
-        /* [out] */ IInetAddress** result);
-
-    CARAPI GetLOOPBACK(
-        /* [out] */ IInetAddress** result);
-
 };
 
 } // namespace Net

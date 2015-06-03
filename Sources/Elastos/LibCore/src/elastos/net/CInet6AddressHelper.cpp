@@ -26,17 +26,5 @@ ECode CInet6AddressHelper::GetByAddress(
     return CInet6Address::GetByAddress(host, addr, nif, address);
 }
 
-ECode CInet6AddressHelper::GetANY(
-    /* [out] */ IInetAddress** result)
-{
-    return CInet6Address::GetANY(result);
-}
-
-ECode CInet6AddressHelper::GetLOOPBACK(
-    /* [out] */ IInetAddress** result)
-{
-    return CInet6Address::GetLOOPBACK(result);
-}
-
 } // namespace Net
 } // namespace Elastos
