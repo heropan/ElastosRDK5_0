@@ -120,6 +120,7 @@ module
     interface Elastos.IO.Channels.IChannels;
     interface Libcore.IO.IStreams;
     interface Elastos.IO.ICloseable;
+    interface Elastos.Net.IURI;
 
     //
     // nio releated classes
@@ -372,6 +373,24 @@ module
 
         interface IFileDescriptor;
     }
+
+//    class CFile {
+//        constructor(
+//            [in] IFile* dir,
+//            [in] String name);
+
+//        constructor(
+//            [in] String path);
+
+//        constructor(
+//            [in] String dirPath,
+//            [in] String name);
+
+//        constructor(
+//            [in] IURI* uri);
+
+//        interface IFile;
+//    }
 
     } // namespace IO
     } // namespace Elastos

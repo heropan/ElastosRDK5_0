@@ -3,9 +3,9 @@
 #define __COSCONSTANTS_H__
 
 #include "_COsConstants.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Libcore {
 namespace IO {

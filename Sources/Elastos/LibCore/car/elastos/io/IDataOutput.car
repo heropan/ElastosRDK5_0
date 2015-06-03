@@ -30,8 +30,9 @@ module
 //         * :-|:------------|
 //         * IOException | if an I/O error occurs while writing.
 //         */
-//        WriteBytes(
-//            [in] ArrayOf<Byte> buffer);
+          // original WriteBytes
+//        Write(
+//            [in] ArrayOf<Byte>* buffer);
 //
 //        /**
 //         * Writes {count} bytes from the byte array {buffer} starting at
@@ -48,8 +49,9 @@ module
 //         * :-|:------------|
 //         * IOException | if an I/O error occurs while writing.
 //         */
-//        WriteBytes(
-//            [in] ArrayOf<Byte> buffer,
+          // original WriteBytes
+//        Write(
+//            [in] ArrayOf<Byte>* buffer,
 //            [in] Int32 offset,
 //            [in] Int32 count);
 
@@ -92,7 +94,8 @@ module
          * :-|:------------|
          * IOException | if an I/O error occurs while writing.
          */
-        WriteBytesFromString(
+        // original WriteBytesFromString
+        WriteBytes(
             [in] String str);
 
         /**

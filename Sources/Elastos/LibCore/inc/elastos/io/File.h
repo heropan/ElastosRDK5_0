@@ -10,8 +10,11 @@ namespace Elastos {
 namespace IO {
 
 class File
+    : public IFile
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Lists the file system roots. The Java platform may support zero or more
      * file systems, each with its own platform-dependent root. Further, the
@@ -200,8 +203,6 @@ public:
 
     /**
      * Returns the path of this file.
-     *
-     * @return this file's path.
      */
     virtual CARAPI GetPath(
         /* [out] */ String* path);
@@ -692,8 +693,8 @@ public:
      * @return a URL for this file.
      * @throws java.net.MalformedURLException
      *             if the path cannot be transformed into a URL.
-     * @deprecated use {@link #toURI} and {@link java.net.URI#toURL} to get
-     * correct escaping of illegal characters.
+     * @deprecated Use {@link #toURI} and {@link java.net.URI#toURL} to get
+     * correct escape illegal characters.
      */
 //    virtual CARAPI ToURL(
 //        /* [out] */ IURL** uri);
@@ -740,9 +741,7 @@ protected:
 
     virtual ~File();
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
+public:
     /**
      * Constructs a new file using the specified direc
      tory and name.
@@ -754,7 +753,7 @@ protected:
      * @throws NullPointerException
      *             if {@code name} is {@code null}.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IFile* dir,
         /* [in] */ const String& name);
 
@@ -764,7 +763,7 @@ protected:
      * @param path
      *            the path to be used for the file.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& path);
 
     /**
@@ -778,7 +777,7 @@ protected:
      * @throws NullPointerException
      *             if {@code name} is {@code null}.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& dirPath,
         /* [in] */ const String& name);
 
@@ -796,7 +795,7 @@ protected:
      * @see #toURI
      * @see java.net.URI
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IURI* uri);
 
 private:
@@ -814,16 +813,6 @@ private:
 
     CARAPI_(Boolean) DoAccess(
         /* [in] */ Int32 mode);
-
-    /**
-     * TODO: move this stuff to libcore.os.
-     * @hide
-     */
-    static CARAPI_(String) Realpath(
-        /* [in] */ const String& path);
-
-    static CARAPI_(String) Readlink(
-        /* [in] */ const String& path);
 
     static CARAPI_(Boolean) SetLastModifiedImpl(
         /* [in] */ const String& path,

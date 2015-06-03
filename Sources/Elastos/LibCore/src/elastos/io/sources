@@ -11,7 +11,11 @@ INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
+<<<<<<< HEAD
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/droid/system/;
+=======
+INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;
+>>>>>>> Change interface IFile pause, waiting for other module.
 
 
 SOURCES = InputStream.cpp
@@ -65,6 +69,7 @@ SOURCES += CPushbackInputStream.cpp
 SOURCES += DataOutputStream.cpp
 SOURCES += CDataOutputStream.cpp
 
+<<<<<<< HEAD
 SOURCES += CFileDescriptor.cpp
 
 
@@ -79,3 +84,7 @@ SOURCES += ByteBuffer.cpp
 SOURCES += CByteBufferHelper.cpp
 SOURCES += CByteArrayBuffer.cpp
 
+=======
+#SOURCES += File.cpp
+#SOURCES += CFile.cpp
+>>>>>>> Change interface IFile pause, waiting for other module.

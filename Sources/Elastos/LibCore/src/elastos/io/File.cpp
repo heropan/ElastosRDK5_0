@@ -5,9 +5,9 @@
 #include "IoUtils.h"
 #include "ToStringArray_S.h"
 #include <elastos/utility/etl/List.h>
-#include <elastos/Vector.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/CSystem.h>
+#include <utils/Vector.h>
+#include <StringBuilder.h>
+#include <CSystem.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/param.h>
@@ -18,146 +18,27 @@
 #include "CLibcore.h"
 
 using Elastos::Utility::Etl::List;
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 using Elastos::Core::CRandom;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CSystem;;
 using Elastos::Core::ISystem;
-using Libcore::IO::IOsConstants;
+// using Libcore::IO::IOsConstants;
+using Elastos::Droid::System::IOsConstants;
 using Libcore::IO::COsConstants;
 using Libcore::IO::ILibcore;
 using Libcore::IO::CLibcore;
 using Libcore::IO::IOs;
-using Libcore::IO::IStructStat;
-using Libcore::IO::IStructStatFs;
-
-static Boolean _Readlink(const char* path, String& result)
-{
-    // We can't know how big a buffer readlink(2) will need, so we need to
-    // loop until it says "that fit".
-    size_t bufSize = 512;
-    while (TRUE) {
-        AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(bufSize);
-        ssize_t len = readlink(path, (char*)buf->GetPayload(), buf->GetLength());
-        if (len == -1) {
-            // An error occurred.
-            return FALSE;
-        }
-        if (static_cast<size_t>(len) < buf->GetLength()) {
-            (*buf)[len] = '\0';
-            // The buffer was big enough.
-            result += (char*)buf->GetPayload();
-            return TRUE;
-        }
-        // Try again with a bigger buffer.
-        bufSize *= 2;
-    }
-}
-
-/**
- * This differs from realpath(3) mainly in its behavior when a path element does not exist or can
- * not be searched. realpath(3) treats that as an error and gives up, but we have Java-compatible
- * behavior where we just assume the path element was not a symbolic link. This leads to a textual
- * treatment of ".." from that point in the path, which may actually lead us back to a path we
- * can resolve (as in "/tmp/does-not-exist/../blah.txt" which would be an error for realpath(3)
- * but "/tmp/blah.txt" under the traditional Java interpretation).
- *
- * This implementation also removes all the fixed-length buffers of the C original.
- */
-static Boolean _Realpath(const char* path, String& resolved)
-{
-    // 'path' must be an absolute path.
-    if (path[0] != '/') {
-        errno = EINVAL;
-        return false;
-    }
-
-    resolved = String("/");
-    if (path[1] == '\0') {
-        return true;
-    }
-
-    // Iterate over path components in 'left'.
-    Int32 symlinkCount = 0;
-    String left(path + 1);
-    while (!left.IsNullOrEmpty()) {
-        // Extract the next path component.
-        Int32 nextSlash = left.IndexOf('/');
-        String nextPathComponent;
-        if (nextSlash != -1) {
-            nextPathComponent = left.Substring(0, nextSlash);
-            left = left.Substring(nextSlash + 1, left.GetLength());
-        }
-        else {
-            nextPathComponent = left;
-            left = NULL;
-        }
-
-        if (nextPathComponent.IsNullOrEmpty()) {
-            continue;
-        }
-        else if (!nextPathComponent.Compare(".")) {
-            continue;
-        }
-        else if (!nextPathComponent.Compare("..")) {
-            // Strip the last path component except when we have single "/".
-            if (resolved.GetLength() > 1) {
-                Int32 rIndex = resolved.LastIndexOf('/');
-                resolved = resolved.Substring(0, rIndex);
-            }
-            continue;
-        }
-
-        // Append the next path component.
-        if (resolved.GetChar(resolved.GetLength() - 1) != '/') {
-            resolved += String("/");
-        }
-        resolved += nextPathComponent;
-
-        // See if we've got a symbolic link, and resolve it if so.
-        struct stat sb;
-        if (lstat(resolved.string(), &sb) == 0 && S_ISLNK(sb.st_mode)) {
-            if (symlinkCount++ > MAXSYMLINKS) {
-                errno = ELOOP;
-                return false;
-            }
-
-            String symlink;
-            if (!_Readlink(resolved.string(), symlink)) {
-                return false;
-            }
-            if (symlink.GetChar(0) == '/') {
-                // The symbolic link is absolute, so we need to start from scratch.
-                resolved = "/";
-            }
-            else if (resolved.GetLength() > 1) {
-                // The symbolic link is relative, so we just lose the last path component (which
-                // was the link).
-                Int32 rIndex = resolved.LastIndexOf('/');
-                resolved = resolved.Substring(0, rIndex);
-            }
-
-            if (!left.IsNullOrEmpty()) {
-                const char* maybeSlash = (symlink.GetChar(symlink.GetLength() - 1) != '/') ? "/" : "";
-                left = symlink + maybeSlash + left;
-            }
-            else {
-                left = symlink;
-            }
-        }
-    }
-
-    Int32 charCount = resolved.GetLength();
-    // Remove trailing slash except when the resolved pathname is a single "/".
-    if (charCount > 1 && resolved.GetChar(charCount - 1) == '/') {
-        resolved = resolved.Substring(0, charCount - 1);
-    }
-
-    return TRUE;
-}
+// using Libcore::IO::IStructStat;
+using Elastos::Droid::System::IStructStat;
+// using Libcore::IO::IStructStatFs;
+using Elastos::Droid::System::IStructStatFs;
+using Elastos::Droid::System::IStructStatVfs;
 
 namespace Elastos {
 namespace IO {
+
+CAR_INTERFACE_IMPL(File, Object, IFile)
 
 //static {
 //    // The default protection domain grants access to these properties.
@@ -191,7 +72,7 @@ File::File()
 File::~File()
 {}
 
-ECode File::Init(
+ECode File::constructor(
     /* [in] */ IFile* dir,
     /* [in] */ const String& name)
 {
@@ -199,17 +80,17 @@ ECode File::Init(
     if (dir != NULL) {
         dir->GetPath(&path);
     }
-    return Init(path, name);
+    return constructor(path, name);
 }
 
-ECode File::Init(
+ECode File::constructor(
     /* [in] */ const String& path)
 {
     mPath = FixSlashes(path);
     return NOERROR;
 }
 
-ECode File::Init(
+ECode File::constructor(
     /* [in] */ const String& dirPath,
     /* [in] */ const String& name)
 {
@@ -229,7 +110,7 @@ ECode File::Init(
     return NOERROR;
 }
 
-ECode File::Init(
+ECode File::constructor(
     /* [in] */ IURI* uri)
 {
      // check pre-conditions
@@ -400,6 +281,7 @@ ECode File::CompareTo(
     /* [in] */ IInterface* obj,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(obj)
     VALIDATE_NOT_NULL(result)
     String anotherPath;
     if (IFile::Probe(obj) == NULL) return NOERROR;
@@ -414,6 +296,7 @@ ECode File::CompareTo(
     /* [in] */ IFile* another,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(another)
     VALIDATE_NOT_NULL(result)
 
     String anotherPath;
@@ -427,6 +310,8 @@ ECode File::CompareTo(
 ECode File::Delete(
     /* [out] */ Boolean* succeeded)
 {
+    VALIDATE_NOT_NULL(succeeded)
+
     // try {
     AutoPtr<ILibcore> libcore;
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
@@ -510,38 +395,8 @@ ECode File::GetCanonicalPath(
 
     String absolutePath;
     GetAbsolutePath(&absolutePath);
-    *path = Realpath(absolutePath);
+    *path = UrlUtils::CanonicalizePath(absolutePath, TRUE);
     return NOERROR;
-}
-
-String File::Realpath(
-    /* [in] */ const String& path)
-{
-    if (path.IsNull()) {
-        return String(NULL);
-    }
-
-    String result;
-    if (!_Realpath(path.string(), result)) {
-        // jniThrowIOException(env, errno);
-        return String(NULL);
-    }
-    return result;
-}
-
-String File::Readlink(
-    /* [in] */ const String& path)
-{
-    if (path.IsNull()) {
-        return String(NULL);
-    }
-
-    String result;
-    if (!_Readlink(path.string(), result)) {
-        // jniThrowIOException(env, errno);
-        return String(NULL);
-    }
-    return result;
 }
 
 ECode File::GetCanonicalFile(
@@ -752,6 +607,8 @@ Boolean File::SetLastModifiedImpl(
 ECode File::SetReadOnly(
     /* [out] */ Boolean* succeeded)
 {
+    VALIDATE_NOT_NULL(succeeded)
+
     return SetWritable(FALSE, FALSE, succeeded);
 }
 
@@ -775,6 +632,8 @@ ECode File::SetExecutable(
     /* [in] */ Boolean executable,
     /* [out] */ Boolean* succeeded)
 {
+    VALIDATE_NOT_NULL(succeeded)
+
     return SetExecutable(executable, TRUE, succeeded);
 }
 
@@ -798,6 +657,8 @@ ECode File::SetReadable(
     /* [in] */ Boolean readable,
     /* [out] */ Boolean* succeeded)
 {
+    VALIDATE_NOT_NULL(succeeded)
+
     return SetReadable(readable, TRUE, succeeded);
 }
 
@@ -821,6 +682,8 @@ ECode File::SetWritable(
     /* [in] */ Boolean writable,
     /* [out] */ Boolean* succeeded)
 {
+    VALIDATE_NOT_NULL(succeeded)
+    
     return SetWritable(writable, TRUE, succeeded);
 }
 
@@ -968,13 +831,17 @@ ECode File::List(
     /* [in] */ IFilenameFilter* filter,
     /* [out, callee] */ ArrayOf<String>** files)
 {
+    VALIDATE_NOT_NULL(files)
+    *files = NULL;
+    VALIDATE_NOT_NULL(filter)
+
     AutoPtr< ArrayOf<String> > filenames = ListImpl(mPath);
     if (filter == NULL || filenames == NULL) {
         *files = filenames;
         REFCOUNT_ADD(*files);
         return NOERROR;
     }
-    Elastos::Utility::List<String> result;
+    Elastos::Utility::Etl::List<String> result;
     for (Int32 i = 0; i < filenames->GetLength(); ++i) {
         String filename = (*filenames)[i];
         Boolean isAccept;
@@ -984,7 +851,7 @@ ECode File::List(
         }
     }
     AutoPtr< ArrayOf<String> > _files = ArrayOf<String>::Alloc(result.GetSize());
-    Elastos::Utility::List<String>::Iterator it;
+    Elastos::Utility::Etl::List<String>::Iterator it;
     Int32 index;
     for (it = result.Begin(), index = 0; it != result.End(); ++it, ++index) {
         (*_files)[index] = *it;
@@ -1011,6 +878,8 @@ ECode File::ListFiles(
     /* [out, callee] */ ArrayOf<IFile*>** files)
 {
     VALIDATE_NOT_NULL(files)
+    *files = NULL;
+    VALIDATE_NOT_NULL(filter)
 
     AutoPtr< ArrayOf<String> > filenames;
     List(filter, (ArrayOf<String>**)&filenames);
@@ -1024,6 +893,10 @@ ECode File::ListFiles(
     /* [in] */ IFileFilter* filter,
     /* [out, callee] */ ArrayOf<IFile*>** files)
 {
+    VALIDATE_NOT_NULL(files)
+    *files = NULL;
+    VALIDATE_NOT_NULL(filter)
+
     AutoPtr< ArrayOf<IFile*> > _files;
     ListFiles((ArrayOf<IFile*>**)&_files);
     if (filter == NULL || _files == NULL) {
@@ -1031,7 +904,7 @@ ECode File::ListFiles(
         REFCOUNT_ADD(*files);
         return NOERROR;
     }
-    Elastos::Utility::List< AutoPtr<IFile> > result;
+    Elastos::Utility::Etl::List< AutoPtr<IFile> > result;
     for (Int32 i = 0; i < _files->GetLength(); ++i) {
         IFile* file = (*_files)[i];
         Boolean isAccept;
@@ -1040,7 +913,7 @@ ECode File::ListFiles(
         }
     }
     _files = ArrayOf<IFile*>::Alloc(result.GetSize());
-    Elastos::Utility::List< AutoPtr<IFile> >::Iterator it;
+    Elastos::Utility::Etl::List< AutoPtr<IFile> >::Iterator it;
     Int32 index;
     for (it = result.Begin(), index = 0; it != result.End(); ++it, ++index) {
         _files->Set(index, *it);
@@ -1212,6 +1085,7 @@ ECode File::RenameTo(
 {
     VALIDATE_NOT_NULL(newPath)
     VALIDATE_NOT_NULL(succeeded)
+    *succeeded = FALSE;
 
     // try {
     String path;
@@ -1296,8 +1170,8 @@ ECode File::GetTotalSpace(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    AutoPtr<IStructStatFs> sb;
-    if (FAILED(IoUtils::Libcore2IoECode(os->Statfs(mPath, (IStructStatFs**)&sb)))) {
+    AutoPtr<IStructStatVfs> sb;
+    if (FAILED(IoUtils::Libcore2IoECode(os->Statvfs(mPath, (IStructStatVfs**)&sb)))) {
         *space = 0;
         return NOERROR;
     }
@@ -1320,8 +1194,8 @@ ECode File::GetUsableSpace(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    AutoPtr<IStructStatFs> sb;
-    if (FAILED(IoUtils::Libcore2IoECode(os->Statfs(mPath, (IStructStatFs**)&sb)))) {
+    AutoPtr<IStructStatVfs> sb;
+    if (FAILED(IoUtils::Libcore2IoECode(os->Statvfs(mPath, (IStructStatVfs**)&sb)))) {
         *space = 0;
         return NOERROR;
     }
@@ -1344,8 +1218,8 @@ ECode File::GetFreeSpace(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    AutoPtr<IStructStatFs> sb;
-    if (FAILED(IoUtils::Libcore2IoECode(os->Statfs(mPath, (IStructStatFs**)&sb)))) {
+    AutoPtr<IStructStatVfs> sb;
+    if (FAILED(IoUtils::Libcore2IoECode(os->Statvfs(mPath, (IStructStatVfs**)&sb)))) {
         *space = 0;
         return NOERROR;
     }

@@ -2,9 +2,9 @@
 #define __TOSTRINGARRAY_S_H__
 
 #include <elquintet.h>
-#include <elastos/Vector.h>
+#include <elastos/utility/etl/Vector.h>
 
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 
 namespace Elastos {
 namespace IO {
