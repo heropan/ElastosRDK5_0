@@ -2,8 +2,10 @@
 #ifndef __CBITSETHELPER_H__
 #define __CBITSETHELPER_H__
 
-#include "_CBitSetHelper.h"
+#include "_Elastos_Utility_CBitSetHelper.h"
+#include "Singleton.h"
 
+using Elastos::Core::Singleton;
 using Elastos::IO::IInt64Buffer;
 using Elastos::IO::IByteBuffer;
 
@@ -11,8 +13,13 @@ namespace Elastos {
 namespace Utility {
 
 CarClass(CBitSetHelper)
+    , public Singleton
+    , public IBitSetHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+    CAR_INTERFACE_DECL()
+
 	/**
      * Equivalent to {@code BitSet.valueOf(LongBuffer.wrap(longs))}, but likely to be faster.
      * This is likely to be the fastest way to create a {@code BitSet} because it's closest

@@ -1,15 +1,14 @@
 
 #include "MapEntry.h"
-#include "elastos/ObjectUtils.h"
+#include "ObjectUtils.h"
 
 using Elastos::Core::ObjectUtils;
+using Elastos::Core::EIID_ICloneable;
 
 namespace Elastos {
 namespace Utility {
 
-CAR_INTERFACE_IMPL_LIGHT(MapEntry::Type, IInterface)
-
-CAR_INTERFACE_IMPL_LIGHT(MapEntry, IMapEntry)
+CAR_INTERFACE_IMPL_2(MapEntry, Object, IMapEntry, ICloneable)
 
 ECode MapEntry::Clone(
     /* [out] */ IInterface** outface)
@@ -27,7 +26,7 @@ ECode MapEntry::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    if ((IInterface*)this == object->Probe(EIID_IInterface)) {
+    if ((IInterface*)(IMapEntry*)this == object->Probe(EIID_IInterface)) {
         *result = TRUE;
         return NOERROR;
     }

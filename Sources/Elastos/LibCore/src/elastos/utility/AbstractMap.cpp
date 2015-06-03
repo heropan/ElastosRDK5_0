@@ -612,6 +612,8 @@ ECode AbstractMap::SimpleEntry::ToString(
 //       AbstractMap::AbstractMapKeySet
 //==========================================================
 
+CAR_INTERFACE_IMPL(AbstractMap::AbstractMapKeySet, Object, IIterator)
+
 AbstractMap::AbstractMapKeySet::AbstractMapKeySet(
     /* [in] */ AbstractMap* hm)
 {

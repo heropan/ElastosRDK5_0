@@ -1,7 +1,7 @@
 #ifndef __UTILITY_CENUMMAP_H__
 #define __UTILITY_CENUMMAP_H__
 
-#include "_CEnumMap.h"
+#include "_Elastos_Utility_CEnumMap.h"
 #include "AbstractMap.h"
 #include "AbstractSet.h"
 #include "AbstractCollection.h"
@@ -15,10 +15,15 @@ using Elastos::Core::IEnum;
 namespace Elastos {
 namespace Utility {
 
-CarClass(CEnumMap) , public AbstractMap
+CarClass(CEnumMap)
+    , public AbstractMap
+    , public IEnumMap
+    , public ISerializable
+    , public ICloneable
 {
 private:
-    class EnumMapEntry : public MapEntry
+    class EnumMapEntry
+        : public MapEntry
     {
     public:
         EnumMapEntry(
@@ -66,7 +71,7 @@ private:
     };
 
     class EnumMapIterator
-        : public ElRefBase
+        : public Object
         , public IIterator
     {
     public:
@@ -105,8 +110,6 @@ private:
 
     class EnumMapKeySet
         : public AbstractSet
-        , public ElRefBase
-        , public ISet
     {
     public:
         EnumMapKeySet(
@@ -178,7 +181,8 @@ private:
         AutoPtr<CEnumMap> mEnumMap;
     };
 
-    class EnumMapKeySetType : public MapEntry::Type
+    class EnumMapKeySetType
+        : public MapEntry::Type
     {
     public:
         CARAPI Get(
@@ -188,8 +192,6 @@ private:
 
     class EnumMapValueCollection
         : public AbstractCollection
-        , public ICollection
-        , public ElRefBase
     {
     public:
         EnumMapValueCollection(
@@ -261,7 +263,8 @@ private:
         AutoPtr<CEnumMap> mEnumMap;
     };
 
-    class EnumMapValueCollectionType : public MapEntry::Type
+    class EnumMapValueCollectionType
+        : public MapEntry::Type
     {
     public:
         CARAPI Get(
@@ -285,8 +288,6 @@ private:
 
     class EnumMapEntrySet
         : public AbstractSet
-        , public ElRefBase
-        , ISet
     {
     public:
         EnumMapEntrySet(
@@ -358,7 +359,8 @@ private:
         AutoPtr<CEnumMap> mEnumMap;
     };
 
-    class EnumMapEntrySetType : public MapEntry::Type
+    class EnumMapEntrySetType
+        : public MapEntry::Type
     {
     public:
         CARAPI Get(
@@ -368,6 +370,9 @@ private:
 
 public:
     CEnumMap();
+
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
 
     CARAPI constructor();
 
@@ -411,9 +416,6 @@ public:
     // @SuppressWarnings("unchecked")
     CARAPI constructor(
         /* [in] */ IMap* map);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Returns a string containing a concise, human-readable description of this
@@ -545,6 +547,10 @@ public:
         /* [in] */ PInterface value,
         /* [out] */ PInterface* oldValue);
 
+    CARAPI Put(
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* value);
+
     /**
      * Copies every mapping in the specified {@code Map} to this {@code Map}.
      *
@@ -577,6 +583,9 @@ public:
     CARAPI Remove(
         /* [in] */ PInterface key,
         /* [out] */ PInterface* value);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* key);
 
     /**
      * Returns the number of mappings in this {@code Map}.

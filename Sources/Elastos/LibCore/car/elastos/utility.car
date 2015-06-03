@@ -290,6 +290,29 @@ module
             interface ICloneable;
         }
 
+        singleton class CBitSetHelper {
+
+            interface IBitSetHelper;
+        }
+
+        class CEnumMap {
+            constructor();
+
+            constructor(
+                [in] InterfaceID keyType);
+
+            constructor(
+                [in] IEnumMap* enummap);
+
+            constructor(
+                [in] IMap* map);
+
+            interface IEnumMap;
+            interface ISerializable;
+            interface ICloneable;
+            interface IMap;
+        }
+
 
     } // namespace Utility
     } // namespace Elastos

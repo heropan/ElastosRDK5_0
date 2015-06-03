@@ -26,3 +26,6 @@ SOURCES += DualPivotQuicksort.cpp
 SOURCES += ComparableTimSort.cpp
 SOURCES += TimSort.cpp
 SOURCES += CBitSet.cpp
+SOURCES += CBitSetHelper.cpp
+SOURCES += MapEntry.cpp
+SOURCES += CEnumMap.cpp

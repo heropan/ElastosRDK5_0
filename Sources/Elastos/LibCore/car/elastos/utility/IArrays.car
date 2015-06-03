@@ -12,6 +12,243 @@ module
         [in] ArrayOf<IInterface*>* array,
         [out] IList** outList);
 
+    BinarySearchByte(
+        [in] ArrayOf<Byte>* array,
+        [in] Byte value,
+        [out] Int32* index);
+
+    BinarySearchByte(
+        [in] ArrayOf<Byte>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Byte value,
+        [out] Int32* index);
+
+    BinarySearchChar32(
+        [in] ArrayOf<Char32>* array,
+        [in] Char32 value,
+        [out] Int32* index);
+
+    BinarySearchChar32(
+        [in] ArrayOf<Char32>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Char32 value,
+        [out] Int32* index);
+
+    BinarySearchDouble(
+        [in] ArrayOf<Double>* array,
+        [in] Double value,
+        [out] Int32* index);
+
+    BinarySearchDouble(
+        [in] ArrayOf<Double>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Double value,
+        [out] Int32* index);
+
+    BinarySearchFloat(
+        [in] ArrayOf<Float>* array,
+        [in] Float value,
+        [out] Int32* index);
+
+    BinarySearchFloat(
+        [in] ArrayOf<Float>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Float value,
+        [out] Int32* index);
+
+    BinarySearchInt32(
+        [in] ArrayOf<Int32>* array,
+        [in] Int32 value,
+        [out] Int32* index);
+
+    BinarySearchInt32(
+        [in] ArrayOf<Int32>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Int32 value,
+        [out] Int32* index);
+
+    BinarySearchInt64(
+        [in] ArrayOf<Int64>* array,
+        [in] Int64 value,
+        [out] Int32* index);
+
+    BinarySearchInt64(
+        [in] ArrayOf<Int64>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Int64 value,
+        [out] Int32* index);
+
+    BinarySearchObject(
+        [in] ArrayOf<IInterface* >* array,
+        [in] IInterface* value,
+        [out] Int32* index);
+
+    BinarySearchObject(
+        [in] ArrayOf<IInterface* >* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] IInterface* value,
+        [out] Int32* index);
+
+    BinarySearch(
+        [in] ArrayOf<IInterface* >* array,
+        [in] IInterface* value,
+        [in] IComparator* comparator,
+        [out] Int32* index);
+
+    BinarySearch(
+        [in] ArrayOf<IInterface* >* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] IInterface* value,
+        [in] IComparator* comparator,
+        [out] Int32* index);
+
+    BinarySearchInt16(
+        [in] ArrayOf<Int16>* array,
+        [in] Int16 value,
+        [out] Int32* index);
+
+    BinarySearchInt16(
+        [in] ArrayOf<Int16>* array,
+        [in] Int32 startIndex,
+        [in] Int32 endIndex,
+        [in] Int16 value,
+        [out] Int32* index);
+
+    FillByte(
+        [in] ArrayOf<Byte>* array,
+        [in] Byte value);
+
+    FillByte(
+        [in] ArrayOf<Byte>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Byte value);
+
+    FillInt16(
+        [in] ArrayOf<Int16>* array,
+        [in] Int16 value);
+
+    FillInt16(
+        [in] ArrayOf<Int16>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Int16 value);
+
+    FillChar32(
+        [in] ArrayOf<Char32>* array,
+        [in] Char32 value);
+
+    FillChar32(
+        [in] ArrayOf<Char32>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Char32 value);
+
+    FillInt32(
+        [in] ArrayOf<Int32>* array,
+        [in] Int32 value);
+
+    FillInt32(
+        [in] ArrayOf<Int32>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Int32 value);
+
+    FillInt64(
+        [in] ArrayOf<Int64>* array,
+        [in] Int64 value);
+
+    FillInt64(
+        [in] ArrayOf<Int64>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Int64 value);
+
+    FillFloat(
+        [in] ArrayOf<Float>* array,
+        [in] Float value);
+
+    FillFloat(
+        [in] ArrayOf<Float>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Float value);
+
+    FillDouble(
+        [in] ArrayOf<Double>* array,
+        [in] Double value);
+
+     FillDouble(
+        [in] ArrayOf<Double>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Double value);
+
+    FillBoolean(
+        [in] ArrayOf<Boolean>* array,
+        [in] Boolean value);
+
+    FillBoolean(
+        [in] ArrayOf<Boolean>* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] Boolean value);
+
+    FillObject(
+        [in] ArrayOf<IInterface* >* array,
+        [in] IInterface* value);
+
+    FillObject(
+        [in] ArrayOf<IInterface* >* array,
+        [in] Int32 start,
+        [in] Int32 end,
+        [in] IInterface* value);
+
+    HashCodeBoolean(
+        [in] ArrayOf<Boolean>* array,
+        [out] Int32* code);
+
+    HashCodeInt32(
+        [in] ArrayOf<Int32>* array,
+        [out] Int32* code);
+
+    HashCodeInt16(
+        [in] ArrayOf<Int16>* array,
+        [out] Int32* code);
+
+    HashCodeChar32(
+        [in] ArrayOf<Char32>* array,
+        [out] Int32* code);
+
+    HashCodeByte(
+        [in] ArrayOf<Byte>* array,
+        [out] Int32* code);
+
+    HashCodeInt64(
+        [in] ArrayOf<Int64>* array,
+        [out] Int32* code);
+
+    HashCodeFloat(
+        [in] ArrayOf<Float>* array,
+        [out] Int32* code);
+
+
+    HashCodeDouble(
+        [in] ArrayOf<Double>* array,
+        [out] Int32* code);
+
+    HashCodeObject(
+        [in] ArrayOf<IInterface* >* array,
+        [out] Int32* code);
+
      /** the array contains other arrays as its elements, the hash code is based
      * on their contents not their identities. So it is not acceptable to invoke
      * this method on an array that contains itself as an element, either

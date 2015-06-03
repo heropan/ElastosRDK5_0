@@ -232,8 +232,6 @@ public:
         AbstractMapValues(
             /* [in] */ AbstractMap* hm);
 
-        CAR_INTERFACE_DECL()
-
         CARAPI GetSize(
             /* [out] */ Int32* value);
 
@@ -507,7 +505,6 @@ public:
     virtual CARAPI ToString(
         /* [out] */ String* str);
 
-protected:
     AbstractMap();
 
     // @SuppressWarnings("unchecked")

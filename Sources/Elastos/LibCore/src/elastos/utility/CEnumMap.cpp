@@ -2,13 +2,17 @@
 #include "CEnumMap.h"
 #include "CArrays.h"
 #include "Enum.h"
-#include "elastos/ObjectUtils.h"
-#include "elastos/StringBuilder.h"
+#include "ObjectUtils.h"
+#include "StringBuilder.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::ObjectUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Enum;
 using Elastos::Core::EIID_IEnum;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IOutputStream;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -17,11 +21,9 @@ namespace Utility {
 //==========================================================
 //       CEnumMap
 //==========================================================
-PInterface CEnumMap::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CEnumMap::Probe(riid);
-}
+
+CAR_INTERFACE_IMPL_3(CEnumMap, AbstractMap, IEnumMap, ISerializable, ICloneable)
+CAR_OBJECT_IMPL(CEnumMap)
 
 CEnumMap::CEnumMap()
     : mMappingsCount(0)
@@ -61,7 +63,7 @@ ECode CEnumMap::constructor(
         AutoPtr<ISet> outset;
         map->KeySet((ISet**)&outset);
         AutoPtr<IIterator> iter;
-        outset->GetIterator((IIterator**)&iter);
+        (IIterable::Probe(outset))->GetIterator((IIterator**)&iter);
         AutoPtr<IInterface> enumKey;
         iter->Next((IInterface**)&enumKey);
         if (IEnum::Probe(enumKey)) {
@@ -223,6 +225,15 @@ ECode CEnumMap::Put(
     return PutImpl(key, value, oldValue);
 }
 
+ECode CEnumMap::Put(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* value)
+{
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
+
 ECode CEnumMap::PutAll(
     /* [in] */ IMap* map)
 {
@@ -249,6 +260,24 @@ ECode CEnumMap::Remove(
     mValues->Set(keyOrdinal, NULL);
     *value = oldValue;
     REFCOUNT_ADD(*value)
+    return NOERROR;
+}
+
+ECode CEnumMap::Remove(
+    /* [in] */ PInterface key)
+{
+
+    if (!IsValidKeyType(key)) {
+        return NOERROR;
+    }
+    Int32 keyOrdinal = 0;
+    IEnum::Probe(key)->Ordinal(&keyOrdinal);
+    if ((*mHasMapping)[keyOrdinal]) {
+        (*mHasMapping)[keyOrdinal] = FALSE;
+        mMappingsCount--;
+    }
+    AutoPtr<IInterface> oldValue = (*mValues)[keyOrdinal];
+    mValues->Set(keyOrdinal, NULL);
     return NOERROR;
 }
 
@@ -281,7 +310,7 @@ ECode CEnumMap::ReadObject(
     assert(0 && "TODO");
     // Initialization((InterfaceID)mKeyType);
     Int32 elementCount = 0;
-    stream->Read(&elementCount);
+    (IInputStream::Probe(stream))->Read(&elementCount);
     AutoPtr<IEnum> enumKey;
     AutoPtr<IInterface> value;
     // for (int i = elementCount; i > 0; i--) {
@@ -296,11 +325,11 @@ ECode CEnumMap::WriteObject(
     /* [in] */ IObjectOutputStream* stream)
 {
     stream->DefaultWriteObject();
-    stream->Write(mMappingsCount);
+    (IOutputStream::Probe(stream))->Write(mMappingsCount);
     AutoPtr<ISet> outset;
     EntrySet((ISet**)&outset);
     AutoPtr<IIterator> iterator;
-    outset->GetIterator((IIterator**)&iterator);
+    (IIterable::Probe(outset))->GetIterator((IIterator**)&iterator);
     Boolean isflag = FALSE;
     while (iterator->HasNext(&isflag), isflag) {
         AutoPtr<IMapEntry> entry;
@@ -356,7 +385,7 @@ ECode CEnumMap::PutAllImpl(
     AutoPtr<ISet> outset;
     map->EntrySet((ISet**)&outset);
     AutoPtr<IIterator> iter;
-    outset->GetIterator((IIterator**)&iter);
+    (IIterable::Probe(outset))->GetIterator((IIterator**)&iter);
     Boolean isflag = FALSE;
     while (iter->HasNext(&isflag), isflag) {
         AutoPtr<IInterface> outface;
@@ -513,8 +542,8 @@ ECode CEnumMap::EnumMapEntry::ToString(
     VALIDATE_NOT_NULL(str)
 
     StringBuilder result(ObjectUtils::ToString((*mEnumMap->mKeys)[mOrdinal]));
-    result.AppendCStr("=");
-    result.AppendString((*mEnumMap->mValues)[mOrdinal] == NULL
+    result.Append("=");
+    result.Append((*mEnumMap->mValues)[mOrdinal] == NULL
             ? String("null") : ObjectUtils::ToString((*mEnumMap->mValues)[mOrdinal]));
     return result.ToString(str);
 }
@@ -532,7 +561,7 @@ ECode CEnumMap::EnumMapEntry::CheckEntryStatus()
 //==========================================================
 //       CEnumMap::EnumMapIterator
 //==========================================================
-CAR_INTERFACE_IMPL(CEnumMap::EnumMapIterator, IIterator);
+CAR_INTERFACE_IMPL(CEnumMap::EnumMapIterator, Object, IIterator);
 
 CEnumMap::EnumMapIterator::EnumMapIterator(
     /* [in] */ MapEntry::Type* value,

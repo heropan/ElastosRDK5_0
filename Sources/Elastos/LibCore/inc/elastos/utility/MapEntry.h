@@ -2,22 +2,24 @@
 #define __UTILITY_MAPENTRY_H__
 
 #include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
+
+using Elastos::Core::Object;
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Utility {
 
 class MapEntry
-    : public ElLightRefBase
+    : public Object
     , public IMapEntry
+    , public ICloneable
 {
 public:
     class Type
-        : public IInterface
-        , public ElLightRefBase
+        : public Object
     {
     public:
-        CAR_INTERFACE_DECL();
-
         virtual CARAPI Get(
             /* [in] */ IMapEntry* entry,
             /* [out] */ IInterface** value) = 0;

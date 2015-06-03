@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace Utility {
 
+CAR_SINGLETON_IMPL(CBitSetHelper)
+CAR_INTERFACE_IMPL(CBitSetHelper, Singleton, IBitSetHelper)
+
+
 ECode CBitSetHelper::ValueOf(
     /* [in] */ ArrayOf<Int64>* int64Arr,
     /* [out] */ IBitSet** bs)
