@@ -1,17 +1,19 @@
 #ifndef __CSTRUCTADDRINFO_H__
 #define __CSTRUCTADDRINFO_H__
 
-#include "coredef.h"
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructAddrinfo.h"
 
 using Elastos::Core::Object;
+using Elastos::Net::IInetAddress;
 
 namespace Elastos {
 namespace Droid {
 namespace System {
 
-CarClass(CStructAddrinfo) , public Object
+CarClass(CStructAddrinfo)
+    , public Object
+    , public IStructAddrinfo
 {
 public:
     CAR_OBJECT_DECL()

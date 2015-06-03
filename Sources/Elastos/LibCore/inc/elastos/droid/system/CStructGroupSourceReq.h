@@ -1,17 +1,19 @@
 #ifndef __CSTRUCTGROUPSOURCEREQ_H__
 #define __CSTRUCTGROUPSOURCEREQ_H__
 
-#include "coredef.h"
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructGroupSourceReq.h"
 
 using Elastos::Core::Object;
+using Elastos::Net::IInetAddress;
 
 namespace Elastos {
 namespace Droid {
 namespace System {
 
-CarClass(CStructGroupSourceReq) , public Object
+CarClass(CStructGroupSourceReq)
+    , public Object
+    , public IStructGroupSourceReq
 {
 public:
     CAR_OBJECT_DECL()
@@ -23,13 +25,13 @@ public:
         /* [in] */ IInetAddress* group,
         /* [in] */ IInetAddress* source);
 
-    CARAPI GetInterface(
+    CARAPI GetGsrInterface(
         /* [out] */ Int32* itf);
 
-    CARAPI GetGroup(
+    CARAPI GetGsrGroup(
         /* [out] */ IInetAddress** group);
 
-    CARAPI GetSource(
+    CARAPI GetGsrSource(
         /* [out] */ IInetAddress** source);
 
 private:

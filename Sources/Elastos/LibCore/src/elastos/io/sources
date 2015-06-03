@@ -39,8 +39,7 @@ SOURCES += CBufferedWriter.cpp
 
 SOURCES += CChannels.cpp
 #SOURCES += CStreams.cpp
-SOURCES += ByteArrayOutputStream.cpp
-SOURCES += CByteArrayOutputStream.cpp
+
 SOURCES += Writer.cpp
 SOURCES += StringWriter.cpp
 SOURCES += CStringWriter.cpp
@@ -76,3 +75,5 @@ SOURCES += MemoryBlock.cpp
 SOURCES += Buffer.cpp
 SOURCES += ByteBuffer.cpp
 SOURCES += CByteArrayBuffer.cpp
+SOURCES += CFileDescriptor.cpp
+

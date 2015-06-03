@@ -2,7 +2,6 @@
 #ifndef __CSTRUCTUTSNAME_H__
 #define __CSTRUCTUTSNAME_H__
 
-#include "coredef.h"
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructUtsname.h"
 
@@ -17,7 +16,9 @@ namespace System {
  * {@code struct utsname} from
  * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_utsname.h.html">&lt;sys/utsname.h&gt;</a>
  */
-CarClass(CStructUtsname) , public Object
+CarClass(CStructUtsname)
+    , public Object
+    , public IStructUtsname
 {
 public:
     CAR_OBJECT_DECL()

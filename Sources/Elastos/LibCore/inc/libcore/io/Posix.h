@@ -1,29 +1,45 @@
-#ifndef __OS_H__
-#define __OS_H__
+#ifndef __POSIX_H__
+#define __POSIX_H__
 
-#include "core/Object.h"
+#include "Object.h"
 
+using Elastos::Core::Object;
+using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IByteBuffer;
 using Elastos::Net::IInetAddress;
+using Elastos::Net::IInetSocketAddress;
+using Elastos::Net::ISocketAddress;
+using Elastos::Droid::System::IStructAddrinfo;
+using Elastos::Droid::System::IStructFlock;
+using Elastos::Droid::System::IStructGroupReq;
+using Elastos::Droid::System::IStructGroupSourceReq;
+using Elastos::Droid::System::IStructLinger;
+using Elastos::Droid::System::IStructPasswd;
+using Elastos::Droid::System::IStructPollfd;
+using Elastos::Droid::System::IStructStat;
+using Elastos::Droid::System::IStructStatVfs;
+using Elastos::Droid::System::IStructTimeval;
+using Elastos::Droid::System::IStructUcred;
+using Elastos::Droid::System::IStructUtsname;
 
-namespace Elastos {
-namespace Droid {
-namespace System {
+namespace Libcore {
+namespace IO {
 
-class Os
+class Posix
 {
 public:
     CARAPI Accept(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ IInetSocketAddress* peerAddress,
-        /* [out] */ Int32* retFd);
+        /* [out] */ IFileDescriptor** retFd);
 
     CARAPI Access(
-        /* [in] */ const String& path,
+        /* [in] */ String path,
         /* [in] */ Int32 mode,
         /* [out] */ Boolean* succeed);
 
     CARAPI Elastos_getaddrinfo(
-        /* [in] */ const String& node,
+        /* [in] */ String node,
         /* [in] */ IStructAddrinfo* hints,
         /* [in] */ Int32 netId,
         /* [out, callee] */ ArrayOf<IInetAddress*>** info);
@@ -34,11 +50,11 @@ public:
         /* [in] */ Int32 port);
 
     CARAPI Chmod(
-        /* [in] */ const String& path,
+        /* [in] */ String path,
         /* [in] */ Int32 mode);
 
     CARAPI Chown(
-        /* [in] */ const String& path,
+        /* [in] */ String path,
         /* [in] */ Int32 uid,
         /* [in] */ Int32 gid);
 
@@ -60,14 +76,14 @@ public:
         /* [out] */ Int32* retFd);
 
     CARAPI Environ(
-        /* [out, callee] */ ArrayOf<String>** env);
+        /* [out, callee] */ ArrayOf<String>* env);
 
     CARAPI Execv(
-        /* [in] */ const String& filename,
+        /* [in] */ String filename,
         /* [in] */ ArrayOf<String>* argv);
 
     CARAPI Execve(
-        /* [in] */ const String& filename,
+        /* [in] */ String filename,
         /* [in] */ ArrayOf<String>* argv,
         /* [in] */ ArrayOf<String>* envp);
 
@@ -129,7 +145,7 @@ public:
         /* [out] */ Int32* gid);
 
     CARAPI Getenv(
-        /* [in] */ const String& name,
+        /* [in] */ String name,
         /* [out] */ String* env);
 
     /* TODO: break into getnameinfoHost and getnameinfoService? */
@@ -149,7 +165,7 @@ public:
         /* [out] */ Int32* ppid);
 
     CARAPI Getpwnam(
-        /* [in] */ const String& name,
+        /* [in] */ String name,
         /* [out] */ IStructPasswd** pwnam);
 
     CARAPI Getpwuid(
@@ -208,13 +224,13 @@ public:
 
     CARAPI Inet_pton(
         /* [in] */ Int32 family,
-        /* [in] */ const String& address,
+        /* [in] */ String address,
         /* [out] */ IInetAddress** addr);
 
     CARAPI IoctlInetAddress(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 cmd,
-        /* [in] */ const String& interfaceName,
+        /* [in] */ String interfaceName,
         /* [out] */ IInetAddress** addr);
 
     CARAPI IoctlInt(
@@ -232,13 +248,13 @@ public:
         /* [in] */ Int32 signal);
 
     CARAPI Lchown(
-        /* [in] */ const String& path,
+        /* [in] */ String path,
         /* [in] */ Int32 uid,
         /* [in] */ Int32 gid);
 
     CARAPI Link(
-        /* [in] */ const String& oldPath,
-        /* [in] */ const String& newPath);
+        /* [in] */ String oldPath,
+        /* [in] */ String newPath);
 
     CARAPI Listen(
         /* [in] */ IFileDescriptor* fd,
@@ -251,7 +267,7 @@ public:
         /* [out] */ Int64* result);
 
     CARAPI Lstat(
-        /* [in] */ const String& path,
+        /* [in] */ String path,
         /* [out] */ IStructStat** stat);
 
     CARAPI Mincore(
@@ -260,7 +276,7 @@ public:
         /* [in] */ ArrayOf<Byte>* vector);
 
     CARAPI Mkdir(
-        /* [in] */ const String& path,
+        /* [in] */ String path,
         /* [in] */ Int32 mode);
 
     CARAPI Mlock(
@@ -268,7 +284,7 @@ public:
         /* [in] */ Int64 byteCount);
 
     CARAPI Mkfifo(
-        /* [in] */ const String& path,
+        /* [in] */ String path,
         /* [in] */ Int32 mode);
 
     CARAPI Mmap(
@@ -294,13 +310,13 @@ public:
         /* [in] */ Int64 byteCount);
 
     CARAPI Open(
-        /* [in] */ const String& path,
+        /* [in] */ String path,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 mode,
         /* [out] */ IFileDescriptor** fd);
 
     CARAPI Pipe(
-        /* [out, callee] */ ArrayOf<Int32>** fds);
+        /* [out, callee] */ ArrayOf<Int32>* fds);
 
     /* TODO: if we used the non-standard ppoll(2) behind the scenes, we could take a long timeout. */
     CARAPI Poll(
@@ -323,7 +339,7 @@ public:
 
     CARAPI Pread(
         /* [in] */ IFileDescriptor* fd,
-        /* [out] */ ArrayOf<Byte>* bytes,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [in] */ Int64 offset,
@@ -351,7 +367,7 @@ public:
 
     CARAPI Read(
         /* [in] */ IFileDescriptor* fd,
-        /* [out] */ ArrayOf<Byte>* bytes,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* num);
@@ -362,7 +378,7 @@ public:
         /* [out] */ Int32* num);
 
     CARAPI Readlink(
-        /* [in] */ const String& path,
+        /* [in] */ String path,
         /* [out] */ String* link);
 
     CARAPI Readv(
@@ -374,7 +390,7 @@ public:
 
     CARAPI Recvfrom(
         /* [in] */ IFileDescriptor* fd,
-        /* [out] */ ArrayOf<Byte>* bytes,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [in] */ Int32 flags,
@@ -389,11 +405,11 @@ public:
         /* [out] */ Int32* num);
 
     CARAPI Remove(
-        /* [in] */ const String& path);
+        /* [in] */ String path);
 
     CARAPI Rename(
-        /* [in] */ const String& oldPath,
-        /* [in] */ const String& newPath);
+        /* [in] */ String oldPath,
+        /* [in] */ String newPath);
 
     CARAPI Sendto(
         /* [in] */ IFileDescriptor* fd,
@@ -416,7 +432,7 @@ public:
     CARAPI Sendfile(
         /* [in] */ Int32 outFd,
         /* [in] */ Int32 inFd,
-        [in/*, out */] Int64* inOffset,
+        /* [out] */ Int64* inOffset,
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* result);
 
@@ -424,8 +440,8 @@ public:
         /* [in] */ Int32 egid);
 
     CARAPI Setenv(
-        /* [in] */ const String& name,
-        /* [in] */ const String& value,
+        /* [in] */ String name,
+        /* [in] */ String value,
         /* [in] */ Boolean overwrite);
 
     CARAPI Seteuid(
@@ -447,7 +463,7 @@ public:
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 level,
         /* [in] */ Int32 option,
-        /* [in] */ const String& interfaceName);
+        /* [in] */ String interfaceName);
 
     CARAPI SetsockoptInt(
         /* [in] */ IFileDescriptor* fd,
@@ -506,12 +522,12 @@ public:
         /* [out] */ IFileDescriptor** fd2);
 
     CARAPI Stat(
-        /* [in] */ const String& path,
+        /* [in] */ String path,
         /* [out] */ IStructStat** stat);
 
     /* TODO: replace statfs with statvfs. */
     CARAPI StatVfs(
-        /* [in] */ const String& path,
+        /* [in] */ String path,
         /* [out] */ IStructStatVfs** statfs);
 
     CARAPI Strerror(
@@ -519,8 +535,8 @@ public:
         /* [out] */ String* strerr);
 
     CARAPI Symlink(
-        /* [in] */ const String& oldPath,
-        /* [in] */ const String& newPath);
+        /* [in] */ String oldPath,
+        /* [in] */ String newPath);
 
     CARAPI Sysconf(
         /* [in] */ Int32 name,
@@ -538,7 +554,7 @@ public:
 
     CARAPI Waitpid(
         /* [in] */ Int32 pid,
-        [in/*, out */] Int32* status,
+        /* [out] */ Int32* status,
         /* [in] */ Int32 options,
         /* [out] */ Int32* result);
 
@@ -560,12 +576,9 @@ public:
         /* [in] */ ArrayOf<Int32>* offsets,
         /* [in] */ ArrayOf<Int32>* byteCounts,
         /* [out] */ Int32* result);
-private:
-    CARAPI Os();
 };
 
-}// namespace System
-}// namespace Droid
-}// namespace Elastos
+} // namespace IO
+} // namespace Libcore
 
 #endif

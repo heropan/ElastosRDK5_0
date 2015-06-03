@@ -1,21 +1,30 @@
 #ifndef __ELASTOS_IO_CFILEDESCRIPTOR_H__
 #define __ELASTOS_IO_CFILEDESCRIPTOR_H__
 
+#include "core/Object.h"
 #include "_Elastos_IO_CFileDescriptor.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace IO {
 
 CarClass(CFileDescriptor)
+    , public Object
+    , public IFileDescriptor
 {
     friend class CRandomAccessFile;
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
     /**
      * Constructs a new FileDescriptor containing an invalid handle. The
      * contained handle is usually modified by native code at a later point.
      */
     CFileDescriptor();
 
+    CARAPI constructor();
     /**
      * Ensures that data which is buffered within the underlying implementation
      * is written out to the appropriate device before returning.
@@ -42,6 +51,9 @@ public:
 
     CARAPI SetDescriptor(
         /* [in] */ Int32 fd);
+
+    CARAPI IsSocket(
+        /* [out] */ Boolean* isSocket);
 
 public:
     /**

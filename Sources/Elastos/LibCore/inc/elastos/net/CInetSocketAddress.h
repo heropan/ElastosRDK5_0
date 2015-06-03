@@ -36,8 +36,14 @@ public:
     CARAPI GetPort(
         /* [out] */ Int32* port);
 
+    CARAPI SetPort(
+        /* [in] */ Int32 port);
+
     CARAPI GetAddress(
         /* [out] */ IInetAddress** address);
+
+    CARAPI SetAddress(
+        /* [in] */ IInetAddress* address);
 
     CARAPI GetHostName(
         /* [out] */ String* hostname);
@@ -57,6 +63,7 @@ public:
 
     CARAPI GetHashCode(
         /* [out] */ Int32* hashCode);
+
 
 public:
     AutoPtr<IInetAddress> mAddr;

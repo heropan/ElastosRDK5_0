@@ -19,14 +19,14 @@ ECode CStructGroupSourceReq::constructor(
     return NOERROR;
 }
 
-ECode CStructGroupSourceReq::GetInterface(
+ECode CStructGroupSourceReq::GetGsrInterface(
     /* [out] */ Int32* itf)
 {
     *itf = gsr_interface;
     return NOERROR;
 }
 
-ECode CStructGroupSourceReq::GetGroup(
+ECode CStructGroupSourceReq::GetGsrGroup(
     /* [out] */ IInetAddress** group)
 {
     *group = gsr_group;
@@ -34,7 +34,7 @@ ECode CStructGroupSourceReq::GetGroup(
     return NOERROR;
 }
 
-ECode CStructGroupSourceReq::GetSource(
+ECode CStructGroupSourceReq::GetGsrSource(
     /* [out] */ IInetAddress** source)
 {
     *source = gsr_source;

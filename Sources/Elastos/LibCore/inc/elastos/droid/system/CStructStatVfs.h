@@ -2,7 +2,6 @@
 #ifndef __CStructStatVfs_H__
 #define __CStructStatVfs_H__
 
-#include "coredef.h"
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructStatVfs.h"
 
@@ -18,7 +17,9 @@ namespace System {
  * TODO: this should be {@code struct statvfs}, but Bionic doesn't support that yet.
  * @hide until the TODO is fixed.
  */
-CarClass(CStructStatVfs) , public Object
+CarClass(CStructStatVfs)
+    , public Object
+    , public IStructStatVfs
 {
 public:
     CAR_OBJECT_DECL()

@@ -1,14 +1,11 @@
 
 module
 {
-    //interface Elastos.Net.IInetAddress;
+    interface Elastos.Net.IInetAddress;
 
     namespace Elastos {
     namespace Droid {
     namespace System {
-
-    //!!!!!!!!!!!!!!!!!!!just for compile!!!!!!!!!!!!!!!!!!!!!
-    interface IInetAddress{}
 
     /**
      * Information returned/taken by getaddrinfo(3). Corresponds to C's {@code struct addrinfo} from

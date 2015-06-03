@@ -13,7 +13,8 @@ module
     merge("droid/system/IStructTimeval.car");
     merge("droid/system/IStructUcred.car");
     merge("droid/system/IStructUtsname.car");
-    merge("droid/system/IOsConstants.car");
+
+    interface Elastos.Net.IInetAddress;
 
     namespace Elastos {
     namespace Droid {

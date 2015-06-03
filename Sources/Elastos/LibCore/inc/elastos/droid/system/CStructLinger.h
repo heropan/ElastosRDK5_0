@@ -2,7 +2,6 @@
 #ifndef __CSTRUCTLINGER_H__
 #define __CSTRUCTLINGER_H__
 
-#include "coredef.h"
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructLinger.h"
 
@@ -16,7 +15,9 @@ namespace System {
  * Corresponds to C's {@code struct linger} from
  * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_socket.h.html">&lt;sys/socket.h&gt;</a>
  */
-CarClass(CStructLinger) , public Object
+CarClass(CStructLinger)
+    , public Object
+    , public IStructLinger
 {
 public:
     CAR_OBJECT_DECL()

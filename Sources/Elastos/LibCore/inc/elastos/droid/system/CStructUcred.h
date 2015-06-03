@@ -1,6 +1,6 @@
 #ifndef __CSTRUCTUCRED_H__
 #define __CSTRUCTUCRED_H__
-#include "coredef.h"
+
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructUcred.h"
 
@@ -9,7 +9,9 @@ using Elastos::Core::Object;
 namespace Elastos {
 namespace Droid {
 namespace System {
-CarClass(CStructUcred) , public Object
+CarClass(CStructUcred)
+    , public Object
+    , public IStructUcred
 {
 public:
     CAR_OBJECT_DECL()

@@ -105,6 +105,13 @@ ECode CInetSocketAddress::GetPort(
     return NOERROR;
 }
 
+ECode CInetSocketAddress::SetPort(
+    /* [in] */ Int32 port)
+{
+    mPort = port;
+    return NOERROR;
+}
+
 ECode CInetSocketAddress::GetAddress(
     /* [out] */ IInetAddress** address)
 {
@@ -113,6 +120,13 @@ ECode CInetSocketAddress::GetAddress(
     *address = mAddr;
     INTERFACE_ADDREF(*address);
 
+    return NOERROR;
+}
+
+ECode CInetSocketAddress::SetAddress(
+    /* [in] */ IInetAddress* address)
+{
+    mAddr = address;
     return NOERROR;
 }
 

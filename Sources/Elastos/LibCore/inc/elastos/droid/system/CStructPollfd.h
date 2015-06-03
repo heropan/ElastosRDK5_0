@@ -2,11 +2,11 @@
 #ifndef __CSTRUCTPOLLFD_H__
 #define __CSTRUCTPOLLFD_H__
 
-#include "coredef.h"
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructPollfd.h"
 
 using Elastos::Core::Object;
+using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {
 namespace Droid {
@@ -16,7 +16,9 @@ namespace System {
  * Corresponds to C's {@code struct pollfd} from
  * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/poll.h.html">&lt;poll.h&gt;</a>
  */
-CarClass(CStructPollfd) , public Object
+CarClass(CStructPollfd)
+    , public Object
+    , public IStructPollfd
 {
 public:
     CAR_OBJECT_DECL()
@@ -25,10 +27,10 @@ public:
 
     /** The file descriptor to poll. */
     CARAPI GetFd(
-        /* [out] */ Int32* fd);
+        /* [out] */ IFileDescriptor** fd);
 
     CARAPI SetFd(
-        /* [in] */ Int32 fd);
+        /* [in] */ IFileDescriptor* fd);
 
     /**
      * The events we're interested in. POLLIN corresponds to being in select(2)'s read fd set,
@@ -60,7 +62,7 @@ public:
 
 private:
     /** The file descriptor to poll. */
-    Int32 mFd;
+    AutoPtr<IFileDescriptor> mFd;
 
     /**
      * The events we're interested in. POLLIN corresponds to being in select(2)'s read fd set,

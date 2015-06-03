@@ -26,12 +26,24 @@ module
             [out] Int32* port);
 
         /**
+         * Sets the port number of this socket.
+         */
+        SetPort(
+            [in] Int32 port);
+
+        /**
          * Gets the address of this socket.
          *
          * @return the socket endpoint address.
          */
         GetAddress(
             [out] IInetAddress** address);
+
+        /**
+         * Sets the address of this socket.
+         */
+        SetAddress(
+            [in] IInetAddress* address);
 
         /**
          * Returns the hostname, doing a reverse lookup on the {InetAddress} if no

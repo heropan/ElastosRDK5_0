@@ -2,7 +2,6 @@
 #ifndef __CSTRUCTTIMEVAL_H__
 #define __CSTRUCTTIMEVAL_H__
 
-#include "coredef.h"
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructTimeval.h"
 
@@ -16,7 +15,9 @@ namespace System {
  * Corresponds to C's {@code struct timeval} from
  * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_time.h.html">&lt;sys/time.h&gt;</a>
  */
-CarClass(CStructTimeval) , public Object
+CarClass(CStructTimeval)
+    , public Object
+    , public IStructTimeval
 {
 public:
     CAR_OBJECT_DECL()

@@ -363,6 +363,11 @@ module
 
     }
 
+    class CFileDescriptor {
+        constructor();
+
+        interface IFileDescriptor;
+    }
 
     } // namespace IO
     } // namespace Elastos

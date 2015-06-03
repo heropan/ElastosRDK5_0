@@ -2,7 +2,6 @@
 #ifndef __CSTRUCTSTAT_H__
 #define __CSTRUCTSTAT_H__
 
-#include "coredef.h"
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructStat.h"
 
@@ -17,7 +16,9 @@ namespace System {
  * {@code struct stat} from
  * <a href="http://www.opengroup.org/onlinepubs/000095399/basedefs/sys/stat.h.html">&lt;stat.h&gt;</a>
  */
-CarClass(CStructStat) , public Object
+CarClass(CStructStat)
+    , public Object
+    , public IStructStat
 {
 public:
     CAR_OBJECT_DECL()

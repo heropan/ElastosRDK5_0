@@ -2,7 +2,6 @@
 #define __CSTRUCTFLOCK_H__
 
 #include "core/Object.h"
-#include "coredef.h"
 #include "_Elastos_Droid_System_CStructFlock.h"
 
 using Elastos::Core::Object;
@@ -11,7 +10,9 @@ namespace Elastos {
 namespace Droid {
 namespace System {
 
-CarClass(CStructFlock) , public Object
+CarClass(CStructFlock)
+    , public Object
+    , public IStructFlock
 {
 public:
     CAR_INTERFACE_DECL()

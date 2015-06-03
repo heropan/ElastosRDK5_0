@@ -11,7 +11,9 @@ namespace Elastos {
 namespace Droid {
 namespace System {
 
-CarClass(CZygote) , public Singleton
+CarClass(CZygote)
+    , public Singleton
+    , public IZygote
 {
 public:
     /**

@@ -35,7 +35,7 @@ static const Boolean DEBUG = FALSE;
 
 CAR_SINGLETON_IMPL(CZygote)
 
-CAR_INTERFACE_IMPL(CZygote, Object, IZygote)
+CAR_INTERFACE_IMPL(CZygote, Singleton, IZygote)
 
 void CZygote::PreFork()
 {

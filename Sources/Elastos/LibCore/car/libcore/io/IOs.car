@@ -428,7 +428,7 @@ module
         Sendfile(
             [in] Int32 outFd,
             [in] Int32 inFd,
-            [in/*, out */] Int64* inOffset,
+            [out] Int64* inOffset,
             [in] Int64 byteCount,
             [out] Int64* result);
 
@@ -550,7 +550,7 @@ module
 
         Waitpid(
             [in] Int32 pid,
-            [in/*, out */] Int32* status,
+            [out] Int32* status,
             [in] Int32 options,
             [out] Int32* result);
 

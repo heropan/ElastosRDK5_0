@@ -2,7 +2,6 @@
 #ifndef __CSTRUCTPASSWD_H__
 #define __CSTRUCTPASSWD_H__
 
-#include "coredef.h"
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructPasswd.h"
 
@@ -17,7 +16,9 @@ namespace System {
  * {@code struct passwd} from
  * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/pwd.h.html">&lt;pwd.h&gt;</a>
  */
-CarClass(CStructPasswd) , public Object
+CarClass(CStructPasswd)
+    , public Object
+    , public IStructPasswd
 {
 public:
     CAR_OBJECT_DECL()

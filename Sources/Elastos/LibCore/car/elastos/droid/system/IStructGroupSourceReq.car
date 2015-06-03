@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Net.IInetAddress;
+
     namespace Elastos {
     namespace Droid {
     namespace System {

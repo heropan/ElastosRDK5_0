@@ -2,13 +2,15 @@
 #include "coredef.h"
 #include "CFileDescriptor.h"
 #include "IoUtils.h"
-#include "COsConstants.h"
-#include "CLibcore.h"
+#include "droid/system/OsConstants.h"
+// #include "CLibcore.h"
+#include "unistd.h"
+#include <sys/socket.h>
+#include <sys/types.h>
 
-using Libcore::IO::IOsConstants;
-using Libcore::IO::COsConstants;
+using Elastos::Droid::System::OsConstants;
 using Libcore::IO::ILibcore;
-using Libcore::IO::CLibcore;
+// using Libcore::IO::CLibcore;
 using Libcore::IO::IOs;
 
 namespace Elastos {
@@ -16,37 +18,25 @@ namespace IO {
 
 static AutoPtr<IFileDescriptor> CreateSTDIN()
 {
-    AutoPtr<COsConstants> osConstans;
-    COsConstants::AcquireSingletonByFriend((COsConstants**)&osConstans);
-    Int32 fileno;
-    osConstans->GetOsConstant(String("STDIN_FILENO"), &fileno);
     AutoPtr<CFileDescriptor> fd;
     CFileDescriptor::NewByFriend((CFileDescriptor**)&fd);
-    fd->SetDescriptor(fileno);
+    fd->SetDescriptor(OsConstants::_STDIN_FILENO);
     return (IFileDescriptor*)fd.Get();
 }
 
 static AutoPtr<IFileDescriptor> CreateSTDOUT()
 {
-    AutoPtr<COsConstants> osConstans;
-    COsConstants::AcquireSingletonByFriend((COsConstants**)&osConstans);
-    Int32 fileno;
-    osConstans->GetOsConstant(String("STDOUT_FILENO"), &fileno);
     AutoPtr<CFileDescriptor> fd;
     CFileDescriptor::NewByFriend((CFileDescriptor**)&fd);
-    fd->SetDescriptor(fileno);
+    fd->SetDescriptor(OsConstants::_STDOUT_FILENO);
     return (IFileDescriptor*)fd.Get();
 }
 
 static AutoPtr<IFileDescriptor> CreateSTDERR()
 {
-    AutoPtr<COsConstants> osConstans;
-    COsConstants::AcquireSingletonByFriend((COsConstants**)&osConstans);
-    Int32 fileno;
-    osConstans->GetOsConstant(String("STDERR_FILENO"), &fileno);
     AutoPtr<CFileDescriptor> fd;
     CFileDescriptor::NewByFriend((CFileDescriptor**)&fd);
-    fd->SetDescriptor(fileno);
+    fd->SetDescriptor(OsConstants::_STDERR_FILENO);
     return (IFileDescriptor*)fd.Get();
 }
 
@@ -54,23 +44,32 @@ const AutoPtr<IFileDescriptor> CFileDescriptor::IN = CreateSTDIN();
 const AutoPtr<IFileDescriptor> CFileDescriptor::OUT = CreateSTDOUT();
 const AutoPtr<IFileDescriptor> CFileDescriptor::ERR = CreateSTDERR();
 
+CAR_OBJECT_IMPL(CFileDescriptor)
+
+CAR_INTERFACE_IMPL(CFileDescriptor, Object, IFileDescriptor)
+
 CFileDescriptor::CFileDescriptor()
     : mDescriptor(-1)
 {}
+
+ECode CFileDescriptor::constructor()
+{
+    return NOERROR;
+}
 
 ECode CFileDescriptor::Sync()
 {
     // try {
     AutoPtr<ILibcore> libcore;
-    CLibcore::AcquireSingleton((ILibcore**)&libcore);
+    // CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
-    libcore->GetOs((IOs**)&os);
+    // libcore->GetOs((IOs**)&os);
     Boolean isAtty;
-    if (os->Isatty(mDescriptor, &isAtty), isAtty) {
-        return IoUtils::Libcore2IoECode(os->Tcdrain(mDescriptor));
+    if (os->Isatty(this, &isAtty), isAtty) {
+        return os->Tcdrain(this);
     }
     else {
-        return IoUtils::Libcore2IoECode(os->Fsync(mDescriptor));
+        return os->Fsync(this);
     }
     // } catch (ErrnoException errnoException) {
     //     SyncFailedException sfe = new SyncFailedException(errnoException.getMessage());
@@ -111,6 +110,14 @@ ECode CFileDescriptor::ToString(
     str->AppendFormat("%d]", mDescriptor);
 
     return NOERROR;
+}
+
+ECode CFileDescriptor::IsSocket(
+    /* [out] */ Boolean* isSocket)
+{
+  int error;
+  socklen_t error_length = sizeof(error);
+  return TEMP_FAILURE_RETRY(getsockopt(mDescriptor, SOL_SOCKET, SO_ERROR, &error, &error_length));
 }
 
 } // namespace IO

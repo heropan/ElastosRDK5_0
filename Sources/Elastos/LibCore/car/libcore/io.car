@@ -2,6 +2,7 @@
 module
 {
     merge("io/Exceptions.car");
+    merge("io/IAsynchronousCloseMonitor.car");
     merge("io/IOs.car");
     merge("io/IIoBridge.car");
     merge("io/ILibcore.car");
@@ -17,4 +18,12 @@ module
     merge("io/IIoUtils.car");
     merge("io/IStreams.car");
     merge("io/IStrictLineReader.car");
+
+    namespace Libcore {
+    namespace IO {
+        singleton class CAsynchronousCloseMonitor {
+            interface IAsynchronousCloseMonitor;
+        }
+    }
+    }
 }

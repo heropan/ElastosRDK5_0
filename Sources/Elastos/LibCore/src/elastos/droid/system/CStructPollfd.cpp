@@ -4,21 +4,23 @@
 namespace Elastos {
 namespace Droid {
 namespace System {
+
 CAR_OBJECT_IMPL(CStructPollfd)
 
 CAR_INTERFACE_IMPL(CStructPollfd, Object, IStructPollfd)
 
 ECode CStructPollfd::GetFd(
-    /* [out] */ Int32* fd)
+    /* [out] */ IFileDescriptor** fd)
 {
     VALIDATE_NOT_NULL(fd);
 
     *fd = mFd;
+    REFCOUNT_ADD(*fd)
     return NOERROR;
 }
 
 ECode CStructPollfd::SetFd(
-    /* [in] */ Int32 fd)
+    /* [in] */ IFileDescriptor* fd)
 {
     mFd = fd;
     return NOERROR;

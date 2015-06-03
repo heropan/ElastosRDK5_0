@@ -27,7 +27,7 @@ module
          * <p>Valid values for this option are in the range 0 to 65535 inclusive. (Larger
          * timeouts will be treated as 65535s timeouts; roughly 18 hours.)
          */
-        const Int32 SO_LINGER = 128;
+        const Int32 _SO_LINGER = 128;
 
         /**
          * Integer timeout in milliseconds for blocking accept or read/receive operations (but not
@@ -36,7 +36,7 @@ module
          *
          * <p>An {InterruptedIOException} is thrown if this timeout expires.
          */
-        const Int32 SO_TIMEOUT = 4102;
+        const Int32 _SO_TIMEOUT = 4102;
 
         /**
          * This boolean option specifies whether data is sent immediately on this socket.
@@ -44,7 +44,7 @@ module
          * socket implementation uses the Nagle's algorithm to try to reach a higher
          * packet efficiency if this option is disabled.
          */
-        const Int32 TCP_NODELAY = 1;
+        const Int32 _TCP_NODELAY = 1;
 
         /**
          * This is an IPv4-only socket option whose functionality is subsumed by
@@ -52,19 +52,19 @@ module
          *
          * @sa #IP_MULTICAST_IF
          */
-        const Int32 IP_MULTICAST_IF = 16;
+        const Int32 _IP_MULTICAST_IF = 16;
 
         /**
          * This option does not correspond to any Unix socket option and is not implemented on Android.
          */
-        const Int32 SO_BINDADDR = 15;
+        const Int32 _SO_BINDADDR = 15;
 
         /**
          * This boolean option specifies whether a reuse of a local address is allowed even
          * if another socket is not yet removed by the operating system. It's only
          * available on a {MulticastSocket}.
          */
-        const Int32 SO_REUSEADDR = 4;
+        const Int32 _SO_REUSEADDR = 4;
 
         /**
          * The size in bytes of a socket's send buffer. This must be an integer greater than 0.
@@ -73,7 +73,7 @@ module
          * <p>For datagram sockets, it is implementation-defined whether packets larger than
          * this size can be sent.
          */
-        const Int32 SO_SNDBUF = 4097;
+        const Int32 _SO_SNDBUF = 4097;
 
         /**
          * The size in bytes of a socket's receive buffer. This must be an integer greater than 0.
@@ -81,12 +81,12 @@ module
          *
          * <p>For datagram sockets, packets larger than this value will be discarded.
          */
-        const Int32 SO_RCVBUF = 4098;
+        const Int32 _SO_RCVBUF = 4098;
 
         /**
          * This boolean option specifies whether the kernel sends keepalive messages.
          */
-        const Int32 SO_KEEPALIVE = 8;
+        const Int32 _SO_KEEPALIVE = 8;
 
         /**
          * This integer option specifies the value for the type-of-service field of the IPv4 header,
@@ -97,7 +97,7 @@ module
          * <p>See <a href="http://www.ietf.org/rfc/rfc1349.txt">RFC 1349</a> for more about IPv4
          * and <a href="http://www.ietf.org/rfc/rfc2460.txt">RFC 2460</a> for more about IPv6.
          */
-        const Int32 IP_TOS = 3;
+        const Int32 _IP_TOS = 3;
 
         /**
          * This boolean option specifies whether the local loopback of multicast packets is
@@ -108,7 +108,7 @@ module
          *
          * @sa MulticastSocket#setLoopbackMode
          */
-        const Int32 IP_MULTICAST_LOOP = 18;
+        const Int32 _IP_MULTICAST_LOOP = 18;
 
         /**
          * This boolean option can be used to enable broadcasting on datagram sockets.
@@ -119,13 +119,13 @@ module
          * This boolean option specifies whether sending TCP urgent data is supported on
          * this socket or not.
          */
-        const Int32 SO_OOBINLINE = 4099;
+        const Int32 _SO_OOBINLINE = 4099;
 
         /**
          * This integer option sets the outgoing interface for multicast packets
          * using an interface index.
          */
-        const Int32 IP_MULTICAST_IF2 = 31;
+        const Int32 _IP_MULTICAST_IF2 = 31;
 
         /**
          * Gets the value for the specified socket option.
