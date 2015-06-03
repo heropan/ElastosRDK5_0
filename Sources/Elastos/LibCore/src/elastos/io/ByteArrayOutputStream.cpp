@@ -19,6 +19,7 @@ ByteArrayOutputStream::~ByteArrayOutputStream()
 ECode ByteArrayOutputStream::constructor()
 {
     mBuf = ArrayOf<Byte>::Alloc(32);
+    return NOERROR;
 }
 
 ECode ByteArrayOutputStream::constructor(
