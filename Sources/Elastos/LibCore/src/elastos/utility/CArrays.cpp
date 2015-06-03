@@ -200,7 +200,7 @@ CAR_SINGLETON_IMPL(CArrays)
 
 CAR_INTERFACE_IMPL(CArrays, Singleton, IArrays)
 
-ECode CArrays::_AsList(
+ECode CArrays::AsList(
     /* [in] */ ArrayOf<IInterface*>* array,
     /* [out] */ IList** outList)
 {
@@ -210,16 +210,16 @@ ECode CArrays::_AsList(
     return NOERROR;
 }
 
-ECode CArrays::_BinarySearchByte(
+ECode CArrays::BinarySearchByte(
     /* [in] */ ArrayOf<Byte>* array,
     /* [in] */ Byte value,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return _BinarySearchByte(array, 0, array->GetLength(), value, index);
+    return BinarySearchByte(array, 0, array->GetLength(), value, index);
 }
 
-ECode CArrays::_BinarySearchByte(
+ECode CArrays::BinarySearchByte(
     /* [in] */ ArrayOf<Byte>* array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
@@ -250,16 +250,16 @@ ECode CArrays::_BinarySearchByte(
     return NOERROR;
 }
 
-ECode CArrays::_BinarySearchChar32(
+ECode CArrays::BinarySearchChar32(
     /* [in] */ ArrayOf<Char32>* array,
     /* [in] */ Char32 value,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return _BinarySearchChar32(array, 0, array->GetLength(), value, index);
+    return BinarySearchChar32(array, 0, array->GetLength(), value, index);
 }
 
-ECode CArrays::_BinarySearchChar32(
+ECode CArrays::BinarySearchChar32(
     /* [in] */ ArrayOf<Char32>* array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
@@ -290,16 +290,16 @@ ECode CArrays::_BinarySearchChar32(
     return NOERROR;
 }
 
-ECode CArrays::_BinarySearchDouble(
+ECode CArrays::BinarySearchDouble(
     /* [in] */ ArrayOf<Double>* array,
     /* [in] */ Double value,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return _BinarySearchDouble(array, 0, array->GetLength(), value, index);
+    return BinarySearchDouble(array, 0, array->GetLength(), value, index);
 }
 
-ECode CArrays::_BinarySearchDouble(
+ECode CArrays::BinarySearchDouble(
     /* [in] */ ArrayOf<Double>* array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
@@ -345,16 +345,16 @@ ECode CArrays::_BinarySearchDouble(
     return NOERROR;
 }
 
-ECode CArrays::_BinarySearchFloat(
+ECode CArrays::BinarySearchFloat(
     /* [in] */ ArrayOf<Float>* array,
     /* [in] */ Float value,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return _BinarySearchFloat(array, 0, array->GetLength(), value, index);
+    return BinarySearchFloat(array, 0, array->GetLength(), value, index);
 }
 
-ECode CArrays::_BinarySearchFloat(
+ECode CArrays::BinarySearchFloat(
     /* [in] */ ArrayOf<Float>* array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
@@ -400,16 +400,16 @@ ECode CArrays::_BinarySearchFloat(
     return NOERROR;
 }
 
-ECode CArrays::_BinarySearchInt32(
+ECode CArrays::BinarySearchInt32(
     /* [in] */ ArrayOf<Int32>* array,
     /* [in] */ Int32 value,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return _BinarySearchInt32(array, 0, array->GetLength(), value, index);
+    return BinarySearchInt32(array, 0, array->GetLength(), value, index);
 }
 
-ECode CArrays::_BinarySearchInt32(
+ECode CArrays::BinarySearchInt32(
     /* [in] */ ArrayOf<Int32>* array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
@@ -440,16 +440,16 @@ ECode CArrays::_BinarySearchInt32(
     return NOERROR;
 }
 
-ECode CArrays::_BinarySearchInt64(
+ECode CArrays::BinarySearchInt64(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int64 value,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return _BinarySearchInt64(array, 0, array->GetLength(), value, index);
+    return BinarySearchInt64(array, 0, array->GetLength(), value, index);
 }
 
-ECode CArrays::_BinarySearchInt64(
+ECode CArrays::BinarySearchInt64(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
@@ -480,16 +480,16 @@ ECode CArrays::_BinarySearchInt64(
      return NOERROR;
 }
 
-ECode CArrays::_BinarySearchObject(
+ECode CArrays::BinarySearchObject(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [in] */ IInterface* value,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return _BinarySearchObject(array, 0, array->GetLength(), value, index);
+    return BinarySearchObject(array, 0, array->GetLength(), value, index);
 }
 
-ECode CArrays::_BinarySearchObject(
+ECode CArrays::BinarySearchObject(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
@@ -523,17 +523,17 @@ ECode CArrays::_BinarySearchObject(
     return NOERROR;
 }
 
-ECode CArrays::_BinarySearch(
+ECode CArrays::BinarySearch(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [in] */ IInterface* value,
     /* [in] */ IComparator* comparator,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return _BinarySearch(array, 0, array->GetLength(), value, comparator, index);
+    return BinarySearch(array, 0, array->GetLength(), value, comparator, index);
 }
 
-ECode CArrays::_BinarySearch(
+ECode CArrays::BinarySearch(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
@@ -543,7 +543,7 @@ ECode CArrays::_BinarySearch(
 {
     VALIDATE_NOT_NULL(index)
     if (comparator == NULL) {
-        return _BinarySearchObject(array, startIndex, endIndex, value, index);
+        return BinarySearchObject(array, startIndex, endIndex, value, index);
     }
 
     FAIL_RETURN(CheckBinarySearchBounds(startIndex, endIndex, array->GetLength()));
@@ -570,16 +570,16 @@ ECode CArrays::_BinarySearch(
     return NOERROR;
 }
 
-ECode CArrays::_BinarySearchInt16(
+ECode CArrays::BinarySearchInt16(
     /* [in] */ ArrayOf<Int16>* array,
     /* [in] */ Int16 value,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return _BinarySearchInt16(array, 0, array->GetLength(), value, index);
+    return BinarySearchInt16(array, 0, array->GetLength(), value, index);
 }
 
-ECode CArrays::_BinarySearchInt16(
+ECode CArrays::BinarySearchInt16(
     /* [in] */ ArrayOf<Int16>* array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
@@ -624,7 +624,7 @@ ECode CArrays::CheckBinarySearchBounds(
     return NOERROR;
 }
 
-ECode CArrays::_FillByte(
+ECode CArrays::FillByte(
     /* [in] */ ArrayOf<Byte>* array,
     /* [in] */ Byte value)
 {
@@ -634,20 +634,20 @@ ECode CArrays::_FillByte(
     return NOERROR;
 }
 
-ECode CArrays::_FillByte(
+ECode CArrays::FillByte(
     /* [in] */ ArrayOf<Byte>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Byte value)
 {
-    FAIL_RETURN(_CheckStartAndEnd(array->GetLength(), start, end));
+    FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
     for (Int32 i = start; i < end; i++) {
         array->Set(i, value);
     }
     return NOERROR;
 }
 
-ECode CArrays::_FillInt16(
+ECode CArrays::FillInt16(
     /* [in] */ ArrayOf<Int16>* array,
     /* [in] */ Int16 value)
 {
@@ -657,20 +657,20 @@ ECode CArrays::_FillInt16(
     return NOERROR;
 }
 
-ECode CArrays::_FillInt16(
+ECode CArrays::FillInt16(
     /* [in] */ ArrayOf<Int16>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Int16 value)
 {
-    FAIL_RETURN(_CheckStartAndEnd(array->GetLength(), start, end));
+    FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
     for (Int32 i = start; i < end; i++) {
         array->Set(i, value);
     }
     return NOERROR;
 }
 
-ECode CArrays::_FillChar32(
+ECode CArrays::FillChar32(
     /* [in] */ ArrayOf<Char32>* array,
     /* [in] */ Char32 value)
 {
@@ -680,20 +680,20 @@ ECode CArrays::_FillChar32(
     return NOERROR;
 }
 
-ECode CArrays::_FillChar32(
+ECode CArrays::FillChar32(
     /* [in] */ ArrayOf<Char32>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Char32 value)
 {
-    FAIL_RETURN(_CheckStartAndEnd(array->GetLength(), start, end));
+    FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
     for (Int32 i = start; i < end; i++) {
         array->Set(i, value);
     }
     return NOERROR;
 }
 
-ECode CArrays::_FillInt32(
+ECode CArrays::FillInt32(
     /* [in] */ ArrayOf<Int32>* array,
     /* [in] */ Int32 value)
 {
@@ -703,20 +703,20 @@ ECode CArrays::_FillInt32(
     return NOERROR;
 }
 
-ECode CArrays::_FillInt32(
+ECode CArrays::FillInt32(
     /* [in] */ ArrayOf<Int32>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Int32 value)
 {
-    FAIL_RETURN(_CheckStartAndEnd(array->GetLength(), start, end));
+    FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
     for (Int32 i = start; i < end; i++) {
         array->Set(i, value);
     }
     return NOERROR;
 }
 
-ECode CArrays::_FillInt64(
+ECode CArrays::FillInt64(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int64 value)
 {
@@ -726,20 +726,20 @@ ECode CArrays::_FillInt64(
     return NOERROR;
 }
 
-ECode CArrays::_FillInt64(
+ECode CArrays::FillInt64(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Int64 value)
 {
-    FAIL_RETURN(_CheckStartAndEnd(array->GetLength(), start, end));
+    FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
     for (Int32 i = start; i < end; i++) {
         array->Set(i, value);
     }
     return NOERROR;
 }
 
-ECode CArrays::_FillFloat(
+ECode CArrays::FillFloat(
     /* [in] */ ArrayOf<Float>* array,
     /* [in] */ Float value)
 {
@@ -749,20 +749,20 @@ ECode CArrays::_FillFloat(
     return NOERROR;
 }
 
-ECode CArrays::_FillFloat(
+ECode CArrays::FillFloat(
     /* [in] */ ArrayOf<Float>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Float value)
 {
-    FAIL_RETURN(_CheckStartAndEnd(array->GetLength(), start, end));
+    FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
     for (Int32 i = start; i < end; i++) {
         array->Set(i, value);
     }
     return NOERROR;
 }
 
-ECode CArrays::_FillDouble(
+ECode CArrays::FillDouble(
     /* [in] */ ArrayOf<Double>* array,
     /* [in] */ Double value)
 {
@@ -772,20 +772,20 @@ ECode CArrays::_FillDouble(
     return NOERROR;
 }
 
-ECode CArrays::_FillDouble(
+ECode CArrays::FillDouble(
     /* [in] */ ArrayOf<Double>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Double value)
 {
-    FAIL_RETURN(_CheckStartAndEnd(array->GetLength(), start, end));
+    FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
     for (Int32 i = start; i < end; i++) {
         array->Set(i, value);
     }
     return NOERROR;
 }
 
-ECode CArrays::_FillBoolean(
+ECode CArrays::FillBoolean(
     /* [in] */ ArrayOf<Boolean>* array,
     /* [in] */ Boolean value)
 {
@@ -795,20 +795,20 @@ ECode CArrays::_FillBoolean(
     return NOERROR;
 }
 
-ECode CArrays::_FillBoolean(
+ECode CArrays::FillBoolean(
     /* [in] */ ArrayOf<Boolean>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Boolean value)
 {
-    FAIL_RETURN(_CheckStartAndEnd(array->GetLength(), start, end));
+    FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
     for (Int32 i = start; i < end; i++) {
         array->Set(i, value);
     }
     return NOERROR;
 }
 
-ECode CArrays::_FillObject(
+ECode CArrays::FillObject(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [in] */ IInterface* value)
 {
@@ -818,20 +818,20 @@ ECode CArrays::_FillObject(
     return NOERROR;
 }
 
-ECode CArrays::_FillObject(
+ECode CArrays::FillObject(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ IInterface* value)
 {
-    FAIL_RETURN(_CheckStartAndEnd(array->GetLength(), start, end));
+    FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
     for (Int32 i = start; i < end; i++) {
         array->Set(i, value);
     }
     return NOERROR;
 }
 
-ECode CArrays::_HashCodeBoolean(
+ECode CArrays::HashCodeBoolean(
     /* [in] */ ArrayOf<Boolean>* array,
     /* [out] */ Int32* code)
 {
@@ -850,7 +850,7 @@ ECode CArrays::_HashCodeBoolean(
     return NOERROR;
 }
 
-ECode CArrays::_HashCodeInt32(
+ECode CArrays::HashCodeInt32(
     /* [in] */ ArrayOf<Int32>* array,
     /* [out] */ Int32* code)
 {
@@ -869,7 +869,7 @@ ECode CArrays::_HashCodeInt32(
     return NOERROR;
 }
 
-ECode CArrays::_HashCodeInt16(
+ECode CArrays::HashCodeInt16(
     /* [in] */ ArrayOf<Int16>* array,
     /* [out] */ Int32* code)
 {
@@ -888,7 +888,7 @@ ECode CArrays::_HashCodeInt16(
     return NOERROR;
 }
 
-ECode CArrays::_HashCodeChar32(
+ECode CArrays::HashCodeChar32(
     /* [in] */ ArrayOf<Char32>* array,
     /* [out] */ Int32* code)
 {
@@ -907,7 +907,7 @@ ECode CArrays::_HashCodeChar32(
     return NOERROR;
 }
 
-ECode CArrays::_HashCodeByte(
+ECode CArrays::HashCodeByte(
     /* [in] */ ArrayOf<Byte>* array,
     /* [out] */ Int32* code)
 {
@@ -926,7 +926,7 @@ ECode CArrays::_HashCodeByte(
     return NOERROR;
 }
 
-ECode CArrays::_HashCodeInt64(
+ECode CArrays::HashCodeInt64(
     /* [in] */ ArrayOf<Int64>* array,
     /* [out] */ Int32* code)
 {
@@ -949,7 +949,7 @@ ECode CArrays::_HashCodeInt64(
     return NOERROR;
 }
 
-ECode CArrays::_HashCodeFloat(
+ECode CArrays::HashCodeFloat(
     /* [in] */ ArrayOf<Float>* array,
     /* [out] */ Int32* code)
 {
@@ -971,7 +971,7 @@ ECode CArrays::_HashCodeFloat(
     return NOERROR;
 }
 
-ECode CArrays::_HashCodeDouble(
+ECode CArrays::HashCodeDouble(
     /* [in] */ ArrayOf<Double>* array,
     /* [out] */ Int32* code)
 {
@@ -994,7 +994,7 @@ ECode CArrays::_HashCodeDouble(
     return NOERROR;
 }
 
-ECode CArrays::_HashCodeObject(
+ECode CArrays::HashCodeObject(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [out] */ Int32* code)
 {
@@ -1019,7 +1019,7 @@ ECode CArrays::_HashCodeObject(
     return NOERROR;
 }
 
-ECode CArrays::_DeepHashCode(
+ECode CArrays::DeepHashCode(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [out] */ Int32* code)
 {
@@ -1067,7 +1067,7 @@ Int32 CArrays::DeepHashCodeElement(
             elem->GetValue(&realNum);
             arr->Set(i, realNum);
         }
-        _HashCodeInt32(arr, &hashCode);
+        HashCodeInt32(arr, &hashCode);
         return hashCode;
     }
     if (riid == EIID_IChar32) {
@@ -1079,7 +1079,7 @@ Int32 CArrays::DeepHashCodeElement(
             elem->GetValue(&realNum);
             arr->Set(i, realNum);
         }
-        _HashCodeChar32(arr, &hashCode);
+        HashCodeChar32(arr, &hashCode);
         return hashCode;
     }
     if (riid == EIID_IBoolean) {
@@ -1091,7 +1091,7 @@ Int32 CArrays::DeepHashCodeElement(
             elem->GetValue(&realNum);
             arr->Set(i, realNum);
         }
-        _HashCodeBoolean(arr, &hashCode);
+        HashCodeBoolean(arr, &hashCode);
         return hashCode;
     }
     if (riid == EIID_IByte) {
@@ -1103,7 +1103,7 @@ Int32 CArrays::DeepHashCodeElement(
             elem->GetValue(&realNum);
             arr->Set(i, realNum);
         }
-        _HashCodeByte(arr, &hashCode);
+        HashCodeByte(arr, &hashCode);
         return hashCode;
     }
     if (riid == EIID_IInteger64) {
@@ -1115,7 +1115,7 @@ Int32 CArrays::DeepHashCodeElement(
             elem->GetValue(&realNum);
             arr->Set(i, realNum);
         }
-        _HashCodeInt64(arr, &hashCode);
+        HashCodeInt64(arr, &hashCode);
         return hashCode;
     }
     if (riid == EIID_IFloat) {
@@ -1127,7 +1127,7 @@ Int32 CArrays::DeepHashCodeElement(
             elem->GetValue(&realNum);
             arr->Set(i, realNum);
         }
-        _HashCodeFloat(arr, &hashCode);
+        HashCodeFloat(arr, &hashCode);
         return hashCode;
     }
     if (riid == EIID_IDouble) {
@@ -1139,7 +1139,7 @@ Int32 CArrays::DeepHashCodeElement(
             elem->GetValue(&realNum);
             arr->Set(i, realNum);
         }
-        _HashCodeDouble(arr, &hashCode);
+        HashCodeDouble(arr, &hashCode);
         return hashCode;
     }
     if (riid == EIID_IInteger16) {
@@ -1151,7 +1151,7 @@ Int32 CArrays::DeepHashCodeElement(
             elem->GetValue(&realNum);
             arr->Set(i, realNum);
         }
-        _HashCodeInt16(arr, &hashCode);
+        HashCodeInt16(arr, &hashCode);
         return hashCode;
     }
 
@@ -1161,11 +1161,11 @@ Int32 CArrays::DeepHashCodeElement(
         p->Get(i, (IInterface**)&elem);
         arr->Set(i, elem);
     }
-    _DeepHashCode(arr, &hashCode);
+    DeepHashCode(arr, &hashCode);
     return hashCode;
 }
 
-ECode CArrays::_EqualsByte(
+ECode CArrays::EqualsByte(
     /* [in] */ ArrayOf<Byte>* array1,
     /* [in] */ ArrayOf<Byte>* array2,
     /* [out] */ Boolean* result)
@@ -1189,7 +1189,7 @@ ECode CArrays::_EqualsByte(
     return NOERROR;
 }
 
-ECode CArrays::_EqualsInt16(
+ECode CArrays::EqualsInt16(
     /* [in] */ ArrayOf<Int16>* array1,
     /* [in] */ ArrayOf<Int16>* array2,
     /* [out] */ Boolean* result)
@@ -1213,7 +1213,7 @@ ECode CArrays::_EqualsInt16(
     return NOERROR;
 }
 
-ECode CArrays::_EqualsChar32(
+ECode CArrays::EqualsChar32(
     /* [in] */ ArrayOf<Char32>* array1,
     /* [in] */ ArrayOf<Char32>* array2,
     /* [out] */ Boolean* result)
@@ -1237,7 +1237,7 @@ ECode CArrays::_EqualsChar32(
     return NOERROR;
 }
 
-ECode CArrays::_EqualsInt32(
+ECode CArrays::EqualsInt32(
     /* [in] */ ArrayOf<Int32>* array1,
     /* [in] */ ArrayOf<Int32>* array2,
     /* [out] */ Boolean* result)
@@ -1261,7 +1261,7 @@ ECode CArrays::_EqualsInt32(
     return NOERROR;
 }
 
-ECode CArrays::_EqualsInt64(
+ECode CArrays::EqualsInt64(
     /* [in] */ ArrayOf<Int64>* array1,
     /* [in] */ ArrayOf<Int64>* array2,
     /* [out] */ Boolean* result)
@@ -1285,7 +1285,7 @@ ECode CArrays::_EqualsInt64(
     return NOERROR;
 }
 
-ECode CArrays::_EqualsFloat(
+ECode CArrays::EqualsFloat(
     /* [in] */ ArrayOf<Float>* array1,
     /* [in] */ ArrayOf<Float>* array2,
     /* [out] */ Boolean* result)
@@ -1311,7 +1311,7 @@ ECode CArrays::_EqualsFloat(
     return NOERROR;
 }
 
-ECode CArrays::_EqualsDouble(
+ECode CArrays::EqualsDouble(
     /* [in] */ ArrayOf<Double>* array1,
     /* [in] */ ArrayOf<Double>* array2,
     /* [out] */ Boolean* result)
@@ -1337,7 +1337,7 @@ ECode CArrays::_EqualsDouble(
     return NOERROR;
 }
 
-ECode CArrays::_EqualsBoolean(
+ECode CArrays::EqualsBoolean(
     /* [in] */ ArrayOf<Boolean>* array1,
     /* [in] */ ArrayOf<Boolean>* array2,
     /* [out] */ Boolean* result)
@@ -1361,7 +1361,7 @@ ECode CArrays::_EqualsBoolean(
     return NOERROR;
 }
 
-ECode CArrays::_EqualsObject(
+ECode CArrays::EqualsObject(
     /* [in] */ ArrayOf<IInterface* >* array1,
     /* [in] */ ArrayOf<IInterface* >* array2,
     /* [out] */ Boolean* result)
@@ -1387,7 +1387,7 @@ ECode CArrays::_EqualsObject(
     return NOERROR;
 }
 
-ECode CArrays::_DeepEquals(
+ECode CArrays::DeepEquals(
     /* [in] */ ArrayOf<IInterface* >* array1,
     /* [in] */ ArrayOf<IInterface* >* array2,
     /* [out] */ Boolean* result)
@@ -1458,7 +1458,7 @@ Boolean CArrays::DeepEqualsElements(
             p2->Get(i, (IInterface**)&elem);
             sencond->Set(i, elem);
         }
-        _DeepEquals(first, sencond, &result);
+        DeepEquals(first, sencond, &result);
         return result;
     }
 
@@ -1482,7 +1482,7 @@ Boolean CArrays::DeepEqualsElements(
             elem->GetValue(&realNum);
             sencond->Set(i, realNum);
         }
-        _EqualsInt32(first, sencond, &result);
+        EqualsInt32(first, sencond, &result);
         return result;
     }
     if (riid1 == EIID_IChar32) {
@@ -1505,7 +1505,7 @@ Boolean CArrays::DeepEqualsElements(
             elem->GetValue(&realNum);
             sencond->Set(i, realNum);
         }
-        _EqualsChar32(first, sencond, &result);
+        EqualsChar32(first, sencond, &result);
         return result;
     }
     if (riid1 == EIID_IBoolean) {
@@ -1528,7 +1528,7 @@ Boolean CArrays::DeepEqualsElements(
             elem->GetValue(&realNum);
             sencond->Set(i, realNum);
         }
-        _EqualsBoolean(first, sencond, &result);
+        EqualsBoolean(first, sencond, &result);
         return result;
     }
     if (riid1 == EIID_IByte) {
@@ -1551,7 +1551,7 @@ Boolean CArrays::DeepEqualsElements(
             elem->GetValue(&realNum);
             sencond->Set(i, realNum);
         }
-        _EqualsByte(first, sencond, &result);
+        EqualsByte(first, sencond, &result);
         return result;
     }
     if (riid1 == EIID_IInteger64) {
@@ -1574,7 +1574,7 @@ Boolean CArrays::DeepEqualsElements(
             elem->GetValue(&realNum);
             sencond->Set(i, realNum);
         }
-        _EqualsInt64(first, sencond, &result);
+        EqualsInt64(first, sencond, &result);
         return result;
     }
     if (riid1 == EIID_IFloat) {
@@ -1597,7 +1597,7 @@ Boolean CArrays::DeepEqualsElements(
             elem->GetValue(&realNum);
             sencond->Set(i, realNum);
         }
-        _EqualsFloat(first, sencond, &result);
+        EqualsFloat(first, sencond, &result);
         return result;
     }
     if (riid1 == EIID_IDouble) {
@@ -1620,7 +1620,7 @@ Boolean CArrays::DeepEqualsElements(
             elem->GetValue(&realNum);
             sencond->Set(i, realNum);
         }
-        _EqualsDouble(first, sencond, &result);
+        EqualsDouble(first, sencond, &result);
         return result;
     }
     if (riid1 == EIID_IInteger16) {
@@ -1643,7 +1643,7 @@ Boolean CArrays::DeepEqualsElements(
             elem->GetValue(&realNum);
             sencond->Set(i, realNum);
         }
-        _EqualsInt16(first, sencond, &result);
+        EqualsInt16(first, sencond, &result);
         return result;
     }
     p1->GetLength(&size);
@@ -1661,17 +1661,17 @@ Boolean CArrays::DeepEqualsElements(
         p2->Get(i, (IInterface**)&elem);
         sencond->Set(i, elem);
     }
-    _DeepEquals(first, sencond, &result);
+    DeepEquals(first, sencond, &result);
     return result;
 }
 
-ECode CArrays::_SortByte(
+ECode CArrays::SortByte(
     /* [in] */ ArrayOf<Byte>* array)
 {
     return DualPivotQuicksort::Sort(array);
 }
 
-ECode CArrays::_SortByte(
+ECode CArrays::SortByte(
     /* [in] */ ArrayOf<Byte>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -1679,7 +1679,7 @@ ECode CArrays::_SortByte(
     return DualPivotQuicksort::Sort(array, start, end);
 }
 
-ECode CArrays::_CheckOffsetAndCount(
+ECode CArrays::CheckOffsetAndCount(
     /* [in] */ Int32 arrayLength,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -1690,7 +1690,7 @@ ECode CArrays::_CheckOffsetAndCount(
     return NOERROR;
 }
 
-ECode CArrays::_CheckStartAndEnd(
+ECode CArrays::CheckStartAndEnd(
     /* [in] */ Int32 len,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -1704,13 +1704,13 @@ ECode CArrays::_CheckStartAndEnd(
     return NOERROR;
 }
 
-ECode CArrays::_SortChar32(
+ECode CArrays::SortChar32(
     /* [in] */ ArrayOf<Char32>* array)
 {
     return DualPivotQuicksort::Sort(array);
 }
 
-ECode CArrays::_SortChar32(
+ECode CArrays::SortChar32(
     /* [in] */ ArrayOf<Char32>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -1718,13 +1718,13 @@ ECode CArrays::_SortChar32(
     return DualPivotQuicksort::Sort(array, start, end);
 }
 
-ECode CArrays::_SortDouble(
+ECode CArrays::SortDouble(
     /* [in] */ ArrayOf<Double>* array)
 {
     return DualPivotQuicksort::Sort(array);
 }
 
-ECode CArrays::_SortDouble(
+ECode CArrays::SortDouble(
     /* [in] */ ArrayOf<Double>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -1732,13 +1732,13 @@ ECode CArrays::_SortDouble(
     return DualPivotQuicksort::Sort(array, start, end);
 }
 
-ECode CArrays::_SortFloat(
+ECode CArrays::SortFloat(
     /* [in] */ ArrayOf<Float>* array)
 {
     return DualPivotQuicksort::Sort(array);
 }
 
-ECode CArrays::_SortFloat(
+ECode CArrays::SortFloat(
     /* [in] */ ArrayOf<Float>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -1746,13 +1746,13 @@ ECode CArrays::_SortFloat(
     return DualPivotQuicksort::Sort(array, start, end);
 }
 
-ECode CArrays::_SortInt32(
+ECode CArrays::SortInt32(
     /* [in] */ ArrayOf<Int32>* array)
 {
     return DualPivotQuicksort::Sort(array);
 }
 
-ECode CArrays::_SortInt32(
+ECode CArrays::SortInt32(
     /* [in] */ ArrayOf<Int32>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -1760,13 +1760,13 @@ ECode CArrays::_SortInt32(
     return DualPivotQuicksort::Sort(array, start, end);
 }
 
-ECode CArrays::_SortInt64(
+ECode CArrays::SortInt64(
     /* [in] */ ArrayOf<Int64>* array)
 {
     return DualPivotQuicksort::Sort(array);
 }
 
-ECode CArrays::_SortInt64(
+ECode CArrays::SortInt64(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -1774,13 +1774,13 @@ ECode CArrays::_SortInt64(
     return DualPivotQuicksort::Sort(array, start, end);
 }
 
-ECode CArrays::_SortInt16(
+ECode CArrays::SortInt16(
     /* [in] */ ArrayOf<Int16>* array)
 {
     return DualPivotQuicksort::Sort(array);
 }
 
-ECode CArrays::_SortInt16(
+ECode CArrays::SortInt16(
     /* [in] */ ArrayOf<Int16>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -1788,13 +1788,13 @@ ECode CArrays::_SortInt16(
     return DualPivotQuicksort::Sort(array, start, end);
 }
 
-ECode CArrays::_SortObject(
+ECode CArrays::SortObject(
     /* [in] */ ArrayOf<IInterface* >* array)
 {
     return ComparableTimSort::Sort(*array);
 }
 
-ECode CArrays::_SortObject(
+ECode CArrays::SortObject(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -1802,7 +1802,7 @@ ECode CArrays::_SortObject(
     return ComparableTimSort::Sort(*array, start, end);
 }
 
-ECode CArrays::_Sort(
+ECode CArrays::Sort(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1811,14 +1811,14 @@ ECode CArrays::_Sort(
     return TimSort::Sort(array, start, end, comparator);
 }
 
-ECode CArrays::_Sort(
+ECode CArrays::Sort(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [in] */ IComparator* comparator)
 {
     return TimSort::Sort(array, comparator);
 }
 
-ECode CArrays::_ToStringBoolean(
+ECode CArrays::ToStringBoolean(
     /* [in] */ ArrayOf<Boolean>* array,
     /* [out] */ String* str)
 {
@@ -1843,7 +1843,7 @@ ECode CArrays::_ToStringBoolean(
     return NOERROR;
 }
 
-ECode CArrays::_ToStringByte(
+ECode CArrays::ToStringByte(
     /* [in] */ ArrayOf<Byte>* array,
     /* [out] */ String* str)
 {
@@ -1868,7 +1868,7 @@ ECode CArrays::_ToStringByte(
     return NOERROR;
 }
 
-ECode CArrays::_ToStringChar32(
+ECode CArrays::ToStringChar32(
     /* [in] */ ArrayOf<Char32>* array,
     /* [out] */ String* str)
 {
@@ -1893,7 +1893,7 @@ ECode CArrays::_ToStringChar32(
     return NOERROR;
 }
 
-ECode CArrays::_ToStringDouble(
+ECode CArrays::ToStringDouble(
     /* [in] */ ArrayOf<Double>* array,
     /* [out] */ String* str)
 {
@@ -1918,7 +1918,7 @@ ECode CArrays::_ToStringDouble(
     return NOERROR;
 }
 
-ECode CArrays::_ToStringFloat(
+ECode CArrays::ToStringFloat(
     /* [in] */ ArrayOf<Float>* array,
     /* [out] */ String* str)
 {
@@ -1943,7 +1943,7 @@ ECode CArrays::_ToStringFloat(
     return NOERROR;
 }
 
-ECode CArrays::_ToStringInt32(
+ECode CArrays::ToStringInt32(
     /* [in] */ ArrayOf<Int32>* array,
     /* [out] */ String* str)
 {
@@ -1968,7 +1968,7 @@ ECode CArrays::_ToStringInt32(
     return NOERROR;
 }
 
-ECode CArrays::_ToStringInt64(
+ECode CArrays::ToStringInt64(
     /* [in] */ ArrayOf<Int64>* array,
     /* [out] */ String* str)
 {
@@ -1993,7 +1993,7 @@ ECode CArrays::_ToStringInt64(
     return NOERROR;
 }
 
-ECode CArrays::_ToStringInt16(
+ECode CArrays::ToStringInt16(
     /* [in] */ ArrayOf<Int16>* array,
     /* [out] */ String* str)
 {
@@ -2018,7 +2018,7 @@ ECode CArrays::_ToStringInt16(
     return NOERROR;
 }
 
-ECode CArrays::_ToStringObject(
+ECode CArrays::ToStringObject(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [out] */ String* str)
 {
@@ -2043,7 +2043,7 @@ ECode CArrays::_ToStringObject(
     return NOERROR;
 }
 
-ECode CArrays::_DeepToString(
+ECode CArrays::DeepToString(
     /* [in] */ ArrayOf<IInterface* >* array,
     /* [out] */ String* str)
 {
@@ -2111,7 +2111,7 @@ void CArrays::DeepToStringImpl(
                         pContent->GetValue(&content);
                         tmpArray->Set(i, content);
                     }
-                    _ToStringBoolean((ArrayOf<Boolean>*) tmpArray, &str);
+                    ToStringBoolean((ArrayOf<Boolean>*) tmpArray, &str);
                     sb->Append(str);
                 }
                 else if (riid == EIID_IByte) {
@@ -2123,7 +2123,7 @@ void CArrays::DeepToStringImpl(
                         pContent->GetValue(&content);
                         tmpArray->Set(i, content);
                     }
-                    _ToStringByte((ArrayOf<Byte>*) tmpArray, &str);
+                    ToStringByte((ArrayOf<Byte>*) tmpArray, &str);
                     sb->Append(str);
                 }
                 else if (riid == EIID_IChar32) {
@@ -2135,7 +2135,7 @@ void CArrays::DeepToStringImpl(
                         pContent->GetValue(&content);
                         tmpArray->Set(i, content);
                     }
-                    _ToStringChar32((ArrayOf<Char32>*) tmpArray, &str);
+                    ToStringChar32((ArrayOf<Char32>*) tmpArray, &str);
                     sb->Append(str);
                 }
                 else if (riid == EIID_IDouble) {
@@ -2147,7 +2147,7 @@ void CArrays::DeepToStringImpl(
                         pContent->GetValue(&content);
                         tmpArray->Set(i, content);
                     }
-                    _ToStringDouble((ArrayOf<Double>*) tmpArray, &str);
+                    ToStringDouble((ArrayOf<Double>*) tmpArray, &str);
                     sb->Append(str);
                 }
                 else if (riid == EIID_IFloat) {
@@ -2159,7 +2159,7 @@ void CArrays::DeepToStringImpl(
                         pContent->GetValue(&content);
                         tmpArray->Set(i, content);
                     }
-                    _ToStringFloat((ArrayOf<Float>*) tmpArray, &str);
+                    ToStringFloat((ArrayOf<Float>*) tmpArray, &str);
                     sb->Append(str);
                 }
                 else if (riid == EIID_IInteger32) {
@@ -2171,7 +2171,7 @@ void CArrays::DeepToStringImpl(
                         pContent->GetValue(&content);
                         tmpArray->Set(i, content);
                     }
-                    _ToStringInt32((ArrayOf<Int32>*) tmpArray, &str);
+                    ToStringInt32((ArrayOf<Int32>*) tmpArray, &str);
                     sb->Append(str);
                 }
                 else if (riid == EIID_IInteger64) {
@@ -2183,7 +2183,7 @@ void CArrays::DeepToStringImpl(
                         pContent->GetValue(&content);
                         tmpArray->Set(i, content);
                     }
-                    _ToStringInt64((ArrayOf<Int64>*) tmpArray, &str);
+                    ToStringInt64((ArrayOf<Int64>*) tmpArray, &str);
                     sb->Append(str);
                 }
                 else if (riid == EIID_IInteger16) {
@@ -2195,7 +2195,7 @@ void CArrays::DeepToStringImpl(
                         pContent->GetValue(&content);
                         tmpArray->Set(i, content);
                     }
-                    _ToStringInt16((ArrayOf<Int16>*) tmpArray, &str);
+                    ToStringInt16((ArrayOf<Int16>*) tmpArray, &str);
                     sb->Append(str);
                 }
                 else if (riid == EIID_IInterface) {
@@ -2247,7 +2247,7 @@ Boolean CArrays::DeepToStringImplContains(
     return FALSE;
 }
 
-ECode CArrays::_CopyOfBoolean(
+ECode CArrays::CopyOfBoolean(
     /* [in] */ ArrayOf<Boolean>* original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<Boolean>** result)
@@ -2256,10 +2256,10 @@ ECode CArrays::_CopyOfBoolean(
     if (newLength < 0) {
         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
     }
-    return _CopyOfRangeBoolean(original, 0, newLength, result);
+    return CopyOfRangeBoolean(original, 0, newLength, result);
 }
 
-ECode CArrays::_CopyOfByte(
+ECode CArrays::CopyOfByte(
     /* [in] */ ArrayOf<Byte>* original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<Byte>** result)
@@ -2268,10 +2268,10 @@ ECode CArrays::_CopyOfByte(
     if (newLength < 0) {
         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
     }
-    return _CopyOfRangeByte(original, 0, newLength, result);
+    return CopyOfRangeByte(original, 0, newLength, result);
 }
 
-ECode CArrays::_CopyOfChar32(
+ECode CArrays::CopyOfChar32(
     /* [in] */ ArrayOf<Char32>* original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<Char32>** result)
@@ -2280,10 +2280,10 @@ ECode CArrays::_CopyOfChar32(
     if (newLength < 0) {
         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
     }
-    return _CopyOfRangeChar32(original, 0, newLength, result);
+    return CopyOfRangeChar32(original, 0, newLength, result);
 }
 
-ECode CArrays::_CopyOfDouble(
+ECode CArrays::CopyOfDouble(
     /* [in] */ ArrayOf<Double>* original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<Double>** result)
@@ -2292,10 +2292,10 @@ ECode CArrays::_CopyOfDouble(
     if (newLength < 0) {
         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
     }
-    return _CopyOfRangeDouble(original, 0, newLength, result);
+    return CopyOfRangeDouble(original, 0, newLength, result);
 }
 
-ECode CArrays::_CopyOfFloat(
+ECode CArrays::CopyOfFloat(
     /* [in] */ ArrayOf<Float>* original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<Float>** result)
@@ -2304,10 +2304,10 @@ ECode CArrays::_CopyOfFloat(
     if (newLength < 0) {
         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
     }
-    return _CopyOfRangeFloat(original, 0, newLength, result);
+    return CopyOfRangeFloat(original, 0, newLength, result);
 }
 
-ECode CArrays::_CopyOfInt32(
+ECode CArrays::CopyOfInt32(
     /* [in] */ ArrayOf<Int32>* original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<Int32>** result)
@@ -2316,10 +2316,10 @@ ECode CArrays::_CopyOfInt32(
     if (newLength < 0) {
         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
     }
-    return _CopyOfRangeInt32(original, 0, newLength, result);
+    return CopyOfRangeInt32(original, 0, newLength, result);
 }
 
-ECode CArrays::_CopyOfInt64(
+ECode CArrays::CopyOfInt64(
     /* [in] */ ArrayOf<Int64>* original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<Int64>** result)
@@ -2328,10 +2328,10 @@ ECode CArrays::_CopyOfInt64(
     if (newLength < 0) {
         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
     }
-    return _CopyOfRangeInt64(original, 0, newLength, result);
+    return CopyOfRangeInt64(original, 0, newLength, result);
 }
 
-ECode CArrays::_CopyOfInt16(
+ECode CArrays::CopyOfInt16(
     /* [in] */ ArrayOf<Int16>* original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<Int16>** result)
@@ -2340,10 +2340,10 @@ ECode CArrays::_CopyOfInt16(
     if (newLength < 0) {
         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
     }
-    return _CopyOfRangeInt16(original, 0, newLength, result);
+    return CopyOfRangeInt16(original, 0, newLength, result);
 }
 
-ECode CArrays::_CopyOf(
+ECode CArrays::CopyOf(
     /* [in] */ ArrayOf<IInterface* >* original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<IInterface* >** result)
@@ -2355,7 +2355,7 @@ ECode CArrays::_CopyOf(
     if (newLength < 0) {
         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
     }
-    return _CopyOfRange(original, 0, newLength, result);
+    return CopyOfRange(original, 0, newLength, result);
 }
 
 // ECode CArrays::_CopyOf(
@@ -2371,7 +2371,7 @@ ECode CArrays::_CopyOf(
 //     return _CopyOfRange(original, 0, newLength, newType, result);
 // }
 
-ECode CArrays::_CopyOfRangeBoolean(
+ECode CArrays::CopyOfRangeBoolean(
     /* [in] */ ArrayOf<Boolean>* original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2394,7 +2394,7 @@ ECode CArrays::_CopyOfRangeBoolean(
     return NOERROR;
 }
 
-ECode CArrays::_CopyOfRangeByte(
+ECode CArrays::CopyOfRangeByte(
     /* [in] */ ArrayOf<Byte>* original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2417,7 +2417,7 @@ ECode CArrays::_CopyOfRangeByte(
     return NOERROR;
 }
 
-ECode CArrays::_CopyOfRangeChar32(
+ECode CArrays::CopyOfRangeChar32(
     /* [in] */ ArrayOf<Char32>* original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2440,7 +2440,7 @@ ECode CArrays::_CopyOfRangeChar32(
     return NOERROR;
 }
 
-ECode CArrays::_CopyOfRangeDouble(
+ECode CArrays::CopyOfRangeDouble(
     /* [in] */ ArrayOf<Double>* original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2463,7 +2463,7 @@ ECode CArrays::_CopyOfRangeDouble(
     return NOERROR;
 }
 
-ECode CArrays::_CopyOfRangeFloat(
+ECode CArrays::CopyOfRangeFloat(
     /* [in] */ ArrayOf<Float>* original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2486,7 +2486,7 @@ ECode CArrays::_CopyOfRangeFloat(
     return NOERROR;
 }
 
-ECode CArrays::_CopyOfRangeInt32(
+ECode CArrays::CopyOfRangeInt32(
     /* [in] */ ArrayOf<Int32>* original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2509,7 +2509,7 @@ ECode CArrays::_CopyOfRangeInt32(
     return NOERROR;
 }
 
-ECode CArrays::_CopyOfRangeInt64(
+ECode CArrays::CopyOfRangeInt64(
     /* [in] */ ArrayOf<Int64>* original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2532,7 +2532,7 @@ ECode CArrays::_CopyOfRangeInt64(
     return NOERROR;
 }
 
-ECode CArrays::_CopyOfRangeInt16(
+ECode CArrays::CopyOfRangeInt16(
     /* [in] */ ArrayOf<Int16>* original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2555,7 +2555,7 @@ ECode CArrays::_CopyOfRangeInt16(
     return NOERROR;
 }
 
-ECode CArrays::_CopyOfRange(
+ECode CArrays::CopyOfRange(
     /* [in] */ ArrayOf<IInterface* >* original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2599,857 +2599,6 @@ ECode CArrays::_CopyOfRange(
 //     *arrayCopy = result;
 //     REFCOUNT_ADD(*arrayCopy)
 //     return NOERROR;
-// }
-
-ECode CArrays::AsList(
-    /* [in] */ ArrayOf<IInterface*>* array,
-    /* [out] */ IList** outList)
-{
-    return _AsList(array, outList);
-}
-
-ECode CArrays::BinarySearchByte(
-    /* [in] */ ArrayOf<Byte>* array,
-    /* [in] */ Byte value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchByte(array, value, index);
-}
-
-ECode CArrays::BinarySearchByte(
-    /* [in] */ ArrayOf<Byte>* array,
-    /* [in] */ Int32 startIndex,
-    /* [in] */ Int32 endIndex,
-    /* [in] */ Byte value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchByte(array, startIndex, endIndex, value, index);
-}
-
-ECode CArrays::BinarySearchChar32(
-    /* [in] */ ArrayOf<Char32>* array,
-    /* [in] */ Char32 value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchChar32(array, value, index);
-}
-
-ECode CArrays::BinarySearchChar32(
-    /* [in] */ ArrayOf<Char32>* array,
-    /* [in] */ Int32 startIndex,
-    /* [in] */ Int32 endIndex,
-    /* [in] */ Char32 value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchChar32(array, startIndex, endIndex, value, index);
-}
-
-ECode CArrays::BinarySearchDouble(
-    /* [in] */ ArrayOf<Double>* array,
-    /* [in] */ Double value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchDouble(array, value, index);
-}
-
-ECode CArrays::BinarySearchDouble(
-    /* [in] */ ArrayOf<Double>* array,
-    /* [in] */ Int32 startIndex,
-    /* [in] */ Int32 endIndex,
-    /* [in] */ Double value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchDouble(array, startIndex, endIndex, value, index);
-}
-
-ECode CArrays::BinarySearchFloat(
-    /* [in] */ ArrayOf<Float>* array,
-    /* [in] */ Float value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchFloat(array, value, index);
-}
-
-ECode CArrays::BinarySearchFloat(
-    /* [in] */ ArrayOf<Float>* array,
-    /* [in] */ Int32 startIndex,
-    /* [in] */ Int32 endIndex,
-    /* [in] */ Float value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchFloat(array, startIndex, endIndex, value, index);
-}
-
-ECode CArrays::BinarySearchInt32(
-    /* [in] */ ArrayOf<Int32>* array,
-    /* [in] */ Int32 value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchInt32(array, value, index);
-}
-
-ECode CArrays::BinarySearchInt32(
-    /* [in] */ ArrayOf<Int32>* array,
-    /* [in] */ Int32 startIndex,
-    /* [in] */ Int32 endIndex,
-    /* [in] */ Int32 value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchInt32(array, startIndex, endIndex, value, index);
-}
-
-ECode CArrays::BinarySearchInt64(
-    /* [in] */ ArrayOf<Int64>* array,
-    /* [in] */ Int64 value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchInt64(array, value, index);
-}
-
-ECode CArrays::BinarySearchInt64(
-    /* [in] */ ArrayOf<Int64>* array,
-    /* [in] */ Int32 startIndex,
-    /* [in] */ Int32 endIndex,
-    /* [in] */ Int64 value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchInt64(array, startIndex, endIndex, value, index);
-}
-
-ECode CArrays::BinarySearchObject(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [in] */ IInterface* value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchObject(array, value, index);
-}
-
-ECode CArrays::BinarySearchObject(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [in] */ Int32 startIndex,
-    /* [in] */ Int32 endIndex,
-    /* [in] */ IInterface* value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchObject(array, startIndex, endIndex, value, index);
-}
-
-ECode CArrays::BinarySearch(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [in] */ IInterface* value,
-    /* [in] */ IComparator* comparator,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearch(array, value, comparator, index);
-}
-
-ECode CArrays::BinarySearch(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [in] */ Int32 startIndex,
-    /* [in] */ Int32 endIndex,
-    /* [in] */ IInterface* value,
-    /* [in] */ IComparator* comparator,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearch(array, startIndex, endIndex, value, comparator, index);
-}
-
-ECode CArrays::BinarySearchInt16(
-    /* [in] */ ArrayOf<Int16>* array,
-    /* [in] */ Int16 value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchInt16(array, value, index);
-}
-
-ECode CArrays::BinarySearchInt16(
-    /* [in] */ ArrayOf<Int16>* array,
-    /* [in] */ Int32 startIndex,
-    /* [in] */ Int32 endIndex,
-    /* [in] */ Int16 value,
-    /* [out] */ Int32* index)
-{
-    return _BinarySearchInt16(array, startIndex, endIndex, value, index);
-}
-
-ECode CArrays::FillByte(
-    /* [in] */ ArrayOf<Byte>* array,
-    /* [in] */ Byte value)
-{
-    return _FillByte(array, value);
-}
-
-ECode CArrays::FillByte(
-    /* [in] */ ArrayOf<Byte>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Byte value)
-{
-    return _FillByte(array, start, end, value);
-}
-
-ECode CArrays::FillInt16(
-    /* [in] */ ArrayOf<Int16>* array,
-    /* [in] */ Int16 value)
-{
-    return _FillInt16(array, value);
-}
-
-ECode CArrays::FillInt16(
-    /* [in] */ ArrayOf<Int16>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Int16 value)
-{
-    return _FillInt16(array, start, end, value);
-}
-
-ECode CArrays::FillChar32(
-    /* [in] */ ArrayOf<Char32>* array,
-    /* [in] */ Char32 value)
-{
-    return _FillChar32(array, value);
-}
-
-ECode CArrays::FillChar32(
-    /* [in] */ ArrayOf<Char32>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Char32 value)
-{
-    return _FillChar32(array, start, end, value);
-}
-
-ECode CArrays::FillInt32(
-    /* [in] */ ArrayOf<Int32>* array,
-    /* [in] */ Int32 value)
-{
-    return _FillInt32(array, value);
-}
-
-ECode CArrays::FillInt32(
-    /* [in] */ ArrayOf<Int32>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Int32 value)
-{
-    return _FillInt32(array, start, end, value);
-}
-
-ECode CArrays::FillInt64(
-    /* [in] */ ArrayOf<Int64>* array,
-    /* [in] */ Int64 value)
-{
-    return _FillInt64(array, value);
-}
-
-ECode CArrays::FillInt64(
-    /* [in] */ ArrayOf<Int64>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Int64 value)
-{
-    return _FillInt64(array, start, end, value);
-}
-
-ECode CArrays::FillFloat(
-    /* [in] */ ArrayOf<Float>* array,
-    /* [in] */ Float value)
-{
-    return _FillFloat(array, value);
-}
-
-ECode CArrays::FillFloat(
-    /* [in] */ ArrayOf<Float>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Float value)
-{
-    return _FillFloat(array, start, end, value);
-}
-
-ECode CArrays::FillDouble(
-    /* [in] */ ArrayOf<Double>* array,
-    /* [in] */ Double value)
-{
-    return _FillDouble(array, value);
-}
-
-ECode CArrays::FillDouble(
-    /* [in] */ ArrayOf<Double>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Double value)
-{
-    return _FillDouble(array, start, end, value);
-}
-
-ECode CArrays::FillBoolean(
-    /* [in] */ ArrayOf<Boolean>* array,
-    /* [in] */ Boolean value)
-{
-    return _FillBoolean(array, value);
-}
-
-ECode CArrays::FillBoolean(
-    /* [in] */ ArrayOf<Boolean>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Boolean value)
-{
-    return _FillBoolean(array, start, end, value);
-}
-
-ECode CArrays::FillObject(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [in] */ IInterface* value)
-{
-    return _FillObject(array, value);
-}
-
-ECode CArrays::FillObject(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ IInterface* value)
-{
-    return _FillObject(array, start, end, value);
-}
-
-ECode CArrays::HashCodeBoolean(
-    /* [in] */ ArrayOf<Boolean>* array,
-    /* [out] */ Int32* code)
-{
-    return _HashCodeBoolean(array, code);
-}
-
-ECode CArrays::HashCodeInt32(
-    /* [in] */ ArrayOf<Int32>* array,
-    /* [out] */ Int32* code)
-{
-    return _HashCodeInt32(array, code);
-}
-
-ECode CArrays::HashCodeInt16(
-    /* [in] */ ArrayOf<Int16>* array,
-    /* [out] */ Int32* code)
-{
-    return _HashCodeInt16(array, code);
-}
-
-ECode CArrays::HashCodeChar32(
-    /* [in] */ ArrayOf<Char32>* array,
-    /* [out] */ Int32* code)
-{
-    return _HashCodeChar32(array, code);
-}
-
-ECode CArrays::HashCodeByte(
-    /* [in] */ ArrayOf<Byte>* array,
-    /* [out] */ Int32* code)
-{
-    return _HashCodeByte(array, code);
-}
-
-ECode CArrays::HashCodeInt64(
-    /* [in] */ ArrayOf<Int64>* array,
-    /* [out] */ Int32* code)
-{
-    return _HashCodeInt64(array, code);
-}
-
-ECode CArrays::HashCodeFloat(
-    /* [in] */ ArrayOf<Float>* array,
-    /* [out] */ Int32* code)
-{
-    return _HashCodeFloat(array, code);
-}
-
-ECode CArrays::HashCodeDouble(
-    /* [in] */ ArrayOf<Double>* array,
-    /* [out] */ Int32* code)
-{
-    return _HashCodeDouble(array, code);
-}
-
-ECode CArrays::HashCodeObject(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [out] */ Int32* code)
-{
-    return _HashCodeObject(array, code);
-}
-
-ECode CArrays::DeepHashCode(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [out] */ Int32* code)
-{
-    return _DeepHashCode(array, code);
-}
-
-ECode CArrays::EqualsByte(
-    /* [in] */ ArrayOf<Byte>* array1,
-    /* [in] */ ArrayOf<Byte>* array2,
-    /* [out] */ Boolean* result)
-{
-    return _EqualsByte(array1, array2, result);
-}
-
-ECode CArrays::EqualsInt16(
-    /* [in] */ ArrayOf<Int16>* array1,
-    /* [in] */ ArrayOf<Int16>* array2,
-    /* [out] */ Boolean* result)
-{
-    return _EqualsInt16(array1, array2, result);
-}
-
-ECode CArrays::EqualsChar32(
-    /* [in] */ ArrayOf<Char32>* array1,
-    /* [in] */ ArrayOf<Char32>* array2,
-    /* [out] */ Boolean* result)
-{
-    return _EqualsChar32(array1, array2, result);
-}
-
-ECode CArrays::EqualsInt32(
-    /* [in] */ ArrayOf<Int32>* array1,
-    /* [in] */ ArrayOf<Int32>* array2,
-    /* [out] */ Boolean* result)
-{
-    return _EqualsInt32(array1, array2, result);
-}
-
-ECode CArrays::EqualsInt64(
-    /* [in] */ ArrayOf<Int64>* array1,
-    /* [in] */ ArrayOf<Int64>* array2,
-    /* [out] */ Boolean* result)
-{
-    return _EqualsInt64(array1, array2, result);
-}
-
-ECode CArrays::EqualsFloat(
-    /* [in] */ ArrayOf<Float>* array1,
-    /* [in] */ ArrayOf<Float>* array2,
-    /* [out] */ Boolean* result)
-{
-    return _EqualsFloat(array1, array2, result);
-}
-
-ECode CArrays::EqualsDouble(
-    /* [in] */ ArrayOf<Double>* array1,
-    /* [in] */ ArrayOf<Double>* array2,
-    /* [out] */ Boolean* result)
-{
-    return _EqualsDouble(array1, array2, result);
-}
-
-ECode CArrays::EqualsBoolean(
-    /* [in] */ ArrayOf<Boolean>* array1,
-    /* [in] */ ArrayOf<Boolean>* array2,
-    /* [out] */ Boolean* result)
-{
-    return _EqualsBoolean(array1, array2, result);
-}
-
-ECode CArrays::EqualsObject(
-    /* [in] */ ArrayOf<IInterface* >* array1,
-    /* [in] */ ArrayOf<IInterface* >* array2,
-    /* [out] */ Boolean* result)
-{
-    return _EqualsObject(array1, array2, result);
-}
-
-ECode CArrays::DeepEquals(
-    /* [in] */ ArrayOf<IInterface* >* array1,
-    /* [in] */ ArrayOf<IInterface* >* array2,
-    /* [out] */ Boolean* result)
-{
-    return _DeepEquals(array1, array2, result);
-}
-
-ECode CArrays::SortByte(
-    /* [in] */ ArrayOf<Byte>* array)
-{
-    return _SortByte(array);
-}
-
-ECode CArrays::SortByte(
-    /* [in] */ ArrayOf<Byte>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    return _SortByte(array, start, end);
-}
-
-ECode CArrays::CheckOffsetAndCount(
-    /* [in] */ Int32 arrayLength,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 count)
-{
-    return _CheckOffsetAndCount(arrayLength, offset, count);
-}
-
-ECode CArrays::CheckStartAndEnd(
-    /* [in] */ Int32 len,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    return _CheckStartAndEnd(len, start, end);
-}
-
-ECode CArrays::SortChar32(
-    /* [in] */ ArrayOf<Char32>* array)
-{
-    return _SortChar32(array);
-}
-
-ECode CArrays::SortChar32(
-    /* [in] */ ArrayOf<Char32>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    return _SortChar32(array, start, end);
-}
-
-ECode CArrays::SortDouble(
-    /* [in] */ ArrayOf<Double>* array)
-{
-    return _SortDouble(array);
-}
-
-ECode CArrays::SortDouble(
-    /* [in] */ ArrayOf<Double>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    return _SortDouble(array, start, end);
-}
-
-ECode CArrays::SortFloat(
-    /* [in] */ ArrayOf<Float>* array)
-{
-    return _SortFloat(array);
-}
-
-ECode CArrays::SortFloat(
-    /* [in] */ ArrayOf<Float>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    return _SortFloat(array, start, end);
-}
-
-ECode CArrays::SortInt32(
-    /* [in] */ ArrayOf<Int32>* array)
-{
-    return _SortInt32(array);
-}
-
-ECode CArrays::SortInt32(
-    /* [in] */ ArrayOf<Int32>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    return _SortInt32(array, start, end);
-}
-
-ECode CArrays::SortInt64(
-    /* [in] */ ArrayOf<Int64>* array)
-{
-    return _SortInt64(array);
-}
-
-ECode CArrays::SortInt64(
-    /* [in] */ ArrayOf<Int64>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    return _SortInt64(array, start, end);
-}
-
-ECode CArrays::SortInt16(
-    /* [in] */ ArrayOf<Int16>* array)
-{
-    return _SortInt16(array);
-}
-
-ECode CArrays::SortInt16(
-    /* [in] */ ArrayOf<Int16>* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    return _SortInt16(array, start, end);
-}
-
-ECode CArrays::SortObject(
-    /* [in] */ ArrayOf<IInterface* >* array)
-{
-    return _SortObject(array);
-}
-
-ECode CArrays::SortObject(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    return _SortObject(array, start, end);
-}
-
-ECode CArrays::Sort(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ IComparator* comparator)
-{
-    return _Sort(array, start, end, comparator);
-}
-
-ECode CArrays::Sort(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [in] */ IComparator* comparator)
-{
-    return _Sort(array, comparator);
-}
-
-ECode CArrays::ToStringBoolean(
-    /* [in] */ ArrayOf<Boolean>* array,
-    /* [out] */ String* str)
-{
-    return _ToStringBoolean(array, str);
-}
-
-ECode CArrays::ToStringByte(
-    /* [in] */ ArrayOf<Byte>* array,
-    /* [out] */ String* str)
-{
-    return _ToStringByte(array, str);
-}
-
-ECode CArrays::ToStringChar32(
-    /* [in] */ ArrayOf<Char32>* array,
-    /* [out] */ String* str)
-{
-    return _ToStringChar32(array, str);
-}
-
-ECode CArrays::ToStringDouble(
-    /* [in] */ ArrayOf<Double>* array,
-    /* [out] */ String* str)
-{
-    return _ToStringDouble(array, str);
-}
-
-ECode CArrays::ToStringFloat(
-    /* [in] */ ArrayOf<Float>* array,
-    /* [out] */ String* str)
-{
-    return _ToStringFloat(array, str);
-}
-
-ECode CArrays::ToStringInt32(
-    /* [in] */ ArrayOf<Int32>* array,
-    /* [out] */ String* str)
-{
-    return _ToStringInt32(array, str);
-}
-
-ECode CArrays::ToStringInt64(
-    /* [in] */ ArrayOf<Int64>* array,
-    /* [out] */ String* str)
-{
-    return _ToStringInt64(array, str);
-}
-
-ECode CArrays::ToStringInt16(
-    /* [in] */ ArrayOf<Int16>* array,
-    /* [out] */ String* str)
-{
-    return _ToStringInt16(array, str);
-}
-
-ECode CArrays::ToStringObject(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [out] */ String* str)
-{
-    return _ToStringObject(array, str);
-}
-
-ECode CArrays::DeepToString(
-    /* [in] */ ArrayOf<IInterface* >* array,
-    /* [out] */ String* str)
-{
-    return _DeepToString(array, str);
-}
-
-ECode CArrays::CopyOfBoolean(
-    /* [in] */ ArrayOf<Boolean>* original,
-    /* [in] */ Int32 newLength,
-    /* [out, callee] */ ArrayOf<Boolean>** result)
-{
-    return _CopyOfBoolean(original, newLength, result);
-}
-
-ECode CArrays::CopyOfByte(
-    /* [in] */ ArrayOf<Byte>* original,
-    /* [in] */ Int32 newLength,
-    /* [out, callee] */ ArrayOf<Byte>** result)
-{
-    return _CopyOfByte(original, newLength, result);
-}
-
-ECode CArrays::CopyOfChar32(
-    /* [in] */ ArrayOf<Char32>* original,
-    /* [in] */ Int32 newLength,
-    /* [out, callee] */ ArrayOf<Char32>** result)
-{
-    return _CopyOfChar32(original, newLength, result);
-}
-
-ECode CArrays::CopyOfDouble(
-    /* [in] */ ArrayOf<Double>* original,
-    /* [in] */ Int32 newLength,
-    /* [out, callee] */ ArrayOf<Double>** result)
-{
-    return _CopyOfDouble(original, newLength, result);
-}
-
-ECode CArrays::CopyOfFloat(
-    /* [in] */ ArrayOf<Float>* original,
-    /* [in] */ Int32 newLength,
-    /* [out, callee] */ ArrayOf<Float>** result)
-{
-    return _CopyOfFloat(original, newLength, result);
-}
-
-ECode CArrays::CopyOfInt32(
-    /* [in] */ ArrayOf<Int32>* original,
-    /* [in] */ Int32 newLength,
-    /* [out, callee] */ ArrayOf<Int32>** result)
-{
-    return _CopyOfInt32(original, newLength, result);
-}
-
-ECode CArrays::CopyOfInt64(
-    /* [in] */ ArrayOf<Int64>* original,
-    /* [in] */ Int32 newLength,
-    /* [out, callee] */ ArrayOf<Int64>** result)
-{
-    return _CopyOfInt64(original, newLength, result);
-}
-
-ECode CArrays::CopyOfInt16(
-    /* [in] */ ArrayOf<Int16>* original,
-    /* [in] */ Int32 newLength,
-    /* [out, callee] */ ArrayOf<Int16>** result)
-{
-    return _CopyOfInt16(original, newLength, result);
-}
-
-ECode CArrays::CopyOf(
-    /* [in] */ ArrayOf<IInterface* >* original,
-    /* [in] */ Int32 newLength,
-    /* [out, callee] */ ArrayOf<IInterface* >** result)
-{
-    return _CopyOf(original, newLength, result);
-}
-
-// ECode CArrays::CopyOf(
-//     /* [in] */ U[] original,
-//     /* [in] */ Int32 newLength,
-//     /* [in] */ Class<? extends T[]> newType,
-//     /* [out, callee] */ <T, U> T[] result)
-// {
-//     return _CopyOf(original, newLength, newType, result);
-// }
-
-ECode CArrays::CopyOfRangeBoolean(
-    /* [in] */ ArrayOf<Boolean>* original,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out, callee] */ ArrayOf<Boolean>** arrayCopy)
-{
-    return _CopyOfRangeBoolean(original, start, end, arrayCopy);
-}
-
-ECode CArrays::CopyOfRangeByte(
-    /* [in] */ ArrayOf<Byte>* original,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out, callee] */ ArrayOf<Byte>** arrayCopy)
-{
-    return _CopyOfRangeByte(original, start, end, arrayCopy);
-}
-
-ECode CArrays::CopyOfRangeChar32(
-    /* [in] */ ArrayOf<Char32>* original,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out, callee] */ ArrayOf<Char32>** arrayCopy)
-{
-    return _CopyOfRangeChar32(original, start, end, arrayCopy);
-}
-
-ECode CArrays::CopyOfRangeDouble(
-    /* [in] */ ArrayOf<Double>* original,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out, callee] */ ArrayOf<Double>** arrayCopy)
-{
-    return _CopyOfRangeDouble(original, start, end, arrayCopy);
-}
-
-ECode CArrays::CopyOfRangeFloat(
-    /* [in] */ ArrayOf<Float>* original,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out, callee] */ ArrayOf<Float>** arrayCopy)
-{
-    return _CopyOfRangeFloat(original, start, end, arrayCopy);
-}
-
-ECode CArrays::CopyOfRangeInt32(
-    /* [in] */ ArrayOf<Int32>* original,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out, callee] */ ArrayOf<Int32>** arrayCopy)
-{
-    return _CopyOfRangeInt32(original, start, end, arrayCopy);
-}
-
-ECode CArrays::CopyOfRangeInt64(
-    /* [in] */ ArrayOf<Int64>* original,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out, callee] */ ArrayOf<Int64>** arrayCopy)
-{
-    return _CopyOfRangeInt64(original, start, end, arrayCopy);
-}
-
-ECode CArrays::CopyOfRangeInt16(
-    /* [in] */ ArrayOf<Int16>* original,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out, callee] */ ArrayOf<Int16>** arrayCopy)
-{
-    return _CopyOfRangeInt16(original, start, end, arrayCopy);
-}
-
-ECode CArrays::CopyOfRange(
-    /* [in] */ ArrayOf<IInterface* >* original,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out, callee] */ ArrayOf<IInterface* >** arrayCopy)
-{
-    return _CopyOfRange(original, start, end, arrayCopy);
-}
-
-// ECode CArrays::CopyOfRange(
-//     /* [in] */ U[] original,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ Class<? extends T[]> newType,
-//     /* [out, callee] */ <T, U> T[] arrayCopy)
-// {
-//     return _CopyOfRange(original, start, end, newType, arrayCopy);
 // }
 
 } // namespace Utility

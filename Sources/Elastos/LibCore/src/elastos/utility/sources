@@ -25,4 +25,4 @@ SOURCES += CArrays.cpp
 SOURCES += DualPivotQuicksort.cpp
 SOURCES += ComparableTimSort.cpp
 SOURCES += TimSort.cpp
-//SOURCES += CBitSet
+SOURCES += CBitSet.cpp

@@ -59,11 +59,13 @@ ECode TimSort::Sort(
     /* [in] */ Int32 hi,
     /* [in] */ IComparator* c)
 {
+    AutoPtr<IArrays> arr;
+    CArrays::AcquireSingleton((IArrays**)&arr);
     if (c == NULL) {
-        return CArrays::_SortObject(a, lo, hi);
+        return arr->SortObject(a, lo, hi);
     }
 
-    VALIDATE_NOT_NULL(CArrays::_CheckStartAndEnd(a->GetLength(), lo, hi));
+    VALIDATE_NOT_NULL(arr->CheckStartAndEnd(a->GetLength(), lo, hi));
     Int32 nRemaining  = hi - lo;
     if (nRemaining < 2)
         return NOERROR;  // Arrays of size 0 and 1 are always sorted

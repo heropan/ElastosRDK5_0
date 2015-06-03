@@ -5,6 +5,7 @@
 #include "_Elastos_Utility_CBitSet.h"
 #include "Object.h"
 
+using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 using Elastos::IO::IInt64Buffer;
 using Elastos::IO::IByteBuffer;
@@ -20,6 +21,10 @@ CarClass(CBitSet)
     , public ICloneable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CBitSet();
 
     /**
@@ -310,6 +315,12 @@ public:
 
     CARAPI Clone(
         /* [out] */ IInterface** object);
+
+    CARAPI ToArray(
+            /* [out] */ ArrayOf<Int64>** arr);
+
+    CARAPI ToArray(
+            /* [out] */ ArrayOf<Byte>** int64Arr);
 
 private:
     /**

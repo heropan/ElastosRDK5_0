@@ -14,6 +14,7 @@ namespace Core {
 
 CarClass(CByte)
      , public Object
+     , public IByte
      , public INumber
      , public ISerializable
      , public IComparable

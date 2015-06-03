@@ -275,6 +275,22 @@ module
             interface IArrays;
         }
 
+        [deprecated]
+        class CBitSet {
+            constructor();
+
+            constructor(
+                [in] Int32 bitCount);
+
+            constructor(
+                [in] ArrayOf<Int64>* array);
+
+            interface IBitSet;
+            interface ISerializable;
+            interface ICloneable;
+        }
+
+
     } // namespace Utility
     } // namespace Elastos
 

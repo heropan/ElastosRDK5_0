@@ -29,7 +29,9 @@ ECode DualPivotQuicksort::Sort(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
 {
-    FAIL_RETURN(CArrays::_CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
+    AutoPtr<IArrays> arr;
+    CArrays::AcquireSingleton((IArrays**)&arr);
+    FAIL_RETURN(arr->CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
     return DoSort(a, fromIndex, toIndex - 1);
 }
 
@@ -297,7 +299,9 @@ ECode DualPivotQuicksort::Sort(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
 {
-    FAIL_RETURN(CArrays::_CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
+    AutoPtr<IArrays> arr;
+    CArrays::AcquireSingleton((IArrays**)&arr);
+    FAIL_RETURN(arr->CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
     return DoSort(a, fromIndex, toIndex - 1);
 }
 
@@ -563,7 +567,9 @@ ECode DualPivotQuicksort::Sort(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
 {
-    FAIL_RETURN(CArrays::_CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
+    AutoPtr<IArrays> arr;
+    CArrays::AcquireSingleton((IArrays**)&arr);
+    FAIL_RETURN(arr->CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
     return DoSort(a, fromIndex, toIndex - 1);
 }
 
@@ -843,7 +849,9 @@ ECode DualPivotQuicksort::Sort(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
 {
-    FAIL_RETURN(CArrays::_CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
+    AutoPtr<IArrays> arr;
+    CArrays::AcquireSingleton((IArrays**)&arr);
+    FAIL_RETURN(arr->CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
     return DoSort(a, fromIndex, toIndex - 1);
 }
 
@@ -1122,7 +1130,9 @@ ECode DualPivotQuicksort::Sort(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
 {
-    FAIL_RETURN(CArrays::_CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
+    AutoPtr<IArrays> arr;
+    CArrays::AcquireSingleton((IArrays**)&arr);
+    FAIL_RETURN(arr->CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
     return DoSort(a, fromIndex, toIndex - 1);
 }
 
@@ -1401,7 +1411,9 @@ ECode DualPivotQuicksort::Sort(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
 {
-    FAIL_RETURN(CArrays::_CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
+    AutoPtr<IArrays> arr;
+    CArrays::AcquireSingleton((IArrays**)&arr);
+    FAIL_RETURN(arr->CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
     return SortNegZeroAndNaN(a, fromIndex, toIndex - 1);
 }
 
@@ -1737,7 +1749,9 @@ ECode DualPivotQuicksort::Sort(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
 {
-    FAIL_RETURN(CArrays::_CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
+    AutoPtr<IArrays> arr;
+    CArrays::AcquireSingleton((IArrays**)&arr);
+    FAIL_RETURN(arr->CheckStartAndEnd(a->GetLength(), fromIndex, toIndex));
     return SortNegZeroAndNaN(a, fromIndex, toIndex - 1);
 }
 

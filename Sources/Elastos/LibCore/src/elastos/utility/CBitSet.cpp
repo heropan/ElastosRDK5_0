@@ -1,18 +1,18 @@
 
 #include "CBitSet.h"
-#include "CByteBufferHelper.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include "Math.h"
+#include "StringBuilder.h"
 
-using Elastos::Utility::Logging::Logger;
-
-using Elastos::IO::CByteBufferHelper;
-using Elastos::IO::IByteBufferHelper;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::EIID_ICloneable;
+using Elastos::IO::IBuffer;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {
+
+CAR_INTERFACE_IMPL_3(CBitSet, Object, IBitSet, ISerializable, ICloneable)
+CAR_OBJECT_IMPL(CBitSet)
 
 const Int64 CBitSet::ALL_ONES;
 
@@ -785,10 +785,10 @@ ECode CBitSet::ValueOfInt64Buffer(
     // clear that's allowed. My assumption is that it's the long[] variant that's the common
     // case anyway, so copy the buffer into a long[].
     Int32 size = 0;
-    int64Arr->GetRemaining(&size);
+    (IBuffer::Probe(int64Arr))->GetRemaining(&size);
     AutoPtr<ArrayOf<Int64> > int64s = ArrayOf<Int64>::Alloc(size);
     Int32 position;
-    int64Arr->GetPosition(&position);
+    (IBuffer::Probe(int64Arr))->GetPosition(&position);
     for (Int32 i = 0; i < size; ++i) {
         Int64 value;
         int64Arr->GetInt64(position + i, &value);
@@ -805,13 +805,13 @@ ECode CBitSet::ValueOfByteArray(
     /* [in] */ const ArrayOf<Byte>& byteArr,
     /* [out] */ IBitSet** bs)
 {
-    VALIDATE_NOT_NULL(bs);
+    /*VALIDATE_NOT_NULL(bs);
 
     AutoPtr<IByteBufferHelper> helper;
     CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&helper);
     AutoPtr<IByteBuffer> byteBuffer;
     helper->WrapArray((ArrayOf<Byte>*)&byteArr, (IByteBuffer**)&byteBuffer);
-    return ValueOfByteBuffer(byteBuffer, bs);
+    return ValueOfByteBuffer(byteBuffer, bs);*/
 }
 
 /**
@@ -830,23 +830,23 @@ ECode CBitSet::ValueOfByteBuffer(
     byteArr->Slice((IByteBuffer**)&byteBuffer);
     byteBuffer->SetOrder(Elastos::IO::ByteOrder_LITTLE_ENDIAN);
     Int32 remaining;
-    byteBuffer->GetRemaining(&remaining);
+    (IBuffer::Probe(byteBuffer))->GetRemaining(&remaining);
     AutoPtr< ArrayOf<Int64> > longs = ArrayForBits(remaining * 8);
     Int32 i = 0;
     Int64 lvalue = 0;
     while(remaining >= sizeof(Int64)) {
         byteBuffer->GetInt64(&lvalue);
         (*longs)[i++] = lvalue;
-        byteBuffer->GetRemaining(&remaining);
+        (IBuffer::Probe(byteBuffer))->GetRemaining(&remaining);
     }
     Boolean hasRemaining;
-    byteBuffer->HasRemaining(&hasRemaining);
+    (IBuffer::Probe(byteBuffer))->HasRemaining(&hasRemaining);
     for (Int32 j = 0; hasRemaining; ++j) {
         Byte byte;
         byteBuffer->GetByte(&byte);
         (*longs)[i] |= (((Int64)byte & 0xff << ((8 * j) & 0x3F)));
 
-        byteBuffer->HasRemaining(&hasRemaining);
+        (IBuffer::Probe(byteBuffer))->HasRemaining(&hasRemaining);
     }
 
    return CBitSet::ValueOfInt64Array(*longs, bs);
@@ -905,17 +905,29 @@ ECode CBitSet::ToString(
             for (Int32 j = 0; j < 64; ++j) {
                 if (((*mBits)[i] & 1LL << j) != 0) {
                     if (comma) {
-                        sb.AppendString(String(", "));
+                        sb.Append(String(", "));
                     } else {
                         comma = TRUE;
                     }
-                    sb.AppendInt32(64 * i + j);
+                    sb.Append(64 * i + j);
                 }
             }
         }
     }
     sb.AppendChar('}');
     *value = sb.ToString();
+    return NOERROR;
+}
+
+ECode CBitSet::ToArray(
+        /* [out] */ ArrayOf<Int64>** arr)
+{
+    return NOERROR;
+}
+
+ECode CBitSet::ToArray(
+        /* [out] */ ArrayOf<Byte>** int64Arr)
+{
     return NOERROR;
 }
 
