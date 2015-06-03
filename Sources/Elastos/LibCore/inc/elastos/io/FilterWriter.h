@@ -2,14 +2,18 @@
 #ifndef __ELASTOS_IO_FILTERWRITER_H__
 #define __ELASTOS_IO_FILTERWRITER_H__
 
-#include "elastos/io/Writer.h"
+#include "Writer.h"
 
 namespace Elastos {
 namespace IO {
 
 class FilterWriter
     : public Writer
+    , public IWriter
 {
+public:
+    CAR_INTERFACE_DECL()
+
 protected:
     FilterWriter();
 
@@ -22,7 +26,7 @@ protected:
      * @param out
      *            the target Writer to filter writes on.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IWriter* out);
 
     /**
@@ -56,7 +60,7 @@ protected:
      *             if an error occurs while writing to this writer.
      */
     CARAPI Write(
-        /* [in] */ const ArrayOf<Char32>& buffer,
+        /* [in] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
@@ -86,7 +90,7 @@ protected:
      * @throws IOException
      *             if an error occurs while writing to this writer.
      */
-    CARAPI WriteString(
+    CARAPI Write(
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);

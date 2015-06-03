@@ -5,6 +5,8 @@
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(FilterWriter, Writer, IFilterWriter)
+
 FilterWriter::FilterWriter()
 {
 }
@@ -13,13 +15,10 @@ FilterWriter::~FilterWriter()
 {
 }
 
-ECode FilterWriter::Init(
+ECode FilterWriter::constructor(
     /* [in] */ IWriter* out)
 {
-    AutoPtr<IInterface> obj;
-    out->GetLock((IInterface**)&obj);
-    LockObject* lockObj = (LockObject*)obj.Get();
-    Writer::Init(lockObj);
+    Writer::constructor(IObject::Probe(out));
 
     mOut = out;
 
@@ -43,7 +42,7 @@ ECode FilterWriter::Flush()
 }
 
 ECode FilterWriter::Write(
-    /* [in] */ const ArrayOf<Char32>& buffer,
+    /* [in] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
@@ -62,7 +61,7 @@ ECode FilterWriter::Write(
     return mOut->Write(oneChar32);
 }
 
-ECode FilterWriter::WriteString(
+ECode FilterWriter::Write(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -70,7 +69,7 @@ ECode FilterWriter::WriteString(
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
-    return mOut->WriteString(str, offset, count);
+    return mOut->Write(str, offset, count);
 }
 
 } // namespace IO

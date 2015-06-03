@@ -72,6 +72,7 @@ SOURCES += CFileDescriptor.cpp
 #SOURCES += CFile.cpp
 
 SOURCES += FilterReader.cpp
+SOURCES += FilterWriter.cpp
 
 #
 # nio related classes

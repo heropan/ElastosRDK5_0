@@ -18,7 +18,6 @@ protected:
 
     ~FilterReader();
 
-public:
     /**
      * Constructs a new FilterReader on the Reader {@code in}.
      *
