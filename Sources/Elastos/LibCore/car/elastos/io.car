@@ -392,6 +392,23 @@ module
 //        interface IFile;
 //    }
 
+//    class CInputStreamReader {
+//        constructor(
+//            [in] IInputStream *is);
+
+//        constructor(
+//            [in] IInputStream *is,
+//            [in] String enc);
+
+//        constructor(
+//            [in] IInputStream* is,
+//            [in] ICharset* charset);
+
+//        interface IReadable;
+//        interface IReader;
+//        interface IInputStreamReader;
+//    }
+
     } // namespace IO
     } // namespace Elastos
 }

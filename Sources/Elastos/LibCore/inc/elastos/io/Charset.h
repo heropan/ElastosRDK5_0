@@ -9,7 +9,7 @@
 #include <Elastos.CoreLibrary_server.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
-#include <elastos/Set.h>
+#include <elastos/utility/etl/Set.h>
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;

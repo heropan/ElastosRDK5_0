@@ -6,7 +6,7 @@
 #include "CharBuffer.h"
 #include "ByteBuffer.h"
 #include "CCodingErrorAction.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
@@ -20,29 +20,28 @@ using Elastos::IO::Charset::ICodingErrorAction;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(InputStreamReader, Reader, IInputStreamReader)
+
 InputStreamReader::InputStreamReader()
     : mEndOfInput(FALSE)
 {
     ASSERT_SUCCEEDED(ByteBuffer::Allocate(8192, (IByteBuffer**)&mBytes));
 }
 
-ECode InputStreamReader::Init(
+ECode InputStreamReader::constructor(
     /* [in] */ IInputStream *in)
 {
     AutoPtr<ICharset> ch;
     FAIL_RETURN(Charset::Charset::DefaultCharset((ICharset**)&ch));
 
-    return Init(in, (ICharset*)ch);
+    return constructor(in, (ICharset*)ch);
 }
 
-ECode InputStreamReader::Init(
+ECode InputStreamReader::constructor(
     /* [in] */ IInputStream *in,
     /* [in] */ const String &enc)
 {
-    AutoPtr<IInterface> obj;
-    in->GetLock((IInterface**)&obj);
-    LockObject* lockobj = (LockObject*)obj.Get();
-    Reader::Init(lockobj);
+    Reader::constructor(IObject::Probe(in));
 
     if (enc.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
@@ -64,17 +63,14 @@ ECode InputStreamReader::Init(
 
     AutoPtr<ICharsetDecoder> unMappableDecoder;
     malformDecoder->OnUnmappableCharacter(replace, (ICharsetDecoder **)&unMappableDecoder);
-    return mBytes->SetLimit(0);
+    return IBuffer::Probe(mBytes)->SetLimit(0);
 }
 
-ECode InputStreamReader::Init(
+ECode InputStreamReader::constructor(
     /* [in] */ IInputStream* in,
     /* [in] */ ICharset* charset)
 {
-    AutoPtr<IInterface> obj;
-    in->GetLock((IInterface**)&obj);
-    LockObject* lockobj = (LockObject*)obj.Get();
-    Reader::Init(lockobj);
+    Reader::constructor(IObject::Probe(in));
 
     mIn = in;
     charset->NewDecoder((ICharsetDecoder**)&mDecoder);
@@ -89,7 +85,7 @@ ECode InputStreamReader::Init(
 
     AutoPtr<ICharsetDecoder> unMappableDecoder;
     malformDecoder->OnUnmappableCharacter(replace, (ICharsetDecoder **)&unMappableDecoder);
-    return mBytes->SetLimit(0);
+    return IBuffer::Probe(mBytes)->SetLimit(0);
 }
 
 ECode InputStreamReader::Close()
@@ -100,7 +96,7 @@ ECode InputStreamReader::Close()
     }
     mDecoder = NULL;
     if (mIn != NULL) {
-        FAIL_RETURN(mIn->Close());
+        FAIL_RETURN(ICloseable::Probe(mIn)->Close());
         mIn = NULL;
     }
     return NOERROR;
@@ -115,7 +111,9 @@ ECode InputStreamReader::GetEncoding(
         return NOERROR;
     }
  //   return HistoricalNamesUtil.getHistoricalName(decoder.charset().name());
-    *encoding = String("UTF-8");
+    AutoPtr<ICharset> c = NULL;
+    mDecoder->Charset((ICharset**)&c);
+    c->GetName(encoding);
 
     return NOERROR;
 }
@@ -131,13 +129,13 @@ ECode InputStreamReader::Read(
     }
     ArrayOf_<Char32, 1> buf;
     Int32 number;
-    FAIL_RETURN(ReadChars(&buf, 0, 1, &number));
+    FAIL_RETURN(Read(&buf, 0, 1, &number));
     *value = number != -1 ? buf[0] : -1;
 
     return NOERROR;
 }
 
-ECode InputStreamReader::ReadChars(
+ECode InputStreamReader::Read(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
@@ -178,32 +176,32 @@ ECode InputStreamReader::ReadChars(
     // bytes.remaining() indicates number of bytes in buffer
     // when 1-st time entered, it'll be equal to zero
     Boolean hasRemaining;
-    mBytes->HasRemaining(&hasRemaining);
+    IBuffer::Probe(mBytes)->HasRemaining(&hasRemaining);
     Boolean needInput = !hasRemaining;
 
     Int32 size;
     Int32 was_red;
 
-    while(out->HasRemaining(&hasRemaining), hasRemaining) {
+    while(IBuffer::Probe(out)->HasRemaining(&hasRemaining), hasRemaining) {
         // fill the buffer if needed
         if (needInput) {
             Int32 num, position;
             FAIL_RETURN(mIn->Available(&num));
-            FAIL_RETURN(out->GetPosition(&position));
+            FAIL_RETURN(IBuffer::Probe(out)->GetPosition(&position));
             if (num == 0 && position > offset) {
                 // we could return the result without blocking read
                 break;
             }
 
             Int32 capacity, limit, arrayOffset;
-            mBytes->GetCapacity(&capacity);
-            mBytes->GetLimit(&limit);
-            mBytes->GetArrayOffset(&arrayOffset);
+            IBuffer::Probe(mBytes)->GetCapacity(&capacity);
+            IBuffer::Probe(mBytes)->GetLimit(&limit);
+            IBuffer::Probe(mBytes)->GetArrayOffset(&arrayOffset);
             Int32 to_read = capacity - limit;
             Int32 off = arrayOffset + limit;
             AutoPtr<ArrayOf<Byte> > buf;
             mBytes->GetArray((ArrayOf<Byte>**)&buf);
-            mIn->ReadBytes(buf, off, to_read, &was_red);
+            mIn->Read(buf, off, to_read, &was_red);
             if (was_red == -1) {
                 mEndOfInput = TRUE;
                 break;
@@ -211,7 +209,7 @@ ECode InputStreamReader::ReadChars(
             else if (was_red == 0) {
                 break;
             }
-            mBytes->SetLimit(limit + was_red);
+            IBuffer::Probe(mBytes)->SetLimit(limit + was_red);
             needInput = FALSE;
         }
 
@@ -221,14 +219,14 @@ ECode InputStreamReader::ReadChars(
         Boolean isUnderflow;
         if (result->IsUnderflow(&isUnderflow), isUnderflow) {
             Int32 capacity, limit, pos;
-            mBytes->GetLimit(&limit);
-            mBytes->GetCapacity(&capacity);
+            IBuffer::Probe(mBytes)->GetLimit(&limit);
+            IBuffer::Probe(mBytes)->GetCapacity(&capacity);
             // compact the buffer if no space left
             if (limit == capacity) {
                 mBytes->Compact();
-                mBytes->GetPosition(&pos);
-                mBytes->SetLimit(pos);
-                mBytes->SetPosition(0);
+                IBuffer::Probe(mBytes)->GetPosition(&pos);
+                IBuffer::Probe(mBytes)->SetLimit(pos);
+                IBuffer::Probe(mBytes)->SetPosition(0);
             }
             needInput = TRUE;
         }
@@ -240,15 +238,20 @@ ECode InputStreamReader::ReadChars(
     if (_CObject_Compare(result, resultTmp) && mEndOfInput) {
         result = NULL;
         mDecoder->Decode(mBytes, out, TRUE, (ICoderResult**)&result);
-        AutoPtr<ICoderResult> resultFlush;
-        mDecoder->Flush(out, (ICoderResult**)&resultFlush);
+        Boolean isUnderflow = false;
+        if(result->IsUnderflow(&isUnderflow), isUnderflow)
+        {
+            AutoPtr<ICoderResult> resultFlush;
+            mDecoder->Flush(out, (ICoderResult**)&resultFlush);
+        }
+
         mDecoder->Reset();
 
         Int32 pos, arrayOffset, limit;
-        mBytes->GetArrayOffset(&arrayOffset);
-        mBytes->GetPosition(&pos);
-        mBytes->GetLimit(&limit);
-        mBytes->SetPosition(Elastos::Core::Math::Min(pos, limit) - arrayOffset);
+        IBuffer::Probe(mBytes)->GetArrayOffset(&arrayOffset);
+        IBuffer::Probe(mBytes)->GetPosition(&pos);
+        IBuffer::Probe(mBytes)->GetLimit(&limit);
+        IBuffer::Probe(mBytes)->SetPosition(Elastos::Core::Math::Min(pos, limit) - arrayOffset);
     }
     Boolean isMalformed, isUnmappable;
     if ((result->IsMalformed(&isMalformed), isMalformed) || (result->IsUnmappable(&isUnmappable), isUnmappable)) {
@@ -256,7 +259,7 @@ ECode InputStreamReader::ReadChars(
     }
 
     Int32 charBufPos;
-    out->GetPosition(&charBufPos);
+    IBuffer::Probe(out)->GetPosition(&charBufPos);
     *number = charBufPos - offset == 0 ? -1 : charBufPos - offset;
     return NOERROR;
 }
@@ -277,7 +280,7 @@ ECode InputStreamReader::IsReady(
     }
 
     Boolean hasRemaining;
-    mBytes->HasRemaining(&hasRemaining);
+    IBuffer::Probe(mBytes)->HasRemaining(&hasRemaining);
     Int32 number;
     mIn->Available(&number);
     *ready = hasRemaining || number > 0;

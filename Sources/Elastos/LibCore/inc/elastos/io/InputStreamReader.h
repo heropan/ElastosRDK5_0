@@ -12,10 +12,15 @@ namespace IO {
 
 class InputStreamReader
     : public Reader
+    , public IInputStreamReader
 {
+public:
+    CAR_INTERFACE_DECL()
+    
 protected:
     InputStreamReader();
 
+public:
     /**
      * Constructs a new {@code InputStreamReader} on the {@link InputStream}
      * {@code in}. This constructor sets the character converter to the encoding
@@ -25,7 +30,7 @@ protected:
      * @param in
      *            the input stream from which to read characters.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream *in);
 
     /**
@@ -43,7 +48,7 @@ protected:
      * @throws UnsupportedEncodingException
      *             if the encoding specified by {@code enc} cannot be found.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream *in,
         /* [in] */ const String &enc);
 
@@ -56,11 +61,10 @@ protected:
      * @param charset
      *            the Charset that defines the character converter
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* in,
         /* [in] */ ICharset* charset);
 
-public:
     /**
      * Closes this reader. This implementation closes the source InputStream and
      * releases all local storage.
@@ -71,11 +75,10 @@ public:
     CARAPI Close();
 
     /**
-     * Returns the name of the encoding used to convert bytes into characters.
-     * The value {@code null} is returned if this reader has been closed.
-     *
-     * @return the name of the character converter or {@code null} if this
-     *         reader is closed.
+     * Returns the canonical name of the encoding used by this writer to convert characters to
+     * bytes, or null if this writer has been closed. Most callers should probably keep
+     * track of the String or Charset they passed in; this method may not return the same
+     * name.
      */
     CARAPI GetEncoding(
         /* [out] */ String* encoding);
@@ -96,30 +99,20 @@ public:
         /* [out] */ Int32* value);
 
     /**
-     * Reads at most {@code length} characters from this reader and stores them
-     * at position {@code offset} in the character array {@code buf}. Returns
+     * Reads up to {@code count} characters from this reader and stores them
+     * at position {@code offset} in the character array {@code buffer}. Returns
      * the number of characters actually read or -1 if the end of the reader has
      * been reached. The bytes are either obtained from converting bytes in this
      * reader's buffer or by first filling the buffer from the source
      * InputStream and then reading from the buffer.
      *
-     * @param buffer
-     *            the array to store the characters read.
-     * @param offset
-     *            the initial position in {@code buf} to store the characters
-     *            read from this reader.
-     * @param length
-     *            the maximum number of characters to read.
-     * @return the number of characters read or -1 if the end of the reader has
-     *         been reached.
      * @throws IndexOutOfBoundsException
-     *             if {@code offset < 0} or {@code length < 0}, or if
-     *             {@code offset + length} is greater than the length of
-     *             {@code buf}.
+     *     if {@code offset < 0 || count < 0 || offset + count > buffer.length}.
      * @throws IOException
      *             if this reader is closed or some other I/O error occurs.
      */
-    CARAPI ReadChars(
+    // @Override
+    CARAPI Read(
         /* [out] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
