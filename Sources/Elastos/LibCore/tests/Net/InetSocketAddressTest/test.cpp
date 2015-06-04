@@ -1,6 +1,5 @@
 
 #include "test.h"
-#include "elastos/ObjectUtils.h"
 
 CTest::CTest()
 {
@@ -151,10 +150,10 @@ int CTest::test_equals(int argc, char* argv[])
     AutoPtr<IInetSocketAddress> isa2;
     CInetSocketAddress::New(2, (IInetSocketAddress**)&isa2);
     Boolean isflag = FALSE;
-    assert(!ObjectUtils::Equals(isa1, isa2));
+    assert(!Object::Equals(isa1, isa2));
     AutoPtr<IInetSocketAddress> isa3;
     CInetSocketAddress::New(1, (IInetSocketAddress**)&isa3);
-    assert(ObjectUtils::Equals(isa1, isa3));
+    assert(Object::Equals(isa1, isa3));
 
     AutoPtr<IInetAddress> localhost;
     AutoPtr<IInetAddressHelper> iah;
@@ -165,7 +164,7 @@ int CTest::test_equals(int argc, char* argv[])
     CInetSocketAddress::New(hostname, 80, (IInetSocketAddress**)&isa1);
     localhost->GetHostAddress(&hostname);
     CInetSocketAddress::New(hostname, 80, (IInetSocketAddress**)&isa2);
-    assert(ObjectUtils::Equals(isa1, isa2));
+    assert(Object::Equals(isa1, isa2));
     return 0;
 }
 
@@ -222,13 +221,13 @@ int CTest::test_hashCode(int argc, char* argv[])
     AutoPtr<IInetSocketAddress> isa2;
     localhost->GetHostAddress(&hostname);
     CInetSocketAddress::New(hostname, 8080, (IInetSocketAddress**)&isa2);
-    Int32 hash1 = ObjectUtils::GetHashCode(isa1);
-    Int32 hash2 = ObjectUtils::GetHashCode(isa2);
+    Int32 hash1 = Object::GetHashCode(isa1);
+    Int32 hash2 = Object::GetHashCode(isa2);
     assert(hash1 == hash2);
 
     AutoPtr<IInetSocketAddress> isa3;
     CInetSocketAddress::New(String("0.0.0.0"), 8080, (IInetSocketAddress**)&isa3);
-    hash2 = ObjectUtils::GetHashCode(isa3);
+    hash2 = Object::GetHashCode(isa3);
     assert(hash1 != hash2);
     return 0;
 }

@@ -2,10 +2,8 @@
 #include "CConcurrentLinkedDeque.h"
 #include "CArrayList.h"
 #include <Math.h>
-#include <elastos/ObjectUtils.h>
 
 using Elastos::Core::Math;
-using Elastos::Core::ObjectUtils;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 
@@ -51,7 +49,7 @@ ECode CConcurrentLinkedDeque::Node::GetInterfaceID(
     /* [out] */ InterfaceID* iid)
 {
     VALIDATE_NOT_NULL(iid);
-    if (ObjectUtils::Equals(object, THIS_PROBE(IInterface))) {
+    if (Object::Equals(object, THIS_PROBE(IInterface))) {
         *iid = EIID_IInterface;
         return NOERROR;
     }
@@ -151,7 +149,7 @@ void CConcurrentLinkedDeque::LinkFirst(
                 // Check for head updates every other hop.
                 // If p == q, we are sure to follow head instead.
                 p = (h != (h = mHead)) ? h : q;
-            else if (ObjectUtils::Equals(p->mNext->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) { // PREV_TERMINATOR
+            else if (Object::Equals(p->mNext->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) { // PREV_TERMINATOR
                 goto RESTARTFROMHEAD;
             }
             else {
@@ -185,7 +183,7 @@ void CConcurrentLinkedDeque::LinkLast(
                 // Check for tail updates every other hop.
                 // If p == q, we are sure to follow tail instead.
                 p = (t != (t = mTail)) ? t : q;
-            else if (ObjectUtils::Equals(p->mPrev->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) { // NEXT_TERMINATOR
+            else if (Object::Equals(p->mPrev->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) { // NEXT_TERMINATOR
                 goto RESTARTFROMTAIL;
             }
             else {
@@ -195,7 +193,7 @@ void CConcurrentLinkedDeque::LinkLast(
                     // Successful CAS is the linearization point
                     // for e to become an element of this deque,
                     // and for newNode to become "live".
-                    if (!ObjectUtils::Equals(p->Probe(EIID_IInterface), t->Probe(EIID_IInterface))) // hop two nodes at a time
+                    if (!Object::Equals(p->Probe(EIID_IInterface), t->Probe(EIID_IInterface))) // hop two nodes at a time
                         CasTail(t, newNode);  // Failure is OK.
                     return;
                 }
@@ -256,13 +254,13 @@ void CConcurrentLinkedDeque::Unlink(
             }
             AutoPtr<Node> q = p->mPrev;
             if (q == NULL) {
-                if (ObjectUtils::Equals(p->mNext->Probe(EIID_IInterface), p->Probe(EIID_IInterface)))
+                if (Object::Equals(p->mNext->Probe(EIID_IInterface), p->Probe(EIID_IInterface)))
                     return;
                 activePred = p;
                 isFirst = TRUE;
                 break;
             }
-            else if (ObjectUtils::Equals(p->Probe(EIID_IInterface), q->Probe(EIID_IInterface)))
+            else if (Object::Equals(p->Probe(EIID_IInterface), q->Probe(EIID_IInterface)))
                 return;
             else
                 p = q;
@@ -277,13 +275,13 @@ void CConcurrentLinkedDeque::Unlink(
             }
             AutoPtr<Node> q = p->mNext;
             if (q == NULL) {
-                if (ObjectUtils::Equals(p->mPrev->Probe(EIID_IInterface), p->Probe(EIID_IInterface)))
+                if (Object::Equals(p->mPrev->Probe(EIID_IInterface), p->Probe(EIID_IInterface)))
                     return;
                 activeSucc = p;
                 isLast = TRUE;
                 break;
             }
-            else if (ObjectUtils::Equals(p->Probe(EIID_IInterface), q->Probe(EIID_IInterface)))
+            else if (Object::Equals(p->Probe(EIID_IInterface), q->Probe(EIID_IInterface)))
                 return;
             else
                 p = q;
@@ -304,8 +302,8 @@ void CConcurrentLinkedDeque::Unlink(
         if ((isFirst | isLast) &&
 
             // Recheck expected state of predecessor and successor
-            (ObjectUtils::Equals(activePred->mNext->Probe(EIID_IInterface), activeSucc->Probe(EIID_IInterface))) &&
-            (ObjectUtils::Equals(activeSucc->mPrev->Probe(EIID_IInterface), activePred->Probe(EIID_IInterface))) &&
+            (Object::Equals(activePred->mNext->Probe(EIID_IInterface), activeSucc->Probe(EIID_IInterface))) &&
+            (Object::Equals(activeSucc->mPrev->Probe(EIID_IInterface), activePred->Probe(EIID_IInterface))) &&
             (isFirst ? activePred->mPrev == NULL : activePred->mItem != NULL) &&
             (isLast  ? activeSucc->mNext == NULL : activeSucc->mItem != NULL)) {
 
@@ -329,11 +327,11 @@ void CConcurrentLinkedDeque::UnlinkFirst(
     // assert first.item == null;
     for (AutoPtr<Node> o = NULL, p = next, q;;) {
         if (p->mItem != NULL || (q = p->mNext) == NULL) {
-            if (o != NULL && (ObjectUtils::Equals(p->mPrev->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) && first->CasNext(next, p)) {
+            if (o != NULL && (Object::Equals(p->mPrev->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) && first->CasNext(next, p)) {
                 SkipDeletedPredecessors(p);
                 if (first->mPrev == NULL &&
                     (p->mNext == NULL || p->mItem != NULL) &&
-                    (ObjectUtils::Equals(p->mPrev->Probe(EIID_IInterface), first->Probe(EIID_IInterface)))) {
+                    (Object::Equals(p->mPrev->Probe(EIID_IInterface), first->Probe(EIID_IInterface)))) {
 
                     UpdateHead(); // Ensure o is not reachable from head
                     UpdateTail(); // Ensure o is not reachable from tail
@@ -345,7 +343,7 @@ void CConcurrentLinkedDeque::UnlinkFirst(
             }
             return;
         }
-        else if (ObjectUtils::Equals(p->Probe(EIID_IInterface), q->Probe(EIID_IInterface)))
+        else if (Object::Equals(p->Probe(EIID_IInterface), q->Probe(EIID_IInterface)))
             return;
         else {
             o = p;
@@ -367,7 +365,7 @@ void CConcurrentLinkedDeque::UnlinkLast(
                 SkipDeletedSuccessors(p);
                 if (last->mNext == NULL &&
                     (p->mPrev == NULL || p->mItem != NULL) &&
-                    (ObjectUtils::Equals(p->mNext->Probe(EIID_IInterface), last->Probe(EIID_IInterface)))) {
+                    (Object::Equals(p->mNext->Probe(EIID_IInterface), last->Probe(EIID_IInterface)))) {
 
                     UpdateHead(); // Ensure o is not reachable from head
                     UpdateTail(); // Ensure o is not reachable from tail
@@ -379,7 +377,7 @@ void CConcurrentLinkedDeque::UnlinkLast(
             }
             return;
         }
-        else if (ObjectUtils::Equals(p->Probe(EIID_IInterface), q->Probe(EIID_IInterface)))
+        else if (Object::Equals(p->Probe(EIID_IInterface), q->Probe(EIID_IInterface)))
             return;
         else {
             o = p;
@@ -407,7 +405,7 @@ void CConcurrentLinkedDeque::UpdateHead()
                     goto RESTARTFROMHEAD;
                 }
             }
-            else if (!ObjectUtils::Equals(h->Probe(EIID_IInterface), mHead->Probe(EIID_IInterface))) {
+            else if (!Object::Equals(h->Probe(EIID_IInterface), mHead->Probe(EIID_IInterface))) {
                 goto RESTARTFROMHEAD;
             }
             else {
@@ -434,7 +432,7 @@ void CConcurrentLinkedDeque::UpdateTail()
                 else
                     goto RESTARTFROMTAIL;
             }
-            else if (!ObjectUtils::Equals(t->Probe(EIID_IInterface), mTail->Probe(EIID_IInterface)))
+            else if (!Object::Equals(t->Probe(EIID_IInterface), mTail->Probe(EIID_IInterface)))
                 goto RESTARTFROMTAIL;
             else {
                 p = q;
@@ -459,12 +457,12 @@ void CConcurrentLinkedDeque::SkipDeletedPredecessors(
                 goto FINDACTIVE;
             AutoPtr<Node> q = p->mPrev;
             if (q == NULL) {
-                if (ObjectUtils::Equals(p->mNext->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) {
+                if (Object::Equals(p->mNext->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) {
                     goto WHILEACTIVE;
                 }
                 goto FINDACTIVE;
             }
-            else if (ObjectUtils::Equals(p->Probe(EIID_IInterface), q->Probe(EIID_IInterface))) {
+            else if (Object::Equals(p->Probe(EIID_IInterface), q->Probe(EIID_IInterface))) {
                 goto WHILEACTIVE;
             }
             else
@@ -472,7 +470,7 @@ void CConcurrentLinkedDeque::SkipDeletedPredecessors(
         }
 
         // found active CAS target
-        if ((ObjectUtils::Equals(prev->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) || x->CasPrev(prev, p))
+        if ((Object::Equals(prev->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) || x->CasPrev(prev, p))
             return;
 
     } while (x->mItem != NULL || x->mNext == NULL);
@@ -495,11 +493,11 @@ void CConcurrentLinkedDeque::SkipDeletedSuccessors(
             }
             AutoPtr<Node> q = p->mNext;
             if (q == NULL) {
-                if (ObjectUtils::Equals(p->mPrev->Probe(EIID_IInterface), p->Probe(EIID_IInterface)))
+                if (Object::Equals(p->mPrev->Probe(EIID_IInterface), p->Probe(EIID_IInterface)))
                     goto WHILEACTIVE;
                 goto FINDACTIVE;
             }
-            else if (ObjectUtils::Equals(p->Probe(EIID_IInterface), q->Probe(EIID_IInterface))) {
+            else if (Object::Equals(p->Probe(EIID_IInterface), q->Probe(EIID_IInterface))) {
                 goto WHILEACTIVE;
             }
             else {
@@ -508,7 +506,7 @@ void CConcurrentLinkedDeque::SkipDeletedSuccessors(
         }
 
         // found active CAS target
-        if ((ObjectUtils::Equals(next->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) || x->CasNext(next, p))
+        if ((Object::Equals(next->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) || x->CasNext(next, p))
             return;
 
     } while (x->mItem != NULL || x->mPrev == NULL);
@@ -519,7 +517,7 @@ AutoPtr<CConcurrentLinkedDeque::Node> CConcurrentLinkedDeque::Succ(
 {
     // TODO: should we skip deleted nodes here?
     AutoPtr<Node> q = p->mNext;
-    if (ObjectUtils::Equals(q->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) {
+    if (Object::Equals(q->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) {
         return First();
     }
     return q;
@@ -529,7 +527,7 @@ AutoPtr<CConcurrentLinkedDeque::Node> CConcurrentLinkedDeque::Pred(
     /* [in] */ Node* p)
 {
     AutoPtr<Node> q = p->mPrev;
-    if (ObjectUtils::Equals(q->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) {
+    if (Object::Equals(q->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) {
         return Last();
     }
     return q;
@@ -545,7 +543,7 @@ AutoPtr<CConcurrentLinkedDeque::Node> CConcurrentLinkedDeque::First()
                 // Check for head updates every other hop.
                 // If p == q, we are sure to follow head instead.
                 p = (h != (h = mHead)) ? h : q;
-            else if (ObjectUtils::Equals(p->Probe(EIID_IInterface), h->Probe(EIID_IInterface))
+            else if (Object::Equals(p->Probe(EIID_IInterface), h->Probe(EIID_IInterface))
                      // It is possible that p is PREV_TERMINATOR,
                      // but if so, the CAS is guaranteed to fail.
                      || CasHead(h, p)) {
@@ -569,7 +567,7 @@ AutoPtr<CConcurrentLinkedDeque::Node> CConcurrentLinkedDeque::Last()
                 // If p == q, we are sure to follow tail instead.
                 p = (t != (t = mTail)) ? t : q;
             }
-            else if (ObjectUtils::Equals(p->Probe(EIID_IInterface), t->Probe(EIID_IInterface))
+            else if (Object::Equals(p->Probe(EIID_IInterface), t->Probe(EIID_IInterface))
                      // It is possible that p is NEXT_TERMINATOR,
                      // but if so, the CAS is guaranteed to fail.
                      || CasTail(t, p)) {
@@ -654,7 +652,7 @@ void CConcurrentLinkedDeque::InitHeadTail(
     /* [in] */ Node* h,
     /* [in] */ Node* t)
 {
-    if (ObjectUtils::Equals(h->Probe(EIID_IInterface), t->Probe(EIID_IInterface))) {
+    if (Object::Equals(h->Probe(EIID_IInterface), t->Probe(EIID_IInterface))) {
         if (h == NULL)
             h = t = new Node(NULL);
         else {
@@ -875,7 +873,7 @@ ECode CConcurrentLinkedDeque::RemoveFirstOccurrence(
     AutoPtr<Node> p = First();
     for (; p != NULL; p = Succ(p)) {
         AutoPtr<IInterface> item = p->mItem;
-        if (item != NULL && ObjectUtils::Equals(o, item) && p->CasItem(item, NULL)) {
+        if (item != NULL && Object::Equals(o, item) && p->CasItem(item, NULL)) {
             Unlink(p);
             *value = TRUE;
             return NOERROR;
@@ -894,7 +892,7 @@ ECode CConcurrentLinkedDeque::RemoveLastOccurrence(
     AutoPtr<Node> p = Last();
     for (; p != NULL; p = Pred(p)) {
         AutoPtr<IInterface> item = p->mItem;
-        if (item != NULL && ObjectUtils::Equals(o, item) && p->CasItem(item, NULL)) {
+        if (item != NULL && Object::Equals(o, item) && p->CasItem(item, NULL)) {
             Unlink(p);
             *value = TRUE;
             return NOERROR;
@@ -916,7 +914,7 @@ ECode CConcurrentLinkedDeque::Contains(
     AutoPtr<Node> p = First();
     for (; p != NULL; p = Succ(p)) {
         AutoPtr<IInterface> item = p->mItem;
-        if (item != NULL && ObjectUtils::Equals(object, item)) {
+        if (item != NULL && Object::Equals(object, item)) {
             *result = TRUE;
             return NOERROR;
         }
@@ -963,7 +961,7 @@ ECode CConcurrentLinkedDeque::AddAll(
     /* [out] */ Boolean* modified)
 {
     VALIDATE_NOT_NULL(modified)
-    if (ObjectUtils::Equals(collection->Probe(EIID_IInterface), THIS_PROBE(IInterface)))
+    if (Object::Equals(collection->Probe(EIID_IInterface), THIS_PROBE(IInterface)))
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
         // As historically specified in AbstractQueue#addAll
         //throw new IllegalArgumentException();
@@ -1001,7 +999,7 @@ ECode CConcurrentLinkedDeque::AddAll(
                 // If p == q, we are sure to follow tail instead.
                 p = (t != (t = mTail)) ? t : q;
             }
-            else if (ObjectUtils::Equals(p->mPrev->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) { // NEXT_TERMINATOR
+            else if (Object::Equals(p->mPrev->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) { // NEXT_TERMINATOR
                 goto RESTARTFROMTAIL;
             }
             else {

@@ -1,14 +1,39 @@
 
 #include "InterfaceAddress.h"
-#include "CInet4Address.h"
-#include <elastos/core/StringUtils.h>
+#include "StringBuilder.h"
+#include "StringUtils.h"
 
+using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL(InterfaceAddress, Object, IInterfaceAddress)
+
+InterfaceAddress::InterfaceAddress()
+    : mPrefixLength(0)
+{}
+
 InterfaceAddress::InterfaceAddress(
+    /* [in] */ IInetAddress* address,
+    /* [in] */ IInetAddress* broadcastAddress,
+    /* [in] */ IInetAddress* mask)
+    : mAddress(address)
+    , mBroadcastAddress(broadcastAddress)
+{
+    mPrefixLength = CountPrefixLength(mask);
+}
+
+InterfaceAddress::InterfaceAddress(
+    /* [in] */ IInetAddress* address,
+    /* [in] */ Int16 prefixLength)
+    : mAddress(address)
+    , mPrefixLength(prefixLength)
+{
+}
+
+ECode InterfaceAddress::constructor(
     /* [in] */ IInetAddress* address,
     /* [in] */ IInetAddress* broadcastAddress,
     /* [in] */ IInetAddress* mask)
@@ -16,54 +41,29 @@ InterfaceAddress::InterfaceAddress(
     mAddress = address;
     mBroadcastAddress = broadcastAddress;
     mPrefixLength = CountPrefixLength(mask);
+    return NOERROR;
 }
 
-InterfaceAddress::InterfaceAddress(
+ECode InterfaceAddress::constructor(
     /* [in] */ IInetAddress* address,
     /* [in] */ Int16 prefixLength)
 {
     mAddress = address;
     mBroadcastAddress = NULL;
     mPrefixLength = prefixLength;
-}
-
-PInterface InterfaceAddress::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IInterfaceAddress*)this;
-    }
-    else if (riid == EIID_IInterfaceAddress) {
-        return (IInterfaceAddress*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 InterfaceAddress::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 InterfaceAddress::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode InterfaceAddress::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 Int16 InterfaceAddress::CountPrefixLength(
     /* [in] */ IInetAddress* mask)
 {
+    assert(mask != NULL);
+
     Int16 count = 0;
-    ArrayOf<Byte>* maskBytes = ((InetAddress*)mask->Probe(EIID_InetAddress))->mIpAddress;
-    for (Int32 i = 0; i < maskBytes->GetLength(); ++i) {
-        Byte b = (*maskBytes)[i];
+    AutoPtr<ArrayOf<Byte> > maskIpAddress;
+    mask->GetAddress((ArrayOf<Byte>**)&maskIpAddress);
+    for (Int32 i = 0; i < maskIpAddress->GetLength(); ++i) {
+        Byte b = (*maskIpAddress)[i];
         for (Int32 j = 0; j < 8; ++j) {
             if ((b & (1 << j)) != 0) {
                 ++count;
@@ -72,6 +72,53 @@ Int16 InterfaceAddress::CountPrefixLength(
     }
 
     return count;
+}
+
+ECode InterfaceAddress::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* equals)
+{
+    VALIDATE_NOT_NULL(equals)
+    *equals = FALSE;
+
+    IInterfaceAddress* oia = IInterfaceAddress::Probe(obj);
+    if (obj == NULL) {
+        return NOERROR;
+    }
+
+    InterfaceAddress* rhs =(InterfaceAddress*)oia;
+    Boolean bval = TRUE;
+    if (mAddress != NULL) {
+        bval = Object::Equals(mAddress, rhs->mAddress);
+    }
+    if (bval && mBroadcastAddress != NULL){
+        bval = Object::Equals(mBroadcastAddress, rhs->mBroadcastAddress);
+    }
+    *equals = bval && (rhs->mPrefixLength == mPrefixLength);
+    return NOERROR;
+}
+
+/**
+ * Returns a string containing this interface's address, prefix length, and broadcast address.
+ * For example: {@code "/172.18.103.112/23 [/172.18.103.255]"} or
+ * {@code "/0:0:0:0:0:0:0:1%1/128 [null]"}.
+ */
+ECode InterfaceAddress::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+
+    String addr = Object::ToString(mAddress);
+    String broadcast = Object::ToString(mBroadcastAddress);
+
+    StringBuilder sb(addr);
+    sb.AppendChar('/');
+    sb.Append(mPrefixLength);
+    sb.AppendChar('[');
+    sb.Append(broadcast);
+    sb.AppendChar(']');
+    *str = sb.ToString();
+    return NOERROR;
 }
 
 ECode InterfaceAddress::GetAddress(
@@ -100,56 +147,6 @@ ECode InterfaceAddress::GetNetworkPrefixLength(
     return NOERROR;
 }
 
-ECode InterfaceAddress::Equals(
-    /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* equals)
-{
-    VALIDATE_NOT_NULL(equals)
-
-    if(obj == this)
-    {
-        *equals = FALSE;
-        return NOERROR;
-    }
-    if(obj->Probe(EIID_IInterfaceAddress) == NULL)
-    {
-        *equals = FALSE;
-        return NOERROR;
-    }
-    AutoPtr<InterfaceAddress> rhs =(InterfaceAddress*)(obj->Probe(EIID_IInterfaceAddress));
-    Boolean addrEquals;
-    Boolean broadcastEquals;
-    if(mAddress != NULL){
-        mAddress->Equals(rhs->mAddress, &addrEquals);
-    }
-    if(mBroadcastAddress != NULL){
-        mBroadcastAddress->Equals(rhs->mBroadcastAddress, &broadcastEquals);
-    }
-    *equals = ((mAddress == NULL) ? rhs->mAddress == NULL : addrEquals) &&
-    (rhs->mPrefixLength == mPrefixLength) &&
-    ((mBroadcastAddress == NULL) ? rhs->mBroadcastAddress == NULL : broadcastEquals);
-    return NOERROR;
-}
-
-/**
- * Returns a string containing this interface's address, prefix length, and broadcast address.
- * For example: {@code "/172.18.103.112/23 [/172.18.103.255]"} or
- * {@code "/0:0:0:0:0:0:0:1%1/128 [null]"}.
- */
-
-ECode InterfaceAddress::ToString(
-    /* [out] */ String* str)
-{
-    VALIDATE_NOT_NULL(str)
-
-    String addr;
-    String broadcast;
-    mAddress->ToString(&addr);
-    mBroadcastAddress->ToString(&broadcast);
-    *str = addr + String("/") + StringUtils::Int32ToString(mPrefixLength) +
-            String("[") + broadcast + String("]");
-    return NOERROR;
-}
 
 } // namespace Net
 } // namespace Elastos

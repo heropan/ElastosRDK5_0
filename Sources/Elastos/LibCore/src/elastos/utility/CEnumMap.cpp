@@ -2,11 +2,9 @@
 #include "CEnumMap.h"
 #include "CArrays.h"
 #include "Enum.h"
-#include "ObjectUtils.h"
 #include "StringBuilder.h"
 
 using Elastos::Core::EIID_ICloneable;
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Enum;
 using Elastos::Core::EIID_IEnum;
@@ -134,7 +132,7 @@ ECode CEnumMap::ContainsValue(
     }
     else {
         for (Int32 i = 0; i < mEnumSize; i++) {
-            if ((*mHasMapping)[i] && ObjectUtils::Equals(value, (*mValues)[i])) {
+            if ((*mHasMapping)[i] && Object::Equals(value, (*mValues)[i])) {
                 *result = TRUE;
                 return NOERROR;
             }
@@ -479,14 +477,14 @@ ECode CEnumMap::EnumMapEntry::Equals(
         AutoPtr<IMapEntry> entry = IMapEntry::Probe(object);
         AutoPtr<IInterface> enumKey;
         entry->GetKey((IInterface**)&enumKey);
-        if (ObjectUtils::Equals(mKey, enumKey)) {
+        if (Object::Equals(mKey, enumKey)) {
             AutoPtr<IInterface> theValue;
             entry->GetValue((IInterface**)&theValue);
             if ((*mEnumMap->mValues)[mOrdinal] == NULL) {
                 isEqual = (theValue == NULL);
             }
             else {
-                isEqual = ObjectUtils::Equals((*mEnumMap->mValues)[mOrdinal], theValue);
+                isEqual = Object::Equals((*mEnumMap->mValues)[mOrdinal], theValue);
             }
         }
     }
@@ -499,8 +497,8 @@ ECode CEnumMap::EnumMapEntry::GetHashCode(
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = ((*mEnumMap->mKeys)[mOrdinal] == NULL ? 0 : ObjectUtils::GetHashCode((*mEnumMap->mKeys)[mOrdinal]))
-            ^ ((*mEnumMap->mValues)[mOrdinal] == NULL ? 0 : ObjectUtils::GetHashCode((*mEnumMap->mValues)[mOrdinal]));
+    *value = ((*mEnumMap->mKeys)[mOrdinal] == NULL ? 0 : Object::GetHashCode((*mEnumMap->mKeys)[mOrdinal]))
+            ^ ((*mEnumMap->mValues)[mOrdinal] == NULL ? 0 : Object::GetHashCode((*mEnumMap->mValues)[mOrdinal]));
     return NOERROR;
 }
 
@@ -541,10 +539,10 @@ ECode CEnumMap::EnumMapEntry::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
-    StringBuilder result(ObjectUtils::ToString((*mEnumMap->mKeys)[mOrdinal]));
+    StringBuilder result(Object::ToString((*mEnumMap->mKeys)[mOrdinal]));
     result.Append("=");
     result.Append((*mEnumMap->mValues)[mOrdinal] == NULL
-            ? String("null") : ObjectUtils::ToString((*mEnumMap->mValues)[mOrdinal]));
+            ? String("null") : Object::ToString((*mEnumMap->mValues)[mOrdinal]));
     return result.ToString(str);
 }
 
@@ -620,13 +618,13 @@ ECode CEnumMap::EnumMapIterator::ToString(
     VALIDATE_NOT_NULL(str)
 
     if (-1 == mPrePosition) {
-        *str = ObjectUtils::ToString(this->Probe(EIID_IInterface));
+        *str = Object::ToString(this);
         return NOERROR;
     }
     AutoPtr<MapEntry> resent =  new MapEntry((*mEnumMap->mKeys)[mPrePosition], (*mEnumMap->mValues)[mPrePosition]);
     AutoPtr<IInterface> outface;
     mType->Get(resent, (IInterface**)&outface);
-    *str = ObjectUtils::ToString(outface);
+    *str = Object::ToString(outface);
     return NOERROR;
 }
 
@@ -913,7 +911,7 @@ ECode CEnumMap::EnumMapValueCollection::Remove(
     else {
         for (Int32 i = 0; i < mEnumMap->mEnumSize; i++) {
             if ((*mEnumMap->mHasMapping)[i]
-                    && ObjectUtils::Equals(object, (*mEnumMap->mValues)[i])) {
+                    && Object::Equals(object, (*mEnumMap->mValues)[i])) {
                 mEnumMap->Remove((*mEnumMap->mKeys)[i], (IInterface**)&outface);
                 *value = TRUE;
                 return NOERROR;
@@ -1121,7 +1119,7 @@ ECode CEnumMap::EnumMapEntrySet::Contains(
                 isEqual = enumValue == NULL;
             }
             else {
-                isEqual = ObjectUtils::Equals(outvalue, enumValue);
+                isEqual = Object::Equals(outvalue, enumValue);
             }
         }
     }

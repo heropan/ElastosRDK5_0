@@ -1,10 +1,9 @@
-#ifndef __NETWORKINTERFACE_H__
-#define __NETWORKINTERFACE_H__
+#ifndef __ELASTOS_NET_NETWORKINTERFACE_H__
+#define __ELASTOS_NET_NETWORKINTERFACE_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
 
-
-
+using Elastos::Core::Object;
 using Elastos::Utility::IList;
 using Elastos::Utility::IEnumeration;
 
@@ -12,28 +11,25 @@ namespace Elastos {
 namespace Net {
 
 class NetworkInterface
-    : public ElRefBase
+    : public Object
     , public INetworkInterface
 {
 public:
+    CAR_INTERFACE_DECL()
+
     NetworkInterface(
         /* [in] */ const String& name,
-        /* [in] */ Int32 displayName,
+        /* [in] */ Int32 interfaceIndex,
         /* [in] */ AutoPtr<IList> addresses,
         /* [in] */ AutoPtr<IList> interfaceAddresses);
 
     ~NetworkInterface();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    CARAPI constructor(
+        /* [in] */ const String& name,
+        /* [in] */ Int32 interfaceIndex,
+        /* [in] */ AutoPtr<IList> addresses,
+        /* [in] */ AutoPtr<IList> interfaceAddresses);
 
     CARAPI GetIndex(
         /* [out] */ Int32* index);
@@ -113,6 +109,9 @@ public:
 
     static AutoPtr<IList> GetNetworkInterfacesList();
 
+protected:
+    NetworkInterface();
+
 private:
     static CARAPI CollectIpv6Addresses(
         /* [in] */ const String& interfaceName,
@@ -135,11 +134,6 @@ private:
         /* [in] */ Int32 mask);
 
 public:
-    static const Int32 NO_INTERFACE_INDEX = 0;
-    static const Int32 UNSET_INTERFACE_INDEX = -1;
-
-private:
-    static const Int32 CHECK_CONNECT_NO_PORT = -1;
 
     String mName;
 
@@ -159,4 +153,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__NETWORKINTERFACE_H__
+#endif //__ELASTOS_NET_NETWORKINTERFACE_H__

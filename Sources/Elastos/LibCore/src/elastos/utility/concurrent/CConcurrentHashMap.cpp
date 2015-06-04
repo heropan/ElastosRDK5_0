@@ -1,9 +1,7 @@
 
 #include "CConcurrentHashMap.h"
-#include "ObjectUtils.h"
 #include <elastos/Math.h>
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Utility::Concurrent::Locks::EIID_IReentrantLock;
 using Elastos::IO::EIID_ISerializable;
 
@@ -74,7 +72,7 @@ AutoPtr<IInterface> CConcurrentHashMap::Segment::Put(
         if (e != NULL) {
             AutoPtr<IInterface> k;
             if ((k = e->mKey) == key ||
-                (e->mHash == hash && ObjectUtils::Equals(key, k))) {
+                (e->mHash == hash && Object::Equals(key, k))) {
                 oldValue = e->mValue;
                 if (!onlyIfAbsent) {
                     e->mValue = value;
@@ -191,7 +189,7 @@ AutoPtr<CConcurrentHashMap::HashEntry> CConcurrentHashMap::Segment::ScanAndLockF
                     node = new HashEntry(hash, key, value, NULL);
                 retries = 0;
             }
-            else if (ObjectUtils::Equals(key, e->mKey))
+            else if (Object::Equals(key, e->mKey))
                 retries = 0;
             else
                 e = e->mNext;
@@ -221,7 +219,7 @@ void CConcurrentHashMap::Segment::ScanAndLock(
     while (!(TryLock(&isflag), isflag)) {
         AutoPtr<HashEntry> f;
         if (retries < 0) {
-            if (e == NULL || ObjectUtils::Equals(key, e->mKey))
+            if (e == NULL || Object::Equals(key, e->mKey))
                 retries = 0;
             else
                 e = e->mNext;
@@ -258,9 +256,9 @@ AutoPtr<IInterface> CConcurrentHashMap::Segment::Remove(
         AutoPtr<IInterface> k;
         AutoPtr<HashEntry> next = e->mNext;
         if ((k = e->mKey) == key ||
-            (e->mHash == hash && ObjectUtils::Equals(key, k))) {
+            (e->mHash == hash && Object::Equals(key, k))) {
             AutoPtr<IInterface> v = e->mValue;
-            if (value == NULL || value == v || ObjectUtils::Equals(value, v)) {
+            if (value == NULL || value == v || Object::Equals(value, v)) {
                 if (pred == NULL) {
                     SetEntryAt(tab, index, next);
                 }
@@ -299,8 +297,8 @@ Boolean CConcurrentHashMap::Segment::Replace(
     for (e = EntryForHash(this, hash); e != NULL; e = e->mNext) {
         AutoPtr<IInterface> k;
         if ((k = e->mKey) == key ||
-            (e->mHash == hash && ObjectUtils::Equals(key, k))) {
-            if (ObjectUtils::Equals(oldValue, e->mValue)) {
+            (e->mHash == hash && Object::Equals(key, k))) {
+            if (Object::Equals(oldValue, e->mValue)) {
                 e->mValue = newValue;
                 ++mModCount;
                 replaced = true;
@@ -330,7 +328,7 @@ AutoPtr<IInterface> CConcurrentHashMap::Segment::Replace(
     for (e = EntryForHash(this, hash); e != NULL; e = e->mNext) {
         AutoPtr<IInterface> k;
         if ((k = e->mKey) == key ||
-            (e->mHash == hash && ObjectUtils::Equals(key, k))) {
+            (e->mHash == hash && Object::Equals(key, k))) {
             oldValue = e->mValue;
             e->mValue = value;
             ++mModCount;
@@ -926,7 +924,7 @@ ECode CConcurrentHashMap::_Values::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    *result = ObjectUtils::Equals(object, THIS_PROBE(IInterface));
+    *result = Object::Equals(object, THIS_PROBE(IInterface));
     return NOERROR;
 }
 
@@ -935,7 +933,7 @@ ECode CConcurrentHashMap::_Values::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    *hashCode = ObjectUtils::GetHashCode(THIS_PROBE(IInterface));
+    *hashCode = Object::GetHashCode(THIS_PROBE(IInterface));
     return NOERROR;
 }
 
@@ -979,7 +977,7 @@ ECode CConcurrentHashMap::_EntrySet::Contains(
     mHost->Get(keyface, (IInterface**)&v);
     AutoPtr<IInterface> valueface;
     e->GetValue((IInterface**)&valueface);
-    *result = v != NULL && ObjectUtils::Equals(v, valueface);
+    *result = v != NULL && Object::Equals(v, valueface);
     return NOERROR;
 }
 
@@ -1170,7 +1168,7 @@ ECode CConcurrentHashMap::PutIfAbsent(
         // throw new NullPointerException();
         return E_NULL_POINTER_EXCEPTION;
     }
-    Int32 hash = Hash(ObjectUtils::GetHashCode(key));
+    Int32 hash = Hash(Object::GetHashCode(key));
     Int32 j = (hash >> mSegmentShift) & mSegmentMask;
     assert(0 && "TODO");
     // if ((s = (Segment<K,V>)UNSAFE.getObject
@@ -1188,7 +1186,7 @@ ECode CConcurrentHashMap::Remove(
 {
     VALIDATE_NOT_NULL(result)
 
-    Int32 hash = Hash(ObjectUtils::GetHashCode(key));
+    Int32 hash = Hash(Object::GetHashCode(key));
     AutoPtr<Segment> s;
     *result = value != NULL && (s = SegmentForHash(hash)) != NULL &&
         s->Remove(key, hash, value) != NULL;
@@ -1203,7 +1201,7 @@ ECode CConcurrentHashMap::Replace(
 {
     VALIDATE_NOT_NULL(result)
 
-    Int32 hash = Hash(ObjectUtils::GetHashCode(key));
+    Int32 hash = Hash(Object::GetHashCode(key));
     if (oldValue == NULL || newValue == NULL) {
         // throw new NullPointerException();
         return E_NULL_POINTER_EXCEPTION;
@@ -1220,7 +1218,7 @@ ECode CConcurrentHashMap::Replace(
 {
     VALIDATE_NOT_NULL(result)
 
-    Int32 hash = Hash(ObjectUtils::GetHashCode(key));
+    Int32 hash = Hash(Object::GetHashCode(key));
     if (value == NULL) {
         // throw new NullPointerException();
         return E_NULL_POINTER_EXCEPTION;
@@ -1250,7 +1248,7 @@ ECode CConcurrentHashMap::ContainsKey(
 
     AutoPtr<Segment> s; // same as get() except no need for volatile value read
     AutoPtr< ArrayOf<HashEntry*> > tab;
-    Int32 h = Hash(ObjectUtils::GetHashCode(key));
+    Int32 h = Hash(Object::GetHashCode(key));
     Int64 u = (((h >> mSegmentShift) & mSegmentMask) << SSHIFT) + SBASE;
     assert(0 && "TODO");
     // if ((s = (Segment<K,V>)UNSAFE.getObjectVolatile(mSegments, u)) != NULL &&
@@ -1302,7 +1300,7 @@ ECode CConcurrentHashMap::ContainsValue(
                     AutoPtr<HashEntry> e;
                     for (e = EntryAt(tab, i); e != NULL; e = e->mNext) {
                         AutoPtr<IInterface> v = e->mValue;
-                        if (v != NULL && ObjectUtils::Equals(value, v))
+                        if (v != NULL && Object::Equals(value, v))
                             *result = TRUE;
                             return NOERROR;
                     }
@@ -1356,7 +1354,7 @@ ECode CConcurrentHashMap::Get(
 
     AutoPtr<Segment> s; // manually integrate access methods to reduce overhead
     AutoPtr< ArrayOf<HashEntry*> > tab;
-    Int32 h = Hash(ObjectUtils::GetHashCode(key));
+    Int32 h = Hash(Object::GetHashCode(key));
     Int64 u = (((h >> mSegmentShift) & mSegmentMask) << SSHIFT) + SBASE;
     assert(0 && "TODO");
     // if ((s = (Segment<K,V>)UNSAFE.getObjectVolatile(mSegments, u)) != NULL &&
@@ -1449,7 +1447,7 @@ ECode CConcurrentHashMap::Put(
         return E_NULL_POINTER_EXCEPTION;
     }
 
-    Int32 hash = Hash(ObjectUtils::GetHashCode(key));
+    Int32 hash = Hash(Object::GetHashCode(key));
     Int32 j = (hash >> mSegmentShift) & mSegmentMask;
     AutoPtr<Segment> s;
     assert(0 && "TODO");
@@ -1495,7 +1493,7 @@ ECode CConcurrentHashMap::Remove(
 {
     VALIDATE_NOT_NULL(value)
 
-    Int32 hash = Hash(ObjectUtils::GetHashCode(key));
+    Int32 hash = Hash(Object::GetHashCode(key));
     AutoPtr<Segment> s = SegmentForHash(hash);
     *value = s == NULL ? NULL : s->Remove(key, hash, NULL);
     REFCOUNT_ADD(*value)

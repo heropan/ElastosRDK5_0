@@ -1,8 +1,6 @@
 
 #include "AbstractSet.h"
-#include "ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Utility::ISet;
 using Elastos::Utility::EIID_ISet;
 
@@ -53,7 +51,7 @@ ECode AbstractSet::GetHashCode(
     while (it->HasNext(&isflag), isflag) {
         AutoPtr<IInterface> next;
         it->Next((IInterface**)&next);
-        result += next == NULL ? 0 : ObjectUtils::GetHashCode(next);
+        result += next == NULL ? 0 : Object::GetHashCode(next);
     }
     *value = result;
     return NOERROR;

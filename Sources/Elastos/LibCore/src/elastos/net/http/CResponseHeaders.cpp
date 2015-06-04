@@ -7,13 +7,11 @@
 #include "CRawHeaders.h"
 #include "CTreeSet.h"
 #include "CStringWrapper.h"
-#include "ObjectUtils.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::Math;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
-using Elastos::Core::ObjectUtils;
 using Elastos::Utility::INavigableSet;
 using Elastos::Utility::CTreeSet;
 using Elastos::Utility::Concurrent::TimeUnit;
@@ -388,7 +386,7 @@ ECode CResponseHeaders::VaryMatches(
         AutoPtr<IInterface> outface2;
         cachedRequest->Get((*outarr)[i], (IInterface**)&outface1);
         newRequest->Get((*outarr)[i], (IInterface**)&outface2);
-        if (!ObjectUtils::Equals(outface1, outface2)) {
+        if (!Object::Equals(outface1, outface2)) {
             *value = FALSE;
             return NOERROR;
         }

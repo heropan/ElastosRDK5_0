@@ -5,7 +5,6 @@
 #include "ComparableTimSort.h"
 #include "TimSort.h"
 #include "Math.h"
-#include "ObjectUtils.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::IArrayOf;
@@ -27,7 +26,6 @@ using Elastos::Core::EIID_IDouble;
 using Elastos::Core::IDouble;
 using Elastos::Core::EIID_IInteger16;
 using Elastos::Core::IInteger16;
-using Elastos::Core::ObjectUtils;
 using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
@@ -56,7 +54,7 @@ ECode CArrays::ArrayList::Contains(
     if (object != NULL) {
         for (Int32 i = 0; i < mA->GetLength(); i++) {
             AutoPtr<IInterface> element = (*mA)[i];
-            if (ObjectUtils::Equals(object, element)) {
+            if (Object::Equals(object, element)) {
                 *result = TRUE;
                 return NOERROR;
             }
@@ -96,7 +94,7 @@ ECode CArrays::ArrayList::IndexOf(
     VALIDATE_NOT_NULL(result)
     if (object != NULL) {
         for (Int32 i = 0; i < mA->GetLength(); i++) {
-            if (ObjectUtils::Equals(object, (*mA)[i])) {
+            if (Object::Equals(object, (*mA)[i])) {
                 *result = i;
                 return NOERROR;
             }
@@ -121,7 +119,7 @@ ECode CArrays::ArrayList::LastIndexOf(
     VALIDATE_NOT_NULL(index)
     if (object != NULL) {
         for (Int32 i = mA->GetLength() - 1; i >= 0; i--) {
-            if (ObjectUtils::Equals(object, (*mA)[i])) {
+            if (Object::Equals(object, (*mA)[i])) {
                 *index = i;
                 return NOERROR;
             }
@@ -1011,7 +1009,7 @@ ECode CArrays::HashCodeObject(
             elementHashCode = 0;
         }
         else {
-            elementHashCode = ObjectUtils::GetHashCode(element);
+            elementHashCode = Object::GetHashCode(element);
         }
         hashCode = 31 * hashCode + elementHashCode;
     }
@@ -1046,7 +1044,7 @@ Int32 CArrays::DeepHashCodeElement(
     }
 
     if (IArrayOf::Probe(element) == NULL) {
-        return ObjectUtils::GetHashCode(element);
+        return Object::GetHashCode(element);
     }
 
     /*
@@ -1378,7 +1376,7 @@ ECode CArrays::EqualsObject(
     for (Int32 i = 0; i < array1->GetLength(); i++) {
         AutoPtr<IInterface> e1 = (*array1)[i];
         AutoPtr<IInterface> e2 = (*array2)[i];
-        if (!(e1 == NULL ? e2 == NULL : ObjectUtils::Equals(e1, e2))) {
+        if (!(e1 == NULL ? e2 == NULL : Object::Equals(e1, e2))) {
             *result = FALSE;
             return NOERROR;
         }
@@ -1426,7 +1424,7 @@ Boolean CArrays::DeepEqualsElements(
     }
 
     if (IArrayOf::Probe(e1) == NULL || IArrayOf::Probe(e2) == NULL) {
-        return ObjectUtils::Equals(e1, e2);
+        return Object::Equals(e1, e2);
     }
 
     /*

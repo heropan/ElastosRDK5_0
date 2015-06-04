@@ -1,10 +1,8 @@
 
 #include "CCollectionCertStoreParameters.h"
 #include "StringBuilder.h"
-#include "elastos/ObjectUtils.h"
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::ObjectUtils;
 
 namespace Elastos {
 namespace Security {
@@ -38,7 +36,7 @@ ECode CCollectionCertStoreParameters::ToString(
     StringBuilder sb("CollectionCertStoreParameters: [\ncollection: ");
     AutoPtr<ICollection> coll;
     GetCollection((ICollection**)&coll);
-    String strCol = ObjectUtils::ToString(coll.Get());
+    String strCol = Object::ToString(coll);
     sb.AppendString(strCol);
     sb.AppendCStr("\n]");
     return sb.ToString(str);

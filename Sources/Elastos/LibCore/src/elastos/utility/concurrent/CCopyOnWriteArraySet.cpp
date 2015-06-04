@@ -1,9 +1,7 @@
 
 #include "CCopyOnWriteArraySet.h"
 #include "CCopyOnWriteArrayList.h"
-#include <elastos/ObjectUtils.h>
 
-using Elastos::Core::ObjectUtils;
 
 namespace Elastos {
 namespace Utility {
@@ -181,7 +179,7 @@ Boolean CCopyOnWriteArraySet::Eq(
     /* [in] */ IInterface* o1,
     /* [in] */ IInterface* o2)
 {
-    return (o1 == NULL) ? o2 == NULL : ObjectUtils::Equals(o1, o2);
+    return (o1 == NULL) ? o2 == NULL : Object::Equals(o1, o2);
 }
 
 } // namespace Concurrent

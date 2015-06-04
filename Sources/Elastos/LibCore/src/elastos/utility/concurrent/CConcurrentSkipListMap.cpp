@@ -1,13 +1,11 @@
 
 #include "CConcurrentSkipListMap.h"
 #include <Math.h>
-#include <elastos/ObjectUtils.h>
 #include "CRandom.h"
 #include "CArrayList.h"
 #include "CCollections.h"
 
 using Elastos::Core::Math;
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::CRandom;
 using Elastos::Core::EIID_IComparable;
 using Elastos::Utility::IArrayList;
@@ -97,7 +95,7 @@ ECode CConcurrentSkipListMap::Node::GetInterfaceID(
     /* [out] */ InterfaceID* iid)
 {
     VALIDATE_NOT_NULL(iid);
-    if (ObjectUtils::Equals(object, THIS_PROBE(IInterface))) {
+    if (Object::Equals(object, THIS_PROBE(IInterface))) {
         *iid = EIID_IInterface;
         return NOERROR;
     }
@@ -124,12 +122,12 @@ Boolean CConcurrentSkipListMap::Node::CasNext(
 
 Boolean CConcurrentSkipListMap::Node::IsMarker()
 {
-    return ObjectUtils::Equals(mValue, THIS_PROBE(IInterface));
+    return Object::Equals(mValue, THIS_PROBE(IInterface));
 }
 
 Boolean CConcurrentSkipListMap::Node::IsBaseHeader()
 {
-    return ObjectUtils::Equals(mValue, sBASE_HEADER);
+    return Object::Equals(mValue, sBASE_HEADER);
 }
 
 Boolean CConcurrentSkipListMap::Node::AppendMarker(
@@ -147,9 +145,9 @@ void CConcurrentSkipListMap::Node::HelpDelete(
      * help-out stages per call tends to minimize CAS
      * interference among helping threads.
      */
-    if (ObjectUtils::Equals(f->Probe(EIID_IInterface), mNext)
-        && ObjectUtils::Equals(THIS_PROBE(IInterface), b->mNext)) {
-        if (f == NULL || !ObjectUtils::Equals(f->mValue, f->Probe(EIID_IInterface))) // not already marked
+    if (Object::Equals(f->Probe(EIID_IInterface), mNext)
+        && Object::Equals(THIS_PROBE(IInterface), b->mNext)) {
+        if (f == NULL || !Object::Equals(f->mValue, f->Probe(EIID_IInterface))) // not already marked
             AppendMarker(f);
         else
             b->CasNext(this, f->mNext);
@@ -159,8 +157,8 @@ void CConcurrentSkipListMap::Node::HelpDelete(
 AutoPtr<IInterface> CConcurrentSkipListMap::Node::GetValidValue()
 {
     AutoPtr<IInterface> v = mValue;
-    if (ObjectUtils::Equals(v, THIS_PROBE(IInterface))
-        || ObjectUtils::Equals(v, sBASE_HEADER) )
+    if (Object::Equals(v, THIS_PROBE(IInterface))
+        || Object::Equals(v, sBASE_HEADER) )
         return NULL;
     return v;
 }
@@ -408,7 +406,7 @@ AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindNode(
                 n->HelpDelete(b, f);
                 break;
             }
-            if (ObjectUtils::Equals(v, n->Probe(EIID_IInterface))
+            if (Object::Equals(v, n->Probe(EIID_IInterface))
                 || b->mValue == NULL)  // b is deleted
                 break;
             Int32 c = 0;
@@ -463,7 +461,7 @@ AutoPtr<IInterface> CConcurrentSkipListMap::DoPut(
                     n->HelpDelete(b, f);
                     break;
                 }
-                if (ObjectUtils::Equals(v, n->Probe(EIID_IInterface))
+                if (Object::Equals(v, n->Probe(EIID_IInterface))
                     || b->mValue == NULL) // b is deleted
                     break;
                 Int32 c = 0;
@@ -639,7 +637,7 @@ AutoPtr<IInterface> CConcurrentSkipListMap::DoRemove(
                 n->HelpDelete(b, f);
                 break;
             }
-            if (ObjectUtils::Equals(v, n->Probe(EIID_IInterface)) || b->mValue == NULL)      // b is deleted
+            if (Object::Equals(v, n->Probe(EIID_IInterface)) || b->mValue == NULL)      // b is deleted
                 break;
             Int32 c = 0;
             key->CompareTo(n->mKey, &c);
@@ -650,7 +648,7 @@ AutoPtr<IInterface> CConcurrentSkipListMap::DoRemove(
                 n = f;
                 continue;
             }
-            if (value != NULL && !ObjectUtils::Equals(value, v))
+            if (value != NULL && !Object::Equals(value, v))
                 return NULL;
             if (!n->CasValue(v, NULL))
                 break;
@@ -705,7 +703,7 @@ AutoPtr<IMapEntry> CConcurrentSkipListMap::DoRemoveFirstEntry()
         if (n == NULL)
             return NULL;
         AutoPtr<Node> f = n->mNext;
-        if (!ObjectUtils::Equals(n->Probe(EIID_IInterface), b->mNext))
+        if (!Object::Equals(n->Probe(EIID_IInterface), b->mNext))
             continue;
         AutoPtr<IInterface> v = n->mValue;
         if (v == NULL) {
@@ -777,7 +775,7 @@ AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindLast()
                     n->HelpDelete(b, f);
                     break;
                 }
-                if (ObjectUtils::Equals(v, n->Probe(EIID_IInterface))
+                if (Object::Equals(v, n->Probe(EIID_IInterface))
                     || b->mValue == NULL)   // b is deleted
                     break;
                 b = n;
@@ -833,7 +831,7 @@ AutoPtr<IMapEntry> CConcurrentSkipListMap::DoRemoveLastEntry()
                 n->HelpDelete(b, f);
                 break;
             }
-            if (ObjectUtils::Equals(v, n->Probe(EIID_IInterface)) || b->mValue == NULL)      // b is deleted
+            if (Object::Equals(v, n->Probe(EIID_IInterface)) || b->mValue == NULL)      // b is deleted
                 break;
             if (f != NULL) {
                 b = n;
@@ -885,7 +883,7 @@ AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindNear(
                 n->HelpDelete(b, f);
                 break;
             }
-            if (ObjectUtils::Equals(v, n->Probe(EIID_IInterface)) || b->mValue == NULL)    // b is deleted
+            if (Object::Equals(v, n->Probe(EIID_IInterface)) || b->mValue == NULL)    // b is deleted
                 break;
             Int32 c = 0;
             key->CompareTo(n->mKey, &c);
@@ -1183,7 +1181,7 @@ ECode CConcurrentSkipListMap::ContainsValue(
         return E_NULL_POINTER_EXCEPTION;
     for (AutoPtr<Node> n = FindFirst(); n != NULL; n = n->mNext) {
         AutoPtr<IInterface> v = n->GetValidValue();
-        if (v != NULL && ObjectUtils::Equals(value, v)) {
+        if (v != NULL && Object::Equals(value, v)) {
             *result = TRUE;
             return NOERROR;
         }
@@ -1286,7 +1284,7 @@ ECode CConcurrentSkipListMap::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (ObjectUtils::Equals(object, THIS_PROBE(IInterface))) {
+    if (Object::Equals(object, THIS_PROBE(IInterface))) {
         *result = TRUE;
         return NOERROR;
     }
@@ -1310,7 +1308,7 @@ ECode CConcurrentSkipListMap::Equals(
         m->Get(k, (IInterface**)&v);
         AutoPtr<IInterface> v2;
         e->GetValue((IInterface**)&v2);
-        if (!ObjectUtils::Equals(v2, v)) {
+        if (!Object::Equals(v2, v)) {
             *result = FALSE;
             return NOERROR;
         }
@@ -1328,7 +1326,7 @@ ECode CConcurrentSkipListMap::Equals(
         e->GetValue((IInterface**)&v);
         AutoPtr<IInterface> v2;
         Get(k, (IInterface**)&v2);
-        if (k == NULL || v == NULL || !ObjectUtils::Equals(v2, v)) {
+        if (k == NULL || v == NULL || !Object::Equals(v2, v)) {
             *result = FALSE;
             return NOERROR;
         }
@@ -1386,7 +1384,7 @@ ECode CConcurrentSkipListMap::Replace(
         }
         AutoPtr<IInterface> v = n->mValue;
         if (v != NULL) {
-            if (! ObjectUtils::Equals(oldValue, v)) {
+            if (! Object::Equals(oldValue, v)) {
                 *res = FALSE;
                 return NOERROR;
             }
@@ -1698,7 +1696,7 @@ CConcurrentSkipListMap::Iter::Iter(
         if (mNext == NULL)
             break;
         AutoPtr<IInterface> x = mNext->mValue;
-        if (x != NULL && !ObjectUtils::Equals(x, mNext->Probe(EIID_IInterface))) {
+        if (x != NULL && !Object::Equals(x, mNext->Probe(EIID_IInterface))) {
             mNextValue = x;
             break;
         }
@@ -1724,7 +1722,7 @@ ECode CConcurrentSkipListMap::Iter::Advance()
         if (mNext == NULL)
             break;
         AutoPtr<IInterface> x = mNext->mValue;
-        if (x != NULL && !ObjectUtils::Equals(x, mNext)) {
+        if (x != NULL && !Object::Equals(x, mNext)) {
             mNextValue = x;
             break;
         }
@@ -2009,7 +2007,7 @@ ECode CConcurrentSkipListMap::_KeySet::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (ObjectUtils::Equals(object, THIS_PROBE(IInterface))) {
+    if (Object::Equals(object, THIS_PROBE(IInterface))) {
         *result = TRUE;
         return NOERROR;
     }
@@ -2367,7 +2365,7 @@ ECode CConcurrentSkipListMap::_EntrySet::Contains(
     if (v != NULL) {
         AutoPtr<IInterface> v2;
         e->GetValue((IInterface**)&v2);
-        *result = ObjectUtils::Equals(v, v2);
+        *result = Object::Equals(v, v2);
         return NOERROR;
     }
     *result = FALSE;
@@ -2416,7 +2414,7 @@ ECode CConcurrentSkipListMap::_EntrySet::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (ObjectUtils::Equals(object, THIS_PROBE(IInterface))) {
+    if (Object::Equals(object, THIS_PROBE(IInterface))) {
         *result = TRUE;
         return NOERROR;
     }
@@ -2835,7 +2833,7 @@ ECode CConcurrentSkipListMap::_SubMap::ContainsValue(
          IsBeforeEnd(n);
          n = n->mNext) {
         AutoPtr<IInterface> v = n->GetValidValue();
-        if (v != NULL && ObjectUtils::Equals(value, v)) {
+        if (v != NULL && Object::Equals(value, v)) {
             *result = TRUE;
             return NOERROR;
         }
@@ -3311,7 +3309,7 @@ CConcurrentSkipListMap::_SubMap::SubMapIter::SubMapIter(
         if (mNext == NULL)
             break;
         AutoPtr<IInterface> x = mNext->mValue;
-        if (x != NULL && !ObjectUtils::Equals(x, mNext)) {
+        if (x != NULL && !Object::Equals(x, mNext)) {
             if (!mOwner->InBounds(mNext->mKey))
                 mNext = NULL;
             else
@@ -3348,7 +3346,7 @@ void CConcurrentSkipListMap::_SubMap::SubMapIter::Ascend()
         if (mNext == NULL)
             break;
         AutoPtr<IInterface> x = mNext->mValue;
-        if (x != NULL && !ObjectUtils::Equals(x, mNext)) {
+        if (x != NULL && !Object::Equals(x, mNext)) {
             if (mOwner->TooHigh(mNext->mKey))
                 mNext = NULL;
             else
@@ -3365,7 +3363,7 @@ void CConcurrentSkipListMap::_SubMap::SubMapIter::Descend()
         if (mNext == NULL)
             break;
         AutoPtr<IInterface> x = mNext->mValue;
-        if (x != NULL && !ObjectUtils::Equals(x, mNext)) {
+        if (x != NULL && !Object::Equals(x, mNext)) {
             if (mOwner->TooLow(mNext->mKey))
                 mNext = NULL;
             else

@@ -3,9 +3,7 @@
 #include "CArrays.h"
 #include "CCollections.h"
 #include <elastos/StringBuilder.h>
-#include "elastos/ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::CArrays;
 
@@ -283,7 +281,7 @@ ECode _Vector::Equals(
             AutoPtr<IInterface> e1 = (*mElementData)[index++];
             AutoPtr<IInterface> e2;
             it->Next((IInterface**)&e2);
-            if (!(e1 == NULL ? e2 == NULL : ObjectUtils::Equals(e1, e2))) {
+            if (!(e1 == NULL ? e2 == NULL : Object::Equals(e1, e2))) {
                 *result = FALSE;
                 return NOERROR;
             }
@@ -379,7 +377,7 @@ ECode _Vector::GetHashCode(
     Int32 result = 1;
     for (Int32 i = 0; i < mElementCount; i++) {
         result = (31 * result)
-                + ((*mElementData)[i] == NULL ? 0 : ObjectUtils::GetHashCode((*mElementData)[i]));
+                + ((*mElementData)[i] == NULL ? 0 : Object::GetHashCode((*mElementData)[i]));
     }
     *hashCode = result;
     return NOERROR;
@@ -406,7 +404,7 @@ ECode _Vector::IndexOf(
     Mutex::Autolock lock(GetSelfLock());
     if (object != NULL) {
         for (Int32 i = location; i < mElementCount; i++) {
-            if (ObjectUtils::Equals(object, (*mElementData)[i])) {
+            if (Object::Equals(object, (*mElementData)[i])) {
                 *value = i;
                 return NOERROR;
             }
@@ -486,7 +484,7 @@ ECode _Vector::LastIndexOf(
     if (location >= 0 && location < mElementCount) {
         if (object != NULL) {
             for (Int32 i = location; i >= 0; i--) {
-                if (ObjectUtils::Equals(object, (*mElementData)[i])) {
+                if (Object::Equals(object, (*mElementData)[i])) {
                     *value = i;
                     return NOERROR;
                 }

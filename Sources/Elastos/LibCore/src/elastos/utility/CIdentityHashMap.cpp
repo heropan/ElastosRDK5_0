@@ -1,9 +1,7 @@
 
 #include "CIdentityHashMap.h"
 #include "CSystem.h"
-#include "elastos/ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::ISystem;
 
 namespace Elastos {
@@ -637,7 +635,7 @@ ECode CIdentityHashMap::IdentityHashMapEntry::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
-    *str = ObjectUtils::ToString(mKey) + String("=") + ObjectUtils::ToString(mValue);
+    *str = Object::ToString(mKey) + String("=") + Object::ToString(mValue);
     return NOERROR;
 }
 
@@ -1240,7 +1238,7 @@ ECode CIdentityHashMap::IdentityHashMapValues::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    *result = ObjectUtils::Equals(this->Probe(EIID_IInterface), object);
+    *result = Object::Equals(this), object);
     return NOERROR;
 }
 
@@ -1249,7 +1247,7 @@ ECode CIdentityHashMap::IdentityHashMapValues::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    *hashCode = ObjectUtils::GetHashCode(this->Probe(EIID_IInterface));
+    *hashCode = Object::GetHashCode(this->Probe(EIID_IInterface));
     return NOERROR;
 }
 

@@ -1,7 +1,6 @@
 
 #include "CPhaser.h"
 #include "LockSupport.h"
-#include <elastos/ObjectUtils.h>
 #include <elastos/StringBuilder.h>
 #include <elastos/Math.h>
 #include "CSystem.h"
@@ -10,7 +9,6 @@
 #include "CForkJoinPool.h"
 
 using Elastos::Core::ISystem;
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::Math;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Concurrent::CForkJoinPool;
@@ -95,7 +93,7 @@ Int32 CPhaser::DoArrive(
 {
     AutoPtr<IPhaser> root = mRoot;
     for (;;) {
-        Int64 s = (ObjectUtils::Equals(root->Probe(EIID_IInterface), THIS_PROBE(IInterface))) ? mState : ReconcileState();
+        Int64 s = Object::Equals(root, this) ? mState : ReconcileState();
         Int32 phase = (Int32)(s >> PHASE_SHIFT);
         if (phase < 0)
             return phase;
@@ -193,7 +191,7 @@ Int64 CPhaser::ReconcileState()
 {
     AutoPtr<IPhaser> root = mRoot;
     Int64 s = mState;
-    if (!ObjectUtils::Equals(root->Probe(EIID_IInterface), THIS_PROBE(IInterface))) {
+    if (!Object::Equals(root), this))) {
         Int32 phase, p;
         // CAS to root phase with current parties, tripping unarrived
         assert(0 && "TODO");
@@ -301,7 +299,7 @@ ECode CPhaser::ArriveAndAwaitAdvance(
     // Specialization of doArrive+awaitAdvance eliminating some reads/paths
     AutoPtr<IPhaser> root = mRoot;
     for (;;) {
-        Int64 s = (ObjectUtils::Equals(root->Probe(EIID_IInterface), THIS_PROBE(IInterface))) ? mState : ReconcileState();
+        Int64 s = Object::Equals(root, this) ? mState : ReconcileState();
         Int32 phase = (Int32)(s >> PHASE_SHIFT);
         if (phase < 0) {
             *value = phase;
@@ -343,7 +341,7 @@ ECode CPhaser::AwaitAdvance(
 {
     VALIDATE_NOT_NULL(value);
     AutoPtr<IPhaser> root = mRoot;
-    Int64 s = (ObjectUtils::Equals(root->Probe(EIID_IInterface), THIS_PROBE(IInterface))) ? mState : ReconcileState();
+    Int64 s = Object::Equals(root, this) ? mState : ReconcileState();
     Int32 p = (Int32)(s >> PHASE_SHIFT);
     if (phase < 0) {
         *value = phase;
@@ -364,7 +362,7 @@ ECode CPhaser::AwaitAdvanceInterruptibly(
 {
     VALIDATE_NOT_NULL(value);
     AutoPtr<IPhaser> root = mRoot;
-    Int64 s = (ObjectUtils::Equals(root->Probe(EIID_IInterface), THIS_PROBE(IInterface))) ? mState : ReconcileState();
+    Int64 s = Object::Equals(root, this) ? mState : ReconcileState();
     Int32 p = (Int32)(s >> PHASE_SHIFT);
     if (phase < 0) {
         *value = phase;
@@ -391,7 +389,7 @@ ECode CPhaser::AwaitAdvanceInterruptibly(
     Int64 nanos;
     unit->ToNanos(timeout, &nanos);
     AutoPtr<IPhaser> root = mRoot;
-    Int64 s = (ObjectUtils::Equals(root->Probe(EIID_IInterface), THIS_PROBE(IInterface))) ? mState : ReconcileState();
+    Int64 s = Object::Equals(root, this) ? mState : ReconcileState();
     Int32 p = (Int32)(s >> PHASE_SHIFT);
     if (phase < 0) {
         *value = phase;

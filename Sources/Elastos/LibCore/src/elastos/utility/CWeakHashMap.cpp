@@ -1,8 +1,6 @@
 #include "CWeakHashMap.h"
 #include "CArrayList.h"
-#include "elastos/ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 
 namespace Elastos {
 namespace Utility {
@@ -18,7 +16,7 @@ CWeakHashMap::Entry::Entry(
         IWeakReferenceSource::Probe(key)->GetWeakReference((IWeakReference**)&mKey);
     }
     mIsNull = key == NULL;
-    mHash = mIsNull ? 0 : ObjectUtils::GetHashCode(key);
+    mHash = mIsNull ? 0 : Object::GetHashCode(key);
     mValue = object;
 }
 
@@ -72,8 +70,8 @@ ECode CWeakHashMap::Entry::Equals(
     entry->GetKey((IInterface**)&entryKey);
     AutoPtr<IInterface> entryValue;
     entry->GetValue((IInterface**)&entryValue);
-    *result = (key == NULL ? entryKey == NULL : ObjectUtils::Equals(key, entryKey))
-            && (mValue == NULL ? entryValue == NULL : ObjectUtils::Equals(mValue, entryValue));
+    *result = (key == NULL ? entryKey == NULL : Object::Equals(key, entryKey))
+            && (mValue == NULL ? entryValue == NULL : Object::Equals(mValue, entryValue));
     return NOERROR;
 }
 
@@ -82,7 +80,7 @@ ECode CWeakHashMap::Entry::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode);
 
-    *hashCode = mHash + (mValue == NULL ? 0 : ObjectUtils::GetHashCode(mValue));
+    *hashCode = mHash + (mValue == NULL ? 0 : Object::GetHashCode(mValue));
     return NOERROR;
 }
 
@@ -93,7 +91,7 @@ ECode CWeakHashMap::Entry::ToString(
 
     AutoPtr<IInterface> key;
     mKey->Resolve(EIID_IInterface, (IInterface**)&key);
-    *str = ObjectUtils::ToString(key) + String("=") + ObjectUtils::ToString(mValue);
+    *str = Object::ToString(key) + String("=") + Object::ToString(mValue);
     return NOERROR;
 }
 
@@ -728,7 +726,7 @@ ECode CWeakHashMap::_Values::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    *result = ObjectUtils::Equals(this->Probe(EIID_IInterface), object);
+    *result = Object::Equals(this), object);
     return NOERROR;
 }
 
@@ -737,7 +735,7 @@ ECode CWeakHashMap::_Values::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    *hashCode = ObjectUtils::GetHashCode(this->Probe(EIID_IInterface));
+    *hashCode = Object::GetHashCode(this->Probe(EIID_IInterface));
     return NOERROR;
 }
 
@@ -887,12 +885,12 @@ ECode CWeakHashMap::Get(
 
     Poll();
     if (key != NULL) {
-        Int32 index = (ObjectUtils::GetHashCode(key) & 0x7FFFFFFF) % mElementData->GetLength();
+        Int32 index = (Object::GetHashCode(key) & 0x7FFFFFFF) % mElementData->GetLength();
         AutoPtr<Entry> entry = (*mElementData)[index];
         while (entry != NULL) {
             AutoPtr<IInterface> entryKey;
             entry->GetKey((IInterface**)&entryKey);
-            if (ObjectUtils::Equals(key, entryKey)) {
+            if (Object::Equals(key, entryKey)) {
                 return entry->GetValue(value);
             }
             entry = entry->mNext;
@@ -916,12 +914,12 @@ AutoPtr<CWeakHashMap::Entry> CWeakHashMap::GetEntry(
 {
     Poll();
     if (key != NULL) {
-        Int32 index = (ObjectUtils::GetHashCode(key) & 0x7FFFFFFF) % mElementData->GetLength();
+        Int32 index = (Object::GetHashCode(key) & 0x7FFFFFFF) % mElementData->GetLength();
         AutoPtr<Entry> entry = (*mElementData)[index];
         while (entry != NULL) {
             AutoPtr<IInterface> entryKey;
             entry->GetKey((IInterface**)&entryKey);
-            if (ObjectUtils::Equals(key, entryKey)) {
+            if (Object::Equals(key, entryKey)) {
                 return entry;
             }
             entry = entry->mNext;
@@ -952,7 +950,7 @@ ECode CWeakHashMap::ContainsValue(
                 AutoPtr<IInterface> key;
                 entry->GetKey((IInterface**)&key);
                 if ((key != NULL || entry->mIsNull)
-                        && ObjectUtils::Equals(value, entry->mValue)) {
+                        && Object::Equals(value, entry->mValue)) {
                     *result = TRUE;
                     return NOERROR;
                 }
@@ -1055,11 +1053,11 @@ ECode CWeakHashMap::Put(
     Int32 index = 0;
     AutoPtr<Entry> entry;
     if (key != NULL) {
-        index = (ObjectUtils::GetHashCode(key) & 0x7FFFFFFF) % mElementData->GetLength();
+        index = (Object::GetHashCode(key) & 0x7FFFFFFF) % mElementData->GetLength();
         entry = (*mElementData)[index];
         AutoPtr<IInterface> entryKey;
         while (entry != NULL &&
-                !ObjectUtils::Equals(key, (entryKey = NULL, entry->GetKey((IInterface**)&entryKey), entryKey))) {
+                !Object::Equals(key, (entryKey = NULL, entry->GetKey((IInterface**)&entryKey), entryKey))) {
             entry = entry->mNext;
         }
     }
@@ -1073,7 +1071,7 @@ ECode CWeakHashMap::Put(
         mModCount++;
         if (++mElementCount > mThreshold) {
             Rehash();
-            index = (key == NULL ? 0 : (ObjectUtils::GetHashCode(key) & 0x7FFFFFFF)) % mElementData->GetLength();
+            index = (key == NULL ? 0 : (Object::GetHashCode(key) & 0x7FFFFFFF)) % mElementData->GetLength();
         }
         entry = new Entry(key, value);
         entry->mNext = (*mElementData)[index];
@@ -1134,11 +1132,11 @@ ECode CWeakHashMap::Remove(
     AutoPtr<Entry> entry;
     AutoPtr<Entry> last;
     if (key != NULL) {
-        index = (ObjectUtils::GetHashCode(key) & 0x7FFFFFFF) % mElementData->GetLength();
+        index = (Object::GetHashCode(key) & 0x7FFFFFFF) % mElementData->GetLength();
         entry = (*mElementData)[index];
         AutoPtr<IInterface> entryKey;
         while (entry != NULL &&
-                !ObjectUtils::Equals(key, (entryKey = NULL, entry->GetKey((IInterface**)&entryKey), entryKey))) {
+                !Object::Equals(key, (entryKey = NULL, entry->GetKey((IInterface**)&entryKey), entryKey))) {
             last = entry;
             entry = entry->mNext;
         }

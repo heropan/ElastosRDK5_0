@@ -1,5 +1,4 @@
 #include "test.h"
-#include <elastos/ObjectUtils.h>
 #include <elastos/StringUtils.h>
 #include <elastos/Thread.h>
 #include <time.h>
@@ -337,7 +336,7 @@ int CTest::test_bindLjava_net_SocketAddress(int argc, char* argv[])
     AutoPtr<ISocketAddress> bindsock;
     theSocket->GetLocalSocketAddress((ISocketAddress**)&bindsock);
     PFL_EX("bogusAddress: %p, bindsock: %p", bogusAddress.Get(), bindsock.Get())
-    assert(ObjectUtils::Equals(bogusAddress, bindsock));
+    assert(Object::Equals(bogusAddress, bindsock));
 
     // Make sure we can now connect and that connections appear to come
     // from the address we bound to.
@@ -361,7 +360,7 @@ PFL_EX("server: %p, theSocket:%p, ec : %p", server.Get(), theSocket.Get(), ec)
 PFL
     AutoPtr<ISocketAddress> remotesocket;
     worker->GetRemoteSocketAddress((ISocketAddress**)&remotesocket);
-    assert(ObjectUtils::Equals(bogusAddress, remotesocket));
+    assert(Object::Equals(bogusAddress, remotesocket));
 PFL
     theSocket->Close();
     worker->Close();
@@ -433,7 +432,7 @@ int CTest::test_bindLjava_net_SocketAddress_Proxy(int argc, char* argv[])
 
     // AutoPtr<IInetAddress> localadd;
     // socket->GetLocalAddress((IInetAddress**)&localadd);
-    // assert(ObjectUtils::Equals(address, localadd));
+    // assert(Object::Equals(address, localadd));
     // Int32 portnum = 0;
     // socket->GetLocalPort(&portnum);
     // assert(0 != portnum);
@@ -1044,7 +1043,7 @@ int CTest::test_getInetAddress(int argc, char* argv[])
 
     AutoPtr<IInetAddress> clientadd;
     client->GetInetAddress((IInetAddress**)&clientadd);
-    assert(ObjectUtils::Equals(clientadd, lochost));
+    assert(Object::Equals(clientadd, lochost));
 
     client->Close();
     server->Close();
@@ -1115,7 +1114,7 @@ int CTest::test_getLocalAddress(int argc, char* argv[])
 
     AutoPtr<IInetAddress> clientadd;
     client->GetLocalAddress((IInetAddress**)&clientadd);
-    assert(ObjectUtils::Equals(clientadd, lochost));
+    assert(Object::Equals(clientadd, lochost));
 
     CSocket::New((ISocket**)&client);
     AutoPtr<IInetAddress> nameadd;
@@ -1177,7 +1176,7 @@ int CTest::test_getLocalSocketAddress(int argc, char* argv[])
     CInetSocketAddress::New(lochost, clientport, (IInetSocketAddress**)&netsock);
     AutoPtr<ISocketAddress> clientadd;
     client->GetLocalSocketAddress((ISocketAddress**)&clientadd);
-    assert(ObjectUtils::Equals(netsock, clientadd));
+    assert(Object::Equals(netsock, clientadd));
     client->Close();
     server->Close();
 
@@ -1193,7 +1192,7 @@ int CTest::test_getLocalSocketAddress(int argc, char* argv[])
     client->GetLocalPort(&clientport);
     CInetSocketAddress::New(lochost, clientport, (IInetSocketAddress**)&netsock);
     client->GetLocalSocketAddress((ISocketAddress**)&clientadd);
-    assert(ObjectUtils::Equals(netsock, clientadd));
+    assert(Object::Equals(netsock, clientadd));
     client->Close();
 
     // now validate the behaviour when the any address is returned
@@ -1415,7 +1414,7 @@ int CTest::test_getRemoteSocketAddress(int argc, char* argv[])
     CInetSocketAddress::New(lochost, serverPort, (IInetSocketAddress**)&netsockadd);
     AutoPtr<ISocketAddress> clientsock;
     client->GetRemoteSocketAddress((ISocketAddress**)&clientsock);
-    assert(ObjectUtils::Equals(netsockadd, clientsock));
+    assert(Object::Equals(netsockadd, clientsock));
     client->Close();
 
     // now create one that is not connected and validate that we get the
@@ -1432,7 +1431,7 @@ int CTest::test_getRemoteSocketAddress(int argc, char* argv[])
     theSocket->Connect(netsockadd);
     CInetSocketAddress::New(lochost, serverPort, (IInetSocketAddress**)&netsockadd);
     theSocket->GetRemoteSocketAddress((ISocketAddress**)&clientsock);
-    assert(ObjectUtils::Equals(netsockadd, clientsock));
+    assert(Object::Equals(netsockadd, clientsock));
     theSocket->Close();
 
     server->Close();

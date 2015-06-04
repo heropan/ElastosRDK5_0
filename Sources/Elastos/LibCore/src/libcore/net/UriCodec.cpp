@@ -1,55 +1,33 @@
 #include "UriCodec.h"
-#include <Elastos.CoreLibrary_server.h>
-#include <elastos/core/Character.h>
-#include <elastos/IntegralToString.h>
-#include "CCharBufferHelper.h"
-#include "CByteArrayOutputStream.h"
-#include "CCharsets.h"
+#include "Character.h"
+#include "IntegralToString.h"
+//#include "CCharBufferHelper.h"
+//#include "CByteArrayOutputStream.h"
+//#include "CCharsets.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IntegralToString;
+using Elastos::IO::IBuffer;
 using Elastos::IO::ICharBuffer;
 using Elastos::IO::IByteBuffer;
 using Elastos::IO::IByteArrayOutputStream;
-using Elastos::IO::CCharBufferHelper;
+// using Elastos::IO::CCharBufferHelper;
 using Elastos::IO::ICharBufferHelper;
-using Elastos::IO::CByteArrayOutputStream;
+// using Elastos::IO::CByteArrayOutputStream;
 using Elastos::IO::Charset::ICharsets;
-using Elastos::IO::Charset::CCharsets;
+// using Elastos::IO::Charset::CCharsets;
 using Elastos::IO::IOutputStream;
 
 namespace Libcore {
 namespace Net {
-
-// e4c77c48-3673-4e45-8426-4992d8b199ba
-extern "C" const InterfaceID EIID_UriCodec =
-    { 0xe4c77c48, 0x3673, 0x4e45, { 0x84, 0x26, 0x49, 0x92, 0xd8, 0xb1, 0x99, 0xba } };
-
-ECode UriCodec::GetClassID(
-    /* [out] */ ClassID* clsid)
-{
-    VALIDATE_NOT_NULL(clsid);
-
-    *clsid = EIID_UriCodec;
-    return NOERROR;
-}
-
-ECode UriCodec::ToString(
-    /* [out] */ String* result)
-{
-    VALIDATE_NOT_NULL(result);
-
-    result->AppendFormat("\nClass[%s]\n", String("UriCodec"));
-    return NOERROR;
-}
 
 ECode UriCodec::Validate(
     /* [in] */ const String& uri,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ const String& name,
-    /* [out] */ String* result) const
+    /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
     *result = NULL;
@@ -102,7 +80,7 @@ ECode UriCodec::ValidateSimple(
 
 ECode UriCodec:: AppendEncoded(
     /* [in] */ StringBuilder& builder,
-    /* [in] */ const String& s) const
+    /* [in] */ const String& s)
 {
     AutoPtr<ICharset> charset = GetDefaultCharset();
     return AppendEncoded(builder, s, charset, FALSE);
@@ -112,7 +90,7 @@ ECode UriCodec::AppendEncoded(
     /* [in] */ StringBuilder& builder,
     /* [in] */ const String& s,
     /* [in] */ ICharset* charset,
-    /* [in] */ Boolean isPartiallyEncoded) const
+    /* [in] */ Boolean isPartiallyEncoded)
 {
     if (s.IsNull())
         return E_NULL_POINTER_EXCEPTION;
@@ -121,18 +99,18 @@ ECode UriCodec::AppendEncoded(
     AutoPtr<ArrayOf<Char32> > char32Array = s.GetChars();
     for(Int32 i = 0; i < s.GetLength(); i++) {
         Char32 c = (*char32Array)[i];
-        if((c >= 'a' && c <= 'z')
+        if ((c >= 'a' && c <= 'z')
                 || (c >= 'A' && c <= 'Z')
                 || (c >= '0' && c <= '9')
                 || IsRetained(c)
-                || (c == '%') && isPartiallyEncoded) {
+                || (c == '%' && isPartiallyEncoded)) {
             if (escapeStart != -1) {
                 AppendHex(builder, s.Substring(escapeStart, i), charset);
                 escapeStart = -1;
             }
 
             if (c =='%' && isPartiallyEncoded){
-                builder.AppendString(s.Substring(i, i + 3));
+                builder.Append(s.Substring(i, i + 3));
                 i += 2;
             }
             else if (c == ' '){
@@ -190,7 +168,7 @@ AutoPtr<ArrayOf<Byte> > UriCodec::GetBytes(
     String buf(cPtr);
     AutoPtr<ArrayOf<Char32> > char32Array = buf.GetChars();
     AutoPtr<ICharsets> charSets;
-    CCharsets::AcquireSingleton((ICharsets**)&charSets);
+    // CCharsets::AcquireSingleton((ICharsets**)&charSets);
     AutoPtr<ArrayOf<Byte> > byteArray;
     String canonicalCharsetName;
     charSet->GetName(&canonicalCharsetName);
@@ -208,18 +186,18 @@ AutoPtr<ArrayOf<Byte> > UriCodec::GetBytes(
     }
     else{
         AutoPtr<ICharBufferHelper> charBufferHelper;
-        CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&charBufferHelper);
+        // CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&charBufferHelper);
         AutoPtr<ICharBuffer> chars;
         AutoPtr<ICharBuffer> charsBuf;
         AutoPtr<IByteBuffer> byteBuffer;
 
-        charBufferHelper->WrapArray(char32Array, (ICharBuffer**)&chars);
+        charBufferHelper->Wrap(char32Array, (ICharBuffer**)&chars);
         chars->AsReadOnlyBuffer((ICharBuffer**)&charsBuf);
         charSet->Encode(charsBuf, (IByteBuffer**)&byteBuffer);
         Int32 len;
-        byteBuffer->GetLimit(&len);
+        IBuffer::Probe(byteBuffer)->GetLimit(&len);
         byteArray= ArrayOf<Byte>::Alloc(len);
-        byteBuffer->GetBytes(byteArray);
+        byteBuffer->Get(byteArray);
     }
     return byteArray;
 }
@@ -239,7 +217,8 @@ ECode UriCodec::Decode(
 
     StringBuilder result(s.GetByteLength());
     AutoPtr<IByteArrayOutputStream> out;
-    CByteArrayOutputStream::New((IByteArrayOutputStream**)&out);
+    // CByteArrayOutputStream::New((IByteArrayOutputStream**)&out);
+    IOutputStream* os = IOutputStream::Probe(out);
     AutoPtr<ArrayOf<Char32> > char32Array = s.GetChars();
     for (Int32 i = 0; i < s.GetLength();) {
         Char32 c = (*char32Array)[i];
@@ -249,7 +228,7 @@ ECode UriCodec::Decode(
                 if (i + 2 < s.GetLength()
                         && (d1 = HexToInt((*char32Array)[i + 1])) != -1
                         && (d2 = HexToInt((*char32Array)[i + 2])) != -1) {
-                    IOutputStream::Probe(out)->Write((Byte) ((d1 << 4) + d2));
+                    os->Write((Byte) ((d1 << 4) + d2));
                 }
                 else if (throwOnFailure) {
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -257,7 +236,7 @@ ECode UriCodec::Decode(
                 else {
                     char* chars = "\ufffd";
                     AutoPtr<ArrayOf<Byte> > replacement = GetBytes(chars, charset);
-                    out->WriteBytes(*replacement, 0, replacement->GetLength());
+                    os->Write(replacement, 0, replacement->GetLength());
                 }
                 i += 3;
             } while (i < s.GetLength() && (*char32Array)[i] == '%');
@@ -265,7 +244,7 @@ ECode UriCodec::Decode(
             AutoPtr<ArrayOf<Byte> > bytes;
             out->ToByteArray((ArrayOf<Byte>**)&bytes);
             //result.append(new String(out.toByteArray(), charset);
-            result.AppendString(String((char*)bytes->GetPayload()));
+            result.Append(String((char*)bytes->GetPayload()));
             out->Reset();
         }
         else {
@@ -299,7 +278,7 @@ ECode UriCodec::AppendHex(
     /* [in] */ Byte b)
 {
     builder.AppendChar('%');
-    builder.AppendString(IntegralToString::ByteToHexString(b, TRUE));
+    builder.Append(IntegralToString::ToHexString(b, TRUE));
     return NOERROR;
 }
 
@@ -321,7 +300,7 @@ AutoPtr<ICharset> UriCodec::GetDefaultCharset()
 {
     AutoPtr<ICharset> charset;
     AutoPtr<ICharsets> charsets;
-    CCharsets::AcquireSingleton((ICharsets**)&charsets);
+    // CCharsets::AcquireSingleton((ICharsets**)&charsets);
     charsets->GetUTF_8((ICharset**)&charset);
     return charset;
 }

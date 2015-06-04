@@ -3,10 +3,8 @@
 #include "StringBuilder.h"
 #include "CByteArrayInputStream.h"
 #include "CCertificateFactoryHelper.h"
-#include "elastos/ObjectUtils.h"
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::ObjectUtils;
 using Elastos::IO::CByteArrayInputStream;
 using Elastos::IO::IInputStream;
 using Elastos::Security::Cert::CCertificateFactoryHelper;
@@ -106,7 +104,7 @@ ECode CertPath::ToString(
         sb.AppendCStr("---------------\n");
         AutoPtr<IInterface> elem;
         listIterator->Next((IInterface**)&elem);
-        String tmp = ObjectUtils::ToString(elem);
+        String tmp = Object::ToString(elem);
         sb.AppendString(tmp);
         n++;
     }

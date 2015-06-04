@@ -2,10 +2,8 @@
 #include "CConcurrentLinkedQueue.h"
 #include "CArrayList.h"
 #include <Math.h>
-#include <elastos/ObjectUtils.h>
 
 using Elastos::Core::Math;
-using Elastos::Core::ObjectUtils;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 
@@ -46,7 +44,7 @@ ECode CConcurrentLinkedQueue::Node::GetInterfaceID(
     /* [out] */ InterfaceID* iid)
 {
     VALIDATE_NOT_NULL(iid);
-    if (ObjectUtils::Equals(object, THIS_PROBE(IInterface))) {
+    if (Object::Equals(object, THIS_PROBE(IInterface))) {
         *iid = EIID_IInterface;
         return NOERROR;
     }
@@ -151,7 +149,7 @@ AutoPtr<CConcurrentLinkedQueue::Node> CConcurrentLinkedQueue::Succ(
     /* [in] */ Node* p)
 {
     AutoPtr<Node> next = p->mNext;
-    return (ObjectUtils::Equals(p->Probe(EIID_IInterface), next->Probe(EIID_IInterface))) ? mHead : next;
+    return (Object::Equals(p->Probe(EIID_IInterface), next->Probe(EIID_IInterface))) ? mHead : next;
 }
 
 ECode CConcurrentLinkedQueue::Offer(
@@ -296,7 +294,7 @@ ECode CConcurrentLinkedQueue::Contains(
     }
     for (AutoPtr<Node> p = First(); p != NULL; p = Succ(p)) {
         AutoPtr<IInterface> item = p->mItem;
-        if (item != NULL && ObjectUtils::Equals(object, item)) {
+        if (item != NULL && Object::Equals(object, item)) {
             *result = TRUE;
             return NOERROR;
         }
@@ -318,7 +316,7 @@ ECode CConcurrentLinkedQueue::Remove(
     for (AutoPtr<Node> p = First(); p != NULL; p = Succ(p)) {
         AutoPtr<IInterface> item = p->mItem;
         if (item != NULL &&
-            ObjectUtils::Equals(object, item) &&
+            Object::Equals(object, item) &&
             p->CasItem(item, NULL)) {
             AutoPtr<Node> next = Succ(p);
             if (pred != NULL && next != NULL)

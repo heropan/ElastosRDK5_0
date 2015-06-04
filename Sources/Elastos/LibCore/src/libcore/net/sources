@@ -16,6 +16,5 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/net;
 
 SOURCES = MimeUtils.cpp
-//SOURCES += CAsynchronousCloseMonitor.cpp
-//SOURCES += Posix.cpp
-//SOURCES += NetworkUtilities.cpp
+SOURCES += CMimeUtils.cpp
+SOURCES += UriCodec.cpp

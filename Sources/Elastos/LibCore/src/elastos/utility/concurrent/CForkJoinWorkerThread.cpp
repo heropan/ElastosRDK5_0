@@ -2,9 +2,7 @@
 #include "CForkJoinWorkerThread.h"
 #include "CForkJoinPool.h"
 #include "ForkJoinTask.h"
-#include <elastos/ObjectUtils.h>
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Utility::Concurrent::CForkJoinPool;
 using Elastos::Utility::Concurrent::ForkJoinTask;
 
@@ -443,7 +441,7 @@ Boolean CForkJoinWorkerThread::LocalHelpJoinTask(
         (i = (q->GetLength() - 1) & --s) >= 0 &&
         (t = (*q)[i]) != NULL) {
         AutoPtr<ForkJoinTask> ct = (ForkJoinTask*)t.Get();
-        if (!ObjectUtils::Equals(t->Probe(EIID_IInterface), joinMe->Probe(EIID_IInterface)) &&
+        if (!Object::Equals(t->Probe(EIID_IInterface), joinMe->Probe(EIID_IInterface)) &&
              ct->mStatus >= 0)
             return FALSE;
         assert(0 && "TODO");
@@ -476,7 +474,7 @@ Boolean CForkJoinWorkerThread::HelpJoinTask(
                 for (Int32 j = 0; ;) {        // search array
                     if ((v = (*ws)[j]) != NULL) {
                         cv = (CForkJoinWorkerThread*)v.Get();
-                        if (ObjectUtils::Equals(cv->mCurrentSteal->Probe(EIID_IInterface), task->Probe(EIID_IInterface))) {
+                        if (Object::Equals(cv->mCurrentSteal->Probe(EIID_IInterface), task->Probe(EIID_IInterface))) {
                             ct->mStealHint = j;
                             break;              // save hint for next time
                         }
@@ -516,7 +514,7 @@ Boolean CForkJoinWorkerThread::HelpJoinTask(
             AutoPtr<ForkJoinTask> ctask = (ForkJoinTask*)task.Get();
             if (--levels > 0 && ctask->mStatus >= 0 &&
                 next != NULL &&
-                !ObjectUtils::Equals(next->Probe(EIID_IInterface), task->Probe(EIID_IInterface))) {
+                !Object::Equals(next->Probe(EIID_IInterface), task->Probe(EIID_IInterface))) {
                 task = next;
                 thread = v;
             }
@@ -544,7 +542,7 @@ Int32 CForkJoinWorkerThread::TryDeqAndExec(
                 (b = cv->mQueueBase) != cv->mQueueTop &&
                 (q = cv->mQueue) != NULL &&
                 (i = (q->GetLength() - 1) & b) >= 0 &&
-                ObjectUtils::Equals((*q)[i]->Probe(EIID_IInterface), t->Probe(EIID_IInterface))) {
+                Object::Equals((*q)[i]->Probe(EIID_IInterface), t->Probe(EIID_IInterface))) {
                 assert(0 && "TODO");
                 // Int64 u = (i << ASHIFT) + ABASE;
                 // if (v->mQueueBase == b &&

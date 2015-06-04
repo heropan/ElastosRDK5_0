@@ -1,6 +1,5 @@
 
 #include "test.h"
-#include "elastos/ObjectUtils.h"
 
 CTest::CTest()
 {
@@ -52,20 +51,20 @@ int CTest::testIteratorAndNonStructuralChanges(int argc, char* argv[])
     PFL_EX("abcde: %p, ec: %p", abcde.Get(), ec)
     AutoPtr<ICharSequence> minsq = ICharSequence::Probe(outface);
     PFL_EX("minsq: %p, outface: %p", minsq.Get(), outface.Get())
-    assert(ObjectUtils::Equals(sqa, outface));
+    assert(Object::Equals(sqa, outface));
     list->Set(1, sqB, (IInterface**)&outface);
 
     abcde->Next((IInterface**)&outface);
-    assert(ObjectUtils::Equals(sqb, outface));
+    assert(Object::Equals(sqb, outface));
 
     abcde->Next((IInterface**)&outface);
-    assert(ObjectUtils::Equals(sqc, outface));
+    assert(Object::Equals(sqc, outface));
 
     abcde->Next((IInterface**)&outface);
-    assert(ObjectUtils::Equals(sqd, outface));
+    assert(Object::Equals(sqd, outface));
 
     abcde->Next((IInterface**)&outface);
-    assert(ObjectUtils::Equals(sqe, outface));
+    assert(Object::Equals(sqe, outface));
     return 0;
 }
 
@@ -248,11 +247,11 @@ int CTest::testSubListIteratorGetsSnapshot(int argc, char* argv[])
     outlist->GetIterator((IIterator**)&bcd);
     list->Clear();
     bcd->Next((IInterface**)&outface);
-    assert(ObjectUtils::Equals(sqb, outface));
+    assert(Object::Equals(sqb, outface));
     bcd->Next((IInterface**)&outface);
-    assert(ObjectUtils::Equals(sqc, outface));
+    assert(Object::Equals(sqc, outface));
     bcd->Next((IInterface**)&outface);
-    assert(ObjectUtils::Equals(sqd, outface));
+    assert(Object::Equals(sqd, outface));
     bcd->HasNext(&isflag);
     assert(!isflag);
     return 0;
@@ -533,7 +532,7 @@ int CTest::testListIterator(int argc, char* argv[])
     i->PreviousIndex(&index);
     assert(4 == index);
     i->Previous((IInterface**)&outface);
-    assert(ObjectUtils::Equals(sqe, outface));
+    assert(Object::Equals(sqe, outface));
     i->NextIndex(&index);
     assert(4 == index);
     i->PreviousIndex(&index);
@@ -543,7 +542,7 @@ int CTest::testListIterator(int argc, char* argv[])
     i->HasPrevious(&isflag);
     assert(isflag);
     i->Previous((IInterface**)&outface);
-    assert(ObjectUtils::Equals(sqd, outface));
+    assert(Object::Equals(sqd, outface));
     i->NextIndex(&index);
     assert(3 == index);
 
@@ -554,7 +553,7 @@ int CTest::testListIterator(int argc, char* argv[])
     i->HasPrevious(&isflag);
     assert(isflag);
     i->Previous((IInterface**)&outface);
-    assert(ObjectUtils::Equals(sqc, outface));
+    assert(Object::Equals(sqc, outface));
     i->NextIndex(&index);
     assert(2 == index);
     i->PreviousIndex(&index);
@@ -564,7 +563,7 @@ int CTest::testListIterator(int argc, char* argv[])
     i->HasPrevious(&isflag);
     assert(isflag);
     i->Previous((IInterface**)&outface);
-    assert(ObjectUtils::Equals(sqb, outface));
+    assert(Object::Equals(sqb, outface));
     i->NextIndex(&index);
     assert(1 == index);
     i->PreviousIndex(&index);
@@ -574,7 +573,7 @@ int CTest::testListIterator(int argc, char* argv[])
     i->HasPrevious(&isflag);
     assert(isflag);
     i->Previous((IInterface**)&outface);
-    assert(ObjectUtils::Equals(sqa, outface));
+    assert(Object::Equals(sqa, outface));
     i->NextIndex(&index);
     assert(0 == index);
     i->PreviousIndex(&index);

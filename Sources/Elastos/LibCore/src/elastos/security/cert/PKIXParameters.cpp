@@ -7,9 +7,7 @@
 #include "CArrayList.h"
 #include "StringBuilder.h"
 #include "CDate.h"
-#include "elastos/ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IEnumeration;
@@ -429,7 +427,7 @@ ECode PKIXParameters::ToString(
         sb.AppendCStr("any");
     }
     else {
-        String policies = ObjectUtils::ToString(mInitialPolicies.Get());
+        String policies = Object::ToString(mInitialPolicies);
         sb.AppendString(policies);
     }
     sb.AppendCStr("\n Cert Stores: ");
@@ -437,7 +435,7 @@ ECode PKIXParameters::ToString(
         sb.AppendCStr("no");
     }
     else {
-        String certStore = ObjectUtils::ToString(mCertStores.Get());
+        String certStore = Object::ToString(mCertStores.Get());
         sb.AppendString(certStore);
     }
     sb.AppendCStr("\n Validity Date: ");
@@ -447,7 +445,7 @@ ECode PKIXParameters::ToString(
         sb.AppendCStr("no");
     }
     else {
-        String certPathCheckers = ObjectUtils::ToString(mCertPathCheckers.Get());
+        String certPathCheckers = Object::ToString(mCertPathCheckers.Get());
         sb.AppendString(certPathCheckers);
     }
     sb.AppendCStr("\n Signature Provider: ");

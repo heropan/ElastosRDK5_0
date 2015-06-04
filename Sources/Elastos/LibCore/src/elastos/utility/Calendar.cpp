@@ -10,7 +10,6 @@
 #include "CLocaleDataHelper.h"
 #include "CLocaleData.h"
 #include "CICUHelper.h"
-#include "ObjectUtils.h"
 #include "StringUtils.h"
 #include "StringBuilder.h"
 
@@ -23,7 +22,6 @@ extern "C" const InterfaceID EIID_Calendar =
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::ICloneable;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -765,7 +763,7 @@ ECode Calendar::Clone(
 Int32 Calendar::GetHashCode()
 {
     return (mLenient ? 1237 : 1231) + mFirstDayOfWeek
-        + mMinimalDaysInFirstWeek + ObjectUtils::GetHashCode(mZone);
+        + mMinimalDaysInFirstWeek + Object::GetHashCode(mZone);
 }
 
 String Calendar::ToString()

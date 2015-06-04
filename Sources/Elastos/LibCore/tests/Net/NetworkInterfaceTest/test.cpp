@@ -1,5 +1,4 @@
 #include "test.h"
-#include <elastos/ObjectUtils.h>
 #include <elastos/StringUtils.h>
 #include <elastos/Thread.h>
 

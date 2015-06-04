@@ -19,4 +19,6 @@ SOURCES += AddressCache.cpp
 SOURCES += InetAddress.cpp
 SOURCES += Inet4Address.cpp
 SOURCES += Inet6Address.cpp
+SOURCES += InterfaceAddress.cpp
+#SOURCES += NetworkInterface.cpp
 SOURCES += net.cpp

@@ -1,8 +1,6 @@
 
 #include "AbstractList.h"
-#include "ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Utility::IList;
 
 namespace Elastos {
@@ -708,7 +706,7 @@ ECode AbstractList::Equals(
         it1->Next((IInterface**)&e1);
         AutoPtr<IInterface> e2;
         it2->Next((IInterface**)&e2);
-        if (!ObjectUtils::Equals(e1, e2)) {
+        if (!Object::Equals(e1, e2)) {
             *result = FALSE;
             return NOERROR;
         }
@@ -732,7 +730,7 @@ ECode AbstractList::GetHashCode(
             *result = 31 * (*result);
         }
         else {
-            Int32 ret = ObjectUtils::GetHashCode(object);
+            Int32 ret = Object::GetHashCode(object);
             *result = 31 * (*result) + ret;
         }
     }
@@ -751,7 +749,7 @@ ECode AbstractList::IndexOf(
         while (((IIterator::Probe(it))->HasNext(&hasnext), hasnext)) {
             AutoPtr<IInterface> nextobject;
             (IIterator::Probe(it))->Next((IInterface**)&nextobject);
-            if (ObjectUtils::Equals(object, nextobject)) {
+            if (Object::Equals(object, nextobject)) {
                 Int32 previousindex;
                 it->PreviousIndex(&previousindex);
                 *result = previousindex;
@@ -799,7 +797,7 @@ ECode AbstractList::LastIndexOf(
         while((it->HasPrevious(&hasprevious), hasprevious)) {
             AutoPtr<IInterface> previousobject;
             it->Previous((IInterface**)&previousobject);
-            if (ObjectUtils::Equals(object, previousobject)) {
+            if (Object::Equals(object, previousobject)) {
                 Int32 nextindex;
                 it->NextIndex(&nextindex);
                 *result = nextindex;

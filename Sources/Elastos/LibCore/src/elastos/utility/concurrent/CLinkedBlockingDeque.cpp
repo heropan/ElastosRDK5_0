@@ -2,9 +2,7 @@
 #include "CLinkedBlockingDeque.h"
 #include <elastos/StringBuilder.h>
 #include <elastos/Math.h>
-#include <elastos/ObjectUtils.h>
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;
 
@@ -50,7 +48,7 @@ AutoPtr<CLinkedBlockingDeque::Node> CLinkedBlockingDeque::AbstractItr::Succ(
             return NULL;
         else if (s->mItem != NULL)
             return s;
-        else if (ObjectUtils::Equals(s->Probe(EIID_IInterface), n->Probe(EIID_IInterface)))
+        else if (Object::Equals(s->Probe(EIID_IInterface), n->Probe(EIID_IInterface)))
             return FirstNode();
         else
             n = s;
@@ -604,7 +602,7 @@ ECode CLinkedBlockingDeque::RemoveFirstOccurrence(
     AutoPtr<IReentrantLock> lock = mLock;
     lock->Lock();
     for (AutoPtr<Node> p = mFirst; p != NULL; p = p->mNext) {
-        if (ObjectUtils::Equals(o, p->mItem)) {
+        if (Object::Equals(o, p->mItem)) {
             Unlink(p);
             *value = TRUE;
             lock->UnLock();
@@ -628,7 +626,7 @@ ECode CLinkedBlockingDeque::RemoveLastOccurrence(
     AutoPtr<IReentrantLock> lock = mLock;
     lock->Lock();
     for (AutoPtr<Node> p = mLast; p != NULL; p = p->mPrev) {
-        if (ObjectUtils::Equals(o, p->mItem)) {
+        if (Object::Equals(o, p->mItem)) {
             Unlink(p);
             *value = TRUE;
             lock->UnLock();
@@ -744,7 +742,7 @@ ECode CLinkedBlockingDeque::DrainTo(
 {
     VALIDATE_NOT_NULL(number);
     VALIDATE_NOT_NULL(c);
-    if (ObjectUtils::Equals(c->Probe(EIID_IInterface), THIS_PROBE(IInterface)))
+    if (Object::Equals(c->Probe(EIID_IInterface), THIS_PROBE(IInterface)))
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     if (maxElements <= 0) {
         *number = 0;
@@ -807,7 +805,7 @@ ECode CLinkedBlockingDeque::Contains(
     AutoPtr<IReentrantLock> lock = mLock;
     lock->Lock();
     for (AutoPtr<Node> p = mFirst; p != NULL; p = p->mNext) {
-        if (ObjectUtils::Equals(object, p->mItem)) {
+        if (Object::Equals(object, p->mItem)) {
             *result = TRUE;
             lock->UnLock();
             return NOERROR;
@@ -870,7 +868,7 @@ String CLinkedBlockingDeque::ToString()
     sb.AppendChar('[');
     for (;;) {
         AutoPtr<IInterface> e = p->mItem;
-        if (ObjectUtils::Equals(e, THIS_PROBE(IInterface)))
+        if (Object::Equals(e, THIS_PROBE(IInterface)))
             sb += String("(this Collection)");
         else
             sb += e;

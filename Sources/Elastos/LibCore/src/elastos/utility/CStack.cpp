@@ -1,8 +1,6 @@
 
 #include "CStack.h"
-#include "ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 
 namespace Elastos {
 namespace Utility {
@@ -380,7 +378,7 @@ ECode CStack::Search(
     Int32 size = mElementCount;
     if (o != NULL) {
         for (Int32 i = size - 1; i >= 0; i--) {
-            if (ObjectUtils::Equals(o, (*dumpArray)[i])) {
+            if (Object::Equals(o, (*dumpArray)[i])) {
                 *value = size - i;
                 return NOERROR;
             }

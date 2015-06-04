@@ -1,8 +1,6 @@
 
 #include "CArrayDeque.h"
-#include "ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::IO::EIID_ISerializable;
 using Elastos::IO::IOutputStream;

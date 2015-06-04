@@ -1,7 +1,6 @@
 #ifndef __UTILITY_ABSTRACTCOLLECTION_H__
 #define __UTILITY_ABSTRACTCOLLECTION_H__
 
-#include <elastos/core/Object.h>
 #include "Object.h"
 
 using Elastos::Core::Object;

@@ -2,9 +2,7 @@
 #include "CTreeMap.h"
 #include "CCollections.h"
 #include "elastos/Math.h"
-#include "elastos/ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::IComparable;
 using Elastos::Core::EIID_IComparable;
 using Elastos::Core::IComparator;
@@ -349,7 +347,7 @@ AutoPtr<CTreeMap::Node> CTreeMap::FindByEntry(
     entry->GetKey((IInterface**)&keyface);
     AutoPtr<Node> mine = FindByObject(keyface);
     AutoPtr<IInterface> valueface;
-    Boolean valuesEqual = mine != NULL && (ObjectUtils::Equals(mine->mValue,
+    Boolean valuesEqual = mine != NULL && (Object::Equals(mine->mValue,
         (entry->GetValue((IInterface**)&valueface), valueface)));
     return valuesEqual ? mine : NULL;
 }
@@ -1102,8 +1100,8 @@ ECode CTreeMap::Node::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    *hashCode = (mKey == NULL ? 0 : ObjectUtils::GetHashCode(mKey))
-            ^ (mValue == NULL ? 0 : ObjectUtils::GetHashCode(mValue));
+    *hashCode = (mKey == NULL ? 0 : Object::GetHashCode(mKey))
+            ^ (mValue == NULL ? 0 : Object::GetHashCode(mValue));
     return NOERROR;
 }
 
@@ -1112,7 +1110,7 @@ ECode CTreeMap::Node::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
-    *str = ObjectUtils::ToString(mKey) + String("=") + ObjectUtils::ToString(mValue);
+    *str = Object::ToString(mKey) + String("=") + Object::ToString(mValue);
     return NOERROR;
 }
 

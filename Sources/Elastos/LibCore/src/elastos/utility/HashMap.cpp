@@ -1,9 +1,7 @@
 
 #include "CHashMap.h"
 #include "CFloat.h"
-#include "elastos/ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::IFloat;
 using Elastos::Core::CFloat;
 using Elastos::Core::IBoolean;
@@ -219,14 +217,14 @@ ECode _HashMap::Get(
     }
 
     // Doug Lea's supplemental secondaryHash function (inlined)
-    Int32 hash = ObjectUtils::GetHashCode(key);
+    Int32 hash = Object::GetHashCode(key);
     hash ^= ((UInt32)hash >> 20) ^ ((UInt32)hash >> 12);
     hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
 
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
     for (AutoPtr<HashMapEntry> e = (*tab)[hash & (tab->GetLength() - 1)]; e != NULL; e = e->mNext) {
         AutoPtr<IInterface> eKey = e->mKey;
-        if (eKey.Get() == key || (e->mHash == hash && ObjectUtils::Equals(key, eKey))) {
+        if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
             *value = e->mValue;
             REFCOUNT_ADD(*value)
             return NOERROR;
@@ -248,14 +246,14 @@ ECode _HashMap::ContainsKey(
     }
 
     // Doug Lea's supplemental secondaryHash function (inlined)
-    Int32 hash = ObjectUtils::GetHashCode(key);
+    Int32 hash = Object::GetHashCode(key);
     hash ^= ((UInt32)hash >> 20) ^ ((UInt32)hash >> 12);
     hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
 
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
     for (AutoPtr<HashMapEntry> e = (*tab)[hash & (tab->GetLength() - 1)]; e != NULL; e = e->mNext) {
         AutoPtr<IInterface> eKey = e->mKey;
-        if (eKey.Get() == key || (e->mHash == hash && ObjectUtils::Equals(key, eKey))) {
+        if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
             *result = TRUE;
             return NOERROR;
         }
@@ -315,12 +313,12 @@ ECode _HashMap::Put(
         return NOERROR;
     }
 
-    Int32 keyhash = ObjectUtils::GetHashCode(key);
+    Int32 keyhash = Object::GetHashCode(key);
     Int32 hash = SecondaryHash(keyhash);
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
     for (AutoPtr<HashMapEntry> e = (*tab)[index]; e != NULL; e = e->mNext) {
-        if (e->mHash == hash && ObjectUtils::Equals(key, e->mKey)) {
+        if (e->mHash == hash && Object::Equals(key, e->mKey)) {
             PreModify(e);
             if (oldValue) {
                 *oldValue = e->mValue;
@@ -384,13 +382,13 @@ ECode _HashMap::ConstructorPut(
         return NOERROR;
     }
 
-    Int32 keycode = ObjectUtils::GetHashCode(key);
+    Int32 keycode = Object::GetHashCode(key);
     Int32 hash = SecondaryHash(keycode);
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
     AutoPtr<HashMapEntry> first = (*tab)[index];
     for (AutoPtr<HashMapEntry> e = first; e != NULL; e = e->mNext) {
-        if (e->mHash == hash && ObjectUtils::Equals(key, e->mKey)) {
+        if (e->mHash == hash && Object::Equals(key, e->mKey)) {
             e->mValue = value;
             return NOERROR;
         }
@@ -538,14 +536,14 @@ ECode _HashMap::Remove(
         REFCOUNT_ADD(*value)
         return NOERROR;
     }
-    Int32 keyhash = ObjectUtils::GetHashCode(key);
+    Int32 keyhash = Object::GetHashCode(key);
     Int32 hash = SecondaryHash(keyhash);
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
     AutoPtr<HashMapEntry> prev;
     AutoPtr<HashMapEntry> e;
     for (e = (*tab)[index], prev = NULL; e != NULL; prev = e, e = e->mNext) {
-        if (e->mHash == hash && ObjectUtils::Equals(key, e->mKey)) {
+        if (e->mHash == hash && Object::Equals(key, e->mKey)) {
             if (prev == NULL) {
                 tab->Set(index, e->mNext);
             }
@@ -654,12 +652,12 @@ Boolean _HashMap::ContainsMapping(
         AutoPtr<HashMapEntry> e = mEntryForNullKey;
         return e != NULL && (value == e->mValue);
     }
-    Int32 keyhash = ObjectUtils::GetHashCode(key);
+    Int32 keyhash = Object::GetHashCode(key);
     Int32 hash = SecondaryHash(keyhash);
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
     for (AutoPtr<HashMapEntry> e = (*tab)[index]; e != NULL; e = e->mNext) {
-        if (e->mHash == hash && ObjectUtils::Equals(key, e->mKey)) {
+        if (e->mHash == hash && Object::Equals(key, e->mKey)) {
             return value == e->mValue;
         }
     }
@@ -682,13 +680,13 @@ Boolean _HashMap::RemoveMapping(
         return TRUE;
     }
 
-    Int32 keyhash = ObjectUtils::GetHashCode(key);
+    Int32 keyhash = Object::GetHashCode(key);
     Int32 hash = SecondaryHash(keyhash);
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
     for (AutoPtr<HashMapEntry> e = (*tab)[index], prev = NULL;
             e != NULL; prev = e, e = e->mNext) {
-        if (e->mHash == hash && ObjectUtils::Equals(key, e->mKey)) {
+        if (e->mHash == hash && Object::Equals(key, e->mKey)) {
             if (!(value == e->mValue)) {
                 return FALSE;  // Map has wrong value for key
             }
@@ -881,7 +879,7 @@ ECode _HashMap::HashMapEntry::Equals(
     AutoPtr<IInterface> valuekey;
     e->GetValue((IInterface**)&valuekey);
 
-    *result = ObjectUtils::Equals(eKey, mKey) && ObjectUtils::Equals(valuekey, mValue);
+    *result = Object::Equals(eKey, mKey) && Object::Equals(valuekey, mValue);
     return NOERROR;
 }
 
@@ -890,8 +888,8 @@ ECode _HashMap::HashMapEntry::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    Int32 keycode = ObjectUtils::GetHashCode(mKey);
-    Int32 valuecode = ObjectUtils::GetHashCode(mValue);
+    Int32 keycode = Object::GetHashCode(mKey);
+    Int32 valuecode = Object::GetHashCode(mValue);
     *hashCode = (mKey == NULL ? 0 : keycode) ^ (mValue == NULL ? 0 : valuecode);
     return NOERROR;
 }
@@ -901,7 +899,7 @@ ECode _HashMap::HashMapEntry::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
-    *str = ObjectUtils::ToString(mKey) + String("=") + ObjectUtils::ToString(mValue);
+    *str = Object::ToString(mKey) + String("=") + Object::ToString(mValue);
     return NOERROR;
 }
 

@@ -1,8 +1,10 @@
 #include "Inet6Address.h"
 #include "CInet6Address.h"
+#include "StringBuilder.h"
 //#include "NetworkInterface.h"
 #include "droid/system/OsConstants.h"
 
+using Elastos::Core::StringBuilder;
 using Elastos::Droid::System::OsConstants;
 using Elastos::Utility::IEnumeration;
 
@@ -28,8 +30,8 @@ static AutoPtr<IInetAddress> InitLOOPBACK()
     return res;
 }
 
-AutoPtr<IInetAddress> CInet6Address::ANY = InitANY();
-AutoPtr<IInetAddress> CInet6Address::LOOPBACK = InitLOOPBACK();
+AutoPtr<IInetAddress> Inet6Address::ANY = InitANY();
+AutoPtr<IInetAddress> Inet6Address::LOOPBACK = InitLOOPBACK();
 
 CAR_INTERFACE_IMPL(Inet6Address, InetAddress, IInet6Address)
 
@@ -324,13 +326,21 @@ void  Inet6Address::ReadObject(
 ECode Inet6Address::ToString(
     /* [out] */ String* result)
 {
-    FAIL_RETURN(InetAddress::ToString(result));
+    VALIDATE_NOT_NULL(result);
+    *result = String("");
+
+    String addr;
+    FAIL_RETURN(InetAddress::ToString(&addr));
+    StringBuilder sb(addr);
+    sb.Append("%");
     if (mIfname.IsNull()){
-        *result = *result + String("%") + mIfname;
+        sb.Append(mIfname);
     }
-    else{
-        *result = *result + String("%") + mScopeId;
+    else {
+        sb.Append(mScopeId);
     }
+
+    *result = sb.ToString();
     return NOERROR;
 }
 

@@ -255,7 +255,7 @@ PFL
         mss->SetInterface(firstAddress);
         AutoPtr<IInterface> outface;
         mss->GetInterface((IInetAddress**)&outface);
-        assert(ObjectUtils::Equals(firstAddress, outface));
+        assert(Object::Equals(firstAddress, outface));
 
 PFL
         groupPort = Support_PortManager::getNextPortForUDP();
@@ -268,7 +268,7 @@ PFL
         AutoPtr<INetworkInterface> outworkint;
         netinthelper->GetByInetAddress(firstAddress, (INetworkInterface**)&outworkint);
 PFL_EX("firstAddress:%p, networkInterface1: %p, outworkint: %p", firstAddress.Get(), networkInterface1.Get(), outworkint.Get())
-        assert(ObjectUtils::Equals(networkInterface1, outworkint));
+        assert(Object::Equals(networkInterface1, outworkint));
     }
 
     mss->Close();
@@ -299,12 +299,12 @@ int CTest::test_getNetworkInterface(int argc, char* argv[])
     mss->SetNetworkInterface(networkInterface1);
     AutoPtr<INetworkInterface> netint;
     mss->GetNetworkInterface((INetworkInterface**)&netint);
-    assert(ObjectUtils::Equals(networkInterface1, netint));
+    assert(Object::Equals(networkInterface1, netint));
 
     if (atLeastTwoInterfaces) {
         mss->SetNetworkInterface(networkInterface2);
         mss->GetNetworkInterface((INetworkInterface**)&netint);
-        assert(ObjectUtils::Equals(networkInterface2, netint));
+        assert(Object::Equals(networkInterface2, netint));
     }
     mss->Close();
 
@@ -313,7 +313,7 @@ int CTest::test_getNetworkInterface(int argc, char* argv[])
     if (IPV6networkInterface1 != NULL) {
         mss->SetNetworkInterface(IPV6networkInterface1);
         mss->GetNetworkInterface((INetworkInterface**)&netint);
-        assert(ObjectUtils::Equals(IPV6networkInterface1, netint));
+        assert(Object::Equals(IPV6networkInterface1, netint));
     }
 
     // validate that we get the expected response when we set via setInterface
@@ -325,7 +325,7 @@ int CTest::test_getNetworkInterface(int argc, char* argv[])
         addresses->NextElement((IInterface**)&firstAddress);
         mss->SetInterface(firstAddress);
         mss->GetNetworkInterface((INetworkInterface**)&netint);
-        assert(ObjectUtils::Equals(networkInterface1, netint));
+        assert(Object::Equals(networkInterface1, netint));
     }
     mss->Close();
     return 0;
@@ -469,8 +469,8 @@ PFL
     networkhelp->GetByInetAddress(outnet, (INetworkInterface**)&loopbackInterface);
 
 PFL
-    Boolean anyLoop = ObjectUtils::Equals(networkInterface1, loopbackInterface)
-                    || ObjectUtils::Equals(networkInterface2, loopbackInterface);
+    Boolean anyLoop = Object::Equals(networkInterface1, loopbackInterface)
+                    || Object::Equals(networkInterface2, loopbackInterface);
     printf("anyLoop= %d \n", anyLoop);
 
     AutoPtr<IArrayList> realInterfaces;
@@ -510,7 +510,7 @@ PFL
             if (IInet4Address::Probe(firstAddress)) {
                 netaddhelp->GetByName(String("224.0.0.4"), (IInetAddress**)&group);
                 if (anyLoop) {
-                    if (ObjectUtils::Equals(networkInterface1, loopbackInterface)) {
+                    if (Object::Equals(networkInterface1, loopbackInterface)) {
                         sendingInterface = networkInterface2;
                     }
                     else {
@@ -561,7 +561,7 @@ PFL
         // System.err.println(thisInterface + " " + group);
         mss->Send(sdp);
         Thread::Sleep(1000);
-        if (ObjectUtils::Equals(thisInterface, sendingInterface)) {
+        if (Object::Equals(thisInterface, sendingInterface)) {
             server->rdp->GetData((ArrayOf<Byte>**)&inbyte);
             server->rdp->GetLength(&msglen);
             AutoPtr<ArrayOf<Char32> > char32 = ArrayOf<Char32>::Alloc(msglen);
@@ -723,11 +723,11 @@ int CTest::test_setInterfaceLjava_net_InetAddress(int argc, char* argv[])
         AutoPtr<INetworkInterface> thework2;
         networkhelp->GetByInetAddress(theInterface, (INetworkInterface**)&thework1);
         networkhelp->GetByInetAddress(theInterface2, (INetworkInterface**)&thework2);
-        assert(ObjectUtils::Equals(thework1, thework2));
+        assert(Object::Equals(thework1, thework2));
     }
     else {
         mss->GetInterface((IInetAddress**)&theInterface);
-        assert(ObjectUtils::Equals(theInterface, localhost));
+        assert(Object::Equals(theInterface, localhost));
     }
     mss->Close();
     return 0;
@@ -771,7 +771,7 @@ int CTest::test_setNetworkInterfaceLjava_net_NetworkInterface_round_trip(int arg
     mss->SetNetworkInterface(networkInterface1);
     AutoPtr<INetworkInterface> thenetwork;
     mss->GetNetworkInterface((INetworkInterface**)&thenetwork);
-    assert(ObjectUtils::Equals(networkInterface1, thenetwork));
+    assert(Object::Equals(networkInterface1, thenetwork));
     mss->Close();
     return 0;
 }

@@ -1,7 +1,7 @@
 #ifndef __LIBCORE_NET_URI_URLUTILS_H__
 #define __LIBCORE_NET_URI_URLUTILS_H__
 
-#include <eltypes.h>
+#include "Object.h"
 
 namespace Libcore {
 namespace Net {
@@ -31,7 +31,8 @@ public:
         /* [in] */ Int32 end);
 
 private:
-    UrlUtils() {}
+    UrlUtils();
+    UrlUtils(const UrlUtils&);
 };
 
 } // namespace Net

@@ -1,9 +1,7 @@
 
 
 #include "CLinkedHashMap.h"
-#include "elastos/ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 
 namespace Elastos {
 namespace Utility {
@@ -168,7 +166,7 @@ ECode CLinkedHashMap::Get(
     }
 
     // Doug Lea's supplemental secondaryHash function (inlined)
-    Int32 hash = ObjectUtils::GetHashCode(key);
+    Int32 hash = Object::GetHashCode(key);
     hash ^= ((UInt32)hash >> 20) ^ ((UInt32)hash >> 12);
     hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
 
@@ -176,7 +174,7 @@ ECode CLinkedHashMap::Get(
     for (AutoPtr<HashMapEntry> e = (*tab)[hash & (tab->GetLength() - 1)];
             e != NULL; e = e->mNext) {
         AutoPtr<IInterface> eKey = e->mKey;
-        if (eKey.Get() == key || (e->mHash == hash && ObjectUtils::Equals(key, eKey))) {
+        if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
             if (mAccessOrder) {
                 MakeTail((LinkedEntry*)e.Get());
             }
@@ -245,7 +243,7 @@ ECode CLinkedHashMap::ContainsValue(
 
     // value is non-NULL
     for (e = header->mNxt; e != header; e = e->mNxt) {
-        if (ObjectUtils::Equals(value, e->mValue)) {
+        if (Object::Equals(value, e->mValue)) {
             *result = TRUE;
             return NOERROR;
         }

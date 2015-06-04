@@ -147,8 +147,7 @@ ECode ByteBuffer::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean* isEquals)
 {
-    assert(0 && "TODO");
-    ByteBuffer* otherObj; // = (ByteBuffer*)(other->Probe(EIID_ByteBuffer));
+    IByteBuffer* otherObj = IByteBuffer::Probe(other);
     if (NULL == otherObj) {
         *isEquals = FALSE;
         return NOERROR;
@@ -167,8 +166,8 @@ ECode ByteBuffer::Equals(
     Int32 otherPosition;
     IBuffer::Probe(other)->GetPosition(&otherPosition);
     Boolean equalSoFar = TRUE;
+    Byte value, otherValue;
     while (equalSoFar && (myPosition < mLimit)) {
-        Byte value, otherValue;
         Get(myPosition++, &value);
         otherObj->Get(otherPosition++, &otherValue);
         equalSoFar = (value == otherValue);
@@ -187,13 +186,13 @@ ECode ByteBuffer::GetHashCode(
 }
 
 ECode ByteBuffer::Get(
-    /* [out] */ ArrayOf<Byte>* dst)
+    /* [in] */ ArrayOf<Byte>* dst)
 {
     return Get(dst, 0, dst->GetLength());
 }
 
 ECode ByteBuffer::Get(
-    /* [out] */ ArrayOf<Byte>* dst,
+    /* [in] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
 {

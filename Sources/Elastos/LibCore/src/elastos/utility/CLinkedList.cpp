@@ -1,8 +1,6 @@
 #include "CLinkedList.h"
-#include "elastos/ObjectUtils.h"
 #include "CArrayList.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::IO::IObjectInput;
 using Elastos::IO::IObjectOutput;
 using Elastos::IO::EIID_IObjectInput;
@@ -516,7 +514,7 @@ ECode CLinkedList::Contains(
     AutoPtr<Link> link = mVoidLink->mNext;
     if (object != NULL) {
         while (link != mVoidLink) {
-            if (ObjectUtils::Equals(object,link->mData)) {
+            if (Object::Equals(object,link->mData)) {
                 *result = TRUE;
                 return NOERROR;
             }
@@ -601,7 +599,7 @@ ECode CLinkedList::IndexOf(
     AutoPtr<Link> link = mVoidLink->mNext;
     if (object != NULL) {
         while (link != mVoidLink) {
-            if (ObjectUtils::Equals(object,link->mData)) {
+            if (Object::Equals(object,link->mData)) {
                 *index = pos;
                 return NOERROR;
             }
@@ -633,7 +631,7 @@ ECode CLinkedList::LastIndexOf(
     if (object != NULL) {
         while (link != mVoidLink) {
             pos--;
-            if (ObjectUtils::Equals(object,link->mData)) {
+            if (Object::Equals(object,link->mData)) {
                 *index = pos;
                 return NOERROR;
             }
@@ -862,7 +860,7 @@ ECode CLinkedList::RemoveOneOccurrence(
     while ((iter->HasNext(&hasnext), hasnext)) {
         AutoPtr<IInterface> element;
         iter->Next((IInterface**)&element);
-        if (object == NULL ? element == NULL : ObjectUtils::Equals(object, element)) {
+        if (object == NULL ? element == NULL : Object::Equals(object, element)) {
             iter->Remove();
             *result = TRUE;
             return NOERROR;

@@ -81,7 +81,7 @@ int CTest::test_ConstructorLjava_util_Map(int argc, char* argv[])
     for (int counter = 0; counter < hmSize; counter++) {
         hm->Get((*objArray2)[counter], (IInterface**)&outface);
         hm2->Get((*objArray2)[counter], (IInterface**)&outface2);
-        assert(ObjectUtils::Equals(outface, outface2));
+        assert(Object::Equals(outface, outface2));
     }
 
     // AutoPtr<IMap> mockMap;
@@ -381,12 +381,12 @@ int CTest::test_keySet(int argc, char* argv[])
     it2->HasNext(&isflag);
     it2->Remove();
     it2->Next((IInterface**)&outface);
-    assert((ObjectUtils::Equals(outface, next, &isflag), isflag));
+    assert((Object::Equals(outface, next, &isflag), isflag));
     assert(1 == (map2->GetSize(&sizelen1), sizelen1));
     map2->KeySet((ISet**)&s);
     s->GetIterator((IIterator**)&it);
     it->Next((IInterface**)&outface);
-    assert(ObjectUtils::Equals(outface, next));
+    assert(Object::Equals(outface, next));
     return 0;
 }
 

@@ -2,9 +2,7 @@
 #include "CopyOnWriteArrayList.h"
 #include "CCopyOnWriteArrayList.h"
 #include "CArrays.h"
-#include "elastos/ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Utility::IArrays;
 
 namespace Elastos {
@@ -108,7 +106,7 @@ ECode CopyOnWriteArrayList::Equals(
         for (Int32 j = 0; j < snapshot->GetLength(); j++) {
             AutoPtr<IInterface> o = (*snapshot)[j];
             AutoPtr<IInterface> outface;
-            if (!(i->HasNext(&isflag), isflag) || !(ObjectUtils::Equals(o, (i->Next((IInterface**)&outface), outface)))) {
+            if (!(i->HasNext(&isflag), isflag) || !(Object::Equals(o, (i->Next((IInterface**)&outface), outface)))) {
                 *result = FALSE;
                 return NOERROR;
             }
@@ -513,7 +511,7 @@ ECode CopyOnWriteArrayList::LastIndexOf(
     }
     else {
         for (Int32 i = to - 1; i >= from; i--) {
-            if (ObjectUtils::Equals(o, data[i])) {
+            if (Object::Equals(o, data[i])) {
                 *value = i;
                 return NOERROR;
             }
@@ -542,7 +540,7 @@ ECode CopyOnWriteArrayList::IndexOf(
     }
     else {
         for (Int32 i = from; i < to; i++) {
-            if (ObjectUtils::Equals(o, data[i])) {
+            if (Object::Equals(o, data[i])) {
                 *value = i;
                 return NOERROR;
             }

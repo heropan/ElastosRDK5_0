@@ -1,7 +1,5 @@
 #include "test.h"
-#include "elastos/ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::IList;
 using Elastos::Utility::CVector;
@@ -662,7 +660,7 @@ int CTest::test_hashCode(int argc, char* argv[]) {
 		tVector->ElementAt(i, (IInterface**)&obj);
 		Int32 hashCode1;
 		if (obj != NULL) {
-			hashCode1 = ObjectUtils::GetHashCode(obj);
+			hashCode1 = Object::GetHashCode(obj);
 		}else {
 			hashCode1 = 0;
 		}
@@ -670,7 +668,7 @@ int CTest::test_hashCode(int argc, char* argv[]) {
 		hashCode = 31 * hashCode + hashCode1;
 	}
 
-	Int32 value = ObjectUtils::GetHashCode(tVector);
+	Int32 value = Object::GetHashCode(tVector);
 	assert(value == hashCode);
 }
 
@@ -1179,7 +1177,7 @@ int CTest::test_toArray_Ljava_lang_Object(int argc, char* argv[]) {
 
 //Num:Test44
 int CTest::test_toString(int argc, char* argv[]) {
-	String str = ObjectUtils::ToString(tVector);
+	String str = Object::ToString(tVector);
 	assert(str.Equals(vString));
 
 	AutoPtr<IVector> v;
@@ -1192,7 +1190,7 @@ int CTest::test_toString(int argc, char* argv[]) {
 	str = String("3");
 	CStringWrapper::New(str, (ICharSequence**)&cs);
 	v->AddElement(v);
-	String result = ObjectUtils::ToString(v);
+	String result = Object::ToString(v);
 	Int32 value = result.IndexOf(String("this"));
 	assert(value > -1);
 }

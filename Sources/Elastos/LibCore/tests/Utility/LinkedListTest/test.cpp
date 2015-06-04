@@ -1,7 +1,6 @@
 #include "test.h"
 #include "cmdef.h"
 #include "elstring.h"
-#include <elastos/ObjectUtils.h>
 
 CTest::CTest() {
     setUp();
@@ -86,18 +85,18 @@ int CTest::test_addAllILjava_util_Collection(int argc, char* argv[]) {
     AutoPtr<IInterface> lsObj;
     for (Int32 i = 0; i < 50; ++i) {
         ll->Get(i, (IInterface**)&lsObj);
-        flag = ObjectUtils::Equals(lsObj, (*objArray)[i]);
-        assert(flag == ObjectUtils::Equals(lsObj, (*objArray)[i]));
+        flag = Object::Equals(lsObj, (*objArray)[i]);
+        assert(flag == Object::Equals(lsObj, (*objArray)[i]));
     }
 
     for (Int32 i = 0; i >= 50 && (i < 150); ++i) {
         ll->Get(i, (IInterface**)&lsObj);
-        assert(ObjectUtils::Equals(lsObj, (*objArray)[i - 50]));
+        assert(Object::Equals(lsObj, (*objArray)[i - 50]));
     }
 
     for (Int32 i = 0; i >= 150 && i < 200; i++) {
         ll->Get(i, (IInterface**)&lsObj);
-        assert(ObjectUtils::Equals(lsObj, (*objArray)[i - 100]));
+        assert(Object::Equals(lsObj, (*objArray)[i - 100]));
     }
 
     AutoPtr<ILinkedList> myList;
@@ -118,13 +117,13 @@ int CTest::test_addAllILjava_util_Collection(int argc, char* argv[]) {
     assert(lsObj == NULL);
 
     ll->Get(51, (IInterface**)&lsObj);
-    assert(ObjectUtils::Equals(lsObj, cs1));
+    assert(Object::Equals(lsObj, cs1));
 
     ll->Get(52, (IInterface**)&lsObj);
     assert(lsObj == NULL);
 
     ll->Get(53, (IInterface**)&lsObj);
-    assert(ObjectUtils::Equals(lsObj, cs2));
+    assert(Object::Equals(lsObj, cs2));
 
     ll->Get(54, (IInterface**)&lsObj);
     assert(lsObj == NULL);
@@ -166,7 +165,7 @@ int CTest::test_addAllLjava_util_Collection(int argc, char* argv[]) {
     for (Int32 i = 0; i < size; ++i) {
         ll->Get(i, (IInterface**)&obj1);
         l->Get(i, (IInterface**)&obj2);
-        assert(ObjectUtils::Equals(obj1, obj2));
+        assert(Object::Equals(obj1, obj2));
     }
 
     ll->AddAll(ICollection::Probe(llclone), &flag);
@@ -176,10 +175,10 @@ int CTest::test_addAllLjava_util_Collection(int argc, char* argv[]) {
     for (int i = 0; i < 100; ++i) {
         ll->Get(i, (IInterface**)&obj1);
         l->Get(i, (IInterface**)&obj2);
-        assert(ObjectUtils::Equals(obj1, obj2));
+        assert(Object::Equals(obj1, obj2));
 
         ll->Get(i + 100, (IInterface**)&obj1);
-        assert(ObjectUtils::Equals(obj1, obj2));
+        assert(Object::Equals(obj1, obj2));
     }
 
     AutoPtr<ILinkedList> _myList;
@@ -199,7 +198,7 @@ int CTest::test_addAllLjava_util_Collection(int argc, char* argv[]) {
     assert(obj1 == NULL);
 
     ll->Get(201, (IInterface**)&obj2);
-    assert(ObjectUtils::Equals(blah, obj2));
+    assert(Object::Equals(blah, obj2));
 
     AutoPtr<IInterface> obj3;
     IList::Probe(ll)->Get(202, (IInterface**)&obj3);
@@ -207,8 +206,8 @@ int CTest::test_addAllLjava_util_Collection(int argc, char* argv[]) {
 
     AutoPtr<IInterface> obj4;
     ll->Get(203, (IInterface**)&obj4);
-    flag = ObjectUtils::Equals(booga, obj4);
-    assert(ObjectUtils::Equals(booga, obj4));
+    flag = Object::Equals(booga, obj4);
+    assert(Object::Equals(booga, obj4));
 
     AutoPtr<IInterface> obj5;
     ll->Get(204, (IInterface**)&obj5);
@@ -269,7 +268,7 @@ int CTest::test_clone(int argc, char* argv[])
     AutoPtr<IInterface> x;
     ICloneable::Probe(ll)->Clone((IInterface**)&x);
     Boolean flag = TRUE;
-    assert(ObjectUtils::Equals(x, ll));
+    assert(Object::Equals(x, ll));
 
     Int32 size;
     ll->GetSize(&size);
@@ -278,11 +277,11 @@ int CTest::test_clone(int argc, char* argv[])
         ll->Get(i, (IInterface**)&llObj);
         AutoPtr<IInterface> xObj;
         IList::Probe(x)->Get(i, (IInterface**)&xObj);
-        assert(ObjectUtils::Equals(llObj, xObj));
+        assert(Object::Equals(llObj, xObj));
     }
     ll->AddFirst((IInterface*)NULL);
     ICloneable::Probe(ll)->Clone((IInterface**)&x);
-    assert(ObjectUtils::Equals(ll, x));
+    assert(Object::Equals(ll, x));
 }
 
 int CTest::test_containsLjava_lang_Object(int argc, char* argv[]) {
@@ -638,7 +637,7 @@ int CTest::test_toArrayLjava_lang_Object(int argc, char* argv[]) {
         li->Next((IInterface**)&obj1);
         AutoPtr<IInterface> obj2;
         ri->Next((IInterface**)&obj2);
-        assert(ObjectUtils::Equals(obj1, obj2));
+        assert(Object::Equals(obj1, obj2));
     }
 
     argArray = ArrayOf<Int32>::Alloc(1000);
@@ -648,7 +647,7 @@ int CTest::test_toArrayLjava_lang_Object(int argc, char* argv[]) {
     assert((*argArray)[size] == NULL);
 
     for (int i = 0; i < size; ++i) {
-        assert(ObjectUtils::Equals((*retArray)[i], (*argArray)[i]));
+        assert(Object::Equals((*retArray)[i], (*argArray)[i]));
     }
 
     ll->AddEx(50, NULL);
@@ -668,7 +667,7 @@ int CTest::test_toArrayLjava_lang_Object(int argc, char* argv[]) {
         li->Next((IInterface**)&obj1);
         AutoPtr<IInterface> obj2;
         ri->Next((IInterface**)&obj2);
-        assert(ObjectUtils::Equals(obj1, obj2));
+        assert(Object::Equals(obj1, obj2));
     }
 
     ECode ec = ll->ToArrayEx(NULL, (ArrayOf<IInterface*>**)&retArray);

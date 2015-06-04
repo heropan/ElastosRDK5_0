@@ -4,14 +4,12 @@
 #include "CArrays.h"
 #include "CArrayList.h"
 #include "CRandom.h"
-#include <elastos/ObjectUtils.h>
 
 using Elastos::Core::IComparable;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::EIID_IComparator;
 using Elastos::Core::CRandom;
-using Elastos::Core::ObjectUtils;
 using Elastos::Utility::IArrays;
 using Elastos::Utility::CArrays;
 using Elastos::Utility::IArrayList;
@@ -167,7 +165,7 @@ ECode CCollections::CopiesList::Contains(
         *result = object == NULL;
     }
     else {
-        *result = ObjectUtils::Equals(mElement, object);
+        *result = Object::Equals(mElement, object);
     }
     return NOERROR;
 }
@@ -971,7 +969,7 @@ ECode CCollections::ReverseComparator2::Equals(
     VALIDATE_NOT_NULL(result)
     AutoPtr<IComparator> p = IComparator::Probe(object);
     if (p != NULL) {
-        *result = ObjectUtils::Equals(mCmp, ((ReverseComparator2*)p.Get())->mCmp);
+        *result = Object::Equals(mCmp, ((ReverseComparator2*)p.Get())->mCmp);
     }
     *result = FALSE;
     return NOERROR;
@@ -1097,7 +1095,7 @@ ECode CCollections::SingletonSet::Contains(
         *result = object == NULL;
     }
     else {
-        *result = ObjectUtils::Equals(mElement, object);
+        *result = Object::Equals(mElement, object);
     }
     return NOERROR;
 }
@@ -1267,7 +1265,7 @@ ECode CCollections::SingletonList::Contains(
         *result = object == NULL;
     }
     else {
-        *result = ObjectUtils::Equals(mElement, object);
+        *result = Object::Equals(mElement, object);
     }
     return NOERROR;
 }
@@ -1749,7 +1747,7 @@ ECode CCollections::SingletonMap::ContainsKey(
         *result = key == NULL;
     }
     else {
-        *result = ObjectUtils::Equals(mK, key);
+        *result = Object::Equals(mK, key);
     }
     return NOERROR;
 }
@@ -1763,7 +1761,7 @@ ECode CCollections::SingletonMap::ContainsValue(
         *result = value == NULL;
     }
     else {
-        *result = ObjectUtils::Equals(mV, value);
+        *result = Object::Equals(mV, value);
     }
     return NOERROR;
 }
@@ -2267,7 +2265,7 @@ ECode CCollections::SynchronizedList::IndexOf(
     }
     if (object != NULL) {
         for (Int32 i = 0; i < size; i++) {
-            if (ObjectUtils::Equals(object, (*array)[i])) {
+            if (Object::Equals(object, (*array)[i])) {
                 *index = i;
                 return NOERROR;
             }
@@ -2300,7 +2298,7 @@ ECode CCollections::SynchronizedList::LastIndexOf(
     }
     if (object != NULL) {
         for (Int32 i = size - 1; i >= 0; i--) {
-            if (ObjectUtils::Equals(object, (*array)[i])) {
+            if (Object::Equals(object, (*array)[i])) {
                 *index = i;
                 return NOERROR;
             }
@@ -5439,7 +5437,7 @@ ECode CCollections::_IndexOfSubList(
 
         AutoPtr<IInterface> o;
         listIt->Next((IInterface**)&o);
-        if ((firstObj == NULL) ? o == NULL : ObjectUtils::Equals(firstObj, o)) {
+        if ((firstObj == NULL) ? o == NULL : Object::Equals(firstObj, o)) {
 
             // iterate through the elements in sublist to see
             // if they are included in the same order in the list
@@ -5455,7 +5453,7 @@ ECode CCollections::_IndexOfSubList(
                 }
                 AutoPtr<IInterface> o;
                 listIt->Next((IInterface**)&o);
-                if ((element == NULL) ? o != NULL : !ObjectUtils::Equals(element, o)) {
+                if ((element == NULL) ? o != NULL : !Object::Equals(element, o)) {
                     difFound = TRUE;
                     break;
                 }
@@ -5508,7 +5506,7 @@ ECode CCollections::_LastIndexOfSubList(
 
         AutoPtr<IInterface> o;
         listIt->Previous((IInterface**)&o);
-        if ((lastObj == NULL) ? o == NULL : ObjectUtils::Equals(lastObj, o)) {
+        if ((lastObj == NULL) ? o == NULL : Object::Equals(lastObj, o)) {
             // iterate through the elements in sublist to see
             // if they are included in the same order in the list
             AutoPtr<IListIterator> sublistIt;
@@ -5525,7 +5523,7 @@ ECode CCollections::_LastIndexOfSubList(
 
                 AutoPtr<IInterface> o;
                 listIt->Previous((IInterface**)&o);
-                if ((element == NULL) ? o != NULL : !ObjectUtils::Equals(element, o)) {
+                if ((element == NULL) ? o != NULL : !Object::Equals(element, o)) {
                     difFound = TRUE;
                     break;
                 }
@@ -5764,7 +5762,7 @@ ECode CCollections::_Frequency(
     while ((itr->HasNext(&b), b)) {
         AutoPtr<IInterface> e;
         itr->Next((IInterface**)&e);
-        if ((o == NULL) ? e == NULL : ObjectUtils::Equals(o, e)) {
+        if ((o == NULL) ? e == NULL : Object::Equals(o, e)) {
             num++;
         }
     }

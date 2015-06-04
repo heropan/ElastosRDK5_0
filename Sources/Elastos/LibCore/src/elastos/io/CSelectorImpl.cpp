@@ -6,7 +6,6 @@
 #include "CStructPollfd.h"
 #include "COsConstants.h"
 #include "CIoBridge.h"
-#include "elastos/ObjectUtils.h"
 
 using Libcore::IO::IOs;
 using Libcore::IO::ILibcore;
@@ -15,7 +14,6 @@ using Libcore::IO::IStructPollfd;
 using Libcore::IO::CStructPollfd;
 using Libcore::IO::COsConstants;
 using Libcore::IO::CIoBridge;
-using Elastos::Core::ObjectUtils;
 using Elastos::IO::Channels::EIID_ISelector;
 using Elastos::IO::Channels::Spi::IAbstractSelectionKey;
 
@@ -103,7 +101,7 @@ ECode CSelectorImpl::Register(
     AutoPtr<ISelectorProvider> sp2;
     channel->Provider((ISelectorProvider**)&sp2);
     Boolean isflag = FALSE;
-    if (!ObjectUtils::Equals(sp1,sp2)) {
+    if (!Object::Equals(sp1,sp2)) {
         // throw new IllegalSelectorException();
         return E_ILLEGAL_SELECTOR_EXCEPTION;
     }

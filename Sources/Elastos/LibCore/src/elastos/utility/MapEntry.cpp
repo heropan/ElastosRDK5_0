@@ -1,8 +1,6 @@
 
 #include "MapEntry.h"
-#include "ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::EIID_ICloneable;
 
 namespace Elastos {
@@ -35,8 +33,8 @@ ECode MapEntry::Equals(
         AutoPtr<IInterface> key, value;
         entry->GetKey((IInterface**)&key);
         entry->GetValue((IInterface**)&value);
-        *result = (mKey == NULL ? key == NULL : ObjectUtils::Equals(mKey, key))
-                && (mValue == NULL ? value == NULL : ObjectUtils::Equals(mValue, value));
+        *result = (mKey == NULL ? key == NULL : Object::Equals(mKey, key))
+                && (mValue == NULL ? value == NULL : Object::Equals(mValue, value));
         return NOERROR;
     }
     *result = FALSE;
@@ -68,8 +66,8 @@ ECode MapEntry::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    *hashCode = (mKey == NULL ? 0 : ObjectUtils::GetHashCode(mKey))
-            ^ (mValue == NULL ? 0 : ObjectUtils::GetHashCode(mValue));
+    *hashCode = (mKey == NULL ? 0 : Object::GetHashCode(mKey))
+            ^ (mValue == NULL ? 0 : Object::GetHashCode(mValue));
     return NOERROR;
 }
 
@@ -91,7 +89,7 @@ ECode MapEntry::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
-    *str = ObjectUtils::ToString(mKey) + String("=") + ObjectUtils::ToString(mValue);
+    *str = Object::ToString(mKey) + String("=") + Object::ToString(mValue);
     return NOERROR;
 }
 

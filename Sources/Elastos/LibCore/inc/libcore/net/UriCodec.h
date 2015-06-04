@@ -1,33 +1,41 @@
 #ifndef __LIBCORE_NET_URICODEC_H__
 #define __LIBCORE_NET_URICODEC_H__
 
-#include <elatypes.h>
-#include <elastos/core/StringBuilder.h>
+#include "Object.h"
+#include "StringBuilder.h"
 
+using Elastos::Core::Object;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::Charset::ICharset;
 
 namespace Libcore {
 namespace Net {
 
-extern "C"  const InterfaceID EIID_UriCodec;
-
-class UriCodec : public Object
+/**
+ * Encodes and decodes {@code application/x-www-form-urlencoded} content.
+ * Subclasses define exactly which characters are legal.
+ *
+ * <p>By default, UTF-8 is used to encode escaped characters. A single input
+ * character like "\u0080" may be encoded to multiple octets like %C2%80.
+ */
+class UriCodec
+    : public Object
 {
 public :
-    CARAPI GetClassID(
-        /* [out] */ ClassID* clsid);
-
-    CARAPI ToString(
-        /* [out] */ String* result);
-
+    /**
+     * Throws if {@code s} is invalid according to this encoder.
+     */
     CARAPI Validate(
         /* [in] */ const String& uri,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ const String& name,
-        /* [out] */ String* result) const;
+        /* [out] */ String* result);
 
+    /**
+     * Throws if {@code s} contains characters that are not letters, digits or
+     * in {@code legal}.
+     */
     static CARAPI ValidateSimple(
         /* [in] */ const String& s,
         /* [in] */ const String& legal);
@@ -39,7 +47,7 @@ public :
 
     CARAPI AppendEncoded(
         /* [in] */ StringBuilder& builder,
-        /* [in] */ const String& s) const;
+        /* [in] */ const String& s);
 
     CARAPI AppendPartiallyEncoded(
         /* [in] */ StringBuilder& builder,
@@ -49,6 +57,12 @@ public :
         /* [in] */ const String& s,
         /* [out] */ String* result);
 
+    /**
+     * @param convertPlus true to convert '+' to ' '.
+     * @param throwOnFailure true to throw an IllegalArgumentException on
+     *     invalid escape sequences; false to replace them with the replacement
+     *     character (U+fffd).
+     */
     static CARAPI Decode(
         /* [in] */ const String& s,
         /* [in] */ Boolean convertPlus,
@@ -59,16 +73,28 @@ public :
     static CARAPI_(AutoPtr<ICharset>) GetDefaultCharset();
 
 private:
+    /**
+     * Encodes {@code s} and appends the result to {@code builder}.
+     *
+     * @param isPartiallyEncoded true to fix input that has already been
+     *     partially or fully encoded. For example, input of "hello%20world" is
+     *     unchanged with isPartiallyEncoded=true but would be double-escaped to
+     *     "hello%2520world" otherwise.
+     */
     CARAPI AppendEncoded(
         /* [in] */ StringBuilder& builder,
         /* [in] */ const String& s,
         /* [in] */ ICharset* charset,
-        /* [in] */ Boolean isPartiallyEncoded) const;
+        /* [in] */ Boolean isPartiallyEncoded);
 
     static CARAPI_(AutoPtr<ArrayOf<Byte> >) GetBytes(
         /* [in] */ const char* cPtr,
         /* [in] */ ICharset* charSet);
 
+    /**
+     * Like {@link Character#digit}, but without support for non-ASCII
+     * characters.
+     */
     static CARAPI_(Int32) HexToInt(
         /* [in] */ char c);
 
@@ -82,6 +108,9 @@ private:
         /* [in] */ ICharset* charset);
 
 protected:
+    /**
+     * Returns true if {@code c} does not need to be escaped.
+     */
     virtual Boolean IsRetained (
         /* [in] */ char c) const = 0;
 };

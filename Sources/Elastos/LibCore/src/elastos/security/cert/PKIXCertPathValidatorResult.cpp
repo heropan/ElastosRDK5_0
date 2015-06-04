@@ -3,9 +3,7 @@
 #include "StringBuilder.h"
 #include "CPKIXCertPathValidatorResult.h"
 #include "CPKIXCertPathBuilderResult.h"
-#include "elastos/ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {
@@ -83,7 +81,7 @@ ECode PKIXCertPathValidatorResult::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
-    *str = ObjectUtils::ToString(this->Probe(EIID_IInterface));
+    *str = Object::ToString(this);
     StringBuilder sb(*str);
     sb.AppendCStr(": [\n Trust Anchor: ");
     String strAnchor;
@@ -94,11 +92,11 @@ ECode PKIXCertPathValidatorResult::ToString(
         sb.AppendCStr("no valid policy tree\n");
     }
     else {
-        String strPolicyTree = ObjectUtils::ToString(mPolicyTree.Get());
+        String strPolicyTree = Object::ToString(mPolicyTree);
         sb.AppendString(strPolicyTree);
     }
     sb.AppendCStr("\n Subject Public Key: ");
-    String subject = ObjectUtils::ToString(mSubjectPublicKey.Get());
+    String subject = Object::ToString(mSubjectPublicKey);
     sb.AppendString(subject);
     sb.AppendCStr("\n]");
     return sb.ToString(str);

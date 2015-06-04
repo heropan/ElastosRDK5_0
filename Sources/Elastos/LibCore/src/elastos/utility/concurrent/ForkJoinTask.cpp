@@ -358,7 +358,7 @@ void ForkJoinTask::ExpungeStaleExceptions()
     //         AutoPtr<ExceptionNode> pred = NULL;
     //         while (e != NULL) {
     //             AutoPtr<ExceptionNode> next = e->mNext;
-    //             if (ObjectUtils::Equals(e->Probe(EIID_IInterface), x)) {
+    //             if (Object::Equals(e, x)) {
     //                 if (pred == NULL)
     //                     (*t)[i] = next;
     //                 else

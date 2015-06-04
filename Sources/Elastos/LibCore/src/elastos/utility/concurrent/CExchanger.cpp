@@ -3,11 +3,9 @@
 #include "LockSupport.h"
 #include "Thread.h"
 #include <Math.h>
-#include <elastos/ObjectUtils.h>
 #include "CAtomicInteger32.h"
 
 using Elastos::Core::Math;
-using Elastos::Core::ObjectUtils;
 using Elastos::Utility::Concurrent::Locks::LockSupport;
 using Elastos::Utility::Concurrent::Atomic::EIID_IAtomicReference;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
@@ -190,7 +188,7 @@ AutoPtr<IInterface> CExchanger::DoExchange(
                     AwaitNanos(me, slot, nanos) :
                     Await(me, slot);
             AutoPtr<IInterface> v = SpinWait(me, slot);    // Spin wait for non-0
-            if (!ObjectUtils::Equals(v, sCANCEL))
+            if (!Object::Equals(v, sCANCEL))
                 return v;
             me = new Node(item);              // Throw away cancelled node
             Int32 m;
@@ -251,7 +249,7 @@ Boolean CExchanger::TryCancel(
         return FALSE;
     AutoPtr<IInterface> s;
     slot->Get((IInterface**)&s);
-    if (ObjectUtils::Equals(s, node->Probe(EIID_IInterface))) { // pre-check to minimize contention
+    if (Object::Equals(s, node->Probe(EIID_IInterface))) { // pre-check to minimize contention
         Boolean a = FALSE;
         slot->CompareAndSet(node, NULL, &a);
     }
@@ -370,11 +368,11 @@ ECode CExchanger::Exchange(
     VALIDATE_NOT_NULL(outface);
     if (!Thread::Interrupted()) {
         AutoPtr<IInterface> v = DoExchange((x == NULL) ? sNULL_ITEM.Get() : x, FALSE, 0);
-        if (ObjectUtils::Equals(v, sNULL_ITEM->Probe(EIID_IInterface))) {
+        if (Object::Equals(v, sNULL_ITEM->Probe(EIID_IInterface))) {
             *outface = NULL;
             return NOERROR;
         }
-        if (!ObjectUtils::Equals(v, sCANCEL->Probe(EIID_IInterface))) {
+        if (!Object::Equals(v, sCANCEL->Probe(EIID_IInterface))) {
             *outface = v;
             REFCOUNT_ADD(*outface);
             return NOERROR;
@@ -397,10 +395,10 @@ ECode CExchanger::Exchange(
         Int64 nanos;
         AutoPtr<IInterface> v = DoExchange((x == NULL) ? sNULL_ITEM.Get() : x,
                               TRUE, (unit->ToNanos(timeout, &nanos), nanos));
-        if (ObjectUtils::Equals(v, sNULL_ITEM->Probe(EIID_IInterface))) {
+        if (Object::Equals(v, sNULL_ITEM->Probe(EIID_IInterface))) {
             return NOERROR;
         }
-        if (!ObjectUtils::Equals(v, sCANCEL->Probe(EIID_IInterface))) {
+        if (!Object::Equals(v, sCANCEL->Probe(EIID_IInterface))) {
             *outface = v;
             REFCOUNT_ADD(*outface);
             return NOERROR;

@@ -9,6 +9,8 @@
 #endif
 #include <elastos/coredef.h>
 #include <elastos/core/NativeThread.h>
+#include <elastos/core/StringUtils.h>
+#include <utils/Log.h>
 
 using Elastos::Core::ISynchronize;
 using Elastos::Core::NativeObject;
@@ -260,7 +262,198 @@ public:
 
 public:
     NativeObject* mNativeObject;
+
+public:
+    //================================================================
+    // static methods
+    //================================================================
+
+    // GetHashCode()
+    //
+    template<typename T1>
+    static CARAPI_(Int32) GetHashCode(
+        /* [in] */ T1* obj);
+
+    template<typename T1>
+    static CARAPI_(Int32) GetHashCode(
+        /* [in] */ const AutoPtr<T1>& obj);
+
+    // ToString()
+    //
+    template<typename T1>
+    static CARAPI_(String) ToString(
+        /* [in] */ T1* obj);
+
+    template<typename T1>
+    static CARAPI_(String) ToString(
+        /* [in] */ const AutoPtr<T1>& obj);
+
+    // Equals()
+    //
+    template<typename T>
+    static CARAPI_(Boolean) Equals(
+        /* [in] */ T* lhs,
+        /* [in] */ T* rhs);
+
+    template<typename T1, typename T2>
+    static CARAPI_(Boolean) Equals(
+        /* [in] */ T1* lhs,
+        /* [in] */ T2* rhs);
+
+    template<typename T>
+    static CARAPI_(Boolean) Equals(
+        /* [in] */ const AutoPtr<T>& lhs,
+        /* [in] */ const AutoPtr<T>& rhs);
+
+    template<typename T1, typename T2>
+    static CARAPI_(Boolean) Equals(
+        /* [in] */ const AutoPtr<T1>& lhs,
+        /* [in] */ T2* rhs);
+
+    template<typename T1, typename T2>
+    static CARAPI_(Boolean) Equals(
+        /* [in] */ T1* lhs,
+        /* [in] */ const AutoPtr<T2>& rhs);
+
+    template<typename T1, typename T2>
+    static CARAPI_(Boolean) Equals(
+        /* [in] */ const AutoPtr<T1>& lhs,
+        /* [in] */ const AutoPtr<T2>& rhs);
 };
+
+//====================================================================
+
+// GetHashCode
+//
+template<typename T1>
+Int32 Object::GetHashCode(
+    /* [in] */ T1* obj)
+{
+    if (obj == NULL) {
+        return 0;
+    }
+
+    IObject* o = (IObject*)obj->Probe(EIID_IObject);
+    if (o == NULL) {
+        return (Int32)obj;
+    }
+
+    Int32 hashcode = 0;
+    o->GetHashCode(&hashcode);
+    return hashcode;
+}
+
+template<typename T1>
+Int32 Object::GetHashCode(
+    /* [in] */ const AutoPtr<T1>& obj)
+{
+    return GetHashCode(obj.Get());
+}
+
+// ToString
+//
+template<typename T1>
+String Object::ToString(
+    /* [in] */ T1* obj)
+{
+    if (obj == NULL) {
+        return String("NULL");
+    }
+
+    IObject* o = (IObject*)obj->Probe(EIID_IObject);
+    if (o == NULL) {
+        return StringUtils::ToHexString((Int32)obj);
+    }
+
+    String str;
+    o->ToString(&str);
+    return str;
+}
+
+template<typename T1>
+String Object::ToString(
+    /* [in] */ const AutoPtr<T1>& obj)
+{
+    return ToString(obj.Get());
+}
+
+// Equals
+//
+template<typename T>
+Boolean Object::Equals(
+    /* [in] */ T* lhs,
+    /* [in] */ T* rhs)
+{
+    if (lhs == rhs) {
+        return TRUE;
+    }
+    else if (lhs == NULL || rhs == NULL) {
+        return FALSE;
+    }
+
+    IObject* obj = (IObject*)lhs->Probe(EIID_IObject);
+    if (obj == NULL) {
+        ALOGD("Waring: Object::Equals lhs object %p is not a IObject!", lhs);
+        return FALSE;
+    }
+    Boolean isflag = FALSE;
+    obj->Equals(rhs, &isflag);
+    return isflag;
+}
+
+template<typename T1, typename T2>
+Boolean Object::Equals(
+    /* [in] */ T1* lhs,
+    /* [in] */ T2* rhs)
+{
+    if (lhs == NULL && rhs == NULL) {
+        return TRUE;
+    }
+    else if (lhs == NULL || rhs == NULL) {
+        return FALSE;
+    }
+
+    IObject* obj = (IObject*)lhs->Probe(EIID_IObject);
+    if (obj == NULL) {
+        ALOGD("Waring: Object::Equals lhs object %p is not a IObject!", lhs);
+        return FALSE;
+    }
+    Boolean isflag = FALSE;
+    obj->Equals(rhs, &isflag);
+    return isflag;
+}
+
+template<typename T1, typename T2>
+Boolean Object::Equals(
+    /* [in] */ const AutoPtr<T1>& lhs,
+    /* [in] */ T2* rhs)
+{
+    return Equals(lhs.Get(), rhs.Get());
+}
+
+template<typename T1, typename T2>
+Boolean Object::Equals(
+    /* [in] */ T1* lhs,
+    /* [in] */ const AutoPtr<T2>& rhs)
+{
+    return Equals(lhs, rhs.Get());
+}
+
+template<typename T1, typename T2>
+Boolean Object::Equals(
+    /* [in] */ const AutoPtr<T1>& lhs,
+    /* [in] */ const AutoPtr<T2>& rhs)
+{
+    return Equals(lhs.Get(), rhs.Get());
+}
+
+template<typename T>
+Boolean Object::Equals(
+    /* [in] */ const AutoPtr<T>& lhs,
+    /* [in] */ const AutoPtr<T>& rhs)
+{
+    return Equals(lhs.Get(), rhs.Get());
+}
 
 } // namespace Core
 } // namespace Elastos

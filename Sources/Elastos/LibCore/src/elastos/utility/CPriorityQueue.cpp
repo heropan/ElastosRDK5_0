@@ -1,10 +1,8 @@
 
 #include "CPriorityQueue.h"
 #include "CArrays.h"
-#include "ObjectUtils.h"
 #include <elastos/Math.h>
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::IComparable;
 
 namespace Elastos {
@@ -245,7 +243,7 @@ ECode CPriorityQueue::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    *result = ObjectUtils::Equals(object, THIS_PROBE(IInterface));
+    *result = Object::Equals(object, this);
     return NOERROR;
 }
 
@@ -254,7 +252,7 @@ ECode CPriorityQueue::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    *hashCode = ObjectUtils::GetHashCode(THIS_PROBE(IInterface));
+    *hashCode = Object::GetHashCode(this);
     return NOERROR;
 }
 
@@ -273,7 +271,7 @@ ECode CPriorityQueue::Remove(
         return NOERROR;
     }
     for (Int32 targetIndex = 0; targetIndex < mSize; targetIndex++) {
-        if (ObjectUtils::Equals(object, (*mElements)[targetIndex])) {
+        if (Object::Equals(object, (*mElements)[targetIndex])) {
             RemoveAt(targetIndex);
             *modified = TRUE;
             return NOERROR;

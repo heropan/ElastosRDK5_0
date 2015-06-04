@@ -2,10 +2,8 @@
 #include "CHashTable.h"
 #include "CFloat.h"
 #include "elastos/StringBuilder.h"
-#include "elastos/ObjectUtils.h"
 #include <cutils/log.h>
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::IFloat;
 using Elastos::Core::CFloat;
 using Elastos::Core::StringBuilder;
@@ -83,7 +81,7 @@ ECode HashTable::HashtableEntry::Equals(
     AutoPtr<IInterface> valueface;
     e->GetKey((IInterface**)&keyface);
     e->GetValue((IInterface**)&valueface);
-    *value = ObjectUtils::Equals(mKey, keyface) && ObjectUtils::Equals(mValue, valueface);
+    *value = Object::Equals(mKey, keyface) && Object::Equals(mValue, valueface);
     return NOERROR;
 }
 
@@ -92,8 +90,8 @@ ECode HashTable::HashtableEntry::GetHashCode(
 {
     VALIDATE_NOT_NULL(value)
 
-    Int32 keycode = ObjectUtils::GetHashCode(mKey);
-    Int32 valuecode = ObjectUtils::GetHashCode(mValue);
+    Int32 keycode = Object::GetHashCode(mKey);
+    Int32 valuecode = Object::GetHashCode(mValue);
     *value = keycode ^ valuecode;
     return NOERROR;
 }
@@ -103,7 +101,7 @@ ECode HashTable::HashtableEntry::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
-    *str = ObjectUtils::ToString(mKey) + String("=") + ObjectUtils::ToString(mValue);
+    *str = Object::ToString(mKey) + String("=") + Object::ToString(mValue);
     return NOERROR;
 }
 
@@ -1070,7 +1068,7 @@ ECode HashTable::Get(
 
     Mutex::Autolock lock(GetSelfLock());
     // Doug Lea's supplemental secondaryHash function (inlined)
-    Int32 hash = ObjectUtils::GetHashCode(key);
+    Int32 hash = Object::GetHashCode(key);
     hash ^= ((UInt32)hash >> 20) ^ ((UInt32)hash >> 12);
     hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
 
@@ -1078,7 +1076,7 @@ ECode HashTable::Get(
     for (AutoPtr<HashtableEntry> e = (*tab)[hash & (tab->GetLength() - 1)];
             e != NULL; e = e->mNext) {
         AutoPtr<IInterface> eKey = e->mKey;
-        if (eKey.Get() == key || (e->mHash == hash && ObjectUtils::Equals(key, eKey))) {
+        if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
             *outface = e->mValue;
             REFCOUNT_ADD(*outface)
             return NOERROR;
@@ -1096,7 +1094,7 @@ ECode HashTable::ContainsKey(
 
     Mutex::Autolock lock(GetSelfLock());
     // Doug Lea's supplemental secondaryHash function (inlined)
-    Int32 hash = ObjectUtils::GetHashCode(key);
+    Int32 hash = Object::GetHashCode(key);
     hash ^= ((UInt32)hash >> 20) ^ ((UInt32)hash >> 12);
     hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
 
@@ -1104,7 +1102,7 @@ ECode HashTable::ContainsKey(
     for (AutoPtr<HashtableEntry> e = (*tab)[hash & (tab->GetLength() - 1)];
             e != NULL; e = e->mNext) {
         AutoPtr<IInterface> eKey = e->mKey;
-        if (eKey.Get() == key || (e->mHash == hash && ObjectUtils::Equals(key, eKey))) {
+        if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
             *result = TRUE;
             return NOERROR;
         }
@@ -1162,13 +1160,13 @@ ECode HashTable::Put(
     }
 
     Mutex::Autolock lock(GetSelfLock());
-    Int32 keyhash = ObjectUtils::GetHashCode(key);
+    Int32 keyhash = Object::GetHashCode(key);
     Int32 hash = SecondaryHash(keyhash);
     AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
     AutoPtr<HashtableEntry> first = (*tab)[index];
     for (AutoPtr<HashtableEntry> e = first; e != NULL; e = e->mNext) {
-        if (e->mHash == hash && ObjectUtils::Equals(key, e->mKey)) {
+        if (e->mHash == hash && Object::Equals(key, e->mKey)) {
             if (outface) {
                 *outface = e->mValue;;
                 REFCOUNT_ADD(*outface)
@@ -1207,13 +1205,13 @@ ECode HashTable::ConstructorPut(
         // throw new NullPointerException("value == null");
         return E_NULL_POINTER_EXCEPTION;
     }
-    Int32 keycode = ObjectUtils::GetHashCode(key);
+    Int32 keycode = Object::GetHashCode(key);
     Int32 hash = SecondaryHash(keycode);
     AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
     AutoPtr<HashtableEntry> first = (*tab)[index];
     for (AutoPtr<HashtableEntry> e = first; e != NULL; e = e->mNext) {
-        if (e->mHash == hash && ObjectUtils::Equals(key, e->mKey)) {
+        if (e->mHash == hash && Object::Equals(key, e->mKey)) {
             e->mValue = value;
             return NOERROR;
         }
@@ -1352,13 +1350,13 @@ ECode HashTable::Remove(
     VALIDATE_NOT_NULL(outface)
 
     Mutex::Autolock lock(GetSelfLock());
-    Int32 keyhash = ObjectUtils::GetHashCode(key);
+    Int32 keyhash = Object::GetHashCode(key);
     Int32 hash = SecondaryHash(keyhash);
     AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
     AutoPtr<HashtableEntry> prev;
     for ( AutoPtr<HashtableEntry> e = (*tab)[index]; e != NULL; prev = e, e = e->mNext) {
-        if (e->mHash == hash && ObjectUtils::Equals(key, e->mKey)) {
+        if (e->mHash == hash && Object::Equals(key, e->mKey)) {
             if (prev == NULL) {
                 tab->Set(index, e->mNext);
             }
@@ -1455,13 +1453,13 @@ Boolean HashTable::ContainsMapping(
     /* [in] */ IInterface* value)
 {
     Mutex::Autolock lock(GetSelfLock());
-    Int32 keycode = ObjectUtils::GetHashCode(key);
+    Int32 keycode = Object::GetHashCode(key);
     Int32 hash = SecondaryHash(keycode);
     AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
     for (AutoPtr<HashtableEntry> e = (*tab)[index]; e != NULL; e = e->mNext) {
-        if (e->mHash == hash && ObjectUtils::Equals(e->mKey, key)) {
-            return ObjectUtils::Equals(e->mValue, value);
+        if (e->mHash == hash && Object::Equals(e->mKey, key)) {
+            return Object::Equals(e->mValue, value);
         }
     }
     return FALSE; // No entry for key
@@ -1472,13 +1470,13 @@ Boolean HashTable::RemoveMapping(
     /* [in] */ IInterface* value)
 {
     Mutex::Autolock lock(GetSelfLock());
-    Int32 keycode = ObjectUtils::GetHashCode(key);
+    Int32 keycode = Object::GetHashCode(key);
     Int32 hash = SecondaryHash(keycode);
     AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
     AutoPtr<HashtableEntry> prev;
     for (AutoPtr<HashtableEntry> e = (*tab)[index]; e != NULL; prev = e, e = e->mNext) {
-        if (e->mHash == hash && ObjectUtils::Equals(e->mKey, key)) {
+        if (e->mHash == hash && Object::Equals(e->mKey, key)) {
             if (!(e->mValue.Get() == value)) {
                 return FALSE;  // Map has wrong value for key
             }
@@ -1532,8 +1530,8 @@ ECode HashTable::GetHashCode(
         if (key.Get() == this->Probe(EIID_IInterface) || value.Get() == this->Probe(EIID_IInterface)) {
             continue;
         }
-        Int32 keyhash = ObjectUtils::GetHashCode(key);
-        Int32 valuehash = ObjectUtils::GetHashCode(value);
+        Int32 keyhash = Object::GetHashCode(key);
+        Int32 valuehash = Object::GetHashCode(value);
         result += (key != NULL ? keyhash : 0)
                 ^ (value != NULL ? valuehash : 0);
     }
@@ -1564,7 +1562,7 @@ ECode HashTable::ToString(
         entry->GetKey((IInterface**)&key);
         String keystr;
         result.AppendString(key.Get() == this->Probe(EIID_IInterface)
-            ? String("(this Map)") : ObjectUtils::ToString(key));
+            ? String("(this Map)") : Object::ToString(key));
 
         result.AppendChar('=');
 
@@ -1572,7 +1570,7 @@ ECode HashTable::ToString(
         entry->GetValue((IInterface**)&value);
         String valuestr;
         result.AppendString(value.Get() == this->Probe(EIID_IInterface)
-            ? String("(this Map)") : ObjectUtils::ToString(value));
+            ? String("(this Map)") : Object::ToString(value));
 
         if (i->HasNext(&hasMore), hasMore) {
             result.AppendCStr(", ");

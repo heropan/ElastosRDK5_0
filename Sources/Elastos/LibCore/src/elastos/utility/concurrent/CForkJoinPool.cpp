@@ -5,12 +5,10 @@
 #include "ForkJoinTask.h"
 #include "TimeUnit.h"
 #include "CArrays.h"
-#include <elastos/ObjectUtils.h>
 #include "CReentrantLock.h"
 #include "CArrayList.h"
 #include "CCollections.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Utility::CArrays;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::CCollections;
@@ -615,7 +613,7 @@ void CForkJoinPool::DeregisterWorker(
             AutoPtr<ArrayOf<IForkJoinWorkerThread*> > ws = mWorkers;
             if (ws != NULL && idx >= 0 &&
                 idx < ws->GetLength() &&
-                ObjectUtils::Equals((*ws)[idx]->Probe(EIID_IInterface), w->Probe(EIID_IInterface)))
+                Object::Equals((*ws)[idx]->Probe(EIID_IInterface), w->Probe(EIID_IInterface)))
                 (*ws)[idx] = NULL;    // verify
             mNextWorkerIndex = idx;
             mScanGuard = g + SG_UNIT;
@@ -828,7 +826,7 @@ ECode CForkJoinPool::Invoke(
     if (t->Probe(EIID_IForkJoinWorkerThread) != NULL ) {
         AutoPtr<IForkJoinWorkerThread> p = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
         AutoPtr<CForkJoinWorkerThread> cp = (CForkJoinWorkerThread*)p.Get();
-        if ( ObjectUtils::Equals(cp->mPool->Probe(EIID_IInterface), THIS_PROBE(IInterface)) )
+        if ( Object::Equals(cp->mPool->Probe(EIID_IInterface), THIS_PROBE(IInterface)) )
             return task->Invoke(outface);  // bypass submit if in same pool
     }
     else {
@@ -847,7 +845,7 @@ void CForkJoinPool::ForkOrSubmit(
     if (t->Probe(EIID_IForkJoinWorkerThread) != NULL) {
         w = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
         AutoPtr<CForkJoinWorkerThread> cw = (CForkJoinWorkerThread*)w.Get();
-        if ( ObjectUtils::Equals(cw->mPool->Probe(EIID_IInterface), THIS_PROBE(IInterface)) )
+        if ( Object::Equals(cw->mPool->Probe(EIID_IInterface), THIS_PROBE(IInterface)) )
             w->PushTask(task);
     }
     else

@@ -1,12 +1,10 @@
 
 #include "CDelayQueue.h"
 #include <Math.h>
-#include <elastos/ObjectUtils.h>
 #include "TimeUnit.h"
 #include "Thread.h"
 
 using Elastos::Core::Math;
-using Elastos::Core::ObjectUtils;
 
 namespace Elastos {
 namespace Utility {
@@ -54,7 +52,7 @@ ECode CDelayQueue::Offer(
     mQ->Offer(e, &b);
     AutoPtr<IInterface> p;
     mQ->Peek((IInterface**)&p);
-    if (ObjectUtils::Equals(p, e)) {
+    if (Object::Equals(p, e)) {
         mLeader = NULL;
         mAvailable->Signal();
     }
@@ -139,7 +137,7 @@ ECode CDelayQueue::Take(
                 Int64 val = 0;
                 mAvailable->AwaitNanos(delay, &val);
                 if (mLeader == thisThread ||
-                    ObjectUtils::Equals(mLeader->Probe(EIID_IInterface), thisThread->Probe(EIID_IInterface)))
+                    Object::Equals(mLeader->Probe(EIID_IInterface), thisThread->Probe(EIID_IInterface)))
                     mLeader = NULL;
             }
         }
@@ -203,7 +201,7 @@ ECode CDelayQueue::Poll(
                 mAvailable->AwaitNanos(delay, &timeLeft);
                 nanos -= delay - timeLeft;
                 if (mLeader == thisThread ||
-                    ObjectUtils::Equals(mLeader->Probe(EIID_IInterface), thisThread->Probe(EIID_IInterface)))
+                    Object::Equals(mLeader->Probe(EIID_IInterface), thisThread->Probe(EIID_IInterface)))
                     mLeader = NULL;
             }
         }
@@ -265,7 +263,7 @@ ECode CDelayQueue::DrainTo(
 
     if (c == NULL)
         return E_NULL_POINTER_EXCEPTION;
-    if (ObjectUtils::Equals(c->Probe(EIID_IInterface), THIS_PROBE(IInterface)))
+    if (Object::Equals(c->Probe(EIID_IInterface), THIS_PROBE(IInterface)))
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
     AutoPtr<IReentrantLock> lock = mLock;
@@ -294,7 +292,7 @@ ECode CDelayQueue::DrainTo(
 
     if (c == NULL)
         return E_NULL_POINTER_EXCEPTION;
-    if (ObjectUtils::Equals(c->Probe(EIID_IInterface), THIS_PROBE(IInterface)))
+    if (Object::Equals(c->Probe(EIID_IInterface), THIS_PROBE(IInterface)))
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     if (maxElements <= 0) {
         return NOERROR;
@@ -379,7 +377,7 @@ void CDelayQueue::RemoveEQ(
     for (; (it->HasNext(&b), b); ) {
         AutoPtr<IInterface> nt;
         it->Next((IInterface**)&nt);
-        if (ObjectUtils::Equals(o, nt)) {
+        if (Object::Equals(o, nt)) {
             it->Remove();
             break;
         }

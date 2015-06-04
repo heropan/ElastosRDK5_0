@@ -31,6 +31,7 @@ class AbstractMap
 public:
 
     CAR_INTERFACE_DECL()
+
     /**
      * An immutable key-value mapping. Despite the name, this class is non-final
      * and its subclasses may be mutable.

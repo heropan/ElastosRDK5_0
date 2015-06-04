@@ -15,7 +15,6 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility/regex;
 SOURCES += Thread.cpp
 SOURCES += NativeThread.cpp
 SOURCES += Object.cpp
-SOURCES += ObjectUtils.cpp
 SOURCES += Singleton.cpp
 
 SOURCES += exportext.cpp

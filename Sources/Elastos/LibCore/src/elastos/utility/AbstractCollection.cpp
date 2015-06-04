@@ -1,10 +1,8 @@
 
 #include "AbstractCollection.h"
 #include <elastos/core/StringBuilder.h>
-#include "ObjectUtils.h"
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::ObjectUtils;
 
 namespace Elastos {
 namespace Utility {
@@ -97,7 +95,7 @@ ECode AbstractCollection::Contains(
         while ((it->HasNext(&hasnext), hasnext)) {
             AutoPtr<IInterface> nextobject;
             it->Next((IInterface**)&nextobject);
-            if (ObjectUtils::Equals(object, nextobject)) {
+            if (Object::Equals(object, nextobject)) {
                 *result = TRUE;
                 return NOERROR;
             }
@@ -167,7 +165,7 @@ ECode AbstractCollection::Remove(
         while ((it->HasNext(&hasnext), hasnext)) {
             AutoPtr<IInterface> nextobject;
             it->Next((IInterface**)&nextobject);
-            if (ObjectUtils::Equals(object, nextobject)) {
+            if (Object::Equals(object, nextobject)) {
                  it->Remove();
                  *result = TRUE;
                  return NOERROR;

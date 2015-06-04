@@ -1,5 +1,4 @@
 #include "test.h"
-#include "elastos/ObjectUtils.h"
 
 int CTest::hmSize = 1000;
 
@@ -56,7 +55,7 @@ int CTest::test_ConstructorI(int argc, char* argv[])
     CStringWrapper::New(String("here"), (ICharSequence**)&here);
     empty->Put(something, here, (IInterface**)&outface);
     empty->Get(something, (IInterface**)&outface);
-    String str= ObjectUtils::ToString(outface);
+    String str= Object::ToString(outface);
     assert(str == String("here"));
     return 0;
 }
@@ -91,7 +90,7 @@ int CTest::test_ConstructorIF(int argc, char* argv[])
     assert((empty->Get(nothing, (IInterface**)&outface), outface) == NULL);
     empty->Put(something, here, (IInterface**)&outface);
     empty->Get(something, (IInterface**)&outface);
-    String str = ObjectUtils::ToString(outface);
+    String str = Object::ToString(outface);
     assert(str == String("here"));
     return 0;
 }
@@ -135,7 +134,7 @@ int CTest::test_getLjava_lang_Object(int argc, char* argv[])
     CStringWrapper::New(String("HELLO"), (ICharSequence**)&HELLO);
     hm->Put(sqT, HELLO, (IInterface**)&outface);
     hm->Get(sqT, (IInterface**)&outface);
-    String str = ObjectUtils::ToString(outface);
+    String str = Object::ToString(outface);
     assert(String("HELLO") == str);
 
     AutoPtr<IMap> m;
@@ -144,7 +143,7 @@ int CTest::test_getLjava_lang_Object(int argc, char* argv[])
     CStringWrapper::New(String("test"), (ICharSequence**)&test);
     m->Put(NULL, test, (IInterface**)&outface);
     m->Get(NULL, (IInterface**)&outface);
-    str = ObjectUtils::ToString(outface);
+    str = Object::ToString(outface);
     assert(String("test") == str);
     AutoPtr<IInteger32> int0;
     CInteger32::New(0, (IInteger32**)&int0);
@@ -165,7 +164,7 @@ int CTest::test_putLjava_lang_ObjectLjava_lang_Object(int argc, char* argv[])
     hm->Put(KEY, VALUE, (IInterface**)&outface);
     String str;
     hm->Get(KEY, (IInterface**)&outface);
-    str = ObjectUtils::ToString(outface);
+    str = Object::ToString(outface);
     assert(String("VALUE") == str);
 
     AutoPtr<IMap> m;
@@ -184,10 +183,10 @@ int CTest::test_putLjava_lang_ObjectLjava_lang_Object(int argc, char* argv[])
     CStringWrapper::New(String("int"), (ICharSequence**)&sqint);
     m->Put(int0, sqint, (IInterface**)&outface);
     m->Get(short0, (IInterface**)&outface);
-    str = ObjectUtils::ToString(outface);
+    str = Object::ToString(outface);
     assert(String("short") == str);
     m->Get(int0, (IInterface**)&outface);
-    str = ObjectUtils::ToString(outface);
+    str = Object::ToString(outface);
     assert(String("int") == str);
     return 0;
 }
@@ -218,10 +217,10 @@ int CTest::test_putPresent(int argc, char* argv[])
         newest = IMapEntry::Probe((*outarr)[i]);
     }
     newest->GetKey((IInterface**)&outface);
-    String str = ObjectUtils::ToString(outface);
+    String str = Object::ToString(outface);
     assert(String("KEY") == str);
     newest->GetValue((IInterface**)&outface);
-    str = ObjectUtils::ToString(outface);
+    str = Object::ToString(outface);
     assert(String("VALUE") == str);
     return 0;
 }
@@ -377,14 +376,14 @@ int CTest::test_keySet(int argc, char* argv[])
     AutoPtr<IInterface> outface2;
     it->Next((IInterface**)&outface);
     list->Get(0, (IInterface**)&outface2);
-    assert((ObjectUtils::Equals(outface, outface2)));
+    assert((Object::Equals(outface, outface2)));
     map->GetSize(&len);
     assert(1 == len);
     outsetm = NULL;
     map->KeySet((ISet**)&outsetm);
     outsetm->GetIterator((IIterator**)&it);
     it->Next((IInterface**)&outface);
-    assert((ObjectUtils::Equals(outface, outface2)));
+    assert((Object::Equals(outface, outface2)));
 
     AutoPtr<IMap> map2;
     CLinkedHashMap::New(101, (IMap**)&map2);
@@ -409,14 +408,14 @@ int CTest::test_keySet(int argc, char* argv[])
     it2->HasNext(&isflag);
     it2->Remove();
     it2->Next((IInterface**)&outface);
-    assert((ObjectUtils::Equals(outface, next)));
+    assert((Object::Equals(outface, next)));
     map2->GetSize(&len);
     assert(1 == len);
     outsetm = NULL;
     map2->KeySet((ISet**)&outsetm);
     outsetm->GetIterator((IIterator**)&it2);
     it2->Next((IInterface**)&outface);
-    assert((ObjectUtils::Equals(outface, next)));
+    assert((Object::Equals(outface, next)));
     return 0;
 }
 
@@ -490,7 +489,7 @@ int CTest::test_removeLjava_lang_Object(int argc, char* argv[])
     CInteger32::New(0, (IInteger32**)&int0);
     assert((m->Remove(int0, (IInterface**)&outface), outface) == NULL);
     m->Remove(NULL, (IInterface**)&outface);
-    str = ObjectUtils::ToString(outface);
+    str = Object::ToString(outface);
     assert(String("test") == str);
     return 0;
 }
@@ -540,14 +539,14 @@ int CTest::test_clone(int argc, char* argv[])
     AutoPtr<IIterator> it;
     values->GetIterator((IIterator**)&it);
     it->Next((IInterface**)&outface);
-    String str = ObjectUtils::ToString(outface);
+    String str = Object::ToString(outface);
 PFL_EX("value == %s", str.string())
     assert(String("value") == str);
 PFL
     keys->GetIterator((IIterator**)&it);
     it->Next((IInterface**)&outface);
 PFL
-    str = ObjectUtils::ToString(outface);
+    str = Object::ToString(outface);
     assert(String("key") == str);
     AutoPtr<IMap> map2;
     ICloneable::Probe(map)->Clone((IInterface**)&outface);
@@ -561,7 +560,7 @@ PFL
     assert(values2 != values);
     values2->GetIterator((IIterator**)&it);
     it->Next((IInterface**)&outface);
-    str = ObjectUtils::ToString(outface);
+    str = Object::ToString(outface);
     // values() and keySet() on the cloned() map should be different
     assert(String("value2") == str);
     map2->Clear();
@@ -577,7 +576,7 @@ PFL
     assert(keys2 != keys);
     keys2->GetIterator((IIterator**)&it);
     it->Next((IInterface**)&outface);
-    str = ObjectUtils::ToString(outface);
+    str = Object::ToString(outface);
     assert(String("key2") == str);
     return 0;
 }
@@ -825,7 +824,7 @@ int CTest::test_ordered_entrySet(int argc, char* argv[])
         AutoPtr<IInteger32> inti;
         CInteger32::New(i, (IInteger32**)&inti);
         lruhm->Get(inti, (IInterface**)&outface);
-        String ii = ObjectUtils::ToString(outface);
+        String ii = Object::ToString(outface);
         p = p + StringUtils::ParseInt32(ii);
     }
     assert(2450 == p);
@@ -924,7 +923,7 @@ int CTest::test_ordered_keySet(int argc, char* argv[])
         AutoPtr<IInteger32> inti;
         CInteger32::New(i, (IInteger32**)&inti);
         lruhm->Get(inti, (IInterface**)&outface);
-        String ii = ObjectUtils::ToString(outface);
+        String ii = Object::ToString(outface);
         p = p + StringUtils::ParseInt32(ii);
     }
     assert(2450 == p);

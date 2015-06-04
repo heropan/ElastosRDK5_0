@@ -20,7 +20,6 @@
 #include "elastos/Character.h"
 #include "elastos/StringUtils.h"
 #include "elastos/Math.h"
-#include "elastos/ObjectUtils.h"
 #include "CSystem.h"
 
 using Libcore::ICU::CNativeDecimalFormat;
@@ -32,7 +31,6 @@ using Elastos::Core::EIID_IStringBuilder;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::IntegralToString;
 using Elastos::Core::StringUtils;
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::Character;
 using Elastos::Core::IBoolean;
 using Elastos::Core::EIID_IBoolean;
@@ -510,7 +508,7 @@ AutoPtr<ICharSequence> CFormatter::Transform(
                 return outseq;
             }
             else if (!(IFormattable::Probe(mArg))) {
-                CStringWrapper::New(ObjectUtils::ToString(mArg), (ICharSequence**)&outseq);
+                CStringWrapper::New(Object::ToString(mArg), (ICharSequence**)&outseq);
                 return outseq;
             }
             break;
@@ -697,7 +695,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromHashCode()
         result = "null";
     }
     else {
-        Int32 codevalue = ObjectUtils::GetHashCode(mArg);
+        Int32 codevalue = Object::GetHashCode(mArg);
         result = StringUtils::Int32ToHexString(codevalue);
     }
     CStringWrapper::New(result, (ICharSequence**)&cs);
@@ -728,7 +726,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromString()
     }
     AutoPtr<ICharSequence> result;
     String midstr;
-    String outstr = mArg != NULL ? ObjectUtils::ToString(mArg) : String("null");
+    String outstr = mArg != NULL ? Object::ToString(mArg) : String("null");
     CStringWrapper::New(outstr, (ICharSequence**)&result);
     return Padding(result, 0);
 }

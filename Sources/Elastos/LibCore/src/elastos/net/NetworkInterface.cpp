@@ -1,32 +1,26 @@
 
 #include "NetworkInterface.h"
-#include <cmdef.h>
 #include "CFile.h"
 #include "IoUtils.h"
 #include "CBufferedReader.h"
 #include "CFileReader.h"
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/StringUtils.h>
-#include <elastos/ObjectUtils.h>
-#include <CInet4Address.h>
-#include <CInet6Address.h>
-#include <InterfaceAddress.h>
-#include <net/if.h>
-#include <sys/socket.h>
-#include <linux/sockios.h>
-#include "CObjectContainer.h"
+#include "StringBuilder.h"
+#include "StringUtils.h"
+#include "CInet4Address.h"
+#include "CInet6Address.h"
+#include "InterfaceAddress.h"
 #include "CLibcore.h"
 #include "CCollections.h"
 #include "CArrayList.h"
 #include "CArrays.h"
 
-namespace Elastos {
-namespace Net {
+#include <net/if.h>
+#include <sys/socket.h>
+#include <linux/sockios.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::CObjectContainer;
-using Elastos::Core::ObjectUtils;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::IO::IoUtils;
@@ -44,6 +38,16 @@ using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::CArrays;
 
+namespace Elastos {
+namespace Net {
+
+CAR_INTERFACE_IMPL(NetworkInterface, Object, INetworkInterface)
+
+NetworkInterface::NetworkInterface()
+    : mInterfaceIndex(-1)
+{
+}
+
 NetworkInterface::NetworkInterface(
     /* [in] */ const String& name,
     /* [in] */ Int32 interfaceIndex,
@@ -60,35 +64,29 @@ NetworkInterface::~NetworkInterface()
 {
 }
 
-PInterface NetworkInterface::Probe(
-    /* [in] */  REIID riid)
+ECode NetworkInterface::constructor(
+    /* [in] */ const String& name,
+    /* [in] */ Int32 interfaceIndex,
+    /* [in] */ AutoPtr<IList> addresses,
+    /* [in] */ AutoPtr<IList> interfaceAddresses)
 {
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
-    }
-    else if (riid == EIID_INetworkInterface) {
-        return (INetworkInterface*)this;
-    }
-
-    return NULL;
+    mName = name;
+    mInterfaceIndex = interfaceIndex;
+    mAddresses = addresses;
+    mInterfaceAddresses = interfaceAddresses;
 }
 
-UInt32 NetworkInterface::AddRef()
+AutoPtr<INetworkInterface> NetworkInterface::ForUnboundMulticastSocket()
 {
-    return ElRefBase::AddRef();
-}
-
-UInt32 NetworkInterface::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode NetworkInterface::GetInterfaceID(
-    /* [in] */  IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-    return E_NOT_IMPLEMENTED;
+    // This is what the RI returns for a MulticastSocket that hasn't been constrained
+    // to a specific interface.
+    AutoPtr< ArrayOf<IInterface*> > outarr = ArrayOf<IInterface*>::Alloc(1);
+    outarr->Set(0, CInet6Address::ANY);
+    AutoPtr<IList> outlist1;
+    // CArrays::_AsList(outarr, (IList**)&outlist1);
+    AutoPtr<IList> outlist2;
+    CCollections::_GetEmptyList((IList**)&outlist2);
+    return new NetworkInterface(String(NULL), -1, outlist1, outlist2);
 }
 
 ECode NetworkInterface::GetIndex(
@@ -111,7 +109,7 @@ ECode NetworkInterface::GetInetAddresses(
     /* [out] */ IEnumeration** addresses)
 {
     VALIDATE_NOT_NULL(addresses);
-    return CCollections::_NewEnumeration(mAddresses, addresses);
+    // return CCollections::_NewEnumeration(mAddresses, addresses);
 }
 
 ECode NetworkInterface::GetDisplayName(
@@ -127,19 +125,22 @@ ECode NetworkInterface::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    NetworkInterface* rhs;
-    rhs = (NetworkInterface*)obj->Probe(EIID_INetworkInterface);
-    if(NULL == rhs) {
-        *result = FALSE;
+    *result = FALSE;
+
+    INetworkInterface* otherni = INetworkInterface::Probe(obj);
+    if (otherni == NULL) {
+        return NOERROR;
     }
-    else if(rhs == this) {
+
+    NetworkInterface* rhs = (NetworkInterface*)otherni;
+    if(rhs == this) {
         *result = TRUE;
+        return NOERROR;
     }
-    else {
-        *result = (rhs->mInterfaceIndex == this->mInterfaceIndex) &&
-                  (rhs->mName == this->mName) &&
-                  (rhs->mAddresses == this->mAddresses);
-    }
+
+    *result = (rhs->mInterfaceIndex == mInterfaceIndex)
+        && (rhs->mName == mName)
+        && (rhs->mAddresses == mAddresses);
     return NOERROR;
 }
 
@@ -148,11 +149,11 @@ ECode NetworkInterface::ToString(
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb(25);
-    sb.AppendCStr("[");
-    sb.AppendString(mName);
-    sb.AppendCStr("][");
-    sb.AppendInt32(mInterfaceIndex);
-    sb.AppendCStr("]");
+    sb.AppendChar('[');
+    sb.Append(mName);
+    sb.Append("][");
+    sb.Append(mInterfaceIndex);
+    sb.AppendChar(']');
 
     AutoPtr<IIterator> outiter;
     mAddresses->GetIterator((IIterator**)&outiter);
@@ -160,10 +161,10 @@ ECode NetworkInterface::ToString(
     while (outiter->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> address;
         outiter->Next((IInterface**)&address);
-        String sAddress = ObjectUtils::ToString(address);
-        sb.AppendCStr("[");
-        sb.AppendString(sAddress);
-        sb.AppendCStr("]");
+        String sAddress = Object::ToString(address);
+        sb.AppendChar(']');
+        sb.Append(sAddress);
+        sb.AppendChar(']');
     }
     *str = sb.ToString();
     return NOERROR;
@@ -174,33 +175,29 @@ ECode NetworkInterface::GetByName(
     /* [out] */ INetworkInterface** networkInterface)
 {
     VALIDATE_NOT_NULL(networkInterface);
+    *networkInterface = NULL;
 
-    if(interfaceName.IsNull()) {
+    if (interfaceName.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    if(!IsValidInterfaceName(interfaceName)) {
-        *networkInterface = NULL;
+
+    if (!IsValidInterfaceName(interfaceName)) {
         return NOERROR;
     }
 
-    Int32 interfaceIndex = ReadIntFile(String("/sys/class/net/") +
-                                      interfaceName +
-                                      String("/ifindex"));
+    StringBuilder sb("/sys/class/net/");
+    sb.Append(interfaceName);
+    sb.Append("/ifindex");
+    Int32 interfaceIndex = ReadIntFile(sb.ToString());
+
     AutoPtr<IList> addresses;
     AutoPtr<IList> interfaceAddresses;
-    CArrayList::New((IArrayList**)&addresses);
-    CArrayList::New((IArrayList**)&interfaceAddresses);
-    CollectIpv6Addresses(interfaceName,
-                         interfaceIndex,
-                         addresses,
-                         interfaceAddresses);
-    CollectIpv4Addresses(interfaceName,
-                         addresses,
-                         interfaceAddresses);
+    // CArrayList::New((IArrayList**)&addresses);
+    // CArrayList::New((IArrayList**)&interfaceAddresses);
+    CollectIpv6Addresses(interfaceName, interfaceIndex, addresses, interfaceAddresses);
+    CollectIpv4Addresses(interfaceName, addresses, interfaceAddresses);
 
-    *networkInterface = (INetworkInterface*)(
-        new NetworkInterface(interfaceName, interfaceIndex,
-            addresses, interfaceAddresses));
+    *networkInterface = (INetworkInterface*)(new NetworkInterface(interfaceName, interfaceIndex, addresses, interfaceAddresses));
     REFCOUNT_ADD(*networkInterface);
     return NOERROR;
 }
@@ -213,11 +210,11 @@ ECode NetworkInterface::FindAddress(
     AutoPtr<IIterator> em;
     mAddresses->GetIterator((IIterator**)&em);
     Boolean hasNext;
+    Boolean equals;
     while (em->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> add;
         em->Next((IInterface**)&add);
-        Boolean equals;
-        if(ObjectUtils::Equals(add, address))
+        if (Object::Equals(add, address))
             break;
     }
     *found = hasNext;
@@ -359,19 +356,6 @@ ECode NetworkInterface::GetByIndex(
     }
     GetByName(String(name), networkInterface);
     return NOERROR;
-}
-
-AutoPtr<INetworkInterface> NetworkInterface::ForUnboundMulticastSocket()
-{
-    // This is what the RI returns for a MulticastSocket that hasn't been constrained
-    // to a specific interface.
-    AutoPtr< ArrayOf<IInterface*> > outarr = ArrayOf<IInterface*>::Alloc(1);
-    outarr->Set(0, CInet6Address::ANY);
-    AutoPtr<IList> outlist1;
-    CArrays::_AsList(outarr, (IList**)&outlist1);
-    AutoPtr<IList> outlist2;
-    CCollections::_GetEmptyList((IList**)&outlist2);
-    return new NetworkInterface(String(NULL), -1, outlist1, outlist2);
 }
 
 ECode NetworkInterface::GetInterfaceAddresses(

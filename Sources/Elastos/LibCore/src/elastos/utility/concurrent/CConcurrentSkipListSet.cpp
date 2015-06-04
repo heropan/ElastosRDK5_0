@@ -1,10 +1,8 @@
 
 #include "CConcurrentSkipListSet.h"
-#include <elastos/ObjectUtils.h>
 #include "CBoolean.h"
 #include "CConcurrentSkipListMap.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Utility::Concurrent::CConcurrentSkipListMap;
@@ -154,7 +152,7 @@ ECode CConcurrentSkipListSet::Equals(
 {
     VALIDATE_NOT_NULL(result);
     // Override AbstractSet version to avoid calling size()
-    if (ObjectUtils::Equals(object, THIS_PROBE(IInterface))) {
+    if (Object::Equals(object, THIS_PROBE(IInterface))) {
         *result = TRUE;
         return NOERROR;
     }

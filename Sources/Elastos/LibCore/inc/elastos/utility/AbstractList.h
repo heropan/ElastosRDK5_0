@@ -2,7 +2,6 @@
 #define __UTILITY_ABSTRACTLIST_H__
 
 #include "AbstractCollection.h"
-#include "Object.h"
 
 using Elastos::Utility::IIterator;
 using Elastos::Utility::ICollection;

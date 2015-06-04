@@ -10,13 +10,11 @@
 #include "CHashTable.h"
 #include <elastos/StringBuilder.h>
 #include <elastos/StringUtils.h>
-#include <elastos/ObjectUtils.h>
 #include <elastos/CSystem.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::IO::IInputStream;
@@ -943,9 +941,9 @@ AutoPtr<IResourceBundle> ResourceBundle::ProcessGetBundle(
     }
     AutoPtr<IList> formats;
     control->GetFormats(baseName, (IList**)&formats);
-    if (ObjectUtils::Equals(Control::FORMAT_CLASS, formats)
-        || ObjectUtils::Equals(Control::FORMAT_PROPERTIES, formats)
-        || ObjectUtils::Equals(Control::FORMAT_DEFAULT, formats)) {
+    if (Object::Equals(Control::FORMAT_CLASS, formats)
+        || Object::Equals(Control::FORMAT_PROPERTIES, formats)
+        || Object::Equals(Control::FORMAT_DEFAULT, formats)) {
         // throw new IllegalArgumentException();
         return NULL;
     }
@@ -1016,7 +1014,7 @@ AutoPtr<IResourceBundle> ResourceBundle::ProcessGetBundle(
     Int32 sizelen = 0;
     Boolean isflag = FALSE;
     if ((ret == NULL)
-            || (ObjectUtils::Equals(CLocale::ROOT, retloc)
+            || (Object::Equals(CLocale::ROOT, retloc)
             && (!(locales->GetSize(&sizelen), sizelen == 1)
             && (locales->Contains(CLocale::ROOT, &isflag), isflag)))) {
         AutoPtr<ILocale> nextLocale;

@@ -1,13 +1,11 @@
 
 #include "CLinkedTransferQueue.h"
 #include "LockSupport.h"
-#include <elastos/ObjectUtils.h>
 #include <elastos/Math.h>
 #include "CSystem.h"
 #include "Thread.h"
 
 using Elastos::Core::ISystem;
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::Math;
 using Elastos::Utility::Concurrent::Locks::LockSupport;
 
@@ -64,7 +62,7 @@ void CLinkedTransferQueue::Node::ForgetContents()
 Boolean CLinkedTransferQueue::Node::IsMatched()
 {
     AutoPtr<IInterface> x = mItem;
-    return (ObjectUtils::Equals(x, THIS_PROBE(IInterface))) || ((x == NULL) == mIsData);
+    return (Object::Equals(x, THIS_PROBE(IInterface))) || ((x == NULL) == mIsData);
 }
 
 Boolean CLinkedTransferQueue::Node::IsUnmatchedRequest()
@@ -77,14 +75,14 @@ Boolean CLinkedTransferQueue::Node::CannotPrecede(
 {
     Boolean d = mIsData;
     AutoPtr<IInterface> x;
-    return d != haveData && ((x = mItem), !ObjectUtils::Equals(x, THIS_PROBE(IInterface))) && (x != NULL) == d;
+    return d != haveData && ((x = mItem), !Object::Equals(x, THIS_PROBE(IInterface))) && (x != NULL) == d;
 }
 
 Boolean CLinkedTransferQueue::Node::TryMatchData()
 {
     // assert isData;
     AutoPtr<IInterface> x = mItem;
-    if (x != NULL && (!ObjectUtils::Equals(x, THIS_PROBE(IInterface))) && CasItem(x, NULL)) {
+    if (x != NULL && (!Object::Equals(x, THIS_PROBE(IInterface))) && CasItem(x, NULL)) {
         LockSupport::Unpark(mWaiter);
         return TRUE;
     }
@@ -160,13 +158,13 @@ AutoPtr<IInterface> CLinkedTransferQueue::Xfer(
         for (AutoPtr<Node> h = mHead, p = h; p != NULL;) { // find & match first node
             Boolean isData = p->mIsData;
             AutoPtr<IInterface> item = p->mItem;
-            if ((!ObjectUtils::Equals(item, p->Probe(EIID_IInterface))) && (item != NULL) == isData) { // unmatched
+            if ((!Object::Equals(item, p->Probe(EIID_IInterface))) && (item != NULL) == isData) { // unmatched
                 if (isData == haveData)   // can't match
                     break;
                 if (p->CasItem(item, e)) { // match
-                    for (AutoPtr<Node> q = p; !ObjectUtils::Equals(q->Probe(EIID_IInterface), h->Probe(EIID_IInterface));) {
+                    for (AutoPtr<Node> q = p; !Object::Equals(q->Probe(EIID_IInterface), h->Probe(EIID_IInterface));) {
                         AutoPtr<Node> n = q->mNext;  // update by 2 unless singleton
-                        if ( (ObjectUtils::Equals(mHead->Probe(EIID_IInterface), h->Probe(EIID_IInterface))) && CasHead(h, n == NULL ? q : n)) {
+                        if ( (Object::Equals(mHead->Probe(EIID_IInterface), h->Probe(EIID_IInterface))) && CasHead(h, n == NULL ? q : n)) {
                             h->ForgetNext();
                             break;
                         }                 // advance and retry
@@ -180,7 +178,7 @@ AutoPtr<IInterface> CLinkedTransferQueue::Xfer(
                 }
             }
             AutoPtr<Node> n = p->mNext;
-            p = (!ObjectUtils::Equals(p->Probe(EIID_IInterface), n->Probe(EIID_IInterface))) ? n : (h = mHead); // Use head if p offlist
+            p = (!Object::Equals(p->Probe(EIID_IInterface), n->Probe(EIID_IInterface))) ? n : (h = mHead); // Use head if p offlist
         }
 
         if (how != NOW) {                 // No matches available
@@ -209,19 +207,19 @@ AutoPtr<CLinkedTransferQueue::Node> CLinkedTransferQueue::TryAppend(
         else if (p->CannotPrecede(haveData))
             return NULL;                  // lost race vs opposite mode
         else if ((n = p->mNext) != NULL)    // not last; keep traversing
-            p = (!ObjectUtils::Equals(p->Probe(EIID_IInterface), t->Probe(EIID_IInterface))) &&
-                (u = mTail, !ObjectUtils::Equals(t->Probe(EIID_IInterface), u->Probe(EIID_IInterface)))
+            p = (!Object::Equals(p->Probe(EIID_IInterface), t->Probe(EIID_IInterface))) &&
+                (u = mTail, !Object::Equals(t->Probe(EIID_IInterface), u->Probe(EIID_IInterface)))
                 ? (t = u) : // stale tail
-                (!ObjectUtils::Equals(p->Probe(EIID_IInterface), n->Probe(EIID_IInterface))) ? n : NULL;      // restart if off list
+                (!Object::Equals(p->Probe(EIID_IInterface), n->Probe(EIID_IInterface))) ? n : NULL;      // restart if off list
         else if (!p->CasNext(NULL, s))
             p = p->mNext;                   // re-read on CAS failure
         else {
-            if (!ObjectUtils::Equals(p->Probe(EIID_IInterface), t->Probe(EIID_IInterface))) {                 // update if slack now >= 2
-                while (((!ObjectUtils::Equals(mTail->Probe(EIID_IInterface), t->Probe(EIID_IInterface))) || !CasTail(t, s)) &&
+            if (!Object::Equals(p->Probe(EIID_IInterface), t->Probe(EIID_IInterface))) {                 // update if slack now >= 2
+                while (((!Object::Equals(mTail->Probe(EIID_IInterface), t->Probe(EIID_IInterface))) || !CasTail(t, s)) &&
                        (t = mTail)   != NULL &&
                        (s = t->mNext) != NULL && // advance and retry
                        (s = s->mNext) != NULL &&
-                       !ObjectUtils::Equals(s->Probe(EIID_IInterface), t->Probe(EIID_IInterface)));
+                       !Object::Equals(s->Probe(EIID_IInterface), t->Probe(EIID_IInterface)));
             }
             return p;
         }
@@ -247,7 +245,7 @@ AutoPtr<IInterface> CLinkedTransferQueue::AwaitMatch(
 
     for (;;) {
         AutoPtr<IInterface> item = s->mItem;
-        if (!ObjectUtils::Equals(item, e)) {                  // matched
+        if (!Object::Equals(item, e)) {                  // matched
             // assert item != s;
             s->ForgetContents();           // avoid garbage
             return item;
@@ -306,7 +304,7 @@ AutoPtr<CLinkedTransferQueue::Node> CLinkedTransferQueue::Succ(
     /* [in] */ Node* p)
 {
     AutoPtr<Node> next = p->mNext;
-    return (ObjectUtils::Equals(p->Probe(EIID_IInterface), next->Probe(EIID_IInterface))) ? mHead : next;
+    return (Object::Equals(p->Probe(EIID_IInterface), next->Probe(EIID_IInterface))) ? mHead : next;
 }
 
 AutoPtr<CLinkedTransferQueue::Node> CLinkedTransferQueue::FirstOfMode(
@@ -324,7 +322,7 @@ AutoPtr<IInterface> CLinkedTransferQueue::FirstDataItem()
     for (AutoPtr<Node> p = mHead; p != NULL; p = Succ(p)) {
         AutoPtr<IInterface> item = p->mItem;
         if (p->mIsData) {
-            if (item != NULL && !ObjectUtils::Equals(item, p->Probe(EIID_IInterface)))
+            if (item != NULL && !Object::Equals(item, p->Probe(EIID_IInterface)))
                 return item;
 //                return LinkedTransferQueue.<E>cast(item);
         }
@@ -346,7 +344,7 @@ Int32 CLinkedTransferQueue::CountOfMode(
                 break;
         }
         AutoPtr<Node> n = p->mNext;
-        if (!ObjectUtils::Equals(n->Probe(EIID_IInterface), p->Probe(EIID_IInterface)))
+        if (!Object::Equals(n->Probe(EIID_IInterface), p->Probe(EIID_IInterface)))
             p = n;
         else {
             count = 0;
@@ -382,10 +380,10 @@ void CLinkedTransferQueue::Itr::Advance(
     else {
         AutoPtr<Node> s, n;       // help with removal of lastPred.next
         while ((s = b->mNext) != NULL &&
-                (!ObjectUtils::Equals(s->Probe(EIID_IInterface), b->Probe(EIID_IInterface))) &&
+                (!Object::Equals(s->Probe(EIID_IInterface), b->Probe(EIID_IInterface))) &&
                 s->IsMatched() &&
                 (n = s->mNext) != NULL &&
-                (!ObjectUtils::Equals(n->Probe(EIID_IInterface), s->Probe(EIID_IInterface))))
+                (!Object::Equals(n->Probe(EIID_IInterface), s->Probe(EIID_IInterface))))
             b->CasNext(s, n);
     }
 
@@ -395,13 +393,13 @@ void CLinkedTransferQueue::Itr::Advance(
         s = (p == NULL) ? mOwner->mHead : p->mNext;
         if (s == NULL)
             break;
-        else if (ObjectUtils::Equals(s->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) {
+        else if (Object::Equals(s->Probe(EIID_IInterface), p->Probe(EIID_IInterface))) {
             p = NULL;
             continue;
         }
         AutoPtr<IInterface> item = s->mItem;
         if (s->mIsData) {
-            if (item != NULL && !(ObjectUtils::Equals(item, s->Probe(EIID_IInterface)))) {
+            if (item != NULL && !(Object::Equals(item, s->Probe(EIID_IInterface)))) {
 //                mNextItem = LinkedTransferQueue.<E>cast(item);
                 mNextItem = item;
                 mNextNode = s;
@@ -415,7 +413,7 @@ void CLinkedTransferQueue::Itr::Advance(
             p = s;
         else if ((n = s->mNext) == NULL)
             break;
-        else if (ObjectUtils::Equals(s->Probe(EIID_IInterface), n->Probe(EIID_IInterface)))
+        else if (Object::Equals(s->Probe(EIID_IInterface), n->Probe(EIID_IInterface)))
             p = NULL;
         else
             p->CasNext(s, n);
@@ -483,16 +481,16 @@ void CLinkedTransferQueue::Unsplice(
      * votes have accumulated, sweep.
      */
     if (pred != NULL &&
-        !ObjectUtils::Equals(pred->Probe(EIID_IInterface), s->Probe(EIID_IInterface)) &&
-        ObjectUtils::Equals(pred->mNext->Probe(EIID_IInterface), s->Probe(EIID_IInterface))) {
+        !Object::Equals(pred->Probe(EIID_IInterface), s->Probe(EIID_IInterface)) &&
+        Object::Equals(pred->mNext->Probe(EIID_IInterface), s->Probe(EIID_IInterface))) {
         AutoPtr<Node> n = s->mNext;
         if (n == NULL ||
-            (!ObjectUtils::Equals(n->Probe(EIID_IInterface), s->Probe(EIID_IInterface)) && pred->CasNext(s, n)
+            (!Object::Equals(n->Probe(EIID_IInterface), s->Probe(EIID_IInterface)) && pred->CasNext(s, n)
                 && pred->IsMatched())) {
             for (;;) {               // check if at, or could be, head
                 AutoPtr<Node> h = mHead;
-                if (ObjectUtils::Equals(h->Probe(EIID_IInterface), pred->Probe(EIID_IInterface)) ||
-                    ObjectUtils::Equals(h->Probe(EIID_IInterface), s->Probe(EIID_IInterface)) ||
+                if (Object::Equals(h->Probe(EIID_IInterface), pred->Probe(EIID_IInterface)) ||
+                    Object::Equals(h->Probe(EIID_IInterface), s->Probe(EIID_IInterface)) ||
                     h == NULL)
                     return;          // at head or list empty
                 if (!h->IsMatched())
@@ -500,12 +498,12 @@ void CLinkedTransferQueue::Unsplice(
                 AutoPtr<Node> hn = h->mNext;
                 if (hn == NULL)
                     return;          // now empty
-                if (!ObjectUtils::Equals(hn->Probe(EIID_IInterface), h->Probe(EIID_IInterface)) &&
+                if (!Object::Equals(hn->Probe(EIID_IInterface), h->Probe(EIID_IInterface)) &&
                     CasHead(h, hn))
                     h->ForgetNext();  // advance head
             }
-            if (!ObjectUtils::Equals(pred->mNext->Probe(EIID_IInterface), pred->Probe(EIID_IInterface)) &&
-                !ObjectUtils::Equals(s->mNext->Probe(EIID_IInterface), s->Probe(EIID_IInterface))) { // recheck if offlist
+            if (!Object::Equals(pred->mNext->Probe(EIID_IInterface), pred->Probe(EIID_IInterface)) &&
+                !Object::Equals(s->mNext->Probe(EIID_IInterface), s->Probe(EIID_IInterface))) { // recheck if offlist
                 for (;;) {           // sweep now if enough votes
                     Int32 v = mSweepVotes;
                     if (v < SWEEP_THRESHOLD) {
@@ -530,7 +528,7 @@ void CLinkedTransferQueue::Sweep()
             p = s;
         else if ((n = s->mNext) == NULL) // trailing node is pinned
             break;
-        else if (ObjectUtils::Equals(s->Probe(EIID_IInterface), n->Probe(EIID_IInterface)))    // stale
+        else if (Object::Equals(s->Probe(EIID_IInterface), n->Probe(EIID_IInterface)))    // stale
             // No need to also check for p == s, since that implies s == n
             p = mHead;
         else
@@ -546,8 +544,8 @@ Boolean CLinkedTransferQueue::FindAndRemove(
             AutoPtr<IInterface> item = p->mItem;
             if (p->mIsData) {
                 if (item != NULL &&
-                    !ObjectUtils::Equals(item, p->Probe(EIID_IInterface)) &&
-                    ObjectUtils::Equals(e, item) &&
+                    !Object::Equals(item, p) &&
+                    Object::Equals(e, item) &&
                     p->TryMatchData()) {
                     Unsplice(pred, p);
                     return TRUE;
@@ -556,7 +554,7 @@ Boolean CLinkedTransferQueue::FindAndRemove(
             else if (item == NULL)
                 break;
             pred = p;
-            if (((p = p->mNext), ObjectUtils::Equals(p->Probe(EIID_IInterface), pred->Probe(EIID_IInterface)))) { // stale
+            if (((p = p->mNext), Object::Equals(p, pred))) { // stale
                 pred = NULL;
                 p = mHead;
             }
@@ -711,7 +709,7 @@ ECode CLinkedTransferQueue::DrainTo(
     VALIDATE_NOT_NULL(number);
     if (c == NULL)
         return E_NULL_POINTER_EXCEPTION;
-    if (ObjectUtils::Equals(c->Probe(EIID_IInterface), THIS_PROBE(IInterface)))
+    if (Object::Equals(c, this))
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     Int32 n = 0;
     for (AutoPtr<IInterface> e; (Poll((IInterface**)&e), e != NULL);) {
@@ -731,7 +729,7 @@ ECode CLinkedTransferQueue::DrainTo(
     VALIDATE_NOT_NULL(number);
     if (c == NULL)
         return E_NULL_POINTER_EXCEPTION;
-    if (ObjectUtils::Equals(c->Probe(EIID_IInterface), THIS_PROBE(IInterface)))
+    if (Object::Equals(c, this))
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     Int32 n = 0;
     for (AutoPtr<IInterface> e; n < maxElements && (Poll((IInterface**)&e), e != NULL);) {
@@ -823,8 +821,8 @@ ECode CLinkedTransferQueue::Contains(
         AutoPtr<IInterface> item = p->mItem;
         if (p->mIsData) {
             if (item != NULL &&
-                !ObjectUtils::Equals(item, p->Probe(EIID_IInterface)) &&
-                ObjectUtils::Equals(object, item)) {
+                !Object::Equals(item, p) &&
+                Object::Equals(object, item)) {
                 *result = TRUE;
                 return NOERROR;
             }

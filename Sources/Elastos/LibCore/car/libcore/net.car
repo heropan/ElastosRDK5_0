@@ -14,11 +14,12 @@ module
     merge("net/url/IJarURLConnectionImpl.car");
     merge("net/url/IUrlUtils.car");
 
-    //namespace Libcore {
-    //namespace Net {
-    //    singleton class CAsynchronousCloseMonitor {
-    //        interface IAsynchronousCloseMonitor;
-    //    }
-    //}
-    //}
+    namespace Libcore {
+    namespace Net {
+
+        singleton class CMimeUtils {
+            interface IMimeUtils;
+        }
+    }
+    }
 }

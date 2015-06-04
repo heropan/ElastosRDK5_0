@@ -1,8 +1,6 @@
 
 #include "CArrayList.h"
-#include "ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::IO::IObjectOutputStreamPutField;
 using Elastos::IO::EIID_ISerializable;
@@ -312,7 +310,7 @@ ECode CArrayList::Contains(
     Int32 s = mSize;
     if (object != NULL) {
         for (Int32 i = 0; i < s; i++) {
-            if (ObjectUtils::Equals(object, (*a)[i])) {
+            if (Object::Equals(object, (*a)[i])) {
                 *result = TRUE;
                 return NOERROR;
             }
@@ -340,7 +338,7 @@ ECode CArrayList::IndexOf(
     Int32 s = mSize;
     if (object != NULL) {
         for (Int32 i = 0; i < s; i++) {
-            if (ObjectUtils::Equals(object, (*a)[i])) {
+            if (Object::Equals(object, (*a)[i])) {
                 *index = i;
                 return NOERROR;
             }
@@ -367,7 +365,7 @@ ECode CArrayList::LastIndexOf(
     AutoPtr< ArrayOf<IInterface*> > a = mArray;
     if (object != NULL) {
         for (Int32 i = mSize - 1; i >= 0; i--) {
-            if (ObjectUtils::Equals(object, (*a)[i])) {
+            if (Object::Equals(object, (*a)[i])) {
                 *index = i;
                 return NOERROR;
             }
@@ -417,7 +415,7 @@ ECode CArrayList::Remove(
     Int32 s = mSize;
     if (object != NULL) {
         for (Int32 i = 0; i < s; i++) {
-            if (ObjectUtils::Equals(object, (*a)[i])) {
+            if (Object::Equals(object, (*a)[i])) {
                 a->Copy(i, a, i + 1, --s - i);
                 a->Set(s, NULL);
                 mSize = s;
@@ -565,7 +563,7 @@ ECode CArrayList::GetHashCode(
     Int32 outhashCode = 1;
     for (Int32 i = 0, s = mSize; i < s; i++) {
         AutoPtr<IInterface> e = (*a)[i];
-        outhashCode = 31 * outhashCode + (e == NULL ? 0 : (ObjectUtils::GetHashCode(e)));
+        outhashCode = 31 * outhashCode + (e == NULL ? 0 : (Object::GetHashCode(e)));
     }
     *hashCode = outhashCode;
     return NOERROR;
@@ -598,7 +596,7 @@ ECode CArrayList::Equals(
             AutoPtr<IInterface> eThis = (*a)[i];
             AutoPtr<IInterface> ethat;
             that->Get(i, (IInterface**)&ethat);
-            if (eThis == NULL ? ethat != NULL : !(ObjectUtils::Equals(eThis, ethat))) {
+            if (eThis == NULL ? ethat != NULL : !(Object::Equals(eThis, ethat))) {
                 *result = FALSE;
                 return NOERROR;
             }
@@ -611,7 +609,7 @@ ECode CArrayList::Equals(
             AutoPtr<IInterface> eThis = (*a)[i];
             AutoPtr<IInterface> eThat;
             it->Next((IInterface**)&eThat);
-            if (eThis == NULL ? eThat != NULL : !(ObjectUtils::Equals(eThis, eThat))) {
+            if (eThis == NULL ? eThat != NULL : !(Object::Equals(eThis, eThat))) {
                 *result = FALSE;
                 return NOERROR;
             }

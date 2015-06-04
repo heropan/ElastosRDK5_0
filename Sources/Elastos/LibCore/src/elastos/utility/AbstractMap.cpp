@@ -1,9 +1,7 @@
 
 #include "AbstractMap.h"
 #include "StringBuilder.h"
-#include "ObjectUtils.h"
 
-using Elastos::Core::ObjectUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::EIID_ISerializable;
 
@@ -40,7 +38,7 @@ ECode AbstractMap::ContainsKey(
             AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
             AutoPtr<IInterface> entrykey;
             entry->GetKey((IInterface**)&entrykey);
-            if (ObjectUtils::Equals(key, entrykey)) {
+            if (Object::Equals(key, entrykey)) {
                 *result = TRUE;
                 return NOERROR;
             }
@@ -81,7 +79,7 @@ ECode AbstractMap::ContainsValue(
             AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
             AutoPtr<IInterface> entryvalue;
             entry->GetValue((IInterface**)&entryvalue);
-            if (ObjectUtils::Equals(value, entryvalue)) {
+            if (Object::Equals(value, entryvalue)) {
                 *result = TRUE;
                 return NOERROR;
             }
@@ -144,7 +142,7 @@ ECode AbstractMap::Equals(
                     return NOERROR;
                 }
             }
-            else if (!ObjectUtils::Equals(mine, theirs)) {
+            else if (!Object::Equals(mine, theirs)) {
                 *result = FALSE;
                 return NOERROR;
             }
@@ -179,7 +177,7 @@ ECode AbstractMap::Get(
             AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
             AutoPtr<IInterface> entkey;
             entry->GetKey((IInterface**)&entkey);
-            if (ObjectUtils::Equals(key, entkey)) {
+            if (Object::Equals(key, entkey)) {
                 AutoPtr<IInterface> entvalue;
                 entry->GetValue((IInterface**)&entvalue);
                 *value = entvalue;
@@ -301,7 +299,7 @@ ECode AbstractMap::Remove(
             AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
             AutoPtr<IInterface> entkey;
             entry->GetKey((IInterface**)&entkey);
-            if (ObjectUtils::Equals(key, entkey)) {
+            if (Object::Equals(key, entkey)) {
                 it->Remove();
                 AutoPtr<IInterface> entvalue;
                 entry->GetValue((IInterface**)&entvalue);
@@ -483,8 +481,8 @@ ECode AbstractMap::SimpleImmutableEntry::Equals(
         AutoPtr<IInterface> valueface;
         entry->GetKey((IInterface**)&keyface);
         entry->GetValue((IInterface**)&valueface);
-        *result = ObjectUtils::Equals(mKey, keyface)
-            && ObjectUtils::Equals(mValue, valueface);
+        *result = Object::Equals(mKey, keyface)
+            && Object::Equals(mValue, valueface);
         return NOERROR;
     }
     *result = FALSE;
@@ -496,8 +494,8 @@ ECode AbstractMap::SimpleImmutableEntry::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    *hashCode = (mKey == NULL ? 0 : ObjectUtils::GetHashCode(mKey))
-            ^ (mValue == NULL ? 0 : ObjectUtils::GetHashCode(mValue));
+    *hashCode = (mKey == NULL ? 0 : Object::GetHashCode(mKey))
+            ^ (mValue == NULL ? 0 : Object::GetHashCode(mValue));
     return NOERROR;
 }
 
@@ -506,7 +504,7 @@ ECode AbstractMap::SimpleImmutableEntry::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
-    *str = ObjectUtils::ToString(mKey) + String("=") + ObjectUtils::ToString(mValue);
+    *str = Object::ToString(mKey) + String("=") + Object::ToString(mValue);
     return NOERROR;
 }
 
@@ -580,8 +578,8 @@ ECode AbstractMap::SimpleEntry::Equals(
         AutoPtr<IInterface> valueface;
         entry->GetKey((IInterface**)&keyface);
         entry->GetValue((IInterface**)&valueface);
-        *result = ObjectUtils::Equals(mKey, keyface)
-            && ObjectUtils::Equals(mValue, valueface);;
+        *result = Object::Equals(mKey, keyface)
+            && Object::Equals(mValue, valueface);;
         return NOERROR;
     }
     *result = FALSE;
@@ -593,8 +591,8 @@ ECode AbstractMap::SimpleEntry::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    *hashCode = (mKey == NULL ? 0 : ObjectUtils::GetHashCode(mKey))
-                ^ (mValue == NULL ? 0 : ObjectUtils::GetHashCode(mValue));
+    *hashCode = (mKey == NULL ? 0 : Object::GetHashCode(mKey))
+                ^ (mValue == NULL ? 0 : Object::GetHashCode(mValue));
     return NOERROR;
 }
 
@@ -603,7 +601,7 @@ ECode AbstractMap::SimpleEntry::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
-    *str = ObjectUtils::ToString(mKey) + String("=") + ObjectUtils::ToString(mValue);
+    *str = Object::ToString(mKey) + String("=") + Object::ToString(mValue);
     return NOERROR;
 }
 
@@ -842,7 +840,7 @@ ECode AbstractMap::AbstractMapValues::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    *result = ObjectUtils::Equals(this->Probe(EIID_IInterface), object);
+    *result = Object::Equals(this, object);
     return NOERROR;
 }
 
@@ -851,7 +849,7 @@ ECode AbstractMap::AbstractMapValues::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    *hashCode = ObjectUtils::GetHashCode(this->Probe(EIID_IInterface));
+    *hashCode = Object::GetHashCode(this);
     return NOERROR;
 }
 

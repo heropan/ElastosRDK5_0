@@ -1,0 +1,18 @@
+
+TARGET_NAME= url
+TARGET_TYPE= lib
+
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../../elastos
+INCLUDES += $(MAKEDIR)/../../../../inc/libcore;
+INCLUDES += $(MAKEDIR)/../../../../inc/libcore/net/url;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/io;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/net;
+
+SOURCES = UrlUtils.cpp

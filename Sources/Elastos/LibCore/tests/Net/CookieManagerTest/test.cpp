@@ -1,6 +1,5 @@
 
 #include "test.h"
-#include "elastos/ObjectUtils.h"
 
 CTest::CTest()
 {
@@ -194,7 +193,7 @@ int CTest::testCookieManager_LCookieStore_LCookiePolicy(int argc, char* argv[])
     cookieManager->GetCookieStore((ICookieStore**)&out2);
     String outstr;
     ((DummyStore*)out2.Get())->GetName(&outstr);
-    assert(ObjectUtils::Equals(store, out2));
+    assert(Object::Equals(store, out2));
     return 0;
 }
 
