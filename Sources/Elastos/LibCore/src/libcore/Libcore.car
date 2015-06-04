@@ -4,4 +4,5 @@ module
     merge("../../car/libcore/icu.car");
     merge("../../car/libcore/io.car");
     merge("../../car/libcore/utility.car");
+    merge("../../car/libcore/net.car");
 }

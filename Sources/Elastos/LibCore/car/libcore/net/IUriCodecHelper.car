@@ -1,0 +1,31 @@
+
+module
+{
+    interface Elastos.IO.Charset.ICharset;
+
+    namespace Libcore {
+    namespace Net {
+
+    [deprecated]
+    interface IUriCodecHelper {
+
+       ValidateSimple(
+            [in] String s,
+            [in] String legal);
+
+       Decode(
+            [in]  String s,
+            [out] String* result);
+
+       Decode(
+            [in] String s,
+            [in] Boolean convertPlus,
+            [in] ICharset* charset,
+            [in] Boolean throwOnFailure,
+            [out] String* result);
+    }
+
+    } // namespace Net
+    } // namespace Libcore
+
+}

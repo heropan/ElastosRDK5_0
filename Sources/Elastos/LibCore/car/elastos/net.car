@@ -24,7 +24,6 @@ module
     merge("net/IURLConnection.car");
     merge("net/IHttpURLConnection.car");
     merge("net/IFileNameMap.car");
-    merge("net/IMimeUtils.car");
     merge("net/IHttpCookie.car");
     merge("net/IIDN.car");
     merge("net/IInetAddress.car");
@@ -47,7 +46,6 @@ module
     merge("net/ISocks4Message.car");
     merge("net/IURLEncoder.car");
     merge("net/IURLDecoder.car");
-    merge("net/IUriCodecHelper.car");
     merge("net/IJarURLConnection.car");
     merge("net/INetPermission.car");
 
@@ -62,7 +60,6 @@ module
     merge("net/http/IHeaderParser.car");
     merge("net/http/IHttpConnection.car");
     merge("net/http/IHttpConnectionPool.car");
-    merge("net/http/IHttpDate.car");
     merge("net/http/IResponseHeaders.car");
     merge("net/http/IRequestHeaders.car");
     merge("net/http/IHttpHandler.car");
@@ -72,15 +69,6 @@ module
     merge("net/http/IHttpURLConnectionImpl.car");
     merge("net/http/IRetryableOutputStream.car");
     merge("net/http/IUnknownLengthHttpInputStream.car");
-
-    merge("net/url/IFileHandler.car");
-    merge("net/url/IFileURLConnection.car");
-    merge("net/url/IFtpHandler.car");
-    merge("net/url/IFtpURLConnection.car");
-    merge("net/url/IFtpURLInputStream.car");
-    merge("net/url/IJarHandler.car");
-    merge("net/url/IJarURLConnectionImpl.car");
-    merge("net/url/IUrlUtils.car");
 
     merge("../elastosx/net/ISocketFactory.car");
     merge("../elastosx/net/IServerSocketFactory.car");
