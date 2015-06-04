@@ -8,6 +8,8 @@ using Elastos::Core::Character;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(LineNumberInputStream, FilterInputStream, ILineNumberInputStream)
+
 LineNumberInputStream::LineNumberInputStream()
     : mLineNumber(0)
     , mMarkedLineNumber(-1)
@@ -20,10 +22,10 @@ LineNumberInputStream::~LineNumberInputStream()
 {
 }
 
-ECode LineNumberInputStream::Init(
+ECode LineNumberInputStream::constructor(
     /* [in] */ IInputStream* in)
 {
-    return FilterInputStream::Init(in);
+    return FilterInputStream::constructor(in);
 }
 
 ECode LineNumberInputStream::Available(
@@ -86,25 +88,25 @@ ECode LineNumberInputStream::Read(
     return NOERROR;
 }
 
-ECode LineNumberInputStream::ReadBytes(
+ECode LineNumberInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 length,
+    /* [in] */ Int32 byteOffset,
+    /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(number)
 
-    if (offset > buffer->GetLength() || offset < 0) {
+    if (byteOffset > buffer->GetLength() || byteOffset < 0) {
 //      throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + offset);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    if (length < 0 || length > buffer->GetLength() - offset) {
+    if (byteCount < 0 || byteCount > buffer->GetLength() - byteOffset) {
 //      throw new ArrayIndexOutOfBoundsException("Length out of bounds: " + length);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    for (Int32 i = 0; i < length; i++) {
+    for (Int32 i = 0; i < byteCount; i++) {
         Int32 currentChar;
         ECode ec = Read(&currentChar);
         if(ec != NOERROR){
@@ -116,9 +118,9 @@ ECode LineNumberInputStream::ReadBytes(
             *number = i == 0 ? -1 : i;
             return NOERROR;
         }
-        (*buffer)[offset + i] = (Byte)currentChar;
+        (*buffer)[byteOffset + i] = (Byte)currentChar;
     }
-    *number = length;
+    *number = byteCount;
 
     return NOERROR;
 }

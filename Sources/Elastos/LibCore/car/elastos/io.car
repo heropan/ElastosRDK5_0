@@ -467,6 +467,16 @@ module
 //        interface IPrintWriter;
 //    }
 
+    class CLineNumberInputStream {
+        constructor(
+            [in] IInputStream* is);
+
+        interface ICloseable;
+        interface IInputStream;
+        interface IFilterInputStream;
+        interface ILineNumberInputStream;
+    }
+
     } // namespace IO
     } // namespace Elastos
 }

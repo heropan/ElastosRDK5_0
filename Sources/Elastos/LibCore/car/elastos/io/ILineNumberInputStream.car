@@ -5,9 +5,13 @@ module
     namespace Elastos {
     namespace IO {
     /**
-     *Wraps an existing InputStream and counts the line terminators encountered while reading the data.
-     *Line numbering starts at 0. Recognized line terminator sequences are '\r', '\n' and "\r\n". When
-     *using read, line terminator sequences are always translated into '\n'.
+     * Wraps an existing {@link InputStream} and counts the line terminators
+     * encountered while reading the data. Line numbering starts at 0. Recognized
+     * line terminator sequences are {@code '\r'}, {@code '\n'} and {@code "\r\n"}.
+     * When using {@code read}, line terminator sequences are always translated into
+     * {@code '\n'}.
+     *
+     * @deprecated Use {@link LineNumberReader} instead.
      *
      * @implement Elastos.IO.IFilterInputStream
      */
