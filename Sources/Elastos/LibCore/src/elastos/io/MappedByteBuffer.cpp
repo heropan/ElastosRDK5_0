@@ -3,16 +3,16 @@
 #include "MappedByteBuffer.h"
 #include "ReadOnlyDirectByteBuffer.h"
 #include "ReadWriteDirectByteBuffer.h"
-#include "CLibcore.h"
-#include "COsConstants.h"
+// #include "CLibcore.h"
+// #include "COsConstants.h"
 
 using Elastos::IO::Channels::FileChannelMapMode_READ_ONLY;
 using Elastos::IO::Channels::FileChannelMapMode_READ_WRITE;
-using Libcore::IO::CLibcore;
-using Libcore::IO::COsConstants;
+// using Libcore::IO::CLibcore;
+// using Libcore::IO::COsConstants;
 using Libcore::IO::ILibcore;
 using Libcore::IO::IOs;
-using Libcore::IO::IOsConstants;
+// using Elastos::Droid::System::IOsConstants;
 
 namespace Elastos {
 namespace IO {
@@ -23,16 +23,16 @@ extern "C" const InterfaceID EIID_MappedByteBuffer =
 
 MappedByteBuffer::MappedByteBuffer(
     /* [in] */ IByteBuffer* directBuffer)
-    : ByteBuffer(((ByteBuffer*)directBuffer->Probe(EIID_ByteBuffer))->mCapacity, ((ByteBuffer*)directBuffer->Probe(EIID_ByteBuffer))->mBlock)
+    : ByteBuffer(((ByteBuffer*)directBuffer)->mCapacity, ((ByteBuffer*)directBuffer)->mBlock)
 {
     Boolean isDirect = FALSE;
-    directBuffer->IsDirect(&isDirect);
+    IBuffer::Probe(directBuffer)->IsDirect(&isDirect);
     // if (!isDirect) {
     //     throw new IllegalArgumentException();
     // }
     assert(isDirect);
 
-    mWrapped = (DirectByteBuffer*)(ByteBuffer*)directBuffer->Probe(EIID_ByteBuffer);
+    mWrapped = (DirectByteBuffer*)(ByteBuffer*)directBuffer;
 //    mMapMode = null;
 }
 
@@ -47,12 +47,12 @@ MappedByteBuffer::MappedByteBuffer(
     if (mMapMode == FileChannelMapMode_READ_ONLY) {
         AutoPtr<ReadOnlyDirectByteBuffer> tmpReadOnly = new ReadOnlyDirectByteBuffer(block, capacity, offset);
         assert(tmpReadOnly != NULL);
-        mWrapped = (DirectByteBuffer*)tmpReadOnly->Probe(EIID_DirectByteBuffer);
+        mWrapped = (DirectByteBuffer*)tmpReadOnly;
     }
     else {
         AutoPtr<ReadWriteDirectByteBuffer> tmpReadWrite = new ReadWriteDirectByteBuffer(block, capacity, offset);
         assert(tmpReadWrite != NULL);
-        mWrapped = (DirectByteBuffer*)tmpReadWrite->Probe(EIID_DirectByteBuffer);
+        mWrapped = (DirectByteBuffer*)tmpReadWrite;
     }
 }
 
@@ -73,12 +73,15 @@ ECode MappedByteBuffer::IsLoaded(
     Int64 tmpSize = 0;
     AutoPtr<ILibcore> libcore;
     AutoPtr<IOs> os;
-    ASSERT_SUCCEEDED(CLibcore::AcquireSingleton((ILibcore**)&libcore));
+    assert(0 && "TODO");
+    // ASSERT_SUCCEEDED(CLibcore::AcquireSingleton((ILibcore**)&libcore));
     libcore->GetOs((IOs**)&os);
-    AutoPtr<IOsConstants> osConstans;
-    ASSERT_SUCCEEDED(COsConstants::AcquireSingleton((IOsConstants**)&osConstans))
+    // AutoPtr<IOsConstants> osConstans;
+    assert(0 && "TODO");
+    // ASSERT_SUCCEEDED(COsConstants::AcquireSingleton((IOsConstants**)&osConstans))
     Int32 SC_PAGE_SIZE = 0;
-    FAIL_RETURN(osConstans->GetOsConstant(String("_SC_PAGE_SIZE"), &SC_PAGE_SIZE))
+    assert(0 && "TODO");
+    // FAIL_RETURN(osConstans->GetOsConstant(String("_SC_PAGE_SIZE"), &SC_PAGE_SIZE))
     FAIL_RETURN(os->Sysconf(SC_PAGE_SIZE, &tmpSize))
     pageSize = (Int32) tmpSize;
     Int32 pageOffset = (Int32) (address % pageSize);
@@ -105,7 +108,8 @@ ECode MappedByteBuffer::Load()
     // try {
     AutoPtr<ILibcore> libcore;
     AutoPtr<IOs> os;
-    ASSERT_SUCCEEDED(CLibcore::AcquireSingleton((ILibcore**)&libcore))
+    assert(0 && "TODO");
+    // ASSERT_SUCCEEDED(CLibcore::AcquireSingleton((ILibcore**)&libcore))
     libcore->GetOs((IOs**)&os);
     ASSERT_SUCCEEDED(os->Mlock(Buffer::mBlock->ToInt32(), Buffer::mBlock->GetSize()))
     ASSERT_SUCCEEDED(os->Munlock(Buffer::mBlock->ToInt32(), Buffer::mBlock->GetSize()))
@@ -120,12 +124,15 @@ ECode MappedByteBuffer::Force()
     //     try {
         AutoPtr<ILibcore> libcore;
         AutoPtr<IOs> os;
-        ASSERT_SUCCEEDED(CLibcore::AcquireSingleton((ILibcore**)&libcore))
+        assert(0 && "TODO");
+        // ASSERT_SUCCEEDED(CLibcore::AcquireSingleton((ILibcore**)&libcore))
         libcore->GetOs((IOs**)&os);
-        AutoPtr<IOsConstants> osConstans;
-        ASSERT_SUCCEEDED(COsConstants::AcquireSingleton((IOsConstants**)&osConstans))
+        // AutoPtr<IOsConstants> osConstans;
+        assert(0 && "TODO");
+        // ASSERT_SUCCEEDED(COsConstants::AcquireSingleton((IOsConstants**)&osConstans))
         Int32 MS_SYNC = 0;
-        FAIL_RETURN(osConstans->GetOsConstant(String("MS_SYNC"), &MS_SYNC))
+        assert(0 && "TODO");
+        // FAIL_RETURN(osConstans->GetOsConstant(String("MS_SYNC"), &MS_SYNC))
         FAIL_RETURN(os->Msync(Buffer::mBlock->ToInt32(), Buffer::mBlock->GetSize(), MS_SYNC))
     //     } catch (ErrnoException errnoException) {
     //         // The RI doesn't throw, presumably on the assumption that you can't get into

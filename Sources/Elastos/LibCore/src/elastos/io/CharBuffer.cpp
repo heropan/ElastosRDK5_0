@@ -1,8 +1,7 @@
 
 #include "CharBuffer.h"
-#include <coredef.h>
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 #include <CharSequenceAdapter.h>
 #include <ReadWriteCharArrayBuffer.h>
 
@@ -26,7 +25,8 @@ ECode CharBuffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    *buf = (ICharBuffer*)new ReadWriteCharArrayBuffer(capacity);
+    assert(0 && "TODO");
+    // *buf = (ICharBuffer*)new ReadWriteCharArrayBuffer(capacity);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -52,7 +52,8 @@ ECode CharBuffer::Wrap(
         //         count);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    AutoPtr<ReadWriteCharArrayBuffer> buffer = new ReadWriteCharArrayBuffer(array);
+    assert(0 && "TODO");
+    AutoPtr<ReadWriteCharArrayBuffer> buffer; // = new ReadWriteCharArrayBuffer(array);
     buffer->mPosition = start;
     buffer->mLimit = start + charCount;
     *buf = (ICharBuffer*)buffer.Get();
@@ -67,7 +68,8 @@ ECode CharBuffer::WrapSequence(
     VALIDATE_NOT_NULL(buf)
     Int32 len = 0;
     chseq->GetLength(&len);
-    *buf = (ICharBuffer*)new CharSequenceAdapter(len, chseq);
+    assert(0 && "TODO");
+    // *buf = (ICharBuffer*)new CharSequenceAdapter(len, chseq);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -85,7 +87,8 @@ ECode CharBuffer::WrapSequence(
         // throw new IndexOutOfBoundsException("cs.length()=" + cs.length() + ", start=" + start + ", end=" + end);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    AutoPtr<CharSequenceAdapter> result = new CharSequenceAdapter(len, chseq);
+    assert(0 && "TODO");
+    AutoPtr<CharSequenceAdapter> result; // = new CharSequenceAdapter(len, chseq);
     result->mPosition = start;
     result->mLimit = end;
     *buf = (ICharBuffer*)result.Get();
@@ -123,7 +126,7 @@ ECode CharBuffer::GetCharAt(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    return GetChar(mPosition + index, value);
+    return Get(mPosition + index, value);
 }
 
 ECode CharBuffer::CompareTo(
@@ -136,19 +139,19 @@ ECode CharBuffer::CompareTo(
     Int32 remaining = 0;
     Int32 otherRemaining = 0;
     GetRemaining(&remaining);
-    otherBuffer->GetRemaining(&otherRemaining);
+    IBuffer::Probe(otherBuffer)->GetRemaining(&otherRemaining);
 
     Int32 compareRemaining = (remaining < otherRemaining) ?
                               remaining : otherRemaining;
     Int32 thisPos = mPosition;
     Int32 otherPos = 0;
-    otherBuffer->GetPosition(&otherPos);
+    IBuffer::Probe(otherBuffer)->GetPosition(&otherPos);
 
     Char32 thisByte;
     Char32 otherByte;
     while (compareRemaining > 0) {
-        GetChar(thisPos, &thisByte);
-        otherBuffer->GetChar(otherPos, &otherByte);
+        Get(thisPos, &thisByte);
+        otherBuffer->Get(otherPos, &otherByte);
         if (thisByte != otherByte) {
             *result = thisByte < otherByte ? -1 : 1;
             return NOERROR;
@@ -163,13 +166,13 @@ ECode CharBuffer::CompareTo(
     return NOERROR;
 }
 
-ECode CharBuffer::GetChars(
+ECode CharBuffer::Get(
     /* [out] */ ArrayOf<Char32>* dst)
 {
-    return GetChars(dst, 0, dst->GetLength());
+    return Get(dst, 0, dst->GetLength());
 }
 
-ECode CharBuffer::GetChars(
+ECode CharBuffer::Get(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
@@ -187,7 +190,7 @@ ECode CharBuffer::GetChars(
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
     for (Int32 i = dstOffset; i < dstOffset + charCount; i++) {
-        GetChar(&(*dst)[i]);
+        Get(&(*dst)[i]);
     }
 
     return NOERROR;
@@ -205,18 +208,18 @@ ECode CharBuffer::GetLength(
     return GetRemaining(number);
 }
 
-ECode CharBuffer::PutChars(
-    /* [in] */ const ArrayOf<Char32>& src)
+ECode CharBuffer::Put(
+    /* [in] */ ArrayOf<Char32>* src)
 {
-    return PutChars(src, 0, src.GetLength());
+    return Put(src, 0, src->GetLength());
 }
 
-ECode CharBuffer::PutChars(
-    /* [in] */ const ArrayOf<Char32>& src,
+ECode CharBuffer::Put(
+    /* [in] */ ArrayOf<Char32>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
 {
-    Int32 length = src.GetLength();
+    Int32 length = src->GetLength();
 
     if ((srcOffset < 0) || (charCount < 0) ||
             (Int64) srcOffset + (Int64) charCount > length) {
@@ -230,13 +233,13 @@ ECode CharBuffer::PutChars(
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
     for (Int32 i = srcOffset; i < srcOffset + charCount; i++) {
-        PutChar(src[i]);
+        Put((*src)[i]);
     }
 
     return NOERROR;
 }
 
-ECode CharBuffer::PutCharBuffer(
+ECode CharBuffer::Put(
     /* [in] */ ICharBuffer* src)
 {
     if (src == (ICharBuffer*)this->Probe(EIID_ICharBuffer)) {
@@ -246,7 +249,7 @@ ECode CharBuffer::PutCharBuffer(
 
     Int32 srcRemaining = 0;
     Int32 remaining = 0;
-    src->GetRemaining(&srcRemaining);
+    IBuffer::Probe(src)->GetRemaining(&srcRemaining);
     GetRemaining(&remaining);
     if (srcRemaining > remaining) {
         // throw new BufferOverflowException();
@@ -254,8 +257,8 @@ ECode CharBuffer::PutCharBuffer(
     }
 
     AutoPtr< ArrayOf<Char32> > contents = ArrayOf<Char32>::Alloc(srcRemaining);
-    FAIL_RETURN(src->GetChars(contents))
-    return PutChars(*contents);
+    FAIL_RETURN(src->Get(contents))
+    return Put(contents);
 }
 
 ECode CharBuffer::PutString(
@@ -283,7 +286,7 @@ ECode CharBuffer::PutString(
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
     for (Int32 i = start; i < end; i++) {
-        PutChar(str[i]);
+        Put(str[i]);
     }
 
     return NOERROR;
@@ -296,19 +299,19 @@ ECode CharBuffer::ToString(
     StringBuilder result(mLimit - mPosition);
     Char32 c;
     for (Int32 i = mPosition; i < mLimit; i++) {
-        FAIL_RETURN(GetChar(i, &c))
+        FAIL_RETURN(Get(i, &c))
         result += c;
     }
     return result.ToString(str);
 }
 
-ECode CharBuffer::AppendChar(
+ECode CharBuffer::Append(
     /* [in] */ Char32 c)
 {
-    return PutChar(c);
+    return Put(c);
 }
 
-ECode CharBuffer::AppendChars(
+ECode CharBuffer::Append(
     /* [in] */ ICharSequence* csq)
 {
     if (csq != NULL) {
@@ -319,7 +322,7 @@ ECode CharBuffer::AppendChars(
     return PutString(String("null"));
 }
 
-ECode CharBuffer::AppendChars(
+ECode CharBuffer::Append(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -357,7 +360,7 @@ ECode CharBuffer::Read(
     }
 
     Int32 targetRemaining = 0;
-    target->GetRemaining(&targetRemaining);
+    IBuffer::Probe(target)->GetRemaining(&targetRemaining);
     if (remaining == 0) {
         *number = mLimit > 0 && targetRemaining == 0 ? 0 : -1;
         return NOERROR;
@@ -366,8 +369,8 @@ ECode CharBuffer::Read(
     remaining = Elastos::Core::Math::Min(targetRemaining, remaining);
     if (remaining > 0) {
         AutoPtr<ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(remaining);
-        GetChars(chars);
-        target->PutChars(*chars);
+        Get(chars);
+        target->Put(chars);
     }
 
     *number = remaining;
@@ -389,7 +392,7 @@ ECode CharBuffer::Equals(
     Int32 thisRemaining = 0;
     Int32 otherRemaining = 0;
     GetRemaining(&thisRemaining);
-    otherBuffer->GetRemaining(&otherRemaining);
+    IBuffer::Probe(otherBuffer)->GetRemaining(&otherRemaining);
     if (thisRemaining != otherRemaining) {
         *rst = FALSE;
         return NOERROR;
@@ -397,13 +400,13 @@ ECode CharBuffer::Equals(
 
     Int32 myPosition = mPosition;
     Int32 otherPosition = 0;
-    otherBuffer->GetPosition(&otherPosition);
+    IBuffer::Probe(otherBuffer)->GetPosition(&otherPosition);
     Boolean equalSoFar = TRUE;
     Char32 thisChar;
     Char32 otherChar;
     while (equalSoFar && (myPosition < mLimit)) {
-        FAIL_RETURN(GetChar(myPosition++, &thisChar))
-        FAIL_RETURN(otherBuffer->GetChar(otherPosition++, &otherChar))
+        FAIL_RETURN(Get(myPosition++, &thisChar))
+        FAIL_RETURN(otherBuffer->Get(otherPosition++, &otherChar))
         equalSoFar = thisChar == otherChar;
     }
     *rst = equalSoFar;

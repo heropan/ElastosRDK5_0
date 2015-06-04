@@ -1,27 +1,30 @@
-#ifndef __ELASTOS_IO_CHAARSET_H__
-#define __ELASTOS_IO_CHAARSET_H__
+#ifndef __ELASTOS_IO_CHAARSET_CHAARSET_H__
+#define __ELASTOS_IO_CHAARSET_CHAARSET_H__
 
 #ifndef __USE_MALLOC
 #define __USE_MALLOC
 #endif
 
-#include <coredef.h>
 #include <Elastos.CoreLibrary_server.h>
+#include "elastos/core/Object.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/Set.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
-using Elastos::Utility::Set;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::Etl::Set;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ISet;
+
 
 namespace Elastos {
 namespace IO {
 namespace Charset {
 
 class Charset
-    : public ElRefBase
+    : public Object
     , public ICharset
 {
 public:
@@ -65,10 +68,7 @@ public:
         /* [out] */ String* name);
 
     CARAPI Aliases(
-        /* [out, callee] */ Set<String>** aliases);
-
-    CARAPI Aliases(
-        /* [out] */ IObjectContainer** aliases);
+        /* [out] */ ISet** aliases);
 
     CARAPI DisplayName(
         /* [out] */ String* name);
@@ -134,4 +134,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__ELASTOS_IO_CHAARSET_H__
+#endif //__ELASTOS_IO_CHAARSET_CHAARSET_H__

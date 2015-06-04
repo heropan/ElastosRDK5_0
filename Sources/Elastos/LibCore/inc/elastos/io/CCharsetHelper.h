@@ -1,15 +1,24 @@
 #ifndef __ELASTOS_IO_CCHARSETHELPER_H__
 #define __ELASTOS_IO_CCHARSETHELPER_H__
 
-#include "_Elastos_IO_CCharsetHelper.h"
+#include "_Elastos_IO_Charset_CCharsetHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace IO {
 namespace Charset {
 
 CarClass(CCharsetHelper)
+    , public Singleton
+    , public ICharsetHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     // TODO:
     // public static SortedMap<String, Charset> availableCharsets();
 

@@ -232,10 +232,10 @@ public:
      * @exception BufferUnderflowException
      *                if the position is equal or greater than limit.
      */
-    virtual CARAPI GetChar(
+    virtual CARAPI Get(
         /* [out] */ Char32* value) = 0;
 
-    virtual CARAPI GetChar(
+    virtual CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Char32* value) = 0;
 
@@ -252,7 +252,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code dst.length} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetChars(
+    virtual CARAPI Get(
         /* [out] */ ArrayOf<Char32>* dst);
 
     /**
@@ -274,7 +274,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code len} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetChars(
+    virtual CARAPI Get(
         /* [out] */ ArrayOf<Char32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 charCount);
@@ -312,7 +312,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutChar(
+    virtual CARAPI Put(
         /* [in] */ Char32 c) = 0;
 
     /**
@@ -329,7 +329,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutChar(
+    virtual CARAPI Put(
         /* [in] */ Int32 index,
         /* [in] */ Char32 c) = 0;
 
@@ -348,8 +348,8 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    CARAPI PutChars(
-        /* [in] */ const ArrayOf<Char32>& src);
+    CARAPI Put(
+        /* [in] */ ArrayOf<Char32>* src);
 
     /**
      * Writes chars from the given char array, starting from the specified offset,
@@ -372,8 +372,8 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutChars(
-        /* [in] */ const ArrayOf<Char32>& src,
+    virtual CARAPI Put(
+        /* [in] */ ArrayOf<Char32>* src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 charCount);
 
@@ -393,7 +393,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutCharBuffer(
+    virtual CARAPI Put(
         /* [in] */ ICharBuffer* src);
 
     /**
@@ -506,13 +506,13 @@ public:
      *      the char to write.
      * @return this buffer.
      */
-    virtual CARAPI AppendChar(
+    virtual CARAPI Append(
         /* [in] */ Char32 c);
 
-    virtual CARAPI AppendChars(
+    virtual CARAPI Append(
         /* [in] */ ICharSequence* csq);
 
-    virtual CARAPI AppendChars(
+    virtual CARAPI Append(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);

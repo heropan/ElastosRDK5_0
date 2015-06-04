@@ -2,7 +2,7 @@
 #include "coredef.h"
 #include "CharArrayBuffer.h"
 #include "CByteOrderHelper.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::StringBuilder;
@@ -33,7 +33,7 @@ CharArrayBuffer::CharArrayBuffer(
     , mOffset(0)
 {}
 
-ECode CharArrayBuffer::GetChar(
+ECode CharArrayBuffer::Get(
     /* [out] */ Char32* value)
 {
     VALIDATE_NOT_NULL(value)
@@ -45,7 +45,7 @@ ECode CharArrayBuffer::GetChar(
     return NOERROR;
 }
 
-ECode CharArrayBuffer::GetChar(
+ECode CharArrayBuffer::Get(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -55,7 +55,13 @@ ECode CharArrayBuffer::GetChar(
     return NOERROR;
 }
 
-ECode CharArrayBuffer::GetChars(
+ECode CharArrayBuffer::Get(
+    /* [out] */ ArrayOf<Char32>* dst)
+{
+    return CharBuffer::Get(dst);
+}
+
+ECode CharArrayBuffer::Get(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
@@ -97,8 +103,8 @@ ECode CharArrayBuffer::SubSequence(
     FAIL_RETURN(CheckStartEndRemaining(start, end))
     AutoPtr<ICharBuffer> result;
     Duplicate((ICharBuffer**)&result);
-    result->SetLimit(mPosition + end);
-    result->SetPosition(mPosition + start);
+    IBuffer::Probe(result)->SetLimit(mPosition + end);
+    IBuffer::Probe(result)->SetPosition(mPosition + start);
     *csq = ICharSequence::Probe(result);
     REFCOUNT_ADD(*csq);
     return NOERROR;

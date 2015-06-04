@@ -4,8 +4,8 @@
 #include "ReadOnlyDirectByteBuffer.h"
 #include "CByteOrderHelper.h"
 #include "Memory.h"
-#include <elastos/Math.h>
-#include "elastos/StringBuilder.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 
@@ -16,57 +16,7 @@ namespace IO {
 extern "C" const InterfaceID EIID_ReadWriteDirectByteBuffer =
     { 0xd9f5d1a4, 0xe93e, 0x4512, { 0xbf, 0x39, 0x5, 0xe7, 0x6d, 0xf6, 0x7e, 0xa2 } };
 
-PInterface ReadWriteDirectByteBuffer::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
-    }
-    else if (riid == EIID_IBuffer) {
-        return (IBuffer*)this;
-    }
-    else if (riid == EIID_IByteBuffer) {
-        return (IByteBuffer*)this;
-    }
-    else if (riid == EIID_Buffer) {
-        return reinterpret_cast<PInterface>((Buffer*)this);
-    }
-    else if (riid == EIID_ByteBuffer) {
-        return reinterpret_cast<PInterface>((ByteBuffer*)this);
-    }
-    else if (riid == EIID_DirectByteBuffer) {
-        return reinterpret_cast<PInterface>((DirectByteBuffer*)this);
-    }
-    else if (riid == EIID_ReadWriteDirectByteBuffer) {
-        return reinterpret_cast<PInterface>(this);
-    }
-
-    return NULL;
-}
-
-UInt32 ReadWriteDirectByteBuffer::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ReadWriteDirectByteBuffer::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ReadWriteDirectByteBuffer::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-    if (pObject == (IInterface*)(IByteBuffer*)this) {
-        *pIID = EIID_IByteBuffer;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(ReadWriteDirectByteBuffer, Object, IByteBuffer)
 
 AutoPtr<ReadWriteDirectByteBuffer> ReadWriteDirectByteBuffer::Copy(
     /* [in] */ DirectByteBuffer* other,
@@ -179,7 +129,7 @@ ECode ReadWriteDirectByteBuffer::AsReadOnlyBuffer(
 {
     VALIDATE_NOT_NULL(buffer);
     AutoPtr<ReadOnlyDirectByteBuffer> buf = ReadOnlyDirectByteBuffer::Copy((DirectByteBuffer*)this, mMark);
-    *buffer = (IByteBuffer*)buf.Get();
+    *buffer = IByteBuffer::Probe(buf);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -213,31 +163,31 @@ ECode ReadWriteDirectByteBuffer::Duplicate(
     return NOERROR;
 }
 
-ECode ReadWriteDirectByteBuffer::GetByte(
+ECode ReadWriteDirectByteBuffer::Get(
     /* [out] */ Byte* value)
 {
-    return DirectByteBuffer::GetByte(value);
+    return DirectByteBuffer::Get(value);
 }
 
-ECode ReadWriteDirectByteBuffer::GetByte(
+ECode ReadWriteDirectByteBuffer::Get(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
-    return DirectByteBuffer::GetByte(index, value);
+    return DirectByteBuffer::Get(index, value);
 }
 
-ECode ReadWriteDirectByteBuffer::GetBytes(
+ECode ReadWriteDirectByteBuffer::Get(
     /* [out] */ ArrayOf<Byte>* dst)
 {
-    return DirectByteBuffer::GetBytes(dst);
+    return DirectByteBuffer::Get(dst, 0, dst->GetLength());
 }
 
-ECode ReadWriteDirectByteBuffer::GetBytes(
+ECode ReadWriteDirectByteBuffer::Get(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
 {
-    return DirectByteBuffer::GetBytes(dst, off, len);
+    return DirectByteBuffer::Get(dst, off, len);
 }
 
 ECode ReadWriteDirectByteBuffer::GetChar(
@@ -348,7 +298,7 @@ ECode ReadWriteDirectByteBuffer::ProtectedHasArray(
     return DirectByteBuffer::ProtectedHasArray(hasArray);
 }
 
-ECode ReadWriteDirectByteBuffer::PutByte(
+ECode ReadWriteDirectByteBuffer::Put(
     /* [in] */ Byte b)
 {
     if (mPosition == mLimit) {
@@ -359,7 +309,7 @@ ECode ReadWriteDirectByteBuffer::PutByte(
     return NOERROR;
 }
 
-ECode ReadWriteDirectByteBuffer::PutByte(
+ECode ReadWriteDirectByteBuffer::Put(
     /* [in] */ Int32 index,
     /* [in] */ Byte b)
 {
@@ -368,28 +318,28 @@ ECode ReadWriteDirectByteBuffer::PutByte(
     return NOERROR;
 }
 
-ECode ReadWriteDirectByteBuffer::PutBytes(
-    /* [in] */ const ArrayOf<Byte>& src)
+ECode ReadWriteDirectByteBuffer::Put(
+    /* [in] */ ArrayOf<Byte>* src)
 {
-    return DirectByteBuffer::PutBytes(src);
+    return DirectByteBuffer::Put(src);
 }
 
-ECode ReadWriteDirectByteBuffer::PutBytes(
-    /* [in] */ const ArrayOf<Byte>& src,
+ECode ReadWriteDirectByteBuffer::Put(
+    /* [in] */ ArrayOf<Byte>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 byteCount)
 {
     Int32 result = 0;
-    FAIL_RETURN(CheckPutBounds(1, src.GetLength(), srcOffset, byteCount, &result))
-    mBlock->PokeByteArray(mOffset + mPosition, const_cast<ArrayOf<Byte>*>(&src), srcOffset, byteCount);
+    FAIL_RETURN(CheckPutBounds(1, src->GetLength(), srcOffset, byteCount, &result))
+    mBlock->PokeByteArray(mOffset + mPosition, src, srcOffset, byteCount);
     mPosition += byteCount;
     return NOERROR;
 }
 
-ECode ReadWriteDirectByteBuffer::PutByteBuffer(
+ECode ReadWriteDirectByteBuffer::Put(
     /* [in] */ IByteBuffer* src)
 {
-    return DirectByteBuffer::PutByteBuffer(src);
+    return DirectByteBuffer::Put(src);
 }
 
 ECode ReadWriteDirectByteBuffer::PutChar32s(

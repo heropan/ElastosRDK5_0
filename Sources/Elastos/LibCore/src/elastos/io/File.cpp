@@ -683,7 +683,7 @@ ECode File::SetWritable(
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded)
-    
+
     return SetWritable(writable, TRUE, succeeded);
 }
 

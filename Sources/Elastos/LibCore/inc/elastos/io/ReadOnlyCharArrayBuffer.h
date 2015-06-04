@@ -71,17 +71,17 @@ public:
     CARAPI Duplicate(
         /* [out] */ ICharBuffer** buffer);
 
-    CARAPI GetChar(
+    CARAPI Get(
         /* [out] */ Char32* value);
 
-    CARAPI GetChar(
+    CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Char32* value);
 
-    CARAPI GetChars(
+    CARAPI Get(
         /* [out] */ ArrayOf<Char32>* dst);
 
-    CARAPI GetChars(
+    CARAPI Get(
         /* [out] */ ArrayOf<Char32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 byteCount);
@@ -98,22 +98,22 @@ public:
     CARAPI ProtectedHasArray(
         /* [out] */ Boolean* result);
 
-    CARAPI PutChar(
+    CARAPI Put(
         /* [in] */ Char32 c);
 
-    CARAPI PutChar(
+    CARAPI Put(
         /* [in] */ Int32 index,
         /* [in] */ Char32 c);
 
-    CARAPI PutChars(
-        /* [in] */ const ArrayOf<Char32>& src);
+    CARAPI Put(
+        /* [in] */ ArrayOf<Char32>* src);
 
-    CARAPI PutChars(
+    CARAPI Put(
+        /* [in] */ ArrayOf<Char32>* src,
         /* [in] */ Int32 off,
-        /* [in] */ Int32 len,
-        /* [in] */ const ArrayOf<Char32>& src);
+        /* [in] */ Int32 len);
 
-    CARAPI PutCharBuffer(
+    CARAPI Put(
         /* [in] */ ICharBuffer* src);
 
     CARAPI PutString(
@@ -127,13 +127,13 @@ public:
     CARAPI Slice(
         /* [out] */ ICharBuffer** buffer);
 
-    CARAPI AppendChar(
+    CARAPI Append(
         /* [in] */ Char32 c);
 
-    CARAPI AppendChars(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq);
 
-    CARAPI AppendChars(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -202,7 +202,7 @@ public:
         /* [out] */ Boolean* rst);
 
     CARAPI PutChars(
-        /* [in] */ const ArrayOf<Char32>& src,
+        /* [in] */ ArrayOf<Char32>* src,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len);
 

@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "HeapByteBuffer.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "Memory.h"
 #include "CByteOrderHelper.h"
 
@@ -37,7 +37,7 @@ HeapByteBuffer::HeapByteBuffer(
     assert(offset + capacity <= backingArray->GetLength());
 }
 
-ECode HeapByteBuffer::GetBytes(
+ECode HeapByteBuffer::Get(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
@@ -165,7 +165,7 @@ ECode HeapByteBuffer::GetInt64s(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetByte(
+ECode HeapByteBuffer::Get(
     /* [out] */ Byte* value)
 {
     if (mPosition == mLimit) {
@@ -175,7 +175,7 @@ ECode HeapByteBuffer::GetByte(
     return NOERROR;
 }
 
-ECode HeapByteBuffer::GetByte(
+ECode HeapByteBuffer::Get(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {

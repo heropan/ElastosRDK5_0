@@ -18,8 +18,9 @@ AutoPtr<ReadOnlyCharArrayBuffer> ReadOnlyCharArrayBuffer::Copy(
     /* [in] */ CharArrayBuffer* other,
     /* [in] */ Int32 markOfOther)
 {
-    AutoPtr<ReadOnlyCharArrayBuffer> buf = new ReadOnlyCharArrayBuffer(other->mCapacity,
-            other->mBackingArray, other->mOffset);
+    assert(0 && "TODO");
+    AutoPtr<ReadOnlyCharArrayBuffer> buf; // = new ReadOnlyCharArrayBuffer(other->mCapacity,
+            // other->mBackingArray, other->mOffset);
     buf->mLimit = other->mLimit;
     buf->mPosition = other->mPosition;
     buf->mMark = markOfOther;
@@ -147,31 +148,31 @@ ECode ReadOnlyCharArrayBuffer::Duplicate(
     return NOERROR;
 }
 
-ECode ReadOnlyCharArrayBuffer::GetChar(
+ECode ReadOnlyCharArrayBuffer::Get(
     /* [out] */ Char32* value)
 {
-    return CharArrayBuffer::GetChar(value);
+    return CharArrayBuffer::Get(value);
 }
 
-ECode ReadOnlyCharArrayBuffer::GetChar(
+ECode ReadOnlyCharArrayBuffer::Get(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
-    return CharArrayBuffer::GetChar(index, value);
+    return CharArrayBuffer::Get(index, value);
 }
 
-ECode ReadOnlyCharArrayBuffer::GetChars(
+ECode ReadOnlyCharArrayBuffer::Get(
     /* [out] */ ArrayOf<Char32>* dst)
 {
-    return CharArrayBuffer::GetChars(dst);
+    return CharArrayBuffer::Get(dst);
 }
 
-ECode ReadOnlyCharArrayBuffer::GetChars(
+ECode ReadOnlyCharArrayBuffer::Get(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
 {
-    return CharArrayBuffer::GetChars(dst, dstOffset, byteCount);
+    return CharArrayBuffer::Get(dst, dstOffset, byteCount);
 }
 
 ECode ReadOnlyCharArrayBuffer::GetOrder(
@@ -202,14 +203,14 @@ CARAPI ReadOnlyCharArrayBuffer::ProtectedHasArray(
     return NOERROR;
 }
 
-ECode ReadOnlyCharArrayBuffer::PutChar(
+ECode ReadOnlyCharArrayBuffer::Put(
     /* [in] */ Char32 c)
 {
     // throw new ReadOnlyBufferException();
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyCharArrayBuffer::PutChar(
+ECode ReadOnlyCharArrayBuffer::Put(
     /* [in] */ Int32 index,
     /* [in] */ Char32 c)
 {
@@ -217,22 +218,13 @@ ECode ReadOnlyCharArrayBuffer::PutChar(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyCharArrayBuffer::PutChars(
-    /* [in] */ const ArrayOf<Char32>& src)
+ECode ReadOnlyCharArrayBuffer::Put(
+    /* [in] */ ArrayOf<Char32>* src)
 {
-    return CharArrayBuffer::PutChars(src);
+    return CharArrayBuffer::Put(src);
 }
 
-ECode ReadOnlyCharArrayBuffer::PutChars(
-    /* [in] */ Int32 off,
-    /* [in] */ Int32 len,
-    /* [in] */ const ArrayOf<Char32>& src)
-{
-    // throw new ReadOnlyBufferException();
-    return E_READ_ONLY_BUFFER_EXCEPTION;
-}
-
-ECode ReadOnlyCharArrayBuffer::PutCharBuffer(
+ECode ReadOnlyCharArrayBuffer::Put(
     /* [in] */ ICharBuffer* src)
 {
     // throw new ReadOnlyBufferException();
@@ -259,29 +251,30 @@ ECode ReadOnlyCharArrayBuffer::Slice(
     VALIDATE_NOT_NULL(buffer);
     Int32 remaining = 0;
     GetRemaining(&remaining);
-    *buffer = (ICharBuffer*)new ReadOnlyCharArrayBuffer(remaining, mBackingArray, mOffset + mPosition);
+    assert(0 && "TODO");
+    // *buffer = (ICharBuffer*)new ReadOnlyCharArrayBuffer(remaining, mBackingArray, mOffset + mPosition);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
-ECode ReadOnlyCharArrayBuffer::AppendChar(
+ECode ReadOnlyCharArrayBuffer::Append(
     /* [in] */ Char32 c)
 {
-    return CharArrayBuffer::AppendChar(c);
+    return CharArrayBuffer::Append(c);
 }
 
-ECode ReadOnlyCharArrayBuffer::AppendChars(
+ECode ReadOnlyCharArrayBuffer::Append(
     /* [in] */ ICharSequence* csq)
 {
-    return CharArrayBuffer::AppendChars(csq);
+    return CharArrayBuffer::Append(csq);
 }
 
-ECode ReadOnlyCharArrayBuffer::AppendChars(
+ECode ReadOnlyCharArrayBuffer::Append(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return CharArrayBuffer::AppendChars(csq, start, end);
+    return CharArrayBuffer::Append(csq, start, end);
 }
 
 ECode ReadOnlyCharArrayBuffer::Read(
@@ -412,12 +405,12 @@ ECode ReadOnlyCharArrayBuffer::Equals(
     return CharArrayBuffer::Equals(object, rst);
 }
 
-ECode ReadOnlyCharArrayBuffer::PutChars(
-    /* [in] */ const ArrayOf<Char32>& src,
+ECode ReadOnlyCharArrayBuffer::Put(
+    /* [in] */ ArrayOf<Char32>* src,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
 {
-    return CharArrayBuffer::PutChars(src, off, len);
+    return CharArrayBuffer::Put(src, off, len);
 }
 
 } // namespace IO

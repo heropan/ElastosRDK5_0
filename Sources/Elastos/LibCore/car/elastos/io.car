@@ -204,16 +204,6 @@ module
         interface IFlushable;
     }
 
-    namespace Channels {
-
-        class CChannels {
-            constructor();
-
-            interface IChannels;
-        }
-
-    } // namespace Channels
-
     class CFilterInputStream {
         constructor(
             [in] IInputStream* is);
@@ -340,15 +330,12 @@ module
         interface IDataOutputStream;
     }
 
-    //
-    // nio relasted classes
-    //
-    singleton class CByteOrderHelper {
-        interface IByteOrderHelper;
-    }
-
     singleton class CByteBufferHelper {
         interface IByteBufferHelper;
+    }
+
+    singleton class CByteOrderHelper {
+        interface IByteOrderHelper;
     }
 
     [deprecated]
@@ -408,6 +395,40 @@ module
 //        interface IReader;
 //        interface IInputStreamReader;
 //    }
+
+    namespace Channels {
+
+        class CChannels {
+            constructor();
+
+            interface IChannels;
+        }
+
+    } // namespace Channels
+
+    namespace Charset {
+
+        class CCodingErrorAction {
+            constructor();
+
+            interface ICodingErrorAction;
+        }
+
+        singleton class CCharsetHelper {
+            interface ICharsetHelper;
+        }
+
+        class CCoderResult {
+            constructor();
+
+            interface ICoderResult;
+        }
+
+        singleton class CCoderResultHelper {
+            interface ICoderResultHelper;
+        }
+
+    } // namespace Charset
 
     } // namespace IO
     } // namespace Elastos

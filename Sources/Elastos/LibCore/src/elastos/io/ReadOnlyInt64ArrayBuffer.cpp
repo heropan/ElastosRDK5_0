@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "ReadOnlyInt64ArrayBuffer.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -19,8 +19,9 @@ AutoPtr<ReadOnlyInt64ArrayBuffer> ReadOnlyInt64ArrayBuffer::Copy(
     /* [in] */ Int64ArrayBuffer* other,
     /* [in] */ Int32 markOfOther)
 {
-    AutoPtr<ReadOnlyInt64ArrayBuffer> buf = new ReadOnlyInt64ArrayBuffer(other->mCapacity,
-            other->mBackingArray, other->mOffset);
+    assert(0 && "TODO");
+    AutoPtr<ReadOnlyInt64ArrayBuffer> buf; // = new ReadOnlyInt64ArrayBuffer(other->mCapacity,
+            // other->mBackingArray, other->mOffset);
     buf->mLimit = other->mLimit;
     buf->mPosition = other->mPosition;
     buf->mMark = markOfOther;
@@ -31,7 +32,8 @@ PInterface ReadOnlyInt64ArrayBuffer::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)this;
+        assert(0 && "TODO");
+        // return (PInterface)this;
     }
     else if (riid == EIID_IInt64Buffer) {
         return (IInt64Buffer*)this;
@@ -157,7 +159,7 @@ ECode ReadOnlyInt64ArrayBuffer::GetInt64(
 ECode ReadOnlyInt64ArrayBuffer::GetInt64s(
     /* [out] */ ArrayOf<Int64>* dst)
 {
-    return Int64ArrayBuffer::GetInt64s(dst);
+    return Int64ArrayBuffer::GetInt64s(dst, 0, dst->GetLength());
 }
 
 ECode ReadOnlyInt64ArrayBuffer::GetInt64s(
@@ -217,8 +219,9 @@ ECode ReadOnlyInt64ArrayBuffer::Slice(
     VALIDATE_NOT_NULL(buffer);
     Int32 remaining = 0;
     GetRemaining(&remaining);
-    *buffer = (IInt64Buffer*)new ReadOnlyInt64ArrayBuffer(remaining, mBackingArray,
-            mOffset + mPosition);
+    assert(0 && "TODO");
+    // *buffer = (IInt64Buffer*)new ReadOnlyInt64ArrayBuffer(remaining, mBackingArray,
+            // mOffset + mPosition);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }

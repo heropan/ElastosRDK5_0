@@ -6,6 +6,10 @@ namespace Elastos {
 namespace IO {
 namespace Charset {
 
+CAR_INTERFACE_IMPL(CCoderResultHelper, Singleton, ICoderResultHelper)
+
+CAR_SINGLETON_IMPL(CCoderResultHelper)
+
 ECode CCoderResultHelper::GetUNDERFLOW(
     /* [out] */ ICoderResult** result){
     return CCoderResult::GetUNDERFLOW(result);

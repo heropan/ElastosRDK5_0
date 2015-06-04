@@ -2,17 +2,17 @@
 #ifndef __ELASTOS_IO_CHARSETENCODER_H__
 #define __ELASTOS_IO_CHARSETENCODER_H__
 
-#include <coredef.h>
-#include <elastos.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace IO {
 namespace Charset {
 
 class CharsetEncoder
-    : public ElRefBase
+    : public Object
     , public ICharsetEncoder
 {
 public:
@@ -44,7 +44,7 @@ public:
         /* [out] */ Float* averageNumber);
 
     CARAPI CanEncode(
-        /* [in] */ Char8 c,
+        /* [in] */ Char32 c,
         /* [out] */ Boolean* result);
 
     CARAPI CanEncode(

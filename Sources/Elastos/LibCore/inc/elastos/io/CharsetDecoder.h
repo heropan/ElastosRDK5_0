@@ -1,8 +1,7 @@
 
-#ifndef __ELASTOS_IO_CHARSETDECODER_H__
-#define __ELASTOS_IO_CHARSETDECODER_H__
+#ifndef __ELASTOS_IO_CHARSET_CHARSETDECODER_H__
+#define __ELASTOS_IO_CHARSET_CHARSETDECODER_H__
 
-#include "coredef.h"
 #include <elastos.h>
 
 namespace Elastos {
@@ -10,7 +9,7 @@ namespace IO {
 namespace Charset {
 
 class CharsetDecoder
-    : public ElRefBase
+    : public Object
     , public ICharsetDecoder
 {
 public:
@@ -498,4 +497,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __ELASTOS_IO_CHARSETDECODER_H__
+#endif // __ELASTOS_IO_CHARSET_CHARSETDECODER_H__

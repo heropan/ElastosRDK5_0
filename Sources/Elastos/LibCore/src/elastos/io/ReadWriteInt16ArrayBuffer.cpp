@@ -2,7 +2,7 @@
 #include "coredef.h"
 #include "ReadWriteInt16ArrayBuffer.h"
 #include "ReadOnlyInt16ArrayBuffer.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -30,8 +30,9 @@ AutoPtr<ReadWriteInt16ArrayBuffer> ReadWriteInt16ArrayBuffer::Copy(
     /* [in] */ Int16ArrayBuffer* other,
     /* [in] */ Int32 markOfOther)
 {
-    AutoPtr<ReadWriteInt16ArrayBuffer> buf = new ReadWriteInt16ArrayBuffer(other->mCapacity,
-            other->mBackingArray, other->mOffset);
+    assert(0 && "TODO");
+    AutoPtr<ReadWriteInt16ArrayBuffer> buf; // = new ReadWriteInt16ArrayBuffer(other->mCapacity,
+            // other->mBackingArray, other->mOffset);
     buf->mLimit = other->mLimit;
     buf->mPosition = other->mPosition;
     buf->mMark = markOfOther;
@@ -42,7 +43,8 @@ PInterface ReadWriteInt16ArrayBuffer::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)this;
+        assert(0 && "TODO");
+        // return (PInterface)this;
     }
     else if (riid == EIID_IInt16Buffer) {
         return (IInt16Buffer*)this;
@@ -177,7 +179,7 @@ ECode ReadWriteInt16ArrayBuffer::GetInt16(
 ECode ReadWriteInt16ArrayBuffer::GetInt16s(
     /* [out] */ ArrayOf<Int16>* dst)
 {
-    return Int16ArrayBuffer::GetInt16s(dst);
+    return Int16ArrayBuffer::GetInt16s(dst, 0, dst->GetLength());
 }
 
 ECode ReadWriteInt16ArrayBuffer::GetInt16s(
@@ -215,13 +217,13 @@ ECode ReadWriteInt16ArrayBuffer::PutInt16(
 }
 
 ECode ReadWriteInt16ArrayBuffer::PutInt16s(
-    /* [in] */ const ArrayOf<Int16>& src)
+    /* [in] */ ArrayOf<Int16>* src)
 {
-    return Int16ArrayBuffer::PutInt16s(src);
+    return Int16ArrayBuffer::Put(src);
 }
 
 ECode ReadWriteInt16ArrayBuffer::PutInt16s(
-    /* [in] */ const ArrayOf<Int16>& src,
+    /* [in] */ ArrayOf<Int16>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int16Count)
 {
@@ -231,7 +233,7 @@ ECode ReadWriteInt16ArrayBuffer::PutInt16s(
         // throw new BufferOverflowException();
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
-    mBackingArray->Copy(mOffset + mPosition, &src, srcOffset, int16Count);
+    mBackingArray->Copy(mOffset + mPosition, src, srcOffset, int16Count);
     mPosition += int16Count;
     return NOERROR;
 }
@@ -248,8 +250,9 @@ ECode ReadWriteInt16ArrayBuffer::Slice(
     VALIDATE_NOT_NULL(buffer);
     Int32 remaining = 0;
     GetRemaining(&remaining);
-    *buffer = (IInt16Buffer*)new ReadWriteInt16ArrayBuffer(remaining, mBackingArray,
-            mOffset + mPosition);
+    assert(0 && "TODO");
+    // *buffer = (IInt16Buffer*)new ReadWriteInt16ArrayBuffer(remaining, mBackingArray,
+            // mOffset + mPosition);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }

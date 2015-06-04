@@ -13,7 +13,7 @@ namespace IO {
 extern "C" const InterfaceID EIID_ByteBuffer =
     { 0xaad41a09, 0x77d1, 0x491c, { 0xa2, 0xa0, 0xc, 0x7d, 0xb0, 0xb3, 0x79, 0xe6 } };
 
-CAR_INTERFACE_IMPL(ByteBuffer, Buffer, IByteBuffer)
+CAR_INTERFACE_IMPL_2(ByteBuffer, Object, IBuffer, IByteBuffer)
 
 ECode ByteBuffer::Allocate(
     /* [in] */ Int32 capacity,
@@ -147,7 +147,8 @@ ECode ByteBuffer::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean* isEquals)
 {
-    IByteBuffer* otherObj = IByteBuffer::Probe(other);
+    assert(0 && "TODO");
+    ByteBuffer* otherObj; // = (ByteBuffer*)(other->Probe(EIID_ByteBuffer));
     if (NULL == otherObj) {
         *isEquals = FALSE;
         return NOERROR;
@@ -254,6 +255,7 @@ ECode ByteBuffer::Put(
     /* [in] */ ArrayOf<Byte>* src)
 {
     VALIDATE_NOT_NULL(src)
+
     return Put(src, 0, src->GetLength());
 }
 
@@ -263,6 +265,7 @@ ECode ByteBuffer::Put(
     /* [in] */ Int32 byteCount)
 {
     VALIDATE_NOT_NULL(src)
+
     Int32 arrayLength = src->GetLength();
     if ((srcOffset | byteCount) < 0 || srcOffset > arrayLength || arrayLength - srcOffset < byteCount) {
         // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,

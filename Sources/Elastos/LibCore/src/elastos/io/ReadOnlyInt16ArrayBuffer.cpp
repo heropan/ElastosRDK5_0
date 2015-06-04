@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "ReadOnlyInt16ArrayBuffer.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -19,8 +19,9 @@ AutoPtr<ReadOnlyInt16ArrayBuffer> ReadOnlyInt16ArrayBuffer::Copy(
     /* [in] */ Int16ArrayBuffer* other,
     /* [in] */ Int32 markOfOther)
 {
-    AutoPtr<ReadOnlyInt16ArrayBuffer> buf = new ReadOnlyInt16ArrayBuffer(other->mCapacity,
-            other->mBackingArray, other->mOffset);
+    assert(0 && "TODO");
+    AutoPtr<ReadOnlyInt16ArrayBuffer> buf; // = new ReadOnlyInt16ArrayBuffer(other->mCapacity,
+            // other->mBackingArray, other->mOffset);
     buf->mLimit = other->mLimit;
     buf->mPosition = other->mPosition;
     buf->mMark = markOfOther;
@@ -31,7 +32,8 @@ PInterface ReadOnlyInt16ArrayBuffer::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)this;
+        assert(0 && "TODO");
+        // return (PInterface)this;
     }
     else if (riid == EIID_IInt16Buffer) {
         return (IInt16Buffer*)this;
@@ -158,7 +160,7 @@ ECode ReadOnlyInt16ArrayBuffer::GetInt16(
 ECode ReadOnlyInt16ArrayBuffer::GetInt16s(
     /* [out] */ ArrayOf<Int16>* dst)
 {
-    return Int16ArrayBuffer::GetInt16s(dst);
+    return Int16ArrayBuffer::GetInt16s(dst, 0, dst->GetLength());
 }
 
 ECode ReadOnlyInt16ArrayBuffer::GetInt16s(
@@ -191,13 +193,13 @@ ECode ReadOnlyInt16ArrayBuffer::PutInt16(
 }
 
 ECode ReadOnlyInt16ArrayBuffer::PutInt16s(
-    /* [in] */ const ArrayOf<Int16>& src)
+    /* [in] */ ArrayOf<Int16>* src)
 {
-    return Int16ArrayBuffer::PutInt16s(src);
+    return Int16ArrayBuffer::Put(src);
 }
 
 ECode ReadOnlyInt16ArrayBuffer::PutInt16s(
-    /* [in] */ const ArrayOf<Int16>& src,
+    /* [in] */ ArrayOf<Int16>* src,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
 {
@@ -218,8 +220,9 @@ ECode ReadOnlyInt16ArrayBuffer::Slice(
     VALIDATE_NOT_NULL(buffer);
     Int32 remaining = 0;
     GetRemaining(&remaining);
-    *buffer = (IInt16Buffer*)new ReadOnlyInt16ArrayBuffer(remaining, mBackingArray,
-            mOffset + mPosition);
+    assert(0 && "TODO");
+    // *buffer = (IInt16Buffer*)new ReadOnlyInt16ArrayBuffer(remaining, mBackingArray,
+            // mOffset + mPosition);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }

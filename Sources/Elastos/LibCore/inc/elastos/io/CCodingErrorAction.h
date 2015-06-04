@@ -2,15 +2,21 @@
 #ifndef __ELASTOS_IO_CCODINGERRORACTION_H__
 #define __ELASTOS_IO_CCODINGERRORACTION_H__
 
-#include "_Elastos_IO_CCodingErrorAction.h"
+#include "_Elastos_IO_Charset_CCodingErrorAction.h"
+#include "elastos/core/Object.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace IO {
 namespace Charset {
 
 CarClass(CCodingErrorAction)
+    , public Object
 {
 public:
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI GetIGNORE(

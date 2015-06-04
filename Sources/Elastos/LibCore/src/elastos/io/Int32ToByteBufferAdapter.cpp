@@ -6,7 +6,7 @@
 #include "HeapByteBuffer.h"
 #include "ReadWriteDirectByteBuffer.h"
 #include "ReadWriteHeapByteBuffer.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -15,11 +15,12 @@ namespace IO {
 
 Int32ToByteBufferAdapter::Int32ToByteBufferAdapter(
     /* [in] */ IByteBuffer* byteBuffer)
-    : Int32Buffer(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mCapacity / sizeof(Int32))
+    : Int32Buffer(((ByteBuffer*)byteBuffer)->mCapacity / sizeof(Int32))
     , mByteBuffer(byteBuffer)
 {
-    mByteBuffer->Clear();
-    mEffectiveDirectAddress = ((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mEffectiveDirectAddress;
+    IBuffer::Probe(mByteBuffer)->Clear();
+    assert(0 && "TODO");
+    // mEffectiveDirectAddress = ((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mEffectiveDirectAddress;
 }
 
 ECode Int32ToByteBufferAdapter::AsInt32Buffer(
@@ -30,8 +31,9 @@ ECode Int32ToByteBufferAdapter::AsInt32Buffer(
     VALIDATE_NOT_NULL(byteBuffer)
     AutoPtr<IByteBuffer> slice;
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
-    slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);
-    *int32Buffer = (IInt32Buffer*) new Int32ToByteBufferAdapter(slice);
+    assert(0 && "TODO");
+    // slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    // *int32Buffer = (IInt32Buffer*) new Int32ToByteBufferAdapter(slice);
     REFCOUNT_ADD(*int32Buffer);
     return NOERROR;
 }
@@ -40,7 +42,8 @@ PInterface Int32ToByteBufferAdapter::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)this;
+        assert(0 && "TODO");
+        // return (PInterface)this;
     }
     else if (riid == EIID_IInt32Buffer) {
         return (IInt32Buffer*)this;
@@ -74,12 +77,14 @@ ECode Int32ToByteBufferAdapter::GetInterfaceID(
     /* [out] */ InterfaceID *pIID)
 {
     VALIDATE_NOT_NULL(pIID);
-    if (pObject == (IInterface*)(Int32Buffer*)this) {
-        *pIID = EIID_Int32Buffer;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
+
+    assert(0 && "TODO");
+    // if (pObject == (IInterface*)(Int32Buffer*)this) {
+    //     *pIID = EIID_Int32Buffer;
+    // }
+    // else {
+    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    // }
     return NOERROR;
 }
 
@@ -128,11 +133,12 @@ ECode Int32ToByteBufferAdapter::AsReadOnlyBuffer(
     VALIDATE_NOT_NULL(buffer)
     AutoPtr<IByteBuffer> byteBuf;
     FAIL_RETURN(mByteBuffer->AsReadOnlyBuffer((IByteBuffer**)&byteBuf))
-    AutoPtr<Int32ToByteBufferAdapter> buf = new Int32ToByteBufferAdapter(byteBuf);
+    assert(0 && "TODO");
+    AutoPtr<Int32ToByteBufferAdapter> buf; // = new Int32ToByteBufferAdapter(byteBuf);
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
-    buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    // buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IInt32Buffer*)buf->Probe(EIID_IInt32Buffer);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
@@ -141,15 +147,15 @@ ECode Int32ToByteBufferAdapter::AsReadOnlyBuffer(
 ECode Int32ToByteBufferAdapter::Compact()
 {
     Boolean isReadOnly = FALSE;
-    mByteBuffer->IsReadOnly(&isReadOnly);
+    IBuffer::Probe(mByteBuffer)->IsReadOnly(&isReadOnly);
     if (isReadOnly) {
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    mByteBuffer->SetLimit(mLimit * sizeof(Int32));
-    mByteBuffer->SetPosition(mPosition * sizeof(Int32));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Int32));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Int32));
     mByteBuffer->Compact();
-    mByteBuffer->Clear();
+    IBuffer::Probe(mByteBuffer)->Clear();
     mPosition = mLimit - mPosition;
     mLimit = mCapacity;
     mMark = IBuffer::UNSET_MARK;
@@ -169,8 +175,9 @@ ECode Int32ToByteBufferAdapter::Duplicate(
     VALIDATE_NOT_NULL(buffer)
     AutoPtr<IByteBuffer> bb;
     FAIL_RETURN(mByteBuffer->Duplicate((IByteBuffer**)&bb))
-    bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
-    AutoPtr<Int32ToByteBufferAdapter> buf = new Int32ToByteBufferAdapter(bb);
+    assert(0 && "TODO");
+    // bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    AutoPtr<Int32ToByteBufferAdapter> buf; // = new Int32ToByteBufferAdapter(bb);
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
@@ -208,14 +215,15 @@ ECode Int32ToByteBufferAdapter::GetInt32s(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int32Count)
 {
-    mByteBuffer->SetLimit(mLimit * sizeof(Int32));
-    mByteBuffer->SetPosition(mPosition * sizeof(Int32));
-    if (mByteBuffer->Probe(EIID_DirectByteBuffer) != NULL) {
-        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetInt32s(dst, dstOffset, int32Count))
-    }
-    else {
-        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetInt32s(dst, dstOffset, int32Count))
-    }
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Int32));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Int32));
+    assert(0 && "TODO");
+    // if (mByteBuffer->Probe(EIID_DirectByteBuffer) != NULL) {
+    //     FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetInt32s(dst, dstOffset, int32Count))
+    // }
+    // else {
+    //     FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetInt32s(dst, dstOffset, int32Count))
+    // }
     mPosition += int32Count;
     return NOERROR;
 }
@@ -255,11 +263,12 @@ ECode Int32ToByteBufferAdapter::PutInt32s(
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int32Count)
 {
-    mByteBuffer->SetLimit(mLimit * sizeof(Int32));
-    mByteBuffer->SetPosition(mPosition * sizeof(Int32));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Int32));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Int32));
     if (mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer) != NULL ) {
-        FAIL_RETURN(((ReadWriteDirectByteBuffer*)mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer))->PutInt32s(
-                src, srcOffset, int32Count))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((ReadWriteDirectByteBuffer*)mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer))->PutInt32s(
+                // src, srcOffset, int32Count))
     }
     else {
         FAIL_RETURN(((ReadWriteHeapByteBuffer*)mByteBuffer.Get())->PutInt32s(src, srcOffset, int32Count))
@@ -278,14 +287,15 @@ ECode Int32ToByteBufferAdapter::Slice(
     /* [out] */ IInt32Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
-    mByteBuffer->SetLimit(mLimit * sizeof(Int32));
-    mByteBuffer->SetPosition(mPosition * sizeof(Int32));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Int32));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Int32));
     AutoPtr<IByteBuffer> bb;
     FAIL_RETURN(mByteBuffer->Slice((IByteBuffer**)&bb))
-    bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
-    *buffer = (IInt32Buffer*) new Int32ToByteBufferAdapter(bb);
+    assert(0 && "TODO");
+    // bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    // *buffer = (IInt32Buffer*) new Int32ToByteBufferAdapter(bb);
     REFCOUNT_ADD(*buffer)
-    mByteBuffer->Clear();
+    IBuffer::Probe(mByteBuffer)->Clear();
     return NOERROR;
 }
 
@@ -335,13 +345,13 @@ ECode Int32ToByteBufferAdapter::HasRemaining(
 ECode Int32ToByteBufferAdapter::IsDirect(
     /* [out] */ Boolean* isDirect)
 {
-    return mByteBuffer->IsDirect(isDirect);
+    return IBuffer::Probe(mByteBuffer)->IsDirect(isDirect);
 }
 
 ECode Int32ToByteBufferAdapter::IsReadOnly(
     /* [out] */ Boolean* isReadOnly)
 {
-    return mByteBuffer->IsReadOnly(isReadOnly);
+    return IBuffer::Probe(mByteBuffer)->IsReadOnly(isReadOnly);
 }
 
 CARAPI Int32ToByteBufferAdapter::ProtectedArray(

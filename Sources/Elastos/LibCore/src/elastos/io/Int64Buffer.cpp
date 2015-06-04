@@ -26,7 +26,8 @@ ECode Int64Buffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    *buf = (IInt64Buffer*)new ReadWriteInt64ArrayBuffer(capacity);
+    assert(0 && "TODO");
+    // *buf = (IInt64Buffer*)new ReadWriteInt64ArrayBuffer(capacity);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -52,7 +53,8 @@ ECode Int64Buffer::Wrap(
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    AutoPtr<ReadWriteInt64ArrayBuffer> rwBuf = new ReadWriteInt64ArrayBuffer(array);
+    assert(0 && "TODO");
+    AutoPtr<ReadWriteInt64ArrayBuffer> rwBuf; // = new ReadWriteInt64ArrayBuffer(array);
     rwBuf->mPosition = start;
     rwBuf->mLimit = start + int64Count;
     *buf = (IInt64Buffer*)rwBuf.Get();
@@ -81,16 +83,16 @@ ECode Int64Buffer::CompareTo(
     Int32 remaining = 0;
     Int32 otherRemaining = 0;
     GetRemaining(&remaining);
-    otherBuffer->GetRemaining(&otherRemaining);
+    IBuffer::Probe(otherBuffer)->GetRemaining(&otherRemaining);
     Int32 compareRemaining = (remaining < otherRemaining) ? remaining : otherRemaining;
     Int32 thisPos = mPosition;
     Int32 otherPos = 0;
-    otherBuffer->GetPosition(&otherPos);
+    IBuffer::Probe(otherBuffer)->GetPosition(&otherPos);
     Int64 thisInt64 = 0;
     Int64 otherInt64 = 0;
     while (compareRemaining > 0) {
         GetInt64(thisPos, &thisInt64);
-        otherBuffer->GetInt64(otherPos, &otherInt64);
+        otherBuffer->Get(otherPos, &otherInt64);
         // checks for Int64 and NaN inequality
         if (thisInt64 != otherInt64) {
             *result = thisInt64 < otherInt64 ? -1 : 1;
@@ -119,7 +121,7 @@ ECode Int64Buffer::Equals(
     Int32 thisRemaining = 0;
     Int32 otherRemaining = 0;
     GetRemaining(&thisRemaining);
-    otherBuffer->GetRemaining(&otherRemaining);
+    IBuffer::Probe(otherBuffer)->GetRemaining(&otherRemaining);
     if (thisRemaining != otherRemaining) {
         *rst = FALSE;
         return NOERROR;
@@ -127,13 +129,13 @@ ECode Int64Buffer::Equals(
 
     Int32 myPosition = mPosition;
     Int32 otherPosition = 0;
-    otherBuffer->GetPosition(&otherPosition);
+    IBuffer::Probe(otherBuffer)->GetPosition(&otherPosition);
     Boolean equalSoFar = TRUE;
     Int64 thisValue = 0;
     Int64 otherValue = 0;
     while (equalSoFar && (myPosition < mLimit)) {
         FAIL_RETURN(GetInt64(myPosition++, &thisValue))
-        FAIL_RETURN(otherBuffer->GetInt64(otherPosition++, &otherValue))
+        FAIL_RETURN(otherBuffer->Get(otherPosition++, &otherValue))
         equalSoFar = thisValue == otherValue;
     }
     *rst = equalSoFar;
@@ -218,7 +220,7 @@ ECode Int64Buffer::PutInt64Buffer(
     }
     Int32 srcRemaining = 0;
     Int32 remaining = 0;
-    src->GetRemaining(&srcRemaining);
+    IBuffer::Probe(src)->GetRemaining(&srcRemaining);
     GetRemaining(&remaining);
     if (srcRemaining > remaining) {
         // throw new BufferOverflowException();
@@ -226,7 +228,7 @@ ECode Int64Buffer::PutInt64Buffer(
     }
 
     AutoPtr< ArrayOf<Int64> > contents = ArrayOf<Int64>::Alloc(srcRemaining);
-    FAIL_RETURN(src->GetInt64s(contents))
+    FAIL_RETURN(src->Get(contents))
     return PutInt64s(*contents);
 }
 

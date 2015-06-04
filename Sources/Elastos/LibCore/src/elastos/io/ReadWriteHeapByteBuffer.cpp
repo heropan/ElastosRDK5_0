@@ -3,9 +3,9 @@
 #include "ReadWriteHeapByteBuffer.h"
 #include "ReadOnlyHeapByteBuffer.h"
 #include "Memory.h"
-#include <elastos/Math.h>
 #include "CByteOrderHelper.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/Math.h>
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -29,51 +29,7 @@ ReadWriteHeapByteBuffer::ReadWriteHeapByteBuffer(
     : HeapByteBuffer(backingArray, capacity, arrayOffset)
 {}
 
-PInterface ReadWriteHeapByteBuffer::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
-    }
-    else if (riid == EIID_IByteBuffer) {
-        return (IByteBuffer*)this;
-    }
-    else if (riid == EIID_Buffer) {
-        return reinterpret_cast<PInterface>((Buffer*)this);
-    }
-    else if (riid == EIID_ByteBuffer) {
-        return reinterpret_cast<PInterface>((ByteBuffer*)this);
-    }
-    else if (riid == EIID_HeapByteBuffer) {
-        return reinterpret_cast<PInterface>((HeapByteBuffer*)this);
-    }
-
-    return NULL;
-}
-
-UInt32 ReadWriteHeapByteBuffer::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ReadWriteHeapByteBuffer::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ReadWriteHeapByteBuffer::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-    if (pObject == (IInterface*)(IByteBuffer*)this) {
-        *pIID = EIID_IByteBuffer;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(ReadWriteHeapByteBuffer, Object, IByteBuffer)
 
 AutoPtr<ReadWriteHeapByteBuffer> ReadWriteHeapByteBuffer::Copy(
     /* [in] */ HeapByteBuffer* other,
@@ -201,35 +157,35 @@ ECode ReadWriteHeapByteBuffer::Duplicate(
     return NOERROR;
 }
 
-ECode ReadWriteHeapByteBuffer::GetByte(
+ECode ReadWriteHeapByteBuffer::Get(
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value);
-    return HeapByteBuffer::GetByte(value);
+    return HeapByteBuffer::Get(value);
 }
 
-ECode ReadWriteHeapByteBuffer::GetByte(
+ECode ReadWriteHeapByteBuffer::Get(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value);
-    return HeapByteBuffer::GetByte(index, value);
+    return HeapByteBuffer::Get(index, value);
 }
 
-ECode ReadWriteHeapByteBuffer::GetBytes(
+ECode ReadWriteHeapByteBuffer::Get(
     /* [out] */ ArrayOf<Byte>* dst)
 {
     VALIDATE_NOT_NULL(dst);
-    return HeapByteBuffer::GetBytes(dst);
+    return HeapByteBuffer::Get(dst, 0, dst->GetLength());
 }
 
-ECode ReadWriteHeapByteBuffer::GetBytes(
+ECode ReadWriteHeapByteBuffer::Get(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
 {
     VALIDATE_NOT_NULL(dst);
-    return HeapByteBuffer::GetBytes(dst, off, len);
+    return HeapByteBuffer::Get(dst, off, len);
 }
 
 ECode ReadWriteHeapByteBuffer::GetChar(
@@ -361,7 +317,7 @@ ECode ReadWriteHeapByteBuffer::ProtectedHasArray(
     return NOERROR;
 }
 
-ECode ReadWriteHeapByteBuffer::PutByte(
+ECode ReadWriteHeapByteBuffer::Put(
     /* [in] */ Byte b)
 {
     if (mPosition == mLimit) {
@@ -371,7 +327,7 @@ ECode ReadWriteHeapByteBuffer::PutByte(
     return NOERROR;
 }
 
-ECode ReadWriteHeapByteBuffer::PutByte(
+ECode ReadWriteHeapByteBuffer::Put(
     /* [in] */ Int32 index,
     /* [in] */ Byte b)
 {
@@ -380,28 +336,28 @@ ECode ReadWriteHeapByteBuffer::PutByte(
     return NOERROR;
 }
 
-ECode ReadWriteHeapByteBuffer::PutBytes(
-    /* [in] */ const ArrayOf<Byte>& src)
+ECode ReadWriteHeapByteBuffer::Put(
+    /* [in] */ ArrayOf<Byte>* src)
 {
-    return HeapByteBuffer::PutBytes(src);
+    return HeapByteBuffer::Put(src);
 }
 
-ECode ReadWriteHeapByteBuffer::PutBytes(
-    /* [in] */ const ArrayOf<Byte>& src,
+ECode ReadWriteHeapByteBuffer::Put(
+    /* [in] */ ArrayOf<Byte>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 byteCount)
 {
     Int32 bounds;
-    FAIL_RETURN(CheckPutBounds(1, src.GetLength(), srcOffset, byteCount, &bounds));
-    mBackingArray->Copy(mOffset + mPosition, &src, srcOffset, byteCount);
+    FAIL_RETURN(CheckPutBounds(1, src->GetLength(), srcOffset, byteCount, &bounds));
+    mBackingArray->Copy(mOffset + mPosition, src, srcOffset, byteCount);
     mPosition += byteCount;
     return NOERROR;
 }
 
-ECode ReadWriteHeapByteBuffer::PutByteBuffer(
+ECode ReadWriteHeapByteBuffer::Put(
     /* [in] */ IByteBuffer* src)
 {
-    return HeapByteBuffer::PutByteBuffer(src);
+    return HeapByteBuffer::Put(src);
 }
 
 ECode ReadWriteHeapByteBuffer::PutChar(

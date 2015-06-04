@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "ReadOnlyFloatArrayBuffer.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -31,7 +31,8 @@ PInterface ReadOnlyFloatArrayBuffer::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)this;
+        assert(0 && "TODO");
+        // return (PInterface)this;
     }
     else if (riid == EIID_IFloatBuffer) {
         return (IFloatBuffer*)this;
@@ -158,7 +159,7 @@ ECode ReadOnlyFloatArrayBuffer::GetFloat(
 ECode ReadOnlyFloatArrayBuffer::GetFloats(
     /* [out] */ ArrayOf<Float>* dst)
 {
-    return FloatArrayBuffer::GetFloats(dst);
+    return FloatArrayBuffer::GetFloats(dst, 0, dst->GetLength());
 }
 
 ECode ReadOnlyFloatArrayBuffer::GetFloats(

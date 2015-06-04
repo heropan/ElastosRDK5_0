@@ -1,8 +1,7 @@
 
-#include "coredef.h"
 #include "NativeConverter.h"
 #include "CharsetICU.h"
-#include "elastos/UniquePtr.h"
+#include "elastos/core/UniquePtr.h"
 #include <unicode/ucnv.h>
 #include <unicode/ucnv_cb.h>
 #include <unicode/uniset.h>

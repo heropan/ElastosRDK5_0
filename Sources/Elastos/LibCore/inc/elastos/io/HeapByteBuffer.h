@@ -36,7 +36,7 @@ protected:
         /* [in] */ Int32 offset);
 
 public:
-    CARAPI GetBytes(
+    CARAPI Get(
         /* [out] */ ArrayOf<Byte>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 byteCount);
@@ -71,10 +71,10 @@ public:
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int64Count);
 
-    CARAPI GetByte(
+    CARAPI Get(
         /* [out] */ Byte* value);
 
-    CARAPI GetByte(
+    CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Byte* value);
 

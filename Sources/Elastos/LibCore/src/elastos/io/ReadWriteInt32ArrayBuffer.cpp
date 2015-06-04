@@ -2,7 +2,7 @@
 #include "coredef.h"
 #include "ReadWriteInt32ArrayBuffer.h"
 #include "ReadOnlyInt32ArrayBuffer.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -30,8 +30,9 @@ AutoPtr<ReadWriteInt32ArrayBuffer> ReadWriteInt32ArrayBuffer::Copy(
     /* [in] */ Int32ArrayBuffer* other,
     /* [in] */ Int32 markOfOther)
 {
-    AutoPtr<ReadWriteInt32ArrayBuffer> buf = new ReadWriteInt32ArrayBuffer(other->mCapacity,
-            other->mBackingArray, other->mOffset);
+    assert(0 && "TODO");
+    AutoPtr<ReadWriteInt32ArrayBuffer> buf; // = new ReadWriteInt32ArrayBuffer(other->mCapacity,
+            // other->mBackingArray, other->mOffset);
     buf->mLimit = other->mLimit;
     buf->mPosition = other->mPosition;
     buf->mMark = markOfOther;
@@ -42,7 +43,8 @@ PInterface ReadWriteInt32ArrayBuffer::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)this;
+        assert(0 && "TODO");
+        // return (PInterface)this;
     }
     else if (riid == EIID_IInt32Buffer) {
         return (IInt32Buffer*)this;
@@ -176,7 +178,7 @@ ECode ReadWriteInt32ArrayBuffer::GetInt32(
 ECode ReadWriteInt32ArrayBuffer::GetInt32s(
     /* [out] */ ArrayOf<Int32>* dst)
 {
-    return Int32ArrayBuffer::GetInt32s(dst);
+    return Int32ArrayBuffer::GetInt32s(dst, 0, dst->GetLength());
 }
 
 ECode ReadWriteInt32ArrayBuffer::GetInt32s(
@@ -247,8 +249,9 @@ ECode ReadWriteInt32ArrayBuffer::Slice(
     VALIDATE_NOT_NULL(buffer);
     Int32 remaining = 0;
     GetRemaining(&remaining);
-    *buffer = (IInt32Buffer*)new ReadWriteInt32ArrayBuffer(remaining, mBackingArray,
-            mOffset + mPosition);
+    assert(0 && "TODO");
+    // *buffer = (IInt32Buffer*)new ReadWriteInt32ArrayBuffer(remaining, mBackingArray,
+            // mOffset + mPosition);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }

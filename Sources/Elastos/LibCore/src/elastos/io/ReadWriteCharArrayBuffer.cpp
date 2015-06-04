@@ -29,8 +29,9 @@ AutoPtr<ReadWriteCharArrayBuffer> ReadWriteCharArrayBuffer::Copy(
     /* [in] */ CharArrayBuffer* other,
     /* [in] */ Int32 markOfOther)
 {
-    AutoPtr<ReadWriteCharArrayBuffer> buf = new ReadWriteCharArrayBuffer(other->mCapacity,
-            other->mBackingArray, other->mOffset);
+    assert(0 && "TODO");
+    AutoPtr<ReadWriteCharArrayBuffer> buf; // = new ReadWriteCharArrayBuffer(other->mCapacity,
+            // other->mBackingArray, other->mOffset);
     buf->mLimit = other->mLimit;
     buf->mPosition = other->mPosition;
     buf->mMark = markOfOther;
@@ -166,31 +167,31 @@ ECode ReadWriteCharArrayBuffer::Duplicate(
     return NOERROR;
 }
 
-ECode ReadWriteCharArrayBuffer::GetChar(
+ECode ReadWriteCharArrayBuffer::Get(
     /* [out] */ Char32* value)
 {
-    return CharArrayBuffer::GetChar(value);
+    return CharArrayBuffer::Get(value);
 }
 
-ECode ReadWriteCharArrayBuffer::GetChar(
+ECode ReadWriteCharArrayBuffer::Get(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
-    return CharArrayBuffer::GetChar(index, value);
+    return CharArrayBuffer::Get(index, value);
 }
 
-ECode ReadWriteCharArrayBuffer::GetChars(
+ECode ReadWriteCharArrayBuffer::Get(
     /* [out] */ ArrayOf<Char32>* dst)
 {
-    return CharArrayBuffer::GetChars(dst);
+    return CharArrayBuffer::Get(dst);
 }
 
-ECode ReadWriteCharArrayBuffer::GetChars(
+ECode ReadWriteCharArrayBuffer::Get(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
 {
-    return CharArrayBuffer::GetChars(dst, dstOffset, byteCount);
+    return CharArrayBuffer::Get(dst, dstOffset, byteCount);
 }
 
 ECode ReadWriteCharArrayBuffer::GetOrder(
@@ -224,7 +225,7 @@ CARAPI ReadWriteCharArrayBuffer::ProtectedHasArray(
     return NOERROR;
 }
 
-ECode ReadWriteCharArrayBuffer::PutChar(
+ECode ReadWriteCharArrayBuffer::Put(
     /* [in] */ Char32 c)
 {
     if (mPosition == mLimit) {
@@ -235,7 +236,7 @@ ECode ReadWriteCharArrayBuffer::PutChar(
     return NOERROR;
 }
 
-ECode ReadWriteCharArrayBuffer::PutChar(
+ECode ReadWriteCharArrayBuffer::Put(
     /* [in] */ Int32 index,
     /* [in] */ Char32 c)
 {
@@ -244,14 +245,14 @@ ECode ReadWriteCharArrayBuffer::PutChar(
     return NOERROR;
 }
 
-ECode ReadWriteCharArrayBuffer::PutChars(
-    /* [in] */ const ArrayOf<Char32>& src)
+ECode ReadWriteCharArrayBuffer::Put(
+    /* [in] */ ArrayOf<Char32>* src)
 {
-    return CharArrayBuffer::PutChars(src);
+    return CharArrayBuffer::Put(src);
 }
 
-ECode ReadWriteCharArrayBuffer::PutChars(
-    /* [in] */ const ArrayOf<Char32>& src,
+ECode ReadWriteCharArrayBuffer::Put(
+    /* [in] */ ArrayOf<Char32>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
 {
@@ -262,15 +263,15 @@ ECode ReadWriteCharArrayBuffer::PutChars(
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
 
-    mBackingArray->Copy(mOffset + mPosition, &src, srcOffset, charCount);
+    mBackingArray->Copy(mOffset + mPosition, src, srcOffset, charCount);
     mPosition += charCount;
     return NOERROR;
 }
 
-ECode ReadWriteCharArrayBuffer::PutCharBuffer(
+ECode ReadWriteCharArrayBuffer::Put(
     /* [in] */ ICharBuffer* src)
 {
-    return CharArrayBuffer::PutCharBuffer(src);
+    return CharArrayBuffer::Put(src);
 }
 
 ECode ReadWriteCharArrayBuffer::PutString(
@@ -293,30 +294,31 @@ ECode ReadWriteCharArrayBuffer::Slice(
     VALIDATE_NOT_NULL(buffer);
     Int32 remaining = 0;
     GetRemaining(&remaining);
-    *buffer = (ICharBuffer*)new ReadWriteCharArrayBuffer(remaining, mBackingArray,
-            mOffset + mPosition);
+    assert(0 && "TODO");
+    // *buffer = (ICharBuffer*)new ReadWriteCharArrayBuffer(remaining, mBackingArray,
+            // mOffset + mPosition);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
-ECode ReadWriteCharArrayBuffer::AppendChar(
+ECode ReadWriteCharArrayBuffer::Append(
     /* [in] */ Char32 c)
 {
-    return CharArrayBuffer::AppendChar(c);
+    return CharArrayBuffer::Append(c);
 }
 
-ECode ReadWriteCharArrayBuffer::AppendChars(
+ECode ReadWriteCharArrayBuffer::Append(
     /* [in] */ ICharSequence* csq)
 {
-    return CharArrayBuffer::AppendChars(csq);
+    return CharArrayBuffer::Append(csq);
 }
 
-ECode ReadWriteCharArrayBuffer::AppendChars(
+ECode ReadWriteCharArrayBuffer::Append(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return CharArrayBuffer::AppendChars(csq, start, end);
+    return CharArrayBuffer::Append(csq, start, end);
 }
 
 ECode ReadWriteCharArrayBuffer::Read(

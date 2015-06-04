@@ -194,7 +194,7 @@ ECode CharsetEncoderICU::EncodeLoop(
     VALIDATE_NOT_NULL(charBuffer)
     Boolean ret = FALSE;
 
-    if (!(charBuffer->HasRemaining(&ret), ret)) {
+    if (!(IBuffer::Probe(charBuffer)->HasRemaining(&ret), ret)) {
         CCoderResult::GetUNDERFLOW(result);
         return NOERROR;
     }
@@ -275,21 +275,21 @@ ECode CharsetEncoderICU::GetArray(
     VALIDATE_NOT_NULL(result)
     VALIDATE_NOT_NULL(outBuffer)
     Boolean has = FALSE;
-    if ((outBuffer->HasArray(&has), has)) {
+    if ((IBuffer::Probe(outBuffer)->HasArray(&has), has)) {
         mOutput = NULL;
         outBuffer->GetArray((ArrayOf<Byte>**)&mOutput);
         Int32 offset = 0;
         Int32 limit = 0;
-        outBuffer->GetArrayOffset(&offset);
-        outBuffer->GetLimit(&limit);
+        IBuffer::Probe(outBuffer)->GetArrayOffset(&offset);
+        IBuffer::Probe(outBuffer)->GetLimit(&limit);
         mOutEnd = offset + limit;
         Int32 pos = 0;
-        outBuffer->GetPosition(&pos);
+        IBuffer::Probe(outBuffer)->GetPosition(&pos);
         *result = offset + pos;
         return NOERROR;
     }
     else {
-        outBuffer->GetRemaining(&mOutEnd);
+        IBuffer::Probe(outBuffer)->GetRemaining(&mOutEnd);
         if (mAllocatedOutput == NULL || mOutEnd > mAllocatedOutput->GetLength()) {
             mAllocatedOutput = ArrayOf<Byte>::Alloc(mOutEnd);
         }
@@ -307,29 +307,29 @@ ECode CharsetEncoderICU::GetArray(
     VALIDATE_NOT_NULL(result)
     VALIDATE_NOT_NULL(inBuffer)
     Boolean has = FALSE;
-    if ((inBuffer->HasArray(&has), has)) {
+    if ((IBuffer::Probe(inBuffer)->HasArray(&has), has)) {
         mInput = NULL;
         inBuffer->GetArray((ArrayOf<Char32>**)&mInput);
         Int32 offset = 0;
         Int32 limit = 0;
-        inBuffer->GetArrayOffset(&offset);
-        inBuffer->GetLimit(&limit);
+        IBuffer::Probe(inBuffer)->GetArrayOffset(&offset);
+        IBuffer::Probe(inBuffer)->GetLimit(&limit);
         mInEnd = offset + limit;
         Int32 pos = 0;
-        inBuffer->GetPosition(&pos);
+        IBuffer::Probe(inBuffer)->GetPosition(&pos);
         *result = offset + pos;
         return NOERROR;
     }
     else {
-        inBuffer->GetRemaining(&mInEnd);
+        IBuffer::Probe(inBuffer)->GetRemaining(&mInEnd);
         if (mAllocatedInput == NULL || mInEnd > mAllocatedInput->GetLength()) {
             mAllocatedInput = ArrayOf<Char32>::Alloc(mInEnd);
         }
         // Copy the input buffer into the allocated array.
         Int32 pos = 0;
-        inBuffer->GetPosition(&pos);
-        inBuffer->GetChars(mAllocatedInput, 0, mInEnd);
-        inBuffer->SetPosition(pos);
+        IBuffer::Probe(inBuffer)->GetPosition(&pos);
+        inBuffer->Get(mAllocatedInput, 0, mInEnd);
+        IBuffer::Probe(inBuffer)->SetPosition(pos);
         // The array's start position is 0.
         mInput = mAllocatedInput;
         *result = 0;
@@ -342,15 +342,15 @@ ECode CharsetEncoderICU::SetPosition(
 {
     VALIDATE_NOT_NULL(outBuffer)
     Boolean has = FALSE;
-    if ((outBuffer->HasArray(&has), has)) {
+    if ((IBuffer::Probe(outBuffer)->HasArray(&has), has)) {
         Int32 pos = 0;
-        outBuffer->GetPosition(&pos);
+        IBuffer::Probe(outBuffer)->GetPosition(&pos);
         Int32 offset = 0;
-        outBuffer->GetArrayOffset(&offset);
-        outBuffer->SetPosition(pos + (*mData)[OUTPUT_OFFSET] - offset);
+        IBuffer::Probe(outBuffer)->GetArrayOffset(&offset);
+        IBuffer::Probe(outBuffer)->SetPosition(pos + (*mData)[OUTPUT_OFFSET] - offset);
     }
     else {
-        outBuffer->PutBytes(*mOutput, 0, (*mData)[OUTPUT_OFFSET]);
+        outBuffer->Put(mOutput, 0, (*mData)[OUTPUT_OFFSET]);
     }
     // release reference to output array, which may not be ours
     mOutput = NULL;
@@ -362,8 +362,8 @@ ECode CharsetEncoderICU::SetPosition(
 {
     VALIDATE_NOT_NULL(inBuffer)
     Int32 pos = 0;
-    inBuffer->GetPosition(&pos);
-    inBuffer->SetPosition(pos + (*mData)[INPUT_OFFSET] - (*mData)[INVALID_CHARS]);
+    IBuffer::Probe(inBuffer)->GetPosition(&pos);
+    IBuffer::Probe(inBuffer)->SetPosition(pos + (*mData)[INPUT_OFFSET] - (*mData)[INVALID_CHARS]);
     // release reference to input array, which may not be ours
     mInput = NULL;
     return NOERROR;

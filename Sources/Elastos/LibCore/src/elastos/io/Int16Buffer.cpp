@@ -26,7 +26,8 @@ ECode Int16Buffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    *buf = (IInt16Buffer*)new ReadWriteInt16ArrayBuffer(capacity);
+    assert(0 && "TODO");
+    // *buf = (IInt16Buffer*) new ReadWriteInt16ArrayBuffer(capacity);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -52,7 +53,8 @@ ECode Int16Buffer::Wrap(
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    AutoPtr<ReadWriteInt16ArrayBuffer> rwBuf = new ReadWriteInt16ArrayBuffer(array);
+    assert(0 && "TODO");
+    AutoPtr<ReadWriteInt16ArrayBuffer> rwBuf; // = new ReadWriteInt16ArrayBuffer(array);
     rwBuf->mPosition = start;
     rwBuf->mLimit = start + int16Count;
     *buf = (IInt16Buffer*)rwBuf.Get();
@@ -81,16 +83,16 @@ ECode Int16Buffer::CompareTo(
     Int32 remaining = 0;
     Int32 otherRemaining = 0;
     GetRemaining(&remaining);
-    otherBuffer->GetRemaining(&otherRemaining);
+    IBuffer::Probe(otherBuffer)->GetRemaining(&otherRemaining);
     Int32 compareRemaining = (remaining < otherRemaining) ? remaining : otherRemaining;
     Int32 thisPos = mPosition;
     Int32 otherPos = 0;
-    otherBuffer->GetPosition(&otherPos);
+    IBuffer::Probe(otherBuffer)->GetPosition(&otherPos);
     Int16 thisInt16 = 0;
     Int16 otherInt16 = 0;
     while (compareRemaining > 0) {
         GetInt16(thisPos, &thisInt16);
-        otherBuffer->GetInt16(otherPos, &otherInt16);
+        otherBuffer->Get(otherPos, &otherInt16);
         // checks for Int16 and NaN inequality
         if (thisInt16 != otherInt16) {
             *result = thisInt16 < otherInt16 ? -1 : 1;
@@ -119,7 +121,7 @@ ECode Int16Buffer::Equals(
     Int32 thisRemaining = 0;
     Int32 otherRemaining = 0;
     GetRemaining(&thisRemaining);
-    otherBuffer->GetRemaining(&otherRemaining);
+    IBuffer::Probe(otherBuffer)->GetRemaining(&otherRemaining);
     if (thisRemaining != otherRemaining) {
         *rst = FALSE;
         return NOERROR;
@@ -127,13 +129,13 @@ ECode Int16Buffer::Equals(
 
     Int32 myPosition = mPosition;
     Int32 otherPosition = 0;
-    otherBuffer->GetPosition(&otherPosition);
+    IBuffer::Probe(otherBuffer)->GetPosition(&otherPosition);
     Boolean equalSoFar = TRUE;
     Int16 thisValue = 0;
     Int16 otherValue = 0;
     while (equalSoFar && (myPosition < mLimit)) {
         FAIL_RETURN(GetInt16(myPosition++, &thisValue))
-        FAIL_RETURN(otherBuffer->GetInt16(otherPosition++, &otherValue))
+        FAIL_RETURN(otherBuffer->Get(otherPosition++, &otherValue))
         equalSoFar = thisValue == otherValue;
     }
     *rst = equalSoFar;
@@ -178,18 +180,18 @@ ECode Int16Buffer::HasArray(
     return ProtectedHasArray(hasArray);
 }
 
-ECode Int16Buffer::PutInt16s(
-    /* [in] */ const ArrayOf<Int16>& src)
+ECode Int16Buffer::Put(
+    /* [in] */ ArrayOf<Int16>* src)
 {
-    return PutInt16s(src, 0, src.GetLength());
+    return Put(src, 0, src->GetLength());
 }
 
-ECode Int16Buffer::PutInt16s(
-    /* [in] */ const ArrayOf<Int16>& src,
+ECode Int16Buffer::Put(
+    /* [in] */ ArrayOf<Int16>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int16Count)
 {
-    Int32 arrayLength = src.GetLength();
+    Int32 arrayLength = src->GetLength();
     if ((srcOffset | int16Count) < 0 || srcOffset > arrayLength || arrayLength - srcOffset < int16Count) {
         // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
         //         count);
@@ -217,7 +219,7 @@ ECode Int16Buffer::PutInt16Buffer(
     }
     Int32 srcRemaining = 0;
     Int32 remaining = 0;
-    src->GetRemaining(&srcRemaining);
+    IBuffer::Probe(src)->GetRemaining(&srcRemaining);
     GetRemaining(&remaining);
     if (srcRemaining > remaining) {
         // throw new BufferOverflowException();
@@ -225,8 +227,8 @@ ECode Int16Buffer::PutInt16Buffer(
     }
 
     AutoPtr< ArrayOf<Int16> > contents = ArrayOf<Int16>::Alloc(srcRemaining);
-    FAIL_RETURN(src->GetInt16s(contents))
-    return PutInt16s(*contents);
+    FAIL_RETURN(src->GetArray((ArrayOf<Int16>**)&contents))
+    return Put(contents);
 }
 
 } // namespace IO

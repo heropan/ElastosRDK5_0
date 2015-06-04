@@ -14,11 +14,11 @@ namespace IO {
 
 CharToByteBufferAdapter::CharToByteBufferAdapter(
     /* [in] */ IByteBuffer* byteBuffer)
-    : CharBuffer(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mCapacity / sizeof(Char32))
-    , mByteBuffer(byteBuffer)
+    : CharBuffer(((ByteBuffer*)byteBuffer)->mCapacity / sizeof(Char32))
 {
-    mByteBuffer->Clear();
-    mEffectiveDirectAddress = ((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mEffectiveDirectAddress;
+    mByteBuffer = byteBuffer;
+    IBuffer::Probe(mByteBuffer)->Clear();
+    mEffectiveDirectAddress = ((ByteBuffer*)byteBuffer)->mEffectiveDirectAddress;
 }
 
 ECode CharToByteBufferAdapter::AsCharBuffer(
@@ -29,8 +29,9 @@ ECode CharToByteBufferAdapter::AsCharBuffer(
     VALIDATE_NOT_NULL(byteBuffer)
     AutoPtr<IByteBuffer> slice;
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
-    slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);
-    *charBuffer = (ICharBuffer*) new CharToByteBufferAdapter(slice);
+    slice->SetOrder(((ByteBuffer*)byteBuffer)->mOrder);
+    assert(0 && "TODO");
+    // *charBuffer = (ICharBuffer*) new CharToByteBufferAdapter(slice);
     REFCOUNT_ADD(*charBuffer);
     return NOERROR;
 }
@@ -132,11 +133,13 @@ ECode CharToByteBufferAdapter::AsReadOnlyBuffer(
     VALIDATE_NOT_NULL(buffer)
     AutoPtr<IByteBuffer> byteBuf;
     FAIL_RETURN(mByteBuffer->AsReadOnlyBuffer((IByteBuffer**)&byteBuf))
-    AutoPtr<CharToByteBufferAdapter> buf = new CharToByteBufferAdapter(byteBuf);
+    assert(0 && "TODO");
+    AutoPtr<CharToByteBufferAdapter> buf; // = new CharToByteBufferAdapter(byteBuf);
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
-    buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    assert(0 && "TODO");
+    // buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (ICharBuffer*)buf->Probe(EIID_ICharBuffer);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
@@ -145,15 +148,15 @@ ECode CharToByteBufferAdapter::AsReadOnlyBuffer(
 ECode CharToByteBufferAdapter::Compact()
 {
     Boolean isReadOnly = FALSE;
-    mByteBuffer->IsReadOnly(&isReadOnly);
+    IBuffer::Probe(mByteBuffer)->IsReadOnly(&isReadOnly);
     if (isReadOnly) {
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    mByteBuffer->SetLimit(mLimit * sizeof(Char32));
-    mByteBuffer->SetPosition(mPosition * sizeof(Char32));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Char32));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Char32));
     mByteBuffer->Compact();
-    mByteBuffer->Clear();
+    IBuffer::Probe(mByteBuffer)->Clear();
     mPosition = mLimit - mPosition;
     mLimit = mCapacity;
     mMark = IBuffer::UNSET_MARK;
@@ -173,8 +176,10 @@ ECode CharToByteBufferAdapter::Duplicate(
     VALIDATE_NOT_NULL(buffer)
     AutoPtr<IByteBuffer> bb;
     FAIL_RETURN(mByteBuffer->Duplicate((IByteBuffer**)&bb))
-    bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
-    AutoPtr<CharToByteBufferAdapter> buf = new CharToByteBufferAdapter(bb);
+
+    assert(0 && "TODO");
+    // bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    AutoPtr<CharToByteBufferAdapter> buf; // = new CharToByteBufferAdapter(bb);
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
@@ -183,7 +188,7 @@ ECode CharToByteBufferAdapter::Duplicate(
     return NOERROR;
 }
 
-ECode CharToByteBufferAdapter::GetChar(
+ECode CharToByteBufferAdapter::Get(
     /* [out] */ Char32* value)
 {
     if (mPosition == mLimit) {
@@ -193,7 +198,7 @@ ECode CharToByteBufferAdapter::GetChar(
     return mByteBuffer->GetChar(mPosition++ * sizeof(Char32), value);
 }
 
-ECode CharToByteBufferAdapter::GetChar(
+ECode CharToByteBufferAdapter::Get(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -201,24 +206,26 @@ ECode CharToByteBufferAdapter::GetChar(
     return mByteBuffer->GetChar(index * sizeof(Char32), value);
 }
 
-ECode CharToByteBufferAdapter::GetChars(
+ECode CharToByteBufferAdapter::Get(
     /* [out] */ ArrayOf<Char32>* dst)
 {
-    return CharBuffer::GetChars(dst);
+    return CharBuffer::Get(dst);
 }
 
-ECode CharToByteBufferAdapter::GetChars(
+ECode CharToByteBufferAdapter::Get(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
 {
-    mByteBuffer->SetLimit(mLimit * sizeof(Char32));
-    mByteBuffer->SetPosition(mPosition * sizeof(Char32));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Char32));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Char32));
     if (mByteBuffer->Probe(EIID_DirectByteBuffer) != NULL) {
-        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetChars(dst, dstOffset, charCount))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->Get(dst, dstOffset, charCount))
     }
     else {
-        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetChars(dst, dstOffset, charCount))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->Get(dst, dstOffset, charCount))
     }
     mPosition += charCount;
     return NOERROR;
@@ -236,52 +243,54 @@ ECode CharToByteBufferAdapter::GetOrder(
     return mByteBuffer->GetOrder(order);
 }
 
-ECode CharToByteBufferAdapter::PutChar(
+ECode CharToByteBufferAdapter::Put(
     /* [in] */ Char32 c)
 {
     if (mPosition == mLimit) {
         // throw new BufferOverflowException();
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
-    return mByteBuffer->PutChar(mPosition++ * sizeof(Char32), c);
+    return mByteBuffer->Put(mPosition++ * sizeof(Char32), c);
 }
 
-ECode CharToByteBufferAdapter::PutChar(
+ECode CharToByteBufferAdapter::Put(
     /* [in] */ Int32 index,
     /* [in] */ Char32 c)
 {
     FAIL_RETURN(CheckIndex(index))
-    return mByteBuffer->PutChar(index * sizeof(Char32), c);
+    return mByteBuffer->Put(index * sizeof(Char32), c);
 }
 
-ECode CharToByteBufferAdapter::PutChars(
-    /* [in] */ const ArrayOf<Char32>& src)
+ECode CharToByteBufferAdapter::Put(
+    /* [in] */ ArrayOf<Char32>* src)
 {
-    return CharBuffer::PutChars(src);
+    return CharBuffer::Put(src);
 }
 
-ECode CharToByteBufferAdapter::PutChars(
-    /* [in] */ const ArrayOf<Char32>& src,
+ECode CharToByteBufferAdapter::Put(
+    /* [in] */ ArrayOf<Char32>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
 {
-    mByteBuffer->SetLimit(mLimit * sizeof(Char32));
-    mByteBuffer->SetPosition(mPosition * sizeof(Char32));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Char32));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Char32));
     if (mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer) != NULL ) {
-        FAIL_RETURN(((ReadWriteDirectByteBuffer*)mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer))->PutChar32s(
-                src, srcOffset, charCount))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((ReadWriteDirectByteBuffer*)mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer))->PutChar32s(
+                // src, srcOffset, charCount))
     }
     else {
-        FAIL_RETURN(((ReadWriteHeapByteBuffer*)mByteBuffer.Get())->PutChar32s(src, srcOffset, charCount))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((ReadWriteHeapByteBuffer*)mByteBuffer.Get())->PutChar32s(src, srcOffset, charCount))
     }
     mPosition += charCount;
     return NOERROR;
 }
 
-ECode CharToByteBufferAdapter::PutCharBuffer(
+ECode CharToByteBufferAdapter::Put(
     /* [in] */ ICharBuffer* src)
 {
-    return CharBuffer::PutCharBuffer(src);
+    return CharBuffer::Put(src);
 }
 
 ECode CharToByteBufferAdapter::PutString(
@@ -302,14 +311,15 @@ ECode CharToByteBufferAdapter::Slice(
     /* [out] */ ICharBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
-    mByteBuffer->SetLimit(mLimit * sizeof(Char32));
-    mByteBuffer->SetPosition(mPosition * sizeof(Char32));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Char32));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Char32));
     AutoPtr<IByteBuffer> bb;
     FAIL_RETURN(mByteBuffer->Slice((IByteBuffer**)&bb))
-    bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
-    *buffer = (ICharBuffer*) new CharToByteBufferAdapter(bb);
+    assert(0 && "TODO");
+    // bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    // *buffer = (ICharBuffer*) new CharToByteBufferAdapter(bb);
     REFCOUNT_ADD(*buffer);
-    mByteBuffer->Clear();
+    IBuffer::Probe(mByteBuffer)->Clear();
     return NOERROR;
 }
 
@@ -329,31 +339,31 @@ ECode CharToByteBufferAdapter::SubSequence(
     FAIL_RETURN(CheckStartEndRemaining(start, end))
     AutoPtr<ICharBuffer> result;
     Duplicate((ICharBuffer**)&result);
-    result->SetLimit(mPosition + end);
-    result->SetPosition(mPosition + start);
+    IBuffer::Probe(result)->SetLimit(mPosition + end);
+    IBuffer::Probe(result)->SetPosition(mPosition + start);
     *csq = (ICharSequence*)result->Probe(EIID_ICharSequence);
     REFCOUNT_ADD(*csq)
     return NOERROR;
 }
 
-ECode CharToByteBufferAdapter::AppendChar(
+ECode CharToByteBufferAdapter::Append(
     /* [in] */ Char32 c)
 {
-    return CharBuffer::AppendChar(c);
+    return CharBuffer::Append(c);
 }
 
-ECode CharToByteBufferAdapter::AppendChars(
+ECode CharToByteBufferAdapter::Append(
     /* [in] */ ICharSequence* csq)
 {
-    return CharBuffer::AppendChars(csq);
+    return CharBuffer::Append(csq);
 }
 
-ECode CharToByteBufferAdapter::AppendChars(
+ECode CharToByteBufferAdapter::Append(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return CharBuffer::AppendChars(csq, start, end);
+    return CharBuffer::Append(csq, start, end);
 }
 
 ECode CharToByteBufferAdapter::Read(
@@ -394,13 +404,13 @@ ECode CharToByteBufferAdapter::HasRemaining(
 ECode CharToByteBufferAdapter::IsDirect(
     /* [out] */ Boolean* isDirect)
 {
-    return mByteBuffer->IsDirect(isDirect);
+    return IBuffer::Probe(mByteBuffer)->IsDirect(isDirect);
 }
 
 ECode CharToByteBufferAdapter::IsReadOnly(
     /* [out] */ Boolean* isReadOnly)
 {
-    return mByteBuffer->IsReadOnly(isReadOnly);
+    return IBuffer::Probe(mByteBuffer)->IsReadOnly(isReadOnly);
 }
 
 ECode CharToByteBufferAdapter::CharToByteBufferAdapter::ProtectedArray(

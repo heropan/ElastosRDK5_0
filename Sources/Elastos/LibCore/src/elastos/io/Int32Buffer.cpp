@@ -26,7 +26,8 @@ ECode Int32Buffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    *buf = (IInt32Buffer*)new ReadWriteInt32ArrayBuffer(capacity);
+    assert(0 && "TODO");
+    // *buf = (IInt32Buffer*)new ReadWriteInt32ArrayBuffer(capacity);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -52,7 +53,8 @@ ECode Int32Buffer::Wrap(
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    AutoPtr<ReadWriteInt32ArrayBuffer> rwBuf = new ReadWriteInt32ArrayBuffer(array);
+    assert(0 && "TODO");
+    AutoPtr<ReadWriteInt32ArrayBuffer> rwBuf; // = new ReadWriteInt32ArrayBuffer(array);
     rwBuf->mPosition = start;
     rwBuf->mLimit = start + int32Count;
     *buf = (IInt32Buffer*)rwBuf.Get();
@@ -81,15 +83,15 @@ ECode Int32Buffer::CompareTo(
     Int32 remaining = 0;
     Int32 otherRemaining = 0;
     GetRemaining(&remaining);
-    otherBuffer->GetRemaining(&otherRemaining);
+    IBuffer::Probe(otherBuffer)->GetRemaining(&otherRemaining);
     Int32 compareRemaining = (remaining < otherRemaining) ? remaining : otherRemaining;
     Int32 thisPos = mPosition;
     Int32 otherPos = 0;
-    otherBuffer->GetPosition(&otherPos);
+    IBuffer::Probe(otherBuffer)->GetPosition(&otherPos);
     Int32 thisInt32, otherInt32;
     while (compareRemaining > 0) {
         GetInt32(thisPos, &thisInt32);
-        otherBuffer->GetInt32(otherPos, &otherInt32);
+        otherBuffer->Get(otherPos, &otherInt32);
         // checks for Int32 and NaN inequality
         if (thisInt32 != otherInt32) {
             *result = thisInt32 < otherInt32 ? -1 : 1;
@@ -118,7 +120,7 @@ ECode Int32Buffer::Equals(
     Int32 thisRemaining = 0;
     Int32 otherRemaining = 0;
     GetRemaining(&thisRemaining);
-    otherBuffer->GetRemaining(&otherRemaining);
+    IBuffer::Probe(otherBuffer)->GetRemaining(&otherRemaining);
     if (thisRemaining != otherRemaining) {
         *rst = FALSE;
         return NOERROR;
@@ -126,13 +128,13 @@ ECode Int32Buffer::Equals(
 
     Int32 myPosition = mPosition;
     Int32 otherPosition = 0;
-    otherBuffer->GetPosition(&otherPosition);
+    IBuffer::Probe(otherBuffer)->GetPosition(&otherPosition);
     Boolean equalSoFar = TRUE;
     Int32 thisValue = 0;
     Int32 otherValue = 0;
     while (equalSoFar && (myPosition < mLimit)) {
         FAIL_RETURN(GetInt32(myPosition++, &thisValue))
-        FAIL_RETURN(otherBuffer->GetInt32(otherPosition++, &otherValue))
+        FAIL_RETURN(otherBuffer->Get(otherPosition++, &otherValue))
         equalSoFar = thisValue == otherValue;
     }
     *rst = equalSoFar;
@@ -216,7 +218,7 @@ ECode Int32Buffer::PutInt32Buffer(
     }
     Int32 srcRemaining = 0;
     Int32 remaining = 0;
-    src->GetRemaining(&srcRemaining);
+    IBuffer::Probe(src)->GetRemaining(&srcRemaining);
     GetRemaining(&remaining);
     if (srcRemaining > remaining) {
         // throw new BufferOverflowException();
@@ -224,7 +226,7 @@ ECode Int32Buffer::PutInt32Buffer(
     }
 
     AutoPtr< ArrayOf<Int32> > contents = ArrayOf<Int32>::Alloc(srcRemaining);
-    FAIL_RETURN(src->GetInt32s(contents))
+    FAIL_RETURN(src->Get(contents))
     return PutInt32s(*contents);
 }
 

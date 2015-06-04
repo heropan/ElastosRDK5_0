@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "ReadOnlyHeapByteBuffer.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -27,48 +27,7 @@ AutoPtr<ReadOnlyHeapByteBuffer> ReadOnlyHeapByteBuffer::Copy(
     return buf;
 }
 
-PInterface ReadOnlyHeapByteBuffer::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
-    }
-    else if (riid == EIID_IByteBuffer) {
-        return (IByteBuffer*)this;
-    }
-    else if (riid == EIID_ByteBuffer) {
-        return reinterpret_cast<PInterface>((ByteBuffer*)this);
-    }
-    else if (riid == EIID_HeapByteBuffer) {
-        return reinterpret_cast<PInterface>((HeapByteBuffer*)this);
-    }
-
-    return NULL;
-}
-
-UInt32 ReadOnlyHeapByteBuffer::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ReadOnlyHeapByteBuffer::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ReadOnlyHeapByteBuffer::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-    if (pObject == (IInterface*)(IByteBuffer*)this) {
-        *pIID = EIID_IByteBuffer;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(ReadOnlyHeapByteBuffer, Object, IByteBuffer)
 
 ECode ReadOnlyHeapByteBuffer::GetPrimitiveArray(
     /* [out] */ Handle32* arrayHandle)
@@ -165,31 +124,31 @@ ECode ReadOnlyHeapByteBuffer::Duplicate(
     return NOERROR;
 }
 
-ECode ReadOnlyHeapByteBuffer::GetByte(
+ECode ReadOnlyHeapByteBuffer::Get(
     /* [out] */ Byte* value)
 {
-    return HeapByteBuffer::GetByte(value);
+    return HeapByteBuffer::Get(value);
 }
 
-ECode ReadOnlyHeapByteBuffer::GetByte(
+ECode ReadOnlyHeapByteBuffer::Get(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
-    return HeapByteBuffer::GetByte(index, value);
+    return HeapByteBuffer::Get(index, value);
 }
 
-ECode ReadOnlyHeapByteBuffer::GetBytes(
+ECode ReadOnlyHeapByteBuffer::Get(
     /* [out] */ ArrayOf<Byte>* dst)
 {
-    return HeapByteBuffer::GetBytes(dst);
+    return HeapByteBuffer::Get(dst, 0, dst->GetLength());
 }
 
-ECode ReadOnlyHeapByteBuffer::GetBytes(
+ECode ReadOnlyHeapByteBuffer::Get(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
 {
-    return HeapByteBuffer::GetBytes(dst, off, len);
+    return HeapByteBuffer::Get(dst, off, len);
 }
 
 ECode ReadOnlyHeapByteBuffer::GetChar(
@@ -304,14 +263,14 @@ ECode ReadOnlyHeapByteBuffer::ProtectedHasArray(
     return NOERROR;
 }
 
-ECode ReadOnlyHeapByteBuffer::PutByte(
+ECode ReadOnlyHeapByteBuffer::Put(
     /* [in] */ Byte b)
 {
     // throw new ReadOnlyBufferException();
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyHeapByteBuffer::PutByte(
+ECode ReadOnlyHeapByteBuffer::Put(
     /* [in] */ Int32 index,
     /* [in] */ Byte b)
 {
@@ -319,14 +278,14 @@ ECode ReadOnlyHeapByteBuffer::PutByte(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode ReadOnlyHeapByteBuffer::PutBytes(
-    /* [in] */ const ArrayOf<Byte>& src)
+ECode ReadOnlyHeapByteBuffer::Put(
+    /* [in] */ ArrayOf<Byte>* src)
 {
-    return HeapByteBuffer::PutBytes(src);
+    return HeapByteBuffer::Put(src);
 }
 
-ECode ReadOnlyHeapByteBuffer::PutBytes(
-    /* [in] */ const ArrayOf<Byte>& src,
+ECode ReadOnlyHeapByteBuffer::Put(
+    /* [in] */ ArrayOf<Byte>* src,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
 {

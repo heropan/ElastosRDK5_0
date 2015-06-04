@@ -1,24 +1,27 @@
 #include "Elastos.CoreLibrary_server.h"
 #include "coredef.h"
 #include "FileChannelImpl.h"
-#include "elastos/Math.h"
+#include "elastos/core/Math.h"
 #include "FileLock.h"
 #include "MemoryBlock.h"
 #include "MappedByteBufferAdapter.h"
 #include "NioUtils.h"
-#include "CLibcore.h"
-#include "COsConstants.h"
+// #include "CLibcore.h"
+// #include "COsConstants.h"
 
 using Libcore::IO::IOs;
 using Libcore::IO::ILibcore;
-using Libcore::IO::CLibcore;
+// using Libcore::IO::CLibcore;
 using Elastos::IO::NioUtils;
-using Libcore::IO::IStructStat;
-using Libcore::IO::COsConstants;
+// using Libcore::IO::IStructStat;
+// using Libcore::IO::COsConstants;
 using Elastos::IO::MemoryBlock;
 using Elastos::IO::Channels::IFileLock;
 using Elastos::IO::Channels::FileLock;
+using Elastos::IO::Channels::IChannel;
+using Elastos::IO::Channels::EIID_IFileChannel;
 using Elastos::IO::MappedByteBufferAdapter;
+using Elastos::Droid::System::IStructStat;
 
 namespace Elastos {
 namespace IO {
@@ -72,7 +75,7 @@ public:
             return ecRet;
 
         Boolean isOpen;
-        ecRet = channel->IsOpen(&isOpen);
+        ecRet = IChannel::Probe(channel)->IsOpen(&isOpen);
         if (NOERROR != ecRet)
             return ecRet;
 
@@ -89,7 +92,7 @@ public:
             return ecRet;
 
         Boolean isOpen;
-        ecRet = channel->IsOpen(&isOpen);
+        ecRet = IChannel::Probe(channel)->IsOpen(&isOpen);
         if (NOERROR != ecRet)
             return ecRet;
 
@@ -112,7 +115,7 @@ private:
 };
 // end FileLockImpl
 
-CAR_INTERFACE_IMPL(FileChannelImpl, IFileChannelImpl)
+CAR_INTERFACE_IMPL(FileChannelImpl, Object, IFileChannelImpl)
 
 FileChannelImpl::FileChannelImpl(
     /* [in] */ IObject* stream,
@@ -124,9 +127,10 @@ FileChannelImpl::FileChannelImpl(
 {
     assert(NULL != stream);
     assert(NULL != fd);
-    AutoPtr<COsConstants> obj;
-    COsConstants::AcquireSingletonByFriend((COsConstants**)&obj);
-    mOsConstants = (IOsConstants*)obj.Get();
+    assert(0 && "TODO");
+    // AutoPtr<COsConstants> obj;
+    // COsConstants::AcquireSingletonByFriend((COsConstants**)&obj);
+    // mOsConstants = (IOsConstants*)obj.Get();
 }
 
 ECode FileChannelImpl::IsOpen(
@@ -180,8 +184,9 @@ ECode FileChannelImpl::CheckOpen()
 ECode FileChannelImpl::CheckReadable()
 {
     Int32 accMode, wrOnly;
-    mOsConstants->GetOsConstant(String("O_ACCMODE"), &accMode);
-    mOsConstants->GetOsConstant(String("O_WRONLY"), &wrOnly);
+    assert(0 && "TODO");
+    // mOsConstants->GetOsConstant(String("O_ACCMODE"), &accMode);
+    // mOsConstants->GetOsConstant(String("O_WRONLY"), &wrOnly);
 
     if ((mMode & accMode) == wrOnly)
     {
@@ -193,8 +198,9 @@ ECode FileChannelImpl::CheckReadable()
 ECode FileChannelImpl::CheckWritable()
 {
     Int32 accMode, rdOnly;
-    mOsConstants->GetOsConstant(String("O_ACCMODE"), &accMode);
-    mOsConstants->GetOsConstant(String("O_RDONLY"), &rdOnly);
+    assert(0 && "TODO");
+    // mOsConstants->GetOsConstant(String("O_ACCMODE"), &accMode);
+    // mOsConstants->GetOsConstant(String("O_RDONLY"), &rdOnly);
     if ((mMode & accMode) == rdOnly)
     {
         return E_NON_WRITABLE_CHANNEL_EXCEPTION;
@@ -218,9 +224,10 @@ ECode FileChannelImpl::BasicLock(
     /* [in] */ Boolean wait)
 {
     Int32 ACCMOD, RDONLY, WRONLY;
-    mOsConstants->GetOsConstant(String("O_ACCMODE"), &ACCMOD);
-    mOsConstants->GetOsConstant(String("O_RDONLY"), &RDONLY);
-    mOsConstants->GetOsConstant(String("O_WRONLY"), &WRONLY);
+    assert(0 && "TODO");
+    // mOsConstants->GetOsConstant(String("O_ACCMODE"), &ACCMOD);
+    // mOsConstants->GetOsConstant(String("O_RDONLY"), &RDONLY);
+    // mOsConstants->GetOsConstant(String("O_WRONLY"), &WRONLY);
     Int32 accessMode = mMode & ACCMOD;
     if (RDONLY == accessMode)
     {
@@ -302,13 +309,15 @@ ECode FileChannelImpl:: Force(
        return ecRet;
 
    Int32 ACCMODE, RDONLY;
-   mOsConstants->GetOsConstant(String("O_ACCMODE"), &ACCMODE);
-   mOsConstants->GetOsConstant(String("O_RDONLY"), &RDONLY);
+    assert(0 && "TODO");
+   // mOsConstants->GetOsConstant(String("O_ACCMODE"), &ACCMODE);
+   // mOsConstants->GetOsConstant(String("O_RDONLY"), &RDONLY);
 
    if( (mMode & ACCMODE) != RDONLY)
    {
        AutoPtr<ILibcore> libcore;
-       CLibcore::AcquireSingleton((ILibcore**)&libcore);
+       assert(0 && "TODO");
+       // CLibcore::AcquireSingleton((ILibcore**)&libcore);
        AutoPtr<IOs> os;
        libcore->GetOs((IOs**)&os);
        Int32 fd;
@@ -353,9 +362,10 @@ ECode FileChannelImpl::Map(
     }
 
     Int32 ACCESSMODE, RDONLY, WRONLY;
-    mOsConstants->GetOsConstant(String("O_ACCMODE"), &ACCESSMODE);
-    mOsConstants->GetOsConstant(String("O_RDONLY"), &RDONLY);
-    mOsConstants->GetOsConstant(String("O_WRONLY"), &WRONLY);
+    assert(0 && "TODO");
+    // mOsConstants->GetOsConstant(String("O_ACCMODE"), &ACCESSMODE);
+    // mOsConstants->GetOsConstant(String("O_RDONLY"), &RDONLY);
+    // mOsConstants->GetOsConstant(String("O_WRONLY"), &WRONLY);
     Int32 accessMode = (mode & ACCESSMODE);
     if(accessMode == RDONLY)
     {
@@ -367,9 +377,10 @@ ECode FileChannelImpl::Map(
        return E_NON_READABLE_CHANNEL_EXCEPTION;
     }
 
-    AutoPtr<CLibcore> obj;
-    CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
-    AutoPtr<ILibcore> libcore = (ILibcore*)obj.Get();
+    assert(0 && "TODO");
+    // AutoPtr<CLibcore> obj;
+    // CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
+    AutoPtr<ILibcore> libcore; // = (ILibcore*)obj.Get();
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
 
@@ -389,7 +400,8 @@ ECode FileChannelImpl::Map(
     Int32 SC_PAGE_SIZE;
     Int64 nPageSize;
 
-    ecRet = mOsConstants->GetOsConstant(String("_SC_PAGE_SIZE"), &SC_PAGE_SIZE);
+    assert(0 && "TODO");
+    // ecRet = mOsConstants->GetOsConstant(String("_SC_PAGE_SIZE"), &SC_PAGE_SIZE);
     assert(NOERROR == ecRet);
 
     ecRet = os->Sysconf(SC_PAGE_SIZE, &nPageSize);
@@ -412,14 +424,16 @@ ECode FileChannelImpl::GetPosition(
     /* [out] */ Int64* position)
 {
     ECode ecRet = CheckOpen();
-    AutoPtr<CLibcore> obj;
-    CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
-    AutoPtr<ILibcore> libcore = (ILibcore*)obj.Get();
+    assert(0 && "TODO");
+    // AutoPtr<CLibcore> obj;
+    // CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
+    AutoPtr<ILibcore> libcore; // = (ILibcore*)obj.Get();
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
 
     Int32 seek_cur;
-    ecRet = mOsConstants->GetOsConstant(String("SEEK_CUR"), &seek_cur);
+    assert(0 && "TODO");
+    // ecRet = mOsConstants->GetOsConstant(String("SEEK_CUR"), &seek_cur);
     assert(NOERROR == ecRet);
 
     Int32 fd;
@@ -435,15 +449,17 @@ ECode FileChannelImpl::SetPosition(
     if(newPosition < 0)
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
-    AutoPtr<CLibcore> obj;
-    CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
-    AutoPtr<ILibcore> libcore = (ILibcore*)obj.Get();
+    assert(0 && "TODO");
+    // AutoPtr<CLibcore> obj;
+    // CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
+    AutoPtr<ILibcore> libcore; // = (ILibcore*)obj.Get();
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
 
     Int32 seek_cur;
     Int64 result;
-    ecRet = mOsConstants->GetOsConstant(String("SEEK_CUR"), &seek_cur);
+    assert(0 && "TODO");
+    // ecRet = mOsConstants->GetOsConstant(String("SEEK_CUR"), &seek_cur);
     assert(NOERROR == ecRet);
     Int32 fd;
     mFd->GetDescriptor(&fd);
@@ -516,9 +532,10 @@ ECode FileChannelImpl::GetSize(
     if(NOERROR != ecRet)
        return ecRet;
 
-    AutoPtr<CLibcore> obj;
-    CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
-    AutoPtr<ILibcore> libcore = (ILibcore*)obj.Get();
+   assert(0 && "TODO");
+    // AutoPtr<CLibcore> obj;
+    // CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
+    AutoPtr<ILibcore> libcore; // = (ILibcore*)obj.Get();
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
 
@@ -543,7 +560,7 @@ ECode FileChannelImpl::TransferFrom(
         return ecRet;
 
     Boolean isOpen;
-    src->IsOpen(&isOpen);
+    IChannel::Probe(src)->IsOpen(&isOpen);
     if(!isOpen)
         return E_CLOSED_CHANNEL_EXCEPTION;
 
@@ -576,16 +593,17 @@ ECode FileChannelImpl::TransferFrom(
         if(NOERROR != ecRet)
             return ecRet;
 
-        ecRet = WriteByteBuffer(buffer, position, (Int32*)number);
-        NioUtils::FreeDirectBuffer((ByteBuffer*)buffer->Probe(EIID_ByteBuffer));
+        ecRet = WriteByteBuffer(IByteBuffer::Probe(buffer), position, (Int32*)number);
+        assert(0 && "TODO");
+        // NioUtils::FreeDirectBuffer((ByteBuffer*)buffer->Probe(EIID_ByteBuffer));
         return ecRet;
     }
 
     AutoPtr<IByteBuffer> buffer;
     ByteBuffer::Allocate((Int32)count, (IByteBuffer**)&buffer);
     Int32 nRead;
-    src->ReadByteBuffer(buffer, &nRead);
-    buffer->Flip();
+    src->Read(buffer, &nRead);
+    IBuffer::Probe(buffer)->Flip();
     return WriteByteBuffer(buffer, position, (Int32*)number);
 }
 
@@ -602,7 +620,7 @@ ECode FileChannelImpl::TransferTo(
         return ecRet;
 
     Boolean isOpen;
-    target->IsOpen(&isOpen);
+    IChannel::Probe(target)->IsOpen(&isOpen);
     if(!isOpen)
         return E_CLOSED_CHANNEL_EXCEPTION;
 
@@ -644,7 +662,8 @@ ECode FileChannelImpl::TransferTo(
         // try {
         Begin();
             // try {
-        FAIL_RETURN(CLibcore::sOs->Sendfile(outFdnum, infdnum, &position, count, number));
+        assert(0 && "TODO");
+        // FAIL_RETURN(CLibcore::sOs->Sendfile(outFdnum, infdnum, &position, count, number));
         completed = TRUE;
         return NOERROR;
             // } catch (ErrnoException errnoException) {
@@ -663,11 +682,12 @@ ECode FileChannelImpl::TransferTo(
     // try {
     FAIL_RETURN(Map(Elastos::IO::Channels::FileChannelMapMode_READ_ONLY, position, count, (IMappedByteBuffer**)&buffer));
     Int32 ouvalue = 0;
-    target->WriteByteBuffer(IByteBuffer::Probe(buffer), &ouvalue);
+    target->Write(IByteBuffer::Probe(buffer), &ouvalue);
     *number = ouvalue;
     return NOERROR;
     // } finally {
-    NioUtils::FreeDirectBuffer((ByteBuffer*)buffer->Probe(EIID_ByteBuffer));
+    assert(0 && "TODO");
+    // NioUtils::FreeDirectBuffer((ByteBuffer*)buffer->Probe(EIID_ByteBuffer));
     // }
     return NOERROR;
 }
@@ -694,9 +714,10 @@ ECode FileChannelImpl::Truncate(
     assert(NOERROR == ecRet);
 
     if (size < nSize) {
-        AutoPtr<CLibcore> obj;
-        CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
-        AutoPtr<ILibcore> libcore = (ILibcore*)obj.Get();
+        assert(0 && "TODO");
+        // AutoPtr<CLibcore> obj;
+        // CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
+        AutoPtr<ILibcore> libcore; // = (ILibcore*)obj.Get();
         AutoPtr<IOs> os;
         libcore->GetOs((IOs**)&os);
 
@@ -705,7 +726,7 @@ ECode FileChannelImpl::Truncate(
         ecRet = os->Ftruncate(fd, nSize);
     }
 
-    *channel = this;
+    *channel = (IFileChannel*) this->Probe(EIID_IFileChannel);
     REFCOUNT_ADD(*channel)
 
     return ecRet;
@@ -748,7 +769,7 @@ ECode FileChannelImpl::WriteImpl(
         return E_NULL_POINTER_EXCEPTION;
 
     Boolean hasRemaining;
-    buffer->HasRemaining(&hasRemaining);
+    IBuffer::Probe(buffer)->HasRemaining(&hasRemaining);
     if(!hasRemaining)
     {
         *ret = 0;
@@ -763,10 +784,12 @@ ECode FileChannelImpl::WriteImpl(
         Int32 fd;
         mFd->GetDescriptor(&fd);
         if (-1 == position) {
-            ecRet = CLibcore::sOs->Write(fd, buffer, &bytesWritten);
+            assert(0 && "TODO");
+            // ecRet = CLibcore::sOs->Write(fd, buffer, &bytesWritten);
         }
         else {
-            ecRet = CLibcore::sOs->Pwrite(fd, buffer, position, &bytesWritten);
+            assert(0 && "TODO");
+            // ecRet = CLibcore::sOs->Pwrite(fd, buffer, position, &bytesWritten);
         }
 
         completed = TRUE;
@@ -779,8 +802,8 @@ ECode FileChannelImpl::WriteImpl(
     if(bytesWritten > 0)
     {
         Int32 pos;
-        buffer->GetPosition(&pos);
-        buffer->SetPosition(pos + bytesWritten);
+        IBuffer::Probe(buffer)->GetPosition(&pos);
+        IBuffer::Probe(buffer)->SetPosition(pos + bytesWritten);
     }
 
     *ret = bytesWritten;
@@ -809,7 +832,7 @@ ECode FileChannelImpl::calculateTotalRemaining(
     Int32 LEN = offset + length;
     for(i=offset; i<LEN; ++i)
     {
-        buffers[i]->GetRemaining(&remaining);
+        IBuffer::Probe(buffers[i])->GetRemaining(&remaining);
         count += remaining;
 
         if(copyingIn)

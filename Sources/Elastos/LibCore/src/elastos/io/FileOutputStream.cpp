@@ -7,7 +7,7 @@
 #include "CLibcore.h"
 #include "CIoBridge.h"
 
-using Libcore::IO::IOsConstants;
+using Elastos::Droid::System::IOsConstants;
 using Libcore::IO::COsConstants;
 using Libcore::IO::ILibcore;
 using Libcore::IO::CLibcore;

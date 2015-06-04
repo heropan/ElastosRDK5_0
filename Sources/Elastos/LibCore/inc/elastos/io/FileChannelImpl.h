@@ -3,12 +3,12 @@
 
 #include "Elastos.CoreLibrary_server.h"
 #include "FileChannel.h"
-#include "coredef.h"
 
 using Elastos::Core::IComparator;
-using Libcore::IO::IOsConstants;
+// using Elastos::Droid::System::IOsConstants;
 using Elastos::IO::Channels::IFileLock;
 using Elastos::IO::Channels::FileChannel;
+using Elastos::IO::Channels::IFileChannel;
 using Elastos::IO::Channels::IReadableByteChannel;
 using Elastos::IO::Channels::IWritableByteChannel;
 using Elastos::IO::Channels::FileChannelMapMode;
@@ -19,7 +19,6 @@ namespace IO {
 class FileChannelImpl
     : public FileChannel
     , public IFileChannelImpl
-    , public ElRefBase
 {
 public:
 
@@ -180,7 +179,7 @@ private:
     AutoPtr<IFileDescriptor> mFd;
     Int32 mMode;
 //    Set<IFileLock*> mLocks;
-    AutoPtr<IOsConstants> mOsConstants;
+    // AutoPtr<IOsConstants> mOsConstants;
 };
 
 } // namespace IO

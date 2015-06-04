@@ -6,6 +6,8 @@ namespace Elastos {
 namespace IO {
 namespace Charset {
 
+CAR_OBJECT_IMPL(CCodingErrorAction)
+
 AutoPtr<ICodingErrorAction> CreateAction(
     /* [in] */ const String& action)
 {

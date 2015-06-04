@@ -12,7 +12,7 @@
 #include "CLibcore.h"
 #include "CModifiedUtf8.h"
 
-using Libcore::IO::IOsConstants;
+using Elastos::Droid::System::IOsConstants;
 using Libcore::IO::COsConstants;
 using Libcore::IO::IIoBridge;
 using Libcore::IO::CIoBridge;

@@ -1,3 +1,4 @@
+
 #include "Buffer.h"
 #include "elastos/core/StringBuilder.h"
 
@@ -10,16 +11,9 @@ namespace IO {
 extern "C" const InterfaceID EIID_Buffer =
     { 0x96b660b5, 0xe243, 0x45e1, { 0xbc, 0x7e, 0x74, 0x2f, 0x66, 0x5b, 0xf0, 0xe } };
 
-
 CAR_INTERFACE_IMPL(Buffer, Object, IBuffer)
 
 Buffer::Buffer()
-    : mCapacity(0)
-    , mLimit(0)
-    , mMark(IBuffer::UNSET_MARK)
-    , mPosition(0)
-    , mElementSizeShift(0)
-    , mEffectiveDirectAddress(0)
 {}
 
 Buffer::Buffer(

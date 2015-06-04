@@ -33,14 +33,17 @@ public:
         /* [in] */ ArrayOf<Char32>* backingArray,
         /* [in] */ Int32 offset);
 
-    CARAPI GetChar(
+    CARAPI Get(
         /* [out] */ Char32* value);
 
-    CARAPI GetChar(
+    CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Char32* value);
 
-    CARAPI GetChars(
+    CARAPI Get(
+        /* [out] */ ArrayOf<Char32>* dst);
+
+    CARAPI Get(
         /* [out] */ ArrayOf<Char32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 charCount);

@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "ReadOnlyDoubleArrayBuffer.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -19,8 +19,9 @@ AutoPtr<ReadOnlyDoubleArrayBuffer> ReadOnlyDoubleArrayBuffer::Copy(
     /* [in] */ DoubleArrayBuffer* other,
     /* [in] */ Int32 markOfOther)
 {
-    AutoPtr<ReadOnlyDoubleArrayBuffer> buf = new ReadOnlyDoubleArrayBuffer(other->mCapacity,
-            other->mBackingArray, other->mOffset);
+    assert(0 && "TODO");
+    AutoPtr<ReadOnlyDoubleArrayBuffer> buf; // = new ReadOnlyDoubleArrayBuffer(other->mCapacity,
+            // other->mBackingArray, other->mOffset);
     buf->mLimit = other->mLimit;
     buf->mPosition = other->mPosition;
     buf->mMark = markOfOther;
@@ -31,7 +32,8 @@ PInterface ReadOnlyDoubleArrayBuffer::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)this;
+        assert(0 && "TODO");
+        // return (PInterface)this;
     }
     else if (riid == EIID_IDoubleBuffer) {
         return (IDoubleBuffer*)this;
@@ -158,7 +160,7 @@ ECode ReadOnlyDoubleArrayBuffer::GetDouble(
 ECode ReadOnlyDoubleArrayBuffer::GetDoubles(
     /* [out] */ ArrayOf<Double>* dst)
 {
-    return DoubleArrayBuffer::GetDoubles(dst);
+    return DoubleArrayBuffer::GetDoubles(dst, 0, dst->GetLength());
 }
 
 ECode ReadOnlyDoubleArrayBuffer::GetDoubles(
@@ -218,7 +220,8 @@ ECode ReadOnlyDoubleArrayBuffer::Slice(
     VALIDATE_NOT_NULL(buffer);
     Int32 remaining = 0;
     GetRemaining(&remaining);
-    *buffer = (IDoubleBuffer*)new ReadOnlyDoubleArrayBuffer(remaining, mBackingArray, mOffset + mPosition);
+    assert(0 && "TODO");
+    // *buffer = (IDoubleBuffer*)new ReadOnlyDoubleArrayBuffer(remaining, mBackingArray, mOffset + mPosition);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }

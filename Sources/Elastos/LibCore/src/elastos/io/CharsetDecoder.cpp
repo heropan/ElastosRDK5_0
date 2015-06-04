@@ -51,7 +51,7 @@ ECode CharsetDecoder::Init(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(CharsetDecoder, ICharsetDecoder)
+CAR_INTERFACE_IMPL(CharsetDecoder, Object, ICharsetDecoder)
 
 ECode CharsetDecoder::AverageCharsPerByte(
     /* [out] */ Float* average)
@@ -77,8 +77,8 @@ ECode CharsetDecoder::Decode(
     VALIDATE_NOT_NULL(charBuffer)
     Reset();
     Int32 remaining = 0;
-    VALIDATE_NOT_NULL((byteBuffer))
-    FAIL_RETURN(byteBuffer->GetRemaining(&remaining))
+    assert(byteBuffer != NULL);
+    FAIL_RETURN(IBuffer::Probe(byteBuffer)->GetRemaining(&remaining))
     Int32 length = (Int32) (remaining * mAverageCharsPerByte);
     AutoPtr<ICharBuffer> output;
     FAIL_RETURN(CharBuffer::Allocate(length, (ICharBuffer**)&output))
@@ -118,7 +118,7 @@ ECode CharsetDecoder::Decode(
         }
     }
 
-    output->Flip();
+    IBuffer::Probe(output)->Flip();
     mStatus = FLUSH;
     *charBuffer = output;
     REFCOUNT_ADD(*charBuffer)
@@ -158,7 +158,7 @@ ECode CharsetDecoder::Decode(
         if (((*result)->IsUnderflow(&ret), ret)) {
             Int32 remaining = 0;
             assert(byteBuffer != NULL);
-            byteBuffer->GetRemaining(&remaining);
+            IBuffer::Probe(byteBuffer)->GetRemaining(&remaining);
             mStatus = endOfInput ? END : ONGOING;
             if (endOfInput && remaining > 0) {
                 *result = NULL;
@@ -186,12 +186,12 @@ ECode CharsetDecoder::Decode(
         if (_CObject_Compare(action, REPLACE)) {
             Int32 remaining = 0;
             assert(charBuffer != NULL);
-            charBuffer->GetRemaining(&remaining);
+            IBuffer::Probe(charBuffer)->GetRemaining(&remaining);
             if (remaining < mReplacementChars.GetLength()) {
                 *result = NULL;
                 return CCoderResult::GetOVERFLOW(result);
             }
-            charBuffer->PutString(mReplacementChars);
+            charBuffer->Put(mReplacementChars);
         }
         else {
             AutoPtr<ICodingErrorAction> IGNORE;
@@ -201,10 +201,10 @@ ECode CharsetDecoder::Decode(
             }
         }
         Int32 tmpPosition = 0;
-        byteBuffer->GetPosition(&tmpPosition);
+        IBuffer::Probe(byteBuffer)->GetPosition(&tmpPosition);
         Int32 tmpLen = 0;
         (*result)->GetLength(&tmpLen);
-        byteBuffer->SetPosition(tmpPosition + tmpLen);
+        IBuffer::Probe(byteBuffer)->SetPosition(tmpPosition + tmpLen);
     }
     return NOERROR;
 }
@@ -396,13 +396,13 @@ ECode CharsetDecoder::AllocateMore(
 {
     VALIDATE_NOT_NULL(newOutput)
     Int32 capacity = 0;
-    output->GetCapacity(&capacity);
+    IBuffer::Probe(output)->GetCapacity(&capacity);
     if (capacity == 0) {
         return CharBuffer::Allocate(1, newOutput);
     }
     FAIL_RETURN(CharBuffer::Allocate(capacity * 2, newOutput))
-    output->Flip();
-    (*newOutput)->PutCharBuffer(output);
+    IBuffer::Probe(output)->Flip();
+    (*newOutput)->Put(output);
     return NOERROR;
 }
 

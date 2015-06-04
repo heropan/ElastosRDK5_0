@@ -6,7 +6,7 @@
 #include "HeapByteBuffer.h"
 #include "ReadWriteDirectByteBuffer.h"
 #include "ReadWriteHeapByteBuffer.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -15,12 +15,12 @@ namespace IO {
 
 Int16ToByteBufferAdapter::Int16ToByteBufferAdapter(
     /* [in] */ IByteBuffer* byteBuffer)
-    : Int16Buffer(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mCapacity / sizeof(Int16))
+    : Int16Buffer(((ByteBuffer*)byteBuffer)->mCapacity / sizeof(Int16))
     , mByteBuffer(byteBuffer)
 {
     mByteBuffer = byteBuffer;
-    mByteBuffer->Clear();
-    mEffectiveDirectAddress = ((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mEffectiveDirectAddress;
+    IBuffer::Probe(mByteBuffer)->Clear();
+    mEffectiveDirectAddress = ((ByteBuffer*)byteBuffer)->mEffectiveDirectAddress;
 }
 
 ECode Int16ToByteBufferAdapter::AsInt16Buffer(
@@ -31,8 +31,9 @@ ECode Int16ToByteBufferAdapter::AsInt16Buffer(
     VALIDATE_NOT_NULL(byteBuffer)
     AutoPtr<IByteBuffer> slice;
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
-    slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);
-    *int16Buffer = (IInt16Buffer*) new Int16ToByteBufferAdapter(slice);
+    assert(0 && "TODO");
+    // slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    // *int16Buffer = (IInt16Buffer*) new Int16ToByteBufferAdapter(slice);
     REFCOUNT_ADD(*int16Buffer);
     return NOERROR;
 }
@@ -41,7 +42,8 @@ PInterface Int16ToByteBufferAdapter::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)this;
+        assert(0 && "TODO");
+        // return (PInterface)this;
     }
     else if (riid == EIID_IInt16Buffer) {
         return (IInt16Buffer*)this;
@@ -75,12 +77,14 @@ ECode Int16ToByteBufferAdapter::GetInterfaceID(
     /* [out] */ InterfaceID *pIID)
 {
     VALIDATE_NOT_NULL(pIID);
-    if (pObject == (IInterface*)(Int16Buffer*)this) {
-        *pIID = EIID_Int16Buffer;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
+
+    assert(0 && "TODO");
+    // if (pObject == (IInterface*)(Int16Buffer*)this) {
+    //     *pIID = EIID_Int16Buffer;
+    // }
+    // else {
+    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    // }
     return NOERROR;
 }
 
@@ -129,11 +133,13 @@ ECode Int16ToByteBufferAdapter::AsReadOnlyBuffer(
     VALIDATE_NOT_NULL(buffer)
     AutoPtr<IByteBuffer> byteBuf;
     FAIL_RETURN(mByteBuffer->AsReadOnlyBuffer((IByteBuffer**)&byteBuf))
-    AutoPtr<Int16ToByteBufferAdapter> buf = new Int16ToByteBufferAdapter(byteBuf);
+    assert(0 && "TODO");
+    AutoPtr<Int16ToByteBufferAdapter> buf; // = new Int16ToByteBufferAdapter(byteBuf);
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
-    buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    assert(0 && "TODO");
+    // buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IInt16Buffer*)buf->Probe(EIID_IInt16Buffer);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
@@ -142,15 +148,15 @@ ECode Int16ToByteBufferAdapter::AsReadOnlyBuffer(
 ECode Int16ToByteBufferAdapter::Compact()
 {
     Boolean isReadOnly = FALSE;
-    mByteBuffer->IsReadOnly(&isReadOnly);
+    IBuffer::Probe(mByteBuffer)->IsReadOnly(&isReadOnly);
     if (isReadOnly) {
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    mByteBuffer->SetLimit(mLimit * sizeof(Int16));
-    mByteBuffer->SetPosition(mPosition * sizeof(Int16));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Int16));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Int16));
     mByteBuffer->Compact();
-    mByteBuffer->Clear();
+    IBuffer::Probe(mByteBuffer)->Clear();
     mPosition = mLimit - mPosition;
     mLimit = mCapacity;
     mMark = IBuffer::UNSET_MARK;
@@ -170,8 +176,9 @@ ECode Int16ToByteBufferAdapter::Duplicate(
     VALIDATE_NOT_NULL(buffer)
     AutoPtr<IByteBuffer> bb;
     FAIL_RETURN(mByteBuffer->Duplicate((IByteBuffer**)&bb))
-    bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
-    AutoPtr<Int16ToByteBufferAdapter> buf = new Int16ToByteBufferAdapter(bb);
+    assert(0 && "TODO");
+    // bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    AutoPtr<Int16ToByteBufferAdapter> buf; // = new Int16ToByteBufferAdapter(bb);
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
@@ -209,13 +216,15 @@ ECode Int16ToByteBufferAdapter::GetInt16s(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int16Count)
 {
-    mByteBuffer->SetLimit(mLimit * sizeof(Int16));
-    mByteBuffer->SetPosition(mPosition * sizeof(Int16));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Int16));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Int16));
     if (mByteBuffer->Probe(EIID_DirectByteBuffer) != NULL) {
-        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetInt16s(dst, dstOffset, int16Count))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetInt16s(dst, dstOffset, int16Count))
     }
     else {
-        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetInt16s(dst, dstOffset, int16Count))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetInt16s(dst, dstOffset, int16Count))
     }
     mPosition += int16Count;
     return NOERROR;
@@ -245,25 +254,27 @@ ECode Int16ToByteBufferAdapter::PutInt16(
     return mByteBuffer->PutInt16(index * sizeof(Int16), c);
 }
 
-ECode Int16ToByteBufferAdapter::PutInt16s(
-    /* [in] */ const ArrayOf<Int16>& src)
+ECode Int16ToByteBufferAdapter::Put(
+    /* [in] */ ArrayOf<Int16>* src)
 {
-    return Int16Buffer::PutInt16s(src);
+    return Int16Buffer::Put(src);
 }
 
-ECode Int16ToByteBufferAdapter::PutInt16s(
-    /* [in] */ const ArrayOf<Int16>& src,
+ECode Int16ToByteBufferAdapter::Put(
+    /* [in] */ ArrayOf<Int16>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int16Count)
 {
-    mByteBuffer->SetLimit(mLimit * sizeof(Int16));
-    mByteBuffer->SetPosition(mPosition * sizeof(Int16));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Int16));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Int16));
     if (mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer) != NULL ) {
-        FAIL_RETURN(((ReadWriteDirectByteBuffer*)mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer))->PutInt16s(
-                src, srcOffset, int16Count))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((ReadWriteDirectByteBuffer*)mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer))->Put(
+                // src, srcOffset, int16Count))
     }
     else {
-        FAIL_RETURN(((ReadWriteHeapByteBuffer*)mByteBuffer.Get())->PutInt16s(src, srcOffset, int16Count))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((ReadWriteHeapByteBuffer*)mByteBuffer.Get())->Put(src, srcOffset, int16Count))
     }
     mPosition += int16Count;
     return NOERROR;
@@ -279,14 +290,15 @@ ECode Int16ToByteBufferAdapter::Slice(
     /* [out] */ IInt16Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
-    mByteBuffer->SetLimit(mLimit * sizeof(Int16));
-    mByteBuffer->SetPosition(mPosition * sizeof(Int16));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Int16));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Int16));
     AutoPtr<IByteBuffer> bb;
     FAIL_RETURN(mByteBuffer->Slice((IByteBuffer**)&bb))
-    bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
-    *buffer = (IInt16Buffer*) new Int16ToByteBufferAdapter(bb);
+    assert(0 && "TODO");
+    // bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    // *buffer = (IInt16Buffer*) new Int16ToByteBufferAdapter(bb);
     REFCOUNT_ADD(*buffer)
-    mByteBuffer->Clear();
+    IBuffer::Probe(mByteBuffer)->Clear();
     return NOERROR;
 }
 
@@ -336,13 +348,13 @@ ECode Int16ToByteBufferAdapter::HasRemaining(
 ECode Int16ToByteBufferAdapter::IsDirect(
     /* [out] */ Boolean* isDirect)
 {
-    return mByteBuffer->IsDirect(isDirect);
+    return IBuffer::Probe(mByteBuffer)->IsDirect(isDirect);
 }
 
 ECode Int16ToByteBufferAdapter::IsReadOnly(
     /* [out] */ Boolean* isReadOnly)
 {
-    return mByteBuffer->IsReadOnly(isReadOnly);
+    return IBuffer::Probe(mByteBuffer)->IsReadOnly(isReadOnly);
 }
 
 CARAPI Int16ToByteBufferAdapter::ProtectedArray(

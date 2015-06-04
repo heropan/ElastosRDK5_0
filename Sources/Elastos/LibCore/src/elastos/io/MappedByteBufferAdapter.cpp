@@ -1,7 +1,7 @@
 
 #include "coredef.h"
 #include "MappedByteBufferAdapter.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -21,58 +21,7 @@ MappedByteBufferAdapter::MappedByteBufferAdapter(
     : MappedByteBuffer(buffer)
 {}
 
-PInterface MappedByteBufferAdapter::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
-    }
-    else if (riid == EIID_IBuffer) {
-        return (IBuffer*)this;
-    }
-    else if (riid == EIID_IByteBuffer) {
-        return (IByteBuffer*)this;
-    }
-    else if (riid == EIID_MappedByteBuffer) {
-        return reinterpret_cast<PInterface>((MappedByteBuffer*)this);
-    }
-    else if (riid == EIID_IMappedByteBuffer) {
-        return (IMappedByteBuffer*)this;
-    }
-    else if (riid == EIID_Buffer) {
-        return reinterpret_cast<PInterface>((Buffer*)this);
-    }
-    else if (riid == EIID_ByteBuffer) {
-        return reinterpret_cast<PInterface>((ByteBuffer*)this);
-    }
-
-    return NULL;
-}
-
-
-UInt32 MappedByteBufferAdapter::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 MappedByteBufferAdapter::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode MappedByteBufferAdapter::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-    if (pObject == (IInterface*)(IMappedByteBuffer *)this) {
-        *pIID = EIID_IMappedByteBuffer ;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(MappedByteBufferAdapter, Object, IMappedByteBuffer)
 
 ECode MappedByteBufferAdapter::IsLoaded(
     /* [out] */ Boolean* isLoaded)
@@ -186,29 +135,29 @@ ECode MappedByteBufferAdapter::Duplicate(
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::GetByte(
+ECode MappedByteBufferAdapter::Get(
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value)
     MappedByteBuffer::mWrapped->SetPosition(mPosition);
-    ASSERT_SUCCEEDED(MappedByteBuffer::mWrapped->GetByte(value))
+    ASSERT_SUCCEEDED(MappedByteBuffer::mWrapped->Get(value))
     ++mPosition;
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::GetByte(
+ECode MappedByteBufferAdapter::Get(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
-    return MappedByteBuffer::mWrapped->GetByte(index, value);
+    return MappedByteBuffer::mWrapped->Get(index, value);
 }
 
-ECode MappedByteBufferAdapter::GetBytes(
+ECode MappedByteBufferAdapter::Get(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
 {
-    ASSERT_SUCCEEDED(MappedByteBuffer::mWrapped->GetBytes(dst, dstOffset, byteCount))
+    ASSERT_SUCCEEDED(MappedByteBuffer::mWrapped->Get(dst, dstOffset, byteCount))
     mPosition += byteCount;
     return NOERROR;
 }
@@ -336,30 +285,30 @@ ECode MappedByteBufferAdapter::SetOrderImpl(
     return MappedByteBuffer::mWrapped->SetOrder(byteOrder);
 }
 
-ECode MappedByteBufferAdapter::PutByte(
+ECode MappedByteBufferAdapter::Put(
     /* [in] */ Byte b)
 {
     MappedByteBuffer::mWrapped->SetPosition(mPosition);
-    ASSERT_SUCCEEDED(MappedByteBuffer::mWrapped->PutByte(b))
+    ASSERT_SUCCEEDED(MappedByteBuffer::mWrapped->Put(b))
     mPosition++;
     return NOERROR;
 }
 
-ECode MappedByteBufferAdapter::PutByte(
+ECode MappedByteBufferAdapter::Put(
     /* [in] */ Int32 index,
     /* [in] */ Byte b)
 {
     MappedByteBuffer::mWrapped->SetPosition(mPosition);
-    return MappedByteBuffer::mWrapped->PutByte(index, b);
+    return MappedByteBuffer::mWrapped->Put(index, b);
 }
 
-ECode MappedByteBufferAdapter::PutBytes(
-    /* [in] */ const ArrayOf<Byte>& src,
+ECode MappedByteBufferAdapter::Put(
+    /* [in] */ ArrayOf<Byte>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 byteCount)
 {
     MappedByteBuffer::mWrapped->SetPosition(mPosition);
-    ASSERT_SUCCEEDED(MappedByteBuffer::mWrapped->PutBytes(src, srcOffset, byteCount))
+    ASSERT_SUCCEEDED(MappedByteBuffer::mWrapped->Put(src, srcOffset, byteCount))
     mPosition += byteCount;
     return NOERROR;
 }
@@ -637,10 +586,10 @@ ECode MappedByteBufferAdapter::CompareTo(
     return ByteBuffer::CompareTo(otherBuffer, result);
 }
 
-ECode MappedByteBufferAdapter::GetBytes(
+ECode MappedByteBufferAdapter::Get(
     /* [out] */ ArrayOf<Byte>* dst)
 {
-    return ByteBuffer::GetBytes(dst);
+    return ByteBuffer::Get(dst);
 }
 
 ECode MappedByteBufferAdapter::GetOrder(
@@ -655,16 +604,16 @@ ECode MappedByteBufferAdapter::SetOrder(
     return ByteBuffer::SetOrder(byteOrder);
 }
 
-ECode MappedByteBufferAdapter::PutBytes(
-    /* [in] */ const ArrayOf<Byte>& src)
+ECode MappedByteBufferAdapter::Put(
+    /* [in] */ ArrayOf<Byte>* src)
 {
-    return ByteBuffer::PutBytes(src);
+    return ByteBuffer::Put(src);
 }
 
-ECode MappedByteBufferAdapter::PutByteBuffer(
+ECode MappedByteBufferAdapter::Put(
     /* [in] */ IByteBuffer* src)
 {
-    return ByteBuffer::PutByteBuffer(src);
+    return ByteBuffer::Put(src);
 }
 
 } // namespace IO

@@ -1,12 +1,14 @@
 
 #include "CCoderResult.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace IO {
 namespace Charset {
+
+CAR_OBJECT_IMPL(CCoderResult)
 
 AutoPtr<ICoderResult> CCoderResult::CreateCoderResult(
     /* [in] */ Int32 type,
@@ -23,8 +25,8 @@ AutoPtr<ICoderResult> CCoderResult::CreateCoderResult(
 const AutoPtr<ICoderResult> CCoderResult::UNDERFLOW = CreateCoderResult(TYPE_UNDERFLOW, 0);
 const AutoPtr<ICoderResult> CCoderResult::OVERFLOW = CreateCoderResult(TYPE_OVERFLOW, 0);
 
-Mutex CCoderResult::sMalformedMutex;
-Mutex CCoderResult::sUnmappableMutex;
+Object CCoderResult::sMalformedMutex;
+Object CCoderResult::sUnmappableMutex;
 
 AutoPtr< HashMap<Int32, AutoPtr<ICoderResult> > > CCoderResult::sMalformedErrors = new HashMap<Int32, AutoPtr<ICoderResult> >();
 AutoPtr< HashMap<Int32, AutoPtr<ICoderResult> > > CCoderResult::sUnmappableErrors = new HashMap<Int32, AutoPtr<ICoderResult> >();
@@ -70,7 +72,7 @@ ECode CCoderResult::MalformedForLength(
     //         return r;
     //     }
         // Temporary achieve
-        Mutex::Autolock lock(sMalformedMutex);
+        Object::Autolock lock(sMalformedMutex);
         AutoPtr<ICoderResult> r;
         HashMap<Int32, AutoPtr<ICoderResult> >::Iterator iter = sMalformedErrors->Find(length);
         if (iter == sMalformedErrors->End()) {
@@ -106,7 +108,7 @@ ECode CCoderResult::UnmappableForLength(
     //         return r;
     //     }
         // Temporary achieve
-        Mutex::Autolock lock(sUnmappableMutex);
+        Object::Autolock lock(sUnmappableMutex);
         AutoPtr<ICoderResult> r;
         HashMap<Int32, AutoPtr<ICoderResult> >::Iterator iter = sUnmappableErrors->Find(length);
         if (iter == sUnmappableErrors->End()) {
@@ -215,12 +217,12 @@ ECode CCoderResult::ToString(
         }
         case TYPE_UNMAPPABLE_CHAR: {
             dsc = String("Unmappable-character error with erroneous input length ");
-            dsc += (StringUtils::Int32ToString(mLength));
+            dsc += (StringUtils::ToString(mLength));
             break;
         }
         case TYPE_MALFORMED_INPUT: {
             dsc = String("Malformed-input error with erroneous input length ");
-            dsc += (StringUtils::Int32ToString(mLength));
+            dsc += (StringUtils::ToString(mLength));
             break;
         }
         default: {

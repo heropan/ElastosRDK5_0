@@ -96,10 +96,10 @@ public:
         /* [in] */ Int16 d);
 
     CARAPI PutInt16s(
-        /* [in] */ const ArrayOf<Int16>& src);
+        /* [in] */ ArrayOf<Int16>* src);
 
     CARAPI PutInt16s(
-        /* [in] */ const ArrayOf<Int16>& src,
+        /* [in] */ ArrayOf<Int16>* src,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len);
 

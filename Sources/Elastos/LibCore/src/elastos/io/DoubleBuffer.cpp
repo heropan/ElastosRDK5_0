@@ -26,7 +26,8 @@ ECode DoubleBuffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    *buf = (IDoubleBuffer*)new ReadWriteDoubleArrayBuffer(capacity);
+    assert(0 && "TODO");
+    // *buf = (IDoubleBuffer*) new ReadWriteDoubleArrayBuffer(capacity);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -51,7 +52,8 @@ ECode DoubleBuffer::Wrap(
         //         count);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    AutoPtr<ReadWriteDoubleArrayBuffer> rwbuf = new ReadWriteDoubleArrayBuffer(array);
+    assert(0 && "TODO");
+    AutoPtr<ReadWriteDoubleArrayBuffer> rwbuf; // = new ReadWriteDoubleArrayBuffer(array);
     rwbuf->mPosition = start;
     rwbuf->mLimit = start + doubleCount;
     *buf = (IDoubleBuffer*)rwbuf.Get();
@@ -81,16 +83,16 @@ ECode DoubleBuffer::CompareTo(
     Int32 remaining = 0;
     Int32 otherRemaining = 0;
     GetRemaining(&remaining);
-    otherBuffer->GetRemaining(&otherRemaining);
+    IBuffer::Probe(otherBuffer)->GetRemaining(&otherRemaining);
     Int32 compareRemaining = (remaining < otherRemaining) ? remaining : otherRemaining;
 
     Int32 thisPos = mPosition;
     Int32 otherPos = 0;
-    otherBuffer->GetPosition(&otherPos);
+    IBuffer::Probe(otherBuffer)->GetPosition(&otherPos);
     Double thisDouble, otherDouble;
     while (compareRemaining > 0) {
         GetDouble(thisPos, &thisDouble);
-        otherBuffer->GetDouble(otherPos, &otherDouble);
+        otherBuffer->Get(otherPos, &otherDouble);
         if ((thisDouble != otherDouble)
                 && ((thisDouble == thisDouble) || (otherDouble == otherDouble))) {
             *result = thisDouble < otherDouble ? -1 : 1;
@@ -113,7 +115,8 @@ ECode DoubleBuffer::Equals(
     *rst = FALSE;
     VALIDATE_NOT_NULL(other);
 
-    DoubleBuffer* otherObj = (DoubleBuffer*)(other->Probe(EIID_DoubleBuffer));
+    assert(0 && "TODO");
+    DoubleBuffer* otherObj; // = (DoubleBuffer*)(other->Probe(EIID_DoubleBuffer));
 
     if (otherObj == NULL) return NOERROR;
 
@@ -220,7 +223,7 @@ ECode DoubleBuffer::PutDoubleBuffer(
     }
     Int32 srcRemaining = 0;
     Int32 remaining = 0;
-    src->GetRemaining(&srcRemaining);
+    IBuffer::Probe(src)->GetRemaining(&srcRemaining);
     GetRemaining(&remaining);
     if (srcRemaining > remaining) {
         // throw new BufferOverflowException();
@@ -228,7 +231,7 @@ ECode DoubleBuffer::PutDoubleBuffer(
     }
 
     AutoPtr< ArrayOf<Double> > doubles = ArrayOf<Double>::Alloc(srcRemaining);
-    FAIL_RETURN(src->GetDoubles(doubles))
+    FAIL_RETURN(src->Get(doubles))
     return PutDoubles(*doubles);
 }
 

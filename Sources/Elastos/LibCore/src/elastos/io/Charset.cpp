@@ -2,11 +2,9 @@
 #include "CharBuffer.h"
 #include "CCodingErrorAction.h"
 #include "NativeConverter.h"
-#include <elastos/Mutex.h>
-#include <elastos/CSystem.h>
 #include "CStringWrapper.h"
 #ifdef ELASTOS_CORELIBRARY
-#include <elastos/CSystem.h>
+#include <CSystem.h>
 #endif
 
 using Elastos::Core::ISystem;
@@ -22,7 +20,7 @@ AutoPtr< HashMap<String, AutoPtr<ICharset> > > Charset::CACHED_CHARSETS = new Ha
 
 const AutoPtr<ICharset> Charset::DEFAULT_CHARSET;
 
-static Mutex gCachedCharsetsLock;
+static Object gCachedCharsetsLock;
 
 Charset::Charset()
     : mAliasesSet(new HashSet<String>())
@@ -32,7 +30,7 @@ Charset::~Charset()
 {
 }
 
-CAR_INTERFACE_IMPL(Charset, ICharset)
+CAR_INTERFACE_IMPL(Charset, Object, ICharset)
 
 ECode Charset::Init(
     /* [in] */ const String& canonicalName,
@@ -85,7 +83,7 @@ ECode Charset::ForName(
     // Is this charset in our cache?
     AutoPtr<ICharset> cs;
     {
-        Mutex::Autolock lock(gCachedCharsetsLock);
+        Object::Autolock lock(gCachedCharsetsLock);
         HashMap<String, AutoPtr<ICharset> >::Iterator it = CACHED_CHARSETS->Find(charsetName);
         if (it != CACHED_CHARSETS->End()) {
             *charset = it->mSecond;
@@ -149,18 +147,10 @@ ECode Charset::Name(
 }
 
 ECode Charset::Aliases(
-    /* [out, callee] */ Set<String>** aliases)
+    /* [out] */ ISet** aliases)
 {
-    // TODO:
+    assert(0 && "TODO");
     // return Collections.unmodifiableSet(this.aliasesSet);
-    assert(0 && "TODO");
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode Charset::Aliases(
-    /* [out] */ IObjectContainer** aliases)
-{
-    assert(0 && "TODO");
     return E_NOT_IMPLEMENTED;
 }
 
@@ -325,7 +315,7 @@ ECode Charset::CacheCharset(
     *charset = NULL;
     VALIDATE_NOT_NULL(cs);
 
-    Mutex::Autolock lock(gCachedCharsetsLock);
+    Object::Autolock lock(gCachedCharsetsLock);
 
     // Get the canonical name for this charset, and the canonical instance from the table.
     String canonicalName;
@@ -376,7 +366,7 @@ AutoPtr<ICharset> Charset::GetDefaultCharset()
 #endif
 
         String encoding;
-        system->GetProperty(String("file.encoding"), String("UTF-8"), &encoding);
+        system->GetProperty(String("file.encoding"), &encoding);
         AutoPtr<ICharset> result;
         ECode ec = ForName(encoding, (ICharset**)&result);
         if (result == NULL || ec == E_UNSUPPORTED_CHARSET_EXCEPTION) {

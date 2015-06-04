@@ -21,7 +21,8 @@ AutoPtr<CharSequenceAdapter> CharSequenceAdapter::Copy(
     VALIDATE_NOT_NULL(other);
     Int32 len = 0;
     other->mSequence->GetLength(&len);
-    AutoPtr<CharSequenceAdapter> buf = new CharSequenceAdapter(len, other->mSequence);
+    assert(0 && "TODO");
+    AutoPtr<CharSequenceAdapter> buf; // = new CharSequenceAdapter(len, other->mSequence);
     buf->mLimit = other->mLimit;
     buf->mPosition = other->mPosition;
     buf->mMark = other->mMark;
@@ -148,7 +149,7 @@ ECode CharSequenceAdapter::Duplicate(
     return NOERROR;
 }
 
-ECode CharSequenceAdapter::GetChar(
+ECode CharSequenceAdapter::Get(
     /* [out] */ Char32* value)
 {
     if (mPosition == mLimit) {
@@ -159,7 +160,7 @@ ECode CharSequenceAdapter::GetChar(
     return mSequence->GetCharAt(mPosition++, value);
 }
 
-ECode CharSequenceAdapter::GetChar(
+ECode CharSequenceAdapter::Get(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
@@ -167,13 +168,13 @@ ECode CharSequenceAdapter::GetChar(
     return mSequence->GetCharAt(index, value);
 }
 
-ECode CharSequenceAdapter::GetChars(
+ECode CharSequenceAdapter::Get(
     /* [out] */ ArrayOf<Char32>* dst)
 {
-    return CharBuffer::GetChars(dst);
+    return CharBuffer::Get(dst);
 }
 
-ECode CharSequenceAdapter::GetChars(
+ECode CharSequenceAdapter::Get(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
@@ -243,14 +244,14 @@ ECode CharSequenceAdapter::ProtectedHasArray(
     return NOERROR;
 }
 
-ECode CharSequenceAdapter::PutChar(
+ECode CharSequenceAdapter::Put(
     /* [in] */ Char32 c)
 {
     // throw new ReadOnlyBufferException();
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode CharSequenceAdapter::PutChar(
+ECode CharSequenceAdapter::Put(
     /* [in] */ Int32 index,
     /* [in] */ Char32 c)
 {
@@ -258,14 +259,14 @@ ECode CharSequenceAdapter::PutChar(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode CharSequenceAdapter::PutChars(
-    /* [in] */ const ArrayOf<Char32>& src)
+ECode CharSequenceAdapter::Put(
+    /* [in] */ ArrayOf<Char32>* src)
 {
-    return CharBuffer::PutChars(src);
+    return CharBuffer::Put(src);
 }
 
-ECode CharSequenceAdapter::PutChars(
-    /* [in] */ const ArrayOf<Char32>& src,
+ECode CharSequenceAdapter::Put(
+    /* [in] */ ArrayOf<Char32>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
 {
@@ -273,10 +274,10 @@ ECode CharSequenceAdapter::PutChars(
     return E_READ_ONLY_BUFFER_EXCEPTION;
 }
 
-ECode CharSequenceAdapter::PutCharBuffer(
+ECode CharSequenceAdapter::Put(
     /* [in] */ ICharBuffer* src)
 {
-    return CharBuffer::PutCharBuffer(src);
+    return CharBuffer::Put(src);
 }
 
 ECode CharSequenceAdapter::PutString(
@@ -302,29 +303,30 @@ ECode CharSequenceAdapter::Slice(
     FAIL_RETURN(mSequence->SubSequence(mPosition, mLimit, (ICharSequence**)&seq))
     Int32 len = 0;
     seq->GetLength(&len);
-    *buffer = (ICharBuffer*)new CharSequenceAdapter(len, seq);
+    assert(0 && "TODO");
+    // *buffer = (ICharBuffer*)new CharSequenceAdapter(len, seq);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
-ECode CharSequenceAdapter::AppendChar(
+ECode CharSequenceAdapter::Append(
     /* [in] */ Char32 c)
 {
-    return CharBuffer::AppendChar(c);
+    return CharBuffer::Append(c);
 }
 
-ECode CharSequenceAdapter::AppendChars(
+ECode CharSequenceAdapter::Append(
     /* [in] */ ICharSequence* csq)
 {
-    return CharBuffer::AppendChars(csq);
+    return CharBuffer::Append(csq);
 }
 
-ECode CharSequenceAdapter::AppendChars(
+ECode CharSequenceAdapter::Append(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return CharBuffer::AppendChars(csq, start, end);
+    return CharBuffer::Append(csq, start, end);
 }
 
 ECode CharSequenceAdapter::Read(

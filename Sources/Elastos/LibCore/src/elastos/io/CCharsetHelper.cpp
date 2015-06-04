@@ -11,6 +11,10 @@ namespace Elastos {
 namespace IO {
 namespace Charset {
 
+CAR_INTERFACE_IMPL(CCharsetHelper, Singleton, ICharsetHelper)
+
+CAR_SINGLETON_IMPL(CCharsetHelper)
+
 ECode CCharsetHelper::ForName(
     /* [in] */ const String& charsetName,
     /* [out] */ ICharset** charset)

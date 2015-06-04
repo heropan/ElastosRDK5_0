@@ -37,53 +37,99 @@ SOURCES += BufferedReader.cpp
 SOURCES += CBufferedReader.cpp
 SOURCES += BufferedWriter.cpp
 SOURCES += CBufferedWriter.cpp
-
 SOURCES += CChannels.cpp
 #SOURCES += CStreams.cpp
 
 SOURCES += Writer.cpp
 SOURCES += StringWriter.cpp
 SOURCES += CStringWriter.cpp
-
 SOURCES += ByteArrayInputStream.cpp
 SOURCES += CByteArrayInputStream.cpp
-
 SOURCES += ByteArrayOutputStream.cpp
 SOURCES += CByteArrayOutputStream.cpp
-
 SOURCES += CharArrayReader.cpp
 SOURCES += CCharArrayReader.cpp
-
 SOURCES += CharArrayWriter.cpp
 SOURCES += CCharArrayWriter.cpp
-
 SOURCES += DataInputStream.cpp
 SOURCES += CDataInputStream.cpp
-
 SOURCES += PushbackInputStream.cpp
 SOURCES += CPushbackInputStream.cpp
-
 SOURCES += DataOutputStream.cpp
 SOURCES += CDataOutputStream.cpp
-
 SOURCES += CFileDescriptor.cpp
-
 #SOURCES += File.cpp
 #SOURCES += CFile.cpp
-
 SOURCES += FilterReader.cpp
 SOURCES += FilterWriter.cpp
-
 #SOURCES += InputStreamReader.cpp
 #SOURCES += CInputStreamReader.cpp
-
-#
-# nio related classes
-#
-SOURCES += CByteOrderHelper.cpp
-SOURCES += MemoryBlock.cpp
-SOURCES += Buffer.cpp
-SOURCES += ByteBuffer.cpp
 SOURCES += CByteBufferHelper.cpp
 SOURCES += CByteArrayBuffer.cpp
-
+SOURCES += DatagramChannel.cpp
+SOURCES += FileChannel.cpp
+SOURCES += FileLock.cpp
+SOURCES += Pipe.cpp
+SOURCES += SelectionKey.cpp
+SOURCES += Selector.cpp
+SOURCES += ServerSocketChannel.cpp
+SOURCES += SocketChannel.cpp
+SOURCES += CharsetProvider.cpp
+SOURCES += CCodingErrorAction.cpp
+SOURCES += CharsetICU.cpp
+SOURCES += NativeConverter.cpp
+SOURCES += CharBuffer.cpp
+SOURCES += Charset.cpp
+SOURCES += CCharsetHelper.cpp
+SOURCES += CharsetDecoder.cpp
+SOURCES += CCoderResult.cpp
+SOURCES += CCoderResultHelper.cpp
+SOURCES += ReadWriteCharArrayBuffer.cpp
+SOURCES += CharSequenceAdapter.cpp
+SOURCES += Buffer.cpp
+SOURCES += CByteOrderHelper.cpp
+SOURCES += CharsetEncoder.cpp
+SOURCES += CharsetEncoderICU.cpp
+SOURCES += CharArrayBuffer.cpp
+SOURCES += ReadOnlyCharArrayBuffer.cpp
+SOURCES += CharsetDecoderICU.cpp
+SOURCES += ByteBuffer.cpp
+SOURCES += HeapByteBuffer.cpp
+SOURCES += ReadWriteHeapByteBuffer.cpp
+SOURCES += ReadWriteDirectByteBuffer.cpp
+SOURCES += NioUtils.cpp
+SOURCES += Memory.cpp
+SOURCES += DirectByteBuffer.cpp
+SOURCES += MemoryBlock.cpp
+SOURCES += FileChannelImpl.cpp
+SOURCES += BaseByteBuffer.cpp
+SOURCES += MappedByteBuffer.cpp
+SOURCES += MappedByteBufferAdapter.cpp
+SOURCES += ReadOnlyDirectByteBuffer.cpp
+SOURCES += CharToByteBufferAdapter.cpp
+SOURCES += ReadOnlyHeapByteBuffer.cpp
+SOURCES += DoubleToByteBufferAdapter.cpp
+SOURCES += FloatToByteBufferAdapter.cpp
+SOURCES += Int16ToByteBufferAdapter.cpp
+SOURCES += Int32ToByteBufferAdapter.cpp
+SOURCES += Int64ToByteBufferAdapter.cpp
+SOURCES += DoubleBuffer.cpp
+SOURCES += FloatBuffer.cpp
+SOURCES += Int16Buffer.cpp
+SOURCES += Int32Buffer.cpp
+SOURCES += Int64Buffer.cpp
+SOURCES += ReadWriteDoubleArrayBuffer.cpp
+SOURCES += ReadWriteFloatArrayBuffer.cpp
+SOURCES += ReadWriteInt16ArrayBuffer.cpp
+SOURCES += ReadWriteInt32ArrayBuffer.cpp
+SOURCES += ReadWriteInt64ArrayBuffer.cpp
+SOURCES += DoubleArrayBuffer.cpp
+SOURCES += FloatArrayBuffer.cpp
+SOURCES += Int16ArrayBuffer.cpp
+SOURCES += Int32ArrayBuffer.cpp
+SOURCES += Int64ArrayBuffer.cpp
+SOURCES += ReadOnlyDoubleArrayBuffer.cpp
+SOURCES += ReadOnlyFloatArrayBuffer.cpp
+SOURCES += ReadOnlyInt16ArrayBuffer.cpp
+SOURCES += ReadOnlyInt32ArrayBuffer.cpp
+SOURCES += ReadOnlyInt64ArrayBuffer.cpp

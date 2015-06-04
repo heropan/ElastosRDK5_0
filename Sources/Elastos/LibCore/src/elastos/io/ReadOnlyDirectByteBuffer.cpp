@@ -1,55 +1,14 @@
 
 #include "ReadOnlyDirectByteBuffer.h"
 #include "coredef.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace IO {
 
-PInterface ReadOnlyDirectByteBuffer::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
-    }
-    else if (riid == EIID_IByteBuffer) {
-        return (IByteBuffer*)this;
-    }
-    else if (riid == EIID_ByteBuffer) {
-        return reinterpret_cast<PInterface>((ByteBuffer*)this);
-    }
-    else if (riid == EIID_DirectByteBuffer) {
-        return reinterpret_cast<PInterface>((DirectByteBuffer*)this);
-    }
-
-    return NULL;
-}
-
-UInt32 ReadOnlyDirectByteBuffer::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ReadOnlyDirectByteBuffer::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ReadOnlyDirectByteBuffer::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-    if (pObject == (IInterface*)(IByteBuffer *)this) {
-        *pIID = EIID_IByteBuffer ;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(ReadOnlyDirectByteBuffer, Object, IByteBuffer)
 
 AutoPtr<ReadOnlyDirectByteBuffer> ReadOnlyDirectByteBuffer::Copy(
     /* [in] */ DirectByteBuffer* other,
@@ -179,31 +138,31 @@ ECode ReadOnlyDirectByteBuffer::Duplicate(
     return NOERROR;
 }
 
-ECode ReadOnlyDirectByteBuffer::GetByte(
+ECode ReadOnlyDirectByteBuffer::Get(
     /* [out] */ Byte* value)
 {
-    return DirectByteBuffer::GetByte(value);
+    return DirectByteBuffer::Get(value);
 }
 
-ECode ReadOnlyDirectByteBuffer::GetByte(
+ECode ReadOnlyDirectByteBuffer::Get(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {
-    return DirectByteBuffer::GetByte(index, value);
+    return DirectByteBuffer::Get(index, value);
 }
 
-ECode ReadOnlyDirectByteBuffer::GetBytes(
+ECode ReadOnlyDirectByteBuffer::Get(
     /* [out] */ ArrayOf<Byte>* dst)
 {
-    return DirectByteBuffer::GetBytes(dst);
+    return DirectByteBuffer::Get(dst, 0, dst->GetLength());
 }
 
-ECode ReadOnlyDirectByteBuffer::GetBytes(
+ECode ReadOnlyDirectByteBuffer::Get(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
 {
-    return DirectByteBuffer::GetBytes(dst, dstOffset, byteCount);
+    return DirectByteBuffer::Get(dst, dstOffset, byteCount);
 }
 
 ECode ReadOnlyDirectByteBuffer::GetChar(
@@ -318,29 +277,27 @@ ECode ReadOnlyDirectByteBuffer::ProtectedHasArray(
     return NOERROR;
 }
 
-ECode ReadOnlyDirectByteBuffer::PutByte(
+ECode ReadOnlyDirectByteBuffer::Put(
     /* [in] */ Byte b)
 {
     return E_READ_ONLY_BUFFER_EXCEPTION;
-//    throw new ReadOnlyBufferException();
 }
 
-ECode ReadOnlyDirectByteBuffer::PutByte(
+ECode ReadOnlyDirectByteBuffer::Put(
     /* [in] */ Int32 index,
     /* [in] */ Byte b)
 {
     return E_READ_ONLY_BUFFER_EXCEPTION;
-//    throw new ReadOnlyBufferException();
 }
 
-ECode ReadOnlyDirectByteBuffer::PutBytes(
-    /* [in] */ const ArrayOf<Byte>& src)
+ECode ReadOnlyDirectByteBuffer::Put(
+    /* [in] */ ArrayOf<Byte>* src)
 {
-    return DirectByteBuffer::PutBytes(src);
+    return DirectByteBuffer::Put(src);
 }
 
-ECode ReadOnlyDirectByteBuffer::PutBytes(
-    /* [in] */ const ArrayOf<Byte>& src,
+ECode ReadOnlyDirectByteBuffer::Put(
+    /* [in] */ ArrayOf<Byte>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 byteCount)
 {
@@ -348,7 +305,7 @@ ECode ReadOnlyDirectByteBuffer::PutBytes(
 //    throw new ReadOnlyBufferException();
 }
 
-ECode ReadOnlyDirectByteBuffer::PutByteBuffer(
+ECode ReadOnlyDirectByteBuffer::Put(
     /* [in] */ IByteBuffer* src)
 {
     return E_READ_ONLY_BUFFER_EXCEPTION;

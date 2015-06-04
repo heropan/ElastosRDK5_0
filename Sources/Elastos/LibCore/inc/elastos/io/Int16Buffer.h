@@ -317,8 +317,8 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    CARAPI PutInt16s(
-        /* [in] */ const ArrayOf<Int16>& src);
+    CARAPI Put(
+        /* [in] */ ArrayOf<Int16>* src);
 
     /**
      * Writes shorts from the given short array, starting from the specified
@@ -341,8 +341,8 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt16s(
-        /* [in] */ const ArrayOf<Int16>& src,
+    virtual CARAPI Put(
+        /* [in] */ ArrayOf<Int16>* src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 int16Count);
 

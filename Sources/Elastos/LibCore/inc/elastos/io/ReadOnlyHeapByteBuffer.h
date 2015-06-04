@@ -19,10 +19,11 @@ namespace IO {
  *
  */
 class ReadOnlyHeapByteBuffer
-    : public IByteBuffer
-    , public HeapByteBuffer
+    : public HeapByteBuffer
 {
 public:
+    CAR_INTERFACE_DECL()
+
     ReadOnlyHeapByteBuffer(
         /* [in] */ ArrayOf<Byte>* backingArray,
         /* [in] */ Int32 capacity,
@@ -31,17 +32,6 @@ public:
     static CARAPI_(AutoPtr<ReadOnlyHeapByteBuffer>) Copy(
         /* [in] */ HeapByteBuffer* other,
         /* [in] */ Int32 markOfOther);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
 
     CARAPI GetPrimitiveArray(
         /* [out] */ Handle32* arrayHandle);
@@ -88,17 +78,17 @@ public:
     CARAPI Duplicate(
         /* [out] */ IByteBuffer** buffer);
 
-    CARAPI GetByte(
+    CARAPI Get(
         /* [out] */ Byte* value);
 
-    CARAPI GetByte(
+    CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Byte* value);
 
-    CARAPI GetBytes(
+    CARAPI Get(
         /* [out] */ ArrayOf<Byte>* dst);
 
-    CARAPI GetBytes(
+    CARAPI Get(
         /* [out] */ ArrayOf<Byte>* dst,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len);
@@ -160,18 +150,18 @@ public:
     CARAPI ProtectedHasArray(
         /* [out] */ Boolean* hasArray);
 
-    CARAPI PutByte(
+    CARAPI Put(
         /* [in] */ Byte b);
 
-    CARAPI PutByte(
+    CARAPI Put(
         /* [in] */ Int32 index,
         /* [in] */ Byte b);
 
-    CARAPI PutBytes(
-        /* [in] */ const ArrayOf<Byte>& src);
+    CARAPI Put(
+        /* [in] */ ArrayOf<Byte>* src);
 
-    CARAPI PutBytes(
-        /* [in] */ const ArrayOf<Byte>& src,
+    CARAPI Put(
+        /* [in] */ ArrayOf<Byte>* src,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len);
 

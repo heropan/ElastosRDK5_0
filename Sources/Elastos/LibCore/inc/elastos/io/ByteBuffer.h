@@ -330,7 +330,7 @@ public:
      *                if {@code dst.length} is greater than {@code remaining()}.
      */
     virtual CARAPI Get(
-        /* [in] */ ArrayOf<Byte>* dst);
+        /* [out] */ ArrayOf<Byte>* dst);
 
     /**
      * Reads bytes from the current position into the specified byte array,
@@ -350,7 +350,7 @@ public:
      * @exception BufferUnderflowException if {@code byteCount > remaining()}
      */
     virtual CARAPI Get(
-        /* [in] */ ArrayOf<Byte>* dst,
+        /* [out] */ ArrayOf<Byte>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 byteCount);
 

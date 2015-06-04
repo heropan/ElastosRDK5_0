@@ -25,7 +25,7 @@ CharsetEncoder::CharsetEncoder()
 CharsetEncoder::~CharsetEncoder()
 {}
 
-CAR_INTERFACE_IMPL(CharsetEncoder, ICharsetEncoder)
+CAR_INTERFACE_IMPL(CharsetEncoder, Object, ICharsetEncoder)
 
 ECode CharsetEncoder::Init(
     /* [in] */ ICharset* cs,
@@ -100,7 +100,7 @@ ECode CharsetEncoder::AverageBytesPerChar(
 }
 
 ECode CharsetEncoder::CanEncode(
-    /* [in] */ Char8 c,
+    /* [in] */ Char32 c,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -146,14 +146,14 @@ ECode CharsetEncoder::Encode(
     VALIDATE_NOT_NULL(byteBuffer);
 
     Int32 remaining = 0;
-    FAIL_RETURN(charBuffer->GetRemaining(&remaining));
+    FAIL_RETURN(IBuffer::Probe(charBuffer)->GetRemaining(&remaining));
     if (remaining == 0) {
         return ByteBuffer::Allocate(0, byteBuffer);
     }
     AutoPtr<ICharsetEncoder> encoder;
     FAIL_RETURN(Reset((ICharsetEncoder**)&encoder));
 
-    FAIL_RETURN(charBuffer->GetRemaining(&remaining));
+    FAIL_RETURN(IBuffer::Probe(charBuffer)->GetRemaining(&remaining));
     Int32 length = (Int32) (remaining * mAverageBytesPerChar);
     AutoPtr<IByteBuffer> output, temp;
     FAIL_RETURN(ByteBuffer::Allocate(length, (IByteBuffer**)&output));
@@ -185,7 +185,7 @@ ECode CharsetEncoder::Encode(
         result = NULL;
         FAIL_RETURN(Flush(output.Get(), (ICoderResult**)&result));
         if (_CObject_Compare(result, UNDERFLOW)) {
-            FAIL_RETURN(output->Flip());
+            FAIL_RETURN(IBuffer::Probe(output)->Flip());
             break;
         } else if (_CObject_Compare(result, OVERFLOW)) {
             temp = NULL;
@@ -194,7 +194,7 @@ ECode CharsetEncoder::Encode(
             continue;
         }
         FAIL_RETURN(CheckCoderResult(result.Get()));
-        FAIL_RETURN(output->Flip());
+        FAIL_RETURN(IBuffer::Probe(output)->Flip());
         Boolean res;
         FAIL_RETURN(result->IsMalformed(&res));
         if (res) {
@@ -248,7 +248,7 @@ ECode CharsetEncoder::Encode(
             mStatus = endOfInput ? END : ONGOING;
             if (endOfInput) {
                 Int32 remaining = 0;
-                charBuffer->GetRemaining(&remaining);
+                IBuffer::Probe(charBuffer)->GetRemaining(&remaining);
                 if (remaining > 0) {
                     res = NULL;
                     FAIL_RETURN(CCoderResult::MalformedForLength(remaining, (ICoderResult**)&res));
@@ -286,13 +286,13 @@ ECode CharsetEncoder::Encode(
 
         if (_CObject_Compare(action, REPLACE)) {
             Int32 remaining = 0;
-            FAIL_RETURN(byteBuffer->GetRemaining(&remaining));
+            FAIL_RETURN(IBuffer::Probe(byteBuffer)->GetRemaining(&remaining));
             if (remaining < mReplacementBytes->GetLength()) {
                 *result = OVERFLOW;
                 REFCOUNT_ADD(*result)
                 return NOERROR;
             }
-            byteBuffer->PutBytes(*mReplacementBytes);
+            byteBuffer->Put(mReplacementBytes);
         } else {
             if (action != IGNORE) {
                 *result = res;
@@ -301,10 +301,10 @@ ECode CharsetEncoder::Encode(
             }
         }
         Int32 pos = 0;
-        FAIL_RETURN(charBuffer->GetPosition(&pos));
+        FAIL_RETURN(IBuffer::Probe(charBuffer)->GetPosition(&pos));
         Int32 len = 0;
         res->GetLength(&len);
-        FAIL_RETURN(charBuffer->SetPosition(pos + len));
+        FAIL_RETURN(IBuffer::Probe(charBuffer)->SetPosition(pos + len));
     }
 
     return NOERROR;
@@ -586,14 +586,14 @@ ECode CharsetEncoder::AllocateMore(
     VALIDATE_NOT_NULL(byteBuffer);
 
     Int32 cap = 0;
-    FAIL_RETURN(output->GetCapacity(&cap));
+    FAIL_RETURN(IBuffer::Probe(output)->GetCapacity(&cap));
     if (cap == 0) {
         FAIL_RETURN(ByteBuffer::Allocate(1, byteBuffer));
         return NOERROR;
     }
     FAIL_RETURN(ByteBuffer::Allocate(cap * 2, byteBuffer));
-    FAIL_RETURN(output->Flip());
-    FAIL_RETURN((*byteBuffer)->PutByteBuffer(output));
+    FAIL_RETURN(IBuffer::Probe(output)->Flip());
+    FAIL_RETURN((*byteBuffer)->Put(output));
     return NOERROR;
 }
 

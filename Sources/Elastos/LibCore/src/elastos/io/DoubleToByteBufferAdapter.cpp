@@ -6,7 +6,7 @@
 #include "HeapByteBuffer.h"
 #include "ReadWriteDirectByteBuffer.h"
 #include "ReadWriteHeapByteBuffer.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -15,11 +15,11 @@ namespace IO {
 
 DoubleToByteBufferAdapter::DoubleToByteBufferAdapter(
     /* [in] */ IByteBuffer* byteBuffer)
-    : DoubleBuffer(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mCapacity / sizeof(Double))
+    : DoubleBuffer(((ByteBuffer*)byteBuffer)->mCapacity / sizeof(Double))
     , mByteBuffer(byteBuffer)
 {
-    mByteBuffer->Clear();
-    mEffectiveDirectAddress = ((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mEffectiveDirectAddress;
+    IBuffer::Probe(mByteBuffer)->Clear();
+    mEffectiveDirectAddress = ((ByteBuffer*)byteBuffer)->mEffectiveDirectAddress;
 }
 
 ECode DoubleToByteBufferAdapter::AsDoubleBuffer(
@@ -30,8 +30,9 @@ ECode DoubleToByteBufferAdapter::AsDoubleBuffer(
     VALIDATE_NOT_NULL(byteBuffer)
     AutoPtr<IByteBuffer> slice;
     FAIL_RETURN(byteBuffer->Slice((IByteBuffer**)&slice))
-    slice->SetOrder(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mOrder);
-    *doubleBuffer = (IDoubleBuffer*) new DoubleToByteBufferAdapter(slice);
+    slice->SetOrder(((ByteBuffer*)byteBuffer)->mOrder);
+    assert(0 && "TODO");
+    // *doubleBuffer = (IDoubleBuffer*) new DoubleToByteBufferAdapter(slice);
     REFCOUNT_ADD(*doubleBuffer);
     return NOERROR;
 }
@@ -40,7 +41,8 @@ PInterface DoubleToByteBufferAdapter::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)this;
+        assert(0 && "TODO");
+        // return (PInterface)this;
     }
     else if (riid == EIID_IDoubleBuffer) {
         return (IDoubleBuffer*)this;
@@ -128,11 +130,13 @@ ECode DoubleToByteBufferAdapter::AsReadOnlyBuffer(
     VALIDATE_NOT_NULL(buffer)
     AutoPtr<IByteBuffer> byteBuf;
     FAIL_RETURN(mByteBuffer->AsReadOnlyBuffer((IByteBuffer**)&byteBuf))
-    AutoPtr<DoubleToByteBufferAdapter> buf = new DoubleToByteBufferAdapter(byteBuf);
+    assert(0 && "TODO");
+    AutoPtr<DoubleToByteBufferAdapter> buf; // = new DoubleToByteBufferAdapter(byteBuf);
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
-    buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    assert(0 && "TODO");
+    // buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IDoubleBuffer*)buf->Probe(EIID_IDoubleBuffer);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
@@ -141,15 +145,15 @@ ECode DoubleToByteBufferAdapter::AsReadOnlyBuffer(
 ECode DoubleToByteBufferAdapter::Compact()
 {
     Boolean isReadOnly = FALSE;
-    mByteBuffer->IsReadOnly(&isReadOnly);
+    IBuffer::Probe(mByteBuffer)->IsReadOnly(&isReadOnly);
     if (isReadOnly) {
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    mByteBuffer->SetLimit(mLimit * sizeof(Double));
-    mByteBuffer->SetPosition(mPosition * sizeof(Double));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Double));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Double));
     mByteBuffer->Compact();
-    mByteBuffer->Clear();
+    IBuffer::Probe(mByteBuffer)->Clear();
     mPosition = mLimit - mPosition;
     mLimit = mCapacity;
     mMark = IBuffer::UNSET_MARK;
@@ -169,8 +173,9 @@ ECode DoubleToByteBufferAdapter::Duplicate(
     VALIDATE_NOT_NULL(buffer)
     AutoPtr<IByteBuffer> bb;
     FAIL_RETURN(mByteBuffer->Duplicate((IByteBuffer**)&bb))
-    bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
-    AutoPtr<DoubleToByteBufferAdapter> buf = new DoubleToByteBufferAdapter(bb);
+    assert(0 && "TODO");
+    // bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    AutoPtr<DoubleToByteBufferAdapter> buf; // = new DoubleToByteBufferAdapter(bb);
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
@@ -208,13 +213,15 @@ ECode DoubleToByteBufferAdapter::GetDoubles(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 doubleCount)
 {
-    mByteBuffer->SetLimit(mLimit * sizeof(Double));
-    mByteBuffer->SetPosition(mPosition * sizeof(Double));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Double));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Double));
     if (mByteBuffer->Probe(EIID_DirectByteBuffer) != NULL) {
-        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetDoubles(dst, dstOffset, doubleCount))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetDoubles(dst, dstOffset, doubleCount))
     }
     else {
-        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetDoubles(dst, dstOffset, doubleCount))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetDoubles(dst, dstOffset, doubleCount))
     }
     mPosition += doubleCount;
     return NOERROR;
@@ -255,11 +262,12 @@ ECode DoubleToByteBufferAdapter::PutDoubles(
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 doubleCount)
 {
-    mByteBuffer->SetLimit(mLimit * sizeof(Double));
-    mByteBuffer->SetPosition(mPosition * sizeof(Double));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Double));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Double));
     if (mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer) != NULL ) {
-        FAIL_RETURN(((ReadWriteDirectByteBuffer*)mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer))->PutDoubles(
-                src, srcOffset, doubleCount))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((ReadWriteDirectByteBuffer*)mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer))->PutDoubles(
+                // src, srcOffset, doubleCount))
     }
     else {
         FAIL_RETURN(((ReadWriteHeapByteBuffer*)mByteBuffer.Get())->PutDoubles(src, srcOffset, doubleCount))
@@ -278,14 +286,15 @@ ECode DoubleToByteBufferAdapter::Slice(
     /* [out] */ IDoubleBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
-    mByteBuffer->SetLimit(mLimit * sizeof(Double));
-    mByteBuffer->SetPosition(mPosition * sizeof(Double));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Double));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Double));
     AutoPtr<IByteBuffer> bb;
     FAIL_RETURN(mByteBuffer->Slice((IByteBuffer**)&bb))
-    bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
-    *buffer = (IDoubleBuffer*) new DoubleToByteBufferAdapter(bb);
+    assert(0 && "TODO");
+    // bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    *buffer; // = (IDoubleBuffer*) new DoubleToByteBufferAdapter(bb);
     REFCOUNT_ADD(*buffer)
-    mByteBuffer->Clear();
+    IBuffer::Probe(mByteBuffer)->Clear();
     return NOERROR;
 }
 
@@ -335,13 +344,13 @@ ECode DoubleToByteBufferAdapter::HasRemaining(
 ECode DoubleToByteBufferAdapter::IsDirect(
     /* [out] */ Boolean* isDirect)
 {
-    return mByteBuffer->IsDirect(isDirect);
+    return IBuffer::Probe(mByteBuffer)->IsDirect(isDirect);
 }
 
 ECode DoubleToByteBufferAdapter::IsReadOnly(
     /* [out] */ Boolean* isReadOnly)
 {
-    return mByteBuffer->IsReadOnly(isReadOnly);
+    return IBuffer::Probe(mByteBuffer)->IsReadOnly(isReadOnly);
 }
 
 CARAPI DoubleToByteBufferAdapter::ProtectedArray(

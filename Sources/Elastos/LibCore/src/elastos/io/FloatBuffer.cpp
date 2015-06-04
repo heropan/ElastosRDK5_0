@@ -82,11 +82,11 @@ ECode FloatBuffer::CompareTo(
     Int32 remaining = 0;
     Int32 otherRemaining = 0;
     GetRemaining(&remaining);
-    otherBuffer->GetRemaining(&otherRemaining);
+    IBuffer::Probe(otherBuffer)->GetRemaining(&otherRemaining);
     Int32 compareRemaining = (remaining < otherRemaining) ? remaining : otherRemaining;
     Int32 thisPos = mPosition;
     Int32 otherPos = 0;
-    otherBuffer->GetPosition(&otherPos);
+    IBuffer::Probe(otherBuffer)->GetPosition(&otherPos);
     Float thisFloat = 0.0f;
     Float otherFloat = 0.0f;
     while (compareRemaining > 0) {
@@ -121,7 +121,7 @@ ECode FloatBuffer::Equals(
     Int32 thisRemaining = 0;
     Int32 otherRemaining = 0;
     GetRemaining(&thisRemaining);
-    otherBuffer->GetRemaining(&otherRemaining);
+    IBuffer::Probe(otherBuffer)->GetRemaining(&otherRemaining);
     if (thisRemaining != otherRemaining) {
         *rst = FALSE;
         return NOERROR;
@@ -129,7 +129,7 @@ ECode FloatBuffer::Equals(
 
     Int32 myPosition = mPosition;
     Int32 otherPosition = 0;
-    otherBuffer->GetPosition(&otherPosition);
+    IBuffer::Probe(otherBuffer)->GetPosition(&otherPosition);
     Boolean equalSoFar = TRUE;
     Float thisValue = 0.0f;
     Float otherValue = 0.0f;
@@ -220,7 +220,7 @@ ECode FloatBuffer::PutFloatBuffer(
     }
     Int32 srcRemaining = 0;
     Int32 remaining = 0;
-    src->GetRemaining(&srcRemaining);
+    IBuffer::Probe(src)->GetRemaining(&srcRemaining);
     GetRemaining(&remaining);
     if (srcRemaining > remaining) {
         // throw new BufferOverflowException();

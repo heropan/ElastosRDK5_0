@@ -6,7 +6,7 @@
 #include "HeapByteBuffer.h"
 #include "ReadWriteDirectByteBuffer.h"
 #include "ReadWriteHeapByteBuffer.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
 #include "cutils/log.h"
 
 using Elastos::Core::StringBuilder;
@@ -16,10 +16,10 @@ namespace IO {
 
 FloatToByteBufferAdapter::FloatToByteBufferAdapter(
     /* [in] */ IByteBuffer* byteBuffer)
-    : FloatBuffer(((ByteBuffer*)byteBuffer->Probe(EIID_ByteBuffer))->mCapacity / sizeof(Float))
+    : FloatBuffer(((ByteBuffer*)byteBuffer)->mCapacity / sizeof(Float))
     , mByteBuffer(byteBuffer)
 {
-    mByteBuffer->Clear();
+    IBuffer::Probe(mByteBuffer)->Clear();
     mEffectiveDirectAddress = (reinterpret_cast<ByteBuffer*>(byteBuffer->Probe(EIID_ByteBuffer)))->mEffectiveDirectAddress;
 }
 
@@ -41,7 +41,8 @@ PInterface FloatToByteBufferAdapter::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)this;
+        assert(0 && "TODO");
+        // return (PInterface)this;
     }
     else if (riid == EIID_IFloatBuffer) {
         return (IFloatBuffer*)this;
@@ -91,7 +92,8 @@ ECode FloatToByteBufferAdapter::GetPrimitiveArray(
     GetArray((ArrayOf<Float>**)&mArrayTemp);
     if (mArrayTemp == NULL)
     {
-        return mByteBuffer->GetPrimitiveArray(arrayHandle);
+        assert(0 && "TODO");
+        // return IBuffer::Probe(mByteBuffer)->GetPrimitiveArray(arrayHandle);
         *arrayHandle = 0;
         return NOERROR;
     }
@@ -134,7 +136,8 @@ ECode FloatToByteBufferAdapter::AsReadOnlyBuffer(
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
-    buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    assert(0 && "TODO");
+    // buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IFloatBuffer*)buf->Probe(EIID_IFloatBuffer);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
@@ -143,15 +146,15 @@ ECode FloatToByteBufferAdapter::AsReadOnlyBuffer(
 ECode FloatToByteBufferAdapter::Compact()
 {
     Boolean isReadOnly = FALSE;
-    mByteBuffer->IsReadOnly(&isReadOnly);
+    IBuffer::Probe(mByteBuffer)->IsReadOnly(&isReadOnly);
     if (isReadOnly) {
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    mByteBuffer->SetLimit(mLimit * sizeof(Float));
-    mByteBuffer->SetPosition(mPosition * sizeof(Float));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Float));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Float));
     mByteBuffer->Compact();
-    mByteBuffer->Clear();
+    IBuffer::Probe(mByteBuffer)->Clear();
     mPosition = mLimit - mPosition;
     mLimit = mCapacity;
     mMark = IBuffer::UNSET_MARK;
@@ -171,7 +174,8 @@ ECode FloatToByteBufferAdapter::Duplicate(
     VALIDATE_NOT_NULL(buffer)
     AutoPtr<IByteBuffer> bb;
     FAIL_RETURN(mByteBuffer->Duplicate((IByteBuffer**)&bb))
-    bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    assert(0 && "TODO");
+    // bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     AutoPtr<FloatToByteBufferAdapter> buf = new FloatToByteBufferAdapter(bb);
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
@@ -210,13 +214,15 @@ ECode FloatToByteBufferAdapter::GetFloats(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 floatCount)
 {
-    mByteBuffer->SetLimit(mLimit * sizeof(Float));
-    mByteBuffer->SetPosition(mPosition * sizeof(Float));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Float));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Float));
     if (mByteBuffer->Probe(EIID_DirectByteBuffer) != NULL) {
-        FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetFloats(dst, dstOffset, floatCount))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((DirectByteBuffer*)mByteBuffer->Probe(EIID_DirectByteBuffer))->GetFloats(dst, dstOffset, floatCount))
     }
     else {
-        FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetFloats(dst, dstOffset, floatCount))
+        assert(0 && "TODO");
+        // FAIL_RETURN(((HeapByteBuffer*)mByteBuffer->Probe(EIID_HeapByteBuffer))->GetFloats(dst, dstOffset, floatCount))
     }
     mPosition += floatCount;
     return NOERROR;
@@ -257,8 +263,8 @@ ECode FloatToByteBufferAdapter::PutFloats(
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 floatCount)
 {
-    mByteBuffer->SetLimit(mLimit * sizeof(Float));
-    mByteBuffer->SetPosition(mPosition * sizeof(Float));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Float));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Float));
     if (mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer) != NULL ) {
         ReadWriteDirectByteBuffer* tmp = reinterpret_cast<ReadWriteDirectByteBuffer*>(
             mByteBuffer->Probe(EIID_ReadWriteDirectByteBuffer));
@@ -281,14 +287,15 @@ ECode FloatToByteBufferAdapter::Slice(
     /* [out] */ IFloatBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
-    mByteBuffer->SetLimit(mLimit * sizeof(Float));
-    mByteBuffer->SetPosition(mPosition * sizeof(Float));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Float));
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Float));
     AutoPtr<IByteBuffer> bb;
     FAIL_RETURN(mByteBuffer->Slice((IByteBuffer**)&bb))
-    bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
+    assert(0 && "TODO");
+    // bb->SetOrder(((ByteBuffer*)mByteBuffer->Probe(EIID_ByteBuffer))->mOrder);
     *buffer = (IFloatBuffer*) new FloatToByteBufferAdapter(bb);
     REFCOUNT_ADD(*buffer)
-    mByteBuffer->Clear();
+    IBuffer::Probe(mByteBuffer)->Clear();
     return NOERROR;
 }
 
@@ -338,13 +345,13 @@ ECode FloatToByteBufferAdapter::HasRemaining(
 ECode FloatToByteBufferAdapter::IsDirect(
     /* [out] */ Boolean* isDirect)
 {
-    return mByteBuffer->IsDirect(isDirect);
+    return IBuffer::Probe(mByteBuffer)->IsDirect(isDirect);
 }
 
 ECode FloatToByteBufferAdapter::IsReadOnly(
     /* [out] */ Boolean* isReadOnly)
 {
-    return mByteBuffer->IsReadOnly(isReadOnly);
+    return IBuffer::Probe(mByteBuffer)->IsReadOnly(isReadOnly);
 }
 
 CARAPI FloatToByteBufferAdapter::ProtectedArray(

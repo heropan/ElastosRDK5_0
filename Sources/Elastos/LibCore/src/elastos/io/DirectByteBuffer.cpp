@@ -2,7 +2,7 @@
 #include "coredef.h"
 #include "DirectByteBuffer.h"
 #include "CByteOrderHelper.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::Math;
 
@@ -29,7 +29,7 @@ DirectByteBuffer::DirectByteBuffer(
     mEffectiveDirectAddress = block->ToInt32() + offset;
 }
 
-ECode DirectByteBuffer::GetBytes(
+ECode DirectByteBuffer::Get(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
@@ -144,7 +144,7 @@ ECode DirectByteBuffer::GetInt16s(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetByte(
+ECode DirectByteBuffer::Get(
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -155,7 +155,7 @@ ECode DirectByteBuffer::GetByte(
     return NOERROR;
 }
 
-ECode DirectByteBuffer::GetByte(
+ECode DirectByteBuffer::Get(
     /* [in] */ Int32 index,
     /* [out] */ Byte* value)
 {

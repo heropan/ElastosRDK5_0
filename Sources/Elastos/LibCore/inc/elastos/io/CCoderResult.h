@@ -1,11 +1,12 @@
 
-#ifndef __ELASTOS_IO_CCODERRESULT_H__
-#define __ELASTOS_IO_CCODERRESULT_H__
+#ifndef __ELASTOS_IO_CHARSET_CCODERRESULT_H__
+#define __ELASTOS_IO_CHARSET_CCODERRESULT_H__
 
-#include "_Elastos_IO_CCoderResult.h"
-#include "coredef.h"
+#include "_Elastos_IO_Charset_CCoderResult.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
@@ -13,8 +14,11 @@ namespace IO {
 namespace Charset {
 
 CarClass(CCoderResult)
+    , public Object
 {
 public:
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     /**
@@ -162,9 +166,9 @@ private:
     // indicating unmappable character error type
     static const Int32 TYPE_UNMAPPABLE_CHAR = 4;
 
-    static Mutex sMalformedMutex;
+    static Object sMalformedMutex;
 
-    static Mutex sUnmappableMutex;
+    static Object sUnmappableMutex;
 
     // TODO:
     /*
@@ -192,4 +196,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __ELASTOS_IO_CCODERRESULT_H__
+#endif // __ELASTOS_IO_CHARSET_CCODERRESULT_H__
