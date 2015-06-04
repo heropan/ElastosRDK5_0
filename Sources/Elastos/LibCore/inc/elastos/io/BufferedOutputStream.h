@@ -74,6 +74,9 @@ public:
         /* [in] */ IOutputStream* outs,
         /* [in] */ Int32 size);
 
+    CARAPI constructor(
+        /* [in] */ IOutputStream* outs);
+
 protected:
     BufferedOutputStream();
 

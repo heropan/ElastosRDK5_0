@@ -16,6 +16,14 @@ BufferedOutputStream::~BufferedOutputStream()
 {
 }
 
+
+ECode BufferedOutputStream::constructor(
+    /* [in] */ IOutputStream* outs)
+{
+    VALIDATE_NOT_NULL(outs);
+    constructor(outs, 8192);
+}
+
 ECode BufferedOutputStream::constructor(
     /* [in] */ IOutputStream* outs,
     /* [in] */ Int32 size)

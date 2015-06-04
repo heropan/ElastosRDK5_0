@@ -218,6 +218,9 @@ module
             [in] IOutputStream* outs,
             [in] Int32 size);
 
+        constructor(
+            [in] IOutputStream* outs);
+
         interface IBufferedOutputStream;
         interface ICloseable;
         interface IOutputStream;
@@ -429,6 +432,40 @@ module
         }
 
     } // namespace Charset
+
+//    class CPrintWriter {
+//        constructor(
+//            [in] IOutputStream* outs);
+
+//        constructor(
+//            [in] IOutputStream* outs,
+//            [in] Boolean autoflush);
+
+//        constructor(
+//            [in] IWriter* wr);
+
+//        constructor(
+//            [in] IWriter* wr,
+//            [in] Boolean autoflush);
+
+//        constructor(
+//            [in] IFile* file);
+
+//        constructor(
+//            [in] IFile* file,
+//            [in] String csn);
+
+//        constructor(
+//            [in] String fileName);
+
+//        constructor(
+//            [in] String fileName,
+//            [in] String csn);
+
+//        interface IAppendable;
+//        interface IWriter;
+//        interface IPrintWriter;
+//    }
 
     } // namespace IO
     } // namespace Elastos

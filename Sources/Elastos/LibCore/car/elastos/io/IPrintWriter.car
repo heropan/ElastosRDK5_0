@@ -258,7 +258,7 @@ module
          * Prints the string representation of the int i followed by a newline.
          * Flushes this writer if the autoFlush flag is set to true.
          */
-        PrintInt32ln(
+        Println(
             [in] Int32 i);
 
         /**

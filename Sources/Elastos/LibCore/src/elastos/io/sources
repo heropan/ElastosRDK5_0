@@ -12,7 +12,10 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/droid/system/;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility/logging;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;
+INCLUDES += $(MAKEDIR)/../../../inc/libcore/icu
 
 
 SOURCES = InputStream.cpp
@@ -64,6 +67,18 @@ SOURCES += FilterReader.cpp
 SOURCES += FilterWriter.cpp
 #SOURCES += InputStreamReader.cpp
 #SOURCES += CInputStreamReader.cpp
+
+#SOURCES += PrintWriter.cpp
+#SOURCES += CPrintWriter.cpp
+
+#
+# nio related classes
+#
+SOURCES += CByteOrderHelper.cpp
+SOURCES += MemoryBlock.cpp
+SOURCES += Buffer.cpp
+SOURCES += ByteBuffer.cpp
+
 SOURCES += CByteBufferHelper.cpp
 SOURCES += CByteArrayBuffer.cpp
 SOURCES += DatagramChannel.cpp

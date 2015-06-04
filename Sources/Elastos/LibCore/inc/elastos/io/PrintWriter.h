@@ -8,22 +8,23 @@
 #else
 #include <Elastos.CoreLibrary.h>
 #endif
-#include "elastos/io/Writer.h"
+#include "Writer.h"
 
 using Libcore::ICU::ILocale;
 
 namespace Elastos {
 namespace IO {
 
-class PrintWriter : public Writer
+class PrintWriter
+    : public Writer
+    , public IPrintWriter
 {
 public:
+    CAR_INTERFACE_DECL()
+
     PrintWriter();
 
     ~PrintWriter();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid) = 0;
 
     CARAPI CheckError(
         /* [out] */ Boolean* hasError);
@@ -50,77 +51,77 @@ public:
         /* [in] */ const String& format,
         /* [in] */ ArrayOf<IInterface*>* args);
 
-    CARAPI PrintChars(
-        /* [in] */ const ArrayOf<Char32>& charArray);
+    CARAPI Print(
+        /* [in] */ ArrayOf<Char32>* charArray);
 
     CARAPI PrintChar(
         /* [in] */ Char32 ch);
 
-    CARAPI PrintDouble(
+    CARAPI Print(
         /* [in] */ Double dnum);
 
-    CARAPI PrintFloat(
+    CARAPI Print(
         /* [in] */ Float fnum);
 
-    CARAPI PrintInt32(
+    CARAPI Print(
         /* [in] */ Int32 inum);
 
-    CARAPI PrintInt64(
+    CARAPI Print(
         /* [in] */ Int64 lnum);
 
-    CARAPI PrintObject(
+    CARAPI Print(
         /* [in] */ IInterface* obj);
 
-    CARAPI PrintString(
+    CARAPI Print(
         /* [in] */ const String& str);
 
-    CARAPI PrintBoolean(
+    CARAPI Print(
         /* [in] */ Boolean result);
 
     CARAPI Println();
 
-    CARAPI PrintCharsln(
-        /* [in] */ const ArrayOf<Char32>& charArray);
+    CARAPI Println(
+        /* [in] */ ArrayOf<Char32>* charArray);
 
     CARAPI PrintCharln(
         /* [in] */ Char32 ch);
 
-    CARAPI PrintDoubleln(
+    CARAPI Println(
         /* [in] */ Double dnum);
 
-    CARAPI PrintFloatln(
+    CARAPI Println(
         /* [in] */ Float fnum);
 
-    CARAPI PrintInt32ln(
+    CARAPI Println(
         /* [in] */ Int32 inum);
 
-    CARAPI PrintInt64ln(
+    CARAPI Println(
         /* [in] */ Int64 lnum);
 
-    CARAPI PrintObjectln(
+    CARAPI Println(
         /* [in] */ IInterface* obj);
 
-    CARAPI PrintStringln(
+    CARAPI Println(
         /* [in] */ const String& str);
 
-    CARAPI PrintBooleanln(
+    CARAPI Println(
         /* [in] */ Boolean result);
 
     CARAPI Write(
-        /* [in] */ const ArrayOf<Char32>& buffer);
+        /* [in] */ ArrayOf<Char32>* buffer);
 
     CARAPI Write(
-        /* [in] */ const ArrayOf<Char32>& buffer,
+        /* [in] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
     CARAPI Write(
         /* [in] */ Int32 oneChar32);
 
-    CARAPI WriteString(
+    CARAPI Write(
         /* [in] */ const String& str);
 
-    CARAPI WriteString(
+    CARAPI Write(
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
@@ -128,43 +129,43 @@ public:
     CARAPI AppendChar(
         /* [in] */ Char32 c);
 
-    CARAPI AppendCharSequence(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq);
 
-    CARAPI AppendCharSequence(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-protected:
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* outs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream* outs,
         /* [in] */ Boolean autoflush);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IWriter* wr);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IWriter* wr,
         /* [in] */ Boolean autoflush);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IFile* file);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IFile* file,
         /* [in] */ const String& csn);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& fileName);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& fileName,
         /* [in] */ const String& csn);
 
+protected:
     CARAPI ClearError();
 
     CARAPI_(void) SetError();
@@ -173,7 +174,7 @@ private:
     CARAPI DoWrite(
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
-        /* [in] */ const ArrayOf<Char32>& buf);
+        /* [in] */ ArrayOf<Char32>* buf);
 
 protected:
     /**
