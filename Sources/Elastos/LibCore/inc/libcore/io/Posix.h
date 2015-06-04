@@ -316,7 +316,7 @@ public:
         /* [out] */ IFileDescriptor** fd);
 
     CARAPI Pipe(
-        /* [out, callee] */ ArrayOf<Int32>* fds);
+        /* [out, callee] */ ArrayOf<IFileDescriptor*>** fds);
 
     /* TODO: if we used the non-standard ppoll(2) behind the scenes, we could take a long timeout. */
     CARAPI Poll(
@@ -576,6 +576,110 @@ public:
         /* [in] */ ArrayOf<Int32>* offsets,
         /* [in] */ ArrayOf<Int32>* byteCounts,
         /* [out] */ Int32* result);
+
+private:
+    CARAPI PreadBytes(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Int32 bufferOffset,
+        /* [in] */ Int32 bufferCount,
+        /* [in] */ Int64 offset,
+        /* [out] */ Int32* result);
+
+    CARAPI PreadBytes(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* byteArray,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
+        /* [in] */ Int64 offset,
+        /* [out] */ Int32* result);
+
+    CARAPI PwriteBytes(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Int32 bufferOffset,
+        /* [in] */ Int32 bufferCount,
+        /* [in] */ Int64 offset,
+        /* [out] */ Int32* result);
+
+    CARAPI PwriteBytes(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* byteArray,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
+        /* [in] */ Int64 offset,
+        /* [out] */ Int32* result);
+
+    CARAPI ReadBytes(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Int32 bufferOffset,
+        /* [in] */ Int32 bufferCount,
+        /* [out] */ Int32* result);
+
+    CARAPI ReadBytes(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* byteArray,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
+        /* [out] */ Int32* result);
+
+    CARAPI RecvfromBytes(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Int32 bufferOffset,
+        /* [in] */ Int32 bufferCount,
+        /* [in] */ Int32 flags,
+        /* [in] */ IInetSocketAddress* srcAddress,
+        /* [out] */ Int32* result);
+
+    CARAPI RecvfromBytes(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* byteArray,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
+        /* [in] */ Int32 flags,
+        /* [in] */ IInetSocketAddress* srcAddress,
+        /* [out] */ Int32* result);
+
+    CARAPI SendtoBytes(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Int32 bufferOffset,
+        /* [in] */ Int32 bufferCount,
+        /* [in] */ Int32 flags,
+        /* [in] */ IInetAddress* inetAddress,
+        /* [in] */ Int32 port,
+        /* [out] */ Int32* result);
+
+    CARAPI SendtoBytes(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* byteArray,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
+        /* [in] */ Int32 flags,
+        /* [in] */ IInetAddress* inetAddress,
+        /* [in] */ Int32 port,
+        /* [out] */ Int32* result);
+
+    CARAPI UmaskImpl(
+        /* [in] */ Int32 mask,
+        /* [out] */ Int32* result);
+
+    CARAPI WriteBytes(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Int32 bufferOffset,
+        /* [in] */ Int32 bufferCount,
+        /* [out] */ Int32* result);
+
+    CARAPI WriteBytes(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* byteArray,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
+        /* [out] */ Int32* result);
+
 };
 
 } // namespace IO

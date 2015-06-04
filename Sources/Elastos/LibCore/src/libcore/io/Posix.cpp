@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/un.h>
-
+#include <vector>
 #include "Posix.h"
 #include "AsynchronousCloseMonitorNative.h"
 #include "io/CFileDescriptor.h"
@@ -45,8 +45,11 @@
 #include "droid/system/CStructUtsname.h"
 #include "Portability.h"
 #include "UniquePtr.h"
+#include "ErrnoRestorer.h"
+#include "LocalArray.h"
 
 using Elastos::Core::Object;
+using Elastos::IO::IBuffer;
 using Elastos::IO::CFileDescriptor;
 using Elastos::Droid::System::CStructPasswd;
 using Elastos::Droid::System::CStructStat;
@@ -308,6 +311,28 @@ static Boolean FillInetSocketAddress(
     return TRUE;
 }
 
+static AutoPtr<IStructStat> DoStat(
+    /* [in] */ String path,
+    /* [in] */ Boolean isLstat)
+{
+    if (path == NULL) {
+        return NULL;
+    }
+    struct stat sb;
+    Int32 rc = isLstat ? TEMP_FAILURE_RETRY(lstat(path, &sb))
+                     : TEMP_FAILURE_RETRY(stat(path, &sb));
+    if (rc == -1) {
+        // throwErrnoException(env, isLstat ? "lstat" : "stat");
+        if (isLstat) {
+            ALOGE("System-call lstat error, errno = %d", errno);
+        } else {
+            ALOGE("System-call stat error, errno = %d", errno);
+        }
+        return NULL;
+    }
+    return MakeStructStat(sb);
+}
+
 class Passwd {
 public:
     Passwd() : mResult(NULL) {
@@ -343,6 +368,37 @@ private:
     struct passwd mPwd;
     struct passwd* mResult;
 };
+
+bool readlink(const char* path, String& result) {
+    // // We can't know how big a buffer readlink(2) will need, so we need to
+    // // loop until it says "that fit".
+    size_t bufSize = 512;
+    while (true) {
+        LocalArray<512> buf(bufSize);
+        ssize_t len = ::readlink(path, &buf[0], buf.size());
+        if (len == -1) {
+            // An error occurred.
+            return false;
+        }
+        if (static_cast<size_t>(len) < buf.size()) {
+            // The buffer was big enough.
+            result = String(&buf[0], len);
+            return true;
+        }
+        // Try again with a bigger buffer.
+        bufSize *= 2;
+    }
+}
+
+// int posix_fallocate(int fd, off_t offset, off_t length) {
+//   ErrnoRestorer errno_restorer;
+//   return (fallocate(fd, 0, offset, length) == 0) ? 0 : errno;
+// }
+
+// int posix_fallocate64(int fd, off64_t offset, off64_t length) {
+//   ErrnoRestorer errno_restorer;
+//   return (fallocate64(fd, 0, offset, length) == 0) ? 0 : errno;
+// }
 
 ECode Posix::Accept(
     /* [in] */ IFileDescriptor* fd,
@@ -1075,7 +1131,8 @@ ECode Posix::Inet_pton(
     /* [out] */ IInetAddress** addr)
 {
     if (name == NULL) {
-        return NULL;
+        *addr = NULL;
+        return NOERROR;
     }
     sockaddr_storage ss;
     memset(&ss, 0, sizeof(ss));
@@ -1118,16 +1175,26 @@ ECode Posix::IoctlInetAddress(
 ECode Posix::IoctlInt(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
-    /* [in] */ Int32* arg,
+    /* [in, out] */ Int32* arg,
     /* [out] */ Int32* result)
 {
-    return NOERROR;
+    // This is complicated because ioctls may return their result by updating their argument
+    // or via their return value, so we need to support both.
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    ECode ec;
+    Int32 rc = ErrorIfMinusOne("ioctl", TEMP_FAILURE_RETRY(ioctl(_fd, cmd, arg)), &ec);
+    *result = rc;
+    return ec;
 }
 
 ECode Posix::Isatty(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ Boolean* isatty)
 {
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    *isatty = TEMP_FAILURE_RETRY(::isatty(_fd)) == 1;
     return NOERROR;
 }
 
@@ -1135,7 +1202,9 @@ ECode Posix::Kill(
     /* [in] */ Int32 pid,
     /* [in] */ Int32 signal)
 {
-    return NOERROR;
+    ECode ec;
+    ErrorIfMinusOne("kill", TEMP_FAILURE_RETRY(kill(pid, signal)), &ec);
+    return ec;
 }
 
 ECode Posix::Lchown(
@@ -1143,21 +1212,38 @@ ECode Posix::Lchown(
     /* [in] */ Int32 uid,
     /* [in] */ Int32 gid)
 {
-    return NOERROR;
+    if (path == NULL) {
+        return NOERROR;
+    }
+    ECode ec;
+    ErrorIfMinusOne("lchown", TEMP_FAILURE_RETRY(lchown(path, uid, gid)), &ec);
+    return ec;
 }
 
 ECode Posix::Link(
     /* [in] */ String oldPath,
     /* [in] */ String newPath)
 {
-    return NOERROR;
+    if (oldPath == NULL) {
+        return NOERROR;
+    }
+    if (newPath == NULL) {
+        return NOERROR;
+    }
+    ECode ec;
+    ErrorIfMinusOne("link", TEMP_FAILURE_RETRY(link(oldPath, newPath)), &ec);
+    return ec;
 }
 
 ECode Posix::Listen(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 backlog)
 {
-    return NOERROR;
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    ECode ec;
+    ErrorIfMinusOne("listen", TEMP_FAILURE_RETRY(listen(_fd, backlog)), &ec);
+    return ec;
 }
 
 ECode Posix::Lseek(
@@ -1166,13 +1252,18 @@ ECode Posix::Lseek(
     /* [in] */ Int32 whence,
     /* [out] */ Int64* result)
 {
-    return NOERROR;
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    ECode ec;
+    ErrorIfMinusOne("lseek", TEMP_FAILURE_RETRY(lseek64(_fd, offset, whence)), &ec);
+    return ec;
 }
 
 ECode Posix::Lstat(
     /* [in] */ String path,
     /* [out] */ IStructStat** stat)
 {
+    *stat = DoStat(path, TRUE);
     return NOERROR;
 }
 
@@ -1181,28 +1272,48 @@ ECode Posix::Mincore(
     /* [in] */ Int64 byteCount,
     /* [in] */ ArrayOf<Byte>* vector)
 {
-    return NOERROR;
+    if (vector == NULL) {
+        return NOERROR;
+    }
+    void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
+    unsigned char* vec = reinterpret_cast<unsigned char*>(vector->GetPayload());
+    ECode ec;
+    ErrorIfMinusOne("mincore", TEMP_FAILURE_RETRY(mincore(ptr, byteCount, vec)), &ec);
+    return ec;
 }
 
 ECode Posix::Mkdir(
     /* [in] */ String path,
     /* [in] */ Int32 mode)
 {
-    return NOERROR;
+    if (path == NULL) {
+        return NOERROR;
+    }
+    ECode ec;
+    ErrorIfMinusOne("mkdir", TEMP_FAILURE_RETRY(mkdir(path, mode)), &ec);
+    return ec;
 }
 
 ECode Posix::Mlock(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount)
 {
-    return NOERROR;
+    void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
+    ECode ec;
+    ErrorIfMinusOne("mlock", TEMP_FAILURE_RETRY(mlock(ptr, byteCount)), &ec);
+    return ec;
 }
 
 ECode Posix::Mkfifo(
     /* [in] */ String path,
     /* [in] */ Int32 mode)
 {
-    return NOERROR;
+    if (path == NULL) {
+        return NOERROR;
+    }
+    ECode ec;
+    ErrorIfMinusOne("mkfifo", TEMP_FAILURE_RETRY(mkfifo(path, mode)), &ec);
+    return ec;
 }
 
 ECode Posix::Mmap(
@@ -1214,6 +1325,17 @@ ECode Posix::Mmap(
     /* [in] */ Int64 offset,
     /* [out] */ Int64* result)
 {
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    void* suggestedPtr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
+    void* ptr = mmap(suggestedPtr, byteCount, prot, flags, _fd, offset);
+    if (ptr == MAP_FAILED) {
+        // throwErrnoException(env, "mmap");
+        ALOGE("System-call mmap error, errno = %d", errno);
+        *result = 0;
+        return E_ERRNO_EXCEPTION;
+    }
+    *result = static_cast<Int64>(reinterpret_cast<uintptr_t>(ptr));
     return NOERROR;
 }
 
@@ -1222,21 +1344,30 @@ ECode Posix::Msync(
     /* [in] */ Int64 byteCount,
     /* [in] */ Int32 flags)
 {
-    return NOERROR;
+    void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
+    ECode ec;
+    ErrorIfMinusOne("msync", TEMP_FAILURE_RETRY(msync(ptr, byteCount, flags)), &ec);
+    return ec;
 }
 
 ECode Posix::Munlock(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount)
 {
-    return NOERROR;
+    void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
+    ECode ec;
+    ErrorIfMinusOne("munlock", TEMP_FAILURE_RETRY(munlock(ptr, byteCount)), &ec);
+    return ec;
 }
 
 ECode Posix::Munmap(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount)
 {
-    return NOERROR;
+    void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
+    ECode ec;
+    ErrorIfMinusOne("munmap", TEMP_FAILURE_RETRY(munmap(ptr, byteCount)), &ec);
+    return ec;
 }
 
 ECode Posix::Open(
@@ -1245,21 +1376,105 @@ ECode Posix::Open(
     /* [in] */ Int32 mode,
     /* [out] */ IFileDescriptor** fd)
 {
-    return NOERROR;
+    if (path == NULL) {
+        *fd = NULL;
+        return NOERROR;
+    }
+    ECode ec;
+    Int32 _fd = ErrorIfMinusOne("open", TEMP_FAILURE_RETRY(open(path, flags, mode)), &ec);
+    if(_fd != -1) {
+        CFileDescriptor::New(fd);
+        (*fd)->SetDescriptor(_fd);
+    } else {
+        *fd = NULL;
+    }
+    return ec;
 }
 
 ECode Posix::Pipe(
-    /* [out, callee] */ ArrayOf<Int32>* fds)
+    /* [out, callee] */ ArrayOf<IFileDescriptor*>** fds)
 {
+    Int32 fdsArr[2];
+    ECode ec;
+    ErrorIfMinusOne("pipe", TEMP_FAILURE_RETRY(pipe(&fdsArr[0])), &ec);
+
+    AutoPtr<ArrayOf<IFileDescriptor*> > result = ArrayOf<IFileDescriptor*>::Alloc(2);
+    for (Int32 i = 0; i < 2; ++i) {
+        AutoPtr<IFileDescriptor> fd;
+        CFileDescriptor::New((IFileDescriptor**)&fd);
+        if (fd == NULL) {
+            *fds = NULL;
+            return NOERROR;
+        }
+        fd->SetDescriptor(fdsArr[i]);
+        result->Set(i, fd);
+    }
+    *fds = result;
+    REFCOUNT_ADD(*fds)
     return NOERROR;
 }
 
     /* TODO: if we used the non-standard ppoll(2) behind the scenes, we could take a long timeout. */
 ECode Posix::Poll(
-    /* [in] */ ArrayOf<IStructPollfd*>* fds,
+    /* [in] */ ArrayOf<IStructPollfd*>* pollfds,
     /* [in] */ Int32 timeoutMs,
     /* [out] */ Int32* result)
 {
+    // static jfieldID fdFid = env->GetFieldID(JniConstants::structPollfdClass, "fd", "Ljava/io/FileDescriptor;");
+    // static jfieldID eventsFid = env->GetFieldID(JniConstants::structPollfdClass, "events", "S");
+    // static jfieldID reventsFid = env->GetFieldID(JniConstants::structPollfdClass, "revents", "S");
+
+    // Turn the Java android.system.StructPollfd[] into a C++ struct pollfd[].
+    size_t arrayLength = pollfds->GetLength();
+    UniquePtr<struct pollfd[]> fds(new struct pollfd[arrayLength]);
+    memset(fds.get(), 0, sizeof(struct pollfd) * arrayLength);
+    size_t count = 0; // Some trailing array elements may be irrelevant. (See below.)
+    for (size_t i = 0; i < arrayLength; ++i) {
+        AutoPtr<IStructPollfd> structPollfd = (*pollfds)[i];
+        if (structPollfd == NULL) {
+            break; // We allow trailing nulls in the array for caller convenience.
+        }
+        AutoPtr<IFileDescriptor> fd;
+        structPollfd->GetFd((IFileDescriptor**)&fd);
+        if (fd == NULL) {
+            break; // We also allow callers to just clear the fd field (this is what Selector does).
+        }
+        Int32 fdTmp;
+        fd->GetDescriptor(&fdTmp);
+        fds[count].fd = fdTmp;
+        Int16 eventsTmp;
+        structPollfd->GetEvents(&eventsTmp);
+        fds[count].events = eventsTmp;
+        ++count;
+    }
+
+    std::vector<AsynchronousCloseMonitorNative*> monitors;
+    for (size_t i = 0; i < count; ++i) {
+        monitors.push_back(new AsynchronousCloseMonitorNative(fds[i].fd));
+    }
+    int rc = poll(fds.get(), count, timeoutMs);
+    for (size_t i = 0; i < monitors.size(); ++i) {
+        delete monitors[i];
+    }
+    if (rc == -1) {
+        // throwErrnoException(env, "poll");
+        ALOGE("syscall_name poll error, errno = %d", errno);
+        *result = -1;
+        return E_ERRNO_EXCEPTION;
+    }
+
+    // Update the revents fields in the Java android.system.StructPollfd[].
+    for (size_t i = 0; i < count; ++i) {
+        AutoPtr<IStructPollfd> structPollfd = (*pollfds)[i];
+        if (structPollfd == NULL) {
+            *result = -1;
+            return NOERROR;
+        }
+        Int16 reventsTmp;
+        structPollfd->GetRevents(&reventsTmp);
+        fds[i].revents = reventsTmp;
+    }
+    *result = rc;
     return NOERROR;
 }
 
@@ -1268,7 +1483,20 @@ ECode Posix::Posix_fallocate(
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length)
 {
+#ifdef __APPLE__
+    ALOGE("fallocate doesn't exist on a Mac");
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+#else
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    errno = TEMP_FAILURE_RETRY(posix_fallocate64(_fd, offset, length));
+    if (errno != 0) {
+        // throwErrnoException(env, "posix_fallocate");
+        ALOGE("System-call posix_fallocate error, errno = %d", errno);
+        return E_ERRNO_EXCEPTION;
+    }
     return NOERROR;
+#endif
 }
 
 ECode Posix::Prctl(
@@ -1277,9 +1505,20 @@ ECode Posix::Prctl(
     /* [in] */ Int64 arg3,
     /* [in] */ Int64 arg4,
     /* [in] */ Int64 arg5,
-    /* [out] */ Int32* prctl)
+    /* [out] */ Int32* prctlOut)
 {
-    return NOERROR;
+#ifdef __APPLE__
+    ALOGE("prctl doesn't exist on a Mac");
+    *prctlOut = 0;
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+#else
+    int result = prctl(static_cast<int>(option),
+                       static_cast<unsigned long>(arg2), static_cast<unsigned long>(arg3),
+                       static_cast<unsigned long>(arg4), static_cast<unsigned long>(arg5));
+    ECode ec;
+    *prctlOut = ErrorIfMinusOne("prctl", result, &ec);
+    return ec;
+#endif
 }
 
 ECode Posix::Pread(
@@ -1290,7 +1529,7 @@ ECode Posix::Pread(
     /* [in] */ Int64 offset,
     /* [out] */ Int32* num)
 {
-    return NOERROR;
+    return PreadBytes(fd, bytes, byteOffset, byteCount, offset, num);
 }
 
 ECode Posix::Pread(
@@ -1299,7 +1538,16 @@ ECode Posix::Pread(
     /* [in] */ Int64 offset,
     /* [out] */ Int32* num)
 {
-    return NOERROR;
+    // TODO::
+    Int32 position, remaining;
+    AutoPtr<IBuffer> buf = IBuffer::Probe(buffer);
+    if (buf == NULL) {
+        *num = -1;
+        return NOERROR;
+    }
+    buf->GetPosition(&position);
+    buf->GetRemaining(&remaining);
+    return PreadBytes(fd, buffer, position, remaining, offset, num);
 }
 
 ECode Posix::Pwrite(
@@ -1310,7 +1558,7 @@ ECode Posix::Pwrite(
     /* [in] */ Int64 offset,
     /* [out] */ Int32* num)
 {
-    return NOERROR;
+    return PwriteBytes(fd, bytes, byteOffset, byteCount, offset, num);
 }
 
 ECode Posix::Pwrite(
@@ -1319,7 +1567,16 @@ ECode Posix::Pwrite(
     /* [in] */ Int64 offset,
     /* [out] */ Int32* num)
 {
-    return NOERROR;
+    // TODO::
+    Int32 position, remaining;
+    AutoPtr<IBuffer> buf = IBuffer::Probe(buffer);
+    if (buf == NULL) {
+        *num = -1;
+        return NOERROR;
+    }
+    buf->GetPosition(&position);
+    buf->GetRemaining(&remaining);
+    return PwriteBytes(fd, buffer, position, remaining, offset, num);
 }
 
 ECode Posix::Read(
@@ -1329,7 +1586,7 @@ ECode Posix::Read(
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* num)
 {
-    return NOERROR;
+    return ReadBytes(fd, bytes, byteOffset, byteCount, num);
 }
 
 ECode Posix::Read(
@@ -1337,13 +1594,35 @@ ECode Posix::Read(
     /* [in] */ IByteBuffer* buffer,
     /* [out] */ Int32* num)
 {
-    return NOERROR;
+    // TODO::
+    Int32 position, remaining;
+    AutoPtr<IBuffer> buf = IBuffer::Probe(buffer);
+    if (buf == NULL) {
+        *num = -1;
+        return NOERROR;
+    }
+    buf->GetPosition(&position);
+    buf->GetRemaining(&remaining);
+    return ReadBytes(fd, buffer, position, remaining, num);
 }
 
 ECode Posix::Readlink(
     /* [in] */ String path,
     /* [out] */ String* link)
 {
+    if (path == NULL) {
+        *link = NULL;
+        return NOERROR;
+    }
+
+    String result;
+    if (!readlink(path, result)) {
+        // throwErrnoException(env, "readlink");
+        ALOGE("System-call readlink error, errno = %d", errno);
+        *link = NULL;
+        return E_ERRNO_EXCEPTION;
+    }
+    *link = result;
     return NOERROR;
 }
 
@@ -1652,6 +1931,236 @@ ECode Posix::Writev(
     /* [out] */ Int32* result)
 {
     return NOERROR;
+}
+
+ECode Posix::PreadBytes(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IByteBuffer* buffer,
+    /* [in] */ Int32 bufferOffset,
+    /* [in] */ Int32 bufferCount,
+    /* [in] */ Int64 offset,
+    /* [out] */ Int32* result)
+{
+    if (buffer == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    AutoPtr<ArrayOf<Byte> > array_;
+    buffer->GetArray((ArrayOf<Byte>**)&array_);
+    ECode ec;
+    *result = IO_FAILURE_RETRY(ssize_t, ec, pread64, fd, array_->GetPayload() + bufferOffset, bufferCount, offset);
+    return ec;
+}
+
+ECode Posix::PreadBytes(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* byteArray,
+    /* [in] */ Int32 byteOffset,
+    /* [in] */ Int32 byteCount,
+    /* [in] */ Int64 offset,
+    /* [out] */ Int32* result)
+{
+    if (byteArray == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    ECode ec;
+    *result = IO_FAILURE_RETRY(ssize_t, ec, pread64, fd, byteArray->GetPayload() + byteOffset, byteCount, offset);
+    return ec;
+}
+
+ECode Posix::PwriteBytes(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IByteBuffer* buffer,
+    /* [in] */ Int32 bufferOffset,
+    /* [in] */ Int32 bufferCount,
+    /* [in] */ Int64 offset,
+    /* [out] */ Int32* result)
+{
+    if (buffer == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    AutoPtr<ArrayOf<Byte> > array_;
+    buffer->GetArray((ArrayOf<Byte>**)&array_);
+    return PwriteBytes(fd, array_, bufferOffset, bufferCount, offset, result);
+}
+
+ECode Posix::PwriteBytes(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* byteArray,
+    /* [in] */ Int32 byteOffset,
+    /* [in] */ Int32 byteCount,
+    /* [in] */ Int64 offset,
+    /* [out] */ Int32* result)
+{
+    if (byteArray == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    ECode ec;
+    *result = IO_FAILURE_RETRY(ssize_t, ec, pwrite64, fd, byteArray->GetPayload() + byteOffset, byteCount, offset);
+    return ec;
+}
+
+ECode Posix::ReadBytes(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IByteBuffer* buffer,
+    /* [in] */ Int32 bufferOffset,
+    /* [in] */ Int32 bufferCount,
+    /* [out] */ Int32* result)
+{
+    if (buffer == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    AutoPtr<ArrayOf<Byte> > array_;
+    buffer->GetArray((ArrayOf<Byte>**)&array_);
+    return ReadBytes(fd, array_, bufferOffset, bufferCount, result);
+}
+
+ECode Posix::ReadBytes(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* byteArray,
+    /* [in] */ Int32 byteOffset,
+    /* [in] */ Int32 byteCount,
+    /* [out] */ Int32* result)
+{
+    if (byteArray == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    ECode ec;
+    *result = IO_FAILURE_RETRY(ssize_t, ec, read, fd, byteArray->GetPayload() + byteOffset, byteCount);
+    return ec;
+}
+
+ECode Posix::RecvfromBytes(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IByteBuffer* buffer,
+    /* [in] */ Int32 bufferOffset,
+    /* [in] */ Int32 bufferCount,
+    /* [in] */ Int32 flags,
+    /* [in] */ IInetSocketAddress* srcAddress,
+    /* [out] */ Int32* result)
+{
+    if (buffer == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    AutoPtr<ArrayOf<Byte> > array_;
+    buffer->GetArray((ArrayOf<Byte>**)&array_);
+    return RecvfromBytes(fd, array_, bufferOffset, bufferCount, flags, srcAddress, result);
+}
+
+ECode Posix::RecvfromBytes(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* byteArray,
+    /* [in] */ Int32 byteOffset,
+    /* [in] */ Int32 byteCount,
+    /* [in] */ Int32 flags,
+    /* [in] */ IInetSocketAddress* srcAddress,
+    /* [out] */ Int32* result)
+{
+    if (byteArray == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    sockaddr_storage ss;
+    socklen_t sl = sizeof(ss);
+    memset(&ss, 0, sizeof(ss));
+    sockaddr* from = (srcAddress != NULL) ? reinterpret_cast<sockaddr*>(&ss) : NULL;
+    socklen_t* fromLength = (srcAddress != NULL) ? &sl : 0;
+    ECode ec;
+    Int32 recvCount = NET_FAILURE_RETRY(ssize_t, ec, recvfrom, fd, byteArray->GetPayload() + byteOffset, byteCount, flags, from, fromLength);
+    FillInetSocketAddress(recvCount, srcAddress, ss);
+    *result = recvCount;
+    return ec;
+}
+
+ECode Posix::SendtoBytes(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IByteBuffer* buffer,
+    /* [in] */ Int32 bufferOffset,
+    /* [in] */ Int32 bufferCount,
+    /* [in] */ Int32 flags,
+    /* [in] */ IInetAddress* inetAddress,
+    /* [in] */ Int32 port,
+    /* [out] */ Int32* result)
+{
+    if (buffer == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    AutoPtr<ArrayOf<Byte> > array_;
+    buffer->GetArray((ArrayOf<Byte>**)&array_);
+    return SendtoBytes(fd, array_, bufferOffset, bufferCount, flags, inetAddress, port, result);
+}
+
+ECode Posix::SendtoBytes(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* byteArray,
+    /* [in] */ Int32 byteOffset,
+    /* [in] */ Int32 byteCount,
+    /* [in] */ Int32 flags,
+    /* [in] */ IInetAddress* inetAddress,
+    /* [in] */ Int32 port,
+    /* [out] */ Int32* result)
+{
+    if (byteArray == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    sockaddr_storage ss;
+    socklen_t sa_len = 0;
+    if (inetAddress != NULL && !InetAddressToSockaddr(inetAddress, port, ss, sa_len)) {
+        *result = -1;
+        return NOERROR;
+    }
+    const sockaddr* to = (inetAddress != NULL) ? reinterpret_cast<const sockaddr*>(&ss) : NULL;
+    ECode ec;
+    *result = NET_FAILURE_RETRY(ssize_t, ec, sendto, fd, byteArray->GetPayload() + byteOffset, byteCount, flags, to, sa_len);
+    return ec;
+}
+
+ECode Posix::UmaskImpl(
+    /* [in] */ Int32 mask,
+    /* [out] */ Int32* result)
+{
+    *result = umask(mask);
+    return NOERROR;
+}
+
+ECode Posix::WriteBytes(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IByteBuffer* buffer,
+    /* [in] */ Int32 bufferOffset,
+    /* [in] */ Int32 bufferCount,
+    /* [out] */ Int32* result)
+{
+    if (buffer == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    AutoPtr<ArrayOf<Byte> > array_;
+    buffer->GetArray((ArrayOf<Byte>**)&array_);
+    return WriteBytes(fd, array_, bufferOffset, bufferCount, result);
+}
+
+ECode Posix::WriteBytes(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* byteArray,
+    /* [in] */ Int32 byteOffset,
+    /* [in] */ Int32 byteCount,
+    /* [out] */ Int32* result)
+{
+    if (byteArray == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    ECode ec;
+    *result = IO_FAILURE_RETRY(ssize_t, ec, write, fd, byteArray->GetPayload() + byteOffset, byteCount);
+    return ec;
 }
 
 } // namespace IO
