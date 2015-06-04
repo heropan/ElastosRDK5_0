@@ -14,6 +14,7 @@ module
      * @Involve
      * interface IDataInput;
      */
+    [deprecated]
     interface IObjectInput {
         /**
          * Indicates the number of bytes of primitive data that can be read without
@@ -54,45 +55,32 @@ module
             [out] Int32* num);
 
         /**
-         * Reads bytes from this stream into the byte array {buffer}. Blocks
-         * while waiting for input.
+         * Reads bytes from this stream into the byte array {@code buffer}. Blocks
+         * while waiting for input. Returns the number of bytes read,
+         * or -1 if the end of this stream has been reached.
          *
-         * @param buffer
-         *            the array in which to store the bytes read.
-         * @return the number of bytes read or -1 if the end of this stream has been
-         *         reached.
-         * @return ECode = NOERROR(0) if success, else as follows:
-         * Value | Meaning |
-         * :-|:------------|
-         * IOException | if this stream is closed or another I/O error occurs.
+         * @throws IOException
+         *             if this stream is closed or another I/O error occurs.
          */
-        ReadBytes(
-            [out] ArrayOf<Byte> buffer,
+        // original ReadBytes
+        Read(
+            [in] ArrayOf<Byte>* buffer,
             [out] Int32* num);
 
         /**
-         * Reads at most {count} bytes from this stream and stores them in
-         * byte array {buffer} starting at offset {count}. Blocks while
-         * waiting for input.
+         * Reads up to {@code byteCount} bytes from this stream and stores them in
+         * byte array {@code buffer} starting at offset {@code byteOffset}. Blocks while
+         * waiting for input. Returns the number of bytes read or -1 if the end of this stream has been
+         * reached.
          *
-         * @param buffer
-         *            the array in which to store the bytes read.
-         * @param offset
-         *            the initial position in {buffer} to store the bytes read
-         *            from this stream.
-         * @param count
-         *            the maximum number of bytes to store in {buffer}.
-         * @return the number of bytes read or -1 if the end of this stream has been
-         *         reached.
-         * @return ECode = NOERROR(0) if success, else as follows:
-         * Value | Meaning |
-         * :-|:------------|
-         * IOException | if this stream is closed or another I/O error occurs.
+         * @throws IOException
+         *             if this stream is closed or another I/O error occurs.
          */
-        ReadBytes(
-            [out] ArrayOf<Byte> buffer,
-            [in] Int32 offset,
-            [in] Int32 count,
+        // original ReadBytes
+        Read(
+            [in] ArrayOf<Byte>* buffer,
+            [in] Int32 byteOffset,
+            [in] Int32 byteCount,
             [out] Int32* num);
 
         /**

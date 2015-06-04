@@ -5,7 +5,7 @@ module
     namespace IO {
 
     /*
-     * Defines an interface for classes that allow reading serialized objects.
+     * Defines an interface for classes that allow writing serialized objects.
      *
      * @implement Elastos.IO.IDataOutput
      * @sa IObjectOutputStream

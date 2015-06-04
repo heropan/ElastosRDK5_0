@@ -133,8 +133,8 @@ module
          *            the character array to print to the target.
          * @see #print(String)
          */
-        PrintChars(
-            [in] ArrayOf<Char32> charArray);
+        Print(
+            [in] ArrayOf<Char32>* charArray);
 
         /**
          * Prints the string representation of the specified character to the
@@ -154,7 +154,7 @@ module
          *            the double value to print to the target.
          * @see #print(String)
          */
-        PrintDouble(
+        Print(
             [in] Double dnum);
 
         /**
@@ -164,7 +164,7 @@ module
          *            the float value to print to the target.
          * @see #print(String)
          */
-        PrintFloat(
+        Print(
             [in] Float fnum);
 
         /**
@@ -174,7 +174,7 @@ module
          *            the integer value to print to the target.
          * @see #print(String)
          */
-        PrintInt32(
+        Print(
             [in] Int32 inum);
 
         /**
@@ -184,7 +184,7 @@ module
          *            the long value to print to the target.
          * @see #print(String)
          */
-        PrintInt64(
+        Print(
             [in] Int64 lnum);
 
         /**
@@ -194,7 +194,7 @@ module
          *            the object to print to the target.
          * @see #print(String)
          */
-        PrintObject(
+        Print(
             [in] IInterface* obj);
 
         /**
@@ -208,7 +208,7 @@ module
          *            the string to print to the target.
          * @see #write(int)
          */
-        PrintString(
+        Print(
             [in] String str);
 
         /**
@@ -218,7 +218,7 @@ module
          *            the boolean value to print the target.
          * @see #print(String)
          */
-        PrintBoolean(
+        Print(
             [in] Boolean result);
 
         /**
@@ -230,8 +230,8 @@ module
          * Prints the string representation of the character array chars followed by a newline.
          * Flushes this writer if the autoFlush flag is set to true.
          */
-        PrintCharsln(
-            [in] ArrayOf<Char32> chars);
+        Println(
+            [in] ArrayOf<Char32>* chars);
 
         /**
          * Prints the string representation of the char c followed by a newline.
@@ -244,14 +244,14 @@ module
          * Prints the string representation of the double d followed by a newline.
          * Flushes this writer if the autoFlush flag is set to true.
          */
-        PrintDoubleln(
+        Println(
             [in] Double d);
 
         /**
          * Prints the string representation of the float f followed by a newline.
          * Flushes this writer if the autoFlush flag is set to true.
          */
-        PrintFloatln(
+        Println(
             [in] Float f);
 
         /**
@@ -265,7 +265,7 @@ module
          * Prints the string representation of the long l followed by a newline.
          * Flushes this writer if the autoFlush flag is set to true.
          */
-        PrintInt64ln(
+        Println(
             [in] Int64 l);
 
         /**
@@ -273,7 +273,7 @@ module
          * followed by a newline.
          * Flushes this writer if the autoFlush flag is set to true.
          */
-        PrintObjectln(
+        Println(
             [in] IInterface* obj);
 
         /**
@@ -287,14 +287,14 @@ module
          *
          * <p>If an I/O error occurs, this writer's error flag is set to true.
          */
-        PrintStringln(
+        Println(
             [in] String str);
 
         /**
          * Prints the string representation of the boolean b followed by a newline.
          * Flushes this writer if the autoFlush flag is set to true.
          */
-        PrintBooleanln(
+        Println(
             [in] Boolean b);
     }
 
