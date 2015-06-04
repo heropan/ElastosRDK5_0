@@ -138,7 +138,7 @@ module
          * IOException | if an error occurs while reading from the source input stream.
          * IllegalArgumentException | if the type of the field identified by {name} is not {boolean}.
          */
-        GetBoolean(
+        Get(
             [in] String name,
             [in] Boolean defaultValue,
             [out] Boolean* value);
@@ -201,7 +201,7 @@ module
          * IOException | if an error occurs while reading from the source input stream.
          * IllegalArgumentException | if the type of the field identified by {name} is not {short}.
          */
-        GetInt16(
+        Get(
             [in] String name,
             [in] Int16 defaultValue,
             [out] Int16* value);
@@ -222,7 +222,7 @@ module
          * IOException | if an error occurs while reading from the source input stream.
          * IllegalArgumentException | if the type of the field identified by { name} is not {int}.
          */
-        GetInt32(
+        Get(
             [in] String name,
             [in] Int32 defaultValue,
             [out] Int32* value);
@@ -243,7 +243,7 @@ module
          * IOException | if an error occurs while reading from the source input stream.
          * IllegalArgumentException | if the type of the field identified by {name} is not {long}.
          */
-        GetInt64(
+        Get(
             [in] String name,
             [in] Int64 defaultValue,
             [out] Int64* value);
@@ -264,7 +264,7 @@ module
          * IOException | if an error occurs while reading from the source input stream.
          * IllegalArgumentException | if the type of the field identified by {float} is not {char}.
          */
-        GetFloat(
+        Get(
             [in] String name,
             [in] Float defaultValue,
             [out] Float* value);
@@ -285,7 +285,7 @@ module
          * IOException | if an error occurs while reading from the source input stream.
          * IllegalArgumentException | if the type of the field identified by {name} is not {double}.
          */
-        GetDouble(
+        Get(
             [in] String name,
             [in] Double defaultValue,
             [out] Double* value);
@@ -307,7 +307,7 @@ module
          *             stream.
          * IllegalArgumentException | if the type of the field identified by {name} is not {Object}.
          */
-        GetObject(
+        Get(
             [in] String name,
             [in] IInterface* defaultValue,
             [out] IInterface** value);

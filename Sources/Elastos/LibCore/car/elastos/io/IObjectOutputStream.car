@@ -129,7 +129,7 @@ module
          * @param value
          *            the value that is put to the persistent field.
          */
-        PutBoolean(
+        Put(
             [in] String name,
             [in] Boolean value);
 
@@ -168,7 +168,7 @@ module
          * @param value
          *            the value that is put to the persistent field.
          */
-        PutInt16(
+        Put(
             [in] String name,
             [in] Int16 value);
 
@@ -181,7 +181,7 @@ module
          * @param value
          *            the value that is put to the persistent field.
          */
-        PutInt32(
+        Put(
             [in] String name,
             [in] Int32 value);
 
@@ -194,7 +194,7 @@ module
          * @param value
          *            the value that is put to the persistent field.
          */
-        PutInt64(
+        Put(
             [in] String name,
             [in] Int64 value);
 
@@ -207,7 +207,7 @@ module
          * @param value
          *            the value that is put to the persistent field.
          */
-        PutFloat(
+        Put(
             [in] String name,
             [in] Float value);
 
@@ -220,7 +220,7 @@ module
          * @param value
          *            the value that is put to the persistent field.
          */
-        PutDouble(
+        Put(
             [in] String name,
             [in] Double value);
 
@@ -233,7 +233,7 @@ module
          * @param value
          *            the value that is put to the persistent field.
          */
-        PutObject(
+        Put(
             [in] String name,
             [in] IInterface* value);
 
