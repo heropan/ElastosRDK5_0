@@ -1,10 +1,12 @@
 
-#ifndef __CHTTPDATEHELPER_H__
-#define __CHTTPDATEHELPER_H__
+#ifndef __LIBCORE_NET_HTTP_CHTTPDATEHELPER_H__
+#define __LIBCORE_NET_HTTP_CHTTPDATEHELPER_H__
 
-#include "_CHttpDate.h"
+#include "_LIBCORE_NET_HTTP_CHttpDate.h"
 #include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Singleton.h>
 
+using Elastos::Core::Singleton;
 using Elastos::Utility::IDate;
 
 namespace Libcore {
@@ -12,8 +14,14 @@ namespace Net {
 namespace Http {
 
 CarClass(CHttpDate)
+    , public Singleton
+    , public IHttpDate
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI Parse(
         /* [in] */ const String& value,
         /* [out] */ IDate** adate);
@@ -55,4 +63,4 @@ private:
 } // namespace Net
 } // namespace Libcore
 
-#endif //__CHTTPDATEHELPER_H__
+#endif //__LIBCORE_NET_HTTP_CHTTPDATEHELPER_H__

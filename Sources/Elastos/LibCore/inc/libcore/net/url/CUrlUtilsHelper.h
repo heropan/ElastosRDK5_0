@@ -1,16 +1,25 @@
 
-#ifndef __CURLUTILSHELPER_H__
-#define __CURLUTILSHELPER_H__
+#ifndef __LIBCORE_NET_URI_CURLUTILSHELPER_H__
+#define __LIBCORE_NET_URI_CURLUTILSHELPER_H__
 
-#include "_CUrlUtilsHelper.h"
+#include "_LIBCORE_NET_URI_CUrlUtilsHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace Net {
 namespace Url {
 
 CarClass(CUrlUtilsHelper)
+    , public Singleton
+    , public IUrlUtilsHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI CanonicalizePath(
         /* [in] */ const String& path,
         /* [in] */ Boolean discardRelativePrefix,
@@ -42,4 +51,4 @@ public:
 } // namespace Net
 } // namespace Libcore
 
-#endif //__CURLUTILSHELPER_H__
+#endif //__LIBCORE_NET_URI_CURLUTILSHELPER_H__

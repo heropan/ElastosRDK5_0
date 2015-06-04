@@ -1,16 +1,23 @@
-#ifndef __URICODECHELPER_H__
-#define __URICODECHELPER_H__
+#ifndef __LIBCORE_NET_URICODECHELPER_H__
+#define __LIBCORE_NET_URICODECHELPER_H__
 
-#include "_CUriCodecHelper.h"
+#include "_LIBCORE_NET_CUriCodecHelper.h"
+#include <elastos/core/Singleton.h>
 
+using Elastos::Core::Singleton;
 using Elastos::IO::Charset::ICharset;
 
 namespace Libcore {
 namespace Net {
 
 CarClass(CUriCodecHelper)
+    , public Singleton
+    , public IUriCodecHelper
 {
 public :
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI ValidateSimple(
         /* [in] */ const String& s,
@@ -31,4 +38,4 @@ public :
 } // namespace Net
 } // namespace Libcore
 
-#endif // __URICODECHELPER_H__
+#endif // __LIBCORE_NET_URICODECHELPER_H__

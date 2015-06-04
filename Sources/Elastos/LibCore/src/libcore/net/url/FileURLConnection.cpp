@@ -25,7 +25,9 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
-ECode FileURLConnection::Init(
+CAR_INTERFACE_IMPL(FileURLConnection, URLConnection, IFileURLConnection)
+
+ECode FileURLConnection::constructor(
     /* [in] */ IURL* url)
 {
     mLength = -1;

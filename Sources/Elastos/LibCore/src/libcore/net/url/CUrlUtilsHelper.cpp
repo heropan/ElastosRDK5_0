@@ -6,6 +6,10 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
+CAR_INTERFACE_IMPL(CUrlUtilsHelper, Singleton, IUrlUtilsHelper)
+
+CAR_SINGLETON_IMPL(CUrlUtilsHelper)
+
 ECode CUrlUtilsHelper::CanonicalizePath(
     /* [in] */ const String& path,
     /* [in] */ Boolean discardRelativePrefix,

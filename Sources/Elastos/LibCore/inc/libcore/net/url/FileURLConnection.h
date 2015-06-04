@@ -1,6 +1,6 @@
 
-#ifndef __FILEURLCONNECTION_H__
-#define __FILEURLCONNECTION_H__
+#ifndef __LIBCORE_NET_URI_FILEURLCONNECTION_H__
+#define __LIBCORE_NET_URI_FILEURLCONNECTION_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include "URLConnection.h"
@@ -15,10 +15,14 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
-class FileURLConnection : public URLConnection
+class FileURLConnection
+    : public URLConnection
+    , public IFileURLConnection
 {
 public:
-    CARAPI Init(
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
         /* [in] */ IURL* url);
 
     CARAPI Connect();
@@ -54,4 +58,4 @@ private:
 } // namespace Net
 } // namespace Libcore
 
-#endif //__FILEURLCONNECTION_H__
+#endif //__LIBCORE_NET_URI_FILEURLCONNECTION_H__

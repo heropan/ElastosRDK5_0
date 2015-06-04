@@ -8,6 +8,12 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
+CAR_INTERFACE_IMPL(FtpHandler, URLStreamHandler, IFtpHandler)
+
+ECode FtpHandler::constructor()
+{
+    return NOERROR;
+}
 ECode FtpHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [out] */ IURLConnection** urlConnection)

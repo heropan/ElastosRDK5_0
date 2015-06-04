@@ -1,5 +1,5 @@
-#ifndef __URICODEC_H__
-#define __URICODEC_H__
+#ifndef __LIBCORE_NET_URICODEC_H__
+#define __LIBCORE_NET_URICODEC_H__
 
 #include <elatypes.h>
 #include <elastos/core/StringBuilder.h>
@@ -10,9 +10,17 @@ using Elastos::IO::Charset::ICharset;
 namespace Libcore {
 namespace Net {
 
-class UriCodec
+extern "C"  const InterfaceID EIID_UriCodec;
+
+class UriCodec : public Object
 {
 public :
+    CARAPI GetClassID(
+        /* [out] */ ClassID* clsid);
+
+    CARAPI ToString(
+        /* [out] */ String* result);
+
     CARAPI Validate(
         /* [in] */ const String& uri,
         /* [in] */ Int32 start,
@@ -81,4 +89,4 @@ protected:
 } // namespace Net
 } // namespace Libcore
 
-#endif // __URICODEC_H__
+#endif // __LIBCORE_NET_URICODEC_H__

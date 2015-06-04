@@ -1,6 +1,6 @@
 
-#ifndef __FTPHANDLER_H__
-#define __FTPHANDLER_H__
+#ifndef __LIBCORE_NET_URI_FTPHANDLER_H__
+#define __LIBCORE_NET_URI_FTPHANDLER_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include "URLConnection.h"
@@ -12,13 +12,20 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
+extern "C"  const InterfaceID EIID_FtpURLConnection;
+
 class FtpURLConnection
-    : public ElRefBase
-    , public ICacheRequest
-    , public URLConnection
+    : public URLConnection
+    , public IFtpURLConnection
 {
 public:
     CAR_INTERFACE_DECL()
+
+    CARAPI GetClassID(
+        /* [out] */ ClassID* clsid);
+
+    CARAPI ToString(
+        /* [out] */ String* result);
 
     CARAPI Connect();
 
@@ -137,4 +144,4 @@ private:
 } // namespace Net
 } // namespace Libcore
 
-#endif //__FTPHANDLER_H__
+#endif //__LIBCORE_NET_URI_FTPHANDLER_H__

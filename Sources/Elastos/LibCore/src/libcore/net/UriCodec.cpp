@@ -22,6 +22,28 @@ using Elastos::IO::IOutputStream;
 namespace Libcore {
 namespace Net {
 
+// e4c77c48-3673-4e45-8426-4992d8b199ba
+extern "C" const InterfaceID EIID_UriCodec =
+    { 0xe4c77c48, 0x3673, 0x4e45, { 0x84, 0x26, 0x49, 0x92, 0xd8, 0xb1, 0x99, 0xba } };
+
+ECode UriCodec::GetClassID(
+    /* [out] */ ClassID* clsid)
+{
+    VALIDATE_NOT_NULL(clsid);
+
+    *clsid = EIID_UriCodec;
+    return NOERROR;
+}
+
+ECode UriCodec::ToString(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    result->AppendFormat("\nClass[%s]\n", String("UriCodec"));
+    return NOERROR;
+}
+
 ECode UriCodec::Validate(
     /* [in] */ const String& uri,
     /* [in] */ Int32 start,

@@ -1,6 +1,6 @@
 
-#ifndef __FILEHANDLER_H__
-#define __FILEHANDLER_H__
+#ifndef __LIBCORE_NET_URI_FILEHANDLER_H__
+#define __LIBCORE_NET_URI_FILEHANDLER_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include "URLStreamHandler.h"
@@ -12,9 +12,15 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
-class FileHandler : public URLStreamHandler
+class FileHandler
+    : public URLStreamHandler
+    , public IFileHandler
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    constructor();
+
     CARAPI OpenConnection(
         /* [in] */ IURL* u,
         /* [out] */ IURLConnection** urlConnection);
@@ -35,4 +41,4 @@ public:
 } // namespace Net
 } // namespace Libcore
 
-#endif //__FILEHANDLER_H__
+#endif //__LIBCORE_NET_URI_FILEHANDLER_H__

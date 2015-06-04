@@ -31,6 +31,9 @@ const String CHttpDate::BROWSER_COMPATIBLE_DATE_FORMATS[14] = {
         String("EEE MMM d yyyy HH:mm:ss z"),
 };
 
+CAR_INTERFACE_IMPL(CHttpDate, Singleton, IHttpDate)
+
+CAR_SINGLETON_IMPL(CHttpDate)
 
 ECode CHttpDate::Parse(
     /* [in] */ const String& value,

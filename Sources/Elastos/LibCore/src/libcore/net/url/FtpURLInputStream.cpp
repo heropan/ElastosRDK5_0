@@ -1,5 +1,4 @@
 
-
 #include "FtpURLInputStream.h"
 #include "IoUtils.h"
 
@@ -9,7 +8,9 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
-ECode FtpURLInputStream::Init(
+CAR_INTERFACE_IMPL(FtpURLInputStream, InputStream, IFtpURLInputStream)
+
+ECode FtpURLInputStream::constructor(
     /* [in] */ IInputStream* is,
     /* [in] */ ISocket* controlSocket)
 {
@@ -17,7 +18,6 @@ ECode FtpURLInputStream::Init(
     mControlSocket = controlSocket;
     return NOERROR;
 }
-
 
 ECode FtpURLInputStream::Available(
     /* [out] */ Int32* number)

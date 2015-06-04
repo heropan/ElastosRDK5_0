@@ -42,7 +42,29 @@ const Int32 FtpURLConnection::FTP_PASWD = 331;
 
 const Int32 FtpURLConnection::FTP_NOTFOUND = 550;
 
-CAR_INTERFACE_IMPL(FtpURLConnection, IFtpURLConnection)
+// 7bc5a59e-e18b-4ba7-918b-2a2935e5d208
+extern "C" const InterfaceID EIID_FtpURLConnection =
+    { 0x7bc5a59e, 0xe18b, 0x4ba7, { 0x91, 0x8b, 0x2a, 0x29, 0x35, 0xe5, 0xd2, 0x08 } };
+
+CAR_INTERFACE_IMPL(FtpURLConnection, URLConnection, IFtpURLConnection)
+
+ECode FtpURLConnection::GetClassID(
+    /* [out] */ ClassID* clsid)
+{
+    VALIDATE_NOT_NULL(clsid);
+
+    *clsid = EIID_FtpURLConnection;
+    return NOERROR;
+}
+
+ECode FtpURLConnection::ToString(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    result->AppendFormat("\nClass[%s]\n", String("FtpURLConnection"));
+    return NOERROR;
+}
 
 ECode FtpURLConnection::Connect()
 {

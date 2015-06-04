@@ -1,6 +1,6 @@
 
-#ifndef __JARHANDLER_H__
-#define __JARHANDLER_H__
+#ifndef __LIBCORE_NET_URI_JARHANDLER_H__
+#define __LIBCORE_NET_URI_JARHANDLER_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include "URLStreamHandler.h"
@@ -12,13 +12,20 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
+extern "C"  const InterfaceID EIID_JarHandler;
+
 class JarHandler
-    : public ElRefBase
+    : public URLStreamHandler
     , public IJarHandler
-    , public URLStreamHandler
 {
 public:
     CAR_INTERFACE_DECL();
+
+    CARAPI GetClassID(
+        /* [out] */ ClassID* clsid);
+
+    CARAPI ToString(
+        /* [out] */ String* result);
 
     virtual CARAPI OpenConnection(
         /* [in] */ IURL* u,
@@ -95,4 +102,4 @@ protected:
 } // namespace Net
 } // namespace Libcore
 
-#endif //__JARHANDLER_H__
+#endif //__LIBCORE_NET_URI_JARHANDLER_H__

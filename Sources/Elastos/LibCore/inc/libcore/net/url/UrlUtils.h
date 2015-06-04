@@ -1,5 +1,5 @@
-#ifndef __LIBCORE_URLUTILS_H__
-#define __LIBCORE_URLUTILS_H__
+#ifndef __LIBCORE_NET_URI_URLUTILS_H__
+#define __LIBCORE_NET_URI_URLUTILS_H__
 
 #include <eltypes.h>
 
@@ -29,9 +29,12 @@ public:
         /* [in] */ const String& chars,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
+
+private:
+    UrlUtils() {}
 };
 
 } // namespace Net
 } // namespace Libcore
 
-#endif // __LIBCORE_URLUTILS_H__
+#endif // __LIBCORE_NET_URI_URLUTILS_H__

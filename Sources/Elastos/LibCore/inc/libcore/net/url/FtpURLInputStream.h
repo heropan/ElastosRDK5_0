@@ -1,24 +1,26 @@
 
-#ifndef __FTPURLINPUTSTREAM_H__
-#define __FTPURLINPUTSTREAM_H__
+#ifndef __LIBCORE_NET_URI_FTPURLINPUTSTREAM_H__
+#define __LIBCORE_NET_URI_FTPURLINPUTSTREAM_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include "InputStream.h"
-
 
 using Elastos::IO::InputStream;
 using Elastos::IO::IInputStream;
 using Elastos::Net::ISocket;
 
-
 namespace Libcore {
 namespace Net {
 namespace Url {
 
-class FtpURLInputStream : public InputStream
+class FtpURLInputStream
+    : public InputStream
+    , public IFtpURLInputStream
 {
 public:
-    CARAPI Init(
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
         /* [in] */ IInputStream* is,
         /* [in] */ ISocket* controlSocket);
 
@@ -58,4 +60,4 @@ private:
 } // namespace Net
 } // namespace Libcore
 
-#endif //__FTPURLINPUTSTREAM_H__
+#endif //__LIBCORE_NET_URI_FTPURLINPUTSTREAM_H__

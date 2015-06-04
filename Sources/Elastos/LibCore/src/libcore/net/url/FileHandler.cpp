@@ -7,6 +7,13 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
+CAR_INTERFACE_IMPL(FileHandler, URLStreamHandler, IFileHandler)
+
+ECode FileHandler::constructor()
+{
+    return NOERROR;
+}
+
 ECode FileHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [out] */ IURLConnection** urlConnection)

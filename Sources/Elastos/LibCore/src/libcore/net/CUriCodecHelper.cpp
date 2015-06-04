@@ -5,11 +5,14 @@
 namespace Libcore {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CUriCodecHelper, Singleton, IUriCodecHelper)
+
+CAR_SINGLETON_IMPL(CUriCodecHelper)
+
 ECode CUriCodecHelper::ValidateSimple(
     /* [in] */ const String& s,
     /* [in] */ const String& legal)
 {
-
 	return UriCodec::ValidateSimple(s,legal);
 }
 
