@@ -24,6 +24,10 @@ INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/zip
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/logging
 INCLUDES += $(MAKEDIR)/../../inc/elastos/droid/system
 INCLUDES += $(MAKEDIR)/../../inc/libcore/io
+INCLUDES += $(MAKEDIR)/../../inc/libcore/net
+INCLUDES += $(MAKEDIR)/../../inc/libcore/net/event
+INCLUDES += $(MAKEDIR)/../../inc/libcore/net/http
+INCLUDES += $(MAKEDIR)/../../inc/libcore/net/url
 
 SOURCES = Elastos.CoreLibrary.car
 
@@ -42,6 +46,7 @@ LIBRARIES += utility/regex/regex.lib
 LIBRARIES += utility/zip/zip.lib
 LIBRARIES += utility/logging/logging.lib
 LIBRARIES += ../libcore/io/io.lib
+LIBRARIES += ../libcore/net/net.lib
 
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib

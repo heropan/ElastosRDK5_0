@@ -1,2 +1,5 @@
 
-DIRS = io
+#DIRS = icu
+DIRS += io
+DIRS += net
+#DIRS += utility

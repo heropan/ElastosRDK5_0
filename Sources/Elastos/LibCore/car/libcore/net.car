@@ -1,0 +1,24 @@
+module
+{
+    merge("net/IMimeUtils.car");
+    merge("net/IUriCodecHelper.car");
+
+    merge("net/http/IHttpDate.car");
+
+    merge("net/url/IFileHandler.car");
+    merge("net/url/IFileURLConnection.car");
+    merge("net/url/IFtpHandler.car");
+    merge("net/url/IFtpURLConnection.car");
+    merge("net/url/IFtpURLInputStream.car");
+    merge("net/url/IJarHandler.car");
+    merge("net/url/IJarURLConnectionImpl.car");
+    merge("net/url/IUrlUtils.car");
+
+    //namespace Libcore {
+    //namespace Net {
+    //    singleton class CAsynchronousCloseMonitor {
+    //        interface IAsynchronousCloseMonitor;
+    //    }
+    //}
+    //}
+}
