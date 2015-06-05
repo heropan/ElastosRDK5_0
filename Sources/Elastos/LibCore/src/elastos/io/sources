@@ -59,6 +59,7 @@ SOURCES += LineNumberInputStream.cpp
 SOURCES += LineNumberReader.cpp
 SOURCES += OutputStreamWriter.cpp
 #SOURCES += CPrintStream.cpp
+SOURCES += PushbackReader.cpp
 
 #
 # nio related classes

@@ -537,6 +537,19 @@ module
 //        interface IPrintStream;
 //    }
 
+    class CPushbackReader {
+        constructor(
+            [in] IReader* ir);
+
+        constructor(
+            [in] IReader* ir,
+            [in] Int32 size);
+
+        interface IReadable;
+        interface IReader;
+        interface IPushbackReader;
+    }
+
     } // namespace IO
     } // namespace Elastos
 }

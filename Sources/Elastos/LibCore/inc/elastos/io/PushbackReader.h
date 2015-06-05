@@ -7,13 +7,19 @@
 namespace Elastos {
 namespace IO {
 
-class PushbackReader : public FilterReader
+class PushbackReader
+    : public FilterReader
+    , public IPushbackReader
 {
+public:
+    CAR_INTERFACE_DECL()
+    
 protected:
     PushbackReader();
 
     ~PushbackReader();
 
+public:
     /**
      * Constructs a new {@code PushbackReader} with the specified reader as
      * source. The size of the pushback buffer is set to the default value of 1
@@ -22,7 +28,7 @@ protected:
      * @param in
      *            the source reader.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IReader* in);
 
     /**
@@ -36,11 +42,10 @@ protected:
      * @throws IllegalArgumentException
      *             if {@code size} is negative.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IReader* in,
         /* [in] */ Int32 size);
 
-public:
     /**
      * Closes this reader. This implementation closes the source reader
      * and releases the pushback buffer.
@@ -94,31 +99,21 @@ public:
         /* [out] */ Int32* value);
 
     /**
-     * Reads at most {@code length} bytes from this reader and stores them in
-     * byte array {@code buffer} starting at {@code offset}. Characters are
+     * Reads up to {@code count} characters from this reader and stores them in
+     * character array {@code buffer} starting at {@code offset}. Characters are
      * read from the pushback buffer first, then from the source reader if more
      * bytes are required. Blocks until {@code count} characters have been read,
      * the end of the source reader is detected or an exception is thrown.
+     * Returns the number of bytes read or -1 if the end of the source reader has been reached.
      *
-     * @param buffer
-     *            the array in which to store the characters read from this
-     *            reader.
-     * @param offset
-     *            the initial position in {@code buffer} to store the characters
-     *            read from this reader.
-     * @param count
-     *            the maximum number of bytes to store in {@code buffer}.
-     * @return the number of bytes read or -1 if the end of the source reader
-     *         has been reached.
      * @throws IndexOutOfBoundsException
-     *             if {@code offset < 0} or {@code count < 0}, or if
-     *             {@code offset + count} is greater than the length of
-     *             {@code buffer}.
+     *     if {@code offset < 0 || count < 0 || offset + count > buffer.length}.
      * @throws IOException
      *             if this reader is closed or another I/O error occurs while
      *             reading from this reader.
      */
-    CARAPI ReadChars(
+    // @Override
+    CARAPI Read(
         /* [out] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
@@ -185,8 +180,8 @@ public:
      *             pushback buffer is not sufficient to store the contents of
      *             {@code buffer}.
      */
-    CARAPI UnreadChars(
-        /* [in] */ const ArrayOf<Char32>& buffer);
+    CARAPI Unread(
+        /* [in] */ ArrayOf<Char32>* buffer);
 
     /**
      * Pushes a subset of the characters in {@code buffer} back to this reader.
@@ -218,8 +213,8 @@ public:
      * @throws NullPointerException
      *             if {@code buffer} is {@code null}.
      */
-    CARAPI UnreadChars(
-        /* [in] */ const ArrayOf<Char32>& buffer,
+    CARAPI Unread(
+        /* [in] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length);
 
