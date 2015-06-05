@@ -1,0 +1,16 @@
+
+TARGET_NAME= methods
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/client/methods
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/message
+
+SOURCES = HttpRequestBase.cpp
+SOURCES += HttpEntityEnclosingRequestBase.cpp
+SOURCES += CHttpDelete.cpp
+SOURCES += CHttpGet.cpp
+SOURCES += CHttpHead.cpp
+SOURCES += CHttpOptions.cpp
+SOURCES += CHttpPost.cpp
+SOURCES += CHttpPut.cpp
+SOURCES += CHttpTrace.cpp

@@ -17,4 +17,8 @@ module
     const E_AUTHENTICATION_EXCEPTION                        = 0xB1070000;
     const E_INVALID_CREDENTIALS_EXCEPTION                   = 0xB1080000;
     const E_MALFORMED_CHALLENGE_EXCEPTION                   = 0xB1090000;
+    const E_CLIENT_PROTOCOL_EXCEPTION                       = 0xB10A0000;
+    const E_CIRCULAR_REDIRECT_EXCEPTION                     = 0xB10B0000;
+    const E_HTTP_RESPONSE_EXCEPTION                         = 0xB10C0000;
+    const E_NON_REPEATABLE_REQUEST_EXCEPTION                = 0xB10D0000;
 }

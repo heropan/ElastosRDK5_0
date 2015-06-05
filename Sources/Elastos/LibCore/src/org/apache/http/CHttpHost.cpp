@@ -143,7 +143,7 @@ ECode CHttpHost::constructor(
     /* [in] */ const String& scheme)
 {
     if (hostname.IsNull()) {
-        // Logger::E("CHttpHost", "Host name may not be null");
+        Logger::E("CHttpHost", "Host name may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mHostname   = hostname;

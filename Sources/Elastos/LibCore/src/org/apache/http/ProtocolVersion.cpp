@@ -119,6 +119,7 @@ ECode ProtocolVersion::CompareToVersion(
     /* [out] */ Int32* delta)
 {
     VALIDATE_NOT_NULL(delta)
+    *delta = 0;
 
     if (that == NULL) {
         Logger::E("ProtocolVersion", "Protocol version must not be null.");

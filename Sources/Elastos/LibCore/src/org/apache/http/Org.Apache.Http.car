@@ -50,6 +50,35 @@ module
     merge("../../../../car/org/apache/http/auth/params/AuthParams.car");
     merge("../../../../car/org/apache/http/auth/params/AuthPNames.car");
 
+    merge("../../../../car/org/apache/http/client/AuthenticationHandler.car");
+    merge("../../../../car/org/apache/http/client/CookieStore.car");
+    merge("../../../../car/org/apache/http/client/CredentialsProvider.car");
+    merge("../../../../car/org/apache/http/client/HttpClient.car");
+    merge("../../../../car/org/apache/http/client/HttpRequestRetryHandler.car");
+    merge("../../../../car/org/apache/http/client/RedirectHandler.car");
+    merge("../../../../car/org/apache/http/client/RequestDirector.car");
+    merge("../../../../car/org/apache/http/client/ResponseHandler.car");
+    merge("../../../../car/org/apache/http/client/UserTokenHandler.car");
+
+    merge("../../../../car/org/apache/http/client/methods/AbortableHttpRequest.car");
+    merge("../../../../car/org/apache/http/client/methods/HttpDelete.car");
+    merge("../../../../car/org/apache/http/client/methods/HttpGet.car");
+    merge("../../../../car/org/apache/http/client/methods/HttpHead.car");
+    merge("../../../../car/org/apache/http/client/methods/HttpOptions.car");
+    merge("../../../../car/org/apache/http/client/methods/HttpPost.car");
+    merge("../../../../car/org/apache/http/client/methods/HttpPut.car");
+    merge("../../../../car/org/apache/http/client/methods/HttpUriRequest.car");
+
+    merge("../../../../car/org/apache/http/client/Params/AllClientPNames.car");
+    merge("../../../../car/org/apache/http/client/Params/AuthPolicy.car");
+    merge("../../../../car/org/apache/http/client/Params/ClientParamBean.car");
+    merge("../../../../car/org/apache/http/client/Params/ClientPNames.car");
+    merge("../../../../car/org/apache/http/client/Params/CookiePolicy.car");
+    merge("../../../../car/org/apache/http/client/Params/HttpClientParams.car");
+
+    merge("../../../../car/org/apache/http/client/Protocol/ClientContext.car");
+    merge("../../../../car/org/apache/http/client/Protocol/ClientContextConfigurer.car");
+
     merge("../../../../car/org/apache/http/params/HttpParams.car");
 
     merge("../../../../car/org/apache/http/protocol/HttpContext.car");
@@ -58,6 +87,8 @@ module
     merge("../../../../car/org/apache/http/util/CharArrayBuffer.car");
 
     using interface Elastos.Core.ICloneable;
+    using interface Elastos.Net.IURI;
+    using interface Elastos.Utility.IList;
 
     namespace Org {
     namespace Apache {
@@ -267,6 +298,231 @@ module
 
     } // namespace Params
     } // namespace Auth
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Client {
+    namespace Entity {
+
+    class CUrlEncodedFormEntity {
+        constructor(
+            [in] IList* parameters,
+            [in] String encoding);
+
+        constructor(
+            [in] IList* parameters);
+
+        interface IStringEntity;
+        interface IAbstractHttpEntity;
+        interface IHttpEntity;
+        interface ICloneable;
+    }
+
+    } // namespace Entity
+    } // namespace Client
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Client {
+    namespace Methods {
+
+    class CHttpDelete {
+        constructor();
+
+        constructor(
+            [in] IURI* uri);
+
+        constructor(
+            [in] String uri);
+
+        interface IHttpDelete;
+        interface IHttpMessage;
+        interface IHttpUriRequest;
+        interface IAbortableHttpRequest;
+        interface ICloneable;
+    }
+
+    class CHttpGet {
+        constructor();
+
+        constructor(
+            [in] IURI* uri);
+
+        constructor(
+            [in] String uri);
+
+        interface IHttpGet;
+        interface IHttpMessage;
+        interface IHttpUriRequest;
+        interface IAbortableHttpRequest;
+        interface ICloneable;
+    }
+
+    class CHttpHead {
+        constructor();
+
+        constructor(
+            [in] IURI* uri);
+
+        constructor(
+            [in] String uri);
+
+        interface IHttpHead;
+        interface IHttpMessage;
+        interface IHttpUriRequest;
+        interface IAbortableHttpRequest;
+        interface ICloneable;
+    }
+
+    class CHttpOptions {
+        constructor();
+
+        constructor(
+            [in] IURI* uri);
+
+        constructor(
+            [in] String uri);
+
+        interface IHttpOptions;
+        interface IHttpMessage;
+        interface IHttpUriRequest;
+        interface IAbortableHttpRequest;
+        interface ICloneable;
+    }
+
+    class CHttpPost {
+        constructor();
+
+        constructor(
+            [in] IURI* uri);
+
+        constructor(
+            [in] String uri);
+
+        interface IHttpPost;
+        interface IHttpEntityEnclosingRequest;
+        interface IHttpMessage;
+        interface IHttpUriRequest;
+        interface IAbortableHttpRequest;
+        interface ICloneable;
+    }
+
+    class CHttpPut {
+        constructor();
+
+        constructor(
+            [in] IURI* uri);
+
+        constructor(
+            [in] String uri);
+
+        interface IHttpPut;
+        interface IHttpEntityEnclosingRequest;
+        interface IHttpMessage;
+        interface IHttpUriRequest;
+        interface IAbortableHttpRequest;
+        interface ICloneable;
+    }
+
+    class CHttpTrace {
+        constructor();
+
+        constructor(
+            [in] IURI* uri);
+
+        constructor(
+            [in] String uri);
+
+        interface IHttpTrace;
+        interface IHttpMessage;
+        interface IHttpUriRequest;
+        interface IAbortableHttpRequest;
+        interface ICloneable;
+    }
+
+    } // namespace Methods
+    } // namespace Client
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Client {
+    namespace Params {
+
+    class CClientParamBean {
+        constructor(
+            [in] IHttpParams* params);
+
+        interface IClientParamBean;
+    }
+
+    singleton class CHttpClientParams {
+        interface IHttpClientParams;
+    }
+
+    } // namespace Params
+    } // namespace Client
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Client {
+    namespace Protocol {
+
+    class CClientContextConfigurer {
+        constructor(
+            [in] IHttpContext* context);
+
+        interface IClientContextConfigurer;
+        interface IClientContext;
+    }
+
+    class CRequestAddCookies {
+        constructor();
+
+        interface IHttpRequestInterceptor;
+    }
+
+    class CRequestDefaultHeaders {
+        constructor();
+
+        interface IHttpRequestInterceptor;
+    }
+
+    class CRequestProxyAuthentication {
+        constructor();
+
+        interface IHttpRequestInterceptor;
+    }
+
+    class CRequestTargetAuthentication {
+        constructor();
+
+        interface IHttpRequestInterceptor;
+    }
+
+    class CResponseProcessCookies {
+        constructor();
+
+        interface IHttpResponseInterceptor;
+    }
+
+    } // namespace Protocol
+    } // namespace Client
     } // namespace Http
     } // namespace Apache
     } // namespace Org

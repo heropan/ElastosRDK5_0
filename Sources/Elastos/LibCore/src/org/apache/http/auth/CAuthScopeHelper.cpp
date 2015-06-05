@@ -9,7 +9,7 @@ namespace Auth {
 
 CAR_INTERFACE_IMPL(CAuthScopeHelper, Object, IAuthScopeHelper)
 
-CAR_OBJECT_IMPL(CAuthScopeHelper)
+CAR_SINGLETON_IMPL(CAuthScopeHelper)
 
 ECode CAuthScopeHelper::GetDefaultScope(
     /* [out] */ IAuthScope** scope)

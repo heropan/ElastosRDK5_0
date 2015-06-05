@@ -1,0 +1,14 @@
+
+TARGET_NAME= protocol
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/client/protocol
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/cookie
+
+SOURCES = CClientContextConfigurer.cpp
+SOURCES += CRequestAddCookies.cpp
+SOURCES += CHttpClientParams.cpp
+SOURCES += CRequestDefaultHeaders.cpp
+SOURCES += CRequestProxyAuthentication.cpp
+SOURCES += CRequestTargetAuthentication.cpp
+SOURCES += CResponseProcessCookies.cpp

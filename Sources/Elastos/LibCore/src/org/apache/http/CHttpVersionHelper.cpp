@@ -8,7 +8,7 @@ namespace Http {
 
 CAR_INTERFACE_IMPL(CHttpVersionHelper, Object, IHttpVersionHelper)
 
-CAR_OBJECT_IMPL(CHttpVersionHelper)
+CAR_SINGLETON_IMPL(CHttpVersionHelper)
 
 ECode CHttpVersionHelper::GerHttpVersion09(
     /* [out] */ IHttpVersion** ver)

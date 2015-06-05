@@ -1,0 +1,10 @@
+
+TARGET_NAME= params
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/client/params
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/params
+
+SOURCES = CClientParamBean.cpp
+SOURCES += HttpClientParams.cpp
+SOURCES += CHttpClientParams.cpp
