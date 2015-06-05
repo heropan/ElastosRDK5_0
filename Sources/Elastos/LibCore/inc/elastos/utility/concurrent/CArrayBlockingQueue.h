@@ -225,7 +225,6 @@ public:
      */
     class Itrs
         : public Object
-        , public IInterface
     {
     private:
         /**
@@ -247,8 +246,6 @@ public:
         };
 
     public:
-        CAR_INTERFACE_DECL()
-
         Itrs(
             /* [in] */ Itr* initial);
 

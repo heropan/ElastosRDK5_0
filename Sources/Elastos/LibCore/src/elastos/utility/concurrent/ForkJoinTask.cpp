@@ -188,8 +188,6 @@ Int32 ForkJoinTask::EXCEPTION_MAP_CAPACITY = 32;
 //====================================================================
 // ForkJoinTask::ExceptionNode::
 //====================================================================
-CAR_INTERFACE_IMPL(ForkJoinTask::ExceptionNode, Object, IInterface)
-
 ForkJoinTask::ExceptionNode::ExceptionNode(
     /* [in] */ IForkJoinTask* task,
     /* [in] */ IThrowable* ex,

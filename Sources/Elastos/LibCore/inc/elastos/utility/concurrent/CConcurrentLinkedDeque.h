@@ -4,9 +4,12 @@
 
 #include "_Elastos_Utility_Concurrent_CConcurrentLinkedDeque.h"
 #include "AbstractCollection.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -16,15 +19,13 @@ CarClass(CConcurrentLinkedDeque)
     , public AbstractCollection
     , public IDeque
     , public IQueue
+    , public ISerializable
 {
 protected:
     class Node
-        : public IInterface
-        , public Object
+        : public Object
     {
     public:
-        CAR_INTERFACE_DECL()
-
         Node();
 
         Node(
@@ -274,6 +275,13 @@ public:
 
     CARAPI GetDescendingIterator(
         /* [out] */ IIterator** outiter);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
 
 protected:
     CARAPI_(AutoPtr<Node>) PrevTerminator();

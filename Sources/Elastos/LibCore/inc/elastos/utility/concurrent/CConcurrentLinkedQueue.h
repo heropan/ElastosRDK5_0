@@ -19,12 +19,9 @@ CarClass(CConcurrentLinkedQueue)
 {
 private:
     class Node
-        : public IInterface
-        , public Object
+        : public Object
     {
     public:
-        CAR_INTERFACE_DECL()
-
         Node(
             /* [in] */ IInterface* item);
 

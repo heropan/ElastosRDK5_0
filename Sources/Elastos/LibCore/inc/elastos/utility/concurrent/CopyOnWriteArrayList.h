@@ -24,11 +24,8 @@ class CopyOnWriteArrayList
 protected:
     class Slice
         : public Object
-        , public IInterface
     {
     public:
-        CAR_INTERFACE_DECL()
-
         Slice(
             /* [in] */ ArrayOf<IInterface*>* expectedElements,
             /* [in] */ Int32 from,

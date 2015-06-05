@@ -9,8 +9,6 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CAR_INTERFACE_IMPL(CLinkedBlockingQueue::Node, Object, IInterface)
-
 CAR_INTERFACE_IMPL(CLinkedBlockingQueue::Itr, Object, IIterator);
 
 CLinkedBlockingQueue::Itr::Itr(

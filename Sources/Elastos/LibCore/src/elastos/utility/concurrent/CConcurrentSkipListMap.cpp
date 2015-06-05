@@ -56,8 +56,6 @@ Boolean CConcurrentSkipListMap::CasHead(
 //====================================================================
 // CConcurrentSkipListMap::Node::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentSkipListMap::Node, Object, IInterface)
-
 CConcurrentSkipListMap::Node::Node(
     /* [in] */ IInterface* key,
     /* [in] */ IInterface* value,
@@ -168,8 +166,6 @@ AutoPtr<AbstractMap::SimpleImmutableEntry> CConcurrentSkipListMap::Node::CreateS
 //====================================================================
 // CConcurrentSkipListMap::Index::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentSkipListMap::Index, Object, IInterface)
-
 CConcurrentSkipListMap::Index::Index(
     /* [in] */ Node* node,
     /* [in] */ Index* down,

@@ -3,6 +3,7 @@
 #include "CArrayList.h"
 #include <Math.h>
 
+using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::Math;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
@@ -14,8 +15,6 @@ namespace Concurrent {
 //====================================================================
 // CConcurrentLinkedDeque::Node::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentLinkedDeque::Node, Object, IInterface)
-
 CConcurrentLinkedDeque::Node::Node()
 {  // default constructor for NEXT_TERMINATOR, PREV_TERMINATOR
 }
@@ -96,7 +95,7 @@ Int64 CConcurrentLinkedDeque::Node::sNextOffset = 0;
 AutoPtr<CConcurrentLinkedDeque::Node> CConcurrentLinkedDeque::sPREV_TERMINATOR;
 AutoPtr<CConcurrentLinkedDeque::Node> CConcurrentLinkedDeque::sNEXT_TERMINATOR;
 
-CAR_INTERFACE_IMPL_2(CConcurrentLinkedDeque, AbstractCollection, IDeque, IQueue)
+CAR_INTERFACE_IMPL_3(CConcurrentLinkedDeque, AbstractCollection, IDeque, IQueue, ISerializable)
 
 CAR_OBJECT_IMPL(CConcurrentLinkedDeque);
 
@@ -579,8 +578,9 @@ AutoPtr<IArrayList> CConcurrentLinkedDeque::ToArrayList()
     for (; p != NULL; p = Succ(p)) {
         AutoPtr<IInterface> item = p->mItem;
         if (item != NULL) {
+            AutoPtr<ICollection> pC = (ICollection*)list->Probe(EIID_ICollection);
             Boolean res;
-            list->Add(item, &res);
+            pC->Add(item, &res);
         }
     }
     return list;
@@ -597,8 +597,9 @@ ECode CConcurrentLinkedDeque::constructor(
 {
     // Copy c into a private chain of Nodes
     AutoPtr<Node> h, t;
+    AutoPtr<IIterable> pI = (IIterable*)c->Probe(EIID_IIterable);
     AutoPtr<IIterator> it;
-    c->GetIterator((IIterator**)&it);
+    pI->GetIterator((IIterator**)&it);
     Boolean isflag = FALSE;
     while ((it->HasNext(&isflag), isflag)) {
         AutoPtr<IInterface> e;
@@ -937,8 +938,9 @@ ECode CConcurrentLinkedDeque::AddAll(
 
     // Copy c into a private chain of Nodes
     AutoPtr<Node> beginningOfTheEnd = NULL, last = NULL;
+    AutoPtr<IIterable> pI = (IIterable*)collection->Probe(EIID_IIterable);
     AutoPtr<IIterator> it;
-    collection->GetIterator((IIterator**)&it);
+    pI->GetIterator((IIterator**)&it);
     Boolean isflag = FALSE;
     while ((it->HasNext(&isflag), isflag)) {
         AutoPtr<IInterface> e;
@@ -1006,7 +1008,9 @@ ECode CConcurrentLinkedDeque::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
     VALIDATE_NOT_NULL(array)
-    return ToArrayList()->ToArray(array);
+    AutoPtr<IArrayList> p = ToArrayList();
+    AutoPtr<ICollection> res = (ICollection*)p->Probe(EIID_ICollection);
+    return res->ToArray(array);
 }
 
 ECode CConcurrentLinkedDeque::ToArray(
@@ -1014,7 +1018,9 @@ ECode CConcurrentLinkedDeque::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     VALIDATE_NOT_NULL(outArray)
-    return ToArrayList()->ToArray(inArray, outArray);
+    AutoPtr<IArrayList> p = ToArrayList();
+    AutoPtr<ICollection> res = (ICollection*)p->Probe(EIID_ICollection);
+    return res->ToArray(inArray, outArray);
 }
 
 ECode CConcurrentLinkedDeque::GetIterator(
@@ -1035,6 +1041,19 @@ ECode CConcurrentLinkedDeque::GetDescendingIterator(
     *outiter = (IIterator*)p->Probe(EIID_IIterator);
     REFCOUNT_ADD(*outiter);
     return NOERROR;
+}
+
+ECode CConcurrentLinkedDeque::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    return E_NO_SUCH_METHOD_EXCEPTION;
+}
+
+ECode CConcurrentLinkedDeque::GetHashCode(
+    /* [out] */ Int32* hashCode)
+{
+    return E_NO_SUCH_METHOD_EXCEPTION;
 }
 
 //====================================================================

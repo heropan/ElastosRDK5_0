@@ -25,11 +25,8 @@ public:
      */
     class WaitNode
         : public Object
-        , public IInterface
     {
     public:
-        CAR_INTERFACE_DECL()
-
         WaitNode()
         {
             mThread = Thread::GetCurrentThread();

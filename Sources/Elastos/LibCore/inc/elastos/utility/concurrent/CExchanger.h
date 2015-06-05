@@ -20,10 +20,7 @@ CarClass(CExchanger)
 private:
     class CDummyObject
         : public Object
-        , public IInterface
     {
-    public:
-        CAR_INTERFACE_DECL()
     };
 
     /**

@@ -35,11 +35,8 @@ public:
      */
     class ExceptionNode// extends WeakReference
         : public Object
-        , public IInterface
     {
     public:
-        CAR_INTERFACE_DECL()
-
         ExceptionNode(
             /* [in] */ IForkJoinTask* task,
             /* [in] */ IThrowable* ex,

@@ -24,12 +24,9 @@ CarClass(CConcurrentSkipListMap)
 {
 public:
     class Node
-        : public IInterface
-        , public Object
+        : public Object
     {
     public:
-        CAR_INTERFACE_DECL()
-
         Node(
             /* [in] */ IInterface* key,
             /* [in] */ IInterface* value,
@@ -87,12 +84,9 @@ public:
     };
 
     class Index
-        : public IInterface
-        , public Object
+        : public Object
     {
     public:
-        CAR_INTERFACE_DECL()
-
         Index(
             /* [in] */ Node* node,
             /* [in] */ Index* down,

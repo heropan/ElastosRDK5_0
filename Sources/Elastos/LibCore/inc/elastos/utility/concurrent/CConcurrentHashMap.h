@@ -31,11 +31,8 @@ public:
      */
     class HashEntry
         : public Object
-        , public IInterface
     {
     public:
-        CAR_INTERFACE_DECL()
-
         HashEntry(
             /* [in] */ Int32 hash,
             /* [in] */ IInterface* key,

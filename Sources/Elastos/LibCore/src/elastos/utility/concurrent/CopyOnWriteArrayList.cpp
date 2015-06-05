@@ -641,8 +641,6 @@ ECode CopyOnWriteArrayList::ReadObject(
 //==========================================================
 //       CopyOnWriteArrayList::Slice
 //==========================================================
-CAR_INTERFACE_IMPL(CopyOnWriteArrayList::Slice, Object, IInterface)
-
 CopyOnWriteArrayList::Slice::Slice(
     /* [in] */ ArrayOf<IInterface*>* expectedElements,
     /* [in] */ Int32 from,

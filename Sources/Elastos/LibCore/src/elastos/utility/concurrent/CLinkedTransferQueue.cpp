@@ -1,12 +1,7 @@
 
 #include "CLinkedTransferQueue.h"
 #include "LockSupport.h"
-<<<<<<< Updated upstream
 #include <elastos/Math.h>
-=======
-#include <ObjectUtils.h>
-#include <Math.h>
->>>>>>> Stashed changes
 #include "CSystem.h"
 #include "Thread.h"
 
@@ -21,8 +16,6 @@ namespace Concurrent {
 //====================================================================
 // CLinkedTransferQueue::Node::
 //====================================================================
-CAR_INTERFACE_IMPL(CLinkedTransferQueue::Node, Object, IInterface);
-
 Boolean CLinkedTransferQueue::Node::CasNext(
     /* [in] */ Node* cmp,
     /* [in] */ Node* val)

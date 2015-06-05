@@ -27,11 +27,8 @@ public:
      */
     class Node
         : public Object
-        , public IInterface
     {
     public:
-        CAR_INTERFACE_DECL();
-
         Node(
             /* [in] */ IInterface* x)
             : mItem(x)
