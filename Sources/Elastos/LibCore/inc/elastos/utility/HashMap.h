@@ -1,8 +1,12 @@
-#ifndef __UTILITY_HASHMAP_H__
-#define __UTILITY_HASHMAP_H__
+#ifndef __UTILITY_HashMap_H__
+#define __UTILITY_HashMap_H__
 
 #include "AbstractMap.h"
+#include "Object.h"
 
+using Elastos::Core::Object;
+using Elastos::Core::ICloneable;
+using Elastos::IO::ISerializable;
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectStreamField;
@@ -10,11 +14,15 @@ using Elastos::IO::IObjectStreamField;
 namespace Elastos {
 namespace Utility {
 
-class _HashMap : public AbstractMap
+class HashMap
+    : public AbstractMap
+    , public IHashMap
+    , public ICloneable
+    , public ISerializable
 {
 public:
     class HashMapEntry
-        : public ElRefBase
+        : public Object
         , public IMapEntry
     {
     public:
@@ -55,12 +63,13 @@ public:
 
 private:
     class HashIterator
+        : public Object
     {
     public:
         HashIterator();
 
         HashIterator(
-            /* [in] */ _HashMap* host);
+            /* [in] */ HashMap* host);
 
         virtual CARAPI HasNext(
             /* [out] */ Boolean* result);
@@ -74,17 +83,16 @@ private:
         AutoPtr<HashMapEntry> mNextEntry;
         AutoPtr<HashMapEntry> mLastEntryReturned;
         Int32 mExpectedModCount;
-        AutoPtr<_HashMap> mHost;
+        AutoPtr<HashMap> mHost;
     };
 
     class KeyIterator
-        : public ElRefBase
-        , public HashIterator
+        : public HashIterator
         , public IIterator
     {
     public:
         KeyIterator(
-            /* [in] */ _HashMap* host);
+            /* [in] */ HashMap* host);
 
         CAR_INTERFACE_DECL()
 
@@ -98,13 +106,12 @@ private:
     };
 
     class ValueIterator
-        : public ElRefBase
-        , public HashIterator
+        : public HashIterator
         , public IIterator
     {
     public:
         ValueIterator(
-            /* [in] */ _HashMap* host);
+            /* [in] */ HashMap* host);
 
         CAR_INTERFACE_DECL()
 
@@ -118,13 +125,12 @@ private:
     };
 
     class EntryIterator
-        : public ElRefBase
-        , public HashIterator
+        : public HashIterator
         , public IIterator
     {
     public:
         EntryIterator(
-            /* [in] */ _HashMap* host);
+            /* [in] */ HashMap* host);
 
         CAR_INTERFACE_DECL()
 
@@ -138,15 +144,11 @@ private:
     };
 
     class _KeySet
-        : public ElRefBase
-        , public AbstractSet
-        , public ISet
+        : public AbstractSet
     {
     public:
         _KeySet(
-            /* [in] */ _HashMap* host);
-
-        CAR_INTERFACE_DECL()
+            /* [in] */ HashMap* host);
 
         CARAPI GetIterator(
             /* [out] */ IIterator** result);
@@ -202,21 +204,17 @@ private:
             /* [out] */ Int32* hashCode);
 
     private:
-        AutoPtr<_HashMap> mHost;
+        AutoPtr<HashMap> mHost;
     };
 
     class _Values
         : public AbstractCollection
-        , public ElRefBase
-        , public ICollection
     {
     public:
         _Values();
 
         _Values(
-            /* [in] */ _HashMap* host);
-
-        CAR_INTERFACE_DECL()
+            /* [in] */ HashMap* host);
 
         CARAPI GetIterator(
             /* [out] */ IIterator** result);
@@ -271,19 +269,15 @@ private:
         CARAPI GetHashCode(
             /* [out] */ Int32* hashCode);
     public:
-        AutoPtr<_HashMap> mHost;
+        AutoPtr<HashMap> mHost;
     };
 
     class _EntrySet
-        : public ElRefBase
-        , public AbstractSet
-        , public ISet
+        : public AbstractSet
     {
     public:
         _EntrySet(
-            /* [in] */ _HashMap* host);
-
-        CAR_INTERFACE_DECL()
+            /* [in] */ HashMap* host);
 
         CARAPI GetIterator(
             /* [out] */ IIterator** result);
@@ -339,11 +333,11 @@ private:
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
     private:
-        AutoPtr<_HashMap> mHost;
+        AutoPtr<HashMap> mHost;
     };
 
 protected:
-    _HashMap();
+    HashMap();
 
     /**
      * Constructs a new empty {@code HashMap} instance.
@@ -389,9 +383,7 @@ protected:
         /* [in] */ IMap* map);
 
 public:
-    virtual CARAPI_(UInt32) AddRef() = 0;
-
-    virtual CARAPI_(UInt32) Release() = 0;
+    CAR_INTERFACE_DECL()
 
     /**
      * Removes all elements from this {@code Map}, leaving it empty.
@@ -494,6 +486,10 @@ public:
         /* [in] */ PInterface value,
         /* [out] */ PInterface* oldValue);
 
+    virtual CARAPI Put(
+        /* [in] */ PInterface key,
+        /* [in] */ PInterface value);
+
     /**
      * Copies every mapping in the specified {@code Map} to this {@code Map}.
      *
@@ -526,6 +522,9 @@ public:
     virtual CARAPI Remove(
         /* [in] */ PInterface key,
         /* [out] */ PInterface* value);
+
+    virtual CARAPI Remove(
+        /* [in] */ PInterface key);
 
     /**
      * Returns the number of mappings in this {@code Map}.
@@ -804,7 +803,13 @@ private:
 
 };
 
+template <>
+struct Conversion<Elastos::Utility::HashMap::HashMapEntry*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
+
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_HASHMAP_H__
+#endif // __UTILITYHashMap_H__

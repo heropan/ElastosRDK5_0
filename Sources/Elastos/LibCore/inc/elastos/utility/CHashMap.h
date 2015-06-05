@@ -1,13 +1,14 @@
 #ifndef __UTILITY_CHASHMAP_H__
 #define __UTILITY_CHASHMAP_H__
 
-#include "_CHashMap.h"
+#include "_Elastos_Utility_CHashMap.h"
 #include "HashMap.h"
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CHashMap), public _HashMap
+CarClass(CHashMap)
+    , public HashMap
 {
 public:
     /**
@@ -52,13 +53,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ IMap* map);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
 
     /**
      * Removes all elements from this {@code Map}, leaving it empty.
@@ -186,6 +180,10 @@ public:
         /* [in] */ PInterface value,
         /* [out] */ PInterface* oldValue);
 
+    CARAPI Put(
+        /* [in] */ PInterface key,
+        /* [in] */ PInterface value);
+
     /**
      * Copies every mapping in the specified {@code Map} to this {@code Map}.
      *
@@ -218,6 +216,9 @@ public:
     CARAPI Remove(
         /* [in] */ PInterface key,
         /* [out] */ PInterface* value);
+
+    CARAPI Remove(
+        /* [in] */ PInterface key);
 
     /**
      * Returns the number of mappings in this {@code Map}.
