@@ -1,6 +1,6 @@
 
-#ifndef __ORG_APACHE_HTTP_AUTH_CAUTHPARAMBEAN_H_
-#define __ORG_APACHE_HTTP_AUTH_CAUTHPARAMBEAN_H_
+#ifndef __ORG_APACHE_HTTP_AUTH_PARAMS_CAUTHPARAMBEAN_H_
+#define __ORG_APACHE_HTTP_AUTH_PARAMS_CAUTHPARAMBEAN_H_
 
 #include "_Org_Apache_Http_Auth_CAuthParamBean.h"
 #include "HttpAbstractParamBean.h"
@@ -38,4 +38,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __ORG_APACHE_HTTP_AUTH_CAUTHPARAMBEAN_H_
+#endif // __ORG_APACHE_HTTP_AUTH_PARAMS_CAUTHPARAMBEAN_H_

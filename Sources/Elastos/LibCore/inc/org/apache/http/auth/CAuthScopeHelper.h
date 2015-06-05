@@ -3,9 +3,10 @@
 #define __ORG_APACHE_HTTP_AUTH_CAUTHSCOPEHELPER_H_
 
 #include "_Org_Apache_Http_Auth_CAuthScopeHelper.h"
-#include <elastos/core/Object.h>
+#include <elastos/core/Singleton.h>
 
-using Elastos::Core::Object;
+using Elastos::Core::Singleton;
+
 
 namespace Org {
 namespace Apache {
@@ -19,7 +20,7 @@ CarClass(CAuthScopeHelper)
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
+    CAR_SINGLETON_DECL()
 
     CARAPI GetDefaultScope(
         /* [out] */ IAuthScope** scope);

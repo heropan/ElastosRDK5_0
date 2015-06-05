@@ -3,9 +3,9 @@
 #define __ORG_APACHE_HTTP_CHTTPVERSIONHELPER_H__
 
 #include "_Org_Apache_Http_CHttpVersionHelper.h"
-#include <elastos/core/Object.h>
+#include <elastos/core/Singleton.h>
 
-using Elastos::Core::Object;
+using Elastos::Core::Singleton;
 
 namespace Org {
 namespace Apache {
@@ -25,7 +25,7 @@ CarClass(CHttpVersionHelper)
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
+    CAR_SINGLETON_DECL()
 
     CARAPI GerHttpVersion09(
         /* [out] */ IHttpVersion** ver);

@@ -1,0 +1,8 @@
+
+TARGET_NAME= entity
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/client/entity
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/entity
+
+SOURCES = CUrlEncodedFormEntity.cpp

@@ -21,6 +21,7 @@ ECode AuthParams::GetCredentialCharset(
     /* [out] */ String* charset)
 {
     VALIDATE_NOT_NULL(charset)
+    *charset = String(NULL);
 
     if (params == NULL) {
         Logger::E("AuthParams", "HTTP parameters may not be null");

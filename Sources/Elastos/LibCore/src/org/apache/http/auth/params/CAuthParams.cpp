@@ -8,6 +8,10 @@ namespace Http {
 namespace Auth {
 namespace Params {
 
+CAR_INTERFACE_IMPL(CAuthParams, Object, IAuthParams)
+
+CAR_SINGLETON_IMPL(CAuthParams)
+
 ECode CAuthParams::GetCredentialCharset(
     /* [in] */ IHttpParams* params,
     /* [out] */ String* charset)

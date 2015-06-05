@@ -1,0 +1,38 @@
+
+#ifndef __ORG_APACHE_HTTP_CLIENT_ENTITY_CURLENCODEDFORMENTITY_H_
+#define __ORG_APACHE_HTTP_CLIENT_ENTITY_CURLENCODEDFORMENTITY_H_
+
+#include "_Org_Apache_Http_Auth_CUrlEncodedFormEntity.h"
+#include "StringEntity.h"
+
+using Elastos::Utility::IList;
+using Org::Apache::Http::Entity::StringEntity;
+
+namespace Org {
+namespace Apache {
+namespace Http {
+namespace Client {
+namespace Entity {
+
+CarClass(CUrlEncodedFormEntity)
+    , public StringEntity
+{
+public:
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor(
+        /* [in] */ IList* parameters,
+        /* [in] */ const String& encoding);
+
+    CARAPI constructor(
+        /* [in] */ IList* parameters);
+
+};
+
+} // namespace Entity
+} // namespace Client
+} // namespace Http
+} // namespace Apache
+} // namespace Org
+
+#endif // __ORG_APACHE_HTTP_CLIENT_ENTITY_CURLENCODEDFORMENTITY_H_

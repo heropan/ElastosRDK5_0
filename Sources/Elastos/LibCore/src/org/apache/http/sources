@@ -53,5 +53,9 @@ LIBRARIES += $(PREBUILD_LIB)/libm.a
 
 LIBRARIES += auth/auth.lib
 LIBRARIES += auth/params/params.lib
+LIBRARIES += client/entity/entity.lib
+LIBRARIES += client/methods/methods.lib
+LIBRARIES += client/params/params.lib
+LIBRARIES += client/protocol/protocol.lib
 
 LIBRARIES += -lcutils

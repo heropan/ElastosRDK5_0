@@ -1,4 +1,8 @@
 
 DIRS = auth
 DIRS = auth/params
-#DIRS += client
+DIRS += client/entity
+DIRS += client/methods
+DIRS += client/params
+DIRS += client/protocol
+DIRS += client/utils

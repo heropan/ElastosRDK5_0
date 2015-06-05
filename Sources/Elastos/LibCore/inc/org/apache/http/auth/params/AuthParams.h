@@ -1,11 +1,9 @@
 
-#ifndef __ORG_APACHE_HTTP_AUTHPARAMS_H__
-#define __ORG_APACHE_HTTP_AUTHPARAMS_H__
+#ifndef __ORG_APACHE_HTTP_AUTH_PARAMS_AUTHPARAMS_H__
+#define __ORG_APACHE_HTTP_AUTH_PARAMS_AUTHPARAMS_H__
 
 #include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Org::Apache::Http::Params::IHttpParams;
 
 namespace Org {
@@ -26,7 +24,7 @@ namespace Params {
  *
  * @see AuthPNames
  */
-class AuthParams : public Object
+class AuthParams
 {
 private:
     AuthParams();
@@ -64,4 +62,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __ORG_APACHE_HTTP_AUTHPARAMS_H__
+#endif // __ORG_APACHE_HTTP_AUTH_PARAMS_AUTHPARAMS_H__

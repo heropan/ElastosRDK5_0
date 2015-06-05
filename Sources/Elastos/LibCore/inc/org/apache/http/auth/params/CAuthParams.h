@@ -1,11 +1,11 @@
 
-#ifndef __ORG_APACHE_HTTP_AUTH_CAUTHPARAMS_H_
-#define __ORG_APACHE_HTTP_AUTH_CAUTHPARAMS_H_
+#ifndef __ORG_APACHE_HTTP_AUTH_PARAMS_CAUTHPARAMS_H_
+#define __ORG_APACHE_HTTP_AUTH_PARAMS_CAUTHPARAMS_H_
 
 #include "_Org_Apache_Http_Auth_CAuthParams.h"
-#include <elastos/core/Object.h>
+#include <elastos/core/Singleton.h>
 
-using Elastos::Core::Object;
+using Elastos::Core::Singleton;
 
 namespace Org {
 namespace Apache {
@@ -14,12 +14,13 @@ namespace Auth {
 namespace Params {
 
 CarClass(CAuthParams)
+    , public Object
     , public IAuthParams
 {
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
+    CAR_SINGLETON_DECL()
 
     /**
      * Obtains the charset for encoding
@@ -54,4 +55,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __ORG_APACHE_HTTP_AUTH_CAUTHPARAMS_H_
+#endif // __ORG_APACHE_HTTP_AUTH_PARAMS_CAUTHPARAMS_H_
