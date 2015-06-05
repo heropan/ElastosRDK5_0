@@ -232,7 +232,7 @@ module
         IoctlInt(
             [in] IFileDescriptor* fd,
             [in] Int32 cmd,
-            [in] Int32* arg,
+            [in /*out*/] Int32* arg,
             [out] Int32* result);
 
         Isatty(
@@ -312,7 +312,7 @@ module
             [out] IFileDescriptor** fd);
 
         Pipe(
-            [out, callee] ArrayOf<Int32>* fds);
+            [out, callee] ArrayOf<IFileDescriptor*>* fds);
 
         /* TODO: if we used the non-standard ppoll(2) behind the scenes, we could take a long timeout. */
         Poll(
