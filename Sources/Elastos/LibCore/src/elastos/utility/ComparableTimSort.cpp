@@ -2,12 +2,13 @@
 #include "coredef.h"
 #include "ComparableTimSort.h"
 #include "Math.h"
+#include "Arrays.h"
 
 using Elastos::Core::IComparable;
 using Elastos::Core::EIID_IComparable;
 
-namespace Elastos{
-namespace Utility{
+namespace Elastos {
+namespace Utility {
 
 const Int32 ComparableTimSort::MIN_MERGE = 32;
 const Int32 ComparableTimSort::MIN_GALLOP = 7;
@@ -16,25 +17,20 @@ const Boolean ComparableTimSort::DEBUG = FALSE;
 
 
 ECode ComparableTimSort::Sort(
-    /* [in] */ const ArrayOf<IInterface*>& a)
+    /* [in] */ ArrayOf<IInterface *> * a)
 {
-    return Sort(a, 0, a.GetLength());
+    VALIDATE_NOT_NULL(a);
+    return Sort(a, 0, a->GetLength());
 }
 
 ECode ComparableTimSort::Sort(
-    /* [in] */ const ArrayOf<IInterface*>& a,
+    /* [in] */ ArrayOf<IInterface *> * a,
     /* [in] */ Int32 lo,
     /* [in] */ Int32 hi)
 {
-    // Arrays.checkStartAndEnd(a.length, lo, hi);
-    if (lo < 0 || hi > a.GetLength()) {
-        // throw new ArrayIndexOutOfBoundsException("start < 0 || end > len." + " start=" + start + ", end=" + end + ", len=" + len);
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-    if (lo > hi) {
-        // throw new IllegalArgumentException("start > end: " + start + " > " + end);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
+    VALIDATE_NOT_NULL(a);
+    FAIL_RETURN(Arrays::CheckStartAndEnd(a->GetLength(), lo, hi));
+
     Int32 nRemaining  = hi - lo;
     if (nRemaining < 2)
         return NOERROR;  // Arrays of size 0 and 1 are always sorted
@@ -85,17 +81,19 @@ ECode ComparableTimSort::Sort(
 }
 
 ComparableTimSort::ComparableTimSort(
-    /* [in] */ const ArrayOf<IInterface*>& a)
+    /* [in] */ ArrayOf<IInterface *> * a)
 {
+    assert(a);
+
     mStackSize = 0;
     mMinGallop = MIN_GALLOP;
 
-    mA = a.Clone();
+    mA = a->Clone();
 
     // Allocate temp storage (which may be increased later if necessary)
-    Int32 len = a.GetLength();
+    Int32 len = a->GetLength();
     // @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
-    AutoPtr<ArrayOf<IInterface*> > newArray = ArrayOf<IInterface*>::Alloc(len < 2 * INITIAL_TMP_STORAGE_LENGTH ?
+    AutoPtr<ArrayOf<IInterface *> > newArray = ArrayOf<IInterface *>::Alloc(len < 2 * INITIAL_TMP_STORAGE_LENGTH ?
                                                                             len >> 1 : INITIAL_TMP_STORAGE_LENGTH);
     mTmp = newArray;
 
@@ -117,7 +115,7 @@ ComparableTimSort::ComparableTimSort(
 }
 
 void ComparableTimSort::BinarySort(
-    /* [in] */ const ArrayOf<IInterface*>& a,
+    /* [in] */ ArrayOf<IInterface *> * a,
     /* [in] */ Int32 lo,
     /* [in] */ Int32 hi,
     /* [in] */ Int32 start)
@@ -130,7 +128,7 @@ void ComparableTimSort::BinarySort(
     }
     for ( ; start < hi; start++) {
         // @SuppressWarnings("unchecked")
-        AutoPtr<IComparable> pivot = (IComparable*) a[start]->Probe(EIID_IComparable);
+        AutoPtr<IComparable> pivot = IComparable::Probe((*a)[start]);
 
         // Set left (and right) to the index where a[start] (pivot) belongs
         Int32 left = lo;
@@ -146,7 +144,7 @@ void ComparableTimSort::BinarySort(
         while (left < right) {
             Int32 mid = (left + right) >> 1;
             Int32 flagvalue = 0;
-            if ((pivot->CompareTo(a[mid], &flagvalue), flagvalue) < 0) {
+            if ((pivot->CompareTo((*a)[mid], &flagvalue), flagvalue) < 0) {
                 right = mid;
             }
             else {
@@ -168,19 +166,19 @@ void ComparableTimSort::BinarySort(
         // Switch is just an optimization for arraycopy in default case
         switch(n) {
             case 2:
-                (const_cast<ArrayOf<IInterface*>* >(&a))->Set(left + 2, a[left + 1]);
+                a->Set(left + 2, (*a)[left + 1]);
             case 1:
-                (const_cast<ArrayOf<IInterface*>* >(&a))->Set(left + 1, a[left]);
+                a->Set(left + 1, (*a)[left]);
                 break;
             default:
-                (const_cast<ArrayOf<IInterface*>* >(&a))->Copy(left + 1, const_cast<ArrayOf<IInterface*>* >(&a), left, n);
+                a->Copy(left + 1, a, left, n);
         }
-        const_cast<ArrayOf<IInterface*>* >(&a)->Set(left, pivot);
+        a->Set(left, pivot);
     }
 }
 
 Int32 ComparableTimSort::CountRunAndMakeAscending(
-    /* [in] */ const ArrayOf<IInterface*>& a,
+    /* [in] */ ArrayOf<IInterface *> * a,
     /* [in] */ Int32 lo,
     /* [in] */ Int32 hi)
 {
@@ -194,14 +192,14 @@ Int32 ComparableTimSort::CountRunAndMakeAscending(
 
     // Find end of run, and reverse range if descending
     Int32 flagvalue = 0;
-    if ((((IComparable*) a[runHi++]->Probe(EIID_IComparable))->CompareTo(a[lo], &flagvalue), flagvalue) < 0) { // Descending
-        while(runHi < hi && (((IComparable*) a[runHi]->Probe(EIID_IComparable))->CompareTo(a[runHi - 1], &flagvalue), flagvalue) < 0) {
+    if ((IComparable::Probe((*a)[runHi++])->CompareTo((*a)[lo], &flagvalue), flagvalue) < 0) { // Descending
+        while(runHi < hi && (IComparable::Probe((*a)[runHi])->CompareTo((*a)[runHi - 1], &flagvalue), flagvalue) < 0) {
             runHi++;
         }
         ReverseRange(a, lo, runHi);
     }
     else {                              // Ascending
-        while (runHi < hi && (((IComparable*) a[runHi]->Probe(EIID_IComparable))->CompareTo(a[runHi - 1], &flagvalue), flagvalue) >= 0) {
+        while (runHi < hi && (IComparable::Probe((*a)[runHi])->CompareTo((*a)[runHi - 1], &flagvalue), flagvalue) >= 0) {
             runHi++;
         }
     }
@@ -210,15 +208,15 @@ Int32 ComparableTimSort::CountRunAndMakeAscending(
 }
 
 void ComparableTimSort::ReverseRange(
-    /* [in] */ const ArrayOf<IInterface*>& a,
+    /* [in] */ ArrayOf<IInterface *> * a,
     /* [in] */ Int32 lo,
     /* [in] */ Int32 hi)
 {
     hi--;
     while (lo < hi) {
-        AutoPtr<IInterface> t = a[lo];
-        (const_cast<ArrayOf<IInterface*>* >(&a))->Set(lo++, a[hi]);
-        (const_cast<ArrayOf<IInterface*>* >(&a))->Set(hi--, t);
+        AutoPtr<IInterface> t = (*a)[lo];
+        a->Set(lo++, (*a)[hi]);
+        a->Set(hi--, t);
     }
 }
 
@@ -352,22 +350,23 @@ void ComparableTimSort::MergeAt(
 
 Int32 ComparableTimSort::GallopLeft(
     /* [in] */ IComparable* key,
-    /* [in] */ const ArrayOf<IInterface*>& a,
+    /* [in] */ ArrayOf<IInterface *> * a,
     /* [in] */ Int32 base,
     /* [in] */ Int32 len,
     /* [in] */ Int32 hint)
 {
     if (DEBUG) {
+        assert(a);
         assert(len > 0 && hint >= 0 && hint < len);
     }
 
     Int32 lastOfs = 0;
     Int32 ofs = 1;
     Int32 flagvalue = 0;
-    if ((key->CompareTo(a[base + hint], &flagvalue), flagvalue) > 0) {
+    if ((key->CompareTo((*a)[base + hint], &flagvalue), flagvalue) > 0) {
         // Gallop right until a[base+hint+lastOfs] < key <= a[base+hint+ofs]
         Int32 maxOfs = len - hint;
-        while (ofs < maxOfs && (key->CompareTo(a[base + hint + ofs], &flagvalue), flagvalue) > 0) {
+        while (ofs < maxOfs && (key->CompareTo((*a)[base + hint + ofs], &flagvalue), flagvalue) > 0) {
             lastOfs = ofs;
             ofs = (ofs << 1) + 1;
             if (ofs <= 0) {   // int overflow
@@ -385,7 +384,7 @@ Int32 ComparableTimSort::GallopLeft(
     else { // key <= a[base + hint]
         // Gallop left until a[base+hint-ofs] < key <= a[base+hint-lastOfs]
         Int32 maxOfs = hint + 1;
-        while (ofs < maxOfs && (key->CompareTo(a[base + hint - ofs], &flagvalue), flagvalue) <= 0) {
+        while (ofs < maxOfs && (key->CompareTo((*a)[base + hint - ofs], &flagvalue), flagvalue) <= 0) {
             lastOfs = ofs;
             ofs = (ofs << 1) + 1;
             if (ofs <= 0) {   // int overflow
@@ -414,7 +413,7 @@ Int32 ComparableTimSort::GallopLeft(
     while (lastOfs < ofs) {
         Int32 m = lastOfs + ((ofs - lastOfs) >> 1);
 
-        if ((key->CompareTo(a[base + m], &flagvalue), flagvalue) > 0) {
+        if ((key->CompareTo((*a)[base + m], &flagvalue), flagvalue) > 0) {
             lastOfs = m + 1;  // a[base + m] < key
         }
         else {
@@ -429,22 +428,23 @@ Int32 ComparableTimSort::GallopLeft(
 
 Int32 ComparableTimSort::GallopRight(
     /* [in] */ IComparable* key,
-    /* [in] */ const ArrayOf<IInterface*>& a,
+    /* [in] */ ArrayOf<IInterface *> * a,
     /* [in] */ Int32 base,
     /* [in] */ Int32 len,
     /* [in] */ Int32 hint)
 {
     if (DEBUG) {
+        assert(a);
         assert(len > 0 && hint >= 0 && hint < len);
     }
 
     Int32 ofs = 1;
     Int32 lastOfs = 0;
     Int32 flagvalue = 0;
-    if ((key->CompareTo(a[base + hint], &flagvalue), flagvalue) < 0) {
+    if ((key->CompareTo((*a)[base + hint], &flagvalue), flagvalue) < 0) {
         // Gallop left until a[b+hint - ofs] <= key < a[b+hint - lastOfs]
         Int32 maxOfs = hint + 1;
-        while (ofs < maxOfs && (key->CompareTo(a[base + hint - ofs], &flagvalue), flagvalue) < 0) {
+        while (ofs < maxOfs && (key->CompareTo((*a)[base + hint - ofs], &flagvalue), flagvalue) < 0) {
             lastOfs = ofs;
             ofs = (ofs << 1) + 1;
             if (ofs <= 0) {   // int overflow
@@ -463,7 +463,7 @@ Int32 ComparableTimSort::GallopRight(
     else { // a[b + hint] <= key
         // Gallop right until a[b+hint + lastOfs] <= key < a[b+hint + ofs]
         Int32 maxOfs = len - hint;
-        while (ofs < maxOfs && (key->CompareTo(a[base + hint + ofs], &flagvalue), flagvalue) >= 0) {
+        while (ofs < maxOfs && (key->CompareTo((*a)[base + hint + ofs], &flagvalue), flagvalue) >= 0) {
             lastOfs = ofs;
             ofs = (ofs << 1) + 1;
             if (ofs <= 0) {   // int overflow
@@ -491,7 +491,7 @@ Int32 ComparableTimSort::GallopRight(
     while (lastOfs < ofs) {
         Int32 m = lastOfs + ((ofs - lastOfs) >> 1);
 
-        if ((key->CompareTo(a[base + m], &flagvalue), flagvalue) < 0) {
+        if ((key->CompareTo((*a)[base + m], &flagvalue), flagvalue) < 0) {
             ofs = m;          // key < a[b + m]
         }
         else {
@@ -515,8 +515,8 @@ void ComparableTimSort::MergeLo(
     }
 
     // Copy first run into temp array
-    AutoPtr<ArrayOf<IInterface*> > a = mA; // For performance
-    AutoPtr<ArrayOf<IInterface*> > tmp = EnsureCapacity(len1);
+    AutoPtr<ArrayOf<IInterface *> > a = mA; // For performance
+    AutoPtr<ArrayOf<IInterface *> > tmp = EnsureCapacity(len1);
     tmp->Copy(0, a, base1, len1);
 
     Int32 cursor1 = 0;       // Indexes into tmp array
@@ -649,8 +649,8 @@ void ComparableTimSort::MergeHi(
     }
 
     // Copy second run into temp array
-    AutoPtr<ArrayOf<IInterface*> > a = mA; // For performance
-    AutoPtr<ArrayOf<IInterface*> > tmp = EnsureCapacity(len2);
+    AutoPtr<ArrayOf<IInterface *> > a = mA; // For performance
+    AutoPtr<ArrayOf<IInterface *> > tmp = EnsureCapacity(len2);
     tmp->Copy(0, a, base2, len2);
 
     Int32 cursor1 = base1 + len1 - 1;  // Indexes into a
@@ -775,7 +775,7 @@ outer:
     }
 }
 
-AutoPtr<ArrayOf<IInterface*> > ComparableTimSort::EnsureCapacity(
+AutoPtr<ArrayOf<IInterface *> > ComparableTimSort::EnsureCapacity(
     /* [in] */ Int32 minCapacity)
 {
     if (mTmp->GetLength() < minCapacity) {
@@ -796,7 +796,7 @@ AutoPtr<ArrayOf<IInterface*> > ComparableTimSort::EnsureCapacity(
         }
 
         // @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
-        AutoPtr<ArrayOf<IInterface*> > newArray = ArrayOf<IInterface*>::Alloc(newSize);
+        AutoPtr<ArrayOf<IInterface *> > newArray = ArrayOf<IInterface *>::Alloc(newSize);
         mTmp = NULL;
         mTmp = newArray;
     }

@@ -111,6 +111,21 @@ void testArrays()
     Arrays::BinarySearch(charArr.Get(), 0, charArr->GetLength(), (Char32)('a' + 15), &index);
     assertEquals(index, 15);
 
+    AutoPtr<IAnimal> dog;
+    AutoPtr<ArrayOf<IAnimal*> > animalArr = ArrayOf<IAnimal*>::Alloc(20);
+    for (Int32 i = 0; i < animalArr->GetLength(); ++i) {
+        StringBuilder sb("Dog_");
+        sb.AppendChar((Char32)('0' + i));
+        AutoPtr<IAnimal> animal;
+        CDog::New(i, sb.ToString(), (IAnimal**)&animal);
+        animalArr->Set(i, animal);
+        if (i == 15) {
+            dog = animal;
+        }
+    }
+
+    Arrays::BinarySearch(animalArr.Get(), 0, animalArr->GetLength(), dog.Get(), &index);
+    assertEquals(index, 15);
 }
 
 void otherTests()

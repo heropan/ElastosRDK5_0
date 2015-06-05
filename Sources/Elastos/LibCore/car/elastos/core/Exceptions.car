@@ -34,4 +34,5 @@ module
     const E_NUMBER_FORMAT_EXCEPTION                     = 0xA0140000;
     const E_PATTERN_SYNTAX_EXCEPTION                    = 0xA0150000;
     const E_CLONE_NOT_SUPPORTED_EXCEPTION               = 0xA0160000;
+    const E_NAGATIVE_ARRAY_SIZE_EXCEPTION               = 0xA0170000;
 }

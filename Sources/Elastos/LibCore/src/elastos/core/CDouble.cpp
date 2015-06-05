@@ -146,7 +146,7 @@ ECode CDouble::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    //*result = RealToString::GetInstance()->ToString(mValue);
+    *result = RealToString::GetInstance()->ToString(mValue);
 
     return NOERROR;
 }

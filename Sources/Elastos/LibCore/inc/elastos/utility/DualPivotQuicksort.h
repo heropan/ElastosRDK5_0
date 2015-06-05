@@ -1,5 +1,5 @@
-#ifndef __UTILITY_DUALPIVOTQUICKSORT_H__
-#define __UTILITY_DUALPIVOTQUICKSORT_H__
+#ifndef __ELASTOS_UTILITY_DUALPIVOTQUICKSORT_H__
+#define __ELASTOS_UTILITY_DUALPIVOTQUICKSORT_H__
 
 #include "Singleton.h"
 
@@ -234,6 +234,7 @@ private:
      * Prevents instantiation.
      */
     DualPivotQuicksort();
+    DualPivotQuicksort(const DualPivotQuicksort&);
 
     /**
      * Sorts the specified range of the array into ascending order. This
@@ -523,4 +524,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__UTILITY_DUALPIVOTQUICKSORT_H__
+#endif //__ELASTOS_UTILITY_DUALPIVOTQUICKSORT_H__

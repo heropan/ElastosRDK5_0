@@ -1,5 +1,5 @@
-#ifndef __UTILITY_COMPARABLETIMSORT_H__
-#define __UTILITY_COMPARABLETIMSORT_H__
+#ifndef __ELASTOS_UTILITY_COMPARABLETIMSORT_H__
+#define __ELASTOS_UTILITY_COMPARABLETIMSORT_H__
 
 #include <Elastos.CoreLibrary_server.h>
 
@@ -28,10 +28,10 @@ public:
      */
 
     static CARAPI Sort(
-        /* [in] */ const ArrayOf<IInterface*>& a);
+        /* [in] */ ArrayOf<IInterface *> * a);
 
     static CARAPI Sort(
-        /* [in] */ const ArrayOf<IInterface*>& a,
+        /* [in] */ ArrayOf<IInterface *> * a,
         /* [in] */ Int32 lo,
         /* [in] */ Int32 hi);
 
@@ -42,7 +42,7 @@ private:
      * @param a the array to be sorted
      */
     ComparableTimSort(
-        /* [in] */ const ArrayOf<IInterface*>& a);
+        /* [in] */ ArrayOf<IInterface *> * a);
 
     /**
      * Sorts the specified portion of the specified array using a binary
@@ -63,7 +63,7 @@ private:
      */
     // @SuppressWarnings("fallthrough")
     static CARAPI_(void) BinarySort(
-        /* [in] */ const ArrayOf<IInterface*>& a,
+        /* [in] */ ArrayOf<IInterface *> * a,
         /* [in] */ Int32 lo,
         /* [in] */ Int32 hi,
         /* [in] */ Int32 start);
@@ -94,7 +94,7 @@ private:
      */
     // @SuppressWarnings("unchecked")
     static CARAPI_(Int32) CountRunAndMakeAscending(
-        /* [in] */ const ArrayOf<IInterface*>& a,
+        /* [in] */ ArrayOf<IInterface *> * a,
         /* [in] */ Int32 lo,
         /* [in] */ Int32 hi);
 
@@ -106,7 +106,7 @@ private:
      * @param hi the index after the last element in the range to be reversed
      */
     static CARAPI_(void) ReverseRange(
-        /* [in] */ const ArrayOf<IInterface*>& a,
+        /* [in] */ ArrayOf<IInterface *> * a,
         /* [in] */ Int32 lo,
         /* [in] */ Int32 hi);
 
@@ -189,7 +189,7 @@ private:
      */
     static CARAPI_(Int32) GallopLeft(
         /* [in] */ IComparable* key,
-        /* [in] */ const ArrayOf<IInterface*>& a,
+        /* [in] */ ArrayOf<IInterface *> * a,
         /* [in] */ Int32 base,
         /* [in] */ Int32 len,
         /* [in] */ Int32 hint);
@@ -208,7 +208,7 @@ private:
      */
     static CARAPI_(Int32) GallopRight(
         /* [in] */ IComparable* key,
-        /* [in] */ const ArrayOf<IInterface*>& a,
+        /* [in] */ ArrayOf<IInterface *> * a,
         /* [in] */ Int32 base,
         /* [in] */ Int32 len,
         /* [in] */ Int32 hint);
@@ -262,7 +262,7 @@ private:
      * @param minCapacity the minimum required capacity of the tmp array
      * @return tmp, whether or not it grew
      */
-    CARAPI_(AutoPtr<ArrayOf<IInterface*> >) EnsureCapacity(
+    CARAPI_(AutoPtr<ArrayOf<IInterface *> >) EnsureCapacity(
         /* [in] */ Int32 minCapacity);
 
 private:
@@ -288,7 +288,7 @@ private:
     /**
      * The array being sorted.
      */
-    AutoPtr<ArrayOf<IInterface*> > mA;
+    AutoPtr<ArrayOf<IInterface *> > mA;
 
     /**
      * When we get into galloping mode, we stay there until both runs win less
@@ -315,7 +315,7 @@ private:
     /**
      * Temp storage for merges.
      */
-    AutoPtr<ArrayOf<IInterface*> > mTmp;
+    AutoPtr<ArrayOf<IInterface *> > mTmp;
 
     /**
      * A stack of pending runs yet to be merged.  Run i starts at
@@ -342,4 +342,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__UTILITY_COMPARABLETIMSORT_H__
+#endif //__ELASTOS_UTILITY_COMPARABLETIMSORT_H__

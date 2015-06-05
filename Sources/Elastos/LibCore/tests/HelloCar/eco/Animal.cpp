@@ -28,6 +28,23 @@ ECode Animal::constructor(
     return NOERROR;
 }
 
+ECode Animal::CompareTo(
+    /* [in] */ IInterface* another,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    IAnimal* oa = IAnimal::Probe(another);
+    if (oa == NULL) {
+        *result = 1;
+        return NOERROR;
+    }
+
+    Animal* a = (Animal*)oa;
+    *result = mName.Compare(a->mName);
+    return NOERROR;
+}
+
 ECode Animal::SetName(
     /* [in] */ const String& name)
 {

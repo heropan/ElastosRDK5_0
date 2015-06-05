@@ -6,6 +6,7 @@
 #include <elastos/core/Object.h>        // include Object 基类
 
 using Elastos::Core::Object;
+using Elastos::Core::IComparable;
 
 namespace Elastos {
 namespace HelloCar {
@@ -14,6 +15,7 @@ namespace HelloCar {
 class Animal
     : public Object
     , public IAnimal
+    , public IComparable
 {
 public:
     CAR_INTERFACE_DECL()    // 实现某个 CAR 接口的类都需要使用 CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL
@@ -25,6 +27,12 @@ public:
     CARAPI constructor(     // 用于被子类继承的 CAR 构造函数
         /* [in] */ Int32 age,
         /* [in] */ const String& name);
+
+    // IComparable 接口函数
+    //
+    CARAPI CompareTo(
+        /* [in] */ IInterface* another,
+        /* [out] */ Int32* result);
 
     // IAnimal 接口函数
     //

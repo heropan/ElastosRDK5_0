@@ -1,13 +1,12 @@
 
 #include "Arrays.h"
+#include "ComparableTimSort.h"
+#include "TimSort.h"
 // #include "CArrayOf.h"
 // #include "CArrayList.h"
-// #include "DualPivotQuicksort.h"
-// #include "ComparableTimSort.h"
-// #include "TimSort.h"
-// #include "Math.h"
 
-// using Elastos::Core::Math;
+using Elastos::Core::Object;
+
 // using Elastos::Core::IArrayOf;
 // using Elastos::Core::CArrayOf;
 // using Elastos::Core::IComparable;
@@ -87,7 +86,7 @@ ECode Arrays::CheckOffsetAndCount(
 // CAR_INTERFACE_IMPL_2(Arrays::ArrayList, AbstractList, ISerializable, IRandomAccess)
 
 // Arrays::ArrayList::ArrayList(
-//     /* [in] */ ArrayOf<IInterface* >* storage)
+//     /* [in] */ ArrayOf<IInterface *> * storage)
 // {
 //     if (storage == NULL) {
 // //        throw new NullPointerException("storage == null");
@@ -209,7 +208,7 @@ ECode Arrays::CheckOffsetAndCount(
 // }
 
 // ECode Arrays::ArrayList::ToArray(
-//     /* [out] */ ArrayOf<IInterface* >** outArray)
+//     /* [out] */ ArrayOf<IInterface *> ** outArray)
 // {
 //     VALIDATE_NOT_NULL(outArray)
 //     *outArray = mA->Clone();
@@ -218,8 +217,8 @@ ECode Arrays::CheckOffsetAndCount(
 // }
 
 // ECode Arrays::ArrayList::ToArray(
-//     /* [in] */ ArrayOf<IInterface* >* contents,
-//     /* [out] */ ArrayOf<IInterface* >** outArray)
+//     /* [in] */ ArrayOf<IInterface *> * contents,
+//     /* [out] */ ArrayOf<IInterface *> ** outArray)
 // {
 //     VALIDATE_NOT_NULL(outArray)
 //     Int32 size;
@@ -262,533 +261,238 @@ ECode Arrays::CheckOffsetAndCount(
 //     return NOERROR;
 // }
 
-// ECode Arrays::BinarySearchObject(
-//     /* [in] */ ArrayOf<IInterface* >* array,
-//     /* [in] */ IInterface* value,
-//     /* [out] */ Int32* index)
-// {
-//     VALIDATE_NOT_NULL(index)
-//     return BinarySearchObject(array, 0, array->GetLength(), value, index);
-// }
+ECode Arrays::BinarySearch(
+    /* [in] */ ArrayOf<IInterface *> * array,
+    /* [in] */ Int32 startIndex,
+    /* [in] */ Int32 endIndex,
+    /* [in] */ IInterface * value,
+    /* [out] */ Int32* index)
+{
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
+    assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
 
-// ECode Arrays::BinarySearchObject(
-//     /* [in] */ ArrayOf<IInterface* >* array,
-//     /* [in] */ Int32 startIndex,
-//     /* [in] */ Int32 endIndex,
-//     /* [in] */ IInterface* value,
-//     /* [out] */ Int32* index)
-// {
-//     VALIDATE_NOT_NULL(index)
-//     FAIL_RETURN(CheckBinarySearchBounds(startIndex, endIndex, array->GetLength()));
-//     Int32 lo = startIndex;
-//     Int32 hi = endIndex - 1;
+    ECode ec = CheckBinarySearchBounds(startIndex, endIndex, array->GetLength());
+    if (FAILED(ec)) {
+        ALOGE("Arrays::BinarySearch: error %08x, startIndex: %d, endIndex: %d, array length: %d",
+            ec, startIndex, endIndex, array->GetLength());
+        return ec;
+    }
 
-//     while (lo <= hi) {
-//         Int32 mid = (UInt32(lo + hi)) >> 1;
-//         AutoPtr<IComparable> p = IComparable::Probe((*array)[mid]);
-//         assert(p != NULL);
-//         Int32 midValCmp;
-//         p->CompareTo(value, &midValCmp);
+    Int32 lo = startIndex;
+    Int32 hi = endIndex - 1;
+    Int32 mid, midValCmp;
+    IComparable* comp;
+    while (lo <= hi) {
+        mid = (UInt32(lo + hi)) >> 1;
+        comp = IComparable::Probe((*array)[mid]);
+        if (comp == NULL) {
+            ALOGE("Arrays::BinarySearch: object at %d does not implement IComparable.", mid);
+        }
+        assert(comp != NULL);
+        comp->CompareTo(value, &midValCmp);
 
-//         if (midValCmp < 0) {
-//             lo = mid + 1;
-//         }
-//         else if (midValCmp > 0) {
-//             hi = mid - 1;
-//         }
-//         else {
-//             *index = mid;  // value found
-//             return NOERROR;
-//         }
-//     }
-//     *index = ~lo;  // value not present
-//     return NOERROR;
-// }
+        if (midValCmp < 0) {
+            lo = mid + 1;
+        }
+        else if (midValCmp > 0) {
+            hi = mid - 1;
+        }
+        else {
+            *index = mid;  // value found
+            return NOERROR;
+        }
+    }
+    *index = ~lo;  // value not present
+    return NOERROR;
+}
 
-// ECode Arrays::BinarySearch(
-//     /* [in] */ ArrayOf<IInterface* >* array,
-//     /* [in] */ IInterface* value,
-//     /* [in] */ IComparator* comparator,
-//     /* [out] */ Int32* index)
-// {
-//     VALIDATE_NOT_NULL(index)
-//     return BinarySearch(array, 0, array->GetLength(), value, comparator, index);
-// }
+ECode Arrays::BinarySearch(
+    /* [in] */ ArrayOf<IInterface *> * array,
+    /* [in] */ IInterface * value,
+    /* [out] */ Int32* index)
+{
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
+    assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
 
-// ECode Arrays::BinarySearch(
-//     /* [in] */ ArrayOf<IInterface* >* array,
-//     /* [in] */ Int32 startIndex,
-//     /* [in] */ Int32 endIndex,
-//     /* [in] */ IInterface* value,
-//     /* [in] */ IComparator* comparator,
-//     /* [out] */ Int32* index)
-// {
-//     VALIDATE_NOT_NULL(index)
-//     if (comparator == NULL) {
-//         return BinarySearchObject(array, startIndex, endIndex, value, index);
-//     }
+    return BinarySearch(array, 0, array->GetLength(), value, index);
+}
 
-//     FAIL_RETURN(CheckBinarySearchBounds(startIndex, endIndex, array->GetLength()));
-//     Int32 lo = startIndex;
-//     Int32 hi = endIndex - 1;
+ECode Arrays::BinarySearch(
+    /* [in] */ ArrayOf<IInterface *> * array,
+    /* [in] */ Int32 startIndex,
+    /* [in] */ Int32 endIndex,
+    /* [in] */ IInterface* value,
+    /* [in] */ IComparator* comparator,
+    /* [out] */ Int32* index)
+{
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
+    assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
 
-//     while (lo <= hi) {
-//         Int32 mid = (UInt32(lo + hi)) >> 1;
-//         Int32 midValCmp;
-//         comparator->Compare((*array)[mid], value, &midValCmp);
+    if (comparator == NULL) {
+        return BinarySearch(array, startIndex, endIndex, value, index);
+    }
 
-//         if (midValCmp < 0) {
-//             lo = mid + 1;
-//         }
-//         else if (midValCmp > 0) {
-//             hi = mid - 1;
-//         }
-//         else {
-//             *index = mid;  // value found
-//             return NOERROR;
-//         }
-//     }
-//     *index = ~lo;  // value not present
-//     return NOERROR;
-// }
+    FAIL_RETURN(CheckBinarySearchBounds(startIndex, endIndex, array->GetLength()));
+    Int32 lo = startIndex;
+    Int32 hi = endIndex - 1;
+    Int32 mid, midValCmp;
 
-// // ECode Arrays::BinarySearchInt16(
-// //     /* [in] */ ArrayOf<Int16>* array,
-// //     /* [in] */ Int16 value,
-// //     /* [out] */ Int32* index)
-// // {
-// //     VALIDATE_NOT_NULL(index)
-// //     return BinarySearchInt16(array, 0, array->GetLength(), value, index);
-// // }
+    while (lo <= hi) {
+        mid = (UInt32(lo + hi)) >> 1;
+        comparator->Compare((*array)[mid], value, &midValCmp);
 
-// // ECode Arrays::BinarySearchInt16(
-// //     /* [in] */ ArrayOf<Int16>* array,
-// //     /* [in] */ Int32 startIndex,
-// //     /* [in] */ Int32 endIndex,
-// //     /* [in] */ Int16 value,
-// //     /* [out] */ Int32* index)
-// // {
-// //     VALIDATE_NOT_NULL(index)
-// //     FAIL_RETURN(CheckBinarySearchBounds(startIndex, endIndex, array->GetLength()));
-// //     Int32 lo = startIndex;
-// //     Int32 hi = endIndex - 1;
+        if (midValCmp < 0) {
+            lo = mid + 1;
+        }
+        else if (midValCmp > 0) {
+            hi = mid - 1;
+        }
+        else {
+            *index = mid;  // value found
+            return NOERROR;
+        }
+    }
+    *index = ~lo;  // value not present
+    return NOERROR;
+}
 
-// //     while (lo <= hi) {
-// //         Int32 mid = (UInt32(lo + hi)) >> 1;
-// //         Int16 midVal = (*array)[mid];
+ECode Arrays::BinarySearch(
+    /* [in] */ ArrayOf<IInterface *> * array,
+    /* [in] */ IInterface* value,
+    /* [in] */ IComparator* comparator,
+    /* [out] */ Int32* index)
+{
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
+    assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
 
-// //         if (midVal < value) {
-// //             lo = mid + 1;
-// //         }
-// //         else if (midVal > value) {
-// //             hi = mid - 1;
-// //         }
-// //         else {
-// //             *index = mid;  // value found
-// //             return NOERROR;
-// //         }
-// //     }
-// //     *index = ~lo;  // value not present
-// //     return NOERROR;
-// // }
+    return BinarySearch(array, 0, array->GetLength(), value, comparator, index);
+}
 
-// ECode Arrays::FillByte(
-//     /* [in] */ ArrayOf<Byte>* array,
-//     /* [in] */ Byte value)
-// {
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+ECode Arrays::GetHashCode(
+    /* [in] */ ArrayOf<Boolean>* array,
+    /* [out] */ Int32* code)
+{
+    VALIDATE_NOT_NULL(code)
+    *code = 0;
 
-// ECode Arrays::FillByte(
-//     /* [in] */ ArrayOf<Byte>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ Byte value)
-// {
-//     FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
-//     for (Int32 i = start; i < end; i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+    if (array == NULL) {
+        return NOERROR;
+    }
 
-// ECode Arrays::FillInt16(
-//     /* [in] */ ArrayOf<Int16>* array,
-//     /* [in] */ Int16 value)
-// {
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+    Int32 hashCode = 1;
+    for (Int32 i = 0; i < array->GetLength(); i++) {
+        // 1231, 1237 are hash code values for boolean value
+        hashCode = 31 * hashCode + ((*array)[i] ? 1231 : 1237);
+    }
+    *code = hashCode;
+    return NOERROR;
+}
 
-// ECode Arrays::FillInt16(
-//     /* [in] */ ArrayOf<Int16>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ Int16 value)
-// {
-//     FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
-//     for (Int32 i = start; i < end; i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+ECode Arrays::GetHashCode(
+    /* [in] */ ArrayOf<Int64>* array,
+    /* [out] */ Int32* code)
+{
+    VALIDATE_NOT_NULL(code)
+    *code = 0;
 
-// ECode Arrays::FillChar32(
-//     /* [in] */ ArrayOf<Char32>* array,
-//     /* [in] */ Char32 value)
-// {
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+    if (array == NULL) {
+        return NOERROR;
+    }
 
-// ECode Arrays::FillChar32(
-//     /* [in] */ ArrayOf<Char32>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ Char32 value)
-// {
-//     FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
-//     for (Int32 i = start; i < end; i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+    Int32 hashCode = 1;
+    Int64 elementValue;
+    for (Int32 i = 0; i < array->GetLength(); i++) {
+        elementValue = (*array)[i];
+        /*
+         * the hash code value for long value is (int) (value ^ (value >>>
+         * 32))
+         */
+        hashCode = 31 * hashCode
+                + (Int32) (elementValue ^ (elementValue >> 32));
+    }
+    *code = hashCode;
+    return NOERROR;
+}
 
-// ECode Arrays::FillInt32(
-//     /* [in] */ ArrayOf<Int32>* array,
-//     /* [in] */ Int32 value)
-// {
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+ECode Arrays::GetHashCode(
+    /* [in] */ ArrayOf<Float>* array,
+    /* [out] */ Int32* code)
+{
+    VALIDATE_NOT_NULL(code)
+    *code = 0;
 
-// ECode Arrays::FillInt32(
-//     /* [in] */ ArrayOf<Int32>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ Int32 value)
-// {
-//     FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
-//     for (Int32 i = start; i < end; i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+    if (array == NULL) {
+        return NOERROR;
+    }
 
-// ECode Arrays::FillInt64(
-//     /* [in] */ ArrayOf<Int64>* array,
-//     /* [in] */ Int64 value)
-// {
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+    Int32 hashCode = 1;
+    for (Int32 i = 0; i < array->GetLength(); i++) {
+        /*
+         * the hash code value for float value is
+         * Float.floatToIntBits(value)
+         */
+        hashCode = 31 * hashCode + Elastos::Core::Math::FloatToInt32Bits((*array)[i]);
+    }
+    *code = hashCode;
+    return NOERROR;
+}
 
-// ECode Arrays::FillInt64(
-//     /* [in] */ ArrayOf<Int64>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ Int64 value)
-// {
-//     FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
-//     for (Int32 i = start; i < end; i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+ECode Arrays::GetHashCode(
+    /* [in] */ ArrayOf<Double>* array,
+    /* [out] */ Int32* code)
+{
+    VALIDATE_NOT_NULL(code)
+    *code = 0;
 
-// ECode Arrays::FillFloat(
-//     /* [in] */ ArrayOf<Float>* array,
-//     /* [in] */ Float value)
-// {
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+    if (array == NULL) {
+        return NOERROR;
+    }
 
-// ECode Arrays::FillFloat(
-//     /* [in] */ ArrayOf<Float>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ Float value)
-// {
-//     FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
-//     for (Int32 i = start; i < end; i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+    Int32 hashCode = 1;
+    Int64 v;
+    for (Int32 i = 0; i < array->GetLength(); i++) {
+        v = Elastos::Core::Math::DoubleToInt64Bits((*array)[i]);
+        /*
+         * the hash code value for double value is (int) (v ^ (v >>> 32))
+         * where v = Double.doubleToLongBits(value)
+         */
+        hashCode = 31 * hashCode + (Int32) (v ^ (v >> 32));
+    }
+    *code = hashCode;
+    return NOERROR;
+}
 
-// ECode Arrays::FillDouble(
-//     /* [in] */ ArrayOf<Double>* array,
-//     /* [in] */ Double value)
-// {
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+ECode Arrays::GetHashCode(
+    /* [in] */ ArrayOf<IInterface *> * array,
+    /* [out] */ Int32* code)
+{
+    VALIDATE_NOT_NULL(code)
+    *code = 0;
 
-// ECode Arrays::FillDouble(
-//     /* [in] */ ArrayOf<Double>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ Double value)
-// {
-//     FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
-//     for (Int32 i = start; i < end; i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
+    if (array == NULL) {
+        return NOERROR;
+    }
 
-// ECode Arrays::FillBoolean(
-//     /* [in] */ ArrayOf<Boolean>* array,
-//     /* [in] */ Boolean value)
-// {
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
-
-// ECode Arrays::FillBoolean(
-//     /* [in] */ ArrayOf<Boolean>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ Boolean value)
-// {
-//     FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
-//     for (Int32 i = start; i < end; i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
-
-// ECode Arrays::FillObject(
-//     /* [in] */ ArrayOf<IInterface* >* array,
-//     /* [in] */ IInterface* value)
-// {
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
-
-// ECode Arrays::FillObject(
-//     /* [in] */ ArrayOf<IInterface* >* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ IInterface* value)
-// {
-//     FAIL_RETURN(CheckStartAndEnd(array->GetLength(), start, end));
-//     for (Int32 i = start; i < end; i++) {
-//         array->Set(i, value);
-//     }
-//     return NOERROR;
-// }
-
-// ECode Arrays::HashCodeBoolean(
-//     /* [in] */ ArrayOf<Boolean>* array,
-//     /* [out] */ Int32* code)
-// {
-//     VALIDATE_NOT_NULL(code)
-//     if (array == NULL) {
-//         *code = 0;
-//         return NOERROR;
-//     }
-//     Int32 hashCode = 1;
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         Boolean element = (*array)[i];
-//         // 1231, 1237 are hash code values for boolean value
-//         hashCode = 31 * hashCode + (element ? 1231 : 1237);
-//     }
-//     *code = hashCode;
-//     return NOERROR;
-// }
-
-// ECode Arrays::HashCodeInt32(
-//     /* [in] */ ArrayOf<Int32>* array,
-//     /* [out] */ Int32* code)
-// {
-//     VALIDATE_NOT_NULL(code)
-//     if (array == NULL) {
-//         *code = 0;
-//         return NOERROR;
-//     }
-//     Int32 hashCode = 1;
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         Int32 element = (*array)[i];
-//         // the hash code value for integer value is integer value itself
-//         hashCode = 31 * hashCode + element;
-//     }
-//     *code = hashCode;
-//     return NOERROR;
-// }
-
-// ECode Arrays::HashCodeInt16(
-//     /* [in] */ ArrayOf<Int16>* array,
-//     /* [out] */ Int32* code)
-// {
-//     VALIDATE_NOT_NULL(code)
-//     if (array == NULL) {
-//         *code = 0;
-//         return NOERROR;
-//     }
-//     Int32 hashCode = 1;
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         Int16 element = (*array)[i];
-//         // the hash code value for short value is its integer value
-//         hashCode = 31 * hashCode + element;
-//     }
-//     *code = hashCode;
-//     return NOERROR;
-// }
-
-// ECode Arrays::HashCodeChar32(
-//     /* [in] */ ArrayOf<Char32>* array,
-//     /* [out] */ Int32* code)
-// {
-//     VALIDATE_NOT_NULL(code)
-//     if (array == NULL) {
-//         *code = 0;
-//         return NOERROR;
-//     }
-//     Int32 hashCode = 1;
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         Char32 element = (*array)[i];
-//         // the hash code value for char value is its integer value
-//         hashCode = 31 * hashCode + element;
-//     }
-//     *code = hashCode;
-//     return NOERROR;
-// }
-
-// ECode Arrays::HashCodeByte(
-//     /* [in] */ ArrayOf<Byte>* array,
-//     /* [out] */ Int32* code)
-// {
-//     VALIDATE_NOT_NULL(code)
-//     if (array == NULL) {
-//         *code = 0;
-//         return NOERROR;
-//     }
-//     Int32 hashCode = 1;
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         Byte element = (*array)[i];
-//         // the hash code value for byte value is its integer value
-//         hashCode = 31 * hashCode + element;
-//     }
-//     *code = hashCode;
-//     return NOERROR;
-// }
-
-// ECode Arrays::HashCodeInt64(
-//     /* [in] */ ArrayOf<Int64>* array,
-//     /* [out] */ Int32* code)
-// {
-//     VALIDATE_NOT_NULL(code)
-//     if (array == NULL) {
-//         *code = 0;
-//         return NOERROR;
-//     }
-//     Int32 hashCode = 1;
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         Int64 elementValue = (*array)[i];
-//         /*
-//          * the hash code value for long value is (int) (value ^ (value >>>
-//          * 32))
-//          */
-//         hashCode = 31 * hashCode
-//                 + (Int32) (elementValue ^ (elementValue >> 32));
-//     }
-//     *code = hashCode;
-//     return NOERROR;
-// }
-
-// ECode Arrays::HashCodeFloat(
-//     /* [in] */ ArrayOf<Float>* array,
-//     /* [out] */ Int32* code)
-// {
-//     VALIDATE_NOT_NULL(code)
-//     if (array == NULL) {
-//         *code = 0;
-//         return NOERROR;
-//     }
-//     Int32 hashCode = 1;
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         Float element = (*array)[i];
-//         /*
-//          * the hash code value for float value is
-//          * Float.floatToIntBits(value)
-//          */
-//         hashCode = 31 * hashCode + Elastos::Core::Math::FloatToInt32Bits(element);
-//     }
-//     *code = hashCode;
-//     return NOERROR;
-// }
-
-// ECode Arrays::HashCodeDouble(
-//     /* [in] */ ArrayOf<Double>* array,
-//     /* [out] */ Int32* code)
-// {
-//     VALIDATE_NOT_NULL(code)
-//     if (array == NULL) {
-//         *code = 0;
-//         return NOERROR;
-//     }
-//     Int32 hashCode = 1;
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         Double element = (*array)[i];
-//         Int64 v = Elastos::Core::Math::DoubleToInt64Bits(element);
-//         /*
-//          * the hash code value for double value is (int) (v ^ (v >>> 32))
-//          * where v = Double.doubleToLongBits(value)
-//          */
-//         hashCode = 31 * hashCode + (Int32) (v ^ (v >> 32));
-//     }
-//     *code = hashCode;
-//     return NOERROR;
-// }
-
-// ECode Arrays::HashCodeObject(
-//     /* [in] */ ArrayOf<IInterface* >* array,
-//     /* [out] */ Int32* code)
-// {
-//     VALIDATE_NOT_NULL(code)
-//     if (array == NULL) {
-//         *code = 0;
-//         return NOERROR;
-//     }
-//     Int32 hashCode = 1;
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         AutoPtr<IInterface> element = (*array)[i];
-//         Int32 elementHashCode;
-//         if (element == NULL) {
-//             elementHashCode = 0;
-//         }
-//         else {
-//             elementHashCode = Object::GetHashCode(element);
-//         }
-//         hashCode = 31 * hashCode + elementHashCode;
-//     }
-//     *code = hashCode;
-//     return NOERROR;
-// }
+    Int32 hashCode = 1;
+    IInterface* element;
+    for (Int32 i = 0; i < array->GetLength(); i++) {
+        element = (*array)[i];
+        hashCode = 31 * hashCode + Object::GetHashCode(element);
+    }
+    *code = hashCode;
+    return NOERROR;
+}
 
 // ECode Arrays::DeepHashCode(
-//     /* [in] */ ArrayOf<IInterface* >* array,
+//     /* [in] */ ArrayOf<IInterface *> * array,
 //     /* [out] */ Int32* code)
 // {
 //     VALIDATE_NOT_NULL(code)
@@ -933,231 +637,91 @@ ECode Arrays::CheckOffsetAndCount(
 //     return hashCode;
 // }
 
-// ECode Arrays::EqualsByte(
-//     /* [in] */ ArrayOf<Byte>* array1,
-//     /* [in] */ ArrayOf<Byte>* array2,
-//     /* [out] */ Boolean* result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (array1 == array2) {
-//         *result = TRUE;
-//         return NOERROR;
-//     }
-//     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-//         *result = FALSE;
-//         return NOERROR;
-//     }
-//     for (Int32 i = 0; i < array1->GetLength(); i++) {
-//         if ((*array1)[i] != (*array2)[i]) {
-//             *result = FALSE;
-//             return NOERROR;
-//         }
-//     }
-//     *result = TRUE;
-//     return NOERROR;
-// }
+ECode Arrays::Equals(
+    /* [in] */ ArrayOf<Float>* array1,
+    /* [in] */ ArrayOf<Float>* array2,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
 
-// ECode Arrays::EqualsInt16(
-//     /* [in] */ ArrayOf<Int16>* array1,
-//     /* [in] */ ArrayOf<Int16>* array2,
-//     /* [out] */ Boolean* result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (array1 == array2) {
-//         *result = TRUE;
-//         return NOERROR;
-//     }
-//     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-//         *result = FALSE;
-//         return NOERROR;
-//     }
-//     for (Int32 i = 0; i < array1->GetLength(); i++) {
-//         if ((*array1)[i] != (*array2)[i]) {
-//             *result = FALSE;
-//             return NOERROR;
-//         }
-//     }
-//     *result = TRUE;
-//     return NOERROR;
-// }
+    if (array1 == array2) {
+        *result = TRUE;
+        return NOERROR;
+    }
 
-// ECode Arrays::EqualsChar32(
-//     /* [in] */ ArrayOf<Char32>* array1,
-//     /* [in] */ ArrayOf<Char32>* array2,
-//     /* [out] */ Boolean* result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (array1 == array2) {
-//         *result = TRUE;
-//         return NOERROR;
-//     }
-//     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-//         *result = FALSE;
-//         return NOERROR;
-//     }
-//     for (Int32 i = 0; i < array1->GetLength(); i++) {
-//         if ((*array1)[i] != (*array2)[i]) {
-//             *result = FALSE;
-//             return NOERROR;
-//         }
-//     }
-//     *result = TRUE;
-//     return NOERROR;
-// }
+    if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    for (Int32 i = 0; i < array1->GetLength(); i++) {
+        if (!Elastos::Core::Math::Equals((*array1)[i], (*array2)[i])) {
+            *result = FALSE;
+            return NOERROR;
+        }
+    }
+    *result = TRUE;
+    return NOERROR;
+}
 
-// ECode Arrays::EqualsInt32(
-//     /* [in] */ ArrayOf<Int32>* array1,
-//     /* [in] */ ArrayOf<Int32>* array2,
-//     /* [out] */ Boolean* result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (array1 == array2) {
-//         *result = TRUE;
-//         return NOERROR;
-//     }
-//     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-//         *result = FALSE;
-//         return NOERROR;
-//     }
-//     for (Int32 i = 0; i < array1->GetLength(); i++) {
-//         if ((*array1)[i] != (*array2)[i]) {
-//             *result = FALSE;
-//             return NOERROR;
-//         }
-//     }
-//     *result = TRUE;
-//     return NOERROR;
-// }
+ECode Arrays::Equals(
+    /* [in] */ ArrayOf<Double>* array1,
+    /* [in] */ ArrayOf<Double>* array2,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
 
-// ECode Arrays::EqualsInt64(
-//     /* [in] */ ArrayOf<Int64>* array1,
-//     /* [in] */ ArrayOf<Int64>* array2,
-//     /* [out] */ Boolean* result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (array1 == array2) {
-//         *result = TRUE;
-//         return NOERROR;
-//     }
-//     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-//         *result = FALSE;
-//         return NOERROR;
-//     }
-//     for (Int32 i = 0; i < array1->GetLength(); i++) {
-//         if ((*array1)[i] != (*array2)[i]) {
-//             *result = FALSE;
-//             return NOERROR;
-//         }
-//     }
-//     *result = TRUE;
-//     return NOERROR;
-// }
+    if (array1 == array2) {
+        *result = TRUE;
+        return NOERROR;
+    }
 
-// ECode Arrays::EqualsFloat(
-//     /* [in] */ ArrayOf<Float>* array1,
-//     /* [in] */ ArrayOf<Float>* array2,
-//     /* [out] */ Boolean* result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (array1 == array2) {
-//         *result = TRUE;
-//         return NOERROR;
-//     }
-//     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-//         *result = FALSE;
-//         return NOERROR;
-//     }
-//     for (Int32 i = 0; i < array1->GetLength(); i++) {
-//         Int32 num1 = Elastos::Core::Math::FloatToInt32Bits((*array1)[i]);
-//         Int32 num2 = Elastos::Core::Math::FloatToInt32Bits((*array2)[i]);
-//         if (num1 != num2) {
-//             *result = FALSE;
-//             return NOERROR;
-//         }
-//     }
-//     *result = TRUE;
-//     return NOERROR;
-// }
+    if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
+        *result = FALSE;
+        return NOERROR;
+    }
 
-// ECode Arrays::EqualsDouble(
-//     /* [in] */ ArrayOf<Double>* array1,
-//     /* [in] */ ArrayOf<Double>* array2,
-//     /* [out] */ Boolean* result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (array1 == array2) {
-//         *result = TRUE;
-//         return NOERROR;
-//     }
-//     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-//         *result = FALSE;
-//         return NOERROR;
-//     }
-//     for (Int32 i = 0; i < array1->GetLength(); i++) {
-//         Int64 num1 = Elastos::Core::Math::DoubleToInt64Bits((*array1)[i]);
-//         Int64 num2 = Elastos::Core::Math::DoubleToInt64Bits((*array2)[i]);
-//         if (num1 != num2) {
-//             *result = FALSE;
-//             return NOERROR;
-//         }
-//     }
-//     *result = TRUE;
-//     return NOERROR;
-// }
+    for (Int32 i = 0; i < array1->GetLength(); i++) {
+        if (!Elastos::Core::Math::Equals((*array1)[i], (*array2)[i])) {
+            *result = FALSE;
+            return NOERROR;
+        }
+    }
 
-// ECode Arrays::EqualsBoolean(
-//     /* [in] */ ArrayOf<Boolean>* array1,
-//     /* [in] */ ArrayOf<Boolean>* array2,
-//     /* [out] */ Boolean* result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (array1 == array2) {
-//         *result = TRUE;
-//         return NOERROR;
-//     }
-//     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-//         *result = FALSE;
-//         return NOERROR;
-//     }
-//     for (Int32 i = 0; i < array1->GetLength(); i++) {
-//         if ((*array1)[i] != (*array2)[i]) {
-//             *result = FALSE;
-//             return NOERROR;
-//         }
-//     }
-//     *result = TRUE;
-//     return NOERROR;
-// }
+    *result = TRUE;
+    return NOERROR;
+}
 
-// ECode Arrays::EqualsObject(
-//     /* [in] */ ArrayOf<IInterface* >* array1,
-//     /* [in] */ ArrayOf<IInterface* >* array2,
-//     /* [out] */ Boolean* result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (array1 == array2) {
-//         *result = TRUE;
-//         return NOERROR;
-//     }
-//     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-//         *result = FALSE;
-//         return NOERROR;
-//     }
-//     for (Int32 i = 0; i < array1->GetLength(); i++) {
-//         AutoPtr<IInterface> e1 = (*array1)[i];
-//         AutoPtr<IInterface> e2 = (*array2)[i];
-//         if (!(e1 == NULL ? e2 == NULL : Object::Equals(e1, e2))) {
-//             *result = FALSE;
-//             return NOERROR;
-//         }
-//     }
-//     *result = TRUE;
-//     return NOERROR;
-// }
+ECode Arrays::Equals(
+    /* [in] */ ArrayOf<IInterface *> * array1,
+    /* [in] */ ArrayOf<IInterface *> * array2,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    if (array1 == array2) {
+        *result = TRUE;
+        return NOERROR;
+    }
+    if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    IInterface *e1, *e2;
+    for (Int32 i = 0; i < array1->GetLength(); i++) {
+        e1 = (*array1)[i];
+        e2 = (*array2)[i];
+        if (!(e1 == NULL ? e2 == NULL : Object::Equals(e1, e2))) {
+            *result = FALSE;
+            return NOERROR;
+        }
+    }
+    *result = TRUE;
+    return NOERROR;
+}
 
 // ECode Arrays::DeepEquals(
-//     /* [in] */ ArrayOf<IInterface* >* array1,
-//     /* [in] */ ArrayOf<IInterface* >* array2,
+//     /* [in] */ ArrayOf<IInterface *> * array1,
+//     /* [in] */ ArrayOf<IInterface *> * array2,
 //     /* [out] */ Boolean* result)
 // {
 //     VALIDATE_NOT_NULL(result)
@@ -1433,361 +997,63 @@ ECode Arrays::CheckOffsetAndCount(
 //     return result;
 // }
 
-// ECode Arrays::SortByte(
-//     /* [in] */ ArrayOf<Byte>* array)
-// {
-//     return DualPivotQuicksort::Sort(array);
-// }
+ECode Arrays::Sort(
+    /* [in] */ ArrayOf<IInterface *> * array)
+{
+    return ComparableTimSort::Sort(array);
+}
 
-// ECode Arrays::SortByte(
-//     /* [in] */ ArrayOf<Byte>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end)
-// {
-//     return DualPivotQuicksort::Sort(array, start, end);
-// }
+ECode Arrays::Sort(
+    /* [in] */ ArrayOf<IInterface *> * array,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end)
+{
+    return ComparableTimSort::Sort(array, start, end);
+}
 
-// ECode Arrays::SortChar32(
-//     /* [in] */ ArrayOf<Char32>* array)
-// {
-//     return DualPivotQuicksort::Sort(array);
-// }
+ECode Arrays::Sort(
+    /* [in] */ ArrayOf<IInterface *> * array,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end,
+    /* [in] */ IComparator* comparator)
+{
+    return TimSort::Sort(array, start, end, comparator);
+}
 
-// ECode Arrays::SortChar32(
-//     /* [in] */ ArrayOf<Char32>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end)
-// {
-//     return DualPivotQuicksort::Sort(array, start, end);
-// }
+ECode Arrays::Sort(
+    /* [in] */ ArrayOf<IInterface *> * array,
+    /* [in] */ IComparator* comparator)
+{
+    return TimSort::Sort(array, comparator);
+}
 
-// ECode Arrays::SortDouble(
-//     /* [in] */ ArrayOf<Double>* array)
-// {
-//     return DualPivotQuicksort::Sort(array);
-// }
-
-// ECode Arrays::SortDouble(
-//     /* [in] */ ArrayOf<Double>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end)
-// {
-//     return DualPivotQuicksort::Sort(array, start, end);
-// }
-
-// ECode Arrays::SortFloat(
-//     /* [in] */ ArrayOf<Float>* array)
-// {
-//     return DualPivotQuicksort::Sort(array);
-// }
-
-// ECode Arrays::SortFloat(
-//     /* [in] */ ArrayOf<Float>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end)
-// {
-//     return DualPivotQuicksort::Sort(array, start, end);
-// }
-
-// ECode Arrays::SortInt32(
-//     /* [in] */ ArrayOf<Int32>* array)
-// {
-//     return DualPivotQuicksort::Sort(array);
-// }
-
-// ECode Arrays::SortInt32(
-//     /* [in] */ ArrayOf<Int32>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end)
-// {
-//     return DualPivotQuicksort::Sort(array, start, end);
-// }
-
-// ECode Arrays::SortInt64(
-//     /* [in] */ ArrayOf<Int64>* array)
-// {
-//     return DualPivotQuicksort::Sort(array);
-// }
-
-// ECode Arrays::SortInt64(
-//     /* [in] */ ArrayOf<Int64>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end)
-// {
-//     return DualPivotQuicksort::Sort(array, start, end);
-// }
-
-// ECode Arrays::SortInt16(
-//     /* [in] */ ArrayOf<Int16>* array)
-// {
-//     return DualPivotQuicksort::Sort(array);
-// }
-
-// ECode Arrays::SortInt16(
-//     /* [in] */ ArrayOf<Int16>* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end)
-// {
-//     return DualPivotQuicksort::Sort(array, start, end);
-// }
-
-// ECode Arrays::SortObject(
-//     /* [in] */ ArrayOf<IInterface* >* array)
-// {
-//     return ComparableTimSort::Sort(*array);
-// }
-
-// ECode Arrays::SortObject(
-//     /* [in] */ ArrayOf<IInterface* >* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end)
-// {
-//     return ComparableTimSort::Sort(*array, start, end);
-// }
-
-// ECode Arrays::Sort(
-//     /* [in] */ ArrayOf<IInterface* >* array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ IComparator* comparator)
-// {
-//     return TimSort::Sort(array, start, end, comparator);
-// }
-
-// ECode Arrays::Sort(
-//     /* [in] */ ArrayOf<IInterface* >* array,
-//     /* [in] */ IComparator* comparator)
-// {
-//     return TimSort::Sort(array, comparator);
-// }
-
-// ECode Arrays::ToStringBoolean(
-//     /* [in] */ ArrayOf<Boolean>* array,
-//     /* [out] */ String* str)
-// {
-//     VALIDATE_NOT_NULL(str)
-//     if (array == NULL) {
-//         *str = String("NULL");
-//         return NOERROR;
-//     }
-//     if (array->GetLength() == 0) {
-//         *str = String("[]");
-//         return NOERROR;
-//     }
-//     StringBuilder sb(array->GetLength() * 7);
-//     sb.AppendChar('[');
-//     sb.Append((*array)[0]);
-//     for (Int32 i = 1; i < array->GetLength(); i++) {
-//         sb.Append(", ");
-//         sb.Append((*array)[i]);
-//     }
-//     sb.AppendChar(']');
-//     *str = sb.ToString();
-//     return NOERROR;
-// }
-
-// ECode Arrays::ToStringByte(
-//     /* [in] */ ArrayOf<Byte>* array,
-//     /* [out] */ String* str)
-// {
-//     VALIDATE_NOT_NULL(str)
-//     if (array == NULL) {
-//         *str = String("NULL");
-//         return NOERROR;
-//     }
-//     if (array->GetLength() == 0) {
-//         *str = String("[]");
-//         return NOERROR;
-//     }
-//     StringBuilder sb(array->GetLength() * 6);
-//     sb.AppendChar('[');
-//     sb.Append((*array)[0]);
-//     for (Int32 i = 1; i < array->GetLength(); i++) {
-//         sb.Append(", ");
-//         sb.Append((*array)[i]);
-//     }
-//     sb.AppendChar(']');
-//     *str = sb.ToString();
-//     return NOERROR;
-// }
-
-// ECode Arrays::ToStringChar32(
-//     /* [in] */ ArrayOf<Char32>* array,
-//     /* [out] */ String* str)
-// {
-//     VALIDATE_NOT_NULL(str)
-//     if (array == NULL) {
-//         *str = String("NULL");
-//         return NOERROR;
-//     }
-//     if (array->GetLength() == 0) {
-//         *str = String("[]");
-//         return NOERROR;
-//     }
-//     StringBuilder sb(array->GetLength() * 3);
-//     sb.AppendChar('[');
-//     sb.AppendChar((*array)[0]);
-//     for (Int32 i = 1; i < array->GetLength(); i++) {
-//         sb.Append(", ");
-//         sb.AppendChar((*array)[i]);
-//     }
-//     sb.AppendChar(']');
-//     *str = sb.ToString();
-//     return NOERROR;
-// }
-
-// ECode Arrays::ToStringDouble(
-//     /* [in] */ ArrayOf<Double>* array,
-//     /* [out] */ String* str)
-// {
-//     VALIDATE_NOT_NULL(str)
-//     if (array == NULL) {
-//         *str = String("NULL");
-//         return NOERROR;
-//     }
-//     if (array->GetLength() == 0) {
-//         *str = String("[]");
-//         return NOERROR;
-//     }
-//     StringBuilder sb(array->GetLength() * 7);
-//     sb.AppendChar('[');
-//     sb.Append((*array)[0]);
-//     for (Int32 i = 1; i < array->GetLength(); i++) {
-//         sb.Append(", ");
-//         sb.Append((*array)[i]);
-//     }
-//     sb.AppendChar(']');
-//     *str = sb.ToString();
-//     return NOERROR;
-// }
-
-// ECode Arrays::ToStringFloat(
-//     /* [in] */ ArrayOf<Float>* array,
-//     /* [out] */ String* str)
-// {
-//     VALIDATE_NOT_NULL(str)
-//     if (array == NULL) {
-//         *str = String("NULL");
-//         return NOERROR;
-//     }
-//     if (array->GetLength() == 0) {
-//         *str = String("[]");
-//         return NOERROR;
-//     }
-//     StringBuilder sb(array->GetLength() * 7);
-//     sb.AppendChar('[');
-//     sb.Append((*array)[0]);
-//     for (Int32 i = 1; i < array->GetLength(); i++) {
-//         sb.Append(", ");
-//         sb.Append((*array)[i]);
-//     }
-//     sb.AppendChar(']');
-//     *str = sb.ToString();
-//     return NOERROR;
-// }
-
-// ECode Arrays::ToStringInt32(
-//     /* [in] */ ArrayOf<Int32>* array,
-//     /* [out] */ String* str)
-// {
-//     VALIDATE_NOT_NULL(str)
-//     if (array == NULL) {
-//         *str = String("NULL");
-//         return NOERROR;
-//     }
-//     if (array->GetLength() == 0) {
-//         *str = String("[]");
-//         return NOERROR;
-//     }
-//     StringBuilder sb(array->GetLength() * 6);
-//     sb.AppendChar('[');
-//     sb.Append((*array)[0]);
-//     for (Int32 i = 1; i < array->GetLength(); i++) {
-//         sb.Append(", ");
-//         sb.Append((*array)[i]);
-//     }
-//     sb.AppendChar(']');
-//     *str = sb.ToString();
-//     return NOERROR;
-// }
-
-// ECode Arrays::ToStringInt64(
-//     /* [in] */ ArrayOf<Int64>* array,
-//     /* [out] */ String* str)
-// {
-//     VALIDATE_NOT_NULL(str)
-//     if (array == NULL) {
-//         *str = String("NULL");
-//         return NOERROR;
-//     }
-//     if (array->GetLength() == 0) {
-//         *str = String("[]");
-//         return NOERROR;
-//     }
-//     StringBuilder sb(array->GetLength() * 6);
-//     sb.AppendChar('[');
-//     sb.Append((*array)[0]);
-//     for (Int32 i = 1; i < array->GetLength(); i++) {
-//         sb.Append(", ");
-//         sb.Append((*array)[i]);
-//     }
-//     sb.AppendChar(']');
-//     *str = sb.ToString();
-//     return NOERROR;
-// }
-
-// ECode Arrays::ToStringInt16(
-//     /* [in] */ ArrayOf<Int16>* array,
-//     /* [out] */ String* str)
-// {
-//     VALIDATE_NOT_NULL(str)
-//     if (array == NULL) {
-//         *str = String("NULL");
-//         return NOERROR;
-//     }
-//     if (array->GetLength() == 0) {
-//         *str = String("[]");
-//         return NOERROR;
-//     }
-//     StringBuilder sb(array->GetLength() * 6);
-//     sb.Append('[');
-//     sb.Append((*array)[0]);
-//     for (Int32 i = 1; i < array->GetLength(); i++) {
-//         sb.Append(", ");
-//         sb.Append((*array)[i]);
-//     }
-//     sb.Append(']');
-//     *str = sb.ToString();
-//     return NOERROR;
-// }
-
-// ECode Arrays::ToStringObject(
-//     /* [in] */ ArrayOf<IInterface* >* array,
-//     /* [out] */ String* str)
-// {
-//     VALIDATE_NOT_NULL(str)
-//     if (array == NULL) {
-//         *str = String("NULL");
-//         return NOERROR;
-//     }
-//     if (array->GetLength() == 0) {
-//         *str = String("[]");
-//         return NOERROR;
-//     }
-//     StringBuilder sb(array->GetLength() * 7);
-//     sb.Append('[');
-//     sb.Append((*array)[0]);
-//     for (Int32 i = 1; i < array->GetLength(); i++) {
-//         sb.Append(", ");
-//         sb.Append((*array)[i]);
-//     }
-//     sb.Append(']');
-//     *str = sb.ToString();
-//     return NOERROR;
-// }
+ECode Arrays::ToString(
+    /* [in] */ ArrayOf<Char32>* array,
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    if (array == NULL) {
+        *str = String("NULL");
+        return NOERROR;
+    }
+    if (array->GetLength() == 0) {
+        *str = String("[]");
+        return NOERROR;
+    }
+    StringBuilder sb(array->GetLength() * 3);
+    sb.AppendChar('[');
+    sb.AppendChar((*array)[0]);
+    for (Int32 i = 1; i < array->GetLength(); i++) {
+        sb.Append(", ");
+        sb.AppendChar((*array)[i]);
+    }
+    sb.AppendChar(']');
+    *str = sb.ToString();
+    return NOERROR;
+}
 
 // ECode Arrays::DeepToString(
-//     /* [in] */ ArrayOf<IInterface* >* array,
+//     /* [in] */ ArrayOf<IInterface *> * array,
 //     /* [out] */ String* str)
 // {
 //     VALIDATE_NOT_NULL(str)
@@ -1811,8 +1077,8 @@ ECode Arrays::CheckOffsetAndCount(
 // }
 
 // void Arrays::DeepToStringImpl(
-//     /* [in] */ ArrayOf<IInterface* >* array,
-//     /* [in] */ ArrayOf<IInterface* >* origArrays,
+//     /* [in] */ ArrayOf<IInterface *> * array,
+//     /* [in] */ ArrayOf<IInterface *> * origArrays,
 //     /* [in] */ StringBuilder* sb)
 // {
 //     if (array == NULL) {
@@ -1975,7 +1241,7 @@ ECode Arrays::CheckOffsetAndCount(
 // }
 
 // Boolean Arrays::DeepToStringImplContains(
-//     /* [in] */ ArrayOf<IInterface* >* origArrays,
+//     /* [in] */ ArrayOf<IInterface *> * origArrays,
 //     /* [in] */ IInterface* array)
 // {
 //     if (origArrays == NULL || origArrays->GetLength() == 0) {
@@ -1990,359 +1256,6 @@ ECode Arrays::CheckOffsetAndCount(
 //     return FALSE;
 // }
 
-// ECode Arrays::CopyOfBoolean(
-//     /* [in] */ ArrayOf<Boolean>* original,
-//     /* [in] */ Int32 newLength,
-//     /* [out, callee] */ ArrayOf<Boolean>** result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (newLength < 0) {
-//         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
-//     }
-//     return CopyOfRangeBoolean(original, 0, newLength, result);
-// }
-
-// ECode Arrays::CopyOfByte(
-//     /* [in] */ ArrayOf<Byte>* original,
-//     /* [in] */ Int32 newLength,
-//     /* [out, callee] */ ArrayOf<Byte>** result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (newLength < 0) {
-//         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
-//     }
-//     return CopyOfRangeByte(original, 0, newLength, result);
-// }
-
-// ECode Arrays::CopyOfChar32(
-//     /* [in] */ ArrayOf<Char32>* original,
-//     /* [in] */ Int32 newLength,
-//     /* [out, callee] */ ArrayOf<Char32>** result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (newLength < 0) {
-//         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
-//     }
-//     return CopyOfRangeChar32(original, 0, newLength, result);
-// }
-
-// ECode Arrays::CopyOfDouble(
-//     /* [in] */ ArrayOf<Double>* original,
-//     /* [in] */ Int32 newLength,
-//     /* [out, callee] */ ArrayOf<Double>** result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (newLength < 0) {
-//         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
-//     }
-//     return CopyOfRangeDouble(original, 0, newLength, result);
-// }
-
-// ECode Arrays::CopyOfFloat(
-//     /* [in] */ ArrayOf<Float>* original,
-//     /* [in] */ Int32 newLength,
-//     /* [out, callee] */ ArrayOf<Float>** result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (newLength < 0) {
-//         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
-//     }
-//     return CopyOfRangeFloat(original, 0, newLength, result);
-// }
-
-// ECode Arrays::CopyOfInt32(
-//     /* [in] */ ArrayOf<Int32>* original,
-//     /* [in] */ Int32 newLength,
-//     /* [out, callee] */ ArrayOf<Int32>** result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (newLength < 0) {
-//         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
-//     }
-//     return CopyOfRangeInt32(original, 0, newLength, result);
-// }
-
-// ECode Arrays::CopyOfInt64(
-//     /* [in] */ ArrayOf<Int64>* original,
-//     /* [in] */ Int32 newLength,
-//     /* [out, callee] */ ArrayOf<Int64>** result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (newLength < 0) {
-//         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
-//     }
-//     return CopyOfRangeInt64(original, 0, newLength, result);
-// }
-
-// ECode Arrays::CopyOfInt16(
-//     /* [in] */ ArrayOf<Int16>* original,
-//     /* [in] */ Int32 newLength,
-//     /* [out, callee] */ ArrayOf<Int16>** result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (newLength < 0) {
-//         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
-//     }
-//     return CopyOfRangeInt16(original, 0, newLength, result);
-// }
-
-// ECode Arrays::CopyOf(
-//     /* [in] */ ArrayOf<IInterface* >* original,
-//     /* [in] */ Int32 newLength,
-//     /* [out, callee] */ ArrayOf<IInterface* >** result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (original == NULL) {
-//         return E_NULL_POINTER_EXCEPTION;
-//     }
-//     if (newLength < 0) {
-//         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
-//     }
-//     return CopyOfRange(original, 0, newLength, result);
-// }
-
-// // ECode Arrays::_CopyOf(
-// //     /* [in] */ U[] original,
-// //     /* [in] */ Int32 newLength,
-// //     /* [in] */ Class<? extends T[]> newType,
-// //     /* [out, callee] */ <T, U> T[] result)
-// // {
-// //     // We use the null pointer check in copyOfRange for exception priority compatibility.
-// //     if (newLength < 0) {
-// //         return E_NEGATIVE_ARRAY_SIZE_EXCEPTION;
-// //     }
-// //     return _CopyOfRange(original, 0, newLength, newType, result);
-// // }
-
-// ECode Arrays::CopyOfRangeBoolean(
-//     /* [in] */ ArrayOf<Boolean>* original,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [out, callee] */ ArrayOf<Boolean>** arrayCopy)
-// {
-//     VALIDATE_NOT_NULL(arrayCopy)
-//     if (start > end) {
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-//     Int32 originalLength = original->GetLength();
-//     if (start < 0 || start > originalLength) {
-//         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//     }
-//     Int32 resultLength = end - start;
-//     Int32 copyLength = Elastos::Core::Math::Min(resultLength, originalLength - start);
-//     AutoPtr<ArrayOf<Boolean> > result = ArrayOf<Boolean>::Alloc(resultLength);
-//     result->Copy(0, original, start, copyLength);
-//     *arrayCopy = result;
-//     REFCOUNT_ADD(*arrayCopy)
-//     return NOERROR;
-// }
-
-// ECode Arrays::CopyOfRangeByte(
-//     /* [in] */ ArrayOf<Byte>* original,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [out, callee] */ ArrayOf<Byte>** arrayCopy)
-// {
-//     VALIDATE_NOT_NULL(arrayCopy)
-//     if (start > end) {
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-//     Int32 originalLength = original->GetLength();
-//     if (start < 0 || start > originalLength) {
-//         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//     }
-//     Int32 resultLength = end - start;
-//     Int32 copyLength = Elastos::Core::Math::Min(resultLength, originalLength - start);
-//     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(resultLength);
-//     result->Copy(0, original, start, copyLength);
-//     *arrayCopy = result;
-//     REFCOUNT_ADD(*arrayCopy)
-//     return NOERROR;
-// }
-
-// ECode Arrays::CopyOfRangeChar32(
-//     /* [in] */ ArrayOf<Char32>* original,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [out, callee] */ ArrayOf<Char32>** arrayCopy)
-// {
-//     VALIDATE_NOT_NULL(arrayCopy)
-//     if (start > end) {
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-//     Int32 originalLength = original->GetLength();
-//     if (start < 0 || start > originalLength) {
-//         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//     }
-//     Int32 resultLength = end - start;
-//     Int32 copyLength = Elastos::Core::Math::Min(resultLength, originalLength - start);
-//     AutoPtr<ArrayOf<Char32> > result = ArrayOf<Char32>::Alloc(resultLength);
-//     result->Copy(0, original, start, copyLength);
-//     *arrayCopy = result;
-//     REFCOUNT_ADD(*arrayCopy)
-//     return NOERROR;
-// }
-
-// ECode Arrays::CopyOfRangeDouble(
-//     /* [in] */ ArrayOf<Double>* original,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [out, callee] */ ArrayOf<Double>** arrayCopy)
-// {
-//     VALIDATE_NOT_NULL(arrayCopy)
-//     if (start > end) {
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-//     Int32 originalLength = original->GetLength();
-//     if (start < 0 || start > originalLength) {
-//         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//     }
-//     Int32 resultLength = end - start;
-//     Int32 copyLength = Elastos::Core::Math::Min(resultLength, originalLength - start);
-//     AutoPtr<ArrayOf<Double> > result = ArrayOf<Double>::Alloc(resultLength);
-//     result->Copy(0, original, start, copyLength);
-//     *arrayCopy = result;
-//     REFCOUNT_ADD(*arrayCopy)
-//     return NOERROR;
-// }
-
-// ECode Arrays::CopyOfRangeFloat(
-//     /* [in] */ ArrayOf<Float>* original,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [out, callee] */ ArrayOf<Float>** arrayCopy)
-// {
-//     VALIDATE_NOT_NULL(arrayCopy)
-//     if (start > end) {
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-//     Int32 originalLength = original->GetLength();
-//     if (start < 0 || start > originalLength) {
-//         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//     }
-//     Int32 resultLength = end - start;
-//     Int32 copyLength = Elastos::Core::Math::Min(resultLength, originalLength - start);
-//     AutoPtr<ArrayOf<Float> > result = ArrayOf<Float>::Alloc(resultLength);
-//     result->Copy(0, original, start, copyLength);
-//     *arrayCopy = result;
-//     REFCOUNT_ADD(*arrayCopy)
-//     return NOERROR;
-// }
-
-// ECode Arrays::CopyOfRangeInt32(
-//     /* [in] */ ArrayOf<Int32>* original,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [out, callee] */ ArrayOf<Int32>** arrayCopy)
-// {
-//     VALIDATE_NOT_NULL(arrayCopy)
-//     if (start > end) {
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-//     Int32 originalLength = original->GetLength();
-//     if (start < 0 || start > originalLength) {
-//         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//     }
-//     Int32 resultLength = end - start;
-//     Int32 copyLength = Elastos::Core::Math::Min(resultLength, originalLength - start);
-//     AutoPtr<ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(resultLength);
-//     result->Copy(0, original, start, copyLength);
-//     *arrayCopy = result;
-//     REFCOUNT_ADD(*arrayCopy)
-//     return NOERROR;
-// }
-
-// ECode Arrays::CopyOfRangeInt64(
-//     /* [in] */ ArrayOf<Int64>* original,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [out, callee] */ ArrayOf<Int64>** arrayCopy)
-// {
-//     VALIDATE_NOT_NULL(arrayCopy)
-//     if (start > end) {
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-//     Int32 originalLength = original->GetLength();
-//     if (start < 0 || start > originalLength) {
-//         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//     }
-//     Int32 resultLength = end - start;
-//     Int32 copyLength = Elastos::Core::Math::Min(resultLength, originalLength - start);
-//     AutoPtr<ArrayOf<Int64> > result = ArrayOf<Int64>::Alloc(resultLength);
-//     result->Copy(0, original, start, copyLength);
-//     *arrayCopy = result;
-//     REFCOUNT_ADD(*arrayCopy)
-//     return NOERROR;
-// }
-
-// ECode Arrays::CopyOfRangeInt16(
-//     /* [in] */ ArrayOf<Int16>* original,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [out, callee] */ ArrayOf<Int16>** arrayCopy)
-// {
-//     VALIDATE_NOT_NULL(arrayCopy)
-//     if (start > end) {
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-//     Int32 originalLength = original->GetLength();
-//     if (start < 0 || start > originalLength) {
-//         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//     }
-//     Int32 resultLength = end - start;
-//     Int32 copyLength = Elastos::Core::Math::Min(resultLength, originalLength - start);
-//     AutoPtr<ArrayOf<Int16> > result = ArrayOf<Int16>::Alloc(resultLength);
-//     result->Copy(0, original, start, copyLength);
-//     *arrayCopy = result;
-//     REFCOUNT_ADD(*arrayCopy)
-//     return NOERROR;
-// }
-
-// ECode Arrays::CopyOfRange(
-//     /* [in] */ ArrayOf<IInterface* >* original,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [out, callee] */ ArrayOf<IInterface* >** arrayCopy)
-// {
-//     VALIDATE_NOT_NULL(arrayCopy)
-//     Int32 originalLength = original->GetLength(); // For exception priority compatibility.
-//     if (start > end) {
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-//     if (start < 0 || start > originalLength) {
-//         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//     }
-//     Int32 resultLength = end - start;
-//     Int32 copyLength = Elastos::Core::Math::Min(resultLength, originalLength - start);
-//     AutoPtr<ArrayOf<IInterface*> > result = ArrayOf<IInterface*>::Alloc(resultLength);
-//     result->Copy(0, original, start, copyLength);
-//     *arrayCopy = result;
-//     REFCOUNT_ADD(*arrayCopy)
-//     return NOERROR;
-// }
-
-// ECode Arrays::_CopyOfRange(
-//     /* [in] */ U[] original,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ Class<? extends T[]> newType,
-//     /* [out, callee] */ <T, U> T[] arrayCopy)
-// {
-//     if (start > end) {
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-//     Int32 originalLength = original->GetLength();
-//     if (start < 0 || start > originalLength) {
-//         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//     }
-//     Int32 resultLength = end - start;
-//     Int32 copyLength = Elastos::Core::Math::Min(resultLength, originalLength - start);
-//     AutoPtr<ArrayOf<T> > result = ArrayOf<T>::Alloc(resultLength);
-//     result->Copy(0, original, start, copyLength);
-//     *arrayCopy = result;
-//     REFCOUNT_ADD(*arrayCopy)
-//     return NOERROR;
-// }
 
 } // namespace Utility
 } // namespace Elastos
