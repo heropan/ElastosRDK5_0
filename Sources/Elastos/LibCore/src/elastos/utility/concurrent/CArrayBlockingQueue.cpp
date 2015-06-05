@@ -735,8 +735,6 @@ ECode CArrayBlockingQueue::RemoveAt(
 const Int32 CArrayBlockingQueue::Itrs::SHORT_SWEEP_PROBES = 4;
 const Int32 CArrayBlockingQueue::Itrs::LONG_SWEEP_PROBES = 16;
 
-CAR_INTERFACE_IMPL(CArrayBlockingQueue::Itrs, Object, IInterface)
-
 CArrayBlockingQueue::Itrs::Itrs(
     /* [in] */ Itr* initial)
 {

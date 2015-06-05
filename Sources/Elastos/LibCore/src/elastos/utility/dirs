@@ -1,5 +1,5 @@
 
-#DIRS += concurrent
+DIRS += concurrent
 #DIRS += jar
 DIRS += logging
 DIRS += regex

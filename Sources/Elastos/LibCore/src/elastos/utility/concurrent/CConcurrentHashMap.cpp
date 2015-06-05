@@ -1,6 +1,6 @@
 
 #include "CConcurrentHashMap.h"
-#include <elastos/Math.h>
+#include <Math.h>
 
 using Elastos::Utility::Concurrent::Locks::EIID_IReentrantLock;
 using Elastos::IO::EIID_ISerializable;
@@ -8,8 +8,6 @@ using Elastos::IO::EIID_ISerializable;
 namespace Elastos {
 namespace Utility {
 namespace Concurrent {
-
-CAR_INTERFACE_IMPL(CConcurrentHashMap::HashEntry, Object, IInterface)
 
 //===============================================================================
 // CConcurrentHashMap::Segment

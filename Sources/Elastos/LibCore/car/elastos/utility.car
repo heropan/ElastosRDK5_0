@@ -220,14 +220,14 @@ module
     // interface Elastos.Core.IThreadUncaughtExceptionHandler;
     interface Elastos.Utility.ICollection;
     // interface Elastos.Utility.ISet;
-    // interface Elastos.Utility.IDeque;
-    // interface Elastos.Utility.IQueue;
+    interface Elastos.Utility.IDeque;
+    interface Elastos.Utility.IQueue;
     // interface Elastos.Utility.IMap;
     // interface Elastos.Utility.ISortedMap;
     // interface Elastos.Utility.INavigableMap;
     // interface Elastos.Utility.ISortedSet;
     // interface Elastos.Utility.INavigableSet;
-    // interface Elastos.Utility.IIterable;
+    interface Elastos.Utility.IIterable;
     // interface Elastos.Utility.Zip.IZipFile;
     // interface Elastos.Utility.Zip.IZipConstants;
     // interface Elastos.Utility.Zip.IZipInputStream;
@@ -331,9 +331,9 @@ module
     } // namespace Utility
     } // namespace Elastos
 
-    // namespace Elastos {
-    // namespace Utility {
-    // namespace Concurrent {
+    namespace Elastos {
+    namespace Utility {
+    namespace Concurrent {
 
     // class CCountDownLatch {
     //     /**
@@ -590,18 +590,18 @@ module
     //     interface ISerializable;
     // }
 
-    // class CConcurrentLinkedDeque {
-    //     constructor();
+    class CConcurrentLinkedDeque {
+        constructor();
 
-    //     constructor(
-    //         [in] ICollection* c);
+        constructor(
+            [in] ICollection* c);
 
-    //     interface IDeque;
-    //     interface IQueue;
-    //     interface ICollection;
-    //     interface IIterable;
-    //     interface ISerializable;
-    // }
+        interface IDeque;
+        interface IQueue;
+        interface ICollection;
+        interface IIterable;
+        interface ISerializable;
+    }
 
     // class CConcurrentLinkedQueue {
     //     constructor();
@@ -1053,9 +1053,9 @@ module
     //     interface ISerializable;
     // }
 
-    // } // namespace Concurrent
-    // } // namespace Utility
-    // } // namespace Elastos
+    } // namespace Concurrent
+    } // namespace Utility
+    } // namespace Elastos
 
 
     // interface Elastos.Core.ICloneable;

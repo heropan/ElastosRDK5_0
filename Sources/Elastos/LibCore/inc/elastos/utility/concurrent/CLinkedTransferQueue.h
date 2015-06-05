@@ -25,12 +25,9 @@ public:
      * ordered wrt other accesses or CASes use simple relaxed forms.
      */
     class Node
-        : public IInterface
-        , public Object
+        : public Object
     {
     public:
-        CAR_INTERFACE_DECL();
-
         // CAS methods for fields
         Boolean CasNext(
             /* [in] */ Node* cmp,

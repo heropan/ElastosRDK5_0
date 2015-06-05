@@ -34,11 +34,6 @@ CExchanger::Slot::Slot()
 {}
 
 //====================================================================
-// CExchanger::CDummyObject
-//====================================================================
-CAR_INTERFACE_IMPL(CExchanger::CDummyObject, Object, IInterface)
-
-//====================================================================
 // CExchanger::
 //====================================================================
 CAR_INTERFACE_IMPL(CExchanger, Object, IExchanger)

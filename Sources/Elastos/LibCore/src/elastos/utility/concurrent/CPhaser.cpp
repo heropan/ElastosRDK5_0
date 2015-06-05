@@ -1,14 +1,8 @@
 
 #include "CPhaser.h"
 #include "LockSupport.h"
-<<<<<<< Updated upstream
 #include <elastos/StringBuilder.h>
 #include <elastos/Math.h>
-=======
-#include <ObjectUtils.h>
-#include <StringBuilder.h>
-#include <Math.h>
->>>>>>> Stashed changes
 #include "CSystem.h"
 #include "Thread.h"
 #include "CAtomicReference.h"

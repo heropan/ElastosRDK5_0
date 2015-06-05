@@ -21,8 +21,6 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CAR_INTERFACE_IMPL(FutureTask::WaitNode, Object, IInterface)
-
 CAR_INTERFACE_IMPL_2(FutureTask, Object, IRunnableFuture, IRunnable)
 
 const Int32 FutureTask::NEW          = 0;

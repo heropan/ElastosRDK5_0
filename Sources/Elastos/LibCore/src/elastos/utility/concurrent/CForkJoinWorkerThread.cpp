@@ -2,10 +2,6 @@
 #include "CForkJoinWorkerThread.h"
 #include "CForkJoinPool.h"
 #include "ForkJoinTask.h"
-<<<<<<< Updated upstream
-=======
-#include <ObjectUtils.h>
->>>>>>> Stashed changes
 
 using Elastos::Utility::Concurrent::CForkJoinPool;
 using Elastos::Utility::Concurrent::ForkJoinTask;

@@ -14,8 +14,6 @@ namespace Concurrent {
 //====================================================================
 // CConcurrentLinkedQueue::Node::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentLinkedQueue::Node, Object, IInterface)
-
 CConcurrentLinkedQueue::Node::Node(
     /* [in] */ IInterface* item)
 {

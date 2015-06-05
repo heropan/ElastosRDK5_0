@@ -1,13 +1,7 @@
 
 #include "CLinkedBlockingDeque.h"
-<<<<<<< Updated upstream
 #include <elastos/StringBuilder.h>
 #include <elastos/Math.h>
-=======
-#include <StringBuilder.h>
-#include <Math.h>
-#include <ObjectUtils.h>
->>>>>>> Stashed changes
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;
@@ -19,8 +13,6 @@ namespace Concurrent {
 //====================================================================
 // CLinkedBlockingDeque::Node::
 //====================================================================
-CAR_INTERFACE_IMPL(CLinkedBlockingDeque::Node, Object, IInterface);
-
 CLinkedBlockingDeque::Node::Node(
     /* [in] */ IInterface* x)
 {
