@@ -1,5 +1,9 @@
 
 #include "CArrayOf.h"
+#include "StringBuilder.h"
+#include <elastos/utility/Arrays.h>
+
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Core {
@@ -66,6 +70,69 @@ ECode CArrayOf::GetTypeId(
     *id = mTypeId;
     return NOERROR;
 }
+
+
+ECode CArrayOf::DeepToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+
+    *str = Arrays::DeepToString(mElements);
+    return NOERROR;
+}
+
+ECode CArrayOf::DeepGetHashCode(
+    /* [out] */ Int32* hash)
+{
+    VALIDATE_NOT_NULL(hash)
+
+    Int32 hashCode = 1, elementHashCode;
+    for (Int32 i = 0; i < mElements->GetLength(); ++i) {
+        elementHashCode = Arrays::DeepGetHashCode((*mElements)[i]);
+        hashCode = 31 * hashCode + elementHashCode;
+    }
+    *hash = hashCode;
+    return NOERROR;
+}
+
+ECode CArrayOf::DeepEquals(
+    /* [in] */ IArrayOf* other,
+    /* [out] */ Boolean* equals)
+{
+    VALIDATE_NOT_NULL(equals)
+    *equals = FALSE;
+
+    if (other == NULL) {
+        return NOERROR;
+    }
+
+    if (THIS_PROBE(IArrayOf) == other) {
+        *equals = TRUE;
+        return NOERROR;
+    }
+
+    Int32 len;
+    other->GetLength(&len);
+    if (len != mElements->GetLength()) {
+        return NOERROR;
+    }
+
+    IInterface* e1;
+    for (Int32 i = 0; i < len; i++) {
+        e1 = (*mElements)[i];
+        AutoPtr<IInterface> e2;
+        other->Get(i, (IInterface**)&e2);
+
+        if (!Arrays::DeepEquals(e1, e2)) {
+            return NOERROR;
+        }
+    }
+
+    *equals = TRUE;
+    return NOERROR;
+}
+
+
 
 } // namespace Core
 } // namespace Elastos

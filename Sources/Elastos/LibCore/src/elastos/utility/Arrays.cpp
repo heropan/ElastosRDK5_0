@@ -238,28 +238,28 @@ ECode Arrays::CheckOffsetAndCount(
 // Arrays
 //====================================================================
 
-// ECode Arrays::AsList(
-//     /* [in] */ ArrayOf<IInterface*>* array,
-//     /* [out] */ IList** outList)
-// {
-//     VALIDATE_NOT_NULL(outList)
-//     *outList = NULL;
+ECode Arrays::AsList(
+    /* [in] */ ArrayOf<IInterface*>* array,
+    /* [out] */ IList** outList)
+{
+    VALIDATE_NOT_NULL(outList)
+    *outList = NULL;
 
-//     if (array) {
-//         // return new ArrayList<T>(array);
-//         AutoPtr<CArrayList> al;
-//         CArrayList::NewByFriend(array->GetLength(), (CArrayList**)&al);
+    if (array) {
+        // return new ArrayList<T>(array);
+        // AutoPtr<CArrayList> al;
+        // CArrayList::NewByFriend(array->GetLength(), (CArrayList**)&al);
 
-//         for (Int32 i = 0; i < array->GetLength(); ++i) {
-//             al->Add(i, (*array)[i]);
-//         }
+        // for (Int32 i = 0; i < array->GetLength(); ++i) {
+        //     al->Add(i, (*array)[i]);
+        // }
 
-//         *outList = (IList*)al->Probe(EIID_IList);
-//         REFCOUNT_ADD(*outList)
-//     }
+        // *outList = (IList*)al->Probe(EIID_IList);
+        // REFCOUNT_ADD(*outList)
+    }
 
-//     return NOERROR;
-// }
+    return NOERROR;
+}
 
 ECode Arrays::BinarySearch(
     /* [in] */ ArrayOf<IInterface *> * array,
@@ -376,15 +376,11 @@ ECode Arrays::BinarySearch(
     return BinarySearch(array, 0, array->GetLength(), value, comparator, index);
 }
 
-ECode Arrays::GetHashCode(
-    /* [in] */ ArrayOf<Boolean>* array,
-    /* [out] */ Int32* code)
+Int32 Arrays::GetHashCode(
+    /* [in] */ ArrayOf<Boolean>* array)
 {
-    VALIDATE_NOT_NULL(code)
-    *code = 0;
-
     if (array == NULL) {
-        return NOERROR;
+        return 0;
     }
 
     Int32 hashCode = 1;
@@ -392,19 +388,14 @@ ECode Arrays::GetHashCode(
         // 1231, 1237 are hash code values for boolean value
         hashCode = 31 * hashCode + ((*array)[i] ? 1231 : 1237);
     }
-    *code = hashCode;
-    return NOERROR;
+    return hashCode;
 }
 
-ECode Arrays::GetHashCode(
-    /* [in] */ ArrayOf<Int64>* array,
-    /* [out] */ Int32* code)
+Int32 Arrays::GetHashCode(
+    /* [in] */ ArrayOf<Int64>* array)
 {
-    VALIDATE_NOT_NULL(code)
-    *code = 0;
-
     if (array == NULL) {
-        return NOERROR;
+        return 0;
     }
 
     Int32 hashCode = 1;
@@ -418,19 +409,14 @@ ECode Arrays::GetHashCode(
         hashCode = 31 * hashCode
                 + (Int32) (elementValue ^ (elementValue >> 32));
     }
-    *code = hashCode;
-    return NOERROR;
+    return hashCode;
 }
 
-ECode Arrays::GetHashCode(
-    /* [in] */ ArrayOf<Float>* array,
-    /* [out] */ Int32* code)
+Int32 Arrays::GetHashCode(
+    /* [in] */ ArrayOf<Float>* array)
 {
-    VALIDATE_NOT_NULL(code)
-    *code = 0;
-
     if (array == NULL) {
-        return NOERROR;
+        return 0;
     }
 
     Int32 hashCode = 1;
@@ -441,19 +427,14 @@ ECode Arrays::GetHashCode(
          */
         hashCode = 31 * hashCode + Elastos::Core::Math::FloatToInt32Bits((*array)[i]);
     }
-    *code = hashCode;
-    return NOERROR;
+    return hashCode;
 }
 
-ECode Arrays::GetHashCode(
-    /* [in] */ ArrayOf<Double>* array,
-    /* [out] */ Int32* code)
+Int32 Arrays::GetHashCode(
+    /* [in] */ ArrayOf<Double>* array)
 {
-    VALIDATE_NOT_NULL(code)
-    *code = 0;
-
     if (array == NULL) {
-        return NOERROR;
+        return 0;
     }
 
     Int32 hashCode = 1;
@@ -466,19 +447,14 @@ ECode Arrays::GetHashCode(
          */
         hashCode = 31 * hashCode + (Int32) (v ^ (v >> 32));
     }
-    *code = hashCode;
-    return NOERROR;
+    return hashCode;
 }
 
-ECode Arrays::GetHashCode(
-    /* [in] */ ArrayOf<IInterface *> * array,
-    /* [out] */ Int32* code)
+Int32 Arrays::GetHashCode(
+    /* [in] */ ArrayOf<IInterface *> * array)
 {
-    VALIDATE_NOT_NULL(code)
-    *code = 0;
-
     if (array == NULL) {
-        return NOERROR;
+        return 0;
     }
 
     Int32 hashCode = 1;
@@ -487,223 +463,101 @@ ECode Arrays::GetHashCode(
         element = (*array)[i];
         hashCode = 31 * hashCode + Object::GetHashCode(element);
     }
-    *code = hashCode;
-    return NOERROR;
+    return hashCode;
 }
 
-// ECode Arrays::DeepHashCode(
-//     /* [in] */ ArrayOf<IInterface *> * array,
-//     /* [out] */ Int32* code)
-// {
-//     VALIDATE_NOT_NULL(code)
-//     if (array == NULL) {
-//         *code = 0;
-//         return NOERROR;
-//     }
-//     Int32 hashCode = 1;
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         AutoPtr<IInterface> element = (*array)[i];
-//         Int32 elementHashCode = DeepHashCodeElement(element);
-//         hashCode = 31 * hashCode + elementHashCode;
-//     }
-//     *code = hashCode;
-//     return NOERROR;
-// }
+Int32 Arrays::DeepGetHashCode(
+    /* [in] */ ArrayOf<IInterface *> * array)
+{
+    if (array == NULL) {
+        return 0;
+    }
 
-// Int32 Arrays::DeepHashCodeElement(
-//     /* [in] */ IInterface* element)
-// {
-//     if (element == NULL) {
-//          return 0;
-//     }
+    Int32 hashCode = 1, elementHashCode;
+    for (Int32 i = 0; i < array->GetLength(); i++) {
+        elementHashCode = DeepGetHashCode((*array)[i]);
+        hashCode = 31 * hashCode + elementHashCode;
+    }
+    return hashCode;
+}
 
-//     if (IArrayOf::Probe(element) == NULL) {
-//         return Object::GetHashCode(element);
-//     }
+Int32 Arrays::DeepGetHashCode(
+    /* [in] */ IInterface* element)
+{
+    if (element == NULL) {
+        return 0;
+    }
 
-//     /*
-//      * element is an array
-//      */
-//     Int32 hashCode;
-//     Int32 size;
-//     AutoPtr<IArrayOf> p = IArrayOf::Probe(element);
-//     InterfaceID riid;
-//     p->GetTypeId(&riid);
-//     p->GetLength(&size);
-//     if (riid == EIID_IInteger32) {
-//         AutoPtr<ArrayOf<Int32> > arr = ArrayOf<Int32>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IInteger32> elem;
-//             p->Get(i, (IInterface**)&elem);
-//             Int32 realNum;
-//             elem->GetValue(&realNum);
-//             arr->Set(i, realNum);
-//         }
-//         HashCodeInt32(arr, &hashCode);
-//         return hashCode;
-//     }
-//     if (riid == EIID_IChar32) {
-//         AutoPtr<ArrayOf<Char32> > arr = ArrayOf<Char32>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IChar32> elem;
-//             p->Get(i, (IInterface**)&elem);
-//             Char32 realNum;
-//             elem->GetValue(&realNum);
-//             arr->Set(i, realNum);
-//         }
-//         HashCodeChar32(arr, &hashCode);
-//         return hashCode;
-//     }
-//     if (riid == EIID_IBoolean) {
-//         AutoPtr<ArrayOf<Boolean> > arr = ArrayOf<Boolean>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IBoolean> elem;
-//             p->Get(i, (IInterface**)&elem);
-//             Boolean realNum;
-//             elem->GetValue(&realNum);
-//             arr->Set(i, realNum);
-//         }
-//         HashCodeBoolean(arr, &hashCode);
-//         return hashCode;
-//     }
-//     if (riid == EIID_IByte) {
-//         AutoPtr<ArrayOf<Byte> > arr = ArrayOf<Byte>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IByte> elem;
-//             p->Get(i, (IInterface**)&elem);
-//             Byte realNum;
-//             elem->GetValue(&realNum);
-//             arr->Set(i, realNum);
-//         }
-//         HashCodeByte(arr, &hashCode);
-//         return hashCode;
-//     }
-//     if (riid == EIID_IInteger64) {
-//         AutoPtr<ArrayOf<Int64> > arr = ArrayOf<Int64>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IInteger64> elem;
-//             p->Get(i, (IInterface**)&elem);
-//             Int64 realNum;
-//             elem->GetValue(&realNum);
-//             arr->Set(i, realNum);
-//         }
-//         HashCodeInt64(arr, &hashCode);
-//         return hashCode;
-//     }
-//     if (riid == EIID_IFloat) {
-//         AutoPtr<ArrayOf<Float> > arr = ArrayOf<Float>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IFloat> elem;
-//             p->Get(i, (IInterface**)&elem);
-//             Float realNum;
-//             elem->GetValue(&realNum);
-//             arr->Set(i, realNum);
-//         }
-//         HashCodeFloat(arr, &hashCode);
-//         return hashCode;
-//     }
-//     if (riid == EIID_IDouble) {
-//         AutoPtr<ArrayOf<Double> > arr = ArrayOf<Double>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IDouble> elem;
-//             p->Get(i, (IInterface**)&elem);
-//             Double realNum;
-//             elem->GetValue(&realNum);
-//             arr->Set(i, realNum);
-//         }
-//         HashCodeDouble(arr, &hashCode);
-//         return hashCode;
-//     }
-//     if (riid == EIID_IInteger16) {
-//         AutoPtr<ArrayOf<Int16> > arr = ArrayOf<Int16>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IInteger16> elem;
-//             p->Get(i, (IInterface**)&elem);
-//             Int16 realNum;
-//             elem->GetValue(&realNum);
-//             arr->Set(i, realNum);
-//         }
-//         HashCodeInt16(arr, &hashCode);
-//         return hashCode;
-//     }
+    if (IArrayOf::Probe(element) == NULL) {
+        return Object::GetHashCode(element);
+    }
 
-//     AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(size);
-//     for (Int32 i = 0; i < size; ++i) {
-//         AutoPtr<IInterface> elem;
-//         p->Get(i, (IInterface**)&elem);
-//         arr->Set(i, elem);
-//     }
-//     DeepHashCode(arr, &hashCode);
-//     return hashCode;
-// }
+    /*
+     * element is an array
+     */
+    Int32 length;
+    AutoPtr<IArrayOf> array = IArrayOf::Probe(element);
+    array->GetLength(&length);
 
-ECode Arrays::Equals(
+    Int32 hashCode = 1, elementHashCode;
+    for (Int32 i = 0; i < length; ++i) {
+        AutoPtr<IInterface> object;
+        array->Get(i, (IInterface**)&object);
+        elementHashCode = DeepGetHashCode(object);
+        hashCode = 31 * hashCode + elementHashCode;
+    }
+    return hashCode;
+}
+
+Boolean Arrays::Equals(
     /* [in] */ ArrayOf<Float>* array1,
-    /* [in] */ ArrayOf<Float>* array2,
-    /* [out] */ Boolean* result)
+    /* [in] */ ArrayOf<Float>* array2)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (array1 == array2) {
-        *result = TRUE;
-        return NOERROR;
+        return TRUE;
     }
 
     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-        *result = FALSE;
-        return NOERROR;
+        return FALSE;
     }
     for (Int32 i = 0; i < array1->GetLength(); i++) {
         if (!Elastos::Core::Math::Equals((*array1)[i], (*array2)[i])) {
-            *result = FALSE;
-            return NOERROR;
+            return FALSE;
         }
     }
-    *result = TRUE;
-    return NOERROR;
+    return TRUE;
 }
 
-ECode Arrays::Equals(
+Boolean Arrays::Equals(
     /* [in] */ ArrayOf<Double>* array1,
-    /* [in] */ ArrayOf<Double>* array2,
-    /* [out] */ Boolean* result)
+    /* [in] */ ArrayOf<Double>* array2)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (array1 == array2) {
-        *result = TRUE;
-        return NOERROR;
+        return TRUE;
     }
 
     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-        *result = FALSE;
-        return NOERROR;
+        return FALSE;
     }
 
     for (Int32 i = 0; i < array1->GetLength(); i++) {
         if (!Elastos::Core::Math::Equals((*array1)[i], (*array2)[i])) {
-            *result = FALSE;
-            return NOERROR;
+            return FALSE;
         }
     }
 
-    *result = TRUE;
-    return NOERROR;
+    return TRUE;
 }
 
-ECode Arrays::Equals(
+Boolean Arrays::Equals(
     /* [in] */ ArrayOf<IInterface *> * array1,
-    /* [in] */ ArrayOf<IInterface *> * array2,
-    /* [out] */ Boolean* result)
+    /* [in] */ ArrayOf<IInterface *> * array2)
 {
-    VALIDATE_NOT_NULL(result)
     if (array1 == array2) {
-        *result = TRUE;
-        return NOERROR;
+        return TRUE;
     }
     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-        *result = FALSE;
-        return NOERROR;
+        return FALSE;
     }
 
     IInterface *e1, *e2;
@@ -711,291 +565,82 @@ ECode Arrays::Equals(
         e1 = (*array1)[i];
         e2 = (*array2)[i];
         if (!(e1 == NULL ? e2 == NULL : Object::Equals(e1, e2))) {
-            *result = FALSE;
-            return NOERROR;
+            return FALSE;
         }
     }
-    *result = TRUE;
-    return NOERROR;
+    return TRUE;
 }
 
-// ECode Arrays::DeepEquals(
-//     /* [in] */ ArrayOf<IInterface *> * array1,
-//     /* [in] */ ArrayOf<IInterface *> * array2,
-//     /* [out] */ Boolean* result)
-// {
-//     VALIDATE_NOT_NULL(result)
-//     if (array1 == array2) {
-//         *result = TRUE;
-//         return NOERROR;
-//     }
-//     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-//         *result = FALSE;
-//         return NOERROR;
-//     }
-//     for (Int32 i = 0; i < array1->GetLength(); i++) {
-//         AutoPtr<IInterface> e1 = (*array1)[i];
-//         AutoPtr<IInterface> e2 = (*array2)[i];
-//         if (!DeepEqualsElements(e1, e2)) {
-//             *result = FALSE;
-//             return NOERROR;
-//         }
-//     }
-//     *result = TRUE;
-//     return NOERROR;
-// }
+Boolean Arrays::DeepEquals(
+    /* [in] */ ArrayOf<IInterface *> * array1,
+    /* [in] */ ArrayOf<IInterface *> * array2)
+{
+    if (array1 == array2) {
+        return TRUE;
+    }
+    if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
+        return FALSE;
+    }
 
-// Boolean Arrays::DeepEqualsElements(
-//     /* [in] */ IInterface* e1,
-//     /* [in] */ IInterface* e2)
-// {
-//     if (e1->Probe(EIID_IInterface) == e2->Probe(EIID_IInterface)) {
-//         return TRUE;
-//     }
+    for (Int32 i = 0; i < array1->GetLength(); i++) {
+        if (!DeepEquals((*array1)[i], (*array2)[i])) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
 
-//     if (e1 == NULL || e2 == NULL) {
-//         return FALSE;
-//     }
+Boolean Arrays::DeepEquals(
+    /* [in] */ IInterface* e1,
+    /* [in] */ IInterface* e2)
+{
+    if (e1 == NULL && e2 == NULL) {
+        return TRUE;
+    }
 
-//     if (IArrayOf::Probe(e1) == NULL || IArrayOf::Probe(e2) == NULL) {
-//         return Object::Equals(e1, e2);
-//     }
+    if (e1 == NULL || e2 == NULL) {
+        return FALSE;
+    }
 
-//     /*
-//      * compare as arrays
-//      */
-//     AutoPtr<IArrayOf> p1 = IArrayOf::Probe(e1);
-//     AutoPtr<IArrayOf> p2 = IArrayOf::Probe(e2);
-//     InterfaceID riid1, riid2;
-//     p1->GetTypeId(&riid1);
-//     p2->GetTypeId(&riid2);
-//     if (riid1 != riid2) {
-//         return FALSE;
-//     }
-//     Boolean result;
-//     Int32 size;
-//     if (riid1 == EIID_IInterface) {
-//         p1->GetLength(&size);
-//         AutoPtr<ArrayOf<IInterface*> > first = ArrayOf<IInterface*>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IInterface> elem;
-//             p1->Get(i, (IInterface**)&elem);
-//             first->Set(i, elem);
-//         }
+    if (e1->Probe(EIID_IInterface) == e2->Probe(EIID_IInterface)) {
+        return TRUE;
+    }
 
-//         p2->GetLength(&size);
-//         AutoPtr<ArrayOf<IInterface*> > sencond = ArrayOf<IInterface*>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IInterface> elem;
-//             p2->Get(i, (IInterface**)&elem);
-//             sencond->Set(i, elem);
-//         }
-//         DeepEquals(first, sencond, &result);
-//         return result;
-//     }
+    if (IArrayOf::Probe(e1) == NULL || IArrayOf::Probe(e2) == NULL) {
+        return Object::Equals(e1, e2);
+    }
 
-//     if (riid1 == EIID_IInteger32) {
-//         p1->GetLength(&size);
-//         AutoPtr<ArrayOf<Int32> > first = ArrayOf<Int32>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IInteger32> elem;
-//             p1->Get(i, (IInterface**)&elem);
-//             Int32 realNum;
-//             elem->GetValue(&realNum);
-//             first->Set(i, realNum);
-//         }
+    /*
+     * compare as arrays
+     */
+    AutoPtr<IArrayOf> a1 = IArrayOf::Probe(e1);
+    AutoPtr<IArrayOf> a2 = IArrayOf::Probe(e2);
+    InterfaceID riid1, riid2;
+    a1->GetTypeId(&riid1);
+    a2->GetTypeId(&riid2);
+    if (riid1 != riid2) {
+        return FALSE;
+    }
 
-//         p2->GetLength(&size);
-//         AutoPtr<ArrayOf<Int32> > sencond = ArrayOf<Int32>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IInteger32> elem;
-//             p2->Get(i, (IInterface**)&elem);
-//             Int32 realNum;
-//             elem->GetValue(&realNum);
-//             sencond->Set(i, realNum);
-//         }
-//         EqualsInt32(first, sencond, &result);
-//         return result;
-//     }
-//     if (riid1 == EIID_IChar32) {
-//         p1->GetLength(&size);
-//         AutoPtr<ArrayOf<Char32> > first = ArrayOf<Char32>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IChar32> elem;
-//             p1->Get(i, (IInterface**)&elem);
-//             Char32 realNum;
-//             elem->GetValue(&realNum);
-//             first->Set(i, realNum);
-//         }
+    Int32 len1, len2;
+    a1->GetLength(&len1);
+    a2->GetLength(&len2);
+    if (len1 != len2) {
+        return FALSE;
+    }
 
-//         p2->GetLength(&size);
-//         AutoPtr<ArrayOf<Char32> > sencond = ArrayOf<Char32>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IChar32> elem;
-//             p2->Get(i, (IInterface**)&elem);
-//             Char32 realNum;
-//             elem->GetValue(&realNum);
-//             sencond->Set(i, realNum);
-//         }
-//         EqualsChar32(first, sencond, &result);
-//         return result;
-//     }
-//     if (riid1 == EIID_IBoolean) {
-//         p1->GetLength(&size);
-//         AutoPtr<ArrayOf<Boolean> > first = ArrayOf<Boolean>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IBoolean> elem;
-//             p1->Get(i, (IInterface**)&elem);
-//             Boolean realNum;
-//             elem->GetValue(&realNum);
-//             first->Set(i, realNum);
-//         }
+    for (Int32 i = 0; i < len1; ++i) {
+        AutoPtr<IInterface> o1, o2;
+        a1->Get(i, (IInterface**)&o1);
+        a2->Get(i, (IInterface**)&o2);
 
-//         p2->GetLength(&size);
-//         AutoPtr<ArrayOf<Boolean> > sencond = ArrayOf<Boolean>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IBoolean> elem;
-//             p2->Get(i, (IInterface**)&elem);
-//             Boolean realNum;
-//             elem->GetValue(&realNum);
-//             sencond->Set(i, realNum);
-//         }
-//         EqualsBoolean(first, sencond, &result);
-//         return result;
-//     }
-//     if (riid1 == EIID_IByte) {
-//         p1->GetLength(&size);
-//         AutoPtr<ArrayOf<Byte> > first = ArrayOf<Byte>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IByte> elem;
-//             p1->Get(i, (IInterface**)&elem);
-//             Byte realNum;
-//             elem->GetValue(&realNum);
-//             first->Set(i, realNum);
-//         }
+        if (DeepEquals(o1, o2) == FALSE) {
+            return FALSE;
+        }
+    }
 
-//         p2->GetLength(&size);
-//         AutoPtr<ArrayOf<Byte> > sencond = ArrayOf<Byte>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IByte> elem;
-//             p2->Get(i, (IInterface**)&elem);
-//             Byte realNum;
-//             elem->GetValue(&realNum);
-//             sencond->Set(i, realNum);
-//         }
-//         EqualsByte(first, sencond, &result);
-//         return result;
-//     }
-//     if (riid1 == EIID_IInteger64) {
-//         p1->GetLength(&size);
-//         AutoPtr<ArrayOf<Int64> > first = ArrayOf<Int64>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IInteger64> elem;
-//             p1->Get(i, (IInterface**)&elem);
-//             Int64 realNum;
-//             elem->GetValue(&realNum);
-//             first->Set(i, realNum);
-//         }
-
-//         p2->GetLength(&size);
-//         AutoPtr<ArrayOf<Int64> > sencond = ArrayOf<Int64>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IInteger64> elem;
-//             p2->Get(i, (IInterface**)&elem);
-//             Int64 realNum;
-//             elem->GetValue(&realNum);
-//             sencond->Set(i, realNum);
-//         }
-//         EqualsInt64(first, sencond, &result);
-//         return result;
-//     }
-//     if (riid1 == EIID_IFloat) {
-//         p1->GetLength(&size);
-//         AutoPtr<ArrayOf<Float> > first = ArrayOf<Float>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IFloat> elem;
-//             p1->Get(i, (IInterface**)&elem);
-//             Float realNum;
-//             elem->GetValue(&realNum);
-//             first->Set(i, realNum);
-//         }
-
-//         p2->GetLength(&size);
-//         AutoPtr<ArrayOf<Float> > sencond = ArrayOf<Float>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IFloat> elem;
-//             p2->Get(i, (IInterface**)&elem);
-//             Float realNum;
-//             elem->GetValue(&realNum);
-//             sencond->Set(i, realNum);
-//         }
-//         EqualsFloat(first, sencond, &result);
-//         return result;
-//     }
-//     if (riid1 == EIID_IDouble) {
-//         p1->GetLength(&size);
-//         AutoPtr<ArrayOf<Double> > first = ArrayOf<Double>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IDouble> elem;
-//             p1->Get(i, (IInterface**)&elem);
-//             Double realNum;
-//             elem->GetValue(&realNum);
-//             first->Set(i, realNum);
-//         }
-
-//         p2->GetLength(&size);
-//         AutoPtr<ArrayOf<Double> > sencond = ArrayOf<Double>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IDouble> elem;
-//             p2->Get(i, (IInterface**)&elem);
-//             Double realNum;
-//             elem->GetValue(&realNum);
-//             sencond->Set(i, realNum);
-//         }
-//         EqualsDouble(first, sencond, &result);
-//         return result;
-//     }
-//     if (riid1 == EIID_IInteger16) {
-//         p1->GetLength(&size);
-//         AutoPtr<ArrayOf<Int16> > first = ArrayOf<Int16>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IInteger16> elem;
-//             p1->Get(i, (IInterface**)&elem);
-//             Int16 realNum;
-//             elem->GetValue(&realNum);
-//             first->Set(i, realNum);
-//         }
-
-//         p2->GetLength(&size);
-//         AutoPtr<ArrayOf<Int16> > sencond = ArrayOf<Int16>::Alloc(size);
-//         for (Int32 i = 0; i < size; ++i) {
-//             AutoPtr<IInteger16> elem;
-//             p2->Get(i, (IInterface**)&elem);
-//             Int16 realNum;
-//             elem->GetValue(&realNum);
-//             sencond->Set(i, realNum);
-//         }
-//         EqualsInt16(first, sencond, &result);
-//         return result;
-//     }
-//     p1->GetLength(&size);
-//     AutoPtr<ArrayOf<IInterface*> > first = ArrayOf<IInterface*>::Alloc(size);
-//     for (Int32 i = 0; i < size; ++i) {
-//         AutoPtr<IInterface> elem;
-//         p1->Get(i, (IInterface**)&elem);
-//         first->Set(i, elem);
-//     }
-
-//     p2->GetLength(&size);
-//     AutoPtr<ArrayOf<IInterface*> > sencond = ArrayOf<IInterface*>::Alloc(size);
-//     for (Int32 i = 0; i < size; ++i) {
-//         AutoPtr<IInterface> elem;
-//         p2->Get(i, (IInterface**)&elem);
-//         sencond->Set(i, elem);
-//     }
-//     DeepEquals(first, sencond, &result);
-//     return result;
-// }
+    return TRUE;
+}
 
 ECode Arrays::Sort(
     /* [in] */ ArrayOf<IInterface *> * array)
@@ -1027,18 +672,14 @@ ECode Arrays::Sort(
     return TimSort::Sort(array, comparator);
 }
 
-ECode Arrays::ToString(
-    /* [in] */ ArrayOf<Char32>* array,
-    /* [out] */ String* str)
+String Arrays::ToString(
+    /* [in] */ ArrayOf<Char32>* array)
 {
-    VALIDATE_NOT_NULL(str)
     if (array == NULL) {
-        *str = String("NULL");
-        return NOERROR;
+        return String("NULL");
     }
     if (array->GetLength() == 0) {
-        *str = String("[]");
-        return NOERROR;
+        return String("[]");
     }
     StringBuilder sb(array->GetLength() * 3);
     sb.AppendChar('[');
@@ -1048,213 +689,123 @@ ECode Arrays::ToString(
         sb.AppendChar((*array)[i]);
     }
     sb.AppendChar(']');
-    *str = sb.ToString();
+    return sb.ToString();
+}
+
+String Arrays::DeepToString(
+    /* [in] */ ArrayOf<IInterface *> * array)
+{
+    // Special case null to prevent NPE
+    if (array == NULL) {
+        return String("NULL");
+    }
+
+    // delegate this to the recursive method
+    StringBuilder sb(array->GetLength() * 9);
+    sb.AppendChar('[');
+    for (Int32 i = 0; i < array->GetLength(); ++i) {
+        DeepToString((*array)[i], array, sb);
+    }
+    sb.AppendChar(']');
+    return sb.ToString();
+}
+
+ECode Arrays::DeepToString(
+    /* [in] */ IInterface * obj,
+    /* [in] */ ArrayOf<IInterface*> * origArray,
+    /* [in] */ StringBuilder& sb)
+{
+    IArrayOf* array = IArrayOf::Probe(obj);
+    if (array == NULL) {
+        String info = Object::ToString(obj);
+        sb.Append(info);
+        return NOERROR;
+    }
+
+    if (DeepToStringContains(origArray, obj)) {
+        sb.Append("[...]");
+    }
+    else {
+        sb.AppendChar('[');
+        Int32 length;
+        array->GetLength(&length);
+        for (Int32 i = 0; i < length; ++i) {
+            AutoPtr<IInterface> element;
+            array->Get(i, (IInterface**)&element);
+            DeepToString(element, origArray, sb);
+        }
+        sb.AppendChar(']');
+    }
+
     return NOERROR;
 }
 
-// ECode Arrays::DeepToString(
-//     /* [in] */ ArrayOf<IInterface *> * array,
-//     /* [out] */ String* str)
-// {
-//     VALIDATE_NOT_NULL(str)
-//     // Special case null to prevent NPE
-//     if (array == NULL) {
-//         *str = String("NULL");
-//         return NOERROR;
-//     }
-//     // delegate this to the recursive method
-//     StringBuilder buf(array->GetLength() * 9);
-//     AutoPtr<ArrayOf<IInterface*> > origArrays = ArrayOf<IInterface*>::Alloc(1);
-//     AutoPtr<IArrayOf> pArray;
-//     CArrayOf::New(EIID_IInterface, array->GetLength(), (IArrayOf**)&pArray);
-//     for (Int32 i = 0; i < array->GetLength(); ++i) {
-//         pArray->Put(i, (*array)[i]);
-//     }
-//     origArrays->Set(0, pArray);
-//     DeepToStringImpl(array, origArrays, &buf);
-//     *str = buf.ToString();
-//     return NOERROR;
-// }
+ECode Arrays::DeepToString(
+    /* [in] */ IInterface * obj,
+    /* [in] */ IArrayOf * origArray,
+    /* [in] */ StringBuilder& sb)
+{
+    IArrayOf* array = IArrayOf::Probe(obj);
+    if (array == NULL) {
+        String info = Object::ToString(obj);
+        sb.Append(info);
+        return NOERROR;
+    }
 
-// void Arrays::DeepToStringImpl(
-//     /* [in] */ ArrayOf<IInterface *> * array,
-//     /* [in] */ ArrayOf<IInterface *> * origArrays,
-//     /* [in] */ StringBuilder* sb)
-// {
-//     if (array == NULL) {
-//         sb->Append("NULL");
-//         return;
-//     }
+    if (DeepToStringContains(origArray, obj)) {
+        sb.Append("[...]");
+    }
+    else {
+        sb.AppendChar('[');
+        Int32 length;
+        array->GetLength(&length);
+        for (Int32 i = 0; i < length; ++i) {
+            AutoPtr<IInterface> element;
+            array->Get(i, (IInterface**)&element);
+            DeepToString(element, origArray, sb);
+        }
+        sb.AppendChar(']');
+    }
 
-//     sb->AppendChar('[');
+    return NOERROR;
+}
 
-//     for (Int32 i = 0; i < array->GetLength(); i++) {
-//         if (i != 0) {
-//             sb->Append(", ");
-//         }
-//         // establish current element
-//         AutoPtr<IInterface> elem = (*array)[i];
-//         if (elem == NULL) {
-//             // element is null
-//             sb->Append("NULL");
-//         }
-//         else {
-//             // get the Class of the current element
-//             if (IArrayOf::Probe(elem) != NULL) {
-//                 // element is an array type
+Boolean Arrays::DeepToStringContains(
+    /* [in] */ ArrayOf<IInterface *> * origArray,
+    /* [in] */ IInterface* array)
+{
+    if (origArray == NULL || origArray->GetLength() == 0) {
+        return FALSE;
+    }
 
-//                 // get the declared Class of the array (element)
-//                 AutoPtr<IArrayOf> p = IArrayOf::Probe(elem);
-//                 InterfaceID riid;
-//                 p->GetTypeId(&riid);
-//                 Int32 length;
-//                 p->GetLength(&length);
-//                 String str;
-//                 // element is a primitive array
-//                 if (riid == EIID_IBoolean) {
-//                     AutoPtr<ArrayOf<Boolean> > tmpArray = ArrayOf<Boolean>::Alloc(length);
-//                     for (Int32 i = 0; i < length; ++i) {
-//                         AutoPtr<IBoolean> pContent;
-//                         p->Get(i, (IInterface**)&pContent);
-//                         Boolean content;
-//                         pContent->GetValue(&content);
-//                         tmpArray->Set(i, content);
-//                     }
-//                     ToStringBoolean((ArrayOf<Boolean>*) tmpArray, &str);
-//                     sb->Append(str);
-//                 }
-//                 else if (riid == EIID_IByte) {
-//                     AutoPtr<ArrayOf<Byte> > tmpArray = ArrayOf<Byte>::Alloc(length);
-//                     for (Int32 i = 0; i < length; ++i) {
-//                         AutoPtr<IByte> pContent;
-//                         p->Get(i, (IInterface**)&pContent);
-//                         Byte content;
-//                         pContent->GetValue(&content);
-//                         tmpArray->Set(i, content);
-//                     }
-//                     ToStringByte((ArrayOf<Byte>*) tmpArray, &str);
-//                     sb->Append(str);
-//                 }
-//                 else if (riid == EIID_IChar32) {
-//                     AutoPtr<ArrayOf<Char32> > tmpArray = ArrayOf<Char32>::Alloc(length);
-//                     for (Int32 i = 0; i < length; ++i) {
-//                         AutoPtr<IChar32> pContent;
-//                         p->Get(i, (IInterface**)&pContent);
-//                         Char32 content;
-//                         pContent->GetValue(&content);
-//                         tmpArray->Set(i, content);
-//                     }
-//                     ToStringChar32((ArrayOf<Char32>*) tmpArray, &str);
-//                     sb->Append(str);
-//                 }
-//                 else if (riid == EIID_IDouble) {
-//                     AutoPtr<ArrayOf<Double> > tmpArray = ArrayOf<Double>::Alloc(length);
-//                     for (Int32 i = 0; i < length; ++i) {
-//                         AutoPtr<IDouble> pContent;
-//                         p->Get(i, (IInterface**)&pContent);
-//                         Double content;
-//                         pContent->GetValue(&content);
-//                         tmpArray->Set(i, content);
-//                     }
-//                     ToStringDouble((ArrayOf<Double>*) tmpArray, &str);
-//                     sb->Append(str);
-//                 }
-//                 else if (riid == EIID_IFloat) {
-//                     AutoPtr<ArrayOf<Float> > tmpArray = ArrayOf<Float>::Alloc(length);
-//                     for (Int32 i = 0; i < length; ++i) {
-//                         AutoPtr<IFloat> pContent;
-//                         p->Get(i, (IInterface**)&pContent);
-//                         Float content;
-//                         pContent->GetValue(&content);
-//                         tmpArray->Set(i, content);
-//                     }
-//                     ToStringFloat((ArrayOf<Float>*) tmpArray, &str);
-//                     sb->Append(str);
-//                 }
-//                 else if (riid == EIID_IInteger32) {
-//                     AutoPtr<ArrayOf<Int32> > tmpArray = ArrayOf<Int32>::Alloc(length);
-//                     for (Int32 i = 0; i < length; ++i) {
-//                         AutoPtr<IInteger32> pContent;
-//                         p->Get(i, (IInterface**)&pContent);
-//                         Int32 content;
-//                         pContent->GetValue(&content);
-//                         tmpArray->Set(i, content);
-//                     }
-//                     ToStringInt32((ArrayOf<Int32>*) tmpArray, &str);
-//                     sb->Append(str);
-//                 }
-//                 else if (riid == EIID_IInteger64) {
-//                     AutoPtr<ArrayOf<Int64> > tmpArray = ArrayOf<Int64>::Alloc(length);
-//                     for (Int32 i = 0; i < length; ++i) {
-//                         AutoPtr<IInteger64> pContent;
-//                         p->Get(i, (IInterface**)&pContent);
-//                         Int64 content;
-//                         pContent->GetValue(&content);
-//                         tmpArray->Set(i, content);
-//                     }
-//                     ToStringInt64((ArrayOf<Int64>*) tmpArray, &str);
-//                     sb->Append(str);
-//                 }
-//                 else if (riid == EIID_IInteger16) {
-//                     AutoPtr<ArrayOf<Int16> > tmpArray = ArrayOf<Int16>::Alloc(length);
-//                     for (Int32 i = 0; i < length; ++i) {
-//                         AutoPtr<IInteger16> pContent;
-//                         p->Get(i, (IInterface**)&pContent);
-//                         Int16 content;
-//                         pContent->GetValue(&content);
-//                         tmpArray->Set(i, content);
-//                     }
-//                     ToStringInt16((ArrayOf<Int16>*) tmpArray, &str);
-//                     sb->Append(str);
-//                 }
-//                 else if (riid == EIID_IInterface) {
-//                     // element is an Object[], so we assert that
-//                     //assert elem instanceof Object[];
-//                     if (DeepToStringImplContains(origArrays, elem)) {
-//                         sb->Append("[...]");
-//                     }
-//                     else {
-//                         AutoPtr<ArrayOf<IInterface*> > newArray = ArrayOf<IInterface*>::Alloc(length);
-//                         for (Int32 i = 0; i < length; ++i) {
-//                             AutoPtr<IInterface> pContent;
-//                             p->Get(i, (IInterface**)&pContent);
-//                             newArray->Set(i, pContent);
-//                         }
-//                         AutoPtr<ArrayOf<IInterface*> > newOrigArrays = ArrayOf<IInterface*>::Alloc(origArrays->GetLength() + 1);
-//                         newOrigArrays->Copy(origArrays, origArrays->GetLength());
-//                         newOrigArrays->Set(origArrays->GetLength(), elem);
-//                         // make the recursive call to this method
-//                         DeepToStringImpl(newArray, newOrigArrays, sb);
-//                     }
-//                 }
-//                 // else {
-//                 //     // no other possible primitives, so we assert that
-//                 //     throw new AssertionError();
-//                 // }
-//             }
-//             else { // element is NOT an array, just an Object
-//                 sb->Append((*array)[i]);
-//             }
-//         }
-//     }
-//     sb->AppendChar(']');
-// }
+    for (Int32 i = 0; i < origArray->GetLength(); ++i) {
+        if ((*origArray)[i] == array) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
 
-// Boolean Arrays::DeepToStringImplContains(
-//     /* [in] */ ArrayOf<IInterface *> * origArrays,
-//     /* [in] */ IInterface* array)
-// {
-//     if (origArrays == NULL || origArrays->GetLength() == 0) {
-//         return FALSE;
-//     }
-//     for (Int32 i = 0; i < origArrays->GetLength(); i++) {
-//         AutoPtr<IInterface> element = (*origArrays)[i];
-//         if (element.Get() == array) {
-//             return TRUE;
-//         }
-//     }
-//     return FALSE;
-// }
+Boolean Arrays::DeepToStringContains(
+    /* [in] */ IArrayOf * origArray,
+    /* [in] */ IInterface * obj)
+{
+    if (origArray == NULL) {
+        return FALSE;
+    }
+
+    Int32 length;
+    origArray->GetLength(&length);
+    for (Int32 i = 0; i < length; ++i) {
+        AutoPtr<IInterface> element;
+        origArray->Get(i, (IInterface**)&element);
+        if (element.Get() == obj) {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
 
 
 } // namespace Utility

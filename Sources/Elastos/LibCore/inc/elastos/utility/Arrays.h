@@ -10,6 +10,7 @@
 using Elastos::Core::IComparator;
 using Elastos::Core::IComparable;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::IArrayOf;
 // using Elastos::IO::ISerializable;
 
 namespace Elastos {
@@ -65,9 +66,9 @@ private:
     // };
 
 public:
-    // static CARAPI AsList(
-    //     /* [in] */ ArrayOf<IInterface *> * array,
-    //     /* [out] */ IList** outList);
+    static CARAPI AsList(
+        /* [in] */ ArrayOf<IInterface *> * array,
+        /* [out] */ IList** outList);
 
     /**
      * Performs a binary search for {@code value} in the ascending sorted array {@code array},
@@ -256,33 +257,29 @@ public:
      * @return the hash code for {@code array}.
      */
     template<typename T>
-    static CARAPI GetHashCode(
-        /* [in] */ ArrayOf<T>* array,
-        /* [out] */ Int32* code);
+    static CARAPI_(Int32) GetHashCode(
+        /* [in] */ ArrayOf<T>* array);
 
-    static CARAPI GetHashCode(
-        /* [in] */ ArrayOf<Boolean>* array,
-        /* [out] */ Int32* code);
+    static CARAPI_(Int32) GetHashCode(
+        /* [in] */ ArrayOf<Boolean>* array);
 
-    static CARAPI GetHashCode(
-        /* [in] */ ArrayOf<Int64>* array,
-        /* [out] */ Int32* code);
+    static CARAPI_(Int32) GetHashCode(
+        /* [in] */ ArrayOf<Int64>* array);
 
-    static CARAPI GetHashCode(
-        /* [in] */ ArrayOf<Float>* array,
-        /* [out] */ Int32* code);
+    static CARAPI_(Int32) GetHashCode(
+        /* [in] */ ArrayOf<Float>* array);
 
-    static CARAPI GetHashCode(
-        /* [in] */ ArrayOf<Double>* array,
-        /* [out] */ Int32* code);
+    static CARAPI_(Int32) GetHashCode(
+        /* [in] */ ArrayOf<Double>* array);
 
-    static CARAPI GetHashCode(
-        /* [in] */ ArrayOf<IInterface *> * array,
-        /* [out] */ Int32* code);
+    static CARAPI_(Int32) GetHashCode(
+        /* [in] */ ArrayOf<IInterface *> * array);
 
-    // static CARAPI DeepHashCode(
-    //     /* [in] */ ArrayOf<IInterface *> * array,
-    //     /* [out] */ Int32* code);
+    static CARAPI_(Int32) DeepGetHashCode(
+        /* [in] */ ArrayOf<IInterface *> * array);
+
+    static CARAPI_(Int32) DeepGetHashCode(
+        /* [in] */ IInterface * element);
 
     /**
      * Compares the two arrays.
@@ -296,30 +293,29 @@ public:
      *         equal, {@code false} otherwise.
      */
     template<typename T>
-    static CARAPI Equals(
+    static CARAPI_(Boolean) Equals(
         /* [in] */ ArrayOf<T>* array1,
-        /* [in] */ ArrayOf<T>* array2,
-        /* [out] */ Boolean* result);
+        /* [in] */ ArrayOf<T>* array2);
 
-    static CARAPI Equals(
+    static CARAPI_(Boolean) Equals(
         /* [in] */ ArrayOf<Float>* array1,
-        /* [in] */ ArrayOf<Float>* array2,
-        /* [out] */ Boolean* result);
+        /* [in] */ ArrayOf<Float>* array2);
 
-    static CARAPI Equals(
+    static CARAPI_(Boolean) Equals(
         /* [in] */ ArrayOf<Double>* array1,
-        /* [in] */ ArrayOf<Double>* array2,
-        /* [out] */ Boolean* result);
+        /* [in] */ ArrayOf<Double>* array2);
 
-    static CARAPI Equals(
+    static CARAPI_(Boolean) Equals(
         /* [in] */ ArrayOf<IInterface *> * array1,
-        /* [in] */ ArrayOf<IInterface *> * array2,
-        /* [out] */ Boolean* result);
+        /* [in] */ ArrayOf<IInterface *> * array2);
 
-    // static CARAPI DeepEquals(
-    //     /* [in] */ ArrayOf<IInterface *> * array1,
-    //     /* [in] */ ArrayOf<IInterface *> * array2,
-    //     /* [out] */ Boolean* result);
+    static CARAPI_(Boolean) DeepEquals(
+        /* [in] */ ArrayOf<IInterface *> * array1,
+        /* [in] */ ArrayOf<IInterface *> * array2);
+
+    static CARAPI_(Boolean) DeepEquals(
+        /* [in] */ IInterface * e1,
+        /* [in] */ IInterface * e2);
 
     template<typename T>
     static CARAPI Sort(
@@ -350,17 +346,14 @@ public:
         /* [in] */ IComparator* comparator);
 
     template<typename T>
-    static CARAPI ToString(
-        /* [in] */ ArrayOf<T> * array,
-        /* [out] */ String* str);
+    static CARAPI_(String) ToString(
+        /* [in] */ ArrayOf<T> * array);
 
-    static CARAPI ToString(
-        /* [in] */ ArrayOf<Char32> * array,
-        /* [out] */ String* str);
+    static CARAPI_(String) ToString(
+        /* [in] */ ArrayOf<Char32> * array);
 
-    // static CARAPI DeepToString(
-    //     /* [in] */ ArrayOf<IInterface *> * array,
-    //     /* [out] */ String* str);
+    static CARAPI_(String) DeepToString(
+        /* [in] */ ArrayOf<IInterface *> * array);
 
     template<typename T>
     static CARAPI CopyOf(
@@ -387,113 +380,6 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out, callee] */ ArrayOf<U> ** result);
-
-    // static CARAPI CopyOfByte(
-    //     /* [in] */ ArrayOf<Byte>* original,
-    //     /* [in] */ Int32 newLength,
-    //     /* [out, callee] */ ArrayOf<Byte>** result);
-
-    // static CARAPI CopyOfChar32(
-    //     /* [in] */ ArrayOf<Char32>* original,
-    //     /* [in] */ Int32 newLength,
-    //     /* [out, callee] */ ArrayOf<Char32>** result);
-
-    // static CARAPI CopyOfDouble(
-    //     /* [in] */ ArrayOf<Double>* original,
-    //     /* [in] */ Int32 newLength,
-    //     /* [out, callee] */ ArrayOf<Double>** result);
-
-    // static CARAPI CopyOfFloat(
-    //     /* [in] */ ArrayOf<Float>* original,
-    //     /* [in] */ Int32 newLength,
-    //     /* [out, callee] */ ArrayOf<Float>** result);
-
-    // static CARAPI CopyOfInt32(
-    //     /* [in] */ ArrayOf<Int32>* original,
-    //     /* [in] */ Int32 newLength,
-    //     /* [out, callee] */ ArrayOf<Int32>** result);
-
-    // static CARAPI CopyOfInt64(
-    //     /* [in] */ ArrayOf<Int64>* original,
-    //     /* [in] */ Int32 newLength,
-    //     /* [out, callee] */ ArrayOf<Int64>** result);
-
-    // static CARAPI CopyOfInt16(
-    //     /* [in] */ ArrayOf<Int16>* original,
-    //     /* [in] */ Int32 newLength,
-    //     /* [out, callee] */ ArrayOf<Int16>** result);
-
-    // static CARAPI CopyOf(
-    //     /* [in] */ ArrayOf<IInterface *> * original,
-    //     /* [in] */ int newLength,
-    //     /* [out, callee] */ ArrayOf<IInterface *> ** result);
-
-    //  static CARAPI _CopyOf(
-    //     /* [in] */ U[] original,
-    //     /* [in] */ int newLength,
-    //     /* [in] */ Class<? extends T[]> newType,
-    //     /* [out, callee] */ <T, U> T[] result);
-
-    // static CARAPI CopyOfRangeBoolean(
-    //     /* [in] */ ArrayOf<Boolean>* original,
-    //     /* [in] */ Int32 start,
-    //     /* [in] */ Int32 end,
-    //     /* [out, callee] */ ArrayOf<Boolean>** arrayCopy);
-
-    // static CARAPI CopyOfRangeByte(
-    //     /* [in] */ ArrayOf<Byte>* original,
-    //     /* [in] */ Int32 start,
-    //     /* [in] */ Int32 end,
-    //     /* [out, callee] */ ArrayOf<Byte>** arrayCopy);
-
-    // static CARAPI CopyOfRangeChar32(
-    //     /* [in] */ ArrayOf<Char32>* original,
-    //     /* [in] */ Int32 start,
-    //     /* [in] */ Int32 end,
-    //     /* [out, callee] */ ArrayOf<Char32>** arrayCopy);
-
-    // static CARAPI CopyOfRangeDouble(
-    //     /* [in] */ ArrayOf<Double>* original,
-    //     /* [in] */ Int32 start,
-    //     /* [in] */ Int32 end,
-    //     /* [out, callee] */ ArrayOf<Double>** arrayCopy);
-
-    // static CARAPI CopyOfRangeFloat(
-    //     /* [in] */ ArrayOf<Float>* original,
-    //     /* [in] */ Int32 start,
-    //     /* [in] */ Int32 end,
-    //     /* [out, callee] */ ArrayOf<Float>** arrayCopy);
-
-    // static CARAPI CopyOfRangeInt32(
-    //     /* [in] */ ArrayOf<Int32>* original,
-    //     /* [in] */ Int32 start,
-    //     /* [in] */ Int32 end,
-    //     /* [out, callee] */ ArrayOf<Int32>** arrayCopy);
-
-    // static CARAPI CopyOfRangeInt64(
-    //     /* [in] */ ArrayOf<Int64>* original,
-    //     /* [in] */ Int32 start,
-    //     /* [in] */ Int32 end,
-    //     /* [out, callee] */ ArrayOf<Int64>** arrayCopy);
-
-    // static CARAPI CopyOfRangeInt16(
-    //     /* [in] */ ArrayOf<Int16>* original,
-    //     /* [in] */ Int32 start,
-    //     /* [in] */ Int32 end,
-    //     /* [out, callee] */ ArrayOf<Int16>** arrayCopy);
-
-    // static CARAPI CopyOfRange(
-    //     /* [in] */ ArrayOf<IInterface *> * original,
-    //     /* [in] */ Int32 start,
-    //     /* [in] */ Int32 end,
-    //     /* [out, callee] */ ArrayOf<IInterface *> ** arrayCopy);
-
-    //  static CARAPI _CopyOfRange(
-    //     /* [in] */ U[] original,
-    //     /* [in] */ Int32 start,
-    //     /* [in] */ Int32 end,
-    //     /* [in] */ Class<? extends T[]> newType,
-    //     /* [out, callee] */ <T, U> T[] arrayCopy);
 
 public:
     static CARAPI CheckStartAndEnd(
@@ -512,21 +398,23 @@ private:
         /* [in] */ Int32 endIndex,
         /* [in] */ Int32 length);
 
-    // static CARAPI_(Int32) DeepHashCodeElement(
-    //     /* [in] */ IInterface * element);
+    static CARAPI DeepToString(
+        /* [in] */ IInterface * obj,
+        /* [in] */ ArrayOf<IInterface*> * origArrays,
+        /* [in] */ StringBuilder& sb);
 
-    // static CARAPI_(Boolean) DeepEqualsElements(
-    //     /* [in] */ IInterface * e1,
-    //     /* [in] */ IInterface * e2);
+    static CARAPI_(Boolean) DeepToStringContains(
+        /* [in] */ ArrayOf<IInterface *> * origArray,
+        /* [in] */ IInterface * obj);
 
-    // static CARAPI_(void) DeepToStringImpl(
-    //     /* [in] */ ArrayOf<IInterface *> * array,
-    //     /* [in] */ ArrayOf<IInterface *> * origArrays,
-    //     /* [in] */ StringBuilder* sb);
+    static CARAPI DeepToString(
+        /* [in] */ IInterface * obj,
+        /* [in] */ IArrayOf * origArrays,
+        /* [in] */ StringBuilder& sb);
 
-    // static CARAPI_(Boolean) DeepToStringImplContains(
-    //     /* [in] */ ArrayOf<IInterface *> * origArrays,
-    //     /* [in] */ IInterface * array);
+    static CARAPI_(Boolean) DeepToStringContains(
+        /* [in] */ IArrayOf * origArray,
+        /* [in] */ IInterface * obj);
 
 private:
     Arrays();
@@ -626,50 +514,40 @@ ECode Arrays::Fill(
 }
 
 template<typename T>
-ECode Arrays::GetHashCode(
-    /* [in] */ ArrayOf<T>* array,
-    /* [out] */ Int32* hash)
+Int32 Arrays::GetHashCode(
+    /* [in] */ ArrayOf<T>* array)
 {
-    VALIDATE_NOT_NULL(hash)
-    *hash = 0;
-
     if (array == NULL) {
-        return NOERROR;
+        return 0;
     }
 
     Int32 hashCode = 1;
     for (Int32 i = 0; i < array->GetLength(); i++) {
         hashCode = 31 * hashCode + (Int32)(*array)[i];
     }
-    *hash = hashCode;
-    return NOERROR;
+    return hashCode;
 }
 
 template<typename T>
-ECode Arrays::Equals(
+Boolean Arrays::Equals(
     /* [in] */ ArrayOf<T>* array1,
-    /* [in] */ ArrayOf<T>* array2,
-    /* [out] */ Boolean* result)
+    /* [in] */ ArrayOf<T>* array2)
 {
-    VALIDATE_NOT_NULL(result)
     if (array1 == array2) {
-        *result = TRUE;
-        return NOERROR;
+        return TRUE;
     }
 
     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-        *result = FALSE;
-        return NOERROR;
+        return FALSE;
     }
 
     for (Int32 i = 0; i < array1->GetLength(); i++) {
         if ((*array1)[i] != (*array2)[i]) {
-            *result = FALSE;
-            return NOERROR;
+            return FALSE;
         }
     }
-    *result = TRUE;
-    return NOERROR;
+
+    return TRUE;
 }
 
 template<typename T>
@@ -689,20 +567,15 @@ ECode Arrays::Sort(
 }
 
 template<typename T>
-ECode Arrays::ToString(
-    /* [in] */ ArrayOf<T>* array,
-    /* [out] */ String* str)
+String Arrays::ToString(
+    /* [in] */ ArrayOf<T>* array)
 {
-    VALIDATE_NOT_NULL(str)
-
     if (array == NULL) {
-        *str = String("NULL");
-        return NOERROR;
+        return String("NULL");
     }
 
     if (array->GetLength() == 0) {
-        *str = String("[]");
-        return NOERROR;
+        return String("[]");
     }
 
     StringBuilder sb(array->GetLength() * 7);
@@ -713,8 +586,7 @@ ECode Arrays::ToString(
         sb.Append((*array)[i]);
     }
     sb.AppendChar(']');
-    *str = sb.ToString();
-    return NOERROR;
+    return sb.ToString();
 }
 
 template<typename T>
