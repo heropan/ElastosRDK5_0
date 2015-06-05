@@ -534,13 +534,12 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-private:
-
     static CARAPI CheckOffsetAndCount(
         /* [in] */ Int32 arrayLength,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
+private:
     static CARAPI CheckBinarySearchBounds(
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -578,7 +577,9 @@ ECode Arrays::BinarySearch(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
+    *index = -1;
     assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
 
     ECode ec = CheckBinarySearchBounds(startIndex, endIndex, array->GetLength());
     if (FAILED(ec)) {
@@ -612,12 +613,16 @@ ECode Arrays::BinarySearch(
 }
 
 template<typename T>
-Int32 Arrays::BinarySearch(
+ECode Arrays::BinarySearch(
     /* [in] */ ArrayOf<T>* array,
     /* [in] */ Byte value,
     /* [out] */ Int32* index)
 {
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
     assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
+
     return BinarySearch(array, 0, array->GetLength(), value, index);
 }
 

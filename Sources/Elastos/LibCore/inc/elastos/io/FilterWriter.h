@@ -9,7 +9,7 @@ namespace IO {
 
 class FilterWriter
     : public Writer
-    , public IWriter
+    , public IFilterWriter
 {
 public:
     CAR_INTERFACE_DECL()

@@ -49,27 +49,6 @@ module
     merge("net/IJarURLConnection.car");
     merge("net/INetPermission.car");
 
-    merge("net/http/IAbstractHttpInputStream.car");
-    merge("net/http/IAbstractHttpOutputStream.car");
-    merge("net/http/IChallenge.car");
-    merge("net/http/IChunkedInputStream.car");
-    merge("net/http/IChunkedOutputStream.car");
-    merge("net/http/IFixedLengthInputStream.car");
-    merge("net/http/IFixedLengthOutputStream.car");
-    merge("net/http/IRawHeaders.car");
-    merge("net/http/IHeaderParser.car");
-    merge("net/http/IHttpConnection.car");
-    merge("net/http/IHttpConnectionPool.car");
-    merge("net/http/IResponseHeaders.car");
-    merge("net/http/IRequestHeaders.car");
-    merge("net/http/IHttpHandler.car");
-    merge("net/http/IHttpResponseCache.car");
-    merge("net/http/IHttpsHandler.car");
-    merge("net/http/IHttpEngine.car");
-    merge("net/http/IHttpURLConnectionImpl.car");
-    merge("net/http/IRetryableOutputStream.car");
-    merge("net/http/IUnknownLengthHttpInputStream.car");
-
     merge("../elastosx/net/ISocketFactory.car");
     merge("../elastosx/net/IServerSocketFactory.car");
 
