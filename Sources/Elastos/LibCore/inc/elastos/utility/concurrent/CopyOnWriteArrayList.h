@@ -2,7 +2,6 @@
 #ifndef __ELASTOS_UTILITY_COPYONWRITEARRAYLIST_H__
 #define __ELASTOS_UTILITY_COPYONWRITEARRAYLIST_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "AbstractList.h"
 #include "elastos/core/Object.h"
 
@@ -839,7 +838,7 @@ private:
     /* transient volatile */
     AutoPtr< ArrayOf<IInterface*> > mElements;
 
-    Mutex mLock;
+    Object mLock;
 
     static const AutoPtr< ArrayOf<IInterface*> > sEmptyArray;
 };

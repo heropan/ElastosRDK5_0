@@ -755,32 +755,32 @@ module
     //     interface IPhaser;
     // }
 
-    // [deprecated]
-    // class CCopyOnWriteArrayList {
-    //     /**
-    //      * Creates an empty instance.
-    //      */
-    //     constructor();
+    [deprecated]
+    class CCopyOnWriteArrayList {
+        /**
+         * Creates an empty instance.
+         */
+        constructor();
 
-    //     /**
-    //      * Creates a new instance containing the elements of {@code collection}.
-    //      */
-    //     constructor(
-    //         [in] ICollection* collection);
+        /**
+         * Creates a new instance containing the elements of {@code collection}.
+         */
+        constructor(
+            [in] ICollection* collection);
 
-    //     /**
-    //      * Creates a new instance containing the elements of {@code array}.
-    //      */
-    //     constructor(
-    //         [in] ArrayOf<IInterface*>* array);
+        /**
+         * Creates a new instance containing the elements of {@code array}.
+         */
+        constructor(
+            [in] ArrayOf<IInterface*>* array);
 
-    //     interface ICopyOnWriteArrayList;
-    //     interface ICollection;
-    //     interface IIterable;
-    //     // interface IRandomAccess;
-    //     interface ICloneable;
-    //     interface ISerializable;
-    // }
+        interface ICopyOnWriteArrayList;
+        interface ICollection;
+        interface IIterable;
+        // interface IRandomAccess;
+        interface ICloneable;
+        interface ISerializable;
+    }
 
     // singleton class CCopyOnWriteArrayListHelper {
     //     interface ICopyOnWriteArrayListHelper;
