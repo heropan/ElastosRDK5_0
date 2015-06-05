@@ -1,17 +1,22 @@
 #ifndef __OUTPUTSTREAMWRITER_H__
 #define __OUTPUTSTREAMWRITER_H__
 
-#include "elastos/io/Writer.h"
+#include "Writer.h"
 
 namespace Elastos {
 namespace IO {
 
 class OutputStreamWriter
     : public Writer
+    , public IOutputStreamWriter
 {
+public:
+    CAR_INTERFACE_DECL()
+
 protected:
     OutputStreamWriter();
 
+public:
     /**
      * Constructs a new OutputStreamWriter using {@code out} as the target
      * stream to write converted characters to. The default character encoding
@@ -20,7 +25,8 @@ protected:
      * @param out
      *            the non-null target stream to write converted bytes to.
      */
-    CARAPI Init(IOutputStream *os);
+    CARAPI constructor(
+        /* [in] */ IOutputStream *os);
 
     /**
      * Constructs a new OutputStreamWriter using {@code out} as the target
@@ -37,7 +43,7 @@ protected:
      * @throws UnsupportedEncodingException
      *             if the encoding specified by {@code enc} cannot be found.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IOutputStream *os,
         /* [in] */ const String &enc);
 
@@ -69,18 +75,18 @@ protected:
 //        /* [in] */ IOutputStream *os,
 //        /* [in] */ ICharsetEncoder *cs);
 
-public:
     /**
-     * Closes this writer. This implementation flushes the buffer as well as the
-     * target stream. The target stream is then closed and the resources for the
+     * Closes this writer. This implementation flushes the buffer but <strong>does not</strong>
+     * flush the target stream. The target stream is then closed and the resources for the
      * buffer and converter are released.
-     * <p>
-     * Only the first invocation of this method has any effect. Subsequent calls
+     *
+     * <p>Only the first invocation of this method has any effect. Subsequent calls
      * do nothing.
      *
      * @throws IOException
      *             if an error occurs while closing this writer.
      */
+    // @Override
     CARAPI Close();
 
     /**
@@ -94,11 +100,10 @@ public:
     CARAPI Flush();
 
     /**
-     * Gets the name of the encoding that is used to convert characters to
-     * bytes.
-     *
-     * @return the string describing the converter or {@code null} if this
-     *         writer is closed.
+     * Returns the canonical name of the encoding used by this writer to convert characters to
+     * bytes, or null if this writer has been closed. Most callers should probably keep
+     * track of the String or Charset they passed in; this method may not return the same
+     * name.
      */
     CARAPI GetEncoding(
         /* [out] */ String *encoding);
@@ -124,7 +129,7 @@ public:
      *             occurs.
      */
     CARAPI Write(
-        /* [in] */ const ArrayOf<Char32>& buffer,
+        /* [in] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
@@ -162,7 +167,7 @@ public:
      *             {@code offset + count} is bigger than the length of
      *             {@code str}.
      */
-    CARAPI WriteString(
+    CARAPI Write(
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
