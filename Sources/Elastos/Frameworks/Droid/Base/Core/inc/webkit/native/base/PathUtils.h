@@ -1,0 +1,86 @@
+
+#ifndef __PATHUTILS_H__
+#define __PATHUTILS_H__
+
+// import android.content.Context;
+// import android.content.pm.ApplicationInfo;
+// import android.os.Environment;
+
+namespace Elastos {
+namespace Droid {
+namespace Webkit {
+namespace Base {
+
+/**
+ * This class provides the path related methods for the native library.
+ */
+class PathUtils
+{
+public:
+    /**
+     * Sets the suffix that should be used for the directory where private data is to be stored
+     * by the application.
+     * @param suffix The private data directory suffix.
+     * @see Context#getDir(String, int)
+     */
+    static CARAPI_(void) SetPrivateDataDirectorySuffix(
+        /* [in] */ String suffix);
+
+    /**
+     * @return the private directory that is used to store application data.
+     */
+    //@CalledByNative
+    static CARAPI_(String) GetDataDirectory(
+        /* [in] */ IContext* appContext);
+
+    /**
+     * @return the private directory that is used to store application database.
+     */
+    //@CalledByNative
+    static CARAPI_(String) GetDatabaseDirectory(
+        /* [in] */ IContext* appContext);
+
+    /**
+     * @return the cache directory.
+     */
+    //@SuppressWarnings("unused")
+    //@CalledByNative
+    static CARAPI_(String) GetCacheDirectory(
+        /* [in] */ IContext* appContext);
+
+    /**
+     * @return the external storage directory.
+     */
+    //@SuppressWarnings("unused")
+    //@CalledByNative
+    static CARAPI_(String) GetExternalStorageDirectory();
+
+private:
+    // Prevent instantiation.
+    PathUtils();
+
+    /**
+     * @return the public downloads directory.
+     */
+    //@SuppressWarnings("unused")
+    //@CalledByNative
+    static CARAPI_(String) GetDownloadsDirectory(
+        /* [in] */ IContext* appContext);
+
+    /**
+     * @return the path to native libraries.
+     */
+    //@SuppressWarnings("unused")
+    //@CalledByNative
+    static CARAPI_(String) GetNativeLibraryDirectory(
+        /* [in] */ IContext* appContext);
+
+    static String sDataDirectorySuffix;
+};
+
+} // namespace Base
+} // namespace Webkit
+} // namespace Droid
+} // namespace Elastos
+
+#endif//__PATHUTILS_H__
