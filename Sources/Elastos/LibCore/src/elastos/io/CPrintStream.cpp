@@ -21,6 +21,10 @@ using Libcore::ICU::CLocale;
 namespace Elastos {
 namespace IO {
 
+CAR_OBJECT_IMPL(CPrintStream)
+
+CAR_INTERFACE_IMPL(CPrintStream, FilterOutputStream, IPrintStream)
+
 const String CPrintStream::sLineSeparator = String("\n");
 
 CPrintStream::CPrintStream()
