@@ -6,6 +6,8 @@
 namespace Elastos{
 namespace IO{
 
+CAR_INTERFACE_IMPL(PushbackReader, FilterReader, IPushbackReader)
+
 PushbackReader::PushbackReader()
     : mPos(0)
 {
@@ -15,10 +17,10 @@ PushbackReader::~PushbackReader()
 {
 }
 
-ECode PushbackReader::Init(
+ECode PushbackReader::constructor(
     /* [in] */ IReader* in)
 {
-    FAIL_RETURN(FilterReader::Init(in));
+    FAIL_RETURN(FilterReader::constructor(in));
     mBuf = ArrayOf<Char32>::Alloc(1);
     if (mBuf == NULL)
         return E_OUT_OF_MEMORY_ERROR;
@@ -27,11 +29,11 @@ ECode PushbackReader::Init(
     return NOERROR;
 }
 
-ECode PushbackReader::Init(
+ECode PushbackReader::constructor(
     /* [in] */ IReader* in,
     /* [in] */ Int32 size)
 {
-    FAIL_RETURN(FilterReader::Init(in));
+    FAIL_RETURN(FilterReader::constructor(in));
     if (size <= 0) {
 //      throw new IllegalArgumentException("size <= 0");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -94,7 +96,7 @@ ECode PushbackReader::CheckNotClosed()
     return NOERROR;
 }
 
-ECode PushbackReader::ReadChars(
+ECode PushbackReader::Read(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
@@ -142,7 +144,7 @@ ECode PushbackReader::ReadChars(
         return NOERROR;
     }
     Int32 inCopied;
-    FAIL_RETURN(mIn->ReadChars(buffer, newOffset, count - copiedChars, &inCopied));
+    FAIL_RETURN(mIn->Read(buffer, newOffset, count - copiedChars, &inCopied));
     if (inCopied > 0) {
         *number = inCopied + copiedChars;
         return NOERROR;
@@ -194,14 +196,14 @@ ECode PushbackReader::Unread(
     return NOERROR;
 }
 
-ECode PushbackReader::UnreadChars(
-    /* [in] */ const ArrayOf<Char32>& buffer)
+ECode PushbackReader::Unread(
+    /* [in] */ ArrayOf<Char32>* buffer)
 {
-    return UnreadChars(buffer, 0, buffer.GetLength());
+    return Unread(buffer, 0, buffer->GetLength());
 }
 
-ECode PushbackReader::UnreadChars(
-    /* [in] */ const ArrayOf<Char32>& buffer,
+ECode PushbackReader::Unread(
+    /* [in] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
@@ -214,7 +216,7 @@ ECode PushbackReader::UnreadChars(
         return E_IO_EXCEPTION;
     }
     // Force buffer null check first!
-    if (offset > buffer.GetLength() - length || offset < 0) {
+    if (offset > buffer->GetLength() - length || offset < 0) {
 //      throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + offset);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -224,7 +226,7 @@ ECode PushbackReader::UnreadChars(
     }
 
     for (Int32 i = offset + length - 1; i >= offset; i--) {
-        FAIL_RETURN(Unread(buffer[i]));
+        FAIL_RETURN(Unread((*buffer)[i]));
     }
 
     return NOERROR;
