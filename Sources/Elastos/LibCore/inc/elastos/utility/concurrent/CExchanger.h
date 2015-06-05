@@ -4,7 +4,9 @@
 
 #include "_Elastos_Utility_Concurrent_CExchanger.h"
 #include "AtomicReference.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Concurrent::Atomic::IAtomicReference;
 using Elastos::Utility::Concurrent::Atomic::AtomicReference;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;

@@ -603,17 +603,17 @@ module
         interface ISerializable;
     }
 
-    // class CConcurrentLinkedQueue {
-    //     constructor();
+    class CConcurrentLinkedQueue {
+        constructor();
 
-    //     constructor(
-    //         [in] ICollection* c);
+        constructor(
+            [in] ICollection* c);
 
-    //     interface IQueue;
-    //     interface ICollection;
-    //     interface IIterable;
-    //     interface ISerializable;
-    // }
+        interface IQueue;
+        interface ICollection;
+        interface IIterable;
+        interface ISerializable;
+    }
 
     // class CConcurrentSkipListMap {
     //     constructor();
