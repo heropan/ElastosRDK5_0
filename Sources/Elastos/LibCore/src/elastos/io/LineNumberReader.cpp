@@ -8,6 +8,8 @@ using Elastos::Core::Character;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(LineNumberReader, BufferedReader, ILineNumberReader)
+
 LineNumberReader::LineNumberReader()
     : mLineNumber(0)
     , mMarkedLineNumber(-1)
@@ -20,17 +22,17 @@ LineNumberReader::~LineNumberReader()
 {
 }
 
-ECode LineNumberReader::Init(
+ECode LineNumberReader::constructor(
     /* [in] */ IReader* ir)
 {
-    return BufferedReader::Init(ir);
+    return BufferedReader::constructor(ir);
 }
 
-ECode LineNumberReader::Init(
+ECode LineNumberReader::constructor(
     /* [in] */ IReader* ir,
     /* [in] */ Int32 size)
 {
-    return BufferedReader::Init(ir, size);
+    return BufferedReader::constructor(ir, size);
 }
 
 ECode LineNumberReader::GetLineNumber(
@@ -84,7 +86,7 @@ ECode LineNumberReader::Read(
     return NOERROR;
 }
 
-ECode LineNumberReader::ReadChars(
+ECode LineNumberReader::Read(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -96,7 +98,7 @@ ECode LineNumberReader::ReadChars(
     Object::Autolock lock(mLock);
 
     Int32 read;
-    FAIL_RETURN(BufferedReader::ReadChars(buffer, offset, length, &read));
+    FAIL_RETURN(BufferedReader::Read(buffer, offset, length, &read));
     if (read == -1) {
         *number = -1;
         return NOERROR;

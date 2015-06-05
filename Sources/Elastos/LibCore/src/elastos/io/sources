@@ -71,6 +71,8 @@ SOURCES += FilterWriter.cpp
 #SOURCES += CPrintWriter.cpp
 SOURCES += LineNumberInputStream.cpp
 SOURCES += CLineNumberInputStream.cpp
+SOURCES += LineNumberReader.cpp
+SOURCES += CLineNumberReader.cpp
 
 #
 # nio related classes
