@@ -44,7 +44,7 @@ static AsynchronousCloseMonitorNative* sBlockedThreadList = NULL;
 #if defined(__APPLE__)
 static const int BLOCKED_THREAD_SIGNAL = SIGUSR2;
 #else
-static const int BLOCKED_THREAD_SIGNAL = 0;//TODO upgrade __SIGRTMIN + 2;
+static const int BLOCKED_THREAD_SIGNAL = __SIGRTMIN + 2;
 #endif
 
 static void BlockedThreadSignalHandler(int /*signal*/) {
