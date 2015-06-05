@@ -14,10 +14,9 @@ $IF lubeoption is "inkernel"
 $ELSE
 #include <container.h>
 $END IF
-#include <elastos/Mutex.h>
-#include <elrefbase.h>
+#include <elastos/core/Mutex.h>
 
-using namespace Elastos::Core::Threading;
+using Elastos::Core::Mutex;
 
 ${ClassNamespaceBegin(class)}
 class ${name};

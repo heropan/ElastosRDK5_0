@@ -6,10 +6,10 @@ $OUTPUT "_CCallbackSink_.h"
 
 #include <elastos.h>
 #include <callback.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/Mutex.h>
 
 using namespace Elastos;
-using namespace Elastos::Core::Threading;
+using Elastos::Core::Mutex;
 
 class _CCallbackSink_
 {
