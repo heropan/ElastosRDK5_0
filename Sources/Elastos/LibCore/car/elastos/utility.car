@@ -15,6 +15,7 @@ module
     merge("utility/IList.car");
     merge("utility/ILocale.car");
     merge("utility/IMap.car");
+    merge("utility/IHashMap.car");
     merge("utility/ILinkedList.car");
     merge("utility/IDictionary.car");
     merge("utility/IProperties.car");
@@ -305,6 +306,25 @@ module
             interface ISerializable;
             interface ICloneable;
             interface IMap;
+        }
+
+        class CHashMap {
+            constructor();
+
+            constructor(
+                [in] Int32 capacity);
+
+            constructor(
+                [in] Int32 capacity,
+                [in] Float loadFactor);
+
+            constructor(
+                [in] IMap* map);
+
+            interface IHashMap;
+            interface IMap;
+            interface ICloneable;
+            interface ISerializable;
         }
 
 

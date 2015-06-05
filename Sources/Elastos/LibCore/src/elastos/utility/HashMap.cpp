@@ -1,19 +1,14 @@
 
-#include "CHashMap.h"
+#include "HashMap.h"
 #include "CFloat.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::IFloat;
 using Elastos::Core::CFloat;
 using Elastos::Core::IBoolean;
 using Elastos::Core::EIID_IBoolean;
 using Elastos::Core::IByte;
 using Elastos::Core::EIID_IByte;
-using Elastos::Core::IChar16;
-using Elastos::Core::EIID_IChar16;
-using Elastos::Core::IChar32;
-using Elastos::Core::EIID_IChar32;
-using Elastos::Core::IChar8;
-using Elastos::Core::EIID_IChar8;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::EIID_IDouble;
@@ -26,6 +21,9 @@ using Elastos::Core::EIID_IInteger32;
 using Elastos::Core::IInteger64;
 using Elastos::Core::EIID_IInteger64;
 using Elastos::IO::IObjectOutputStreamPutField;
+using Elastos::IO::EIID_ISerializable;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IOutputStream;
 
 namespace Elastos {
 namespace Utility {
@@ -34,33 +32,35 @@ namespace Utility {
 //==========================================================
 //       HashMap
 //==========================================================
-const Int64 _HashMap::sSerialVersionUID;
+const Int64 HashMap::sSerialVersionUID;
 
-AutoPtr< ArrayOf<IObjectStreamField*> > _HashMap::sSerialPersistentFields;
+AutoPtr< ArrayOf<IObjectStreamField*> > HashMap::sSerialPersistentFields;
 
-const Int32 _HashMap::MINIMUM_CAPACITY;
+const Int32 HashMap::MINIMUM_CAPACITY;
 
-const Int32 _HashMap::MAXIMUM_CAPACITY;
+const Int32 HashMap::MAXIMUM_CAPACITY;
 
-const AutoPtr< ArrayOf<_HashMap::HashMapEntry*> > _HashMap::EMPTY_TABLE =  ArrayOf<_HashMap::HashMapEntry*>::Alloc(MINIMUM_CAPACITY >> 1) ; // new HashMapEntry[MINIMUM_CAPACITY >> 1];
+const AutoPtr< ArrayOf<HashMap::HashMapEntry*> > HashMap::EMPTY_TABLE =  ArrayOf<HashMap::HashMapEntry*>::Alloc(MINIMUM_CAPACITY >> 1) ; // new HashMapEntry[MINIMUM_CAPACITY >> 1];
 
-const Float _HashMap::DEFAULT_LOAD_FACTOR;
+const Float HashMap::DEFAULT_LOAD_FACTOR;
 
-_HashMap::_HashMap()
+CAR_INTERFACE_IMPL_2(HashMap, AbstractMap, ICloneable, ISerializable)
+
+HashMap::HashMap()
     : mModCount(0)
     , mSize(0)
     , mThreshold(0)
 {
 }
 
-ECode _HashMap::Init()
+ECode HashMap::Init()
 {
     mTable = EMPTY_TABLE;
     mThreshold = -1; // Forces first put invocation to replace EMPTY_TABLE
     return NOERROR;
 }
 
-ECode _HashMap::Init(
+ECode HashMap::Init(
     /* [in] */ Int32 capacity)
 {
     if (capacity < 0) {
@@ -89,7 +89,7 @@ ECode _HashMap::Init(
     return NOERROR;
 }
 
-ECode _HashMap::Init(
+ECode HashMap::Init(
     /* [in] */ Int32 capacity,
     /* [in] */ Float loadFactor)
 {
@@ -111,7 +111,7 @@ ECode _HashMap::Init(
     return NOERROR;
 }
 
-ECode _HashMap::Init(
+ECode HashMap::Init(
     /* [in] */ IMap* map)
 {
     Int32 sizelen = 0;
@@ -120,13 +120,13 @@ ECode _HashMap::Init(
     return ConstructorPutAll(map);
 }
 
-ECode _HashMap::ConstructorPutAll(
+ECode HashMap::ConstructorPutAll(
     /* [in] */ IMap* map)
 {
     AutoPtr< ArrayOf<IInterface*> > es;
     AutoPtr<ISet> outset;
     map->EntrySet((ISet**)&outset);
-    outset->ToArray((ArrayOf<IInterface*>**)&es);
+    (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&es);
     for (Int32 i = 0; i< es->GetLength(); i++) {
         AutoPtr<IMapEntry> e = IMapEntry::Probe((*es)[i]);
         AutoPtr<IInterface> keyface;
@@ -138,7 +138,7 @@ ECode _HashMap::ConstructorPutAll(
     return NOERROR;
 }
 
-Int32 _HashMap::CapacityForInitSize(
+Int32 HashMap::CapacityForInitSize(
     /* [in] */ Int32 size)
 {
     Int32 result = (size >> 1) + size; // Multiply by 3/2 to allow for growth
@@ -147,7 +147,7 @@ Int32 _HashMap::CapacityForInitSize(
     return (result & ~(MAXIMUM_CAPACITY-1))==0 ? result : MAXIMUM_CAPACITY;
 }
 
-ECode _HashMap::Clone(
+ECode HashMap::Clone(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -156,15 +156,17 @@ ECode _HashMap::Clone(
      * This could be made more efficient. It unnecessarily hashes all of
      * the elements in the map.
      */
-    AutoPtr<CHashMap> result;
     // try {
     // result = (HashMap<K, V>) super.clone();
-    CHashMap::NewByFriend((CHashMap**)&result);
+    assert(0 && "TODO");
+
     // } catch (CloneNotSupportedException e) {
     //     throw new AssertionError(e);
     // }
 
     // Restore clone to empty state, retaining our capacity and threshold
+    /*AutoPtr<IHashMap> result;
+    CHashMap::NewByFriend((CHashMap**)&result);
     result->MakeTable(mTable->GetLength());
     result->mEntryForNullKey = NULL;
     result->mSize = 0;
@@ -176,16 +178,16 @@ ECode _HashMap::Clone(
     result->ConstructorPutAll((IMap*)this->Probe(EIID_IMap)); // Calls method overridden in subclass!!
     AutoPtr<IMap> outmap = (IMap*) result->Probe(EIID_IMap);
     *object = outmap;
-    REFCOUNT_ADD(*object)
+    REFCOUNT_ADD(*object)*/
     return NOERROR;
 }
 
-ECode _HashMap::Init_()
+ECode HashMap::Init_()
 {
     return NOERROR;
 }
 
-ECode _HashMap::IsEmpty(
+ECode HashMap::IsEmpty(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -194,7 +196,7 @@ ECode _HashMap::IsEmpty(
     return NOERROR;
 }
 
-ECode _HashMap::GetSize(
+ECode HashMap::GetSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size)
@@ -203,7 +205,7 @@ ECode _HashMap::GetSize(
     return NOERROR;
 }
 
-ECode _HashMap::Get(
+ECode HashMap::Get(
     /* [in] */ PInterface key,
     /* [out] */ PInterface* value)
 {
@@ -234,7 +236,7 @@ ECode _HashMap::Get(
     return NOERROR;
 }
 
-ECode _HashMap::ContainsKey(
+ECode HashMap::ContainsKey(
     /* [in] */ IInterface* key,
     /* [out] */ Boolean* result)
 {
@@ -262,7 +264,7 @@ ECode _HashMap::ContainsKey(
     return NOERROR;
 }
 
-ECode _HashMap::ContainsValue(
+ECode HashMap::ContainsValue(
     /* [in] */ IInterface* value,
     /* [out] */ Boolean* result)
 {
@@ -296,7 +298,7 @@ ECode _HashMap::ContainsValue(
     return NOERROR;
 }
 
-ECode _HashMap::Put(
+ECode HashMap::Put(
     /* [in] */ PInterface key,
     /* [in] */ PInterface value,
     /* [out] */ PInterface* oldValue)
@@ -342,7 +344,7 @@ ECode _HashMap::Put(
     return NOERROR;
 }
 
-AutoPtr<IInterface> _HashMap::PutValueForNullKey(
+AutoPtr<IInterface> HashMap::PutValueForNullKey(
     /* [in] */ IInterface* value)
 {
     AutoPtr<HashMapEntry> entry = mEntryForNullKey;
@@ -360,13 +362,13 @@ AutoPtr<IInterface> _HashMap::PutValueForNullKey(
     }
 }
 
-ECode _HashMap::PreModify(
+ECode HashMap::PreModify(
     /* [in] */ HashMapEntry* e)
 {
     return NOERROR;
 }
 
-ECode _HashMap::ConstructorPut(
+ECode HashMap::ConstructorPut(
     /* [in] */ IInterface* key,
     /* [in] */ IInterface* value)
 {
@@ -401,7 +403,7 @@ ECode _HashMap::ConstructorPut(
     return NOERROR;
 }
 
-ECode _HashMap::AddNewEntry(
+ECode HashMap::AddNewEntry(
     /* [in] */ IInterface* key,
     /* [in] */ IInterface* value,
     /* [in] */ Int32 hash,
@@ -412,14 +414,14 @@ ECode _HashMap::AddNewEntry(
     return NOERROR;
 }
 
-ECode _HashMap::AddNewEntryForNullKey(
+ECode HashMap::AddNewEntryForNullKey(
     /* [in] */ IInterface* value)
 {
     mEntryForNullKey = new HashMapEntry(NULL, value, 0, NULL);
     return NOERROR;
 }
 
-AutoPtr<_HashMap::HashMapEntry> _HashMap::ConstructorNewEntry(
+AutoPtr<HashMap::HashMapEntry> HashMap::ConstructorNewEntry(
     /* [in] */ IInterface* key,
     /* [in] */ IInterface* value,
     /* [in] */ Int32 hash,
@@ -429,7 +431,7 @@ AutoPtr<_HashMap::HashMapEntry> _HashMap::ConstructorNewEntry(
     return res;
 }
 
-ECode _HashMap::PutAll(
+ECode HashMap::PutAll(
     /* [in] */ IMap* map)
 {
     Int32 sizelen = 0;
@@ -438,7 +440,7 @@ ECode _HashMap::PutAll(
     return AbstractMap::PutAll(map);
 }
 
-ECode _HashMap::EnsureCapacity(
+ECode HashMap::EnsureCapacity(
     /* [in] */ Int32 numMappings)
 {
     Int32 newCapacity = RoundUpToPowerOfTwo(CapacityForInitSize(numMappings));
@@ -470,17 +472,16 @@ ECode _HashMap::EnsureCapacity(
     return NOERROR;
 }
 
-AutoPtr< ArrayOf<_HashMap::HashMapEntry*> > _HashMap::MakeTable(
+AutoPtr< ArrayOf<HashMap::HashMapEntry*> > HashMap::MakeTable(
     /* [in] */ Int32 newCapacity)
 {
-    // @SuppressWarnings("unchecked")
     AutoPtr< ArrayOf<HashMapEntry*> > newTable = ArrayOf<HashMapEntry*>::Alloc(newCapacity);
     mTable = newTable;
     mThreshold = (newCapacity >> 1) + (newCapacity >> 2); // 3/4 capacity
     return newTable;
 }
 
-AutoPtr< ArrayOf<_HashMap::HashMapEntry*> > _HashMap::DoubleCapacity()
+AutoPtr< ArrayOf<HashMap::HashMapEntry*> > HashMap::DoubleCapacity()
 {
     AutoPtr< ArrayOf<HashMapEntry*> > oldTable = mTable;
     Int32 oldCapacity = oldTable->GetLength();
@@ -525,7 +526,7 @@ AutoPtr< ArrayOf<_HashMap::HashMapEntry*> > _HashMap::DoubleCapacity()
     return newTable;
 }
 
-ECode _HashMap::Remove(
+ECode HashMap::Remove(
     /* [in] */ PInterface key,
     /* [out] */ PInterface* value)
 {
@@ -562,7 +563,7 @@ ECode _HashMap::Remove(
     return NOERROR;
 }
 
-AutoPtr<IInterface> _HashMap::RemoveNullKey()
+AutoPtr<IInterface> HashMap::RemoveNullKey()
 {
     AutoPtr<HashMapEntry> e = mEntryForNullKey;
     if (e == NULL) {
@@ -575,13 +576,13 @@ AutoPtr<IInterface> _HashMap::RemoveNullKey()
     return e->mValue;
 }
 
-ECode _HashMap::PostRemove(
+ECode HashMap::PostRemove(
     /* [in] */ HashMapEntry* e)
 {
     return NOERROR;
 }
 
-ECode _HashMap::Clear()
+ECode HashMap::Clear()
 {
     if (mSize != 0) {
         // Arrays.fill(table, null);
@@ -595,7 +596,7 @@ ECode _HashMap::Clear()
     return NOERROR;
 }
 
-ECode _HashMap::KeySet(
+ECode HashMap::KeySet(
     /* [out] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
@@ -614,18 +615,18 @@ ECode _HashMap::KeySet(
     }
 }
 
-ECode _HashMap::Values(
+ECode HashMap::Values(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value)
 
     AutoPtr<ICollection> vs = mValues;
-    *value = (vs != NULL) ? vs : (mValues = (ICollection*) new _HashMap::_Values(this));
+    *value = (vs != NULL) ? vs : (mValues = (ICollection*) new _Values(this));
     REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
-ECode _HashMap::EntrySet(
+ECode HashMap::EntrySet(
     /* [out] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(entries)
@@ -644,7 +645,7 @@ ECode _HashMap::EntrySet(
     }
 }
 
-Boolean _HashMap::ContainsMapping(
+Boolean HashMap::ContainsMapping(
     /* [in] */ IInterface* key,
     /* [in] */ IInterface* value)
 {
@@ -664,7 +665,7 @@ Boolean _HashMap::ContainsMapping(
     return FALSE; // No entry for key
 }
 
-Boolean _HashMap::RemoveMapping(
+Boolean HashMap::RemoveMapping(
     /* [in] */ IInterface* key,
     /* [in] */ IInterface* value)
 {
@@ -705,25 +706,25 @@ Boolean _HashMap::RemoveMapping(
     return FALSE; // No entry for key
 }
 
-AutoPtr<IIterator> _HashMap::NewKeyIterator()
+AutoPtr<IIterator> HashMap::NewKeyIterator()
 {
     AutoPtr<IIterator> res = (IIterator*) new KeyIterator(this);
     return res;
 }
 
-AutoPtr<IIterator> _HashMap::NewValueIterator()
+AutoPtr<IIterator> HashMap::NewValueIterator()
 {
     AutoPtr<IIterator> res = (IIterator*) new ValueIterator(this);
     return res;
 }
 
-AutoPtr<IIterator> _HashMap::NewEntryIterator()
+AutoPtr<IIterator> HashMap::NewEntryIterator()
 {
     AutoPtr<IIterator> res = (IIterator*) new EntryIterator(this);
     return res;
 }
 
-Int32 _HashMap::SecondaryHash(
+Int32 HashMap::SecondaryHash(
     /* [in] */ Int32 h)
 {
     // Doug Lea's supplemental hash function
@@ -731,7 +732,7 @@ Int32 _HashMap::SecondaryHash(
     return h ^ ((UInt32)h >> 7) ^ ((UInt32)h >> 4);
 }
 
-Int32 _HashMap::RoundUpToPowerOfTwo(
+Int32 HashMap::RoundUpToPowerOfTwo(
     /* [in] */ Int32 i)
 {
     i--; // If input is a power of two, shift its high-order bit right
@@ -746,21 +747,21 @@ Int32 _HashMap::RoundUpToPowerOfTwo(
     return i + 1;
 }
 
-ECode _HashMap::WriteObject(
+ECode HashMap::WriteObject(
     /* [in] */ IObjectOutputStream* stream)
 {
     // Emulate loadFactor field for other implementations to read
     AutoPtr<IObjectOutputStreamPutField> fields;
     stream->PutFields((IObjectOutputStreamPutField**)&fields);
-    fields->PutFloat(String("loadFactor"), DEFAULT_LOAD_FACTOR);
+    fields->Put(String("loadFactor"), DEFAULT_LOAD_FACTOR);
     stream->WriteFields();
 
-    stream->Write(mTable->GetLength()); // Capacity
-    stream->Write(mSize);
+    (IOutputStream::Probe(stream))->Write(mTable->GetLength()); // Capacity
+    (IOutputStream::Probe(stream))->Write(mSize);
     AutoPtr< ArrayOf<IInterface*> > outentry;
     AutoPtr<ISet> outset;
     EntrySet((ISet**)&outset);
-    outset->ToArray((ArrayOf<IInterface*>**)&outentry);
+    (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&outentry);
     for (Int32 i = 0; i < outentry->GetLength(); i++) {
         AutoPtr<IMapEntry> e = IMapEntry::Probe((*outentry)[i]);
         AutoPtr<IInterface> eKey;
@@ -774,12 +775,12 @@ ECode _HashMap::WriteObject(
     return NOERROR;
 }
 
-ECode _HashMap::ReadObject(
+ECode HashMap::ReadObject(
     /* [in] */ IObjectInputStream* stream)
 {
     stream->DefaultReadObject();
     Int32 capacity = 0;
-    stream->Read(&capacity);
+    (IInputStream::Probe(stream))->Read(&capacity);
     if (capacity < 0) {
         // throw new InvalidObjectException("Capacity: " + capacity);
         return E_INVALID_OBJECT_EXCEPTION;
@@ -796,7 +797,7 @@ ECode _HashMap::ReadObject(
     MakeTable(capacity);
 
     Int32 size = 0;
-    stream->Read(&size);
+    (IInputStream::Probe(stream))->Read(&size);
     if (size < 0) {
         // throw new InvalidObjectException("Size: " + size);
         return E_INVALID_OBJECT_EXCEPTION;
@@ -812,13 +813,28 @@ ECode _HashMap::ReadObject(
     return NOERROR;
 }
 
+ECode HashMap::Put(
+    /* [in] */ PInterface key,
+    /* [in] */ PInterface value)
+{
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
+ECode HashMap::Remove(
+    /* [in] */ PInterface key)
+{
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
 
 //==========================================================
 //       HashMap::HashMapEntry
 //==========================================================
-CAR_INTERFACE_IMPL(_HashMap::HashMapEntry, IMapEntry)
+CAR_INTERFACE_IMPL(HashMap::HashMapEntry, Object, IMapEntry)
 
-_HashMap::HashMapEntry::HashMapEntry(
+HashMap::HashMapEntry::HashMapEntry(
     /* [in] */ IInterface* key,
     /* [in] */ IInterface* value,
     /* [in] */ Int32 hash,
@@ -830,7 +846,7 @@ _HashMap::HashMapEntry::HashMapEntry(
     mNext = next;
 }
 
-ECode _HashMap::HashMapEntry::GetKey(
+ECode HashMap::HashMapEntry::GetKey(
     /* [out] */ PInterface* key)
 {
     VALIDATE_NOT_NULL(key)
@@ -840,7 +856,7 @@ ECode _HashMap::HashMapEntry::GetKey(
     return NOERROR;
 }
 
-ECode _HashMap::HashMapEntry::GetValue(
+ECode HashMap::HashMapEntry::GetValue(
     /* [out] */ PInterface* key)
 {
     VALIDATE_NOT_NULL(key)
@@ -850,7 +866,7 @@ ECode _HashMap::HashMapEntry::GetValue(
     return NOERROR;
 }
 
-ECode _HashMap::HashMapEntry::SetValue(
+ECode HashMap::HashMapEntry::SetValue(
     /* [in] */ IInterface* value,
     /* [out] */ IInterface** valueReplacee)
 {
@@ -863,7 +879,7 @@ ECode _HashMap::HashMapEntry::SetValue(
     return NOERROR;
 }
 
-ECode _HashMap::HashMapEntry::Equals(
+ECode HashMap::HashMapEntry::Equals(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
@@ -883,7 +899,7 @@ ECode _HashMap::HashMapEntry::Equals(
     return NOERROR;
 }
 
-ECode _HashMap::HashMapEntry::GetHashCode(
+ECode HashMap::HashMapEntry::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     VALIDATE_NOT_NULL(hashCode)
@@ -894,7 +910,7 @@ ECode _HashMap::HashMapEntry::GetHashCode(
     return NOERROR;
 }
 
-ECode _HashMap::HashMapEntry::ToString(
+ECode HashMap::HashMapEntry::ToString(
     /* [out] */ String *str)
 {
     VALIDATE_NOT_NULL(str)
@@ -907,12 +923,12 @@ ECode _HashMap::HashMapEntry::ToString(
 //==========================================================
 //       HashMap::HashIterator
 //==========================================================
-_HashMap::HashIterator::HashIterator()
+HashMap::HashIterator::HashIterator()
 {
 }
 
-_HashMap::HashIterator::HashIterator(
-    /* [in] */ _HashMap* host)
+HashMap::HashIterator::HashIterator(
+    /* [in] */ HashMap* host)
 {
     mHost = host;
     mExpectedModCount = mHost->mModCount;
@@ -929,7 +945,7 @@ _HashMap::HashIterator::HashIterator(
     }
 }
 
-ECode _HashMap::HashIterator::HasNext(
+ECode HashMap::HashIterator::HasNext(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -938,7 +954,7 @@ ECode _HashMap::HashIterator::HasNext(
     return NOERROR;
 }
 
-AutoPtr<_HashMap::HashMapEntry> _HashMap::HashIterator::NextEntry()
+AutoPtr<HashMap::HashMapEntry> HashMap::HashIterator::NextEntry()
 {
     if (mHost->mModCount != mExpectedModCount) {
         // throw new ConcurrentModificationException();
@@ -961,7 +977,7 @@ AutoPtr<_HashMap::HashMapEntry> _HashMap::HashIterator::NextEntry()
     return mLastEntryReturned;
 }
 
-ECode _HashMap::HashIterator::Remove()
+ECode HashMap::HashIterator::Remove()
 {
     if (mLastEntryReturned == NULL) {
         // throw new IllegalStateException();
@@ -982,15 +998,15 @@ ECode _HashMap::HashIterator::Remove()
 //==========================================================
 //       HashMap::KeyIterator
 //==========================================================
-CAR_INTERFACE_IMPL(_HashMap::KeyIterator, IIterator);
+CAR_INTERFACE_IMPL(HashMap::KeyIterator, HashIterator, IIterator)
 
-_HashMap::KeyIterator::KeyIterator(
-    /* [in] */ _HashMap* host)
+HashMap::KeyIterator::KeyIterator(
+    /* [in] */ HashMap* host)
     : HashIterator(host)
 {
 }
 
-ECode _HashMap::KeyIterator::Next(
+ECode HashMap::KeyIterator::Next(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -1001,13 +1017,13 @@ ECode _HashMap::KeyIterator::Next(
     return NOERROR;
 }
 
-ECode _HashMap::KeyIterator::HasNext(
+ECode HashMap::KeyIterator::HasNext(
     /* [out] */ Boolean* result)
 {
     return HashIterator::HasNext(result);
 }
 
-ECode _HashMap::KeyIterator::Remove()
+ECode HashMap::KeyIterator::Remove()
 {
     return HashIterator::Remove();
 }
@@ -1016,15 +1032,15 @@ ECode _HashMap::KeyIterator::Remove()
 //==========================================================
 //       HashMap::ValueIterator
 //==========================================================
-CAR_INTERFACE_IMPL(_HashMap::ValueIterator, IIterator);
+CAR_INTERFACE_IMPL(HashMap::ValueIterator, HashIterator, IIterator);
 
-_HashMap::ValueIterator::ValueIterator(
-    /* [in] */ _HashMap* host)
+HashMap::ValueIterator::ValueIterator(
+    /* [in] */ HashMap* host)
     : HashIterator(host)
 {
 }
 
-ECode _HashMap::ValueIterator::Next(
+ECode HashMap::ValueIterator::Next(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -1035,13 +1051,13 @@ ECode _HashMap::ValueIterator::Next(
     return NOERROR;
 }
 
-ECode _HashMap::ValueIterator::HasNext(
+ECode HashMap::ValueIterator::HasNext(
     /* [out] */ Boolean* result)
 {
     return HashIterator::HasNext(result);
 }
 
-ECode _HashMap::ValueIterator::Remove()
+ECode HashMap::ValueIterator::Remove()
 {
     return HashIterator::Remove();
 }
@@ -1050,32 +1066,32 @@ ECode _HashMap::ValueIterator::Remove()
 //==========================================================
 //       HashMap::EntryIterator
 //==========================================================
-CAR_INTERFACE_IMPL(_HashMap::EntryIterator, IIterator);
+CAR_INTERFACE_IMPL(HashMap::EntryIterator, HashIterator, IIterator);
 
-_HashMap::EntryIterator::EntryIterator(
-    /* [in] */ _HashMap* host)
+HashMap::EntryIterator::EntryIterator(
+    /* [in] */ HashMap* host)
     : HashIterator(host)
 {
 }
 
-ECode _HashMap::EntryIterator::Next(
+ECode HashMap::EntryIterator::Next(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
 
     AutoPtr<HashMapEntry> outhash = NextEntry();
-    *object = outhash;
+    *object = (IIterator*)outhash.Get();
     REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
-ECode _HashMap::EntryIterator::HasNext(
+ECode HashMap::EntryIterator::HasNext(
     /* [out] */ Boolean* result)
 {
     return HashIterator::HasNext(result);
 }
 
-ECode _HashMap::EntryIterator::Remove()
+ECode HashMap::EntryIterator::Remove()
 {
     return HashIterator::Remove();
 }
@@ -1084,57 +1100,14 @@ ECode _HashMap::EntryIterator::Remove()
 //==========================================================
 //       HashMap::_KeySet
 //==========================================================
-UInt32 _HashMap::_KeySet::AddRef()
-{
-    return ElRefBase::AddRef();
-}
 
-UInt32 _HashMap::_KeySet::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface _HashMap::_KeySet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ISet*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ISet*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(ISet*)this;
-    }
-    else if (EIID_ISet == riid) {
-        return (ISet*)this;
-    }
-
-    return NULL;
-}
-
-ECode _HashMap::_KeySet::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ISet*)this) {
-        *pIID = EIID_ISet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
-
-_HashMap::_KeySet::_KeySet(
-    /* [in] */ _HashMap* host)
+HashMap::_KeySet::_KeySet(
+    /* [in] */ HashMap* host)
 {
     mHost = host;
 }
 
-ECode _HashMap::_KeySet::GetIterator(
+ECode HashMap::_KeySet::GetIterator(
     /* [out] */ IIterator** result)
 {
     VALIDATE_NOT_NULL(result)
@@ -1145,7 +1118,7 @@ ECode _HashMap::_KeySet::GetIterator(
     return NOERROR;
 }
 
-ECode _HashMap::_KeySet::GetSize(
+ECode HashMap::_KeySet::GetSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size)
@@ -1154,7 +1127,7 @@ ECode _HashMap::_KeySet::GetSize(
     return NOERROR;
 }
 
-ECode _HashMap::_KeySet::IsEmpty(
+ECode HashMap::_KeySet::IsEmpty(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -1163,14 +1136,14 @@ ECode _HashMap::_KeySet::IsEmpty(
     return NOERROR;
 }
 
-ECode _HashMap::_KeySet::Contains(
+ECode HashMap::_KeySet::Contains(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
     return mHost->ContainsKey(o, result);
 }
 
-ECode _HashMap::_KeySet::Remove(
+ECode HashMap::_KeySet::Remove(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
@@ -1183,127 +1156,86 @@ ECode _HashMap::_KeySet::Remove(
     return NOERROR;
 }
 
-ECode _HashMap::_KeySet::Clear()
+ECode HashMap::_KeySet::Clear()
 {
     return mHost->Clear();
 }
 
-ECode _HashMap::_KeySet::Add(
+ECode HashMap::_KeySet::Add(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* modified)
 {
     return AbstractSet::Add(object, modified);
 }
 
-ECode _HashMap::_KeySet::AddAll(
+ECode HashMap::_KeySet::AddAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
     return AbstractSet::AddAll(collection, modified);
 }
 
-ECode _HashMap::_KeySet::ContainsAll(
+ECode HashMap::_KeySet::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
     return AbstractSet::ContainsAll(collection, result);
 }
 
-ECode _HashMap::_KeySet::RemoveAll(
+ECode HashMap::_KeySet::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
     return AbstractSet::RemoveAll(collection, result);
 }
 
-ECode _HashMap::_KeySet::RetainAll(
+ECode HashMap::_KeySet::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
     return AbstractSet::RetainAll(collection, result);
 }
 
-ECode _HashMap::_KeySet::ToArray(
+ECode HashMap::_KeySet::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
     return AbstractSet::ToArray(array);
 }
 
-ECode _HashMap::_KeySet::ToArray(
+ECode HashMap::_KeySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     return AbstractSet::ToArray(contents, outArray);
 }
 
-ECode _HashMap::_KeySet::Equals(
+ECode HashMap::_KeySet::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
     return AbstractSet::Equals(object, result);
 }
 
-ECode _HashMap::_KeySet::GetHashCode(
+ECode HashMap::_KeySet::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     return AbstractSet::GetHashCode(hashCode);
 }
 
 //==========================================================
-//       HashMap::_Values
+//       HashMap::Values
 //==========================================================
-UInt32 _HashMap::_Values::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 _HashMap::_Values::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface _HashMap::_Values::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ICollection*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ICollection*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)this;
-    }
-
-    return NULL;
-}
-
-ECode _HashMap::_Values::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ICollection*)this) {
-        *pIID = EIID_ICollection;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
-
-_HashMap::_Values::_Values()
+HashMap::_Values::_Values()
 {
 }
 
-_HashMap::_Values::_Values(
-    /* [in] */ _HashMap* host)
+HashMap::_Values::_Values(
+    /* [in] */ HashMap* host)
 {
     mHost = host;
 }
 
-ECode _HashMap::_Values::GetIterator(
+ECode HashMap::_Values::GetIterator(
     /* [out] */ IIterator** result)
 {
     VALIDATE_NOT_NULL(result)
@@ -1314,7 +1246,7 @@ ECode _HashMap::_Values::GetIterator(
     return NOERROR;
 }
 
-ECode _HashMap::_Values::GetSize(
+ECode HashMap::_Values::GetSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size)
@@ -1323,7 +1255,7 @@ ECode _HashMap::_Values::GetSize(
     return NOERROR;
 }
 
-ECode _HashMap::_Values::IsEmpty(
+ECode HashMap::_Values::IsEmpty(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -1332,7 +1264,7 @@ ECode _HashMap::_Values::IsEmpty(
     return NOERROR;
 }
 
-ECode _HashMap::_Values::Contains(
+ECode HashMap::_Values::Contains(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
@@ -1341,67 +1273,67 @@ ECode _HashMap::_Values::Contains(
     return mHost->ContainsValue(o, result);
 }
 
-ECode _HashMap::_Values::Clear()
+ECode HashMap::_Values::Clear()
 {
     return mHost->Clear();
 }
 
-ECode _HashMap::_Values::Add(
+ECode HashMap::_Values::Add(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* modified)
 {
     return AbstractCollection::Add(object, modified);
 }
 
-ECode _HashMap::_Values::AddAll(
+ECode HashMap::_Values::AddAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
     return AbstractCollection::AddAll(collection, modified);
 }
 
-ECode _HashMap::_Values::ContainsAll(
+ECode HashMap::_Values::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
     return AbstractCollection::ContainsAll(collection, result);
 }
 
-ECode _HashMap::_Values::Remove(
+ECode HashMap::_Values::Remove(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
     return AbstractCollection::Remove(object, result);
 }
 
-ECode _HashMap::_Values::RemoveAll(
+ECode HashMap::_Values::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
     return AbstractCollection::RemoveAll(collection, result);
 }
 
-ECode _HashMap::_Values::RetainAll(
+ECode HashMap::_Values::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
     return AbstractCollection::RetainAll(collection, result);
 }
 
-ECode _HashMap::_Values::ToArray(
+ECode HashMap::_Values::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
     return AbstractCollection::ToArray(array);
 }
 
-ECode _HashMap::_Values::ToArray(
+ECode HashMap::_Values::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     return AbstractCollection::ToArray(contents, outArray);
 }
 
-ECode _HashMap::_Values::Equals(
+ECode HashMap::_Values::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
@@ -1410,7 +1342,7 @@ ECode _HashMap::_Values::Equals(
     return NOERROR;
 }
 
-ECode _HashMap::_Values::GetHashCode(
+ECode HashMap::_Values::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     VALIDATE_NOT_NULL(hashCode);
@@ -1419,59 +1351,15 @@ ECode _HashMap::_Values::GetHashCode(
 }
 
 //==========================================================
-//       HashMap::_EntrySet
+//       HashMap::EntrySet
 //==========================================================
-UInt32 _HashMap::_EntrySet::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 _HashMap::_EntrySet::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface _HashMap::_EntrySet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ISet*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ISet*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(ISet*)this;
-    }
-    else if (EIID_ISet == riid) {
-        return (ISet*)this;
-    }
-
-    return NULL;
-}
-
-ECode _HashMap::_EntrySet::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ISet*)this) {
-        *pIID = EIID_ISet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
-
-_HashMap::_EntrySet::_EntrySet(
-    /* [in] */ _HashMap* host)
+HashMap::_EntrySet::_EntrySet(
+    /* [in] */ HashMap* host)
 {
     mHost = host;
 }
 
-ECode _HashMap::_EntrySet::GetIterator(
+ECode HashMap::_EntrySet::GetIterator(
     /* [out] */ IIterator** result)
 {
     VALIDATE_NOT_NULL(result)
@@ -1482,7 +1370,7 @@ ECode _HashMap::_EntrySet::GetIterator(
     return NOERROR;
 }
 
-ECode _HashMap::_EntrySet::Contains(
+ECode HashMap::_EntrySet::Contains(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
@@ -1501,7 +1389,7 @@ ECode _HashMap::_EntrySet::Contains(
     return NOERROR;
 }
 
-ECode _HashMap::_EntrySet::Remove(
+ECode HashMap::_EntrySet::Remove(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
@@ -1520,7 +1408,7 @@ ECode _HashMap::_EntrySet::Remove(
     return NOERROR;
 }
 
-ECode _HashMap::_EntrySet::GetSize(
+ECode HashMap::_EntrySet::GetSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size)
@@ -1529,7 +1417,7 @@ ECode _HashMap::_EntrySet::GetSize(
     return NOERROR;
 }
 
-ECode _HashMap::_EntrySet::IsEmpty(
+ECode HashMap::_EntrySet::IsEmpty(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -1538,66 +1426,66 @@ ECode _HashMap::_EntrySet::IsEmpty(
     return NOERROR;
 }
 
-ECode _HashMap::_EntrySet::Clear()
+ECode HashMap::_EntrySet::Clear()
 {
     return mHost->Clear();
 }
 
-ECode _HashMap::_EntrySet::Add(
+ECode HashMap::_EntrySet::Add(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* modified)
 {
     return AbstractSet::Add(object, modified);
 }
 
-ECode _HashMap::_EntrySet::AddAll(
+ECode HashMap::_EntrySet::AddAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
     return AbstractSet::AddAll(collection, modified);
 }
 
-ECode _HashMap::_EntrySet::ContainsAll(
+ECode HashMap::_EntrySet::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
     return AbstractSet::ContainsAll(collection, result);
 }
 
-ECode _HashMap::_EntrySet::Equals(
+ECode HashMap::_EntrySet::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
     return AbstractSet::Equals(object, result);
 }
 
-ECode _HashMap::_EntrySet::GetHashCode(
+ECode HashMap::_EntrySet::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     return AbstractSet::GetHashCode(hashCode);
 }
 
-ECode _HashMap::_EntrySet::RemoveAll(
+ECode HashMap::_EntrySet::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
     return AbstractSet::RemoveAll(collection, modified);
 }
 
-ECode _HashMap::_EntrySet::RetainAll(
+ECode HashMap::_EntrySet::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
     return AbstractSet::RetainAll(collection, modified);
 }
 
-ECode _HashMap::_EntrySet::ToArray(
+ECode HashMap::_EntrySet::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
     return AbstractSet::ToArray(array);
 }
 
-ECode _HashMap::_EntrySet::ToArray(
+ECode HashMap::_EntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {

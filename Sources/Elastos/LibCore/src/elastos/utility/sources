@@ -29,3 +29,5 @@ SOURCES += CBitSet.cpp
 SOURCES += CBitSetHelper.cpp
 SOURCES += MapEntry.cpp
 SOURCES += CEnumMap.cpp
+SOURCES += HashMap.cpp
+SOURCES += CHashMap.cpp
