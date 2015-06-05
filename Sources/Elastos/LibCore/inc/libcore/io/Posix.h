@@ -419,7 +419,7 @@ public:
         /* [in] */ Int32 flags,
         /* [in] */ IInetAddress* inetAddress,
         /* [in] */ Int32 port,
-        /* [out] */ Int32* result);
+        /* [out] */ Int32* num);
 
     CARAPI Sendto(
         /* [in] */ IFileDescriptor* fd,
@@ -427,7 +427,7 @@ public:
         /* [in] */ Int32 flags,
         /* [in] */ IInetAddress* inetAddress,
         /* [in] */ Int32 port,
-        /* [out] */ Int32* result);
+        /* [out] */ Int32* num);
 
     CARAPI Sendfile(
         /* [in] */ IFileDescriptor* outFd,
@@ -531,8 +531,12 @@ public:
         /* [out] */ IStructStatVfs** statfs);
 
     CARAPI Strerror(
-        /* [in] */ Int32 errno,
+        /* [in] */ Int32 errnum,
         /* [out] */ String* strerr);
+
+    CARAPI Strsignal(
+        /* [in] */ Int32 signal,
+        /* [out] */ String* strSignal);
 
     CARAPI Symlink(
         /* [in] */ String oldPath,
@@ -544,6 +548,10 @@ public:
 
     CARAPI Tcdrain(
         /* [in] */ IFileDescriptor* fd);
+
+    CARAPI Tcsendbreak(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ Int32 duration);
 
     CARAPI Umask(
         /* [in] */ Int32 mask,
