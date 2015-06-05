@@ -9,12 +9,17 @@ namespace IO {
 
 class LineNumberReader
     : public BufferedReader
+    , public ILineNumberReader
 {
+public:
+    CAR_INTERFACE_DECL()
+    
 protected:
     LineNumberReader();
 
     ~LineNumberReader();
 
+public:
     /**
      * Constructs a new LineNumberReader on the Reader {@code in}. The internal
      * buffer gets the default size (8 KB).
@@ -22,7 +27,7 @@ protected:
      * @param in
      *            the Reader that is buffered.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IReader* in);
     /**
      * Constructs a new LineNumberReader on the Reader {@code in}. The size of
@@ -35,11 +40,10 @@ protected:
      * @throws IllegalArgumentException
      *             if {@code size <= 0}.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IReader* in,
         /* [in] */ Int32 size);
 
-public:
     /**
      * Returns the current line number for this reader. Numbering starts at 0.
      *
@@ -86,28 +90,20 @@ public:
         /* [out] */ Int32* value);
 
     /**
-     * Reads at most {@code count} characters from the source reader and stores
+     * Reads up to {@code count} characters from the source reader and stores
      * them in the character array {@code buffer} starting at {@code offset}.
      * Returns the number of characters actually read or -1 if no characters
      * have been read and the end of this reader has been reached.
-     * <p>
-     * The line number count is incremented if a line terminator is encountered.
+     *
+     * <p>The line number count is incremented if a line terminator is encountered.
      * Recognized line terminator sequences are {@code '\r'}, {@code '\n'} and
      * {@code "\r\n"}.
      *
-     * @param buffer
-     *            the array in which to store the characters read.
-     * @param offset
-     *            the initial position in {@code buffer} to store the characters
-     *            read from this reader.
-     * @param count
-     *            the maximum number of characters to store in {@code buffer}.
-     * @return the number of characters actually read or -1 if the end of the
-     *         source reader has been reached while reading.
      * @throws IOException
      *             if this reader is closed or another IOException occurs.
      */
-    CARAPI ReadChars(
+    // @Override
+    CARAPI Read(
         /* [out] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

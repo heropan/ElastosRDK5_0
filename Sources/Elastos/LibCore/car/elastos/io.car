@@ -477,6 +477,20 @@ module
         interface ILineNumberInputStream;
     }
 
+    class CLineNumberReader {
+        constructor(
+            [in] IReader* ir);
+
+        constructor(
+            [in] IReader* ir,
+            [in] Int32 size);
+
+        interface IReadable;
+        interface IReader;
+        interface IBufferedReader;
+        interface ILineNumberReader;
+    }
+
     } // namespace IO
     } // namespace Elastos
 }
