@@ -1043,3 +1043,8 @@ EXPORTS
     _ZN7Elastos7Utility7Logging7Slogger1VEPKcS4_z
     _ZN7Elastos7Utility7Logging7Slogger1WEPKcS4_z
     _ZN7Elastos7Utility7Logging7Slogger7PrintlnEiPKcS4_z
+
+    ;;Arrays
+    _ZN7Elastos7Utility6Arrays16CheckStartAndEndEiii
+    _ZN7Elastos7Utility6Arrays19CheckOffsetAndCountEiii
+    _ZN7Elastos7Utility6Arrays23CheckBinarySearchBoundsEiii

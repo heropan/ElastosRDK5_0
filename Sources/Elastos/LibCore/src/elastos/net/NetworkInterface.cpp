@@ -12,7 +12,7 @@
 #include "CLibcore.h"
 #include "CCollections.h"
 #include "CArrayList.h"
-#include "CArrays.h"
+#include "Arrays.h"
 
 #include <net/if.h>
 #include <sys/socket.h>

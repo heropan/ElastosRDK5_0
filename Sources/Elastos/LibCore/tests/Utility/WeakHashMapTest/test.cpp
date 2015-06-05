@@ -6,8 +6,7 @@ using Elastos::Utility::IIterator;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IList;
 using Elastos::Utility::IEntry;
-using Elastos::Utility::IArrays;
-using Elastos::Utility::CArrays;
+using Elastos::Utility::Arrays;
 
 //====================================================================
 // CTest::MockMap::
@@ -323,10 +322,8 @@ int CTest::test_entrySet(int argc, char* argv[])
     }
     AutoPtr<IList> keys;
     AutoPtr<IList> values;
-    AutoPtr<IArrays> arrs;
-    CArrays::AcquireSingleton((IArrays**)&arrs);
-    arrs->AsList(mKeyArray, (IList**)&keys);
-    arrs->AsList(mValueArray, (IList**)&values);
+    Arrays::AsList(mKeyArray, (IList**)&keys);
+    Arrays::AsList(mValueArray, (IList**)&values);
     AutoPtr<ISet> entrySet;
     mWhm->EntrySet((ISet**)&entrySet);
     Int32 size;
@@ -474,10 +471,9 @@ int CTest::test_keySet(int argc, char* argv[])
 
     AutoPtr<IList> keys;
     AutoPtr<IList> values;
-    AutoPtr<IArrays> arrs;
-    CArrays::AcquireSingleton((IArrays**)&arrs);
-    arrs->AsList(mKeyArray, (IList**)&keys);
-    arrs->AsList(mValueArray, (IList**)&values);
+
+    Arrays::AsList(mKeyArray, (IList**)&keys);
+    Arrays::AsList(mValueArray, (IList**)&values);
     AutoPtr<ISet> keySet;
     mWhm->KeySet((ISet**)&keySet);
     Int32 size;
@@ -523,10 +519,9 @@ int CTest::test_values(int argc, char* argv[])
 
     AutoPtr<IList> keys;
     AutoPtr<IList> values;
-    AutoPtr<IArrays> arrs;
-    CArrays::AcquireSingleton((IArrays**)&arrs);
-    arrs->AsList(mKeyArray, (IList**)&keys);
-    arrs->AsList(mValueArray, (IList**)&values);
+
+    Arrays::AsList(mKeyArray, (IList**)&keys);
+    Arrays::AsList(mValueArray, (IList**)&values);
     AutoPtr<ICollection> valuesCollection;
     mWhm->Values((ICollection**)&valuesCollection);
     Int32 size;

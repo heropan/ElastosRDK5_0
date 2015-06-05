@@ -4,7 +4,7 @@
 #include "Elastos.CoreLibrary.h"
 using namespace Elastos;
 using namespace Elastos::Core;
-using Elastos::Utility::IArrays;
+using Elastos::Utility::Arrays;
 
 #define TEST(a, x) a.test_##x
 

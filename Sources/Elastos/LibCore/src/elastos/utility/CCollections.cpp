@@ -1,7 +1,7 @@
 
 #include "CCollections.h"
 #include "CBoolean.h"
-#include "CArrays.h"
+#include "Arrays.h"
 #include "CArrayList.h"
 #include "CRandom.h"
 
@@ -10,8 +10,7 @@ using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::EIID_IComparator;
 using Elastos::Core::CRandom;
-using Elastos::Utility::IArrays;
-using Elastos::Utility::CArrays;
+using Elastos::Utility::Arrays;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::IO::EIID_ISerializable;

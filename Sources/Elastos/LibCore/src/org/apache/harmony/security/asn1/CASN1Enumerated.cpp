@@ -1,8 +1,7 @@
 
 #include "CASN1Enumerated.h"
 
-using Elastos::Utility::IArrays;
-using Elastos::Utility::CArrays;
+using Elastos::Utility::Arrays;
 using Elastos::Core::IArrayOf;
 
 namespace Org {

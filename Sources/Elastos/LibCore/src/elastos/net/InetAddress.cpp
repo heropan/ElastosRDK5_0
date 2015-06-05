@@ -8,7 +8,7 @@
 #include "NetworkUtilities.h"
 //#include "CStructAddrinfo.h"
 //#include "CLibcore.h"
-//#include "CArrays.h"
+#include "Arrays.h"
 //#include "CCollections.h"
 // #include "CCountDownLatch.h"
 // #include "CAtomicBoolean.h"
@@ -31,7 +31,7 @@ using Elastos::Core::IThread;
 using Elastos::Utility::IList;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IIterable;
-using Elastos::Utility::IArrays;
+using Elastos::Utility::Arrays;
 // using Elastos::Utility::CArrays;
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::ICollections;
@@ -207,7 +207,7 @@ ECode InetAddress::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    AutoPtr<IArrays> arrays;
+    // AutoPtr<IArrays> arrays;
     //TODO CArrays::AcquireSingleton((IArrays**)&arrays);
     // return arrays->GetHashCode(mIpAddress, hashCode);
 }

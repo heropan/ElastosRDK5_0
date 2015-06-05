@@ -99,7 +99,10 @@ AddressCache::AddressCache()
 
 AddressCache::~AddressCache()
 {
-    mCache->EvictAll();
+    if (mCache) {
+        mCache->EvictAll();
+        mCache = NULL;
+    }
 }
 
 /**

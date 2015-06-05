@@ -8,8 +8,7 @@ using Elastos::Net::IProxyHelper;
 using Elastos::Net::CProxyHelper;
 using Elastos::Net::IInetSocketAddressHelper;
 using Elastos::Net::IInetSocketAddress;
-using Elastos::Utility::IArrays;
-using Elastos::Utility::CArrays;
+using Elastos::Utility::Arrays;
 using Elastos::Utility::IList;
 
 //====================================================================

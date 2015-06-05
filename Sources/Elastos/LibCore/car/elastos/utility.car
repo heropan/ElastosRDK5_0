@@ -57,7 +57,6 @@ module
     merge("utility/IScanner.car");
     merge("utility/IServiceLoader.car");
     merge("utility/IVector.car");
-    merge("utility/IArrays.car");
     merge("utility/IStack.car");
     merge("utility/IStringTokenizer.car");
     merge("utility/IUnsafeArrayList.car");
@@ -268,11 +267,6 @@ module
             interface ICloneable;
             interface ISerializable;
             interface IRandomAccess;
-        }
-
-        singleton class CArrays {
-
-            interface IArrays;
         }
 
         [deprecated]

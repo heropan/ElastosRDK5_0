@@ -8,7 +8,7 @@
 #include "CIoBridge.h"
 #include "CInetAddressHelper.h"
 #include "CSocks4Message.h"
-#include "CArrays.h"
+#include "Arrays.h"
 #include "CCloseGuard.h"
 #include "CLibcore.h"
 #include "COsConstants.h"
@@ -26,8 +26,7 @@ using Elastos::Net::CSocks4Message;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CCloseGuard;
-using Elastos::Utility::IArrays;
-using Elastos::Utility::CArrays;
+using Elastos::Utility::Arrays;
 using Libcore::IO::IIoBridge;
 using Libcore::IO::CIoBridge;
 using Libcore::IO::CLibcore;

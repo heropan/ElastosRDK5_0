@@ -669,8 +669,6 @@ private:
     Int32 mEnumSize;
 
     AutoPtr<EnumMapEntrySet> mEntrySet;
-
-    AutoPtr<IArrays> mResarr;
 };
 
 } // namespace Utility

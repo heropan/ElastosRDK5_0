@@ -15,9 +15,14 @@ namespace Charset {
 
 CarClass(CCoderResult)
     , public Object
+    , public ICoderResult
 {
 public:
     CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
+    CCoderResult();
 
     CARAPI constructor();
 

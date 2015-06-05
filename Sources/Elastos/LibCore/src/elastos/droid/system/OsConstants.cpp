@@ -54,7 +54,7 @@ const Int32 OsConstants::_AI_V4MAPPED = AI_V4MAPPED;
 #if defined(CAP_LAST_CAP)
 const Int32 OsConstants::_CAP_AUDIT_CONTROL = CAP_AUDIT_CONTROL;
 const Int32 OsConstants::_CAP_AUDIT_WRITE = CAP_AUDIT_WRITE;
-const Int32 OsConstants::_CAP_BLOCK_SUSPEND = CAP_BLOCK_SUSPEND;
+const Int32 OsConstants::_CAP_BLOCK_SUSPEND = 0;//todo upgrade CAP_BLOCK_SUSPEND;
 const Int32 OsConstants::_CAP_CHOWN = CAP_CHOWN;
 const Int32 OsConstants::_CAP_DAC_OVERRIDE = CAP_DAC_OVERRIDE;
 const Int32 OsConstants::_CAP_DAC_READ_SEARCH = CAP_DAC_READ_SEARCH;

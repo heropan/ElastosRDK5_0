@@ -1,7 +1,7 @@
 
 #include "CHttpCookie.h"
 #include "CHttpDate.h"
-#include "CArrays.h"
+#include "Arrays.h"
 #include "CStringWrapper.h"
 #include <elastos/core/Character.h>
 #include <elastos/core/StringUtils.h>

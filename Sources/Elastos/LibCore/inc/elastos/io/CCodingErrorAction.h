@@ -13,8 +13,11 @@ namespace Charset {
 
 CarClass(CCodingErrorAction)
     , public Object
+    , public ICodingErrorAction
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     CARAPI constructor();

@@ -1,6 +1,6 @@
 
 #include "CPriorityQueue.h"
-#include "CArrays.h"
+#include "Arrays.h"
 #include <elastos/Math.h>
 
 using Elastos::Core::IComparable;

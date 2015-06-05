@@ -1,9 +1,9 @@
 
 #include "CopyOnWriteArrayList.h"
 #include "CCopyOnWriteArrayList.h"
-#include "CArrays.h"
+#include "Arrays.h"
 
-using Elastos::Utility::IArrays;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Utility {

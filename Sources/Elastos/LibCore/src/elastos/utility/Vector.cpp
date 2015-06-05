@@ -1,6 +1,6 @@
 
 #include "CVector.h"
-#include "CArrays.h"
+#include "Arrays.h"
 #include "CCollections.h"
 #include <elastos/StringBuilder.h>
 

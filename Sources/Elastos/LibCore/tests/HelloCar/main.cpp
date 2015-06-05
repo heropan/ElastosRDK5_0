@@ -33,6 +33,7 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/List.h>
+#include <elastos/utility/Arrays.h>
 
 using namespace Elastos;
 
@@ -41,6 +42,7 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::IThread;
 using Elastos::Core::Math;
 using Elastos::Utility::Etl::List;
+using Elastos::Utility::Arrays;
 
 using Elastos::HelloCar::IAnimal;
 using Elastos::HelloCar::IDog;
@@ -80,15 +82,50 @@ void testCoreExports()
     printf("StringBuilder.ToString() %s\n", sb.ToString().string());
 }
 
+void assertEquals(Int32 testValue, Int32 expectation)
+{
+    if (testValue != expectation) {
+        printf(" >> error: got %d, but expect %d\n", testValue, expectation);
+        assert(testValue == expectation);
+    }
+}
+
+void testArrays()
+{
+    AutoPtr<ArrayOf<Int32> > int32Arr = ArrayOf<Int32>::Alloc(100);
+    for (Int32 i = 0; i < int32Arr->GetLength(); ++i) {
+        int32Arr->Set(i, i);
+    }
+
+    Int32 index;
+    Arrays::BinarySearch(int32Arr.Get(), 0, 50, 25, &index);
+    assertEquals(index, 25);
+
+    Arrays::BinarySearch(int32Arr.Get(), 0, 50, 60, &index);
+    printf("Arrays::BinarySearch(int32Arr, 0, 50, 60); result: %d\n", index);
+
+    AutoPtr<ArrayOf<Char32> > charArr = ArrayOf<Char32>::Alloc(20);
+    for (Int32 i = 0; i < charArr->GetLength(); ++i) {
+        charArr->Set(i, (Char32)('a' + i));
+    }
+    Arrays::BinarySearch(charArr.Get(), 0, charArr->GetLength(), (Char32)('a' + 15), &index);
+    assertEquals(index, 15);
+
+}
+
 void otherTests()
 {
     //testThread
     //testEtl()
-    testCoreExports();
+    // testCoreExports();
+    testArrays();
 }
 
 int main(int argc, char *argv[])
 {
+    printf("==================================\n");
+    printf("=========== Hello Car ============\n");
+    printf("==================================\n");
     Boolean canFly;
     String name;
 

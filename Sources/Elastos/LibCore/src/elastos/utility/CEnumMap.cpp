@@ -1,6 +1,6 @@
 
 #include "CEnumMap.h"
-#include "CArrays.h"
+#include "Arrays.h"
 #include "Enum.h"
 #include "StringBuilder.h"
 
@@ -27,7 +27,6 @@ CEnumMap::CEnumMap()
     : mMappingsCount(0)
     , mEnumSize(0)
 {
-    CArrays::AcquireSingleton((IArrays**)&mResarr);
 }
 
 ECode CEnumMap::constructor()
@@ -77,8 +76,8 @@ ECode CEnumMap::constructor(
 
 ECode CEnumMap::Clear()
 {
-    mResarr->FillObject(mValues, NULL);
-    mResarr->FillBoolean(mHasMapping, FALSE);
+    //Arrays::FillObject(mValues, NULL);
+    //Arrays::FillBoolean(mHasMapping, FALSE);
     mMappingsCount = 0;
     return NOERROR;
 }
@@ -179,8 +178,8 @@ ECode CEnumMap::Equals(
 
     Boolean isflag1 = FALSE;
     Boolean isflag2 = FALSE;
-    mResarr->EqualsBoolean(mHasMapping, enumMap->mHasMapping, &isflag1);
-    mResarr->EqualsObject(mValues, enumMap->mValues, &isflag2);
+    //Arrays::EqualsBoolean(mHasMapping, enumMap->mHasMapping, &isflag1);
+    //Arrays::EqualsObject(mValues, enumMap->mValues, &isflag2);
     *value = isflag1 && isflag2;
     return NOERROR;
 }

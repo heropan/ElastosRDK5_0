@@ -1,6 +1,6 @@
 #include <cmdef.h>
 #include "CZoneInfo.h"
-#include "CArrays.h"
+#include "Arrays.h"
 #include "CFormatter.h"
 #include "CInteger32.h"
 #include "CBoolean.h"

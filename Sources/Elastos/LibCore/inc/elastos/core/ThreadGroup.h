@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_CORE_THREADGROUP_H__
 #define __ELASTOS_CORE_THREADGROUP_H__
 
+#include "Mutex.h"
 #include "Object.h"
 
 using Elastos::Core::Object;
@@ -279,12 +280,12 @@ private:
     // The Threads this ThreadGroup contains
     AutoPtr< ArrayOf<IThread*> > mChildrenThreads;
     // Locked when using the childrenThreads field
-    Object mChildrenThreadsLock;
+    Mutex mChildrenThreadsLock;
 
     // The ThreadGroups this ThreadGroup contains
     AutoPtr< ArrayOf<IThreadGroup*> > mChildrenGroups;
     // Locked when using the childrenGroups field
-    Object mChildrenGroupsLock;
+    Mutex mChildrenGroupsLock;
 
     // Whether this ThreadGroup is a daemon ThreadGroup or not
     Boolean mIsDaemon;

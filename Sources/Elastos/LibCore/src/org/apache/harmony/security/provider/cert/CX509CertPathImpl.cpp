@@ -12,8 +12,7 @@
 
 using Elastos::Utility::CCollections;
 using Elastos::Utility::ICollections;
-using Elastos::Utility::IArrays;
-using Elastos::Utility::CArrays;
+using Elastos::Utility::Arrays;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
 

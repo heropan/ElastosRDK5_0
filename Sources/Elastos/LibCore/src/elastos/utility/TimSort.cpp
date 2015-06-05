@@ -1,6 +1,6 @@
 
 #include "TimSort.h"
-#include "CArrays.h"
+#include "Arrays.h"
 #include "Math.h"
 
 namespace Elastos {
@@ -59,13 +59,11 @@ ECode TimSort::Sort(
     /* [in] */ Int32 hi,
     /* [in] */ IComparator* c)
 {
-    AutoPtr<IArrays> arr;
-    CArrays::AcquireSingleton((IArrays**)&arr);
     if (c == NULL) {
-        return arr->SortObject(a, lo, hi);
+        // return Arrays::SortObject(a, lo, hi);
     }
 
-    VALIDATE_NOT_NULL(arr->CheckStartAndEnd(a->GetLength(), lo, hi));
+    VALIDATE_NOT_NULL(Arrays::CheckStartAndEnd(a->GetLength(), lo, hi));
     Int32 nRemaining  = hi - lo;
     if (nRemaining < 2)
         return NOERROR;  // Arrays of size 0 and 1 are always sorted

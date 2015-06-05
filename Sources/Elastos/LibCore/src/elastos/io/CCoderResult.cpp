@@ -8,6 +8,8 @@ namespace Elastos {
 namespace IO {
 namespace Charset {
 
+CAR_INTERFACE_IMPL(CCoderResult, Object, ICoderResult)
+
 CAR_OBJECT_IMPL(CCoderResult)
 
 AutoPtr<ICoderResult> CCoderResult::CreateCoderResult(
@@ -30,6 +32,12 @@ Object CCoderResult::sUnmappableMutex;
 
 AutoPtr< HashMap<Int32, AutoPtr<ICoderResult> > > CCoderResult::sMalformedErrors = new HashMap<Int32, AutoPtr<ICoderResult> >();
 AutoPtr< HashMap<Int32, AutoPtr<ICoderResult> > > CCoderResult::sUnmappableErrors = new HashMap<Int32, AutoPtr<ICoderResult> >();
+
+CCoderResult::CCoderResult()
+    : mType(0)
+    , mLength(0)
+{
+}
 
 ECode CCoderResult::constructor()
 {
