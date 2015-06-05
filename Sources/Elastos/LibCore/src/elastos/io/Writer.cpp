@@ -97,6 +97,8 @@ ECode Writer::AppendChar(
 ECode Writer::Append(
     /* [in] */ ICharSequence* csq)
 {
+    VALIDATE_NOT_NULL(csq)
+
     String tmp("NULL");
     if (NULL != csq) {
         csq->ToString(&tmp);
@@ -110,6 +112,8 @@ ECode Writer::Append(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
+    VALIDATE_NOT_NULL(csq)
+    
     String tmp("NULL");
     if (NULL != csq) {
         csq->ToString(&tmp);

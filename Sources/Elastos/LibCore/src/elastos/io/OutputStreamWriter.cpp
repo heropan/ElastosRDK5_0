@@ -10,6 +10,8 @@ using Elastos::Core::CStringWrapper;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(OutputStreamWriter, Writer, IOutputStreamWriter)
+
 OutputStreamWriter::OutputStreamWriter()
 {
     ASSERT_SUCCEEDED(ByteBuffer::Allocate(8192, (IByteBuffer**)&mBytes));
@@ -23,7 +25,7 @@ ECode OutputStreamWriter::Close()
     if (mOut != NULL) {
          Flush();
          IFlushable::Probe(mOut)->Flush();
-         mOut->Close();
+         ICloseable::Probe(mOut)->Close();
     //     mEncoder = NULL;
          mBytes = NULL;
     }
@@ -43,15 +45,15 @@ ECode OutputStreamWriter::FlushBytes(
 
     FAIL_RETURN(CheckStatus());
     Int32 position;
-    mBytes->GetPosition(&position);
+    IBuffer::Probe(mBytes)->GetPosition(&position);
     if (position > 0) {
-        mBytes->Flip();
+        IBuffer::Probe(mBytes)->Flip();
         AutoPtr<ArrayOf<Byte> > buf;
         mBytes->GetArray((ArrayOf<Byte>**)&buf);
         Int32 offset;
-        mBytes->GetArrayOffset(&offset);
-        mOut->WriteBytes(*buf, offset, position);
-        mBytes->Clear();
+        IBuffer::Probe(mBytes)->GetArrayOffset(&offset);
+        mOut->Write(*buf, offset, position);
+        IBuffer::Probe(mBytes)->Clear();
     }
 
     if (flushUnderlyingStream) {
@@ -71,8 +73,8 @@ ECode OutputStreamWriter::Convert(
         chars->GetLength(&count);
         for(Int32 i = 0; i < count; ++i) {
             Char32 ch;
-            chars->GetChar(&ch);
-            mBytes->PutByte((Byte)ch);
+            chars->Get(&ch);
+            mBytes->Put((Byte)ch);
         }
 //        if (result.isOverflow()) {
 //            // Make room and try again.
@@ -156,14 +158,14 @@ ECode OutputStreamWriter::Write(
 }
 
 ECode OutputStreamWriter::Write(
-    /* [in] */ const ArrayOf<Char32>& buffer,
+    /* [in] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckStatus());
-    Int32 arrayLength = buffer.GetLength();
+    Int32 arrayLength = buffer->GetLength();
     if ((offset | count) < 0 || offset > arrayLength || arrayLength - offset < count) {
         // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
         //         count);
@@ -171,11 +173,11 @@ ECode OutputStreamWriter::Write(
     }
 
     AutoPtr<ICharBuffer> chars;
-    CharBuffer::Wrap(const_cast<ArrayOf<Char32>*>(&buffer), offset, count, (ICharBuffer**)&chars);
+    CharBuffer::Wrap(buffer, offset, count, (ICharBuffer**)&chars);
     return Convert(chars);
 }
 
-ECode OutputStreamWriter::WriteString(
+ECode OutputStreamWriter::Write(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -202,20 +204,17 @@ ECode OutputStreamWriter::WriteString(
     return Convert(chars);
 }
 
-ECode OutputStreamWriter::Init(
+ECode OutputStreamWriter::constructor(
     /* [in] */ IOutputStream *out)
 {
-    return Init(out, String(NULL)/*Charset.defaultCharset()*/);
+    return constructor(out, String(NULL)/*Charset.defaultCharset()*/);
 }
 
-ECode OutputStreamWriter::Init(
+ECode OutputStreamWriter::constructor(
     /* [in] */ IOutputStream *out,
     /* [in] */ const String &enc)
 {
-    AutoPtr<IInterface> obj;
-    out->GetLock((IInterface**)&obj);
-    LockObject* lockObj = (LockObject*)obj.Get();
-    Writer::Init(lockObj);
+    Writer::constructor(IObject::Probe(out));
 
     // if (charsetName == null) {
     //     throw new NullPointerException("charsetName == null");

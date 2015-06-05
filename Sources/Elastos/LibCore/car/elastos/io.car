@@ -491,6 +491,19 @@ module
         interface ILineNumberReader;
     }
 
+    class COutputStreamWriter {
+        constructor(
+            [in] IOutputStream *os);
+
+        constructor(
+            [in] IOutputStream *os,
+            [in] String enc);
+
+        interface IAppendable;
+        interface IWriter;
+        interface IOutputStreamWriter;
+    }
+
     } // namespace IO
     } // namespace Elastos
 }
