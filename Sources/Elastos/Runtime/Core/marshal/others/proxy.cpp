@@ -39,25 +39,25 @@ EXTERN_C void ProxyEntryFunc(void);
 
 #ifdef _GNUC
 #    if defined(_arm)
-#       define DECL_SYS_PROXY_ENTRY()
+#       define DECL_SYS_PROXY_ENTRY()              \
             __asm__(                               \
-            ".text;"                            \
-            ".align 4;"                         \
-            ".globl ProxyEntryFunc;"           \
-            "ProxyEntryFunc:"                  \
-            "stmdb  sp!, {r0 - r3};"            \
-             "mov    r1, #0xff;"                 \
-            "ldr    pc, [r0, #4];"              \
-            "nop;"                              \
+            ".text;"                               \
+            ".align 4;"                            \
+            ".globl ProxyEntryFunc;"               \
+            "ProxyEntryFunc:"                      \
+            "stmdb  sp!, {r0 - r3};"               \
+             "mov    r1, #0xff;"                   \
+            "ldr    pc, [r0, #4];"                 \
+            "nop;"                                 \
         )
         DECL_SYS_PROXY_ENTRY();
 #    elif defined(_x86)
-#       define DECL_SYS_PROXY_ENTRY()             \
+#       define DECL_SYS_PROXY_ENTRY()              \
             __asm__(                               \
                 ".text;"                           \
                 ".align 4;"                        \
-                ".globl ProxyEntryFunc;"          \
-                "ProxyEntryFunc:"                 \
+                ".globl ProxyEntryFunc;"           \
+                "ProxyEntryFunc:"                  \
                 ".intel_syntax;"                   \
                 "ret    0x4;"                      \
                 ".att_syntax;"                     \
@@ -69,7 +69,7 @@ EXTERN_C void ProxyEntryFunc(void);
 #else
 #   if defined(_x86)
 #       define DECL_SYS_PROXY_ENTRY() \
-            __declspec( naked ) void ProxyEntryFunc()                   \
+            __declspec( naked ) void ProxyEntryFunc() \
             {                                       \
                 __asm push esp                      \
                 __asm mov eax, dword ptr [esp + 8]  \
@@ -94,11 +94,11 @@ EXTERN_C ECode GlobalProxyEntry(UInt32 *puArgs)
     __asm__(                            \
         ".text;"                        \
         ".align 4;"                     \
-        ".globl __ProxyEntry;"         \
-        "__ProxyEntry:"                \
+        ".globl __ProxyEntry;"          \
+        "__ProxyEntry:"                 \
         "stmdb  sp!, {r1, lr};"         \
         "add    r0, sp, #4;"            \
-        "bl     GlobalProxyEntry;"     \
+        "bl     GlobalProxyEntry;"      \
         "ldr    lr, [sp, #4];"          \
         "add    sp, sp, #24;"           \
         "mov    pc, lr;"                \

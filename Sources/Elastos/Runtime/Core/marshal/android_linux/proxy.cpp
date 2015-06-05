@@ -51,14 +51,14 @@ inline UInt32 CalcMethodIndex(UInt32 uCallerAddr)
     return (uCallerAddr - PROXY_ENTRY_BASE) >> PROXY_ENTRY_SHIFT;
 }
 
-#define SYS_PROXY_EXIT(ec, pret, argc)  \
-    do {                                \
+#define SYS_PROXY_EXIT(ec, pret, argc)    \
+    do {                                  \
         UInt32 n;                         \
         n = *(UInt32 *)(pret);            \
-        n &= PROXY_ENTRY_MASK;          \
+        n &= PROXY_ENTRY_MASK;            \
         n += PROXY_ENTRY_BASE + ((argc) << PROXY_ENTRY_SHIFT);  \
         *(UInt32 *)(pret) = n;            \
-        return (ec);                    \
+        return (ec);                      \
     } while (0)
 
 #elif defined(_arm)
@@ -100,20 +100,20 @@ EXTERN_C void ProxyEntryFunc(void);
 
 #ifdef _GNUC
 #    if defined(_arm)
-#       define DECL_SYS_PROXY_ENTRY()
+#       define DECL_SYS_PROXY_ENTRY()              \
             __asm__(                               \
-            ".text;"                            \
-            ".align 4;"                         \
-            ".globl ProxyEntryFunc;"           \
-            "ProxyEntryFunc:"                  \
-            "push {r0 - r3};"            \
-            "push {lr};"
-            "mov  r1, #0xff;"                 \
-            "ldr  pc, [r0, #4];"              \
+            ".text;"                               \
+            ".align 4;"                            \
+            ".globl ProxyEntryFunc;"               \
+            "ProxyEntryFunc:"                      \
+            "push {r0 - r3};"                      \
+            "push {lr};"                           \
+            "mov  r1, #0xff;"                      \
+            "ldr  pc, [r0, #4];"                   \
         )
         DECL_SYS_PROXY_ENTRY();
 #    elif defined(_x86)
-#       define DECL_SYS_PROXY_ENTRY()             \
+#       define DECL_SYS_PROXY_ENTRY()              \
             __asm__(                               \
                 ".text;"                           \
                 ".align 4;"                        \
@@ -133,7 +133,7 @@ EXTERN_C void ProxyEntryFunc(void);
 #else
 #   if defined(_x86)
 #       define DECL_SYS_PROXY_ENTRY() \
-            __declspec( naked ) void ProxyEntryFunc()                   \
+            __declspec( naked ) void ProxyEntryFunc() \
             {                                       \
                 __asm push esp                      \
                 __asm mov eax, dword ptr [esp + 8]  \
@@ -158,17 +158,17 @@ EXTERN_C ECode GlobalProxyEntry(UInt32 *puArgs)
     __asm__(                            \
         ".text;"                        \
         ".align 4;"                     \
-        ".globl __ProxyEntry;"         \
-        "__ProxyEntry:"                \
-        "push   {r1};"         \
+        ".globl __ProxyEntry;"          \
+        "__ProxyEntry:"                 \
+        "push   {r1};"                  \
         "add    r0, sp, #4;"            \
-        "bl     GlobalProxyEntry;"     \
-        "add    sp, sp, #4;"           \
-        "pop    {lr};"                \
-        "pop    {r1};"                \
-        "pop    {r1 - r3};"            \
-        "push   {lr};"                \
-        "pop    {pc};"                \
+        "bl     GlobalProxyEntry;"      \
+        "add    sp, sp, #4;"            \
+        "pop    {lr};"                  \
+        "pop    {r1};"                  \
+        "pop    {r1 - r3};"             \
+        "push   {lr};"                  \
+        "pop    {pc};"                  \
     )
 
 DECL_PROXY_ENTRY();
