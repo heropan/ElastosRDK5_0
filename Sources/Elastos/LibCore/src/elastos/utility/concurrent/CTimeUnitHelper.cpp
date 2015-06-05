@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
+CAR_INTERFACE_IMPL(CTimeUnitHelper, Singleton, ITimeUnitHelper)
+
+CAR_SINGLETON_IMPL(CTimeUnitHelper)
+
 ECode CTimeUnitHelper::GetNANOSECONDS(
     /* [out] */ ITimeUnit** unit)
 {

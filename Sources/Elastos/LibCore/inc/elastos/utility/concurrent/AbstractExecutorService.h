@@ -1,12 +1,6 @@
 
-#ifndef __ABSTRACTEXECUTORSERVICE_H__
-#define __ABSTRACTEXECUTORSERVICE_H__
-
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#ifndef __ELASTOS_UTILITY_ABSTRACTEXECUTORSERVICE_H__
+#define __ELASTOS_UTILITY_ABSTRACTEXECUTORSERVICE_H__
 
 using Elastos::Core::IRunnable;
 
@@ -49,12 +43,13 @@ extern const InterfaceID EIID_AbstractExecutorService;
  * @author Doug Lea
  */
 class AbstractExecutorService
+    : public Object
+    , public IAbstractExecutorService
 {
     friend class CExecutorCompletionService;
 
 public:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
 
     virtual CARAPI Submit(
         /* [in] */ IRunnable* task,
@@ -137,4 +132,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ABSTRACTEXECUTORSERVICE_H__
+#endif //__ELASTOS_UTILITY_ABSTRACTEXECUTORSERVICE_H__

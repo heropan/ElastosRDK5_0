@@ -2,6 +2,10 @@
 #include "CForkJoinWorkerThread.h"
 #include "CForkJoinPool.h"
 #include "ForkJoinTask.h"
+<<<<<<< Updated upstream
+=======
+#include <ObjectUtils.h>
+>>>>>>> Stashed changes
 
 using Elastos::Utility::Concurrent::CForkJoinPool;
 using Elastos::Utility::Concurrent::ForkJoinTask;
@@ -22,6 +26,10 @@ Int32 CForkJoinWorkerThread::MAXIMUM_QUEUE_CAPACITY = 1 << 24; // 16M
 
 Int32 CForkJoinWorkerThread::MAX_HELP = 16;
 
+CAR_INTERFACE_IMPL(CForkJoinWorkerThread, Thread, IForkJoinWorkerThread)
+
+CAR_OBJECT_IMPL(CForkJoinWorkerThread);
+
 ECode CForkJoinWorkerThread::constructor(
     /* [in] */ IForkJoinPool* pool)
 {
@@ -37,12 +45,6 @@ ECode CForkJoinWorkerThread::constructor(
         Thread::SetUncaughtExceptionHandler(ueh);
     Thread::SetDaemon(TRUE);
     return NOERROR;
-}
-
-PInterface CForkJoinWorkerThread::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CForkJoinWorkerThread::Probe(riid);
 }
 
 ECode CForkJoinWorkerThread::GetPool(
@@ -635,238 +637,6 @@ ECode CForkJoinWorkerThread::HelpQuiescePool()
         }
     }
     return NOERROR;
-}
-
-ECode CForkJoinWorkerThread::CheckAccess()
-{
-    return Thread::CheckAccess();
-}
-
-ECode CForkJoinWorkerThread::CountStackFrames(
-    /* [out] */ Int32* number)
-{
-    VALIDATE_NOT_NULL(number);
-    return Thread::CountStackFrames(number);
-}
-
-ECode CForkJoinWorkerThread::Destroy()
-{
-    return Thread::Destroy();
-}
-
-ECode CForkJoinWorkerThread::GetContextClassLoader(
-    /* [out] */ IClassLoader** outload)
-{
-    VALIDATE_NOT_NULL(outload);
-    return Thread::GetContextClassLoader(outload);
-}
-
-ECode CForkJoinWorkerThread::GetId(
-    /* [out] */ Int64* id)
-{
-    VALIDATE_NOT_NULL(id);
-    return Thread::GetId(id);
-}
-
-ECode CForkJoinWorkerThread::GetName(
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name);
-    return Thread::GetName(name);
-}
-
-ECode CForkJoinWorkerThread::GetPriority(
-    /* [out] */ Int32* priority)
-{
-    VALIDATE_NOT_NULL(priority);
-    return Thread::GetPriority(priority);
-}
-
-ECode CForkJoinWorkerThread::GetState(
-    /* [out] */ ThreadState* state)
-{
-    VALIDATE_NOT_NULL(state);
-    return Thread::GetState(state);
-}
-
-ECode CForkJoinWorkerThread::GetThreadGroup(
-    /* [out] */ IThreadGroup** group)
-{
-    VALIDATE_NOT_NULL(group);
-    return Thread::GetThreadGroup(group);
-}
-
-ECode CForkJoinWorkerThread::GetUncaughtExceptionHandler(
-    /* [out] */ IThreadUncaughtExceptionHandler** handler)
-{
-    VALIDATE_NOT_NULL(handler);
-    return Thread::GetUncaughtExceptionHandler(handler);
-}
-
-ECode CForkJoinWorkerThread::Interrupt()
-{
-    return Thread::Interrupt();
-}
-
-ECode CForkJoinWorkerThread::IsAlive(
-    /* [out] */ Boolean* isAlive)
-{
-    VALIDATE_NOT_NULL(isAlive);
-    return Thread::IsAlive(isAlive);
-}
-
-ECode CForkJoinWorkerThread::IsDaemon(
-    /* [out] */ Boolean* isDaemon)
-{
-    VALIDATE_NOT_NULL(isDaemon);
-    return Thread::IsDaemon(isDaemon);
-}
-
-ECode CForkJoinWorkerThread::IsInterrupted(
-    /* [out] */ Boolean* isInterrupted)
-{
-    VALIDATE_NOT_NULL(isInterrupted);
-    return Thread::IsInterrupted(isInterrupted);
-}
-
-ECode CForkJoinWorkerThread::Join()
-{
-    return Thread::Join();
-}
-
-ECode CForkJoinWorkerThread::Join(
-    /* [in] */ Int64 millis)
-{
-    return Thread::Join(millis);
-}
-
-ECode CForkJoinWorkerThread::Join(
-    /* [in] */ Int64 millis,
-    /* [in] */ Int32 nanos)
-{
-    return Thread::Join(millis, nanos);
-}
-
-ECode CForkJoinWorkerThread::Resume()
-{
-    return Thread::Resume();
-}
-
-ECode CForkJoinWorkerThread::SetContextClassLoader(
-    /* [in] */ IClassLoader* cl)
-{
-    return Thread::SetContextClassLoader(cl);
-}
-
-ECode CForkJoinWorkerThread::SetDaemon(
-    /* [in] */ Boolean isDaemon)
-{
-    return Thread::SetDaemon(isDaemon);
-}
-
-ECode CForkJoinWorkerThread::PushInterruptAction(
-    /* [in] */ IRunnable* interruptAction)
-{
-    return Thread::PushInterruptAction(interruptAction);
-}
-
-ECode CForkJoinWorkerThread::PopInterruptAction(
-    /* [in] */ IRunnable* interruptAction)
-{
-    return Thread::PopInterruptAction(interruptAction);
-}
-
-ECode CForkJoinWorkerThread::SetName(
-    /* [in] */ const String& threadName)
-{
-    return Thread::SetName(threadName);
-}
-
-ECode CForkJoinWorkerThread::SetPriority(
-    /* [in] */ Int32 priority)
-{
-    return Thread::SetPriority(priority);
-}
-
-ECode CForkJoinWorkerThread::SetUncaughtExceptionHandler(
-    /* [in] */ IThreadUncaughtExceptionHandler* handler)
-{
-    return Thread::SetUncaughtExceptionHandler(handler);
-}
-
-ECode CForkJoinWorkerThread::Start()
-{
-    return Thread::Start();
-}
-
-ECode CForkJoinWorkerThread::Stop()
-{
-    return Thread::Stop();
-}
-
-ECode CForkJoinWorkerThread::Suspend()
-{
-    return Thread::Suspend();
-}
-
-ECode CForkJoinWorkerThread::Unpark()
-{
-    return Thread::Unpark();
-}
-
-ECode CForkJoinWorkerThread::ParkFor(
-    /* [in] */ Int64 nanos)
-{
-    return Thread::ParkFor(nanos);
-}
-
-ECode CForkJoinWorkerThread::ParkUntil(
-    /* [in] */ Int64 time)
-{
-    return Thread::ParkUntil(time);
-}
-
-ECode CForkJoinWorkerThread::Detach()
-{
-    return Thread::Detach();
-}
-
-ECode CForkJoinWorkerThread::Lock()
-{
-    return Thread::Lock();
-}
-
-ECode CForkJoinWorkerThread::Unlock()
-{
-    return Thread::Unlock();
-}
-
-ECode CForkJoinWorkerThread::Notify()
-{
-    return Thread::Notify();
-}
-
-ECode CForkJoinWorkerThread::NotifyAll()
-{
-    return Thread::NotifyAll();
-}
-
-ECode CForkJoinWorkerThread::Wait()
-{
-    return Thread::Wait();
-}
-
-ECode CForkJoinWorkerThread::Wait(
-    /* [in] */ Int64 millis)
-{
-    return Thread::Wait(millis);
-}
-
-ECode CForkJoinWorkerThread::Wait(
-    /* [in] */ Int64 millis,
-    /* [in] */ Int32 nanos)
-{
-    return Thread::Wait(millis, nanos);
 }
 
 } // namespace Concurrent

@@ -1,8 +1,8 @@
 
-#ifndef __CCONCURRENTHASHMAP_H__
-#define __CCONCURRENTHASHMAP_H__
+#ifndef __ELASTOS_UTILITY_CCONCURRENTHASHMAP_H__
+#define __ELASTOS_UTILITY_CCONCURRENTHASHMAP_H__
 
-#include "_CConcurrentHashMap.h"
+#include "_Elastos_Utility_Concurrent_CConcurrentHashMap.h"
 #include "AbstractMap.h"
 #include "ReentrantLock.h"
 
@@ -19,15 +19,23 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CarClass(CConcurrentHashMap), public AbstractMap
+CarClass(CConcurrentHashMap)
+    , public AbstractMap
+    , public IConcurrentHashMap
+    , public IConcurrentMap
 {
 public:
     /**
      * ConcurrentHashMap list entry. Note that this is never exported
      * out as a user-visible Map.Entry.
      */
-    class HashEntry : public ElRefBase {
+    class HashEntry
+        : public Object
+        , public IInterface
+    {
     public:
+        CAR_INTERFACE_DECL()
+
         HashEntry(
             /* [in] */ Int32 hash,
             /* [in] */ IInterface* key,
@@ -76,9 +84,7 @@ public:
      * simplify some locking and avoid separate construction.
      */
     class Segment
-        : public ElRefBase
-        , public IReentrantLock
-        , public ReentrantLock
+        : public ReentrantLock
     {
     public:
         Segment(
@@ -86,63 +92,11 @@ public:
             /* [in] */ Int32 threshold,
             /* [in] */ ArrayOf<HashEntry*>* tab);
 
-        CAR_INTERFACE_DECL();
-
         CARAPI_(AutoPtr<IInterface>) Put(
             /* [in] */ IInterface* key,
             /* [in] */ Int32 hash,
             /* [in] */ IInterface* value,
             /* [in] */ Boolean onlyIfAbsent);
-
-        CARAPI Lock();
-
-        CARAPI LockInterruptibly();
-
-        CARAPI TryLock(
-            /* [out] */ Boolean* result);
-
-        CARAPI TryLock(
-            /* [in] */ Int64 timeout,
-            /* [in] */ ITimeUnit* unit,
-            /* [out] */ Boolean* result);
-
-        CARAPI UnLock();
-
-        CARAPI NewCondition(
-            /* [out] */ ICondition** condition);
-
-        CARAPI GetHoldCount(
-            /* [out] */ Int32* count);
-
-        CARAPI IsLocked(
-            /* [out] */ Boolean* result);
-
-        CARAPI IsFair(
-            /* [out] */ Boolean* result);
-
-        CARAPI HasQueuedThreads(
-            /* [out] */ Boolean* result);
-
-        CARAPI HasQueuedThread(
-            /* [in] */ IThread* thread,
-            /* [out] */ Boolean* result);
-
-        CARAPI GetQueueLength(
-            /* [out] */ Int32* result);
-
-        CARAPI HasWaiters(
-            /* [in] */ ICondition* condition,
-            /* [out] */ Boolean* result);
-
-        CARAPI GetWaitQueueLength(
-            /* [in] */ ICondition* condition,
-            /* [out] */ Int32* result);
-
-        CARAPI ToString(
-            /* [out] */ String* info);
-
-        CARAPI IsHeldByCurrentThread(
-            /* [out] */ Boolean* value);
 
         /**
          * Remove; match on key only if value null, else match both.
@@ -214,7 +168,7 @@ public:
          * The per-segment table. Elements are accessed via
          * entryAt/setEntryAt providing volatile semantics.
          */
-        /* transient volatile */ AutoPtr< ArrayOf<HashEntry*> > mTable;
+        /* transient*/ volatile AutoPtr< ArrayOf<HashEntry*> > mTable;
 
         /**
          * The number of elements. Accessed only either within locks
@@ -277,8 +231,13 @@ public:
 
     /* ---------------- Iterator Support -------------- */
 
-    class HashIterator {
+    class HashIterator
+        : public Object
+        , public IIterator
+    {
     public:
+        CAR_INTERFACE_DECL()
+
         HashIterator(
             /* [in] */ CConcurrentHashMap* host);
 
@@ -308,23 +267,13 @@ public:
 
     class KeyIterator
         : public HashIterator
-        , public IIterator
         , public IEnumeration
-        , public ElRefBase
     {
     public:
+        CAR_INTERFACE_DECL()
+
         KeyIterator(
             /* [in] */ CConcurrentHashMap* host);
-
-        CAR_INTERFACE_DECL();
-
-        CARAPI HasNext(
-            /* [out] */ Boolean* result);
-
-        CARAPI Remove();
-
-        CARAPI HasMoreElements(
-            /* [out] */ Boolean * value);
 
         CARAPI Next(
             /* [out] */ IInterface** object);
@@ -335,23 +284,13 @@ public:
 
     class ValueIterator
         : public HashIterator
-        , public IIterator
         , public IEnumeration
-        , public ElRefBase
     {
     public:
+        CAR_INTERFACE_DECL()
+
         ValueIterator(
             /* [in] */ CConcurrentHashMap* host);
-
-        CAR_INTERFACE_DECL();
-
-        CARAPI HasNext(
-            /* [out] */ Boolean* result);
-
-        CARAPI Remove();
-
-        CARAPI HasMoreElements(
-            /* [out] */ Boolean * value);
 
         CARAPI Next(
             /* [out] */ IInterface** object);
@@ -364,7 +303,8 @@ public:
      * Custom Entry class used by EntryIterator.next(), that relays
      * setValue changes to the underlying map.
      */
-    class WriteThroughEntry : public AbstractMap::SimpleEntry
+    class WriteThroughEntry
+        : public AbstractMap::SimpleEntry
     {
     public:
         WriteThroughEntry(
@@ -391,34 +331,21 @@ public:
 
     class EntryIterator
         : public HashIterator
-        , public IIterator
-        , public ElRefBase
     {
     public:
         EntryIterator(
             /* [in] */ CConcurrentHashMap* host);
-
-        CAR_INTERFACE_DECL();
-
-        CARAPI HasNext(
-            /* [out] */ Boolean* result);
-
-        CARAPI Remove();
 
         CARAPI Next(
             /* [out] */ IInterface** object);
     };
 
     class _KeySet
-        : public ElRefBase
-        , public AbstractSet
-        , public ISet
+        : public AbstractSet
     {
     public:
         _KeySet(
             /* [in] */ CConcurrentHashMap* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI GetIterator(
             /* [out] */ IIterator** result);
@@ -438,40 +365,6 @@ public:
             /* [out] */ Boolean* result);
 
         CARAPI Clear();
-
-        CARAPI Add(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* modified);
-
-        CARAPI AddAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ContainsAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI RemoveAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI RetainAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI ToArray(
-            /* [out, callee] */ ArrayOf<IInterface*>** array);
-
-        CARAPI ToArray(
-            /* [in] */ ArrayOf<IInterface*>* contents,
-            /* [out, callee] */ ArrayOf<IInterface*>** outArray);
-
-        CARAPI Equals(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* result);
-
-        CARAPI GetHashCode(
-            /* [out] */ Int32* hashCode);
 
     private:
         AutoPtr<CConcurrentHashMap> mHost;
@@ -479,14 +372,10 @@ public:
 
     class _Values
         : public AbstractCollection
-        , public ElRefBase
-        , public ICollection
     {
     public:
         _Values(
             /* [in] */ CConcurrentHashMap* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI GetIterator(
             /* [out] */ IIterator** result);
@@ -502,37 +391,6 @@ public:
             /* [out] */ Boolean* result);
 
         CARAPI Clear();
-
-        CARAPI Add(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* modified);
-
-        CARAPI AddAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ContainsAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI Remove(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* result);
-
-        CARAPI RemoveAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI RetainAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI ToArray(
-            /* [out, callee] */ ArrayOf<IInterface*>** array);
-
-        CARAPI ToArray(
-            /* [in] */ ArrayOf<IInterface*>* contents,
-            /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
         CARAPI Equals(
             /* [in] */ IInterface* object,
@@ -545,15 +403,11 @@ public:
     };
 
     class _EntrySet
-        : public ElRefBase
-        , public AbstractSet
-        , public ISet
+        : public AbstractSet
     {
     public:
         _EntrySet(
             /* [in] */ CConcurrentHashMap* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI GetIterator(
             /* [out] */ IIterator** result);
@@ -574,43 +428,14 @@ public:
 
         CARAPI Clear();
 
-        CARAPI Add(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* modified);
-
-        CARAPI AddAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ContainsAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI Equals(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* result);
-
-        CARAPI GetHashCode(
-            /* [out] */ Int32* hashCode);
-
-        CARAPI RemoveAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI RetainAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ToArray(
-            /* [out, callee] */ ArrayOf<IInterface*>** array);
-
-        CARAPI ToArray(
-            /* [in] */ ArrayOf<IInterface*>* inArray,
-            /* [out, callee] */ ArrayOf<IInterface*>** outArray);
-
     private:
         AutoPtr<CConcurrentHashMap> mHost;
     };
+
+public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     /**
      * Creates a new, empty map with the specified initial
@@ -680,9 +505,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ IMap* m);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * If the specified key is not already associated
@@ -1241,4 +1063,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CCONCURRENTHASHMAP_H__
+#endif //__ELASTOS_UTILITY_CCONCURRENTHASHMAP_H__

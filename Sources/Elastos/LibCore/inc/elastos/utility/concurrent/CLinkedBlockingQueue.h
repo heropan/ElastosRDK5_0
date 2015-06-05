@@ -1,13 +1,11 @@
 
-#ifndef __CLINKEDBLOCKINGQUEUE_H__
-#define __CLINKEDBLOCKINGQUEUE_H__
+#ifndef __ELASTOS_UTILITY_CLINKEDBLOCKINGQUEUE_H__
+#define __ELASTOS_UTILITY_CLINKEDBLOCKINGQUEUE_H__
 
-#include "_CLinkedBlockingQueue.h"
-#include <elastos/Queue.h>
-#include <elastos/Mutex.h>
-#include <elastos/Condition.h>
+#include "_Elastos_Utility_Concurrent_CLinkedBlockingQueue.h"
+#include <Queue.h>
+#include <Condition.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::Condition;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
@@ -17,14 +15,23 @@ namespace Utility {
 namespace Concurrent {
 
 CarClass(CLinkedBlockingQueue)
+    , public Object
+    , public IBlockingQueue
+    , public IIterable
+    , public ICollection
+    , public IQueue
 {
 public:
     /**
      * Linked list node class
      */
-    class Node : public ElLightRefBase
+    class Node
+        : public Object
+        , public IInterface
     {
     public:
+        CAR_INTERFACE_DECL();
+
         Node(
             /* [in] */ IInterface* x)
             : mItem(x)
@@ -44,14 +51,14 @@ public:
 
 private:
     class Itr
-        : public ElLightRefBase
+        : public Object
         , public IIterator
     {
     public:
+        CAR_INTERFACE_DECL();
+
         Itr(
             /* [in] */ CLinkedBlockingQueue* owner);
-
-        CAR_INTERFACE_DECL();
 
         CARAPI HasNext(
             /* [out] */ Boolean* result);
@@ -85,6 +92,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CLinkedBlockingQueue();
 
     CARAPI constructor();
@@ -273,4 +284,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CLINKEDBLOCKINGQUEUE_H__
+#endif //__ELASTOS_UTILITY_CLINKEDBLOCKINGQUEUE_H__

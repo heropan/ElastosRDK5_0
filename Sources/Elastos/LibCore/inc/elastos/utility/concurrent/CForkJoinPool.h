@@ -1,8 +1,8 @@
 
-#ifndef __CFORKJOINPOOL_H__
-#define __CFORKJOINPOOL_H__
+#ifndef __ELASTOS_UTILITY_CFORKJOINPOOL_H__
+#define __ELASTOS_UTILITY_CFORKJOINPOOL_H__
 
-#include "_CForkJoinPool.h"
+#include "_Elastos_Utility_Concurrent_CForkJoinPool.h"
 #include "AbstractExecutorService.h"
 
 using Elastos::Core::IThrowable;
@@ -15,7 +15,9 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CarClass(CForkJoinPool), public AbstractExecutorService
+CarClass(CForkJoinPool)
+    , public AbstractExecutorService
+    , public IForkJoinPool
 {
 public:
     /**
@@ -24,8 +26,11 @@ public:
      */
     class DefaultForkJoinWorkerThreadFactory
         : public IForkJoinPoolForkJoinWorkerThreadFactory
+        , public Object
     {
     public:
+        CAR_INTERFACE_DECL()
+
         AutoPtr<IForkJoinWorkerThread> NewThread(
             /* [in] */ IForkJoinPool* pool);
     };
@@ -47,6 +52,10 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     // Exported methods
 
     // Constructors
@@ -97,9 +106,6 @@ public:
         /* [in] */ IForkJoinPoolForkJoinWorkerThreadFactory* factory,
         /* [in] */ IThreadUncaughtExceptionHandler* handler,
         /* [in] */ const Boolean& asyncMode);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     // Execution methods
 
@@ -207,22 +213,6 @@ public:
     CARAPI InvokeAll(
         /* [in] */ ICollection* tasks,
         /* [out] */ IList** futures);
-
-    CARAPI InvokeAll(
-        /* [in] */ ICollection* tasks,
-        /* [in] */ Int64 timeout,
-        /* [in] */ ITimeUnit* unit,
-        /* [out] */ IList** futures);
-
-    CARAPI InvokeAny(
-        /* [in] */ ICollection* tasks,
-        /* [out] */ IInterface** result);
-
-    CARAPI InvokeAny(
-        /* [in] */ ICollection* tasks,
-        /* [in] */ Int64 timeout,
-        /* [in] */ ITimeUnit* unit,
-        /* [out] */ IInterface** result);
 
     /**
      * Blocks in accord with the given blocker.  If the current thread
@@ -825,4 +815,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CFORKJOINPOOL_H__
+#endif //__ELASTOS_UTILITY_CFORKJOINPOOL_H__

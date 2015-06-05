@@ -14,41 +14,12 @@ namespace Concurrent {
 //====================================================================
 // CConcurrentLinkedQueue::Node::
 //====================================================================
+CAR_INTERFACE_IMPL(CConcurrentLinkedQueue::Node, Object, IInterface)
+
 CConcurrentLinkedQueue::Node::Node(
     /* [in] */ IInterface* item)
 {
 //    UNSAFE.putObject(this, itemOffset, item);
-}
-
-PInterface CConcurrentLinkedQueue::Node::Probe(
-    /* [in] */ REIID riid)
-{
-    if ( riid == EIID_IInterface) {
-        return THIS_PROBE(IInterface);
-    }
-    return NULL;
-}
-
-UInt32 CConcurrentLinkedQueue::Node::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CConcurrentLinkedQueue::Node::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CConcurrentLinkedQueue::Node::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (Object::Equals(object, THIS_PROBE(IInterface))) {
-        *iid = EIID_IInterface;
-        return NOERROR;
-    }
-    return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
 Boolean CConcurrentLinkedQueue::Node::CasItem(
@@ -92,6 +63,10 @@ Boolean CConcurrentLinkedQueue::Node::CasNext(
 //====================================================================
 // CConcurrentLinkedQueue::
 //====================================================================
+CAR_INTERFACE_IMPL_2(CConcurrentLinkedQueue, AbstractQueue, IConcurrentLinkedQueue, ISerializable)
+
+CAR_OBJECT_IMPL(CConcurrentLinkedQueue);
+
 ECode CConcurrentLinkedQueue::constructor()
 {
     mHead = mTail = new Node(NULL);
@@ -122,12 +97,6 @@ ECode CConcurrentLinkedQueue::constructor(
     mHead = h;
     mTail = t;
     return NOERROR;
-}
-
-PInterface CConcurrentLinkedQueue::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CConcurrentLinkedQueue::Probe(riid);
 }
 
 ECode CConcurrentLinkedQueue::Add(
@@ -578,7 +547,7 @@ Int64 CConcurrentLinkedQueue::sTailOffset;
 //====================================================================
 // CConcurrentLinkedQueue::Itr::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentLinkedQueue::Itr, IIterator)
+CAR_INTERFACE_IMPL(CConcurrentLinkedQueue::Itr, Object, IIterator)
 
 CConcurrentLinkedQueue::Itr::Itr(
     /* [in] */ CConcurrentLinkedQueue* owner)

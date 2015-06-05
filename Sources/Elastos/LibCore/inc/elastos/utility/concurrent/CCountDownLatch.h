@@ -1,8 +1,8 @@
 
-#ifndef __CCOUNTDOWNLATCH_H__
-#define __CCOUNTDOWNLATCH_H__
+#ifndef __ELASTOS_UTILITY_CCOUNTDOWNLATCH_H__
+#define __ELASTOS_UTILITY_CCOUNTDOWNLATCH_H__
 
-#include "_CCountDownLatch.h"
+#include "_Elastos_Utility_Concurrent_CCountDownLatch.h"
 #include "AbstractQueuedSynchronizer.h"
 
 using Elastos::Utility::Concurrent::Locks::AbstractQueuedSynchronizer;
@@ -12,6 +12,8 @@ namespace Utility {
 namespace Concurrent {
 
 CarClass(CCountDownLatch)
+    , public Object
+    , public ICountDownLatch
 {
 private:
     /**
@@ -19,8 +21,7 @@ private:
      * Uses AQS state to represent count.
      */
     class Sync
-        : public ElRefBase
-        , public AbstractQueuedSynchronizer
+        : public AbstractQueuedSynchronizer
     {
     public:
         Sync(
@@ -36,6 +37,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Constructs a {@code CountDownLatch} initialized with the given count.
      *
@@ -151,4 +156,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CCOUNTDOWNLATCH_H__
+#endif //__ELASTOS_UTILITY_CCOUNTDOWNLATCH_H__

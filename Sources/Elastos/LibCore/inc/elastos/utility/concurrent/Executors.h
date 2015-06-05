@@ -1,13 +1,10 @@
 
-#ifndef __EXECUTORS_H__
-#define __EXECUTORS_H__
+#ifndef __ELASTOS_UTILITY_EXECUTORS_H__
+#define __ELASTOS_UTILITY_EXECUTORS_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include "elastos/core/Object.h"
 
+using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 using Elastos::Core::IThread;
 using Elastos::Core::IThreadGroup;
@@ -18,24 +15,26 @@ namespace Utility {
 namespace Concurrent {
 
 class Executors
+    : public Object
+    , public IExecutors
 {
 public:
     /**
      * A callable that runs given task and returns given result
      */
     class RunnableAdapter
-        : public ElLightRefBase
+        : public Object
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         RunnableAdapter(
             /* [in] */ IRunnable* task,
             /* [in] */ IInterface* result)
             : mTask(task)
             , mResult(result)
         {}
-
-        CAR_INTERFACE_DECL();
 
         CARAPI Call(
             /* [out] */ IInterface** result);
@@ -49,13 +48,13 @@ public:
      * The default thread factory
      */
     class DefaultThreadFactory
-        : public ElLightRefBase
+        : public Object
         , public IThreadFactory
     {
     public:
-        DefaultThreadFactory();
+        CAR_INTERFACE_DECL()
 
-        CAR_INTERFACE_DECL();
+        DefaultThreadFactory();
 
         CARAPI NewThread(
             /* [in] */ IRunnable* r,
@@ -69,6 +68,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Returns a default thread factory used to create new threads.
      * This factory creates all new threads used by an Executor in the
@@ -104,4 +105,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__EXECUTORS_H__
+#endif //__ELASTOS_UTILITY_EXECUTORS_H__

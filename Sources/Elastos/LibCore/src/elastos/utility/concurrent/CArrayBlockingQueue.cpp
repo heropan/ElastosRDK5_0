@@ -1,9 +1,9 @@
 
 #include "CArrayBlockingQueue.h"
 #include "CReentrantLock.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Math.h>
+#include <StringBuilder.h>
+#include <StringUtils.h>
+#include <Math.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -15,19 +15,17 @@ namespace Concurrent {
 
 
 //==========================================================
-//       CTreeMap::CArrayBlockingQueue
+//       CArrayBlockingQueue
 //==========================================================
+CAR_INTERFACE_IMPL_2(CArrayBlockingQueue, AbstractQueue, IArrayBlockingQueue, IBlockingQueue)
+
+CAR_OBJECT_IMPL(CArrayBlockingQueue);
+
 CArrayBlockingQueue::CArrayBlockingQueue()
     : mTakeIndex(0)
     , mPutIndex(0)
     , mCount(0)
 {
-}
-
-PInterface CArrayBlockingQueue::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CArrayBlockingQueue::Probe(riid);
 }
 
 ECode CArrayBlockingQueue::constructor(
@@ -732,10 +730,12 @@ ECode CArrayBlockingQueue::RemoveAt(
 
 
 //==========================================================
-//       CTreeMap::Itrs
+//       CArrayBlockingQueue::Itrs
 //==========================================================
 const Int32 CArrayBlockingQueue::Itrs::SHORT_SWEEP_PROBES = 4;
 const Int32 CArrayBlockingQueue::Itrs::LONG_SWEEP_PROBES = 16;
+
+CAR_INTERFACE_IMPL(CArrayBlockingQueue::Itrs, Object, IInterface)
 
 CArrayBlockingQueue::Itrs::Itrs(
     /* [in] */ Itr* initial)
@@ -887,13 +887,13 @@ ECode CArrayBlockingQueue::Itrs::ElementDequeued()
 
 
 //==========================================================
-//       CTreeMap::Itr
+//       CArrayBlockingQueue::Itr
 //==========================================================
 const Int32 CArrayBlockingQueue::Itr::NONE = -1;
 const Int32 CArrayBlockingQueue::Itr::REMOVED = -2;
 const Int32 CArrayBlockingQueue::Itr::DETACHED = -3;
 
-CAR_INTERFACE_IMPL(CArrayBlockingQueue::Itr, IIterator);
+CAR_INTERFACE_IMPL(CArrayBlockingQueue::Itr, Object, IIterator)
 
 CArrayBlockingQueue::Itr::Itr(
     /* [in] */ CArrayBlockingQueue* host)

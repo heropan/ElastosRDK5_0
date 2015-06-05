@@ -1,10 +1,12 @@
 
-#ifndef __CSEMAPHORE_H__
-#define __CSEMAPHORE_H__
+#ifndef __ELASTOS_UTILITY_CSEMAPHORE_H__
+#define __ELASTOS_UTILITY_CSEMAPHORE_H__
 
-#include "_CSemaphore.h"
+#include "_Elastos_Utility_Concurrent_CSemaphore.h"
 #include "AbstractQueuedSynchronizer.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Concurrent::Locks::ICondition;
 
 namespace Elastos {
@@ -12,6 +14,8 @@ namespace Utility {
 namespace Concurrent {
 
 CarClass(CSemaphore)
+    , public Object
+    , public ISemaphore
 {
 public:
     enum CLSID {
@@ -21,15 +25,11 @@ public:
     };
 
     class Sync
-        : public ElLightRefBase
-        , public Locks::AbstractQueuedSynchronizer
+        : public Locks::AbstractQueuedSynchronizer
     {
     public:
         Sync(
             /* [in] */ Int32 permits);
-
-        virtual CARAPI_(Sync*) Probe(
-            /* [in] */ Int32 clsID) = 0;
 
         CARAPI GetPermits(
             /* [out] */ Int32* out);
@@ -58,9 +58,6 @@ public:
         NonfairSync(
             /* [in] */ Int32 permits);
 
-        CARAPI_(Sync*) Probe(
-            /* [in] */ Int32 clsID);
-
         CARAPI TryAcquireShared(
             /* [in] */ Int32 acquires,
             /* [out] */ Int32* out);
@@ -75,9 +72,6 @@ public:
         FairSync(
             /* [in] */ Int32 permits);
 
-        CARAPI_(Sync*) Probe(
-            /* [in] */ Int32 clsID);
-
         CARAPI TryAcquireShared(
             /* [in] */ Int32 acquires,
             /* [out] */ Int32* out);
@@ -87,6 +81,10 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     constructor(
         /* [in] */ Int32 permits);
 
@@ -161,4 +159,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CSEMAPHORE_H__
+#endif //__ELASTOS_UTILITY_CSEMAPHORE_H__

@@ -1,8 +1,8 @@
 
-#ifndef __CFORKJOINTASKHELPER_H__
-#define __CFORKJOINTASKHELPER_H__
+#ifndef __ELASTOS_UTILITY_CFORKJOINTASKHELPER_H__
+#define __ELASTOS_UTILITY_CFORKJOINTASKHELPER_H__
 
-#include "_CForkJoinTaskHelper.h"
+#include "_Elastos_Utility_Concurrent_CForkJoinTaskHelper.h"
 
 using Elastos::Core::IRunnable;
 
@@ -11,8 +11,14 @@ namespace Utility {
 namespace Concurrent {
 
 CarClass(CForkJoinTaskHelper)
+    , public Singleton
+    , public IForkJoinTaskHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI InvokeAll(
         /* [in] */ IForkJoinTask* t1,
         /* [in] */ IForkJoinTask* t2);
@@ -56,4 +62,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CFORKJOINTASKHELPER_H__
+#endif //__ELASTOS_UTILITY_CFORKJOINTASKHELPER_H__

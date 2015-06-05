@@ -1,16 +1,25 @@
 
-#ifndef __CCOPYONWRITEARRAYLISTHELPER_H__
-#define __CCOPYONWRITEARRAYLISTHELPER_H__
+#ifndef __ELASTOS_UTILITY_CCOPYONWRITEARRAYLISTHELPER_H__
+#define __ELASTOS_UTILITY_CCOPYONWRITEARRAYLISTHELPER_H__
 
-#include "_CCopyOnWriteArrayListHelper.h"
+#include "_Elastos_Utility_Concurrent_CCopyOnWriteArrayListHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
 CarClass(CCopyOnWriteArrayListHelper)
+    , public Singleton
+    , public ICopyOnWriteArrayListHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI ContainsAll(
         /* [in] */ ICollection* collection,
         /* [in] */ const ArrayOf<IInterface*>& snapshot,
@@ -37,4 +46,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CCOPYONWRITEARRAYLISTHELPER_H__
+#endif //__ELASTOS_UTILITY_CCOPYONWRITEARRAYLISTHELPER_H__

@@ -13,6 +13,9 @@ namespace Concurrent {
 //====================================================================
 // CDelayQueue::
 //====================================================================
+CAR_INTERFACE_IMPL_2(CDelayQueue, AbstractQueue, IDelayQueue, IBlockingQueue)
+
+CAR_OBJECT_IMPL(CDelayQueue);
 
 ECode CDelayQueue::constructor()
 {
@@ -25,12 +28,6 @@ ECode CDelayQueue::constructor(
 {
     Boolean b;
     return AbstractQueue::AddAll(c, &b);
-}
-
-PInterface CDelayQueue::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CDelayQueue::Probe(riid);
 }
 
 ECode CDelayQueue::Add(
@@ -399,63 +396,10 @@ ECode CDelayQueue::GetIterator(
     return NOERROR;
 }
 
-ECode CDelayQueue::AddAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractQueue::AddAll(collection, modified);
-}
-
-ECode CDelayQueue::Contains(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    return AbstractQueue::Contains(object, result);
-}
-
-ECode CDelayQueue::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractQueue::ContainsAll(collection, result);
-}
-
-ECode CDelayQueue::IsEmpty(
-    /* [out] */ Boolean* result)
-{
-    return AbstractQueue::IsEmpty(result);
-}
-
-ECode CDelayQueue::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractQueue::RemoveAll(collection, modified);
-}
-
-ECode CDelayQueue::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractQueue::RetainAll(collection, modified);
-}
-
-ECode CDelayQueue::Remove(
-    /* [out] */ IInterface** e)
-{
-    return AbstractQueue::Remove(e);
-}
-
-ECode CDelayQueue::Element(
-    /* [out] */ IInterface** e)
-{
-    return AbstractQueue::Element(e);
-}
-
 //====================================================================
 // CDelayQueue::Itr::
 //====================================================================
-CAR_INTERFACE_IMPL(CDelayQueue::Itr, IIterator);
+CAR_INTERFACE_IMPL(CDelayQueue::Itr, Object, IIterator);
 
 CDelayQueue::Itr::Itr(
     /* [in] */ IWeakReference* owner,

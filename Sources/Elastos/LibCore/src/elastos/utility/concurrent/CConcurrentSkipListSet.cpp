@@ -14,6 +14,9 @@ namespace Concurrent {
 //====================================================================
 // CConcurrentSkipListSet::
 //====================================================================
+CAR_INTERFACE_IMPL_4(CConcurrentSkipListSet, AbstractSet, INavigableSet, ISortedSet, ISerializable, ICloneable)
+
+CAR_OBJECT_IMPL(CConcurrentSkipListSet);
 
 ECode CConcurrentSkipListSet::constructor()
 {
@@ -49,12 +52,6 @@ ECode CConcurrentSkipListSet::constructor(
 {
     mM = m;
     return NOERROR;
-}
-
-PInterface CConcurrentSkipListSet::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CConcurrentSkipListSet::Probe(riid);
 }
 
 ECode CConcurrentSkipListSet::Clone(
@@ -373,40 +370,6 @@ ECode CConcurrentSkipListSet::DescendingSet(
     *outnav = p.Get();
     REFCOUNT_ADD(*outnav);
     return NOERROR;
-}
-
-ECode CConcurrentSkipListSet::AddAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::AddAll(collection, modified);
-}
-
-ECode CConcurrentSkipListSet::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::ContainsAll(collection, result);
-}
-
-ECode CConcurrentSkipListSet::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::RetainAll(collection, modified);
-}
-
-ECode CConcurrentSkipListSet::ToArray(
-    /* [out, callee] */ ArrayOf<IInterface*>** array)
-{
-    return AbstractSet::ToArray(array);
-}
-
-ECode CConcurrentSkipListSet::ToArray(
-    /* [in] */ ArrayOf<IInterface*>* inArray,
-    /* [out, callee] */ ArrayOf<IInterface*>** outArray)
-{
-    return AbstractSet::ToArray(inArray, outArray);
 }
 
 void CConcurrentSkipListSet::SetMap(

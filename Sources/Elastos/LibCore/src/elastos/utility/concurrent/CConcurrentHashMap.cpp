@@ -9,6 +9,8 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
+CAR_INTERFACE_IMPL(CConcurrentHashMap::HashEntry, Object, IInterface)
+
 //===============================================================================
 // CConcurrentHashMap::Segment
 //===============================================================================
@@ -51,8 +53,6 @@ CConcurrentHashMap::Segment::Segment(
     mThreshold = threshold;
     mTable = tab;
 }
-
-CAR_INTERFACE_IMPL(CConcurrentHashMap::Segment, IReentrantLock);
 
 AutoPtr<IInterface> CConcurrentHashMap::Segment::Put(
     /* [in] */ IInterface* key,
@@ -356,107 +356,10 @@ void CConcurrentHashMap::Segment::Clear()
     // }
 }
 
-ECode CConcurrentHashMap::Segment::Lock()
-{
-    return ReentrantLock::Lock();
-}
-
-ECode CConcurrentHashMap::Segment::LockInterruptibly()
-{
-    return ReentrantLock::LockInterruptibly();
-}
-
-ECode CConcurrentHashMap::Segment::TryLock(
-    /* [out] */ Boolean* result)
-{
-    return ReentrantLock::TryLock(result);
-}
-
-ECode CConcurrentHashMap::Segment::TryLock(
-    /* [in] */ Int64 timeout,
-    /* [in] */ ITimeUnit* unit,
-    /* [out] */ Boolean* result)
-{
-    return ReentrantLock::TryLock(timeout, unit, result);
-}
-
-ECode CConcurrentHashMap::Segment::UnLock()
-{
-    return ReentrantLock::UnLock();
-}
-
-ECode CConcurrentHashMap::Segment::NewCondition(
-    /* [out] */ ICondition** condition)
-{
-    return ReentrantLock::NewCondition(condition);
-}
-
-ECode CConcurrentHashMap::Segment::GetHoldCount(
-    /* [out] */ Int32* count)
-{
-    return ReentrantLock::GetHoldCount(count);
-}
-
-ECode CConcurrentHashMap::Segment::IsLocked(
-    /* [out] */ Boolean* result)
-{
-    return ReentrantLock::IsLocked(result);
-}
-
-ECode CConcurrentHashMap::Segment::IsFair(
-    /* [out] */ Boolean* result)
-{
-    return ReentrantLock::IsFair(result);
-}
-
-ECode CConcurrentHashMap::Segment::HasQueuedThreads(
-    /* [out] */ Boolean* result)
-{
-    return ReentrantLock::HasQueuedThreads(result);
-}
-
-ECode CConcurrentHashMap::Segment::HasQueuedThread(
-    /* [in] */ IThread* thread,
-    /* [out] */ Boolean* result)
-{
-    return ReentrantLock::HasQueuedThread(thread, result);
-}
-
-ECode CConcurrentHashMap::Segment::GetQueueLength(
-    /* [out] */ Int32* result)
-{
-    return ReentrantLock::GetQueueLength(result);
-}
-
-ECode CConcurrentHashMap::Segment::HasWaiters(
-    /* [in] */ ICondition* condition,
-    /* [out] */ Boolean* result)
-{
-    return ReentrantLock::HasWaiters(condition, result);
-}
-
-ECode CConcurrentHashMap::Segment::GetWaitQueueLength(
-    /* [in] */ ICondition* condition,
-    /* [out] */ Int32* result)
-{
-    return ReentrantLock::GetWaitQueueLength(condition, result);
-}
-
-ECode CConcurrentHashMap::Segment::ToString(
-    /* [out] */ String* info)
-{
-    return ReentrantLock::ToString(info);
-}
-
-ECode CConcurrentHashMap::Segment::IsHeldByCurrentThread(
-    /* [out] */ Boolean* value)
-{
-    return ReentrantLock::IsHeldByCurrentThread(value);
-}
-
 //===============================================================================
 // CConcurrentHashMap::HashIterator
 //===============================================================================
+CAR_INTERFACE_IMPL(CConcurrentHashMap::HashIterator, Object, IIterator)
 
 CConcurrentHashMap::HashIterator::HashIterator(
     /* [in] */ CConcurrentHashMap* host)
@@ -529,30 +432,12 @@ ECode CConcurrentHashMap::HashIterator::Remove()
 //===============================================================================
 // CConcurrentHashMap::KeyIterator
 //===============================================================================
+CAR_INTERFACE_IMPL(CConcurrentHashMap::KeyIterator, HashIterator, IEnumeration)
 
 CConcurrentHashMap::KeyIterator::KeyIterator(
     /* [in] */ CConcurrentHashMap* host)
     : HashIterator(host)
 {
-}
-
-CAR_INTERFACE_IMPL_2(CConcurrentHashMap::KeyIterator, IIterator, IEnumeration);
-
-ECode CConcurrentHashMap::KeyIterator::HasNext(
-    /* [out] */ Boolean* result)
-{
-    return HashIterator::HasNext(result);
-}
-
-ECode CConcurrentHashMap::KeyIterator::Remove()
-{
-    return HashIterator::Remove();
-}
-
-ECode CConcurrentHashMap::KeyIterator::HasMoreElements(
-    /* [out] */ Boolean * value)
-{
-    return HashIterator::HasMoreElements(value);
 }
 
 ECode CConcurrentHashMap::KeyIterator::Next(
@@ -580,30 +465,12 @@ ECode CConcurrentHashMap::KeyIterator::NextElement(
 //===============================================================================
 // CConcurrentHashMap::ValueIterator
 //===============================================================================
+CAR_INTERFACE_IMPL(CConcurrentHashMap::ValueIterator, HashIterator, IEnumeration)
 
 CConcurrentHashMap::ValueIterator::ValueIterator(
     /* [in] */ CConcurrentHashMap* host)
     : HashIterator(host)
 {
-}
-
-CAR_INTERFACE_IMPL_2(CConcurrentHashMap::ValueIterator, IIterator, IEnumeration);
-
-ECode CConcurrentHashMap::ValueIterator::HasNext(
-    /* [out] */ Boolean* result)
-{
-    return HashIterator::HasNext(result);
-}
-
-ECode CConcurrentHashMap::ValueIterator::Remove()
-{
-    return HashIterator::Remove();
-}
-
-ECode CConcurrentHashMap::ValueIterator::HasMoreElements(
-    /* [out] */ Boolean * value)
-{
-    return HashIterator::HasMoreElements(value);
 }
 
 ECode CConcurrentHashMap::ValueIterator::Next(
@@ -672,19 +539,6 @@ CConcurrentHashMap::EntryIterator::EntryIterator(
 {
 }
 
-CAR_INTERFACE_IMPL(CConcurrentHashMap::EntryIterator, IIterator);
-
-ECode CConcurrentHashMap::EntryIterator::HasNext(
-    /* [out] */ Boolean* result)
-{
-    return HashIterator::HasNext(result);
-}
-
-ECode CConcurrentHashMap::EntryIterator::Remove()
-{
-    return HashIterator::Remove();
-}
-
 ECode CConcurrentHashMap::EntryIterator::Next(
     /* [out] */ IInterface** object)
 {
@@ -700,13 +554,10 @@ ECode CConcurrentHashMap::EntryIterator::Next(
 //===============================================================================
 // CConcurrentHashMap::_KeySet
 //===============================================================================
-
 CConcurrentHashMap::_KeySet::_KeySet(
     /* [in] */ CConcurrentHashMap* host)
 {
 }
-
-CAR_INTERFACE_IMPL(CConcurrentHashMap::_KeySet, ISet)
 
 ECode CConcurrentHashMap::_KeySet::GetIterator(
     /* [out] */ IIterator** result)
@@ -755,67 +606,6 @@ ECode CConcurrentHashMap::_KeySet::Clear()
     return mHost->Clear();
 }
 
-ECode CConcurrentHashMap::_KeySet::Add(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::Add(object, modified);
-}
-
-ECode CConcurrentHashMap::_KeySet::AddAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::AddAll(collection, modified);
-}
-
-ECode CConcurrentHashMap::_KeySet::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::ContainsAll(collection, result);
-}
-
-ECode CConcurrentHashMap::_KeySet::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::RemoveAll(collection, result);
-}
-
-ECode CConcurrentHashMap::_KeySet::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::RetainAll(collection, result);
-}
-
-ECode CConcurrentHashMap::_KeySet::ToArray(
-    /* [out, callee] */ ArrayOf<IInterface*>** array)
-{
-    return AbstractSet::ToArray(array);
-}
-
-ECode CConcurrentHashMap::_KeySet::ToArray(
-    /* [in] */ ArrayOf<IInterface*>* contents,
-    /* [out, callee] */ ArrayOf<IInterface*>** outArray)
-{
-    return AbstractSet::ToArray(contents, outArray);
-}
-
-ECode CConcurrentHashMap::_KeySet::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::Equals(object, result);
-}
-
-ECode CConcurrentHashMap::_KeySet::GetHashCode(
-    /* [out] */ Int32* hashCode)
-{
-    return AbstractSet::GetHashCode(hashCode);
-}
-
 //===============================================================================
 // CConcurrentHashMap::_Values
 //===============================================================================
@@ -861,61 +651,6 @@ ECode CConcurrentHashMap::_Values::Contains(
 ECode CConcurrentHashMap::_Values::Clear()
 {
     return mHost->Clear();
-}
-
-ECode CConcurrentHashMap::_Values::Add(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractCollection::Add(object, modified);
-}
-
-ECode CConcurrentHashMap::_Values::AddAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractCollection::AddAll(collection, modified);
-}
-
-ECode CConcurrentHashMap::_Values::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractCollection::ContainsAll(collection, result);
-}
-
-ECode CConcurrentHashMap::_Values::Remove(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    return AbstractCollection::Remove(object, result);
-}
-
-ECode CConcurrentHashMap::_Values::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractCollection::RemoveAll(collection, result);
-}
-
-ECode CConcurrentHashMap::_Values::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractCollection::RetainAll(collection, result);
-}
-
-ECode CConcurrentHashMap::_Values::ToArray(
-    /* [out, callee] */ ArrayOf<IInterface*>** array)
-{
-    return AbstractCollection::ToArray(array);
-}
-
-ECode CConcurrentHashMap::_Values::ToArray(
-    /* [in] */ ArrayOf<IInterface*>* contents,
-    /* [out, callee] */ ArrayOf<IInterface*>** outArray)
-{
-    return AbstractCollection::ToArray(contents, outArray);
 }
 
 ECode CConcurrentHashMap::_Values::Equals(
@@ -1017,70 +752,12 @@ ECode CConcurrentHashMap::_EntrySet::Clear()
     return mHost->Clear();
 }
 
-ECode CConcurrentHashMap::_EntrySet::Add(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::Add(object, modified);
-}
-
-ECode CConcurrentHashMap::_EntrySet::AddAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::AddAll(collection, modified);
-}
-
-ECode CConcurrentHashMap::_EntrySet::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::ContainsAll(collection, result);
-}
-
-ECode CConcurrentHashMap::_EntrySet::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::Equals(object, result);
-}
-
-ECode CConcurrentHashMap::_EntrySet::GetHashCode(
-    /* [out] */ Int32* hashCode)
-{
-    return AbstractSet::GetHashCode(hashCode);
-}
-
-ECode CConcurrentHashMap::_EntrySet::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::RemoveAll(collection, modified);
-}
-
-ECode CConcurrentHashMap::_EntrySet::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::RetainAll(collection, modified);
-}
-
-ECode CConcurrentHashMap::_EntrySet::ToArray(
-    /* [out, callee] */ ArrayOf<IInterface*>** array)
-{
-    return AbstractSet::ToArray(array);
-}
-
-ECode CConcurrentHashMap::_EntrySet::ToArray(
-    /* [in] */ ArrayOf<IInterface*>* inArray,
-    /* [out, callee] */ ArrayOf<IInterface*>** outArray)
-{
-    return AbstractSet::ToArray(inArray, outArray);
-}
-
 //===============================================================================
 // CConcurrentHashMap
 //===============================================================================
+CAR_INTERFACE_IMPL_2(CConcurrentHashMap, AbstractMap, IConcurrentHashMap, IConcurrentMap)
+
+CAR_OBJECT_IMPL(CConcurrentHashMap);
 
 ECode CConcurrentHashMap::constructor(
     /* [in] */ Int32 initialCapacity,
@@ -1148,12 +825,6 @@ ECode CConcurrentHashMap::constructor(
                   DEFAULT_INITIAL_CAPACITY),
          DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL));
     return PutAll(m);
-}
-
-PInterface CConcurrentHashMap::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CConcurrentHashMap::Probe(riid);
 }
 
 ECode CConcurrentHashMap::PutIfAbsent(

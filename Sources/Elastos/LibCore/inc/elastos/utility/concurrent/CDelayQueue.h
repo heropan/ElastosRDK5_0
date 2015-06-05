@@ -1,8 +1,8 @@
 
-#ifndef __CDELAYQUEUE_H__
-#define __CDELAYQUEUE_H__
+#ifndef __ELASTOS_UTILITY_CDELAYQUEUE_H__
+#define __ELASTOS_UTILITY_CDELAYQUEUE_H__
 
-#include "_CDelayQueue.h"
+#include "_Elastos_Utility_Concurrent_CDelayQueue.h"
 #include "AbstractQueue.h"
 
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;
@@ -12,7 +12,10 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CarClass(CDelayQueue) , public AbstractQueue
+CarClass(CDelayQueue)
+    , public AbstractQueue
+    , public IDelayQueue
+    , public IBlockingQueue
 {
 private:
     /**
@@ -20,7 +23,7 @@ private:
      */
     class Itr
         : public IIterator
-        , public ElRefBase
+        , public Object
     {
     public:
         CAR_INTERFACE_DECL();
@@ -45,6 +48,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Creates a new <tt>DelayQueue</tt> that is initially empty.
      */
@@ -60,9 +67,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ ICollection* c);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI Add(
         /* [in] */ IInterface* object,
@@ -126,35 +130,6 @@ public:
     CARAPI GetIterator(
         /* [out] */ IIterator** it);
 
-    CARAPI AddAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
-
-    CARAPI Contains(
-        /* [in] */ IInterface* object,
-        /* [out] */ Boolean* result);
-
-    CARAPI ContainsAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* result);
-
-    CARAPI IsEmpty(
-        /* [out] */ Boolean* result);
-
-    CARAPI RemoveAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
-
-    CARAPI RetainAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
-
-    CARAPI Remove(
-        /* [out] */ IInterface** e);
-
-    CARAPI Element(
-        /* [out] */ IInterface** e);
-
 private:
     /**
      * Return first element only if it is expired.
@@ -202,4 +177,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CDELAYQUEUE_H__
+#endif //__ELASTOS_UTILITY_CDELAYQUEUE_H__

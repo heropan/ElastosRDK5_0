@@ -6,12 +6,6 @@
 #include <elastos/Thread.h>
 #include "CArrayList.h"
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
-
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::Thread;
 using Elastos::Utility::CArrayList;
@@ -37,6 +31,8 @@ const Boolean CThreadPoolExecutor::ONLY_ONE;
 //==========================================================
 //         CThreadPoolExecutor::Worker
 //==========================================================
+CAR_INTERFACE_IMPL(CThreadPoolExecutor::Worker, AbstractQueuedSynchronizer, IRunnable);
+
 CThreadPoolExecutor::Worker::Worker(
     /* [in] */ IRunnable* firstTask,
     /* [in] */ CThreadPoolExecutor* owner)
@@ -47,8 +43,6 @@ CThreadPoolExecutor::Worker::Worker(
     mOwner->GetThreadFactory((IThreadFactory**)&factory);
     factory->NewThread((IRunnable*)this, (IThread**)&mThread);
 }
-
-CAR_INTERFACE_IMPL_LIGHT(CThreadPoolExecutor::Worker, IRunnable);
 
 Boolean CThreadPoolExecutor::Worker::TryAcquire(
     /* [in] */ Int32 unused)
@@ -73,7 +67,7 @@ Boolean CThreadPoolExecutor::Worker::TryRelease(
 //==========================================================
 //         CThreadPoolExecutor::CallerRunsPolicy
 //==========================================================
-CAR_INTERFACE_IMPL_LIGHT(CThreadPoolExecutor::CallerRunsPolicy, IRejectedExecutionHandler);
+CAR_INTERFACE_IMPL(CThreadPoolExecutor::CallerRunsPolicy, Object, IRejectedExecutionHandler);
 
 ECode CThreadPoolExecutor::CallerRunsPolicy::RejectedExecution(
     /* [in] */ IRunnable* r,
@@ -90,19 +84,19 @@ ECode CThreadPoolExecutor::CallerRunsPolicy::RejectedExecution(
 //==========================================================
 //         CThreadPoolExecutor::AbortPolicy
 //==========================================================
-CAR_INTERFACE_IMPL_LIGHT(CThreadPoolExecutor::AbortPolicy, IRejectedExecutionHandler);
+CAR_INTERFACE_IMPL(CThreadPoolExecutor::AbortPolicy, Object, IRejectedExecutionHandler);
 
 
 //==========================================================
 //         CThreadPoolExecutor::DiscardPolicy
 //==========================================================
-CAR_INTERFACE_IMPL_LIGHT(CThreadPoolExecutor::DiscardPolicy, IRejectedExecutionHandler);
+CAR_INTERFACE_IMPL(CThreadPoolExecutor::DiscardPolicy, Object, IRejectedExecutionHandler);
 
 
 //==========================================================
 //         CThreadPoolExecutor::DiscardOldestPolicy
 //==========================================================
-CAR_INTERFACE_IMPL_LIGHT(CThreadPoolExecutor::DiscardOldestPolicy, IRejectedExecutionHandler);
+CAR_INTERFACE_IMPL(CThreadPoolExecutor::DiscardOldestPolicy, Object, IRejectedExecutionHandler);
 
 ECode CThreadPoolExecutor::DiscardOldestPolicy::RejectedExecution(
     /* [in] */ IRunnable* r,
@@ -123,6 +117,10 @@ ECode CThreadPoolExecutor::DiscardOldestPolicy::RejectedExecution(
 //==========================================================
 //         CThreadPoolExecutor
 //==========================================================
+CAR_INTERFACE_IMPL(CThreadPoolExecutor, AbstractExecutorService, IThreadPoolExecutor)
+
+CAR_OBJECT_IMPL(CThreadPoolExecutor);
+
 CThreadPoolExecutor::CThreadPoolExecutor()
     : mLargestPoolSize(0)
     , mCompletedTaskCount(0)
@@ -203,12 +201,6 @@ ECode CThreadPoolExecutor::constructor(
     return NOERROR;
 }
 
-PInterface CThreadPoolExecutor::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CThreadPoolExecutor::Probe(riid);
-}
-
 Boolean CThreadPoolExecutor::CompareAndIncrementWorkerCount(
     /* [in] */ Int32 expect)
 {
@@ -260,7 +252,7 @@ void CThreadPoolExecutor::TryTerminate()
             return;
         }
 
-        Mutex::Autolock lock(mMainLock);
+        Object::Autolock lock(mMainLock);
 
         Boolean result;
         if (mCtl->CompareAndSet(c, CtlOf(TIDYING, 0), &result), result) {
@@ -293,7 +285,7 @@ ECode CThreadPoolExecutor::CheckShutdownAccess()
 
 void CThreadPoolExecutor::InterruptWorkers()
 {
-    Mutex::Autolock lock(mMainLock);
+    Object::Autolock lock(mMainLock);
 
     HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
     for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
@@ -305,7 +297,7 @@ void CThreadPoolExecutor::InterruptWorkers()
 void CThreadPoolExecutor::InterruptIdleWorkers(
     /* [in] */ Boolean onlyOne)
 {
-    Mutex::Autolock lock(mMainLock);
+    Object::Autolock lock(mMainLock);
 
     HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
     for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
@@ -417,7 +409,7 @@ NEXT:
 
     Int32 c;
     {
-        Mutex::Autolock lock(mMainLock);
+        Object::Autolock lock(mMainLock);
 
         // Recheck while holding lock.
         // Back out on ThreadFactory failure or if
@@ -466,7 +458,7 @@ void CThreadPoolExecutor::ProcessWorkerExit(
     }
 
     {
-        Mutex::Autolock lock(mMainLock);
+        Object::Autolock lock(mMainLock);
 
         mCompletedTaskCount += w->mCompletedTasks;
         mWorkers.Erase(w);
@@ -639,7 +631,7 @@ ECode CThreadPoolExecutor::Execute(
 ECode CThreadPoolExecutor::Shutdown()
 {
     {
-        Mutex::Autolock lock(mMainLock);
+        Object::Autolock lock(mMainLock);
 
         FAIL_RETURN(CheckShutdownAccess());
         AdvanceRunState(SHUTDOWN);
@@ -658,7 +650,7 @@ ECode CThreadPoolExecutor::ShutdownNow(
     }
 
     {
-        Mutex::Autolock lock(mMainLock);
+        Object::Autolock lock(mMainLock);
 
         FAIL_RETURN(CheckShutdownAccess());
         AdvanceRunState(STOP);
@@ -711,7 +703,7 @@ ECode CThreadPoolExecutor::AwaitTermination(
     VALIDATE_NOT_NULL(result);
     Int64 nanos;
     unit->ToNanos(timeout, &nanos);
-    Mutex::Autolock lock(mMainLock);
+    Object::Autolock lock(mMainLock);
 
     for (;;) {
         Int32 c;
@@ -972,7 +964,7 @@ ECode CThreadPoolExecutor::GetPoolSize(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    Mutex::Autolock lock(mMainLock);
+    Object::Autolock lock(mMainLock);
     // Remove rare and surprising possibility of
     // isTerminated() && getPoolSize() > 0
     Int32 c;
@@ -985,7 +977,7 @@ ECode CThreadPoolExecutor::GetActiveCount(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    Mutex::Autolock lock(mMainLock);
+    Object::Autolock lock(mMainLock);
     Int32 n = 0;
     HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
     for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
@@ -1002,7 +994,7 @@ ECode CThreadPoolExecutor::GetLargestPoolSize(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    Mutex::Autolock lock(mMainLock);
+    Object::Autolock lock(mMainLock);
     *number = mLargestPoolSize;
     return NOERROR;
 }
@@ -1011,7 +1003,7 @@ ECode CThreadPoolExecutor::GetTaskCount(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number);
-    Mutex::Autolock lock(mMainLock);
+    Object::Autolock lock(mMainLock);
     Int64 n = mCompletedTaskCount;
     HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
     for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
@@ -1031,7 +1023,7 @@ ECode CThreadPoolExecutor::GetCompletedTaskCount(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number);
-    Mutex::Autolock lock(mMainLock);
+    Object::Autolock lock(mMainLock);
     Int64 n = mCompletedTaskCount;
     HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
     for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
@@ -1075,67 +1067,6 @@ ECode CThreadPoolExecutor::ToString(
     //     "]";
     assert(0);
     return E_NOT_IMPLEMENTED;
-}
-
-ECode CThreadPoolExecutor::Submit(
-    /* [in] */ ICallable* task,
-    /* [out] */ IFuture** future)
-{
-    VALIDATE_NOT_NULL(future);
-    return AbstractExecutorService::Submit(task, future);
-}
-
-ECode CThreadPoolExecutor::Submit(
-    /* [in] */ IRunnable* task,
-    /* [in] */ IInterface* result,
-    /* [out] */ IFuture** future)
-{
-    VALIDATE_NOT_NULL(future);
-    return AbstractExecutorService::Submit(task, result, future);
-}
-
-ECode CThreadPoolExecutor::Submit(
-    /* [in] */ IRunnable* task,
-    /* [out] */ IFuture** future)
-{
-    VALIDATE_NOT_NULL(future);
-    return AbstractExecutorService::Submit(task, future);
-}
-
-ECode CThreadPoolExecutor::InvokeAny(
-    /* [in] */ ICollection* tasks,
-    /* [out] */ IInterface** result)
-{
-    VALIDATE_NOT_NULL(result);
-    return AbstractExecutorService::InvokeAny(tasks, result);
-}
-
-ECode CThreadPoolExecutor::InvokeAny(
-    /* [in] */ ICollection* tasks,
-    /* [in] */ Int64 timeout,
-    /* [in] */ ITimeUnit* unit,
-    /* [out] */ IInterface** result)
-{
-    VALIDATE_NOT_NULL(result);
-    return AbstractExecutorService::InvokeAny(tasks, timeout, unit, result);
-}
-
-ECode CThreadPoolExecutor::InvokeAll(
-    /* [in] */ ICollection* tasks,
-    /* [out] */ IList** futures)
-{
-    VALIDATE_NOT_NULL(futures);
-    return AbstractExecutorService::InvokeAll(tasks, futures);
-}
-
-ECode CThreadPoolExecutor::InvokeAll(
-    /* [in] */ ICollection* tasks,
-    /* [in] */ Int64 timeout,
-    /* [in] */ ITimeUnit* unit,
-    /* [out] */ IList** futures)
-{
-    VALIDATE_NOT_NULL(futures);
-    return AbstractExecutorService::InvokeAll(tasks, timeout, unit, futures);
 }
 
 } // namespace Concurrent

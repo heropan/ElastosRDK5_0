@@ -1,7 +1,12 @@
 
 #include "CLinkedTransferQueue.h"
 #include "LockSupport.h"
+<<<<<<< Updated upstream
 #include <elastos/Math.h>
+=======
+#include <ObjectUtils.h>
+#include <Math.h>
+>>>>>>> Stashed changes
 #include "CSystem.h"
 #include "Thread.h"
 
@@ -16,7 +21,7 @@ namespace Concurrent {
 //====================================================================
 // CLinkedTransferQueue::Node::
 //====================================================================
-CAR_INTERFACE_IMPL(CLinkedTransferQueue::Node, IInterface);
+CAR_INTERFACE_IMPL(CLinkedTransferQueue::Node, Object, IInterface);
 
 Boolean CLinkedTransferQueue::Node::CasNext(
     /* [in] */ Node* cmp,
@@ -102,6 +107,10 @@ Int32 CLinkedTransferQueue::FRONT_SPINS   = 1 << 7;
 Int32 CLinkedTransferQueue::CHAINED_SPINS = FRONT_SPINS >> 1;
 
 Int32 CLinkedTransferQueue::SWEEP_THRESHOLD = 32;
+
+CAR_INTERFACE_IMPL_2(CLinkedTransferQueue, AbstractQueue, ITransferQueue, IBlockingQueue)
+
+CAR_OBJECT_IMPL(CLinkedTransferQueue);
 
 Boolean CLinkedTransferQueue::CasTail(
     /* [in] */ Node* cmp,
@@ -357,7 +366,7 @@ Int32 CLinkedTransferQueue::CountOfMode(
 //====================================================================
 // CLinkedTransferQueue::Itr::
 //====================================================================
-CAR_INTERFACE_IMPL(CLinkedTransferQueue::Itr, IIterator);
+CAR_INTERFACE_IMPL(CLinkedTransferQueue::Itr, Object, IIterator);
 
 void CLinkedTransferQueue::Itr::Advance(
     /* [in] */ Node* prev)

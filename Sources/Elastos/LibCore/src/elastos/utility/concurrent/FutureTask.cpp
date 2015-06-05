@@ -2,18 +2,12 @@
 #include "FutureTask.h"
 #include <cutils/atomic.h>
 #include <cutils/atomic-inline.h>
-
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
 #include "LockSupport.h"
 #include "Executors.h"
 #include "CInteger32.h"
 #include "CExecutors.h"
 #include "CLockSupport.h"
 #include "CSystem.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
 
 using Elastos::Core::ISystem;
 using Elastos::Core::IInteger32;
@@ -26,6 +20,10 @@ using Elastos::Utility::Concurrent::CExecutors;
 namespace Elastos {
 namespace Utility {
 namespace Concurrent {
+
+CAR_INTERFACE_IMPL(FutureTask::WaitNode, Object, IInterface)
+
+CAR_INTERFACE_IMPL_2(FutureTask, Object, IRunnableFuture, IRunnable)
 
 const Int32 FutureTask::NEW          = 0;
 const Int32 FutureTask::COMPLETING   = 1;
@@ -395,21 +393,21 @@ ECode FutureTask::AwaitDone(
             }
             last = now;
 #ifdef ELASTOS_UTILITY_CONCURRENT
-            LockSupport::ParkNanos((IRunnableFuture*)this->Probe(EIID_IRunnableFuture), nanos);
+            LockSupport::ParkNanos((IRunnableFuture*)THIS_PROBE(IRunnableFuture), nanos);
 #else
             AutoPtr<ILockSupport> lockSupport;
             CLockSupport::AcquireSingleton((ILockSupport**)&lockSupport);
-            lockSupport->ParkNanos((IRunnableFuture*)this->Probe(EIID_IRunnableFuture), nanos);
+            lockSupport->ParkNanos((IRunnableFuture*)THIS_PROBE(IRunnableFuture), nanos);
 #endif
 
         }
         else {
 #ifdef ELASTOS_UTILITY_CONCURRENT
-            LockSupport::Park((IRunnableFuture*)this->Probe(EIID_IRunnableFuture));
+            LockSupport::Park((IRunnableFuture*)THIS_PROBE(IRunnableFuture));
 #else
             AutoPtr<ILockSupport> lockSupport;
             CLockSupport::AcquireSingleton((ILockSupport**)&lockSupport);
-            lockSupport->Park((IRunnableFuture*)this->Probe(EIID_IRunnableFuture));
+            lockSupport->Park((IRunnableFuture*)THIS_PROBE(IRunnableFuture));
 #endif
         }
     }

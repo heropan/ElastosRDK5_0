@@ -1,8 +1,8 @@
 
-#ifndef __CARRAYBLOCKINGQUEUE_H__
-#define __CARRAYBLOCKINGQUEUE_H__
+#ifndef __ELASTOS_UTILITY_CARRAYBLOCKINGQUEUE_H__
+#define __ELASTOS_UTILITY_CARRAYBLOCKINGQUEUE_H__
 
-#include "_CArrayBlockingQueue.h"
+#include "_Elastos_Utility_Concurrent_CArrayBlockingQueue.h"
 #include "AbstractQueue.h"
 
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;
@@ -12,7 +12,10 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CarClass(CArrayBlockingQueue), public AbstractQueue
+CarClass(CArrayBlockingQueue)
+    , public AbstractQueue
+    , public IArrayBlockingQueue
+    , public IBlockingQueue
 {
 private:
     /**
@@ -34,14 +37,14 @@ private:
      * interior remove while in detached mode.
      */
     class Itr
-        : public ElRefBase
+        : public Object
         , public IIterator
     {
     public:
+        CAR_INTERFACE_DECL()
+
         Itr(
             /* [in] */ CArrayBlockingQueue* host);
-
-        CAR_INTERFACE_DECL();
 
         CARAPI_(Boolean) IsDetached();
 
@@ -220,7 +223,9 @@ public:
      * reentrantly invoking another such method, causing subtle
      * corruption bugs.
      */
-    class Itrs : public ElRefBase
+    class Itrs
+        : public Object
+        , public IInterface
     {
     private:
         /**
@@ -242,6 +247,8 @@ public:
         };
 
     public:
+        CAR_INTERFACE_DECL()
+
         Itrs(
             /* [in] */ Itr* initial);
 
@@ -306,6 +313,10 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CArrayBlockingQueue();
 
     /**
@@ -352,10 +363,6 @@ public:
         /* [in] */ Int32 capacity,
         /* [in] */ Boolean fair,
         /* [in] */ ICollection* c);
-
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Inserts the specified element at the tail of this queue if it is
@@ -827,4 +834,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CARRAYBLOCKINGQUEUE_H__
+#endif //__ELASTOS_UTILITY_CARRAYBLOCKINGQUEUE_H__

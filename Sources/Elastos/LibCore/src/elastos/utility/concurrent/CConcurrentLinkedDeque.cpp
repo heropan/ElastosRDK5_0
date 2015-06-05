@@ -14,6 +14,8 @@ namespace Concurrent {
 //====================================================================
 // CConcurrentLinkedDeque::Node::
 //====================================================================
+CAR_INTERFACE_IMPL(CConcurrentLinkedDeque::Node, Object, IInterface)
+
 CConcurrentLinkedDeque::Node::Node()
 {  // default constructor for NEXT_TERMINATOR, PREV_TERMINATOR
 }
@@ -23,37 +25,6 @@ CConcurrentLinkedDeque::Node::Node(
 {
     assert(0 && "TODO");
 //    UNSAFE.putObject(this, itemOffset, item);
-}
-
-PInterface CConcurrentLinkedDeque::Node::Probe(
-    /* [in] */ REIID riid)
-{
-    if ( riid == EIID_IInterface) {
-        return THIS_PROBE(IInterface);
-    }
-    return NULL;
-}
-
-UInt32 CConcurrentLinkedDeque::Node::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CConcurrentLinkedDeque::Node::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CConcurrentLinkedDeque::Node::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (Object::Equals(object, THIS_PROBE(IInterface))) {
-        *iid = EIID_IInterface;
-        return NOERROR;
-    }
-    return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
 Boolean CConcurrentLinkedDeque::Node::CasItem(
@@ -124,6 +95,10 @@ Int64 CConcurrentLinkedDeque::Node::sNextOffset = 0;
 
 AutoPtr<CConcurrentLinkedDeque::Node> CConcurrentLinkedDeque::sPREV_TERMINATOR;
 AutoPtr<CConcurrentLinkedDeque::Node> CConcurrentLinkedDeque::sNEXT_TERMINATOR;
+
+CAR_INTERFACE_IMPL_2(CConcurrentLinkedDeque, AbstractCollection, IDeque, IQueue)
+
+CAR_OBJECT_IMPL(CConcurrentLinkedDeque);
 
 AutoPtr<CConcurrentLinkedDeque::Node> CConcurrentLinkedDeque::PrevTerminator()
 {
@@ -642,12 +617,6 @@ ECode CConcurrentLinkedDeque::constructor(
     return NOERROR;
 }
 
-PInterface CConcurrentLinkedDeque::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CConcurrentLinkedDeque::Probe(riid);
-}
-
 void CConcurrentLinkedDeque::InitHeadTail(
     /* [in] */ Node* h,
     /* [in] */ Node* t)
@@ -1068,31 +1037,10 @@ ECode CConcurrentLinkedDeque::GetDescendingIterator(
     return NOERROR;
 }
 
-ECode CConcurrentLinkedDeque::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractCollection::ContainsAll(collection, result);
-}
-
-ECode CConcurrentLinkedDeque::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractCollection::RemoveAll(collection, modified);
-}
-
-ECode CConcurrentLinkedDeque::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractCollection::RetainAll(collection, modified);
-}
-
 //====================================================================
 // CConcurrentLinkedDeque::AbstractItr::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentLinkedDeque::AbstractItr, IIterator)
+CAR_INTERFACE_IMPL(CConcurrentLinkedDeque::AbstractItr, Object, IIterator)
 
 CConcurrentLinkedDeque::AbstractItr::AbstractItr(
     /* [in] */ CConcurrentLinkedDeque* owner)

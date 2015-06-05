@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
+CAR_INTERFACE_IMPL(CCopyOnWriteArrayListHelper, Singleton, ICopyOnWriteArrayListHelper)
+
+CAR_SINGLETON_IMPL(CCopyOnWriteArrayListHelper)
+
 ECode CCopyOnWriteArrayListHelper::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [in] */ const ArrayOf<IInterface*>& snapshot,

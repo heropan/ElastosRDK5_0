@@ -343,6 +343,46 @@ module
             [in] IInterface* fromKey,
             [in] Boolean inclusive,
             [out] INavigableMap** outnav);
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p>Equivalent to {@code subMap(fromKey, true, toKey, false)}.
+         *
+         * @throws ClassCastException       {@inheritDoc}
+         * @throws NullPointerException     {@inheritDoc}
+         * @throws IllegalArgumentException {@inheritDoc}
+         */
+        SubMap(
+            [in] IInterface* fromKey,
+            [in] IInterface* toKey,
+            [out] ISortedMap** res);
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p>Equivalent to {@code headMap(toKey, false)}.
+         *
+         * @throws ClassCastException       {@inheritDoc}
+         * @throws NullPointerException     {@inheritDoc}
+         * @throws IllegalArgumentException {@inheritDoc}
+         */
+        HeadMap(
+            [in] IInterface* toKey,
+            [out] ISortedMap** res);
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p>Equivalent to {@code tailMap(fromKey, true)}.
+         *
+         * @throws ClassCastException       {@inheritDoc}
+         * @throws NullPointerException     {@inheritDoc}
+         * @throws IllegalArgumentException {@inheritDoc}
+         */
+        TailMap(
+            [in] IInterface* fromKey,
+            [out] ISortedMap** res);
     }
 
     } // namespace Utility

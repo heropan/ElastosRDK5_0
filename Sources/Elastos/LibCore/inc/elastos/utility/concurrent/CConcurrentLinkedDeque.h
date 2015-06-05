@@ -1,8 +1,8 @@
 
-#ifndef __CCONCURRENTLINKEDDEQUE_H__
-#define __CCONCURRENTLINKEDDEQUE_H__
+#ifndef __ELASTOS_UTILITY_CCONCURRENTLINKEDDEQUE_H__
+#define __ELASTOS_UTILITY_CCONCURRENTLINKEDDEQUE_H__
 
-#include "_CConcurrentLinkedDeque.h"
+#include "_Elastos_Utility_Concurrent_CConcurrentLinkedDeque.h"
 #include "AbstractCollection.h"
 
 using Elastos::IO::IObjectOutputStream;
@@ -12,29 +12,23 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CarClass(CConcurrentLinkedDeque) , public AbstractCollection
+CarClass(CConcurrentLinkedDeque)
+    , public AbstractCollection
+    , public IDeque
+    , public IQueue
 {
 protected:
     class Node
         : public IInterface
-        , public ElRefBase
+        , public Object
     {
     public:
+        CAR_INTERFACE_DECL()
+
         Node();
 
         Node(
             /* [in] */ IInterface* item);
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid);
 
         Boolean CasItem(
             /* [in] */ IInterface* cmp,
@@ -70,7 +64,7 @@ protected:
 private:
     class AbstractItr
         : public IIterator
-        , public ElRefBase
+        , public Object
     {
      public:
         CAR_INTERFACE_DECL();
@@ -167,13 +161,14 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ ICollection* c);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI AddFirst(
         /* [in] */ IInterface* e);
@@ -279,18 +274,6 @@ public:
 
     CARAPI GetDescendingIterator(
         /* [out] */ IIterator** outiter);
-
-    CARAPI ContainsAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* result);
-
-    CARAPI RemoveAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
-
-    CARAPI RetainAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
 
 protected:
     CARAPI_(AutoPtr<Node>) PrevTerminator();
@@ -442,4 +425,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CCONCURRENTLINKEDDEQUE_H__
+#endif //__ELASTOS_UTILITY_CCONCURRENTLINKEDDEQUE_H__

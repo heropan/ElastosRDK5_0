@@ -10,58 +10,15 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-
-CAR_INTERFACE_IMPL_LIGHT_2(CExecutorCompletionService::QueueingFuture, IRunnableFuture, IRunnable);
-
 void CExecutorCompletionService::QueueingFuture::Done()
 {
     Boolean result;
     mOwner->mCompletionQueue->Add(mTask, &result);
 }
 
-ECode CExecutorCompletionService::QueueingFuture::Cancel(
-    /* [in] */ Boolean mayInterruptIfRunning,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return FutureTask::Cancel(mayInterruptIfRunning, result);
-}
+CAR_INTERFACE_IMPL(CExecutorCompletionService, Object, IExecutorCompletionService)
 
-ECode CExecutorCompletionService::QueueingFuture::IsCancelled(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return FutureTask::IsCancelled(result);
-}
-
-ECode CExecutorCompletionService::QueueingFuture::IsDone(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return FutureTask::IsDone(result);
-}
-
-ECode CExecutorCompletionService::QueueingFuture::Get(
-    /* [out] */ IInterface** result)
-{
-    VALIDATE_NOT_NULL(result);
-    return FutureTask::Get(result);
-}
-
-ECode CExecutorCompletionService::QueueingFuture::Get(
-    /* [in] */ Int64 timeout,
-    /* [in] */ ITimeUnit* unit,
-    /* [out] */ IInterface** result)
-{
-    VALIDATE_NOT_NULL(result);
-    return FutureTask::Get(timeout, unit, result);
-}
-
-ECode CExecutorCompletionService::QueueingFuture::Run()
-{
-    return FutureTask::Run();
-}
-
+CAR_OBJECT_IMPL(CExecutorCompletionService);
 
 ECode CExecutorCompletionService::constructor(
     /* [in] */ IExecutor* executor)

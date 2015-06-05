@@ -1,12 +1,12 @@
 
-#ifndef __COPYONWRITEARRAYLIST_H__
-#define __COPYONWRITEARRAYLIST_H__
+#ifndef __ELASTOS_UTILITY_COPYONWRITEARRAYLIST_H__
+#define __ELASTOS_UTILITY_COPYONWRITEARRAYLIST_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include "AbstractList.h"
-#include <elastos/Mutex.h>
+#include "elastos/core/Object.h"
 
-using Elastos::Core::Mutex;
+using Elastos::Core::Object;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 using Elastos::Utility::AbstractList;
@@ -16,11 +16,19 @@ namespace Utility {
 namespace Concurrent {
 
 class CopyOnWriteArrayList
+    : public Object
+    , public ICopyOnWriteArrayList
+    , public ICollection
+    , public IIterable
 {
 protected:
-    class Slice : public ElRefBase
+    class Slice
+        : public Object
+        , public IInterface
     {
     public:
+        CAR_INTERFACE_DECL()
+
         Slice(
             /* [in] */ ArrayOf<IInterface*>* expectedElements,
             /* [in] */ Int32 from,
@@ -62,9 +70,7 @@ protected:
      * of Java's concurrency semantics for final fields.
      */
     class CowSubList
-        : public ElRefBase
-        , public AbstractList
-        , IList
+        : public AbstractList
     {
     public:
         CowSubList(
@@ -72,8 +78,6 @@ protected:
             /* [in] */ Int32 from,
             /* [in] */ Int32 to,
             /* [in] */ CopyOnWriteArrayList* host);
-
-        CAR_INTERFACE_DECL();
 
         CARAPI Add(
             /* [in] */ Int32 location,
@@ -191,16 +195,17 @@ protected:
      * Iterates an immutable snapshot of the list.
      */
     class CowIterator
-        : public ElRefBase
+        : public Object
         , public IListIterator
+        , public IIterator
     {
     public:
+        CAR_INTERFACE_DECL()
+
         CowIterator(
             /* [in] */ ArrayOf<IInterface*>* snapshot,
             /* [in] */ Int32 from,
             /* [in] */ Int32 to);
-
-        CAR_INTERFACE_DECL();
 
         CARAPI Add(
             /* [in] */ IInterface* object);
@@ -238,8 +243,7 @@ protected:
     };
 
 public:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
 
     /**
      * Creates an empty instance.
@@ -847,4 +851,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__COPYONWRITEARRAYLIST_H__
+#endif //__ELASTOS_UTILITY_COPYONWRITEARRAYLIST_H__

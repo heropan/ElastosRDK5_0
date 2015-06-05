@@ -1,16 +1,10 @@
 
 #include "Executors.h"
-#include <elastos/Thread.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
+#include <Thread.h>
+#include <StringBuilder.h>
+#include <StringUtils.h>
 #include "CThread.h"
 #include "CAtomicInteger32.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -25,7 +19,7 @@ namespace Concurrent {
 //==============================================
 //    Executors::RunnableAdapter
 //===============================================
-CAR_INTERFACE_IMPL_LIGHT(Executors::RunnableAdapter, ICallable)
+CAR_INTERFACE_IMPL(Executors::RunnableAdapter, Object, ICallable)
 
 ECode Executors::RunnableAdapter::Call(
     /* [out] */ IInterface** result)
@@ -50,6 +44,8 @@ static AutoPtr<IAtomicInteger32> InitsPoolNumber()
 
 const AutoPtr<IAtomicInteger32> Executors::DefaultThreadFactory::sPoolNumber = InitsPoolNumber();
 
+CAR_INTERFACE_IMPL(Executors::DefaultThreadFactory, Object, IThreadFactory)
+
 Executors::DefaultThreadFactory::DefaultThreadFactory()
 {
     CAtomicInteger32::New(1, (IAtomicInteger32**)&mThreadNumber);
@@ -65,8 +61,6 @@ Executors::DefaultThreadFactory::DefaultThreadFactory()
     sb += "-thread-";
     mNamePrefix = sb.ToString();
 }
-
-CAR_INTERFACE_IMPL_LIGHT(Executors::DefaultThreadFactory, IThreadFactory)
 
 ECode Executors::DefaultThreadFactory::NewThread(
     /* [in] */ IRunnable* r,
@@ -92,6 +86,8 @@ ECode Executors::DefaultThreadFactory::NewThread(
 //==============================================
 //    Executors
 //===============================================
+CAR_INTERFACE_IMPL(Executors, Object, IExecutors)
+
 AutoPtr<IThreadFactory> Executors::GetDefaultThreadFactory()
 {
     return new DefaultThreadFactory();

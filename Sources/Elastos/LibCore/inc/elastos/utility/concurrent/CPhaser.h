@@ -1,8 +1,8 @@
 
-#ifndef __CPHASER_H__
-#define __CPHASER_H__
+#ifndef __ELASTOS_UTILITY_CPHASER_H__
+#define __ELASTOS_UTILITY_CPHASER_H__
 
-#include "_CPhaser.h"
+#include "_Elastos_Utility_Concurrent_CPhaser.h"
 
 using Elastos::Utility::Concurrent::Atomic::IAtomicReference;
 
@@ -11,6 +11,8 @@ namespace Utility {
 namespace Concurrent {
 
 CarClass(CPhaser)
+    , public Object
+    , public IPhaser
 {
 public:
     /**
@@ -18,7 +20,7 @@ public:
      */
     class QNode
         : public IForkJoinPoolManagedBlocker
-        , public ElRefBase
+        , public Object
     {
     public:
         CAR_INTERFACE_DECL();
@@ -49,6 +51,10 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Creates a new phaser with no initially registered parties, no
      * parent, and initial phase number 0. Any thread using this
@@ -368,4 +374,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CPHASER_H__
+#endif //__ELASTOS_UTILITY_CPHASER_H__

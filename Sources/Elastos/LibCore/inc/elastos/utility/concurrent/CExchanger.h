@@ -1,12 +1,10 @@
 
-#ifndef __CEXCHANGER_H__
-#define __CEXCHANGER_H__
+#ifndef __ELASTOS_UTILITY_CEXCHANGER_H__
+#define __ELASTOS_UTILITY_CEXCHANGER_H__
 
-#include "_CExchanger.h"
+#include "_Elastos_Utility_Concurrent_CExchanger.h"
 #include "AtomicReference.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Concurrent::Atomic::IAtomicReference;
 using Elastos::Utility::Concurrent::Atomic::AtomicReference;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
@@ -16,10 +14,12 @@ namespace Utility {
 namespace Concurrent {
 
 CarClass(CExchanger)
+    , public IExchanger
+    , public Object
 {
 private:
     class CDummyObject
-        : public ElRefBase
+        : public Object
         , public IInterface
     {
     public:
@@ -34,13 +34,9 @@ private:
      * of the use of non-V CANCEL sentinels.
      */
     class Node
-        : public IAtomicReference
-        , public AtomicReference
-        , public ElRefBase
+        : public AtomicReference
     {
     public:
-        CAR_INTERFACE_DECL();
-
         /**
          * Creates node with given item and empty hole.
          * @param item the item
@@ -91,13 +87,9 @@ private:
      * extra space.
      */
     class Slot
-        : public IAtomicReference
-        , public AtomicReference
-        , public ElRefBase
+        : public AtomicReference
     {
     public:
-        CAR_INTERFACE_DECL();
-
         Slot();
 
         CARAPI Get(
@@ -134,6 +126,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Creates a new Exchanger.
      */
@@ -359,11 +355,11 @@ private:
      */
     AutoPtr<IAtomicInteger32> mMax;
 
-    static Mutex mLock;
+    static Object mLock;
 };
 
 } // namespace Concurrent
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CEXCHANGER_H__
+#endif //__ELASTOS_UTILITY_CEXCHANGER_H__

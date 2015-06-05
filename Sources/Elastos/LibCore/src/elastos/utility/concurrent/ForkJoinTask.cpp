@@ -1,6 +1,6 @@
 
 #include "ForkJoinTask.h"
-#include <elastos/Thread.h>
+#include <Thread.h>
 #include "CForkJoinWorkerThread.h"
 #include "CSystem.h"
 
@@ -21,51 +21,9 @@ Int32 ForkJoinTask::CANCELLED   = -2;
 Int32 ForkJoinTask::EXCEPTIONAL = -3;
 Int32 ForkJoinTask::SIGNAL      =  1;
 
-Mutex ForkJoinTask::mLock;
+Object ForkJoinTask::mLock;
 
-UInt32 ForkJoinTask::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ForkJoinTask::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface ForkJoinTask::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(IForkJoinTask*)this;
-    }
-    else if (EIID_IForkJoinTask == riid) {
-        return (IForkJoinTask*)this;
-    }
-    else if (Elastos::IO::EIID_ISerializable == riid) {
-        return (ISerializable*)this;
-    }
-
-    return NULL;
-}
-
-ECode ForkJoinTask::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(IForkJoinTask*)this) {
-        *pIID = EIID_IForkJoinTask;
-    }
-    else if (pObject == (IInterface*)(ISerializable*)this) {
-        *pIID = Elastos::IO::EIID_ISerializable;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_3(ForkJoinTask, Object, IForkJoinTask, IFuture, ISerializable)
 
 Int32 ForkJoinTask::SetCompletion(
     /* [in] */ const Int32& completion)
@@ -105,7 +63,7 @@ Int32 ForkJoinTask::ExternalAwaitDone()
     if ((s = mStatus) >= 0) {
         Boolean interrupted = FALSE;
         {
-            Mutex::Autolock lock(mLock);
+            Object::Autolock lock(mLock);
             while ((s = mStatus) >= 0) {
                 if (s == 0) {
                     assert(0 && "TODO");
@@ -134,7 +92,7 @@ Int32 ForkJoinTask::ExternalInterruptibleAwaitDone(
         return s;
 //        throw new InterruptedException();
     if ((s = mStatus) >= 0) {
-        Mutex::Autolock lock(mLock);
+        Object::Autolock lock(mLock);
         while ((s = mStatus) >= 0) {
             if (s == 0) {
                 assert(0 && "TODO");
@@ -230,6 +188,7 @@ Int32 ForkJoinTask::EXCEPTION_MAP_CAPACITY = 32;
 //====================================================================
 // ForkJoinTask::ExceptionNode::
 //====================================================================
+CAR_INTERFACE_IMPL(ForkJoinTask::ExceptionNode, Object, IInterface)
 
 ForkJoinTask::ExceptionNode::ExceptionNode(
     /* [in] */ IForkJoinTask* task,

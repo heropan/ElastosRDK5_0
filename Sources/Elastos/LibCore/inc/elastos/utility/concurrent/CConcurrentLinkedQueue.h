@@ -1,8 +1,8 @@
 
-#ifndef __CCONCURRENTLINKEDQUEUE_H__
-#define __CCONCURRENTLINKEDQUEUE_H__
+#ifndef __ELASTOS_UTILITY_CCONCURRENTLINKEDQUEUE_H__
+#define __ELASTOS_UTILITY_CCONCURRENTLINKEDQUEUE_H__
 
-#include "_CConcurrentLinkedQueue.h"
+#include "_Elastos_Utility_Concurrent_CConcurrentLinkedQueue.h"
 #include "AbstractQueue.h"
 
 using Elastos::IO::IObjectOutputStream;
@@ -12,27 +12,21 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CarClass(CConcurrentLinkedQueue) , public AbstractQueue
+CarClass(CConcurrentLinkedQueue)
+    , public AbstractQueue
+    , public IConcurrentLinkedQueue
+    , public ISerializable
 {
 private:
     class Node
         : public IInterface
-        , public ElRefBase
+        , public Object
     {
     public:
+        CAR_INTERFACE_DECL()
+
         Node(
             /* [in] */ IInterface* item);
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid);
 
         Boolean CasItem(
             /* [in] */ IInterface* cmp,
@@ -57,7 +51,7 @@ private:
 
     class Itr
         : public IIterator
-        , public ElRefBase
+        , public Object
     {
     public:
         CAR_INTERFACE_DECL();
@@ -104,13 +98,14 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ ICollection* c);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI Add(
         /* [in] */ IInterface* object,
@@ -215,4 +210,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CCONCURRENTLINKEDQUEUE_H__
+#endif //__ELASTOS_UTILITY_CCONCURRENTLINKEDQUEUE_H__

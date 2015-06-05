@@ -1,16 +1,25 @@
 
-#ifndef __CTIMEUNITHELPER_H__
-#define __CTIMEUNITHELPER_H__
+#ifndef __ELASTOS_UTILITY_CTIMEUNITHELPER_H__
+#define __ELASTOS_UTILITY_CTIMEUNITHELPER_H__
 
-#include "_CTimeUnitHelper.h"
+#include "_Elastos_Utility_Concurrent_CTimeUnitHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
 CarClass(CTimeUnitHelper)
+    , public Singleton
+    , public ITimeUnitHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetNANOSECONDS(
         /* [out] */ ITimeUnit** unit);
 
@@ -37,4 +46,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CTIMEUNITHELPER_H__
+#endif //__ELASTOS_UTILITY_CTIMEUNITHELPER_H__

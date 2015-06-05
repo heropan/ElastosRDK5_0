@@ -1,18 +1,16 @@
 
-#ifndef __CTHREADPOOLEXECUTOR_H__
-#define __CTHREADPOOLEXECUTOR_H__
+#ifndef __ELASTOS_UTILITY_CTHREADPOOLEXECUTOR_H__
+#define __ELASTOS_UTILITY_CTHREADPOOLEXECUTOR_H__
 
-#include "_CThreadPoolExecutor.h"
+#include "_Elastos_Utility_Concurrent_CThreadPoolExecutor.h"
 #include "AbstractExecutorService.h"
 #include "AbstractQueuedSynchronizer.h"
 #include <elastos/utility/etl/HashSet.h>
-#include <elastos/Mutex.h>
-#include <elastos/Condition.h>
+#include <Condition.h>
 
-using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Core::Condition;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::Concurrent::Locks::AbstractQueuedSynchronizer;
 
@@ -20,7 +18,9 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CarClass(CThreadPoolExecutor) , public AbstractExecutorService
+CarClass(CThreadPoolExecutor)
+    , public AbstractExecutorService
+    , public IThreadPoolExecutor
 {
 public:
     /**
@@ -30,7 +30,7 @@ public:
      * is discarded.
      */
     class CallerRunsPolicy
-        : public ElLightRefBase
+        : public Object
         , public IRejectedExecutionHandler
     {
     public:
@@ -53,7 +53,7 @@ public:
      * {@code RejectedExecutionException}.
      */
     class AbortPolicy
-        : public ElLightRefBase
+        : public Object
         , public IRejectedExecutionHandler
     {
     public:
@@ -82,7 +82,7 @@ public:
      * rejected task.
      */
     class DiscardPolicy
-        : public ElLightRefBase
+        : public Object
         , public IRejectedExecutionHandler
     {
     public:
@@ -106,7 +106,7 @@ public:
      * is shut down, in which case the task is discarded.
      */
     class DiscardOldestPolicy
-        : public ElLightRefBase
+        : public Object
         , public IRejectedExecutionHandler
     {
     public:
@@ -140,11 +140,12 @@ private:
      * lock when they invoke pool control methods like setCorePoolSize.
      */
     class Worker
-        : public ElLightRefBase
-        , public AbstractQueuedSynchronizer
+        : public AbstractQueuedSynchronizer
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
+
         /**
          * Creates with given first task and thread from ThreadFactory.
          * @param firstTask the first task (null if none)
@@ -152,8 +153,6 @@ private:
         Worker(
             /* [in] */ IRunnable* firstTask,
             /* [in] */ CThreadPoolExecutor* owner);
-
-        CAR_INTERFACE_DECL();
 
         /** Delegates main run loop to outer runWorker  */
         CARAPI Run()
@@ -198,6 +197,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CThreadPoolExecutor();
 
     ~CThreadPoolExecutor();
@@ -334,9 +337,6 @@ public:
         /* [in] */ IBlockingQueue* workQueue,
         /* [in] */ IThreadFactory* threadFactory,
         /* [in] */ IRejectedExecutionHandler* handler);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Transitions to TERMINATED state if either (SHUTDOWN and pool
@@ -776,39 +776,6 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
-    CARAPI Submit(
-        /* [in] */ ICallable* task,
-        /* [out] */ IFuture** future);
-
-    CARAPI Submit(
-        /* [in] */ IRunnable* task,
-        /* [in] */ IInterface* result,
-        /* [out] */ IFuture** future);
-
-    CARAPI Submit(
-        /* [in] */ IRunnable* task,
-        /* [out] */ IFuture** future);
-
-    CARAPI InvokeAny(
-        /* [in] */ ICollection* tasks,
-        /* [out] */ IInterface** result);
-
-    CARAPI InvokeAny(
-        /* [in] */ ICollection* tasks,
-        /* [in] */ Int64 timeout,
-        /* [in] */ ITimeUnit* unit,
-        /* [out] */ IInterface** result);
-
-    CARAPI InvokeAll(
-        /* [in] */ ICollection* tasks,
-        /* [out] */ IList** futures);
-
-    CARAPI InvokeAll(
-        /* [in] */ ICollection* tasks,
-        /* [in] */ Int64 timeout,
-        /* [in] */ ITimeUnit* unit,
-        /* [out] */ IList** futures);
-
 protected:
     /**
      * Method invoked prior to executing the given Runnable in the
@@ -1192,7 +1159,7 @@ private:
      * ensuring workers set is stable while separately checking
      * permission to interrupt and actually interrupting.
      */
-    Mutex mMainLock;
+    Object mMainLock;
 
     /**
      * Set containing all worker threads in pool. Accessed only when
@@ -1306,4 +1273,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CTHREADPOOLEXECUTOR_H__
+#endif //__ELASTOS_UTILITY_CTHREADPOOLEXECUTOR_H__

@@ -1,8 +1,8 @@
 
-#ifndef __CCONCURRENTSKIPLISTMAP_H__
-#define __CCONCURRENTSKIPLISTMAP_H__
+#ifndef __ELASTOS_UTILITY_CCONCURRENTSKIPLISTMAP_H__
+#define __ELASTOS_UTILITY_CCONCURRENTSKIPLISTMAP_H__
 
-#include "_CConcurrentSkipListMap.h"
+#include "_Elastos_Utility_Concurrent_CConcurrentSkipListMap.h"
 #include "AbstractMap.h"
 
 using Elastos::Core::IComparable;
@@ -15,14 +15,21 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CarClass(CConcurrentSkipListMap) , public AbstractMap
+CarClass(CConcurrentSkipListMap)
+    , public AbstractMap
+    , public IConcurrentNavigableMap
+    , public INavigableMap
+    , public ISortedMap
+    , public IConcurrentMap
 {
 public:
     class Node
         : public IInterface
-        , public ElRefBase
+        , public Object
     {
     public:
+        CAR_INTERFACE_DECL()
+
         Node(
             /* [in] */ IInterface* key,
             /* [in] */ IInterface* value,
@@ -30,17 +37,6 @@ public:
 
         Node(
             /* [in] */ Node* next);
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid);
 
         Boolean CasValue(
             /* [in] */ IInterface* cmp,
@@ -92,10 +88,10 @@ public:
 
     class Index
         : public IInterface
-        , public ElRefBase
+        , public Object
     {
     public:
-        CAR_INTERFACE_DECL();
+        CAR_INTERFACE_DECL()
 
         Index(
             /* [in] */ Node* node,
@@ -157,10 +153,10 @@ public:
 
     class ComparableUsingComparator
         : public IComparable
-        , public ElRefBase
+        , public Object
     {
     public:
-        CAR_INTERFACE_DECL();
+        CAR_INTERFACE_DECL()
 
         ComparableUsingComparator(
             /* [in] */ IInterface* key,
@@ -179,7 +175,7 @@ public:
 
     class Iter
         : public IIterator
-        , public ElRefBase
+        , public Object
     {
     public:
         CAR_INTERFACE_DECL();
@@ -241,7 +237,7 @@ public:
     class _KeySet
         : public AbstractSet
         , public INavigableSet
-        , public ElRefBase
+        , public ISortedSet
     {
     public:
         CAR_INTERFACE_DECL();
@@ -346,41 +342,14 @@ public:
         CARAPI DescendingSet(
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI Add(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* modified);
-
-        CARAPI AddAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ContainsAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI RemoveAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI RetainAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI GetHashCode(
-            /* [out] */ Int32* hashCode);
-
     private:
         AutoPtr<INavigableMap> mM;
     };
 
     class _Values
         : public AbstractCollection
-        , public ICollection
-        , public ElRefBase
     {
     public:
-        CAR_INTERFACE_DECL();
-
         _Values(
             /* [in] */ INavigableMap* map);
 
@@ -406,48 +375,14 @@ public:
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
-        CARAPI Add(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* modified);
-
-        CARAPI AddAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ContainsAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI RemoveAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI RetainAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI GetHashCode(
-            /* [out] */ Int32* hashCode);
-
-        CARAPI Remove(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* modified);
-
-        CARAPI Equals(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* result);
     private:
         AutoPtr<INavigableMap> mM;
     };
 
     class _EntrySet
         : public AbstractSet
-        , public ISet
-        , public ElRefBase
     {
     public:
-        CAR_INTERFACE_DECL();
-
         _EntrySet(
             /* [in] */ INavigableMap* map);
 
@@ -481,29 +416,6 @@ public:
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
-        CARAPI Add(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* modified);
-
-        CARAPI AddAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ContainsAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI RemoveAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI RetainAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI GetHashCode(
-            /* [out] */ Int32* hashCode);
-
     private:
         AutoPtr<INavigableMap> mM;
     };
@@ -512,12 +424,12 @@ public:
         : public AbstractMap
         , public INavigableMap
         , public IConcurrentMap
-        , public ElRefBase
+        , public ISortedMap
     {
     public:
         class SubMapIter
             : public IIterator
-            , public ElRefBase
+            , public Object
         {
         public:
             CAR_INTERFACE_DECL();
@@ -755,16 +667,6 @@ public:
 
         AutoPtr<IIterator> EntryIterator();
 
-        CARAPI Equals(
-            /* [in] */ IInterface* entry,
-            /* [out] */ Boolean* result);
-
-        CARAPI PutAll(
-            /* [in] */ IMap* map);
-
-        CARAPI GetHashCode(
-            /* [out] */ Int32* hashCode);
-
     private:
         /* ----------------  Utilities -------------- */
 
@@ -836,6 +738,10 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI Initialize();
 
     Int32 Compare(
@@ -894,9 +800,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ ISortedMap* m);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI Clone(
         /* [out] */ IInterface** res);
@@ -1178,4 +1081,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CCONCURRENTSKIPLISTMAP_H__
+#endif //__ELASTOS_UTILITY_CCONCURRENTSKIPLISTMAP_H__

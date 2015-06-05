@@ -1,8 +1,8 @@
 
-#ifndef __CCOPYONWRITEARRAYSET_H__
-#define __CCOPYONWRITEARRAYSET_H__
+#ifndef __ELASTOS_UTILITY_CCOPYONWRITEARRAYSET_H__
+#define __ELASTOS_UTILITY_CCOPYONWRITEARRAYSET_H__
 
-#include "_CCopyOnWriteArraySet.h"
+#include "_Elastos_Utility_Concurrent_CCopyOnWriteArraySet.h"
 #include "AbstractSet.h"
 
 namespace Elastos {
@@ -12,6 +12,8 @@ namespace Concurrent {
 CarClass(CCopyOnWriteArraySet), public AbstractSet
 {
 public:
+    CAR_OBJECT_DECL()
+
     /**
      * Creates an empty set.
      */
@@ -26,9 +28,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ ICollection* c);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Attempts to add {@code object} to the contents of this
@@ -338,4 +337,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CCOPYONWRITEARRAYSET_H__
+#endif //__ELASTOS_UTILITY_CCOPYONWRITEARRAYSET_H__

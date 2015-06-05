@@ -1,7 +1,13 @@
 
 #include "CLinkedBlockingDeque.h"
+<<<<<<< Updated upstream
 #include <elastos/StringBuilder.h>
 #include <elastos/Math.h>
+=======
+#include <StringBuilder.h>
+#include <Math.h>
+#include <ObjectUtils.h>
+>>>>>>> Stashed changes
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;
@@ -13,7 +19,7 @@ namespace Concurrent {
 //====================================================================
 // CLinkedBlockingDeque::Node::
 //====================================================================
-CAR_INTERFACE_IMPL(CLinkedBlockingDeque::Node, IInterface);
+CAR_INTERFACE_IMPL(CLinkedBlockingDeque::Node, Object, IInterface);
 
 CLinkedBlockingDeque::Node::Node(
     /* [in] */ IInterface* x)
@@ -24,7 +30,7 @@ CLinkedBlockingDeque::Node::Node(
 //====================================================================
 // CLinkedBlockingDeque::AbstractItr::
 //====================================================================
-CAR_INTERFACE_IMPL(CLinkedBlockingDeque::AbstractItr, IIterator);
+CAR_INTERFACE_IMPL(CLinkedBlockingDeque::AbstractItr, Object, IIterator);
 
 CLinkedBlockingDeque::AbstractItr::AbstractItr(
     /* [in] */ CLinkedBlockingDeque* owner) : mOwner(owner)
@@ -147,6 +153,10 @@ AutoPtr<CLinkedBlockingDeque::Node> CLinkedBlockingDeque::DescendingItr::NextNod
 
 Int64 CLinkedBlockingDeque::sSerialVersionUID = -387911632671998426L;
 
+CAR_INTERFACE_IMPL_3(CLinkedBlockingDeque, AbstractQueue, IBlockingDeque, IBlockingQueue, ISerializable)
+
+CAR_OBJECT_IMPL(CLinkedBlockingDeque);
+
 ECode CLinkedBlockingDeque::constructor()
 {
     return constructor(Elastos::Core::Math::INT32_MAX_VALUE);
@@ -182,12 +192,6 @@ ECode CLinkedBlockingDeque::constructor(
     }
     lock->UnLock();
     return NOERROR;
-}
-
-PInterface CLinkedBlockingDeque::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CLinkedBlockingDeque::Probe(riid);
 }
 
 Boolean CLinkedBlockingDeque::LinkFirst(

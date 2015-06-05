@@ -25,6 +25,10 @@ AutoPtr<IRandom> CConcurrentSkipListMap::sSeedGenerator;
 
 AutoPtr<IInterface> CConcurrentSkipListMap::sBASE_HEADER;// = new CObject();
 
+CAR_INTERFACE_IMPL_4(CConcurrentSkipListMap, AbstractMap, IConcurrentNavigableMap, INavigableMap, ISortedMap, IConcurrentMap)
+
+CAR_OBJECT_IMPL(CConcurrentSkipListMap);
+
 ECode CConcurrentSkipListMap::Initialize()
 {
     CRandom::New((IRandom**)&sSeedGenerator);
@@ -52,6 +56,7 @@ Boolean CConcurrentSkipListMap::CasHead(
 //====================================================================
 // CConcurrentSkipListMap::Node::
 //====================================================================
+CAR_INTERFACE_IMPL(CConcurrentSkipListMap::Node, Object, IInterface)
 
 CConcurrentSkipListMap::Node::Node(
     /* [in] */ IInterface* key,
@@ -69,37 +74,6 @@ CConcurrentSkipListMap::Node::Node(
     mKey = NULL;
     mValue = this;
     mNext = next;
-}
-
-PInterface CConcurrentSkipListMap::Node::Probe(
-    /* [in] */ REIID riid)
-{
-    if ( riid == EIID_IInterface) {
-        return THIS_PROBE(IInterface);
-    }
-    return NULL;
-}
-
-UInt32 CConcurrentSkipListMap::Node::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CConcurrentSkipListMap::Node::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CConcurrentSkipListMap::Node::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (Object::Equals(object, THIS_PROBE(IInterface))) {
-        *iid = EIID_IInterface;
-        return NOERROR;
-    }
-    return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
 Boolean CConcurrentSkipListMap::Node::CasValue(
@@ -194,7 +168,7 @@ AutoPtr<AbstractMap::SimpleImmutableEntry> CConcurrentSkipListMap::Node::CreateS
 //====================================================================
 // CConcurrentSkipListMap::Index::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentSkipListMap::Index, IInterface);
+CAR_INTERFACE_IMPL(CConcurrentSkipListMap::Index, Object, IInterface)
 
 CConcurrentSkipListMap::Index::Index(
     /* [in] */ Node* node,
@@ -265,7 +239,7 @@ CConcurrentSkipListMap::HeadIndex::HeadIndex(
 //====================================================================
 // CConcurrentSkipListMap::ComparableUsingComparator::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentSkipListMap::ComparableUsingComparator, IComparable)
+CAR_INTERFACE_IMPL(CConcurrentSkipListMap::ComparableUsingComparator, Object, IComparable)
 
 CConcurrentSkipListMap::ComparableUsingComparator::ComparableUsingComparator(
     /* [in] */ IInterface* key,
@@ -942,12 +916,6 @@ ECode CConcurrentSkipListMap::constructor(
     Initialize();
     BuildFromSorted(m);
     return NOERROR;
-}
-
-PInterface CConcurrentSkipListMap::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CConcurrentSkipListMap::Probe(riid);
 }
 
 ECode CConcurrentSkipListMap::Clone(
@@ -1685,7 +1653,7 @@ ECode CConcurrentSkipListMap::PollLastEntry(
 //====================================================================
 // CConcurrentSkipListMap::Iter::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentSkipListMap::Iter, IIterator);
+CAR_INTERFACE_IMPL(CConcurrentSkipListMap::Iter, Object, IIterator);
 
 CConcurrentSkipListMap::Iter::Iter(
     /* [in] */ CConcurrentSkipListMap* owner)
@@ -1856,7 +1824,7 @@ ECode CConcurrentSkipListMap::PutAll(
 //====================================================================
 // CConcurrentSkipListMap::_KeySet::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentSkipListMap::_KeySet, INavigableSet);
+CAR_INTERFACE_IMPL_2(CConcurrentSkipListMap::_KeySet, AbstractSet, ISortedSet, INavigableSet);
 
 CConcurrentSkipListMap::_KeySet::_KeySet(
     /* [in] */ INavigableMap* map)
@@ -2146,52 +2114,9 @@ ECode CConcurrentSkipListMap::_KeySet::DescendingSet(
     return NOERROR;
 }
 
-ECode CConcurrentSkipListMap::_KeySet::Add(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::Add(object, modified);
-}
-
-ECode CConcurrentSkipListMap::_KeySet::AddAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::AddAll(collection, modified);
-}
-
-ECode CConcurrentSkipListMap::_KeySet::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::ContainsAll(collection, result);
-}
-
-ECode CConcurrentSkipListMap::_KeySet::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::RemoveAll(collection, modified);
-}
-
-ECode CConcurrentSkipListMap::_KeySet::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::RetainAll(collection, modified);
-}
-
-ECode CConcurrentSkipListMap::_KeySet::GetHashCode(
-    /* [out] */ Int32* hashCode)
-{
-    return AbstractSet::GetHashCode(hashCode);
-}
-
 //====================================================================
 // CConcurrentSkipListMap::_Values::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentSkipListMap::_Values, ICollection);
-
 CConcurrentSkipListMap::_Values::_Values(
     /* [in] */ INavigableMap* map)
 {
@@ -2261,66 +2186,9 @@ ECode CConcurrentSkipListMap::_Values::ToArray(
     return ToList(this)->ToArray(inArray, outArray);
 }
 
-ECode CConcurrentSkipListMap::_Values::Add(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractCollection::Add(object, modified);
-}
-
-ECode CConcurrentSkipListMap::_Values::AddAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractCollection::AddAll(collection, modified);
-}
-
-ECode CConcurrentSkipListMap::_Values::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractCollection::ContainsAll(collection, result);
-}
-
-ECode CConcurrentSkipListMap::_Values::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractCollection::RemoveAll(collection, modified);
-}
-
-ECode CConcurrentSkipListMap::_Values::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractCollection::RetainAll(collection, modified);
-}
-
-ECode CConcurrentSkipListMap::_Values::GetHashCode(
-    /* [out] */ Int32* hashCode)
-{
-    return E_NO_SUCH_METHOD_EXCEPTION;
-}
-
-ECode CConcurrentSkipListMap::_Values::Remove(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractCollection::Remove(object, modified);
-}
-
-ECode CConcurrentSkipListMap::_Values::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    return E_NO_SUCH_METHOD_EXCEPTION;
-}
-
 //====================================================================
 // CConcurrentSkipListMap::_EntrySet::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentSkipListMap::_EntrySet, ISet);
-
 CConcurrentSkipListMap::_EntrySet::_EntrySet(
     /* [in] */ INavigableMap* map)
 {
@@ -2449,51 +2317,10 @@ ECode CConcurrentSkipListMap::_EntrySet::ToArray(
     return ToList(this)->ToArray(inArray, outArray);
 }
 
-ECode CConcurrentSkipListMap::_EntrySet::Add(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::Add(object, modified);
-}
-
-ECode CConcurrentSkipListMap::_EntrySet::AddAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::AddAll(collection, modified);
-}
-
-ECode CConcurrentSkipListMap::_EntrySet::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::ContainsAll(collection, result);
-}
-
-ECode CConcurrentSkipListMap::_EntrySet::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::RemoveAll(collection, modified);
-}
-
-ECode CConcurrentSkipListMap::_EntrySet::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::RetainAll(collection, modified);
-}
-
-ECode CConcurrentSkipListMap::_EntrySet::GetHashCode(
-    /* [out] */ Int32* hashCode)
-{
-    return AbstractSet::GetHashCode(hashCode);
-}
-
 //====================================================================
 // CConcurrentSkipListMap::_SubMap::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentSkipListMap::_SubMap, INavigableMap);
+CAR_INTERFACE_IMPL_3(CConcurrentSkipListMap::_SubMap, AbstractMap, INavigableMap, IConcurrentMap, ISortedMap)
 
 CConcurrentSkipListMap::_SubMap::_SubMap(
     /* [in] */ CConcurrentSkipListMap* map,
@@ -3276,29 +3103,10 @@ AutoPtr<IIterator> CConcurrentSkipListMap::_SubMap::EntryIterator()
     return (IIterator*)p->Probe(EIID_IIterator);
 }
 
-ECode CConcurrentSkipListMap::_SubMap::Equals(
-    /* [in] */ IInterface* entry,
-    /* [out] */ Boolean* result)
-{
-    return AbstractMap::Equals(entry, result);
-}
-
-ECode CConcurrentSkipListMap::_SubMap::PutAll(
-    /* [in] */ IMap* map)
-{
-    return AbstractMap::PutAll(map);
-}
-
-ECode CConcurrentSkipListMap::_SubMap::GetHashCode(
-    /* [out] */ Int32* hashCode)
-{
-    return AbstractMap::GetHashCode(hashCode);
-}
-
 //====================================================================
 // CConcurrentSkipListMap::_SubMap::SubMapIter::
 //====================================================================
-CAR_INTERFACE_IMPL(CConcurrentSkipListMap::_SubMap::SubMapIter, IIterator);
+CAR_INTERFACE_IMPL(CConcurrentSkipListMap::_SubMap::SubMapIter, Object, IIterator);
 
 CConcurrentSkipListMap::_SubMap::SubMapIter::SubMapIter(
     /* [in] */ _SubMap* owner)

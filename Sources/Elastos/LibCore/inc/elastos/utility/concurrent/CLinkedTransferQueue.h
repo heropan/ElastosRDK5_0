@@ -1,8 +1,8 @@
 
-#ifndef __CLINKEDTRANSFERQUEUE_H__
-#define __CLINKEDTRANSFERQUEUE_H__
+#ifndef __ELASTOS_UTILITY_CLINKEDTRANSFERQUEUE_H__
+#define __ELASTOS_UTILITY_CLINKEDTRANSFERQUEUE_H__
 
-#include "_CLinkedTransferQueue.h"
+#include "_Elastos_Utility_Concurrent_CLinkedTransferQueue.h"
 #include "AbstractQueue.h"
 
 using Elastos::IO::IObjectOutputStream;
@@ -12,7 +12,10 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CarClass(CLinkedTransferQueue) , public AbstractQueue
+CarClass(CLinkedTransferQueue)
+    , public AbstractQueue
+    , public ITransferQueue
+    , public IBlockingQueue
 {
 public:
     /**
@@ -23,7 +26,7 @@ public:
      */
     class Node
         : public IInterface
-        , public ElRefBase
+        , public Object
     {
     public:
         CAR_INTERFACE_DECL();
@@ -118,7 +121,7 @@ public:
 
     class Itr
         : public IIterator
-        , public ElRefBase
+        , public Object
     {
     public:
         CAR_INTERFACE_DECL();
@@ -150,6 +153,10 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
 //    static <E> E cast(Object item);
 
     /* -------------- Traversal methods -------------- */
@@ -192,9 +199,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ ICollection* c);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI Put(
         /* [in] */ IInterface* e);
@@ -505,4 +509,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CLINKEDTRANSFERQUEUE_H__
+#endif //__ELASTOS_UTILITY_CLINKEDTRANSFERQUEUE_H__

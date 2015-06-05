@@ -1,13 +1,17 @@
 
 #include "CLinkedBlockingQueue.h"
 #include "CAtomicInteger32.h"
-#include <elastos/Math.h>
+#include <Math.h>
 
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
 
 namespace Elastos {
 namespace Utility {
 namespace Concurrent {
+
+CAR_INTERFACE_IMPL(CLinkedBlockingQueue::Node, Object, IInterface)
+
+CAR_INTERFACE_IMPL(CLinkedBlockingQueue::Itr, Object, IIterator);
 
 CLinkedBlockingQueue::Itr::Itr(
     /* [in] */ CLinkedBlockingQueue* owner)
@@ -20,8 +24,6 @@ CLinkedBlockingQueue::Itr::Itr(
     }
     mOwner->FullyUnlock();
 }
-
-CAR_INTERFACE_IMPL_LIGHT(CLinkedBlockingQueue::Itr, IIterator);
 
 ECode CLinkedBlockingQueue::Itr::HasNext(
     /* [out] */ Boolean* result)
@@ -83,6 +85,9 @@ ECode CLinkedBlockingQueue::Itr::Remove()
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL_4(CLinkedBlockingQueue, Object, IBlockingQueue, IIterable, ICollection, IQueue)
+
+CAR_OBJECT_IMPL(CLinkedBlockingQueue);
 
 CLinkedBlockingQueue::CLinkedBlockingQueue()
     : mCapacity(0)

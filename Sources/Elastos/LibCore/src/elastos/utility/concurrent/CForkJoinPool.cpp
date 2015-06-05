@@ -25,6 +25,7 @@ namespace Concurrent {
 //====================================================================
 // CForkJoinPool::DefaultForkJoinWorkerThreadFactory::
 //====================================================================
+CAR_INTERFACE_IMPL(DefaultForkJoinWorkerThreadFactory, Object, IForkJoinPoolForkJoinWorkerThreadFactory)
 
 AutoPtr<IForkJoinWorkerThread> CForkJoinPool::DefaultForkJoinWorkerThreadFactory::NewThread(
     /* [in] */ IForkJoinPool* pool)
@@ -37,6 +38,9 @@ AutoPtr<IForkJoinWorkerThread> CForkJoinPool::DefaultForkJoinWorkerThreadFactory
 //====================================================================
 // CForkJoinPool::
 //====================================================================
+CAR_INTERFACE_IMPL(CForkJoinPool, AbstractExecutorService, IForkJoinPool)
+
+CAR_OBJECT_IMPL(CForkJoinPool);
 
 AutoPtr<IForkJoinPoolForkJoinWorkerThreadFactory> CForkJoinPool::mDefaultForkJoinWorkerThreadFactory;
 
@@ -959,34 +963,6 @@ ECode CForkJoinPool::InvokeAll(
     *futures = l;
     REFCOUNT_ADD(*futures);
     return NOERROR;
-}
-
-ECode CForkJoinPool::InvokeAll(
-    /* [in] */ ICollection* tasks,
-    /* [in] */ Int64 timeout,
-    /* [in] */ ITimeUnit* unit,
-    /* [out] */ IList** futures)
-{
-    VALIDATE_NOT_NULL(futures);
-    return AbstractExecutorService::InvokeAll(tasks, timeout, unit, futures);
-}
-
-ECode CForkJoinPool::InvokeAny(
-    /* [in] */ ICollection* tasks,
-    /* [out] */ IInterface** result)
-{
-    VALIDATE_NOT_NULL(result);
-    return AbstractExecutorService::InvokeAny(tasks, result);
-}
-
-ECode CForkJoinPool::InvokeAny(
-    /* [in] */ ICollection* tasks,
-    /* [in] */ Int64 timeout,
-    /* [in] */ ITimeUnit* unit,
-    /* [out] */ IInterface** result)
-{
-    VALIDATE_NOT_NULL(result);
-    return AbstractExecutorService::InvokeAny(tasks, timeout, unit, result);
 }
 
 //====================================================================

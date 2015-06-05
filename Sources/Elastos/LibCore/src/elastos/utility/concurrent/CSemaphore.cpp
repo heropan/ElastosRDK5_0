@@ -163,6 +163,9 @@ ECode CSemaphore::FairSync::TryAcquireShared(
 //====================================================================
 // CSemaphore::
 //====================================================================
+CAR_INTERFACE_IMPL(CSemaphore, Object, ISemaphore)
+
+CAR_OBJECT_IMPL(CSemaphore);
 
 CSemaphore::constructor(
     /* [in] */ Int32 permits)

@@ -1,8 +1,8 @@
 
-#ifndef __CFORKJOINWORKERTHREAD_H__
-#define __CFORKJOINWORKERTHREAD_H__
+#ifndef __ELASTOS_UTILITY_CFORKJOINWORKERTHREAD_H__
+#define __ELASTOS_UTILITY_CFORKJOINWORKERTHREAD_H__
 
-#include "_CForkJoinWorkerThread.h"
+#include "_Elastos_Utility_Concurrent_CForkJoinWorkerThread.h"
 #include "Thread.h"
 
 using Elastos::Core::IThrowable;
@@ -13,9 +13,15 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CarClass(CForkJoinWorkerThread), Thread
+CarClass(CForkJoinWorkerThread)
+    , public Thread
+    , public IForkJoinWorkerThread
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI GetPool(
         /* [out] */ IForkJoinPool** outpool);
 
@@ -73,110 +79,6 @@ public:
 
     CARAPI HelpQuiescePool();
 
-    CARAPI CheckAccess();
-
-    CARAPI CountStackFrames(
-        /* [out] */ Int32* number);
-
-    CARAPI Destroy();
-
-    CARAPI GetContextClassLoader(
-        /* [out] */ IClassLoader** outload);
-
-    CARAPI GetId(
-        /* [out] */ Int64* id);
-
-    CARAPI GetName(
-        /* [out] */ String* name);
-
-    CARAPI GetPriority(
-        /* [out] */ Int32* priority);
-
-    CARAPI GetState(
-        /* [out] */ ThreadState* state);
-
-    CARAPI GetThreadGroup(
-        /* [out] */ IThreadGroup** group);
-
-    CARAPI GetUncaughtExceptionHandler(
-        /* [out] */ IThreadUncaughtExceptionHandler** handler);
-
-    CARAPI Interrupt();
-
-    CARAPI IsAlive(
-        /* [out] */ Boolean* isAlive);
-
-    CARAPI IsDaemon(
-        /* [out] */ Boolean* isDaemon);
-
-    CARAPI IsInterrupted(
-        /* [out] */ Boolean* isInterrupted);
-
-    CARAPI Join();
-
-    CARAPI Join(
-        /* [in] */ Int64 millis);
-
-    CARAPI Join(
-        /* [in] */ Int64 millis,
-        /* [in] */ Int32 nanos);
-
-    CARAPI Resume();
-
-    CARAPI SetContextClassLoader(
-        /* [in] */ IClassLoader* cl);
-
-    CARAPI SetDaemon(
-        /* [in] */ Boolean isDaemon);
-
-    CARAPI PushInterruptAction(
-        /* [in] */ IRunnable* interruptAction);
-
-    CARAPI PopInterruptAction(
-        /* [in] */ IRunnable* interruptAction);
-
-    CARAPI SetName(
-        /* [in] */ const String& threadName);
-
-    CARAPI SetPriority(
-        /* [in] */ Int32 priority);
-
-    CARAPI SetUncaughtExceptionHandler(
-        /* [in] */ IThreadUncaughtExceptionHandler* handler);
-
-    CARAPI Start();
-
-    CARAPI Stop();
-
-    CARAPI Suspend();
-
-    CARAPI Unpark();
-
-    CARAPI ParkFor(
-        /* [in] */ Int64 nanos);
-
-    CARAPI ParkUntil(
-        /* [in] */ Int64 time);
-
-    CARAPI Detach();
-
-    CARAPI Lock();
-
-    CARAPI Unlock();
-
-    CARAPI Notify();
-
-    CARAPI NotifyAll();
-
-    CARAPI Wait();
-
-    CARAPI Wait(
-        /* [in] */ Int64 millis);
-
-    CARAPI Wait(
-        /* [in] */ Int64 millis,
-        /* [in] */ Int32 nanos);
-
     /**
      * Creates a ForkJoinWorkerThread operating in the given pool.
      *
@@ -185,9 +87,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ IForkJoinPool* pool);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     // Run State management
 
@@ -475,4 +374,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CFORKJOINWORKERTHREAD_H__
+#endif //__ELASTOS_UTILITY_CFORKJOINWORKERTHREAD_H__

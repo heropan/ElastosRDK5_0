@@ -1,13 +1,6 @@
 
-#ifndef __FORKJOINTASK_H__
-#define __FORKJOINTASK_H__
-
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#include <elastos/Mutex.h>
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#ifndef __ELASTOS_UTILITY_FORKJOINTASK_H__
+#define __ELASTOS_UTILITY_FORKJOINTASK_H__
 
 using Elastos::Core::IThrowable;
 using Elastos::Core::IRunnable;
@@ -24,7 +17,8 @@ namespace Concurrent {
 class ForkJoinTask
     : public IForkJoinTask
     , public ISerializable
-    , public ElRefBase
+    , public IFuture
+    , public Object
 {
 public:
     /**
@@ -40,8 +34,12 @@ public:
      * pool becomes isQuiescent.
      */
     class ExceptionNode// extends WeakReference
+        : public Object
+        , public IInterface
     {
     public:
+        CAR_INTERFACE_DECL()
+
         ExceptionNode(
             /* [in] */ IForkJoinTask* task,
             /* [in] */ IThrowable* ex,
@@ -347,7 +345,7 @@ private:
 
     static Int64 sSerialVersionUID;
 
-    static Mutex mLock;
+    static Object mLock;
 
     // // Unsafe mechanics
     // private static final sun.misc.Unsafe UNSAFE;
@@ -428,4 +426,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__FORKJOINTASK_H__
+#endif //__ELASTOS_UTILITY_FORKJOINTASK_H__

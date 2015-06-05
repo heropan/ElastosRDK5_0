@@ -1,13 +1,8 @@
 
-#ifndef __FUTURETASK_H__
-#define __FUTURETASK_H__
+#ifndef __ELASTOS_UTILITY_FUTURETASK_H__
+#define __ELASTOS_UTILITY_FUTURETASK_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
-#include <elastos/Thread.h>
+#include <Thread.h>
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::IThread;
@@ -18,6 +13,9 @@ namespace Utility {
 namespace Concurrent {
 
 class FutureTask
+    : public Object
+    , public IRunnableFuture
+    , public IRunnable
 {
 public:
     /**
@@ -26,46 +24,15 @@ public:
      * for more detailed explanation.
      */
     class WaitNode
-        : public ElLightRefBase
+        : public Object
         , public IInterface
     {
     public:
+        CAR_INTERFACE_DECL()
+
         WaitNode()
         {
             mThread = Thread::GetCurrentThread();
-        }
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid)
-        {
-            if ( riid == EIID_IInterface) {
-                return (IInterface*)this;
-            }
-            return NULL;
-        }
-
-        CARAPI_(UInt32) AddRef()
-        {
-            return ElLightRefBase::AddRef();
-        }
-
-        CARAPI_(UInt32) Release()
-        {
-            return ElLightRefBase::Release();
-        }
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid)
-        {
-            VALIDATE_NOT_NULL(iid);
-            if (object == (IInterface*)this) {
-                *iid = EIID_IInterface;
-            }
-            else {
-                return E_ILLEGAL_ARGUMENT_EXCEPTION;
-            }
-            return NOERROR;
         }
 
     public:
@@ -74,6 +41,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     FutureTask();
 
     /**
@@ -101,9 +70,6 @@ public:
     FutureTask(
         /* [in] */ IRunnable* runnable,
         /* [in] */ IInterface* result);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     virtual CARAPI IsCancelled(
         /* [out] */ Boolean* isCancelled);
@@ -152,10 +118,10 @@ public:
         /* [in] */ ECode ec);
 
 protected:
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ICallable* callable);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IRunnable* runnable,
         /* [in] */ IInterface* result);
 
@@ -281,4 +247,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__FUTURETASK_H__
+#endif //__ELASTOS_UTILITY_FUTURETASK_H__

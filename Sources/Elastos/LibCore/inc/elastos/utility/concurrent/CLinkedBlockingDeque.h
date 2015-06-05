@@ -1,8 +1,8 @@
 
-#ifndef __CLINKEDBLOCKINGDEQUE_H__
-#define __CLINKEDBLOCKINGDEQUE_H__
+#ifndef __ELASTOS_UTILITY_CLINKEDBLOCKINGDEQUE_H__
+#define __ELASTOS_UTILITY_CLINKEDBLOCKINGDEQUE_H__
 
-#include "_CLinkedBlockingDeque.h"
+#include "_Elastos_Utility_Concurrent_CLinkedBlockingDeque.h"
 #include "AbstractQueue.h"
 
 using Elastos::IO::IObjectOutputStream;
@@ -14,13 +14,17 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CarClass(CLinkedBlockingDeque) , AbstractQueue
+CarClass(CLinkedBlockingDeque)
+    , public AbstractQueue
+    , public IBlockingDeque
+    , public IBlockingQueue
+    , public ISerializable
 {
 private:
     /** Doubly-linked list node class */
     class Node
         : public IInterface
-        , public ElRefBase
+        , public Object
     {
     public:
         CAR_INTERFACE_DECL();
@@ -56,7 +60,7 @@ private:
      */
     class AbstractItr
         : public IIterator
-        , public ElRefBase
+        , public Object
     {
     public:
         CAR_INTERFACE_DECL();
@@ -141,6 +145,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Creates a {@code LinkedBlockingDeque} with a capacity of
      * {@link Integer#MAX_VALUE}.
@@ -167,9 +175,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ ICollection* c);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Unlinks x.
@@ -489,4 +494,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CLINKEDBLOCKINGDEQUE_H__
+#endif //__ELASTOS_UTILITY_CLINKEDBLOCKINGDEQUE_H__

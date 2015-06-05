@@ -1,8 +1,14 @@
 
 #include "CPhaser.h"
 #include "LockSupport.h"
+<<<<<<< Updated upstream
 #include <elastos/StringBuilder.h>
 #include <elastos/Math.h>
+=======
+#include <ObjectUtils.h>
+#include <StringBuilder.h>
+#include <Math.h>
+>>>>>>> Stashed changes
 #include "CSystem.h"
 #include "Thread.h"
 #include "CAtomicReference.h"
@@ -36,6 +42,10 @@ Int32  CPhaser::ONE_ARRIVAL     = 1;
 Int32  CPhaser::ONE_PARTY       = 1 << PARTIES_SHIFT;
 Int32  CPhaser::ONE_DEREGISTER  = ONE_ARRIVAL|ONE_PARTY;
 Int32  CPhaser::EMPTY           = 1;
+
+CAR_INTERFACE_IMPL(CPhaser, Object, IPhaser)
+
+CAR_OBJECT_IMPL(CPhaser);
 
 Int32 CPhaser::UnarrivedOf(
     /* [in] */ Int64 s)
@@ -613,7 +623,7 @@ Int32 CPhaser::InternalAwaitAdvance(
 //====================================================================
 // CPhaser::QNode::
 //====================================================================
-CAR_INTERFACE_IMPL(CPhaser::QNode, IForkJoinPoolManagedBlocker);
+CAR_INTERFACE_IMPL(CPhaser::QNode, Object, IForkJoinPoolManagedBlocker);
 
 CPhaser::QNode::QNode(
     /* [in] */ IPhaser* phaser,

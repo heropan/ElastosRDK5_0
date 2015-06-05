@@ -17,71 +17,15 @@ namespace Concurrent {
 //====================================================================
 // CExchanger::Node::
 //====================================================================
-CAR_INTERFACE_IMPL(CExchanger::Node, IAtomicReference);
-
 CExchanger::Node::Node(
     /* [in] */ IInterface* item)
 {
     mItem = item;
 }
 
-ECode CExchanger::Node::Get(
-    /* [out] */ IInterface** outface)
-{
-    VALIDATE_NOT_NULL(outface);
-    return AtomicReference::Get(outface);
-}
-
-ECode CExchanger::Node::Set(
-    /* [in] */ IInterface* newValue)
-{
-    return AtomicReference::Set(newValue);
-}
-
-ECode CExchanger::Node::LazySet(
-    /* [in] */ IInterface* newValue)
-{
-    return AtomicReference::LazySet(newValue);
-}
-
-ECode CExchanger::Node::CompareAndSet(
-    /* [in] */ IInterface* expect,
-    /* [in] */ IInterface* update,
-    /* [out] */ Boolean* value)
-{
-    VALIDATE_NOT_NULL(value);
-    return AtomicReference::CompareAndSet(expect, update, value);
-}
-
-ECode CExchanger::Node::WeakCompareAndSet(
-    /* [in] */ IInterface* expect,
-    /* [in] */ IInterface* update,
-    /* [out] */ Boolean* value)
-{
-    VALIDATE_NOT_NULL(value);
-    return AtomicReference::WeakCompareAndSet(expect, update, value);
-}
-
-ECode CExchanger::Node::GetAndSet(
-    /* [in] */ IInterface* newValue,
-    /* [out] */ IInterface** outface)
-{
-    VALIDATE_NOT_NULL(outface);
-    return AtomicReference::GetAndSet(newValue, outface);
-}
-
-ECode CExchanger::Node::ToString(
-    /* [out] */ String* str)
-{
-    VALIDATE_NOT_NULL(str);
-    return AtomicReference::ToString(str);
-}
-
 //====================================================================
 // CExchanger::Slot::
 //====================================================================
-CAR_INTERFACE_IMPL(CExchanger::Slot, IAtomicReference);
-
 CExchanger::Slot::Slot()
     : mQ0(0), mQ1(0), mQ2(0), mQ3(0)
     , mQ4(0), mQ5(0), mQ6(0), mQ7(0)
@@ -89,62 +33,17 @@ CExchanger::Slot::Slot()
     , mQc(0), mQd(0), mQe(0)
 {}
 
-ECode CExchanger::Slot::Get(
-    /* [out] */ IInterface** outface)
-{
-    VALIDATE_NOT_NULL(outface);
-    return AtomicReference::Get(outface);
-}
-
-ECode CExchanger::Slot::Set(
-    /* [in] */ IInterface* newValue)
-{
-    return AtomicReference::Set(newValue);
-}
-
-ECode CExchanger::Slot::LazySet(
-    /* [in] */ IInterface* newValue)
-{
-    return AtomicReference::LazySet(newValue);
-}
-
-ECode CExchanger::Slot::CompareAndSet(
-    /* [in] */ IInterface* expect,
-    /* [in] */ IInterface* update,
-    /* [out] */ Boolean* value)
-{
-    VALIDATE_NOT_NULL(value);
-    return AtomicReference::CompareAndSet(expect, update, value);
-}
-
-ECode CExchanger::Slot::WeakCompareAndSet(
-    /* [in] */ IInterface* expect,
-    /* [in] */ IInterface* update,
-    /* [out] */ Boolean* value)
-{
-    VALIDATE_NOT_NULL(value);
-    return AtomicReference::WeakCompareAndSet(expect, update, value);
-}
-
-ECode CExchanger::Slot::GetAndSet(
-    /* [in] */ IInterface* newValue,
-    /* [out] */ IInterface** outface)
-{
-    VALIDATE_NOT_NULL(outface);
-    return AtomicReference::GetAndSet(newValue, outface);
-}
-
-ECode CExchanger::Slot::ToString(
-    /* [out] */ String* str)
-{
-    VALIDATE_NOT_NULL(str);
-    return AtomicReference::ToString(str);
-}
+//====================================================================
+// CExchanger::CDummyObject
+//====================================================================
+CAR_INTERFACE_IMPL(CExchanger::CDummyObject, Object, IInterface)
 
 //====================================================================
 // CExchanger::
 //====================================================================
-CAR_INTERFACE_IMPL(CExchanger::CDummyObject, IInterface)
+CAR_INTERFACE_IMPL(CExchanger, Object, IExchanger)
+
+CAR_OBJECT_IMPL(CExchanger);
 
 const Int32 CExchanger::sNCPU = 4;//= Runtime.getRuntime().availableProcessors();
 const Int32 CExchanger::sCAPACITY = 32;
@@ -155,7 +54,7 @@ Int32 CExchanger::sTIMED_SPINS = sSPINS / 20;
 AutoPtr<IInterface> CExchanger::sCANCEL = new CDummyObject();
 AutoPtr<IInterface> CExchanger::sNULL_ITEM = new CDummyObject();
 
-Mutex CExchanger::mLock;
+Object CExchanger::mLock;
 
 AutoPtr<IInterface> CExchanger::DoExchange(
     /* [in] */ IInterface* item,
@@ -234,7 +133,7 @@ void CExchanger::CreateSlot(
     AutoPtr<Slot> newSlot = new Slot();
     AutoPtr<ArrayOf<Slot*> > a = mArena;
     {
-        Mutex::Autolock lock(mLock);
+        Object::Autolock lock(mLock);
         if ((*a)[index] == NULL)
             a->Set(index, newSlot);
     }

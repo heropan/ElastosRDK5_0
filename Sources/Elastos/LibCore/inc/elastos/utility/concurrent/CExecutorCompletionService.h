@@ -1,8 +1,8 @@
 
-#ifndef __CEXECUTORCOMPLETIONSERVICE_H__
-#define __CEXECUTORCOMPLETIONSERVICE_H__
+#ifndef __ELASTOS_UTILITY_CEXECUTORCOMPLETIONSERVICE_H__
+#define __ELASTOS_UTILITY_CEXECUTORCOMPLETIONSERVICE_H__
 
-#include "_CExecutorCompletionService.h"
+#include "_Elastos_Utility_Concurrent_CExecutorCompletionService.h"
 #include "FutureTask.h"
 
 using Elastos::Core::IRunnable;
@@ -12,16 +12,15 @@ namespace Utility {
 namespace Concurrent {
 
 CarClass(CExecutorCompletionService)
+    , public Object
+    , public IExecutorCompletionService
 {
 private:
     /**
      * FutureTask extension to enqueue upon completion
      */
     class QueueingFuture
-        : public ElLightRefBase
-        , public FutureTask
-        , public IRunnableFuture
-        , public IRunnable
+        : public FutureTask
     {
     public:
         QueueingFuture(
@@ -32,28 +31,6 @@ private:
             , mOwner(owner)
         {}
 
-        CAR_INTERFACE_DECL();
-
-        CARAPI Cancel(
-            /* [in] */ Boolean mayInterruptIfRunning,
-            /* [out] */ Boolean* result);
-
-        CARAPI IsCancelled(
-            /* [out] */ Boolean* result);
-
-        CARAPI IsDone(
-            /* [out] */ Boolean* result);
-
-        CARAPI Get(
-            /* [out] */ IInterface** result);
-
-        CARAPI Get(
-            /* [in] */ Int64 timeout,
-            /* [in] */ ITimeUnit* unit,
-            /* [out] */ IInterface** result);
-
-        CARAPI Run();
-
     protected:
         CARAPI_(void) Done();
 
@@ -63,6 +40,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IExecutor* executor);
 
@@ -108,4 +89,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CEXECUTORCOMPLETIONSERVICE_H__
+#endif //__ELASTOS_UTILITY_CEXECUTORCOMPLETIONSERVICE_H__

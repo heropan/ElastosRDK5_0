@@ -2,11 +2,6 @@
 #ifndef __ELASTOS_UTILITY_CONCURRENT_TIMEUNIT_H__
 #define __ELASTOS_UTILITY_CONCURRENT_TIMEUNIT_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
 #include <elastos/core/Object.h>
 #include "Math.h"
 

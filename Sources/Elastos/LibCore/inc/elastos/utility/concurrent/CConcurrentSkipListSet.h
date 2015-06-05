@@ -1,8 +1,8 @@
 
-#ifndef __CCONCURRENTSKIPLISTSET_H__
-#define __CCONCURRENTSKIPLISTSET_H__
+#ifndef __ELASTOS_UTILITY_CCONCURRENTSKIPLISTSET_H__
+#define __ELASTOS_UTILITY_CCONCURRENTSKIPLISTSET_H__
 
-#include "_CConcurrentSkipListSet.h"
+#include "_Elastos_Utility_Concurrent_CConcurrentSkipListSet.h"
 #include "AbstractSet.h"
 
 using Elastos::Core::IComparator;
@@ -11,9 +11,18 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-CarClass(CConcurrentSkipListSet) , public AbstractSet
+CarClass(CConcurrentSkipListSet)
+    , public AbstractSet
+    , public INavigableSet
+    , public ISortedSet
+    , public ISerializable
+    , public ICloneable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Constructs a new, empty set that orders its elements according to
      * their {@linkplain Comparable natural ordering}.
@@ -61,9 +70,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ INavigableMap* m);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI Clone(
         /* [out] */ IInterface** res);
@@ -174,25 +180,6 @@ public:
     CARAPI DescendingSet(
         /* [out] */ INavigableSet** outnav);
 
-    CARAPI AddAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
-
-    CARAPI ContainsAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* result);
-
-    CARAPI RetainAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
-
-    CARAPI ToArray(
-        /* [out, callee] */ ArrayOf<IInterface*>** array);
-
-    CARAPI ToArray(
-        /* [in] */ ArrayOf<IInterface*>* inArray,
-        /* [out, callee] */ ArrayOf<IInterface*>** outArray);
-
 private:
     // Support for resetting map in clone
     CARAPI_(void) SetMap(
@@ -213,4 +200,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CCONCURRENTSKIPLISTSET_H__
+#endif //__ELASTOS_UTILITY_CCONCURRENTSKIPLISTSET_H__

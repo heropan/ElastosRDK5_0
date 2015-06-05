@@ -7,6 +7,8 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
+CAR_OBJECT_IMPL(CCopyOnWriteArraySet)
+
 ECode CCopyOnWriteArraySet::constructor()
 {
     return CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&mAl);
@@ -18,12 +20,6 @@ ECode CCopyOnWriteArraySet::constructor(
     FAIL_RETURN(CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&mAl));
     Int32 value = 0;
     return mAl->AddAllAbsent(c, &value);
-}
-
-PInterface CCopyOnWriteArraySet::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CCopyOnWriteArraySet::Probe(riid);
 }
 
 ECode CCopyOnWriteArraySet::Add(

@@ -14,6 +14,8 @@ namespace Concurrent {
 //==========================================================
 const AutoPtr< ArrayOf<IInterface*> > CopyOnWriteArrayList::sEmptyArray = ArrayOf<IInterface*>::Alloc(0);
 
+CAR_INTERFACE_IMPL_3(CopyOnWriteArrayList, Object, ICopyOnWriteArrayList, ICollection, IIterable)
+
 ECode CopyOnWriteArrayList::Init()
 {
     mElements = sEmptyArray;
@@ -639,6 +641,7 @@ ECode CopyOnWriteArrayList::ReadObject(
 //==========================================================
 //       CopyOnWriteArrayList::Slice
 //==========================================================
+CAR_INTERFACE_IMPL(CopyOnWriteArrayList::Slice, Object, IInterface)
 
 CopyOnWriteArrayList::Slice::Slice(
     /* [in] */ ArrayOf<IInterface*>* expectedElements,
@@ -681,8 +684,6 @@ ECode CopyOnWriteArrayList::Slice::CheckConcurrentModification(
 //==========================================================
 //       CopyOnWriteArrayList::CowSubList
 //==========================================================
-CAR_INTERFACE_IMPL_3(CopyOnWriteArrayList::CowSubList, IList, ICollection, IIterable);
-
 CopyOnWriteArrayList::CowSubList::CowSubList(
     /* [in] */ ArrayOf<IInterface*>* expectedElements,
     /* [in] */ Int32 from,
@@ -1029,7 +1030,7 @@ ECode CopyOnWriteArrayList::CowSubList::SubList(
 //==========================================================
 //       CopyOnWriteArrayList::CowIterator
 //==========================================================
-CAR_INTERFACE_IMPL_2(CopyOnWriteArrayList::CowIterator, IListIterator, IIterator);
+CAR_INTERFACE_IMPL_2(CopyOnWriteArrayList::CowIterator, Object, IListIterator, IIterator);
 
 CopyOnWriteArrayList::CowIterator::CowIterator(
     /* [in] */ ArrayOf<IInterface*>* snapshot,

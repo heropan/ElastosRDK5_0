@@ -11,6 +11,9 @@ namespace Concurrent {
 //====================================================================
 // CForkJoinTaskHelper::
 //====================================================================
+CAR_INTERFACE_IMPL(CForkJoinTaskHelper, Singleton, IForkJoinTaskHelper)
+
+CAR_SINGLETON_IMPL(CForkJoinTaskHelper)
 
 ECode CForkJoinTaskHelper::InvokeAll(
     /* [in] */ IForkJoinTask* t1,
