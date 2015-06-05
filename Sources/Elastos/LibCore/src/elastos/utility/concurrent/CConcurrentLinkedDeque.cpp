@@ -578,9 +578,8 @@ AutoPtr<IArrayList> CConcurrentLinkedDeque::ToArrayList()
     for (; p != NULL; p = Succ(p)) {
         AutoPtr<IInterface> item = p->mItem;
         if (item != NULL) {
-            AutoPtr<ICollection> pC = (ICollection*)list->Probe(EIID_ICollection);
             Boolean res;
-            pC->Add(item, &res);
+            (ICollection::Probe(list))->Add(item, &res);
         }
     }
     return list;
@@ -597,9 +596,8 @@ ECode CConcurrentLinkedDeque::constructor(
 {
     // Copy c into a private chain of Nodes
     AutoPtr<Node> h, t;
-    AutoPtr<IIterable> pI = (IIterable*)c->Probe(EIID_IIterable);
     AutoPtr<IIterator> it;
-    pI->GetIterator((IIterator**)&it);
+    (IIterable::Probe(c))->GetIterator((IIterator**)&it);
     Boolean isflag = FALSE;
     while ((it->HasNext(&isflag), isflag)) {
         AutoPtr<IInterface> e;
@@ -938,9 +936,8 @@ ECode CConcurrentLinkedDeque::AddAll(
 
     // Copy c into a private chain of Nodes
     AutoPtr<Node> beginningOfTheEnd = NULL, last = NULL;
-    AutoPtr<IIterable> pI = (IIterable*)collection->Probe(EIID_IIterable);
     AutoPtr<IIterator> it;
-    pI->GetIterator((IIterator**)&it);
+    (IIterable::Probe(collection))->GetIterator((IIterator**)&it);
     Boolean isflag = FALSE;
     while ((it->HasNext(&isflag), isflag)) {
         AutoPtr<IInterface> e;
@@ -1009,8 +1006,7 @@ ECode CConcurrentLinkedDeque::ToArray(
 {
     VALIDATE_NOT_NULL(array)
     AutoPtr<IArrayList> p = ToArrayList();
-    AutoPtr<ICollection> res = (ICollection*)p->Probe(EIID_ICollection);
-    return res->ToArray(array);
+    return (ICollection::Probe(p))->ToArray(array);
 }
 
 ECode CConcurrentLinkedDeque::ToArray(
@@ -1019,8 +1015,7 @@ ECode CConcurrentLinkedDeque::ToArray(
 {
     VALIDATE_NOT_NULL(outArray)
     AutoPtr<IArrayList> p = ToArrayList();
-    AutoPtr<ICollection> res = (ICollection*)p->Probe(EIID_ICollection);
-    return res->ToArray(inArray, outArray);
+    return (ICollection::Probe(p))->ToArray(inArray, outArray);
 }
 
 ECode CConcurrentLinkedDeque::GetIterator(

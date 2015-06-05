@@ -4,9 +4,12 @@
 
 #include "_Elastos_Utility_Concurrent_CConcurrentLinkedQueue.h"
 #include "AbstractQueue.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
+using Elastos::IO::ISerializable;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
@@ -165,6 +168,13 @@ public:
 
     CARAPI Element(
         /* [out] */ IInterface** e);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
 
 protected:
     CARAPI_(void) UpdateHead(

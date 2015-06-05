@@ -3,6 +3,7 @@
 #include "CArrayList.h"
 #include <Math.h>
 
+using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::Math;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
@@ -76,7 +77,7 @@ ECode CConcurrentLinkedQueue::constructor(
 {
     AutoPtr<Node> h, t;
     AutoPtr<IIterator> it;
-    c->GetIterator((IIterator**)&it);
+    (IIterable::Probe(c))->GetIterator((IIterator**)&it);
     Boolean isflag = FALSE;
     while ((it->HasNext(&isflag), isflag)) {
         AutoPtr<IInterface> e;
@@ -309,7 +310,7 @@ ECode CConcurrentLinkedQueue::AddAll(
     // Copy c into a private chain of Nodes
     AutoPtr<Node> beginningOfTheEnd, last;
     AutoPtr<IIterator> it;
-    collection->GetIterator((IIterator**)&it);
+    (IIterable::Probe(collection))->GetIterator((IIterator**)&it);
     Boolean isflag = FALSE;
     while ((it->HasNext(&isflag), isflag)) {
         AutoPtr<IInterface> e;
@@ -372,10 +373,10 @@ ECode CConcurrentLinkedQueue::ToArray(
         AutoPtr<IInterface> item = p->mItem;
         if (item != NULL) {
             Boolean b = FALSE;
-            al->Add(item, &b);
+            (ICollection::Probe(al))->Add(item, &b);
         }
     }
-    return al->ToArray(array);
+    return (ICollection::Probe(al))->ToArray(array);
 }
 
 ECode CConcurrentLinkedQueue::ToArray(
@@ -408,10 +409,10 @@ ECode CConcurrentLinkedQueue::ToArray(
         AutoPtr<IInterface> item = q->mItem;
         if (item != NULL) {
             Boolean b = FALSE;
-            al->Add(item, &b);
+            (ICollection::Probe(al))->Add(item, &b);
         }
     }
-    return al->ToArray(inArray, outArray);
+    return (ICollection::Probe(al))->ToArray(inArray, outArray);
 }
 
 ECode CConcurrentLinkedQueue::GetIterator(
@@ -524,6 +525,19 @@ Boolean CConcurrentLinkedQueue::CasHead(
 {
 //   return UNSAFE.compareAndSwapObject(this, headOffset, cmp, val);
     return FALSE;
+}
+
+ECode CConcurrentLinkedQueue::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    return E_NO_SUCH_METHOD_EXCEPTION;
+}
+
+ECode CConcurrentLinkedQueue::GetHashCode(
+    /* [out] */ Int32* hashCode)
+{
+    return E_NO_SUCH_METHOD_EXCEPTION;
 }
 
 //private static final sun.misc.Unsafe UNSAFE;
