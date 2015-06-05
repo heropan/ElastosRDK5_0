@@ -138,8 +138,8 @@ module
         /**
          * Prints the string representation of the character array chars.
          */
-        PrintChars(
-            [in] ArrayOf<Char32> chars);
+        Print(
+            [in] ArrayOf<Char32>* chars);
 
         /**
          * Prints the string representation of the char c.
@@ -150,31 +150,31 @@ module
         /**
          * Prints the string representation of the double d.
          */
-        PrintDouble(
+        Print(
             [in] Double d);
 
         /**
          * Prints the string representation of the float f.
          */
-        PrintFloat(
+        Print(
             [in] Float f);
 
         /**
          * Prints the string representation of the int i.
          */
-        PrintInt32(
+        Print(
             [in] Int32 i);
 
         /**
          * Prints the string representation of the long l.
          */
-        PrintInt64(
+        Print(
             [in] Int64 l);
 
         /**
          * Prints the string representation of the Object o, or "null".
          */
-        PrintObject(
+        Print(
             [in] IInterface* o);
 
         /**
@@ -189,13 +189,13 @@ module
          *            the string to print to the target stream.
          * @see #write(int)
          */
-        PrintString(
+        Print(
             [in] String str);
 
         /**
          * Prints the string representation of the boolean b.
          */
-        PrintBoolean(
+        Print(
             [in] Boolean b);
 
         /**
@@ -206,8 +206,8 @@ module
         /**
          * Prints the string representation of the character array chars followed by a newline.
          */
-        PrintCharsln(
-            [in] ArrayOf<Char32> chars);
+        Println(
+            [in] ArrayOf<Char32>* chars);
 
         /**
          * Prints the string representation of the char c followed by a newline.
@@ -218,32 +218,32 @@ module
         /**
          * Prints the string representation of the double d followed by a newline.
          */
-        PrintDoubleln(
+        Println(
             [in] Double d);
 
         /**
          * Prints the string representation of the float f followed by a newline.
          */
-        PrintFloatln(
+        Println(
             [in] Float f);
 
         /**
          * Prints the string representation of the int i followed by a newline.
          */
-        PrintInt32ln(
+        Println(
             [in] Int32 i);
 
         /**
          * Prints the string representation of the long l followed by a newline.
          */
-        PrintInt64ln(
+        Println(
             [in] Int64 l);
 
         /**
          * Prints the string representation of the Object o, or "null",
          * followed by a newline.
          */
-        PrintObjectln(
+        Println(
             [in] IInterface* o);
 
         /**
@@ -257,13 +257,13 @@ module
          *            the string to print to the target stream.
          * @see #write(int)
          */
-        PrintStringln(
+        Println(
             [in] String str);
 
         /**
          * Prints the string representation of the boolean b followed by a newline.
          */
-        PrintBooleanln(
+        Println(
             [in] Boolean b);
     }
 

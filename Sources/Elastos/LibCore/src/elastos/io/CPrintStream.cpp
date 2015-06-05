@@ -7,7 +7,7 @@
 #include "CLocale.h"
 #include "CFormatter.h"
 #include <elastos/core/Character.h>
-#include <elastos/StringUtils.h>
+#include <StringUtils.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::StringUtils;
@@ -31,7 +31,7 @@ CPrintStream::CPrintStream()
 ECode CPrintStream::constructor(
     /* [in] */ IOutputStream* outs)
 {
-    FAIL_RETURN(FilterOutputStream::Init(outs));
+    FAIL_RETURN(FilterOutputStream::constructor(outs));
     if (outs == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -42,7 +42,7 @@ ECode CPrintStream::constructor(
     /* [in] */ IOutputStream* outs,
     /* [in] */ Boolean autoflush)
 {
-    FAIL_RETURN(FilterOutputStream::Init(outs));
+    FAIL_RETURN(FilterOutputStream::constructor(outs));
     if (outs == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -55,7 +55,7 @@ ECode CPrintStream::constructor(
     /* [in] */ Boolean autoflush,
     /* [in] */ const String& enc)
 {
-    FAIL_RETURN(FilterOutputStream::Init(outs));
+    FAIL_RETURN(FilterOutputStream::constructor(outs));
     if (outs == NULL || enc.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -79,7 +79,7 @@ ECode CPrintStream::constructor(
 {
     AutoPtr<IFileOutputStream> fos;
     FAIL_RETURN(CFileOutputStream::New(file, (IFileOutputStream**)&fos));
-    return FilterOutputStream::Init((IOutputStream*)fos.Get());
+    return FilterOutputStream::constructor((IOutputStream*)fos.Get());
 }
 
 ECode CPrintStream::constructor(
@@ -88,7 +88,7 @@ ECode CPrintStream::constructor(
 {
     AutoPtr<IFileOutputStream> fos;
     FAIL_RETURN(CFileOutputStream::New(file, (IFileOutputStream**)&fos));
-    FAIL_RETURN(FilterOutputStream::Init((IOutputStream*)fos.Get()));
+    FAIL_RETURN(FilterOutputStream::constructor((IOutputStream*)fos.Get()));
 
     if (csn.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
@@ -153,7 +153,7 @@ ECode CPrintStream::Close()
 {
     Flush();
     if (mOut != NULL) {
-        if(NOERROR != mOut->Close()) {
+        if(NOERROR != ICloseable::Probe(mOut)->Close()) {
             SetError();
         }
         else {
@@ -220,18 +220,18 @@ ECode CPrintStream::Printf(
 
 ECode CPrintStream::Newline()
 {
-    return PrintString(sLineSeparator);
+    return Print(sLineSeparator);
 }
 
-ECode CPrintStream::PrintChars(
-    /* [in] */ const ArrayOf<Char32>& charArray)
+ECode CPrintStream::Print(
+    /* [in] */ ArrayOf<Char32>* charArray)
 {
     AutoPtr<ArrayOf<Char8> > dst;
     Int32 dstOffset = 0;
     FAIL_RETURN(Character::ToChars(
-        charArray, 0, charArray.GetLength(), (ArrayOf<Char8>**)&dst, &dstOffset));
+        *charArray, 0, charArray->GetLength(), (ArrayOf<Char8>**)&dst, &dstOffset));
 
-    return PrintString(String(dst->GetPayload()));
+    return Print(String(dst->GetPayload()));
 }
 
 ECode CPrintStream::PrintChar(
@@ -239,35 +239,35 @@ ECode CPrintStream::PrintChar(
 {
     AutoPtr<ArrayOf<Char8> > charArray;
     FAIL_RETURN(Character::ToChars(ch, (ArrayOf<Char8>**)&charArray));
-    return PrintString(String(charArray->GetPayload()));
+    return Print(String(charArray->GetPayload()));
 }
 
-ECode CPrintStream::PrintDouble(
+ECode CPrintStream::Print(
     /* [in] */ Double dnum)
 {
-    return PrintString(StringUtils::DoubleToString(dnum));
+    return Print(StringUtils::DoubleToString(dnum));
 }
 
-ECode CPrintStream::PrintFloat(
+ECode CPrintStream::Print(
     /* [in] */ Float fnum)
 {
     //PrintString(String.valueOf(fnum));
-    return PrintString(StringUtils::DoubleToString(fnum));
+    return Print(StringUtils::DoubleToString(fnum));
 }
 
-ECode CPrintStream::PrintInt32(
+ECode CPrintStream::Print(
     /* [in] */ Int32 inum)
 {
-    return PrintString(StringUtils::Int32ToString(inum));
+    return Print(StringUtils::Int32ToString(inum));
 }
 
-ECode CPrintStream::PrintInt64(
+ECode CPrintStream::Print(
     /* [in] */ Int64 lnum)
 {
-    return PrintString(StringUtils::Int64ToString(lnum));
+    return Print(StringUtils::Int64ToString(lnum));
 }
 
-ECode CPrintStream::PrintObject(
+ECode CPrintStream::Print(
     /* [in] */ IInterface* obj)
 {
     assert(0);
@@ -275,7 +275,7 @@ ECode CPrintStream::PrintObject(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CPrintStream::PrintString(
+ECode CPrintStream::Print(
     /* [in] */ const String& str)
 {
     if (mOut == NULL) {
@@ -283,7 +283,7 @@ ECode CPrintStream::PrintString(
         return NOERROR;
     }
     if (str.IsNull()) {
-        PrintString(String("NULL"));
+        Print(String("NULL"));
         return NOERROR;
     }
 
@@ -291,7 +291,7 @@ ECode CPrintStream::PrintString(
     AutoPtr< ArrayOf<Byte> > tmp = ArrayOf<Byte>::Alloc(size);
     tmp->Copy((Byte*)str.string(), size);
 
-    if (mEncoding == NULL && NOERROR != WriteBytes(*tmp)) {
+    if (mEncoding == NULL && NOERROR != Write(*tmp)) {
         SetError();
     }
 /*    if(mEncoding != NULL && NOERROR != WriteBuffer(str.getBytes(mEncoding)))
@@ -302,10 +302,10 @@ ECode CPrintStream::PrintString(
     return NOERROR;
 }
 
-ECode CPrintStream::PrintBoolean(
+ECode CPrintStream::Print(
     /* [in] */ Boolean result)
 {
-    return PrintString(StringUtils::BooleanToString(result));
+    return Print(StringUtils::BooleanToString(result));
 }
 
 ECode CPrintStream::Println()
@@ -313,49 +313,49 @@ ECode CPrintStream::Println()
     return Newline();
 }
 
-ECode CPrintStream::PrintCharsln(
-    /* [in] */ const ArrayOf<Char32>& charArray)
+ECode CPrintStream::Println(
+    /* [in] */ ArrayOf<Char32>* charArray)
 {
     AutoPtr<ArrayOf<Char8> > dst;
     Int32 dstOffset = 0;
     FAIL_RETURN(Character::ToChars(
-        charArray, 0, charArray.GetLength(), (ArrayOf<Char8>**)&dst, &dstOffset));
+        *charArray, 0, charArray->GetLength(), (ArrayOf<Char8>**)&dst, &dstOffset));
 
-    return PrintStringln(String(dst->GetPayload()));
+    return Println(String(dst->GetPayload()));
 }
 
 ECode CPrintStream::PrintCharln(
     /* [in] */ Char32 ch)
 {
-    return PrintStringln(StringUtils::Int32ToString((Int32)ch));
+    return Println(StringUtils::Int32ToString((Int32)ch));
 }
 
-ECode CPrintStream::PrintDoubleln(
+ECode CPrintStream::Println(
     /* [in] */ Double dnum)
 {
-    return PrintStringln(StringUtils::DoubleToString(dnum));
+    return Println(StringUtils::DoubleToString(dnum));
 }
 
-ECode CPrintStream::PrintFloatln(
+ECode CPrintStream::Println(
     /* [in] */ Float fnum)
 {
     //PrintStringln(String.valueOf(fnum));
-    return PrintStringln(StringUtils::DoubleToString(fnum));
+    return Println(StringUtils::DoubleToString(fnum));
 }
 
-ECode CPrintStream::PrintInt32ln(
+ECode CPrintStream::Println(
     /* [in] */ Int32 inum)
 {
-    return PrintStringln(StringUtils::Int32ToString(inum));
+    return Println(StringUtils::Int32ToString(inum));
 }
 
-ECode CPrintStream::PrintInt64ln(
+ECode CPrintStream::Println(
     /* [in] */ Int64 lnum)
 {
-    return PrintStringln(StringUtils::Int64ToString(lnum));
+    return Println(StringUtils::Int64ToString(lnum));
 }
 
-ECode CPrintStream::PrintObjectln(
+ECode CPrintStream::Println(
     /* [in] */ IInterface* obj)
 {
     assert(0);
@@ -363,17 +363,17 @@ ECode CPrintStream::PrintObjectln(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CPrintStream::PrintStringln(
+ECode CPrintStream::Println(
     /* [in] */ const String& str)
 {
-    PrintString(str);
+    Print(str);
     return Newline();
 }
 
-ECode CPrintStream::PrintBooleanln(
+ECode CPrintStream::Println(
     /* [in] */ Boolean result)
 {
-    return PrintStringln(StringUtils::BooleanToString(result));
+    return Println(StringUtils::BooleanToString(result));
 }
 
 ECode CPrintStream::SetError()
@@ -385,7 +385,7 @@ ECode CPrintStream::SetError()
 ECode CPrintStream::Write(
     /* [in] */ Int32 oneChar32)
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
 
     if (mOut == NULL) {
         SetError();
@@ -407,33 +407,27 @@ ECode CPrintStream::Write(
     return NOERROR;
 }
 
-ECode CPrintStream::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer)
-{
-    return FilterOutputStream::WriteBytes(buffer);
-}
-
-ECode CPrintStream::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+ECode CPrintStream::Write(
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
     // Force buffer null check first!
-    if (offset > buffer.GetLength() || offset < 0) {
+    if (offset > buffer->GetLength() || offset < 0) {
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    if (count < 0 || count > buffer.GetLength() - offset) {
+    if (count < 0 || count > buffer->GetLength() - offset) {
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
 
     if (mOut == NULL) {
         SetError();
         return NOERROR;
     }
 
-    if(NOERROR != mOut->WriteBytes(buffer, offset, count)) {
+    if(NOERROR != mOut->Write(buffer, offset, count)) {
         SetError();
     }
     else if (mAutoFlush) {
@@ -443,25 +437,25 @@ ECode CPrintStream::WriteBytes(
     return NOERROR;
 }
 
-ECode CPrintStream::AppendChar(
+ECode CPrintStream::Append(
     /* [in] */ Char32 c)
 {
     return PrintChar(c);
 }
 
-ECode CPrintStream::AppendCharSequence(
+ECode CPrintStream::Append(
     /* [in] */ ICharSequence* csq)
 {
     String str("NULL");
     if (NULL != csq) {
         csq->ToString(&str);
     }
-    PrintString(str);
+    Print(str);
 
     return NOERROR;
 }
 
-ECode CPrintStream::AppendCharSequence(
+ECode CPrintStream::Append(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -470,24 +464,7 @@ ECode CPrintStream::AppendCharSequence(
     if (NULL != csq) {
         csq->ToString(&str);
     }
-    return PrintString(str.Substring(start, end));
-}
-
-ECode CPrintStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = FilterOutputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
-
-PInterface CPrintStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CPrintStream::Probe(riid);
+    return Print(str.Substring(start, end));
 }
 
 } // namespace IO

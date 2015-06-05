@@ -504,6 +504,39 @@ module
         interface IOutputStreamWriter;
     }
 
+//    class CPrintStream {
+//        constructor(
+//            [in] IOutputStream* outs);
+
+//        constructor(
+//            [in] IOutputStream* outs,
+//            [in] Boolean autoflush);
+
+//        constructor(
+//            [in] IOutputStream* outs,
+//            [in] Boolean autoflush,
+//            [in] String enc);
+
+//        constructor(
+//            [in] IFile* file);
+
+//        constructor(
+//            [in] IFile* file,
+//            [in] String csn);
+
+//        constructor(
+//            [in] String fileName);
+
+//        constructor(
+//            [in] String fileName,
+//            [in] String csn);
+
+//        interface ICloseable;
+//        interface IOutputStream;
+//        interface IFilterOutputStream;
+//        interface IPrintStream;
+//    }
+
     } // namespace IO
     } // namespace Elastos
 }

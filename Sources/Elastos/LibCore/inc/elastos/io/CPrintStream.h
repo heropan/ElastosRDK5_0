@@ -13,6 +13,7 @@ namespace IO {
 
 CarClass(CPrintStream)
     , public FilterOutputStream
+    , public IPrintStream
 {
 public:
     CPrintStream();
@@ -72,89 +73,80 @@ public:
         /* [in] */ ArrayOf<IInterface*>* args,
         /* [out] */ IPrintStream** ps);
 
-    CARAPI PrintChars(
-        /* [in] */ const ArrayOf<Char32>& charArray);
+    CARAPI Print(
+        /* [in] */ ArrayOf<Char32>* charArray);
 
     CARAPI PrintChar(
         /* [in] */ Char32 ch);
 
-    CARAPI PrintDouble(
+    CARAPI Print(
         /* [in] */ Double dnum);
 
-    CARAPI PrintFloat(
+    CARAPI Print(
         /* [in] */ Float fnum);
 
-    CARAPI PrintInt32(
+    CARAPI Print(
         /* [in] */ Int32 inum);
 
-    CARAPI PrintInt64(
+    CARAPI Print(
         /* [in] */ Int64 lnum);
 
-    CARAPI PrintObject(
+    CARAPI Print(
         /* [in] */ IInterface* obj);
 
-    CARAPI PrintString(
+    CARAPI Print(
         /* [in] */ const String& str);
 
-    CARAPI PrintBoolean(
+    CARAPI Print(
         /* [in] */ Boolean result);
 
     CARAPI Println();
 
-    CARAPI PrintCharsln(
-        /* [in] */ const ArrayOf<Char32>& charArray);
+    CARAPI Println(
+        /* [in] */ ArrayOf<Char32>* charArray);
 
     CARAPI PrintCharln(
         /* [in] */ Char32 ch);
 
-    CARAPI PrintDoubleln(
+    CARAPI Println(
         /* [in] */ Double dnum);
 
-    CARAPI PrintFloatln(
+    CARAPI Println(
         /* [in] */ Float fnum);
 
-    CARAPI PrintInt32ln(
+    CARAPI Println(
         /* [in] */ Int32 inum);
 
-    CARAPI PrintInt64ln(
+    CARAPI Println(
         /* [in] */ Int64 lnum);
 
-    CARAPI PrintObjectln(
+    CARAPI Println(
         /* [in] */ IInterface* obj);
 
-    CARAPI PrintStringln(
+    CARAPI Println(
         /* [in] */ const String& str);
 
-    CARAPI PrintBooleanln(
+    CARAPI Println(
         /* [in] */ Boolean result);
 
     CARAPI Write(
         /* [in] */ Int32 oneChar32);
 
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer,
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
-    CARAPI AppendChar(
+    CARAPI Append(
         /* [in] */ Char32 c);
 
-    CARAPI AppendCharSequence(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq);
 
-    CARAPI AppendCharSequence(
+    CARAPI Append(
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 protected:
     CARAPI ClearError();
