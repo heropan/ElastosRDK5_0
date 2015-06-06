@@ -1,0 +1,449 @@
+
+namespace Elastos {
+namespace Droid {
+namespace Webkit {
+namespace Base {
+
+//===============================================================
+//                 TraceEvent::BasicLooperMonitor
+//===============================================================
+
+//@Override
+ECode TraceEvent::BasicLooperMonitor::Println(
+    /* [in] */ const String& line)
+{
+    if (line.StartsWith(">")) {
+        BeginHandling(line);
+    }
+    else {
+        assert(line.StartsWith("<"));
+        EndHandling(line);
+    }
+
+    return NOERROR;
+}
+
+void TraceEvent::BasicLooperMonitor::BeginHandling(
+    /* [in] */ const String& line)
+{
+    if (sEnabled) NativeBeginToplevel();
+}
+
+void TraceEvent::BasicLooperMonitor::EndHandling(
+    /* [in] */ const String& line)
+{
+    if (sEnabled) NativeEndToplevel();
+}
+
+//===============================================================
+//              TraceEvent::IdleTracingLooperMonitor
+//===============================================================
+
+const String TraceEvent::IdleTracingLooperMonitor::TAG("TraceEvent.LooperMonitor");
+const String TraceEvent::IdleTracingLooperMonitor::IDLE_EVENT_NAME("Looper.queueIdle");
+
+const Int64 TraceEvent::IdleTracingLooperMonitor::FRAME_DURATION_MILLIS;
+const Int64 TraceEvent::IdleTracingLooperMonitor::MIN_INTERESTING_DURATION_MILLIS;
+const Int64 TraceEvent::IdleTracingLooperMonitor::MIN_INTERESTING_BURST_DURATION_MILLIS;
+
+// Stats tracking
+
+
+TraceEvent::IdleTracingLooperMonitor::IdleTracingLooperMonitor()
+    : mLastIdleStartedAt(0L)
+    , mLastWorkStartedAt(0L)
+    , mNumTasksSeen(0)
+    , mNumIdlesSeen(0)
+    , mNumTasksSinceLastIdle(0)
+    , mIdleMonitorAttached(FALSE)
+{
+}
+
+// Called from within the begin/end methods only.
+// This method can only execute on the looper thread, because that is
+// the only thread that is permitted to call Looper.myqueue().
+void TraceEvent::IdleTracingLooperMonitor::SyncIdleMonitoring()
+{
+    if (sEnabled && !mIdleMonitorAttached) {
+        // approximate start time for computational purposes
+        mLastIdleStartedAt = SystemClock::ElapsedRealtime();
+        AutoPtr<ILooperHelper> looperHelper;
+        CLooperHelper::AcquireSingleton((ILooperHelper**)&looperHelper);
+        AutoPtr<IMessageQueue> queue;
+        looperHelper->MyQueue((IMessageQueue**)&queue);
+        queue->AddIdleHandler(this);
+        mIdleMonitorAttached = TRUE;
+//        Log.v(TAG, "attached idle handler");
+    }
+    else if (mIdleMonitorAttached && !sEnabled) {
+        AutoPtr<ILooperHelper> looperHelper;
+        CLooperHelper::AcquireSingleton((ILooperHelper**)&looperHelper);
+        AutoPtr<IMessageQueue> queue;
+        looperHelper->MyQueue((IMessageQueue**)&queue);
+        queue->RemoveIdleHandler(this);
+        mIdleMonitorAttached = FALSE;
+//        Log.v(TAG, "detached idle handler");
+    }
+}
+
+//@Override
+void TraceEvent::IdleTracingLooperMonitor::BeginHandling(
+    /* [in] */ const String& line)
+{
+    // Close-out any prior 'idle' period before starting new task.
+    if (mNumTasksSinceLastIdle == 0) {
+        TraceEvent::End(IDLE_EVENT_NAME);
+    }
+    mLastWorkStartedAt = SystemClock::ElapsedRealtime();
+    SyncIdleMonitoring();
+    BasicLooperMonitor::BeginHandling(line);
+}
+
+//@Override
+void TraceEvent::IdleTracingLooperMonitor::EndHandling(
+    /* [in] */ const String& line)
+{
+    const Int64 elapsed = SystemClock::elapsedRealtime()
+            - mLastWorkStartedAt;
+    if (elapsed > MIN_INTERESTING_DURATION_MILLIS) {
+        TraceAndLog(Log.WARN, "observed a task that took "
+                + elapsed + "ms: " + line);
+    }
+    BasicLooperMonitor::EndHandling(line);
+    SyncIdleMonitoring();
+    mNumTasksSeen++;
+    mNumTasksSinceLastIdle++;
+}
+
+void TraceEvent::IdleTracingLooperMonitor::TraceAndLog(
+    /* [in] */ Int32 level,
+    /* [in] */ String message)
+{
+    TraceEvent::Instant(String("TraceEvent.LooperMonitor:IdleStats"), message);
+//    Log.println(level, TAG, message);
+}
+
+//@Override
+Boolean TraceEvent::IdleTracingLooperMonitor::QueueIdle()
+{
+    const Int64 now =  SystemClock::ElapsedRealtime();
+    if (mLastIdleStartedAt == 0) mLastIdleStartedAt = now;
+    const Int64 elapsed = now - mLastIdleStartedAt;
+    mNumIdlesSeen++;
+    TraceEvent::Begin(IDLE_EVENT_NAME, mNumTasksSinceLastIdle + " tasks since last idle.");
+    if (elapsed > MIN_INTERESTING_BURST_DURATION_MILLIS) {
+        // Dump stats
+        String statsString = mNumTasksSeen + " tasks and "
+                + mNumIdlesSeen + " idles processed so far, "
+                + mNumTasksSinceLastIdle + " tasks bursted and "
+                + elapsed + "ms elapsed since last idle";
+        TraceAndLog(Log.DEBUG, statsString);
+    }
+    mLastIdleStartedAt = now;
+    mNumTasksSinceLastIdle = 0;
+    return TRUE; // stay installed
+}
+
+
+//===============================================================
+//                TraceEvent::LooperMonitorHolder
+//===============================================================
+
+static AutoPtr<BasicLooperMonitor> BasicLooperMonitor_Create()
+{
+    AutoPtr<BasicLooperMonitor> instant;
+    if (CommandLine::GetInstance()->HasSwitch(BaseSwitches::ENABLE_IDLE_TRACING)) {
+        instant = new IdleTracingLooperMonitor();
+    }
+    else {
+        instant = new BasicLooperMonitor();
+    }
+}
+
+const AutoPtr<BasicLooperMonitor> TraceEvent::LooperMonitorHolder::sInstance = BasicLooperMonitor_Create();
+
+//===============================================================
+//                         TraceEvent
+//===============================================================
+
+volatile Boolean TraceEvent::sEnabled = FALSE;
+
+/**
+ * Register an enabled observer, such that java traces are always enabled with native.
+ */
+void TraceEvent::RegisterNativeEnabledObserver()
+{
+    NativeRegisterEnabledObserver();
+}
+
+/**
+ * Notification from native that tracing is enabled/disabled.
+ */
+//@CalledByNative
+void TraceEvent::SetEnabled(
+    /* [in] */ Boolean enabled)
+{
+   sEnabled = enabled;
+   ThreadUtils::GetUiThreadLooper()->SetMessageLogging(
+       enabled ? LooperMonitorHolder::sInstance : NULL);
+}
+
+/**
+ * Enables or disabled Android systrace path of Chrome tracing. If enabled, all Chrome
+ * traces will be also output to Android systrace. Because of the overhead of Android
+ * systrace, this is for WebView only.
+ */
+void TraceEvent::SetATraceEnabled(
+    /* [in] */ Boolean enabled)
+{
+    if (sEnabled == enabled) return;
+    if (enabled) {
+        NativeStartATrace();
+    }
+    else {
+        NativeStopATrace();
+    }
+}
+
+/**
+ * @return True if tracing is enabled, false otherwise.
+ * It is safe to call trace methods without checking if TraceEvent
+ * is enabled.
+ */
+Boolean TraceEvent::Enabled()
+{
+    return sEnabled;
+}
+
+/**
+ * Triggers the 'instant' native trace event with no arguments.
+ * @param name The name of the event.
+ */
+void TraceEvent::Instant(
+    /* [in] */ String name)
+{
+    if (sEnabled) NativeInstant(name, String(NULL));
+}
+
+/**
+ * Triggers the 'instant' native trace event.
+ * @param name The name of the event.
+ * @param arg  The arguments of the event.
+ */
+void TraceEvent::Instant(
+    /* [in] */ String name,
+    /* [in] */ String arg)
+{
+    if (sEnabled) NativeInstant(name, arg);
+}
+
+/**
+ * Convenience wrapper around the versions of startAsync() that take string parameters.
+ * @param id The id of the asynchronous event.
+ * @see #begin()
+ */
+void TraceEvent::StartAsync(
+    /* [in] */ Int64 id)
+{
+    if (sEnabled) NativeStartAsync(getCallerName(), id, String(NULL));
+}
+
+/**
+ * Triggers the 'start' native trace event with no arguments.
+ * @param name The name of the event.
+ * @param id   The id of the asynchronous event.
+ */
+void TraceEvent::StartAsync(
+    /* [in] */ String name,
+    /* [in] */ Int64 id)
+{
+    if (sEnabled) NativeStartAsync(name, id, String(NULL));
+}
+
+/**
+ * Triggers the 'start' native trace event.
+ * @param name The name of the event.
+ * @param id   The id of the asynchronous event.
+ * @param arg  The arguments of the event.
+ */
+void TraceEvent::StartAsync(
+    /* [in] */ String name,
+    /* [in] */ Int64 id,
+    /* [in] */ String arg)
+{
+    if (sEnabled) NativeStartAsync(name, id, arg);
+}
+
+/**
+ * Convenience wrapper around the versions of finishAsync() that take string parameters.
+ * @param id The id of the asynchronous event.
+ * @see #begin()
+ */
+void TraceEvent::FinishAsync(
+    /* [in] */ Int64 id)
+{
+    if (sEnabled) NativeFinishAsync(getCallerName(), id, String(NULL));
+}
+
+/**
+ * Triggers the 'finish' native trace event with no arguments.
+ * @param name The name of the event.
+ * @param id   The id of the asynchronous event.
+ */
+void TraceEvent::FinishAsync(
+    /* [in] */ String name,
+    /* [in] */ Int64 id)
+{
+    if (sEnabled) NativeFinishAsync(name, id, String(NULL));
+}
+
+/**
+ * Triggers the 'finish' native trace event.
+ * @param name The name of the event.
+ * @param id   The id of the asynchronous event.
+ * @param arg  The arguments of the event.
+ */
+void TraceEvent::FinishAsync(
+    /* [in] */ String name,
+    /* [in] */ Int64 id,
+    /* [in] */ String arg)
+{
+    if (sEnabled) NativeFinishAsync(name, id, arg);
+}
+
+/**
+ * Convenience wrapper around the versions of begin() that take string parameters.
+ * The name of the event will be derived from the class and function name that call this.
+ * IMPORTANT: if using this version, ensure end() (no parameters) is always called from the
+ * same calling context.
+ *
+ * Note that the overhead is at ms or sub-ms order. Don't use this when millisecond accuracy
+ * is desired.
+ */
+void TraceEvent::Begin() {
+    if (sEnabled) NativeBegin(GetCallerName(), String(NULL));
+}
+
+/**
+ * Triggers the 'begin' native trace event with no arguments.
+ * @param name The name of the event.
+ */
+void TraceEvent::Begin(
+    /* [in] */ String name)
+{
+    if (sEnabled) NativeBegin(name, String(NULL));
+}
+
+/**
+ * Triggers the 'begin' native trace event.
+ * @param name The name of the event.
+ * @param arg  The arguments of the event.
+ */
+void TraceEvent::Begin(
+    /* [in] */ String name,
+    /* [in] */ String arg)
+{
+    if (sEnabled) NativeBegin(name, arg);
+}
+
+/**
+ * Convenience wrapper around the versions of end() that take string parameters.
+ * @see #begin()
+ */
+void TraceEvent::End() {
+    if (sEnabled) NativeEnd(GetCallerName(), String(NULL));
+}
+
+/**
+ * Triggers the 'end' native trace event with no arguments.
+ * @param name The name of the event.
+ */
+void TraceEvent::End(
+    /* [in] */ String name)
+{
+    if (sEnabled) NativeEnd(name, String(NULL));
+}
+
+/**
+ * Triggers the 'end' native trace event.
+ * @param name The name of the event.
+ * @param arg  The arguments of the event.
+ */
+void TraceEvent::End(
+    /* [in] */ String name,
+    /* [in] */ String arg)
+{
+    if (sEnabled) NativeEnd(name, arg);
+}
+
+String TraceEvent::GetCallerName() {
+    // This was measured to take about 1ms on Trygon device.
+    StackTraceElement[] stack = java.lang.Thread.currentThread().getStackTrace();
+
+    // Commented out to avoid excess call overhead, but these lines can be useful to debug
+    // exactly where the TraceEvent's client is on the callstack.
+    //  int index = 0;
+    //  while (!stack[index].getClassName().equals(TraceEvent.class.getName())) ++index;
+    //  while (stack[index].getClassName().equals(TraceEvent.class.getName())) ++index;
+    //  System.logW("TraceEvent caller is at stack index " + index);
+
+    // '4' Was derived using the above commented out code snippet.
+    return stack[4].getClassName() + "." + stack[4].getMethodName();
+}
+
+void TraceEvent::NativeRegisterEnabledObserver()
+{
+}
+
+void TraceEvent::NativeStartATrace()
+{
+}
+
+void TraceEvent::NativeStopATrace()
+{
+}
+
+void TraceEvent::NativeInstant(
+    /* [in] */ String name,
+    /* [in] */ String arg)
+{
+}
+
+void TraceEvent::NativeBegin(
+    /* [in] */ String name,
+    /* [in] */ String arg)
+{
+}
+
+void TraceEvent::NativeEnd(
+    /* [in] */ String name,
+    /* [in] */ String arg)
+{
+}
+
+void TraceEvent::NativeBeginToplevel()
+{
+}
+
+void TraceEvent::NativeEndToplevel()
+{
+}
+
+void TraceEvent::NativeStartAsync(
+    /* [in] */ String name,
+    /* [in] */ Int64 id,
+    /* [in] */ String arg)
+{
+}
+
+void TraceEvent::NativeFinishAsync(
+    /* [in] */ String name,
+    /* [in] */ Int64 id,
+    /* [in] */ String arg)
+{
+}
+
+} // namespace Base
+} // namespace Webkit
+} // namespace Droid
+} // namespace Elastos
