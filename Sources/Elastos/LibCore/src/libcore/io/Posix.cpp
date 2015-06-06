@@ -390,16 +390,6 @@ bool readlink(const char* path, String& result) {
     }
 }
 
-// int posix_fallocate(int fd, off_t offset, off_t length) {
-//   ErrnoRestorer errno_restorer;
-//   return (fallocate(fd, 0, offset, length) == 0) ? 0 : errno;
-// }
-
-// int posix_fallocate64(int fd, off64_t offset, off64_t length) {
-//   ErrnoRestorer errno_restorer;
-//   return (fallocate64(fd, 0, offset, length) == 0) ? 0 : errno;
-// }
-
 ECode Posix::Accept(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetSocketAddress* peerAddress,
@@ -685,7 +675,6 @@ ECode Posix::Execve(
 
     ALOGE("execve returned errno = %d", errno);
     return E_ERRNO_EXCEPTION;
-    // return NOERROR;
 }
 
 ECode Posix::Fchmod(
@@ -1633,7 +1622,43 @@ ECode Posix::Readv(
     /* [in] */ ArrayOf<Int32>* byteCounts,
     /* [out] */ Int32* num)
 {
-    return NOERROR;
+    if (offsets == NULL || byteCounts == NULL || buffers == NULL) {
+        *num = -1;
+        return NOERROR;
+    }
+    // TODO: Linux actually has a 1024 buffer limit. glibc works around this, and we should too.
+    // TODO: you can query the limit at runtime with sysconf(_SC_IOV_MAX).
+    std::vector<iovec> ioVec;
+    std::vector<AutoPtr<ArrayOf<Byte> > > buffersVec;
+    Int32 length = buffers->GetLength();
+    for (size_t i = 0; i < length; ++i) {
+        AutoPtr<IInterface> buffer = (*buffers)[i];
+        AutoPtr<IByteBuffer> byteBuffer = IByteBuffer::Probe(buffer);
+        if (byteBuffer == NULL) {
+            *num = -1;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        AutoPtr<ArrayOf<Byte> > byteArr;
+        byteBuffer->GetArray((ArrayOf<Byte>**)&byteArr);
+        if (byteArr == NULL) {
+            // TODO:: buffer.isDirect()
+            *num = -1;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        buffersVec.push_back(byteArr);
+        Byte* ptr = const_cast<Byte*>(buffersVec.back()->GetPayload());
+        if (ptr == NULL) {
+            *num = -1;
+            return NOERROR;
+        }
+        struct iovec iov;
+        iov.iov_base = reinterpret_cast<void*>(ptr + (*offsets)[i]);
+        iov.iov_len = (*byteCounts)[i];
+        ioVec.push_back(iov);
+    }
+    ECode ec;
+    *num = IO_FAILURE_RETRY(ssize_t, ec, readv, fd, &ioVec[0], length);
+    return ec;
 }
 
 ECode Posix::Recvfrom(
@@ -1645,7 +1670,7 @@ ECode Posix::Recvfrom(
     /* [in] */ IInetSocketAddress* srcAddress,
     /* [out] */ Int32* num)
 {
-    return NOERROR;
+    return RecvfromBytes(fd, bytes, byteOffset, byteCount, flags, srcAddress, num);
 }
 
 ECode Posix::Recvfrom(
@@ -1655,20 +1680,39 @@ ECode Posix::Recvfrom(
     /* [in] */ IInetSocketAddress* srcAddress,
     /* [out] */ Int32* num)
 {
-    return NOERROR;
+    // TODO::
+    Int32 position, remaining;
+    AutoPtr<IBuffer> buf = IBuffer::Probe(buffer);
+    if (buf == NULL) {
+        *num = -1;
+        return NOERROR;
+    }
+    buf->GetPosition(&position);
+    buf->GetRemaining(&remaining);
+    return RecvfromBytes(fd, buffer, position, remaining, flags, srcAddress, num);
 }
 
 ECode Posix::Remove(
     /* [in] */ String path)
 {
-    return NOERROR;
+    if (path == NULL) {
+        return NOERROR;
+    }
+    ECode ec;
+    ErrorIfMinusOne("remove", TEMP_FAILURE_RETRY(remove(path)), &ec);
+    return ec;
 }
 
 ECode Posix::Rename(
     /* [in] */ String oldPath,
     /* [in] */ String newPath)
 {
-    return NOERROR;
+    if (oldPath == NULL || newPath == NULL) {
+        return NOERROR;
+    }
+    ECode ec;
+    ErrorIfMinusOne("rename", TEMP_FAILURE_RETRY(rename(oldPath, newPath)), &ec);
+    return ec;
 }
 
 ECode Posix::Sendto(
@@ -1679,9 +1723,9 @@ ECode Posix::Sendto(
     /* [in] */ Int32 flags,
     /* [in] */ IInetAddress* inetAddress,
     /* [in] */ Int32 port,
-    /* [out] */ Int32* result)
+    /* [out] */ Int32* num)
 {
-    return NOERROR;
+    return SendtoBytes(fd, bytes, byteOffset, byteCount, flags, inetAddress, port, num);
 }
 
 ECode Posix::Sendto(
@@ -1690,9 +1734,18 @@ ECode Posix::Sendto(
     /* [in] */ Int32 flags,
     /* [in] */ IInetAddress* inetAddress,
     /* [in] */ Int32 port,
-    /* [out] */ Int32* result)
+    /* [out] */ Int32* num)
 {
-    return NOERROR;
+    // TODO::
+    Int32 position, remaining;
+    AutoPtr<IBuffer> buf = IBuffer::Probe(buffer);
+    if (buf == NULL) {
+        *num = -1;
+        return NOERROR;
+    }
+    buf->GetPosition(&position);
+    buf->GetRemaining(&remaining);
+    return SendtoBytes(fd, buffer, position, remaining, flags, inetAddress, port, num);
 }
 
 ECode Posix::Sendfile(
@@ -1702,13 +1755,33 @@ ECode Posix::Sendfile(
     /* [in] */ Int64 byteCount,
     /* [out] */ Int64* result)
 {
-    return NOERROR;
+    Int32 _outFd, _inFd;
+    outFd->GetDescriptor(&_outFd);
+    inFd->GetDescriptor(&_inFd);
+
+    off_t offset = 0;
+    off_t* offsetPtr = NULL;
+    if (inOffset != NULL) {
+        // TODO: fix bionic so we can have a 64-bit off_t!
+        offset = *inOffset;
+        offsetPtr = &offset;
+    }
+
+    ECode ec;
+    *result = ErrorIfMinusOne("sendfile", TEMP_FAILURE_RETRY(sendfile(_outFd, _inFd, offsetPtr, byteCount)), &ec);
+    if (inOffset != NULL) {
+        *inOffset = offset;
+    }
+
+    return ec;
 }
 
 ECode Posix::Setegid(
     /* [in] */ Int32 egid)
 {
-    return NOERROR;
+    ECode ec;
+    ErrorIfMinusOne("setegid", TEMP_FAILURE_RETRY(setegid(egid)), &ec);
+    return ec;
 }
 
 ECode Posix::Setenv(
@@ -1716,25 +1789,36 @@ ECode Posix::Setenv(
     /* [in] */ String value,
     /* [in] */ Boolean overwrite)
 {
-    return NOERROR;
+    if (name == NULL || value == NULL) {
+        return NOERROR;
+    }
+    ECode ec;
+    ErrorIfMinusOne("setenv", setenv(name, value, overwrite), &ec);
+    return ec;
 }
 
 ECode Posix::Seteuid(
     /* [in] */ Int32 euid)
 {
-    return NOERROR;
+    ECode ec;
+    ErrorIfMinusOne("seteuid", TEMP_FAILURE_RETRY(seteuid(euid)), &ec);
+    return ec;
 }
 
 ECode Posix::Setgid(
     /* [in] */ Int32 gid)
 {
-    return NOERROR;
+    ECode ec;
+    ErrorIfMinusOne("setgid", TEMP_FAILURE_RETRY(setgid(gid)), &ec);
+    return ec;
 }
 
 ECode Posix::Setsid(
     /* [out] */ Int32* sid)
 {
-    return NOERROR;
+    ECode ec;
+    ErrorIfMinusOne("setsid", TEMP_FAILURE_RETRY(setsid()), &ec);
+    return ec;
 }
 
 ECode Posix::SetsockoptByte(
@@ -1743,7 +1827,12 @@ ECode Posix::SetsockoptByte(
     /* [in] */ Int32 option,
     /* [in] */ Int32 value)
 {
-    return NOERROR;
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    u_char byte = value;
+    ECode ec;
+    ErrorIfMinusOne("setsockopt", TEMP_FAILURE_RETRY(setsockopt(_fd, level, option, &byte, sizeof(byte))), &ec);
+    return ec;
 }
 
 ECode Posix::SetsockoptIfreq(
@@ -1752,7 +1841,15 @@ ECode Posix::SetsockoptIfreq(
     /* [in] */ Int32 option,
     /* [in] */ String interfaceName)
 {
-    return NOERROR;
+    struct ifreq req;
+    if (!FillIfreq(interfaceName, req)) {
+        return NOERROR;
+    }
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    ECode ec;
+    ErrorIfMinusOne("setsockopt", TEMP_FAILURE_RETRY(setsockopt(_fd, level, option, &req, sizeof(req))), &ec);
+    return ec;
 }
 
 ECode Posix::SetsockoptInt(
@@ -1761,7 +1858,11 @@ ECode Posix::SetsockoptInt(
     /* [in] */ Int32 option,
     /* [in] */ Int32 value)
 {
-    return NOERROR;
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    ECode ec;
+    ErrorIfMinusOne("setsockopt", TEMP_FAILURE_RETRY(setsockopt(_fd, level, option, &value, sizeof(value))), &ec);
+    return ec;
 }
 
 ECode Posix::SetsockoptIpMreqn(
@@ -1770,7 +1871,18 @@ ECode Posix::SetsockoptIpMreqn(
     /* [in] */ Int32 option,
     /* [in] */ Int32 value)
 {
-    return NOERROR;
+#if defined(__APPLE__) && MAC_OS_X_VERSION_MAX_ALLOWED < 1070
+    abort();
+#else
+    ip_mreqn req;
+    memset(&req, 0, sizeof(req));
+    req.imr_ifindex = value;
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    ECode ec;
+    ErrorIfMinusOne("setsockopt", TEMP_FAILURE_RETRY(setsockopt(_fd, level, option, &req, sizeof(req))), &ec);
+    return ec;
+#endif
 }
 
 ECode Posix::SetsockoptGroupReq(
@@ -1779,7 +1891,46 @@ ECode Posix::SetsockoptGroupReq(
     /* [in] */ Int32 option,
     /* [in] */ IStructGroupReq* value)
 {
-    return NOERROR;
+#if defined(__APPLE__) && MAC_OS_X_VERSION_MAX_ALLOWED < 1070
+    abort();
+#else
+    struct group_req req;
+    memset(&req, 0, sizeof(req));
+
+    // static jfieldID grInterfaceFid = env->GetFieldID(JniConstants::structGroupReqClass, "gr_interface", "I");
+    Int32 gr_interface;
+    value->GetGrInterface(&gr_interface);
+    req.gr_interface = gr_interface;
+    // Get the IPv4 or IPv6 multicast address to join or leave.
+    // static jfieldID grGroupFid = env->GetFieldID(JniConstants::structGroupReqClass, "gr_group", "Ljava/net/InetAddress;");
+    AutoPtr<IInetAddress> group;
+    value->GetGrGroup((IInetAddress**)&group);
+    socklen_t sa_len;
+    if (!InetAddressToSockaddrVerbatim(group, 0, req.gr_group, sa_len)) {
+        return NOERROR;
+    }
+
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    Int32 rc = TEMP_FAILURE_RETRY(setsockopt(_fd, level, option, &req, sizeof(req)));
+    if (rc == -1 && errno == EINVAL) {
+        // Maybe we're a 32-bit binary talking to a 64-bit kernel?
+        // glibc doesn't automatically handle this.
+        // http://sourceware.org/bugzilla/show_bug.cgi?id=12080
+        struct group_req64 {
+            uint32_t gr_interface;
+            uint32_t my_padding;
+            sockaddr_storage gr_group;
+        };
+        group_req64 req64;
+        req64.gr_interface = req.gr_interface;
+        memcpy(&req64.gr_group, &req.gr_group, sizeof(req.gr_group));
+        rc = TEMP_FAILURE_RETRY(setsockopt(_fd, level, option, &req64, sizeof(req64)));
+    }
+    ECode ec;
+    ErrorIfMinusOne("setsockopt", rc, &ec);
+    return ec;
+#endif
 }
 
 ECode Posix::SetsockoptGroupSourceReq(
@@ -1788,38 +1939,116 @@ ECode Posix::SetsockoptGroupSourceReq(
     /* [in] */ Int32 option,
     /* [in] */ IStructGroupSourceReq* value)
 {
-    return NOERROR;
+#if defined(__APPLE__) && MAC_OS_X_VERSION_MAX_ALLOWED < 1070
+    abort();
+#else
+    socklen_t sa_len;
+    struct group_source_req req;
+    memset(&req, 0, sizeof(req));
+
+    // static jfieldID gsrInterfaceFid = env->GetFieldID(JniConstants::structGroupSourceReqClass, "gsr_interface", "I");
+    Int32 gsr_interface;
+    value->GetGsrInterface(&gsr_interface);
+    req.gsr_interface = gsr_interface;
+    // Get the IPv4 or IPv6 multicast address to join or leave.
+    // static jfieldID gsrGroupFid = env->GetFieldID(JniConstants::structGroupSourceReqClass, "gsr_group", "Ljava/net/InetAddress;");
+    // ScopedLocalRef<jobject> javaGroup(env, env->GetObjectField(javaGroupSourceReq, gsrGroupFid));
+    AutoPtr<IInetAddress> group;
+    value->GetGsrGroup((IInetAddress**)&group);
+    if (!InetAddressToSockaddrVerbatim(group, 0, req.gsr_group, sa_len)) {
+        return NOERROR;
+    }
+
+    // Get the IPv4 or IPv6 multicast address to add to the filter.
+    // static jfieldID gsrSourceFid = env->GetFieldID(JniConstants::structGroupSourceReqClass, "gsr_source", "Ljava/net/InetAddress;");
+    // ScopedLocalRef<jobject> javaSource(env, env->GetObjectField(javaGroupSourceReq, gsrSourceFid));
+    AutoPtr<IInetAddress> source;
+    value->GetGsrSource((IInetAddress**)&source);
+    if (!InetAddressToSockaddrVerbatim(source, 0, req.gsr_source, sa_len)) {
+        return NOERROR;
+    }
+
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    Int32 rc = TEMP_FAILURE_RETRY(setsockopt(_fd, level, option, &req, sizeof(req)));
+    if (rc == -1 && errno == EINVAL) {
+        // Maybe we're a 32-bit binary talking to a 64-bit kernel?
+        // glibc doesn't automatically handle this.
+        // http://sourceware.org/bugzilla/show_bug.cgi?id=12080
+        struct group_source_req64 {
+            uint32_t gsr_interface;
+            uint32_t my_padding;
+            sockaddr_storage gsr_group;
+            sockaddr_storage gsr_source;
+        };
+        group_source_req64 req64;
+        req64.gsr_interface = req.gsr_interface;
+        memcpy(&req64.gsr_group, &req.gsr_group, sizeof(req.gsr_group));
+        memcpy(&req64.gsr_source, &req.gsr_source, sizeof(req.gsr_source));
+        rc = TEMP_FAILURE_RETRY(setsockopt(_fd, level, option, &req64, sizeof(req64)));
+    }
+    ECode ec;
+    ErrorIfMinusOne("setsockopt", rc, &ec);
+    return ec;
+#endif
 }
 
 ECode Posix::SetsockoptLinger(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
-    /* [in] */ IStructLinger* value)
+    /* [in] */ IStructLinger* strLinger)
 {
-    return NOERROR;
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    struct linger value;
+    Int32 onoff, linger;
+    strLinger->GetOnoff(&onoff);
+    strLinger->GetLinger(&linger);
+
+    value.l_onoff = onoff;
+    value.l_linger = linger;
+    ECode ec;
+    ErrorIfMinusOne("setsockopt", TEMP_FAILURE_RETRY(setsockopt(_fd, level, option, &value, sizeof(value))), &ec);
+    return ec;
 }
 
 ECode Posix::SetsockoptTimeval(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
-    /* [in] */ IStructTimeval* value)
+    /* [in] */ IStructTimeval* strTimeval)
 {
-    return NOERROR;
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    struct timeval value;
+    Int64 sec, usec;
+    strTimeval->GetSec(&sec);
+    strTimeval->GetUsec(&usec);
+    value.tv_sec = sec;
+    value.tv_usec = usec;
+    ECode ec;
+    ErrorIfMinusOne("setsockopt", TEMP_FAILURE_RETRY(setsockopt(_fd, level, option, &value, sizeof(value))), &ec);
+    return ec;
 }
 
 ECode Posix::Setuid(
     /* [in] */ Int32 uid)
 {
-    return NOERROR;
+    ECode ec;
+    ErrorIfMinusOne("setuid", TEMP_FAILURE_RETRY(setuid(uid)), &ec);
+    return ec;
 }
 
 ECode Posix::Shutdown(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 how)
 {
-    return NOERROR;
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    ECode ec;
+    ErrorIfMinusOne("shutdown", TEMP_FAILURE_RETRY(shutdown(_fd, how)), &ec);
+    return ec;
 }
 
 ECode Posix::Socket(
@@ -1828,6 +2057,13 @@ ECode Posix::Socket(
     /* [in] */ Int32 protocol,
     /* [out] */ IFileDescriptor** fd)
 {
+    ECode ec;
+    Int32 _fd = ErrorIfMinusOne("socket", TEMP_FAILURE_RETRY(socket(socketDomain, type, protocol)), &ec);
+    *fd = NULL;
+    if(_fd != -1) {
+        CFileDescriptor::New(fd);
+        (*fd)->SetDescriptor(_fd);
+    }
     return NOERROR;
 }
 
@@ -1838,28 +2074,65 @@ ECode Posix::Socketpair(
     /* [out] */ IFileDescriptor** fd1,
     /* [out] */ IFileDescriptor** fd2)
 {
-    return NOERROR;
+    Int32 fds[2];
+    ECode ec;
+    Int32 rc = ErrorIfMinusOne("socketpair", TEMP_FAILURE_RETRY(socketpair(socketDomain, type, protocol, fds)), &ec);
+    if (rc != -1) {
+        CFileDescriptor::New(fd1);
+        (*fd1)->SetDescriptor(fds[0]);
+        CFileDescriptor::New(fd2);
+        (*fd2)->SetDescriptor(fds[1]);
+    } else {
+        *fd1 = *fd2 = NULL;
+    }
+    return ec;
 }
 
 ECode Posix::Stat(
     /* [in] */ String path,
     /* [out] */ IStructStat** stat)
 {
+    *stat = DoStat(path, FALSE);
+    REFCOUNT_ADD(*stat)
     return NOERROR;
 }
 
     /* TODO: replace statfs with statvfs. */
 ECode Posix::StatVfs(
     /* [in] */ String path,
-    /* [out] */ IStructStatVfs** statfs)
+    /* [out] */ IStructStatVfs** vfsResult)
 {
+    if (path == NULL) {
+        *vfsResult = NULL;
+        return NOERROR;
+    }
+    struct statvfs sb;
+    Int32 rc = TEMP_FAILURE_RETRY(statvfs(path, &sb));
+    if (rc == -1) {
+        // throwErrnoException(env, "statvfs");
+        ALOGE("System-call statvfs error, errno = %d", errno);
+        *vfsResult = NULL;
+        return NOERROR;
+    }
+    *vfsResult = MakeStructStatVfs(sb);
+    REFCOUNT_ADD(*vfsResult)
     return NOERROR;
 }
 
 ECode Posix::Strerror(
-    /* [in] */ Int32 errno,
+    /* [in] */ Int32 errnum,
     /* [out] */ String* strerr)
 {
+    const char* message = strerror(errnum);
+    *strerr = message;
+    return NOERROR;
+}
+
+ECode Posix::Strsignal(
+    /* [in] */ Int32 signal,
+    /* [out] */ String* strSignal)
+{
+    *strSignal = strsignal(signal);
     return NOERROR;
 }
 
@@ -1867,42 +2140,90 @@ ECode Posix::Symlink(
     /* [in] */ String oldPath,
     /* [in] */ String newPath)
 {
-    return NOERROR;
+    if (oldPath == NULL || newPath == NULL) {
+        return NOERROR;
+    }
+
+    ECode ec;
+    ErrorIfMinusOne("symlink", TEMP_FAILURE_RETRY(symlink(oldPath, newPath)), &ec);
+    return ec;
 }
 
 ECode Posix::Sysconf(
     /* [in] */ Int32 name,
     /* [out] */ Int64* result)
 {
+    // Since -1 is a valid result from sysconf(3), detecting failure is a little more awkward.
+    errno = 0;
+    *result = sysconf(name);
+    if (*result == -1L && errno == EINVAL) {
+        // throwErrnoException(env, "sysconf");
+        ALOGE("System-call sysconf error, errno = %d", errno);
+        return E_ERRNO_EXCEPTION;
+    }
     return NOERROR;
 }
 
 ECode Posix::Tcdrain(
     /* [in] */ IFileDescriptor* fd)
 {
-    return NOERROR;
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    ECode ec;
+    ErrorIfMinusOne("tcdrain", TEMP_FAILURE_RETRY(tcdrain(_fd)), &ec);
+    return ec;
 }
+
+ECode Posix::Tcsendbreak(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ Int32 duration)
+{
+    Int32 _fd;
+    fd->GetDescriptor(&_fd);
+    ECode ec;
+    ErrorIfMinusOne("tcsendbreak", TEMP_FAILURE_RETRY(tcsendbreak(_fd, duration)), &ec);
+    return ec;
+}
+
 
 ECode Posix::Umask(
     /* [in] */ Int32 mask,
     /* [out] */ Int32* result)
 {
-    return NOERROR;
+    if ((mask & 0777) != mask) {
+        ALOGE("Invalid umask: %d", mask);
+        // throw new IllegalArgumentException("Invalid umask: " + mask);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    return umask(mask);
 }
 
 ECode Posix::Uname(
-    /* [out] */ IStructUtsname** uname)
+    /* [out] */ IStructUtsname** unameOut)
 {
+    struct utsname buf;
+    if (TEMP_FAILURE_RETRY(uname(&buf)) == -1) {
+        *unameOut = NULL; // Can't happen.
+    }
+    *unameOut = MakeStructUtsname(buf);
+    REFCOUNT_ADD(*unameOut)
     return NOERROR;
 }
 
 ECode Posix::Waitpid(
     /* [in] */ Int32 pid,
-    /* [out] */ Int32* status,
+    /* [out] */ Int32* statusArg,
     /* [in] */ Int32 options,
     /* [out] */ Int32* result)
 {
-    return NOERROR;
+    Int32 status;
+    ECode ec;
+    Int32 rc = ErrorIfMinusOne("waitpid", TEMP_FAILURE_RETRY(waitpid(pid, &status, options)), &ec);
+    if (rc != -1 && statusArg == NULL) {
+        *statusArg = statusArg;
+    }
+    *result = rc;
+    return ec;
 }
 
 ECode Posix::Write(
@@ -1912,7 +2233,7 @@ ECode Posix::Write(
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* num)
 {
-    return NOERROR;
+    return WriteBytes(fd, bytes, byteOffset, byteCount, num);
 }
 
 ECode Posix::Write(
@@ -1920,7 +2241,16 @@ ECode Posix::Write(
     /* [in] */ IByteBuffer* buffer,
     /* [out] */ Int32* num)
 {
-    return NOERROR;
+    // TODO::
+    Int32 position, remaining;
+    AutoPtr<IBuffer> buf = IBuffer::Probe(buffer);
+    if (buf == NULL) {
+        *num = -1;
+        return NOERROR;
+    }
+    buf->GetPosition(&position);
+    buf->GetRemaining(&remaining);
+    return WriteBytes(fd, buffer, position, remaining, num);
 }
 
 ECode Posix::Writev(
@@ -2015,7 +2345,7 @@ ECode Posix::ReadBytes(
         return NOERROR;
     }
     AutoPtr<ArrayOf<Byte> > array_;
-    buffer->GetArray((ArrayOf<Byte>**)&array_);
+    buffer->GetArray((ArrayOf<Byte>**)&array_); // TODO buffer.isDirect
     return ReadBytes(fd, array_, bufferOffset, bufferCount, result);
 }
 
@@ -2049,7 +2379,7 @@ ECode Posix::RecvfromBytes(
         return NOERROR;
     }
     AutoPtr<ArrayOf<Byte> > array_;
-    buffer->GetArray((ArrayOf<Byte>**)&array_);
+    buffer->GetArray((ArrayOf<Byte>**)&array_); // TODO buffer.isDirect()
     return RecvfromBytes(fd, array_, bufferOffset, bufferCount, flags, srcAddress, result);
 }
 
@@ -2093,7 +2423,7 @@ ECode Posix::SendtoBytes(
         return NOERROR;
     }
     AutoPtr<ArrayOf<Byte> > array_;
-    buffer->GetArray((ArrayOf<Byte>**)&array_);
+    buffer->GetArray((ArrayOf<Byte>**)&array_); //TODO: buffer.isDirect()
     return SendtoBytes(fd, array_, bufferOffset, bufferCount, flags, inetAddress, port, result);
 }
 
@@ -2143,7 +2473,7 @@ ECode Posix::WriteBytes(
         return NOERROR;
     }
     AutoPtr<ArrayOf<Byte> > array_;
-    buffer->GetArray((ArrayOf<Byte>**)&array_);
+    buffer->GetArray((ArrayOf<Byte>**)&array_); //TODO: buffer.isDirect()
     return WriteBytes(fd, array_, bufferOffset, bufferCount, result);
 }
 

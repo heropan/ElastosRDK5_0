@@ -530,6 +530,10 @@ module
             [in] Int32 errno,
             [out] String* strerr);
 
+        Strsignal(
+            [in] Int32 signal,
+            [out] String* strSignal);
+
         Symlink(
             [in] String oldPath,
             [in] String newPath);
@@ -540,6 +544,10 @@ module
 
         Tcdrain(
             [in] IFileDescriptor* fd);
+
+        Tcsendbreak(
+            [in] IFileDescriptor* fd,
+            [in] Int32 duration);
 
         Umask(
             [in] Int32 mask,
