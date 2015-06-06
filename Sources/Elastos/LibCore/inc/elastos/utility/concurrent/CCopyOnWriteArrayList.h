@@ -30,6 +30,18 @@ public:
      */
     CARAPI constructor(
         /* [in] */ ArrayOf<IInterface*>* array);
+
+    CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
 };
 
 } // namespace Concurrent
