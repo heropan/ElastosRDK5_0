@@ -121,6 +121,7 @@ module
     interface Libcore.IO.IStreams;
     interface Elastos.IO.ICloseable;
     interface Elastos.Net.IURI;
+    interface Elastos.Utility.IObjectEnumerator;
 
     //
     // nio releated classes
@@ -561,6 +562,19 @@ module
 
 //        interface ICloseable;
 //        interface IRandomAccessFile;
+//    }
+
+//    class CSequenceInputStream {
+//        constructor(
+//            [in] IInputStream* s1,
+//            [in] IInputStream* s2);
+
+//        constructor(
+//            [in] IObjectEnumerator* e);
+
+//        interface ICloseable;
+//        interface IInputStream;
+//        interface ISequenceInputStream;
 //    }
 
     } // namespace IO

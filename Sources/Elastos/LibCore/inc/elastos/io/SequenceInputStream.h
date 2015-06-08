@@ -4,12 +4,19 @@
 
 #include "InputStream.h"
 
+using Elastos::Utility::IObjectEnumerator;
+using Elastos::Utility::IObjectContainer;
+
 namespace Elastos {
 namespace IO {
 
-class SequenceInputStream : public InputStream
+class SequenceInputStream
+    : public InputStream
+    , public ISequenceInputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Constructs a new {@code SequenceInputStream} using the two streams
      * {@code s1} and {@code s2} as the sequence of streams to read from.
@@ -21,7 +28,7 @@ public:
      * @throws NullPointerException
      *             if {@code s1} is {@code null}.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInputStream* s1,
         /* [in] */ IInputStream* s2);
 
@@ -35,7 +42,7 @@ public:
      * @throws NullPointerException
      *             if any of the elements in {@code e} is {@code null}.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IObjectEnumerator* e);
 
     CARAPI Available(
@@ -67,15 +74,15 @@ public:
         /* [out] */ Int32* value);
 
     /**
-     * Reads at most {@code count} bytes from this sequence of input streams and
-     * stores them in the byte array {@code buffer} starting at {@code offset}.
+     * Reads up to {@code byteCount} bytes from this sequence of input streams and
+     * stores them in the byte array {@code buffer} starting at {@code byteOffset}.
      * Blocks only until at least 1 byte has been read, the end of the stream
      * has been reached, or an exception is thrown.
      * <p>
      * This SequenceInputStream shows the same behavior as other InputStreams.
      * To do this it will read only as many bytes as a call to read on the
      * current substream returns. If that call does not return as many bytes as
-     * requested by {@code count}, it will not retry to read more on its own
+     * requested by {@code byteCount}, it will not retry to read more on its own
      * because subsequent reads might block. This would violate the rule that
      * it will only block until at least one byte has been read.
      * <p>
@@ -83,28 +90,18 @@ public:
      * will close that substream and start with the next one. If there are no
      * more substreams it will return -1.
      *
-     * @param buffer
-     *            the array in which to store the bytes read.
-     * @param offset
-     *            the initial position in {@code buffer} to store the bytes read
-     *            from this stream.
-     * @param count
-     *            the maximum number of bytes to store in {@code buffer}.
-     * @return the number of bytes actually read; -1 if this sequence of streams
-     *         is closed or if the end of the last stream in the sequence has
-     *         been reached.
      * @throws IndexOutOfBoundsException
-     *             if {@code offset < 0} or {@code count < 0}, or if {@code
-     *             offset + count} is greater than the size of {@code buffer}.
+     *     if {@code byteOffset < 0 || byteCount < 0 || byteOffset + byteCount > buffer.length}.
      * @throws IOException
      *             if an I/O error occurs.
      * @throws NullPointerException
-     *             if {@code buffer} is {@code null}.
+     *             if {@code buffer == null}.
      */
-    CARAPI ReadBytes(
+    // @Override
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
 
 private:

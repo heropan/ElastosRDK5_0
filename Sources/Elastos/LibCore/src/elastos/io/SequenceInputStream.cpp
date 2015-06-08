@@ -8,7 +8,9 @@ using Elastos::Core::CObjectContainer;
 namespace Elastos {
 namespace IO {
 
-ECode SequenceInputStream::Init(
+CAR_INTERFACE_IMPL(SequenceInputStream, InputStream, ISequenceInputStream)
+
+ECode SequenceInputStream::constructor(
     /* [in] */ IInputStream* s1,
     /* [in] */ IInputStream* s2)
 {
@@ -22,7 +24,7 @@ ECode SequenceInputStream::Init(
     return NOERROR;
 }
 
-ECode SequenceInputStream::Init(
+ECode SequenceInputStream::constructor(
     /* [in] */ IObjectEnumerator* e)
 {
     mEnum = e;
@@ -62,7 +64,7 @@ ECode SequenceInputStream::Close()
 ECode SequenceInputStream::NextStream()
 {
     if (mIn != NULL) {
-        mIn->Close();
+        ICloseable::Probe(mIn)->Close();
         mIn = NULL;
     }
     Boolean succeeded = FALSE;
@@ -94,10 +96,10 @@ ECode SequenceInputStream::Read(
     return -1;
 }
 
-ECode SequenceInputStream::ReadBytes(
+ECode SequenceInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 count,
+    /* [in] */ Int32 byteOffset,
+    /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(buffer)
@@ -106,21 +108,14 @@ ECode SequenceInputStream::ReadBytes(
         *number = -1;
         return NOERROR;
     }
-    // BEGIN android-changed
     if (buffer == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    // avoid int overflow
-    // Exception priorities (in case of multiple errors) differ from
-    // RI, but are spec-compliant.
-    // used (offset | count) < 0 instead of (offset < 0) || (count < 0)
-    // to safe one operation
-    if ((offset | count) < 0 || offset > buffer->GetLength() - count) {
+    if ((byteOffset | byteCount) < 0 || byteOffset > buffer->GetLength() - byteCount) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    // END android-changed
     while (mIn != NULL) {
-        mIn->ReadBytes(buffer, offset, count, number);
+        mIn->Read(buffer, byteOffset, byteCount, number);
         if ((*number) >= 0) {
             return NOERROR;
         }
