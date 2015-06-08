@@ -811,7 +811,7 @@ ECode CIoBridge::_Sendto(
         return NOERROR;
     }
     // try {
-    return CLibcore::sOs->SendtoEx(fd, buffer, flags, inetAddress, port, result);
+    return CLibcore::sOs->Sendto(fd, buffer, flags, inetAddress, port, result);
     // } catch (ErrnoException errnoException) {
     //     result = maybeThrowAfterSendto(isDatagram, errnoException);
     // }
@@ -861,7 +861,7 @@ ECode CIoBridge::_Recvfrom(
         CInetSocketAddress::New((IInetSocketAddress**)&srcAddress);
     }
 
-    FAIL_RETURN(CLibcore::sOs->RecvfromEx(fd, buffer, flags, srcAddress, result));
+    FAIL_RETURN(CLibcore::sOs->Recvfrom(fd, buffer, flags, srcAddress, result));
     *result = PostRecvfrom(isRead, packet, isConnected, srcAddress, *result);
     return NOERROR;
     // } catch (ErrnoException errnoException) {
@@ -976,13 +976,13 @@ ECode CIoBridge::Connect(
     /* [out] */ Boolean* result)
 {
 //    try {
-    return ConnectEx(fd, inetAddress, port, 0, result);
+    return Connect(fd, inetAddress, port, 0, result);
 //    } catch (SocketTimeoutException ex) {
 //        throw new AssertionError(ex); // Can't happen for a connect without a timeout.
 //    }
 }
 
-ECode CIoBridge::ConnectEx(
+ECode CIoBridge::Connect(
     /* [in] */ Int32 fd,
     /* [in] */ IInetAddress* inetAddress,
     /* [in] */ Int32 port,
@@ -1065,7 +1065,7 @@ ECode CIoBridge::Sendto(
     return _Sendto(fd, bytes, byteOffset, byteCount, flags, inetAddress, port, result);
 }
 
-ECode CIoBridge::SendtoEx(
+ECode CIoBridge::Sendto(
         /* [in] */ Int32 fd,
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int32 flags,
@@ -1090,7 +1090,7 @@ ECode CIoBridge::Recvfrom(
     return _Recvfrom(isRead, fd, bytes, byteOffset, byteCount, flags, packet, isConnected, result);
 }
 
-ECode CIoBridge::RecvfromEx(
+ECode CIoBridge::Recvfrom(
     /* [in] */ Boolean isRead,
     /* [in] */ Int32 fd,
     /* [in] */ IByteBuffer* buffer,

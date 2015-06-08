@@ -24,7 +24,7 @@ AutoPtr<ISocketTagger> SocketTagger::sTagger = new SocketTaggerInner();
 
 CAR_INTERFACE_IMPL(SocketTagger, ISocketTagger);
 
-ECode SocketTagger::TagEx(
+ECode SocketTagger::Tag(
     /* [in] */ ISocket* socket)
 {
     Boolean ret;
@@ -37,7 +37,7 @@ ECode SocketTagger::TagEx(
     return NOERROR;
 }
 
-ECode SocketTagger::UntagEx(
+ECode SocketTagger::Untag(
     /* [in] */ ISocket* socket)
 {
     Boolean ret;

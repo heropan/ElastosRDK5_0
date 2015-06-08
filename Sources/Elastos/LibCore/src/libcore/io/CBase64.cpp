@@ -25,10 +25,10 @@ ECode CBase64::Decode(
     /* [in] */ ArrayOf<Byte>* inData,
     /* [out, callee] */ ArrayOf<Byte>** outData)
 {
-    return DecodeEx(inData, inData->GetLength(), outData);
+    return Decode(inData, inData->GetLength(), outData);
 }
 
-ECode CBase64::DecodeEx(
+ECode CBase64::Decode(
     /* [in] */ ArrayOf<Byte>* inData,
     /* [in] */ Int32 len,
     /* [out, callee] */ ArrayOf<Byte>** outData)

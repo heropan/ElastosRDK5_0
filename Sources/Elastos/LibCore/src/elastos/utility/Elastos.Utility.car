@@ -1034,10 +1034,6 @@ module
     //     interface IFlushable;
     // }
 
-    // singleton class CComparableTimSortHelper {
-    //     interface IComparableTimSortHelper;
-    // }
-
     // singleton class CCurrencyHelper {
     //     interface ICurrencyHelper;
     // }

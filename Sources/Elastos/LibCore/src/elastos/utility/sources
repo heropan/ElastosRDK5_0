@@ -40,7 +40,7 @@ SOURCES += CIdentityHashMap.cpp
 
 
 
-
+SOURCES += CStringTokenizer.cpp
 SOURCES += Timer.cpp
 SOURCES += Grego.cpp
 SOURCES += TimerTask.cpp
@@ -48,6 +48,9 @@ SOURCES += CUUID.cpp
 SOURCES += CUUIDHelper.cpp
 SOURCES += TimeZoneGetter.cpp
 SOURCES += CTimeZoneGetterHelper.cpp
+SOURCES += CLocale.cpp
+SOURCES += CLocaleHelper.cpp
+SOURCES += CLocaleBuilder.cpp
 
 
 

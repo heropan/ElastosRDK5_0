@@ -147,7 +147,7 @@ ECode NativeBreakIterator::Next(
     return NOERROR;
 }
 
-ECode NativeBreakIterator::NextEx(
+ECode NativeBreakIterator::Next(
     /* [out] */ Int32 * value)
 {
     VALIDATE_NOT_NULL(value)
@@ -177,7 +177,7 @@ ECode NativeBreakIterator::SetText(
     return NOERROR;
 }
 
-ECode NativeBreakIterator::SetTextEx(
+ECode NativeBreakIterator::SetText(
     /* [in] */ const String& newText)
 {
     AutoPtr<IStringCharacterIterator> stringCharIter;

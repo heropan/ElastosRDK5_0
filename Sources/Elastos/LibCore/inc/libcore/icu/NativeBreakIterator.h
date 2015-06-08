@@ -54,7 +54,7 @@ public:
         /* [in] */ Int32 n,
         /* [out] */ Int32 * value);
 
-    CARAPI NextEx(
+    CARAPI Next(
         /* [out] */ Int32 * value);
 
     CARAPI Previous(
@@ -63,7 +63,7 @@ public:
     CARAPI SetText(
         /* [in] */ ICharacterIterator * newText);
 
-    CARAPI SetTextEx(
+    CARAPI SetText(
         /* [in] */ const String& newText);
 
     CARAPI IsBoundary(

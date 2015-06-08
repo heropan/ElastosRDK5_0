@@ -1,14 +1,24 @@
-#ifndef __UTILITY_CSTINGTOKENIZER_H__
-#define __UTILITY_CSTINGTOKENIZER_H__
+#ifndef __ELASTOS_UTILITY_CSTINGTOKENIZER_H__
+#define __ELASTOS_UTILITY_CSTINGTOKENIZER_H__
 
-#include "_CStringTokenizer.h"
+#include "_Elastos_Utility_CStringTokenizer.h"
+#include "Object.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
 
 CarClass(CStringTokenizer)
+    , public Object
+    , public IStringTokenizer
+    , public IEnumeration
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CStringTokenizer();
 
     /**
@@ -125,4 +135,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CSTINGTOKENIZER_H__
+#endif // __ELASTOS_UTILITY_CSTINGTOKENIZER_H__

@@ -242,6 +242,57 @@ module
     namespace Elastos {
     namespace Utility {
 
+        class CStringTokenizer {
+            /**
+             * Constructs a new {@code StringTokenizer} for the parameter string using
+             * whitespace as the delimiter. The {@code returnDelimiters} flag is set to
+             * {@code false}.
+             *
+             * @param string
+             *            the string to be tokenized.
+             */
+            constructor(
+                [in] String string);
+
+            /**
+             * Constructs a new {@code StringTokenizer} for the parameter string using
+             * the specified delimiters. The {@code returnDelimiters} flag is set to
+             * {@code false}. If {@code delimiters} is {@code null}, this constructor
+             * doesn't throw an {@code Exception}, but later calls to some methods might
+             * throw a {@code NullPointerException}.
+             *
+             * @param string
+             *            the string to be tokenized.
+             * @param delimiters
+             *            the delimiters to use.
+             */
+            constructor(
+                [in] String string,
+                [in] String delimiters);
+
+            /**
+             * Constructs a new {@code StringTokenizer} for the parameter string using
+             * the specified delimiters, returning the delimiters as tokens if the
+             * parameter {@code returnDelimiters} is {@code true}. If {@code delimiters}
+             * is null this constructor doesn't throw an {@code Exception}, but later
+             * calls to some methods might throw a {@code NullPointerException}.
+             *
+             * @param string
+             *            the string to be tokenized.
+             * @param delimiters
+             *            the delimiters to use.
+             * @param returnDelimiters
+             *            {@code true} to return each delimiter as a token.
+             */
+            constructor(
+                [in] String string,
+                [in] String delimiters,
+                [in] Boolean returnDelimiters);
+
+            interface IStringTokenizer;
+            interface IEnumeration;
+        }
+
         class CArrayDeque {
             constructor();
 
@@ -436,6 +487,58 @@ module
 
         singleton class CTimeZoneGetterHelper {
            interface ITimeZoneGetterHelper;
+        }
+
+        class CLocale {
+            /**
+             * There's a circular dependency between toLowerCase/toUpperCase and
+             * Locale.US. Work around this by avoiding these methods when constructing
+             * the built-in locales.
+             *
+             * @param unused required for this constructor to have a unique signature
+             */
+            constructor(
+                [in] Boolean unused,
+                [in] String lowerCaseLanguageCode,
+                [in] String upperCaseCountryCode);
+
+            constructor();
+
+            /**
+             * Constructs a new {@code Locale} using the specified language.
+             */
+            constructor(
+                [in] String language);
+
+            /**
+             * Constructs a new {@code Locale} using the specified language and country codes.
+             */
+            constructor(
+               [in] String language,
+               [in] String country);
+
+            /**
+             * Constructs a new {@code Locale} using the specified language, country,
+             * and variant codes.
+             */
+            constructor(
+                [in] String language,
+                [in] String country,
+                [in] String variant);
+
+            interface ILocale;
+            interface ICloneable;
+            interface ISerializable;
+        }
+
+        singleton class CLocaleHelper {
+            interface ILocaleHelper;
+        }
+
+        class CLocaleBuilder {
+            constructor();
+
+            interface ILocaleBuilder;
         }
 
     } // namespace Utility
