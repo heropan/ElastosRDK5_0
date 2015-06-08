@@ -31,8 +31,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/un.h>
-#include <vector>
-#include "Posix.h"
+
+#include "CPosix.h"
 #include "AsynchronousCloseMonitorNative.h"
 #include "io/CFileDescriptor.h"
 #include "NetworkUtilities.h"
@@ -44,13 +44,16 @@
 #include "droid/system/CStructStatVfs.h"
 #include "droid/system/CStructUtsname.h"
 #include "Portability.h"
-#include "UniquePtr.h"
+#include "core/UniquePtr.h"
 #include "ErrnoRestorer.h"
 #include "LocalArray.h"
+#include <elastos/utility/etl/Vector.h>
 
 using Elastos::Core::Object;
+using Elastos::Core::UniquePtr;
 using Elastos::IO::IBuffer;
 using Elastos::IO::CFileDescriptor;
+using Elastos::Utility::Etl::Vector;
 using Elastos::Droid::System::CStructPasswd;
 using Elastos::Droid::System::CStructStat;
 using Elastos::Droid::System::CStructLinger;
@@ -390,7 +393,11 @@ bool readlink(const char* path, String& result) {
     }
 }
 
-ECode Posix::Accept(
+CAR_OBJECT_IMPL(CPosix)
+
+CAR_INTERFACE_IMPL(CPosix, Object, IOs)
+
+ECode CPosix::Accept(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetSocketAddress* peerAddress,
     /* [out] */ IFileDescriptor** retFd)
@@ -412,8 +419,8 @@ ECode Posix::Accept(
     return ec;
 }
 
-ECode Posix::Access(
-    /* [in] */ String path,
+ECode CPosix::Access(
+    /* [in] */ const String& path,
     /* [in] */ Int32 mode,
     /* [out] */ Boolean* succeed)
 {
@@ -430,8 +437,8 @@ ECode Posix::Access(
     return NOERROR;
 }
 
-ECode Posix::Elastos_getaddrinfo(
-    /* [in] */ String node,
+ECode CPosix::Elastos_getaddrinfo(
+    /* [in] */ const String& node,
     /* [in] */ IStructAddrinfo* _hints,
     /* [in] */ Int32 netId,
     /* [out, callee] */ ArrayOf<IInetAddress*>** info)
@@ -502,7 +509,7 @@ ECode Posix::Elastos_getaddrinfo(
     return NOERROR;
 }
 
-ECode Posix::Bind(
+ECode CPosix::Bind(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 port)
@@ -519,8 +526,8 @@ ECode Posix::Bind(
     return ec;
 }
 
-ECode Posix::Chmod(
-    /* [in] */ String path,
+ECode CPosix::Chmod(
+    /* [in] */ const String& path,
     /* [in] */ Int32 mode)
 {
     if (path == NULL) {
@@ -531,8 +538,8 @@ ECode Posix::Chmod(
     return ec;
 }
 
-ECode Posix::Chown(
-    /* [in] */ String path,
+ECode CPosix::Chown(
+    /* [in] */ const String& path,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 gid)
 {
@@ -544,7 +551,7 @@ ECode Posix::Chown(
     return ec;
 }
 
-ECode Posix::Close(
+ECode CPosix::Close(
     /* [in] */ IFileDescriptor* fd)
 {
     // Get the FileDescriptor's 'fd' field and clear it.
@@ -561,7 +568,7 @@ ECode Posix::Close(
     return ec;
 }
 
-ECode Posix::Connect(
+ECode CPosix::Connect(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 port)
@@ -578,7 +585,7 @@ ECode Posix::Connect(
     return ec;
 }
 
-ECode Posix::Dup(
+ECode CPosix::Dup(
     /* [in] */ IFileDescriptor* oldFd,
     /* [out] */ IFileDescriptor** retFd)
 {
@@ -594,7 +601,7 @@ ECode Posix::Dup(
     return ec;
 }
 
-ECode Posix::Dup2(
+ECode CPosix::Dup2(
     /* [in] */ IFileDescriptor* oldFd,
     /* [in] */ Int32 newFd,
     /* [out] */ IFileDescriptor** retFd)
@@ -611,7 +618,7 @@ ECode Posix::Dup2(
     return ec;
 }
 
-ECode Posix::Environ(
+ECode CPosix::Environ(
     /* [out, callee] */ ArrayOf<String>** env)
 {
     extern char** environ; // Standard, but not in any header file.
@@ -627,8 +634,8 @@ ECode Posix::Environ(
     return NOERROR;
 }
 
-ECode Posix::Execv(
-    /* [in] */ String filename,
+ECode CPosix::Execv(
+    /* [in] */ const String& filename,
     /* [in] */ ArrayOf<String>* argv)
 {
     if (filename == NULL) {
@@ -648,8 +655,8 @@ ECode Posix::Execv(
     // throwErrnoException(env, "execv");
 }
 
-ECode Posix::Execve(
-    /* [in] */ String filename,
+ECode CPosix::Execve(
+    /* [in] */ const String& filename,
     /* [in] */ ArrayOf<String>* argv,
     /* [in] */ ArrayOf<String>* envp)
 {
@@ -677,7 +684,7 @@ ECode Posix::Execve(
     return E_ERRNO_EXCEPTION;
 }
 
-ECode Posix::Fchmod(
+ECode CPosix::Fchmod(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 mode)
 {
@@ -688,7 +695,7 @@ ECode Posix::Fchmod(
     return ec;
 }
 
-ECode Posix::Fchown(
+ECode CPosix::Fchown(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 gid)
@@ -700,7 +707,7 @@ ECode Posix::Fchown(
     return ec;
 }
 
-ECode Posix::FcntlVoid(
+ECode CPosix::FcntlVoid(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [out] */ Int32* result)
@@ -712,7 +719,7 @@ ECode Posix::FcntlVoid(
     return ec;
 }
 
-ECode Posix::FcntlInt64(
+ECode CPosix::FcntlInt64(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [in] */ Int64 arg,
@@ -725,7 +732,7 @@ ECode Posix::FcntlInt64(
     return ec;
 }
 
-ECode Posix::FcntlFlock(
+ECode CPosix::FcntlFlock(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [in] */ IStructFlock* flock,
@@ -760,7 +767,7 @@ ECode Posix::FcntlFlock(
     return ec;
 }
 
-ECode Posix::Fdatasync(
+ECode CPosix::Fdatasync(
     /* [in] */ IFileDescriptor* fd)
 {
     Int32 _fd;
@@ -770,7 +777,7 @@ ECode Posix::Fdatasync(
     return ec;
 }
 
-ECode Posix::Fstat(
+ECode CPosix::Fstat(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ IStructStat** statout)
 {
@@ -789,7 +796,7 @@ ECode Posix::Fstat(
     return NOERROR;
 }
 
-ECode Posix::Fstatvfs(
+ECode CPosix::Fstatvfs(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ IStructStatVfs** statFs)
 {
@@ -808,7 +815,7 @@ ECode Posix::Fstatvfs(
     return NOERROR;
 }
 
-ECode Posix::Fsync(
+ECode CPosix::Fsync(
     /* [in] */ IFileDescriptor* fd)
 {
     Int32 _fd;
@@ -818,7 +825,7 @@ ECode Posix::Fsync(
     return ec;
 }
 
-ECode Posix::Ftruncate(
+ECode CPosix::Ftruncate(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 length)
 {
@@ -829,7 +836,7 @@ ECode Posix::Ftruncate(
     return NOERROR;
 }
 
-ECode Posix::Gai_strerror(
+ECode CPosix::Gai_strerror(
     /* [in] */ Int32 error,
     /* [out] */ String* strerror)
 {
@@ -837,29 +844,29 @@ ECode Posix::Gai_strerror(
     return NOERROR;
 }
 
-ECode Posix::Getegid(
+ECode CPosix::Getegid(
     /* [out] */ Int32* egid)
 {
     *egid = getegid();
     return NOERROR;
 }
 
-ECode Posix::Geteuid(
+ECode CPosix::Geteuid(
     /* [out] */ Int32* euid)
 {
     *euid = geteuid();
     return NOERROR;
 }
 
-ECode Posix::Getgid(
+ECode CPosix::Getgid(
     /* [out] */ Int32* gid)
 {
     *gid = getgid();
     return NOERROR;
 }
 
-ECode Posix::Getenv(
-    /* [in] */ String name,
+ECode CPosix::Getenv(
+    /* [in] */ const String& name,
     /* [out] */ String* env)
 {
     if (name == NULL) {
@@ -871,7 +878,7 @@ ECode Posix::Getenv(
 }
 
     /* TODO: break into getnameinfoHost and getnameinfoService? */
-ECode Posix::Getnameinfo(
+ECode CPosix::Getnameinfo(
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 flags,
     /* [out] */ String* nameinfo)
@@ -895,7 +902,7 @@ ECode Posix::Getnameinfo(
     return NOERROR;
 }
 
-ECode Posix::Getpeername(
+ECode CPosix::Getpeername(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ ISocketAddress** peername)
 {
@@ -904,22 +911,22 @@ ECode Posix::Getpeername(
     return NOERROR;
 }
 
-ECode Posix::Getpid(
+ECode CPosix::Getpid(
     /* [out] */ Int32* pid)
 {
     *pid = getpid();
     return NOERROR;
 }
 
-ECode Posix::Getppid(
+ECode CPosix::Getppid(
     /* [out] */ Int32* ppid)
 {
     *ppid = getppid();
     return NOERROR;
 }
 
-ECode Posix::Getpwnam(
-    /* [in] */ String name,
+ECode CPosix::Getpwnam(
+    /* [in] */ const String& name,
     /* [out] */ IStructPasswd** pwnam)
 {
     if (name == NULL) {
@@ -930,7 +937,7 @@ ECode Posix::Getpwnam(
     return NOERROR;
 }
 
-ECode Posix::Getpwuid(
+ECode CPosix::Getpwuid(
     /* [in] */ Int32 uid,
     /* [out] */ IStructPasswd** pwuid)
 {
@@ -939,7 +946,7 @@ ECode Posix::Getpwuid(
     return NOERROR;
 }
 
-ECode Posix::Getsockname(
+ECode CPosix::Getsockname(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ ISocketAddress** sockname)
 {
@@ -948,7 +955,7 @@ ECode Posix::Getsockname(
     return NOERROR;
 }
 
-ECode Posix::GetsockoptByte(
+ECode CPosix::GetsockoptByte(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -964,7 +971,7 @@ ECode Posix::GetsockoptByte(
     return ec;
 }
 
-ECode Posix::GetsockoptInAddr(
+ECode CPosix::GetsockoptInAddr(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -989,7 +996,7 @@ ECode Posix::GetsockoptInAddr(
     return NOERROR;
 }
 
-ECode Posix::GetsockoptInt32(
+ECode CPosix::GetsockoptInt32(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -1005,7 +1012,7 @@ ECode Posix::GetsockoptInt32(
     return NOERROR;
 }
 
-ECode Posix::GetsockoptLinger(
+ECode CPosix::GetsockoptLinger(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -1028,7 +1035,7 @@ ECode Posix::GetsockoptLinger(
     return NOERROR;
 }
 
-ECode Posix::GetsockoptTimeval(
+ECode CPosix::GetsockoptTimeval(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -1051,7 +1058,7 @@ ECode Posix::GetsockoptTimeval(
     return NOERROR;
 }
 
-ECode Posix::GetsockoptUcred(
+ECode CPosix::GetsockoptUcred(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -1074,7 +1081,7 @@ ECode Posix::GetsockoptUcred(
     return NOERROR;
 }
 
-ECode Posix::Gettid(
+ECode CPosix::Gettid(
     /* [out] */ Int32* tid)
 {
 #if defined(__APPLE__)
@@ -1095,14 +1102,14 @@ ECode Posix::Gettid(
 #endif
 }
 
-ECode Posix::Getuid(
+ECode CPosix::Getuid(
     /* [out] */ Int32* uid)
 {
     *uid =getuid();
     return NOERROR;
 }
 
-ECode Posix::If_indextoname(
+ECode CPosix::If_indextoname(
     /* [in] */ Int32 index,
     /* [out] */ String* name)
 {
@@ -1114,9 +1121,9 @@ ECode Posix::If_indextoname(
     return NOERROR;
 }
 
-ECode Posix::Inet_pton(
+ECode CPosix::Inet_pton(
     /* [in] */ Int32 family,
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [out] */ IInetAddress** addr)
 {
     if (name == NULL) {
@@ -1137,10 +1144,10 @@ ECode Posix::Inet_pton(
     return NOERROR;
 }
 
-ECode Posix::IoctlInetAddress(
+ECode CPosix::IoctlInetAddress(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
-    /* [in] */ String interfaceName,
+    /* [in] */ const String& interfaceName,
     /* [out] */ IInetAddress** addr)
 {
     struct ifreq req;
@@ -1161,7 +1168,7 @@ ECode Posix::IoctlInetAddress(
     return NOERROR;
 }
 
-ECode Posix::IoctlInt(
+ECode CPosix::IoctlInt(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [in, out] */ Int32* arg,
@@ -1177,7 +1184,7 @@ ECode Posix::IoctlInt(
     return ec;
 }
 
-ECode Posix::Isatty(
+ECode CPosix::Isatty(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ Boolean* isatty)
 {
@@ -1187,7 +1194,7 @@ ECode Posix::Isatty(
     return NOERROR;
 }
 
-ECode Posix::Kill(
+ECode CPosix::Kill(
     /* [in] */ Int32 pid,
     /* [in] */ Int32 signal)
 {
@@ -1196,8 +1203,8 @@ ECode Posix::Kill(
     return ec;
 }
 
-ECode Posix::Lchown(
-    /* [in] */ String path,
+ECode CPosix::Lchown(
+    /* [in] */ const String& path,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 gid)
 {
@@ -1209,9 +1216,9 @@ ECode Posix::Lchown(
     return ec;
 }
 
-ECode Posix::Link(
-    /* [in] */ String oldPath,
-    /* [in] */ String newPath)
+ECode CPosix::Link(
+    /* [in] */ const String& oldPath,
+    /* [in] */ const String& newPath)
 {
     if (oldPath == NULL) {
         return NOERROR;
@@ -1224,7 +1231,7 @@ ECode Posix::Link(
     return ec;
 }
 
-ECode Posix::Listen(
+ECode CPosix::Listen(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 backlog)
 {
@@ -1235,7 +1242,7 @@ ECode Posix::Listen(
     return ec;
 }
 
-ECode Posix::Lseek(
+ECode CPosix::Lseek(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int32 whence,
@@ -1248,15 +1255,15 @@ ECode Posix::Lseek(
     return ec;
 }
 
-ECode Posix::Lstat(
-    /* [in] */ String path,
+ECode CPosix::Lstat(
+    /* [in] */ const String& path,
     /* [out] */ IStructStat** stat)
 {
     *stat = DoStat(path, TRUE);
     return NOERROR;
 }
 
-ECode Posix::Mincore(
+ECode CPosix::Mincore(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount,
     /* [in] */ ArrayOf<Byte>* vector)
@@ -1271,8 +1278,8 @@ ECode Posix::Mincore(
     return ec;
 }
 
-ECode Posix::Mkdir(
-    /* [in] */ String path,
+ECode CPosix::Mkdir(
+    /* [in] */ const String& path,
     /* [in] */ Int32 mode)
 {
     if (path == NULL) {
@@ -1283,7 +1290,7 @@ ECode Posix::Mkdir(
     return ec;
 }
 
-ECode Posix::Mlock(
+ECode CPosix::Mlock(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount)
 {
@@ -1293,8 +1300,8 @@ ECode Posix::Mlock(
     return ec;
 }
 
-ECode Posix::Mkfifo(
-    /* [in] */ String path,
+ECode CPosix::Mkfifo(
+    /* [in] */ const String& path,
     /* [in] */ Int32 mode)
 {
     if (path == NULL) {
@@ -1305,7 +1312,7 @@ ECode Posix::Mkfifo(
     return ec;
 }
 
-ECode Posix::Mmap(
+ECode CPosix::Mmap(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount,
     /* [in] */ Int32 prot,
@@ -1328,7 +1335,7 @@ ECode Posix::Mmap(
     return NOERROR;
 }
 
-ECode Posix::Msync(
+ECode CPosix::Msync(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount,
     /* [in] */ Int32 flags)
@@ -1339,7 +1346,7 @@ ECode Posix::Msync(
     return ec;
 }
 
-ECode Posix::Munlock(
+ECode CPosix::Munlock(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount)
 {
@@ -1349,7 +1356,7 @@ ECode Posix::Munlock(
     return ec;
 }
 
-ECode Posix::Munmap(
+ECode CPosix::Munmap(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount)
 {
@@ -1359,8 +1366,8 @@ ECode Posix::Munmap(
     return ec;
 }
 
-ECode Posix::Open(
-    /* [in] */ String path,
+ECode CPosix::Open(
+    /* [in] */ const String& path,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 mode,
     /* [out] */ IFileDescriptor** fd)
@@ -1380,7 +1387,7 @@ ECode Posix::Open(
     return ec;
 }
 
-ECode Posix::Pipe(
+ECode CPosix::Pipe(
     /* [out, callee] */ ArrayOf<IFileDescriptor*>** fds)
 {
     Int32 fdsArr[2];
@@ -1404,7 +1411,7 @@ ECode Posix::Pipe(
 }
 
     /* TODO: if we used the non-standard ppoll(2) behind the scenes, we could take a long timeout. */
-ECode Posix::Poll(
+ECode CPosix::Poll(
     /* [in] */ ArrayOf<IStructPollfd*>* pollfds,
     /* [in] */ Int32 timeoutMs,
     /* [out] */ Int32* result)
@@ -1437,12 +1444,12 @@ ECode Posix::Poll(
         ++count;
     }
 
-    std::vector<AsynchronousCloseMonitorNative*> monitors;
+    Vector<AsynchronousCloseMonitorNative*> monitors;
     for (size_t i = 0; i < count; ++i) {
-        monitors.push_back(new AsynchronousCloseMonitorNative(fds[i].fd));
+        monitors.PushBack(new AsynchronousCloseMonitorNative(fds[i].fd));
     }
     int rc = poll(fds.get(), count, timeoutMs);
-    for (size_t i = 0; i < monitors.size(); ++i) {
+    for (size_t i = 0; i < monitors.GetSize(); ++i) {
         delete monitors[i];
     }
     if (rc == -1) {
@@ -1467,7 +1474,7 @@ ECode Posix::Poll(
     return NOERROR;
 }
 
-ECode Posix::Posix_fallocate(
+ECode CPosix::Posix_fallocate(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length)
@@ -1488,7 +1495,7 @@ ECode Posix::Posix_fallocate(
 #endif
 }
 
-ECode Posix::Prctl(
+ECode CPosix::Prctl(
     /* [in] */ Int32 option,
     /* [in] */ Int64 arg2,
     /* [in] */ Int64 arg3,
@@ -1510,7 +1517,7 @@ ECode Posix::Prctl(
 #endif
 }
 
-ECode Posix::Pread(
+ECode CPosix::Pread(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
@@ -1521,7 +1528,7 @@ ECode Posix::Pread(
     return PreadBytes(fd, bytes, byteOffset, byteCount, offset, num);
 }
 
-ECode Posix::Pread(
+ECode CPosix::Pread(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int64 offset,
@@ -1539,7 +1546,7 @@ ECode Posix::Pread(
     return PreadBytes(fd, buffer, position, remaining, offset, num);
 }
 
-ECode Posix::Pwrite(
+ECode CPosix::Pwrite(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
@@ -1550,7 +1557,7 @@ ECode Posix::Pwrite(
     return PwriteBytes(fd, bytes, byteOffset, byteCount, offset, num);
 }
 
-ECode Posix::Pwrite(
+ECode CPosix::Pwrite(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int64 offset,
@@ -1568,7 +1575,7 @@ ECode Posix::Pwrite(
     return PwriteBytes(fd, buffer, position, remaining, offset, num);
 }
 
-ECode Posix::Read(
+ECode CPosix::Read(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
@@ -1578,7 +1585,7 @@ ECode Posix::Read(
     return ReadBytes(fd, bytes, byteOffset, byteCount, num);
 }
 
-ECode Posix::Read(
+ECode CPosix::Read(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [out] */ Int32* num)
@@ -1595,8 +1602,8 @@ ECode Posix::Read(
     return ReadBytes(fd, buffer, position, remaining, num);
 }
 
-ECode Posix::Readlink(
-    /* [in] */ String path,
+ECode CPosix::Readlink(
+    /* [in] */ const String& path,
     /* [out] */ String* link)
 {
     if (path == NULL) {
@@ -1615,7 +1622,7 @@ ECode Posix::Readlink(
     return NOERROR;
 }
 
-ECode Posix::Readv(
+ECode CPosix::Readv(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<IInterface*>* buffers,
     /* [in] */ ArrayOf<Int32>* offsets,
@@ -1628,8 +1635,8 @@ ECode Posix::Readv(
     }
     // TODO: Linux actually has a 1024 buffer limit. glibc works around this, and we should too.
     // TODO: you can query the limit at runtime with sysconf(_SC_IOV_MAX).
-    std::vector<iovec> ioVec;
-    std::vector<AutoPtr<ArrayOf<Byte> > > buffersVec;
+    Vector<iovec> ioVec;
+    Vector<AutoPtr<ArrayOf<Byte> > > buffersVec;
     Int32 length = buffers->GetLength();
     for (size_t i = 0; i < length; ++i) {
         AutoPtr<IInterface> buffer = (*buffers)[i];
@@ -1645,8 +1652,8 @@ ECode Posix::Readv(
             *num = -1;
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
-        buffersVec.push_back(byteArr);
-        Byte* ptr = const_cast<Byte*>(buffersVec.back()->GetPayload());
+        buffersVec.PushBack(byteArr);
+        Byte* ptr = const_cast<Byte*>(buffersVec.GetBack()->GetPayload());
         if (ptr == NULL) {
             *num = -1;
             return NOERROR;
@@ -1654,14 +1661,14 @@ ECode Posix::Readv(
         struct iovec iov;
         iov.iov_base = reinterpret_cast<void*>(ptr + (*offsets)[i]);
         iov.iov_len = (*byteCounts)[i];
-        ioVec.push_back(iov);
+        ioVec.PushBack(iov);
     }
     ECode ec;
     *num = IO_FAILURE_RETRY(ssize_t, ec, readv, fd, &ioVec[0], length);
     return ec;
 }
 
-ECode Posix::Recvfrom(
+ECode CPosix::Recvfrom(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
@@ -1673,7 +1680,7 @@ ECode Posix::Recvfrom(
     return RecvfromBytes(fd, bytes, byteOffset, byteCount, flags, srcAddress, num);
 }
 
-ECode Posix::Recvfrom(
+ECode CPosix::Recvfrom(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 flags,
@@ -1692,8 +1699,8 @@ ECode Posix::Recvfrom(
     return RecvfromBytes(fd, buffer, position, remaining, flags, srcAddress, num);
 }
 
-ECode Posix::Remove(
-    /* [in] */ String path)
+ECode CPosix::Remove(
+    /* [in] */ const String& path)
 {
     if (path == NULL) {
         return NOERROR;
@@ -1703,9 +1710,9 @@ ECode Posix::Remove(
     return ec;
 }
 
-ECode Posix::Rename(
-    /* [in] */ String oldPath,
-    /* [in] */ String newPath)
+ECode CPosix::Rename(
+    /* [in] */ const String& oldPath,
+    /* [in] */ const String& newPath)
 {
     if (oldPath == NULL || newPath == NULL) {
         return NOERROR;
@@ -1715,7 +1722,7 @@ ECode Posix::Rename(
     return ec;
 }
 
-ECode Posix::Sendto(
+ECode CPosix::Sendto(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
@@ -1728,7 +1735,7 @@ ECode Posix::Sendto(
     return SendtoBytes(fd, bytes, byteOffset, byteCount, flags, inetAddress, port, num);
 }
 
-ECode Posix::Sendto(
+ECode CPosix::Sendto(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 flags,
@@ -1748,7 +1755,7 @@ ECode Posix::Sendto(
     return SendtoBytes(fd, buffer, position, remaining, flags, inetAddress, port, num);
 }
 
-ECode Posix::Sendfile(
+ECode CPosix::Sendfile(
     /* [in] */ IFileDescriptor* outFd,
     /* [in] */ IFileDescriptor* inFd,
     /* [out] */ Int64* inOffset,
@@ -1776,7 +1783,7 @@ ECode Posix::Sendfile(
     return ec;
 }
 
-ECode Posix::Setegid(
+ECode CPosix::Setegid(
     /* [in] */ Int32 egid)
 {
     ECode ec;
@@ -1784,9 +1791,9 @@ ECode Posix::Setegid(
     return ec;
 }
 
-ECode Posix::Setenv(
-    /* [in] */ String name,
-    /* [in] */ String value,
+ECode CPosix::Setenv(
+    /* [in] */ const String& name,
+    /* [in] */ const String& value,
     /* [in] */ Boolean overwrite)
 {
     if (name == NULL || value == NULL) {
@@ -1797,7 +1804,7 @@ ECode Posix::Setenv(
     return ec;
 }
 
-ECode Posix::Seteuid(
+ECode CPosix::Seteuid(
     /* [in] */ Int32 euid)
 {
     ECode ec;
@@ -1805,7 +1812,7 @@ ECode Posix::Seteuid(
     return ec;
 }
 
-ECode Posix::Setgid(
+ECode CPosix::Setgid(
     /* [in] */ Int32 gid)
 {
     ECode ec;
@@ -1813,7 +1820,7 @@ ECode Posix::Setgid(
     return ec;
 }
 
-ECode Posix::Setsid(
+ECode CPosix::Setsid(
     /* [out] */ Int32* sid)
 {
     ECode ec;
@@ -1821,7 +1828,7 @@ ECode Posix::Setsid(
     return ec;
 }
 
-ECode Posix::SetsockoptByte(
+ECode CPosix::SetsockoptByte(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -1835,11 +1842,11 @@ ECode Posix::SetsockoptByte(
     return ec;
 }
 
-ECode Posix::SetsockoptIfreq(
+ECode CPosix::SetsockoptIfreq(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
-    /* [in] */ String interfaceName)
+    /* [in] */ const String& interfaceName)
 {
     struct ifreq req;
     if (!FillIfreq(interfaceName, req)) {
@@ -1852,7 +1859,7 @@ ECode Posix::SetsockoptIfreq(
     return ec;
 }
 
-ECode Posix::SetsockoptInt(
+ECode CPosix::SetsockoptInt(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -1865,7 +1872,7 @@ ECode Posix::SetsockoptInt(
     return ec;
 }
 
-ECode Posix::SetsockoptIpMreqn(
+ECode CPosix::SetsockoptIpMreqn(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -1885,7 +1892,7 @@ ECode Posix::SetsockoptIpMreqn(
 #endif
 }
 
-ECode Posix::SetsockoptGroupReq(
+ECode CPosix::SetsockoptGroupReq(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -1933,7 +1940,7 @@ ECode Posix::SetsockoptGroupReq(
 #endif
 }
 
-ECode Posix::SetsockoptGroupSourceReq(
+ECode CPosix::SetsockoptGroupSourceReq(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -1993,7 +2000,7 @@ ECode Posix::SetsockoptGroupSourceReq(
 #endif
 }
 
-ECode Posix::SetsockoptLinger(
+ECode CPosix::SetsockoptLinger(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -2013,7 +2020,7 @@ ECode Posix::SetsockoptLinger(
     return ec;
 }
 
-ECode Posix::SetsockoptTimeval(
+ECode CPosix::SetsockoptTimeval(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -2032,7 +2039,7 @@ ECode Posix::SetsockoptTimeval(
     return ec;
 }
 
-ECode Posix::Setuid(
+ECode CPosix::Setuid(
     /* [in] */ Int32 uid)
 {
     ECode ec;
@@ -2040,7 +2047,7 @@ ECode Posix::Setuid(
     return ec;
 }
 
-ECode Posix::Shutdown(
+ECode CPosix::Shutdown(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 how)
 {
@@ -2051,7 +2058,7 @@ ECode Posix::Shutdown(
     return ec;
 }
 
-ECode Posix::Socket(
+ECode CPosix::Socket(
     /* [in] */ Int32 socketDomain,
     /* [in] */ Int32 type,
     /* [in] */ Int32 protocol,
@@ -2067,7 +2074,7 @@ ECode Posix::Socket(
     return NOERROR;
 }
 
-ECode Posix::Socketpair(
+ECode CPosix::Socketpair(
     /* [in] */ Int32 socketDomain,
     /* [in] */ Int32 type,
     /* [in] */ Int32 protocol,
@@ -2088,8 +2095,8 @@ ECode Posix::Socketpair(
     return ec;
 }
 
-ECode Posix::Stat(
-    /* [in] */ String path,
+ECode CPosix::Stat(
+    /* [in] */ const String& path,
     /* [out] */ IStructStat** stat)
 {
     *stat = DoStat(path, FALSE);
@@ -2098,8 +2105,8 @@ ECode Posix::Stat(
 }
 
     /* TODO: replace statfs with statvfs. */
-ECode Posix::StatVfs(
-    /* [in] */ String path,
+ECode CPosix::StatVfs(
+    /* [in] */ const String& path,
     /* [out] */ IStructStatVfs** vfsResult)
 {
     if (path == NULL) {
@@ -2119,7 +2126,7 @@ ECode Posix::StatVfs(
     return NOERROR;
 }
 
-ECode Posix::Strerror(
+ECode CPosix::Strerror(
     /* [in] */ Int32 errnum,
     /* [out] */ String* strerr)
 {
@@ -2128,7 +2135,7 @@ ECode Posix::Strerror(
     return NOERROR;
 }
 
-ECode Posix::Strsignal(
+ECode CPosix::Strsignal(
     /* [in] */ Int32 signal,
     /* [out] */ String* strSignal)
 {
@@ -2136,9 +2143,9 @@ ECode Posix::Strsignal(
     return NOERROR;
 }
 
-ECode Posix::Symlink(
-    /* [in] */ String oldPath,
-    /* [in] */ String newPath)
+ECode CPosix::Symlink(
+    /* [in] */ const String& oldPath,
+    /* [in] */ const String& newPath)
 {
     if (oldPath == NULL || newPath == NULL) {
         return NOERROR;
@@ -2149,7 +2156,7 @@ ECode Posix::Symlink(
     return ec;
 }
 
-ECode Posix::Sysconf(
+ECode CPosix::Sysconf(
     /* [in] */ Int32 name,
     /* [out] */ Int64* result)
 {
@@ -2164,7 +2171,7 @@ ECode Posix::Sysconf(
     return NOERROR;
 }
 
-ECode Posix::Tcdrain(
+ECode CPosix::Tcdrain(
     /* [in] */ IFileDescriptor* fd)
 {
     Int32 _fd;
@@ -2174,7 +2181,7 @@ ECode Posix::Tcdrain(
     return ec;
 }
 
-ECode Posix::Tcsendbreak(
+ECode CPosix::Tcsendbreak(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 duration)
 {
@@ -2186,7 +2193,7 @@ ECode Posix::Tcsendbreak(
 }
 
 
-ECode Posix::Umask(
+ECode CPosix::Umask(
     /* [in] */ Int32 mask,
     /* [out] */ Int32* result)
 {
@@ -2198,7 +2205,7 @@ ECode Posix::Umask(
     return umask(mask);
 }
 
-ECode Posix::Uname(
+ECode CPosix::Uname(
     /* [out] */ IStructUtsname** unameOut)
 {
     struct utsname buf;
@@ -2210,7 +2217,7 @@ ECode Posix::Uname(
     return NOERROR;
 }
 
-ECode Posix::Waitpid(
+ECode CPosix::Waitpid(
     /* [in] */ Int32 pid,
     /* [out] */ Int32* statusArg,
     /* [in] */ Int32 options,
@@ -2220,13 +2227,13 @@ ECode Posix::Waitpid(
     ECode ec;
     Int32 rc = ErrorIfMinusOne("waitpid", TEMP_FAILURE_RETRY(waitpid(pid, &status, options)), &ec);
     if (rc != -1 && statusArg == NULL) {
-        *statusArg = statusArg;
+        *statusArg = status;
     }
     *result = rc;
     return ec;
 }
 
-ECode Posix::Write(
+ECode CPosix::Write(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
@@ -2236,7 +2243,7 @@ ECode Posix::Write(
     return WriteBytes(fd, bytes, byteOffset, byteCount, num);
 }
 
-ECode Posix::Write(
+ECode CPosix::Write(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [out] */ Int32* num)
@@ -2253,17 +2260,53 @@ ECode Posix::Write(
     return WriteBytes(fd, buffer, position, remaining, num);
 }
 
-ECode Posix::Writev(
+ECode CPosix::Writev(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<IInterface*>* buffers,
     /* [in] */ ArrayOf<Int32>* offsets,
     /* [in] */ ArrayOf<Int32>* byteCounts,
-    /* [out] */ Int32* result)
+    /* [out] */ Int32* num)
 {
-    return NOERROR;
+    if (offsets == NULL || byteCounts == NULL || buffers == NULL) {
+        *num = -1;
+        return NOERROR;
+    }
+    // TODO: Linux actually has a 1024 buffer limit. glibc works around this, and we should too.
+    // TODO: you can query the limit at runtime with sysconf(_SC_IOV_MAX).
+    Vector<iovec> ioVec;
+    Vector<AutoPtr<ArrayOf<Byte> > > buffersVec;
+    Int32 length = buffers->GetLength();
+    for (size_t i = 0; i < length; ++i) {
+        AutoPtr<IInterface> buffer = (*buffers)[i];
+        AutoPtr<IByteBuffer> byteBuffer = IByteBuffer::Probe(buffer);
+        if (byteBuffer == NULL) {
+            *num = -1;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        AutoPtr<ArrayOf<Byte> > byteArr;
+        byteBuffer->GetArray((ArrayOf<Byte>**)&byteArr);
+        if (byteArr == NULL) {
+            // TODO:: buffer.isDirect()
+            *num = -1;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        buffersVec.PushBack(byteArr);
+        Byte* ptr = const_cast<Byte*>(buffersVec.GetBack()->GetPayload());
+        if (ptr == NULL) {
+            *num = -1;
+            return NOERROR;
+        }
+        struct iovec iov;
+        iov.iov_base = reinterpret_cast<void*>(ptr + (*offsets)[i]);
+        iov.iov_len = (*byteCounts)[i];
+        ioVec.PushBack(iov);
+    }
+    ECode ec;
+    *num = IO_FAILURE_RETRY(ssize_t, ec, writev, fd, &ioVec[0], length);
+    return ec;
 }
 
-ECode Posix::PreadBytes(
+ECode CPosix::PreadBytes(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 bufferOffset,
@@ -2282,7 +2325,7 @@ ECode Posix::PreadBytes(
     return ec;
 }
 
-ECode Posix::PreadBytes(
+ECode CPosix::PreadBytes(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* byteArray,
     /* [in] */ Int32 byteOffset,
@@ -2299,7 +2342,7 @@ ECode Posix::PreadBytes(
     return ec;
 }
 
-ECode Posix::PwriteBytes(
+ECode CPosix::PwriteBytes(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 bufferOffset,
@@ -2316,7 +2359,7 @@ ECode Posix::PwriteBytes(
     return PwriteBytes(fd, array_, bufferOffset, bufferCount, offset, result);
 }
 
-ECode Posix::PwriteBytes(
+ECode CPosix::PwriteBytes(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* byteArray,
     /* [in] */ Int32 byteOffset,
@@ -2333,7 +2376,7 @@ ECode Posix::PwriteBytes(
     return ec;
 }
 
-ECode Posix::ReadBytes(
+ECode CPosix::ReadBytes(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 bufferOffset,
@@ -2349,7 +2392,7 @@ ECode Posix::ReadBytes(
     return ReadBytes(fd, array_, bufferOffset, bufferCount, result);
 }
 
-ECode Posix::ReadBytes(
+ECode CPosix::ReadBytes(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* byteArray,
     /* [in] */ Int32 byteOffset,
@@ -2365,7 +2408,7 @@ ECode Posix::ReadBytes(
     return ec;
 }
 
-ECode Posix::RecvfromBytes(
+ECode CPosix::RecvfromBytes(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 bufferOffset,
@@ -2383,7 +2426,7 @@ ECode Posix::RecvfromBytes(
     return RecvfromBytes(fd, array_, bufferOffset, bufferCount, flags, srcAddress, result);
 }
 
-ECode Posix::RecvfromBytes(
+ECode CPosix::RecvfromBytes(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* byteArray,
     /* [in] */ Int32 byteOffset,
@@ -2408,7 +2451,7 @@ ECode Posix::RecvfromBytes(
     return ec;
 }
 
-ECode Posix::SendtoBytes(
+ECode CPosix::SendtoBytes(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 bufferOffset,
@@ -2427,7 +2470,7 @@ ECode Posix::SendtoBytes(
     return SendtoBytes(fd, array_, bufferOffset, bufferCount, flags, inetAddress, port, result);
 }
 
-ECode Posix::SendtoBytes(
+ECode CPosix::SendtoBytes(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* byteArray,
     /* [in] */ Int32 byteOffset,
@@ -2453,7 +2496,7 @@ ECode Posix::SendtoBytes(
     return ec;
 }
 
-ECode Posix::UmaskImpl(
+ECode CPosix::UmaskImpl(
     /* [in] */ Int32 mask,
     /* [out] */ Int32* result)
 {
@@ -2461,7 +2504,7 @@ ECode Posix::UmaskImpl(
     return NOERROR;
 }
 
-ECode Posix::WriteBytes(
+ECode CPosix::WriteBytes(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 bufferOffset,
@@ -2477,7 +2520,7 @@ ECode Posix::WriteBytes(
     return WriteBytes(fd, array_, bufferOffset, bufferCount, result);
 }
 
-ECode Posix::WriteBytes(
+ECode CPosix::WriteBytes(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* byteArray,
     /* [in] */ Int32 byteOffset,
