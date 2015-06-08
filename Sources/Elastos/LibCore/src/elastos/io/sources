@@ -60,6 +60,7 @@ SOURCES += LineNumberReader.cpp
 SOURCES += OutputStreamWriter.cpp
 #SOURCES += CPrintStream.cpp
 SOURCES += PushbackReader.cpp
+#SOURCES += CRandomAccessFile.cpp
 
 #
 # nio related classes

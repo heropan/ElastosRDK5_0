@@ -11,8 +11,14 @@ namespace Elastos {
 namespace IO {
 
 CarClass(CRandomAccessFile)
+    , public IRandomAccessFile
+    , public ICloseable
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CRandomAccessFile();
 
     ~CRandomAccessFile();
@@ -48,11 +54,11 @@ public:
     CARAPI Read(
         /* [out] */ Int32* value);
 
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -109,11 +115,11 @@ public:
     CARAPI Write(
         /* [in] */ Int32 oneByte);
 
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* buffer);
 
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer,
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
@@ -123,13 +129,10 @@ public:
     CARAPI WriteByte(
         /* [in] */ Int32 value);
 
-    CARAPI WriteBytesFromString(
-        /* [in] */ const String& str);
-
     CARAPI WriteChar(
         /* [in] */ Int32 value);
 
-    CARAPI Write(
+    CARAPI WriteBytes(
         /* [in] */ const String& str);
 
     CARAPI WriteDouble(

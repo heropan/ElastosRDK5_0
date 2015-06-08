@@ -18,6 +18,7 @@ module
      * @Involve
      * interface ICloseable;
      */
+    [deprecated]
     interface IRandomAccessFile {
         /**
          * Gets this file's FileChannel object.
@@ -93,39 +94,34 @@ module
 
         /**
          * Reads bytes from the current position in this file and stores them in the
-         * byte array buffer. The maximum number of bytes read corresponds
-         * to the size of buffer. Blocks until at least one byte has been
+         * byte array {@code buffer}. The maximum number of bytes read corresponds
+         * to the size of {@code buffer}. Blocks until at least one byte has been
          * read, the end of the file is detected, or an exception is thrown.
+         * Returns the number of bytes actually read or -1 if the end of the file
+         * has been reached. See also {@link #readFully}.
          *
-         * @param buffer
-         *            the byte array in which to store the bytes read.
-         * @return the number of bytes actually read or -1 if the end of the file
-         *         has been reached.
-         * @return ECode = NOERROR(0) if success, elas as follows:
-         * Value | Meaning |
-         * :-|:------------|
-         * IOException | if this file is closed or another I/O error occurs.
+         * @throws IOException
+         *             if this file is closed or another I/O error occurs.
          */
-        ReadBytes(
-            [out] ArrayOf<Byte> buffer,
+        Read(
+            [in] ArrayOf<Byte>* buffer,
             [out] Int32* number);
 
         /**
-         * Reads at most byteCount bytes from the current position in this file
-         * and stores them in the byte array buffer starting at byteOffset.
-         * Blocks until at least one byte has been read, the end of the file is detected,
-         * or an exception is thrown.
+         * Reads up to {@code byteCount} bytes from the current position in this file
+         * and stores them in the byte array {@code buffer} starting at {@code
+         * byteOffset}. Blocks until at least one byte has been
+         * read, the end of the file is detected, or an exception is thrown.
+         * Returns the number of bytes actually read or -1 if the end of the stream has been reached.
+         * See also {@link #readFully}.
          *
-         * @return the number of bytes actually read or -1 if the end of the stream
-         *         has been reached.
-         * @return ECode = NOERROR(0) if success, elas as follows:
-         * Value | Meaning |
-         * :-|:------------|
-         * IndexOutOfBoundsException | if {byteOffset < 0} or {byteCount < 0}, or if {byteOffset + byteCount} is greater than the size of {buffer}.
-         * IOException | if this file is closed or another I/O error occurs.
+         * @throws IndexOutOfBoundsException
+         *     if {@code byteOffset < 0 || byteCount < 0 || byteOffset + byteCount > buffer.length}.
+         * @throws IOException
+         *             if this file is closed or another I/O error occurs.
          */
-        ReadBytes(
-            [out] ArrayOf<Byte> buffer,
+        Read(
+            [in] ArrayOf<Byte>* buffer,
             [in] Int32 offset,
             [in] Int32 length,
             [out] Int32* number);
@@ -191,8 +187,8 @@ module
          * :-|:------------|
          * IOException | if an I/O error occurs while writing to this file.
          */
-        WriteBytes(
-            [in] ArrayOf<Byte> buffer);
+        Write(
+            [in] ArrayOf<Byte>* buffer);
 
         /**
          * Writes byteCount bytes from the byte array buffer to this
@@ -205,8 +201,8 @@ module
          * IndexOutOfBoundsException | if {byteCount < 0}, {byteOffset < 0} or {byteCount + byteOffset} is greater than the size of {buffer}.
          * IOException | if an I/O error occurs while writing to this file.
          */
-        WriteBytes(
-            [in] ArrayOf<Byte> buffer,
+        Write(
+            [in] ArrayOf<Byte>* buffer,
             [in] Int32 offset,
             [in] Int32 count);
     }

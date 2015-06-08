@@ -4,9 +4,9 @@
 #include "CFile.h"
 #include "IoUtils.h"
 #include "NioUtils.h"
-#include <elastos/Math.h>
+#include <Math.h>
 #include <elastos/core/Character.h>
-#include <elastos/StringBuilder.h>
+#include <StringBuilder.h>
 #include "COsConstants.h"
 #include "CIoBridge.h"
 #include "CLibcore.h"
@@ -27,6 +27,10 @@ using Elastos::IO::Charset::CModifiedUtf8;
 
 namespace Elastos {
 namespace IO {
+
+CAR_OBJECT_IMPL(CRandomAccessFile)
+
+CAR_INTERFACE_IMPL(CRandomAccessFile, Object, IRandomAccessFile)
 
 CRandomAccessFile::CRandomAccessFile()
     : mSyncMetadata(FALSE)
@@ -82,7 +86,7 @@ ECode CRandomAccessFile::constructor(
     FAIL_RETURN(CIoBridge::AcquireSingletonByFriend((CIoBridge**)&ioObj));
     AutoPtr<IIoBridge> ioBridge = (IIoBridge*)ioObj.Get();
     String path;
-    file->GetAbsolutePath(&path);
+    file->GetPath(&path);
     Int32 fd;
     FAIL_RETURN(ioBridge->Open(path, flags, &fd));
 
@@ -110,26 +114,26 @@ ECode CRandomAccessFile::constructor(
 ECode CRandomAccessFile::Close()
 {
     // guard.close();
-    Mutex::Autolock lock(_m_syncLock);
+    Object::Autolock lock(_m_syncLock);
 
     Boolean isflag(FALSE);
-    if (mChannel != NULL && (mChannel->IsOpen(&isflag) , isflag)) {
-        mChannel->Close();
+    if (mChannel != NULL && (IChannel::Probe(mChannel)->IsOpen(&isflag) , isflag)) {
+        IChannel::Probe(mChannel)->Close();
         mChannel = NULL;
     }
 
-    return IoUtils::Close(mFd);
+    return IoUtils::CloseAndSignalBlockedThreads(mFd);
 }
 
 ECode CRandomAccessFile::GetChannel(
     /* [out] */ IFileChannel **channel)
 {
     VALIDATE_NOT_NULL(channel)
-    Mutex::Autolock lock(_m_syncLock);
+    Object::Autolock lock(_m_syncLock);
 
     // BEGIN android-added
     if(mChannel == NULL) {
-        mChannel = NioUtils::NewFileChannel(this, mFd, mMode);
+        mChannel = NioUtils::NewFileChannel(IObject::Probe(this), mFd, mMode);
     }
     // END android-added
     *channel = mChannel;
@@ -191,23 +195,23 @@ ECode CRandomAccessFile::Read(
     VALIDATE_NOT_NULL(value);
 
     Int32 byteCount;
-    FAIL_RETURN(ReadBytes(mScratch, 0, 1, &byteCount))
+    FAIL_RETURN(Read(mScratch, 0, 1, &byteCount))
     *value = byteCount != -1 ? (*mScratch)[0] & 0xff : -1;
 
     return NOERROR;
 }
 
-ECode CRandomAccessFile::ReadBytes(
+ECode CRandomAccessFile::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
 
-    return ReadBytes(buffer, 0, buffer->GetLength(), number);
+    return Read(buffer, 0, buffer->GetLength(), number);
 }
 
-ECode CRandomAccessFile::ReadBytes(
+ECode CRandomAccessFile::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -332,7 +336,7 @@ ECode CRandomAccessFile::ReadFully(
     // END android-changed
     Int32 number;
     while (length > 0) {
-        FAIL_RETURN(ReadBytes(buffer, offset, length, &number));
+        FAIL_RETURN(Read(buffer, offset, length, &number));
         if (number < 0) {
             // throw new EOFException();
             return E_EOF_EXCEPTION;
@@ -557,14 +561,14 @@ ECode CRandomAccessFile::SkipBytes(
     return NOERROR;
 }
 
-ECode CRandomAccessFile::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer)
+ECode CRandomAccessFile::Write(
+    /* [in] */ ArrayOf<Byte>* buffer)
 {
-    return WriteBytes(buffer, 0, buffer.GetLength());
+    return Write(buffer, 0, buffer->GetLength());
 }
 
-ECode CRandomAccessFile::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+ECode CRandomAccessFile::Write(
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
@@ -585,7 +589,7 @@ ECode CRandomAccessFile::Write(
     /* [in] */ Int32 oneByte)
 {
     (*mScratch)[0] = (Byte)(oneByte & 0xFF);
-    return WriteBytes(*mScratch, 0, 1);
+    return Write(mScratch, 0, 1);
 }
 
 ECode CRandomAccessFile::WriteBoolean(
@@ -600,34 +604,23 @@ ECode CRandomAccessFile::WriteByte(
     return Write(value & 0xff);
 }
 
-ECode CRandomAccessFile::WriteBytesFromString(
-    /* [in] */ const String& str)
-{
-    if (str.IsNullOrEmpty())
-        return NOERROR;
-    AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(str.GetByteLength());
-    memcpy(bytes->GetPayload(), (const char*)str, str.GetByteLength());
-
-    return WriteBytes(*bytes);
-}
-
 ECode CRandomAccessFile::WriteChar(
     /* [in] */ Int32 value)
 {
     ArrayOf_<Byte, 4> buffer;
     Int32 len;
     Character::ToChars((Char32)value, *(ArrayOf<Char8>*)&buffer, 0, &len);
-    return WriteBytes(buffer, 0, len);
+    return Write(buffer, 0, len);
 }
 
-ECode CRandomAccessFile::Write(
+ECode CRandomAccessFile::WriteBytes(
     /* [in] */ const String& str)
 {
     if (str.IsNullOrEmpty())
         return NOERROR;
 
     AutoPtr<ArrayOf<Char32> > chs = str.GetChars();
-    return WriteBytes(*(ArrayOf<Byte>*)chs.Get());
+    return Write((ArrayOf<Byte>*)chs.Get());
 }
 
 ECode CRandomAccessFile::WriteDouble(
@@ -655,7 +648,7 @@ ECode CRandomAccessFile::WriteInt32(
     (*mScratch)[2] = (Byte)(value >> 8);
     (*mScratch)[3] = (Byte)value;
 
-    return WriteBytes(*mScratch, 0, sizeof(Int32));
+    return Write(mScratch, 0, sizeof(Int32));
 }
 
 ECode CRandomAccessFile::WriteInt64(
@@ -676,7 +669,7 @@ ECode CRandomAccessFile::WriteInt64(
     (*mScratch)[6] = (Byte)(value >> 8);
     (*mScratch)[7] = (Byte)value;
 
-    return WriteBytes(*mScratch, 0, sizeof(Int64));
+    return Write(mScratch, 0, sizeof(Int64));
 }
 
 ECode CRandomAccessFile::WriteInt16(
@@ -690,7 +683,7 @@ ECode CRandomAccessFile::WriteInt16(
     (*mScratch)[0] = (Byte)(value >> 8);
     (*mScratch)[1] = (Byte)value;
 
-    return WriteBytes(*mScratch, 0, sizeof(Int32));
+    return Write(mScratch, 0, sizeof(Int32));
 }
 
 ECode CRandomAccessFile::WriteUTF(
@@ -700,7 +693,7 @@ ECode CRandomAccessFile::WriteUTF(
     CModifiedUtf8::AcquireSingleton((IModifiedUtf8**)&utf8help);
     AutoPtr<ArrayOf<Byte> > bytes;
     utf8help->Encode(&str, (ArrayOf<Byte>**)&bytes);
-    return WriteBytes(*bytes);
+    return Write(bytes);
 }
 
 } // namespace IO

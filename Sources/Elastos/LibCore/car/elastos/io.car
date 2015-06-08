@@ -550,6 +550,19 @@ module
         interface IPushbackReader;
     }
 
+//    class CRandomAccessFile {
+//        constructor(
+//            [in] IFile* file,
+//            [in] String mode);
+
+//        constructor(
+//            [in] String fileName,
+//            [in] String mode);
+
+//        interface ICloseable;
+//        interface IRandomAccessFile;
+//    }
+
     } // namespace IO
     } // namespace Elastos
 }
