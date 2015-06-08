@@ -42,6 +42,13 @@ SOURCES += CIdentityHashMap.cpp
 
 
 SOURCES += Timer.cpp
+SOURCES += Grego.cpp
+SOURCES += TimerTask.cpp
+SOURCES += CUUID.cpp
+SOURCES += CUUIDHelper.cpp
+SOURCES += TimeZoneGetter.cpp
+SOURCES += CTimeZoneGetterHelper.cpp
+
 
 
 SOURCES += utility.cpp

@@ -1,16 +1,31 @@
 #include "CUUID.h"
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
-#include "CMemory.h"
+#include "StringUtils.h"
+#include "StringBuilder.h"
+// #include "CMemory.h"
+//#include "CMessageDigestHelper.h"
 
-using Elastos::IO::IMemory;
-using Elastos::IO::CMemory;
-using Elastos::IO::ByteOrder_BIG_ENDIAN;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::EIID_IComparable;
+using Elastos::Core::IRandom;
+using Libcore::IO::IMemory;
+// using Libcore::IO::CMemory;
+using Elastos::IO::ByteOrder_BIG_ENDIAN;
+using Elastos::IO::EIID_ISerializable;
+using Elastos::Security::EIID_ISecureRandom;
+using Elastos::Security::IMessageDigest;
+using Elastos::Security::IMessageDigestHelper;
+// using Elastos::Security::CMessageDigestHelper;
 
 namespace Elastos {
 namespace Utility {
+
+AutoPtr<ISecureRandom> CUUID::sRng;
+Object CUUID::sRngLock;
+
+CAR_INTERFACE_IMPL_3(CUUID, Object, IUUID, IComparable, ISerializable)
+
+CAR_OBJECT_IMPL(CUUID)
 
 CUUID::CUUID()
     : mMostSigBits(0)
@@ -82,46 +97,54 @@ ECode CUUID::RandomUUID(
     VALIDATE_NOT_NULL(uuid);
     *uuid = NULL;
 
-    Byte data[16];
-    // // lock on the class to protect lazy init
-    // synchronized (UUID.class) {
-    //     if (rng == null) {
-    //         rng = new SecureRandom();
-    //     }
-    // }
-    // rng.nextBytes(data);
-    // return MakeUuid(data, 4);
-    // assert(0 && "TODO");
+    // lock on the class to protect lazy init
+    synchronized (sRngLock) {
+        if (sRng == NULL) {
+            // CSecureRandom::New((ISecureRandom**)&sRng);
+        }
+    }
+
+    AutoPtr<ArrayOf<Byte> > data = ArrayOf<Byte>::Alloc(16);
+    IRandom::Probe(sRng)->NextBytes(data);
+    AutoPtr<IUUID> id = MakeUuid(data, 4);
+    *uuid = id;
+    REFCOUNT_ADD(*uuid);
     return NOERROR;
 }
 
 ECode CUUID::NameUUIDFromBytes(
-    /* [in] */ const ArrayOf<Byte>& name,
+    /* [in] */ ArrayOf<Byte>* name,
     /* [out] */ IUUID** uuid)
 {
+    assert(name);
     VALIDATE_NOT_NULL(uuid)
     *uuid = NULL;
+    VALIDATE_NOT_NULL(name)
 
-    if (name.GetLength() == 0) {
+    if (name->GetLength() == 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
         // throw new NullPointerException("name == null");
     }
     // try {
-    //     MessageDigest md = MessageDigest.getInstance("MD5");
-    //     return MakeUuid(md.digest(name), 3);
-    // } catch (NoSuchAlgorithmException e) {
-    //     throw new AssertionError(e);
-    // }
-    assert(0 && "TODO");
+    AutoPtr<IMessageDigestHelper> helper;
+    // CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+    AutoPtr<IMessageDigest> md;
+    helper->GetInstance(String("MD5"), (IMessageDigest**)&md);
+
+    AutoPtr<ArrayOf<Byte> > hash;
+    // md->Digest(name, (ArrayOf<Byte>**)&hash);
+    AutoPtr<IUUID> id = MakeUuid(hash, 3);
+    *uuid = id;
+    REFCOUNT_ADD(*uuid);
     return NOERROR;
 }
 
 AutoPtr<IUUID> CUUID::MakeUuid(
-    /* [in] */ const ArrayOf<Byte>& hash,
+    /* [in] */ ArrayOf<Byte>* hash,
     /* [in] */ Int32 version)
 {
     AutoPtr<IMemory> memory;
-    CMemory::AcquireSingleton((IMemory**)&memory);
+    // CMemory::AcquireSingleton((IMemory**)&memory);
     Int64 msb, lsb;
     memory->PeekInt64(hash, 0, ByteOrder_BIG_ENDIAN, &msb);
     memory->PeekInt64(hash, 8, ByteOrder_BIG_ENDIAN, &lsb);
@@ -170,21 +193,21 @@ ECode CUUID::FromString(
     String s1 = name.Substring(0, position[0]);
     String s2 = name.Substring(position[0] + 1, position[1]);
     String s3 = name.Substring(position[1] + 1, position[2]);
-    FAIL_RETURN(StringUtils::ParseInt64(s1, 16, &m1));
-    FAIL_RETURN(StringUtils::ParseInt64(s2, 16, &m2));
-    FAIL_RETURN(StringUtils::ParseInt64(s3, 16, &m3));
+    FAIL_RETURN(StringUtils::Parse(s1, 16, &m1));
+    FAIL_RETURN(StringUtils::Parse(s2, 16, &m2));
+    FAIL_RETURN(StringUtils::Parse(s3, 16, &m3));
 
     String ls1 = name.Substring(position[2] + 1, position[3]);
     String ls2 = name.Substring(position[3] + 1);
     Int64 lsb1, lsb2;
-    FAIL_RETURN(StringUtils::ParseInt64(ls1, 16, &lsb1));
-    FAIL_RETURN(StringUtils::ParseInt64(ls2, 16, &lsb2));
+    FAIL_RETURN(StringUtils::Parse(ls1, 16, &lsb1));
+    FAIL_RETURN(StringUtils::Parse(ls2, 16, &lsb2));
 
     Int64 msb = (m1 << 32) | (m2 << 16) | m3;
     Int64 lsb = (lsb1 << 48) | lsb2;
     AutoPtr<CUUID> outuid;
     FAIL_RETURN(CUUID::NewByFriend(msb, lsb, (CUUID**)&outuid));
-    *uuid = (IUUID*) outuid.Get();
+    *uuid = (IUUID*)outuid->Probe(EIID_IUUID);
     REFCOUNT_ADD(*uuid)
     return NOERROR;
 }
@@ -264,23 +287,25 @@ ECode CUUID::Node(
 }
 
 ECode CUUID::CompareTo(
-    /* [in] */ IUUID* other,
+    /* [in] */ IInterface* other,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (other == NULL) {
+
+    IUUID* uo = IUUID::Probe(other);
+    if (other == NULL || uo == NULL) {
         *result = -1;
         return NOERROR;
     }
 
     *result = 0;
-    if (other == (IUUID*)this) {
+    if (other == THIS_PROBE(IInterface)) {
         return NOERROR;
     }
 
     Int64 om, ol;
-    other->GetMostSignificantBits(&om);
-    other->GetLeastSignificantBits(&ol);
+    uo->GetMostSignificantBits(&om);
+    uo->GetLeastSignificantBits(&ol);
 
     if (mMostSigBits != om) {
         *result = mMostSigBits < om ? -1 : 1;
@@ -336,25 +361,25 @@ ECode CUUID::ToString(
 
     StringBuilder builder(36);
 
-    String msbStr = StringUtils::Int64ToHexString(mMostSigBits);
+    String msbStr = StringUtils::ToHexString(mMostSigBits);
     if (msbStr.GetLength() < 16) {
         Int32 diff = 16 - msbStr.GetLength();
         for (Int32 i = 0; i < diff; i++) {
             builder.AppendChar('0');
         }
     }
-    builder.AppendString(msbStr);
+    builder.Append(msbStr);
     builder.InsertChar(8, '-');
     builder.InsertChar(13, '-');
     builder.AppendChar('-');
-    String lsbStr = StringUtils::Int64ToHexString(mLeastSigBits);
+    String lsbStr = StringUtils::ToHexString(mLeastSigBits);
     if (lsbStr.GetLength() < 16) {
         Int32 diff = 16 - lsbStr.GetLength();
         for (Int32 i = 0; i < diff; i++) {
             builder.AppendChar('0');
         }
     }
-    builder.AppendString(lsbStr);
+    builder.Append(lsbStr);
     builder.InsertChar(23, '-');
     *str = builder.ToString();
     return NOERROR;

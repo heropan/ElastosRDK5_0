@@ -68,4 +68,5 @@ EXPORT_HEADERS += elastos/utility/logging/Slogger.h
 
 EXPORT_HEADERS += elastos/utility/Arrays.h
 EXPORT_HEADERS += elastos/utility/DualPivotQuicksort.h
+EXPORT_HEADERS += elastos/utility/TimerTask.h
 

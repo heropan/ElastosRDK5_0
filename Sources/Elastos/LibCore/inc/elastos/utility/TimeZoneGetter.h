@@ -1,7 +1,9 @@
-#ifndef __UTILITY_TIMEZONEGETTER_H__
-#define __UTILITY_TIMEZONEGETTER_H__
+#ifndef __ELASTOS_UTILITY_TIMEZONEGETTER_H__
+#define __ELASTOS_UTILITY_TIMEZONEGETTER_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
@@ -10,8 +12,8 @@ class TimeZoneGetter
 {
 private:
     class DefaultTimeZoneGetter
-        : public ITimeZoneGetter
-        , public ElRefBase
+        : public Object
+        , public ITimeZoneGetter
     {
     public:
         CAR_INTERFACE_DECL();
@@ -30,10 +32,14 @@ public:
         /* [in] */ ITimeZoneGetter* getter);
 
 private:
+    TimeZoneGetter();
+    TimeZoneGetter(const TimeZoneGetter&);
+
+private:
     static AutoPtr<ITimeZoneGetter> sInstance;
 };
 
 }// namespace Utility
 }// namespace Utility
 
-#endif // __UTILITY_TIMEZONEGETTER_H__
+#endif // __ELASTOS_UTILITY_TIMEZONEGETTER_H__

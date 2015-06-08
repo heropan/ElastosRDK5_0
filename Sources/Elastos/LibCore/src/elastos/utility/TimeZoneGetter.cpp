@@ -9,7 +9,7 @@ using Elastos::Core::ISystem;
 namespace Elastos {
 namespace Utility {
 
-CAR_INTERFACE_IMPL(TimeZoneGetter::DefaultTimeZoneGetter, ITimeZoneGetter);
+CAR_INTERFACE_IMPL(TimeZoneGetter::DefaultTimeZoneGetter, Object, ITimeZoneGetter);
 
 ECode TimeZoneGetter::DefaultTimeZoneGetter::GetId(
     /* [out] */ String* id)

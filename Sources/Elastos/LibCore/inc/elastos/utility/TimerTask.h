@@ -1,22 +1,18 @@
-#ifndef __TIMERTASK_H__
-#define __TIMERTASK_H__
+#ifndef __ELASTOS_UTILITY_TIMERTASK_H__
+#define __ELASTOS_UTILITY_TIMERTASK_H__
 
-#ifdef DELASTOS_CORE
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
-#include <elastos/Mutex.h>
+#include <elastos/core/Object.h>
 
-
-using Elastos::Core::Mutex;
+using Elastos::Core::Object;
+using Elastos::Core::IRunnable;
 
 namespace Elastos {
 namespace Utility {
 
 class TimerTask
-    : public ITimerTask
-    , public ElRefBase
+    : public Object
+    , public ITimerTask
+    , public IRunnable
 {
 protected:
     /**
@@ -26,6 +22,8 @@ protected:
 
 public:
     CAR_INTERFACE_DECL();
+
+    virtual ~TimerTask();
 
     /*
      * Method called from the Timer for synchronized getting of when field.
@@ -69,6 +67,12 @@ public:
     CARAPI ScheduledExecutionTime(
         /* [out] */ Int64* time);
 
+    /**
+     * The task to run should be specified in the implementation of the {@code run()}
+     * method.
+     */
+    virtual CARAPI Run() = 0;
+
     CARAPI SetWhen(
         /* [in] */ Int64 when);
 
@@ -92,7 +96,8 @@ public:
     CARAPI Unlock();
 
 public:
-    Mutex mLock;
+    /* Lock object for synchronization. It's also used by Timer class. */
+    Object mLock;
 
     /* If timer was cancelled */
     Boolean mCancelled;
@@ -115,4 +120,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__TIMERTASK_H__
+#endif //__ELASTOS_UTILITY_TIMERTASK_H__

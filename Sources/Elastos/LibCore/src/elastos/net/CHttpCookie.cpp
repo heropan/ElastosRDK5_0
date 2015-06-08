@@ -158,7 +158,7 @@ void CHttpCookie::CookieParser::SetAttribute(
     }
     else if (name.Equals("max-age") && cookie->mMaxAge == -1ll) {
         mHasMaxAge = TRUE;
-        cookie->mMaxAge = StringUtils::ParseInt64(value);
+        cookie->mMaxAge = StringUtils::Parse(value);
     }
     else if (name.Equals("path") && cookie->mPath.IsNull()) {
         cookie->mPath = value;

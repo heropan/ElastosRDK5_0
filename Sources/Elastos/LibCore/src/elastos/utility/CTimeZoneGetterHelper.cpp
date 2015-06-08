@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace Utility {
 
+CAR_INTERFACE_IMPL(CTimeZoneGetterHelper, Singleton, ITimeZoneGetterHelper)
+
+CAR_SINGLETON_IMPL(CTimeZoneGetterHelper)
+
 ECode CTimeZoneGetterHelper::GetInstance(
     /* [out] */ ITimeZoneGetter** instance)
 {

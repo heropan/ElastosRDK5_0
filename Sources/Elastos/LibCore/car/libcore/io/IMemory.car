@@ -69,16 +69,16 @@ module
             [in] Int16 value,
             [in] ByteOrder order);
 
-    /**
-     * Copies 'byteCount' bytes from the source to the destination. The objects are either
-     * instances of DirectByteBuffer or byte[]. The offsets in the byte[] case must include
-     * the Buffer.arrayOffset if the array came from a Buffer.array call. We could make this
-     * private and provide the four type-safe variants, but then ByteBuffer.put(ByteBuffer)
-     * would need to work out which to call based on whether the source and destination buffers
-     * are direct or not.
-     *
-     * @hide make type-safe before making public?
-     */
+        /**
+         * Copies 'byteCount' bytes from the source to the destination. The objects are either
+         * instances of DirectByteBuffer or byte[]. The offsets in the byte[] case must include
+         * the Buffer.arrayOffset if the array came from a Buffer.array call. We could make this
+         * private and provide the four type-safe variants, but then ByteBuffer.put(ByteBuffer)
+         * would need to work out which to call based on whether the source and destination buffers
+         * are direct or not.
+         *
+         * @hide make type-safe before making public?
+         */
         Memmove(
             [in] IObject* dstObject,
             [in] Int32 dstOffset,

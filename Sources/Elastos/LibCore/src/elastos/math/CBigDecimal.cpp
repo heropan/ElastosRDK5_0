@@ -325,7 +325,7 @@ ECode CBigDecimal::constructor(
     temp = unscaledBuffer.ToString();
 
     if (bufLength < 19) {
-        mSmallValue = StringUtils::ParseInt64(temp);
+        mSmallValue = StringUtils::Parse(temp);
         mBitLength = BitLength(mSmallValue);
     } else {
         AutoPtr<IBigInteger> bi;

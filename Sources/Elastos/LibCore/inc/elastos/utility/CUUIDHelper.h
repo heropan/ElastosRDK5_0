@@ -1,14 +1,23 @@
-#ifndef __CUUIDHELPER_H__
-#define __CUUIDHELPER_H__
+#ifndef __ELASTOS_UTILITY_CUUIDHELPER_H__
+#define __ELASTOS_UTILITY_CUUIDHELPER_H__
 
-#include "_CUUIDHelper.h"
+#include "_Elastos_Utility_CUUIDHelper.h"
+#include "Singleton.h"
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {
 
 CarClass(CUUIDHelper)
+    , public Singleton
+    , public IUUIDHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * <p>
      * Generates a variant 2, version 4 (randomly generated number) UUID as per
@@ -29,7 +38,7 @@ public:
      * @return an UUID instance.
      */
     CARAPI NameUUIDFromBytes(
-        /* [in] */ const ArrayOf<Byte>& name,
+        /* [in] */ ArrayOf<Byte>* name,
         /* [out] */ IUUID** uuid);
 
     /**

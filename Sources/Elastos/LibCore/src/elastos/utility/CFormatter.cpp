@@ -940,7 +940,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromInteger()
             result->AppendString(StringUtils::Int64ToOctalString(value));
         }
         else {
-            result->AppendString(StringUtils::Int64ToHexString(value));
+            result->AppendString(StringUtils::ToHexString(value));
         }
     }
 

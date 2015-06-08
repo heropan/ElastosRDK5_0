@@ -4,6 +4,11 @@ module
     namespace Elastos {
     namespace Utility {
 
+    /**
+     * @Involve
+     * interface IComparable
+     * interface ISerializable
+     */
     interface IUUID {
         /**
          * <p>
@@ -94,7 +99,7 @@ module
             [out] Int64* node);
 
         CompareTo(
-            [in] IUUID* other,
+            [in] IInterface* other,
             [out] Int32* result);
 
         Equals(
@@ -108,6 +113,7 @@ module
             [out] String* str);
     }
 
+    [deprecated]
     interface IUUIDHelper {
         /**
          * <p>
@@ -129,7 +135,7 @@ module
          * @return an UUID instance.
          */
         NameUUIDFromBytes(
-            [in] ArrayOf<Byte> name,
+            [in] ArrayOf<Byte>* name,
             [out] IUUID** uuid);
 
         /**

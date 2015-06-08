@@ -1,14 +1,23 @@
-#ifndef __UTILITY_CTIMEZONEGETTERHELPER_H__
-#define __UTILITY_CTIMEZONEGETTERHELPER_H__
+#ifndef __ELASTOS_UTILITY_CTIMEZONEGETTERHELPER_H__
+#define __ELASTOS_UTILITY_CTIMEZONEGETTERHELPER_H__
 
-#include "_CTimeZoneGetterHelper.h"
+#include "_Elastos_Utility_CTimeZoneGetterHelper.h"
+#include "Singleton.h"
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {
 
 CarClass(CTimeZoneGetterHelper)
+    , public Singleton
+    , public ITimeZoneGetterHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetInstance(
         /* [out] */ ITimeZoneGetter** instance);
 
@@ -19,4 +28,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__UTILITY_CTIMEZONEGETTERHELPER_H__
+#endif //__ELASTOS_UTILITY_CTIMEZONEGETTERHELPER_H__

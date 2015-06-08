@@ -215,6 +215,7 @@ module
     interface Elastos.IO.IFilterInputStream;
     interface Elastos.IO.IFilterOutputStream;
     interface Elastos.IO.ICloseable;
+    interface Elastos.Core.IComparable;
     // interface Elastos.Core.IThread;
     // interface Elastos.Core.IRunnable;
     interface Elastos.Core.ICloneable;
@@ -408,6 +409,33 @@ module
             constructor();
 
             interface ITimer;
+        }
+
+        class CUUID {
+            /**
+             * <p>
+             * Constructs an instance with the specified bits.
+             *
+             * @param mostSigBits
+             *            The 64 most significant bits of the UUID.
+             * @param leastSigBits
+             *            The 64 least significant bits of the UUID.
+             */
+            constructor(
+                [in] Int64 mostSigBits,
+                [in] Int64 leastSigBits);
+
+            interface IUUID;
+            interface IComparable;
+            interface ISerializable;
+        }
+
+        singleton class CUUIDHelper {
+            interface IUUIDHelper;
+        }
+
+        singleton class CTimeZoneGetterHelper {
+           interface ITimeZoneGetterHelper;
         }
 
     } // namespace Utility

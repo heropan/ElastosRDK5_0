@@ -4,6 +4,10 @@
 namespace Elastos {
 namespace Utility {
 
+CAR_INTERFACE_IMPL(CUUIDHelper, Singleton, IUUIDHelper)
+
+CAR_SINGLETON_IMPL(CUUIDHelper)
+
 ECode CUUIDHelper::RandomUUID(
     /* [out] */ IUUID** uuid)
 {
@@ -11,7 +15,7 @@ ECode CUUIDHelper::RandomUUID(
 }
 
 ECode CUUIDHelper::NameUUIDFromBytes(
-    /* [in] */ const ArrayOf<Byte>& name,
+    /* [in] */ ArrayOf<Byte>* name,
     /* [out] */ IUUID** uuid)
 {
     return CUUID::NameUUIDFromBytes(name, uuid);

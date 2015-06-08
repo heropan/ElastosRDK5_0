@@ -1,16 +1,29 @@
-#ifndef __CUUID_H__
-#define __CUUID_H__
+#ifndef __ELASTOS_UTILITY_CUUID_H__
+#define __ELASTOS_UTILITY_CUUID_H__
 
-#include "_CUUID.h"
+#include "_Elastos_Utility_CUUID.h"
+#include "Object.h"
 
+using Elastos::Core::Object;
+using Elastos::Core::IComparable;
+using Elastos::IO::ISerializable;
 using Elastos::IO::IObjectInputStream;
+using Elastos::Security::ISecureRandom;
 
 namespace Elastos {
 namespace Utility {
 
 CarClass(CUUID)
+    , public Object
+    , public IUUID
+    , public IComparable
+    , public ISerializable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CUUID();
 
     CARAPI constructor(
@@ -106,7 +119,7 @@ public:
         /* [out] */ Int64* node);
 
     CARAPI CompareTo(
-        /* [in] */ IUUID* other,
+        /* [in] */ IInterface* other,
         /* [out] */ Int32* result);
 
     CARAPI Equals(
@@ -140,7 +153,7 @@ public:
      * @return an UUID instance.
      */
     static CARAPI NameUUIDFromBytes(
-        /* [in] */ const ArrayOf<Byte>& name,
+        /* [in] */ ArrayOf<Byte>* name,
         /* [out] */ IUUID** uuid);
 
     /**
@@ -168,14 +181,15 @@ private:
     CARAPI Init();
 
     static AutoPtr<IUUID> MakeUuid(
-        /* [in] */ const ArrayOf<Byte>& hash,
+        /* [in] */ ArrayOf<Byte>* hash,
         /* [in] */ Int32 version);
 
     CARAPI ReadObject(
         /* [in] */ IObjectInputStream* in);
 
 private:
-    //static SecureRandom rng;
+    static AutoPtr<ISecureRandom> sRng;
+    static Object sRngLock;
 
     Int64 mMostSigBits;
     Int64 mLeastSigBits;
@@ -191,4 +205,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CUUID_H__
+#endif //__ELASTOS_UTILITY_CUUID_H__

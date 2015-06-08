@@ -2,8 +2,8 @@
 #include "Grego.h"
 #include "Elastos.CoreLibrary_server.h"
 
-namespace Elastos{
-namespace Utility{
+namespace Elastos {
+namespace Utility {
 
 const Int64 Grego::MIN_MILLIS;
 const Int64 Grego::MAX_MILLIS;

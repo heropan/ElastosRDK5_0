@@ -743,7 +743,7 @@ ECode CScanner::HasNextInt64(
         mMatcher->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
         // try {
-        Int64 outint = StringUtils::ParseInt64(intString, radix);
+        Int64 outint = StringUtils::Parse(intString, radix);
         AutoPtr<IInteger64> inint;
         ECode ec = CInteger64::New(outint, (IInteger64**)&inint);
         if (ec == NOERROR) {
@@ -1148,7 +1148,7 @@ ECode CScanner::NextInt64(
     intString = RemoveLocaleInfo(intString, INT);
     Int64 longValue = 0;
     // try {
-    ECode ec = StringUtils::ParseInt64(intString, radix, &longValue);
+    ECode ec = StringUtils::Parse(intString, radix, &longValue);
     // } catch (NumberFormatException e) {
     if (ec == E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;

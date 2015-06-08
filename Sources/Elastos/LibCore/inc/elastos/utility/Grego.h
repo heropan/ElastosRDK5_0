@@ -1,6 +1,6 @@
 
-#ifndef __UTILITY_GREGO_H__
-#define __UTILITY_GREGO_H__
+#ifndef __ELASTOS_UTILITY_GREGO_H__
+#define __ELASTOS_UTILITY_GREGO_H__
 
 #include <elastos.h>
 
@@ -135,4 +135,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__UTILITY_GREGO_H__
+#endif //__ELASTOS_UTILITY_GREGO_H__
