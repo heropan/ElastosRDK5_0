@@ -2,6 +2,9 @@
 #define __ELASTOS_IO_CHANNELS_SELECTIONKEY_H__
 
 #include <Elastos.CoreLibrary_server.h>
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace IO {
@@ -22,7 +25,7 @@ namespace Channels {
  * The ready set is an operation set that shows the operations that a
  * {@code channel} is ready to execute.
  */
-class SelectionKey
+class SelectionKey : public Object
 {
 public:
 

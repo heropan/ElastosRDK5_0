@@ -2,13 +2,14 @@
 #define __ELASTOS_IO_CHANNELS_SELECTIONKEYIMPL_H__
 
 #include "AbstractSelectionKey.h"
+#include "AbstractSelectableChannel.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::IO::Channels::ISelector;
 using Elastos::IO::Channels::ISocketChannel;
 using Elastos::IO::Channels::ISelectableChannel;
 using Elastos::IO::Channels::Spi::AbstractSelectionKey;
-using Elastos::IO::Channels::Spi::IAbstractSelectableChannel;
+using Elastos::IO::Channels::Spi::AbstractSelectableChannel;
 
 namespace Elastos {
 namespace IO {
@@ -19,7 +20,7 @@ class SelectionKeyImpl : public AbstractSelectionKey
 {
 public:
     SelectionKeyImpl(
-        /* [in] */ IAbstractSelectableChannel* channel,
+        /* [in] */ AbstractSelectableChannel* channel,
         /* [in] */ Int32 opts,
         /* [in] */ IObject* attach,
         /* [in] */ ISelectorImpl* selector);
@@ -51,7 +52,7 @@ public:
         /* [out] */ Boolean* isConnected);
 
 private:
-    IAbstractSelectableChannel* mChannel;
+    AbstractSelectableChannel* mChannel;
     Int32 mInterestOps;
     Int32 mReadyOps;
     ISelectorImpl* mSelector;

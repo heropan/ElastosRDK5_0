@@ -49,7 +49,7 @@ public:
      *
      * @return the set of registered keys.
      */
-    virtual CARAPI Keys(
+    virtual CARAPI GetKeys(
         /* [out] */ ISet** keySet) = 0;
 
     /**
@@ -57,7 +57,7 @@ public:
      *
      * @return the provider of this selector.
      */
-    virtual CARAPI Provider(
+    virtual CARAPI GetProvider(
         /* [out] */ ISelectorProvider** provider) = 0;
 
     /**

@@ -21,8 +21,9 @@ ECode AbstractSelectionKey::Cancel()
         ECode ecRet = Selector((ISelector**)&selector);
         if (NOERROR == ecRet) {
             IAbstractSelector* absSel = IAbstractSelector::Probe(selector);
-            ISelectionKey* selKey = (ISelectionKey*)(IInterface*)this;
-            absSel->Cancel(selKey);
+            assert(0 && "TODO");
+            // ISelectionKey* selKey = (ISelectionKey*)(IInterface*)this;
+            // absSel->Cancel(selKey);
         }
     }
     return NOERROR;

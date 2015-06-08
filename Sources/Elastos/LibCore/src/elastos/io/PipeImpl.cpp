@@ -21,7 +21,7 @@ PipeSourceChannel::PipeSourceChannel(
 
 ECode PipeSourceChannel::ImplCloseSelectableChannel()
 {
-    return mChannel->Close();
+    return ICloseable::Probe(mChannel)->Close();
 }
 
 ECode PipeSourceChannel::ImplConfigureBlocking(Boolean blocking)
@@ -75,7 +75,7 @@ PipeSinkChannel::PipeSinkChannel(ISelectorProvider* provider, IFileDescriptor* f
 
 ECode PipeSinkChannel::ImplCloseSelectableChannel()
 {
-    return mChannel->Close();
+    return ICloseable::Probe(mChannel)->Close();
 }
 
 ECode PipeSinkChannel::ImplConfigureBlocking(Boolean blocking)

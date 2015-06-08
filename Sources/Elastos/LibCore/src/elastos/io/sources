@@ -71,10 +71,10 @@ SOURCES += StringReader.cpp
 # nio related classes
 #
 SOURCES += CByteOrderHelper.cpp
+#SOURCES += CLineNumberInputStream.cpp
 SOURCES += MemoryBlock.cpp
 SOURCES += Buffer.cpp
 SOURCES += ByteBuffer.cpp
-
 SOURCES += CByteBufferHelper.cpp
 SOURCES += CByteArrayBuffer.cpp
 SOURCES += DatagramChannel.cpp
@@ -144,3 +144,10 @@ SOURCES += ReadOnlyFloatArrayBuffer.cpp
 SOURCES += ReadOnlyInt16ArrayBuffer.cpp
 SOURCES += ReadOnlyInt32ArrayBuffer.cpp
 SOURCES += ReadOnlyInt64ArrayBuffer.cpp
+#SOURCES += DatagramChannelImpl.cpp
+#SOURCES += IoVec.cpp
+SOURCES += NIOAccess.cpp
+SOURCES += PipeImpl.cpp
+SOURCES += SelectionKeyImpl.cpp
+SOURCES += CSelectorImpl.cpp
+#SOURCES += SocketChannelImpl.cpp

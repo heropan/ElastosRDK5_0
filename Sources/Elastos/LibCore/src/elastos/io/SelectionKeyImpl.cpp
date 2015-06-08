@@ -1,11 +1,13 @@
 #include "SelectionKeyImpl.h"
 #include "coredef.h"
 
+using Elastos::IO::Channels::EIID_ISelectableChannel;
+
 namespace Elastos {
 namespace IO {
 
 SelectionKeyImpl::SelectionKeyImpl(
-    /* [in] */ IAbstractSelectableChannel* channel,
+    /* [in] */ AbstractSelectableChannel* channel,
     /* [in] */ Int32 ops,
     /* [in] */ IObject* attachment,
     /* [in] */ ISelectorImpl* selector)
@@ -22,7 +24,7 @@ SelectionKeyImpl::SelectionKeyImpl(
 ECode SelectionKeyImpl::Channel(
     /* [in] */ ISelectableChannel** channel)
 {
-    *channel = mChannel;
+    *channel = (ISelectableChannel*) mChannel->Probe(EIID_ISelectableChannel);
     REFCOUNT_ADD(*channel);
     return NOERROR;
 }
@@ -94,7 +96,7 @@ ECode SelectionKeyImpl::ReadyOps(
 ECode SelectionKeyImpl::Selector(
     /* [out] */ ISelector** selector)
 {
-      *selector = mSelector;
+      *selector = ISelector::Probe(mSelector);
       REFCOUNT_ADD(*selector);
       return NOERROR;
 }

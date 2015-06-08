@@ -5,18 +5,26 @@
 #include "AbstractSelector.h"
 #include "SelectionKeyImpl.h"
 #include <elastos/core/Thread.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IUnsafeArrayList;
 using Elastos::IO::Channels::Spi::ISelectorProvider;
 using Elastos::IO::Channels::Spi::AbstractSelector;
+using Elastos::IO::Channels::Spi::IAbstractSelector;
 using Elastos::IO::Channels::ISelectionKey;
+using Elastos::IO::Channels::ISelector;
 
 namespace Elastos {
 namespace IO {
 
-CarClass(CSelectorImpl) , public AbstractSelector
+CarClass(CSelectorImpl)
+    , public Object
+    , public AbstractSelector
+    , public IAbstractSelector
+    , public ISelector
 {
     // private static class UnaddableSet<E> implements Set<E> {
 
@@ -90,6 +98,8 @@ CarClass(CSelectorImpl) , public AbstractSelector
     // };
 
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -99,7 +109,7 @@ public:
         /* [in] */ ISelectionKey* key);
 
     CARAPI Register(
-        /* [in] */  IAbstractSelectableChannel* channel,
+        /* [in] */  AbstractSelectableChannel* channel,
         /* [in] */  Int32 operations,
         /* [in] */  IObject* obj,
         /* [out] */ ISelectionKey** returnKey);
@@ -135,7 +145,7 @@ public:
      *
      * @return the set of registered keys.
      */
-    CARAPI Keys(
+    CARAPI GetKeys(
         /* [out] */ ISet** keySet);
 
      /**
@@ -143,7 +153,7 @@ public:
      *
      * @return the provider of this selector.
      */
-    CARAPI Provider(
+    CARAPI GetProvider(
         /* [out] */ ISelectorProvider** provider);
 
      /**
@@ -277,7 +287,7 @@ private:
     AutoPtr<IUnsafeArrayList> mPollFds;
 
     // Used for emulating synchronized keyword
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace IO

@@ -117,7 +117,9 @@ module
     interface Elastos.Core.IComparable;
 
     interface Elastos.IO.Channels.Spi.ISelectorProvider;
+    interface Elastos.IO.Channels.Spi.IAbstractSelector;
     interface Elastos.IO.Channels.IChannels;
+    interface Elastos.IO.Channels.ISelector;
     interface Libcore.IO.IStreams;
     interface Elastos.IO.ICloseable;
     interface Elastos.Net.IURI;
@@ -340,6 +342,17 @@ module
 
     singleton class CByteOrderHelper {
         interface IByteOrderHelper;
+    }
+
+    class CSelectorImpl {
+        constructor();
+
+        constructor(
+            [in] ISelectorProvider* selectorProvider);
+
+        interface ISelectorImpl;
+        interface IAbstractSelector;
+        interface ISelector;
     }
 
     [deprecated]
