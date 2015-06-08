@@ -36,7 +36,7 @@ using Elastos::Utility::ICollections;
 using Elastos::Utility::CCollections;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
-using Elastos::Utility::CArrays;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Net {
@@ -83,7 +83,7 @@ AutoPtr<INetworkInterface> NetworkInterface::ForUnboundMulticastSocket()
     AutoPtr< ArrayOf<IInterface*> > outarr = ArrayOf<IInterface*>::Alloc(1);
     outarr->Set(0, CInet6Address::ANY);
     AutoPtr<IList> outlist1;
-    // CArrays::_AsList(outarr, (IList**)&outlist1);
+    Arrays::AsList(outarr, (IList**)&outlist1);
     AutoPtr<IList> outlist2;
     CCollections::_GetEmptyList((IList**)&outlist2);
     return new NetworkInterface(String(NULL), -1, outlist1, outlist2);

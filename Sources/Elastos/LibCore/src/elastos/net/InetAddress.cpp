@@ -32,7 +32,7 @@ using Elastos::Utility::IList;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IIterable;
 using Elastos::Utility::Arrays;
-// using Elastos::Utility::CArrays;
+// using Elastos::Utility::Arrays;
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::ICollections;
 // using Elastos::Utility::CCollections;
@@ -206,10 +206,8 @@ ECode InetAddress::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     VALIDATE_NOT_NULL(hashCode)
-
-    // AutoPtr<IArrays> arrays;
-    //TODO CArrays::AcquireSingleton((IArrays**)&arrays);
-    // return arrays->GetHashCode(mIpAddress, hashCode);
+    *hashCode = Arrays::GetHashCode(mIpAddress);
+    return NOERROR;
 }
 
 ECode InetAddress::GetLocalHost(

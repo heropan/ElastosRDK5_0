@@ -593,7 +593,7 @@ ECode PlainSocketImpl::Read(
         *value = 0;
         return NOERROR;
     }
-    CArrays::_CheckOffsetAndCount(buffer->GetLength(), offset, byteCount);
+    Arrays::CheckOffsetAndCount(buffer->GetLength(), offset, byteCount);
     if (mShutdownInput) {
         *value = -1;
         return NOERROR;
@@ -622,7 +622,7 @@ ECode PlainSocketImpl::Write(
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* value)
 {
-    CArrays::_CheckOffsetAndCount(buffer.GetLength(), offset, byteCount);
+    Arrays::CheckOffsetAndCount(buffer.GetLength(), offset, byteCount);
     Int32 fd = 0;
     mFd->GetDescriptor(&fd);
     if (mStreaming) {

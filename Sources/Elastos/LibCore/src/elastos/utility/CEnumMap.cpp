@@ -76,8 +76,9 @@ ECode CEnumMap::constructor(
 
 ECode CEnumMap::Clear()
 {
-    //Arrays::FillObject(mValues, NULL);
-    //Arrays::FillBoolean(mHasMapping, FALSE);
+    IInterface * nullObj = NULL;
+    Arrays::Fill(mValues.Get(), nullObj);
+    Arrays::Fill(mHasMapping.Get(), FALSE);
     mMappingsCount = 0;
     return NOERROR;
 }
@@ -176,11 +177,8 @@ ECode CEnumMap::Equals(
         return NOERROR;
     }
 
-    Boolean isflag1 = FALSE;
-    Boolean isflag2 = FALSE;
-    //Arrays::EqualsBoolean(mHasMapping, enumMap->mHasMapping, &isflag1);
-    //Arrays::EqualsObject(mValues, enumMap->mValues, &isflag2);
-    *value = isflag1 && isflag2;
+    *value = Arrays::Equals(mHasMapping, enumMap->mHasMapping)
+        && Arrays::Equals(mValues, enumMap->mValues);
     return NOERROR;
 }
 

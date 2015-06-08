@@ -63,7 +63,7 @@ int CTest::testNoProxySystemProperty(int argc, char* argv[])// throws URISyntaxE
     AutoPtr<Elastos::Net::IProxy> noProxy;
     helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
     AutoPtr<IList> l;
-//    CArrays::_AsList(noProxy, (IList**)&l);
+//    Arrays::AsList(noProxy, (IList**)&l);
     AutoPtr<IObjectContainer> ftp;
     proxySelector->Select(ftpUri, (IObjectContainer**)&ftp);
     AutoPtr<IObjectContainer> http;
@@ -119,7 +119,7 @@ int CTest::testProxyHostOnly(int argc, char* argv[])// throws URISyntaxException
     AutoPtr<IProxy> a;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr, (Elastos::Net::IProxy**)&a);
     AutoPtr<IList> l1;
-//    CArrays::_AsList(a, (IList**)&l1);
+//    Arrays::AsList(a, (IList**)&l1);
     AutoPtr<IObjectContainer> oc1;
     proxySelector->Select(ftpUri, (IObjectContainer**)&oc1);
     Boolean bl = FALSE;
@@ -132,7 +132,7 @@ int CTest::testProxyHostOnly(int argc, char* argv[])// throws URISyntaxException
     AutoPtr<IProxy> b;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr_2, (Elastos::Net::IProxy**)&b);
     AutoPtr<IList> l2;
-//    CArrays::_AsList(b, (IList**)&l2);
+//    Arrays::AsList(b, (IList**)&l2);
     AutoPtr<IObjectContainer> oc2;
     proxySelector->Select(httpUri, (IObjectContainer**)&oc2);
     p = NULL;
@@ -145,7 +145,7 @@ int CTest::testProxyHostOnly(int argc, char* argv[])// throws URISyntaxException
     AutoPtr<IProxy> c;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr_3, (Elastos::Net::IProxy**)&c);
     AutoPtr<IList> l3;
-//    CArrays::_AsList(c, (IList**)&l3);
+//    Arrays::AsList(c, (IList**)&l3);
     AutoPtr<IObjectContainer> oc3;
     proxySelector->Select(httpsUri, (IObjectContainer**)&oc3);
     p = NULL;
@@ -158,7 +158,7 @@ int CTest::testProxyHostOnly(int argc, char* argv[])// throws URISyntaxException
     AutoPtr<Elastos::Net::IProxy> noProxy;
     helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
     AutoPtr<IList> l4;
-//    CArrays::_AsList(noProxy, (IList**)&l4);
+//    Arrays::AsList(noProxy, (IList**)&l4);
     AutoPtr<IObjectContainer> oc4;
     proxySelector->Select(otherUri, (IObjectContainer**)&oc4);
     p = NULL;
@@ -197,7 +197,7 @@ int CTest::testProxyHostPort(int argc, char* argv[])// throws URISyntaxException
     AutoPtr<IProxy> a;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr, (Elastos::Net::IProxy**)&a);
     AutoPtr<IList> l1;
-//    CArrays::_AsList(a, (IList**)&l1);
+//    Arrays::AsList(a, (IList**)&l1);
     AutoPtr<IObjectContainer> oc1;
     proxySelector->Select(ftpUri, (IObjectContainer**)&oc1);
     Boolean bl = FALSE;
@@ -210,7 +210,7 @@ int CTest::testProxyHostPort(int argc, char* argv[])// throws URISyntaxException
     AutoPtr<IProxy> b;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr_2, (Elastos::Net::IProxy**)&b);
     AutoPtr<IList> l2;
-//    CArrays::_AsList(b, (IList**)&l2);
+//    Arrays::AsList(b, (IList**)&l2);
     AutoPtr<IObjectContainer> oc2;
     proxySelector->Select(httpUri, (IObjectContainer**)&oc2);
     p = NULL;
@@ -223,7 +223,7 @@ int CTest::testProxyHostPort(int argc, char* argv[])// throws URISyntaxException
     AutoPtr<IProxy> c;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr_3, (Elastos::Net::IProxy**)&c);
     AutoPtr<IList> l3;
-//    CArrays::_AsList(c, (IList**)&l3);
+//    Arrays::AsList(c, (IList**)&l3);
     AutoPtr<IObjectContainer> oc3;
     proxySelector->Select(httpUri, (IObjectContainer**)&oc3);
     p = NULL;
@@ -236,7 +236,7 @@ int CTest::testProxyHostPort(int argc, char* argv[])// throws URISyntaxException
     AutoPtr<Elastos::Net::IProxy> noProxy;
     helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
     AutoPtr<IList> l4;
-//    CArrays::_AsList(noProxy, (IList**)&l4);
+//    Arrays::AsList(noProxy, (IList**)&l4);
     AutoPtr<IObjectContainer> oc4;
     proxySelector->Select(socketUri, (IObjectContainer**)&oc4);
     p = NULL;
@@ -267,7 +267,7 @@ int CTest::testProxyPortOnly(int argc, char* argv[])// throws URISyntaxException
     AutoPtr<Elastos::Net::IProxy> noProxy;
     helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
     AutoPtr<IList> l1;
-//    CArrays::_AsList(noProxy, (IList**)&l1);
+//    Arrays::AsList(noProxy, (IList**)&l1);
 
     AutoPtr<IObjectContainer> oc1;
     proxySelector->Select(ftpUri, (IObjectContainer**)&oc1);
@@ -317,7 +317,7 @@ int CTest::testHttpsDoesNotUseHttpProperties(int argc, char* argv[])// throws UR
     AutoPtr<Elastos::Net::IProxy> noProxy;
     helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
     AutoPtr<IList> l1;
-//    CArrays::_AsList(noProxy, (IList**)&l1);
+//    Arrays::AsList(noProxy, (IList**)&l1);
     AutoPtr<IObjectContainer> oc1;
     proxySelector->Select(httpsUri, (IObjectContainer**)&oc1);
     Boolean b = FALSE;
@@ -339,7 +339,7 @@ int CTest::testProxyHost(int argc, char* argv[])// throws URISyntaxException
     AutoPtr<IProxy> a;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr, (Elastos::Net::IProxy**)&a);
     AutoPtr<IList> l1;
-//    CArrays::_AsList(a, (IList**)&l1);
+//    Arrays::AsList(a, (IList**)&l1);
     AutoPtr<IObjectContainer> oc1;
     proxySelector->Select(ftpUri, (IObjectContainer**)&oc1);
     Boolean b = FALSE;
@@ -359,7 +359,7 @@ int CTest::testProxyHost(int argc, char* argv[])// throws URISyntaxException
     AutoPtr<IProxy> a2;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr_2, (Elastos::Net::IProxy**)&a2);
     AutoPtr<IList> l2;
-//    CArrays::_AsList(a2, (IList**)&l2);
+//    Arrays::AsList(a2, (IList**)&l2);
     AutoPtr<IObjectContainer> oc3;
     proxySelector->Select(httpsUri, (IObjectContainer**)&oc3);
     p = NULL;
@@ -372,7 +372,7 @@ int CTest::testProxyHost(int argc, char* argv[])// throws URISyntaxException
     AutoPtr<Elastos::Net::IProxy> noProxy;
     helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
     AutoPtr<IList> l4;
-//    CArrays::_AsList(noProxy, (IList**)&l4);
+//    Arrays::AsList(noProxy, (IList**)&l4);
     AutoPtr<IObjectContainer> oc4;
     proxySelector->Select(socketUri, (IObjectContainer**)&oc4);
     p = NULL;
@@ -402,7 +402,7 @@ int CTest::testHttpProxyHostPreferredOverProxyHost(int argc, char* argv[])// thr
     AutoPtr<IProxy> a;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr, (IProxy**)&a);
     AutoPtr<IList> l1;
-//    CArrays::_AsList(a, (IList**)&l1);
+//    Arrays::AsList(a, (IList**)&l1);
     AutoPtr<IObjectContainer> oc1;
     proxySelector->Select(httpUri, (IObjectContainer**)&oc1);
     Boolean b = FALSE;
@@ -424,7 +424,7 @@ int CTest::testSocksProxyHost(int argc, char* argv[])// throws URISyntaxExceptio
     AutoPtr<IProxy> a;
     CProxy::New(Elastos::Net::ProxyType_SOCKS, addr, (IProxy**)&a);
     AutoPtr<IList> l1;
-//    CArrays::_AsList(a, (IList**)&l1);
+//    Arrays::AsList(a, (IList**)&l1);
     AutoPtr<IObjectContainer> oc1;
     proxySelector->Select(ftpUri, (IObjectContainer**)&oc1);
     Boolean b = FALSE;
@@ -458,7 +458,7 @@ int CTest::testSocksProxyHost(int argc, char* argv[])// throws URISyntaxExceptio
     AutoPtr<Elastos::Net::IProxy> noProxy;
     helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
     AutoPtr<IList> l2;
-//    CArrays::_AsList(noProxy, (IList**)&l2);
+//    Arrays::AsList(noProxy, (IList**)&l2);
     AutoPtr<IObjectContainer> oc5;
     proxySelector->Select(otherUri, (IObjectContainer**)&oc5);
     p = NULL;
@@ -481,7 +481,7 @@ int CTest::testSocksProxyHostAndPort(int argc, char* argv[])// throws URISyntaxE
     AutoPtr<IProxy> a;
     CProxy::New(Proxy::ProxyType_SOCKS, addr, (IProxy**)&a);
     AutoPtr<IList> l1;
-//    CArrays::_AsList(a, (IList**)&l1);
+//    Arrays::AsList(a, (IList**)&l1);
     AutoPtr<IObjectContainer> oc1;
     proxySelector->Select(ftpUri, (IObjectContainer**)&oc1);
     Boolean b = FALSE;
@@ -515,7 +515,7 @@ int CTest::testSocksProxyHostAndPort(int argc, char* argv[])// throws URISyntaxE
     AutoPtr<Elastos::Net::IProxy> noProxy;
     helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
     AutoPtr<IList> l2;
-//    CArrays::_AsList(noProxy, (IList**)&l2);
+//    Arrays::AsList(noProxy, (IList**)&l2);
     AutoPtr<IObjectContainer> oc5;
     proxySelector->Select(otherUri, (IObjectContainer**)&oc5);
     p = NULL;
@@ -539,7 +539,7 @@ int CTest::testNonProxyHostsFtp(int argc, char* argv[])// throws URISyntaxExcept
     AutoPtr<IProxy> a;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr, (IProxy**)&a);
     AutoPtr<IList> l1;
-//    CArrays::_AsList(a, (IList**)&l1);
+//    Arrays::AsList(a, (IList**)&l1);
     AutoPtr<IURI> net;
     CURI::New(String("ftp://foo.net"), (IURI**)&net);
     AutoPtr<IObjectContainer> oc1;
@@ -554,7 +554,7 @@ int CTest::testNonProxyHostsFtp(int argc, char* argv[])// throws URISyntaxExcept
     AutoPtr<Elastos::Net::IProxy> noProxy;
     helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
     AutoPtr<IList> l2;
-//    CArrays::_AsList(noProxy, (IList**)&l2);
+//    Arrays::AsList(noProxy, (IList**)&l2);
     AutoPtr<IURI> com;
     CURI::New(String("ftp://foo.com"), (IURI**)&com);
     AutoPtr<IObjectContainer> oc2;
@@ -579,7 +579,7 @@ int CTest::testNonProxyHostsHttp(int argc, char* argv[])// throws URISyntaxExcep
     AutoPtr<IProxy> a;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr, (IProxy**)&a);
     AutoPtr<IList> l1;
-//    CArrays::_AsList(a, (IList**)&l1);
+//    Arrays::AsList(a, (IList**)&l1);
     AutoPtr<IURI> net;
     CURI::New(String("ftp://foo.net"), (IURI**)&net);
     AutoPtr<IObjectContainer> oc1;
@@ -594,7 +594,7 @@ int CTest::testNonProxyHostsHttp(int argc, char* argv[])// throws URISyntaxExcep
     AutoPtr<Elastos::Net::IProxy> noProxy;
     helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
     AutoPtr<IList> l2;
-//    CArrays::_AsList(noProxy, (IList**)&l2);
+//    Arrays::AsList(noProxy, (IList**)&l2);
     AutoPtr<IURI> com;
     CURI::New(String("ftp://foo.com"), (IURI**)&com);
     AutoPtr<IObjectContainer> oc2;
@@ -619,7 +619,7 @@ int CTest::testNonProxyHostsHttps(int argc, char* argv[])// throws URISyntaxExce
     AutoPtr<IProxy> a;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr, (IProxy**)&a);
     AutoPtr<IList> l1;
-//    CArrays::_AsList(a, (IList**)&l1);
+//    Arrays::AsList(a, (IList**)&l1);
     AutoPtr<IURI> net;
     CURI::New(String("ftp://foo.net"), (IURI**)&net);
     AutoPtr<IObjectContainer> oc1;
@@ -634,7 +634,7 @@ int CTest::testNonProxyHostsHttps(int argc, char* argv[])// throws URISyntaxExce
     AutoPtr<Elastos::Net::IProxy> noProxy;
     helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
     AutoPtr<IList> l2;
-//    CArrays::_AsList(noProxy, (IList**)&l2);
+//    Arrays::AsList(noProxy, (IList**)&l2);
     AutoPtr<IURI> com;
     CURI::New(String("ftp://foo.com"), (IURI**)&com);
     AutoPtr<IObjectContainer> oc2;
@@ -658,7 +658,7 @@ int CTest::testSchemeCaseSensitive(int argc, char* argv[])// throws URISyntaxExc
     AutoPtr<IProxy> a;
     CProxy::New(Elastos::Net::ProxyType_HTTP, addr, (IProxy**)&a);
     AutoPtr<IList> l1;
-//    CArrays::_AsList(a, (IList**)&l1);
+//    Arrays::AsList(a, (IList**)&l1);
     AutoPtr<IURI> uri;
     CURI::New(String("ftp://foo.net"), (IURI**)&uri);
     AutoPtr<IObjectContainer> oc1;

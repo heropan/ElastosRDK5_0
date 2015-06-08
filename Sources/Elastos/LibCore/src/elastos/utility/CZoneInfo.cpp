@@ -341,11 +341,11 @@ ECode CZoneInfo::GetHashCode(
     GetID(&id);
     Int32 code;
     result = prime * result + id.GetHashCode();
-    result = prime * result + (CArrays::_HashCodeInt32(mOffsets, &code), code);
-    result = prime * result + (CArrays::_HashCodeBoolean(mIsDsts, &code), code);
+    result = prime * result + Arrays::GetHashCode(mOffsets);
+    result = prime * result + Arrays::GetHashCode(mIsDsts);
     result = prime * result + mRawOffset;
-    result = prime * result + (CArrays::_HashCodeInt32(mTransitions, &code), code);
-    result = prime * result + (CArrays::_HashCodeBoolean(mTypes, &code), code);
+    result = prime * result + Arrays::GetHashCode(mTransitions);
+    result = prime * result + Arrays::GetHashCode(mTypes);
     result = prime * result + (mUseDst ? 1231 : 1237);
     *hashCode = result;
     return NOERROR;

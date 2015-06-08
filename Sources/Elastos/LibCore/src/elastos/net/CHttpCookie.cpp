@@ -18,7 +18,7 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Net::Http::CHttpDate;
-using Elastos::Utility::CArrays;
+using Elastos::Utility::Arrays;
 
 const String CHttpCookie::CookieParser::ATTRIBUTE_NAME_TERMINATORS = String(",;= \t");
 const String CHttpCookie::CookieParser::WHITESPACE = String(" \t");

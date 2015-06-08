@@ -2,31 +2,9 @@
 #include "Arrays.h"
 #include "ComparableTimSort.h"
 #include "TimSort.h"
-// #include "CArrayOf.h"
 // #include "CArrayList.h"
 
 using Elastos::Core::Object;
-
-// using Elastos::Core::IArrayOf;
-// using Elastos::Core::CArrayOf;
-// using Elastos::Core::IComparable;
-// using Elastos::Core::EIID_IInteger32;
-// using Elastos::Core::IInteger32;
-// using Elastos::Core::EIID_IChar32;
-// using Elastos::Core::IChar32;
-// using Elastos::Core::EIID_IBoolean;
-// using Elastos::Core::IBoolean;
-// using Elastos::Core::EIID_IByte;
-// using Elastos::Core::IByte;
-// using Elastos::Core::EIID_IInteger64;
-// using Elastos::Core::IInteger64;
-// using Elastos::Core::EIID_IFloat;
-// using Elastos::Core::IFloat;
-// using Elastos::Core::EIID_IDouble;
-// using Elastos::Core::IDouble;
-// using Elastos::Core::EIID_IInteger16;
-// using Elastos::Core::IInteger16;
-// using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {

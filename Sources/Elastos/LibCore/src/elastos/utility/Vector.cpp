@@ -5,7 +5,7 @@
 #include <elastos/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::CArrays;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Utility {
@@ -662,10 +662,8 @@ ECode _Vector::SetSize(
         return NOERROR;
     }
     EnsureCapacity(length);
-    AutoPtr<IArrays> arraysHelper;
-    CArrays::AcquireSingleton((IArrays**)&arraysHelper);
     if (mElementCount > length) {
-        FAIL_RETURN(arraysHelper->FillObject(mElementData.Get(), length, mElementCount, NULL));
+        FAIL_RETURN(Arrays::Fill(mElementData.Get(), length, mElementCount, NULL));
     }
     mElementCount = length;
     mModCount++;

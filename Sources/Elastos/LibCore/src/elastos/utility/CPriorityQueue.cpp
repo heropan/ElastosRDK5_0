@@ -218,7 +218,7 @@ ECode CPriorityQueue::AddAll(
 
 ECode CPriorityQueue::Clear()
 {
-    CArrays::_FillObject(mElements, NULL);
+    Arrays::Fill(mElements, NULL);
     mSize = 0;
     return NOERROR;
 }

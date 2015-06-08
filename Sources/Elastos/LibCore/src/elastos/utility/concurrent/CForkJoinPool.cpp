@@ -9,7 +9,7 @@
 #include "CArrayList.h"
 #include "CCollections.h"
 
-using Elastos::Utility::CArrays;
+using Elastos::Utility::Arrays;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::CCollections;
 using Elastos::Utility::Concurrent::CForkJoinWorkerThread;
@@ -572,7 +572,7 @@ Int32 CForkJoinPool::RegisterWorker(
                     for (k = 0; k < n && (*ws)[k] != NULL; ++k)
                         ;
                     if (k == n) {
-                        CArrays::_CopyOf((ArrayOf<IInterface*>*)ws.Get(), n << 1, (ArrayOf<IInterface*>**)&mWorkers);
+                        Arrays::CopyOf((ArrayOf<IInterface*>*)ws.Get(), n << 1, (ArrayOf<IInterface*>**)&mWorkers);
                         ws = mWorkers;
                     }
                 }

@@ -2,7 +2,7 @@
 #include "test.h"
 #include <elastos/Math.h>
 
-using Elastos::Utility::CArrays;
+using Elastos::Utility::Arrays;
 using Elastos::Utility::IList;
 using Elastos::Utility::ILinkedList;
 using Elastos::Utility::CLinkedList;
@@ -71,26 +71,24 @@ int CTest::test_asList_Ljava_lang_Object(int argc, char* argv[])
 // test 1
 int CTest::test_binarySearch_BB(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     Int32 index = -1;
     ECode ec = 0;
     // Test for method int java.util.Arrays.binarySearch(byte [], byte)
     for (Byte counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchByte(byteArray, counter, &index);
+        ec = Arrays::BinarySearch(byteArray, counter, &index);
         assert(index == counter);
     }
-    ec = ars->BinarySearchByte(byteArray, (Byte) -1, &index);
+    ec = Arrays::BinarySearch(byteArray, (Byte) -1, &index);
     printf("ec = %d index = %d\n", ec, index);
 //    assert(index == -1);
-    ec = ars->BinarySearchByte(byteArray, (Byte) arraySize, &index);
+    ec = Arrays::BinarySearch(byteArray, (Byte) arraySize, &index);
     assert(index == -(arraySize + 1));
 
     for (Byte counter = 0; counter < arraySize; counter++) {
         byteArray->Set(counter, (*byteArray)[counter]-50);
     }
     for (Byte counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchByte(byteArray, (Byte) (counter - 50), &index);
+        ec = Arrays::BinarySearch(byteArray, (Byte) (counter - 50), &index);
 //        assert(index == counter);
     }
     return ec;
@@ -99,18 +97,16 @@ int CTest::test_binarySearch_BB(int argc, char* argv[])
 // test 2
 int CTest::test_binarySearch_CC(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     Int32 index = -1;
     ECode ec = 0;
     // Test for method int java.util.Arrays.binarySearch(char [], char)
     for (Char32 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchChar32(charArray, counter + 1, &index);
+        ec = Arrays::BinarySearch(charArray, counter + 1, &index);
         assert(index == counter);
     }
-    ec = ars->BinarySearchChar32(charArray, 0x0000, &index);
+    ec = Arrays::BinarySearch(charArray, 0x0000, &index);
     assert(index == -1);
-    ec = ars->BinarySearchChar32(charArray, arraySize + 1, &index);
+    ec = Arrays::BinarySearch(charArray, arraySize + 1, &index);
     assert(index == -(arraySize + 1));
     return ec;
 }
@@ -121,25 +117,23 @@ int CTest::test_binarySearch_CC(int argc, char* argv[])
  */
 int CTest::test_binarySearch_DD(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     Int32 index = -1;
     ECode ec = 0;
     // Test for method int java.util.Arrays.binarySearch(double [], double)
     for (Int32 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchDouble(doubleArray, counter, &index);
+        ec = Arrays::BinarySearch(doubleArray, counter, &index);
         assert(index == counter);
     }
-    ec = ars->BinarySearchDouble(doubleArray, -1, &index);
+    ec = Arrays::BinarySearch(doubleArray, -1, &index);
     assert(index == -1);
-    ec = ars->BinarySearchDouble(doubleArray, arraySize, &index);
+    ec = Arrays::BinarySearch(doubleArray, arraySize, &index);
     assert(index == -(arraySize + 1));
 
     for (Int32 counter = 0; counter < arraySize; counter++) {
         doubleArray->Set(counter, (*doubleArray)[counter] - 50);
     }
     for (Int32 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchDouble(doubleArray, (Double) (counter - 50), &index);
+        ec = Arrays::BinarySearch(doubleArray, (Double) (counter - 50), &index);
         assert(index == (Double) counter);
     }
 
@@ -156,12 +150,12 @@ int CTest::test_binarySearch_DD(int argc, char* argv[])
     specials->Set(9, Elastos::Core::Math::DOUBLE_POSITIVE_INFINITY);
     specials->Set(10, Elastos::Core::Math::DOUBLE_NAN);
     for (Int32 i = 0; i < specials->GetLength(); i++) {
-        ec = ars->BinarySearchDouble(specials, (*specials)[i], &index);
+        ec = Arrays::BinarySearch(specials, (*specials)[i], &index);
         assert(index == i);
     }
-    ec = ars->BinarySearchDouble(specials, -1, &index);
+    ec = Arrays::BinarySearch(specials, -1, &index);
     assert(index == -4);
-    ec = ars->BinarySearchDouble(specials, 1, &index);
+    ec = Arrays::BinarySearch(specials, 1, &index);
     assert(index == -8);
     return ec;
 }
@@ -169,24 +163,22 @@ int CTest::test_binarySearch_DD(int argc, char* argv[])
 // test 4
 int CTest::test_binarySearch_FF(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     Int32 index = -1;
     ECode ec = 0;
     // Test for method int java.util.Arrays.binarySearch(float [], float)
     for (Int32 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchFloat(floatArray, counter, &index);
+        ec = Arrays::BinarySearch(floatArray, counter, &index);
         assert(index == counter);
     }
-    ec = ars->BinarySearchFloat(floatArray, -1, &index);
+    ec = Arrays::BinarySearch(floatArray, -1, &index);
     assert(index == -1);
-    ec = ars->BinarySearchFloat(floatArray, arraySize, &index);
+    ec = Arrays::BinarySearch(floatArray, arraySize, &index);
     assert(index == -(arraySize + 1));
     for (Int32 counter = 0; counter < arraySize; counter++) {
         floatArray->Set(counter, (*floatArray)[counter] - 50);
     }
     for (Int32 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchFloat(floatArray, counter - 50, &index);
+        ec = Arrays::BinarySearch(floatArray, counter - 50, &index);
         assert(index == counter);
     }
 
@@ -204,12 +196,12 @@ int CTest::test_binarySearch_FF(int argc, char* argv[])
     specials->Set(10, Elastos::Core::Math::FLOAT_NAN);
     for (Int32 i = 0; i < specials->GetLength(); i++) {
         Int32 result;
-        ec = ars->BinarySearchFloat(specials, (*specials)[i], &result);
+        ec = Arrays::BinarySearch(specials, (*specials)[i], &result);
         assert(result == i);
     }
-    ec = ars->BinarySearchFloat(specials, -1.0, &index);
+    ec = Arrays::BinarySearch(specials, -1.0, &index);
     assert(index == -4);
-    ec = ars->BinarySearchFloat(specials, 1.0, &index);
+    ec = Arrays::BinarySearch(specials, 1.0, &index);
     assert(index == -8);
     return ec;
 }
@@ -217,25 +209,23 @@ int CTest::test_binarySearch_FF(int argc, char* argv[])
 // test 5
 int CTest::test_binarySearch_II(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     Int32 index = -1;
     ECode ec = 0;
     // Test for method int java.util.Arrays.binarySearch(int [], int)
     for (Int32 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchInt32(intArray, counter, &index);
+        ec = Arrays::BinarySearch(intArray, counter, &index);
         assert(index == counter);
     }
-    ec = ars->BinarySearchInt32(intArray, -1, &index);
+    ec = Arrays::BinarySearch(intArray, -1, &index);
     assert(index == -1);
-    ec = ars->BinarySearchInt32(intArray, arraySize, &index);
+    ec = Arrays::BinarySearch(intArray, arraySize, &index);
     assert(index == -(arraySize + 1));
 
     for (Int32 counter = 0; counter < arraySize; counter++) {
         intArray->Set(counter, (*intArray)[counter] - 50);
     }
     for (Int32 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchInt32(intArray, counter - 50, &index);
+        ec = Arrays::BinarySearch(intArray, counter - 50, &index);
         assert(index == counter);
     }
     return ec;
@@ -244,24 +234,22 @@ int CTest::test_binarySearch_II(int argc, char* argv[])
 // test 6
 int CTest::test_binarySearch_JJ(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     Int32 index = -1;
     ECode ec = 0;
     // Test for method int java.util.Arrays.binarySearch(long [], long)
     for (Int64 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchInt64(longArray, counter, &index);
+        ec = Arrays::BinarySearch(longArray, counter, &index);
         assert(index == counter);
     }
-    ec = ars->BinarySearchInt64(longArray, -1, &index);
+    ec = Arrays::BinarySearch(longArray, -1, &index);
     assert(index == -1);
-    ec = ars->BinarySearchInt64(longArray, arraySize, &index);
+    ec = Arrays::BinarySearch(longArray, arraySize, &index);
     assert(index == -(arraySize + 1));
     for (Int64 counter = 0; counter < arraySize; counter++) {
         longArray->Set((Int32)counter, (*longArray)[(Int32) counter] - 50);
     }
     for (Int64 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchInt64(longArray, counter - (Int64) 50, &index);
+        ec = Arrays::BinarySearch(longArray, counter - (Int64) 50, &index);
         assert(index == counter);
     }
     return ec;
@@ -270,31 +258,29 @@ int CTest::test_binarySearch_JJ(int argc, char* argv[])
 // test 7
 int CTest::test_binarySearch_Ljava_lang_ObjectLjava_lang_Object(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     Int32 index = -1;
     ECode ec = 0;
     // Test for method int java.util.Arrays.binarySearch(java.lang.Object
     // [], java.lang.Object)
     AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(0);
     AutoPtr<IInterface> obj;
-    ec = ars->BinarySearchObject(arr, obj, &index);
+    ec = Arrays::BinarySearch(arr, obj, &index);
     assert(-1 == index);
 
     AutoPtr<IInteger32> num1;
     CInteger32::New(-1, (IInteger32**)&num1);
-    ec = ars->BinarySearchObject(arr, num1, &index);
+    ec = Arrays::BinarySearch(arr, num1, &index);
     assert(-1 == index);
 
     for (Int32 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchObject(objectArray, (*objArray)[counter], &index);
+        ec = Arrays::BinarySearch(objectArray, (*objArray)[counter], &index);
         assert(index == counter);
     }
-    ec = ars->BinarySearchObject(objectArray, num1, &index);
+    ec = Arrays::BinarySearch(objectArray, num1, &index);
     assert(-1 == index);
     AutoPtr<IInteger32> num2;
     CInteger32::New(arraySize, (IInteger32**)&num2);
-    ec = ars->BinarySearchObject(objectArray, num2, &index);
+    ec = Arrays::BinarySearch(objectArray, num2, &index);
     assert(index == -(arraySize + 1));
 
     AutoPtr<ArrayOf<IInterface*> > oArray = ArrayOf<IInterface*>::Alloc(5);
@@ -316,7 +302,7 @@ int CTest::test_binarySearch_Ljava_lang_ObjectLjava_lang_Object(int argc, char* 
 
     AutoPtr<IInteger32> num3;
     CInteger32::New(10, (IInteger32**)&num3);
-    ec = ars->BinarySearchObject(oArray, num3, &index);
+    ec = Arrays::BinarySearch(oArray, num3, &index);
     assert(ec != NOERROR);
     return ec;
 }
@@ -324,8 +310,6 @@ int CTest::test_binarySearch_Ljava_lang_ObjectLjava_lang_Object(int argc, char* 
 //IComparator NOT_IMPLEMENT
 int CTest::test_binarySearch_Ljava_lang_ObjectLjava_lang_ObjectLjava_util_Comparator(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     Int32 index = -1;
     ECode ec = 0;
     // Test for method int java.util.Arrays.binarySearch(java.lang.Object
@@ -335,14 +319,14 @@ int CTest::test_binarySearch_Ljava_lang_ObjectLjava_lang_ObjectLjava_util_Compar
         objectArray->Set(counter, (*objArray)[arraySize - counter - 1]);
     AutoPtr<IInteger32> num1;
     CInteger32::New(-1, (IInteger32**)&num1);
-    ec = ars->BinarySearch(objectArray, num1, comp, &index);
+    ec = Arrays::BinarySearch(objectArray, num1, comp, &index);
     assert(-(arraySize + 1) == index);
     AutoPtr<IInteger32> num2;
     CInteger32::New(arraySize, (IInteger32**)&num2);
-    ec = ars->BinarySearch(objectArray, num2, comp, &index);
+    ec = Arrays::BinarySearch(objectArray, num2, comp, &index);
     assert(-1 == index);
     for (Int32 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearch(objectArray, (*objArray)[counter], comp, &index);
+        ec = Arrays::BinarySearch(objectArray, (*objArray)[counter], comp, &index);
         assert(arraySize - counter - 1 == index);
     }
     return ec;
@@ -351,24 +335,22 @@ int CTest::test_binarySearch_Ljava_lang_ObjectLjava_lang_ObjectLjava_util_Compar
 // test 8
 int CTest::test_binarySearch_SS(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     Int32 index = -1;
     ECode ec = 0;
     // Test for method int java.util.Arrays.binarySearch(short [], short)
     for (Int16 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchInt16(shortArray, counter, &index);
+        ec = Arrays::BinarySearch(shortArray, counter, &index);
         assert(index == counter);
-        ec = ars->BinarySearchInt32(intArray, (Int16) -1, &index);
+        ec = Arrays::BinarySearch(intArray, (Int16) -1, &index);
         assert(index == -1);
-        ec = ars->BinarySearchInt32(intArray, (Int16) arraySize, &index);
+        ec = Arrays::BinarySearch(intArray, (Int16) arraySize, &index);
         assert(index == -(arraySize + 1));
     }
     for (Int16 counter = 0; counter < arraySize; counter++) {
         shortArray->Set(counter, (*shortArray)[counter] - 50);
     }
     for (Int16 counter = 0; counter < arraySize; counter++) {
-        ec = ars->BinarySearchInt16(shortArray, (Int16) (counter - 50), &index);
+        ec = Arrays::BinarySearch(shortArray, (Int16) (counter - 50), &index);
         assert(index == counter);
     }
     return ec;
@@ -377,12 +359,10 @@ int CTest::test_binarySearch_SS(int argc, char* argv[])
 // test 9
 int CTest::test_fill_BB(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(byte [], byte)
     AutoPtr<ArrayOf<Byte> > d = ArrayOf<Byte>::Alloc(1000);
-    ec = ars->FillByte(d, Elastos::Core::Math::BYTE_MAX_VALUE);
+    ec = Arrays::Fill(d, Elastos::Core::Math::BYTE_MAX_VALUE);
     for (Int32 i = 0; i < d->GetLength(); i++) {
         assert((*d)[i] == Elastos::Core::Math::BYTE_MAX_VALUE);
     }
@@ -392,13 +372,11 @@ int CTest::test_fill_BB(int argc, char* argv[])
 // test 10
 int CTest::test_fill_BIIB(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(byte [], int, int, byte)
     Byte val = Elastos::Core::Math::BYTE_MAX_VALUE;
     AutoPtr<ArrayOf<Byte> > d = ArrayOf<Byte>::Alloc(1000);
-    ec = ars->FillByteEx(d, 400, d->GetLength(), val);
+    ec = Arrays::Fill(d, 400, d->GetLength(), val);
     for (Int32 i = 0; i < 400; i++) {
         assert(!((*d)[i] == val));
     }
@@ -407,15 +385,15 @@ int CTest::test_fill_BIIB(int argc, char* argv[])
     }
 
     AutoPtr<ArrayOf<Byte> > b1 = ArrayOf<Byte>::Alloc(2);
-    ec = ars->FillByteEx(b1, 2, 1, (Byte) 27);
+    ec = Arrays::Fill(b1, 2, 1, (Byte) 27);
     assert( ec == E_ILLEGAL_ARGUMENT_EXCEPTION );
 
     AutoPtr<ArrayOf<Byte> > b2 = ArrayOf<Byte>::Alloc(2);
-    ec = ars->FillByteEx(b2, -1, 1, (Byte) 27);
+    ec = Arrays::Fill(b2, -1, 1, (Byte) 27);
     assert( ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION );
 
     AutoPtr<ArrayOf<Byte> > b3 = ArrayOf<Byte>::Alloc(2);
-    ec = ars->FillByteEx(b3, 1, 4, (Byte) 27);
+    ec = Arrays::Fill(b3, 1, 4, (Byte) 27);
     assert( ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION );
     return ec;
 }
@@ -423,12 +401,10 @@ int CTest::test_fill_BIIB(int argc, char* argv[])
 // test 11
 int CTest::test_fill_SS(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(short [], short)
     AutoPtr<ArrayOf<Int16> > d = ArrayOf<Int16>::Alloc(1000);
-    ec = ars->FillInt16(d, Elastos::Core::Math::INT16_MAX_VALUE);
+    ec = Arrays::Fill(d, Elastos::Core::Math::INT16_MAX_VALUE);
     for (Int32 i = 0; i < d->GetLength(); i++) {
         assert((*d)[i] == Elastos::Core::Math::INT16_MAX_VALUE);
     }
@@ -438,13 +414,11 @@ int CTest::test_fill_SS(int argc, char* argv[])
 // test 12
 int CTest::test_fill_SIIS(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(short [], int, int, short)
     Int16 val = Elastos::Core::Math::INT16_MAX_VALUE;
     AutoPtr<ArrayOf<Int16> > d = ArrayOf<Int16>::Alloc(1000);
-    ec = ars->FillInt16Ex(d, 400, d->GetLength(), val);
+    ec = Arrays::Fill(d, 400, d->GetLength(), val);
     for (Int32 i = 0; i < 400; i++) {
         assert(!((*d)[i] == val));
     }
@@ -452,13 +426,13 @@ int CTest::test_fill_SIIS(int argc, char* argv[])
         assert((*d)[i] == val);
     }
 
-    ec = ars->FillInt16Ex(d, 10, 0, val);
+    ec = Arrays::Fill(d, 10, 0, val);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->FillInt16Ex(d, -10, 0, val);
+    ec = Arrays::Fill(d, -10, 0, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->FillInt16Ex(d, 10, d->GetLength()+1, val);
+    ec = Arrays::Fill(d, 10, d->GetLength()+1, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -466,13 +440,11 @@ int CTest::test_fill_SIIS(int argc, char* argv[])
 // test 13
 int CTest::test_fill_CC(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(char [], char)
 
     AutoPtr<ArrayOf<Char32> > d = ArrayOf<Char32>::Alloc(1000);
-    ec = ars->FillChar32(d, 'V');
+    ec = Arrays::Fill(d, 'V');
     for (Int32 i = 0; i < d->GetLength(); i++) {
         assert('V' == (*d)[i]);
     }
@@ -482,26 +454,24 @@ int CTest::test_fill_CC(int argc, char* argv[])
 // test 14
 int CTest::test_fill_CIIC(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(char [], int, int, char)
     Char32 val = 'T';
     AutoPtr<ArrayOf<Char32> > d = ArrayOf<Char32>::Alloc(1000);
-    ec = ars->FillChar32Ex(d, 400, d->GetLength(), val);
+    ec = Arrays::Fill(d, 400, d->GetLength(), val);
     for (Int32 i = 0; i < 400; i++) {
         assert(!((*d)[i] == val));
     }
     for (Int32 i = 400; i < d->GetLength(); i++)
         assert((*d)[i] == val);
 
-    ec = ars->FillChar32Ex(d, 10, 0, val);
+    ec = Arrays::Fill(d, 10, 0, val);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->FillChar32Ex(d, -10, 0, val);
+    ec = Arrays::Fill(d, -10, 0, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->FillChar32Ex(d, 10, d->GetLength()+1, val);
+    ec = Arrays::Fill(d, 10, d->GetLength()+1, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -509,12 +479,10 @@ int CTest::test_fill_CIIC(int argc, char* argv[])
 // test 15
 int CTest::test_fill_II(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(int [], int)
     AutoPtr<ArrayOf<Int32> > d = ArrayOf<Int32>::Alloc(1000);
-    ec = ars->FillInt32(d, Elastos::Core::Math::INT32_MAX_VALUE);
+    ec = Arrays::Fill(d, Elastos::Core::Math::INT32_MAX_VALUE);
     for (Int32 i = 0; i < d->GetLength(); i++) {
         assert((*d)[i] == Elastos::Core::Math::INT32_MAX_VALUE);
     }
@@ -524,13 +492,11 @@ int CTest::test_fill_II(int argc, char* argv[])
 // test 16
 int CTest::test_fill_IIII(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(int [], int, int, int)
     Int32 val = Elastos::Core::Math::INT32_MAX_VALUE;
     AutoPtr<ArrayOf<Int32> > d = ArrayOf<Int32>::Alloc(1000);
-    ec = ars->FillInt32Ex(d, 400, d->GetLength(), val);
+    ec = Arrays::Fill(d, 400, d->GetLength(), val);
     for (Int32 i = 0; i < 400; i++) {
         assert(!((*d)[i] == val));
     }
@@ -538,13 +504,13 @@ int CTest::test_fill_IIII(int argc, char* argv[])
         assert((*d)[i] == val);
     }
 
-    ec = ars->FillInt32Ex(d, 10, 0, val);
+    ec = Arrays::Fill(d, 10, 0, val);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->FillInt32Ex(d, -10, 0, val);
+    ec = Arrays::Fill(d, -10, 0, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->FillInt32Ex(d, 10, d->GetLength()+1, val);
+    ec = Arrays::Fill(d, 10, d->GetLength()+1, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -552,12 +518,10 @@ int CTest::test_fill_IIII(int argc, char* argv[])
 // test 17
 int CTest::test_fill_JJ(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(long [], long)
     AutoPtr<ArrayOf<Int64> > d = ArrayOf<Int64>::Alloc(1000);
-    ec = ars->FillInt64(d, Elastos::Core::Math::INT64_MAX_VALUE);
+    ec = Arrays::Fill(d, Elastos::Core::Math::INT64_MAX_VALUE);
     for (Int32 i = 0; i < d->GetLength(); i++) {
         assert((*d)[i] == Elastos::Core::Math::INT64_MAX_VALUE);
     }
@@ -567,12 +531,10 @@ int CTest::test_fill_JJ(int argc, char* argv[])
 // test 18
 int CTest::test_fill_JIIJ(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(long [], int, int, long)
     AutoPtr<ArrayOf<Int64> > d = ArrayOf<Int64>::Alloc(1000);
-    ec = ars->FillInt64Ex(d, 400, d->GetLength(), Elastos::Core::Math::INT64_MAX_VALUE);
+    ec = Arrays::Fill(d, 400, d->GetLength(), Elastos::Core::Math::INT64_MAX_VALUE);
     for (Int32 i = 0; i < 400; i++) {
         assert(!((*d)[i] == Elastos::Core::Math::INT64_MAX_VALUE));
     }
@@ -580,13 +542,13 @@ int CTest::test_fill_JIIJ(int argc, char* argv[])
         assert((*d)[i] == Elastos::Core::Math::INT64_MAX_VALUE);
     }
 
-    ec = ars->FillInt64Ex(d, 10, 0, Elastos::Core::Math::INT64_MIN_VALUE);
+    ec = Arrays::Fill(d, 10, 0, Elastos::Core::Math::INT64_MIN_VALUE);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->FillInt64Ex(d, -10, 0, Elastos::Core::Math::INT64_MAX_VALUE);
+    ec = Arrays::Fill(d, -10, 0, Elastos::Core::Math::INT64_MAX_VALUE);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->FillInt64Ex(d, 10, d->GetLength()+1, Elastos::Core::Math::INT64_MAX_VALUE);
+    ec = Arrays::Fill(d, 10, d->GetLength()+1, Elastos::Core::Math::INT64_MAX_VALUE);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -594,12 +556,10 @@ int CTest::test_fill_JIIJ(int argc, char* argv[])
 // test 19
 int CTest::test_fill_FF(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(float [], float)
     AutoPtr<ArrayOf<Float> > d = ArrayOf<Float>::Alloc(1000);
-    ec = ars->FillFloat(d, Elastos::Core::Math::FLOAT_MAX_VALUE);
+    ec = Arrays::FillFloat(d, Elastos::Core::Math::FLOAT_MAX_VALUE);
     for (Int32 i = 0; i < d->GetLength(); i++) {
         assert((*d)[i] == Elastos::Core::Math::FLOAT_MAX_VALUE);
     }
@@ -609,13 +569,11 @@ int CTest::test_fill_FF(int argc, char* argv[])
 // test 20
 int CTest::test_fill_FIIF(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(float [], int, int, float)
     Float val = Elastos::Core::Math::FLOAT_MAX_VALUE;
     AutoPtr<ArrayOf<Float> > d = ArrayOf<Float>::Alloc(1000);
-    ec = ars->FillFloatEx(d, 400, d->GetLength(), val);
+    ec = Arrays::FillFloatEx(d, 400, d->GetLength(), val);
     for (Int32 i = 0; i < 400; i++) {
         assert(!((*d)[i] == val));
     }
@@ -623,13 +581,13 @@ int CTest::test_fill_FIIF(int argc, char* argv[])
         assert((*d)[i] == val);
     }
 
-    ec = ars->FillFloatEx(d, 10, 0, val);
+    ec = Arrays::FillFloatEx(d, 10, 0, val);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->FillFloatEx(d, -10, 0, val);
+    ec = Arrays::FillFloatEx(d, -10, 0, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->FillFloatEx(d, 10, d->GetLength()+1, val);
+    ec = Arrays::FillFloatEx(d, 10, d->GetLength()+1, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -637,12 +595,10 @@ int CTest::test_fill_FIIF(int argc, char* argv[])
 // test 21
 int CTest::test_fill_DD(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(double [], double)
     AutoPtr<ArrayOf<Double> > d = ArrayOf<Double>::Alloc(1000);
-    ec = ars->FillDouble(d, Elastos::Core::Math::DOUBLE_MAX_VALUE);
+    ec = Arrays::FillDouble(d, Elastos::Core::Math::DOUBLE_MAX_VALUE);
     for (Int32 i = 0; i < d->GetLength(); i++) {
         assert((*d)[i] == Elastos::Core::Math::DOUBLE_MAX_VALUE);
     }
@@ -652,14 +608,12 @@ int CTest::test_fill_DD(int argc, char* argv[])
 // test 22
 int CTest::test_fill_DIID(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(double [], int, int,
     // double)
     Double val = Elastos::Core::Math::DOUBLE_MAX_VALUE;
     AutoPtr<ArrayOf<Double> > d = ArrayOf<Double>::Alloc(1000);
-    ec = ars->FillDoubleEx(d, 400, d->GetLength(), val);
+    ec = Arrays::FillDoubleEx(d, 400, d->GetLength(), val);
     for (Int32 i = 0; i < 400; i++) {
         assert(!((*d)[i] == val));
     }
@@ -667,13 +621,13 @@ int CTest::test_fill_DIID(int argc, char* argv[])
         assert((*d)[i] == val);
     }
 
-    ec = ars->FillDoubleEx(d, 10, 0, val);
+    ec = Arrays::FillDoubleEx(d, 10, 0, val);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->FillDoubleEx(d, -10, 0, val);
+    ec = Arrays::FillDoubleEx(d, -10, 0, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->FillDoubleEx(d, 10, d->GetLength()+1, val);
+    ec = Arrays::FillDoubleEx(d, 10, d->GetLength()+1, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -681,12 +635,10 @@ int CTest::test_fill_DIID(int argc, char* argv[])
 // test 23
 int CTest::test_fill_ZZ(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(boolean [], boolean)
     AutoPtr<ArrayOf<Boolean> > d = ArrayOf<Boolean>::Alloc(1000);
-    ec = ars->FillBoolean(d, TRUE);
+    ec = Arrays::FillBoolean(d, TRUE);
     for (Int32 i = 0; i < d->GetLength(); i++) {
         assert((*d)[i] == TRUE);
     }
@@ -696,14 +648,12 @@ int CTest::test_fill_ZZ(int argc, char* argv[])
 // test 24
 int CTest::test_fill_ZIIZ(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(boolean [], int, int,
     // boolean)
     Boolean val = TRUE;
     AutoPtr<ArrayOf<Boolean> > d = ArrayOf<Boolean>::Alloc(1000);
-    ec = ars->FillBooleanEx(d, 400, d->GetLength(), val);
+    ec = Arrays::FillBooleanEx(d, 400, d->GetLength(), val);
     for (Int32 i = 0; i < 400; i++) {
         assert(!((*d)[i] == val));
     }
@@ -711,13 +661,13 @@ int CTest::test_fill_ZIIZ(int argc, char* argv[])
         assert((*d)[i] == val);
     }
 
-    ec = ars->FillBooleanEx(d, 10, 0, val);
+    ec = Arrays::FillBooleanEx(d, 10, 0, val);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->FillBooleanEx(d, -10, 0, val);
+    ec = Arrays::FillBooleanEx(d, -10, 0, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->FillBooleanEx(d, 10, d->GetLength()+1, val);
+    ec = Arrays::FillBooleanEx(d, 10, d->GetLength()+1, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -725,14 +675,12 @@ int CTest::test_fill_ZIIZ(int argc, char* argv[])
 // test 25
 int CTest::test_fill_Ljava_lang_ObjectLjava_lang_Object(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(java.lang.Object [],
     // java.lang.Object)
     AutoPtr<IInterface> val;
     AutoPtr<ArrayOf<IInterface*> > d = ArrayOf<IInterface*>::Alloc(1000);
-    ec = ars->FillObjectEx(d, 0, d->GetLength(), val);
+    ec = Arrays::FillObjectEx(d, 0, d->GetLength(), val);
     for (Int32 i = 0; i < d->GetLength(); i++)
         assert((*d)[i] == val);
     return ec;
@@ -741,15 +689,13 @@ int CTest::test_fill_Ljava_lang_ObjectLjava_lang_Object(int argc, char* argv[])
 // test 26
 int CTest::test_fill_Ljava_lang_ObjectIILjava_lang_Object(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.fill(java.lang.Object [], int,
     // int, java.lang.Object)
     AutoPtr<IInterface> val;
     CInteger32::New(99, (IInteger32**)&val);
     AutoPtr<ArrayOf<IInterface*> > d = ArrayOf<IInterface*>::Alloc(1000);
-    ec = ars->FillObjectEx(d, 400, d->GetLength(), val);
+    ec = Arrays::FillObjectEx(d, 400, d->GetLength(), val);
     for (Int32 i = 0; i < 400; i++)
     {
         assert(!((*d)[i] == val));
@@ -757,17 +703,17 @@ int CTest::test_fill_Ljava_lang_ObjectIILjava_lang_Object(int argc, char* argv[]
     for (Int32 i = 400; i < d->GetLength(); i++)
         assert((*d)[i] == val);
 
-    ec = ars->FillObjectEx(d, 400, d->GetLength(), NULL);
+    ec = Arrays::FillObjectEx(d, 400, d->GetLength(), NULL);
     for (Int32 i = 400; i < d->GetLength(); i++)
         assert((*d)[i] == NULL);
 
-    ec = ars->FillObjectEx(d, 10, 0, val);
+    ec = Arrays::FillObjectEx(d, 10, 0, val);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->FillObjectEx(d, -10, 0, val);
+    ec = Arrays::FillObjectEx(d, -10, 0, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->FillObjectEx(d, 10, d->GetLength()+1, val);
+    ec = Arrays::FillObjectEx(d, 10, d->GetLength()+1, val);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -775,19 +721,17 @@ int CTest::test_fill_Ljava_lang_ObjectIILjava_lang_Object(int argc, char* argv[]
 // test 27
 int CTest::test_equals_BB(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method boolean java.util.Arrays.equals(byte [], byte [])
     AutoPtr<ArrayOf<Byte> > d = ArrayOf<Byte>::Alloc(1000);
     AutoPtr<ArrayOf<Byte> > x = ArrayOf<Byte>::Alloc(1000);
-    ec = ars->FillByte(d, Elastos::Core::Math::BYTE_MAX_VALUE);
-    ec = ars->FillByte(x, Elastos::Core::Math::BYTE_MIN_VALUE);
+    ec = Arrays::Fill(d, Elastos::Core::Math::BYTE_MAX_VALUE);
+    ec = Arrays::Fill(x, Elastos::Core::Math::BYTE_MIN_VALUE);
     Boolean result;
-    ec = ars->EqualsByte(d, x, &result);
+    ec = Arrays::EqualsByte(d, x, &result);
     assert(!result);
-    ec = ars->FillByte(x, Elastos::Core::Math::BYTE_MAX_VALUE);
-    ec = ars->EqualsByte(d, x, &result);
+    ec = Arrays::Fill(x, Elastos::Core::Math::BYTE_MAX_VALUE);
+    ec = Arrays::EqualsByte(d, x, &result);
     assert(result);
     return ec;
 }
@@ -795,19 +739,17 @@ int CTest::test_equals_BB(int argc, char* argv[])
 // test 28
 int CTest::test_equals_SS(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method boolean java.util.Arrays.equals(short [], short [])
     AutoPtr<ArrayOf<Int16> > d = ArrayOf<Int16>::Alloc(1000);
     AutoPtr<ArrayOf<Int16> > x = ArrayOf<Int16>::Alloc(1000);
-    ec = ars->FillInt16(d, Elastos::Core::Math::INT16_MAX_VALUE);
-    ec = ars->FillInt16(x, Elastos::Core::Math::INT16_MIN_VALUE);
+    ec = Arrays::Fill(d, Elastos::Core::Math::INT16_MAX_VALUE);
+    ec = Arrays::Fill(x, Elastos::Core::Math::INT16_MIN_VALUE);
     Boolean result;
-    ec = ars->EqualsInt16(d, x, &result);
+    ec = Arrays::EqualsInt16(d, x, &result);
     assert(!result);
-    ec = ars->FillInt16(x, Elastos::Core::Math::INT16_MAX_VALUE);
-    ec = ars->EqualsInt16(d, x, &result);
+    ec = Arrays::Fill(x, Elastos::Core::Math::INT16_MAX_VALUE);
+    ec = Arrays::EqualsInt16(d, x, &result);
     assert(result);
     return ec;
 }
@@ -815,20 +757,18 @@ int CTest::test_equals_SS(int argc, char* argv[])
 // test 29
 int CTest::test_equals_CC(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method boolean java.util.Arrays.equals(char [], char [])
     AutoPtr<ArrayOf<Char32> > d = ArrayOf<Char32>::Alloc(1000);
     AutoPtr<ArrayOf<Char32> > x = ArrayOf<Char32>::Alloc(1000);
     Char32 c = 'T';
-    ec = ars->FillChar32(d, c);
-    ec = ars->FillChar32(x, 'L');
+    ec = Arrays::Fill(d, c);
+    ec = Arrays::Fill(x, 'L');
     Boolean result = FALSE;
-    ec = ars->EqualsChar32(d, x, &result);
+    ec = Arrays::EqualsChar32(d, x, &result);
     assert(!result);
-    ec = ars->FillChar32(x, c);
-    ec = ars->EqualsChar32(d, x, &result);
+    ec = Arrays::Fill(x, c);
+    ec = Arrays::EqualsChar32(d, x, &result);
     assert(result);
     return ec;
 }
@@ -836,25 +776,23 @@ int CTest::test_equals_CC(int argc, char* argv[])
 // test 30
 int CTest::test_equals_II(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method boolean java.util.Arrays.equals(int [], int [])
     AutoPtr<ArrayOf<Int32> > d = ArrayOf<Int32>::Alloc(1000);
     AutoPtr<ArrayOf<Int32> > x = ArrayOf<Int32>::Alloc(1000);
-    ec = ars->FillInt32(d, Elastos::Core::Math::INT32_MAX_VALUE);
-    ec = ars->FillInt32(x, Elastos::Core::Math::INT32_MIN_VALUE);
+    ec = Arrays::Fill(d, Elastos::Core::Math::INT32_MAX_VALUE);
+    ec = Arrays::Fill(x, Elastos::Core::Math::INT32_MIN_VALUE);
     Boolean result;
-    ec = ars->EqualsInt32(d, x, &result);
+    ec = Arrays::EqualsInt32(d, x, &result);
     assert(!result);
-    ec = ars->FillInt32(x, Elastos::Core::Math::INT32_MAX_VALUE);
-    ec = ars->EqualsInt32(d, x, &result);
+    ec = Arrays::Fill(x, Elastos::Core::Math::INT32_MAX_VALUE);
+    ec = Arrays::EqualsInt32(d, x, &result);
     assert(result);
     AutoPtr<ArrayOf<Int32> > it1 = ArrayOf<Int32>::Alloc(2);
-    ec = ars->EqualsInt32(it1, NULL, &result);
+    ec = Arrays::EqualsInt32(it1, NULL, &result);
     assert(!result);
     AutoPtr<ArrayOf<Int32> > it2 = ArrayOf<Int32>::Alloc(2);
-    ec = ars->EqualsInt32(NULL, it2, &result);
+    ec = Arrays::EqualsInt32(NULL, it2, &result);
     assert(!result);
     return ec;
 }
@@ -862,25 +800,23 @@ int CTest::test_equals_II(int argc, char* argv[])
 // test 31
 int CTest::test_equals_JJ(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method boolean java.util.Arrays.equals(long [], long [])
     AutoPtr<ArrayOf<Int64> > d = ArrayOf<Int64>::Alloc(1000);
     AutoPtr<ArrayOf<Int64> > x = ArrayOf<Int64>::Alloc(1000);
-    ec = ars->FillInt64(d, Elastos::Core::Math::INT64_MAX_VALUE);
-    ec = ars->FillInt64(x, Elastos::Core::Math::INT64_MIN_VALUE);
+    ec = Arrays::Fill(d, Elastos::Core::Math::INT64_MAX_VALUE);
+    ec = Arrays::Fill(x, Elastos::Core::Math::INT64_MIN_VALUE);
     Boolean result;
-    ec = ars->EqualsInt64(d, x, &result);
+    ec = Arrays::EqualsInt64(d, x, &result);
     assert(!result);
-    ec = ars->FillInt64(x, Elastos::Core::Math::INT64_MAX_VALUE);
-    ec = ars->EqualsInt64(d, x, &result);
+    ec = Arrays::Fill(x, Elastos::Core::Math::INT64_MAX_VALUE);
+    ec = Arrays::EqualsInt64(d, x, &result);
     assert(result);
     AutoPtr<ArrayOf<Int64> > l1 = ArrayOf<Int64>::Alloc(1);
     l1->Set(0, 0x100000000L);
     AutoPtr<ArrayOf<Int64> > l2 = ArrayOf<Int64>::Alloc(1);
     l2->Set(0, 0x200000000L);
-    ec = ars->EqualsInt64(l1, l2, &result);
+    ec = Arrays::EqualsInt64(l1, l2, &result);
     assert(!result);
     return ec;
 }
@@ -888,31 +824,29 @@ int CTest::test_equals_JJ(int argc, char* argv[])
 // test 32
 int CTest::test_equals_FF(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method boolean java.util.Arrays.equals(float [], float [])
     AutoPtr<ArrayOf<Float> > d = ArrayOf<Float>::Alloc(1000);
     AutoPtr<ArrayOf<Float> > x = ArrayOf<Float>::Alloc(1000);
-    ec = ars->FillFloat(d, Elastos::Core::Math::FLOAT_MAX_VALUE);
-    ec = ars->FillFloat(x, Elastos::Core::Math::FLOAT_MIN_VALUE);
+    ec = Arrays::FillFloat(d, Elastos::Core::Math::FLOAT_MAX_VALUE);
+    ec = Arrays::FillFloat(x, Elastos::Core::Math::FLOAT_MIN_VALUE);
     Boolean result;
-    ec = ars->EqualsFloat(d, x, &result);
+    ec = Arrays::EqualsFloat(d, x, &result);
     assert(!result);
-    ec = ars->FillFloat(x, Elastos::Core::Math::FLOAT_MAX_VALUE);
-    ec = ars->EqualsFloat(d, x, &result);
+    ec = Arrays::FillFloat(x, Elastos::Core::Math::FLOAT_MAX_VALUE);
+    ec = Arrays::EqualsFloat(d, x, &result);
     assert(result);
     AutoPtr<ArrayOf<Float> > f1 = ArrayOf<Float>::Alloc(1);
     f1->Set(0, Elastos::Core::Math::FLOAT_NAN);
     AutoPtr<ArrayOf<Float> > f2 = ArrayOf<Float>::Alloc(1);
     f2->Set(0, Elastos::Core::Math::FLOAT_NAN);
-    ec = ars->EqualsFloat(f1, f2, &result);
+    ec = Arrays::EqualsFloat(f1, f2, &result);
     assert(result);
     AutoPtr<ArrayOf<Float> > f3 = ArrayOf<Float>::Alloc(1);
     f3->Set(0, 0.0);
     AutoPtr<ArrayOf<Float> > f4 = ArrayOf<Float>::Alloc(1);
     f4->Set(0, -0.0);
-    ec = ars->EqualsFloat(f3, f4, &result);
+    ec = Arrays::EqualsFloat(f3, f4, &result);
     assert(!result);
     return ec;
 }
@@ -920,33 +854,31 @@ int CTest::test_equals_FF(int argc, char* argv[])
 // test 33
 int CTest::test_equals_DD(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method boolean java.util.Arrays.equals(double [], double [])
     AutoPtr<ArrayOf<Double> > d = ArrayOf<Double>::Alloc(1000);
     AutoPtr<ArrayOf<Double> > x = ArrayOf<Double>::Alloc(1000);
-    ec = ars->FillDouble(d, Elastos::Core::Math::DOUBLE_MAX_VALUE);
-    ec = ars->FillDouble(x, Elastos::Core::Math::DOUBLE_MIN_VALUE);
+    ec = Arrays::FillDouble(d, Elastos::Core::Math::DOUBLE_MAX_VALUE);
+    ec = Arrays::FillDouble(x, Elastos::Core::Math::DOUBLE_MIN_VALUE);
     Boolean result;
-    ec = ars->EqualsDouble(d, x, &result);
+    ec = Arrays::EqualsDouble(d, x, &result);
     assert(!result);
-    ec = ars->FillDouble(x, Elastos::Core::Math::DOUBLE_MAX_VALUE);
-    ec = ars->EqualsDouble(d, x, &result);
+    ec = Arrays::FillDouble(x, Elastos::Core::Math::DOUBLE_MAX_VALUE);
+    ec = Arrays::EqualsDouble(d, x, &result);
     assert(result);
     AutoPtr<ArrayOf<Double> > dl1 = ArrayOf<Double>::Alloc(1);
     dl1->Set(0, 1.0);
     AutoPtr<ArrayOf<Double> > dl2 = ArrayOf<Double>::Alloc(1);
     dl2->Set(0, 2.0);
-    ec = ars->EqualsDouble(dl1, dl2, &result);
+    ec = Arrays::EqualsDouble(dl1, dl2, &result);
     assert(!result);
     dl1->Set(0, Elastos::Core::Math::DOUBLE_NAN);
     dl2->Set(0, Elastos::Core::Math::DOUBLE_NAN);
-    ec = ars->EqualsDouble(dl1, dl2, &result);
+    ec = Arrays::EqualsDouble(dl1, dl2, &result);
     assert(result);
     dl1->Set(0, 0.0);
     dl2->Set(0, -0.0);
-    ec = ars->EqualsDouble(dl1, dl2, &result);
+    ec = Arrays::EqualsDouble(dl1, dl2, &result);
     assert(!result);
     return ec;
 }
@@ -954,20 +886,18 @@ int CTest::test_equals_DD(int argc, char* argv[])
 // test 34
 int CTest::test_equals_ZZ(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method boolean java.util.Arrays.equals(boolean [], boolean
     // [])
     AutoPtr<ArrayOf<Boolean> > d = ArrayOf<Boolean>::Alloc(1000);
     AutoPtr<ArrayOf<Boolean> > x = ArrayOf<Boolean>::Alloc(1000);
-    ec = ars->FillBoolean(d, TRUE);
-    ec = ars->FillBoolean(x, FALSE);
+    ec = Arrays::FillBoolean(d, TRUE);
+    ec = Arrays::FillBoolean(x, FALSE);
     Boolean result;
-    ec = ars->EqualsBoolean(d, x, &result);
+    ec = Arrays::EqualsBoolean(d, x, &result);
     assert(!result);
-    ec = ars->FillBoolean(x, TRUE);
-    ec = ars->EqualsBoolean(d, x, &result);
+    ec = Arrays::FillBoolean(x, TRUE);
+    ec = Arrays::EqualsBoolean(d, x, &result);
     assert(result);
     return ec;
 }
@@ -975,8 +905,6 @@ int CTest::test_equals_ZZ(int argc, char* argv[])
 // test 35
 int CTest::test_equals_Ljava_lang_Object_Ljava_lang_Object(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Boolean result;
     // Test for method boolean java.util.Arrays.equals(java.lang.Object [],
@@ -985,16 +913,16 @@ int CTest::test_equals_Ljava_lang_Object_Ljava_lang_Object(int argc, char* argv[
     AutoPtr<ArrayOf<IInterface*> > x = ArrayOf<IInterface*>::Alloc(1000);
     AutoPtr<IInterface> o;
     CInteger32::New(0, (IInteger32**)&o);
-    ec = ars->FillObject(d, o);
+    ec = Arrays::FillObject(d, o);
     AutoPtr<IInterface> elem;
     CInteger32::New(0, (IInteger32**)&elem);
-    ec = ars->FillObject(x, elem);
-    ec = ars->EqualsObject(d, x, &result);
+    ec = Arrays::FillObject(x, elem);
+    ec = Arrays::Equals(d, x, &result);
     assert(!result);
-    ec = ars->FillObject(x, o);
+    ec = Arrays::FillObject(x, o);
     d->Set(50, NULL);
     x->Set(50, NULL);
-    ec = ars->EqualsObject(d, x, &result);
+    ec = Arrays::Equals(d, x, &result);
     assert(result == TRUE);
     return ec;
 }
@@ -1002,15 +930,13 @@ int CTest::test_equals_Ljava_lang_Object_Ljava_lang_Object(int argc, char* argv[
 //NOT_IMPLEMENTED
 int CTest::test_sort_B(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(byte [])
     AutoPtr<ArrayOf<Byte> > reversedArray = ArrayOf<Byte>::Alloc(arraySize);
     for (Int32 counter = 0; counter < arraySize; counter++) {
         reversedArray->Set(counter, (Byte) (arraySize - counter - 1));
     }
-    ec = ars->SortByte(reversedArray);
+    ec = Arrays::SortByte(reversedArray);
     for (Int32 counter = 0; counter < arraySize; counter++)
         assert((*reversedArray)[counter] == (Byte) counter);
     return ec;
@@ -1019,8 +945,6 @@ int CTest::test_sort_B(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_BII(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(byte [], int, int)
     Int32 startIndex = arraySize / 4;
@@ -1031,7 +955,7 @@ int CTest::test_sort_BII(int argc, char* argv[])
         reversedArray->Set(counter, (Byte) (arraySize - counter - 1));
         originalReversedArray->Set(counter, (*reversedArray)[counter]);
     }
-    ars->SortByteEx(reversedArray, startIndex, endIndex);
+    Arrays::SortByteEx(reversedArray, startIndex, endIndex);
     for (Int32 counter = 0; counter < startIndex; counter++)
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
     for (Int32 counter = startIndex; counter < endIndex - 1; counter++)
@@ -1040,13 +964,13 @@ int CTest::test_sort_BII(int argc, char* argv[])
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
 
     //exception testing
-    ec = ars->SortByteEx(reversedArray, startIndex + 1, startIndex);
+    ec = Arrays::SortByteEx(reversedArray, startIndex + 1, startIndex);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->SortByteEx(reversedArray, -1, startIndex);
+    ec = Arrays::SortByteEx(reversedArray, -1, startIndex);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->SortByteEx(reversedArray, startIndex, reversedArray->GetLength() + 1);
+    ec = Arrays::SortByteEx(reversedArray, startIndex, reversedArray->GetLength() + 1);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -1054,14 +978,12 @@ int CTest::test_sort_BII(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_C(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(char [])
     AutoPtr<ArrayOf<Char32> > reversedArray = ArrayOf<Char32>::Alloc(arraySize);
     for (Int32 counter = 0; counter < arraySize; counter++)
         reversedArray->Set(counter, (Char32) (arraySize - counter - 1));
-    ars->SortChar32(reversedArray);
+    Arrays::SortChar32(reversedArray);
     for (Int32 counter = 0; counter < arraySize; counter++)
         assert((*reversedArray)[counter] == (Char32) counter);
     return ec;
@@ -1070,8 +992,6 @@ int CTest::test_sort_C(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_CII(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(char [], int, int)
     Int32 startIndex = arraySize / 4;
@@ -1082,7 +1002,7 @@ int CTest::test_sort_CII(int argc, char* argv[])
         reversedArray->Set(counter, (Char32) (arraySize - counter - 1));
         originalReversedArray->Set(counter, (*reversedArray)[counter]);
     }
-    ars->SortChar32Ex(reversedArray, startIndex, endIndex);
+    Arrays::SortChar32Ex(reversedArray, startIndex, endIndex);
     for (Int32 counter = 0; counter < startIndex; counter++)
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
     for (Int32 counter = startIndex; counter < endIndex - 1; counter++)
@@ -1091,13 +1011,13 @@ int CTest::test_sort_CII(int argc, char* argv[])
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
 
     //exception testing
-    ec = ars->SortChar32Ex(reversedArray, startIndex + 1, startIndex);
+    ec = Arrays::SortChar32Ex(reversedArray, startIndex + 1, startIndex);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->SortChar32Ex(reversedArray, -1, startIndex);
+    ec = Arrays::SortChar32Ex(reversedArray, -1, startIndex);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->SortChar32Ex(reversedArray, startIndex, reversedArray->GetLength() + 1);
+    ec = Arrays::SortChar32Ex(reversedArray, startIndex, reversedArray->GetLength() + 1);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -1105,15 +1025,13 @@ int CTest::test_sort_CII(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_D(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Boolean result;
     // Test for method void java.util.Arrays.sort(double [])
     AutoPtr<ArrayOf<Double> > reversedArray = ArrayOf<Double>::Alloc(arraySize);
     for (Int32 counter = 0; counter < arraySize; counter++)
         reversedArray->Set(counter, (Double) (arraySize - counter - 1));
-    ec = ars->SortDouble(reversedArray);
+    ec = Arrays::SortDouble(reversedArray);
     for (Int32 counter = 0; counter < arraySize; counter++)
         assert((*reversedArray)[counter] == (Double) counter);
 
@@ -1142,24 +1060,24 @@ int CTest::test_sort_D(int argc, char* argv[])
     answer->Set(5, Elastos::Core::Math::DOUBLE_POSITIVE_INFINITY);
     answer->Set(6, Elastos::Core::Math::DOUBLE_NAN);
 
-    ec = ars->SortDouble(specials1);
+    ec = Arrays::SortDouble(specials1);
     AutoPtr<ArrayOf<IInterface*> > print1 = ArrayOf<IInterface*>::Alloc(specials1->GetLength());
     for (Int32 i = 0; i < specials1->GetLength(); i++) {
         AutoPtr<IDouble> elem;
         CDouble::New((*specials1)[i], (IDouble**)&elem);
         print1->Set(i, elem);
     }
-    ec = ars->EqualsDouble(specials1, answer, &result);
+    ec = Arrays::EqualsDouble(specials1, answer, &result);
     assert(result == TRUE);
 
-    ec = ars->SortDouble(specials2);
+    ec = Arrays::SortDouble(specials2);
     AutoPtr<ArrayOf<IInterface*> > print2 = ArrayOf<IInterface*>::Alloc(specials2->GetLength());
     for (Int32 i = 0; i < specials2->GetLength(); i++) {
         AutoPtr<IDouble> elem;
         CDouble::New((*specials2)[i], (IDouble**)&elem);
         print2->Set(i, elem);
     }
-    ec = ars->EqualsDouble(specials2, answer, &result);
+    ec = Arrays::EqualsDouble(specials2, answer, &result);
     assert(result == TRUE);
     return ec;
 }
@@ -1167,8 +1085,6 @@ int CTest::test_sort_D(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_DII(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(double [], int, int)
     Int32 startIndex = arraySize / 4;
@@ -1179,7 +1095,7 @@ int CTest::test_sort_DII(int argc, char* argv[])
         reversedArray->Set(counter, (Double) (arraySize - counter - 1));
         originalReversedArray->Set(counter, (*reversedArray)[counter]);
     }
-    ec = ars->SortDoubleEx(reversedArray, startIndex, endIndex);
+    ec = Arrays::SortDoubleEx(reversedArray, startIndex, endIndex);
     for (Int32 counter = 0; counter < startIndex; counter++)
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
     for (Int32 counter = startIndex; counter < endIndex - 1; counter++)
@@ -1188,13 +1104,13 @@ int CTest::test_sort_DII(int argc, char* argv[])
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
 
     //exception testing
-    ec = ars->SortDoubleEx(reversedArray, startIndex + 1, startIndex);
+    ec = Arrays::SortDoubleEx(reversedArray, startIndex + 1, startIndex);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->SortDoubleEx(reversedArray, -1, startIndex);
+    ec = Arrays::SortDoubleEx(reversedArray, -1, startIndex);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->SortDoubleEx(reversedArray, startIndex, reversedArray->GetLength() + 1);
+    ec = Arrays::SortDoubleEx(reversedArray, startIndex, reversedArray->GetLength() + 1);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -1202,15 +1118,13 @@ int CTest::test_sort_DII(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_F(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Boolean result;
     // Test for method void java.util.Arrays.sort(float [])
     AutoPtr<ArrayOf<Float> > reversedArray = ArrayOf<Float>::Alloc(arraySize);
     for (Int32 counter = 0; counter < arraySize; counter++)
         reversedArray->Set(counter, (Float) (arraySize - counter - 1));
-    ec = ars->SortFloat(reversedArray);
+    ec = Arrays::SortFloat(reversedArray);
     for (Int32 counter = 0; counter < arraySize; counter++)
         assert((*reversedArray)[counter] == (Float) counter);
 
@@ -1239,24 +1153,24 @@ int CTest::test_sort_F(int argc, char* argv[])
     answer->Set(5, Elastos::Core::Math::FLOAT_POSITIVE_INFINITY);
     answer->Set(6, Elastos::Core::Math::FLOAT_NAN);
 
-    ec = ars->SortFloat(specials1);
+    ec = Arrays::SortFloat(specials1);
     AutoPtr<ArrayOf<IInterface*> > print1 = ArrayOf<IInterface*>::Alloc(specials1->GetLength());
     for (Int32 i = 0; i < specials1->GetLength(); i++) {
         AutoPtr<IFloat> elem;
         CFloat::New((*specials1)[i], (IFloat**)&elem);
         print1->Set(i, elem);
     }
-    ec = ars->EqualsFloat(specials1, answer, &result);
+    ec = Arrays::EqualsFloat(specials1, answer, &result);
     assert(result == TRUE);
 
-    ec = ars->SortFloat(specials2);
+    ec = Arrays::SortFloat(specials2);
     AutoPtr<ArrayOf<IInterface*> > print2 = ArrayOf<IInterface*>::Alloc(specials2->GetLength());
     for (Int32 i = 0; i < specials2->GetLength(); i++) {
         AutoPtr<IFloat> elem;
         CFloat::New((*specials2)[i], (IFloat**)&elem);
         print2->Set(i, elem);
     }
-    ec = ars->EqualsFloat(specials2, answer, &result);
+    ec = Arrays::EqualsFloat(specials2, answer, &result);
     assert(result == TRUE);
     return ec;
 }
@@ -1264,8 +1178,6 @@ int CTest::test_sort_F(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_FII(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(float [], int, int)
     Int32 startIndex = arraySize / 4;
@@ -1276,7 +1188,7 @@ int CTest::test_sort_FII(int argc, char* argv[])
         reversedArray->Set(counter, (Float) (arraySize - counter - 1));
         originalReversedArray->Set(counter, (*reversedArray)[counter]);
     }
-    ec = ars->SortFloatEx(reversedArray, startIndex, endIndex);
+    ec = Arrays::SortFloatEx(reversedArray, startIndex, endIndex);
     for (Int32 counter = 0; counter < startIndex; counter++)
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
     for (Int32 counter = startIndex; counter < endIndex - 1; counter++)
@@ -1285,13 +1197,13 @@ int CTest::test_sort_FII(int argc, char* argv[])
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
 
     //exception testing
-    ec = ars->SortFloatEx(reversedArray, startIndex + 1, startIndex);
+    ec = Arrays::SortFloatEx(reversedArray, startIndex + 1, startIndex);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->SortFloatEx(reversedArray, -1, startIndex);
+    ec = Arrays::SortFloatEx(reversedArray, -1, startIndex);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->SortFloatEx(reversedArray, startIndex, reversedArray->GetLength() + 1);
+    ec = Arrays::SortFloatEx(reversedArray, startIndex, reversedArray->GetLength() + 1);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -1299,14 +1211,12 @@ int CTest::test_sort_FII(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_I(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(int [])
     AutoPtr<ArrayOf<Int32> > reversedArray = ArrayOf<Int32>::Alloc(arraySize);
     for (Int32 counter = 0; counter < arraySize; counter++)
         reversedArray->Set(counter, arraySize - counter - 1);
-    ec = ars->SortInt32(reversedArray);
+    ec = Arrays::SortInt32(reversedArray);
     for (Int32 counter = 0; counter < arraySize; counter++)
         assert((*reversedArray)[counter] == counter);
     return ec;
@@ -1315,8 +1225,6 @@ int CTest::test_sort_I(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_III(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(int [], int, int)
     Int32 startIndex = arraySize / 4;
@@ -1327,7 +1235,7 @@ int CTest::test_sort_III(int argc, char* argv[])
         reversedArray->Set(counter, arraySize - counter - 1);
         originalReversedArray->Set(counter, (*reversedArray)[counter]);
     }
-    ec = ars->SortInt32Ex(reversedArray, startIndex, endIndex);
+    ec = Arrays::SortInt32Ex(reversedArray, startIndex, endIndex);
     for (Int32 counter = 0; counter < startIndex; counter++)
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
     for (Int32 counter = startIndex; counter < endIndex - 1; counter++)
@@ -1336,13 +1244,13 @@ int CTest::test_sort_III(int argc, char* argv[])
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
 
     //exception testing
-    ec = ars->SortInt32Ex(reversedArray, startIndex + 1, startIndex);
+    ec = Arrays::SortInt32Ex(reversedArray, startIndex + 1, startIndex);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->SortInt32Ex(reversedArray, -1, startIndex);
+    ec = Arrays::SortInt32Ex(reversedArray, -1, startIndex);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->SortInt32Ex(reversedArray, startIndex, reversedArray->GetLength() + 1);
+    ec = Arrays::SortInt32Ex(reversedArray, startIndex, reversedArray->GetLength() + 1);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -1350,14 +1258,12 @@ int CTest::test_sort_III(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_J(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(long [])
     AutoPtr<ArrayOf<Int64> > reversedArray = ArrayOf<Int64>::Alloc(arraySize);
     for (Int32 counter = 0; counter < arraySize; counter++)
         reversedArray->Set(counter, (Int64) (arraySize - counter - 1));
-    ec = ars->SortInt64(reversedArray);
+    ec = Arrays::SortInt64(reversedArray);
     for (Int32 counter = 0; counter < arraySize; counter++)
         assert((*reversedArray)[counter] == (Int64) counter);
     return ec;
@@ -1366,8 +1272,6 @@ int CTest::test_sort_J(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_JII(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(long [], int, int)
     Int32 startIndex = arraySize / 4;
@@ -1378,7 +1282,7 @@ int CTest::test_sort_JII(int argc, char* argv[])
         reversedArray->Set(counter, (Int64) (arraySize - counter - 1));
         originalReversedArray->Set(counter, (*reversedArray)[counter]);
     }
-    ec = ars->SortInt64Ex(reversedArray, startIndex, endIndex);
+    ec = Arrays::SortInt64Ex(reversedArray, startIndex, endIndex);
     for (Int32 counter = 0; counter < startIndex; counter++)
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
     for (Int32 counter = startIndex; counter < endIndex - 1; counter++)
@@ -1387,13 +1291,13 @@ int CTest::test_sort_JII(int argc, char* argv[])
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
 
     //exception testing
-    ec = ars->SortInt64Ex(reversedArray, startIndex + 1, startIndex);
+    ec = Arrays::SortInt64Ex(reversedArray, startIndex + 1, startIndex);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->SortInt64Ex(reversedArray, -1, startIndex);
+    ec = Arrays::SortInt64Ex(reversedArray, -1, startIndex);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->SortInt64Ex(reversedArray, startIndex, reversedArray->GetLength() + 1);
+    ec = Arrays::SortInt64Ex(reversedArray, startIndex, reversedArray->GetLength() + 1);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -1401,25 +1305,23 @@ int CTest::test_sort_JII(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_Ljava_lang_Object(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(java.lang.Object [])
     AutoPtr<ArrayOf<IInterface*> > reversedArray = ArrayOf<IInterface*>::Alloc(arraySize);
     for (Int32 counter = 0; counter < arraySize; counter++)
         reversedArray->Set(counter, (*objectArray)[arraySize - counter - 1]);
-    ec = ars->SortObject(reversedArray);
+    ec = Arrays::SortObject(reversedArray);
     for (Int32 counter = 0; counter < arraySize; counter++)
         assert((*reversedArray)[counter] == (*objectArray)[counter]);
 
     AutoPtr<ICharSequence> str;
     CStringWrapper::New(String("String"), (ICharSequence**)&str);
-    ec = ars->FillObjectEx(reversedArray, 0, reversedArray->GetLength()/2, str);
+    ec = Arrays::FillObjectEx(reversedArray, 0, reversedArray->GetLength()/2, str);
     AutoPtr<IInteger32> it;
     CInteger32::New(1, (IInteger32**)&it);
-    ec = ars->FillObjectEx(reversedArray, reversedArray->GetLength()/2, reversedArray->GetLength(), it);
+    ec = Arrays::FillObjectEx(reversedArray, reversedArray->GetLength()/2, reversedArray->GetLength(), it);
 
-    ec = ars->SortObject(reversedArray);
+    ec = Arrays::SortObject(reversedArray);
     assert(ec != NOERROR);
     return ec;
 }
@@ -1427,8 +1329,6 @@ int CTest::test_sort_Ljava_lang_Object(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_Ljava_lang_ObjectII(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(java.lang.Object [], int,
     // int)
@@ -1440,7 +1340,7 @@ int CTest::test_sort_Ljava_lang_ObjectII(int argc, char* argv[])
         reversedArray->Set(counter, (*objectArray)[arraySize - counter - 1]);
         originalReversedArray->Set(counter, (*reversedArray)[counter]);
     }
-    ec = ars->SortObjectEx(reversedArray, startIndex, endIndex);
+    ec = Arrays::SortObjectEx(reversedArray, startIndex, endIndex);
     for (Int32 counter = 0; counter < startIndex; counter++)
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
     for (Int32 counter = startIndex; counter < endIndex - 1; counter++)
@@ -1451,35 +1351,33 @@ int CTest::test_sort_Ljava_lang_ObjectII(int argc, char* argv[])
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
 
     //exception testing
-    ec = ars->SortObjectEx(reversedArray, startIndex + 1, startIndex);
+    ec = Arrays::SortObjectEx(reversedArray, startIndex + 1, startIndex);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->SortObjectEx(reversedArray, -1, startIndex);
+    ec = Arrays::SortObjectEx(reversedArray, -1, startIndex);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->SortObjectEx(reversedArray, startIndex, reversedArray->GetLength() + 1);
+    ec = Arrays::SortObjectEx(reversedArray, startIndex, reversedArray->GetLength() + 1);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
     AutoPtr<ICharSequence> str;
     CStringWrapper::New(String("String"), (ICharSequence**)&str);
-    ec = ars->FillObjectEx(reversedArray, 0, reversedArray->GetLength()/2, str);
+    ec = Arrays::FillObjectEx(reversedArray, 0, reversedArray->GetLength()/2, str);
     AutoPtr<IInteger32> it;
     CInteger32::New(1, (IInteger32**)&it);
-    ec = ars->FillObjectEx(reversedArray, reversedArray->GetLength()/2, reversedArray->GetLength(), it);
+    ec = Arrays::FillObjectEx(reversedArray, reversedArray->GetLength()/2, reversedArray->GetLength(), it);
 
-    ec = ars->SortObjectEx(reversedArray, reversedArray->GetLength()/4, 3*reversedArray->GetLength()/4);
+    ec = Arrays::SortObjectEx(reversedArray, reversedArray->GetLength()/4, 3*reversedArray->GetLength()/4);
     assert(ec != NOERROR);
 
-    ec = ars->SortObjectEx(reversedArray, 0, reversedArray->GetLength()/4);
-    ec = ars->SortObjectEx(reversedArray, 3*reversedArray->GetLength()/4, reversedArray->GetLength());
+    ec = Arrays::SortObjectEx(reversedArray, 0, reversedArray->GetLength()/4);
+    ec = Arrays::SortObjectEx(reversedArray, 3*reversedArray->GetLength()/4, reversedArray->GetLength());
     return ec;
 }
 
 //NOT_IMPLEMENTED
 int CTest::test_sort_Ljava_lang_ObjectIILjava_util_Comparator(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(java.lang.Object [], int,
     // int, java.util.Comparator)
@@ -1489,7 +1387,7 @@ int CTest::test_sort_Ljava_lang_ObjectIILjava_util_Comparator(int argc, char* ar
     AutoPtr<ArrayOf<IInterface*> > originalArray = ArrayOf<IInterface*>::Alloc(arraySize);
     for (Int32 counter = 0; counter < arraySize; counter++)
         originalArray->Set(counter, (*objectArray)[counter]);
-    //ec = ars->SortEx(objectArray, startIndex, endIndex, comp);
+    //ec = Arrays::SortEx(objectArray, startIndex, endIndex, comp);
     for (Int32 counter = 0; counter < startIndex; counter++)
         assert((*objectArray)[counter] == (*originalArray)[counter]);
     for (Int32 counter = startIndex; counter < endIndex - 1; counter++)
@@ -1498,23 +1396,23 @@ int CTest::test_sort_Ljava_lang_ObjectIILjava_util_Comparator(int argc, char* ar
         assert((*objectArray)[counter] == (*originalArray)[counter]);
     AutoPtr<ICharSequence> str;
     CStringWrapper::New(String("String"), (ICharSequence**)&str);
-    ec = ars->FillObjectEx(originalArray, 0, originalArray->GetLength()/2, str);
+    ec = Arrays::FillObjectEx(originalArray, 0, originalArray->GetLength()/2, str);
     AutoPtr<IInteger32> it;
     CInteger32::New(1, (IInteger32**)&it);
-    ec = ars->FillObjectEx(originalArray, originalArray->GetLength()/2, originalArray->GetLength(), it);
+    ec = Arrays::FillObjectEx(originalArray, originalArray->GetLength()/2, originalArray->GetLength(), it);
 
-    //ec = ars->Sort(originalArray, startIndex, endIndex, comp);
+    //ec = Arrays::Sort(originalArray, startIndex, endIndex, comp);
     //assert(ec != NOERROR);
 
-    // ec = ars->SortEx(originalArray, endIndex, originalArray->GetLength(), comp);
+    // ec = Arrays::SortEx(originalArray, endIndex, originalArray->GetLength(), comp);
 
-    // ec = ars->SortEx(originalArray, endIndex, originalArray->GetLength() + 1, comp);
+    // ec = Arrays::SortEx(originalArray, endIndex, originalArray->GetLength() + 1, comp);
     // assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    // ec = ars->SortEx(originalArray, -1, startIndex, comp);
+    // ec = Arrays::SortEx(originalArray, -1, startIndex, comp);
     // assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    // ec = ars->SortEx(originalArray, originalArray->GetLength(), endIndex, comp);
+    // ec = Arrays::SortEx(originalArray, originalArray->GetLength(), endIndex, comp);
     // assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
     return ec;
 }
@@ -1522,25 +1420,23 @@ int CTest::test_sort_Ljava_lang_ObjectIILjava_util_Comparator(int argc, char* ar
 //NOT_IMPLEMENTED
 int CTest::test_sort_Ljava_lang_ObjectLjava_util_Comparator(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(java.lang.Object [],
     // java.util.Comparator)
     ReversedIntegerComparator* comp/* = new ReversedIntegerComparator()*/;
-    //ec = ars->Sort(objectArray, comp);
+    //ec = Arrays::Sort(objectArray, comp);
     for (Int32 counter = 0; counter < arraySize - 1; counter++)
         assert(comp->Compare((*objectArray)[counter],
                                 (*objectArray)[counter + 1]) <= 0);
 
     AutoPtr<ICharSequence> str;
     CStringWrapper::New(String("String"), (ICharSequence**)&str);
-    ec = ars->FillObjectEx(objectArray, 0, objectArray->GetLength()/2, str);
+    ec = Arrays::FillObjectEx(objectArray, 0, objectArray->GetLength()/2, str);
     AutoPtr<IInteger32> it;
     CInteger32::New(1, (IInteger32**)&it);
-    ec = ars->FillObjectEx(objectArray, objectArray->GetLength()/2, objectArray->GetLength(), it);
+    ec = Arrays::FillObjectEx(objectArray, objectArray->GetLength()/2, objectArray->GetLength(), it);
 
-    //ec = ars->Sort(objectArray, comp);
+    //ec = Arrays::Sort(objectArray, comp);
     //assert(ec != NOERROR);
     return ec;
 }
@@ -1548,14 +1444,12 @@ int CTest::test_sort_Ljava_lang_ObjectLjava_util_Comparator(int argc, char* argv
 //NOT_IMPLEMENTED
 int CTest::test_sort_S(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(short [])
     AutoPtr<ArrayOf<Int16> > reversedArray = ArrayOf<Int16>::Alloc(arraySize);
     for (Int32 counter = 0; counter < arraySize; counter++)
         reversedArray->Set(counter, (Int16) (arraySize - counter - 1));
-    ec = ars->SortInt16(reversedArray);
+    ec = Arrays::SortInt16(reversedArray);
     for (Int32 counter = 0; counter < arraySize; counter++)
         assert((*reversedArray)[counter] == (Int16) counter);
     return ec;
@@ -1564,8 +1458,6 @@ int CTest::test_sort_S(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_sort_SII(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     // Test for method void java.util.Arrays.sort(short [], int, int)
     Int32 startIndex = arraySize / 4;
@@ -1576,7 +1468,7 @@ int CTest::test_sort_SII(int argc, char* argv[])
         reversedArray->Set(counter, (Int16) (arraySize - counter - 1));
         originalReversedArray->Set(counter, (*reversedArray)[counter]);
     }
-    ec = ars->SortInt16Ex(reversedArray, startIndex, endIndex);
+    ec = Arrays::SortInt16Ex(reversedArray, startIndex, endIndex);
     for (Int32 counter = 0; counter < startIndex; counter++)
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
     for (Int32 counter = startIndex; counter < endIndex - 1; counter++)
@@ -1585,13 +1477,13 @@ int CTest::test_sort_SII(int argc, char* argv[])
         assert((*reversedArray)[counter] == (*originalReversedArray)[counter]);
 
     //exception testing
-    ec = ars->SortInt16Ex(reversedArray, startIndex + 1, startIndex);
+    ec = Arrays::SortInt16Ex(reversedArray, startIndex + 1, startIndex);
     assert(ec == E_ILLEGAL_ARGUMENT_EXCEPTION);
 
-    ec = ars->SortInt16Ex(reversedArray, -1, startIndex);
+    ec = Arrays::SortInt16Ex(reversedArray, -1, startIndex);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
-    ec = ars->SortInt16Ex(reversedArray, startIndex, reversedArray->GetLength() + 1);
+    ec = Arrays::SortInt16Ex(reversedArray, startIndex, reversedArray->GetLength() + 1);
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
     return ec;
 }
@@ -1599,14 +1491,12 @@ int CTest::test_sort_SII(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_java_util_Arrays_sort_byte_array_NPE(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     AutoPtr<ArrayOf<Byte> > byte_array_null = NULL;
-    ec = ars->SortByte(byte_array_null);
+    ec = Arrays::SortByte(byte_array_null);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     // Regression for HARMONY-378
-    ec = ars->SortByteEx(byte_array_null, (Int32) -1, (Int32) 1);
+    ec = Arrays::SortByteEx(byte_array_null, (Int32) -1, (Int32) 1);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     return ec;
 }
@@ -1614,14 +1504,12 @@ int CTest::test_java_util_Arrays_sort_byte_array_NPE(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_java_util_Arrays_sort_char_array_NPE(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     AutoPtr<ArrayOf<Char32> > char_array_null = NULL;
-    ec = ars->SortChar32(char_array_null);
+    ec = Arrays::SortChar32(char_array_null);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     // Regression for HARMONY-378
-    ec = ars->SortChar32Ex(char_array_null, -1, 1);
+    ec = Arrays::SortChar32Ex(char_array_null, -1, 1);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     return ec;
 }
@@ -1629,14 +1517,12 @@ int CTest::test_java_util_Arrays_sort_char_array_NPE(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_java_util_Arrays_sort_double_array_NPE(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     AutoPtr<ArrayOf<Double> > double_array_null = NULL;
-    ec = ars->SortDouble(double_array_null);
+    ec = Arrays::SortDouble(double_array_null);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     // Regression for HARMONY-378
-    ec = ars->SortDoubleEx(double_array_null, -1, 1);
+    ec = Arrays::SortDoubleEx(double_array_null, -1, 1);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     return ec;
 }
@@ -1644,14 +1530,12 @@ int CTest::test_java_util_Arrays_sort_double_array_NPE(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_java_util_Arrays_sort_float_array_NPE(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     AutoPtr<ArrayOf<Float> > float_array_null = NULL;
-    ec = ars->SortFloat(float_array_null);
+    ec = Arrays::SortFloat(float_array_null);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     // Regression for HARMONY-378
-    ec = ars->SortFloatEx(float_array_null, -1, 1);
+    ec = Arrays::SortFloatEx(float_array_null, -1, 1);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     return ec;
 }
@@ -1659,14 +1543,12 @@ int CTest::test_java_util_Arrays_sort_float_array_NPE(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_java_util_Arrays_sort_int_array_NPE(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     AutoPtr<ArrayOf<Int32> > int_array_null = NULL;
-    ec = ars->SortInt32(int_array_null);
+    ec = Arrays::SortInt32(int_array_null);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     // Regression for HARMONY-378
-    ec = ars->SortInt32Ex(int_array_null, -1, 1);
+    ec = Arrays::SortInt32Ex(int_array_null, -1, 1);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     return ec;
 }
@@ -1674,17 +1556,15 @@ int CTest::test_java_util_Arrays_sort_int_array_NPE(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_java_util_Arrays_sort_object_array_NPE(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     AutoPtr<ArrayOf<IInterface*> > object_array_null = NULL;
-    ec = ars->SortObject(object_array_null);
+    ec = Arrays::SortObject(object_array_null);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     // Regression for HARMONY-378
-    ec = ars->SortObjectEx(object_array_null, (Int32) -1, (Int32) 1);
+    ec = Arrays::SortObjectEx(object_array_null, (Int32) -1, (Int32) 1);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     // Regression for HARMONY-378
-    ec = ars->SortEx(object_array_null, (Int32) -1, (Int32) 1, NULL);
+    ec = Arrays::SortEx(object_array_null, (Int32) -1, (Int32) 1, NULL);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     return ec;
 }
@@ -1692,14 +1572,12 @@ int CTest::test_java_util_Arrays_sort_object_array_NPE(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_java_util_Arrays_sort_long_array_NPE(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     AutoPtr<ArrayOf<Int64> > long_array_null = NULL;
-    ec = ars->SortInt64(long_array_null);
+    ec = Arrays::SortInt64(long_array_null);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     // Regression for HARMONY-378
-    ec = ars->SortInt64Ex(long_array_null, -1, 1);
+    ec = Arrays::SortInt64Ex(long_array_null, -1, 1);
     assert(ec == E_NULL_POINTER_EXCEPTION);
     return ec;
 }
@@ -1707,15 +1585,13 @@ int CTest::test_java_util_Arrays_sort_long_array_NPE(int argc, char* argv[])
 //NOT_IMPLEMENTED
 int CTest::test_java_util_Arrays_sort_short_array_NPE(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     AutoPtr<ArrayOf<Int16> > short_array_null = NULL;
-    ec = ars->SortInt16(short_array_null);
+    ec = Arrays::SortInt16(short_array_null);
     assert(ec != NOERROR);
 
     // Regression for HARMONY-378
-    ec = ars->SortInt16Ex(short_array_null, (Int32) -1, (Int32) 1);
+    ec = Arrays::SortInt16Ex(short_array_null, (Int32) -1, (Int32) 1);
     assert(ec != NOERROR);
     return ec;
 }
@@ -2226,8 +2102,6 @@ Int32 CTest::checkSum(ArrayOf<Double>* a)
 // test 36
 int CTest::test_deepEquals_Ljava_lang_ObjectLjava_lang_Object(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Boolean result;
     AutoPtr<IArrayOf> a1;
@@ -2305,13 +2179,13 @@ int CTest::test_deepEquals_Ljava_lang_ObjectLjava_lang_Object(int argc, char* ar
     b->Set(1, b2);
     b->Set(2, b3);
 
-    ec = ars->EqualsObject(a, b, &result);
+    ec = Arrays::Equals(a, b, &result);
     assert(result == FALSE);
-    ec = ars->DeepEquals(a, b, &result);
+    ec = Arrays::DeepEquals(a, b, &result);
     assert(result == TRUE);
 
     a->Set(2, a4);
-    ec = ars->DeepEquals(a, b, &result);
+    ec = Arrays::DeepEquals(a, b, &result);
     assert(result == FALSE);
     return ec;
 }
@@ -2319,8 +2193,6 @@ int CTest::test_deepEquals_Ljava_lang_ObjectLjava_lang_Object(int argc, char* ar
 // test 37
 int CTest::test_deepHashCode_Ljava_lang_Object(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     AutoPtr<IArrayOf> a1;
     CArrayOf::New(EIID_IInteger32, 3, (IArrayOf**)&a1);
@@ -2382,9 +2254,9 @@ int CTest::test_deepHashCode_Ljava_lang_Object(int argc, char* argv[])
     b->Set(1, b2);
     b->Set(2, b3);
     Int32 deep_hash_a;
-    ars->DeepHashCode(a, &deep_hash_a);
+    Arrays::DeepHashCode(a, &deep_hash_a);
     Int32 deep_hash_b;
-    ars->DeepHashCode(b, &deep_hash_b);
+    Arrays::DeepHashCode(b, &deep_hash_b);
 
     assert(deep_hash_a == deep_hash_b);
     return ec;
@@ -2393,8 +2265,6 @@ int CTest::test_deepHashCode_Ljava_lang_Object(int argc, char* argv[])
 // test 38
 int CTest::test_hashCode_LZ(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Int32 listHashCode;
     Int32 arrayHashCode;
@@ -2415,7 +2285,7 @@ int CTest::test_hashCode_LZ(int argc, char* argv[])
         assert(result);
     }
     ec = listOfBoolean->GetHashCode(&listHashCode);
-    ec = ars->HashCodeBoolean(boolArr, &arrayHashCode);
+    ec = Arrays::GetHashCode(boolArr, &arrayHashCode);
     assert(listHashCode == arrayHashCode);
     return ec;
 }
@@ -2423,8 +2293,6 @@ int CTest::test_hashCode_LZ(int argc, char* argv[])
 // test 39
 int CTest::test_hashCode_LI(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Int32 listHashCode;
     Int32 arrayHashCode;
@@ -2445,7 +2313,7 @@ int CTest::test_hashCode_LI(int argc, char* argv[])
         assert(result);
     }
     ec = listOfInteger->GetHashCode(&listHashCode);
-    ec = ars->HashCodeInt32(intArr, &arrayHashCode);
+    ec = Arrays::GetHashCode(intArr, &arrayHashCode);
     assert(listHashCode == arrayHashCode);
 
     AutoPtr<ArrayOf<Int32> > intArr2 = ArrayOf<Int32>::Alloc(5);
@@ -2455,8 +2323,8 @@ int CTest::test_hashCode_LI(int argc, char* argv[])
     intArr2->Set(3, 7);
     intArr2->Set(4, 19);
     Int32 codeArr2, codeArr;
-    ec = ars->HashCodeInt32(intArr2, &codeArr2);
-    ec = ars->HashCodeInt32(intArr, &codeArr);
+    ec = Arrays::GetHashCode(intArr2, &codeArr2);
+    ec = Arrays::GetHashCode(intArr, &codeArr);
     assert(codeArr2 == codeArr);
     return ec;
 }
@@ -2464,8 +2332,6 @@ int CTest::test_hashCode_LI(int argc, char* argv[])
 // test 40
 int CTest::test_hashCode_LC(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Int32 listHashCode;
     Int32 arrayHashCode;
@@ -2486,7 +2352,7 @@ int CTest::test_hashCode_LC(int argc, char* argv[])
         assert(result);
     }
     ec = listOfCharacter->GetHashCode(&listHashCode);
-    ec = ars->HashCodeChar32(charArr, &arrayHashCode);
+    ec = Arrays::GetHashCode(charArr, &arrayHashCode);
     assert(listHashCode == arrayHashCode);
     return ec;
 }
@@ -2494,8 +2360,6 @@ int CTest::test_hashCode_LC(int argc, char* argv[])
 // test 41
 int CTest::test_hashCode_LB(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Int32 listHashCode;
     Int32 arrayHashCode;
@@ -2516,7 +2380,7 @@ int CTest::test_hashCode_LB(int argc, char* argv[])
         assert(result);
     }
     ec = listOfByte->GetHashCode(&listHashCode);
-    ec = ars->HashCodeByte(byteArr, &arrayHashCode);
+    ec = Arrays::GetHashCode(byteArr, &arrayHashCode);
     assert(listHashCode == arrayHashCode);
     return ec;
 }
@@ -2524,8 +2388,6 @@ int CTest::test_hashCode_LB(int argc, char* argv[])
 // test 42
 int CTest::test_hashCode_LJ(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Int32 listHashCode;
     Int32 arrayHashCode;
@@ -2546,7 +2408,7 @@ int CTest::test_hashCode_LJ(int argc, char* argv[])
         assert(result);
     }
     ec = listOfLong->GetHashCode(&listHashCode);
-    ec = ars->HashCodeInt64(longArr, &arrayHashCode);
+    ec = Arrays::GetHashCode(longArr, &arrayHashCode);
     assert(listHashCode == arrayHashCode);
     return ec;
 }
@@ -2554,8 +2416,6 @@ int CTest::test_hashCode_LJ(int argc, char* argv[])
 // test 43
 int CTest::test_hashCode_LF(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Int32 listHashCode;
     Int32 arrayHashCode;
@@ -2576,7 +2436,7 @@ int CTest::test_hashCode_LF(int argc, char* argv[])
         assert(result);
     }
     ec = listOfFloat->GetHashCode(&listHashCode);
-    ec = ars->HashCodeFloat(floatArr, &arrayHashCode);
+    ec = Arrays::GetHashCode(floatArr, &arrayHashCode);
     assert(listHashCode == arrayHashCode);
 
     AutoPtr<ArrayOf<Float> > floatArr2 = ArrayOf<Float>::Alloc(5);
@@ -2586,8 +2446,8 @@ int CTest::test_hashCode_LF(int argc, char* argv[])
     floatArr->Set(3, -3e+2f);
     floatArr->Set(4, 10e-4f);
     Int32 codeArr2, codeArr;
-    ec = ars->HashCodeFloat(floatArr2, &codeArr2);
-    ec = ars->HashCodeFloat(floatArr, &codeArr);
+    ec = Arrays::GetHashCode(floatArr2, &codeArr2);
+    ec = Arrays::GetHashCode(floatArr, &codeArr);
     assert(codeArr2 == codeArr);
     return ec;
 }
@@ -2595,8 +2455,6 @@ int CTest::test_hashCode_LF(int argc, char* argv[])
 // test 44
 int CTest::test_hashCode_LD(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Int32 listHashCode;
     Int32 arrayHashCode;
@@ -2617,7 +2475,7 @@ int CTest::test_hashCode_LD(int argc, char* argv[])
         assert(result);
     }
     ec = listOfDouble->GetHashCode(&listHashCode);
-    ec = ars->HashCodeDouble(doubleArr, &arrayHashCode);
+    ec = Arrays::GetHashCode(doubleArr, &arrayHashCode);
     assert(listHashCode == arrayHashCode);
     return ec;
 }
@@ -2625,8 +2483,6 @@ int CTest::test_hashCode_LD(int argc, char* argv[])
 // test 45
 int CTest::test_hashCode_LS(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Int32 listHashCode;
     Int32 arrayHashCode;
@@ -2647,7 +2503,7 @@ int CTest::test_hashCode_LS(int argc, char* argv[])
         assert(result);
     }
     ec = listOfShort->GetHashCode(&listHashCode);
-    ec = ars->HashCodeInt16(shortArr, &arrayHashCode);
+    ec = Arrays::GetHashCode(shortArr, &arrayHashCode);
     assert(listHashCode == arrayHashCode);
     return ec;
 }
@@ -2655,8 +2511,6 @@ int CTest::test_hashCode_LS(int argc, char* argv[])
 // test 46
 int CTest::test_hashCode_Ljava_lang_Object(int argc, char* argv[])
 {
-    AutoPtr<IArrays> ars;
-    CArrays::AcquireSingleton((IArrays**)&ars);
     ECode ec = 0;
     Int32 listHashCode;
     Int32 arrayHashCode;
@@ -2679,7 +2533,7 @@ int CTest::test_hashCode_Ljava_lang_Object(int argc, char* argv[])
     ec = listOfObject->Add(NULL, &result);
     assert(result);
     ec = listOfObject->GetHashCode(&listHashCode);
-    ec = ars->HashCodeObject(objectArr, &arrayHashCode);
+    arrayHashCode = Arrays::Get>HashCode(objectArr);
     assert(listHashCode == arrayHashCode);
     return ec;
 }

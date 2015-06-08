@@ -3,7 +3,6 @@
 
 CTest::CTest()
 {
-    CArrays::AcquireSingleton((IArrays**)&arrhelp);
     mabcde = ArrayOf<IInterface*>::Alloc(5);
     autoarr = ArrayOf<IInterface*>::Alloc(5);
     CStringWrapper::New(String("a"), (ICharSequence**)&sqa);
@@ -41,7 +40,7 @@ int CTest::testIteratorAndNonStructuralChanges(int argc, char* argv[])
     CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&list);
 
     AutoPtr<IList> outlist;
-    arrhelp->AsList(mabcde, (IList**)&outlist);
+    Arrays::AsList(mabcde, (IList**)&outlist);
     Boolean isflag = FALSE;
     list->AddAll(outlist, &isflag);
     AutoPtr<IIterator> abcde;
@@ -74,7 +73,7 @@ int CTest::testSubListAndNonStructuralChanges(int argc, char* argv[])
     AutoPtr<ICopyOnWriteArrayList> list;
     CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&list);
     AutoPtr<IList> outlist;
-    arrhelp->AsList(mabcde, (IList**)&outlist);
+    Arrays::AsList(mabcde, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     AutoPtr<IList> bcd;
     list->SubList(1, 4, (IList**)&bcd);
@@ -97,7 +96,7 @@ int CTest::testSubListAndStructuralChanges(int argc, char* argv[])
     AutoPtr<ICopyOnWriteArrayList> list;
     CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&list);
     AutoPtr<IList> outlist;
-    arrhelp->AsList(mabcde, (IList**)&outlist);
+    Arrays::AsList(mabcde, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     AutoPtr<IList> bcd;
     list->SubList(1, 4, (IList**)&bcd);
@@ -118,7 +117,7 @@ int CTest::testSubListAndSizePreservingStructuralChanges(int argc, char* argv[])
     AutoPtr<ICopyOnWriteArrayList> list;
     CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&list);
     AutoPtr<IList> outlist;
-    arrhelp->AsList(mabcde, (IList**)&outlist);
+    Arrays::AsList(mabcde, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     AutoPtr<IList> bcd;
     list->SubList(1, 4, (IList**)&bcd);
@@ -128,7 +127,7 @@ int CTest::testSubListAndSizePreservingStructuralChanges(int argc, char* argv[])
     autoarr->Set(2, sqC);
     autoarr->Set(3, sqD);
     autoarr->Set(4, sqE);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     // try {
     ECode ec = bcd->Get(1, (IInterface**)&outface);
@@ -147,17 +146,17 @@ int CTest::testRemoveAll(int argc, char* argv[])
     AutoPtr<ICopyOnWriteArrayList> list;
     CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&list);
     AutoPtr<IList> outlist;
-    arrhelp->AsList(mabcde, (IList**)&outlist);
+    Arrays::AsList(mabcde, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
 
     AutoPtr<IList> rmlist;
-    arrhelp->AsList(NULL, (IList**)&rmlist);
+    Arrays::AsList(NULL, (IList**)&rmlist);
     list->RemoveAll(rmlist, &isflag);
     assert((outlist->Equals(list, &isflag), isflag));
 
     autoarr = ArrayOf<IInterface*>::Alloc(1);
     autoarr->Set(0, sqe);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     list->RemoveAll(outlist, &isflag);
 
     autoarr = ArrayOf<IInterface*>::Alloc(4);
@@ -165,18 +164,18 @@ int CTest::testRemoveAll(int argc, char* argv[])
     autoarr->Set(1, sqb);
     autoarr->Set(2, sqc);
     autoarr->Set(3, sqd);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(list, &isflag), isflag));
 
     autoarr = ArrayOf<IInterface*>::Alloc(2);
     autoarr->Set(0, sqb);
     autoarr->Set(1, sqc);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     list->RemoveAll(outlist, &isflag);
 
     autoarr->Set(0, sqa);
     autoarr->Set(1, sqd);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(list, &isflag), isflag));
     return 0;
 }
@@ -187,7 +186,7 @@ int CTest::testSubListClear(int argc, char* argv[])
     AutoPtr<ICopyOnWriteArrayList> list;
     CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&list);
     AutoPtr<IList> outlist;
-    arrhelp->AsList(mabcde, (IList**)&outlist);
+    Arrays::AsList(mabcde, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     AutoPtr<IList> bcd;
     list->SubList(1, 4, (IList**)&bcd);
@@ -196,14 +195,14 @@ int CTest::testSubListClear(int argc, char* argv[])
     autoarr = ArrayOf<IInterface*>::Alloc(2);
     autoarr->Set(0, sqa);
     autoarr->Set(1, sqe);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(list, &isflag), isflag));
 
     autoarr = ArrayOf<IInterface*>::Alloc(3);
     autoarr->Set(0, sqB);
     autoarr->Set(1, sqC);
     autoarr->Set(2, sqD);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     bcd->AddAll(outlist, &isflag);
 
     autoarr = ArrayOf<IInterface*>::Alloc(5);
@@ -213,7 +212,7 @@ int CTest::testSubListClear(int argc, char* argv[])
     autoarr->Set(3, sqD);
     autoarr->Set(4, sqe);
 
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(list, &isflag), isflag));
     return 0;
 }
@@ -240,7 +239,7 @@ int CTest::testSubListIteratorGetsSnapshot(int argc, char* argv[])
     AutoPtr<ICopyOnWriteArrayList> list;
     CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&list);
     AutoPtr<IList> outlist;
-    arrhelp->AsList(mabcde, (IList**)&outlist);
+    Arrays::AsList(mabcde, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     list->SubList(1, 4, (IList**)&outlist);
     AutoPtr<IIterator> bcd;
@@ -264,7 +263,7 @@ int CTest::testSubListRemoveByValue(int argc, char* argv[])
     CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&list);
     AutoPtr<IList> bcd;
     AutoPtr<IList> outlist;
-    arrhelp->AsList(mabcde, (IList**)&outlist);
+    Arrays::AsList(mabcde, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     list->SubList(1, 4, (IList**)&bcd);
 
@@ -273,7 +272,7 @@ int CTest::testSubListRemoveByValue(int argc, char* argv[])
     autoarr->Set(0, sqb);
     autoarr->Set(1, sqd);
     AutoPtr<IList> bdlist;
-    arrhelp->AsList(autoarr, (IList**)&bdlist);
+    Arrays::AsList(autoarr, (IList**)&bdlist);
     assert((bdlist->Equals(bcd, &isflag), isflag));
 
     autoarr = ArrayOf<IInterface*>::Alloc(4);
@@ -281,7 +280,7 @@ int CTest::testSubListRemoveByValue(int argc, char* argv[])
     autoarr->Set(1, sqb);
     autoarr->Set(2, sqd);
     autoarr->Set(3, sqe);
-    arrhelp->AsList(autoarr, (IList**)&bcd);
+    Arrays::AsList(autoarr, (IList**)&bcd);
     assert((bcd->Equals(list, &isflag), isflag));
     return 0;
 }
@@ -293,14 +292,14 @@ int CTest::testSubListRemoveByIndex(int argc, char* argv[])
     CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&list);
     AutoPtr<IList> bcd;
     AutoPtr<IList> outlist;
-    arrhelp->AsList(mabcde, (IList**)&outlist);
+    Arrays::AsList(mabcde, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     list->SubList(1, 4, (IList**)&bcd);
     bcd->RemoveEx(1, (IInterface**)&outface);
     autoarr = ArrayOf<IInterface*>::Alloc(2);
     autoarr->Set(0, sqb);
     autoarr->Set(1, sqd);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(bcd, &isflag), isflag));
 
     autoarr = ArrayOf<IInterface*>::Alloc(4);
@@ -308,7 +307,7 @@ int CTest::testSubListRemoveByIndex(int argc, char* argv[])
     autoarr->Set(1, sqb);
     autoarr->Set(2, sqd);
     autoarr->Set(3, sqe);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(list, &isflag), isflag));
     return 0;
 }
@@ -331,7 +330,7 @@ int CTest::testSubListRetainAll(int argc, char* argv[])
     autoarr->Set(8, sqi);
 
     AutoPtr<IList> outlist;
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     AutoPtr<IList> def;
     list->SubList(3, 6, (IList**)&def);
@@ -340,7 +339,7 @@ int CTest::testSubListRetainAll(int argc, char* argv[])
     autoarr->Set(0, sqc);
     autoarr->Set(1, sqe);
     autoarr->Set(2, sqh);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     def->RetainAll(outlist, &isflag); // the RI fails here
 
     autoarr = ArrayOf<IInterface*>::Alloc(7);
@@ -351,12 +350,12 @@ int CTest::testSubListRetainAll(int argc, char* argv[])
     autoarr->Set(4, sqg);
     autoarr->Set(5, sqh);
     autoarr->Set(6, sqi);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(list, &isflag), isflag));
 
     autoarr = ArrayOf<IInterface*>::Alloc(1);
     autoarr->Set(0, sqe);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(def, &isflag), isflag));
     return 0;
 }
@@ -379,7 +378,7 @@ int CTest::testSubListRemoveAll(int argc, char* argv[])
     autoarr->Set(8, sqi);
 
     AutoPtr<IList> outlist;
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     AutoPtr<IList> def;
     list->SubList(3, 6, (IList**)&def);
@@ -389,7 +388,7 @@ int CTest::testSubListRemoveAll(int argc, char* argv[])
     mabcde->Set(1, sqe);
     mabcde->Set(2, sqh);
     AutoPtr<IList> abcdlist;
-    arrhelp->AsList(mabcde, (IList**)&abcdlist);
+    Arrays::AsList(mabcde, (IList**)&abcdlist);
 
     def->RemoveAll(abcdlist, &isflag);  // the RI fails here
 
@@ -403,12 +402,12 @@ int CTest::testSubListRemoveAll(int argc, char* argv[])
     autoarr->Set(6, sqh);
     autoarr->Set(7, sqi);
 
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(list, &isflag), isflag));
     mabcde = ArrayOf<IInterface*>::Alloc(2);
     mabcde->Set(0, sqd);
     mabcde->Set(1, sqf);
-    arrhelp->AsList(mabcde, (IList**)&abcdlist);
+    Arrays::AsList(mabcde, (IList**)&abcdlist);
     assert((abcdlist->Equals(def, &isflag), isflag));
     return 0;
 }
@@ -441,7 +440,7 @@ int CTest::testSubListAddIsAtEnd(int argc, char* argv[])
     CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&list);
 
     AutoPtr<IList> outlist;
-    arrhelp->AsList(mabcde, (IList**)&outlist);
+    Arrays::AsList(mabcde, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     AutoPtr<IList> bcd;
     list->SubList(1, 4, (IList**)&bcd);
@@ -454,14 +453,14 @@ int CTest::testSubListAddIsAtEnd(int argc, char* argv[])
     autoarr->Set(3, sqd);
     autoarr->Set(4, sqf);
     autoarr->Set(5, sqe);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(list, &isflag), isflag));
     autoarr = ArrayOf<IInterface*>::Alloc(4);
     autoarr->Set(0, sqb);
     autoarr->Set(1, sqc);
     autoarr->Set(2, sqd);
     autoarr->Set(3, sqf);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(bcd, &isflag), isflag));
     return 0;
 }
@@ -473,7 +472,7 @@ int CTest::testSubListAddAll(int argc, char* argv[])
     CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&list);
 
     AutoPtr<IList> outlist;
-    arrhelp->AsList(mabcde, (IList**)&outlist);
+    Arrays::AsList(mabcde, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     AutoPtr<IList> bcd;
     list->SubList(1, 4, (IList**)&bcd);
@@ -483,7 +482,7 @@ int CTest::testSubListAddAll(int argc, char* argv[])
     autoarr->Set(1, sqg);
     autoarr->Set(2, sqh);
     autoarr->Set(3, sqi);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     bcd->AddAllEx(1, outlist, &isflag);
 
     autoarr = ArrayOf<IInterface*>::Alloc(9);
@@ -496,7 +495,7 @@ int CTest::testSubListAddAll(int argc, char* argv[])
     autoarr->Set(6, sqc);
     autoarr->Set(7, sqd);
     autoarr->Set(8, sqe);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(list, &isflag), isflag));
 
     autoarr = ArrayOf<IInterface*>::Alloc(7);
@@ -507,7 +506,7 @@ int CTest::testSubListAddAll(int argc, char* argv[])
     autoarr->Set(4, sqi);
     autoarr->Set(5, sqc);
     autoarr->Set(6, sqd);
-    arrhelp->AsList(autoarr, (IList**)&outlist);
+    Arrays::AsList(autoarr, (IList**)&outlist);
     assert((outlist->Equals(bcd, &isflag), isflag));
     return 0;
 }
@@ -519,7 +518,7 @@ int CTest::testListIterator(int argc, char* argv[])
     CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&list);
 
     AutoPtr<IList> outlist;
-    arrhelp->AsList(mabcde, (IList**)&outlist);
+    Arrays::AsList(mabcde, (IList**)&outlist);
     list->AddAll(outlist, &isflag);
     AutoPtr<IListIterator> i;
     list->GetListIteratorEx(5, (IListIterator**)&i);
@@ -606,7 +605,7 @@ int CTest::testSerialize(int argc, char* argv[])
     autoarr->Set(2, sqc);
     autoarr->Set(3, NULL);
     autoarr->Set(4, sqe);
-    arrhelp->AsList(autoarr, (IList**)&contents);
+    Arrays::AsList(autoarr, (IList**)&contents);
     AutoPtr<ICopyOnWriteArrayList> list;
     CCopyOnWriteArrayList::New(contents, (ICopyOnWriteArrayList**)&list);
 
@@ -623,7 +622,7 @@ int CTest::testDoesNotRetainToArray(int argc, char* argv[])
     strings->Set(1, sqb);
     strings->Set(2, sqc);
     AutoPtr<IList> asList;
-    arrhelp->AsList(strings, (IList**)&asList);
+    Arrays::AsList(strings, (IList**)&asList);
     // assertEquals(String[].class, asList.toArray().getClass());
     // CopyOnWriteArrayList<Object> objects = new CopyOnWriteArrayList<Object>(asList);
     // objects.add(Boolean.TRUE);
@@ -651,7 +650,7 @@ void CTest::testAddAllIsAtomic(IList* list)
 
     AutoPtr<IList> toAdd;
     autoarr = ArrayOf<IInterface*>::Alloc(1000);
-    arrhelp->AsList(autoarr, (IList**)&toAdd);
+    Arrays::AsList(autoarr, (IList**)&toAdd);
     for (int i = 0; i < 100; i++) {
         list->AddAll(toAdd, &isflag);
         list->Clear();

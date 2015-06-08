@@ -1136,9 +1136,7 @@ int CTest::test_toArray(int argc, char* argv[]) {
 	AutoPtr<ArrayOf<IInterface*> > array;
 	tVector->ToArray((ArrayOf<IInterface*>**)&array);
 	Boolean flag = FALSE;
-	AutoPtr<IArrays> arrayHelper;
-	CArrays::AcquireSingleton((IArrays**)&arrayHelper);
-	arrayHelper->EqualsObject(array, objArray, &flag);
+	Arrays::Equals(array, objArray, &flag);
 	assert(flag == TRUE);
 }
 

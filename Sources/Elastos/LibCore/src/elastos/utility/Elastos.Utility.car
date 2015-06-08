@@ -760,10 +760,6 @@ module
     //     interface IRandomAccess;
     // }
 
-    // singleton class CArrays {
-    //     interface IArrays;
-    // }
-
     // singleton class CCollections {
     //     interface ICollections;
     // }

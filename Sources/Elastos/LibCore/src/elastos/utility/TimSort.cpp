@@ -60,7 +60,7 @@ ECode TimSort::Sort(
     /* [in] */ IComparator* c)
 {
     if (c == NULL) {
-        // return Arrays::SortObject(a, lo, hi);
+        return Arrays::Sort(a, lo, hi);
     }
 
     VALIDATE_NOT_NULL(Arrays::CheckStartAndEnd(a->GetLength(), lo, hi));

@@ -621,10 +621,8 @@ int CTest::test_toArrayLjava_lang_Object(int argc, char* argv[]) {
     Boolean flag = FALSE;
     // assert(retArray->Equals(argArray));
 
-    AutoPtr<IArrays> iArrays;
-    CArrays::AcquireSingleton((iArrays**)&iArrays);
     AutoPtr<IList> list;
-    iArrays->AsList(retArray, (IList**)&list);
+    Arrays::AsList(retArray, (IList**)&list);
     AutoPtr<ILinkedList> linkedList;
     CLinkedList::New(ICollection::Probe(list), (ILinkedList**)&linkedList);
     AutoPtr<IList> retList = IList::Probe(linkedList);

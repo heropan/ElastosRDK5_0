@@ -5266,7 +5266,7 @@ ECode CCollections::_Sort(
 {
     AutoPtr<ArrayOf<IInterface*> > array;
     list->ToArray((ArrayOf<IInterface*>**)&array);
-    CArrays::_SortObject(array);
+    Arrays::Sort(array);
     Int32 i = 0;
     AutoPtr<IListIterator> it;
     list->GetListIterator((IListIterator**)&it);
@@ -5288,7 +5288,7 @@ ECode CCollections::_Sort(
     AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(num);
     AutoPtr<ArrayOf<IInterface*> > array;
     list->ToArray(arr, (ArrayOf<IInterface*>**)&array);
-    CArrays::_Sort(array, comparator);
+    Arrays::Sort(array, comparator);
     AutoPtr<IListIterator> it;
     list->GetListIterator((IListIterator**)&it);
     Boolean b;
