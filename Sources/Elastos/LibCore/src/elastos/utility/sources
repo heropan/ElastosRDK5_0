@@ -31,3 +31,9 @@ SOURCES += MapEntry.cpp
 SOURCES += CEnumMap.cpp
 SOURCES += HashMap.cpp
 SOURCES += CHashMap.cpp
+
+
+SOURCES += Timer.cpp
+
+
+SOURCES += utility.cpp

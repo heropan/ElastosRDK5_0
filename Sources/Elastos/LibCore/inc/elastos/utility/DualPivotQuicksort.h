@@ -1,9 +1,7 @@
 #ifndef __ELASTOS_UTILITY_DUALPIVOTQUICKSORT_H__
 #define __ELASTOS_UTILITY_DUALPIVOTQUICKSORT_H__
 
-#include "Singleton.h"
-
-using Elastos::Core::Singleton;
+#include <elastos.h>
 
 namespace Elastos{
 namespace Utility{

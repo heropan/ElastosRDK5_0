@@ -1,27 +1,25 @@
-#ifndef __TIMER_H__
-#define __TIMER_H__
+#ifndef __ELASTOS_UTILITY_TIMER_H__
+#define __ELASTOS_UTILITY_TIMER_H__
 
-#include "CDate.h"
-#include <elastos/Thread.h>
-#include <elastos/Mutex.h>
-#include <Elastos.CoreLibrary_server.h>
+#include "Object.h"
+#include "Thread.h"
 
+using Elastos::Core::Object;
+using Elastos::Core::Thread;
 using Elastos::Core::IClassLoader;
 using Elastos::Core::IRunnable;
 using Elastos::Core::IThread;
-using Elastos::Core::Thread;
-using Elastos::Core::Mutex;
 
 namespace Elastos {
 namespace Utility {
 
 class Timer
+    : public Object
+    , public ITimer
 {
 private:
     class TimerImpl
-        : public ElRefBase
-        , public IThread
-        , public Thread
+        : public Thread
     {
         friend class Timer;
 
@@ -74,132 +72,15 @@ private:
 
         ~TimerImpl();
 
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
-
-        CARAPI CheckAccess();
-
-        CARAPI CountStackFrames(
-            /* [out] */ Int32* number);
-
-        CARAPI Destroy();
-
-        CARAPI GetId(
-            /* [out] */ Int64* id);
-
-        CARAPI GetName(
-            /* [out] */ String* name);
-
-        CARAPI GetPriority(
-            /* [out] */ Int32* priority);
-
-        CARAPI GetState(
-            /* [out] */ ThreadState* state);
-
-        CARAPI GetThreadGroup(
-            /* [out] */ IThreadGroup** group);
-
-        CARAPI Interrupt();
-
-        CARAPI IsAlive(
-            /* [out] */ Boolean* isAlive);
-
-        CARAPI IsDaemon(
-            /* [out] */ Boolean* isDaemon);
-
-        CARAPI IsInterrupted(
-            /* [out] */ Boolean* isInterrupted);
-
-        CARAPI Join();
-
-        CARAPI Join(
-            /* [in] */ Int64 millis);
-
-        CARAPI Join(
-            /* [in] */ Int64 millis,
-            /* [in] */ Int32 nanos);
-
-        CARAPI Resume();
-
-        CARAPI SetDaemon(
-            /* [in] */ Boolean isDaemon);
-
-        CARAPI SetName(
-            /* [in] */ const String& threadName);
-
-        CARAPI SetPriority(
-            /* [in] */ Int32 priority);
-
-        CARAPI Start();
-
-        CARAPI Stop();
-
-        CARAPI Suspend();
-
-        CARAPI Detach();
-
-        CARAPI Unpark();
-
-        CARAPI ParkFor(
-            /* [in] */ Int64 nanos);
-
-        CARAPI ParkUntil(
-            /* [in] */ Int64 time);
-
-        CARAPI Lock();
-
-        CARAPI Unlock();
-
-        CARAPI Notify();
-
-        CARAPI NotifyAll();
-
-        CARAPI Wait();
-
-        CARAPI Wait(
-            /* [in] */ Int64 millis);
-
-        CARAPI Wait(
-            /* [in] */ Int64 millis,
-            /* [in] */ Int32 nanos);
-
         CARAPI Run();
 
         CARAPI_(void) Cancel();
 
         CARAPI_(Int32) Purge();
 
-        CARAPI GetUncaughtExceptionHandler(
-            /* [out] */ IThreadUncaughtExceptionHandler** handler);
-
-        CARAPI GetContextClassLoader(
-            /* [out] */ IClassLoader** outload);
-
-        CARAPI SetContextClassLoader(
-            /* [in] */ IClassLoader* cl);
-
-        CARAPI PushInterruptAction(
-            /* [in] */ IRunnable* interruptAction);
-
-        CARAPI PopInterruptAction(
-            /* [in] */ IRunnable* interruptAction);
-
-        CARAPI SetUncaughtExceptionHandler(
-            /* [in] */ IThreadUncaughtExceptionHandler* handler);
-
     private:
         CARAPI_(void) InsertTask(
             /* [in] */ ITimerTask* newTask);
-
-        CARAPI_(Mutex*) GetSelfLock();
 
     public:
         /**
@@ -218,7 +99,6 @@ private:
          * {@code when} field of TaskScheduled object.
          */
         AutoPtr<TimerHeap> mTasks;
-        Mutex mLock;
     };
 
     class FinalizerHelper : public ElRefBase
@@ -234,6 +114,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Creates a new named {@code Timer} which may be specified to be run as a
      * daemon thread.
@@ -406,7 +288,7 @@ public:
         /* [in] */ IDate* when,
         /* [in] */ Int64 period);
 
-protected:
+public:
     /**
      * Creates a new named {@code Timer} which may be specified to be run as a
      * daemon thread.
@@ -415,22 +297,25 @@ protected:
      * @param isDaemon true if {@code Timer}'s thread should be a daemon thread.
      * @throws NullPointerException is {@code name} is {@code null}
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& name,
-        /* [in] */ Boolean isDaemon = FALSE);
+        /* [in] */ Boolean isDaemon);
+
+    CARAPI constructor(
+        /* [in] */ const String& name);
 
     /**
      * Creates a new {@code Timer} which may be specified to be run as a daemon thread.
      *
      * @param isDaemon {@code true} if the {@code Timer}'s thread should be a daemon thread.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Boolean isDaemon);
 
     /**
      * Creates a new non-daemon {@code Timer}.
      */
-    CARAPI Init();
+    CARAPI constructor();
 
 private:
     static CARAPI_(Int64) NextId();
@@ -446,7 +331,7 @@ private:
 
 private:
     static Int64 sTimerId;
-    static Mutex sTimerIdLock;
+    static Object sTimerIdLock;
 
     /* This object will be used in synchronization purposes */
     AutoPtr<TimerImpl> mImpl;
@@ -458,4 +343,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__TIMER_H__
+#endif //__ELASTOS_UTILITY_TIMER_H__
