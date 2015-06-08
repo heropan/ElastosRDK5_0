@@ -1,15 +1,28 @@
 
-#ifndef __ICU_CLOCALE_H__
-#define __ICU_CLOCALE_H__
+#ifndef __ELASTOS_UTILITY_CLOCALE_H__
+#define __ELASTOS_UTILITY_CLOCALE_H__
 
-#include "_CLocale.h"
+#include "_Elastos_Utility_CLocale.h"
+#include "Object.h"
 
-namespace Libcore {
-namespace ICU {
+using Elastos::Core::Object;
+using Elastos::Core::ICloneable;
+using Elastos::IO::ISerializable;
+
+namespace Elastos {
+namespace Utility {
 
 CarClass(CLocale)
+    , public Object
+    , public ILocale
+    , public ICloneable
+    , public ISerializable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * There's a circular dependency between toLowerCase/toUpperCase and
      * Locale.US. Work around this by avoiding these methods when constructing
@@ -47,7 +60,7 @@ public:
         /* [in] */ const String& variant);
 
     CARAPI Clone(
-        /* [out] */ ILocale** newObj);
+        /* [out] */ IInterface** newObj);
 
     CARAPI Equals(
         /* [in] */ IInterface* other,
@@ -97,7 +110,7 @@ public:
      * Returns the empty string if this locale does not correspond to a specific
      * country.
      */
-    CARAPI GetDisplayCountryEx(
+    CARAPI GetDisplayCountry(
         /* [in] */ ILocale* locale,
         /* [out] */ String* country);
 
@@ -111,7 +124,7 @@ public:
      * Returns the name of this locale's language, localized to {@code locale}.
      * If the language name is unknown, the language code is returned.
      */
-    CARAPI GetDisplayLanguageEx(
+    CARAPI GetDisplayLanguage(
         /* [in] */ ILocale* locale,
         /* [out] */ String* language);
 
@@ -129,7 +142,7 @@ public:
      * States,Computer)}, {@code anglais (&#x00c9;tats-Unis)}, {@code anglais
      * (&#x00c9;tats-Unis,informatique)}.
      */
-    CARAPI GetDisplayNameEx(
+    CARAPI GetDisplayName(
         /* [in] */ ILocale* locale,
         /* [out] */ String* name);
 
@@ -152,7 +165,7 @@ public:
      *            the {@code Locale} for which the display name is retrieved.
      * @return a variant name.
      */
-    CARAPI GetDisplayVariantEx(
+    CARAPI GetDisplayVariant(
         /* [in] */ ILocale* locale,
         /* [out] */ String* variantName);
 
@@ -213,6 +226,120 @@ public:
      */
     CARAPI GetVariant(
         /* [out] */ String* variant);
+
+    /**
+     * Returns the script code for this {@code Locale} or an empty {@code String} if no script
+     * was set.
+     *
+     * If set, the script code will be a title cased string of length 4, as per the ISO 15924
+     * specification.
+     *
+     * @since 1.7
+     */
+    CARAPI GetScript(
+        /* [out] */ String* script);
+
+    /**
+     * Equivalent to {@code getDisplayScript(Locale.getDefault()))}
+     *
+     * @since 1.7
+     */
+    CARAPI GetDisplayScript(
+        /* [out] */ String* script);
+
+    /**
+     * Returns the name of this locale's script code, localized to {@link Locale}. If the
+     * script code is unknown, the return value of this method is the same as that of
+     * {@link #getScript()}.
+     *
+     * @since 1.7
+     */
+    CARAPI GetDisplayScript(
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* script);
+
+    /**
+     * Returns a well formed BCP-47 language tag that identifies this locale.
+     *
+     * Note that this locale itself might consist of ill formed fields, since the
+     * public {@code Locale} constructors do not perform validity checks to maintain
+     * backwards compatibility. When this is the case, this method will either replace
+     * ill formed fields with standard BCP-47 subtags (For eg. "und" (undetermined)
+     * for invalid languages) or omit them altogether.
+     *
+     * Additionally, ill formed variants will result in the remainder of the tag
+     * (both variants and extensions) being moved to the private use extension,
+     * where they will appear after a subtag whose value is {@code "lvariant"}.
+     *
+     * It's also important to note that the BCP-47 tag is well formed in the sense
+     * that it is unambiguously parseable into its specified components. We do not
+     * require that any of the components are registered with the applicable registries.
+     * For example, we do not require scripts to be a registered ISO 15924 scripts or
+     * languages to appear in the ISO-639-2 code list.
+     *
+     * @since 1.7
+     */
+    CARAPI ToLanguageTag(
+        /* [out] */ String* tag);
+
+    /**
+     * Returns the set of BCP-47 extensions this locale contains.
+     *
+     * See <a href="https://tools.ietf.org/html/bcp47#section-2.1">
+     *     the IETF BCP-47 specification</a> (Section 2.2.6) for details.
+     *
+     * @since 1.7
+     */
+    CARAPI GetExtensionKeys(
+        /* [out] */ ISet** keys);
+
+    /**
+     * Returns the BCP-47 extension whose key is {@code extensionKey}, or {@code null}
+     * if this locale does not contain the extension.
+     *
+     * Individual Keywords and attributes for the unicode
+     * locale extension can be fetched using {@link #getUnicodeLocaleAttributes()},
+     * {@link #getUnicodeLocaleKeys()}  and {@link #getUnicodeLocaleType}.
+     *
+     * @since 1.7
+     */
+    CARAPI GetExtension(
+        /* [in] */ Char32 extensionKey,
+        /* [out] */ String* extension);
+
+    /**
+     * Returns the {@code type} for the specified unicode locale extension {@code key}.
+     *
+     * For more information about types and keywords, see {@link Builder#setUnicodeLocaleKeyword}
+     * and <a href="http://www.unicode.org/reports/tr35/#BCP47">Unicode Technical Standard #35</a>
+     *
+     * @since 1.7
+     */
+    CARAPI GetUnicodeLocaleType(
+        /* [in] */ const String& keyWord,
+        /* [out] */ String* type);
+
+    /**
+     * Returns the set of unicode locale extension attributes this locale contains.
+     *
+     * For more information about attributes, see {@link Builder#addUnicodeLocaleAttribute}
+     * and <a href="http://www.unicode.org/reports/tr35/#BCP47">Unicode Technical Standard #35</a>
+     *
+     * @since 1.7
+     */
+    CARAPI GetUnicodeLocaleAttributes(
+        /* [out] */ ISet** keys);
+
+    /**
+     * Returns the set of unicode locale extension keywords this locale contains.
+     *
+     * For more information about types and keywords, see {@link Builder#setUnicodeLocaleKeyword}
+     * and <a href="http://www.unicode.org/reports/tr35/#BCP47">Unicode Technical Standard #35</a>
+     *
+     * @since 1.7
+     */
+    CARAPI GetUnicodeLocaleKeys(
+        /* [out] */ ISet** keys);
 
     /**
      * Overrides the default locale. This does not affect system configuration,
@@ -363,19 +490,50 @@ public:
 private:
     CARAPI_(String) ToNewString();
 
+    /**
+     * Constructs a valid BCP-47 language tag from locale fields. Additional validation
+     * is required when this Locale was not constructed using a Builder and variants
+     * set this way are treated specially.
+     *
+     * In both cases, we convert empty language tags to "und", omit invalid country tags
+     * and perform a special case conversion of "no-NO-NY" to "nn-NO".
+     */
+    CARAPI_(String) MakeLanguageTag();
+
 private:
+    static String UNDETERMINED_LANGUAGE;
+
     // Initialize a default which is used during static
     // initialization of the default for the platform.
     static AutoPtr<ILocale> sDefaultLocale;
     static Boolean sIsInited;
 
-    String mCountryCode;
-    String mLanguageCode;
-    String mVariantCode;
-    String mCachedToStringResult;
+    /* transient */ String mCountryCode;
+    /* transient */ String mLanguageCode;
+    /* transient */ String mVariantCode;
+    /* transient */ String mScriptCode;
+
+    /* Sorted, Unmodifiable */
+    /* transient */ AutoPtr<ISet> mUnicodeAttributes;
+    /* Sorted, Unmodifiable */
+    /* transient */ AutoPtr<IMap> mUnicodeKeywords; // Map<String, String>
+    /* Sorted, Unmodifiable */
+    /* transient */ AutoPtr<IMap> mExtensions; //Map<Character, String>
+
+    /**
+     * Whether this instance was constructed from a builder. We can make
+     * stronger assumptions about the validity of Locale fields if this was
+     * constructed by a builder.
+     */
+    /* transient */ Boolean mHasValidatedFields;
+
+    /* transient */ String mCachedToStringResult;
+    /* transient */ String mCachedLanguageTag;
+    /* transient */ String mCachedIcuLocaleId;
+
 };
 
-} // namespace ICU
-} // namespace Libcore
+} // namespace Utility
+} // namespace Elastos
 
-#endif //__ICU_CLOCALE_H__
+#endif //__ELASTOS_UTILITY_CLOCALE_H__

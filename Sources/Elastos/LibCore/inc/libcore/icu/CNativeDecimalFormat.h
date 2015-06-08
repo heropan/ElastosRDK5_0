@@ -85,7 +85,7 @@ public:
     CARAPI SetDecimalFormatSymbols(
         /* [in] */ IDecimalFormatSymbols* dfs);
 
-    CARAPI SetDecimalFormatSymbolsEx(
+    CARAPI SetDecimalFormatSymbols(
         /* [in] */ ILocaleData* localeData);
 
     CARAPI FormatBigDecimal(

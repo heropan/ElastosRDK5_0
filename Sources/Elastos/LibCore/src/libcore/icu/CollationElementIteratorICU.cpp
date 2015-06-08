@@ -68,7 +68,7 @@ ECode CollationElementIteratorICU::SetText(
     return NativeCollation::SetText(mAddress, source);
 }
 
-ECode CollationElementIteratorICU::SetTextEx(
+ECode CollationElementIteratorICU::SetText(
     /* [in] */ ICharacterIterator* source)
 {
     return NativeCollation::SetText(mAddress,

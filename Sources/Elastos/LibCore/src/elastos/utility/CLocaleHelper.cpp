@@ -2,14 +2,16 @@
 #include "CLocaleHelper.h"
 #include "CLocale.h"
 
-namespace Libcore {
-namespace ICU {
+namespace Elastos {
+namespace Utility {
+
+CAR_INTERFACE_IMPL(CLocaleHelper, Singleton, ILocaleHelper)
+
+CAR_SINGLETON_IMPL(CLocaleHelper)
 
 ECode CLocaleHelper::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
-    VALIDATE_NOT_NULL(locales);
-
     return CLocale::GetAvailableLocales(locales);
 }
 
@@ -97,16 +99,12 @@ ECode CLocaleHelper::GetLocale(
 ECode CLocaleHelper::GetISOCountries(
     /* [out] */ ArrayOf<String>** codes)
 {
-    VALIDATE_NOT_NULL(codes);
-
     return CLocale::GetISOCountries(codes);
 }
 
 ECode CLocaleHelper::GetISOLanguages(
     /* [out] */ ArrayOf<String>** codes)
 {
-    VALIDATE_NOT_NULL(codes);
-
     return CLocale::GetISOLanguages(codes);
 }
 
@@ -343,5 +341,5 @@ ECode CLocaleHelper::GetUS(
     return NOERROR;
 }
 
-} // namespace ICU
-} // namespace Libcore
+} // namespace Utility
+} // namespace Elastos

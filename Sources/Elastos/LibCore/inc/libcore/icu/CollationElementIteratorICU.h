@@ -35,7 +35,7 @@ public:
     CARAPI SetText(
         /* [in] */ const String& source);
 
-    CARAPI SetTextEx(
+    CARAPI SetText(
         /* [in] */ ICharacterIterator* source);
 
     CARAPI GetOffset(

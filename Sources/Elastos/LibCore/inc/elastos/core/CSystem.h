@@ -146,7 +146,7 @@ public:
         /* [in] */ const String& name,
         /* [out] */ String* value);
 
-    CARAPI GetEnvEx(
+    CARAPI GetEnv(
         /* [in] */ const String& name,
         /* [in] */ const String& defaultValue,
         /* [out] */ String* value);
@@ -250,7 +250,7 @@ public:
      * @return the value of the specified system property or the {@code
      *         defaultValue} if the property does not exist.
      */
-    CARAPI GetPropertyEx(
+    CARAPI GetProperty(
         /* [in] */ const String& prop,
         /* [in] */ const String& defaultValue,
         /* [out */ String* value);

@@ -394,7 +394,7 @@ ECode CNativeDecimalFormat::SetDecimalFormatSymbols(
     return NOERROR;
 }
 
-ECode CNativeDecimalFormat::SetDecimalFormatSymbolsEx(
+ECode CNativeDecimalFormat::SetDecimalFormatSymbols(
     /* [in] */ ILocaleData* localeData)
 {
     String currencySymbol;
@@ -456,7 +456,7 @@ ECode CNativeDecimalFormat::FormatBigInteger(
     VALIDATE_NOT_NULL(result);
     AutoPtr<FieldPositionIterator> fpi = FieldPositionIterator::ForFieldPosition(field);
     String str;
-    value->ToStringEx(10,&str);
+    value->ToString(10,&str);
     AutoPtr<ArrayOf<Char32> >  out = FormatDigitList(mAddress, str, fpi);
     if (fpi != NULL) {
         FAIL_RETURN(FieldPositionIterator::SetFieldPosition(fpi, field));
@@ -562,7 +562,7 @@ ECode CNativeDecimalFormat::FormatToCharacterIterator(
         Int32 start(0), limit(0);
         fpIter->Start(&start);
         fpIter->Limit(&limit);
-        FAIL_RETURN(as->AddAttributeEx(field,(IInterface*)field, start, limit));
+        FAIL_RETURN(as->AddAttribute(field,(IInterface*)field, start, limit));
     }
 
     // return the CharacterIterator from StructAttributedString
@@ -805,7 +805,7 @@ ECode CNativeDecimalFormat::SetMultiplier(
     AutoPtr<IBigDecimalHelper> bdHelper;
     ASSERT_SUCCEEDED(CBigDecimalHelper::AcquireSingleton((IBigDecimalHelper**)&bdHelper));
     mMultiplierBigDecimal = NULL;
-    return bdHelper->ValueOfEx((Int64)value, (IBigDecimal**)&mMultiplierBigDecimal);
+    return bdHelper->ValueOf((Int64)value, (IBigDecimal**)&mMultiplierBigDecimal);
 }
 
 ECode CNativeDecimalFormat::SetNegativePrefix(

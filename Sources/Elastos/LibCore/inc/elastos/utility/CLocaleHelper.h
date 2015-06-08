@@ -1,15 +1,24 @@
 
-#ifndef __ICU_CLOCALEHELPER_H__
-#define __ICU_CLOCALEHELPER_H__
+#ifndef __ELASTOS_UTILITY_CLOCALEHELPER_H__
+#define __ELASTOS_UTILITY_CLOCALEHELPER_H__
 
-#include "_CLocaleHelper.h"
+#include "_Elastos_Utility_CLocaleHelper.h"
+#include "Singleton.h"
 
-namespace Libcore {
-namespace ICU {
+using Elastos::Core::Singleton;
+
+namespace Elastos {
+namespace Utility {
 
 CarClass(CLocaleHelper)
+    , public Singleton
+    , public ILocaleHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Returns the system's installed locales. This array always includes {@code
      * Locale.US}, and usually several others. Most locale-sensitive classes
@@ -206,7 +215,7 @@ public:
         /* [out] */ ILocale** locale);
 };
 
-} // namespace ICU
-} // namespace Libcore
+} // namespace Utility
+} // namespace Elastos
 
-#endif //__ICU_CLOCALEHELPER_H__
+#endif //__ELASTOS_UTILITY_CLOCALEHELPER_H__

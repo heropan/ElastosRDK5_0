@@ -136,7 +136,7 @@ ECode CCollectionUtils::_RemoveDuplicates(
     /* [in] */ IList* list,
     /* [in] */ IComparator* comparator)
 {
-    FAIL_RETURN(CCollections::_SortEx(list, comparator));
+    FAIL_RETURN(CCollections::_Sort(list, comparator));
     Int32 j = 1;
     Int32 listsize = 0;
     list->GetSize(&listsize);

@@ -1,14 +1,17 @@
 
 #include "CLocale.h"
-#include "ICUUtil.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/CSystem.h>
+// #include "ICUUtil.h"
+#include "StringBuilder.h"
+#include "CSystem.h"
 
 using Elastos::Core::CSystem;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::EIID_ICloneable;
+using Elastos::IO::EIID_ISerializable;
+// using Libcore::ICU::ICUUtil;
 
-namespace Libcore {
-namespace ICU {
+namespace Elastos {
+namespace Utility {
 
 static AutoPtr<ILocale> CreateLocale(
     /* [in] */ const String& language,
@@ -42,9 +45,18 @@ const AutoPtr<ILocale> CLocale::TRADITIONAL_CHINESE = CreateLocale(String("zh"),
 const AutoPtr<ILocale> CLocale::UK = CreateLocale(String("en"), String("GB"));
 const AutoPtr<ILocale> CLocale::US = CreateLocale(String("en"), String("US"));
 
-AutoPtr<ILocale> CLocale::sDefaultLocale = CLocale::US;
+String CLocale::UNDETERMINED_LANGUAGE("und");
 
+/**
+ * The current default locale. It is temporarily assigned to US because we
+ * need a default locale to lookup the real default locale.
+ */
+AutoPtr<ILocale> CLocale::sDefaultLocale = CLocale::US;
 Boolean CLocale::sIsInited = FALSE;
+
+CAR_INTERFACE_IMPL_3(CLocale, Object, ILocale, ICloneable, ISerializable)
+
+CAR_OBJECT_IMPL(CLocale)
 
 ECode CLocale::constructor(
     /* [in] */ Boolean unused,
@@ -120,10 +132,14 @@ ECode CLocale::constructor(
 }
 
 ECode CLocale::Clone(
-    /* [out] */ ILocale** newObj)
+    /* [out] */ IInterface** newObj)
 {
     VALIDATE_NOT_NULL(newObj);
-    return CLocale::New(mLanguageCode, mCountryCode, mVariantCode, newObj);
+    AutoPtr<ILocale> locale;
+    CLocale::New(mLanguageCode, mCountryCode, mVariantCode, (ILocale**)&locale);
+    *newObj = locale->Probe(EIID_IInterface);
+    REFCOUNT_ADD(*newObj);
+    return NOERROR;
 }
 
 ECode CLocale::Equals(
@@ -138,7 +154,7 @@ ECode CLocale::Equals(
 
     if (ILocale::Probe(other) == NULL) return NOERROR;
 
-    if ((CLocale*)ILocale::Probe(other) == this) {
+    if (other == this->Probe(EIID_IInterface)) {
         *result = TRUE;
         return NOERROR;
     }
@@ -154,7 +170,7 @@ ECode CLocale::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
-    return ICUUtil::GetAvailableLocales(locales);
+    // return ICUUtil::GetAvailableLocales(locales);
 }
 
 ECode CLocale::GetCountry(
@@ -174,13 +190,13 @@ AutoPtr<ILocale> CLocale::GetDefault()
         Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
 
         String language, region, variant;
-        cs->GetPropertyEx(String("user.language"), String("en"), &language);
-        cs->GetPropertyEx(String("user.region"), String("US"), &region);
-        cs->GetPropertyEx(String("user.variant"), String(""), &variant);
+        cs->GetProperty(String("user.language"), String("en"), &language);
+        cs->GetProperty(String("user.region"), String("US"), &region);
+        cs->GetProperty(String("user.variant"), String(""), &variant);
 
         AutoPtr<CLocale> l;
         ASSERT_SUCCEEDED(CLocale::NewByFriend(language, region, variant, (CLocale**)&l));
-        sDefaultLocale = (ILocale*)l.Get();
+        sDefaultLocale = ILocale::Probe(l);
     }
 
     return sDefaultLocale;
@@ -190,10 +206,10 @@ ECode CLocale::GetDisplayCountry(
     /* [out] */ String* country)
 {
     VALIDATE_NOT_NULL(country);
-    return GetDisplayCountryEx(GetDefault(), country);
+    return GetDisplayCountry(GetDefault(), country);
 }
 
-ECode CLocale::GetDisplayCountryEx(
+ECode CLocale::GetDisplayCountry(
     /* [in] */ ILocale* locale,
     /* [out] */ String* country)
 {
@@ -206,12 +222,12 @@ ECode CLocale::GetDisplayCountryEx(
     String thisStr, locStr;
     ToString(&thisStr);
     locale->ToString(&locStr);
-    String result = ICUUtil::GetDisplayCountry(thisStr, locStr);
-    if (result.IsNull()) { // TODO: do we need to do this, or does ICU do it for us?
-        GetDefault()->ToString(&locStr);
-        result = ICUUtil::GetDisplayCountry(thisStr, locStr);
-    }
-    *country = result;
+    // String result = ICUUtil::GetDisplayCountry(thisStr, locStr);
+    // if (result.IsNull()) { // TODO: do we need to do this, or does ICU do it for us?
+    //     GetDefault()->ToString(&locStr);
+    //     result = ICUUtil::GetDisplayCountry(thisStr, locStr);
+    // }
+    // *country = result;
     return NOERROR;
 }
 
@@ -219,10 +235,10 @@ ECode CLocale::GetDisplayLanguage(
     /* [out] */ String* language)
 {
     VALIDATE_NOT_NULL(language);
-    return GetDisplayLanguageEx(GetDefault(), language);
+    return GetDisplayLanguage(GetDefault(), language);
 }
 
-ECode CLocale::GetDisplayLanguageEx(
+ECode CLocale::GetDisplayLanguage(
     /* [in] */ ILocale* locale,
     /* [out] */ String* language)
 {
@@ -247,12 +263,12 @@ ECode CLocale::GetDisplayLanguageEx(
     String thisStr, locStr;
     ToString(&thisStr);
     locale->ToString(&locStr);
-    String result = ICUUtil::GetDisplayLanguage(thisStr, locStr);
-    if (result.IsNull()) { // TODO: do we need to do this, or does ICU do it for us?
-        GetDefault()->ToString(&locStr);
-        result = ICUUtil::GetDisplayLanguage(thisStr, locStr);
-    }
-    *language = result;
+    // String result = ICUUtil::GetDisplayLanguage(thisStr, locStr);
+    // if (result.IsNull()) { // TODO: do we need to do this, or does ICU do it for us?
+    //     GetDefault()->ToString(&locStr);
+    //     result = ICUUtil::GetDisplayLanguage(thisStr, locStr);
+    // }
+    // *language = result;
     return NOERROR;
 }
 
@@ -260,10 +276,10 @@ ECode CLocale::GetDisplayName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
-    return GetDisplayNameEx(GetDefault(), name);;
+    return GetDisplayName(GetDefault(), name);;
 }
 
-ECode CLocale::GetDisplayNameEx(
+ECode CLocale::GetDisplayName(
     /* [in] */ ILocale* locale,
     /* [out] */ String* name)
 {
@@ -273,33 +289,33 @@ ECode CLocale::GetDisplayNameEx(
     StringBuilder buffer;
     if (!mLanguageCode.IsEmpty()) {
         String displayLanguage;
-        GetDisplayLanguageEx(locale, &displayLanguage);
-        buffer.AppendString(displayLanguage.IsEmpty() ? mLanguageCode : displayLanguage);
+        GetDisplayLanguage(locale, &displayLanguage);
+        buffer.Append(displayLanguage.IsEmpty() ? mLanguageCode : displayLanguage);
         ++count;
     }
     if (!mCountryCode.IsEmpty()) {
         if (count == 1) {
-            buffer.AppendCStr(" (");
+            buffer.Append(" (");
         }
         String displayCountry;
-        GetDisplayCountryEx(locale, &displayCountry);
-        buffer.AppendString(displayCountry.IsEmpty() ? mCountryCode : displayCountry);
+        GetDisplayCountry(locale, &displayCountry);
+        buffer.Append(displayCountry.IsEmpty() ? mCountryCode : displayCountry);
         ++count;
     }
     if (!mVariantCode.IsEmpty()) {
         if (count == 1) {
-            buffer.AppendCStr(" (");
+            buffer.Append(" (");
         }
         else if (count == 2) {
-            buffer.AppendCStr(",");
+            buffer.Append(",");
         }
         String displayVariant;
-        GetDisplayVariantEx(locale, &displayVariant);
-        buffer.AppendString(displayVariant.IsEmpty() ? mVariantCode : displayVariant);
+        GetDisplayVariant(locale, &displayVariant);
+        buffer.Append(displayVariant.IsEmpty() ? mVariantCode : displayVariant);
         ++count;
     }
     if (count > 1) {
-        buffer.AppendCStr(")");
+        buffer.Append(")");
     }
     return buffer.ToString(name);
 }
@@ -308,10 +324,10 @@ ECode CLocale::GetDisplayVariant(
     /* [out] */ String* variantName)
 {
     VALIDATE_NOT_NULL(variantName);
-    return GetDisplayVariantEx(GetDefault(), variantName);;
+    return GetDisplayVariant(GetDefault(), variantName);;
 }
 
-ECode CLocale::GetDisplayVariantEx(
+ECode CLocale::GetDisplayVariant(
     /* [in] */ ILocale* locale,
     /* [out] */ String* variantName)
 {
@@ -324,12 +340,12 @@ ECode CLocale::GetDisplayVariantEx(
     String thisStr, locStr;
     ToString(&thisStr);
     locale->ToString(&locStr);
-    String result = ICUUtil::GetDisplayVariant(thisStr, locStr);
-    if (result.IsNull()) { // TODO: do we need to do this, or does ICU do it for us?
-        GetDefault()->ToString(&locStr);
-        result = ICUUtil::GetDisplayVariant(thisStr, locStr);
-    }
-    *variantName = result;
+    // String result = ICUUtil::GetDisplayVariant(thisStr, locStr);
+    // if (result.IsNull()) { // TODO: do we need to do this, or does ICU do it for us?
+    //     GetDefault()->ToString(&locStr);
+    //     result = ICUUtil::GetDisplayVariant(thisStr, locStr);
+    // }
+    // *variantName = result;
     return NOERROR;
 }
 
@@ -344,7 +360,7 @@ ECode CLocale::GetISO3Country(
     }
     String thisStr;
     ToString(&thisStr);
-    *country = ICUUtil::GetISO3Country(thisStr);
+    // *country = ICUUtil::GetISO3Country(thisStr);
     return NOERROR;
 }
 
@@ -359,7 +375,7 @@ ECode CLocale::GetISO3Language(
     }
     String thisStr;
     ToString(&thisStr);
-    *language = ICUUtil::GetISO3Language(thisStr);
+    // *language = ICUUtil::GetISO3Language(thisStr);
     return NOERROR;
 }
 
@@ -367,14 +383,14 @@ ECode CLocale::GetISOCountries(
     /* [out] */ ArrayOf<String>** codes)
 {
     VALIDATE_NOT_NULL(codes);
-    return ICUUtil::GetISOCountries(codes);
+    // return ICUUtil::GetISOCountries(codes);
 }
 
 ECode CLocale::GetISOLanguages(
     /* [out] */ ArrayOf<String>** codes)
 {
     VALIDATE_NOT_NULL(codes);
-    return ICUUtil::GetISOLanguages(codes);
+    // return ICUUtil::GetISOLanguages(codes);
 }
 
 ECode CLocale::GetLanguage(
@@ -390,6 +406,191 @@ ECode CLocale::GetVariant(
 {
     VALIDATE_NOT_NULL(variant);
     *variant = mVariantCode;
+    return NOERROR;
+}
+
+ECode CLocale::GetScript(
+    /* [out] */ String* script)
+{
+    VALIDATE_NOT_NULL(script);
+    *script = mScriptCode;
+    return NOERROR;
+}
+
+ECode CLocale::GetDisplayScript(
+    /* [out] */ String* script)
+{
+    VALIDATE_NOT_NULL(script);
+    AutoPtr<ILocale> locale = GetDefault();
+    return GetDisplayScript(locale, script);
+}
+
+ECode CLocale::GetDisplayScript(
+    /* [in] */ ILocale* locale,
+    /* [out] */ String* script)
+{
+    VALIDATE_NOT_NULL(script);
+    *script = String("");
+
+    if (mScriptCode.IsEmpty()) {
+        return NOERROR;
+    }
+
+    // String result = ICUUtil::GetDisplayScript(THIS_PROBE(ILocale), locale);
+    // if (result.IsNull()) { // TODO: do we need to do this, or does ICU do it for us?
+    //     AutoPtr<ILocale> locale = GetDefault();
+    //     result = ICUUtil::GetDisplayScript(THIS_PROBE(ILocale),locale);
+    // }
+
+    // *script = result;
+    return NOERROR;
+}
+
+ECode CLocale::ToLanguageTag(
+    /* [out] */ String* tag)
+{
+    VALIDATE_NOT_NULL(tag);
+    if (mCachedLanguageTag.IsNull()) {
+        mCachedLanguageTag = MakeLanguageTag();
+    }
+
+    *tag = mCachedLanguageTag;
+    return NOERROR;
+}
+
+String CLocale::MakeLanguageTag()
+{
+    assert(0 && "TODO");
+    return String("");
+    // // We only need to revalidate the language, country and variant because
+    // // the rest of the fields can only be set via the builder which validates
+    // // them anyway.
+    // String language = "";
+    // String region = "";
+    // String variant = "";
+    // String illFormedVariantSubtags = "";
+
+    // if (hasValidatedFields) {
+    //     language = languageCode;
+    //     region = countryCode;
+    //     // Note that we are required to normalize hyphens to underscores
+    //     // in the builder, but we must use hyphens in the BCP-47 language tag.
+    //     variant = variantCode.replace('_', '-');
+    // } else {
+    //     language = Builder.normalizeAndValidateLanguage(languageCode, false /* strict */);
+    //     region = Builder.normalizeAndValidateRegion(countryCode, false /* strict */);
+
+    //     try {
+    //         variant = Builder.normalizeAndValidateVariant(variantCode);
+    //     } catch (IllformedLocaleException ilfe) {
+    //         // If our variant is ill formed, we must attempt to split it into
+    //         // its constituent subtags and preserve the well formed bits and
+    //         // move the rest to the private use extension (if they're well
+    //         // formed extension subtags).
+    //         String split[] = splitIllformedVariant(variantCode);
+
+    //         variant = split[0];
+    //         illFormedVariantSubtags = split[1];
+    //     }
+    // }
+
+    // if (language.isEmpty()) {
+    //     language = UNDETERMINED_LANGUAGE;
+    // }
+
+    // if ("no".equals(language) && "NO".equals(region) && "NY".equals(variant)) {
+    //     language = "nn";
+    //     region = "NO";
+    //     variant = "";
+    // }
+
+    // final StringBuilder sb = new StringBuilder(16);
+    // sb.append(language);
+
+    // if (!scriptCode.isEmpty()) {
+    //     sb.append('-');
+    //     sb.append(scriptCode);
+    // }
+
+    // if (!region.isEmpty()) {
+    //     sb.append('-');
+    //     sb.append(region);
+    // }
+
+    // if (!variant.isEmpty()) {
+    //     sb.append('-');
+    //     sb.append(variant);
+    // }
+
+    // // Extensions (optional, omitted if empty). Note that we don't
+    // // emit the private use extension here, but add it in the end.
+    // for (Map.Entry<Character, String> extension : extensions.entrySet()) {
+    //     if (!extension.getKey().equals('x')) {
+    //         sb.append('-').append(extension.getKey());
+    //         sb.append('-').append(extension.getValue());
+    //     }
+    // }
+
+    // // The private use extension comes right at the very end.
+    // final String privateUse = extensions.get('x');
+    // if (privateUse != null) {
+    //     sb.append("-x-");
+    //     sb.append(privateUse);
+    // }
+
+    // // If we have any ill-formed variant subtags, we append them to the
+    // // private use extension (or add a private use extension if one doesn't
+    // // exist).
+    // if (!illFormedVariantSubtags.isEmpty()) {
+    //     if (privateUse == null) {
+    //         sb.append("-x-lvariant-");
+    //     } else {
+    //         sb.append('-');
+    //     }
+    //     sb.append(illFormedVariantSubtags);
+    // }
+
+    // return sb.toString();
+}
+
+ECode CLocale::GetExtensionKeys(
+    /* [out] */ ISet** keys)
+{
+    VALIDATE_NOT_NULL(keys);
+
+    return NOERROR;
+}
+
+ECode CLocale::GetExtension(
+    /* [in] */ Char32 extensionKey,
+    /* [out] */ String* extension)
+{
+    VALIDATE_NOT_NULL(extension);
+
+    return NOERROR;
+}
+
+ECode CLocale::GetUnicodeLocaleType(
+    /* [in] */ const String& keyWord,
+    /* [out] */ String* type)
+{
+    VALIDATE_NOT_NULL(type);
+    return NOERROR;
+}
+
+ECode CLocale::GetUnicodeLocaleAttributes(
+    /* [out] */ ISet** keys)
+{
+    VALIDATE_NOT_NULL(keys);
+    // *variant = mVariantCode;
+    return NOERROR;
+}
+
+ECode CLocale::GetUnicodeLocaleKeys(
+    /* [out] */ ISet** keys)
+{
+    VALIDATE_NOT_NULL(keys);
+    // *variant = mVariantCode;
     return NOERROR;
 }
 
@@ -433,14 +634,14 @@ String CLocale::ToNewString()
     // for "en_US_POSIX", the largest "common" value. (In practice, the string form is almost
     // always 5 characters: "ll_cc".)
     StringBuilder result(11);
-    result.AppendString(mLanguageCode);
+    result.Append(mLanguageCode);
     if ((!mCountryCode.IsNull() && mCountryCode.GetByteLength() > 0) ||
         (!mVariantCode.IsNull() && mVariantCode.GetByteLength() > 0)) {
          result.AppendChar('_');
     }
 
     if (!mCountryCode.IsNull()) {
-        result.AppendString(mCountryCode);
+        result.Append(mCountryCode);
     }
 
     if (!mVariantCode.IsNull() && mVariantCode.GetByteLength() > 0) {
@@ -448,11 +649,11 @@ String CLocale::ToNewString()
     }
 
     if (!mVariantCode.IsNull()) {
-        result.AppendString(mVariantCode);
+        result.Append(mVariantCode);
     }
 
     return result.ToString();
 }
 
-} // namespace ICU
-} // namespace Libcore
+} // namespace Utility
+} // namespace Elastos

@@ -66,7 +66,7 @@ public:
         /* [in] */ const String& source,
         /* [out] */ ICollationElementIteratorICU ** outicu);
 
-    CARAPI GetCollationElementIteratorEx(
+    CARAPI GetCollationElementIterator(
         /* [in] */ ICharacterIterator * it,
         /* [out] */ ICollationElementIteratorICU ** outicu);
 
@@ -74,7 +74,7 @@ public:
     CARAPI GetHashCode(
         /* [out] */ Int32 * value);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ const String& source,
         /* [in] */ const String& target,
         /* [out] */ Boolean * value);

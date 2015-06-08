@@ -19,10 +19,10 @@ class SocketTagger
 public:
     CAR_INTERFACE_DECL();
 
-    CARAPI TagEx(
+    CARAPI Tag(
         /* [in] */ ISocket* socket);
 
-    CARAPI UntagEx(
+    CARAPI Untag(
         /* [in] */ ISocket* socket);
 
     /**

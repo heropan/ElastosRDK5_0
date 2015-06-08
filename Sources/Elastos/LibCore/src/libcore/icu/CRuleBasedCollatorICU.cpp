@@ -165,7 +165,7 @@ ECode CRuleBasedCollatorICU::GetCollationElementIterator(
     return NOERROR;
 }
 
-ECode CRuleBasedCollatorICU::GetCollationElementIteratorEx(
+ECode CRuleBasedCollatorICU::GetCollationElementIterator(
     /* [in] */ ICharacterIterator * it,
     /* [out] */ ICollationElementIteratorICU ** outicu)
 {
@@ -195,7 +195,7 @@ ECode CRuleBasedCollatorICU::GetHashCode(
     return NOERROR;
 }
 
-ECode CRuleBasedCollatorICU::EqualsEx(
+ECode CRuleBasedCollatorICU::Equals(
     /* [in] */ const String& source,
     /* [in] */ const String& target,
     /* [out] */ Boolean * value)

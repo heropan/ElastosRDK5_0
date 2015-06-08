@@ -14,7 +14,7 @@ public:
         /* [in] */ ArrayOf<Byte>* inData,
         /* [out, callee] */ ArrayOf<Byte>** outData);
 
-    CARAPI DecodeEx(
+    CARAPI Decode(
         /* [in] */ ArrayOf<Byte>* inData,
         /* [in] */ Int32 len,
         /* [out, callee] */ ArrayOf<Byte>** outData);

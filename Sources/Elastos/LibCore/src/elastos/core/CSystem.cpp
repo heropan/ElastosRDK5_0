@@ -195,7 +195,7 @@ ECode CSystem::GetEnv(
     return NOERROR;
 }
 
-ECode CSystem::GetEnvEx(
+ECode CSystem::GetEnv(
     /* [in] */ const String& name,
     /* [in] */ const String& defaultValue,
     /* [out] */ String* value)
@@ -298,7 +298,7 @@ ECode CSystem::InitSystemProperties()
     p->SetProperty(String("java.version"), String("0"), NULL);
 
     String tmp;
-    GetEnvEx(String("JAVA_HOME"), String("/system"), &tmp);
+    GetEnv(String("JAVA_HOME"), String("/system"), &tmp);
     p->SetProperty(String("java.home"), tmp, NULL);
 
     p->SetProperty(String("java.io.tmpdir"), String("/tmp"), NULL);
@@ -330,9 +330,9 @@ ECode CSystem::InitSystemProperties()
     p->SetProperty(String("user.language"), String("en"), NULL);
     p->SetProperty(String("user.region"), String("US"), NULL);
 
-    GetEnvEx(String("HOME"), String(""), &tmp);
+    GetEnv(String("HOME"), String(""), &tmp);
     p->SetProperty(String("user.home"), tmp, NULL);
-    GetEnvEx(String("USER"), String(""), &tmp);
+    GetEnv(String("USER"), String(""), &tmp);
     p->SetProperty(String("user.name"), tmp, NULL);
 
     struct utsname info;
@@ -365,10 +365,10 @@ ECode CSystem::GetProperty(
     /* [in] */ const String& propertyName,
     /* [out] */ String* value)
 {
-    return GetPropertyEx(propertyName, String(NULL), value);
+    return GetProperty(propertyName, String(NULL), value);
 }
 
-ECode CSystem::GetPropertyEx(
+ECode CSystem::GetProperty(
     /* [in] */ const String& prop,
     /* [in] */ const String& defaultValue,
     /* [out] */ String* value)

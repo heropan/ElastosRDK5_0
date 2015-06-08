@@ -132,7 +132,7 @@ module
             [in] String name,
             [out] String* value);
 
-        GetEnvEx(
+        GetEnv(
             [in] String name,
             [in] String defaultValue,
             [out] String* value);
@@ -236,7 +236,7 @@ module
          * @return the value of the specified system property or the {@code
          *         defaultValue} if the property does not exist.
          */
-        GetPropertyEx(
+        GetProperty(
             [in] String prop,
             [in] String defaultValue,
             [out] String* value);

@@ -30,7 +30,7 @@ public:
         /* [in] */ Int32 port,
         /* [out] */ Boolean* result);
 
-    CARAPI ConnectEx(
+    CARAPI Connect(
         /* [in] */ Int32 fd,
         /* [in] */ IInetAddress* inetAddress,
         /* [in] */ Int32 port,
@@ -86,7 +86,7 @@ public:
         /* [in] */ Int32 port,
         /* [out] */ Int32* result);
 
-    CARAPI SendtoEx(
+    CARAPI Sendto(
         /* [in] */ Int32 fd,
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int32 flags,
@@ -105,7 +105,7 @@ public:
         /* [in] */ Boolean isConnected,
         /* [out] */ Int32* result);
 
-    CARAPI RecvfromEx(
+    CARAPI Recvfrom(
         /* [in] */ Boolean isRead,
         /* [in] */ Int32 fd,
         /* [in] */ IByteBuffer* buffer,
