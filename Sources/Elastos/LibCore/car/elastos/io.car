@@ -586,6 +586,15 @@ module
         interface IStringBufferInputStream;
     }
 
+    class CStringReader {
+        constructor(
+            [in] String str);
+
+        interface IReadable;
+        interface IReader;
+        interface IStringReader;
+    }
+
     } // namespace IO
     } // namespace Elastos
 }
