@@ -8,6 +8,8 @@ using Elastos::Core::Character;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(StringReader, Reader, IStringReader)
+
 StringReader::StringReader()
     : mMarkpos(-1)
     , mPos(0)
@@ -19,7 +21,7 @@ StringReader::~StringReader()
 {
 }
 
-ECode StringReader::Init(
+ECode StringReader::constructor(
     /* [in] */ const String& str)
 {
     if (str.IsNull()) {
@@ -50,7 +52,7 @@ ECode StringReader::Mark(
     /* [in] */ Int32 readLimit)
 {
     if (readLimit < 0) {
-//      throw new IllegalArgumentException();
+//      throw new IllegalArgumentException("readLimit < 0: " + readLimit);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -97,10 +99,10 @@ ECode StringReader::Read(
     return NOERROR;
 }
 
-ECode StringReader::ReadChars(
+ECode StringReader::Read(
     /* [out] */ ArrayOf<Char32>* buffer,
     /* [in] */ Int32 offset,
-    /* [in] */ Int32 length,
+    /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
     // BEGIN android-note
@@ -117,12 +119,12 @@ ECode StringReader::ReadChars(
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    if (length < 0 || length > buffer->GetLength() - offset) {
+    if (count < 0 || count > buffer->GetLength() - offset) {
 //      throw new ArrayIndexOutOfBoundsException("Length out of bounds: " + len);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    if (length == 0) {
+    if (count == 0) {
         *number = 0;
         return NOERROR;
     }
@@ -132,7 +134,7 @@ ECode StringReader::ReadChars(
         return NOERROR;
     }
 
-    Int32 end = mPos + length > mCount ? mCount : mPos + length;
+    Int32 end = mPos + count > mCount ? mCount : mPos + count;
 
     FAIL_RETURN(Character::ToChar32s(mStr, mPos, end - mPos, buffer, offset));
 

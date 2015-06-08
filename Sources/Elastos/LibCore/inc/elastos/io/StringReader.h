@@ -7,13 +7,19 @@
 namespace Elastos {
 namespace IO {
 
-class StringReader : public Reader
+class StringReader
+    : public Reader
+    , public IStringReader
 {
+public:
+    CAR_INTERFACE_DECL()
+
 protected:
     StringReader();
 
     ~StringReader();
 
+public:
     /**
      * Construct a new {@code StringReader} with {@code str} as source. The size
      * of the reader is set to the {@code length()} of the string and the Object
@@ -22,9 +28,9 @@ protected:
      * @param str
      *            the source string for this reader.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& str);
-public:
+
     /**
      * Closes this reader. Once it is closed, read operations on this reader
      * will throw an {@code IOException}. Only the first invocation of this
@@ -79,30 +85,21 @@ public:
         /* [out] */ Int32* value);
 
     /**
-     * Reads at most {@code len} characters from the source string and stores
-     * them at {@code offset} in the character array {@code buf}. Returns the
+     * Reads up to {@code count} characters from the source string and stores
+     * them at {@code offset} in the character array {@code buffer}. Returns the
      * number of characters actually read or -1 if the end of the source string
      * has been reached.
      *
-     * @param buf
-     *            the character array to store the characters read.
-     * @param offset
-     *            the initial position in {@code buffer} to store the characters
-     *            read from this reader.
-     * @param len
-     *            the maximum number of characters to read.
-     * @return the number of characters read or -1 if the end of the reader has
-     *         been reached.
      * @throws IndexOutOfBoundsException
-     *             if {@code offset < 0} or {@code len < 0}, or if
-     *             {@code offset + len} is greater than the size of {@code buf}.
+                if {@code offset < 0 || count < 0 || offset + count > buffer.length}.
      * @throws IOException
      *             if this reader is closed.
      */
-    CARAPI ReadChars(
+    // @Override
+    CARAPI Read(
         /* [out] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
+        /* [in] */ Int32 count,
         /* [out] */ Int32* number);
 
     /**
