@@ -1,8 +1,11 @@
 
-#ifndef __CATOMICMARKABLEREFERENCE_H__
-#define __CATOMICMARKABLEREFERENCE_H__
+#ifndef __ELASTOS_UTILITY_CATOMICMARKABLEREFERENCE_H__
+#define __ELASTOS_UTILITY_CATOMICMARKABLEREFERENCE_H__
 
-#include "_CAtomicMarkableReference.h"
+#include "_Elastos_Utility_Concurrent_CAtomicMarkableReference.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
@@ -10,8 +13,13 @@ namespace Concurrent {
 namespace Atomic {
 
 CarClass(CAtomicMarkableReference)
+    , public Object
+    , public IAtomicMarkableReference
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
     /**
      * Creates a new {@code AtomicMarkableReference} with the given
      * initial values.
@@ -161,4 +169,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CATOMICMARKABLEREFERENCE_H__
+#endif //__ELASTOS_UTILITY_CATOMICMARKABLEREFERENCE_H__

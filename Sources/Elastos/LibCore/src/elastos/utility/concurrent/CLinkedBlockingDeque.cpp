@@ -1,10 +1,12 @@
 
 #include "CLinkedBlockingDeque.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Math.h>
+#include <StringBuilder.h>
+#include <Math.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;
+using Elastos::IO::EIID_ISerializable;
+using Elastos::Utility::Concurrent::Locks::ILock;
 
 namespace Elastos {
 namespace Utility {
@@ -29,10 +31,10 @@ CLinkedBlockingDeque::AbstractItr::AbstractItr(
 {
     // set to initial position
     AutoPtr<IReentrantLock> lock;// = LinkedBlockingDeque.this.lock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
 //    mNext = FirstNode();
     mNextItem = (mNext == NULL) ? NULL : mNext->mItem;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
 }
 
 AutoPtr<CLinkedBlockingDeque::Node> CLinkedBlockingDeque::AbstractItr::Succ(
@@ -56,11 +58,11 @@ AutoPtr<CLinkedBlockingDeque::Node> CLinkedBlockingDeque::AbstractItr::Succ(
 void CLinkedBlockingDeque::AbstractItr::Advance()
 {
     AutoPtr<IReentrantLock> lock = mOwner->mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // assert next != null;
     mNext = Succ(mNext);
     mNextItem = (mNext == NULL) ? NULL : mNext->mItem;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
 }
 
 ECode CLinkedBlockingDeque::AbstractItr::HasNext(
@@ -92,10 +94,10 @@ ECode CLinkedBlockingDeque::AbstractItr::Remove()
         return E_ILLEGAL_STATE_EXCEPTION;
     mLastRet = NULL;
     AutoPtr<IReentrantLock> lock = mOwner->mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     if (n->mItem != NULL)
         mOwner->Unlink(n);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -167,22 +169,22 @@ ECode CLinkedBlockingDeque::constructor(
 {
     constructor(Elastos::Core::Math::INT32_MAX_VALUE);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock(); // Never contended, but necessary for visibility
+    (ILock::Probe(lock))->Lock(); // Never contended, but necessary for visibility
     AutoPtr<ArrayOf<IInterface*> > arr;
     c->ToArray((ArrayOf<IInterface*>**)&arr);
     for (Int32 i = 0; i < arr->GetLength(); i++) {
         AutoPtr<IInterface> e = (*arr)[i];
         if (e == NULL) {
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             return E_NULL_POINTER_EXCEPTION;
         }
         AutoPtr<Node> p = new Node(e);
         if (!LinkLast(p)) {
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             return E_ILLEGAL_STATE_EXCEPTION;
         }
     }
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -311,9 +313,9 @@ ECode CLinkedBlockingDeque::OfferFirst(
     VALIDATE_NOT_NULL(value);
     AutoPtr<Node> node = new Node(e);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     *value = LinkFirst(node);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -325,9 +327,9 @@ ECode CLinkedBlockingDeque::OfferLast(
     VALIDATE_NOT_NULL(value);
     AutoPtr<Node> node = new Node(e);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     *value = LinkLast(node);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -337,10 +339,10 @@ ECode CLinkedBlockingDeque::PutFirst(
     VALIDATE_NOT_NULL(e);
     AutoPtr<Node> node = new Node(e);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     while (!LinkFirst(node))
         mNotFull->Await();
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -350,10 +352,10 @@ ECode CLinkedBlockingDeque::PutLast(
     VALIDATE_NOT_NULL(e);
     AutoPtr<Node> node = new Node(e);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     while (!LinkLast(node))
         mNotFull->Await();
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -368,17 +370,17 @@ ECode CLinkedBlockingDeque::OfferFirst(
     Int64 nanos;
     unit->ToNanos(timeout, &nanos);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->LockInterruptibly();
+    (ILock::Probe(lock))->LockInterruptibly();
     while (!LinkFirst(node)) {
         if (nanos <= 0) {
             *value = FALSE;
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             return NOERROR;
         }
         mNotFull->AwaitNanos(nanos, &nanos);
     }
     *value = TRUE;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -394,17 +396,17 @@ ECode CLinkedBlockingDeque::OfferLast(
     Int64 nanos;
     unit->ToNanos(timeout, &nanos);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->LockInterruptibly();
+    (ILock::Probe(lock))->LockInterruptibly();
     while (!LinkLast(node)) {
         if (nanos <= 0) {
             *value = FALSE;
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             return NOERROR;
         }
         mNotFull->AwaitNanos(nanos, &nanos);
     }
     *value = TRUE;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -437,11 +439,11 @@ ECode CLinkedBlockingDeque::PollFirst(
 {
     VALIDATE_NOT_NULL(res);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     AutoPtr<IInterface> p = UnlinkFirst();
     *res = p.Get();
     REFCOUNT_ADD(*res);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -450,11 +452,11 @@ ECode CLinkedBlockingDeque::PollLast(
 {
     VALIDATE_NOT_NULL(res);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     AutoPtr<IInterface> p = UnlinkLast();
     *res = p.Get();
     REFCOUNT_ADD(*res);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -463,13 +465,13 @@ ECode CLinkedBlockingDeque::TakeFirst(
 {
     VALIDATE_NOT_NULL(outface);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     AutoPtr<IInterface> x;
     while ( (x = UnlinkFirst()) == NULL)
         mNotEmpty->Await();
     *outface = x;
     REFCOUNT_ADD(*outface);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -478,13 +480,13 @@ ECode CLinkedBlockingDeque::TakeLast(
 {
     VALIDATE_NOT_NULL(outface);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     AutoPtr<IInterface> x;
     while ( (x = UnlinkLast()) == NULL)
         mNotEmpty->Await();
     *outface = x;
     REFCOUNT_ADD(*outface);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -497,19 +499,19 @@ ECode CLinkedBlockingDeque::PollFirst(
     Int64 nanos;
     unit->ToNanos(timeout, &nanos);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->LockInterruptibly();
+    (ILock::Probe(lock))->LockInterruptibly();
     AutoPtr<IInterface> x;
     while ( (x = UnlinkFirst()) == NULL) {
         if (nanos <= 0) {
             *outface = NULL;
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             return NOERROR;
         }
         mNotEmpty->AwaitNanos(nanos, &nanos);
     }
     *outface = x;
     REFCOUNT_ADD(*outface);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -522,19 +524,19 @@ ECode CLinkedBlockingDeque::PollLast(
     Int64 nanos;
     unit->ToNanos(timeout, &nanos);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->LockInterruptibly();
+    (ILock::Probe(lock))->LockInterruptibly();
     AutoPtr<IInterface> x;
     while ( (x = UnlinkLast()) == NULL) {
         if (nanos <= 0) {
             *outface = NULL;
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             return NOERROR;
         }
         mNotEmpty->AwaitNanos(nanos, &nanos);
     }
     *outface = x;
     REFCOUNT_ADD(*outface);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -567,10 +569,10 @@ ECode CLinkedBlockingDeque::PeekFirst(
 {
     VALIDATE_NOT_NULL(res);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     *res = (mFirst == NULL) ? NULL : mFirst->mItem;
     REFCOUNT_ADD(*res);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -579,10 +581,10 @@ ECode CLinkedBlockingDeque::PeekLast(
 {
     VALIDATE_NOT_NULL(res);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     *res = (mLast == NULL) ? NULL : mLast->mItem;
     REFCOUNT_ADD(*res);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -596,17 +598,17 @@ ECode CLinkedBlockingDeque::RemoveFirstOccurrence(
         return NOERROR;
     }
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     for (AutoPtr<Node> p = mFirst; p != NULL; p = p->mNext) {
         if (Object::Equals(o, p->mItem)) {
             Unlink(p);
             *value = TRUE;
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             return NOERROR;
         }
     }
     *value = FALSE;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -620,17 +622,17 @@ ECode CLinkedBlockingDeque::RemoveLastOccurrence(
         return NOERROR;
     }
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     for (AutoPtr<Node> p = mLast; p != NULL; p = p->mPrev) {
         if (Object::Equals(o, p->mItem)) {
             Unlink(p);
             *value = TRUE;
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             return NOERROR;
         }
     }
     *value = FALSE;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -717,9 +719,9 @@ ECode CLinkedBlockingDeque::RemainingCapacity(
 {
     VALIDATE_NOT_NULL(capacity);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     *capacity = mCapacity - mCount;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -745,7 +747,7 @@ ECode CLinkedBlockingDeque::DrainTo(
         return NOERROR;
     }
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     Int32 n = Elastos::Core::Math::Min(maxElements, mCount);
     for (Int32 i = 0; i < n; i++) {
         Boolean b;
@@ -753,7 +755,7 @@ ECode CLinkedBlockingDeque::DrainTo(
         UnlinkFirst();
     }
     *number = n;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -783,9 +785,9 @@ ECode CLinkedBlockingDeque::GetSize(
 {
     VALIDATE_NOT_NULL(size);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     *size = mCount;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -799,16 +801,16 @@ ECode CLinkedBlockingDeque::Contains(
         return NOERROR;
     }
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     for (AutoPtr<Node> p = mFirst; p != NULL; p = p->mNext) {
         if (Object::Equals(object, p->mItem)) {
             *result = TRUE;
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             return NOERROR;
         }
     }
     *result = FALSE;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -817,14 +819,14 @@ ECode CLinkedBlockingDeque::ToArray(
 {
     VALIDATE_NOT_NULL(array);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     AutoPtr<ArrayOf<IInterface*> > a = ArrayOf<IInterface*>::Alloc(mCount);
     Int32 k = 0;
     for (AutoPtr<Node> p = mFirst; p != NULL; p = p->mNext)
         (*a)[k++] = p->mItem;
     *array = a;
     REFCOUNT_ADD(*array);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -834,7 +836,7 @@ ECode CLinkedBlockingDeque::ToArray(
 {
     VALIDATE_NOT_NULL(outArray);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // if (inArray->GetLength() < mCount)
     //     a = (T[])java.lang.reflect.Array.newInstance
     //         (a.getClass().getComponentType(), mCount);
@@ -846,17 +848,17 @@ ECode CLinkedBlockingDeque::ToArray(
         (*inArray)[k] = NULL;
     *outArray = inArray;
     REFCOUNT_ADD(*outArray);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
 String CLinkedBlockingDeque::ToString()
 {
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     AutoPtr<Node> p = mFirst;
     if (p == NULL) {
-        lock->UnLock();
+        (ILock::Probe(lock))->UnLock();
         return String("[]");
     }
 
@@ -864,13 +866,13 @@ String CLinkedBlockingDeque::ToString()
     sb.AppendChar('[');
     for (;;) {
         AutoPtr<IInterface> e = p->mItem;
-        if (Object::Equals(e, THIS_PROBE(IInterface)))
+        if (Object::Equals(e.Get(), THIS_PROBE(IInterface)))
             sb += String("(this Collection)");
         else
             sb += e;
         p = p->mNext;
         if (p == NULL) {
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             sb.AppendChar(']');
             return sb.ToString();
         }
@@ -882,7 +884,7 @@ String CLinkedBlockingDeque::ToString()
 ECode CLinkedBlockingDeque::Clear()
 {
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     for (AutoPtr<Node> f = mFirst; f != NULL; ) {
         f->mItem = NULL;
         AutoPtr<Node> n = f->mNext;
@@ -893,7 +895,7 @@ ECode CLinkedBlockingDeque::Clear()
     mFirst = mLast = NULL;
     mCount = 0;
     mNotFull->SignalAll();
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -913,45 +915,6 @@ ECode CLinkedBlockingDeque::GetDescendingIterator(
     *iterator = new DescendingItr(this);
     REFCOUNT_ADD(*iterator);
     return NOERROR;
-}
-
-ECode CLinkedBlockingDeque::AddAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    VALIDATE_NOT_NULL(modified);
-    return AbstractQueue::AddAll(collection, modified);
-}
-
-ECode CLinkedBlockingDeque::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return AbstractQueue::ContainsAll(collection, result);
-}
-
-ECode CLinkedBlockingDeque::IsEmpty(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return AbstractQueue::IsEmpty(result);
-}
-
-ECode CLinkedBlockingDeque::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    VALIDATE_NOT_NULL(modified);
-    return AbstractQueue::RemoveAll(collection, modified);
-}
-
-ECode CLinkedBlockingDeque::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    VALIDATE_NOT_NULL(modified);
-    return AbstractQueue::RetainAll(collection, modified);
 }
 
 void CLinkedBlockingDeque::WriteObject(
@@ -985,6 +948,19 @@ void CLinkedBlockingDeque::ReadObject(
     //         break;
     //     Add(item);
     // }
+}
+
+ECode CLinkedBlockingDeque::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    return E_NO_SUCH_ELEMENT_EXCEPTION;
+}
+
+ECode CLinkedBlockingDeque::GetHashCode(
+    /* [out] */ Int32* hashCode)
+{
+    return E_NO_SUCH_ELEMENT_EXCEPTION;
 }
 
 } // namespace Concurrent

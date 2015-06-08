@@ -1,12 +1,10 @@
 
-#ifndef __ATOMICREFERENCE_H__
-#define __ATOMICREFERENCE_H__
+#ifndef __ELASTOS_UTILITY_ATOMICREFERENCE_H__
+#define __ELASTOS_UTILITY_ATOMICREFERENCE_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
@@ -14,20 +12,24 @@ namespace Concurrent {
 namespace Atomic {
 
 class AtomicReference
+    : public Object
+    , public IAtomicReference
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Creates a new AtomicReference with the given initial value.
      *
      * @param initialValue the initial value
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInterface* initialValue);
 
     /**
      * Creates a new AtomicReference with null initial value.
      */
-    CARAPI Init();
+    CARAPI constructor();
 
     /**
      * Gets the current value.
@@ -122,4 +124,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ATOMICREFERENCE_H__
+#endif //__ELASTOS_UTILITY_ATOMICREFERENCE_H__

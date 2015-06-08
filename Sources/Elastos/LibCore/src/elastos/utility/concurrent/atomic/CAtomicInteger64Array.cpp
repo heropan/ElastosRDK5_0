@@ -1,6 +1,6 @@
 
 #include "CAtomicInteger64Array.h"
-#include "elastos/StringBuilder.h"
+#include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -14,6 +14,10 @@ const Int64 CAtomicInteger64Array::mSerialVersionUID = -2308431214976778248L;
 const Int32 CAtomicInteger64Array::sBase = 0; // = unsafe.arrayBaseOffset(long[].class);
 
 const Int32 CAtomicInteger64Array::sShift = 0;
+
+CAR_INTERFACE_IMPL(CAtomicInteger64Array, Object, IAtomicInteger64Array)
+
+CAR_OBJECT_IMPL(CAtomicInteger64Array)
 
 ECode CAtomicInteger64Array::constructor(
     /* [in] */ Int32 length)

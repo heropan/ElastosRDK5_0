@@ -1,9 +1,11 @@
 
-#ifndef __CATOMICREFERENCEARRAY_H__
-#define __CATOMICREFERENCEARRAY_H__
+#ifndef __ELASTOS_UTILITY_CATOMICREFERENCEARRAY_H__
+#define __ELASTOS_UTILITY_CATOMICREFERENCEARRAY_H__
 
-#include "_CAtomicReferenceArray.h"
+#include "_Elastos_Utility_Concurrent_CAtomicReferenceArray.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::IO::IObjectInputStream;
 
 namespace Elastos {
@@ -12,8 +14,13 @@ namespace Concurrent {
 namespace Atomic {
 
 CarClass(CAtomicReferenceArray)
+    , public Object
+    , public IAtomicReferenceArray
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
     /**
      * Creates a new AtomicReferenceArray of the given length, with all
      * elements initially null.
@@ -178,4 +185,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CATOMICREFERENCEARRAY_H__
+#endif //__ELASTOS_UTILITY_CATOMICREFERENCEARRAY_H__

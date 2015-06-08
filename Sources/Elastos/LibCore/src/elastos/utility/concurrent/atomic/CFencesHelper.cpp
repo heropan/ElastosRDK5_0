@@ -8,6 +8,10 @@ namespace Atomic {
 
 Int32 CFencesHelper::sTheVolatile = 0;
 
+CAR_INTERFACE_IMPL(CFencesHelper, Singleton, IFencesHelper)
+
+CAR_SINGLETON_IMPL(CFencesHelper)
+
 ECode CFencesHelper::OrderReads(
     /* [in] */ IInterface* ref,
     /* [out] */ IInterface** outface)

@@ -6,6 +6,10 @@ namespace Utility {
 namespace Concurrent {
 namespace Atomic {
 
+CAR_INTERFACE_IMPL(CAtomicStampedReference, Object, IAtomicStampedReference)
+
+CAR_OBJECT_IMPL(CAtomicStampedReference)
+
 ECode CAtomicStampedReference::constructor(
     /* [in] */ IInterface* initialRef,
     /* [in] */ Int32 initialStamp)

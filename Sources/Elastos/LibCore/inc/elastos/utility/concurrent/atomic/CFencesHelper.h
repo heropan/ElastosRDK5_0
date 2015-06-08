@@ -1,8 +1,11 @@
 
-#ifndef __CFENCES_H__
-#define __CFENCES_H__
+#ifndef __ELASTOS_UTILITY_CFENCES_H__
+#define __ELASTOS_UTILITY_CFENCES_H__
 
-#include "_CFencesHelper.h"
+#include "_Elastos_Utility_Concurrent_CFencesHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {
@@ -10,8 +13,13 @@ namespace Concurrent {
 namespace Atomic {
 
 CarClass(CFencesHelper)
+    , public Singleton
+    , public IFencesHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
    /**
      * Informally: Ensures that a read of the given reference prior to
      * the invocation of this method occurs before a subsequent use of
@@ -91,4 +99,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CFENCES_H__
+#endif //__ELASTOS_UTILITY_CFENCES_H__

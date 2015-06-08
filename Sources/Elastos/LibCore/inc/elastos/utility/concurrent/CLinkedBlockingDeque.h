@@ -5,6 +5,7 @@
 #include "_Elastos_Utility_Concurrent_CLinkedBlockingDeque.h"
 #include "AbstractQueue.h"
 
+using Elastos::IO::ISerializable;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;
@@ -392,24 +393,12 @@ public:
     CARAPI GetDescendingIterator(
         /* [out] */ IIterator** iterator);
 
-    CARAPI AddAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
-
-    CARAPI ContainsAll(
-        /* [in] */ ICollection* collection,
+    CARAPI Equals(
+        /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
 
-    CARAPI IsEmpty(
-        /* [out] */ Boolean* result);
-
-    CARAPI RemoveAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
-
-    CARAPI RetainAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
 
 private:
     // Basic linking and unlinking operations, called only while holding lock

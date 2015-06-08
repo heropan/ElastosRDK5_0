@@ -8,6 +8,10 @@ namespace Utility {
 namespace Concurrent {
 namespace Atomic {
 
+CAR_INTERFACE_IMPL(CAtomicBoolean, Object, IAtomicBoolean)
+
+CAR_OBJECT_IMPL(CAtomicBoolean)
+
 /**
  * Creates a new AtomicInteger with the given initial value.
  *

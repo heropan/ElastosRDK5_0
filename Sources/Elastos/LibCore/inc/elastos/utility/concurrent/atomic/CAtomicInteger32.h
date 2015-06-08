@@ -1,8 +1,11 @@
 
-#ifndef __CATOMICINTEGER32_H__
-#define __CATOMICINTEGER32_H__
+#ifndef __ELASTOS_UTILITY_CATOMICINTEGER32_H__
+#define __ELASTOS_UTILITY_CATOMICINTEGER32_H__
 
-#include "_CAtomicInteger32.h"
+#include "_Elastos_Utility_Concurrent_CAtomicInteger32.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
@@ -10,8 +13,13 @@ namespace Concurrent {
 namespace Atomic {
 
 CarClass(CAtomicInteger32)
+    , public Object
+    , public IAtomicInteger32
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
     /**
      * Creates a new AtomicInteger with the given initial value.
      *
@@ -179,4 +187,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CATOMICINTEGER32_H__
+#endif //__ELASTOS_UTILITY_CATOMICINTEGER32_H__

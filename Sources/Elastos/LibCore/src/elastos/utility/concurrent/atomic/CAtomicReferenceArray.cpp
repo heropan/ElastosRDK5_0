@@ -1,6 +1,6 @@
 
 #include "CAtomicReferenceArray.h"
-#include "elastos/StringBuilder.h"
+#include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -15,6 +15,10 @@ const Int64 CAtomicReferenceArray::sSerialVersionUID = -6209656149925076980L;
 const Int32 CAtomicReferenceArray::sBase = 0;
 const Int32 CAtomicReferenceArray::sShift = 0;
 const Int64 CAtomicReferenceArray::sArrayFieldOffset = 0;
+
+CAR_INTERFACE_IMPL(CAtomicReferenceArray, Object, IAtomicReferenceArray)
+
+CAR_OBJECT_IMPL(CAtomicReferenceArray)
 
 ECode CAtomicReferenceArray::constructor(
     /* [in] */ Int32 length)

@@ -746,9 +746,9 @@ module
     //     interface IExecutor;
     // }
 
-    // singleton class CTimeUnitHelper {
-    //     interface ITimeUnitHelper;
-    // }
+    singleton class CTimeUnitHelper {
+        interface ITimeUnitHelper;
+    }
 
     // class CArrayBlockingQueue {
     //     /**
@@ -921,22 +921,22 @@ module
     //     interface IForkJoinTaskHelper;
     // }
 
-    // class CLinkedBlockingDeque {
-    //     constructor();
+    class CLinkedBlockingDeque {
+        constructor();
 
-    //     constructor(
-    //         [in] Int32 capacity);
+        constructor(
+            [in] Int32 capacity);
 
-    //     constructor(
-    //         [in] ICollection* c);
+        constructor(
+            [in] ICollection* c);
 
-    //     interface IBlockingDeque;
-    //     interface IBlockingQueue;
-    //     interface IQueue;
-    //     interface ICollection;
-    //     interface IIterable;
-    //     interface ISerializable;
-    // }
+        interface IBlockingDeque;
+        interface IBlockingQueue;
+        interface IQueue;
+        interface ICollection;
+        interface IIterable;
+        interface ISerializable;
+    }
 
     // class CLinkedTransferQueue {
     //     constructor();

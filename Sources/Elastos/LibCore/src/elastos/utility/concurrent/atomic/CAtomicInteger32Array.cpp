@@ -2,7 +2,7 @@
 #include "CAtomicInteger32Array.h"
 #include <cutils/atomic.h>
 #include <cutils/atomic-inline.h>
-#include <elastos/StringBuilder.h>
+#include <StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 
@@ -11,6 +11,9 @@ namespace Utility {
 namespace Concurrent {
 namespace Atomic {
 
+CAR_INTERFACE_IMPL(CAtomicInteger32Array, Object, IAtomicInteger32Array)
+
+CAR_OBJECT_IMPL(CAtomicInteger32Array)
 /**
  * Creates a new AtomicIntegerArray of the given length, with all
  * elements initially zero.

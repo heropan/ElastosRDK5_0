@@ -8,6 +8,10 @@ namespace Atomic {
 
 const Int64 CAtomicMarkableReference::mPairOffset = 0; // = objectFieldOffset(UNSAFE, "pair", AtomicMarkableReference.class);
 
+CAR_INTERFACE_IMPL(CAtomicMarkableReference, Object, IAtomicMarkableReference)
+
+CAR_OBJECT_IMPL(CAtomicMarkableReference)
+
 ECode CAtomicMarkableReference::constructor(
     /* [in] */ IInterface* initialRef,
     /* [in] */ Boolean initialMark)

@@ -1,7 +1,7 @@
 
 #include "CLinkedTransferQueue.h"
 #include "LockSupport.h"
-#include <elastos/Math.h>
+#include <Math.h>
 #include "CSystem.h"
 #include "Thread.h"
 

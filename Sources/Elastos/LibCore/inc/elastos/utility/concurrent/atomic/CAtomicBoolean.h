@@ -1,8 +1,11 @@
 
-#ifndef __CATOMICBOOLEAN_H__
-#define __CATOMICBOOLEAN_H__
+#ifndef __ELASTOS_UTILITY_CATOMICBOOLEAN_H__
+#define __ELASTOS_UTILITY_CATOMICBOOLEAN_H__
 
-#include "_CAtomicBoolean.h"
+#include "_Elastos_Utility_Concurrent_CAtomicBoolean.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
@@ -10,8 +13,13 @@ namespace Concurrent {
 namespace Atomic {
 
 CarClass(CAtomicBoolean)
+    , public Object
+    , public IAtomicBoolean
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
     /**
      * Creates a new AtomicInteger with the given initial value.
      *
@@ -100,4 +108,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CATOMICBOOLEAN_H__
+#endif //__ELASTOS_UTILITY_CATOMICBOOLEAN_H__
