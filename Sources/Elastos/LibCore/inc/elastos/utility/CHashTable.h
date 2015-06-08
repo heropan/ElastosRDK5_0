@@ -1,13 +1,14 @@
 #ifndef __UTILITY_CHASHTABLE_H__
 #define __UTILITY_CHASHTABLE_H__
 
-#include "_CHashTable.h"
+#include "_Elastos_Utility_CHashTable.h"
 #include "HashTable.h"
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CHashTable) , public HashTable
+CarClass(CHashTable)
+    , public HashTable
 {
 public:
     /**
@@ -49,13 +50,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ IMap* map);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
 
     /**
      * Removes all elements from this {@code Map}, leaving it empty.
@@ -183,6 +177,10 @@ public:
         /* [in] */ PInterface value,
         /* [out] */ PInterface* oldValue);
 
+    CARAPI Put(
+        /* [in] */ PInterface key,
+        /* [in] */ PInterface value);
+
     /**
      * Copies every mapping in the specified {@code Map} to this {@code Map}.
      *
@@ -215,6 +213,9 @@ public:
     CARAPI Remove(
         /* [in] */ PInterface key,
         /* [out] */ PInterface* value);
+
+    CARAPI Remove(
+        /* [in] */ PInterface key);
 
     /**
      * Returns the number of mappings in this {@code Map}.
@@ -276,9 +277,6 @@ public:
      */
     CARAPI Keys(
         /* [out] */ IEnumeration** enm);
-
-protected:
-    CARAPI_(Mutex*) GetSelfLock();
 };
 
 } // namespace Utility

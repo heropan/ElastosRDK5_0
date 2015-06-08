@@ -16,6 +16,9 @@ module
     merge("utility/ILocale.car");
     merge("utility/IMap.car");
     merge("utility/IHashMap.car");
+    merge("utility/IHashSet.car");
+    merge("utility/IHashTable.car");
+    merge("utility/IIdentityHashMap.car");
     merge("utility/ILinkedList.car");
     merge("utility/IDictionary.car");
     merge("utility/IProperties.car");
@@ -325,6 +328,65 @@ module
             interface IMap;
             interface ICloneable;
             interface ISerializable;
+        }
+
+        class CHashSet {
+            constructor();
+
+            constructor(
+                [in] Int32 capacity);
+
+            constructor(
+                [in] Int32 capacity,
+                [in] Float loadFactor);
+
+            constructor(
+                [in] ICollection* collection);
+
+            constructor(
+                [in] IMap* backingMap);
+
+            interface IHashSet;
+            interface ISet;
+            interface ICollection;
+            interface IIterable;
+            interface ICloneable;
+            interface ISerializable;
+        }
+
+        class CHashTable {
+            constructor();
+
+            constructor(
+                [in] Int32 capacity);
+
+            constructor(
+                [in] Int32 capacity,
+                [in] Float loadFactor);
+
+            constructor(
+                [in] IMap* backingMap);
+
+            interface IHashTable;
+            interface IDictionary;
+            interface IMap;
+            interface ICloneable;
+            interface ISerializable;
+        }
+
+        class CIdentityHashMap {
+            constructor();
+
+            constructor(
+                [in] Int32 maxSize);
+
+            constructor(
+                [in] IMap* Map);
+
+            interface IIdentityHashMap;
+            interface IMap;
+            interface ISerializable;
+            interface ICloneable;
         }
 
 

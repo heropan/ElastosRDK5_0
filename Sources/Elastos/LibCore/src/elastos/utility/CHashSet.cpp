@@ -4,12 +4,6 @@
 namespace Elastos {
 namespace Utility {
 
-PInterface CHashSet::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CHashSet::Probe(riid);
-}
-
 ECode CHashSet::constructor()
 {
     return HashSet::Init();

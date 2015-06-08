@@ -1,13 +1,14 @@
 #ifndef __UTILITY_CHASHSET_H__
 #define __UTILITY_CHASHSET_H__
 
-#include "_CHashSet.h"
+#include "_Elastos_Utility_CHashSet.h"
 #include "HashSet.h"
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CHashSet) , public HashSet
+CarClass(CHashSet)
+    , public HashSet
 {
 public:
     /**
@@ -49,9 +50,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ IMap* backingMap);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Adds the specified object to this {@code HashSet} if not already present.

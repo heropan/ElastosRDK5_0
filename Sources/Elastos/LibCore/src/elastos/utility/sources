@@ -31,6 +31,14 @@ SOURCES += MapEntry.cpp
 SOURCES += CEnumMap.cpp
 SOURCES += HashMap.cpp
 SOURCES += CHashMap.cpp
+SOURCES += HashSet.cpp
+SOURCES += CHashSet.cpp
+SOURCES += HashTable.cpp
+SOURCES += CHashTable.cpp
+SOURCES += CIdentityHashMap.cpp
+
+
+
 
 
 SOURCES += Timer.cpp

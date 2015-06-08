@@ -1,7 +1,7 @@
 #ifndef __UTILITY_CIDENTITYHASHMAP_H__
 #define __UTILITY_CIDENTITYHASHMAP_H__
 
-#include "_CIdentityHashMap.h"
+#include "_Elastos_Utility_CIdentityHashMap.h"
 #include "AbstractMap.h"
 #include "MapEntry.h"
 #include "AbstractSet.h"
@@ -14,10 +14,15 @@ using Elastos::IO::IObjectStreamField;
 namespace Elastos {
 namespace Utility {
 
-CarClass(CIdentityHashMap) , public AbstractMap
+CarClass(CIdentityHashMap)
+    , public AbstractMap
+    , public IIdentityHashMap
+    , public ISerializable
+    , public ICloneable
 {
 public:
-    class IdentityHashMapEntry : public MapEntry
+    class IdentityHashMapEntry
+        : public MapEntry
     {
     public:
         IdentityHashMapEntry(
@@ -52,7 +57,7 @@ public:
     };
 
     class IdentityHashMapIterator
-        : public ElRefBase
+        : public Object
         , public IIterator
     {
     public:
@@ -90,14 +95,10 @@ public:
 
     class IdentityHashMapEntrySet
         : public AbstractSet
-        , public ElRefBase
-        , public ISet
     {
     public:
         IdentityHashMapEntrySet(
             /* [in] */ CIdentityHashMap* hm);
-
-        CAR_INTERFACE_DECL()
 
         AutoPtr<CIdentityHashMap> GetHashMap();
 
@@ -160,14 +161,10 @@ public:
 
     class IdentityHashMapKeySet
         : public AbstractSet
-        , public ElRefBase
-        , public ISet
     {
     public:
         IdentityHashMapKeySet(
             /* [in] */ CIdentityHashMap* hm);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI GetSize(
             /* [out] */ Int32* value);
@@ -228,14 +225,10 @@ public:
 
     class IdentityHashMapValues
         : public AbstractCollection
-        , public ElRefBase
-        , public ICollection
     {
     public:
         IdentityHashMapValues(
             /* [in] */ CIdentityHashMap* hm);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI GetSize(
             /* [out] */ Int32* value);
@@ -294,7 +287,8 @@ public:
         AutoPtr<CIdentityHashMap> mAssociatedMap;
     };
 
-    class IdentityHashMapMapEntryType : public MapEntry::Type
+    class IdentityHashMapMapEntryType
+        : public MapEntry::Type
     {
     public:
         CARAPI Get(
@@ -302,7 +296,8 @@ public:
             /* [out] */ IInterface** outface);
     };
 
-    class IdentityHashMapKeySetMapEntryType : public MapEntry::Type
+    class IdentityHashMapKeySetMapEntryType
+        : public MapEntry::Type
     {
     public:
         CARAPI Get(
@@ -310,7 +305,8 @@ public:
             /* [out] */ IInterface** outface);
     };
 
-    class IdentityHashMapValuesMapEntryType : public MapEntry::Type
+    class IdentityHashMapValuesMapEntryType
+        : public MapEntry::Type
     {
     public:
         CARAPI Get(
@@ -319,6 +315,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     CIdentityHashMap();
 
     /**
@@ -344,9 +342,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ IMap* map);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Removes all elements from this {@code Map}, leaving it empty.
@@ -474,6 +469,10 @@ public:
         /* [in] */ PInterface value,
         /* [out] */ PInterface* oldValue);
 
+    CARAPI Put(
+        /* [in] */ PInterface key,
+        /* [in] */ PInterface value);
+
     /**
      * Copies every mapping in the specified {@code Map} to this {@code Map}.
      *
@@ -506,6 +505,9 @@ public:
     CARAPI Remove(
         /* [in] */ PInterface key,
         /* [out] */ PInterface* value);
+
+    CARAPI Remove(
+        /* [in] */ PInterface key);
 
     /**
      * Returns the number of mappings in this {@code Map}.

@@ -3,47 +3,15 @@
 #include "CSystem.h"
 
 using Elastos::Core::ISystem;
+using Elastos::Core::EIID_ICloneable;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {
 
-class NullObject : public IInterface, public ElLightRefBase
+class NullObject
+    : public Object
 {
-public:
-    UInt32 AddRef()
-    {
-        return ElLightRefBase::AddRef();
-    }
-
-    UInt32 Release()
-    {
-        return ElLightRefBase::Release();
-    }
-
-    PInterface Probe(
-        /* [in] */ REIID riid)
-    {
-        if (EIID_IInterface == riid) {
-            return (PInterface)this;
-        }
-
-        return NULL;
-    }
-
-    ECode GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID)
-    {
-        VALIDATE_NOT_NULL(pIID)
-
-        if (pObject == (IInterface*)this) {
-            *pIID = EIID_ISet;
-        }
-        else {
-            return E_INVALID_ARGUMENT;
-        }
-        return NOERROR;
-    }
 };
 
 //==========================================================
@@ -56,13 +24,9 @@ const Int32 CIdentityHashMap::DEFAULT_MAX_SIZE;
 /* Default load factor of 0.75; */
 const Int32 CIdentityHashMap::sLoadFactor;
 
-const AutoPtr<IInterface> CIdentityHashMap::NULL_OBJECT = new NullObject;  //$NON-LOCK-1$
+const AutoPtr<IInterface> CIdentityHashMap::NULL_OBJECT = (IObject*)new NullObject;  //$NON-LOCK-1$
 
-PInterface CIdentityHashMap::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CIdentityHashMap::Probe(riid);
-}
+CAR_INTERFACE_IMPL_3(CIdentityHashMap, AbstractMap, IIdentityHashMap, ISerializable, ICloneable)
 
 CIdentityHashMap::CIdentityHashMap()
     : mSize(0)
@@ -308,6 +272,14 @@ ECode CIdentityHashMap::Put(
     return NOERROR;
 }
 
+ECode CIdentityHashMap::Put(
+    /* [in] */ PInterface key,
+    /* [in] */ PInterface value)
+{
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
 ECode CIdentityHashMap::PutAll(
     /* [in] */ IMap* map)
 {
@@ -404,6 +376,13 @@ ECode CIdentityHashMap::Remove(
     return NOERROR;
 }
 
+ECode CIdentityHashMap::Remove(
+    /* [in] */ PInterface key)
+{
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
 ECode CIdentityHashMap::EntrySet(
     /* [out] */ ISet** entries)
 {
@@ -476,7 +455,7 @@ ECode CIdentityHashMap::Equals(
         // ensure we use the equals method of the set created by "this"
         AutoPtr<ISet> mapset;
         map->EntrySet((ISet**)&mapset);
-        return set->Equals(mapset, result);
+        return (ICollection::Probe(set))->Equals(mapset, result);
     }
     *result = FALSE;
     return NOERROR;
@@ -523,11 +502,11 @@ ECode CIdentityHashMap::WriteObject(
     /* [in] */ IObjectOutputStream* stream)
 {
     stream->DefaultWriteObject();
-    stream->Write(mSize);
+    (IOutputStream::Probe(stream))->Write(mSize);
     AutoPtr<ISet> entries;
     EntrySet((ISet**)&entries);
     AutoPtr<IIterator> iterator;
-    entries->GetIterator((IIterator**)&iterator);
+    (IIterable::Probe(entries))->GetIterator((IIterator**)&iterator);
     Boolean isflag = FALSE;
     while (iterator->HasNext(&isflag), isflag) {
         AutoPtr<IInterface> outface;
@@ -545,7 +524,7 @@ ECode CIdentityHashMap::ReadObject(
 {
     stream->DefaultReadObject();
     Int32 savedSize = 0;
-    stream->Read(&savedSize);
+    (IInputStream::Probe(stream))->Read(&savedSize);
     mThreshold = GetThreshold(DEFAULT_MAX_SIZE);
     mElementData = NewElementArray(ComputeElementArraySize());
     for (Int32 i = savedSize; --i >= 0;) {
@@ -657,7 +636,7 @@ ECode CIdentityHashMap::IdentityHashMapEntry::SetValue(
 //==========================================================
 //       CIdentityHashMap::IdentityHashMapIterator
 //==========================================================
-CAR_INTERFACE_IMPL(CIdentityHashMap::IdentityHashMapIterator, IIterator);
+CAR_INTERFACE_IMPL(CIdentityHashMap::IdentityHashMapIterator, Object, IIterator);
 
 CIdentityHashMap::IdentityHashMapIterator::IdentityHashMapIterator(
     /* [in] */ MapEntry::Type* value,
@@ -742,50 +721,6 @@ ECode CIdentityHashMap::IdentityHashMapIterator::Remove()
 //==========================================================
 //       CIdentityHashMap::IdentityHashMapEntrySet
 //==========================================================
-
-UInt32 CIdentityHashMap::IdentityHashMapEntrySet::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CIdentityHashMap::IdentityHashMapEntrySet::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CIdentityHashMap::IdentityHashMapEntrySet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ISet*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ISet*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(ISet*)this;
-    }
-    else if (EIID_ISet == riid) {
-        return (ISet*)this;
-    }
-
-    return NULL;
-}
-
-ECode CIdentityHashMap::IdentityHashMapEntrySet::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ISet*)this) {
-        *pIID = EIID_ISet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
 
 CIdentityHashMap::IdentityHashMapEntrySet::IdentityHashMapEntrySet(
     /* [in] */ CIdentityHashMap* hm)
@@ -938,49 +873,6 @@ ECode CIdentityHashMap::IdentityHashMapEntrySet::ToArray(
 //==========================================================
 //       CIdentityHashMap::IdentityHashMapKeySet
 //==========================================================
-UInt32 CIdentityHashMap::IdentityHashMapKeySet::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CIdentityHashMap::IdentityHashMapKeySet::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CIdentityHashMap::IdentityHashMapKeySet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ISet*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ISet*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(ISet*)this;
-    }
-    else if (EIID_ISet == riid) {
-        return (ISet*)this;
-    }
-
-    return NULL;
-}
-
-ECode CIdentityHashMap::IdentityHashMapKeySet::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ISet*)this) {
-        *pIID = EIID_ISet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
 
 CIdentityHashMap::IdentityHashMapKeySet::IdentityHashMapKeySet(
     /* [in] */ CIdentityHashMap* hm)
@@ -1106,46 +998,6 @@ ECode CIdentityHashMap::IdentityHashMapKeySet::ToArray(
 //==========================================================
 //       CIdentityHashMap::IdentityHashMapValues
 //==========================================================
-UInt32 CIdentityHashMap::IdentityHashMapValues::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CIdentityHashMap::IdentityHashMapValues::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CIdentityHashMap::IdentityHashMapValues::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ICollection*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ICollection*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)this;
-    }
-
-    return NULL;
-}
-
-ECode CIdentityHashMap::IdentityHashMapValues::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ICollection*)this) {
-        *pIID = EIID_ICollection;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
 
 CIdentityHashMap::IdentityHashMapValues::IdentityHashMapValues(
     /* [in] */ CIdentityHashMap* hm)
@@ -1238,7 +1090,7 @@ ECode CIdentityHashMap::IdentityHashMapValues::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    *result = Object::Equals(this), object);
+    *result = Object::Equals(this, object);
     return NOERROR;
 }
 

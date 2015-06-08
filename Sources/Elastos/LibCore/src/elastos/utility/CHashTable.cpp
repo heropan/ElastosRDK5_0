@@ -4,22 +4,6 @@
 namespace Elastos {
 namespace Utility {
 
-PInterface CHashTable::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CHashTable::Probe(riid);
-}
-
-UInt32 CHashTable::AddRef()
-{
-    return _CHashTable::AddRef();
-}
-
-UInt32 CHashTable::Release()
-{
-    return _CHashTable::Release();
-}
-
 ECode CHashTable::constructor()
 {
     return HashTable::Init();
@@ -109,6 +93,14 @@ ECode CHashTable::Put(
     return HashTable::Put(key, value, oldValue);
 }
 
+ECode CHashTable::Put(
+    /* [in] */ PInterface key,
+    /* [in] */ PInterface value)
+{
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
 ECode CHashTable::PutAll(
     /* [in] */ IMap* map)
 {
@@ -120,6 +112,13 @@ ECode CHashTable::Remove(
     /* [out] */ PInterface* value)
 {
     return HashTable::Remove(key, value);
+}
+
+ECode CHashTable::Remove(
+    /* [in] */ PInterface key)
+{
+    assert(0 && "TODO");
+    return NOERROR;
 }
 
 ECode CHashTable::GetSize(
@@ -150,11 +149,6 @@ ECode CHashTable::Keys(
     /* [out] */ IEnumeration** enm)
 {
     return HashTable::Keys(enm);
-}
-
-Mutex* CHashTable::GetSelfLock()
-{
-    return &_m_syncLock;
 }
 
 } // namespace Utility

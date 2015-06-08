@@ -1,0 +1,20 @@
+module
+{
+    namespace Elastos {
+    namespace Utility {
+
+    /**
+     * @Involve
+     * interface IHashTable;
+     * interface IDictionary;
+     * interface IMap;
+     * interface ICloneable;
+     * interface ISerializable;
+     */
+    interface IHashTable {
+
+    }
+
+    } // namespace Utility
+    } // namespace Elastos
+}

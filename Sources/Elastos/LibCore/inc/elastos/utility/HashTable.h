@@ -2,12 +2,12 @@
 #define __UTILITY_HASHTABLE_H__
 
 #include "AbstractSet.h"
-#include "elastos/Mutex.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectStreamField;
-using Elastos::Core::Mutex;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -23,6 +23,12 @@ namespace Utility {
  * @see HashMap
  */
 class HashTable
+    : public Object
+    , public IHashTable
+    , public IDictionary
+    , public IMap
+    , public ICloneable
+    , public ISerializable
 {
 private:
     /**
@@ -32,7 +38,7 @@ private:
      * behaves the same way.
      */
     class HashtableEntry
-        : public ElRefBase
+        : public Object
         , public IMapEntry
     {
     public:
@@ -72,6 +78,7 @@ private:
     };
 
     class HashIterator
+        : public Object
     {
     public:
         HashIterator();
@@ -98,7 +105,6 @@ private:
 
     class KeyIterator
         : public HashIterator
-        , public ElRefBase
         , public IIterator
     {
     public:
@@ -118,7 +124,6 @@ private:
 
     class ValueIterator
         : public HashIterator
-        , public ElRefBase
         , public IIterator
     {
     public:
@@ -138,7 +143,6 @@ private:
 
     class EntryIterator
         : public HashIterator
-        , public ElRefBase
         , public IIterator
     {
     public:
@@ -158,7 +162,6 @@ private:
 
     class KeyEnumeration
         : public HashIterator
-        , public ElRefBase
         , public IEnumeration
     {
     public:
@@ -176,7 +179,6 @@ private:
 
     class ValueEnumeration
         : public HashIterator
-        , public ElRefBase
         , public IEnumeration
     {
     public:
@@ -194,14 +196,10 @@ private:
 
     class _KeySet
         : public AbstractSet
-        , public ElRefBase
-        , public ISet
     {
     public:
         _KeySet(
             /* [in] */ HashTable* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI GetIterator(
             /* [out] */ IIterator** outiter);
@@ -265,14 +263,10 @@ private:
 
     class _Values
         : public AbstractCollection
-        , public ElRefBase
-        , public ICollection
     {
     public:
         _Values(
             /* [in] */ HashTable* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI GetIterator(
             /* [out] */ IIterator** outiter);
@@ -336,14 +330,10 @@ private:
 
     class _EntrySet
         : public AbstractSet
-        , public ElRefBase
-        , public ISet
     {
     public:
         _EntrySet(
             /* [in] */ HashTable* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI GetIterator(
             /* [out] */ IIterator** outiter);
@@ -406,12 +396,7 @@ private:
     };
 
 public:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
-    virtual CARAPI_(UInt32) AddRef() = 0;
-
-    virtual CARAPI_(UInt32) Release() = 0;
+    CAR_INTERFACE_DECL()
 
     /**
      * Returns an enumeration on the elements of this dictionary.
@@ -671,8 +656,6 @@ protected:
      */
     virtual CARAPI Rehash();
 
-    virtual CARAPI_(Mutex*) GetSelfLock() = 0;
-
 private:
     /**
      * Inserts all of the elements of map into this Hashtable in a manner
@@ -841,6 +824,12 @@ private:
     /* transient */ AutoPtr<ISet> mKeySet;
     /* transient */ AutoPtr<ISet> mEntrySet;
     /* transient */ AutoPtr<ICollection> mValues;
+};
+
+template <>
+struct Conversion<Elastos::Utility::HashTable::HashtableEntry*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
 };
 
 } // namespace Utility

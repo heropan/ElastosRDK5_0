@@ -3,15 +3,24 @@
 
 #include "AbstractSet.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::IObjectOutputStream;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
 
-class HashSet : public AbstractSet
+class HashSet
+    : public AbstractSet
+    , public IHashSet
+    , public ICloneable
+    , public ISerializable
 {
 public:
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Adds the specified object to this {@code HashSet} if not already present.
      *

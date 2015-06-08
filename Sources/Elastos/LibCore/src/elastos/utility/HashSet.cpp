@@ -2,8 +2,15 @@
 #include "CHashSet.h"
 #include "CHashMap.h"
 
+using Elastos::Core::EIID_ICloneable;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IOutputStream;
+using Elastos::IO::EIID_ISerializable;
+
 namespace Elastos {
 namespace Utility {
+
+CAR_INTERFACE_IMPL_3(HashSet, AbstractSet, IHashSet, ICloneable, ISerializable)
 
 ECode HashSet::Init()
 {
@@ -108,7 +115,7 @@ ECode HashSet::GetIterator(
 
     AutoPtr<ISet> outset;
     mBackingMap->KeySet((ISet**)&outset);
-    return outset->GetIterator(it);
+    return (IIterable::Probe(outset))->GetIterator(it);
 }
 
 ECode HashSet::Remove(
@@ -133,12 +140,12 @@ ECode HashSet::WriteObject(
     /* [in] */ IObjectOutputStream* stream)
 {
     stream->DefaultWriteObject();
-    stream->Write(((CHashMap*)mBackingMap.Get())->mTable->GetLength());
+    (IOutputStream::Probe(stream))->Write(((CHashMap*)mBackingMap.Get())->mTable->GetLength());
     assert(0 && "TODO");
     // stream->WriteFloat(CHashMap::DEFAULT_LOAD_FACTOR);
     Int32 sizelen = 0;
     GetSize(&sizelen);
-    stream->Write(sizelen);
+    (IOutputStream::Probe(stream))->Write(sizelen);
     // for (E e : this) {
     //     stream.writeObject(e);
     // }
@@ -150,13 +157,13 @@ ECode HashSet::ReadObject(
 {
     stream->DefaultReadObject();
     Int32 length = 0;
-    stream->Read(&length);
+    (IInputStream::Probe(stream))->Read(&length);
     Float loadFactor = 0;
     assert(0 && "TODO");
     // stream->ReadFloat(&loadFactor);
     mBackingMap = CreateBackingMap(length, loadFactor);
     Int32 elementCount = 0;
-    stream->Read(&elementCount);
+    (IInputStream::Probe(stream))->Read(&elementCount);
     for (Int32 i = elementCount; --i >= 0;) {
         AutoPtr<IInterface> key;
         // stream->ReadObject((IInterface**)&key);

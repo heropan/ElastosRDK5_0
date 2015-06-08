@@ -1,13 +1,16 @@
 
-#include "CHashTable.h"
 #include "CFloat.h"
-#include "elastos/StringBuilder.h"
-#include <cutils/log.h>
+#include "StringBuilder.h"
+#include "HashTable.h"
 
 using Elastos::Core::IFloat;
 using Elastos::Core::CFloat;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IObjectOutputStreamPutField;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IOutputStream;
+using Elastos::Core::EIID_ICloneable;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -15,7 +18,7 @@ namespace Utility {
 //==========================================================
 //       HashTable::HashtableEntry
 //==========================================================
-CAR_INTERFACE_IMPL(HashTable::HashtableEntry, IMapEntry);
+CAR_INTERFACE_IMPL(HashTable::HashtableEntry, Object, IMapEntry);
 
 HashTable::HashtableEntry::HashtableEntry(
     /* [in] */ IInterface* key,
@@ -195,7 +198,7 @@ ECode HashTable::HashIterator::Remove()
 //==========================================================
 //       HashTable::KeyIterator
 //==========================================================
-CAR_INTERFACE_IMPL(HashTable::KeyIterator, IIterator);
+CAR_INTERFACE_IMPL(HashTable::KeyIterator, HashTable::HashIterator, IIterator);
 
 HashTable::KeyIterator::KeyIterator(
     /* [in] */ HashTable* host)
@@ -229,7 +232,7 @@ ECode HashTable::KeyIterator::Remove()
 //==========================================================
 //       HashTable::ValueIterator
 //==========================================================
-CAR_INTERFACE_IMPL(HashTable::ValueIterator, IIterator);
+CAR_INTERFACE_IMPL(HashTable::ValueIterator, HashTable::HashIterator, IIterator);
 
 HashTable::ValueIterator::ValueIterator(
     /* [in] */ HashTable* host)
@@ -263,7 +266,7 @@ ECode HashTable::ValueIterator::Remove()
 //==========================================================
 //       HashTable::EntryIterator
 //==========================================================
-CAR_INTERFACE_IMPL(HashTable::EntryIterator, IIterator);
+CAR_INTERFACE_IMPL(HashTable::EntryIterator, HashTable::HashIterator, IIterator);
 
 HashTable::EntryIterator::EntryIterator(
     /* [in] */ HashTable* host)
@@ -297,7 +300,7 @@ ECode HashTable::EntryIterator::Remove()
 //==========================================================
 //       HashTable::KeyEnumeration
 //==========================================================
-CAR_INTERFACE_IMPL(HashTable::KeyEnumeration, IEnumeration);
+CAR_INTERFACE_IMPL(HashTable::KeyEnumeration, HashTable::HashIterator, IEnumeration);
 
 HashTable::KeyEnumeration::KeyEnumeration(
     /* [in] */ HashTable* host)
@@ -326,7 +329,7 @@ ECode HashTable::KeyEnumeration::NextElement(
 //==========================================================
 //       HashTable::ValueEnumeration
 //==========================================================
-CAR_INTERFACE_IMPL(HashTable::ValueEnumeration, IEnumeration);
+CAR_INTERFACE_IMPL(HashTable::ValueEnumeration, HashTable::HashIterator, IEnumeration);
 
 HashTable::ValueEnumeration::ValueEnumeration(
     /* [in] */ HashTable* host)
@@ -355,49 +358,6 @@ ECode HashTable::ValueEnumeration::NextElement(
 //==========================================================
 //       HashTable::_KeySet
 //==========================================================
-UInt32 HashTable::_KeySet::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 HashTable::_KeySet::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface HashTable::_KeySet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ISet*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ISet*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(ISet*)this;
-    }
-    else if (EIID_ISet == riid) {
-        return (ISet*)this;
-    }
-
-    return NULL;
-}
-
-ECode HashTable::_KeySet::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ISet*)this) {
-        *pIID = EIID_ISet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
 
 HashTable::_KeySet::_KeySet(
     /* [in] */ HashTable* host)
@@ -435,7 +395,7 @@ ECode HashTable::_KeySet::Remove(
 {
     VALIDATE_NOT_NULL(value)
 
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     Int32 oldSize = mHost->mSize;
     AutoPtr<IInterface> res;
     mHost->Remove(o, (IInterface**)&res);
@@ -445,7 +405,7 @@ ECode HashTable::_KeySet::Remove(
 
 ECode HashTable::_KeySet::Clear()
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return mHost->Clear();
 }
 
@@ -473,7 +433,7 @@ ECode HashTable::_KeySet::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return AbstractSet::RemoveAll(collection, value);
 }
 
@@ -481,7 +441,7 @@ ECode HashTable::_KeySet::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return AbstractSet::RetainAll(collection, value);
 }
 
@@ -489,7 +449,7 @@ ECode HashTable::_KeySet::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return AbstractSet::ContainsAll(collection, value);
 }
 
@@ -497,28 +457,28 @@ ECode HashTable::_KeySet::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* value)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return AbstractSet::Equals(object, value);
 }
 
 ECode HashTable::_KeySet::GetHashCode(
     /* [out] */ Int32* value)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return AbstractSet::GetHashCode(value);
 }
 
 ECode HashTable::_KeySet::ToString(
     /* [out] */ String* str)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return AbstractSet::ToString(str);
 }
 
 ECode HashTable::_KeySet::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return AbstractSet::ToArray(array);
 }
 
@@ -526,7 +486,7 @@ ECode HashTable::_KeySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return AbstractSet::ToArray(contents, outArray);
 }
 
@@ -534,46 +494,6 @@ ECode HashTable::_KeySet::ToArray(
 //==========================================================
 //       HashTable::_Values
 //==========================================================
-UInt32 HashTable::_Values::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 HashTable::_Values::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface HashTable::_Values::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ICollection*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ICollection*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)this;
-    }
-
-    return NULL;
-}
-
-ECode HashTable::_Values::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ICollection*)this) {
-        *pIID = EIID_ICollection;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
 
 HashTable::_Values::_Values(
     /* [in] */ HashTable* host)
@@ -672,21 +592,21 @@ ECode HashTable::_Values::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return AbstractCollection::ContainsAll(collection, value);
 }
 
 ECode HashTable::_Values::ToString(
     /* [out] */ String* str)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return AbstractCollection::ToString(str);
 }
 
 ECode HashTable::_Values::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return AbstractCollection::ToArray(array);
 }
 
@@ -694,7 +614,7 @@ ECode HashTable::_Values::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
+    synchronized(mHost);
     return AbstractCollection::ToArray(contents, outArray);
 }
 
@@ -702,49 +622,6 @@ ECode HashTable::_Values::ToArray(
 //==========================================================
 //       HashTable::_EntrySet
 //==========================================================
-UInt32 HashTable::_EntrySet::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 HashTable::_EntrySet::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface HashTable::_EntrySet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ISet*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ISet*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(ISet*)this;
-    }
-    else if (EIID_ISet == riid) {
-        return (ISet*)this;
-    }
-
-    return NULL;
-}
-
-ECode HashTable::_EntrySet::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ISet*)this) {
-        *pIID = EIID_ISet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
 
 HashTable::_EntrySet::_EntrySet(
     /* [in] */ HashTable* host)
@@ -834,32 +711,36 @@ ECode HashTable::_EntrySet::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
-    return AbstractSet::RemoveAll(collection, value);
+    synchronized(mHost) {
+        return AbstractSet::RemoveAll(collection, value);
+    }
 }
 
 ECode HashTable::_EntrySet::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
-    return AbstractSet::RetainAll(collection, value);
+    synchronized(mHost) {
+        return AbstractSet::RetainAll(collection, value);
+    }
 }
 
 ECode HashTable::_EntrySet::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
-    return AbstractSet::ContainsAll(collection, value);
+    synchronized(mHost) {
+        return AbstractSet::ContainsAll(collection, value);
+    }
 }
 
 ECode HashTable::_EntrySet::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* value)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
-    return AbstractSet::Equals(object, value);
+    synchronized(mHost) {
+        return AbstractSet::Equals(object, value);
+    }
 }
 
 ECode HashTable::_EntrySet::GetHashCode(
@@ -871,28 +752,35 @@ ECode HashTable::_EntrySet::GetHashCode(
 ECode HashTable::_EntrySet::ToString(
     /* [out] */ String* str)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
-    return AbstractSet::ToString(str);
+    synchronized(mHost) {
+        return AbstractSet::ToString(str);
+    }
 }
 
 ECode HashTable::_EntrySet::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
-    return AbstractSet::ToArray(array);
+    synchronized(mHost)
+    {
+        return AbstractSet::ToArray(array);
+    }
 }
 
 ECode HashTable::_EntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    Mutex::Autolock lock(mHost->GetSelfLock());
-    return AbstractSet::ToArray(contents, outArray);
+    synchronized(mHost) {
+        return AbstractSet::ToArray(contents, outArray);
+    }
 }
 
 //==========================================================
 //       HashTable
 //==========================================================
+
+CAR_INTERFACE_IMPL_5(HashTable, Object, IHashTable, IDictionary, IMap, ICloneable, ISerializable);
+
 const Int32 HashTable::MINIMUM_CAPACITY;
 
 const Int32 HashTable::MAXIMUM_CAPACITY;
@@ -990,7 +878,7 @@ ECode HashTable::ConstructorPutAll(
     AutoPtr<ArrayOf<IInterface*> > outarr;
     AutoPtr<ISet> outset;
     map->EntrySet((ISet**)&outset);
-    outset->ToArray((ArrayOf<IInterface*>**)&outarr);
+    (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&outarr);
     for (Int32 i = 0; i < outarr->GetLength(); i++) {
         AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
         AutoPtr<IInterface> keyface;
@@ -1014,11 +902,8 @@ Int32 HashTable::CapacityForInitSize(
 ECode HashTable::Clone(
     /* [out] */ IInterface** object)
 {
-    Mutex::Autolock lock(GetSelfLock());
-    /*
-     * This could be made more efficient. It unnecessarily hashes all of
-     * the elements in the map.
-     */
+    /*synchronized(this);
+
     AutoPtr<CHashTable> result;
     // try {
     // result = (Hashtable<K, V>) super.clone();
@@ -1036,7 +921,7 @@ ECode HashTable::Clone(
 
     result->ConstructorPutAll((IMap*)this->Probe(EIID_IMap));
     *object = result->Probe(EIID_IInterface);
-    REFCOUNT_ADD(*object)
+    REFCOUNT_ADD(*object)*/
     return NOERROR;
 }
 
@@ -1045,9 +930,10 @@ ECode HashTable::IsEmpty(
 {
     VALIDATE_NOT_NULL(value)
 
-    Mutex::Autolock lock(GetSelfLock());
-    *value = mSize == 0;
-    return NOERROR;
+    synchronized(this) {
+       *value = mSize == 0;
+        return NOERROR;
+    }
 }
 
 ECode HashTable::GetSize(
@@ -1055,9 +941,10 @@ ECode HashTable::GetSize(
 {
     VALIDATE_NOT_NULL(value)
 
-    Mutex::Autolock lock(GetSelfLock());
-    *value = mSize;
-    return NOERROR;
+    synchronized(this) {
+        *value = mSize;
+        return NOERROR;
+    }
 }
 
 ECode HashTable::Get(
@@ -1066,24 +953,25 @@ ECode HashTable::Get(
 {
     VALIDATE_NOT_NULL(outface)
 
-    Mutex::Autolock lock(GetSelfLock());
-    // Doug Lea's supplemental secondaryHash function (inlined)
-    Int32 hash = Object::GetHashCode(key);
-    hash ^= ((UInt32)hash >> 20) ^ ((UInt32)hash >> 12);
-    hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
+    synchronized(this) {
+        // Doug Lea's supplemental secondaryHash function (inlined)
+        Int32 hash = Object::GetHashCode(key);
+        hash ^= ((UInt32)hash >> 20) ^ ((UInt32)hash >> 12);
+        hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
 
-    AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
-    for (AutoPtr<HashtableEntry> e = (*tab)[hash & (tab->GetLength() - 1)];
-            e != NULL; e = e->mNext) {
-        AutoPtr<IInterface> eKey = e->mKey;
-        if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
-            *outface = e->mValue;
-            REFCOUNT_ADD(*outface)
-            return NOERROR;
+        AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
+        for (AutoPtr<HashtableEntry> e = (*tab)[hash & (tab->GetLength() - 1)];
+                e != NULL; e = e->mNext) {
+            AutoPtr<IInterface> eKey = e->mKey;
+            if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
+                *outface = e->mValue;
+                REFCOUNT_ADD(*outface)
+                return NOERROR;
+            }
         }
+        *outface = NULL;
+        return NOERROR;
     }
-    *outface = NULL;
-    return NOERROR;
 }
 
 ECode HashTable::ContainsKey(
@@ -1092,23 +980,24 @@ ECode HashTable::ContainsKey(
 {
     VALIDATE_NOT_NULL(result)
 
-    Mutex::Autolock lock(GetSelfLock());
-    // Doug Lea's supplemental secondaryHash function (inlined)
-    Int32 hash = Object::GetHashCode(key);
-    hash ^= ((UInt32)hash >> 20) ^ ((UInt32)hash >> 12);
-    hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
+    synchronized(this) {
+        // Doug Lea's supplemental secondaryHash function (inlined)
+        Int32 hash = Object::GetHashCode(key);
+        hash ^= ((UInt32)hash >> 20) ^ ((UInt32)hash >> 12);
+        hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
 
-    AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
-    for (AutoPtr<HashtableEntry> e = (*tab)[hash & (tab->GetLength() - 1)];
-            e != NULL; e = e->mNext) {
-        AutoPtr<IInterface> eKey = e->mKey;
-        if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
-            *result = TRUE;
-            return NOERROR;
+        AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
+        for (AutoPtr<HashtableEntry> e = (*tab)[hash & (tab->GetLength() - 1)];
+                e != NULL; e = e->mNext) {
+            AutoPtr<IInterface> eKey = e->mKey;
+            if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
+                *result = TRUE;
+                return NOERROR;
+            }
         }
+        *result = FALSE;
+        return NOERROR;
     }
-    *result = FALSE;
-    return NOERROR;
 }
 
 ECode HashTable::ContainsValue(
@@ -1116,27 +1005,30 @@ ECode HashTable::ContainsValue(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = FALSE;
 
-    if (value == NULL) {
-        // throw new NullPointerException("value == null");
-        return E_NULL_POINTER_EXCEPTION;
-    }
 
-    Mutex::Autolock lock(GetSelfLock());
-    AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
-    Int32 len = tab->GetLength();
+    synchronized(this) {
+        *result = FALSE;
 
-    for (Int32 i = 0; i < len; i++) {
-        for (AutoPtr<HashtableEntry> e = (*tab)[i]; e != NULL; e = e->mNext) {
-            if (value == e->mValue) {
-                *result = TRUE;
-                return NOERROR;
+        if (value == NULL) {
+            // throw new NullPointerException("value == null");
+            return E_NULL_POINTER_EXCEPTION;
+        }
+
+        AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
+        Int32 len = tab->GetLength();
+
+        for (Int32 i = 0; i < len; i++) {
+            for (AutoPtr<HashtableEntry> e = (*tab)[i]; e != NULL; e = e->mNext) {
+                if (value == e->mValue) {
+                    *result = TRUE;
+                    return NOERROR;
+                }
             }
         }
-    }
 
-    return NOERROR;
+        return NOERROR;
+    }
 }
 
 ECode HashTable::Contains(
@@ -1151,46 +1043,45 @@ ECode HashTable::Put(
     /* [in] */ IInterface* value,
     /* [out] */ IInterface** outface)
 {
-    if (key == NULL || value == NULL) {
+    synchronized(this) {
+        if (key == NULL || value == NULL) {
+            if (outface) {
+                *outface = NULL;
+            }
+            // throw new NullPointerException("key or value is null");
+            return E_NULL_POINTER_EXCEPTION;
+        }
+        Int32 keyhash = Object::GetHashCode(key);
+        Int32 hash = SecondaryHash(keyhash);
+        AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
+        Int32 index = hash & (tab->GetLength() - 1);
+        AutoPtr<HashtableEntry> first = (*tab)[index];
+        for (AutoPtr<HashtableEntry> e = first; e != NULL; e = e->mNext) {
+            if (e->mHash == hash && Object::Equals(key, e->mKey)) {
+                if (outface) {
+                    *outface = e->mValue;;
+                    REFCOUNT_ADD(*outface)
+                }
+
+                e->mValue = value;
+                return NOERROR;
+            }
+        }
+        // No entry for key is present; create one
+        mModCount++;
+        if (mSize++ > mThreshold) {
+            Rehash();  // Does nothing!!
+            tab = DoubleCapacity();
+            index = hash & (tab->GetLength() - 1);
+            first = (*tab)[index];
+        }
+        AutoPtr<HashtableEntry> res = new HashtableEntry(key, value, hash, first);
+        tab->Set(index, res);
         if (outface) {
             *outface = NULL;
         }
-        // throw new NullPointerException("key or value is null");
-        return E_NULL_POINTER_EXCEPTION;
+        return NOERROR;
     }
-
-    Mutex::Autolock lock(GetSelfLock());
-    Int32 keyhash = Object::GetHashCode(key);
-    Int32 hash = SecondaryHash(keyhash);
-    AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
-    Int32 index = hash & (tab->GetLength() - 1);
-    AutoPtr<HashtableEntry> first = (*tab)[index];
-    for (AutoPtr<HashtableEntry> e = first; e != NULL; e = e->mNext) {
-        if (e->mHash == hash && Object::Equals(key, e->mKey)) {
-            if (outface) {
-                *outface = e->mValue;;
-                REFCOUNT_ADD(*outface)
-            }
-
-            e->mValue = value;
-            return NOERROR;
-        }
-    }
-
-    // No entry for key is present; create one
-    mModCount++;
-    if (mSize++ > mThreshold) {
-        Rehash();  // Does nothing!!
-        tab = DoubleCapacity();
-        index = hash & (tab->GetLength() - 1);
-        first = (*tab)[index];
-    }
-    AutoPtr<HashtableEntry> res = new HashtableEntry(key, value, hash, first);
-    tab->Set(index, res);
-    if (outface) {
-        *outface = NULL;
-    }
-    return NOERROR;
 }
 
 ECode HashTable::ConstructorPut(
@@ -1227,24 +1118,25 @@ ECode HashTable::ConstructorPut(
 ECode HashTable::PutAll(
     /* [in] */ IMap* map)
 {
-    Mutex::Autolock lock(GetSelfLock());
-    Int32 sizelen = 0;
-    map->GetSize(&sizelen);
-    EnsureCapacity(sizelen);
-    AutoPtr<ArrayOf<IInterface*> > outarr;
-    AutoPtr<ISet> outset;
-    map->EntrySet((ISet**)&outset);
-    outset->ToArray((ArrayOf<IInterface*>**)&outarr);
-    for (Int32 i = 0; i < outarr->GetLength(); i++) {
-        AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
-        AutoPtr<IInterface> keyface;
-        AutoPtr<IInterface> valueface;
-        e->GetKey((IInterface**)&keyface);
-        e->GetValue((IInterface**)&valueface);
-        AutoPtr<IInterface> outface;
-        Put(keyface, valueface, (IInterface**)&outface);
+    synchronized(this) {
+        Int32 sizelen = 0;
+        map->GetSize(&sizelen);
+        EnsureCapacity(sizelen);
+        AutoPtr<ArrayOf<IInterface*> > outarr;
+        AutoPtr<ISet> outset;
+        map->EntrySet((ISet**)&outset);
+        (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&outarr);
+        for (Int32 i = 0; i < outarr->GetLength(); i++) {
+            AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
+            AutoPtr<IInterface> keyface;
+            AutoPtr<IInterface> valueface;
+            e->GetKey((IInterface**)&keyface);
+            e->GetValue((IInterface**)&valueface);
+            AutoPtr<IInterface> outface;
+            Put(keyface, valueface, (IInterface**)&outface);
+        }
+        return NOERROR;
     }
-    return NOERROR;
 }
 
 ECode HashTable::EnsureCapacity(
@@ -1349,43 +1241,45 @@ ECode HashTable::Remove(
 {
     VALIDATE_NOT_NULL(outface)
 
-    Mutex::Autolock lock(GetSelfLock());
-    Int32 keyhash = Object::GetHashCode(key);
-    Int32 hash = SecondaryHash(keyhash);
-    AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
-    Int32 index = hash & (tab->GetLength() - 1);
-    AutoPtr<HashtableEntry> prev;
-    for ( AutoPtr<HashtableEntry> e = (*tab)[index]; e != NULL; prev = e, e = e->mNext) {
-        if (e->mHash == hash && Object::Equals(key, e->mKey)) {
-            if (prev == NULL) {
-                tab->Set(index, e->mNext);
+    synchronized(this) {
+        Int32 keyhash = Object::GetHashCode(key);
+        Int32 hash = SecondaryHash(keyhash);
+        AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
+        Int32 index = hash & (tab->GetLength() - 1);
+        AutoPtr<HashtableEntry> prev;
+        for ( AutoPtr<HashtableEntry> e = (*tab)[index]; e != NULL; prev = e, e = e->mNext) {
+            if (e->mHash == hash && Object::Equals(key, e->mKey)) {
+                if (prev == NULL) {
+                    tab->Set(index, e->mNext);
+                }
+                else {
+                    prev->mNext = e->mNext;
+                }
+                mModCount++;
+                mSize--;
+                *outface = e->mValue;
+                REFCOUNT_ADD(*outface);
+                return NOERROR;
             }
-            else {
-                prev->mNext = e->mNext;
-            }
-            mModCount++;
-            mSize--;
-            *outface = e->mValue;
-            REFCOUNT_ADD(*outface)
-            return NOERROR;
         }
+        *outface = NULL;
+        return NOERROR;
     }
-    *outface = NULL;
-    return NOERROR;
 }
 
 ECode HashTable::Clear()
 {
-    Mutex::Autolock lock(GetSelfLock());
-    if (mSize != 0) {
+    synchronized(this) {
+        if (mSize != 0) {
         // Arrays.fill(table, null);
-        for (Int32 i = 0; i < mTable->GetLength(); ++i) {
-            mTable->Set(i, NULL);
+            for (Int32 i = 0; i < mTable->GetLength(); ++i) {
+                mTable->Set(i, NULL);
+                }
+            mModCount++;
+            mSize = 0;
         }
-        mModCount++;
-        mSize = 0;
+        return NOERROR;
     }
-    return NOERROR;
 }
 
 ECode HashTable::KeySet(
@@ -1393,11 +1287,12 @@ ECode HashTable::KeySet(
 {
     VALIDATE_NOT_NULL(keySet)
 
-    Mutex::Autolock lock(GetSelfLock());
-    AutoPtr<ISet> ks = mKeySet;
-    *keySet = ks != NULL ? ks : (mKeySet = (ISet*) new _KeySet(this));
-    REFCOUNT_ADD(*keySet)
-    return NOERROR;
+    synchronized(this) {
+        AutoPtr<ISet> ks = mKeySet;
+        *keySet = ks != NULL ? ks : (mKeySet = (ISet*) new _KeySet(this));
+        REFCOUNT_ADD(*keySet);
+        return NOERROR;
+    }
 }
 
 ECode HashTable::Values(
@@ -1405,11 +1300,12 @@ ECode HashTable::Values(
 {
     VALIDATE_NOT_NULL(value)
 
-    Mutex::Autolock lock(GetSelfLock());
-    AutoPtr<ICollection> vs = mValues;
-    *value = vs != NULL ? vs : (mValues = (ICollection*) new _Values(this));
-    REFCOUNT_ADD(*value)
-    return NOERROR;
+    synchronized(this) {
+        AutoPtr<ICollection> vs = mValues;
+        *value = vs != NULL ? vs : (mValues = (ICollection*) new _Values(this));
+        REFCOUNT_ADD(*value);
+        return NOERROR;
+    }
 }
 
 ECode HashTable::EntrySet(
@@ -1417,11 +1313,12 @@ ECode HashTable::EntrySet(
 {
     VALIDATE_NOT_NULL(entries)
 
-    Mutex::Autolock lock(GetSelfLock());
-    AutoPtr<ISet> es = mEntrySet;
-    *entries = (es != NULL) ? es : (mEntrySet = (ISet*) new _EntrySet(this));
-    REFCOUNT_ADD(*entries)
-    return NOERROR;
+    synchronized(this) {
+        AutoPtr<ISet> es = mEntrySet;
+        *entries = (es != NULL) ? es : (mEntrySet = (ISet*) new _EntrySet(this));
+        REFCOUNT_ADD(*entries);
+        return NOERROR;
+    }
 }
 
 ECode HashTable::Keys(
@@ -1429,10 +1326,11 @@ ECode HashTable::Keys(
 {
     VALIDATE_NOT_NULL(enm)
 
-    Mutex::Autolock lock(GetSelfLock());
-    AutoPtr<IEnumeration> res = (IEnumeration*) new KeyEnumeration(this);
-    *enm = res;
-    REFCOUNT_ADD(*enm)
+    synchronized(this) {
+        AutoPtr<IEnumeration> res = (IEnumeration*) new KeyEnumeration(this);
+        *enm = res;
+        REFCOUNT_ADD(*enm);
+    }
     return NOERROR;
 }
 
@@ -1441,10 +1339,11 @@ ECode HashTable::Elements(
 {
     VALIDATE_NOT_NULL(enm)
 
-    Mutex::Autolock lock(GetSelfLock());
-    AutoPtr<IEnumeration> res = (IEnumeration*) new ValueEnumeration(this);
-    *enm = res;
-    REFCOUNT_ADD(*enm)
+    synchronized(this) {
+        AutoPtr<IEnumeration> res = (IEnumeration*) new ValueEnumeration(this);
+        *enm = res;
+        REFCOUNT_ADD(*enm);
+    }
     return NOERROR;
 }
 
@@ -1452,46 +1351,50 @@ Boolean HashTable::ContainsMapping(
     /* [in] */ IInterface* key,
     /* [in] */ IInterface* value)
 {
-    Mutex::Autolock lock(GetSelfLock());
-    Int32 keycode = Object::GetHashCode(key);
-    Int32 hash = SecondaryHash(keycode);
-    AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
-    Int32 index = hash & (tab->GetLength() - 1);
-    for (AutoPtr<HashtableEntry> e = (*tab)[index]; e != NULL; e = e->mNext) {
-        if (e->mHash == hash && Object::Equals(e->mKey, key)) {
-            return Object::Equals(e->mValue, value);
+    synchronized(this) {
+        Int32 keycode = Object::GetHashCode(key);
+        Int32 hash = SecondaryHash(keycode);
+        AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
+        Int32 index = hash & (tab->GetLength() - 1);
+        for (AutoPtr<HashtableEntry> e = (*tab)[index]; e != NULL; e = e->mNext) {
+            if (e->mHash == hash && Object::Equals((e->mKey).Get(), key)) {
+                Boolean res = FALSE;
+                (IObject::Probe(e->mValue))->Equals(value, &res);
+                return res;
+            }
         }
+        return FALSE; // No entry for key
     }
-    return FALSE; // No entry for key
 }
 
 Boolean HashTable::RemoveMapping(
     /* [in] */ IInterface* key,
     /* [in] */ IInterface* value)
 {
-    Mutex::Autolock lock(GetSelfLock());
-    Int32 keycode = Object::GetHashCode(key);
-    Int32 hash = SecondaryHash(keycode);
-    AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
-    Int32 index = hash & (tab->GetLength() - 1);
-    AutoPtr<HashtableEntry> prev;
-    for (AutoPtr<HashtableEntry> e = (*tab)[index]; e != NULL; prev = e, e = e->mNext) {
-        if (e->mHash == hash && Object::Equals(e->mKey, key)) {
-            if (!(e->mValue.Get() == value)) {
-                return FALSE;  // Map has wrong value for key
+    synchronized(this) {
+        Int32 keycode = Object::GetHashCode(key);
+        Int32 hash = SecondaryHash(keycode);
+        AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
+        Int32 index = hash & (tab->GetLength() - 1);
+        AutoPtr<HashtableEntry> prev;
+        for (AutoPtr<HashtableEntry> e = (*tab)[index]; e != NULL; prev = e, e = e->mNext) {
+            if (e->mHash == hash && Object::Equals((e->mKey).Get(), key)) {
+                if (!(e->mValue.Get() == value)) {
+                    return FALSE;  // Map has wrong value for key
+                }
+                if (prev == NULL) {
+                    tab->Set(index, e->mNext);
+                }
+                else {
+                    prev->mNext = e->mNext;
+                }
+                mModCount++;
+                mSize--;
+                return TRUE;
             }
-            if (prev == NULL) {
-                tab->Set(index, e->mNext);
-            }
-            else {
-                prev->mNext = e->mNext;
-            }
-            mModCount++;
-            mSize--;
-            return TRUE;
         }
+        return FALSE; // No entry for key
     }
-    return FALSE; // No entry for key
 }
 
 ECode HashTable::Equals(
@@ -1500,14 +1403,15 @@ ECode HashTable::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    Mutex::Autolock lock(GetSelfLock());
-    AutoPtr<IMap> res = (IMap*) object->Probe(EIID_IMap);
-    AutoPtr<ISet> outarr;
-    AutoPtr<ISet> outarr2;
-    EntrySet((ISet**)&outarr);
-    Boolean isflag = FALSE;
-    *result = (res != NULL) && (outarr->Equals((res->EntrySet((ISet**)&outarr2), outarr2), &isflag), isflag);
-    return NOERROR;
+    synchronized(this) {
+        AutoPtr<IMap> res = (IMap*) object->Probe(EIID_IMap);
+        AutoPtr<ISet> outarr;
+        AutoPtr<ISet> outarr2;
+        EntrySet((ISet**)&outarr);
+        Boolean isflag = FALSE;
+        *result = (res != NULL) && ((ICollection::Probe(outarr))->Equals((res->EntrySet((ISet**)&outarr2), outarr2), &isflag), isflag);
+        return NOERROR;
+    }
 }
 
 ECode HashTable::GetHashCode(
@@ -1515,28 +1419,29 @@ ECode HashTable::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    Mutex::Autolock lock(GetSelfLock());
-    Int32 result = 0;
-    AutoPtr<ArrayOf<IInterface*> > outarr;
-    AutoPtr<ISet> outset;
-    EntrySet((ISet**)&outset);
-    outset->ToArray((ArrayOf<IInterface*>**)&outarr);
-    for (Int32 i = 0; i < outarr->GetLength(); i++) {
-        AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
-        AutoPtr<IInterface> key;
-        e->GetKey((IInterface**)&key);
-        AutoPtr<IInterface> value;
-        e->GetValue((IInterface**)&value);
-        if (key.Get() == this->Probe(EIID_IInterface) || value.Get() == this->Probe(EIID_IInterface)) {
-            continue;
+    synchronized(this) {
+        Int32 result = 0;
+        AutoPtr<ArrayOf<IInterface*> > outarr;
+        AutoPtr<ISet> outset;
+        EntrySet((ISet**)&outset);
+        (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&outarr);
+        for (Int32 i = 0; i < outarr->GetLength(); i++) {
+            AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
+            AutoPtr<IInterface> key;
+            e->GetKey((IInterface**)&key);
+            AutoPtr<IInterface> value;
+            e->GetValue((IInterface**)&value);
+            if (key.Get() == this->Probe(EIID_IInterface) || value.Get() == this->Probe(EIID_IInterface)) {
+                continue;
+            }
+            Int32 keyhash = Object::GetHashCode(key);
+            Int32 valuehash = Object::GetHashCode(value);
+            result += (key != NULL ? keyhash : 0)
+                    ^ (value != NULL ? valuehash : 0);
         }
-        Int32 keyhash = Object::GetHashCode(key);
-        Int32 valuehash = Object::GetHashCode(value);
-        result += (key != NULL ? keyhash : 0)
-                ^ (value != NULL ? valuehash : 0);
+        *hashCode = result;
+        return NOERROR;
     }
-    *hashCode = result;
-    return NOERROR;
 }
 
 ECode HashTable::ToString(
@@ -1544,41 +1449,42 @@ ECode HashTable::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
-    Mutex::Autolock lock(GetSelfLock());
-    StringBuilder result;
-    result.AppendChar('{');
-    AutoPtr<ISet> outarr;
-    EntrySet((ISet**)&outarr);
-    AutoPtr<IIterator> i;
-    outarr->GetIterator((IIterator**)&i);
-    Boolean hasMore = FALSE;
-    i->HasNext(&hasMore);
-    while (hasMore) {
-        AutoPtr<IInterface> outface;
-        i->Next((IInterface**)&outface);
-        AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
+    synchronized(this) {
+        StringBuilder result;
+        result.AppendChar('{');
+        AutoPtr<ISet> outarr;
+        EntrySet((ISet**)&outarr);
+        AutoPtr<IIterator> i;
+        (IIterable::Probe(outarr))->GetIterator((IIterator**)&i);
+        Boolean hasMore = FALSE;
+        i->HasNext(&hasMore);
+        while (hasMore) {
+            AutoPtr<IInterface> outface;
+            i->Next((IInterface**)&outface);
+            AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
 
-        AutoPtr<IInterface> key;
-        entry->GetKey((IInterface**)&key);
-        String keystr;
-        result.AppendString(key.Get() == this->Probe(EIID_IInterface)
-            ? String("(this Map)") : Object::ToString(key));
+            AutoPtr<IInterface> key;
+            entry->GetKey((IInterface**)&key);
+            String keystr;
+            result.Append(key.Get() == this->Probe(EIID_IInterface)
+                ? String("(this Map)") : Object::ToString(key));
 
-        result.AppendChar('=');
+            result.AppendChar('=');
 
-        AutoPtr<IInterface> value;
-        entry->GetValue((IInterface**)&value);
-        String valuestr;
-        result.AppendString(value.Get() == this->Probe(EIID_IInterface)
-            ? String("(this Map)") : Object::ToString(value));
+            AutoPtr<IInterface> value;
+            entry->GetValue((IInterface**)&value);
+            String valuestr;
+            result.Append(value.Get() == this->Probe(EIID_IInterface)
+                ? String("(this Map)") : Object::ToString(value));
 
-        if (i->HasNext(&hasMore), hasMore) {
-            result.AppendCStr(", ");
+            if (i->HasNext(&hasMore), hasMore) {
+                result.Append(", ");
+            }
         }
-    }
 
-    result.AppendChar('}');
-    return result.ToString(str);
+        result.AppendChar('}');
+        return result.ToString(str);
+    }
 }
 
 Int32 HashTable::SecondaryHash(
@@ -1607,25 +1513,26 @@ Int32 HashTable::RoundUpToPowerOfTwo(
 ECode HashTable::WriteObject(
     /* [in] */ IObjectOutputStream* stream)
 {
-    Mutex::Autolock lock(GetSelfLock());
     // Emulate loadFactor field for other implementations to read
-    AutoPtr<IObjectOutputStreamPutField> fields;
-    stream->PutFields((IObjectOutputStreamPutField**)&fields);
-    fields->PutInt32(String("threshold"),  (Int32) (DEFAULT_LOAD_FACTOR * mTable->GetLength()));
-    fields->PutFloat(String("loadFactor"), DEFAULT_LOAD_FACTOR);
-    stream->WriteFields();
+    synchronized(this) {
+        AutoPtr<IObjectOutputStreamPutField> fields;
+        stream->PutFields((IObjectOutputStreamPutField**)&fields);
+        fields->Put(String("threshold"),  (Int32) (DEFAULT_LOAD_FACTOR * mTable->GetLength()));
+        fields->Put(String("loadFactor"), DEFAULT_LOAD_FACTOR);
+        stream->WriteFields();
 
-    stream->Write(mTable->GetLength()); // Capacity
-    stream->Write(mSize);
-    AutoPtr<ArrayOf<IInterface*> > outarr;
-    AutoPtr<ISet> outset;
-    EntrySet((ISet**)&outset);
-    outset->ToArray((ArrayOf<IInterface*>**)&outarr);
-    for (Int32 i = 0; i < outarr->GetLength(); i++) {
-        AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
-        assert(0 && "TODO");
-        // stream.writeObject(e.getKey());
-        // stream.writeObject(e.getValue());
+        (IOutputStream::Probe(stream))->Write(mTable->GetLength()); // Capacity
+        (IOutputStream::Probe(stream))->Write(mSize);
+        AutoPtr<ArrayOf<IInterface*> > outarr;
+        AutoPtr<ISet> outset;
+        EntrySet((ISet**)&outset);
+        (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&outarr);
+        for (Int32 i = 0; i < outarr->GetLength(); i++) {
+            AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
+            assert(0 && "TODO");
+            // stream.writeObject(e.getKey());
+            // stream.writeObject(e.getValue());
+        }
     }
     return NOERROR;
 }
@@ -1635,7 +1542,7 @@ ECode HashTable::ReadObject(
 {
     stream->DefaultReadObject();
     Int32 capacity = 0;
-    stream->Read(&capacity);
+    (IInputStream::Probe(stream))->Read(&capacity);
     if (capacity < 0) {
         // throw new InvalidObjectException("Capacity: " + capacity);
         return E_INVALID_OBJECT_EXCEPTION;
@@ -1652,7 +1559,7 @@ ECode HashTable::ReadObject(
     MakeTable(capacity);
 
     Int32 size = 0;
-    stream->Read(&size);
+    (IInputStream::Probe(stream))->Read(&size);
     if (size < 0) {
         // throw new InvalidObjectException("Size: " + size);
         return E_INVALID_OBJECT_EXCEPTION;

@@ -1,0 +1,19 @@
+
+module
+{
+    namespace Elastos {
+    namespace Utility {
+
+    /**
+     * @Involve
+     * interface IMap;
+     * interface ICloneable;
+     * interface ISerializable;
+     */
+    interface IIdentityHashMap {
+
+    }
+
+    } // namespace Utility
+    } // namespace Elastos
+}
