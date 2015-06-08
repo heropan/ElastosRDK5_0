@@ -1171,7 +1171,7 @@ ECode File::GetTotalSpace(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStatVfs> sb;
-    if (FAILED(IoUtils::Libcore2IoECode(os->Statvfs(mPath, (IStructStatVfs**)&sb)))) {
+    if (FAILED(IoUtils::Libcore2IoECode(os->StatVfs(mPath, (IStructStatVfs**)&sb)))) {
         *space = 0;
         return NOERROR;
     }
@@ -1195,7 +1195,7 @@ ECode File::GetUsableSpace(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStatVfs> sb;
-    if (FAILED(IoUtils::Libcore2IoECode(os->Statvfs(mPath, (IStructStatVfs**)&sb)))) {
+    if (FAILED(IoUtils::Libcore2IoECode(os->StatVfs(mPath, (IStructStatVfs**)&sb)))) {
         *space = 0;
         return NOERROR;
     }
@@ -1219,7 +1219,7 @@ ECode File::GetFreeSpace(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStatVfs> sb;
-    if (FAILED(IoUtils::Libcore2IoECode(os->Statvfs(mPath, (IStructStatVfs**)&sb)))) {
+    if (FAILED(IoUtils::Libcore2IoECode(os->StatVfs(mPath, (IStructStatVfs**)&sb)))) {
         *space = 0;
         return NOERROR;
     }

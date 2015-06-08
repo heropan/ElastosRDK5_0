@@ -19,7 +19,7 @@ module
 
      /**
      * @Involve
-     * interface Elastos.IO.ICloseable;
+     * interface ICloseable;
      * interface IInputStream;
      */
     interface IFileInputStream {

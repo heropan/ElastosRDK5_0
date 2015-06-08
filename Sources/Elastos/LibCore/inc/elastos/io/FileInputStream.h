@@ -36,8 +36,11 @@ namespace IO {
  */
 class FileInputStream
     : public InputStream
+    , public IFileFilter
 {
 public:
+    CAR_INTERFACE_DECL()
+    
     CARAPI Available(
         /* [out] */ Int32* avail);
 
@@ -106,7 +109,7 @@ public:
      * @throws IOException
      *             if the stream is closed or another IOException occurs.
      */
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -151,7 +154,7 @@ protected:
      *             if a {@code SecurityManager} is installed and it denies the
      *             read request.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IFile* file);
 
     /**
@@ -167,7 +170,7 @@ protected:
      *             if a {@code SecurityManager} is installed and it denies the
      *             read request.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IFileDescriptor* fd);
 
     /**
@@ -183,7 +186,7 @@ protected:
      *             if a {@code SecurityManager} is installed and it denies the
      *             read request.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& fileName);
 
 private:

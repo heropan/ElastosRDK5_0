@@ -19,6 +19,8 @@ using Libcore::IO::CIoBridge;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(FileInputStream, InputStream, IFileInputStream)
+
 FileInputStream::FileInputStream()
 {}
 
@@ -52,7 +54,7 @@ FileInputStream::~FileInputStream()
     // }
 }
 
-ECode FileInputStream::Init(
+ECode FileInputStream::constructor(
     /* [in] */ IFile* file)
 {
     if (file == NULL) {
@@ -61,7 +63,7 @@ ECode FileInputStream::Init(
     }
     CFileDescriptor::NewByFriend((CFileDescriptor**)&mFd);
     String path;
-    file->GetAbsolutePath(&path);
+    file->GetPath(&path);
     AutoPtr<COsConstants> osConstans;
     COsConstants::AcquireSingletonByFriend((COsConstants**)&osConstans);
     Int32 mode;
@@ -75,7 +77,7 @@ ECode FileInputStream::Init(
     return NOERROR;
 }
 
-ECode FileInputStream::Init(
+ECode FileInputStream::constructor(
     /* [in] */ IFileDescriptor* fd)
 {
     if (fd == NULL) {
@@ -87,7 +89,7 @@ ECode FileInputStream::Init(
     return NOERROR;
 }
 
-ECode FileInputStream::Init(
+ECode FileInputStream::constructor(
     /* [in] */ const String& fileName)
 {
     AutoPtr<CFile> file;
@@ -110,13 +112,13 @@ ECode FileInputStream::Available(
 ECode FileInputStream::Close()
 {
     // BEGIN android-changed
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
 
     // if (mChannel != NULL) {
     //     mChannel->Close();
     // }
     if (mShouldClose) {
-        return IoUtils::Close(mFd);
+        return IoBridge::CloseAndSignalBlockedThreads(mFd);
     }
     else {
         // An owned fd has been invalidated by IoUtils.close, but
@@ -131,7 +133,7 @@ ECode FileInputStream::GetChannel(
 {
     VALIDATE_NOT_NULL(channel)
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
 
     if (mChannel == NULL) {
         mChannel = NioUtils::NewFileChannel(THIS_PROBE(IObject), mFd, COsConstants::sO_RDONLY);
@@ -158,12 +160,12 @@ ECode FileInputStream::Read(
 
     ArrayOf_<Byte, 1> readed;
     Int32 result;
-    FAIL_RETURN(ReadBytes(&readed, 0, 1, &result));
+    FAIL_RETURN(Read(&readed, 0, 1, &result));
     *value = result != -1 ? readed[0] & 0xff : -1;
     return NOERROR;;
 }
 
-ECode FileInputStream::ReadBytes(
+ECode FileInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,

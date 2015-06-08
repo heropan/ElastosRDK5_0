@@ -19,6 +19,7 @@
 // #include "CSequenceInputStream.h"
 #include "CStringBufferInputStream.h"
 #include "CStringReader.h"
+// #include "CFileInputStream.h"
 
 namespace Elastos {
 namespace IO {
@@ -64,6 +65,8 @@ CAR_OBJECT_IMPL(CPushbackReader)
 CAR_OBJECT_IMPL(CStringBufferInputStream)
 
 CAR_OBJECT_IMPL(CStringReader)
+
+// CAR_OBJECT_IMPL(CFileInputStream)
 
 } // namespace IO
 } // namespace Elastos

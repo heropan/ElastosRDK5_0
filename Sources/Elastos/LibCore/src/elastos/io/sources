@@ -65,6 +65,7 @@ SOURCES += PushbackReader.cpp
 #SOURCES += CSequenceInputStream.cpp
 SOURCES += StringBufferInputStream.cpp
 SOURCES += StringReader.cpp
+#SOURCES += FileInputStream.cpp
 
 #
 # nio related classes

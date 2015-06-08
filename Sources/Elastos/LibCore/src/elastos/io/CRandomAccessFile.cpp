@@ -122,7 +122,7 @@ ECode CRandomAccessFile::Close()
         mChannel = NULL;
     }
 
-    return IoUtils::CloseAndSignalBlockedThreads(mFd);
+    return IoBridge::CloseAndSignalBlockedThreads(mFd);
 }
 
 ECode CRandomAccessFile::GetChannel(

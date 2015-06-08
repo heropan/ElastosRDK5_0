@@ -595,6 +595,21 @@ module
         interface IStringReader;
     }
 
+//    class CFileInputStream {
+//        constructor(
+//            [in] IFile* file);
+
+//        constructor(
+//            [in] IFileDescriptor* fd);
+
+//        constructor(
+//            [in] String fileName);
+
+//        interface ICloseable;
+//        interface IInputStream;
+//        interface IFileInputStream;
+//    }
+
     } // namespace IO
     } // namespace Elastos
 }
