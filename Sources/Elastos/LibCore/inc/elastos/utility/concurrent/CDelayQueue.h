@@ -5,6 +5,7 @@
 #include "_Elastos_Utility_Concurrent_CDelayQueue.h"
 #include "AbstractQueue.h"
 
+using Elastos::Core::IThread;
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;
 using Elastos::Utility::Concurrent::Locks::ICondition;
 
@@ -130,18 +131,22 @@ public:
     CARAPI GetIterator(
         /* [out] */ IIterator** it);
 
+    CARAPI RemoveEQ(
+        /* [in] */ IInterface* o);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
+
 private:
     /**
      * Return first element only if it is expired.
      * Used only by drainTo.  Call only when holding lock.
      */
     AutoPtr<IInterface> PeekExpired();
-
-    /**
-     * Identity-based version for use in Itr.remove
-     */
-    void RemoveEQ(
-        /* [in] */ IInterface* o);
 
 private:
     AutoPtr<IReentrantLock> mLock;

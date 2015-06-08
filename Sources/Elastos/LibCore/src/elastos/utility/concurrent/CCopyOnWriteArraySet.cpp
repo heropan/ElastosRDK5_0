@@ -43,21 +43,21 @@ ECode CCopyOnWriteArraySet::AddAll(
 
 ECode CCopyOnWriteArraySet::Clear()
 {
-    return mAl->Clear();
+    return (ICollection::Probe(mAl))->Clear();
 }
 
 ECode CCopyOnWriteArraySet::Contains(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    return mAl->Contains(object, result);
+    return (ICollection::Probe(mAl))->Contains(object, result);
 }
 
 ECode CCopyOnWriteArraySet::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
-    return mAl->ContainsAll(collection, result);
+    return (ICollection::Probe(mAl))->ContainsAll(collection, result);
 }
 
 ECode CCopyOnWriteArraySet::Equals(
@@ -66,7 +66,7 @@ ECode CCopyOnWriteArraySet::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    if (object == this->Probe(EIID_IInterface)) {
+    if (object == THIS_PROBE(IInterface)) {
         *result = TRUE;
         return NOERROR;
     }
@@ -76,7 +76,7 @@ ECode CCopyOnWriteArraySet::Equals(
     }
     AutoPtr<ISet> set = ISet::Probe(object);
     AutoPtr<IIterator> it;
-    set->GetIterator((IIterator**)&it);
+    (IIterable::Probe(set))->GetIterator((IIterator**)&it);
 
     // Uses O(n^2) algorithm that is only appropriate
     // for small sets, which CopyOnWriteArraySets should be.
@@ -122,53 +122,53 @@ ECode CCopyOnWriteArraySet::GetHashCode(
 ECode CCopyOnWriteArraySet::IsEmpty(
     /* [out] */ Boolean* result)
 {
-    return mAl->IsEmpty(result);
+    return (ICollection::Probe(mAl))->IsEmpty(result);
 }
 
 ECode CCopyOnWriteArraySet::Remove(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* modified)
 {
-    return mAl->Remove(object, modified);
+    return (ICollection::Probe(mAl))->Remove(object, modified);
 }
 
 ECode CCopyOnWriteArraySet::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    return mAl->RemoveAll(collection, modified);
+    return (ICollection::Probe(mAl))->RemoveAll(collection, modified);
 }
 
 ECode CCopyOnWriteArraySet::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    return mAl->RetainAll(collection, modified);
+    return (ICollection::Probe(mAl))->RetainAll(collection, modified);
 }
 
 ECode CCopyOnWriteArraySet::GetSize(
     /* [out] */ Int32* size)
 {
-    return mAl->GetSize(size);
+    return (ICollection::Probe(mAl))->GetSize(size);
 }
 
 ECode CCopyOnWriteArraySet::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
-    return mAl->ToArray(array);
+    return (ICollection::Probe(mAl))->ToArray(array);
 }
 
 ECode CCopyOnWriteArraySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return mAl->ToArray(inArray, outArray);
+    return (ICollection::Probe(mAl))->ToArray(inArray, outArray);
 }
 
 ECode CCopyOnWriteArraySet::GetIterator(
     /* [out] */ IIterator** it)
 {
-    return mAl->GetIterator(it);
+    return (IIterable::Probe(mAl))->GetIterator(it);
 }
 
 Boolean CCopyOnWriteArraySet::Eq(

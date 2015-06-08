@@ -4,7 +4,9 @@
 #include "TimeUnit.h"
 #include "Thread.h"
 
+using Elastos::Core::Thread;
 using Elastos::Core::Math;
+using Elastos::Utility::Concurrent::Locks::ILock;
 
 namespace Elastos {
 namespace Utility {
@@ -44,17 +46,17 @@ ECode CDelayQueue::Offer(
 {
     VALIDATE_NOT_NULL(result);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     Boolean b = FALSE;
-    mQ->Offer(e, &b);
+    (IQueue::Probe(mQ))->Offer(e, &b);
     AutoPtr<IInterface> p;
-    mQ->Peek((IInterface**)&p);
-    if (Object::Equals(p, e)) {
+    (IQueue::Probe(mQ))->Peek((IInterface**)&p);
+    if (Object::Equals(p.Get(), e)) {
         mLeader = NULL;
         mAvailable->Signal();
     }
     *result = TRUE;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -82,22 +84,22 @@ ECode CDelayQueue::Poll(
     *e = NULL;
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
 
     ECode ec = NOERROR;
     AutoPtr<IInterface> first;
-    mQ->Peek((IInterface**)&first);
+    (IQueue::Probe(mQ))->Peek((IInterface**)&first);
     if (first != NULL) {
         AutoPtr<ITimeUnit> tu = TimeUnit::GetNANOSECONDS();
         AutoPtr<IDelayed> d = IDelayed::Probe(first.Get());
         Int64 val = 0;
         d->GetDelay(tu, &val);
         if (val <= 0) {
-            ec = mQ->Poll(e);
+            ec = (IQueue::Probe(mQ))->Poll(e);
         }
     }
 
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return ec;
 }
 
@@ -108,11 +110,11 @@ ECode CDelayQueue::Take(
     *e = NULL;
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->LockInterruptibly();
+    (ILock::Probe(lock))->LockInterruptibly();
 
     for (;;) {
         AutoPtr<IInterface> first;
-        mQ->Peek((IInterface**)&first);
+        (IQueue::Probe(mQ))->Peek((IInterface**)&first);
         if (first == NULL) {
             mAvailable->Await();
         }
@@ -122,8 +124,8 @@ ECode CDelayQueue::Take(
             Int64 delay = 0;
             d->GetDelay(tu, &delay);
             if (delay <= 0) {
-                ECode ec = mQ->Poll(e);
-                lock->UnLock();
+                ECode ec = (IQueue::Probe(mQ))->Poll(e);
+                (ILock::Probe(lock))->UnLock();
                 return ec;
             }
             else if (mLeader != NULL)
@@ -140,9 +142,9 @@ ECode CDelayQueue::Take(
         }
     }
     AutoPtr<IInterface> p;
-    if (mLeader == NULL && (mQ->Peek((IInterface**)&p), p) != NULL)
+    if (mLeader == NULL && ((IQueue::Probe(mQ))->Peek((IInterface**)&p), p) != NULL)
         mAvailable->Signal();
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -157,13 +159,13 @@ ECode CDelayQueue::Poll(
     Int64 nanos;
     unit->ToNanos(timeout, &nanos);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->LockInterruptibly();
+    (ILock::Probe(lock))->LockInterruptibly();
     for (;;) {
         AutoPtr<IInterface> first;
-        mQ->Peek((IInterface**)&first);
+        (IQueue::Probe(mQ))->Peek((IInterface**)&first);
         if (first == NULL) {
             if (nanos <= 0) {
-                lock->UnLock();
+                (ILock::Probe(lock))->UnLock();
                 return NOERROR;
             }
             else {
@@ -178,12 +180,12 @@ ECode CDelayQueue::Poll(
             Int64 delay = 0;
             d->GetDelay(tu, &delay);
             if (delay <= 0) {
-                mQ->Poll(e);
-                lock->UnLock();
+                (IQueue::Probe(mQ))->Poll(e);
+                (ILock::Probe(lock))->UnLock();
                 return NOERROR;
             }
             if (nanos <= 0) {
-                lock->UnLock();
+                (ILock::Probe(lock))->UnLock();
                 return NOERROR;
             }
             if (nanos < delay || mLeader != NULL) {
@@ -205,9 +207,9 @@ ECode CDelayQueue::Poll(
     }
 
     AutoPtr<IInterface> o;
-    if (mLeader == NULL && (mQ->Peek((IInterface**)&o), o) != NULL)
+    if (mLeader == NULL && ((IQueue::Probe(mQ))->Peek((IInterface**)&o), o) != NULL)
         mAvailable->Signal();
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -216,10 +218,10 @@ ECode CDelayQueue::Peek(
 {
     VALIDATE_NOT_NULL(e);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     AutoPtr<IInterface> o;
-    ECode ec = mQ->Peek((IInterface**)&o);
-    lock->UnLock();
+    ECode ec = (IQueue::Probe(mQ))->Peek((IInterface**)&o);
+    (ILock::Probe(lock))->UnLock();
     return ec;
 }
 
@@ -228,9 +230,9 @@ ECode CDelayQueue::GetSize(
 {
     VALIDATE_NOT_NULL(size);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
-    ECode ec = mQ->GetSize(size);
-    lock->UnLock();
+    (ILock::Probe(lock))->Lock();
+    ECode ec = (ICollection::Probe(mQ))->GetSize(size);
+    (ILock::Probe(lock))->UnLock();
     return ec;
 }
 
@@ -238,7 +240,7 @@ AutoPtr<IInterface> CDelayQueue::PeekExpired()
 {
     // assert lock.isHeldByCurrentThread();
     AutoPtr<IInterface> first;
-    mQ->Peek((IInterface**)&first);
+    (IQueue::Probe(mQ))->Peek((IInterface**)&first);
     if (first == NULL) {
         return NULL;
     }
@@ -264,18 +266,18 @@ ECode CDelayQueue::DrainTo(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     Int32 n = 0;
     Boolean b;
     AutoPtr<IInterface> e;
     for (; (e = PeekExpired()) != NULL;) {
         c->Add(e, &b);       // In this order, in case add() throws.
         AutoPtr<IInterface> pRes;
-        mQ->Poll((IInterface**)&pRes);
+        (IQueue::Probe(mQ))->Poll((IInterface**)&pRes);
         ++n;
     }
     *number = n;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
@@ -296,27 +298,27 @@ ECode CDelayQueue::DrainTo(
     }
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     Int32 n = 0;
     Boolean b;
     AutoPtr<IInterface> e;
     for (; n < maxElements && (e = PeekExpired()) != NULL;) {
         c->Add(e, &b);       // In this order, in case add() throws.
         AutoPtr<IInterface> pRes;
-        mQ->Poll((IInterface**)&pRes);
+        (IQueue::Probe(mQ))->Poll((IInterface**)&pRes);
         ++n;
     }
     *number = n;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return NOERROR;
 }
 
 ECode CDelayQueue::Clear()
 {
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
-    ECode ec = mQ->Clear();
-    lock->UnLock();
+    (ILock::Probe(lock))->Lock();
+    ECode ec = (ICollection::Probe(mQ))->Clear();
+    (ILock::Probe(lock))->UnLock();
     return ec;
 }
 
@@ -333,9 +335,9 @@ ECode CDelayQueue::ToArray(
 {
     VALIDATE_NOT_NULL(array);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
-    ECode ec = mQ->ToArray(array);
-    lock->UnLock();
+    (ILock::Probe(lock))->Lock();
+    ECode ec = (ICollection::Probe(mQ))->ToArray(array);
+    (ILock::Probe(lock))->UnLock();
     return ec;
 }
 
@@ -345,9 +347,9 @@ ECode CDelayQueue::ToArray(
 {
     VALIDATE_NOT_NULL(outArray);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
-    ECode ec = mQ->ToArray(inArray, outArray);
-    lock->UnLock();
+    (ILock::Probe(lock))->Lock();
+    ECode ec = (ICollection::Probe(mQ))->ToArray(inArray, outArray);
+    (ILock::Probe(lock))->UnLock();
     return ec;
 }
 
@@ -357,19 +359,19 @@ ECode CDelayQueue::Remove(
 {
     VALIDATE_NOT_NULL(modified);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
-    ECode ec = mQ->Remove(object, modified);
-    lock->UnLock();
+    (ILock::Probe(lock))->Lock();
+    ECode ec = (ICollection::Probe(mQ))->Remove(object, modified);
+    (ILock::Probe(lock))->UnLock();
     return ec;
 }
 
-void CDelayQueue::RemoveEQ(
+ECode CDelayQueue::RemoveEQ(
     /* [in] */ IInterface* o)
 {
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     AutoPtr<IIterator> it;
-    mQ->GetIterator((IIterator**)&it);
+    (IIterable::Probe(mQ))->GetIterator((IIterator**)&it);
     Boolean b = FALSE;
     for (; (it->HasNext(&b), b); ) {
         AutoPtr<IInterface> nt;
@@ -379,7 +381,8 @@ void CDelayQueue::RemoveEQ(
             break;
         }
     }
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
+    return NOERROR;
 }
 
 ECode CDelayQueue::GetIterator(
@@ -394,6 +397,19 @@ ECode CDelayQueue::GetIterator(
     *it = (IIterator*)p.Get();
     REFCOUNT_ADD(*it);
     return NOERROR;
+}
+
+ECode CDelayQueue::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    return E_NO_SUCH_METHOD_EXCEPTION;
+}
+
+ECode CDelayQueue::GetHashCode(
+    /* [out] */ Int32* hashCode)
+{
+    return E_NO_SUCH_METHOD_EXCEPTION;
 }
 
 //====================================================================

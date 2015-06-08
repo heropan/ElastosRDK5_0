@@ -13,13 +13,6 @@ CarClass(CFutureTask), public FutureTask
 {
 public:
     CAR_OBJECT_DECL()
-
-    CARAPI constructor(
-        /* [in] */ ICallable* callable);
-
-    CARAPI constructor(
-        /* [in] */ IRunnable* runnable,
-        /* [in] */ IInterface* result);
 };
 
 } // namespace Concurrent

@@ -223,7 +223,7 @@ module
     // interface Elastos.Core.ISynchronize;
     // interface Elastos.Core.IThreadUncaughtExceptionHandler;
     interface Elastos.Utility.ICollection;
-    // interface Elastos.Utility.ISet;
+    interface Elastos.Utility.ISet;
     interface Elastos.Utility.IDeque;
     interface Elastos.Utility.IQueue;
     // interface Elastos.Utility.IMap;
@@ -769,17 +769,17 @@ module
     //     interface ICloneable;
     // }
 
-    // class CDelayQueue {
-    //     constructor();
+    class CDelayQueue {
+        constructor();
 
-    //     constructor(
-    //         [in] ICollection* c);
+        constructor(
+            [in] ICollection* c);
 
-    //     interface IBlockingQueue;
-    //     interface IQueue;
-    //     interface ICollection;
-    //     interface IIterable;
-    // }
+        interface IBlockingQueue;
+        interface IQueue;
+        interface ICollection;
+        interface IIterable;
+    }
 
     // class CExchanger {
     //     constructor();
@@ -892,29 +892,29 @@ module
         interface ISerializable;
     }
 
-    // singleton class CCopyOnWriteArrayListHelper {
-    //     interface ICopyOnWriteArrayListHelper;
-    // }
+    singleton class CCopyOnWriteArrayListHelper {
+        interface ICopyOnWriteArrayListHelper;
+    }
 
-    // class CCopyOnWriteArraySet {
-    //     /**
-    //      * Creates an empty set.
-    //      */
-    //     constructor();
+    class CCopyOnWriteArraySet {
+        /**
+         * Creates an empty set.
+         */
+        constructor();
 
-    //     /**
-    //      * Creates a set containing all of the elements of the specified
-    //      * collection.
-    //      *
-    //      * @param c the collection of elements to initially contain
-    //      * @throws NullPointerException if the specified collection is null
-    //      */
-    //     constructor(
-    //         [in] ICollection* c);
+        /**
+         * Creates a set containing all of the elements of the specified
+         * collection.
+         *
+         * @param c the collection of elements to initially contain
+         * @throws NullPointerException if the specified collection is null
+         */
+        constructor(
+            [in] ICollection* c);
 
-    //     interface ISet;
-    //     interface ISerializable;
-    // }
+        interface ISet;
+        interface ISerializable;
+    }
 
     // class CConcurrentHashMap {
     //     /**

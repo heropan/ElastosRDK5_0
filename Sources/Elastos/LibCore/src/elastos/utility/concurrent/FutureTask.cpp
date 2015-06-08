@@ -37,17 +37,17 @@ FutureTask::FutureTask()
 FutureTask::FutureTask(
     /* [in] */ ICallable* callable)
 {
-    ASSERT_SUCCEEDED(Init(callable));
+    ASSERT_SUCCEEDED(constructor(callable));
 }
 
 FutureTask::FutureTask(
     /* [in] */ IRunnable* runnable,
     /* [in] */ IInterface* result)
 {
-    ASSERT_SUCCEEDED(Init(runnable, result));
+    ASSERT_SUCCEEDED(constructor(runnable, result));
 }
 
-ECode FutureTask::Init(
+ECode FutureTask::constructor(
     /* [in] */ ICallable* callable)
 {
     if (callable == NULL) return E_NULL_POINTER_EXCEPTION;
@@ -56,7 +56,7 @@ ECode FutureTask::Init(
     return NOERROR;
 }
 
-ECode FutureTask::Init(
+ECode FutureTask::constructor(
     /* [in] */ IRunnable* runnable,
     /* [in] */ IInterface* result)
 {
