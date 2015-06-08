@@ -577,6 +577,15 @@ module
 //        interface ISequenceInputStream;
 //    }
 
+    class CStringBufferInputStream {
+        constructor(
+            [in] String str);
+
+        interface ICloseable;
+        interface IInputStream;
+        interface IStringBufferInputStream;
+    }
+
     } // namespace IO
     } // namespace Elastos
 }

@@ -7,17 +7,22 @@
 namespace Elastos {
 namespace IO {
 
-class StringBufferInputStream : public InputStream
+class StringBufferInputStream
+    : public InputStream
+    , public IStringBufferInputStream
 {
+public:
+    CAR_INTERFACE_DECL()
+    
 protected:
     StringBufferInputStream();
 
     ~StringBufferInputStream();
 
-    CARAPI Init(
+public:
+    CARAPI constructor(
         /* [in] */ const String& str);
 
-public:
     CARAPI Available(
         /* [out] */ Int32* number);
 
@@ -32,30 +37,10 @@ public:
     CARAPI Read(
         /* [out] */ Int32* value);
 
-    /**
-     * Reads at most {@code length} bytes from the source string and stores them
-     * in the byte array {@code b} starting at {@code offset}.
-     *
-     * @param buffer
-     *            the byte array in which to store the bytes read.
-     * @param offset
-     *            the initial position in {@code b} to store the bytes read from
-     *            this stream.
-     * @param length
-     *            the maximum number of bytes to store in {@code b}.
-     * @return the number of bytes actually read or -1 if the end of the source
-     *         string has been reached.
-     * @throws IndexOutOfBoundsException
-     *             if {@code offset < 0} or {@code length < 0}, or if
-     *             {@code offset + length} is greater than the length of
-     *             {@code b}.
-     * @throws NullPointerException
-     *             if {@code b} is {@code null}.
-     */
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
+        /* [in] */ Int32 byteOffset,
+        /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
 
     /**
