@@ -803,13 +803,13 @@ private:
 
 };
 
+} // namespace Utility
+} // namespace Elastos
+
 template <>
 struct Conversion<Elastos::Utility::HashMap::HashMapEntry*, IInterface*>
 {
     enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
 };
-
-} // namespace Utility
-} // namespace Elastos
 
 #endif // __UTILITYHashMap_H__

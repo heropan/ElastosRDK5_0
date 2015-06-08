@@ -1,17 +1,17 @@
 
 #include "Timer.h"
 #include "CSystem.h"
-#include <elastos/Autolock.h>
-#include <elastos/StringBuilder.h>
+#include "StringBuilder.h"
 
 using Elastos::Core::ISystem;
-using Elastos::Core::Autolock;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::ISynchronize;
 
 namespace Elastos {
 namespace Utility {
 
+//==========================================================
+// Timer::TimerImpl::TimerHeap
+//==========================================================
 Timer::TimerImpl::TimerHeap::TimerHeap()
     : DEFAULT_HEAP_SIZE(256)
     , mTimers(ArrayOf<ITimerTask*>::Alloc(DEFAULT_HEAP_SIZE))
@@ -144,6 +144,9 @@ ECode Timer::TimerImpl::TimerHeap::GetTask(
 }
 
 
+//==========================================================
+// Timer::TimerImpl
+//==========================================================
 Timer::TimerImpl::TimerImpl(
     /* [in] */ const String& name,
     /* [in] */ Boolean isDaemon)
@@ -151,7 +154,7 @@ Timer::TimerImpl::TimerImpl(
     , mFinished(FALSE)
     , mTasks(new TimerHeap())
 {
-    Thread::Init();
+    Thread::constructor();
     Thread::SetName(name);
     Thread::SetDaemon(isDaemon);
     Thread::Start();
@@ -160,236 +163,6 @@ Timer::TimerImpl::TimerImpl(
 Timer::TimerImpl::~TimerImpl()
 {}
 
-PInterface Timer::TimerImpl::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
-    }
-    else if (riid == EIID_IThread) {
-        return (IThread*)this;
-    }
-    else if (riid == EIID_ISynchronize) {
-        return (ISynchronize*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 Timer::TimerImpl::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Timer::TimerImpl::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Timer::TimerImpl::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (pObject == (IInterface*)(IThread*)this) {
-        *pIID = EIID_IThread;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
-
-ECode Timer::TimerImpl::CheckAccess()
-{
-    return Thread::CheckAccess();
-}
-
-ECode Timer::TimerImpl::CountStackFrames(
-    /* [out] */ Int32* number)
-{
-    return Thread::CountStackFrames(number);
-}
-
-ECode Timer::TimerImpl::Destroy()
-{
-    return Thread::Destroy();
-}
-
-ECode Timer::TimerImpl::GetId(
-    /* [out] */ Int64* id)
-{
-    return Thread::GetId(id);
-}
-
-ECode Timer::TimerImpl::GetName(
-    /* [out] */ String* name)
-{
-    return Thread::GetName(name);
-}
-
-ECode Timer::TimerImpl::GetPriority(
-    /* [out] */ Int32* priority)
-{
-    return Thread::GetPriority(priority);
-}
-
-ECode Timer::TimerImpl::GetState(
-    /* [out] */ ThreadState* state)
-{
-    return Thread::GetState(state);
-}
-
-ECode Timer::TimerImpl::GetThreadGroup(
-    /* [out] */ IThreadGroup** group)
-{
-    return Thread::GetThreadGroup(group);
-}
-
-ECode Timer::TimerImpl::Interrupt()
-{
-    return Thread::Interrupt();
-}
-
-ECode Timer::TimerImpl::IsAlive(
-    /* [out] */ Boolean* isAlive)
-{
-    return Thread::IsAlive(isAlive);
-}
-
-ECode Timer::TimerImpl::IsDaemon(
-    /* [out] */ Boolean* isDaemon)
-{
-    return Thread::IsDaemon(isDaemon);
-}
-
-ECode Timer::TimerImpl::IsInterrupted(
-    /* [out] */ Boolean* isInterrupted)
-{
-    return Thread::IsInterrupted(isInterrupted);
-}
-
-ECode Timer::TimerImpl::Join()
-{
-    return Thread::Join();
-}
-
-ECode Timer::TimerImpl::Join(
-    /* [in] */ Int64 millis)
-{
-    return Thread::Join(millis);
-}
-
-ECode Timer::TimerImpl::Join(
-    /* [in] */ Int64 millis,
-    /* [in] */ Int32 nanos)
-{
-    return Thread::Join(millis, nanos);
-}
-
-ECode Timer::TimerImpl::Resume()
-{
-    return Thread::Resume();
-}
-
-ECode Timer::TimerImpl::SetDaemon(
-    /* [in] */ Boolean isDaemon)
-{
-    return Thread::SetDaemon(isDaemon);
-}
-
-ECode Timer::TimerImpl::SetName(
-    /* [in] */ const String& threadName)
-{
-    return Thread::SetName(threadName);
-}
-
-ECode Timer::TimerImpl::SetPriority(
-    /* [in] */ Int32 priority)
-{
-    return Thread::SetPriority(priority);
-}
-
-ECode Timer::TimerImpl::Start()
-{
-    return Thread::Start();
-}
-
-ECode Timer::TimerImpl::Stop()
-{
-    return Thread::Stop();
-}
-
-ECode Timer::TimerImpl::Suspend()
-{
-    return Thread::Suspend();
-}
-
-ECode Timer::TimerImpl::Detach()
-{
-    return Thread::Detach();
-}
-
-ECode Timer::TimerImpl::Unpark()
-{
-    return Thread::Unpark();
-}
-
-ECode Timer::TimerImpl::ParkFor(
-    /* [in] */ Int64 nanos)
-{
-    return Thread::ParkFor(nanos);
-}
-
-ECode Timer::TimerImpl::ParkUntil(
-    /* [in] */ Int64 time)
-{
-    return Thread::ParkUntil(time);
-}
-
-ECode Timer::TimerImpl::Lock()
-{
-    return Thread::Lock();
-}
-
-ECode Timer::TimerImpl::Unlock()
-{
-    return Thread::Unlock();
-}
-
-ECode Timer::TimerImpl::Notify()
-{
-    return Thread::Notify();
-}
-
-ECode Timer::TimerImpl::NotifyAll()
-{
-    return Thread::NotifyAll();
-}
-
-ECode Timer::TimerImpl::Wait()
-{
-    return Thread::Wait();
-}
-
-ECode Timer::TimerImpl::Wait(
-    /* [in] */ Int64 millis)
-{
-    return Thread::Wait(millis);
-}
-
-ECode Timer::TimerImpl::Wait(
-    /* [in] */ Int64 millis,
-    /* [in] */ Int32 nanos)
-{
-    return Thread::Wait(millis, nanos);
-}
-
-Mutex* Timer::TimerImpl::GetSelfLock()
-{
-    return &mLock;
-}
-
 ECode Timer::TimerImpl::Run()
 {
     AutoPtr<ISystem> system;
@@ -397,8 +170,7 @@ ECode Timer::TimerImpl::Run()
 
     while (TRUE) {
         AutoPtr<ITimerTask> task;
-        {
-            Autolock lock(this);
+        synchronized (this) {
             // need to check cancelled inside the synchronized block
             if (mCancelled) {
                 return NOERROR;
@@ -498,12 +270,13 @@ ECode Timer::TimerImpl::Run()
         }
 
         Boolean taskCompletedNormally = FALSE;
-        if (SUCCEEDED(task->Run())) {
+        if (SUCCEEDED(IRunnable::Probe(task)->Run())) {
             taskCompletedNormally = TRUE;
         }
         if (!taskCompletedNormally) {
-            Autolock lock(this);
-            mCancelled = TRUE;
+            synchronized(this) {
+                mCancelled = TRUE;
+            }
         }
     }
     return NOERROR;
@@ -519,10 +292,11 @@ void Timer::TimerImpl::InsertTask(
 
 void Timer::TimerImpl::Cancel()
 {
-    Autolock lock(this);
-    mCancelled = TRUE;
-    mTasks->Reset();
-    Notify();
+    synchronized(this) {
+        mCancelled = TRUE;
+        mTasks->Reset();
+        Notify();
+    }
 }
 
 Int32 Timer::TimerImpl::Purge()
@@ -536,42 +310,9 @@ Int32 Timer::TimerImpl::Purge()
     return mTasks->mDeletedCancelledNumber;
 }
 
-ECode Timer::TimerImpl::GetUncaughtExceptionHandler(
-    /* [out] */ IThreadUncaughtExceptionHandler** handler)
-{
-    return Thread::GetUncaughtExceptionHandler(handler);
-}
-
-ECode Timer::TimerImpl::GetContextClassLoader(
-    /* [out] */ IClassLoader** outload)
-{
-    return Thread::GetContextClassLoader(outload);
-}
-
-ECode Timer::TimerImpl::SetContextClassLoader(
-    /* [in] */ IClassLoader* cl)
-{
-    return Thread::SetContextClassLoader(cl);
-}
-
-ECode Timer::TimerImpl::PushInterruptAction(
-    /* [in] */ IRunnable* interruptAction)
-{
-    return Thread::PushInterruptAction(interruptAction);
-}
-
-ECode Timer::TimerImpl::PopInterruptAction(
-    /* [in] */ IRunnable* interruptAction)
-{
-    return Thread::PopInterruptAction(interruptAction);
-}
-
-ECode Timer::TimerImpl::SetUncaughtExceptionHandler(
-    /* [in] */ IThreadUncaughtExceptionHandler* handler)
-{
-    return Thread::SetUncaughtExceptionHandler(handler);
-}
-
+//==========================================================
+// Timer::FinalizerHelper
+//==========================================================
 Timer::FinalizerHelper::FinalizerHelper(
     /* [in] */ TimerImpl* impl)
     : mImpl(impl)
@@ -579,18 +320,23 @@ Timer::FinalizerHelper::FinalizerHelper(
 
 Timer::FinalizerHelper::~FinalizerHelper()
 {
-    Autolock lock(mImpl);
+    Object::Autolock lock(mImpl);
     mImpl->mFinished = TRUE;
     mImpl->Notify();
 }
 
+//==========================================================
+// Timer::Timer
+//==========================================================
 
 Int64 Timer::sTimerId = 0;
-Mutex Timer::sTimerIdLock;
+Object Timer::sTimerIdLock;
+
+CAR_INTERFACE_IMPL(Timer, Object, ITimer)
 
 Int64 Timer::NextId()
 {
-    Mutex::Autolock lock(&sTimerIdLock);
+    Object::Autolock lock(sTimerIdLock);
     return sTimerId++;
 }
 
@@ -601,25 +347,25 @@ Timer::Timer(
     /* [in] */ const String& name,
     /* [in] */ Boolean isDaemon)
 {
-    ASSERT_SUCCEEDED(Init(name, isDaemon));
+    ASSERT_SUCCEEDED(constructor(name, isDaemon));
 }
 
 Timer::Timer(
     /* [in] */ const String& name)
 {
-    ASSERT_SUCCEEDED(Init(name, FALSE));
+    ASSERT_SUCCEEDED(constructor(name, FALSE));
 }
 
 Timer::Timer(
     /* [in] */Boolean isDaemon)
 {
-    ASSERT_SUCCEEDED(Init(isDaemon));
+    ASSERT_SUCCEEDED(constructor(isDaemon));
 }
 
 Timer::~Timer()
 {}
 
-ECode Timer::Init(
+ECode Timer::constructor(
     /* [in] */ const String& name,
     /* [in] */ Boolean isDaemon)
 {
@@ -632,18 +378,24 @@ ECode Timer::Init(
     return NOERROR;
 }
 
-ECode Timer::Init(
+ECode Timer::constructor(
+    /* [in] */ const String& name)
+{
+    return constructor(name, FALSE);
+}
+
+ECode Timer::constructor(
     /* [in] */Boolean isDaemon)
 {
     StringBuilder sb;
     sb += "Timer-";
     sb += Timer::NextId();
-    return Init(sb.ToString(), isDaemon);
+    return constructor(sb.ToString(), isDaemon);
 }
 
-ECode Timer::Init()
+ECode Timer::constructor()
 {
-    return Init(FALSE);
+    return constructor(FALSE);
 }
 
 ECode Timer::Cancel()
@@ -655,7 +407,7 @@ ECode Timer::Cancel()
 ECode Timer::Purge(
     /* [out] */ Int32* number)
 {
-    Autolock lock(mImpl);
+    Object::Autolock lock(mImpl);
     *number = mImpl->Purge();
     return NOERROR;
 }
@@ -761,7 +513,7 @@ ECode Timer::ScheduleImpl(
     /* [in] */ Int64 period,
     /* [in] */ Boolean fixed)
 {
-    Autolock lock(mImpl);
+    Object::Autolock lock(mImpl);
 
     if (mImpl->mCancelled) {
         // throw new IllegalStateException("Timer was canceled");

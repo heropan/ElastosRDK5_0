@@ -328,6 +328,26 @@ module
         }
 
 
+
+        //
+        // Date & Time related classes
+        //
+        class CTimer {
+            constructor(
+                [in] String name,
+                [in] Boolean isDaemon);
+
+            constructor(
+                [in] String name);
+
+            constructor(
+                [in] Boolean isDaemon);
+
+            constructor();
+
+            interface ITimer;
+        }
+
     } // namespace Utility
     } // namespace Elastos
 
