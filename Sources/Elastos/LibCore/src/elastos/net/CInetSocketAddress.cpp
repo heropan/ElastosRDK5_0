@@ -11,6 +11,10 @@ namespace Net {
 
 const Int64 CInetSocketAddress::sSerialVersionUID = 5076001401234631237ll;
 
+CAR_INTERFACE_IMPL_3(CInetSocketAddress, Object, IInetSocketAddress, ISocketAddress, ISerializable)
+
+CAR_OBJECT_IMPL(CInetSocketAddress)
+
 ECode CInetSocketAddress::constructor()
 {
     // These will be filled in the native implementation of recvfrom.

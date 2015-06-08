@@ -1,13 +1,12 @@
 
-#ifndef __DATAGRAMSOCKET_H__
-#define __DATAGRAMSOCKET_H__
+#ifndef __ELASTOS_NET_DATAGRAMSOCKET_H__
+#define __ELASTOS_NET_DATAGRAMSOCKET_H__
 
 #include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
 
-
+using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
-
-
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::Channels::IDatagramChannel;
 
@@ -15,8 +14,13 @@ namespace Elastos {
 namespace Net {
 
 class DatagramSocket
+    : public Object
+    , public IDatagramSocket
+    , public ICloseable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     virtual CARAPI Close();
 
     virtual CARAPI Connect(
@@ -123,19 +127,17 @@ public:
 protected:
     DatagramSocket();
 
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 aPort);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 aport,
         /* [in] */ IInetAddress* addr);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ISocketAddress* localAddr);
-
-    virtual CARAPI_(Mutex*) GetSelfLock() = 0;
 
 private:
     CARAPI CheckPort(
@@ -169,4 +171,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__DATAGRAMSOCKET_H__
+#endif //__ELASTOS_NET_DATAGRAMSOCKET_H__

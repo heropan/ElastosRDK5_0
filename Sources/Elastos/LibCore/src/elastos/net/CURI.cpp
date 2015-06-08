@@ -36,6 +36,10 @@ const UriCodec& CURI::ASCII_ONLY = CURI::ASCIIEncoder();
 //
 //AutoPtr<INetworkSystem> CURI::NETWORK_SYSTEM = InitNetworkSystem();
 
+CAR_INTERFACE_IMPL_3(CURI, Object, IURI, ISerializable, IComparable)
+
+CAR_OBJECT_IMPL(CURI)
+
 CURI::CURI()
     : mPort(-1)
     , mOpaque(FALSE)

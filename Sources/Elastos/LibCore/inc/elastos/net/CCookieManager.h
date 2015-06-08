@@ -1,10 +1,11 @@
 
-#ifndef __CCOOKIEMANAGER_H__
-#define __CCOOKIEMANAGER_H__
+#ifndef __ELASTOS_NET_CCOOKIEMANAGER_H__
+#define __ELASTOS_NET_CCOOKIEMANAGER_H__
 
-#include "_CCookieManager.h"
+#include "_ELASTOS_NET_CCookieManager.h"
 #include <elastos/utility/etl/List.h>
 #include "CStringWrapper.h"
+#include "CookieHandler.h"
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::IMap;
@@ -15,8 +16,14 @@ namespace Elastos {
 namespace Net {
 
 CarClass(CCookieManager)
+    , public CookieHandler
+    , public ICookieManager
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI SetCookiePolicy(
         /* [in] */ ICookiePolicy* cookiePolicy);
 
@@ -62,4 +69,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CCOOKIEMANAGER_H__
+#endif //__ELASTOS_NET_CCOOKIEMANAGER_H__

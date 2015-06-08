@@ -1,18 +1,18 @@
 
-#ifndef __MyRunnable_H__
-#define __MyRunnable_H__
+#ifndef __ELASTOS_NET_MyRunnable_H__
+#define __ELASTOS_NET_MyRunnable_H__
 
 #include <elastos.h>
 #include <eltypes.h>
 #include <stdio.h>
-
 #include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
 
-
+using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 
 class MyRunnable
-    : public ElRefBase
+    : public Object
     , public IRunnable
 {
 public:
@@ -41,4 +41,4 @@ private:
     Mutex mLock;
 };
 
-#endif //__MyRunnable_H__
+#endif //__ELASTOS_NET_MyRunnable_H__

@@ -1,21 +1,30 @@
 
-#ifndef __CURI_H__
-#define __CURI_H__
+#ifndef __ELASTOS_NET_CURI_H__
+#define __ELASTOS_NET_CURI_H__
 
-#include "_CURI.h"
+#include "_ELASTOS_NET_CURI.h"
 
 #include <elastos/Character.h>
 #include "UriCodec.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::Character;
-
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CURI)
+    , public Object
+    , public IURI
+    , public ISerializable
+    , public IComparable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CURI();
 
     CARAPI constructor();
@@ -269,4 +278,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CURI_H__
+#endif //__ELASTOS_NET_CURI_H__

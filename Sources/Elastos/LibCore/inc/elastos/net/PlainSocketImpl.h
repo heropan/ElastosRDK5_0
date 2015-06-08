@@ -1,9 +1,7 @@
-#ifndef __PLAINSOCKETIMPL_H__
-#define __PLAINSOCKETIMPL_H__
+#ifndef __ELASTOS_NET_PLAINSOCKETIMPL_H__
+#define __ELASTOS_NET_PLAINSOCKETIMPL_H__
 
 #include "SocketImpl.h"
-
-
 
 using Elastos::Core::ICloseGuard;
 
@@ -12,22 +10,26 @@ namespace Net {
 
 extern "C" const InterfaceID EIID_PlainSocketImpl;
 
-class PlainSocketImpl : public SocketImpl
+class PlainSocketImpl
+    : public SocketImpl
+    , public IPlainSocketImpl
 {
     friend class CSocketInputStream;
     friend class CSocketOutputStream;
 public:
+    CAR_INTERFACE_DECL()
+
     PlainSocketImpl();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IFileDescriptor* fd);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IProxy* proxy);
 
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 localport,
         /* [in] */ IInetAddress* addr,
@@ -177,4 +179,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__PLAINSOCKETIMPL_H__
+#endif //__ELASTOS_NET_PLAINSOCKETIMPL_H__

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_NET_NETWORKINTERFACE_H__
 #define __ELASTOS_NET_NETWORKINTERFACE_H__
 
-#include "Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 using Elastos::Utility::IList;

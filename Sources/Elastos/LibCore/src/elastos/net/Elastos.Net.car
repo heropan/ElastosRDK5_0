@@ -47,14 +47,12 @@ module
     merge("../../../car/elastos/net/IServerSocket.car");
     merge("../../../car/elastos/net/ISocket.car");
     merge("../../../car/elastos/net/ISocketImplFactory.car");
-    merge("../../../car/elastos/net/ISocketInputStream.car");
     merge("../../../car/elastos/net/ISocketOutputStream.car");
     merge("../../../car/elastos/net/ISocks4Message.car");
     merge("../../../car/elastos/net/IURLEncoder.car");
     merge("../../../car/elastos/net/IURLDecoder.car");
     merge("../../../car/elastos/net/IUriCodecHelper.car");
     merge("../../../car/elastos/net/NotUsed.car");
-    merge("../../../car/elastos/net/IRawSocket.car");
     merge("../../../car/elastos/net/IJarURLConnection.car");
     merge("../../../car/elastos/net/INetPermission.car");
 
@@ -151,6 +149,7 @@ module
     //         [in] ICookiePolicy* cookiePolicy);
 
     //     interface ICookieManager;
+    //     interface ICookieHandler;
     // }
 
     // singleton class CCookiePolicyHelper {
@@ -925,6 +924,7 @@ module
     //         [in] IInetAddress* localAddress);
 
     //     interface IServerSocket;
+    //     interface ICloseable
     // }
 
     // singleton class CServerSocketHelper {
@@ -963,15 +963,6 @@ module
     //     interface IPlainServerSocketImpl;
     // }
 
-    // class CSocketInputStream {
-    //     constructor(
-    //         [in] ISocketImpl * pImpl);
-
-    //     interface Elastos.IO.ICloseable;
-    //     interface Elastos.IO.IInputStream;
-    //     interface ISocketInputStream;
-    // }
-
     // class CSocketOutputStream {
     //     constructor(
     //         [in] ISocketImpl * pImpl);
@@ -994,15 +985,6 @@ module
 
     //     interface IDatagramSocket;
     //     interface IMulticastSocket;
-    // }
-
-    // class CRawSocket {
-    //     constructor(
-    //         [in] String interfaceName,
-    //         [in] Int16 protocolType);
-
-    //     interface Elastos.IO.ICloseable;
-    //     interface IRawSocket;
     // }
 
     // class CPlainDatagramSocketImpl {

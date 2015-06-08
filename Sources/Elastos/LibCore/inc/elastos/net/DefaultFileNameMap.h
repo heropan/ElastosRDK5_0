@@ -1,18 +1,22 @@
 
-#ifndef __DEFAULTFILENAMEMAP_H__
-#define __DEFAULTFILENAMEMAP_H__
+#ifndef __ELASTOS_NET_DEFAULTFILENAMEMAP_H__
+#define __ELASTOS_NET_DEFAULTFILENAMEMAP_H__
 
 #include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Net {
 
 class DefaultFileNameMap
-    : public ElRefBase
+    : public Object
     , public IFileNameMap
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
@@ -32,4 +36,4 @@ public:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__DEFAULTFILENAMEMAP_H__
+#endif //__ELASTOS_NET_DEFAULTFILENAMEMAP_H__

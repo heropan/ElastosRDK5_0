@@ -1,13 +1,14 @@
 
-#ifndef __CURL_H__
-#define __CURL_H__
+#ifndef __ELASTOS_NET_CURL_H__
+#define __ELASTOS_NET_CURL_H__
 
-#include "_CURL.h"
+#include "_ELASTOS_NET_CURL.h"
 
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
-
 using Elastos::IO::IInputStream;
 
 namespace Elastos {
@@ -16,10 +17,17 @@ namespace Net {
 class URLStreamHandler;
 
 CarClass(CURL)
+    , public Object
+    , public IURL
+    , public ISerializable
 {
     friend class URLStreamHandler;
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CURL();
 
     CARAPI constructor(
@@ -185,4 +193,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CURL_H__
+#endif //__ELASTOS_NET_CURL_H__

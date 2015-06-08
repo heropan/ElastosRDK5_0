@@ -1,15 +1,26 @@
 
-#ifndef __CINETSOCKETADDRESS_H__
-#define __CINETSOCKETADDRESS_H__
+#ifndef __ELASTOS_NET_CINETSOCKETADDRESS_H__
+#define __ELASTOS_NET_CINETSOCKETADDRESS_H__
 
-#include "_CInetSocketAddress.h"
+#include "_ELASTOS_NET_CInetSocketAddress.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CInetSocketAddress)
+    , public Object
+    , public IInetSocketAddress
+    , public ISocketAddress
+    , public ISerializable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -79,4 +90,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CINETSOCKETADDRESS_H__
+#endif //__ELASTOS_NET_CINETSOCKETADDRESS_H__

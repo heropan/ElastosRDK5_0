@@ -1,14 +1,23 @@
-#ifndef __CPROXYHELPER_H__
-#define __CPROXYHELPER_H__
+#ifndef __ELASTOS_NET_CPROXYHELPER_H__
+#define __ELASTOS_NET_CPROXYHELPER_H__
 
 #include <_CProxyHelper.h>
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CProxyHelper)
+    , public Singleton
+    , public IProxyHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     GetNO_PROXY(
         /* [out] */ IProxy** proxy);
 };
@@ -16,4 +25,4 @@ public:
 } // namespace Net
 } // namespace Elastos
 
-#endif // __CPROXYHELPER_H__
+#endif //__ELASTOS_NET_CPROXYHELPER_H__

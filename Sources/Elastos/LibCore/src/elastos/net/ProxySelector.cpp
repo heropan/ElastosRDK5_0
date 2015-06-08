@@ -23,6 +23,8 @@ AutoPtr<INetPermission> ProxySelector::sGetProxySelectorPermission;
 
 AutoPtr<INetPermission> ProxySelector::sSetProxySelectorPermission;
 
+CAR_INTERFACE_IMPL(ProxySelector, Object, IProxySelect)
+
 ECode ProxySelector::GetDefault(
     /* [out] */ IProxySelector** defaultSelector)
 {

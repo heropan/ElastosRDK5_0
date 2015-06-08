@@ -1,13 +1,18 @@
-#ifndef __CINET6ADDRESSHELPER_H__
-#define __CINET6ADDRESSHELPER_H__
+#ifndef __ELASTOS_NET_CINET6ADDRESSHELPER_H__
+#define __ELASTOS_NET_CINET6ADDRESSHELPER_H__
 
-#include "_CInet6AddressHelper.h"
+#include "_ELASTOS_NET_CInet6AddressHelper.h"
 #include "InetAddress.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CInet6AddressHelper)
+    , public Singleton
+    , public IInet6AddressHelper
 {
     CARAPI GetByAddress(
         /* [in] */ const String& host,
@@ -25,4 +30,4 @@ CarClass(CInet6AddressHelper)
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CINET6ADDRESSHELPER_H__
+#endif //__ELASTOS_NET_CINET6ADDRESSHELPER_H__

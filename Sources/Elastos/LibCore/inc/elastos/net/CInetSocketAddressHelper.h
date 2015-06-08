@@ -1,15 +1,24 @@
 
-#ifndef __CINETSOCKETADDRESSHELPER_H__
-#define __CINETSOCKETADDRESSHELPER_H__
+#ifndef __ELASTOS_NET_CINETSOCKETADDRESSHELPER_H__
+#define __ELASTOS_NET_CINETSOCKETADDRESSHELPER_H__
 
-#include "_CInetSocketAddressHelper.h"
+#include "_ELASTOS_NET_CInetSocketAddressHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CInetSocketAddressHelper)
+    , public Singleton
+    , public IInetSocketAddressHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI CreateUnresolved(
         /* [in] */ const String& host,
         /* [in] */ Int32 port,
@@ -20,4 +29,4 @@ public:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CINETSOCKETADDRESSHELPER_H__
+#endif //__ELASTOS_NET_CINETSOCKETADDRESSHELPER_H__

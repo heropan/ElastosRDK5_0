@@ -25,6 +25,8 @@ const String DatagramSocket::TAG("DatagramSocket");
 AutoPtr<IDatagramSocketImplFactory> DatagramSocket::mFactory;
 Mutex DatagramSocket::sLock;
 
+CAR_SINGLETON_IMPL_2(DatagramSocket, Object, IDatagramSocket, ICloseable)
+
 DatagramSocket::DatagramSocket()
     : mPort(-1)
     , mIsBound(FALSE)
@@ -33,19 +35,19 @@ DatagramSocket::DatagramSocket()
     , mIsClosed(FALSE)
 {}
 
-ECode DatagramSocket::Init()
+ECode DatagramSocket::constructor()
 {
-    return Init(0);
+    return constructor(0);
 }
 
-ECode DatagramSocket::Init(
+ECode DatagramSocket::constructor(
     /* [in] */ Int32 aPort)
 {
     FAIL_RETURN(CheckPort(aPort));
     return CreateSocket(aPort, CInet4Address::ANY.Get());
 }
 
-ECode DatagramSocket::Init(
+ECode DatagramSocket::constructor(
     /* [in] */ Int32 aport,
     /* [in] */ IInetAddress* addr)
 {
@@ -53,7 +55,7 @@ ECode DatagramSocket::Init(
     return CreateSocket(aport, addr == NULL ? CInet4Address::ANY.Get() : addr);
 }
 
-ECode DatagramSocket::Init(
+ECode DatagramSocket::constructor(
     /* [in] */ ISocketAddress* localAddr)
 {
     if (localAddr != NULL) {

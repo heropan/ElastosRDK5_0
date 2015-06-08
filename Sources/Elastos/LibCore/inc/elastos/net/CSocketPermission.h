@@ -1,14 +1,21 @@
 
-#ifndef __CSOCKETPERMISSION_H__
-#define __CSOCKETPERMISSION_H__
+#ifndef __ELASTOS_NET_CSOCKETPERMISSION_H__
+#define __ELASTOS_NET_CSOCKETPERMISSION_H__
 
-#include "_CSocketPermission.h"
+#include "_ELASTOS_NET_CSocketPermission.h"
 #include "Permission.h"
 #include <elastos/AutoPtr.h>
 
-CarClass(CSocketPermission) , public Permission
+CarClass(CSocketPermission)
+    , public Permission
+    , public ISocketPermission
+    , public ISerializable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CSocketPermission();
 
     CARAPI constructor(
@@ -100,4 +107,4 @@ private:
     String mActions; // List of all actions allowed by this permission
 };
 
-#endif //__CSOCKETPERMISSION_H__
+#endif //__ELASTOS_NET_CSOCKETPERMISSION_H__

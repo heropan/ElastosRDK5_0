@@ -1,13 +1,18 @@
 
-#ifndef __CCOOKIEPOLICYHELPER_H__
-#define __CCOOKIEPOLICYHELPER_H__
+#ifndef __ELASTOS_NET_CCOOKIEPOLICYHELPER_H__
+#define __ELASTOS_NET_CCOOKIEPOLICYHELPER_H__
 
-#include "_CCookiePolicyHelper.h"
+#include "_ELASTOS_NET_CCookiePolicyHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CCookiePolicyHelper)
+    , public Singleton
+    , public ICookiePolicyHelper
 {
 private:
     class CookiePolicyAcceptAll
@@ -77,6 +82,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetCookiePolicy(
         /* [in] */ CookiePolicyKind kind,
         /* [out] */ ICookiePolicy** policy);
@@ -93,4 +102,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CCOOKIEPOLICYHELPER_H__
+#endif //__ELASTOS_NET_CCOOKIEPOLICYHELPER_H__

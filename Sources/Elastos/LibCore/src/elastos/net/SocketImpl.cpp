@@ -11,6 +11,8 @@ namespace Net {
 extern "C" const InterfaceID EIID_SocketImpl =
     { 0x95a22b32, 0x2670, 0x4e61, { 0x87, 0x9d, 0x35, 0xe0, 0xaa, 0x78, 0xc5, 0x79 } };
 
+CAR_INTERFACE_IMPL_2(SocketImpl, Object, ISocketImpl, ISocketOptions)
+
 SocketImpl::SocketImpl()
     : mStreaming(TRUE)
     , mPort(0)

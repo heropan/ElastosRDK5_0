@@ -1,15 +1,24 @@
 
-#ifndef __CPASSWORDAUTHENTICATION_H__
-#define __CPASSWORDAUTHENTICATION_H__
+#ifndef __ELASTOS_NET_CPASSWORDAUTHENTICATION_H__
+#define __ELASTOS_NET_CPASSWORDAUTHENTICATION_H__
 
-#include "_CPasswordAuthentication.h"
+#include "_ELASTOS_NET_CPasswordAuthentication.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CPasswordAuthentication)
+    , public Object
+    , public IPasswordAuthentication
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     ~CPasswordAuthentication();
 
     CARAPI constructor(
@@ -31,4 +40,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CPASSWORDAUTHENTICATION_H__
+#endif //__ELASTOS_NET_CPASSWORDAUTHENTICATION_H__

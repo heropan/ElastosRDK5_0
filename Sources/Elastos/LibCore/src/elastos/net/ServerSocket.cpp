@@ -19,13 +19,15 @@ namespace Net {
 AutoPtr<ISocketImplFactory> ServerSocket::sFactory;
 Mutex ServerSocket::sLock;
 
+CAR_INTERFACE_IMPL_2(ServerSocket, Object, IServerSocket, ICloseable)
+
 ServerSocket::ServerSocket()
     : mIsCreated(FALSE)
     , mIsBound(FALSE)
     , mIsClosed(FALSE)
 {}
 
-ECode ServerSocket::Init()
+ECode ServerSocket::constructor()
 {
     if (sFactory != NULL) {
         return sFactory->CreateSocketImpl((ISocketImpl**)&mImpl);
@@ -38,27 +40,27 @@ ECode ServerSocket::Init()
     }
 }
 
-ECode ServerSocket::Init(
+ECode ServerSocket::constructor(
     /* [in] */ ISocketImpl* impl)
 {
     mImpl = impl;
     return NOERROR;
 }
 
-ECode ServerSocket::Init(
+ECode ServerSocket::constructor(
     /* [in] */ Int32 aPort)
 {
-    return Init(aPort, DefaultBacklog(), CInet4Address::ANY);
+    return constructor(aPort, DefaultBacklog(), CInet4Address::ANY);
 }
 
-ECode ServerSocket::Init(
+ECode ServerSocket::constructor(
     /* [in] */ Int32 aPort,
     /* [in] */ Int32 backlog)
 {
-    return Init(aPort, backlog, CInet4Address::ANY);
+    return constructor(aPort, backlog, CInet4Address::ANY);
 }
 
-ECode ServerSocket::Init(
+ECode ServerSocket::constructor(
     /* [in] */ Int32 aPort,
     /* [in] */ Int32 backlog,
     /* [in] */ IInetAddress* localAddr)

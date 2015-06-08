@@ -1,5 +1,5 @@
-#ifndef __SOCKS4MESSAGE_H__
-#define __SOCKE4MESSAGE_H__
+#ifndef __ELASTOS_NET_SOCKS4MESSAGE_H__
+#define __ELASTOS_NET_SOCKE4MESSAGE_H__
 
 #include "Elastos.CoreLibrary_server.h"
 
@@ -7,6 +7,8 @@ namespace Elastos {
 namespace Net {
 
 class Socks4Message
+    : public Object
+    , public ISocks4Message
 {
 public:
     static const Int32 COMMAND_CONNECT = 1;
@@ -31,38 +33,80 @@ protected:
     AutoPtr<ArrayOf<Byte> > mBuffer;
 
 public:
-    Socks4Message();
+    CAR_INTERFACE_DECL()
 
-    CARAPI Init();
+    //Socks4Message();
 
-    CARAPI_(Int32) GetCommandOrResult();
+    CARAPI constructor();
 
-    CARAPI_(void) SetCommandOrResult(
+    /**
+     * Get the request's command or result.
+     */
+    CARAPI GetCommandOrResult(
+        /* [out] */ Int32* result);
+
+    /**
+     * Set the request's command or result.
+     */
+    CARAPI SetCommandOrResult(
         /* [in] */ Int32 command);
 
-    CARAPI_(Int32) GetPort();
+    /**
+     * Returns the request's port number.
+     */
+    CARAPI GetPort(
+        /* [out] */ Int32* port);
 
-    CARAPI_(void) SetPort(
+    /**
+     * Set the request's port number.
+     */
+    CARAPI SetPort(
         /* [in] */ Int32 port);
 
-    CARAPI_(Int32) GetIP();
+    /**
+     * Returns the IP address of the request as an integer.
+     */
+    CARAPI GetIP(
+        /* [out] */ Int32* ip);
 
-    CARAPI_(void) SetIP(
-        /* [in] */ const ArrayOf<Byte>& ip);
+    /**
+     * Set the IP address. This expects an array of four bytes in host order.
+     */
+    CARAPI SetIP(
+        /* [in] */ ArrayOf<Byte>* ip);
 
-    CARAPI_(String) GetUserId();
-
-    CARAPI_(void) SetUserId(
+    /**
+     * Returns the user id for authentication.
+     */
+    CARAPI GetUserId(
+        /* [out] */ String* id);
+    /**
+     * Set the user id for authentication.
+     */
+    CARAPI SetUserId(
         /* [in] */ const String& id);
 
-    CARAPI_(String) ToString();
+    CARAPI ToString(
+        /* [out] */ String* str);
 
-    CARAPI_(Int32) GetLength();
-
-    CARAPI_(String) GetErrorString(
-        /* [in] */ Int32 error);
-
-    CARAPI_(AutoPtr<ArrayOf<Byte> >) GetBytes();
+    /**
+     * Returns the total number of bytes used for the request. This method
+     * searches for the end of the user id, then searches for the end of the
+     * password and returns the final index as the requests length.
+     */
+    CARAPI GetLength(
+        /* [out] */ Int32* length);
+    /**
+     * Returns an error string corresponding to the given error value.
+     */
+    CARAPI GetErrorString(
+        /* [in] */ Int32 error,
+        /* [out] */ String* str);
+    /**
+     * Returns the message's byte buffer.
+     */
+    CARAPI GetBytes(
+        /* [out, callee] */ ArrayOf<Byte>** bytes);
 
 private:
     CARAPI_(Int32) GetInt16(
@@ -92,4 +136,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__SOCKS4MESSAGE_H__
+#endif //__ELASTOS_NET_SOCKS4MESSAGE_H__

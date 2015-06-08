@@ -1,19 +1,18 @@
 
-#ifndef __AUTHENTICATOR_H__
-#define __AUTHENTICATOR_H__
+#ifndef __ELASTOS_NET_AUTHENTICATOR_H__
+#define __ELASTOS_NET_AUTHENTICATOR_H__
 
 #include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
 
-
-
-
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Net {
 
 extern const InterfaceID EIID_Authenticator;
 
-class Authenticator : public ElRefBase
+class Authenticator : public Object
 {
 public:
     Authenticator();
@@ -103,4 +102,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__AUTHENTICATOR_H__
+#endif //__ELASTOS_NET_AUTHENTICATOR_H__

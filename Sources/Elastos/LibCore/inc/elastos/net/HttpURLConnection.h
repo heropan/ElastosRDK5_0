@@ -1,6 +1,6 @@
 
-#ifndef __HTTPURLCONNECTION_H__
-#define __HTTPURLCONNECTION_H__
+#ifndef __ELASTOS_NET_HTTPURLCONNECTION_H__
+#define __ELASTOS_NET_HTTPURLCONNECTION_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include "URLConnection.h"
@@ -10,9 +10,13 @@ namespace Net {
 
 //extern "C" const InterfaceID EIID_HttpURLConnection;
 
-class HttpURLConnection : public URLConnection
+class HttpURLConnection
+    : public URLConnection
+    , public IHttpURLConnection
 {
 public:
+    CAR_INTERFACE_DECL()
+
     virtual CARAPI Disconnect() = 0;
 
     virtual CARAPI GetErrorStream(
@@ -86,4 +90,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__HTTPURLCONNECTION_H__
+#endif //__ELASTOS_NET_HTTPURLCONNECTION_H__

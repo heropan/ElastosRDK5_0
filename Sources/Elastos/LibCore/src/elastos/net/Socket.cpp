@@ -21,6 +21,8 @@ namespace Net {
 AutoPtr<ISocketImplFactory> Socket::sFactory;
 Mutex Socket::sLock;
 
+CAR_INTERFACE_IMPL_2(Socket, Object, ISocket, ICloneable)
+
 Socket::Socket()
     : mIsCreated(FALSE)
     , mIsBound(FALSE)
@@ -32,7 +34,7 @@ Socket::Socket()
     mLocalAddress = CInet4Address::ANY;
 }
 
-ECode Socket::Init()
+ECode Socket::constructor()
 {
     if (sFactory != NULL) {
         sFactory->CreateSocketImpl((ISocketImpl**)&mImpl);
@@ -45,7 +47,7 @@ ECode Socket::Init()
     return NOERROR;
 }
 
-ECode Socket::Init(
+ECode Socket::constructor(
     /* [in] */ IProxy* proxy)
 {
     mProxy = proxy;
@@ -82,61 +84,61 @@ ECode Socket::Init(
     return NOERROR;
 }
 
-ECode Socket::Init(
+ECode Socket::constructor(
     /* [in] */ const String& dstName,
     /* [in] */ Int32 dstPort)
 {
 
-    return Init(dstName, dstPort, NULL, 0);
+    return constructor(dstName, dstPort, NULL, 0);
 }
 
-ECode Socket::Init(
+ECode Socket::constructor(
     /* [in] */ const String& dstName,
     /* [in] */ Int32 dstPort,
     /* [in] */ IInetAddress* localAddress,
     /* [in] */ Int32 localPort)
 {
 
-    FAIL_RETURN(Init());
+    FAIL_RETURN(constructor());
 
     return TryAllAddresses(dstName, dstPort, localAddress, localPort, TRUE);
 }
 
-ECode Socket::Init(
+ECode Socket::constructor(
     /* [in] */ const String& hostName,
     /* [in] */ Int32 port,
     /* [in] */ Boolean streaming)
 {
-    FAIL_RETURN(Init());
+    FAIL_RETURN(constructor());
     return TryAllAddresses(hostName, port, NULL, 0, streaming);
 }
 
-ECode Socket::Init(
+ECode Socket::constructor(
     /* [in] */ IInetAddress* dstAddress,
     /* [in] */ Int32 dstPort)
 {
-    FAIL_RETURN(Init());
+    FAIL_RETURN(constructor());
     FAIL_RETURN(CheckDestination(dstAddress, dstPort));
     return StartupSocket(dstAddress, dstPort, NULL, 0, TRUE);
 }
 
-ECode Socket::Init(
+ECode Socket::constructor(
     /* [in] */ IInetAddress* dstAddress,
     /* [in] */ Int32 dstPort,
     /* [in] */ IInetAddress* localAddress,
     /* [in] */ Int32 localPort)
 {
-    FAIL_RETURN(Init());
+    FAIL_RETURN(constructor());
     FAIL_RETURN(CheckDestination(dstAddress, dstPort));
     return StartupSocket(dstAddress, dstPort, localAddress, localPort, TRUE);
 }
 
-ECode Socket::Init(
+ECode Socket::constructor(
     /* [in] */ IInetAddress* addr,
     /* [in] */ Int32 port,
     /* [in] */ Boolean streaming)
 {
-    FAIL_RETURN(Init());
+    FAIL_RETURN(constructor());
     FAIL_RETURN(CheckDestination(addr, port));
     return StartupSocket(addr, port, NULL, 0, streaming);
 }

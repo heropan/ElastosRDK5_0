@@ -1,14 +1,20 @@
 
-#ifndef __CNETPERMISSION_H__
-#define __CNETPERMISSION_H__
+#ifndef __ELASTOS_NET_CNETPERMISSION_H__
+#define __ELASTOS_NET_CNETPERMISSION_H__
 
-#include "_CNetPermission.h"
+#include "_ELASTOS_NET_CNetPermission.h"
 #include "BasicPermission.h"
 #include <elastos/AutoPtr.h>
 
-CarClass(CNetPermission) , public BasicPermission
+CarClass(CNetPermission)
+    , public BasicPermission
+    , public INetPermission
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ const String& name);
 
@@ -17,4 +23,4 @@ public:
         /* [in] */ const String& actions);
 };
 
-#endif //__CNETPERMISSION_H__
+#endif //__ELASTOS_NET_CNETPERMISSION_H__

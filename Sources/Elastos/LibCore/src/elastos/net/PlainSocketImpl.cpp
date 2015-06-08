@@ -42,6 +42,8 @@ extern "C" const InterfaceID EIID_PlainSocketImpl =
 AutoPtr<IInetAddress> PlainSocketImpl::sLastConnectedAddress = NULL;
 Int32 PlainSocketImpl::sLastConnectedPort = 0;
 
+CAR_INTERFACE_IMPL(PlainSocketImpl, SocketImpl, IPlainSocketImpl)
+
 PlainSocketImpl::PlainSocketImpl()
     :SocketImpl()
     , mStreaming(TRUE)
@@ -50,7 +52,7 @@ PlainSocketImpl::PlainSocketImpl()
     mGuard = CCloseGuard::Get();
 }
 
-ECode PlainSocketImpl::Init(
+ECode PlainSocketImpl::constructor(
     /* [in] */ IFileDescriptor* fd)
 {
     mFd = fd;
@@ -62,25 +64,25 @@ ECode PlainSocketImpl::Init(
     return NOERROR;
 }
 
-ECode PlainSocketImpl::Init(
+ECode PlainSocketImpl::constructor(
     /* [in] */ IProxy* proxy)
 {
     AutoPtr<IFileDescriptor> fd;
     CFileDescriptor::New((IFileDescriptor**)&fd);
-    Init(fd);
+    constructor(fd);
     mProxy = proxy;
     return NOERROR;
 }
 
-ECode PlainSocketImpl::Init()
+ECode PlainSocketImpl::constructor()
 {
     AutoPtr<IFileDescriptor> fd;
     CFileDescriptor::New((IFileDescriptor**)&fd);
-    Init(fd);
+    constructor(fd);
     return NOERROR;
 }
 
-ECode PlainSocketImpl::Init(
+ECode PlainSocketImpl::constructor(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 localport,
     /* [in] */ IInetAddress* addr,

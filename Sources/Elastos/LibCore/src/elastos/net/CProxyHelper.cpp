@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CProxyHelper, Singleton, IProxyHelper)
+
+CAR_SINGLETON_IMPL(CProxyHelper)
+
 ECode CProxyHelper::GetNO_PROXY(
     /* [out] */ IProxy** proxy)
 {

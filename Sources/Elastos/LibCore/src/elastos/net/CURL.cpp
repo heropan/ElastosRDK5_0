@@ -29,6 +29,10 @@ HashMap<String, AutoPtr<IURLStreamHandler> > CURL::sStreamHandlers;
 AutoPtr<IURLStreamHandlerFactory> CURL::sStreamHandlerFactory;
 Mutex CURL::sLock;
 
+CAR_INTERFACE_IMPL_2(CURL, Object, IURL, ISerializable)
+
+CAR_OBJECT_IMPL(CURL)
+
 CURL::CURL()
     : mHashCode(0)
     , mPort(-1)

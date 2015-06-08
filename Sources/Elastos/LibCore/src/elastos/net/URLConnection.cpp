@@ -7,15 +7,17 @@
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringUtils.h>
 
-namespace Elastos {
-namespace Net {
-
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
 using Elastos::Core::ISystem;
 using Elastos::Utility::IDateHelper;
 using Elastos::Utility::CDateHelper;
+
+namespace Elastos {
+namespace Net {
+
+CAR_INTERFACE_IMPL(URLConnection, Object, IURLConnection)
 
 PInterface URLConnection::DefaultContentHandler::Probe(
     /* [in] */ REIID riid)

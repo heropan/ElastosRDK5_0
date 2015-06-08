@@ -1,13 +1,15 @@
 
-#ifndef __CHTTPCOOKIE_H__
-#define __CHTTPCOOKIE_H__
+#ifndef __ELASTOS_NET_CHTTPCOOKIE_H__
+#define __ELASTOS_NET_CHTTPCOOKIE_H__
 
-#include "_CHttpCookie.h"
+#include "_ELASTOS_NET_CHttpCookie.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringBuilder.h>
 #include "InetAddress.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;
@@ -17,6 +19,9 @@ namespace Elastos {
 namespace Net {
 
 CarClass(CHttpCookie)
+    , public Object
+    , public IHttpCookie
+    , public ICloneable
 {
 public:
     class CookieParser : public ElRefBase
@@ -63,6 +68,10 @@ public:
 
 public:
     static CARAPI StaticInit();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CHttpCookie();
 
@@ -206,4 +215,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CHTTPCOOKIE_H__
+#endif //__ELASTOS_NET_CHTTPCOOKIE_H__

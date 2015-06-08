@@ -1,10 +1,8 @@
 
-#ifndef __SOCKET_H__
-#define __SOCKET_H__
+#ifndef __ELASTOS_NET_SOCKET_H__
+#define __ELASTOS_NET_SOCKET_H__
 
 #include "Elastos.CoreLibrary_server.h"
-
-
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
@@ -14,8 +12,13 @@ namespace Elastos {
 namespace Net {
 
 class Socket
+    : public Object
+    , public ISocket
+    , public ICloseable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI Close();
 
     CARAPI GetInetAddress(
@@ -148,37 +151,37 @@ public:
 protected:
     Socket();
 
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IProxy* proxy);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& dstName,
         /* [in] */ Int32 dstPort);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& dstName,
         /* [in] */ Int32 dstPort,
         /* [in] */ IInetAddress* localAddress,
         /* [in] */ Int32 localPort);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& hostName,
         /* [in] */ Int32 port,
         /* [in] */ Boolean streaming);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInetAddress* dstAddress,
         /* [in] */ Int32 dstPort);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInetAddress* dstAddress,
         /* [in] */ Int32 dstPort,
         /* [in] */ IInetAddress* localAddress,
         /* [in] */ Int32 localPort);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IInetAddress* addr,
         /* [in] */ Int32 port,
         /* [in] */ Boolean streaming);
@@ -238,4 +241,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__SOCKET_H__
+#endif //__ELASTOS_NET_SOCKET_H__

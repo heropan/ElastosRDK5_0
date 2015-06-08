@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CURLDecoder, Singleton, IURLDecoder)
+
+CAR_SINGLETON_IMPL(CURLDecoder)
+
 ECode CURLDecoder::Decode(
     /* [in] */ const String& s,
     /* [out] */ String* result)

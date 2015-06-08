@@ -1,17 +1,24 @@
 
-#ifndef __DATAGRAMSOCKETIMPL_H__
-#define __DATAGRAMSOCKETIMPL_H__
+#ifndef __ELASTOS_NET_DATAGRAMSOCKETIMPL_H__
+#define __ELASTOS_NET_DATAGRAMSOCKETIMPL_H__
 
 #include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {
 namespace Net {
 
 class DatagramSocketImpl
+    : public Object
+    , public IDatagramSocketImpl
+    , public ISocketOptions
 {
 public:
+    CAR_INTERFACE_DECL()
+
     DatagramSocketImpl();
 
     virtual CARAPI Bind(
@@ -86,4 +93,4 @@ protected:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__DATAGRAMSOCKETIMPL_H__
+#endif //__ELASTOS_NET_DATAGRAMSOCKETIMPL_H__

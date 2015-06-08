@@ -14,6 +14,10 @@ AutoPtr<IProxy> StaticInitProxy()
 
 AutoPtr<IProxy> CProxy::NO_PROXY = StaticInitProxy();
 
+CAR_INTERFACE_IMPL(CProxy, Object, IProxy)
+
+CAR_OBJECT_IMPL(CProxy)
+
 ECode CProxy::constructor(
     /* [in] */ ProxyType type,
     /* [in] */ ISocketAddress* sa)

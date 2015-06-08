@@ -4,6 +4,10 @@
 namespace Elastos {
 namespace Net {
 
+CAR_SINGLETON_IMPL(CCookieHandlerHelper, Singleton, ICookieHandlerHelper)
+
+CAR_SINGLETON_IMPL(CCookieHandlerHelper)
+
 ECode CCookieHandlerHelper::GetDefault(
     /* [out] */ ICookieHandler** handler)
 {

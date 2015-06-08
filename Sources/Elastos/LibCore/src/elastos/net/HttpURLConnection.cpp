@@ -12,6 +12,8 @@ namespace Net {
 
 Boolean HttpURLConnection::sFollowRedirects = TRUE;
 
+CAR_INTERFACE_IMPL(HttpURLConnection, URLConnection, IHttpURLConnection)
+
 HttpURLConnection::HttpURLConnection()
     : URLConnection()
     , mMethod("GET")/*HttpURLConnectionImpl.GET*/

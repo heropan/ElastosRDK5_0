@@ -1,18 +1,24 @@
 
-#ifndef __CDATAGRAMPACKET_H__
-#define __CDATAGRAMPACKET_H__
+#ifndef __ELASTOS_NET_CDATAGRAMPACKET_H__
+#define __ELASTOS_NET_CDATAGRAMPACKET_H__
 
-#include "_CDatagramPacket.h"
+#include "_ELASTOS_NET_CDatagramPacket.h"
+#include <elastos/core/Object.h>
 
-
-
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CDatagramPacket)
+    , public Object
+    , public IDatagramPacket
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CDatagramPacket();
 
     ~CDatagramPacket();
@@ -110,4 +116,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CDATAGRAMPACKET_H__
+#endif //__ELASTOS_NET_CDATAGRAMPACKET_H__

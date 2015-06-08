@@ -18,6 +18,10 @@ const CString CSocketPermission::sActionNames[] = {
 const Int32 CSocketPermission::HIGHEST_PORT = 65535;
 const Int32 CSocketPermission::LOWEST_PORT = 0;
 
+CAR_INTERFACE_IMPL_2(CSocketPermission, Permission, ICSocketPermission, ISerializable)
+
+CAR_OBJECT_IMPL(CSocketPermission)
+
 CSocketPermission::CSocketPermission()
     : mResolved(FALSE)
     , mPortMin(LOWEST_PORT)

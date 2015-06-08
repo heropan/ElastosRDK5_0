@@ -3,15 +3,17 @@
 namespace Elastos {
 namespace Net {
 
-ECode PlainServerSocketImpl::Init()
+CAR_INTERFACE_IMPL(PlainServerSocketImpl, PlainSocketImpl, IPlainServerSocketImpl)
+
+ECode PlainServerSocketImpl::constructor()
 {
-    return PlainSocketImpl::Init();
+    return PlainSocketImpl::constructor();
 }
 
-ECode PlainServerSocketImpl::Init(
+ECode PlainServerSocketImpl::constructor(
     /* [in] */ IFileDescriptor* fd)
 {
-    return PlainSocketImpl::Init(fd);
+    return PlainSocketImpl::constructor(fd);
 }
 
 ECode PlainServerSocketImpl::Create(

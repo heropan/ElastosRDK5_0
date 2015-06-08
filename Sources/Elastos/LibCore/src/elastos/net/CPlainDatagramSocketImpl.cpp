@@ -25,6 +25,10 @@ using Libcore::IO::CStructGroupReq;
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CPlainDatagramSocketImpl, DatagramSocketImpl, CPlainDatagramSocketImpl)
+
+CAR_OBJECT_IMPL(CPlainDatagramSocketImpl)
+
 CPlainDatagramSocketImpl::CPlainDatagramSocketImpl()
     : mIsNativeConnected(FALSE)
     , mConnectedPort(-1)

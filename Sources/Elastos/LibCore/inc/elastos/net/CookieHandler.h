@@ -1,17 +1,18 @@
 
-#ifndef __COOKIEHANDLER_H__
-#define __COOKIEHANDLER_H__
+#ifndef __ELASTOS_NET_COOKIEHANDLER_H__
+#define __ELASTOS_NET_COOKIEHANDLER_H__
 
 #include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
 
-
+using Elastos::Core::Object;
 using Elastos::Utility::IMap;
 using Elastos::Net::ICookieHandler;
 
 namespace Elastos {
 namespace Net {
 
-class CookieHandler
+class CookieHandler : public Object
 {
 public:
     static CARAPI GetDefault(
@@ -38,4 +39,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__COOKIEHANDLER_H__
+#endif //__ELASTOS_NET_COOKIEHANDLER_H__

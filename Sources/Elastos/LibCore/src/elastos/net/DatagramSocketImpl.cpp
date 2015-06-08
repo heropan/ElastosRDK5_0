@@ -8,6 +8,8 @@ using Libcore::IO::CIoBridge;
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL_2(DatagramSocketImpl, Object, IDatagramSocketImpl, ISocketOptions)
+
 DatagramSocketImpl::DatagramSocketImpl()
     : mLocalPort(-1)
 {}

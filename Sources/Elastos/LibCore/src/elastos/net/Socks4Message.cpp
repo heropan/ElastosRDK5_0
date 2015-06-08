@@ -5,71 +5,96 @@
 namespace Elastos {
 namespace Net {
 
-Socks4Message::Socks4Message()
-{
-    Init();
-}
+CAR_INTERFACE_IMPL(Socks4Message, Object, ISocks4Message)
 
-ECode Socks4Message::Init()
+// Socks4Message::Socks4Message()
+// {
+//     assert(0);
+//     Init();
+// }
+
+ECode Socks4Message::constructor()
 {
     mBuffer = ArrayOf<Byte>::Alloc(BUFFER_LENGTH);
     SetVersionNumber(SOCKS_VERSION);
     return NOERROR;
 }
 
-Int32 Socks4Message::GetCommandOrResult()
+ECode Socks4Message::GetCommandOrResult(
+    /* [out] */ Int32* result)
 {
-    return (*mBuffer)[INDEX_COMMAND];
+    VALIDATE_NOT_NULL(result)
+
+    *result = (*mBuffer)[INDEX_COMMAND];
+    return NOERROR;
 }
 
-void Socks4Message::SetCommandOrResult(
+ECode Socks4Message::SetCommandOrResult(
     /* [in] */ Int32 command)
 {
     (*mBuffer)[INDEX_COMMAND] = (Byte) command;
+    return NOERROR;
 }
 
-Int32 Socks4Message::GetPort()
+ECode Socks4Message::GetPort(
+    /* [out] */ Int32* port);
 {
-    return GetInt16(INDEX_PORT);
+    VALIDATE_NOT_NULL(port)
+
+    *port = GetInt16(INDEX_PORT);
+    return NOERROR;
 }
 
-void Socks4Message::SetPort(
+ECode Socks4Message::SetPort(
     /* [in] */ Int32 port)
 {
-    SetInt16(INDEX_PORT, port);
+    return SetInt16(INDEX_PORT, port);
 }
 
-Int32 Socks4Message::GetIP()
+ECode Socks4Message::GetIP(
+    /* [out] */ Int32* ip)
 {
-    return GetInt32(INDEX_IP);
+    VALIDATE_NOT_NULL(ip)
+
+    *ip = GetInt32(INDEX_IP);
+    return NOERROR;
 }
 
-void Socks4Message::SetIP(
-    /* [in] */ const ArrayOf<Byte>& ip)
+ECode Socks4Message::SetIP(
+    /* [in] */ ArrayOf<Byte>* ip)
 {
-    (*mBuffer)[INDEX_IP] = ip[0];
-    (*mBuffer)[INDEX_IP + 1] = ip[1];
-    (*mBuffer)[INDEX_IP + 2] = ip[2];
-    (*mBuffer)[INDEX_IP + 3] = ip[3];
+    (*mBuffer)[INDEX_IP] = (*ip)[0];
+    (*mBuffer)[INDEX_IP + 1] = (*ip)[1];
+    (*mBuffer)[INDEX_IP + 2] = (*ip)[2];
+    (*mBuffer)[INDEX_IP + 3] = (*ip)[3];
 }
 
-String Socks4Message::GetUserId()
+ECode Socks4Message::GetUserId(
+    /* [out] */ String* id)
 {
-    return GetString(INDEX_USER_ID, MAX_USER_ID_LENGTH);
+    VALIDATE_NOT_NULL(id)
+
+    *id = GetString(INDEX_USER_ID, MAX_USER_ID_LENGTH);
+    return NOERROR;
 }
 
-void Socks4Message::SetUserId(
+ECode Socks4Message::SetUserId(
     /* [in] */ const String& id)
 {
-    SetString(INDEX_USER_ID, MAX_USER_ID_LENGTH, id);
+    return SetString(INDEX_USER_ID, MAX_USER_ID_LENGTH, id);
 }
 
-String Socks4Message::ToString()
+ECode Socks4Message::ToString(
+    /* [out] */ String* str )
 {
+    return NOERROR;
 }
 
-Int32 Socks4Message::GetLength()
+ECode Socks4Message::GetLength(
+    /* [out] */ Int32* length)
 {
+    VALIDATE_NOT_NULL(length)
+
     Int32 index = 0;
 
     // Look for the end of the user id.
@@ -82,17 +107,27 @@ Int32 Socks4Message::GetLength()
 
     // Increment the index to include the NULL character in the length;
     index++;
-    return index;
+    *length = index;
+    return NOERROR;
 }
 
-String Socks4Message::GetErrorString(
-    /* [in] */ Int32 error)
+ECode Socks4Message::GetErrorString(
+    /* [in] */ Int32 error,
+    /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
+    return NOERROR;
 }
 
-AutoPtr<ArrayOf<Byte> > Socks4Message::GetBytes()
+ECode Socks4Message::GetBytes(
+    /* [out, callee] */ ArrayOf<Byte>** bytes)
 {
-    return mBuffer;
+    VALIDATE_NOT_NULL(bytes)
+
+    *bytes = mBuffer;
+    REFCOUNT_ADD(*bytes);
+    return NOERROR;
 }
 //private-------------------------------------
 Int32 Socks4Message::GetInt16(

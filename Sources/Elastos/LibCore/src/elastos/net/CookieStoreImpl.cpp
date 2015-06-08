@@ -12,6 +12,8 @@ using Elastos::Utility::CCollections;
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CookieStoreImpl, Object, ICookieStore)
+
 CookieStoreImpl::~CookieStoreImpl()
 {
     mMap.Clear();

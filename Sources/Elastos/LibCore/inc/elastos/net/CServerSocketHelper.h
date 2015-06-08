@@ -1,15 +1,24 @@
 
-#ifndef __CSERVERSOCKETHELPER_H__
-#define __CSERVERSOCKETHELPER_H__
+#ifndef __ELASTOS_NET_CSERVERSOCKETHELPER_H__
+#define __ELASTOS_NET_CSERVERSOCKETHELPER_H__
 
-#include "_CServerSocketHelper.h"
+#include "_ELASTOS_NET_CServerSocketHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CServerSocketHelper)
+    , public Singleton
+    , public IServerSocketHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI SetSocketFactory(
         /* [in] */ ISocketImplFactory* aFactory);
 };
@@ -17,4 +26,4 @@ public:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CSERVERSOCKETHELPER_H__
+#endif //__ELASTOS_NET_CSERVERSOCKETHELPER_H__

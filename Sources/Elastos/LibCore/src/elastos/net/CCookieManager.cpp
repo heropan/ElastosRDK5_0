@@ -21,6 +21,9 @@ using Elastos::Core::Math;
 const String CCookieManager::VERSION_ZERO_HEADER = String("Set-cookie");
 const String CCookieManager::VERSION_ONE_HEADER = String("Set-cookie2");
 
+CAR_INTERFACE_IMPL(CCookieManager, CookieHandler, ICookieManager)
+
+CAR_OBJECT_IMPL(CCookieManager)
 
 ECode CCookieManager::constructor()
 {

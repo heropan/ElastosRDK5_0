@@ -171,6 +171,10 @@ AutoPtr<ICookiePolicy> CCookiePolicyHelper::ACCEPT_ALL;
 AutoPtr<ICookiePolicy> CCookiePolicyHelper::ACCEPT_NONE;
 AutoPtr<ICookiePolicy> CCookiePolicyHelper::ACCEPT_ORIGINAL_SERVER;
 
+CAR_SINGLETON_IMPL(CCookiePolicyHelper, Singleton, ICookiePolicyHelper)
+
+CAR_SINGLETON_IMPL(CCookiePolicyHelper)
+
 ECode CCookiePolicyHelper::GetCookiePolicy(
     /* [in] */ CookiePolicyKind kind,
     /* [out] */ ICookiePolicy** policy)

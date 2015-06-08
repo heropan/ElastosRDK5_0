@@ -1,14 +1,23 @@
-#ifndef __CCOOKIEHANDLERHELPER_H__
-#define __CCOOKIEHANDLERHELPER_H__
+#ifndef __ELASTOS_NET_CCOOKIEHANDLERHELPER_H__
+#define __ELASTOS_NET_CCOOKIEHANDLERHELPER_H__
 
-#include "_CCookieHandlerHelper.h"
+#include "_ELASTOS_NET_CCookieHandlerHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CCookieHandlerHelper)
+    , public Singleton
+    , public ICookieHandlerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetDefault(
         /* [out] */ ICookieHandler** handler);
 
@@ -22,4 +31,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif
+#endif //__ELASTOS_NET_CCOOKIEHANDLERHELPER_H__

@@ -1,8 +1,8 @@
 
-#ifndef __CNETGLOBALINIT_H__
-#define __CNETGLOBALINIT_H__
+#ifndef __ELASTOS_NET_CNETGLOBALINIT_H__
+#define __ELASTOS_NET_CNETGLOBALINIT_H__
 
-#include "_CNetGlobalInit.h"
+#include "_ELASTOS_NET_CNetGlobalInit.h"
 
 CarClass(CNetGlobalInit)
 {
@@ -12,4 +12,4 @@ public:
     CARAPI constructor();
 };
 
-#endif // __CNETGLOBALINIT_H__
+#endif //__ELASTOS_NET_CNETGLOBALINIT_H__

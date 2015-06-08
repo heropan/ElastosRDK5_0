@@ -14,7 +14,7 @@ module
      *
      * @Involve
      * interface Elastos.IO.ISerializable;
-     * interface ISocketAddress;
+     * interface Elastos.Net.ISocketAddress;
      */
     interface IInetSocketAddress {
         /**

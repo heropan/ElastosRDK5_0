@@ -1,10 +1,12 @@
 
-#ifndef __URLCONNECTION_H__
-#define __URLCONNECTION_H__
+#ifndef __ELASTOS_NET_URLCONNECTION_H__
+#define __ELASTOS_NET_URLCONNECTION_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 using Elastos::Utility::Etl::HashMap;
@@ -16,6 +18,8 @@ namespace Net {
 // extern "C" const InterfaceID EIID_URLConnection;
 
 class URLConnection
+    : public Object
+    , public IURLConnection
 {
 public:
     class DefaultContentHandler
@@ -45,6 +49,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     virtual CARAPI Connect() = 0;
 
     virtual CARAPI GetAllowUserInteraction(
@@ -259,4 +265,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__URLCONNECTION_H__
+#endif //__ELASTOS_NET_URLCONNECTION_H__

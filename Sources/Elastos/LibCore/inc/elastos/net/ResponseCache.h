@@ -1,15 +1,17 @@
 
-#ifndef __RESPONSECACHE_H__
-#define __RESPONSECACHE_H__
+#ifndef __ELASTOS_NET_RESPONSECACHE_H__
+#define __ELASTOS_NET_RESPONSECACHE_H__
 
 #include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Utility::IObjectStringMap;
+using Elastos::Core::Object;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Net {
 
-class ResponseCache
+class ResponseCache : public Object
 {
 public:
     /**
@@ -27,7 +29,7 @@ public:
     virtual CARAPI Get(
         /* [in] */ IURI* uri,
         /* [in] */ const String& requestMethod,
-        /* [in] */ IObjectStringMap* requestHeaders,
+        /* [in] */ IMap* requestHeaders,
         /* [out] */ ICacheResponse** cache) = 0;
 
     virtual CARAPI Put(
@@ -42,4 +44,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__RESPONSECACHE_H__
+#endif //__ELASTOS_NET_RESPONSECACHE_H__

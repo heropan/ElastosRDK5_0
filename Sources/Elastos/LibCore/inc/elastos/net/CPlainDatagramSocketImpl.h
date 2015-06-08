@@ -1,7 +1,7 @@
-#ifndef __CPLAINDATAGRAMSOCKETIMPL_H__
-#define __CPLAINDATAGRAMSOCKETIMPL_H__
+#ifndef __ELASTOS_NET_CPLAINDATAGRAMSOCKETIMPL_H__
+#define __ELASTOS_NET_CPLAINDATAGRAMSOCKETIMPL_H__
 
-#include "_CPlainDatagramSocketImpl.h"
+#include "_ELASTOS_NET_CPlainDatagramSocketImpl.h"
 #include "DatagramSocketImpl.h"
 
 using Elastos::Core::ICloseGuard;
@@ -11,9 +11,15 @@ using Libcore::IO::IStructGroupReq;
 namespace Elastos {
 namespace Net {
 
-CarClass(CPlainDatagramSocketImpl), public DatagramSocketImpl
+CarClass(CPlainDatagramSocketImpl)
+    , public DatagramSocketImpl
+    , public IPlainDatagramSocketImpl
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CPlainDatagramSocketImpl();
 
     ~CPlainDatagramSocketImpl();
@@ -118,4 +124,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif // __CPLAINDATAGRAMSOCKETIMPL_H__
+#endif //__ELASTOS_NET_CPLAINDATAGRAMSOCKETIMPL_H__

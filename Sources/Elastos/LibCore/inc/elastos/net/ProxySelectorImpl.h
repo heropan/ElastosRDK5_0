@@ -1,6 +1,6 @@
 
-#ifndef __PROXYSELECTORIMPL_H__
-#define __PROXYSELECTORIMPL_H__
+#ifndef __ELASTOS_NET_PROXYSELECTORIMPL_H__
+#define __ELASTOS_NET_PROXYSELECTORIMPL_H__
 
 #include "ProxySelector.h"
 #include "Elastos.CoreLibrary_server.h"
@@ -8,10 +8,7 @@
 namespace Elastos {
 namespace Net {
 
-class ProxySelectorImpl
-    : public ElRefBase
-    , public IProxySelector
-    , public ProxySelector
+class ProxySelectorImpl : ProxySelector
 {
 public:
     CARAPI_(PInterface) Probe(
@@ -108,4 +105,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__PROXYSELECTORIMPL_H__
+#endif //__ELASTOS_NET_PROXYSELECTORIMPL_H__

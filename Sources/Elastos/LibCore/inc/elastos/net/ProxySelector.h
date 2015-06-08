@@ -1,17 +1,23 @@
 
-#ifndef __PROXYSELECTOR_H__
-#define __PROXYSELECTOR_H__
+#ifndef __ELASTOS_NET_PROXYSELECTOR_H__
+#define __ELASTOS_NET_PROXYSELECTOR_H__
 
 #include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Net::INetPermission;
 
 namespace Elastos {
 namespace Net {
 
-class ProxySelector
+class ProxySelect
+    : public Object
+    , public IProxySelect
 {
 public:
+    CAR_INTERFACE_DECL()
+
     static CARAPI GetDefault(
         /* [out] */ IProxySelector** defaultSelector);
 
@@ -38,4 +44,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__ProxySelector_H__
+#endif //__ELASTOS_NET_ProxySelector_H__

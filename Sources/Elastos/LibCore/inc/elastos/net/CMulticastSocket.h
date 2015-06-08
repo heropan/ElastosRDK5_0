@@ -1,8 +1,8 @@
 
-#ifndef __CMULTICASTSOCKET_H__
-#define __CMULTICASTSOCKET_H__
+#ifndef __ELASTOS_NET_CMULTICASTSOCKET_H__
+#define __ELASTOS_NET_CMULTICASTSOCKET_H__
 
-#include "_CMulticastSocket.h"
+#include "_ELASTOS_NET_CMulticastSocket.h"
 #include "DatagramSocket.h"
 
 using Elastos::IO::IFileDescriptor;
@@ -10,9 +10,15 @@ using Elastos::IO::IFileDescriptor;
 namespace Elastos {
 namespace Net {
 
-CarClass(CMulticastSocket) , public DatagramSocket
+CarClass(CMulticastSocket)
+    , public DatagramSocket
+    , public IMulticastSocket
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -179,4 +185,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CMULTICASTSOCKET_H__
+#endif //__ELASTOS_NET_CMULTICASTSOCKET_H__

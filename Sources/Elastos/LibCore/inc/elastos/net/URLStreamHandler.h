@@ -1,15 +1,15 @@
 
-#ifndef __URLSTREAMHANDLER_H__
-#define __URLSTREAMHANDLER_H__
+#ifndef __ELASTOS_NET_URLSTREAMHANDLER_H__
+#define __ELASTOS_NET_URLSTREAMHANDLER_H__
 
 #include "Elastos.CoreLibrary_server.h"
 
-// extern "C" const InterfaceID EIID_URLStreamHandler;
+extern "C" const InterfaceID EIID_URLStreamHandler;
 
 namespace Elastos {
 namespace Net {
 
-class URLStreamHandler
+class URLStreamHandler : public Object
 {
 public:
     virtual CARAPI OpenConnection(
@@ -93,4 +93,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__URLSTREAMHANDLER_H__
+#endif //__ELASTOS_NET_URLSTREAMHANDLER_H__

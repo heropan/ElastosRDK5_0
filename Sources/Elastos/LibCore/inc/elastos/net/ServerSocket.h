@@ -1,6 +1,6 @@
 
-#ifndef __SERVERSOCKET_H__
-#define __SERVERSOCKET_H__
+#ifndef __ELASTOS_NET_SERVERSOCKET_H__
+#define __ELASTOS_NET_SERVERSOCKET_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include "CSocket.h"
@@ -9,8 +9,13 @@ namespace Elastos {
 namespace Net {
 
 class ServerSocket
+    : public Object
+    , public IServerSocket
+    , public ICloseable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI GetImpl(
         /* [out] */ ISocketImpl** impl);
 
@@ -121,4 +126,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__SERVERSOCKET_H__
+#endif //__ELASTOS_NET_SERVERSOCKET_H__

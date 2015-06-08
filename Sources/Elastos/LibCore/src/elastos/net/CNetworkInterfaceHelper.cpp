@@ -6,6 +6,10 @@
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CNetworkInterfaceHelper, Singleton, INetworkInterfaceHelper)
+
+CAR_SINGLETON_IMPL(CNetworkInterfaceHelper)
+
 ECode CNetworkInterfaceHelper::GetByName(
    /* [in] */ const String& interfaceName,
    /* [out] */ INetworkInterface** networkInterface)

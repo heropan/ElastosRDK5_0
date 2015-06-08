@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CDatagramPacket, Object, IDatagramPacket)
+
+CAR_OBJECT_IMPL(CDatagramPacket)
+
 CDatagramPacket::CDatagramPacket()
     : mLength(0)
     , mUserSuppliedLength(0)

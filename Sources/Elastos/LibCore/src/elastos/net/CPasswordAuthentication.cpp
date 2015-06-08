@@ -4,6 +4,10 @@
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CPasswordAuthentication, Object, IPasswordAuthentication)
+
+CAR_OBJECT_IMPL(CPasswordAuthentication)
+
 CPasswordAuthentication::~CPasswordAuthentication()
 {
 }

@@ -1,6 +1,6 @@
 
-#ifndef __NETWORKUTILITIES_H__
-#define __NETWORKUTILITIES_H__
+#ifndef __ELASTOS_NET_NETWORKUTILITIES_H__
+#define __ELASTOS_NET_NETWORKUTILITIES_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include <arpa/inet.h>
@@ -16,5 +16,5 @@ ELAPI SocketAddressToByteArray(
     /* [out] */ ArrayOf<Byte>* ipAddress);
 
 
-#endif //__NETWORKUTILITIES_H__
+#endif //__ELASTOS_NET_NETWORKUTILITIES_H__
 

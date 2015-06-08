@@ -1,9 +1,11 @@
 
-#ifndef __SOCKETIMPL_H__
-#define __SOCKETIMPL_H__
+#ifndef __ELASTOS_NET_SOCKETIMPL_H__
+#define __ELASTOS_NET_SOCKETIMPL_H__
 
 #include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
@@ -14,8 +16,13 @@ namespace Net {
 extern "C" const InterfaceID EIID_SocketImpl;
 
 class SocketImpl
+    : public Object
+    , public ISocketImpl
+    , public ISocketOptions
 {
 public:
+    CAR_INTERFACE_DECL()
+
     SocketImpl();
 
     virtual CARAPI GetFD(
@@ -104,4 +111,4 @@ protected:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__SOCKETIMPL_H__
+#endif //__ELASTOS_NET_SOCKETIMPL_H__

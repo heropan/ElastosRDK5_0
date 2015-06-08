@@ -1,6 +1,6 @@
 
-#ifndef __URLDECODER_H__
-#define __URLDECODER_H__
+#ifndef __ELASTOS_NET_URLDECODER_H__
+#define __ELASTOS_NET_URLDECODER_H__
 
 #include <eltypes.h>
 
@@ -10,7 +10,6 @@ namespace Net {
 class URLDecoder
 {
 public:
-
     static CARAPI Decode(
         /* [in] */ const String& s,
         /* [out] */ String* decodedStr);
@@ -21,11 +20,11 @@ public:
         /* [out] */ String* decodedStr);
 
 private:
-    URLDecoder();
+    URLDecoder() {}
 
 };
 
 } // namespace Net
 } // namespace Elastos
 
-#endif //__URLDECODER_H__
+#endif //__ELASTOS_NET_URLDECODER_H__

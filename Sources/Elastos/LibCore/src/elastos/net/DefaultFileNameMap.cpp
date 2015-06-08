@@ -5,6 +5,8 @@
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL(DefaultFileNameMap, Object, IFileNameMap)
+
 PInterface DefaultFileNameMap::Probe(
     /* [in] */ REIID riid)
 {

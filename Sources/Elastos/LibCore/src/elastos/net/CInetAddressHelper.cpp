@@ -4,6 +4,10 @@
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CInetAddressHelper, Singleton, IInetAddressHelper)
+
+CAR_SINGLETON_IMPL(CInetAddressHelper)
+
 ECode CInetAddressHelper::GetAllByName(
     /* [in] */ const String& host,
     /* [out, callee] */ ArrayOf<IInetAddress*>** interAddress)

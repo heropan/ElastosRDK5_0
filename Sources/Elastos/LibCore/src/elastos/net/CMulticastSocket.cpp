@@ -16,6 +16,10 @@ using Elastos::Core::CBoolean;
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CMulticastSocket, DatagramSocket, IMulticastSocket)
+
+CAR_OBJECT_IMPL(CMulticastSocket)
+
 ECode CMulticastSocket::constructor()
 {
     FAIL_RETURN(DatagramSocket::Init());

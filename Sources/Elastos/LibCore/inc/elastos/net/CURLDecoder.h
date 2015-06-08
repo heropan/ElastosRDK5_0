@@ -1,14 +1,23 @@
-#ifndef __CURLDCODER_H__
-#define __CURLDCODER_H__
+#ifndef __ELASTOS_NET_CURLDCODER_H__
+#define __ELASTOS_NET_CURLDCODER_H__
 
-#include "_CURLDecoder.h"
+#include "_ELASTOS_NET_CURLDecoder.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CURLDecoder)
+    : public Singleton
+    , public IURLDecoderHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI Decode(
         /* [in] */ const String& s,
         /* [out] */ String* result);
@@ -22,4 +31,4 @@ public:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__URLENCODER_H__
+#endif //__ELASTOS_NET_URLENCODER_H__

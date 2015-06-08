@@ -228,4 +228,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__INETADDRESS_H__
+#endif //__ELASTOS_NET_INETADDRESS_H__

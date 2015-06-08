@@ -1,17 +1,21 @@
-#ifndef __PLAINSERVERSOCKETIMPL_H__
-#define __PLAINSERVERSOCKETIMPL_H__
+#ifndef __ELASTOS_NET_PLAINSERVERSOCKETIMPL_H__
+#define __ELASTOS_NET_PLAINSERVERSOCKETIMPL_H__
 
 #include "PlainSocketImpl.h"
 
 namespace Elastos {
 namespace Net {
 
-class PlainServerSocketImpl : public PlainSocketImpl
+class PlainServerSocketImpl
+    : public PlainSocketImpl
+    , public IPlainServerSocketImpl
 {
 public:
-    Init();
+    CAR_INTERFACE_DECL()
 
-    Init(
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ IFileDescriptor *fd);
 
     CARAPI Create(
@@ -21,4 +25,4 @@ public:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__PLAINSERVERSOCKETIMPL_H__
+#endif //__ELASTOS_NET_PLAINSERVERSOCKETIMPL_H__

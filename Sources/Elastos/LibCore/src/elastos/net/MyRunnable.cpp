@@ -5,6 +5,8 @@
 
 using Elastos::Core::EIID_IRunnable;
 
+CAR_INTERFACE_IMPL(MyRunnable, Object, IRunnable)
+
 MyRunnable::MyRunnable()
     : mStop(FALSE)
 {

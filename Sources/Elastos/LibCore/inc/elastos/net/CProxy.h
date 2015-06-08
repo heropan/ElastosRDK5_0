@@ -1,14 +1,23 @@
-#ifndef __CPROXY_H__
-#define __CPROXY_H__
+#ifndef __ELASTOS_NET_CPROXY_H__
+#define __ELASTOS_NET_CPROXY_H__
 
-#include "_CProxy.h"
+#include "_ELASTOS_NET_CProxy.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CProxy)
+    , public Object
+    , public IProxy
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -36,4 +45,4 @@ private:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CPROXY_H__
+#endif //__ELASTOS_NET_CPROXY_H__

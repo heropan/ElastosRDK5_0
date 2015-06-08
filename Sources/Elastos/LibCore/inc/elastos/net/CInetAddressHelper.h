@@ -1,15 +1,24 @@
-#ifndef __CINETADDRESSHELPER_H__
-#define __CINETADDRESSHELPER_H__
+#ifndef __ELASTOS_NET_CINETADDRESSHELPER_H__
+#define __ELASTOS_NET_CINETADDRESSHELPER_H__
 
-#include "_CInetAddressHelper.h"
+#include "_ELASTOS_NET_CInetAddressHelper.h"
 #include "InetAddress.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CInetAddressHelper)
+    , public Singleton
+    , public IInetAddressHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetAllByName(
         /* [in] */ const String& host,
         /* [out, callee] */ ArrayOf<IInetAddress*>** interAddress);
@@ -47,4 +56,4 @@ public:
 } // namespace Net
 } // namespace Elastos
 
-#endif //__CINETADDRESSHELPER_H__
+#endif //__ELASTOS_NET_CINETADDRESSHELPER_H__

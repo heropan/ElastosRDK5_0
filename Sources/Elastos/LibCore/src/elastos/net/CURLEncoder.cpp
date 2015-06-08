@@ -9,6 +9,10 @@ using Elastos::IO::Charset::CCharsetHelper;
 namespace Elastos {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CURLEncoder, Singleton, IURLEncoder)
+
+CAR_SINGLETON_IMPL(CURLEncoder)
+
 ECode CURLEncoder::Encode(
     /* [in] */ const String& s,
     /* [out] */ String* result)
