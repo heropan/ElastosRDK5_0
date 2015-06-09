@@ -118,7 +118,9 @@ ECode FileInputStream::Close()
     //     mChannel->Close();
     // }
     if (mShouldClose) {
-        return IoBridge::CloseAndSignalBlockedThreads(mFd);
+        AutoPtr<IIoBridge> ioBridge;
+        IoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
+        return ioBridge->CloseAndSignalBlockedThreads(mFd);
     }
     else {
         // An owned fd has been invalidated by IoUtils.close, but

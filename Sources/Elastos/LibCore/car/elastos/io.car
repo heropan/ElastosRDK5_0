@@ -623,6 +623,28 @@ module
 //        interface IFileInputStream;
 //    }
 
+//    class CFileOutputStream {
+//        constructor(
+//            [in] IFile* file);
+
+//        constructor(
+//            [in] IFile* file,
+//            [in] Boolean append);
+
+//        constructor(
+//            [in] IFileDescriptor* fd);
+
+//        constructor(
+//            [in] String fileName);
+
+//        constructor(
+//            [in] String fileName,
+//            [in] Boolean append);
+
+//        interface ICloseable;
+//        interface IOutputStream;
+//        interface IFileOutputStream;
+//    }
     } // namespace IO
     } // namespace Elastos
 }

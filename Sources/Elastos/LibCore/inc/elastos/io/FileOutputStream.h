@@ -35,9 +35,13 @@ namespace IO {
  * @see BufferedOutputStream
  * @see FileInputStream
  */
-class FileOutputStream : public OutputStream
+class FileOutputStream
+    : public OutputStream
+    , public IFileOutputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Closes this stream. This implementation closes the underlying operating
      * system resources allocated to represent this stream.
@@ -73,12 +77,6 @@ public:
         /* [out] */ IFileDescriptor** fd);
 
     /**
-      * implements the flush method to call fsync();
-      *
-      **/
-    virtual CARAPI Flush();
-
-    /**
      * Writes the specified byte {@code oneByte} to this stream. Only the low
      * order byte of the integer {@code oneByte} is written.
      *
@@ -111,8 +109,8 @@ public:
      * @throws NullPointerException
      *             if {@code buffer} is {@code null}.
      */
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer,
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount);
 
@@ -128,6 +126,7 @@ protected:
      */
     virtual ~FileOutputStream();
 
+public:
     /**
      * Constructs a new FileOutputStream on the File {@code file}. If the file
      * exists, it is overwritten.
@@ -141,7 +140,7 @@ protected:
      *             write request.
      * @see java.lang.SecurityManager#checkWrite(FileDescriptor)
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IFile* file);
 
     /**
@@ -161,7 +160,7 @@ protected:
      * @see java.lang.SecurityManager#checkWrite(FileDescriptor)
      * @see java.lang.SecurityManager#checkWrite(String)
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IFile* file,
         /* [in] */ Boolean append);
 
@@ -179,7 +178,7 @@ protected:
      *             write request.
      * @see java.lang.SecurityManager#checkWrite(FileDescriptor)
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IFileDescriptor* fd);
 
     /**
@@ -195,7 +194,7 @@ protected:
      *             if a {@code SecurityManager} is installed and it denies the
      *             write request.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& fileName);
 
     /**
@@ -214,7 +213,7 @@ protected:
      *             if a {@code SecurityManager} is installed and it denies the
      *             write request.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& fileName,
         /* [in] */ Boolean append);
 
@@ -230,8 +229,6 @@ private:
 
     /** File access mode */
     Int32 mMode;
-
-    Mutex* mLockInner;
 };
 
 } // namespace IO

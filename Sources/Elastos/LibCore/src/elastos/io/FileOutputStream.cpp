@@ -1,9 +1,9 @@
 
 #include "coredef.h"
 #include "FileOutputStream.h"
-#include "CFile.h"
+// temp disable #include "CFile.h"
 #include "IoUtils.h"
-#include "COsConstants.h"
+// temp disable #include "COsConstants.h"
 #include "CLibcore.h"
 #include "CIoBridge.h"
 
@@ -17,6 +17,8 @@ using Libcore::IO::CIoBridge;
 
 namespace Elastos {
 namespace IO {
+
+CAR_INTERFACE_IMPL(FileOutputStream, OutputStream, IFileOutputStream)
 
 FileOutputStream::FileOutputStream()
 {}
@@ -36,13 +38,13 @@ FileOutputStream::~FileOutputStream()
     // }
 }
 
-ECode FileOutputStream::Init(
+ECode FileOutputStream::constructor(
     /* [in] */ IFile* file)
 {
-    return Init(file, FALSE);
+    return constructor(file, FALSE);
 }
 
-ECode FileOutputStream::Init(
+ECode FileOutputStream::constructor(
     /* [in] */ IFile* file,
     /* [in] */ Boolean append)
 {
@@ -59,7 +61,7 @@ ECode FileOutputStream::Init(
     osConstans->GetOsConstant(String("O_TRUNC"), &m4);
     mMode = m1 | m2 | (append ? m3 : m4);
     String path;
-    file->GetAbsolutePath(&path);
+    file->GetPath(&path);
     CFileDescriptor::NewByFriend((CFileDescriptor**)&mFd);
     AutoPtr<CIoBridge> ioBridge;
     CIoBridge::AcquireSingletonByFriend((CIoBridge**)&ioBridge);
@@ -70,7 +72,7 @@ ECode FileOutputStream::Init(
     return NOERROR;
 }
 
-ECode FileOutputStream::Init(
+ECode FileOutputStream::constructor(
     /* [in] */ IFileDescriptor* fd)
 {
     if (fd == NULL) {
@@ -86,19 +88,19 @@ ECode FileOutputStream::Init(
     return NOERROR;
 }
 
-ECode FileOutputStream::Init(
+ECode FileOutputStream::constructor(
     /* [in] */ const String& fileName)
 {
-    return Init(fileName, FALSE);
+    return constructor(fileName, FALSE);
 }
 
-ECode FileOutputStream::Init(
+ECode FileOutputStream::constructor(
     /* [in] */ const String& fileName,
     /* [in] */ Boolean append)
 {
     AutoPtr<CFile> file;
     CFile::NewByFriend(fileName, (CFile**)&file);
-    return Init((IFile*)file.Get(), append);
+    return constructor((IFile*)file.Get(), append);
 }
 
 ECode FileOutputStream::Close()
@@ -111,7 +113,7 @@ ECode FileOutputStream::GetChannel(
 {
     VALIDATE_NOT_NULL(channel)
 
-    Mutex::Autolock lock(mLockInner);
+    Object::Autolock lock(this);
 
     // if (channel == null) {
     //     channel = NioUtils.newFileChannel(this, fd, mode);
@@ -131,21 +133,16 @@ ECode FileOutputStream::GetFD(
     return NOERROR;
 }
 
-ECode FileOutputStream::Flush()
-{
-    return mFd->Sync();
-}
-
 ECode FileOutputStream::Write(
     /* [in] */ Int32 oneByte)
 {
     ArrayOf_<Byte, 1> bytes;
     (bytes)[0] = (Byte)oneByte;
-    return WriteBytes(bytes, 0, 1);
+    return Write(bytes, 0, 1);
 }
 
-ECode FileOutputStream::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+ECode FileOutputStream::Write(
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount)
 {
@@ -159,10 +156,12 @@ ECode FileOutputStream::WriteBytes(
 
 ECode FileOutputStream::CloseInner()
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
 
     if (mShouldClose) {
-        return IoUtils::Close(mFd);
+        AutoPtr<IIoBridge> ioBridge;
+        CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
+        return ioBridge->CloseAndSignalBlockedThreads(mFd);
     }
     else {
         // An owned fd has been invalidated by IoUtils.close, but
