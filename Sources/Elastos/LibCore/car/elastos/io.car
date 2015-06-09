@@ -673,6 +673,30 @@ module
 //        interface IFileReader;
 //    }
 
+//    class CFileWriter {
+//        constructor(
+//            [in] IFile* file);
+
+//        constructor(
+//            [in] IFile* file,
+//            [in] Boolean append);
+
+//        constructor(
+//            [in] IFileDescriptor* fd);
+
+//        constructor(
+//            [in] String filename);
+
+//        constructor(
+//            [in] String filename,
+//            [in] Boolean append);
+
+//        interface IAppendable;
+//        interface IWriter;
+//        interface IOutputStreamWriter;
+//        interface IFileWriter;
+//    }
+
     } // namespace IO
     } // namespace Elastos
 }

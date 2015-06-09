@@ -9,7 +9,10 @@ namespace IO {
 
 class FileWriter
     : public OutputStreamWriter
+    , public IFileWriter
 {
+public:
+	CAR_INTERFACE_DECL()
 };
 
 } // namespace IO

@@ -71,6 +71,8 @@ SOURCES += StringReader.cpp
 #SOURCES += CFilePermission.cpp
 #SOURCES += FileReader.cpp
 #SOURCES += CFileReader.cpp
+#SOURCES += FileWriter.cpp
+#SOURCES += CFileWriter.cpp
 
 #
 # nio related classes
