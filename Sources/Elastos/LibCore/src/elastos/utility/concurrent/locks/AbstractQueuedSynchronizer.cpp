@@ -1,9 +1,9 @@
 
 #include "AbstractQueuedSynchronizer.h"
 #include "LockSupport.h"
-#include <elastos/Thread.h>
+#include <Thread.h>
 #include <cutils/atomic.h>
-#include <elastos/StringUtils.h>
+#include <StringUtils.h>
 
 #ifdef ELASTOS_CORELIBRARY
 #include "CSystem.h"
@@ -59,45 +59,7 @@ const Int32 AbstractQueuedSynchronizer::ConditionObject::REINTERRUPT =  1;
 
 const Int32 AbstractQueuedSynchronizer::ConditionObject::THROW_IE    = -1;
 
-UInt32 AbstractQueuedSynchronizer::ConditionObject::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 AbstractQueuedSynchronizer::ConditionObject::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface AbstractQueuedSynchronizer::ConditionObject::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(ICondition*)this;
-    }
-    else if (riid == EIID_ICondition) {
-        return (ICondition*)this;
-    }
-    else if (riid == EIID_ConditionObject) {
-        return reinterpret_cast<PInterface>((ConditionObject*)this);
-    }
-
-    return NULL;
-}
-
-ECode AbstractQueuedSynchronizer::ConditionObject::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-    if (pObject == (IInterface*)(ICondition*)this) {
-        *pIID = EIID_ICondition;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_2(AbstractQueuedSynchronizer::ConditionObject, Object, ICondition, ISerializable)
 
 AbstractQueuedSynchronizer::ConditionObject::ConditionObject(
     /* [in] */ AbstractQueuedSynchronizer* host)
@@ -480,6 +442,8 @@ ECode AbstractQueuedSynchronizer::ConditionObject::GetWaitingThreads(
 //       AbstractQueuedSynchronizer
 //==========================================================
 const Int64 AbstractQueuedSynchronizer::sSpinForTimeoutThreshold;
+
+CAR_INTERFACE_IMPL(AbstractQueuedSynchronizer, AbstractOwnableSynchronizer, IAbstractQueuedSynchronizer)
 
 Boolean AbstractQueuedSynchronizer::CompareAndSetState(
     /* [in] */ Int32 expect,

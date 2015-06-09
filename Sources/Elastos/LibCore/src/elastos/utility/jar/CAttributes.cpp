@@ -1,3 +1,4 @@
+
 #include "CAttributes.h"
 #include "CHashMap.h"
 #include "CStringWrapper.h"
@@ -9,6 +10,10 @@ using Elastos::Core::CStringWrapper;
 namespace Elastos {
 namespace Utility {
 namespace Jar {
+
+CAR_INTERFACE_IMPL(CAttributes, Object, IAttributes)
+
+CAR_OBJECT_IMPL(CAttributes)
 
 ECode CAttributes::GetValue(
     /* [in] */ IName* name,

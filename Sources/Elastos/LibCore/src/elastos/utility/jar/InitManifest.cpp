@@ -1,9 +1,4 @@
-#include "elastos/HashMap.h"
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include "HashMap.h"
 #include "CManifest.h"
 #include "InitManifest.h"
 #include "CUnsafeByteSequence.h"

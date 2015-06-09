@@ -17,8 +17,6 @@ namespace Jar {
 
 const String CJarFile::META_DIR("META-INF/");
 
-CAR_INTERFACE_IMPL_LIGHT(CJarFile::JarFileInputStream, IInputStream)
-
 CJarFile::JarFileInputStream::JarFileInputStream(
     /* [in] */ IInputStream* is,
     /* [in] */ IZipEntry* ze,
@@ -60,14 +58,7 @@ ECode CJarFile::JarFileInputStream::Read(
     }
 }
 
-ECode CJarFile::JarFileInputStream::ReadBytes(
-    /* [out] */ ArrayOf<Byte>* buffer,
-    /* [out] */ Int32* number)
-{
-    return FilterInputStream::ReadBytes(buffer, number);
-}
-
-ECode CJarFile::JarFileInputStream::ReadBytes(
+ECode CJarFile::JarFileInputStream::Read(
     /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes,
@@ -79,13 +70,13 @@ ECode CJarFile::JarFileInputStream::ReadBytes(
         return NOERROR;
     }
     if (mCount > 0) {
-        FAIL_RETURN(FilterInputStream::ReadBytes(buf, off, nbytes, val))
+        FAIL_RETURN(FilterInputStream::Read(buf, off, nbytes, val))
         if (*val != -1) {
             Int32 size = *val;
             if (mCount < size) {
                 size = (Int32) mCount;
             }
-            FAIL_RETURN(mEntry->WriteBytes(*buf, off, size))
+            FAIL_RETURN(mEntry->Write(*buf, off, size))
             mCount -= size;
         } else {
             mCount = 0;
@@ -114,18 +105,6 @@ ECode CJarFile::JarFileInputStream::Available(
     return FilterInputStream::Available(val);
 }
 
-ECode CJarFile::JarFileInputStream::Mark(
-    /* [in] */ Int32 readLimit)
-{
-    return FilterInputStream::Mark(readLimit);
-}
-
-ECode CJarFile::JarFileInputStream::IsMarkSupported(
-    /* [out] */ Boolean* supported)
-{
-    return FilterInputStream::IsMarkSupported(supported);
-}
-
 ECode CJarFile::JarFileInputStream::Skip(
     /* [in] */ Int64 byteCount,
     /* [out] */ Int64* val)
@@ -136,15 +115,9 @@ ECode CJarFile::JarFileInputStream::Skip(
     return stream->SkipByReading((IInputStream*)IInputStream::Probe(this), byteCount, val);
 }
 
-ECode CJarFile::JarFileInputStream::Reset()
-{
-    return FilterInputStream::Reset();
-}
+CAR_INTERFACE_IMPL(CJarFile, ZipFile, IJarFile)
 
-ECode CJarFile::JarFileInputStream::Close()
-{
-    return FilterInputStream::Close();
-}
+CAR_OBJECT_IMPL(CJarFile)
 
 CJarFile::CJarFile()
     : mClosed(FALSE)
@@ -155,12 +128,6 @@ ECode CJarFile::Close()
     FAIL_RETURN(ZipFile::Close())
     mClosed = TRUE;
     return NOERROR;
-}
-
-ECode CJarFile::GetEntries(
-    /* [out] */ IObjectContainer** entries)
-{
-    return ZipFile::GetEntries(entries);
 }
 
 ECode CJarFile::GetEntry(
@@ -245,20 +212,6 @@ ECode CJarFile::GetInputStream(
     *is = ret;
     REFCOUNT_ADD(*is)
     return NOERROR;
-}
-
-ECode CJarFile::GetName(
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name)
-    return ZipFile::GetName(name);
-}
-
-ECode CJarFile::GetSize(
-    /* [out] */ Int32* size)
-{
-    VALIDATE_NOT_NULL(size)
-    return ZipFile::GetSize(size);
 }
 
 ECode CJarFile::GetJarEntry(

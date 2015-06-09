@@ -1,13 +1,10 @@
 
-#ifndef __LOCKSUPPORT_H__
-#define __LOCKSUPPORT_H__
+#ifndef __ELASTOS_UTILITY_LOCKSUPPORT_H__
+#define __ELASTOS_UTILITY_LOCKSUPPORT_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::IThread;
 
 namespace Elastos {
@@ -16,8 +13,11 @@ namespace Concurrent {
 namespace Locks {
 
 class LockSupport
+    : public Object
+    , public ILockSupport
 {
 public:
+    CAR_INTERFACE_DECL()
     /**
      * Makes available the permit for the given thread, if it
      * was not already available.  If the thread was blocked on
@@ -267,4 +267,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__LOCKSUPPORT_H__
+#endif //__ELASTOS_UTILITY_LOCKSUPPORT_H__

@@ -15,79 +15,13 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
+CAR_INTERFACE_IMPL(CJarInputStream, ZipInputStream, IJarInputStream)
+
+CAR_OBJECT_IMPL(CJarInputStream)
+
 CJarInputStream::CJarInputStream()
     : mEos(FALSE), mIsMeta(FALSE)
 {}
-
-ECode CJarInputStream::Close()
-{
-    return ZipInputStream::Close();
-}
-
-ECode CJarInputStream::Available(
-    /* [out] */ Int32* number)
-{
-    VALIDATE_NOT_NULL(number)
-    return ZipInputStream::Available(number);
-}
-
-ECode CJarInputStream::Mark(
-    /* [in] */ Int32 readLimit)
-{
-    return ZipInputStream::Mark(readLimit);
-}
-
-ECode CJarInputStream::IsMarkSupported(
-    /* [out] */ Boolean* supported)
-{
-    VALIDATE_NOT_NULL(supported)
-    return ZipInputStream::IsMarkSupported(supported);
-}
-
-ECode CJarInputStream::Read(
-    /* [out] */ Int32* value)
-{
-    VALIDATE_NOT_NULL(value)
-    return ZipInputStream::Read(value);
-}
-
-ECode CJarInputStream::ReadBytes(
-    /* [out] */ ArrayOf<Byte>* buffer,
-    /* [out] */ Int32* number)
-{
-    VALIDATE_NOT_NULL(buffer)
-    VALIDATE_NOT_NULL(number)
-    return ZipInputStream::ReadBytes(buffer, number);
-}
-
-ECode CJarInputStream::ReadBytes(
-    /* [out] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 length,
-    /* [out] */ Int32* number)
-{
-    VALIDATE_NOT_NULL(buffer)
-    VALIDATE_NOT_NULL(number)
-    return ZipInputStream::ReadBytes(buffer, offset, length, number);
-}
-
-ECode CJarInputStream::Reset()
-{
-    return ZipInputStream::Reset();
-}
-
-ECode CJarInputStream::Skip(
-    /* [in] */ Int64 byteCount,
-    /* [out] */ Int64* number)
-{
-    VALIDATE_NOT_NULL(number)
-    return ZipInputStream::Skip(byteCount, number);
-}
-
-ECode CJarInputStream::CloseEntry()
-{
-    return ZipInputStream::CloseEntry();
-}
 
 ECode CJarInputStream::GetNextEntry(
     /* [out] */ IZipEntry** entry)
@@ -97,7 +31,8 @@ ECode CJarInputStream::GetNextEntry(
         mJarEntry = mEntry;
         mEntry = NULL;
         ((CJarEntry*)mJarEntry.Get())->SetAttributes(NULL);
-    } else {
+    }
+    else {
         mJarEntry = NULL;
         ZipInputStream::GetNextEntry((IZipEntry**)&mJarEntry);
         if (!mJarEntry) {
@@ -112,7 +47,8 @@ ECode CJarInputStream::GetNextEntry(
             if (mIsMeta) {
                 mVerStream = NULL;
                 FAIL_RETURN(CByteArrayOutputStream::New((IOutputStream**)&mVerStream))
-            } else {
+            }
+            else {
                 AutoPtr<JarVerifier::VerifierEntry> ve;
                 FAIL_RETURN(mVerifier->InitEntry(name, (JarVerifier::VerifierEntry**)&ve))
                 mVerStream = ve;
@@ -170,7 +106,8 @@ ECode CJarInputStream::constructor(
                 ((CManifest*)mManifest.Get())->GetMainAttributesEnd(&mVerifier->mMainAttributesEnd);
             }
         }
-    } else {
+    }
+    else {
         AutoPtr<IAttributes> temp;
         CAttributes::New(3, (IAttributes**)&temp);
         AutoPtr<ICharSequence> cs;

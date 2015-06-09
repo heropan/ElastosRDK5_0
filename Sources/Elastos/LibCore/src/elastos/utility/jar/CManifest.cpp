@@ -1,9 +1,5 @@
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
+
 #include "CManifest.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
 #include "CByteBufferHelper.h"
 #include "CStringWrapper.h"
 #include "CAttributes.h"
@@ -14,8 +10,7 @@
 #include "CCharBufferHelper.h"
 #include "CCoderResultHelper.h"
 #include "CHashMap.h"
-#include <elastos/HashMap.h>
-
+#include <HashMap.h>
 
 using Elastos::IO::IStreams;
 using Elastos::IO::CStreams;
@@ -39,7 +34,9 @@ const AutoPtr<IName> CManifest::NAME_ATTRIBUTE;
 const AutoPtr<ArrayOf<Byte> > CManifest::LINE_SEPARATOR = CManifest::InitStatics();
 const AutoPtr<ArrayOf<Byte> > CManifest::VALUE_SEPARATOR;
 
-CAR_INTERFACE_IMPL_LIGHT(CManifest::Chunk, IInterface)
+CAR_INTERFACE_IMPL(CManifest, Object, IManifest);
+
+CAR_OBJECT_IMPL(CManifest);
 
 const AutoPtr<ArrayOf<Byte> > CManifest::InitStatics()
 {
@@ -360,7 +357,7 @@ ECode CManifest::Write(
         }
     }
 
-    FAIL_RETURN(out->WriteBytes(*LINE_SEPARATOR))
+    FAIL_RETURN(out->Write(*LINE_SEPARATOR))
 
     AutoPtr<IMap> entries;
     manifest->GetEntries((IMap**)&entries);
@@ -391,7 +388,7 @@ ECode CManifest::Write(
             ICharSequence::Probe(value)->ToString(&val);
             FAIL_RETURN(WriteEntry(out, name, val, encoder, buffer))
         }
-        FAIL_RETURN(out->WriteBytes(*LINE_SEPARATOR))
+        FAIL_RETURN(out->Write(*LINE_SEPARATOR))
     }
     return NOERROR;
 }
@@ -407,8 +404,8 @@ ECode CManifest::WriteEntry(
     name->GetName(&nameString);
     const AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc((Byte*)const_cast<char*>(nameString.string()),
         nameString.GetLength());
-    FAIL_RETURN(os->WriteBytes(*bytes))
-    FAIL_RETURN(os->WriteBytes(*VALUE_SEPARATOR))
+    FAIL_RETURN(os->Write(*bytes))
+    FAIL_RETURN(os->Write(*VALUE_SEPARATOR))
     AutoPtr<ICharsetEncoder> charsetEncoder;
     FAIL_RETURN(encoder->Reset((ICharsetEncoder**)&charsetEncoder))
     bBuf->Clear();
@@ -435,8 +432,8 @@ ECode CManifest::WriteEntry(
         bBuf->GetArray((ArrayOf<Byte>**)&bBufArray);
         bBuf->GetArrayOffset(&arrayOffset);
         bBuf->GetPosition(&position);
-        os->WriteBytes(*bBufArray, arrayOffset, position);
-        os->WriteBytes(*LINE_SEPARATOR);
+        os->Write(*bBufArray, arrayOffset, position);
+        os->Write(*LINE_SEPARATOR);
         if (underflow == r) {
             break;
         }

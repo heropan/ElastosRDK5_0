@@ -1,8 +1,8 @@
 
-#ifndef __CMANIFEST_H__
-#define __CMANIFEST_H__
-#include "_CManifest.h"
-#include "elastos/Object.h"
+#ifndef __ELASTOS_UTILITY_CMANIFEST_H__
+#define __ELASTOS_UTILITY_CMANIFEST_H__
+#include "_Elastos_Utility_Jar_CManifest.h"
+#include "elastos/core/Object.h"
 
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
@@ -19,14 +19,14 @@ namespace Utility {
 namespace Jar {
 
 CarClass(CManifest)
+    , public Object
+    , public IManifest
 {
 public:
     class Chunk
-        : public IInterface
-        , public ElLightRefBase {
+        : public Object
+    {
     public:
-        CAR_INTERFACE_DECL()
-
         Chunk(
             /* in */ Int32 start,
             /* in */ Int32 end)
@@ -38,6 +38,11 @@ public:
         Int32 mStart;
         Int32 mEnd;
     };
+
+public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     static CARAPI Write(
         /* [in] */ IManifest* manifest,
@@ -153,4 +158,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __CMANIFEST_H__
+#endif // __ELASTOS_UTILITY_CMANIFEST_H__

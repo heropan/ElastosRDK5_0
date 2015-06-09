@@ -1,8 +1,8 @@
 
-#ifndef __CJAROUTPUTSTREAM_H__
-#define __CJAROUTPUTSTREAM_H__
+#ifndef __ELASTOS_UTILITY_CJAROUTPUTSTREAM_H__
+#define __ELASTOS_UTILITY_CJAROUTPUTSTREAM_H__
 
-#include "_CJarOutputStream.h"
+#include "_Elastos_Utility_Jar_CJarOutputStream.h"
 #include "ZipOutputStream.h"
 
 using Elastos::Utility::Zip::IZipEntry;
@@ -14,42 +14,14 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
-CarClass(CJarOutputStream), ZipOutputStream
+CarClass(CJarOutputStream)
+    , public ZipOutputStream
+    , public IJarOutputStream
 {
 public:
-    CARAPI Close();
+    CAR_INTERFACE_DECL()
 
-    CARAPI Flush();
-
-    CARAPI Write(
-        /* [in] */ Int32 oneByte);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 count);
-
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
-    CARAPI Finish();
-
-    CARAPI CloseEntry();
-
-    CARAPI PutNextEntry(
-        /* [in] */ IZipEntry* ze);
-
-    CARAPI SetComment(
-        /* [in] */ const String& comment);
-
-    CARAPI SetLevel(
-        /* [in] */ Int32 level);
-
-    CARAPI SetMethod(
-        /* [in] */ Int32 method);
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ IOutputStream* os,
@@ -66,4 +38,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __CJAROUTPUTSTREAM_H__
+#endif // __ELASTOS_UTILITY_CJAROUTPUTSTREAM_H__

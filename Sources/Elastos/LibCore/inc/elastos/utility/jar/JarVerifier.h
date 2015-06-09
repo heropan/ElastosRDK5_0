@@ -1,15 +1,11 @@
-#ifndef __JARVERIFIER_H__
-#define __JARVERIFIER_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
-#include "elastos/HashMap.h"
+#ifndef __ELASTOS_UTILITY_JARVERIFIER_H__
+#define __ELASTOS_UTILITY_JARVERIFIER_H__
+
+#include "HashMap.h"
 #include <elastos.h>
 #include "OutputStream.h"
-#include <elastos/Object.h>
+#include <Object.h>
 
 using Elastos::Utility::IVector;
 using Elastos::Utility::Etl::HashMap;
@@ -23,19 +19,18 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
-class JarVerifier : public ElLightRefBase {
+class JarVerifier
+    : public Object
+{
 public:
     /**
     * Stores and a hash and a message digest and verifies that massage digest
     * matches the hash.
     */
-    class VerifierEntry :
-        public IOutputStream,
-        public OutputStream,
-        public ElLightRefBase {
+    class VerifierEntry
+        : public OutputStream
+    {
     public:
-        CAR_INTERFACE_DECL()
-
         VerifierEntry(
             /* [in] */ const String& name,
             /* [in] */ IMessageDigest* digest,
@@ -49,13 +44,13 @@ public:
         CARAPI Write(
             /* in */ Int32 value);
 
-        CARAPI WriteBytes(
+        CARAPI Write(
             /* [in] */ const ArrayOf<Byte>& buffer);
 
         /**
          * Updates a digest with byte array.
          */
-        CARAPI WriteBytes(
+        CARAPI Write(
             /* [in] */ const ArrayOf<Byte>& buffer,
             /* [in] */ Int32 offset,
             /* [in] */ Int32 count);
@@ -90,6 +85,7 @@ public:
         JarVerifier* mHost;
     };
 
+public:
     static CARAPI GetSignerCertificates(
         /* [in] */ const String& signatureFileName,
         /* [in] */ HashMap<String, AutoPtr<ArrayOf<ICertificate*> > >* certificates,
@@ -165,4 +161,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //end __JARVERIFIER_H__
+#endif // __ELASTOS_UTILITY_JARVERIFIER_H__

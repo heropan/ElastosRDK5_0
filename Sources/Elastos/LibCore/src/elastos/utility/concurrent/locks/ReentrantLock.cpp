@@ -148,14 +148,15 @@ Boolean ReentrantLock::FairSync::TryAcquire(
 //===============================================================================
 // ReentrantLock
 //===============================================================================
+CAR_INTERFACE_IMPL(ReentrantLock, Object, IReentrantLock)
 
-ECode ReentrantLock::Init()
+ECode ReentrantLock::constructor()
 {
     mSync = new NonfairSync();
     return NOERROR;
 }
 
-ECode ReentrantLock::Init(
+ECode ReentrantLock::constructor(
     /* [in] */ Boolean fair)
 {
     if (fair) {

@@ -1,14 +1,11 @@
 
-#ifndef __ABSTRACTOWNABLESYNCHRONIZER_H__
-#define __ABSTRACTOWNABLESYNCHRONIZER_H__
+#ifndef __ELASTOS_UTILITY_ABSTRACTOWNABLESYNCHRONIZER_H__
+#define __ELASTOS_UTILITY_ABSTRACTOWNABLESYNCHRONIZER_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include <Elastos/core/Object.h>
 
 using Elastos::Core::IThread;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
@@ -28,6 +25,7 @@ namespace Locks {
  * @author Doug Lea
  */
 class AbstractOwnableSynchronizer
+    : public Object
 {
 protected:
     /**
@@ -71,4 +69,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ABSTRACTOWNABLESYNCHRONIZER_H__
+#endif //__ELASTOS_UTILITY_ABSTRACTOWNABLESYNCHRONIZER_H__

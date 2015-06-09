@@ -1,28 +1,30 @@
 
-#ifndef __CATTRIBUTES_H__
-#define __CATTRIBUTES_H__
+#ifndef __ELASTOS_UTILITY_CATTRIBUTES_H__
+#define __ELASTOS_UTILITY_CATTRIBUTES_H__
 
-#include "_CAttributes.h"
-
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include "_Elastos_Utility_Jar_CAttributes.h"
+#include "Object.h"
 
 using Elastos::Utility::IMapEntry;
 using Elastos::Utility::IMap;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IObjectMap;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
 namespace Jar {
 
 CarClass(CAttributes)
+    , public Object
+    , public IAttributes
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI GetValue(
         /* [in] */ IName* name,
         /* [out] */ String* value);
@@ -109,4 +111,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __CATTRIBUTES_H__
+#endif // __ELASTOS_UTILITY_CATTRIBUTES_H__

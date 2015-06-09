@@ -1,17 +1,20 @@
-#include <elautoptr.h>
 
+#include <elautoptr.h>
 #include "CManifest.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IUnsafeByteSequence;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
 namespace Jar {
 
 class InitManifest
-    : public ElLightRefBase {
+    : public Object
+{
 public:
     InitManifest(
         /* in */ ArrayOf<Byte>* buf,

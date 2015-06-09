@@ -27,6 +27,10 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
+CAR_INTERFACE_IMPL(CJarEntry, ZipEntry, IJarEntry)
+
+CAR_OBJECT_IMPL(CJarEntry)
+
 CJarEntry::CJarEntry()
     : mIsFactoryChecked(FALSE)
 {}
@@ -102,48 +106,6 @@ ECode CJarEntry::IsDirectory(
     VALIDATE_NOT_NULL(isDirectory)
     *isDirectory = ZipEntry::IsDirectory();
     return NOERROR;
-}
-
-ECode CJarEntry::SetComment(
-    /* [in] */ const String& comment)
-{
-    return ZipEntry::SetComment(comment);
-}
-
-ECode CJarEntry::SetCompressedSize(
-    /* [in] */ Int64 size)
-{
-    return ZipEntry::SetCompressedSize(size);
-}
-
-ECode CJarEntry::SetCrc(
-    /* [in] */ Int64 checksum)
-{
-    return ZipEntry::SetCrc(checksum);
-}
-
-ECode CJarEntry::SetExtra(
-    /* [in] */ ArrayOf<Byte>* data)
-{
-    return ZipEntry::SetExtra(data);
-}
-
-ECode CJarEntry::SetMethod(
-    /* [in] */ Int32 method)
-{
-    return ZipEntry::SetMethod(method);
-}
-
-ECode CJarEntry::SetSize(
-    /* [in] */ Int64 size)
-{
-    return ZipEntry::SetSize(size);
-}
-
-ECode CJarEntry::SetTime(
-    /* [in] */ Int64 timeByMil)
-{
-    return ZipEntry::SetTime(timeByMil);
 }
 
 ECode CJarEntry::GetAttributes(
@@ -253,16 +215,6 @@ ECode CJarEntry::GetCodeSigners(
     *codeSigner = tmp;
     REFCOUNT_ADD(*codeSigner)
     return NOERROR;
-}
-
-PInterface CJarEntry::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_ZipEntry) {
-        return reinterpret_cast<PInterface>((ZipEntry*)this);
-    }
-
-    return _CJarEntry::Probe(riid);
 }
 
 ECode CJarEntry::GetCodeSigners(

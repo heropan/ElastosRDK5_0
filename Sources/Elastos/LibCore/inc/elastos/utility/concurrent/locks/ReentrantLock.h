@@ -1,9 +1,11 @@
 
-#ifndef __REENTRANTLOCK_H__
-#define __REENTRANTLOCK_H__
+#ifndef __ELASTOS_UTILITY_REENTRANTLOCK_H__
+#define __ELASTOS_UTILITY_REENTRANTLOCK_H__
 
 #include "AbstractQueuedSynchronizer.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::IO::IObjectInputStream;
 
 namespace Elastos {
@@ -12,6 +14,8 @@ namespace Concurrent {
 namespace Locks {
 
 class ReentrantLock
+    : public Object
+    , public IReentrantLock
 {
 public:
     enum CLSID {
@@ -27,12 +31,8 @@ public:
      */
     class Sync
         : public AbstractQueuedSynchronizer
-        , public ElRefBase
     {
     public:
-        virtual CARAPI_(Sync*) Probe(
-            /* [in] */ Int32 clsID) = 0;
-
         /**
          * Performs {@link Lock#lock}. The main reason for subclassing
          * is to allow fast path for nonfair version.
@@ -71,18 +71,6 @@ public:
      */
     class NonfairSync : public Sync {
     public:
-        CARAPI_(Sync*) Probe(
-            /* [in] */ Int32 clsID)
-        {
-            if (clsID == CLSID_Sync) {
-                return (Sync*)(NonfairSync*)(this);
-            }
-            else if (clsID == CLSID_NonfairSync) {
-                return (Sync*)(NonfairSync*)(this);
-            }
-            return NULL;
-        }
-
         /**
          * Performs lock.  Try immediate barge, backing up to normal
          * acquire on failure.
@@ -99,18 +87,6 @@ public:
      */
     class FairSync : public Sync {
     public:
-        CARAPI_(Sync*) Probe(
-            /* [in] */ Int32 clsID)
-        {
-            if (clsID == CLSID_Sync) {
-                return (Sync*)(FairSync*)(this);
-            }
-            else if (clsID == CLSID_FairSync) {
-                return (Sync*)(FairSync*)(this);
-            }
-            return NULL;
-        }
-
         CARAPI_(void) Lock();
 
     protected:
@@ -122,11 +98,13 @@ public:
             /* [in] */ Int32 acquires);
     };
 
+public:
+    CAR_INTERFACE_DECL()
     /**
      * Creates an instance of {@code ReentrantLock}.
      * This is equivalent to using {@code ReentrantLock(false)}.
      */
-    CARAPI Init();
+    CARAPI constructor();
 
     /**
      * Creates an instance of {@code ReentrantLock} with the
@@ -134,7 +112,7 @@ public:
      *
      * @param fair {@code true} if this lock should use a fair ordering policy
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Boolean fair);
 
     /**
@@ -607,4 +585,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__REENTRANTLOCK_H__
+#endif //__ELASTOS_UTILITY_REENTRANTLOCK_H__

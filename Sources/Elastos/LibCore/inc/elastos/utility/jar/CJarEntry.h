@@ -1,15 +1,10 @@
 
-#ifndef __CJARENTRY_H__
-#define __CJARENTRY_H__
+#ifndef __ELASTOS_UTILITY_CJARENTRY_H__
+#define __ELASTOS_UTILITY_CJARENTRY_H__
 
-#include "_CJarEntry.h"
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include "_Elastos_Utility_Jar_CJarEntry.h"
 #include "ZipEntry.h"
-#include "elastos/List.h"
+#include "List.h"
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Zip::IZipEntry;
@@ -22,9 +17,15 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
-CarClass(CJarEntry), public ZipEntry
+CarClass(CJarEntry)
+    , public ZipEntry
+    , public IJarEntry
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CJarEntry();
 
     CARAPI GetComment(
@@ -54,27 +55,6 @@ public:
     CARAPI IsDirectory(
         /* [out] */ Boolean* isDirectory);
 
-    CARAPI SetComment(
-        /* [in] */ const String& comment);
-
-    CARAPI SetCompressedSize(
-        /* [in] */ Int64 size);
-
-    CARAPI SetCrc(
-        /* [in] */ Int64 checksum);
-
-    CARAPI SetExtra(
-        /* [in] */ ArrayOf<Byte>* data);
-
-    CARAPI SetMethod(
-        /* [in] */ Int32 method);
-
-    CARAPI SetSize(
-        /* [in] */ Int64 size);
-
-    CARAPI SetTime(
-        /* [in] */ Int64 time);
-
     CARAPI GetAttributes(
         /* [out] */ IAttributes** attrib);
 
@@ -96,8 +76,6 @@ public:
     CARAPI GetCodeSigners(
         /* [out, callee] */ ArrayOf<ICodeSigner*>** codeSigner);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 private:
     CARAPI GetCodeSigners(
     /* [in] */ ArrayOf<ICertificate*>* certs,
@@ -122,4 +100,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __CJARENTRY_H__
+#endif // __ELASTOS_UTILITY_CJARENTRY_H__

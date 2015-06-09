@@ -12,8 +12,9 @@ INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/concurrent;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/concurrent/atomic;
 
-VPATH := $(MAKEDIR)/../atomic
+//VPATH := $(MAKEDIR)/atomic
 //SOURCES += AtomicReference.cpp
 //SOURCES += CAtomicBoolean.cpp
 //SOURCES += CAtomicInteger32.cpp
@@ -26,7 +27,7 @@ VPATH := $(MAKEDIR)/../atomic
 //SOURCES += CAtomicStampedReference.cpp
 //SOURCES += CFencesHelper.cpp
 
-VPATH := $(MAKEDIR)/../locks
+VPATH := $(MAKEDIR)/locks
 //SOURCES += AbstractQueuedSynchronizer.cpp
 //SOURCES += CLockSupport.cpp
 //SOURCES += CReentrantLock.cpp

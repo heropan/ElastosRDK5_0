@@ -1,13 +1,8 @@
 
-#ifndef __CJARFILE_H__
-#define __CJARFILE_H__
+#ifndef __ELASTOS_UTILITY_CJARFILE_H__
+#define __ELASTOS_UTILITY_CJARFILE_H__
 
-#include "_CJarFile.h"
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include "_Elastos_Utility_Jar_CJarFile.h"
 #include "ZipFile.h"
 #include "JarVerifier.h"
 
@@ -20,51 +15,35 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
-CarClass(CJarFile), public ZipFile
+CarClass(CJarFile)
+    , public ZipFile
+    , public IJarFile
 {
 public:
     class JarFileInputStream
         : public FilterInputStream
-        , public IInputStream
-        , public ElLightRefBase {
+    {
     public:
         JarFileInputStream(
             /* [in] */ IInputStream* is,
             /* [in] */ IZipEntry* ze,
             /* [in] */ JarVerifier::VerifierEntry* e);
 
-        //late following interfaces could be replaced with a macro
-        CAR_INTERFACE_DECL()
-
         CARAPI Available(
             /* [out] */ Int32* val);
-
-        CARAPI Mark(
-            /* [in] */ Int32 readLimit);
-
-        CARAPI IsMarkSupported(
-            /* [out] */ Boolean* supported);
 
         CARAPI Read(
             /* [out] */ Int32* val);
 
-        CARAPI ReadBytes(
-            /* [out] */ ArrayOf<Byte>* buffer,
-            /* [out] */ Int32* number);
-
-        CARAPI ReadBytes(
+        CARAPI Read(
             /* [in] */ ArrayOf<Byte>* buf,
             /* [in] */ Int32 off,
             /* [in] */ Int32 nbytes,
             /* [out] */ Int32* val);
 
-        CARAPI Reset();
-
         CARAPI Skip(
             /* [in] */ Int64 byteCount,
             /* [out] */ Int64* val);
-
-        CARAPI Close();
 
     private:
         Int64 mCount;
@@ -73,12 +52,14 @@ public:
         Boolean mDone;
     };
 
+public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CJarFile();
 
     CARAPI Close();
-
-    CARAPI GetEntries(
-        /* [out] */ IObjectContainer** entries);
 
     CARAPI GetEntry(
         /* [in] */ const String& entryName,
@@ -87,12 +68,6 @@ public:
     CARAPI GetInputStream(
         /* [in] */ IZipEntry* entry,
         /* [out] */ IInputStream** is);
-
-    CARAPI GetName(
-        /* [out] */ String* name);
-
-    CARAPI GetSize(
-        /* [out] */ Int32* size);
 
     CARAPI GetJarEntry(
         /* [in] */ const String& name,
@@ -148,4 +123,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __CJARFILE_H__
+#endif // __ELASTOS_UTILITY_CJARFILE_H__

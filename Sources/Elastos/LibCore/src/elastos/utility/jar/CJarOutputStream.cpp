@@ -7,83 +7,15 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
+CAR_INTERFACE_IMPL(CJarOutputStream, ZipOutputStream, IJarOutputStream)
 
-ECode CJarOutputStream::Close()
-{
-    return ZipOutputStream::Close();
-}
-
-ECode CJarOutputStream::Flush()
-{
-    return ZipOutputStream::Flush();
-}
-
-ECode CJarOutputStream::Write(
-    /* [in] */ Int32 oneByte)
-{
-    return ZipOutputStream::Write(oneByte);
-}
-
-ECode CJarOutputStream::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer)
-{
-    return ZipOutputStream::WriteBytes(buffer);
-}
-
-ECode CJarOutputStream::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 count)
-{
-    return ZipOutputStream::WriteBytes(buffer, offset, count);
-}
-
-ECode CJarOutputStream::CheckError(
-    /* [out] */ Boolean* hasError)
-{
-    VALIDATE_NOT_NULL(hasError)
-    return ZipOutputStream::CheckError(hasError);
-}
-
-ECode CJarOutputStream::Finish()
-{
-    return ZipOutputStream::Finish();
-}
-
-ECode CJarOutputStream::CloseEntry()
-{
-    return ZipOutputStream::CloseEntry();
-}
-
-ECode CJarOutputStream::PutNextEntry(
-    /* [in] */ IZipEntry* ze)
-{
-    return ZipOutputStream::PutNextEntry(ze);
-}
-
-ECode CJarOutputStream::SetComment(
-    /* [in] */ const String& comment)
-{
-    return ZipOutputStream::SetComment(comment);
-}
-
-ECode CJarOutputStream::SetLevel(
-    /* [in] */ Int32 level)
-{
-    return ZipOutputStream::SetLevel(level);
-}
-
-ECode CJarOutputStream::SetMethod(
-    /* [in] */ Int32 method)
-{
-    return ZipOutputStream::SetMethod(method);
-}
+CAR_OBJECT_IMPL(CJarOutputStream)
 
 ECode CJarOutputStream::constructor(
     /* [in] */ IOutputStream* os,
     /* [in] */ IManifest* manifest)
 {
-    FAIL_RETURN(ZipOutputStream::Init(os))
+    FAIL_RETURN(ZipOutputStream::constructor(os))
     if (manifest == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -99,7 +31,7 @@ ECode CJarOutputStream::constructor(
 ECode CJarOutputStream::constructor(
     /* [in] */ IOutputStream* os)
 {
-    return ZipOutputStream::Init(os);
+    return ZipOutputStream::constructor(os);
 }
 
 

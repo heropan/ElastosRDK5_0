@@ -26,8 +26,6 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
-CAR_INTERFACE_IMPL_LIGHT(JarVerifier::VerifierEntry, IOutputStream)
-
 JarVerifier::VerifierEntry::VerifierEntry(
     /* [in] */ const String& name,
     /* [in] */ IMessageDigest* digest,
@@ -48,13 +46,13 @@ ECode JarVerifier::VerifierEntry::Write(
     return mDigest->Update((Byte)value);
 }
 
-ECode JarVerifier::VerifierEntry::WriteBytes(
+ECode JarVerifier::VerifierEntry::Write(
             /* [in] */ const ArrayOf<Byte>& buffer)
 {
-    return OutputStream::WriteBytes(buffer);
+    return OutputStream::Write(buffer);
 }
 
-ECode JarVerifier::VerifierEntry::WriteBytes(
+ECode JarVerifier::VerifierEntry::Write(
     /* in */ const ArrayOf<Byte>& buf,
     /* in */ Int32 off,
     /* in */ Int32 nbytes)

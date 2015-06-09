@@ -1,8 +1,4 @@
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+
 #include "CName.h"
 #include "CManifest.h"
 
@@ -35,6 +31,10 @@ const AutoPtr<IName> CName::IMPLEMENTATION_VENDOR_ID = CreateName(String("Implem
 const AutoPtr<IName> CName::IMPLEMENTATION_URL = CreateName(String("Implementation-URL"));
 const AutoPtr<IName> CName::NAME = CreateName(String("Name"));
 const AutoPtr<IName> CName::CLASS_PATH = CreateName(String("Class-Path"));
+
+CAR_INTERFACE_IMPL(CName, Object, IName)
+
+CAR_OBJECT_IMPL(CName)
 
 ECode CName::GetName(
     /* [out] */ String * pName)

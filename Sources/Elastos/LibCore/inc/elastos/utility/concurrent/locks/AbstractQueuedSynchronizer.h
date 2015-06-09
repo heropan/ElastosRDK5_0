@@ -1,12 +1,7 @@
 
-#ifndef __ABSTRACTQUEUEDSYNCHRONIZER_H__
-#define __ABSTRACTQUEUEDSYNCHRONIZER_H__
+#ifndef __ELASTOS_UTILITY_ABSTRACTQUEUEDSYNCHRONIZER_H__
+#define __ELASTOS_UTILITY_ABSTRACTQUEUEDSYNCHRONIZER_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
 #include "AbstractOwnableSynchronizer.h"
 
 using Elastos::IO::ISerializable;
@@ -18,7 +13,9 @@ namespace Locks {
 
 extern "C" const InterfaceID EIID_ConditionObject;
 
-class AbstractQueuedSynchronizer : public AbstractOwnableSynchronizer
+class AbstractQueuedSynchronizer
+    : public AbstractOwnableSynchronizer
+    , public IAbstractQueuedSynchronizer
 {
 public:
     /**
@@ -100,7 +97,7 @@ public:
      * expert group, for helpful ideas, discussions, and critiques
      * on the design of this class.
      */
-    class Node : public ElRefBase
+    class Node : public Object
     {
     public:
         Node() : mWaitStatus(0)
@@ -259,18 +256,17 @@ public:
      * so deserialized conditions have no waiters.
      */
     class ConditionObject
-        : public ElRefBase
+        : public Object
         , public ICondition
         , public ISerializable
     {
     public:
+        CAR_INTERFACE_DECL();
         /**
          * Creates a new <tt>ConditionObject</tt> instance.
          */
         ConditionObject(
             /* [in] */ AbstractQueuedSynchronizer* host);
-
-        CAR_INTERFACE_DECL();
 
         // public methods
 
@@ -506,6 +502,7 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
     /**
      * Convenience method to interrupt current thread.
      */
@@ -1315,4 +1312,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ABSTRACTQUEUEDSYNCHRONIZER_H__
+#endif //__ELASTOS_UTILITY_ABSTRACTQUEUEDSYNCHRONIZER_H__

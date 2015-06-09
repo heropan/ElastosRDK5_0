@@ -20,6 +20,7 @@ INCLUDES += $(MAKEDIR)/../../inc/elastos/sql/sqlite/jdbc
 INCLUDES += $(MAKEDIR)/../../inc/elastos/text
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/concurrent
+INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/concurrent/atomic
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/regex
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/zip
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/logging

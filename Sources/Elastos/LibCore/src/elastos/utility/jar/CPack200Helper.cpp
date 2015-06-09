@@ -34,6 +34,10 @@ label: \
     REFCOUNT_ADD(*var) \
 } while(0);
 
+CAR_INTERFACE_IMPL(CPack200Helper, Singleton, IPack200Helper)
+
+CAR_SINGLETON_IMPL(CPack200Helper)
+
 ECode CPack200Helper::NewPacker(
     /* [out] */ IPacker** packer)
 {
