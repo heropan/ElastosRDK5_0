@@ -12,26 +12,26 @@ class StringUtils
 public:
     // From String without error code
     //
-    static CARAPI_(Int16) Parse(
+    static CARAPI_(Int16) ParseInt16(
         /* [in] */ const String& input,
         /* [in] */ Int32 radix = 10,
         /* [in] */ Int16 defValue = 0);
 
-    static CARAPI_(Int32) Parse(
+    static CARAPI_(Int32) ParseInt32(
         /* [in] */ const String& input,
         /* [in] */ Int32 radix = 10,
         /* [in] */ Int32 defValue = 0);
 
-    static CARAPI_(Int64) Parse(
+    static CARAPI_(Int64) ParseInt64(
         /* [in] */ const String& input,
         /* [in] */ Int32 radix = 10,
         /* [in] */ Int64 defValue = 0);
 
-    static CARAPI_(Float) Parse(
+    static CARAPI_(Float) ParseFloat(
         /* [in] */ const String& input,
         /* [in] */ Float defValue = 0.0);
 
-    static CARAPI_(Double) Parse(
+    static CARAPI_(Double) ParseDouble(
         /* [in] */ const String& input,
         /* [in] */ Double defValue = 0.0);
 

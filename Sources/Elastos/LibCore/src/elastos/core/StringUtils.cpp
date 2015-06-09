@@ -27,7 +27,7 @@ using Elastos::Utility::Regex::IMatcher;
 namespace Elastos {
 namespace Core {
 
-Int16 StringUtils::Parse(
+Int16 StringUtils::ParseInt16(
     /* [in] */ const String& input,
     /* [in] */ Int32 radix,
     /* [in] */ Int16 defValue)
@@ -44,7 +44,7 @@ Int16 StringUtils::Parse(
     return value;
 }
 
-Int32 StringUtils::Parse(
+Int32 StringUtils::ParseInt32(
     /* [in] */ const String& input,
     /* [in] */ Int32 radix,
     /* [in] */ Int32 defValue)
@@ -61,7 +61,7 @@ Int32 StringUtils::Parse(
     return value;
 }
 
-Int64 StringUtils::Parse(
+Int64 StringUtils::ParseInt64(
     /* [in] */ const String& input,
     /* [in] */ Int32 radix,
     /* [in] */ Int64 defValue)
@@ -78,7 +78,7 @@ Int64 StringUtils::Parse(
     return value;
 }
 
-Float StringUtils::Parse(
+Float StringUtils::ParseFloat(
     /* [in] */ const String& input,
     /* [in] */ Float defValue)
 {
@@ -94,7 +94,7 @@ Float StringUtils::Parse(
     return value;
 }
 
-Double StringUtils::Parse(
+Double StringUtils::ParseDouble(
     /* [in] */ const String& input,
     /* [in] */ Double defValue)
 {

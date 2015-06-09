@@ -637,8 +637,13 @@ EXPORTS
     _ZN7Elastos4Core16IntegralToString8ToStringExi
 
     ;;StringUtils
+    _ZN7Elastos4Core11StringUtils10ParseFloatERKNS_6StringEf
+    _ZN7Elastos4Core11StringUtils10ParseInt16ERKNS_6StringEis
+    _ZN7Elastos4Core11StringUtils10ParseInt32ERKNS_6StringEii
+    _ZN7Elastos4Core11StringUtils10ParseInt64ERKNS_6StringEix
     _ZN7Elastos4Core11StringUtils10ReplaceAllERKNS_6StringEPKcS6_PS2_
     _ZN7Elastos4Core11StringUtils10ReplaceAllERKNS_6StringES4_S4_PS2_
+    _ZN7Elastos4Core11StringUtils11ParseDoubleERKNS_6StringEd
     _ZN7Elastos4Core11StringUtils11ToHexStringERNS_7ArrayOfIhEEh
     _ZN7Elastos4Core11StringUtils11ToHexStringEhh
     _ZN7Elastos4Core11StringUtils11ToHexStringEihi
@@ -657,14 +662,9 @@ EXPORTS
     _ZN7Elastos4Core11StringUtils5ParseERKNS_6StringEPi
     _ZN7Elastos4Core11StringUtils5ParseERKNS_6StringEPs
     _ZN7Elastos4Core11StringUtils5ParseERKNS_6StringEPx
-    _ZN7Elastos4Core11StringUtils5ParseERKNS_6StringEd
-    _ZN7Elastos4Core11StringUtils5ParseERKNS_6StringEf
     _ZN7Elastos4Core11StringUtils5ParseERKNS_6StringEiPi
     _ZN7Elastos4Core11StringUtils5ParseERKNS_6StringEiPs
     _ZN7Elastos4Core11StringUtils5ParseERKNS_6StringEiPx
-    _ZN7Elastos4Core11StringUtils5ParseERKNS_6StringEii
-    _ZN7Elastos4Core11StringUtils5ParseERKNS_6StringEis
-    _ZN7Elastos4Core11StringUtils5ParseERKNS_6StringEix
     _ZN7Elastos4Core11StringUtils5SplitERKNS_6StringEPKcPPNS_7ArrayOfIS2_EE
     _ZN7Elastos4Core11StringUtils5SplitERKNS_6StringEPKciPPNS_7ArrayOfIS2_EE
     _ZN7Elastos4Core11StringUtils5SplitERKNS_6StringES4_PPNS_7ArrayOfIS2_EE
