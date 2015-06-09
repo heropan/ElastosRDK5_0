@@ -104,7 +104,7 @@ ECode CSplitter::Split(
     UInt32 maxSize = limit <= 0 ? Elastos::Core::Math::INT32_MAX_VALUE : limit;
     AutoPtr<CMatcher> matcher;
     AutoPtr<ICharSequence> inputSeq;
-   FAIL_RETURN(CStringWrapper::New(input, (ICharSequence**)&inputSeq));
+    FAIL_RETURN(CStringWrapper::New(input, (ICharSequence**)&inputSeq));
     FAIL_RETURN(CMatcher::NewByFriend(pattern, inputSeq, (CMatcher**)&matcher));
 
     Int32 begin = 0, end, size = 0;

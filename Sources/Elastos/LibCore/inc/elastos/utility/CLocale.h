@@ -646,8 +646,9 @@ private:
         /* [in] */ Int32 lowerBound,
         /* [in] */ Int32 upperBound);
 
-    static String TitleCaseAsciiWord(
-        /* [in] */ const String& word);
+    static CARAPI TitleCaseAsciiWord(
+        /* [in] */ const String& word,
+        /* [out] */ String* str);
 
     /**
      * A type list must contain one or more alphanumeric subtags whose lengths

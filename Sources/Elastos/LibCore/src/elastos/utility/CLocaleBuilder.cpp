@@ -2,6 +2,15 @@
 //#include "CTreeSet.h"
 //#include "CTreeMap.h"
 #include "CLocale.h"
+#include "StringUtils.h"
+#include "CStringWrapper.h"
+#include "CChar32.h"
+
+using Elastos::Core::CStringWrapper;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringUtils;
+using Elastos::Core::IChar32;
+using Elastos::Core::CChar32;
 
 namespace Elastos {
 namespace Utility {
@@ -125,25 +134,30 @@ ECode CLocaleBuilder::SetVariant(
 }
 
 ECode CLocaleBuilder::NormalizeAndValidateVariant(
-    /* [in] */ const String& region,
+    /* [in] */ const String& variant,
     /* [out] */ String* str)
 {
-    // if (variant == null || variant.isEmpty()) {
-    //     return "";
-    // }
+    VALIDATE_NOT_NULL(str)
+    *str = String("");
 
-    // // Note that unlike extensions, we canonicalize to lower case alphabets
-    // // and underscores instead of hyphens.
-    // final String normalizedVariant = variant.replace('-', '_');
-    // String[] subTags = normalizedVariant.split("_");
+    if (variant.IsNullOrEmpty()) {
+        return NOERROR;
+    }
 
-    // for (String subTag : subTags) {
-    //     if (!isValidVariantSubtag(subTag)) {
-    //         throw new IllformedLocaleException("Invalid variant: " + variant);
-    //     }
-    // }
+    // Note that unlike extensions, we canonicalize to lower case alphabets
+    // and underscores instead of hyphens.
+    String normalizedVariant = variant.Replace('-', '_');
+    AutoPtr<ArrayOf<String> > subTags;
+    StringUtils::Split(normalizedVariant, String("_"), (ArrayOf<String>**)&subTags);
 
-    // return normalizedVariant;
+    for (Int32 i = 0; i < subTags->GetLength(); ++i) {
+        if (!IsValidVariantSubtag((*subTags)[i])) {
+            ALOGE("CLocaleBuilder::NormalizeAndValidateVariant: IllformedLocaleException, Invalid variant: %s", variant.string());
+            return E_ILLFORMED_LOCALE_EXCEPTION;
+        }
+    }
+
+    *str = normalizedVariant;
     return NOERROR;
 }
 
@@ -153,16 +167,17 @@ Boolean CLocaleBuilder::IsValidVariantSubtag(
     // The BCP-47 spec states that :
     // - Subtags can be between [5, 8] alphanumeric chars in length.
     // - Subtags that start with a number are allowed to be 4 chars in length.
-    // if (subTag.length() >= 5 && subTag.length() <= 8) {
-    //     if (isAsciiAlphaNum(subTag)) {
-    //         return true;
-    //     }
-    // } else if (subTag.length() == 4) {
-    //     final char firstChar = subTag.charAt(0);
-    //     if ((firstChar >= '0' && firstChar <= '9') && isAsciiAlphaNum(subTag)) {
-    //         return true;
-    //     }
-    // }
+    if (subTag.GetLength() >= 5 && subTag.GetLength() <= 8) {
+        if (CLocale::IsAsciiAlphaNum(subTag)) {
+            return TRUE;
+        }
+    }
+    else if (subTag.GetLength() == 4) {
+        Char32 firstChar = subTag.GetChar(0);
+        if ((firstChar >= '0' && firstChar <= '9') && CLocale::IsAsciiAlphaNum(subTag)) {
+            return TRUE;
+        }
+    }
 
     return FALSE;
 }
@@ -171,7 +186,6 @@ ECode CLocaleBuilder::SetScript(
     /* [in] */ const String& script)
 {
     return NormalizeAndValidateScript(script, TRUE /* strict */, &mScript);
-    return NOERROR;
 }
 
 ECode CLocaleBuilder::NormalizeAndValidateScript(
@@ -179,132 +193,157 @@ ECode CLocaleBuilder::NormalizeAndValidateScript(
     /* [in] */ Boolean strict,
     /* [out] */ String* str)
 {
-    // if (script == null || script.isEmpty()) {
-    //     return "";
-    // }
+    VALIDATE_NOT_NULL(str)
+    *str = String("");
+    if (script.IsNullOrEmpty()) {
+        return NOERROR;
+    }
 
-    // if (!isValidBcp47Alpha(script, 4, 4)) {
-    //     if (strict) {
-    //         throw new IllformedLocaleException("Invalid script: " + script);
-    //     } else {
-    //         return "";
-    //     }
-    // }
+    if (!CLocale::IsValidBcp47Alpha(script, 4, 4)) {
+        if (strict) {
+            ALOGE("CLocaleBuilder::NormalizeAndValidateScript: IllformedLocaleException, Invalid script: %s", script.string());
+            return E_ILLFORMED_LOCALE_EXCEPTION;
+        }
+        else {
+            return NOERROR;
+        }
+    }
 
-    // return titleCaseAsciiWord(script);
-    return NOERROR;
+    return CLocale::TitleCaseAsciiWord(script, str);
 }
 
 ECode CLocaleBuilder::SetLocale(
     /* [in] */ ILocale* locale)
 {
-    // if (locale == null) {
-    //     throw new NullPointerException("locale == null");
-    // }
+    if (locale == NULL) {
+        ALOGE("CLocaleBuilder::SetLocale, NullPointerExceptionm, locale == null");
+        return E_NULL_POINTER_EXCEPTION;
+    }
 
-    // // Make copies of the existing values so that we don't partially
-    // // update the state if we encounter an error.
-    // final String backupLanguage = language;
-    // final String backupRegion = region;
-    // final String backupVariant = variant;
+    CLocale* l = (CLocale*)locale;
+    // Make copies of the existing values so that we don't partially
+    // update the state if we encounter an error.
+    String backupLanguage = mLanguage;
+    String backupRegion = mRegion;
+    String backupVariant = mVariant;
 
-    // try {
-    //     setLanguage(locale.getLanguage());
-    //     setRegion(locale.getCountry());
-    //     setVariant(locale.getVariant());
-    // } catch (IllformedLocaleException ifle) {
-    //     language = backupLanguage;
-    //     region = backupRegion;
-    //     variant = backupVariant;
+    String language, country, variant;
+    locale->GetLanguage(&language);
+    locale->GetCountry(&country);
+    locale->GetVariant(&variant);
 
-    //     throw ifle;
-    // }
+    ECode ec = SetLanguage(language);
+    FAIL_GOTO(ec, _FAIL_)
 
-    // // The following values can be set only via the builder class, so
-    // // there's no need to normalize them or check their validity.
+    ec = SetRegion(country);
+    FAIL_GOTO(ec, _FAIL_)
 
-    // this.script = locale.getScript();
+    ec = SetVariant(variant);
+    FAIL_GOTO(ec, _FAIL_)
 
-    // mExtensions->clear();
-    // mExtensions->putAll(locale.extensions);
+    // The following values can be set only via the builder class, so
+    // there's no need to normalize them or check their validity.
 
-    // mKeywords->clear();
-    // mKeywords->putAll(locale.unicodeKeywords);
+    locale->GetScript(&mScript);
 
-    // mAttributes->clear();
-    // mAttributes->addAll(locale.unicodeAttributes);
+    mExtensions->Clear();
+    mExtensions->PutAll(IMap::Probe(l->mExtensions));
+
+    mKeywords->Clear();
+    mKeywords->PutAll(IMap::Probe(l->mUnicodeKeywords));
+
+    ICollection::Probe(mAttributes)->Clear();
+    ICollection::Probe(mAttributes)->AddAll(ICollection::Probe(l->mUnicodeAttributes));
     return NOERROR;
+
+_FAIL_:
+    mLanguage = backupLanguage;
+    mRegion = backupRegion;
+    mVariant = backupVariant;
+    return ec;
 }
 
 ECode CLocaleBuilder::AddUnicodeLocaleAttribute(
     /* [in] */ const String& attribute)
 {
-    // if (attribute == null) {
-    //     throw new NullPointerException("attribute == null");
-    // }
+    if (attribute.IsNull()) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
 
-    // final String lowercaseAttribute = attribute.toLowerCase(Locale.ROOT);
-    // if (!isValidBcp47Alphanum(lowercaseAttribute, 3, 8)) {
-    //     throw new IllformedLocaleException("Invalid locale attribute: " + attribute);
-    // }
+    String lowercaseAttribute = attribute.ToLowerCase();//toLowerCase(Locale.ROOT);
+    if (!CLocale::IsValidBcp47Alphanum(lowercaseAttribute, 3, 8)) {
+        ALOGE("CLocaleBuilder::AddUnicodeLocaleAttribute: IllformedLocaleException, Invalid attribute: %s", attribute.string());
+        return E_ILLFORMED_LOCALE_EXCEPTION;
+    }
 
-    // mAttributes->add(lowercaseAttribute);
-    return NOERROR;
+    AutoPtr<ICharSequence> csq;
+    CStringWrapper::New(lowercaseAttribute, (ICharSequence**)&csq);
+    return ICollection::Probe(mAttributes)->Add(csq->Probe(EIID_IInterface));
 }
 
 ECode CLocaleBuilder::RemoveUnicodeLocaleAttribute(
     /* [in] */ const String& attribute)
 {
-    // if (attribute == null) {
-    //     throw new NullPointerException("attribute == null");
-    // }
+    if (attribute.IsNull()) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
 
-    // // Weirdly, remove is specified to check whether the attribute
-    // // is valid, so we have to perform the full alphanumeric check here.
-    // final String lowercaseAttribute = attribute.toLowerCase(Locale.ROOT);
-    // if (!isValidBcp47Alphanum(lowercaseAttribute, 3, 8)) {
-    //     throw new IllformedLocaleException("Invalid locale attribute: " + attribute);
-    // }
+    // Weirdly, remove is specified to check whether the attribute
+    // is valid, so we have to perform the full alphanumeric check here.
+    String lowercaseAttribute = attribute.ToLowerCase();//toLowerCase(Locale.ROOT);
+    if (!CLocale::IsValidBcp47Alphanum(lowercaseAttribute, 3, 8)) {
+        ALOGE("CLocaleBuilder::RemoveUnicodeLocaleAttribute: IllformedLocaleException, Invalid attribute: %s", attribute.string());
+        return E_ILLFORMED_LOCALE_EXCEPTION;
+    }
 
-    // mAttributes->remove(attribute);
-    return NOERROR;
+    AutoPtr<ICharSequence> csq;
+    CStringWrapper::New(lowercaseAttribute, (ICharSequence**)&csq);
+    return ICollection::Probe(mAttributes)->Remove(csq->Probe(EIID_IInterface));
 }
 
 ECode CLocaleBuilder::SetExtension(
     /* [in] */ Char32 key,
     /* [in] */ const String& value)
 {
-    // if (value == null || value.isEmpty()) {
-    //     mExtensions->remove(key);
-    //     return this;
-    // }
+    AutoPtr<IChar32> keyObj;
+    CChar32::New(key, (IChar32**)&keyObj);
+    if (value.IsNullOrEmpty()) {
+        mExtensions->Remove(keyObj->Probe(EIID_IInterface));
+        return NOERROR;
+    }
 
-    // final String normalizedValue = value.toLowerCase(Locale.ROOT).replace('_', '-');
-    // final String[] subtags = normalizedValue.split("-");
+    String normalizedValue = value.ToLowerCase();//ToLowerCase(Locale.ROOT)
+    normalizedValue = normalizedValue.Replace('_', '-');
+    AutoPtr<ArrayOf<String> > subtags;
+    StringUtils::Split(normalizedValue, String("-"), (ArrayOf<String>**)&subtags);
 
-    // // Lengths for subtags in the private use extension should be [1, 8] chars.
-    // // For all other extensions, they should be [2, 8] chars.
-    // //
-    // // http://www.rfc-editor.org/rfc/bcp/bcp47.txt
-    // final int minimumLength = (key == PRIVATE_USE_EXTENSION) ? 1 : 2;
-    // for (String subtag : subtags) {
-    //     if (!isValidBcp47Alphanum(subtag, minimumLength, 8)) {
-    //         throw new IllformedLocaleException(
-    //                 "Invalid private use extension : " + value);
-    //     }
-    // }
+    // Lengths for subtags in the private use extension should be [1, 8] chars.
+    // For all other extensions, they should be [2, 8] chars.
+    //
+    // http://www.rfc-editor.org/rfc/bcp/bcp47.txt
+    Int32 minimumLength = (key == ILocale::PRIVATE_USE_EXTENSION) ? 1 : 2;
+    for (Int32 i = 0; i < subtags->GetLength(); ++i) {
+        String subtag = (*subtags)[i];
+        if (!CLocale::IsValidBcp47Alphanum(subtag, minimumLength, 8)) {
+            ALOGE("CLocaleBuilder::SetExtension: IllformedLocaleException, Invalid private use extension : %s", value.string());
+            return E_ILLFORMED_LOCALE_EXCEPTION;
+        }
+    }
 
-    // // We need to take special action in the case of unicode extensions,
-    // // since we claim to understand their keywords and mAttributes->
-    // if (key == UNICODE_LOCALE_EXTENSION) {
-    //     // First clear existing attributes and mKeywords->
-    //     mExtensions->clear();
-    //     mAttributes->clear();
+    // We need to take special action in the case of unicode extensions,
+    // since we claim to understand their keywords and ICollection::Probe(mAttributes)->
+    if (key == ILocale::UNICODE_LOCALE_EXTENSION) {
+        // First clear existing attributes and mKeywords->
+        mExtensions->Clear();
+        ICollection::Probe(mAttributes)->Clear();
 
-    //     parseUnicodeExtension(subtags, keywords, attributes);
-    // } else {
-    //     mExtensions->put(key, normalizedValue);
-    // }
+        CLocale::ParseUnicodeExtension(subtags, mKeywords, mAttributes);
+    }
+    else {
+        AutoPtr<ICharSequence> csq;
+        CStringWrapper::New(normalizedValue, (ICharSequence**)&csq);
+        mExtensions->Put(keyObj, TO_IINTERFACE(csq));
+    }
     return NOERROR;
 }
 
@@ -320,35 +359,42 @@ ECode CLocaleBuilder::SetUnicodeLocaleKeyword(
     /* [in] */ const String& key,
     /* [in] */ const String& type)
 {
-    // if (key == null) {
-    //     throw new NullPointerException("key == null");
-    // }
+    if (key.IsNull()) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
 
-    // if (type == null && keywords != null) {
-    //     mKeywords->remove(key);
-    //     return this;
-    // }
+    if (type.IsNull() && mKeywords != NULL) {
+        AutoPtr<ICharSequence> csq;
+        CStringWrapper::New(key, (ICharSequence**)&csq);
+        mKeywords->Remove(TO_IINTERFACE(csq));
+        return NOERROR;
+    }
 
-    // final String lowerCaseKey = key.toLowerCase(Locale.ROOT);
-    // // The key must be exactly two alphanumeric characters.
-    // if (lowerCaseKey.length() != 2 || !isAsciiAlphaNum(lowerCaseKey)) {
-    //     throw new IllformedLocaleException("Invalid unicode locale keyword: " + key);
-    // }
+    String lowerCaseKey = key.ToLowerCase();//ToLowerCase(Locale.ROOT)
+    // The key must be exactly two alphanumeric characters.
+    if (lowerCaseKey.GetLength() != 2 || !CLocale::IsAsciiAlphaNum(lowerCaseKey)) {
+        ALOGE("CLocaleBuilder::SetExtension: IllformedLocaleException, Invalid unicode locale keyword : %s", key.string());
+        return E_ILLFORMED_LOCALE_EXCEPTION;
+    }
 
-    // // The type can be one or more alphanumeric strings of length [3, 8] characters,
-    // // separated by a separator char, which is one of "_" or "-". Though the spec
-    // // doesn't require it, we normalize all "_" to "-" to make the rest of our
-    // // processing easier.
-    // final String lowerCaseType = type.toLowerCase(Locale.ROOT).replace("_", "-");
-    // if (!isValidTypeList(lowerCaseType)) {
-    //     throw new IllformedLocaleException("Invalid unicode locale type: " + type);
-    // }
+    // The type can be one or more alphanumeric strings of length [3, 8] characters,
+    // separated by a separator char, which is one of "_" or "-". Though the spec
+    // doesn't require it, we normalize all "_" to "-" to make the rest of our
+    // processing easier.
+    String lowerCaseType = type.ToLowerCase();//ToLowerCase(Locale.ROOT)
+    lowerCaseType = lowerCaseType.Replace('_', '-');
+    if (!CLocale::IsValidTypeList(lowerCaseType)) {
+        ALOGE("CLocaleBuilder::SetExtension: IllformedLocaleException, Invalid unicode locale type : %s", type.string());
+        return E_ILLFORMED_LOCALE_EXCEPTION;
+    }
 
-    // // Everything checks out fine, add the <key, type> mapping to the list.
-    // mKeywords->put(lowerCaseKey, lowerCaseType);
+    // Everything checks out fine, add the <key, type> mapping to the list.
+    AutoPtr<ICharSequence> keycsq, typecsq;
+    CStringWrapper::New(lowerCaseKey, (ICharSequence**)&keycsq);
+    CStringWrapper::New(lowerCaseType, (ICharSequence**)&typecsq);
+    mKeywords->Put(TO_IINTERFACE(keycsq), TO_IINTERFACE(typecsq));
     return NOERROR;
 }
-
 
 ECode CLocaleBuilder::Clear()
 {

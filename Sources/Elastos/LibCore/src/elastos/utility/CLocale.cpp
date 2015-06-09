@@ -1178,8 +1178,9 @@ Boolean CLocale::IsValidBcp47Alphanum(
     return IsAsciiAlphaNum(attributeOrType);
 }
 
-String CLocale::TitleCaseAsciiWord(
-    /* [in] */ const String& word)
+ECode CLocale::TitleCaseAsciiWord(
+    /* [in] */ const String& word,
+    /* [out] */ String* str)
 {
     assert(0 && "TODO");
     // try {
