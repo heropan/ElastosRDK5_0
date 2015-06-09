@@ -1,4 +1,7 @@
 #include "CLocaleBuilder.h"
+//#include "CTreeSet.h"
+//#include "CTreeMap.h"
+#include "CLocale.h"
 
 namespace Elastos {
 namespace Utility {
@@ -30,89 +33,100 @@ ECode CLocaleBuilder::constructor()
 ECode CLocaleBuilder::SetLanguage(
     /* [in] */ const String& language)
 {
-    mLanguage = NormalizeAndValidateLanguage(language, TRUE /* strict */);
+    return NormalizeAndValidateLanguage(language, TRUE /* strict */, &mLanguage);
+}
+
+ECode CLocaleBuilder::NormalizeAndValidateLanguage(
+    /* [in] */ const String& language,
+    /* [in] */ Boolean strict,
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    *str = String("");
+
+   if (language.IsNullOrEmpty()) {
+        return NOERROR;
+    }
+
+    String lowercaseLanguage = language.ToLowerCase();//ToLowerCase(Locale.ROOT);
+    if (!CLocale::IsValidBcp47Alpha(lowercaseLanguage, 2, 3)) {
+        if (strict) {
+            ALOGE("CLocaleBuilder::NormalizeAndValidateLanguage: error Invalid language: %s", language.string());
+            return E_ILLFORMED_LOCALE_EXCEPTION;
+        } else {
+            *str = CLocale::UNDETERMINED_LANGUAGE;
+            return NOERROR;
+        }
+    }
+
+    *str = lowercaseLanguage;
     return NOERROR;
 }
 
-String CLocaleBuilder::NormalizeAndValidateLanguage(
-    /* [in] */ const String& language,
-    /* [in] */ Boolean strict)
-{
-   // if (language == null || language.isEmpty()) {
-   //      return "";
-   //  }
-
-   //  final String lowercaseLanguage = language.toLowerCase(Locale.ROOT);
-   //  if (!isValidBcp47Alpha(lowercaseLanguage, 2, 3)) {
-   //      if (strict) {
-   //          throw new IllformedLocaleException("Invalid language: " + language);
-   //      } else {
-   //          return UNDETERMINED_LANGUAGE;
-   //      }
-   //  }
-
-   //  return lowercaseLanguage;
-    return String("");
-}
-
 ECode CLocaleBuilder::SetLanguageTag(
-    /* [in] */ const String& tag)
+    /* [in] */ const String& languageTag)
 {
-    // if (languageTag == null || languageTag.isEmpty()) {
-    //     clear();
-    //     return this;
-    // }
+    if (languageTag.IsNullOrEmpty()) {
+        Clear();
+        return NOERROR;
+    }
 
-    // final Locale fromIcu = forLanguageTag(languageTag, true /* strict */);
-    // // When we ask ICU for strict parsing, it might return a null locale
-    // // if the language tag is malformed.
-    // if (fromIcu == null) {
-    //     throw new IllformedLocaleException("Invalid languageTag: " + languageTag);
-    // }
+    AutoPtr<ILocale> fromIcu;
+    FAIL_RETURN(CLocale::ForLanguageTag(languageTag, true /* strict */, (ILocale**)&fromIcu));
+    // When we ask ICU for strict parsing, it might return a null locale
+    // if the language tag is malformed.
+    if (fromIcu == NULL) {
+        ALOGE("CLocaleBuilder::SetLanguageTag: IllformedLocaleException, Invalid languageTag: %s", languageTag.string());
+        return E_ILLFORMED_LOCALE_EXCEPTION;
+    }
 
-    // setLocale(fromIcu);
-    // return this;
+    SetLocale(fromIcu);
     return NOERROR;
 }
 
 ECode CLocaleBuilder::SetRegion(
     /* [in] */ const String& region)
 {
-    mRegion = NormalizeAndValidateRegion(region, TRUE /* strict */);
-    return NOERROR;
+    return NormalizeAndValidateRegion(region, TRUE /* strict */, &mRegion);
 }
 
-String CLocaleBuilder::NormalizeAndValidateRegion(
+ECode CLocaleBuilder::NormalizeAndValidateRegion(
     /* [in] */ const String& region,
-    /* [in] */ Boolean strict)
+    /* [in] */ Boolean strict,
+    /* [out] */ String* str)
 {
-    // if (region == null || region.isEmpty()) {
-    //     return "";
-    // }
+    VALIDATE_NOT_NULL(str)
+    *str = String("");
 
-    // final String uppercaseRegion = region.toUpperCase(Locale.ROOT);
-    // if (!isValidBcp47Alpha(uppercaseRegion, 2, 2) &&
-    //         !isUnM49AreaCode(uppercaseRegion)) {
-    //     if (strict) {
-    //         throw new IllformedLocaleException("Invalid region: " + region);
-    //     } else {
-    //         return "";
-    //     }
-    // }
+    if (region.IsNullOrEmpty()) {
+        return NOERROR;
+    }
 
-    // return uppercaseRegion;
-    return String("");
+    String uppercaseRegion = region.ToUpperCase(); // toUpperCase(Locale.ROOT);
+    if (!CLocale::IsValidBcp47Alpha(uppercaseRegion, 2, 2)
+        && !CLocale::IsUnM49AreaCode(uppercaseRegion)) {
+        if (strict) {
+            ALOGE("CLocaleBuilder::NormalizeAndValidateRegion: IllformedLocaleException, Invalid region: %s", region.string());
+            return E_ILLFORMED_LOCALE_EXCEPTION;
+        }
+        else {
+            return NOERROR;
+        }
+    }
+
+    *str = uppercaseRegion;
+    return NOERROR;
 }
 
 ECode CLocaleBuilder::SetVariant(
     /* [in] */ const String& variant)
 {
-    mVariant = NormalizeAndValidateVariant(variant);
-    return NOERROR;
+    return NormalizeAndValidateVariant(variant, &mVariant);
 }
 
-String CLocaleBuilder::NormalizeAndValidateVariant(
-    /* [in] */ const String& region)
+ECode CLocaleBuilder::NormalizeAndValidateVariant(
+    /* [in] */ const String& region,
+    /* [out] */ String* str)
 {
     // if (variant == null || variant.isEmpty()) {
     //     return "";
@@ -130,7 +144,7 @@ String CLocaleBuilder::NormalizeAndValidateVariant(
     // }
 
     // return normalizedVariant;
-    return String("");
+    return NOERROR;
 }
 
 Boolean CLocaleBuilder::IsValidVariantSubtag(
@@ -156,13 +170,14 @@ Boolean CLocaleBuilder::IsValidVariantSubtag(
 ECode CLocaleBuilder::SetScript(
     /* [in] */ const String& script)
 {
-    mScript = NormalizeAndValidateScript(script, TRUE /* strict */);
+    return NormalizeAndValidateScript(script, TRUE /* strict */, &mScript);
     return NOERROR;
 }
 
-String CLocaleBuilder::NormalizeAndValidateScript(
+ECode CLocaleBuilder::NormalizeAndValidateScript(
     /* [in] */ const String& script,
-    /* [in] */ Boolean strict)
+    /* [in] */ Boolean strict,
+    /* [out] */ String* str)
 {
     // if (script == null || script.isEmpty()) {
     //     return "";
@@ -177,7 +192,7 @@ String CLocaleBuilder::NormalizeAndValidateScript(
     // }
 
     // return titleCaseAsciiWord(script);
-    return String("");
+    return NOERROR;
 }
 
 ECode CLocaleBuilder::SetLocale(
@@ -210,14 +225,14 @@ ECode CLocaleBuilder::SetLocale(
 
     // this.script = locale.getScript();
 
-    // extensions.clear();
-    // extensions.putAll(locale.extensions);
+    // mExtensions->clear();
+    // mExtensions->putAll(locale.extensions);
 
-    // keywords.clear();
-    // keywords.putAll(locale.unicodeKeywords);
+    // mKeywords->clear();
+    // mKeywords->putAll(locale.unicodeKeywords);
 
-    // attributes.clear();
-    // attributes.addAll(locale.unicodeAttributes);
+    // mAttributes->clear();
+    // mAttributes->addAll(locale.unicodeAttributes);
     return NOERROR;
 }
 
@@ -233,7 +248,7 @@ ECode CLocaleBuilder::AddUnicodeLocaleAttribute(
     //     throw new IllformedLocaleException("Invalid locale attribute: " + attribute);
     // }
 
-    // attributes.add(lowercaseAttribute);
+    // mAttributes->add(lowercaseAttribute);
     return NOERROR;
 }
 
@@ -251,7 +266,7 @@ ECode CLocaleBuilder::RemoveUnicodeLocaleAttribute(
     //     throw new IllformedLocaleException("Invalid locale attribute: " + attribute);
     // }
 
-    // attributes.remove(attribute);
+    // mAttributes->remove(attribute);
     return NOERROR;
 }
 
@@ -260,7 +275,7 @@ ECode CLocaleBuilder::SetExtension(
     /* [in] */ const String& value)
 {
     // if (value == null || value.isEmpty()) {
-    //     extensions.remove(key);
+    //     mExtensions->remove(key);
     //     return this;
     // }
 
@@ -280,24 +295,24 @@ ECode CLocaleBuilder::SetExtension(
     // }
 
     // // We need to take special action in the case of unicode extensions,
-    // // since we claim to understand their keywords and attributes.
+    // // since we claim to understand their keywords and mAttributes->
     // if (key == UNICODE_LOCALE_EXTENSION) {
-    //     // First clear existing attributes and keywords.
-    //     extensions.clear();
-    //     attributes.clear();
+    //     // First clear existing attributes and mKeywords->
+    //     mExtensions->clear();
+    //     mAttributes->clear();
 
     //     parseUnicodeExtension(subtags, keywords, attributes);
     // } else {
-    //     extensions.put(key, normalizedValue);
+    //     mExtensions->put(key, normalizedValue);
     // }
     return NOERROR;
 }
 
 ECode CLocaleBuilder::ClearExtensions()
 {
-    // extensions.clear();
-    // attributes.clear();
-    // keywords.clear();
+    mExtensions->Clear();
+    ICollection::Probe(mAttributes)->Clear();
+    mKeywords->Clear();
     return NOERROR;
 }
 
@@ -310,7 +325,7 @@ ECode CLocaleBuilder::SetUnicodeLocaleKeyword(
     // }
 
     // if (type == null && keywords != null) {
-    //     keywords.remove(key);
+    //     mKeywords->remove(key);
     //     return this;
     // }
 
@@ -330,26 +345,33 @@ ECode CLocaleBuilder::SetUnicodeLocaleKeyword(
     // }
 
     // // Everything checks out fine, add the <key, type> mapping to the list.
-    // keywords.put(lowerCaseKey, lowerCaseType);
+    // mKeywords->put(lowerCaseKey, lowerCaseType);
     return NOERROR;
 }
 
 
 ECode CLocaleBuilder::Clear()
 {
-    // clearExtensions();
-    // language = region = variant = script = "";
+    ClearExtensions();
+    mLanguage = mRegion = mVariant = mScript = String("");
     return NOERROR;
 }
 
 ECode CLocaleBuilder::Build(
-    /* [out] */ ILocale** locale)
+    /* [out] */ ILocale** result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
     // NOTE: We need to make a copy of attributes, keywords and extensions
     // because the RI allows this builder to reused.
-    // return new Locale(language, region, variant, script,
-    //         attributes, keywords, extensions,
-    //         true /* has validated fields */);
+    AutoPtr<CLocale> locale;
+    CLocale::NewByFriend((CLocale**)&locale);
+    FAIL_RETURN(locale->constructor(mLanguage, mRegion, mVariant,
+        mScript, mAttributes, mKeywords, mExtensions, TRUE /* has validated fields */));
+    AutoPtr<ILocale> l = (ILocale*)locale->Probe(EIID_ILocale);
+    *result = l;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

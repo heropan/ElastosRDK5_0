@@ -119,6 +119,67 @@ interface IActivity {
 
 相应的示例可以参考Thread和CThread的实现。
 
+## ICloneable 接口的实现
+<code>ICloneable</code> 接口的实现需要特殊处理，由于<code>Java</code>代码中子类通常会调用父类的 Clone() 来克隆父类的成员．在<code>Elastos</code>代码中，我们可以使用如下机制来实现：
+
+``` cpp
+    // CLocale.h
+    public:
+    // 覆写 ICloneable 接口
+    CARAPI Clone(
+        /* [out] */ IInterface** newObj);
+
+    protected:
+    // 供自身以及子类调用
+    CARAPI CloneImpl(
+        /* [in] */ ILocale* locale);
+
+    // CLocale.cpp
+    ECode CLocale::Clone(
+        /* [out] */ IInterface** newObj)
+    {
+        VALIDATE_NOT_NULL(newObj);
+        // 调用适当的构造函数创建对象（通常是无参数的那一个）
+        AutoPtr<ILocale> locale;
+        CLocale::New((ILocale**)&locale);
+
+        // 调用自身的 CloneImpl
+        CloneImpl(locale);
+
+        // 返回接口指针
+        *newObj = locale->Probe(EIID_IInterface);
+        REFCOUNT_ADD(*newObj);
+        return NOERROR;
+    }
+
+    ECode CLocale::CloneImpl(
+        /* [in] */ ILocale* locale)
+    {
+        assert(locale);
+
+        // 若有父类，调用直接父类的 CloneImpl
+        // CloneImpl(IParent::Probe(locale);
+
+        CLocale* l = (CLocale*)locale;
+        l->mCountryCode = mCountryCode;
+        l->mLanguageCode = mLanguageCode;
+        l->mVariantCode = mVariantCode;
+        l->mScriptCode = mScriptCode;
+
+        l->mUnicodeAttributes = mUnicodeAttributes;
+        l->mUnicodeKeywords = mUnicodeKeywords;
+        l->mExtensions = mExtensions;
+
+        l->mHasValidatedFields = mHasValidatedFields;
+
+        l->mCachedToStringResult = mCachedToStringResult;
+        l->mCachedLanguageTag = mCachedLanguageTag;
+        l->mCachedIcuLocaleId = mCachedIcuLocaleId;
+        return NOERROR;
+    }
+```
+
+
 ## 其它
 ---
 ### 一些宏

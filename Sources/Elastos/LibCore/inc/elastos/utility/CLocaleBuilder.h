@@ -10,6 +10,8 @@ using Elastos::Core::Object;
 namespace Elastos {
 namespace Utility {
 
+class CLocale;
+
 CarClass(CLocaleBuilder)
     , public Object
     , public ILocaleBuilder
@@ -255,23 +257,29 @@ public:
         /* [out] */ ILocale** locale);
 
 private:
-    String NormalizeAndValidateLanguage(
+    friend class CLocale;
+
+    static CARAPI NormalizeAndValidateLanguage(
         /* [in] */ const String& language,
-        /* [in] */ Boolean strict);
+        /* [in] */ Boolean strict,
+        /* [out] */ String* str);
 
-    String NormalizeAndValidateRegion(
+    static CARAPI NormalizeAndValidateRegion(
         /* [in] */ const String& region,
-        /* [in] */ Boolean strict);
+        /* [in] */ Boolean strict,
+        /* [out] */ String* str);
 
-    String NormalizeAndValidateVariant(
-        /* [in] */ const String& region);
+    static CARAPI NormalizeAndValidateVariant(
+        /* [in] */ const String& region,
+        /* [out] */ String* str);
 
-    Boolean IsValidVariantSubtag(
+    static Boolean IsValidVariantSubtag(
         /* [in] */ const String& subTag);
 
-    String NormalizeAndValidateScript(
+    static CARAPI NormalizeAndValidateScript(
         /* [in] */ const String& script,
-        /* [in] */ Boolean strict);
+        /* [in] */ Boolean strict,
+        /* [out] */ String* str);
 
 private:
     String mLanguage;
