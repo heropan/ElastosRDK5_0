@@ -8,9 +8,13 @@
 using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 using Elastos::IO::ISerializable;
+using Elastos::IO::IObjectOutputStream;
+using Elastos::IO::IObjectStreamField;
 
 namespace Elastos {
 namespace Utility {
+
+class CLocaleBuilder;
 
 CarClass(CLocale)
     , public Object
@@ -23,6 +27,8 @@ public:
 
     CAR_OBJECT_DECL()
 
+    CLocale();
+
     /**
      * There's a circular dependency between toLowerCase/toUpperCase and
      * Locale.US. Work around this by avoiding these methods when constructing
@@ -31,7 +37,7 @@ public:
      * @param unused required for this constructor to have a unique signature
      */
     CARAPI constructor(
-        /* [in] */ Boolean unused,
+        /* [in] */ Boolean hasValidatedFields,
         /* [in] */ const String& lowerCaseLanguageCode,
         /* [in] */ const String& upperCaseCountryCode);
 
@@ -59,12 +65,41 @@ public:
         /* [in] */ const String& country,
         /* [in] */ const String& variant);
 
+    /**
+     * Required by libcore.icu.ICU.
+     *
+     * @hide
+     */
+    CARAPI constructor(
+        /* [in] */ const String& language,
+        /* [in] */ const String& country,
+        /* [in] */ const String& variant,
+        /* [in] */ const String& scriptCode,
+        /* [in] */ /* nonnull */ ISet* unicodeAttributes,
+        /* [in] */ /* nonnull */ IMap* unicodeKeywords,
+        /* [in] */ /* nonnull */ IMap* extensions,
+        /* [in] */ Boolean hasValidatedFields);
+
     CARAPI Clone(
         /* [out] */ IInterface** newObj);
 
     CARAPI Equals(
         /* [in] */ IInterface* other,
         /* [out] */ Boolean* result);
+
+    /**
+     * Returns a locale for a given BCP-47 language tag. This method is more
+     * lenient than {@link Builder#setLanguageTag}. For a given language tag, parsing
+     * will proceed up to the first malformed subtag. All subsequent tags are discarded.
+     * Note that language tags use {@code -} rather than {@code _}, for example {@code en-US}.
+     *
+     * @throws NullPointerException if {@code languageTag} is {@code null}.
+     *
+     * @since 1.7
+     */
+    static CARAPI ForLanguageTag(
+        /* [in] */ const String& languageTag,
+        /* [out] */ ILocale** locale);
 
     /**
      * Returns the system's installed locales. This array always includes {@code
@@ -373,6 +408,47 @@ public:
     CARAPI GetHashCode(
         /* [out] */ Int32* value);
 
+    /**
+     * The serialized form for extensions is straightforward. It's simply
+     * of the form key1-value1-key2-value2 where each value might in turn contain
+     * multiple subtags separated by hyphens. Each key is guaranteed to be a single
+     * character in length.
+     *
+     * This method assumes that {@code extensionsMap} is non-empty.
+     *
+     * Visible for testing.
+     *
+     * @hide
+     */
+    static CARAPI_(String) SerializeExtensions(
+        /* [in] */ IMap* extensionsMap);
+
+    /**
+     * Visible for testing.
+     *
+     * @hide
+     */
+    static CARAPI ParseSerializedExtensions(
+        /* [in] */ const String& extString,
+        /* [in] */ IMap* outputMap);
+
+    /**
+     * This extension is described by http://www.unicode.org/reports/tr35/#RFC5234
+     * unicode_locale_extensions = sep "u" (1*(sep keyword) / 1*(sep attribute) *(sep keyword)).
+     *
+     * It must contain at least one keyword or attribute and attributes (if any)
+     * must appear before keywords. Attributes can't appear after keywords because
+     * they will be indistinguishable from a subtag of the keyword type.
+     *
+     * Visible for testing.
+     *
+     * @hide
+     */
+    static void ParseUnicodeExtension(
+        /* [in] */ ArrayOf<String>* subtags,
+        /* [in] */ IMap* keywords,
+        /* [in] */ ISet* attributes);
+
 public:
     /**
      * Locale constant for en_CA.
@@ -487,8 +563,20 @@ public:
      */
     static const AutoPtr<ILocale> US;
 
+protected:
+
+    CARAPI CloneImpl(
+        /* [in] */ ILocale* locale);
+
 private:
-    CARAPI_(String) ToNewString();
+    friend class CLocaleBuilder;
+
+    static CARAPI_(String) ToNewString(
+        /* [in] */ const String& languageCode,
+        /* [in] */ const String& countryCode,
+        /* [in] */ const String& variantCode,
+        /* [in] */ const String& scriptCode,
+        /* [in] */ IMap* extensions);
 
     /**
      * Constructs a valid BCP-47 language tag from locale fields. Additional validation
@@ -500,8 +588,132 @@ private:
      */
     CARAPI_(String) MakeLanguageTag();
 
+    /**
+     * Splits ill formed variants into a set of valid variant subtags (which
+     * can be used directly in language tag construction) and a set of invalid
+     * variant subtags (which can be appended to the private use extension),
+     * provided that each subtag is a valid private use extension subtag.
+     *
+     * This method returns a two element String array. The first element is a string
+     * containing the concatenation of valid variant subtags which can be appended
+     * to a BCP-47 tag directly and the second containing the concatenation of
+     * invalid variant subtags which can be appended to the private use extension
+     * directly.
+     *
+     * This method assumes that {@code variant} contains at least one ill formed
+     * variant subtag.
+     */
+    static AutoPtr<ArrayOf<String> > SplitIllformedVariant(
+        /* [in] */ const String& variant);
+
+    /**
+     * Builds a string by concatenating array elements within the range [start, end).
+     * The supplied range is assumed to be valid and no checks are performed.
+     */
+    static String ConcatenateRange(
+        /* [in] */ ArrayOf<String>* array,
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end);
+
+    CARAPI WriteObject(
+        /* [in] */ IObjectOutputStream* stream);
+
+    CARAPI ReadObject(
+        /* [in] */ IObjectOutputStream* stream);
+
+    CARAPI ReadExtensions(
+        /* [in] */ const String& extensions);
+
+    /**
+     * A UN M.49 is a 3 digit numeric code.
+     */
+    static Boolean IsUnM49AreaCode(
+        /* [in] */ const String& code);
+
+    /*
+     * Checks whether a given string is an ASCII alphanumeric string.
+     */
+    static Boolean IsAsciiAlphaNum(
+        /* [in] */ const String& string);
+
+    static Boolean IsValidBcp47Alpha(
+        /* [in] */ const String& attributeOrType,
+        /* [in] */ Int32 lowerBound,
+        /* [in] */ Int32 upperBound);
+
+    static Boolean IsValidBcp47Alphanum(
+        /* [in] */ const String& attributeOrType,
+        /* [in] */ Int32 lowerBound,
+        /* [in] */ Int32 upperBound);
+
+    static String TitleCaseAsciiWord(
+        /* [in] */ const String& word);
+
+    /**
+     * A type list must contain one or more alphanumeric subtags whose lengths
+     * are between 3 and 8.
+     */
+    static Boolean IsValidTypeList(
+        /* [in] */ const String& lowerCaseTypeList);
+
+    static void AddUnicodeExtensionToExtensionsMap(
+        /* [in] */ ISet* attributes,
+        /* [in] */ IMap* keywords,
+        /* [in] */ IMap* extensions);
+
+    /**
+     * Joins a list of subtags into a BCP-47 tag using the standard separator
+     * ("-").
+     */
+    static String JoinBcp47Subtags(
+        /* [in] */ IList* strings);
+
+    /**
+     * @hide for internal use only.
+     */
+    static String AdjustLanguageCode(
+        /* [in] */ const String& languageCode);
+
+    static String ConvertGrandfatheredTag(
+        /* [in] */ const String& original);
+
+    /**
+     * Scans elements of {@code subtags} in the range {@code [startIndex, endIndex)}
+     * and appends valid variant subtags upto the first invalid subtag  (if any) to
+     * {@code normalizedVariants}.
+     */
+    static void ExtractVariantSubtags(
+        /* [in] */ ArrayOf<String>* subtags,
+        /* [in] */ Int32 startIndex,
+        /* [in] */ Int32 endIndex,
+        /* [in] */ IList* normalizedVariants);
+
+   /**
+     * Scans elements of {@code subtags} in the range {@code [startIndex, endIndex)}
+     * and inserts valid extensions into {@code extensions}. The scan is aborted
+     * when an invalid extension is encountered. Returns the index of the first
+     * unparsable element of {@code subtags}.
+     */
+    static Int32 ExtractExtensions(
+        /* [in] */ ArrayOf<String>* subtags,
+        /* [in] */ Int32 startIndex,
+        /* [in] */ Int32 endIndex,
+        /* [in] */ IMap* extensions);
+
+    static CARAPI ForLanguageTag(
+        /* @Nonnull */ /* [in] */ const String& tag,
+        /* [in] */ Boolean strict,
+        /* [out] */ ILocale** locale);
+
 private:
+    static AutoPtr<ArrayOf<IObjectStreamField> > sSerialPersistentFields;
     static String UNDETERMINED_LANGUAGE;
+
+    /**
+     * Map of grandfathered language tags to their modern replacements.
+     */
+    static AutoPtr<IMap> GRANDFATHERED_LOCALES;
+
 
     // Initialize a default which is used during static
     // initialization of the default for the platform.

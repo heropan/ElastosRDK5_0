@@ -1177,6 +1177,64 @@ interface IActivity {
 <p>当前，被继承的C++类不直接实现相应的接口，比如，Thread类不实现IThread接口。这样处理，是因为CThread之类本身会通过_CThread继承IThread接口，所以，在CThread类里必须重新定义IThread接口中的所有方法。</p>
 <p>现在，我们修正了CAR编译器生成的镜像代码，简化了CAR类的继承结构，已经可以支持让Thread类继承IThread接口，而CThread直接继承Thread即可。这样做也可以减小代码的冗余，让类的继承结构更加的简单、合理。</p>
 <p>相应的示例可以参考Thread和CThread的实现。</p>
+<h2 id="icloneable"><a name="user-content-icloneable" href="#icloneable" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>ICloneable 接口的实现</h2>
+<p><code>ICloneable</code> 接口的实现需要特殊处理，由于<code>Java</code>代码中子类通常会调用父类的 Clone() 来克隆父类的成员．在<code>Elastos</code>代码中，我们可以使用如下机制来实现：</p>
+<pre><code class="cpp">    // CLocale.h
+    public:
+    // 覆写 ICloneable 接口
+    CARAPI Clone(
+        /* [out] */ IInterface** newObj);
+
+    protected:
+    // 供自身以及子类调用
+    CARAPI CloneImpl(
+        /* [in] */ ILocale* locale);
+
+    // CLocale.cpp
+    ECode CLocale::Clone(
+        /* [out] */ IInterface** newObj)
+    {
+        VALIDATE_NOT_NULL(newObj);
+        // 调用适当的构造函数创建对象（通常是无参数的那一个）
+        AutoPtr&lt;ILocale&gt; locale;
+        CLocale::New((ILocale**)&amp;locale);
+
+        // 调用自身的 CloneImpl
+        CloneImpl(locale);
+
+        // 返回接口指针
+        *newObj = locale-&gt;Probe(EIID_IInterface);
+        REFCOUNT_ADD(*newObj);
+        return NOERROR;
+    }
+
+    ECode CLocale::CloneImpl(
+        /* [in] */ ILocale* locale)
+    {
+        assert(locale);
+
+        // 若有父类，调用直接父类的 CloneImpl
+        // CloneImpl(IParent::Probe(locale);
+
+        CLocale* l = (CLocale*)locale;
+        l-&gt;mCountryCode = mCountryCode;
+        l-&gt;mLanguageCode = mLanguageCode;
+        l-&gt;mVariantCode = mVariantCode;
+        l-&gt;mScriptCode = mScriptCode;
+
+        l-&gt;mUnicodeAttributes = mUnicodeAttributes;
+        l-&gt;mUnicodeKeywords = mUnicodeKeywords;
+        l-&gt;mExtensions = mExtensions;
+
+        l-&gt;mHasValidatedFields = mHasValidatedFields;
+
+        l-&gt;mCachedToStringResult = mCachedToStringResult;
+        l-&gt;mCachedLanguageTag = mCachedLanguageTag;
+        l-&gt;mCachedIcuLocaleId = mCachedIcuLocaleId;
+        return NOERROR;
+    }
+</code></pre>
+
 <h2 id="_4"><a name="user-content-_4" href="#_4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>其它</h2>
 <hr />
 <h3 id="_5"><a name="user-content-_5" href="#_5" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>一些宏</h3>
