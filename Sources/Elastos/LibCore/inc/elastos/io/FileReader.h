@@ -9,7 +9,10 @@ namespace IO {
 
 class FileReader
     : public InputStreamReader
+    , public IFileReader
 {
+public:
+	CAR_INTERFACE_DECL()
 };
 
 } // namespace IO

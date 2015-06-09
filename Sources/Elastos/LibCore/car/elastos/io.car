@@ -657,6 +657,22 @@ module
 //        interface IFilePermission;
 //    }
 
+//    class CFileReader {
+//        constructor(
+//            [in] IFile* file);
+
+//        constructor(
+//            [in] IFileDescriptor* fd);
+
+//        constructor(
+//            [in] String filename);
+
+//        interface IReadable;
+//        interface IReader;
+//        interface IInputStreamReader;
+//        interface IFileReader;
+//    }
+
     } // namespace IO
     } // namespace Elastos
 }
