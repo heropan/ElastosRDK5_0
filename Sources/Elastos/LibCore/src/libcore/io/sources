@@ -21,3 +21,6 @@ SOURCES += SocketTagger.cpp
 SOURCES += CBase64.cpp
 SOURCES += CLibcore.cpp
 SOURCES += CIoBridge.cpp
+SOURCES += CSocketTaggerHelper.cpp
+SOURCES += ForwardingOs.cpp
+SOURCES += ToStringArray.cpp

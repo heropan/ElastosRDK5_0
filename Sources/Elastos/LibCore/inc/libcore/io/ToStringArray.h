@@ -1,13 +1,13 @@
 #ifndef __TOSTRINGARRAY_H__
 #define __TOSTRINGARRAY_H__
 
-#include <elquintet.h>
-#include <elastos/Vector.h>
+#include <coredef.h>
+#include <elastos/utility/etl/Vector.h>
 
 using Elastos::AutoPtr;
 using Elastos::String;
 using Elastos::ArrayOf;
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 
 namespace Libcore {
 namespace IO {

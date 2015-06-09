@@ -1,15 +1,24 @@
 #ifndef __CSOCKETTAGGERhELPER_H__
 #define __CSOCKETTAGGERhELPER_H__
 
+#include "core/Singleton.h"
 #include "SocketTagger.h"
-#include "_CSocketTaggerHelper.h"
+#include "_Libcore_IO_CSocketTaggerHelper.h"
+
+using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace IO {
 
 CarClass(CSocketTaggerHelper)
+    , public Singleton
+    , public ISocketTaggerHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Sets this process' socket tagger to {@code tagger}.
      */
