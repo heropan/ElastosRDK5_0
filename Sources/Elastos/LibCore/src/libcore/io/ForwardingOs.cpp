@@ -3,17 +3,26 @@
 namespace Libcore {
 namespace IO {
 
+// {216d5978-6282-44ec-aad1-ebe79d89e532}
+extern const _ELASTOS ClassID ECLSID_ForwardingOs = {
+    { 0x216d5978, 0x6282, 0x44ec, { 0xaa, 0xd1, 0xeb, 0xe7, 0x9d, 0x89, 0xe5, 0x32 }},
+    (char *)c_pElastos_CoreLibraryUunm,
+    0x2d2b67d7 };
+
+CAR_OBJECT_IMPL(ForwardingOs)
+
+CAR_INTERFACE_IMPL(ForwardingOs, Object, IOs)
+
 ForwardingOs::ForwardingOs(
     /* [in] */ IOs* os)
     : mOs(os)
 {}
 
-CAR_INTERFACE_IMPL(ForwardingOs, IOs);
 
 ECode ForwardingOs::Accept(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetSocketAddress* peerAddress,
-    /* [out] */ Int32* retFd)
+    /* [out] */ IFileDescriptor** retFd)
 {
     VALIDATE_NOT_NULL(retFd);
 
@@ -31,7 +40,7 @@ ECode ForwardingOs::Access(
 }
 
 ECode ForwardingOs::Bind(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 port)
 {
@@ -54,13 +63,13 @@ ECode ForwardingOs::Chown(
 }
 
 ECode ForwardingOs::Close(
-    /* [in] */ Int32 fd)
+    /* [in] */ IFileDescriptor* fd)
 {
     return mOs->Close(fd);
 }
 
 ECode ForwardingOs::Connect(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 port)
 {
@@ -68,8 +77,8 @@ ECode ForwardingOs::Connect(
 }
 
 ECode ForwardingOs::Dup(
-    /* [in] */ Int32 oldFd,
-    /* [out] */ Int32* retFd)
+    /* [in] */ IFileDescriptor* oldFd,
+    /* [out] */ IFileDescriptor** retFd)
 {
     VALIDATE_NOT_NULL(retFd);
 
@@ -77,9 +86,9 @@ ECode ForwardingOs::Dup(
 }
 
 ECode ForwardingOs::Dup2(
-    /* [in] */ Int32 oldFd,
+    /* [in] */ IFileDescriptor* oldFd,
     /* [in] */ Int32 newFd,
-    /* [out] */ Int32* retFd)
+    /* [out] */ IFileDescriptor** retFd)
 {
     VALIDATE_NOT_NULL(retFd);
 
@@ -93,14 +102,14 @@ ECode ForwardingOs::Environ(
 }
 
 ECode ForwardingOs::Fchmod(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 mode)
 {
     return mOs->Fchmod(fd, mode);
 }
 
 ECode ForwardingOs::Fchown(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 gid)
 {
@@ -108,7 +117,7 @@ ECode ForwardingOs::Fchown(
 }
 
 ECode ForwardingOs::FcntlVoid(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [out] */ Int32* result)
 {
@@ -118,7 +127,7 @@ ECode ForwardingOs::FcntlVoid(
 }
 
 ECode ForwardingOs::FcntlInt64(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [in] */ Int64 arg,
     /* [out] */ Int32* result)
@@ -129,7 +138,7 @@ ECode ForwardingOs::FcntlInt64(
 }
 
 ECode ForwardingOs::FcntlFlock(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [in] */ IStructFlock* arg,
     /* [out] */ Int32* result)
@@ -140,13 +149,13 @@ ECode ForwardingOs::FcntlFlock(
 }
 
 ECode ForwardingOs::Fdatasync(
-    /* [in] */ Int32 fd)
+    /* [in] */ IFileDescriptor* fd)
 {
     return mOs->Fdatasync(fd);
 }
 
 ECode ForwardingOs::Fstat(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [out] */ IStructStat** stat)
 {
     VALIDATE_NOT_NULL(stat);
@@ -154,23 +163,23 @@ ECode ForwardingOs::Fstat(
     return mOs->Fstat(fd, stat);
 }
 
-ECode ForwardingOs::Fstatfs(
-    /* [in] */ Int32 fd,
-    /* [out] */ IStructStatFs** statFs)
+ECode ForwardingOs::Fstatvfs(
+    /* [in] */ IFileDescriptor* fd,
+    /* [out] */ IStructStatVfs** statVfs)
 {
-    VALIDATE_NOT_NULL(statFs);
+    VALIDATE_NOT_NULL(statVfs);
 
-    return mOs->Fstatfs(fd, statFs);
+    return mOs->Fstatvfs(fd, statVfs);
 }
 
 ECode ForwardingOs::Fsync(
-    /* [in] */ Int32 fd)
+    /* [in] */ IFileDescriptor* fd)
 {
     return mOs->Fsync(fd);
 }
 
 ECode ForwardingOs::Ftruncate(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 length)
 {
     return mOs->Ftruncate(fd, length);
@@ -185,12 +194,13 @@ ECode ForwardingOs::Gai_strerror(
     return mOs->Gai_strerror(error, strerror);
 }
 
-ECode ForwardingOs::Getaddrinfo(
+ECode ForwardingOs::Elastos_getaddrinfo(
     /* [in] */ const String& node,
     /* [in] */ IStructAddrinfo* hints,
+    /* [in] */ Int32 netId,
     /* [out, callee] */ ArrayOf<IInetAddress*>** addrinfo)
 {
-    return mOs->Getaddrinfo(node, hints, addrinfo);
+    return mOs->Elastos_getaddrinfo(node, hints, netId, addrinfo);
 }
 
 ECode ForwardingOs::Getegid(
@@ -271,7 +281,7 @@ ECode ForwardingOs::Getpwuid(
 }
 
 ECode ForwardingOs::Getsockname(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [out] */ ISocketAddress** sockname)
 {
     VALIDATE_NOT_NULL(sockname);
@@ -280,7 +290,7 @@ ECode ForwardingOs::Getsockname(
 }
 
 ECode ForwardingOs::GetsockoptByte(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [out] */ Int32* sockopt)
@@ -291,7 +301,7 @@ ECode ForwardingOs::GetsockoptByte(
 }
 
 ECode ForwardingOs::GetsockoptInAddr(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [out] */ IInetAddress** addr)
@@ -301,19 +311,19 @@ ECode ForwardingOs::GetsockoptInAddr(
     return mOs->GetsockoptInAddr(fd, level, option, addr);
 }
 
-ECode ForwardingOs::GetsockoptInt(
-    /* [in] */ Int32 fd,
+ECode ForwardingOs::GetsockoptInt32(
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [out] */ Int32* sockopt)
 {
     VALIDATE_NOT_NULL(sockopt);
 
-    return mOs->GetsockoptInt(fd, level, option, sockopt);
+    return mOs->GetsockoptInt32(fd, level, option, sockopt);
 }
 
 ECode ForwardingOs::GetsockoptLinger(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [out] */ IStructLinger** linger)
@@ -324,7 +334,7 @@ ECode ForwardingOs::GetsockoptLinger(
 }
 
 ECode ForwardingOs::GetsockoptTimeval(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [out] */ IStructTimeval** timeval)
@@ -362,7 +372,7 @@ ECode ForwardingOs::Inet_pton(
 }
 
 ECode ForwardingOs::IoctlInetAddress(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [in] */ const String& interfaceName,
     /* [out] */ IInetAddress** addr)
@@ -373,7 +383,7 @@ ECode ForwardingOs::IoctlInetAddress(
 }
 
 ECode ForwardingOs::IoctlInt(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
     /* [in] */ Int32* arg,
     /* [out] */ Int32* result)
@@ -384,7 +394,7 @@ ECode ForwardingOs::IoctlInt(
 }
 
 ECode ForwardingOs::Isatty(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [out] */ Boolean* isatty)
 {
     VALIDATE_NOT_NULL(isatty);
@@ -408,14 +418,14 @@ ECode ForwardingOs::Lchown(
 }
 
 ECode ForwardingOs::Listen(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 backlog)
 {
     return mOs->Listen(fd, backlog);
 }
 
 ECode ForwardingOs::Lseek(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int32 whence,
     /* [out] */ Int64* result)
@@ -437,7 +447,7 @@ ECode ForwardingOs::Lstat(
 ECode ForwardingOs::Mincore(
     /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount,
-    /* [in] */ const ArrayOf<Byte>& vector)
+    /* [in] */ ArrayOf<Byte>* vector)
 {
     return mOs->Mincore(address, byteCount, vector);
 }
@@ -461,7 +471,7 @@ ECode ForwardingOs::Mmap(
     /* [in] */ Int64 byteCount,
     /* [in] */ Int32 prot,
     /* [in] */ Int32 flags,
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [out] */ Int64* result)
 {
@@ -496,7 +506,7 @@ ECode ForwardingOs::Open(
     /* [in] */ const String& path,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 mode,
-    /* [out] */ Int32* fd)
+    /* [out] */ IFileDescriptor** fd)
 {
     VALIDATE_NOT_NULL(fd);
 
@@ -504,13 +514,13 @@ ECode ForwardingOs::Open(
 }
 
 ECode ForwardingOs::Pipe(
-    /* [out, callee] */ ArrayOf<Int32>** fds)
+    /* [out, callee] */ ArrayOf<IFileDescriptor*>** fds)
 {
     return mOs->Pipe(fds);
 }
 
 ECode ForwardingOs::Poll(
-    /* [in] */ const ArrayOf<IStructPollfd*>& fdStructs,
+    /* [in] */ ArrayOf<IStructPollfd*>* fdStructs,
     /* [in] */ Int32 timeoutMs,
     /* [out] */ Int32* result)
 {
@@ -520,8 +530,8 @@ ECode ForwardingOs::Poll(
 }
 
 ECode ForwardingOs::Pread(
-    /* [in] */ Int32 fd,
-    /* [out] */ ArrayOf<Byte>* bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [in] */ Int64 offset,
@@ -534,8 +544,8 @@ ECode ForwardingOs::Pread(
 }
 
 ECode ForwardingOs::Pwrite(
-    /* [in] */ Int32 fd,
-    /* [in] */ const ArrayOf<Byte>& bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [in] */ Int64 offset,
@@ -547,8 +557,8 @@ ECode ForwardingOs::Pwrite(
 }
 
 ECode ForwardingOs::Read(
-    /* [in] */ Int32 fd,
-    /* [out] */ ArrayOf<Byte>* bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* num)
@@ -559,8 +569,8 @@ ECode ForwardingOs::Read(
 }
 
 ECode ForwardingOs::Recvfrom(
-    /* [in] */ Int32 fd,
-    /* [out] */ ArrayOf<Byte>* bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [in] */ Int32 flags,
@@ -587,8 +597,8 @@ ECode ForwardingOs::Rename(
 }
 
 ECode ForwardingOs::Sendto(
-    /* [in] */ Int32 fd,
-    /* [in] */ const ArrayOf<Byte>& bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [in] */ Int32 flags,
@@ -602,8 +612,8 @@ ECode ForwardingOs::Sendto(
 }
 
 ECode ForwardingOs::Sendfile(
-    /* [in] */ Int32 outFd,
-    /* [in] */ Int32 inFd,
+    /* [in] */ IFileDescriptor* outFd,
+    /* [in] */ IFileDescriptor* inFd,
     /* [in, out] */ Int64* inOffset,
     /* [in] */ Int64 byteCount,
     /* [out] */ Int64* result)
@@ -641,7 +651,7 @@ ECode ForwardingOs::Setsid(
 }
 
 ECode ForwardingOs::SetsockoptByte(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ Int32 value)
@@ -650,7 +660,7 @@ ECode ForwardingOs::SetsockoptByte(
 }
 
 ECode ForwardingOs::SetsockoptIfreq(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ const String& interfaceName)
@@ -659,7 +669,7 @@ ECode ForwardingOs::SetsockoptIfreq(
 }
 
 ECode ForwardingOs::SetsockoptInt(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ Int32 value)
@@ -668,7 +678,7 @@ ECode ForwardingOs::SetsockoptInt(
 }
 
 ECode ForwardingOs::SetsockoptIpMreqn(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ Int32 value)
@@ -677,7 +687,7 @@ ECode ForwardingOs::SetsockoptIpMreqn(
 }
 
 ECode ForwardingOs::SetsockoptGroupReq(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ IStructGroupReq* value)
@@ -686,7 +696,7 @@ ECode ForwardingOs::SetsockoptGroupReq(
 }
 
 ECode ForwardingOs::SetsockoptLinger(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ IStructLinger* value)
@@ -695,7 +705,7 @@ ECode ForwardingOs::SetsockoptLinger(
 }
 
 ECode ForwardingOs::SetsockoptTimeval(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ IStructTimeval* value)
@@ -710,7 +720,7 @@ ECode ForwardingOs::Setuid(
 }
 
 ECode ForwardingOs::Shutdown(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 how)
 {
     return mOs->Shutdown(fd, how);
@@ -720,7 +730,7 @@ ECode ForwardingOs::Socket(
     /* [in] */ Int32 socketDomain,
     /* [in] */ Int32 type,
     /* [in] */ Int32 protocol,
-    /* [out] */ Int32* fd)
+    /* [out] */ IFileDescriptor** fd)
 {
     VALIDATE_NOT_NULL(fd);
 
@@ -731,8 +741,8 @@ ECode ForwardingOs::Socketpair(
     /* [in] */ Int32 socketDomain,
     /* [in] */ Int32 type,
     /* [in] */ Int32 protocol,
-    /* [out] */ Int32* fd1,
-    /* [out] */ Int32* fd2)
+    /* [out] */ IFileDescriptor** fd1,
+    /* [out] */ IFileDescriptor** fd2)
 {
     VALIDATE_NOT_NULL(fd1);
     VALIDATE_NOT_NULL(fd2);
@@ -749,13 +759,13 @@ ECode ForwardingOs::Stat(
     return mOs->Stat(path, stat);
 }
 
-ECode ForwardingOs::Statfs(
+ECode ForwardingOs::StatVfs(
     /* [in] */ const String& path,
-    /* [out] */ IStructStatFs** statfs)
+    /* [out] */ IStructStatVfs** statVfs)
 {
-    VALIDATE_NOT_NULL(statfs);
+    VALIDATE_NOT_NULL(statVfs);
 
-    return mOs->Statfs(path, statfs);
+    return mOs->StatVfs(path, statVfs);
 }
 
 ECode ForwardingOs::Strerror(
@@ -785,7 +795,7 @@ ECode ForwardingOs::Sysconf(
 }
 
 ECode ForwardingOs::Tcdrain(
-    /* [in] */ Int32 fd)
+    /* [in] */ IFileDescriptor* fd)
 {
     return mOs->Tcdrain(fd);
 }
@@ -820,8 +830,8 @@ ECode ForwardingOs::Waitpid(
 }
 
 ECode ForwardingOs::Write(
-    /* [in] */ Int32 fd,
-    /* [in] */ const ArrayOf<Byte>& bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* num)
@@ -829,6 +839,189 @@ ECode ForwardingOs::Write(
     VALIDATE_NOT_NULL(num);
 
     return mOs->Write(fd, bytes, byteOffset, byteCount, num);
+}
+
+ECode ForwardingOs::Execv(
+    /* [in] */ const String& filename,
+    /* [in] */ ArrayOf<String>* argv)
+{
+    return mOs->Execv(filename, argv);
+}
+
+ECode ForwardingOs::Execve(
+    /* [in] */ const String& filename,
+    /* [in] */ ArrayOf<String>* argv,
+    /* [in] */ ArrayOf<String>* envp)
+{
+    return mOs->Execve(filename, argv, envp);
+}
+
+ECode ForwardingOs::Getpeername(
+    /* [in] */ IFileDescriptor* fd,
+    /* [out] */ ISocketAddress** peername)
+{
+    return mOs->Getpeername(fd, peername);
+}
+
+ECode ForwardingOs::GetsockoptUcred(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ Int32 level,
+    /* [in] */ Int32 option,
+    /* [out] */ IStructUcred** ucred)
+{
+    return mOs->GetsockoptUcred(fd, level, option, ucred);
+}
+
+ECode ForwardingOs::Gettid(
+    /* [out] */ Int32* tid)
+{
+    return mOs->Gettid(tid);
+}
+
+ECode ForwardingOs::Link(
+    /* [in] */ const String& oldPath,
+    /* [in] */ const String& newPath)
+{
+    return mOs->Link(oldPath, newPath);
+}
+
+ECode ForwardingOs::Mkfifo(
+    /* [in] */ const String& path,
+    /* [in] */ Int32 mode)
+{
+    return mOs->Mkfifo(path, mode);
+}
+
+ECode ForwardingOs::Posix_fallocate(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ Int64 offset,
+    /* [in] */ Int64 length)
+{
+    return mOs->Posix_fallocate(fd, offset, length);
+}
+
+ECode ForwardingOs::Prctl(
+    /* [in] */ Int32 option,
+    /* [in] */ Int64 arg2,
+    /* [in] */ Int64 arg3,
+    /* [in] */ Int64 arg4,
+    /* [in] */ Int64 arg5,
+    /* [out] */ Int32* prctl)
+{
+    return mOs->Prctl(option, arg2, arg3, arg4, arg5, prctl);
+}
+
+ECode ForwardingOs::Pread(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IByteBuffer* buffer,
+    /* [in] */ Int64 offset,
+    /* [out] */ Int32* num)
+{
+    return mOs->Pread(fd, buffer, offset, num);
+}
+
+ECode ForwardingOs::Pwrite(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IByteBuffer* buffer,
+    /* [in] */ Int64 offset,
+    /* [out] */ Int32* num)
+{
+    return mOs->Pwrite(fd, buffer, offset, num);
+}
+
+ECode ForwardingOs::Read(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IByteBuffer* buffer,
+    /* [out] */ Int32* num)
+{
+    return mOs->Read(fd, buffer, num);
+}
+
+ECode ForwardingOs::Readlink(
+    /* [in] */ const String& path,
+    /* [out] */ String* link)
+{
+    return mOs->Readlink(path, link);
+}
+
+ECode ForwardingOs::Readv(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<IInterface*>* buffers,
+    /* [in] */ ArrayOf<Int32>* offsets,
+    /* [in] */ ArrayOf<Int32>* byteCounts,
+    /* [out] */ Int32* num)
+{
+    return mOs->Readv(fd,buffers, offsets, byteCounts, num);
+}
+
+ECode ForwardingOs::Recvfrom(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IByteBuffer* buffer,
+    /* [in] */ Int32 flags,
+    /* [in] */ IInetSocketAddress* srcAddress,
+    /* [out] */ Int32* num)
+{
+    return mOs->Recvfrom(fd, buffer, flags, srcAddress, num);
+}
+
+ECode ForwardingOs::Sendto(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IByteBuffer* buffer,
+    /* [in] */ Int32 flags,
+    /* [in] */ IInetAddress* inetAddress,
+    /* [in] */ Int32 port,
+    /* [out] */ Int32* result)
+{
+    return mOs->Sendto(fd, buffer, flags, inetAddress, port, result);
+}
+
+ECode ForwardingOs::Setenv(
+    /* [in] */ const String& name,
+    /* [in] */ const String& value,
+    /* [in] */ Boolean overwrite)
+{
+    return mOs->Setenv(name, value, overwrite);
+}
+
+ECode ForwardingOs::SetsockoptGroupSourceReq(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ Int32 level,
+    /* [in] */ Int32 option,
+    /* [in] */ IStructGroupSourceReq* value)
+{
+    return mOs->SetsockoptGroupSourceReq(fd, level, option, value);
+}
+
+ECode ForwardingOs::Strsignal(
+    /* [in] */ Int32 signal,
+    /* [in] */ String* strSignal)
+{
+    return mOs->Strsignal(signal, strSignal);
+}
+
+ECode ForwardingOs::Tcsendbreak(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ Int32 duration)
+{
+    return mOs->Tcsendbreak(fd, duration);
+}
+
+ECode ForwardingOs::Write(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IByteBuffer* buffer,
+    /* [out] */ Int32* num)
+{
+    return mOs->Write(fd, buffer, num);
+}
+
+ECode ForwardingOs::Writev(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<IInterface*>* buffers,
+    /* [in] */ ArrayOf<Int32>* offsets,
+    /* [in] */ ArrayOf<Int32>* byteCounts,
+    /* [out] */ Int32* result)
+{
+    return mOs->Writev(fd, buffers, offsets, byteCounts, result);
 }
 
 } // namespace IO

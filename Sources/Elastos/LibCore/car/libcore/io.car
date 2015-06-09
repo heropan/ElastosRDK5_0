@@ -37,6 +37,10 @@ module
             interface IIoBridge;
         }
 
+        singleton class CSocketTaggerHelper {
+            interface ISocketTaggerHelper;
+        }
+
 //        class CPosix {
 //            interface IOs;
 //        }

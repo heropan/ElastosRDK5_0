@@ -1,8 +1,5 @@
 
 #include "ToStringArray.h"
-#include <elastos/Vector.h>
-
-using Elastos::Utility::Vector;
 
 namespace Libcore {
 namespace IO {

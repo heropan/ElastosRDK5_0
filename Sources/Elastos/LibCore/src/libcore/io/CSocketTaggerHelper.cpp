@@ -4,6 +4,10 @@
 namespace Libcore {
 namespace IO {
 
+CAR_SINGLETON_IMPL(CSocketTaggerHelper)
+
+CAR_INTERFACE_IMPL(CSocketTaggerHelper, Singleton, ISocketTaggerHelper)
+
 ECode CSocketTaggerHelper::Set(
     /* [in] */ ISocketTagger* tagger)
 {
