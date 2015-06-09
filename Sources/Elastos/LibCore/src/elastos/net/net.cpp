@@ -1,9 +1,9 @@
 #include "CInet4Address.h"
 #include "CInet6Address.h"
-#include "CDatagramSocket.h"
-#include "CPlainServerSocketImpl.h"
-#include "CPlainSocketImpl.h"
-#include "CSocks4Message.h"
+//#include "CDatagramSocket.h"
+//#include "CPlainServerSocketImpl.h"
+//#include "CPlainSocketImpl.h"
+//#include "CSocks4Message.h"
 
 
 namespace Elastos {
