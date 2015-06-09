@@ -124,6 +124,7 @@ module
     interface Elastos.IO.ICloseable;
     interface Elastos.Net.IURI;
     interface Elastos.Utility.IObjectEnumerator;
+    interface Elastos.Security.IGuard;
 
     //
     // nio releated classes
@@ -645,6 +646,17 @@ module
 //        interface IOutputStream;
 //        interface IFileOutputStream;
 //    }
+
+//    class CFilePermission {
+//        constructor(
+//            [in] String path,
+//            [in] String actions);
+
+//        interface IGuard;
+//        interface IPermission;
+//        interface IFilePermission;
+//    }
+
     } // namespace IO
     } // namespace Elastos
 }

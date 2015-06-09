@@ -2,14 +2,26 @@
 #ifndef __ELASTOS_IO_CFILEPERMISSION_H__
 #define __ELASTOS_IO_CFILEPERMISSION_H__
 
+#include "core/Object.h"
 #include "_Elastos_IO_CFilePermission.h"
+
+using Elastos::Core::Object;
+using Elastos::Security::IGuard;
 
 namespace Elastos {
 namespace IO {
 
 CarClass(CFilePermission)
+    , public Object
+    , public IFilePermission
+    , public IPermission
+    , public IGuard
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor(
         /* [in] */ const String& path,
         /* [in] */ const String& actions);
@@ -26,6 +38,9 @@ public:
     CARAPI Implies(
         /* [in] */ IPermission* p,
         /* [out] */ Boolean* result);
+
+    CARAPI CheckGuard(
+        /* [in] */ IInterface* object);
 };
 
 } // namespace IO

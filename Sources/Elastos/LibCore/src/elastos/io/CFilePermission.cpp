@@ -1,12 +1,16 @@
 
-#include "coredef.h"
 #include "CFilePermission.h"
 #include "AllPermissionCollection.h"
 
 using Elastos::Security::AllPermissionCollection;
+using Elastos::Security::EIID_IGuard;
 
 namespace Elastos {
 namespace IO {
+
+CAR_OBJECT_IMPL(CFilePermission)
+
+CAR_INTERFACE_IMPL_3(CFilePermission, Object, IFilePermission, IPermission, IGuard)
 
 ECode CFilePermission::constructor(
     /* [in] */ const String& path,
@@ -51,6 +55,12 @@ ECode CFilePermission::Implies(
     VALIDATE_NOT_NULL(result);
 
     *result = TRUE;
+    return NOERROR;
+}
+
+ECode CFilePermission::CheckGuard(
+    /* [in] */ IInterface* object)
+{
     return NOERROR;
 }
 
