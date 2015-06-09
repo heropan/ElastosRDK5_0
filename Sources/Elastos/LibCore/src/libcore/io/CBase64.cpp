@@ -1,6 +1,5 @@
 
 #include "CBase64.h"
-#include <cmdef.h>
 
 static const AutoPtr<ArrayOf<Byte> > InitStatic()
 {
@@ -20,6 +19,10 @@ static const AutoPtr<ArrayOf<Byte> > map = InitStatic();
 
 namespace Libcore {
 namespace IO {
+
+CAR_SINGLETON_IMPL(CBase64)
+
+CAR_INTERFACE_IMPL(CBase64, Singleton, IBase64)
 
 ECode CBase64::Decode(
     /* [in] */ ArrayOf<Byte>* inData,
@@ -134,22 +137,22 @@ ECode CBase64::Encoder(
     AutoPtr<ArrayOf<Byte> > out = ArrayOf<Byte>::Alloc(length);
     Int32 index = 0, end = inData->GetLength() - inData->GetLength() % 3;
     for (Int32 i = 0; i < end; i += 3) {
-        (*out)[index++] = map[((*inData)[i] & 0xff) >> 2];
-        (*out)[index++] = map[(((*inData)[i] & 0x03) << 4) | (((*inData)[i+1] & 0xff) >> 4)];
-        (*out)[index++] = map[(((*inData)[i+1] & 0x0f) << 2) | (((*inData)[i+2] & 0xff) >> 6)];
-        (*out)[index++] = map[((*inData)[i+2] & 0x3f)];
+        (*out)[index++] = (*map)[((*inData)[i] & 0xff) >> 2];
+        (*out)[index++] = (*map)[(((*inData)[i] & 0x03) << 4) | (((*inData)[i+1] & 0xff) >> 4)];
+        (*out)[index++] = (*map)[(((*inData)[i+1] & 0x0f) << 2) | (((*inData)[i+2] & 0xff) >> 6)];
+        (*out)[index++] = (*map)[((*inData)[i+2] & 0x3f)];
     }
     switch (inData->GetLength() % 3) {
         case 1:
-            (*out)[index++] = map[((*inData)[end] & 0xff) >> 2];
-            (*out)[index++] = map[((*inData)[end] & 0x03) << 4];
+            (*out)[index++] = (*map)[((*inData)[end] & 0xff) >> 2];
+            (*out)[index++] = (*map)[((*inData)[end] & 0x03) << 4];
             (*out)[index++] = '=';
             (*out)[index++] = '=';
             break;
         case 2:
-            (*out)[index++] = map[((*inData)[end] & 0xff) >> 2];
-            (*out)[index++] = map[(((*inData)[end] & 0x03) << 4) | (((*inData)[end+1] & 0xff) >> 4)];
-            (*out)[index++] = map[(((*inData)[end+1] & 0x0f) << 2)];
+            (*out)[index++] = (*map)[((*inData)[end] & 0xff) >> 2];
+            (*out)[index++] = (*map)[(((*inData)[end] & 0x03) << 4) | (((*inData)[end+1] & 0xff) >> 4)];
+            (*out)[index++] = (*map)[(((*inData)[end+1] & 0x0f) << 2)];
             (*out)[index++] = '=';
             break;
     } // end switch

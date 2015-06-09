@@ -1,29 +1,41 @@
 #ifndef __SOCKETTAGGER_H__
 #define __SOCKETTAGGER_H__
 
-#include "Elastos.CoreLibrary_server.h"
-#include <elastos/Mutex.h>
+#ifndef __UUNM_Elastos_CoreLibrary_DEFINED__
+#define __UUNM_Elastos_CoreLibrary_DEFINED__
+#define c_pElastos_CoreLibraryUunm "Elastos.CoreLibrary.eco"
+#endif // __UUNM_Elastos_CoreLibrary_DEFINED__
 
+#include "core/Object.h"
+
+using Elastos::Core::Object;
 using Libcore::IO::ISocketTagger;
-using Elastos::Core::Mutex;
+using Libcore::IO::EIID_ISocketTagger;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Net::ISocket;
 
 namespace Libcore {
 namespace IO {
 
+EXTERN const _ELASTOS ClassID ECLSID_SocketTagger;
+
 class SocketTagger
-    : public ElRefBase
+    : public Object
     , public ISocketTagger
 {
 public:
-    CAR_INTERFACE_DECL();
+    CAR_OBJECT_DECL()
+    CAR_INTERFACE_DECL()
 
     CARAPI Tag(
         /* [in] */ ISocket* socket);
 
     CARAPI Untag(
         /* [in] */ ISocket* socket);
+
+    using ISocketTagger::Tag;
+
+    using ISocketTagger::Untag;
 
     /**
      * Sets this process' socket tagger to {@code tagger}.
@@ -40,7 +52,7 @@ public:
 private:
     static AutoPtr<ISocketTagger> sTagger;
 
-    static Mutex sLock;
+    static Object sLock;
 };
 
 class SocketTaggerInner

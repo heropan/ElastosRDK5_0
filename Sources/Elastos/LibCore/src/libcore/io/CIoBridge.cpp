@@ -1,19 +1,19 @@
 
 #include "CIoBridge.h"
 #include "CLibcore.h"
-#include "COsConstants.h"
-#include "AsynchronousSocketCloseMonitor.h"
-#include "CInetSocketAddress.h"
-#include "CStructLinger.h"
-#include "CStructPollfd.h"
-#include "CStructTimeval.h"
-#include <elastos/Math.h>
+#include "droid/system/OsConstants.h"
+#include "CAsynchronousCloseMonitor.h"
+//#include "CInetSocketAddress.h"
+#include "droid/system/CStructLinger.h"
+#include "droid/system/CStructPollfd.h"
+#include "droid/system/CStructTimeval.h"
+#include "core/Math.h"
 #include "CInteger32.h"
 #include "CBoolean.h"
-#include "IoUtils.h"
-#include "CFileDescriptor.h"
-#include "CInet6Address.h"
-#include "NetworkInterface.h"
+// #include "io/IoUtils.h"
+#include "io/CFileDescriptor.h"
+// #include "CInet6Address.h"
+// #include "NetworkInterface.h"
 #include "CSystem.h"
 
 using Elastos::Core::ISystem;
@@ -22,35 +22,45 @@ using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
-using Elastos::IO::IoUtils;
-using Elastos::IO::IFileDescriptor;
+// using Elastos::IO::IoUtils; //TODO::
+using Elastos::IO::IBuffer;
 using Elastos::IO::CFileDescriptor;
-using Elastos::Net::CInetSocketAddress;
+//using Elastos::Net::CInetSocketAddress;
 using Elastos::Net::IInet4Address;
 using Elastos::Net::IInet6Address;
-using Elastos::Net::CInet6Address;
+// using Elastos::Net::CInet6Address;
 using Elastos::Net::ISocketAddress;
 using Elastos::Net::ISocketOptions;
 using Elastos::Net::INetworkInterface;
-using Elastos::Net::NetworkInterface;
+// using Elastos::Net::NetworkInterface;
 using Elastos::Net::ISocketOptions;
+using Elastos::Droid::System::IStructLinger;
+using Elastos::Droid::System::IStructPollfd;
+using Elastos::Droid::System::IStructTimeval;
+using Elastos::Droid::System::CStructLinger;
+using Elastos::Droid::System::CStructPollfd;
+using Elastos::Droid::System::CStructTimeval;
+using Elastos::Droid::System::OsConstants;
+using Elastos::Droid::System::IStructGroupReq;
+using Elastos::Droid::System::IStructGroupSourceReq;
+using Elastos::Droid::System::IStructStat;
 
 namespace Libcore {
 namespace IO {
 
-const Int32 CIoBridge::MCAST_JOIN_GROUP;
-const Int32 CIoBridge::MCAST_LEAVE_GROUP;
-const Int32 CIoBridge::IP_MULTICAST_TTL;
+CAR_SINGLETON_IMPL(CIoBridge)
+
+CAR_INTERFACE_IMPL(CIoBridge, Singleton, IIoBridge)
 
 ECode CIoBridge::_Available(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [out] */ Int32* avail)
 {
     VALIDATE_NOT_NULL(avail);
 
 //    try {
     Int32 available, result;
-    FAIL_RETURN(CLibcore::sOs->IoctlInt(fd, COsConstants::sFIONREAD, &available, &result));
+    FAIL_RETURN(CLibcore::sOs->IoctlInt(fd, OsConstants::_FIONREAD, &available, &result));
     if (available < 0) {
         // If the fd refers to a regular file, the result is the difference between
         // the file size and the file position. This may be negative if the position
@@ -72,16 +82,18 @@ ECode CIoBridge::_Available(
 }
 
 ECode CIoBridge::_Bind(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* inetAddress,
     /* [in] */ Int32 port)
 {
     AutoPtr<IInet6Address> inet6 = IInet6Address::Probe(inetAddress);
     Int32 scopeid = 0;
-    if (inet6 != NULL && (inet6->GetScopeId(&scopeid), scopeid) == 0) {
+    Boolean isLinkLocalAddress;
+    if (inet6 != NULL && ((inet6->GetScopeId(&scopeid), scopeid) == 0) &&
+            (inetAddress->IsLinkLocalAddress(&isLinkLocalAddress), isLinkLocalAddress)) {
        // Linux won't let you bind a link-local address without a scope id. Find one.
         AutoPtr<INetworkInterface> nif;
-        NetworkInterface::GetByInetAddress(inetAddress, (INetworkInterface**)&nif);
+        // NetworkInterface::GetByInetAddress(inetAddress, (INetworkInterface**)&nif); // TODO::
         if (nif == NULL) {
             // throw new SocketException("Can't bind to a link-local address without a scope id: " + inetAddress);
             return E_LIBCORE_SOCKET_EXCEPTION;
@@ -93,7 +105,7 @@ ECode CIoBridge::_Bind(
         inetAddress->GetAddress((ArrayOf<Byte>**)&outbyte);
         Int32 index = 0;
         nif->GetIndex(&index);
-        CInet6Address::GetByAddress(hostname, outbyte, index, (IInetAddress**)&inetAddress);
+        // CInet6Address::GetByAddress(hostname, outbyte, index, (IInetAddress**)&inetAddress);
         // } catch (UnknownHostException ex) {
         //     // throw new AssertionError(ex); // Can't happen.
         // }
@@ -106,29 +118,25 @@ ECode CIoBridge::_Bind(
 }
 
 ECode CIoBridge::_Connect(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* inetAddress,
-    /* [in] */ Int32 port,
-    /* [out] */ Boolean* result)
+    /* [in] */ Int32 port)
 {
 //    try {
-    return _Connect(fd, inetAddress, port, 0, result);
+    return _Connect(fd, inetAddress, port, 0);
 //    } catch (SocketTimeoutException ex) {
 //        throw new AssertionError(ex); // Can't happen for a connect without a timeout.
 //    }
 }
 
 ECode CIoBridge::_Connect(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* inetAddress,
     /* [in] */ Int32 port,
-    /* [in] */ Int32 timeoutMs,
-    /* [out] */ Boolean* result)
+    /* [in] */ Int32 timeoutMs)
 {
-    VALIDATE_NOT_NULL(result);
-
     // try {
-    return ConnectErrno(fd, inetAddress, port, timeoutMs, result);
+    return ConnectErrno(fd, inetAddress, port, timeoutMs);
     // } catch (ErrnoException errnoException) {
     //     throw new ConnectException(connectDetail(inetAddress, port, timeoutMs, errnoException), errnoException);
     // } catch (SocketException ex) {
@@ -141,16 +149,14 @@ ECode CIoBridge::_Connect(
 }
 
 ECode CIoBridge::ConnectErrno(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* inetAddress,
     /* [in] */ Int32 port,
-    /* [in] */ Int32 timeoutMs,
-    /* [out] */ Boolean* result)
+    /* [in] */ Int32 timeoutMs)
 {
     // With no timeout, just call connect(2) directly.
     if (timeoutMs == 0) {
         FAIL_RETURN(CLibcore::sOs->Connect(fd, inetAddress, port));
-        *result = TRUE;
         return NOERROR;
     }
 
@@ -164,11 +170,8 @@ ECode CIoBridge::ConnectErrno(
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
 
-    AutoPtr<IFileDescriptor> outfd;
-    CFileDescriptor::New((IFileDescriptor**)&outfd);
-    outfd->SetDescriptor(fd);
     // 1. set the socket to non-blocking.
-    IoUtils::SetBlocking(outfd, FALSE);
+    // IoUtils::SetBlocking(fd, FALSE); // TODO::
 
     // 2. call connect(2) non-blocking.
     Int64 finishTimeMs;
@@ -176,9 +179,8 @@ ECode CIoBridge::ConnectErrno(
     finishTimeMs += timeoutMs;
     // try {
     ECode ec = CLibcore::sOs->Connect(fd, inetAddress, port);
-    if (ec == NOERROR) {
-        IoUtils::SetBlocking(outfd, TRUE); // 4. set the socket back to blocking.
-        *result = TRUE; // We connected immediately.
+    if (!FAILED(ec)) {
+        // IoUtils::SetBlocking(fd, TRUE); // 4. set the socket back to blocking. // TODO::
         return NOERROR;
     }
 
@@ -201,20 +203,22 @@ ECode CIoBridge::ConnectErrno(
             // throw new SocketTimeoutException(connectDetail(inetAddress, port, timeoutMs, null));
             return E_SOCKET_TIMEOUT_EXCEPTION;
         }
-    } while (!(CIoBridge::_IsConnected(fd, inetAddress, port, timeoutMs, remainingTimeoutMs, &isflag), isflag));
-    IoUtils::SetBlocking(outfd, TRUE); // 4. set the socket back to blocking.
-    *result = TRUE; // Or we'd have thrown.
+    } while (_IsConnected(fd, inetAddress, port, timeoutMs, remainingTimeoutMs, &isflag), !isflag);
+    // IoUtils::SetBlocking(fd, TRUE); // 4. set the socket back to blocking. // TODO::
     return NOERROR;
 }
 
-ECode CIoBridge::_CloseSocket(
-    /* [in] */ Int32 fd)
+ECode CIoBridge::_CloseAndSignalBlockedThreads(
+    /* [in] */ IFileDescriptor* fd)
 {
-    if (fd == -1) {
+    Boolean valid;
+    if ((fd == NULL) || (fd->Valid(&valid), !valid)) {
         // Socket.close doesn't throw if you try to close an already-closed socket.
         return NOERROR;
     }
-    AsynchronousSocketCloseMonitor::signalBlockedThreads(fd);
+    AutoPtr<IAsynchronousCloseMonitor> monitor;
+    CAsynchronousCloseMonitor::AcquireSingleton((IAsynchronousCloseMonitor**)&monitor);
+    monitor->SignalBlockedThreads(fd);
     // try {
     return CLibcore::sOs->Close(fd);
     // } catch (ErrnoException errnoException) {
@@ -223,7 +227,7 @@ ECode CIoBridge::_CloseSocket(
 }
 
 ECode CIoBridge::_IsConnected(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* inetAddress,
     /* [in] */ Int32 port,
     /* [in] */ Int32 timeoutMs,
@@ -234,10 +238,12 @@ ECode CIoBridge::_IsConnected(
 
     // ErrnoException cause;
     // try {
-    ArrayOf_<IStructPollfd*, 1> pollFds;
-    CStructPollfd::New(&(pollFds[0]));
-    pollFds[0]->SetFd(fd);
-    pollFds[0]->SetEvents((Int16)COsConstants::sPOLLOUT);
+    AutoPtr<ArrayOf<IStructPollfd*> > pollFds = ArrayOf<IStructPollfd*>::Alloc(1);
+    AutoPtr<IStructPollfd> pollFd;
+    CStructPollfd::New((IStructPollfd**)&pollFd);
+    pollFds->Set(0, pollFd);
+    pollFd->SetFd(fd);
+    pollFd->SetEvents((Int16)OsConstants::_POLLOUT);
     Int32 rc;
     FAIL_RETURN(CLibcore::sOs->Poll(pollFds, remainingTimeoutMs, &rc));
     if (rc == 0) {
@@ -245,14 +251,14 @@ ECode CIoBridge::_IsConnected(
         return NOERROR;
     }
     Int32 connectError;
-    FAIL_RETURN(CLibcore::sOs->GetsockoptInt(fd,
-            COsConstants::sSOL_SOCKET, COsConstants::sSO_ERROR, &connectError));
+    FAIL_RETURN(CLibcore::sOs->GetsockoptInt32(fd,
+            OsConstants::_SOL_SOCKET, OsConstants::_SO_ERROR, &connectError));
     if (connectError == 0) {
         *isConnected = TRUE; // Success!
         return NOERROR;
     }
     // throw new ErrnoException("isConnected", connectError); // The connect(2) failed.
-    return E_LIBCORE_CONNECT_EXCEPTION;
+    return E_ERRNO_EXCEPTION;
     // } catch (ErrnoException errnoException) {
     //     if (!fd.valid()) {
     //         throw new SocketException("Socket closed");
@@ -278,7 +284,7 @@ ECode CIoBridge::_IsConnected(
 }
 
 ECode CIoBridge::_GetSocketOption(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 option,
     /* [out] */ IInterface** value)
 {
@@ -292,40 +298,40 @@ ECode CIoBridge::_GetSocketOption(
 }
 
 ECode CIoBridge::GetSocketOptionErrno(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 option,
     /* [out] */ IInterface** value)
 {
     switch (option) {
-    case ISocketOptions::IP_MULTICAST_IF:
+    case ISocketOptions::_IP_MULTICAST_IF:
     {
         // This is IPv4-only.
         AutoPtr<IInetAddress> iObj;
         CLibcore::sOs->GetsockoptInAddr(fd,
-                COsConstants::sIPPROTO_IP, COsConstants::sIP_MULTICAST_IF, (IInetAddress**)&iObj);
+                OsConstants::_IPPROTO_IP, OsConstants::_IP_MULTICAST_IF, (IInetAddress**)&iObj);
         *value = iObj;
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case ISocketOptions::IP_MULTICAST_IF2:
+    case ISocketOptions::_IP_MULTICAST_IF2:
     {
         // This is IPv6-only.
         Int32 socketopt;
-        CLibcore::sOs->GetsockoptInt(fd,
-                COsConstants::sIPPROTO_IPV6, COsConstants::sIPV6_MULTICAST_IF, &socketopt);
+        CLibcore::sOs->GetsockoptInt32(fd,
+                OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_IF, &socketopt);
         AutoPtr<IInteger32> iObj;
         CInteger32::New(socketopt, (IInteger32**)&iObj);
         *value = iObj;
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case ISocketOptions::IP_MULTICAST_LOOP:
+    case ISocketOptions::_IP_MULTICAST_LOOP:
     {
         // Since setting this from java.net always sets IPv4 and IPv6 to the same value,
         // it doesn't matter which we return.
         Int32 socketopt;
-        CLibcore::sOs->GetsockoptInt(fd,
-                COsConstants::sIPPROTO_IPV6, COsConstants::sIPV6_MULTICAST_LOOP, &socketopt);
+        CLibcore::sOs->GetsockoptInt32(fd,
+                OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_LOOP, &socketopt);
         Boolean b = BooleanFromInt(socketopt);
         AutoPtr<IBoolean> bObj;
         CBoolean::New(b, (IBoolean**)&bObj);
@@ -338,21 +344,21 @@ ECode CIoBridge::GetSocketOptionErrno(
         // Since setting this from java.net always sets IPv4 and IPv6 to the same value,
         // it doesn't matter which we return.
         Int32 socketopt;
-        CLibcore::sOs->GetsockoptInt(fd,
-                COsConstants::sIPPROTO_IPV6, COsConstants::sIPV6_MULTICAST_HOPS, &socketopt);
+        CLibcore::sOs->GetsockoptInt32(fd,
+                OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_HOPS, &socketopt);
         AutoPtr<IInteger32> iObj;
         CInteger32::New(socketopt, (IInteger32**)&iObj);
         *value = iObj;
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case ISocketOptions::IP_TOS:
+    case ISocketOptions::_IP_TOS:
     {
         // Since setting this from java.net always sets IPv4 and IPv6 to the same value,
         // it doesn't matter which we return.
         Int32 socketopt;
-        CLibcore::sOs->GetsockoptInt(fd,
-                COsConstants::sIPPROTO_IPV6, COsConstants::sIPV6_TCLASS, &socketopt);
+        CLibcore::sOs->GetsockoptInt32(fd,
+                OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_TCLASS, &socketopt);
         AutoPtr<IInteger32> iObj;
         CInteger32::New(socketopt, (IInteger32**)&iObj);
         *value = iObj;
@@ -362,8 +368,8 @@ ECode CIoBridge::GetSocketOptionErrno(
     case ISocketOptions::_SO_BROADCAST:
     {
         Int32 socketopt;
-        CLibcore::sOs->GetsockoptInt(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_BROADCAST, &socketopt);
+        CLibcore::sOs->GetsockoptInt32(fd,
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_BROADCAST, &socketopt);
         Boolean b = BooleanFromInt(socketopt);
         AutoPtr<IBoolean> bObj;
         CBoolean::New(b, (IBoolean**)&bObj);
@@ -371,11 +377,11 @@ ECode CIoBridge::GetSocketOptionErrno(
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case ISocketOptions::SO_KEEPALIVE:
+    case ISocketOptions::_SO_KEEPALIVE:
     {
         Int32 socketopt;
-        CLibcore::sOs->GetsockoptInt(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_KEEPALIVE, &socketopt);
+        CLibcore::sOs->GetsockoptInt32(fd,
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_KEEPALIVE, &socketopt);
         Boolean b = BooleanFromInt(socketopt);
         AutoPtr<IBoolean> bObj;
         CBoolean::New(b, (IBoolean**)&bObj);
@@ -383,11 +389,11 @@ ECode CIoBridge::GetSocketOptionErrno(
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case ISocketOptions::SO_LINGER:
+    case ISocketOptions::_SO_LINGER:
     {
         AutoPtr<IStructLinger> linger;
         CLibcore::sOs->GetsockoptLinger(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_LINGER, (IStructLinger**)&linger);
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_LINGER, (IStructLinger**)&linger);
         Boolean isOn;
         if (linger->IsOn(&isOn), !isOn) {
             AutoPtr<IBoolean> bObj;
@@ -404,11 +410,11 @@ ECode CIoBridge::GetSocketOptionErrno(
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case ISocketOptions::SO_OOBINLINE:
+    case ISocketOptions::_SO_OOBINLINE:
     {
         Int32 socketopt;
-        CLibcore::sOs->GetsockoptInt(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_OOBINLINE, &socketopt);
+        CLibcore::sOs->GetsockoptInt32(fd,
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_OOBINLINE, &socketopt);
         Boolean b = BooleanFromInt(socketopt);
         AutoPtr<IBoolean> bObj;
         CBoolean::New(b, (IBoolean**)&bObj);
@@ -416,22 +422,22 @@ ECode CIoBridge::GetSocketOptionErrno(
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case ISocketOptions::SO_RCVBUF:
+    case ISocketOptions::_SO_RCVBUF:
     {
         Int32 socketopt;
-        CLibcore::sOs->GetsockoptInt(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_SNDBUF, &socketopt);
+        CLibcore::sOs->GetsockoptInt32(fd,
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_RCVBUF, &socketopt);
         AutoPtr<IInteger32> iObj;
         CInteger32::New(socketopt, (IInteger32**)&iObj);
         *value = iObj;
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case ISocketOptions::SO_REUSEADDR:
+    case ISocketOptions::_SO_REUSEADDR:
     {
         Int32 socketopt;
-        CLibcore::sOs->GetsockoptInt(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_REUSEADDR, &socketopt);
+        CLibcore::sOs->GetsockoptInt32(fd,
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_REUSEADDR, &socketopt);
         Boolean b = BooleanFromInt(socketopt);
         AutoPtr<IBoolean> bObj;
         CBoolean::New(b, (IBoolean**)&bObj);
@@ -439,22 +445,22 @@ ECode CIoBridge::GetSocketOptionErrno(
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case ISocketOptions::SO_SNDBUF:
+    case ISocketOptions::_SO_SNDBUF:
     {
         Int32 socketopt;
-        CLibcore::sOs->GetsockoptInt(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_SNDBUF, &socketopt);
+        CLibcore::sOs->GetsockoptInt32(fd,
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_SNDBUF, &socketopt);
         AutoPtr<IInteger32> iObj;
         CInteger32::New(socketopt, (IInteger32**)&iObj);
         *value = iObj;
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case ISocketOptions::SO_TIMEOUT:
+    case ISocketOptions::_SO_TIMEOUT:
     {
         AutoPtr<IStructTimeval> tv;
         CLibcore::sOs->GetsockoptTimeval(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_RCVTIMEO, (IStructTimeval**)&tv);
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_RCVTIMEO, (IStructTimeval**)&tv);
         Int64 millis;
         tv->ToMillis(&millis);
         AutoPtr<IInteger32> iObj;
@@ -463,11 +469,11 @@ ECode CIoBridge::GetSocketOptionErrno(
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case ISocketOptions::TCP_NODELAY:
+    case ISocketOptions::_TCP_NODELAY:
     {
         Int32 socketopt;
-        CLibcore::sOs->GetsockoptInt(fd,
-                COsConstants::sIPPROTO_TCP, COsConstants::sTCP_NODELAY, &socketopt);
+        CLibcore::sOs->GetsockoptInt32(fd,
+                OsConstants::_IPPROTO_TCP, OsConstants::_TCP_NODELAY, &socketopt);
         Boolean b = BooleanFromInt(socketopt);
         AutoPtr<IBoolean> bObj;
         CBoolean::New(b, (IBoolean**)&bObj);
@@ -494,7 +500,7 @@ Int32 CIoBridge::BooleanToInt(
 }
 
 ECode CIoBridge::_SetSocketOption(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 option,
     /* [in] */ IInterface* value)
 {
@@ -506,36 +512,36 @@ ECode CIoBridge::_SetSocketOption(
 }
 
 ECode CIoBridge::SetSocketOptionErrno(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 option,
     /* [in] */ IInterface* value)
 {
     switch (option) {
-    case ISocketOptions::IP_MULTICAST_IF:
+    case ISocketOptions::_IP_MULTICAST_IF:
         // throw new UnsupportedOperationException("Use IP_MULTICAST_IF2 on Android");
         return E_LIBCORE_UNSUPPORTED_OPERATION_EXCEPTION;
-    case ISocketOptions::IP_MULTICAST_IF2:
+    case ISocketOptions::_IP_MULTICAST_IF2:
     {
         // Although IPv6 was cleaned up to use int, IPv4 uses an ip_mreqn containing an int.
         assert(IInteger32::Probe(value) != NULL);
         Int32 i;
         IInteger32::Probe(value)->GetValue(&i);
         FAIL_RETURN(CLibcore::sOs->SetsockoptIpMreqn(fd,
-                COsConstants::sIPPROTO_IP, COsConstants::sIP_MULTICAST_IF, i));
+                OsConstants::_IPPROTO_IP, OsConstants::_IP_MULTICAST_IF, i));
         FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
-                COsConstants::sIPPROTO_IPV6, COsConstants::sIPV6_MULTICAST_IF, i));
+                OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_IF, i));
         return NOERROR;
     }
-    case ISocketOptions::IP_MULTICAST_LOOP:
+    case ISocketOptions::_IP_MULTICAST_LOOP:
     {
         // Although IPv6 was cleaned up to use int, IPv4 multicast loopback uses a byte.
         assert(IBoolean::Probe(value) != NULL);
         Boolean b = FALSE;
         IBoolean::Probe(value)->GetValue(&b);
         FAIL_RETURN(CLibcore::sOs->SetsockoptByte(fd,
-                COsConstants::sIPPROTO_IP, COsConstants::sIP_MULTICAST_LOOP, BooleanToInt(b)));
+                OsConstants::_IPPROTO_IP, OsConstants::_IP_MULTICAST_LOOP, BooleanToInt(b)));
         FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
-                COsConstants::sIPPROTO_IPV6, COsConstants::sIPV6_MULTICAST_LOOP, BooleanToInt(b)));
+                OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_LOOP, BooleanToInt(b)));
         return NOERROR;
     }
     case CIoBridge::IP_MULTICAST_TTL:
@@ -546,20 +552,20 @@ ECode CIoBridge::SetSocketOptionErrno(
         Int32 i;
         IInteger32::Probe(value)->GetValue(&i);
         FAIL_RETURN(CLibcore::sOs->SetsockoptByte(fd,
-                COsConstants::sIPPROTO_IP, COsConstants::sIP_MULTICAST_TTL, i));
+                OsConstants::_IPPROTO_IP, OsConstants::_IP_MULTICAST_TTL, i));
         FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
-                COsConstants::sIPPROTO_IPV6, COsConstants::sIPV6_MULTICAST_HOPS, i));
+                OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_HOPS, i));
         return NOERROR;
     }
-    case ISocketOptions::IP_TOS:
+    case ISocketOptions::_IP_TOS:
     {
         assert(IInteger32::Probe(value) != NULL);
         Int32 i;
         IInteger32::Probe(value)->GetValue(&i);
         FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
-                COsConstants::sIPPROTO_IP, COsConstants::sIP_TOS, i));
+                OsConstants::_IPPROTO_IP, OsConstants::_IP_TOS, i));
         FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
-                COsConstants::sIPPROTO_IPV6, COsConstants::sIPV6_TCLASS, i));
+                OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_TCLASS, i));
         return NOERROR;
     }
     case ISocketOptions::_SO_BROADCAST:
@@ -568,19 +574,19 @@ ECode CIoBridge::SetSocketOptionErrno(
         Boolean b = FALSE;
         IBoolean::Probe(value)->GetValue(&b);
         FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_BROADCAST, BooleanToInt(b)));
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_BROADCAST, BooleanToInt(b)));
         return NOERROR;
     }
-    case ISocketOptions::SO_KEEPALIVE:
+    case ISocketOptions::_SO_KEEPALIVE:
     {
         assert(IBoolean::Probe(value) != NULL);
         Boolean b = FALSE;
         IBoolean::Probe(value)->GetValue(&b);
         FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_KEEPALIVE, BooleanToInt(b)));
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_KEEPALIVE, BooleanToInt(b)));
         return NOERROR;
     }
-    case ISocketOptions::SO_LINGER:
+    case ISocketOptions::_SO_LINGER:
     {
         Boolean on = FALSE;
         Int32 seconds = 0;
@@ -588,51 +594,51 @@ ECode CIoBridge::SetSocketOptionErrno(
             on = TRUE;
             Int32 i;
             IInteger32::Probe(value)->GetValue(&i);
-            seconds = Elastos::Utility::Min(i, 65535);
+            seconds = Elastos::Core::Math::Min(i, 65535);
         }
         AutoPtr<IStructLinger> linger;
         CStructLinger::New(BooleanToInt(on), seconds, (IStructLinger**)&linger);
         FAIL_RETURN(CLibcore::sOs->SetsockoptLinger(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_LINGER, linger));
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_LINGER, linger));
         return NOERROR;
     }
-    case ISocketOptions::SO_OOBINLINE:
+    case ISocketOptions::_SO_OOBINLINE:
     {
         assert(IBoolean::Probe(value) != NULL);
         Boolean b = FALSE;
         IBoolean::Probe(value)->GetValue(&b);
         FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_OOBINLINE, BooleanToInt(b)));
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_OOBINLINE, BooleanToInt(b)));
         return NOERROR;
     }
-    case ISocketOptions::SO_RCVBUF:
+    case ISocketOptions::_SO_RCVBUF:
     {
         assert(IInteger32::Probe(value) != NULL);
         Int32 i;
         IInteger32::Probe(value)->GetValue(&i);
         FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_RCVBUF, i));
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_RCVBUF, i));
         return NOERROR;
     }
-    case ISocketOptions::SO_REUSEADDR:
+    case ISocketOptions::_SO_REUSEADDR:
     {
         assert(IBoolean::Probe(value) != NULL);
         Boolean b = FALSE;
         IBoolean::Probe(value)->GetValue(&b);
         FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_REUSEADDR, BooleanToInt(b)));
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_REUSEADDR, BooleanToInt(b)));
         return NOERROR;
     }
-    case ISocketOptions::SO_SNDBUF:
+    case ISocketOptions::_SO_SNDBUF:
     {
         assert(IInteger32::Probe(value) != NULL);
         Int32 i;
         IInteger32::Probe(value)->GetValue(&i);
         FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_SNDBUF, i));
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_SNDBUF, i));
         return NOERROR;
     }
-    case ISocketOptions::SO_TIMEOUT:
+    case ISocketOptions::_SO_TIMEOUT:
     {
         assert(IInteger32::Probe(value) != NULL);
         Int32 millis;
@@ -640,28 +646,43 @@ ECode CIoBridge::SetSocketOptionErrno(
         AutoPtr<IStructTimeval> tv;
         CStructTimeval::FromMillis(millis, (IStructTimeval**)&tv);
         FAIL_RETURN(CLibcore::sOs->SetsockoptTimeval(fd,
-                COsConstants::sSOL_SOCKET, COsConstants::sSO_RCVTIMEO, tv));
+                OsConstants::_SOL_SOCKET, OsConstants::_SO_RCVTIMEO, tv));
         return NOERROR;
     }
-    case ISocketOptions::TCP_NODELAY:
+    case ISocketOptions::_TCP_NODELAY:
     {
         assert(IBoolean::Probe(value) != NULL);
         Boolean b = FALSE;
         IBoolean::Probe(value)->GetValue(&b);
         FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
-                COsConstants::sIPPROTO_TCP, COsConstants::sTCP_NODELAY, BooleanToInt(b)));
+                OsConstants::_IPPROTO_TCP, OsConstants::_TCP_NODELAY, BooleanToInt(b)));
         return NOERROR;
     }
-    case CIoBridge::MCAST_JOIN_GROUP:
-    case CIoBridge::MCAST_LEAVE_GROUP:
+    case MCAST_JOIN_GROUP:
+    case MCAST_LEAVE_GROUP:
     {
         assert(IStructGroupReq::Probe(value) != NULL);
         AutoPtr<IStructGroupReq> groupReq = IStructGroupReq::Probe(value);
         AutoPtr<IInetAddress> group;
         groupReq->GetGrGroup((IInetAddress**)&group);
-        Int32 level = (IInet4Address::Probe(group) != NULL) ? COsConstants::sIPPROTO_IP : COsConstants::sIPPROTO_IPV6;
+        Int32 level = (IInet4Address::Probe(group) != NULL) ? OsConstants::_IPPROTO_IP : OsConstants::_IPPROTO_IPV6;
         Int32 op = (option == MCAST_JOIN_GROUP) ? MCAST_JOIN_GROUP : MCAST_LEAVE_GROUP;
         FAIL_RETURN(CLibcore::sOs->SetsockoptGroupReq(fd, level, op, groupReq));
+        return NOERROR;
+    }
+    case MCAST_JOIN_SOURCE_GROUP:
+    case MCAST_LEAVE_SOURCE_GROUP:
+    case MCAST_BLOCK_SOURCE:
+    case MCAST_UNBLOCK_SOURCE:
+    {
+        assert(IStructGroupSourceReq::Probe(value) != NULL);
+        AutoPtr<IStructGroupSourceReq> groupSourceReq = IStructGroupSourceReq::Probe(value);
+        AutoPtr<IInetAddress> group;
+        groupSourceReq->GetGsrGroup((IInetAddress**)&group);
+        Int32 level = (IInet4Address::Probe(group) != NULL) ? OsConstants::_IPPROTO_IP : OsConstants::_IPPROTO_IPV6;
+        Int32 op = GetGroupSourceReqOp(option);
+        assert(op != -1);
+        CLibcore::sOs->SetsockoptGroupSourceReq(fd, level, op, groupSourceReq);
         return NOERROR;
     }
     default:
@@ -670,25 +691,42 @@ ECode CIoBridge::SetSocketOptionErrno(
     }
 }
 
+Int32 CIoBridge::GetGroupSourceReqOp(
+    /* [in] */ Int32 value)
+{
+    switch (value) {
+        case IIoBridge::MCAST_JOIN_SOURCE_GROUP:
+            return OsConstants::_MCAST_JOIN_SOURCE_GROUP;
+        case IIoBridge::MCAST_LEAVE_SOURCE_GROUP:
+            return OsConstants::_MCAST_LEAVE_SOURCE_GROUP;
+        case IIoBridge::MCAST_BLOCK_SOURCE:
+            return OsConstants::_MCAST_BLOCK_SOURCE;
+        case IIoBridge::MCAST_UNBLOCK_SOURCE:
+            return OsConstants::_MCAST_UNBLOCK_SOURCE;
+        default:
+            return -1;
+    }
+}
+
 ECode CIoBridge::_Open(
     /* [in] */ const String& path,
     /* [in] */ Int32 flags,
-    /* [out] */ Int32* fd)
+    /* [out] */ IFileDescriptor** fd)
 {
     VALIDATE_NOT_NULL(fd);
 
-    *fd = -1;
+    *fd = NULL;
     AutoPtr<IStructStat> stat;
     // try {
     // On Android, we don't want default permissions to allow global access.
-    Int32 mode = ((flags & COsConstants::sO_ACCMODE) == COsConstants::sO_RDONLY) ? 0 : 0600;
+    Int32 mode = ((flags & OsConstants::_O_ACCMODE) == OsConstants::_O_RDONLY) ? 0 : 0600;
     FAIL_GOTO(CLibcore::sOs->Open(path, flags, mode, fd), FILE_NOT_FOUND);
-    if (*fd != -1) {
+    if (*fd != NULL) {
         // Posix open(2) fails with EISDIR only if you ask for write permission.
         // Java disallows reading directories too.
-        CLibcore::sOs->Fstat(*fd, (IStructStat**)&stat);
+        FAIL_RETURN(CLibcore::sOs->Fstat(*fd, (IStructStat**)&stat));
         stat->GetMode(&mode);
-        if (COsConstants::_S_ISDIR(mode)) {
+        if (OsConstants::S_IsDIR(mode)) {
             // throw new ErrnoException("open", EISDIR);
             goto FILE_NOT_FOUND;
         }
@@ -696,18 +734,15 @@ ECode CIoBridge::_Open(
     return NOERROR;
 
 FILE_NOT_FOUND:
-    if (*fd != -1) {
-        AutoPtr<CFileDescriptor> fDes;
-        CFileDescriptor::NewByFriend((CFileDescriptor**)&fDes);
-        fDes->SetDescriptor(*fd);
-        IoUtils::Close(fDes);
+    if (*fd != NULL) {
+        // IoUtils::Close(*fd); //TODO::
     }
     return E_LIBCORE_FILE_NOT_FOUND_EXCEPTION;
 }
 
 ECode CIoBridge::_Read(
-    /* [in] */ Int32 fd,
-    /* [out] */ ArrayOf<Byte>* bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* count)
@@ -742,13 +777,13 @@ ECode CIoBridge::_Read(
 }
 
 ECode CIoBridge::_Write(
-    /* [in] */ Int32 fd,
-    /* [in] */ const ArrayOf<Byte> & bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount)
 {
-    if ((byteOffset | byteCount) < 0 || byteOffset > bytes.GetLength() ||
-        bytes.GetLength() - byteOffset < byteCount) {
+    if ((byteOffset | byteCount) < 0 || byteOffset > bytes->GetLength() ||
+        bytes->GetLength() - byteOffset < byteCount) {
         // throw new ArrayIndexOutOfBoundsException(arrayLength, offset, count);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -770,8 +805,8 @@ ECode CIoBridge::_Write(
 }
 
 ECode CIoBridge::_Sendto(
-    /* [in] */ Int32 fd,
-    /* [in] */ const ArrayOf<Byte>& bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [in] */ Int32 flags,
@@ -794,7 +829,7 @@ ECode CIoBridge::_Sendto(
 }
 
 ECode CIoBridge::_Sendto(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 flags,
     /* [in] */ IInetAddress* inetAddress,
@@ -805,7 +840,12 @@ ECode CIoBridge::_Sendto(
 
     Boolean isDatagram = (inetAddress != NULL);
     Int32 remainvalue = 0;
-    buffer->GetRemaining(&remainvalue);
+    AutoPtr<IBuffer> buf = IBuffer::Probe(buffer);
+    if (buf == NULL) {
+        *result = 0;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    buf->GetRemaining(&remainvalue);
     if (!isDatagram && remainvalue == 0) {
         *result = 0;
         return NOERROR;
@@ -819,8 +859,8 @@ ECode CIoBridge::_Sendto(
 
 ECode CIoBridge::_Recvfrom(
     /* [in] */ Boolean isRead,
-    /* [in] */ Int32 fd,
-    /* [out] */ ArrayOf<Byte>* bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [in] */ Int32 flags,
@@ -833,7 +873,7 @@ ECode CIoBridge::_Recvfrom(
     // try {
     AutoPtr<IInetSocketAddress> srcAddress;
     if (packet != NULL && !isConnected) {
-        CInetSocketAddress::New((IInetSocketAddress**)&srcAddress);
+        //CInetSocketAddress::New((IInetSocketAddress**)&srcAddress); //TODO::
     }
     FAIL_RETURN(CLibcore::sOs->Recvfrom(fd, bytes, byteOffset, byteCount, flags, srcAddress, result));
     *result = PostRecvfrom(isRead, packet, isConnected, srcAddress, *result);
@@ -846,7 +886,7 @@ ECode CIoBridge::_Recvfrom(
 
 ECode CIoBridge::_Recvfrom(
     /* [in] */ Boolean isRead,
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 flags,
     /* [in] */ IDatagramPacket* packet,
@@ -858,7 +898,7 @@ ECode CIoBridge::_Recvfrom(
     // try {
     AutoPtr<IInetSocketAddress> srcAddress;
     if (packet != NULL && !isConnected) {
-        CInetSocketAddress::New((IInetSocketAddress**)&srcAddress);
+        //CInetSocketAddress::New((IInetSocketAddress**)&srcAddress); //TODO::
     }
 
     FAIL_RETURN(CLibcore::sOs->Recvfrom(fd, buffer, flags, srcAddress, result));
@@ -896,13 +936,13 @@ Int32 CIoBridge::PostRecvfrom(
 
 ECode CIoBridge::_Socket(
     /* [in] */ Boolean stream,
-    /* [out] */ Int32* fd)
+    /* [out] */ IFileDescriptor** fd)
 {
     VALIDATE_NOT_NULL(fd);
 
     // try {
-    FAIL_RETURN(CLibcore::sOs->Socket(COsConstants::sAF_INET6, stream ?
-            COsConstants::sSOCK_STREAM : COsConstants::sSOCK_DGRAM, 0, fd));
+    FAIL_RETURN(CLibcore::sOs->Socket(OsConstants::_AF_INET6, stream ?
+            OsConstants::_SOCK_STREAM : OsConstants::_SOCK_DGRAM, 0, fd));
 
     // The RFC (http://www.ietf.org/rfc/rfc3493.txt) says that IPV6_MULTICAST_HOPS defaults
     // to 1. The Linux kernel (at least up to 2.6.38) accidentally defaults to 64 (which
@@ -913,7 +953,7 @@ ECode CIoBridge::_Socket(
     // (IPv4 is already correct.)
     if (!stream) {
         CLibcore::sOs->SetsockoptInt(*fd,
-                COsConstants::sIPPROTO_IPV6, COsConstants::sIPV6_MULTICAST_HOPS, 1);
+                OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_HOPS, 1);
     }
 
     return NOERROR;
@@ -923,7 +963,7 @@ ECode CIoBridge::_Socket(
 }
 
 ECode CIoBridge::_GetSocketLocalAddress(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [out] */ IInetAddress** address)
 {
     VALIDATE_NOT_NULL(address);
@@ -939,7 +979,7 @@ ECode CIoBridge::_GetSocketLocalAddress(
 }
 
 ECode CIoBridge::_GetSocketLocalPort(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [out] */ Int32* port)
 {
     VALIDATE_NOT_NULL(port);
@@ -955,14 +995,14 @@ ECode CIoBridge::_GetSocketLocalPort(
 }
 
 ECode CIoBridge::Available(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [out] */ Int32* avail)
 {
     return _Available(fd, avail);
 }
 
 ECode CIoBridge::Bind(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* inetAddress,
     /* [in] */ Int32 port)
 {
@@ -970,36 +1010,34 @@ ECode CIoBridge::Bind(
 }
 
 ECode CIoBridge::Connect(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* inetAddress,
-    /* [in] */ Int32 port,
-    /* [out] */ Boolean* result)
+    /* [in] */ Int32 port)
 {
 //    try {
-    return Connect(fd, inetAddress, port, 0, result);
+    return Connect(fd, inetAddress, port, 0);
 //    } catch (SocketTimeoutException ex) {
 //        throw new AssertionError(ex); // Can't happen for a connect without a timeout.
 //    }
 }
 
 ECode CIoBridge::Connect(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* inetAddress,
     /* [in] */ Int32 port,
-    /* [in] */ Int32 timeoutMs,
-    /* [out] */ Boolean* result)
+    /* [in] */ Int32 timeoutMs)
 {
-    return _Connect(fd, inetAddress, port, timeoutMs, result);
+    return _Connect(fd, inetAddress, port, timeoutMs);
 }
 
-ECode CIoBridge::CloseSocket(
-    /* [in] */ Int32 fd)
+ECode CIoBridge::CloseAndSignalBlockedThreads(
+    /* [in] */ IFileDescriptor* fd)
 {
-    return _CloseSocket(fd);
+    return _CloseAndSignalBlockedThreads(fd);
 }
 
 ECode CIoBridge::IsConnected(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IInetAddress* inetAddress,
     /* [in] */ Int32 port,
     /* [in] */ Int32 timeoutMs,
@@ -1010,7 +1048,7 @@ ECode CIoBridge::IsConnected(
 }
 
 ECode CIoBridge::GetSocketOption(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 option,
     /* [out] */ IInterface** value)
 {
@@ -1018,7 +1056,7 @@ ECode CIoBridge::GetSocketOption(
 }
 
 ECode CIoBridge::SetSocketOption(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 option,
     /* [in] */ IInterface* value)
 {
@@ -1028,14 +1066,14 @@ ECode CIoBridge::SetSocketOption(
 ECode CIoBridge::Open(
     /* [in] */ const String& path,
     /* [in] */ Int32 flags,
-    /* [out] */ Int32* fd)
+    /* [out] */ IFileDescriptor** fd)
 {
     return _Open(path, flags, fd);
 }
 
 ECode CIoBridge::Read(
-    /* [in] */ Int32 fd,
-    /* [out] */ ArrayOf<Byte>* bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* count)
@@ -1044,8 +1082,8 @@ ECode CIoBridge::Read(
 }
 
 ECode CIoBridge::Write(
-    /* [in] */ Int32 fd,
-    /* [in] */ const ArrayOf<Byte>& bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount)
 {
@@ -1053,8 +1091,8 @@ ECode CIoBridge::Write(
 }
 
 ECode CIoBridge::Sendto(
-    /* [in] */ Int32 fd,
-    /* [in] */ const ArrayOf<Byte>& bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [in] */ Int32 flags,
@@ -1066,7 +1104,7 @@ ECode CIoBridge::Sendto(
 }
 
 ECode CIoBridge::Sendto(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int32 flags,
         /* [in] */ IInetAddress* inetAddress,
@@ -1078,8 +1116,8 @@ ECode CIoBridge::Sendto(
 
 ECode CIoBridge::Recvfrom(
     /* [in] */ Boolean isRead,
-    /* [in] */ Int32 fd,
-    /* [out] */ ArrayOf<Byte>* bytes,
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [in] */ Int32 flags,
@@ -1092,7 +1130,7 @@ ECode CIoBridge::Recvfrom(
 
 ECode CIoBridge::Recvfrom(
     /* [in] */ Boolean isRead,
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 flags,
     /* [in] */ IDatagramPacket* packet,
@@ -1104,20 +1142,20 @@ ECode CIoBridge::Recvfrom(
 
 ECode CIoBridge::Socket(
     /* [in] */ Boolean stream,
-    /* [out] */ Int32* fd)
+    /* [out] */ IFileDescriptor** fd)
 {
     return _Socket(stream, fd);
 }
 
 ECode CIoBridge::GetSocketLocalAddress(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [out] */ IInetAddress** address)
 {
     return _GetSocketLocalAddress(fd, address);
 }
 
 ECode CIoBridge::GetSocketLocalPort(
-    /* [in] */ Int32 fd,
+    /* [in] */ IFileDescriptor* fd,
     /* [out] */ Int32* port)
 {
     return _GetSocketLocalPort(fd, port);

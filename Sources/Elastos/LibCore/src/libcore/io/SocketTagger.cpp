@@ -6,7 +6,13 @@ using Elastos::IO::IFileDescriptor;
 namespace Libcore {
 namespace IO {
 
-Mutex SocketTagger::sLock;
+// {1d7f90b3-c0ca-45d9-af25-63fac0171aa5}
+extern const _ELASTOS ClassID ECLSID_SocketTagger = {
+    { 0x1d7f90b3, 0xc0ca, 0x45d9, { 0xaf, 0x25, 0x63, 0xfa, 0xc0, 0x17, 0x1a, 0xa5}},
+    (char *)c_pElastos_CoreLibraryUunm,
+    0x2d2b67d7 };
+
+Object SocketTagger::sLock;
 
 ECode SocketTaggerInner::Tag(
     /* [in] */ IFileDescriptor* socketDescriptor)
@@ -22,7 +28,8 @@ ECode SocketTaggerInner::Untag(
 
 AutoPtr<ISocketTagger> SocketTagger::sTagger = new SocketTaggerInner();
 
-CAR_INTERFACE_IMPL(SocketTagger, ISocketTagger);
+CAR_OBJECT_IMPL(SocketTagger)
+CAR_INTERFACE_IMPL(SocketTagger, Object, ISocketTagger);
 
 ECode SocketTagger::Tag(
     /* [in] */ ISocket* socket)
@@ -32,7 +39,7 @@ ECode SocketTagger::Tag(
     if (!ret) {
         AutoPtr<IFileDescriptor> descriptor;
         FAIL_RETURN(socket->GetFileDescriptor((IFileDescriptor**)&descriptor))
-        return Tag(descriptor);
+        return Tag(descriptor.Get());
     }
     return NOERROR;
 }
@@ -45,7 +52,7 @@ ECode SocketTagger::Untag(
     if (!ret) {
         AutoPtr<IFileDescriptor> descriptor;
         FAIL_RETURN(socket->GetFileDescriptor((IFileDescriptor**)&descriptor))
-        return Untag(descriptor);
+        return Untag(descriptor.Get());
     }
     return NOERROR;
 }
@@ -53,7 +60,7 @@ ECode SocketTagger::Untag(
 ECode SocketTagger::Set(
     /* [in] */ ISocketTagger* tagger)
 {
-    Mutex::Autolock lock(sLock);
+    Autolock lock(sLock);
 
     if (tagger == NULL) {
         //throw new NullPointerException("tagger == null");
@@ -69,12 +76,10 @@ ECode SocketTagger::Set(
 ECode SocketTagger::Get(
     /* [out] */ ISocketTagger** tagger)
 {
-
     VALIDATE_NOT_NULL(tagger);
 
-    Mutex::Autolock lock(sLock);
+    Autolock lock(sLock);
     *tagger = sTagger;
-    REFCOUNT_ADD(*tagger);
     return NOERROR;
 }
 

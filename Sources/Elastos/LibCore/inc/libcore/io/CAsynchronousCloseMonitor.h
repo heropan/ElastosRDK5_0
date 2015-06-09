@@ -10,7 +10,9 @@ using Elastos::IO::IFileDescriptor;
 namespace Libcore {
 namespace IO {
 
-CarClass(CAsynchronousCloseMonitor) , public Singleton
+CarClass(CAsynchronousCloseMonitor)
+    , public Singleton
+    , public IAsynchronousCloseMonitor
 {
 public:
     CAR_SINGLETON_DECL()

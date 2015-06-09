@@ -2,14 +2,23 @@
 #ifndef __CLIBCORE_H__
 #define __CLIBCORE_H__
 
-#include "_CLibcore.h"
+#include "core/Singleton.h"
+#include "_Libcore_IO_CLibcore.h"
+
+using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace IO {
 
 CarClass(CLibcore)
+    , public Singleton
+    , public ILibcore
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetOs(
         /* [out] */ IOs ** os);
 

@@ -2,46 +2,53 @@
 #ifndef __CIOBRIDGE_H__
 #define __CIOBRIDGE_H__
 
-#include "_CIoBridge.h"
+#include "core/Singleton.h"
+#include "_Libcore_IO_CIoBridge.h"
 
 using Elastos::IO::IByteBuffer;
+using Elastos::IO::IFileDescriptor;
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IDatagramPacket;
 using Elastos::Net::IInetSocketAddress;
+using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace IO {
 
 CarClass(CIoBridge)
+    , public Singleton
+    , public IIoBridge
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI Available(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [out] */ Int32* avail);
 
     CARAPI Bind(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IInetAddress* inetAddress,
         /* [in] */ Int32 port);
 
     CARAPI Connect(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IInetAddress* inetAddress,
-        /* [in] */ Int32 port,
-        /* [out] */ Boolean* result);
+        /* [in] */ Int32 port);
 
     CARAPI Connect(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IInetAddress* inetAddress,
         /* [in] */ Int32 port,
-        /* [in] */ Int32 timeoutMs,
-        /* [out] */ Boolean* result);
+        /* [in] */ Int32 timeoutMs);
 
-    CARAPI CloseSocket(
-        /* [in] */ Int32 fd);
+    CARAPI CloseAndSignalBlockedThreads(
+        /* [in] */ IFileDescriptor* fd);
 
     CARAPI IsConnected(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IInetAddress* inetAddress,
         /* [in] */ Int32 port,
         /* [in] */ Int32 timeoutMs,
@@ -49,36 +56,36 @@ public:
         /* [out] */ Boolean* isConnected);
 
     CARAPI GetSocketOption(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 option,
         /* [out] */ IInterface** value);
 
     CARAPI SetSocketOption(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 option,
         /* [in] */ IInterface* value);
 
     CARAPI Open(
         /* [in] */ const String& path,
         /* [in] */ Int32 flags,
-        /* [out] */ Int32* fd);
+        /* [out] */ IFileDescriptor** fd);
 
     CARAPI Read(
-        /* [in] */ Int32 fd,
-        /* [out] */ ArrayOf<Byte>* bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* count);
 
     CARAPI Write(
-        /* [in] */ Int32 fd,
-        /* [in] */ const ArrayOf<Byte>& bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount);
 
     CARAPI Sendto(
-        /* [in] */ Int32 fd,
-        /* [in] */ const ArrayOf<Byte>& bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [in] */ Int32 flags,
@@ -87,7 +94,7 @@ public:
         /* [out] */ Int32* result);
 
     CARAPI Sendto(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int32 flags,
         /* [in] */ IInetAddress* inetAddress,
@@ -96,8 +103,8 @@ public:
 
     CARAPI Recvfrom(
         /* [in] */ Boolean isRead,
-        /* [in] */ Int32 fd,
-        /* [out] */ ArrayOf<Byte>* bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [in] */ Int32 flags,
@@ -107,7 +114,7 @@ public:
 
     CARAPI Recvfrom(
         /* [in] */ Boolean isRead,
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int32 flags,
         /* [in] */ IDatagramPacket* packet,
@@ -116,44 +123,42 @@ public:
 
     CARAPI Socket(
         /* [in] */ Boolean stream,
-        /* [out] */ Int32* fd);
+        /* [out] */ IFileDescriptor** fd);
 
     CARAPI GetSocketLocalAddress(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [out] */ IInetAddress** address);
 
     CARAPI GetSocketLocalPort(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [out] */ Int32* port);
 
 public:
     static CARAPI _Available(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [out] */ Int32* avail);
 
     static CARAPI _Bind(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IInetAddress* inetAddress,
         /* [in] */ Int32 port);
 
     static CARAPI _Connect(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IInetAddress* inetAddress,
-        /* [in] */ Int32 port,
-        /* [out] */ Boolean* result);
+        /* [in] */ Int32 port);
 
     static CARAPI _Connect(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IInetAddress* inetAddress,
         /* [in] */ Int32 port,
-        /* [in] */ Int32 timeoutMs,
-        /* [out] */ Boolean* result);
+        /* [in] */ Int32 timeoutMs);
 
-    static CARAPI _CloseSocket(
-        /* [in] */ Int32 fd);
+    static CARAPI _CloseAndSignalBlockedThreads(
+        /* [in] */ IFileDescriptor* fd);
 
     static CARAPI _IsConnected(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IInetAddress* inetAddress,
         /* [in] */ Int32 port,
         /* [in] */ Int32 timeoutMs,
@@ -161,36 +166,36 @@ public:
         /* [out] */ Boolean* isConnected);
 
     static CARAPI _GetSocketOption(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 option,
         /* [out] */ IInterface** value);
 
     static CARAPI _SetSocketOption(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 option,
         /* [in] */ IInterface* value);
 
     static CARAPI _Open(
         /* [in] */ const String& path,
         /* [in] */ Int32 flags,
-        /* [out] */ Int32* fd);
+        /* [out] */ IFileDescriptor** fd);
 
     static CARAPI _Read(
-        /* [in] */ Int32 fd,
-        /* [out] */ ArrayOf<Byte>* bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* count);
 
     static CARAPI _Write(
-        /* [in] */ Int32 fd,
-        /* [in] */ const ArrayOf<Byte>& bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount);
 
     static CARAPI _Sendto(
-        /* [in] */ Int32 fd,
-        /* [in] */ const ArrayOf<Byte>& bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [in] */ Int32 flags,
@@ -199,7 +204,7 @@ public:
         /* [out] */ Int32* result);
 
     static CARAPI _Sendto(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int32 flags,
         /* [in] */ IInetAddress* inetAddress,
@@ -208,8 +213,8 @@ public:
 
     static CARAPI _Recvfrom(
         /* [in] */ Boolean isRead,
-        /* [in] */ Int32 fd,
-        /* [out] */ ArrayOf<Byte>* bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [in] */ Int32 flags,
@@ -219,7 +224,7 @@ public:
 
     static CARAPI _Recvfrom(
         /* [in] */ Boolean isRead,
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int32 flags,
         /* [in] */ IDatagramPacket* packet,
@@ -228,28 +233,30 @@ public:
 
     static CARAPI _Socket(
         /* [in] */ Boolean stream,
-        /* [out] */ Int32* fd);
+        /* [out] */ IFileDescriptor** fd);
 
     static CARAPI _GetSocketLocalAddress(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [out] */ IInetAddress** address);
 
     static CARAPI _GetSocketLocalPort(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [out] */ Int32* port);
 
 private:
-    static ConnectErrno(
-        /* [in] */ Int32 fd,
+    static CARAPI ConnectErrno(
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IInetAddress* inetAddress,
         /* [in] */ Int32 port,
-        /* [in] */ Int32 timeoutMs,
-        /* [out] */ Boolean* result);
+        /* [in] */ Int32 timeoutMs);
 
-    static GetSocketOptionErrno(
-        /* [in] */ Int32 fd,
+    static CARAPI GetSocketOptionErrno(
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 option,
         /* [out] */ IInterface** value);
+
+    static CARAPI_(Int32) GetGroupSourceReqOp(
+        /* [in] */ Int32 value);
 
     static CARAPI_(Boolean) BooleanFromInt(
         /* [in] */ Int32 i);
@@ -258,7 +265,7 @@ private:
         /* [in] */ Boolean b);
 
     static CARAPI SetSocketOptionErrno(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 option,
         /* [in] */ IInterface* value);
 
@@ -268,12 +275,6 @@ private:
         /* [in] */ Boolean isConnected,
         /* [in] */ IInetSocketAddress* srcAddress,
         /* [in] */ Int32 byteCount);
-
-public:
-    // Socket options used by java.net but not exposed in SocketOptions.
-    static const Int32 MCAST_JOIN_GROUP = 19;
-    static const Int32 MCAST_LEAVE_GROUP = 20;
-    static const Int32 IP_MULTICAST_TTL = 17;
 };
 
 } // namespace IO

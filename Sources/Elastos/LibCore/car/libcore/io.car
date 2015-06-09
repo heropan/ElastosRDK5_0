@@ -24,6 +24,22 @@ module
         singleton class CAsynchronousCloseMonitor {
             interface IAsynchronousCloseMonitor;
         }
+
+        singleton class CBase64 {
+            interface IBase64;
+        }
+
+        singleton class CLibcore {
+            interface ILibcore;
+        }
+
+        singleton class CIoBridge {
+            interface IIoBridge;
+        }
+
+//        class CPosix {
+//            interface IOs;
+//        }
     }
     }
 }
