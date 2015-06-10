@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CFileWriter.h"
 #include "CFileOutputStream.h"
 

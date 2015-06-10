@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CRandomAccessFile.h"
 #include "CFile.h"
 #include "IoUtils.h"

@@ -14,6 +14,13 @@ class BufferedOutputStream
 public:
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor(
+        /* [in] */ IOutputStream* outs,
+        /* [in] */ Int32 size);
+
+    CARAPI constructor(
+        /* [in] */ IOutputStream* outs);
+
     CARAPI Close();
 
     /**
@@ -69,13 +76,6 @@ public:
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
-
-    CARAPI constructor(
-        /* [in] */ IOutputStream* outs,
-        /* [in] */ Int32 size);
-
-    CARAPI constructor(
-        /* [in] */ IOutputStream* outs);
 
 protected:
     BufferedOutputStream();

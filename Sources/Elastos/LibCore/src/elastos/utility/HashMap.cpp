@@ -53,14 +53,14 @@ HashMap::HashMap()
 {
 }
 
-ECode HashMap::Init()
+ECode HashMap::constructor()
 {
     mTable = EMPTY_TABLE;
     mThreshold = -1; // Forces first put invocation to replace EMPTY_TABLE
     return NOERROR;
 }
 
-ECode HashMap::Init(
+ECode HashMap::constructor(
     /* [in] */ Int32 capacity)
 {
     if (capacity < 0) {
@@ -89,11 +89,11 @@ ECode HashMap::Init(
     return NOERROR;
 }
 
-ECode HashMap::Init(
+ECode HashMap::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Float loadFactor)
 {
-    FAIL_RETURN(this->Init(capacity));
+    FAIL_RETURN(this->constructor(capacity));
 
     AutoPtr<IFloat> flo;
     CFloat::New(loadFactor, (IFloat**)&flo);
@@ -111,12 +111,12 @@ ECode HashMap::Init(
     return NOERROR;
 }
 
-ECode HashMap::Init(
+ECode HashMap::constructor(
     /* [in] */ IMap* map)
 {
     Int32 sizelen = 0;
     map->GetSize(&sizelen);
-    FAIL_RETURN(this->Init(CapacityForInitSize(sizelen)));
+    FAIL_RETURN(this->constructor(CapacityForInitSize(sizelen)));
     return ConstructorPutAll(map);
 }
 

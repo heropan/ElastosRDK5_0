@@ -1,6 +1,5 @@
 #include "SelectorProvider.h"
 #include "CSelectorProviderImpl.h"
-#include "coredef.h"
 
 namespace Elastos {
 namespace IO {

@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CCodingErrorAction.h"
 
 namespace Elastos {

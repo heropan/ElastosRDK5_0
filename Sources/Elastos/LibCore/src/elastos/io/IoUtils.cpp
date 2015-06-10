@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "IoUtils.h"
 #include "CFileDescriptor.h"
 #include "CFile.h"

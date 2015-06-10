@@ -1,6 +1,5 @@
 
 #include "ReadWriteCharArrayBuffer.h"
-#include "coredef.h"
 #include "ReadOnlyCharArrayBuffer.h"
 
 using Elastos::Core::EIID_ICharSequence;

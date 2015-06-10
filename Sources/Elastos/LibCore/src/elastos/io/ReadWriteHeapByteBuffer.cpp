@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "ReadWriteHeapByteBuffer.h"
 #include "ReadOnlyHeapByteBuffer.h"
 #include "Memory.h"

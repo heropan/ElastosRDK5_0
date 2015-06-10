@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "PushbackReader.h"
 #include <elastos/core/Character.h>
 

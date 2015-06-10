@@ -33,6 +33,8 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* modified);
 
+    using AbstractCollection::Add;
+
     /**
      * Removes all elements from this {@code Collection}, leaving it empty (optional).
      *
@@ -109,10 +111,11 @@ public:
 protected:
     HashSet() {}
 
+public:
     /**
      * Constructs a new empty instance of {@code HashSet}.
      */
-    CARAPI Init();
+    CARAPI constructor();
 
     /**
      * Constructs a new instance of {@code HashSet} with the specified capacity.
@@ -120,7 +123,7 @@ protected:
      * @param capacity
      *            the initial capacity of this {@code HashSet}.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 capacity);
 
     /**
@@ -132,7 +135,7 @@ protected:
      * @param loadFactor
      *            the initial load factor.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ Float loadFactor);
 
@@ -143,10 +146,10 @@ protected:
      * @param collection
      *            the collection of elements to add.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ICollection* collection);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IMap* backingMap);
 
     virtual CARAPI_(AutoPtr<IMap>) CreateBackingMap(

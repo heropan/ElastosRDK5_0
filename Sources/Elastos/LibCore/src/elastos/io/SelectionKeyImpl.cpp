@@ -1,5 +1,4 @@
 #include "SelectionKeyImpl.h"
-#include "coredef.h"
 
 using Elastos::IO::Channels::EIID_ISelectableChannel;
 

@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CFileReader.h"
 #include "CFileInputStream.h"
 

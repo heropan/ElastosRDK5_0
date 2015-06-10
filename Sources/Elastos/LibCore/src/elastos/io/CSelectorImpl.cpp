@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CSelectorImpl.h"
 // #include "CLibcore.h"
 #include "IoUtils.h"

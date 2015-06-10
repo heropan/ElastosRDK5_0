@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "PushbackInputStream.h"
 #include <elastos/core/Character.h>
 

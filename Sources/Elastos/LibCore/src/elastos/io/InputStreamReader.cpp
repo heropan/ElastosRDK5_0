@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "InputStreamReader.h"
 #include "Charset.h"
 #include "CCoderResult.h"

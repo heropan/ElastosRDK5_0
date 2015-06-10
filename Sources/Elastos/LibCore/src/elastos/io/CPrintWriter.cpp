@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CPrintWriter.h"
 
 using Elastos::Core::EIID_IAppendable;

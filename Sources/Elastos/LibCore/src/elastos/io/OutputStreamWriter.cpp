@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "OutputStreamWriter.h"
 #include "ByteBuffer.h"
 #include "CharBuffer.h"

@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "FileOutputStream.h"
 // temp disable #include "CFile.h"
 #include "IoUtils.h"

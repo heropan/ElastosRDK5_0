@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CharToByteBufferAdapter.h"
 #include "ByteBuffer.h"
 #include "DirectByteBuffer.h"

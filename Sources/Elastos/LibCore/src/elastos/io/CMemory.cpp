@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CMemory.h"
 #include "Memory.h"
 

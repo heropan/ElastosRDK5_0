@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "FloatBuffer.h"
 #include "ReadWriteFloatArrayBuffer.h"
 

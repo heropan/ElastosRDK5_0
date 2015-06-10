@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "ReadWriteDirectByteBuffer.h"
 #include "ReadOnlyDirectByteBuffer.h"
 #include "CByteOrderHelper.h"

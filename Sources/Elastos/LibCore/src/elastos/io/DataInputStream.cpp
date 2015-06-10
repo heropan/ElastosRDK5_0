@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "DataInputStream.h"
 #include "CPushbackInputStream.h"
 #include <elastos/core/Math.h>

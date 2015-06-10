@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "ByteArrayOutputStream.h"
 
 namespace Elastos {

@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "DataOutputStream.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>

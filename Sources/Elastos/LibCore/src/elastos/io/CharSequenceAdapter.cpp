@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CharSequenceAdapter.h"
 #include "CByteOrderHelper.h"
 

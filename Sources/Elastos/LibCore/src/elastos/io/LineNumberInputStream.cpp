@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "LineNumberInputStream.h"
 #include <elastos/core/Character.h>
 

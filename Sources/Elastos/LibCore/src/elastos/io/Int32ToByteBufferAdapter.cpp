@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "Int32ToByteBufferAdapter.h"
 #include "ByteBuffer.h"
 #include "DirectByteBuffer.h"

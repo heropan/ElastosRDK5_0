@@ -1,4 +1,3 @@
-#include "coredef.h"
 #include "SocketChannel.h"
 
 namespace Elastos {

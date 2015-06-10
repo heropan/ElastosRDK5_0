@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CCharBufferHelper.h"
 #include "BufferFactory.h"
 #include "CharBuffer.h"

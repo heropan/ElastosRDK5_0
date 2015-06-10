@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "SinkChannel.h"
 
 namespace Elastos {

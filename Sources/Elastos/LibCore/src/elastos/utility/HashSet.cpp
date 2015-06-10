@@ -12,49 +12,47 @@ namespace Utility {
 
 CAR_INTERFACE_IMPL_3(HashSet, AbstractSet, IHashSet, ICloneable, ISerializable)
 
-ECode HashSet::Init()
+ECode HashSet::constructor()
 {
     AutoPtr<IMap> hmap;
     FAIL_RETURN(CHashMap::New((IMap**)&hmap));
-    return this->Init(hmap);
+    return this->constructor(hmap);
 }
 
-ECode HashSet::Init(
+ECode HashSet::constructor(
     /* [in] */ Int32 capacity)
 {
     AutoPtr<IMap> hmap;
     FAIL_RETURN(CHashMap::New(capacity, (IMap**)&hmap));
-    return this->Init(hmap);
+    return this->constructor(hmap);
 }
 
-ECode HashSet::Init(
+ECode HashSet::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Float loadFactor)
 {
     AutoPtr<IMap> hmap;
     FAIL_RETURN(CHashMap::New(capacity, loadFactor, (IMap**)&hmap));
-    return this->Init(hmap);
+    return this->constructor(hmap);
 }
 
-ECode HashSet::Init(
+ECode HashSet::constructor(
     /* [in] */ ICollection* collection)
 {
     Int32 clolen = 0;
     collection->GetSize(&clolen);
     AutoPtr<IMap> hmap;
     FAIL_RETURN(CHashMap::New(clolen < 6 ? 11 : clolen * 2, (IMap**)&hmap));
-    this->Init(hmap);
+    this->constructor(hmap);
     AutoPtr< ArrayOf<IInterface*> > outarr;
     collection->ToArray((ArrayOf<IInterface*>**)&outarr);
     for (Int32 i = 0; i < outarr->GetLength(); i++) {
-        AutoPtr<IInterface> e = (*outarr)[i];
-        Boolean isflag = FALSE;
-        Add(e, &isflag);
+        Add((*outarr)[i]);
     }
     return NOERROR;
 }
 
-ECode HashSet::Init(
+ECode HashSet::constructor(
     /* [in] */ IMap* backingMap)
 {
     mBackingMap = backingMap;

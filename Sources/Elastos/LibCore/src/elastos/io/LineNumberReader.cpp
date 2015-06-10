@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "LineNumberReader.h"
 #include <elastos/core/Character.h>
 

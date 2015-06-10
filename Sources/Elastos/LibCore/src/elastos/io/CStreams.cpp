@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CStreams.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>

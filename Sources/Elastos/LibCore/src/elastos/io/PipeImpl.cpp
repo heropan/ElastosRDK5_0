@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "PipeImpl.h"
 #include "IoUtils.h"
 

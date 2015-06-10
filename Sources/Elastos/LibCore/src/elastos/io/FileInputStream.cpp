@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "FileInputStream.h"
 #include "CFile.h"
 #include "IoUtils.h"

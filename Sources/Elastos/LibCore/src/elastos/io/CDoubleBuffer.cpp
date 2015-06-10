@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CDoubleBufferHelper.h"
 
 namespace Elastos {

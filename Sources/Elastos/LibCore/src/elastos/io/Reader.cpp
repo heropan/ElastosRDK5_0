@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "Reader.h"
 #include <elastos/core/Character.h>
 #include <elastos/core/Math.h>

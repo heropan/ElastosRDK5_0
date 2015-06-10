@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "MappedByteBuffer.h"
 #include "ReadOnlyDirectByteBuffer.h"
 #include "ReadWriteDirectByteBuffer.h"

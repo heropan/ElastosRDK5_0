@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "SequenceInputStream.h"
 #include "CObjectContainer.h"
 

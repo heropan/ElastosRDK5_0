@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CharArrayReader.h"
 #include <elastos/core/Character.h>
 

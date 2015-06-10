@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "BufferedOutputStream.h"
 
 namespace Elastos {
@@ -16,11 +15,9 @@ BufferedOutputStream::~BufferedOutputStream()
 {
 }
 
-
 ECode BufferedOutputStream::constructor(
     /* [in] */ IOutputStream* outs)
 {
-    VALIDATE_NOT_NULL(outs);
     constructor(outs, 8192);
 }
 
@@ -121,7 +118,7 @@ ECode BufferedOutputStream::FlushInternal()
 
 ECode BufferedOutputStream::CheckNotClosed()
 {
-    if(mBuf == NULL)
+    if (mBuf == NULL)
         return E_IO_EXCEPTION;
     return NOERROR;
 }

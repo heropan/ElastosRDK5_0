@@ -398,6 +398,18 @@ private:
 public:
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ Int32 capacity);
+
+    CARAPI constructor(
+        /* [in] */ Int32 capacity,
+        /* [in] */ Float loadFactor);
+
+    CARAPI constructor(
+        /* [in] */ IMap* map);
+
     /**
      * Returns an enumeration on the elements of this dictionary.
      *
@@ -463,6 +475,10 @@ public:
         /* [in] */ IInterface* value,
         /* [out] */ IInterface** outface);
 
+    virtual CARAPI Put(
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* value);
+
     /**
      * Removes the key/value pair with the specified {@code key} from this
      * dictionary.
@@ -477,6 +493,9 @@ public:
     virtual CARAPI Remove(
         /* [in] */ IInterface* key,
         /* [out] */ IInterface** outface);
+
+    virtual CARAPI Remove(
+        /* [in] */ IInterface* key);
 
     /**
      * Returns the number of key/value pairs in this dictionary.
@@ -635,26 +654,14 @@ public:
     virtual CARAPI ToString(
         /* [out] */ String* str);
 
-protected:
-    HashTable();
-
-    CARAPI Init();
-
-    CARAPI Init(
-        /* [in] */ Int32 capacity);
-
-    CARAPI Init(
-        /* [in] */ Int32 capacity,
-        /* [in] */ Float loadFactor);
-
-    CARAPI Init(
-        /* [in] */ IMap* map);
-
     /**
      * Increases the capacity of this {@code Hashtable}. This method is called
      * when the size of this {@code Hashtable} exceeds the load factor.
      */
     virtual CARAPI Rehash();
+
+protected:
+    HashTable();
 
 private:
     /**

@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "MemoryBlock.h"
 #include "Memory.h"
 #include "CByteOrderHelper.h"

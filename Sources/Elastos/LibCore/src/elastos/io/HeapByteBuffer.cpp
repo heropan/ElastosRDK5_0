@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "HeapByteBuffer.h"
 #include <elastos/core/Math.h>
 #include "Memory.h"

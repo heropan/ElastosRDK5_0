@@ -1,7 +1,7 @@
 
-#include "coredef.h"
 #include "Memory.h"
 #include <byteswap.h>
+#include <coredef.h>
 
 namespace Elastos {
 namespace IO {

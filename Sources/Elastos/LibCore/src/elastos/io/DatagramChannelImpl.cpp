@@ -1,4 +1,3 @@
-#include "coredef.h"
 #include "DatagramChannelImpl.h"
 #include "CIoBridge.h"
 #include "CLibcore.h"

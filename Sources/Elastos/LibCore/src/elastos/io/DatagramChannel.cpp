@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "DatagramChannel.h"
 #include "SelectionKey.h"
 #include "SelectorProvider.h"

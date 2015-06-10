@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "FilterWriter.h"
 
 namespace Elastos {

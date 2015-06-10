@@ -1,6 +1,5 @@
 
 #include "ReadOnlyDirectByteBuffer.h"
-#include "coredef.h"
 #include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;

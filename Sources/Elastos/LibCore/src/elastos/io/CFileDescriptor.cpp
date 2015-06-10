@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CFileDescriptor.h"
 #include "IoUtils.h"
 #include "droid/system/OsConstants.h"

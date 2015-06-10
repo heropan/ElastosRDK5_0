@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CCharsets.h"
 #include "Charset.h"
 

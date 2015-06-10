@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "Int16Buffer.h"
 #include "ReadWriteInt16ArrayBuffer.h"
 

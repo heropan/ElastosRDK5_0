@@ -797,14 +797,14 @@ HashTable::HashTable()
 {
 }
 
-ECode HashTable::Init()
+ECode HashTable::constructor()
 {
     mTable = EMPTY_TABLE;
     mThreshold = -1; // Forces first put invocation to replace EMPTY_TABLE
     return NOERROR;
 }
 
-ECode HashTable::Init(
+ECode HashTable::constructor(
     /* [in] */ Int32 capacity)
 {
     if (capacity < 0) {
@@ -832,11 +832,11 @@ ECode HashTable::Init(
     return NOERROR;
 }
 
-ECode HashTable::Init(
+ECode HashTable::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Float loadFactor)
 {
-    Init(capacity);
+    constructor(capacity);
 
     AutoPtr<CFloat> fptr;
     FAIL_RETURN(CFloat::NewByFriend(loadFactor, (CFloat**)&fptr));
@@ -855,12 +855,12 @@ ECode HashTable::Init(
     return NOERROR;
 }
 
-ECode HashTable::Init(
+ECode HashTable::constructor(
     /* [in] */ IMap* map)
 {
     Int32 sizelen = 0;
     map->GetSize(&sizelen);
-    Init(CapacityForInitSize(sizelen));
+    constructor(CapacityForInitSize(sizelen));
     return ConstructorPutAll(map);
 }
 
@@ -924,8 +924,8 @@ ECode HashTable::IsEmpty(
 
     synchronized(this) {
        *value = mSize == 0;
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode HashTable::GetSize(
@@ -935,8 +935,8 @@ ECode HashTable::GetSize(
 
     synchronized(this) {
         *value = mSize;
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode HashTable::Get(
@@ -961,9 +961,10 @@ ECode HashTable::Get(
                 return NOERROR;
             }
         }
-        *outface = NULL;
-        return NOERROR;
     }
+
+    *outface = NULL;
+    return NOERROR;
 }
 
 ECode HashTable::ContainsKey(
@@ -987,9 +988,10 @@ ECode HashTable::ContainsKey(
                 return NOERROR;
             }
         }
-        *result = FALSE;
-        return NOERROR;
     }
+
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode HashTable::ContainsValue(
@@ -997,11 +999,9 @@ ECode HashTable::ContainsValue(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-
+    *result = FALSE;
 
     synchronized(this) {
-        *result = FALSE;
-
         if (value == NULL) {
             // throw new NullPointerException("value == null");
             return E_NULL_POINTER_EXCEPTION;
@@ -1018,9 +1018,8 @@ ECode HashTable::ContainsValue(
                 }
             }
         }
-
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode HashTable::Contains(
@@ -1072,8 +1071,15 @@ ECode HashTable::Put(
         if (outface) {
             *outface = NULL;
         }
-        return NOERROR;
     }
+    return NOERROR;
+}
+
+ECode HashTable::Put(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* value)
+{
+    return Put(key, value, NULL);
 }
 
 ECode HashTable::ConstructorPut(
@@ -1127,8 +1133,8 @@ ECode HashTable::PutAll(
             AutoPtr<IInterface> outface;
             Put(keyface, valueface, (IInterface**)&outface);
         }
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode HashTable::EnsureCapacity(
@@ -1255,8 +1261,15 @@ ECode HashTable::Remove(
             }
         }
         *outface = NULL;
-        return NOERROR;
     }
+    return NOERROR;
+}
+
+ECode HashTable::Remove(
+    /* [in] */ IInterface* key)
+{
+    AutoPtr<IInterface> obj;
+    return Remove(key, (IInterface**)&obj);
 }
 
 ECode HashTable::Clear()

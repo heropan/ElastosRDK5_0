@@ -8,4 +8,6 @@ DIRS += net
 DIRS += text
 DIRS += utility
 DIRS += droid
+
+DIRS += ../elastosx
 DIRS += ../libcore

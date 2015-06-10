@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "ReadOnlyHeapByteBuffer.h"
 #include "elastos/core/StringBuilder.h"
 

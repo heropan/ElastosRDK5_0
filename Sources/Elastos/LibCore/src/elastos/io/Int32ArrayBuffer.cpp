@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "Int32ArrayBuffer.h"
 #include "CByteOrderHelper.h"
 

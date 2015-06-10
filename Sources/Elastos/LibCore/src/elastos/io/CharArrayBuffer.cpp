@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CharArrayBuffer.h"
 #include "CByteOrderHelper.h"
 #include <elastos/core/StringBuilder.h>

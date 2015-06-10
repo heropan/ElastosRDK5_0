@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "DoubleBuffer.h"
 #include "ReadWriteDoubleArrayBuffer.h"
 

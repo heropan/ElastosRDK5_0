@@ -1,5 +1,4 @@
 #include "Elastos.CoreLibrary_server.h"
-#include "coredef.h"
 #include "FileChannelImpl.h"
 #include "elastos/core/Math.h"
 #include "FileLock.h"

@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "StringBufferInputStream.h"
 
 namespace Elastos {

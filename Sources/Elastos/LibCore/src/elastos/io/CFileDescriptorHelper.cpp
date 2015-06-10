@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CFileDescriptorHelper.h"
 #include "CFileDescriptor.h"
 

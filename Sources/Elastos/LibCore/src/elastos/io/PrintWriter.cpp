@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "PrintWriter.h"
 #ifdef ELASTOS_CORELIBRARY
 #include "COutputStreamWriter.h"

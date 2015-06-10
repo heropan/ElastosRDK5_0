@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "StringReader.h"
 #include <elastos/core/Character.h>
 

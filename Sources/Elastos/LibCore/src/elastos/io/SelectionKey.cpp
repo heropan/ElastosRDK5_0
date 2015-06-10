@@ -1,4 +1,3 @@
-#include "coredef.h"
 #include "SelectionKey.h"
 
 namespace Elastos {

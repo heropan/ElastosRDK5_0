@@ -1,7 +1,5 @@
 
-#include "coredef.h"
 #include "BufferedInputStream.h"
-#include <utils/Log.h>
 
 namespace Elastos {
 namespace IO {
@@ -39,6 +37,8 @@ ECode BufferedInputStream::Available(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number)
+    *number = 0;
+
     Object::Autolock lock(this);
 
     AutoPtr<IInputStream> localIn = mIn; // 'in' could be invalidated by close()

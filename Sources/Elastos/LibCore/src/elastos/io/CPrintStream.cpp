@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CPrintStream.h"
 #include "CFile.h"
 #include "CCharsetHelper.h"

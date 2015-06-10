@@ -1,7 +1,6 @@
 
 #include "CChannels.h"
 #include "Channels.h"
-#include "coredef.h"
 #include "ByteBuffer.h"
 #include "InputStream.h"
 #include "OutputStream.h"

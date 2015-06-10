@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "StringWriter.h"
 #include <elastos/core/Character.h>
 

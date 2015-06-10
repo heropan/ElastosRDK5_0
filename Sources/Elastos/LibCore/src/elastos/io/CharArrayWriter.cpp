@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CharArrayWriter.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>

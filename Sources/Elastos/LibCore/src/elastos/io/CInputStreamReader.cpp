@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CInputStreamReader.h"
 
 namespace Elastos {

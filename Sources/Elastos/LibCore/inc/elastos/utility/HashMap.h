@@ -336,14 +336,12 @@ private:
         AutoPtr<HashMap> mHost;
     };
 
-protected:
-    HashMap();
-
+public:
     /**
      * Constructs a new empty {@code HashMap} instance.
      */
     // @SuppressWarnings("unchecked")
-    CARAPI Init();
+    CARAPI constructor();
 
     /**
      * Constructs a new {@code HashMap} instance with the specified capacity.
@@ -353,7 +351,7 @@ protected:
      * @throws IllegalArgumentException
      *                when the capacity is less than zero.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 capacity);
 
     /**
@@ -368,7 +366,7 @@ protected:
      *                when the capacity is less than zero or the load factor is
      *                less or equal to zero or NaN.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ Float loadFactor);
 
@@ -379,8 +377,11 @@ protected:
      * @param map
      *            the mappings to add.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IMap* map);
+
+protected:
+    HashMap();
 
 public:
     CAR_INTERFACE_DECL()
