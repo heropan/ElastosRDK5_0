@@ -25,7 +25,7 @@ ECode TableResult::Types(
     return NOERROR;
 }
 
-Boolean TableResult::Newrow(
+ECode TableResult::Newrow(
     /* [in] */ const ArrayOf<String> & rowdata,
     /* [out] */ Boolean* value)
 {

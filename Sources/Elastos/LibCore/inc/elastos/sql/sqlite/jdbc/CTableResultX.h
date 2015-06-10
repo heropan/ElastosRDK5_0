@@ -20,6 +20,8 @@ public:
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 
+    CARAPI_(UInt32) Release();
+
     CARAPI Columns(
         /* [in] */ const ArrayOf<String>& coldata);
 

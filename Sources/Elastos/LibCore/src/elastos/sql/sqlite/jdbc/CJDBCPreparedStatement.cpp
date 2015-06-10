@@ -5,8 +5,8 @@
 #include "CDatabaseX.h"
 #include "StringEncoder.h"
 #include "Database.h"
-#include <elastos/StringBuffer.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
@@ -62,7 +62,7 @@ String CJDBCPreparedStatement::Fixup(
     Int32 nparm = 0;
     Char32 c, nextChar;
     AutoPtr<ArrayOf<Char32> > charArray = sql.GetChars();
-    for (UInt32 i = 0; i < charArray->GetLength(); i++) {
+    for (Int32 i = 0; i < charArray->GetLength(); i++) {
         c = (*charArray)[i];
         if (c == '\'') {
             if (inq) {
@@ -88,7 +88,7 @@ String CJDBCPreparedStatement::Fixup(
                 sb.AppendChar(c);
             } else {
                 ++nparm;
-                sb.AppendCStr(mNullrepl ? "'%q'" : "%Q");
+                sb.Append(mNullrepl ? "'%q'" : "%Q");
             }
         } else if (c == ';') {
             if (!inq) {
@@ -97,7 +97,7 @@ String CJDBCPreparedStatement::Fixup(
             sb.AppendChar(c);
         }
         else if (c == '%') {
-            sb.AppendCStr("%%");
+            sb.Append("%%");
         }
         else {
             sb.AppendChar(c);
@@ -122,7 +122,7 @@ String CJDBCPreparedStatement::Fixup2(
     Int32 parm = -1;
     Char32 c;
     AutoPtr<ArrayOf<Char32> > charArray = sql.GetChars();
-    for (UInt32 i = 0; i < charArray->GetLength(); i++) {
+    for (Int32 i = 0; i < charArray->GetLength(); i++) {
         c = (*charArray)[i];
         if (c == '%') {
             sb.AppendChar(c);
@@ -145,7 +145,7 @@ ECode CJDBCPreparedStatement::AddBatch()
     if (mBatch == NULL) {
         mBatch = new List<AutoPtr<BatchArg> >(mArgs->GetLength());
     }
-    for (UInt32 i = 0; i < mArgs->GetLength(); i++) {
+    for (Int32 i = 0; i < mArgs->GetLength(); i++) {
         AutoPtr<BatchArg> arg = new BatchArg((*mArgs)[i], (*mBlobs)[i]);
         mBatch->PushBack(arg);
     }
@@ -163,13 +163,13 @@ ECode CJDBCPreparedStatement::ExecuteBatch(
 
     AutoPtr<ArrayOf<Int32> > ret =
             ArrayOf<Int32>::Alloc(mBatch->GetSize() / mArgs->GetLength());
-    for (UInt32 i = 0; i < ret->GetLength(); i++) {
+    for (Int32 i = 0; i < ret->GetLength(); i++) {
         (*ret)[i] = IStatement::EXECUTE_FAILED;
     }
     Int32 errs = 0;
     Int32 index = 0;
-    for (UInt32 i = 0; i < ret->GetLength(); i++) {
-        for (UInt32 k = 0; k < mArgs->GetLength(); k++) {
+    for (Int32 i = 0; i < ret->GetLength(); i++) {
+        for (Int32 k = 0; k < mArgs->GetLength(); k++) {
             AutoPtr<BatchArg> b = (*mBatch)[index++];
             (*mArgs)[k] = b->arg;
             (*mBlobs)[k] = b->blob;
@@ -205,7 +205,7 @@ ECode CJDBCPreparedStatement::Close()
 
 ECode CJDBCPreparedStatement::ClearParameters()
 {
-    for (UInt32 i = 0; i < mArgs->GetLength(); i++) {
+    for (Int32 i = 0; i < mArgs->GetLength(); i++) {
         (*mArgs)[i] = mNullrepl ? String("") : String(NULL);
         (*mBlobs)[i] = FALSE;
     }
@@ -215,7 +215,7 @@ ECode CJDBCPreparedStatement::ClearParameters()
 ECode CJDBCPreparedStatement::Execute(
     /* [out] */ Boolean * value)
 {
-    VALIADTE_NOT_NULL(value);
+    VALIDATE_NOT_NULL(value);
     AutoPtr<IResultSet> set;
     JDBCStatement::ExecuteQuery(Fixup2(sql), *mArgs, FALSE, (IResultSet**)&set);
     *value = set != NULL;
@@ -231,7 +231,7 @@ ECode CJDBCPreparedStatement::ExecuteQuery(
 ECode CJDBCPreparedStatement::ExecuteUpdate(
     /* [out] */ Int32 * value)
 {
-    VALIADTE_NOT_NULL(value);
+    VALIDATE_NOT_NULL(value);
     AutoPtr<IResultSet> set;
     ECode ec = JDBCStatement::ExecuteQuery(Fixup2(sql), *mArgs, TRUE, (IResultSet**)&set);
     *value = updcnt;
@@ -240,14 +240,14 @@ ECode CJDBCPreparedStatement::ExecuteUpdate(
 ECode CJDBCPreparedStatement::GetMetaData(
     /* [out] */ IResultSetMetaData ** resultsetmeta)
 {
-    VALIADTE_NOT_NULL(*resultsetmeta);
-    return rs->GetMetaData(resultsetmeta);
+    VALIDATE_NOT_NULL(*resultsetmeta);
+    return IResultSet::Probe(rs)->GetMetaData(resultsetmeta);
 }
 
 ECode CJDBCPreparedStatement::GetParameterMetaData(
     /* [out] */ IParameterMetaData ** parametermeta)
 {
-    VALIADTE_NOT_NULL(*parametermeta);
+    VALIDATE_NOT_NULL(*parametermeta);
     *parametermeta = NULL;
     return E_SQL_EXCEPTION;
 }
@@ -278,7 +278,7 @@ ECode CJDBCPreparedStatement::SetBigDecimal(
         (*mArgs)[parameterIndex - 1] = mNullrepl ? String("") : String(NULL);
     } else {
         String  outstr;
-        theBigDecimal->ToString(&outstr);
+        IObject::Probe(theBigDecimal)->ToString(&outstr);
         (*mArgs)[parameterIndex - 1] = String("") + outstr;
     }
     (*mBlobs)[parameterIndex - 1] = FALSE;
@@ -293,7 +293,7 @@ ECode CJDBCPreparedStatement::SetBinaryStream(
 
     AutoPtr<ArrayOf<Byte> > data = ArrayOf<Byte>::Alloc(length);
     Int32 value = 0;
-    ECode ec = theInputStream->ReadBytes(data, 0, length,&value);
+    ECode ec = theInputStream->Read(data, 0, length,&value);
     if (ec !=NOERROR)
     {
         return E_SQL_EXCEPTION;
@@ -371,7 +371,7 @@ ECode CJDBCPreparedStatement::SetCharacterStream(
 {
     AutoPtr<ArrayOf<Char32> > data = ArrayOf<Char32>::Alloc(length);
     Int32 outlen = 0;
-    ECode ec = reader->ReadChars(data,&outlen);
+    ECode ec = reader->Read(data,&outlen);
     if (ec != NOERROR)
     {
         return E_SQL_EXCEPTION;
@@ -403,11 +403,11 @@ ECode CJDBCPreparedStatement::SetDate(
     } else {
         if (((CJDBCConnection* )conn.Get())->mUseJulian) {
             Int64 outtime = 0;
-            theDate->GetTime(&outtime);
-            (*mArgs)[parameterIndex - 1] = StringUtils::DoubleToString(SQLite::Database::JulianFromLong(outtime));
+            Elastos::Utility::IDate::Probe(theDate)->GetTime(&outtime);
+            (*mArgs)[parameterIndex - 1] = StringUtils::ToString(SQLite::Database::JulianFromLong(outtime));
         } else {
             String outstr;
-            theDate->ToString(&outstr);
+            IObject::Probe(theDate)->ToString(&outstr);
             (*mArgs)[parameterIndex - 1] = outstr;
         }
     }
@@ -430,7 +430,7 @@ ECode CJDBCPreparedStatement::SetDouble(
     if (parameterIndex < 1 || parameterIndex > mArgs->GetLength()) {
         return E_SQL_EXCEPTION;
     }
-    (*mArgs)[parameterIndex - 1] = String("") + StringUtils::DoubleToString(theDouble);
+    (*mArgs)[parameterIndex - 1] = String("") + StringUtils::ToString(theDouble);
     (*mBlobs)[parameterIndex - 1] = FALSE;
     return NOERROR;
 }
@@ -442,7 +442,7 @@ ECode CJDBCPreparedStatement::SetFloat(
     if (parameterIndex < 1 || parameterIndex > mArgs->GetLength()) {
         return E_SQL_EXCEPTION;
     }
-    (*mArgs)[parameterIndex - 1] = String("") + StringUtils::DoubleToString(theFloat);
+    (*mArgs)[parameterIndex - 1] = String("") + StringUtils::ToString(theFloat);
     (*mBlobs)[parameterIndex - 1] = FALSE;
     return NOERROR;
 }
@@ -454,7 +454,7 @@ ECode CJDBCPreparedStatement::SetInt(
     if (parameterIndex < 1 || parameterIndex > mArgs->GetLength()) {
         return E_SQL_EXCEPTION;
     }
-    (*mArgs)[parameterIndex - 1] = String("") + StringUtils::Int32ToString(theInt);
+    (*mArgs)[parameterIndex - 1] = String("") + StringUtils::ToString(theInt);
     (*mBlobs)[parameterIndex - 1] = FALSE;
     return NOERROR;
 }
@@ -466,7 +466,7 @@ ECode CJDBCPreparedStatement::SetLong(
     if (parameterIndex < 1 || parameterIndex > mArgs->GetLength()) {
         return E_SQL_EXCEPTION;
     }
-    (*mArgs)[parameterIndex - 1] = String("") + StringUtils::Int64ToString(theLong);
+    (*mArgs)[parameterIndex - 1] = String("") + StringUtils::ToString(theLong);
     (*mBlobs)[parameterIndex - 1] = FALSE;
     return NOERROR;
 }
@@ -515,7 +515,7 @@ ECode CJDBCPreparedStatement::SetObject(
             (*mArgs)[parameterIndex - 1] = SQLite::StringEncoder::Encode(bx);
         } else {
             String str;
-            theobject->ToString(&str);
+            theObject->ToString(&str);
             (*mArgs)[parameterIndex - 1] = str;
         }
     }
@@ -539,8 +539,8 @@ ECode CJDBCPreparedStatement::SetObject(
         if (arr) {
             AutoPtr<ArrayOf<Byte> > bx = (ArrayOf<Byte> *)theObject;
             Boolean dbflag = FALSE;
-            ((CDatabaseX* )((CJDBCConnection* )conn.Get())->mDb.Get())->Is3(&dbflag);
             if (dbflag) {
+            ((CDatabaseX* )((CJDBCConnection* )conn.Get())->mDb.Get())->Is3(&dbflag);
                 (*mArgs)[parameterIndex - 1] = SQLite::StringEncoder::EncodeX(bx);
                 (*mBlobs)[parameterIndex - 1] = TRUE;
                 return  NOERROR;
@@ -548,7 +548,7 @@ ECode CJDBCPreparedStatement::SetObject(
             (*mArgs)[parameterIndex - 1] = SQLite::StringEncoder::Encode(bx);
         } else {
             String str;
-            theobject->ToString(&str);
+            theObject->ToString(&str);
             (*mArgs)[parameterIndex - 1] = str;
         }
     }
@@ -582,7 +582,7 @@ ECode CJDBCPreparedStatement::SetObject(
             (*mArgs)[parameterIndex - 1] = SQLite::StringEncoder::Encode(bx);
         } else {
             String str;
-            theobject->ToString(&str);
+            theObject->ToString(&str);
             (*mArgs)[parameterIndex - 1] = str;
         }
     }
@@ -604,7 +604,7 @@ ECode CJDBCPreparedStatement::SetShort(
     if (parameterIndex < 1 || parameterIndex > mArgs->GetLength()) {
         return E_SQL_EXCEPTION;
     }
-    (*mArgs)[parameterIndex - 1] = String("") + StringUtils::Int32ToString(theShort);
+    (*mArgs)[parameterIndex - 1] = String("") + StringUtils::ToString(theShort);
     (*mBlobs)[parameterIndex - 1] = FALSE;
     return NOERROR;
 }
@@ -637,11 +637,11 @@ ECode CJDBCPreparedStatement::SetTime(
     } else {
         if (((CJDBCConnection* )conn.Get())->mUseJulian) {
             Int64 outtime = 0;
-            theTime->GetTime(&outtime);
-            (*mArgs)[parameterIndex - 1] = StringUtils::DoubleToString(SQLite::Database::JulianFromLong(outtime));
+            Elastos::Utility::IDate::Probe(theTime)->GetTime(&outtime);
+            (*mArgs)[parameterIndex - 1] = StringUtils::ToString(SQLite::Database::JulianFromLong(outtime));
         } else {
             String outstr;
-            theTime->ToString(&outstr);
+            IObject::Probe(theTime)->ToString(&outstr);
             (*mArgs)[parameterIndex - 1] = outstr;
         }
     }
@@ -670,11 +670,11 @@ ECode CJDBCPreparedStatement::SetTimestamp(
     } else {
         if (((CJDBCConnection* )conn.Get())->mUseJulian) {
             Int64 outtime = 0;
-            theTimestamp->GetTime(&outtime);
-            (*mArgs)[parameterIndex - 1] = StringUtils::DoubleToString(SQLite::Database::JulianFromLong(outtime));
+            Elastos::Utility::IDate::Probe(theTimestamp)->GetTime(&outtime);
+            (*mArgs)[parameterIndex - 1] = StringUtils::ToString(SQLite::Database::JulianFromLong(outtime));
         } else {
             String outstr;
-            theTimestamp->ToString(&outstr);
+            IObject::Probe(theTimestamp)->ToString(&outstr);
             (*mArgs)[parameterIndex - 1] = outstr;
         }
     }
@@ -1276,272 +1276,6 @@ ECode CJDBCPreparedStatement::GetURL(
     /* [out] */ IURL ** url)
 {
     return E_SQL_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetRowId(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IRowId * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetRowId(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IRowId * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetNString(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ const String& value)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetNString(
-    /* [in] */ const String& parameterName,
-    /* [in] */ const String& value)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetNCharacterStream(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IReader * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetNCharacterStream(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IReader * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetNClob(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ INClob * value)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetNClob(
-    /* [in] */ const String& parameterName,
-    /* [in] */ INClob * value)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetClob(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IReader * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetClob(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IReader * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetBlob(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IInputStream * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetBlob(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IInputStream * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetNClob(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IReader * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetNClob(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IReader * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetSQLXML(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ ISQLXML * xml)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetSQLXML(
-    /* [in] */ const String& parameterName,
-    /* [in] */ ISQLXML * xml)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetAsciiStream(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IInputStream * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetAsciiStream(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IInputStream * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetBinaryStream(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IInputStream * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetBinaryStream(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IInputStream * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetCharacterStream(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IReader * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetCharacterStream(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IReader * x,
-    /* [in] */ Int64 len)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetAsciiStream(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IInputStream * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetAsciiStream(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IInputStream * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetBinaryStream(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IInputStream * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetBinaryStream(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IInputStream * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetCharacterStream(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IReader * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetCharacterStream(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IReader * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetNCharacterStream(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IReader * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetNCharacterStream(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IReader * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetClob(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IReader * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetClob(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IReader * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetBlob(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IInputStream * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetBlob(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IInputStream * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetNClob(
-    /* [in] */ Int32 parameterIndex,
-    /* [in] */ IReader * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
-}
-
-ECode CJDBCPreparedStatement::SetNClob(
-    /* [in] */ const String& parameterName,
-    /* [in] */ IReader * x)
-{
-    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
 } // namespace JDBC

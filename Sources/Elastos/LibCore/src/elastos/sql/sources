@@ -14,7 +14,8 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/sql
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/sql/sqlite
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/sql/sqlite/jdbc
 
-VPATH := $(MAKEDIR)/SQLite/JDBC:$(MAKEDIR)/SQLite
+VPATH := $(MAKEDIR)/sqlite:$(MAKEDIR)/sqlite/jdbc
+
 SOURCES += CDatabaseX.cpp
 SOURCES += CJDBCConnection.cpp
 SOURCES += CJDBCDatabaseMetaData.cpp
@@ -25,7 +26,6 @@ SOURCES += CJDBCStatement.cpp
 SOURCES += CTableResultX.cpp
 SOURCES += JDBCStatement.cpp
 
-#VPATH := $(MAKEDIR)/SQLite
 SOURCES += CDBDump.cpp
 SOURCES += CTestProgressHandler.cpp
 SOURCES += CStmt.cpp

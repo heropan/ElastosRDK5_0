@@ -2,7 +2,8 @@
 #ifndef __CJDBCRESULTSETMETADATA_H__
 #define __CJDBCRESULTSETMETADATA_H__
 
-#include "_CJDBCResultSetMetaData.h"
+#include <elastos/core/Object.h>
+#include "_Elastos_Sql_SQLite_JDBC_CJDBCResultSetMetaData.h"
 
 namespace Elastos {
 namespace Sql {

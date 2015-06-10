@@ -13,8 +13,8 @@
 #include "CShell.h"
 #include "CDatabaseX.h"
 #include <elastos/HashSet.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
 #include "CURL.h"
 #include "CByteArrayInputStream.h"
 #include "CCharArrayReader.h"
