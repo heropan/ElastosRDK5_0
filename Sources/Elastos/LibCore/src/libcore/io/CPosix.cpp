@@ -1859,7 +1859,7 @@ ECode CPosix::SetsockoptIfreq(
     return ec;
 }
 
-ECode CPosix::SetsockoptInt(
+ECode CPosix::SetsockoptInt32(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
@@ -2078,19 +2078,15 @@ ECode CPosix::Socketpair(
     /* [in] */ Int32 socketDomain,
     /* [in] */ Int32 type,
     /* [in] */ Int32 protocol,
-    /* [out] */ IFileDescriptor** fd1,
-    /* [out] */ IFileDescriptor** fd2)
+    /* [in] */ IFileDescriptor* fd1,
+    /* [in] */ IFileDescriptor* fd2)
 {
     Int32 fds[2];
     ECode ec;
     Int32 rc = ErrorIfMinusOne("socketpair", TEMP_FAILURE_RETRY(socketpair(socketDomain, type, protocol, fds)), &ec);
     if (rc != -1) {
-        CFileDescriptor::New(fd1);
-        (*fd1)->SetDescriptor(fds[0]);
-        CFileDescriptor::New(fd2);
-        (*fd2)->SetDescriptor(fds[1]);
-    } else {
-        *fd1 = *fd2 = NULL;
+        fd1->SetDescriptor(fds[0]);
+        fd2->SetDescriptor(fds[1]);
     }
     return ec;
 }
@@ -2215,6 +2211,17 @@ ECode CPosix::Uname(
     *unameOut = MakeStructUtsname(buf);
     REFCOUNT_ADD(*unameOut)
     return NOERROR;
+}
+
+ECode CPosix::Unsetenv(
+    /* [in] */ const String& name)
+{
+    if (name == NULL) {
+        return NOERROR;
+    }
+    ECode ec;
+    Int32 rc = ErrorIfMinusOne("unsetenv", unsetenv(name), &ec);
+    return ec;
 }
 
 ECode CPosix::Waitpid(

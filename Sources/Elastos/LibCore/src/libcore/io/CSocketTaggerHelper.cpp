@@ -1,5 +1,6 @@
 
 #include "CSocketTaggerHelper.h"
+#include "SocketTagger.h"
 
 namespace Libcore {
 namespace IO {

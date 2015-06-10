@@ -472,7 +472,7 @@ public:
         /* [in] */ Int32 option,
         /* [in] */ const String& interfaceName);
 
-    CARAPI SetsockoptInt(
+    CARAPI SetsockoptInt32(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 level,
         /* [in] */ Int32 option,
@@ -525,8 +525,8 @@ public:
         /* [in] */ Int32 socketDomain,
         /* [in] */ Int32 type,
         /* [in] */ Int32 protocol,
-        /* [out] */ IFileDescriptor** fd1,
-        /* [out] */ IFileDescriptor** fd2);
+        /* [in] */ IFileDescriptor* fd1,
+        /* [in] */ IFileDescriptor* fd2);
 
     CARAPI Stat(
         /* [in] */ const String& path,
@@ -566,6 +566,9 @@ public:
 
     CARAPI Uname(
         /* [out] */ IStructUtsname** uname);
+
+    CARAPI Unsetenv(
+        /* [in] */ const String& name);
 
     CARAPI Waitpid(
         /* [in] */ Int32 pid,

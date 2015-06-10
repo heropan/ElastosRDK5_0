@@ -668,13 +668,13 @@ ECode ForwardingOs::SetsockoptIfreq(
     return mOs->SetsockoptIfreq(fd, level, option, interfaceName);
 }
 
-ECode ForwardingOs::SetsockoptInt(
+ECode ForwardingOs::SetsockoptInt32(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 level,
     /* [in] */ Int32 option,
     /* [in] */ Int32 value)
 {
-    return mOs->SetsockoptInt(fd, level, option, value);
+    return mOs->SetsockoptInt32(fd, level, option, value);
 }
 
 ECode ForwardingOs::SetsockoptIpMreqn(
@@ -741,12 +741,9 @@ ECode ForwardingOs::Socketpair(
     /* [in] */ Int32 socketDomain,
     /* [in] */ Int32 type,
     /* [in] */ Int32 protocol,
-    /* [out] */ IFileDescriptor** fd1,
-    /* [out] */ IFileDescriptor** fd2)
+    /* [in] */ IFileDescriptor* fd1,
+    /* [in] */ IFileDescriptor* fd2)
 {
-    VALIDATE_NOT_NULL(fd1);
-    VALIDATE_NOT_NULL(fd2);
-
     return mOs->Socketpair(socketDomain, type, protocol, fd1, fd2);
 }
 
@@ -815,6 +812,12 @@ ECode ForwardingOs::Uname(
     VALIDATE_NOT_NULL(utsname);
 
     return mOs->Uname(utsname);
+}
+
+ECode ForwardingOs::Unsetenv(
+    /* [in] */ const String& name)
+{
+    return mOs->Unsetenv(name);
 }
 
 ECode ForwardingOs::Waitpid(

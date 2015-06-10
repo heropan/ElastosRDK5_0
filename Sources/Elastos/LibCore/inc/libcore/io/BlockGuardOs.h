@@ -20,88 +20,196 @@ public:
     CARAPI Accept(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ IInetSocketAddress* peerAddress,
-        /* [out] */ Int32* retFd);
+        /* [out] */ IFileDescriptor** retFd);
+
+    CARAPI Access(
+        /* [in] */ String path,
+        /* [in] */ Int32 mode,
+        /* [out] */ Boolean* succeed);
+
+    CARAPI Chmod(
+        /* [in] */ String path,
+        /* [in] */ Int32 mode);
+
+    CARAPI Chown(
+        /* [in] */ String path,
+        /* [in] */ Int32 uid,
+        /* [in] */ Int32 gid);
+
 
     CARAPI Close(
-        /* [in] */ Int32 fd);
+        /* [in] */ IFileDescriptor* fd);
 
     CARAPI Connect(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ IInetAddress* address,
         /* [in] */ Int32 port);
+
+    CARAPI Fchmod(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ Int32 mode);
+
+    CARAPI Fchown(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ Int32 uid,
+        /* [in] */ Int32 gid);
 
     // TODO: Untag newFd when needed for dup2(FileDescriptor oldFd, int newFd)
 
     CARAPI Fdatasync(
-        /* [in] */ Int32 fd);
+        /* [in] */ IFileDescriptor* fd);
+
+    CARAPI Fstat(
+        /* [in] */ IFileDescriptor* fd,
+        /* [out] */ IStructStat** stat);
+
+    CARAPI Fstatvfs(
+        /* [in] */ IFileDescriptor* fd,
+        /* [out] */ IStructStatVfs** statVfs);
 
     CARAPI Fsync(
-        /* [in] */ Int32 fd);
+        /* [in] */ IFileDescriptor* fd);
 
     CARAPI Ftruncate(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int64 length);
+
+    CARAPI Lchown(
+        /* [in] */ String path,
+        /* [in] */ Int32 uid,
+        /* [in] */ Int32 gid);
+
+    CARAPI Link(
+        /* [in] */ String oldPath,
+        /* [in] */ String newPath);
+
+    CARAPI Lseek(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ Int64 offset,
+        /* [in] */ Int32 whence,
+        /* [out] */ Int64* result);
+
+    CARAPI Lstat(
+        /* [in] */ String path,
+        /* [out] */ IStructStat** stat);
+
+    CARAPI Mkdir(
+        /* [in] */ String path,
+        /* [in] */ Int32 mode);
+    CARAPI Mkfifo(
+        /* [in] */ String path,
+        /* [in] */ Int32 mode);
 
     CARAPI Open(
         /* [in] */ const String& path,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 mode,
-        /* [out] */ Int32* fd);
+        /* [out] */ IFileDescriptor** fd);
 
     CARAPI Poll(
-        /* [in] */ const ArrayOf<IStructPollfd*>& fdStructs,
+        /* [in] */ ArrayOf<IStructPollfd*>* fdStructs,
         /* [in] */ Int32 timeoutMs,
         /* [out] */ Int32* result);
 
-    //CARAPI int pread(FileDescriptor fd, ByteBuffer buffer, long offset);
+    CARAPI Posix_fallocate(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ Int64 offset,
+        /* [in] */ Int64 length);
 
     CARAPI Pread(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [out] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [in] */ Int64 offset,
         /* [out] */ Int32* num);
 
-    //CARAPI int pwrite(FileDescriptor fd, ByteBuffer buffer, long offset);
+    CARAPI Pread(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Int64 offset,
+        /* [out] */ Int32* num);
 
     CARAPI Pwrite(
-        /* [in] */ Int32 fd,
-        /* [in] */ const ArrayOf<Byte>& bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [in] */ Int64 offset,
         /* [out] */ Int32* num);
 
-    //CARAPI int read(FileDescriptor fd, ByteBuffer buffer);
-
     CARAPI Read(
-        /* [in] */ Int32 fd,
-        /* [out] */ ArrayOf<Byte>* bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* num);
 
-    //CARAPI int readv(FileDescriptor fd, Object[] buffers, int[] offsets, int[] byteCounts);
+    CARAPI Pwrite(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Int64 offset,
+        /* [out] */ Int32* num);
 
-    //CARAPI int recvfrom(FileDescriptor fd, ByteBuffer buffer, int flags, InetSocketAddress srcAddress);
+    CARAPI Read(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [out] */ Int32* num);
+
+    CARAPI Readlink(
+        /* [in] */ String path,
+        /* [out] */ String* link);
+
+    CARAPI Readv(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<IInterface*>* buffers,
+        /* [in] */ ArrayOf<Int32>* offsets,
+        /* [in] */ ArrayOf<Int32>* byteCounts,
+        /* [out] */ Int32* num);
 
     CARAPI Recvfrom(
-        /* [in] */ Int32 fd,
-        /* [out] */ ArrayOf<Byte>* bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [in] */ Int32 flags,
         /* [in] */ IInetSocketAddress* srcAddress,
         /* [out] */ Int32* num);
 
-    //CARAPI int sendto(FileDescriptor fd, ByteBuffer buffer, int flags, InetAddress inetAddress, int port);
+    CARAPI Recvfrom(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Int32 flags,
+        /* [in] */ IInetSocketAddress* srcAddress,
+        /* [out] */ Int32* num);
+
+    CARAPI Remove(
+        /* [in] */ String path);
+
+    CARAPI Rename(
+        /* [in] */ String oldPath,
+        /* [in] */ String newPath);
+
+    CARAPI Sendfile(
+        /* [in] */ IFileDescriptor* outFd,
+        /* [in] */ IFileDescriptor* inFd,
+        /* [out] */ Int64* inOffset,
+        /* [in] */ Int64 byteCount,
+        /* [out] */ Int64* result);
 
     CARAPI Sendto(
-        /* [in] */ Int32 fd,
-        /* [in] */ const ArrayOf<Byte>& bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
+        /* [in] */ Int32 flags,
+        /* [in] */ IInetAddress* inetAddress,
+        /* [in] */ Int32 port,
+        /* [out] */ Int32* result);
+
+    CARAPI Sendto(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int32 flags,
         /* [in] */ IInetAddress* inetAddress,
         /* [in] */ Int32 port,
@@ -111,36 +219,57 @@ public:
         /* [in] */ Int32 socketDomain,
         /* [in] */ Int32 type,
         /* [in] */ Int32 protocol,
-        /* [out] */ Int32* fd);
+        /* [out] */ IFileDescriptor** fd);
 
     CARAPI Socketpair(
         /* [in] */ Int32 socketDomain,
         /* [in] */ Int32 type,
         /* [in] */ Int32 protocol,
-        /* [out] */ Int32* fd1,
-        /* [out] */ Int32* fd2);
+        /* [in] */ IFileDescriptor* fd1,
+        /* [in] */ IFileDescriptor* fd2);
 
-    //CARAPI int write(FileDescriptor fd, ByteBuffer buffer);
+    CARAPI Stat(
+        /* [in] */ String path,
+        /* [out] */ IStructStat** stat);
+
+    /* TODO: replace statfs with statvfs. */
+    CARAPI StatVfs(
+        /* [in] */ String path,
+        /* [out] */ IStructStatVfs** statfs);
+
+    CARAPI Symlink(
+        /* [in] */ String oldPath,
+        /* [in] */ String newPath);
 
     CARAPI Write(
-        /* [in] */ Int32 fd,
-        /* [in] */ const ArrayOf<Byte>& bytes,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [out] */ Int32* num);
+
+    CARAPI Write(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<Byte>* bytes,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* num);
 
-    //CARAPI int writev(FileDescriptor fd, Object[] buffers, int[] offsets, int[] byteCounts);
+    CARAPI Writev(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ArrayOf<IInterface*>* buffers,
+        /* [in] */ ArrayOf<Int32>* offsets,
+        /* [in] */ ArrayOf<Int32>* byteCounts,
+        /* [out] */ Int32* result);
 
 private:
     CARAPI TagSocket(
-        /* [in] */ Int32 fd,
-        /* [out] */ Int32* retFd);
+        /* [in] */ IFileDescriptor* fd,
+        /* [out] */ IFileDescriptor** retFd);
 
     CARAPI UntagSocket(
-        /* [in] */ Int32 fd);
+        /* [in] */ IFileDescriptor* fd);
 
     static CARAPI IsLingerSocket(
-        /* [in] */ Int32 fd,
+        /* [in] */ IFileDescriptor* fd,
         /* [out] */ Boolean* result);
 };
 

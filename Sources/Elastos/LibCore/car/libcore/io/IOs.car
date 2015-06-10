@@ -118,7 +118,7 @@ module
 
         Fstatvfs(
             [in] IFileDescriptor* fd,
-            [out] IStructStatVfs** statFs);
+            [out] IStructStatVfs** statVfs);
 
         Fsync(
             [in] IFileDescriptor* fd);
@@ -461,7 +461,7 @@ module
             [in] Int32 option,
             [in] String interfaceName);
 
-        SetsockoptInt(
+        SetsockoptInt32(
             [in] IFileDescriptor* fd,
             [in] Int32 level,
             [in] Int32 option,
@@ -514,8 +514,8 @@ module
             [in] Int32 socketDomain,
             [in] Int32 type,
             [in] Int32 protocol,
-            [out] IFileDescriptor** fd1,
-            [out] IFileDescriptor** fd2);
+            [in] IFileDescriptor* fd1,
+            [in] IFileDescriptor* fd2);
 
         Stat(
             [in] String path,
@@ -555,6 +555,9 @@ module
 
         Uname(
             [out] IStructUtsname** uname);
+
+        Unsetenv(
+            [in] String name);
 
         Waitpid(
             [in] Int32 pid,

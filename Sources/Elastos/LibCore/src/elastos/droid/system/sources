@@ -8,6 +8,7 @@ include $(MAKEDIR)/../../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../inc/libcore/io;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
@@ -27,3 +28,4 @@ SOURCES += CStructGroupSourceReq.cpp
 SOURCES += OsConstants.cpp
 SOURCES += CStructFlock.cpp
 SOURCES += CStructUcred.cpp
+SOURCES += Os.cpp

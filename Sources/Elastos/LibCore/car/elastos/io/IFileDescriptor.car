@@ -32,6 +32,9 @@ module
          */
         SetDescriptor(
             [in] Int32 fd);
+
+        IsSocket(
+            [out] Boolean* isSocket);
     }
 
     interface IFileDescriptorHelper {
