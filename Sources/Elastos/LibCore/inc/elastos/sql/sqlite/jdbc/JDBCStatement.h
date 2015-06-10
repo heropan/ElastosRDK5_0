@@ -2,10 +2,11 @@
 #ifndef __JDBCSTATEMENT_H__
 #define __JDBCSTATEMENT_H__
 
-#include <coredef.h>
-#include "Object.h"
-#include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
+#include <elastos/utility/etl/List.h>
 
+using Elastos::Core::Object;
+using Elastos::Utility::Etl::List;
 using Elastos::Sql::IResultSet;
 using Elastos::Sql::ISQLWarning;
 
@@ -112,7 +113,7 @@ public:
     virtual CARAPI GetQueryTimeout(
         /* [out] */ Int32* value);
 
-    virtual CARAPI_(AutoPtr<IResultSet>) GetResultSet(
+    virtual CARAPI GetResultSet(
         /* [out] */ IResultSet** value);
 
     virtual CARAPI GetResultSetConcurrency(
@@ -185,7 +186,6 @@ public:
 
 private:
     List<String> batch;
-    Mutex mSyncLock;
 };
 
 } // namespace JDBC

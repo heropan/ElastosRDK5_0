@@ -3,9 +3,9 @@
 #define __TABLERESULT_H__
 
 #include <coredef.h>
+#include <elastos/utility/etl/Vector.h>
 
-
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 
 namespace Elastos {
 namespace Sql {
@@ -26,7 +26,8 @@ public:
         /* [in] */ const ArrayOf<String> & intypes);
 
     virtual CARAPI Newrow(
-        /* [in] */ const ArrayOf<String> & rowdata);
+        /* [in] */ const ArrayOf<String> & rowdata,
+        /* [out] */ Boolean* value);
 
     virtual CARAPI ToString(
         /* [out] */ String* value);

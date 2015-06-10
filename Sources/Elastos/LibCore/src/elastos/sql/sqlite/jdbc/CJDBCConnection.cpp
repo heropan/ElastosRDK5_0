@@ -390,7 +390,7 @@ ECode CJDBCConnection::SetTransactionIsolation(
         return E_SQL_EXCEPTION;
     }
 
-    return NOERROR;
+    return ec;
 }
 
 ECode CJDBCConnection::SetTypeMap(

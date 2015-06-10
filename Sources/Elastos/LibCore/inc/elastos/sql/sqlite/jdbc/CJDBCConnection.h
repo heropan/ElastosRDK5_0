@@ -3,7 +3,9 @@
 #define __CJDBCCONNECTION_H__
 
 #include "_Elastos_Sql_SQLite_JDBC_CJDBCConnection.h"
+#include "Object.h"
 
+using Elastos::Core::Object;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Utility::IProperties;
 using Elastos::Sql::ISQLWarning;

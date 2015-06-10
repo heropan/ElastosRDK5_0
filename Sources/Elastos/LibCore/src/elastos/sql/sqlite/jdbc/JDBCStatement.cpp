@@ -247,8 +247,10 @@ ECode JDBCStatement::ExecuteQuery(
                     if (ms > 1000) {
                         ms = 1000;
                     }
-                    Mutex::Autolock lock(mSyncLock);
-                    wait(&ms);
+
+                    synchronized(this) {
+                        Wait(&ms);
+                    }
                     // }
                     // catch (java.lang.Exception eee) {
                     // }

@@ -3,9 +3,7 @@
 #define __CJDBCPREPAREDSTATEMENT_H__
 
 #include "_Elastos_Sql_SQLite_JDBC_CJDBCPreparedStatement.h"
-#include "coredef.h"
 #include "JDBCStatement.h"
-#include "CJDBCStatement.h"
 
 using Elastos::Net::IURL;
 using Elastos::IO::IReader;
@@ -207,85 +205,6 @@ public:
     CARAPI SetURL(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IURL * theURL);
-
-    CARAPI SetRowId(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IRowId * theRowId);
-
-    CARAPI SetNString(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ const String& theString);
-
-    CARAPI SetNCharacterStream(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IReader * reader,
-        /* [in] */ Int64 length);
-
-    CARAPI SetNClob(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ INClob * value);
-
-    CARAPI SetClob(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IReader * reader,
-        /* [in] */ Int64 length);
-
-    CARAPI SetBlob(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IInputStream * inputStream,
-        /* [in] */ Int64 length);
-
-    CARAPI SetNClob(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IReader * reader,
-        /* [in] */ Int64 length);
-
-    CARAPI SetSQLXML(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ ISQLXML * xmlObject);
-
-    CARAPI SetAsciiStream(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IInputStream * inputStream,
-        /* [in] */ Int64 length);
-
-    CARAPI SetBinaryStream(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IInputStream * inputStream,
-        /* [in] */ Int64 length);
-
-    CARAPI SetCharacterStream(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IReader * reader,
-        /* [in] */ Int64 length);
-
-    CARAPI SetAsciiStream(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IInputStream * inputStream);
-
-    CARAPI SetBinaryStream(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IInputStream * inputStream);
-
-    CARAPI SetCharacterStream(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IReader * reader);
-
-    CARAPI SetNCharacterStream(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IReader * reader);
-
-    CARAPI SetClob(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IReader * reader);
-
-    CARAPI SetBlob(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IInputStream * inputStream);
-
-    CARAPI SetNClob(
-        /* [in] */ Int32 parameterIndex,
-        /* [in] */ IReader * reader);
 
     CARAPI RegisterOutputParameter(
         /* [in] */ const String& parameterName,

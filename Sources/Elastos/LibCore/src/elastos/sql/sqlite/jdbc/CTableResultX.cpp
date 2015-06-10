@@ -30,6 +30,11 @@ PInterface CTableResultX::Probe(
     return TableResult::Probe(riid);
 }
 
+UInt32 CTableResultX::Release()
+{
+    return TableResult::Release();
+}
+
 ECode CTableResultX::constructor(
     /* [in] */ Int32 maxrows)
 {
