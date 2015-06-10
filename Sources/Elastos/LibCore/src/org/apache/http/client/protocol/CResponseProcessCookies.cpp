@@ -94,7 +94,7 @@ void CResponseProcessCookies::ProcessCookies(
         Boolean result;
         while(it->HasNext(&result), result) {
             AutoPtr<ICookie> cookie;
-            it->Next((IInterface**)&cookie);
+            it->GetNext((IInterface**)&cookie);
             // try {
             if (FAILED(cookieSpec->Validate(cookie, cookieOrigin))) {
                 Logger::E("CResponseProcessCookies", "Cookie rejected: ");

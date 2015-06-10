@@ -204,7 +204,7 @@ public:
         _ValueIterator(
             /* [in] */ CConcurrentSkipListMap* owner);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
     };
 
@@ -215,7 +215,7 @@ public:
         _KeyIterator(
             /* [in] */ CConcurrentSkipListMap* owner);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
     };
 
@@ -226,7 +226,7 @@ public:
         _EntryIterator(
             /* [in] */ CConcurrentSkipListMap* owner);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
     };
 
@@ -459,7 +459,7 @@ public:
             SubMapValueIterator(
                 /* [in] */ _SubMap* owner);
 
-            CARAPI Next(
+            CARAPI GetNext(
                 /* [out] */ IInterface** object);
         };
 
@@ -470,7 +470,7 @@ public:
             SubMapKeyIterator(
                 /* [in] */ _SubMap* owner);
 
-            CARAPI Next(
+            CARAPI GetNext(
                 /* [out] */ IInterface** object);
         };
 
@@ -481,7 +481,7 @@ public:
             SubMapEntryIterator(
                 /* [in] */ _SubMap* owner);
 
-            CARAPI Next(
+            CARAPI GetNext(
                 /* [out] */ IInterface** object);
         };
 
@@ -642,16 +642,16 @@ public:
 
         /* ---------------- Submap Views -------------- */
 
-        CARAPI KeySet(
+        CARAPI GetKeySet(
             /* [out] */ ISet** res);
 
         CARAPI NavigableKeySet(
             /* [out] */ INavigableSet** res);
 
-        CARAPI Values(
+        CARAPI GetValues(
             /* [out] */ ICollection** value);
 
-        CARAPI EntrySet(
+        CARAPI GetEntrySet(
             /* [out] */ ISet** entries);
 
         CARAPI DescendingKeySet(
@@ -833,16 +833,16 @@ public:
 
     /* ---------------- View methods -------------- */
 
-    CARAPI KeySet(
+    CARAPI GetKeySet(
         /* [out] */ ISet** res);
 
     CARAPI NavigableKeySet(
         /* [out] */ INavigableSet** res);
 
-    CARAPI Values(
+    CARAPI GetValues(
         /* [out] */ ICollection** value);
 
-    CARAPI EntrySet(
+    CARAPI GetEntrySet(
         /* [out] */ ISet** entries);
 
     CARAPI DescendingMap(

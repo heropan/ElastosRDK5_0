@@ -52,7 +52,7 @@ module
          * @throws NoSuchElementException
          *                if no tokens remain.
          */
-        NextToken(
+        GetNextToken(
             [out] String* str);
 
         /**
@@ -65,7 +65,7 @@ module
          * @throws NoSuchElementException
          *                if no tokens remain.
          */
-        NextToken(
+        GetNextToken(
             [in] String delims,
             [out] String* str);
     }

@@ -47,10 +47,10 @@ ECode CHashTable::ContainsValue(
     return HashTable::ContainsValue(value, result);
 }
 
-ECode CHashTable::EntrySet(
+ECode CHashTable::GetEntrySet(
     /* [out] */ ISet** entries)
 {
-    return HashTable::EntrySet(entries);
+    return HashTable::GetEntrySet(entries);
 }
 
 ECode CHashTable::Equals(
@@ -79,10 +79,10 @@ ECode CHashTable::IsEmpty(
     return HashTable::IsEmpty(result);
 }
 
-ECode CHashTable::KeySet(
+ECode CHashTable::GetKeySet(
     /* [out] */ ISet** keySet)
 {
-    return HashTable::KeySet(keySet);
+    return HashTable::GetKeySet(keySet);
 }
 
 ECode CHashTable::Put(
@@ -127,10 +127,10 @@ ECode CHashTable::GetSize(
     return HashTable::GetSize(size);
 }
 
-ECode CHashTable::Values(
+ECode CHashTable::GetValues(
     /* [out] */ ICollection** value)
 {
-    return HashTable::Values(value);
+    return HashTable::GetValues(value);
 }
 
 ECode CHashTable::Clone(
@@ -139,16 +139,16 @@ ECode CHashTable::Clone(
     return HashTable::Clone(object);
 }
 
-ECode CHashTable::Elements(
+ECode CHashTable::GetElements(
     /* [out] */ IEnumeration** enm)
 {
-    return HashTable::Elements(enm);
+    return HashTable::GetElements(enm);
 }
 
-ECode CHashTable::Keys(
+ECode CHashTable::GetKeys(
     /* [out] */ IEnumeration** enm)
 {
-    return HashTable::Keys(enm);
+    return HashTable::GetKeys(enm);
 }
 
 } // namespace Utility

@@ -24,7 +24,7 @@ public:
     CARAPI Add(
         /* [in] */ IPermission *permission);
 
-    CARAPI Elements(
+    CARAPI GetElements(
         /* [out] */ IEnumeration **elems);
 
     CARAPI Implies(

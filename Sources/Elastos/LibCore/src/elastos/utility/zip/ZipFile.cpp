@@ -200,12 +200,12 @@ ECode ZipFile::Enumeration::HasMoreElements(
     return mIt->HasNext(value);
 }
 
-ECode ZipFile::Enumeration::NextElement(
+ECode ZipFile::Enumeration::GetNextElement(
     /* [out] */ IInterface ** inter)
 {
     VALIDATE_NOT_NULL(inter);
     CheckNotClosed();
-    return mIt->Next(inter);
+    return mIt->GetNext(inter);
 }
 
 //====================================================================

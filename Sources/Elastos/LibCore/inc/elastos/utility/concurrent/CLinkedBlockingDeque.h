@@ -79,7 +79,7 @@ private:
         CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -295,7 +295,7 @@ public:
         /* [in] */ ITimeUnit* unit,
         /* [out] */ IInterface** e);
 
-    CARAPI Element(
+    CARAPI GetElement(
         /* [out] */ IInterface** e);
 
     CARAPI Peek(

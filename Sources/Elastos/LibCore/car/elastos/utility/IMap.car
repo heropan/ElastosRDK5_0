@@ -104,7 +104,7 @@ module
          *
          * @return a set of the mappings
          */
-        EntrySet(
+        GetEntrySet(
             [out] ISet** entries);
 
         /**
@@ -161,7 +161,7 @@ module
          *
          * @return a set of the keys.
          */
-        KeySet(
+        GetKeySet(
             [out] ISet** keySet);
 
         /**
@@ -257,7 +257,7 @@ module
          *
          * @return a collection of the values contained in this map.
          */
-        Values(
+        GetValues(
             [out] ICollection** value);
     }
 

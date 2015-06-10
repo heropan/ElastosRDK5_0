@@ -174,7 +174,7 @@ ECode CNativeDecimalFormat::FieldPositionIterator::SetFieldPosition(
     return NOERROR;
 }
 
-ECode CNativeDecimalFormat::FieldPositionIterator::Next(
+ECode CNativeDecimalFormat::FieldPositionIterator::GetNext(
     /* [out] */ Boolean* next)
 {
     VALIDATE_NOT_NULL(next);

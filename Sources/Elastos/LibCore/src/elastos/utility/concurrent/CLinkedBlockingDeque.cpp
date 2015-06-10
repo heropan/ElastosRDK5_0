@@ -73,7 +73,7 @@ ECode CLinkedBlockingDeque::AbstractItr::HasNext(
     return NOERROR;
 }
 
-ECode CLinkedBlockingDeque::AbstractItr::Next(
+ECode CLinkedBlockingDeque::AbstractItr::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
@@ -700,7 +700,7 @@ ECode CLinkedBlockingDeque::Poll(
     return PollFirst(timeout, unit, e);
 }
 
-ECode CLinkedBlockingDeque::Element(
+ECode CLinkedBlockingDeque::GetElement(
     /* [out] */ IInterface** e)
 {
     VALIDATE_NOT_NULL(e);

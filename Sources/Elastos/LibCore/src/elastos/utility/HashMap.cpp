@@ -125,7 +125,7 @@ ECode HashMap::ConstructorPutAll(
 {
     AutoPtr< ArrayOf<IInterface*> > es;
     AutoPtr<ISet> outset;
-    map->EntrySet((ISet**)&outset);
+    map->GetEntrySet((ISet**)&outset);
     (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&es);
     for (Int32 i = 0; i< es->GetLength(); i++) {
         AutoPtr<IMapEntry> e = IMapEntry::Probe((*es)[i]);
@@ -596,7 +596,7 @@ ECode HashMap::Clear()
     return NOERROR;
 }
 
-ECode HashMap::KeySet(
+ECode HashMap::GetKeySet(
     /* [out] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
@@ -615,7 +615,7 @@ ECode HashMap::KeySet(
     }
 }
 
-ECode HashMap::Values(
+ECode HashMap::GetValues(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -626,7 +626,7 @@ ECode HashMap::Values(
     return NOERROR;
 }
 
-ECode HashMap::EntrySet(
+ECode HashMap::GetEntrySet(
     /* [out] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(entries)
@@ -760,7 +760,7 @@ ECode HashMap::WriteObject(
     (IOutputStream::Probe(stream))->Write(mSize);
     AutoPtr< ArrayOf<IInterface*> > outentry;
     AutoPtr<ISet> outset;
-    EntrySet((ISet**)&outset);
+    GetEntrySet((ISet**)&outset);
     (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&outentry);
     for (Int32 i = 0; i < outentry->GetLength(); i++) {
         AutoPtr<IMapEntry> e = IMapEntry::Probe((*outentry)[i]);
@@ -1006,7 +1006,7 @@ HashMap::KeyIterator::KeyIterator(
 {
 }
 
-ECode HashMap::KeyIterator::Next(
+ECode HashMap::KeyIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -1040,7 +1040,7 @@ HashMap::ValueIterator::ValueIterator(
 {
 }
 
-ECode HashMap::ValueIterator::Next(
+ECode HashMap::ValueIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -1074,7 +1074,7 @@ HashMap::EntryIterator::EntryIterator(
 {
 }
 
-ECode HashMap::EntryIterator::Next(
+ECode HashMap::EntryIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)

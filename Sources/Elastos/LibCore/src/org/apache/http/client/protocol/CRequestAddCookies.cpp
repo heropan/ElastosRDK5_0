@@ -153,7 +153,7 @@ ECode CRequestAddCookies::Process(
     Boolean hasNext;
     while(it->HasNext(&hasNext), hasNext) {
         AutoPtr<ICookie> cookie;
-        it->Next((IInterface**)&cookie);
+        it->GetNext((IInterface**)&cookie);
         Boolean match;
         if (cookieSpec->Match(cookie, cookieOrigin, &match), match) {
             // if (this.log.isDebugEnabled()) {

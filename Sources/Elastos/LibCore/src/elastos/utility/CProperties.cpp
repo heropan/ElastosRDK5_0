@@ -140,10 +140,10 @@ ECode CProperties::ContainsValue(
     return Properties::ContainsValue(value, result);
 }
 
-ECode CProperties::EntrySet(
+ECode CProperties::GetEntrySet(
     /* [out] */ ISet** entries)
 {
-    return Properties::EntrySet(entries);
+    return Properties::GetEntrySet(entries);
 }
 
 ECode CProperties::Equals(
@@ -172,10 +172,10 @@ ECode CProperties::IsEmpty(
     return Properties::IsEmpty(result);
 }
 
-ECode CProperties::KeySet(
+ECode CProperties::GetKeySet(
     /* [out] */ ISet** keySet)
 {
-    return Properties::KeySet(keySet);
+    return Properties::GetKeySet(keySet);
 }
 
 ECode CProperties::Put(
@@ -205,10 +205,10 @@ ECode CProperties::GetSize(
     return Properties::GetSize(size);
 }
 
-ECode CProperties::Values(
+ECode CProperties::GetValues(
     /* [out] */ ICollection** value)
 {
-    return Properties::Values(value);
+    return Properties::GetValues(value);
 }
 
 ECode CProperties::Clone(
@@ -217,16 +217,16 @@ ECode CProperties::Clone(
     return Properties::Clone(object);
 }
 
-ECode CProperties::Elements(
+ECode CProperties::GetElements(
     /* [out] */ IEnumeration** enm)
 {
-    return Properties::Elements(enm);
+    return Properties::GetElements(enm);
 }
 
-ECode CProperties::Keys(
+ECode CProperties::GetKeys(
     /* [out] */ IEnumeration** enm)
 {
-    return Properties::Keys(enm);
+    return Properties::GetKeys(enm);
 }
 
 ECode CProperties::constructor()

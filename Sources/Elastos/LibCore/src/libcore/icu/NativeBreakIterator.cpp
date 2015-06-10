@@ -137,7 +137,7 @@ ECode NativeBreakIterator::Last(
     return NOERROR;
 }
 
-ECode NativeBreakIterator::Next(
+ECode NativeBreakIterator::GetNext(
     /* [in] */ Int32 n,
     /* [out] */ Int32 * value)
 {
@@ -147,7 +147,7 @@ ECode NativeBreakIterator::Next(
     return NOERROR;
 }
 
-ECode NativeBreakIterator::Next(
+ECode NativeBreakIterator::GetNext(
     /* [out] */ Int32 * value)
 {
     VALIDATE_NOT_NULL(value)

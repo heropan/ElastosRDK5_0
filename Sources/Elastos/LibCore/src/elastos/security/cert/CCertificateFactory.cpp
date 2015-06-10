@@ -205,7 +205,7 @@ ECode CCertificateFactory::GenerateCertPath(
         return E_CERTIFICATE_EXCEPTION;
     }
     AutoPtr<IInterface> next;
-    it->Next((IInterface**)&next);
+    it->GetNext((IInterface**)&next);
     String nextString;
     //FAIL_RETURN(ICharSequence::Probe(next)->ToString(&nextString))
     return mSpiImpl->EngineGenerateCertPathEx(inStream, nextString, certPath);

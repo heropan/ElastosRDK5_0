@@ -27,7 +27,7 @@ ECode CArrayDeque::DeqIterator::HasNext(
     return NOERROR;
 }
 
-ECode CArrayDeque::DeqIterator::Next(
+ECode CArrayDeque::DeqIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
@@ -78,7 +78,7 @@ ECode CArrayDeque::DescendingIterator::HasNext(
     return NOERROR;
 }
 
-ECode CArrayDeque::DescendingIterator::Next(
+ECode CArrayDeque::DescendingIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -474,7 +474,7 @@ ECode CArrayDeque::Poll(
     return PollFirst(e);
 }
 
-ECode CArrayDeque::Element(
+ECode CArrayDeque::GetElement(
     /* [out] */ IInterface** e)
 {
     return GetFirst(e);

@@ -96,7 +96,7 @@ private:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI HasNext(
@@ -115,7 +115,7 @@ private:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI HasNext(
@@ -134,7 +134,7 @@ private:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI HasNext(
@@ -426,7 +426,7 @@ public:
      *
      * @return a set of the mappings
      */
-    virtual CARAPI EntrySet(
+    virtual CARAPI GetEntrySet(
         /* [out] */ ISet** entries);
 
     /**
@@ -458,7 +458,7 @@ public:
      *
      * @return a set of the keys.
      */
-    virtual CARAPI KeySet(
+    virtual CARAPI GetKeySet(
         /* [out] */ ISet** keySet);
 
     /**
@@ -554,7 +554,7 @@ public:
      *
      * @return a collection of the values contained in this map.
      */
-    virtual CARAPI Values(
+    virtual CARAPI GetValues(
         /* [out] */ ICollection** value);
 
     /**

@@ -52,7 +52,7 @@ ECode AbstractCollection::AddAll(
     Boolean hasnext = FALSE;
     while ((it->HasNext(&hasnext), hasnext)) {
         AutoPtr<IInterface> nextobject;
-        it->Next((IInterface**)&nextobject);
+        it->GetNext((IInterface**)&nextobject);
         Boolean flag = FALSE;
         FAIL_RETURN(Add(nextobject, &flag));
         if (flag) {
@@ -77,7 +77,7 @@ ECode AbstractCollection::Clear()
     Boolean hasnext = FALSE;
     while ((it->HasNext(&hasnext), hasnext)) {
         AutoPtr<IInterface> nextobject;
-        it->Next((IInterface**)&nextobject);
+        it->GetNext((IInterface**)&nextobject);
         it->Remove();
     }
     return NOERROR;
@@ -94,7 +94,7 @@ ECode AbstractCollection::Contains(
     if (object != NULL) {
         while ((it->HasNext(&hasnext), hasnext)) {
             AutoPtr<IInterface> nextobject;
-            it->Next((IInterface**)&nextobject);
+            it->GetNext((IInterface**)&nextobject);
             if (Object::Equals(object, nextobject)) {
                 *result = TRUE;
                 return NOERROR;
@@ -104,7 +104,7 @@ ECode AbstractCollection::Contains(
     else {
         while ((it->HasNext(&hasnext), hasnext)) {
             AutoPtr<IInterface> nextobject;
-            it->Next((IInterface**)&nextobject);
+            it->GetNext((IInterface**)&nextobject);
             if (nextobject == NULL) {
                 *result = TRUE;
                 return NOERROR;
@@ -132,7 +132,7 @@ ECode AbstractCollection::ContainsAll(
     Boolean flag = FALSE;
     while ((it->HasNext(&hasnext), hasnext)) {
             AutoPtr<IInterface> nextobject;
-            it->Next((IInterface**)&nextobject);
+            it->GetNext((IInterface**)&nextobject);
             Contains(nextobject, &flag);
             if (!flag) {
                 *result = FALSE;
@@ -164,7 +164,7 @@ ECode AbstractCollection::Remove(
     if (object != NULL) {
         while ((it->HasNext(&hasnext), hasnext)) {
             AutoPtr<IInterface> nextobject;
-            it->Next((IInterface**)&nextobject);
+            it->GetNext((IInterface**)&nextobject);
             if (Object::Equals(object, nextobject)) {
                  it->Remove();
                  *result = TRUE;
@@ -175,7 +175,7 @@ ECode AbstractCollection::Remove(
     else {
         while ((it->HasNext(&hasnext), hasnext)) {
             AutoPtr<IInterface> nextobject;
-            it->Next((IInterface**)&nextobject);
+            it->GetNext((IInterface**)&nextobject);
             if (nextobject == NULL) {
                 it->Remove();
                 *result = TRUE;
@@ -206,7 +206,7 @@ ECode AbstractCollection::RemoveAll(
     Boolean hasnext = FALSE;
     while ((it->HasNext(&hasnext), hasnext)) {
         AutoPtr<IInterface> nextobject;
-        it->Next((IInterface**)&nextobject);
+        it->GetNext((IInterface**)&nextobject);
         Boolean flag = FALSE;
         collection->Contains(nextobject, &flag);
         if (flag) {
@@ -236,7 +236,7 @@ ECode  AbstractCollection::RetainAll(
     Boolean hasnext = FALSE;
     while ((it->HasNext(&hasnext), hasnext)) {
         AutoPtr<IInterface> nextobject;
-        it->Next((IInterface**)&nextobject);
+        it->GetNext((IInterface**)&nextobject);
         Boolean flag = FALSE;
         collection->Contains(nextobject, &flag);
         if (!flag) {
@@ -245,6 +245,13 @@ ECode  AbstractCollection::RetainAll(
         }
     }
     return NOERROR;
+}
+
+ECode  AbstractCollection::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    Boolean result;
+    return RetainAll(collection, &result);
 }
 
 ECode AbstractCollection::ToArray(
@@ -259,7 +266,7 @@ ECode AbstractCollection::ToArray(
     AutoPtr<ArrayOf<IInterface*> > sparray = ArrayOf<IInterface*>::Alloc(size);
     while (index < size) {
         AutoPtr<IInterface> nextobject;
-        it->Next((IInterface**)&nextobject);
+        it->GetNext((IInterface**)&nextobject);
         sparray->Set(index++, nextobject);
     }
     *array = sparray;
@@ -282,7 +289,7 @@ ECode AbstractCollection::ToArray(
     Int32 index = 0;
     while (index < size) {
         AutoPtr<IInterface> nextobject;
-        it->Next((IInterface**)&nextobject);
+        it->GetNext((IInterface**)&nextobject);
         array->Set(index++, nextobject);
     }
     if (index < contents->GetLength()) {
@@ -312,7 +319,7 @@ ECode AbstractCollection::ToString(
     Boolean hasnext = FALSE;
     while ((it->HasNext(&hasnext), hasnext)) {
         AutoPtr<IInterface> nextobject;
-        it->Next((IInterface**)&nextobject);
+        it->GetNext((IInterface**)&nextobject);
         if (nextobject.Get() != this->Probe(EIID_IInterface)) {
             buffer.Append(nextobject);
         }

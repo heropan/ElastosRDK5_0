@@ -27,7 +27,7 @@ private:
         CARAPI HasNext(
             /* [out] */ Boolean* value);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** outinter);
 
         CARAPI Remove();
@@ -178,7 +178,7 @@ public:
      * @return the head of this queue
      * @throws NoSuchElementException if this queue is empty
      */
-    CARAPI Element(
+    CARAPI GetElement(
         /* [out] */ IInterface** e);
 
     /**

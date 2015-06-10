@@ -114,7 +114,7 @@ ECode HashSet::GetIterator(
     VALIDATE_NOT_NULL(it)
 
     AutoPtr<ISet> outset;
-    mBackingMap->KeySet((ISet**)&outset);
+    mBackingMap->GetKeySet((ISet**)&outset);
     return (IIterable::Probe(outset))->GetIterator(it);
 }
 

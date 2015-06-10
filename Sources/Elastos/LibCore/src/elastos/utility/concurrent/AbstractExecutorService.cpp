@@ -124,7 +124,7 @@ ECode AbstractExecutorService::DoInvokeAny(
 
     // Start one task for sure; the rest incrementally
     AutoPtr<IInterface> obj;
-    it->Next((IInterface**)&obj);
+    it->GetNext((IInterface**)&obj);
     AutoPtr<IFuture> f;
     ecs->Submit(ICallable::Probe(obj), (IFuture**)&f);
     futures.PushBack(f);
@@ -138,7 +138,7 @@ ECode AbstractExecutorService::DoInvokeAny(
             if (ntasks > 0) {
                 --ntasks;
                 obj = NULL;
-                it->Next((IInterface**)&obj);
+                it->GetNext((IInterface**)&obj);
                 ecs->Submit(ICallable::Probe(obj), (IFuture**)&f);
                 futures.PushBack(f);
                 ++active;
@@ -308,7 +308,7 @@ ECode AbstractExecutorService::InvokeAll(
     Int64 now;
     while ((it->HasNext(&hasNext), hasNext)) {
         AutoPtr<IInterface> nxt;
-        it->Next((IInterface**)&nxt);
+        it->GetNext((IInterface**)&nxt);
         AutoPtr<IRunnable> p = IRunnable::Probe(nxt);;
         Execute(p);
 

@@ -438,7 +438,7 @@ CConcurrentHashMap::KeyIterator::KeyIterator(
 {
 }
 
-ECode CConcurrentHashMap::KeyIterator::Next(
+ECode CConcurrentHashMap::KeyIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -449,7 +449,7 @@ ECode CConcurrentHashMap::KeyIterator::Next(
     return NOERROR;
 }
 
-ECode CConcurrentHashMap::KeyIterator::NextElement(
+ECode CConcurrentHashMap::KeyIterator::GetNextElement(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -471,7 +471,7 @@ CConcurrentHashMap::ValueIterator::ValueIterator(
 {
 }
 
-ECode CConcurrentHashMap::ValueIterator::Next(
+ECode CConcurrentHashMap::ValueIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -482,7 +482,7 @@ ECode CConcurrentHashMap::ValueIterator::Next(
     return NOERROR;
 }
 
-ECode CConcurrentHashMap::ValueIterator::NextElement(
+ECode CConcurrentHashMap::ValueIterator::GetNextElement(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -537,7 +537,7 @@ CConcurrentHashMap::EntryIterator::EntryIterator(
 {
 }
 
-ECode CConcurrentHashMap::EntryIterator::Next(
+ECode CConcurrentHashMap::EntryIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -997,7 +997,7 @@ ECode CConcurrentHashMap::Contains(
     return ContainsValue(value, result);
 }
 
-ECode CConcurrentHashMap::EntrySet(
+ECode CConcurrentHashMap::GetEntrySet(
     /* [out] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(entries)
@@ -1092,7 +1092,7 @@ ECode CConcurrentHashMap::IsEmpty(
     return NOERROR;
 }
 
-ECode CConcurrentHashMap::KeySet(
+ECode CConcurrentHashMap::GetKeySet(
     /* [out] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
@@ -1140,7 +1140,7 @@ ECode CConcurrentHashMap::PutAll(
     VALIDATE_NOT_NULL(map)
 
     AutoPtr<ISet> outset;
-    map->EntrySet((ISet**)&outset);
+    map->GetEntrySet((ISet**)&outset);
     AutoPtr< ArrayOf<IInterface*> > outarr;
     outset->ToArray((ArrayOf<IInterface*>**)&outarr);
     for (Int32 i = 0; i < outarr->GetLength(); i++) {
@@ -1210,7 +1210,7 @@ ECode CConcurrentHashMap::GetSize(
     return NOERROR;
 }
 
-ECode CConcurrentHashMap::Values(
+ECode CConcurrentHashMap::GetValues(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1221,7 +1221,7 @@ ECode CConcurrentHashMap::Values(
     return NOERROR;
 }
 
-ECode CConcurrentHashMap::Keys(
+ECode CConcurrentHashMap::GetKeys(
     /* [out] */ IEnumeration** outenum)
 {
     VALIDATE_NOT_NULL(outenum)
@@ -1232,7 +1232,7 @@ ECode CConcurrentHashMap::Keys(
     return NOERROR;
 }
 
-ECode CConcurrentHashMap::Elements(
+ECode CConcurrentHashMap::GetElements(
     /* [out] */ IEnumeration** outenum)
 {
     VALIDATE_NOT_NULL(outenum)

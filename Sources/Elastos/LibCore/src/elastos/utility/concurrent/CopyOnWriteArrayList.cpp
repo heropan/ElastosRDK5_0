@@ -14,7 +14,7 @@ namespace Concurrent {
 //==========================================================
 const AutoPtr< ArrayOf<IInterface*> > CopyOnWriteArrayList::sEmptyArray = ArrayOf<IInterface*>::Alloc(0);
 
-CAR_INTERFACE_IMPL_3(CopyOnWriteArrayList, Object, ICopyOnWriteArrayList, ICollection, IIterable)
+CAR_INTERFACE_IMPL_4(CopyOnWriteArrayList, Object, ICopyOnWriteArrayList, ICollection, IIterable, IRandomAccess)
 
 ECode CopyOnWriteArrayList::Init()
 {
@@ -45,7 +45,7 @@ ECode CopyOnWriteArrayList::Add(
 {
     VALIDATE_NOT_NULL(modified)
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
     AutoPtr< ArrayOf<IInterface*> > newElements = ArrayOf<IInterface*>::Alloc(mElements->GetLength() + 1);
     newElements->Copy(mElements);
     newElements->Set(mElements->GetLength(), object);
@@ -108,7 +108,7 @@ ECode CopyOnWriteArrayList::Equals(
         for (Int32 j = 0; j < snapshot->GetLength(); j++) {
             AutoPtr<IInterface> o = (*snapshot)[j];
             AutoPtr<IInterface> outface;
-            if (!(i->HasNext(&isflag), isflag) || !(Object::Equals(o, (i->Next((IInterface**)&outface), outface)))) {
+            if (!(i->HasNext(&isflag), isflag) || !(Object::Equals(o, (i->GetNext((IInterface**)&outface), outface)))) {
                 *result = FALSE;
                 return NOERROR;
             }
@@ -147,7 +147,7 @@ ECode CopyOnWriteArrayList::Remove(
 {
     VALIDATE_NOT_NULL(modified)
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
     Int32 index = 0;
     IndexOf(object, &index);
     if (index == -1) {
@@ -166,7 +166,7 @@ ECode CopyOnWriteArrayList::RemoveAll(
 {
     VALIDATE_NOT_NULL(modified)
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
     *modified = RemoveOrRetain(collection, FALSE, 0, mElements->GetLength()) != 0;
     return NOERROR;
 }
@@ -177,9 +177,16 @@ ECode CopyOnWriteArrayList::RetainAll(
 {
     VALIDATE_NOT_NULL(modified)
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
     *modified = RemoveOrRetain(collection, TRUE, 0, mElements->GetLength()) != 0;
     return NOERROR;
+}
+
+ECode CopyOnWriteArrayList::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    Boolean result;
+    return RetainAll(collection, &result);
 }
 
 ECode CopyOnWriteArrayList::GetSize(
@@ -240,7 +247,7 @@ ECode CopyOnWriteArrayList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
     AutoPtr< ArrayOf<IInterface*> > newElements = ArrayOf<IInterface*>::Alloc(mElements->GetLength() + 1);
     newElements->Copy(0, mElements, 0, location);
     newElements->Set(location, object);
@@ -256,7 +263,7 @@ ECode CopyOnWriteArrayList::AddAll(
 {
     VALIDATE_NOT_NULL(modified)
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
     AutoPtr< ArrayOf<IInterface*> > toAdd;
     collection->ToArray((ArrayOf<IInterface*>**)&toAdd);
     AutoPtr< ArrayOf<IInterface*> > newElements = ArrayOf<IInterface*>::Alloc(mElements->GetLength() + toAdd->GetLength());
@@ -335,7 +342,7 @@ ECode CopyOnWriteArrayList::Remove(
 {
     VALIDATE_NOT_NULL(object)
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
     AutoPtr<IInterface> removed = (*mElements)[location];
     RemoveRange(location, location + 1);
     *object = removed;
@@ -359,7 +366,7 @@ ECode CopyOnWriteArrayList::Set(
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::SubList(
+ECode CopyOnWriteArrayList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
@@ -406,7 +413,7 @@ ECode CopyOnWriteArrayList::AddAllAbsent(
 {
     VALIDATE_NOT_NULL(value)
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
     AutoPtr< ArrayOf<IInterface*> > toAdd;
     collection->ToArray((ArrayOf<IInterface*>**)&toAdd);
     AutoPtr< ArrayOf<IInterface*> > newElements = ArrayOf<IInterface*>::Alloc(mElements->GetLength() + toAdd->GetLength());
@@ -434,7 +441,7 @@ ECode CopyOnWriteArrayList::AddIfAbsent(
 {
     VALIDATE_NOT_NULL(value)
 
-    Object::Autolock lock(mLock);
+    Object::Autolock lock(this);
     Boolean isflag = FALSE;
     if (Contains(object, &isflag), isflag) {
         *value = FALSE;
@@ -662,6 +669,7 @@ ECode CopyOnWriteArrayList::Slice::CheckElementIndex(
         // throw new IndexOutOfBoundsException("index=" + index + ", size=" + (to - from));
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
+    return NOERROR;
 }
 
 ECode CopyOnWriteArrayList::Slice::CheckPositionIndex(
@@ -702,7 +710,7 @@ ECode CopyOnWriteArrayList::CowSubList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
-    Object::Autolock lock(mHost->mLock);
+    Object::Autolock lock(this);
     FAIL_RETURN(mSlice->CheckPositionIndex(location));
     FAIL_RETURN(mSlice->CheckConcurrentModification(mHost->mElements));
     mHost->Add(location + mSlice->mFrom, object);
@@ -717,7 +725,7 @@ ECode CopyOnWriteArrayList::CowSubList::AddAll(
 {
     VALIDATE_NOT_NULL(result)
 
-    Object::Autolock lock(mHost->mLock);
+    Object::Autolock lock(this);
     FAIL_RETURN(mSlice->CheckPositionIndex(location));
     FAIL_RETURN(mSlice->CheckConcurrentModification(mHost->mElements));
     Int32 oldSize = mHost->mElements->GetLength();
@@ -734,7 +742,7 @@ ECode CopyOnWriteArrayList::CowSubList::AddAll(
 {
     VALIDATE_NOT_NULL(result)
 
-    Object::Autolock lock(mHost->mLock);
+    Object::Autolock lock(this);
     Int32 length = 0;
     GetSize(&length);
     return AddAll(length, collection, result);
@@ -790,7 +798,7 @@ ECode CopyOnWriteArrayList::CowSubList::Remove(
 {
     VALIDATE_NOT_NULL(object)
 
-    Object::Autolock lock(mHost->mLock);
+    Object::Autolock lock(this);
     FAIL_RETURN(mSlice->CheckElementIndex(location));
     FAIL_RETURN(mSlice->CheckConcurrentModification(mHost->mElements));
     AutoPtr<IInterface> removed;
@@ -808,7 +816,7 @@ ECode CopyOnWriteArrayList::CowSubList::Set(
 {
     VALIDATE_NOT_NULL(outobject)
 
-    Object::Autolock lock(mHost->mLock);
+    Object::Autolock lock(this);
     FAIL_RETURN(mSlice->CheckElementIndex(location));
     FAIL_RETURN(mSlice->CheckConcurrentModification(mHost->mElements));
     AutoPtr<IInterface> result;
@@ -876,7 +884,7 @@ ECode CopyOnWriteArrayList::CowSubList::Remove(
 {
     VALIDATE_NOT_NULL(result)
 
-    Object::Autolock lock(mHost->mLock);
+    Object::Autolock lock(this);
     Int32 index = 0;
     IndexOf(object, &index);
     if (index == -1) {
@@ -895,7 +903,7 @@ ECode CopyOnWriteArrayList::CowSubList::RemoveAll(
 {
     VALIDATE_NOT_NULL(result)
 
-    Object::Autolock lock(mHost->mLock);
+    Object::Autolock lock(this);
     FAIL_RETURN(mSlice->CheckConcurrentModification(mHost->mElements));
     Int32 removed = mHost->RemoveOrRetain(collection, FALSE, mSlice->mFrom, mSlice->mTo);
     mSlice = new Slice(mHost->mElements, mSlice->mFrom, mSlice->mTo - removed);
@@ -909,7 +917,7 @@ ECode CopyOnWriteArrayList::CowSubList::RetainAll(
 {
     VALIDATE_NOT_NULL(result)
 
-    Object::Autolock lock(mHost->mLock);
+    Object::Autolock lock(this);
     FAIL_RETURN(mSlice->CheckConcurrentModification(mHost->mElements));
     Int32 removed = mHost->RemoveOrRetain(collection, TRUE, mSlice->mFrom, mSlice->mTo);
     mSlice = new Slice(mHost->mElements, mSlice->mFrom, mSlice->mTo - removed);
@@ -946,7 +954,7 @@ ECode CopyOnWriteArrayList::CowSubList::Add(
 {
     VALIDATE_NOT_NULL(modified)
 
-    Object::Autolock lock(mHost->mLock);
+    Object::Autolock lock(this);
     FAIL_RETURN(Add(mSlice->mTo - mSlice->mFrom, object));
     *modified = TRUE;
     return NOERROR;
@@ -954,7 +962,7 @@ ECode CopyOnWriteArrayList::CowSubList::Add(
 
 ECode CopyOnWriteArrayList::CowSubList::Clear()
 {
-    Object::Autolock lock(mHost->mLock);
+    Object::Autolock lock(this);
     FAIL_RETURN(mSlice->CheckConcurrentModification(mHost->mElements));
     mHost->RemoveRange(mSlice->mFrom, mSlice->mTo);
     mSlice = new Slice(mHost->mElements, mSlice->mFrom, mSlice->mFrom);
@@ -1010,7 +1018,7 @@ ECode CopyOnWriteArrayList::CowSubList::GetListIterator(
     return GetListIterator(0, it);
 }
 
-ECode CopyOnWriteArrayList::CowSubList::SubList(
+ECode CopyOnWriteArrayList::CowSubList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
@@ -1065,7 +1073,7 @@ ECode CopyOnWriteArrayList::CowIterator::HasPrevious(
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::CowIterator::NextIndex(
+ECode CopyOnWriteArrayList::CowIterator::GetNextIndex(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
@@ -1074,7 +1082,7 @@ ECode CopyOnWriteArrayList::CowIterator::NextIndex(
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::CowIterator::Previous(
+ECode CopyOnWriteArrayList::CowIterator::GetPrevious(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -1092,7 +1100,7 @@ ECode CopyOnWriteArrayList::CowIterator::Previous(
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::CowIterator::PreviousIndex(
+ECode CopyOnWriteArrayList::CowIterator::GetPreviousIndex(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
@@ -1117,7 +1125,7 @@ ECode CopyOnWriteArrayList::CowIterator::HasNext(
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::CowIterator::Next(
+ECode CopyOnWriteArrayList::CowIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)

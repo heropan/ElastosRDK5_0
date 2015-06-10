@@ -45,6 +45,27 @@ module
             [in] IInterface* object);
 
         /**
+         * Adds the specified object at the end of this {@code List}.
+         *
+         * @param object
+         *            the object to add.
+         * @return always true.
+         * @throws UnsupportedOperationException
+         *                if adding to this {@code List} is not supported.
+         * @throws ClassCastException
+         *                if the class of the object is inappropriate for this
+         *                {@code List}.
+         * @throws IllegalArgumentException
+         *                if the object cannot be added to this {@code List}.
+         */
+        Add(
+            [in] IInterface* object,
+            [out] Boolean* modified);
+
+        Add(
+            [in] IInterface* object);
+
+        /**
          * Inserts the objects in the specified collection at the specified location
          * in this {@code List}. The objects are added in the order they are returned from
          * the collection's iterator.
@@ -69,6 +90,10 @@ module
             [in] Int32 location,
             [in] ICollection* collection,
             [out] Boolean* modified);
+
+        AddAll(
+            [in] Int32 location,
+            [in] ICollection* collection);
 
         /**
          * Returns the element at the specified location in this {@code List}.
@@ -151,6 +176,9 @@ module
             [in] Int32 location,
             [out] IInterface** object);
 
+        Remove(
+            [in] Int32 location);
+
         /**
          * Replaces the element at the specified location in this {@code List} with the
          * specified object. This operation does not change the size of the {@code List}.
@@ -175,6 +203,10 @@ module
             [in] IInterface* object,
             [out] IInterface** prevObject);
 
+        Set(
+            [in] Int32 location,
+            [in] IInterface* object);
+
         /**
          * Returns a {@code List} of the specified portion of this {@code List} from the given start
          * index to the end index minus one. The returned {@code List} is backed by this
@@ -189,7 +221,7 @@ module
          *                if {@code start < 0, start > end} or {@code end >
          *                size()}
          */
-        SubList(
+        GetSubList(
             [in] Int32 start,
             [in] Int32 end,
             [out] IList** subList);

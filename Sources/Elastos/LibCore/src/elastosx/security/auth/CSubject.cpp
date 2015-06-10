@@ -317,7 +317,7 @@ ECode CSubject::ToString(
     while(it->HasNext(&hasNext), hasNext) {
         buf.AppendCStr("\tPrincipal: ");
         AutoPtr<IInterface> elem;
-        it->Next((IInterface**)&elem);
+        it->GetNext((IInterface**)&elem);
         buf.AppendObject(elem);
         buf.AppendChar('\n');
     }
@@ -327,7 +327,7 @@ ECode CSubject::ToString(
     while(it->HasNext(&hasNext), hasNext) {
         buf.AppendCStr("\tPublic Credential: ");
         AutoPtr<IInterface> elem;
-        it->Next((IInterface**)&elem);
+        it->GetNext((IInterface**)&elem);
         buf.AppendObject(elem);
         buf.AppendChar('\n');
     }
@@ -340,7 +340,7 @@ ECode CSubject::ToString(
     while(it->HasNext(&hasNext), hasNext) {
         buf.AppendCStr("\tPrivate Credential: ");
         AutoPtr<IInterface> elem;
-        it->Next((IInterface**)&elem);
+        it->GetNext((IInterface**)&elem);
         buf.AppendObject(elem);
         buf.AppendChar('\n');
     }
@@ -695,7 +695,7 @@ ECode CSubject::SecureSet::ReadObject(
     mElements->GetIterator((IIterator**)&it);
     for(Boolean hasNext = FALSE; (it->HasNext(&hasNext), hasNext);) {
         AutoPtr<IInterface> elem;
-        it->Next((IInterface**)&elem);
+        it->GetNext((IInterface**)&elem);
         VerifyElement(elem);
     }
     return NOERROR;
@@ -723,7 +723,7 @@ ECode CSubject::SecureSet::SecureIterator::HasNext(
     return mIterator->HasNext(hasNext);
 }
 
-ECode CSubject::SecureSet::SecureIterator::Next(
+ECode CSubject::SecureSet::SecureIterator::GetNext(
     /* [out] */ IInterface **next)
 {
     return mIterator->Next(next);

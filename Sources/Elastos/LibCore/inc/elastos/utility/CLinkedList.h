@@ -47,7 +47,7 @@ private:
         CARAPI HasPrevious(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI NextIndex(
@@ -85,7 +85,7 @@ private:
         CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -288,7 +288,7 @@ public:
     CARAPI GetListIterator(
         /* [out] */ IListIterator** it);
 
-    CARAPI SubList(
+    CARAPI GetSubList(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ IList** subList);

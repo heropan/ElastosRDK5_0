@@ -74,7 +74,7 @@ public:
         /* [in] */ Int32 location,
         /* [out] */ IInterface** outface);
 
-    CARAPI Elements(
+    CARAPI GetElements(
         /* [out] */ IEnumeration** enu);
 
     CARAPI EnsureCapacity(
@@ -162,7 +162,7 @@ public:
     CARAPI GetSize(
         /* [out] */ Int32* size);
 
-    CARAPI SubList(
+    CARAPI GetSubList(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ IList** subList);

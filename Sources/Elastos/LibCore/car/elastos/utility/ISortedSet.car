@@ -28,7 +28,7 @@ module
          *
          * @return a comparator or null if the natural ordering is used.
          */
-        Comparator(
+        GetComparator(
             [out] IComparator** outcom);
 
         /**
@@ -39,7 +39,7 @@ module
          * @throws NoSuchElementException
          *             when this {@code SortedSet} is empty.
          */
-        First(
+        GetFirst(
             [out] IInterface** outface);
 
         /**
@@ -58,7 +58,7 @@ module
          *             when the end element is null and this {@code SortedSet} does
          *             not support null elements.
          */
-        HeadSet(
+        GetHeadSet(
             [in] IInterface* end,
             [out] ISortedSet** outsort);
 
@@ -70,7 +70,7 @@ module
          * @throws NoSuchElementException
          *             when this {@code SortedSet} is empty.
          */
-        Last(
+        GetLast(
             [out] IInterface** outface);
 
         /**
@@ -95,7 +95,7 @@ module
          * @throws IllegalArgumentException
          *             when the start element is greater than the end element.
          */
-        SubSet(
+        GetSubSet(
             [in] IInterface* start,
             [in] IInterface* end,
             [out] ISortedSet** outsort);
@@ -116,7 +116,7 @@ module
          *             when the start element is null and this {@code SortedSet}
          *             does not support null elements.
          */
-        TailSet(
+        GetTailSet(
             [in] IInterface* start,
             [out] ISortedSet** outsort);
     }

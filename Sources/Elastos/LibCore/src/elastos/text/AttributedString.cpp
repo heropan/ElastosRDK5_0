@@ -97,7 +97,7 @@ ECode AttributedString::AttributedIterator::Clone(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode AttributedString::AttributedIterator::Current(
+ECode AttributedString::AttributedIterator::GetCurrent(
     /* [out] */ Char32* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -109,7 +109,7 @@ ECode AttributedString::AttributedIterator::Current(
     return NOERROR;
 }
 
-ECode AttributedString::AttributedIterator::First(
+ECode AttributedString::AttributedIterator::GetFirst(
     /* [out] */ Char32* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -346,7 +346,7 @@ ECode AttributedString::AttributedIterator::GetRunLimit(
     IAttributedCharacterIteratorAttribute* attr;
     while(it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next((IInterface**)&obj);
+        it->GetNext((IInterface**)&obj);
         attr = IAttributedCharacterIteratorAttribute::Probe(obj);
 
         GetRunLimit(attr, &newLimit);
@@ -432,7 +432,7 @@ ECode AttributedString::AttributedIterator::GetRunStart(
     IAttributedCharacterIteratorAttribute* attr;
     while(it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next((IInterface**)&obj);
+        it->GetNext((IInterface**)&obj);
         attr = IAttributedCharacterIteratorAttribute::Probe(obj);
 
         GetRunStart(attr, &newStart);
@@ -445,7 +445,7 @@ ECode AttributedString::AttributedIterator::GetRunStart(
     return NOERROR;
 }
 
-ECode AttributedString::AttributedIterator::Last(
+ECode AttributedString::AttributedIterator::GetLast(
     /* [out] */ Char32* lastValue)
 {
     VALIDATE_NOT_NULL(lastValue);
@@ -458,7 +458,7 @@ ECode AttributedString::AttributedIterator::Last(
     return NOERROR;
 }
 
-ECode AttributedString::AttributedIterator::Next(
+ECode AttributedString::AttributedIterator::GetNext(
     /* [out] */ Char32* nextValue)
 {
     VALIDATE_NOT_NULL(nextValue);
@@ -471,7 +471,7 @@ ECode AttributedString::AttributedIterator::Next(
     return NOERROR;
 }
 
-ECode AttributedString::AttributedIterator::Previous(
+ECode AttributedString::AttributedIterator::GetPrevious(
     /* [out] */ Char32* previousValue)
 {
     VALIDATE_NOT_NULL(previousValue);
@@ -532,9 +532,9 @@ ECode AttributedString::constructor(
     StringBuffer buffer;
     for (Int32 i = bi; i < ei; i++) {
         Char32 cv, nv;
-        ci->Current(&cv);
+        ci->GetCurrent(&cv);
         buffer += cv;
-        ci->Next(&nv);
+        ci->GetNext(&nv);
     }
     buffer.ToString(&mText);
 
@@ -552,11 +552,11 @@ ECode AttributedString::constructor(
     Int32 start, limit;
     while(it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next((IInterface**)&obj);
+        it->GetNext((IInterface**)&obj);
         attr = IAttributedCharacterIteratorAttribute::Probe(obj);
 
         ci->SetIndex(0, &ch);
-        while (ci->Current(&cv), cv != (Char32)ICharacterIterator::DONE) {
+        while (ci->GetCurrent(&cv), cv != (Char32)ICharacterIterator::DONE) {
             iterator->GetRunStart(attr, &start);
             iterator->GetRunLimit(attr, &limit);
             AutoPtr<IInterface> value;
@@ -597,10 +597,10 @@ ECode AttributedString::constructor(
     Int32 index;
     while (ci->GetIndex(&index) ,index < end) {
         Char32 c;
-        ci->Current(&c);
+        ci->GetCurrent(&c);
         buffer += c;
         Char32 nextC;
-        ci->Next(&nextC);
+        ci->GetNext(&nextC);
     }
     buffer.ToString(&mText);
 
@@ -612,7 +612,7 @@ ECode AttributedString::constructor(
     Int32 id, runStart, limit;
     while(it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next((IInterface**)&obj);
+        it->GetNext((IInterface**)&obj);
         attr = IAttributedCharacterIteratorAttribute::Probe(obj);
 
         ci->SetIndex(start, &c);
@@ -703,7 +703,7 @@ ECode AttributedString::constructor(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;;
-        it->Next((IInterface**)&obj);
+        it->GetNext((IInterface**)&obj);
         IMapEntry* entry = IMapEntry::Probe(obj);
 
         AutoPtr<IInterface> val;

@@ -38,7 +38,7 @@ ECode CCollections::Iterator::HasNext(
     return NOERROR;
 }
 
-ECode CCollections::Iterator::Next(
+ECode CCollections::Iterator::GetNext(
     /* [out] */ IInterface** object)
 {
     return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -66,7 +66,7 @@ ECode CCollections::MyEnumeration::HasMoreElements(
     return NOERROR;
 }
 
-ECode CCollections::MyEnumeration::NextElement(
+ECode CCollections::MyEnumeration::GetNextElement(
     /* [out] */ IInterface** inter)
 {
     return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -89,10 +89,10 @@ ECode CCollections::MyEnumeration2::HasMoreElements(
     return mIt->HasNext(value);
 }
 
-ECode CCollections::MyEnumeration2::NextElement(
+ECode CCollections::MyEnumeration2::GetNextElement(
     /* [out] */ IInterface** inter)
 {
-    return mIt->Next(inter);
+    return mIt->GetNext(inter);
 }
 
 //====================================================================
@@ -326,12 +326,12 @@ ECode CCollections::CopiesList::Set(
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
-ECode CCollections::CopiesList::SubList(
+ECode CCollections::CopiesList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
 {
-    return AbstractList::SubList(start, end, subList);
+    return AbstractList::GetSubList(start, end, subList);
 }
 
 ECode CCollections::CopiesList::GetIterator(
@@ -554,12 +554,12 @@ ECode CCollections::EmptyList::GetListIterator(
     return AbstractList::GetListIterator(it);
 }
 
-ECode CCollections::EmptyList::SubList(
+ECode CCollections::EmptyList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
 {
-    return AbstractList::SubList(start, end, subList);
+    return AbstractList::GetSubList(start, end, subList);
 }
 
 ECode CCollections::EmptyList::GetListIterator(
@@ -817,7 +817,7 @@ ECode CCollections::EmptyMap::ContainsValue(
     return NOERROR;
 }
 
-ECode CCollections::EmptyMap::EntrySet(
+ECode CCollections::EmptyMap::GetEntrySet(
     /* [out, callee] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(entries)
@@ -835,7 +835,7 @@ ECode CCollections::EmptyMap::Get(
     return NOERROR;
 }
 
-ECode CCollections::EmptyMap::KeySet(
+ECode CCollections::EmptyMap::GetKeySet(
     /* [out, callee] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
@@ -844,7 +844,7 @@ ECode CCollections::EmptyMap::KeySet(
     return NOERROR;
 }
 
-ECode CCollections::EmptyMap::Values(
+ECode CCollections::EmptyMap::GetValues(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1006,7 +1006,7 @@ ECode CCollections::SingletonSet::Iterator::HasNext(
     return NOERROR;
 }
 
-ECode CCollections::SingletonSet::Iterator::Next(
+ECode CCollections::SingletonSet::Iterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -1426,12 +1426,12 @@ ECode CCollections::SingletonList::Set(
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
-ECode CCollections::SingletonList::SubList(
+ECode CCollections::SingletonList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
 {
-    return AbstractList::SubList(start, end, subList);
+    return AbstractList::GetSubList(start, end, subList);
 }
 
 ECode CCollections::SingletonList::GetIterator(
@@ -1477,7 +1477,7 @@ ECode CCollections::SingletonMap::MySet::Iterator::HasNext(
     return NOERROR;
 }
 
-ECode CCollections::SingletonMap::MySet::Iterator::Next(
+ECode CCollections::SingletonMap::MySet::Iterator::GetNext(
     /* [out] */ IMapEntry** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -1492,7 +1492,7 @@ ECode CCollections::SingletonMap::MySet::Iterator::Next(
     return NOERROR;
 }
 
-ECode CCollections::SingletonMap::MySet::Iterator::Next(
+ECode CCollections::SingletonMap::MySet::Iterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -1788,7 +1788,7 @@ ECode CCollections::SingletonMap::GetSize(
     return NOERROR;
 }
 
-ECode CCollections::SingletonMap::EntrySet(
+ECode CCollections::SingletonMap::GetEntrySet(
     /* [out, callee] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(entries)
@@ -1821,10 +1821,10 @@ ECode CCollections::SingletonMap::IsEmpty(
     return AbstractMap::IsEmpty(result);
 }
 
-ECode CCollections::SingletonMap::KeySet(
+ECode CCollections::SingletonMap::GetKeySet(
     /* [out, callee] */ ISet** keySet)
 {
-    return AbstractMap::KeySet(keySet);
+    return AbstractMap::GetKeySet(keySet);
 }
 
 ECode CCollections::SingletonMap::Put(
@@ -1848,10 +1848,10 @@ ECode CCollections::SingletonMap::Remove(
     return AbstractMap::Remove(key, value);
 }
 
-ECode CCollections::SingletonMap::Values(
+ECode CCollections::SingletonMap::GetValues(
     /* [out] */ ICollection** value)
 {
-    return AbstractMap::Values(value);
+    return AbstractMap::GetValues(value);
 }
 
 //====================================================================
@@ -2116,7 +2116,7 @@ CCollections::SynchronizedRandomAccessList::SynchronizedRandomAccessList(
 {
 }
 
-ECode CCollections::SynchronizedRandomAccessList::SubList(
+ECode CCollections::SynchronizedRandomAccessList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
@@ -2351,7 +2351,7 @@ ECode CCollections::SynchronizedList::Set(
     return mList->Set(location, object, prevObject);
 }
 
-ECode CCollections::SynchronizedList::SubList(
+ECode CCollections::SynchronizedList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
@@ -2559,13 +2559,13 @@ ECode CCollections::SynchronizedMap::ContainsValue(
     return mM->ContainsValue(value, result);
 }
 
-ECode CCollections::SynchronizedMap::EntrySet(
+ECode CCollections::SynchronizedMap::GetEntrySet(
     /* [out, callee] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(*entries)
     Mutex::Autolock lock(mMutex);
     AutoPtr<ISet> entry;
-    mM->EntrySet((ISet**)&entry);
+    mM->GetEntrySet((ISet**)&entry);
     AutoPtr<ISet> res = new SynchronizedSet(entry, mMutex);
     *entries = res;
     REFCOUNT_ADD(*entries)
@@ -2606,13 +2606,13 @@ ECode CCollections::SynchronizedMap::IsEmpty(
     return mM->IsEmpty(result);
 }
 
-ECode CCollections::SynchronizedMap::KeySet(
+ECode CCollections::SynchronizedMap::GetKeySet(
     /* [out, callee] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
     Mutex::Autolock lock(mMutex);
     AutoPtr<ISet> key;
-    mM->KeySet((ISet**)&key);
+    mM->GetKeySet((ISet**)&key);
     *keySet = new SynchronizedSet(key, mMutex);
     REFCOUNT_ADD(*keySet)
     return NOERROR;
@@ -2651,7 +2651,7 @@ ECode CCollections::SynchronizedMap::GetSize(
     return mM->GetSize(size);
 }
 
-ECode CCollections::SynchronizedMap::Values(
+ECode CCollections::SynchronizedMap::GetValues(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -2996,10 +2996,10 @@ ECode CCollections::SynchronizedSortedMap::ContainsValue(
     return SynchronizedMap::ContainsValue(value, result);
 }
 
-ECode CCollections::SynchronizedSortedMap::EntrySet(
+ECode CCollections::SynchronizedSortedMap::GetEntrySet(
     /* [out, callee] */ ISet** entries)
 {
-    return SynchronizedMap::EntrySet(entries);
+    return SynchronizedMap::GetEntrySet(entries);
 }
 
 ECode CCollections::SynchronizedSortedMap::Equals(
@@ -3028,16 +3028,16 @@ ECode CCollections::SynchronizedSortedMap::IsEmpty(
     return SynchronizedMap::IsEmpty(result);
 }
 
-ECode CCollections::SynchronizedSortedMap::KeySet(
+ECode CCollections::SynchronizedSortedMap::GetKeySet(
     /* [out, callee] */ ISet** keySet)
 {
-    return SynchronizedMap::KeySet(keySet);
+    return SynchronizedMap::GetKeySet(keySet);
 }
 
-ECode CCollections::SynchronizedSortedMap::Values(
+ECode CCollections::SynchronizedSortedMap::GetValues(
     /* [out] */ ICollection** value)
 {
-    return SynchronizedMap::Values(value);
+    return SynchronizedMap::GetValues(value);
 }
 
 ECode CCollections::SynchronizedSortedMap::Put(
@@ -3314,11 +3314,11 @@ ECode CCollections::UnmodifiableCollection::Iterator::HasNext(
     return mIterator->HasNext(result);
 }
 
-ECode CCollections::UnmodifiableCollection::Iterator::Next(
+ECode CCollections::UnmodifiableCollection::Iterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
-    return mIterator->Next(object);
+    return mIterator->GetNext(object);
 }
 
 ECode CCollections::UnmodifiableCollection::Iterator::Remove()
@@ -3548,7 +3548,7 @@ CCollections::UnmodifiableRandomAccessList::UnmodifiableRandomAccessList(
 {
 }
 
-ECode CCollections::UnmodifiableRandomAccessList::SubList(
+ECode CCollections::UnmodifiableRandomAccessList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
@@ -3640,32 +3640,32 @@ ECode CCollections::UnmodifiableList::ListIterator::HasPrevious(
     return mIterator->HasPrevious(result);
 }
 
-ECode CCollections::UnmodifiableList::ListIterator::Next(
+ECode CCollections::UnmodifiableList::ListIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
-    return mIterator->Next(object);
+    return mIterator->GetNext(object);
 }
 
 ECode CCollections::UnmodifiableList::ListIterator::NextIndex(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return mIterator->NextIndex(index);
+    return mIterator->GetNextIndex(index);
 }
 
 ECode CCollections::UnmodifiableList::ListIterator::Previous(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
-    return mIterator->Previous(object);
+    return mIterator->GetPrevious(object);
 }
 
 ECode CCollections::UnmodifiableList::ListIterator::PreviousIndex(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return mIterator->PreviousIndex(index);
+    return mIterator->GetPreviousIndex(index);
 }
 
 ECode CCollections::UnmodifiableList::ListIterator::Remove()
@@ -3828,7 +3828,7 @@ ECode CCollections::UnmodifiableList::Set(
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
-ECode CCollections::UnmodifiableList::SubList(
+ECode CCollections::UnmodifiableList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
@@ -4015,18 +4015,18 @@ ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::Iterator::HasNext(
     return mIterator->HasNext(result);
 }
 
-ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::Iterator::Next(
+ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::Iterator::GetNext(
     /* [out] */ IMapEntry** object)
 {
     AutoPtr<IMapEntry> o;
-    mIterator->Next((IMapEntry**)&o);
+    mIterator->GetNext((IMapEntry**)&o);
     AutoPtr<IMapEntry> res = new UnmodifiableMapEntry(o);
     *object = res;
     REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
-ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::Iterator::Next(
+ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::Iterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -4072,7 +4072,7 @@ ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::ToArray(
     AutoPtr<IIterator> it;
     GetIterator((IIterator**)&it);
     for (Int32 i = length; --i >= 0;) {
-        it->Next(&(*result)[i]);
+        it->GetNext(&(*result)[i]);
     }
     *array = result;
     REFCOUNT_ADD(*array)
@@ -4093,7 +4093,7 @@ ECode CCollections::UnmodifiableMap::UnmodifiableEntrySet::ToArray(
     }
     while (index < size) {
         AutoPtr<IInterface> o;
-        it->Next((IInterface**)&o);
+        it->GetNext((IInterface**)&o);
         inArray->Set(index++, o);
     }
     if (index < inArray->GetLength()) {
@@ -4185,12 +4185,12 @@ ECode CCollections::UnmodifiableMap::ContainsValue(
     return mM->ContainsValue(value, result);
 }
 
-ECode CCollections::UnmodifiableMap::EntrySet(
+ECode CCollections::UnmodifiableMap::GetEntrySet(
     /* [out, callee] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(entries)
     AutoPtr<ISet> set;
-    mM->EntrySet((ISet**)&set);
+    mM->GetEntrySet((ISet**)&set);
     AutoPtr<ISet> res = new UnmodifiableEntrySet(set);
     *entries = res;
     REFCOUNT_ADD(*entries)
@@ -4227,12 +4227,12 @@ ECode CCollections::UnmodifiableMap::IsEmpty(
     return mM->IsEmpty(result);
 }
 
-ECode CCollections::UnmodifiableMap::KeySet(
+ECode CCollections::UnmodifiableMap::GetKeySet(
     /* [out, callee] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
     AutoPtr<ISet> set;
-    mM->KeySet((ISet**)&set);
+    mM->GetKeySet((ISet**)&set);
     AutoPtr<ISet> res = new UnmodifiableSet(set);
     *keySet = res;
     REFCOUNT_ADD(*keySet)
@@ -4267,7 +4267,7 @@ ECode CCollections::UnmodifiableMap::GetSize(
     return mM->GetSize(size);
 }
 
-ECode CCollections::UnmodifiableMap::Values(
+ECode CCollections::UnmodifiableMap::GetValues(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -4560,10 +4560,10 @@ ECode CCollections::UnmodifiableSortedMap::ContainsValue(
     return UnmodifiableMap::ContainsValue(value, result);
 }
 
-ECode CCollections::UnmodifiableSortedMap::EntrySet(
+ECode CCollections::UnmodifiableSortedMap::GetEntrySet(
     /* [out, callee] */ ISet** entries)
 {
-    return UnmodifiableMap::EntrySet(entries);
+    return UnmodifiableMap::GetEntrySet(entries);
 }
 
 ECode CCollections::UnmodifiableSortedMap::Equals(
@@ -4592,10 +4592,10 @@ ECode CCollections::UnmodifiableSortedMap::IsEmpty(
     return UnmodifiableMap::IsEmpty(result);
 }
 
-ECode CCollections::UnmodifiableSortedMap::KeySet(
+ECode CCollections::UnmodifiableSortedMap::GetKeySet(
     /* [out, callee] */ ISet** keySet)
 {
-    return UnmodifiableMap::KeySet(keySet);
+    return UnmodifiableMap::GetKeySet(keySet);
 }
 
 ECode CCollections::UnmodifiableSortedMap::Put(
@@ -4625,10 +4625,10 @@ ECode CCollections::UnmodifiableSortedMap::GetSize(
     return UnmodifiableMap::GetSize(size);
 }
 
-ECode CCollections::UnmodifiableSortedMap::Values(
+ECode CCollections::UnmodifiableSortedMap::GetValues(
     /* [out] */ ICollection** value)
 {
-    return UnmodifiableMap::Values(value);
+    return UnmodifiableMap::GetValues(value);
 }
 
 //====================================================================
@@ -4847,16 +4847,16 @@ ECode CCollections::_BinarySearch(
         while ((it->HasNext(&b), b)) {
             Int32 result;
             AutoPtr<IInterface> o;
-            it->Next((IInterface**)&o);
+            it->GetNext((IInterface**)&o);
             AutoPtr<IComparable> com = IComparable::Probe(o);
             com->CompareTo(object, &result);
             result = -result;
             if (result <= 0) {
                 if (result == 0) {
-                    return it->PreviousIndex(index);
+                    return it->GetPreviousIndex(index);
                 }
                 Int32 preIndex;
-                it->PreviousIndex(&preIndex);
+                it->GetPreviousIndex(&preIndex);
                 *index = -preIndex - 1;
                 return NOERROR;
             }
@@ -4910,15 +4910,15 @@ ECode CCollections::_BinarySearch(
         while ((it->HasNext(&b), b)) {
             Int32 result;
             AutoPtr<IInterface> o;
-            it->Next((IInterface**)&o);
+            it->GetNext((IInterface**)&o);
             comparator->Compare(o, object, &result);
             result = -result;
             if (result <= 0) {
                 if (result == 0) {
-                    return it->PreviousIndex(index);
+                    return it->GetPreviousIndex(index);
                 }
                 Int32 preIndex;
-                it->PreviousIndex(&preIndex);
+                it->GetPreviousIndex(&preIndex);
                 *index = -preIndex - 1;
                 return NOERROR;
             }
@@ -4971,12 +4971,12 @@ ECode CCollections::_Copy(
     Boolean b;
     while ((srcIt->HasNext(&b), b)) {
         AutoPtr<IInterface> o1;
-        ec = destIt->Next((IInterface**)&o1);
+        ec = destIt->GetNext((IInterface**)&o1);
         if (ec != NOERROR) {
             return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
         }
         AutoPtr<IInterface> o2;
-        srcIt->Next((IInterface**)&o2);
+        srcIt->GetNext((IInterface**)&o2);
         destIt->Set(o2);
     }
     return NOERROR;
@@ -5003,7 +5003,7 @@ ECode CCollections::_Fill(
     Boolean b;
     while ((it->HasNext(&b), b)) {
         AutoPtr<IInterface> o;
-        it->Next((IInterface**)&o);
+        it->GetNext((IInterface**)&o);
         it->Set(object);
     }
     return NOERROR;
@@ -5017,11 +5017,11 @@ ECode CCollections::_Max(
     AutoPtr<IIterator> it;
     collection->GetIterator((IIterator**)&it);
     AutoPtr<IInterface> max;
-    it->Next((IInterface**)&max);
+    it->GetNext((IInterface**)&max);
     Boolean b;
     while ((it->HasNext(&b), b)) {
         AutoPtr<IInterface> next;
-        it->Next((IInterface**)&next);
+        it->GetNext((IInterface**)&next);
         AutoPtr<IComparable> res = IComparable::Probe(max);
         Int32 val;
         res->CompareTo(next, &val);
@@ -5047,11 +5047,11 @@ ECode CCollections::_Max(
     AutoPtr<IIterator> it;
     collection->GetIterator((IIterator**)&it);
     AutoPtr<IInterface> max;
-    it->Next((IInterface**)&max);
+    it->GetNext((IInterface**)&max);
     Boolean b;
     while ((it->HasNext(&b), b)) {
         AutoPtr<IInterface> next;
-        it->Next((IInterface**)&next);
+        it->GetNext((IInterface**)&next);
         Int32 res;
         if ((comparator->Compare(max, next, &res), res) < 0) {
             max = next;
@@ -5070,11 +5070,11 @@ ECode CCollections::_Min(
     AutoPtr<IIterator> it;
     collection->GetIterator((IIterator**)&it);
     AutoPtr<IInterface> min;
-    it->Next((IInterface**)&min);
+    it->GetNext((IInterface**)&min);
     Boolean b;
     while ((it->HasNext(&b), b)) {
         AutoPtr<IInterface> next;
-        it->Next((IInterface**)&next);
+        it->GetNext((IInterface**)&next);
         AutoPtr<IComparable> com = IComparable::Probe(min);
         Int32 res;
         if ((com->CompareTo(next, &res), res) > 0) {
@@ -5099,11 +5099,11 @@ ECode CCollections::_Min(
     AutoPtr<IIterator> it;
     collection->GetIterator((IIterator**)&it);
     AutoPtr<IInterface> min;
-    it->Next((IInterface**)&min);
+    it->GetNext((IInterface**)&min);
     Boolean b;
     while ((it->HasNext(&b), b)) {
         AutoPtr<IInterface> next;
-        it->Next((IInterface**)&next);
+        it->GetNext((IInterface**)&next);
         Int32 num = 0;
         comparator->Compare(min, next, &num);
         if (num > 0) {
@@ -5138,9 +5138,9 @@ ECode CCollections::_Reverse(
     list->GetListIterator(size, (IListIterator**)&back);
     for (Int32 i = 0; i < size / 2; i++) {
         AutoPtr<IInterface> frontNext;
-        front->Next((IInterface**)&frontNext);
+        front->GetNext((IInterface**)&frontNext);
         AutoPtr<IInterface> backPrev;
-        back->Previous((IInterface**)&backPrev);
+        back->GetPrevious((IInterface**)&backPrev);
         front->Set(backPrev);
         back->Set(frontNext);
     }
@@ -5220,7 +5220,7 @@ ECode CCollections::_Shuffle(
         Boolean b;
         while ((it->HasNext(&b), b)) {
             AutoPtr<IInterface> o;
-            it->Next((IInterface**)&o);
+            it->GetNext((IInterface**)&o);
             it->Set((*array)[i++]);
         }
     }
@@ -5273,7 +5273,7 @@ ECode CCollections::_Sort(
     Boolean b;
     while ((it->HasNext(&b), b)) {
         AutoPtr<IInterface> o;
-        it->Next((IInterface**)&o);
+        it->GetNext((IInterface**)&o);
         it->Set((*array)[i++]);
     }
     return NOERROR;
@@ -5295,7 +5295,7 @@ ECode CCollections::_Sort(
     while ((it->HasNext(&b), b)) {
         Int32 i = 0;
         AutoPtr<IInterface> o;
-        it->Next((IInterface**)&o);
+        it->GetNext((IInterface**)&o);
         it->Set((*array)[i++]);
     }
     return NOERROR;
@@ -5435,7 +5435,7 @@ ECode CCollections::_IndexOfSubList(
         list->GetListIterator(index, (IListIterator**)&listIt);
 
         AutoPtr<IInterface> o;
-        listIt->Next((IInterface**)&o);
+        listIt->GetNext((IInterface**)&o);
         if ((firstObj == NULL) ? o == NULL : Object::Equals(firstObj, o)) {
 
             // iterate through the elements in sublist to see
@@ -5445,13 +5445,13 @@ ECode CCollections::_IndexOfSubList(
             Boolean difFound = FALSE, subHasNext, listHasNext;
             while ((sublistIt->HasNext(&subHasNext), subHasNext)) {
                 AutoPtr<IInterface> element;
-                sublistIt->Next((IInterface**)&element);
+                sublistIt->GetNext((IInterface**)&element);
                 if (!(listIt->HasNext(&listHasNext), listHasNext)) {
                     *result = -1;
                     return NOERROR;
                 }
                 AutoPtr<IInterface> o;
-                listIt->Next((IInterface**)&o);
+                listIt->GetNext((IInterface**)&o);
                 if ((element == NULL) ? o != NULL : !Object::Equals(element, o)) {
                     difFound = TRUE;
                     break;
@@ -5504,7 +5504,7 @@ ECode CCollections::_LastIndexOfSubList(
         list->GetListIterator(index + 1, (IListIterator**)&listIt);
 
         AutoPtr<IInterface> o;
-        listIt->Previous((IInterface**)&o);
+        listIt->GetPrevious((IInterface**)&o);
         if ((lastObj == NULL) ? o == NULL : Object::Equals(lastObj, o)) {
             // iterate through the elements in sublist to see
             // if they are included in the same order in the list
@@ -5514,14 +5514,14 @@ ECode CCollections::_LastIndexOfSubList(
             Boolean subPrevious, listPrevious;
             while ((sublistIt->HasPrevious(&subPrevious), subPrevious)) {
                 AutoPtr<IInterface> element;
-                sublistIt->Previous((IInterface**)&element);
+                sublistIt->GetPrevious((IInterface**)&element);
                 if (!(listIt->HasPrevious(&listPrevious), listPrevious)) {
                     *result = -1;
                     return NOERROR;
                 }
 
                 AutoPtr<IInterface> o;
-                listIt->Previous((IInterface**)&o);
+                listIt->GetPrevious((IInterface**)&o);
                 if ((element == NULL) ? o != NULL : !Object::Equals(element, o)) {
                     difFound = TRUE;
                     break;
@@ -5530,7 +5530,7 @@ ECode CCollections::_LastIndexOfSubList(
             // All elements of sublist are found in main list
             // starting from listIt.nextIndex().
             if (!difFound) {
-                return listIt->NextIndex(result);
+                return listIt->GetNextIndex(result);
             }
         }
         // This was not the sequence we were looking for,
@@ -5760,7 +5760,7 @@ ECode CCollections::_Frequency(
     c->GetIterator((IIterator**)&itr);
     while ((itr->HasNext(&b), b)) {
         AutoPtr<IInterface> e;
-        itr->Next((IInterface**)&e);
+        itr->GetNext((IInterface**)&e);
         if ((o == NULL) ? e == NULL : Object::Equals(o, e)) {
             num++;
         }
@@ -5939,7 +5939,7 @@ ECode CCollections::_Disjoint(
     Boolean b;
     while ((it->HasNext(&b), b)) {
         AutoPtr<IInterface> o;
-        it->Next((IInterface**)&o);
+        it->GetNext((IInterface**)&o);
         Boolean a;
         if ((c2->Contains(o, &a), a)) {
             *result = FALSE;
@@ -6451,7 +6451,7 @@ CCollections::SetFromMap::SetFromMap(
     /* [in] */ IMap* map)
 {
     mM = map;
-    map->KeySet((ISet**)&mBackingSet);
+    map->GetKeySet((ISet**)&mBackingSet);
 }
 
 ECode CCollections::SetFromMap::Equals(
@@ -6589,7 +6589,7 @@ ECode CCollections::SetFromMap::ReadObject(
     /* [in] */ IObjectInputStream* stream)
 {
     stream->DefaultReadObject();
-    return mM->KeySet((ISet**)&mBackingSet);
+    return mM->GetKeySet((ISet**)&mBackingSet);
 }
 
 //====================================================================
@@ -6700,7 +6700,7 @@ ECode CCollections::AsLIFOQueue::Clear()
     return mQ->Clear();
 }
 
-ECode CCollections::AsLIFOQueue::Element(
+ECode CCollections::AsLIFOQueue::GetElement(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -7079,11 +7079,11 @@ ECode CCollections::CheckedListIterator::HasNext(
     return mI->HasNext(result);
 }
 
-ECode CCollections::CheckedListIterator::Next(
+ECode CCollections::CheckedListIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
-    return mI->Next(object);
+    return mI->GetNext(object);
 }
 
 ECode CCollections::CheckedListIterator::Remove()
@@ -7102,21 +7102,21 @@ ECode CCollections::CheckedListIterator::Previous(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(*object)
-    return mI->Previous(object);
+    return mI->GetPrevious(object);
 }
 
 ECode CCollections::CheckedListIterator::NextIndex(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return mI->NextIndex(index);
+    return mI->GetNextIndex(index);
 }
 
 ECode CCollections::CheckedListIterator::PreviousIndex(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index)
-    return mI->PreviousIndex(index);
+    return mI->GetPreviousIndex(index);
 }
 
 ECode CCollections::CheckedListIterator::Set(
@@ -7284,7 +7284,7 @@ ECode CCollections::CheckedList::GetListIterator(
     return NOERROR;
 }
 
-ECode CCollections::CheckedList::SubList(
+ECode CCollections::CheckedList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
@@ -7682,19 +7682,19 @@ ECode CCollections::CheckedMap::CheckedEntrySet::CheckedEntryIterator::Remove()
     return mI->Remove();
 }
 
-ECode CCollections::CheckedMap::CheckedEntrySet::CheckedEntryIterator::Next(
+ECode CCollections::CheckedMap::CheckedEntrySet::CheckedEntryIterator::GetNext(
     /* [out] */ IMapEntry** object)
 {
     VALIDATE_NOT_NULL(object)
     AutoPtr<IInterface> o;
-    mI->Next((IInterface**)&o);
+    mI->GetNext((IInterface**)&o);
     AutoPtr<IMapEntry> res = new CheckedEntry(IMapEntry::Probe(o), mValueType);
     *object = res;
     REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
-ECode CCollections::CheckedMap::CheckedEntrySet::CheckedEntryIterator::Next(
+ECode CCollections::CheckedMap::CheckedEntrySet::CheckedEntryIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -7784,7 +7784,7 @@ ECode CCollections::CheckedMap::CheckedEntrySet::ToArray(
     GetIterator((IIterator**)&it);
     for (Int32 i = 0; i < thisSize; i++) {
         AutoPtr<IInterface> o;
-        it->Next((IInterface**)&o);
+        it->GetNext((IInterface**)&o);
         arr->Set(i, o);
     }
     *array = arr;
@@ -7806,7 +7806,7 @@ ECode CCollections::CheckedMap::CheckedEntrySet::ToArray(
     GetIterator((IIterator**)&it);
     for (Int32 i = 0; i < thisSize; i++) {
         AutoPtr<IInterface> o;
-        it->Next((IInterface**)&o);
+        it->GetNext((IInterface**)&o);
         inArray->Set(i, o);
     }
     if (thisSize < inArray->GetLength()) {
@@ -8047,12 +8047,12 @@ ECode CCollections::CheckedMap::PutAll(
     }
     AutoPtr<ArrayOf<IMapEntry*> > entries = ArrayOf<IMapEntry*>::Alloc(size);
     AutoPtr<ISet> entry;
-    map->EntrySet((ISet**)&entry);
+    map->GetEntrySet((ISet**)&entry);
     AutoPtr<IIterator> it;
     entry->GetIterator((IIterator**)&it);
     for (Int32 i = 0; i < size; i++) {
         AutoPtr<IInterface> o;
-        it->Next((IInterface**)&o);
+        it->GetNext((IInterface**)&o);
         AutoPtr<IMapEntry> e = IMapEntry::Probe(o);
         if (e != NULL) {
             AutoPtr<IInterface> key;
@@ -8080,26 +8080,26 @@ ECode CCollections::CheckedMap::Clear()
     return mM->Clear();
 }
 
-ECode CCollections::CheckedMap::KeySet(
+ECode CCollections::CheckedMap::GetKeySet(
     /* [out, callee] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
-    return mM->KeySet(keySet);
+    return mM->GetKeySet(keySet);
 }
 
-ECode CCollections::CheckedMap::Values(
+ECode CCollections::CheckedMap::GetValues(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value)
     return mM->Values(value);
 }
 
-ECode CCollections::CheckedMap::EntrySet(
+ECode CCollections::CheckedMap::GetEntrySet(
     /* [out, callee] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(entries)
     AutoPtr<ISet> set;
-    mM->EntrySet((ISet**)&set);
+    mM->GetEntrySet((ISet**)&set);
     AutoPtr<ISet> res = new CheckedEntrySet(set, mValueType);
     *entries = res;
     REFCOUNT_ADD(*entries)
@@ -8501,22 +8501,22 @@ ECode CCollections::CheckedSortedMap::Clear()
     return CheckedMap::Clear();
 }
 
-ECode CCollections::CheckedSortedMap::KeySet(
+ECode CCollections::CheckedSortedMap::GetKeySet(
     /* [out, callee] */ ISet** keySet)
 {
-    return CheckedMap::KeySet(keySet);
+    return CheckedMap::GetKeySet(keySet);
 }
 
-ECode CCollections::CheckedSortedMap::Values(
+ECode CCollections::CheckedSortedMap::GetValues(
     /* [out] */ ICollection** value)
 {
-    return CheckedMap::Values(value);
+    return CheckedMap::GetValues(value);
 }
 
-ECode CCollections::CheckedSortedMap::EntrySet(
+ECode CCollections::CheckedSortedMap::GetEntrySet(
     /* [out, callee] */ ISet** entries)
 {
-    return CheckedMap::EntrySet(entries);
+    return CheckedMap::GetEntrySet(entries);
 }
 
 ECode CCollections::CheckedSortedMap::Equals(

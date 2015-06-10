@@ -72,7 +72,7 @@ private:
         KeyIterator(
             /* [in] */ CLinkedHashMap* host);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** outface);
     };
 
@@ -82,7 +82,7 @@ private:
         ValueIterator(
             /* [in] */ CLinkedHashMap* host);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** outface);
     };
 
@@ -92,7 +92,7 @@ private:
         EntryIterator(
             /* [in] */ CLinkedHashMap* host);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** outface);
     };
 
@@ -210,7 +210,7 @@ public:
      *
      * @return a set of the mappings
      */
-    CARAPI EntrySet(
+    CARAPI GetEntrySet(
         /* [out] */ ISet** entries);
 
     /**
@@ -267,7 +267,7 @@ public:
      *
      * @return a set of the keys.
      */
-    CARAPI KeySet(
+    CARAPI GetKeySet(
         /* [out] */ ISet** keySet);
 
     /**
@@ -356,7 +356,7 @@ public:
      *
      * @return a collection of the values contained in this map.
      */
-    CARAPI Values(
+    CARAPI GetValues(
         /* [out] */ ICollection** value);
 
     /**

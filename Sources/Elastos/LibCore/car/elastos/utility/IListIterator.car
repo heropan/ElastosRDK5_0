@@ -49,7 +49,7 @@ module
          *             if there are no more elements.
          * @see #next
          */
-        NextIndex(
+        GetNextIndex(
             [out] Int32* index);
 
         /**
@@ -60,7 +60,7 @@ module
          *             if there are no previous elements.
          * @see #hasPrevious
          */
-        Previous(
+        GetPrevious(
             [out] IInterface** object);
 
         /**
@@ -72,7 +72,7 @@ module
          *             if there are no previous elements.
          * @see #previous
          */
-        PreviousIndex(
+        GetPreviousIndex(
             [out] Int32* index);
 
         /**

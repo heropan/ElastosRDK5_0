@@ -99,7 +99,7 @@ outer:
             return NOERROR;
         }
         AutoPtr<IInterface> x;
-        it->Next((IInterface**)&x);
+        it->GetNext((IInterface**)&x);
         for (Int32 i = 0; i < len; ++i) {
             if (!(*matched)[i] && Eq(x, (*elements)[i])) {
                 (*matched)[i] = TRUE;

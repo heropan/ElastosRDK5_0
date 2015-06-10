@@ -40,7 +40,7 @@ private:
          *             if there are no more elements.
          * @see #hasMoreElements
          */
-        CARAPI NextElement(
+        CARAPI GetNextElement(
             /* [out] */ IInterface ** inter);
 
     private:

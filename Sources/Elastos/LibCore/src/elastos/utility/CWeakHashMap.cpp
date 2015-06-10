@@ -133,7 +133,7 @@ ECode CWeakHashMap::HashIterator::HasNext(
     }
 }
 
-ECode CWeakHashMap::HashIterator::Next(
+ECode CWeakHashMap::HashIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -487,7 +487,7 @@ ECode CWeakHashMap::_KeySet::ToArray(
     Boolean hasNext = FALSE;
     for (; iter->HasNext(&hasNext), hasNext;) {
         AutoPtr<IInterface> value;
-        iter->Next((IInterface**)&value);
+        iter->GetNext((IInterface**)&value);
         Boolean result;
         coll->Add(value, &result);
     }
@@ -511,7 +511,7 @@ ECode CWeakHashMap::_KeySet::ToArray(
     Boolean hasNext = FALSE;
     for (; iter->HasNext(&hasNext), hasNext;) {
         AutoPtr<IInterface> value;
-        iter->Next((IInterface**)&value);
+        iter->GetNext((IInterface**)&value);
         Boolean result;
         coll->Add(value, &result);
     }
@@ -837,7 +837,7 @@ ECode CWeakHashMap::ContainsKey(
     return NOERROR;
 }
 
-ECode CWeakHashMap::EntrySet(
+ECode CWeakHashMap::GetEntrySet(
     /* [out] */ ISet** ret)
 {
     VALIDATE_NOT_NULL(ret);
@@ -849,7 +849,7 @@ ECode CWeakHashMap::EntrySet(
     return NOERROR;
 }
 
-ECode CWeakHashMap::KeySet(
+ECode CWeakHashMap::GetKeySet(
     /* [out] */ ISet** ret)
 {
     VALIDATE_NOT_NULL(ret);
@@ -863,7 +863,7 @@ ECode CWeakHashMap::KeySet(
     return NOERROR;
 }
 
-ECode CWeakHashMap::Values(
+ECode CWeakHashMap::GetValues(
     /* [out] */ ICollection** collection)
 {
     VALIDATE_NOT_NULL(collection);
@@ -1179,7 +1179,7 @@ void CWeakHashMap::PutAllImpl(
     /* [in] */ IMap* map)
 {
     AutoPtr<ISet> entry;
-    map->EntrySet((ISet**)&entry);
+    map->GetEntrySet((ISet**)&entry);
     if (entry != NULL) {
         AbstractMap::PutAll(map);
     }

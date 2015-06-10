@@ -138,7 +138,7 @@ public:
         CARAPI HasMoreElements(
             /* [out] */ Boolean * value);
 
-        CARAPI NextElement(
+        CARAPI GetNextElement(
             /* [out] */ IInterface ** inter);
 
     public:

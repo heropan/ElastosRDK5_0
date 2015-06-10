@@ -57,7 +57,7 @@ private:
         CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -427,7 +427,7 @@ public:
     CARAPI Peek(
         /* [out] */ IInterface** e);
 
-    CARAPI Element(
+    CARAPI GetElement(
         /* [out] */ IInterface** e);
 
     // this doc comment is overridden to remove the reference to collections

@@ -331,7 +331,7 @@ ECode CX509CertFactoryImpl::EngineGenerateCertificates(
             it->HasNext(&next);
             while (next) {
                 AutoPtr<IInterface> elem;
-                it->Next((IInterface**)&elem);
+                it->GetNext((IInterface**)&elem);
                 AutoPtr<IX509CertImpl> certImpl;
                 CX509CertImpl::New(elem, (IX509CertImpl**)&certImpl);
                 result->Add(certImpl.Get());
@@ -508,7 +508,7 @@ ECode CX509CertFactoryImpl::EngineGenerateCRLs(
             it->HasNext(&next);
             while (next) {
                 AutoPtr<IInterface> elem;
-                it->Next((IInterface**)&elem);
+                it->GetNext((IInterface**)&elem);
                 AutoPtr<IX509CRLImpl> crlImpl;
                 CX509CRLImpl::New(elem, (IX509CRLImpl**)&crlImpl);
                 result->Add(crlImpl.Get());

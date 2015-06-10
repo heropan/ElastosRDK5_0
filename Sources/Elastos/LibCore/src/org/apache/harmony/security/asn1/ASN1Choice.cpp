@@ -78,7 +78,7 @@ ECode CASN1Choice::constructor(
 
     for (Int32 i = 0; i < size; i++) {
         AutoPtr<IInterface> tmp;
-        it->Next((IInterface**)&tmp);
+        it->GetNext((IInterface**)&tmp);
         AutoPtr<IMapEntry> entry = IMapEntry::Probe(tmp);
         AutoPtr<IBigInteger> identifier = entry.getKey();
         Int32 val;

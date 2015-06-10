@@ -340,7 +340,7 @@ ECode CManifest::Write(
     if (version != NULL) {
         FAIL_RETURN(WriteEntry(out, CName::MANIFEST_VERSION, version, encoder, buffer))
         AutoPtr<ISet> keyset;
-        ((CAttributes*)(((CManifest*)manifest)->mMainAttributes.Get()))->KeySet((ISet**)&keyset);
+        ((CAttributes*)(((CManifest*)manifest)->mMainAttributes.Get()))->GetKeySet((ISet**)&keyset);
         AutoPtr<IIterator> entries;
         keyset->GetIterator((IIterator**)&entries);
         Boolean isflag = FALSE;
@@ -348,7 +348,7 @@ ECode CManifest::Write(
         Boolean equal;
         while (entries->HasNext(&isflag), isflag) {
             AutoPtr<IInterface> outface;
-            entries->Next((IInterface**)&outface);
+            entries->GetNext((IInterface**)&outface);
             AutoPtr<IName> name = IName::Probe(outface);
             if((name->Equals(CName::MANIFEST_VERSION, &equal), !equal)) {
                 ((CManifest*)manifest)->mMainAttributes->GetValue(name, &val);
@@ -362,7 +362,7 @@ ECode CManifest::Write(
     AutoPtr<IMap> entries;
     manifest->GetEntries((IMap**)&entries);
     AutoPtr<ISet> keySet;
-    entries->KeySet((ISet**)&keySet);
+    entries->GetKeySet((ISet**)&keySet);
     AutoPtr<IIterator> it;
     keySet->GetIterator((IIterator**)&it);
     Boolean hasNext;
@@ -371,18 +371,18 @@ ECode CManifest::Write(
 
     while(it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> elm;
-        it->Next((IInterface**)&elm);
+        it->GetNext((IInterface**)&elm);
         ICharSequence::Probe(elm)->ToString(&key);
         WriteEntry(out, NAME_ATTRIBUTE, key, encoder, buffer);
         AutoPtr<IInterface> attrib;
         entries->Get(elm, (IInterface**)&attrib);
         AutoPtr<ISet> keySet;
-        IMap::Probe(attrib)->KeySet((ISet**)&keySet);
+        IMap::Probe(attrib)->GetKeySet((ISet**)&keySet);
         AutoPtr<IIterator> it;
         keySet->GetIterator((IIterator**)&it);
         while(it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> elm, value;
-            it->Next((IInterface**)&elm);
+            it->GetNext((IInterface**)&elm);
             AutoPtr<IName> name = IName::Probe(elm);
             IMap::Probe(attrib)->Get(name.Get(), (IInterface**)&value);
             ICharSequence::Probe(value)->ToString(&val);

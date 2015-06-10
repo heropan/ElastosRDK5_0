@@ -31,7 +31,7 @@ ECode CPriorityQueue::PriorityIterator::HasNext(
     return NOERROR;
 }
 
-ECode CPriorityQueue::PriorityIterator::Next(
+ECode CPriorityQueue::PriorityIterator::GetNext(
     /* [out] */ IInterface** outinter)
 {
     VALIDATE_NOT_NULL(outinter)
@@ -180,10 +180,10 @@ ECode CPriorityQueue::Poll(
     return NOERROR;
 }
 
-ECode CPriorityQueue::Element(
+ECode CPriorityQueue::GetElement(
     /* [out] */ IInterface** e)
 {
-    return AbstractQueue::Element(e);
+    return AbstractQueue::GetElement(e);
 }
 
 ECode CPriorityQueue::Peek(
@@ -382,7 +382,7 @@ ECode CPriorityQueue::GetFromSortedSet(
     Boolean isflag = FALSE;
     while (iter->HasNext(&isflag), isflag) {
         AutoPtr<IInterface> outface;
-        iter->Next((IInterface**)&outface);
+        iter->GetNext((IInterface**)&outface);
         mElements->Set(mSize++, outface);
     }
     return NOERROR;

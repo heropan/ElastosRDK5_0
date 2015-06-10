@@ -113,7 +113,7 @@ private:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** outface);
 
         CARAPI HasNext(
@@ -132,7 +132,7 @@ private:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** outface);
 
         CARAPI HasNext(
@@ -151,7 +151,7 @@ private:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** outface);
 
         CARAPI HasNext(
@@ -173,7 +173,7 @@ private:
         CARAPI HasMoreElements(
             /* [out] */ Boolean * value);
 
-        CARAPI NextElement(
+        CARAPI GetNextElement(
             /* [out] */ IInterface ** inter);
     };
 
@@ -190,7 +190,7 @@ private:
         CARAPI HasMoreElements(
             /* [out] */ Boolean * value);
 
-        CARAPI NextElement(
+        CARAPI GetNextElement(
             /* [out] */ IInterface ** inter);
     };
 
@@ -406,7 +406,7 @@ public:
      * @see #size
      * @see Enumeration
      */
-    virtual CARAPI Elements(
+    virtual CARAPI GetElements(
         /* [out] */ IEnumeration** enm);
 
     /**
@@ -440,7 +440,7 @@ public:
      * @see #size
      * @see Enumeration
      */
-    virtual CARAPI Keys(
+    virtual CARAPI GetKeys(
         /* [out] */ IEnumeration** enm);
 
     /**
@@ -544,7 +544,7 @@ public:
      *
      * @return a set of the mappings
      */
-    virtual CARAPI EntrySet(
+    virtual CARAPI GetEntrySet(
         /* [out] */ ISet** entries);
 
     /**
@@ -579,7 +579,7 @@ public:
      *
      * @return a set of the keys.
      */
-    virtual CARAPI KeySet(
+    virtual CARAPI GetKeySet(
         /* [out] */ ISet** keySet);
 
     /**
@@ -621,7 +621,7 @@ public:
      *
      * @return a collection of the values contained in this map.
      */
-    virtual CARAPI Values(
+    virtual CARAPI GetValues(
         /* [out] */ ICollection** value);
 
     virtual CARAPI Clone(

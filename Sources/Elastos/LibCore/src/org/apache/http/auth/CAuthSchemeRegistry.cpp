@@ -85,7 +85,7 @@ ECode CAuthSchemeRegistry::GetSchemeNames(
     VALIDATE_NOT_NULL(names)
 
     AutoPtr<ISet> set;
-    mRegisteredSchemes->KeySet((ISet**)&set);
+    mRegisteredSchemes->GetKeySet((ISet**)&set);
     AutoPtr<ICollection> col = ICollection::Probe(set);
     AutoPtr<IArrayList> aList;
     CArrayList::New(col, (IArrayList**)&aList);

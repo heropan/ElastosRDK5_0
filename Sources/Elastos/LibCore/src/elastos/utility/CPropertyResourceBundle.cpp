@@ -38,7 +38,7 @@ ECode CPropertyResourceBundle::_Enumeration::HasMoreElements(
     return NOERROR;
 }
 
-ECode CPropertyResourceBundle::_Enumeration::NextElement(
+ECode CPropertyResourceBundle::_Enumeration::GetNextElement(
     /* [out] */ IInterface ** inter)
 {
     VALIDATE_NOT_NULL(inter)

@@ -58,11 +58,11 @@ ECode CEnumMap::constructor(
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         AutoPtr<ISet> outset;
-        map->KeySet((ISet**)&outset);
+        map->GetKeySet((ISet**)&outset);
         AutoPtr<IIterator> iter;
         (IIterable::Probe(outset))->GetIterator((IIterator**)&iter);
         AutoPtr<IInterface> enumKey;
-        iter->Next((IInterface**)&enumKey);
+        iter->GetNext((IInterface**)&enumKey);
         if (IEnum::Probe(enumKey)) {
             Initialization(EIID_IEnum);
         }
@@ -142,7 +142,7 @@ ECode CEnumMap::ContainsValue(
     return NOERROR;
 }
 
-ECode CEnumMap::EntrySet(
+ECode CEnumMap::GetEntrySet(
     /* [out] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(entries)
@@ -199,7 +199,7 @@ ECode CEnumMap::Get(
     return NOERROR;
 }
 
-ECode CEnumMap::KeySet(
+ECode CEnumMap::GetKeySet(
     /* [out] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
@@ -285,7 +285,7 @@ ECode CEnumMap::GetSize(
     return NOERROR;
 }
 
-ECode CEnumMap::Values(
+ECode CEnumMap::GetValues(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -322,14 +322,14 @@ ECode CEnumMap::WriteObject(
     stream->DefaultWriteObject();
     (IOutputStream::Probe(stream))->Write(mMappingsCount);
     AutoPtr<ISet> outset;
-    EntrySet((ISet**)&outset);
+    GetEntrySet((ISet**)&outset);
     AutoPtr<IIterator> iterator;
     (IIterable::Probe(outset))->GetIterator((IIterator**)&iterator);
     Boolean isflag = FALSE;
     while (iterator->HasNext(&isflag), isflag) {
         AutoPtr<IMapEntry> entry;
         AutoPtr<IInterface> outface;
-        iterator->Next((IInterface**)&outface);
+        iterator->GetNext((IInterface**)&outface);
         entry = IMapEntry::Probe(outface);
         assert(0 && "TODO");
         // stream.writeObject(entry.getKey());
@@ -378,13 +378,13 @@ ECode CEnumMap::PutAllImpl(
     /* [in] */ IMap* map)
 {
     AutoPtr<ISet> outset;
-    map->EntrySet((ISet**)&outset);
+    map->GetEntrySet((ISet**)&outset);
     AutoPtr<IIterator> iter;
     (IIterable::Probe(outset))->GetIterator((IIterator**)&iter);
     Boolean isflag = FALSE;
     while (iter->HasNext(&isflag), isflag) {
         AutoPtr<IInterface> outface;
-        iter->Next((IInterface**)&outface);
+        iter->GetNext((IInterface**)&outface);
         AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
         AutoPtr<IInterface> keyface;
         AutoPtr<IInterface> valueface;
@@ -583,7 +583,7 @@ ECode CEnumMap::EnumMapIterator::HasNext(
     return NOERROR;
 }
 
-ECode CEnumMap::EnumMapIterator::Next(
+ECode CEnumMap::EnumMapIterator::GetNext(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -1021,7 +1021,7 @@ CEnumMap::EnumMapEntryIterator::EnumMapEntryIterator(
 {
 }
 
-ECode CEnumMap::EnumMapEntryIterator::Next(
+ECode CEnumMap::EnumMapEntryIterator::GetNext(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -1245,7 +1245,7 @@ ECode CEnumMap::EnumMapEntrySet::ToArray(
     GetIterator((IIterator**)&iter);
     for (; index < size; index++) {
         AutoPtr<IInterface> outface;
-        iter->Next((IInterface**)&outface);
+        iter->GetNext((IInterface**)&outface);
         AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
         AutoPtr<IInterface> keyface;
         AutoPtr<IInterface> valueface;

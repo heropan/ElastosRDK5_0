@@ -64,8 +64,8 @@ protected:
 
 private:
     class AbstractItr
-        : public IIterator
-        , public Object
+        : public Object
+        , public IIterator
     {
      public:
         CAR_INTERFACE_DECL();
@@ -81,7 +81,7 @@ private:
         CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -136,6 +136,12 @@ private:
             /* [in] */ Node* p)
         {
             return mOwner->Succ(p);
+        }
+
+        CARAPI GetNext(
+            /* [out] */ IInterface** object)
+        {
+            return AbstractItr::GetNext(object);
         }
     };
 
@@ -226,7 +232,7 @@ public:
     CARAPI Peek(
         /* [out] */ IInterface** e);
 
-    CARAPI Element(
+    CARAPI GetElement(
         /* [out] */ IInterface** e);
 
     CARAPI Push(

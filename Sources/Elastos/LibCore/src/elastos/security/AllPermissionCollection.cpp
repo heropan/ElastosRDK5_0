@@ -12,7 +12,7 @@ ECode AllPermissionCollection::Add(
     return NOERROR;
 }
 
-ECode AllPermissionCollection::Elements(
+ECode AllPermissionCollection::GetElements(
     /* [out] */ IEnumeration **elems)
 {
     return NOERROR;

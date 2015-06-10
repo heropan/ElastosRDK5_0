@@ -71,7 +71,7 @@ module
          * @throws NullPointerException if the specified element is null
          *         and this set does not permit null elements
          */
-        Lower(
+        GetLower(
             [in] IInterface* e,
             [out] IInterface** outface);
 
@@ -87,7 +87,7 @@ module
          * @throws NullPointerException if the specified element is null
          *         and this set does not permit null elements
          */
-        Floor(
+        GetFloor(
             [in] IInterface* e,
             [out] IInterface** outface);
 
@@ -103,7 +103,7 @@ module
          * @throws NullPointerException if the specified element is null
          *         and this set does not permit null elements
          */
-        Ceiling(
+        GetCeiling(
             [in] IInterface* e,
             [out] IInterface** outface);
 
@@ -119,7 +119,7 @@ module
          * @throws NullPointerException if the specified element is null
          *         and this set does not permit null elements
          */
-        Higher(
+        GetHigher(
             [in] IInterface* e,
             [out] IInterface** outface);
 
@@ -156,7 +156,7 @@ module
          *
          * @return a reverse order view of this set
          */
-        DescendingSet(
+        GetDescendingSet(
             [out] INavigableSet** outnav);
 
         /**
@@ -165,7 +165,7 @@ module
          *
          * @return an iterator over the elements in this set, in descending order
          */
-        DescendingIterator(
+        GetDescendingIterator(
             [out] IIterator** outiter);
 
         /**
@@ -203,7 +203,7 @@ module
          *         has a restricted range, and {@code fromElement} or
          *         {@code toElement} lies outside the bounds of the range.
          */
-        SubSet(
+        GetSubSet(
             [in] IInterface* fromElement,
             [in] Boolean fromInclusive,
             [in] IInterface* toElement,
@@ -237,7 +237,7 @@ module
          *         restricted range, and {@code toElement} lies outside the
          *         bounds of the range
          */
-        HeadSet(
+        GetHeadSet(
             [in] IInterface* toElement,
             [in] Boolean inclusive,
             [out] INavigableSet** outnav);
@@ -269,7 +269,7 @@ module
          *         restricted range, and {@code fromElement} lies outside the
          *         bounds of the range
          */
-        TailSet(
+        GetTailSet(
             [in] IInterface* fromElement,
             [in] Boolean inclusive,
             [out] INavigableSet** outnav);

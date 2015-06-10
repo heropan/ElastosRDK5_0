@@ -51,7 +51,7 @@ public:
         /* [in] */ IInterface* value,
         /* [out] */ Boolean* result);
 
-    CARAPI EntrySet(
+    CARAPI GetEntrySet(
         /* [out] */ ISet** entries);
 
     CARAPI Equals(
@@ -68,7 +68,7 @@ public:
     CARAPI IsEmpty(
         /* [out] */ Boolean* result);
 
-    CARAPI KeySet(
+    CARAPI GetKeySet(
         /* [out] */ ISet** keySet);
 
     CARAPI Put(
@@ -86,7 +86,7 @@ public:
     CARAPI GetSize(
         /* [out] */ Int32* size);
 
-    CARAPI Values(
+    CARAPI GetValues(
         /* [out] */ ICollection** value);
 
     CARAPI constructor();

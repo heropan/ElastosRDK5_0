@@ -315,7 +315,7 @@ void ComparableTimSort::MergeAt(
      * Find where the first element of run2 goes in run1. Prior elements
      * in run1 can be ignored (because they're already in place).
      */
-    Int32 k = GallopRight((IComparable*) (*mA)[base2]->Probe(EIID_IComparable), *mA, base1, len1, 0);
+    Int32 k = GallopRight((IComparable*) (*mA)[base2]->Probe(EIID_IComparable), mA.Get(), base1, len1, 0);
     if (DEBUG) {
         assert(k >= 0);
     }
@@ -330,7 +330,7 @@ void ComparableTimSort::MergeAt(
      * Find where the last element of run1 goes in run2. Subsequent elements
      * in run2 can be ignored (because they're already in place).
      */
-    len2 = GallopLeft((IComparable*) (*mA)[base1 + len1 - 1]->Probe(EIID_IComparable), *mA, base2, len2, len2 - 1);
+    len2 = GallopLeft((IComparable*) (*mA)[base1 + len1 - 1]->Probe(EIID_IComparable), mA.Get(), base2, len2, len2 - 1);
     if (DEBUG) {
         assert(len2 >= 0);
     }
@@ -578,7 +578,7 @@ outer:
             if (DEBUG) {
                 assert(len1 > 1 && len2 > 0);
             }
-            count1 = GallopRight((IComparable*) (*a)[cursor2]->Probe(EIID_IComparable), *tmp, cursor1, len1, 0);
+            count1 = GallopRight((IComparable*) (*a)[cursor2]->Probe(EIID_IComparable), tmp, cursor1, len1, 0);
             if (count1 != 0) {
                 a->Copy(dest, tmp, cursor1, count1);
                 dest += count1;
@@ -593,7 +593,7 @@ outer:
                 goto outer;
             }
 
-            count2 = GallopLeft((IComparable*) (*tmp)[cursor1]->Probe(EIID_IComparable), *a, cursor2, len2, 0);
+            count2 = GallopLeft((IComparable*) (*tmp)[cursor1]->Probe(EIID_IComparable), a, cursor2, len2, 0);
             if (count2 != 0) {
                 a->Copy(dest, a, cursor2, count2);
                 dest += count2;
@@ -713,7 +713,7 @@ outer:
             if (DEBUG) {
                 assert(len1 > 0 && len2 > 1);
             }
-            count1 = len1 - GallopRight((IComparable*) (*tmp)[cursor2]->Probe(EIID_IComparable), *a, base1, len1, len1 - 1);
+            count1 = len1 - GallopRight((IComparable*) (*tmp)[cursor2]->Probe(EIID_IComparable), a, base1, len1, len1 - 1);
             if (count1 != 0) {
                 dest -= count1;
                 cursor1 -= count1;
@@ -728,7 +728,7 @@ outer:
                 goto outer;
             }
 
-            count2 = len2 - GallopLeft((IComparable*) (*a)[cursor1]->Probe(EIID_IComparable), *tmp, 0, len2, len2 - 1);
+            count2 = len2 - GallopLeft((IComparable*) (*a)[cursor1]->Probe(EIID_IComparable), tmp, 0, len2, len2 - 1);
             if (count2 != 0) {
                 dest -= count2;
                 cursor2 -= count2;

@@ -20,7 +20,7 @@ module
          *
          * @return the comparator or {@code null} if the natural order is used.
          */
-        Comparator(
+        GetComparator(
             [out] IComparator** comp);
 
         /**
@@ -30,7 +30,7 @@ module
          * @throws NoSuchElementException
          *                if this sorted map is empty.
          */
-        FirstKey(
+        GetFirstKey(
             [out] IInterface** outface);
 
         /**
@@ -54,7 +54,7 @@ module
          *             if this map is itself a sorted map over a range of another
          *             map and the specified key is outside of its range.
          */
-        HeadMap(
+        GetHeadMap(
             [in] IInterface* endKey,
             [out] ISortedMap** sortmap);
 
@@ -65,7 +65,7 @@ module
          * @throws NoSuchElementException
          *                if this sorted map is empty.
          */
-        LastKey(
+        GetLastKey(
             [out] IInterface** outface);
 
         /**
@@ -93,7 +93,7 @@ module
          *             is itself a sorted map over a range of another sorted map and
          *             the specified range is outside of its range.
          */
-        SubMap(
+        GetSubMap(
             [in] IInterface* startKey,
             [in] IInterface* endKey,
             [out] ISortedMap** sortmap);
@@ -120,7 +120,7 @@ module
          *             if this map itself a sorted map over a range of another map
          *             and the specified key is outside of its range.
          */
-        TailMap(
+        GetTailMap(
             [in] IInterface* startKey,
             [out] ISortedMap** sortmap);
     }

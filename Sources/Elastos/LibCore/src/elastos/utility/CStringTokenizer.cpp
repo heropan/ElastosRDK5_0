@@ -111,13 +111,13 @@ ECode CStringTokenizer::HasMoreTokens(
     return NOERROR;
 }
 
-ECode CStringTokenizer::NextElement(
+ECode CStringTokenizer::GetNextElement(
     /* [out] */ IInterface ** inter)
 {
     VALIDATE_NOT_NULL(inter)
 
     String str;
-    NextToken(&str);
+    GetNextToken(&str);
     AutoPtr<ICharSequence> sq;
     CStringWrapper::New(str, (ICharSequence**)&sq);
     *inter = sq;
@@ -125,7 +125,7 @@ ECode CStringTokenizer::NextElement(
     return NOERROR;
 }
 
-ECode CStringTokenizer::NextToken(
+ECode CStringTokenizer::GetNextToken(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
@@ -176,14 +176,14 @@ ECode CStringTokenizer::NextToken(
     return E_NO_SUCH_ELEMENT_EXCEPTION;
 }
 
-ECode CStringTokenizer::NextToken(
+ECode CStringTokenizer::GetNextToken(
     /* [in] */ const String& delims,
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
 
     mDelimiters = delims;
-    return NextToken(str);
+    return GetNextToken(str);
 }
 
 } // namespace Utility

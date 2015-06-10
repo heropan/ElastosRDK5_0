@@ -414,7 +414,7 @@ ECode Properties::StringPropertyNames(
     CHashTable::New((IMap**)&stringProperties);
     SelectProperties(stringProperties, TRUE);
     AutoPtr<ISet> keySet;
-    stringProperties->KeySet((ISet**)&keySet);
+    stringProperties->GetKeySet((ISet**)&keySet);
     return CCollections::_NewUnmodifiableSet(keySet, strNames);
 }
 

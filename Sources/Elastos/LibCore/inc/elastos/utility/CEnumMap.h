@@ -85,7 +85,7 @@ private:
             /* [out] */ Boolean* value);
 
         // @SuppressWarnings("unchecked")
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** outface);
 
         CARAPI Remove();
@@ -282,7 +282,7 @@ private:
 
         // @SuppressWarnings("unchecked")
         // @Override
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** outface);
     };
 
@@ -372,6 +372,7 @@ public:
     CEnumMap();
 
     CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     CARAPI constructor();
@@ -487,7 +488,7 @@ public:
      *
      * @return a set of the mappings
      */
-    CARAPI EntrySet(
+    CARAPI GetEntrySet(
         /* [out] */ ISet** entries);
 
     /**
@@ -519,7 +520,7 @@ public:
      *
      * @return a set of the keys.
      */
-    CARAPI KeySet(
+    CARAPI GetKeySet(
         /* [out] */ ISet** keySet);
 
     /**
@@ -615,7 +616,7 @@ public:
      *
      * @return a collection of the values contained in this map.
      */
-    CARAPI Values(
+    CARAPI GetValues(
         /* [out] */ ICollection** value);
 
     CARAPI Clone(

@@ -21,7 +21,7 @@ module
          *
          * @return {@code true} if the stack is empty, {@code false} otherwise.
          */
-        Empty(
+        IsEmpty(
             [out] Boolean* value);
 
         /**

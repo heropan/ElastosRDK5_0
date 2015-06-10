@@ -375,7 +375,7 @@ ECode CDelayQueue::RemoveEQ(
     Boolean b = FALSE;
     for (; (it->HasNext(&b), b); ) {
         AutoPtr<IInterface> nt;
-        it->Next((IInterface**)&nt);
+        it->GetNext((IInterface**)&nt);
         if (Object::Equals(o, nt)) {
             it->Remove();
             break;
@@ -433,7 +433,7 @@ ECode CDelayQueue::Itr::HasNext(
     return NOERROR;
 }
 
-ECode CDelayQueue::Itr::Next(
+ECode CDelayQueue::Itr::GetNext(
     /* [out] */ IInterface** res)
 {
     if (mCursor >= mArray->GetLength())

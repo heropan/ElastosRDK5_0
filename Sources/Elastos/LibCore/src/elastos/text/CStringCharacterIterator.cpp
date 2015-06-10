@@ -52,10 +52,10 @@ ECode CStringCharacterIterator::Last(
     return StringCharacterIterator::Last(character);
 }
 
-ECode CStringCharacterIterator::Next(
+ECode CStringCharacterIterator::GetNext(
     /* [out] */ Char32* character)
 {
-    return StringCharacterIterator::Next(character);
+    return StringCharacterIterator::GetNext(character);
 }
 
 ECode CStringCharacterIterator::Previous(

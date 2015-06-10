@@ -260,6 +260,9 @@ public:
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* result);
 
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
     /**
      * Returns a count of how many objects this {@code Collection} contains.
      * <p>

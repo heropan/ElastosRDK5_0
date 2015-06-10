@@ -30,7 +30,7 @@ private:
         CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -60,13 +60,13 @@ private:
         CARAPI HasPrevious(
             /* [out] */ Boolean* result);
 
-        CARAPI NextIndex(
+        CARAPI GetNextIndex(
             /* [out] */ Int32* result);
 
-        CARAPI Previous(
+        CARAPI GetPrevious(
             /* [out] */ IInterface** object);
 
-        CARAPI PreviousIndex(
+        CARAPI GetPreviousIndex(
             /* [out] */ Int32* result);
 
         CARAPI Set(
@@ -75,7 +75,7 @@ private:
         CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -133,6 +133,11 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
 
+    virtual CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    // using AbstractCollection::Add;
+
     /**
      * Inserts the objects in the specified Collection at the specified location
      * in this List. The objects are added in the order they are returned from
@@ -156,6 +161,12 @@ public:
         /* [in] */ Int32 location,
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* result);
+
+    virtual CARAPI AddAll(
+        /* [in] */ Int32 location,
+        /* [in] */ ICollection* collection);
+
+    using AbstractCollection::AddAll;
 
     /**
      * Removes all elements from this list, leaving it empty.
@@ -279,11 +290,14 @@ public:
      * @throws IndexOutOfBoundsException
      *             if {@code location < 0 || location >= size()}
      */
-
-    using AbstractCollection::Remove;
     virtual CARAPI Remove(
         /* [in] */ Int32 location,
         /* [out] */ IInterface** object);
+
+    virtual CARAPI Remove(
+        /* [in] */ Int32 location);
+
+    using AbstractCollection::Remove;
 
     /**
      * Replaces the element at the specified location in this list with the
@@ -351,7 +365,7 @@ public:
      * @throws IllegalArgumentException
      *             if (start > end)
      */
-    virtual CARAPI SubList(
+    virtual CARAPI GetSubList(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ IList** list);
@@ -420,16 +434,16 @@ private:
         CARAPI HasPrevious(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
-        CARAPI NextIndex(
+        CARAPI GetNextIndex(
             /* [out] */ Int32* result);
 
-        CARAPI Previous(
+        CARAPI GetPrevious(
             /* [out] */ IInterface** object);
 
-        CARAPI PreviousIndex(
+        CARAPI GetPreviousIndex(
             /* [out] */ Int32* result);
 
         CARAPI Remove();
@@ -553,7 +567,7 @@ public:
     CARAPI GetListIterator(
         /* [out] */ IListIterator** it);
 
-    CARAPI SubList(
+    CARAPI GetSubList(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ IList** subList);

@@ -38,7 +38,7 @@ private:
         CARAPI HasNext(
             /* [out] */ Boolean* value);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -82,7 +82,7 @@ private:
         CARAPI HasNext(
             /* [out] */ Boolean* value);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -174,7 +174,7 @@ public:
     CARAPI Poll(
         /* [out] */ IInterface** e);
 
-    CARAPI Element(
+    CARAPI GetElement(
         /* [out] */ IInterface** e);
 
     CARAPI Peek(

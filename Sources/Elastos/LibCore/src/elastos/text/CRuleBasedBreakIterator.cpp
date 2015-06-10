@@ -22,17 +22,17 @@ ECode CRuleBasedBreakIterator::Last(
     return RuleBasedBreakIterator::Last(postion);
 }
 
-ECode CRuleBasedBreakIterator::Next(
+ECode CRuleBasedBreakIterator::GetNext(
     /* [out] */ Int32* postion)
 {
-    return RuleBasedBreakIterator::Next(postion);
+    return RuleBasedBreakIterator::GetNext(postion);
 }
 
-ECode CRuleBasedBreakIterator::Next(
+ECode CRuleBasedBreakIterator::GetNext(
     /* [in] */ Int32 n,
     /* [out] */ Int32* postion)
 {
-    return RuleBasedBreakIterator::Next(n,postion);
+    return RuleBasedBreakIterator::GetNext(n,postion);
 }
 
 ECode CRuleBasedBreakIterator::Preceding(

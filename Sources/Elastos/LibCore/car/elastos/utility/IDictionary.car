@@ -24,7 +24,7 @@ module
          * @see #size
          * @see Enumeration
          */
-        Elements(
+        GetElements(
             [out] IEnumeration** enm);
 
         /**
@@ -58,7 +58,7 @@ module
          * @see #size
          * @see Enumeration
          */
-        Keys(
+        GetKeys(
             [out] IEnumeration** enm);
 
         /**
@@ -81,6 +81,10 @@ module
             [in] IInterface* value,
             [out] IInterface** outface);
 
+        Put(
+            [in] IInterface* key,
+            [in] IInterface* value);
+
         /**
          * Removes the key/value pair with the specified {@code key} from this
          * dictionary.
@@ -95,6 +99,9 @@ module
         Remove(
             [in] IInterface* key,
             [out] IInterface** outface);
+
+        Remove(
+            [in] IInterface* key);
 
         /**
          * Returns the number of key/value pairs in this dictionary.

@@ -35,7 +35,7 @@ module
          *             if there are no more elements.
          * @see #hasNext
          */
-        Next(
+        GetNext(
             [out] IInterface** object);
 
         /**

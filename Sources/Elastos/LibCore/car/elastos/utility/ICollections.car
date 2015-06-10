@@ -779,6 +779,10 @@ module
         [in] ArrayOf<IInterface*>* a,
         [out] Boolean* result);
 
+    AddAll(
+        [in] ICollection* c,
+        [in] ArrayOf<IInterface*>* a);
+
     /**
      * Returns whether the specified collections have no elements in common.
      *

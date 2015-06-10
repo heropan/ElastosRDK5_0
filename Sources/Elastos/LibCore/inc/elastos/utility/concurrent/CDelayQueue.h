@@ -36,7 +36,7 @@ private:
         CARAPI HasNext(
             /* [out] */ Boolean* res);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** res);
 
         CARAPI Remove();

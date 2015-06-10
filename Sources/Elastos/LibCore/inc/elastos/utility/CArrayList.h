@@ -36,13 +36,13 @@ private:
 
         CAR_INTERFACE_DECL()
 
-        ECode HasNext(
+        CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        ECode Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);;
 
-        ECode Remove();
+        CARAPI Remove();
 
     private:
         /** Number of elements remaining in this iteration */
@@ -170,7 +170,7 @@ public:
         /* [in] */ Int32 location,
         /* [out] */ IListIterator** it);
 
-    CARAPI SubList(
+    CARAPI GetSubList(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ IList** subList);

@@ -100,10 +100,10 @@ ECode CAttributes::ContainsValue(
     return mMap->ContainsValue(value, result);
 }
 
-ECode CAttributes::EntrySet(
+ECode CAttributes::GetEntrySet(
     /* [out] */ ISet** entries)
 {
-    return mMap->EntrySet(entries);
+    return mMap->GetEntrySet(entries);
 }
 
 ECode CAttributes::Equals(
@@ -148,10 +148,10 @@ ECode CAttributes::IsEmpty(
     return (mMap->GetSize(&size), size) == 0;
 }
 
-ECode CAttributes::KeySet(
+ECode CAttributes::GetKeySet(
     /* [out] */ ISet** keySet)
 {
-    return mMap->KeySet(keySet);
+    return mMap->GetKeySet(keySet);
 }
 
 ECode CAttributes::Put(
@@ -187,7 +187,7 @@ ECode CAttributes::GetSize(
     return mMap->GetSize(size);
 }
 
-ECode CAttributes::Values(
+ECode CAttributes::GetValues(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value)

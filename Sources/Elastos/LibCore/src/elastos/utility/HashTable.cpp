@@ -206,7 +206,7 @@ HashTable::KeyIterator::KeyIterator(
 {
 }
 
-ECode HashTable::KeyIterator::Next(
+ECode HashTable::KeyIterator::GetNext(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -240,7 +240,7 @@ HashTable::ValueIterator::ValueIterator(
 {
 }
 
-ECode HashTable::ValueIterator::Next(
+ECode HashTable::ValueIterator::GetNext(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -274,7 +274,7 @@ HashTable::EntryIterator::EntryIterator(
 {
 }
 
-ECode HashTable::EntryIterator::Next(
+ECode HashTable::EntryIterator::GetNext(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -314,7 +314,7 @@ ECode HashTable::KeyEnumeration::HasMoreElements(
     return HasNext(value);
 }
 
-ECode HashTable::KeyEnumeration::NextElement(
+ECode HashTable::KeyEnumeration::GetNextElement(
     /* [out] */ IInterface ** inter)
 {
     VALIDATE_NOT_NULL(inter)
@@ -343,7 +343,7 @@ ECode HashTable::ValueEnumeration::HasMoreElements(
     return HasNext(value);
 }
 
-ECode HashTable::ValueEnumeration::NextElement(
+ECode HashTable::ValueEnumeration::GetNextElement(
     /* [out] */ IInterface ** inter)
 {
     VALIDATE_NOT_NULL(inter)
@@ -877,7 +877,7 @@ ECode HashTable::ConstructorPutAll(
 {
     AutoPtr<ArrayOf<IInterface*> > outarr;
     AutoPtr<ISet> outset;
-    map->EntrySet((ISet**)&outset);
+    map->GetEntrySet((ISet**)&outset);
     (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&outarr);
     for (Int32 i = 0; i < outarr->GetLength(); i++) {
         AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
@@ -1124,7 +1124,7 @@ ECode HashTable::PutAll(
         EnsureCapacity(sizelen);
         AutoPtr<ArrayOf<IInterface*> > outarr;
         AutoPtr<ISet> outset;
-        map->EntrySet((ISet**)&outset);
+        map->GetEntrySet((ISet**)&outset);
         (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&outarr);
         for (Int32 i = 0; i < outarr->GetLength(); i++) {
             AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
@@ -1282,7 +1282,7 @@ ECode HashTable::Clear()
     }
 }
 
-ECode HashTable::KeySet(
+ECode HashTable::GetKeySet(
     /* [out] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
@@ -1295,7 +1295,7 @@ ECode HashTable::KeySet(
     }
 }
 
-ECode HashTable::Values(
+ECode HashTable::GetValues(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1308,7 +1308,7 @@ ECode HashTable::Values(
     }
 }
 
-ECode HashTable::EntrySet(
+ECode HashTable::GetEntrySet(
     /* [out] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(entries)
@@ -1321,7 +1321,7 @@ ECode HashTable::EntrySet(
     }
 }
 
-ECode HashTable::Keys(
+ECode HashTable::GetKeys(
     /* [out] */ IEnumeration** enm)
 {
     VALIDATE_NOT_NULL(enm)
@@ -1334,7 +1334,7 @@ ECode HashTable::Keys(
     return NOERROR;
 }
 
-ECode HashTable::Elements(
+ECode HashTable::GetElements(
     /* [out] */ IEnumeration** enm)
 {
     VALIDATE_NOT_NULL(enm)
@@ -1407,9 +1407,9 @@ ECode HashTable::Equals(
         AutoPtr<IMap> res = (IMap*) object->Probe(EIID_IMap);
         AutoPtr<ISet> outarr;
         AutoPtr<ISet> outarr2;
-        EntrySet((ISet**)&outarr);
+        GetEntrySet((ISet**)&outarr);
         Boolean isflag = FALSE;
-        *result = (res != NULL) && ((ICollection::Probe(outarr))->Equals((res->EntrySet((ISet**)&outarr2), outarr2), &isflag), isflag);
+        *result = (res != NULL) && ((ICollection::Probe(outarr))->Equals((res->GetEntrySet((ISet**)&outarr2), outarr2), &isflag), isflag);
         return NOERROR;
     }
 }
@@ -1423,7 +1423,7 @@ ECode HashTable::GetHashCode(
         Int32 result = 0;
         AutoPtr<ArrayOf<IInterface*> > outarr;
         AutoPtr<ISet> outset;
-        EntrySet((ISet**)&outset);
+        GetEntrySet((ISet**)&outset);
         (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&outarr);
         for (Int32 i = 0; i < outarr->GetLength(); i++) {
             AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
@@ -1453,14 +1453,14 @@ ECode HashTable::ToString(
         StringBuilder result;
         result.AppendChar('{');
         AutoPtr<ISet> outarr;
-        EntrySet((ISet**)&outarr);
+        GetEntrySet((ISet**)&outarr);
         AutoPtr<IIterator> i;
         (IIterable::Probe(outarr))->GetIterator((IIterator**)&i);
         Boolean hasMore = FALSE;
         i->HasNext(&hasMore);
         while (hasMore) {
             AutoPtr<IInterface> outface;
-            i->Next((IInterface**)&outface);
+            i->GetNext((IInterface**)&outface);
             AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
 
             AutoPtr<IInterface> key;
@@ -1525,7 +1525,7 @@ ECode HashTable::WriteObject(
         (IOutputStream::Probe(stream))->Write(mSize);
         AutoPtr<ArrayOf<IInterface*> > outarr;
         AutoPtr<ISet> outset;
-        EntrySet((ISet**)&outset);
+        GetEntrySet((ISet**)&outset);
         (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&outarr);
         for (Int32 i = 0; i < outarr->GetLength(); i++) {
             AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);

@@ -279,6 +279,9 @@ module
             [in] ICollection* collection,
             [out] Boolean* modified);
 
+        RetainAll(
+            [in] ICollection* collection);
+
         /**
          * Returns a count of how many objects this {@code Collection} contains.
          *

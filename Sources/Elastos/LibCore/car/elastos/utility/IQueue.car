@@ -161,7 +161,7 @@ module
          * @return the head of this queue
          * @throws NoSuchElementException if this queue is empty
          */
-        Element(
+        GetElement(
             [out] IInterface** e);
 
         /**

@@ -105,7 +105,7 @@ ECode PKIXParameters::GetCertPathCheckers(
     Boolean hasNext;
     while ((it->HasNext(&hasNext), hasNext)) {
         AutoPtr<IInterface> elem, clonedElem;
-        it->Next((IInterface**)&elem);
+        it->GetNext((IInterface**)&elem);
         IPKIXCertPathChecker::Probe(elem)->Clone((IInterface**)&clonedElem);
         Boolean isModified;
         modifiableList->Add(clonedElem, &isModified);
@@ -135,7 +135,7 @@ ECode PKIXParameters::SetCertPathCheckers(
     Boolean hasNext;
     while ((it->HasNext(&hasNext), hasNext)) {
         AutoPtr<IInterface> elem, clonedElem;
-        it->Next((IInterface**)&elem);
+        it->GetNext((IInterface**)&elem);
         IPKIXCertPathChecker::Probe(elem)->Clone((IInterface**)&clonedElem);
         Boolean isModified;
         mCertPathCheckers->Add(clonedElem, &isModified);

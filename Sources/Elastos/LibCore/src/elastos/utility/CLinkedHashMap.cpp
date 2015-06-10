@@ -299,10 +299,10 @@ ECode CLinkedHashMap::ContainsKey(
     return _HashMap::ContainsKey(key, result);
 }
 
-ECode CLinkedHashMap::EntrySet(
+ECode CLinkedHashMap::GetEntrySet(
     /* [out] */ ISet** entries)
 {
-    return _HashMap::EntrySet(entries);
+    return _HashMap::GetEntrySet(entries);
 }
 
 ECode CLinkedHashMap::Equals(
@@ -324,10 +324,10 @@ ECode CLinkedHashMap::IsEmpty(
     return _HashMap::IsEmpty(result);
 }
 
-ECode CLinkedHashMap::KeySet(
+ECode CLinkedHashMap::GetKeySet(
     /* [out] */ ISet** keySet)
 {
-    return _HashMap::KeySet(keySet);
+    return _HashMap::GetKeySet(keySet);
 }
 
 ECode CLinkedHashMap::Put(
@@ -357,10 +357,10 @@ ECode CLinkedHashMap::GetSize(
     return _HashMap::GetSize(size);
 }
 
-ECode CLinkedHashMap::Values(
+ECode CLinkedHashMap::GetValues(
     /* [out] */ ICollection** value)
 {
-    return _HashMap::Values(value);
+    return _HashMap::GetValues(value);
 }
 
 ECode CLinkedHashMap::Clone(
@@ -461,7 +461,7 @@ CLinkedHashMap::KeyIterator::KeyIterator(
 {
 }
 
-ECode CLinkedHashMap::KeyIterator::Next(
+ECode CLinkedHashMap::KeyIterator::GetNext(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -482,7 +482,7 @@ CLinkedHashMap::ValueIterator::ValueIterator(
 {
 }
 
-ECode CLinkedHashMap::ValueIterator::Next(
+ECode CLinkedHashMap::ValueIterator::GetNext(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -503,7 +503,7 @@ CLinkedHashMap::EntryIterator::EntryIterator(
 {
 }
 
-ECode CLinkedHashMap::EntryIterator::Next(
+ECode CLinkedHashMap::EntryIterator::GetNext(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)

@@ -87,7 +87,7 @@ ECode CLinkedList::LinkIterator::HasPrevious(
     return NOERROR;
 }
 
-ECode CLinkedList::LinkIterator::Next(
+ECode CLinkedList::LinkIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
@@ -206,7 +206,7 @@ ECode CLinkedList::ReverseLinkIterator::HasNext(
     return NOERROR;
 }
 
-ECode CLinkedList::ReverseLinkIterator::Next(
+ECode CLinkedList::ReverseLinkIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
@@ -859,7 +859,7 @@ ECode CLinkedList::RemoveOneOccurrence(
     Boolean hasnext = FALSE;
     while ((iter->HasNext(&hasnext), hasnext)) {
         AutoPtr<IInterface> element;
-        iter->Next((IInterface**)&element);
+        iter->GetNext((IInterface**)&element);
         if (object == NULL ? element == NULL : Object::Equals(object, element)) {
             iter->Remove();
             *result = TRUE;
@@ -1013,7 +1013,7 @@ ECode CLinkedList::WriteObject(
     Boolean flag = FALSE;
     while ((it->HasNext(&flag), flag)) {
         AutoPtr<IInterface> nextobject;
-        it->Next((IInterface**)&nextobject);
+        it->GetNext((IInterface**)&nextobject);
         outputstream->WriteObject(nextobject);
     }
     return NOERROR;
@@ -1104,13 +1104,13 @@ ECode CLinkedList::GetListIterator(
     return AbstractSequentialList::GetListIterator(it);
 }
 
-ECode CLinkedList::SubList(
+ECode CLinkedList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
 {
     VALIDATE_NOT_NULL(subList);
-    return AbstractSequentialList::SubList(start, end, subList);
+    return AbstractSequentialList::GetSubList(start, end, subList);
 }
 
 } // Utility

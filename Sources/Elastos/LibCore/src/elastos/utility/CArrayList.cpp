@@ -28,7 +28,7 @@ ECode CArrayList::ArrayListIterator::HasNext(
     return NOERROR;
 }
 
-ECode CArrayList::ArrayListIterator::Next(
+ECode CArrayList::ArrayListIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -608,7 +608,7 @@ ECode CArrayList::Equals(
         for (Int32 i = 0; i < s; i++) {
             AutoPtr<IInterface> eThis = (*a)[i];
             AutoPtr<IInterface> eThat;
-            it->Next((IInterface**)&eThat);
+            it->GetNext((IInterface**)&eThat);
             if (eThis == NULL ? eThat != NULL : !(Object::Equals(eThis, eThat))) {
                 *result = FALSE;
                 return NOERROR;
@@ -692,13 +692,13 @@ ECode CArrayList::GetListIterator(
     return AbstractList::GetListIterator(location, it);
 }
 
-ECode CArrayList::SubList(
+ECode CArrayList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
 {
     VALIDATE_NOT_NULL(subList);
-    return AbstractList::SubList(start, end, subList);
+    return AbstractList::GetSubList(start, end, subList);
 }
 
 } // namespace Utility

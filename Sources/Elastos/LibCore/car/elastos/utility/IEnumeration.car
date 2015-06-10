@@ -21,7 +21,7 @@ module
          *             if there are no more elements.
          * @see #hasMoreElements
          */
-        NextElement(
+        GetNextElement(
             [out] IInterface ** inter);
     }
 

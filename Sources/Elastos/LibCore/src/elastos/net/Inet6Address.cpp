@@ -94,7 +94,7 @@ ECode Inet6Address::GetByAddress(
     Boolean hasNext;
     while (em->HasMoreElements(&hasNext), hasNext) {
         AutoPtr<IInetAddress> ia;
-        em->NextElement((IInterface**)&ia);
+        em->GetNextElement((IInterface**)&ia);
         AutoPtr<ArrayOf<Byte> > addresses;
         ia->GetAddress((ArrayOf<Byte>**)&addresses);
         if(addresses->GetLength() == 16)

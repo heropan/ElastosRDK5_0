@@ -111,10 +111,10 @@ ECode CStack::ElementAt(
     return _Vector::ElementAt(location, outface);
 }
 
-ECode CStack::Elements(
+ECode CStack::GetElements(
     /* [out] */ IEnumeration** enu)
 {
-    return _Vector::Elements(enu);
+    return _Vector::GetElements(enu);
 }
 
 ECode CStack::EnsureCapacity(
@@ -271,12 +271,12 @@ ECode CStack::GetSize(
     return _Vector::GetSize(size);
 }
 
-ECode CStack::SubList(
+ECode CStack::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
 {
-    return _Vector::SubList(start, end, subList);
+    return _Vector::GetSubList(start, end, subList);
 }
 
 ECode CStack::ToArray(

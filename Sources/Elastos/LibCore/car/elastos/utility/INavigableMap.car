@@ -28,7 +28,7 @@ module
          * @throws NullPointerException if the specified key is null
          *         and this map does not permit null keys
          */
-        LowerEntry(
+        GetLowerEntry(
             [in] IInterface* key,
             [out] IMapEntry** outent);
 
@@ -44,7 +44,7 @@ module
          * @throws NullPointerException if the specified key is null
          *         and this map does not permit null keys
          */
-        LowerKey(
+        GetLowerKey(
             [in] IInterface* key,
             [out] IInterface** outface);
 
@@ -61,7 +61,7 @@ module
          * @throws NullPointerException if the specified key is null
          *         and this map does not permit null keys
          */
-        FloorEntry(
+        GetFloorEntry(
             [in] IInterface* key,
             [out] IMapEntry** outent);
 
@@ -77,7 +77,7 @@ module
          * @throws NullPointerException if the specified key is null
          *         and this map does not permit null keys
          */
-        FloorKey(
+        GetFloorKey(
             [in] IInterface* key,
             [out] IInterface** outface);
 
@@ -94,7 +94,7 @@ module
          * @throws NullPointerException if the specified key is null
          *         and this map does not permit null keys
          */
-        CeilingEntry(
+        GetCeilingEntry(
             [in] IInterface* key,
             [out] IMapEntry** outent);
 
@@ -110,7 +110,7 @@ module
          * @throws NullPointerException if the specified key is null
          *         and this map does not permit null keys
          */
-        CeilingKey(
+        GetCeilingKey(
             [in] IInterface* key,
             [out] IInterface** outface);
 
@@ -127,7 +127,7 @@ module
          * @throws NullPointerException if the specified key is null
          *         and this map does not permit null keys
          */
-        HigherEntry(
+        GetHigherEntry(
             [in] IInterface* key,
             [out] IMapEntry** outent);
 
@@ -143,7 +143,7 @@ module
          * @throws NullPointerException if the specified key is null
          *         and this map does not permit null keys
          */
-        HigherKey(
+        GetHigherKey(
             [in] IInterface* key,
             [out] IInterface** outface);
 
@@ -154,7 +154,7 @@ module
          * @return an entry with the least key,
          *         or {@code null} if this map is empty
          */
-        FirstEntry(
+        GetFirstEntry(
             [out] IMapEntry** outent);
 
         /**
@@ -164,7 +164,7 @@ module
          * @return an entry with the greatest key,
          *         or {@code null} if this map is empty
          */
-        LastEntry(
+        GetLastEntry(
             [out] IMapEntry** outent);
 
         /**
@@ -202,7 +202,7 @@ module
          *
          * @return a reverse order view of this map
          */
-        DescendingMap(
+        GetDescendingMap(
             [out] INavigableMap** outnav);
 
         /**
@@ -219,7 +219,7 @@ module
          *
          * @return a navigable set view of the keys in this map
          */
-        NavigableKeySet(
+        GetNavigableKeySet(
             [out] INavigableSet** outnav);
 
         /**
@@ -236,7 +236,7 @@ module
          *
          * @return a reverse order navigable set view of the keys in this map
          */
-        DescendingKeySet(
+        GetDescendingKeySet(
             [out] INavigableSet** outnav);
 
         /**
@@ -273,7 +273,7 @@ module
          *         range, and {@code fromKey} or {@code toKey} lies
          *         outside the bounds of the range
          */
-        SubMap(
+        GetSubMap(
             [in] IInterface* fromKey,
             [in] Boolean fromInclusive,
             [in] IInterface* toKey,
@@ -307,7 +307,7 @@ module
          *         restricted range, and {@code toKey} lies outside the
          *         bounds of the range
          */
-        HeadMap(
+        GetHeadMap(
             [in] IInterface* toKey,
             [in] Boolean inclusive,
             [out] INavigableMap** outnav);
@@ -339,7 +339,7 @@ module
          *         restricted range, and {@code fromKey} lies outside the
          *         bounds of the range
          */
-        TailMap(
+        GetTailMap(
             [in] IInterface* fromKey,
             [in] Boolean inclusive,
             [out] INavigableMap** outnav);
@@ -353,7 +353,7 @@ module
          * @throws NullPointerException     {@inheritDoc}
          * @throws IllegalArgumentException {@inheritDoc}
          */
-        SubMap(
+        GetSubMap(
             [in] IInterface* fromKey,
             [in] IInterface* toKey,
             [out] ISortedMap** res);
@@ -367,7 +367,7 @@ module
          * @throws NullPointerException     {@inheritDoc}
          * @throws IllegalArgumentException {@inheritDoc}
          */
-        HeadMap(
+        GetHeadMap(
             [in] IInterface* toKey,
             [out] ISortedMap** res);
 
@@ -380,7 +380,7 @@ module
          * @throws NullPointerException     {@inheritDoc}
          * @throws IllegalArgumentException {@inheritDoc}
          */
-        TailMap(
+        GetTailMap(
             [in] IInterface* fromKey,
             [out] ISortedMap** res);
     }

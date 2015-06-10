@@ -939,7 +939,7 @@ ECode CThreadPoolExecutor::Purge()
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next((IInterface**)&obj);
+        it->GetNext((IInterface**)&obj);
         IRunnable* r = IRunnable::Probe(obj);
         Boolean isCancelled;
         if (IFuture::Probe(r) &&

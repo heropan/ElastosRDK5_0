@@ -18,7 +18,7 @@ public:
     virtual CARAPI Add(
         /* [in] */ IPermission *permission) = 0;
 
-    virtual CARAPI Elements(
+    virtual CARAPI GetElements(
         /* [out] */ IEnumeration **elems) = 0;
 
     virtual CARAPI Implies(

@@ -715,7 +715,7 @@ String CLocale::MakeLanguageTag()
     // Extensions (optional, omitted if empty). Note that we don't
     // emit the private use extension here, but add it in the end.
     AutoPtr<ISet> entrySet;
-    mExtensions->EntrySet((ISet**)&entrySet);
+    mExtensions->GetEntrySet((ISet**)&entrySet);
     AutoPtr<IIterator> it;
     IIterable::Probe(entrySet)->GetIterator((IIterator**)&it);
     Boolean hasNext;
@@ -724,7 +724,7 @@ String CLocale::MakeLanguageTag()
     AutoPtr<ICharSequence> csq;
     AutoPtr<IInterface> obj;
     while (it->HasNext(&hasNext), hasNext) {
-        it->Next((IInterface**)&obj);
+        it->GetNext((IInterface**)&obj);
         extension = IMapEntry::Probe(obj);
 
         obj = NULL;

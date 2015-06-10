@@ -106,7 +106,7 @@ ECode StringCharacterIterator::Last(
     return NOERROR;
 }
 
-ECode StringCharacterIterator::Next(
+ECode StringCharacterIterator::GetNext(
     /* [out] */ Char32* nextCharacter)
 {
     VALIDATE_NOT_NULL(nextCharacter);

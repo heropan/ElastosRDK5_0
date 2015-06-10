@@ -57,7 +57,7 @@ ECode CTreeSet::constructor(
     Boolean isflag = FALSE;
     while (it->HasNext(&isflag), isflag) {
         AutoPtr<IInterface> outface;
-        it->Next((IInterface**)&outface);
+        it->GetNext((IInterface**)&outface);
         Add(outface, &isflag);
     }
     return NOERROR;
@@ -143,7 +143,7 @@ ECode CTreeSet::GetIterator(
     VALIDATE_NOT_NULL(it)
 
     AutoPtr<ISet> outset;
-    mBackingMap->KeySet((ISet**)&outset);
+    mBackingMap->GetKeySet((ISet**)&outset);
     return outset->GetIterator(it);
 }
 
@@ -392,14 +392,14 @@ void CTreeSet::WriteObject(
     stream->Write(size);
     if (size > 0) {
         AutoPtr<ISet> outset;
-        mBackingMap->KeySet((ISet**)&outset);
+        mBackingMap->GetKeySet((ISet**)&outset);
         AutoPtr<IIterator> it;
         outset->GetIterator((IIterator**)&it);
         Boolean isflag = FALSE;
         while (it->HasNext(&isflag), isflag) {
             assert(0 && "TODO");
             AutoPtr<IInterface> outface;
-            it->Next((IInterface**)&outface);
+            it->GetNext((IInterface**)&outface);
             // stream->WriteObject(outface);
         }
     }

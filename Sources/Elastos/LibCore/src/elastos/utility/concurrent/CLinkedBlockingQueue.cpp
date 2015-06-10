@@ -46,7 +46,7 @@ AutoPtr<CLinkedBlockingQueue::Node> CLinkedBlockingQueue::Itr::NextNode(
     }
 }
 
-ECode CLinkedBlockingQueue::Itr::Next(
+ECode CLinkedBlockingQueue::Itr::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
@@ -609,7 +609,7 @@ ECode CLinkedBlockingQueue::Remove(
     else return E_NO_SUCH_ELEMENT_EXCEPTION;
 }
 
-ECode CLinkedBlockingQueue::Element(
+ECode CLinkedBlockingQueue::GetElement(
     /* [out] */ IInterface** e)
 {
     FAIL_RETURN(Peek(e));
@@ -645,7 +645,7 @@ ECode CLinkedBlockingQueue::ContainsAll(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next((IInterface**)&e);
+        it->GetNext((IInterface**)&e);
         Boolean contains;
         if (Contains(e, &contains), !contains) {
             *result = FALSE;
@@ -677,7 +677,7 @@ ECode CLinkedBlockingQueue::RemoveAll(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next((IInterface**)&e);
+        it->GetNext((IInterface**)&e);
         Boolean contains;
         if (collection->Contains(e, &contains), contains) {
             it->Remove();
@@ -698,7 +698,7 @@ ECode CLinkedBlockingQueue::RetainAll(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next((IInterface**)&e);
+        it->GetNext((IInterface**)&e);
         Boolean contains;
         if (collection->Contains(e, &contains), !contains) {
             it->Remove();

@@ -344,7 +344,7 @@ ECode CX509CertPathImpl::GetInstance(
         while(hasNext) {
             AutoPtr<IInterface> cert;
             AutoPtr<IX509CertImpl> impl;
-            it->Next((IInterface**)&cert);
+            it->GetNext((IInterface**)&cert);
             CX509CertImpl::New(cert.Get(), (IX509CertImpl**)&impl);
             result->Add(impl.Get());
             it->HasNext(&hasNext);
@@ -421,7 +421,7 @@ ECode CX509CertPathImpl::GetInstance(
         it->HasNext(&hasNext)
         while (hasNext) {
             AutoPtr<IInterface> tmp;
-            it->Next((IInterface**)&tmp);
+            it->GetNext((IInterface**)&tmp);
             AutoPtr<IX509CertImpl> impl;
             CX509CertImpl::New(ICertificate::Probe(tmp), (IX509CertImpl**)&impl);
             result->Add(impl.Get());

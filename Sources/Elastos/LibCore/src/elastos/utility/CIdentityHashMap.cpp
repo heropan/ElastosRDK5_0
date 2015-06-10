@@ -383,7 +383,7 @@ ECode CIdentityHashMap::Remove(
     return NOERROR;
 }
 
-ECode CIdentityHashMap::EntrySet(
+ECode CIdentityHashMap::GetEntrySet(
     /* [out] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(entries)
@@ -394,7 +394,7 @@ ECode CIdentityHashMap::EntrySet(
     return NOERROR;
 }
 
-ECode CIdentityHashMap::KeySet(
+ECode CIdentityHashMap::GetKeySet(
     /* [out] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
@@ -407,7 +407,7 @@ ECode CIdentityHashMap::KeySet(
     return NOERROR;
 }
 
-ECode CIdentityHashMap::Values(
+ECode CIdentityHashMap::GetValues(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -451,10 +451,10 @@ ECode CIdentityHashMap::Equals(
         }
 
         AutoPtr<ISet> set;
-        EntrySet((ISet**)&set);
+        GetEntrySet((ISet**)&set);
         // ensure we use the equals method of the set created by "this"
         AutoPtr<ISet> mapset;
-        map->EntrySet((ISet**)&mapset);
+        map->GetEntrySet((ISet**)&mapset);
         return (ICollection::Probe(set))->Equals(mapset, result);
     }
     *result = FALSE;
@@ -504,13 +504,13 @@ ECode CIdentityHashMap::WriteObject(
     stream->DefaultWriteObject();
     (IOutputStream::Probe(stream))->Write(mSize);
     AutoPtr<ISet> entries;
-    EntrySet((ISet**)&entries);
+    GetEntrySet((ISet**)&entries);
     AutoPtr<IIterator> iterator;
     (IIterable::Probe(entries))->GetIterator((IIterator**)&iterator);
     Boolean isflag = FALSE;
     while (iterator->HasNext(&isflag), isflag) {
         AutoPtr<IInterface> outface;
-        iterator->Next((IInterface**)&outface);
+        iterator->GetNext((IInterface**)&outface);
         AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
         assert(0 && "TODO");
         // stream.writeObject(entry.key);
@@ -541,7 +541,7 @@ ECode CIdentityHashMap::PutAllImpl(
     /* [in] */ IMap* map)
 {
     AutoPtr<ISet> entries;
-    map->EntrySet((ISet**)&entries);
+    map->GetEntrySet((ISet**)&entries);
     if (entries != NULL) {
         AbstractMap::PutAll(map);
     }
@@ -677,7 +677,7 @@ ECode CIdentityHashMap::IdentityHashMapIterator::CheckConcurrentMod()
     return NOERROR;
 }
 
-ECode CIdentityHashMap::IdentityHashMapIterator::Next(
+ECode CIdentityHashMap::IdentityHashMapIterator::GetNext(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -1027,7 +1027,7 @@ ECode CIdentityHashMap::IdentityHashMapValues::Remove(
     GetIterator((IIterator**)&it);
     while (it->HasNext(&isflag), isflag) {
         AutoPtr<IInterface> outface;
-        it->Next((IInterface**)&outface);
+        it->GetNext((IInterface**)&outface);
         if (object == outface) {
             it->Remove();
             *value = TRUE;

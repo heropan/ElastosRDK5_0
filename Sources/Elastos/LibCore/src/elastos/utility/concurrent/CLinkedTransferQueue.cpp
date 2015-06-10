@@ -439,7 +439,7 @@ ECode CLinkedTransferQueue::Itr::HasNext(
     return NOERROR;
 }
 
-ECode CLinkedTransferQueue::Itr::Next(
+ECode CLinkedTransferQueue::Itr::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
@@ -903,11 +903,11 @@ ECode CLinkedTransferQueue::Remove(
     return AbstractQueue::Remove(e);
 }
 
-ECode CLinkedTransferQueue::Element(
+ECode CLinkedTransferQueue::GetElement(
     /* [out] */ IInterface** e)
 {
     VALIDATE_NOT_NULL(e);
-    return AbstractQueue::Element(e);
+    return AbstractQueue::GetElement(e);
 }
 
 void CLinkedTransferQueue::WriteObject(

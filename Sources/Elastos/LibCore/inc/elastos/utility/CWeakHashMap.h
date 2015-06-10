@@ -70,7 +70,7 @@ public:
         CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -400,7 +400,7 @@ public:
      *
      * @return a set of the mappings.
      */
-    CARAPI EntrySet(
+    CARAPI GetEntrySet(
         /* [out] */ ISet** entrys);
 
     /**
@@ -410,7 +410,7 @@ public:
      *
      * @return a set of the keys.
      */
-    CARAPI KeySet(
+    CARAPI GetKeySet(
         /* [out] */ ISet** keys);
 
     /**
@@ -432,7 +432,7 @@ public:
      *
      * @return a collection of the values contained in this map.
      */
-    CARAPI Values(
+    CARAPI GetValues(
         /* [out] */ ICollection** values);
 
     /**

@@ -180,7 +180,7 @@ String CRuleBasedCollatorICU::CharacterIteratorToString(
 {
     StringBuilder result;
     Char32 ch(0);
-    for (it->Current(&ch); ch != ICharacterIterator::DONE; it->Next(&ch)) {
+    for (it->Current(&ch); ch != ICharacterIterator::DONE; it->GetNext(&ch)) {
         result.AppendChar(ch);
     }
     return result.ToString();

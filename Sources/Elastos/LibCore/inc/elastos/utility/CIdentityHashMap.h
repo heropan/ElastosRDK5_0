@@ -72,7 +72,7 @@ public:
 
         CARAPI CheckConcurrentMod();
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** outface);
 
         CARAPI Remove();
@@ -384,7 +384,7 @@ public:
      *
      * @return a set of the mappings
      */
-    CARAPI EntrySet(
+    CARAPI GetEntrySet(
         /* [out] */ ISet** entries);
 
     /**
@@ -441,7 +441,7 @@ public:
      *
      * @return a set of the keys.
      */
-    CARAPI KeySet(
+    CARAPI GetKeySet(
         /* [out] */ ISet** keySet);
 
     /**
@@ -537,7 +537,7 @@ public:
      *
      * @return a collection of the values contained in this map.
      */
-    CARAPI Values(
+    CARAPI GetValues(
         /* [out] */ ICollection** value);
 
     CARAPI Clone(

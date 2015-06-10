@@ -47,10 +47,10 @@ ECode CHashMap::ContainsValue(
     return HashMap::ContainsValue(value, result);
 }
 
-ECode CHashMap::EntrySet(
+ECode CHashMap::GetEntrySet(
     /* [out] */ ISet** entries)
 {
-    return HashMap::EntrySet(entries);
+    return HashMap::GetEntrySet(entries);
 }
 
 ECode CHashMap::Equals(
@@ -79,10 +79,10 @@ ECode CHashMap::IsEmpty(
     return HashMap::IsEmpty(result);
 }
 
-ECode CHashMap::KeySet(
+ECode CHashMap::GetKeySet(
     /* [out] */ ISet** keySet)
 {
-    return HashMap::KeySet(keySet);
+    return HashMap::GetKeySet(keySet);
 }
 
 ECode CHashMap::Put(
@@ -112,10 +112,10 @@ ECode CHashMap::GetSize(
     return HashMap::GetSize(size);
 }
 
-ECode CHashMap::Values(
+ECode CHashMap::GetValues(
     /* [out] */ ICollection** value)
 {
-    return HashMap::Values(value);
+    return HashMap::GetValues(value);
 }
 
 ECode CHashMap::Clone(

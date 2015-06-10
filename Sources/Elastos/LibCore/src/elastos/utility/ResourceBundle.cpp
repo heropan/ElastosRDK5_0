@@ -840,7 +840,7 @@ ECode ResourceBundle::ContainsKey(
     return outset->Contains(sq, value);
 }
 
-ECode ResourceBundle::KeySet(
+ECode ResourceBundle::GetKeySet(
     /* [out] */ ISet** outset)
 {
     VALIDATE_NOT_NULL(outset)

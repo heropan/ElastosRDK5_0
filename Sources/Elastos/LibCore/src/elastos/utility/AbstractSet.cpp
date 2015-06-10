@@ -50,7 +50,7 @@ ECode AbstractSet::GetHashCode(
     Boolean isflag = FALSE;
     while (it->HasNext(&isflag), isflag) {
         AutoPtr<IInterface> next;
-        it->Next((IInterface**)&next);
+        it->GetNext((IInterface**)&next);
         result += next == NULL ? 0 : Object::GetHashCode(next);
     }
     *value = result;
@@ -72,7 +72,7 @@ ECode AbstractSet::RemoveAll(
         Boolean isflag = FALSE;
         while (it->HasNext(&isflag), isflag) {
             AutoPtr<IInterface> next;
-            it->Next((IInterface**)&next);
+            it->GetNext((IInterface**)&next);
             if (collection->Contains(next, &isflag), isflag) {
                 it->Remove();
                 result = TRUE;
@@ -85,7 +85,7 @@ ECode AbstractSet::RemoveAll(
         Boolean isflag = FALSE;
         while (it->HasNext(&isflag), isflag) {
             AutoPtr<IInterface> next;
-            it->Next((IInterface**)&next);
+            it->GetNext((IInterface**)&next);
             Boolean rmflag = FALSE;
             result = (Remove(next, &rmflag), rmflag) || result;
         }

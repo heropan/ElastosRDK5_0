@@ -35,7 +35,7 @@ ECode CCollectionUtils::_Iterator::HasNext(
     return NOERROR;
 }
 
-ECode CCollectionUtils::_Iterator::Next(
+ECode CCollectionUtils::_Iterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)

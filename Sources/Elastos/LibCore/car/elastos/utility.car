@@ -990,7 +990,7 @@ module
         interface ICopyOnWriteArrayList;
         interface ICollection;
         interface IIterable;
-        // interface IRandomAccess;
+        interface IRandomAccess;
         interface ICloneable;
         interface ISerializable;
     }

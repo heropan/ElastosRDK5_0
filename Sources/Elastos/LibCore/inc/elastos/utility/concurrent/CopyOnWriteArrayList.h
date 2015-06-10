@@ -19,6 +19,7 @@ class CopyOnWriteArrayList
     , public ICopyOnWriteArrayList
     , public ICollection
     , public IIterable
+    , public IRandomAccess
 {
 protected:
     class Slice
@@ -172,7 +173,7 @@ protected:
         CARAPI GetListIterator(
             /* [out] */ IListIterator** it);
 
-        CARAPI SubList(
+        CARAPI GetSubList(
             /* [in] */ Int32 start,
             /* [in] */ Int32 end,
             /* [out] */ IList** subList);
@@ -209,13 +210,13 @@ protected:
         CARAPI HasPrevious(
             /* [out] */ Boolean* result);
 
-        CARAPI NextIndex(
+        CARAPI GetNextIndex(
             /* [out] */ Int32* index);
 
-        CARAPI Previous(
+        CARAPI GetPrevious(
             /* [out] */ IInterface** object);
 
-        CARAPI PreviousIndex(
+        CARAPI GetPreviousIndex(
             /* [out] */ Int32* index);
 
         CARAPI Set(
@@ -224,7 +225,7 @@ protected:
         CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -490,6 +491,9 @@ public:
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* modified);
 
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
     /**
      * Returns a count of how many objects this {@code Collection} contains.
      *
@@ -719,7 +723,7 @@ public:
      *                if {@code start < 0, start > end} or {@code end >
      *                size()}
      */
-    CARAPI SubList(
+    CARAPI GetSubList(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ IList** subList);
@@ -837,8 +841,6 @@ private:
      */
     /* transient volatile */
     AutoPtr< ArrayOf<IInterface*> > mElements;
-
-    Object mLock;
 
     static const AutoPtr< ArrayOf<IInterface*> > sEmptyArray;
 };

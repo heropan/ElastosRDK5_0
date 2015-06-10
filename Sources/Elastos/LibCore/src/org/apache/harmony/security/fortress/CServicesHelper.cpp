@@ -169,7 +169,7 @@ ECode CServicesHelper::InitServiceInfo(
     it->HasNext(&hasNext);
     while(hasNext) {
         AutoPtr<IInterface> next;
-        it->Next((IInterface**)&next);
+        it->GetNext((IInterface**)&next);
         AutoPtr<IService> service = IService::Probe(next);
         String type;
         service->GetType(&type);
@@ -271,7 +271,7 @@ ECode CServicesHelper::GetCacheVersion(
         it->HasNext(&hasNext);
         while (hasNext) {
             AutoPtr<IInterface> next;
-            it->Next((IInterface**)&next);
+            it->GetNext((IInterface**)&next);
             InitServiceInfo(IProvider::Probe(next));
             it->HasNext(&hasNext);
         }

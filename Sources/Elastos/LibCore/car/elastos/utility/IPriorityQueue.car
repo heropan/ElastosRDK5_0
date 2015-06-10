@@ -23,7 +23,7 @@ module
          * @return the comparator of the priority queue or null if the natural
          *         ordering is used.
          */
-        Comparator(
+        GetComparator(
             [out] IComparator** outcom);
     }
 

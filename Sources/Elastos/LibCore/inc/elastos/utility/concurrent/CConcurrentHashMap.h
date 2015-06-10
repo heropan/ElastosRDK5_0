@@ -274,10 +274,10 @@ public:
         KeyIterator(
             /* [in] */ CConcurrentHashMap* host);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
-        CARAPI NextElement(
+        CARAPI GetNextElement(
             /* [out] */ IInterface** object);
     };
 
@@ -291,10 +291,10 @@ public:
         ValueIterator(
             /* [in] */ CConcurrentHashMap* host);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
-        CARAPI NextElement(
+        CARAPI GetNextElement(
             /* [out] */ IInterface** object);
     };
 
@@ -335,7 +335,7 @@ public:
         EntryIterator(
             /* [in] */ CConcurrentHashMap* host);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
     };
 
@@ -691,7 +691,7 @@ public:
      *
      * @return a set of the mappings
      */
-    CARAPI EntrySet(
+    CARAPI GetEntrySet(
         /* [out] */ ISet** entries);
 
     /**
@@ -748,7 +748,7 @@ public:
      *
      * @return a set of the keys.
      */
-    CARAPI KeySet(
+    CARAPI GetKeySet(
         /* [out] */ ISet** keySet);
 
     /**
@@ -837,7 +837,7 @@ public:
      *
      * @return a collection of the values contained in this map.
      */
-    CARAPI Values(
+    CARAPI GetValues(
         /* [out] */ ICollection** value);
 
     /**
@@ -846,7 +846,7 @@ public:
      * @return an enumeration of the keys in this table
      * @see #keySet()
      */
-    CARAPI Keys(
+    CARAPI GetKeys(
         /* [out] */ IEnumeration** outenum);
 
     /**
@@ -855,7 +855,7 @@ public:
      * @return an enumeration of the values in this table
      * @see #values()
      */
-    CARAPI Elements(
+    CARAPI GetElements(
         /* [out] */ IEnumeration** outenum);
 
     /**

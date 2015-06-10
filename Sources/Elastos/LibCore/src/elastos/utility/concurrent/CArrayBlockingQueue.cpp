@@ -73,7 +73,7 @@ ECode CArrayBlockingQueue::constructor(
         c->GetIterator((IIterator**)&it);
         while(it->HasNext(&hasNext), hasNext) {
             obj = NULL;
-            it->Next((IInterface**)&obj);
+            it->GetNext((IInterface**)&obj);
             ec = CheckNotNull(obj);
             if (FAILED(ec)) goto _Exit_;
 
@@ -272,7 +272,7 @@ ECode CArrayBlockingQueue::Peek(
     return NOERROR;
 }
 
-ECode CArrayBlockingQueue::Element(
+ECode CArrayBlockingQueue::GetElement(
     /* [out] */ IInterface** e)
 {
     VALIDATE_NOT_NULL(e);
@@ -956,7 +956,7 @@ ECode CArrayBlockingQueue::Itr::HasNext(
     return NOERROR;
 }
 
-ECode CArrayBlockingQueue::Itr::Next(
+ECode CArrayBlockingQueue::Itr::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);

@@ -437,7 +437,7 @@ ECode CX509CertSelector::SetExtendedKeyUsage(
     keyUsage->GetIterator((IIterator**)&it);
     while ((it->HasNext(&hasNext), hasNext)) {
         AutoPtr<IInterface> elem;
-        it->Next((IInterface**)&elem);
+        it->GetNext((IInterface**)&elem);
         String usage;
         ICharSequence::Probe(elem)->ToString(&usage);
         FAIL_RETURN(CheckOID(usage))
@@ -623,7 +623,7 @@ ECode CX509CertSelector::SetPolicy(
     policies->GetIterator((IIterator**)&it);
     while ((it->HasNext(&hasNext), hasNext)) {
         AutoPtr<IInterface> elem;
-        it->Next((IInterface**)&elem);
+        it->GetNext((IInterface**)&elem);
         String certPolicyId;
         ICharSequence::Probe(elem)->ToString(&certPolicyId);
         FAIL_RETURN(CheckOID(certPolicyId))

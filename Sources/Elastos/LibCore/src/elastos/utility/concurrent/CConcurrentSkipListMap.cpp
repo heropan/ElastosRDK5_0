@@ -956,13 +956,13 @@ void CConcurrentSkipListMap::BuildFromSorted(
     }
 
     AutoPtr<ISet> s;
-    map->EntrySet((ISet**)&s);
+    map->GetEntrySet((ISet**)&s);
     AutoPtr<IIterator> it;
     s->GetIterator((IIterator**)&it);
     Boolean bNext;
     while ((it->HasNext(&bNext), bNext)) {
         AutoPtr<IMapEntry> e;
-        it->Next((IInterface**)&e);
+        it->GetNext((IInterface**)&e);
         Int32 j = RandomLevel();
         if (j > h->mLevel) j = h->mLevel + 1;
         AutoPtr<IInterface> k;
@@ -1182,7 +1182,7 @@ ECode CConcurrentSkipListMap::Clear()
 
 /* ---------------- View methods -------------- */
 
-ECode CConcurrentSkipListMap::KeySet(
+ECode CConcurrentSkipListMap::GetKeySet(
     /* [out] */ ISet** res)
 {
     VALIDATE_NOT_NULL(res);
@@ -1202,7 +1202,7 @@ ECode CConcurrentSkipListMap::NavigableKeySet(
     return NOERROR;
 }
 
-ECode CConcurrentSkipListMap::Values(
+ECode CConcurrentSkipListMap::GetValues(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value);
@@ -1212,7 +1212,7 @@ ECode CConcurrentSkipListMap::Values(
     return NOERROR;
 }
 
-ECode CConcurrentSkipListMap::EntrySet(
+ECode CConcurrentSkipListMap::GetEntrySet(
     /* [out] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(entries);
@@ -1260,7 +1260,7 @@ ECode CConcurrentSkipListMap::Equals(
     }
 
     AutoPtr<ISet> entries;
-    this->EntrySet((ISet**)&entries);
+    this->GetEntrySet((ISet**)&entries);
     AutoPtr<ArrayOf<IInterface*> > arr;
     entries->ToArray((ArrayOf<IInterface*>**)&arr);
     for (Int32 i = 0;i < arr->GetLength();i++) {
@@ -1278,7 +1278,7 @@ ECode CConcurrentSkipListMap::Equals(
         }
     }
     AutoPtr<ISet> entries2;
-    m->EntrySet((ISet**)&entries2);
+    m->GetEntrySet((ISet**)&entries2);
     AutoPtr<ArrayOf<IInterface*> > arr2;
     entries2->ToArray((ArrayOf<IInterface*>**)&arr2);
     for (Int32 i = 0;i < arr2->GetLength();i++) {
@@ -1715,7 +1715,7 @@ CConcurrentSkipListMap::_ValueIterator::_ValueIterator(
 {
 }
 
-ECode CConcurrentSkipListMap::_ValueIterator::Next(
+ECode CConcurrentSkipListMap::_ValueIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
@@ -1734,7 +1734,7 @@ CConcurrentSkipListMap::_KeyIterator::_KeyIterator(
 {
 }
 
-ECode CConcurrentSkipListMap::_KeyIterator::Next(
+ECode CConcurrentSkipListMap::_KeyIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
@@ -1753,7 +1753,7 @@ CConcurrentSkipListMap::_EntryIterator::_EntryIterator(
 {
 }
 
-ECode CConcurrentSkipListMap::_EntryIterator::Next(
+ECode CConcurrentSkipListMap::_EntryIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
@@ -3032,7 +3032,7 @@ ECode CConcurrentSkipListMap::_SubMap::PollLastEntry(
 
 /* ---------------- _SubMap Views -------------- */
 
-ECode CConcurrentSkipListMap::_SubMap::KeySet(
+ECode CConcurrentSkipListMap::_SubMap::GetKeySet(
     /* [out] */ ISet** res)
 {
     VALIDATE_NOT_NULL(res);
@@ -3052,7 +3052,7 @@ ECode CConcurrentSkipListMap::_SubMap::NavigableKeySet(
     return NOERROR;
 }
 
-ECode CConcurrentSkipListMap::_SubMap::Values(
+ECode CConcurrentSkipListMap::_SubMap::GetValues(
     /* [out] */ ICollection** value)
 {
     VALIDATE_NOT_NULL(value);
@@ -3062,7 +3062,7 @@ ECode CConcurrentSkipListMap::_SubMap::Values(
     return NOERROR;
 }
 
-ECode CConcurrentSkipListMap::_SubMap::EntrySet(
+ECode CConcurrentSkipListMap::_SubMap::GetEntrySet(
     /* [out] */ ISet** entries)
 {
     VALIDATE_NOT_NULL(entries);
@@ -3196,7 +3196,7 @@ CConcurrentSkipListMap::_SubMap::SubMapValueIterator::SubMapValueIterator(
 {
 }
 
-ECode CConcurrentSkipListMap::_SubMap::SubMapValueIterator::Next(
+ECode CConcurrentSkipListMap::_SubMap::SubMapValueIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
@@ -3215,7 +3215,7 @@ CConcurrentSkipListMap::_SubMap::SubMapKeyIterator::SubMapKeyIterator(
 {
 }
 
-ECode CConcurrentSkipListMap::_SubMap::SubMapKeyIterator::Next(
+ECode CConcurrentSkipListMap::_SubMap::SubMapKeyIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
@@ -3234,7 +3234,7 @@ CConcurrentSkipListMap::_SubMap::SubMapEntryIterator::SubMapEntryIterator(
 {
 }
 
-ECode CConcurrentSkipListMap::_SubMap::SubMapEntryIterator::Next(
+ECode CConcurrentSkipListMap::_SubMap::SubMapEntryIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);

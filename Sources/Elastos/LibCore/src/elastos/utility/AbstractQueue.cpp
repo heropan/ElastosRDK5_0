@@ -41,7 +41,7 @@ ECode AbstractQueue::Remove(
     return NOERROR;
 }
 
-ECode AbstractQueue::Element(
+ECode AbstractQueue::GetElement(
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
@@ -86,7 +86,7 @@ ECode AbstractQueue::AddAll(
     Boolean hasNext, added;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next((IInterface**)&e);
+        it->GetNext((IInterface**)&e);
         if (Add(e, &added), added) {
             modified = TRUE;
         }

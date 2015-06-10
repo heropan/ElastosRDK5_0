@@ -115,7 +115,7 @@ void CConcurrentLinkedDeque::LinkFirst(
     CheckNotNull(e);
     AutoPtr<Node> newNode = new Node(e);
 
-    RESTARTFROMHEAD:
+RESTARTFROMHEAD:
     for (;;) {
         for (AutoPtr<Node> h = mHead, p = h, q;;) {
             if ((q = p->mPrev) != NULL &&
@@ -601,7 +601,7 @@ ECode CConcurrentLinkedDeque::constructor(
     Boolean isflag = FALSE;
     while ((it->HasNext(&isflag), isflag)) {
         AutoPtr<IInterface> e;
-        it->Next((IInterface**)&e);
+        it->GetNext((IInterface**)&e);
         FAIL_RETURN(CheckNotNull(e));
         AutoPtr<Node> newNode = new Node(e);
         if (h == NULL)
@@ -812,7 +812,7 @@ ECode CConcurrentLinkedDeque::Peek(
     return PeekFirst(e);
 }
 
-ECode CConcurrentLinkedDeque::Element(
+ECode CConcurrentLinkedDeque::GetElement(
     /* [out] */ IInterface** e)
 {
     VALIDATE_NOT_NULL(e)
@@ -941,7 +941,7 @@ ECode CConcurrentLinkedDeque::AddAll(
     Boolean isflag = FALSE;
     while ((it->HasNext(&isflag), isflag)) {
         AutoPtr<IInterface> e;
-        it->Next((IInterface**)&e);
+        it->GetNext((IInterface**)&e);
         FAIL_RETURN(CheckNotNull(e));
         AutoPtr<Node> newNode = new Node(e);
         if (beginningOfTheEnd == NULL)
@@ -1092,7 +1092,7 @@ ECode CConcurrentLinkedDeque::AbstractItr::HasNext(
     return NOERROR;
 }
 
-ECode CConcurrentLinkedDeque::AbstractItr::Next(
+ECode CConcurrentLinkedDeque::AbstractItr::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);

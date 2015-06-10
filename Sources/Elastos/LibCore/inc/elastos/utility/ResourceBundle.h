@@ -523,7 +523,7 @@ public:
         /* [in] */ String key,
         /* [out] */ Boolean* value);
 
-    CARAPI KeySet(
+    CARAPI GetKeySet(
         /* [out] */ ISet** outset);
 
 protected:

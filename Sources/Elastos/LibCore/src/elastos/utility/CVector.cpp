@@ -133,10 +133,10 @@ ECode CVector::ElementAt(
     return _Vector::ElementAt(location, outface);
 }
 
-ECode CVector::Elements(
+ECode CVector::GetElements(
     /* [out] */ IEnumeration** enu)
 {
-    return _Vector::Elements(enu);
+    return _Vector::GetElements(enu);
 }
 
 ECode CVector::EnsureCapacity(
@@ -293,12 +293,12 @@ ECode CVector::GetSize(
     return _Vector::GetSize(size);
 }
 
-ECode CVector::SubList(
+ECode CVector::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
 {
-    return _Vector::SubList(start, end, subList);
+    return _Vector::GetSubList(start, end, subList);
 }
 
 ECode CVector::ToArray(

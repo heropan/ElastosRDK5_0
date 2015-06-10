@@ -364,7 +364,7 @@ ECode JarVerifier::VerifyCertificate(
     //convert _entries to entries;
     AutoPtr<HashMap<String, AutoPtr<IAttributes> > > entries = new HashMap<String, AutoPtr<IAttributes> >();
     AutoPtr<ISet> entrySet;
-    _entries->EntrySet((ISet**)&entrySet);
+    _entries->GetEntrySet((ISet**)&entrySet);
     AutoPtr<IIterator> it;
     entrySet->GetIterator((IIterator**)&it);
 
@@ -373,7 +373,7 @@ ECode JarVerifier::VerifyCertificate(
     IMapEntry* mapEnty;
     for (; (it->HasNext(&hasNext), hasNext);) {
         AutoPtr<IInterface> next, key, value;
-        it->Next((IInterface**)&next);
+        it->GetNext((IInterface**)&next);
         mapEnty = IMapEntry::Probe(next);
         mapEnty->GetKey((IInterface**)&key);
         mapEnty->GetValue((IInterface**)&value);

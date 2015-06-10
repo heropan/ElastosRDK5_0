@@ -78,10 +78,10 @@ public:
         CARAPI Clone(
             /* [out] */ IInterface** copy);
 
-        CARAPI Current(
+        CARAPI GetCurrent(
             /* [out] */ Char32* value);
 
-        CARAPI First(
+        CARAPI GetFirst(
             /* [out] */ Char32* value);
 
         CARAPI GetBeginIndex(
@@ -125,13 +125,13 @@ public:
             /* [in] */ ISet* attributes,
             /* [out] */ Int32* index);
 
-        CARAPI Last(
+        CARAPI GetLast(
             /* [out] */ Char32* lastValue);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ Char32* nextValue);
 
-        CARAPI Previous(
+        CARAPI GetPrevious(
             /* [out] */ Char32* previousValue);
 
         CARAPI SetIndex(

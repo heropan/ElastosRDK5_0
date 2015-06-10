@@ -25,7 +25,7 @@ module
          * @return the current character, or {DONE} if the current index is
          *         past the beginning or end of the sequence.
          */
-        Current(
+        GetCurrent(
             [out] Char32* character);
 
         /**
@@ -34,7 +34,7 @@ module
          *
          * @return the character at the begin index.
          */
-        First(
+        GetFirst(
             [out] Char32* character);
 
         /**
@@ -67,7 +67,7 @@ module
          *
          * @return the character before the end index.
          */
-        Last(
+        GetLast(
             [out] Char32* character);
 
         /**
@@ -76,7 +76,7 @@ module
          * @return the character at the next index, or {DONE} if the next
          *         index would be past the end.
          */
-        Next(
+        GetNext(
             [out] Char32* character);
 
         /**
@@ -85,7 +85,7 @@ module
          * @return the character at the previous index, or {DONE} if the
          *         previous index would be past the beginning.
          */
-        Previous(
+        GetPrevious(
             [out] Char32* character);
 
         /**

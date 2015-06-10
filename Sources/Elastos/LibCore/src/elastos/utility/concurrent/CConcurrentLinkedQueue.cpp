@@ -81,7 +81,7 @@ ECode CConcurrentLinkedQueue::constructor(
     Boolean isflag = FALSE;
     while ((it->HasNext(&isflag), isflag)) {
         AutoPtr<IInterface> e;
-        it->Next((IInterface**)&e);
+        it->GetNext((IInterface**)&e);
         CheckNotNull(e);
         AutoPtr<Node> newNode = new Node(e);
         if (h == NULL)
@@ -314,7 +314,7 @@ ECode CConcurrentLinkedQueue::AddAll(
     Boolean isflag = FALSE;
     while ((it->HasNext(&isflag), isflag)) {
         AutoPtr<IInterface> e;
-        it->Next((IInterface**)&e);
+        it->GetNext((IInterface**)&e);
         CheckNotNull(e);
         AutoPtr<Node> newNode = new Node(e);
         if (beginningOfTheEnd == NULL)
@@ -457,10 +457,10 @@ ECode CConcurrentLinkedQueue::Remove(
     return AbstractQueue::Remove(e);
 }
 
-ECode CConcurrentLinkedQueue::Element(
+ECode CConcurrentLinkedQueue::GetElement(
     /* [out] */ IInterface** e)
 {
-    return AbstractQueue::Element(e);
+    return AbstractQueue::GetElement(e);
 }
 
 void CConcurrentLinkedQueue::WriteObject(
@@ -612,7 +612,7 @@ ECode CConcurrentLinkedQueue::Itr::HasNext(
     return NOERROR;
 }
 
-ECode CConcurrentLinkedQueue::Itr::Next(
+ECode CConcurrentLinkedQueue::Itr::GetNext(
     /* [out] */ IInterface** object)
 {
     if (mNextNode == NULL)

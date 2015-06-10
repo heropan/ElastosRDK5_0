@@ -158,7 +158,7 @@ public:
             /* [in] */ IInterface* object,
             /* [out] */ IInterface** prevObject);
 
-        CARAPI SubList(
+        CARAPI GetSubList(
             /* [in] */ Int32 start,
             /* [in] */ Int32 end,
             /* [out] */ IList** subList);
@@ -233,7 +233,7 @@ public:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI SubList(
+        CARAPI GetSubList(
             /* [in] */ Int32 start,
             /* [in] */ Int32 end,
             /* [out] */ IList** subList);
@@ -339,7 +339,7 @@ public:
             /* [in] */ IInterface* value,
             /* [out] */ Boolean* result);
 
-        CARAPI EntrySet(
+        CARAPI GetEntrySet(
             /* [out, callee] */ ISet** entries);
 
         CARAPI Equals(
@@ -356,7 +356,7 @@ public:
         CARAPI IsEmpty(
             /* [out] */ Boolean* result);
 
-        CARAPI KeySet(
+        CARAPI GetKeySet(
             /* [out, callee] */ ISet** keySet);
 
         CARAPI Put(
@@ -374,7 +374,7 @@ public:
         CARAPI GetSize(
             /* [out] */ Int32* size);
 
-        CARAPI Values(
+        CARAPI GetValues(
             /* [out] */ ICollection** value);
 
         CARAPI ToString(
@@ -435,7 +435,7 @@ public:
             /* [in] */ IInterface* value,
             /* [out] */ Boolean* result);
 
-        CARAPI EntrySet(
+        CARAPI GetEntrySet(
             /* [out, callee] */ ISet** entries);
 
         CARAPI Equals(
@@ -452,10 +452,10 @@ public:
         CARAPI IsEmpty(
             /* [out] */ Boolean* result);
 
-        CARAPI KeySet(
+        CARAPI GetKeySet(
             /* [out, callee] */ ISet** keySet);
 
-        CARAPI Values(
+        CARAPI GetValues(
             /* [out] */ ICollection** value);
 
         CARAPI Put(
@@ -587,7 +587,7 @@ private:
         CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -605,7 +605,7 @@ private:
         CARAPI HasMoreElements(
             /* [out] */ Boolean* value);
 
-        CARAPI NextElement(
+        CARAPI GetNextElement(
             /* [out] */ IInterface** inter);
     };
 
@@ -622,7 +622,7 @@ private:
         CARAPI HasMoreElements(
             /* [out] */ Boolean* value);
 
-        CARAPI NextElement(
+        CARAPI GetNextElement(
             /* [out] */ IInterface** inter);
     public:
         AutoPtr<IIterator> mIt;
@@ -728,7 +728,7 @@ private:
             /* [in] */ IInterface* object,
             /* [out] */ IInterface** prevObject);
 
-        CARAPI SubList(
+        CARAPI GetSubList(
             /* [in] */ Int32 start,
             /* [in] */ Int32 end,
             /* [out] */ IList** subList);
@@ -832,7 +832,7 @@ public:
         CARAPI GetListIterator(
             /* [out] */ IListIterator** it);
 
-        CARAPI SubList(
+        CARAPI GetSubList(
             /* [in] */ Int32 start,
             /* [in] */ Int32 end,
             /* [out] */ IList** subList);
@@ -932,17 +932,17 @@ public:
             /* [in] */ IInterface* value,
             /* [out] */ Boolean* result);
 
-        CARAPI EntrySet(
+        CARAPI GetEntrySet(
             /* [out, callee] */ ISet** entries);
 
         CARAPI Get(
             /* [in] */ PInterface key,
             /* [out] */ PInterface* value);
 
-        CARAPI KeySet(
+        CARAPI GetKeySet(
             /* [out, callee] */ ISet** keySet);
 
-        CARAPI Values(
+        CARAPI GetValues(
             /* [out] */ ICollection** value);
 
         CARAPI Clear();
@@ -1042,7 +1042,7 @@ public:
             CARAPI HasNext(
                 /* [out] */ Boolean* result);
 
-            CARAPI Next(
+            CARAPI GetNext(
                 /* [out] */ IInterface** object);
 
             CARAPI Remove();
@@ -1213,7 +1213,7 @@ public:
             /* [in] */ IInterface* object,
             /* [out] */ IInterface** prevObject);
 
-        CARAPI SubList(
+        CARAPI GetSubList(
             /* [in] */ Int32 start,
             /* [in] */ Int32 end,
             /* [out] */ IList** subList);
@@ -1264,10 +1264,10 @@ public:
                 CARAPI HasNext(
                     /* [out] */ Boolean* result);
 
-                CARAPI Next(
+                CARAPI GetNext(
                     /* [out] */ IMapEntry** object);
 
-                CARAPI Next(
+                CARAPI GetNext(
                     /* [out] */ IInterface** object);
 
                 CARAPI Remove();
@@ -1360,7 +1360,7 @@ public:
         CARAPI GetSize(
             /* [out] */ Int32* size);
 
-        CARAPI EntrySet(
+        CARAPI GetEntrySet(
             /* [out, callee] */ ISet** entries);
 
         CARAPI Clear();
@@ -1375,7 +1375,7 @@ public:
         CARAPI IsEmpty(
             /* [out] */ Boolean* result);
 
-        CARAPI KeySet(
+        CARAPI GetKeySet(
             /* [out, callee] */ ISet** keySet);
 
         CARAPI Put(
@@ -1390,7 +1390,7 @@ public:
             /* [in] */ PInterface key,
             /* [out] */ PInterface* value);
 
-        CARAPI Values(
+        CARAPI GetValues(
             /* [out] */ ICollection** value);
 
     protected:
@@ -1417,7 +1417,7 @@ public:
             CARAPI HasNext(
                 /* [out] */ Boolean* result);
 
-            CARAPI Next(
+            CARAPI GetNext(
                 /* [out] */ IInterface** object);
 
             CARAPI Remove();
@@ -1515,7 +1515,7 @@ public:
             CARAPI HasPrevious(
                 /* [out] */ Boolean* result);
 
-            CARAPI Next(
+            CARAPI GetNext(
                 /* [out] */ IInterface** object);
 
             CARAPI NextIndex(
@@ -1583,7 +1583,7 @@ public:
             /* [in] */ IInterface* object,
             /* [out] */ IInterface** prevObject);
 
-        CARAPI SubList(
+        CARAPI GetSubList(
             /* [in] */ Int32 start,
             /* [in] */ Int32 end,
             /* [out] */ IList** subList);
@@ -1652,7 +1652,7 @@ public:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI SubList(
+        CARAPI GetSubList(
             /* [in] */ Int32 start,
             /* [in] */ Int32 end,
             /* [out] */ IList** subList);
@@ -1782,10 +1782,10 @@ public:
                 CARAPI HasNext(
                     /* [out] */ Boolean* result);
 
-                CARAPI Next(
+                CARAPI GetNext(
                     /* [out] */ IMapEntry** object);
 
-                CARAPI Next(
+                CARAPI GetNext(
                     /* [out] */ IInterface** object);
 
                 CARAPI Remove();
@@ -1825,7 +1825,7 @@ public:
             /* [in] */ IInterface* value,
             /* [out] */ Boolean* result);
 
-        CARAPI EntrySet(
+        CARAPI GetEntrySet(
             /* [out, callee] */ ISet** entries);
 
         CARAPI Equals(
@@ -1842,7 +1842,7 @@ public:
         CARAPI IsEmpty(
             /* [out] */ Boolean* result);
 
-        CARAPI KeySet(
+        CARAPI GetKeySet(
             /* [out, callee] */ ISet** keySet);
 
         CARAPI Put(
@@ -1860,7 +1860,7 @@ public:
         CARAPI GetSize(
             /* [out] */ Int32* size);
 
-        CARAPI Values(
+        CARAPI GetValues(
             /* [out] */ ICollection** value);
 
         CARAPI ToString(
@@ -1910,7 +1910,7 @@ public:
             /* [in] */ IInterface* value,
             /* [out] */ Boolean* result);
 
-        CARAPI EntrySet(
+        CARAPI GetEntrySet(
             /* [out, callee] */ ISet** entries);
 
         CARAPI Equals(
@@ -1927,7 +1927,7 @@ public:
         CARAPI IsEmpty(
             /* [out] */ Boolean* result);
 
-        CARAPI KeySet(
+        CARAPI GetKeySet(
             /* [out, callee] */ ISet** keySet);
 
         CARAPI Put(
@@ -1945,7 +1945,7 @@ public:
         CARAPI GetSize(
             /* [out] */ Int32* size);
 
-        CARAPI Values(
+        CARAPI GetValues(
             /* [out] */ ICollection** value);
         AutoPtr<ISortedMap> mSm;
     };
@@ -2146,7 +2146,7 @@ public:
 
         CARAPI Clear();
 
-        CARAPI Element(
+        CARAPI GetElement(
             /* [out] */ IInterface** object);
 
         CARAPI Remove(
@@ -2286,7 +2286,7 @@ public:
         CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -2362,7 +2362,7 @@ public:
             /* [in] */ Int32 location,
             /* [out] */ IListIterator** it);
 
-        CARAPI SubList(
+        CARAPI GetSubList(
             /* [in] */ Int32 start,
             /* [in] */ Int32 end,
             /* [out] */ IList** subList);
@@ -2575,10 +2575,10 @@ public:
 
                 CARAPI Remove();
 
-                CARAPI Next(
+                CARAPI GetNext(
                     /* [out] */ IMapEntry** object);
 
-                CARAPI Next(
+                CARAPI GetNext(
                     /* [out] */ IInterface** object);
 
             public:
@@ -2689,13 +2689,13 @@ public:
 
         CARAPI Clear();
 
-        CARAPI KeySet(
+        CARAPI GetKeySet(
             /* [out, callee] */ ISet** keySet);
 
-        CARAPI Values(
+        CARAPI GetValues(
             /* [out] */ ICollection** value);
 
-        CARAPI EntrySet(
+        CARAPI GetEntrySet(
             /* [out, callee] */ ISet** entries);
 
         CARAPI Equals(
@@ -2874,13 +2874,13 @@ public:
 
         CARAPI Clear();
 
-        CARAPI KeySet(
+        CARAPI GetKeySet(
             /* [out, callee] */ ISet** keySet);
 
-        CARAPI Values(
+        CARAPI GetValues(
             /* [out] */ ICollection** value);
 
-        CARAPI EntrySet(
+        CARAPI GetEntrySet(
             /* [out, callee] */ ISet** entries);
 
         CARAPI Equals(

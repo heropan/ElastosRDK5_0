@@ -44,7 +44,7 @@ ECode CX509CRLSelector::SetIssuers(
     issuers->GetIterator((IIterator**)&it);
     while ((it->HasNext(&hasNext), hasNext)) {
         AutoPtr<IInterface> issuer;
-        it->Next((IInterface**)&issuer);
+        it->GetNext((IInterface**)&issuer);
         String name;
         IX500Principal::Probe(issuer)->GetNameEx(IX500Principal::CANONICAL, &name);
         AutoPtr<ICharSequence> cs;

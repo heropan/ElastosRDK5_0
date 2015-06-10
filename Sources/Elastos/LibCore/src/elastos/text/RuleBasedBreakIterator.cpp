@@ -79,14 +79,14 @@ ECode RuleBasedBreakIterator::Last(
     return mWrapped->Last(position);
 }
 
-ECode RuleBasedBreakIterator::Next(
+ECode RuleBasedBreakIterator::GetNext(
     /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position);
     return mWrapped->Next(position);
 }
 
-ECode RuleBasedBreakIterator::Next(
+ECode RuleBasedBreakIterator::GetNext(
     /* [in] */ Int32 n,
     /* [out] */ Int32* position)
 {

@@ -11,12 +11,14 @@ CAR_INTERFACE_IMPL(CCoderResultHelper, Singleton, ICoderResultHelper)
 CAR_SINGLETON_IMPL(CCoderResultHelper)
 
 ECode CCoderResultHelper::GetUNDERFLOW(
-    /* [out] */ ICoderResult** result){
+    /* [out] */ ICoderResult** result)
+{
     return CCoderResult::GetUNDERFLOW(result);
 }
 
 ECode CCoderResultHelper::GetOVERFLOW(
-    /* [out] */ ICoderResult** result){
+    /* [out] */ ICoderResult** result)
+{
     return CCoderResult::GetOVERFLOW(result);
 }
 

@@ -525,7 +525,7 @@ public:
                     /* [in] */ Node* next,
                     /* [in] */ BoundedMap* host);
 
-                CARAPI Next(
+                CARAPI GetNext(
                     /* [out] */ IInterface** object);
             };
 
@@ -606,7 +606,7 @@ public:
                     /* [in] */ Node* next,
                     /* [in] */ BoundedMap* host);
 
-                CARAPI Next(
+                CARAPI GetNext(
                     /* [out] */ IInterface** object);
             };
 
@@ -618,7 +618,7 @@ public:
                     /* [in] */ Node* next,
                     /* [in] */ BoundedMap* host);
 
-                CARAPI Next(
+                CARAPI GetNext(
                     /* [out] */ IInterface** object);
             };
 
@@ -772,7 +772,7 @@ public:
             /* [in] */ IInterface* value,
             /* [out] */ Boolean* result);
 
-        CARAPI EntrySet(
+        CARAPI GetEntrySet(
             /* [out] */ ISet** entries);
 
         CARAPI Equals(
@@ -789,7 +789,7 @@ public:
         CARAPI IsEmpty(
             /* [out] */ Boolean* result);
 
-        CARAPI KeySet(
+        CARAPI GetKeySet(
             /* [out] */ ISet** keySet);
 
         CARAPI Put(
@@ -807,7 +807,7 @@ public:
         CARAPI GetSize(
             /* [out] */ Int32* size);
 
-        CARAPI Values(
+        CARAPI GetValues(
             /* [out] */ ICollection** value);
 
         CARAPI Comparator(
@@ -997,7 +997,7 @@ public:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI EntrySet(
+        CARAPI GetEntrySet(
             /* [out] */ ISet** entries);
 
         CARAPI Clear();
@@ -1024,7 +1024,7 @@ public:
         CARAPI IsEmpty(
             /* [out] */ Boolean* result);
 
-        CARAPI KeySet(
+        CARAPI GetKeySet(
             /* [out] */ ISet** keySet);
 
         CARAPI Put(
@@ -1042,7 +1042,7 @@ public:
         CARAPI GetSize(
             /* [out] */ Int32* size);
 
-        CARAPI Values(
+        CARAPI GetValues(
             /* [out] */ ICollection** value);
 
     protected:
@@ -1098,7 +1098,7 @@ public:
     public:
         CAR_INTERFACE_DECL()
 
-        CARAPI EntrySet(
+        CARAPI GetEntrySet(
             /* [out] */ ISet** entries);
 
         CARAPI Clear();
@@ -1125,7 +1125,7 @@ public:
         CARAPI IsEmpty(
             /* [out] */ Boolean* result);
 
-        CARAPI KeySet(
+        CARAPI GetKeySet(
             /* [out] */ ISet** keySet);
 
         CARAPI Put(
@@ -1143,7 +1143,7 @@ public:
         CARAPI GetSize(
             /* [out] */ Int32* size);
 
-        CARAPI Values(
+        CARAPI GetValues(
             /* [out] */ ICollection** value);
 
         // @SuppressWarnings("unchecked") // we have to trust that the bounds are Ks
@@ -1275,7 +1275,7 @@ public:
      *
      * @return a set of the mappings
      */
-    CARAPI EntrySet(
+    CARAPI GetEntrySet(
         /* [out] */ ISet** entries);
 
     /**
@@ -1332,7 +1332,7 @@ public:
      *
      * @return a set of the keys.
      */
-    CARAPI KeySet(
+    CARAPI GetKeySet(
         /* [out] */ ISet** keySet);
 
     /**
@@ -1421,7 +1421,7 @@ public:
      *
      * @return a collection of the values contained in this map.
      */
-    CARAPI Values(
+    CARAPI GetValues(
         /* [out] */ ICollection** value);
 
     /**

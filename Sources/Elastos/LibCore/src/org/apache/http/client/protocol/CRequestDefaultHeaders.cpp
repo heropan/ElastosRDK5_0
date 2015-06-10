@@ -39,7 +39,7 @@ ECode CRequestDefaultHeaders::Process(
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IObject> defHeader;
-            it->Next((IInterface**)&defHeader);
+            it->GetNext((IInterface**)&defHeader);
             request->AddHeader(IHeader::Probe(defHeader));
         }
     }

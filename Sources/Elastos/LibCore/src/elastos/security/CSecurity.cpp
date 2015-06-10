@@ -338,7 +338,7 @@ ECode CSecurity::GetProvidersEx2(
     keys->GetIterator((IIterator**)&it);
     for (; (it->HasNext(&isflag), isflag);) {
         AutoPtr<IInterface> outface;
-        it->Next((IInterface**)&outface);
+        it->GetNext((IInterface**)&outface);
         AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
         AutoPtr<IInterface> itkey, itvalue;
         entry->GetKey((IInterface**)&itkey);
@@ -470,7 +470,7 @@ ECode CSecurity::GetAlgorithms(
         Boolean next;
         while ((it->HasNext(&next), next)) {
             AutoPtr<IInterface> elm;
-            it->Next((IInterface**)&elm);
+            it->GetNext((IInterface**)&elm);
             AutoPtr<IService> service = IService::Probe(elm);
             String type, algorithm;
             if ((service->GetType(&type), type).EqualsIgnoreCase(serviceName)) {

@@ -78,7 +78,7 @@ public:
      *             if there are no more elements.
      * @see #hasMoreElements
      */
-    CARAPI NextElement(
+    CARAPI GetNextElement(
         /* [out] */ IInterface ** inter);
 
     /**
@@ -105,7 +105,7 @@ public:
      * @throws NoSuchElementException
      *                if no tokens remain.
      */
-    CARAPI NextToken(
+    CARAPI GetNextToken(
         /* [out] */ String* str);
 
     /**
@@ -118,7 +118,7 @@ public:
      * @throws NoSuchElementException
      *                if no tokens remain.
      */
-    CARAPI NextToken(
+    CARAPI GetNextToken(
         /* [in] */ const String& delims,
         /* [out] */ String* str);
 

@@ -24,7 +24,7 @@ ECode CCollationElementIterator::GetOffset(
     return mIcuIterator->GetOffset(offset);
 }
 
-ECode CCollationElementIterator::Next(
+ECode CCollationElementIterator::GetNext(
     /* [out] */ Int32* nextValue)
 {
     return mIcuIterator->Next(nextValue);

@@ -62,7 +62,7 @@ private:
         CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -166,7 +166,7 @@ public:
     CARAPI Remove(
         /* [out] */ IInterface** e);
 
-    CARAPI Element(
+    CARAPI GetElement(
         /* [out] */ IInterface** e);
 
     CARAPI Equals(

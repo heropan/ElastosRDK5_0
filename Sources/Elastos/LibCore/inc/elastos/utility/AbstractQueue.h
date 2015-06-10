@@ -86,7 +86,7 @@ public:
      * @return the head of this queue
      * @throws NoSuchElementException if this queue is empty
      */
-    virtual CARAPI Element(
+    virtual CARAPI GetElement(
         /* [out] */ IInterface** object);
 
     /**

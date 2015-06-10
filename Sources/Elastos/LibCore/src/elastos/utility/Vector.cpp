@@ -22,7 +22,7 @@ ECode _Vector::Enumeration::HasMoreElements(
     return NOERROR;
 }
 
-ECode _Vector::Enumeration::NextElement(
+ECode _Vector::Enumeration::GetNextElement(
     /* [out] */ IInterface** out)
 {
     Mutex::Autolock lock(mOwner->GetSelfLock());
@@ -71,7 +71,7 @@ ECode _Vector::Init(
     Boolean result;
     while ((it->HasNext(&result),result)) {
         AutoPtr<IInterface> next;
-        it->Next((IInterface**)&next);
+        it->GetNext((IInterface**)&next);
         mElementData->Set(mElementCount++, next);
     }
     return NOERROR;
@@ -134,7 +134,7 @@ ECode _Vector::AddAll(
         Boolean result = FALSE;
         while ((it->HasNext(&result),result)) {
             AutoPtr<IInterface> next;
-            it->Next((IInterface**)&next);
+            it->GetNext((IInterface**)&next);
             mElementData->Set(location++, next);
         }
         mElementCount += size;
@@ -231,7 +231,7 @@ ECode _Vector::ElementAt(
     return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 }
 
-ECode _Vector::Elements(
+ECode _Vector::GetElements(
     /* [out] */ IEnumeration** enu)
 {
     VALIDATE_NOT_NULL(enu)
@@ -280,7 +280,7 @@ ECode _Vector::Equals(
         while ((it->HasNext(&hasNext), hasNext)) {
             AutoPtr<IInterface> e1 = (*mElementData)[index++];
             AutoPtr<IInterface> e2;
-            it->Next((IInterface**)&e2);
+            it->GetNext((IInterface**)&e2);
             if (!(e1 == NULL ? e2 == NULL : Object::Equals(e1, e2))) {
                 *result = FALSE;
                 return NOERROR;
@@ -679,7 +679,7 @@ ECode _Vector::GetSize(
     return NOERROR;
 }
 
-ECode _Vector::SubList(
+ECode _Vector::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
@@ -687,7 +687,7 @@ ECode _Vector::SubList(
     VALIDATE_NOT_NULL(subList)
     Mutex::Autolock lock(GetSelfLock());
     AutoPtr<IList> ssList;
-    AbstractList::SubList(start, end, (IList**)&ssList);
+    AbstractList::GetSubList(start, end, (IList**)&ssList);
     *subList = new CCollections::SynchronizedRandomAccessList(ssList, GetSelfLock());
     REFCOUNT_ADD(*subList);
     return NOERROR;
