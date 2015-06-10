@@ -19,6 +19,8 @@ module
     merge("utility/IHashSet.car");
     merge("utility/IHashTable.car");
     merge("utility/IIdentityHashMap.car");
+    merge("utility/ILinkedHashMap.car");
+    merge("utility/ILinkedHashSet.car");
     merge("utility/ILinkedList.car");
     merge("utility/IDictionary.car");
     merge("utility/IProperties.car");
@@ -440,6 +442,67 @@ module
             interface IMap;
             interface ISerializable;
             interface ICloneable;
+        }
+
+        class CLinkedHashMap {
+            constructor();
+
+            constructor(
+                [in] Int32 capacity);
+
+            constructor(
+                [in] Int32 capacity,
+                [in] Float loadFactor);
+
+            constructor(
+                [in] Int32 capacity,
+                [in] Float loadFactor,
+                [in] Boolean accessOrder);
+
+            constructor(
+                [in] IMap* Map);
+
+            interface ILinkedHashMap;
+            interface IMap;
+            interface ISerializable;
+            interface ICloneable;
+        }
+
+        class CLinkedHashSet {
+            constructor();
+
+            constructor(
+                [in] Int32 capacity);
+
+            constructor(
+                [in] Int32 capacity,
+                [in] Float loadFactor);
+
+            constructor(
+                [in] ICollection* collection);
+
+            interface ILinkedHashSet;
+            interface IHashSet;
+            interface ISet;
+            interface ICollection;
+            interface ISerializable;
+            interface ICloneable;
+        }
+
+        class CLinkedList {
+            constructor();
+
+            constructor(
+                [in] ICollection* collection);
+
+            interface ILinkedList;
+            interface IList;
+            interface ICollection;
+            interface IIterable;
+            interface IDeque;
+            interface IQueue;
+            interface ICloneable;
+            interface ISerializable;
         }
 
 

@@ -1,10 +1,12 @@
 #include "CLinkedList.h"
 #include "CArrayList.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::IO::IObjectInput;
 using Elastos::IO::IObjectOutput;
-using Elastos::IO::EIID_IObjectInput;
-using Elastos::IO::EIID_IObjectOutput;
+using Elastos::IO::EIID_ISerializable;
+using Elastos::IO::IDataOutput;
+using Elastos::IO::IDataInput;
 
 namespace Elastos {
 namespace Utility {
@@ -48,7 +50,7 @@ CLinkedList::LinkIterator::LinkIterator(
     }
 }
 
-CAR_INTERFACE_IMPL_LIGHT(CLinkedList::LinkIterator, IListIterator);
+CAR_INTERFACE_IMPL_2(CLinkedList::LinkIterator, Object, IListIterator, IIterator);
 
 ECode CLinkedList::LinkIterator::Add(
     /* [in] */ IInterface* object)
@@ -183,6 +185,27 @@ ECode CLinkedList::LinkIterator::Set(
     }
 }
 
+ECode CLinkedList::LinkIterator::GetNextIndex(
+    /* [out] */ Int32* index)
+{
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
+ECode CLinkedList::LinkIterator::GetPrevious(
+    /* [out] */ IInterface** object)
+{
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
+ECode CLinkedList::LinkIterator::GetPreviousIndex(
+    /* [out] */ Int32* index)
+{
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
 
 //============================================================
 // CLinkedList::ReverseLinkIterator
@@ -196,7 +219,7 @@ CLinkedList::ReverseLinkIterator::ReverseLinkIterator(
     mLink = mList->mVoidLink;
 }
 
-CAR_INTERFACE_IMPL_LIGHT(CLinkedList::ReverseLinkIterator, IIterator);
+CAR_INTERFACE_IMPL(CLinkedList::ReverseLinkIterator, Object, IIterator);
 
 ECode CLinkedList::ReverseLinkIterator::HasNext(
     /* [out] */ Boolean* result)
@@ -248,6 +271,8 @@ ECode CLinkedList::ReverseLinkIterator::Remove()
 //============================================================
 // CLinkedList
 //============================================================
+CAR_INTERFACE_IMPL_5(CLinkedList, AbstractSequentialList, ILinkedList, IDeque, IQueue, ICloneable, ISerializable)
+
 CLinkedList::CLinkedList()
     : mSize(0)
 {}
@@ -273,22 +298,6 @@ ECode CLinkedList::constructor(
     constructor();
     Boolean result;
     return AddAll(collection, &result);
-}
-
-UInt32 CLinkedList::AddRef()
-{
-    return _CLinkedList::AddRef();
-}
-
-UInt32 CLinkedList::Release()
-{
-    return _CLinkedList::Release();
-}
-
-PInterface CLinkedList::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CLinkedList::Probe(riid);
 }
 
 ECode CLinkedList::Add(
@@ -497,7 +506,7 @@ ECode CLinkedList::Clone(
     AutoPtr<ILinkedList> l;
     CLinkedList::New((ILinkedList**)&l);
     Boolean flag = FALSE;
-    FAIL_RETURN(l->AddAll(this, &flag));
+    FAIL_RETURN((ICollection::Probe(l))->AddAll(this, &flag));
     *object = l.Get();
     REFCOUNT_ADD(*object);
     return NOERROR;
@@ -1007,7 +1016,7 @@ ECode CLinkedList::WriteObject(
     //need CObjectOutputStream implement
     assert(0 && "TODO");
     // outputstream = (CObjectOutputStream*)stream->Probe(EIID_IObjectOutput);
-    outputstream->WriteInt32(mSize);
+    (IDataOutput::Probe(outputstream))->WriteInt32(mSize);
     AutoPtr<IIterator> it;
     GetIterator((IIterator**)&it);
     Boolean flag = FALSE;
@@ -1029,7 +1038,7 @@ ECode CLinkedList::ReadObject(
     assert(0 && "TODO");
     // inputstream = (CObjectInputStream*)stream->Probe(EIID_IObjectInput);
     Int32 result;
-    inputstream->ReadInt32(&result);
+    (IDataInput::Probe(inputstream))->ReadInt32(&result);
     mVoidLink = new Link(NULL, NULL, NULL);
     AutoPtr<Link> link = mVoidLink;
     for (Int32 i = mSize; --i >= 0;) {
@@ -1101,7 +1110,7 @@ ECode CLinkedList::GetListIterator(
     /* [out] */ IListIterator** it)
 {
     VALIDATE_NOT_NULL(it);
-    return AbstractSequentialList::GetListIterator(it);
+    return new LinkIterator(this , it);
 }
 
 ECode CLinkedList::GetSubList(
@@ -1111,6 +1120,13 @@ ECode CLinkedList::GetSubList(
 {
     VALIDATE_NOT_NULL(subList);
     return AbstractSequentialList::GetSubList(start, end, subList);
+}
+
+ECode CLinkedList::Element(
+        /* [out] */ IInterface** e)
+{
+    VALIDATE_NOT_NULL(e);
+    return GetFirstImpl(e);
 }
 
 } // Utility

@@ -1,15 +1,19 @@
 #ifndef __UTILITY_CLINKEDHASHSET_H__
 #define __UTILITY_CLINKEDHASHSET_H__
 
-#include "_CLinkedHashSet.h"
+#include "_Elastos_Utility_CLinkedHashSet.h"
 #include "HashSet.h"
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CLinkedHashSet) , public HashSet
+CarClass(CLinkedHashSet)
+    , public HashSet
+    , public ILinkedHashSet
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Constructs a new empty instance of {@code LinkedHashSet}.
      */
@@ -47,9 +51,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ ICollection* collection);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Adds the specified object to this {@code HashSet} if not already present.

@@ -36,7 +36,9 @@ SOURCES += CHashSet.cpp
 SOURCES += HashTable.cpp
 SOURCES += CHashTable.cpp
 SOURCES += CIdentityHashMap.cpp
-
+SOURCES += CLinkedHashMap.cpp
+SOURCES += CLinkedHashSet.cpp
+SOURCES += CLinkedList.cpp
 
 
 

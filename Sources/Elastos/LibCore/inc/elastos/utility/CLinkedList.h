@@ -1,19 +1,28 @@
 #ifndef __UTILITY_CLINKEDLIST_H__
 #define __UTILITY_CLINKEDLIST_H__
 
-#include "_CLinkedList.h"
+#include "_Elastos_Utility_CLinkedList.h"
 #include "AbstractSequentialList.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::IObjectOutputStream;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CLinkedList) , public AbstractSequentialList
+CarClass(CLinkedList)
+    , public AbstractSequentialList
+    , public ILinkedList
+    , public IDeque
+    , public IQueue
+    , public ICloneable
+    , public ISerializable
 {
 private:
-    class Link : public ElLightRefBase
+    class Link
+        : public Object
     {
     public:
         Link(
@@ -28,8 +37,9 @@ private:
     };
 
     class LinkIterator
-        : public ElLightRefBase
+        : public Object
         , public IListIterator
+        , public IIterator
     {
     public:
         LinkIterator(
@@ -64,6 +74,15 @@ private:
         CARAPI Set(
             /* [in] */ IInterface* object);
 
+        CARAPI GetNextIndex(
+            /* [out] */ Int32* index);
+
+        CARAPI GetPrevious(
+            /* [out] */ IInterface** object);
+
+        CARAPI GetPreviousIndex(
+            /* [out] */ Int32* index);
+
     public:
         Int32 mPos;
         Int32 mExpectedModCount;
@@ -73,7 +92,7 @@ private:
     };
 
     class ReverseLinkIterator
-        : public ElLightRefBase
+        : public Object
         , public IIterator
     {
     public:
@@ -98,6 +117,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     CLinkedList();
 
     ~CLinkedList();
@@ -109,13 +130,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ ICollection* collection);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI Add(
         /* [in] */ Int32 location,
@@ -292,6 +306,9 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ IList** subList);
+
+    CARAPI Element(
+        /* [out] */ IInterface** e);
 
 private:
     CARAPI AddLastImpl(

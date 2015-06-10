@@ -707,6 +707,164 @@
     }
 #endif
 
+#ifndef CAR_INTERFACE_IMPL_7
+#define CAR_INTERFACE_IMPL_7(ClassName, SupperClassName, Interface1, Interface2, Interface3, Interface4, Interface5, Interface6, Interface7) \
+    UInt32 ClassName::AddRef()                                                          \
+    {                                                                                   \
+        return ElRefBase::AddRef();                                                     \
+    }                                                                                   \
+                                                                                        \
+    UInt32 ClassName::Release()                                                         \
+    {                                                                                   \
+        return ElRefBase::Release();                                                    \
+    }                                                                                   \
+                                                                                        \
+    PInterface ClassName::Probe(                                                        \
+        /* [in] */ REIID riid)                                                          \
+    {                                                                                   \
+        if (riid == EIID_IInterface) {                                                  \
+            return (IInterface*)(Interface1*)this;                                      \
+        }                                                                               \
+        else if (riid == EIID_##Interface1) {                                           \
+            return (Interface1*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface2) {                                           \
+            return (Interface2*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface3) {                                           \
+            return (Interface3*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface4) {                                           \
+            return (Interface4*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface5) {                                           \
+            return (Interface5*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface6) {                                           \
+            return (Interface6*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface7) {                                           \
+            return (Interface7*)this;                                                   \
+        }                                                                               \
+        return SupperClassName::Probe(riid);                                            \
+    }                                                                                   \
+                                                                                        \
+    ECode ClassName::GetInterfaceID(                                                    \
+        /* [in] */ IInterface* object,                                                  \
+        /* [out] */ InterfaceID* iid)                                                   \
+    {                                                                                   \
+        VALIDATE_NOT_NULL(iid);                                                         \
+                                                                                        \
+        if (object == (IInterface*)(Interface1*)this) {                                 \
+            *iid = EIID_##Interface1;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface2*)this) {                            \
+            *iid = EIID_##Interface2;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface3*)this) {                            \
+            *iid = EIID_##Interface3;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface4*)this) {                            \
+            *iid = EIID_##Interface4;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface5*)this) {                            \
+            *iid = EIID_##Interface5;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface6*)this) {                            \
+            *iid = EIID_##Interface6;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface7*)this) {                            \
+            *iid = EIID_##Interface7;                                                   \
+        }                                                                               \
+        else {                                                                          \
+            return SupperClassName::GetInterfaceID(object, iid);                        \
+        }                                                                               \
+        return NOERROR;                                                                 \
+    }
+#endif
+
+#ifndef CAR_INTERFACE_IMPL_8
+#define CAR_INTERFACE_IMPL_8(ClassName, SupperClassName, Interface1, Interface2, Interface3, Interface4, Interface5, Interface6, Interface7, Interface8) \
+    UInt32 ClassName::AddRef()                                                          \
+    {                                                                                   \
+        return ElRefBase::AddRef();                                                     \
+    }                                                                                   \
+                                                                                        \
+    UInt32 ClassName::Release()                                                         \
+    {                                                                                   \
+        return ElRefBase::Release();                                                    \
+    }                                                                                   \
+                                                                                        \
+    PInterface ClassName::Probe(                                                        \
+        /* [in] */ REIID riid)                                                          \
+    {                                                                                   \
+        if (riid == EIID_IInterface) {                                                  \
+            return (IInterface*)(Interface1*)this;                                      \
+        }                                                                               \
+        else if (riid == EIID_##Interface1) {                                           \
+            return (Interface1*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface2) {                                           \
+            return (Interface2*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface3) {                                           \
+            return (Interface3*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface4) {                                           \
+            return (Interface4*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface5) {                                           \
+            return (Interface5*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface6) {                                           \
+            return (Interface6*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface7) {                                           \
+            return (Interface7*)this;                                                   \
+        }                                                                               \
+        else if (riid == EIID_##Interface8) {                                           \
+            return (Interface8*)this;                                                   \
+        }                                                                               \
+        return SupperClassName::Probe(riid);                                            \
+    }                                                                                   \
+                                                                                        \
+    ECode ClassName::GetInterfaceID(                                                    \
+        /* [in] */ IInterface* object,                                                  \
+        /* [out] */ InterfaceID* iid)                                                   \
+    {                                                                                   \
+        VALIDATE_NOT_NULL(iid);                                                         \
+                                                                                        \
+        if (object == (IInterface*)(Interface1*)this) {                                 \
+            *iid = EIID_##Interface1;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface2*)this) {                            \
+            *iid = EIID_##Interface2;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface3*)this) {                            \
+            *iid = EIID_##Interface3;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface4*)this) {                            \
+            *iid = EIID_##Interface4;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface5*)this) {                            \
+            *iid = EIID_##Interface5;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface6*)this) {                            \
+            *iid = EIID_##Interface6;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface7*)this) {                            \
+            *iid = EIID_##Interface7;                                                   \
+        }                                                                               \
+        else if (object == (IInterface*)(Interface8*)this) {                            \
+            *iid = EIID_##Interface8;                                                   \
+        }                                                                               \
+        else {                                                                          \
+            return SupperClassName::GetInterfaceID(object, iid);                        \
+        }                                                                               \
+        return NOERROR;                                                                 \
+    }
+#endif
+
 // Car object decls and impls
 //
 #ifndef CAR_OBJECT_DECL

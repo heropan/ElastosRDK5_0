@@ -10,25 +10,11 @@ namespace Utility {
 //==========================================================
 //       CLinkedHashMap
 //==========================================================
-PInterface CLinkedHashMap::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CLinkedHashMap::Probe(riid);
-}
-
-UInt32 CLinkedHashMap::AddRef()
-{
-    return _CLinkedHashMap::AddRef();
-}
-
-UInt32 CLinkedHashMap::Release()
-{
-    return _CLinkedHashMap::Release();
-}
+CAR_INTERFACE_IMPL(CLinkedHashMap, HashMap, ILinkedHashMap);
 
 ECode CLinkedHashMap::constructor()
 {
-    _HashMap::Init();
+    HashMap::Init();
     Init_();
     mAccessOrder = FALSE;
     return NOERROR;
@@ -37,14 +23,14 @@ ECode CLinkedHashMap::constructor()
 ECode CLinkedHashMap::constructor(
     /* [in] */ Int32 initialCapacity)
 {
-    return this->constructor(initialCapacity, DEFAULT_LOAD_FACTOR);
+    return constructor(initialCapacity, DEFAULT_LOAD_FACTOR);
 }
 
 ECode CLinkedHashMap::constructor(
     /* [in] */ Int32 initialCapacity,
     /* [in] */ Float loadFactor)
 {
-    return this->constructor(initialCapacity, loadFactor, FALSE);
+    return constructor(initialCapacity, loadFactor, FALSE);
 }
 
 ECode CLinkedHashMap::constructor(
@@ -52,7 +38,7 @@ ECode CLinkedHashMap::constructor(
     /* [in] */ Float loadFactor,
     /* [in] */ Boolean accessOrder)
 {
-    FAIL_RETURN(_HashMap::Init(initialCapacity, loadFactor));
+    FAIL_RETURN(HashMap::Init(initialCapacity, loadFactor));
     Init_();
     mAccessOrder = accessOrder;
     return NOERROR;
@@ -63,7 +49,7 @@ ECode CLinkedHashMap::constructor(
 {
     Int32 sizelen = 0;
     map->GetSize(&sizelen);
-    FAIL_RETURN(this->constructor(CapacityForInitSize(sizelen)));
+    FAIL_RETURN(constructor(CapacityForInitSize(sizelen)));
     return ConstructorPutAll(map);
 }
 
@@ -254,7 +240,7 @@ ECode CLinkedHashMap::ContainsValue(
 
 ECode CLinkedHashMap::Clear()
 {
-    _HashMap::Clear();
+    HashMap::Clear();
 
     // Clear all links to help GC
     AutoPtr<LinkedEntry> header = mHeader;
@@ -296,38 +282,38 @@ ECode CLinkedHashMap::ContainsKey(
     /* [in] */ IInterface* key,
     /* [out] */ Boolean* result)
 {
-    return _HashMap::ContainsKey(key, result);
+    return HashMap::ContainsKey(key, result);
 }
 
 ECode CLinkedHashMap::GetEntrySet(
     /* [out] */ ISet** entries)
 {
-    return _HashMap::GetEntrySet(entries);
+    return HashMap::GetEntrySet(entries);
 }
 
 ECode CLinkedHashMap::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    return _HashMap::Equals(object, result);
+    return HashMap::Equals(object, result);
 }
 
 ECode CLinkedHashMap::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
-    return _HashMap::GetHashCode(hashCode);
+    return HashMap::GetHashCode(hashCode);
 }
 
 ECode CLinkedHashMap::IsEmpty(
     /* [out] */ Boolean* result)
 {
-    return _HashMap::IsEmpty(result);
+    return HashMap::IsEmpty(result);
 }
 
 ECode CLinkedHashMap::GetKeySet(
     /* [out] */ ISet** keySet)
 {
-    return _HashMap::GetKeySet(keySet);
+    return HashMap::GetKeySet(keySet);
 }
 
 ECode CLinkedHashMap::Put(
@@ -335,32 +321,32 @@ ECode CLinkedHashMap::Put(
     /* [in] */ PInterface value,
     /* [out] */ PInterface* oldValue)
 {
-    return _HashMap::Put(key, value, oldValue);
+    return HashMap::Put(key, value, oldValue);
 }
 
 ECode CLinkedHashMap::PutAll(
     /* [in] */ IMap* map)
 {
-    return _HashMap::PutAll(map);
+    return HashMap::PutAll(map);
 }
 
 ECode CLinkedHashMap::Remove(
     /* [in] */ PInterface key,
     /* [out] */ PInterface* value)
 {
-    return _HashMap::Remove(key, value);
+    return HashMap::Remove(key, value);
 }
 
 ECode CLinkedHashMap::GetSize(
     /* [out] */ Int32* size)
 {
-    return _HashMap::GetSize(size);
+    return HashMap::GetSize(size);
 }
 
 ECode CLinkedHashMap::GetValues(
     /* [out] */ ICollection** value)
 {
-    return _HashMap::GetValues(value);
+    return HashMap::GetValues(value);
 }
 
 ECode CLinkedHashMap::Clone(
@@ -399,7 +385,7 @@ ECode CLinkedHashMap::Clone(
 //==========================================================
 //       CLinkedHashMap::LinkedHashIterator
 //==========================================================
-CAR_INTERFACE_IMPL(CLinkedHashMap::LinkedHashIterator, IIterator);
+CAR_INTERFACE_IMPL(CLinkedHashMap::LinkedHashIterator, Object, IIterator);
 
 CLinkedHashMap::LinkedHashIterator::LinkedHashIterator(
     /* [in] */ CLinkedHashMap* host)

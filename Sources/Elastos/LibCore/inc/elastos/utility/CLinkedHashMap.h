@@ -1,19 +1,22 @@
 #ifndef __UTILITY_CLINKEDHASHMAP_H__
 #define __UTILITY_CLINKEDHASHMAP_H__
 
-#include "_CLinkedHashMap.h"
+#include "_Elastos_Utility_CLinkedHashMap.h"
 #include "HashMap.h"
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CLinkedHashMap) , public _HashMap
+CarClass(CLinkedHashMap)
+    , public HashMap
+    , public ILinkedHashMap
 {
 private:
     /**
      * LinkedEntry adds nxt/prv double-links to plain HashMapEntry.
      */
-    class LinkedEntry : public HashMapEntry {
+    class LinkedEntry
+        : public HashMapEntry {
     public:
         /** Create the header entry */
         LinkedEntry()
@@ -42,8 +45,8 @@ private:
     };
 
     class LinkedHashIterator
-        : public IIterator
-        , public ElRefBase
+        : public Object
+        , public IIterator
     {
     protected:
         LinkedHashIterator(
@@ -66,7 +69,8 @@ private:
         AutoPtr<CLinkedHashMap> mHost;
     };
 
-    class KeyIterator : public LinkedHashIterator
+    class KeyIterator
+        : public LinkedHashIterator
     {
     public:
         KeyIterator(
@@ -76,7 +80,8 @@ private:
             /* [out] */ IInterface** outface);
     };
 
-    class ValueIterator : public LinkedHashIterator
+    class ValueIterator
+        : public LinkedHashIterator
     {
     public:
         ValueIterator(
@@ -97,6 +102,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Constructs a new empty {@code LinkedHashMap} instance.
      */
@@ -161,13 +168,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ IMap* map);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
 
     /**
      * Removes all elements from this {@code Map}, leaving it empty.

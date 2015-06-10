@@ -11,6 +11,10 @@ module
      * interface IIterable;
      * interface ICollection;
      * interface IList;
+     * interface IDeque;
+     * interface IQueue;
+     * interface ICloneable;
+     * interface ISerializable;
      */
     interface ILinkedList {
         /**

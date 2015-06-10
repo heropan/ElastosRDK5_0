@@ -5,11 +5,7 @@
 namespace Elastos {
 namespace Utility {
 
-PInterface CLinkedHashSet::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CLinkedHashSet::Probe(riid);
-}
+CAR_INTERFACE_IMPL(CLinkedHashSet, HashSet, ILinkedHashSet);
 
 ECode CLinkedHashSet::constructor()
 {
