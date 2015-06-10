@@ -135,6 +135,7 @@ CARAPI GetClassID(
     VALIDATE_NOT_NULL(pCLSID)
 
     *pCLSID = Libcore::ICU::ECLSID_CCollationElementIteratorICU;
+    return NOERROR;
 }
 
 } // namespace ICU

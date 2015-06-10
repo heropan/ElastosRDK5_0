@@ -65,7 +65,7 @@ public:
 
     // CollationElementIterator.
     static CARAPI_(void) CloseElements(
-        /* [in] */ Int32 address);
+        /* [in] */ Int64 address);
 
     static CARAPI_(Int32) GetMaxExpansion(
         /* [in] */ Int32 address,

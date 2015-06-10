@@ -19,6 +19,10 @@ module
 //    namespace Libcore {
 //    namespace ICU {
 
+//    singleton class CCollationElementIteratorICUHelper {
+//        interface ICollationElementIteratorICUHelper;
+//    }
+
 //    } // namespace ICU
 //    } // namespace LibCore
 }

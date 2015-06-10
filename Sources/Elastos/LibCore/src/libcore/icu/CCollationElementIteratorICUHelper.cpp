@@ -5,6 +5,10 @@
 namespace Libcore {
 namespace ICU {
 
+CAR_SINGLETON_IMPL(CCollationElementIteratorICUHelper)
+
+CAR_INTERFACE_IMPL(CCollationElementIteratorICUHelper, Singleton, ICollationElementIteratorICUHelper)
+
 ECode CCollationElementIteratorICUHelper::PrimaryOrder(
     /* [in] */ Int32 order,
     /* [out] */ Int32 * value)
@@ -33,7 +37,7 @@ ECode CCollationElementIteratorICUHelper::TertiaryOrder(
 }
 
 ECode CCollationElementIteratorICUHelper::GetInstance(
-    /* [in] */ Int32 collatorAddress,
+    /* [in] */ Int64 collatorAddress,
     /* [in] */ const String& source,
     /* [out] */ ICollationElementIteratorICU ** outiterICU)
 {

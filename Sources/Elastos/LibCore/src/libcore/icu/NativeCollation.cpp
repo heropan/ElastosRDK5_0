@@ -60,7 +60,7 @@ void NativeCollation::CloseCollator(
 }
 
 void NativeCollation::CloseElements(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address)
 {
     ucol_closeElements(toCollationElements(address));
     Mutex::Autolock lock(sUstrMapLock);
