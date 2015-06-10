@@ -1,9 +1,9 @@
 
-#ifndef __CFORMATTER_H__
-#define __CFORMATTER_H__
+#ifndef __ELASTOS_UTILITY_CFORMATTER_H__
+#define __ELASTOS_UTILITY_CFORMATTER_H__
 
-#include "_CFormatter.h"
-#include "elastos/StringBuilder.h"
+#include "_Elastos_Utility_CFormatter.h"
+#include "StringBuilder.h"
 
 using Elastos::Core::IAppendable;
 using Elastos::Core::StringBuilder;
@@ -19,6 +19,8 @@ namespace Elastos {
 namespace Utility {
 
 CarClass(CFormatter)
+    , public Object
+    , public IFormatter
 {
     friend Boolean InitTLS();
 public:
@@ -37,7 +39,7 @@ public:
         DECIMAL_FLOAT
     };
 
-    class CachedDecimalFormat : public ElLightRefBase
+    class CachedDecimalFormat : public Object
     {
     public:
         CachedDecimalFormat();
@@ -57,7 +59,7 @@ private:
     /*
      * Complete details of a single format specifier parsed from a format string.
      */
-    class FormatToken : public ElLightRefBase
+    class FormatToken : public Object
     {
     public:
         FormatToken();
@@ -142,7 +144,7 @@ private:
         StringBuilder mStrFlags;
     };
 
-    class FormatSpecifierParser : public ElLightRefBase
+    class FormatSpecifierParser : public Object
     {
     public:
         /**
@@ -202,6 +204,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CFormatter();
 
     /**
@@ -694,4 +700,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CFORMATTER_H__
+#endif //__ELASTOS_UTILITY_CFORMATTER_H__

@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace Utility {
 
+CAR_INTERFACE_IMPL(CObservable, Object, IObservable)
+
+CAR_OBJECT_IMPL(CObservable)
+
 ECode CObservable::constructor()
 {
     AutoPtr<IArrayList> outlist;
@@ -22,7 +26,7 @@ ECode CObservable::AddObserver(
         return E_NULL_POINTER_EXCEPTION;
     }
     {
-        Mutex::Autolock lock(mLock);
+        Object::Autolock lock(this);
         Boolean isflag = FALSE;
         if (!(mObservers->Contains(observer, &isflag), isflag))
             mObservers->Add(observer, &isflag);
@@ -39,12 +43,14 @@ ECode CObservable::CountObservers(
 ECode CObservable::DeleteObserver(
     /* [in] */ IObserver* observer)
 {
+    Object::Autolock lock(this);
     Boolean isflag = FALSE;
     return mObservers->Remove(observer, &isflag);
 }
 
 ECode CObservable::DeleteObservers()
 {
+    Object::Autolock lock(this);
     return mObservers->Clear();
 }
 
@@ -68,7 +74,7 @@ ECode CObservable::NotifyObservers(
     Int32 size = 0;
     AutoPtr< ArrayOf<IInterface*> > arrays;
     {
-        Mutex::Autolock lock(mLock);
+        Object::Autolock lock(this);
         Boolean isflag = FALSE;
         if (HasChanged(&isflag), isflag) {
             ClearChanged();

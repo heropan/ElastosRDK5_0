@@ -1,16 +1,18 @@
 
-#include <cmdef.h>
 #include "CDateHelper.h"
-#include "CDate.h"
+#include "Date.h"
 
 namespace Elastos {
 namespace Utility {
+
+CAR_SINGLETON_IMPL(CDateHelper)
+CAR_INTERFACE_IMPL(CDateHelper, Singleton, IDateHelper)
 
 ECode CDateHelper::Parse(
     /* [in] */ const String& string,
     /* [out] */ Int64* value)
 {
-    return CDate::Parse(string, value);
+    return Date::Parse(string, value);
 }
 
 ECode CDateHelper::UTC(
@@ -23,7 +25,7 @@ ECode CDateHelper::UTC(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
-    *value = CDate::UTC(year, month, day, hour, minute, second);
+    *value = Date::UTC(year, month, day, hour, minute, second);
     return NOERROR;
 }
 
