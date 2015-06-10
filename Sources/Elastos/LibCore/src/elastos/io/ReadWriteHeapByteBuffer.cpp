@@ -3,7 +3,7 @@
 #include "ReadOnlyHeapByteBuffer.h"
 #include "Memory.h"
 #include "CByteOrderHelper.h"
-#include <elastos/core/Math.h>
+#include "Math.h"
 #include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;

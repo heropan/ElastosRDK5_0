@@ -4,17 +4,18 @@
 #include "IoUtils.h"
 #include "ToStringArray_S.h"
 #include <elastos/utility/etl/List.h>
-#include <utils/Vector.h>
-#include <StringBuilder.h>
+#include "StringBuilder.h"
 #include <CSystem.h>
+#include "CRandom.h"
+#include "COsConstants.h"
+#include "CLibcore.h"
+
+#include <utils/Vector.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/param.h>
 #include <utime.h>
 #include <unistd.h>
-#include "CRandom.h"
-#include "COsConstants.h"
-#include "CLibcore.h"
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::Vector;
@@ -37,7 +38,7 @@ using Elastos::Droid::System::IStructStatVfs;
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL(File, Object, IFile)
+CAR_INTERFACE_IMPL_3(File, Object, IFile, IComparable, ISerializable)
 
 //static {
 //    // The default protection domain grants access to these properties.

@@ -3,8 +3,8 @@ module
 {
     interface Elastos.IO.IFileFilter;
     interface Elastos.IO.IFilenameFilter;
-//    interface Elastos.Net.IURI;
-//    interface Elastos.Net.IURL;
+    interface Elastos.Net.IURI;
+    interface Elastos.Net.IURL;
 
     namespace Elastos {
     namespace IO {
@@ -72,9 +72,6 @@ module
             [in] IFile* another,
             [out] Int32* result);
 
-        CreateNewFile(
-            [out] Boolean* succeeded);
-
         /**
          * Deletes this file. Directories must be empty before they will be deleted.
          *
@@ -85,6 +82,23 @@ module
          */
         Delete(
             [out] Boolean* isDeleted);
+
+        /**
+         * Schedules this file to be automatically deleted when the VM terminates normally.
+         *
+         * <p><i>Note that on Android, the application lifecycle does not include VM termination,
+         * so calling this method will not ensure that files are deleted</i>. Instead, you should
+         * use the most appropriate out of:
+         * <ul>
+         * <li>Use a {@code finally} clause to manually invoke {@link #delete}.
+         * <li>Maintain your own set of files to delete, and process it at an appropriate point
+         * in your application's lifecycle.
+         * <li>Use the Unix trick of deleting the file as soon as all readers and writers have
+         * opened it. No new readers/writers will be able to access the file, but all existing
+         * ones will still have access until the last one closes the file.
+         * </ul>
+         */
+        DeleteOnExit();
 
         /**
          * Compares {@code obj} to this file and returns {@code true} if they
@@ -110,13 +124,6 @@ module
             [out] Boolean* isExist);
 
         /**
-         * Returns a new file constructed using the absolute path of this file.
-         * Equivalent to {new File(this.getAbsolutePath())}.
-         */
-        GetAbsoluteFile(
-            [out] IFile** file);
-
-        /**
          * Returns the absolute path of this file. An absolute path is a path that starts at a root
          * of the file system. On Android, there is only one root: {/}.
          *
@@ -128,16 +135,10 @@ module
             [out] String* path);
 
         /**
-         * Returns a new file created using the canonical path of this file.
-         * Equivalent to new File(this.getCanonicalPath()).
-         *
-         * @return the new file constructed from this file's canonical path.
-         * @return ECode = NOERROR(0) if success, else as follows:
-         * Value | Meaning |
-         * :-|:------------|
-         * IOException | if an I/O error occurs.
+         * Returns a new file constructed using the absolute path of this file.
+         * Equivalent to {new File(this.getAbsolutePath())}.
          */
-        GetCanonicalFile(
+        GetAbsoluteFile(
             [out] IFile** file);
 
         /**
@@ -171,26 +172,17 @@ module
             [out] String* path);
 
         /**
-         * Returns the number of free bytes on the partition containing this path.
-         * Returns 0 if this path does not exist.
+         * Returns a new file created using the canonical path of this file.
+         * Equivalent to new File(this.getCanonicalPath()).
          *
-         * <p>Note that this is likely to be an optimistic over-estimate and should not
-         * be taken as a guarantee your application can actually write this many bytes.
-         *
-         * @since 1.6
+         * @return the new file constructed from this file's canonical path.
+         * @return ECode = NOERROR(0) if success, else as follows:
+         * Value | Meaning |
+         * :-|:------------|
+         * IOException | if an I/O error occurs.
          */
-        GetFreeSpace(
-            [out] Int64* space);
-
-        /**
-         * Returns the length of this file in bytes.
-         * Returns 0 if the file does not exist.
-         * The result for a directory is not defined.
-         *
-         * @return the number of bytes in this file.
-         */
-        GetLength(
-            [out] Int64* length);
+        GetCanonicalFile(
+            [out] IFile** file);
 
         /**
          * Returns the name of the file or directory represented by this file.
@@ -228,31 +220,6 @@ module
          */
         GetPath(
             [out] String* path);
-
-        /**
-         * Returns the total size in bytes of the partition containing this path.
-         * Returns 0 if this path does not exist.
-         *
-         * @since 1.6
-         */
-        GetTotalSpace(
-            [out] Int64* space);
-
-        /**
-         * Returns the number of usable free bytes on the partition containing this path.
-         * Returns 0 if this path does not exist.
-         *
-         * <p>Note that this is likely to be an optimistic over-estimate and should not
-         * be taken as a guarantee your application can actually write this many bytes.
-         * On Android (and other Unix-based systems), this method returns the number of free bytes
-         * available to non-root users, regardless of whether you're actually running as root,
-         * and regardless of any quota or other restrictions that might apply to the user.
-         * (The getFreeSpace method returns the number of bytes potentially available to root.)
-         *
-         * @since 1.6
-         */
-        GetUsableSpace(
-            [out] Int64* space);
 
         /**
          * Indicates if this file's pathname is absolute. Whether a pathname is
@@ -308,148 +275,8 @@ module
          *
          * @return the time when this file was last modified.
          */
-        LastModified(
+        GetLastModified(
             [out] Int64* time);
-
-        /**
-         * Returns an array of strings with the file names in the directory
-         * represented by this file. The result is {null} if this file is not
-         * a directory.
-         * <p>
-         * The entries {.} and {..} representing the current and parent
-         * directory are not returned as part of the list.
-         *
-         * @return an array of strings with file names or {null}.
-         */
-        List(
-            [out, callee] ArrayOf<String>* files);
-
-        /**
-         * Gets a list of the files in the directory represented by this file. This
-         * list is then filtered through a FilenameFilter and the names of files
-         * with matching names are returned as an array of strings. Returns
-         * {null} if this file is not a directory. If {filter} is
-         * {null} then all filenames match.
-         * <p>
-         * The entries {.} and {..} representing the current and parent
-         * directories are not returned as part of the list.
-         *
-         * @param filter
-         *            the filter to match names against, may be {null}.
-         * @return an array of files or {null}.
-         */
-        List(
-            [in] IFilenameFilter* filter,
-            [out, callee] ArrayOf<String>* files);
-
-        /**
-         * Returns an array of files contained in the directory represented by this
-         * file. The result is {null} if this file is not a directory. The
-         * paths of the files in the array are absolute if the path of this file is
-         * absolute, they are relative otherwise.
-         *
-         * @return an array of files or {null}.
-         */
-        ListFiles(
-            [out, callee] ArrayOf<IFile*>* files);
-
-        /**
-         * Gets a list of the files in the directory represented by this file. This
-         * list is then filtered through a FilenameFilter and files with matching
-         * names are returned as an array of files. Returns {null} if this
-         * file is not a directory. If {filter} is {null} then all
-         * filenames match.
-         * <p>
-         * The entries {.} and {..} representing the current and parent
-         * directories are not returned as part of the list.
-         *
-         * @param filter
-         *            the filter to match names against, may be {null}.
-         * @return an array of files or {null}.
-         */
-        ListFiles(
-            [in] IFilenameFilter* filter,
-            [out, callee] ArrayOf<IFile*>* files);
-
-        /**
-         * Gets a list of the files in the directory represented by this file. This
-         * list is then filtered through a FileFilter and matching files are
-         * returned as an array of files. Returns {null} if this file is not a
-         * directory. If {filter} is {null} then all files match.
-         * <p>
-         * The entries {.} and {..} representing the current and parent
-         * directories are not returned as part of the list.
-         *
-         * @param filter
-         *            the filter to match names against, may be {null}.
-         * @return an array of files or {null}.
-         */
-        ListFilesEx2(
-            [in] IFileFilter* filter,
-            [out, callee] ArrayOf<IFile*>* files);
-
-        /**
-         * Creates the directory named by this file, assuming its parents exist.
-         * Use #mkdirs if you also want to create missing parents.
-         *
-         * @sa #mkdirs
-         * <p>Note that this method does <i>not</i> throw {IOException} on failure.
-         * Callers must check the return value. Note also that this method returns
-         * false if the directory already existed. If you want to know whether the
-         * directory exists on return, either use {(f.mkdir() || f.isDirectory())}
-         * or simply ignore the return value from this method and simply call isDirectory.
-         *
-         * @sa #isDirectory
-         *
-         * @return {true} if the directory was created,
-         *         {false} on failure or if the directory already existed.
-         */
-        Mkdir(
-            [out] Boolean* succeeded);
-
-        /**
-         * Creates the directory named by this file, creating missing parent
-         * directories if necessary.
-         * Use #mkdir if you don't want to create missing parents.
-         *
-         * @sa #mkdir
-         *
-         * <p>Note that this method does <i>not</i> throw {IOException} on failure.
-         * Callers must check the return value. Note also that this method returns
-         * false if the directory already existed. If you want to know whether the
-         * directory exists on return, either use {(f.mkdirs() || f.isDirectory())}
-         * or simply ignore the return value from this method and simply call  isDirectory.
-         *
-         * @sa #isDirectory
-         *
-         * @return {true} if the directory was created,
-         *         {false} on failure or if the directory already existed.
-         */
-        Mkdirs(
-            [out] Boolean* succeeded);
-
-        /**
-         * Renames this file to newPath. This operation is supported for both
-         * files and directories.
-         *
-         * <p>Many failures are possible. Some of the more likely failures include:
-         * <ul>
-         * <li>Write permission is required on the directories containing both the source and
-         * destination paths.
-         * <li>Search permission is required for all parents of both paths.
-         * <li>Both paths be on the same mount point. On Android, applications are most likely to hit
-         * this restriction when attempting to copy between internal storage and an SD card.
-         * </ul>
-         *
-         * <p>Note that this method does <i>not</i> throw IOException on failure.
-         * Callers must check the return value.
-         *
-         * @param newPath the new path.
-         * @return true on success.
-         */
-        RenameTo(
-            [in] IFile* newPath,
-            [out] Boolean* succeeded);
 
         /**
          * Sets the time this file was last modified, measured in milliseconds since
@@ -576,6 +403,177 @@ module
             [in] Boolean writable,
             [out] Boolean* succeeded);
 
+        /**
+         * Returns the length of this file in bytes.
+         * Returns 0 if the file does not exist.
+         * The result for a directory is not defined.
+         *
+         * @return the number of bytes in this file.
+         */
+        GetLength(
+            [out] Int64* len);
+
+        /**
+         * Returns an array of strings with the file names in the directory
+         * represented by this file. The result is {null} if this file is not
+         * a directory.
+         * <p>
+         * The entries {.} and {..} representing the current and parent
+         * directory are not returned as part of the list.
+         *
+         * @return an array of strings with file names or {null}.
+         */
+        List(
+            [out, callee] ArrayOf<String>* files);
+
+        /**
+         * Gets a list of the files in the directory represented by this file. This
+         * list is then filtered through a FilenameFilter and the names of files
+         * with matching names are returned as an array of strings. Returns
+         * {null} if this file is not a directory. If {filter} is
+         * {null} then all filenames match.
+         * <p>
+         * The entries {.} and {..} representing the current and parent
+         * directories are not returned as part of the list.
+         *
+         * @param filter
+         *            the filter to match names against, may be {null}.
+         * @return an array of files or {null}.
+         */
+        List(
+            [in] IFilenameFilter* filter,
+            [out, callee] ArrayOf<String>* files);
+
+        /**
+         * Returns an array of files contained in the directory represented by this
+         * file. The result is {null} if this file is not a directory. The
+         * paths of the files in the array are absolute if the path of this file is
+         * absolute, they are relative otherwise.
+         *
+         * @return an array of files or {null}.
+         */
+        ListFiles(
+            [out, callee] ArrayOf<IFile*>* files);
+
+        /**
+         * Gets a list of the files in the directory represented by this file. This
+         * list is then filtered through a FilenameFilter and files with matching
+         * names are returned as an array of files. Returns {null} if this
+         * file is not a directory. If {filter} is {null} then all
+         * filenames match.
+         * <p>
+         * The entries {.} and {..} representing the current and parent
+         * directories are not returned as part of the list.
+         *
+         * @param filter
+         *            the filter to match names against, may be {null}.
+         * @return an array of files or {null}.
+         */
+        ListFiles(
+            [in] IFilenameFilter* filter,
+            [out, callee] ArrayOf<IFile*>* files);
+
+        /**
+         * Gets a list of the files in the directory represented by this file. This
+         * list is then filtered through a FileFilter and matching files are
+         * returned as an array of files. Returns {null} if this file is not a
+         * directory. If {filter} is {null} then all files match.
+         * <p>
+         * The entries {.} and {..} representing the current and parent
+         * directories are not returned as part of the list.
+         *
+         * @param filter
+         *            the filter to match names against, may be {null}.
+         * @return an array of files or {null}.
+         */
+        ListFiles(
+            [in] IFileFilter* filter,
+            [out, callee] ArrayOf<IFile*>* files);
+
+        /**
+         * Creates the directory named by this file, assuming its parents exist.
+         * Use #mkdirs if you also want to create missing parents.
+         *
+         * @sa #mkdirs
+         * <p>Note that this method does <i>not</i> throw {IOException} on failure.
+         * Callers must check the return value. Note also that this method returns
+         * false if the directory already existed. If you want to know whether the
+         * directory exists on return, either use {(f.mkdir() || f.isDirectory())}
+         * or simply ignore the return value from this method and simply call isDirectory.
+         *
+         * @sa #isDirectory
+         *
+         * @return {true} if the directory was created,
+         *         {false} on failure or if the directory already existed.
+         */
+        Mkdir(
+            [out] Boolean* succeeded);
+
+        /**
+         * Creates the directory named by this file, creating missing parent
+         * directories if necessary.
+         * Use #mkdir if you don't want to create missing parents.
+         *
+         * @sa #mkdir
+         *
+         * <p>Note that this method does <i>not</i> throw {IOException} on failure.
+         * Callers must check the return value. Note also that this method returns
+         * false if the directory already existed. If you want to know whether the
+         * directory exists on return, either use {(f.mkdirs() || f.isDirectory())}
+         * or simply ignore the return value from this method and simply call  isDirectory.
+         *
+         * @sa #isDirectory
+         *
+         * @return {true} if the directory was created,
+         *         {false} on failure or if the directory already existed.
+         */
+        Mkdirs(
+            [out] Boolean* succeeded);
+
+        /**
+         * Creates a new, empty file on the file system according to the path
+         * information stored in this file. This method returns true if it creates
+         * a file, false if the file already existed. Note that it returns false
+         * even if the file is not a file (because it's a directory, say).
+         *
+         * <p>This method is not generally useful. For creating temporary files,
+         * use {@link #createTempFile} instead. For reading/writing files, use {@link FileInputStream},
+         * {@link FileOutputStream}, or {@link RandomAccessFile}, all of which can create files.
+         *
+         * <p>Note that this method does <i>not</i> throw {@code IOException} if the file
+         * already exists, even if it's not a regular file. Callers should always check the
+         * return value, and may additionally want to call {@link #isFile}.
+         *
+         * @return true if the file has been created, false if it
+         *         already exists.
+         * @throws IOException if it's not possible to create the file.
+         */
+        CreateNewFile(
+            [out] Boolean* succeeded);
+
+        /**
+         * Renames this file to newPath. This operation is supported for both
+         * files and directories.
+         *
+         * <p>Many failures are possible. Some of the more likely failures include:
+         * <ul>
+         * <li>Write permission is required on the directories containing both the source and
+         * destination paths.
+         * <li>Search permission is required for all parents of both paths.
+         * <li>Both paths be on the same mount point. On Android, applications are most likely to hit
+         * this restriction when attempting to copy between internal storage and an SD card.
+         * </ul>
+         *
+         * <p>Note that this method does <i>not</i> throw IOException on failure.
+         * Callers must check the return value.
+         *
+         * @param newPath the new path.
+         * @return true on success.
+         */
+        RenameTo(
+            [in] IFile* newPath,
+            [out] Boolean* succeeded);
+
         ToString(
             [out] String* str);
 
@@ -586,8 +584,8 @@ module
          *
          * @return an URI for this file.
          */
-//        ToURI(
-//            [out] IURI** uri);
+        ToURI(
+            [out] IURI** uri);
 
         /**
          * Returns a Uniform Resource Locator for this file. The URL is system
@@ -606,8 +604,45 @@ module
          * @sa java.net.URI#toURL
          *
          */
-//        ToURL(
-//            [out] IURL** uri);
+        ToURL(
+            [out] IURL** uri);
+
+        /**
+         * Returns the total size in bytes of the partition containing this path.
+         * Returns 0 if this path does not exist.
+         *
+         * @since 1.6
+         */
+        GetTotalSpace(
+            [out] Int64* space);
+
+        /**
+         * Returns the number of usable free bytes on the partition containing this path.
+         * Returns 0 if this path does not exist.
+         *
+         * <p>Note that this is likely to be an optimistic over-estimate and should not
+         * be taken as a guarantee your application can actually write this many bytes.
+         * On Android (and other Unix-based systems), this method returns the number of free bytes
+         * available to non-root users, regardless of whether you're actually running as root,
+         * and regardless of any quota or other restrictions that might apply to the user.
+         * (The getFreeSpace method returns the number of bytes potentially available to root.)
+         *
+         * @since 1.6
+         */
+        GetUsableSpace(
+            [out] Int64* space);
+
+        /**
+         * Returns the number of free bytes on the partition containing this path.
+         * Returns 0 if this path does not exist.
+         *
+         * <p>Note that this is likely to be an optimistic over-estimate and should not
+         * be taken as a guarantee your application can actually write this many bytes.
+         *
+         * @since 1.6
+         */
+        GetFreeSpace(
+            [out] Int64* space);
     }
 
     interface IFileHelper {

@@ -3,8 +3,10 @@
 #include "ByteBuffer.h"
 #include "CharBuffer.h"
 #include "CStringWrapper.h"
+#include "Charset.h"
 
 using Elastos::Core::CStringWrapper;
+using Elastos::IO::Charset::ICharset;
 
 namespace Elastos {
 namespace IO {
@@ -14,6 +16,40 @@ CAR_INTERFACE_IMPL(OutputStreamWriter, Writer, IOutputStreamWriter)
 OutputStreamWriter::OutputStreamWriter()
 {
     ASSERT_SUCCEEDED(ByteBuffer::Allocate(8192, (IByteBuffer**)&mBytes));
+}
+
+OutputStreamWriter::~OutputStreamWriter()
+{
+}
+
+ECode OutputStreamWriter::constructor(
+    /* [in] */ IOutputStream *out)
+{
+    AutoPtr<ICharset> cs;
+    Charset::Charset::DefaultCharset((ICharset**)&cs);
+    String charsetName;
+    IObject::Probe(cs)->ToString(&charsetName);
+    return constructor(out, charsetName);
+}
+
+ECode OutputStreamWriter::constructor(
+    /* [in] */ IOutputStream *out,
+    /* [in] */ const String &charsetName)
+{
+    FAIL_RETURN(Writer::constructor(IObject::Probe(out)));
+
+    // if (charsetName null) {
+    //     throw new NullPointerException("charsetName == null");
+    // }
+    mOut = out;
+    // try {
+    //     encoder = Charset.forName(charsetName).newEncoder();
+    // } catch (Exception e) {
+    //     throw new UnsupportedEncodingException(charsetName);
+    // }
+    // encoder.onMalformedInput(CodingErrorAction.REPLACE);
+    // encoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
+    return NOERROR;
 }
 
 ECode OutputStreamWriter::Close()
@@ -161,6 +197,8 @@ ECode OutputStreamWriter::Write(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
+    VALIDATE_NOT_NULL(buffer)
+
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckStatus());
@@ -201,32 +239,6 @@ ECode OutputStreamWriter::Write(
     AutoPtr<ICharBuffer> chars;
     CharBuffer::WrapSequence(charSeq, offset, count + offset, (ICharBuffer**)&chars);
     return Convert(chars);
-}
-
-ECode OutputStreamWriter::constructor(
-    /* [in] */ IOutputStream *out)
-{
-    return constructor(out, String(NULL)/*Charset.defaultCharset()*/);
-}
-
-ECode OutputStreamWriter::constructor(
-    /* [in] */ IOutputStream *out,
-    /* [in] */ const String &enc)
-{
-    Writer::constructor(IObject::Probe(out));
-
-    // if (charsetName == null) {
-    //     throw new NullPointerException("charsetName == null");
-    // }
-    mOut = out;
-    // try {
-    //     encoder = Charset.forName(charsetName).newEncoder();
-    // } catch (Exception e) {
-    //     throw new UnsupportedEncodingException(charsetName);
-    // }
-    // encoder.onMalformedInput(CodingErrorAction.REPLACE);
-    // encoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
-    return NOERROR;
 }
 
 } // namespace IO

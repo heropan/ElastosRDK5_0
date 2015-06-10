@@ -74,6 +74,30 @@ SOURCES += StringReader.cpp
 #SOURCES += FileWriter.cpp
 #SOURCES += CFileWriter.cpp
 
+#TODO
+#PipedInputStream
+#PipedOutputStream
+#PipedReader
+#PipedWriter
+#StreamTokenizer
+
+# For Serializable(need not surport now)
+# EmulatedFields
+# EmulatedFieldsForDumping
+# EmulatedFieldsForLoading
+# Externalizable
+# ObjectInput
+# ObjectInputStream
+# ObjectInputValidation
+# ObjectOutput
+# ObjectOutputStream
+# ObjectStreamClass
+# ObjectStreamConstants
+# ObjectStreamField
+# SerializablePermission
+# SerializationHandleMap
+#
+
 #
 # nio related classes
 #

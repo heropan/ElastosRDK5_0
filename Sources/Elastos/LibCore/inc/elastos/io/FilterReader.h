@@ -13,10 +13,6 @@ class FilterReader
 {
 public:
     CAR_INTERFACE_DECL()
-protected:
-    FilterReader();
-
-    ~FilterReader();
 
     /**
      * Constructs a new FilterReader on the Reader {@code in}.
@@ -91,7 +87,7 @@ protected:
      */
     // @Override
     CARAPI Read(
-        /* [out] */ ArrayOf<Char32>* buffer,
+        /* [in] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [out] */ Int32* number);
@@ -143,6 +139,11 @@ protected:
     CARAPI Skip(
         /* [in] */ Int64 count,
         /* [out] */ Int64* number);
+
+protected:
+    FilterReader();
+
+    virtual ~FilterReader();
 
 protected:
     /**

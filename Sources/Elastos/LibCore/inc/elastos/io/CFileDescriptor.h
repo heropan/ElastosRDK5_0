@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_IO_CFILEDESCRIPTOR_H__
 #define __ELASTOS_IO_CFILEDESCRIPTOR_H__
 
-#include "core/Object.h"
+#include "Object.h"
 #include "_Elastos_IO_CFileDescriptor.h"
 
 using Elastos::Core::Object;
@@ -18,6 +18,7 @@ public:
     CAR_OBJECT_DECL()
 
     CAR_INTERFACE_DECL()
+
     /**
      * Constructs a new FileDescriptor containing an invalid handle. The
      * contained handle is usually modified by native code at a later point.

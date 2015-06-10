@@ -1,7 +1,7 @@
 
 #include "DirectByteBuffer.h"
 #include "CByteOrderHelper.h"
-#include <elastos/core/Math.h>
+#include "Math.h"
 
 using Elastos::Core::Math;
 

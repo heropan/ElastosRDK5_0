@@ -1,6 +1,6 @@
 
 #include "StringWriter.h"
-#include <elastos/core/Character.h>
+#include "Character.h"
 
 using Elastos::Core::Character;
 

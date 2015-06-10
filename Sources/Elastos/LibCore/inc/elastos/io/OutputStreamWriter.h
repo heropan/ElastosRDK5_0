@@ -13,9 +13,6 @@ class OutputStreamWriter
 public:
     CAR_INTERFACE_DECL()
 
-protected:
-    OutputStreamWriter();
-
 public:
     /**
      * Constructs a new OutputStreamWriter using {@code out} as the target
@@ -46,34 +43,6 @@ public:
     CARAPI constructor(
         /* [in] */ IOutputStream *os,
         /* [in] */ const String &enc);
-
-    /**
-     * Constructs a new OutputStreamWriter using {@code out} as the target
-     * stream to write converted characters to and {@code cs} as the character
-     * encoding.
-     *
-     * @param out
-     *            the target stream to write converted bytes to.
-     * @param cs
-     *            the {@code Charset} that specifies the character encoding.
-     */
-//    CARAPI Init(
-//        /* [in] */ IOutputStream *os,
-//        /* [in] */ ICharset *cs);
-
-    /**
-     * Constructs a new OutputStreamWriter using {@code out} as the target
-     * stream to write converted characters to and {@code enc} as the character
-     * encoder.
-     *
-     * @param out
-     *            the target stream to write converted bytes to.
-     * @param enc
-     *            the character encoder used for character conversion.
-     */
-//    CARAPI Init(
-//        /* [in] */ IOutputStream *os,
-//        /* [in] */ ICharsetEncoder *cs);
 
     /**
      * Closes this writer. This implementation flushes the buffer but <strong>does not</strong>
@@ -171,6 +140,11 @@ public:
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
+
+protected:
+    OutputStreamWriter();
+
+    virtual ~OutputStreamWriter();
 
 private:
     CARAPI FlushBytes(

@@ -1,7 +1,7 @@
 
 #include "CharBuffer.h"
-#include <elastos/core/Math.h>
-#include <elastos/core/StringBuilder.h>
+#include "Math.h"
+#include "StringBuilder.h"
 #include <CharSequenceAdapter.h>
 #include <ReadWriteCharArrayBuffer.h>
 

@@ -6,6 +6,7 @@
 #include "CLibcore.h"
 #include "CIoBridge.h"
 #include "NioUtils.h"
+#include "CFileDescriptor.h"
 
 using Elastos::Droid::System::IOsConstants;
 using Libcore::IO::COsConstants;
@@ -21,6 +22,7 @@ namespace IO {
 CAR_INTERFACE_IMPL(FileInputStream, InputStream, IFileInputStream)
 
 FileInputStream::FileInputStream()
+    : mShouldClose(FALSE)
 {}
 
 FileInputStream::~FileInputStream()
@@ -28,20 +30,11 @@ FileInputStream::~FileInputStream()
     // try {
     // TODO: can't call GetSelfLock() in destruct function
     //
-    //Close();
-    {
-        // if (mChannel != NULL) {
-        //     mChannel->Close();
-        // }
-        if (mShouldClose) {
-            IoUtils::Close(mFd);
-        }
-        else {
-            // An owned fd has been invalidated by IoUtils.close, but
-            // we need to explicitly stop using an unowned fd (http://b/4361076).
-            CFileDescriptor::NewByFriend((CFileDescriptor**)&mFd);
-        }
-    }
+    // try {
+    //     if (guard != null) {
+    //         guard.warnIfOpen();
+    //     }
+    //     close();
     // } finally {
     //     try {
     //         super.finalize();
@@ -60,7 +53,7 @@ ECode FileInputStream::constructor(
 //        throw new NullPointerException("file == null");
         return E_NULL_POINTER_EXCEPTION;
     }
-    CFileDescriptor::NewByFriend((CFileDescriptor**)&mFd);
+    CFileDescriptor::New((IFileDescriptor**)&mFd);
     String path;
     file->GetPath(&path);
     AutoPtr<COsConstants> osConstans;
@@ -83,7 +76,7 @@ ECode FileInputStream::constructor(
 //        throw new NullPointerException("fd == null");
         return E_NULL_POINTER_EXCEPTION;
     }
-    mFd = (CFileDescriptor*)fd;
+    mFd = fd;
     mShouldClose = FALSE;
     return NOERROR;
 }
@@ -91,9 +84,9 @@ ECode FileInputStream::constructor(
 ECode FileInputStream::constructor(
     /* [in] */ const String& fileName)
 {
-    AutoPtr<CFile> file;
-    CFile::NewByFriend(fileName, (CFile**)&file);
-    return Init((IFile*)file.Get());
+    AutoPtr<IFile> file;
+    CFile::New(fileName, (IFile**)&file);
+    return constructor(file);
 }
 
 ECode FileInputStream::Available(
@@ -110,23 +103,19 @@ ECode FileInputStream::Available(
 
 ECode FileInputStream::Close()
 {
-    // BEGIN android-changed
-    Object::Autolock lock(this);
-
-    // if (mChannel != NULL) {
-    //     mChannel->Close();
+    // guard.close();
+    // synchronized (this) {
+    //     if (channel != null) {
+    //         channel.close();
+    //     }
+    //     if (shouldClose) {
+    //         IoBridge.closeAndSignalBlockedThreads(fd);
+    //     } else {
+    //         // An owned fd has been invalidated by IoUtils.close, but
+    //         // we need to explicitly stop using an unowned fd (http://b/4361076).
+    //         fd = new FileDescriptor();
+    //     }
     // }
-    if (mShouldClose) {
-        AutoPtr<IIoBridge> ioBridge;
-        IoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
-        return ioBridge->CloseAndSignalBlockedThreads(mFd);
-    }
-    else {
-        // An owned fd has been invalidated by IoUtils.close, but
-        // we need to explicitly stop using an unowned fd (http://b/4361076).
-        CFileDescriptor::NewByFriend((CFileDescriptor**)&mFd);
-        return NOERROR;
-    }
 }
 
 ECode FileInputStream::GetChannel(
@@ -159,10 +148,7 @@ ECode FileInputStream::Read(
 {
     VALIDATE_NOT_NULL(value)
 
-    ArrayOf_<Byte, 1> readed;
-    Int32 result;
-    FAIL_RETURN(Read(&readed, 0, 1, &result));
-    *value = result != -1 ? readed[0] & 0xff : -1;
+    // return Streams.readSingleByte(this);
     return NOERROR;;
 }
 
@@ -189,6 +175,7 @@ ECode FileInputStream::Skip(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number)
+    *number = 0;
 
     if (byteCount < 0) {
 //      throw new IOException("byteCount < 0: " + byteCount);

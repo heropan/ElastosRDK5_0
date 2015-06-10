@@ -1,6 +1,6 @@
 
 #include "HeapByteBuffer.h"
-#include <elastos/core/Math.h>
+#include "Math.h"
 #include "Memory.h"
 #include "CByteOrderHelper.h"
 

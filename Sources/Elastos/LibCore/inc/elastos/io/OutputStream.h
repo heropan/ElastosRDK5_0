@@ -18,10 +18,6 @@ class OutputStream
 public:
     CAR_INTERFACE_DECL()
 
-    OutputStream();
-
-    virtual ~OutputStream();
-
     /**
      * Closes this stream. Implementations of this method should free any
      * resources used by the stream. This implementation does nothing.
@@ -84,6 +80,11 @@ public:
      */
     CARAPI CheckError(
         /* [out] */ Boolean* hasError);
+
+protected:
+    OutputStream();
+
+    virtual ~OutputStream();
 };
 
 } // namespace IO

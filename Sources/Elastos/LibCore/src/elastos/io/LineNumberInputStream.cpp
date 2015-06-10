@@ -1,6 +1,6 @@
 
 #include "LineNumberInputStream.h"
-#include <elastos/core/Character.h>
+#include "Character.h"
 
 using Elastos::Core::Character;
 
@@ -62,6 +62,7 @@ ECode LineNumberInputStream::Read(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = 0;
 
     Int32 currentChar = mLastChar;
     if (currentChar == -1) {
@@ -88,12 +89,13 @@ ECode LineNumberInputStream::Read(
 }
 
 ECode LineNumberInputStream::Read(
-    /* [out] */ ArrayOf<Byte>* buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(buffer)
+    *number = 0;
     VALIDATE_NOT_NULL(number)
 
     if (byteOffset > buffer->GetLength() || byteOffset < 0) {

@@ -1,8 +1,8 @@
 
 #include "DataInputStream.h"
 #include "CPushbackInputStream.h"
-#include <elastos/core/Math.h>
-#include <elastos/core/StringBuilder.h>
+#include "Math.h"
+#include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;
@@ -10,7 +10,7 @@ using Elastos::Core::Math;
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL(DataInputStream, FilterInputStream, IDataInputStream)
+CAR_INTERFACE_IMPL_2(DataInputStream, FilterInputStream, IDataInputStream, IDataInput)
 
 DataInputStream::DataInputStream()
 {
@@ -32,8 +32,9 @@ ECode DataInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(number)
+    *number = 0;
+    VALIDATE_NOT_NULL(buffer)
     return Read(buffer, number);
 }
 
@@ -43,8 +44,9 @@ ECode DataInputStream::Read(
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(number)
+    *number = 0;
+    VALIDATE_NOT_NULL(buffer)
 
     return mIn->Read(buffer, byteOffset, byteCount, number);
 }
@@ -53,6 +55,7 @@ ECode DataInputStream::ReadBoolean(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = FALSE;
 
     Int32 temp;
     FAIL_RETURN(mIn->Read(&temp));
@@ -68,6 +71,7 @@ ECode DataInputStream::ReadByte(
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = '\0';
 
     Int32 temp;
     FAIL_RETURN(mIn->Read(&temp));
@@ -83,6 +87,7 @@ ECode DataInputStream::ReadChar(
     /* [out] */ Char32* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = -1;
 
     Int32 number;
     FAIL_RETURN(ReadToBuff(4, &number));
@@ -100,6 +105,7 @@ ECode DataInputStream::ReadToBuff(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number)
+    *number = -1;
 
     Int32 offset = 0;
     while(offset < count) {
@@ -115,6 +121,7 @@ ECode DataInputStream::ReadDouble(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = 0;
 
     Int64 int64Value;
     FAIL_RETURN(ReadInt64(&int64Value));
@@ -126,6 +133,7 @@ ECode DataInputStream::ReadFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = 0;
 
     Int32 int32Value;
     FAIL_RETURN(ReadInt32(&int32Value));
@@ -180,6 +188,7 @@ ECode DataInputStream::ReadInt32(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = 0;
 
     Int32 number;
     FAIL_RETURN(ReadToBuff(4, &number));
@@ -194,6 +203,7 @@ ECode DataInputStream::ReadLine(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
+    *str = String("");
 
     AutoPtr<StringBuilder> line = new StringBuilder(80);
     Boolean foundTerminator = FALSE;
@@ -242,6 +252,7 @@ ECode DataInputStream::ReadInt64(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = 0;
 
     Int32 number;
     FAIL_RETURN(ReadToBuff(8, &number));
@@ -260,9 +271,9 @@ ECode DataInputStream::ReadInt16(
     /* [out] */ Int16* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = 0;
 
     Int32 number;
-
     FAIL_RETURN(ReadToBuff(2, &number));
     if (number < 0) return E_EOF_EXCEPTION;
     *value = (Int16)((((*mBuff)[0] & 0xff) << 8) | ((*mBuff)[1] & 0xff));
@@ -273,8 +284,6 @@ ECode DataInputStream::ReadInt16(
 ECode DataInputStream::ReadUnsignedByte(
     /* [out] */ Int32* value)
 {
-    VALIDATE_NOT_NULL(value)
-
     FAIL_RETURN(mIn->Read(value));
     return *value < 0? E_EOF_EXCEPTION : NOERROR;
 }
@@ -283,6 +292,7 @@ ECode DataInputStream::ReadUnsignedInt16(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = 0;
 
     Int32 number;
     FAIL_RETURN(ReadToBuff(2, &number));
@@ -296,6 +306,8 @@ ECode DataInputStream::ReadUTF(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
+    *str = String(NULL);
+
     Int32 value = 0;
     FAIL_RETURN(ReadUnsignedInt16(&value));
     return DecodeUTF(value, str);
@@ -306,6 +318,7 @@ ECode DataInputStream::SkipBytes(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number)
+    *number = 0;
 
     Int32 skipped = 0;
     Int64 skip;
@@ -326,6 +339,8 @@ ECode DataInputStream::SkipBytes(
 String DataInputStream::ReadUTF(
     /* [in] */ IDataInput* dataInput)
 {
+    assert(dataInput);
+
     Int32 value = 0;
     dataInput->ReadUnsignedInt16(&value);
 
@@ -338,14 +353,16 @@ ECode DataInputStream::DecodeUTF(
 {
     VALIDATE_NOT_NULL(str)
 
-    *str = DecodeUTF(utfSize, (IDataInput*)this->Probe(EIID_IDataInput));
+    *str = DecodeUTF(utfSize, THIS_PROBE(IDataInput));
     return NOERROR;
 }
 
 String DataInputStream::DecodeUTF(
-        /* [in] */ Int32 utfSize,
-        /* [in] */ IDataInput* in)
+    /* [in] */ Int32 utfSize,
+    /* [in] */ IDataInput* in)
 {
+    assert(in);
+
     AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(utfSize);
     AutoPtr< ArrayOf<Char32> > charbuf = ArrayOf<Char32>::Alloc(utfSize);
     in->ReadFully(buf, 0, utfSize);

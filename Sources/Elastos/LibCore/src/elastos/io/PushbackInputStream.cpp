@@ -1,6 +1,6 @@
 
 #include "PushbackInputStream.h"
-#include <elastos/core/Character.h>
+#include "Character.h"
 
 namespace Elastos{
 namespace IO{
@@ -55,6 +55,7 @@ ECode PushbackInputStream::Available(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
+    *number = 0;
 
     if (mBuf == NULL) {
 //      throw new IOException();
@@ -168,6 +169,7 @@ ECode PushbackInputStream::Skip(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number);
+    *number = 0;
 
     if (mIn == NULL) {
 //      throw streamClosed();

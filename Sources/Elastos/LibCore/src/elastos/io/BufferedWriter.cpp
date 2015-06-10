@@ -1,6 +1,6 @@
 
 #include "BufferedWriter.h"
-#include <elastos/core/Character.h>
+#include "Character.h"
 
 using Elastos::Core::Character;
 
@@ -40,7 +40,7 @@ ECode BufferedWriter::constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Writer::constructor(wout->Probe(EIID_IObject));
+    FAIL_RETURN(Writer::constructor(IObject::Probe(wout)))
 
     mOut = wout;
     mBuf = ArrayOf<Char32>::Alloc(size);

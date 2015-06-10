@@ -14,10 +14,6 @@ class ByteArrayOutputStream
 public:
     CAR_INTERFACE_DECL()
 
-    ByteArrayOutputStream();
-
-    ~ByteArrayOutputStream();
-
     CARAPI constructor();
 
     CARAPI constructor(
@@ -113,7 +109,7 @@ public:
      */
     // synchronized
     CARAPI Write(
-        /* [in] */ const ArrayOf<Byte> * buffer,
+        /* [in] */ ArrayOf<Byte> * buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
@@ -127,7 +123,13 @@ public:
      *             if an error occurs while writing to {@code out}.
      */
     // synchronized
-    CARAPI WriteTo(IOutputStream* out);
+    CARAPI WriteTo(
+        /* [in] */ IOutputStream* out);
+
+protected:
+    ByteArrayOutputStream();
+
+    virtual ~ByteArrayOutputStream();
 
 private:
     CARAPI Expand(

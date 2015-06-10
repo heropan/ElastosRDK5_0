@@ -3,7 +3,6 @@
 #define __ELASTOS_IO_FILEINPUTSTREAM_H__
 
 #include "InputStream.h"
-#include "CFileDescriptor.h"
 
 using Elastos::IO::Channels::IFileChannel;
 
@@ -36,11 +35,57 @@ namespace IO {
  */
 class FileInputStream
     : public InputStream
-    , public IFileFilter
+    , public IFileInputStream
 {
 public:
     CAR_INTERFACE_DECL()
-    
+
+    /**
+     * Constructs a new {@code FileInputStream} based on {@code file}.
+     *
+     * @param file
+     *            the file from which this stream reads.
+     * @throws FileNotFoundException
+     *             if {@code file} does not exist.
+     * @throws SecurityException
+     *             if a {@code SecurityManager} is installed and it denies the
+     *             read request.
+     */
+    CARAPI constructor(
+        /* [in] */ IFile* file);
+
+    /**
+     * Constructs a new {@code FileInputStream} on the {@link FileDescriptor}
+     * {@code fd}. The file must already be open, therefore no
+     * {@code FileNotFoundException} will be thrown.
+     *
+     * @param fd
+     *            the FileDescriptor from which this stream reads.
+     * @throws NullPointerException
+     *             if {@code fd} is {@code null}.
+     * @throws SecurityException
+     *             if a {@code SecurityManager} is installed and it denies the
+     *             read request.
+     */
+    CARAPI constructor(
+        /* [in] */ IFileDescriptor* fd);
+
+    /**
+     * Constructs a new {@code FileInputStream} on the file named
+     * {@code fileName}. The path of {@code fileName} may be absolute or
+     * relative to the system property {@code "user.dir"}.
+     *
+     * @param fileName
+     *            the path and name of the file from which this stream reads.
+     * @throws FileNotFoundException
+     *             if there is no file named {@code fileName}.
+     * @throws SecurityException
+     *             if a {@code SecurityManager} is installed and it denies the
+     *             read request.
+     */
+    CARAPI constructor(
+        /* [in] */ const String& fileName);
+
     CARAPI Available(
         /* [out] */ Int32* avail);
 
@@ -110,7 +155,7 @@ public:
      *             if the stream is closed or another IOException occurs.
      */
     CARAPI Read(
-        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [out] */ Int32* number);
@@ -143,54 +188,8 @@ protected:
      */
     virtual ~FileInputStream();
 
-    /**
-     * Constructs a new {@code FileInputStream} based on {@code file}.
-     *
-     * @param file
-     *            the file from which this stream reads.
-     * @throws FileNotFoundException
-     *             if {@code file} does not exist.
-     * @throws SecurityException
-     *             if a {@code SecurityManager} is installed and it denies the
-     *             read request.
-     */
-    CARAPI constructor(
-        /* [in] */ IFile* file);
-
-    /**
-     * Constructs a new {@code FileInputStream} on the {@link FileDescriptor}
-     * {@code fd}. The file must already be open, therefore no
-     * {@code FileNotFoundException} will be thrown.
-     *
-     * @param fd
-     *            the FileDescriptor from which this stream reads.
-     * @throws NullPointerException
-     *             if {@code fd} is {@code null}.
-     * @throws SecurityException
-     *             if a {@code SecurityManager} is installed and it denies the
-     *             read request.
-     */
-    CARAPI constructor(
-        /* [in] */ IFileDescriptor* fd);
-
-    /**
-     * Constructs a new {@code FileInputStream} on the file named
-     * {@code fileName}. The path of {@code fileName} may be absolute or
-     * relative to the system property {@code "user.dir"}.
-     *
-     * @param fileName
-     *            the path and name of the file from which this stream reads.
-     * @throws FileNotFoundException
-     *             if there is no file named {@code fileName}.
-     * @throws SecurityException
-     *             if a {@code SecurityManager} is installed and it denies the
-     *             read request.
-     */
-    CARAPI constructor(
-        /* [in] */ const String& fileName);
-
 private:
-    AutoPtr<CFileDescriptor> mFd;
+    AutoPtr<IFileDescriptor> mFd;
     Boolean mShouldClose;
 
     /** The unique file channel. Lazily initialized because it's rarely needed. */

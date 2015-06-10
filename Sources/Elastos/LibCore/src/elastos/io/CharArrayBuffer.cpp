@@ -1,7 +1,7 @@
 
 #include "CharArrayBuffer.h"
 #include "CByteOrderHelper.h"
-#include <elastos/core/StringBuilder.h>
+#include "StringBuilder.h"
 
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::StringBuilder;

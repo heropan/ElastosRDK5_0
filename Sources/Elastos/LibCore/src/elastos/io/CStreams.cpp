@@ -1,7 +1,7 @@
 
 #include "CStreams.h"
-#include <elastos/core/Math.h>
-#include <elastos/core/StringBuilder.h>
+#include "Math.h"
+#include "StringBuilder.h"
 #include <CByteArrayOutputStream.h>
 #include <CStringWriter.h>
 

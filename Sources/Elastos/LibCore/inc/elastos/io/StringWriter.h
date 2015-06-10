@@ -18,10 +18,6 @@ class StringWriter
 public:
     CAR_INTERFACE_DECL()
 
-    StringWriter();
-
-    virtual ~StringWriter();
-
     /**
      * Constructs a new {@code StringWriter} which has a {@link StringBuffer}
      * allocated with the default size of 16 characters. The {@code
@@ -42,7 +38,6 @@ public:
     CARAPI constructor(
         /* [in] */ Int32 initialSize);
 
-public:
     /**
      * Calling this method has no effect. In contrast to most {@code Writer} subclasses,
      * the other methods in {@code StringWriter} do not throw an {@code IOException} if
@@ -182,6 +177,11 @@ public:
         /* [in] */ ICharSequence* csq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
+
+protected:
+    StringWriter();
+
+    virtual ~StringWriter();
 
 private:
     AutoPtr<StringBuffer> mBuf;

@@ -14,12 +14,6 @@ class StringReader
 public:
     CAR_INTERFACE_DECL()
 
-protected:
-    StringReader();
-
-    ~StringReader();
-
-public:
     /**
      * Construct a new {@code StringReader} with {@code str} as source. The size
      * of the reader is set to the {@code length()} of the string and the Object
@@ -97,7 +91,7 @@ public:
      */
     // @Override
     CARAPI Read(
-        /* [out] */ ArrayOf<Char32>* buffer,
+        /* [in] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [out] */ Int32* number);
@@ -151,6 +145,11 @@ public:
     CARAPI Skip(
         /* [in] */ Int64 count,
         /* [out] */ Int64* number);
+
+protected:
+    StringReader();
+
+    virtual ~StringReader();
 
 private:
     CARAPI CheckNotClosed();

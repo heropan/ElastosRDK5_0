@@ -14,12 +14,6 @@ class FilterOutputStream
 public:
     CAR_INTERFACE_DECL()
 
-protected:
-    FilterOutputStream();
-
-    virtual ~FilterOutputStream();
-
-public:
     CARAPI constructor(
         /* [in] */ IOutputStream* outs);
 
@@ -73,6 +67,11 @@ public:
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
+
+protected:
+    FilterOutputStream();
+
+    virtual ~FilterOutputStream();
 
 protected:
     /**

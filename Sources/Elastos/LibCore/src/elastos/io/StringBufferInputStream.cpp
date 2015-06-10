@@ -54,8 +54,9 @@ ECode StringBufferInputStream::Read(
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(number)
+    *number = -1;
+    VALIDATE_NOT_NULL(buffer)
 
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
@@ -105,11 +106,11 @@ ECode StringBufferInputStream::Skip(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number)
+    *number = 0;
 
     Object::Autolock lock(this);
 
     if (count <= 0) {
-        *number = 0;
         return NOERROR;
     }
 

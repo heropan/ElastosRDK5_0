@@ -57,9 +57,6 @@ ECode FilterInputStream::Read(
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(number);
-    *number = -1;
-    VALIDATE_NOT_NULL(buffer);
     return mIn->Read(buffer, byteOffset, byteCount, number);
 }
 

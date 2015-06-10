@@ -1,7 +1,7 @@
 
 #include "Reader.h"
-#include <elastos/core/Character.h>
-#include <elastos/core/Math.h>
+#include "Character.h"
+#include "Math.h"
 
 namespace Elastos {
 namespace IO {

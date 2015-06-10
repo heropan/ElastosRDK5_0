@@ -1,6 +1,6 @@
 
 #include "PushbackReader.h"
-#include <elastos/core/Character.h>
+#include "Character.h"
 
 namespace Elastos{
 namespace IO{
@@ -101,8 +101,9 @@ ECode PushbackReader::Read(
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(number)
+    *number = 0;
+    VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -161,6 +162,7 @@ ECode PushbackReader::IsReady(
     /* [out] */ Boolean* ready)
 {
     VALIDATE_NOT_NULL(ready)
+    *ready = FALSE;
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -206,6 +208,7 @@ ECode PushbackReader::Unread(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
+    VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -236,6 +239,7 @@ ECode PushbackReader::Skip(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number)
+    *number = 0;
 
     if (count < 0) {
 //      throw new IllegalArgumentException();

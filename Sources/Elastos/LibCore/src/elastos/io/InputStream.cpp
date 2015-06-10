@@ -1,6 +1,6 @@
 
 #include "InputStream.h"
-#include <elastos/core/Math.h>
+#include "Math.h"
 #include <utils/Log.h>
 
 namespace Elastos {

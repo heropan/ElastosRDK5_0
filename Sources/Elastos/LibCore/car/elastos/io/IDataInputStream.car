@@ -19,6 +19,7 @@ module
      * interface Elastos.IO.ICloseable;
      * interface IInputStream;
      * interface IFilterInputStream;
+     * interface IDataInput
      */
     interface IDataInputStream {
     }

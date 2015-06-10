@@ -14,11 +14,6 @@ class FilterWriter
 public:
     CAR_INTERFACE_DECL()
 
-protected:
-    FilterWriter();
-
-    ~FilterWriter();
-
     /**
      * Constructs a new FilterWriter on the Writer {@code out}. All writes are
      * now filtered through this writer.
@@ -94,6 +89,11 @@ protected:
         /* [in] */ const String& str,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
+
+protected:
+    FilterWriter();
+
+    virtual ~FilterWriter();
 
 protected:
      /**

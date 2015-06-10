@@ -149,14 +149,15 @@ CARAPI ByteArrayInputStream::Skip(
     /* [in] */ Int64 count,
     /* [out] */ Int64* number)
 {
-    assert(number != NULL);
+    VALIDATE_NOT_NULL(number)
+    *number = 0;
+
+    if (count <= 0) {
+        return NOERROR;
+    }
 
     Object::Autolock lock(this);
 
-    if (count <= 0) {
-        *number = 0;
-        return NOERROR;
-    }
     Int32 temp = mPos;
     mPos = mCount - mPos < count ? mCount : (Int32)(mPos + count);
     *number = mPos - temp;

@@ -13,13 +13,7 @@ class PushbackReader
 {
 public:
     CAR_INTERFACE_DECL()
-    
-protected:
-    PushbackReader();
 
-    ~PushbackReader();
-
-public:
     /**
      * Constructs a new {@code PushbackReader} with the specified reader as
      * source. The size of the pushback buffer is set to the default value of 1
@@ -114,7 +108,7 @@ public:
      */
     // @Override
     CARAPI Read(
-        /* [out] */ ArrayOf<Char32>* buffer,
+        /* [in] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [out] */ Int32* number);
@@ -233,6 +227,11 @@ public:
     CARAPI Skip(
         /* [in] */ Int64 count,
         /* [out] */ Int64* number);
+
+protected:
+    PushbackReader();
+
+    virtual ~PushbackReader();
 
 private:
     CARAPI CheckNotClosed();

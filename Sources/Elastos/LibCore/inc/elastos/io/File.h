@@ -1,16 +1,21 @@
 #ifndef __ELASTOS_IO_FILE_H__
 #define __ELASTOS_IO_FILE_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
 
+using Elastos::Core::Object;
 using Elastos::Core::IRandom;
+using Elastos::IO::ISerializable;
 using Elastos::Net::IURI;
 
 namespace Elastos {
 namespace IO {
 
 class File
-    : public IFile
+    : public Object
+    , public IFile
+    , public IComparable
+    , public ISerializable
 {
 public:
     CAR_INTERFACE_DECL()

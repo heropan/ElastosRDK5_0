@@ -13,10 +13,6 @@ class CharArrayReader
 {
 public:
     CAR_INTERFACE_DECL()
-    
-    CharArrayReader();
-
-    ~CharArrayReader();
 
     CARAPI constructor(
         /* [in] */ ArrayOf<Char32>* buf);
@@ -26,7 +22,6 @@ public:
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length);
 
-public:
     /**
      * This method closes this CharArrayReader. Once it is closed, you can no
      * longer read from it. Only the first invocation of this method has any
@@ -84,7 +79,7 @@ public:
      *             if this reader is closed.
      */
     CARAPI Read(
-        /* [out] */ ArrayOf<Char32> * buffer,
+        /* [in] */ ArrayOf<Char32> * buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [out] */ Int32* number);
@@ -129,6 +124,11 @@ public:
     CARAPI Skip(
         /* [in] */Int64 n,
         /* [out] */ Int64* number);
+
+protected:
+    CharArrayReader();
+
+    virtual ~CharArrayReader();
 
 private:
     /**

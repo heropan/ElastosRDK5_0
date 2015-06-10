@@ -4,7 +4,7 @@
 #include "IoUtils.h"
 #include "NioUtils.h"
 #include <Math.h>
-#include <elastos/core/Character.h>
+#include "Character.h"
 #include <StringBuilder.h>
 #include "COsConstants.h"
 #include "CIoBridge.h"

@@ -1,6 +1,6 @@
 
 #include "CharArrayReader.h"
-#include <elastos/core/Character.h>
+#include "Character.h"
 
 using Elastos::Core::Character;
 
@@ -116,14 +116,15 @@ ECode CharArrayReader::Read(
     /*[out]*/ Int32* character)
 {
     VALIDATE_NOT_NULL(character)
+    *character = -1;
+
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
-    if (mPos == mCount) {
-        *character = -1;
-        return NOERROR;
+
+    if (mPos != mCount) {
+        *character = (*mBuf)[mPos++];
     }
-    *character = (*mBuf)[mPos++];
 
     return NOERROR;
 }
@@ -135,6 +136,7 @@ ECode CharArrayReader::Read(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number)
+    *number = 0;
     VALIDATE_NOT_NULL(buffer)
 
     // BEGIN android-note
@@ -168,6 +170,8 @@ ECode CharArrayReader::IsReady(
     /*[out]*/ Boolean* isReady)
 {
     VALIDATE_NOT_NULL(isReady)
+    *isReady = FALSE;
+
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
@@ -191,11 +195,12 @@ ECode CharArrayReader::Skip(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number)
+    *number = 0;
+
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     if (n <= 0) {
-        *number = 0;
         return NOERROR;
     }
 

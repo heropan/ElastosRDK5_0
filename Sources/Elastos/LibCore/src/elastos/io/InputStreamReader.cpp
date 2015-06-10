@@ -5,8 +5,8 @@
 #include "CharBuffer.h"
 #include "ByteBuffer.h"
 #include "CCodingErrorAction.h"
-#include <elastos/core/Math.h>
-#include <elastos/core/Character.h>
+#include "Math.h"
+#include "Character.h"
 
 using Elastos::Core::Character;
 using Elastos::IO::Charset::CCoderResult;

@@ -8,8 +8,6 @@
 #include <sys/types.h>
 
 using Elastos::Droid::System::OsConstants;
-// using Elastos::Droid::System::IOsConstants;
-// using Libcore::IO::COsConstants;
 using Libcore::IO::ILibcore;
 // using Libcore::IO::CLibcore;
 using Libcore::IO::IOs;

@@ -1,6 +1,6 @@
 
 #include "LineNumberReader.h"
-#include <elastos/core/Character.h>
+#include "Character.h"
 
 using Elastos::Core::Character;
 
@@ -91,8 +91,9 @@ ECode LineNumberReader::Read(
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(number)
+    *number = NULL;
+    VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -128,6 +129,7 @@ ECode LineNumberReader::ReadLine(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = String(NULL);
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
@@ -173,6 +175,7 @@ ECode LineNumberReader::Skip(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number)
+    *number = 0;
 
     if (count < 0) {
 //      throw new IllegalArgumentException();
@@ -182,8 +185,8 @@ ECode LineNumberReader::Skip(
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
+    Int32 value;
     for (Int32 i = 0; i < count; i++) {
-        Int32 value;
         Read(&value);
         if (value == -1) {
             *number = i;

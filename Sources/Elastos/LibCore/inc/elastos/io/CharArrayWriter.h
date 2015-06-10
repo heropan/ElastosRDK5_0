@@ -22,7 +22,7 @@ public:
 protected:
     CharArrayWriter();
 
-    ~CharArrayWriter();
+    virtual ~CharArrayWriter();
 
 public:
 

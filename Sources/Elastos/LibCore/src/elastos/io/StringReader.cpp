@@ -1,6 +1,6 @@
 
 #include "StringReader.h"
-#include <elastos/core/Character.h>
+#include "Character.h"
 
 using Elastos::Core::Character;
 
@@ -107,8 +107,9 @@ ECode StringReader::Read(
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(number)
+    *number = -1;
+    VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
 
     Object::Autolock lock(mLock);
@@ -147,6 +148,7 @@ ECode StringReader::IsReady(
     /* [out] */ Boolean* ready)
 {
     VALIDATE_NOT_NULL(ready)
+    *ready = FALSE;
     assert(mLock != NULL);
 
     Object::Autolock lock(mLock);
@@ -174,6 +176,7 @@ ECode StringReader::Skip(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number)
+    *number = 0;
     assert(mLock != NULL);
 
     Object::Autolock lock(mLock);

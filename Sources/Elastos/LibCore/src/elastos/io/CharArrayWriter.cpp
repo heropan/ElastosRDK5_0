@@ -1,7 +1,7 @@
 
 #include "CharArrayWriter.h"
-#include <elastos/core/Math.h>
-#include <elastos/core/Character.h>
+#include "Math.h"
+#include "Character.h"
 #include "CStringWrapper.h"
 
 using Elastos::Core::Character;
@@ -98,12 +98,15 @@ ECode CharArrayWriter::ToCharArray(
     /* [out] */ ArrayOf<Char32>** str)
 {
     VALIDATE_NOT_NULL(str)
+    *str = NULL;
+
     Object::Autolock lock(mLock);
 
-    *str = mBuf->Clone();
-    if (*str == NULL)
+    AutoPtr<ArrayOf<Char32> > arr = mBuf->Clone();
+    if (arr == NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
+    *str = arr;
     REFCOUNT_ADD(*str);
     return NOERROR;
 }
@@ -112,13 +115,15 @@ ECode CharArrayWriter::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = String(NULL);
+
     Object::Autolock lock(mLock);
 
     AutoPtr<ArrayOf<Char8> > dst;
     Int32 dstOffset = 0;
     FAIL_RETURN(Character::ToChars(*mBuf, 0, mCount, (ArrayOf<Char8>**)&dst, &dstOffset));
 
-    *result = (char*)dst->GetPayload();
+    *result = String((char*)dst->GetPayload(), dst->GetLength());
 
     return NOERROR;
 }
@@ -139,6 +144,7 @@ ECode CharArrayWriter::Write(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
+    VALIDATE_NOT_NULL(buffer)
     // avoid int overflow
     // BEGIN android-changed
     // Exception priorities (in case of multiple errors) differ from
@@ -209,12 +215,10 @@ ECode CharArrayWriter::Append(
 ECode CharArrayWriter::Append(
     /* [in] */ ICharSequence* csq)
 {
-    if (NULL == csq) {
-        FAIL_RETURN(CStringWrapper::New(String("NULL"), &csq));
+    Int32 number = 0;
+    if (csq) {
+        csq->GetLength(&number);
     }
-
-    Int32 number;
-    FAIL_RETURN(csq->GetLength(&number));
     return Append(csq, 0, number);
 }
 

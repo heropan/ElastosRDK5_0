@@ -1,6 +1,6 @@
 
 #include "Writer.h"
-#include <elastos/core/Character.h>
+#include "Character.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::EIID_IAppendable;

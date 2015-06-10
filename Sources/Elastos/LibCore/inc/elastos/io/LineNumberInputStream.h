@@ -1,6 +1,6 @@
 
-#ifndef __LINENUMBERINPUTSTREAM_H__
-#define __LINENUMBERINPUTSTREAM_H__
+#ifndef __ELASTOS_LINENUMBER_INPUTSTREAM_H__
+#define __ELASTOS_LINENUMBER_INPUTSTREAM_H__
 
 #include "FilterInputStream.h"
 
@@ -13,11 +13,11 @@ class LineNumberInputStream
 {
 public:
     CAR_INTERFACE_DECL()
-    
+
 protected:
     LineNumberInputStream();
 
-    ~LineNumberInputStream();
+    virtual ~LineNumberInputStream();
 
 public:
     /**
@@ -109,7 +109,7 @@ public:
      */
     // @Override
     CARAPI Read(
-        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
@@ -173,4 +173,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__LINENUMBERINPUTSTREAM_H__
+#endif //__ELASTOS_LINENUMBER_INPUTSTREAM_H__

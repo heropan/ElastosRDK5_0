@@ -23,10 +23,6 @@ class FilterInputStream
 public:
     CAR_INTERFACE_DECL()
 
-    FilterInputStream();
-
-    virtual ~FilterInputStream();
-
     /**
      * Constructs a new {@code FilterInputStream} with the specified input
      * stream as source.
@@ -116,7 +112,7 @@ public:
      *             if this stream is closed or another I/O error occurs.
      */
     CARAPI Read(
-        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
@@ -151,6 +147,11 @@ public:
     CARAPI Skip(
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* number);
+
+protected:
+    FilterInputStream();
+
+    virtual ~FilterInputStream();
 
 protected:
     /**

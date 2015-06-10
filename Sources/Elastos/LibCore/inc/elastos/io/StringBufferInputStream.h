@@ -13,13 +13,7 @@ class StringBufferInputStream
 {
 public:
     CAR_INTERFACE_DECL()
-    
-protected:
-    StringBufferInputStream();
 
-    ~StringBufferInputStream();
-
-public:
     CARAPI constructor(
         /* [in] */ const String& str);
 
@@ -38,7 +32,7 @@ public:
         /* [out] */ Int32* value);
 
     CARAPI Read(
-        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
@@ -61,6 +55,11 @@ public:
     CARAPI Skip(
         /* [in] */ Int64 count,
         /* [out] */ Int64* number);
+
+protected:
+    StringBufferInputStream();
+
+    virtual ~StringBufferInputStream();
 
 protected:
     /**

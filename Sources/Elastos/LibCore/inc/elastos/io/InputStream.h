@@ -17,10 +17,6 @@ class InputStream
 public:
     CAR_INTERFACE_DECL()
 
-    InputStream();
-
-    virtual ~InputStream();
-
     /**
      * Returns an estimated number of bytes that can be read or skipped without blocking for more
      * input.
@@ -187,6 +183,10 @@ public:
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* number);
 
+protected:
+    InputStream();
+
+    virtual ~InputStream();
 };
 
 } // namespace IO

@@ -3,8 +3,8 @@
 #include "ReadOnlyDirectByteBuffer.h"
 #include "CByteOrderHelper.h"
 #include "Memory.h"
-#include <elastos/core/Math.h>
-#include <elastos/core/StringBuilder.h>
+#include "Math.h"
+#include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 

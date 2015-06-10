@@ -19,7 +19,7 @@ ECode FilterReader::constructor(
 {
     VALIDATE_NOT_NULL(in);
 
-    Reader::constructor(IObject::Probe(in));
+    FAIL_RETURN(Reader::constructor(IObject::Probe(in)))
 
     mIn = in;
 
@@ -60,7 +60,6 @@ ECode FilterReader::Read(
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 
-
     return mIn->Read(value);
 }
 
@@ -70,8 +69,9 @@ ECode FilterReader::Read(
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(number)
+    *number = 0;
+    VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
     Object::Autolock lock(mLock);
 

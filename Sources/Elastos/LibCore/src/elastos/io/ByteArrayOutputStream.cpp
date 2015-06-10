@@ -126,7 +126,7 @@ ECode ByteArrayOutputStream::Write(
 }
 
 ECode ByteArrayOutputStream::Write(
-    /* [in] */ const ArrayOf<Byte>* buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {

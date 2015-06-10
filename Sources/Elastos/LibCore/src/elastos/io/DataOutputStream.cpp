@@ -1,7 +1,7 @@
 
 #include "DataOutputStream.h"
-#include <elastos/core/Math.h>
-#include <elastos/core/Character.h>
+#include "Math.h"
+#include "Character.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::Math;
@@ -9,7 +9,7 @@ using Elastos::Core::Math;
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL(DataOutputStream, FilterOutputStream, IDataOutputStream)
+CAR_INTERFACE_IMPL_2(DataOutputStream, FilterOutputStream, IDataOutputStream, IDataOutput)
 
 static const Char32 kByteMask = 0x000000BF;
 static const Char32 kByteMark = 0x00000080;
@@ -128,7 +128,7 @@ ECode DataOutputStream::WriteChar(
     return NOERROR;
 }
 
-ECode DataOutputStream::Write(
+ECode DataOutputStream::WriteChars(
     /* [in] */ const String& str)
 {
     if (str.IsNullOrEmpty())

@@ -10,15 +10,20 @@ namespace IO {
 class DataOutputStream
     : public FilterOutputStream
     , public IDataOutputStream
+    , public IDataOutput
 {
 public:
     CAR_INTERFACE_DECL()
-protected:
-    DataOutputStream();
 
-    ~DataOutputStream();
-
-public:
+    /**
+     * Constructs a new {@code DataOutputStream} on the {@code OutputStream}
+     * {@code out}. Note that data written by this stream is not in a human
+     * readable form but can be reconstructed by using a {@link DataInputStream}
+     * on the resulting output.
+     *
+     * @param out
+     *            the target stream for writing.
+     */
     CARAPI constructor(
         /* [in] */ IOutputStream* out);
 
@@ -113,121 +118,37 @@ public:
     CARAPI WriteBytes(
         /* [in] */ ArrayOf<Byte>* buffer);
 
-    /**
-     * Writes the low order 8-bit bytes from the specified string.
-     *
-     * @param str
-     *            the string containing the bytes to write.
-     * @throws IOException
-     *             if an I/O error occurs while writing.
-     */
     CARAPI WriteBytes(
         /* [in] */ const String& str);
 
-    /**
-     * Writes a 32-bit character to the target stream. Only the two lower bytes
-     * of the integer {@code val} are written, with the higher one written
-     * first. This corresponds to the Unicode value of {@code val}.
-     *
-     * @param val
-     *            the character to write to the target stream
-     * @throws IOException
-     *             if an error occurs while writing to the target stream.
-     * @see DataInputStream#readChar()
-     */
     CARAPI WriteChar(
         /* [in] */ Int32 val);
 
-    /**
-     * Writes the 16-bit characters contained in {@code str} in big-endian order.
-     *
-     * @param str
-     *            the string that contains the characters to write.
-     * @throws IOException
-     *             if an I/O error occurs while writing.
-     * @see DataInput#readChar()
-     */
-    CARAPI Write(
+    CARAPI WriteChars(
         /* [in] */ const String& str);
 
-    /**
-     * Writes a 64-bit double to the target stream. The resulting output is the
-     * eight bytes resulting from calling Double.doubleToLongBits().
-     *
-     * @param val
-     *            the double to write to the target stream.
-     * @throws IOException
-     *             if an error occurs while writing to the target stream.
-     * @see DataInputStream#readDouble()
-     */
     CARAPI WriteDouble(
         /* [in] */ Double val);
 
-    /**
-     * Writes a 32-bit float to the target stream. The resulting output is the
-     * four bytes resulting from calling Float.floatToIntBits().
-     *
-     * @param val
-     *            the float to write to the target stream.
-     * @throws IOException
-     *             if an error occurs while writing to the target stream.
-     * @see DataInputStream#readFloat()
-     */
     CARAPI WriteFloat(
         /* [in] */ Float val);
 
-    /**
-     * Writes a 32-bit int to the target stream. The resulting output is the
-     * four bytes, highest order first, of {@code val}.
-     *
-     * @param val
-     *            the int to write to the target stream.
-     * @throws IOException
-     *             if an error occurs while writing to the target stream.
-     * @see DataInputStream#readInt()
-     */
     CARAPI WriteInt32(
         /* [in] */ Int32 val);
 
-    /**
-     * Writes a 64-bit long to the target stream. The resulting output is the
-     * eight bytes, highest order first, of {@code val}.
-     *
-     * @param val
-     *            the long to write to the target stream.
-     * @throws IOException
-     *             if an error occurs while writing to the target stream.
-     * @see DataInputStream#readLong()
-     */
     CARAPI WriteInt64(
         /* [in] */ Int64 val);
 
-    /**
-     * Writes the specified 16-bit short to the target stream. Only the lower
-     * two bytes of the integer {@code val} are written, with the higher one
-     * written first.
-     *
-     * @param val
-     *            the short to write to the target stream.
-     * @throws IOException
-     *             if an error occurs while writing to the target stream.
-     * @see DataInputStream#readShort()
-     * @see DataInputStream#readUnsignedShort()
-     */
     CARAPI WriteInt16(
         /* [in] */ Int32 val);
 
-    /**
-     * Writes the specified string encoded in {@link DataInput modified UTF-8}.
-     *
-     * @param str
-     *            the string to write encoded in {@link DataInput modified UTF-8}.
-     * @throws IOException
-     *             if an I/O error occurs while writing.
-     * @see DataInput#readUTF()
-         */
     CARAPI WriteUTF(
         /* [in] */ const String& str);
+
+protected:
+    DataOutputStream();
+
+    virtual ~DataOutputStream();
 
 protected:
     CARAPI_(Int32) CountUTFBytes(

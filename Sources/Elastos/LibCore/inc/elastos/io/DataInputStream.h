@@ -10,17 +10,18 @@ namespace IO {
 class DataInputStream
     : public FilterInputStream
     , public IDataInputStream
+    , public IDataInput
 {
 public:
     CAR_INTERFACE_DECL()
-    
+
     CARAPI constructor(
         /* [in] */ IInputStream* is);
 
 protected:
     DataInputStream();
 
-    ~DataInputStream();
+    virtual ~DataInputStream();
 
     CARAPI DecodeUTF(
         /* [in] */ Int32 utfSize,

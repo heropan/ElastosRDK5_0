@@ -17,7 +17,7 @@ public:
 
     BufferedWriter();
 
-    ~BufferedWriter();
+    virtual ~BufferedWriter();
 
     /**
      * Constructs a new {@code BufferedWriter}, providing {@code out} with a buffer

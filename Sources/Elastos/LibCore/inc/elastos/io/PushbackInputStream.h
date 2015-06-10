@@ -7,19 +7,13 @@
 namespace Elastos {
 namespace IO {
 
-class PushbackInputStream 
+class PushbackInputStream
     : public FilterInputStream
     , public IPushbackInputStream
 {
 public:
     CAR_INTERFACE_DECL()
-    
-protected:
-    PushbackInputStream();
 
-    ~PushbackInputStream();
-
-public:
     /**
      * Constructs a new {@code PushbackInputStream} with the specified input
      * stream as source. The size of the pushback buffer is set to the default
@@ -112,7 +106,7 @@ public:
      */
     // @Override
     CARAPI Read(
-        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
@@ -219,6 +213,11 @@ public:
      *             if this method is called.
      */
     CARAPI Reset();
+
+protected:
+    PushbackInputStream();
+
+    virtual ~PushbackInputStream();
 
 protected:
     /**

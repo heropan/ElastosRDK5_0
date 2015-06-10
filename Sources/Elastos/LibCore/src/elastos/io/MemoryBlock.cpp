@@ -4,7 +4,7 @@
 #include "CByteOrderHelper.h"
 #include "OsConstants.h"
 // #include "CLibcore.h"
-#include <elastos/core/Math.h>
+#include "Math.h"
 #include "CByteOrderHelper.h"
 // #include "COsConstants.h"
 // #include "CLibcore.h"

@@ -10,8 +10,8 @@
 #include "CFormatter.h"
 #include <CSystem.h>
 #endif
-#include <elastos/core/Character.h>
-#include <StringUtils.h>
+#include "Character.h"
+#include "StringUtils.h"
 #include <Slogger.h>
 
 using Libcore::ICU::CLocale;
