@@ -35,6 +35,7 @@ public:
         {
         }
 
+    public:
         Int32 mStart;
         Int32 mEnd;
     };
@@ -130,8 +131,6 @@ public:
     AutoPtr<IMap> mEntries;
 
 private:
-    static Object mLock;
-
     static const AutoPtr<ArrayOf<Byte> > LINE_SEPARATOR;
 
     static const AutoPtr<ArrayOf<Byte> > VALUE_SEPARATOR;

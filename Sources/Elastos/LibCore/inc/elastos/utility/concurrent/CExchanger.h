@@ -353,8 +353,6 @@ private:
      * when a thread happens to stall right before setting.
      */
     AutoPtr<IAtomicInteger32> mMax;
-
-    static Object mLock;
 };
 
 } // namespace Concurrent

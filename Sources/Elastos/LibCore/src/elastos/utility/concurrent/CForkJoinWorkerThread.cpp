@@ -30,7 +30,7 @@ ECode CForkJoinWorkerThread::constructor(
     /* [in] */ IForkJoinPool* pool)
 {
     AutoPtr<CForkJoinPool> cp = (CForkJoinPool*)pool;
-    Thread::Init(cp->NextWorkerName());
+    Thread::constructor(cp->NextWorkerName());
     mPool = pool;
     Int32 k = cp->RegisterWorker(this);
     mPoolIndex = k;

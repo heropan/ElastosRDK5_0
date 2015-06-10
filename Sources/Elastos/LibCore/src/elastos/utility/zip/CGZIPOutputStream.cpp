@@ -65,7 +65,7 @@ ECode CGZIPOutputStream::constructor(
 {
     AutoPtr<CDeflater> deflater;
     CDeflater::NewByFriend(IDeflater::DEFAULT_COMPRESSION, TRUE, (CDeflater**)&deflater);
-    FAIL_RETURN(DeflaterOutputStream::Init(os, deflater.Get(), size));
+    FAIL_RETURN(DeflaterOutputStream::constructor(os, deflater.Get(), size));
     WriteInt32(IGZIPInputStream::MAGIC);
     FAIL_RETURN(mOut->Write(IDeflater::DEFLATED));
     FAIL_RETURN(mOut->Write(0)); // flags

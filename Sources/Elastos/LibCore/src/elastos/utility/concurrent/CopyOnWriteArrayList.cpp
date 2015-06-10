@@ -16,23 +16,23 @@ const AutoPtr< ArrayOf<IInterface*> > CopyOnWriteArrayList::sEmptyArray = ArrayO
 
 CAR_INTERFACE_IMPL_4(CopyOnWriteArrayList, Object, ICopyOnWriteArrayList, ICollection, IIterable, IRandomAccess)
 
-ECode CopyOnWriteArrayList::Init()
+ECode CopyOnWriteArrayList::constructor()
 {
     mElements = sEmptyArray;
     return NOERROR;
 }
 
-ECode CopyOnWriteArrayList::Init(
+ECode CopyOnWriteArrayList::constructor(
     /* [in] */ ICollection* collection)
 {
     VALIDATE_NOT_NULL(collection)
 
     AutoPtr< ArrayOf<IInterface*> > outarr;
     collection->ToArray((ArrayOf<IInterface*>**)&outarr);
-    return Init(outarr);
+    return constructor(outarr);
 }
 
-ECode CopyOnWriteArrayList::Init(
+ECode CopyOnWriteArrayList::constructor(
     /* [in] */ ArrayOf<IInterface*>* array)
 {
     mElements = array->Clone();

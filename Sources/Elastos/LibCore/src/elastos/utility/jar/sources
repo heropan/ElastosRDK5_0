@@ -1,0 +1,26 @@
+
+TARGET_NAME= jar
+TARGET_TYPE= lib
+
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/zip;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/jar;
+
+//SOURCES = CAttributes.cpp
+//SOURCES += CJarEntry.cpp
+//SOURCES += CJarFile.cpp
+//SOURCES += CJarInputStream.cpp
+//SOURCES += CJarOutputStream.cpp
+//SOURCES += CManifest.cpp
+//SOURCES += CName.cpp
+//SOURCES += CPack200Helper.cpp
+//SOURCES += InitManifest.cpp
+//SOURCES += JarVerifier.cpp

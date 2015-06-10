@@ -81,7 +81,7 @@ ECode CJarInputStream::constructor(
     /* [in] */ IInputStream* stream,
     /* [in] */ Boolean verify)
 {
-    FAIL_RETURN(ZipInputStream::Init(stream))
+    FAIL_RETURN(ZipInputStream::constructor(stream))
     if (verify) {
         mVerifier = new JarVerifier(String("JarInputStream"));
     }

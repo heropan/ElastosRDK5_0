@@ -23,7 +23,7 @@ CJarFile::JarFileInputStream::JarFileInputStream(
     /* [in] */ JarVerifier::VerifierEntry* e)
     : mDone(FALSE)
 {
-    FilterInputStream::Init(is);
+    FilterInputStream::constructor(is);
     mZipEntry = ze;
     mZipEntry->GetSize(&mCount);
     mEntry = e;
@@ -287,7 +287,7 @@ ECode CJarFile::constructor(
     /* [in] */ Boolean verify)
 {
     // TODO: Add your code here
-    FAIL_RETURN(ZipFile::Init(file))
+    FAIL_RETURN(ZipFile::constructor(file))
     if (verify) {
         String path;
         mVerifier = new JarVerifier((file->GetPath(&path), path));
@@ -300,7 +300,7 @@ ECode CJarFile::constructor(
     /* [in] */ Boolean verify,
     /* [in] */ Int32 mode)
 {
-    FAIL_RETURN(ZipFile::Init(file))
+    FAIL_RETURN(ZipFile::constructor(file))
     if (verify) {
         String path;
         mVerifier = new JarVerifier((file->GetPath(&path), path));
@@ -318,7 +318,7 @@ ECode CJarFile::constructor(
     /* [in] */ const String& filename,
     /* [in] */ Boolean verify)
 {
-    FAIL_RETURN(ZipFile::Init(filename))
+    FAIL_RETURN(ZipFile::constructor(filename))
     if (verify) {
         mVerifier = new JarVerifier(filename);
     }

@@ -21,8 +21,6 @@ Int32 ForkJoinTask::CANCELLED   = -2;
 Int32 ForkJoinTask::EXCEPTIONAL = -3;
 Int32 ForkJoinTask::SIGNAL      =  1;
 
-Object ForkJoinTask::mLock;
-
 CAR_INTERFACE_IMPL_3(ForkJoinTask, Object, IForkJoinTask, IFuture, ISerializable)
 
 Int32 ForkJoinTask::SetCompletion(
@@ -63,7 +61,7 @@ Int32 ForkJoinTask::ExternalAwaitDone()
     if ((s = mStatus) >= 0) {
         Boolean interrupted = FALSE;
         {
-            Object::Autolock lock(mLock);
+            Object::Autolock lock(this);
             while ((s = mStatus) >= 0) {
                 if (s == 0) {
                     assert(0 && "TODO");
@@ -92,7 +90,7 @@ Int32 ForkJoinTask::ExternalInterruptibleAwaitDone(
         return s;
 //        throw new InterruptedException();
     if ((s = mStatus) >= 0) {
-        Object::Autolock lock(mLock);
+        Object::Autolock lock(this);
         while ((s = mStatus) >= 0) {
             if (s == 0) {
                 assert(0 && "TODO");
