@@ -169,19 +169,19 @@ ECode CJarEntry::SetAttributes(
 ECode CJarEntry::constructor(
     /* [in] */ const String& name)
 {
-    return ZipEntry::Init(name);
+    return ZipEntry::constructor(name);
 }
 
 ECode CJarEntry::constructor(
     /* [in] */ IZipEntry* zipEntry)
 {
-    return ZipEntry::Init(reinterpret_cast<ZipEntry*>(zipEntry->Probe(EIID_ZipEntry)));
+    return ZipEntry::constructor(reinterpret_cast<ZipEntry*>(zipEntry->Probe(EIID_ZipEntry)));
 }
 
 ECode CJarEntry::constructor(
     /* [in] */ IJarEntry* jarEntry)
 {
-    FAIL_RETURN(ZipEntry::Init(reinterpret_cast<ZipEntry*>(jarEntry->Probe(EIID_ZipEntry))))
+    FAIL_RETURN(ZipEntry::constructor(reinterpret_cast<ZipEntry*>(jarEntry->Probe(EIID_ZipEntry))))
     mParentJar = ((CJarEntry*)jarEntry)->mParentJar;
     mAttributes = ((CJarEntry*)jarEntry)->mAttributes;
     mSigners = ((CJarEntry*)jarEntry)->mSigners;

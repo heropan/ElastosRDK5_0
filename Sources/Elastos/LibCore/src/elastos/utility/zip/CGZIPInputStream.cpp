@@ -177,7 +177,7 @@ ECode CGZIPInputStream::constructor(
 {
     AutoPtr<CInflater> inflater;
     CInflater::NewByFriend(TRUE, (CInflater**)&inflater);
-    FAIL_RETURN(InflaterInputStream::Init(is, inflater.Get(), size));
+    FAIL_RETURN(InflaterInputStream::constructor(is, inflater.Get(), size));
     AutoPtr<ArrayOf<Byte> > header = ArrayOf<Byte>::Alloc(10);
     FAIL_RETURN(ReadFully(0, header->GetLength(), header));
     AutoPtr<IMemory> memory;

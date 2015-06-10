@@ -153,8 +153,6 @@ private:
     AutoPtr<HashMap<String, AutoPtr<StringAttributesMap> > > mSignatures;
     AutoPtr<HashMap<String, AutoPtr<ArrayOf<ICertificate*> > > > mCertificates;
     AutoPtr<HashMap<String, AutoPtr<ArrayOf<ICertificate*> > > > mVerifiedEntries;
-
-    Object mLock;
 };
 
 } // namespace Jar

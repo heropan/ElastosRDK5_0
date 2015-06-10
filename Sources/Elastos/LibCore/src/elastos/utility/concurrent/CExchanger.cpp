@@ -49,8 +49,6 @@ Int32 CExchanger::sTIMED_SPINS = sSPINS / 20;
 AutoPtr<IInterface> CExchanger::sCANCEL = new CDummyObject();
 AutoPtr<IInterface> CExchanger::sNULL_ITEM = new CDummyObject();
 
-Object CExchanger::mLock;
-
 AutoPtr<IInterface> CExchanger::DoExchange(
     /* [in] */ IInterface* item,
     /* [in] */ Boolean timed,
@@ -128,7 +126,7 @@ void CExchanger::CreateSlot(
     AutoPtr<Slot> newSlot = new Slot();
     AutoPtr<ArrayOf<Slot*> > a = mArena;
     {
-        Object::Autolock lock(mLock);
+        Object::Autolock lock(this);
         if ((*a)[index] == NULL)
             a->Set(index, newSlot);
     }

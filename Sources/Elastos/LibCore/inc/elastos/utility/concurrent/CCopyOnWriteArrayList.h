@@ -14,22 +14,6 @@ CarClass(CCopyOnWriteArrayList)
 {
 public:
     CAR_OBJECT_DECL()
-    /**
-     * Creates an empty instance.
-     */
-    CARAPI constructor();
-
-    /**
-     * Creates a new instance containing the elements of {@code collection}.
-     */
-    CARAPI constructor(
-        /* [in] */ ICollection* collection);
-
-    /**
-     * Creates a new instance containing the elements of {@code array}.
-     */
-    CARAPI constructor(
-        /* [in] */ ArrayOf<IInterface*>* array);
 
     CARAPI Add(
         /* [in] */ IInterface* object);

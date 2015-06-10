@@ -309,9 +309,6 @@ public:
     /** The run status of this task */
     volatile Int32 mStatus; // accessed directly by pool and workers
 
-protected:
-//    AutoPtr<LockObject> mLock;
-
 private:
     static Int32 NORMAL;
     static Int32 CANCELLED;
@@ -341,8 +338,6 @@ private:
     // Serialization support
 
     static Int64 sSerialVersionUID;
-
-    static Object mLock;
 
     // // Unsafe mechanics
     // private static final sun.misc.Unsafe UNSAFE;

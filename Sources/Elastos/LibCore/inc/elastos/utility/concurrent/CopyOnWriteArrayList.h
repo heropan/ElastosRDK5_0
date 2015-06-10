@@ -245,18 +245,18 @@ public:
     /**
      * Creates an empty instance.
      */
-    CARAPI Init();
+    CARAPI constructor();
 
     /**
      * Creates a new instance containing the elements of {@code collection}.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ICollection* collection);
 
     /**
      * Creates a new instance containing the elements of {@code array}.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<IInterface*>* array);
 
     /**

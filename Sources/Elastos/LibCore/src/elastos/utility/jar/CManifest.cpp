@@ -10,7 +10,7 @@
 #include "CCharBufferHelper.h"
 #include "CCoderResultHelper.h"
 #include "CHashMap.h"
-#include <HashMap.h>
+#include "HashMap.h"
 
 using Elastos::IO::IStreams;
 using Elastos::IO::CStreams;
@@ -29,7 +29,6 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
-Object CManifest::mLock;
 const AutoPtr<IName> CManifest::NAME_ATTRIBUTE;
 const AutoPtr<ArrayOf<Byte> > CManifest::LINE_SEPARATOR = CManifest::InitStatics();
 const AutoPtr<ArrayOf<Byte> > CManifest::VALUE_SEPARATOR;
@@ -204,7 +203,7 @@ ECode CManifest::ExposeByteArrayInputStreamBytes(
 {
     AutoPtr<ArrayOf<Byte> > buffer;
     {
-        Object::Autolock lock(mLock);
+        Object::Autolock lock(this);
         AutoPtr<ArrayOf<Byte> > buf;
         Int32 pos;
         //later I will add two public function to wrapper the protected members
