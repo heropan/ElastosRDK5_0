@@ -33,10 +33,10 @@ private:
         CARAPI Println(
             /* [in] */ const String& line);
 
-        CARAPI_(void) BeginHandling(
+        virtual CARAPI_(void) BeginHandling(
             /* [in] */ const String& line);
 
-        CARAPI_(void) EndHandling(
+        virtual CARAPI_(void) EndHandling(
             /* [in] */ const String& line);
     };
 

@@ -38,7 +38,7 @@ public:
          * Called when the application's state changes.
          * @param newState The application state.
          */
-        CARAPI_(void) OnApplicationStateChange(
+        virtual CARAPI_(void) OnApplicationStateChange(
             /* [in] */ Int32 newState) = 0;
     };
 
@@ -53,7 +53,7 @@ public:
          * @param activity The activity that had a state change.
          * @param newState New activity state.
          */
-        CARAPI_(void) OnActivityStateChange(
+        virtual CARAPI_(void) OnActivityStateChange(
             /* [in] */ IActivity* activity,
             /* [in] */ Int32 newState) = 0;
     };
@@ -67,18 +67,18 @@ private:
        /**
          * @return The current {@link ActivityState} of the activity.
          */
-        CARAPI_(Int32) GetStatus();
+        virtual CARAPI_(Int32) GetStatus();
 
         /**
          * @param status The new {@link ActivityState} of the activity.
          */
-        CARAPI_(void) SetStatus(
+        virtual CARAPI_(void) SetStatus(
             /* [in] */ Int32 status);
 
         /**
          * @return A list of {@link ActivityStateListener}s listening to this activity.
          */
-        CARAPI_(ObserverList<ActivityStateListener>) GetListeners();
+        virtual CARAPI_(ObserverList<ActivityStateListener>) GetListeners();
 
     private:
         Int32 mStatus;// = ActivityState.DESTROYED;
@@ -91,7 +91,7 @@ private:
         InnerWindowFocusChangedListener(
             /* [in] */ ApplicationStatus* owner);
 
-        CARAPI_(void) OnWindowFocusChanged(
+        virtual CARAPI_(void) OnWindowFocusChanged(
             /* [in] */ IActivity* activity,
             /* [in] */ Boolean hasFocus);
 
@@ -107,27 +107,27 @@ private:
         InnerActivityLifecycleCallbacks(
             /* [in] */ ApplicationStatus* owner);
 
-        CARAPI_(void) OnActivityCreated(
+        virtual CARAPI_(void) OnActivityCreated(
             /* [in] */ IActivity* activity,
             /* [in] */ IBundle* savedInstanceState);
 
-        CARAPI_(void) OnActivityDestroyed(
+        virtual CARAPI_(void) OnActivityDestroyed(
             /* [in] */ IActivity* activity);
 
-        CARAPI_(void) OnActivityPaused(
+        virtual CARAPI_(void) OnActivityPaused(
             /* [in] */ IActivity* activity);
 
-        CARAPI_(void) OnActivityResumed(
+        virtual CARAPI_(void) OnActivityResumed(
             /* [in] */ IActivity* activity);
 
-        CARAPI_(void) OnActivitySaveInstanceState(
+        virtual CARAPI_(void) OnActivitySaveInstanceState(
             /* [in] */ IActivity* activity,
             /* [in] */ IBundle* outState);
 
-        CARAPI_(void) OnActivityStarted(
+        virtual CARAPI_(void) OnActivityStarted(
             /* [in] */ IActivity* activity);
 
-        CARAPI_(void) OnActivityStopped(
+        virtual CARAPI_(void) OnActivityStopped(
             /* [in] */ IActivity* activity);
 
     private:
@@ -154,7 +154,7 @@ private:
         InnerApplicationStateListener(
             /* [in] */ ApplicationStatus* owner);
 
-        CARAPI_(void) OnApplicationStateChange(
+        virtual CARAPI_(void) OnApplicationStateChange(
             /* [in] */ Int32 newState);
 
     private:

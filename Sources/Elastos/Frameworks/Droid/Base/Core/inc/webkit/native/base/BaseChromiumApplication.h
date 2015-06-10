@@ -31,7 +31,7 @@ public:
          * @param activity The {@link Activity} that has a window focus changed event.
          * @param hasFocus Whether or not {@code activity} gained or lost focus.
          */
-        CARAPI_(void) OnWindowFocusChanged(
+        virtual CARAPI_(void) OnWindowFocusChanged(
             /* [in] */ IActivity* activity,
             /* [in] */ Boolean hasFocus);
     };
@@ -102,14 +102,14 @@ public:
      * Registers a listener to receive window focus updates on activities in this application.
      * @param listener Listener to receive window focus events.
      */
-    CARAPI_(void) RegisterWindowFocusChangedListener(
+    virtual CARAPI_(void) RegisterWindowFocusChangedListener(
         /* [in] */ WindowFocusChangedListener* listener);
 
     /**
      * Unregisters a listener from receiving window focus updates on activities in this application.
      * @param listener Listener that doesn't want to receive window focus events.
      */
-    CARAPI_(void) UnregisterWindowFocusChangedListener(
+    virtual CARAPI_(void) UnregisterWindowFocusChangedListener(
         /* [in] */ WindowFocusChangedListener* listener);
 
 private:
