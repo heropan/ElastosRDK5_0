@@ -12,6 +12,7 @@ namespace Utility {
 //==========================================================
 //       CPropertyResourceBundle::_Enumeration
 //==========================================================
+CAR_INTERFACE_IMPL(CPropertyResourceBundle::_Enumeration, Object, IEnumeration)
 
 CPropertyResourceBundle::_Enumeration::_Enumeration(
     /* [in] */ CPropertyResourceBundle* host)
@@ -21,8 +22,6 @@ CPropertyResourceBundle::_Enumeration::_Enumeration(
 
     mHost->mParent->GetKeys((IEnumeration**)&mPEnum);
 }
-
-CAR_INTERFACE_IMPL(CPropertyResourceBundle::_Enumeration, IEnumeration);
 
 ECode CPropertyResourceBundle::_Enumeration::HasMoreElements(
     /* [out] */ Boolean * value)
@@ -84,6 +83,9 @@ Boolean CPropertyResourceBundle::_Enumeration::FindNext()
 //==========================================================
 //       CPropertyResourceBundle
 //==========================================================
+CAR_INTERFACE_IMPL(CPropertyResourceBundle, ResourceBundle, IPropertyResourceBundle)
+
+CAR_OBJECT_IMPL(CPropertyResourceBundle)
 
 ECode CPropertyResourceBundle::constructor()
 {
@@ -125,40 +127,6 @@ ECode CPropertyResourceBundle::GetKeys(
     return NOERROR;
 }
 
-ECode CPropertyResourceBundle::GetLocale(
-    /* [out] */ ILocale** loc)
-{
-    return ResourceBundle::GetLocale(loc);
-}
-
-ECode CPropertyResourceBundle::GetObject(
-    /* [in] */ const String& key,
-    /* [out] */ IInterface** outface)
-{
-    return ResourceBundle::GetObject(key, outface);
-}
-
-ECode CPropertyResourceBundle::GetString(
-    /* [in] */ const String& key,
-    /* [out] */ String* str)
-{
-    return ResourceBundle::GetString(key, str);
-}
-
-ECode CPropertyResourceBundle::GetStringArray(
-    /* [in] */ const String& key,
-    /* [out, callee] */ ArrayOf<String>** arrstr)
-{
-    return ResourceBundle::GetStringArray(key, arrstr);
-}
-
-ECode CPropertyResourceBundle::ContainsKey(
-    /* [in] */ const String& key,
-    /* [out] */ Boolean* value)
-{
-    return ResourceBundle::ContainsKey(key, value);
-}
-
 ECode CPropertyResourceBundle::HandleGetObject(
     /* [in] */ const String& key,
     /* [out] */ IInterface** outface)
@@ -166,12 +134,6 @@ ECode CPropertyResourceBundle::HandleGetObject(
     AutoPtr<ICharSequence> sq;
     CStringWrapper::New(key, (ICharSequence**)&sq);
     return mResources->Get(sq, outface);
-}
-
-ECode CPropertyResourceBundle::HandleKeySet(
-    /* [out] */ ISet** outset)
-{
-    return ResourceBundle::HandleKeySet(outset);
 }
 
 AutoPtr<IEnumeration> CPropertyResourceBundle::GetLocalKeys()

@@ -1,17 +1,21 @@
-#ifndef __UTILITY_COBSERVABLE_H__
-#define __UTILITY_COBSERVABLE_H__
 
-#include "_CObservable.h"
-#include <elastos/Mutex.h>
+#ifndef __ELASTOS_UTILITY_COBSERVABLE_H__
+#define __ELASTOS_UTILITY_COBSERVABLE_H__
 
-using Elastos::Core::Mutex;
+#include "_Elastos_Utility_CObservable.h"
 
 namespace Elastos {
 namespace Utility {
 
 CarClass(CObservable)
+    , public Object
+    , public IObservable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     /**
@@ -89,16 +93,12 @@ public:
     CARAPI SetChanged();
 
 protected:
-
     AutoPtr<IList> mObservers; // = new ArrayList<Observer>();
 
     Boolean mChanged; // = false;
-
-private:
-    Mutex mLock;
 };
 
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_COBSERVABLE_H__
+#endif // __ELASTOS_UTILITY_COBSERVABLE_H__

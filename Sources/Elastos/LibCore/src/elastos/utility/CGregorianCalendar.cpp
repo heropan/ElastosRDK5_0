@@ -2,7 +2,7 @@
 #include "CGregorianCalendar.h"
 #include "TimeZone.h"
 #include "CSystem.h"
-#include <elastos/Math.h>
+#include <Math.h>
 //#include <cutils/log.h>
 
 using Elastos::Core::Math;
@@ -44,6 +44,10 @@ static AutoPtr<ArrayOf<Byte> > InitDaysInMonth()
 
 AutoPtr<ArrayOf<Byte> > CGregorianCalendar::sDaysInMonth = InitDaysInMonth();
 
+CAR_INTERFACE_IMPL(CGregorianCalendar, Calendar, IGregorianCalendar)
+
+CAR_OBJECT_IMPL(CGregorianCalendar)
+
 CGregorianCalendar::CGregorianCalendar()
     : mGregorianCutover(sDefaultGregorianCutover)
     , mChangeYear(1582)
@@ -68,7 +72,7 @@ ECode CGregorianCalendar::constructor(
 {
     AutoPtr<ITimeZone> timezone = TimeZone::GetDefault();
     AutoPtr<ILocale> locale = GetDefaultLocale();
-    FAIL_RETURN(Calendar::Init(timezone, locale));
+    FAIL_RETURN(Calendar::constructor(timezone, locale));
     return Set(year, month, day);
 }
 
@@ -81,7 +85,7 @@ ECode CGregorianCalendar::constructor(
 {
     AutoPtr<ITimeZone> timezone = TimeZone::GetDefault();
     AutoPtr<ILocale> locale = GetDefaultLocale();
-    FAIL_RETURN(Calendar::Init(timezone, locale));
+    FAIL_RETURN(Calendar::constructor(timezone, locale));
     return Set(year, month, day, hour, minute);
 }
 
@@ -95,7 +99,7 @@ ECode CGregorianCalendar::constructor(
 {
     AutoPtr<ITimeZone> timezone = TimeZone::GetDefault();
     AutoPtr<ILocale> locale = GetDefaultLocale();
-    FAIL_RETURN(Calendar::Init(timezone, locale));
+    FAIL_RETURN(Calendar::constructor(timezone, locale));
     return Set(year, month, day, hour, minute, second);
 }
 
@@ -128,7 +132,7 @@ ECode CGregorianCalendar::constructor(
 {
     VALIDATE_NOT_NULL(timeZone);
     VALIDATE_NOT_NULL(locale);
-    FAIL_RETURN(Calendar::Init(timeZone, locale));
+    FAIL_RETURN(Calendar::constructor(timeZone, locale));
 
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
@@ -143,18 +147,9 @@ ECode CGregorianCalendar::constructor(
     AutoPtr<ITimeZone> tz = TimeZone::GetDefault();
     Int32 zonevalue;
     FAIL_RETURN(tz->GetRawOffset(&zonevalue));
-    FAIL_RETURN(Calendar::Init(tz));
+    FAIL_RETURN(Calendar::constructor(tz));
     SetFirstDayOfWeek(SUNDAY);
     return SetMinimalDaysInFirstWeek(1);
-}
-
-PInterface CGregorianCalendar::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == Elastos::Utility::EIID_Calendar) {
-        return reinterpret_cast<PInterface>((Calendar*)this);
-    }
-    return _CGregorianCalendar::Probe(riid);
 }
 
 ECode CGregorianCalendar::Add(
@@ -1196,170 +1191,11 @@ ECode CGregorianCalendar::SetGregorianChange(
     return NOERROR;
 }
 
-ECode CGregorianCalendar::IsAfter(
-    /* [in] */ ICalendar* calendar,
-    /* [out] */ Boolean* result)
-{
-    return Calendar::IsAfter(calendar, result);
-}
-
-ECode CGregorianCalendar::IsBefore(
-    /* [in] */ ICalendar* calendar,
-    /* [out] */ Boolean* result)
-{
-    return Calendar::IsBefore(calendar, result);
-}
-
-ECode CGregorianCalendar::Clear()
-{
-    return Calendar::Clear();
-}
-
-ECode CGregorianCalendar::GetTimeZone(
-    /* [out] */ ITimeZone** tz)
-{
-    return Calendar::GetTimeZone(tz);
-}
-
-ECode CGregorianCalendar::SetTimeZone(
-    /* [in] */ ITimeZone* tz)
-{
-    return Calendar::SetTimeZone(tz);
-}
-
-ECode CGregorianCalendar::Clear(
-    /* [in] */ Int32 field)
-{
-    return Calendar::Clear(field);
-}
-
-ECode CGregorianCalendar::Get(
-    /* [in] */ Int32 field,
-    /* [out] */ Int32* value)
-{
-    return Calendar::Get(field, value);
-}
-
 Int32 CGregorianCalendar::GetFirstDayOfWeek()
 {
     Int32 value;
     Calendar::GetFirstDayOfWeek(&value);
     return value;
-}
-
-ECode CGregorianCalendar::GetFirstDayOfWeek(
-    /* [out] */ Int32* firstDayOfWeek)
-{
-    return Calendar::GetFirstDayOfWeek(firstDayOfWeek);
-}
-
-ECode CGregorianCalendar::GetMinimalDaysInFirstWeek(
-    /* [out] */ Int32* minimalDaysInFirstWeek)
-{
-    return Calendar::GetMinimalDaysInFirstWeek(minimalDaysInFirstWeek);
-}
-
-ECode CGregorianCalendar::GetTime(
-    /* [out] */ IDate** newObj)
-{
-    return Calendar::GetTime(newObj);
-}
-
-ECode CGregorianCalendar::GetTimeInMillis(
-    /* [out] */ Int64* time)
-{
-    return Calendar::GetTimeInMillis(time);
-}
-
-ECode CGregorianCalendar::IsLenient(
-    /* [out] */ Boolean* lenient)
-{
-    return Calendar::IsLenient(lenient);
-}
-
-ECode CGregorianCalendar::IsSet(
-    /* [in] */ Int32 field,
-    /* [out] */ Boolean* set)
-{
-    return Calendar::IsSet(field, set);
-}
-
-ECode CGregorianCalendar::Set(
-    /* [in] */ Int32 field,
-    /* [in] */ Int32 value)
-{
-    return Calendar::Set(field, value);
-}
-
-ECode CGregorianCalendar::Set(
-    /* [in] */ Int32 year,
-    /* [in] */ Int32 month,
-    /* [in] */ Int32 day)
-{
-    return Calendar::Set(year, month, day);
-}
-
-ECode CGregorianCalendar::Set(
-    /* [in] */ Int32 year,
-    /* [in] */ Int32 month,
-    /* [in] */ Int32 day,
-    /* [in] */ Int32 hourOfDay,
-    /* [in] */ Int32 minute)
-{
-    return Calendar::Set(year, month, day, hourOfDay, minute);
-}
-
-ECode CGregorianCalendar::Set(
-    /* [in] */ Int32 year,
-    /* [in] */ Int32 month,
-    /* [in] */ Int32 day,
-    /* [in] */ Int32 hourOfDay,
-    /* [in] */ Int32 minute,
-    /* [in] */ Int32 second)
-{
-    return Calendar::Set(year, month, day, hourOfDay, minute, second);
-}
-
-ECode CGregorianCalendar::SetFirstDayOfWeek(
-    /* [in] */ Int32 value)
-{
-    return Calendar::SetFirstDayOfWeek(value);
-}
-
-ECode CGregorianCalendar::SetLenient(
-    /* [in] */ Boolean value)
-{
-    return Calendar::SetLenient(value);
-}
-
-ECode CGregorianCalendar::SetMinimalDaysInFirstWeek(
-    /* [in] */ Int32 value)
-{
-    return Calendar::SetMinimalDaysInFirstWeek(value);
-}
-
-ECode CGregorianCalendar::SetTime(
-    /* [in] */ IDate* date)
-{
-    return Calendar::SetTime(date);
-}
-
-ECode CGregorianCalendar::SetTimeInMillis(
-    /* [in] */ Int64 milliseconds)
-{
-    return Calendar::SetTimeInMillis(milliseconds);
-}
-
-ECode CGregorianCalendar::CompareTo(
-    /* [in] */ IInterface* anotherCalendar,
-    /* [out] */ Int32* result)
-{
-    return Calendar::CompareTo(anotherCalendar, result);
-}
-
-ECode CGregorianCalendar::Complete()
-{
-    return Calendar::Complete();
 }
 
 ECode CGregorianCalendar::Clone(
@@ -1371,24 +1207,6 @@ ECode CGregorianCalendar::Clone(
     *cloned = (IGregorianCalendar*)temp;
     REFCOUNT_ADD(*cloned);
     return NOERROR;
-}
-
-ECode CGregorianCalendar::GetDisplayName(
-    /* [in] */ Int32 field,
-    /* [in] */ Int32 style,
-    /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
-{
-    return Calendar::GetDisplayName(field, style, locale, name);
-}
-
-ECode CGregorianCalendar::GetDisplayNames(
-    /* [in] */ Int32 field,
-    /* [in] */ Int32 style,
-    /* [in] */ ILocale* locale,
-    /* [out] */ IObjectStringMap** names)
-{
-    return Calendar::GetDisplayNames(field, style, locale, names);
 }
 
 ECode CGregorianCalendar::ToString(

@@ -11,7 +11,7 @@
 #include "Charset.h"
 #include "CStringWrapper.h"
 #include "CBigInteger.h"
-#include "CDate.h"
+#include "Date.h"
 #include "Calendar.h"
 #include "CDouble.h"
 #include "CBigDecimal.h"
@@ -108,6 +108,10 @@ AutoPtr<ArrayOf<Char32> > InitZEROS()
     return zeros;
 }
 const AutoPtr<ArrayOf<Char32> > CFormatter::ZEROS = InitZEROS(); //ZEROS[] = { '0', '0', '0', '0', '0', '0', '0', '0', '0' };
+
+CAR_INTERFACE_IMPL(CFormatter, Object, IFormatter)
+
+CAR_OBJECT_IMPL(CFormatter)
 
 CFormatter::CFormatter()
     : mClosed(FALSE)

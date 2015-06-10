@@ -1,16 +1,22 @@
 
-#ifndef __UTILITY_CGREGORIANCALENDER_H__
-#define __UTILITY_CGREGORIANCALENDER_H__
+#ifndef __ELASTOS_UTILITY_CGREGORIANCALENDER_H__
+#define __ELASTOS_UTILITY_CGREGORIANCALENDER_H__
 
-#include "_CGregorianCalendar.h"
+#include "_Elastos_Utility_CGregorianCalendar.h"
 #include "Calendar.h"
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CGregorianCalendar) , public Calendar
+CarClass(CGregorianCalendar)
+    , public Calendar
+    , public IGregorianCalendar
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CGregorianCalendar();
 
     /**
@@ -120,9 +126,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ Boolean ignored);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Returns true if {@code year} is a leap year.
@@ -288,103 +291,6 @@ public:
         /* [in] */ Int32 field,
         /* [in] */ Boolean increment);
 
-    CARAPI IsAfter(
-        /* [in] */ ICalendar* calendar,
-        /* [out] */ Boolean* result);
-
-    CARAPI IsBefore(
-        /* [in] */ ICalendar* calendar,
-        /* [out] */ Boolean* result);
-
-    CARAPI Clear();
-
-    CARAPI GetTimeZone(
-        /* [out] */ ITimeZone** tz);
-
-    CARAPI SetTimeZone(
-        /* [in] */ ITimeZone* tz);
-
-    CARAPI Clear(
-        /* [in] */ Int32 field);
-
-    CARAPI Get(
-        /* [in] */ Int32 field,
-        /* [out] */ Int32* value);
-
-    CARAPI GetFirstDayOfWeek(
-        /* [out] */ Int32* FirstDayOfWeek);
-
-    CARAPI GetMinimalDaysInFirstWeek(
-        /* [out] */ Int32* MinimalDaysInFirstWeek);
-
-    CARAPI GetTime(
-        /* [out] */ IDate** newObj);
-
-    CARAPI GetTimeInMillis(
-        /* [out] */ Int64* time);
-
-    CARAPI IsLenient(
-        /* [out] */ Boolean* lenient);
-
-    CARAPI IsSet(
-        /* [in] */ Int32 field,
-        /* [out] */ Boolean* set);
-
-    CARAPI Set(
-        /* [in] */ Int32 field,
-        /* [in] */ Int32 value);
-
-    CARAPI Set(
-        /* [in] */ Int32 year,
-        /* [in] */ Int32 month,
-        /* [in] */ Int32 day);
-
-    CARAPI Set(
-        /* [in] */ Int32 year,
-        /* [in] */ Int32 month,
-        /* [in] */ Int32 day,
-        /* [in] */ Int32 hourOfDay,
-        /* [in] */ Int32 minute);
-
-    CARAPI Set(
-        /* [in] */ Int32 year,
-        /* [in] */ Int32 month,
-        /* [in] */ Int32 day,
-        /* [in] */ Int32 hourOfDay,
-        /* [in] */ Int32 minute,
-        /* [in] */ Int32 second);
-
-    CARAPI SetFirstDayOfWeek(
-        /* [in] */ Int32 value);
-
-    CARAPI SetLenient(
-        /* [in] */ Boolean value);
-
-    CARAPI SetMinimalDaysInFirstWeek(
-        /* [in] */ Int32 value);
-
-    CARAPI SetTime(
-        /* [in] */ IDate* date);
-
-    CARAPI SetTimeInMillis(
-        /* [in] */ Int64 milliseconds);
-
-    CARAPI CompareTo(
-        /* [in] */ IInterface* anotherCalendar,
-        /* [out] */ Int32* Result);
-
-    CARAPI GetDisplayName(
-        /* [in] */ Int32 field,
-        /* [in] */ Int32 style,
-        /* [in] */ ILocale* locale,
-        /* [out] */ String* name);
-
-    CARAPI GetDisplayNames(
-        /* [in] */ Int32 field,
-        /* [in] */ Int32 style,
-        /* [in] */ ILocale* locale,
-        /* [out] */ IObjectStringMap** names);
-
     CARAPI Clone(
         /* [out] */ IInterface** cloned);
 
@@ -395,8 +301,6 @@ public:
         /* [out] */ String* str);
 
 protected:
-    CARAPI Complete();
-
     CARAPI ComputeFields();
 
     CARAPI ComputeTime();
@@ -465,4 +369,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CGREGORIANCALENDER_H__
+#endif // __ELASTOS_UTILITY_CGREGORIANCALENDER_H__

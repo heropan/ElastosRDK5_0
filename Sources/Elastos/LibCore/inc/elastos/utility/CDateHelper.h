@@ -1,15 +1,21 @@
-#ifndef __UTILITY_CDATEHELPER_H__
-#define __UTILITY_CDATEHELPER_H__
+#ifndef __ELASTOS_UTILITY_CDATEHELPER_H__
+#define __ELASTOS_UTILITY_CDATEHELPER_H__
 
-#include "_CDateHelper.h"
-#include <elastos.h>
+#include "_Elastos_Utility_CDateHelper.h"
+#include "Singleton.h"
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {
 
 CarClass(CDateHelper)
+    , public Singleton
+    , public IDateHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+    CAR_INTERFACE_DECL()
 
     /**
      * Returns the millisecond value of the date and time parsed from the
@@ -63,4 +69,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CDATEHELPER_H__
+#endif // __ELASTOS_UTILITY_CDATEHELPER_H__

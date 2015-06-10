@@ -1,7 +1,7 @@
-#ifndef __UTILITY_CPROPERTY_RESOURCE_BUNDLE_H__
-#define __UTILITY_CPROPERTY_RESOURCE_BUNDLE_H__
+#ifndef __ELASTOS_UTILITY_CPROPERTY_RESOURCE_BUNDLE_H__
+#define __ELASTOS_UTILITY_CPROPERTY_RESOURCE_BUNDLE_H__
 
-#include "_CPropertyResourceBundle.h"
+#include "_Elastos_Utility_CPropertyResourceBundle.h"
 #include "ResourceBundle.h"
 
 using Elastos::IO::IInputStream;
@@ -10,18 +10,20 @@ using Elastos::IO::IReader;
 namespace Elastos {
 namespace Utility {
 
-CarClass(CPropertyResourceBundle), public ResourceBundle
+CarClass(CPropertyResourceBundle)
+    , public ResourceBundle
+    , public IPropertyResourceBundle
 {
 private:
     class _Enumeration
         : public IEnumeration
-        , public ElRefBase
+        , public Object
     {
     public:
+        CAR_INTERFACE_DECL()
+
         _Enumeration(
             /* [in] */ CPropertyResourceBundle* host);
-
-        CAR_INTERFACE_DECL()
 
         /**
          * Returns whether this {@code Enumeration} has more elements.
@@ -56,6 +58,10 @@ private:
         AutoPtr<CPropertyResourceBundle> mHost;
     };
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     /**
@@ -89,75 +95,9 @@ public:
     CARAPI GetKeys(
         /* [out] */ IEnumeration** enu);
 
-    /**
-     * Gets the {@code Locale} of this {@code ResourceBundle}. In case a bundle was not
-     * found for the requested {@code Locale}, this will return the actual {@code Locale} of
-     * this resource bundle that was found after doing a fallback.
-     *
-     * @return the {@code Locale} of this {@code ResourceBundle}.
-     */
-    CARAPI GetLocale(
-        /* [out] */ ILocale** loc);
-
-    /**
-     * Returns the named resource from this {@code ResourceBundle}. If the resource
-     * cannot be found in this bundle, it falls back to the parent bundle (if
-     * it's not null) by calling the {@link #handleGetObject} method. If the resource still
-     * can't be found it throws a {@code MissingResourceException}.
-     *
-     * @param key
-     *            the name of the resource.
-     * @return the resource object.
-     * @throws MissingResourceException
-     *                if the resource is not found.
-     */
-    CARAPI GetObject(
-        /* [in] */ const String& key,
-        /* [out] */ IInterface** outface);
-
-    /**
-     * Returns the named string resource from this {@code ResourceBundle}.
-     *
-     * @param key
-     *            the name of the resource.
-     * @return the resource string.
-     * @throws MissingResourceException
-     *                if the resource is not found.
-     * @throws ClassCastException
-     *                if the resource found is not a string.
-     * @see #getObject(String)
-     */
-    CARAPI GetString(
-        /* [in] */ const String& key,
-        /* [out] */ String* str);
-
-    /**
-     * Returns the named resource from this {@code ResourceBundle}.
-     *
-     * @param key
-     *            the name of the resource.
-     * @return the resource string array.
-     * @throws MissingResourceException
-     *                if the resource is not found.
-     * @throws ClassCastException
-     *                if the resource found is not an array of strings.
-     * @see #getObject(String)
-     */
-    CARAPI GetStringArray(
-        /* [in] */ const String& key,
-        /* [out, callee] */ ArrayOf<String>** arrstr);
-
-    CARAPI ContainsKey(
-        /* [in] */ const String& key,
-        /* [out] */ Boolean* value);
-
     CARAPI HandleGetObject(
         /* [in] */ const String& key,
         /* [out] */ IInterface** outface);
-
-protected:
-    CARAPI HandleKeySet(
-        /* [out] */ ISet** outset);
 
 private:
     AutoPtr<IEnumeration> GetLocalKeys();
@@ -169,4 +109,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CPROPERTY_RESOURCE_BUNDLE_H__
+#endif // __ELASTOS_UTILITY_CPROPERTY_RESOURCE_BUNDLE_H__
