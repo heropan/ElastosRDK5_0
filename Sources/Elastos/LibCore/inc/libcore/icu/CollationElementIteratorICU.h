@@ -2,15 +2,21 @@
 #ifndef __COLLATIONELEMENTITERATORICU_H__
 #define __COLLATIONELEMENTITERATORICU_H__
 
+#include "coredef.h"
 #include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
+
+using Elastos::Core::Object;
 
 using Elastos::Text::ICharacterIterator;
 
 namespace Libcore {
 namespace ICU {
 
+extern "C" const _ELASTOS ClassID ECLSID_CCollationElementIteratorICU;
+
 class CollationElementIteratorICU
-    : public ElRefBase
+    : public Object
     , public ICollationElementIteratorICU
 {
 public:
@@ -18,7 +24,7 @@ public:
 
     ~CollationElementIteratorICU();
 
-    CAR_INTERFACE_DECL();
+    CAR_INTERFACE_DECL()
 
     CARAPI Reset();
 
@@ -44,6 +50,12 @@ public:
     CARAPI SetOffset(
         /* [in] */ Int32 offset);
 
+    CARAPI ToString(
+        /* [out] */ String* info);
+
+    CARAPI GetClassID(
+        /* [out] */ ClassID *pCLSID);
+
     static CARAPI_(Int32) PrimaryOrder(
         /* [in] */ Int32 order);
 
@@ -54,15 +66,15 @@ public:
         /* [in] */ Int32 order);
 
     static CARAPI_(AutoPtr<ICollationElementIteratorICU>) GetInstance(
-        /* [in] */ Int32 collatorAddress,
+        /* [in] */ Int64 collatorAddress,
         /* [in] */ const String& source);
 
 private:
     CollationElementIteratorICU(
-        /* [in] */ Int32 collelemiteratoraddress);
+        /* [in] */ Int64 collelemiteratoraddress);
 
 private:
-    Int32 mAddress;
+    Int64 mAddress;
 
     const static Int32 PRIMARY_ORDER_MASK_;
 

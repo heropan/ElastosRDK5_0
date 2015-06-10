@@ -15,4 +15,10 @@ module
     merge("icu/INativePluralRules.car");
     merge("icu/INativeNormalizerHelper.car");
     merge("icu/IAlphabeticIndex.car");
+
+//    namespace Libcore {
+//    namespace ICU {
+
+//    } // namespace ICU
+//    } // namespace LibCore
 }

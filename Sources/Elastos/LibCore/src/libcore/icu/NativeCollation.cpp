@@ -102,9 +102,9 @@ ECode NativeCollation::GetAttribute(
 }
 
 ECode NativeCollation::GetCollationElementIterator(
-    /* [in] */ Int32 collatoraddress,
+    /* [in] */ Int64 collatoraddress,
     /* [in] */ const String& source,
-    /* [out] */ Int32* coleitr)
+    /* [out] */ Int64* coleitr)
 {
     if (source.IsNull()) {
         *coleitr = -1;

@@ -948,4 +948,9 @@ public:                                                                         
     CAR_SINGLETON_METHODS_IMPL(ClassName)
 #endif
 
+#ifndef __UUNM_Elastos_CoreLibrary_DEFINED__
+#define __UUNM_Elastos_CoreLibrary_DEFINED__
+#define c_pElastos_CoreLibraryUunm "Elastos.CoreLibrary.eco"
+#endif // __UUNM_Elastos_CoreLibrary_DEFINED__
+
 #endif //__ELASTOS_CORE_DEF_H__

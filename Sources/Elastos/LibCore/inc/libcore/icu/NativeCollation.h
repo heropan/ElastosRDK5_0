@@ -4,10 +4,9 @@
 
 #include <elastos.h>
 #include <eltypes.h>
-#include <cmdef.h>
 #include <unicode/unistr.h>
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/Mutex.h>
+#include <Mutex.h>
 #include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Utility::Etl::HashMap;
@@ -34,9 +33,9 @@ public:
         /* [out] */ Int32* result);
 
     static CARAPI GetCollationElementIterator(
-        /* [in] */ Int32 collatoraddress,
+        /* [in] */ Int64 collatoraddress,
         /* [in] */ const String& source,
-        /* [out] */ Int32* coleitr);
+        /* [out] */ Int64* coleitr);
 
     static CARAPI_(String) GetRules(
         /* [in] */ Int32 collatoraddress);

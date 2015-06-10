@@ -5,6 +5,10 @@
 namespace Libcore {
 namespace ICU {
 
+extern "C" const _ELASTOS ClassID ECLSID_CCollationElementIteratorICU = {
+    { 0x015e3ac6, 0x25b8, 0x4982, { 0xa2, 0xb9, 0x24, 0x2f, 0x8f, 0xf1, 0x15, 0xde } },
+    (char *)c_pElastos_CoreLibraryUunm,
+    0xf6f1637e };
 
 const Int32 CollationElementIteratorICU::PRIMARY_ORDER_MASK_ = 0xffff0000;
 const Int32 CollationElementIteratorICU::SECONDARY_ORDER_MASK_ = 0x0000ff00;
@@ -14,13 +18,12 @@ const Int32 CollationElementIteratorICU::SECONDARY_ORDER_SHIFT_ = 8;
 const Int32 CollationElementIteratorICU::UNSIGNED_16_BIT_MASK_ = 0x0000FFFF;
 
 CollationElementIteratorICU::CollationElementIteratorICU()
-{
-}
+{}
 
 CollationElementIteratorICU::CollationElementIteratorICU(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address)
     : mAddress(address)
-{ }
+{}
 
 CollationElementIteratorICU::~CollationElementIteratorICU()
 {
@@ -31,7 +34,7 @@ CollationElementIteratorICU::~CollationElementIteratorICU()
     //}
 }
 
-CAR_INTERFACE_IMPL(CollationElementIteratorICU, ICollationElementIteratorICU);
+CAR_INTERFACE_IMPL(CollationElementIteratorICU, Object, ICollationElementIteratorICU)
 
 ECode CollationElementIteratorICU::Reset()
 {
@@ -109,12 +112,29 @@ Int32 CollationElementIteratorICU::TertiaryOrder(
 }
 
 AutoPtr<ICollationElementIteratorICU> CollationElementIteratorICU::GetInstance(
-    /* [in] */ Int32 collatorAddress,
+    /* [in] */ Int64 collatorAddress,
     /* [in] */ const String& source)
 {
-    Int32 iteratorAddress = 0;
+    Int64 iteratorAddress = 0;
     NativeCollation::GetCollationElementIterator(collatorAddress, source , &iteratorAddress);
     return (ICollationElementIteratorICU*)new CollationElementIteratorICU(iteratorAddress);
+}
+
+ECode CollationElementIteratorICU::ToString(
+        /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info)
+
+    *info = String("CollationElementIteratorICU");
+    return NOERROR;
+}
+
+CARAPI GetClassID(
+    /* [out] */ ClassID *pCLSID)
+{
+    VALIDATE_NOT_NULL(pCLSID)
+
+    *pCLSID = Libcore::ICU::ECLSID_CCollationElementIteratorICU;
 }
 
 } // namespace ICU
