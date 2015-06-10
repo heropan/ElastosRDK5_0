@@ -102,7 +102,7 @@ class CString;
 template <class T> struct Type2Flag
 {
     static Int32 Flag() {
-        if (SUPERSUBCLASS_EX(IInterface*, T)) {
+        if (SUPERSUBCLASS_EX(IObject*, T)) {
             return CarQuintetFlag_Type_IObject;
         }
         else if (SUPERSUBCLASS_EX(ElRefBase*, T)) {
@@ -141,7 +141,7 @@ DECL_TYPE2FLAG_TMPL(String,             CarQuintetFlag_Type_String);
 
 DECL_TYPE2FLAG_TMPL(EMuid,              CarQuintetFlag_Type_EMuid);
 DECL_TYPE2FLAG_TMPL(EGuid,              CarQuintetFlag_Type_EGuid);
-DECL_TYPE2FLAG_TMPL(IInterface *,       CarQuintetFlag_Type_IObject);
+DECL_TYPE2FLAG_TMPL(IObject *,          CarQuintetFlag_Type_IObject);
 DECL_TYPE2FLAG_TMPL(ElRefBase *,        CarQuintetFlag_Type_RefObject);
 DECL_TYPE2FLAG_TMPL(ElLightRefBase *,   CarQuintetFlag_Type_LightRefObject);
 
@@ -487,7 +487,7 @@ void ReleaseFunc(void const * buf)
     }
 }
 
-template<class T, Boolean isElRefBaseObj, Boolean isElLightRefBaseObj, Boolean isInterfaceObj>
+template<class T, Boolean isElRefBaseObj, Boolean isElLightRefBaseObj, Boolean isCarObj>
 struct ReleaseOpImpl
 {
     void operator()(void const * buf)
@@ -554,7 +554,7 @@ struct ReleaseOpImpl<T, FALSE, FALSE, TRUE>
 {
     void operator()(void const * buf)
     {
-        ReleaseFunc<T, IInterface>(buf);
+        ReleaseFunc<T, IObject>(buf);
     }
 };
 
@@ -565,7 +565,7 @@ inline void QuintetObjectReleaseOp<T>::operator()(void const* buf)
         ReleaseOpImpl<T,
             SUPERSUBCLASS_EX(ElRefBase*, T),
             SUPERSUBCLASS_EX(ElLightRefBase*, T),
-            SUPERSUBCLASS_EX(IInterface*, T)> impl;
+            SUPERSUBCLASS_EX(IObject*, T)> impl;
         impl(buf);
     }
 }
@@ -687,7 +687,7 @@ static Int32 PlainCopy(T* dst, Int32 dstOffset, T const * src, Int32 srcOffset, 
     return copyCount;
 }
 
-template<class T, Boolean isElRefBaseObj, Boolean isElLightRefBaseObj, Boolean isInterfaceObj>
+template<class T, Boolean isElRefBaseObj, Boolean isElLightRefBaseObj, Boolean isCarObj>
 struct CopyOpImpl
 {
     Int32 operator()(ArrayOf<T>* dst, Int32 dstOffset, T const* src, Int32 srcOffset, Int32 count)
@@ -756,7 +756,7 @@ struct CopyOpImpl<T, FALSE, FALSE, TRUE>
 {
     Int32 operator()(ArrayOf<T>* dst, Int32 offset, T const* src, Int32 srcOffset, Int32 count)
     {
-        return CopyFunc<T, IInterface>(dst, offset, src, srcOffset, count);
+        return CopyFunc<T, IObject>(dst, offset, src, srcOffset, count);
     }
 };
 
@@ -773,7 +773,7 @@ inline Int32 QuintetObjectCopyOp::operator()(
     CopyOpImpl<T,
         SUPERSUBCLASS_EX(ElRefBase*, T),
         SUPERSUBCLASS_EX(ElLightRefBase*, T),
-        SUPERSUBCLASS_EX(IInterface*, T)> impl;
+        SUPERSUBCLASS_EX(IObject*, T)> impl;
     return impl(dst, offset, src, srcOffset, count);
 }
 

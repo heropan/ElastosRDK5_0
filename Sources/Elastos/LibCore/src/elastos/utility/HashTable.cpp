@@ -711,36 +711,32 @@ ECode HashTable::_EntrySet::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    synchronized(mHost) {
-        return AbstractSet::RemoveAll(collection, value);
-    }
+    Object::Autolock lock(mHost);
+    return AbstractSet::RemoveAll(collection, value);
 }
 
 ECode HashTable::_EntrySet::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    synchronized(mHost) {
-        return AbstractSet::RetainAll(collection, value);
-    }
+    Object::Autolock lock(mHost);
+    return AbstractSet::RetainAll(collection, value);
 }
 
 ECode HashTable::_EntrySet::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    synchronized(mHost) {
-        return AbstractSet::ContainsAll(collection, value);
-    }
+    Object::Autolock lock(mHost);
+    return AbstractSet::ContainsAll(collection, value);
 }
 
 ECode HashTable::_EntrySet::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* value)
 {
-    synchronized(mHost) {
-        return AbstractSet::Equals(object, value);
-    }
+    Object::Autolock lock(mHost);
+    return AbstractSet::Equals(object, value);
 }
 
 ECode HashTable::_EntrySet::GetHashCode(
@@ -752,27 +748,23 @@ ECode HashTable::_EntrySet::GetHashCode(
 ECode HashTable::_EntrySet::ToString(
     /* [out] */ String* str)
 {
-    synchronized(mHost) {
-        return AbstractSet::ToString(str);
-    }
+    Object::Autolock lock(mHost);
+    return AbstractSet::ToString(str);
 }
 
 ECode HashTable::_EntrySet::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
-    synchronized(mHost)
-    {
-        return AbstractSet::ToArray(array);
-    }
+    Object::Autolock lock(mHost);
+    return AbstractSet::ToArray(array);
 }
 
 ECode HashTable::_EntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    synchronized(mHost) {
-        return AbstractSet::ToArray(contents, outArray);
-    }
+    Object::Autolock lock(mHost);
+    return AbstractSet::ToArray(contents, outArray);
 }
 
 //==========================================================
