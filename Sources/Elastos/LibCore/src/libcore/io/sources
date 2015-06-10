@@ -24,3 +24,4 @@ SOURCES += CIoBridge.cpp
 SOURCES += CSocketTaggerHelper.cpp
 SOURCES += ForwardingOs.cpp
 SOURCES += ToStringArray.cpp
+SOURCES += BlockGuardOs.cpp

@@ -80,6 +80,7 @@ ECode SocketTagger::Get(
 
     Autolock lock(sLock);
     *tagger = sTagger;
+    REFCOUNT_ADD(*tagger)
     return NOERROR;
 }
 

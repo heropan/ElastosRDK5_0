@@ -2,7 +2,6 @@
 #define __CSOCKETTAGGERhELPER_H__
 
 #include "core/Singleton.h"
-#include "SocketTagger.h"
 #include "_Libcore_IO_CSocketTaggerHelper.h"
 
 using Elastos::Core::Singleton;

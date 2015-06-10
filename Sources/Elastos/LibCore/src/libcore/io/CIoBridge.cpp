@@ -528,7 +528,7 @@ ECode CIoBridge::SetSocketOptionErrno(
         IInteger32::Probe(value)->GetValue(&i);
         FAIL_RETURN(CLibcore::sOs->SetsockoptIpMreqn(fd,
                 OsConstants::_IPPROTO_IP, OsConstants::_IP_MULTICAST_IF, i));
-        FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
+        FAIL_RETURN(CLibcore::sOs->SetsockoptInt32(fd,
                 OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_IF, i));
         return NOERROR;
     }
@@ -540,7 +540,7 @@ ECode CIoBridge::SetSocketOptionErrno(
         IBoolean::Probe(value)->GetValue(&b);
         FAIL_RETURN(CLibcore::sOs->SetsockoptByte(fd,
                 OsConstants::_IPPROTO_IP, OsConstants::_IP_MULTICAST_LOOP, BooleanToInt(b)));
-        FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
+        FAIL_RETURN(CLibcore::sOs->SetsockoptInt32(fd,
                 OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_LOOP, BooleanToInt(b)));
         return NOERROR;
     }
@@ -553,7 +553,7 @@ ECode CIoBridge::SetSocketOptionErrno(
         IInteger32::Probe(value)->GetValue(&i);
         FAIL_RETURN(CLibcore::sOs->SetsockoptByte(fd,
                 OsConstants::_IPPROTO_IP, OsConstants::_IP_MULTICAST_TTL, i));
-        FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
+        FAIL_RETURN(CLibcore::sOs->SetsockoptInt32(fd,
                 OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_HOPS, i));
         return NOERROR;
     }
@@ -562,9 +562,9 @@ ECode CIoBridge::SetSocketOptionErrno(
         assert(IInteger32::Probe(value) != NULL);
         Int32 i;
         IInteger32::Probe(value)->GetValue(&i);
-        FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
+        FAIL_RETURN(CLibcore::sOs->SetsockoptInt32(fd,
                 OsConstants::_IPPROTO_IP, OsConstants::_IP_TOS, i));
-        FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
+        FAIL_RETURN(CLibcore::sOs->SetsockoptInt32(fd,
                 OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_TCLASS, i));
         return NOERROR;
     }
@@ -573,7 +573,7 @@ ECode CIoBridge::SetSocketOptionErrno(
         assert(IBoolean::Probe(value) != NULL);
         Boolean b = FALSE;
         IBoolean::Probe(value)->GetValue(&b);
-        FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
+        FAIL_RETURN(CLibcore::sOs->SetsockoptInt32(fd,
                 OsConstants::_SOL_SOCKET, OsConstants::_SO_BROADCAST, BooleanToInt(b)));
         return NOERROR;
     }
@@ -582,7 +582,7 @@ ECode CIoBridge::SetSocketOptionErrno(
         assert(IBoolean::Probe(value) != NULL);
         Boolean b = FALSE;
         IBoolean::Probe(value)->GetValue(&b);
-        FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
+        FAIL_RETURN(CLibcore::sOs->SetsockoptInt32(fd,
                 OsConstants::_SOL_SOCKET, OsConstants::_SO_KEEPALIVE, BooleanToInt(b)));
         return NOERROR;
     }
@@ -607,7 +607,7 @@ ECode CIoBridge::SetSocketOptionErrno(
         assert(IBoolean::Probe(value) != NULL);
         Boolean b = FALSE;
         IBoolean::Probe(value)->GetValue(&b);
-        FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
+        FAIL_RETURN(CLibcore::sOs->SetsockoptInt32(fd,
                 OsConstants::_SOL_SOCKET, OsConstants::_SO_OOBINLINE, BooleanToInt(b)));
         return NOERROR;
     }
@@ -616,7 +616,7 @@ ECode CIoBridge::SetSocketOptionErrno(
         assert(IInteger32::Probe(value) != NULL);
         Int32 i;
         IInteger32::Probe(value)->GetValue(&i);
-        FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
+        FAIL_RETURN(CLibcore::sOs->SetsockoptInt32(fd,
                 OsConstants::_SOL_SOCKET, OsConstants::_SO_RCVBUF, i));
         return NOERROR;
     }
@@ -625,7 +625,7 @@ ECode CIoBridge::SetSocketOptionErrno(
         assert(IBoolean::Probe(value) != NULL);
         Boolean b = FALSE;
         IBoolean::Probe(value)->GetValue(&b);
-        FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
+        FAIL_RETURN(CLibcore::sOs->SetsockoptInt32(fd,
                 OsConstants::_SOL_SOCKET, OsConstants::_SO_REUSEADDR, BooleanToInt(b)));
         return NOERROR;
     }
@@ -634,7 +634,7 @@ ECode CIoBridge::SetSocketOptionErrno(
         assert(IInteger32::Probe(value) != NULL);
         Int32 i;
         IInteger32::Probe(value)->GetValue(&i);
-        FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
+        FAIL_RETURN(CLibcore::sOs->SetsockoptInt32(fd,
                 OsConstants::_SOL_SOCKET, OsConstants::_SO_SNDBUF, i));
         return NOERROR;
     }
@@ -654,7 +654,7 @@ ECode CIoBridge::SetSocketOptionErrno(
         assert(IBoolean::Probe(value) != NULL);
         Boolean b = FALSE;
         IBoolean::Probe(value)->GetValue(&b);
-        FAIL_RETURN(CLibcore::sOs->SetsockoptInt(fd,
+        FAIL_RETURN(CLibcore::sOs->SetsockoptInt32(fd,
                 OsConstants::_IPPROTO_TCP, OsConstants::_TCP_NODELAY, BooleanToInt(b)));
         return NOERROR;
     }
@@ -952,7 +952,7 @@ ECode CIoBridge::_Socket(
     // remove this code. Until then, we manually set the hop limit on IPv6 datagram sockets.
     // (IPv4 is already correct.)
     if (!stream) {
-        CLibcore::sOs->SetsockoptInt(*fd,
+        CLibcore::sOs->SetsockoptInt32(*fd,
                 OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_HOPS, 1);
     }
 
