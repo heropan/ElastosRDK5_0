@@ -83,6 +83,13 @@ ECode DataOutputStream::Write(
     return NOERROR;
 }
 
+ECode DataOutputStream::Write(
+    /* [in] */ ArrayOf<Byte>* buffer)
+{
+    VALIDATE_NOT_NULL(buffer)
+    return Write(buffer, 0, buffer->GetLength());
+}
+
 ECode DataOutputStream::WriteBoolean(
     /* [in] */ Boolean val)
 {

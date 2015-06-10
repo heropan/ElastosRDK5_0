@@ -4,6 +4,7 @@ module
     namespace Elastos {
     namespace IO {
 
+    [deprecated]
     interface IDataOutput {
         /**
          * Writes the specified 8-bit byte.

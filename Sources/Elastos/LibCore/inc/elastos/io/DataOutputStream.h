@@ -79,6 +79,9 @@ public:
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* buffer);
+
     /**
      * Writes a boolean to the target stream.
      *
