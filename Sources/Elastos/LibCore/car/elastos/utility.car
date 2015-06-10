@@ -232,6 +232,7 @@ module
     // interface Elastos.Utility.ISortedSet;
     // interface Elastos.Utility.INavigableSet;
     interface Elastos.Utility.IIterable;
+    interface Elastos.Utility.IRandomAccess;
     // interface Elastos.Utility.Zip.IZipFile;
     // interface Elastos.Utility.Zip.IZipConstants;
     // interface Elastos.Utility.Zip.IZipInputStream;
