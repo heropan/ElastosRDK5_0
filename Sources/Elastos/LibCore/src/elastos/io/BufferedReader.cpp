@@ -283,7 +283,8 @@ ECode BufferedReader::MaybeSwallowLF()
 ECode BufferedReader::ReadLine(
     /* [out] */ String* contents)
 {
-    VALIDATE_NOT_NULL(contents);
+    VALIDATE_NOT_NULL(contents)
+    *contents = String(NULL);
 
     Object::Autolock lock(mLock);
 
@@ -336,6 +337,8 @@ ECode BufferedReader::IsReady(
     /* [out] */ Boolean* ready)
 {
     VALIDATE_NOT_NULL(ready)
+    *ready = FALSE;
+
     Object::Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
@@ -363,6 +366,7 @@ ECode BufferedReader::Skip(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number)
+    *number = 0;
 
     if (charCount < 0) {
 //      throw new IllegalArgumentException();

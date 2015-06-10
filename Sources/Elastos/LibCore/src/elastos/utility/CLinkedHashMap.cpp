@@ -14,7 +14,7 @@ CAR_INTERFACE_IMPL(CLinkedHashMap, HashMap, ILinkedHashMap);
 
 ECode CLinkedHashMap::constructor()
 {
-    HashMap::Init();
+    HashMap::constructor();
     Init_();
     mAccessOrder = FALSE;
     return NOERROR;
@@ -38,7 +38,7 @@ ECode CLinkedHashMap::constructor(
     /* [in] */ Float loadFactor,
     /* [in] */ Boolean accessOrder)
 {
-    FAIL_RETURN(HashMap::Init(initialCapacity, loadFactor));
+    FAIL_RETURN(HashMap::constructor(initialCapacity, loadFactor));
     Init_();
     mAccessOrder = accessOrder;
     return NOERROR;

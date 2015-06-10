@@ -11,7 +11,7 @@ ECode CLinkedHashSet::constructor()
 {
     AutoPtr<IMap> res;
     FAIL_RETURN(CLinkedHashMap::New((IMap**)&res));
-    return HashSet::Init(res);
+    return HashSet::constructor(res);
 }
 
 ECode CLinkedHashSet::constructor(
@@ -19,7 +19,7 @@ ECode CLinkedHashSet::constructor(
 {
     AutoPtr<IMap> res;
     FAIL_RETURN(CLinkedHashMap::New(capacity, (IMap**)&res));
-    return HashSet::Init(res);
+    return HashSet::constructor(res);
 }
 
 ECode CLinkedHashSet::constructor(
@@ -28,7 +28,7 @@ ECode CLinkedHashSet::constructor(
 {
     AutoPtr<IMap> res;
     FAIL_RETURN(CLinkedHashMap::New(capacity, loadFactor, (IMap**)&res));
-    return HashSet::Init(res);
+    return HashSet::constructor(res);
 }
 
 ECode CLinkedHashSet::constructor(
@@ -41,7 +41,7 @@ ECode CLinkedHashSet::constructor(
     Int32 sizelen = 0;
     collection->GetSize(&sizelen);
     FAIL_RETURN(CLinkedHashMap::New(sizelen < 6 ? 11 : sizelen * 2, (IMap**)&res));
-    FAIL_RETURN(HashSet::Init(res));
+    FAIL_RETURN(HashSet::constructor(res));
     AutoPtr< ArrayOf<IInterface*> > outarr;
     collection->ToArray((ArrayOf<IInterface*>**)&outarr);
     Boolean isflag = FALSE;
