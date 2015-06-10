@@ -117,7 +117,7 @@ public:
      *  Returns true if this command line contains the given switch.
      *  (Switch names ARE case-sensitive).
      */
-    CARAPI_(Boolean) HasSwitch(
+    virtual CARAPI_(Boolean) HasSwitch(
         /* [in] */ String switchString) = 0;
 
     /**
@@ -125,7 +125,7 @@ public:
      * @param switchString The switch key to lookup. It should NOT start with '--' !
      * @return switch value, or null if the switch is not set or set to empty.
      */
-    CARAPI_(String) GetSwitchValue(
+    virtual CARAPI_(String) GetSwitchValue(
         /* [in] */ String switchString) = 0;
 
     /**
@@ -135,7 +135,7 @@ public:
      * @param defaultValue The default value to return if the switch isn't set.
      * @return Switch value, or {@code defaultValue} if the switch is not set or set to empty.
      */
-    CARAPI_(String) GetSwitchValue(
+    virtual CARAPI_(String) GetSwitchValue(
         /* [in] */ String switchString,
         /* [in] */ String defaultValue);
 
@@ -144,7 +144,7 @@ public:
      * this action happens before the switch is needed.
      * @param switchString the switch to add.  It should NOT start with '--' !
      */
-    CARAPI_(void) AppendSwitch(
+    virtual CARAPI_(void) AppendSwitch(
         /* [in] */ String switchString) = 0;
 
     /**
@@ -154,7 +154,7 @@ public:
      * @param value the value for this switch.
      * For example, --foo=bar becomes 'foo', 'bar'.
      */
-    CARAPI_(void) AppendSwitchWithValue(
+    virtual CARAPI_(void) AppendSwitchWithValue(
         /* [in] */ String switchString,
         /* [in] */ String value) = 0;
 
@@ -165,14 +165,14 @@ public:
      *   Unlike the other append routines, these switches SHOULD start with '--' .
      *   Unlike init(), this does not include the program name in array[0].
      */
-    CARAPI_(void) AppendSwitchesAndArguments(
+    virtual CARAPI_(void) AppendSwitchesAndArguments(
         /* [in] */ ArrayOf<String>* array) = 0;
 
     /**
      * Determine if the command line is bound to the native (JNI) implementation.
      * @return true if the underlying implementation is delegating to the native command line.
      */
-    CARAPI_(Boolean) IsNativeImplementation();
+    virtual CARAPI_(Boolean) IsNativeImplementation();
 
     /**
      * @returns true if the command line has already been initialized.

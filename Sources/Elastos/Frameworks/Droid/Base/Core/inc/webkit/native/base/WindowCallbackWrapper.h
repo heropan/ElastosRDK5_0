@@ -131,7 +131,7 @@ public:
         /* [in] */ IActionModeCallback* callback,
         /* [out] */ IActionMode** mode);
 
-    CARAPI OnWindowDismissed();
+    virtual CARAPI OnWindowDismissed();
 
 private:
     const AutoPtr<IWindowCallback> mCallback;
