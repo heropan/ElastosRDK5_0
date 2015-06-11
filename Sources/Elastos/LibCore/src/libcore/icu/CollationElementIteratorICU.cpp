@@ -129,7 +129,7 @@ ECode CollationElementIteratorICU::ToString(
     return NOERROR;
 }
 
-CARAPI GetClassID(
+CARAPI CollationElementIteratorICU::GetClassID(
     /* [out] */ ClassID *pCLSID)
 {
     VALIDATE_NOT_NULL(pCLSID)

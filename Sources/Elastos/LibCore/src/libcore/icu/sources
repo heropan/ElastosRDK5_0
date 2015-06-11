@@ -15,6 +15,6 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 
 SOURCES = CollationElementIteratorICU.cpp
-#SOURCES += CCollationElementIteratorICUHelper.cpp
+SOURCES += CCollationElementIteratorICUHelper.cpp
 SOURCES += NativeCollation.cpp
 SOURCES += CNativeCollationHelper.cpp
