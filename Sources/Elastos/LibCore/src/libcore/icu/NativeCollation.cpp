@@ -14,13 +14,13 @@ Mutex NativeCollation::sUstrMapLock;
 #define UCOL_MAX_BUFFER 128
 
 static UCollator* toCollator(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address)
 {
     return reinterpret_cast<UCollator*>(static_cast<uintptr_t>(address));
 }
 
 static UCollationElements* toCollationElements(
-   /* [in] */ Int32 address)
+   /* [in] */ Int64 address)
 {
    return reinterpret_cast<UCollationElements*>(static_cast<uintptr_t>(address));
 }
@@ -53,8 +53,11 @@ static ECode maybeThrowIcuException(
     }
 }
 
+NativeCollation::NativeCollation()
+{}
+
 void NativeCollation::CloseCollator(
-    /* [in] */ Int32 collatoraddress)
+    /* [in] */ Int64 collatoraddress)
 {
     ucol_close(toCollator(collatoraddress));
 }
@@ -72,7 +75,7 @@ void NativeCollation::CloseElements(
 }
 
 Int32 NativeCollation::Compare(
-    /* [in] */ Int32 collatoraddress,
+    /* [in] */ Int64 collatoraddress,
     /* [in] */ const String& source,
     /* [in] */ const String& target)
 {
@@ -91,7 +94,7 @@ Int32 NativeCollation::Compare(
 }
 
 ECode NativeCollation::GetAttribute(
-    /* [in] */ Int32 collatoraddress,
+    /* [in] */ Int64 collatoraddress,
     /* [in] */ Int32 type,
     /* [out] */ Int32* result)
 {
@@ -127,20 +130,20 @@ ECode NativeCollation::GetCollationElementIterator(
 }
 
 Int32 NativeCollation::GetMaxExpansion(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ Int32 order)
 {
     return ucol_getMaxExpansion(toCollationElements(address), order);
 }
 
 Int32 NativeCollation::GetOffset(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address)
 {
     return ucol_getOffset(toCollationElements(address));
 }
 
 String NativeCollation::GetRules(
-    /* [in] */ Int32 collatoraddress)
+    /* [in] */ Int64 collatoraddress)
 {
     int32_t length = 0;
     UnicodeString rules = ucol_getRules(toCollator(collatoraddress), &length);
@@ -151,7 +154,7 @@ String NativeCollation::GetRules(
 }
 
 AutoPtr<ArrayOf<Byte> > NativeCollation::GetSortKey(
-    /* [in] */ Int32 collatoraddress,
+    /* [in] */ Int64 collatoraddress,
     /* [in] */ const String& source)
 {
     if (source.IsNull()) {
@@ -184,7 +187,7 @@ AutoPtr<ArrayOf<Byte> > NativeCollation::GetSortKey(
 }
 
 ECode NativeCollation::Next(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ Int32* result)
 {
     UErrorCode status = U_ZERO_ERROR;
@@ -193,17 +196,26 @@ ECode NativeCollation::Next(
 }
 
 ECode NativeCollation::OpenCollator(
-    /* [in] */ const String& locale,
-    /* [out] */ Int32* address)
+    /* [in] */ ILocale* locale,
+    /* [out] */ Int64 * value)
 {
-    if (locale.string() == NULL) {
+    String s;
+    locale->ToLanguageTag(&s);
+    return OpenCollator(s, value);
+}
+
+ECode NativeCollation::OpenCollator(
+    /* [in] */ const String& languageTag,
+    /* [out] */ Int64* address)
+{
+    if (languageTag.string() == NULL) {
         *address = 0;
         return NOERROR;
     }
     UErrorCode status = U_ZERO_ERROR;
-    UCollator* c = ucol_open(locale.string(), &status);
+    UCollator* c = ucol_open(languageTag.string(), &status);
     FAIL_RETURN(maybeThrowIcuException(status));
-    *address = static_cast<Int32>(reinterpret_cast<uintptr_t>(c));
+    *address = static_cast<Int64>(reinterpret_cast<uintptr_t>(c));
     return NOERROR;
 }
 
@@ -211,7 +223,7 @@ ECode NativeCollation::OpenCollatorFromRules(
     /* [in] */ const String& rules,
     /* [in] */ Int32 normalizationmode,
     /* [in] */ Int32 collationstrength,
-    /* [out] */ Int32* address)
+    /* [out] */ Int64* address)
 {
     if (rules.IsNull()) {
         *address = -1;
@@ -229,7 +241,7 @@ ECode NativeCollation::OpenCollatorFromRules(
 }
 
 ECode NativeCollation::Previous(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ Int32* result)
 {
     UErrorCode status = U_ZERO_ERROR;
@@ -238,14 +250,14 @@ ECode NativeCollation::Previous(
 }
 
 void NativeCollation::Reset(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address)
 {
     ucol_reset(toCollationElements(address));
 }
 
 ECode NativeCollation::SafeClone(
-    /* [in] */ Int32 collatoraddress,
-    /* [out] */ Int32* address)
+    /* [in] */ Int64 collatoraddress,
+    /* [out] */ Int64* address)
 {
     UErrorCode status = U_ZERO_ERROR;
     Int32 bufferSize = U_COL_SAFECLONE_BUFFERSIZE;
@@ -256,7 +268,7 @@ ECode NativeCollation::SafeClone(
 }
 
 ECode NativeCollation::SetAttribute(
-    /* [in] */ Int32 collatoraddress,
+    /* [in] */ Int64 collatoraddress,
     /* [in] */ Int32 type,
     /* [in] */ Int32 value)
 {
@@ -267,7 +279,7 @@ ECode NativeCollation::SetAttribute(
 }
 
 ECode NativeCollation::SetOffset(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ Int32 offset)
 {
     UErrorCode status = U_ZERO_ERROR;
@@ -276,7 +288,7 @@ ECode NativeCollation::SetOffset(
 }
 
 ECode NativeCollation::SetText(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ const String& source)
 {
     UnicodeString* ustr = new UnicodeString(UnicodeString::fromUTF8(source.string()));

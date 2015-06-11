@@ -16,13 +16,17 @@ module
     merge("icu/INativeNormalizerHelper.car");
     merge("icu/IAlphabeticIndex.car");
 
-//    namespace Libcore {
-//    namespace ICU {
+    namespace Libcore {
+    namespace ICU {
 
 //    singleton class CCollationElementIteratorICUHelper {
 //        interface ICollationElementIteratorICUHelper;
 //    }
 
-//    } // namespace ICU
-//    } // namespace LibCore
+    singleton class CNativeCollationHelper {
+        interface INativeCollationHelper;
+    }
+
+    } // namespace ICU
+    } // namespace LibCore
 }

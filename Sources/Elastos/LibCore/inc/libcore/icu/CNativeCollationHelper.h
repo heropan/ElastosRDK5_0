@@ -2,90 +2,100 @@
 #ifndef __ICU_CNATIVECOLLATIONHELPER_H__
 #define __ICU_CNATIVECOLLATIONHELPER_H__
 
-#include "_CNativeCollationHelper.h"
+#include "_Libcore_ICU_CNativeCollationHelper.h"
+#include "Singleton.h"
+
+using Elastos::Utility::ILocale;
+using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace ICU {
 
 CarClass(CNativeCollationHelper)
+    , public Singleton
+    , public INativeCollationHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI CloseCollator(
-        /* [in] */ Int32 address);
+        /* [in] */ Int64 address);
 
     CARAPI Compare(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ const String& source,
         /* [in] */ const String& target ,
         /* [out] */ Int32 * value);
 
     CARAPI GetAttribute(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int32 type,
         /* [out] */ Int32 * value);
 
     CARAPI GetCollationElementIterator(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ const String& source,
-        /* [out] */ Int32 * value);
+        /* [out] */ Int64 * value);
 
     CARAPI GetRules(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ String * str);
 
     CARAPI GetSortKey(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ const String& source,
-        /* [out,callee] */ ArrayOf<Byte> ** outarray);
+        /* [out, callee] */ ArrayOf<Byte> ** outarray);
 
     CARAPI OpenCollator(
-        /* [in] */ const String& locale,
-        /* [out] */ Int32 * value);
+        /* [in] */ ILocale* locale,
+        /* [out] */ Int64 * value);
 
     CARAPI OpenCollatorFromRules(
         /* [in] */ const String& rules,
         /* [in] */ Int32 normalizationMode,
         /* [in] */ Int32 collationStrength,
-        /* [out] */ Int32 * value);
+        /* [out] */ Int64 * value);
 
     CARAPI SafeClone(
-        /* [in] */ Int32 address,
-        /* [out] */ Int32 * value);
+        /* [in] */ Int64 address,
+        /* [out] */ Int64 * value);
 
     CARAPI SetAttribute(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int32 type,
         /* [in] */ Int32 value);
 
     CARAPI CloseElements(
-        /* [in] */ Int32 address);
+        /* [in] */ Int64 address);
 
     CARAPI GetMaxExpansion(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int32 order,
         /* [out] */ Int32 * value);
 
     CARAPI GetOffset(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ Int32 * value);
 
     CARAPI Next(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ Int32 * value);
 
     CARAPI Previous(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ Int32 * value);
 
     CARAPI Reset(
-        /* [in] */ Int32 address);
+        /* [in] */ Int64 address);
 
     CARAPI SetOffset(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int32 offset);
 
     CARAPI SetText(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ const String& source);
 };
 

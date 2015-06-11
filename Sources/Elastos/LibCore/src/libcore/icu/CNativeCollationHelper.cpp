@@ -5,15 +5,19 @@
 namespace Libcore {
 namespace ICU {
 
+CAR_SINGLETON_IMPL(CNativeCollationHelper)
+
+CAR_INTERFACE_IMPL(CNativeCollationHelper, Singleton, INativeCollationHelper)
+
 ECode CNativeCollationHelper::CloseCollator(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address)
 {
     NativeCollation::CloseCollator(address);
     return NOERROR;
 }
 
 ECode CNativeCollationHelper::Compare(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ const String& source,
     /* [in] */ const String& target ,
     /* [out] */ Int32 * value)
@@ -25,7 +29,7 @@ ECode CNativeCollationHelper::Compare(
 }
 
 ECode CNativeCollationHelper::GetAttribute(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ Int32 type,
     /* [out] */ Int32 * value)
 {
@@ -33,15 +37,15 @@ ECode CNativeCollationHelper::GetAttribute(
 }
 
 ECode CNativeCollationHelper::GetCollationElementIterator(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ const String& source,
-    /* [out] */ Int32 * value)
+    /* [out] */ Int64 * value)
 {
     return NativeCollation::GetCollationElementIterator(address,source,value);
 }
 
 ECode CNativeCollationHelper::GetRules(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ String * str)
 {
     VALIDATE_NOT_NULL(str)
@@ -51,19 +55,19 @@ ECode CNativeCollationHelper::GetRules(
 }
 
 ECode CNativeCollationHelper::GetSortKey(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ const String& source,
-    /* [out,callee] */ ArrayOf<Byte> ** outarray)
+    /* [out, callee] */ ArrayOf<Byte> ** outarray)
 {
     VALIDATE_NOT_NULL(outarray)
 
-    *outarray = NativeCollation::GetSortKey(address,source);
+    *outarray = NativeCollation::GetSortKey(address, source);
     return NOERROR;
 }
 
 ECode CNativeCollationHelper::OpenCollator(
-    /* [in] */ const String& locale,
-    /* [out] */ Int32 * value)
+    /* [in] */ ILocale* locale,
+    /* [out] */ Int64 * value)
 {
     return NativeCollation::OpenCollator(locale,value);
 }
@@ -72,20 +76,20 @@ ECode CNativeCollationHelper::OpenCollatorFromRules(
     /* [in] */ const String& rules,
     /* [in] */ Int32 normalizationMode,
     /* [in] */ Int32 collationStrength,
-    /* [out] */ Int32 * value)
+    /* [out] */ Int64 * value)
 {
     return NativeCollation::OpenCollatorFromRules(rules,normalizationMode,collationStrength,value);
 }
 
 ECode CNativeCollationHelper::SafeClone(
-    /* [in] */ Int32 address,
-    /* [out] */ Int32 * value)
+    /* [in] */ Int64 address,
+    /* [out] */ Int64 * value)
 {
     return NativeCollation::SafeClone(address,value);
 }
 
 ECode CNativeCollationHelper::SetAttribute(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ Int32 type,
     /* [in] */ Int32 value)
 {
@@ -93,14 +97,14 @@ ECode CNativeCollationHelper::SetAttribute(
 }
 
 ECode CNativeCollationHelper::CloseElements(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address)
 {
     NativeCollation::CloseElements(address);
     return NOERROR;
 }
 
 ECode CNativeCollationHelper::GetMaxExpansion(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ Int32 order,
     /* [out] */ Int32 * value)
 {
@@ -109,7 +113,7 @@ ECode CNativeCollationHelper::GetMaxExpansion(
 }
 
 ECode CNativeCollationHelper::GetOffset(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ Int32 * value)
 {
     *value = NativeCollation::GetOffset(address);
@@ -117,35 +121,35 @@ ECode CNativeCollationHelper::GetOffset(
 }
 
 ECode CNativeCollationHelper::Next(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ Int32 * value)
 {
     return NativeCollation::Next(address,value);
 }
 
 ECode CNativeCollationHelper::Previous(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ Int32 * value)
 {
     return NativeCollation::Previous(address,value);
 }
 
 ECode CNativeCollationHelper::Reset(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address)
 {
     NativeCollation::Reset(address);
     return NOERROR;
 }
 
 ECode CNativeCollationHelper::SetOffset(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ Int32 offset)
 {
     return NativeCollation::SetOffset(address,offset);
 }
 
 ECode CNativeCollationHelper::SetText(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ const String& source)
 {
     return NativeCollation::SetText(address,source);

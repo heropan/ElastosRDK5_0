@@ -38,17 +38,17 @@ module
 
         OpenCollator(
             [in] ILocale* locale,
-            [out] Int32 * value);
+            [out] Int64 * value);
 
         OpenCollatorFromRules(
             [in] String rules,
             [in] Int32 normalizationMode,
             [in] Int32 collationStrength,
-            [out] Int32 * value);
+            [out] Int64 * value);
 
         SafeClone(
             [in] Int64 address,
-            [out] Int32 * value);
+            [out] Int64 * value);
 
         SetAttribute(
             [in] Int64 address,
@@ -73,7 +73,7 @@ module
             [out] Int32 * value);
 
         Previous(
-            [in] Int32 address,
+            [in] Int64 address,
             [out] Int32 * value);
 
         Reset(
