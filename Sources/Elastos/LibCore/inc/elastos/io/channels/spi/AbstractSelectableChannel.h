@@ -1,10 +1,9 @@
 #ifndef __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTABLECHANNEL_H__
 #define __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTABLECHANNEL_H__
 
-#include <Elastos.CoreLibrary_server.h>
+#include "SelectableChannel.h"
 #include <elastos/core/Thread.h>
 #include <elastos/utility/etl/List.h>
-#include "SelectableChannel.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::Object;
@@ -27,8 +26,11 @@ namespace Spi {
  */
 class AbstractSelectableChannel
     : public SelectableChannel
+    , public IAbstractSelectableChannel
 {
 public:
+    CAR_INTERFACE_DECL()
+
     AbstractSelectableChannel(
         /* [in] */ ISelectorProvider* provider);
 
@@ -40,7 +42,7 @@ public:
      * @see java.nio.channels.SelectableChannel#provider()
      * @return this channel's selector provider.
      */
-    CARAPI Provider(
+    CARAPI GetProvider(
         /* [out] */ ISelectorProvider** provider);
 
     /**

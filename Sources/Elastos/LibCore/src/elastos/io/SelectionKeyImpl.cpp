@@ -9,7 +9,7 @@ SelectionKeyImpl::SelectionKeyImpl(
     /* [in] */ AbstractSelectableChannel* channel,
     /* [in] */ Int32 ops,
     /* [in] */ IObject* attachment,
-    /* [in] */ ISelectorImpl* selector)
+    /* [in] */ IAbstractSelector* selector)
 {
     REFCOUNT_ADD(channel);
     this->mChannel = channel;

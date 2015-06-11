@@ -12,7 +12,7 @@ namespace Spi {
 extern "C" const InterfaceID EIID_AbstractInterruptibleChannel =
         { 0xda62f295, 0x36e3, 0x4f0c, { 0xb4, 0x6d, 0xed, 0xd0, 0x0f, 0xfa, 0x96, 0x26 } };
 
-CAR_INTERFACE_IMPL_WITH_CPP_CAST(AbstractInterruptibleChannel, Object, IChannel)
+CAR_INTERFACE_IMPL_4(AbstractInterruptibleChannel, Object, IChannel, ICloseable, IInterruptibleChannel, IAbstractInterruptibleChannel)
 
 class ActionRunnable
     : public ElRefBase
@@ -74,7 +74,7 @@ AbstractInterruptibleChannel::~AbstractInterruptibleChannel()
 
 Boolean AbstractInterruptibleChannel::IsOpen()
 {
-    Object::Autolock lock(mMutex);
+    Object::Autolock lock(this);
     Boolean ret = !mClosed;
     return ret;
 }
@@ -92,7 +92,7 @@ ECode AbstractInterruptibleChannel::Close()
     ECode retCode = E_INTERRUPTED;
 
     if (!mClosed) {
-        Object::Autolock lock(mMutex);
+        Object::Autolock lock(this);
         if (!mClosed) {
             mClosed = TRUE;
             retCode = this->ImplCloseChannel();

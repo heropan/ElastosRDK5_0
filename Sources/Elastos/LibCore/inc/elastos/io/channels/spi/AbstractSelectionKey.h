@@ -1,8 +1,9 @@
 #ifndef __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTIONKEY_H__
 #define __ELASTOS_IO_CHANNELS_SPI_ABSTRACTSELECTIONKEY_H__
 
-#include <Elastos.CoreLibrary_server.h>
 #include "SelectionKey.h"
+
+using Elastos::IO::Channels::SelectionKey;
 
 namespace Elastos {
 namespace IO {
@@ -15,8 +16,10 @@ namespace Spi {
  */
 class AbstractSelectionKey
     : public SelectionKey
+    , public IAbstractSelectionKey
 {
 public:
+    CAR_INTERFACE_DECL()
 
     /**
      * Indicates whether this key is valid. A key is valid as long as it has not
@@ -37,6 +40,10 @@ public:
     CARAPI Cancel();
 
 protected:
+
+    AbstractSelectionKey();
+
+    virtual ~AbstractSelectionKey();
 
 private:
     Boolean mIsValid;

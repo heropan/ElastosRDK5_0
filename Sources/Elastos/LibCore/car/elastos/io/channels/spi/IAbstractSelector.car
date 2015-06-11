@@ -19,36 +19,10 @@ module
    * interface Elastos.IO.Channels.ISelector;
    */
    interface IAbstractSelector {
+      Cancel(
+          [in] ISelectionKey* key);
+    }
 
-     /**
-     * Closes this selector. This method does nothing if this selector is
-     * already closed. The actual closing must be implemented by subclasses in
-     * {@code implCloseSelector()}.
-     */
-    // Close();
-
-     /**
-     * Returns true if this selector is open.
-     */
-    // IsOpen(
-    // [out] Boolean* isOpen);
-
-     /**
-     * Returns this selector's provider.
-     */
-    // Provider(
-    // [out] ISelectorProvider** provider);
-
-    Cancel(
-        [in] ISelectionKey* key);
-
-    // Register(
-    //     [in]  IAbstractSelectableChannel* channel,
-    //     [in]  Int32 operations,
-    //     [in]  IObject* obj,
-    //     [out] ISelectionKey** returnKey);
-
-    } // end interface
     } // namespace Spi
     } // namespace Channels
     } // namespace IO

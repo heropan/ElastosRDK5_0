@@ -1,22 +1,42 @@
 #ifndef __ELASTOS_IO_CHANNELS_SELECTOR_H__
 #define __ELASTOS_IO_CHANNELS_SELECTOR_H__
 
-#include <Elastos.CoreLibrary_server.h>
-#include <elastos/core/Thread.h>
+#include "Object.h"
 
-using Elastos::Core::IRunnable;
+using Elastos::Core::Object;
 using Elastos::Utility::ISet;
+using Elastos::IO::ICloseable;
 using Elastos::IO::Channels::Spi::ISelectorProvider;
 
 namespace Elastos {
 namespace IO {
 namespace Channels {
 
+/**
+ * A controller for the selection of {@link SelectableChannel} objects.
+ * Selectable channels can be registered with a selector and get a
+ * {@link SelectionKey} that represents the registration. The keys are also
+ * added to the selector's key set. Selection keys can be canceled so that the
+ * corresponding channel is no longer registered with the selector.
+ * <p>
+ * By invoking the {@code select} method, the key set is checked and all keys
+ * that have been canceled since last select operation are moved to the set of
+ * canceled keys. During the select operation, the channels registered with this
+ * selector are checked to see whether they are ready for operation according to
+ * their {@link SelectionKey interest set}.
+ */
 class Selector
+    : public Object
+    , public ISelector
+    , public ICloseable
 {
+protected:
+    Selector();
+
+    virtual ~Selector();
+
 public:
-    virtual ~Selector()
-    {}
+    CAR_INTERFACE_DECL()
 
     /**
      * Closes this selector. Ongoing calls to the {@code select} methods of this
@@ -137,8 +157,7 @@ public:
      * @throws ClosedSelectorException
      *             if the selector is closed.
      */
-    virtual CARAPI Wakeup(
-        /* [out] */ ISelector** selector) = 0;
+    virtual CARAPI Wakeup() = 0;
 };
 
 } // namespace Channels

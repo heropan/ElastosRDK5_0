@@ -28,6 +28,8 @@ class AbstractInterruptibleChannel
     : public Object
     , public IChannel
     , public ICloseable
+    , public IInterruptibleChannel
+    , public IAbstractInterruptibleChannel
 {
 public:
     CAR_INTERFACE_DECL()
@@ -109,7 +111,6 @@ private:
     volatile Boolean mClosed;
     volatile Boolean mInterrupted;
     AutoPtr<IRunnable> mInterruptAndCloseRunnable;
-    Object mMutex;
 };
 
 } // namespace Spi

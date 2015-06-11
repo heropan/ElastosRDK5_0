@@ -6,6 +6,15 @@ namespace IO {
 namespace Channels {
 namespace Spi {
 
+CAR_INTERFACE_IMPL(AbstractSelectionKey, SelectionKey, IAbstractSelectionKey)
+
+AbstractSelectionKey::AbstractSelectionKey()
+    : mIsValid(FALSE)
+{}
+
+AbstractSelectionKey::~AbstractSelectionKey()
+{}
+
 ECode AbstractSelectionKey::IsValid(
     /* out*/ Boolean* isValid)
 {

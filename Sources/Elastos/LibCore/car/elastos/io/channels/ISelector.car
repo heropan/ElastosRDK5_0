@@ -146,8 +146,7 @@ module
         * @throws ClosedSelectorException
         *             if the selector is closed.
         */
-        Wakeup(
-            [out] ISelector** outsel);
+        Wakeup();
     }
 
     } // namespace Channels

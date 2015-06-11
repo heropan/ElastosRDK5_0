@@ -3,17 +3,13 @@
 
 #include "_Elastos_IO_CSelectorImpl.h"
 #include "AbstractSelector.h"
-#include "SelectionKeyImpl.h"
-#include <elastos/core/Thread.h>
-#include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IUnsafeArrayList;
 using Elastos::IO::Channels::Spi::ISelectorProvider;
 using Elastos::IO::Channels::Spi::AbstractSelector;
-using Elastos::IO::Channels::Spi::IAbstractSelector;
+using Elastos::IO::Channels::Spi::IAbstractSelectableChannel;
 using Elastos::IO::Channels::ISelectionKey;
 using Elastos::IO::Channels::ISelector;
 
@@ -21,10 +17,7 @@ namespace Elastos {
 namespace IO {
 
 CarClass(CSelectorImpl)
-    , public Object
     , public AbstractSelector
-    , public IAbstractSelector
-    , public ISelector
 {
     // private static class UnaddableSet<E> implements Set<E> {
 
@@ -98,7 +91,7 @@ CarClass(CSelectorImpl)
     // };
 
 public:
-    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
 
     CARAPI constructor();
 
@@ -109,7 +102,7 @@ public:
         /* [in] */ ISelectionKey* key);
 
     CARAPI Register(
-        /* [in] */  AbstractSelectableChannel* channel,
+        /* [in] */  IAbstractSelectableChannel* channel,
         /* [in] */  Int32 operations,
         /* [in] */  IObject* obj,
         /* [out] */ ISelectionKey** returnKey);
@@ -234,8 +227,7 @@ public:
      * @throws ClosedSelectorException
      *             if the selector is closed.
      */
-    CARAPI Wakeup(
-        /* [out] */ ISelector** outsel);
+    CARAPI Wakeup();
 
 protected:
     CARAPI ImplCloseSelector();

@@ -10,20 +10,23 @@ using Elastos::IO::Channels::ISocketChannel;
 using Elastos::IO::Channels::ISelectableChannel;
 using Elastos::IO::Channels::Spi::AbstractSelectionKey;
 using Elastos::IO::Channels::Spi::AbstractSelectableChannel;
+using Elastos::IO::Channels::Spi::IAbstractSelector;
 
 namespace Elastos {
 namespace IO {
+
 /**
  * Default implementation of SelectionKey
  */
-class SelectionKeyImpl : public AbstractSelectionKey
+class SelectionKeyImpl
+    : public AbstractSelectionKey
 {
 public:
     SelectionKeyImpl(
         /* [in] */ AbstractSelectableChannel* channel,
         /* [in] */ Int32 opts,
         /* [in] */ IObject* attach,
-        /* [in] */ ISelectorImpl* selector);
+        /* [in] */ IAbstractSelector* selector);
 
     CARAPI Channel(
         /* [out] */ ISelectableChannel** channel);
@@ -55,8 +58,9 @@ private:
     AbstractSelectableChannel* mChannel;
     Int32 mInterestOps;
     Int32 mReadyOps;
-    ISelectorImpl* mSelector;
+    IAbstractSelector* mSelector;
 };
+
 
 } // namespace IO
 } // namespace Elastos

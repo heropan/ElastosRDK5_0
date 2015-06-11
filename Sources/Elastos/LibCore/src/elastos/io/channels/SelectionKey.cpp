@@ -4,6 +4,8 @@ namespace Elastos {
 namespace IO {
 namespace Channels {
 
+CAR_INTERFACE_IMPL(SelectionKey, Object, ISelectionKey)
+
 /**
  * Interest set mask bit for socket-accept operations.
  */
@@ -70,7 +72,7 @@ ECode SelectionKey::IsConnectable(
     return ecRet;
 }
 
-Boolean SelectionKey::IsReadable(
+ECode SelectionKey::IsReadable(
     /* [out] */ Boolean* readable)
 {
     Int32 ops;

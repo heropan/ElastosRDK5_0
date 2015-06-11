@@ -1,5 +1,0 @@
-DIRS = core
-DIRS += math
-DIRS += io
-DIRS += utility
-DIRS += droid

@@ -72,8 +72,6 @@ module
     merge("io/INIOAccess.car");
 
     merge("io/IFileDescriptorChannel.car");
-    merge("io/ISelectorImpl.car");
-    merge("io/ISelectionKeyImpl.car");
     merge("io/IPipeImpl.car");
     merge("io/IFileChannelImpl.car");
 
@@ -102,6 +100,9 @@ module
 
     merge("io/channels/spi/ISelectorProvider.car");
     merge("io/channels/spi/IAbstractSelector.car");
+    merge("io/channels/spi/IAbstractSelectionKey.car");
+    merge("io/channels/spi/IAbstractInterruptibleChannel.car");
+    merge("io/channels/spi/IAbstractSelectableChannel.car");
 
     merge("io/charset/ICharset.car");
     merge("io/charset/ICoderResult.car");
@@ -355,9 +356,9 @@ module
         constructor(
             [in] ISelectorProvider* selectorProvider);
 
-        interface ISelectorImpl;
         interface IAbstractSelector;
         interface ISelector;
+        interface ICloseable;
     }
 
     [deprecated]

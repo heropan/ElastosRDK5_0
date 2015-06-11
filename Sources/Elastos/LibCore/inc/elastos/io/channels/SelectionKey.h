@@ -1,8 +1,7 @@
 #ifndef __ELASTOS_IO_CHANNELS_SELECTIONKEY_H__
 #define __ELASTOS_IO_CHANNELS_SELECTIONKEY_H__
 
-#include <Elastos.CoreLibrary_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 
@@ -25,9 +24,12 @@ namespace Channels {
  * The ready set is an operation set that shows the operations that a
  * {@code channel} is ready to execute.
  */
-class SelectionKey : public Object
+class SelectionKey
+    : public Object
+    , public ISelectionKey
 {
 public:
+    CAR_INTERFACE_DECL()
 
     /**
      * Interest set mask bit for socket-accept operations.
@@ -166,7 +168,7 @@ public:
      * @throws CancelledKeyException
      *             if the key has already been canceled.
      */
-    Boolean IsReadable(
+    CARAPI IsReadable(
         /* [out] */ Boolean* readable);
 
     /**

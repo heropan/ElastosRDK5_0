@@ -9,6 +9,8 @@ namespace IO {
 namespace Channels {
 namespace Spi {
 
+CAR_INTERFACE_IMPL(AbstractSelectableChannel, SelectableChannel, IAbstractSelectableChannel)
+
 AbstractSelectableChannel::AbstractSelectableChannel(
     /* [in] */ ISelectorProvider* provider)
     : mProvider(provider)
@@ -20,7 +22,7 @@ AbstractSelectableChannel::~AbstractSelectableChannel()
 {
 }
 
-ECode AbstractSelectableChannel::Provider(
+ECode AbstractSelectableChannel::GetProvider(
     /* [in] */ ISelectorProvider** provider)
 {
     VALIDATE_NOT_NULL(provider);
