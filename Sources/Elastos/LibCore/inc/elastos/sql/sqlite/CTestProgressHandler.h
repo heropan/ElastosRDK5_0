@@ -3,7 +3,9 @@
 #define __CTESTPROGRESSHANDLER_H__
 
 #include "_Elastos_Sql_SQLite_CTestProgressHandler.h"
-#include <coredef.h>
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {

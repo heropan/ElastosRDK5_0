@@ -1,17 +1,17 @@
 
 #include <coredef.h>
 #include "CTimestamp.h"
-#include <elastos/StringUtils.h>
-#include "CPatternHelper.h"
-#include "CParsePosition.h"
+#include <elastos/core/StringUtils.h>
+//#include "CPatternHelper.h"
+//#include "CParsePosition.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Regex::IPatternHelper;
-using Elastos::Utility::Regex::CPatternHelper;
+//using Elastos::Utility::Regex::CPatternHelper;
 // using Elastos::Text::ISimpleDateFormat;
 // using Elastos::Text::CSimpleDateFormat;
 using Elastos::Text::IParsePosition;
-using Elastos::Text::CParsePosition;
+//using Elastos::Text::CParsePosition;
 
 namespace Elastos {
 namespace Sql {
@@ -28,7 +28,11 @@ PInterface CTimestamp::Probe(
     if (riid == EIID_ITimestamp) {
         return (IInterface*)(ITimestamp*)this;
     }
-    return Date::Probe(riid);
+
+    //TODO
+    assert(0);
+    // return Date::Probe(riid);
+    return NULL;
 }
 
 ECode CTimestamp::CompareTo(
@@ -77,7 +81,7 @@ ECode CTimestamp::ToString(
         sb->AppendChar('0');
     } else {
         Format(nanos, 9, sb);
-        while (sb->GetChar(sb->GetLength() - 1) == '0') {
+        while (sb->GetCharAt(sb->GetLength() - 1) == '0') {
             sb->SetLength(sb->GetLength() - 1);
         }
     }
@@ -93,7 +97,7 @@ ECode CTimestamp::After(
     Int64 thisTime = 0;
     GetTime(&thisTime);
     Int64 compareTime = 0;
-    theTimestamp->GetTime(&compareTime);
+    Elastos::Utility::IDate::Probe(theTimestamp)->GetTime(&compareTime);
 
     Int32 thisNano = 0;
     GetNanos(&thisNano);
@@ -127,7 +131,7 @@ ECode CTimestamp::Before(
     Int64 thisTime = 0;
     GetTime(&thisTime);
     Int64 compareTime = 0;
-    theTimestamp->GetTime(&compareTime);
+    Elastos::Utility::IDate::Probe(theTimestamp)->GetTime(&compareTime);
 
     Int32 thisNano = 0;
     GetNanos(&thisNano);
@@ -158,7 +162,10 @@ ECode CTimestamp::CompareTo(
     /* [in] */ ITimestamp * theTimestamp,
     /* [out] */ Int32 * value)
 {
-    Int32 result = Date::CompareTo(IDate::Probe(theTimestamp));
+    //TODO
+    assert(0);
+    Int32 result = 0;
+    // Int32 result = Date::CompareTo(IDate::Probe(theTimestamp));
     if (result == 0) {
         Int32 thisNano = 0;
         GetNanos(&thisNano);
@@ -202,7 +209,7 @@ ECode CTimestamp::Equals(
     Int32 ananos = 0;
     Int32 bnanos = 0;
     GetTime(&atime);
-    theTimestamp->GetTime(&btime);
+    Elastos::Utility::IDate::Probe(theTimestamp)->GetTime(&btime);
     GetNanos(&ananos);
     theTimestamp->GetNanos(&bnanos);
     *value = (atime == btime) && (ananos == bnanos);
@@ -266,7 +273,9 @@ AutoPtr<ITimestamp> CTimestamp::ValueOf(const String& str)
     // omit trailing whitespace
     String s = str.Trim();
     AutoPtr<IPatternHelper> pat;
-    CPatternHelper::AcquireSingleton((IPatternHelper **)&pat);
+    //TODO
+    assert(0);
+    // CPatternHelper::AcquireSingleton((IPatternHelper **)&pat);
     Boolean ispat = FALSE;
     pat->Matches(TIME_FORMAT_REGEX, s, &ispat);
     if (!ispat) {
@@ -374,11 +383,11 @@ void CTimestamp::Format(
     /* [in] */ Int32 digits,
     /* [in] */ AutoPtr<StringBuilder> sb)
 {
-    String str = StringUtils::Int32ToString(date);
+    String str = StringUtils::ToString(date);
     if (digits - str.GetLength() > 0) {
-        sb->AppendString(PADDING.Substring(0, digits - str.GetLength()));
+        sb->Append(PADDING.Substring(0, digits - str.GetLength()));
     }
-    sb->AppendString(str);
+    sb->Append(str);
 }
 
 void CTimestamp::SetTimeImpl(

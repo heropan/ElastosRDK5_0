@@ -2,24 +2,18 @@
 #ifndef __CDRIVERMANAGER_H__
 #define __CDRIVERMANAGER_H__
 
-#include "_CDriverManager.h"
-#include <coredef.h>
+#include "_Elastos_Sql_CDriverManager.h"
+#include "Object.h"
 #include <elastos.h>
 #include <elastos/utility/etl/List.h>
-#include <elastos/Mutex.h>
-#include "CPrintStream.h"
-#include "CPrintWriter.h"
-#include "CProperties.h"
 
+using Elastos::Core::Object;
+using Elastos::Core::IClassLoader;
 using Elastos::IO::IPrintStream;
 using Elastos::IO::IPrintWriter;
-using Elastos::IO::CPrintStream;
-using Elastos::IO::CPrintWriter;
 using Elastos::Utility::IProperties;
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Mutex;
-using Elastos::Core::IClassLoader;
 
 namespace Elastos {
 namespace Sql {
@@ -29,6 +23,8 @@ CarClass(CDriverManager)
     , public IDriverManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
     CAR_SINGLETON_DECL();
 
     CARAPI DeregisterDriver(
@@ -111,7 +107,7 @@ private:
     // Permission for setting log
     // const static SQLPermission logPermission = new SQLPermission("setLog");
 
-    Mutex mLock;
+    Object theDriversTmpLock;
 
 public:
     static Boolean isinitflag;

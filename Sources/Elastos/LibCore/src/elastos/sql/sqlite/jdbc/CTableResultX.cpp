@@ -9,6 +9,7 @@ namespace SQLite {
 namespace JDBC{
 
 CAR_OBJECT_IMPL(CTableResultX)
+CAR_INTERFACE_IMPL(CTableResultX, TableResult, ITableResultX);
 
 ECode CTableResultX::constructor()
 {
@@ -18,21 +19,6 @@ ECode CTableResultX::constructor()
         (*sql_type)[i] = ITypes::VARCHAR;
     }
     return NOERROR;
-}
-
-PInterface CTableResultX::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_ITableResultX) {
-        return (PInterface)(ITableResultX*)this;
-    }
-
-    return TableResult::Probe(riid);
-}
-
-UInt32 CTableResultX::Release()
-{
-    return TableResult::Release();
 }
 
 ECode CTableResultX::constructor(

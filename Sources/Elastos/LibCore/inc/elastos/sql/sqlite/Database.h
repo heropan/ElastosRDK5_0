@@ -44,21 +44,23 @@ public:
 
     CARAPI Exec(
         /* [in] */ const String& sql,
-        /* [in] */ AutoPtr<ICallback> cb);
+        /* [in] */ ICallback* cb);
 
     CARAPI Exec(
         /* [in] */ const String& sql,
-        /* [in] */ AutoPtr<ICallback> cb,
+        /* [in] */ ICallback* cb,
         /* [in] */ const ArrayOf<String> & argsstr);
 
-    CARAPI_(Int64) LastInsertRowid();
+    CARAPI LastInsertRowid(
+        /* [out] */ Int64* id);
 
     CARAPI Interrupt();
 
-    CARAPI_(Int64) Changes();
+    CARAPI Changes(
+        /* [out] */ Int64* id);
 
     CARAPI BusyHandler(
-        /* [in] */ AutoPtr<IBusyHandler> bh);
+        /* [in] */ IBusyHandler* bh);
 
     CARAPI BusyTimeout(
         /* [in] */ Int32 ms);
@@ -86,7 +88,7 @@ public:
     virtual CARAPI GetTable(
         /* [in] */ const String& sql,
         /* [in] */ const ArrayOf<String> & args,
-        /* [in] */ AutoPtr<ITableResult> tbl);
+        /* [in] */ ITableResult* tbl);
 
     virtual CARAPI Dbversion(
         /* [out] */ String * ver);
@@ -94,12 +96,12 @@ public:
     CARAPI CreateFunction(
         /* [in] */ const String& name,
         /* [in] */ Int32 nargs,
-        /* [in] */ AutoPtr<IFunction> f);
+        /* [in] */ IFunction* f);
 
     CARAPI CreateAggregate(
         /* [in] */ const String& name,
         /* [in] */ Int32 nargs,
-        /* [in] */ AutoPtr<IFunction> f);
+        /* [in] */ IFunction* f);
 
     CARAPI FunctionType(
         /* [in] */ const String& name,
@@ -118,18 +120,19 @@ public:
         /* [in] */ const String& enc);
 
     CARAPI SetAuthorizer(
-        /* [in] */ AutoPtr<IAuthorizer> auth);
+        /* [in] */ IAuthorizer* auth);
 
     CARAPI Trace(
-        /* [in] */ AutoPtr<ITrace> tr);
+        /* [in] */ ITrace* tr);
 
     virtual CARAPI Backup(
-        /* [in] */ AutoPtr<IDatabase> dest,
+        /* [in] */ IDatabase* dest,
         /* [in] */ const String& destName,
-        /* [in] */ const String& srcName);
+        /* [in] */ const String& srcName,
+        /* [out] */ IBackup ** backup);
 
     CARAPI Profile(
-        /* [in] */ AutoPtr<IProfile> pr);
+        /* [in] */ IProfile* pr);
 
     virtual CARAPI DbStatus(
         /* [in] */ Int32 op,
@@ -163,7 +166,7 @@ public:
 
     CARAPI ProgressHandler(
         /* [in] */ Int32 n,
-        /* [in] */ AutoPtr<IProgressHandler> p);
+        /* [in] */ IProgressHandler* p);
 
     CARAPI Key(
         /* [in] */ const ArrayOf<Byte> & ekey);

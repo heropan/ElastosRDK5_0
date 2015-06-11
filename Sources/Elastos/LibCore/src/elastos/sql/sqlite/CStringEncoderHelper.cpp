@@ -5,8 +5,9 @@
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
+CAR_INTERFACE_IMPL(CStringEncoderHelper, Object, IStringEncoderHelper);
 
-CAR_SINGLETON_IMPL(CStringEncoderHelper, Object, IStringEncoderHelper)
+CAR_SINGLETON_IMPL(CStringEncoderHelper)
 
 ECode CStringEncoderHelper::Encode(
     /* [in] */ const ArrayOf<Byte>& a,

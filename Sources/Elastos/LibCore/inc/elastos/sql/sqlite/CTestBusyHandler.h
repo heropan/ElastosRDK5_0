@@ -3,7 +3,9 @@
 #define __CTESTBUSYHANDLER_H__
 
 #include "_Elastos_Sql_SQLite_CTestBusyHandler.h"
-#include <coredef.h>
+#include "Object.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {

@@ -36,7 +36,7 @@ ECode CBlob::GetInputStream(
 {
     AutoPtr<IBlobR> tmp;
     FAIL_RETURN(CBlobR::New(this, (IBlobR** )&tmp));
-    *instream = (IInputStream *)tmp;
+    *instream = IInputStream::Probe(tmp);
     REFCOUNT_ADD(*instream);
     return NOERROR;
 }
@@ -46,7 +46,7 @@ ECode CBlob::GetOutputStream(
 {
     AutoPtr<IBlobW> tmp;
     FAIL_RETURN(CBlobW::New(this, (IBlobW** )&tmp));
-    *outstream = tmp;
+    *outstream = IOutputStream::Probe(tmp);
     REFCOUNT_ADD(*outstream);
     return NOERROR;
 }

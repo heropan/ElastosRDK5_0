@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "Database.h"
 #include "CTableResult.h"
 #include "CVm.h"
@@ -8,7 +7,7 @@
 #include "CBlob.h"
 #include "CFunctionContext.h"
 #include <eldebugdef.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Sql::SQLite::CFunctionContext;
@@ -338,7 +337,7 @@ ECode Database::Close()
 
 ECode Database::Exec(
     /* [in] */ const String& sql,
-    /* [in] */ AutoPtr<ICallback> cb)
+    /* [in] */ ICallback* cb)
 {
     Object::Autolock lock(this);
     return _Exec(sql, cb);
@@ -346,17 +345,20 @@ ECode Database::Exec(
 
 ECode Database::Exec(
     /* [in] */ const String& sql,
-    /* [in] */ AutoPtr<ICallback> cb,
+    /* [in] */ ICallback* cb,
     /* [in] */ const ArrayOf<String> & args)
 {
     Object::Autolock lock(this);
     return _Exec(sql, cb, args);
 }
 
-Int64 Database::LastInsertRowid()
+ECode Database::LastInsertRowid(
+    /* [out] */ Int64* id)
 {
+    VALIDATE_NOT_NULL(id);
     Object::Autolock lock(this);
-    return _LastInsertRowid();
+    *id = _LastInsertRowid();
+    return NOERROR;
 }
 
 ECode Database::Interrupt()
@@ -365,14 +367,17 @@ ECode Database::Interrupt()
     return _Interrupt();
 }
 
-Int64 Database::Changes()
+ECode Database::Changes(
+    /* [out] */ Int64* value)
 {
+    VALIDATE_NOT_NULL(value);
     Object::Autolock lock(this);
-    return _Changes();
+    *value = _Changes();
+    return NOERROR;
 }
 
 ECode Database::BusyHandler(
-    /* [in] */ AutoPtr<IBusyHandler> bh)
+    /* [in] */ IBusyHandler* bh)
 {
     Object::Autolock lock(this);
     return _BusyHandler(bh);
@@ -394,8 +399,9 @@ ECode Database::GetTable(
     *tableresult = NULL;
     AutoPtr<ITableResult> ret ;
     CTableResult::New(maxrows,(ITableResult **)&ret);
-    if (!Is3()) {
-        ECode ec = Exec(sql, ret);
+    Boolean is3 = FALSE;
+    if (Is3(&is3), !is3) {
+        ECode ec = Exec(sql, ICallback::Probe(ret));
         if (ec != NOERROR) {
             if (maxrows <= 0 || !((CTableResult *)ret.Get())->atmaxrows) {
                 return NOERROR;
@@ -405,7 +411,7 @@ ECode Database::GetTable(
         Object::Autolock lock(this);
         // /* only one statement !!! */
             AutoPtr<IVm> vm;
-            vm = Compile(sql);
+            Compile(sql, (IVm**)&vm);
             SetLastError(((CVm *)vm.Get())->mError_code);
             Boolean vmflag = FALSE;
             ((CVm *)vm.Get())->Step((ICallback *)ret.Get(),&vmflag);
@@ -446,7 +452,8 @@ ECode Database::GetTable(
     *tableresult = NULL;
     AutoPtr<ITableResult> ret ;
     CTableResult::New(maxrows,(ITableResult **)&ret);
-    if (!Is3()) {
+    Boolean is3 = FALSE;
+    if (Is3(&is3), !is3) {
         ECode ec = Exec(sql, (ICallback *)ret.Get(), args);
         if (ec != NOERROR) {
             if (maxrows <= 0 || !((CTableResult *)ret.Get())->atmaxrows) {
@@ -457,7 +464,7 @@ ECode Database::GetTable(
         Object::Autolock lock(this);
         // /* only one statement !!! */
         AutoPtr<IVm> vm;
-        vm = Compile(sql,args);
+        Compile(sql, args, (IVm**)&vm);
         SetLastError(((CVm *)vm.Get())->mError_code);
         Boolean vmflag = FALSE;
         if (((CTableResult *)ret.Get())->maxrows > 0) {
@@ -492,13 +499,14 @@ ECode Database::GetTable(
 ECode Database::GetTable(
     /* [in] */ const String& sql,
     /* [in] */ const ArrayOf<String> & args,
-    /* [in] */ AutoPtr<ITableResult> tbl)
+    /* [in] */ ITableResult* tbl)
 {
-    ((CTableResult* )(tbl.Get()))->Clear();
-    if (!Is3()) {
-        ECode ec = Exec(sql, (ICallback *)tbl.Get(), args);
+    ((CTableResult* )tbl)->Clear();
+    Boolean is3 = FALSE;
+    if (Is3(&is3), !is3) {
+        ECode ec = Exec(sql, ICallback::Probe(tbl), args);
         if (ec != NOERROR) {
-            if (((CTableResult *)tbl.Get())->maxrows <= 0 || !((CTableResult *)tbl.Get())->atmaxrows) {
+            if (((CTableResult *)tbl)->maxrows <= 0 || !((CTableResult *)tbl)->atmaxrows) {
                 return E_SQL_EXCEPTION;
             }
         }
@@ -506,17 +514,17 @@ ECode Database::GetTable(
         Object::Autolock lock(this);
         /* only one statement !!! */
         AutoPtr<IVm> vm;
-        vm = Compile(sql,args);
+        Compile(sql, args, (IVm**)&vm);
         Boolean vmflag = FALSE;
-        if (((CTableResult* )(tbl.Get()))->maxrows > 0) {
-            ((CVm *)vm.Get())->Step((ICallback *)tbl.Get(),&vmflag);
-            while (((CTableResult* )(tbl.Get()))->nrows < ((CTableResult* )(tbl.Get()))->maxrows
+        if (((CTableResult* )tbl)->maxrows > 0) {
+            ((CVm *)vm.Get())->Step((ICallback *)tbl,&vmflag);
+            while (((CTableResult* )tbl)->nrows < ((CTableResult* )tbl)->maxrows
                         && vmflag) {
                 SetLastError(((CVm *)vm.Get())->mError_code);
             }
         } else {
             vmflag = FALSE;
-            ((CVm *)vm.Get())->Step((ICallback *)tbl.Get(),&vmflag);
+            ((CVm *)vm.Get())->Step((ICallback *)tbl,&vmflag);
             while (vmflag) {
                 SetLastError(((CVm *)vm.Get())->mError_code);
             }
@@ -575,7 +583,7 @@ ECode Database::Dbversion(
 ECode Database::CreateFunction(
     /* [in] */ const String& name,
     /* [in] */ Int32 nargs,
-    /* [in] */ AutoPtr<IFunction> f)
+    /* [in] */ IFunction* f)
 {
     Object::Autolock lock(this);
     return _CreateFunction(name, nargs, f);
@@ -584,7 +592,7 @@ ECode Database::CreateFunction(
 ECode Database::CreateAggregate(
     /* [in] */ const String& name,
     /* [in] */ Int32 nargs,
-    /* [in] */ AutoPtr<IFunction> f)
+    /* [in] */ IFunction* f)
 {
     Object::Autolock lock(this);
     return _CreateAggregate(name, nargs, f);
@@ -641,21 +649,21 @@ ECode Database::SetEncoding(
 }
 
 ECode Database::SetAuthorizer(
-    /* [in] */ AutoPtr<IAuthorizer> auth)
+    /* [in] */ IAuthorizer* auth)
 {
     Object::Autolock lock(this);
     return _SetAuthorizer(auth);
 }
 
 ECode Database::Trace(
-    /* [in] */ AutoPtr<ITrace> tr)
+    /* [in] */ ITrace* tr)
 {
     Object::Autolock lock(this);
     return _Trace(tr);
 }
 
 ECode Database::Backup(
-    /* [in] */ AutoPtr<IDatabase> dest,
+    /* [in] */ IDatabase* dest,
     /* [in] */ const String& destName,
     /* [in] */ const String& srcName,
     /* [out] */ IBackup ** backup)
@@ -673,7 +681,7 @@ ECode Database::Backup(
 }
 
 ECode Database::Profile(
-    /* [in] */ AutoPtr<IProfile> r)
+    /* [in] */ IProfile* r)
 {
     ECode ec = NOERROR;
     synchronized(this) {
@@ -732,15 +740,16 @@ ECode Database::Prepare(
     /* [out] */ IStmt ** st)
 {
     VALIDATE_NOT_NULL(*st);
+    ECode ec = NOERROR;
     synchronized(this) {
         AutoPtr<IStmt> stmt;
         CStmt::New((IStmt **)&stmt);
-        ECode ec = Stmt_prepare(sql, stmt);
+        ec = Stmt_prepare(sql, stmt);
         *st = stmt;
         REFCOUNT_ADD(*st);
     }
 
-    return NOERROR;
+    return ec;
 }
 
 ECode Database::OpenBlob(
@@ -797,7 +806,7 @@ ECode Database::Is3(
 
 ECode Database::ProgressHandler(
     /* [in] */ Int32 n,
-    /* [in] */ AutoPtr<IProgressHandler> p)
+    /* [in] */ IProgressHandler* p)
 {
     Object::Autolock lock(this);
     return _ProgressHandler(n, p);
@@ -819,7 +828,7 @@ ECode Database::Key(
     Char32 c;
     if (charArray->GetLength() > 0) {
         ekey = ArrayOf<Byte>::Alloc(charArray->GetLength());
-        for (UInt32 i = 0; i< charArray->GetLength(); i++) {
+        for (Int32 i = 0; i< charArray->GetLength(); i++) {
             c = (*charArray)[i];
             (*ekey)[i] = (Byte) ((c & 0xff) ^ (c >> 8));
         }

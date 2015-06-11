@@ -1,7 +1,7 @@
 
 #include "CSinFunc.h"
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 

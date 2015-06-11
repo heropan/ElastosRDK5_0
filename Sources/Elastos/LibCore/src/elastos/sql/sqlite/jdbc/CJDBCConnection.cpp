@@ -144,7 +144,7 @@ ECode CJDBCConnection::GetTransactionIsolation(
 }
 
 ECode CJDBCConnection::GetTypeMap(
-    /* [out] */ IObjectStringMap ** typemap)
+    /* [out] */ IMap ** typemap)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
@@ -394,7 +394,7 @@ ECode CJDBCConnection::SetTransactionIsolation(
 }
 
 ECode CJDBCConnection::SetTypeMap(
-    /* [in] */ IObjectStringMap * typemap)
+    /* [in] */ IMap * typemap)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }

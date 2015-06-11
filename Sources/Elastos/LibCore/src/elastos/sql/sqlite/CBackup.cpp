@@ -48,20 +48,23 @@ ECode CBackup::Step(
     /* [in] */ Int32 n,
     /* [out] */ Boolean* isCompleted)
 {
+    ECode ec = NOERROR;
     synchronized(this) {
-        *isCompleted = _Step(n);
+        ec = _Step(n, isCompleted);
     }
 
-    return NOERROR;
+    return ec;
 }
 
 ECode CBackup::Backup()
 {
+    ECode ec = NOERROR;
     synchronized(this) {
-        _Step(-1);
+        Boolean res = FALSE;
+        ec = _Step(-1, &res);
     }
 
-    return NOERROR;
+    return ec;
 }
 
 ECode CBackup::Remaining(
@@ -124,10 +127,12 @@ ECode CBackup::_Finalize()
     return NOERROR;
 }
 
-Boolean CBackup::_Step(
-    /* [in] */ Int32 n)
+ECode CBackup::_Step(
+    /* [in] */ Int32 n,
+    /* [out] */ Boolean* state)
 {
-    Boolean result = TRUE;
+    VALIDATE_NOT_NULL(state);
+    *state = TRUE;
 #if HAVE_SQLITE3 && HAVE_SQLITE3_BACKUPAPI
     hbk *bk = mHandle;
     Int32 ret = 0;
@@ -141,10 +146,10 @@ Boolean CBackup::_Step(
             case SQLITE_LOCKED:
             case SQLITE_BUSY:
             case SQLITE_OK:
-                result = FALSE;
+                *state = FALSE;
                 break;
             default:
-                result = FALSE;
+                *state = FALSE;
                 return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
                 break;
         }
@@ -155,7 +160,7 @@ Boolean CBackup::_Step(
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 #endif
-    return result;
+    return NOERROR;
 }
 
 Int32 CBackup::_Remaining()

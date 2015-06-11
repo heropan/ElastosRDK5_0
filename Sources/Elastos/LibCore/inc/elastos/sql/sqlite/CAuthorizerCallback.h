@@ -3,7 +3,9 @@
 #define __CAUTHORIZERCALLBACK_H__
 
 #include "_Elastos_Sql_SQLite_CAuthorizerCallback.h"
-#include <coredef.h>
+#include "Object.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {

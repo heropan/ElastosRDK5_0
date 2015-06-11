@@ -10,7 +10,7 @@ using Elastos::IO::IReader;
 using Elastos::IO::IInputStream;
 using Elastos::Math::IBigDecimal;
 using Elastos::Utility::ICalendar;
-using Elastos::Utility::IObjectMap;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Sql {
@@ -38,10 +38,9 @@ CarClass(CJDBCPreparedStatement)
     , public IJDBCPreparedStatement
 {
 public:
-    CAR_OBJECT_DECL();
+    CAR_INTERFACE_DECL();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL();
 
     ~CJDBCPreparedStatement();
 
@@ -135,11 +134,11 @@ public:
         /* [in] */ Int32 parameterIndex,
         /* [in] */ Float theFloat);
 
-    CARAPI SetInt(
+    CARAPI SetInt32(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ Int32 theInt);
 
-    CARAPI SetLong(
+    CARAPI SetInt64(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ Int64 theLong);
 
@@ -171,7 +170,7 @@ public:
         /* [in] */ Int32 parameterIndex,
         /* [in] */ IRef * theRef);
 
-    CARAPI SetShort(
+    CARAPI SetInt16(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ Int16 theShort);
 
@@ -236,15 +235,15 @@ public:
         /* [in] */ const String& parameterName,
         /* [in] */ Byte val);
 
-    CARAPI SetShort(
+    CARAPI SetInt16(
         /* [in] */ const String& parameterName,
         /* [in] */ Int16 val);
 
-    CARAPI SetInt(
+    CARAPI SetInt32(
         /* [in] */ const String& parameterName,
         /* [in] */ Int32 val);
 
-    CARAPI SetLong(
+    CARAPI SetInt64(
         /* [in] */ const String& parameterName,
         /* [in] */ Int64 val);
 
@@ -342,15 +341,15 @@ public:
         /* [in] */ const String& parameterName,
         /* [out] */ Byte * outbyte);
 
-    CARAPI GetShort(
+    CARAPI GetInt16(
         /* [in] */ const String& parameterName,
         /* [out] */ Int16 * value);
 
-    CARAPI GetInt(
+    CARAPI GetInt32(
         /* [in] */ const String& parameterName,
         /* [out] */ Int32 * value);
 
-    CARAPI GetLong(
+    CARAPI GetInt64(
         /* [in] */ const String& parameterName,
         /* [out] */ Int64 * value);
 
@@ -392,12 +391,12 @@ public:
 
     CARAPI GetObject(
         /* [in] */ const String& parameterName,
-        /* [in] */ IObjectMap * map,
+        /* [in] */ IMap * map,
         /* [out] */ IObject ** theobject);
 
     CARAPI GetObject(
         /* [in] */ Int32 parameterIndex,
-        /* [in] */ IObjectMap * map,
+        /* [in] */ IMap * map,
         /* [out] */ IObject ** theobject);
 
     CARAPI GetRef(

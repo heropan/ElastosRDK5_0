@@ -2,6 +2,7 @@
 #ifndef __CJDBCRESULTSET_H__
 #define __CJDBCRESULTSET_H__
 
+#include <elastos/core/Object.h>
 #include "_Elastos_Sql_SQLite_JDBC_CJDBCResultSet.h"
 #include "CTableResult.h"
 #include "Elastos.CoreLibrary_server.h"
@@ -11,8 +12,9 @@ using Elastos::IO::IReader;
 using Elastos::Math::IBigDecimal;
 using Elastos::Net::IURL;
 using Elastos::Utility::ICalendar;
-using Elastos::Utility::IObjectStringMap;
+using Elastos::Utility::IMap;
 using Elastos::Sql::ISQLWarning;
+using Elastos::Core::Object;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger16;
 using Elastos::Core::IInteger64;
@@ -167,19 +169,19 @@ public:
         /* [in] */ const String& colName,
         /* [out] */ Float * value);
 
-    CARAPI GetInt(
+    CARAPI GetInt32(
         /* [in] */ Int32 colIndex,
         /* [out] */ Int32 * value);
 
-    CARAPI GetInt(
+    CARAPI GetInt32(
         /* [in] */ const String& colName,
         /* [out] */ Int32 * value);
 
-    CARAPI GetLong(
+    CARAPI GetInt64(
         /* [in] */ Int32 colIndex,
         /* [out] */ Int64 * value);
 
-    CARAPI GetLong(
+    CARAPI GetInt64(
         /* [in] */ const String& colName,
         /* [out] */ Int64 * value);
 
@@ -201,11 +203,11 @@ public:
     CARAPI GetRow(
         /* [out] */ Int32 * value);
 
-    CARAPI GetShort(
+    CARAPI GetInt16(
         /* [in] */ Int32 colIndex,
         /* [out] */ Int16 * value);
 
-    CARAPI GetShort(
+    CARAPI GetInt16(
         /* [in] */ const String& colName,
         /* [out] */ Int16 * value);
 
@@ -753,7 +755,7 @@ public:
 
     CARAPI GetObject(
         /* [in] */ Int32 colIndex,
-        /* [in] */ IObjectStringMap * map,
+        /* [in] */ IMap * map,
         /* [out] */ IInterface ** obj);
 
     CARAPI GetObject(
@@ -762,7 +764,7 @@ public:
 
     CARAPI GetObject(
         /* [in] */ const String& colName,
-        /* [in] */ IObjectStringMap * map,
+        /* [in] */ IMap * map,
         /* [out] */ IInterface** obj);
 
     CARAPI GetURL(

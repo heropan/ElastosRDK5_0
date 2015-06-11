@@ -3,6 +3,9 @@
 #define __CVM_H__
 
 #include "_Elastos_Sql_SQLite_CVm.h"
+#include "Object.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {

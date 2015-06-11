@@ -333,7 +333,7 @@ ECode CJDBCResultSetMetaData::FindColByName(
 {
     String c = String(NULL);
     if (r != NULL && ((CJDBCResultSet *)r.Get())->tr != NULL) {
-        for (UInt32 i = 0; i < ((CJDBCResultSet *)r.Get())->tr->ncolumns; i++) {
+        for (Int32 i = 0; i < ((CJDBCResultSet *)r.Get())->tr->ncolumns; i++) {
             c = (*((CJDBCResultSet *)r.Get())->tr->column)[i];
             if (c != NULL) {
                 if (c.EqualsIgnoreCase(columnName) == 0) {

@@ -3,6 +3,10 @@
 #define __CBACKUP_H__
 
 #include "_Elastos_Sql_SQLite_CBackup.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
+
 
 namespace Elastos {
 namespace Sql {
@@ -41,8 +45,9 @@ protected:
     Int64 mHandle;
 
 private:
-    CARAPI_(Boolean) _Step(
-        /* [in] */ Int32 n);
+    CARAPI _Step(
+        /* [in] */ Int32 n,
+        /* [out] */ Boolean* state);
 
     CARAPI_(Int32) _Remaining();
 

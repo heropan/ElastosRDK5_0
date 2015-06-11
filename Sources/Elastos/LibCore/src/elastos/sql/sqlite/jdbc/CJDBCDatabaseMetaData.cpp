@@ -21,7 +21,7 @@ namespace JDBC{
 
 CAR_OBJECT_IMPL(CJDBCDatabaseMetaData)
 
-CAR_INTERFACE_IMPL_3(CJDBCResultSet, Object, IJDBCDatabaseMetaData, IDatabaseMetaData, IWrapper);
+CAR_INTERFACE_IMPL_3(CJDBCDatabaseMetaData, Object, IJDBCDatabaseMetaData, IDatabaseMetaData, IWrapper);
 
 ECode CJDBCDatabaseMetaData::AllProceduresAreCallable(
     /* [out] */ Boolean * callable)
@@ -402,7 +402,7 @@ ECode CJDBCDatabaseMetaData::GetColumns(
             (*row)[14] = String("0");
             (*row)[15] = String("65536");
             col = h[String("cid")];
-            (*row)[16] = StringUtils::ToString(StringUtils::Parse((*r0)[col], 10, (Int32)0) + 1); // android-changed
+            (*row)[16] = StringUtils::ToString(StringUtils::ParseInt32((*r0)[col]) + 1); // android-changed
             col = h[String("notnull")];
             (*row)[17] = ((*r0)[col].GetChar(0) == '0') ? String("YES") : String("NO");
             (*row)[10] = ((*r0)[col].GetChar(0) == '0') ?
@@ -800,7 +800,7 @@ ECode CJDBCDatabaseMetaData::GetIndexInfo(
                 (*row)[5]  = iname;
                 (*row)[6]  = String("") + StringUtils::ToString(IDatabaseMetaData::tableIndexOther);
                 col = h1[String("seqno")];
-                (*row)[7]  = StringUtils::ToString(StringUtils::Parse((*r1)[col], 10, (Int32)0) + 1);
+                (*row)[7]  = StringUtils::ToString(StringUtils::ParseInt32((*r1)[col]) + 1);
                 col = h1[String("name")];
                 (*row)[8]  = (*r1)[col];
                 (*row)[9]  = String("A");
@@ -1062,7 +1062,7 @@ ECode CJDBCDatabaseMetaData::GetPrimaryKeys(
                 col = h1[String("name")];
                 (*row)[3] = (*r1)[col];
                 col = h1[String("seqno")];
-                (*row)[4]  = StringUtils::ToString(StringUtils::Parse((*r1)[col], 10, (Int32)0) + 1);
+                (*row)[4]  = StringUtils::ToString(StringUtils::ParseInt32((*r1)[col]) + 1);
                 (*row)[5]  = iname;
                 Boolean rowflag = FALSE;
                         tr->Newrow(*row,&rowflag);
@@ -1110,7 +1110,7 @@ ECode CJDBCDatabaseMetaData::GetPrimaryKeys(
             col = h0[String("name")];
             (*row)[3] = (*r0)[col];
             col = h0[String("cid")];
-            (*row)[4] = StringUtils::ToString(StringUtils::Parse((*r0)[col], 10, (Int32)0) + 1);
+            (*row)[4] = StringUtils::ToString(StringUtils::ParseInt32((*r0)[col]) + 1);
             (*row)[5] = String("");
             Boolean rowflag = FALSE;
                         tr->Newrow(*row,&rowflag);
@@ -2538,7 +2538,7 @@ Int32 CJDBCDatabaseMetaData::GetM(String inTypeStr, Int32 type)
         }
         if (i2 - i1 > 0) {
             String num = typeStr.Substring(i1, i2);
-            m = StringUtils::Parse(num, 10, (Int32)0);
+            m = StringUtils::ParseInt32(num);
         }
     }
     return m;
@@ -2567,7 +2567,7 @@ Int32 CJDBCDatabaseMetaData::GetD(String typeStr, Int32 type)
         i2 = lcTypeStr.IndexOf(')', i1);
         if (i2 - i1 > 0) {
             String num = lcTypeStr.Substring(i1, i2);
-            d = StringUtils::Parse(num, 10, (Int32)0);
+            d = StringUtils::ParseInt32(num);
         }
     }
     return d;
@@ -2602,7 +2602,7 @@ void CJDBCDatabaseMetaData::InternalImportedKeys(String table, String pktable,
         (*row)[5]  = String("");
         (*row)[6]  = table;
         (*row)[7]  = fkcol == NULL ? pkcol : fkcol;
-        (*row)[8]  = StringUtils::ToString(StringUtils::Parse(seq, 10, (Int32)0) + 1);
+        (*row)[8]  = StringUtils::ToString(StringUtils::ParseInt32(seq) + 1);
         (*row)[9]  = String("") + StringUtils::ToString(IDatabaseMetaData::importedKeyNoAction);
         (*row)[10] = String("") + StringUtils::ToString(IDatabaseMetaData::importedKeyNoAction);
         (*row)[11] = String(NULL);

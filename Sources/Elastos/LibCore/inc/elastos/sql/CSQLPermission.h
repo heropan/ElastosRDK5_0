@@ -3,19 +3,30 @@
 #define __CSQLPERMISSION_H__
 
 #include "_Elastos_Sql_CSQLPermission.h"
+#include "Object.h"
+//#include "BasicPermission.h"
+
+//TODO: temp.
+using Elastos::Core::Object;
+//using Elastos::Security::BasicPermission;
+using Elastos::Security::IPermission;
 
 namespace Elastos {
 namespace Sql {
-
+//TODO need the class BasicPermission.
 CarClass(CSQLPermission)
-    , public BasicPermission
+    // , public BasicPermission
+    , public Object
     , public ISQLPermission
 {
 public:
+    //TODO: to delete
+    CAR_INTERFACE_DECL();
+
     CAR_OBJECT_DECL();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    // CARAPI_(PInterface) Probe(
+    //     /* [in] */ REIID riid);
 
     CARAPI constructor(
         /* [in] */ const String& name);

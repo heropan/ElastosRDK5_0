@@ -1,6 +1,8 @@
 
 #include "CDataTruncation.h"
 
+using Elastos::IO::EIID_ISerializable;
+
 namespace Elastos {
 namespace Sql {
 

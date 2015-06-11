@@ -21,15 +21,7 @@ const Boolean CJDBCPreparedStatement::mNullrepl =
 
 CAR_OBJECT_IMPL(CJDBCPreparedStatement)
 
-PInterface CJDBCPreparedStatement::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IJDBCPreparedStatement) {
-        return (PInterface)(IJDBCPreparedStatement*)this;
-    }
-
-    return JDBCStatement::Probe(riid);
-}
+CAR_INTERFACE_IMPL(CJDBCPreparedStatement, JDBCStatement, IJDBCPreparedStatement);
 
 ECode CJDBCPreparedStatement::constructor(
     /* [in] */ IJDBCConnection * pConn,
@@ -447,7 +439,7 @@ ECode CJDBCPreparedStatement::SetFloat(
     return NOERROR;
 }
 
-ECode CJDBCPreparedStatement::SetInt(
+ECode CJDBCPreparedStatement::SetInt32(
     /* [in] */ Int32 parameterIndex,
     /* [in] */ Int32 theInt)
 {
@@ -459,7 +451,7 @@ ECode CJDBCPreparedStatement::SetInt(
     return NOERROR;
 }
 
-ECode CJDBCPreparedStatement::SetLong(
+ECode CJDBCPreparedStatement::SetInt64(
     /* [in] */ Int32 parameterIndex,
     /* [in] */ Int64 theLong)
 {
@@ -597,7 +589,7 @@ ECode CJDBCPreparedStatement::SetRef(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
-ECode CJDBCPreparedStatement::SetShort(
+ECode CJDBCPreparedStatement::SetInt16(
     /* [in] */ Int32 parameterIndex,
     /* [in] */ Int16 theShort)
 {
@@ -712,8 +704,22 @@ ECode CJDBCPreparedStatement::SetRowId(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
+ECode CJDBCPreparedStatement::SetRowId(
+    /* [in] */ const String& parameterName,
+    /* [in] */ IRowId * theRowId)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
 ECode CJDBCPreparedStatement::SetNString(
     /* [in] */ Int32 parameterIndex,
+    /* [in] */ const String& theString)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
+ECode CJDBCPreparedStatement::SetNString(
+    /* [in] */ const String& parameterName,
     /* [in] */ const String& theString)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -727,6 +733,14 @@ ECode CJDBCPreparedStatement::SetNCharacterStream(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
+ECode CJDBCPreparedStatement::SetNCharacterStream(
+    /* [in] */ const String& parameterName,
+    /* [in] */ IReader * reader,
+    /* [in] */ Int64 length)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
 ECode CJDBCPreparedStatement::SetNClob(
     /* [in] */ Int32 parameterIndex,
     /* [in] */ INClob * value)
@@ -734,8 +748,23 @@ ECode CJDBCPreparedStatement::SetNClob(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
+ECode CJDBCPreparedStatement::SetNClob(
+    /* [in] */ const String& parameterName,
+    /* [in] */ INClob * value)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
 ECode CJDBCPreparedStatement::SetClob(
     /* [in] */ Int32 parameterIndex,
+    /* [in] */ IReader * reader,
+    /* [in] */ Int64 length)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
+ECode CJDBCPreparedStatement::SetClob(
+    /* [in] */ const String& parameterName,
     /* [in] */ IReader * reader,
     /* [in] */ Int64 length)
 {
@@ -750,8 +779,24 @@ ECode CJDBCPreparedStatement::SetBlob(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
+ECode CJDBCPreparedStatement::SetBlob(
+    /* [in] */ const String& parameterName,
+    /* [in] */ IInputStream * inputStream,
+    /* [in] */ Int64 length)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
 ECode CJDBCPreparedStatement::SetNClob(
     /* [in] */ Int32 parameterIndex,
+    /* [in] */ IReader * reader,
+    /* [in] */ Int64 length)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
+ECode CJDBCPreparedStatement::SetNClob(
+    /* [in] */ const String& parameterName,
     /* [in] */ IReader * reader,
     /* [in] */ Int64 length)
 {
@@ -765,8 +810,23 @@ ECode CJDBCPreparedStatement::SetSQLXML(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
+ECode CJDBCPreparedStatement::SetSQLXML(
+    /* [in] */ const String& parameterName,
+    /* [in] */ ISQLXML * xmlObject)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
 ECode CJDBCPreparedStatement::SetAsciiStream(
     /* [in] */ Int32 parameterIndex,
+    /* [in] */ IInputStream * inputStream,
+    /* [in] */ Int64 length)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
+ECode CJDBCPreparedStatement::SetAsciiStream(
+    /* [in] */ const String& parameterName,
     /* [in] */ IInputStream * inputStream,
     /* [in] */ Int64 length)
 {
@@ -781,8 +841,24 @@ ECode CJDBCPreparedStatement::SetBinaryStream(
     return E_SQL_EXCEPTION;
 }
 
+ECode CJDBCPreparedStatement::SetBinaryStream(
+    /* [in] */ const String& parameterName,
+    /* [in] */ IInputStream * inputStream,
+    /* [in] */ Int64 length)
+{
+    return E_SQL_EXCEPTION;
+}
+
 ECode CJDBCPreparedStatement::SetCharacterStream(
     /* [in] */ Int32 parameterIndex,
+    /* [in] */ IReader * reader,
+    /* [in] */ Int64 length)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
+ECode CJDBCPreparedStatement::SetCharacterStream(
+    /* [in] */ const String& parameterName,
     /* [in] */ IReader * reader,
     /* [in] */ Int64 length)
 {
@@ -796,8 +872,22 @@ ECode CJDBCPreparedStatement::SetAsciiStream(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
+ECode CJDBCPreparedStatement::SetAsciiStream(
+    /* [in] */ const String& parameterName,
+    /* [in] */ IInputStream * inputStream)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
 ECode CJDBCPreparedStatement::SetBinaryStream(
     /* [in] */ Int32 parameterIndex,
+    /* [in] */ IInputStream * inputStream)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
+ECode CJDBCPreparedStatement::SetBinaryStream(
+    /* [in] */ const String& parameterName,
     /* [in] */ IInputStream * inputStream)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -810,8 +900,22 @@ ECode CJDBCPreparedStatement::SetCharacterStream(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
+ECode CJDBCPreparedStatement::SetCharacterStream(
+    /* [in] */ const String& parameterName,
+    /* [in] */ IReader * reader)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
 ECode CJDBCPreparedStatement::SetNCharacterStream(
     /* [in] */ Int32 parameterIndex,
+    /* [in] */ IReader * reader)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
+ECode CJDBCPreparedStatement::SetNCharacterStream(
+    /* [in] */ const String& parameterName,
     /* [in] */ IReader * reader)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -824,6 +928,13 @@ ECode CJDBCPreparedStatement::SetClob(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
+ECode CJDBCPreparedStatement::SetClob(
+    /* [in] */ const String& parameterName,
+    /* [in] */ IReader * reader)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
 ECode CJDBCPreparedStatement::SetBlob(
     /* [in] */ Int32 parameterIndex,
     /* [in] */ IInputStream * inputStream)
@@ -831,8 +942,22 @@ ECode CJDBCPreparedStatement::SetBlob(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
 
+ECode CJDBCPreparedStatement::SetBlob(
+    /* [in] */ const String& parameterName,
+    /* [in] */ IInputStream * inputStream)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
 ECode CJDBCPreparedStatement::SetNClob(
     /* [in] */ Int32 parameterIndex,
+    /* [in] */ IReader * reader)
+{
+    return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
+}
+
+ECode CJDBCPreparedStatement::SetNClob(
+    /* [in] */ const String& parameterName,
     /* [in] */ IReader * reader)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -889,21 +1014,21 @@ ECode CJDBCPreparedStatement::SetByte(
     return E_SQL_EXCEPTION;
 }
 
-ECode CJDBCPreparedStatement::SetShort(
+ECode CJDBCPreparedStatement::SetInt16(
     /* [in] */ const String& parameterName,
     /* [in] */ Int16 val)
 {
     return E_SQL_EXCEPTION;
 }
 
-ECode CJDBCPreparedStatement::SetInt(
+ECode CJDBCPreparedStatement::SetInt32(
     /* [in] */ const String& parameterName,
     /* [in] */ Int32 val)
 {
     return E_SQL_EXCEPTION;
 }
 
-ECode CJDBCPreparedStatement::SetLong(
+ECode CJDBCPreparedStatement::SetInt64(
     /* [in] */ const String& parameterName,
     /* [in] */ Int64 val)
 {
@@ -1067,21 +1192,21 @@ ECode CJDBCPreparedStatement::GetByte(
     return E_SQL_EXCEPTION;
 }
 
-ECode CJDBCPreparedStatement::GetShort(
+ECode CJDBCPreparedStatement::GetInt16(
     /* [in] */ const String& parameterName,
     /* [out] */ Int16 * value)
 {
     return E_SQL_EXCEPTION;
 }
 
-ECode CJDBCPreparedStatement::GetInt(
+ECode CJDBCPreparedStatement::GetInt32(
     /* [in] */ const String& parameterName,
     /* [out] */ Int32 * value)
 {
     return E_SQL_EXCEPTION;
 }
 
-ECode CJDBCPreparedStatement::GetLong(
+ECode CJDBCPreparedStatement::GetInt64(
     /* [in] */ const String& parameterName,
     /* [out] */ Int64 * value)
 {
@@ -1153,7 +1278,7 @@ ECode CJDBCPreparedStatement::GetBigDecimal(
 
 ECode CJDBCPreparedStatement::GetObject(
     /* [in] */ const String& parameterName,
-    /* [in] */ IObjectMap * map,
+    /* [in] */ IMap * map,
     /* [out] */ IObject ** theobject)
 {
     return E_SQL_EXCEPTION;
@@ -1161,7 +1286,7 @@ ECode CJDBCPreparedStatement::GetObject(
 
 ECode CJDBCPreparedStatement::GetObject(
     /* [in] */ Int32 parameterIndex,
-    /* [in] */ IObjectMap * map,
+    /* [in] */ IMap * map,
     /* [out] */ IObject ** theobject)
 {
     return E_SQL_EXCEPTION;

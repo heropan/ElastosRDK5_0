@@ -3,6 +3,9 @@
 #define __CDATABASEHELPER_H__
 
 #include "_Elastos_Sql_SQLite_CDatabaseHelper.h"
+#include "Object.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {
@@ -13,6 +16,8 @@ CarClass(CDatabaseHelper)
     , public IDatabaseHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
     CAR_SINGLETON_DECL();
 
     CARAPI Complete(

@@ -2,7 +2,7 @@
 #ifndef __CBLOBR_H__
 #define __CBLOBR_H__
 
-#include "_CBlobR.h"
+#include "_Elastos_Sql_SQLite_CBlobR.h"
 #include "CBlob.h"
 #include <InputStream.h>
 
@@ -17,6 +17,8 @@ CarClass(CBlobR)
     , public IBlobR
 {
 public:
+    CAR_INTERFACE_DECL();
+
     CAR_OBJECT_DECL();
 
     CARAPI Available(
@@ -48,9 +50,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ Elastos::Sql::SQLite::IBlob* blob);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 private:
     AutoPtr<CBlob> mBlob;

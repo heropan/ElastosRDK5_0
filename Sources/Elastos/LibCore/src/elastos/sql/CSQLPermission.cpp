@@ -1,25 +1,35 @@
 
+#include "coredef.h"
 #include "CSQLPermission.h"
 
 namespace Elastos {
 namespace Sql {
 
+//TODO: to delete
+CAR_INTERFACE_IMPL(CSQLPermission, Object, ISQLPermission);
+
 CAR_OBJECT_IMPL(CSQLPermission);
 
-PInterface CTimestamp::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_ISQLPermission) {
-        return (IInterface*)(ISQLPermission*)this;
-    }
-    return BasicPermission::Probe(riid);
-}
+// PInterface CSQLPermission::Probe(
+//     /* [in] */ REIID riid)
+// {
+//     if (riid == EIID_ISQLPermission) {
+//         return (IInterface*)(ISQLPermission*)this;
+//     }
+
+//     //TODO
+//     assert(0);
+//     // return BasicPermission::Probe(riid);
+//     return NOERROR;
+// }
 
 ECode CSQLPermission::constructor(
     /* [in] */ const String& name)
 {
     // super("");
-    BasicPermission::Init(String(""));
+    //TODO
+    assert(0);
+    // BasicPermission::Init(String(""));
     return NOERROR;
 }
 
@@ -28,7 +38,9 @@ ECode CSQLPermission::constructor(
     /* [in] */ const String& actions)
 {
     // super("", "");
-    BasicPermission::Init(String(""), String(""));
+    //TODO
+    assert(0);
+    // BasicPermission::Init(String(""), String(""));
     return NOERROR;
 }
 

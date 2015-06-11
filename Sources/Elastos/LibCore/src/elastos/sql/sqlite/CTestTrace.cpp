@@ -15,20 +15,8 @@ ECode CTestTrace::Trace(
     /* [in] */ const String& stmt)
 {
     traceCalled = TRUE;
-    buf.AppendString(stmt);
+    buf.Append(stmt);
     return NOERROR;
-}
-
-PInterface CTestTrace::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_ITrace) {
-        return (ITrace*)this;
-    } else if (riid == EIID_ICallback) {
-        return (ICallback*)this;
-    } else {
-        return NULL;
-    }
 }
 
 ECode CTestTrace::Columns(

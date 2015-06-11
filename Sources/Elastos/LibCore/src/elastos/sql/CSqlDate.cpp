@@ -1,6 +1,6 @@
 
 #include "CSqlDate.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 
@@ -17,7 +17,11 @@ PInterface CSqlDate::Probe(
     if (riid == Elastos::Sql::EIID_IDate) {
         return (IInterface*)(Elastos::Sql::IDate*)this;
     }
-    return Date::Probe(riid);
+
+    //TODO
+    assert(0);
+    // return Date::Probe(riid);
+    return NULL;
 }
 
 ECode CSqlDate::GetHours(
@@ -132,11 +136,11 @@ void CSqlDate::Format(
     /* [in] */ Int32 digits,
     /* [in] */ AutoPtr<StringBuilder> sb)
 {
-    String str = StringUtils::Int32ToString(date);
+    String str = StringUtils::ToString(date);
     if (digits - str.GetLength() > 0) {
-        sb->AppendString(PADDING.Substring(0, digits - str.GetLength()));
+        sb->Append(PADDING.Substring(0, digits - str.GetLength()));
     }
-    sb->AppendString(str);
+    sb->Append(str);
 }
 
 } // namespace Sql

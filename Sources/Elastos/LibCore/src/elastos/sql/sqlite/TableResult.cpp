@@ -1,6 +1,6 @@
 
 #include "TableResult.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::StringBuffer;
 
@@ -51,7 +51,7 @@ ECode TableResult::ToString(
     StringBuffer sb;
     Int32 i = 0;
     for (i = 0; i < ncolumns; i++) {
-        sb.AppendString((*column)[i].IsNull() ? String("NULL") : (*column)[i]);
+        sb.Append((*column)[i].IsNull() ? String("NULL") : (*column)[i]);
         sb.AppendChar('|');
     }
     sb.AppendChar('\n');
@@ -59,7 +59,7 @@ ECode TableResult::ToString(
         Int32 k = 0;
         AutoPtr<ArrayOf<String> > row = rows[i];
         for (k = 0; k < ncolumns; k++) {
-            sb.AppendString((*row)[k].IsNull() ? String("NULL") : (*row)[k]);
+            sb.Append((*row)[k].IsNull() ? String("NULL") : (*row)[k]);
             sb.AppendChar('|');
         }
         sb.AppendChar('\n');

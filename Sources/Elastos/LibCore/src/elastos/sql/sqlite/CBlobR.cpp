@@ -7,14 +7,7 @@ namespace SQLite {
 
 CAR_OBJECT_IMPL(CBlobR);
 
-PInterface CBlobR::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IBlobR) {
-        return (IInterface*)(IBlobR*)this;
-    }
-    return InputStream::Probe(riid);
-}
+CAR_INTERFACE_IMPL(CBlobR, InputStream, IBlobR);
 
 ECode CBlobR::constructor(
     /* [in] */ Elastos::Sql::SQLite::IBlob* blob)

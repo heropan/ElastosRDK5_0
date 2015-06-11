@@ -1,8 +1,8 @@
 
 #include "CDBDump.h"
 #include "CTableResult.h"
-#include <elastos/StringBuffer.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::IO::IFlushable;
 using Elastos::IO::EIID_IFlushable;
@@ -36,7 +36,7 @@ ECode CDBDump::Newrow(
     if (args.GetLength() != 3) {
         *value = TRUE;
     }
-    s->pw->PrintStringln(args[2] + String(";"));
+    s->pw->Print(args[2] + String(";"));
     if (args[1].Equals("table") == 0) {
         CShell s2 ;
         s->Clone(s2);
@@ -55,13 +55,13 @@ ECode CDBDump::Newrow(
                 StringBuffer sb;
                 String sep = String("");
 
-                sb.AppendCStr("SELECT ");
-                for (UInt32 i = 0; i < ((CTableResult *)t.Get())->nrows; i++) {
+                sb.Append("SELECT ");
+                for (Int32 i = 0; i < ((CTableResult *)t.Get())->nrows; i++) {
                     String col = (*(((CTableResult *)t.Get())->rows)[i])[1];
-                    sb.AppendCStr(sep + "quote(" + CShell::SqlQuoteDbl(col) + ")");
+                    sb.Append(sep + "quote(" + CShell::SqlQuoteDbl(col) + ")");
                     sep = ",";
                 }
-                sb.AppendCStr(" from '%q'");
+                sb.Append(" from '%q'");
                 query = sb.ToString();
                 s2.mode = CShell::MODE_Insert2;
             }
@@ -74,7 +74,7 @@ ECode CDBDump::Newrow(
             ec = s2.db->Exec(String("SELECT * from '%q'"), &s2, *qargs);
         }
         if (ec != NOERROR) {
-            s->err->PrintStringln(String("SQL Error: ")+StringUtils::Int32ToString(ec,16));
+            s->err->Print(String("SQL Error: ")+StringUtils::ToString(ec,16));
             AutoPtr<IFlushable> iflush = (IFlushable*)s->err->Probe(EIID_IFlushable);
             iflush->Flush();
             *value = TRUE;
@@ -89,7 +89,7 @@ ECode CDBDump::constructor(
     /* [in] */ const ArrayOf<String> & tables)
 {
     s = (CShell *)ms;
-    s->pw->PrintStringln(String("BEGIN TRANSACTION;"));
+    s->pw->Print(String("BEGIN TRANSACTION;"));
     AutoPtr<IFlushable> iflush = (IFlushable*)s->err->Probe(EIID_IFlushable);
     if (tables.GetLength() == 0) {
         ECode  ec = s->db->Exec(String("SELECT name, type, sql FROM sqlite_master ") +
@@ -97,12 +97,12 @@ ECode CDBDump::constructor(
                         String("ORDER BY substr(type,2,1), name"), (ICallback *)this);
         if (ec != NOERROR)
         {
-            s->err->PrintStringln(String("SQL Error: ")+StringUtils::Int32ToString(ec,16));
+            s->err->Print(String("SQL Error: ")+StringUtils::ToString(ec,16));
             iflush->Flush();
         }
     } else {
         AutoPtr<ArrayOf<String> > arg = ArrayOf<String>::Alloc(1);
-        for (UInt32 i = 0; i < tables.GetLength(); i++) {
+        for (Int32 i = 0; i < tables.GetLength(); i++) {
             (*arg)[0] = tables[i];
             ECode ec = s->db->Exec(String("SELECT name, type, sql FROM sqlite_master ") +
                                    String("WHERE tbl_name LIKE '%q' AND type!='meta' ") +
@@ -110,12 +110,12 @@ ECode CDBDump::constructor(
                                    String(" ORDER BY substr(type,2,1), name"),
                                    (ICallback *)this, *arg);
          if(ec != NOERROR) {
-            s->err->PrintStringln(String("SQL Error: ")+StringUtils::Int32ToString(ec,16));
+            s->err->Print(String("SQL Error: ")+StringUtils::ToString(ec,16));
             iflush->Flush();
         }
         }
     }
-    s->pw->PrintStringln(String("COMMIT;"));
+    s->pw->Print(String("COMMIT;"));
     return NOERROR;
 }
 

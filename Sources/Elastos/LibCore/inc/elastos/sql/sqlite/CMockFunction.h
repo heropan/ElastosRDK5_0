@@ -3,9 +3,10 @@
 #define __CMOCKFUNCTION_H__
 
 #include "_Elastos_Sql_SQLite_CMockFunction.h"
-#include <coredef.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
+#include "Object.h"
 
+using Elastos::Core::Object;
 using Elastos::Core::StringBuffer;
 
 namespace Elastos {

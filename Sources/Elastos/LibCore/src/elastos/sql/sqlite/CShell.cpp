@@ -1,10 +1,9 @@
 
-#include "coredef.h"
 #include "CShell.h"
-#include <elastos/StringBuffer.h>
-#include "CPrintWriter.h"
+#include <elastos/core/StringBuffer.h>
+//#include "CPrintWriter.h"
 
-using Elastos::IO::CPrintWriter;
+//using Elastos::IO::CPrintWriter;
 using Elastos::Core::StringBuffer;
 
 namespace Elastos {
@@ -13,7 +12,7 @@ namespace SQLite {
 
 CAR_OBJECT_IMPL(CShell);
 
-CAR_OBJECT_IMPL_2(CShell, Object, IShell, ICallback);
+CAR_INTERFACE_IMPL_2(CShell, Object, IShell, ICallback);
 
 CShell::CShell()
     : echo(FALSE)
@@ -35,8 +34,10 @@ CARAPI CShell::constructor(
     /* [in] */ IPrintStream* ps,
     /* [in] */ IPrintStream* errs)
 {
-    FAIL_RETURN(CPrintWriter::New(ps,(IPrintWriter **)&pw));
-    FAIL_RETURN(CPrintWriter::New(errs,(IPrintWriter **)&err));
+    //TODO
+    assert(0);
+    // FAIL_RETURN(CPrintWriter::New(ps,(IPrintWriter **)&pw));
+    // FAIL_RETURN(CPrintWriter::New(errs,(IPrintWriter **)&err));
     return NOERROR;
 }
 void CShell::Clone(
@@ -79,10 +80,10 @@ ECode CShell::Newrow(
                 break;
             }
             if (count++ > 0) {
-                pw->PrintStringln(String(""));
+                pw->Print(String(""));
             }
             for (i = 0; i < args.GetLength(); i++) {
-                pw->PrintStringln((*cols)[i] + String(" = ") + (args[i] == NULL ? String("NULL") : args[i]));
+                pw->Print((*cols)[i] + String(" = ") + (args[i] == NULL ? String("NULL") : args[i]));
             }
             break;
         }
@@ -100,12 +101,12 @@ ECode CShell::Newrow(
                     }
                     (*colwidth)[i] = w;
                     if (showHeader) {
-                        pw->PrintStringln(csep + (*cols)[i]);
+                        pw->Print(csep + (*cols)[i]);
                         csep = String(" ");
                     }
                 }
                 if (showHeader) {
-                    pw->PrintStringln(String(""));
+                    pw->Print(String(""));
                 }
             }
             if (args.GetLength() == 0) {
@@ -113,10 +114,10 @@ ECode CShell::Newrow(
             }
             csep = String("");
             for (i = 0; i < args.GetLength(); i++) {
-                pw->PrintStringln(csep + (args[i] == NULL ? "NULL" : args[i]));
+                pw->Print(csep + (args[i] == NULL ? "NULL" : args[i]));
                 csep = String(" ");
             }
-            pw->PrintStringln(String(""));
+            pw->Print(String(""));
             break;
         }
 
@@ -125,7 +126,7 @@ ECode CShell::Newrow(
         {
             if (count++ == 0 && showHeader) {
             for (i = 0; i < args.GetLength(); i++) {
-                pw->PrintStringln((*cols)[i] +
+                pw->Print((*cols)[i] +
                      (i == args.GetLength() - 1 ? "\n" : sep));
             }
             }
@@ -133,34 +134,34 @@ ECode CShell::Newrow(
             break;
             }
             for (i = 0; i < args.GetLength(); i++) {
-            pw->PrintStringln(args[i] == NULL ? String("NULL") : args[i]);
+            pw->Print(args[i] == NULL ? String("NULL") : args[i]);
             if (mode == MODE_Semi) {
-            pw->PrintStringln(String(";"));
+            pw->Print(String(";"));
             } else if (i < args.GetLength() - 1) {
-                pw->PrintStringln(sep);
+                pw->Print(sep);
             }
             }
-            pw->PrintStringln(String(""));
+            pw->Print(String(""));
             break;
         }
 
     case MODE_Html:
         {
             if (count++ == 0 && showHeader) {
-                pw->PrintStringln(String("<TR>"));
+                pw->Print(String("<TR>"));
                 for (i = 0; i < args.GetLength(); i++) {
-                    pw->PrintStringln(String("<TH>") + HtmlQuote((*cols)[i]) + String("</TH>"));
+                    pw->Print(String("<TH>") + HtmlQuote((*cols)[i]) + String("</TH>"));
             }
-            pw->PrintStringln(String("</TR>"));
+            pw->Print(String("</TR>"));
             }
             if (args.GetLength() == 0) {
             break;
             }
-            pw->PrintStringln(String("<TR>"));
+            pw->Print(String("<TR>"));
             for (i = 0; i < args.GetLength(); i++) {
-                pw->PrintStringln(String("<TD>") + HtmlQuote(args[i]) + String("</TD>"));
+                pw->Print(String("<TD>") + HtmlQuote(args[i]) + String("</TD>"));
             }
-            pw->PrintStringln(String("</TR>"));
+            pw->Print(String("</TR>"));
             break;
         }
     case MODE_Insert:
@@ -172,20 +173,20 @@ ECode CShell::Newrow(
             if (destTable != NULL) {
                 tname = destTable;
             }
-            pw->PrintStringln(String("INSERT Int32O ") + tname + String(" VALUES("));
+            pw->Print(String("INSERT Int32O ") + tname + String(" VALUES("));
             for (i = 0; i < args.GetLength(); i++) {
                 String tsep = i > 0 ? String(",") : String("");
             if (args[i] == NULL) {
-                pw->PrintStringln(tsep + String("NULL"));
+                pw->Print(tsep + String("NULL"));
             }
             else if (IsNumeric(args[i])) {
-                 pw->PrintStringln(tsep + args[i]);
+                 pw->Print(tsep + args[i]);
             }
             else {
-                pw->PrintStringln(tsep + SqlQuote(args[i]));
+                pw->Print(tsep + SqlQuote(args[i]));
             }
             }
-            pw->PrintStringln(String(");"));
+            pw->Print(String(");"));
             break;
         }
 
@@ -198,12 +199,12 @@ ECode CShell::Newrow(
             if (destTable != NULL) {
                 tname = destTable;
             }
-            pw->PrintStringln(String("INSERT Int32O ") + tname + String(" VALUES("));
+            pw->Print(String("INSERT Int32O ") + tname + String(" VALUES("));
             for (i = 0; i < args.GetLength(); i++) {
                 String tsep = i > 0 ? String(",") : String("");
-            pw->PrintStringln(tsep + args[i]);
+            pw->Print(tsep + args[i]);
             }
-            pw->PrintStringln(String(");"));
+            pw->Print(String(");"));
             break;
         }
     }
@@ -221,23 +222,23 @@ String CShell::HtmlQuote(
     StringBuffer sb;
     Char32 c;
     AutoPtr<ArrayOf<Char32> > charArray = str.GetChars();
-    for (UInt32 i = 0; i < charArray->GetLength(); i++) {
+    for (Int32 i = 0; i < charArray->GetLength(); i++) {
         c = (*charArray)[i];
         if (c == '<') {
-            sb.AppendCStr("&lt;");
+            sb.Append("&lt;");
         }
         else if (c == '>') {
-            sb.AppendCStr("&gt;");
+            sb.Append("&gt;");
         }
         else if (c == '&') {
-            sb.AppendCStr("&amp;");
+            sb.Append("&amp;");
         }
         else {
             Int32 x = c;
             if (x < 32 || x > 127) {
-                sb.AppendCStr("&#");
+                sb.Append("&#");
                 sb.AppendChar(c);
-                sb.AppendCStr(";");
+                sb.Append(";");
 
             } else {
                 sb.AppendChar(c);
@@ -266,7 +267,7 @@ String CShell::SqlQuoteDbl(
 
     Char32 c;
     AutoPtr<ArrayOf<Char32> > charArray = str.GetChars();
-    UInt32 i = 0, single = 0, dbl = 0;
+    Int32 i = 0, single = 0, dbl = 0;
     for (i = 0; i < charArray->GetLength(); i++) {
         c = (*charArray)[i];
         if (c == '\'') {
@@ -302,7 +303,7 @@ String CShell::SqlQuote(
     }
 
     AutoPtr<ArrayOf<Char32> > charArray = str.GetChars();
-    UInt32 i, single = 0, dbl = 0;
+    Int32 i, single = 0, dbl = 0;
     Char32 ch;
     for (i = 0; i < charArray->GetLength(); i++) {
         ch = (*charArray)[i];

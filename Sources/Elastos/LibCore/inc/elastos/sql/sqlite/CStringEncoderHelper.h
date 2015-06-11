@@ -3,6 +3,9 @@
 #define __CSTRINGENCODERHELPER_H__
 
 #include "_Elastos_Sql_SQLite_CStringEncoderHelper.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {
@@ -13,6 +16,8 @@ CarClass(CStringEncoderHelper)
     , public IStringEncoderHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
     CAR_SINGLETON_DECL();
 
     CARAPI Encode(

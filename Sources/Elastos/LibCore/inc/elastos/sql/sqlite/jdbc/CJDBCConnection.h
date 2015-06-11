@@ -6,7 +6,7 @@
 #include "Object.h"
 
 using Elastos::Core::Object;
-using Elastos::Utility::IObjectStringMap;
+using Elastos::Utility::IMap;
 using Elastos::Utility::IProperties;
 using Elastos::Sql::ISQLWarning;
 using Elastos::Sql::IStatement;
@@ -73,7 +73,7 @@ public:
         /* [out] */ Int32 * pValue);
 
     CARAPI GetTypeMap(
-        /* [out] */ IObjectStringMap ** typemap);
+        /* [out] */ IMap ** typemap);
 
     CARAPI GetWarnings(
         /* [out] */ ISQLWarning ** ppWarning);
@@ -163,7 +163,7 @@ public:
         /* [in] */ Int32 level);
 
     CARAPI SetTypeMap(
-        /* [in] */ IObjectStringMap * typemap);
+        /* [in] */ IMap * typemap);
 
     CARAPI CreateClob(
         /* [out] */ IClob ** ppClob);

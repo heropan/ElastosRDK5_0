@@ -3,6 +3,9 @@
 #define __CDRIVERPROPERTYINFO_H__
 
 #include "_Elastos_Sql_CDriverPropertyInfo.h"
+#include "Object.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {

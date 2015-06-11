@@ -15,22 +15,17 @@ CarClass(CTableResultX)
     , public ITableResultX
 {
 public:
+    CAR_INTERFACE_DECL();
+
     CAR_OBJECT_DECL();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CARAPI constructor();
 
-    CARAPI_(UInt32) Release();
+    CARAPI constructor(
+        /* [in] */ Int32 maxrows);
 
-    CARAPI Columns(
-        /* [in] */ const ArrayOf<String>& coldata);
-
-    CARAPI Types(
-        /* [in] */ const ArrayOf<String>& intypes);
-
-    CARAPI Newrow(
-        /* [in] */ const ArrayOf<String>& rowdata,
-        /* [out] */ Boolean * value);
+    CARAPI constructor(
+        /* [in] */ Elastos::Sql::SQLite::ITableResult* tr);
 
     CARAPI_(void) Sql_types(
         /* [in] */ ArrayOf<Int32>* types);

@@ -3,8 +3,9 @@
 #define __CJDBCDRIVER_H__
 
 #include "_Elastos_Sql_SQLite_CJDBCDriver.h"
-#include "coredef.h"
+#include "Object.h"
 
+using Elastos::Core::Object;
 using Elastos::Utility::IProperties;
 using Elastos::Sql::IConnection;
 using Elastos::Sql::IDriverPropertyInfo;

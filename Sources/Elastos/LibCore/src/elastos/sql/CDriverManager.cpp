@@ -2,11 +2,12 @@
 #include "CDriverManager.h"
 #include "CSystem.h"
 #include "Pattern.h"
+// #include "CProperties.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Utility::Regex::Pattern;
 using Elastos::Utility::IProperties;
-using Elastos::Utility::CProperties;
+// using Elastos::Utility::CProperties;
 
 namespace Elastos {
 namespace Sql {
@@ -17,7 +18,8 @@ AutoPtr<IPrintStream> CDriverManager::thePrintStream;
 AutoPtr<IPrintWriter> CDriverManager::thePrintWriter;
 Boolean CDriverManager::isinitflag = FALSE;
 
-CAR_SINGLETON_IMPL(CDriverManager, Object, IDriverManagerHelper);
+CAR_INTERFACE_IMPL(CDriverManager, Object, IDriverManagerHelper);
+CAR_SINGLETON_IMPL(CDriverManager);
 
 CDriverManager::CDriverManager()
 {
@@ -71,8 +73,10 @@ ECode CDriverManager::DeregisterDriver(
     if (!IsClassFromClassLoader(driver, callerClassLoader)) {
         return E_SQL_SECURITY_EXCEPTION;
     }
-    Mutex::Autolock lock(mLock);
-    theDrivers.Remove((IDriver *)driver);
+
+    synchronized(theDriversTmpLock) {
+        theDrivers.Remove((IDriver *)driver);
+    }
 
     return NOERROR;
 }
@@ -81,8 +85,10 @@ ECode CDriverManager::GetConnection(
     /* [in] */ const String& url,
     /* [out] */ IConnection ** conn)
 {
-    AutoPtr<IProperties> mprope = NULL;
-    CProperties::New((IProperties **)&mprope);
+    AutoPtr<IProperties> mprope;
+    //TODO
+    assert(0);
+    // CProperties::New((IProperties **)&mprope);
     return GetConnection(url, mprope , conn);
 }
 
@@ -97,8 +103,8 @@ ECode CDriverManager::GetConnection(
     if (url.IsNull()) {
         return E_SQL_EXCEPTION;
     }
-    {
-        Mutex::Autolock lock(mLock);
+
+    synchronized(theDriversTmpLock) {
         /*
          * Loop over the drivers in the DriverSet checking to see if one can
          * open a connection to the supplied URL - return the first
@@ -125,7 +131,9 @@ ECode CDriverManager::GetConnection(
     /* [out] */ IConnection ** conn)
 {
     AutoPtr<IProperties> theProperties;
-    CProperties::New((IProperties **)&theProperties);
+    //TODO
+    assert(0);
+    // CProperties::New((IProperties **)&theProperties);
 
     String temp;
     if (!user.IsNull()) {
@@ -143,8 +151,7 @@ ECode CDriverManager::GetDriver(
 {
     AutoPtr<IClassLoader> callerClassLoader  ;//= VMStack.getCallingClassLoader();
     assert(0 && "TODO");
-    {
-        Mutex::Autolock lock(mLock);
+    synchronized(theDriversTmpLock) {
         /*
          * Loop over the drivers in the DriverSet checking to see if one
          * does understand the supplied URL - return the first driver which
@@ -178,8 +185,7 @@ ECode CDriverManager::GetDrivers(
      */
     AutoPtr<IClassLoader> callerClassLoader ; //= VMStack.getCallingClassLoader();
     assert(0 && "TODO");
-    {
-        Mutex::Autolock lock(mLock);
+    synchronized(theDriversTmpLock) {
         List<AutoPtr<IDriver> > result;
         List<AutoPtr<IDriver> >::Iterator iter = theDrivers.Begin();
         while (iter != theDrivers.End()) {
@@ -221,10 +227,10 @@ ECode CDriverManager::Println(
     /* [in] */ const String& message)
 {
     if (thePrintWriter != NULL) {
-        thePrintWriter->PrintString(message);
+        thePrintWriter->Print(message);
         // thePrintWriter->Flush();
     } else if (thePrintStream != NULL) {
-        thePrintStream->PrintString(message);
+        thePrintStream->Print(message);
         // thePrintStream->Flush();
     }
     /*
@@ -240,8 +246,7 @@ ECode CDriverManager::RegisterDriver(
     if (driver == NULL) {
         return E_SQL_NULL_POINTER_EXCEPTION;
     }
-    {
-        Mutex::Autolock lock(mLock);
+    synchronized(theDriversTmpLock) {
         theDrivers.PushBack(driver);
     }
     return NOERROR;

@@ -133,7 +133,7 @@ ECode JDBCStatement::ExecuteBatch(
     for (Int32 i = 0; i < ret->GetLength(); i++) {
         // try {
         Boolean Exflag = FALSE;
-        Exflag = Execute(batch[i]);
+        Execute(batch[i], &Exflag);
         (*ret)[i] = updcnt;
         // } catch (SQLException e) {
         if (!Exflag)
@@ -249,7 +249,7 @@ ECode JDBCStatement::ExecuteQuery(
                     }
 
                     synchronized(this) {
-                        Wait(&ms);
+                        Wait(ms);
                     }
                     // }
                     // catch (java.lang.Exception eee) {
@@ -267,10 +267,10 @@ ECode JDBCStatement::ExecuteQuery(
         return E_SQL_EXCEPTION;
     }
     if (!updonly && tr != NULL) {
-        CJDBCResultSet::New(tr, (IJDBCStatement *)this->Probe(),(IJDBCResultSet **)&rs);
+        CJDBCResultSet::New(tr, (IJDBCStatement *)this->Probe(EIID_IJDBCStatement),(IJDBCResultSet **)&rs);
     }
 
-    *resultset = rs.Get();
+    *resultset = IResultSet::Probe(rs);
     REFCOUNT_ADD(*resultset);
     return NOERROR;
 }
@@ -327,7 +327,7 @@ ECode JDBCStatement::GetConnection(
     /* [out] */ IConnection ** value)
 {
     VALIDATE_NOT_NULL(*value);
-    *value = conn;
+    *value = IConnection::Probe(conn);
     REFCOUNT_ADD(*value);
     return NOERROR;
 }
@@ -405,7 +405,7 @@ ECode JDBCStatement::GetResultSet(
     /* [out] */ IResultSet** value)
 {
     VALIDATE_NOT_NULL(*value);
-    *value = rs.Get();
+    *value = IResultSet::Probe(rs);
     REFCOUNT_ADD(*value);
     return NOERROR;
 }

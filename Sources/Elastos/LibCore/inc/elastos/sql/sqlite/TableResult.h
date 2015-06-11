@@ -2,10 +2,11 @@
 #ifndef __TABLERESULT_H__
 #define __TABLERESULT_H__
 
-#include <coredef.h>
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/Vector.h>
 
 using Elastos::Utility::Etl::Vector;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {

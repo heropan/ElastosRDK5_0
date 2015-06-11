@@ -3,9 +3,10 @@
 #define __CTESTTRACE_H__
 
 #include "_Elastos_Sql_SQLite_CTestTrace.h"
-#include <coredef.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
+#include "Object.h"
 
+using Elastos::Core::Object;
 using Elastos::Core::StringBuffer;
 
 namespace Elastos {
@@ -24,9 +25,6 @@ public:
 
     CARAPI Trace(
         /* [in] */ const String& stmt);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI Columns(
         /* [in] */ const ArrayOf<String>& coldata);

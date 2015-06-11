@@ -1,3 +1,4 @@
+
 #include "CMockFunction.h"
 
 namespace Elastos {
@@ -36,8 +37,8 @@ ECode CMockFunction::Step(
 {
     stepCalled = TRUE;
     for (Int32 i = 0; i < args.GetLength(); i++) {
-        acc.AppendString(args[i]);
-        acc.AppendCStr(" ");
+        acc.Append(args[i]);
+        acc.Append(" ");
     }
     return NOERROR;
 }

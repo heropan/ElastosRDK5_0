@@ -17,10 +17,9 @@ CarClass(CBlobW)
     , public IBlobW
 {
 public:
-    CAR_OBJECT_DECL();
+    CAR_INTERFACE_DECL();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL();
 
     CBlobW();
 
@@ -39,6 +38,8 @@ public:
 
     CARAPI constructor(
         /* [in] */ Elastos::Sql::SQLite::IBlob* blob);
+
+    CARAPI Flush();
 
 private:
     AutoPtr<CBlob> mBlob;

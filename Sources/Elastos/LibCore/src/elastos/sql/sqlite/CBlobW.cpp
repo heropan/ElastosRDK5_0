@@ -7,18 +7,11 @@ namespace SQLite {
 
 CAR_OBJECT_IMPL(CBlobW);
 
+CAR_INTERFACE_IMPL(CBlobW, OutputStream, IBlobW);
+
 CBlobW::CBlobW()
     : mPos(0)
 {
-}
-
-PInterface CBlobW::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IBlobW) {
-        return (IInterface*)(IBlobW*)this;
-    }
-    return OutputStream::Probe(riid);
 }
 
 ECode CBlobW::constructor(
@@ -67,6 +60,11 @@ ECode CBlobW::Close()
     mBlob->Close();
     mBlob = NULL;
     mPos = 0;
+    return NOERROR;
+}
+
+ECode CBlobW::Flush()
+{
     return NOERROR;
 }
 
