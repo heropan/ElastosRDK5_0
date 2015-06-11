@@ -1,5 +1,5 @@
-#ifndef __UTILITY_PROPERTIES_H__
-#define __UTILITY_PROPERTIES_H__
+#ifndef __ELASTOS_UTILITY_PROPERTIES_H__
+#define __ELASTOS_UTILITY_PROPERTIES_H__
 
 #include "HashTable.h"
 
@@ -15,9 +15,13 @@ using Elastos::Core::IStringBuilder;
 namespace Elastos{
 namespace Utility{
 
-class Properties : public HashTable
+class Properties
+    : public HashTable
+    , public IProperties
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI GetProperty(
         /* [in] */ const String& name,
         /* [out] */ String* str);
@@ -120,4 +124,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_PROPERTIES_H__
+#endif // __ELASTOS_UTILITY_PROPERTIES_H__

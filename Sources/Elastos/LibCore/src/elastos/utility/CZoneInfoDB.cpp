@@ -4,6 +4,10 @@
 namespace Elastos{
 namespace Utility{
 
+CAR_INTERFACE_IMPL(CZoneInfoDB, Singleton, IZoneInfoDB)
+
+CAR_SINGLETON_IMPL(CZoneInfoDB)
+
 ECode CZoneInfoDB::constructor()
 {
     return ZoneInfoDB::Init();

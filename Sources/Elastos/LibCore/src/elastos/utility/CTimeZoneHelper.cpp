@@ -1,9 +1,13 @@
-#include <cmdef.h>
+
 #include "CTimeZoneHelper.h"
 #include "TimeZone.h"
 
 namespace Elastos {
 namespace Utility {
+
+CAR_INTERFACE_IMPL(CTimeZoneHelper, Singleton, ITimeZoneHelper)
+
+CAR_SINGLETON_IMPL(CTimeZoneHelper)
 
 ECode CTimeZoneHelper::GetAvailableIDs(
     /* [out, callee] */ ArrayOf<String> ** array)

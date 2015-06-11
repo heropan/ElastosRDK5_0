@@ -1,4 +1,4 @@
-#include <cmdef.h>
+
 #include "CZoneInfo.h"
 #include "Arrays.h"
 #include "CFormatter.h"
@@ -7,7 +7,7 @@
 #include "CStringWrapper.h"
 #include "CSimpleDateFormat.h"
 #include "CSystem.h"
-#include <elastos/Math.h>
+#include <Math.h>
 #include <assert.h>
 
 namespace Elastos{
@@ -36,11 +36,9 @@ const Int32 CZoneInfo::LEAP[] = {
         0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335,
 };
 
-PInterface CZoneInfo::Probe(
-        /* [in] */ REIID riid)
-{
-    return _CZoneInfo::Probe(riid);
-}
+CAR_INTERFACE_IMPL(CZoneInfo, TimeZone, IZoneInfo)
+
+CAR_OBJECT_IMPL(CZoneInfo)
 
 ECode CZoneInfo::constructor(
     /* [in] */ const String& name,
@@ -431,49 +429,6 @@ ECode CZoneInfo::Clone(
     REFCOUNT_ADD(*newObj)
     return NOERROR;
 }
-
-ECode CZoneInfo::SetID(
-    /* [in] */ const String& id)
-{
-    return TimeZone::SetID(id);
-}
-
-ECode CZoneInfo::GetID(
-    /* [out] */ String* id)
-{
-    return TimeZone::GetID(id);
-}
-
-ECode CZoneInfo::GetDisplayName(
-    /* [out] */ String* name)
-{
-    return TimeZone::GetDisplayName(name);
-}
-
-ECode CZoneInfo::GetDisplayName(
-    /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
-{
-    return TimeZone::GetDisplayName(locale, name);
-}
-
-ECode CZoneInfo::GetDisplayName(
-    /* [in] */ Boolean daylightTime,
-    /* [in] */ Int32 style,
-    /* [out] */ String* name)
-{
-    return TimeZone::GetDisplayName(daylightTime, style, name);
-}
-
-ECode CZoneInfo::GetDisplayName(
-    /* [in] */ Boolean daylightTime,
-    /* [in] */ Int32 style,
-    /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
-{
-    return TimeZone::GetDisplayName(daylightTime, style, locale, name);
-}
-
 
 } // Utility
 } // Elastos

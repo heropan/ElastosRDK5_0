@@ -19,8 +19,8 @@
 #include "Character.h"
 #include "CharBuffer.h"
 #include "NumberFormat.h"
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
+#include <Math.h>
+#include <StringUtils.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
@@ -78,6 +78,10 @@ const Int32 CScanner::DIPLOID;
 const Int32 CScanner::DEFAULT_RADIX;
 
 const Int32 CScanner::DEFAULT_TRUNK_SIZE;
+
+CAR_INTERFACE_IMPL_2(CScanner, Object, IScanner, IIterator)
+
+CAR_OBJECT_IMPL(CScanner)
 
 Boolean CScanner::StaticInit()
 {

@@ -8,9 +8,9 @@
 #include "CFile.h"
 #include "CHashSet.h"
 #include "CHashTable.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/CSystem.h>
+#include <StringBuilder.h>
+#include <StringUtils.h>
+#include <CSystem.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
@@ -108,7 +108,7 @@ ResourceBundle::Control::Control()
     CCollections::_NewUnmodifiableList(sListClass, (IList**)&mFormat);
 }
 
-CAR_INTERFACE_IMPL(ResourceBundle::Control, IResourceBundleControl)
+CAR_INTERFACE_IMPL(ResourceBundle::Control, Object, IResourceBundleControl)
 
 ECode ResourceBundle::Control::GetCandidateLocales(
     /* [in] */ const String& baseName,
@@ -569,6 +569,8 @@ const AutoPtr<IMap> ResourceBundle::sCache;
 Mutex ResourceBundle::mLock;
 
 AutoPtr<ILocale> ResourceBundle::sCacheLocale; // = CLocale::GetDefault();
+
+CAR_INTERFACE_IMPL(ResourceBundle, Object, IResourceBundle)
 
 Boolean ResourceBundle::ishostinit()
 {

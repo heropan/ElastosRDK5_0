@@ -1,15 +1,12 @@
 
-#ifndef __UTILITY_CURRENCY_H__
-#define __UTILITY_CURRENCY_H__
+#ifndef __ELASTOS_UTILITY_CURRENCY_H__
+#define __ELASTOS_UTILITY_CURRENCY_H__
 
-#include <cmdef.h>
-#include <Elastos.CoreLibrary_server.h>
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/Object.h>
 
 using Libcore::ICU::ILocale;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 
 _ETL_NAMESPACE_BEGIN
 #ifndef DEFINE_HASH_AUTOPTR_ILOCALE_USING_HASH_CODE
@@ -42,7 +39,7 @@ namespace Elastos{
 namespace Utility{
 
 class Currency
-    : public ElRefBase
+    : public Object
     , public ICurrency
 {
 public:
@@ -92,11 +89,9 @@ private:
     static HashMap<AutoPtr<ILocale>, AutoPtr<ICurrency> > sLocalesToCurrencies; // = new HashMap<Locale, Currency>();
 
     String mCurrencyCode;
-
-    static Mutex mLock;
 };
 
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__UTILITY_CURRENCY_H__
+#endif //__ELASTOS_UTILITY_CURRENCY_H__

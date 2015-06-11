@@ -1,7 +1,10 @@
-#ifndef __UTILITY_CZONEINFODB_H__
-#define __UTILITY_CZONEINFODB_H__
+#ifndef __ELASTOS_UTILITY_CZONEINFODB_H__
+#define __ELASTOS_UTILITY_CZONEINFODB_H__
 
-#include "_CZoneInfoDB.h"
+#include "_Elastos_Utility_CZoneInfoDB.h"
+#include "Singleton.h"
+
+using Elastos::Core::Singleton;
 
 namespace Elastos{
 namespace Utility{
@@ -12,8 +15,14 @@ namespace Utility{
  * @hide - used to implement TimeZone
  */
 CarClass(CZoneInfoDB)
+    , public Singleton
+    , public IZoneInfoDB
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI constructor();
 
     CARAPI GetAvailableIDs(
@@ -41,4 +50,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__UTILITY_CZONEINFODB_H__
+#endif //__ELASTOS_UTILITY_CZONEINFODB_H__

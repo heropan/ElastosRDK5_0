@@ -3,7 +3,7 @@
 #include "Grego.h"
 #include "Calendar.h"
 #include "CGregorianCalendar.h"
-#include <elastos/StringBuilder.h>
+#include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -14,6 +14,10 @@ const Int32 CSimpleTimeZone::DOM_MODE;
 const Int32 CSimpleTimeZone::DOW_IN_MONTH_MODE;
 const Int32 CSimpleTimeZone::DOW_GE_DOM_MODE;
 const Int32 CSimpleTimeZone::DOW_LE_DOM_MODE;
+
+CAR_INTERFACE_IMPL(CSimpleTimeZone, TimeZone, ISimpleTimeZone)
+
+CAR_OBJECT_IMPL(CSimpleTimeZone)
 
 CSimpleTimeZone::CSimpleTimeZone()
     : mRawOffset(0)
@@ -713,48 +717,6 @@ ECode CSimpleTimeZone::UseDaylightTime(
     VALIDATE_NOT_NULL(pIsUsed);
     *pIsUsed = mUseDaylight;
     return NOERROR;
-}
-
-ECode CSimpleTimeZone::SetID(
-    /* [in] */ const String& id)
-{
-    return TimeZone::SetID(id);
-}
-
-ECode CSimpleTimeZone::GetID(
-    /* [out] */ String* id)
-{
-    return TimeZone::GetID(id);
-}
-
-ECode CSimpleTimeZone::GetDisplayName(
-    /* [out] */ String* name)
-{
-    return TimeZone::GetDisplayName(name);
-}
-
-ECode CSimpleTimeZone::GetDisplayName(
-    /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
-{
-    return TimeZone::GetDisplayName(locale, name);
-}
-
-ECode CSimpleTimeZone::GetDisplayName(
-    /* [in] */ Boolean daylightTime,
-    /* [in] */ Int32 style,
-    /* [out] */ String* name)
-{
-    return TimeZone::GetDisplayName(daylightTime, style, name);
-}
-
-ECode CSimpleTimeZone::GetDisplayName(
-    /* [in] */ Boolean daylightTime,
-    /* [in] */ Int32 style,
-    /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
-{
-    return TimeZone::GetDisplayName(daylightTime, style, locale, name);
 }
 
 // private void writeObject(ObjectOutputStream stream) throws IOException {

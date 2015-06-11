@@ -1,10 +1,9 @@
 
-#ifndef __CSCANNER_H__
-#define __CSCANNER_H__
+#ifndef __ELASTOS_UTILITY_CSCANNER_H__
+#define __ELASTOS_UTILITY_CSCANNER_H__
 
-#include "_CScanner.h"
-#include <cmdef.h>
-#include <elastos/StringBuilder.h>
+#include "_Elastos_Utility_CScanner.h"
+#include <StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IFile;
@@ -24,6 +23,9 @@ namespace Elastos {
 namespace Utility {
 
 CarClass(CScanner)
+    , public Object
+    , public IScanner
+    , public IIterator
 {
 private:
     enum DataType {
@@ -37,6 +39,10 @@ private:
         FLOAT
     };
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CScanner();
 
     /**
@@ -1206,4 +1212,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CSCANNER_H__
+#endif //__ELASTOS_UTILITY_CSCANNER_H__

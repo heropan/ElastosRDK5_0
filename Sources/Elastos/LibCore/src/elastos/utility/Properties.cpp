@@ -10,9 +10,9 @@
 #include "CHashTable.h"
 #include "CCollections.h"
 #include "CSystem.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Character.h>
+#include <StringBuilder.h>
+#include <StringUtils.h>
+#include <Character.h>
 #include <cutils/log.h>
 
 using Elastos::Core::StringBuilder;
@@ -58,6 +58,8 @@ static AutoPtr<ICharSequence> StrToCS(
     CStringWrapper::New(str, (ICharSequence**)&cs);
     return cs;
 }
+
+CAR_INTERFACE_IMPL(Properties, HashTable, IProperties)
 
 Properties::Properties()
 {

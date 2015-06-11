@@ -1,5 +1,4 @@
 #include "Calendar.h"
-#include <cmdef.h>
 #include <CObjectStringMap.h>
 #include <unistd.h>
 #include "CDateFormatSymbolsHelper.h"
@@ -43,7 +42,7 @@ const String Calendar::FIELD_NAMES[] = {String("ERA"), String("YEAR"), String("M
         String("HOUR_OF_DAY"), String("MINUTE"), String("SECOND"), String("MILLISECOND"),
         String("ZONE_OFFSET"), String("DST_OFFSET") };
 
-Mutex Calendar::sLock;
+CAR_INTERFACE_IMPL(Calendar, Object, ICalendar)
 
 Calendar::Calendar()
     : mAreFieldsSet(FALSE)
@@ -324,7 +323,7 @@ ECode Calendar::GetAvailableLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** ppLocales)
 {
     VALIDATE_NOT_NULL(ppLocales);
-    Mutex::Autolock lock(sLock);
+    Object::Autolock lock(this);
     AutoPtr<IICUHelper> icuHelper;
     CICUHelper::AcquireSingleton((IICUHelper**)&icuHelper);
     return icuHelper->GetAvailableCalendarLocales(ppLocales);
@@ -343,7 +342,7 @@ ECode Calendar::GetInstance(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = NULL;
-    Mutex::Autolock lock(sLock);
+    Object::Autolock lock(this);
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend((CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
@@ -357,7 +356,7 @@ ECode Calendar::GetInstance(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = NULL;
-    Mutex::Autolock lock(sLock);
+    Object::Autolock lock(this);
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(locale, (CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
@@ -371,7 +370,7 @@ ECode Calendar::GetInstance(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = NULL;
-    Mutex::Autolock lock(sLock);
+    Object::Autolock lock(this);
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(timezone, (CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
@@ -386,7 +385,7 @@ ECode Calendar::GetInstance(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = NULL;
-    Mutex::Autolock lock(sLock);
+    Object::Autolock lock(this);
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(timezone, locale, (CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);

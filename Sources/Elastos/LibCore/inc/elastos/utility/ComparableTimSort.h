@@ -1,8 +1,9 @@
 #ifndef __ELASTOS_UTILITY_COMPARABLETIMSORT_H__
 #define __ELASTOS_UTILITY_COMPARABLETIMSORT_H__
 
-#include <Elastos.CoreLibrary_server.h>
+#include "elastos/core/Object.h"
 
+using Elastos::Core::Object;
 using Elastos::Core::IComparable;
 
 namespace Elastos{
@@ -19,6 +20,7 @@ namespace Utility{
  * eliminate the code duplication.  (See Arrays.java for details.)
  */
 class ComparableTimSort
+    : public Object
 {
 public:
     /*

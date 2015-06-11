@@ -1,12 +1,9 @@
-#ifndef __UTILITY_CCALENDAR_H__
-#define __UTILITY_CCALENDAR_H__
+#ifndef __ELASTOS_UTILITY_CCALENDAR_H__
+#define __ELASTOS_UTILITY_CCALENDAR_H__
 
 #include <elautoptr.h>
-#include "Elastos.CoreLibrary_server.h"
-#include <elastos/Mutex.h>
 
 using Libcore::ICU::ILocale;
-using Elastos::Core::Mutex;
 
 namespace Elastos{
 namespace Utility{
@@ -16,8 +13,11 @@ extern "C" const InterfaceID EIID_Calendar;
 class IObjectStringMap;
 
 class Calendar
+    : public Object
+    , public ICalendar
 {
 protected:
+    CAR_INTERFACE_DECL()
 
     Calendar();
 
@@ -47,10 +47,7 @@ public:
 
     virtual ~Calendar() {}
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ITimeZone* timezone);
 
     /**
@@ -689,8 +686,6 @@ protected:
 
     AutoPtr<ITimeZone> mZone;
 
-    static Mutex sLock;
-
 public:
     Int32 mLastTimeFieldSet;
     Int32 mLastDateFieldSet;
@@ -699,4 +694,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__UTILITY_CCALENDAR_H__
+#endif //__ELASTOS_UTILITY_CCALENDAR_H__

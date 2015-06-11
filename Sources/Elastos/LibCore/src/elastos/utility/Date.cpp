@@ -36,6 +36,8 @@ namespace Utility{
 
 Int32 Date::sCreationYear = -1;
 
+CAR_INTERFACE_IMPL(Date, Object, IDate)
+
 Int32 Date::GetCreationYear()
 {
     if (sCreationYear == -1) {

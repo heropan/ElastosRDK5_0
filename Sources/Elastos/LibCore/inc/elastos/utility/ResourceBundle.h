@@ -1,8 +1,7 @@
-#ifndef __UTILITY_RESOURCEBUNDLE_H__
-#define __UTILITY_RESOURCEBUNDLE_H__
+#ifndef __ELASTOS_UTILITY_RESOURCEBUNDLE_H__
+#define __ELASTOS_UTILITY_RESOURCEBUNDLE_H__
 
-#include "Elastos.CoreLibrary_server.h"
-#include <elastos/Mutex.h>
+
 
 using Elastos::Core::IClassLoader;
 using Elastos::Core::Mutex;
@@ -62,6 +61,8 @@ namespace Utility {
  * @since 1.1
  */
 class ResourceBundle
+    : public Object
+    , public IResourceBundle
 {
 public:
     /**
@@ -73,7 +74,7 @@ public:
      */
     class Control
         : public IResourceBundleControl
-        , public ElRefBase
+        , public Object
     {
     protected:
         /**
@@ -300,6 +301,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Constructs a new instance of this class.
      */
@@ -645,4 +648,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_RESOURCEBUNDLE_H__
+#endif // __ELASTOS_UTILITY_RESOURCEBUNDLE_H__

@@ -1,20 +1,23 @@
 
-#ifndef __UTILITY_CSIMPLETIMEZONE_H__
-#define __UTILITY_CSIMPLETIMEZONE_H__
+#ifndef __ELASTOS_UTILITY_CSIMPLETIMEZONE_H__
+#define __ELASTOS_UTILITY_CSIMPLETIMEZONE_H__
 
-#include "_CSimpleTimeZone.h"
+#include "_Elastos_Utility_CSimpleTimeZone.h"
 #include "TimeZone.h"
 
 namespace Elastos{
 namespace Utility{
 
-CarClass(CSimpleTimeZone) , public TimeZone
+CarClass(CSimpleTimeZone)
+    , public TimeZone
+    , public ISimpleTimeZone
 {
 public:
-    CSimpleTimeZone();
+    CAR_INTERFACE_DECL()
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL()
+
+    CSimpleTimeZone();
 
     /**
      * Constructs a {@code SimpleTimeZone} with the given base time zone offset from GMT
@@ -410,30 +413,6 @@ public:
     CARAPI UseDaylightTime(
         /* [out] */ Boolean * pIsUsed);
 
-    CARAPI SetID(
-        /* [in] */ const String& id);
-
-    CARAPI GetID(
-        /* [out] */ String* id);
-
-    CARAPI GetDisplayName(
-        /* [out] */ String* name);
-
-    CARAPI GetDisplayName(
-        /* [in] */ ILocale* locale,
-        /* [out] */ String* name);
-
-    CARAPI GetDisplayName(
-        /* [in] */ Boolean daylightTime,
-        /* [in] */ Int32 style,
-        /* [out] */ String* name);
-
-    CARAPI GetDisplayName(
-        /* [in] */ Boolean daylightTime,
-        /* [in] */ Int32 style,
-        /* [in] */ ILocale* locale,
-        /* [out] */ String* name);
-
     CARAPI GetHashCode(
         /* [out] */ Int32* hashCode);
 
@@ -493,4 +472,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CSIMPLETIMEZONE_H__
+#endif // __ELASTOS_UTILITY_CSIMPLETIMEZONE_H__

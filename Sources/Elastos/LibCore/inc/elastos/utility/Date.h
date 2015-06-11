@@ -14,6 +14,8 @@ class Date
     , public IDate
 {
 public:
+    CAR_INTERFACE_DECL()
+
     Date();
 
     /**

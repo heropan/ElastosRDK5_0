@@ -16,9 +16,8 @@ namespace Utility{
 
 HashMap<String, AutoPtr<ICurrency> > Currency::sCodesToCurrencies;
 HashMap<AutoPtr<ILocale>, AutoPtr<ICurrency> > Currency::sLocalesToCurrencies;
-Mutex Currency::mLock;
 
-CAR_INTERFACE_IMPL(Currency, ICurrency)
+CAR_INTERFACE_IMPL(Currency, Object, ICurrency)
 
 Currency::Currency(
     /* [in] */ const String& currencyCode)
@@ -36,7 +35,7 @@ Currency::Currency(
 AutoPtr<ICurrency> Currency::GetInstance(
     /* [in] */ const String& currencyCode)
 {
-    Mutex::Autolock lock(mLock);
+    Object::Autolock lock(this);
 
     AutoPtr<ICurrency> currency = sCodesToCurrencies[currencyCode];
     if (currency == NULL) {
@@ -50,7 +49,7 @@ ECode Currency::GetInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ ICurrency** instance)
 {
-    Mutex::Autolock lock(mLock);
+    Object::Autolock lock(this);
 
     AutoPtr<ICurrency> currency = sLocalesToCurrencies[locale];
     if (currency != NULL) {

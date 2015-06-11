@@ -1,7 +1,7 @@
-#ifndef __UTILITY_CZONEINFO_H__
-#define __UTILITY_CZONEINFO_H__
+#ifndef __ELASTOS_UTILITY_CZONEINFO_H__
+#define __ELASTOS_UTILITY_CZONEINFO_H__
 
-#include "_CZoneInfo.h"
+#include "_Elastos_Utility_CZoneInfo.h"
 #include "TimeZone.h"
 
 namespace Elastos {
@@ -12,11 +12,14 @@ namespace Utility {
  *
  * @hide - used to implement TimeZone
  */
-CarClass(CZoneInfo), public TimeZone
+CarClass(CZoneInfo)
+    , public TimeZone
+    , public IZoneInfo
 {
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ const String& name,
@@ -114,30 +117,6 @@ public:
         /* [in] */ IInterface* other,
         /* [out] */ Boolean* isEqual);
 
-    CARAPI SetID(
-        /* [in] */ const String& id);
-
-    CARAPI GetID(
-        /* [out] */ String* id);
-
-    CARAPI GetDisplayName(
-        /* [out] */ String* name);
-
-    CARAPI GetDisplayName(
-        /* [in] */ ILocale* locale,
-        /* [out] */ String* name);
-
-    CARAPI GetDisplayName(
-        /* [in] */ Boolean daylightTime,
-        /* [in] */ Int32 style,
-        /* [out] */ String* name);
-
-    CARAPI GetDisplayName(
-        /* [in] */ Boolean daylightTime,
-        /* [in] */ Int32 style,
-        /* [in] */ ILocale* locale,
-        /* [out] */ String* name);
-
     CARAPI GetHashCode(
         /* [out] */ Int32* hashCode);
 
@@ -177,4 +156,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__UTILITY_CZONEINFO_H__
+#endif //__ELASTOS_UTILITY_CZONEINFO_H__
