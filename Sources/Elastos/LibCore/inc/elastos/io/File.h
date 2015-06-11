@@ -5,8 +5,10 @@
 
 using Elastos::Core::Object;
 using Elastos::Core::IRandom;
+using Elastos::Core::IComparable;
 using Elastos::IO::ISerializable;
 using Elastos::Net::IURI;
+using Elastos::Net::IURL;
 
 namespace Elastos {
 namespace IO {
@@ -19,6 +21,62 @@ class File
 {
 public:
     CAR_INTERFACE_DECL()
+
+    /**
+     * Constructs a new file using the specified direc
+     tory and name.
+     *
+     * @param dir
+     *            the directory where the file is stored.
+     * @param name
+     *            the file's name.
+     * @throws NullPointerException
+     *             if {@code name} is {@code null}.
+     */
+    CARAPI constructor(
+        /* [in] */ IFile* dir,
+        /* [in] */ const String& name);
+
+    /**
+     * Constructs a new file using the specified path.
+     *
+     * @param path
+     *            the path to be used for the file.
+     */
+    CARAPI constructor(
+        /* [in] */ const String& path);
+
+    /**
+     * Constructs a new File using the specified directory path and file name,
+     * placing a path separator between the two.
+     *
+     * @param dirPath
+     *            the path to the directory where the file is stored.
+     * @param name
+     *            the file's name.
+     * @throws NullPointerException
+     *             if {@code name} is {@code null}.
+     */
+    CARAPI constructor(
+        /* [in] */ const String& dirPath,
+        /* [in] */ const String& name);
+
+    /**
+     * Constructs a new File using the path of the specified URI. {@code uri}
+     * needs to be an absolute and hierarchical Unified Resource Identifier with
+     * file scheme and non-empty path component, but with undefined authority,
+     * query or fragment components.
+     *
+     * @param uri
+     *            the Unified Resource Identifier that is used to construct this
+     *            file.
+     * @throws IllegalArgumentException
+     *             if {@code uri} does not comply with the conditions above.
+     * @see #toURI
+     * @see java.net.URI
+     */
+    CARAPI constructor(
+        /* [in] */ IURI* uri);
 
     /**
      * Lists the file system roots. The Java platform may support zero or more
@@ -45,7 +103,7 @@ public:
      *
      * @since 1.6
      */
-    virtual CARAPI CanExecute(
+    CARAPI CanExecute(
         /* [out] */ Boolean* canExecute);
 
     /**
@@ -56,7 +114,7 @@ public:
      *             if a {@code SecurityManager} is installed and it denies the
      *             read request.
      */
-    virtual CARAPI CanRead(
+    CARAPI CanRead(
         /* [out] */ Boolean* canRead);
 
     /**
@@ -68,7 +126,7 @@ public:
      *             if a {@code SecurityManager} is installed and it denies the
      *             write request.
      */
-    virtual CARAPI CanWrite(
+    CARAPI CanWrite(
     /* [out] */ Boolean* canWrite);
 
     /**
@@ -81,11 +139,11 @@ public:
      *         described in the Comparable interface.
      * @see Comparable
      */
-    virtual CARAPI CompareTo(
+    CARAPI CompareTo(
         /* [in] */ IInterface* obj,
         /* [out] */ Int32* result);
 
-    virtual CARAPI CompareTo(
+    CARAPI CompareTo(
         /* [in] */ IFile* another,
         /* [out] */ Int32* result);
 
@@ -101,8 +159,25 @@ public:
      *             request.
      * @see java.lang.SecurityManager#checkDelete
      */
-    virtual CARAPI Delete(
+    CARAPI Delete(
         /* [out] */ Boolean* succeeded);
+
+    /**
+     * Schedules this file to be automatically deleted when the VM terminates normally.
+     *
+     * <p><i>Note that on Android, the application lifecycle does not include VM termination,
+     * so calling this method will not ensure that files are deleted</i>. Instead, you should
+     * use the most appropriate out of:
+     * <ul>
+     * <li>Use a {@code finally} clause to manually invoke {@link #delete}.
+     * <li>Maintain your own set of files to delete, and process it at an appropriate point
+     * in your application's lifecycle.
+     * <li>Use the Unix trick of deleting the file as soon as all readers and writers have
+     * opened it. No new readers/writers will be able to access the file, but all existing
+     * ones will still have access until the last one closes the file.
+     * </ul>
+     */
+    CARAPI DeleteOnExit();
 
     /**
      * Compares {@code obj} to this file and returns {@code true} if they
@@ -128,7 +203,7 @@ public:
      * @see #getPath
      * @see java.lang.SecurityManager#checkRead(FileDescriptor)
      */
-     virtual CARAPI Exists(
+     CARAPI Exists(
         /* [out] */ Boolean* isExist);
 
     /**
@@ -136,7 +211,7 @@ public:
      *
      * @return the absolute file path.
      */
-    virtual CARAPI GetAbsolutePath(
+    CARAPI GetAbsolutePath(
         /* [out] */ String* path);
 
     /**
@@ -145,7 +220,7 @@ public:
      * @return a new file from this file's absolute path.
      * @see java.lang.SecurityManager#checkPropertyAccess
      */
-    virtual CARAPI GetAbsoluteFile(
+    CARAPI GetAbsoluteFile(
         /* [out] */ IFile** file);
 
     /**
@@ -162,7 +237,7 @@ public:
      * @throws IOException
      *             if an I/O error occurs.
      */
-    virtual CARAPI GetCanonicalPath(
+    CARAPI GetCanonicalPath(
         /* [out] */ String* path);
 
     /**
@@ -174,7 +249,7 @@ public:
      *             if an I/O error occurs.
      * @see java.lang.SecurityManager#checkPropertyAccess
      */
-    virtual CARAPI GetCanonicalFile(
+    CARAPI GetCanonicalFile(
         /* [out] */ IFile** file);
 
     /**
@@ -183,7 +258,7 @@ public:
      * @return this file's name or an empty string if there is no name part in
      *         the file's path.
      */
-    virtual CARAPI GetName(
+    CARAPI GetName(
         /* [out] */ String* name);
 
     /**
@@ -193,7 +268,7 @@ public:
      *
      * @return this file's parent pathname or {@code null}.
      */
-    virtual CARAPI GetParent(
+    CARAPI GetParent(
         /* [out] */ String* parent);
 
     /**
@@ -203,13 +278,13 @@ public:
      *
      * @return a new file representing this file's parent or {@code null}.
      */
-    virtual CARAPI GetParentFile(
+    CARAPI GetParentFile(
         /* [out] */ IFile ** file);
 
     /**
      * Returns the path of this file.
      */
-    virtual CARAPI GetPath(
+    CARAPI GetPath(
         /* [out] */ String* path);
 
     /**
@@ -231,7 +306,7 @@ public:
      *         otherwise.
      * @see #getPath
      */
-    virtual CARAPI IsAbsolute(
+    CARAPI IsAbsolute(
         /* [out] */ Boolean* isAbsolute);
 
     /**
@@ -244,7 +319,7 @@ public:
      *             if a {@code SecurityManager} is installed and it denies read
      *             access to this file.
      */
-    virtual CARAPI IsDirectory(
+    CARAPI IsDirectory(
         /* [out] */ Boolean* isDirectory);
 
     /**
@@ -256,7 +331,7 @@ public:
      *             if a {@code SecurityManager} is installed and it denies read
      *             access to this file.
      */
-    virtual CARAPI IsFile(
+    CARAPI IsFile(
         /* [out] */ Boolean* isFile);
 
     /**
@@ -271,7 +346,7 @@ public:
      *             if a {@code SecurityManager} is installed and it denies read
      *             access to this file.
      */
-    virtual CARAPI IsHidden(
+    CARAPI IsHidden(
         /* [out] */ Boolean* isHidden);
 
     /**
@@ -284,7 +359,7 @@ public:
      *             if a {@code SecurityManager} is installed and it denies read
      *             access to this file.
      */
-    virtual CARAPI LastModified(
+    CARAPI GetLastModified(
         /* [out] */ Int64* time);
 
     /**
@@ -304,7 +379,7 @@ public:
      *             if a {@code SecurityManager} is installed and it denies write
      *             access to this file.
      */
-    virtual CARAPI SetLastModified(
+    CARAPI SetLastModified(
         /* [in] */ Int64 time,
         /* [out] */ Boolean* succeeded);
 
@@ -313,7 +388,7 @@ public:
      *
      * @see #setWritable(boolean, boolean)
      */
-    virtual CARAPI SetReadOnly(
+    CARAPI SetReadOnly(
         /* [out] */ Boolean* succeeded);
 
     /**
@@ -341,7 +416,7 @@ public:
      *             permission to this file object
      * @since 1.6
      */
-    virtual CARAPI SetExecutable(
+    CARAPI SetExecutable(
         /* [in] */ Boolean executable,
         /* [in] */ Boolean ownerOnly,
         /* [out] */ Boolean* succeeded);
@@ -351,7 +426,7 @@ public:
      * @see #setExecutable(boolean, boolean)
      * @since 1.6
      */
-    virtual CARAPI SetExecutable(
+    CARAPI SetExecutable(
         /* [in] */ Boolean executable,
         /* [out] */ Boolean* succeeded);
 
@@ -377,7 +452,7 @@ public:
      *             permission to this file object
      * @since 1.6
      */
-    virtual CARAPI SetReadable(
+    CARAPI SetReadable(
         /* [in] */ Boolean readable,
         /* [in] */ Boolean ownerOnly,
         /* [out] */ Boolean* succeeded);
@@ -387,7 +462,7 @@ public:
      * @see #setReadable(boolean, boolean)
      * @since 1.6
      */
-    virtual CARAPI SetReadable(
+    CARAPI SetReadable(
         /* [in] */ Boolean readable,
         /* [out] */ Boolean* succeeded);
 
@@ -411,7 +486,7 @@ public:
      *             permission to this file object
      * @since 1.6
      */
-    virtual CARAPI SetWritable(
+    CARAPI SetWritable(
         /* [in] */ Boolean writable,
         /* [in] */ Boolean ownerOnly,
         /* [out] */ Boolean* succeeded);
@@ -421,7 +496,7 @@ public:
      * @see #setWritable(boolean, boolean)
      * @since 1.6
      */
-    virtual CARAPI SetWritable(
+    CARAPI SetWritable(
         /* [in] */ Boolean writable,
         /* [out] */ Boolean* succeeded);
 
@@ -435,7 +510,7 @@ public:
      *             if a {@code SecurityManager} is installed and it denies read
      *             access to this file.
      */
-    virtual CARAPI GetLength(
+    CARAPI GetLength(
         /* [out] */ Int64* length);
 
     /**
@@ -453,7 +528,7 @@ public:
      * @see #isDirectory
      * @see java.lang.SecurityManager#checkRead(FileDescriptor)
      */
-    virtual CARAPI List(
+    CARAPI List(
         /* [out, callee] */ ArrayOf<String>** files);
 
     /**
@@ -476,7 +551,7 @@ public:
      * @see #isDirectory
      * @see java.lang.SecurityManager#checkRead(FileDescriptor)
      */
-    virtual CARAPI List(
+    CARAPI List(
         /* [in] */ IFilenameFilter* filter,
         /* [out, callee] */ ArrayOf<String>** files);
 
@@ -493,7 +568,7 @@ public:
      * @see #list
      * @see #isDirectory
      */
-    virtual CARAPI ListFiles(
+    CARAPI ListFiles(
         /* [out, callee] */ ArrayOf<IFile*>** files);
 
     /**
@@ -517,7 +592,7 @@ public:
      * @see #isDirectory
      * @see java.lang.SecurityManager#checkRead(FileDescriptor)
      */
-    virtual CARAPI ListFiles(
+    CARAPI ListFiles(
         /* [in] */ IFilenameFilter* filter,
         /* [out, callee] */ ArrayOf<IFile*>** files);
 
@@ -540,7 +615,7 @@ public:
      * @see #isDirectory
      * @see java.lang.SecurityManager#checkRead(FileDescriptor)
      */
-    virtual CARAPI ListFiles(
+    CARAPI ListFiles(
         /* [in] */ IFileFilter* filter,
         /* [out, callee] */ ArrayOf<IFile*>** files);
 
@@ -558,7 +633,7 @@ public:
      *             access for this file.
      * @see #mkdirs
      */
-    virtual CARAPI Mkdir(
+    CARAPI Mkdir(
         /* [out] */ Boolean* succeeded);
 
     /**
@@ -576,7 +651,7 @@ public:
      *             access for this file.
      * @see #mkdir
      */
-    virtual CARAPI Mkdirs(
+    CARAPI Mkdirs(
         /* [out] */ Boolean* succeeded);
 
     /**
@@ -593,7 +668,7 @@ public:
      *             if a {@code SecurityManager} is installed and it denies write
      *             access for this file.
      */
-    virtual CARAPI CreateNewFile(
+    CARAPI CreateNewFile(
         /* [out] */ Boolean* succeeded);
 
     /**
@@ -666,7 +741,7 @@ public:
      *             if a {@code SecurityManager} is installed and it denies write
      *             access for this file or {@code newPath}.
      */
-    virtual CARAPI RenameTo(
+    CARAPI RenameTo(
         /* [in] */ IFile* newPath,
         /* [out] */ Boolean* succeeded);
 
@@ -686,9 +761,8 @@ public:
      *
      * @return an URI for this file.
      */
-
-//    virtual CARAPI ToURI(
-//        /* [out] */ IURI** uri);
+    CARAPI ToURI(
+       /* [out] */ IURI** uri);
 
     /**
      * Returns a Uniform Resource Locator for this file. The URL is system
@@ -701,8 +775,8 @@ public:
      * @deprecated Use {@link #toURI} and {@link java.net.URI#toURL} to get
      * correct escape illegal characters.
      */
-//    virtual CARAPI ToURL(
-//        /* [out] */ IURL** uri);
+    CARAPI ToURL(
+       /* [out] */ IURL** uri);
 
     /**
      * Returns the total size in bytes of the partition containing this path.
@@ -710,7 +784,7 @@ public:
      *
      * @since 1.6
      */
-    virtual CARAPI GetTotalSpace(
+    CARAPI GetTotalSpace(
         /* [out] */ Int64* space);
 
     /**
@@ -726,7 +800,7 @@ public:
      *
      * @since 1.6
      */
-    virtual CARAPI GetUsableSpace(
+    CARAPI GetUsableSpace(
         /* [out] */ Int64* space);
 
     /**
@@ -738,70 +812,13 @@ public:
      *
      * @since 1.6
      */
-    virtual CARAPI GetFreeSpace(
+    CARAPI GetFreeSpace(
         /* [out] */ Int64* space);
 
 protected:
-        File();
+    File();
 
     virtual ~File();
-
-public:
-    /**
-     * Constructs a new file using the specified direc
-     tory and name.
-     *
-     * @param dir
-     *            the directory where the file is stored.
-     * @param name
-     *            the file's name.
-     * @throws NullPointerException
-     *             if {@code name} is {@code null}.
-     */
-    CARAPI constructor(
-        /* [in] */ IFile* dir,
-        /* [in] */ const String& name);
-
-    /**
-     * Constructs a new file using the specified path.
-     *
-     * @param path
-     *            the path to be used for the file.
-     */
-    CARAPI constructor(
-        /* [in] */ const String& path);
-
-    /**
-     * Constructs a new File using the specified directory path and file name,
-     * placing a path separator between the two.
-     *
-     * @param dirPath
-     *            the path to the directory where the file is stored.
-     * @param name
-     *            the file's name.
-     * @throws NullPointerException
-     *             if {@code name} is {@code null}.
-     */
-    CARAPI constructor(
-        /* [in] */ const String& dirPath,
-        /* [in] */ const String& name);
-
-    /**
-     * Constructs a new File using the path of the specified URI. {@code uri}
-     * needs to be an absolute and hierarchical Unified Resource Identifier with
-     * file scheme and non-empty path component, but with undefined authority,
-     * query or fragment components.
-     *
-     * @param uri
-     *            the Unified Resource Identifier that is used to construct this
-     *            file.
-     * @throws IllegalArgumentException
-     *             if {@code uri} does not comply with the conditions above.
-     * @see #toURI
-     * @see java.net.URI
-     */
-    CARAPI constructor(
-        /* [in] */ IURI* uri);
 
 private:
     // Removes duplicate adjacent slashes and any trailing slash.

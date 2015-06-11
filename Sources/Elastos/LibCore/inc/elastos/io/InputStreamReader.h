@@ -16,11 +16,7 @@ class InputStreamReader
 {
 public:
     CAR_INTERFACE_DECL()
-    
-protected:
-    InputStreamReader();
 
-public:
     /**
      * Constructs a new {@code InputStreamReader} on the {@link InputStream}
      * {@code in}. This constructor sets the character converter to the encoding
@@ -64,6 +60,19 @@ public:
     CARAPI constructor(
         /* [in] */ IInputStream* in,
         /* [in] */ ICharset* charset);
+
+    /**
+     * Constructs a new InputStreamReader on the InputStream {@code in} and
+     * CharsetDecoder {@code dec}.
+     *
+     * @param in
+     *            the source InputStream from which to read characters.
+     * @param dec
+     *            the CharsetDecoder used by the character conversion.
+     */
+    CARAPI constructor(
+        /* [in] */ IInputStream* is,
+        /* [in] */ ICharsetDecoder* dec);
 
     /**
      * Closes this reader. This implementation closes the source InputStream and
@@ -113,7 +122,7 @@ public:
      */
     // @Override
     CARAPI Read(
-        /* [out] */ ArrayOf<Char32>* buffer,
+        /* [in] */ ArrayOf<Char32>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [out] */ Int32* number);
@@ -133,6 +142,11 @@ public:
      */
     CARAPI IsReady(
         /* [out] */ Boolean* ready);
+
+protected:
+    InputStreamReader();
+
+    virtual ~InputStreamReader();
 
 private:
     CARAPI_(Boolean) IsOpen();

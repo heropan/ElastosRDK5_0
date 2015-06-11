@@ -2,20 +2,23 @@
 #ifndef __ELASTOS_IO_CFILEPERMISSION_H__
 #define __ELASTOS_IO_CFILEPERMISSION_H__
 
-#include "core/Object.h"
+#include "Object.h"
 #include "_Elastos_IO_CFilePermission.h"
+// #include "Permission.h"
 
 using Elastos::Core::Object;
 using Elastos::Security::IGuard;
+// using Elastos::Security::Permission;
 
 namespace Elastos {
 namespace IO {
 
 CarClass(CFilePermission)
     , public Object
-    , public IFilePermission
-    , public IPermission
+    // , public Permission
+    , public IPermission //TODO
     , public IGuard
+    , public ISerializable
 {
 public:
     CAR_OBJECT_DECL()

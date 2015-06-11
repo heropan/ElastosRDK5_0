@@ -1,11 +1,10 @@
 
-#ifndef __SEQUENCEINPUTSTREAM_H__
-#define __SEQUENCEINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_SEQUENCEINPUTSTREAM_H__
+#define __ELASTOS_IO_SEQUENCEINPUTSTREAM_H__
 
 #include "InputStream.h"
 
-using Elastos::Utility::IObjectEnumerator;
-using Elastos::Utility::IObjectContainer;
+using Elastos::Utility::IEnumeration;
 
 namespace Elastos {
 namespace IO {
@@ -43,7 +42,7 @@ public:
      *             if any of the elements in {@code e} is {@code null}.
      */
     CARAPI constructor(
-        /* [in] */ IObjectEnumerator* e);
+        /* [in] */ IEnumeration* e);
 
     CARAPI Available(
         /* [out] */ Int32* number);
@@ -113,12 +112,10 @@ private:
     CARAPI NextStream();
 
 private:
-    AutoPtr<IObjectContainer> mContainer;
-
     /**
      * An enumeration which will return types of InputStream.
      */
-    AutoPtr<IObjectEnumerator> mEnum;
+    AutoPtr<IEnumeration> mEnum;
 
     /**
      * The current input stream.
@@ -129,4 +126,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__SEQUENCEINPUTSTREAM_H__
+#endif //__ELASTOS_IO_SEQUENCEINPUTSTREAM_H__

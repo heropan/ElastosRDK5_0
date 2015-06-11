@@ -6,14 +6,14 @@
 #include "MappedByteBufferAdapter.h"
 #include "NioUtils.h"
 // #include "CLibcore.h"
-// #include "COsConstants.h"
+#include "OsConstants.h"
 
 using Libcore::IO::IOs;
 using Libcore::IO::ILibcore;
 // using Libcore::IO::CLibcore;
 using Elastos::IO::NioUtils;
-// using Libcore::IO::IStructStat;
-// using Libcore::IO::COsConstants;
+using Elastos::Droid::System::OsConstants;
+using Elastos::Droid::System::IStructStat;
 using Elastos::IO::MemoryBlock;
 using Elastos::IO::Channels::IFileLock;
 using Elastos::IO::Channels::FileLock;

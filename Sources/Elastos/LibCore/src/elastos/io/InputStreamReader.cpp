@@ -27,6 +27,9 @@ InputStreamReader::InputStreamReader()
     ASSERT_SUCCEEDED(ByteBuffer::Allocate(8192, (IByteBuffer**)&mBytes));
 }
 
+InputStreamReader::~InputStreamReader()
+{}
+
 ECode InputStreamReader::constructor(
     /* [in] */ IInputStream *in)
 {
@@ -40,7 +43,7 @@ ECode InputStreamReader::constructor(
     /* [in] */ IInputStream *in,
     /* [in] */ const String &enc)
 {
-    Reader::constructor(IObject::Probe(in));
+    FAIL_RETURN(Reader::constructor(IObject::Probe(in)))
 
     if (enc.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
@@ -67,9 +70,23 @@ ECode InputStreamReader::constructor(
 
 ECode InputStreamReader::constructor(
     /* [in] */ IInputStream* in,
+    /* [in] */ ICharsetDecoder* dec)
+{
+    VALIDATE_NOT_NULL(dec)
+    FAIL_RETURN(Reader::constructor(IObject::Probe(in)))
+    Float fval;
+    dec->AverageCharsPerByte(&fval);
+    mIn = in;
+    mDecoder = dec;
+    IBuffer::Probe(mBytes)->SetLimit(0);
+    return NOERROR;
+}
+
+ECode InputStreamReader::constructor(
+    /* [in] */ IInputStream* in,
     /* [in] */ ICharset* charset)
 {
-    Reader::constructor(IObject::Probe(in));
+    FAIL_RETURN(Reader::constructor(IObject::Probe(in)))
 
     mIn = in;
     charset->NewDecoder((ICharsetDecoder**)&mDecoder);

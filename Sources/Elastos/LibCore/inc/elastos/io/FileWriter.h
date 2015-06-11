@@ -13,6 +13,23 @@ class FileWriter
 {
 public:
 	CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
+        /* [in] */ IFile* file);
+
+    CARAPI constructor(
+        /* [in] */ IFile* file,
+        /* [in] */ Boolean append);
+
+    CARAPI constructor(
+        /* [in] */ IFileDescriptor* fd);
+
+    CARAPI constructor(
+        /* [in] */ const String& filename);
+
+    CARAPI constructor(
+        /* [in] */ const String& filename,
+        /* [in] */ Boolean append);
 };
 
 } // namespace IO

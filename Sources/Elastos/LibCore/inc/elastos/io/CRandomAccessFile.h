@@ -3,15 +3,27 @@
 #define __ELASTOS_IO_CRANDOMACCESSFILE_H__
 
 #include "_Elastos_IO_CRandomAccessFile.h"
-#include "CFileDescriptor.h"
+#include "Object.h"
 
+using Elastos::Core::Object;
 using Elastos::IO::Channels::IFileChannel;
 
 namespace Elastos {
 namespace IO {
 
+/**
+ * Allows reading from and writing to a file in a random-access manner. This is
+ * different from the uni-directional sequential access that a
+ * {@link FileInputStream} or {@link FileOutputStream} provides. If the file is
+ * opened in read/write mode, write operations are available as well. The
+ * position of the next read or write operation can be moved forwards and
+ * backwards after every operation.
+ */
 CarClass(CRandomAccessFile)
+    , public Object
     , public IRandomAccessFile
+    , public IDataInput
+    , public IDataOutput
     , public ICloseable
 {
 public:
@@ -55,11 +67,11 @@ public:
         /* [out] */ Int32* value);
 
     CARAPI Read(
-        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
     CARAPI Read(
-        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [out] */ Int32* number);
@@ -80,10 +92,10 @@ public:
         /* [out] */ Char32* value);
 
     CARAPI ReadFully(
-        /* [out] */ ArrayOf<byte>* buffer);
+        /* [in] */ ArrayOf<byte>* buffer);
 
     CARAPI ReadFully(
-        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length);
 
@@ -135,6 +147,9 @@ public:
     CARAPI WriteBytes(
         /* [in] */ const String& str);
 
+    CARAPI WriteChars(
+        /* [in] */ const String& str);
+
     CARAPI WriteDouble(
         /* [in] */ Double value);
 
@@ -157,7 +172,7 @@ private:
     /**
      * The FileDescriptor representing this RandomAccessFile.
      */
-    AutoPtr<CFileDescriptor> mFd;
+    AutoPtr<IFileDescriptor> mFd;
 
     Boolean mSyncMetadata;
 

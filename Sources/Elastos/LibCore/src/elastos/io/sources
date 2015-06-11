@@ -33,8 +33,6 @@ SOURCES += BufferedOutputStream.cpp
 SOURCES += Reader.cpp
 SOURCES += BufferedReader.cpp
 SOURCES += BufferedWriter.cpp
-#SOURCES += CStreams.cpp
-
 SOURCES += Writer.cpp
 SOURCES += StringWriter.cpp
 SOURCES += ByteArrayInputStream.cpp
@@ -45,31 +43,25 @@ SOURCES += DataInputStream.cpp
 SOURCES += PushbackInputStream.cpp
 SOURCES += DataOutputStream.cpp
 SOURCES += CFileDescriptor.cpp
-#SOURCES += File.cpp
-#SOURCES += CFile.cpp   // pls move to io.cpp
+SOURCES += File.cpp
 SOURCES += FilterReader.cpp
 SOURCES += FilterWriter.cpp
-#SOURCES += InputStreamReader.cpp
-#SOURCES += CInputStreamReader.cpp  // pls move to io.cpp
-#SOURCES += PrintWriter.cpp
-#SOURCES += CPrintWriter.cpp
+SOURCES += InputStreamReader.cpp
+SOURCES += PrintWriter.cpp
 SOURCES += LineNumberInputStream.cpp
 SOURCES += LineNumberReader.cpp
 SOURCES += OutputStreamWriter.cpp
-#SOURCES += CPrintStream.cpp
+SOURCES += CPrintStream.cpp
 SOURCES += PushbackReader.cpp
-#SOURCES += CRandomAccessFile.cpp
-#SOURCES += SequenceInputStream.cpp
-#SOURCES += CSequenceInputStream.cpp
+SOURCES += CRandomAccessFile.cpp
+SOURCES += SequenceInputStream.cpp
 SOURCES += StringBufferInputStream.cpp
 SOURCES += StringReader.cpp
-#SOURCES += FileInputStream.cpp
-#SOURCES += FileOutputStream.cpp
-#SOURCES += CFilePermission.cpp
-#SOURCES += FileReader.cpp
-#SOURCES += CFileReader.cpp
-#SOURCES += FileWriter.cpp
-#SOURCES += CFileWriter.cpp
+SOURCES += FileInputStream.cpp
+SOURCES += FileOutputStream.cpp
+SOURCES += CFilePermission.cpp
+SOURCES += FileReader.cpp
+SOURCES += FileWriter.cpp
 
 #TODO
 #PipedInputStream
@@ -78,7 +70,7 @@ SOURCES += StringReader.cpp
 #PipedWriter
 #StreamTokenizer
 
-# For Serializable(need not surport now)
+# For Serializable(not surport now)
 # EmulatedFields
 # EmulatedFieldsForDumping
 # EmulatedFieldsForLoading
@@ -94,5 +86,3 @@ SOURCES += StringReader.cpp
 # SerializablePermission
 # SerializationHandleMap
 #
-
-

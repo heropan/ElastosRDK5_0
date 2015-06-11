@@ -1,25 +1,17 @@
 
 #include "PrintWriter.h"
-#ifdef ELASTOS_CORELIBRARY
 #include "COutputStreamWriter.h"
 #include "CFileOutputStream.h"
 #include "CBufferedOutputStream.h"
 #include "CStringWrapper.h"
 #include "CLocaleHelper.h"
 #include "CLocale.h"
-#include "CFormatter.h"
-#include <CSystem.h>
-#endif
-#include "Character.h"
-#include "StringUtils.h"
-#include <Slogger.h>
+//#include "CFormatter.h"
+#include "CSystem.h"
+#include "utility/logging/Slogger.h"
 
-using Libcore::ICU::CLocale;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-using Elastos::Core::Character;
 using Elastos::Core::StringUtils;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::IAppendable;
@@ -28,8 +20,11 @@ using Elastos::IO::COutputStreamWriter;
 using Elastos::IO::CFileOutputStream;
 using Elastos::IO::CBufferedOutputStream;
 using Elastos::Utility::IFormatter;
-using Elastos::Utility::CFormatter;
+//using Elastos::Utility::CFormatter;
 using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::CLocale;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 
 namespace Elastos {
 namespace IO {
@@ -82,51 +77,51 @@ ECode PrintWriter::constructor(
 ECode PrintWriter::constructor(
     /* [in] */ IFile* file)
 {
-    AutoPtr<IFileOutputStream> fops;
-    FAIL_RETURN(CFileOutputStream::New(file, (IFileOutputStream**)&fops));
-    AutoPtr<IBufferedOutputStream> bops;
-    FAIL_RETURN(CBufferedOutputStream::New(IOutputStream::Probe(fops), (IBufferedOutputStream**)&bops));
-    AutoPtr<IOutputStreamWriter> opsr;
-    FAIL_RETURN(COutputStreamWriter::New(bops, (IOutputStreamWriter**)&opsr));
-    return constructor(IWriter::Probe(opsr), FALSE);
+    AutoPtr<IOutputStream> fops;
+    FAIL_RETURN(CFileOutputStream::New(file, (IOutputStream**)&fops));
+    AutoPtr<IOutputStream> bops;
+    FAIL_RETURN(CBufferedOutputStream::New(fops, (IOutputStream**)&bops));
+    AutoPtr<IWriter> opsr;
+    FAIL_RETURN(COutputStreamWriter::New(bops, (IWriter**)&opsr));
+    return constructor(opsr, FALSE);
 }
 
 ECode PrintWriter::constructor(
     /* [in] */ IFile* file,
     /* [in] */ const String& csn)
 {
-    AutoPtr<IFileOutputStream> fops;
-    FAIL_RETURN(CFileOutputStream::New(file, (IFileOutputStream**)&fops));
-    AutoPtr<IBufferedOutputStream> bops;
-    FAIL_RETURN(CBufferedOutputStream::New(IOutputStream::Probe(fops), (IBufferedOutputStream**)&bops));
-    AutoPtr<IOutputStreamWriter> opsr;
-    FAIL_RETURN(COutputStreamWriter::New(bops, csn, (IOutputStreamWriter**)&opsr));
-    return constructor(IWriter::Probe(opsr), FALSE);
+    AutoPtr<IOutputStream> fops;
+    FAIL_RETURN(CFileOutputStream::New(file, (IOutputStream**)&fops));
+    AutoPtr<IOutputStream> bops;
+    FAIL_RETURN(CBufferedOutputStream::New(fops, (IOutputStream**)&bops));
+    AutoPtr<IWriter> opsr;
+    FAIL_RETURN(COutputStreamWriter::New(bops, csn, (IWriter**)&opsr));
+    return constructor(opsr, FALSE);
 }
 
 ECode PrintWriter::constructor(
     /* [in] */ const String& fileName)
 {
-    AutoPtr<IFileOutputStream> fops;
-    FAIL_RETURN(CFileOutputStream::New(fileName, (IFileOutputStream**)&fops));
-    AutoPtr<IBufferedOutputStream> bops;
-    FAIL_RETURN(CBufferedOutputStream::New(IOutputStream::Probe(fops), (IBufferedOutputStream**)&bops));
-    AutoPtr<IOutputStreamWriter> opsr;
-    FAIL_RETURN(COutputStreamWriter::New(bops, (IOutputStreamWriter**)&opsr));
-    return constructor(IWriter::Probe(opsr), FALSE);
+    AutoPtr<IOutputStream> fops;
+    FAIL_RETURN(CFileOutputStream::New(fileName, (IOutputStream**)&fops));
+    AutoPtr<IOutputStream> bops;
+    FAIL_RETURN(CBufferedOutputStream::New(fops, (IOutputStream**)&bops));
+    AutoPtr<IWriter> opsr;
+    FAIL_RETURN(COutputStreamWriter::New(bops, (IWriter**)&opsr));
+    return constructor(opsr, FALSE);
 }
 
 ECode PrintWriter::constructor(
     /* [in] */ const String& fileName,
     /* [in] */ const String& csn)
 {
-    AutoPtr<IFileOutputStream> fops;
-    FAIL_RETURN(CFileOutputStream::New(fileName, (IFileOutputStream**)&fops));
-    AutoPtr<IBufferedOutputStream> bops;
-    FAIL_RETURN(CBufferedOutputStream::New(IOutputStream::Probe(fops), (IBufferedOutputStream**)&bops));
-    AutoPtr<IOutputStreamWriter> opsr;
-    FAIL_RETURN(COutputStreamWriter::New(bops, csn, (IOutputStreamWriter**)&opsr));
-    return constructor(IWriter::Probe(opsr), FALSE);
+    AutoPtr<IOutputStream> fops;
+    FAIL_RETURN(CFileOutputStream::New(fileName, (IOutputStream**)&fops));
+    AutoPtr<IOutputStream> bops;
+    FAIL_RETURN(CBufferedOutputStream::New(fops, (IOutputStream**)&bops));
+    AutoPtr<IWriter> opsr;
+    FAIL_RETURN(COutputStreamWriter::New(bops, csn, (IWriter**)&opsr));
+    return constructor(opsr, FALSE);
 }
 
 ECode PrintWriter::CheckError(
@@ -205,7 +200,7 @@ ECode PrintWriter::Format(
     }
 
     AutoPtr<IFormatter> formatter;
-    FAIL_RETURN(CFormatter::New((IAppendable*)this->Probe(EIID_IAppendable), l, (IFormatter**)&formatter))
+    // FAIL_RETURN(CFormatter::New((IAppendable*)this->Probe(EIID_IAppendable), l, (IFormatter**)&formatter))
     FAIL_RETURN(formatter->Format(format, args))
     if (mAutoflush) {
         Flush();
@@ -232,7 +227,8 @@ ECode PrintWriter::Printf(
 ECode PrintWriter::Print(
     /* [in] */ ArrayOf<Char32>* charArray)
 {
-    return Print(String(charArray, 0));
+    String s(*charArray);
+    return Print(s);
 }
 
 ECode PrintWriter::PrintChar(
@@ -246,41 +242,32 @@ ECode PrintWriter::PrintChar(
 ECode PrintWriter::Print(
     /* [in] */ Double dnum)
 {
-    return Print(StringUtils::DoubleToString(dnum));
+    return Print(StringUtils::ToString(dnum));
 }
 
 ECode PrintWriter::Print(
     /* [in] */ Float fnum)
 {
-    //PrintString(String.valueOf(fnum));
-    return PrintString(StringUtils::DoubleToString(fnum));
+    //Print(String.valueOf(fnum));
+    return Print(StringUtils::ToString(fnum));
 }
 
 ECode PrintWriter::Print(
     /* [in] */ Int32 inum)
 {
-    return PrintString(StringUtils::Int32ToString(inum));
+    return Print(StringUtils::ToString(inum));
 }
 
 ECode PrintWriter::Print(
     /* [in] */ Int64 lnum)
 {
-    return PrintString(StringUtils::Int64ToString(lnum));
+    return Print(StringUtils::ToString(lnum));
 }
 
 ECode PrintWriter::Print(
     /* [in] */ IInterface* obj)
 {
-    String str;
-    IObject* object = IObject::Probe(obj);
-    if (object) {
-        object->ToString(&str);
-    }
-    else {
-        str.AppendFormat("%p", obj);
-    }
-
-    return Print(str);
+    return Print(Object::ToString(obj));
 }
 
 ECode PrintWriter::Print(
@@ -335,26 +322,26 @@ ECode PrintWriter::PrintCharln(
 ECode PrintWriter::Println(
     /* [in] */ Double dnum)
 {
-    return Println(StringUtils::DoubleToString(dnum));
+    return Println(StringUtils::ToString(dnum));
 }
 
 ECode PrintWriter::Println(
     /* [in] */ Float fnum)
 {
-    //PrintStringln(String.valueOf(fnum));
-    return Println(StringUtils::DoubleToString(fnum));
+    //Println(String.valueOf(fnum));
+    return Println(StringUtils::ToString(fnum));
 }
 
 ECode PrintWriter::Println(
     /* [in] */ Int32 inum)
 {
-    return Println(StringUtils::Int32ToString(inum));
+    return Println(StringUtils::ToString(inum));
 }
 
 ECode PrintWriter::Println(
     /* [in] */ Int64 lnum)
 {
-    return Println(StringUtils::Int64ToString(lnum));
+    return Println(StringUtils::ToString(lnum));
 }
 
 ECode PrintWriter::Println(

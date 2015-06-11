@@ -1,15 +1,14 @@
 
 #include "FileInputStream.h"
 #include "CFile.h"
-#include "IoUtils.h"
-#include "COsConstants.h"
+//#include "IoUtils.h"
+#include "OsConstants.h"
 #include "CLibcore.h"
 #include "CIoBridge.h"
 #include "NioUtils.h"
 #include "CFileDescriptor.h"
 
-using Elastos::Droid::System::IOsConstants;
-using Libcore::IO::COsConstants;
+using Elastos::Droid::System::OsConstants;
 using Libcore::IO::ILibcore;
 using Libcore::IO::CLibcore;
 using Libcore::IO::IOs;
@@ -56,14 +55,10 @@ ECode FileInputStream::constructor(
     CFileDescriptor::New((IFileDescriptor**)&mFd);
     String path;
     file->GetPath(&path);
-    AutoPtr<COsConstants> osConstans;
-    COsConstants::AcquireSingletonByFriend((COsConstants**)&osConstans);
-    Int32 mode;
-    osConstans->GetOsConstant(String("O_RDONLY"), &mode);
     AutoPtr<CIoBridge> ioBridge;
     CIoBridge::AcquireSingletonByFriend((CIoBridge**)&ioBridge);
-    Int32 fd;
-    FAIL_RETURN(ioBridge->Open(path, mode, &fd));
+    AutoPtr<IFileDescriptor> fd;
+    FAIL_RETURN(ioBridge->Open(path, OsConstants::_O_RDONLY, (IFileDescriptor**)&fd));
     mFd->SetDescriptor(fd);
     mShouldClose = TRUE;
     return NOERROR;
@@ -98,7 +93,7 @@ ECode FileInputStream::Available(
     mFd->GetDescriptor(&fd);
     AutoPtr<CIoBridge> ioBridge;
     CIoBridge::AcquireSingletonByFriend((CIoBridge**)&ioBridge);
-    return IoUtils::Libcore2IoECode(ioBridge->Available(fd, avail));
+    // return IoUtils::Libcore2IoECode(ioBridge->Available(fd, avail));
 }
 
 ECode FileInputStream::Close()
@@ -126,7 +121,7 @@ ECode FileInputStream::GetChannel(
     Object::Autolock lock(this);
 
     if (mChannel == NULL) {
-        mChannel = NioUtils::NewFileChannel(THIS_PROBE(IObject), mFd, COsConstants::sO_RDONLY);
+        // mChannel = NioUtils::NewFileChannel(THIS_PROBE(IObject), mFd, OsConstants::sO_RDONLY);
     }
     *channel = mChannel;
     REFCOUNT_ADD(*channel)
@@ -166,8 +161,8 @@ ECode FileInputStream::Read(
     mFd->GetDescriptor(&fd);
     AutoPtr<IIoBridge> ioBridge;
     CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
-    return IoUtils::Libcore2IoECode(ioBridge->Read(fd,
-            buffer, byteOffset, byteCount, number));
+    // return IoUtils::Libcore2IoECode(ioBridge->Read(fd,
+    //         buffer, byteOffset, byteCount, number));
 }
 
 ECode FileInputStream::Skip(
@@ -185,16 +180,11 @@ ECode FileInputStream::Skip(
         // Try lseek(2). That returns the new offset, but we'll throw an
         // exception if it couldn't perform exactly the seek we asked for.
         Int32 fd;
-        mFd->GetDescriptor(&fd);
-        AutoPtr<IOsConstants> osConstans;
-        COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-        Int32 mode;
-        osConstans->GetOsConstant(String("SEEK_CUR"), &mode);
         AutoPtr<ILibcore> libcore;
         CLibcore::AcquireSingleton((ILibcore**)&libcore);
         AutoPtr<IOs> os;
         libcore->GetOs((IOs**)&os);
-        FAIL_RETURN(IoUtils::Libcore2IoECode(os->Lseek(fd, byteCount, mode, number)));
+        // FAIL_RETURN(IoUtils::Libcore2IoECode(os->Lseek(fd, byteCount, OsConstants::_SEEK_CUR, number)));
         *number = byteCount;
         return NOERROR;
     // } catch (ErrnoException errnoException) {

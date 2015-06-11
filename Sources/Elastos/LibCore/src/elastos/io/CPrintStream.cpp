@@ -4,7 +4,7 @@
 #include "CCharsetHelper.h"
 #include "CFileOutputStream.h"
 #include "CLocale.h"
-#include "CFormatter.h"
+//#include "CFormatter.h"
 #include "Character.h"
 #include "StringUtils.h"
 
@@ -12,23 +12,26 @@ using Elastos::Core::Character;
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_IAppendable;
 using Elastos::Utility::IFormatter;
-using Elastos::Utility::CFormatter;
+//using Elastos::Utility::CFormatter;
+using Elastos::Utility::CLocale;
 using Elastos::IO::Charset::ICharsetHelper;
 using Elastos::IO::Charset::CCharsetHelper;
-using Libcore::ICU::CLocale;
 
 namespace Elastos {
 namespace IO {
 
 CAR_OBJECT_IMPL(CPrintStream)
 
-CAR_INTERFACE_IMPL(CPrintStream, FilterOutputStream, IPrintStream)
+CAR_INTERFACE_IMPL_2(CPrintStream, FilterOutputStream, IPrintStream, IAppendable)
 
-const String CPrintStream::sLineSeparator = String("\n");
+const String CPrintStream::sLineSeparator("\n");
 
 CPrintStream::CPrintStream()
     : mIoError(FALSE)
     , mAutoFlush(FALSE)
+{}
+
+CPrintStream::~CPrintStream()
 {}
 
 ECode CPrintStream::constructor(
@@ -197,7 +200,7 @@ ECode CPrintStream::Format(
         return E_EOF_EXCEPTION;
     }
     AutoPtr<IFormatter> res;
-    FAIL_RETURN(CFormatter::New(THIS_PROBE(IAppendable), l, (IFormatter**)&res));
+    // FAIL_RETURN(CFormatter::New(THIS_PROBE(IAppendable), l, (IFormatter**)&res));
     res->Format(format, args);
     *pw = THIS_PROBE(IPrintStream);
     REFCOUNT_ADD(*pw)
@@ -248,34 +251,32 @@ ECode CPrintStream::PrintChar(
 ECode CPrintStream::Print(
     /* [in] */ Double dnum)
 {
-    return Print(StringUtils::DoubleToString(dnum));
+    return Print(StringUtils::ToString(dnum));
 }
 
 ECode CPrintStream::Print(
     /* [in] */ Float fnum)
 {
     //PrintString(String.valueOf(fnum));
-    return Print(StringUtils::DoubleToString(fnum));
+    return Print(StringUtils::ToString(fnum));
 }
 
 ECode CPrintStream::Print(
     /* [in] */ Int32 inum)
 {
-    return Print(StringUtils::Int32ToString(inum));
+    return Print(StringUtils::ToString(inum));
 }
 
 ECode CPrintStream::Print(
     /* [in] */ Int64 lnum)
 {
-    return Print(StringUtils::Int64ToString(lnum));
+    return Print(StringUtils::ToString(lnum));
 }
 
 ECode CPrintStream::Print(
     /* [in] */ IInterface* obj)
 {
-    assert(0);
-    //PrintString(String.valueOf(obj));
-    return E_NOT_IMPLEMENTED;
+    return Print(Object::ToString(obj));
 }
 
 ECode CPrintStream::Print(
@@ -330,32 +331,32 @@ ECode CPrintStream::Println(
 ECode CPrintStream::PrintCharln(
     /* [in] */ Char32 ch)
 {
-    return Println(StringUtils::Int32ToString((Int32)ch));
+    return Println(StringUtils::ToString((Int32)ch));
 }
 
 ECode CPrintStream::Println(
     /* [in] */ Double dnum)
 {
-    return Println(StringUtils::DoubleToString(dnum));
+    return Println(StringUtils::ToString(dnum));
 }
 
 ECode CPrintStream::Println(
     /* [in] */ Float fnum)
 {
     //PrintStringln(String.valueOf(fnum));
-    return Println(StringUtils::DoubleToString(fnum));
+    return Println(StringUtils::ToString(fnum));
 }
 
 ECode CPrintStream::Println(
     /* [in] */ Int32 inum)
 {
-    return Println(StringUtils::Int32ToString(inum));
+    return Println(StringUtils::ToString(inum));
 }
 
 ECode CPrintStream::Println(
     /* [in] */ Int64 lnum)
 {
-    return Println(StringUtils::Int64ToString(lnum));
+    return Println(StringUtils::ToString(lnum));
 }
 
 ECode CPrintStream::Println(
@@ -440,7 +441,7 @@ ECode CPrintStream::Write(
     return NOERROR;
 }
 
-ECode CPrintStream::Append(
+ECode CPrintStream::AppendChar(
     /* [in] */ Char32 c)
 {
     return PrintChar(c);

@@ -1,28 +1,31 @@
 
 #include "CRandomAccessFile.h"
 #include "CFile.h"
-#include "IoUtils.h"
+//#include "IoUtils.h"
 #include "NioUtils.h"
-#include <Math.h>
+#include "Math.h"
 #include "Character.h"
-#include <StringBuilder.h>
-#include "COsConstants.h"
+#include "StringBuilder.h"
+#include "OsConstants.h"
 #include "CIoBridge.h"
 #include "CLibcore.h"
-#include "CModifiedUtf8.h"
+#include "CFileDescriptor.h"
+//#include "CModifiedUtf8.h"
 
-using Elastos::Droid::System::IOsConstants;
-using Libcore::IO::COsConstants;
+using Elastos::Droid::System::OsConstants;
+using Elastos::Droid::System::IStructStat;
+using Elastos::Core::Character;
+using Elastos::Core::StringBuilder;
 using Libcore::IO::IIoBridge;
 using Libcore::IO::CIoBridge;
 using Libcore::IO::ILibcore;
 using Libcore::IO::CLibcore;
-using Libcore::IO::IStructStat;
 using Libcore::IO::IOs;
-using Elastos::Core::Character;
-using Elastos::Core::StringBuilder;
+using Libcore::IO::IIoBridge;
+using Libcore::IO::CIoBridge;
+using Elastos::IO::Channels::IChannel;
 using Elastos::IO::Charset::IModifiedUtf8;
-using Elastos::IO::Charset::CModifiedUtf8;
+// using Elastos::IO::Charset::CModifiedUtf8;
 
 namespace Elastos {
 namespace IO {
@@ -51,33 +54,33 @@ ECode CRandomAccessFile::constructor(
     /* [in] */ IFile* file,
     /* [in] */ const String& mode)
 {
-    AutoPtr<COsConstants> obj;
-    FAIL_RETURN(COsConstants::AcquireSingletonByFriend((COsConstants**)&obj));
-    AutoPtr<IOsConstants> osConstans = (IOsConstants*)obj.Get();
+//     AutoPtr<COsConstants> obj;
+//     FAIL_RETURN(COsConstants::AcquireSingletonByFriend((COsConstants**)&obj));
+//     AutoPtr<IOsConstants> osConstans = (IOsConstants*)obj.Get();
     Int32 flags;
-    if (mode.Equals("r")) {
-        osConstans->GetOsConstant(String("O_RDONLY"), &flags);
-    }
-    else if (mode.Equals("rw") || mode.Equals("rws") || mode.Equals("rwd")) {
-        Int32 flag1, flag2;
-        osConstans->GetOsConstant(String("O_RDWR"), &flag1);
-        osConstans->GetOsConstant(String("O_CREAT"), &flag2);
-        flags = flag1 | flag2;
+//     if (mode.Equals("r")) {
+//         osConstans->GetOsConstant(String("O_RDONLY"), &flags);
+//     }
+//     else if (mode.Equals("rw") || mode.Equals("rws") || mode.Equals("rwd")) {
+//         Int32 flag1, flag2;
+//         osConstans->GetOsConstant(String("O_RDWR"), &flag1);
+//         osConstans->GetOsConstant(String("O_CREAT"), &flag2);
+//         flags = flag1 | flag2;
 
-        if (mode.Equals("rws")) {
-            // Sync file and metadata with every write
-            mSyncMetadata = TRUE;
-        }
-        else if (mode.Equals("rwd")) {
-            // Sync file, but not necessarily metadata
-            osConstans->GetOsConstant(String("O_SYNC"), &flag1);
-            flags |= flag1;
-        }
-    }
-    else {
-//        throw new IllegalArgumentException("Invalid mode: " + mode);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
+//         if (mode.Equals("rws")) {
+//             // Sync file and metadata with every write
+//             mSyncMetadata = TRUE;
+//         }
+//         else if (mode.Equals("rwd")) {
+//             // Sync file, but not necessarily metadata
+//             osConstans->GetOsConstant(String("O_SYNC"), &flag1);
+//             flags |= flag1;
+//         }
+//     }
+//     else {
+// //        throw new IllegalArgumentException("Invalid mode: " + mode);
+//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
+//     }
 
     mMode = flags;
 
@@ -86,8 +89,8 @@ ECode CRandomAccessFile::constructor(
     AutoPtr<IIoBridge> ioBridge = (IIoBridge*)ioObj.Get();
     String path;
     file->GetPath(&path);
-    Int32 fd;
-    FAIL_RETURN(ioBridge->Open(path, flags, &fd));
+    AutoPtr<IFileDescriptor> fd;
+    FAIL_RETURN(ioBridge->Open(path, flags, (IFileDescriptor**)&fd));
 
     CFileDescriptor::NewByFriend((CFileDescriptor**)&mFd);
     mFd->SetDescriptor(fd);
@@ -113,7 +116,7 @@ ECode CRandomAccessFile::constructor(
 ECode CRandomAccessFile::Close()
 {
     // guard.close();
-    Object::Autolock lock(_m_syncLock);
+    Object::Autolock lock(this);
 
     Boolean isflag(FALSE);
     if (mChannel != NULL && (IChannel::Probe(mChannel)->IsOpen(&isflag) , isflag)) {
@@ -121,18 +124,20 @@ ECode CRandomAccessFile::Close()
         mChannel = NULL;
     }
 
-    return IoBridge::CloseAndSignalBlockedThreads(mFd);
+    AutoPtr<IIoBridge> ioBridge;
+    CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
+    return ioBridge->CloseAndSignalBlockedThreads(mFd);
 }
 
 ECode CRandomAccessFile::GetChannel(
     /* [out] */ IFileChannel **channel)
 {
     VALIDATE_NOT_NULL(channel)
-    Object::Autolock lock(_m_syncLock);
+    Object::Autolock lock(this);
 
     // BEGIN android-added
     if(mChannel == NULL) {
-        mChannel = NioUtils::NewFileChannel(IObject::Probe(this), mFd, mMode);
+        mChannel = NioUtils::NewFileChannel(THIS_PROBE(IObject), mFd, mMode);
     }
     // END android-added
     *channel = mChannel;
@@ -156,19 +161,12 @@ ECode CRandomAccessFile::GetFilePointer(
     VALIDATE_NOT_NULL(offset);
     *offset = -1;
 
-    AutoPtr<COsConstants> obj;
-    FAIL_RETURN(COsConstants::AcquireSingletonByFriend((COsConstants**)&obj));
-    AutoPtr<IOsConstants> osConstans = (IOsConstants*)obj.Get();
-    Int32 mode;
-    osConstans->GetOsConstant(String("SEEK_CUR"), &mode);
-
-    AutoPtr<CLibcore> ioObj;
-    CLibcore::AcquireSingletonByFriend((CLibcore**)&ioObj);
-    AutoPtr<ILibcore> libcore = (ILibcore*)ioObj.Get();
+    AutoPtr<ILibcore> libcore;
+    CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
 
-    return IoUtils::Libcore2IoECode(os->Lseek(mFd->mDescriptor, 0ll, mode, offset));
+    // return IoUtils::Libcore2IoECode(os->Lseek(mFd->mDescriptor, 0ll, OsConstants::_SEEK_CUR, offset));
 }
 
 ECode CRandomAccessFile::GetLength(
@@ -176,14 +174,13 @@ ECode CRandomAccessFile::GetLength(
 {
     VALIDATE_NOT_NULL(len);
 
-    AutoPtr<CLibcore> ioObj;
-    CLibcore::AcquireSingletonByFriend((CLibcore**)&ioObj);
-    AutoPtr<ILibcore> libcore = (ILibcore*)ioObj.Get();
+    AutoPtr<ILibcore> libcore;
+    CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
 
     AutoPtr<IStructStat> stat;
-    FAIL_RETURN(IoUtils::Libcore2IoECode(os->Fstat(mFd->mDescriptor, (IStructStat**)&stat)));
+    // FAIL_RETURN(IoUtils::Libcore2IoECode(os->Fstat(mFd->mDescriptor, (IStructStat**)&stat)));
 
     return stat->GetSize(len);
 }
@@ -218,11 +215,9 @@ ECode CRandomAccessFile::Read(
 {
     VALIDATE_NOT_NULL(number);
 
-    AutoPtr<CIoBridge> obj;
-    FAIL_RETURN(CIoBridge::AcquireSingletonByFriend((CIoBridge**)&obj));
-    AutoPtr<IIoBridge> ioBridge = (IIoBridge*)obj.Get();
-
-    return ioBridge->Read(mFd->mDescriptor, buffer, offset, length, number);
+    AutoPtr<IIoBridge> ioBridge;
+    CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
+    return ioBridge->Read(mFd, buffer, offset, length, number);
 }
 
 ECode CRandomAccessFile::ReadBoolean(
@@ -475,14 +470,14 @@ ECode CRandomAccessFile::ReadUTF(
     }
     AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(utfSize);
     Int32 readsize = 0;
-    ReadBytes(buf, 0, buf->GetLength(), &readsize);
+    Read(buf, 0, buf->GetLength(), &readsize);
     if (readsize != buf->GetLength()) {
         // throw new EOFException();
         return E_EOF_EXCEPTION;
     }
     AutoPtr<IModifiedUtf8> mutf8help;
-    CModifiedUtf8::AcquireSingleton((IModifiedUtf8**)&mutf8help);
-    AutoPtr< ArrayOf<Char8> > charbuf = ArrayOf<Char8>::Alloc(utfSize);
+    // CModifiedUtf8::AcquireSingleton((IModifiedUtf8**)&mutf8help);
+    AutoPtr< ArrayOf<Char32> > charbuf = ArrayOf<Char32>::Alloc(utfSize);
     return mutf8help->Decode(buf, charbuf, 0, utfSize, str);
 }
 
@@ -495,12 +490,6 @@ ECode CRandomAccessFile::Seek(
         return E_IO_EXCEPTION;
     }
 
-    AutoPtr<COsConstants> obj;
-    FAIL_RETURN(COsConstants::AcquireSingletonByFriend((COsConstants**)&obj));
-    AutoPtr<IOsConstants> osConstans = (IOsConstants*)obj.Get();
-    Int32 mode;
-    osConstans->GetOsConstant(String("SEEK_SET"), &mode);
-
     AutoPtr<CLibcore> ioObj;
     CLibcore::AcquireSingletonByFriend((CLibcore**)&ioObj);
     AutoPtr<ILibcore> libcore = (ILibcore*)ioObj.Get();
@@ -508,7 +497,7 @@ ECode CRandomAccessFile::Seek(
     libcore->GetOs((IOs**)&os);
 
     Int64 res;
-    return IoUtils::Libcore2IoECode(os->Lseek(mFd->mDescriptor, offset, mode, &res));
+    // return IoUtils::Libcore2IoECode(os->Lseek(mFd->mDescriptor, offset, OsConstants::_SEEK_SET, &res));
 }
 
 ECode CRandomAccessFile::SetLength(
@@ -525,7 +514,7 @@ ECode CRandomAccessFile::SetLength(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
 
-    FAIL_RETURN(IoUtils::Libcore2IoECode(os->Ftruncate(mFd->mDescriptor, newLength)));
+    // FAIL_RETURN(IoUtils::Libcore2IoECode(os->Ftruncate(mFd->mDescriptor, newLength)));
 
     Int64 filePointer;
     FAIL_RETURN(GetFilePointer(&filePointer));
@@ -575,7 +564,7 @@ ECode CRandomAccessFile::Write(
     FAIL_RETURN(CIoBridge::AcquireSingletonByFriend((CIoBridge**)&obj));
     AutoPtr<IIoBridge> ioBridge = (IIoBridge*)obj.Get();
 
-    FAIL_RETURN(ioBridge->Write(mFd->mDescriptor, buffer, offset, count));
+    FAIL_RETURN(ioBridge->Write(mFd, buffer, offset, count));
 
     // if we are in "rws" mode, attempt to sync file+metadata
     if (mSyncMetadata) {
@@ -618,6 +607,22 @@ ECode CRandomAccessFile::WriteBytes(
     if (str.IsNullOrEmpty())
         return NOERROR;
 
+    // byte[] bytes = new byte[str.length()];
+    // for (int index = 0; index < str.length(); index++) {
+    //     bytes[index] = (byte) (str.charAt(index) & 0xFF);
+    // }
+    // write(bytes);
+    AutoPtr<ArrayOf<Char32> > chs = str.GetChars();
+    return Write((ArrayOf<Byte>*)chs.Get());
+}
+
+ECode CRandomAccessFile::WriteChars(
+    /* [in] */ const String& str)
+{
+    if (str.IsNullOrEmpty())
+        return NOERROR;
+
+    // write(str.getBytes("UTF-16BE"));
     AutoPtr<ArrayOf<Char32> > chs = str.GetChars();
     return Write((ArrayOf<Byte>*)chs.Get());
 }
@@ -689,7 +694,7 @@ ECode CRandomAccessFile::WriteUTF(
     /* [in] */ const String& str)
 {
     AutoPtr<IModifiedUtf8> utf8help;
-    CModifiedUtf8::AcquireSingleton((IModifiedUtf8**)&utf8help);
+    // CModifiedUtf8::AcquireSingleton((IModifiedUtf8**)&utf8help);
     AutoPtr<ArrayOf<Byte> > bytes;
     utf8help->Encode(&str, (ArrayOf<Byte>**)&bytes);
     return Write(bytes);

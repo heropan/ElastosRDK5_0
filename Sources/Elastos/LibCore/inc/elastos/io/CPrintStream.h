@@ -6,7 +6,8 @@
 #include "FilterOutputStream.h"
 
 using Elastos::Core::ICharSequence;
-using Libcore::ICU::ILocale;
+using Elastos::Core::IAppendable;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace IO {
@@ -14,6 +15,7 @@ namespace IO {
 CarClass(CPrintStream)
     , public FilterOutputStream
     , public IPrintStream
+    , public IAppendable
 {
 public:
     CAR_OBJECT_DECL()
@@ -21,6 +23,8 @@ public:
     CAR_INTERFACE_DECL()
 
     CPrintStream();
+
+    virtual ~CPrintStream();
 
     CARAPI constructor(
         /* [in] */ IOutputStream* outs);
@@ -32,21 +36,21 @@ public:
     CARAPI constructor(
         /* [in] */ IOutputStream* outs,
         /* [in] */ Boolean autoflush,
-        /* [in] */ const String& enc);
+        /* [in] */ const String& charsetName);
 
     CARAPI constructor(
         /* [in] */ IFile* file);
 
     CARAPI constructor(
         /* [in] */ IFile* file,
-        /* [in] */ const String& csn);
+        /* [in] */ const String& charsetName);
 
     CARAPI constructor(
         /* [in] */ const String& fileName);
 
     CARAPI constructor(
         /* [in] */ const String& fileName,
-        /* [in] */ const String& csn);
+        /* [in] */ const String& charsetName);
 
     CARAPI CheckError(
         /* [out] */ Boolean* hasError);
@@ -141,7 +145,7 @@ public:
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
-    CARAPI Append(
+    CARAPI AppendChar(
         /* [in] */ Char32 c);
 
     CARAPI Append(

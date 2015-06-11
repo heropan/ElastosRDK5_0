@@ -69,7 +69,7 @@ module
          * @see #size
          */
         // @SuppressWarnings("unchecked")
-        ElementAt(
+        GetElementAt(
             [in] Int32 location,
             [out] IInterface** outface);
 
@@ -81,7 +81,7 @@ module
          * @see #elementAt
          * @see Enumeration
          */
-        Elements(
+        GetElements(
             [out] IEnumeration** enu);
 
         /**
@@ -107,7 +107,7 @@ module
          * @see #size
          */
         // @SuppressWarnings("unchecked")
-        FirstElement(
+        GetFirstElement(
             [out] IInterface** outface);
 
         /**
@@ -163,7 +163,7 @@ module
          * @see #size
          */
         // @SuppressWarnings("unchecked")
-        LastElement(
+        GetLastElement(
             [out] IInterface** outface);
 
         /**

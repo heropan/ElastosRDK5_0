@@ -1,7 +1,7 @@
 
 #include "MappedByteBuffer.h"
-#include "ReadOnlyDirectByteBuffer.h"
-#include "ReadWriteDirectByteBuffer.h"
+//#include "ReadOnlyDirectByteBuffer.h"
+//#include "ReadWriteDirectByteBuffer.h"
 // #include "CLibcore.h"
 // #include "COsConstants.h"
 
@@ -44,14 +44,14 @@ MappedByteBuffer::MappedByteBuffer(
     , mMapMode(mapMode)
 {
     if (mMapMode == FileChannelMapMode_READ_ONLY) {
-        AutoPtr<ReadOnlyDirectByteBuffer> tmpReadOnly = new ReadOnlyDirectByteBuffer(block, capacity, offset);
-        assert(tmpReadOnly != NULL);
-        mWrapped = (DirectByteBuffer*)tmpReadOnly;
+        // AutoPtr<ReadOnlyDirectByteBuffer> tmpReadOnly = new ReadOnlyDirectByteBuffer(block, capacity, offset);
+        // assert(tmpReadOnly != NULL);
+        // mWrapped = (DirectByteBuffer*)tmpReadOnly;
     }
     else {
-        AutoPtr<ReadWriteDirectByteBuffer> tmpReadWrite = new ReadWriteDirectByteBuffer(block, capacity, offset);
-        assert(tmpReadWrite != NULL);
-        mWrapped = (DirectByteBuffer*)tmpReadWrite;
+        // AutoPtr<ReadWriteDirectByteBuffer> tmpReadWrite = new ReadWriteDirectByteBuffer(block, capacity, offset);
+        // assert(tmpReadWrite != NULL);
+        // mWrapped = (DirectByteBuffer*)tmpReadWrite;
     }
 }
 

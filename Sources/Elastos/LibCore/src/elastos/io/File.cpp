@@ -1,16 +1,16 @@
 
 #include "File.h"
-#include "CFile.h"
-#include "IoUtils.h"
-#include "ToStringArray_S.h"
+//#include "CFile.h"
+//#include "IoUtils.h"
+//#include "ToStringArray_S.h"
 #include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/Vector.h>
 #include "StringBuilder.h"
-#include <CSystem.h>
+#include "CSystem.h"
 #include "CRandom.h"
-#include "COsConstants.h"
+#include "OsConstants.h"
 #include "CLibcore.h"
 
-#include <utils/Vector.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/param.h>
@@ -23,16 +23,13 @@ using Elastos::Core::CRandom;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CSystem;;
 using Elastos::Core::ISystem;
-// using Libcore::IO::IOsConstants;
-using Elastos::Droid::System::IOsConstants;
-using Libcore::IO::COsConstants;
+using Elastos::Core::EIID_IComparable;
+using Elastos::Droid::System::OsConstants;
 using Libcore::IO::ILibcore;
 using Libcore::IO::CLibcore;
 using Libcore::IO::IOs;
-// using Libcore::IO::IStructStat;
 using Elastos::Droid::System::IStructStat;
-// using Libcore::IO::IStructStatFs;
-using Elastos::Droid::System::IStructStatFs;
+// using Elastos::Droid::System::IStructStatFs;
 using Elastos::Droid::System::IStructStatVfs;
 
 namespace Elastos {
@@ -212,7 +209,7 @@ ECode File::ListRoots(
 {
     VALIDATE_NOT_NULL(roots)
     AutoPtr<IFile> file;
-    CFile::New(String("/"), (IFile**)&file);
+    // CFile::New(String("/"), (IFile**)&file);
     AutoPtr< ArrayOf<IFile*> > files = ArrayOf<IFile*>::Alloc(1);
     files->Set(0, file);
     *roots = files;
@@ -224,12 +221,7 @@ ECode File::CanExecute(
     /* [out] */ Boolean* canExecute)
 {
     VALIDATE_NOT_NULL(canExecute)
-
-    AutoPtr<IOsConstants> osConstans;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-    Int32 mode;
-    osConstans->GetOsConstant(String("X_OK"), &mode);
-    *canExecute = DoAccess(mode);
+    *canExecute = DoAccess(OsConstants::_X_OK);
     return NOERROR;
 }
 
@@ -237,12 +229,7 @@ ECode File::CanRead(
     /* [out] */ Boolean* canRead)
 {
     VALIDATE_NOT_NULL(canRead)
-
-    AutoPtr<IOsConstants> osConstans;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-    Int32 mode;
-    osConstans->GetOsConstant(String("R_OK"), &mode);
-    *canRead = DoAccess(mode);
+    *canRead = DoAccess(OsConstants::_R_OK);
     return NOERROR;
 }
 
@@ -250,12 +237,7 @@ ECode File::CanWrite(
     /* [out] */ Boolean* canWrite)
 {
     VALIDATE_NOT_NULL(canWrite)
-
-    AutoPtr<IOsConstants> osConstans;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-    Int32 mode;
-    osConstans->GetOsConstant(String("W_OK"), &mode);
-    *canWrite = DoAccess(mode);
+    *canWrite = DoAccess(OsConstants::_W_OK);
     return NOERROR;
 }
 
@@ -268,9 +250,9 @@ Boolean File::DoAccess(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     Boolean result;
-    if (SUCCEEDED(IoUtils::Libcore2IoECode(os->Access(mPath, mode, &result)))) {
-        return result;
-    }
+    // if (SUCCEEDED(IoUtils::Libcore2IoECode(os->Access(mPath, mode, &result)))) {
+    //     return result;
+    // }
     return FALSE;
     // } catch (ErrnoException errnoException) {
     //     return false;
@@ -317,15 +299,20 @@ ECode File::Delete(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    if (SUCCEEDED(IoUtils::Libcore2IoECode(os->Remove(mPath)))) {
-        *succeeded = TRUE;
-        return NOERROR;
-    }
+    // if (SUCCEEDED(IoUtils::Libcore2IoECode(os->Remove(mPath)))) {
+    //     *succeeded = TRUE;
+    //     return NOERROR;
+    // }
     *succeeded = FALSE;
     return NOERROR;
     // } catch (ErrnoException errnoException) {
     //     return false;
     // }
+}
+
+ECode File::DeleteOnExit()
+{
+    // return DeleteOnExit.getInstance().addFile(getAbsolutePath());
 }
 
 ECode File::Equals(
@@ -348,12 +335,7 @@ ECode File::Exists(
     /* [out] */ Boolean* isExist)
 {
     VALIDATE_NOT_NULL(isExist)
-
-    AutoPtr<IOsConstants> osConstans;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-    Int32 mode;
-    osConstans->GetOsConstant(String("F_OK"), &mode);
-    *isExist = DoAccess(mode);
+    *isExist = DoAccess(OsConstants::_F_OK);
     return NOERROR;
 }
 
@@ -385,7 +367,7 @@ ECode File::GetAbsoluteFile(
 
     String absolutePath;
     GetAbsolutePath(&absolutePath);
-    return CFile::New(absolutePath, file);
+    // return CFile::New(absolutePath, file);
 }
 
 ECode File::GetCanonicalPath(
@@ -395,7 +377,7 @@ ECode File::GetCanonicalPath(
 
     String absolutePath;
     GetAbsolutePath(&absolutePath);
-    *path = UrlUtils::CanonicalizePath(absolutePath, TRUE);
+    // *path = UrlUtils::CanonicalizePath(absolutePath, TRUE);
     return NOERROR;
 }
 
@@ -405,7 +387,7 @@ ECode File::GetCanonicalFile(
     VALIDATE_NOT_NULL(file)
     String path;
     GetCanonicalPath(&path);
-    return CFile::New(path, file);
+    // return CFile::New(path, file);
 }
 
 ECode File::GetName(
@@ -453,7 +435,7 @@ ECode File::GetParentFile(
         *file = NULL;
         return NOERROR;
     }
-    return CFile::New(tempParent, file);
+    // return CFile::New(tempParent, file);
 }
 
 ECode File::GetPath(
@@ -491,16 +473,14 @@ ECode File::IsDirectory(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    AutoPtr<IStructStat> stat;
-    if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
-        *isDirectory = FALSE;
-        return NOERROR;
-    }
-    Int32 mode;
-    stat->GetMode(&mode);
-    AutoPtr<IOsConstants> osConstans;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-    return osConstans->_S_ISDIR(mode, isDirectory);
+    // AutoPtr<IStructStat> stat;
+    // if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
+    //     *isDirectory = FALSE;
+    //     return NOERROR;
+    // }
+    // Int32 mode;
+    // stat->GetMode(&mode);
+    // return OsConstants::_S_ISDIR(mode, isDirectory);
     // } catch (ErrnoException errnoException) {
     //     // The RI returns false on error. (Even for errors like EACCES or ELOOP.)
     //     return false;
@@ -516,16 +496,14 @@ ECode File::IsFile(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    AutoPtr<IStructStat> stat;
-    if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
-        *isFile = FALSE;
-        return NOERROR;
-    }
-    Int32 mode;
-    stat->GetMode(&mode);
-    AutoPtr<IOsConstants> osConstans;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-    return osConstans->_S_ISREG(mode, isFile);
+    // AutoPtr<IStructStat> stat;
+    // if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
+    //     *isFile = FALSE;
+    //     return NOERROR;
+    // }
+    // Int32 mode;
+    // stat->GetMode(&mode);
+    // return OsConstants::_S_ISREG(mode, isFile);
     // } catch (ErrnoException errnoException) {
     //     // The RI returns false on error. (Even for errors like EACCES or ELOOP.)
     //     return false;
@@ -546,7 +524,7 @@ ECode File::IsHidden(
     return NOERROR;
 }
 
-ECode File::LastModified(
+ECode File::GetLastModified(
     /* [out] */ Int64* time)
 {
     VALIDATE_NOT_NULL(time)
@@ -556,10 +534,10 @@ ECode File::LastModified(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStat> stat;
-    if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
-        *time = 0;
-        return NOERROR;
-    }
+    // if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
+    //     *time = 0;
+    //     return NOERROR;
+    // }
     Int64 mtime;
     stat->GetMtime(&mtime);
     *time = mtime * 1000LL;
@@ -618,13 +596,11 @@ ECode File::SetExecutable(
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded)
-    AutoPtr<IOsConstants> osConstans;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-    Int32 mdS_IXUSR, mdS_IXGRP, mdS_IXOTH;
-    osConstans->GetOsConstant(String("S_IXUSR"), &mdS_IXUSR);
-    osConstans->GetOsConstant(String("S_IXGRP"), &mdS_IXGRP);
-    osConstans->GetOsConstant(String("S_IXOTH"), &mdS_IXOTH);
-    *succeeded = DoChmod(ownerOnly ? mdS_IXUSR : (mdS_IXUSR | mdS_IXGRP | mdS_IXOTH), executable);
+    // Int32 mdS_IXUSR, mdS_IXGRP, mdS_IXOTH;
+    // IOsConstants->GetOsConstant(String("S_IXUSR"), &mdS_IXUSR);
+    // IOsConstants->GetOsConstant(String("S_IXGRP"), &mdS_IXGRP);
+    // IOsConstants->GetOsConstant(String("S_IXOTH"), &mdS_IXOTH);
+    // *succeeded = DoChmod(ownerOnly ? mdS_IXUSR : (mdS_IXUSR | mdS_IXGRP | mdS_IXOTH), executable);
     return NOERROR;
 }
 
@@ -643,12 +619,10 @@ ECode File::SetReadable(
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded)
-    AutoPtr<IOsConstants> osConstans;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
     Int32 mdS_IRUSR, mdS_IRGRP, mdS_IROTH;
-    osConstans->GetOsConstant(String("S_IRUSR"), &mdS_IRUSR);
-    osConstans->GetOsConstant(String("S_IRGRP"), &mdS_IRGRP);
-    osConstans->GetOsConstant(String("S_IROTH"), &mdS_IROTH);
+    // IOsConstants->GetOsConstant(String("S_IRUSR"), &mdS_IRUSR);
+    // IOsConstants->GetOsConstant(String("S_IRGRP"), &mdS_IRGRP);
+    // IOsConstants->GetOsConstant(String("S_IROTH"), &mdS_IROTH);
     *succeeded = DoChmod(ownerOnly ? mdS_IRUSR : (mdS_IRUSR | mdS_IRGRP | mdS_IROTH), readable);
     return NOERROR;
 }
@@ -668,12 +642,10 @@ ECode File::SetWritable(
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded)
-    AutoPtr<IOsConstants> osConstans;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
     Int32 mdS_IWUSR, mdS_IWGRP, mdS_IWOTH;
-    osConstans->GetOsConstant(String("S_IWUSR"), &mdS_IWUSR);
-    osConstans->GetOsConstant(String("S_IWGRP"), &mdS_IWGRP);
-    osConstans->GetOsConstant(String("S_IWOTH"), &mdS_IWOTH);
+    // osConstans->GetOsConstant(String("S_IWUSR"), &mdS_IWUSR);
+    // osConstans->GetOsConstant(String("S_IWGRP"), &mdS_IWGRP);
+    // osConstans->GetOsConstant(String("S_IWOTH"), &mdS_IWOTH);
     *succeeded = DoChmod(ownerOnly ? mdS_IWUSR : (mdS_IWUSR | mdS_IWGRP | mdS_IWOTH), writable);
     return NOERROR;
 }
@@ -696,16 +668,16 @@ Boolean File::DoChmod(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    AutoPtr<IStructStat> stat;
-    if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
-        return FALSE;
-    }
-    Int32 mode;
-    stat->GetMode(&mode);
-    Int32 newMode = set ? (mode | mask) : (mode & ~mask);
-    if (FAILED(IoUtils::Libcore2IoECode(os->Chmod(mPath, newMode)))) {
-        return FALSE;
-    }
+    // AutoPtr<IStructStat> stat;
+    // if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
+    //     return FALSE;
+    // }
+    // Int32 mode;
+    // stat->GetMode(&mode);
+    // Int32 newMode = set ? (mode | mask) : (mode & ~mask);
+    // if (FAILED(IoUtils::Libcore2IoECode(os->Chmod(mPath, newMode)))) {
+    //     return FALSE;
+    // }
     return TRUE;
     // } catch (ErrnoException errnoException) {
     //     return false;
@@ -722,10 +694,10 @@ ECode File::GetLength(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStat> stat;
-    if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
-        *length = 0;
-        return NOERROR;
-    }
+    // if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
+    //     *length = 0;
+    //     return NOERROR;
+    // }
     Int64 size;
     stat->GetSize(&size);
     *length = size;
@@ -824,7 +796,7 @@ AutoPtr< ArrayOf<String> > File::ListImpl(
         return NULL;
     }
     // Translate the intermediate form into a Java String[].
-    return Elastos::IO::ToStringArray(entries);
+    // return Elastos::IO::ToStringArray(entries);
 }
 
 ECode File::List(
@@ -933,8 +905,8 @@ AutoPtr< ArrayOf<IFile*> > File::FilenamesToFiles(
     AutoPtr< ArrayOf<IFile*> > result = ArrayOf<IFile*>::Alloc(count);
     for (Int32 i = 0; i < count; ++i) {
         AutoPtr<IFile> file;
-        CFile::New((IFile*)this->Probe(EIID_IFile),
-                (*filenames)[i], (IFile**)&file);
+        // CFile::New((IFile*)this->Probe(EIID_IFile),
+        //         (*filenames)[i], (IFile**)&file);
         result->Set(i, file);
     }
     return result;
@@ -955,15 +927,15 @@ ECode File::Mkdir(
 ECode File::MkdirErrno()
 {
     // On Android, we don't want default permissions to allow global access.
-    AutoPtr<IOsConstants> osConstans;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-    Int32 mode;
-    osConstans->GetOsConstant(String("S_IRWXU"), &mode);
-    AutoPtr<ILibcore> libcore;
-    CLibcore::AcquireSingleton((ILibcore**)&libcore);
-    AutoPtr<IOs> os;
-    libcore->GetOs((IOs**)&os);
-    return IoUtils::Libcore2IoECode(os->Mkdir(mPath, mode));
+    // AutoPtr<IOsConstants> osConstans;
+    // COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
+    // Int32 mode;
+    // osConstans->GetOsConstant(String("S_IRWXU"), &mode);
+    // AutoPtr<ILibcore> libcore;
+    // CLibcore::AcquireSingleton((ILibcore**)&libcore);
+    // AutoPtr<IOs> os;
+    // libcore->GetOs((IOs**)&os);
+    // return IoUtils::Libcore2IoECode(os->Mkdir(mPath, mode));
 }
 
 ECode File::Mkdirs(
@@ -1001,22 +973,22 @@ ECode File::CreateNewFile(
     VALIDATE_NOT_NULL(succeeded)
     // try {
     // On Android, we don't want default permissions to allow global access.
-    AutoPtr<IOsConstants> osConstans;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-    Int32 mdO_RDWR, mdO_CREAT, mdO_EXCL;
-    osConstans->GetOsConstant(String("O_RDWR"), &mdO_RDWR);
-    osConstans->GetOsConstant(String("O_CREAT"), &mdO_CREAT);
-    osConstans->GetOsConstant(String("O_EXCL"), &mdO_EXCL);
-    AutoPtr<ILibcore> libcore;
-    CLibcore::AcquireSingleton((ILibcore**)&libcore);
-    AutoPtr<IOs> os;
-    libcore->GetOs((IOs**)&os);
-    Int32 fd;
-    ECode ec = IoUtils::Libcore2IoECode(os->Open(mPath, mdO_RDWR | mdO_CREAT | mdO_EXCL, 0600, &fd));
-    if (fd != -1) {
-        IoUtils::Libcore2IoECode(os->Close(fd));
-    }
-    *succeeded = SUCCEEDED(ec) ? TRUE : FALSE;
+    // AutoPtr<IOsConstants> osConstans;
+    // COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
+    // Int32 mdO_RDWR, mdO_CREAT, mdO_EXCL;
+    // osConstans->GetOsConstant(String("O_RDWR"), &mdO_RDWR);
+    // osConstans->GetOsConstant(String("O_CREAT"), &mdO_CREAT);
+    // osConstans->GetOsConstant(String("O_EXCL"), &mdO_EXCL);
+    // AutoPtr<ILibcore> libcore;
+    // CLibcore::AcquireSingleton((ILibcore**)&libcore);
+    // AutoPtr<IOs> os;
+    // libcore->GetOs((IOs**)&os);
+    // Int32 fd;
+    // ECode ec = IoUtils::Libcore2IoECode(os->Open(mPath, mdO_RDWR | mdO_CREAT | mdO_EXCL, 0600, &fd));
+    // if (fd != -1) {
+    //     IoUtils::Libcore2IoECode(os->Close(fd));
+    // }
+    // *succeeded = SUCCEEDED(ec) ? TRUE : FALSE;
     return NOERROR;
     // } catch (ErrnoException errnoException) {
     //     if (errnoException.errno == EEXIST) {
@@ -1060,7 +1032,7 @@ ECode File::CreateTempFile(
 
         String tmpDir;
         system->GetProperty(String("elastos.io.tmpdir"), String("."), &tmpDir);
-        CFile::New(tmpDir, (IFile**)&tmpDirFile);
+        // CFile::New(tmpDir, (IFile**)&tmpDirFile);
     }
     AutoPtr<IFile> result;
     Boolean succeeded;
@@ -1072,7 +1044,7 @@ ECode File::CreateTempFile(
         sb += randomInt32;
         sb += _suffix;
         result = NULL;
-        CFile::New(tmpDirFile, sb.ToString(), (IFile**)&result);
+        // CFile::New(tmpDirFile, sb.ToString(), (IFile**)&result);
     } while (result->CreateNewFile(&succeeded), !succeeded);
     *file = result;
     REFCOUNT_ADD(*file);
@@ -1094,7 +1066,7 @@ ECode File::RenameTo(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    *succeeded = SUCCEEDED(IoUtils::Libcore2IoECode(os->Rename(mPath, path))) ? TRUE : FALSE;
+    // *succeeded = SUCCEEDED(IoUtils::Libcore2IoECode(os->Rename(mPath, path))) ? TRUE : FALSE;
     return NOERROR;
     // } catch (ErrnoException errnoException) {
     //     return false;
@@ -1109,7 +1081,8 @@ ECode File::ToString(
     return NOERROR;
 }
 
-// public URI toURI() {
+ECode File::ToURI(
+    /* [out] */ IURI** uri){
 //     String name = getAbsoluteName();
 //     try {
 //         if (!name.startsWith("/")) {
@@ -1123,9 +1096,10 @@ ECode File::ToString(
 //         // this should never happen
 //         return null;
 //     }
-// }
+}
 
-// public URL toURL() throws java.net.MalformedURLException {
+ECode File::ToURL(
+    /* [out] */ IURL** uri) {
 //     String name = getAbsoluteName();
 //     if (!name.startsWith("/")) {
 //         // start with sep.
@@ -1148,7 +1122,7 @@ ECode File::ToString(
 //         name = name.replace(separatorChar, '/');
 //     }
 //     return name;
-// }
+}
 
 // private void writeObject(ObjectOutputStream stream) throws IOException {
 //     stream.defaultWriteObject();
@@ -1171,10 +1145,10 @@ ECode File::GetTotalSpace(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStatVfs> sb;
-    if (FAILED(IoUtils::Libcore2IoECode(os->StatVfs(mPath, (IStructStatVfs**)&sb)))) {
-        *space = 0;
-        return NOERROR;
-    }
+    // if (FAILED(IoUtils::Libcore2IoECode(os->StatVfs(mPath, (IStructStatVfs**)&sb)))) {
+    //     *space = 0;
+    //     return NOERROR;
+    // }
     Int64 blocks, bsize;
     sb->GetBlocks(&blocks);
     sb->GetBsize(&bsize);
@@ -1195,10 +1169,10 @@ ECode File::GetUsableSpace(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStatVfs> sb;
-    if (FAILED(IoUtils::Libcore2IoECode(os->StatVfs(mPath, (IStructStatVfs**)&sb)))) {
-        *space = 0;
-        return NOERROR;
-    }
+    // if (FAILED(IoUtils::Libcore2IoECode(os->StatVfs(mPath, (IStructStatVfs**)&sb)))) {
+    //     *space = 0;
+    //     return NOERROR;
+    // }
     Int64 bavail, bsize;
     sb->GetBavail(&bavail);
     sb->GetBsize(&bsize);
@@ -1219,10 +1193,10 @@ ECode File::GetFreeSpace(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStatVfs> sb;
-    if (FAILED(IoUtils::Libcore2IoECode(os->StatVfs(mPath, (IStructStatVfs**)&sb)))) {
-        *space = 0;
-        return NOERROR;
-    }
+    // if (FAILED(IoUtils::Libcore2IoECode(os->StatVfs(mPath, (IStructStatVfs**)&sb)))) {
+    //     *space = 0;
+    //     return NOERROR;
+    // }
     Int64 bfree, bsize;
     sb->GetBfree(&bfree);
     sb->GetBsize(&bsize);

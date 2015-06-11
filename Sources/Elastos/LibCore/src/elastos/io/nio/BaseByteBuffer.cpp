@@ -1,11 +1,11 @@
 
 #include "BaseByteBuffer.h"
-#include "CharToByteBufferAdapter.h"
-#include "FloatToByteBufferAdapter.h"
-#include "DoubleToByteBufferAdapter.h"
-#include "Int16ToByteBufferAdapter.h"
-#include "Int32ToByteBufferAdapter.h"
-#include "Int64ToByteBufferAdapter.h"
+// #include "CharToByteBufferAdapter.h"
+// #include "FloatToByteBufferAdapter.h"
+// #include "DoubleToByteBufferAdapter.h"
+// #include "Int16ToByteBufferAdapter.h"
+// #include "Int32ToByteBufferAdapter.h"
+// #include "Int64ToByteBufferAdapter.h"
 
 namespace Elastos {
 namespace IO {
@@ -20,42 +20,42 @@ ECode BaseByteBuffer::AsCharBuffer(
     /* [out] */ ICharBuffer** buffer)
 {
     AutoPtr<IByteBuffer> byteBuf = (IByteBuffer*)this->Probe(EIID_IByteBuffer);
-    return CharToByteBufferAdapter::AsCharBuffer(byteBuf, buffer);
+   //  return CharToByteBufferAdapter::AsCharBuffer(byteBuf, buffer);
 }
 
 ECode BaseByteBuffer::AsDoubleBuffer(
     /* [out] */ IDoubleBuffer** buffer)
 {
     AutoPtr<IByteBuffer> byteBuf = (IByteBuffer*)this->Probe(EIID_IByteBuffer);
-    return DoubleToByteBufferAdapter::AsDoubleBuffer(byteBuf, buffer);
+   //  return DoubleToByteBufferAdapter::AsDoubleBuffer(byteBuf, buffer);
 }
 
 ECode BaseByteBuffer::AsFloatBuffer(
     /* [out] */ IFloatBuffer** buffer)
 {
     AutoPtr<IByteBuffer> byteBuf = (IByteBuffer*)this->Probe(EIID_IByteBuffer);
-    return FloatToByteBufferAdapter::AsFloatBuffer(byteBuf, buffer);
+    // return FloatToByteBufferAdapter::AsFloatBuffer(byteBuf, buffer);
 }
 
 ECode BaseByteBuffer::AsInt16Buffer(
     /* [out] */ IInt16Buffer** buffer)
 {
     AutoPtr<IByteBuffer> byteBuf = (IByteBuffer*)this->Probe(EIID_IByteBuffer);
-    return Int16ToByteBufferAdapter::AsInt16Buffer(byteBuf, buffer);
+    // return Int16ToByteBufferAdapter::AsInt16Buffer(byteBuf, buffer);
 }
 
 ECode BaseByteBuffer::AsInt32Buffer(
     /* [out] */ IInt32Buffer** buffer)
 {
     AutoPtr<IByteBuffer> byteBuf = (IByteBuffer*)this->Probe(EIID_IByteBuffer);
-    return Int32ToByteBufferAdapter::AsInt32Buffer(byteBuf, buffer);
+    // return Int32ToByteBufferAdapter::AsInt32Buffer(byteBuf, buffer);
 }
 
 ECode BaseByteBuffer::AsInt64Buffer(
     /* [out] */ IInt64Buffer** buffer)
 {
     AutoPtr<IByteBuffer> byteBuf = (IByteBuffer*)this->Probe(EIID_IByteBuffer);
-    return Int64ToByteBufferAdapter::AsInt64Buffer(byteBuf, buffer);
+    // return Int64ToByteBufferAdapter::AsInt64Buffer(byteBuf, buffer);
 }
 
 ECode BaseByteBuffer::GetChar(

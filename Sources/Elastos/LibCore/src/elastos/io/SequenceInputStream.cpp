@@ -1,8 +1,9 @@
 
 #include "SequenceInputStream.h"
-#include "CObjectContainer.h"
+// #include "CVector.h"
 
-using Elastos::Core::CObjectContainer;
+using Elastos::Utility::IVector;
+// using Elastos::Utility::CVector;
 
 namespace Elastos {
 namespace IO {
@@ -16,21 +17,26 @@ ECode SequenceInputStream::constructor(
     if (s1 == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    CObjectContainer::New((IObjectContainer**)&mContainer);
-    mContainer->Add(s2);
-    mContainer->GetObjectEnumerator((IObjectEnumerator**)&mEnum);
+
+    AutoPtr<IVector> inVector;
+    // CVector::New(1, (IVector**)&inVector);
+    inVector->AddElement(s2);
+    inVector->GetElements((IEnumeration**)&mEnum);
     mIn = s1;
     return NOERROR;
 }
 
 ECode SequenceInputStream::constructor(
-    /* [in] */ IObjectEnumerator* e)
+    /* [in] */ IEnumeration* e)
 {
+    VALIDATE_NOT_NULL(e)
     mEnum = e;
-    Boolean succeeded = FALSE;
-    e->MoveNext(&succeeded);
-    if (succeeded) {
-        e->Current((IInterface**)(&mIn));
+    Boolean hasMore = FALSE;
+    e->HasMoreElements(&hasMore);
+    if (hasMore) {
+        AutoPtr<IInterface> obj;
+        e->GetNextElement((IInterface**)&obj);
+        mIn = IInputStream::Probe(obj);
         if (mIn == NULL) {
             return E_NULL_POINTER_EXCEPTION;
         }
@@ -56,7 +62,6 @@ ECode SequenceInputStream::Close()
         NextStream();
     }
     mEnum = NULL;
-    mContainer = NULL;
     return NOERROR;
 }
 
@@ -67,15 +72,14 @@ ECode SequenceInputStream::NextStream()
         mIn = NULL;
     }
     Boolean succeeded = FALSE;
-    mEnum->MoveNext(&succeeded);
+    mEnum->HasMoreElements(&succeeded);
     if (succeeded) {
-        mEnum->Current((IInterface**)(&mIn));
+        AutoPtr<IInterface> obj;
+        mEnum->GetNextElement((IInterface**)&obj);
+        mIn = IInputStream::Probe(obj);
         if (mIn == NULL) {
             return E_NULL_POINTER_EXCEPTION;
         }
-    }
-    else {
-        mIn = NULL;
     }
 
     return NOERROR;
@@ -96,13 +100,14 @@ ECode SequenceInputStream::Read(
 }
 
 ECode SequenceInputStream::Read(
-    /* [out] */ ArrayOf<Byte>* buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(number)
+    *number = 0;
+    VALIDATE_NOT_NULL(buffer)
     if (mIn == NULL) {
         *number = -1;
         return NOERROR;

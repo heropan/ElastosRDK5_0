@@ -2,15 +2,9 @@
 #ifndef __ELASTOS_IO_PRINTWRITR_H__
 #define __ELASTOS_IO_PRINTWRITR_H__
 
-#include <elastos.h>
-#ifdef ELASTOS_CORELIBRARY
-#include <Elastos.CoreLibrary_server.h>
-#else
-#include <Elastos.CoreLibrary.h>
-#endif
 #include "Writer.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace IO {
@@ -24,7 +18,7 @@ public:
 
     PrintWriter();
 
-    ~PrintWriter();
+    virtual ~PrintWriter();
 
     CARAPI CheckError(
         /* [out] */ Boolean* hasError);

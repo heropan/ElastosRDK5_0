@@ -109,23 +109,20 @@ module
 
     interface Elastos.Core.IAppendable;
     interface Elastos.Core.IComparable;
-
+    interface Elastos.IO.ICloseable;
+    interface Elastos.IO.IFlushable;
+    interface Elastos.IO.IDataInput;
+    interface Elastos.IO.IDataOutput;
+    interface Elastos.IO.IByteOrderHelper;
+    interface Elastos.IO.Charset.ICharsetDecoder;
     interface Elastos.IO.Channels.Spi.ISelectorProvider;
     interface Elastos.IO.Channels.Spi.IAbstractSelector;
     interface Elastos.IO.Channels.IChannels;
     interface Elastos.IO.Channels.ISelector;
-    interface Elastos.IO.ICloseable;
-    interface Elastos.IO.IDataInput;
-    interface Elastos.IO.IDataOutput;
     interface Elastos.Net.IURI;
-    interface Elastos.Utility.IObjectEnumerator;
+    interface Elastos.Utility.IEnumeration;
     interface Elastos.Security.IGuard;
-    interface Libcore.IO.IStreams;
 
-    //
-    // nio releated classes
-    //
-    interface Elastos.IO.IByteOrderHelper;
 
     namespace Elastos {
     namespace IO {
@@ -146,10 +143,6 @@ module
 
         interface ISelectorProvider;
     }
-
-    // singleton class CStreams {
-    //     interface IStreams;
-    // }
 
     class CByteArrayOutputStream {
         /**
@@ -377,110 +370,82 @@ module
         interface IFileDescriptor;
     }
 
-//    class CFile {
-//        constructor(
-//            [in] IFile* dir,
-//            [in] String name);
+    class CFile {
+        constructor(
+            [in] IFile* dir,
+            [in] String name);
 
-//        constructor(
-//            [in] String path);
+        constructor(
+            [in] String path);
 
-//        constructor(
-//            [in] String dirPath,
-//            [in] String name);
+        constructor(
+            [in] String dirPath,
+            [in] String name);
 
-//        constructor(
-//            [in] IURI* uri);
+        constructor(
+            [in] IURI* uri);
 
-//        interface IFile;
-//        interface IComparable;
-//        interface ISerializable;
-//    }
+        interface IFile;
+        interface IComparable;
+        interface ISerializable;
+    }
 
-//    class CInputStreamReader {
-//        constructor(
-//            [in] IInputStream *is);
+    class CInputStreamReader {
+        constructor(
+            [in] IInputStream *is);
 
-//        constructor(
-//            [in] IInputStream *is,
-//            [in] String enc);
+        constructor(
+            [in] IInputStream *is,
+            [in] String charsetName);
 
-//        constructor(
-//            [in] IInputStream* is,
-//            [in] ICharset* charset);
+        constructor(
+            [in] IInputStream* is,
+            [in] ICharsetDecoder* dec);
 
-//        interface IReadable;
-//        interface IReader;
-//        interface IInputStreamReader;
-//    }
+        constructor(
+            [in] IInputStream* is,
+            [in] ICharset* charset);
 
-    namespace Channels {
+        interface IReadable;
+        interface IReader;
+        interface IInputStreamReader;
+    }
 
-        class CChannels {
-            constructor();
+    class CPrintWriter {
+        constructor(
+            [in] IOutputStream* outs);
 
-            interface IChannels;
-        }
+        constructor(
+            [in] IOutputStream* outs,
+            [in] Boolean autoflush);
 
-    } // namespace Channels
+        constructor(
+            [in] IWriter* wr);
 
-    namespace Charset {
+        constructor(
+            [in] IWriter* wr,
+            [in] Boolean autoflush);
 
-        class CCodingErrorAction {
-            constructor();
+        constructor(
+            [in] IFile* file);
 
-            interface ICodingErrorAction;
-        }
+        constructor(
+            [in] IFile* file,
+            [in] String csn);
 
-        singleton class CCharsetHelper {
-            interface ICharsetHelper;
-        }
+        constructor(
+            [in] String fileName);
 
-        class CCoderResult {
-            constructor();
+        constructor(
+            [in] String fileName,
+            [in] String csn);
 
-            interface ICoderResult;
-        }
-
-        singleton class CCoderResultHelper {
-            interface ICoderResultHelper;
-        }
-
-    } // namespace Charset
-
-//    class CPrintWriter {
-//        constructor(
-//            [in] IOutputStream* outs);
-
-//        constructor(
-//            [in] IOutputStream* outs,
-//            [in] Boolean autoflush);
-
-//        constructor(
-//            [in] IWriter* wr);
-
-//        constructor(
-//            [in] IWriter* wr,
-//            [in] Boolean autoflush);
-
-//        constructor(
-//            [in] IFile* file);
-
-//        constructor(
-//            [in] IFile* file,
-//            [in] String csn);
-
-//        constructor(
-//            [in] String fileName);
-
-//        constructor(
-//            [in] String fileName,
-//            [in] String csn);
-
-//        interface IAppendable;
-//        interface IWriter;
-//        interface IPrintWriter;
-//    }
+        interface IPrintWriter;
+        interface IWriter;
+        interface IAppendable;
+        interface ICloseable;
+        interface IFlushable;
+    }
 
     class CLineNumberInputStream {
         constructor(
@@ -519,38 +484,40 @@ module
         interface IOutputStreamWriter;
     }
 
-//    class CPrintStream {
-//        constructor(
-//            [in] IOutputStream* outs);
+    class CPrintStream {
+        constructor(
+            [in] IOutputStream* outs);
 
-//        constructor(
-//            [in] IOutputStream* outs,
-//            [in] Boolean autoflush);
+        constructor(
+            [in] IOutputStream* outs,
+            [in] Boolean autoflush);
 
-//        constructor(
-//            [in] IOutputStream* outs,
-//            [in] Boolean autoflush,
-//            [in] String enc);
+        constructor(
+            [in] IOutputStream* outs,
+            [in] Boolean autoflush,
+            [in] String charsetName);
 
-//        constructor(
-//            [in] IFile* file);
+        constructor(
+            [in] IFile* file);
 
-//        constructor(
-//            [in] IFile* file,
-//            [in] String csn);
+        constructor(
+            [in] IFile* file,
+            [in] String charsetName);
 
-//        constructor(
-//            [in] String fileName);
+        constructor(
+            [in] String fileName);
 
-//        constructor(
-//            [in] String fileName,
-//            [in] String csn);
+        constructor(
+            [in] String fileName,
+            [in] String charsetName);
 
-//        interface ICloseable;
-//        interface IOutputStream;
-//        interface IFilterOutputStream;
-//        interface IPrintStream;
-//    }
+        interface ICloseable;
+        interface IFlushable;
+        interface IOutputStream;
+        interface IFilterOutputStream;
+        interface IPrintStream;
+        interface IAppendable;
+    }
 
     class CPushbackReader {
         constructor(
@@ -565,31 +532,33 @@ module
         interface IPushbackReader;
     }
 
-//    class CRandomAccessFile {
-//        constructor(
-//            [in] IFile* file,
-//            [in] String mode);
+    class CRandomAccessFile {
+        constructor(
+            [in] IFile* file,
+            [in] String mode);
 
-//        constructor(
-//            [in] String fileName,
-//            [in] String mode);
+        constructor(
+            [in] String fileName,
+            [in] String mode);
 
-//        interface ICloseable;
-//        interface IRandomAccessFile;
-//    }
+        interface ICloseable;
+        interface IRandomAccessFile;
+        interface IDataInput;
+        interface IDataOutput;
+    }
 
-//    class CSequenceInputStream {
-//        constructor(
-//            [in] IInputStream* s1,
-//            [in] IInputStream* s2);
+    class CSequenceInputStream {
+        constructor(
+            [in] IInputStream* s1,
+            [in] IInputStream* s2);
 
-//        constructor(
-//            [in] IObjectEnumerator* e);
+        constructor(
+            [in] IEnumeration* e);
 
-//        interface ICloseable;
-//        interface IInputStream;
-//        interface ISequenceInputStream;
-//    }
+        interface ICloseable;
+        interface IInputStream;
+        interface ISequenceInputStream;
+    }
 
     class CStringBufferInputStream {
         constructor(
@@ -609,93 +578,130 @@ module
         interface IStringReader;
     }
 
-//    class CFileInputStream {
-//        constructor(
-//            [in] IFile* file);
+    class CFileInputStream {
+        constructor(
+            [in] IFile* file);
 
-//        constructor(
-//            [in] IFileDescriptor* fd);
+        constructor(
+            [in] IFileDescriptor* fd);
 
-//        constructor(
-//            [in] String fileName);
+        constructor(
+            [in] String fileName);
 
-//        interface ICloseable;
-//        interface IInputStream;
-//        interface IFileInputStream;
-//    }
+        interface ICloseable;
+        interface IInputStream;
+        interface IFileInputStream;
+    }
 
-//    class CFileOutputStream {
-//        constructor(
-//            [in] IFile* file);
+    class CFileOutputStream {
+        constructor(
+            [in] IFile* file);
 
-//        constructor(
-//            [in] IFile* file,
-//            [in] Boolean append);
+        constructor(
+            [in] IFile* file,
+            [in] Boolean append);
 
-//        constructor(
-//            [in] IFileDescriptor* fd);
+        constructor(
+            [in] IFileDescriptor* fd);
 
-//        constructor(
-//            [in] String fileName);
+        constructor(
+            [in] String fileName);
 
-//        constructor(
-//            [in] String fileName,
-//            [in] Boolean append);
+        constructor(
+            [in] String fileName,
+            [in] Boolean append);
 
-//        interface ICloseable;
-//        interface IOutputStream;
-//        interface IFileOutputStream;
-//    }
+        interface ICloseable;
+        interface IOutputStream;
+        interface IFileOutputStream;
+    }
 
-//    class CFilePermission {
-//        constructor(
-//            [in] String path,
-//            [in] String actions);
+    class CFilePermission {
+        constructor(
+            [in] String path,
+            [in] String actions);
 
-//        interface IGuard;
-//        interface IPermission;
-//        interface IFilePermission;
-//    }
+        interface IFilePermission;
+        interface IGuard;
+        interface IPermission;
+        interface ISerializable;
+    }
 
-//    class CFileReader {
-//        constructor(
-//            [in] IFile* file);
+    class CFileReader {
+        constructor(
+            [in] IFile* file);
 
-//        constructor(
-//            [in] IFileDescriptor* fd);
+        constructor(
+            [in] IFileDescriptor* fd);
 
-//        constructor(
-//            [in] String filename);
+        constructor(
+            [in] String filename);
 
-//        interface IReadable;
-//        interface IReader;
-//        interface IInputStreamReader;
-//        interface IFileReader;
-//    }
+        interface IFileReader;
+        interface IReadable;
+        interface ICloseable;
+        interface IReader;
+        interface IInputStreamReader;
+    }
 
-//    class CFileWriter {
-//        constructor(
-//            [in] IFile* file);
+    class CFileWriter {
+        constructor(
+            [in] IFile* file);
 
-//        constructor(
-//            [in] IFile* file,
-//            [in] Boolean append);
+        constructor(
+            [in] IFile* file,
+            [in] Boolean append);
 
-//        constructor(
-//            [in] IFileDescriptor* fd);
+        constructor(
+            [in] IFileDescriptor* fd);
 
-//        constructor(
-//            [in] String filename);
+        constructor(
+            [in] String filename);
 
-//        constructor(
-//            [in] String filename,
-//            [in] Boolean append);
+        constructor(
+            [in] String filename,
+            [in] Boolean append);
 
-//        interface IAppendable;
-//        interface IWriter;
-//        interface IOutputStreamWriter;
-//        interface IFileWriter;
-//    }
+        interface IFileWriter;
+        interface IAppendable;
+        interface ICloseable;
+        interface IWriter;
+        interface IOutputStreamWriter;
+    }
+
+    namespace Channels {
+
+        class CChannels {
+            constructor();
+
+            interface IChannels;
+        }
+
+    } // namespace Channels
+
+    namespace Charset {
+
+        class CCodingErrorAction {
+            constructor();
+
+            interface ICodingErrorAction;
+        }
+
+        singleton class CCharsetHelper {
+            interface ICharsetHelper;
+        }
+
+        class CCoderResult {
+            constructor();
+
+            interface ICoderResult;
+        }
+
+        singleton class CCoderResultHelper {
+            interface ICoderResultHelper;
+        }
+
+    } // namespace Charset
 
     } // namespace IO
     } // namespace Elastos
