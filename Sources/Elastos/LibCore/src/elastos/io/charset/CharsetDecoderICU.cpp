@@ -1,7 +1,7 @@
 
 #include "CCoderResult.h"
 #include "CharsetDecoderICU.h"
-#include "NativeConverter.h"
+// #include "NativeConverter.h"
 #include <unicode/utypes.h>
 
 namespace Elastos {
@@ -23,7 +23,7 @@ CharsetDecoderICU::CharsetDecoderICU()
 
 CharsetDecoderICU::~CharsetDecoderICU()
 {
-    NativeConverter::CloseConverter(mConverterHandle);
+    // NativeConverter::CloseConverter(mConverterHandle);
     mConverterHandle = 0;
 }
 
@@ -46,28 +46,28 @@ ECode CharsetDecoderICU::NewInstance(
     // constructor, or call to updateCallback throw, we still free the native peer.
     Int64 address = 0;
     ECode ecode = NOERROR;
-    {
-        ecode = NativeConverter::OpenConverter(icuCanonicalName, &address);
-        if (FAILED(ecode))
-        {
-            goto EXIT;
-        }
+//     {
+//         ecode = NativeConverter::OpenConverter(icuCanonicalName, &address);
+//         if (FAILED(ecode))
+//         {
+//             goto EXIT;
+//         }
 
-        Float averageCharsPerByte = 0.0f;
-        averageCharsPerByte = NativeConverter::GetAveCharsPerByte(address);
-        AutoPtr<CharsetDecoderICU> result = new CharsetDecoderICU();
-        ASSERT_SUCCEEDED(result->Init(cs, averageCharsPerByte, address));
+//         Float averageCharsPerByte = 0.0f;
+//         averageCharsPerByte = NativeConverter::GetAveCharsPerByte(address);
+//         AutoPtr<CharsetDecoderICU> result = new CharsetDecoderICU();
+//         ASSERT_SUCCEEDED(result->Init(cs, averageCharsPerByte, address));
 
-        address = 0; // CharsetDecoderICU has taken ownership; its finalizer will do the free.
-        result->UpdateCallback();
+//         address = 0; // CharsetDecoderICU has taken ownership; its finalizer will do the free.
+//         result->UpdateCallback();
 
-        *decoderICU = result;
-        REFCOUNT_ADD(*decoderICU)
-    }
-EXIT:
-    if (address != 0) {
-        NativeConverter::CloseConverter(address);
-    }
+//         *decoderICU = result;
+//         REFCOUNT_ADD(*decoderICU)
+//     }
+// EXIT:
+//     if (address != 0) {
+//         NativeConverter::CloseConverter(address);
+//     }
     return ecode;
 }
 
@@ -91,7 +91,7 @@ ECode CharsetDecoderICU::ImplOnUnmappableCharacter(
 
 ECode CharsetDecoderICU::ImplReset()
 {
-    NativeConverter::ResetByteToChar(mConverterHandle);
+    // NativeConverter::ResetByteToChar(mConverterHandle);
     (*mData)[INPUT_OFFSET] = 0;
     (*mData)[OUTPUT_OFFSET] = 0;
     (*mData)[INVALID_BYTES] = 0;
@@ -119,7 +119,7 @@ ECode CharsetDecoderICU::ImplFlush(
     (*mData)[INVALID_BYTES] = 0; // Make sure we don't see earlier errors.
 
     Int32 error;
-    NativeConverter::Decode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, TRUE, &error);
+    // NativeConverter::Decode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, TRUE, &error);
     if (U_FAILURE(UErrorCode(error))) {
         if (error == U_BUFFER_OVERFLOW_ERROR) {
             CCoderResult::GetOVERFLOW(result);
@@ -160,7 +160,7 @@ ECode CharsetDecoderICU::DecodeLoop(
     (*mData)[OUTPUT_OFFSET] = num;
     //try {
     Int32 error;
-    NativeConverter::Decode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, FALSE, &error);
+    // NativeConverter::Decode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, FALSE, &error);
     if (U_FAILURE(UErrorCode(error))) {
         if (error == U_BUFFER_OVERFLOW_ERROR) {
             CCoderResult::GetOVERFLOW(result);
@@ -190,7 +190,7 @@ EXIT:
 
 ECode CharsetDecoderICU::UpdateCallback()
 {
-    return NativeConverter::SetCallbackDecode(mConverterHandle, this);
+    // return NativeConverter::SetCallbackDecode(mConverterHandle, this);
 }
 
 ECode CharsetDecoderICU::GetArray(

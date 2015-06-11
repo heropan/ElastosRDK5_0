@@ -1,6 +1,6 @@
 
 #include "PipeImpl.h"
-#include "IoUtils.h"
+//#include "IoUtils.h"
 
 namespace Elastos{
 namespace IO{
@@ -32,7 +32,7 @@ ECode PipeSourceChannel::ImplConfigureBlocking(Boolean blocking)
         return ecRet;
     }
 
-    return IoUtils::SetBlocking(descriptor, blocking);
+//    return IoUtils::SetBlocking(descriptor, blocking);
 }
 
 ECode PipeSourceChannel::ReadByteBuffer(IByteBuffer* buffer, Int32* nRead)
@@ -84,7 +84,7 @@ ECode PipeSinkChannel::ImplConfigureBlocking(Boolean blocking)
     if(NOERROR != ecRet)
         return ecRet;
 
-    return IoUtils::SetBlocking(desc, blocking);
+//    return IoUtils::SetBlocking(desc, blocking);
 }
 
 ECode PipeSinkChannel::WriteBuffer(IByteBuffer* buffer, Int32* nWrite)
@@ -105,6 +105,7 @@ ECode PipeSinkChannel::WriteBuffers(ArrayOf<IByteBuffer*> & buffers,
 
 ECode PipeSinkChannel::GetFD(IFileDescriptor** descriptor)
 {
+    VALIDATE_NOT_NULL(descriptor)
     *descriptor = mFd.Get();
     REFCOUNT_ADD(*descriptor);
 

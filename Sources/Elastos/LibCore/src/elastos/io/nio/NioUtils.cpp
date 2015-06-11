@@ -46,15 +46,15 @@ AutoPtr<IFileChannel> NioUtils::NewFileChannel(
 }
 
 ArrayOf<Byte>* NioUtils::GetUnsafeArray(
-    /* [in] */ HeapByteBuffer* b)
+    /* [in] */ ByteBuffer* b)
 {
-    return b->mBackingArray;
+    // return b->mBackingArray;
 }
 
 Int32 NioUtils::GetUnsafeArrayOffset(
-    /* [in] */ HeapByteBuffer* b)
+    /* [in] */ ByteBuffer* b)
 {
-    return b->mOffset;
+    // return b->mOffset;
 }
 
 } // namespace IO

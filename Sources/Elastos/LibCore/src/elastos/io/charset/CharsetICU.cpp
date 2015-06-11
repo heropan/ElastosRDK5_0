@@ -2,7 +2,7 @@
 #include <coredef.h>
 #include "CharsetEncoderICU.h"
 #include "CharsetDecoderICU.h"
-#include "NativeConverter.h"
+// #include "NativeConverter.h"
 
 namespace Elastos {
 namespace IO {
@@ -58,7 +58,7 @@ ECode CharsetICU::Contains(
 
     String temp;
     charset->GetName(&temp);
-    *result = NativeConverter::Contains(mIcuCanonicalName, temp);
+    // *result = NativeConverter::Contains(mIcuCanonicalName, temp);
     return NOERROR;
 }
 

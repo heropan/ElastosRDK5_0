@@ -1,5 +1,7 @@
 module
 {
+    merge("io/Errors.car");
+    merge("io/Exceptions.car");
     merge("io/ICloseable.car");
     merge("io/IFlushable.car");
     merge("io/IInputStream.car");
@@ -54,28 +56,21 @@ module
     merge("io/IStringBufferInputStream.car");
     merge("io/IStringReader.car");
     merge("io/IStringWriter.car");
-    merge("io/Errors.car");
-    merge("io/Exceptions.car");
 
-    merge("io/ByteOrder.car");
-    merge("io/IBuffer.car");
-    merge("io/IByteBuffer.car");
-    merge("io/ICharBuffer.car");
-    merge("io/IDoubleBuffer.car");
-    merge("io/IFloatBuffer.car");
-    merge("io/IInt16Buffer.car");
-    merge("io/IInt32Buffer.car");
-    merge("io/IInt64Buffer.car");
-    merge("io/IIoUtils.car");
-    merge("io/IUnsafeByteSequence.car");
-    merge("io/IMappedByteBuffer.car");
-    merge("io/INIOAccess.car");
-
-    merge("io/IFileDescriptorChannel.car");
-    merge("io/IPipeImpl.car");
-    merge("io/IFileChannelImpl.car");
-
-    merge("io/INativeConverterHelper.car");
+    merge("io/nio/IByteOrder.car");
+    merge("io/nio/IBuffer.car");
+    merge("io/nio/IByteBuffer.car");
+    merge("io/nio/ICharBuffer.car");
+    merge("io/nio/IDoubleBuffer.car");
+    merge("io/nio/IFloatBuffer.car");
+    merge("io/nio/IInt16Buffer.car");
+    merge("io/nio/IInt32Buffer.car");
+    merge("io/nio/IInt64Buffer.car");
+    merge("io/nio/IMappedByteBuffer.car");
+    merge("io/nio/INIOAccess.car");
+    merge("io/nio/IFileDescriptorChannel.car");
+    merge("io/nio/IPipeImpl.car");
+    merge("io/nio/IFileChannelImpl.car");
 
     merge("io/channels/IChannel.car");
     merge("io/channels/IReadableByteChannel.car");
@@ -83,7 +78,6 @@ module
     merge("io/channels/IChannels.car");
     merge("io/channels/IScatteringByteChannel.car");
     merge("io/channels/IGatheringByteChannel.car");
-
     merge("io/channels/IInterruptibleChannel.car");
     merge("io/channels/IFileChannel.car");
     merge("io/channels/ISelectableChannel.car");
@@ -91,7 +85,6 @@ module
     merge("io/channels/ISelector.car");
     merge("io/channels/ISocketChannel.car");
     merge("io/channels/IServerSocketChannel.car");
-
     merge("io/channels/IDatagramChannel.car");
     merge("io/channels/ISinkChannel.car");
     merge("io/channels/ISourceChannel.car");

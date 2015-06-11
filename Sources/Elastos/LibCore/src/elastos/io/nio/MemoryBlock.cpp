@@ -1,6 +1,6 @@
 
 #include "MemoryBlock.h"
-#include "Memory.h"
+// #include "Memory.h"
 #include "CByteOrderHelper.h"
 #include "OsConstants.h"
 // #include "CLibcore.h"
@@ -103,7 +103,7 @@ void MemoryBlock::PokeByte(
     /* [in] */ Int32 offset,
     /* [in] */ Byte value)
 {
-    Memory::PokeByte(mAddress + offset, value);
+   // Memory::PokeByte(mAddress + offset, value);
 }
 
 void MemoryBlock::PokeByteArray(
@@ -112,7 +112,7 @@ void MemoryBlock::PokeByteArray(
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 byteCount)
 {
-    Memory::PokeByteArray(mAddress + offset, src, srcOffset, byteCount);
+   // Memory::PokeByteArray(mAddress + offset, src, srcOffset, byteCount);
 }
 
 void MemoryBlock::PokeCharArray(
@@ -122,7 +122,7 @@ void MemoryBlock::PokeCharArray(
     /* [in] */ Int32 charCount,
     /* [in] */ Boolean swap)
 {
-    Memory::PokeCharArray(mAddress + offset, src, srcOffset, charCount, swap);
+   // Memory::PokeCharArray(mAddress + offset, src, srcOffset, charCount, swap);
 }
 
 void MemoryBlock::PokeDoubleArray(
@@ -132,7 +132,7 @@ void MemoryBlock::PokeDoubleArray(
     /* [in] */ Int32 doubleCount,
     /* [in] */ Boolean swap)
 {
-    Memory::PokeDoubleArray(mAddress + offset, src, srcOffset, doubleCount, swap);
+   // Memory::PokeDoubleArray(mAddress + offset, src, srcOffset, doubleCount, swap);
 }
 
 void MemoryBlock::PokeFloatArray(
@@ -142,7 +142,7 @@ void MemoryBlock::PokeFloatArray(
     /* [in] */ Int32 floatCount,
     /* [in] */ Boolean swap)
 {
-    Memory::PokeFloatArray(mAddress + offset, src, srcOffset, floatCount, swap);
+   // Memory::PokeFloatArray(mAddress + offset, src, srcOffset, floatCount, swap);
 }
 
 void MemoryBlock::PokeInt32Array(
@@ -152,7 +152,7 @@ void MemoryBlock::PokeInt32Array(
     /* [in] */ Int32 int32Count,
     /* [in] */ Boolean swap)
 {
-    Memory::PokeInt32Array(mAddress + offset, src, srcOffset, int32Count, swap);
+   // Memory::PokeInt32Array(mAddress + offset, src, srcOffset, int32Count, swap);
 }
 
 void MemoryBlock::PokeInt64Array(
@@ -162,7 +162,7 @@ void MemoryBlock::PokeInt64Array(
     /* [in] */ Int32 int64Count,
     /* [in] */ Boolean swap)
 {
-    Memory::PokeInt64Array(mAddress + offset, src, srcOffset, int64Count, swap);
+   // Memory::PokeInt64Array(mAddress + offset, src, srcOffset, int64Count, swap);
 }
 
 void MemoryBlock::PokeInt16Array(
@@ -172,13 +172,13 @@ void MemoryBlock::PokeInt16Array(
     /* [in] */ Int32 int16Count,
     /* [in] */ Boolean swap)
 {
-    Memory::PokeInt16Array(mAddress + offset, src, srcOffset, int16Count, swap);
+   // Memory::PokeInt16Array(mAddress + offset, src, srcOffset, int16Count, swap);
 }
 
 Byte MemoryBlock::PeekByte(
     /* [in] */ Int32 offset)
 {
-    return Memory::PeekByte(mAddress + offset);
+    // return Memory::PeekByte(mAddress + offset);
 }
 
 void MemoryBlock::PeekByteArray(
@@ -187,7 +187,7 @@ void MemoryBlock::PeekByteArray(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 byteCount)
 {
-    Memory::PeekByteArray(mAddress + offset, dst, dstOffset, byteCount);
+   // Memory::PeekByteArray(mAddress + offset, dst, dstOffset, byteCount);
 }
 
 void MemoryBlock::PeekCharArray(
@@ -197,7 +197,7 @@ void MemoryBlock::PeekCharArray(
     /* [in] */ Int32 charCount,
     /* [in] */ Boolean swap)
 {
-    Memory::PeekCharArray(mAddress + offset, dst, dstOffset, charCount, swap);
+   // Memory::PeekCharArray(mAddress + offset, dst, dstOffset, charCount, swap);
 }
 
 void MemoryBlock::PeekDoubleArray(
@@ -207,7 +207,7 @@ void MemoryBlock::PeekDoubleArray(
     /* [in] */ Int32 doubleCount,
     /* [in] */ Boolean swap)
 {
-    Memory::PeekDoubleArray(mAddress + offset, dst, dstOffset, doubleCount, swap);
+   // Memory::PeekDoubleArray(mAddress + offset, dst, dstOffset, doubleCount, swap);
 }
 
 void MemoryBlock::PeekFloatArray(
@@ -217,7 +217,7 @@ void MemoryBlock::PeekFloatArray(
     /* [in] */ Int32 floatCount,
     /* [in] */ Boolean swap)
 {
-    Memory::PeekFloatArray(mAddress + offset, dst, dstOffset, floatCount, swap);
+   // Memory::PeekFloatArray(mAddress + offset, dst, dstOffset, floatCount, swap);
 }
 
 void MemoryBlock::PeekInt32Array(
@@ -227,7 +227,7 @@ void MemoryBlock::PeekInt32Array(
     /* [in] */ Int32 int32Count,
     /* [in] */ Boolean swap)
 {
-    Memory::PeekInt32Array(mAddress + offset, dst, dstOffset, int32Count, swap);
+   // Memory::PeekInt32Array(mAddress + offset, dst, dstOffset, int32Count, swap);
 }
 
 void MemoryBlock::PeekInt64Array(
@@ -237,7 +237,7 @@ void MemoryBlock::PeekInt64Array(
     /* [in] */ Int32 int64Count,
     /* [in] */ Boolean swap)
 {
-    Memory::PeekInt64Array(mAddress + offset, dst, dstOffset, int64Count, swap);
+   // Memory::PeekInt64Array(mAddress + offset, dst, dstOffset, int64Count, swap);
 }
 
 void MemoryBlock::PeekInt16Array(
@@ -247,7 +247,7 @@ void MemoryBlock::PeekInt16Array(
     /* [in] */ Int32 int16Count,
     /* [in] */ Boolean swap)
 {
-    Memory::PeekInt16Array(mAddress + offset, dst, dstOffset, int16Count, swap);
+   // Memory::PeekInt16Array(mAddress + offset, dst, dstOffset, int16Count, swap);
 }
 
 void MemoryBlock::PokeInt16(
@@ -260,7 +260,7 @@ void MemoryBlock::PokeInt16(
     CByteOrderHelper::AcquireSingletonByFriend((CByteOrderHelper **)&obj);
     AutoPtr<IByteOrderHelper> boh = (IByteOrderHelper*)obj.Get();
     boh->IsNeedsSwap(order , &isflag);
-    Memory::PokeInt16(mAddress + offset, value, isflag);
+   // Memory::PokeInt16(mAddress + offset, value, isflag);
 }
 
 Int16 MemoryBlock::PeekInt16(
@@ -272,7 +272,7 @@ Int16 MemoryBlock::PeekInt16(
     CByteOrderHelper::AcquireSingletonByFriend((CByteOrderHelper **)&obj);
     AutoPtr<IByteOrderHelper> boh = (IByteOrderHelper*)obj.Get();
     boh->IsNeedsSwap(order , &isflag);
-    return Memory::PeekInt16(mAddress + offset, isflag);
+    // return Memory::PeekInt16(mAddress + offset, isflag);
 }
 
 void MemoryBlock::PokeInt32(
@@ -285,7 +285,7 @@ void MemoryBlock::PokeInt32(
     CByteOrderHelper::AcquireSingletonByFriend((CByteOrderHelper **)&obj);
     AutoPtr<IByteOrderHelper> boh = (IByteOrderHelper*)obj.Get();
     boh->IsNeedsSwap(order , &isflag);
-    Memory::PokeInt32(mAddress + offset, value, isflag);
+   // Memory::PokeInt32(mAddress + offset, value, isflag);
 }
 
 Int32 MemoryBlock::PeekInt32(
@@ -297,7 +297,7 @@ Int32 MemoryBlock::PeekInt32(
     CByteOrderHelper::AcquireSingletonByFriend((CByteOrderHelper **)&obj);
     AutoPtr<IByteOrderHelper> boh = (IByteOrderHelper*)obj.Get();
     boh->IsNeedsSwap(order , &isflag);
-    return Memory::PeekInt32(mAddress + offset, isflag);
+    // return Memory::PeekInt32(mAddress + offset, isflag);
 }
 
 void MemoryBlock::PokeInt64(
@@ -310,7 +310,7 @@ void MemoryBlock::PokeInt64(
     CByteOrderHelper::AcquireSingletonByFriend((CByteOrderHelper **)&obj);
     AutoPtr<IByteOrderHelper> boh = (IByteOrderHelper*)obj.Get();
     boh->IsNeedsSwap(order , &isflag);
-    Memory::PokeInt64(mAddress + offset, value, isflag);
+    // Memory::PokeInt64(mAddress + offset, value, isflag);
 }
 
 Int64 MemoryBlock::PeekInt64(
@@ -322,7 +322,7 @@ Int64 MemoryBlock::PeekInt64(
     CByteOrderHelper::AcquireSingletonByFriend((CByteOrderHelper **)&obj);
     AutoPtr<IByteOrderHelper> boh = (IByteOrderHelper*)obj.Get();
     boh->IsNeedsSwap(order , &isflag);
-    return Memory::PeekInt64(mAddress + offset, isflag);
+    // return Memory::PeekInt64(mAddress + offset, isflag);
 }
 
 Int32 MemoryBlock::ToInt32()

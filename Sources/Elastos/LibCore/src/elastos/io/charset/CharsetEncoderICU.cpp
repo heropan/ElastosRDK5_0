@@ -1,7 +1,7 @@
 
 #include "CCoderResult.h"
 #include "CharsetEncoderICU.h"
-#include "NativeConverter.h"
+//#include "NativeConverter.h"
 #include <unicode/utypes.h>
 #include <coredef.h>
 
@@ -44,7 +44,7 @@ CharsetEncoderICU::CharsetEncoderICU()
 
 CharsetEncoderICU::~CharsetEncoderICU()
 {
-    NativeConverter::CloseConverter(mConverterHandle);
+    // NativeConverter::CloseConverter(mConverterHandle);
     mConverterHandle=0;
 }
 
@@ -73,7 +73,7 @@ ECode CharsetEncoderICU::CanEncode(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = NativeConverter::CanEncode(mConverterHandle, codePoint);
+    // *result = NativeConverter::CanEncode(mConverterHandle, codePoint);
     return NOERROR;
 }
 
@@ -89,20 +89,20 @@ ECode CharsetEncoderICU::NewInstance(
     ECode ecode = NOERROR;
     //try {
     {
-        ecode = NativeConverter::OpenConverter(icuCanonicalName, &address);
-        if(FAILED(ecode)) goto EXIT;
+        // ecode = NativeConverter::OpenConverter(icuCanonicalName, &address);
+        // if(FAILED(ecode)) goto EXIT;
 
-        Float averageBytesPerChar = NativeConverter::GetAveBytesPerChar(address);
-        Float maxBytesPerChar = NativeConverter::GetMaxBytesPerChar(address);
-        AutoPtr< ArrayOf<Byte> > replacement;
-        MakeReplacement(icuCanonicalName, address, (ArrayOf<Byte>**)&replacement);
-        AutoPtr<CharsetEncoderICU> result = new CharsetEncoderICU();
-        result->Init(cs, averageBytesPerChar, maxBytesPerChar, (*replacement), address);
+        // Float averageBytesPerChar = NativeConverter::GetAveBytesPerChar(address);
+        // Float maxBytesPerChar = NativeConverter::GetMaxBytesPerChar(address);
+        // AutoPtr< ArrayOf<Byte> > replacement;
+        // MakeReplacement(icuCanonicalName, address, (ArrayOf<Byte>**)&replacement);
+        // AutoPtr<CharsetEncoderICU> result = new CharsetEncoderICU();
+        // result->Init(cs, averageBytesPerChar, maxBytesPerChar, (*replacement), address);
 
-        *encoderICU = result;
-        REFCOUNT_ADD(*encoderICU);
+        // *encoderICU = result;
+        // REFCOUNT_ADD(*encoderICU);
 
-        address = 0; // CharsetEncoderICU has taken ownership; its finalizer will do the free.
+        // address = 0; // CharsetEncoderICU has taken ownership; its finalizer will do the free.
         // } finally {
         //     if (address != 0) {
         //         NativeConverter.closeConverter(address);
@@ -111,7 +111,7 @@ ECode CharsetEncoderICU::NewInstance(
     }
 EXIT:
     if (address != 0) {
-        NativeConverter::CloseConverter(address);
+        // NativeConverter::CloseConverter(address);
     }
 
     return ecode;
@@ -137,7 +137,7 @@ ECode CharsetEncoderICU::ImplOnUnmappableCharacter(
 
 ECode CharsetEncoderICU::ImplReset()
 {
-    NativeConverter::ResetCharToByte(mConverterHandle);
+    // NativeConverter::ResetCharToByte(mConverterHandle);
     (*mData)[INPUT_OFFSET] = 0;
     (*mData)[OUTPUT_OFFSET] = 0;
     (*mData)[INVALID_CHARS] = 0;
@@ -166,7 +166,7 @@ ECode CharsetEncoderICU::ImplFlush(
     (*mData)[INVALID_CHARS] = 0; // Make sure we don't see earlier errors.
 
     Int32 error;
-    NativeConverter::Encode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, TRUE, &error);
+    // NativeConverter::Encode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, TRUE, &error);
     if (U_FAILURE(UErrorCode(error))) {
         if (error == U_BUFFER_OVERFLOW_ERROR) {
             CCoderResult::GetOVERFLOW(result);
@@ -209,7 +209,7 @@ ECode CharsetEncoderICU::EncodeLoop(
     //try {
     Int32 error;
     ECode ecode = NOERROR;
-    NativeConverter::Encode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, FALSE, &error);
+    // NativeConverter::Encode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, FALSE, &error);
     if (U_FAILURE(UErrorCode(error))) {
         if (error == U_BUFFER_OVERFLOW_ERROR) {
             CCoderResult::GetOVERFLOW(result);
@@ -257,14 +257,14 @@ ECode CharsetEncoderICU::MakeReplacement(
         return NOERROR;
     }
     // ...but fall back to asking ICU.
-    *resultArray = NativeConverter::GetSubstitutionBytes(address);
+    // *resultArray = NativeConverter::GetSubstitutionBytes(address);
     REFCOUNT_ADD(*resultArray);
     return NOERROR;
 }
 
 ECode CharsetEncoderICU::UpdateCallback()
 {
-    NativeConverter::SetCallbackEncode(mConverterHandle, this);
+    // NativeConverter::SetCallbackEncode(mConverterHandle, this);
     return NOERROR;
 }
 

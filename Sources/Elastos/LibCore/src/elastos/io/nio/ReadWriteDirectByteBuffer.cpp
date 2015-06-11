@@ -2,7 +2,7 @@
 #include "ReadWriteDirectByteBuffer.h"
 #include "ReadOnlyDirectByteBuffer.h"
 #include "CByteOrderHelper.h"
-#include "Memory.h"
+//#include "Memory.h"
 #include "Math.h"
 #include "StringBuilder.h"
 
@@ -139,7 +139,7 @@ ECode ReadWriteDirectByteBuffer::Compact()
     GetRemaining(&remaining);
     AutoPtr< ArrayOf<Byte> > tmpByteArray;
     GetArray((ArrayOf<Byte>**)&tmpByteArray);
-    ASSERT_SUCCEEDED(Memory::Memmove(tmpByteArray, 0, *tmpByteArray, mPosition, remaining))
+    // ASSERT_SUCCEEDED(Memory::Memmove(tmpByteArray, 0, *tmpByteArray, mPosition, remaining))
     mPosition = mLimit - mPosition;
     mLimit = mCapacity;
     mMark = IBuffer::UNSET_MARK;

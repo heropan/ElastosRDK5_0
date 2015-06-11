@@ -2,9 +2,9 @@
 #include "CharToByteBufferAdapter.h"
 #include "ByteBuffer.h"
 #include "DirectByteBuffer.h"
-#include "HeapByteBuffer.h"
+// #include "HeapByteBuffer.h"
 #include "ReadWriteDirectByteBuffer.h"
-#include "ReadWriteHeapByteBuffer.h"
+// #include "ReadWriteHeapByteBuffer.h"
 
 using Elastos::Core::EIID_ICharSequence;
 

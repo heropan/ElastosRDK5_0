@@ -3,7 +3,7 @@
 #include "CByteArrayBuffer.h"
 //#include "DirectByteBuffer.h"
 #include "NioUtils.h"
-#include "Memory.h"
+//#include "Memory.h"
 
 namespace Elastos {
 namespace IO {

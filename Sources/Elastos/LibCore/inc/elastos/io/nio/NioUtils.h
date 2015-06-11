@@ -3,7 +3,6 @@
 
 #include "Buffer.h"
 #include "ByteBuffer.h"
-#include "HeapByteBuffer.h"
 #include "Elastos.CoreLibrary_server.h"
 
 using Elastos::IO::Channels::IFileChannel;
@@ -31,9 +30,9 @@ public:
 
     static AutoPtr<IFileChannel> NewFileChannel(IObject *stream, IFileDescriptor *fd, Int32 mode);
 
-    static ArrayOf<Byte>* GetUnsafeArray(HeapByteBuffer* b);
+    static ArrayOf<Byte>* GetUnsafeArray(ByteBuffer* b);
 
-    static Int32 GetUnsafeArrayOffset(HeapByteBuffer* b);
+    static Int32 GetUnsafeArrayOffset(ByteBuffer* b);
 private:
     NioUtils() {}
 };

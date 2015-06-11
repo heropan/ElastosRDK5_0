@@ -1,7 +1,7 @@
 #include "Charset.h"
 #include "CharBuffer.h"
 #include "CCodingErrorAction.h"
-#include "NativeConverter.h"
+// #include "NativeConverter.h"
 #include "CStringWrapper.h"
 #ifdef ELASTOS_CORELIBRARY
 #include <CSystem.h>
@@ -10,7 +10,7 @@
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::CStringWrapper;
-using Elastos::IO::NativeConverter;
+// using Elastos::IO::NativeConverter;
 
 namespace Elastos {
 namespace IO {
@@ -98,7 +98,7 @@ ECode Charset::ForName(
     }
 
     FAIL_RETURN(CheckCharsetName(charsetName));
-    NativeConverter::CharsetForName(charsetName, (ICharset**)&cs);
+    // NativeConverter::CharsetForName(charsetName, (ICharset**)&cs);
 
     if (cs.Get() != NULL) {
         AutoPtr<ICharset> result;
