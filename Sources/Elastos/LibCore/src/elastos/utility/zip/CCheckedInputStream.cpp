@@ -1,11 +1,12 @@
 
 #include "CCheckedInputStream.h"
-#include <elastos/Math.h>
+#include "Math.h"
+#include "CStreams.h"
 
 using Elastos::Core::Math;
-using Elastos::IO::IStreams;
-using Elastos::IO::CStreams;
 using Elastos::IO::EIID_IInputStream;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
 
 namespace Elastos {
 namespace Utility {

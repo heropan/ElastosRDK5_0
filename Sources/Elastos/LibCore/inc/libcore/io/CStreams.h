@@ -1,13 +1,15 @@
 #ifndef __ELASTOS_IO_CSTREAMS_H__
 #define __ELASTOS_IO_CSTREAMS_H__
 
-#include "_Elastos_IO_CStreams.h"
-#include <elastos/core/Singleton.h>
+#include "_Libcore_IO_CStreams.h"
+#include "Singleton.h"
 
 using Elastos::Core::Singleton;
-using Libcore::IO::IStreams;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IOutputStream;
+using Elastos::IO::IReader;
 
-namespace Elastos {
+namespace Libcore {
 namespace IO {
 
 CarClass(CStreams)
@@ -121,6 +123,6 @@ private:
 };
 
 } // namespace IO
-} // namespace Elastos
+} // namespace Libcore
 
 #endif //__ELASTOS_IO_CSTREAMS_H__

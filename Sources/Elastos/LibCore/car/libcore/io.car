@@ -41,6 +41,10 @@ module
             interface ISocketTaggerHelper;
         }
 
+        singleton class CStreams {
+            interface IStreams;
+        }
+
 //        class CPosix {
 //            interface IOs;
 //        }

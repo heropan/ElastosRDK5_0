@@ -12,6 +12,7 @@ INCLUDES += $(MAKEDIR)/../../../inc/libcore;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 
 SOURCES = AsynchronousCloseMonitorNative.cpp
 SOURCES += CAsynchronousCloseMonitor.cpp
@@ -25,3 +26,4 @@ SOURCES += CSocketTaggerHelper.cpp
 SOURCES += ForwardingOs.cpp
 SOURCES += ToStringArray.cpp
 SOURCES += BlockGuardOs.cpp
+SOURCES += CStreams.cpp

@@ -1874,35 +1874,35 @@ module
     //     interface IFlushable;
     // }
 
-    // /**
-    //  * The {@code CheckedInputStream} class is used to maintain a checksum at the
-    //  * same time as the data, on which the checksum is computed, is read from a
-    //  * stream. The purpose of this checksum is to establish data integrity,
-    //  * comparing the computed checksum against a published checksum value.
-    //  */
-    // class CCheckedInputStream {
-    //     /**
-    //      * Constructs a new {@code CheckedInputStream} on {@code InputStream}
-    //      * {@code is}. The checksum will be calculated using the algorithm
-    //      * implemented by {@code csum}.
-    //      *
-    //      * <p><strong>Warning:</strong> passing a null source creates an invalid
-    //      * {@code CheckedInputStream}. All operations on such a stream will fail.
-    //      *
-    //      * @param is
-    //      *            the input stream to calculate checksum from.
-    //      * @param csum
-    //      *            an entity implementing the checksum algorithm.
-    //      */
-    //     constructor(
-    //         [in] IInputStream* is,
-    //         [in] IChecksum* csum);
+    /**
+     * The {@code CheckedInputStream} class is used to maintain a checksum at the
+     * same time as the data, on which the checksum is computed, is read from a
+     * stream. The purpose of this checksum is to establish data integrity,
+     * comparing the computed checksum against a published checksum value.
+     */
+    class CCheckedInputStream {
+        /**
+         * Constructs a new {@code CheckedInputStream} on {@code InputStream}
+         * {@code is}. The checksum will be calculated using the algorithm
+         * implemented by {@code csum}.
+         *
+         * <p><strong>Warning:</strong> passing a null source creates an invalid
+         * {@code CheckedInputStream}. All operations on such a stream will fail.
+         *
+         * @param is
+         *            the input stream to calculate checksum from.
+         * @param csum
+         *            an entity implementing the checksum algorithm.
+         */
+        constructor(
+            [in] IInputStream* is,
+            [in] IChecksum* csum);
 
-    //     interface ICheckedInputStream;
-    //     interface IFilterInputStream;
-    //     interface IInputStream;
-    //     interface ICloseable;
-    // }
+        interface ICheckedInputStream;
+        interface IFilterInputStream;
+        interface IInputStream;
+        interface ICloseable;
+    }
 
     /**
      * The {@code CheckedOutputStream} class is used to maintain a running checksum

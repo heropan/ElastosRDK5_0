@@ -2,27 +2,36 @@
 #include "CStreams.h"
 #include "Math.h"
 #include "StringBuilder.h"
-#include <CByteArrayOutputStream.h>
-#include <CStringWriter.h>
+#include "CByteArrayOutputStream.h"
+#include "CStringWriter.h"
 
+using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
-using Libcore::IO::EIID_IStreams;
+using Elastos::IO::ICloseable;
+using Elastos::IO::EIID_ICloseable;
+using Elastos::IO::IByteArrayOutputStream;
+using Elastos::IO::CByteArrayOutputStream;
+using Elastos::IO::IWriter;
+using Elastos::IO::CStringWriter;
+using Elastos::IO::IStringWriter;
+using Elastos::Core::IStringBuffer;
 
-namespace Elastos {
+namespace Libcore {
 namespace IO {
 
 CAR_INTERFACE_IMPL(CStreams, Singleton, IStreams)
 
 CAR_SINGLETON_IMPL(CStreams)
 
-AutoPtr<ArrayOf<Byte> > CStreams::mSkipBuffer = NULL;
+AutoPtr<ArrayOf<Byte> > CStreams::mSkipBuffer;
 
 ECode CStreams::ReadSingleByte(
     /* [in] */ IInputStream* in,
     /* [out] */ Int32* singleByte)
 {
-    VALIDATE_NOT_NULL(in);
     VALIDATE_NOT_NULL(singleByte);
+    *singleByte = '\0';
+    VALIDATE_NOT_NULL(in);
 
     AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(1);
     Int32 result;
@@ -46,12 +55,12 @@ ECode CStreams::ReadFully(
     /* [in] */ IInputStream* in,
     /* [out, callee] */ ArrayOf<Byte>** dst)
 {
-    VALIDATE_NOT_NULL(in);
     VALIDATE_NOT_NULL(dst);
+    *dst = NULL;
+    VALIDATE_NOT_NULL(in);
     ECode ec = ReadFullyNoClose(in, dst);
     FAIL_RETURN(ICloseable::Probe(in)->Close())
     return ec;
-
 }
 
 ECode CStreams::ReadFully(
@@ -60,13 +69,14 @@ ECode CStreams::ReadFully(
     /* [in] */ Int32 byteCount,
     /* [out] */ ArrayOf<Byte>* dst)
 {
+    if (dst == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
     if (byteCount == 0) {
         return NOERROR;
     }
     if (in == NULL) {
-        return E_NULL_POINTER_EXCEPTION;
-    }
-    if (dst == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
 
@@ -186,7 +196,7 @@ ECode CStreams::SkipByReading(
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = -1;
+    *result = 0;
     VALIDATE_NOT_NULL(in);
 
     using Elastos::Core::Math;
@@ -219,9 +229,10 @@ ECode CStreams::Copy(
     /* [in] */ IOutputStream* out,
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number);
+    *number = 0;
     VALIDATE_NOT_NULL(in);
     VALIDATE_NOT_NULL(out);
-    VALIDATE_NOT_NULL(number);
 
     Int32 total = 0;
     ArrayOf_<Byte, 8192> buffer;
@@ -241,8 +252,9 @@ ECode CStreams::ReadAsciiLine(
     /* [in] */ IInputStream* in,
     /* [out] */ String* characters)
 {
-    VALIDATE_NOT_NULL(in);
     VALIDATE_NOT_NULL(characters);
+    *characters = String(NULL);
+    VALIDATE_NOT_NULL(in);
     //TODO: support UTF-8 here instead
 
     StringBuilder result(80);
@@ -262,9 +274,9 @@ ECode CStreams::ReadAsciiLine(
     Int32 length = 0;
     result.GetLength(&length);
     if (length > 0) {
-        Char32 ch = result.GetChar(length - 1);
+        Char32 ch = result.GetCharAt(length - 1);
         if (ch == '\r') {
-            result.Delete(length - 1);
+            result.DeleteCharAt(length - 1);
         }
     }
 
@@ -273,4 +285,4 @@ ECode CStreams::ReadAsciiLine(
 }
 
 } // namespace IO
-} // namespace Elastos
+} // namespace Libcore

@@ -3,8 +3,7 @@
 #define __ELASTOS_UTILITY_CCHECKEDINPUTSTREAM_H__
 
 #include "_Elastos_Utility_Zip_CCheckedInputStream.h"
-#include "CStreams.h"
-#include <FilterInputStream.h>
+#include "FilterInputStream.h"
 
 using Elastos::IO::FilterInputStream;
 
