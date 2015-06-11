@@ -1,14 +1,13 @@
-#ifndef __MATH_MULTIPLICATION_H__
-#define __MATH_MULTIPLICATION_H__
+#ifndef __ELASTOS_MATH_MULTIPLICATION_H__
+#define __ELASTOS_MATH_MULTIPLICATION_H__
 
-#include <elastos.h>
 #include <CBigInteger.h>
-#include "Object.h"
+#include <elastos.h>
 
 namespace Elastos {
 namespace Math {
 
-class Multiplication : public Object
+class Multiplication
 {
 
 public:
@@ -104,4 +103,4 @@ private:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_MULTIPLICATION_H__
+#endif // __ELASTOS_MATH_MULTIPLICATION_H__

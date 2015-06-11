@@ -5,7 +5,9 @@
 namespace Elastos {
 namespace Math {
 
-CAR_SINGLETON_IMPL(CBigIntegerHelper, Singleton, IBigIntegerHelper)
+CAR_INTERFACE_IMPL(CBigIntegerHelper, Singleton, IBigIntegerHelper)
+
+CAR_SINGLETON_IMPL(CBigIntegerHelper)
 
 ECode CBigIntegerHelper::ValueOf(
     /* [in] */ Int64 value,

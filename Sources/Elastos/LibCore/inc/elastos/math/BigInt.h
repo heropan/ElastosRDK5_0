@@ -1,11 +1,12 @@
-#ifndef __MATH_BIGINT_H__
-#define __MATH_BIGINT_H__
+#ifndef __ELASTOS_MATH_BIGINT_H__
+#define __ELASTOS_MATH_BIGINT_H__
 
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Object.h>
 #include <elastos.h>
 #include <elquintet.h>
-#include <elastos/StringBuilder.h>
-#include "Object.h"
 
+using Elastos::Core::Object;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {
@@ -207,4 +208,4 @@ private:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_BIGINT_H__
+#endif // __ELASTOS_MATH_BIGINT_H__

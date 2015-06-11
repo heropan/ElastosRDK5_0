@@ -1,160 +1,159 @@
 module
 {
-    merge("../../../car/elastos/math/IMathContext.car");
-    merge("../../../car/elastos/math/IBigDecimal.car");
-    merge("../../../car/elastos/math/IBigInteger.car");
-    merge("../../../car/elastos/math/RoundingMode.car");
-
     //interface Elastos.IO.ISerializable;
-    interface Elastos.Core.IComparable;
-    interface Elastos.Core.INumber;
 
-    // namespace Elastos {
-    // namespace Math {
+    merge("math/IMathContext.car");
+    merge("math/IBigDecimal.car");
+    merge("math/IBigInteger.car");
+    merge("math/RoundingMode.car");
 
-    // class CBigDecimal {
-    //     constructor(
-    //         [in] Int32 i32Value);
+    namespace Elastos {
+    namespace Math {
 
-    //     constructor(
-    //         [in] Int64 i64Value);
+    class CBigDecimal {
+        constructor(
+            [in] Int32 i32Value);
 
-    //     constructor(
-    //         [in] Double dValue);
+        constructor(
+            [in] Int64 i64Value);
 
-    //     constructor(
-    //         [in] Int64 i64SmallValue,
-    //         [in] Int32 scale);
+        constructor(
+            [in] Double dValue);
 
-    //     constructor(
-    //         [in] Int32 i32SmallValue,
-    //         [in] Int32 scale);
+        constructor(
+            [in] Int64 i64SmallValue,
+            [in] Int32 scale);
 
-    //     constructor(
-    //         [in] String sVal);
+        constructor(
+            [in] Int32 i32SmallValue,
+            [in] Int32 scale);
 
-    //     constructor(
-    //         [in] ArrayOf<Char32> buf);
+        constructor(
+            [in] String sVal);
 
-    //     constructor(
-    //         [in] ArrayOf<Char32> buf,
-    //         [in] Int32 offset,
-    //         [in] Int32 length);
+        constructor(
+            [in] ArrayOf<Char32> buf);
 
-    //     constructor(
-    //         [in] IBigInteger* val);
+        constructor(
+            [in] ArrayOf<Char32> buf,
+            [in] Int32 offset,
+            [in] Int32 length);
 
-    //     constructor(
-    //         [in] IBigInteger* val,
-    //         [in] Int32 scale);
+        constructor(
+            [in] IBigInteger* val);
 
-    //     constructor(
-    //         [in] IBigInteger* val,
-    //         [in] Int32 scale,
-    //         [in] IMathContext* mc);
+        constructor(
+            [in] IBigInteger* val,
+            [in] Int32 scale);
 
-    //     constructor(
-    //         [in] ArrayOf<Char32> buf,
-    //         [in] Int32 offset,
-    //         [in] Int32 length,
-    //         [in] IMathContext* mc);
+        constructor(
+            [in] IBigInteger* val,
+            [in] Int32 scale,
+            [in] IMathContext* mc);
 
-    //     constructor(
-    //         [in] ArrayOf<Char32> buf,
-    //         [in] IMathContext* mc);
+        constructor(
+            [in] ArrayOf<Char32> buf,
+            [in] Int32 offset,
+            [in] Int32 length,
+            [in] IMathContext* mc);
 
-    //     constructor(
-    //         [in] String strVal,
-    //         [in] IMathContext* mc);
+        constructor(
+            [in] ArrayOf<Char32> buf,
+            [in] IMathContext* mc);
 
-    //     constructor(
-    //         [in] Double dVal,
-    //         [in] IMathContext* mc);
+        constructor(
+            [in] String strVal,
+            [in] IMathContext* mc);
 
-    //     constructor(
-    //         [in] IBigInteger* bigIntegerVal,
-    //         [in] IMathContext* mc);
+        constructor(
+            [in] Double dVal,
+            [in] IMathContext* mc);
 
-    //     constructor(
-    //         [in] Int32 int32Val,
-    //         [in] IMathContext* mc);
+        constructor(
+            [in] IBigInteger* bigIntegerVal,
+            [in] IMathContext* mc);
 
-    //     constructor(
-    //         [in] Int64 int64Val,
-    //         [in] IMathContext* mc);
+        constructor(
+            [in] Int32 int32Val,
+            [in] IMathContext* mc);
 
-    //     //interface Elastos.IO.ISerializable;
-    //     interface Elastos.Core.INumber;
-    //     interface Elastos.Core.IComparable;
-    //     interface IBigDecimal;
-    // }
+        constructor(
+            [in] Int64 int64Val,
+            [in] IMathContext* mc);
 
-    // singleton class CBigDecimalHelper {
-    //     interface IBigDecimalHelper;
-    // }
+        //interface Elastos.IO.ISerializable;
+        interface Elastos.Core.INumber;
+        interface Elastos.Core.IComparable;
+        interface IBigDecimal;
+    }
 
-    // class CBigInteger {
-    //     constructor();
+    singleton class CBigDecimalHelper {
+        interface IBigDecimalHelper;
+    }
 
-    //     constructor(
-    //         [in] Int32 sign,
-    //         [in] Int64 value);
+    [deprecated]
+    class CBigInteger {
+        constructor();
 
-    //     constructor(
-    //         [in] Int32 sign,
-    //         [in] Int32 numberLength,
-    //         [in] ArrayOf<Int32> digits);
+        constructor(
+            [in] Int32 numBits,
+            [in] Elastos.Core.IRandom* random);
 
-    //     constructor(
-    //         [in] Int32 numBits,
-    //         [in] IRandom* random)
+        constructor(
+            [in] Int32 bitLength,
+            [in] Int32 certainty,
+            [in] Elastos.Core.IRandom* random);
 
-    //     constructor(
-    //         [in]  Int32 bitLength,
-    //         [in]  Int32 certainty,
-    //         [in]  IRandom* random);
+        constructor(
+            [in] Int32 sign,
+            [in] Int64 value);
 
-    //     constructor(
-    //         [in] String value);
+        constructor(
+            [in] Int32 sign,
+            [in] Int32 numberLength,
+            [in] ArrayOf<Int32> digits);
 
-    //     constructor(
-    //         [in] String value,
-    //         [in] Int32 radix);
+        constructor(
+            [in] String value);
 
-    //     constructor(
-    //         [in] Int32 signum,
-    //         [in] ArrayOf<Byte> magnitude);
+        constructor(
+            [in] String value,
+            [in] Int32 radix);
 
-    //     constructor(
-    //         [in] ArrayOf<Byte> arrValue);
+        constructor(
+            [in] Int32 signum,
+            [in] ArrayOf<Byte> magnitude);
 
-    //     //interface Elastos.IO.ISerializable;
-    //     interface Elastos.Core.INumber;
-    //     interface Elastos.Core.IComparable;
-    //     interface IBigInteger;
-    // }
+        constructor(
+            [in] ArrayOf<Byte> arrValue);
 
-    // singleton class CBigIntegerHelper {
-    //     interface IBigIntegerHelper;
-    // }
+        //interface Elastos.IO.ISerializable;
+        interface Elastos.Core.INumber;
+        interface Elastos.Core.IComparable;
+        interface IBigInteger;
+    }
 
-    // class CMathContext {
-    //     constructor(
-    //         [in] Int32 precision);
+    singleton class CBigIntegerHelper {
+        interface IBigIntegerHelper;
+    }
 
-    //     constructor(
-    //         [in] Int32 precision,
-    //         [in] RoundingMode roundingMode);
+    class CMathContext {
+        constructor(
+            [in] Int32 precision);
 
-    //     //interface Elastos.IO.ISerializable;
-    //     interface IMathContext;
-    // }
+        constructor(
+            [in] Int32 precision,
+            [in] RoundingMode roundingMode);
 
-    // singleton class CMathContextHelper {
-    //     interface IMathContextHelper;
-    // }
+        //interface Elastos.IO.ISerializable;
+        interface IMathContext;
+    }
 
-    // } // namespace Core
-    // } // namespace Elastos
+    singleton class CMathContextHelper {
+        interface IMathContextHelper;
+    }
+
+    } // namespace Core
+    } // namespace Elastos
 
 }

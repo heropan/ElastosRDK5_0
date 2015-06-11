@@ -1,13 +1,15 @@
-#ifndef __MATH_CBIGINTEGER_H__
-#define __MATH_CBIGINTEGER_H__
+#ifndef __ELASTOS_MATH_CBIGINTEGER_H__
+#define __ELASTOS_MATH_CBIGINTEGER_H__
 
-#include "__Elastos_Math__CBigInteger.h"
-#include <elstring.h>
-#include <elastos/Mutex.h>
+#include "_Elastos_Math_CBigInteger.h"
 #include <BigInt.h>
-#include "Object.h"
+#include <elastos/core/Object.h>
+#include <elstring.h>
 
-using Elastos::Core::Mutex;
+using Elastos::Core::Object;
+using Elastos::Core::INumber;
+using Elastos::Core::IComparable;
+using Elastos::Core::IRandom;
 
 namespace Elastos {
 namespace Math {
@@ -34,7 +36,7 @@ class Multiplication;
  * arbitrarily-large sequences of bits.
  */
 CarClass(CBigInteger)
-    : public Object
+    , public Object
     , public IBigInteger
     , public INumber
     , public IComparable
@@ -709,10 +711,10 @@ private:
     /** Cache for the hash code. */
     Int32 mHashCode;
 
-    Mutex mLock;
+    //Mutex mLock;
 };
 
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_CBIGINTEGER_H__
+#endif // __ELASTOS_MATH_CBIGINTEGER_H__

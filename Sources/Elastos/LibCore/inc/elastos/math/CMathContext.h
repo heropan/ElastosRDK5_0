@@ -1,18 +1,22 @@
-#ifndef __MATH_CMATHCONTEXT_H__
-#define __MATH_CMATHCONTEXT_H__
+#ifndef __ELASTOS_MATH_CMATHCONTEXT_H__
+#define __ELASTOS_MATH_CMATHCONTEXT_H__
 
-#include "__Elastos_Math__CMathContext.h"
-#include "Object.h"
+#include "_Elastos_Math_CMathContext.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Math {
 
 CarClass(CMathContext)
-    : public Object
+    , public Object
     , public IMathContext
 {
 public:
     CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * Constructs a new {@code MathContext} with the specified precision and
@@ -123,4 +127,4 @@ private:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_CMATHCONTEXT_H__
+#endif // __ELASTOS_MATH_CMATHCONTEXT_H__

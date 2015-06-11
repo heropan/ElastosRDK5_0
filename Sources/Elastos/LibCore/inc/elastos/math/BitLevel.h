@@ -1,9 +1,8 @@
-#ifndef __MATH_BITLEVEL_H__
-#define __MATH_BITLEVEL_H__
+#ifndef __ELASTOS_MATH_BITLEVEL_H__
+#define __ELASTOS_MATH_BITLEVEL_H__
 
-#include <elastos.h>
 #include <CBigInteger.h>
-#include "Object.h"
+#include <elastos.h>
 
 namespace Elastos {
 namespace Math {
@@ -23,7 +22,7 @@ namespace Math {
  * All operations are provided in immutable way, and some in both mutable and
  * immutable.
  */
-class BitLevel : public Object
+class BitLevel
 {
 
 public:
@@ -113,4 +112,4 @@ private:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __BITLEVEL_H__
+#endif // __ELASTOS_MATH_BITLEVEL_H__

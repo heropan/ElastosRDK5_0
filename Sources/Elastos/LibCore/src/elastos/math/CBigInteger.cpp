@@ -1,16 +1,18 @@
+
 #include "CBigInteger.h"
-#include <cmdef.h>
-#include <elastos/Math.h>
-#include <elastos/Character.h>
-#include <elastos/StringUtils.h>
-#include <BitLevel.h>
-#include <Logical.h>
-#include <Primality.h>
-#include <Conversion.h>
+#include "Conversion.h"
+#include "BitLevel.h"
+#include "Logical.h"
+#include "Primality.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::Math;
 using Elastos::Core::Character;
 using Elastos::Core::StringUtils;
+using Elastos::Core::EIID_INumber;
+using Elastos::Core::EIID_IComparable;
 
 namespace Elastos {
 namespace Math {
@@ -40,7 +42,7 @@ CBigInteger::CBigInteger()
 
 CAR_OBJECT_IMPL(CBigInteger)
 
-CAR_INTERFACE_IMPL_WITH_CPP_CAST_3(CBigInteger, Object, IBigInteger, INumber, IComparable)
+CAR_INTERFACE_IMPL_3(CBigInteger, Object, IBigInteger, INumber, IComparable)
 
 ECode CBigInteger::constructor()
 {
@@ -76,7 +78,7 @@ ECode CBigInteger::constructor(
             random->NextInt32(&((*digits)[i]));
         }
         // Clear any extra bits.
-        digits[numberLength - 1] >>= (((-numBits) & 31) & 0x1F);
+        (*digits)[numberLength - 1] >>= (((-numBits) & 31) & 0x1F);
         SetJavaRepresentation(sign, numberLength, *digits);
     }
     mJavaIsValid = TRUE;
@@ -96,7 +98,7 @@ ECode CBigInteger::constructor(
         Int32 candidate;
         Int32 temp;
         do {
-            random->NextInt(&temp);
+            random->NextInt32(&temp);
             candidate = temp & ((1 << (bitLength & 0x1F)) - 1);
             candidate |= (1 << ((bitLength - 1) & 0x1F)); // Set top bit.
             if (bitLength > 2) {
@@ -112,7 +114,7 @@ ECode CBigInteger::constructor(
         do {
             AutoPtr<BigInt> prime = new BigInt();
             BigInt::GeneratePrimeDefault(bitLength, *prime);
-            setBigInt(prime);
+            SetBigInt(prime);
         } while ((BitLength(&length), length) != bitLength);
     }
 }
@@ -247,17 +249,18 @@ AutoPtr<BigInt> CBigInteger::GetBigInt()
         return mBigInt;
     }
 
-    Mutex::Autolock lock(mLock);
-    if (mNativeIsValid) {
-        return mBigInt;
+    synchronized(this) {
+        if (mNativeIsValid) {
+            return mBigInt;
+        }
+
+        assert(mDigits != NULL);
+
+        AutoPtr<BigInt> bigInt = new BigInt();
+        bigInt->PutLittleEndianInts(*mDigits, (mSign < 0));
+        SetBigInt(bigInt);
+        return bigInt;
     }
-
-    assert(mDigits != NULL);
-
-    AutoPtr<BigInt> bigInt = new BigInt();
-    bigInt->PutLittleEndianInts(*mDigits, (mSign < 0));
-    SetBigInt(bigInt);
-    return bigInt;
 }
 
 void CBigInteger::SetJavaRepresentation(
@@ -290,22 +293,23 @@ void CBigInteger::PrepareJavaRepresentation()
         return;
     }
 
-    Mutex::Autolock lock(mLock);
-    if (mJavaIsValid) {
-        return;
-    }
+    synchronized (this) {
+        if (mJavaIsValid) {
+            return;
+        }
 
-    Int32 sign = mBigInt->Sign();
-    AutoPtr< ArrayOf<Int32> > digits = NULL;
-    if (sign != 0) {
-        digits = mBigInt->LittleEndianIntsMagnitude();
-    }
-    else {
-        digits = ArrayOf<Int32>::Alloc(1);
-        (*digits)[0] = 0;
-    }
+        Int32 sign = mBigInt->Sign();
+        AutoPtr< ArrayOf<Int32> > digits = NULL;
+        if (sign != 0) {
+            digits = mBigInt->LittleEndianIntsMagnitude();
+        }
+        else {
+            digits = ArrayOf<Int32>::Alloc(1);
+            (*digits)[0] = 0;
+        }
 
-    SetJavaRepresentation(sign, digits->GetLength(), *digits);
+        SetJavaRepresentation(sign, digits->GetLength(), *digits);
+    }
 }
 
 ECode CBigInteger::ValueOf(

@@ -1,11 +1,12 @@
 #include "CBigDecimal.h"
-#include <cmdef.h>
-#include <CMathContext.h>
-#include <elastos/StringUtils.h>
-#include <Conversion.h>
-#include <Multiplication.h>
+#include "CMathContext.h"
+#include "Conversion.h"
+#include "Multiplication.h"
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
+using Elastos::Core::EIID_INumber;
+using Elastos::Core::EIID_IComparable;
 
 namespace Elastos {
 namespace Math {
@@ -109,7 +110,7 @@ Boolean CBigDecimal::InitStatic()
 
 CAR_OBJECT_IMPL(CBigDecimal)
 
-CAR_INTERFACE_IMPL_WITH_CPP_CAST_3(CBigDecimal, Object, IBigDecimal, INumber, IComparable)
+CAR_INTERFACE_IMPL_3(CBigDecimal, Object, IBigDecimal, INumber, IComparable)
 
 CBigDecimal::CBigDecimal()
     : mBitLength(0)
@@ -271,7 +272,7 @@ ECode CBigDecimal::constructor(
         }
     }
 
-    unscaledBuffer.AppendChars(in, begin, offset - begin);
+    unscaledBuffer.Append(in, begin, offset - begin);
     temp = unscaledBuffer.ToString();
 
     bufLength += offset - begin;
@@ -293,7 +294,7 @@ ECode CBigDecimal::constructor(
         }
         mScale = offset - begin;
         bufLength += mScale;
-        unscaledBuffer.AppendChars(in, begin, mScale);
+        unscaledBuffer.Append(in, begin, mScale);
         temp = unscaledBuffer.ToString();
     } else {
         mScale = 0;
@@ -311,7 +312,7 @@ ECode CBigDecimal::constructor(
         }
         // Accumulating all remaining digits
         StringBuilder inSB(in.GetLength());
-        inSB.AppendChars(in);
+        inSB.Append(in);
         inSB.Substring(begin, last + 1 - begin, &scaleString);
 
         // Checking if the scale is defined
@@ -325,7 +326,7 @@ ECode CBigDecimal::constructor(
     temp = unscaledBuffer.ToString();
 
     if (bufLength < 19) {
-        mSmallValue = StringUtils::Parse(temp);
+        mSmallValue = StringUtils::ParseInt64(temp);
         mBitLength = BitLength(mSmallValue);
     } else {
         AutoPtr<IBigInteger> bi;
@@ -474,7 +475,7 @@ ECode CBigDecimal::ValueOf(
     }
 
     StringBuilder sb;
-    sb.AppendDouble(val);
+    sb.Append(val);
     String str = sb.ToString();
     return CBigDecimal::New(str, result);
 }
@@ -938,8 +939,11 @@ ECode CBigDecimal::DivideBigIntegers(
     Int32 compRem;                                      // 'compare to remainder'
     if(divisorBitLen < 63) { // 63 in order to avoid out of Int64 after *2
         Int64 rem = 0, divisor = 0;
-        remainder->Int64Value(&rem);
-        scaledDivisor->Int64Value(&divisor);
+        INumber* number;
+        number = (INumber*)remainder->Probe(EIID_INumber);
+        number->Int64Value(&rem);
+        number = (INumber*)scaledDivisor->Probe(EIID_INumber);
+        number->Int64Value(&divisor);
         compRem = LongCompareTo(Math::Abs(rem) * 2, Math::Abs(divisor));
 
         Boolean testBit;
@@ -957,7 +961,8 @@ ECode CBigDecimal::DivideBigIntegers(
         absBI->ShiftLeftOneBit((IBigInteger**)&shiftBI);
 
         // To check if the discarded fraction >= 0.5
-        shiftBI->CompareTo((IBigInteger*)divisorAbsBI, &compRem);
+        IComparable* comp = (IComparable*)shiftBI->Probe(EIID_IComparable);
+        comp->CompareTo((IBigInteger*)divisorAbsBI, &compRem);
 
         Boolean testBit;
         quotient->TestBit(0, &testBit);
@@ -973,7 +978,8 @@ ECode CBigDecimal::DivideBigIntegers(
         Int64 longVal = 0;
         quotient->BitLength(&quotBitLen);
         if(quotBitLen < 63) {
-            quotient->Int64Value(&longVal);
+            INumber* number = (INumber*)quotient->Probe(EIID_INumber);
+            number->Int64Value(&longVal);
             return ValueOf(longVal + compRem,scale, result);
         }
 
@@ -1196,7 +1202,8 @@ ECode CBigDecimal::Divide(
         (*quotAndRem)[1]->ShiftLeftOneBit((IBigInteger**)&temp);
 
         // Checking if:   2 * remainder >= divisor ?
-        temp->CompareTo(duBI, &compRem);
+        IComparable* comp = (IComparable*)temp->Probe(EIID_IComparable);
+        comp->CompareTo(duBI, &compRem);
         temp = NULL;
 
         Int32 quotSignum = 0;
@@ -1693,19 +1700,21 @@ ECode CBigDecimal::Abs(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    AutoPtr<IBigDecimal> result = NULL;
+    AutoPtr<IBigDecimal> _result = NULL;
     Int32 signum = 0, scale = 0;
     GetSignum(&signum);
-    Getscale(&scale);
+    GetScale(&scale);
     if (signum < 0) {
-        Negate((IBigDecimal**)&result);
+        Negate((IBigDecimal**)&_result);
     }
     else {
-        CBigDecimal::New(GetUnscaledValue(), scale, (IBigDecimal**)&result);
+        CBigDecimal::New(GetUnscaledValue(), scale, (IBigDecimal**)&_result);
     }
 
-    FAIL_RETURN(Abs(result));
-    return ((CBigDecimal*)(*result))->InplaceRound(mc);
+    ((CBigDecimal*)_result.Get())->InplaceRound(mc);
+    *result = _result;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
 ECode CBigDecimal::Negate(
@@ -2065,7 +2074,8 @@ ECode CBigDecimal::CompareTo(
                 valUnscaled = temp;
             }
 
-            return thisUnscaled->CompareTo(valUnscaled, result);
+            IComparable* comp = (IComparable*)thisUnscaled->Probe(EIID_IComparable);
+            return comp->CompareTo(valUnscaled, result);
         }
     }
     else if (thisSign < valueSign) {
@@ -2121,7 +2131,8 @@ ECode CBigDecimal::GetHashCode(
     }
     else {
         Int32 intValHashCode;
-        mIntVal->GetHashCode(&intValHashCode);
+        IObject* o = (IObject*)mIntVal->Probe(EIID_IObject);
+        o->GetHashCode(&intValHashCode);
         mHashCode = 17 * intValHashCode + mScale;
     }
 
@@ -2187,7 +2198,8 @@ ECode CBigDecimal::ToString(
 
     AutoPtr<IBigInteger> thisUnscaled = GetUnscaledValue();
     String intString;
-    thisUnscaled->ToString(&intString);
+    IObject* o = (IObject*)thisUnscaled->Probe(EIID_IObject);
+    o->ToString(&intString);
     if (mScale == 0) {
         *str = String(intString);
        return NOERROR;
@@ -2200,27 +2212,27 @@ ECode CBigDecimal::ToString(
     Int64 exponent = -(Int64)mScale + end - begin;
     StringBuilder result;
 
-    result.AppendString(intString);
+    result.Append(intString);
     if ((mScale > 0) && (exponent >= -6)) {
         if (exponent >= 0) {
-            result.InsertChar(end - mScale, '.');
+            result.Insert(end - mScale, '.');
         } else {
             AutoPtr<ArrayOf<Char32> > array = ArrayOf<Char32>::Alloc(2);
             (*array)[0] = '0';
             (*array)[1] = '.';
-            result.InsertChars(begin - 1, *(ArrayOf<Char32>*)array);
-            result.InsertChars(begin + 1, *(ArrayOf<Char32>*)CharZeros, 0, -(Int32)exponent - 1);
+            result.Insert(begin - 1, *(ArrayOf<Char32>*)array);
+            result.Insert(begin + 1, *(ArrayOf<Char32>*)CharZeros, 0, -(Int32)exponent - 1);
         }
     } else {
         if (end - begin >= 1) {
-            result.InsertChar(begin, '.');
+            result.Insert(begin, '.');
             end++;
         }
-        result.InsertChar(end, 'E');
+        result.Insert(end, 'E');
         if (exponent > 0) {
-            result.InsertChar(++end, '+');
+            result.Insert(++end, '+');
         }
-        result.InsertString(++end, StringUtils::Int64ToString(exponent));
+        result.Insert(++end, StringUtils::ToString(exponent));
     }
 
     mToStringImage = result.ToString();
@@ -2235,7 +2247,8 @@ ECode CBigDecimal::ToEngineeringString(
 
     AutoPtr<IBigInteger> thisUnscaled = GetUnscaledValue();
     String intString;
-    thisUnscaled->ToString(&intString);
+    IObject* o = (IObject*)thisUnscaled->Probe(EIID_IObject);
+    o->ToString(&intString);
 
     if (mScale == 0) {
         *representation = intString;
@@ -2257,8 +2270,8 @@ ECode CBigDecimal::ToEngineeringString(
             AutoPtr<ArrayOf<Char32> > array = ArrayOf<Char32>::Alloc(2);
             (*array)[0] = '0';
             (*array)[1] = '.';
-            result.InsertChars(begin - 1, *(ArrayOf<Char32>*)array);
-            result.InsertChars(begin + 1, *(ArrayOf<Char32>*)CharZeros, 0, -(Int32)exponent - 1);
+            result.Insert(begin - 1, *(ArrayOf<Char32>*)array);
+            result.Insert(begin + 1, *(ArrayOf<Char32>*)CharZeros, 0, -(Int32)exponent - 1);
         }
     }
     else {
@@ -2294,7 +2307,7 @@ ECode CBigDecimal::ToEngineeringString(
             if (exponent > 0) {
                 result.InsertChar(++end, '+');
             }
-            result.InsertString(++end, StringUtils::Int64ToString(exponent));
+            result.Insert(++end, StringUtils::ToString(exponent));
         }
     }
 
@@ -2309,7 +2322,8 @@ ECode CBigDecimal::ToPlainString(
 
     AutoPtr<IBigInteger> thisUnscaled = GetUnscaledValue();
     String intStr;
-    thisUnscaled->ToString(&intStr);
+    IObject* o = (IObject*)thisUnscaled->Probe(EIID_IObject);
+    o->ToString(&intStr);
 
     if ((mScale == 0) || ((IsZero()) && (mScale < 0))) {
         *representation = intStr;
@@ -2333,32 +2347,32 @@ ECode CBigDecimal::ToPlainString(
     if (mScale > 0) {
         delta -= (intStr.GetLength() - begin);
         if (delta >= 0) {
-            result.AppendCStr("0.");
+            result.Append("0.");
             // To append zeros after the decimal point
             for (; delta > CharZerosLength; delta -= CharZerosLength) {
-                result.AppendChars(*(ArrayOf<Char32>*)CharZeros);
+                result.Append(*(ArrayOf<Char32>*)CharZeros);
             }
-            result.AppendChars(*(ArrayOf<Char32>*)CharZeros, 0, delta);
+            result.Append(*(ArrayOf<Char32>*)CharZeros, 0, delta);
 
             String subStr = intStr.Substring(begin);
-            result.AppendString(subStr);
+            result.Append(subStr);
         } else {
 
             delta = begin - delta;
             String subStr = intStr.Substring(begin, delta);
-            result.AppendString(subStr);
-            result.AppendChar('.');
+            result.Append(subStr);
+            result.Append('.');
             subStr = intStr.Substring(delta);
-            result.AppendString(subStr);
+            result.Append(subStr);
         }
     } else {// (mScale <= 0)
         String subStr = intStr.Substring(begin);
-        result.AppendString(subStr);
+        result.Append(subStr);
         // To append trailing zeros
         for (; delta < -CharZerosLength; delta += CharZerosLength) {
-            result.AppendChars(*(ArrayOf<Char32>*)CharZeros);
+            result.Append(*(ArrayOf<Char32>*)CharZeros);
         }
-        result.AppendChars(*(ArrayOf<Char32>*)CharZeros, 0, -delta);
+        result.Append(*(ArrayOf<Char32>*)CharZeros, 0, -delta);
     }
 
     result.ToString(representation);
@@ -2447,7 +2461,8 @@ ECode CBigDecimal::Int64Value(
     else {
         AutoPtr<IBigInteger> bi;
         ToBigInteger((IBigInteger**)&bi);
-        return bi->Int64Value(result);
+        INumber* number = (INumber*)bi->Probe(EIID_INumber);
+        return number->Int64Value(result);
     }
 }
 
@@ -2464,7 +2479,8 @@ ECode CBigDecimal::ValueExact(
     bigInteger->BitLength(&bitLen);
     if (bitLen < bitLengthOfType) {
         // It fits in the primitive type
-        return bigInteger->Int64Value(result);
+        INumber* number = (INumber*)bigInteger->Probe(EIID_INumber);
+        return number->Int64Value(result);
     }
 
     return E_ARITHMETIC_EXCEPTION;
@@ -2493,7 +2509,8 @@ ECode CBigDecimal::Int32Value(
     else {
         AutoPtr<IBigInteger> bi;
         ToBigInteger((IBigInteger**)&bi);
-        return bi->Int32Value(result);
+        INumber* number = (INumber*)bi->Probe(EIID_INumber);
+        return number->Int32Value(result);
     }
 }
 
@@ -2522,7 +2539,8 @@ ECode CBigDecimal::Int16Value(
     else {
         AutoPtr<IBigInteger> bi;
         ToBigInteger((IBigInteger**)&bi);
-        return bi->Int16Value(result);
+        INumber* number = (INumber*)bi->Probe(EIID_INumber);
+        return number->Int16Value(result);
     }
 }
 
@@ -2550,10 +2568,11 @@ ECode CBigDecimal::ByteValue(
     else {
         AutoPtr<IBigInteger> bi;
         ToBigInteger((IBigInteger**)&bi);
-        return bi->ByteValue(result);
+        INumber* number = (INumber*)bi->Probe(EIID_INumber);
+        return number->ByteValue(result);
     }
 
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 ECode CBigDecimal::ByteValueExact(
@@ -2660,7 +2679,8 @@ ECode CBigDecimal::DoubleValue(
         (*quotAndRem)[1]->ShiftLeftOneBit((IBigInteger**)&temp);
 
         // To check if the fractional part >= 0.5
-        temp->CompareTo(powerOfTen, &compRem);
+        IComparable* comp = (IComparable*)temp->Probe(EIID_IComparable);
+        comp->CompareTo(powerOfTen, &compRem);
         temp = NULL;
 
         AutoPtr<IBigInteger> abi, cbi;
@@ -2682,7 +2702,8 @@ ECode CBigDecimal::DoubleValue(
         AutoPtr<IBigInteger> srbi;
         mantissa->ShiftRight(discardedSize, (IBigInteger**)&srbi);
         // mantissa = (abs(u) * 10^s) >> (n - 54)
-        srbi->Int64Value(&bits);
+        INumber* number = (INumber*)srbi->Probe(EIID_INumber);
+        number->Int64Value(&bits);
         tempBits = bits;
         // #bits = 54, to check if the discarded fraction produces a carry
         if ((((bits & 1) == 1) && (lowestSetBit < discardedSize))
@@ -2693,7 +2714,8 @@ ECode CBigDecimal::DoubleValue(
     else {// (n <= 54)
         // mantissa = (abs(u) * 10^s) << (54 - n)
         Int64 lval;
-        mantissa->Int64Value(&lval);
+        INumber* number = (INumber*)mantissa->Probe(EIID_INumber);
+        number->Int64Value(&lval);
         bits = lval << (-discardedSize & 0x3F);
         tempBits = bits;
         // #bits = 54, to check if the discarded fraction produces a carry:
@@ -2823,7 +2845,8 @@ void CBigDecimal::SetUnscaledValue(
     mIntVal = unscalevalue;
     unscalevalue->BitLength(&mBitLength);
     if (mBitLength < 64) {
-        unscalevalue->Int64Value(&mSmallValue);
+        INumber* number = (INumber*)unscalevalue->Probe(EIID_INumber);
+        number->Int64Value(&mSmallValue);
     }
 }
 
@@ -2915,7 +2938,8 @@ ECode CBigDecimal::InplaceRound(
 
         // To check if the discarded fraction >= 0.5
         Int32 compRem;
-        shiftBI->CompareTo((IBigInteger*)sizeOfFraction, &compRem);
+        IComparable* comp = (IComparable*)shiftBI->Probe(EIID_IComparable);
+        comp->CompareTo((IBigInteger*)sizeOfFraction, &compRem);
         // To look if there is a carry
         Boolean testBit;
         dbi->TestBit(0, &testBit);

@@ -1,9 +1,8 @@
-#ifndef __MATH_LOGICAL_H__
-#define __MATH_LOGICAL_H__
+#ifndef __ELASTOS_MATH_LOGICAL_H__
+#define __ELASTOS_MATH_LOGICAL_H__
 
-#include <elastos.h>
 #include <CBigInteger.h>
-#include "Object.h"
+#include <elastos.h>
 
 namespace Elastos {
 namespace Math {
@@ -19,7 +18,7 @@ namespace Math {
  * <li>xor</li>
  * </ul>
  */
-class Logical : public Object
+class Logical
 {
 public:
     /** @see BigInteger#not() */
@@ -125,4 +124,4 @@ private:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_LOGICAL_H__
+#endif // __ELASTOS_MATH_LOGICAL_H__

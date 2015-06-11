@@ -5,7 +5,9 @@
 namespace Elastos {
 namespace Math {
 
-CAR_SINGLETON_IMPL(CMathContextHelper, Singleton, IMathContextHelper)
+CAR_INTERFACE_IMPL(CMathContextHelper, Singleton, IMathContextHelper)
+
+CAR_SINGLETON_IMPL(CMathContextHelper)
 
 ECode CMathContextHelper::GetDECIMAL32(
     /* [out] */ IMathContext** context)

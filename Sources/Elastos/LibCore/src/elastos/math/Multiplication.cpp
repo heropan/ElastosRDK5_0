@@ -1,6 +1,6 @@
-#include <cmdef.h>
-#include <Multiplication.h>
-#include <elastos/Math.h>
+
+#include "Multiplication.h"
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Math {

@@ -1,6 +1,6 @@
-#include <Primality.h>
-#include <cmdef.h>
-#include <BigInt.h>
+
+#include "Primality.h"
+#include "BigInt.h"
 
 namespace Elastos {
 namespace Math {

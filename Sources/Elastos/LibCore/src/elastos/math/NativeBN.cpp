@@ -1,6 +1,6 @@
-#include <NativeBN.h>
-#include <cmdef.h>
-#include <elastos/UniquePtr.h>
+
+#include "NativeBN.h"
+#include <elastos/core/UniquePtr.h>
 #include <openssl/bn.h>
 #include <openssl/crypto.h>
 #include <openssl/err.h>
@@ -168,10 +168,10 @@ void NativeBN::BN_bin2bn(
     /* [in] */ Boolean neg,
     /* [in] */ Int64 ret)
 {
-    if (!OneValidHandle(env, ret)) return;
+    if (!OneValidHandle(ret)) return;
     if (arr.GetLength() == 0) return;
 
-    Boolean success = (::BN_bin2bn(reinterpret_cast<const unsigned char*>(bytes.GetPayload()), len, ToBigNum(ret)) != NULL);
+    Boolean success = (::BN_bin2bn(reinterpret_cast<const unsigned char*>(arr.GetPayload()), len, ToBigNum(ret)) != NULL);
     if (success && neg) {
         ::BN_set_negative(ToBigNum(ret), 1);
     }
@@ -303,13 +303,13 @@ void NativeBN::TwosComp2bn(
     /* [in] */ Int32 bytesLen,
     /* [in] */ Int64 ret0)
 {
-    if (!OneValidHandle(env, ret0)) return;
+    if (!OneValidHandle(ret0)) return;
     BIGNUM* ret = ToBigNum(ret0);
 
-    if (bytesLen == 0) return FALSE;
+    if (bytesLen == 0) return;
 
     const unsigned char* s = reinterpret_cast<const unsigned char*>(arr.GetPayload());
-    if ((bytes[0] & 0X80) == 0) { // Positive value!
+    if ((arr[0] & 0X80) == 0) { // Positive value!
         //
         // We can use the existing BN implementation for unsigned big endian bytes:
         //
@@ -402,7 +402,7 @@ AutoPtr<ArrayOf<Byte> > NativeBN::BN_bn2bin(
     /* [in] */ Int64 a0)
 {
     if (!OneValidHandle(a0)) return NULL;
-    BIGNUM* a = toBigNum(a0);
+    BIGNUM* a = ToBigNum(a0);
 
     AutoPtr<ArrayOf<Byte> > result = NULL;
     Int32 size = BN_num_bytes(a);
@@ -418,7 +418,7 @@ AutoPtr<ArrayOf<Byte> > NativeBN::BN_bn2bin(
 AutoPtr<ArrayOf<Int32> > NativeBN::Bn2litEndInts(
     /* [in] */ Int64 a0)
 {
-  if (!OneValidHandle(env, a0)) return NULL;
+  if (!OneValidHandle(a0)) return NULL;
   BIGNUM* a = ToBigNum(a0);
   bn_check_top(a);
   int wLen = a->top;
@@ -528,7 +528,7 @@ Int32 NativeBN::BN_mod_word(
     /* [in] */ Int32 w)
 {
     if (!OneValidHandle(a)) return 0;
-    return BN_mod_word(ToBigNum(a), w);
+    return ::BN_mod_word(ToBigNum(a), w);
     //throwExceptionIfNecessary(env);
 }
 
@@ -602,7 +602,7 @@ void NativeBN::BN_nnmod(
     /* [in] */ Int64 a,
     /* [in] */ Int64 m)
 {
-    if (!ThreeValidHandles(env, r, a, m)) return;
+    if (!ThreeValidHandles(r, a, m)) return;
     Unique_BN_CTX ctx(BN_CTX_new());
     ::BN_nnmod(ToBigNum(r), ToBigNum(a), ToBigNum(m), ctx.get());
     //throwExceptionIfNecessary(env);

@@ -18,6 +18,8 @@ const AutoPtr<IMathContext> CMathContext::UNLIMITED = CreateMathContext(0, Round
 
 CAR_OBJECT_IMPL(CMathContext)
 
+CAR_INTERFACE_IMPL(CMathContext, Object, IMathContext)
+
 ECode CMathContext::constructor(
     /* [in] */ Int32 precision)
 {

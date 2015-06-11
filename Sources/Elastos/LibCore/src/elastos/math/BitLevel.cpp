@@ -1,7 +1,6 @@
 
 #include <BitLevel.h>
-#include <cmdef.h>
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <assert.h>
 
 namespace Elastos {

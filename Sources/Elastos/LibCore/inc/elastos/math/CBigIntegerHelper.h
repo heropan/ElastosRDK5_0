@@ -1,18 +1,23 @@
-#ifndef __MATH_CBIGINTEGERHELPER_H__
-#define __MATH_CBIGINTEGERHELPER_H__
+#ifndef __ELASTOS_MATH_CBIGINTEGERHELPER_H__
+#define __ELASTOS_MATH_CBIGINTEGERHELPER_H__
 
-#include "__Elastos_Math__CBigIntegerHelper.h"
-#include "Singleton.h"
+#include "_Elastos_Math_CBigIntegerHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
+using Elastos::Core::IRandom;
 
 namespace Elastos {
 namespace Math {
 
 CarClass(CBigIntegerHelper)
-    : public Singleton
+    , public Singleton
     , public IBigIntegerHelper
 {
 public:
     CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /** Returns a {@code BigInteger} whose value is equal to {@code value}. */
     CARAPI ValueOf(
@@ -40,4 +45,4 @@ public:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_CBIGINTEGERHELPER_H__
+#endif // __ELASTOS_MATH_CBIGINTEGERHELPER_H__

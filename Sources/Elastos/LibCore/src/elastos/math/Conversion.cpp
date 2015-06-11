@@ -1,19 +1,19 @@
 #include "Conversion.h"
-#include <cmdef.h>
-#include <elastos/Math.h>
-#include <elastos/Character.h>
-#include <elastos/IntegralToString.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <BitLevel.h>
-#include <BigInt.h>
-#include <Division.h>
+#include "BitLevel.h"
+#include "BigInt.h"
+#include "Division.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/IntegralToString.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Core::IntegralToString;
 using Elastos::Core::Math;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
+using Elastos::Core::StringUtils;
+using Elastos::Core::EIID_INumber;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::IntegralToString;
 
 namespace Elastos {
 namespace Math {
@@ -54,7 +54,7 @@ String Conversion::BigInteger2String(
             v = -v;
         }
 
-        return IntegralToString::Int64ToString(v, radix);
+        return IntegralToString::ToString(v, radix);
     }
 
     if ((radix == 10) || (radix < Character::MIN_RADIX)
@@ -156,11 +156,11 @@ String Conversion::ToDecimalScaledString(
             default:
                 StringBuilder result1;
                 if (scale < 0) {
-                    result1.AppendCStr("0E+");
+                    result1.Append("0E+");
                 } else {
-                    result1.AppendCStr("0E");
+                    result1.Append("0E");
                 }
-                result1.AppendInt32(-scale);
+                result1.Append(-scale);
                 return result1.ToString();
         }
     }
@@ -300,18 +300,18 @@ String Conversion::ToDecimalScaledString(
 
         String str(result->GetPayload() + currentChar + 1, resLengthInChars
                 - currentChar - 1);
-        result1.AppendString(str);
+        result1.Append(str);
     }
     else {
         String str(result->GetPayload() + currentChar, resLengthInChars
                 - currentChar);
-        result1.AppendString(str);
+        result1.Append(str);
     }
     result1.AppendChar('E');
     if (exponent > 0) {
         result1.AppendChar('+');
     }
-    result1.AppendString(StringUtils::Int32ToString(exponent));
+    result1.Append(StringUtils::ToString(exponent));
     return result1.ToString();
 }
 
@@ -338,15 +338,15 @@ String Conversion::ToDecimalScaledString(
             default:
                 StringBuilder result1;
                 if (scale  < 0) {
-                    result1.AppendCStr("0E+");
+                    result1.Append("0E+");
                 } else {
-                    result1.AppendCStr("0E");
+                    result1.Append("0E");
                 }
                 if (scale == Math::INT32_MIN_VALUE) {
-                    result1.AppendCStr("2147483648");
+                    result1.Append("2147483648");
                 }
                 else {
-                    result1.AppendString(StringUtils::Int32ToString(-scale));
+                    result1.Append(StringUtils::ToString(-scale));
                 }
                 return result1.ToString();
         }
@@ -413,18 +413,18 @@ String Conversion::ToDecimalScaledString(
         result1.AppendChar((*result)[currentChar]);
         result1.AppendChar('.');
         String temp(result->GetPayload() + currentChar+1,resLengthInChars - currentChar-1);
-        result1.AppendString(temp);
+        result1.Append(temp);
     }
     else {
         String temp(result->GetPayload() + currentChar,resLengthInChars - currentChar);
-        result1.AppendString(temp);
+        result1.Append(temp);
     }
 
     result1.AppendChar('E');
     if (exponent > 0) {
         result1.AppendChar('+');
     }
-    result1.AppendString(StringUtils::Int64ToString(exponent));
+    result1.Append(StringUtils::ToString(exponent));
     return result1.ToString();
 }
 
@@ -485,7 +485,8 @@ Double Conversion::BigInteger2Double(
     AutoPtr<IBigInteger> srBi;
     absBi->ShiftRight(delta, (IBigInteger**)&srBi);
     Int64 lVal = 0;
-    srBi->Int64Value(&lVal);
+    INumber* number = (INumber*)srBi->Probe(EIID_INumber);
+    number->Int64Value(&lVal);
 
     /*
      * Take 53 bits from lVal to mantissa. The least significant bit is

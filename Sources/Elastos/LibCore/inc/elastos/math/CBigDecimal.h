@@ -1,12 +1,13 @@
-#ifndef __MATH_CBIGDECIMAL_H__
-#define __MATH_CBIGDECIMAL_H__
+#ifndef __ELASTOS_MATH_CBIGDECIMAL_H__
+#define __ELASTOS_MATH_CBIGDECIMAL_H__
 
-#include "__Elastos_Math__CBigDecimal.h"
-#include <elstring.h>
-#include <elastos/Math.h>
+#include "_Elastos_Math_CBigDecimal.h"
 #include <CBigInteger.h>
-#include "Object.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/Object.h>
+#include <elstring.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::INumber;
 using Elastos::Core::IComparable;
 
@@ -22,7 +23,7 @@ namespace Math {
  * <p>Most operations allow you to supply a {@link MathContext} to specify a desired rounding mode.
  */
 CarClass(CBigDecimal)
-    : public Object
+    , public Object
     , public IBigDecimal
     , public INumber
     , public IComparable
@@ -1419,4 +1420,4 @@ private:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_CBIGDECIMAL_H__
+#endif // __ELASTOS_MATH_CBIGDECIMAL_H__

@@ -1,15 +1,14 @@
-#ifndef __MATH_CONERSION_H__
-#define __MATH_CONERSION_H__
+#ifndef __ELASTOS_MATH_CONERSION_H__
+#define __ELASTOS_MATH_CONERSION_H__
 
-#include <elastos.h>
 #include <CBigInteger.h>
+#include <elastos.h>
 #include <elquintet.h>
-#include "Object.h"
 
 namespace Elastos {
 namespace Math {
 
-class Conversion : public Object
+class Conversion
 {
 public:
 
@@ -71,4 +70,4 @@ public:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_CONERSION_H__
+#endif // __ELASTOS_MATH_CONERSION_H__

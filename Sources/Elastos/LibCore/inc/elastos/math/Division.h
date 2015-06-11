@@ -1,9 +1,8 @@
-#ifndef __MATH_DIVISION_H__
-#define __MATH_DIVISION_H__
+#ifndef __ELASTOS_MATH_DIVISION_H__
+#define __ELASTOS_MATH_DIVISION_H__
 
 #include <elastos.h>
 #include <elquintet.h>
-#include "Object.h"
 
 namespace Elastos {
 namespace Math {
@@ -29,7 +28,7 @@ namespace Math {
  * </li>
  *</ul>
  */
-class Division : public Object
+class Division
 {
 public:
     /**
@@ -58,5 +57,5 @@ private:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_DIVISION_H__
+#endif // __ELASTOS_MATH_DIVISION_H__
 

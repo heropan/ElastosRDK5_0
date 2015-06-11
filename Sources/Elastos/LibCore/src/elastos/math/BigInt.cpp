@@ -1,8 +1,8 @@
 
 #include <BigInt.h>
-#include <elastos/Character.h>
-#include <Elastos.CoreLibrary_server.h>
 #include <NativeBN.h>
+#include <elastos/core/Character.h>
+#include <Elastos.CoreLibrary_server.h>
 
 using Elastos::Core::Character;
 
@@ -31,8 +31,8 @@ ECode BigInt::GetClassID(
 {
     VALIDATE_NOT_NULL(clsid);
 
-    *clsid = EIID_BigInt;
-    return NOERROR;
+    //*clsid = EIID_BigInt;
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode BigInt::ToString(
@@ -40,7 +40,7 @@ ECode BigInt::ToString(
 {
     VALIDATE_NOT_NULL(result);
 
-    result->AppendFormat("\nClass[%s]\n", String("BigInt"));
+    result->AppendFormat("Class Name: [%s]\n", "BigInt");
     return NOERROR;
 }
 
@@ -224,7 +224,7 @@ ECode BigInt::PutBigEndian(
     /* [in] */ Boolean neg)
 {
     FAIL_RETURN(MakeValid());
-    NativeBN::BN_bin2bn(bytes, neg, mBignum);
+    NativeBN::BN_bin2bn(bytes, bytes.GetLength(), neg, mBignum);
     return NOERROR;
 }
 
@@ -233,7 +233,7 @@ ECode BigInt::PutLittleEndianInts(
     /* [in] */ Boolean neg)
 {
     FAIL_RETURN(MakeValid());
-    NativeBN::LitEndInts2bn(ints, neg, mBignum);
+    NativeBN::LitEndInts2bn(ints, ints.GetLength(), neg, mBignum);
     return NOERROR;
 }
 
@@ -241,7 +241,7 @@ ECode BigInt::PutBigEndianTwosComplement(
     /* [in] */ const ArrayOf<Byte>& bytes)
 {
     FAIL_RETURN(MakeValid());
-    NativeBN::TwosComp2bn(bytes, mBignum);
+    NativeBN::TwosComp2bn(bytes, bytes.GetLength(), mBignum);
     return NOERROR;
 }
 
@@ -257,7 +257,7 @@ String BigInt::DecString()
 
 String BigInt::HexString()
 {
-    return NativeBN::BN_bn2h(mBignum);
+    return NativeBN::BN_bn2hex(mBignum);
 }
 
 AutoPtr<ArrayOf<Byte> > BigInt::BigEndianMagnitude()
@@ -360,7 +360,7 @@ ECode BigInt::Addition(
 ECode BigInt::Add(
     /* [in] */ const BigInt& a)
 {
-    NativeBN::BN_add(mBignum, mBignum, a.mBignum;
+    NativeBN::BN_add(mBignum, mBignum, a.mBignum);
     return NOERROR;
 }
 
@@ -482,14 +482,14 @@ ECode BigInt::GeneratePrimeDefault(
     /* [in] */ BigInt& r)
 {
     FAIL_RETURN(NewBigInt(r));
-    NativeBN::BN_generate_prime_(r.mBignum, bitLength, FALSE, 0, 0, 0);
+    NativeBN::BN_generate_prime_ex(r.mBignum, bitLength, FALSE, 0, 0, 0);
     return NOERROR;
 }
 
 Boolean BigInt::IsPrime(
     /* [in] */ Int32 certainty)
 {
-    return NativeBN::BN_is_prime_(mBignum, certainty, 0);
+    return NativeBN::BN_is_prime_ex(mBignum, certainty, 0);
 }
 
 } // namespace Math

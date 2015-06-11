@@ -1,11 +1,13 @@
 
-#include "CBigDecimalHelper.h"
 #include "CBigDecimal.h"
+#include "CBigDecimalHelper.h"
 
 namespace Elastos {
 namespace Math {
 
-CAR_SINGLETON_IMPL(CBigDecimalHelper, Singleton, IBigDecimalHelper)
+CAR_INTERFACE_IMPL(CBigDecimalHelper, Singleton, IBigDecimalHelper)
+
+CAR_SINGLETON_IMPL(CBigDecimalHelper)
 
 ECode CBigDecimalHelper::ValueOf(
     /* [in] */ Int64 unscaledVal,

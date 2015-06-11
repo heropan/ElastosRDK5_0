@@ -1,16 +1,16 @@
-#ifndef __MATH_NATIVEBN_H__
-#define __MATH_NATIVEBN_H__
+#ifndef __ELASTOS_MATH_NATIVEBN_H__
+#define __ELASTOS_MATH_NATIVEBN_H__
 
 #include <elastos.h>
 #include <elquintet.h>
-#include "Object.h"
+#include <openssl/bn.h>
 
 // see java_math_NativeBN.cpp
 //
 namespace Elastos {
 namespace Math {
 
-class NativeBN : public Object
+class NativeBN
 {
 public:
     static Int64 BN_new();
@@ -215,7 +215,7 @@ private:
     static BIGNUM* ToBigNum(
         /* [in] */ Int64 address);
 
-    static Boolean NativeBN::IsValidHandle(
+    static Boolean IsValidHandle(
         /* [in] */ Int64 handle);
 
     static Boolean OneValidHandle(
@@ -236,10 +236,10 @@ private:
         /* [in] */ Int64 c,
         /* [in] */ Int64 d);
 
-    static Boolean NegBigEndianBytes2bn(
+    static void NegBigEndianBytes2bn(
         /* [in] */ const unsigned char* bytes,
         /* [in] */ Int32 bytesLen,
-        /* [in] */ Int32 ret);
+        /* [in] */ Int64 ret);
 
     static char* LeadingZerosTrimmed(
         /* [in] */ char* s);
@@ -248,4 +248,4 @@ private:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_NATIVEBN_H__
+#endif // __ELASTOS_MATH_NATIVEBN_H__

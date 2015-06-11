@@ -1,15 +1,14 @@
-#ifndef __MATH_PRIMALITY_H__
-#define __MATH_PRIMALITY_H__
+#ifndef __ELASTOS_MATH_PRIMALITY_H__
+#define __ELASTOS_MATH_PRIMALITY_H__
 
-#include <elastos.h>
 #include <CBigInteger.h>
+#include <elastos.h>
 #include <elquintet.h>
-#include "Object.h"
 
 namespace Elastos {
 namespace Math {
 
-class Primality : public Object
+class Primality
 {
 public:
     /**
@@ -47,4 +46,4 @@ private:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_PRIMALITY_H__
+#endif // __ELASTOS_MATH_PRIMALITY_H__

@@ -1,18 +1,22 @@
-#ifndef __MATH_CMATHCONTEXTHELPER_H__
-#define __MATH_CMATHCONTEXTHELPER_H__
+#ifndef __ELASTOS_MATH_CMATHCONTEXTHELPER_H__
+#define __ELASTOS_MATH_CMATHCONTEXTHELPER_H__
 
-#include "__Elastos_Math__CMathContextHelper.h"
-#include "Singleton.h"
+#include "_Elastos_Math_CMathContextHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Math {
 
 CarClass(CMathContextHelper)
-    : public Singleton
+    , public Singleton
     , public IMathContextHelper
 {
 public:
     CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CARAPI GetDECIMAL32(
         /* [out] */ IMathContext** context);
@@ -30,4 +34,4 @@ public:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_CMATHCONTEXTHELPER_H__
+#endif // __ELASTOS_MATH_CMATHCONTEXTHELPER_H__

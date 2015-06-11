@@ -1,18 +1,22 @@
-#ifndef __MATH_CBIGDECIMALHELPER_H__
-#define __MATH_CBIGDECIMALHELPER_H__
+#ifndef __ELASTOS_MATH_CBIGDECIMALHELPER_H__
+#define __ELASTOS_MATH_CBIGDECIMALHELPER_H__
 
-#include "__Elastos_Math__CBigDecimalHelper.h"
-#include "Singleton.h"
+#include "_Elastos_Math_CBigDecimalHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Math {
 
 CarClass(CBigDecimalHelper)
-    : public Singleton
+    , public Singleton
     , public IBigDecimalHelper
 {
 public:
     CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * Returns a new {@code BigDecimal} instance whose value is equal to {@code
@@ -80,4 +84,4 @@ public:
 } // namespace Math
 } // namespace Elastos
 
-#endif // __MATH_CBIGDECIMALHELPER_H__
+#endif // __ELASTOS_MATH_CBIGDECIMALHELPER_H__
