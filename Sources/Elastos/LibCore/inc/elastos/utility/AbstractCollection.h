@@ -292,6 +292,13 @@ public:
      */
     CARAPI ToString(
         /* [out] */ String* result);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
 };
 
 } // namespace Utility

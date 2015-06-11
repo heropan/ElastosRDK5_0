@@ -335,5 +335,18 @@ ECode AbstractCollection::ToString(
     return NOERROR;
 }
 
+ECode AbstractCollection::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    return Object::Equals(object, result);
+}
+
+ECode AbstractCollection::GetHashCode(
+    /* [out] */ Int32* hashCode)
+{
+    return Object::GetHashCode(hashCode);
+}
+
 } // namespace Utility
 } // namespace Elastos

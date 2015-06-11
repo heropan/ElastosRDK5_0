@@ -118,42 +118,6 @@ public:
         CARAPI GetIterator(
             /* [out] */ IIterator** outiter);
 
-        CARAPI IsEmpty(
-            /* [out] */ Boolean* result);
-
-        CARAPI Add(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* modified);
-
-        CARAPI AddAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ContainsAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI Equals(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* result);
-
-        CARAPI GetHashCode(
-            /* [out] */ Int32* hashCode);
-
-        CARAPI RemoveAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI RetainAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ToArray(
-            /* [out, callee] */ ArrayOf<IInterface*>** array);
-
-        CARAPI ToArray(
-            /* [in] */ ArrayOf<IInterface*>* inArray,
-            /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
     private:
         AutoPtr<CIdentityHashMap> mAssociatedMap;
@@ -182,43 +146,6 @@ public:
         CARAPI GetIterator(
             /* [out] */ IIterator** outiter);
 
-        CARAPI IsEmpty(
-            /* [out] */ Boolean* result);
-
-        CARAPI Add(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* modified);
-
-        CARAPI AddAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ContainsAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI Equals(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* result);
-
-        CARAPI GetHashCode(
-            /* [out] */ Int32* hashCode);
-
-        CARAPI RemoveAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI RetainAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ToArray(
-            /* [out, callee] */ ArrayOf<IInterface*>** array);
-
-        CARAPI ToArray(
-            /* [in] */ ArrayOf<IInterface*>* inArray,
-            /* [out, callee] */ ArrayOf<IInterface*>** outArray);
-
     private:
         AutoPtr<CIdentityHashMap> mAssociatedMap;
     };
@@ -245,43 +172,6 @@ public:
 
         CARAPI GetIterator(
             /* [out] */ IIterator** outiter);
-
-        CARAPI IsEmpty(
-            /* [out] */ Boolean* result);
-
-        CARAPI Add(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* modified);
-
-        CARAPI AddAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ContainsAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI Equals(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* result);
-
-        CARAPI GetHashCode(
-            /* [out] */ Int32* hashCode);
-
-        CARAPI RemoveAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI RetainAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI ToArray(
-            /* [out, callee] */ ArrayOf<IInterface*>** array);
-
-        CARAPI ToArray(
-            /* [in] */ ArrayOf<IInterface*>* inArray,
-            /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
     private:
         AutoPtr<CIdentityHashMap> mAssociatedMap;
