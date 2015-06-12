@@ -10,6 +10,7 @@
 
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
+using Elastos::Utility::IDate;
 
 namespace Elastos {
 namespace Sql {
@@ -385,7 +386,7 @@ ECode CJDBCPreparedStatement::SetClob(
 
 ECode CJDBCPreparedStatement::SetDate(
     /* [in] */ Int32 parameterIndex,
-    /* [in] */ IDate * theDate)
+    /* [in] */ ISQLDate * theDate)
 {
     if (parameterIndex < 1 || parameterIndex > mArgs->GetLength()) {
         return E_SQL_EXCEPTION;
@@ -395,7 +396,7 @@ ECode CJDBCPreparedStatement::SetDate(
     } else {
         if (((CJDBCConnection* )conn.Get())->mUseJulian) {
             Int64 outtime = 0;
-            Elastos::Utility::IDate::Probe(theDate)->GetTime(&outtime);
+            IDate::Probe(theDate)->GetTime(&outtime);
             (*mArgs)[parameterIndex - 1] = StringUtils::ToString(SQLite::Database::JulianFromLong(outtime));
         } else {
             String outstr;
@@ -409,7 +410,7 @@ ECode CJDBCPreparedStatement::SetDate(
 
 ECode CJDBCPreparedStatement::SetDate(
     /* [in] */ Int32 parameterIndex,
-    /* [in] */ IDate * theDate,
+    /* [in] */ ISQLDate * theDate,
     /* [in] */ ICalendar * cal)
 {
     return SetDate(parameterIndex, theDate);
@@ -629,7 +630,7 @@ ECode CJDBCPreparedStatement::SetTime(
     } else {
         if (((CJDBCConnection* )conn.Get())->mUseJulian) {
             Int64 outtime = 0;
-            Elastos::Utility::IDate::Probe(theTime)->GetTime(&outtime);
+            IDate::Probe(theTime)->GetTime(&outtime);
             (*mArgs)[parameterIndex - 1] = StringUtils::ToString(SQLite::Database::JulianFromLong(outtime));
         } else {
             String outstr;
@@ -662,7 +663,7 @@ ECode CJDBCPreparedStatement::SetTimestamp(
     } else {
         if (((CJDBCConnection* )conn.Get())->mUseJulian) {
             Int64 outtime = 0;
-            Elastos::Utility::IDate::Probe(theTimestamp)->GetTime(&outtime);
+            IDate::Probe(theTimestamp)->GetTime(&outtime);
             (*mArgs)[parameterIndex - 1] = StringUtils::ToString(SQLite::Database::JulianFromLong(outtime));
         } else {
             String outstr;
@@ -1072,7 +1073,7 @@ ECode CJDBCPreparedStatement::SetBytes(
 
 ECode CJDBCPreparedStatement::SetDate(
     /* [in] */ const String& parameterName,
-    /* [in] */ IDate * val)
+    /* [in] */ ISQLDate * val)
 {
     return E_SQL_EXCEPTION;
 }
@@ -1141,7 +1142,7 @@ ECode CJDBCPreparedStatement::SetCharacterStream(
 
 ECode CJDBCPreparedStatement::SetDate(
     /* [in] */ const String& parameterName,
-    /* [in] */ IDate * val,
+    /* [in] */ ISQLDate * val,
     /* [in] */ ICalendar * cal)
 {
     return E_SQL_EXCEPTION;
@@ -1236,7 +1237,7 @@ ECode CJDBCPreparedStatement::GetBytes(
 
 ECode CJDBCPreparedStatement::GetDate(
     /* [in] */ const String& parameterName,
-    /* [out] */ IDate ** thedate)
+    /* [out] */ ISQLDate ** thedate)
 {
     return E_SQL_EXCEPTION;
 }
@@ -1351,7 +1352,7 @@ ECode CJDBCPreparedStatement::GetArray(
 ECode CJDBCPreparedStatement::GetDate(
     /* [in] */ const String& parameterName,
     /* [in] */ ICalendar * cal,
-    /* [out] */ IDate ** thedate)
+    /* [out] */ ISQLDate ** thedate)
 {
     return E_SQL_EXCEPTION;
 }
@@ -1359,7 +1360,7 @@ ECode CJDBCPreparedStatement::GetDate(
 ECode CJDBCPreparedStatement::GetDate(
     /* [in] */ Int32 parameterIndex,
     /* [in] */ ICalendar * cal,
-    /* [out] */ IDate ** thedate)
+    /* [out] */ ISQLDate ** thedate)
 {
     return E_SQL_EXCEPTION;
 }

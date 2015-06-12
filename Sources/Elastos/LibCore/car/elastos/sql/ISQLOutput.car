@@ -130,7 +130,7 @@ module
          * @see Date
          */
         WriteDate(
-            [in] IDate* theDate);
+            [in] ISQLDate* theDate);
 
         /**
          * Write a {@code java.sql.Time} value into the output stream.

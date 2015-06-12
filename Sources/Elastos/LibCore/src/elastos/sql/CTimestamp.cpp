@@ -1,13 +1,16 @@
 
-#include <coredef.h>
 #include "CTimestamp.h"
 #include <elastos/core/StringUtils.h>
 //#include "CPatternHelper.h"
 //#include "CParsePosition.h"
+#include "CLocaleHelper.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Regex::IPatternHelper;
 //using Elastos::Utility::Regex::CPatternHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 // using Elastos::Text::ISimpleDateFormat;
 // using Elastos::Text::CSimpleDateFormat;
 using Elastos::Text::IParsePosition;
@@ -17,23 +20,10 @@ namespace Elastos {
 namespace Sql {
 
 const String CTimestamp::TIME_FORMAT_REGEX = String("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.*");
-
 const String CTimestamp::PADDING = String("000000000");
 
+CAR_INTERFACE_IMPL(CTimestamp, Date, ITimestamp);
 CAR_OBJECT_IMPL(CTimestamp);
-
-PInterface CTimestamp::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_ITimestamp) {
-        return (IInterface*)(ITimestamp*)this;
-    }
-
-    //TODO
-    assert(0);
-    // return Date::Probe(riid);
-    return NULL;
-}
 
 ECode CTimestamp::CompareTo(
     /* [in] */ IDate* date,
@@ -47,7 +37,8 @@ ECode CTimestamp::GetTime(
 {
     VALIDATE_NOT_NULL(time)
 
-    Int64 theTime = Date::GetTime();
+    Int64 theTime = 0;
+    Date::GetTime(&theTime);
     theTime = theTime + (nanos / 1000000);
     *time = theTime;
     return NOERROR;
@@ -65,17 +56,29 @@ ECode CTimestamp::ToString(
 {
     AutoPtr<StringBuilder> sb = new StringBuilder(29);
 
-    Format((Date::GetYear() + 1900), 4, sb);
+    Int32 value = 0;
+    Date::GetYear(&value);
+    Format(value + 1900, 4, sb);
     sb->AppendChar('-');
-    Format((Date::GetMonth() + 1), 2, sb);
+
+    Date::GetMonth(&value);
+    Format(value + 1, 2, sb);
     sb->AppendChar('-');
-    Format(Date::GetDate(), 2, sb);
+
+    Date::GetDate(&value);
+    Format(value, 2, sb);
     sb->AppendChar(' ');
-    Format(Date::GetHours(), 2, sb);
+
+    Date::GetHours(&value);
+    Format(value, 2, sb);
     sb->AppendChar(':');
-    Format(Date::GetMinutes(), 2, sb);
+
+    Date::GetMinutes(&value);
+    Format(value, 2, sb);
     sb->AppendChar(':');
-    Format(Date::GetSeconds(), 2, sb);
+
+    Date::GetSeconds(&value);
+    Format(value, 2, sb);
     sb->AppendChar('.');
     if (nanos == 0) {
         sb->AppendChar('0');
@@ -243,7 +246,7 @@ ECode CTimestamp::constructor(
     /* [in] */ Int32 theSecond,
     /* [in] */ Int32 theNano)
 {
-    Init(theYear, theMonth, theDate, theHour, theMinute, theSecond);
+    Date::constructor(theYear, theMonth, theDate, theHour, theMinute, theSecond);
     if (theNano < 0 || theNano > 999999999) {
         return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -254,7 +257,7 @@ ECode CTimestamp::constructor(
 ECode CTimestamp::constructor(
     /* [in] */ Int64 theTime)
 {
-    Init(theTime);
+    Date::constructor(theTime);
     /*
      * Now set the time for this Timestamp object - which deals with the
      * nanosecond value as well as the base time
@@ -270,7 +273,7 @@ AutoPtr<ITimestamp> CTimestamp::ValueOf(const String& str)
         return NULL;
     }
 
-    // omit trailing whitespace
+    // Omit trailing whitespace
     String s = str.Trim();
     AutoPtr<IPatternHelper> pat;
     //TODO
@@ -284,8 +287,13 @@ AutoPtr<ITimestamp> CTimestamp::ValueOf(const String& str)
     }
 
     assert(0 && "TODO");
+    AutoPtr<ILocaleHelper> localeHelper;
+    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
+    AutoPtr<ILocale> us;
+    localeHelper->GetUS((ILocale**)&us);
+
     // AutoPtr<ISimpleDateFormat> df;
-    // CSimpleDateFormat::New(String("yyyy-MM-dd HH:mm:ss"), (ISimpleDateFormat **)&df);
+    // CSimpleDateFormat::New(String("yyyy-MM-dd HH:mm:ss"), us, (ISimpleDateFormat **)&df);
     // AutoPtr<IParsePosition> pp;
     // CParsePosition::New(0, (IParsePosition **)&pp);
 
@@ -318,56 +326,42 @@ AutoPtr<ITimestamp> CTimestamp::ValueOf(const String& str)
     Int32 position = 0;
     // pp->GetIndex(&position);
     Int32 remaining = s.GetLength() - position;
-    Int32 theNanos = 0;
+    Int32 nanos;
 
     if (remaining == 0) {
         // First, allow for the case where no fraction of a second is given:
-        theNanos = 0;
+        nanos = 0;
     } else {
-        /*
-         * Case where fraction of a second is specified: Require 1 character
-         * plus the "." in the remaining part of the string...
-         */
-        if ((s.GetLength() - position) < String(".n").GetLength()) {
+        // Validate the string is in the range ".0" to ".999999999"
+        if (remaining < 2 || remaining > 10 || s.GetChar(position) != '.') {
+            // throw badTimestampString(s);
+            // return E_ILLEGAL_ARGUMENT_EXCEPTION;
             return NULL;
         }
 
-        /*
-         * If we're strict, we should not allow any EXTRA characters after
-         * the 9 digits
-         */
-        if ((s.GetLength() - position) > String(".nnnnnnnnn").GetLength()) {
+        Int64 tmp = 0;
+        if (FAILED(StringUtils::ParsePositiveInt64(s.Substring(position + 1), &tmp))) {
+            // throw badTimestampString(s);
+            // return E_ILLEGAL_ARGUMENT_EXCEPTION;
             return NULL;
         }
-
-        // Require the next character to be a "."
-        if (s.GetChar(position) != '.') {
-            return NULL;
+        nanos = tmp;
+        // We must adjust for the cases where the nanos String was not 9
+        // characters long (i.e. ".123" means 123000000 nanos)
+        if (nanos != 0) {
+            for (Int32 i = remaining - 1; i < 9; i++) {
+                nanos *= 10;
+            }
         }
-        // Get the length of the number string - need to account for the '.'
-        Int32 nanoLength = s.GetLength() - position - 1;
-
-        // Get the 9 characters following the "." as an integer
-        String theNanoString = s.Substring(position + 1, position + 1 + nanoLength);
-        /*
-         * We must adjust for the cases where the nanos String was not 9
-         * characters long by padding out with zeros
-         */
-        theNanoString = theNanoString + String("000000000");
-        theNanoString = theNanoString.Substring(0, 9);
-
-        theNanos = StringUtils::ParseInt32(theNanoString);
-    }
-
-    if (theNanos < 0 || theNanos > 999999999) {
-        return NULL;
     }
 
     AutoPtr<ITimestamp> theTimestamp;
     Int64 outtime = 0;
+    //TODO
+    assert(0);
     // theDate->GetTime(&outtime);
     CTimestamp::New(outtime, (ITimestamp **)&theTimestamp);
-    theTimestamp->SetNanos(theNanos);
+    theTimestamp->SetNanos(nanos);
 
     return theTimestamp;
 }

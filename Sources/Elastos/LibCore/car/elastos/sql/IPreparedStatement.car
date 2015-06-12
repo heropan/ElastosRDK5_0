@@ -318,7 +318,7 @@ module
          */
         SetDate(
             [in] Int32 parameterIndex,
-            [in] IDate * theDate);
+            [in] ISQLDate * theDate);
 
         /**
          * Sets the value of a specified parameter to a supplied {@code
@@ -344,7 +344,7 @@ module
          */
         SetDate(
             [in] Int32 parameterIndex,
-            [in] IDate * theDate,
+            [in] ISQLDate * theDate,
             [in] ICalendar * cal);
 
         /**

@@ -14,7 +14,7 @@ module
     interface Elastos.Sql.INClob;
     interface Elastos.Sql.ISQLXML;
     interface Elastos.Sql.ITimestamp;
-    interface Elastos.Sql.IDate;
+    interface Elastos.Sql.ISQLDate;
     interface Elastos.Sql.ITime;
 
     namespace Elastos {
@@ -93,7 +93,7 @@ module
 
         SetDate(
             [in] String parameterName,
-            [in] IDate * val);
+            [in] ISQLDate * val);
 
         SetTime(
             [in] String parameterName,
@@ -135,7 +135,7 @@ module
 
         SetDate(
             [in] String parameterName,
-            [in] IDate * val,
+            [in] ISQLDate * val,
             [in] ICalendar * cal);
 
         SetTime(
@@ -191,7 +191,7 @@ module
 
         GetDate(
             [in] String parameterName,
-            [out] IDate ** thedate);
+            [out] ISQLDate ** thedate);
 
         GetTime(
             [in] String parameterName,
@@ -258,12 +258,12 @@ module
         GetDate(
             [in] String parameterName,
             [in] ICalendar * cal,
-            [out] IDate ** thedate);
+            [out] ISQLDate ** thedate);
 
         GetDate(
             [in] Int32 parameterIndex,
             [in] ICalendar * cal,
-            [out] IDate ** thedate);
+            [out] ISQLDate ** thedate);
 
         GetTime(
             [in] String parameterName,

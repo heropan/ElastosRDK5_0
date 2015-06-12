@@ -10,19 +10,7 @@ namespace Sql {
 const String CTime::PADDING = String("00");
 
 CAR_OBJECT_IMPL(CTime);
-
-PInterface CTime::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_ITime) {
-        return (IInterface*)(ITime*)this;
-    }
-
-    //TODO
-    assert(0);
-    // return Date::Probe(riid);
-    return NULL;
-}
+CAR_INTERFACE_IMPL(CTime, Date, ITime);
 
 ECode CTime::GetDate(
     /* [out] */ Int32 * pDate)
@@ -77,11 +65,17 @@ ECode CTime::ToString(
 {
     AutoPtr<StringBuilder> sb = new StringBuilder(8);
 
-    Format(Date::GetHours(), 2, sb);
+    Int32 value = 0;
+    Date::GetHours(&value);
+    Format(value, 2, sb);
     sb->AppendChar(':');
-    Format(Date::GetMinutes(), 2, sb);
+
+    Date::GetMinutes(&value);
+    Format(value, 2, sb);
     sb->AppendChar(':');
-    Format(Date::GetSeconds(), 2, sb);
+
+    Date::GetSeconds(&value);
+    Format(value, 2, sb);
 
     sb->ToString(pLocaleStr);
     return NOERROR;
@@ -92,14 +86,14 @@ ECode CTime::constructor(
     /* [in] */ Int32 theMinute,
     /* [in] */ Int32 theSecond)
 {
-    Init(70, 0, 1, theHour, theMinute, theSecond);
+    Date::constructor(70, 0, 1, theHour, theMinute, theSecond);
     return NOERROR;
 }
 
 ECode CTime::constructor(
     /* [in] */ Int64 theTime)
 {
-    Init(theTime);
+    Date::constructor(theTime);
     return NOERROR;
 }
 

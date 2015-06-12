@@ -133,7 +133,7 @@ module
          * @see Date
          */
         ReadDate(
-            [out] IDate** date);
+            [out] ISQLDate** date);
 
         /**
          * Returns the next attribute in the stream in the form of a {@code

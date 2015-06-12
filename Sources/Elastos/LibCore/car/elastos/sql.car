@@ -8,7 +8,7 @@ module
     merge("sql/INClob.car");
     merge("sql/IArray.car");
     merge("sql/IStruct.car");
-    merge("sql/IDate.car");
+    merge("sql/ISQLDate.car");
     merge("sql/ITime.car");
     merge("sql/IWrapper.car");
     merge("sql/IParameterMetaData.car");
@@ -65,6 +65,8 @@ module
     merge("sql/sqlite/jdbc/IJDBCDatabaseMetaData.car");
     merge("sql/sqlite/jdbc/IJDBCResultSet.car");
 
+    interface Elastos.Utility.IDate;
+
     namespace Elastos {
     namespace Sql {
         class CSQLWarning {
@@ -103,49 +105,48 @@ module
             interface ISQLWarning;
         }
 
+        class CTime {
+            constructor(
+                [in] Int32 theHour,
+                [in] Int32 theMinute,
+                [in] Int32 theSecond);
 
-        // class CTime {
-        //     constructor(
-        //         [in] Int32 theHour,
-        //         [in] Int32 theMinute,
-        //         [in] Int32 theSecond);
+            constructor(
+                [in] Int64 theTime);
 
-        //     constructor(
-        //         [in] Int64 theTime);
+            interface ITime;
+            interface IDate;
+        }
 
-        //     interface ITime;
-        //     interface Elastos.Utility.IDate;
-        // }
+        class CSqlDate {
+            constructor(
+                [in] Int32 theYear,
+                [in] Int32 theMonth,
+                [in] Int32 theDay);
 
-       // class CSqlDate {
-       //     constructor(
-       //         [in] Int32 theYear,
-       //         [in] Int32 theMonth,
-       //         [in] Int32 theDay);
+            constructor(
+                [in] Int64 theDate);
 
-       //     constructor(
-       //         [in] Int64 theDate);
+            interface ISQLDate;
+            interface IDate;
+        }
 
-       //     interface IDate;
-       //     interface Elastos.Utility.IDate;
-       // }
+        class CTimestamp {
+            constructor(
+                [in] Int32 theYear,
+                [in] Int32 theMonth,
+                [in] Int32 theDate,
+                [in] Int32 theHour,
+                [in] Int32 theMinute,
+                [in] Int32 theSecond,
+                [in] Int32 theNano);
 
-       // class CTimestamp {
-       //     constructor(
-       //         [in] Int32 theYear,
-       //         [in] Int32 theMonth,
-       //         [in] Int32 theDate,
-       //         [in] Int32 theHour,
-       //         [in] Int32 theMinute,
-       //         [in] Int32 theSecond,
-       //         [in] Int32 theNano);
+            constructor(
+                [in] Int64 theTime);
 
-       //     constructor(
-       //         [in] Int64 theTime);
-
-       //     interface ITimestamp;
-       //     interface Elastos.Utility.IDate;
-       // }
+            interface ITimestamp;
+            interface IDate;
+        }
 
         class CDriverPropertyInfo {
             constructor(

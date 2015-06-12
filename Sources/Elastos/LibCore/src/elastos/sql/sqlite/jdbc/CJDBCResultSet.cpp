@@ -5,8 +5,8 @@
 #include "CJDBCResultSetMetaData.h"
 #include "JDBCStatement.h"
 #include "CJDBCConnection.h"
-//#include "CTime.h"
-//#include "CTimestamp.h"
+#include "CTime.h"
+#include "CTimestamp.h"
 #include "StringEncoder.h"
 #include "CTableResultX.h"
 #include "CShell.h"
@@ -17,7 +17,7 @@
 //#include "CURL.h"
 #include "CByteArrayInputStream.h"
 #include "CCharArrayReader.h"
-//#include "CSqlDate.h"
+#include "CSqlDate.h"
 
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::StringBuffer;
@@ -1155,7 +1155,7 @@ ECode CJDBCResultSet::UpdateClob(
 
 ECode CJDBCResultSet::UpdateDate(
     /* [in] */ Int32 colIndex,
-    /* [in] */ IDate * x)
+    /* [in] */ ISQLDate * x)
 {
     Boolean isupdate = FALSE;
     IsUpdatable(&isupdate);
@@ -1171,7 +1171,7 @@ ECode CJDBCResultSet::UpdateDate(
 
 ECode CJDBCResultSet::UpdateDate(
     /* [in] */ const String& colName,
-    /* [in] */ IDate * x)
+    /* [in] */ ISQLDate * x)
 {
     Int32 col = 0;
     FindColumn(colName,&col);
@@ -1938,7 +1938,7 @@ ECode CJDBCResultSet::GetArray(
 
 ECode CJDBCResultSet::GetDate(
     /* [in] */ Int32 colIndex,
-    /* [out] */ IDate ** idate)
+    /* [out] */ ISQLDate ** idate)
 {
     *idate = InternalGetDate(colIndex, NULL);
     return NOERROR;
@@ -1947,7 +1947,7 @@ ECode CJDBCResultSet::GetDate(
 ECode CJDBCResultSet::GetDate(
     /* [in] */ Int32 colIndex,
     /* [in] */ ICalendar * cal,
-    /* [out] */ IDate ** idate)
+    /* [out] */ ISQLDate ** idate)
 {
     *idate = InternalGetDate(colIndex, cal);
     return NOERROR;
@@ -1955,7 +1955,7 @@ ECode CJDBCResultSet::GetDate(
 
 ECode CJDBCResultSet::GetDate(
     /* [in] */ const String& colName,
-    /* [out] */ IDate ** idate)
+    /* [out] */ ISQLDate ** idate)
 {
     Int32 col = 0;
     FindColumn(colName,&col);
@@ -1966,7 +1966,7 @@ ECode CJDBCResultSet::GetDate(
 ECode CJDBCResultSet::GetDate(
     /* [in] */ const String& colName,
     /* [in] */ ICalendar * cal,
-    /* [out] */ IDate ** idate)
+    /* [out] */ ISQLDate ** idate)
 {
     Int32 col = 0;
     FindColumn(colName,&col);
@@ -2160,27 +2160,24 @@ AutoPtr<ITime> CJDBCResultSet::InternalGetTime(
     ECode ec = NOERROR;
     lastg = (*rd)[colIndex - 1];
 
-    //TODO
-    assert(0);
-    // if (((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mUseJulian) {
+    if (((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mUseJulian) {
+        ec = CTime::New(SQLite::Database::LongFromJulian(lastg),(ITime **)&otime);
+        if (ec != NOERROR)
+        {
+            otime = CTime::ValueOf(lastg);
+            return otime;
+        }
+    } else {
+        otime = CTime::ValueOf(lastg);
+        if (otime != NULL)
+        {
+            return otime;
+        }else{
+            CTime::New(SQLite::Database::LongFromJulian(lastg),(ITime **)&otime);
+            return otime;
+        }
+    }
 
-    //     ec = CTime::New(SQLite::Database::LongFromJulian(lastg),(ITime **)&otime);
-    //     if (ec != NOERROR)
-    //     {
-    //         otime = CTime::ValueOf(lastg);
-    //         return otime;
-    //     }
-    // } else {
-    //         otime = CTime::ValueOf(lastg);
-    //         if (otime != NULL)
-    //         {
-    //             return otime;
-    //         }else{
-    //             CTime::New(SQLite::Database::LongFromJulian(lastg),(ITime **)&otime);
-    //             return otime;
-    //         }
-
-    // }
     if (ec != NOERROR)
     {
         lastg = NULL;
@@ -2200,31 +2197,29 @@ AutoPtr<ITimestamp> CJDBCResultSet::InternalGetTimestamp(
     AutoPtr<ITimestamp> otime;
     ECode ec = NOERROR;
 
-    //TODO
-    assert(0);
-    // if (((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mUseJulian) {
-    //     ec = CTimestamp::New(SQLite::Database::LongFromJulian(lastg),(ITimestamp ** )&otime);
-    //     if (ec != NOERROR)
-    //      {
-    //         return Elastos::Sql::CTimestamp::ValueOf(lastg);
-    //      }
-    // } else {
-    //     otime = Elastos::Sql::CTimestamp::ValueOf(lastg);
-    //     if (otime)
-    //     {
-    //         return otime;
-    //     }else{
-    //         CTimestamp::New(SQLite::Database::LongFromJulian(lastg),(ITimestamp ** )&otime);
-    //         return otime;
-    //     }
-    // }
+    if (((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mUseJulian) {
+        ec = CTimestamp::New(SQLite::Database::LongFromJulian(lastg),(ITimestamp ** )&otime);
+        if (ec != NOERROR)
+         {
+            return Elastos::Sql::CTimestamp::ValueOf(lastg);
+         }
+    } else {
+        otime = Elastos::Sql::CTimestamp::ValueOf(lastg);
+        if (otime)
+        {
+            return otime;
+        }else{
+            CTimestamp::New(SQLite::Database::LongFromJulian(lastg),(ITimestamp ** )&otime);
+            return otime;
+        }
+    }
     if(ec != NOERROR) {
         lastg = String(NULL);
     }
     return NULL;
 }
 
-AutoPtr<IDate> CJDBCResultSet::InternalGetDate(
+AutoPtr<ISQLDate> CJDBCResultSet::InternalGetDate(
     /* [in] */ Int32 colIndex,
     /* [in] */ ICalendar * cal)
 {
@@ -2233,26 +2228,24 @@ AutoPtr<IDate> CJDBCResultSet::InternalGetDate(
     }
     AutoPtr<ArrayOf<String> > rd = tr->rows[row];
     lastg = (*rd)[colIndex - 1];
-    AutoPtr<IDate> otime;
+    AutoPtr<ISQLDate> otime;
     ECode ec = NOERROR;
 
-    //TODO
-    assert(0);
-    // if (((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mUseJulian) {
-    //     ec = CSqlDate::New(SQLite::Database::LongFromJulian(lastg),(IDate **)&otime);
-    //     if(ec != NOERROR) {
-    //         return Elastos::Sql::CSqlDate::ValueOf(lastg);
-    //     }
-    // } else {
-    //         otime = Elastos::Sql::CSqlDate::ValueOf(lastg);
-    //         if (otime)
-    //         {
-    //             return otime;
-    //         }else {
-    //             CSqlDate::New(SQLite::Database::LongFromJulian(lastg),(IDate **)&otime);
-    //             return otime;
-    //         }
-    // }
+    if (((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mUseJulian) {
+        ec = CSqlDate::New(SQLite::Database::LongFromJulian(lastg),(ISQLDate **)&otime);
+        if(ec != NOERROR) {
+            return Elastos::Sql::CSqlDate::ValueOf(lastg);
+        }
+    } else {
+            otime = Elastos::Sql::CSqlDate::ValueOf(lastg);
+            if (otime)
+            {
+                return otime;
+            }else {
+                CSqlDate::New(SQLite::Database::LongFromJulian(lastg),(ISQLDate **)&otime);
+                return otime;
+            }
+    }
     if (ec != NOERROR)
      {
             lastg = NULL;

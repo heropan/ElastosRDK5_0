@@ -183,7 +183,7 @@ ECode CJDBCConnection::NativeSQL(
 
 ECode CJDBCConnection::PrepareCall(
     /* [in] */ const String& sql,
-    /* [out] */ Elastos::Sql::ICallableStatement ** ppCallableStatement)
+    /* [out] */ ICallableStatement ** ppCallableStatement)
 {
     return E_SQL_EXCEPTION;
 }
@@ -192,7 +192,7 @@ ECode CJDBCConnection::PrepareCall(
     /* [in] */ const String& sql,
     /* [in] */ Int32 resultSetType,
     /* [in] */ Int32 resultSetConcurrency,
-    /* [out] */ Elastos::Sql::ICallableStatement ** ppCallableStatement)
+    /* [out] */ ICallableStatement ** ppCallableStatement)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }
@@ -202,7 +202,7 @@ ECode CJDBCConnection::PrepareCall(
     /* [in] */ Int32 resultSetType,
     /* [in] */ Int32 resultSetConcurrency,
     /* [in] */ Int32 resultSetHoldability,
-    /* [out] */ Elastos::Sql::ICallableStatement ** ppCallableStatement)
+    /* [out] */ ICallableStatement ** ppCallableStatement)
 {
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 }

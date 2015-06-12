@@ -408,11 +408,11 @@ public:
 
     CARAPI UpdateDate(
         /* [in] */ Int32 colIndex,
-        /* [in] */ IDate * x);
+        /* [in] */ ISQLDate * x);
 
     CARAPI UpdateDate(
         /* [in] */ const String& colName,
-        /* [in] */ IDate * x);
+        /* [in] */ ISQLDate * x);
 
     CARAPI UpdateDouble(
         /* [in] */ Int32 colIndex,
@@ -737,21 +737,21 @@ public:
 
     CARAPI GetDate(
         /* [in] */ Int32 colIndex,
-        /* [out] */ IDate ** idate);
+        /* [out] */ ISQLDate ** idate);
 
     CARAPI GetDate(
         /* [in] */ Int32 colIndex,
         /* [in] */ ICalendar * cal,
-        /* [out] */ IDate ** idate);
+        /* [out] */ ISQLDate ** idate);
 
     CARAPI GetDate(
         /* [in] */ const String& colName,
-        /* [out] */ IDate ** idate);
+        /* [out] */ ISQLDate ** idate);
 
     CARAPI GetDate(
         /* [in] */ const String& colName,
         /* [in] */ ICalendar * cal,
-        /* [out] */ IDate ** idate);
+        /* [out] */ ISQLDate ** idate);
 
     CARAPI GetObject(
         /* [in] */ Int32 colIndex,
@@ -803,7 +803,7 @@ private:
         /* [in] */ Int32 colIndex,
         /* [in] */ ICalendar * cal);
 
-    CARAPI_(AutoPtr<IDate>) InternalGetDate(
+    CARAPI_(AutoPtr<ISQLDate>) InternalGetDate(
         /* [in] */ Int32 colIndex,
         /* [in] */ ICalendar * cal);
 

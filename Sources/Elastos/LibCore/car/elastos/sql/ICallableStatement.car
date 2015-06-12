@@ -277,7 +277,7 @@ module
          */
         GetDate(
             [in] Int32 parameterIndex,
-            [out] IDate ** idate);
+            [out] ISQLDate ** idate);
 
         /**
          * Gets the value of the specified JDBC {@code DATE} parameter as a {@code
@@ -301,7 +301,7 @@ module
         GetDate(
             [in] Int32 parameterIndex,
             [in] ICalendar * cal,
-            [out] IDate ** idate);
+            [out] ISQLDate ** idate);
 
         /**
          * Gets the value of the specified JDBC {@code DATE} parameter as a {@code
@@ -317,7 +317,7 @@ module
          */
         GetDate(
             [in] String parameterName,
-            [out] IDate ** idate);
+            [out] ISQLDate ** idate);
 
         /**
          * Gets the value of the specified JDBC {@code DATE} parameter as a {@code
@@ -340,7 +340,7 @@ module
         GetDate(
             [in] String parameterName,
             [in] ICalendar * cal,
-            [out] IDate ** idate);
+            [out] ISQLDate ** idate);
 
         /**
          * Gets the value of the specified JDBC {@code DOUBLE} parameter as a
@@ -1129,7 +1129,7 @@ module
          */
         SetDate(
             [in] String parameterName,
-            [in] IDate * theDate);
+            [in] ISQLDate * theDate);
 
         /**
          * Sets the value of a specified parameter to a supplied {@code
@@ -1153,7 +1153,7 @@ module
          */
         SetDate(
             [in] String parameterName,
-            [in] IDate * theDate,
+            [in] ISQLDate * theDate,
             [in] ICalendar * cal);
 
         /**

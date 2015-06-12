@@ -9,20 +9,8 @@ namespace Sql {
 
 const String CSqlDate::PADDING = String("0000");
 
+CAR_INTERFACE_IMPL(CSqlDate, Date, ISQLDate);
 CAR_OBJECT_IMPL(CSqlDate);
-
-PInterface CSqlDate::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == Elastos::Sql::EIID_IDate) {
-        return (IInterface*)(Elastos::Sql::IDate*)this;
-    }
-
-    //TODO
-    assert(0);
-    // return Date::Probe(riid);
-    return NULL;
-}
 
 ECode CSqlDate::GetHours(
     /* [out] */ Int32 * value)
@@ -71,11 +59,17 @@ ECode CSqlDate::ToString(
 {
     AutoPtr<StringBuilder> sb = new StringBuilder(10);
 
-    Format((Date::GetYear() + 1900), 4, sb);
+    Int32 value = 0;
+    Date::GetYear(&value);
+    Format(value + 1900, 4, sb);
     sb->AppendChar('-');
-    Format((Date::GetMonth() + 1), 2, sb);
+
+    Date::GetMonth(&value);
+    Format(value + 1, 2, sb);
     sb->AppendChar('-');
-    Format(Date::GetDate(), 2, sb);
+
+    Date::GetDate(&value);
+    Format(value, 2, sb);
     sb->ToString(str);
     return NOERROR;
 }
@@ -85,44 +79,52 @@ ECode CSqlDate::constructor(
     /* [in] */ Int32 theMonth,
     /* [in] */ Int32 theDay)
 {
-    Init(theYear, theMonth, theDay);
+    Date::constructor(theYear, theMonth, theDay);
     return NOERROR;
 }
 
 ECode CSqlDate::constructor(
     /* [in] */ Int64 theDate)
 {
-    Init(NormalizeTime(theDate));
+    Date::constructor(NormalizeTime(theDate));
     return NOERROR;
 }
 
-AutoPtr<Elastos::Sql::IDate> CSqlDate::ValueOf(
+AutoPtr<ISQLDate> CSqlDate::ValueOf(
     /* [in] */ const String& dateString)
 {
-    if (dateString.IsNull()) {
-        //TODO throw new IllegalArgumentException("dateString == null");
-        return NULL;
-    }
-    Int32 firstIndex = dateString.IndexOf('-');
-    Int32 secondIndex = dateString.IndexOf('-', firstIndex + 1);
-    // secondIndex == -1 means none or only one separator '-' has been
-    // found.
-    // The string is separated into three parts by two separator characters,
-    // if the first or the third part is null string, we should throw
-    // IllegalArgumentException to follow RI
-    if (secondIndex == -1 || firstIndex == 0
-            || secondIndex + 1 == dateString.GetLength()) {
-        //TODO throw new IllegalArgumentException();
+    if (dateString == NULL) {
+        // throw new IllegalArgumentException("dateString == null");
+        // return E_ILLEGAL_ARGUMENT_EXCEPTION;
         return NULL;
     }
 
-    // parse each part of the string
-    Int32 year = StringUtils::ParseInt32(dateString.Substring(0, firstIndex));
-    Int32 month = StringUtils::ParseInt32(dateString.Substring(firstIndex + 1, secondIndex));
-    Int32 day = StringUtils::ParseInt32(dateString.Substring(secondIndex + 1, dateString.GetLength()));
-    AutoPtr<IDate> thedate;
-    CSqlDate::New(year - 1900, month - 1, day, (IDate **)&thedate);
-    return thedate;
+    if (dateString.GetLength() > 10) {
+        // early fail to avoid parsing huge invalid strings
+        // throw new IllegalArgumentException();
+        // return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        return NULL;
+    }
+
+    AutoPtr<ArrayOf<String> > parts;
+    StringUtils::Split(dateString, "-", (ArrayOf<String>**)&parts);
+    if (parts->GetLength() != 3) {
+        // throw new IllegalArgumentException();
+        // return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        return NULL;
+    }
+
+    Int64 value = 0;
+    StringUtils::ParsePositiveInt64((*parts)[0], &value);
+    Int32 year = value;
+    StringUtils::ParsePositiveInt64((*parts)[1], &value);
+    Int32 month = value;
+    StringUtils::ParsePositiveInt64((*parts)[2], &value);
+    Int32 day = value;
+
+    AutoPtr<ISQLDate> date;
+    CSqlDate::New(year - 1900, month - 1, day, (ISQLDate**)&date);
+    return date;
 }
 
 Int64 CSqlDate::NormalizeTime(

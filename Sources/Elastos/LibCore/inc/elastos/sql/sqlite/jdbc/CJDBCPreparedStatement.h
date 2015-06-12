@@ -119,11 +119,11 @@ public:
 
     CARAPI SetDate(
         /* [in] */ Int32 parameterIndex,
-        /* [in] */ IDate * theDate);
+        /* [in] */ ISQLDate * theDate);
 
     CARAPI SetDate(
         /* [in] */ Int32 parameterIndex,
-        /* [in] */ IDate * theDate,
+        /* [in] */ ISQLDate * theDate,
         /* [in] */ ICalendar * cal);
 
     CARAPI SetDouble(
@@ -269,7 +269,7 @@ public:
 
     CARAPI SetDate(
         /* [in] */ const String& parameterName,
-        /* [in] */ IDate * val);
+        /* [in] */ ISQLDate * val);
 
     CARAPI SetTime(
         /* [in] */ const String& parameterName,
@@ -311,7 +311,7 @@ public:
 
     CARAPI SetDate(
         /* [in] */ const String& parameterName,
-        /* [in] */ IDate * val,
+        /* [in] */ ISQLDate * val,
         /* [in] */ ICalendar * cal);
 
     CARAPI SetTime(
@@ -367,7 +367,7 @@ public:
 
     CARAPI GetDate(
         /* [in] */ const String& parameterName,
-        /* [out] */ IDate ** thedate);
+        /* [out] */ ISQLDate ** thedate);
 
     CARAPI GetTime(
         /* [in] */ const String& parameterName,
@@ -434,12 +434,12 @@ public:
     CARAPI GetDate(
         /* [in] */ const String& parameterName,
         /* [in] */ ICalendar * cal,
-        /* [out] */ IDate ** thedate);
+        /* [out] */ ISQLDate ** thedate);
 
     CARAPI GetDate(
         /* [in] */ Int32 parameterIndex,
         /* [in] */ ICalendar * cal,
-        /* [out] */ IDate ** thedate);
+        /* [out] */ ISQLDate ** thedate);
 
     CARAPI GetTime(
         /* [in] */ const String& parameterName,

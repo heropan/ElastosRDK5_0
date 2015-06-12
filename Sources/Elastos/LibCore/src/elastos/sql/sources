@@ -13,6 +13,7 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/core
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/net
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/security
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility/regex
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/sql
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/sql/sqlite
@@ -55,12 +56,10 @@ SOURCES += StringEncoder.cpp
 SOURCES += CAuthorizerCallback.cpp
 
 SOURCES += CDriverPropertyInfo.cpp
-#SOURCES += CSqlDate.cpp
-#SOURCES += CTimestamp.cpp
+SOURCES += CSqlDate.cpp
+SOURCES += CTimestamp.cpp
 SOURCES += CSQLPermission.cpp
 SOURCES += CDataTruncation.cpp
 SOURCES += CSQLWarning.cpp
 SOURCES += CDriverManager.cpp
-#SOURCES += CTime.cpp
-#SOURCES += Date.cpp
-
+SOURCES += CTime.cpp

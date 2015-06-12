@@ -5,6 +5,8 @@
 #include "_Elastos_Sql_CTime.h"
 #include "Date.h"
 
+using Elastos::Utility::Date;
+
 namespace Elastos {
 namespace Sql {
 
@@ -13,10 +15,9 @@ CarClass(CTime)
     , public ITime
 {
 public:
-    CAR_OBJECT_DECL();
+    CAR_INTERFACE_DECL();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL();
 
     CARAPI GetDate(
         /* [out] */ Int32 * pDate);
