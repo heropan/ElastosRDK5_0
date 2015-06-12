@@ -16,9 +16,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ IProperties* properties);
-
-protected:
-    CARAPI_(Mutex*) GetSelfLock();
 };
 
 } // namespace Utility

@@ -58,6 +58,9 @@ SOURCES += CCurrencyHelper.cpp
 SOURCES += CDateHelper.cpp
 SOURCES += CGregorianCalendar.cpp
 SOURCES += Calendar.cpp
+SOURCES += CObservable.cpp
+SOURCES += Properties.cpp
+SOURCES += CProperties.cpp
 
 
 SOURCES += utility.cpp

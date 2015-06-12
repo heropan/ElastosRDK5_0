@@ -769,6 +769,27 @@ module
             interface IComparable;
         }
 
+        class CProperties {
+            constructor();
+
+            constructor(
+                [in] IProperties * properties);
+
+            interface IProperties;
+            interface IMap;
+            interface ICloneable;
+            interface ISerializable;
+        }
+
+        class CObservable {
+            /**
+             * Constructs a new {@code Observable} object.
+             */
+            constructor();
+
+            interface IObservable;
+        }
+
     } // namespace Utility
     } // namespace Elastos
 
