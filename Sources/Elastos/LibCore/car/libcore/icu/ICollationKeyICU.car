@@ -5,11 +5,10 @@ module
     namespace ICU {
 
     /**
-     * ICollationKeyICU extends Elastos.Text.ICollationKey
      * @Involve
      * interface IComparable;
+     * interface ICollationKey;
      */
-
     interface ICollationKeyICU {
     }
 

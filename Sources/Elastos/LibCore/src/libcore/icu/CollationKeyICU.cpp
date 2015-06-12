@@ -1,6 +1,6 @@
 
 #include "CollationKeyICU.h"
-#include <elastos/Math.h>
+#include <Math.h>
 
 using Elastos::Text::EIID_ICollationKey;
 
@@ -10,26 +10,32 @@ extern "C" const InterfaceID EIID_CollationKeyICU =
 namespace Libcore {
 namespace ICU {
 
-ECode CollationKeyICU::Init(
+#if 0 // for compiling
+CAR_INTERFACE_IMPL(CollationKeyICU, CollationKey, ICollationKeyICU)
+#else
+CAR_INTERFACE_IMPL(CollationKeyICU, Object, ICollationKeyICU)
+#endif // #if 0
+
+ECode CollationKeyICU::constructor(
     /* [in] */ const String& source,
-    /* [in] */ const ArrayOf<Byte>& bytes)
+    /* [in] */ ArrayOf<Byte>* bytes)
 {
-    CollationKey::Init(source);
-    mBytes = bytes.Clone();
+#if 0 // for compiling
+    CollationKey::constructor(source);
+#endif // #if 0
+    mBytes = bytes->Clone();
     mHashCode = 0;
     return NOERROR;
-}
-
-CollationKeyICU::~CollationKeyICU()
-{
 }
 
 ECode CollationKeyICU::CompareTo(
     /* [in] */ IInterface* _other,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(_other);
     VALIDATE_NOT_NULL(result);
 
+#if 0 // for compiling
     AutoPtr<ICollationKey> other = ICollationKey::Probe(_other);
     if (other == NULL) return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
@@ -79,15 +85,9 @@ ECode CollationKeyICU::CompareTo(
         *result = 1;
         return NOERROR;
     }
+#endif // #if 0
     *result = 0;
     return NOERROR;
-}
-
-ECode CollationKeyICU::GetSourceString(
-    /* [out] */ String* sourceString)
-{
-    VALIDATE_NOT_NULL(sourceString);
-    return CollationKey::GetSourceString(sourceString);
 }
 
 ECode CollationKeyICU::Equals(
@@ -98,6 +98,7 @@ ECode CollationKeyICU::Equals(
         *value = TRUE;
         return NOERROR;
     }
+#if 0 // for compiling
     AutoPtr<ICollationKey> res = (ICollationKey *) object->Probe(EIID_ICollationKey);
     if (!res) {
         *value = FALSE;
@@ -106,6 +107,7 @@ ECode CollationKeyICU::Equals(
     Int32 out(0);
     CompareTo(res,&out);
     *value = out == 0;
+#endif // #if 0
     return NOERROR;
 }
 

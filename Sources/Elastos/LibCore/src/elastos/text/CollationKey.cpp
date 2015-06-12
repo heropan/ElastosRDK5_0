@@ -3,6 +3,8 @@
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CollationKey, Object, ICollationKey)
+
 ECode CollationKey::Init(
     /* [in] */ const String& source)
 {
