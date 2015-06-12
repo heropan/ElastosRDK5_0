@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CDecimalFormatSymbolsHelper, Singleton, IDecimalFormatSymbolsHelper)
+
+CAR_SINGLETON_IMPL(CDecimalFormatSymbolsHelper)
+
 ECode CDecimalFormatSymbolsHelper::GetInstance(
     /* [out] */ IDecimalFormatSymbols** instance)
 {

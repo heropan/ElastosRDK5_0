@@ -1,17 +1,17 @@
 
 #include "DecimalFormat.h"
-#include <cmdef.h>
 #include <elautoptr.h>
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <unistd.h>
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 #include "CDouble.h"
 #include "CInteger64.h"
 #include "CDecimalFormatSymbols.h"
-#include "CNativeDecimalFormat.h"
-#include "CBigDecimal.h"
-#include "Currency.h"
+// #include "CNativeDecimalFormat.h"
+// #include "CBigDecimal.h"
+// #include "Currency.h"
 
+using Elastos::Core::ICharSequence;
 using Elastos::Core::Character;
 using Elastos::Core::CDouble;
 using Elastos::Core::IDouble;
@@ -22,13 +22,13 @@ using Elastos::Core::EIID_IDouble;
 using Elastos::Core::EIID_INumber;
 using Elastos::Text::IDecimalFormatSymbols;
 using Elastos::Text::CDecimalFormatSymbols;
-using Libcore::ICU::CNativeDecimalFormat;
+// using Libcore::ICU::CNativeDecimalFormat;
 using Elastos::Math::IBigInteger;
 using Elastos::Math::EIID_IBigInteger;
 using Elastos::Math::IBigDecimal;
 using Elastos::Math::EIID_IBigDecimal;
-using Elastos::Math::CBigDecimal;
-using Elastos::Utility::Currency;
+// using Elastos::Math::CBigDecimal;
+// using Elastos::Utility::Currency;
 
 namespace Elastos {
 namespace Text {
@@ -46,7 +46,7 @@ DecimalFormat::DecimalFormat()
     : mRoundingMode(Elastos::Math::RoundingMode_HALF_EVEN)
 {}
 
-ECode DecimalFormat::Init()
+ECode DecimalFormat::constructor()
 {
     AutoPtr<ILocaleHelper> localeHelper;
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
@@ -54,7 +54,8 @@ ECode DecimalFormat::Init()
     FAIL_RETURN(localeHelper->GetDefault((ILocale**)&locale));
     CDecimalFormatSymbols::New(locale, (IDecimalFormatSymbols**)&mSymbols);
     AutoPtr<ILocaleDataHelper> helper;
-    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
+    assert(0 && "TODO");
+    // CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(helper->Get(locale, (ILocaleData**)&localeData));
     String numberPattern;
@@ -63,26 +64,26 @@ ECode DecimalFormat::Init()
     return NOERROR;
 }
 
-ECode DecimalFormat::Init(
+ECode DecimalFormat::constructor(
     /* [in] */ const String& pattern)
 {
     AutoPtr<ILocaleHelper> localeHelper;
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
     AutoPtr<ILocale> locale;
     FAIL_RETURN(localeHelper->GetDefault((ILocale**)&locale));
-    return Init(pattern, locale);
+    return constructor(pattern, locale);
 }
 
-ECode DecimalFormat::Init(
+ECode DecimalFormat::constructor(
     /* [in] */ const String& pattern,
     /* [in] */ IDecimalFormatSymbols* value)
 {
     if (value == NULL) return E_NULL_POINTER_EXCEPTION;
-    value->Clone((IDecimalFormatSymbols**)&mSymbols);
+    ICloneable::Probe(value)->Clone((IDecimalFormatSymbols**)&mSymbols);
     return InitNative(pattern);
 }
 
-ECode DecimalFormat::Init(
+ECode DecimalFormat::constructor(
     /* [in] */ const String& pattern,
     /* [in] */ ILocale* locale)
 {
@@ -94,7 +95,8 @@ ECode DecimalFormat::InitNative(
     /* [in] */ const String& pattern)
 {
     //try {
-    FAIL_RETURN(CNativeDecimalFormat::New(pattern, mSymbols, (INativeDecimalFormat**)&mNdf));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CNativeDecimalFormat::New(pattern, mSymbols, (INativeDecimalFormat**)&mNdf));
     //} catch (IllegalArgumentException ex) {
     //    throw new IllegalArgumentException(pattern);
     //}
@@ -170,14 +172,14 @@ ECode DecimalFormat::FormatDouble(
         AutoPtr<IStringBuffer> outsb;
         FormatDouble(value, sb, fp, (IStringBuffer **)&outsb);
         String upResult;
-        outsb->ToString(&upResult);
+        ICharSequence::Probe(outsb)->ToString(&upResult);
 
         SetRoundingMode(Elastos::Math::RoundingMode_DOWN);
         AutoPtr<IFieldPosition> fpx;
         CFieldPosition::New(0, (IFieldPosition**)&fpx);
         String downResult;
         FormatDouble(value, sb, fp, (IStringBuffer **)&outsb);
-        outsb->ToString(&downResult);
+        ICharSequence::Probe(outsb)->ToString(&downResult);
         if (!upResult.Equals(downResult)) {
             //throw new ArithmeticException("rounding mode UNNECESSARY but rounding required");
             SetRoundingMode(Elastos::Math::RoundingMode_UNNECESSARY);
@@ -238,7 +240,7 @@ ECode DecimalFormat::FormatObject(
         if (bitlen < 64)
         {
             Int64 result(0);
-            bigInteger->Int64Value(&result);
+            INumber::Probe(bigInteger)->Int64Value(&result);
             mNdf->FormatInt64(result, field , (ArrayOf<Char32> **)&chars);
         } else {
             mNdf->FormatBigInteger(bigInteger, field ,(ArrayOf<Char32> **)&chars);
@@ -266,7 +268,7 @@ ECode DecimalFormat::FormatObject(
 ECode DecimalFormat::GetDecimalFormatSymbols(
     /* [out] */ IDecimalFormatSymbols** symbols)
 {
-    return mSymbols->Clone(symbols);
+    return ICloneable::Probe(mSymbols)->Clone(symbols);
 }
 
 ECode DecimalFormat::GetCurrency(
@@ -357,7 +359,8 @@ ECode DecimalFormat::Parse(
             Int64 lnum(0);
             number->Int64Value(&lnum);
             AutoPtr<IBigDecimal> Inum;
-            FAIL_RETURN(CBigDecimal::New(lnum,(IBigDecimal **)&Inum));
+            assert(0 && "TODO");
+            // FAIL_RETURN(CBigDecimal::New(lnum,(IBigDecimal **)&Inum));
             *value = (INumber *)Inum->Probe(EIID_INumber);
             REFCOUNT_ADD(*value);
             return NOERROR;
@@ -366,9 +369,10 @@ ECode DecimalFormat::Parse(
         Boolean flagdouble = FALSE;
         if (Idou && (Idou->IsInfinite(&flagdouble) , !flagdouble) && (Idou->IsNaN(&flagdouble), !flagdouble)) {
             String str;
-            number->ToString(&str);
+            IObject::Probe(number)->ToString(&str);
             AutoPtr<IBigDecimal> Inum;
-            FAIL_RETURN(CBigDecimal::New(str,(IBigDecimal **)&Inum));
+            assert(0 && "TODO");
+            // FAIL_RETURN(CBigDecimal::New(str,(IBigDecimal **)&Inum));
             *value = (INumber *)Inum->Probe(EIID_INumber);
             REFCOUNT_ADD(*value);
             return NOERROR;
@@ -377,9 +381,10 @@ ECode DecimalFormat::Parse(
         if (number->Probe(EIID_IBigInteger))
         {
             String str;
-            ((IBigInteger *)number->Probe(EIID_IBigInteger))->ToString(&str);
+            IObject::Probe(number)->ToString(&str);
             AutoPtr<IBigDecimal> Inum;
-            FAIL_RETURN(CBigDecimal::New(str,(IBigDecimal **)&Inum));
+            assert(0 && "TODO");
+            // FAIL_RETURN(CBigDecimal::New(str,(IBigDecimal **)&Inum));
             *value = (INumber *)Inum->Probe(EIID_INumber);
             REFCOUNT_ADD(*value);
             return NOERROR;
@@ -394,7 +399,7 @@ ECode DecimalFormat::Parse(
         number->DoubleValue(&lnum);
         AutoPtr<IDouble> Inum;
         FAIL_RETURN(CDouble::New(lnum,(IDouble **)&Inum));
-        *value = Inum;
+        *value = INumber::Probe(Inum);
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
@@ -403,11 +408,11 @@ ECode DecimalFormat::Parse(
     this->IsParseIntegerOnly(&isParseIntegerOnly);
 
     if (isParseIntegerOnly && number->Probe(EIID_IDouble) ) {
-        if (((IDouble *)number->Probe(EIID_IDouble))->Equals(NEGATIVE_ZERO_DOUBLE ,&nagflag) , nagflag)
+        if (IObject::Probe(number)->Equals(NEGATIVE_ZERO_DOUBLE ,&nagflag) , nagflag)
         {
             AutoPtr<IInteger64> Inum;
             FAIL_RETURN(CInteger64::New(0L,(IInteger64 **)&Inum));
-            *value = Inum;
+            *value = INumber::Probe(Inum);
             REFCOUNT_ADD(*value);
             return NOERROR;
         }
@@ -422,7 +427,7 @@ ECode DecimalFormat::SetDecimalFormatSymbols(
 {
     if (value != NULL) {
         mSymbols = NULL;
-        value->Clone((IDecimalFormatSymbols**)&mSymbols);
+        ICloneable::Probe(value)->Clone((IDecimalFormatSymbols**)&mSymbols);
         String exponentSeparator;
         mSymbols->GetExponentSeparator(&exponentSeparator);
         mNdf->SetDecimalFormatSymbols(mSymbols);
@@ -435,8 +440,9 @@ ECode DecimalFormat::SetCurrency(
 {
     String currencyCode;
     currency->GetCurrencyCode(&currencyCode);
-    AutoPtr<ICurrency> autoCurrency = Currency::GetInstance(currencyCode);
-    FAIL_RETURN(mNdf->SetCurrency(autoCurrency));
+    assert(0 && "TODO");
+    AutoPtr<ICurrency> autoCurrency; // = Currency::GetInstance(currencyCode);
+    // FAIL_RETURN(mNdf->SetCurrency(autoCurrency));
     return mSymbols->SetCurrency(currency);
 }
 
@@ -603,7 +609,7 @@ ECode DecimalFormat::Equals(
     GetDecimalFormatSymbols((IDecimalFormatSymbols**)&dfs1);
     other->GetDecimalFormatSymbols((IDecimalFormatSymbols**)&dfs2);
 
-    dfs1->Equals(dfs2, &res2);
+    IObject::Probe(dfs1)->Equals(dfs2, &res2);
 
     *result = (mNdf == NULL ? ndf == NULL : res1) && res2;
 
@@ -616,6 +622,13 @@ ECode DecimalFormat::GetNdf(
     VALIDATE_NOT_NULL(ndf)
     *ndf = mNdf;
     REFCOUNT_ADD(*ndf);
+    return NOERROR;
+}
+
+ECode DecimalFormat::Clone(
+    /* [out] */ IInterface** outobj)
+{
+    assert(0 && "TODO");
     return NOERROR;
 }
 

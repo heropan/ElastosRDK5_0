@@ -1,24 +1,23 @@
-#ifndef __NUMBERFORMAT_H__
-#define __NUMBERFORMAT_H__
+#ifndef __ELASTOS_TEXT_NUMBERFORMAT_H__
+#define __ELASTOS_TEXT_NUMBERFORMAT_H__
 
-#include <elautoptr.h>
 #include "Elastos.CoreLibrary_server.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 #include "Format.h"
 #include "CLocaleHelper.h"
-#include "CICUHelper.h"
-#include "CLocaleDataHelper.h"
+// #include "CICUHelper.h"
+// #include "CLocaleDataHelper.h"
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
 
-using Libcore::ICU::ILocale;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::IICUHelper;
-using Libcore::ICU::CICUHelper;
+// using Libcore::ICU::CICUHelper;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::ILocaleDataHelper;
-using Libcore::ICU::CLocaleDataHelper;
+// using Libcore::ICU::CLocaleDataHelper;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::IParsePosition;
 using Elastos::Text::CFieldPosition;
@@ -230,4 +229,4 @@ private:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__NUMBERFORMAT_H__
+#endif //__ELASTOS_TEXT_NUMBERFORMAT_H__

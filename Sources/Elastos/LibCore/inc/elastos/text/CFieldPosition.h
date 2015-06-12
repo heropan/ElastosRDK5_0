@@ -1,13 +1,16 @@
 
-#ifndef __CFIELDPOSITION_H__
-#define __CFIELDPOSITION_H__
+#ifndef __ELASTOS_TEXT_CFIELDPOSITION_H__
+#define __ELASTOS_TEXT_CFIELDPOSITION_H__
 
-#include "_CFieldPosition.h"
+#include "_Elastos_Text_CFieldPosition.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Text {
 
-CarClass(CFieldPosition)
+CarClass(CFieldPosition), public Object
 {
 public:
     CFieldPosition();
@@ -63,4 +66,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CFIELDPOSITION_H__
+#endif // __ELASTOS_TEXT_CFIELDPOSITION_H__

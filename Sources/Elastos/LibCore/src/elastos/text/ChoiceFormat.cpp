@@ -1,9 +1,9 @@
 #include "ChoiceFormat.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Character.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/StringUtils.h>
 #include "CChoiceFormat.h"
 #include "CStringWrapper.h"
 #include "CDouble.h"
@@ -28,14 +28,14 @@ ChoiceFormat::~ChoiceFormat()
 {
 }
 
-ECode ChoiceFormat::Init(
+ECode ChoiceFormat::constructor(
     /* [in] */ const ArrayOf<Double>& limits,
     /* [in] */ const ArrayOf<String>& formats)
 {
     return SetChoices(limits, formats);
 }
 
-ECode ChoiceFormat::Init(
+ECode ChoiceFormat::constructor(
     /* [in] */ const String& tem)
 {
     return ApplyPattern(tem);
@@ -163,7 +163,7 @@ ECode ChoiceFormat::Equals(
     AutoPtr<ArrayOf<Double> > limits;
     choice->GetLimits((ArrayOf<Double>**)&limits);
     AutoPtr<ArrayOf<String> > formats;
-    choice->GetChoiceFormats((ArrayOf<String>**)&formats);
+    choice->GetFormats((ArrayOf<String>**)&formats);
     return mChoiceLimits->Equals(limits)
             && mChoiceFormats->Equals(formats);
 }
@@ -179,7 +179,7 @@ ECode ChoiceFormat::FormatDouble(
     VALIDATE_NOT_NULL(outbuffer);
     for (Int32 i = mChoiceLimits->GetLength() - 1; i >= 0; i--) {
         if ((*mChoiceLimits)[i] <= value) {
-            inbuffer->AppendString((*mChoiceFormats)[i]);
+            inbuffer->Append((*mChoiceFormats)[i]);
             *outbuffer = inbuffer;
             REFCOUNT_ADD(*outbuffer);
             return NOERROR;
@@ -187,7 +187,7 @@ ECode ChoiceFormat::FormatDouble(
     }
     if (mChoiceFormats->GetLength())
     {
-        inbuffer->AppendString((*mChoiceFormats)[0]);
+        inbuffer->Append((*mChoiceFormats)[0]);
     }
     *outbuffer = inbuffer;
     REFCOUNT_ADD(*outbuffer);
@@ -290,7 +290,7 @@ ECode ChoiceFormat::Parse(
             position->SetIndex(offset + (*mChoiceFormats)[i].GetLength());
             AutoPtr<IDouble> outdouble;
             FAIL_RETURN(CDouble::New((*mChoiceLimits)[i],(IDouble **)&outdouble))
-            *value = outdouble;
+            *value = INumber::Probe(outdouble);
             REFCOUNT_ADD(*value);
             return NOERROR;
         }
@@ -298,7 +298,7 @@ ECode ChoiceFormat::Parse(
     position->SetErrorIndex(offset);
     AutoPtr<IDouble> outdouble;
     FAIL_RETURN(CDouble::New(Elastos::Core::Math::DOUBLE_NAN,(IDouble **)&outdouble))
-    *value = outdouble;
+    *value = INumber::Probe(outdouble);
     REFCOUNT_ADD(*value);
     return NOERROR;
 }
@@ -354,20 +354,20 @@ ECode ChoiceFormat::ToPattern(
         if (i != 0) {
             buffer.AppendChar('|');
         }
-        String previous = StringUtils::DoubleToString(PreviousDouble((*mChoiceLimits)[i]));
-        String limit = StringUtils::DoubleToString((*mChoiceLimits)[i]);
+        String previous = StringUtils::ToString(PreviousDouble((*mChoiceLimits)[i]));
+        String limit = StringUtils::ToString((*mChoiceLimits)[i]);
         if (previous.GetLength() < limit.GetLength()) {
-            buffer.AppendString(previous);
+            buffer.Append(previous);
             buffer.AppendChar('<');
         } else {
-            buffer.AppendString(limit);
+            buffer.Append(limit);
             buffer.AppendChar('#');
         }
         Boolean quote = ((*mChoiceFormats)[i].IndexOf('|') != -1);
         if (quote) {
             buffer.AppendChar('\'');
         }
-        buffer.AppendString((*mChoiceFormats)[i]);
+        buffer.Append((*mChoiceFormats)[i]);
         if (quote) {
             buffer.AppendChar('\'');
         }

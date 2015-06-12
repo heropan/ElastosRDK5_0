@@ -1,5 +1,5 @@
-#ifndef __DATEFORMATMACRO_H__
-#define __DATEFORMATMACRO_H__
+#ifndef __ELASTOS_TEXT_DATEFORMATMACRO_H__
+#define __ELASTOS_TEXT_DATEFORMATMACRO_H__
 
 #define DATEFORMAT_METHODS_DECL()                                                                    \
                                                                                                      \
@@ -132,4 +132,4 @@
         return superClass::SetTimeZone(timezone);                                                    \
     }                                                                                                \
 
-#endif  //__DATEFORMATMACRO_H__
+#endif  //__ELASTOS_TEXT_DATEFORMATMACRO_H__

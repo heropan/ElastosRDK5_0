@@ -1,13 +1,12 @@
 
-#ifndef __CSIMPLEDATEFORMAT_H__
-#define __CSIMPLEDATEFORMAT_H__
+#ifndef __ELASTOS_TEXT_CSIMPLEDATEFORMAT_H__
+#define __ELASTOS_TEXT_CSIMPLEDATEFORMAT_H__
 
-#include "_CSimpleDateFormat.h"
-#include <cmdef.h>
+#include "_Elastos_Text_CSimpleDateFormat.h"
 #include "SimpleDateFormat.h"
 #include "DateFormatMacro.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::IParsePosition;
 using Elastos::Utility::ICurrency;
@@ -92,4 +91,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CSIMPLEDATEFORMAT_H__
+#endif // __ELASTOS_TEXT_CSIMPLEDATEFORMAT_H__

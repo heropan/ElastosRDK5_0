@@ -1,13 +1,16 @@
 
-#ifndef __CPARSEPOSITION_H__
-#define __CPARSEPOSITION_H__
+#ifndef __ELASTOS_TEXT_CPARSEPOSITION_H__
+#define __ELASTOS_TEXT_CPARSEPOSITION_H__
 
-#include "_CParsePosition.h"
+#include "_Elastos_Text_CParsePosition.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Text {
 
-CarClass(CParsePosition)
+CarClass(CParsePosition), public Object
 {
 public:
     CParsePosition();
@@ -44,4 +47,4 @@ private:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CPARSEPOSITION_H__
+#endif // __ELASTOS_TEXT_CPARSEPOSITION_H__

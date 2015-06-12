@@ -1,10 +1,10 @@
-#ifndef __COLLATOR_H__
-#define __COLLATOR_H__
+#ifndef __ELASTOS_TEXT_COLLATOR_H__
+#define __ELASTOS_TEXT_COLLATOR_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos.h>
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Libcore::ICU::IRuleBasedCollatorICU;
 using Elastos::Text::ICollationKey;
 
@@ -96,4 +96,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__COLLATOR_H__
+#endif //__ELASTOS_TEXT_COLLATOR_H__

@@ -1,5 +1,5 @@
-#ifndef __RULEBASEDBREAKITERATOR_H__
-#define __RULEBASEDBREAKITERATOR_H__
+#ifndef __ELASTOS_TEXT_RULEBASEDBREAKITERATOR_H__
+#define __ELASTOS_TEXT_RULEBASEDBREAKITERATOR_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos.h>
@@ -41,11 +41,11 @@ public:
         /* [out] */ Int32* lastValue);
 
     //@Override
-    CARAPI Next(
+    CARAPI GetNext(
         /* [out] */ Int32* nextValue);
 
     //@Override
-    CARAPI Next(
+    CARAPI GetNext(
         /* [in] */ Int32 n,
         /* [out] */ Int32* nextValue);
 
@@ -82,4 +82,4 @@ private:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__RULEBASEDBREAKITERATOR_H__
+#endif //__ELASTOS_TEXT_RULEBASEDBREAKITERATOR_H__

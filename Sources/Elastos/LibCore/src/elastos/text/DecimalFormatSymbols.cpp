@@ -2,36 +2,37 @@
 #include "DecimalFormatSymbols.h"
 #include "CDecimalFormatSymbols.h"
 #include "CLocaleHelper.h"
-#include "CLocaleDataHelper.h"
-#include "CICUHelper.h"
-#include "Currency.h"
+// #include "CLocaleDataHelper.h"
+// #include "CICUHelper.h"
+// #include "Currency.h"
 
 using Libcore::ICU::IICUHelper;
-using Libcore::ICU::CICUHelper;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+// using Libcore::ICU::CICUHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::ILocaleDataHelper;
-using Libcore::ICU::CLocaleDataHelper;
-using Elastos::Utility::Currency;
+// using Libcore::ICU::CLocaleDataHelper;
+// using Elastos::Utility::Currency;
 
 namespace Elastos {
 namespace Text {
 
-ECode DecimalFormatSymbols::Init()
+ECode DecimalFormatSymbols::constructor()
 {
     AutoPtr<ILocaleHelper> localeHelper;
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
     AutoPtr<ILocale> locale;
     FAIL_RETURN(localeHelper->GetDefault((ILocale**)&locale));
-    return Init(locale);
+    return constructor(locale);
 }
 
-ECode DecimalFormatSymbols::Init(
+ECode DecimalFormatSymbols::constructor(
     /* [in] */ ILocale* locale)
 {
     AutoPtr<ILocaleDataHelper> helper;
-    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
+    assert(0 && "TODO");
+    // CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(helper->Get(locale, (ILocaleData**)&localeData));
     localeData->GetZeroDigit(&mZeroDigit);
@@ -47,13 +48,15 @@ ECode DecimalFormatSymbols::Init(
     localeData->GetNaN(&mNaN);
     localeData->GetExponentSeparator(&mExponentSeparator);
     mLocale = locale;
-    ECode ec = Currency::GetInstance(locale, (ICurrency**)&mCurrency);
+    assert(0 && "TODO");
+    ECode ec; // = Currency::GetInstance(locale, (ICurrency**)&mCurrency);
     if (SUCCEEDED(ec)) {
         mCurrency->GetSymbol(locale, &mCurrencySymbol);
         mCurrency->GetCurrencyCode(&mIntlCurrencySymbol);
     }
     else {
-        mCurrency = Currency::GetInstance(String("XXX"));
+        assert(0 && "TODO");
+        // mCurrency = Currency::GetInstance(String("XXX"));
         localeData->GetCurrencySymbol(&mCurrencySymbol);
         localeData->GetInternationalCurrencySymbol(&mIntlCurrencySymbol);
     }
@@ -91,7 +94,8 @@ ECode DecimalFormatSymbols::GetAvailableLocales(
     VALIDATE_NOT_NULL(locales);
 
     AutoPtr<IICUHelper> ICUHelper;
-    CICUHelper::AcquireSingleton((IICUHelper**)&ICUHelper);
+    assert(0 && "TODO");
+    // CICUHelper::AcquireSingleton((IICUHelper**)&ICUHelper);
     return ICUHelper->GetAvailableDecimalFormatSymbolsLocales(locales);
 }
 
@@ -263,7 +267,8 @@ ECode DecimalFormatSymbols::SetInternationalCurrencySymbol(
         return NOERROR;
     }
 
-    mCurrency = Currency::GetInstance(value);
+    assert(0 && "TODO");
+    // mCurrency = Currency::GetInstance(value);
     ECode ec = mCurrency->GetSymbol(mLocale, &mCurrencySymbol);
     if (FAILED(ec)) {
         mCurrency = NULL;

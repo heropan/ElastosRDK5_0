@@ -4,6 +4,10 @@
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CNumberFormatHelper, Singleton, INumberFormatHelper)
+
+CAR_SINGLETON_IMPL(CNumberFormatHelper)
+
 ECode CNumberFormatHelper::GetAvailableLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {

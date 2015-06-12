@@ -1,15 +1,23 @@
 
-#ifndef __CBIDIHELPER_H__
-#define __CBIDIHELPER_H__
+#ifndef __ELASTOS_TEXT_CBIDIHELPER_H__
+#define __ELASTOS_TEXT_CBIDIHELPER_H__
 
-#include "_CBidiHelper.h"
+#include "_Elastos_Text_CBidiHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Text {
 
 CarClass(CBidiHelper)
+    , public Singleton
+    , public IBidiHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI ReorderVisually(
         /* [in] */ ArrayOf<Byte>* levels,
@@ -28,4 +36,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CBIDIHELPER_H__
+#endif // __ELASTOS_TEXT_CBIDIHELPER_H__

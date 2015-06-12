@@ -1,8 +1,7 @@
-#ifndef __COLLATIONKEY_H__
-#define __COLLATIONKEY_H__
+#ifndef __ELASTOS_TEXT_COLLATIONKEY_H__
+#define __ELASTOS_TEXT_COLLATIONKEY_H__
 
 #include <elastos.h>
-#include <cmdef.h>
 #include "Elastos.CoreLibrary_server.h"
 
 namespace Elastos {
@@ -32,4 +31,4 @@ private:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__COLLATIONKEY_H__
+#endif //__ELASTOS_TEXT_COLLATIONKEY_H__

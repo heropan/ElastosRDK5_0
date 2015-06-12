@@ -65,16 +65,16 @@ ECode Bidi::Init(
     }
 
     Int32 begin = 0;
-    paragraph->GetBeginIndex(&begin);
+    ICharacterIterator::Probe(paragraph)->GetBeginIndex(&begin);
     Int32 end = 0;
-    paragraph->GetEndIndex(&end);
+    ICharacterIterator::Probe(paragraph)->GetEndIndex(&end);
     Int32 length = end - begin;
     AutoPtr< ArrayOf<Char32> > text = ArrayOf<Char32>::Alloc(length + 1) ; // One more char for AttributedCharacterIterator.DONE
     if (length != 0) {
-        paragraph->First(&(*text)[0]);
+        ICharacterIterator::Probe(paragraph)->GetFirst(&(*text)[0]);
     } else {
         Char32 c(0);
-        paragraph->First(&c);
+        ICharacterIterator::Probe(paragraph)->GetFirst(&c);
     }
 
     // First check the RUN_DIRECTION attribute.
@@ -113,13 +113,13 @@ ECode Bidi::Init(
             }
 
             for (; i < textLimit; i++) {
-                paragraph->Next(&(*text)[i]);
+                ICharacterIterator::Probe(paragraph)->GetNext(&(*text)[i]);
                 (*embeddings)[i - 1] = (Byte)embLevel;
             }
         }
         else {
             for (; i < textLimit; i++) {
-                paragraph->Next(&(*text)[i]);
+                ICharacterIterator::Probe(paragraph)->GetNext(&(*text)[i]);
             }
         }
         // paragraph->GetRunLimit(

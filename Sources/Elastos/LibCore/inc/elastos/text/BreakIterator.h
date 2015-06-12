@@ -1,17 +1,18 @@
-#ifndef __BREAKITERATOR_H__
-#define __BREAKITERATOR_H__
+#ifndef __ELASTOS_TEXT_BREAKITERATOR_H__
+#define __ELASTOS_TEXT_BREAKITERATOR_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include <elastos.h>
+#include <elastos/core/Object.h>
 
-using Libcore::ICU::ILocale;
 using Libcore::ICU::INativeBreakIterator;
+using Elastos::Core::Object;
+using Elastos::Utility::ILocale;
 using Elastos::Text::ICharacterIterator;
 
 namespace Elastos {
 namespace Text {
 
-class BreakIterator {
+class BreakIterator : public Object {
 public:
 
     static CARAPI GetAvailableLocales(
@@ -72,10 +73,10 @@ public:
     virtual CARAPI Last(
         /* [out] */ Int32* position) = 0;
 
-    virtual CARAPI Next(
+    virtual CARAPI GetNext(
         /* [out] */ Int32* position) = 0;
 
-    virtual CARAPI Next(
+    virtual CARAPI GetNext(
         /* [in] */ Int32 n,
         /* [out] */ Int32* position) = 0;
 
@@ -98,4 +99,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__BREAKITERATOR_H__
+#endif //__ELASTOS_TEXT_BREAKITERATOR_H__

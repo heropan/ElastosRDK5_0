@@ -1,10 +1,9 @@
 
-#ifndef __CSTRINGCHARACTERIERATOR_H__
-#define __CSTRINGCHARACTERIERATOR_H__
+#ifndef __ELASTOS_TEXT_CSTRINGCHARACTERIERATOR_H__
+#define __ELASTOS_TEXT_CSTRINGCHARACTERIERATOR_H__
 
-#include "_CStringCharacterIterator.h"
+#include "_Elastos_Text_CStringCharacterIterator.h"
 #include "StringCharacterIterator.h"
-#include <cmdef.h>
 
 namespace Elastos {
 namespace Text {
@@ -63,4 +62,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CSTRINGCHARACTERIERATOR_H__
+#endif // __ELASTOS_TEXT_CSTRINGCHARACTERIERATOR_H__

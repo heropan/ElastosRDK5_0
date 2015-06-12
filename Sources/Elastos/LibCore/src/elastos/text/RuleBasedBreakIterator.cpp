@@ -1,8 +1,9 @@
 
 #include "RuleBasedBreakIterator.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::StringBuffer;
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Text {
@@ -112,7 +113,7 @@ ECode RuleBasedBreakIterator::SetText(
 {
     // call a method to check if null pointer
     Char32 current;
-    newText->Current(&current);
+    newText->GetCurrent(&current);
     return mWrapped->SetText(newText);
 }
 
@@ -144,7 +145,7 @@ ECode RuleBasedBreakIterator::Preceding(
 ECode RuleBasedBreakIterator::Clone(
     /* [out] */ IInterface ** outface)
 {
-    return mWrapped->Clone((INativeBreakIterator **)outface);
+    return ICloneable::Probe(mWrapped)->Clone((INativeBreakIterator **)outface);
 }
 
 } // namespace Text

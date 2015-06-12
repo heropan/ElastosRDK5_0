@@ -7,6 +7,10 @@
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CBidiHelper, Singleton, IBidiHelper)
+
+CAR_SINGLETON_IMPL(CBidiHelper)
+
 ECode CBidiHelper::ReorderVisually(
     /* [in] */ ArrayOf<Byte>* levels,
     /* [in] */ Int32 levelStart,

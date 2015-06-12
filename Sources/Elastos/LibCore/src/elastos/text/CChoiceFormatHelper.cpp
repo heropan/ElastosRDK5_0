@@ -4,6 +4,10 @@
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CChoiceFormatHelper, Singleton, IChoiceFormatHelper)
+
+CAR_SINGLETON_IMPL(CChoiceFormatHelper)
+
 ECode CChoiceFormatHelper::NextDouble(
     /* [in] */ Double value,
     /* [out] */ Double* nextValue)

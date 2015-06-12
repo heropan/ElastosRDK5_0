@@ -1,8 +1,8 @@
 
-#ifndef __CRULEBASEDCOLLATOR_H__
-#define __CRULEBASEDCOLLATOR_H__
+#ifndef __ELASTOS_TEXT_CRULEBASEDCOLLATOR_H__
+#define __ELASTOS_TEXT_CRULEBASEDCOLLATOR_H__
 
-#include "_CRuleBasedCollator.h"
+#include "_Elastos_Text_CRuleBasedCollator.h"
 #include "RuleBasedCollator.h"
 
 using Libcore::ICU::IRuleBasedCollatorICU;
@@ -75,4 +75,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CRULEBASEDCOLLATOR_H__
+#endif // __ELASTOS_TEXT_CRULEBASEDCOLLATOR_H__

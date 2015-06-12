@@ -1,8 +1,8 @@
 
-#ifndef __CDATEFORMATFIELDHELPER_H__
-#define __CDATEFORMATFIELDHELPER_H__
+#ifndef __ELASTOS_TEXT_CDATEFORMATFIELDHELPER_H__
+#define __ELASTOS_TEXT_CDATEFORMATFIELDHELPER_H__
 
-#include "_CDateFormatFieldHelper.h"
+#include "_Elastos_Text_CDateFormatFieldHelper.h"
 
 namespace Elastos {
 namespace Text {
@@ -24,4 +24,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CDATEFORMATFIELDHELPER_H__
+#endif // __ELASTOS_TEXT_CDATEFORMATFIELDHELPER_H__

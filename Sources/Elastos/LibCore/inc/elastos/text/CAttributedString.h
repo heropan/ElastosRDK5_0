@@ -1,11 +1,11 @@
 
-#ifndef __CATTRIBUTEDSTRING_H__
-#define __CATTRIBUTEDSTRING_H__
+#ifndef __ELASTOS_TEXT_CATTRIBUTEDSTRING_H__
+#define __ELASTOS_TEXT_CATTRIBUTEDSTRING_H__
 
-#include "_CAttributedString.h"
+#include "_Elastos_Text_CAttributedString.h"
 #include "AttributedString.h"
 
-// using Elastos::Utility::IObjectMap;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Text {
@@ -57,14 +57,14 @@ public:
         /* [in] */ Int32 end,
         /* [out] */ IAttributedCharacterIterator** iterator);
 
-    // CARAPI AddAttributes(
-    //     /* [in] */ IObjectMap * attributes,
-    //     /* [in] */ Int32 start,
-    //     /* [in] */ Int32 end);
+    CARAPI AddAttributes(
+        /* [in] */ IMap * attributes,
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end);
 
 };
 
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CATTRIBUTEDSTRING_H__
+#endif // __ELASTOS_TEXT_CATTRIBUTEDSTRING_H__

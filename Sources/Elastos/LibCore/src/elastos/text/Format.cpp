@@ -4,6 +4,9 @@
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
 
+using Elastos::Core::ICharSequence;
+using Elastos::Core::EIID_ICloneable;
+using Elastos::IO::EIID_ISerializable;
 using Elastos::Text::IAttributedString;
 using Elastos::Text::CAttributedString;
 using Elastos::Text::IFieldPosition;
@@ -12,6 +15,8 @@ using Elastos::Text::CParsePosition;
 
 namespace Elastos {
 namespace Text {
+
+CAR_INTERFACE_IMPL_2(Format, Object, ISerializable, ICloneable)
 
 Format::Format()
 {}
@@ -29,7 +34,7 @@ ECode Format::FormatObject(
     AutoPtr<IStringBuffer> sb = new StringBuffer();
     AutoPtr<IStringBuffer> outsb;
     FormatObject(object, sb, field, (IStringBuffer **)&outsb);
-    return outsb->ToString(value);
+    return ICharSequence::Probe(outsb)->ToString(value);
 }
 
 ECode Format::FormatToCharacterIterator(

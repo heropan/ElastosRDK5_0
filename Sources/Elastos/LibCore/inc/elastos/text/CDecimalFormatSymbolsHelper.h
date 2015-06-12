@@ -1,19 +1,26 @@
 
-#ifndef __CDECIMALFORMATSYMBOLSHELPER_H__
-#define __CDECIMALFORMATSYMBOLSHELPER_H__
+#ifndef __ELASTOS_TEXT_CDECIMALFORMATSYMBOLSHELPER_H__
+#define __ELASTOS_TEXT_CDECIMALFORMATSYMBOLSHELPER_H__
 
-#include "_CDecimalFormatSymbolsHelper.h"
-#include <cmdef.h>
+#include "_Elastos_Text_CDecimalFormatSymbolsHelper.h"
 #include <Elastos.CoreLibrary.h>
+#include <elastos/core/Singleton.h>
 
-using Libcore::ICU::ILocale;
+using Elastos::Core::Singleton;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Text {
 
 CarClass(CDecimalFormatSymbolsHelper)
+    , public Singleton
+    , public IDecimalFormatSymbolsHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetInstance(
         /* [out] */ IDecimalFormatSymbols** instance);
 
@@ -29,4 +36,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CDECIMALFORMATSYMBOLSHELPER_H__
+#endif // __ELASTOS_TEXT_CDECIMALFORMATSYMBOLSHELPER_H__

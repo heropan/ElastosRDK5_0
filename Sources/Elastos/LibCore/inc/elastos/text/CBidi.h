@@ -1,8 +1,8 @@
 
-#ifndef __CBIDI_H__
-#define __CBIDI_H__
+#ifndef __ELASTOS_TEXT_CBIDI_H__
+#define __ELASTOS_TEXT_CBIDI_H__
 
-#include "_CBidi.h"
+#include "_Elastos_Text_CBidi.h"
 #include "Bidi.h"
 
 namespace Elastos {
@@ -75,4 +75,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CBIDI_H__
+#endif // __ELASTOS_TEXT_CBIDI_H__

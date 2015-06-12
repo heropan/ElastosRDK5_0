@@ -7,7 +7,7 @@ namespace Text {
 ECode CAttributedString::constructor(
     /* [in] */ IAttributedCharacterIterator* iterator)
 {
-    return AttributedString::Init(iterator);
+    return AttributedString::constructor(iterator);
 }
 
 ECode CAttributedString::constructor(
@@ -15,7 +15,7 @@ ECode CAttributedString::constructor(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return AttributedString::Init(iterator, start, end);
+    return AttributedString::constructor(iterator, start, end);
 }
 
 ECode CAttributedString::constructor(
@@ -24,13 +24,13 @@ ECode CAttributedString::constructor(
     /* [in] */ Int32 end,
     /* [in] */ ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes)
 {
-    return AttributedString::Init(iterator, start, end, attributes);
+    return AttributedString::constructor(iterator, start, end, attributes);
 }
 
 ECode CAttributedString::constructor(
     /* [in] */ const String& value)
 {
-    return AttributedString::Init(value);
+    return AttributedString::constructor(value);
 }
 
 // ECode CAttributedString::constructor(
@@ -78,13 +78,14 @@ ECode CAttributedString::GetIterator(
     return AttributedString::GetIterator(attributes, start, end, iterator);
 }
 
-// ECode CAttributedString::AddAttributes(
-//     /* [in] */ IObjectMap * attributes,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end)
-// {
-//     return NOERROR;
-// }
+ECode CAttributedString::AddAttributes(
+    /* [in] */ IMap * attributes,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end)
+{
+    assert(0 && "TODO");
+    return NOERROR;
+}
 
 } // namespace Text
 } // namespace Elastos

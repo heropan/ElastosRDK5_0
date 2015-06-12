@@ -1,8 +1,8 @@
 
-#ifndef __CCOLLATIONELEMENTITERATOR_H__
-#define __CCOLLATIONELEMENTITERATOR_H__
+#ifndef __ELASTOS_TEXT_CCOLLATIONELEMENTITERATOR_H__
+#define __ELASTOS_TEXT_CCOLLATIONELEMENTITERATOR_H__
 
-#include "_CCollationElementIterator.h"
+#include "_Elastos_Text_CCollationElementIterator.h"
 
 using Libcore::ICU::ICollationElementIteratorICU;
 using Elastos::Text::ICharacterIterator;
@@ -47,4 +47,4 @@ private:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CCOLLATIONELEMENTITERATOR_H__
+#endif // __ELASTOS_TEXT_CCOLLATIONELEMENTITERATOR_H__

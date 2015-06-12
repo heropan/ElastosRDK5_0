@@ -37,6 +37,7 @@ module
     interface Elastos.Text.IAnnotation;
     interface Elastos.Text.IAttributedCharacterIteratorAttribute;
     interface Elastos.IO.ISerializable;
+    interface Libcore.ICU.INativeBreakIterator;
 
     namespace Elastos {
     namespace Text {
@@ -54,6 +55,145 @@ module
 
         interface IAttributedCharacterIteratorAttribute;
         interface ISerializable;
+    }
+
+    [deprecated]
+    class CBidi {
+        constructor(
+            [in] IAttributedCharacterIterator* paragraph);
+
+        constructor(
+            [in] ArrayOf<Char32>* text,
+            [in] Int32 textStart,
+            [in] ArrayOf<Byte>* embeddings,
+            [in] Int32 embStart,
+            [in] Int32 paragraphLength,
+            [in] Int32 flags);
+
+        constructor(
+            [in] String paragraph,
+            [in] Int32 flags);
+
+        constructor(
+            [in] Int64 pBidi);
+
+        interface IBidi;
+    }
+
+    singleton class CBidiHelper {
+        interface IBidiHelper;
+    }
+
+    [deprecated]
+    class CRuleBasedBreakIterator {
+        constructor(
+            [in] INativeBreakIterator * iterator);
+
+        interface IBreakIterator;
+    }
+
+    class CFieldPosition {
+        constructor(
+            [in] Int32 field);
+
+        constructor(
+            [in] IAttributedCharacterIteratorAttribute* attribute);
+
+        constructor(
+            [in] IAttributedCharacterIteratorAttribute* attribute,
+            [in] Int32 field);
+
+        interface IFieldPosition;
+    }
+
+    class CParsePosition {
+        constructor(
+            [in] Int32 index);
+
+        interface IParsePosition;
+    }
+
+    [deprecated]
+    class CAttributedString {
+        constructor(
+            [in] IAttributedCharacterIterator* iterator);
+
+        constructor(
+            [in] IAttributedCharacterIterator* iterator,
+            [in] Int32 start,
+            [in] Int32 end);
+
+        constructor(
+            [in] IAttributedCharacterIterator* iterator,
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes);
+
+        constructor(
+            [in] String value);
+
+        // constructor(
+        //     [in] String value,
+        //     [in] IObjectMap * attributes);
+
+        interface IAttributedString;
+    }
+
+    [deprecated]
+    class CChoiceFormat {
+        constructor(
+            [in] ArrayOf<Double> limits,
+            [in] ArrayOf<String> formats);
+
+        constructor(
+            [in] String tem);
+
+        interface IChoiceFormat;
+    }
+
+    singleton class CChoiceFormatHelper {
+        interface IChoiceFormatHelper;
+    }
+
+    class CNumberFormatField {
+        constructor(
+            [in] String fieldName);
+
+        interface INumberFormatField;
+    }
+
+    singleton class CNumberFormatHelper {
+        interface INumberFormatHelper;
+    }
+
+    class CDecimalFormat {
+        constructor();
+
+        constructor(
+            [in] String pattern);
+
+        constructor(
+            [in] String pattern,
+            [in] IDecimalFormatSymbols* value);
+
+        constructor(
+            [in] String pattern,
+            [in] ILocale* locale);
+
+        interface IDecimalFormat;
+    }
+
+    class CDecimalFormatSymbols {
+        constructor();
+
+        constructor(
+            [in] ILocale* locale);
+
+        interface IDecimalFormatSymbols;
+    }
+
+    singleton class CDecimalFormatSymbolsHelper {
+        interface IDecimalFormatSymbolsHelper;
     }
 
     } // Text

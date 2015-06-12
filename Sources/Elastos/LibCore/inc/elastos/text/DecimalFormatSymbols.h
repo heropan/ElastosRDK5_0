@@ -1,19 +1,23 @@
-#ifndef __DECIMALFORMATSYMBOLS_H__
-#define __DECIMALFORMATSYMBOLS_H__
+#ifndef __ELASTOS_TEXT_DECIMALFORMATSYMBOLS_H__
+#define __ELASTOS_TEXT_DECIMALFORMATSYMBOLS_H__
 
 #include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
 
-using Libcore::ICU::ILocale;
+using Elastos::Core::Object;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::ICurrency;
 
 namespace Elastos {
 namespace Text {
 
-class DecimalFormatSymbols
+class DecimalFormatSymbols : public Object
 {
 public:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ ILocale* locale);
 
     static CARAPI GetInstance(
         /* [out] */ IDecimalFormatSymbols** instance);
@@ -153,13 +157,6 @@ public:
 
     // private void readObject(ObjectInputStream stream);
 
-protected:
-
-    CARAPI Init();
-
-    CARAPI Init(
-        /* [in] */ ILocale* locale);
-
 private:
     Char32 mZeroDigit;
 
@@ -191,4 +188,4 @@ private:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__DECIMALFORMATSYMBOLS_H__
+#endif //__ELASTOS_TEXT_DECIMALFORMATSYMBOLS_H__

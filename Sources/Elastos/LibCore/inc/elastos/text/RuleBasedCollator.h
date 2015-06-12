@@ -1,5 +1,5 @@
-#ifndef __RULEBASEDCOLLATOR_H__
-#define __RULEBASEDCOLLATOR_H__
+#ifndef __ELASTOS_TEXT_RULEBASEDCOLLATOR_H__
+#define __ELASTOS_TEXT_RULEBASEDCOLLATOR_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include "Collator.h"
@@ -57,4 +57,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__RULEBASEDCOLLATOR_H__
+#endif //__ELASTOS_TEXT_RULEBASEDCOLLATOR_H__

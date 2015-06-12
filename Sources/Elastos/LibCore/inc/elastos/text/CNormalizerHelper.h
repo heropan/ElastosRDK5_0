@@ -1,10 +1,10 @@
 
-#ifndef __CNORMALIZERHELPER_H__
-#define __CNORMALIZERHELPER_H__
+#ifndef __ELASTOS_TEXT_CNORMALIZERHELPER_H__
+#define __ELASTOS_TEXT_CNORMALIZERHELPER_H__
 
-#include "_CNormalizerHelper.h"
+#include "_Elastos_Text_CNormalizerHelper.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Core::ICharSequence;
 
 namespace Elastos {
@@ -28,4 +28,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CNORMALIZERHELPER_H__
+#endif // __ELASTOS_TEXT_CNORMALIZERHELPER_H__

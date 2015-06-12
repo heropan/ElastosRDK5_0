@@ -1,8 +1,8 @@
 
-#ifndef __CCOLLATIONELEMENTITERATORHELPER_H__
-#define __CCOLLATIONELEMENTITERATORHELPER_H__
+#ifndef __ELASTOS_TEXT_CCOLLATIONELEMENTITERATORHELPER_H__
+#define __ELASTOS_TEXT_CCOLLATIONELEMENTITERATORHELPER_H__
 
-#include "_CCollationElementIteratorHelper.h"
+#include "_Elastos_Text_CCollationElementIteratorHelper.h"
 
 namespace Elastos {
 namespace Text {
@@ -27,4 +27,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CCOLLATIONELEMENTITERATORHELPER_H__
+#endif // __ELASTOS_TEXT_CCOLLATIONELEMENTITERATORHELPER_H__

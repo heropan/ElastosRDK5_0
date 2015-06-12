@@ -11,6 +11,7 @@ using Elastos::Text::IParsePosition;
 using Elastos::Core::Object;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::IStringBuffer;
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Text {
@@ -27,7 +28,7 @@ public:
         CARAPI Init(
             /* [in] */ const String& fieldName)
         {
-            return AttributedCharacterIteratorAttribute::Init(fieldName);
+            return AttributedCharacterIteratorAttribute::constructor(fieldName);
         }
 
         CARAPI GetClassID(
@@ -42,11 +43,9 @@ public:
 public:
     //@Override
     //public Object clone();
+    CAR_INTERFACE_DECL()
 
     virtual ~Format() {}
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     CARAPI FormatObject(
         /* [in] */ IInterface* object,

@@ -8,7 +8,7 @@
 #include "CInteger64.h"
 #include "CInteger32.h"
 #include "CAttributedString.h"
-#include "CLocaleData.h"
+// #include "CLocaleData.h"
 #include "CLocale.h"
 #include "TimeZones.h"
 #include "CArrayOf.h"
@@ -35,13 +35,13 @@ using Elastos::Text::IAttributedString;
 using Elastos::Text::CAttributedString;
 using Elastos::Text::IDecimalFormatSymbols;
 using Libcore::ICU::ILocaleData;
-using Libcore::ICU::CLocaleData;
+// using Libcore::ICU::CLocaleData;
 using Libcore::ICU::ILocaleDataHelper;
 using Libcore::ICU::CLocaleDataHelper;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Libcore::ICU::CLocale;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ITimeZones;
 using Libcore::ICU::TimeZones;
 

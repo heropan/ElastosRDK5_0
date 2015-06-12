@@ -1,12 +1,12 @@
 
-#ifndef __CRULEBASEBREAKITERATOR_H__
-#define __CRULEBASEBREAKITERATOR_H__
+#ifndef __ELASTOS_TEXT_CRULEBASEBREAKITERATOR_H__
+#define __ELASTOS_TEXT_CRULEBASEBREAKITERATOR_H__
 
-#include "_CRuleBasedBreakIterator.h"
+#include "_Elastos_Text_CRuleBasedBreakIterator.h"
 #include "RuleBasedBreakIterator.h"
 
-using Libcore::ICU::ILocale;
 using Libcore::ICU::INativeBreakIterator;
+using Elastos::Utility::ILocale;
 using Elastos::Text::ICharacterIterator;
 
 namespace Elastos {
@@ -26,10 +26,10 @@ public:
     CARAPI Last(
         /* [out] */ Int32* postion);
 
-    CARAPI Next(
+    CARAPI GetNext(
         /* [out] */ Int32* postion);
 
-    CARAPI Next(
+    CARAPI GetNext(
         /* [in] */ Int32 n,
         /* [out] */ Int32* postion);
 
@@ -67,4 +67,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CRULEBASEBREAKITERATOR_H__
+#endif // __ELASTOS_TEXT_CRULEBASEBREAKITERATOR_H__

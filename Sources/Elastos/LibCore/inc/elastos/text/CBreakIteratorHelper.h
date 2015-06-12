@@ -1,10 +1,10 @@
 
-#ifndef __CBREAKITERATORHELPER_H__
-#define __CBREAKITERATORHELPER_H__
+#ifndef __ELASTOS_TEXT_CBREAKITERATORHELPER_H__
+#define __ELASTOS_TEXT_CBREAKITERATORHELPER_H__
 
-#include "_CBreakIteratorHelper.h"
+#include "_Elastos_Text_CBreakIteratorHelper.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Text {
@@ -48,4 +48,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CBREAKITERATORHELPER_H__
+#endif // __ELASTOS_TEXT_CBREAKITERATORHELPER_H__

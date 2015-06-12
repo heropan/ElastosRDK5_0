@@ -1,11 +1,11 @@
 
-#ifndef __CDATEFORMATSYMBOLS_H__
-#define __CDATEFORMATSYMBOLS_H__
+#ifndef __ELASTOS_TEXT_CDATEFORMATSYMBOLS_H__
+#define __ELASTOS_TEXT_CDATEFORMATSYMBOLS_H__
 
-#include "_CDateFormatSymbols.h"
+#include "_Elastos_Text_CDateFormatSymbols.h"
 #include "DateFormatSymbols.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Text {
@@ -100,4 +100,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CDATEFORMATSYMBOLS_H__
+#endif // __ELASTOS_TEXT_CDATEFORMATSYMBOLS_H__

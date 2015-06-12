@@ -28,7 +28,8 @@ public:
         /* [in] */ const String& pattern);
 
     //@Override
-    //public Object clone();
+    CARAPI Clone(
+        /* [out] */ IInterface** outobj);
 
     CARAPI Equals(
         /* [in] */ IInterface* object,
@@ -180,18 +181,16 @@ public:
     CARAPI GetNdf(
         /* [out] */ INativeDecimalFormat** ndf);
 
-protected:
+    CARAPI constructor();
 
-    CARAPI Init();
-
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& pattern);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& pattern,
         /* [in] */ IDecimalFormatSymbols* value);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& pattern,
         /* [in] */ ILocale* locale);
 

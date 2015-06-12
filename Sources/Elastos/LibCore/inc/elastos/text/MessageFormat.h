@@ -1,5 +1,5 @@
-#ifndef __MESSAGEFORMAT_H__
-#define __MESSAGEFORMAT_H__
+#ifndef __ELASTOS_TEXT_MESSAGEFORMAT_H__
+#define __ELASTOS_TEXT_MESSAGEFORMAT_H__
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos.h>
 #include <elastos/StringBuffer.h>
@@ -230,4 +230,4 @@ private:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__MESSAGEFORMAT_H__
+#endif //__ELASTOS_TEXT_MESSAGEFORMAT_H__

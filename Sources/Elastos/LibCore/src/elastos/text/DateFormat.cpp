@@ -9,7 +9,7 @@
 #include "CStringWrapper.h"
 #include "CDouble.h"
 #include "CLocaleDataHelper.h"
-#include "CLocaleData.h"
+// #include "CLocaleData.h"
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
 
@@ -18,13 +18,13 @@ using Elastos::Utility::CDate;
 using Elastos::Core::INumber;
 using Elastos::Core::EIID_INumber;
 using Libcore::ICU::IICUHelper;
-using Libcore::ICU::CICUHelper;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+// using Libcore::ICU::CICUHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
 using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
-using Libcore::ICU::CLocaleData;
+// using Libcore::ICU::CLocaleData;
 using Elastos::Text::CFieldPosition;
 using Elastos::Text::CParsePosition;
 

@@ -1,11 +1,11 @@
-#ifndef __DATEFORMATSYMBOLS_H__
-#define __DATEFORMATSYMBOLS_H__
+#ifndef __ELASTOS_TEXT_DATEFORMATSYMBOLS_H__
+#define __ELASTOS_TEXT_DATEFORMATSYMBOLS_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos/Mutex.h>
 
 using Elastos::Core::Mutex;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Text {
@@ -157,4 +157,4 @@ private:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__DATEFORMATSYMBOLS_H__
+#endif //__ELASTOS_TEXT_DATEFORMATSYMBOLS_H__

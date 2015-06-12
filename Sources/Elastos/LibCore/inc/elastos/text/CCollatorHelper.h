@@ -1,11 +1,10 @@
 
-#ifndef __CCOLLATORHELPER_H__
-#define __CCOLLATORHELPER_H__
+#ifndef __ELASTOS_TEXT_CCOLLATORHELPER_H__
+#define __ELASTOS_TEXT_CCOLLATORHELPER_H__
 
-#include "_CCollatorHelper.h"
-#include <cmdef.h>
+#include "_Elastos_Text_CCollatorHelper.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Text {
@@ -27,4 +26,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CCOLLATORHELPER_H__
+#endif // __ELASTOS_TEXT_CCOLLATORHELPER_H__

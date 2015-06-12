@@ -4,10 +4,10 @@
 #include "CICUHelper.h"
 #include "CRuleBasedCollatorICU.h"
 
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::IICUHelper;
-using Libcore::ICU::CICUHelper;
+// using Libcore::ICU::CICUHelper;
 using Libcore::ICU::CRuleBasedCollatorICU;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::EIID_ICharSequence;

@@ -1,6 +1,6 @@
 
-#ifndef __DATEFORMAT_H__
-#define __DATEFORMAT_H__
+#ifndef __ELASTOS_TEXT_DATEFORMAT_H__
+#define __ELASTOS_TEXT_DATEFORMAT_H__
 
 #ifndef __USE_MALLOC
 #define __USE_MALLOC
@@ -14,7 +14,7 @@
 using Elastos::Utility::IDate;
 using Elastos::Utility::ICalendar;
 using Elastos::Utility::ITimeZone;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::IParsePosition;
 using Elastos::Utility::Etl::HashMap;
@@ -225,4 +225,4 @@ protected:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__DATEFORMAT_H__
+#endif //__ELASTOS_TEXT_DATEFORMAT_H__

@@ -1,11 +1,11 @@
 
-#ifndef __CMESSAGEFORMAT_H__
-#define __CMESSAGEFORMAT_H__
+#ifndef __ELASTOS_TEXT_CMESSAGEFORMAT_H__
+#define __ELASTOS_TEXT_CMESSAGEFORMAT_H__
 
-#include "_CMessageFormat.h"
+#include "_Elastos_Text_CMessageFormat.h"
 #include "MessageFormat.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Text::IAttributedCharacterIterator;;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::IParsePosition;
@@ -113,4 +113,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CMESSAGEFORMAT_H__
+#endif // __ELASTOS_TEXT_CMESSAGEFORMAT_H__

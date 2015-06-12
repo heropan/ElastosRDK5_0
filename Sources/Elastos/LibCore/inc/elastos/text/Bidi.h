@@ -1,18 +1,19 @@
-#ifndef __BIDI_H__
-#define __BIDI_H__
+#ifndef __ELASTOS_TEXT_BIDI_H__
+#define __ELASTOS_TEXT_BIDI_H__
 
 #include <Elastos.CoreLibrary_server.h>
-#include <elastos.h>
-#include <elastos/utility/etl/List.h>
+// #include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Text::IAttributedCharacterIterator;;
 
 namespace Elastos {
 namespace Text {
 
-class Bidi {
+class Bidi : public Object {
 public:
-    class BidiRun : public ElRefBase {
+    class BidiRun : public Object {
     public:
         BidiRun(
             /* [in] */ Int32 start,
@@ -193,4 +194,4 @@ private:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__BIDI_H__
+#endif //__ELASTOS_TEXT_BIDI_H__

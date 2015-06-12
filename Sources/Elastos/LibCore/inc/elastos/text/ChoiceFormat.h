@@ -1,10 +1,9 @@
-#ifndef __CHOICEFORMAT_H__
-#define __CHOICEFORMAT_H__
+#ifndef __ELASTOS_TEXT_CHOICEFORMAT_H__
+#define __ELASTOS_TEXT_CHOICEFORMAT_H__
 
-#include <elastos.h>
-#include <elastos/utility/etl/List.h>
 #include "Elastos.CoreLibrary_server.h"
 #include "NumberFormat.h"
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
 using Elastos::Core::IStringBuffer;
@@ -19,11 +18,11 @@ class ChoiceFormat : public NumberFormat
 public:
     virtual ~ChoiceFormat();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const ArrayOf<Double>& limits,
         /* [in] */ const ArrayOf<String>& formats);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& tem);
 
     virtual CARAPI ApplyPattern(
@@ -97,4 +96,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CHOICEFORMAT_H__
+#endif // __ELASTOS_TEXT_CHOICEFORMAT_H__

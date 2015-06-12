@@ -2,17 +2,18 @@
 #include "NumberFormat.h"
 #include "CNumberFormatField.h"
 #include "CDecimalFormat.h"
-#include "CLocaleData.h"
+// #include "CLocaleData.h"
 
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::CFieldPosition;
-using Libcore::ICU::CLocaleData;
+// using Libcore::ICU::CLocaleData;
 using Elastos::Math::IBigInteger;
 using Elastos::Core::IByte;
 using Elastos::Core::IInteger16;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger64;
 using Elastos::Core::IStringBuffer;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Text {
@@ -21,7 +22,7 @@ static AutoPtr<INumberFormatField> sInit(const String& name)
 {
      AutoPtr<CNumberFormatField> field;
      CNumberFormatField::NewByFriend(name, (CNumberFormatField**)&field);
-     return (INumberFormatField*)field;
+     return (INumberFormatField*)field.Get();
 }
 
 const AutoPtr<INumberFormatField> NumberFormat::Field::SIGN = sInit(String("sign"));
@@ -62,7 +63,7 @@ ECode NumberFormat::FormatDouble(
     AutoPtr<IStringBuffer> sb = new StringBuffer();
     AutoPtr<IStringBuffer> outsb;
     FormatDouble(value, sb, position, (IStringBuffer **)&outsb);
-    return outsb->ToString(result);
+    return ICharSequence::Probe(outsb)->ToString(result);
 }
 
 ECode NumberFormat::FormatInt64(
@@ -76,7 +77,7 @@ ECode NumberFormat::FormatInt64(
     AutoPtr<IStringBuffer> sb = new StringBuffer();
     AutoPtr<IStringBuffer> outsb;
     FormatInt64(value, sb, position, (IStringBuffer **)&outsb);
-    return outsb->ToString(result);
+    return ICharSequence::Probe(outsb)->ToString(result);
 }
 
 ECode NumberFormat::FormatObject(
@@ -120,7 +121,8 @@ ECode NumberFormat::GetAvailableLocales(
     *locales = NULL;
 
     AutoPtr<IICUHelper> ICUHelper;
-    FAIL_RETURN(CICUHelper::AcquireSingleton((IICUHelper **)&ICUHelper));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CICUHelper::AcquireSingleton((IICUHelper **)&ICUHelper));
     return ICUHelper->GetAvailableNumberFormatLocales(locales);
 }
 
@@ -152,7 +154,8 @@ ECode NumberFormat::GetCurrencyInstance(
     *instance = NULL;
 
     AutoPtr<ILocaleDataHelper> helper;
-    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
+    assert(0 && "TODO");
+    // CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(helper->Get(locale, (ILocaleData**)&localeData));
     String currencyPattern;
@@ -183,7 +186,8 @@ ECode NumberFormat::GetIntegerInstance(
     AutoPtr<INumberFormat> result;
     AutoPtr<ILocaleDataHelper> datahelper;
     AutoPtr<ILocaleData> data;
-    FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper **)&datahelper));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper **)&datahelper));
     datahelper->Get(locale,(ILocaleData **)&data);
 
     String integerPattern;
@@ -221,7 +225,7 @@ ECode NumberFormat::GetInstance(
 
     AutoPtr<IDecimalFormat> format;
     FAIL_RETURN(CDecimalFormat::New(pattern, locale, (IDecimalFormat**)&format));
-    *instance = format;
+    *instance = INumberFormat::Probe(format);
     REFCOUNT_ADD(*instance);
     return NOERROR;
 }
@@ -279,7 +283,8 @@ ECode NumberFormat::GetNumberInstance(
     *instance = NULL;
 
     AutoPtr<ILocaleDataHelper> helper;
-    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
+    assert(0 && "TODO");
+    // CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(helper->Get(locale, (ILocaleData**)&localeData));
     String numberPattern;
@@ -308,7 +313,8 @@ ECode NumberFormat::GetPercentInstance(
     *instance = NULL;
 
     AutoPtr<ILocaleDataHelper> helper;
-    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
+    assert(0 && "TODO");
+    // CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(helper->Get(locale, (ILocaleData**)&localeData));
     String percentPattern;

@@ -1,15 +1,24 @@
 
-#ifndef __CCHOICEFORMATHELPER_H__
-#define __CCHOICEFORMATHELPER_H__
+#ifndef __ELASTOS_TEXT_CCHOICEFORMATHELPER_H__
+#define __ELASTOS_TEXT_CCHOICEFORMATHELPER_H__
 
-#include "_CChoiceFormatHelper.h"
+#include "_Elastos_Text_CChoiceFormatHelper.h"
+#include "elastos/core/Singleton.h"
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Text {
 
 CarClass(CChoiceFormatHelper)
+    , public Singleton
+    , public IChoiceFormatHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI NextDouble(
         /* [in] */ Double value,
         /* [out] */ Double* nextValue);
@@ -28,4 +37,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CCHOICEFORMATHELPER_H__
+#endif // __ELASTOS_TEXT_CCHOICEFORMATHELPER_H__

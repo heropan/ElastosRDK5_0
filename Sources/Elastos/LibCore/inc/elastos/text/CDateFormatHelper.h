@@ -1,10 +1,10 @@
 
-#ifndef __CDATEFORMATHELPER_H__
-#define __CDATEFORMATHELPER_H__
+#ifndef __ELASTOS_TEXT_CDATEFORMATHELPER_H__
+#define __ELASTOS_TEXT_CDATEFORMATHELPER_H__
 
-#include "_CDateFormatHelper.h"
+#include "_Elastos_Text_CDateFormatHelper.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Text {
@@ -60,4 +60,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CDATEFORMATHELPER_H__
+#endif // __ELASTOS_TEXT_CDATEFORMATHELPER_H__

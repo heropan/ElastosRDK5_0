@@ -1,9 +1,8 @@
 
-#ifndef __CMESSAGEFORMATFIELD_H__
-#define __CMESSAGEFORMATFIELD_H__
+#ifndef __ELASTOS_TEXT_CMESSAGEFORMATFIELD_H__
+#define __ELASTOS_TEXT_CMESSAGEFORMATFIELD_H__
 
-#include "_CMessageFormatField.h"
-#include <cmdef.h>
+#include "_Elastos_Text_CMessageFormatField.h"
 #include <AttributedCharacterIteratorAttribute.h>
 #include <AttributedCharacterIteratorAttributeMacro.h>
 
@@ -28,4 +27,4 @@ public:
 } // namespace Text
 } // namespace Elastos
 
-#endif // __CMESSAGEFORMATFIELD_H__
+#endif // __ELASTOS_TEXT_CMESSAGEFORMATFIELD_H__

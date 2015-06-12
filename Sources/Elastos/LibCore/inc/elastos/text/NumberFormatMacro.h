@@ -1,5 +1,5 @@
-#ifndef __NUMBERFORMATMACRO_H__
-#define __NUMBERFORMATMACRO_H__
+#ifndef __ELASTOS_TEXT_NUMBERFORMATMACRO_H__
+#define __ELASTOS_TEXT_NUMBERFORMATMACRO_H__
 
 #define NUMBERFORMAT_METHODS_DECL()                                                 \
                                                                                     \
@@ -242,4 +242,4 @@
         return superClass::SetRoundingMode(roundingMode);                           \
     }                                                                               \
 
-#endif  //__NUMBERFORMATMACRO_H__
+#endif  //__ELASTOS_TEXT_NUMBERFORMATMACRO_H__
