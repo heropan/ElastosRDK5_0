@@ -8,19 +8,14 @@ CAR_OBJECT_IMPL(CProperties)
 
 ECode CProperties::constructor()
 {
-    return HashTable::Init();
+    return HashTable::constructor();
 }
 
 ECode CProperties::constructor(
     /* [in] */ IProperties* properties)
 {
-    FAIL_RETURN(HashTable::Init());
-    return Properties::Init((CProperties*)properties);
-}
-
-Mutex* CProperties::GetSelfLock()
-{
-    return &_m_syncLock;
+    FAIL_RETURN(HashTable::constructor());
+    return Properties::constructor((Properties*)properties);
 }
 
 } // namespace Utility

@@ -3,6 +3,9 @@
 #define __ELASTOS_UTILITY_COBSERVABLE_H__
 
 #include "_Elastos_Utility_CObservable.h"
+#include "Object.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {

@@ -4,11 +4,11 @@
 #include "CBufferedReader.h"
 #include "COutputStreamWriter.h"
 #include "CPrintStream.h"
-#include "CCharsetHelper.h"
+//#include "CCharsetHelper.h"
 #include "CStringWrapper.h"
 #include "CDate.h"
 #include "CHashTable.h"
-#include "CCollections.h"
+//#include "CCollections.h"
 #include "CSystem.h"
 #include <StringBuilder.h>
 #include <StringUtils.h>
@@ -30,7 +30,7 @@ using Elastos::IO::CPrintStream;
 using Elastos::IO::IFlushable;
 using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICharsetHelper;
-using Elastos::IO::Charset::CCharsetHelper;
+//using Elastos::IO::Charset::CCharsetHelper;
 
 namespace Elastos{
 namespace Utility{
@@ -65,7 +65,7 @@ Properties::Properties()
 {
 }
 
-ECode Properties::Init(
+ECode Properties::constructor(
     /* [in] */ Properties* properties)
 {
     mDefaults = properties;
@@ -80,7 +80,7 @@ void Properties::DumpString(
     AutoPtr<ArrayOf<Char32> > charArray = string.GetChars();
     UInt32 i = 0;
     if (!key && i < charArray->GetLength() && (*charArray)[i] == ' ') {
-        buffer->AppendString(String("\\ "));
+        buffer->Append(String("\\ "));
         i++;
     }
 
@@ -88,16 +88,16 @@ void Properties::DumpString(
         Char32 ch = (*charArray)[i];
         switch (ch) {
         case '\t':
-            buffer->AppendString(String("\\t"));
+            buffer->Append(String("\\t"));
             break;
         case '\n':
-            buffer->AppendString(String("\\n"));
+            buffer->Append(String("\\n"));
             break;
         case '\f':
-            buffer->AppendString(String("\\f"));
+            buffer->Append(String("\\f"));
             break;
         case '\r':
-            buffer->AppendString(String("\\r"));
+            buffer->Append(String("\\r"));
             break;
         default:
             if (String("\\#!=:").IndexOf(ch) >= 0 || (key && ch == ' ')) {
@@ -107,12 +107,12 @@ void Properties::DumpString(
                 buffer->AppendChar(ch);
             }
             else {
-                String hex = StringUtils::Int32ToString(ch, 16);
-                buffer->AppendString(String("\\u"));
+                String hex = StringUtils::ToHexString((Int32)ch);
+                buffer->Append(String("\\u"));
                 for (UInt32 j = 0; j < 4 - hex.GetLength(); j++) {
-                    buffer->AppendString(String("0"));
+                    buffer->Append(String("0"));
                 }
-                buffer->AppendString(hex);
+                buffer->Append(hex);
             }
         }
     }
@@ -182,11 +182,11 @@ ECode Properties::ListToAppendable(
     system->GetLineSeparator(&separator);
     while (keys->HasMoreElements(&hasFlag), hasFlag) {
         AutoPtr<IInterface> iKey;
-        keys->NextElement((IInterface**)&iKey);
+        keys->GetNextElement((IInterface**)&iKey);
         String key;
         if (ICharSequence::Probe(iKey))
             ICharSequence::Probe(iKey)->ToString(&key);
-        sb->AppendString(key);
+        sb->Append(key);
         sb->AppendChar('=');
 
         AutoPtr<IInterface> result;
@@ -203,14 +203,14 @@ ECode Properties::ListToAppendable(
             def = def->mDefaults;
         }
         if (property.GetLength() > 40) {
-            sb->AppendString(property.Substring(0, 37));
-            sb->AppendString(String("..."));
+            sb->Append(property.Substring(0, 37));
+            sb->Append(String("..."));
         }
         else {
-            sb->AppendString(property);
+            sb->Append(property);
         }
-        sb->AppendString(separator);
-        out->AppendCharSequence(sb->ToCharSequence());
+        sb->Append(separator);
+        out->Append(sb->ToCharSequence());
         sb->SetLength(0);
     }
     return NOERROR;
@@ -224,13 +224,13 @@ ECode Properties::Load(
     }
     AutoPtr<IInputStreamReader> inreader;
     FAIL_RETURN(CInputStreamReader::New(instream,String("ISO-8859-1"), (IInputStreamReader**)&inreader));
-    return Load(inreader);
+    return Load(IReader::Probe(inreader));
 }
 
 ECode Properties::Load(
     /* [in] */ IReader* inreader)
 {
-    Mutex::Autolock lock(GetSelfLock());
+    Object::Autolock lock(this);
     if (inreader == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -244,7 +244,7 @@ ECode Properties::Load(
     FAIL_RETURN(CBufferedReader::New(inreader, (IBufferedReader**)&br));
 
     while (TRUE) {
-        br->Read(&intVal);
+        (IReader::Probe(br))->Read(&intVal);
         if (intVal == -1) {
             break;
         }
@@ -308,7 +308,7 @@ ECode Properties::Load(
             case '!':
                 if (firstChar) {
                     while (TRUE) {
-                        br->Read(&intVal);
+                        (IReader::Probe(br))->Read(&intVal);
                         if (intVal == -1) {
                             break;
                         }
@@ -406,7 +406,7 @@ ECode Properties::PropertyNames(
     AutoPtr<IMap> selected;
     CHashTable::New((IMap**)&selected);
     SelectProperties(selected, FALSE);
-    return IDictionary::Probe(selected)->Keys(names);
+    return IDictionary::Probe(selected)->GetKeys(names);
 }
 
 ECode Properties::StringPropertyNames(
@@ -417,7 +417,7 @@ ECode Properties::StringPropertyNames(
     SelectProperties(stringProperties, TRUE);
     AutoPtr<ISet> keySet;
     stringProperties->GetKeySet((ISet**)&keySet);
-    return CCollections::_NewUnmodifiableSet(keySet, strNames);
+//    return CCollections::_NewUnmodifiableSet(keySet, strNames);
 }
 
 ECode Properties::SelectProperties(
@@ -428,12 +428,12 @@ ECode Properties::SelectProperties(
         mDefaults->SelectProperties(selectProperties, isStringOnly);
     }
     AutoPtr<IEnumeration> keys;
-    Keys((IEnumeration**)&keys);
+    GetKeys((IEnumeration**)&keys);
     Boolean hasFlag = FALSE;
     while (keys->HasMoreElements(&hasFlag), hasFlag) {
         // @SuppressWarnings("unchecked")
         AutoPtr<IInterface> key;
-        keys->NextElement((IInterface**)&key);
+        keys->GetNextElement((IInterface**)&key);
         if (isStringOnly && !ICharSequence::Probe(key)) {
             // Only select property with string key and value
             continue;
@@ -480,37 +480,37 @@ ECode Properties::Store(
 {
     AutoPtr<IOutputStreamWriter> outwriter;
     FAIL_RETURN(COutputStreamWriter::New(outstream,String("ISO-8859-1"), (IOutputStreamWriter**)&outwriter));
-    return Store(outwriter, comment);
+    return Store((IWriter::Probe(outwriter)), comment);
 }
 
 ECode Properties::Store(
     /* [in] */ IWriter* writer,
     /* [in] */ const String& comment)
 {
-    Mutex::Autolock lock(GetSelfLock());
+    Object::Autolock lock(this);
 
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     String lineSeparator;
     system->GetLineSeparator(&lineSeparator);
     if (!comment.IsNull()) {
-        writer->WriteString(String("#"));
-        writer->WriteString(comment);
-        writer->WriteString(lineSeparator);
+        writer->Write(String("#"));
+        writer->Write(comment);
+        writer->Write(lineSeparator);
     }
-    writer->WriteString(String("#"));
+    writer->Write(String("#"));
     AutoPtr<IDate> nowdate;
     FAIL_RETURN(CDate::New((IDate**)&nowdate));
     String outstr;
     IObject::Probe(nowdate)->ToString(&outstr);
-    writer->WriteString(outstr);
-    writer->WriteString(lineSeparator);
+    writer->Write(outstr);
+    writer->Write(lineSeparator);
 
     AutoPtr<StringBuilder> sb = new StringBuilder(200);
     AutoPtr<ISet> entries;
-    FAIL_RETURN(EntrySet((ISet**)&entries));
+    FAIL_RETURN(GetEntrySet((ISet**)&entries));
     AutoPtr<ArrayOf<IInterface*> > outarr;
-    entries->ToArray((ArrayOf<IInterface*>**)&outarr);
+    (ICollection::Probe(entries))->ToArray((ArrayOf<IInterface*>**)&outarr);
     for (Int32 i = 0; i < outarr->GetLength(); i++) {
         AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
         AutoPtr<IInterface> iKey;
@@ -525,8 +525,8 @@ ECode Properties::Store(
         String value;
         ICharSequence::Probe(iValue)->ToString(&value);
         DumpString(sb, value, FALSE);
-        sb->AppendString(lineSeparator);
-        writer->WriteString(sb->ToString());
+        sb->Append(lineSeparator);
+        writer->Write(sb->ToString());
         sb->SetLength(0);
     }
     IFlushable::Probe(writer)->Flush();
@@ -536,7 +536,7 @@ ECode Properties::Store(
 ECode Properties::LoadFromXML(
     /* [in] */ IInputStream* instream)
 {
-    Mutex::Autolock lock(GetSelfLock());
+    Object::Autolock lock(this);
     if (instream == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -623,7 +623,7 @@ ECode Properties::StoreToXML(
     /* [in] */ const String& comment,
     /* [in] */ const String& encoding)
 {
-    Mutex::Autolock lock(GetSelfLock());
+    Object::Autolock lock(this);
     if (os == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -640,7 +640,7 @@ ECode Properties::StoreToXML(
 
     String encodingCanonicalName("UTF-8");
     AutoPtr<ICharsetHelper> sethelper;
-    CCharsetHelper::AcquireSingleton((ICharsetHelper **)&sethelper);
+//    CCharsetHelper::AcquireSingleton((ICharsetHelper **)&sethelper);
     AutoPtr<ICharset> charset;
     if (SUCCEEDED(sethelper->ForName(encoding, (ICharset**)&charset))) {
         charset->GetName(&encodingCanonicalName);
@@ -658,26 +658,26 @@ ECode Properties::StoreToXML(
     AutoPtr<IPrintStream> printStream;
     FAIL_RETURN(CPrintStream::New(os, FALSE, encodingCanonicalName , (IPrintStream **)&printStream));
 
-    printStream->PrintString(String("<?xml version=\"1.0\" encoding=\""));
-    printStream->PrintString(encodingCanonicalName);
-    printStream->PrintStringln(String("\"?>"));
+    printStream->Print(String("<?xml version=\"1.0\" encoding=\""));
+    printStream->Print(encodingCanonicalName);
+    printStream->Println(String("\"?>"));
 
-    printStream->PrintString(String("<!DOCTYPE properties SYSTEM \""));
-    printStream->PrintString(PROP_DTD_NAME);
-    printStream->PrintStringln(String("\">"));
+    printStream->Print(String("<!DOCTYPE properties SYSTEM \""));
+    printStream->Print(PROP_DTD_NAME);
+    printStream->Println(String("\">"));
 
-    printStream->PrintStringln(String("<properties>"));
+    printStream->Println(String("<properties>"));
 
     if (!comment.IsNull()) {
-        printStream->PrintString(String("<comment>"));
-        printStream->PrintString(SubstitutePredefinedEntries(comment));
-        printStream->PrintStringln(String("</comment>"));
+        printStream->Print(String("<comment>"));
+        printStream->Print(SubstitutePredefinedEntries(comment));
+        printStream->Println(String("</comment>"));
     }
 
     AutoPtr<ISet> entries;
-    FAIL_RETURN(EntrySet((ISet**)&entries));
+    FAIL_RETURN(GetEntrySet((ISet**)&entries));
     AutoPtr<ArrayOf<IInterface*> > outarr;
-    entries->ToArray((ArrayOf<IInterface*>**)&outarr);
+    (ICollection::Probe(entries))->ToArray((ArrayOf<IInterface*>**)&outarr);
     for (Int32 i = 0; i < outarr->GetLength(); i++) {
         AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
         AutoPtr<IInterface> iKey;
@@ -688,13 +688,13 @@ ECode Properties::StoreToXML(
         ICharSequence::Probe(iKey)->ToString(&key);
         String value;
         ICharSequence::Probe(iValue)->ToString(&value);
-        printStream->PrintString(String("<entry key=\""));
-        printStream->PrintString(SubstitutePredefinedEntries(key));
-        printStream->PrintString(String("\">"));
-        printStream->PrintString(SubstitutePredefinedEntries(value));
-        printStream->PrintStringln(String("</entry>"));
+        printStream->Print(String("<entry key=\""));
+        printStream->Print(SubstitutePredefinedEntries(key));
+        printStream->Print(String("\">"));
+        printStream->Print(SubstitutePredefinedEntries(value));
+        printStream->Println(String("</entry>"));
     }
-    printStream->PrintStringln(String("</properties>"));
+    printStream->Println(String("</properties>"));
     IFlushable::Probe(printStream)->Flush();
     return  NOERROR;
 }

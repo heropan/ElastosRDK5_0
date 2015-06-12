@@ -81,7 +81,7 @@ public:
 protected:
     Properties();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Properties* properties);
 
 private:

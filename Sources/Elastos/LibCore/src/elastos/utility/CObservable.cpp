@@ -28,7 +28,7 @@ ECode CObservable::AddObserver(
     {
         Object::Autolock lock(this);
         Boolean isflag = FALSE;
-        if (!(mObservers->Contains(observer, &isflag), isflag))
+        if (!((ICollection::Probe(mObservers))->Contains(observer, &isflag), isflag))
             mObservers->Add(observer, &isflag);
     }
     return NOERROR;
@@ -37,21 +37,20 @@ ECode CObservable::AddObserver(
 ECode CObservable::CountObservers(
     /* [out] */ Int32* value)
 {
-    return mObservers->GetSize(value);
+    return (ICollection::Probe(mObservers))->GetSize(value);
 }
 
 ECode CObservable::DeleteObserver(
     /* [in] */ IObserver* observer)
 {
     Object::Autolock lock(this);
-    Boolean isflag = FALSE;
-    return mObservers->Remove(observer, &isflag);
+    return mObservers->Remove(observer);
 }
 
 ECode CObservable::DeleteObservers()
 {
     Object::Autolock lock(this);
-    return mObservers->Clear();
+    return (ICollection::Probe(mObservers))->Clear();
 }
 
 ECode CObservable::HasChanged(
@@ -78,8 +77,8 @@ ECode CObservable::NotifyObservers(
         Boolean isflag = FALSE;
         if (HasChanged(&isflag), isflag) {
             ClearChanged();
-            mObservers->GetSize(&size);
-            mObservers->ToArray((ArrayOf<IInterface*>**)&arrays);
+            (ICollection::Probe(mObservers))->GetSize(&size);
+            (ICollection::Probe(mObservers))->ToArray((ArrayOf<IInterface*>**)&arrays);
         }
     }
     if (arrays != NULL) {
