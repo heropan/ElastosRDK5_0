@@ -5,6 +5,7 @@
 #include "_LIBCORE_NET_HTTP_CHttpDate.h"
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos/core/Singleton.h>
+#include <pthread.h>
 
 using Elastos::Core::Singleton;
 using Elastos::Utility::IDate;
@@ -57,6 +58,7 @@ private:
      * If we fail to parse a date in a non-standard format, try each of these formats in sequence.
      */
     static const String BROWSER_COMPATIBLE_DATE_FORMATS[14];
+    static pthread_key_t key_tls;
 };
 
 } // namespace Http

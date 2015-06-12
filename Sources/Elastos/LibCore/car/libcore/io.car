@@ -45,6 +45,14 @@ module
             interface IStreams;
         }
 
+        singleton class CDeleteOnExitHelper {
+            interface IDeleteOnExitHelper;
+        }
+
+        singleton class CDropBox {
+            interface IDropBox;
+        }
+
 //        class CPosix {
 //            interface IOs;
 //        }

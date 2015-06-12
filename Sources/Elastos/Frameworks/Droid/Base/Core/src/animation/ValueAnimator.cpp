@@ -49,6 +49,7 @@ ValueAnimator::AnimationHandler::AnimationHandler()
 ValueAnimator::AnimationHandler::~AnimationHandler()
 {
 }
+
 void ValueAnimator::AnimationHandler::Start()
 {
     ScheduleAnimation();

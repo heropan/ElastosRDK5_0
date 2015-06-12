@@ -15,7 +15,7 @@ module
             [in] Int32 len,
             [out, callee] ArrayOf<Byte>* outData);
 
-        Encoder(
+        Encode(
             [in] ArrayOf<Byte>* inData,
             [out] String* outData);
     }
