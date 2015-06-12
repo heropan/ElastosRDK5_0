@@ -13,9 +13,6 @@ CarClass(CCat)
 {
 public:
     CAR_OBJECT_DECL()   // 非单例 CAR 类需要使用宏 CAR_OBJECT_DECL/CAR_OBJECT_IMPL
-
-    CARAPI CanFly(
-        /* [out] */ Boolean* canFly);
 };
 
 } // HelloCar

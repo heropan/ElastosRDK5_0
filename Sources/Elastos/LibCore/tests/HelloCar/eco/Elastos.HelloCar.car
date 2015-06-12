@@ -26,6 +26,10 @@ module
     }
 
     class CCat {                        // 声明 CAR 类
+        constructor(                    // 显式声明有参构造函数
+            [in] Int32 age,
+            [in] String name);
+
         interface IAnimal;              // 接口声明
         interface IComparable;          // 接口声明
     }
