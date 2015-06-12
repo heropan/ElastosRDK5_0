@@ -605,6 +605,46 @@ module
             interface ILocaleBuilder;
         }
 
+        class CDate {
+
+            constructor();
+
+            //@Deprecated
+            constructor(
+                [in] Int32 year,
+                [in] Int32 month,
+                [in] Int32 day);
+
+            //@Deprecated
+            constructor(
+                [in] Int32 year,
+                [in] Int32 month,
+                [in] Int32 day,
+                [in] Int32 hour,
+                [in] Int32 minute);
+
+            //@Deprecated
+            constructor(
+                [in] Int32 year,
+                [in] Int32 month,
+                [in] Int32 day,
+                [in] Int32 hour,
+                [in] Int32 minute,
+                [in] Int32 second);
+
+            constructor(
+                [in] Int64 milliseconds);
+
+            //@Deprecated
+            constructor(
+                [in] String string);
+
+            interface IDate;
+            interface ISerializable;
+            interface ICloneable;
+            interface IComparable;
+        }
+
     } // namespace Utility
     } // namespace Elastos
 

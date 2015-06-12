@@ -50,6 +50,7 @@ SOURCES += CTimeZoneGetterHelper.cpp
 SOURCES += CLocale.cpp
 SOURCES += CLocaleHelper.cpp
 SOURCES += CLocaleBuilder.cpp
+SOURCES += Date.cpp
 
 
 

@@ -3,8 +3,12 @@
 #define __ELASTOS_UTILITY_DATE_H__
 
 #include <StringBuilder.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::StringBuilder;
+using Elastos::Core::Object;
+using Elastos::Core::ICloneable;
+using Elastos::Core::IComparable;
 
 namespace Elastos {
 namespace Utility {
@@ -12,11 +16,41 @@ namespace Utility {
 class Date
     : public Object
     , public IDate
+    , public ISerializable
+    , public ICloneable
+    , public IComparable
+
 {
 public:
     CAR_INTERFACE_DECL()
 
     Date();
+
+    Date(
+        /* [in] */ Int32 year,
+        /* [in] */ Int32 month,
+        /* [in] */ Int32 day);
+
+    Date(
+        /* [in] */ Int32 year,
+        /* [in] */ Int32 month,
+        /* [in] */ Int32 day,
+        /* [in] */ Int32 hour,
+        /* [in] */ Int32 minute);
+
+    Date(
+        /* [in] */ Int32 year,
+        /* [in] */ Int32 month,
+        /* [in] */ Int32 day,
+        /* [in] */ Int32 hour,
+        /* [in] */ Int32 minute,
+        /* [in] */ Int32 second);
+
+    Date(
+        /* [in] */ Int64 milliseconds);
+
+    Date(
+        /* [in] */ const String& string);
 
     /**
      * Initializes this {@code Date} instance to the current time.
