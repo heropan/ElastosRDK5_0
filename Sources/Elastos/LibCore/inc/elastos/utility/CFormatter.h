@@ -8,12 +8,12 @@
 using Elastos::Core::IAppendable;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
-using Libcore::ICU::ILocale;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::INativeDecimalFormat;
 using Elastos::IO::IFile;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IPrintStream;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Utility {

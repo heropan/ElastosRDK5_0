@@ -1,17 +1,25 @@
 
-#ifndef __UTILITY_CCURRENCYHELPER_H__
-#define __UTILITY_CCURRENCYHELPER_H__
+#ifndef __ELASTOS_UTILITY_CCURRENCYHELPER_H__
+#define __ELASTOS_UTILITY_CCURRENCYHELPER_H__
 
-#include "_CCurrencyHelper.h"
+#include "_Elastos_Utility_CCurrencyHelper.h"
+#include "Singleton.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Core::Singleton;
+using Elastos::Utility::ILocale;
 
 namespace Elastos{
 namespace Utility{
 
 CarClass(CCurrencyHelper)
+    , public Singleton
+    , public ICurrencyHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetInstance(
         /* [in] */ const String& currencyCode,
         /* [out] */ ICurrency** outcur);
@@ -27,4 +35,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__UTILITY_CCURRENCYHELPER_H__
+#endif //__ELASTOS_UTILITY_CCURRENCYHELPER_H__

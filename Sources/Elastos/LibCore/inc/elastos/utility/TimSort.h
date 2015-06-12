@@ -1,15 +1,17 @@
-#ifndef __UTILITY_TIMSORT_H__
-#define __UTILITY_TIMSORT_H__
+#ifndef __ELASTOS_UTILITY_TIMSORT_H__
+#define __ELASTOS_UTILITY_TIMSORT_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IComparator;
 using Elastos::Core::IComparable;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {
 
 class TimSort
+    : public Object
 {
 public:
     /*
@@ -345,4 +347,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_TIMSORT_H__
+#endif // __ELASTOS_UTILITY_TIMSORT_H__

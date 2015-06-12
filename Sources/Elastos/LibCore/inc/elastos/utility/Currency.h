@@ -5,8 +5,8 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/Object.h>
 
-using Libcore::ICU::ILocale;
-using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::HashMap;
 
 _ETL_NAMESPACE_BEGIN
 #ifndef DEFINE_HASH_AUTOPTR_ILOCALE_USING_HASH_CODE

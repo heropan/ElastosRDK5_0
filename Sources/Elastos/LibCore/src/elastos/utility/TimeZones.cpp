@@ -1,18 +1,18 @@
 
 #include "TimeZones.h"
-#include "ElStringByteSink.h"
+//#include "ElStringByteSink.h"
 #include "CLocaleHelper.h"
 #include "CArrayOf.h"
 #include "CStringWrapper.h"
-#include <elastos/UniquePtr.h>
-#include <elastos/Pair.h>
-#include <elastos/Vector.h>
-#include <elastos/Map.h>
+#include <UniquePtr.h>
+//#include <Pair.h>
+#include <Vector.h>
+//#include <Map.h>
 #include <unicode/smpdtfmt.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #ifdef ELASTOS_CORELIBRARY
-#include <elastos/CSystem.h>
+#include <CSystem.h>
 #endif
 
 using Elastos::Core::ISystem;
@@ -22,14 +22,12 @@ using Elastos::Core::CArrayOf;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::CStringWrapper;
-using Elastos::Utility::Pair;
-using Elastos::Utility::Vector;
-using Elastos::Utility::Map;
+//using Elastos::Utility::Pair;
+//using Elastos::Utility::Vector;
+//using Elastos::Utility::Map;
 
-_ETL_NAMESPACE_BEGIN
-const RBTreeColorType S_RBTreeRed = FALSE;
-const RBTreeColorType S_RBTreeBlack = TRUE;
-_ETL_NAMESPACE_END
+//const RBTreeColorType S_RBTreeRed = FALSE;
+//const RBTreeColorType S_RBTreeBlack = TRUE;
 
 namespace Libcore {
 namespace ICU {

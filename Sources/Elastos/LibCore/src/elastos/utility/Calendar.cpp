@@ -1,16 +1,17 @@
+
 #include "Calendar.h"
-#include <CObjectStringMap.h>
 #include <unistd.h>
-#include "CDateFormatSymbolsHelper.h"
+//#include "CDateFormatSymbolsHelper.h"
 #include "TimeZone.h"
 #include "CGregorianCalendar.h"
 #include "CInteger32.h"
 #include "CLocaleHelper.h"
-#include "CLocaleDataHelper.h"
-#include "CLocaleData.h"
-#include "CICUHelper.h"
+//#include "CLocaleDataHelper.h"
+//#include "CLocaleData.h"
+//#include "CICUHelper.h"
 #include "StringUtils.h"
 #include "StringBuilder.h"
+#include "CHashMap.h"
 
 namespace Elastos{
 namespace Utility{
@@ -19,22 +20,26 @@ namespace Utility{
 extern "C" const InterfaceID EIID_Calendar =
     { 0x2d103daa, 0xa4a7, 0x4fb8, { 0xa1, 0xe7, 0xaf, 0x5e, 032, 0xf9, 0xef, 0x44 } };
 
+using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::ICloneable;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::EIID_IComparable;
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Text::IDateFormatSymbols;
 using Elastos::Text::IDateFormatSymbolsHelper;
-using Elastos::Text::CDateFormatSymbolsHelper;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+//using Elastos::Text::CDateFormatSymbolsHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::CHashMap;
 using Libcore::ICU::ILocaleDataHelper;
-using Libcore::ICU::CLocaleDataHelper;
+//using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
-using Libcore::ICU::CLocaleData;
+//using Libcore::ICU::CLocaleData;
 using Libcore::ICU::IICUHelper;
-using Libcore::ICU::CICUHelper;
+//using Libcore::ICU::CICUHelper;
 
 const String Calendar::FIELD_NAMES[] = {String("ERA"), String("YEAR"), String("MONTH"),
         String("WEEK_OF_YEAR"), String("WEEK_OF_MONTH"), String("DAY_OF_MONTH"), String("DAY_OF_YEAR"),
@@ -42,7 +47,7 @@ const String Calendar::FIELD_NAMES[] = {String("ERA"), String("YEAR"), String("M
         String("HOUR_OF_DAY"), String("MINUTE"), String("SECOND"), String("MILLISECOND"),
         String("ZONE_OFFSET"), String("DST_OFFSET") };
 
-CAR_INTERFACE_IMPL(Calendar, Object, ICalendar)
+CAR_INTERFACE_IMPL_4(Calendar, Object, ICalendar, ISerializable, ICloneable, IComparable)
 
 Calendar::Calendar()
     : mAreFieldsSet(FALSE)
@@ -66,15 +71,15 @@ AutoPtr<ILocale> Calendar::GetDefaultLocale()
     return locale;
 }
 
-ECode Calendar::Init()
+ECode Calendar::constructor()
 {
     AutoPtr<ILocale> locale = GetDefaultLocale();
     AutoPtr<ITimeZone> timezone = TimeZone::GetDefault();
 
-    return Init(timezone.Get(), locale.Get());
+    return constructor(timezone.Get(), locale.Get());
 }
 
-ECode Calendar::Init(
+ECode Calendar::constructor(
     /* [in] */ ITimeZone* timezone)
 {
     mFields = ArrayOf<Int32>::Alloc(ICalendar::FIELD_COUNT);
@@ -85,14 +90,14 @@ ECode Calendar::Init(
     return NOERROR;
 }
 
-ECode Calendar::Init(
+ECode Calendar::constructor(
     /* [in] */ ITimeZone* timezone,
     /* [in] */ ILocale* locale)
 {
-    FAIL_RETURN(Init(timezone));
+    FAIL_RETURN(constructor(timezone));
 
     AutoPtr<ILocaleDataHelper> localeDataHelper;
-    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper);
+//    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper);
 
     AutoPtr<ILocaleData> localeData;
     localeDataHelper->Get(locale, (ILocaleData**)&localeData);
@@ -102,10 +107,10 @@ ECode Calendar::Init(
     localeData->GetMinimalDaysInFirstWeek((IInteger32**)&imdifw);
     Int32 fdw = 0, mdifw = 0;
     if (ifdw) {
-        ifdw->Int32Value(&fdw);
+        ifdw->GetValue(&fdw);
     }
     if (imdifw) {
-        imdifw->Int32Value(&mdifw);
+        imdifw->GetValue(&mdifw);
     }
 
     FAIL_RETURN(SetFirstDayOfWeek(fdw));
@@ -323,9 +328,9 @@ ECode Calendar::GetAvailableLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** ppLocales)
 {
     VALIDATE_NOT_NULL(ppLocales);
-    Object::Autolock lock(this);
+//    Object::Autolock lock(this);
     AutoPtr<IICUHelper> icuHelper;
-    CICUHelper::AcquireSingleton((IICUHelper**)&icuHelper);
+//    CICUHelper::AcquireSingleton((IICUHelper**)&icuHelper);
     return icuHelper->GetAvailableCalendarLocales(ppLocales);
 }
 
@@ -342,7 +347,7 @@ ECode Calendar::GetInstance(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = NULL;
-    Object::Autolock lock(this);
+//    Object::Autolock lock(this);
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend((CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
@@ -356,7 +361,7 @@ ECode Calendar::GetInstance(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = NULL;
-    Object::Autolock lock(this);
+//    Object::Autolock lock(this);
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(locale, (CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
@@ -370,7 +375,7 @@ ECode Calendar::GetInstance(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = NULL;
-    Object::Autolock lock(this);
+//    Object::Autolock lock(this);
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(timezone, (CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
@@ -385,7 +390,7 @@ ECode Calendar::GetInstance(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = NULL;
-    Object::Autolock lock(this);
+//    Object::Autolock lock(this);
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(timezone, locale, (CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
@@ -655,7 +660,7 @@ ECode Calendar::GetDisplayNameArray(
 
     AutoPtr<IDateFormatSymbols> dfs;
     AutoPtr<IDateFormatSymbolsHelper> dfsh;
-    FAIL_RETURN(CDateFormatSymbolsHelper::AcquireSingleton((IDateFormatSymbolsHelper**)&dfsh));
+//    FAIL_RETURN(CDateFormatSymbolsHelper::AcquireSingleton((IDateFormatSymbolsHelper**)&dfsh));
     dfsh->GetInstance(locale, (IDateFormatSymbols**)&dfs);
     AutoPtr< ArrayOf<String> > result;
     switch (field) {
@@ -698,7 +703,7 @@ ECode Calendar::GetDisplayNames(
     /* [in] */ Int32 field,
     /* [in] */ Int32 style,
     /* [in] */ ILocale* locale,
-    /* [out] */ IObjectStringMap** result)
+    /* [out] */ IMap** result)
 {
     VALIDATE_NOT_NULL(result);
     *result = NULL;
@@ -706,8 +711,8 @@ ECode Calendar::GetDisplayNames(
     FAIL_RETURN(CheckStyle(style));
     Complete();
 
-    AutoPtr<IObjectStringMap> array;
-    CObjectStringMap::New((IObjectStringMap**)&array);
+    AutoPtr<IMap> array;
+    CHashMap::New((IMap**)&array);
 
     AutoPtr<ArrayOf<String> > nameArray;
     if (style == ICalendar::SHORT || style == ICalendar::ALL_STYLES) {
@@ -732,7 +737,7 @@ ECode Calendar::GetDisplayNames(
 }
 
 void Calendar::InsertValuesInMap(
-    /* [in] */ IObjectStringMap* array,
+    /* [in] */ IMap* array,
     /* [in] */ ArrayOf<String>& values)
 {
     if (array == NULL) {
@@ -742,7 +747,7 @@ void Calendar::InsertValuesInMap(
         if (!values[i].IsNullOrEmpty()) {
             AutoPtr<IInteger32> ii;
             CInteger32::New(i, (IInteger32**)&ii);
-            array->Put(values[i], ii);
+//            array->Put(values[i], ii);
         }
     }
 }
@@ -769,7 +774,7 @@ String Calendar::ToString()
 {
     StringBuilder sb("Calendar");
     sb += "[time=";
-    sb += (mIsTimeSet ? StringUtils::Int64ToString(mTime) : "?");
+    sb += (mIsTimeSet ? StringUtils::ToString(mTime) : "?");
     sb += ",areFieldsSet=";
     sb += mAreFieldsSet;
     sb += ",lenient=";
@@ -783,10 +788,10 @@ String Calendar::ToString()
     sb += mMinimalDaysInFirstWeek;
     for (Int32 i = 0; i < ICalendar::FIELD_COUNT; i++) {
         sb.AppendChar(',');
-        sb.AppendString(FIELD_NAMES[i]);
+        sb.Append(FIELD_NAMES[i]);
         sb.AppendChar('=');
         if ((*mIsSet)[i]) {
-            sb.AppendInt32((*mFields)[i]);
+            sb.Append((*mFields)[i]);
         } else {
             sb.AppendChar('?');
         }

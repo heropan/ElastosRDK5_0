@@ -370,8 +370,7 @@ void CGregorianCalendar::FullFieldsCalc(
     (*mFields)[MONTH] = month;
     (*mFields)[DATE] = date;
     (*mFields)[DAY_OF_WEEK_IN_MONTH] = (date - 1) / 7 + 1;
-    Int32 firstDayOfWeek;
-    GetFirstDayOfWeek(&firstDayOfWeek);
+    Int32 firstDayOfWeek = GetFirstDayOfWeek();
     (*mFields)[WEEK_OF_MONTH] = (date - 1 + Mod7(days - date - 2
             - (firstDayOfWeek - 1))) / 7 + 1;
     Int32 daysFromStart = Mod7(days - 3 - ((*mFields)[DAY_OF_YEAR] - 1)
@@ -558,13 +557,12 @@ ECode CGregorianCalendar::ComputeTime()
                 dayOfWeek = (*mFields)[DAY_OF_WEEK] - 1;
             }
             else {
-                GetFirstDayOfWeek(&dayOfWeek);
+                dayOfWeek = GetFirstDayOfWeek();
                 dayOfWeek = dayOfWeek - 1;
             }
             if ((*mIsSet)[WEEK_OF_MONTH]
                     && mLastDateFieldSet != DAY_OF_WEEK_IN_MONTH) {
-                Int32 fdow;
-                GetFirstDayOfWeek(&fdow);
+                Int32 fdow = GetFirstDayOfWeek();
                 Int32 skew = Mod7(days - 3 - (fdow - 1));
                 days += ((*mFields)[WEEK_OF_MONTH] - 1) * 7
                         + Mod7(skew + dayOfWeek - (days - 3)) - skew;
@@ -582,8 +580,7 @@ ECode CGregorianCalendar::ComputeTime()
                 }
             }
             else if ((*mIsSet)[DAY_OF_WEEK]) {
-                Int32 fdow;
-                GetFirstDayOfWeek(&fdow);
+                Int32 fdow = GetFirstDayOfWeek();
                 Int32 skew = Mod7(days - 3 - (fdow - 1));
                 days += Mod7(Mod7(skew + dayOfWeek - (days - 3)) - skew);
             }
@@ -602,12 +599,11 @@ ECode CGregorianCalendar::ComputeTime()
                 dayOfWeek = (*mFields)[DAY_OF_WEEK] - 1;
             }
             else {
-                GetFirstDayOfWeek(&dayOfWeek);
+                dayOfWeek = GetFirstDayOfWeek();
                 dayOfWeek = dayOfWeek - 1;
             }
 
-            Int32 fdow;
-            GetFirstDayOfWeek(&fdow);
+            Int32 fdow = GetFirstDayOfWeek();
             Int32 skew = Mod7(days - 3 - (fdow - 1));
             days += ((*mFields)[WEEK_OF_YEAR] - 1) * 7
                     + Mod7(skew + dayOfWeek - (days - 3)) - skew;
@@ -846,17 +842,17 @@ ECode CGregorianCalendar::GetActualMaximum(
             Int32 ret;
             Get(ERA, &ret);
             if (ret == AD) {
-                clone->SetTimeInMillis(Elastos::Core::Math::INT64_MAX_VALUE);
+                (ICalendar::Probe(clone))->SetTimeInMillis(Elastos::Core::Math::INT64_MAX_VALUE);
             }
             else {
-                clone->SetTimeInMillis(Elastos::Core::Math::INT64_MIN_VALUE);
+                (ICalendar::Probe(clone))->SetTimeInMillis(Elastos::Core::Math::INT64_MIN_VALUE);
             }
-            clone->Get(YEAR, &result);
+            (ICalendar::Probe(clone))->Get(YEAR, &result);
             Int32 hretmp;
             Get(YEAR, &hretmp);
-            clone->Set(YEAR, hretmp);
+            (ICalendar::Probe(clone))->Set(YEAR, hretmp);
             Boolean isBefore;
-            clone->IsBefore((ICalendar*)this->Probe(EIID_ICalendar), &isBefore);
+            (ICalendar::Probe(clone))->IsBefore((ICalendar*)this->Probe(EIID_ICalendar), &isBefore);
             if (isBefore) {
                 result--;
             }
@@ -1168,10 +1164,10 @@ ECode CGregorianCalendar::SetGregorianChange(
     AutoPtr<IGregorianCalendar> cal;
     AutoPtr<ITimeZone> timezone = TimeZone::GMT();
     CGregorianCalendar::New(timezone, (IGregorianCalendar **)&cal);
-    cal->SetTime(date);
-    cal->Get(YEAR, &mChangeYear);
+    (ICalendar::Probe(cal))->SetTime(date);
+    (ICalendar::Probe(cal))->Get(YEAR, &mChangeYear);
     Int32 value;
-    cal->Get(ERA, &value);
+    (ICalendar::Probe(cal))->Get(ERA, &value);
     if (value == BC) {
         mChangeYear = 1 - mChangeYear;
     }
@@ -1179,7 +1175,7 @@ ECode CGregorianCalendar::SetGregorianChange(
             - ((mChangeYear - 2000) / 100);
 
     Int32 dayOfYear;
-    cal->Get(DAY_OF_YEAR, &dayOfYear);
+    (ICalendar::Probe(cal))->Get(DAY_OF_YEAR, &dayOfYear);
     if (dayOfYear < mJulianSkew) {
         mCurrentYearSkew = dayOfYear-1;
         mLastYearSkew = mJulianSkew - dayOfYear + 1;

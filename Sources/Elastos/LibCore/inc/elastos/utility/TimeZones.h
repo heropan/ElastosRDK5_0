@@ -1,23 +1,23 @@
 
-#ifndef __ICU_TIMEZONES_H__
-#define __ICU_TIMEZONES_H__
+#ifndef __ELASTOS_UTILITY_TIMEZONES_H__
+#define __ELASTOS_UTILITY_TIMEZONES_H__
 
-#include "Elastos.CoreLibrary_server.h"
-#include <elastos/utility/etl/HashMap.h>
-#include <elastos/Mutex.h>
+#include <HashMap.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::IArrayOf;
-using Elastos::Core::Mutex;
-using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::HashMap;
 
-namespace Libcore {
-namespace ICU {
+namespace Elastos {
+namespace Utility {
 
 class TimeZones
+    : public Object
 {
 public:
     class ZoneStringsCache
-        : public ElLightRefBase
+        : public Object
     {
     public:
         ZoneStringsCache();
@@ -38,7 +38,6 @@ public:
 
     private:
         HashMap<String, String> mInternTable;
-        Mutex mlock;
     };
 
 public:
@@ -72,7 +71,7 @@ private:
     static AutoPtr<ZoneStringsCache> sCachedZoneStrings;
 };
 
-} // namespace ICU
-} // namespace Libcore
+} // namespace Utility
+} // namespace Elastos
 
-#endif //__ICU_TIMEZONES_H__
+#endif //__ELASTOS_UTILITY_TIMEZONES_H__

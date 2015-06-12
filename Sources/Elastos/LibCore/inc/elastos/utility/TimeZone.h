@@ -1,26 +1,31 @@
 
-#ifndef __UTILITY_TIMEZONE_H__
-#define __UTILITY_TIMEZONE_H__
+#ifndef __ELASTOS_UTILITY_TIMEZONE_H__
+#define __ELASTOS_UTILITY_TIMEZONE_H__
 
 #include "CDate.h"
-#include <elastos/StringBuffer.h>
+#include "StringBuffer.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::StringBuffer;
 using Elastos::Utility::Regex::IPattern;
-using Libcore::ICU::ILocale;
+//using Libcore::ICU::ILocale;
 
 namespace Elastos {
 namespace Utility {
 
 class TimeZone
+    : public Object
+    , public ITimeZone
+    , public ISerializable
+    , public ICloneable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     TimeZone() {}
 
     virtual ~TimeZone() {}
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     /**
      * Equivalent to {@code getDisplayName(false, TimeZone.LONG, Locale.getDefault())}.
@@ -227,4 +232,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_TIMEZONE_H__
+#endif // __ELASTOS_UTILITY_TIMEZONE_H__

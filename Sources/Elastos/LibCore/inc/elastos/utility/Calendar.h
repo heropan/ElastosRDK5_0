@@ -2,19 +2,25 @@
 #define __ELASTOS_UTILITY_CCALENDAR_H__
 
 #include <elautoptr.h>
+#include <elastos/core/Object.h>
 
-using Libcore::ICU::ILocale;
+using Elastos::Core::IComparable;
+using Elastos::Core::ICloneable;
+using Elastos::Core::Object;
+using Elastos::Utility::ILocale;
+using Elastos::IO::ISerializable;
 
 namespace Elastos{
 namespace Utility{
 
 extern "C" const InterfaceID EIID_Calendar;
 
-class IObjectStringMap;
-
 class Calendar
     : public Object
     , public ICalendar
+    , public ISerializable
+    , public ICloneable
+    , public IComparable
 {
 protected:
     CAR_INTERFACE_DECL()
@@ -24,7 +30,7 @@ protected:
     /**
      * Constructs a {@code Calendar} instance using the default {@code TimeZone} and {@code Locale}.
      */
-    CARAPI Init();
+    CARAPI constructor();
 
     /**
      * Constructs a {@code Calendar} instance using the specified {@code TimeZone} and {@code Locale}.
@@ -34,7 +40,7 @@ protected:
      * @param locale
      *            the locale.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ITimeZone* timezone,
         /* [in] */ ILocale* locale);
 
@@ -516,7 +522,7 @@ public:
         /* [in] */ Int32 field,
         /* [in] */ Int32 style,
         /* [in] */ ILocale* locale,
-        /* [out] */ IObjectStringMap** array);
+        /* [out] */ IMap** array);
 
     virtual Clone(
         /* [out] */ IInterface** cloned) = 0;
@@ -631,7 +637,7 @@ private:
         /* [out, callee] */ ArrayOf<String>** array);
 
     static void InsertValuesInMap(
-        /* [in] */ IObjectStringMap* array,
+        /* [in] */ IMap* array,
         /* [in] */ ArrayOf<String>& values);
 
 private:
