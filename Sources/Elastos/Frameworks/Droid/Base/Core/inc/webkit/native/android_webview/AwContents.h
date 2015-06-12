@@ -460,6 +460,27 @@ private:
         : public Object
         , public IGeolocationPermissionsCallback
     {
+    private:
+        class InnerRunnable
+            : public Object
+            , public IRunnable
+        {
+        public:
+            InnerRunnable(
+                /* [in] */ AwGeolocationCallback* owner,
+                /* [in] */ const String& origin,
+                /* [in] */ Boolean allow,
+                /* [in] */ Boolean retain);
+
+            CARAPI Run();
+
+        private:
+            AwGeolocationCallback* mOwner;
+            const String& mOrigin;
+            Boolean mAllow,
+            Boolean mRetain;
+        };
+
     public:
         AwGeolocationCallback(
             /* [in] */ AwContents* owner);
@@ -467,7 +488,7 @@ private:
         //@Override
         CARAPI Invoke(
             /* [in] */ const String& origin,
-            /* [in] */ const Boolean allow,
+            /* [in] */ Boolean allow,
             /* [in] */ Boolean retain);
 
     private:
@@ -574,6 +595,120 @@ private:
         const Rect mClipBoundsTemporary = new Rect();
         Int32 mLayerType = View.LAYER_TYPE_NONE;
         AutoPtr<IComponentCallbacks2> mComponentCallbacks;
+    };
+
+    class InnerZoomSupportChangeListener
+        : public Object
+        , public ZoomSupportChangeListener
+    {
+    public:
+        InnerZoomSupportChangeListener(
+            /* [in] */ AwContents* owner);
+
+        //@Override
+        CARAPI_(void) OnGestureZoomSupportChanged(
+            /* [in] */ Boolean supportsDoubleTapZoom,
+            /* [in] */ Boolean supportsMultiTouchZoom);
+
+    private:
+        AwContents* mOwner;
+    };
+
+    class InnerCallable
+        : public Object
+        , public ICallable
+    {
+    public:
+        InnerCallable(
+            /* [in] */ AwContents* owner);
+
+        CARAPI Call(
+            /* [out] */ IPicture** pic);
+
+    private:
+        AwContents* mOwner;
+    };
+
+    class InnerValueCallback
+        : public Object
+        , public IValueCallback
+    {
+    private:
+        class InnerRunnable
+            : public Object
+            , public IRunnable
+        {
+        public:
+            InnerRunnable(
+                /* [in] */ InnerValueCallback* owner,
+                /* [in] */ ArrayOf<String>* value);
+
+            CARAPI Run();
+
+        private:
+            InnerValueCallback* mOwner;
+            ArrayOf<String>* mValue;
+        };
+
+    public:
+        InnerValueCallback(
+            /* [in] */ AwContents* owner);
+
+        CARAPI OnReceiveValue(
+            /* [in] */ ArrayOf<String>* value);
+
+    private:
+        AwContents* mOwner;
+    };
+
+    class InnerJavaScriptCallback : public ContentViewCore::JavaScriptCallback
+    {
+    public:
+        InnerJavaScriptCallback(
+            /* [in] */ AwContents* owner,
+            /* [in] */ IValueCallback* callback);
+
+        CARAPI_(void) HandleJavaScriptResult(
+            /* [in] */ String jsonResult);
+
+    private:
+        AwContents* mOwner;
+        IValueCallback* mCallback;
+    };
+
+    class SaveWebArchiveInternalRunnable
+        : public Object
+        , public IRunnable
+    {
+    public:
+        SaveWebArchiveInternalRunnable(
+            /* [in] */ AwContents* owner,
+            /* [in] */ const IValueCallback* callback);
+
+        CARAPI Run();
+
+    private:
+        AwContents* mOwner;
+        const IValueCallback* mCallback;
+    };
+
+    class InnerSmartClipDataListener
+        : public Object
+        , public ContentViewCore::SmartClipDataListener
+    {
+    public:
+        InnerSmartClipDataListener(
+            /* [in] */ AwContents* owner,
+            /* [in] */ const IHandler* resultHandler);
+
+        CARAPI_(void) OnSmartClipDataExtracted(
+            /* [in] */ String text,
+            /* [in] */ String html,
+            /* [in] */ IRect* clipRect);
+
+    private:
+        AwContents* mOwner;
+        const IHandler* mResultHandler;
     };
 
 public:
@@ -732,7 +867,7 @@ public:
      * @param params Parameters for this load.
      */
     virtual CARAPI_(void) LoadUrl(
-        /* [in] */ LoadUrlParams params);
+        /* [in] */ LoadUrlParams* params);
 
     /**
      * Get the URL of the current page.
@@ -1642,6 +1777,16 @@ private:
         /* [in] */ String origin,
         /* [in] */ Int64 resources);
 
+    CARAPI_(void) Init(
+        /* [in] */ AwBrowserContext* browserContext,
+        /* [in] */ IViewGroup* containerView,
+        /* [in] */ IContext* context,
+        /* [in] */ InternalAccessDelegate* internalAccessAdapter,
+        /* [in] */ NativeGLDelegate* nativeGLDelegate,
+        /* [in] */ AwContentsClient* contentsClient,
+        /* [in] */ AwSettings* settings,
+        /* [in] */ DependencyFactory* dependencyFactory);
+
 private:
     // This is only to avoid heap allocations inside getGlobalVisibleRect. It should treated
     // as a local variable in the function and not used anywhere else.
@@ -1671,20 +1816,20 @@ private:
     const AutoPtr<AwLayoutChangeListener> mLayoutChangeListener;
     const AutoPtr<IContext> mContext;
     AutoPtr<ContentViewCore> mContentViewCore;
-    const AutoPtr<AwContentsClient mContentsClient;
-    const AutoPtr<AwContentViewClient mContentViewClient;
-    const AutoPtr<AwContentsClientBridge mContentsClientBridge;
-    const AutoPtr<AwWebContentsDelegateAdapter mWebContentsDelegate;
-    const AutoPtr<AwContentsIoThreadClient mIoThreadClient;
-    const InterceptNavigationDelegateImpl mInterceptNavigationDelegate;
+    const AutoPtr<AwContentsClient> mContentsClient;
+    const AutoPtr<AwContentViewClient> mContentViewClient;
+    const AutoPtr<AwContentsClientBridge> mContentsClientBridge;
+    const AutoPtr<AwWebContentsDelegateAdapter> mWebContentsDelegate;
+    const AutoPtr<AwContentsIoThreadClient> mIoThreadClient;
+    const InterceptNavigationDelegateImpl> mInterceptNavigationDelegate;
     AutoPtr<InternalAccessDelegate> mInternalAccessAdapter;
-    const NativeGLDelegate mNativeGLDelegate;
-    const AutoPtr<AwLayoutSizer mLayoutSizer;
-    const AutoPtr<AwZoomControls mZoomControls;
-    const AutoPtr<AwScrollOffsetManager mScrollOffsetManager;
-    AutoPtr<IOverScrollGlow> mOverScrollGlow;
+    const AutoPtr<NativeGLDelegate> mNativeGLDelegate;
+    const AutoPtr<AwLayoutSizer> mLayoutSizer;
+    const AutoPtr<AwZoomControls> mZoomControls;
+    const AutoPtr<AwScrollOffsetManager> mScrollOffsetManager;
+    AutoPtr<OverScrollGlow> mOverScrollGlow;
     // This can be accessed on any thread after construction. See AwContentsIoThreadClient.
-    const AutoPtr<AwSettings mSettings;
+    const AutoPtr<AwSettings> mSettings;
     const AutoPtr<ScrollAccessibilityHelper> mScrollAccessibilityHelper;
 
     Boolean mIsPaused;
