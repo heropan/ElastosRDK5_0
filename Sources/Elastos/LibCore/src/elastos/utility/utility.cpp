@@ -6,6 +6,7 @@
 // Date & time related classes
 //
 #include "CTimer.h"
+#include "CDate.h"
 
 
 namespace Elastos {
@@ -21,6 +22,7 @@ CAR_OBJECT_IMPL(CHashTable)
 // Date & time related classes
 //
 CAR_OBJECT_IMPL(CTimer)
+CAR_OBJECT_IMPL(CDate)
 
 
 
