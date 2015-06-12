@@ -2,14 +2,21 @@
 #ifndef __BASICLRUCACHE_H__
 #define __BASICLRUCACHE_H__
 
+#include "Object.h"
+#include "elastos/utility/CLinkedHashMap.h"
 #include "Elastos.CoreLibrary_server.h"
 
+using Elastos::Core::Object;
 using Elastos::Utility::IMap;
+using Elastos::Utility::CLinkedHashMap;
+using Libcore::Utility::IBasicLruCache;
 
 namespace Libcore {
 namespace Utility {
 
 class BasicLruCache
+    , public Object
+    , public IBasicLruCache
 {
 public:
     BasicLruCache();

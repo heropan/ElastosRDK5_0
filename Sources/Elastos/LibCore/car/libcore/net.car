@@ -20,6 +20,11 @@ module
         singleton class CMimeUtils {
             interface IMimeUtils;
         }
+
+        singleton class CUriCodecHelper {
+            interface IUriCodecHelper;
+        }
+
     }
     }
 }

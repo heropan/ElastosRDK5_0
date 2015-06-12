@@ -27,3 +27,8 @@ SOURCES += ForwardingOs.cpp
 SOURCES += ToStringArray.cpp
 SOURCES += BlockGuardOs.cpp
 SOURCES += CStreams.cpp
+SOURCES += DeleteOnExit.cpp
+SOURCES += CDeleteOnExitHelper.cpp
+SOURCES += CDropBox.cpp
+SOURCES += HeapBufferIterator.cpp
+

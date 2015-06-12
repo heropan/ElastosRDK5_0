@@ -128,7 +128,7 @@ ECode CBase64::Decode(
     return NOERROR;
 }
 
-ECode CBase64::Encoder(
+ECode CBase64::Encode(
     /* [in] */ ArrayOf<Byte>* inData,
     /* [out] */ String* outData)
 {

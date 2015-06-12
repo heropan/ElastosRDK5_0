@@ -31,6 +31,23 @@ const String CHttpDate::BROWSER_COMPATIBLE_DATE_FORMATS[14] = {
         String("EEE MMM d yyyy HH:mm:ss z"),
 };
 
+pthread_key_t CHttpDate::key_tls;
+
+static void ThreadDestructor(void* st)
+{
+    ISimpleDateFormat* format = reinterpret_cast<ISimpleDateFormat*>(st);
+    if (format) {
+        format->Release();
+    }
+}
+
+static Boolean InitTLS()
+{
+    Int32 result = pthread_key_create(&key_tls, ThreadDestructor);
+    assert(result == 0);
+    return TRUE;
+}
+
 CAR_INTERFACE_IMPL(CHttpDate, Singleton, IHttpDate)
 
 CAR_SINGLETON_IMPL(CHttpDate)

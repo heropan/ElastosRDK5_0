@@ -28,7 +28,7 @@ public:
         /* [in] */ Int32 len,
         /* [out, callee] */ ArrayOf<Byte>** outData);
 
-    CARAPI Encoder(
+    CARAPI Encode(
         /* [in] */ ArrayOf<Byte>* inData,
         /* [out] */ String* outData);
 
