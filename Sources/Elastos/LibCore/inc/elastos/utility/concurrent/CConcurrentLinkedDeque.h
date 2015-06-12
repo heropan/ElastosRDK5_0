@@ -4,7 +4,7 @@
 
 #include "_Elastos_Utility_Concurrent_CConcurrentLinkedDeque.h"
 #include "AbstractCollection.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 using Elastos::IO::IObjectOutputStream;

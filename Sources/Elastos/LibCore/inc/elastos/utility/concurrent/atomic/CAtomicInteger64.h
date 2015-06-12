@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_CATOMICINTEGER64_H__
 
 #include "_Elastos_Utility_Concurrent_CAtomicInteger64.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 

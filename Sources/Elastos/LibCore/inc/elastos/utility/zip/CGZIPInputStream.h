@@ -2,7 +2,6 @@
 #ifndef __ELASTOS_UTILITY_CGZIPINPUTSTREAM_H__
 #define __ELASTOS_UTILITY_CGZIPINPUTSTREAM_H__
 
-#include "CMemory.h"
 #include "_Elastos_Utility_Zip_CGZIPInputStream.h"
 #include "InflaterInputStream.h"
 #include "CCRC32.h"
@@ -38,7 +37,7 @@ public:
      * given buffer.
      */
     CARAPI Read(
-        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);

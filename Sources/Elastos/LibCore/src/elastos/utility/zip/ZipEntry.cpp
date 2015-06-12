@@ -1,11 +1,16 @@
 
 #include "ZipEntry.h"
+// #include "CGregorianCalendar.h"
+//#include "CDate.h"
+#include "CStreams.h"
+// #include "CHeapBufferIterator.h"
 
-using Elastos::IO::IStreams;
-using Elastos::IO::CStreams;
-using Elastos::IO::IHeapBufferIterator;
-using Elastos::IO::CHeapBufferIterator;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
+using Libcore::IO::IHeapBufferIterator;
+// using Libcore::IO::CHeapBufferIterator;
 using Elastos::IO::ByteOrder_LITTLE_ENDIAN;
+using Elastos::Core::EIID_ICloneable;
 
 namespace Elastos {
 namespace Utility {
@@ -15,7 +20,7 @@ namespace Zip {
 extern "C" const InterfaceID EIID_ZipEntry =
         { 0x2BFF7AA8, 0x6021, 0x6956, { 0x0E, 0xB4, 0x0A, 0xAC, 0xAD, 0xF7, 0x36, 0x8B } };
 
-CAR_INTERFACE_IMPL(ZipEntry, Object, IZipEntry)
+CAR_INTERFACE_IMPL_2(ZipEntry, Object, IZipEntry, ICloneable)
 
 ZipEntry::ZipEntry()
     : mCompressedSize(-1)
@@ -33,47 +38,85 @@ ZipEntry::~ZipEntry()
 {
 }
 
-String ZipEntry::GetComment()
+ECode ZipEntry::Clone(
+    /* [out] */ IInterface** obj)
 {
-    return mComment;
+    return NOERROR;
 }
 
-Int64 ZipEntry::GetCompressedSize()
+ECode ZipEntry::GetHashCode(
+    /* [out] */ Int32* hash)
 {
-    return mCompressedSize;
+    // return name.hashCode();
+    return NOERROR;
 }
 
-Int64 ZipEntry::GetCrc()
+ECode ZipEntry::GetComment(
+    /* [out] */ String* result)
 {
-    return mCrc;
+    VALIDATE_NOT_NULL(result)
+    *result = mComment;
+    return NOERROR;
 }
 
-AutoPtr<ArrayOf<Byte> > ZipEntry::GetExtra()
+ECode ZipEntry::GetCompressedSize(
+    /* [out] */ Int64* result)
 {
-    return mExtra;
+    VALIDATE_NOT_NULL(result)
+    *result = mCompressedSize;
+    return NOERROR;
 }
 
-Int32 ZipEntry::GetMethod()
+ECode ZipEntry::GetCrc(
+    /* [out] */ Int64* result)
 {
-    return mCompressionMethod;
+    VALIDATE_NOT_NULL(result)
+    *result = mCrc;
+    return NOERROR;
 }
 
-String ZipEntry::GetName()
+ECode ZipEntry::GetExtra(
+    /* [out, callee] */ ArrayOf<Byte>** result)
 {
-    return mName;
+    VALIDATE_NOT_NULL(result)
+    *result = mExtra;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
-Int64 ZipEntry::GetSize()
+ECode ZipEntry::GetMethod(
+    /* [out] */ Int32* result)
 {
-    return mSize;
+    VALIDATE_NOT_NULL(result)
+    *result = mCompressionMethod;
+    return NOERROR;
 }
 
-Int64 ZipEntry::GetTime()
+ECode ZipEntry::GetName(
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = mName;
+    return NOERROR;
+}
+
+ECode ZipEntry::GetSize(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mSize;
+    return NOERROR;
+}
+
+ECode ZipEntry::GetTime(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result)
+
     Int64 time = -1;
     if (mTime != -1) {
-        AutoPtr<IGregorianCalendar> cal;
-        CGregorianCalendar::New((IGregorianCalendar**)&cal);
+        AutoPtr<ICalendar> cal;
+        // CGregorianCalendar::New((ICalendar**)&cal);
         cal->Set(ICalendar::MILLISECOND, 0);
         cal->Set(1980 + ((mModDate >> 9) & 0x7f), ((mModDate >> 5) & 0xf) - 1,
                 mModDate & 0x1f, (mTime >> 11) & 0x1f, (mTime >> 5) & 0x3f,
@@ -82,14 +125,18 @@ Int64 ZipEntry::GetTime()
         cal->GetTime((IDate**)&d);
         d->GetTime(&time);
     }
-    return time;
+    *result = time;
+    return NOERROR;
 }
 
-Boolean ZipEntry::IsDirectory()
+ECode ZipEntry::IsDirectory(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     Int32 length = mName.GetLength();
     assert(length > 0);
-    return mName.GetChar(length - 1) == '/';
+    *result = mName.GetChar(length - 1) == '/';
+    return NOERROR;
 }
 
 ECode ZipEntry::SetComment(
@@ -165,10 +212,10 @@ ECode ZipEntry::SetSize(
 ECode ZipEntry::SetTime(
     /* [in] */ Int64 value)
 {
-    AutoPtr<IGregorianCalendar> cal;
-    CGregorianCalendar::New((IGregorianCalendar**)&cal);
+    AutoPtr<ICalendar> cal;
+    // CGregorianCalendar::New((ICalendar**)&cal);
     AutoPtr<IDate> date;
-    CDate::New(value, (IDate**)&date);
+    // CDate::New(value, (IDate**)&date);
     cal->SetTime(date);
     Int32 year;
     cal->Get(ICalendar::YEAR, &year);
@@ -227,73 +274,73 @@ ECode ZipEntry::constructor(
 }
 
 ECode ZipEntry::constructor(
-    /* in */ const ArrayOf<Byte>& hdrBuf,
+    /* in */ ArrayOf<Byte>* buf,
     /* in */ IInputStream* in)
 {
-    ArrayOf<Byte>* buf = const_cast<ArrayOf<Byte>* >(&hdrBuf);
+    VALIDATE_NOT_NULL(buf)
     AutoPtr<IStreams> streams;
     CStreams::AcquireSingleton((IStreams**)&streams);
     FAIL_RETURN(streams->ReadFully(in, 0, buf->GetLength(), buf));
 
-    AutoPtr<IHeapBufferIterator> it;
-    CHeapBufferIterator::New(buf, 0, buf->GetLength(), ByteOrder_LITTLE_ENDIAN,
-            (IHeapBufferIterator**)&it);
+//     AutoPtr<IHeapBufferIterator> it;
+//     CHeapBufferIterator::New(buf, 0, buf->GetLength(), ByteOrder_LITTLE_ENDIAN,
+//             (IHeapBufferIterator**)&it);
 
-    Int32 sig;
-    it->ReadInt32(&sig);
-    if (sig != IZipConstants::CENSIG) {
-        return E_ZIP_EXCEPTION;
-//         throw new ZipException("Central Directory Entry not found");
-    }
+//     Int32 sig;
+//     it->ReadInt32(&sig);
+//     if (sig != IZipConstants::CENSIG) {
+//         return E_ZIP_EXCEPTION;
+// //         throw new ZipException("Central Directory Entry not found");
+//     }
 
-    Int16 temp16;
-    it->Seek(10);
-    it->ReadInt16(&temp16);
-    mCompressionMethod = temp16;
-    it->ReadInt16(&temp16);
-    mTime = temp16;
-    it->ReadInt16(&temp16);
-    mModDate = temp16;
+//     Int16 temp16;
+//     it->Seek(10);
+//     it->ReadInt16(&temp16);
+//     mCompressionMethod = temp16;
+//     it->ReadInt16(&temp16);
+//     mTime = temp16;
+//     it->ReadInt16(&temp16);
+//     mModDate = temp16;
 
-    // These are 32-bit values in the file, but 64-bit fields in this object.
-    Int32 temp;
-    it->ReadInt32(&temp);
-    mCrc = ((Int64)temp) & 0xffffffffll;
+//     // These are 32-bit values in the file, but 64-bit fields in this object.
+//     Int32 temp;
+//     it->ReadInt32(&temp);
+//     mCrc = ((Int64)temp) & 0xffffffffll;
 
-    it->ReadInt32(&temp);
-    mCompressedSize = ((Int64)temp) & 0xffffffffll;
+//     it->ReadInt32(&temp);
+//     mCompressedSize = ((Int64)temp) & 0xffffffffll;
 
-    it->ReadInt32(&temp);
-    mSize = ((Int64)temp) & 0xffffffffll;
+//     it->ReadInt32(&temp);
+//     mSize = ((Int64)temp) & 0xffffffffll;
 
-    it->ReadInt16(&temp16);
-    mNameLength = temp16;
-    Int16 extraLength, commentLength;
-    it->ReadInt16(&extraLength);
-    it->ReadInt16(&commentLength);
+//     it->ReadInt16(&temp16);
+//     mNameLength = temp16;
+//     Int16 extraLength, commentLength;
+//     it->ReadInt16(&extraLength);
+//     it->ReadInt16(&commentLength);
 
-    // This is a 32-bit value in the file, but a 64-bit field in this object.
-    it->Seek(42);
-    it->ReadInt32(&temp);
-    mLocalHeaderRelOffset = ((Int64) temp) & 0xffffffffll;
+//     // This is a 32-bit value in the file, but a 64-bit field in this object.
+//     it->Seek(42);
+//     it->ReadInt32(&temp);
+//     mLocalHeaderRelOffset = ((Int64) temp) & 0xffffffffll;
 
-    AutoPtr< ArrayOf<Byte> > nameBytes = ArrayOf<Byte>::Alloc(mNameLength);
-    FAIL_RETURN(streams->ReadFully(in, 0, mNameLength, nameBytes));
-    mName = String((const char *)nameBytes->GetPayload(), mNameLength);
+//     AutoPtr< ArrayOf<Byte> > nameBytes = ArrayOf<Byte>::Alloc(mNameLength);
+//     FAIL_RETURN(streams->ReadFully(in, 0, mNameLength, nameBytes));
+//     mName = String((const char *)nameBytes->GetPayload(), mNameLength);
 
-    // The RI has always assumed UTF-8. (If GPBF_UTF8_FLAG isn't set, the encoding is
-    // actually IBM-437.)
-    if (commentLength > 0) {
-        AutoPtr< ArrayOf<Byte> > commentBytes = ArrayOf<Byte>::Alloc(commentLength);
-        FAIL_RETURN(streams->ReadFully(in, 0, commentLength, commentBytes));
-        mComment = String((const char *)commentBytes->GetPayload(),
-                commentBytes->GetLength());
-    }
+//     // The RI has always assumed UTF-8. (If GPBF_UTF8_FLAG isn't set, the encoding is
+//     // actually IBM-437.)
+//     if (commentLength > 0) {
+//         AutoPtr< ArrayOf<Byte> > commentBytes = ArrayOf<Byte>::Alloc(commentLength);
+//         FAIL_RETURN(streams->ReadFully(in, 0, commentLength, commentBytes));
+//         mComment = String((const char *)commentBytes->GetPayload(),
+//                 commentBytes->GetLength());
+//     }
 
-    if (extraLength > 0) {
-        mExtra = ArrayOf<Byte>::Alloc(extraLength);
-        streams->ReadFully(in, 0, extraLength, mExtra);
-    }
+//     if (extraLength > 0) {
+//         mExtra = ArrayOf<Byte>::Alloc(extraLength);
+//         streams->ReadFully(in, 0, extraLength, mExtra);
+//     }
 
     return NOERROR;
 }

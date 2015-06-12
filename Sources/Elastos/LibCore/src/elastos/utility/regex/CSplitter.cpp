@@ -2,7 +2,7 @@
 #include "CSplitter.h"
 #include "CMatcher.h"
 #include "CStringWrapper.h"
-#include <elastos/core/Math.h>
+#include "Math.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::Math;

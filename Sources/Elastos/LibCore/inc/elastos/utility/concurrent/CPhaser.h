@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_CPHASER_H__
 
 #include "_Elastos_Utility_Concurrent_CPhaser.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 using Elastos::Utility::Concurrent::Atomic::IAtomicReference;

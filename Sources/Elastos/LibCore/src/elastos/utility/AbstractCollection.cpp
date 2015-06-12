@@ -1,6 +1,6 @@
 
 #include "AbstractCollection.h"
-#include <elastos/core/StringBuilder.h>
+#include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 

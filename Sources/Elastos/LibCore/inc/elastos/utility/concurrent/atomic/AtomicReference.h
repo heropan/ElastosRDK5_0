@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_UTILITY_ATOMICREFERENCE_H__
 #define __ELASTOS_UTILITY_ATOMICREFERENCE_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 

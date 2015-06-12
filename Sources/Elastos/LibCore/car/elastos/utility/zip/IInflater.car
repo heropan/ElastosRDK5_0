@@ -46,7 +46,7 @@ module
      * @sa InflaterInputStream
      *
      */
-
+    [deprecated]
     interface IInflater {
         /**
          * Releases resources associated with this {Inflater}. Any unused
@@ -132,7 +132,7 @@ module
          * DataFormatException | if the underlying stream is corrupted or was not compressed using a {Deflater}.
          */
         Inflate(
-            [out] ArrayOf<Byte> buf,
+            [in] ArrayOf<Byte>* buf,
             [out] Int32* number);
 
          /**
@@ -147,7 +147,7 @@ module
          */
         // synchronized
         Inflate(
-            [out] ArrayOf<Byte> buf,
+            [in] ArrayOf<Byte>* buf,
             [in] Int32 offset,
             [in] Int32 byteCount,
             [out] Int32* number);
@@ -183,7 +183,7 @@ module
          */
         // synchronized
         SetDictionary(
-            [in] ArrayOf<Byte> buf);
+            [in] ArrayOf<Byte>* buf);
 
         /**
          * Sets the preset dictionary to be used for inflation to a subsequence of {dictionary}
@@ -192,7 +192,7 @@ module
          */
         // synchronized
         SetDictionary(
-            [in] ArrayOf<Byte> buf,
+            [in] ArrayOf<Byte>* buf,
             [in] Int32 offset,
             [in] Int32 byteCount);
 
@@ -202,7 +202,7 @@ module
          */
         // synchronized
         SetInput(
-            [in] ArrayOf<Byte> buf);
+            [in] ArrayOf<Byte>* buf);
 
         /**
          * Sets the current input to to be decompressed. This method should only be
@@ -210,7 +210,7 @@ module
          */
         // synchronized
         SetInput(
-            [in] ArrayOf<Byte> buf,
+            [in] ArrayOf<Byte>* buf,
             [in] Int32 offset,
             [in] Int32 byteCount);
     }

@@ -1,8 +1,9 @@
 
 #include "CGZIPInputStream.h"
+// #include "CMemory.h"
 
-using Elastos::IO::IMemory;
-using Elastos::IO::CMemory;
+using Libcore::IO::IMemory;
+// using Libcore::IO::CMemory;
 using Elastos::IO::ByteOrder_LITTLE_ENDIAN;
 
 namespace Elastos {
@@ -59,7 +60,7 @@ ECode CGZIPInputStream::Read(
     mEos = mEof;
 
     if (bytesRead != -1) {
-        mCrc->Update(*buffer, offset, bytesRead);
+        mCrc->Update(buffer, offset, bytesRead);
     }
 
     if (mEos) {
@@ -83,13 +84,13 @@ ECode CGZIPInputStream::VerifyCrc()
     FAIL_RETURN(ReadFully(copySize, trailerSize - copySize, b));
 
     AutoPtr<IMemory> memory;
-    CMemory::AcquireSingleton((IMemory**)&memory);
+    // CMemory::AcquireSingleton((IMemory**)&memory);
 
     Int64 checksum;
     mCrc->GetValue(&checksum);
 
     Int32 temp;
-    memory->PeekInt32(*b, 0, ByteOrder_LITTLE_ENDIAN, &temp);
+    memory->PeekInt32(b, 0, ByteOrder_LITTLE_ENDIAN, &temp);
     if (temp != (Int32)checksum) {
 //        throw new IOException("CRC mismatch");
         return E_IO_EXCEPTION;
@@ -97,7 +98,7 @@ ECode CGZIPInputStream::VerifyCrc()
 
     Int32 value;
     mInf->GetTotalOut(&value);
-    memory->PeekInt32(*b, 4, ByteOrder_LITTLE_ENDIAN, &temp);
+    memory->PeekInt32(b, 4, ByteOrder_LITTLE_ENDIAN, &temp);
     if (temp != value) {
 //        throw new IOException("Size mismatch");
         return E_IO_EXCEPTION;
@@ -181,9 +182,9 @@ ECode CGZIPInputStream::constructor(
     AutoPtr<ArrayOf<Byte> > header = ArrayOf<Byte>::Alloc(10);
     FAIL_RETURN(ReadFully(0, header->GetLength(), header));
     AutoPtr<IMemory> memory;
-    CMemory::AcquireSingleton((IMemory**)&memory);
+    // CMemory::AcquireSingleton((IMemory**)&memory);
     Int16 magic;
-    memory->PeekInt16(*header, 0, ByteOrder_LITTLE_ENDIAN, &magic);
+    memory->PeekInt16(header, 0, ByteOrder_LITTLE_ENDIAN, &magic);
     if (magic != MAGIC) {
 //        throw new IOException(String.format("unknown format (magic number %x)", magic));
         return E_IO_EXCEPTION;
@@ -192,15 +193,15 @@ ECode CGZIPInputStream::constructor(
     Int32 flags = (*header)[3];
     Boolean hcrc = (flags & FHCRC) != 0;
     if (hcrc) {
-        mCrc->Update(*header, 0, header->GetLength());
+        mCrc->Update(header, 0, header->GetLength());
     }
     if ((flags & FEXTRA) != 0) {
         FAIL_RETURN(ReadFully(0, 2, header));
         if (hcrc) {
-            mCrc->Update(*header, 0, 2);
+            mCrc->Update(header, 0, 2);
         }
         Int16 temp;
-        memory->PeekInt16(*header, 0, ByteOrder_LITTLE_ENDIAN, &temp);
+        memory->PeekInt16(header, 0, ByteOrder_LITTLE_ENDIAN, &temp);
         Int32 length = temp & 0xffff;
         while (length > 0) {
             Int32 max = length > mBuf->GetLength() ? mBuf->GetLength() : length;
@@ -211,7 +212,7 @@ ECode CGZIPInputStream::constructor(
                 return E_EOF_EXCEPTION;
             }
             if (hcrc) {
-                mCrc->Update(*mBuf, 0, result);
+                mCrc->Update(mBuf, 0, result);
             }
             length -= result;
         }
@@ -226,7 +227,7 @@ ECode CGZIPInputStream::constructor(
         FAIL_RETURN(ReadFully(0, 2, header));
 
         Int16 crc16;
-        memory->PeekInt16(*header, 0, ByteOrder_LITTLE_ENDIAN, &crc16);
+        memory->PeekInt16(header, 0, ByteOrder_LITTLE_ENDIAN, &crc16);
         Int64 value;
         mCrc->GetValue(&value);
         if ((Int16)value != crc16) {

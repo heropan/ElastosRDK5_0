@@ -2,21 +2,16 @@
 #ifndef __ELASTOS_UTILITY_ZIPFILE_H__
 #define __ELASTOS_UTILITY_ZIPFILE_H__
 
-#include <elastos/core/Object.h>
-//#include "CDataInputStream.h"
-#include "CBufferedInputStream.h"
-//#include "CRandomAccessFile.h"
-//#include "CFile.h"
-//#include "CZipEntry.h"
+#include "Object.h"
 #include "InflaterInputStream.h"
-#include <HashMap.h>
-#include <InputStream.h>
+#include "InputStream.h"
 
 using Elastos::IO::IRandomAccessFile;
 using Elastos::IO::InputStream;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IFile;
-using Elastos::Utility::_HashMap;
+using Elastos::IO::ICloseable;
+using Elastos::Utility::ILinkedHashMap;
 
 extern "C" const InterfaceID EIID_ZipFileRAFStream;
 
@@ -41,6 +36,7 @@ namespace Zip {
 class ZipFile
     : public Object
     , public IZipFile
+    , public ICloseable
 {
 public:
     CAR_INTERFACE_DECL()
@@ -54,7 +50,7 @@ public:
      * <p>We could support mark/reset, but we don't currently need them.
      */
     class RAFStream
-        , public InputStream
+        : public InputStream
     {
     public:
         RAFStream(
@@ -68,7 +64,7 @@ public:
             /* [out] */ Int32* value);
 
         CARAPI Read(
-            /* [out] */ ArrayOf<Byte>* buffer,
+            /* [in] */ ArrayOf<Byte>* buffer,
             /* [in] */ Int32 offset,
             /* [in] */ Int32 length,
             /* [out] */ Int32* number);
@@ -99,18 +95,18 @@ public:
     };
 
     class ZipInflaterInputStream
-        , public InflaterInputStream
+        : public InflaterInputStream
     {
     public:
         ZipInflaterInputStream(
             /* [in] */ IInputStream* is,
             /* [in] */ IInflater* inf,
             /* [in] */ Int32 bsize,
-            /* [in] */ CZipEntry* entry);
+            /* [in] */ IZipEntry* entry);
 
         //@Override
         CARAPI Read(
-            /* [out] */ ArrayOf<Byte>* buffer,
+            /* [in] */ ArrayOf<Byte>* buffer,
             /* [in] */ Int32 off,
             /* [in] */ Int32 nbytes,
             /* [out] */ Int32* number);
@@ -120,7 +116,7 @@ public:
             /* [out] */ Int32* number);
 
     public:
-        AutoPtr<CZipEntry> mEntry;
+        AutoPtr<IZipEntry> mEntry;
         Int64 mBytesRead;
         static Object sLock;
     };
@@ -150,69 +146,6 @@ public:
 
     virtual ~ZipFile();
 
-    /**
-     * Closes this ZIP file. This method is idempotent.
-     *
-     * @throws IOException
-     *             if an IOException occurs.
-     */
-    virtual CARAPI Close();
-
-    /**
-     * Returns an enumeration of the entries. The entries are listed in the
-     * order in which they appear in the ZIP archive.
-     *
-     * @return the enumeration of the entries.
-     * @throws IllegalStateException if this ZIP file has been closed.
-     */
-    virtual CARAPI GetEntries(
-        /* [out] */ IEnumeration** entries);
-
-    /**
-     * Gets the ZIP entry with the specified name from this {@code ZipFile}.
-     *
-     * @param entryName
-     *            the name of the entry in the ZIP file.
-     * @return a {@code ZipEntry} or {@code null} if the entry name does not
-     *         exist in the ZIP file.
-     * @throws IllegalStateException if this ZIP file has been closed.
-     */
-    virtual CARAPI GetEntry(
-        /* [in] */ const String& entryName,
-        /* [out] */ IZipEntry** entry);
-
-    /**
-     * Returns an input stream on the data of the specified {@code ZipEntry}.
-     *
-     * @param entry
-     *            the ZipEntry.
-     * @return an input stream of the data contained in the {@code ZipEntry}.
-     * @throws IOException
-     *             if an {@code IOException} occurs.
-     * @throws IllegalStateException if this ZIP file has been closed.
-     */
-    virtual CARAPI GetInputStream(
-        /* [in] */ IZipEntry* entry,
-        /* [out] */ IInputStream** is);
-
-    /**
-     * Gets the file name of this {@code ZipFile}.
-     *
-     * @return the file name of this {@code ZipFile}.
-     */
-    virtual CARAPI GetName(
-        /* [out] */ String* name);
-
-    /**
-     * Returns the number of {@code ZipEntries} in this {@code ZipFile}.
-     *
-     * @return the number of entries in this file.
-     * @throws IllegalStateException if this ZIP file has been closed.
-     */
-    virtual CARAPI GetSize(
-        /* [out] */ Int32* size);
-
-protected:
     /**
      * Constructs a new {@code ZipFile} with the specified file.
      *
@@ -252,6 +185,68 @@ protected:
      */
     CARAPI constructor(
         /* [in] */ const String& name);
+
+    /**
+     * Closes this ZIP file. This method is idempotent.
+     *
+     * @throws IOException
+     *             if an IOException occurs.
+     */
+    CARAPI Close();
+
+    /**
+     * Returns an enumeration of the entries. The entries are listed in the
+     * order in which they appear in the ZIP archive.
+     *
+     * @return the enumeration of the entries.
+     * @throws IllegalStateException if this ZIP file has been closed.
+     */
+    CARAPI GetEntries(
+        /* [out] */ IEnumeration** entries);
+
+    /**
+     * Gets the ZIP entry with the specified name from this {@code ZipFile}.
+     *
+     * @param entryName
+     *            the name of the entry in the ZIP file.
+     * @return a {@code ZipEntry} or {@code null} if the entry name does not
+     *         exist in the ZIP file.
+     * @throws IllegalStateException if this ZIP file has been closed.
+     */
+    CARAPI GetEntry(
+        /* [in] */ const String& entryName,
+        /* [out] */ IZipEntry** entry);
+
+    /**
+     * Returns an input stream on the data of the specified {@code ZipEntry}.
+     *
+     * @param entry
+     *            the ZipEntry.
+     * @return an input stream of the data contained in the {@code ZipEntry}.
+     * @throws IOException
+     *             if an {@code IOException} occurs.
+     * @throws IllegalStateException if this ZIP file has been closed.
+     */
+    CARAPI GetInputStream(
+        /* [in] */ IZipEntry* entry,
+        /* [out] */ IInputStream** is);
+
+    /**
+     * Gets the file name of this {@code ZipFile}.
+     *
+     * @return the file name of this {@code ZipFile}.
+     */
+    CARAPI GetName(
+        /* [out] */ String* name);
+
+    /**
+     * Returns the number of {@code ZipEntries} in this {@code ZipFile}.
+     *
+     * @return the number of entries in this file.
+     * @throws IllegalStateException if this ZIP file has been closed.
+     */
+    CARAPI GetSize(
+        /* [out] */ Int32* size);
 
 protected:
     CARAPI CheckNotClosed();
@@ -301,7 +296,8 @@ private:
     AutoPtr<IRandomAccessFile> mRaf;
     static Object sLock;
 
-    _HashMap<String, AutoPtr<IZipEntry> > mEntries;
+    AutoPtr<ILinkedHashMap> mEntries;
+    // LinkedHashMap<String, ZipEntry> entries
 
 //    CloseGuard guard = CloseGuard.get();
 };

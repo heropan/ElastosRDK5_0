@@ -1,10 +1,11 @@
 
 #include "InflaterOutputStream.h"
+#include "Arrays.h"
+#include "CInflater.h"
 
 namespace Elastos {
 namespace Utility {
 namespace Zip {
-
 
 const Int32 InflaterOutputStream::DEFAULT_BUFFER_SIZE;
 
@@ -23,8 +24,7 @@ ECode InflaterOutputStream::Close()
     if (!mClosed) {
         FAIL_RETURN(Finish());
         FAIL_RETURN(mInf->End());
-        AutoPtr<ICloseable> cls = (ICloseable*)mOut->Probe(Elastos::IO::EIID_ICloseable);
-        FAIL_RETURN(cls->Close());
+        ICloseable::Probe(mOut)->Close();
         mClosed = TRUE;
     }
     return NOERROR;
@@ -46,23 +46,19 @@ ECode InflaterOutputStream::Finish()
 ECode InflaterOutputStream::Write(
     /* [in] */ Int32 b)
 {
-    ArrayOf_<Byte, 1> buf;
-    buf[0] = (Byte)b;
+    AutoPtr<ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(1);
+    buf->Set(0, (Byte)b);
     return Write(buf, 0, 1);
 }
 
 ECode InflaterOutputStream::Write(
-    /* [in] */ const ArrayOf<Byte>& bytes,
+    /* [in] */ ArrayOf<Byte>* bytes,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
+    VALIDATE_NOT_NULL(bytes);
     FAIL_RETURN(CheckClosed());
-    //Arrays.checkOffsetAndCount(bytes.length, offset, byteCount);
-    if ((offset | byteCount) < 0 || offset > bytes.GetLength() ||
-            bytes.GetLength() - offset < byteCount) {
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//        throw new ArrayIndexOutOfBoundsException(arrayLength, offset, byteCount);
-    }
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(bytes->GetLength(), offset, byteCount));
 
     FAIL_RETURN(mInf->SetInput(bytes, offset, byteCount));
     return Write();
@@ -95,12 +91,13 @@ ECode InflaterOutputStream::CheckClosed()
 }
 
 ECode InflaterOutputStream::Write(
-    /* [in] */ const ArrayOf<Byte>& buffer)
+    /* [in] */ ArrayOf<Byte>* buffer)
 {
+    VALIDATE_NOT_NULL(buffer)
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
-    return Write(buffer, 0, buffer.GetLength());
+    return Write(buffer, 0, buffer->GetLength());
 }
 
 ECode InflaterOutputStream::CheckError(
@@ -144,7 +141,7 @@ ECode InflaterOutputStream::constructor(
 //        throw new IllegalArgumentException();
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mInf = (CInflater*)inf;
+    mInf = inf;
     mBuf = ArrayOf<Byte>::Alloc(bufferSize);
     return NOERROR;
 }

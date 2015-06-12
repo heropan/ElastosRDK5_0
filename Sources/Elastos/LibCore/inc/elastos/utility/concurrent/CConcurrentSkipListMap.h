@@ -4,7 +4,7 @@
 
 #include "_Elastos_Utility_Concurrent_CConcurrentSkipListMap.h"
 #include "AbstractMap.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 using Elastos::Core::IComparable;

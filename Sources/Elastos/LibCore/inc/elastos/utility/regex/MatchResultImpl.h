@@ -2,7 +2,7 @@
 #ifndef __REGEX_MATCHRESULTIMPL_H__
 #define __REGEX_MATCHRESULTIMPL_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 

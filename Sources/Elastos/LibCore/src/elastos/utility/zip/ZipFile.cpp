@@ -1,28 +1,33 @@
 
 #include "ZipFile.h"
 #include "CInflater.h"
-#include <elastos/core/Math.h>
-#include <cutils/log.h>
-#include <elastos/core/StringBuilder.h>
+#include "Math.h"
+#include "CDataInputStream.h"
+#include "CBufferedInputStream.h"
+#include "CRandomAccessFile.h"
+#include "CFile.h"
+#include "CZipEntry.h"
+#include "StringBuilder.h"
+#include "CStreams.h"
 
 using Elastos::Core::Math;
-using Elastos::IO::EIID_IInputStream;
-using Elastos::IO::IStreams;
-using Elastos::IO::CStreams;
-using Elastos::IO::EIID_IFilterInputStream;
 using Elastos::IO::IDataInputStream;
 using Elastos::IO::CDataInputStream;
 using Elastos::IO::IDataInput;
-using Elastos::IO::IHeapBufferIterator;
-using Elastos::IO::CHeapBufferIterator;
 using Elastos::IO::ByteOrder_LITTLE_ENDIAN;
-using Elastos::IO::EIID_IDataInput;
 using Elastos::IO::IBufferedInputStream;
 using Elastos::IO::CBufferedInputStream;
 using Elastos::IO::CRandomAccessFile;
 using Elastos::IO::CFile;
-
+using Elastos::IO::EIID_IDataInput;
+using Elastos::IO::EIID_IInputStream;
+using Elastos::IO::EIID_IFilterInputStream;
+using Elastos::IO::EIID_ICloseable;
 using Elastos::Core::StringBuilder;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
+using Libcore::IO::IBufferIterator;
+using Libcore::IO::IHeapBufferIterator;
 
 namespace Elastos {
 namespace Utility {
@@ -69,8 +74,9 @@ ECode ZipFile::RAFStream::Read(
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
+    *number = 0;
+    VALIDATE_NOT_NULL(buffer);
     Object::Autolock locK(sLock);
 
     mSharedRaf->Seek(mOffset);
@@ -119,11 +125,12 @@ ECode ZipFile::RAFStream::IsMarkSupported(
 }
 
 ECode ZipFile::RAFStream::Read(
-    /* [out] */ ArrayOf<Byte>* buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
+    *number = 0;
+    VALIDATE_NOT_NULL(buffer);
     return Read(buffer, 0, buffer->GetLength(), number);
 }
 
@@ -138,7 +145,7 @@ ZipFile::ZipInflaterInputStream::ZipInflaterInputStream(
     /* [in] */ IInputStream* is,
     /* [in] */ IInflater* inf,
     /* [in] */ Int32 bsize,
-    /* [in] */ CZipEntry* entry)
+    /* [in] */ IZipEntry* entry)
     : mEntry(entry)
     , mBytesRead(0)
 {
@@ -196,7 +203,7 @@ ECode ZipFile::Enumeration::HasMoreElements(
     /* [out] */ Boolean * value)
 {
     VALIDATE_NOT_NULL(value);
-    CheckNotClosed();
+    // FAIL_RETURN(mHost->CheckNotClosed())
     return mIt->HasNext(value);
 }
 
@@ -204,7 +211,7 @@ ECode ZipFile::Enumeration::GetNextElement(
     /* [out] */ IInterface ** inter)
 {
     VALIDATE_NOT_NULL(inter);
-    CheckNotClosed();
+    // FAIL_RETURN(mHost->CheckNotClosed())
     return mIt->GetNext(inter);
 }
 
@@ -214,7 +221,7 @@ ECode ZipFile::Enumeration::GetNextElement(
 
 Object ZipFile::sLock;
 
-CAR_INTERFACE_IMPL(ZipFile, Object, IZipFile)
+CAR_INTERFACE_IMPL_2(ZipFile, Object, IZipFile, ICloseable)
 
 ZipFile::ZipFile()
 {
@@ -237,7 +244,7 @@ ECode ZipFile::Close()
         {
             Object::Autolock locK(sLock);
             mRaf = NULL;
-            raf->Close();
+            ICloseable::Probe(raf)->Close();
         }
         if (mFileToDeleteOnClose != NULL) {
             Boolean result;
@@ -261,13 +268,13 @@ ECode ZipFile::GetEntries(
     /* [out] */ IEnumeration** entries)
 {
     VALIDATE_NOT_NULL(entries);
+    *entries = NULL;
     FAIL_RETURN(CheckNotClosed());
 
     AutoPtr<ICollection> vals;
-    mEntries->Values((ICollection**)&vals);
-    AutoPtr<IIterable> p = (IIterable*)vals->Probe(EIID_IIterable);
+    IMap::Probe(mEntries)->GetValues((ICollection**)&vals);
     AutoPtr<IIterator> iterator;
-    p->GetIterator((IIterator**)&iterator);
+    IIterable::Probe(vals)->GetIterator((IIterator**)&iterator);
     AutoPtr<Enumeration> res = new Enumeration(iterator);
     *entries = res.Get();
     REFCOUNT_ADD(*entries);
@@ -279,6 +286,7 @@ ECode ZipFile::GetEntry(
     /* [out] */ IZipEntry** entry)
 {
     VALIDATE_NOT_NULL(entry)
+    *entry = NULL;
     FAIL_RETURN(CheckNotClosed());
 
     if (entryName.IsNull()) {
@@ -286,14 +294,14 @@ ECode ZipFile::GetEntry(
 //         throw new NullPointerException("entryName == null");
     }
 
-    _HashMap<String, AutoPtr<IZipEntry> >::Iterator it = mEntries.Find(entryName);
-    if (it == mEntries.End()) {
-        it = mEntries.Find(entryName + "/");
-    }
-    if (it != mEntries.End()) {
-        *entry = it->mSecond;
-        REFCOUNT_ADD(*entry)
-    }
+    // _HashMap<String, AutoPtr<IZipEntry> >::Iterator it = mEntries.Find(entryName);
+    // if (it == mEntries.End()) {
+    //     it = mEntries.Find(entryName + "/");
+    // }
+    // if (it != mEntries.End()) {
+    //     *entry = it->mSecond;
+    //     REFCOUNT_ADD(*entry)
+    // }
     return NOERROR;
 }
 
@@ -331,7 +339,7 @@ ECode ZipFile::GetInputStream(
     Int16 value;
     di->ReadInt16(&value);
     Int32 localExtraLenOrWhatever = (Int16)((value << 8) | ((((UInt16)value) >> 8) & 0xFF));
-    dis->Close();
+    ICloseable::Probe(dis)->Close();
 
     // Skip the name and this "extra" data or whatever it is:
     Int64 number;
@@ -367,8 +375,7 @@ ECode ZipFile::GetSize(
     VALIDATE_NOT_NULL(size);
     *size = -1;
     FAIL_RETURN(CheckNotClosed());
-    *size = mEntries.GetSize();
-    return NOERROR;
+    return IMap::Probe(mEntries)->GetSize(size);
 }
 
 ECode ZipFile::ReadCentralDir()
@@ -416,9 +423,9 @@ ECode ZipFile::ReadCentralDir()
     di->ReadFully(eocd, 0, eocd->GetLength());
 
     // Pull out the information we need.
-    AutoPtr<IHeapBufferIterator> it;
-    CHeapBufferIterator::New(eocd, 0, eocd->GetLength(), ByteOrder_LITTLE_ENDIAN,
-            (IHeapBufferIterator**)&it);
+    AutoPtr<IBufferIterator> it;
+    // CHeapBufferIterator::New(eocd, 0, eocd->GetLength(), ByteOrder_LITTLE_ENDIAN,
+    //         (IBufferIterator**)&it);
 
     Int16 temp16;
     it->ReadInt16(&temp16);
@@ -446,12 +453,12 @@ ECode ZipFile::ReadCentralDir()
     IInputStream* is = IInputStream::Probe(bin.Get());
 
     String name;
-    AutoPtr<ArrayOf<Byte> > hdrBuf = ArrayOf<Byte>::Alloc(IZipFile::CENHDR); // Reuse the same buffer for each entry.
+    AutoPtr<ArrayOf<Byte> > hdrBuf = ArrayOf<Byte>::Alloc(IZipConstants::CENHDR); // Reuse the same buffer for each entry.
     for (Int32 i = 0; i < numEntries; ++i) {
         AutoPtr<IZipEntry> newEntry;
         FAIL_RETURN(CZipEntry::New(*hdrBuf, is, (IZipEntry**)&newEntry));
         newEntry->GetName(&name);
-        mEntries[name] = newEntry;
+        // mEntries[name] = newEntry;
     }
 
     return NOERROR;

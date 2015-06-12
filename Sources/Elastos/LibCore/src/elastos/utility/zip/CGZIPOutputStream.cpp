@@ -1,5 +1,6 @@
 
 #include "CGZIPOutputStream.h"
+#include "CDeflater.h"
 
 namespace Elastos {
 namespace Utility {
@@ -25,7 +26,7 @@ ECode CGZIPOutputStream::Finish()
 }
 
 ECode CGZIPOutputStream::Write(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 off,
     /* [in] */ Int32 nbytes)
 {

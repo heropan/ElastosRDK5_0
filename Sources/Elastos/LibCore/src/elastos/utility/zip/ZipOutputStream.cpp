@@ -1,8 +1,13 @@
 
 #include "ZipOutputStream.h"
 #include "CZipFile.h"
-#include <elastos/Algorithm.h>
+#include "CByteArrayOutputStream.h"
+#include "CZipEntry.h"
+#include "CCRC32.h"
+#include "CDeflater.h"
 #include "CSystem.h"
+#include "Arrays.h"
+#include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Core::ISystem;
 using Elastos::IO::CByteArrayOutputStream;
@@ -23,7 +28,7 @@ ZipOutputStream::ZipOutputStream()
     , mNameLength(0)
 {
     CByteArrayOutputStream::New((IByteArrayOutputStream**)&mCDir);
-    CCRC32::NewByFriend((CCRC32**)&mCrc);
+    CCRC32::New((ICRC32**)&mCrc);
 }
 
 ZipOutputStream::~ZipOutputStream()
@@ -65,8 +70,9 @@ ECode ZipOutputStream::CloseEntry()
         return NOERROR;
     }
 
+    CZipEntry* ze = (CZipEntry*)mCurrentEntry.Get();
     Int32 method;
-    mCurrentEntry->GetMethod(&method);
+    ze->GetMethod(&method);
     if (method == IZipOutputStream::DEFLATED) {
         FAIL_RETURN(DeflaterOutputStream::Finish());
     }
@@ -74,12 +80,12 @@ ECode ZipOutputStream::CloseEntry()
     // Verify values for STORED types
     if (method == IZipOutputStream::STORED) {
         Int64 value;
-        mCrc->GetValue(&value);
-        if (value != mCurrentEntry->mCrc) {
+        IChecksum::Probe(mCrc)->GetValue(&value);
+        if (value != ze->mCrc) {
 //            throw new ZipException("CRC mismatch");
             return E_ZIP_EXCEPTION;
         }
-        if (mCurrentEntry->mSize != mCrc->mTbytes) {
+        if (ze->mSize != ((CCRC32*)mCrc.Get())->mTbytes) {
 //           throw new ZipException("Size mismatch");
             return E_ZIP_EXCEPTION;
         }
@@ -90,12 +96,15 @@ ECode ZipOutputStream::CloseEntry()
     if (method != IZipOutputStream::STORED) {
         mCurOffset += IZipConstants::EXTHDR;
         WriteInt64(mOut, IZipConstants::EXTSIG);
-        mCrc->GetValue(&mCurrentEntry->mCrc);
-        WriteInt64(mOut, mCurrentEntry->mCrc);
-        mDef->GetTotalOut((Int32*)&mCurrentEntry->mCompressedSize);
-        WriteInt64(mOut, mCurrentEntry->mCompressedSize);
-        mDef->GetTotalIn((Int32*)&mCurrentEntry->mSize);
-        WriteInt64(mOut, mCurrentEntry->mSize);
+        IChecksum::Probe(mCrc)->GetValue(&ze->mCrc);
+        WriteInt64(mOut, ze->mCrc);
+        Int32 ival;
+        mDef->GetTotalOut(&ival);
+        ze->mCompressedSize = ival;
+        WriteInt64(mOut, ze->mCompressedSize);
+        mDef->GetTotalIn(&ival);
+        ze->mSize = ival;
+        WriteInt64(mOut, ze->mSize);
     }
     // Update the CentralDirectory
     // http://www.pkware.com/documents/casestudies/APPNOTE.TXT
@@ -104,58 +113,60 @@ ECode ZipOutputStream::CloseEntry()
     // Some tools insist that the central directory also have the UTF-8 flag.
     // http://code.google.com/p/android/issues/detail?id=20214
     flags |= CZipFile::GPBF_UTF8_FLAG;
-    WriteInt64(mCDir, IZipConstants::CENSIG);
-    WriteInt16(mCDir, ZIPLocalHeaderVersionNeeded); // Version created
-    WriteInt16(mCDir, ZIPLocalHeaderVersionNeeded); // Version to extract
-    WriteInt16(mCDir, flags);
-    WriteInt16(mCDir, method);
-    WriteInt16(mCDir, mCurrentEntry->mTime);
-    WriteInt16(mCDir, mCurrentEntry->mModDate);
+
+    IOutputStream* os = IOutputStream::Probe(mCDir);
+    WriteInt64(os, IZipConstants::CENSIG);
+    WriteInt16(os, ZIPLocalHeaderVersionNeeded); // Version created
+    WriteInt16(os, ZIPLocalHeaderVersionNeeded); // Version to extract
+    WriteInt16(os, flags);
+    WriteInt16(os, method);
+    WriteInt16(os, ze->mTime);
+    WriteInt16(os, ze->mModDate);
     Int64 checksum;
-    mCrc->GetValue(&checksum);
-    WriteInt64(mCDir, checksum);
+    IChecksum::Probe(mCrc)->GetValue(&checksum);
+    WriteInt64(os, checksum);
     if (method == IZipOutputStream::DEFLATED) {
         Int32 value;
         mDef->GetTotalOut(&value);
-        mCurOffset += WriteInt64(mCDir, value);
+        mCurOffset += WriteInt64(os, value);
         mDef->GetTotalIn(&value);
-        WriteInt64(mCDir, value);
+        WriteInt64(os, value);
     }
     else {
-        mCurOffset += WriteInt64(mCDir, mCrc->mTbytes);
-        WriteInt64(mCDir, mCrc->mTbytes);
+        mCurOffset += WriteInt64(os, ((CCRC32*)mCrc.Get())->mTbytes);
+        WriteInt64(os, ((CCRC32*)mCrc.Get())->mTbytes);
     }
-    mCurOffset += WriteInt16(mCDir, mNameLength);
-    if (mCurrentEntry->mExtra != NULL) {
-        mCurOffset += WriteInt16(mCDir, mCurrentEntry->mExtra->GetLength());
+    mCurOffset += WriteInt16(os, mNameLength);
+    if (ze->mExtra != NULL) {
+        mCurOffset += WriteInt16(os, ze->mExtra->GetLength());
     }
     else {
-        WriteInt16(mCDir, 0);
+        WriteInt16(os, 0);
     }
     String c;
-    mCurrentEntry->GetComment(&c);
+    ze->GetComment(&c);
     if (!c.IsNull()) {
-        WriteInt16(mCDir, c.GetLength());
+        WriteInt16(os, c.GetLength());
     }
     else {
-        WriteInt16(mCDir, 0);
+        WriteInt16(os, 0);
     }
-    WriteInt16(mCDir, 0); // Disk Start
-    WriteInt16(mCDir, 0); // Internal File Attributes
-    WriteInt64(mCDir, 0); // External File Attributes
-    WriteInt64(mCDir, mOffset);
-    mCDir->Write(mNameBytes);
+    WriteInt16(os, 0); // Disk Start
+    WriteInt16(os, 0); // Internal File Attributes
+    WriteInt64(os, 0); // External File Attributes
+    WriteInt64(os, mOffset);
+    os->Write(mNameBytes);
     mNameBytes = NULL;
-    if (mCurrentEntry->mExtra != NULL) {
-        mCDir->Write(mCurrentEntry->mExtra);
+    if (ze->mExtra != NULL) {
+        os->Write(ze->mExtra);
     }
     mOffset +=mCurOffset;
     if (!c.IsNull()) {
-        mCDir->Write(ArrayOf<Byte>(
-            reinterpret_cast<Byte*>(const_cast<char*>((const char*)c)), c.GetByteLength()));
+        AutoPtr<ArrayOf<Byte> > bytes = c.GetBytes();
+        os->Write(bytes, 0, bytes->GetLength());
     }
     mCurrentEntry = NULL;
-    mCrc->Reset();
+    IChecksum::Probe(mCrc)->Reset();
     mDef->Reset();
     mDone = FALSE;
     return NOERROR;
@@ -178,24 +189,25 @@ ECode ZipOutputStream::Finish()
     if (mCurrentEntry != NULL) {
         FAIL_RETURN(CloseEntry());
     }
+
+    IOutputStream* os = IOutputStream::Probe(mCDir);
     Int32 cdirSize;
     mCDir->GetSize(&cdirSize);
     // Write Central Dir End
-    WriteInt64(mCDir, IZipConstants::ENDSIG);
-    WriteInt16(mCDir, 0); // Disk Number
-    WriteInt16(mCDir, 0); // Start Disk
-    WriteInt16(mCDir, mEntries.GetSize()); // Number of entries
-    WriteInt16(mCDir, mEntries.GetSize()); // Number of entries
-    WriteInt64(mCDir, cdirSize); // Size of central dir
-    WriteInt64(mCDir, mOffset); // Offset of central dir
+    WriteInt64(os, IZipConstants::ENDSIG);
+    WriteInt16(os, 0); // Disk Number
+    WriteInt16(os, 0); // Start Disk
+    WriteInt16(os, mEntries.GetSize()); // Number of entries
+    WriteInt16(os, mEntries.GetSize()); // Number of entries
+    WriteInt64(os, cdirSize); // Size of central dir
+    WriteInt64(os, mOffset); // Offset of central dir
     if (!mComment.IsNull()) {
-        WriteInt16(mCDir, mComment.GetLength());
-        mCDir->Write(ArrayOf<Byte>(
-                reinterpret_cast<Byte*>(const_cast<char*>((const char*)mComment)),
-                mComment.GetByteLength()));
+        AutoPtr<ArrayOf<Byte> > bytes = mComment.GetBytes();
+        WriteInt16(os, bytes->GetLength());
+        os->Write(bytes, 0, bytes->GetLength());
     }
     else {
-        WriteInt16(mCDir, 0);
+        WriteInt16(os, 0);
     }
     // Write the central dir
     AutoPtr<ArrayOf<Byte> > bytes;
@@ -230,7 +242,7 @@ ECode ZipOutputStream::PutNextEntry(
         }
     }
     FAIL_RETURN(CheckClosed());
-    Vector<String>::Iterator it = Find(mEntries.Begin(), mEntries.End(), ze->mName);
+    HashSet<String>::Iterator it = Find(mEntries.Begin(), mEntries.End(), ze->mName);
     if (it != mEntries.End()) {
 //        throw new ZipException("Entry already exists: " + ze.name);
         return E_ZIP_EXCEPTION;
@@ -247,8 +259,8 @@ ECode ZipOutputStream::PutNextEntry(
     }
 
     mDef->SetLevel(mCompressLevel);
-    mCurrentEntry = ze;
-    mEntries.PushBack(mCurrentEntry->mName);
+    mCurrentEntry = _ze;
+    mEntries.Insert(ze->mName);
     mCurrentEntry->GetMethod(&method);
     if (method == -1) {
         mCurrentEntry->SetMethod(mCompressMethod);
@@ -259,10 +271,11 @@ ECode ZipOutputStream::PutNextEntry(
     // Java always outputs UTF-8 filenames. (Before Java 7, the RI didn't set this flag and used
     // modified UTF-8. From Java 7, it sets this flag and uses normal UTF-8.)
     flags |= CZipFile::GPBF_UTF8_FLAG;
-    WriteInt64(mOut, IZipConstants::LOCSIG); // Entry header
-    WriteInt16(mOut, ZIPLocalHeaderVersionNeeded); // Extraction version
-    WriteInt16(mOut, flags);
-    WriteInt16(mOut, method);
+    IOutputStream* os = IOutputStream::Probe(mCDir);
+    WriteInt64(os, IZipConstants::LOCSIG); // Entry header
+    WriteInt16(os, ZIPLocalHeaderVersionNeeded); // Extraction version
+    WriteInt16(os, flags);
+    WriteInt16(os, method);
     Int64 time;
     mCurrentEntry->GetTime(&time);
     if (time == -1) {
@@ -272,36 +285,36 @@ ECode ZipOutputStream::PutNextEntry(
         system->GetCurrentTimeMillis(&millis);
         mCurrentEntry->SetTime(millis);
     }
-    WriteInt16(mOut, mCurrentEntry->mTime);
-    WriteInt16(mOut, mCurrentEntry->mModDate);
+    WriteInt16(os, ze->mTime);
+    WriteInt16(os, ze->mModDate);
 
     if (method == IZipOutputStream::STORED) {
-        if (mCurrentEntry->mSize == -1) {
-            mCurrentEntry->mSize = mCurrentEntry->mCompressedSize;
+        if (ze->mSize == -1) {
+            ze->mSize = ze->mCompressedSize;
         }
-        else if (mCurrentEntry->mCompressedSize == -1) {
-            mCurrentEntry->mCompressedSize = mCurrentEntry->mSize;
+        else if (ze->mCompressedSize == -1) {
+            ze->mCompressedSize = ze->mSize;
         }
-        WriteInt64(mOut, mCurrentEntry->mCrc);
-        WriteInt64(mOut, mCurrentEntry->mSize);
-        WriteInt64(mOut, mCurrentEntry->mSize);
+        WriteInt64(os, ze->mCrc);
+        WriteInt64(os, ze->mSize);
+        WriteInt64(os, ze->mSize);
     }
     else {
-        WriteInt64(mOut, 0);
-        WriteInt64(mOut, 0);
-        WriteInt64(mOut, 0);
+        WriteInt64(os, 0);
+        WriteInt64(os, 0);
+        WriteInt64(os, 0);
     }
     WriteInt16(mOut, mNameLength);
-    if (mCurrentEntry->mExtra != NULL) {
-        WriteInt16(mOut, mCurrentEntry->mExtra->GetLength());
+    if (ze->mExtra != NULL) {
+        WriteInt16(os, ze->mExtra->GetLength());
     }
     else {
-        WriteInt16(mOut, 0);
+        WriteInt16(os, 0);
     }
-    mNameBytes = ToUTF8Bytes(mCurrentEntry->mName, mNameLength);
-    mOut->Write(mNameBytes);
-    if (mCurrentEntry->mExtra != NULL) {
-        mOut->Write(mCurrentEntry->mExtra);
+    mNameBytes = ToUTF8Bytes(ze->mName, mNameLength);
+    os->Write(mNameBytes);
+    if (ze->mExtra != NULL) {
+        os->Write(ze->mExtra);
     }
     return NOERROR;
 }
@@ -364,16 +377,12 @@ Int32 ZipOutputStream::WriteInt16(
 }
 
 ECode ZipOutputStream::Write(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
-//    Arrays.checkOffsetAndCount(buffer.length, offset, byteCount);
-    if ((offset | byteCount) < 0 || offset > buffer.GetLength() ||
-            buffer.GetLength() - offset < byteCount) {
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//        throw new ArrayIndexOutOfBoundsException(arrayLength, offset, count);
-    }
+    VALIDATE_NOT_NULL(buffer)
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buffer->GetLength(), offset, byteCount))
 
     if (mCurrentEntry == NULL) {
 //        throw new ZipException("No active entry");
@@ -388,7 +397,7 @@ ECode ZipOutputStream::Write(
     else {
         FAIL_RETURN(DeflaterOutputStream::Write(buffer, offset, byteCount));
     }
-    return mCrc->Update(buffer, offset, byteCount);
+    return IChecksum::Probe(mCrc)->Update(buffer, offset, byteCount);
 }
 
 Int32 ZipOutputStream::GetUtf8Count(
@@ -404,7 +413,7 @@ AutoPtr<ArrayOf<Byte> > ZipOutputStream::ToUTF8Bytes(
     Int32 byteLength = value.ToByteIndex(length);
     assert(value.GetByteLength() >= byteLength);
     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(length);
-    memcpy(result->GetPayload(), (const char*)value, byteLength);
+    memcpy(result->GetPayload(), value.string(), byteLength);
     return result;
 }
 

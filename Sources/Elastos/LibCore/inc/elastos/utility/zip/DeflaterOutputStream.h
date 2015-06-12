@@ -2,8 +2,6 @@
 #ifndef __ELASTOS_UTILITY_DEFLATEROUTPUTSTREAM_H__
 #define __ELASTOS_UTILITY_DEFLATEROUTPUTSTREAM_H__
 
-#include "CStreams.h"
-#include "CDeflater.h"
 #include <FilterOutputStream.h>
 
 using Elastos::IO::IOutputStream;
@@ -24,69 +22,14 @@ class DeflaterOutputStream
     : public FilterOutputStream
     , public IDeflaterOutputStream
 {
-public:
-    CAR_INTERFACE_DECL()
-
+protected:
     DeflaterOutputStream();
 
     virtual ~DeflaterOutputStream();
 
-    /**
-     * Writes any unwritten compressed data to the underlying stream, the closes
-     * all underlying streams. This stream can no longer be used after close()
-     * has been called.
-     *
-     * @throws IOException
-     *             If an error occurs while closing the data compression
-     *             process.
-     */
-    //@Override
-    virtual CARAPI Close();
+public:
+    CAR_INTERFACE_DECL()
 
-    /**
-     * Writes any unwritten data to the underlying stream. Does not close the
-     * stream.
-     *
-     * @throws IOException
-     *             If an error occurs.
-     */
-    virtual CARAPI Finish();
-
-    //@Override
-    virtual CARAPI Write(
-        /* [in] */ Int32 i);
-
-    /**
-     * Compresses {@code byteCount} bytes of data from {@code buf} starting at
-     * {@code offset} and writes it to the underlying stream.
-     * @throws IOException
-     *             If an error occurs during writing.
-     */
-    virtual CARAPI Write(
-        /* [in] */ const ArrayOf<Byte>& buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 byteCount);
-
-    /**
-     * Flushes the underlying stream. This flushes only the bytes that can be
-     * compressed at the highest level.
-     *
-     * <p>For deflater output streams constructed with Java 7's
-     * {@code syncFlush} parameter set to true (not yet available on Android),
-     * this first flushes all outstanding data so that it may be immediately
-     * read by its recipient. Doing so may degrade compression.
-     */
-    //@Override
-    virtual CARAPI Flush();
-
-    //inherit frome super class
-    virtual CARAPI Write(
-        /* [in] */ const ArrayOf<Byte>& buffer);
-
-    virtual CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
-protected:
     /**
      * Compress the data in the input buffer and write it to the underlying
      * stream.
@@ -94,7 +37,7 @@ protected:
      * @throws IOException
      *             If an error occurs during deflation.
      */
-    virtual CARAPI Deflate();
+    CARAPI Deflate();
 
     /**
      * This constructor lets you pass the {@code Deflater} specifying the
@@ -169,6 +112,60 @@ protected:
         /* [in] */ Int32 bsize,
         /* [in] */ Boolean syncFlush);
 
+    /**
+     * Writes any unwritten compressed data to the underlying stream, the closes
+     * all underlying streams. This stream can no longer be used after close()
+     * has been called.
+     *
+     * @throws IOException
+     *             If an error occurs while closing the data compression
+     *             process.
+     */
+    //@Override
+    CARAPI Close();
+
+    /**
+     * Writes any unwritten data to the underlying stream. Does not close the
+     * stream.
+     *
+     * @throws IOException
+     *             If an error occurs.
+     */
+    CARAPI Finish();
+
+    //@Override
+    CARAPI Write(
+        /* [in] */ Int32 i);
+
+    /**
+     * Compresses {@code byteCount} bytes of data from {@code buf} starting at
+     * {@code offset} and writes it to the underlying stream.
+     * @throws IOException
+     *             If an error occurs during writing.
+     */
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* buffer,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 byteCount);
+
+    /**
+     * Flushes the underlying stream. This flushes only the bytes that can be
+     * compressed at the highest level.
+     *
+     * <p>For deflater output streams constructed with Java 7's
+     * {@code syncFlush} parameter set to true (not yet available on Android),
+     * this first flushes all outstanding data so that it may be immediately
+     * read by its recipient. Doing so may degrade compression.
+     */
+    //@Override
+    CARAPI Flush();
+
+    //inherit frome super class
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* buffer);
+
+    CARAPI CheckError(
+        /* [out] */ Boolean* hasError);
 
 public:
     static const Int32 BUF_SIZE = 512;
@@ -185,7 +182,7 @@ protected:
     /**
      * The deflater used.
      */
-    AutoPtr<CDeflater> mDef;
+    AutoPtr<IDeflater> mDef;
 
 private:
     Boolean mSyncFlush;

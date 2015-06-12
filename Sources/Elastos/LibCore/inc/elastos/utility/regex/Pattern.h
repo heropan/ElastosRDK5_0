@@ -3,7 +3,7 @@
 #define __REGEX_PATTERN_H__
 
 #include <unicode/regex.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::ICharSequence;
 using U_ICU_NAMESPACE::RegexPattern;

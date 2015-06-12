@@ -5,7 +5,7 @@
 #include "_Elastos_Utility_Concurrent_CLinkedBlockingQueue.h"
 #include <Queue.h>
 #include <Condition.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 using Elastos::Core::Condition;

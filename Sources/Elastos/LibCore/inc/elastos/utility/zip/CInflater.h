@@ -4,7 +4,7 @@
 
 #include "_Elastos_Utility_Zip_CInflater.h"
 #include "Zip.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 using Elastos::IO::IFileDescriptor;
@@ -109,7 +109,7 @@ public:
      *             using a {@code Deflater}.
      */
     CARAPI Inflate(
-        /* [out] */ ArrayOf<Byte>* buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [out] */ Int32* number);
 
     /**
@@ -123,7 +123,7 @@ public:
      */
     // synchronized
     CARAPI Inflate(
-        /* [out] */ ArrayOf<Byte>* buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
@@ -158,7 +158,7 @@ public:
      * See {@link #needsDictionary} for details.
      */
     CARAPI SetDictionary(
-        /* [in] */ const ArrayOf<Byte>& buf);
+        /* [in] */ ArrayOf<Byte>* buf);
 
     /**
      * Sets the preset dictionary to be used for inflation to a subsequence of {@code dictionary}
@@ -167,7 +167,7 @@ public:
      */
     // synchronized
     CARAPI SetDictionary(
-        /* [in] */ const ArrayOf<Byte>& buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);
 
@@ -176,7 +176,7 @@ public:
      * called if {@link #needsInput} returns {@code true}.
      */
     CARAPI SetInput(
-        /* [in] */ const ArrayOf<Byte>& buf);
+        /* [in] */ ArrayOf<Byte>* buf);
 
     /**
      * Sets the current input to to be decompressed. This method should only be
@@ -184,7 +184,7 @@ public:
      */
     // synchronized
     CARAPI SetInput(
-        /* [in] */ const ArrayOf<Byte>& buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);
 
@@ -239,13 +239,13 @@ private:
         /* [in] */ NativeZipStream* stream);
 
     CARAPI_(void) SetDictionaryImplLocked(
-        /* [in] */ const ArrayOf<Byte>& buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [in] */ NativeZipStream* stream);
 
     CARAPI_(void) SetInputImplLocked(
-        /* [in] */ const ArrayOf<Byte>& buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [in] */ NativeZipStream* stream);

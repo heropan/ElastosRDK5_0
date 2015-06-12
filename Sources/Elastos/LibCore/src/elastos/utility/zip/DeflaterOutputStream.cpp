@@ -1,8 +1,11 @@
 
 #include "DeflaterOutputStream.h"
+#include "CStreams.h"
+#include "CDeflater.h"
+#include "Arrays.h"
 
-using Elastos::IO::IStreams;
-using Elastos::IO::CStreams;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
 using Elastos::IO::EIID_IOutputStream;
 
 namespace Elastos {
@@ -68,20 +71,17 @@ ECode DeflaterOutputStream::Write(
 }
 
 ECode DeflaterOutputStream::Write(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
+    VALIDATE_NOT_NULL(buffer)
     if (mDone) {
 //        throw new IOException("attempt to write after finish");
         return E_IO_EXCEPTION;
     }
-    //Arrays.checkOffsetAndCount(buffer.length, offset, byteCount);
-    if ((offset | byteCount) < 0 || offset > buffer.GetLength() ||
-            buffer.GetLength() - offset < byteCount) {
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//        throw new ArrayIndexOutOfBoundsException(arrayLength, offset, count);
-    }
+
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buffer->GetLength(), offset, byteCount))
 
     Boolean need;
     mDef->NeedsInput(&need);
@@ -92,6 +92,17 @@ ECode DeflaterOutputStream::Write(
     mDef->SetInput(buffer, offset, byteCount);
     return Deflate();
 }
+
+ECode DeflaterOutputStream::Write(
+    /* [in] */ ArrayOf<Byte>* buffer)
+{
+    VALIDATE_NOT_NULL(buffer)
+    // BEGIN android-note
+    // changed array notation to be consistent with the rest of harmony
+    // END android-note
+    return Write(buffer, 0, buffer->GetLength());
+}
+
 
 ECode DeflaterOutputStream::Flush()
 {
@@ -169,19 +180,10 @@ ECode DeflaterOutputStream::constructor(
 //        throw new IllegalArgumentException();
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mDef = (CDeflater*)def;
+    mDef = def;
     mSyncFlush = syncFlush;
     mBuf = ArrayOf<Byte>::Alloc(bsize);
     return NOERROR;
-}
-
-ECode DeflaterOutputStream::Write(
-    /* [in] */ const ArrayOf<Byte> & buffer)
-{
-    // BEGIN android-note
-    // changed array notation to be consistent with the rest of harmony
-    // END android-note
-    return Write(buffer, 0, buffer.GetLength());
 }
 
 

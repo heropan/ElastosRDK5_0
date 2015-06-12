@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_CCRC32_H__
 
 #include "_Elastos_Utility_Zip_CCRC32.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 

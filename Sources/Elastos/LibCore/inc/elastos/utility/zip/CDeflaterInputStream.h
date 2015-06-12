@@ -9,7 +9,8 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-CarClass(CDeflaterInputStream) , public DeflaterInputStream
+CarClass(CDeflaterInputStream)
+    , public DeflaterInputStream
 {
 public:
     CAR_OBJECT_DECL()

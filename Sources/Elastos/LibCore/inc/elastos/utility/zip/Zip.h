@@ -1,9 +1,16 @@
 
-#ifndef __ZIP_H__
-#define __ZIP_H__
+#ifndef __ELASTOS_UTILITY_ZIP_H__
+#define __ELASTOS_UTILITY_ZIP_H__
 
+#include "Object.h"
 #include "zlib.h"
 #include "zutil.h"// For DEF_WBITS and DEF_MEM_LEVEL.
+
+using namespace Elastos;
+
+namespace Elastos {
+namespace Utility {
+namespace Zip {
 
 class NativeZipStream
 {
@@ -24,7 +31,7 @@ public:
     }
 
     CARAPI_(void) SetDictionary(
-        /* [in] */ const ArrayOf<Byte>& dictionary,
+        /* [in] */ ArrayOf<Byte>* dictionary,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len,
         /* [in] */ Boolean inflate)
@@ -34,7 +41,7 @@ public:
 //            jniThrowOutOfMemoryError(env, NULL);
             return;
         }
-        dictionaryBytes->Copy((Byte*)(dictionary.GetPayload() + off), len);
+        dictionaryBytes->Copy(dictionary, off, len);
         const Bytef* zDictionary = reinterpret_cast<const Bytef*>(dictionaryBytes->GetPayload());
         Int32 err;
         if (inflate) {
@@ -51,7 +58,7 @@ public:
     }
 
     CARAPI SetInput(
-        /* [in] */ const ArrayOf<Byte>* buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len)
     {
@@ -84,4 +91,8 @@ private:
     AutoPtr<ArrayOf<Byte> > mDict;
 };
 
-#endif  //__ZIP_H__
+} // namespace Zip
+} // namespace Utility
+} // namespace Elastos
+
+#endif  //__ELASTOS_UTILITY_ZIP_H__

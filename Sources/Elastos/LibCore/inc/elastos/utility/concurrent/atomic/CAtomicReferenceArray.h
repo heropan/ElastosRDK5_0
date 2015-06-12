@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_CATOMICREFERENCEARRAY_H__
 
 #include "_Elastos_Utility_Concurrent_CAtomicReferenceArray.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 using Elastos::IO::IObjectInputStream;

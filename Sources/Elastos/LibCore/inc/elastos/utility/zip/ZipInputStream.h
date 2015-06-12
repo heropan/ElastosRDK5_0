@@ -2,13 +2,9 @@
 #ifndef __ELASTOS_UTILITY_ZIPINPUTSTREAM_H__
 #define __ELASTOS_UTILITY_ZIPINPUTSTREAM_H__
 
-#include "CMemory.h"
-#include "CPushbackInputStream.h"
 #include "InflaterInputStream.h"
-#include "CZipEntry.h"
-#include "CCRC32.h"
 
-using Elastos::IO::IMemory;
+using Libcore::IO::IMemory;
 
 namespace Elastos {
 namespace Utility {
@@ -43,6 +39,15 @@ public:
     virtual ~ZipInputStream();
 
     /**
+     * Constructs a new {@code ZipInputStream} from the specified input stream.
+     *
+     * @param stream
+     *            the input stream to representing a ZIP archive.
+     */
+    CARAPI constructor(
+        /* [in] */ IInputStream* stream);
+
+    /**
      * Closes this {@code ZipInputStream}.
      *
      * @throws IOException
@@ -57,7 +62,7 @@ public:
      * @throws IOException
      *             if an {@code IOException} occurs.
      */
-    virtual CARAPI CloseEntry();
+    CARAPI CloseEntry();
 
     /**
      * Reads the next entry from this {@code ZipInputStream} or {@code null} if
@@ -68,7 +73,7 @@ public:
      *             if an {@code IOException} occurs.
      * @see ZipEntry
      */
-    virtual CARAPI GetNextEntry(
+    CARAPI GetNextEntry(
         /* [out] */ IZipEntry** entry);
 
     /**
@@ -79,7 +84,7 @@ public:
      */
     //@Override
     CARAPI Read(
-        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
@@ -89,14 +94,6 @@ public:
         /* [out] */ Int32* number);
 
 protected:
-    /**
-     * Constructs a new {@code ZipInputStream} from the specified input stream.
-     *
-     * @param stream
-     *            the input stream to representing a ZIP archive.
-     */
-    CARAPI constructor(
-        /* [in] */ IInputStream* stream);
 
     /**
      * creates a {@link ZipEntry } with the given name.
@@ -105,7 +102,7 @@ protected:
      *            the name of the entry.
      * @return the created {@code ZipEntry}.
      */
-    virtual CARAPI_(AutoPtr<CZipEntry>) CreateZipEntry(
+    virtual CARAPI_(AutoPtr<IZipEntry>) CreateZipEntry(
         /* [in] */ const String& name);
 
 private:
@@ -132,11 +129,11 @@ private:
     Int32 mInRead;
     Int32 mLastRead;
 
-    AutoPtr<CZipEntry> mCurrentEntry;
+    AutoPtr<IZipEntry> mCurrentEntry;
 
     AutoPtr<ArrayOf<Byte> > mHdrBuf;
 
-    AutoPtr<CCRC32> mCrc;
+    AutoPtr<ICRC32> mCrc;
 
     AutoPtr<ArrayOf<Byte> > mNameBuf;
 };

@@ -2,7 +2,7 @@
 #include <elautoptr.h>
 #include "CManifest.h"
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::IO::IUnsafeByteSequence;
 using Elastos::Core::ICharSequence;

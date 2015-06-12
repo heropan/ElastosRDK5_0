@@ -4,7 +4,7 @@
 
 #include "_Elastos_Utility_Concurrent_CConcurrentLinkedQueue.h"
 #include "AbstractQueue.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;

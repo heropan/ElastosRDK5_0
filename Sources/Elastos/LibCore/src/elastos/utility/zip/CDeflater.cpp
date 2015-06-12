@@ -1,5 +1,6 @@
 
 #include "CDeflater.h"
+#include "Arrays.h"
 
 namespace Elastos {
 namespace Utility {
@@ -43,23 +44,25 @@ CDeflater::~CDeflater()
 }
 
 ECode CDeflater::Deflate(
-    /* [out] */ ArrayOf<Byte>* buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buf);
     VALIDATE_NOT_NULL(number);
+    *number = 0;
+    VALIDATE_NOT_NULL(buf);
 
     return Deflate(buf, 0, buf->GetLength(), number);
 }
 
 ECode CDeflater::Deflate(
-    /* [out] */ ArrayOf<Byte>* buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buf);
     VALIDATE_NOT_NULL(number);
+    *number = 0;
+    VALIDATE_NOT_NULL(buf);
 
     Object::Autolock locK(sLock);
 
@@ -73,8 +76,9 @@ ECode CDeflater::Deflate(
     /* [in] */ Int32 flush,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buf);
     VALIDATE_NOT_NULL(number);
+    *number = 0;
+    VALIDATE_NOT_NULL(buf);
 
     Object::Autolock locK(sLock);
 
@@ -89,20 +93,18 @@ ECode CDeflater::DeflateImplLocked(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
     /* [in] */ Int32 flush,
-    /* [out] */ ArrayOf<Byte>* buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
+    *number = 0;
     FAIL_RETURN(CheckOpen());
 
-//    Arrays.checkOffsetAndCount(buf.length, offset, byteCount);
-    if ((offset | byteCount) < 0 || offset > buf->GetLength() ||
-            buf->GetLength() - offset < byteCount) {
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//        throw new ArrayIndexOutOfBoundsException(arrayLength, offset, count);
-    }
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
+
     if (mInputBuffer == NULL) {
         AutoPtr<ArrayOf<Byte> > emptyByteArray = ArrayOf<Byte>::Alloc(0);
-        SetInput(*emptyByteArray);
+        SetInput(emptyByteArray);
     }
     *number = DeflateImplLocked(offset, byteCount, flush, mStreamHandle, buf);
     return NOERROR;
@@ -113,7 +115,7 @@ Int32 CDeflater::DeflateImplLocked(
     /* [in] */ Int32 byteCount,
     /* [in] */ Int32 flushParm,
     /* [in] */ NativeZipStream* stream,
-    /* [out] */ ArrayOf<Byte>* buf)
+    /* [in] */ ArrayOf<Byte>* buf)
 {
     // /* We need to get the number of bytes already read */
     // Int32 inBytes = mInRead;
@@ -292,31 +294,29 @@ ECode CDeflater::ResetImplLocked(
 }
 
 ECode CDeflater::SetDictionary(
-    /* [in] */ const ArrayOf<Byte>& buf)
+    /* [in] */ ArrayOf<Byte>* buf)
 {
-    return SetDictionary(buf, 0, buf.GetLength());
+    VALIDATE_NOT_NULL(buf)
+    return SetDictionary(buf, 0, buf->GetLength());
 }
 
 ECode CDeflater::SetDictionary(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
+    VALIDATE_NOT_NULL(buf)
     Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
-    //Arrays.checkOffsetAndCount(buf.length, offset, byteCount);
-    if ((offset | byteCount) < 0 || offset > buf.GetLength() ||
-            buf.GetLength() - offset < byteCount) {
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//        throw new ArrayIndexOutOfBoundsException(arrayLength, offset, byteCount);
-    }
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
+
     SetDictionaryImplLocked(buf, offset, byteCount, mStreamHandle);
     return NOERROR;
 }
 
 void CDeflater::SetDictionaryImplLocked(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
     /* [in] */ NativeZipStream* stream)
@@ -325,25 +325,22 @@ void CDeflater::SetDictionaryImplLocked(
 }
 
 ECode CDeflater::SetInput(
-    /* [in] */ const ArrayOf<Byte>& buf)
+    /* [in] */ ArrayOf<Byte>* buf)
 {
-    return SetInput(buf, 0, buf.GetLength());
+    VALIDATE_NOT_NULL(buf)
+    return SetInput(buf, 0, buf->GetLength());
 }
 
 ECode CDeflater::SetInput(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
+    VALIDATE_NOT_NULL(buf)
     Object::Autolock locK(sLock);
 
-    FAIL_RETURN(CheckOpen());
-    //Arrays.checkOffsetAndCount(buf.length, offset, byteCount);
-    if ((offset | byteCount) < 0 || offset > buf.GetLength() ||
-            buf.GetLength() - offset < byteCount) {
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//        throw new ArrayIndexOutOfBoundsException(arrayLength, offset, byteCount);
-    }
+    FAIL_RETURN(CheckOpen())
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
 
     mInLength = byteCount;
     mInRead = 0;
@@ -351,7 +348,7 @@ ECode CDeflater::SetInput(
         FAIL_RETURN(SetLevelsImplLocked(mCompressLevel,
                     mStrategy, mStreamHandle));
     }
-    mInputBuffer = buf.Clone();
+    mInputBuffer = buf->Clone();
     SetInputImplLocked(buf, offset, byteCount, mStreamHandle);
     return NOERROR;
 }
@@ -377,12 +374,12 @@ ECode CDeflater::SetLevelsImplLocked(
 }
 
 void CDeflater::SetInputImplLocked(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
     /* [in] */ NativeZipStream* stream)
 {
-    stream->SetInput(const_cast<ArrayOf<Byte>*>(&buf), offset, byteCount);
+    stream->SetInput(buf, offset, byteCount);
 }
 
 ECode CDeflater::SetLevel(

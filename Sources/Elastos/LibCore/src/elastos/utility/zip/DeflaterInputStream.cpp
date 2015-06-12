@@ -1,11 +1,13 @@
 
 #include "DeflaterInputStream.h"
-#include <elastos/core/Math.h>
+#include "Math.h"
+#include "CStreams.h"
+#include "CDeflater.h"
 
 using Elastos::Core::Math;
-using Elastos::IO::IStreams;
-using Elastos::IO::CStreams;
 using Elastos::IO::EIID_IInputStream;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
 
 namespace Elastos {
 namespace Utility {
@@ -28,7 +30,7 @@ ECode DeflaterInputStream::Close()
 {
     mClosed = TRUE;
     FAIL_RETURN(mDef->End());
-    return mIn->Close();
+    return ICloseable::Probe(mIn)->Close();
 }
 
 ECode DeflaterInputStream::Read(
@@ -75,7 +77,7 @@ ECode DeflaterInputStream::Read(
                 mDef->Finish();
             }
             else {
-                mDef->SetInput(*mBuf, 0, bytesRead);
+                mDef->SetInput(mBuf, 0, bytesRead);
             }
         }
         Int32 bytesDeflated;
@@ -179,7 +181,7 @@ ECode DeflaterInputStream::constructor(
 //        throw new IllegalArgumentException();
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mDef = (CDeflater*)deflater;
+    mDef = deflater;
     mBuf = ArrayOf<Byte>::Alloc(bufferSize);
     return NOERROR;
 }

@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_REENTRANTLOCK_H__
 
 #include "AbstractQueuedSynchronizer.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 using Elastos::IO::IObjectInputStream;

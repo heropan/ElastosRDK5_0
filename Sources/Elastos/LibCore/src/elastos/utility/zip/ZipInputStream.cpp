@@ -1,16 +1,21 @@
 
 #include "ZipInputStream.h"
 #include "CZipFile.h"
-#include <elastos/core/Math.h>
+#include "CZipEntry.h"
+#include "CCRC32.h"
+//#include "CMemory.h"
+#include "Math.h"
+#include "CPushbackInputStream.h"
+#include "CStreams.h"
 
 using Elastos::Core::Math;
-using Elastos::IO::IStreams;
-using Elastos::IO::CStreams;
 using Elastos::IO::EIID_IInputStream;
 using Elastos::IO::IPushbackInputStream;
-using Elastos::IO::CMemory;
-using Elastos::IO::ByteOrder_LITTLE_ENDIAN;
 using Elastos::IO::CPushbackInputStream;
+// using Libcore::IO::CMemory;
+using Elastos::IO::ByteOrder_LITTLE_ENDIAN;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
 
 namespace Elastos {
 namespace Utility {
@@ -28,7 +33,7 @@ ZipInputStream::ZipInputStream()
     , mLastRead(0)
 {
     mHdrBuf = ArrayOf<Byte>::Alloc(IZipConstants::LOCHDR - IZipConstants::LOCVER);
-    CCRC32::NewByFriend((CCRC32**)&mCrc);
+    CCRC32::New((ICRC32**)&mCrc);
     mNameBuf = ArrayOf<Byte>::Alloc(256);
 }
 
@@ -77,19 +82,19 @@ ECode ZipInputStream::CloseEntry()
     // }
 
     Int32 inB, out;
-    if (mCurrentEntry->mCompressionMethod == IZipEntry::DEFLATED) {
-        mInf->GetTotalIn(&inB);
-        mInf->GetTotalOut(&out);
-    }
-    else {
-        inB = mInRead;
-        out = mInRead;
-    }
+    // if (mCurrentEntry->mCompressionMethod == IZipEntry::DEFLATED) {
+    //     mInf->GetTotalIn(&inB);
+    //     mInf->GetTotalOut(&out);
+    // }
+    // else {
+    //     inB = mInRead;
+    //     out = mInRead;
+    // }
 
     Int32 diff = mEntryIn - inB;
     // Pushback any required bytes
     if (diff != 0) {
-        IPushbackInputStream::Probe(mIn)->UnreadBytes(*mBuf, mLen - diff, diff);
+        IPushbackInputStream::Probe(mIn)->Unread(mBuf, mLen - diff, diff);
     }
 
     ECode newec = ReadAndVerifyDataDescriptor(inB, out);
@@ -97,7 +102,7 @@ ECode ZipInputStream::CloseEntry()
 
     mInf->Reset();
     mLastRead = mInRead = mEntryIn = mLen = 0;
-    mCrc->Reset();
+    IChecksum::Probe(mCrc)->Reset();
     mCurrentEntry = NULL;
 
     return ec;
@@ -112,35 +117,35 @@ ECode ZipInputStream::ReadAndVerifyDataDescriptor(
         CStreams::AcquireSingleton((IStreams**)&streams);
         FAIL_RETURN(streams->ReadFully(mIn, 0, IZipConstants::EXTHDR, mHdrBuf));
         AutoPtr<IMemory> memory;
-        CMemory::AcquireSingleton((IMemory**)&memory);
+        // CMemory::AcquireSingleton((IMemory**)&memory);
         Int32 sig;
-        memory->PeekInt32(*mHdrBuf, 0, ByteOrder_LITTLE_ENDIAN, &sig);
+        memory->PeekInt32(mHdrBuf, 0, ByteOrder_LITTLE_ENDIAN, &sig);
         if (sig != IZipConstants::EXTSIG) {
 //            throw new ZipException(String.format("unknown format (EXTSIG=%x)", sig));
             return E_ZIP_EXCEPTION;
         }
 
         Int32 temp;
-        memory->PeekInt32(*mHdrBuf, IZipConstants::EXTCRC, ByteOrder_LITTLE_ENDIAN, &temp);
-        mCurrentEntry->mCrc = temp & 0xffffffffll;
+        // memory->PeekInt32(mHdrBuf, IZipConstants::EXTCRC, ByteOrder_LITTLE_ENDIAN, &temp);
+        // mCurrentEntry->mCrc = temp & 0xffffffffll;
 
-        memory->PeekInt32(*mHdrBuf, IZipConstants::EXTSIZ, ByteOrder_LITTLE_ENDIAN, &temp);
-        mCurrentEntry->mCompressedSize = temp & 0xffffffffll;
+        // memory->PeekInt32(mHdrBuf, IZipConstants::EXTSIZ, ByteOrder_LITTLE_ENDIAN, &temp);
+        // mCurrentEntry->mCompressedSize = temp & 0xffffffffll;
 
-        memory->PeekInt32(*mHdrBuf, IZipConstants::EXTLEN, ByteOrder_LITTLE_ENDIAN, &temp);
-        mCurrentEntry->mSize = temp & 0xffffffffll;
+        // memory->PeekInt32(mHdrBuf, IZipConstants::EXTLEN, ByteOrder_LITTLE_ENDIAN, &temp);
+        // mCurrentEntry->mSize = temp & 0xffffffffll;
     }
 
-    Int64 checksum;
-    mCrc->GetValue(&checksum);
-    if (mCurrentEntry->mCrc != checksum) {
-//        throw new ZipException("CRC mismatch");
-        return E_ZIP_EXCEPTION;
-    }
-    if (mCurrentEntry->mCompressedSize != inB || mCurrentEntry->mSize != out) {
-//        throw new ZipException("Size mismatch");
-        return E_ZIP_EXCEPTION;
-    }
+//     Int64 checksum;
+//     IChecksum::Probe(mCrc)->GetValue(&checksum);
+//     if (mCurrentEntry->mCrc != checksum) {
+// //        throw new ZipException("CRC mismatch");
+//         return E_ZIP_EXCEPTION;
+//     }
+//     if (mCurrentEntry->mCompressedSize != inB || mCurrentEntry->mSize != out) {
+// //        throw new ZipException("Size mismatch");
+//         return E_ZIP_EXCEPTION;
+//     }
     return NOERROR;
 }
 
@@ -156,14 +161,14 @@ ECode ZipInputStream::GetNextEntry(
     }
 
     AutoPtr<IMemory> memory;
-    CMemory::AcquireSingleton((IMemory**)&memory);
+    // CMemory::AcquireSingleton((IMemory**)&memory);
     // Read the signature to see whether there's another local file header.
     AutoPtr<IStreams> streams;
     CStreams::AcquireSingleton((IStreams**)&streams);
     FAIL_RETURN(streams->ReadFully(mIn, 0, 4, mHdrBuf));
 
     Int32 hdr;
-    memory->PeekInt32(*mHdrBuf, 0, ByteOrder_LITTLE_ENDIAN, &hdr);
+    memory->PeekInt32(mHdrBuf, 0, ByteOrder_LITTLE_ENDIAN, &hdr);
     if (hdr == IZipConstants::CENSIG) {
         mEntriesEnd = TRUE;
         return NOERROR;
@@ -189,13 +194,13 @@ ECode ZipInputStream::GetNextEntry(
     Int64 ceCrc = 0, ceCompressedSize = 0, ceSize = -1;
     if (!mHasDD) {
         Int32 temp;
-        memory->PeekInt32(*mHdrBuf, IZipConstants::LOCCRC - IZipConstants::LOCVER, ByteOrder_LITTLE_ENDIAN, &temp);
+        memory->PeekInt32(mHdrBuf, IZipConstants::LOCCRC - IZipConstants::LOCVER, ByteOrder_LITTLE_ENDIAN, &temp);
         ceCrc = temp & 0xffffffffL;
 
-        memory->PeekInt32(*mHdrBuf, IZipConstants::LOCSIZ - IZipConstants::LOCVER, ByteOrder_LITTLE_ENDIAN, &temp);
+        memory->PeekInt32(mHdrBuf, IZipConstants::LOCSIZ - IZipConstants::LOCVER, ByteOrder_LITTLE_ENDIAN, &temp);
         ceCompressedSize = temp & 0xffffffffL;
 
-        memory->PeekInt32(*mHdrBuf, IZipConstants::LOCLEN - IZipConstants::LOCVER, ByteOrder_LITTLE_ENDIAN, &temp);
+        memory->PeekInt32(mHdrBuf, IZipConstants::LOCLEN - IZipConstants::LOCVER, ByteOrder_LITTLE_ENDIAN, &temp);
         ceSize = temp & 0xffffffffL;
     }
 
@@ -215,8 +220,8 @@ ECode ZipInputStream::GetNextEntry(
     //mCurrentEntry = createZipEntry(ModifiedUtf8.decode(nameBuf, charBuf, 0, nameLength));
     String zipEntryName((const char *)mNameBuf->GetPayload(), nameLength);
     mCurrentEntry = CreateZipEntry(zipEntryName);
-    mCurrentEntry->mTime = ceLastModifiedTime;
-    mCurrentEntry->mModDate = ceLastModifiedDate;
+    // mCurrentEntry->mTime = ceLastModifiedTime;
+    // mCurrentEntry->mModDate = ceLastModifiedDate;
     mCurrentEntry->SetMethod(ceCompressionMethod);
     if (ceSize != -1) {
         mCurrentEntry->SetCrc(ceCrc);
@@ -240,7 +245,7 @@ Int32 ZipInputStream::PeekShort(
     /* [in] */ Int32 offset)
 {
     Int16 value;
-    memory->PeekInt16(*mHdrBuf, offset, ByteOrder_LITTLE_ENDIAN, &value);
+    memory->PeekInt16(mHdrBuf, offset, ByteOrder_LITTLE_ENDIAN, &value);
     return (value & 0xffff);
 }
 
@@ -267,33 +272,33 @@ ECode ZipInputStream::Read(
         return NOERROR;
     }
 
-    if (mCurrentEntry->mCompressionMethod == IZipEntry::STORED) {
-        Int32 csize = (Int32)mCurrentEntry->mSize;
-        if (mInRead >= csize) {
-            *number = -1;
-            return NOERROR;
-        }
-        if (mLastRead >= mLen) {
-            mLastRead = 0;
-            FAIL_RETURN(mIn->Read(mBuf, &mLen));
-            if (mLen == -1) {
-                mEof = TRUE;
-                *number = -1;
-                return NOERROR;
-            }
-            mEntryIn += mLen;
-        }
-        Int32 toRead = byteCount > (mLen - mLastRead) ? mLen - mLastRead : byteCount;
-        if ((csize - mInRead) < toRead) {
-            toRead = csize - mInRead;
-        }
-        memcpy(buffer->GetPayload() + offset, mBuf->GetPayload() + mLastRead, toRead);
-        mLastRead += toRead;
-        mInRead += toRead;
-        mCrc->Update(*buffer, offset, toRead);
-        *number = toRead;
-        return NOERROR;
-    }
+    // if (mCurrentEntry->mCompressionMethod == IZipEntry::STORED) {
+    //     Int32 csize = (Int32)mCurrentEntry->mSize;
+    //     if (mInRead >= csize) {
+    //         *number = -1;
+    //         return NOERROR;
+    //     }
+    //     if (mLastRead >= mLen) {
+    //         mLastRead = 0;
+    //         FAIL_RETURN(mIn->Read(mBuf, &mLen));
+    //         if (mLen == -1) {
+    //             mEof = TRUE;
+    //             *number = -1;
+    //             return NOERROR;
+    //         }
+    //         mEntryIn += mLen;
+    //     }
+    //     Int32 toRead = byteCount > (mLen - mLastRead) ? mLen - mLastRead : byteCount;
+    //     if ((csize - mInRead) < toRead) {
+    //         toRead = csize - mInRead;
+    //     }
+    //     memcpy(buffer->GetPayload() + offset, mBuf->GetPayload() + mLastRead, toRead);
+    //     mLastRead += toRead;
+    //     mInRead += toRead;
+    //     IChecksum::Probe(mCrc)->Update(buffer, offset, toRead);
+    //     *number = toRead;
+    //     return NOERROR;
+    // }
     Boolean value;
     mInf->NeedsInput(&value);
     if (value) {
@@ -311,7 +316,7 @@ ECode ZipInputStream::Read(
         *number = -1;
         return NOERROR;
     }
-    mCrc->Update(*buffer, offset, read);
+    IChecksum::Probe(mCrc)->Update(buffer, offset, read);
     *number = read;
     return NOERROR;
 }
@@ -319,17 +324,18 @@ ECode ZipInputStream::Read(
 ECode ZipInputStream::Available(
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
     FAIL_RETURN(CheckClosed());
     // The InflaterInputStream contract says we must only return 0 or 1.
-    *number = (mCurrentEntry == NULL || mInRead < mCurrentEntry->mSize) ? 1 : 0;
+    // *number = (mCurrentEntry == NULL || mInRead < mCurrentEntry->mSize) ? 1 : 0;
     return NOERROR;
 }
 
-AutoPtr<CZipEntry> ZipInputStream::CreateZipEntry(
+AutoPtr<IZipEntry> ZipInputStream::CreateZipEntry(
     /* [in] */ const String& name)
 {
-    AutoPtr<CZipEntry> entry;
-    CZipEntry::NewByFriend(name, (CZipEntry**)&entry);
+    AutoPtr<IZipEntry> entry;
+    CZipEntry::New(name, (IZipEntry**)&entry);
     return entry;
 }
 
@@ -350,11 +356,11 @@ ECode ZipInputStream::constructor(
         return E_NULL_POINTER_EXCEPTION;
     }
 
-    AutoPtr<IPushbackInputStream> is;
-    FAIL_RETURN(CPushbackInputStream::New(stream, BUF_SIZE, (IPushbackInputStream**)&is));
-    AutoPtr<CInflater> inflater;
-    CInflater::NewByFriend(TRUE, (CInflater**)&inflater);
-    return InflaterInputStream::constructor(is.Get(), (IInflater*)inflater.Get());
+    AutoPtr<IInputStream> is;
+    FAIL_RETURN(CPushbackInputStream::New(stream, BUF_SIZE, (IInputStream**)&is));
+    AutoPtr<IInflater> inflater;
+    CInflater::New(TRUE, (IInflater**)&inflater);
+    return InflaterInputStream::constructor(is.Get(), inflater.Get());
 }
 
 } // namespace Zip

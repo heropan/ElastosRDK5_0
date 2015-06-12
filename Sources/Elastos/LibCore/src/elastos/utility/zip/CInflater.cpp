@@ -1,6 +1,7 @@
 
 #include "CInflater.h"
-#include <elastos/core/Math.h>
+#include "Math.h"
+#include "Arrays.h"
 #include <unistd.h>
 #include <errno.h>
 
@@ -338,33 +339,28 @@ ECode CInflater::ResetImplLocked(
 }
 
 ECode CInflater::SetDictionary(
-    /* [in] */ const ArrayOf<Byte>& buf)
+    /* [in] */ ArrayOf<Byte>* buf)
 {
-    return SetDictionary(buf, 0, buf.GetLength());
+    VALIDATE_NOT_NULL(buf)
+    return SetDictionary(buf, 0, buf->GetLength());
 }
 
 ECode CInflater::SetDictionary(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
+    VALIDATE_NOT_NULL(buf)
     Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
-//    Arrays.checkOffsetAndCount(dictionary.length, offset, byteCount);
-    if (offset <= buf.GetLength() && byteCount >= 0 && offset >= 0
-            && buf.GetLength() - offset >= byteCount) {
-        SetDictionaryImplLocked(buf, offset, byteCount, mStreamHandle);
-        return NOERROR;
-    }
-    else {
-//        throw new ArrayIndexOutOfBoundsException();
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
+    SetDictionaryImplLocked(buf, offset, byteCount, mStreamHandle);
+    return NOERROR;
 }
 
 void CInflater::SetDictionaryImplLocked(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
     /* [in] */ NativeZipStream* stream)
@@ -373,21 +369,23 @@ void CInflater::SetDictionaryImplLocked(
 }
 
 ECode CInflater::SetInput(
-    /* [in] */ const ArrayOf<Byte>& buf)
+    /* [in] */ ArrayOf<Byte>* buf)
 {
-    return SetInput(buf, 0, buf.GetLength());
+    VALIDATE_NOT_NULL(buf)
+    return SetInput(buf, 0, buf->GetLength());
 }
 
 ECode CInflater::SetInput(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount)
 {
+    VALIDATE_NOT_NULL(buf)
     Object::Autolock locK(sLock);
 
     FAIL_RETURN(CheckOpen());
 
-    Int32 arrayLength = buf.GetLength();
+    Int32 arrayLength = buf->GetLength();
     if ((offset | byteCount) < 0 || offset > arrayLength || arrayLength - offset < byteCount)
     {
 //        throw new ArrayIndexOutOfBoundsException();
@@ -414,12 +412,12 @@ Int32 CInflater::SetFileInput(
 }
 
 void CInflater::SetInputImplLocked(
-    /* [in] */ const ArrayOf<Byte>& buf,
+    /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
     /* [in] */ NativeZipStream* stream)
 {
-    stream->SetInput(&buf, offset, byteCount);
+    stream->SetInput(buf, offset, byteCount);
 }
 
 Int32 CInflater::SetFileInputImplLocked(

@@ -4,7 +4,7 @@
 
 #include "_Elastos_Utility_Zip_CDeflater.h"
 #include "Zip.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 
@@ -183,7 +183,7 @@ public:
      */
     // synchronized
     CARAPI SetDictionary(
-        /* [in] */ const ArrayOf<Byte>& buf);
+        /* [in] */ ArrayOf<Byte>* buf);
 
     /**
      * Sets the dictionary to be used for compression by this {@code Deflater}.
@@ -201,7 +201,7 @@ public:
      */
     // synchronized
     CARAPI SetDictionary(
-        /* [in] */ const ArrayOf<Byte>& buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);
 
@@ -213,7 +213,7 @@ public:
      *            the buffer.
      */
     CARAPI SetInput(
-        /* [in] */ const ArrayOf<Byte>& buf);
+        /* [in] */ ArrayOf<Byte>* buf);
 
     /* Sets the input buffer the {@code Deflater} will use to extract uncompressed bytes
      * for later compression. Input will be taken from the buffer region
@@ -228,7 +228,7 @@ public:
      */
     // synchronized
     CARAPI SetInput(
-        /* [in] */ const ArrayOf<Byte>& buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);
 
@@ -353,7 +353,7 @@ private:
         /* [in] */ NativeZipStream* stream);
 
     CARAPI_(void) SetDictionaryImplLocked(
-        /* [in] */ const ArrayOf<Byte>& buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [in] */ NativeZipStream* stream);
@@ -364,7 +364,7 @@ private:
         /* [in] */ NativeZipStream* stream);
 
     CARAPI_(void) SetInputImplLocked(
-        /* [in] */ const ArrayOf<Byte>& buf,
+        /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [in] */ NativeZipStream* stream);

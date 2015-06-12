@@ -2,13 +2,10 @@
 #ifndef __ELASTOS_UTILITY_ZIPOUTPUTSTREAM_H__
 #define __ELASTOS_UTILITY_ZIPOUTPUTSTREAM_H__
 
-#include "CByteArrayOutputStream.h"
 #include "DeflaterOutputStream.h"
-#include "CZipEntry.h"
-#include "CCRC32.h"
-#include <elastos/Vector.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IByteArrayOutputStream;
 
@@ -26,6 +23,16 @@ public:
     ZipOutputStream();
 
     virtual ~ZipOutputStream();
+
+    /**
+     * Constructs a new {@code ZipOutputStream} with the specified output
+     * stream.
+     *
+     * @param p1
+     *            the {@code OutputStream} to write the data to.
+     */
+    CARAPI constructor(
+        /* [in] */ IOutputStream* p1);
 
     /**
      * Closes the current {@code ZipEntry}, if any, and the underlying output
@@ -111,7 +118,7 @@ public:
      */
     //@Override
     CARAPI Write(
-        /* [in] */ const ArrayOf<Byte>& buffer,
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);
 
@@ -122,16 +129,6 @@ public:
         /* [in] */ const String& value,
         /* [in] */ Int32 length);
 
-protected:
-    /**
-     * Constructs a new {@code ZipOutputStream} with the specified output
-     * stream.
-     *
-     * @param p1
-     *            the {@code OutputStream} to write the data to.
-     */
-    CARAPI constructor(
-        /* [in] */ IOutputStream* p1);
 
 private:
     CARAPI_(Int64) WriteInt64(
@@ -150,7 +147,7 @@ protected:
 private:
     String mComment;
 
-    Vector<String> mEntries;//why not use hashset?
+    HashSet<String> mEntries;
 
     Int32 mCompressMethod;
 
@@ -158,9 +155,9 @@ private:
 
     AutoPtr<IByteArrayOutputStream> mCDir;
 
-    AutoPtr<CZipEntry> mCurrentEntry;
+    AutoPtr<IZipEntry> mCurrentEntry;
 
-    AutoPtr<CCRC32> mCrc;
+    AutoPtr<ICRC32> mCrc;
 
     Int32 mOffset;
     Int32 mCurOffset;

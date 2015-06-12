@@ -5,7 +5,7 @@
 #include "_Elastos_Utility_Concurrent_CConcurrentHashMap.h"
 #include "AbstractMap.h"
 #include "ReentrantLock.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 using Elastos::IO::ISerializable;

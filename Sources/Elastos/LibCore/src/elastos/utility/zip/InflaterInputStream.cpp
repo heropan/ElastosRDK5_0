@@ -1,10 +1,12 @@
 
 #include "InflaterInputStream.h"
-#include "CZipFile.h"
+#include "CStreams.h"
+// #include "CZipFile.h"
+#include "CInflater.h"
 
-using Elastos::IO::IStreams;
-using Elastos::IO::CStreams;
 using Elastos::IO::EIID_IInputStream;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
 
 namespace Elastos {
 namespace Utility {
@@ -115,23 +117,23 @@ ECode InflaterInputStream::Fill()
 {
     FAIL_RETURN(CheckClosed());
 
-    if (mNativeEndBufSize > 0) {
-        CZipFile::RAFStream* is = (CZipFile::RAFStream*)mIn->Probe(EIID_ZipFileRAFStream);
-        Object::Autolock locK(is->sLock);
-        Int64 len = is->mLength - is->mOffset;
-        if (len > mNativeEndBufSize) len = mNativeEndBufSize;
-        AutoPtr<IFileDescriptor> fd;
-        is->mSharedRaf->GetFD((IFileDescriptor**)&fd);
-        Int32 cnt = mInf->SetFileInput(fd, is->mOffset, mNativeEndBufSize);
-        Int64 result;
-        is->Skip(cnt, &result);
-    }
-    else {
-        mIn->Read(mBuf, &mLen);
-        if (mLen > 0) {
-            mInf->SetInput(*mBuf, 0, mLen);
-        }
-    }
+    // if (mNativeEndBufSize > 0) {
+    //     CZipFile::RAFStream* is = (CZipFile::RAFStream*)mIn->Probe(EIID_ZipFileRAFStream);
+    //     Object::Autolock locK(is->sLock);
+    //     Int64 len = is->mLength - is->mOffset;
+    //     if (len > mNativeEndBufSize) len = mNativeEndBufSize;
+    //     AutoPtr<IFileDescriptor> fd;
+    //     is->mSharedRaf->GetFD((IFileDescriptor**)&fd);
+    //     Int32 cnt = mInf->SetFileInput(fd, is->mOffset, mNativeEndBufSize);
+    //     Int64 result;
+    //     is->Skip(cnt, &result);
+    // }
+    // else {
+    //     mIn->Read(mBuf, &mLen);
+    //     if (mLen > 0) {
+    //         mInf->SetInput(mBuf, 0, mLen);
+    //     }
+    // }
     return NOERROR;
 }
 
@@ -172,7 +174,7 @@ ECode InflaterInputStream::Close()
         mInf->End();
         mClosed = TRUE;
         mEof = TRUE;
-        mIn->Close();
+        ICloseable::Probe(mIn)->Close();
     }
     return NOERROR;
 }
@@ -243,13 +245,13 @@ ECode InflaterInputStream::constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    mInf = (CInflater*)inflater;
-    if (is->Probe(EIID_ZipFileRAFStream)) {
-        mNativeEndBufSize = bsize;
-    }
-    else {
-        mBuf = ArrayOf<Byte>::Alloc(bsize);
-    }
+    mInf = inflater;
+    // if (is->Probe(EIID_ZipFileRAFStream)) {
+    //     mNativeEndBufSize = bsize;
+    // }
+    // else {
+    //     mBuf = ArrayOf<Byte>::Alloc(bsize);
+    // }
 
     return NOERROR;
 }

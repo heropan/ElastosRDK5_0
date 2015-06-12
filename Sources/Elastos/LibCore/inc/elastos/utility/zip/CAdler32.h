@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_CADLER32_H__
 
 #include "_Elastos_Utility_Zip_CAdler32.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 
