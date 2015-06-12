@@ -28,7 +28,6 @@ using Elastos::IO::IOutputStream;
 namespace Elastos {
 namespace Utility {
 
-
 //==========================================================
 //       HashMap
 //==========================================================

@@ -806,8 +806,9 @@ ECode CBigInteger::Min(
     /* [in] */ IBigInteger* value,
     /* [out] */ IBigInteger** result)
 {
-    VALIDATE_NOT_NULL(value);
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
+    VALIDATE_NOT_NULL(value);
 
     Int32 cmpResult;
     CompareTo(value, &cmpResult);
@@ -827,8 +828,9 @@ ECode CBigInteger::Max(
     /* [in] */ IBigInteger* value,
     /* [out] */ IBigInteger** result)
 {
-    VALIDATE_NOT_NULL(value);
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
+    VALIDATE_NOT_NULL(value);
 
     Int32 cmpResult;
     CompareTo(value, &cmpResult);
@@ -848,8 +850,9 @@ ECode CBigInteger::Gcd(
     /* [in] */ IBigInteger* value,
     /* [out] */ IBigInteger** result)
 {
-    VALIDATE_NOT_NULL(value);
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
+    VALIDATE_NOT_NULL(value);
 
     CBigInteger* cValue = (CBigInteger*)value;
     AutoPtr<BigInt> bigInt = new BigInt();
@@ -861,8 +864,9 @@ ECode CBigInteger::Multiply(
     /* [in] */ IBigInteger* value,
     /* [out] */ IBigInteger** result)
 {
-    VALIDATE_NOT_NULL(value);
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
+    VALIDATE_NOT_NULL(value);
 
     CBigInteger* cValue = (CBigInteger*)value;
     AutoPtr<BigInt> bigInt = new BigInt();

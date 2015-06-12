@@ -808,4 +808,11 @@ private:
 } // namespace Elastos
 
 
+template <>
+struct Conversion<Elastos::Utility::HashMap::HashMapEntry*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
+
+
 #endif // __UTILITYHashMap_H__

@@ -33,14 +33,14 @@ using Elastos::Math::EIID_IBigDecimal;
 namespace Elastos {
 namespace Text {
 
-AutoPtr<IDouble>  isInt()
+static AutoPtr<IDouble>  IntNEGATIVE_ZERO_DOUBLE()
 {
     AutoPtr<CDouble> out;
-    CDouble::NewByFriend(-0.0,(CDouble **)&out);
-    return (IDouble*)out.Get();
+    CDouble::NewByFriend(-0.0, (CDouble **)&out);
+    return (IDouble*)out->Probe(EIID_IDouble);
 }
 
-const AutoPtr<IDouble> DecimalFormat::NEGATIVE_ZERO_DOUBLE = isInt();
+const AutoPtr<IDouble> DecimalFormat::NEGATIVE_ZERO_DOUBLE = IntNEGATIVE_ZERO_DOUBLE();
 
 DecimalFormat::DecimalFormat()
     : mRoundingMode(Elastos::Math::RoundingMode_HALF_EVEN)

@@ -823,8 +823,9 @@ ECode CBitSet::ValueOf(
     /* [in] */ IByteBuffer* byteArr,
     /* [out] */ IBitSet** bs)
 {
-    VALIDATE_NOT_NULL(byteArr);
     VALIDATE_NOT_NULL(bs);
+    *bs = NULL;
+    VALIDATE_NOT_NULL(byteArr);
 
     AutoPtr<IByteBuffer> byteBuffer;
     byteArr->Slice((IByteBuffer**)&byteBuffer);

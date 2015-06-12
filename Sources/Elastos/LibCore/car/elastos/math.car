@@ -1,6 +1,9 @@
 module
 {
     //interface Elastos.IO.ISerializable;
+    interface Elastos.Core.INumber;
+    interface Elastos.Core.IComparable;
+    interface Elastos.Core.IRandom;
 
     merge("math/IMathContext.car");
     merge("math/IBigDecimal.car");
@@ -81,9 +84,9 @@ module
             [in] Int64 int64Val,
             [in] IMathContext* mc);
 
-        //interface Elastos.IO.ISerializable;
-        interface Elastos.Core.INumber;
-        interface Elastos.Core.IComparable;
+        //interface ISerializable;
+        interface INumber;
+        interface IComparable;
         interface IBigDecimal;
     }
 
@@ -97,12 +100,12 @@ module
 
         constructor(
             [in] Int32 numBits,
-            [in] Elastos.Core.IRandom* random);
+            [in] IRandom* random);
 
         constructor(
             [in] Int32 bitLength,
             [in] Int32 certainty,
-            [in] Elastos.Core.IRandom* random);
+            [in] IRandom* random);
 
         constructor(
             [in] Int32 sign,
@@ -127,9 +130,9 @@ module
         constructor(
             [in] ArrayOf<Byte> arrValue);
 
-        //interface Elastos.IO.ISerializable;
-        interface Elastos.Core.INumber;
-        interface Elastos.Core.IComparable;
+        //interface ISerializable;
+        interface INumber;
+        interface IComparable;
         interface IBigInteger;
     }
 
@@ -145,7 +148,7 @@ module
             [in] Int32 precision,
             [in] RoundingMode roundingMode);
 
-        //interface Elastos.IO.ISerializable;
+        //interface ISerializable;
         interface IMathContext;
     }
 

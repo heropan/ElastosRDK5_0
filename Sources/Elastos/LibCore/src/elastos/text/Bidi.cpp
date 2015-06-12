@@ -9,6 +9,12 @@ using Elastos::Core::EIID_IInteger32;
 using Elastos::Text::IAttributedCharacterIteratorAttribute;
 using Elastos::Text::EIID_IAttributedCharacterIteratorAttribute;
 
+template <>
+struct Conversion<Elastos::Text::Bidi::BidiRun*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
+
 namespace Elastos {
 namespace Text {
 

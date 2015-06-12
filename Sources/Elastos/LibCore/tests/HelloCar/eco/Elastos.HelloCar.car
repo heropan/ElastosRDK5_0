@@ -26,6 +26,8 @@ module
     }
 
     class CCat {                        // 声明 CAR 类
+        constructor();                  // 显式声明无参构造函数
+
         constructor(                    // 显式声明有参构造函数
             [in] Int32 age,
             [in] String name);

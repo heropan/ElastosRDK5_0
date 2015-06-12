@@ -4,11 +4,7 @@
 namespace Elastos {
 namespace Text {
 
-ECode CNumberFormatField::constructor(
-    /* [in] */ const String& fieldName)
-{
-    return AttributedCharacterIteratorAttribute::constructor(fieldName);
-}
+CAR_OBJECT_IMPL(CNumberFormatField)
 
 } // namespace Text
 } // namespace Elastos

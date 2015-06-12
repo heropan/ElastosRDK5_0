@@ -8,6 +8,10 @@ using Elastos::Utility::Arrays;
 namespace Elastos {
 namespace Core {
 
+CAR_INTERFACE_IMPL(CArrayOf, Object, IArrayOf)
+
+CAR_OBJECT_IMPL(CArrayOf)
+
 CArrayOf::CArrayOf()
     : mElements(NULL)
 {}

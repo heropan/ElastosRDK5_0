@@ -14,6 +14,7 @@ namespace Core {
 
 CarClass(CInteger64)
     , public Object
+    , public IInteger64
     , public INumber
     , public ISerializable
     , public IComparable

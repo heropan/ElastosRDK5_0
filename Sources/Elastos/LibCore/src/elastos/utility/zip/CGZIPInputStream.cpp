@@ -1,6 +1,7 @@
 
 #include "CGZIPInputStream.h"
 // #include "CMemory.h"
+#include "CInflater.h"
 
 using Libcore::IO::IMemory;
 // using Libcore::IO::CMemory;

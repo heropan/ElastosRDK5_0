@@ -12,6 +12,7 @@ namespace Core {
 
 CarClass(CBoolean)
     , public Object
+    , public IBoolean
     , public ISerializable
     , public IComparable
 {

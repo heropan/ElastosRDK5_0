@@ -10,8 +10,13 @@ namespace Core {
 
 CarClass(CArrayOf)
     , public Object
+    , public IArrayOf
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CArrayOf();
 
     ~CArrayOf();

@@ -14,6 +14,7 @@ namespace Core {
 
 CarClass(CFloat)
     , public Object
+    , public IFloat
     , public INumber
     , public ISerializable
     , public IComparable

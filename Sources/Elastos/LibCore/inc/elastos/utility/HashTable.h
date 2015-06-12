@@ -837,4 +837,11 @@ private:
 } // namespace Elastos
 
 
+template <>
+struct Conversion<Elastos::Utility::HashTable::HashtableEntry*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
+
+
 #endif // __UTILITY_HASHTABLE_H__

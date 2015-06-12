@@ -22,7 +22,7 @@ static AutoPtr<INumberFormatField> sInit(const String& name)
 {
      AutoPtr<CNumberFormatField> field;
      CNumberFormatField::NewByFriend(name, (CNumberFormatField**)&field);
-     return (INumberFormatField*)field.Get();
+     return (INumberFormatField*)field->Probe(EIID_INumberFormatField);
 }
 
 const AutoPtr<INumberFormatField> NumberFormat::Field::SIGN = sInit(String("sign"));

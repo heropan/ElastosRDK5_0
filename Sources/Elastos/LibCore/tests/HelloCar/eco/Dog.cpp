@@ -1,14 +1,12 @@
 
-#include "CDog.h"
+#include "Dog.h"
 
 namespace Elastos {
 namespace HelloCar {
 
-CAR_INTERFACE_IMPL(CDog, Animal, IDog)
+CAR_INTERFACE_IMPL(Dog, Animal, IDog)
 
-CAR_OBJECT_IMPL(CDog)
-
-ECode CDog::Bark()
+ECode Dog::Bark()
 {
     printf("%s : wang! wang!\n", mName.string());
     return NOERROR;

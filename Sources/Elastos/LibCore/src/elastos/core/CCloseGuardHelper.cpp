@@ -6,9 +6,9 @@
 namespace Elastos {
 namespace Core {
 
-CAR_INTERFACE_IMPL(CCloseGuardHelper, Object, ICloseGuardHelper)
+CAR_INTERFACE_IMPL(CCloseGuardHelper, Singleton, ICloseGuardHelper)
 
-CAR_OBJECT_IMPL(CCloseGuardHelper)
+CAR_SINGLETON_IMPL(CCloseGuardHelper)
 
 ECode CCloseGuardHelper::Get(
     /* [out] */ ICloseGuard** guard)

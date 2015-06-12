@@ -23,7 +23,7 @@ static AutoPtr<IBigInteger> CreateBigInteger(Int32 sign, Int64 value)
 {
     AutoPtr<CBigInteger> obj;
     CBigInteger::NewByFriend(sign, value, (CBigInteger**)&obj);
-    return (IBigInteger*)obj.Get();
+    return (IBigInteger*)obj->Probe(EIID_IBigInteger);
 }
 
 Boolean Multiplication::InitStatic()

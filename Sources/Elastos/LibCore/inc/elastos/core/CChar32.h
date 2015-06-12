@@ -12,8 +12,10 @@ namespace Core {
 
 CarClass(CChar32)
     , public Object
+    , public IChar32
     , public INumber
     , public ISerializable
+    , public IComparable
 {
 public:
     CAR_INTERFACE_DECL()

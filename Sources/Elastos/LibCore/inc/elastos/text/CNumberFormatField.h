@@ -3,8 +3,7 @@
 #define __ELASTOS_TEXT_CNUMBERFORMATFIELD_H__
 
 #include "_Elastos_Text_CNumberFormatField.h"
-#include <AttributedCharacterIteratorAttribute.h>
-#include <AttributedCharacterIteratorAttributeMacro.h>
+#include "AttributedCharacterIteratorAttribute.h"
 
 namespace Elastos {
 namespace Text {
@@ -12,8 +11,7 @@ namespace Text {
 CarClass(CNumberFormatField) , public AttributedCharacterIteratorAttribute
 {
 public:
-    CARAPI constructor(
-        /* [in] */ const String& fieldName);
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Text

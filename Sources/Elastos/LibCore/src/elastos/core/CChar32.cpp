@@ -7,7 +7,7 @@ using Elastos::IO::EIID_ISerializable;
 namespace Elastos {
 namespace Core {
 
-CAR_INTERFACE_IMPL_3(CChar32, Object, IChar32, INumber, ISerializable)
+CAR_INTERFACE_IMPL_4(CChar32, Object, IChar32, INumber, ISerializable, IComparable)
 
 CAR_OBJECT_IMPL(CChar32)
 

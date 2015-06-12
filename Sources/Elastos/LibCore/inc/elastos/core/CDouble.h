@@ -14,6 +14,7 @@ namespace Core {
 
 CarClass(CDouble)
     , public Object
+    , public IDouble
     , public INumber
     , public ISerializable
     , public IComparable
@@ -22,7 +23,6 @@ public:
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
 
     CARAPI constructor(
         /* [in] */ Double value);

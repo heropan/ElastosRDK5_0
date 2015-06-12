@@ -22,6 +22,8 @@ public:
 
     Animal();               // 若有成员需要初始化，则需显式声明构造函数，以便使用初始化列表进行初始化
 
+    virtual ~Animal();
+
     CARAPI constructor();   // 用于被子类继承的 CAR 构造函数
 
     CARAPI constructor(     // 用于被子类继承的 CAR 构造函数

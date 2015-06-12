@@ -12,7 +12,6 @@ CAR_INTERFACE_IMPL_4(CInteger16, Object, IInteger16, INumber, ISerializable, ICo
 
 CAR_OBJECT_IMPL(CInteger16)
 
-
 ECode CInteger16::constructor(
     /* [in] */ Int16 value)
 {

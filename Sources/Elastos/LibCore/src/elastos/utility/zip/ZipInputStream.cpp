@@ -7,6 +7,7 @@
 #include "Math.h"
 #include "CPushbackInputStream.h"
 #include "CStreams.h"
+#include "CInflater.h"
 
 using Elastos::Core::Math;
 using Elastos::IO::EIID_IInputStream;

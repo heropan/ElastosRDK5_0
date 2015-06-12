@@ -4,7 +4,7 @@
 namespace Elastos {
 namespace Core {
 
-CAR_SINGLETON_METHODS_IMPL(CBlockGuard)
+CAR_SINGLETON_IMPL(CBlockGuard)
 
 ECode CBlockGuard::GetThreadPolicy(
     /* [out] */ IBlockGuardPolicy** policy)

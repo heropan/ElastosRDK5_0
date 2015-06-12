@@ -12,7 +12,7 @@ CarClass(CBlockGuard)
     , public BlockGuard
 {
 public:
-    CAR_SINGLETON_METHODS_DECL()
+    CAR_SINGLETON_DECL()
 
     /**
      * Get the current thread's policy.

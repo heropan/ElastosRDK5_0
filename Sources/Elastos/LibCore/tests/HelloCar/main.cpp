@@ -111,21 +111,20 @@ void testArrays()
     Arrays::BinarySearch(charArr.Get(), 0, charArr->GetLength(), (Char32)('a' + 15), &index);
     assertEquals(index, 15);
 
-    AutoPtr<IAnimal> dog;
-    AutoPtr<ArrayOf<IAnimal*> > animalArr = ArrayOf<IAnimal*>::Alloc(20);
+    AutoPtr<ArrayOf<IInterface*> > animalArr = ArrayOf<IInterface*>::Alloc(10);
     for (Int32 i = 0; i < animalArr->GetLength(); ++i) {
         StringBuilder sb("Dog_");
-        sb.AppendChar((Char32)('0' + i));
+        sb.Append(i);
         AutoPtr<IAnimal> animal;
         CDog::New(i, sb.ToString(), (IAnimal**)&animal);
-        animalArr->Set(i, animal);
-        if (i == 15) {
-            dog = animal;
-        }
+
+        animalArr->Set(i, TO_IINTERFACE(animal));
     }
 
-    Arrays::BinarySearch(animalArr.Get(), 0, animalArr->GetLength(), dog.Get(), &index);
-    assertEquals(index, 15);
+    AutoPtr<IAnimal> dog;
+    CDog::New(4, String("Dog_4"), (IAnimal**)&dog);
+    Arrays::BinarySearch(animalArr.Get(), 0, animalArr->GetLength(), TO_IINTERFACE(dog), &index);
+    printf("Arrays::BinarySearch(animalArr, Dog_4); result: %d\n", index);
 }
 
 void otherTests()
@@ -141,30 +140,33 @@ int main(int argc, char *argv[])
     printf("==================================\n");
     printf("=========== Hello Car ============\n");
     printf("==================================\n");
-    Boolean canFly;
-    String name;
 
-    AutoPtr<IAnimal> cat;
-    CCat::New((IAnimal**)&cat);
-    cat->SetName(String("Kitty"));
-    cat->GetName(&name);
-    cat->CanFly(&canFly);
-    printf("%s %s!\n\n", name.string(), canFly ? "can fly" : "can not fly");
+    {
+        Boolean canFly;
+        String name;
 
-    AutoPtr<IDog> dog;
-    CDog::New(2, String("HuaHua"), (IDog**)&dog);
-    dog->Bark();
+        AutoPtr<IAnimal> cat;
+        CCat::New((IAnimal**)&cat);
+        cat->SetName(String("Kitty"));
+        cat->GetName(&name);
+        cat->CanFly(&canFly);
+        printf("%s %s!\n\n", name.string(), canFly ? "can fly" : "can not fly");
 
-    IAnimal* da = IAnimal::Probe(dog);
-    da->GetName(&name);
-    da->CanFly(&canFly);
-    printf("%s %s!\n\n", name.string(), canFly ? "can fly" : "can not fly");
+        AutoPtr<IDog> dog;
+        CDog::New(2, String("HuaHua"), (IDog**)&dog);
+        dog->Bark();
 
-    AutoPtr<IAnimalHelper> helper;
-    CAnimalHelper::AcquireSingleton((IAnimalHelper**)&helper);
-    helper->CanFly(cat, &canFly);
-    cat->GetName(&name);
-    printf("CAnimalHelper::CanFly : %s %s!\n\n", name.string(), canFly ? "can fly" : "can not fly");
+        IAnimal* da = IAnimal::Probe(dog);
+        da->GetName(&name);
+        da->CanFly(&canFly);
+        printf("%s %s!\n\n", name.string(), canFly ? "can fly" : "can not fly");
+
+        AutoPtr<IAnimalHelper> helper;
+        CAnimalHelper::AcquireSingleton((IAnimalHelper**)&helper);
+        helper->CanFly(cat, &canFly);
+        cat->GetName(&name);
+        printf("CAnimalHelper::CanFly : %s %s!\n\n", name.string(), canFly ? "can fly" : "can not fly");
+    }
 
     // other tests
     otherTests();
