@@ -12,9 +12,12 @@ INCLUDES += $(MAKEDIR)/../../../inc/libcore;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/icu;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/text;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 
-SOURCES = CollationElementIteratorICU.cpp
+SOURCES = icu.cpp
+SOURCES += CollationElementIteratorICU.cpp
 SOURCES += CCollationElementIteratorICUHelper.cpp
 SOURCES += NativeCollation.cpp
 SOURCES += CNativeCollationHelper.cpp
+SOURCES += CollationKeyICU.cpp

@@ -2,14 +2,21 @@
 #define __ELASTOS_TEXT_COLLATIONKEY_H__
 
 #include <elastos.h>
+#include <Object.h>
 #include "Elastos.CoreLibrary_server.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Text {
 
 class CollationKey
+    : public Object
+    , public ICollationKey
 {
 public:
+    CAR_INTERFACE_DECL()
+
     virtual CARAPI CompareTo(
         /* [in] */ IInterface* value,
         /* [out] */ Int32* result) = 0;

@@ -16,6 +16,9 @@ module
     merge("icu/INativeNormalizerHelper.car");
     merge("icu/IAlphabeticIndex.car");
 
+    interface Elastos.Core.IComparable;
+    interface Elastos.Text.ICollationKey;
+
     namespace Libcore {
     namespace ICU {
 
@@ -25,6 +28,17 @@ module
 
     singleton class CNativeCollationHelper {
         interface INativeCollationHelper;
+    }
+
+    [deprecated]
+    class CCollationKeyICU {
+        constructor(
+            [in] String source,
+            [in] ArrayOf<Byte>* ab);
+
+        interface IComparable;
+        interface ICollationKey;
+        interface ICollationKeyICU;
     }
 
     } // namespace ICU
