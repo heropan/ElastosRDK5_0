@@ -1,14 +1,14 @@
 module
 {
-    //interface Elastos.IO.ISerializable;
-    interface Elastos.Core.INumber;
-    interface Elastos.Core.IComparable;
-    interface Elastos.Core.IRandom;
-
     merge("math/IMathContext.car");
     merge("math/IBigDecimal.car");
     merge("math/IBigInteger.car");
     merge("math/RoundingMode.car");
+
+    //interface Elastos.IO.ISerializable;
+    interface Elastos.Core.INumber;
+    interface Elastos.Core.IComparable;
+    interface Elastos.Core.IRandom;
 
     namespace Elastos {
     namespace Math {
