@@ -505,8 +505,132 @@ module
             interface ISerializable;
         }
 
+        singleton class CCalendarHelper {
+            interface ICalendarHelper;
+        }
 
+        singleton class CCurrencyHelper {
+            interface ICurrencyHelper;
+        }
 
+        singleton class CDateHelper {
+            interface IDateHelper;
+        }
+
+        class CGregorianCalendar {
+            /**
+             * Constructs a new {@code GregorianCalendar} initialized to the current date and
+             * time with the default {@code Locale} and {@code TimeZone}.
+             */
+            constructor();
+
+            /**
+             * Constructs a new {@code GregorianCalendar} initialized to midnight in the default
+             * {@code TimeZone} and {@code Locale} on the specified date.
+             *
+             * @param year
+             *            the year.
+             * @param month
+             *            the month.
+             * @param day
+             *            the day of the month.
+             */
+            constructor(
+                [in] Int32 year,
+                [in] Int32 month,
+                [in] Int32 day);
+
+            /**
+             * Constructs a new {@code GregorianCalendar} initialized to the specified date and
+             * time in the default {@code TimeZone} and {@code Locale}.
+             *
+             * @param year
+             *            the year.
+             * @param month
+             *            the month.
+             * @param day
+             *            the day of the month.
+             * @param hour
+             *            the hour.
+             * @param minute
+             *            the minute.
+             */
+            constructor(
+                [in] Int32 year,
+                [in] Int32 month,
+                [in] Int32 day,
+                [in] Int32 hour,
+                [in] Int32 minute);
+
+            /**
+             * Constructs a new {@code GregorianCalendar} initialized to the specified date and
+             * time in the default {@code TimeZone} and {@code Locale}.
+             *
+             * @param year
+             *            the year.
+             * @param month
+             *            the month.
+             * @param day
+             *            the day of the month.
+             * @param hour
+             *            the hour.
+             * @param minute
+             *            the minute.
+             * @param second
+             *            the second.
+             */
+            constructor(
+                [in] Int32 year,
+                [in] Int32 month,
+                [in] Int32 day,
+                [in] Int32 hour,
+                [in] Int32 minute,
+                [in] Int32 second);
+
+            constructor(
+                [in] Int64 milliseconds);
+
+            /**
+             * Constructs a new {@code GregorianCalendar} initialized to the current date and
+             * time and using the specified {@code Locale} and the default {@code TimeZone}.
+             *
+             * @param locale
+             *            the {@code Locale}.
+             */
+            constructor(
+                [in] ILocale* locale);
+
+            /**
+             * Constructs a new {@code GregorianCalendar} initialized to the current date and
+             * time and using the specified {@code TimeZone} and the default {@code Locale}.
+             *
+             * @param timezone
+             *            the {@code TimeZone}.
+             */
+            constructor(
+                [in] ITimeZone* timeZone);
+
+            /**
+             * Constructs a new {@code GregorianCalendar} initialized to the current date and
+             * time and using the specified {@code TimeZone} and {@code Locale}.
+             *
+             * @param timezone
+             *            the {@code TimeZone}.
+             * @param locale
+             *            the {@code Locale}.
+             */
+            constructor(
+                [in] ITimeZone* timeZone,
+                [in] ILocale* locale);
+
+            constructor(
+                [in] Boolean ignored);
+
+            interface IGregorianCalendar;
+            interface ISerializable;
+            interface ICloneable;
+            interface IComparable;
+        }
         //
         // Date & Time related classes
         //

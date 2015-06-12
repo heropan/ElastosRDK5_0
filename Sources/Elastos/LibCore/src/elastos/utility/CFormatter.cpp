@@ -16,14 +16,13 @@
 #include "CDouble.h"
 #include "CBigDecimal.h"
 #include "CMathContext.h"
-#include "elastos/IntegralToString.h"
-#include "elastos/Character.h"
-#include "elastos/StringUtils.h"
-#include "elastos/Math.h"
+#include "IntegralToString.h"
+#include "Character.h"
+#include "StringUtils.h"
+#include "Math.h"
 #include "CSystem.h"
 
 using Libcore::ICU::CNativeDecimalFormat;
-using Libcore::ICU::CLocale;
 using Libcore::ICU::LocaleData;
 using Elastos::Core::EIID_IAppendable;
 using Elastos::Core::IStringBuilder;
@@ -72,6 +71,7 @@ using Elastos::Math::IMathContext;
 using Elastos::Math::CMathContext;
 using Elastos::Utility::Calendar;
 using Elastos::Utility::CDate;
+using Elastos::Utility::CLocale;
 
 namespace Elastos {
 namespace Utility {

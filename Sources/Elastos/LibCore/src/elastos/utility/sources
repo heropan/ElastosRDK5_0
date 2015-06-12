@@ -51,7 +51,13 @@ SOURCES += CLocale.cpp
 SOURCES += CLocaleHelper.cpp
 SOURCES += CLocaleBuilder.cpp
 SOURCES += Date.cpp
-
+SOURCES += TimSort.cpp
+SOURCES += TimeZone.cpp
+SOURCES += CCalendarHelper.cpp
+SOURCES += CCurrencyHelper.cpp
+SOURCES += CDateHelper.cpp
+SOURCES += CGregorianCalendar.cpp
+SOURCES += Calendar.cpp
 
 
 SOURCES += utility.cpp
