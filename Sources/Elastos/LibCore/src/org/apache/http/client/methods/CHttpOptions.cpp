@@ -68,6 +68,19 @@ ECode CHttpOptions::GetAllowedMethods(
     return NOERROR;
 }
 
+ECode CHttpOptions::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<IHttpOptions> httpOptions;
+    CHttpOptions::New((IHttpOptions**)&httpOptions);
+    HttpRequestBase::CloneImpl(IHttpUriRequest::Probe(httpOptions));
+    *obj = httpOptions->Probe(EIID_IInterface);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
 ECode CHttpOptions::constructor();
 {
     return NOERROR;

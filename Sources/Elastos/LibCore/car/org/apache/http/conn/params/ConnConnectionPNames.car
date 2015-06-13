@@ -1,0 +1,34 @@
+
+module
+{
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Conn {
+    namespace Params {
+
+    /**
+     * Parameter names for connections in HttpConn.
+     *
+     * @version $Revision: 576068 $
+     *
+     * @since 4.0
+     */
+    interface IConnConnectionPNames {
+
+        /**
+         * @see ConnConnectionPNames#MAX_STATUS_LINE_GARBAGE
+         */
+        SetMaxStatusLineGarbage(
+            [in] Int32 maxStatusLineGarbage);
+
+    }
+
+    } // namespace Params
+    } // namespace Conn
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+}

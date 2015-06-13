@@ -38,6 +38,9 @@ public:
         /* [in] */ Int32 minor,
         /* [out] */ IProtocolVersion** ver);
 
+    CARAPI Clone(
+        /* [out] */ IInterface** obj);
+
     /**
      * Create a protocol version designator.
      *
@@ -48,6 +51,8 @@ public:
     CARAPI constructor(
         /* [in] */ Int32 major,
         /* [in] */ Int32 minor);
+
+    CARAPI constructor();
 
 public:
     /** HTTP protocol version 0.9 */

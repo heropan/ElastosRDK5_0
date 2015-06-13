@@ -39,8 +39,9 @@ public:
     CARAPI ExpectContinue(
         /* [out] */ Boolean* result);
 
-    CARAPI Clone(
-        /* [out] */ IInterface** result);
+protected:
+    virtual CARAPI CloneImpl(
+        /* [in] */ IHttpEntityEnclosingRequest* dst);
 
 private:
     AutoPtr<IHttpEntity> mEntity;

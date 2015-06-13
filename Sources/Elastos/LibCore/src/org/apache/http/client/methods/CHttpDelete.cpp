@@ -22,6 +22,19 @@ ECode CHttpDelete::GetMethod(
     return NOERROR;
 }
 
+ECode CHttpDelete::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<IHttpDelete> httpDelete;
+    CHttpDelete::New((IHttpDelete**)&httpDelete);
+    HttpRequestBase::CloneImpl(IHttpUriRequest::Probe(httpDelete));
+    *obj = httpDelete->Probe(EIID_IInterface);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
 ECode CHttpDelete::constructor();
 {
     return NOERROR;

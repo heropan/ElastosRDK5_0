@@ -32,6 +32,9 @@ CarClass(CProtocolVersion) , public ProtocolVersion
 public:
     CAR_OBJECT_DECL()
 
+    CARAPI Clone(
+        /* [out] */ IInterface** obj);
+
     /**
      * Create a protocol version designator.
      *
@@ -43,6 +46,8 @@ public:
         /* [in] */ const String& protocol,
         /* [in] */ Int32 major,
         /* [in] */ Int32 minor);
+
+    CARAPI constructor();
 };
 
 } // namespace Http

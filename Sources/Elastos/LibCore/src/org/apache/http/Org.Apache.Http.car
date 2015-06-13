@@ -69,15 +69,56 @@ module
     merge("../../../../car/org/apache/http/client/methods/HttpPut.car");
     merge("../../../../car/org/apache/http/client/methods/HttpUriRequest.car");
 
-    merge("../../../../car/org/apache/http/client/Params/AllClientPNames.car");
-    merge("../../../../car/org/apache/http/client/Params/AuthPolicy.car");
-    merge("../../../../car/org/apache/http/client/Params/ClientParamBean.car");
-    merge("../../../../car/org/apache/http/client/Params/ClientPNames.car");
-    merge("../../../../car/org/apache/http/client/Params/CookiePolicy.car");
-    merge("../../../../car/org/apache/http/client/Params/HttpClientParams.car");
+    merge("../../../../car/org/apache/http/client/params/AllClientPNames.car");
+    merge("../../../../car/org/apache/http/client/params/AuthPolicy.car");
+    merge("../../../../car/org/apache/http/client/params/ClientParamBean.car");
+    merge("../../../../car/org/apache/http/client/params/ClientPNames.car");
+    merge("../../../../car/org/apache/http/client/params/CookiePolicy.car");
+    merge("../../../../car/org/apache/http/client/params/HttpClientParams.car");
 
-    merge("../../../../car/org/apache/http/client/Protocol/ClientContext.car");
-    merge("../../../../car/org/apache/http/client/Protocol/ClientContextConfigurer.car");
+    merge("../../../../car/org/apache/http/client/protocol/ClientContext.car");
+    merge("../../../../car/org/apache/http/client/protocol/ClientContextConfigurer.car");
+
+    merge("../../../../car/org/apache/http/conn/ClientConnectionManager.car");
+    merge("../../../../car/org/apache/http/conn/ClientConnectionManagerFactory.car");
+    merge("../../../../car/org/apache/http/conn/ClientConnectionOperator.car");
+    merge("../../../../car/org/apache/http/conn/ClientConnectionRequest.car");
+    merge("../../../../car/org/apache/http/conn/ConnectionKeepAliveStrategy.car");
+    merge("../../../../car/org/apache/http/conn/ConnectionReleaseTrigger.car");
+    merge("../../../../car/org/apache/http/conn/EofSensorInputStream.car");
+    merge("../../../../car/org/apache/http/conn/EofSensorWatcher.car");
+    merge("../../../../car/org/apache/http/conn/ManagedClientConnection.car");
+    merge("../../../../car/org/apache/http/conn/MultihomePlainSocketFactory.car");
+    merge("../../../../car/org/apache/http/conn/OperatedClientConnection.car");
+
+    merge("../../../../car/org/apache/http/conn/params/ConnConnectionParamBean.car");
+    merge("../../../../car/org/apache/http/conn/params/ConnConnectionPNames.car");
+    merge("../../../../car/org/apache/http/conn/params/ConnManagerParamBean.car");
+    merge("../../../../car/org/apache/http/conn/params/ConnManagerParams.car");
+    merge("../../../../car/org/apache/http/conn/params/ConnManagerPNames.car");
+    merge("../../../../car/org/apache/http/conn/params/ConnPerRoute.car");
+    merge("../../../../car/org/apache/http/conn/params/ConnPerRouteBean.car");
+    merge("../../../../car/org/apache/http/conn/params/ConnRouteParamBean.car");
+    merge("../../../../car/org/apache/http/conn/params/ConnRouteParams.car");
+    merge("../../../../car/org/apache/http/conn/params/ConnRoutePNames.car");
+
+    merge("../../../../car/org/apache/http/conn/routing/BasicRouteDirector.car");
+    merge("../../../../car/org/apache/http/conn/routing/HttpRoute.car");
+    merge("../../../../car/org/apache/http/conn/routing/HttpRouteDirector.car");
+    merge("../../../../car/org/apache/http/conn/routing/HttpRoutePlanner.car");
+    merge("../../../../car/org/apache/http/conn/routing/RouteInfo.car");
+    merge("../../../../car/org/apache/http/conn/routing/RouteTracker.car");
+
+    merge("../../../../car/org/apache/http/conn/scheme/HostNameResolver.car");
+    merge("../../../../car/org/apache/http/conn/scheme/LayeredSocketFactory.car");
+    merge("../../../../car/org/apache/http/conn/scheme/PlainSocketFactory.car");
+    merge("../../../../car/org/apache/http/conn/scheme/Scheme.car");
+    merge("../../../../car/org/apache/http/conn/scheme/SchemeRegistry.car");
+    merge("../../../../car/org/apache/http/conn/scheme/SocketFactory.car");
+
+    merge("../../../../car/org/apache/http/conn/ssl/AbstractVerifier.car");
+    merge("../../../../car/org/apache/http/conn/ssl/SSLSocketFactory.car");
+    merge("../../../../car/org/apache/http/conn/ssl/X509HostnameVerifier.car");
 
     merge("../../../../car/org/apache/http/params/HttpParams.car");
 
@@ -87,6 +128,8 @@ module
     merge("../../../../car/org/apache/http/util/CharArrayBuffer.car");
 
     using interface Elastos.Core.ICloneable;
+    using interface Elastos.IO.ICloseable;
+    using interface Elastos.IO.IInputStream;
     using interface Elastos.Net.IURI;
     using interface Elastos.Utility.IList;
 
@@ -115,6 +158,8 @@ module
     }
 
     class CProtocolVersion {
+        constructor();
+
         constructor(
             [in] String protocol,
             [in] Int32 major,
@@ -125,6 +170,8 @@ module
     }
 
     class CHttpVersion {
+        constructor();
+
         constructor(
             [in] Int32 major,
             [in] Int32 minor);
@@ -315,6 +362,8 @@ module
 
         constructor(
             [in] IList* parameters);
+
+        constructor();
 
         interface IStringEntity;
         interface IAbstractHttpEntity;
@@ -523,6 +572,210 @@ module
 
     } // namespace Protocol
     } // namespace Client
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Conn {
+
+    class CBasicEofSensorWatcher {
+        constructor(
+            [in] IManagedClientConnection* conn,
+            [in] Boolean reuse);
+
+        interface IEofSensorWatcher;
+    }
+
+    class CBasicManagedEntity {
+        constructor(
+            [in] IHttpEntity* entity,
+            [in] IManagedClientConnection* conn,
+            [in] Boolean reuse);
+
+        interface IHttpEntity;
+        interface IConnectionReleaseTrigger;
+        interface IEofSensorWatcher;
+    }
+
+    class CEofSensorInputStream {
+        constructor(
+            [in] IInputStream* in,
+            [in] IEofSensorWatcher* watcher);
+
+        interface IEofSensorInputStream;
+        interface IInputStream;
+        interface ICloseable;
+        interface IConnectionReleaseTrigger;
+    }
+
+    singleton class CMultihomePlainSocketFactoryHelper {
+        interface IMultihomePlainSocketFactoryHelper;
+    }
+
+    } // namespace Conn
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Conn {
+    namespace Params {
+
+    class CConnConnectionParamBean {
+        constructor(
+            [in] IHttpParams* params);
+
+        interface IConnConnectionParamBean;
+    }
+
+    class CConnManagerParamBean {
+        constructor(
+            [in] IHttpParams* params);
+
+        interface IConnManagerParamBean;
+    }
+
+    singleton class CConnManagerParams {
+        interface IConnManagerParams;
+        interface IConnManagerPNames;
+    }
+
+    class CConnPerRouteBean {
+        constructor(
+            [in] Int32 defaultMax);
+
+        constructor();
+
+        interface IConnPerRouteBean;
+        interface IConnPerRoute;
+    }
+
+    class CConnRouteParamBean {
+        constructor(
+            [in] IHttpParams* params);
+
+        interface IConnRouteParamBean;
+    }
+
+    singleton class CConnRouteParams {
+        interface IConnRouteParams;
+        interface IConnRoutePNames;
+    }
+
+    } // namespace Params
+    } // namespace Conn
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Conn {
+    namespace Routing {
+
+    class CBasicRouteDirector {
+        interface IBasicRouteDirector;
+        interface IHttpRouteDirector;
+    }
+
+    class CHttpRoute {
+        constructor(
+            [in] IHttpHost* target,
+            [in] IInetAddress* local,
+            [in] ArrayOf<IHttpHost*>* proxies,
+            [in] Boolean secure,
+            [in] TunnelType tunnelled,
+            [in] LayerType layered);
+
+        constructor(
+            [in] IHttpHost* target,
+            [in] IInetAddress* local,
+            [in] IHttpHost* proxy,
+            [in] Boolean secure,
+            [in] TunnelType tunnelled,
+            [in] LayerType layered);
+
+        constructor(
+            [in] IHttpHost* target,
+            [in] IInetAddress* local,
+            [in] Boolean secure);
+
+        constructor(
+            [in] IHttpHost* target);
+
+        constructor(
+            [in] IHttpHost* target,
+            [in] IInetAddress* local,
+            [in] IHttpHost* proxy,
+            [in] Boolean secure);
+
+        interface IHttpRoute;
+        interface IRouteInfo;
+        interface ICloneable;
+    }
+
+    class CRouteTracker {
+        constructor(
+            [in] IHttpHost* target,
+            [in] IInetAddress* local);
+
+        constructor(
+            [in] IHttpRoute* route);
+
+        interface IRouteTracker;
+        interface IRouteInfo;
+        interface ICloneable;
+    }
+
+    } // namespace Routing
+    } // namespace Conn
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Conn {
+    namespace Scheme {
+
+    class CPlainSocketFactory {
+        constructor(
+            [in] IHostNameResolver* nameResolver);
+
+        constructor();
+
+        interface IPlainSocketFactory;
+        interface ISocketFactory;
+    }
+
+    singleton class CPlainSocketFactoryHelper {
+        interface IPlainSocketFactoryHelper;
+    }
+
+    class CScheme {
+        constructor(
+            [in] String name,
+            [in] ISocketFactory* factory,
+            [in] Int32 port);
+
+        interface IScheme;
+    }
+
+    class CSchemeRegistry {
+        constructor();
+
+        interface ISchemeRegistry;
+    }
+
+    } // namespace Scheme
+    } // namespace Conn
     } // namespace Http
     } // namespace Apache
     } // namespace Org

@@ -133,8 +133,12 @@ ECode CHttpHost::GetHashCode(
 ECode CHttpHost::Clone(
     /* [out] */ IInterface** object)
 {
-    // return super.clone();
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(object)
+    AutoPtr<IHttpHost> host;
+    CHttpHost::New(mHostname, mPort, mSchemeName, (IHttpHost**)&host);
+    *object = host->Probe(EIID_IInterface);
+    REFCOUNT_ADD(*object)
+    return NOERROR;
 }
 
 ECode CHttpHost::constructor(
@@ -146,7 +150,7 @@ ECode CHttpHost::constructor(
         Logger::E("CHttpHost", "Host name may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mHostname   = hostname;
+    mHostname = hostname;
     mLcHostname = hostname.ToLowerCase(ILocale::ENGLISH);
     if (!scheme.IsNull()) {
         mSchemeName = scheme.ToLowerCase(ILocale::ENGLISH);

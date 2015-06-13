@@ -22,6 +22,19 @@ ECode CHttpTrace::GetMethod(
     return NOERROR;
 }
 
+ECode CHttpTrace::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<IHttpTrace> httpTrace;
+    CHttpTrace::New((IHttpTrace**)&httpTrace);
+    HttpRequestBase::CloneImpl(IHttpUriRequest::Probe(httpTrace));
+    *obj = httpTrace->Probe(EIID_IInterface);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
 ECode CHttpTrace::constructor();
 {
     return NOERROR;

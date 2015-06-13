@@ -43,6 +43,9 @@ public:
     CARAPI GetMethod(
         /* [out] */ String* method);
 
+    CARAPI Clone(
+        /* [out] */ IInterface** obj);
+
     CARAPI constructor();
 
     CARAPI constructor(

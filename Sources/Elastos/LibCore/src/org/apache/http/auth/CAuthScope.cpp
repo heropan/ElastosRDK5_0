@@ -153,12 +153,12 @@ ECode CAuthScope::ToString(
     VALIDATE_NOT_NULL(string)
     StringBuilder buffer;
     if (!mScheme.IsNull()) {
-        buffer.AppendCStr(mScheme.ToUpperCase(ILocale::ENGLISH).string());
-        buffer.AppendChar(' ');
+        buffer.Append(mScheme.ToUpperCase(ILocale::ENGLISH));
+        buffer.Append(' ');
     }
     if (!mRealm.IsNull()) {
         buffer.AppendChar('\'');
-        buffer.AppendCStr(mRealm.string());
+        buffer.Append(mRealm);
         buffer.AppendChar('\'');
     }
     else {
@@ -166,10 +166,10 @@ ECode CAuthScope::ToString(
     }
     if (!mHost.IsNull()) {
         buffer.AppendChar('@');
-        buffer.AppendCStr(mHost.string());
+        buffer.Append(mHost);
         if (mPort >= 0) {
             buffer.AppendChar(':');
-            buffer.AppendCStr(mPort.string());
+            buffer.Append(mPort);
         }
     }
     *string = buffer.ToString();

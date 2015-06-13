@@ -67,9 +67,9 @@ ECode CBasicUserPrincipal::ToString(
 {
     VALIDATE_NOT_NULL(str)
     StringBuilder buffer;
-    buffer.AppendCStr("[principal: ");
-    buffer.AppendCStr(mUsername.string());
-    buffer.AppendCStr("]");
+    buffer.Append("[principal: ");
+    buffer.Append(mUsername);
+    buffer.Append("]");
     *str = buffer.ToString();
     return NOERROR;
 }

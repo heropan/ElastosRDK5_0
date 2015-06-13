@@ -14,6 +14,19 @@ namespace Entity {
 
 CAR_OBJECT_IMPL(CUrlEncodedFormEntity)
 
+ECode CProtocolVersion::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<IStringEntity> ver;
+    CUrlEncodedFormEntity::New((IStringEntity**)&ver);
+    StringEntity::CloneImpl(ver);
+    *obj = ver->Probe(EIID_IInterface);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
 ECode CUrlEncodedFormEntity::constructor(
     /* [in] */ IList* parameters,
     /* [in] */ const String& encoding)
@@ -27,6 +40,11 @@ ECode CUrlEncodedFormEntity::constructor(
 {
     FAIL_RETURN(Init(URLEncodedUtils::Format(parameters, IHTTP::DEFAULT_CONTENT_CHARSET), IHTTP::DEFAULT_CONTENT_CHARSET))
     return SetContentType(IURLEncodedUtils::CONTENT_TYPE);
+}
+
+ECode CUrlEncodedFormEntity::constructor()
+{
+    return NOERROR;
 }
 
 } // namespace Entity

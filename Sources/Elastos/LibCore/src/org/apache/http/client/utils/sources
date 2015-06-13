@@ -1,0 +1,11 @@
+
+TARGET_NAME= utils
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/client/utils
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/message
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/net
+
+SOURCES = CloneUtils.cpp
+SOURCES += URIUtils.cpp
+SOURCES += URLEncodedUtils.cpp

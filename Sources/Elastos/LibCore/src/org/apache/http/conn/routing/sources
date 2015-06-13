@@ -1,0 +1,9 @@
+
+TARGET_NAME= routing
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/conn/routing
+
+SOURCES = CBasicRouteDirector.cpp
+SOURCES += CHttpRoute.cpp
+SOURCES += CRouteTracker.cpp

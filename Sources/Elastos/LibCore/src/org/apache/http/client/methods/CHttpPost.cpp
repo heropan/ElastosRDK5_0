@@ -22,6 +22,19 @@ ECode CHttpPost::GetMethod(
     return NOERROR;
 }
 
+ECode CHttpPost::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<IHttpPost> httpPost;
+    CHttpPost::New((IHttpPost**)&httpPost);
+    HttpEntityEnclosingRequestBase::CloneImpl(IHttpEntityEnclosingRequest::Probe(httpPost));
+    *obj = httpPost->Probe(EIID_IInterface);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
 ECode CHttpPost::constructor();
 {
     return NOERROR;

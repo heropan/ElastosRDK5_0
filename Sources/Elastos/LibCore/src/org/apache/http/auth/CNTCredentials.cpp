@@ -104,11 +104,11 @@ ECode CNTCredentials::ToString(
 {
     VALIDATE_NOT_NULL(string)
     StringBuilder buffer;
-    buffer.AppendCStr("[principal: ");
-    buffer.AppendInterface(mPrincipal);
-    buffer.AppendCStr("][workstation: ");
-    buffer.AppendCStr(mWorkstation.string());
-    buffer.AppendCStr("]");
+    buffer.Append("[principal: ");
+    buffer.Append(mPrincipal);
+    buffer.Append("][workstation: ");
+    buffer.Append(mWorkstation);
+    buffer.Append("]");
     *string = buffer.ToString();
     return NOERROR;
 }

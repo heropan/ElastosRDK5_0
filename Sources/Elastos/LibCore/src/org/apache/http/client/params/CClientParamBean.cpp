@@ -20,7 +20,7 @@ ECode CClientParamBean::SetConnectionManagerFactoryClassName(
 ECode CClientParamBean::SetConnectionManagerFactory(
     /* [in] */ IClientConnectionManagerFactory factory)
 {
-    mParams->SetParameter(IClientPNames::CONNECTION_MANAGER_FACTORY, factory);
+    mParams->SetParameter(IClientPNames::CONNECTION_MANAGER_FACTORY, IObject::Probe(factory));
 }
 
 ECode CClientParamBean::SetHandleRedirects(
@@ -38,7 +38,7 @@ ECode CClientParamBean::SetRejectRelativeRedirect(
 ECode CClientParamBean::SetMaxRedirects(
     /* [in] */ Int32 maxRedirects)
 {
-    mParams->SetIntParameter(IClientPNames::MAX_REDIRECTS, maxRedirects);
+    mParams->SetInt32Parameter(IClientPNames::MAX_REDIRECTS, maxRedirects);
 }
 
 ECode CClientParamBean::SetAllowCircularRedirects(
@@ -62,19 +62,19 @@ ECode CClientParamBean::SetCookiePolicy(
 ECode CClientParamBean::SetVirtualHost(
     /* [in] */ IHttpHost* host)
 {
-    mParams->SetParameter(IClientPNames::VIRTUAL_HOST, host);
+    mParams->SetParameter(IClientPNames::VIRTUAL_HOST, IObject::Probe(host));
 }
 
 ECode CClientParamBean::SetDefaultHeaders(
     /* [in] */ ICollection* headers)
 {
-    mParams->SetParameter(IClientPNames::DEFAULT_HEADERS, headers);
+    mParams->SetParameter(IClientPNames::DEFAULT_HEADERS, IObject::Probe(headers));
 }
 
 ECode CClientParamBean::SetDefaultHost(
     /* [in] */ IHttpHost* host)
 {
-    mParams->SetParameter(IClientPNames::DEFAULT_HOST, host);
+    mParams->SetParameter(IClientPNames::DEFAULT_HOST, IObject::Probe(host));
 }
 
 ECode CClientParamBean::constructor(

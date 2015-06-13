@@ -7,6 +7,8 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
+using Org::Apache::Http::Params::HttpAbstractParamBean;
+using Org::Apache::Http::Params::IHttpParams;
 
 namespace Org {
 namespace Apache {

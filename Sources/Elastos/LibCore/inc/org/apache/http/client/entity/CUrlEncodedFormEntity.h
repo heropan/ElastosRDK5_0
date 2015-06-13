@@ -20,12 +20,17 @@ CarClass(CUrlEncodedFormEntity)
 public:
     CAR_OBJECT_DECL()
 
+    CARAPI Clone(
+        /* [out] */ IInterface** obj);
+
     CARAPI constructor(
         /* [in] */ IList* parameters,
         /* [in] */ const String& encoding);
 
     CARAPI constructor(
         /* [in] */ IList* parameters);
+
+    CARAPI constructor();
 
 };
 

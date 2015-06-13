@@ -85,11 +85,11 @@ ECode CAuthState::ToString(
 {
     VALIDATE_NOT_NULL(str)
     StringBuilder buffer;
-    buffer.AppendCStr("auth scope [");
-    buffer.AppendInterface(mAuthScope);
-    buffer.AppendCStr("]; credentials set [");
-    buffer.AppendCStr(this.credentials != NULL ? "true" : "false");
-    buffer.AppendCStr("]");
+    buffer.Append("auth scope [");
+    buffer.Append(mAuthScope);
+    buffer.Append("]; credentials set [");
+    buffer.Append(this.credentials != NULL ? "true" : "false");
+    buffer.Append("]");
     *str = buffer.ToString();
     return NOERROR;
 }

@@ -1,0 +1,33 @@
+
+module
+{
+
+    interface Org.Apache.Http.Conn.SSL.IX509HostnameVerifier;
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Conn {
+    namespace SSL {
+
+    /**
+     * @Involve
+     * interface ILayeredSocketFactory;
+     */
+    interface ISSLSocketFactory {
+
+        SetHostnameVerifier(
+            [in] IX509HostnameVerifier* hostnameVerifier);
+
+        GetHostnameVerifier(
+            [out] IX509HostnameVerifier** hostnameVerifier);
+
+    }
+
+    } // namespace SSL
+    } // namespace Conn
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+}

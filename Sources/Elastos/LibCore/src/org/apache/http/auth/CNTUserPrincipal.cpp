@@ -108,9 +108,9 @@ ECode CNTUserPrincipal::constructor(
     }
     if (!mDomain.IsNull() && mDomain.GetLength() > 0) {
         StringBuilder buffer;
-        buffer.AppendCStr(mDomain);
+        buffer.Append(mDomain);
         buffer.AppendChar('/');
-        buffer.AppendCStr(mUsername);
+        buffer.Append(mUsername);
         mNtname = buffer.ToString();
     }
     else {

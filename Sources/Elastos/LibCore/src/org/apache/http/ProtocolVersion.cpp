@@ -185,11 +185,15 @@ CARAPI ProtocolVersion::ToString(
     return buffer->ToString(string);
 }
 
-CARAPI ProtocolVersion::Clone(
-    /* [out] */ IInterface** obj)
+CARAPI ProtocolVersion::CloneImpl(
+    /* [in] */ IProtocolVersion* ver)
 {
-    // return super.clone();
-    return E_NOT_IMPLEMENTED;
+    assert(ver);
+    AutoPtr<ProtocolVersion> protocolVer = (ProtocolVersion*)ver;
+    protocolVer->mProtocol = mProtocol;
+    protocolVer->mMinor = mMinor;
+    protocolVer->mMajor = mMajor;
+    return NOERROR;
 }
 
 ECode ProtocolVersion::Init(

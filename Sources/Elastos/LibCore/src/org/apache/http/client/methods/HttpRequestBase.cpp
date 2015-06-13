@@ -162,14 +162,11 @@ ECode HttpRequestBase::IsAborted(
     return NOERROR;
 }
 
-ECode HttpRequestBase::Clone(
-    /* [out] */ IInterface** result)
+ECode HttpRequestBase::CloneImpl(
+    /* [in] */ IHttpUriRequest* dst)
 {
-    VALIDATE_NOT_NULL(result)
-
-    AutoPtr<IInterface> c;
-    AbstractHttpMessage::Clone((IInterface**)&c);
-    AutoPtr<HttpRequestBase> clone = (HttpRequestBase*)c.Get();
+    assert(src);
+    AutoPtr<HttpRequestBase> clone = (HttpRequestBase*)dst.Get();
     AutoPtr<IReentrantLock> l;
     CReentrantLock::New((IReentrantLock**)&l);
     clone->mAbortLock = ILock::Probe(l);
@@ -182,8 +179,6 @@ ECode HttpRequestBase::Clone(
     o = NULL;
     CloneUtils::Clone(IObject::Probe(mparams), (IObject**)&o);
     clone->mparams = IHttpParams::Probe(o);
-    *result = c;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

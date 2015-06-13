@@ -46,6 +46,9 @@ public:
         /* [in] */ IHttpResponse* response,
         /* [out] */ ISet** methods);
 
+    CARAPI Clone(
+        /* [out] */ IInterface** obj);
+
     CARAPI constructor();
 
     CARAPI constructor(

@@ -66,7 +66,11 @@ public:
         /* [out] */ Boolean* isAborted);
 
     CARAPI Clone(
-        /* [out] */ IInterface** result);
+        /* [out] */ IInterface** result) = 0;
+
+protected:
+    virtual CARAPI CloneImpl(
+        /* [in] */ IHttpUriRequest* dst);
 
 private:
     AutoPtr<ILock> mAbortLock;

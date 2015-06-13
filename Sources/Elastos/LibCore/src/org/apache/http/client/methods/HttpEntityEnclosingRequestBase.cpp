@@ -51,21 +51,16 @@ ECode HttpEntityEnclosingRequestBase::ExpectContinue(
     return NOERROR;
 }
 
-ECode HttpEntityEnclosingRequestBase::Clone(
-    /* [out] */ IInterface** result)
+ECode HttpEntityEnclosingRequestBase::CloneImpl(
+    /* [in] */ IInterface* dst)
 {
-    VALIDATE_NOT_NULL(result)
-
-    AutoPtr<IInterface> c;
-    HttpRequestBase::Clone((IInterface**)&c);
-    AutoPtr<HttpEntityEnclosingRequestBase> clone = (HttpEntityEnclosingRequestBase*)c.Get();
+    HttpRequestBase::CloneImpl(src);
+    AutoPtr<HttpEntityEnclosingRequestBase> clone = (HttpEntityEnclosingRequestBase*)src.Get();
     if (mEntity != NULL) {
         AutoPtr<IObject> o;
         CloneUtils::Clone(IObject::Probe(mEntity), (IObject**)&o);
         clone->mEntity = IHttpEntity::Probe(o);
     }
-    *result = c;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

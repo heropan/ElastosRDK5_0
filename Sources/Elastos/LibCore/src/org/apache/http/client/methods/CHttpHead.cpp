@@ -22,6 +22,19 @@ ECode CHttpHead::GetMethod(
     return NOERROR;
 }
 
+ECode CHttpHead::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<IHttpHead> httpHead;
+    CHttpHead::New((IHttpHead**)&httpHead);
+    HttpRequestBase::CloneImpl(IHttpUriRequest::Probe(httpHead));
+    *obj = httpHead->Probe(EIID_IInterface);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
 ECode CHttpHead::constructor();
 {
     return NOERROR;

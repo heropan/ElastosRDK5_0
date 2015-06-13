@@ -57,11 +57,29 @@ ECode CHttpVersion::ForVersion(
     return CHttpVersion::New(major, minor, ver);
 }
 
+ECode CHttpVersion::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<IHttpVersion> ver;
+    CHttpVersion::New((IHttpVersion**)&ver);
+    CloneImpl(ver);
+    *obj = ver->Probe(EIID_IInterface);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
 ECode CHttpVersion::constructor(
     /* [in] */ Int32 major,
     /* [in] */ Int32 minor)
 {
     return ProtocolVersion::Init(HTTP, major, minor);
+}
+
+ECode CHttpVersion::constructor()
+{
+    return NOERROR;
 }
 
 } // namespace Http

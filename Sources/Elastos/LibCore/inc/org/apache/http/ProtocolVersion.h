@@ -30,7 +30,7 @@ namespace Http {
  * @version $Revision: 609106 $
  */
 class ProtocolVersion
-    , public Object
+    : public Object
     , public IProtocolVersion
     , public ICloneable
 {
@@ -179,9 +179,9 @@ public:
         /* [out] */ String* string);
 
     CARAPI Clone(
-        /* [out] */ IInterface** obj);
+        /* [out] */ IInterface** obj) = 0;
 
-
+protected:
     /**
      * Create a protocol version designator.
      *
@@ -193,6 +193,9 @@ public:
         /* [in] */ const String& protocol,
         /* [in] */ Int32 major,
         /* [in] */ Int32 minor);
+
+    CARAPI CloneImpl(
+        /* [in] */ IProtocolVersion* ver);
 
 protected:
     /** Name of the protocol. */
