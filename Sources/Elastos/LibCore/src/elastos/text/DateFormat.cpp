@@ -1,28 +1,29 @@
 
 #include "DateFormat.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 #include "AttributedCharacterIteratorAttribute.h"
 #include "CSimpleDateFormat.h"
-#include "CDate.h"
-#include "CICUHelper.h"
+// #include "CDate.h"
+// #include "CICUHelper.h"
 #include "CLocaleHelper.h"
 #include "CStringWrapper.h"
 #include "CDouble.h"
-#include "CLocaleDataHelper.h"
+// #include "CLocaleDataHelper.h"
 // #include "CLocaleData.h"
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
 
 using Elastos::Utility::EIID_IDate;
-using Elastos::Utility::CDate;
+// using Elastos::Utility::CDate;
 using Elastos::Core::INumber;
 using Elastos::Core::EIID_INumber;
+using Elastos::Core::ICharSequence;
 using Libcore::ICU::IICUHelper;
 // using Libcore::ICU::CICUHelper;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
-using Libcore::ICU::CLocaleDataHelper;
+// using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
 // using Libcore::ICU::CLocaleData;
 using Elastos::Text::CFieldPosition;
@@ -80,7 +81,7 @@ HashMap<Int32, AutoPtr<IDateFormatField> > DateFormat::Field::sTable(11);
 
 TEXTATTRIBUITEDCHARACTERITERATORATTRIBUTE_METHODS_IMPL(DateFormat::Field, AttributedCharacterIteratorAttribute)
 
-CAR_INTERFACE_IMPL(DateFormat::Field, IDateFormatField)
+CAR_INTERFACE_IMPL(DateFormat::Field, Object, IDateFormatField)
 
 DateFormat::Field::Field()
     : mCalendarField(-1)
@@ -154,7 +155,8 @@ ECode DateFormat::FormatObject(
         Int64 v;
         number->Int64Value(&v);
         AutoPtr<IDate> dateObj;
-        CDate::New(v, (IDate**)&dateObj);
+        assert(0 && "TODO");
+        // CDate::New(v, (IDate**)&dateObj);
         return FormatDate(dateObj, buffer, field, value);
     }
 
@@ -172,7 +174,7 @@ ECode DateFormat::FormatDate(
     AutoPtr<IStringBuffer> sb = new StringBuffer();
     AutoPtr<IStringBuffer> outsb;
     FormatDate(date, sb, field, (IStringBuffer **)&outsb);
-    return outsb->ToString(value);
+    return ICharSequence::Probe(outsb)->ToString(value);
 }
 
 ECode DateFormat::GetAvailableLocales(
@@ -180,7 +182,8 @@ ECode DateFormat::GetAvailableLocales(
 {
     VALIDATE_NOT_NULL(locales);
     AutoPtr<IICUHelper> ICUHelper;
-    FAIL_RETURN(CICUHelper::AcquireSingleton((IICUHelper**)&ICUHelper));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CICUHelper::AcquireSingleton((IICUHelper**)&ICUHelper));
     return ICUHelper->GetAvailableDateFormatLocales(locales);
 }
 
@@ -225,7 +228,8 @@ ECode DateFormat::GetDateInstance(
     FAIL_RETURN(CheckDateStyle(style));
 
     AutoPtr<ILocaleDataHelper> localeDataHelper;
-    FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(localeDataHelper->Get(locale, (ILocaleData**)&localeData));
     String format;
@@ -274,7 +278,8 @@ ECode DateFormat::GetDateTimeInstance(
     FAIL_RETURN(CheckDateStyle(dateStyle));
 
     AutoPtr<ILocaleDataHelper> localeDataHelper;
-    FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(localeDataHelper->Get(locale, (ILocaleData**)&localeData));
     String dateFormat;
@@ -336,7 +341,8 @@ ECode DateFormat::GetTimeInstance(
     FAIL_RETURN(CheckTimeStyle(style));
 
     AutoPtr<ILocaleDataHelper> localeDataHelper;
-    FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(localeDataHelper->Get(locale, (ILocaleData**)&localeData));
     String timeFormat;
@@ -459,7 +465,7 @@ ECode DateFormat::Equals(
     Boolean res1 = FALSE, res2 = FALSE;
     AutoPtr<INumberFormat> nf;
     dateFormat->GetNumberFormat((INumberFormat**)&nf);
-    mNumberFormat->Equals((INumberFormat*)nf, &res1);
+    IObject::Probe(mNumberFormat)->Equals((INumberFormat*)nf, &res1);
 
     AutoPtr<ITimeZone> timezone1, timezone2;
     mCalendar->GetTimeZone((ITimeZone**)&timezone1);

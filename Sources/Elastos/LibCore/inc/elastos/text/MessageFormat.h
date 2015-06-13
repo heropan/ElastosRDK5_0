@@ -2,9 +2,9 @@
 #define __ELASTOS_TEXT_MESSAGEFORMAT_H__
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 #include <elastos/utility/etl/List.h>
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 #include "Format.h"
 #include "NumberFormat.h"
 #include "DateFormat.h"
@@ -60,18 +60,19 @@ public:
 
     virtual ~MessageFormat();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& tem,
         /* [in] */ ILocale* locale);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& tem);
 
     virtual CARAPI ApplyPattern(
         /* [in] */ const String& tem);
 
-//    @Override
-//    public Object clone();
+    // @Override
+    CARAPI Clone(
+        /* [out] */ IInterface** outface);
 
     CARAPI Equals(
         /* [in] */ IInterface* object,

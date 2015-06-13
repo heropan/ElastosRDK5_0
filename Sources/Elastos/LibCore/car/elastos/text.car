@@ -38,6 +38,8 @@ module
     interface Elastos.Text.IAttributedCharacterIteratorAttribute;
     interface Elastos.IO.ISerializable;
     interface Libcore.ICU.INativeBreakIterator;
+    interface Libcore.ICU.ICollationElementIteratorICU;
+    interface Libcore.ICU.IRuleBasedCollatorICU;
 
     namespace Elastos {
     namespace Text {
@@ -194,6 +196,81 @@ module
 
     singleton class CDecimalFormatSymbolsHelper {
         interface IDecimalFormatSymbolsHelper;
+    }
+
+    class CMessageFormat {
+        constructor(
+            [in] String tem,
+            [in] ILocale* locale);
+
+        constructor(
+            [in] String tem);
+
+        interface IMessageFormat;
+    }
+
+    class CSimpleDateFormat {
+        constructor();
+
+        constructor(
+            [in] String pattern);
+
+        constructor(
+            [in] String temp,
+            [in] IDateFormatSymbols* value);
+
+        constructor(
+            [in] String temp,
+            [in] ILocale* locale);
+
+        interface ISimpleDateFormat;
+    }
+
+    singleton class CNormalizerHelper {
+        interface INormalizer;
+    }
+
+    class CMessageFormatField {
+        constructor(
+            [in] String name);
+
+        interface IMessageFormatField;
+    }
+
+    class CDateFormatSymbols {
+        constructor();
+
+        constructor(
+            [in] ILocale* locale);
+
+        interface IDateFormatSymbols;
+    }
+
+    singleton class CDateFormatSymbolsHelper {
+        interface IDateFormatSymbolsHelper;
+    }
+
+    class CCollationElementIterator {
+        constructor(
+            [in] ICollationElementIteratorICU* iterator);
+
+        interface ICollationElementIterator;
+    }
+
+    singleton class CCollationElementIteratorHelper {
+        interface ICollationElementIteratorHelper;
+    }
+
+    [deprecated]
+    class CRuleBasedCollator {
+        constructor(
+            [in] IRuleBasedCollatorICU* wrapper);
+
+        constructor(
+            [in] String rules);
+
+        interface IRuleBasedCollator;
+        // interface IComparator;
     }
 
     } // Text

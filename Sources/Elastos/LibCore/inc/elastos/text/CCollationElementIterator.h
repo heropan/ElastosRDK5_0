@@ -3,14 +3,16 @@
 #define __ELASTOS_TEXT_CCOLLATIONELEMENTITERATOR_H__
 
 #include "_Elastos_Text_CCollationElementIterator.h"
+#include <elastos/core/Object.h>
 
 using Libcore::ICU::ICollationElementIteratorICU;
+using Elastos::Core::Object;
 using Elastos::Text::ICharacterIterator;
 
 namespace Elastos {
 namespace Text {
 
-CarClass(CCollationElementIterator)
+CarClass(CCollationElementIterator) , public Object
 {
 public:
     CARAPI constructor(
@@ -23,7 +25,7 @@ public:
     CARAPI GetOffset(
         /* [out] */ Int32* offset);
 
-    CARAPI Next(
+    CARAPI GetNext(
         /* [out] */ Int32* nextValue);
 
     CARAPI Previous(

@@ -1,31 +1,32 @@
 #include "Collator.h"
 #include "CRuleBasedCollator.h"
 #include "CLocaleHelper.h"
-#include "CICUHelper.h"
-#include "CRuleBasedCollatorICU.h"
+// #include "CICUHelper.h"
+// #include "CRuleBasedCollatorICU.h"
 
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::IICUHelper;
 // using Libcore::ICU::CICUHelper;
-using Libcore::ICU::CRuleBasedCollatorICU;
+// using Libcore::ICU::CRuleBasedCollatorICU;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::EIID_ICharSequence;
 
 namespace Elastos {
 namespace Text {
 
-ECode Collator::Init()
+ECode Collator::constructor()
 {
     AutoPtr<ILocaleHelper> localeHelper;
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
     AutoPtr<ILocale> locale;
     localeHelper->GetDefault((ILocale**)&locale);
-    CRuleBasedCollatorICU::New(locale, (IRuleBasedCollatorICU**)&mICUColl);
+    assert(0 && "TODO");
+    // CRuleBasedCollatorICU::New(locale, (IRuleBasedCollatorICU**)&mICUColl);
     return NOERROR;
 }
 
-ECode Collator::Init(
+ECode Collator::constructor(
     /* [in] */ IRuleBasedCollatorICU* icuColl)
 {
     mICUColl = icuColl;
@@ -63,13 +64,14 @@ ECode Collator::Equals(
 
     AutoPtr<ICollator> collator = ICollator::Probe(object);
     AutoPtr<IRuleBasedCollatorICU> icuCollator;
-    collator->GetICUCollator((IRuleBasedCollatorICU**)&icuCollator);
+    assert(0 && "TODO");
+    // collator->GetICUCollator((IRuleBasedCollatorICU**)&icuCollator);
     if (mICUColl == NULL) {
         *result = icuCollator == NULL;
         return NOERROR;
     }
     else {
-        return mICUColl->Equals(icuCollator->Probe(EIID_IInterface), result);
+        return IObject::Probe(mICUColl)->Equals(icuCollator->Probe(EIID_IInterface), result);
     }
 }
 
@@ -90,7 +92,8 @@ ECode Collator::GetAvailableLocales(
 {
     VALIDATE_NOT_NULL(locales);
     AutoPtr<IICUHelper> icuHelper;
-    CICUHelper::AcquireSingleton((IICUHelper**)&icuHelper);
+    assert(0 && "TODO");
+    // CICUHelper::AcquireSingleton((IICUHelper**)&icuHelper);
     return icuHelper->GetAvailableCollatorLocales(locales);
 }
 
@@ -124,7 +127,8 @@ ECode Collator::GetInstance(
     }
     AutoPtr<IRuleBasedCollator> rbc;
     AutoPtr<IRuleBasedCollatorICU> icuCollator;
-    CRuleBasedCollatorICU::New(locale, (IRuleBasedCollatorICU**)&icuCollator);
+    assert(0 && "TODO");
+    // CRuleBasedCollatorICU::New(locale, (IRuleBasedCollatorICU**)&icuCollator);
     FAIL_RETURN(CRuleBasedCollator::New(icuCollator, (IRuleBasedCollator**)&rbc));
     *instance = (ICollator*)rbc->Probe(EIID_ICollator);
     REFCOUNT_ADD(*instance);

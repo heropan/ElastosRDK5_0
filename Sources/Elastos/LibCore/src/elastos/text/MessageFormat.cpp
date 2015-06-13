@@ -5,14 +5,14 @@
 #include "CMessageFormatField.h"
 #include "CMessageFormat.h"
 #include "CStringWrapper.h"
-#include "CObjectContainer.h"
+// #include "CObjectContainer.h"
 #include "CAttributedString.h"
 #include "CDecimalFormatSymbols.h"
 #include "CDouble.h"
 #include "CInteger64.h"
 #include "CDecimalFormatSymbols.h"
-#include "CNativeDecimalFormat.h"
-#include "CBigDecimal.h"
+// #include "CNativeDecimalFormat.h"
+// #include "CBigDecimal.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Character;
@@ -21,7 +21,7 @@ using Elastos::Core::IByte;
 using Elastos::Core::IInteger16;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger64;
-using Elastos::Core::CObjectContainer;
+// using Elastos::Core::CObjectContainer;
 using Elastos::Utility::EIID_IDate;
 using Elastos::Text::IAttributedString;
 using Elastos::Text::CAttributedString;
@@ -38,7 +38,7 @@ static AutoPtr<IMessageFormatField> sInit(const String& name)
 {
     AutoPtr<CMessageFormatField> field;
     CMessageFormatField::NewByFriend(name, (CMessageFormatField**)&field);
-    return (IMessageFormatField*)field;
+    return (IMessageFormatField*)field.Get();
 }
 
 const AutoPtr<IMessageFormatField> MessageFormat::MessageFormatField::ARGUMENT
@@ -54,7 +54,7 @@ MessageFormat::~MessageFormat()
 {
 }
 
-ECode MessageFormat::Init(
+ECode MessageFormat::constructor(
     /* [in] */ const String& tem,
     /* [in] */ ILocale* locale)
 {
@@ -62,14 +62,14 @@ ECode MessageFormat::Init(
     return ApplyPattern(tem);
 }
 
-ECode MessageFormat::Init(
+ECode MessageFormat::constructor(
     /* [in] */ const String& tem)
 {
     AutoPtr<ILocaleHelper> pLocaleHelper;
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&pLocaleHelper);
     AutoPtr<ILocale> pLocale;
     pLocaleHelper->GetDefault((ILocale**)&pLocale);
-    return Init(tem, (ILocale*)pLocale);
+    return constructor(tem, (ILocale*)pLocale);
 }
 
 ECode MessageFormat::ApplyPattern(
@@ -249,18 +249,18 @@ ECode MessageFormat::FormatImpl(
         }
 
         if (IChoiceFormat::Probe(format) != NULL) {
-            format->FormatObject(arg, &result);
+            format->Format(arg, &result);
             AutoPtr<IMessageFormat> mf;
             CMessageFormat::New(result, (IMessageFormat**)&mf);
             mf->SetLocale(mLocale);
             AutoPtr<IStringBuffer > outres;
-            mf->FormatObjects(objects, buffer , passedField, (IStringBuffer **)&outres);
+            mf->Format(objects, buffer , passedField, (IStringBuffer **)&outres);
             HandleArgumentField(begin, buffer->GetLength(), (*mArgumentNumbers)[i], position, fields);
             HandleFormat(format, arg, begin, fields);
         }
         else {
             AutoPtr<IStringBuffer> outres;
-            format->FormatObject(arg, buffer, passedField, (IStringBuffer **)&outres);
+            format->Format(arg, buffer, passedField, (IStringBuffer **)&outres);
             HandleArgumentField(begin, buffer->GetLength(), (*mArgumentNumbers)[i], position, fields);
             HandleFormat(format, arg, begin, fields);
         }
@@ -283,7 +283,7 @@ ECode MessageFormat::HandleArgumentField(
 {
     if (fields != NULL) {
         AutoPtr<FieldContainer> fc = new FieldContainer(begin, end,
-            (IAttributedCharacterIteratorAttribute*)MessageFormatField::ARGUMENT,
+            (IAttributedCharacterIteratorAttribute*)MessageFormatField::ARGUMENT.Get(),
             (IInterface*)argIndex);
         fields->PushBack(fc);
     }
@@ -291,8 +291,9 @@ ECode MessageFormat::HandleArgumentField(
         Int32 endIndex;
         position->GetEndIndex(&endIndex);
         AutoPtr<IFormatField> fa;
-        position->GetFieldAttribute((IAttributedCharacterIteratorAttribute**)&fa);
-        if (fa == MessageFormatField::ARGUMENT && endIndex == 0) {
+        position->GetFieldAttribute((IFormatField**)&fa);
+        Boolean isflag = FALSE;
+        if (IObject::Probe(fa)->Equals(MessageFormatField::ARGUMENT, &isflag), isflag && endIndex == 0) {
             position->SetBeginIndex(begin);
             position->SetEndIndex(end);
         }
@@ -326,8 +327,8 @@ ECode MessageFormat::HandleFormat(
     format->FormatToCharacterIterator(arg, (IAttributedCharacterIterator**)&iterator);
     Int32 index, endIndex, start, end;
     Char32 character;
-    iterator->GetIndex(&index);
-    iterator->GetEndIndex(&endIndex);
+    ICharacterIterator::Probe(iterator)->GetIndex(&index);
+    ICharacterIterator::Probe(iterator)->GetEndIndex(&endIndex);
     while (index != endIndex) {
         iterator->GetRunStart(&start);
         iterator->GetRunLimit(&end);
@@ -340,7 +341,7 @@ ECode MessageFormat::HandleFormat(
 //                fields.add(new FieldContainer(begin + start, begin + end,
 //                        attribute, value));
 //            }
-        iterator->SetIndex(end, &character);
+        ICharacterIterator::Probe(iterator)->SetIndex(end, &character);
     }
     return NOERROR;
 }
@@ -529,7 +530,8 @@ ECode MessageFormat::ParseObject(
     FAIL_RETURN(Parse(string, position, (ArrayOf<IInterface*>**)&objects));
     if (objects != NULL) {
         AutoPtr<IObjectContainer> bc;
-        CObjectContainer::New((IObjectContainer**)&bc);
+        assert(0 && "TODO");
+        // CObjectContainer::New((IObjectContainer**)&bc);
         for (Int32 i = 0; i < objects->GetLength(); ++i) {
             bc->Add((*objects)[i]);
         }
@@ -643,7 +645,7 @@ ECode MessageFormat::ParseVariable(
                     IDateFormat::DEFAULT, mLocale, (IDateFormat**)&dv);
             }
 
-            *value = dv;
+            *value = IFormat::Probe(dv);
             REFCOUNT_ADD(*value);
             return NOERROR;
         }
@@ -661,7 +663,7 @@ ECode MessageFormat::ParseVariable(
             String outstr;
             buffer.Substring(0, buffer.GetLength(),&outstr);
             CSimpleDateFormat::New(outstr, mLocale.Get(), (ISimpleDateFormat**)&sdf);
-            *value = sdf.Get();
+            *value = IFormat::Probe(sdf);
             REFCOUNT_ADD(*value);
             return NOERROR;
         }
@@ -687,7 +689,7 @@ ECode MessageFormat::ParseVariable(
         else {
             DateFormat::GetTimeInstance(dateStyle, mLocale.Get(), (IDateFormat**)&dv);
         }
-        *value = dv;
+        *value = IFormat::Probe(dv);
         REFCOUNT_ADD(*value);
         return NOERROR;
 
@@ -711,7 +713,7 @@ ECode MessageFormat::ParseVariable(
             String outstr;
             buffer.Substring(0, buffer.GetLength(),&outstr);
             CDecimalFormat::New(outstr, dfs, (IDecimalFormat**)&df);
-            *value = df.Get();
+            *value = IFormat::Probe(df);
             REFCOUNT_ADD(*value);
             return NOERROR;
         }
@@ -727,7 +729,7 @@ ECode MessageFormat::ParseVariable(
                 NumberFormat::GetIntegerInstance(mLocale, (INumberFormat**)&nv);
                 break;
         }
-        *value = nv.Get();
+        *value = IFormat::Probe(nv);
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
@@ -738,7 +740,7 @@ ECode MessageFormat::ParseVariable(
     String outstr;
     buffer.Substring(0, buffer.GetLength(), &outstr);
     CChoiceFormat::New(outstr, (IChoiceFormat**)&cf);
-    *value = cf.Get();
+    *value = IFormat::Probe(cf);
     REFCOUNT_ADD(*value);
     return NOERROR;
 }
@@ -784,7 +786,7 @@ ECode MessageFormat::SetLocale(
             CDecimalFormatSymbols::New(mLocale, (IDecimalFormatSymbols**)&dfs);
             AutoPtr<IDecimalFormat> dff;
             CDecimalFormat::New(pattern, dfs, (IDecimalFormat**)&dff);
-            mFormats->Set(i, dff);
+            mFormats->Set(i, IFormat::Probe(dff));
         }
         else if (ISimpleDateFormat::Probe(format) != NULL) {
             String pattern;
@@ -792,7 +794,7 @@ ECode MessageFormat::SetLocale(
             sdf->ToPattern(&pattern);
             AutoPtr<ISimpleDateFormat> sdff;
             CSimpleDateFormat::New(pattern, mLocale, (ISimpleDateFormat**)&sdff);
-            mFormats->Set(i, sdff);
+            mFormats->Set(i, IFormat::Probe(sdff));
         }
     }
     return NOERROR;
@@ -818,13 +820,13 @@ ECode MessageFormat::DecodeDecimalFormat(
     NumberFormat::GetPercentInstance(mLocale, (INumberFormat**)&nfp);
 
     Boolean result = FALSE;
-    if (nff->Equals(nfn, &result), result) {
+    if (IObject::Probe(nff)->Equals(nfn, &result), result) {
         // Empty block
-    } else if (nff->Equals(nfi, &result), result) {
+    } else if (IObject::Probe(nff)->Equals(nfi, &result), result) {
         *buffer += ",integer";
-    } else if (nff->Equals(nfc, &result), result) {
+    } else if (IObject::Probe(nff)->Equals(nfc, &result), result) {
         *buffer += ",currency";
-    } else if (nff->Equals(nfp, &result), result) {
+    } else if (IObject::Probe(nff)->Equals(nfp, &result), result) {
         *buffer += ",percent";
     } else {
         *buffer += ',';
@@ -857,28 +859,28 @@ ECode MessageFormat::DecodeSimpleDateFormat(
     DateFormat::GetDateInstance(IDateFormat::FULL, mLocale, (IDateFormat**)&dfd4);
 
     Boolean result = FALSE;
-    if (dateFormat->Equals(dft, &result), result) {
+    if (IObject::Probe(dateFormat)->Equals(dft, &result), result) {
         *buffer += ",time";
     }
-    else if (dateFormat->Equals(dfd, &result), result) {
+    else if (IObject::Probe(dateFormat)->Equals(dfd, &result), result) {
         *buffer += ",date";
     }
-    else if (dateFormat->Equals(dft2, &result), result) {
+    else if (IObject::Probe(dateFormat)->Equals(dft2, &result), result) {
         *buffer += ",time,short";
     }
-    else if (dateFormat->Equals(dfd2, &result), result) {
+    else if (IObject::Probe(dateFormat)->Equals(dfd2, &result), result) {
         *buffer += ",date,short";
     }
-    else if (dateFormat->Equals(dft3, &result), result) {
+    else if (IObject::Probe(dateFormat)->Equals(dft3, &result), result) {
         *buffer += ",time,long";
     }
-    else if (dateFormat->Equals(dfd3, &result), result) {
+    else if (IObject::Probe(dateFormat)->Equals(dfd3, &result), result) {
         *buffer += ",date,long";
     }
-    else if (dateFormat->Equals(dft4, &result), result) {
+    else if (IObject::Probe(dateFormat)->Equals(dft4, &result), result) {
         *buffer += ",time,full";
     }
-    else if (dateFormat->Equals(dfd4, &result), result) {
+    else if (IObject::Probe(dateFormat)->Equals(dfd4, &result), result) {
         *buffer += ",date,full";
     }
     else {
@@ -1048,6 +1050,13 @@ ECode MessageFormat::Equals(
     format->GetFormats((ArrayOf<IFormat*>**)&formats);
     res3 = mFormats->Equals(formats);
     *result = res1 && res2 && res3;
+    return NOERROR;
+}
+
+ECode MessageFormat::Clone(
+    /* [out] */ IInterface** outface)
+{
+    assert(0 && "TODO");
     return NOERROR;
 }
 

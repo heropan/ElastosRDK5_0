@@ -1,15 +1,15 @@
 #ifndef __SIMPLEDATEFORMAT_H__
 #define __SIMPLEDATEFORMAT_H__
 
-#include <elastos.h>
-#include <elastos/utility/etl/List.h>
-#include <elastos/StringBuffer.h>
 #include "Elastos.CoreLibrary_server.h"
 #include "DateFormat.h"
-#include "elastos/Character.h"
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringBuffer.h>
+#include "elastos/core/Character.h"
 
 using Elastos::Core::StringBuffer;
 using Elastos::Utility::Etl::List;
+using Elastos::Utility::IObjectContainer;
 using Elastos::Core::Character;
 using Elastos::Core::INumber;
 using Elastos::Text::IAttributedCharacterIterator;;
@@ -24,19 +24,22 @@ namespace Text {
 class SimpleDateFormat : public DateFormat
 {
 public:
-    CARAPI Init();
+    CARAPI constructor();
 
     virtual ~SimpleDateFormat();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& pattern);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& tem,
         /* [in] */ IDateFormatSymbols* value);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& tem,
+        /* [in] */ ILocale* locale);
+
+    CARAPI constructor(
         /* [in] */ ILocale* locale);
 
     virtual CARAPI ApplyLocalizedPattern(
@@ -85,15 +88,15 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
 
+    CARAPI Clone(
+        /* [out] */ IInterface** outface);
+
 private:
     CARAPI ValidateFormat(
         /* [in] */ Char32 format);
 
     CARAPI ValidatePattern(
         /* [in] */ const String& tem);
-
-    CARAPI Init(
-        /* [in] */ ILocale* locale);
 
     static CARAPI DefaultPattern(
         /* [out] */ String* pattern);

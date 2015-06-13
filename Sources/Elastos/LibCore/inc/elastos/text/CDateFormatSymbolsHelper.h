@@ -3,15 +3,22 @@
 #define __ELASTOS_TEXT_CDATEFORMATSYMBOLSHELPER_H__
 
 #include "_Elastos_Text_CDateFormatSymbolsHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Utility::ILocale;
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Text {
 
 CarClass(CDateFormatSymbolsHelper)
+    , public Singleton
+    , public IDateFormatSymbolsHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI GetInstance(
         /* [out] */ IDateFormatSymbols** instance);

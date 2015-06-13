@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CDateFormatSymbolsHelper, Singleton, IDateFormatSymbolsHelper)
+
+CAR_SINGLETON_IMPL(CDateFormatSymbolsHelper)
+
 ECode CDateFormatSymbolsHelper::GetInstance(
     /* [out] */ IDateFormatSymbols** instance)
 {
