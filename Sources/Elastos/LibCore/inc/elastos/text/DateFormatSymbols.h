@@ -2,27 +2,25 @@
 #define __ELASTOS_TEXT_DATEFORMATSYMBOLS_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include <elastos/Mutex.h>
+#include "elastos/core/Object.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::ILocale;
+using Elastos::Utility::IObjectContainer;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Text {
 
-class DateFormatSymbols
+class DateFormatSymbols : public Object
 {
 public:
     DateFormatSymbols();
 
     virtual ~DateFormatSymbols();
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CARAPI constructor();
 
-    CARAPI Init();
-
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ILocale* locale);
 
     CARAPI_(AutoPtr<ArrayOf<IObjectContainer*> >) InternalZoneStrings();
@@ -148,7 +146,7 @@ public:
 
     AutoPtr<ILocale> mLocale;
 
-    Mutex mLock;
+    Object mLock;
 
 private:
     String mLocalPatternChars;

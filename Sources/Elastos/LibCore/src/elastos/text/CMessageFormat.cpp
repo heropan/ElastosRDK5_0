@@ -4,173 +4,175 @@
 namespace Elastos {
 namespace Text {
 
-ECode CMessageFormat::FormatObject(
-    /* [in] */ IInterface* object,
-    /* [out] */ String* value)
-{
-    return MessageFormat::FormatObject(object,value);
-}
+CAR_OBJECT_IMPL(CMessageFormat)
 
-ECode CMessageFormat::FormatObject(
-    /* [in] */ IInterface* object,
-    /* [in] */ IStringBuffer * buffer,
-    /* [in] */ IFieldPosition* field,
-    /* [out] */ IStringBuffer ** value)
-{
-    return MessageFormat::FormatObject(object,buffer,field,value);
-}
+// ECode CMessageFormat::Format(
+//     /* [in] */ IInterface* object,
+//     /* [out] */ String* value)
+// {
+//     return MessageFormat::Format(object,value);
+// }
 
-ECode CMessageFormat::FormatToCharacterIterator(
-    /* [in] */ IInterface* object,
-    /* [out] */ IAttributedCharacterIterator** charactorIterator)
-{
-    return MessageFormat::FormatToCharacterIterator(object,charactorIterator);
-}
+// ECode CMessageFormat::Format(
+//     /* [in] */ IInterface* object,
+//     /* [in] */ IStringBuffer * buffer,
+//     /* [in] */ IFieldPosition* field,
+//     /* [out] */ IStringBuffer ** value)
+// {
+//     return MessageFormat::Format(object,buffer,field,value);
+// }
 
-ECode CMessageFormat::ParseObject(
-    /* [in] */ const String& string,
-    /* [out] */ IInterface** object)
-{
-    return MessageFormat::ParseObject(string,object);
-}
+// ECode CMessageFormat::FormatToCharacterIterator(
+//     /* [in] */ IInterface* object,
+//     /* [out] */ IAttributedCharacterIterator** charactorIterator)
+// {
+//     return MessageFormat::FormatToCharacterIterator(object,charactorIterator);
+// }
 
-ECode CMessageFormat::ParseObject(
-    /* [in] */ const String& string,
-    /* [in] */ IParsePosition* position,
-    /* [out] */ IInterface** object)
-{
-    return MessageFormat::ParseObject(string,position,object);
-}
+// ECode CMessageFormat::ParseObject(
+//     /* [in] */ const String& string,
+//     /* [out] */ IInterface** object)
+// {
+//     return MessageFormat::ParseObject(string,object);
+// }
 
-ECode CMessageFormat::constructor(
-    /* [in] */ const String& tem,
-    /* [in] */ ILocale* locale)
-{
-    return MessageFormat::Init(tem, locale);
-}
+// ECode CMessageFormat::ParseObject(
+//     /* [in] */ const String& string,
+//     /* [in] */ IParsePosition* position,
+//     /* [out] */ IInterface** object)
+// {
+//     return MessageFormat::ParseObject(string,position,object);
+// }
 
-ECode CMessageFormat::constructor(
-    /* [in] */ const String& tem)
-{
-    return MessageFormat::Init(tem);
-}
+// ECode CMessageFormat::constructor(
+//     /* [in] */ const String& tem,
+//     /* [in] */ ILocale* locale)
+// {
+//     return MessageFormat::Init(tem, locale);
+// }
 
-ECode CMessageFormat::ApplyPattern(
-    /* [in] */ const String& temp)
-{
-    return MessageFormat::ApplyPattern(temp);
-}
+// ECode CMessageFormat::constructor(
+//     /* [in] */ const String& tem)
+// {
+//     return MessageFormat::Init(tem);
+// }
 
-ECode CMessageFormat::FormatObjects(
-    /* [in] */ ArrayOf<IInterface*>* objects,
-    /* [in] */ IStringBuffer * buffer,
-    /* [in] */ IFieldPosition* field,
-    /* [out] */ IStringBuffer ** value)
-{
-    return MessageFormat::FormatObjects(objects,buffer,field,value);
-}
+// ECode CMessageFormat::ApplyPattern(
+//     /* [in] */ const String& temp)
+// {
+//     return MessageFormat::ApplyPattern(temp);
+// }
 
-ECode CMessageFormat::GetFormats(
-    /* [out, callee] */ ArrayOf<IFormat*>** formats)
-{
-    return MessageFormat::GetFormats(formats);
-}
+// ECode CMessageFormat::FormatObjects(
+//     /* [in] */ ArrayOf<IInterface*>* objects,
+//     /* [in] */ IStringBuffer * buffer,
+//     /* [in] */ IFieldPosition* field,
+//     /* [out] */ IStringBuffer ** value)
+// {
+//     return MessageFormat::FormatObjects(objects,buffer,field,value);
+// }
 
-ECode CMessageFormat::GetFormatsByArgumentIndex(
-    /* [out, callee] */ ArrayOf<IFormat*>** formatsByArgumentIndex)
-{
-    return MessageFormat::GetFormatsByArgumentIndex(formatsByArgumentIndex);
-}
+// ECode CMessageFormat::GetFormats(
+//     /* [out, callee] */ ArrayOf<IFormat*>** formats)
+// {
+//     return MessageFormat::GetFormats(formats);
+// }
 
-ECode CMessageFormat::SetFormatByArgumentIndex(
-    /* [in] */ Int32 argIndex,
-    /* [in] */ IFormat* format)
-{
-    return MessageFormat::SetFormatByArgumentIndex(argIndex,format);
-}
+// ECode CMessageFormat::GetFormatsByArgumentIndex(
+//     /* [out, callee] */ ArrayOf<IFormat*>** formatsByArgumentIndex)
+// {
+//     return MessageFormat::GetFormatsByArgumentIndex(formatsByArgumentIndex);
+// }
 
-ECode CMessageFormat::SetFormatsByArgumentIndex(
-    /* [in] */ ArrayOf<IFormat*>* formats)
-{
-    return MessageFormat::SetFormatsByArgumentIndex(formats);
-}
+// ECode CMessageFormat::SetFormatByArgumentIndex(
+//     /* [in] */ Int32 argIndex,
+//     /* [in] */ IFormat* format)
+// {
+//     return MessageFormat::SetFormatByArgumentIndex(argIndex,format);
+// }
 
-ECode CMessageFormat::GetLocale(
-    /* [out] */ ILocale** locale)
-{
-    return MessageFormat::GetLocale(locale);
-}
+// ECode CMessageFormat::SetFormatsByArgumentIndex(
+//     /* [in] */ ArrayOf<IFormat*>* formats)
+// {
+//     return MessageFormat::SetFormatsByArgumentIndex(formats);
+// }
 
-ECode CMessageFormat::Parse(
-    /* [in] */ const String& string,
-    /* [out, callee] */ ArrayOf<IInterface*>** result)
-{
-    return MessageFormat::Parse(string,result);
-}
+// ECode CMessageFormat::GetLocale(
+//     /* [out] */ ILocale** locale)
+// {
+//     return MessageFormat::GetLocale(locale);
+// }
 
-ECode CMessageFormat::Parse(
-    /* [in] */ const String& string,
-    /* [in] */ IParsePosition* position,
-    /* [out, callee] */ ArrayOf<IInterface*>** result)
-{
-    return MessageFormat::Parse(string,position,result);
-}
+// ECode CMessageFormat::Parse(
+//     /* [in] */ const String& string,
+//     /* [out, callee] */ ArrayOf<IInterface*>** result)
+// {
+//     return MessageFormat::Parse(string,result);
+// }
 
-ECode CMessageFormat::SetFormat(
-    /* [in] */ Int32 offset,
-    /* [in] */ IFormat* format)
-{
-    return MessageFormat::SetFormat(offset,format);
-}
+// ECode CMessageFormat::Parse(
+//     /* [in] */ const String& string,
+//     /* [in] */ IParsePosition* position,
+//     /* [out, callee] */ ArrayOf<IInterface*>** result)
+// {
+//     return MessageFormat::Parse(string,position,result);
+// }
 
-ECode CMessageFormat::SetFormats(
-    /* [in] */ ArrayOf<IFormat*>* formats)
-{
-    return MessageFormat::SetFormats(formats);
-}
+// ECode CMessageFormat::SetFormat(
+//     /* [in] */ Int32 offset,
+//     /* [in] */ IFormat* format)
+// {
+//     return MessageFormat::SetFormat(offset,format);
+// }
 
-ECode CMessageFormat::SetLocale(
-    /* [in] */ ILocale* locale)
-{
-    return MessageFormat::SetLocale(locale);
-}
+// ECode CMessageFormat::SetFormats(
+//     /* [in] */ ArrayOf<IFormat*>* formats)
+// {
+//     return MessageFormat::SetFormats(formats);
+// }
 
-ECode CMessageFormat::ToPattern(
-    /* [out] */ String* pattern)
-{
-    return MessageFormat::ToPattern(pattern);
-}
+// ECode CMessageFormat::SetLocale(
+//     /* [in] */ ILocale* locale)
+// {
+//     return MessageFormat::SetLocale(locale);
+// }
 
-PInterface CMessageFormat::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CMessageFormat::Probe(riid);
-}
+// ECode CMessageFormat::ToPattern(
+//     /* [out] */ String* pattern)
+// {
+//     return MessageFormat::ToPattern(pattern);
+// }
 
-ECode CMessageFormat::GetMaxOffset(
-    /* [out] */ Int32* maxOffset)
-{
-    return MessageFormat::GetMaxOffset(maxOffset);
-}
+// PInterface CMessageFormat::Probe(
+//     /* [in] */ REIID riid)
+// {
+//     return _CMessageFormat::Probe(riid);
+// }
 
-ECode CMessageFormat::GetArgumentNumbers(
-    /* [out,callee] */ ArrayOf<Int32>** argumentNumbers)
-{
-    return MessageFormat::GetArgumentNumbers(argumentNumbers);
-}
+// ECode CMessageFormat::GetMaxOffset(
+//     /* [out] */ Int32* maxOffset)
+// {
+//     return MessageFormat::GetMaxOffset(maxOffset);
+// }
 
-ECode CMessageFormat::GetStrings(
-    /* [out,callee] */ ArrayOf<String>** strings)
-{
-    return MessageFormat::GetStrings(strings);
-}
+// ECode CMessageFormat::GetArgumentNumbers(
+//     /* [out,callee] */ ArrayOf<Int32>** argumentNumbers)
+// {
+//     return MessageFormat::GetArgumentNumbers(argumentNumbers);
+// }
 
-ECode CMessageFormat::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    return MessageFormat::Equals(object, result);
-}
+// ECode CMessageFormat::GetStrings(
+//     /* [out,callee] */ ArrayOf<String>** strings)
+// {
+//     return MessageFormat::GetStrings(strings);
+// }
+
+// ECode CMessageFormat::Equals(
+//     /* [in] */ IInterface* object,
+//     /* [out] */ Boolean* result)
+// {
+//     return MessageFormat::Equals(object, result);
+// }
 
 } // namespace Text
 } // namespace Elastos

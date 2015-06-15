@@ -12,16 +12,7 @@ namespace Text {
 CarClass(CMessageFormatField) , public AttributedCharacterIteratorAttribute
 {
 public:
-    TEXTATTRIBUITEDCHARACTERITERATORATTRIBUTE_METHODS_DECL()
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID* clsid);
-
-    CARAPI constructor(
-        /* [in] */ const String& name);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Text

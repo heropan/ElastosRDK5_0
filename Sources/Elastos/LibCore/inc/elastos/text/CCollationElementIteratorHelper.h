@@ -3,13 +3,21 @@
 #define __ELASTOS_TEXT_CCOLLATIONELEMENTITERATORHELPER_H__
 
 #include "_Elastos_Text_CCollationElementIteratorHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Text {
 
 CarClass(CCollationElementIteratorHelper)
+    , public Singleton
+    , public ICollationElementIteratorHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI PrimaryOrder(
         /* [in] */ Int32 order,

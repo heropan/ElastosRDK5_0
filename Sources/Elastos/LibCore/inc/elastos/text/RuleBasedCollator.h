@@ -13,14 +13,13 @@ namespace Text {
 
 class RuleBasedCollator : public Collator
 {
-protected:
-    CARAPI Init(
+public:
+    CARAPI constructor(
         /* [in] */ IRuleBasedCollatorICU* wrapper);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& rules);
 
-public:
     virtual CARAPI GetCollationElementIterator(
         /* [in] */ ICharacterIterator* source,
         /* [out] */ ICollationElementIterator** collationElementIterator);

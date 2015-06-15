@@ -26,12 +26,12 @@ class DateFormat : public Format
 {
 public:
     class Field
-        : public ElRefBase
-        , public IDateFormatField
+        : public IDateFormatField
         , public Format::Field
     {
     public:
         CAR_INTERFACE_DECL()
+
         TEXTATTRIBUITEDCHARACTERITERATORATTRIBUTE_METHODS_DECL()
 
         Field();

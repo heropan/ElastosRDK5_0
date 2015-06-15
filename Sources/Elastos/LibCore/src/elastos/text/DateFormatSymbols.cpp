@@ -2,23 +2,25 @@
 #include "DateFormatSymbols.h"
 #include "CDateFormatSymbols.h"
 #include "CStringWrapper.h"
-#include "CObjectContainer.h"
+// #include "CObjectContainer.h"
 #include "CLocaleHelper.h"
-#include "CLocaleDataHelper.h"
-#include "CICUHelper.h"
-#include "TimeZones.h"
+// #include "CLocaleDataHelper.h"
+// #include "CICUHelper.h"
+// #include "TimeZones.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
-using Elastos::Core::CObjectContainer;
+using Elastos::Core::IArrayOf;
+// using Elastos::Core::CObjectContainer;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::IObjectEnumerator;
 using Libcore::ICU::ILocaleDataHelper;
-using Libcore::ICU::CLocaleDataHelper;
+// using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::IICUHelper;
 // using Libcore::ICU::CICUHelper;
-using Libcore::ICU::TimeZones;
+// using Libcore::ICU::TimeZones;
 
 namespace Elastos {
 namespace Text {
@@ -34,16 +36,18 @@ DateFormatSymbols::~DateFormatSymbols()
 
 AutoPtr<ArrayOf<IObjectContainer*> > DateFormatSymbols::InternalZoneStrings()
 {
-    Mutex::Autolock lock(mLock);
+    Object::Autolock lock(mLock);
     if (mZoneStrings == NULL) {
         AutoPtr< ArrayOf<IArrayOf*> > result;
-        TimeZones::GetZoneStrings(mLocale, (ArrayOf<IArrayOf*>**)&result);
+        assert(0 && "TODO");
+        // TimeZones::GetZoneStrings(mLocale, (ArrayOf<IArrayOf*>**)&result);
         Int32 length = result->GetLength();
         mZoneStrings = ArrayOf<IObjectContainer*>::Alloc(length);
         for (Int32 i = 0; i < length; ++i) {
             AutoPtr<IArrayOf> arrstr = (*result)[i];
             AutoPtr<IObjectContainer> newBc;
-            CObjectContainer::New((IObjectContainer**)&newBc);
+            assert(0 && "TODO");
+            // CObjectContainer::New((IObjectContainer**)&newBc);
             Int32 arrlen = 0;
             arrstr->GetLength(&arrlen);
             for (Int32 j = 0; j < arrlen; ++j) {
@@ -58,22 +62,23 @@ AutoPtr<ArrayOf<IObjectContainer*> > DateFormatSymbols::InternalZoneStrings()
     return mZoneStrings;
 }
 
-ECode DateFormatSymbols::Init()
+ECode DateFormatSymbols::constructor()
 {
     AutoPtr<ILocaleHelper> localeHelper;
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
     AutoPtr<ILocale> locale;
     localeHelper->GetDefault((ILocale**)&locale);
-    return Init(locale);
+    return constructor(locale);
 }
 
-ECode DateFormatSymbols::Init(
+ECode DateFormatSymbols::constructor(
     /* [in] */ ILocale* locale)
 {
     mLocale = locale;
     mLocalPatternChars = ISimpleDateFormat_PATTERN_CHARS;
     AutoPtr<ILocaleDataHelper> localeDataHelper;
-    FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(localeDataHelper->Get(locale, (ILocaleData**)&localeData));
 
@@ -183,7 +188,8 @@ ECode DateFormatSymbols::GetAvailableLocales(
 {
     VALIDATE_NOT_NULL(arrayOfLocales)
     AutoPtr<IICUHelper> pICUHelper;
-    FAIL_RETURN(CICUHelper::AcquireSingleton((IICUHelper**)&pICUHelper))
+    assert(0 && "TODO");
+    // FAIL_RETURN(CICUHelper::AcquireSingleton((IICUHelper**)&pICUHelper))
     return pICUHelper->GetAvailableDateFormatSymbolsLocales(arrayOfLocales);
 }
 
@@ -402,7 +408,8 @@ ECode DateFormatSymbols::Clone2dStringArray(
         }
 
         AutoPtr<IObjectContainer> newBc;
-        CObjectContainer::New((IObjectContainer**)&newBc);
+        assert(0 && "TODO");
+        // CObjectContainer::New((IObjectContainer**)&newBc);
 
         AutoPtr<IObjectEnumerator> enumerator;
         bc->GetObjectEnumerator((IObjectEnumerator**)&enumerator);

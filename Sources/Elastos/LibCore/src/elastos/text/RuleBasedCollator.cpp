@@ -1,20 +1,20 @@
 
 #include "RuleBasedCollator.h"
 #include "CCollationElementIterator.h"
-#include "CRuleBasedCollatorICU.h"
+// #include "CRuleBasedCollatorICU.h"
 
-using Libcore::ICU::CRuleBasedCollatorICU;
+// using Libcore::ICU::CRuleBasedCollatorICU;
 
 namespace Elastos {
 namespace Text {
 
-ECode RuleBasedCollator::Init(
+ECode RuleBasedCollator::constructor(
     /* [in] */ IRuleBasedCollatorICU* wrapper)
 {
-    return Collator::Init(wrapper);
+    return Collator::constructor(wrapper);
 }
 
-ECode RuleBasedCollator::Init(
+ECode RuleBasedCollator::constructor(
     /* [in] */ const String& rules)
 {
     if (rules.IsNull()) {
@@ -24,7 +24,8 @@ ECode RuleBasedCollator::Init(
         return E_PARSE_EXCEPTION;;
     }
     //try {
-    FAIL_RETURN(CRuleBasedCollatorICU::New(rules, (IRuleBasedCollatorICU**)&mICUColl));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CRuleBasedCollatorICU::New(rules, (IRuleBasedCollatorICU**)&mICUColl));
     //} catch (Exception e) {
     //    if (e instanceof ParseException) {
     //        throw (ParseException) e;

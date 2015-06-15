@@ -2,16 +2,16 @@
 #define __ELASTOS_TEXT_COLLATOR_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include <elastos.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 using Libcore::ICU::IRuleBasedCollatorICU;
-using Elastos::Text::ICollationKey;
 
 namespace Elastos {
 namespace Text {
 
-class Collator
+class Collator : public Object
 {
 public:
     virtual CARAPI Compare(
@@ -67,10 +67,10 @@ public:
         /* [out] */ IRuleBasedCollatorICU** icuCollator);
 
 protected:
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IRuleBasedCollatorICU* icuColl);
 
-    CARAPI Init();
+    CARAPI constructor();
 
 private:
     CARAPI DecompositionMode_Java_ICU(
