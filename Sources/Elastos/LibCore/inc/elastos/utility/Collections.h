@@ -1,11 +1,9 @@
 #ifndef __UTILITY_CCOLLECTIONS_H__
 #define __UTILITY_CCOLLECTIONS_H__
 
-#include "_CCollections.h"
 #include "AbstractList.h"
 #include "AbstractSet.h"
 #include "AbstractMap.h"
-#include <elastos/Mutex.h>
 #include "MapEntry.h"
 #include "AbstractQueue.h"
 
@@ -17,13 +15,15 @@ using Elastos::Core::IRandom;
 namespace Elastos {
 namespace Utility {
 
-CarClass(CCollections)
+class Collections
+    : public Object
 {
 public:
     class SynchronizedCollection
-        : public ICollection
+        : public Object
+        , public ICollection
+        , public IIterable
         , public ISerializable
-        , public ElRefBase
     {
     public:
         SynchronizedCollection(
@@ -31,7 +31,9 @@ public:
 
         SynchronizedCollection(
             /* [in] */ ICollection* collection,
-            /* [in] */ Mutex* mutex);
+            /* [in] */ Object* lock);
+
+        ~SynchronizedCollection();
 
         CAR_INTERFACE_DECL()
 
@@ -39,9 +41,15 @@ public:
             /* [in] */ IInterface* object,
             /* [out] */ Boolean* modified);
 
+        CARAPI Add(
+            /* [in] */ IInterface* object);
+
         CARAPI AddAll(
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection* collection);
 
         CARAPI Clear();
 
@@ -63,13 +71,22 @@ public:
             /* [in] */ IInterface* object,
             /* [out] */ Boolean* modified);
 
+        CARAPI Remove(
+            /* [in] */ IInterface* object);
+
         CARAPI RemoveAll(
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
 
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* collection);
+
         CARAPI RetainAll(
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection* collection);
 
         CARAPI GetSize(
             /* [out] */ Int32* size);
@@ -96,8 +113,9 @@ public:
             /* [in] */ IObjectOutputStream* stream);
 
     public:
+        Object* mLock;
+        Boolean mIsStrongLock;
         AutoPtr<ICollection> mC;
-        Mutex* mMutex;
     };
 
     class SynchronizedList
@@ -110,7 +128,7 @@ public:
 
         SynchronizedList(
             /* [in] */ IList* l,
-            /* [in] */ Mutex* mutex);
+            /* [in] */ Object* lock);
 
         CAR_INTERFACE_DECL()
 
@@ -118,10 +136,17 @@ public:
             /* [in] */ Int32 location,
             /* [in] */ IInterface* object);
 
+        CARAPI Add(
+            /* [in] */ IInterface* object);
+
         CARAPI AddAll(
             /* [in] */ Int32 location,
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
+
+        CARAPI AddAll(
+            /* [in] */ Int32 location,
+            /* [in] */ ICollection* collection);
 
         CARAPI Equals(
             /* [in] */ IInterface* object,
@@ -153,10 +178,17 @@ public:
             /* [in] */ Int32 location,
             /* [out] */ IInterface** object);
 
+        CARAPI Remove(
+            /* [in] */ Int32 location);
+
         CARAPI Set(
             /* [in] */ Int32 location,
             /* [in] */ IInterface* object,
             /* [out] */ IInterface** prevObject);
+
+        CARAPI Set(
+            /* [in] */ Int32 location,
+            /* [in] */ IInterface* object);
 
         CARAPI GetSubList(
             /* [in] */ Int32 start,
@@ -229,7 +261,7 @@ public:
 
         SynchronizedRandomAccessList(
             /* [in] */ IList* l,
-            /* [in] */ Mutex* mutex);
+            /* [in] */ Object* lock);
 
         CAR_INTERFACE_DECL()
 
@@ -252,7 +284,7 @@ public:
 
         SynchronizedSet(
             /* [in] */ ISet* set,
-            /* [in] */ Mutex* mutex);
+            /* [in] */ Object* lock);
 
         CAR_INTERFACE_DECL()
 
@@ -315,9 +347,9 @@ public:
     };
 
     class SynchronizedMap
-        : public IMap
+        : public Object
+        , public IMap
         , public ISerializable
-        , public ElRefBase
     {
     public:
         SynchronizedMap(
@@ -325,7 +357,9 @@ public:
 
         SynchronizedMap(
             /* [in] */ IMap* map,
-            /* [in] */ Mutex* mutex);
+            /* [in] */ Object* lock);
+
+        ~SynchronizedMap();
 
         CAR_INTERFACE_DECL()
 
@@ -364,12 +398,19 @@ public:
             /* [in] */ PInterface value,
             /* [out] */ PInterface* oldValue);
 
+        CARAPI Put(
+            /* [in] */ PInterface key,
+            /* [in] */ PInterface value);
+
         CARAPI PutAll(
             /* [in] */ IMap* map);
 
         CARAPI Remove(
             /* [in] */ PInterface key,
             /* [out] */ PInterface* value);
+
+        CARAPI Remove(
+            /* [in] */ PInterface key);
 
         CARAPI GetSize(
             /* [out] */ Int32* size);
@@ -385,7 +426,8 @@ public:
             /* [in] */ IObjectOutputStream* stream);
 
     public:
-        Mutex* mMutex;
+        Object* mLock;
+        Boolean mIsStrongLock;
         AutoPtr<IMap> mM;
     };
 
@@ -399,29 +441,29 @@ public:
 
         SynchronizedSortedMap(
             /* [in] */ ISortedMap* map,
-            /* [in] */ Mutex* mutex);
+            /* [in] */ Object* lock);
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Comparator(
+        CARAPI GetComparator(
             /* [out] */ IComparator** comp);
 
-        CARAPI FirstKey(
+        CARAPI GetFirstKey(
             /* [out] */ IInterface** outface);
 
-        CARAPI HeadMap(
+        CARAPI GetHeadMap(
             /* [in] */ IInterface* endKey,
             /* [out] */ ISortedMap** sortmap);
 
-        CARAPI LastKey(
+        CARAPI GetLastKey(
             /* [out] */ IInterface** outface);
 
-        CARAPI SubMap(
+        CARAPI GetSubMap(
             /* [in] */ IInterface* startKey,
             /* [in] */ IInterface* endKey,
             /* [out] */ ISortedMap** sortmap);
 
-        CARAPI TailMap(
+        CARAPI GetTailMap(
             /* [in] */ IInterface* startKey,
             /* [out] */ ISortedMap** sortmap);
 
@@ -463,12 +505,19 @@ public:
             /* [in] */ PInterface value,
             /* [out] */ PInterface* oldValue);
 
+        CARAPI Put(
+            /* [in] */ PInterface key,
+            /* [in] */ PInterface value);
+
         CARAPI PutAll(
             /* [in] */ IMap* map);
 
         CARAPI Remove(
             /* [in] */ PInterface key,
             /* [out] */ PInterface* value);
+
+        CARAPI Remove(
+            /* [in] */ PInterface key);
 
         CARAPI GetSize(
             /* [out] */ Int32* size);
@@ -489,29 +538,29 @@ public:
 
         SynchronizedSortedSet(
             /* [in] */ ISortedSet* set,
-            /* [in] */ Mutex* mutex);
+            /* [in] */ Object* lock);
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Comparator(
+        CARAPI GetComparator(
             /* [out] */ IComparator** outcom);
 
-        CARAPI First(
+        CARAPI GetFirst(
             /* [out] */ IInterface** outface);
 
-        CARAPI HeadSet(
+        CARAPI GetHeadSet(
             /* [in] */ IInterface* end,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI Last(
+        CARAPI GetLast(
             /* [out] */ IInterface** outface);
 
-        CARAPI SubSet(
+        CARAPI GetSubSet(
             /* [in] */ IInterface* start,
             /* [in] */ IInterface* end,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI TailSet(
+        CARAPI GetTailSet(
             /* [in] */ IInterface* start,
             /* [out] */ ISortedSet** outsort);
 
@@ -576,8 +625,8 @@ public:
 
 private:
     class Iterator
-        : public IIterator
-        , public ElRefBase
+        : public Object
+        , public IIterator
     {
     public:
         Iterator();
@@ -594,8 +643,8 @@ private:
     };
 
     class MyEnumeration
-        : public IEnumeration
-        , public ElRefBase
+        : public Object
+        , public IEnumeration
     {
     public:
         MyEnumeration();
@@ -610,8 +659,8 @@ private:
     };
 
     class MyEnumeration2
-        : public IEnumeration
-        , public ElRefBase
+        : public Object
+        , public IEnumeration
     {
     public:
         MyEnumeration2(
@@ -629,10 +678,8 @@ private:
     };
 
     class CopiesList
-        : public IList
-        , public AbstractList
+        : public AbstractList
         , public ISerializable
-        , public ElRefBase
     {
     public:
         CopiesList(
@@ -742,10 +789,8 @@ private:
 public:
     class EmptyList
         : public AbstractList
-        , public IList
         , public IRandomAccess
         , public ISerializable
-        , public ElRefBase
     {
     public:
         CAR_INTERFACE_DECL()
@@ -851,9 +896,7 @@ public:
 
     class EmptySet
         : public AbstractSet
-        , public ISet
         , public ISerializable
-        , public ElRefBase
     {
     public:
         CAR_INTERFACE_DECL()
@@ -917,9 +960,7 @@ public:
 
     class EmptyMap
         : public AbstractMap
-        , public IMap
         , public ISerializable
-        , public ElRefBase
     {
     public:
         CAR_INTERFACE_DECL()
@@ -962,12 +1003,19 @@ public:
             /* [in] */ PInterface value,
             /* [out] */ PInterface* oldValue);
 
+        CARAPI Put(
+            /* [in] */ PInterface key,
+            /* [in] */ PInterface value);
+
         CARAPI PutAll(
             /* [in] */ IMap* map);
 
         CARAPI Remove(
             /* [in] */ PInterface key,
             /* [out] */ PInterface* value);
+
+        CARAPI Remove(
+            /* [in] */ PInterface key);
 
         CARAPI GetSize(
             /* [out] */ Int32* size);
@@ -977,9 +1025,9 @@ public:
     };
 
     class ReverseComparator
-        : public IComparator
+        : public Object
+        , public IComparator
         , public ISerializable
-        , public ElRefBase
     {
     public:
         CAR_INTERFACE_DECL()
@@ -997,9 +1045,9 @@ public:
     };
 
     class ReverseComparator2
-        : public IComparator
+        : public Object
+        , public IComparator
         , public ISerializable
-        , public ElRefBase
     {
     public:
         ReverseComparator2(
@@ -1024,14 +1072,12 @@ public:
 
     class SingletonSet
         : public AbstractSet
-        , public ISet
         , public ISerializable
-        , public ElRefBase
     {
     private:
         class Iterator
-            : public IIterator
-            , public ElRefBase
+            : public Object
+            , public IIterator
         {
         public:
             Iterator(
@@ -1116,9 +1162,7 @@ public:
 
     class SingletonList
         : public AbstractList
-        , public IList
         , public ISerializable
-        , public ElRefBase
     {
     public:
         SingletonList(
@@ -1227,23 +1271,20 @@ public:
 
     class SingletonMap
         : public AbstractMap
-        , public IMap
         , public ISerializable
-        , public ElRefBase
     {
     private:
         class MySet
-            : public ISet
-            , public AbstractSet
-            , public ElRefBase
+            : public AbstractSet
         {
         private:
             class Iterator
-                : public IIterator
-                , public ElRefBase
+                : public Object
+                , public IIterator
             {
             private:
-                class MyMapEntry : public MapEntry
+                class MyMapEntry
+                    : public MapEntry
                 {
                 public:
                     MyMapEntry(
@@ -1399,14 +1440,14 @@ public:
     };
 
     class UnmodifiableCollection
-        : public ICollection
+        : public Object
+        , public ICollection
         , public ISerializable
-        , public ElRefBase
     {
     private:
         class Iterator
-            : public IIterator
-            , public ElRefBase
+            : public Object
+            , public IIterator
         {
         public:
             Iterator(
@@ -1434,9 +1475,15 @@ public:
             /* [in] */ IInterface* object,
             /* [out] */ Boolean* modified);
 
+        CARAPI Add(
+            /* [in] */ IInterface* object);
+
         CARAPI AddAll(
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection* collection);
 
         CARAPI Clear();
 
@@ -1458,13 +1505,22 @@ public:
             /* [in] */ IInterface* object,
             /* [out] */ Boolean* modified);
 
+        CARAPI Remove(
+            /* [in] */ IInterface* object);
+
         CARAPI RemoveAll(
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
 
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* collection);
+
         CARAPI RetainAll(
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection* collection);
 
         CARAPI GetSize(
             /* [out] */ Int32* size);
@@ -1496,8 +1552,8 @@ public:
     {
     private:
         class ListIterator
-            : public IListIterator
-            , public ElRefBase
+            : public Object
+            , public IListIterator
         {
         public:
             ListIterator(
@@ -1518,13 +1574,13 @@ public:
             CARAPI GetNext(
                 /* [out] */ IInterface** object);
 
-            CARAPI NextIndex(
+            CARAPI GetNextIndex(
                 /* [out] */ Int32* index);
 
-            CARAPI Previous(
+            CARAPI GetPrevious(
                 /* [out] */ IInterface** object);
 
-            CARAPI PreviousIndex(
+            CARAPI GetPreviousIndex(
                 /* [out] */ Int32* index);
 
             CARAPI Remove();
@@ -1544,9 +1600,16 @@ public:
             /* [in] */ IInterface* object,
             /* [out] */ Boolean* modified);
 
+        CARAPI Add(
+            /* [in] */ IInterface* object);
+
         CARAPI AddAll(
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
+
+        CARAPI AddAll(
+            /* [in] */ Int32 location,
+            /* [in] */ ICollection* collection);
 
         CARAPI Equals(
             /* [in] */ IInterface* object,
@@ -1578,10 +1641,17 @@ public:
             /* [in] */ Int32 location,
             /* [out] */ IInterface** object);
 
+        CARAPI Remove(
+            /* [in] */ Int32 location);
+
         CARAPI Set(
             /* [in] */ Int32 location,
             /* [in] */ IInterface* object,
             /* [out] */ IInterface** prevObject);
+
+        CARAPI Set(
+            /* [in] */ Int32 location,
+            /* [in] */ IInterface* object);
 
         CARAPI GetSubList(
             /* [in] */ Int32 start,
@@ -1726,9 +1796,9 @@ public:
     };
 
     class UnmodifiableMap
-        : public IMap
+        : public Object
+        , public IMap
         , public ISerializable
-        , public ElRefBase
     {
     private:
         class UnmodifiableEntrySet
@@ -1736,8 +1806,8 @@ public:
         {
         private:
             class UnmodifiableMapEntry
-                : public IMapEntry
-                , public ElRefBase
+                : public Object
+                , public IMapEntry
             {
             public:
                 UnmodifiableMapEntry(
@@ -1770,8 +1840,8 @@ public:
             };
 
             class Iterator
-                : public IIterator
-                , public ElRefBase
+                : public Object
+                , public IIterator
             {
             public:
                 Iterator(
@@ -1850,12 +1920,19 @@ public:
             /* [in] */ PInterface value,
             /* [out] */ PInterface* oldValue);
 
+        CARAPI Put(
+            /* [in] */ PInterface key,
+            /* [in] */ PInterface value);
+
         CARAPI PutAll(
             /* [in] */ IMap* map);
 
         CARAPI Remove(
             /* [in] */ PInterface key,
             /* [out] */ PInterface* value);
+
+        CARAPI Remove(
+            /* [in] */ PInterface key);
 
         CARAPI GetSize(
             /* [out] */ Int32* size);
@@ -1878,25 +1955,25 @@ public:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Comparator(
+        CARAPI GetComparator(
             /* [out] */ IComparator** comp);
 
-        CARAPI FirstKey(
+        CARAPI GetFirstKey(
             /* [out] */ IInterface** outface);
 
-        CARAPI HeadMap(
+        CARAPI GetHeadMap(
             /* [in] */ IInterface* endKey,
             /* [out] */ ISortedMap** sortmap);
 
-        CARAPI LastKey(
+        CARAPI GetLastKey(
             /* [out] */ IInterface** outface);
 
-        CARAPI SubMap(
+        CARAPI GetSubMap(
             /* [in] */ IInterface* startKey,
             /* [in] */ IInterface* endKey,
             /* [out] */ ISortedMap** sortmap);
 
-        CARAPI TailMap(
+        CARAPI GetTailMap(
             /* [in] */ IInterface* startKey,
             /* [out] */ ISortedMap** sortmap);
 
@@ -1960,25 +2037,25 @@ public:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Comparator(
+        CARAPI GetComparator(
             /* [out] */ IComparator** outcom);
 
-        CARAPI First(
+        CARAPI GetFirst(
             /* [out] */ IInterface** outface);
 
-        CARAPI HeadSet(
+        CARAPI GetHeadSet(
             /* [in] */ IInterface* end,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI Last(
+        CARAPI GetLast(
             /* [out] */ IInterface** outface);
 
-        CARAPI SubSet(
+        CARAPI GetSubSet(
             /* [in] */ IInterface* start,
             /* [in] */ IInterface* end,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI TailSet(
+        CARAPI GetTailSet(
             /* [in] */ IInterface* start,
             /* [out] */ ISortedSet** outsort);
 
@@ -2039,9 +2116,7 @@ public:
 
     class SetFromMap
         : public AbstractSet
-        , public ISet
         , public ISerializable
-        , public ElRefBase
     {
     public:
         SetFromMap(
@@ -2113,10 +2188,8 @@ public:
     };
 
     class AsLIFOQueue
-        : public IQueue
-        , public AbstractQueue
+        : public AbstractQueue
         , public ISerializable
-        , public ElRefBase
     {
     public:
         AsLIFOQueue(
@@ -2200,9 +2273,9 @@ public:
     };
 
     class CheckedCollection
-        : public ICollection
+        : public Object
+        , public ICollection
         , public ISerializable
-        , public ElRefBase
     {
     public:
        CheckedCollection(
@@ -2235,9 +2308,15 @@ public:
             /* [in] */ IInterface* object,
             /* [out] */ Boolean* modified);
 
+        CARAPI Add(
+            /* [in] */ IInterface* object);
+
         CARAPI Remove(
             /* [in] */ IInterface* object,
             /* [out] */ Boolean* modified);
+
+        CARAPI Remove(
+            /* [in] */ IInterface* object);
 
         CARAPI ContainsAll(
             /* [in] */ ICollection* collection,
@@ -2247,13 +2326,22 @@ public:
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
 
+        CARAPI AddAll(
+            /* [in] */ ICollection* collection);
+
         CARAPI RemoveAll(
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
 
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* collection);
+
         CARAPI RetainAll(
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection* collection);
 
         CARAPI Clear();
 
@@ -2273,8 +2361,8 @@ public:
     };
 
     class CheckedListIterator
-        : public IListIterator
-        , public ElRefBase
+        : public Object
+        , public IListIterator
     {
     public:
         CheckedListIterator(
@@ -2294,13 +2382,13 @@ public:
         CARAPI HasPrevious(
             /* [out] */ Boolean* result);
 
-        CARAPI Previous(
+        CARAPI GetPrevious(
             /* [out] */ IInterface** object);
 
-        CARAPI NextIndex(
+        CARAPI GetNextIndex(
             /* [out] */ Int32* index);
 
-        CARAPI PreviousIndex(
+        CARAPI GetPreviousIndex(
             /* [out] */ Int32* index);
 
         CARAPI Set(
@@ -2330,6 +2418,10 @@ public:
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
 
+        CARAPI AddAll(
+            /* [in] */ Int32 location,
+            /* [in] */ ICollection* collection);
+
         CARAPI Get(
             /* [in] */ Int32 location,
             /* [out] */ IInterface** object);
@@ -2339,6 +2431,13 @@ public:
             /* [in] */ IInterface* object,
             /* [out] */ IInterface** prevObject);
 
+        CARAPI Set(
+            /* [in] */ Int32 location,
+            /* [in] */ IInterface* object);
+
+        CARAPI Add(
+            /* [in] */ IInterface* object);
+
         CARAPI Add(
             /* [in] */ Int32 location,
             /* [in] */ IInterface* object);
@@ -2346,6 +2445,9 @@ public:
         CARAPI Remove(
             /* [in] */ Int32 location,
             /* [out] */ IInterface** object);
+
+        CARAPI Remove(
+            /* [in] */ Int32 location);
 
         CARAPI IndexOf(
             /* [in] */ IInterface* object,
@@ -2511,17 +2613,17 @@ public:
      * A dynamically typesafe view of a Map.
      */
     class CheckedMap
-        : public IMap
+        : public Object
+        , public IMap
         , public ISerializable
-        , public ElRefBase
     {
     private:
         /**
          * A dynamically typesafe view of a Map.Entry.
          */
         class CheckedEntry
-            : public IMapEntry
-            , public ElRefBase
+            : public Object
+            , public IMapEntry
         {
         public:
             CheckedEntry(
@@ -2555,13 +2657,13 @@ public:
          * A dynamically typesafe view of an entry set.
          */
         class CheckedEntrySet
-            : public ISet
-            , public ElRefBase
+            : public Object
+            , public ISet
         {
         private:
             class CheckedEntryIterator
-                : public IIterator
-                , public ElRefBase
+                : public Object
+                , public IIterator
             {
             public:
                 CheckedEntryIterator(
@@ -2680,9 +2782,16 @@ public:
             /* [in] */ PInterface value,
             /* [out] */ PInterface* oldValue);
 
+        CARAPI Put(
+            /* [in] */ PInterface key,
+            /* [in] */ PInterface value);
+
         CARAPI Remove(
             /* [in] */ PInterface key,
             /* [out] */ PInterface* value);
+
+        CARAPI Remove(
+            /* [in] */ PInterface key);
 
         CARAPI PutAll(
             /* [in] */ IMap* map);
@@ -2728,26 +2837,26 @@ public:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Comparator(
+        CARAPI GetComparator(
             /* [out] */ IComparator** outcom);
 
-        CARAPI SubSet(
+        CARAPI GetSubSet(
             /* [in] */ IInterface* start,
             /* [in] */ IInterface* end,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI HeadSet(
+        CARAPI GetHeadSet(
             /* [in] */ IInterface* end,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI TailSet(
+        CARAPI GetTailSet(
             /* [in] */ IInterface* start,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI First(
+        CARAPI GetFirst(
             /* [out] */ IInterface** outface);
 
-        CARAPI Last(
+        CARAPI GetLast(
             /* [out] */ IInterface** outface);
 
         CARAPI GetIterator(
@@ -2820,26 +2929,26 @@ public:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Comparator(
+        CARAPI GetComparator(
             /* [out] */ IComparator** comp);
 
-        CARAPI SubMap(
+        CARAPI GetSubMap(
             /* [in] */ IInterface* startKey,
             /* [in] */ IInterface* endKey,
             /* [out] */ ISortedMap** sortmap);
 
-        CARAPI HeadMap(
+        CARAPI GetHeadMap(
             /* [in] */ IInterface* endKey,
             /* [out] */ ISortedMap** sortmap);
 
-        CARAPI TailMap(
+        CARAPI GetTailMap(
             /* [in] */ IInterface* startKey,
             /* [out] */ ISortedMap** sortmap);
 
-        CARAPI FirstKey(
+        CARAPI GetFirstKey(
             /* [out] */ IInterface** outface);
 
-        CARAPI LastKey(
+        CARAPI GetLastKey(
             /* [out] */ IInterface** outface);
 
         CARAPI GetSize(
@@ -2895,480 +3004,248 @@ public:
     };
 
 public:
-    CARAPI BinarySearch(
+    static CARAPI BinarySearch(
         /* [in] */ IList* list,
         /* [in] */ IInterface* object,
         /* [out] */ Int32* index);
 
-    CARAPI BinarySearch(
+    static CARAPI BinarySearch(
         /* [in] */ IList* list,
         /* [in] */ IInterface* object,
         /* [in] */ IComparator* comparator,
         /* [out] */ Int32* index);
 
-    CARAPI Copy(
+    static CARAPI Copy(
         /* [in] */ IList* destination,
         /* [in] */ IList* source);
 
-    CARAPI NewEnumeration(
+    static CARAPI NewEnumeration(
         /* [in] */ ICollection* collection,
         /* [out] */ IEnumeration** result);
 
-    CARAPI Fill(
+    static CARAPI Fill(
         /* [in] */ IList* list,
         /* [in] */ IInterface* object);
 
-    CARAPI Max(
+    static CARAPI Max(
         /* [in] */ ICollection* collection,
         /* [out] */ IInterface** result);
 
-    CARAPI Max(
-        /* [in] */ ICollection* collection,
-        /* [in] */ IComparator* comparator,
-        /* [out] */ IInterface** result);
-
-    CARAPI Min(
-        /* [in] */ ICollection* collection,
-        /* [out] */ IInterface** result);
-
-    CARAPI Min(
+    static CARAPI Max(
         /* [in] */ ICollection* collection,
         /* [in] */ IComparator* comparator,
         /* [out] */ IInterface** result);
 
-    CARAPI NCopies(
+    static CARAPI Min(
+        /* [in] */ ICollection* collection,
+        /* [out] */ IInterface** result);
+
+    static CARAPI Min(
+        /* [in] */ ICollection* collection,
+        /* [in] */ IComparator* comparator,
+        /* [out] */ IInterface** result);
+
+    static CARAPI NCopies(
         /* [in] */ Int32 length,
         /* [in] */ IInterface* object,
         /* [out] */ IList** result);
 
-    CARAPI Reverse(
+    static CARAPI Reverse(
         /* [in] */ IList* list);
 
-    CARAPI ReverseOrder(
+    static CARAPI ReverseOrder(
         /* [out] */ IComparator** result);
 
-    CARAPI ReverseOrder(
+    static CARAPI ReverseOrder(
         /* [in] */ IComparator* c,
         /* [out] */ IComparator** result);
 
-    CARAPI Shuffle(
+    static CARAPI Shuffle(
         /* [in] */ IList* list);
 
-    CARAPI Shuffle(
+    static CARAPI Shuffle(
         /* [in] */ IList* list,
         /* [in] */ IRandom* random);
 
-    CARAPI NewSingleton(
+    static CARAPI NewSingleton(
         /* [in] */ IInterface* object,
         /* [out] */ ISet** out);
 
-    CARAPI NewSingletonList(
+    static CARAPI NewSingletonList(
         /* [in] */ IInterface* object,
         /* [out] */ IList** result);
 
-    CARAPI NewSingletonMap(
+    static CARAPI NewSingletonMap(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value,
         /* [out] */ IMap** result);
 
-    CARAPI Sort(
+    static CARAPI Sort(
         /* [in] */ IList* list);
 
-    CARAPI Sort(
+    static CARAPI Sort(
         /* [in] */ IList* list,
         /* [in] */ IComparator* comparator);
 
-    CARAPI Swap(
+    static CARAPI Swap(
         /* [in] */ IList* list,
         /* [in] */ Int32 index1,
         /* [in] */ Int32 index2);
 
-    CARAPI ReplaceAll(
+    static CARAPI ReplaceAll(
         /* [in] */ IList* list,
         /* [in] */ IInterface* obj,
         /* [in] */ IInterface* obj2,
         /* [out] */ Boolean* result);
 
-    CARAPI Rotate(
+    static CARAPI Rotate(
         /* [in] */ IList* lst,
         /* [in] */ Int32 dist);
 
-    CARAPI IndexOfSubList(
+    static CARAPI IndexOfSubList(
         /* [in] */ IList* list,
         /* [in] */ IList* sublist,
         /* [out] */ Int32* index);
 
-    CARAPI LastIndexOfSubList(
+    static CARAPI LastIndexOfSubList(
         /* [in] */ IList* list,
         /* [in] */ IList* sublist,
         /* [out] */ Int32* index);
 
-    CARAPI  NewList(
+    static CARAPI NewList(
         /* [in] */ IEnumeration* enumeration,
         /* [out] */ IArrayList** result);
 
-    CARAPI  NewSynchronizedCollection(
+    static CARAPI NewSynchronizedCollection(
         /* [in] */ ICollection* collection,
         /* [out] */ ICollection** result);
 
-    CARAPI  NewSynchronizedList(
+    static CARAPI NewSynchronizedList(
         /* [in] */ IList* list,
         /* [out] */ IList** result);
 
-    CARAPI  NewSynchronizedMap(
+    static CARAPI NewSynchronizedMap(
         /* [in] */ IMap* map,
         /* [out] */ IMap** result);
 
-    CARAPI  NewSynchronizedSet(
+    static CARAPI NewSynchronizedSet(
         /* [in] */ ISet* set,
         /* [out] */ ISet** result);
 
-    CARAPI  NewSynchronizedSortedMap(
+    static CARAPI NewSynchronizedSortedMap(
         /* [in] */ ISortedMap* map,
         /* [out] */ ISortedMap** result);
 
-    CARAPI  NewSynchronizedSortedSet(
+    static CARAPI NewSynchronizedSortedSet(
         /* [in] */ ISortedSet* set,
         /* [out] */ ISortedSet** result);
 
-    CARAPI  NewUnmodifiableCollection(
+    static CARAPI NewUnmodifiableCollection(
         /* [in] */ ICollection* collection,
         /* [out] */ ICollection** result);
 
-    CARAPI  NewUnmodifiableList(
+    static CARAPI NewUnmodifiableList(
         /* [in] */ IList* list,
         /* [out] */ IList** result);
 
-    CARAPI  NewUnmodifiableMap(
+    static CARAPI NewUnmodifiableMap(
         /* [in] */ IMap* map,
         /* [out] */ IMap** result);
 
-    CARAPI  NewUnmodifiableSet(
+    static CARAPI NewUnmodifiableSet(
         /* [in] */ ISet* set,
         /* [out] */ ISet** result);
 
-    CARAPI  NewUnmodifiableSortedMap(
+    static CARAPI NewUnmodifiableSortedMap(
         /* [in] */ ISortedMap* map,
         /* [out] */ ISortedMap** result);
 
-    CARAPI  NewUnmodifiableSortedSet(
+    static CARAPI NewUnmodifiableSortedSet(
         /* [in] */ ISortedSet* set,
         /* [out] */ ISortedSet** result);
 
-    CARAPI Frequency(
+    static CARAPI Frequency(
         /* [in] */ ICollection* c,
         /* [in] */ IInterface* o,
         /* [out] */ Int32* result);
 
-    CARAPI GetEmptyList(
+    static CARAPI GetEmptyList(
         /* [out] */ IList** result);
 
-    CARAPI GetEmptySet(
+    static CARAPI GetEmptySet(
         /* [out] */ ISet** result);
 
-    CARAPI GetEmptyMap(
+    static CARAPI GetEmptyMap(
         /* [out] */ IMap** result);
 
-    CARAPI GetEmptyEnumeration(
+    static CARAPI GetEmptyEnumeration(
         /* [out] */ IEnumeration** result);
 
-    CARAPI GetEmptyIterator(
+    static CARAPI GetEmptyIterator(
         /* [out] */ IIterator** result);
 
-    CARAPI GetEmptyListIterator(
+    static CARAPI GetEmptyListIterator(
         /* [out] */ IListIterator** result);
 
-    CARAPI NewCheckedCollection(
+    static CARAPI NewCheckedCollection(
         /* [in] */ ICollection* c,
         /* [in] */ const InterfaceID& type,
         /* [out] */ ICollection** result);
 
-    CARAPI NewCheckedMap(
+    static CARAPI NewCheckedMap(
         /* [in] */ IMap* m,
         /* [in] */ const InterfaceID& keyType,
         /* [in] */ const InterfaceID& valueType,
         /* [out] */ IMap** result);
 
-    CARAPI NewCheckedList(
+    static CARAPI NewCheckedList(
         /* [in] */ IList* list,
         /* [in] */ const InterfaceID& type,
         /* [out] */ IList** result);
 
-    CARAPI NewCheckedSet(
+    static CARAPI NewCheckedSet(
         /* [in] */ ISet* s,
         /* [in] */ const InterfaceID& type,
         /* [out] */ ISet** result);
 
-    CARAPI NewCheckedSortedMap(
+    static CARAPI NewCheckedSortedMap(
         /* [in] */ ISortedMap* m,
         /* [in] */ const InterfaceID& keyType,
         /* [in] */ const InterfaceID& valueType,
         /* [out] */ ISortedMap** result);
 
-    CARAPI NewCheckedSortedSet(
+    static CARAPI NewCheckedSortedSet(
         /* [in] */ ISortedSet* s,
         /* [in] */ const InterfaceID& type,
         /* [out] */ ISortedSet** result);
 
-    CARAPI AddAll(
+    static CARAPI AddAll(
         /* [in] */ ICollection* c,
         /* [in] */ ArrayOf<IInterface*>* a,
         /* [out] */ Boolean* result);
 
-    CARAPI Disjoint(
+    static CARAPI Disjoint(
         /* [in] */ ICollection* c1,
         /* [in] */ ICollection* c2,
         /* [out] */ Boolean* result);
 
-    CARAPI CheckType(
+    static CARAPI CheckType(
         /* [in] */ IInterface* obj,
         /* [in] */ const InterfaceID& type);
 
-    CARAPI NewSetFromMap(
+    static CARAPI NewSetFromMap(
         /* [in] */ IMap* map,
         /* [out] */ ISet** result);
 
-    CARAPI NewAsLifoQueue(
+    static CARAPI NewAsLifoQueue(
         /* [in] */ IDeque* deque,
         /* [out] */ IQueue** result);
 
-public:
-    static CARAPI _BinarySearch(
-        /* [in] */ IList* list,
-        /* [in] */ IInterface* object,
-        /* [out] */ Int32* index);
+    private:
 
-    static CARAPI _BinarySearch(
-        /* [in] */ IList* list,
-        /* [in] */ IInterface* object,
-        /* [in] */ IComparator* comparator,
-        /* [out] */ Int32* index);
+        Collections();
+        ~Collections();
 
-    static CARAPI _Copy(
-        /* [in] */ IList* destination,
-        /* [in] */ IList* source);
-
-    static CARAPI _NewEnumeration(
-        /* [in] */ ICollection* collection,
-        /* [out] */ IEnumeration** result);
-
-    static CARAPI _Fill(
-        /* [in] */ IList* list,
-        /* [in] */ IInterface* object);
-
-    static CARAPI _Max(
-        /* [in] */ ICollection* collection,
-        /* [out] */ IInterface** result);
-
-    static CARAPI _Max(
-        /* [in] */ ICollection* collection,
-        /* [in] */ IComparator* comparator,
-        /* [out] */ IInterface** result);
-
-    static CARAPI _Min(
-        /* [in] */ ICollection* collection,
-        /* [out] */ IInterface** result);
-
-    static CARAPI _Min(
-        /* [in] */ ICollection* collection,
-        /* [in] */ IComparator* comparator,
-        /* [out] */ IInterface** result);
-
-    static CARAPI _NCopies(
-        /* [in] */ Int32 length,
-        /* [in] */ IInterface* object,
-        /* [out] */ IList** result);
-
-    static CARAPI _Reverse(
-        /* [in] */ IList* list);
-
-    static CARAPI _ReverseOrder(
-        /* [out] */ IComparator** result);
-
-    static CARAPI _ReverseOrder(
-        /* [in] */ IComparator* c,
-        /* [out] */ IComparator** result);
-
-    static CARAPI _Shuffle(
-        /* [in] */ IList* list);
-
-    static CARAPI _Shuffle(
-        /* [in] */ IList* list,
-        /* [in] */ IRandom* random);
-
-    static CARAPI _NewSingleton(
-        /* [in] */ IInterface* object,
-        /* [out] */ ISet** out);
-
-    static CARAPI _NewSingletonList(
-        /* [in] */ IInterface* object,
-        /* [out] */ IList** result);
-
-    static CARAPI _NewSingletonMap(
-        /* [in] */ IInterface* key,
-        /* [in] */ IInterface* value,
-        /* [out] */ IMap** result);
-
-    static CARAPI _Sort(
-        /* [in] */ IList* list);
-
-    static CARAPI _Sort(
-        /* [in] */ IList* list,
-        /* [in] */ IComparator* comparator);
-
-    static CARAPI _Swap(
-        /* [in] */ IList* list,
-        /* [in] */ Int32 index1,
-        /* [in] */ Int32 index2);
-
-    static CARAPI _ReplaceAll(
-        /* [in] */ IList* list,
-        /* [in] */ IInterface* obj,
-        /* [in] */ IInterface* obj2,
-        /* [out] */ Boolean* result);
-
-    static CARAPI _Rotate(
-        /* [in] */ IList* lst,
-        /* [in] */ Int32 dist);
-
-    static CARAPI _IndexOfSubList(
-        /* [in] */ IList* list,
-        /* [in] */ IList* sublist,
-        /* [out] */ Int32* index);
-
-    static CARAPI _LastIndexOfSubList(
-        /* [in] */ IList* list,
-        /* [in] */ IList* sublist,
-        /* [out] */ Int32* index);
-
-    static CARAPI _NewList(
-        /* [in] */ IEnumeration* enumeration,
-        /* [out] */ IArrayList** result);
-
-    static CARAPI _NewSynchronizedCollection(
-        /* [in] */ ICollection* collection,
-        /* [out] */ ICollection** result);
-
-    static CARAPI _NewSynchronizedList(
-        /* [in] */ IList* list,
-        /* [out] */ IList** result);
-
-    static CARAPI _NewSynchronizedMap(
-        /* [in] */ IMap* map,
-        /* [out] */ IMap** result);
-
-    static CARAPI _NewSynchronizedSet(
-        /* [in] */ ISet* set,
-        /* [out] */ ISet** result);
-
-    static CARAPI _NewSynchronizedSortedMap(
-        /* [in] */ ISortedMap* map,
-        /* [out] */ ISortedMap** result);
-
-    static CARAPI _NewSynchronizedSortedSet(
-        /* [in] */ ISortedSet* set,
-        /* [out] */ ISortedSet** result);
-
-    static CARAPI _NewUnmodifiableCollection(
-        /* [in] */ ICollection* collection,
-        /* [out] */ ICollection** result);
-
-    static CARAPI _NewUnmodifiableList(
-        /* [in] */ IList* list,
-        /* [out] */ IList** result);
-
-    static CARAPI _NewUnmodifiableMap(
-        /* [in] */ IMap* map,
-        /* [out] */ IMap** result);
-
-    static CARAPI _NewUnmodifiableSet(
-        /* [in] */ ISet* set,
-        /* [out] */ ISet** result);
-
-    static CARAPI _NewUnmodifiableSortedMap(
-        /* [in] */ ISortedMap* map,
-        /* [out] */ ISortedMap** result);
-
-    static CARAPI _NewUnmodifiableSortedSet(
-        /* [in] */ ISortedSet* set,
-        /* [out] */ ISortedSet** result);
-
-    static CARAPI _Frequency(
-        /* [in] */ ICollection* c,
-        /* [in] */ IInterface* o,
-        /* [out] */ Int32* result);
-
-    static CARAPI _GetEmptyList(
-        /* [out] */ IList** result);
-
-    static CARAPI _GetEmptySet(
-        /* [out] */ ISet** result);
-
-    static CARAPI _GetEmptyMap(
-        /* [out] */ IMap** result);
-
-    static CARAPI _GetEmptyEnumeration(
-        /* [out] */ IEnumeration** result);
-
-    static CARAPI _GetEmptyIterator(
-        /* [out] */ IIterator** result);
-
-    static CARAPI _GetEmptyListIterator(
-        /* [out] */ IListIterator** result);
-
-    static CARAPI _NewCheckedCollection(
-        /* [in] */ ICollection* c,
-        /* [in] */ const InterfaceID& type,
-        /* [out] */ ICollection** result);
-
-    static CARAPI _NewCheckedMap(
-        /* [in] */ IMap* m,
-        /* [in] */ const InterfaceID& keyType,
-        /* [in] */ const InterfaceID& valueType,
-        /* [out] */ IMap** result);
-
-    static CARAPI _NewCheckedList(
-        /* [in] */ IList* list,
-        /* [in] */ const InterfaceID& type,
-        /* [out] */ IList** result);
-
-    static CARAPI _NewCheckedSet(
-        /* [in] */ ISet* s,
-        /* [in] */ const InterfaceID& type,
-        /* [out] */ ISet** result);
-
-    static CARAPI _NewCheckedSortedMap(
-        /* [in] */ ISortedMap* m,
-        /* [in] */ const InterfaceID& keyType,
-        /* [in] */ const InterfaceID& valueType,
-        /* [out] */ ISortedMap** result);
-
-    static CARAPI _NewCheckedSortedSet(
-        /* [in] */ ISortedSet* s,
-        /* [in] */ const InterfaceID& type,
-        /* [out] */ ISortedSet** result);
-
-    static CARAPI _AddAll(
-        /* [in] */ ICollection* c,
-        /* [in] */ ArrayOf<IInterface*>* a,
-        /* [out] */ Boolean* result);
-
-    static CARAPI _Disjoint(
-        /* [in] */ ICollection* c1,
-        /* [in] */ ICollection* c2,
-        /* [out] */ Boolean* result);
-
-    static CARAPI _CheckType(
-        /* [in] */ IInterface* obj,
-        /* [in] */ const InterfaceID& type);
-
-    static CARAPI _NewSetFromMap(
-        /* [in] */ IMap* map,
-        /* [out] */ ISet** result);
-
-    static CARAPI _NewAsLifoQueue(
-        /* [in] */ IDeque* deque,
-        /* [out] */ IQueue** result);
 public:
     static const AutoPtr<IList> EMPTY_LIST;
     static const AutoPtr<ISet> EMPTY_SET;

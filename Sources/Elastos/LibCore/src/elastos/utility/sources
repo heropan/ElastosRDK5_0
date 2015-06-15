@@ -36,6 +36,7 @@ SOURCES += CIdentityHashMap.cpp
 SOURCES += CLinkedHashMap.cpp
 SOURCES += CLinkedHashSet.cpp
 SOURCES += CLinkedList.cpp
+SOURCES += Collections.cpp
 
 
 

@@ -150,6 +150,13 @@ public:
         /* [in] */ IInterface * value,
         /* [out] */ Int32* index);
 
+    static CARAPI BinarySearch(
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ Int32 startIndex,
+        /* [in] */ Int32 endIndex,
+        /* [in] */ IInterface * value,
+        /* [out] */ Int32* index);
+
     /**
      * Performs a binary search for {@code value} in the ascending sorted array {@code array}.
      * Searching in an unsorted array has an undefined result. It's also undefined which element
@@ -165,6 +172,11 @@ public:
      */
     static CARAPI BinarySearch(
         /* [in] */ ArrayOf<IInterface *> * array,
+        /* [in] */ IInterface * value,
+        /* [out] */ Int32* index);
+
+    static CARAPI BinarySearch(
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
         /* [in] */ IInterface * value,
         /* [out] */ Int32* index);
 
@@ -197,6 +209,14 @@ public:
         /* [in] */ IComparator* comparator,
         /* [out] */ Int32* index);
 
+    static CARAPI BinarySearch(
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ Int32 startIndex,
+        /* [in] */ Int32 endIndex,
+        /* [in] */ IInterface * value,
+        /* [in] */ IComparator* comparator,
+        /* [out] */ Int32* index);
+
     /**
      * Performs a binary search for {@code value} in the ascending sorted array {@code array},
      * using {@code comparator} to compare elements.
@@ -214,6 +234,12 @@ public:
      */
     static CARAPI BinarySearch(
         /* [in] */ ArrayOf<IInterface *> * array,
+        /* [in] */ IInterface * value,
+        /* [in] */ IComparator* comparator,
+        /* [out] */ Int32* index);
+
+    static CARAPI BinarySearch(
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
         /* [in] */ IInterface * value,
         /* [in] */ IComparator* comparator,
         /* [out] */ Int32* index);
@@ -305,6 +331,9 @@ public:
     static CARAPI_(Int32) GetHashCode(
         /* [in] */ ArrayOf<IInterface *> * array);
 
+    static CARAPI_(Int32) GetHashCode(
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array);
+
     static CARAPI_(Int32) DeepGetHashCode(
         /* [in] */ ArrayOf<IInterface *> * array);
 
@@ -344,6 +373,18 @@ public:
         /* [in] */ ArrayOf<IInterface *> * array1,
         /* [in] */ ArrayOf<IInterface *> * array2);
 
+    static CARAPI_(Boolean) Equals(
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array1,
+        /* [in] */ ArrayOf<IInterface *> * array2);
+
+    static CARAPI_(Boolean) Equals(
+        /* [in] */ ArrayOf<IInterface *> * array1,
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array2);
+
+    static CARAPI_(Boolean) Equals(
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array1,
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array2);
+
     static CARAPI_(Boolean) DeepEquals(
         /* [in] */ ArrayOf<IInterface *> * array1,
         /* [in] */ ArrayOf<IInterface *> * array2);
@@ -376,7 +417,15 @@ public:
         /* [in] */ ArrayOf<IInterface *> * array);
 
     static CARAPI Sort(
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array);
+
+    static CARAPI Sort(
         /* [in] */ ArrayOf<IInterface *> * array,
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end);
+
+    static CARAPI Sort(
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
@@ -387,7 +436,17 @@ public:
         /* [in] */ IComparator* comparator);
 
     static CARAPI Sort(
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end,
+        /* [in] */ IComparator* comparator);
+
+    static CARAPI Sort(
         /* [in] */ ArrayOf<IInterface *> * array,
+        /* [in] */ IComparator* comparator);
+
+    static CARAPI Sort(
+        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
         /* [in] */ IComparator* comparator);
 
     template<typename T>

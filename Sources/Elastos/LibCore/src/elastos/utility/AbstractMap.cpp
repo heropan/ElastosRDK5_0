@@ -262,6 +262,13 @@ ECode AbstractMap::Put(
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
+ECode AbstractMap::Put(
+    /* [in] */ PInterface key,
+    /* [in] */ PInterface value)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
 ECode AbstractMap::PutAll(
     /* [in] */ IMap* map)
 {
@@ -327,6 +334,47 @@ ECode AbstractMap::Remove(
         }
     }
     *value = NULL;
+    return NOERROR;
+}
+
+ECode AbstractMap::Remove(
+    /* [in] */ PInterface key)
+{
+    AutoPtr<ISet> entries;
+    GetEntrySet((ISet**)&entries);
+    AutoPtr<IIterator> it;
+    (IIterable::Probe(entries))->GetIterator((IIterator**)&it);
+    Boolean isflag = FALSE;
+    if (key != NULL) {
+        while (it->HasNext(&isflag), isflag) {
+            AutoPtr<IInterface> outface;
+            it->GetNext((IInterface**)&outface);
+            AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
+            AutoPtr<IInterface> entkey;
+            entry->GetKey((IInterface**)&entkey);
+            if (Object::Equals(key, entkey)) {
+                it->Remove();
+                AutoPtr<IInterface> entvalue;
+                entry->GetValue((IInterface**)&entvalue);
+                return NOERROR;
+            }
+        }
+    }
+    else {
+        while (it->HasNext(&isflag), isflag) {
+            AutoPtr<IInterface> outface;
+            it->GetNext((IInterface**)&outface);
+            AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
+            AutoPtr<IInterface> entkey;
+            entry->GetKey((IInterface**)&entkey);
+            if (entkey == NULL) {
+                it->Remove();
+                AutoPtr<IInterface> entvalue;
+                entry->GetValue((IInterface**)&entvalue);
+                return NOERROR;
+            }
+        }
+    }
     return NOERROR;
 }
 

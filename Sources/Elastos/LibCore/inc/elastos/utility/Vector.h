@@ -1,5 +1,5 @@
-#ifndef __UTILITY_VECTOR_H__
-#define __UTILITY_VECTOR_H__
+#ifndef __UTILITYVector_H__
+#define __UTILITYVector_H__
 
 #include "AbstractList.h"
 
@@ -9,16 +9,20 @@ using Elastos::IO::IObjectOutputStream;
 namespace Elastos {
 namespace Utility {
 
-class _Vector : public AbstractList
+class Vector
+    : public AbstractList
+    , public IRandomAccess
+    , public ICloneable
+    , public ISerializable
 {
 private:
     class Enumeration
-        : public IEnumeration
-        , public ElRefBase
+        : public Object
+        , public IEnumeration
     {
     public:
         Enumeration(
-            /* [in] */ _Vector* owner)
+            /* [in] */ Vector* owner)
             : mPos(0)
             , mOwner(owner)
         {}
@@ -33,7 +37,7 @@ private:
 
     private:
         Int32 mPos;
-        AutoPtr<_Vector> mOwner;
+        AutoPtr<Vector> mOwner;
     };
 
 public:
@@ -183,7 +187,7 @@ public:
     CARAPI TrimToSize();
 
 protected:
-    _Vector();
+    Vector();
 
     CARAPI Init(
         /* [in] */ Int32 capacity = DEFAULT_SIZE,
@@ -197,9 +201,7 @@ protected:
         /* [in] */ Int32 end);
 
     CARAPI Clone(
-        /* [in] */ _Vector* object);
-
-    virtual Mutex* GetSelfLock() = 0;
+        /* [in] */ Vector* object);
 
 private:
     AutoPtr<ArrayOf<IInterface*> > NewElementArray(
@@ -241,4 +243,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_VECTOR_H__
+#endif // __UTILITYVector_H__
