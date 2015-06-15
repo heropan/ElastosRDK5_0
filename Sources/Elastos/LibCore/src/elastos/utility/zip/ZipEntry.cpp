@@ -1,14 +1,17 @@
 
 #include "ZipEntry.h"
-// #include "CGregorianCalendar.h"
-//#include "CDate.h"
+#include "CGregorianCalendar.h"
+#include "CDate.h"
 #include "CStreams.h"
-// #include "CHeapBufferIterator.h"
+#include "HeapBufferIterator.h"
+#include "CZipEntry.h"
+#include "ZipFile.h"
+#include "Arrays.h"
 
 using Libcore::IO::IStreams;
 using Libcore::IO::CStreams;
-using Libcore::IO::IHeapBufferIterator;
-// using Libcore::IO::CHeapBufferIterator;
+using Libcore::IO::IBufferIterator;
+using Libcore::IO::HeapBufferIterator;
 using Elastos::IO::ByteOrder_LITTLE_ENDIAN;
 using Elastos::Core::EIID_ICloneable;
 
@@ -23,8 +26,8 @@ extern "C" const InterfaceID EIID_ZipEntry =
 CAR_INTERFACE_IMPL_2(ZipEntry, Object, IZipEntry, ICloneable)
 
 ZipEntry::ZipEntry()
-    : mCompressedSize(-1)
-    , mCrc(-1)
+    : mCrc(-1)
+    , mCompressedSize(-1)
     , mSize(-1)
     , mCompressionMethod(-1)
     , mTime(-1)
@@ -32,22 +35,199 @@ ZipEntry::ZipEntry()
     , mExtra(NULL)
     , mNameLength(-1)
     , mLocalHeaderRelOffset(-1)
+    , mDataOffset(-1)
 {}
 
 ZipEntry::~ZipEntry()
 {
 }
 
+ECode ZipEntry::constructor(
+    /* [in] */ const String& name,
+    /* [in] */ const String& comment,
+    /* [in] */ Int64 crc,
+    /* [in] */ Int64 compressedSize,
+    /* [in] */ Int64 size,
+    /* [in] */ Int32 compressionMethod,
+    /* [in] */ Int32 time,
+    /* [in] */ Int32 modDate,
+    /* [in] */ ArrayOf<Byte>* extra,
+    /* [in] */ Int32 nameLength,
+    /* [in] */ Int64 localHeaderRelOffset,
+    /* [in] */ Int64 dataOffset)
+{
+    mName = name;
+    mComment = comment;
+    mCrc = crc;
+    mCompressedSize = compressedSize;
+    mSize = size;
+    mCompressionMethod = compressionMethod;
+    mTime = time;
+    mModDate = modDate;
+    mExtra = extra;
+    mNameLength = nameLength;
+    mLocalHeaderRelOffset = localHeaderRelOffset;
+    mDataOffset = dataOffset;
+    return NOERROR;
+}
+
+ECode ZipEntry::constructor(
+    /* [in] */ const String& name)
+{
+    if (name.IsNull()) {
+//        throw new NullPointerException();
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    FAIL_RETURN(ValidateStringLength(String("Name"), name))
+
+    mName = name;
+    return NOERROR;
+}
+
+ECode ZipEntry::constructor(
+    /* [in] */ IZipEntry* other)
+{
+    VALIDATE_NOT_NULL(other)
+    CZipEntry* ze = (CZipEntry*)other;
+    mName = ze->mName;
+    mComment = ze->mComment;
+    mTime = ze->mTime;
+    mSize = ze->mSize;
+    mCompressedSize = ze->mCompressedSize;
+    mCrc = ze->mCrc;
+    mCompressionMethod = ze->mCompressionMethod;
+    mModDate = ze->mModDate;
+    mExtra = ze->mExtra;
+    mNameLength = ze->mNameLength;
+    mLocalHeaderRelOffset = ze->mLocalHeaderRelOffset;
+    return NOERROR;
+}
+
+ECode ZipEntry::constructor(
+    /* in */ ArrayOf<Byte>* cdeHdrBuf,
+    /* in */ IInputStream* cdStream,
+    /* [in] */ ICharset* defaultCharset)
+{
+    VALIDATE_NOT_NULL(cdeHdrBuf)
+    AutoPtr<IStreams> streams;
+    CStreams::AcquireSingleton((IStreams**)&streams);
+    FAIL_RETURN(streams->ReadFully(cdStream, cdeHdrBuf, 0, cdeHdrBuf->GetLength()));
+
+    AutoPtr<IBufferIterator> it = HeapBufferIterator::Iterator(
+        cdeHdrBuf, 0, cdeHdrBuf->GetLength(), ByteOrder_LITTLE_ENDIAN);
+
+    Int32 sig;
+    it->ReadInt32(&sig);
+    if (sig != IZipConstants::CENSIG) {
+        ALOGE("ZipException: ZipEntry::constructor Central Directory Entry not found.");
+        return E_ZIP_EXCEPTION;
+//         throw new ZipException("Central Directory Entry not found");
+    }
+
+    Int16 temp16;
+    it->Seek(8);
+    it->ReadInt16(&temp16);
+    Int32 gpbf = temp16 & 0xffff;
+
+    if ((gpbf & ZipFile::GPBF_UNSUPPORTED_MASK) != 0) {
+        ALOGE("ZipException: ZipEntry::constructor Invalid General Purpose Bit Flag: %08x", gpbf);
+        // throw new ZipException("Invalid General Purpose Bit Flag: " + gpbf);
+        return E_ZIP_EXCEPTION;
+    }
+
+    // If the GPBF_UTF8_FLAG is set then the character encoding is UTF-8 whatever the default
+    // provided.
+    AutoPtr<ICharset> charset = defaultCharset;
+    if ((gpbf & ZipFile::GPBF_UTF8_FLAG) != 0) {
+        charset = NULL;//TODO upgrade StandardCharsets.UTF_8;
+    }
+
+    it->ReadInt16(&temp16);
+    mCompressionMethod = temp16 & 0xffff;
+    it->ReadInt16(&temp16);
+    mTime = temp16 & 0xffff;
+    it->ReadInt16(&temp16);
+    mModDate = temp16 & 0xffff;
+
+    // These are 32-bit values in the file, but 64-bit fields in this object.
+    Int32 temp;
+    it->ReadInt32(&temp);
+    mCrc = ((Int64) temp) & 0xffffffffL;
+    it->ReadInt32(&temp);
+    mCompressedSize = ((Int64) temp) & 0xffffffffL;
+    it->ReadInt32(&temp);
+    mSize = ((Int64) temp) & 0xffffffffL;
+
+    it->ReadInt16(&temp16);
+    mNameLength = temp16 & 0xffff;
+    it->ReadInt16(&temp16);
+    Int32 extraLength = temp16 & 0xffff;
+    it->ReadInt16(&temp16);
+    Int32 commentByteCount = temp16 & 0xffff;
+
+    // This is a 32-bit value in the file, but a 64-bit field in this object.
+    it->Seek(42);
+    it->ReadInt32(&temp);
+    mLocalHeaderRelOffset = ((Int64) temp) & 0xffffffffL;
+
+    AutoPtr< ArrayOf<Byte> > nameBytes = ArrayOf<Byte>::Alloc(mNameLength);
+    FAIL_RETURN(streams->ReadFully(cdStream, nameBytes, 0, mNameLength));
+    if (ContainsNulByte(nameBytes)) {
+        ALOGE("ZipException: Filename contains NUL byte: %s", Arrays::ToString(nameBytes).string());
+        //throw new ZipException("Filename contains NUL byte: " + Arrays.toString(nameBytes));
+        return E_ZIP_EXCEPTION;
+    }
+    // name = new String(nameBytes, 0, nameBytes.length, charset);
+    mName = String((const char*)nameBytes->GetPayload(), mNameLength);
+
+    if (extraLength > 0) {
+        mExtra = ArrayOf<Byte>::Alloc(extraLength);
+        streams->ReadFully(cdStream, mExtra, 0, extraLength);
+    }
+
+    if (commentByteCount > 0) {
+        AutoPtr<ArrayOf<Byte> > commentBytes = ArrayOf<Byte>::Alloc(commentByteCount);
+        streams->ReadFully(cdStream, commentBytes, 0, commentByteCount);
+        //comment = new String(commentBytes, 0, commentBytes.length, charset);
+        mComment = String((const char*)commentBytes->GetPayload(), commentByteCount);
+    }
+}
+
 ECode ZipEntry::Clone(
     /* [out] */ IInterface** obj)
 {
+    AutoPtr<IZipEntry> ze;
+    CZipEntry::New(mName, (IZipEntry**)&ze);
+    return CloneImpl(ze);
+}
+
+
+ECode ZipEntry::CloneImpl(
+    /* [in] */ IZipEntry* obj)
+{
+    VALIDATE_NOT_NULL(obj)
+    CZipEntry* ze = (CZipEntry*)obj;
+    ze->mName = mName;
+    ze->mComment = mComment;
+    ze->mCrc = mCrc;
+    ze->mCompressedSize = mCompressedSize;
+    ze->mSize = mSize;
+    ze->mCompressionMethod = mCompressionMethod;
+    ze->mTime = mTime;
+    ze->mModDate = mModDate;
+    ze->mExtra = mExtra != NULL ? mExtra->Clone() : NULL;
+    ze->mNameLength = mNameLength;
+    ze->mLocalHeaderRelOffset = mLocalHeaderRelOffset;
+    ze->mDataOffset = mDataOffset;
     return NOERROR;
 }
 
 ECode ZipEntry::GetHashCode(
     /* [out] */ Int32* hash)
 {
-    // return name.hashCode();
+    VALIDATE_NOT_NULL(hash)
+    *hash = mName.GetHashCode();
     return NOERROR;
 }
 
@@ -116,11 +296,11 @@ ECode ZipEntry::GetTime(
     Int64 time = -1;
     if (mTime != -1) {
         AutoPtr<ICalendar> cal;
-        // CGregorianCalendar::New((ICalendar**)&cal);
+        CGregorianCalendar::New((ICalendar**)&cal);
         cal->Set(ICalendar::MILLISECOND, 0);
         cal->Set(1980 + ((mModDate >> 9) & 0x7f), ((mModDate >> 5) & 0xf) - 1,
-                mModDate & 0x1f, (mTime >> 11) & 0x1f, (mTime >> 5) & 0x3f,
-                (mTime & 0x1f) << 1);
+            mModDate & 0x1f, (mTime >> 11) & 0x1f, (mTime >> 5) & 0x3f,
+            (mTime & 0x1f) << 1);
         AutoPtr<IDate> d;
         cal->GetTime((IDate**)&d);
         d->GetTime(&time);
@@ -142,14 +322,15 @@ ECode ZipEntry::IsDirectory(
 ECode ZipEntry::SetComment(
     /* [in] */ const String& comment)
 {
-    if (comment.IsNull() || comment.GetLength() <= 0xFFFF) {
-        mComment = comment;
+    if (comment.IsNull()) {
+        mComment = NULL;
         return NOERROR;
     }
-    else {
-//        throw new IllegalArgumentException();
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
+
+    FAIL_RETURN(ValidateStringLength(String("Comment"), comment))
+
+    mComment = comment;
+    return NOERROR;
 }
 
 ECode ZipEntry::SetCompressedSize(
@@ -175,14 +356,14 @@ ECode ZipEntry::SetCrc(
 ECode ZipEntry::SetExtra(
     /* [in] */ ArrayOf<Byte>* data)
 {
-    if (data == NULL || data->GetLength() <= 0xFFFF) {
-        mExtra = data;
-        return NOERROR;
-    }
-    else {
-//        throw new IllegalArgumentException();
+    if (data != NULL && data->GetLength() > 0xFFFF) {
+        ALOGE("IllegalArgumentException: Extra data too long: %d", data->GetLength());
+        // throw new IllegalArgumentException("Extra data too long: " + data.length);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
+    mExtra = data;
+    return NOERROR;
 }
 
 ECode ZipEntry::SetMethod(
@@ -213,9 +394,9 @@ ECode ZipEntry::SetTime(
     /* [in] */ Int64 value)
 {
     AutoPtr<ICalendar> cal;
-    // CGregorianCalendar::New((ICalendar**)&cal);
+    CGregorianCalendar::New((ICalendar**)&cal);
     AutoPtr<IDate> date;
-    // CDate::New(value, (IDate**)&date);
+    CDate::New(value, (IDate**)&date);
     cal->SetTime(date);
     Int32 year;
     cal->Get(ICalendar::YEAR, &year);
@@ -241,110 +422,57 @@ ECode ZipEntry::SetTime(
     return NOERROR;
 }
 
-ECode ZipEntry::constructor(
-    /* [in] */ const String& name)
+ECode ZipEntry::SetDataOffset(
+    /* [in] */ Int64 value)
 {
-    if (name.IsNull()) {
-//        throw new NullPointerException();
-        return E_NULL_POINTER_EXCEPTION;
+    mDataOffset = value;
+    return NOERROR;
+}
+
+ECode ZipEntry::GetDataOffset(
+    /* [out] */ Int64* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mDataOffset;
+    return NOERROR;
+}
+
+ECode ZipEntry::ToString(
+    /* [out] */ String* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mName;
+    return NOERROR;
+}
+
+Boolean ZipEntry::ContainsNulByte(
+    /* [in] */ ArrayOf<Byte>* bytes)
+{
+    assert(bytes);
+    for (Int32 i = 0; i < bytes->GetLength(); ++i) {
+        if ((*bytes)[i] == 0) {
+            return TRUE;
+        }
     }
-    if (name.GetLength() > 0xFFFF) {
-//        throw new IllegalArgumentException();
+    return FALSE;
+}
+
+ECode ZipEntry::ValidateStringLength(
+    /* [in] */ const String& argument,
+    /* [in] */ const String& string)
+{
+    // This check is not perfect: the character encoding is determined when the entry is
+    // written out. UTF-8 is probably a worst-case: most alternatives should be single byte per
+    // character.
+    //byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
+    AutoPtr<ArrayOf<Byte> > bytes = string.GetBytes();
+    if (bytes->GetLength() > 0xffff) {
+        ALOGE("IllegalArgumentException: %s : %s too long.", argument.string(), string.string());
+        // throw new IllegalArgumentException(argument + " too long: " + bytes.length);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mName = name;
     return NOERROR;
 }
-
-ECode ZipEntry::constructor(
-    /* [in] */ ZipEntry* ze)
-{
-    mName = ze->mName;
-    mComment = ze->mComment;
-    mTime = ze->mTime;
-    mSize = ze->mSize;
-    mCompressedSize = ze->mCompressedSize;
-    mCrc = ze->mCrc;
-    mCompressionMethod = ze->mCompressionMethod;
-    mModDate = ze->mModDate;
-    mExtra = ze->mExtra == NULL ? NULL : ze->mExtra->Clone();
-    mNameLength = ze->mNameLength;
-    mLocalHeaderRelOffset = ze->mLocalHeaderRelOffset;
-    return NOERROR;
-}
-
-ECode ZipEntry::constructor(
-    /* in */ ArrayOf<Byte>* buf,
-    /* in */ IInputStream* in)
-{
-    VALIDATE_NOT_NULL(buf)
-    AutoPtr<IStreams> streams;
-    CStreams::AcquireSingleton((IStreams**)&streams);
-    FAIL_RETURN(streams->ReadFully(in, 0, buf->GetLength(), buf));
-
-//     AutoPtr<IHeapBufferIterator> it;
-//     CHeapBufferIterator::New(buf, 0, buf->GetLength(), ByteOrder_LITTLE_ENDIAN,
-//             (IHeapBufferIterator**)&it);
-
-//     Int32 sig;
-//     it->ReadInt32(&sig);
-//     if (sig != IZipConstants::CENSIG) {
-//         return E_ZIP_EXCEPTION;
-// //         throw new ZipException("Central Directory Entry not found");
-//     }
-
-//     Int16 temp16;
-//     it->Seek(10);
-//     it->ReadInt16(&temp16);
-//     mCompressionMethod = temp16;
-//     it->ReadInt16(&temp16);
-//     mTime = temp16;
-//     it->ReadInt16(&temp16);
-//     mModDate = temp16;
-
-//     // These are 32-bit values in the file, but 64-bit fields in this object.
-//     Int32 temp;
-//     it->ReadInt32(&temp);
-//     mCrc = ((Int64)temp) & 0xffffffffll;
-
-//     it->ReadInt32(&temp);
-//     mCompressedSize = ((Int64)temp) & 0xffffffffll;
-
-//     it->ReadInt32(&temp);
-//     mSize = ((Int64)temp) & 0xffffffffll;
-
-//     it->ReadInt16(&temp16);
-//     mNameLength = temp16;
-//     Int16 extraLength, commentLength;
-//     it->ReadInt16(&extraLength);
-//     it->ReadInt16(&commentLength);
-
-//     // This is a 32-bit value in the file, but a 64-bit field in this object.
-//     it->Seek(42);
-//     it->ReadInt32(&temp);
-//     mLocalHeaderRelOffset = ((Int64) temp) & 0xffffffffll;
-
-//     AutoPtr< ArrayOf<Byte> > nameBytes = ArrayOf<Byte>::Alloc(mNameLength);
-//     FAIL_RETURN(streams->ReadFully(in, 0, mNameLength, nameBytes));
-//     mName = String((const char *)nameBytes->GetPayload(), mNameLength);
-
-//     // The RI has always assumed UTF-8. (If GPBF_UTF8_FLAG isn't set, the encoding is
-//     // actually IBM-437.)
-//     if (commentLength > 0) {
-//         AutoPtr< ArrayOf<Byte> > commentBytes = ArrayOf<Byte>::Alloc(commentLength);
-//         FAIL_RETURN(streams->ReadFully(in, 0, commentLength, commentBytes));
-//         mComment = String((const char *)commentBytes->GetPayload(),
-//                 commentBytes->GetLength());
-//     }
-
-//     if (extraLength > 0) {
-//         mExtra = ArrayOf<Byte>::Alloc(extraLength);
-//         streams->ReadFully(in, 0, extraLength, mExtra);
-//     }
-
-    return NOERROR;
-}
-
 
 } // namespace Zip
 } // namespace Utility

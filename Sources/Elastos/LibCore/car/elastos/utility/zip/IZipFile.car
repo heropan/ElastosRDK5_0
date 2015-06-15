@@ -114,6 +114,16 @@ module
             [out] String* name);
 
         /**
+         * Returns this file's comment, or null if it doesn't have one.
+         * See {@link ZipOutputStream#setComment}.
+         *
+         * @throws IllegalStateException if this zip file has been closed.
+         * @since 1.7
+         */
+        GetComment(
+            [out] String* name);
+
+        /**
          * Returns the number of {ZipEntries} in this {ZipFile}.
          *
          * @return the number of entries in this file.

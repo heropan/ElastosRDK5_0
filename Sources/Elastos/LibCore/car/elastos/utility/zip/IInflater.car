@@ -105,6 +105,14 @@ module
             [out] Int32* number);
 
         /**
+         * Returns the offset of the next byte to read in the underlying buffer.
+         *
+         * For internal use only.
+         */
+        GetCurrentOffset(
+            [out] Int32* offset);
+
+        /**
          * Returns the total number of bytes of input read by this {Inflater}. This
          * method is limited to 32 bits; use {@sa #getBytesRead} instead.
          */

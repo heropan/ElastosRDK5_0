@@ -42,7 +42,7 @@ module
         /**
          * The magic header for the GZIP format.
          */
-        const Int32 MAGIC = 0x8b1f;
+        const Int32 GZIP_MAGIC = 0x8b1f;
     }
 
     } // namespace Zip

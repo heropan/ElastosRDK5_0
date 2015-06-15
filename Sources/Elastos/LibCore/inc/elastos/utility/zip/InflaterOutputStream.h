@@ -116,16 +116,12 @@ public:
     CARAPI Write(
         /* [in] */ ArrayOf<Byte>* buffer);
 
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
 private:
     CARAPI Write();
 
     CARAPI CheckClosed();
 
 protected:
-    AutoPtr<IOutputStream> mOut;
     AutoPtr<IInflater> mInf;
     AutoPtr<ArrayOf<Byte> > mBuf;
 

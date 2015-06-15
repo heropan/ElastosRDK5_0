@@ -9,7 +9,7 @@ module
      * {@link BufferIterator} over the mapped data.
      *
      * @Involve
-     * interface IAutoCloseable;
+     * interface ICloseable;
      */
 
     interface IMemoryMappedFile {

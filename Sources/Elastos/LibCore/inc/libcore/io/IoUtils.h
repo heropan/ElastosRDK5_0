@@ -5,7 +5,7 @@
 #include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Core::IRandom;
-using Elastos::Core::IAutoCloseable;
+using Elastos::IO::ICloseable;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::Charset::ICharset;
@@ -28,7 +28,7 @@ public:
      * Closes 'closeable', ignoring any checked exceptions. Does nothing if 'closeable' is null.
      */
     static CARAPI CloseQuietly(
-        /* [in] */ IAutoCloseable* closeable);
+        /* [in] */ ICloseable* closeable);
 
     /**
      * Closes 'socket', ignoring any exceptions. Does nothing if 'socket' is null.

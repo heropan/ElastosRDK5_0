@@ -80,7 +80,7 @@ ECode CDeflater::Deflate(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    *number = 0;
+    *number = -1;
     VALIDATE_NOT_NULL(buf);
 
     return Deflate(buf, 0, buf->GetLength(), number);
@@ -93,7 +93,7 @@ ECode CDeflater::Deflate(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    *number = 0;
+    *number = -1;
     VALIDATE_NOT_NULL(buf);
 
     Object::Autolock locK(this);
@@ -109,7 +109,7 @@ ECode CDeflater::Deflate(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    *number = 0;
+    *number = -1;
     VALIDATE_NOT_NULL(buf);
 
     Object::Autolock locK(this);
@@ -129,7 +129,7 @@ ECode CDeflater::DeflateImplLocked(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number)
-    *number = 0;
+    *number = -1;
     FAIL_RETURN(CheckOpen());
 
     FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))

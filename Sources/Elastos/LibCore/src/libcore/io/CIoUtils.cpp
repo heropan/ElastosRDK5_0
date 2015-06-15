@@ -16,7 +16,7 @@ ECode CIoUtils::Close(
 }
 
 ECode CIoUtils::CloseQuietly(
-    /* [in] */ IAutoCloseable* closeable)
+    /* [in] */ ICloseable* closeable)
 {
     return IoUtils::CloseQuietly(closeable);
 }

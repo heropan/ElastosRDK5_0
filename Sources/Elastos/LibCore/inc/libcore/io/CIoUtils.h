@@ -5,7 +5,7 @@
 #include "Singleton.h"
 
 using Elastos::Core::Singleton;
-using Elastos::Core::IAutoCloseable;
+using Elastos::IO::ICloseable;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IFile;
 using Elastos::Net::ISocket;
@@ -26,7 +26,7 @@ public:
         /* [in] */ IFileDescriptor* fd);
 
     CARAPI CloseQuietly(
-        /* [in] */ IAutoCloseable* closeable);
+        /* [in] */ ICloseable* closeable);
 
     CARAPI CloseQuietly(
         /* [in] */ ISocket* socket);

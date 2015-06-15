@@ -6,6 +6,7 @@
 #include "InflaterInputStream.h"
 #include "InputStream.h"
 
+using Elastos::Core::ICloseGuard;
 using Elastos::IO::IRandomAccessFile;
 using Elastos::IO::InputStream;
 using Elastos::IO::IInputStream;
@@ -53,9 +54,17 @@ public:
         : public InputStream
     {
     public:
+        IInterface* Probe(
+            /* [in] */ REIID riid);
+
         RAFStream(
             /* [in] */ IRandomAccessFile* raf,
-            /* [in] */ Int64 pos);
+            /* [in] */ Int64 initialOffset);
+
+        RAFStream(
+            /* [in] */ IRandomAccessFile* raf,
+            /* [in] */ Int64 initialOffset,
+            /* [in] */ Int64 endOffset);
 
         CARAPI Available(
             /* [out] */ Int32* number);
@@ -65,33 +74,27 @@ public:
 
         CARAPI Read(
             /* [in] */ ArrayOf<Byte>* buffer,
-            /* [in] */ Int32 offset,
-            /* [in] */ Int32 length,
+            /* [in] */ Int32 byteOffset,
+            /* [in] */ Int32 byteCount,
+            /* [out] */ Int32* number);
+
+        CARAPI Read(
+            /* [in] */ ArrayOf<Byte>* buffer,
             /* [out] */ Int32* number);
 
         CARAPI Skip(
             /* [in] */ Int64 byteCount,
             /* [out] */ Int64* number);
 
-        CARAPI Close();
-
-        CARAPI Mark(
-            /* [in] */ Int32 readLimit);
-
-        CARAPI IsMarkSupported(
-            /* [out] */ Boolean* supported);
-
-        CARAPI Read(
-            /* [out] */ ArrayOf<Byte>* buffer,
-            /* [out] */ Int32* number);
-
-        CARAPI Reset();
+        CARAPI Fill(
+            /* [in] */ IInflater* inflater,
+            /* [in] */ Int32 nativeEndBufSize,
+            /* [out] */ Int32* result);
 
     public:
         AutoPtr<IRandomAccessFile> mSharedRaf;
         Int64 mOffset;
-        Int64 mLength;
-        static Object sLock;
+        Int64 mEndOffset;
     };
 
     class ZipInflaterInputStream
@@ -118,7 +121,6 @@ public:
     public:
         AutoPtr<IZipEntry> mEntry;
         Int64 mBytesRead;
-        static Object sLock;
     };
 
     class Enumeration
@@ -204,6 +206,9 @@ public:
     CARAPI GetEntries(
         /* [out] */ IEnumeration** entries);
 
+
+    CARAPI GetComment(
+        /* [out] */ String* comment);
     /**
      * Gets the ZIP entry with the specified name from this {@code ZipFile}.
      *
@@ -288,6 +293,7 @@ public:
      */
     static const Int32 GPBF_UTF8_FLAG; // android-added
 
+    static const Int32 GPBF_UNSUPPORTED_MASK;
 private:
     String mFileName;
 
@@ -296,10 +302,10 @@ private:
     AutoPtr<IRandomAccessFile> mRaf;
     static Object sLock;
 
-    AutoPtr<ILinkedHashMap> mEntries;
-    // LinkedHashMap<String, ZipEntry> entries
+    AutoPtr<IMap> mEntries;
 
-//    CloseGuard guard = CloseGuard.get();
+    String mComment;
+    AutoPtr<ICloseGuard> mGuard;
 };
 
 } // namespace Zip

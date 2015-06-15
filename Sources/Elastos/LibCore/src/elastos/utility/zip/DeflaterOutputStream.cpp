@@ -25,6 +25,68 @@ DeflaterOutputStream::~DeflaterOutputStream()
 {
 }
 
+ECode DeflaterOutputStream::constructor(
+    /* [in] */ IOutputStream* os,
+    /* [in] */ IDeflater* def)
+{
+    return constructor(os, def, BUF_SIZE, FALSE);
+}
+
+ECode DeflaterOutputStream::constructor(
+    /* [in] */ IOutputStream* os)
+{
+    AutoPtr<IDeflater> deflater;
+    CDeflater::New((IDeflater**)&deflater);
+    return constructor(os, deflater, BUF_SIZE, FALSE);
+}
+
+ECode DeflaterOutputStream::constructor(
+    /* [in] */ IOutputStream* os,
+    /* [in] */ IDeflater* def,
+    /* [in] */ Int32 bsize)
+{
+    return constructor(os, def, bsize, FALSE);
+}
+
+ECode DeflaterOutputStream::constructor(
+    /* [in] */ IOutputStream* os,
+    /* [in] */ Boolean syncFlush)
+{
+    AutoPtr<IDeflater> deflater;
+    CDeflater::New((IDeflater**)&deflater);
+    return constructor(os, deflater, BUF_SIZE, syncFlush);
+}
+
+ECode DeflaterOutputStream::constructor(
+    /* [in] */ IOutputStream* os,
+    /* [in] */ IDeflater* def,
+    /* [in] */ Boolean syncFlush)
+{
+    return constructor(os, def, BUF_SIZE, syncFlush);
+}
+
+ECode DeflaterOutputStream::constructor(
+    /* [in] */ IOutputStream* os,
+    /* [in] */ IDeflater* def,
+    /* [in] */ Int32 bsize,
+    /* [in] */ Boolean syncFlush)
+{
+    FAIL_RETURN(FilterOutputStream::constructor(os))
+
+    if (os == NULL || def == NULL) {
+//        throw new NullPointerException();
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (bsize <= 0) {
+//        throw new IllegalArgumentException();
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mDef = def;
+    mSyncFlush = syncFlush;
+    mBuf = ArrayOf<Byte>::Alloc(bsize);
+    return NOERROR;
+}
+
 ECode DeflaterOutputStream::Deflate()
 {
     Int32 byteCount;
@@ -53,8 +115,8 @@ ECode DeflaterOutputStream::Finish()
     }
     mDef->Finish();
     Boolean finished;
+    Int32 byteCount;
     while (mDef->Finished(&finished), !finished) {
-        Int32 byteCount;
         FAIL_RETURN(mDef->Deflate(mBuf, &byteCount));
         FAIL_RETURN(mOut->Write(mBuf, 0, byteCount));
     }
@@ -113,77 +175,7 @@ ECode DeflaterOutputStream::Flush()
             FAIL_RETURN(mOut->Write(mBuf, 0, byteCount));
         }
     }
-    //return mOut->Flush();
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode DeflaterOutputStream::CheckError(
-    /* [out] */ Boolean* hasError)
-{
-    assert(hasError != NULL);
-    *hasError = FALSE;
-    return NOERROR;
-}
-
-ECode DeflaterOutputStream::constructor(
-    /* [in] */ IOutputStream* os,
-    /* [in] */ IDeflater* def)
-{
-    return constructor(os, def, BUF_SIZE, FALSE);
-}
-
-ECode DeflaterOutputStream::constructor(
-    /* [in] */ IOutputStream* os)
-{
-    AutoPtr<CDeflater> deflater;
-    CDeflater::NewByFriend((CDeflater**)&deflater);
-    return constructor(os, (IDeflater*)deflater.Get(), BUF_SIZE, FALSE);
-}
-
-ECode DeflaterOutputStream::constructor(
-    /* [in] */ IOutputStream* os,
-    /* [in] */ IDeflater* def,
-    /* [in] */ Int32 bsize)
-{
-    return constructor(os, def, bsize, FALSE);
-}
-
-ECode DeflaterOutputStream::constructor(
-    /* [in] */ IOutputStream* os,
-    /* [in] */ Boolean syncFlush)
-{
-    AutoPtr<CDeflater> deflater;
-    CDeflater::NewByFriend((CDeflater**)&deflater);
-    return constructor(os, (IDeflater*)deflater.Get(), BUF_SIZE, syncFlush);
-}
-
-ECode DeflaterOutputStream::constructor(
-    /* [in] */ IOutputStream* os,
-    /* [in] */ IDeflater* def,
-    /* [in] */ Boolean syncFlush)
-{
-    return constructor(os, def, BUF_SIZE, syncFlush);
-}
-
-ECode DeflaterOutputStream::constructor(
-    /* [in] */ IOutputStream* os,
-    /* [in] */ IDeflater* def,
-    /* [in] */ Int32 bsize,
-    /* [in] */ Boolean syncFlush)
-{
-    FilterOutputStream::constructor(os);
-    if (os == NULL || def == NULL) {
-//        throw new NullPointerException();
-        return E_NULL_POINTER_EXCEPTION;
-    }
-    if (bsize <= 0) {
-//        throw new IllegalArgumentException();
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    mDef = def;
-    mSyncFlush = syncFlush;
-    mBuf = ArrayOf<Byte>::Alloc(bsize);
-    return NOERROR;
+    return IFlushable::Probe(mOut)->Flush();
 }
 
 

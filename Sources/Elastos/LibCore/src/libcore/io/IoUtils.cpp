@@ -174,7 +174,7 @@ ECode IoUtils::Close(
  * Closes 'closeable', ignoring any exceptions. Does nothing if 'closeable' is null.
  */
 ECode IoUtils::CloseQuietly(
-    /* [in] */ IAutoCloseable* closeable)
+    /* [in] */ ICloseable* closeable)
 {
     if (closeable != NULL) {
         // try {

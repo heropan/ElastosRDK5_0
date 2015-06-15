@@ -54,9 +54,9 @@ public:
      */
     CARAPI ReadFully(
         /* [in] */ IInputStream* in,
+        /* [in] */ ArrayOf<Byte>* dst,
         /* [in] */ Int32 offset,
-        /* [in] */ Int32 byteCount,
-        /* [out] */ ArrayOf<Byte>* dst);
+        /* [in] */ Int32 byteCount);
 
     /**
      * Returns a byte[] containing the remainder of 'in', closing it when done.

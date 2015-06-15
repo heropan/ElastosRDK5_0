@@ -4,9 +4,10 @@
 
 #include "Object.h"
 
-using Elastos::IO::IInputStream;
 using Elastos::Core::ICloneable;
 using Elastos::Core::Object;
+using Elastos::IO::Charset::ICharset;
+using Elastos::IO::IInputStream;
 
 namespace Elastos {
 namespace Utility {
@@ -29,8 +30,19 @@ public:
     CARAPI Clone(
         /* [out] */ IInterface** obj);
 
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
+    CARAPI constructor(
+        /* [in] */ const String& name,
+        /* [in] */ const String& comment,
+        /* [in] */ Int64 crc,
+        /* [in] */ Int64 compressedSize,
+        /* [in] */ Int64 size,
+        /* [in] */ Int32 compressionMethod,
+        /* [in] */ Int32 time,
+        /* [in] */ Int32 modDate,
+        /* [in] */ ArrayOf<Byte>* extra,
+        /* [in] */ Int32 nameLength,
+        /* [in] */ Int64 localHeaderRelOffset,
+        /* [in] */ Int64 dataOffset);
 
     /**
      * Constructs a new {@code ZipEntry} with the specified name.
@@ -51,11 +63,12 @@ public:
      *            the {@code ZipEntry} from which to obtain values.
      */
     CARAPI constructor(
-        /* [in]*/ ZipEntry* ze);
+        /* [in] */ IZipEntry* ze);
 
     CARAPI constructor(
-        /* [in] */ ArrayOf<Byte>* hdrBuf,
-        /* [in] */ IInputStream* is);
+        /* [in] */ ArrayOf<Byte>* cdeHdrBuf,
+        /* [in] */ IInputStream* cdStream,
+        /* [in] */ ICharset* defaultCharset);
 
     /**
      * Gets the comment for this {@code ZipEntry}.
@@ -210,12 +223,37 @@ public:
     CARAPI SetTime(
         /* [in] */ Int64 value);
 
+    /** @hide */
+    CARAPI SetDataOffset(
+        /* [in] */ Int64 value);
+
+    CARAPI GetDataOffset(
+        /* [out] */ Int64* value);
+
+    CARAPI ToString(
+        /* [out] */ String* value);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* value);
+
+protected:
+    CARAPI CloneImpl(
+        /* [in] */ IZipEntry* obj);
+
+private:
+    static Boolean ContainsNulByte(
+        /* [in] */ ArrayOf<Byte>* bytes);
+
+    static CARAPI ValidateStringLength(
+        /* [in] */ const String& argument,
+        /* [in] */ const String& string);
+
 public:
     String mName;
     String mComment;
 
+    Int64 mCrc; // Needs to be a long to distinguish -1 ("not set") from the 0xffffffff CRC32.
     Int64 mCompressedSize;
-    Int64 mCrc;
     Int64 mSize;
 
     Int32 mCompressionMethod;
@@ -226,6 +264,7 @@ public:
 
     Int32 mNameLength;
     Int64 mLocalHeaderRelOffset;
+    Int64 mDataOffset;
 };
 
 } // namespace Zip

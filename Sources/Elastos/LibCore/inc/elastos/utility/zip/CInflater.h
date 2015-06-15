@@ -7,12 +7,40 @@
 #include "Object.h"
 
 using Elastos::Core::Object;
+using Elastos::Core::ICloseGuard;
 using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {
 namespace Utility {
 namespace Zip {
 
+/**
+ * This class decompresses data that was compressed using the <i>DEFLATE</i>
+ * algorithm (see <a href="http://www.gzip.org/algorithm.txt">specification</a>).
+ *
+ * <p>It is usually more convenient to use {@link InflaterInputStream}.
+ *
+ * <p>To decompress an in-memory {@code byte[]} to another in-memory {@code byte[]} manually:
+ * <pre>
+ *     byte[] compressedBytes = ...
+ *     int decompressedByteCount = ... // From your format's metadata.
+ *     Inflater inflater = new Inflater();
+ *     inflater.setInput(compressedBytes, 0, compressedBytes.length);
+ *     byte[] decompressedBytes = new byte[decompressedByteCount];
+ *     if (inflater.inflate(decompressedBytes) != decompressedByteCount) {
+ *         throw new AssertionError();
+ *     }
+ *     inflater.end();
+ * </pre>
+ * <p>In situations where you don't have all the input in one array (or have so much
+ * input that you want to feed it to the inflater in chunks), it's possible to call
+ * {@link #setInput} repeatedly, but you're much better off using {@link InflaterInputStream}
+ * to handle all this for you.
+ *
+ * <p>If you don't know how big the decompressed data will be, you can call {@link #inflate}
+ * repeatedly on a temporary buffer, copying the bytes to a {@link java.io.ByteArrayOutputStream},
+ * but this is probably another sign you'd be better off using {@link InflaterInputStream}.
+ */
 CarClass(CInflater)
     , public Object
     , public IInflater
@@ -25,6 +53,24 @@ public:
     CInflater();
 
     ~CInflater();
+
+    /**
+     * This constructor creates an inflater that expects a header from the input
+     * stream. Use {@code Inflater(boolean)} if the input comes without a ZLIB
+     * header.
+     */
+    CARAPI constructor();
+
+    /**
+     * This constructor allows to create an inflater that expects no header from
+     * the input stream.
+     *
+     * @param noHeader
+     *            {@code true} indicates that no ZLIB header comes with the
+     *            input.
+     */
+    CARAPI constructor(
+        /* [in] */ Boolean noHeader);
 
     /**
      * Releases resources associated with this {@code Inflater}. Any unused
@@ -81,6 +127,14 @@ public:
     // synchronized
     CARAPI GetRemaining(
         /* [out] */ Int32* number);
+
+    /**
+     * Returns the offset of the next byte to read in the underlying buffer.
+     *
+     * For internal use only.
+     */
+    CARAPI GetCurrentOffset(
+        /* [out] */ Int32* offset);
 
     /**
      * Returns the total number of bytes of input read by this {@code Inflater}. This
@@ -188,24 +242,6 @@ public:
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);
 
-    /**
-     * This constructor creates an inflater that expects a header from the input
-     * stream. Use {@code Inflater(boolean)} if the input comes without a ZLIB
-     * header.
-     */
-    CARAPI constructor();
-
-    /**
-     * This constructor allows to create an inflater that expects no header from
-     * the input stream.
-     *
-     * @param noHeader
-     *            {@code true} indicates that no ZLIB header comes with the
-     *            input.
-     */
-    CARAPI constructor(
-        /* [in] */ Boolean noHeader);
-
     // synchronized
     /* package */ CARAPI_(Int32) SetFileInput(
         /* [in] */ IFileDescriptor* fd,
@@ -216,42 +252,42 @@ private:
     CARAPI CreateStream(
         /* [in] */ Boolean noHeader);
 
-    CARAPI_(void) EndImplLocked(
+    CARAPI_(void) EndImpl(
         /* [in] */ NativeZipStream* stream);
 
-    CARAPI_(Int32) GetAdlerImplLocked(
+    CARAPI_(Int32) GetAdlerImpl(
         /* [in] */ NativeZipStream* stream);
 
-    CARAPI_(Int64) GetTotalInImplLocked(
+    CARAPI_(Int64) GetTotalInImpl(
         /* [in] */ NativeZipStream* stream);
 
-    CARAPI_(Int64) GetTotalOutImplLocked(
+    CARAPI_(Int64) GetTotalOutImpl(
         /* [in] */ NativeZipStream* stream);
 
-    CARAPI InflateImplLocked(
+    CARAPI InflateImpl(
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [out] */ ArrayOf<Byte>* buf,
         /* [in] */ NativeZipStream* stream,
         /* [out] */ Int32* result);
 
-    CARAPI ResetImplLocked(
+    CARAPI ResetImpl(
         /* [in] */ NativeZipStream* stream);
 
-    CARAPI_(void) SetDictionaryImplLocked(
+    CARAPI_(void) SetDictionaryImpl(
         /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [in] */ NativeZipStream* stream);
 
-    CARAPI_(void) SetInputImplLocked(
+    CARAPI_(void) SetInputImpl(
         /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [in] */ NativeZipStream* stream);
 
     // BEGIN android-only
-    CARAPI_(Int32) SetFileInputImplLocked(
+    CARAPI_(Int32) SetFileInputImpl(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int64 offset,
         /* [in] */ Int32 byteCount,
@@ -266,11 +302,9 @@ private:
     Boolean mFinished; // Set by the inflateImpl native
     Boolean mNeedsDictionary; // Set by the inflateImpl native
 
-    NativeZipStream* mStreamHandle;
+    AutoPtr<NativeZipStream> mStreamHandle;
 
-    //CloseGuard guard = CloseGuard.get();
-
-    static Object sLock;
+    AutoPtr<ICloseGuard> mGuard;
 };
 
 } // namespace Zip

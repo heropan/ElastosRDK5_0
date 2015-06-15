@@ -4,7 +4,7 @@ module
     interface Elastos.IO.IFile;
     interface Elastos.Net.ISocket;
     interface Elastos.IO.IFileDescriptor;
-    interface Elastos.Core.IAutoCloseable;
+    interface Elastos.IO.ICloseable;
 
     namespace Libcore {
     namespace IO {
@@ -21,7 +21,7 @@ module
          * Closes 'closeable', ignoring any checked exceptions. Does nothing if 'closeable' is null.
          */
         CloseQuietly(
-            [in] IAutoCloseable* closeable);
+            [in] ICloseable* closeable);
 
         /**
          * Closes 'fd', ignoring any exceptions. Does nothing if 'fd' is null or invalid.

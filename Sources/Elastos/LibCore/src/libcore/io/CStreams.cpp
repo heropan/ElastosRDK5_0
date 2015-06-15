@@ -65,9 +65,9 @@ ECode CStreams::ReadFully(
 
 ECode CStreams::ReadFully(
     /* [in] */ IInputStream* in,
+    /* [in] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 offset,
-    /* [in] */ Int32 byteCount,
-    /* [out] */ ArrayOf<Byte>* dst)
+    /* [in] */ Int32 byteCount)
 {
     if (dst == NULL) {
         return E_NULL_POINTER_EXCEPTION;

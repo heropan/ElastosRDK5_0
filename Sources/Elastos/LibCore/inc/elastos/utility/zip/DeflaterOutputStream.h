@@ -164,9 +164,6 @@ public:
     CARAPI Write(
         /* [in] */ ArrayOf<Byte>* buffer);
 
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
 public:
     static const Int32 BUF_SIZE = 512;
 

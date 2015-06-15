@@ -19,6 +19,47 @@ InflaterOutputStream::~InflaterOutputStream()
 {
 }
 
+ECode InflaterOutputStream::constructor(
+    /* [in] */ IOutputStream* out)
+{
+    AutoPtr<IInflater> inflater;
+    CInflater::New((IInflater**)&inflater);
+    return constructor(out, inflater);
+}
+
+ECode InflaterOutputStream::constructor(
+    /* [in] */ IOutputStream* out,
+    /* [in] */ IInflater* inf)
+{
+    return constructor(out, inf, DEFAULT_BUFFER_SIZE);
+}
+
+ECode InflaterOutputStream::constructor(
+    /* [in] */ IOutputStream* out,
+    /* [in] */ IInflater* inf,
+    /* [in] */ Int32 bufferSize)
+{
+    FAIL_RETURN(FilterOutputStream::constructor(out))
+
+    if (out == NULL || inf == NULL) {
+//        throw new NullPointerException();
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    else if (inf == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+//        throw new NullPointerException("inf == null");
+    }
+
+    if (bufferSize <= 0) {
+//        throw new IllegalArgumentException();
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    mInf = inf;
+    mBuf = ArrayOf<Byte>::Alloc(bufferSize);
+    return NOERROR;
+}
+
 ECode InflaterOutputStream::Close()
 {
     if (!mClosed) {
@@ -33,8 +74,7 @@ ECode InflaterOutputStream::Close()
 ECode InflaterOutputStream::Flush()
 {
     FAIL_RETURN(Finish());
-    //return mOut->Flush();
-    return E_NOT_IMPLEMENTED;
+    return IFlushable::Probe(mOut)->Flush();
 }
 
 ECode InflaterOutputStream::Finish()
@@ -68,15 +108,12 @@ ECode InflaterOutputStream::Write()
 {
     Int32 inflated;
     ECode ec = mInf->Inflate(mBuf, &inflated);
-    if (FAILED(ec)) {
-        if (ec == E_DATA_FORMAT_EXCEPTION) return E_ZIP_EXCEPTION;
-    }
+    if (ec == (ECode)E_DATA_FORMAT_EXCEPTION) return E_ZIP_EXCEPTION;
+
     while (inflated > 0) {
         FAIL_RETURN(mOut->Write(mBuf, 0, inflated));
         ec = mInf->Inflate(mBuf, &inflated);
-        if (FAILED(ec)) {
-            if (ec == E_DATA_FORMAT_EXCEPTION) return E_ZIP_EXCEPTION;
-        }
+        if (ec == (ECode)E_DATA_FORMAT_EXCEPTION) return E_ZIP_EXCEPTION;
     }
     return NOERROR;
 }
@@ -98,52 +135,6 @@ ECode InflaterOutputStream::Write(
     // changed array notation to be consistent with the rest of harmony
     // END android-note
     return Write(buffer, 0, buffer->GetLength());
-}
-
-ECode InflaterOutputStream::CheckError(
-    /* [out] */ Boolean* hasError)
-{
-    assert(hasError != NULL);
-    *hasError = FALSE;
-    return NOERROR;
-}
-
-ECode InflaterOutputStream::constructor(
-    /* [in] */ IOutputStream* out)
-{
-    AutoPtr<CInflater> inflater;
-    CInflater::NewByFriend((CInflater**)&inflater);
-    return constructor(out, (IInflater*)inflater.Get());
-}
-
-ECode InflaterOutputStream::constructor(
-    /* [in] */ IOutputStream* out,
-    /* [in] */ IInflater* inf)
-{
-    return constructor(out, inf, DEFAULT_BUFFER_SIZE);
-}
-
-ECode InflaterOutputStream::constructor(
-    /* [in] */ IOutputStream* out,
-    /* [in] */ IInflater* inf,
-    /* [in] */ Int32 bufferSize)
-{
-    mOut = out;
-    if (out == NULL || inf == NULL) {
-//        throw new NullPointerException();
-        return E_NULL_POINTER_EXCEPTION;
-    }
-    else if (inf == NULL) {
-        return E_NULL_POINTER_EXCEPTION;
-//        throw new NullPointerException("inf == null");
-    }
-    if (bufferSize <= 0) {
-//        throw new IllegalArgumentException();
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    mInf = inf;
-    mBuf = ArrayOf<Byte>::Alloc(bufferSize);
-    return NOERROR;
 }
 
 

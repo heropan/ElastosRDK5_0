@@ -7,6 +7,7 @@ module
     namespace Libcore {
     namespace IO {
 
+    [deprecated]
     interface IStreams {
         /**
          * Implements InputStream.read(int) in terms of InputStream.read(byte[], int, int).
@@ -44,9 +45,9 @@ module
          */
         ReadFully(
             [in] IInputStream* instream,
+            [in] ArrayOf<Byte>* dst,
             [in] Int32 offset,
-            [in] Int32 byteCount,
-            [out] ArrayOf<Byte> dst);
+            [in] Int32 byteCount);
 
         /**
          * Returns a byte[] containing the remainder of 'in', closing it when done.

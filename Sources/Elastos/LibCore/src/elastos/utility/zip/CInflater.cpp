@@ -2,16 +2,17 @@
 #include "CInflater.h"
 #include "Math.h"
 #include "Arrays.h"
+#include "CCloseGuardHelper.h"
 #include <unistd.h>
 #include <errno.h>
 
 using Elastos::Core::Math;
+using Elastos::Core::ICloseGuardHelper;
+using Elastos::Core::CCloseGuardHelper;
 
 namespace Elastos {
 namespace Utility {
 namespace Zip {
-
-Object CInflater::sLock;
 
 CAR_INTERFACE_IMPL(CInflater, Object, IInflater)
 
@@ -23,14 +24,18 @@ CInflater::CInflater()
     , mFinished(FALSE)
     , mNeedsDictionary(FALSE)
     , mStreamHandle(NULL)
-{}
+{
+    AutoPtr<ICloseGuardHelper> helper;
+    CCloseGuardHelper::AcquireSingleton((ICloseGuardHelper**)&helper);
+    helper->Get((ICloseGuard**)&mGuard);
+}
 
 CInflater::~CInflater()
 {
 //    try {
-    // if (guard != NULL) {
-    //     guard.warnIfOpen();
-    // }
+    if (mGuard != NULL) {
+        mGuard->WarnIfOpen();
+    }
     End();
 //    } finally {
 //        try {
@@ -44,7 +49,7 @@ CInflater::~CInflater()
 ECode CInflater::CreateStream(
     /* [in] */ Boolean noHeader)
 {
-    NativeZipStream* stream = new NativeZipStream;
+    AutoPtr<NativeZipStream> stream = new NativeZipStream;
     if (stream == NULL) {
 //        jniThrowOutOfMemoryError(env, NULL);
         mStreamHandle = NULL;
@@ -63,21 +68,21 @@ ECode CInflater::CreateStream(
     Int32 err = inflateInit2(&stream->mStream, noHeader ? -DEF_WBITS : DEF_WBITS);
     if (err != Z_OK) {
 //        throwExceptionForZlibError(env, "java/lang/IllegalArgumentException", err);
-        delete stream;
         mStreamHandle = NULL;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
     mStreamHandle = stream;
     return NOERROR;
 }
 
 ECode CInflater::End()
 {
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
-    //guard.close();
+    mGuard->Close();
     if (mStreamHandle != NULL) {
-        EndImplLocked(mStreamHandle);
+        EndImpl(mStreamHandle);
         mInRead = 0;
         mInLength = 0;
         mStreamHandle = NULL;
@@ -86,7 +91,7 @@ ECode CInflater::End()
     return NOERROR;
 }
 
-void CInflater::EndImplLocked(
+void CInflater::EndImpl(
     /* [in] */ NativeZipStream* stream)
 {
     inflateEnd(&stream->mStream);
@@ -98,7 +103,7 @@ ECode CInflater::Finished(
 {
     VALIDATE_NOT_NULL(finished);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     *finished = mFinished;
     return NOERROR;
@@ -109,15 +114,15 @@ ECode CInflater::GetAdler(
 {
     VALIDATE_NOT_NULL(checksum);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
-    *checksum = GetAdlerImplLocked(mStreamHandle);
+    *checksum = GetAdlerImpl(mStreamHandle);
 
     return NOERROR;
 }
 
-Int32 CInflater::GetAdlerImplLocked(
+Int32 CInflater::GetAdlerImpl(
     /* [in] */ NativeZipStream* stream)
 {
     return stream->mStream.adler;
@@ -128,10 +133,10 @@ ECode CInflater::GetBytesRead(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
-    *number = GetTotalInImplLocked(mStreamHandle);
+    *number = GetTotalInImpl(mStreamHandle);
 
     return NOERROR;
 }
@@ -141,10 +146,10 @@ ECode CInflater::GetBytesWritten(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
-    *number = GetTotalOutImplLocked(mStreamHandle);
+    *number = GetTotalOutImpl(mStreamHandle);
     return NOERROR;
 }
 
@@ -153,10 +158,20 @@ ECode CInflater::GetRemaining(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     *number = mInLength - mInRead;
 
+    return NOERROR;
+}
+
+ECode CInflater::GetCurrentOffset(
+    /* [out] */ Int32* offset)
+{
+    VALIDATE_NOT_NULL(offset);
+
+    Object::Autolock locK(this);
+    *offset = mInRead;
     return NOERROR;
 }
 
@@ -165,15 +180,15 @@ ECode CInflater::GetTotalIn(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     *number = (Int32)Elastos::Core::Math::Min(
-            GetTotalInImplLocked(mStreamHandle), (Int64)Elastos::Core::Math::INT32_MAX_VALUE);
+            GetTotalInImpl(mStreamHandle), (Int64)Elastos::Core::Math::INT32_MAX_VALUE);
     return NOERROR;
 }
 
-Int64 CInflater::GetTotalInImplLocked(
+Int64 CInflater::GetTotalInImpl(
     /* [in] */ NativeZipStream* stream)
 {
     return stream->mStream.total_in;
@@ -184,15 +199,15 @@ ECode CInflater::GetTotalOut(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     *number = (Int32)Elastos::Core::Math::Min(
-            GetTotalOutImplLocked(mStreamHandle), (Int64)Elastos::Core::Math::INT32_MAX_VALUE);
+            GetTotalOutImpl(mStreamHandle), (Int64)Elastos::Core::Math::INT32_MAX_VALUE);
     return NOERROR;
 }
 
-Int64 CInflater::GetTotalOutImplLocked(
+Int64 CInflater::GetTotalOutImpl(
     /* [in] */ NativeZipStream* stream)
 {
     return stream->mStream.total_out;
@@ -218,13 +233,9 @@ ECode CInflater::Inflate(
     *number = -1;
     VALIDATE_NOT_NULL(buf);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
-    Int32 arrayLength = buf->GetLength();
-    if ((offset | byteCount) < 0 || offset > arrayLength || arrayLength - offset < byteCount) {
-//        throw new ArrayIndexOutOfBoundsException();
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
 
     FAIL_RETURN(CheckOpen());
 
@@ -238,7 +249,7 @@ ECode CInflater::Inflate(
     Boolean neededDict = mNeedsDictionary;
     mNeedsDictionary = FALSE;
     Int32 result;
-    FAIL_RETURN(InflateImplLocked(offset, byteCount, buf, mStreamHandle, &result));
+    FAIL_RETURN(InflateImpl(offset, byteCount, buf, mStreamHandle, &result));
     if (mNeedsDictionary && neededDict) {
 //        throw new DataFormatException("Needs dictionary");
         return E_DATA_FORMAT_EXCEPTION;
@@ -248,7 +259,7 @@ ECode CInflater::Inflate(
     return NOERROR;
 }
 
-ECode CInflater::InflateImplLocked(
+ECode CInflater::InflateImpl(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
     /* [out] */ ArrayOf<Byte>* buf,
@@ -290,7 +301,7 @@ ECode CInflater::InflateImplLocked(
 
     mInRead += bytesRead;
     *result = bytesWritten;
-    PFL_EX(" >> bytesWritten: %d", bytesWritten);
+    ALOGD(" >> bytesWritten: %d", bytesWritten);
     return NOERROR;
 }
 
@@ -299,7 +310,7 @@ ECode CInflater::NeedsDictionary(
 {
     VALIDATE_NOT_NULL(result);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     *result = mNeedsDictionary;
     return NOERROR;
@@ -310,7 +321,7 @@ ECode CInflater::NeedsInput(
 {
     VALIDATE_NOT_NULL(result);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     *result = mInRead == mInLength;
     return NOERROR;
@@ -318,16 +329,16 @@ ECode CInflater::NeedsInput(
 
 ECode CInflater::Reset()
 {
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     mFinished = FALSE;
     mNeedsDictionary = FALSE;
     mInLength = mInRead = 0;
-    return ResetImplLocked(mStreamHandle);
+    return ResetImpl(mStreamHandle);
 }
 
-ECode CInflater::ResetImplLocked(
+ECode CInflater::ResetImpl(
     /* [in] */ NativeZipStream* stream)
 {
     Int32 err = inflateReset(&stream->mStream);
@@ -351,15 +362,15 @@ ECode CInflater::SetDictionary(
     /* [in] */ Int32 byteCount)
 {
     VALIDATE_NOT_NULL(buf)
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
-    SetDictionaryImplLocked(buf, offset, byteCount, mStreamHandle);
+    SetDictionaryImpl(buf, offset, byteCount, mStreamHandle);
     return NOERROR;
 }
 
-void CInflater::SetDictionaryImplLocked(
+void CInflater::SetDictionaryImpl(
     /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
@@ -381,20 +392,15 @@ ECode CInflater::SetInput(
     /* [in] */ Int32 byteCount)
 {
     VALIDATE_NOT_NULL(buf)
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
 
-    Int32 arrayLength = buf->GetLength();
-    if ((offset | byteCount) < 0 || offset > arrayLength || arrayLength - offset < byteCount)
-    {
-//        throw new ArrayIndexOutOfBoundsException();
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
 
     mInRead = 0;
     mInLength = byteCount;
-    SetInputImplLocked(buf, offset, byteCount, mStreamHandle);
+    SetInputImpl(buf, offset, byteCount, mStreamHandle);
     return NOERROR;
 }
 
@@ -403,15 +409,15 @@ Int32 CInflater::SetFileInput(
     /* [in] */ Int64 offset,
     /* [in] */ Int32 byteCount)
 {
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     mInRead = 0;
-    mInLength = SetFileInputImplLocked(fd, offset, byteCount, mStreamHandle);
+    mInLength = SetFileInputImpl(fd, offset, byteCount, mStreamHandle);
     return mInLength;
 }
 
-void CInflater::SetInputImplLocked(
+void CInflater::SetInputImpl(
     /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
@@ -420,13 +426,12 @@ void CInflater::SetInputImplLocked(
     stream->SetInput(buf, offset, byteCount);
 }
 
-Int32 CInflater::SetFileInputImplLocked(
+Int32 CInflater::SetFileInputImpl(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int32 byteCount,
     /* [in] */ NativeZipStream* stream)
 {
-
     // We reuse the existing native buffer if it's large enough.
     // TODO: benchmark.
     if (stream->mInCap < byteCount) {

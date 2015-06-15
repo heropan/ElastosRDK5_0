@@ -1,6 +1,7 @@
 
 #include "CGZIPOutputStream.h"
 #include "CDeflater.h"
+#include "CCRC32.h"
 
 namespace Elastos {
 namespace Utility {
@@ -13,6 +14,42 @@ CAR_OBJECT_IMPL(CGZIPOutputStream)
 CGZIPOutputStream::CGZIPOutputStream()
 {
     CCRC32::NewByFriend((CCRC32**)&mCrc);
+}
+
+ECode CGZIPOutputStream::constructor(
+    /* [in] */ IOutputStream* os)
+{
+    return constructor(os, BUF_SIZE, FALSE);
+}
+
+ECode CGZIPOutputStream::constructor(
+    /* [in] */ IOutputStream* os,
+    /* [in] */ Int32 size)
+{
+    return constructor(os, size, FALSE);
+}
+
+ECode CGZIPOutputStream::constructor(
+    /* [in] */ IOutputStream* os,
+    /* [in] */ Boolean syncFlush)
+{
+    return constructor(os, BUF_SIZE, syncFlush);
+}
+
+ECode CGZIPOutputStream::constructor(
+    /* [in] */ IOutputStream* os,
+    /* [in] */ Boolean syncFlush,
+    /* [in] */ Int32 size)
+{
+    AutoPtr<CDeflater> deflater;
+    CDeflater::NewByFriend(IDeflater::DEFAULT_COMPRESSION, TRUE, (CDeflater**)&deflater);
+    FAIL_RETURN(DeflaterOutputStream::constructor(os, deflater.Get(), size, syncFlush));
+    WriteInt32(IGZIPInputStream::GZIP_MAGIC);
+    FAIL_RETURN(mOut->Write(IDeflater::DEFLATED));
+    FAIL_RETURN(mOut->Write(0)); // flags
+    WriteInt64(0); // mod time
+    FAIL_RETURN(mOut->Write(0)); // extra flags
+    return mOut->Write(0); // operating system
 }
 
 ECode CGZIPOutputStream::Finish()
@@ -52,27 +89,6 @@ Int32 CGZIPOutputStream::WriteInt32(
     mOut->Write(i & 0xFF);
     mOut->Write((i >> 8) & 0xFF);
     return i;
-}
-
-ECode CGZIPOutputStream::constructor(
-    /* [in] */ IOutputStream* os)
-{
-    return constructor(os, BUF_SIZE);
-}
-
-ECode CGZIPOutputStream::constructor(
-    /* [in] */ IOutputStream* os,
-    /* [in] */ Int32 size)
-{
-    AutoPtr<CDeflater> deflater;
-    CDeflater::NewByFriend(IDeflater::DEFAULT_COMPRESSION, TRUE, (CDeflater**)&deflater);
-    FAIL_RETURN(DeflaterOutputStream::constructor(os, deflater.Get(), size));
-    WriteInt32(IGZIPInputStream::MAGIC);
-    FAIL_RETURN(mOut->Write(IDeflater::DEFLATED));
-    FAIL_RETURN(mOut->Write(0)); // flags
-    WriteInt64(0); // mod time
-    FAIL_RETURN(mOut->Write(0)); // extra flags
-    return mOut->Write(0); // operating system
 }
 
 } // namespace Zip

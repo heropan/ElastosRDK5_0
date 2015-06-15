@@ -166,6 +166,7 @@ private:
     static Boolean sIsInited;
 
     static Boolean Init();
+
 public:
     // Used by Calendar.
     AutoPtr<IInteger32> mFirstDayOfWeek;

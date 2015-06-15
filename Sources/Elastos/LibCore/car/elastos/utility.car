@@ -213,34 +213,21 @@ module
     merge("utility/jar/IPack200.car");
 
 
+    interface Elastos.Core.IComparable;
+    interface Elastos.Core.ICloneable;
     interface Elastos.IO.ISerializable;
     interface Elastos.IO.IFilterInputStream;
     interface Elastos.IO.IFilterOutputStream;
     interface Elastos.IO.ICloseable;
-    interface Elastos.Core.IComparable;
-    // interface Elastos.Core.IThread;
-    // interface Elastos.Core.IRunnable;
-    interface Elastos.Core.ICloneable;
-    // interface Elastos.Core.IComparator;
-    // interface Elastos.Core.ISynchronize;
-    // interface Elastos.Core.IThreadUncaughtExceptionHandler;
+    interface Elastos.IO.Charset.ICharset;
     interface Elastos.Utility.ICollection;
     interface Elastos.Utility.ISet;
     interface Elastos.Utility.IDeque;
     interface Elastos.Utility.IQueue;
-    // interface Elastos.Utility.IMap;
-    // interface Elastos.Utility.ISortedMap;
-    // interface Elastos.Utility.INavigableMap;
-    // interface Elastos.Utility.ISortedSet;
-    // interface Elastos.Utility.INavigableSet;
     interface Elastos.Utility.IIterable;
     interface Elastos.Utility.IRandomAccess;
     interface Elastos.Utility.Zip.IZipEntry;
-    // interface Elastos.Utility.Zip.IZipFile;
-    //interface Elastos.Utility.Zip.IZipInputStream;
-    //interface Elastos.Utility.Zip.IZipOutputStream;
-    // interface Elastos.Utility.Zip.IInflaterInputStream;
-    // interface Elastos.Utility.Zip.IDeflaterOutputStream;
+
 
     namespace Elastos {
     namespace Utility {
@@ -627,6 +614,7 @@ module
                 [in] Boolean ignored);
 
             interface IGregorianCalendar;
+            interface ICalendar;
             interface ISerializable;
             interface ICloneable;
             interface IComparable;
@@ -2193,31 +2181,38 @@ module
      */
     class CGZIPOutputStream {
         /**
-         * Construct a new {@code GZIPOutputStream} to write data in GZIP format to
-         * the underlying stream.
-         *
-         * @param os
-         *            the {@code OutputStream} to write data to.
-         * @throws IOException
-         *             if an {@code IOException} occurs.
+         * Constructs a new {@code GZIPOutputStream} to write data in GZIP format to
+         * the given stream.
          */
         constructor(
             [in] IOutputStream* os);
 
         /**
-         * Construct a new {@code GZIPOutputStream} to write data in GZIP format to
-         * the underlying stream. Set the internal compression buffer to size
-         * {@code size}.
-         *
-         * @param os
-         *            the {@code OutputStream} to write to.
-         * @param size
-         *            the internal buffer size.
-         * @throws IOException
-         *             if an {@code IOException} occurs.
+         * Constructs a new {@code GZIPOutputStream} to write data in GZIP format to
+         * the given stream with the given flushing behavior (see {@link DeflaterOutputStream#flush}).
+         * @since 1.7
          */
         constructor(
             [in] IOutputStream* os,
+            [in] Boolean syncFlush);
+
+        /**
+         * Constructs a new {@code GZIPOutputStream} to write data in GZIP format to
+         * the given stream with the given internal buffer size.
+         */
+        constructor(
+            [in] IOutputStream* os,
+            [in] Int32 size);
+
+        /**
+         * Constructs a new {@code GZIPOutputStream} to write data in GZIP format to
+         * the given stream with the given internal buffer size and
+         * flushing behavior (see {@link DeflaterOutputStream#flush}).
+         * @since 1.7
+         */
+        constructor(
+            [in] IOutputStream* os,
+            [in] Boolean syncFlush,
             [in] Int32 size);
 
         interface IGZIPOutputStream;
@@ -2388,7 +2383,8 @@ module
          */
         constructor(
             [in] ArrayOf<Byte>* hdrBuf,
-            [in] IInputStream* is);
+            [in] IInputStream* is,
+            [in] ICharset* defaultCharset);
 
         interface IZipEntry;
         interface ICloneable;

@@ -5,7 +5,6 @@ module
     merge("core/Exceptions.car");
     merge("core/ICharSequence.car");
     merge("core/IAppendable.car");
-    merge("core/IAutoCloseable.car");
     merge("core/ICloneable.car");
     merge("core/IComparable.car");
     merge("core/IComparator.car");

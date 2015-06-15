@@ -3,6 +3,7 @@
 #include "Math.h"
 #include "CStreams.h"
 #include "CDeflater.h"
+#include "Arrays.h"
 
 using Elastos::Core::Math;
 using Elastos::IO::EIID_IInputStream;
@@ -26,6 +27,42 @@ DeflaterInputStream::~DeflaterInputStream()
 {
 }
 
+ECode DeflaterInputStream::constructor(
+    /* [in] */ IInputStream* in)
+{
+    AutoPtr<IDeflater> deflater;
+    CDeflater::New((IDeflater**)&deflater);
+    return constructor(in, deflater, DEFAULT_BUFFER_SIZE);
+}
+
+ECode DeflaterInputStream::constructor(
+    /* [in] */ IInputStream* in,
+    /* [in] */ IDeflater* deflater)
+{
+    return constructor(in, deflater, DEFAULT_BUFFER_SIZE);
+}
+
+ECode DeflaterInputStream::constructor(
+    /* [in] */ IInputStream* in,
+    /* [in] */ IDeflater* deflater,
+    /* [in] */ Int32 bufferSize)
+{
+    FAIL_RETURN(FilterInputStream::constructor(in))
+
+    if (in == NULL || deflater == NULL) {
+//        throw new NullPointerException();
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (bufferSize <= 0) {
+//        throw new IllegalArgumentException();
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    mDef = deflater;
+    mBuf = ArrayOf<Byte>::Alloc(bufferSize);
+    return NOERROR;
+}
+
 ECode DeflaterInputStream::Close()
 {
     mClosed = TRUE;
@@ -43,17 +80,16 @@ ECode DeflaterInputStream::Read(
 
 ECode DeflaterInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int32 offset,
+    /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
+    *number = -1;
+
     FAIL_RETURN(CheckClosed());
-//    Arrays.checkOffsetAndCount(buffer.length, offset, byteCount);
-    if ((offset | byteCount) < 0 || offset > buffer->GetLength() ||
-            buffer->GetLength() - offset < byteCount) {
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//        throw new ArrayIndexOutOfBoundsException(arrayLength, offset, count);
-    }
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buffer->GetLength(), byteOffset, byteCount))
+
     if (byteCount == 0) {
         *number = 0;
         return NOERROR;
@@ -64,14 +100,14 @@ ECode DeflaterInputStream::Read(
         return NOERROR;
     }
 
-    Int32 count = 0;
-    Boolean finished;
+    using Elastos::Core::Math;
+
+    Int32 count = 0, bytesRead = 0, bytesDeflated;
+    Boolean finished, needs;
     while (count < byteCount && (mDef->Finished(&finished), !finished)) {
-        Boolean needs;
         mDef->NeedsInput(&needs);
         if (needs) {
             // read data from input stream
-            Int32 bytesRead;
             mIn->Read(mBuf, &bytesRead);
             if (bytesRead == -1) {
                 mDef->Finish();
@@ -80,19 +116,23 @@ ECode DeflaterInputStream::Read(
                 mDef->SetInput(mBuf, 0, bytesRead);
             }
         }
-        Int32 bytesDeflated;
-        mDef->Deflate(mBuf, 0, Elastos::Core::Math::Min(mBuf->GetLength(), byteCount - count),
-                &bytesDeflated);
+
+        mDef->Deflate(buffer, byteOffset + count, byteCount - count, &bytesDeflated);
         if (bytesDeflated == -1) {
             break;
         }
-        memcpy(buffer->GetPayload() + offset + count, mBuf->GetPayload(), byteCount);
-        count += byteCount;
+        count += bytesDeflated;
     }
+
     if (count == 0) {
         count = -1;
         mAvailable = FALSE;
     }
+
+    if (mDef->Finished(&finished), finished) {
+        mAvailable = FALSE;
+    }
+
     *number = count;
     return NOERROR;
 }
@@ -101,11 +141,13 @@ ECode DeflaterInputStream::Skip(
     /* [in] */ Int64 byteCount,
     /* [out] */ Int64* number)
 {
-    byteCount = Elastos::Core::Math::Min((Int64)Elastos::Core::Math::INT32_MAX_VALUE, byteCount);
+    VALIDATE_NOT_NULL(number)
+    *number = 0;
+    using Elastos::Core::Math;
+    byteCount = Math::Min((Int64)Math::INT32_MAX_VALUE, byteCount);
     AutoPtr<IStreams> streams;
     CStreams::AcquireSingleton((IStreams**)&streams);
-    return streams->SkipByReading(THIS_PROBE(IInputStream),
-            byteCount, number);
+    return streams->SkipByReading(THIS_PROBE(IInputStream), byteCount, number);
 }
 
 ECode DeflaterInputStream::Available(
@@ -119,6 +161,7 @@ ECode DeflaterInputStream::Available(
 ECode DeflaterInputStream::IsMarkSupported(
     /* [out] */ Boolean* supported)
 {
+    VALIDATE_NOT_NULL(supported)
     *supported = FALSE;
     return NOERROR;
 }
@@ -148,43 +191,11 @@ ECode DeflaterInputStream::Read(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
+    *number = 0;
     VALIDATE_NOT_NULL(buffer);
     return Read(buffer, 0, buffer->GetLength(), number);
 }
 
-ECode DeflaterInputStream::constructor(
-    /* [in] */ IInputStream* in)
-{
-    AutoPtr<CDeflater> deflater;
-    CDeflater::NewByFriend((CDeflater**)&deflater);
-    return constructor(in, (IDeflater*)deflater.Get(), DEFAULT_BUFFER_SIZE);
-}
-
-ECode DeflaterInputStream::constructor(
-    /* [in] */ IInputStream* in,
-    /* [in] */ IDeflater* deflater)
-{
-    return constructor(in, deflater, DEFAULT_BUFFER_SIZE);
-}
-
-ECode DeflaterInputStream::constructor(
-    /* [in] */ IInputStream* in,
-    /* [in] */ IDeflater* deflater,
-    /* [in] */ Int32 bufferSize)
-{
-    FilterInputStream::constructor(in);
-    if (in == NULL || deflater == NULL) {
-//        throw new NullPointerException();
-        return E_NULL_POINTER_EXCEPTION;
-    }
-    if (bufferSize <= 0) {
-//        throw new IllegalArgumentException();
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    mDef = deflater;
-    mBuf = ArrayOf<Byte>::Alloc(bufferSize);
-    return NOERROR;
-}
 
 } // namespace Zip
 } // namespace Utility
