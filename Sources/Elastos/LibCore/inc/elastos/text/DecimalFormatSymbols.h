@@ -174,7 +174,7 @@ private:
 
     Char32 mMonetarySeparator;
 
-    Char32 mMinusSign;
+    String mMinusSign;
 
     String mInfinity, mNaN, mCurrencySymbol, mIntlCurrencySymbol;
 

@@ -139,7 +139,7 @@ module
             [out] Char32* monetarySeparator);
 
         GetMinusSign(
-            [out] Char32* minusSign);
+            [out] String* minusSign);
 
         GetExponentSeparator(
             [out] String* exponentSeparator);

@@ -2,14 +2,28 @@
 #ifndef __ICU_CLOCALEDATAHELPER_H__
 #define __ICU_CLOCALEDATAHELPER_H__
 
-#include "_CLocaleDataHelper.h"
+#include "_Libcore_ICU_CLocaleDataHelper.h"
+#include "Singleton.h"
+
+using Elastos::Core::Singleton;
+using Elastos::Utility::ILocale;
 
 namespace Libcore {
 namespace ICU {
 
 CarClass(CLocaleDataHelper)
+	, public Singleton
+	, public ILocaleDataHelper
 {
 public:
+	CAR_SINGLETON_DECL()
+
+	CAR_INTERFACE_DECL()
+
+    CARAPI MapInvalidAndNullLocales(
+        /* [in] */ ILocale* locale,
+        /* [out] */ ILocale** rst);
+
     /**
      * Returns a shared LocaleData for the given locale.
      */

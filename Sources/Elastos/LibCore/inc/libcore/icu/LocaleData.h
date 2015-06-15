@@ -2,14 +2,17 @@
 #define __IO_LOCALEDATA_H__
 
 #include <Elastos.CoreLibrary_server.h>
+#include <Object.h>
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/Mutex.h>
+#include <Mutex.h>
 #include "CInteger32.h"
 
+using Elastos::Core::Object;
 using Elastos::Core::Mutex;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::ILocale;
 
 namespace Libcore {
 namespace ICU {
@@ -22,11 +25,18 @@ namespace ICU {
  * them a clone rather than the original.
  */
 class LocaleData
+    : public Object
+    , public ILocaleData
 {
 public:
+    CAR_INTERFACE_DECL()
+
     LocaleData();
 
     ~LocaleData();
+
+    static CARAPI_(AutoPtr<ILocale>) MapInvalidAndNullLocales(
+        /* [in] */ ILocale* locale);
 
     static CARAPI_(AutoPtr<ILocaleData>) Get(
         /* [in] */ ILocale* locale);
@@ -120,7 +130,7 @@ public:
         /* [out] */ Char32* monetarySeparator);
 
     CARAPI GetMinusSign(
-        /* [out] */ Char32* minusSign);
+        /* [out] */ String* minusSign);
 
     CARAPI GetExponentSeparator(
         /* [out] */ String* exponentSeparator);
@@ -194,6 +204,18 @@ public:
     String mMediumDateFormat;
     String mShortDateFormat;
 
+    // Used by TimePicker. Not currently used by UTS#35.
+    String mNarrowAm; // "a".
+    String mNarrowPm; // "p".
+
+    // shortDateFormat, but guaranteed to have 4-digit years.
+    // Used by android.text.format.DateFormat.getDateFormatStringForSetting.
+    String mShortDateFormat4;
+
+    // Used by android.text.format.DateFormat.getTimeFormat.
+    String mTimeFormat12; // "hh:mm a"
+    String mTimeFormat24; // "HH:mm"
+
     // Used by DecimalFormatSymbols.
     Char32 mZeroDigit;
     Char32 mDecimalSeparator;
@@ -202,7 +224,7 @@ public:
     Char32 mPercent;
     Char32 mPerMill;
     Char32 mMonetarySeparator;
-    Char32 mMinusSign;
+    String mMinusSign;
     String mExponentSeparator;
     String mInfinity;
     String mNaN;
@@ -219,7 +241,7 @@ public:
     // A cache for the locale-specific data.
 private:
     static HashMap< String, AutoPtr<ILocaleData> > sLocaleDataCache;
-    static Mutex sLocaleDataCacheLock;
+    static Object sLocaleDataCacheLock;
 };
 
 } // namespace ICU

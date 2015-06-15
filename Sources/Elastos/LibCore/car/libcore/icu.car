@@ -41,6 +41,14 @@ module
         interface ICollationKeyICU;
     }
 
+    class CLocaleData {
+        interface ILocaleData;
+    }
+
+    singleton class CLocaleDataHelper {
+        interface ILocaleDataHelper;
+    }
+
     } // namespace ICU
     } // namespace LibCore
 }

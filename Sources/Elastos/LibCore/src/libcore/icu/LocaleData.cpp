@@ -2,16 +2,19 @@
 #include "LocaleData.h"
 #include "CLocaleData.h"
 #include "CLocale.h"
-#include "ICUUtil.h"
-#include "elastos/StringUtils.h"
+// #include "ICUUtil.h"
+#include "StringUtils.h"
 
 using Elastos::Core::StringUtils;
+using Elastos::Utility::CLocale;
 
 namespace Libcore {
 namespace ICU {
 
+CAR_INTERFACE_IMPL(LocaleData, Object, ILocaleData)
+
 HashMap< String, AutoPtr<ILocaleData> > LocaleData::sLocaleDataCache;
-Mutex LocaleData::sLocaleDataCacheLock;
+Object LocaleData::sLocaleDataCacheLock;
 
 Boolean LocaleData::sIsInited = FALSE; //Init();
 
@@ -43,7 +46,24 @@ LocaleData::LocaleData()
     , mLongStandAloneWeekdayNames(NULL)
     , mShortStandAloneWeekdayNames(NULL)
     , mTinyStandAloneWeekdayNames(NULL)
-{}
+{
+    Init();
+}
+AutoPtr<ILocale> LocaleData::MapInvalidAndNullLocales(
+        /* [in] */ ILocale* locale)
+{
+    AutoPtr<ILocale> rev = locale;
+    if (NULL == rev) {
+        rev = CLocale::GetDefault();
+    }
+
+    String s;
+    rev->ToLanguageTag(&s);
+    if (s.Equals("und"))
+        rev = CLocale::ROOT;
+
+    return rev;
+}
 
 LocaleData::~LocaleData()
 {
@@ -53,30 +73,26 @@ AutoPtr<ILocaleData> LocaleData::Get(
     /* [in] */ ILocale* _locale)
 {
     AutoPtr<ILocale> locale = _locale;
-    if (locale == NULL) {
-        locale = CLocale::GetDefault();
-    }
-    String localeName;
-    locale->ToString(&localeName);
+    String tmp;
+    locale->ToLanguageTag(&tmp);
+    const String languageTag = tmp;
+    synchronized(sLocaleDataCacheLock)
     {
-        Mutex::Autolock lock(&sLocaleDataCacheLock);
-
         HashMap< String, AutoPtr<ILocaleData> >::Iterator it =
-                sLocaleDataCache.Find(localeName);
+                sLocaleDataCache.Find(languageTag);
         if (it != sLocaleDataCache.End()) {
             return (ILocaleData*)it->mSecond.Get();
         }
     }
     AutoPtr<ILocaleData> newLocaleData = InitLocaleData(locale);
+    synchronized(sLocaleDataCacheLock)
     {
-        Mutex::Autolock lock(&sLocaleDataCacheLock);
-
         HashMap< String, AutoPtr<ILocaleData> >::Iterator it =
-                sLocaleDataCache.Find(localeName);
+                sLocaleDataCache.Find(languageTag);
         if (it != sLocaleDataCache.End()) {
             return (ILocaleData*)it->mSecond.Get();
         }
-        sLocaleDataCache[localeName] = newLocaleData;
+        sLocaleDataCache[languageTag] = newLocaleData;
         return (ILocaleData*)newLocaleData.Get();
     }
 }
@@ -360,7 +376,7 @@ ECode LocaleData::GetMonetarySeparator(
 }
 
 ECode LocaleData::GetMinusSign(
-    /* [out] */ Char32* minusSign)
+    /* [out] */ String* minusSign)
 {
     VALIDATE_NOT_NULL(minusSign);
     *minusSign = mMinusSign;
@@ -445,11 +461,19 @@ AutoPtr<ILocaleData> LocaleData::InitLocaleData(
     AutoPtr<CLocaleData> localeObj;
     CLocaleData::NewByFriend((CLocaleData**)&localeObj);
     LocaleData* localeData = (LocaleData*)localeObj.Get();
-    String localeName;
-    locale->ToString(&localeName);
-    if (!ICUUtil::InitLocaleDataImpl(localeName, localeData)) {
+    String localeLanguageTag;
+    locale->ToLanguageTag(&localeLanguageTag);
+#if 0   // for compiling
+    if (!ICUUtil::InitLocaleDataNative(localeLanguageTag, localeData)) {
         return NULL;
     }
+
+    // Get the "h:mm a" and "HH:mm" 12- and 24-hour time format strings.
+    ICUUtil::GetBestDateTimePattern("hm", locale, &localeData->mTimeFormat12);
+    ICUUtil::GetBestDateTimePattern("Hm", locale, &localeData->mTimeFormat24);
+#endif // #if 0
+
+    // Fix up a couple of patterns.
     if (!localeData->mFullTimeFormat.IsNull()) {
         // There are some full time format patterns in ICU that use the pattern character 'v'.
         // Java doesn't accept this, so we replace it with 'z' which has about the same result
@@ -469,6 +493,8 @@ AutoPtr<ILocaleData> LocaleData::InitLocaleData(
         StringUtils::ReplaceAll(localeData->mNumberPattern, String("\\.[#,]*"), String("") ,
             &localeData->mIntegerPattern);
     }
+    StringUtils::ReplaceAll(localeData->mShortDateFormat, String("\\byy\\b"), String("y"),
+        &localeData->mShortDateFormat4);
     return (ILocaleData*)localeObj.Get();
 }
 
