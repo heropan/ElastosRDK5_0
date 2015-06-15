@@ -1,26 +1,26 @@
 
 #include "CDeflater.h"
 #include "Arrays.h"
+#include "CCloseGuardHelper.h"
+
+using Elastos::Core::ICloseGuardHelper;
+using Elastos::Core::CCloseGuardHelper;
 
 namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-const Int32 CDeflater::NO_FLUSH;
-const Int32 CDeflater::SYNC_FLUSH;
-const Int32 CDeflater::FULL_FLUSH;
 const Int32 CDeflater::FINISH;
-Object CDeflater::sLock;
 
 CAR_INTERFACE_IMPL(CDeflater, Object, IDeflater)
 
 CAR_OBJECT_IMPL(CDeflater)
 
 CDeflater::CDeflater()
-    : mFlushParm(NO_FLUSH)
+    : mFlushParm(IDeflater::NO_FLUSH)
     , mFinished(FALSE)
-    , mCompressLevel(DEFAULT_COMPRESSION)
-    , mStrategy(DEFAULT_STRATEGY)
+    , mCompressLevel(IDeflater::DEFAULT_COMPRESSION)
+    , mStrategy(IDeflater::DEFAULT_STRATEGY)
     , mStreamHandle(NULL)
     , mInRead(0)
     , mInLength(0)
@@ -29,9 +29,10 @@ CDeflater::CDeflater()
 CDeflater::~CDeflater()
 {
 //    try {
-    // if (guard != null) {
-    //     guard.warnIfOpen();
-    // }
+    if (mGuard != NULL) {
+        mGuard->WarnIfOpen();
+        mGuard = NULL;
+    }
     End(); // to allow overriding classes to clean up
 //    endImpl(); // in case those classes don't call super.end()
 //    } finally {
@@ -41,6 +42,37 @@ CDeflater::~CDeflater()
 //            throw new AssertionError(t);
 //        }
 //    }
+}
+
+ECode CDeflater::constructor()
+{
+    return constructor(IDeflater::DEFAULT_COMPRESSION, FALSE);
+}
+
+ECode CDeflater::constructor(
+    /* [in] */ Int32 level)
+{
+    return constructor(level, FALSE);
+}
+
+ECode CDeflater::constructor(
+    /* [in] */ Int32 level,
+    /* [in] */ Boolean noHeader)
+{
+    if (level < IDeflater::DEFAULT_COMPRESSION
+        || level > IDeflater::BEST_COMPRESSION) {
+//        throw new IllegalArgumentException();
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    AutoPtr<ICloseGuardHelper> helper;
+    CCloseGuardHelper::AcquireSingleton((ICloseGuardHelper**)&helper);
+    helper->Get((ICloseGuard**)&mGuard);
+
+    mCompressLevel = level;
+    CreateStream(mCompressLevel, mStrategy, noHeader, (NativeZipStream**)&mStreamHandle);
+    mGuard->Open(String("end"));
+    return NOERROR;
 }
 
 ECode CDeflater::Deflate(
@@ -64,7 +96,7 @@ ECode CDeflater::Deflate(
     *number = 0;
     VALIDATE_NOT_NULL(buf);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     return DeflateImplLocked(offset, byteCount, mFlushParm, buf, number);
 }
@@ -80,7 +112,7 @@ ECode CDeflater::Deflate(
     *number = 0;
     VALIDATE_NOT_NULL(buf);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     if (flush != NO_FLUSH && flush != SYNC_FLUSH && flush != FULL_FLUSH) {
 //        throw new IllegalArgumentException();
@@ -159,14 +191,13 @@ void CDeflater::EndImplLocked(
     /* [in] */ NativeZipStream* stream)
 {
     deflateEnd(&stream->mStream);
-    delete stream;
 }
 
 ECode CDeflater::End()
 {
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
-//    guard.close();
+    mGuard->Close();
     EndImplLocked();
     return NOERROR;
 }
@@ -182,7 +213,7 @@ void CDeflater::EndImplLocked()
 
 ECode CDeflater::Finish()
 {
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     mFlushParm = FINISH;
     return NOERROR;
@@ -193,7 +224,7 @@ ECode CDeflater::Finished(
 {
     VALIDATE_NOT_NULL(finished);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
     *finished = mFinished;
     return NOERROR;
 }
@@ -203,7 +234,7 @@ ECode CDeflater::GetAdler(
 {
     VALIDATE_NOT_NULL(checksum);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
 
@@ -222,7 +253,7 @@ ECode CDeflater::GetTotalIn(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
 
@@ -241,7 +272,7 @@ ECode CDeflater::GetTotalOut(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
 
@@ -260,7 +291,7 @@ ECode CDeflater::NeedsInput(
 {
     VALIDATE_NOT_NULL(result);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     if (mInputBuffer == NULL) {
         *result = TRUE;
@@ -272,7 +303,7 @@ ECode CDeflater::NeedsInput(
 
 ECode CDeflater::Reset()
 {
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
 
@@ -306,7 +337,7 @@ ECode CDeflater::SetDictionary(
     /* [in] */ Int32 byteCount)
 {
     VALIDATE_NOT_NULL(buf)
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
@@ -337,7 +368,7 @@ ECode CDeflater::SetInput(
     /* [in] */ Int32 byteCount)
 {
     VALIDATE_NOT_NULL(buf)
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen())
     FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
@@ -345,8 +376,7 @@ ECode CDeflater::SetInput(
     mInLength = byteCount;
     mInRead = 0;
     if (mInputBuffer == NULL) {
-        FAIL_RETURN(SetLevelsImplLocked(mCompressLevel,
-                    mStrategy, mStreamHandle));
+        FAIL_RETURN(SetLevelsImplLocked(mCompressLevel, mStrategy, mStreamHandle));
     }
     mInputBuffer = buf->Clone();
     SetInputImplLocked(buf, offset, byteCount, mStreamHandle);
@@ -385,7 +415,7 @@ void CDeflater::SetInputImplLocked(
 ECode CDeflater::SetLevel(
     /* [in] */ Int32 level)
 {
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     if (level < DEFAULT_COMPRESSION ||
             level > BEST_COMPRESSION) {
@@ -403,7 +433,7 @@ ECode CDeflater::SetLevel(
 ECode CDeflater::SetStrategy(
     /* [in] */ Int32 strategy)
 {
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     if (strategy < DEFAULT_STRATEGY ||
         strategy > HUFFMAN_ONLY) {
@@ -423,7 +453,7 @@ ECode CDeflater::GetBytesRead(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     *number = GetTotalInImplLocked(mStreamHandle);
@@ -435,7 +465,7 @@ ECode CDeflater::GetBytesWritten(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(sLock);
+    Object::Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     *number = GetTotalOutImplLocked(mStreamHandle);
@@ -445,11 +475,14 @@ ECode CDeflater::GetBytesWritten(
 ECode CDeflater::CreateStream(
     /* [in] */ Int32 level,
     /* [in] */ Int32 strategy,
-    /* [in] */ Boolean noHeader)
+    /* [in] */ Boolean noHeader,
+    /* [out] */ NativeZipStream** result)
 {
-    NativeZipStream* stream = new NativeZipStream;
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    AutoPtr<NativeZipStream> stream = new NativeZipStream();
     if (stream == NULL) {
-        mStreamHandle = NULL;
         return E_OUT_OF_MEMORY_ERROR;
     }
     /*
@@ -466,12 +499,12 @@ ECode CDeflater::CreateStream(
     Int32 err = deflateInit2(&stream->mStream, level, Z_DEFLATED, windowBits,
             memLevel, strategy);
     if (err != Z_OK) {
-        delete stream;
-        mStreamHandle = NULL;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 //        throwExceptionForZlibError(env, "java/lang/IllegalArgumentException", err);
     }
-    mStreamHandle = stream;
+
+    *result = stream;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -483,31 +516,6 @@ ECode CDeflater::CheckOpen()
     }
     return NOERROR;
 }
-
-ECode CDeflater::constructor()
-{
-    return constructor(DEFAULT_COMPRESSION, FALSE);
-}
-
-ECode CDeflater::constructor(
-    /* [in] */ Int32 level)
-{
-    return constructor(level, FALSE);
-}
-
-ECode CDeflater::constructor(
-    /* [in] */ Int32 level,
-    /* [in] */ Boolean noHeader)
-{
-    if (level < DEFAULT_COMPRESSION ||
-        level > BEST_COMPRESSION) {
-//        throw new IllegalArgumentException();
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    mCompressLevel = level;
-    return CreateStream(mCompressLevel, mStrategy, noHeader);
-}
-
 
 } // namespace Zip
 } // namespace Utility

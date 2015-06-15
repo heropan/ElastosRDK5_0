@@ -87,8 +87,6 @@ module
         CanOpenReadOnly(
             [in] String path,
             [out] Boolean* canOpen);
-
-        ThrowInterruptedIoException();
     }
 
     } // namespace IO

@@ -3,7 +3,7 @@
 #include "CZipFile.h"
 #include "CZipEntry.h"
 #include "CCRC32.h"
-//#include "CMemory.h"
+#include "Memory.h"
 #include "Math.h"
 #include "CPushbackInputStream.h"
 #include "CStreams.h"
@@ -13,7 +13,7 @@ using Elastos::Core::Math;
 using Elastos::IO::EIID_IInputStream;
 using Elastos::IO::IPushbackInputStream;
 using Elastos::IO::CPushbackInputStream;
-// using Libcore::IO::CMemory;
+using Libcore::IO::Memory;
 using Elastos::IO::ByteOrder_LITTLE_ENDIAN;
 using Libcore::IO::IStreams;
 using Libcore::IO::CStreams;
@@ -117,23 +117,20 @@ ECode ZipInputStream::ReadAndVerifyDataDescriptor(
         AutoPtr<IStreams> streams;
         CStreams::AcquireSingleton((IStreams**)&streams);
         FAIL_RETURN(streams->ReadFully(mIn, 0, IZipConstants::EXTHDR, mHdrBuf));
-        AutoPtr<IMemory> memory;
-        // CMemory::AcquireSingleton((IMemory**)&memory);
-        Int32 sig;
-        memory->PeekInt32(mHdrBuf, 0, ByteOrder_LITTLE_ENDIAN, &sig);
+        Int32 sig = Memory::PeekInt32(mHdrBuf, 0, ByteOrder_LITTLE_ENDIAN);
         if (sig != IZipConstants::EXTSIG) {
 //            throw new ZipException(String.format("unknown format (EXTSIG=%x)", sig));
             return E_ZIP_EXCEPTION;
         }
 
         Int32 temp;
-        // memory->PeekInt32(mHdrBuf, IZipConstants::EXTCRC, ByteOrder_LITTLE_ENDIAN, &temp);
+        temp = Memory::PeekInt32(mHdrBuf, IZipConstants::EXTCRC, ByteOrder_LITTLE_ENDIAN);
         // mCurrentEntry->mCrc = temp & 0xffffffffll;
 
-        // memory->PeekInt32(mHdrBuf, IZipConstants::EXTSIZ, ByteOrder_LITTLE_ENDIAN, &temp);
+        temp = Memory::PeekInt32(mHdrBuf, IZipConstants::EXTSIZ, ByteOrder_LITTLE_ENDIAN);
         // mCurrentEntry->mCompressedSize = temp & 0xffffffffll;
 
-        // memory->PeekInt32(mHdrBuf, IZipConstants::EXTLEN, ByteOrder_LITTLE_ENDIAN, &temp);
+        temp = Memory::PeekInt32(mHdrBuf, IZipConstants::EXTLEN, ByteOrder_LITTLE_ENDIAN);
         // mCurrentEntry->mSize = temp & 0xffffffffll;
     }
 
@@ -161,15 +158,12 @@ ECode ZipInputStream::GetNextEntry(
         return NOERROR;
     }
 
-    AutoPtr<IMemory> memory;
-    // CMemory::AcquireSingleton((IMemory**)&memory);
     // Read the signature to see whether there's another local file header.
     AutoPtr<IStreams> streams;
     CStreams::AcquireSingleton((IStreams**)&streams);
     FAIL_RETURN(streams->ReadFully(mIn, 0, 4, mHdrBuf));
 
-    Int32 hdr;
-    memory->PeekInt32(mHdrBuf, 0, ByteOrder_LITTLE_ENDIAN, &hdr);
+    Int32 hdr = Memory::PeekInt32(mHdrBuf, 0, ByteOrder_LITTLE_ENDIAN);
     if (hdr == IZipConstants::CENSIG) {
         mEntriesEnd = TRUE;
         return NOERROR;
@@ -180,37 +174,37 @@ ECode ZipInputStream::GetNextEntry(
 
     // Read the local file header.
     FAIL_RETURN(streams->ReadFully(mIn, 0, (IZipConstants::LOCHDR - IZipConstants::LOCVER), mHdrBuf));
-    Int32 version = PeekShort(memory, 0) & 0xff;
+    Int32 version = PeekShort(0) & 0xff;
     if (version > ZIPLocalHeaderVersionNeeded) {
         return E_ZIP_EXCEPTION;
 //        throw new ZipException("Cannot read local header version " + version);
     }
 
-    Int32 flags = PeekShort(memory, IZipConstants::LOCFLG - IZipConstants::LOCVER);
+    Int32 flags = PeekShort(IZipConstants::LOCFLG - IZipConstants::LOCVER);
     mHasDD = ((flags & CZipFile::GPBF_DATA_DESCRIPTOR_FLAG) != 0);
-    Int32 ceLastModifiedTime = PeekShort(memory, IZipConstants::LOCTIM - IZipConstants::LOCVER);
-    Int32 ceLastModifiedDate = PeekShort(memory, IZipConstants::LOCTIM - IZipConstants::LOCVER + 2);
-    Int32 ceCompressionMethod = PeekShort(memory, IZipConstants::LOCHOW - IZipConstants::LOCVER);
+    Int32 ceLastModifiedTime = PeekShort(IZipConstants::LOCTIM - IZipConstants::LOCVER);
+    Int32 ceLastModifiedDate = PeekShort(IZipConstants::LOCTIM - IZipConstants::LOCVER + 2);
+    Int32 ceCompressionMethod = PeekShort(IZipConstants::LOCHOW - IZipConstants::LOCVER);
 
     Int64 ceCrc = 0, ceCompressedSize = 0, ceSize = -1;
     if (!mHasDD) {
         Int32 temp;
-        memory->PeekInt32(mHdrBuf, IZipConstants::LOCCRC - IZipConstants::LOCVER, ByteOrder_LITTLE_ENDIAN, &temp);
+        temp = Memory::PeekInt32(mHdrBuf, IZipConstants::LOCCRC - IZipConstants::LOCVER, ByteOrder_LITTLE_ENDIAN);
         ceCrc = temp & 0xffffffffL;
 
-        memory->PeekInt32(mHdrBuf, IZipConstants::LOCSIZ - IZipConstants::LOCVER, ByteOrder_LITTLE_ENDIAN, &temp);
+        temp = Memory::PeekInt32(mHdrBuf, IZipConstants::LOCSIZ - IZipConstants::LOCVER, ByteOrder_LITTLE_ENDIAN);
         ceCompressedSize = temp & 0xffffffffL;
 
-        memory->PeekInt32(mHdrBuf, IZipConstants::LOCLEN - IZipConstants::LOCVER, ByteOrder_LITTLE_ENDIAN, &temp);
+        temp = Memory::PeekInt32(mHdrBuf, IZipConstants::LOCLEN - IZipConstants::LOCVER, ByteOrder_LITTLE_ENDIAN);
         ceSize = temp & 0xffffffffL;
     }
 
-    Int32 nameLength = PeekShort(memory, IZipConstants::LOCNAM - IZipConstants::LOCVER);
+    Int32 nameLength = PeekShort( IZipConstants::LOCNAM - IZipConstants::LOCVER);
     if (nameLength == 0) {
         return E_ZIP_EXCEPTION;
 //        throw new ZipException("Entry is not named");
     }
-    Int32 extraLength = PeekShort(memory, IZipConstants::LOCEXT - IZipConstants::LOCVER);
+    Int32 extraLength = PeekShort(IZipConstants::LOCEXT - IZipConstants::LOCVER);
     if (nameLength > mNameBuf->GetLength()) {
         mNameBuf = ArrayOf<Byte>::Alloc(nameLength);
         // The bytes are modified UTF-8, so the number of chars will always be less than or
@@ -242,19 +236,17 @@ ECode ZipInputStream::GetNextEntry(
 }
 
 Int32 ZipInputStream::PeekShort(
-    /* [in] */ IMemory* memory,
     /* [in] */ Int32 offset)
 {
-    Int16 value;
-    memory->PeekInt16(mHdrBuf, offset, ByteOrder_LITTLE_ENDIAN, &value);
+    Int16 value = Memory::PeekInt16(mHdrBuf, offset, ByteOrder_LITTLE_ENDIAN);
     return (value & 0xffff);
 }
 
 ECode ZipInputStream::Read(
-        /* [out] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 byteCount,
-        /* [out] */ Int32* number)
+    /* [in] */ ArrayOf<Byte>* buffer,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 byteCount,
+    /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number)
     *number = -1;

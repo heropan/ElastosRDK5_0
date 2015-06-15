@@ -162,6 +162,8 @@ public:
     CARAPI Delete(
         /* [out] */ Boolean* succeeded);
 
+    CARAPI Delete();
+
     /**
      * Schedules this file to be automatically deleted when the VM terminates normally.
      *

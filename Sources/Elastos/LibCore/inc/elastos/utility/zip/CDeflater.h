@@ -3,10 +3,11 @@
 #define __ELASTOS_UTILITY_CDEFLATER_H__
 
 #include "_Elastos_Utility_Zip_CDeflater.h"
-#include "Zip.h"
+#include "NativeZipStream.h"
 #include "Object.h"
 
 using Elastos::Core::Object;
+using Elastos::Core::ICloseGuard;
 
 namespace Elastos {
 namespace Utility {
@@ -24,6 +25,42 @@ public:
     CDeflater();
 
     ~CDeflater();
+
+    /**
+     * Constructs a new {@code Deflater} instance with default compression
+     * level. The strategy can be specified with {@link #setStrategy}, only. A
+     * header is added to the output by default; use constructor {@code
+     * Deflater(level, boolean)} if you need to omit the header.
+     */
+    CARAPI constructor();
+
+    /**
+     * Constructs a new {@code Deflater} instance with a specific compression
+     * level. The strategy can be specified with {@code setStrategy}, only. A
+     * header is added to the output by default; use
+     * {@code Deflater(level, boolean)} if you need to omit the header.
+     *
+     * @param level
+     *            the compression level in the range between 0 and 9.
+     */
+    CARAPI constructor(
+        /* [in] */ Int32 level);
+
+    /**
+     * Constructs a new {@code Deflater} instance with a specific compression
+     * level. If noHeader is passed as true no ZLib header is added to the
+     * output. In a ZIP archive every entry (compressed file) comes with such a
+     * header. The strategy can be specified with the setStrategy method, only.
+     *
+     * @param level
+     *            the compression level in the range between 0 and 9.
+     * @param noHeader
+     *            {@code true} indicates that no ZLIB header should be written.
+     */
+    CARAPI constructor(
+        /* [in] */ Int32 level,
+        /* [in] */ Boolean noHeader);
+
 
     /**
      * Deflates the data (previously passed to {@code setInput}) into the
@@ -285,41 +322,6 @@ public:
     CARAPI GetBytesWritten(
         /* [out] */ Int64* number);
 
-    /**
-     * Constructs a new {@code Deflater} instance with default compression
-     * level. The strategy can be specified with {@link #setStrategy}, only. A
-     * header is added to the output by default; use constructor {@code
-     * Deflater(level, boolean)} if you need to omit the header.
-     */
-    CARAPI constructor();
-
-    /**
-     * Constructs a new {@code Deflater} instance with a specific compression
-     * level. The strategy can be specified with {@code setStrategy}, only. A
-     * header is added to the output by default; use
-     * {@code Deflater(level, boolean)} if you need to omit the header.
-     *
-     * @param level
-     *            the compression level in the range between 0 and 9.
-     */
-    CARAPI constructor(
-        /* [in] */ Int32 level);
-
-    /**
-     * Constructs a new {@code Deflater} instance with a specific compression
-     * level. If noHeader is passed as true no ZLib header is added to the
-     * output. In a ZIP archive every entry (compressed file) comes with such a
-     * header. The strategy can be specified with the setStrategy method, only.
-     *
-     * @param level
-     *            the compression level in the range between 0 and 9.
-     * @param noHeader
-     *            {@code true} indicates that no ZLIB header should be written.
-     */
-    CARAPI constructor(
-        /* [in] */ Int32 level,
-        /* [in] */ Boolean noHeader);
-
 private:
     CARAPI DeflateImplLocked(
         /* [in] */ Int32 offset,
@@ -372,38 +374,10 @@ private:
     CARAPI CreateStream(
         /* [in] */ Int32 level,
         /* [in] */ Int32 strategy,
-        /* [in] */ Boolean noHeader);
+        /* [in] */ Boolean noHeader,
+        /* [out] */ NativeZipStream** stream);
 
     CARAPI CheckOpen();
-
-public:
-    /**
-     * Use buffering for best compression.
-     *
-     * @hide
-     * @since 1.7
-     */
-    static const Int32 NO_FLUSH = 0;
-
-    /**
-     * Flush buffers so recipients can immediately decode the data sent thus
-     * far. This mode may degrade compression.
-     *
-     * @hide
-     * @since 1.7
-     */
-    static const Int32 SYNC_FLUSH = 2;
-
-    /**
-     * Flush buffers so recipients can immediately decode the data sent thus
-     * far. The compression state is also reset to permit random access and
-     * recovery for clients who have discarded or damaged their own copy. This
-     * mode may degrade compression.
-     *
-     * @hide
-     * @since 1.7
-     */
-    static const Int32 FULL_FLUSH = 3;
 
 private:
     /**
@@ -419,7 +393,7 @@ private:
 
     Int32 mStrategy;
 
-    NativeZipStream* mStreamHandle;
+    AutoPtr<NativeZipStream> mStreamHandle;
 
     AutoPtr<ArrayOf<Byte> > mInputBuffer;
 
@@ -427,9 +401,7 @@ private:
 
     Int32 mInLength;
 
-    //CloseGuard guard = CloseGuard.get();
-
-    static Object sLock;
+    AutoPtr<ICloseGuard> mGuard;
 };
 
 } // namespace Zip

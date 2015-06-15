@@ -1,15 +1,14 @@
 #include "CUUID.h"
 #include "StringUtils.h"
 #include "StringBuilder.h"
-// #include "CMemory.h"
+#include "Memory.h"
 //#include "CMessageDigestHelper.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::EIID_IComparable;
 using Elastos::Core::IRandom;
-using Libcore::IO::IMemory;
-// using Libcore::IO::CMemory;
+using Libcore::IO::Memory;
 using Elastos::IO::ByteOrder_BIG_ENDIAN;
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Security::EIID_ISecureRandom;
@@ -143,11 +142,8 @@ AutoPtr<IUUID> CUUID::MakeUuid(
     /* [in] */ ArrayOf<Byte>* hash,
     /* [in] */ Int32 version)
 {
-    AutoPtr<IMemory> memory;
-    // CMemory::AcquireSingleton((IMemory**)&memory);
-    Int64 msb, lsb;
-    memory->PeekInt64(hash, 0, ByteOrder_BIG_ENDIAN, &msb);
-    memory->PeekInt64(hash, 8, ByteOrder_BIG_ENDIAN, &lsb);
+    Int64 msb = Memory::PeekInt64(hash, 0, ByteOrder_BIG_ENDIAN);
+    Int64 lsb = Memory::PeekInt64(hash, 8, ByteOrder_BIG_ENDIAN);
     // Set the version field.
     msb &= ~(0xfLL << 12);
     msb |= ((Int64) version) << 12;

@@ -16,6 +16,15 @@ CAR_INTERFACE_IMPL(CCheckedInputStream, FilterInputStream, ICheckedInputStream)
 
 CAR_OBJECT_IMPL(CCheckedInputStream)
 
+ECode CCheckedInputStream::constructor(
+    /* [in] */ IInputStream* is,
+    /* [in] */ IChecksum* csum)
+{
+    FAIL_RETURN(FilterInputStream::constructor(is))
+    mCheck = csum;
+    return NOERROR;
+}
+
 ECode CCheckedInputStream::Read(
     /* [out] */ Int32* value)
 {
@@ -23,7 +32,7 @@ ECode CCheckedInputStream::Read(
 
     FAIL_RETURN(mIn->Read(value));
     if (*value != -1) {
-        mCheck->Update(*value);
+        mCheck->Update(value);
     }
     return NOERROR;
 }
@@ -34,12 +43,13 @@ ECode CCheckedInputStream::Read(
     /* [in] */ Int32 nbytes,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
+    *number = 0;
+    VALIDATE_NOT_NULL(buffer);
 
     FAIL_RETURN(mIn->Read(buffer, off, nbytes, number));
     if (*number != -1) {
-        mCheck->Update(*buffer, off, *number);
+        mCheck->Update(buffer, off, *number);
     }
     return NOERROR;
 }
@@ -69,30 +79,9 @@ ECode CCheckedInputStream::Read(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
+    *number = 0;
     VALIDATE_NOT_NULL(buffer);
     return Read(buffer, 0, buffer->GetLength(), number);
-}
-
-/**
- * Constructs a new {@code CheckedInputStream} on {@code InputStream}
- * {@code is}. The checksum will be calculated using the algorithm
- * implemented by {@code csum}.
- *
- * <p><strong>Warning:</strong> passing a null source creates an invalid
- * {@code CheckedInputStream}. All operations on such a stream will fail.
- *
- * @param is
- *            the input stream to calculate checksum from.
- * @param csum
- *            an entity implementing the checksum algorithm.
- */
-ECode CCheckedInputStream::constructor(
-    /* [in] */ IInputStream* is,
-    /* [in] */ IChecksum* csum)
-{
-    FilterInputStream::constructor(is);
-    mCheck = csum;
-    return NOERROR;
 }
 
 

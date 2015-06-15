@@ -310,6 +310,12 @@ ECode File::Delete(
     // }
 }
 
+ECode File::Delete()
+{
+    Boolean succeeded;
+    return Delete(&succeeded);
+}
+
 ECode File::DeleteOnExit()
 {
     // return DeleteOnExit.getInstance().addFile(getAbsolutePath());

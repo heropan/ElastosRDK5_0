@@ -1,10 +1,9 @@
 
-#ifndef __CCHECKEDOUTPUTSTREAM_H__
-#define __CCHECKEDOUTPUTSTREAM_H__
-
+#ifndef __ELASTOS_UTILITY_ZIP_CCHECKEDOUTPUTSTREAM_H__
+#define __ELASTOS_UTILITY_ZIP_CCHECKEDOUTPUTSTREAM_H__
 
 #include "_Elastos_Utility_Zip_CCheckedOutputStream.h"
-#include <FilterOutputStream.h>
+#include "FilterOutputStream.h"
 
 using Elastos::IO::IOutputStream;
 using Elastos::IO::FilterOutputStream;
@@ -13,11 +12,13 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-class CheckedOutputStream
-    : public FilterOutputStream
+CarClass(CCheckedOutputStream)
+    , public FilterOutputStream
     , public ICheckedOutputStream
 {
 public:
+    CAR_OBJECT_DECL()
+
     CAR_INTERFACE_DECL()
 
     /**
@@ -75,25 +76,8 @@ public:
         /* [in] */ Int32 off,
         /* [in] */ Int32 nbytes);
 
-    CARAPI Close();
-
-    CARAPI Flush();
-
-    CARAPI Write(
-        /* [in] */ ArrayOf<Byte>* buffer);
-
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
 private:
     AutoPtr<IChecksum> mCheck;
-};
-
-CarClass(CCheckedOutputStream)
-    , public CheckedOutputStream
-{
-public:
-    CAR_OBJECT_DECL()
 };
 
 
@@ -101,4 +85,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CCHECKEDOUTPUTSTREAM_H__
+#endif //__ELASTOS_UTILITY_ZIP_CCHECKEDOUTPUTSTREAM_H__

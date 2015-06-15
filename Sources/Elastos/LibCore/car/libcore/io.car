@@ -8,8 +8,8 @@ module
     merge("io/ILibcore.car");
     merge("io/ISocketTagger.car");
     merge("io/IBase64.car");
-    merge("io/IMemory.car");
     merge("io/IBufferIterator.car");
+    merge("io/IMemory.car");
     merge("io/IMemoryMappedFile.car");
     merge("io/ISizeOf.car");
     merge("io/INioBufferIterator.car");
@@ -51,6 +51,14 @@ module
 
         singleton class CDropBox {
             interface IDropBox;
+        }
+
+        singleton class CMemory {
+            interface IMemory;
+        }
+
+        singleton class CIoUtils {
+            interface IIoUtils;
         }
 
 //        class CPosix {

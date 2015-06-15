@@ -1,10 +1,10 @@
 
 #include "CGZIPInputStream.h"
-// #include "CMemory.h"
+#include "Memory.h"
 #include "CInflater.h"
+#include "Arrays.h"
 
-using Libcore::IO::IMemory;
-// using Libcore::IO::CMemory;
+using Libcore::IO::Memory;
 using Elastos::IO::ByteOrder_LITTLE_ENDIAN;
 
 namespace Elastos {
@@ -49,12 +49,7 @@ ECode CGZIPInputStream::Read(
     if (mEos) {
         return NOERROR;
     }
-    //Arrays.checkOffsetAndCount(buffer.length, offset, byteCount);
-    if ((offset | byteCount) < 0 || offset > buffer->GetLength() ||
-            buffer->GetLength() - offset < byteCount) {
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//        throw new ArrayIndexOutOfBoundsException(arrayLength, offset, count);
-    }
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buffer->GetLength(), offset, byteCount))
 
     Int32 bytesRead;
     InflaterInputStream::Read(buffer, offset, byteCount, &bytesRead);
@@ -84,14 +79,10 @@ ECode CGZIPInputStream::VerifyCrc()
     memcpy(mBuf->GetPayload() + mLen - size, b->GetPayload(), copySize);
     FAIL_RETURN(ReadFully(copySize, trailerSize - copySize, b));
 
-    AutoPtr<IMemory> memory;
-    // CMemory::AcquireSingleton((IMemory**)&memory);
-
     Int64 checksum;
     mCrc->GetValue(&checksum);
 
-    Int32 temp;
-    memory->PeekInt32(b, 0, ByteOrder_LITTLE_ENDIAN, &temp);
+    Int32 temp = Memory::PeekInt32(b, 0, ByteOrder_LITTLE_ENDIAN);
     if (temp != (Int32)checksum) {
 //        throw new IOException("CRC mismatch");
         return E_IO_EXCEPTION;
@@ -99,7 +90,7 @@ ECode CGZIPInputStream::VerifyCrc()
 
     Int32 value;
     mInf->GetTotalOut(&value);
-    memory->PeekInt32(b, 4, ByteOrder_LITTLE_ENDIAN, &temp);
+    temp = Memory::PeekInt32(b, 4, ByteOrder_LITTLE_ENDIAN);
     if (temp != value) {
 //        throw new IOException("Size mismatch");
         return E_IO_EXCEPTION;
@@ -182,10 +173,7 @@ ECode CGZIPInputStream::constructor(
     FAIL_RETURN(InflaterInputStream::constructor(is, inflater.Get(), size));
     AutoPtr<ArrayOf<Byte> > header = ArrayOf<Byte>::Alloc(10);
     FAIL_RETURN(ReadFully(0, header->GetLength(), header));
-    AutoPtr<IMemory> memory;
-    // CMemory::AcquireSingleton((IMemory**)&memory);
-    Int16 magic;
-    memory->PeekInt16(header, 0, ByteOrder_LITTLE_ENDIAN, &magic);
+    Int16 magic = Memory::PeekInt16(header, 0, ByteOrder_LITTLE_ENDIAN);
     if (magic != MAGIC) {
 //        throw new IOException(String.format("unknown format (magic number %x)", magic));
         return E_IO_EXCEPTION;
@@ -201,8 +189,7 @@ ECode CGZIPInputStream::constructor(
         if (hcrc) {
             mCrc->Update(header, 0, 2);
         }
-        Int16 temp;
-        memory->PeekInt16(header, 0, ByteOrder_LITTLE_ENDIAN, &temp);
+        Int16 temp = Memory::PeekInt16(header, 0, ByteOrder_LITTLE_ENDIAN);
         Int32 length = temp & 0xffff;
         while (length > 0) {
             Int32 max = length > mBuf->GetLength() ? mBuf->GetLength() : length;
@@ -227,8 +214,7 @@ ECode CGZIPInputStream::constructor(
     if (hcrc) {
         FAIL_RETURN(ReadFully(0, 2, header));
 
-        Int16 crc16;
-        memory->PeekInt16(header, 0, ByteOrder_LITTLE_ENDIAN, &crc16);
+        Int16 crc16 = Memory::PeekInt16(header, 0, ByteOrder_LITTLE_ENDIAN);
         Int64 value;
         mCrc->GetValue(&value);
         if ((Int16)value != crc16) {

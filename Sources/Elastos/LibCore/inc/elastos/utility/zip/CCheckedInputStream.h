@@ -21,6 +21,23 @@ public:
     CAR_OBJECT_DECL()
 
     /**
+     * Constructs a new {@code CheckedInputStream} on {@code InputStream}
+     * {@code is}. The checksum will be calculated using the algorithm
+     * implemented by {@code csum}.
+     *
+     * <p><strong>Warning:</strong> passing a null source creates an invalid
+     * {@code CheckedInputStream}. All operations on such a stream will fail.
+     *
+     * @param is
+     *            the input stream to calculate checksum from.
+     * @param csum
+     *            an entity implementing the checksum algorithm.
+     */
+    CARAPI constructor(
+        /* [in] */ IInputStream* is,
+        /* [in] */ IChecksum* csum);
+
+    /**
      * Reads one byte of data from the underlying input stream and updates the
      * checksum with the byte data.
      *
@@ -83,23 +100,6 @@ public:
     CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
-
-    /**
-     * Constructs a new {@code CheckedInputStream} on {@code InputStream}
-     * {@code is}. The checksum will be calculated using the algorithm
-     * implemented by {@code csum}.
-     *
-     * <p><strong>Warning:</strong> passing a null source creates an invalid
-     * {@code CheckedInputStream}. All operations on such a stream will fail.
-     *
-     * @param is
-     *            the input stream to calculate checksum from.
-     * @param csum
-     *            an entity implementing the checksum algorithm.
-     */
-    CARAPI constructor(
-        /* [in] */ IInputStream* is,
-        /* [in] */ IChecksum* csum);
 
 private:
     AutoPtr<IChecksum> mCheck;

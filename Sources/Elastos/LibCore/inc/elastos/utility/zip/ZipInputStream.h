@@ -4,8 +4,6 @@
 
 #include "InflaterInputStream.h"
 
-using Libcore::IO::IMemory;
-
 namespace Elastos {
 namespace Utility {
 namespace Zip {
@@ -111,7 +109,6 @@ private:
         /* [in] */ Int32 out);
 
     CARAPI_(Int32) PeekShort(
-        /* [in] */ IMemory* memory,
         /* [in] */ Int32 offset);
 
     CARAPI CheckClosed();

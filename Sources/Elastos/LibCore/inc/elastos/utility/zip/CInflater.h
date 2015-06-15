@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_CINFLATER_H__
 
 #include "_Elastos_Utility_Zip_CInflater.h"
-#include "Zip.h"
+#include "NativeZipStream.h"
 #include "Object.h"
 
 using Elastos::Core::Object;

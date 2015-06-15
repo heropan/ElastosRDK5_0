@@ -1,6 +1,7 @@
 
 #include "CCRC32.h"
 #include <zlib.h>
+#include "Arrays.h"
 
 namespace Elastos {
 namespace Utility {
@@ -73,12 +74,8 @@ ECode CCRC32::Update(
     /* [in] */ Int32 byteCount)
 {
     VALIDATE_NOT_NULL(buf)
-    if ((offset | byteCount) < 0 || offset > buf->GetLength()
-            || buf->GetLength() - offset < byteCount) {
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//        throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
-//                count);
-    }
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
+
     mTbytes += byteCount;
     mCrc = UpdateImpl(buf, offset, byteCount, mCrc);
     return NOERROR;
