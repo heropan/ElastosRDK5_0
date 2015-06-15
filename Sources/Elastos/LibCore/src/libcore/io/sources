@@ -27,15 +27,12 @@ SOURCES += ForwardingOs.cpp
 SOURCES += ToStringArray.cpp
 SOURCES += BlockGuardOs.cpp
 SOURCES += CStreams.cpp
-<<<<<<< HEAD
 SOURCES += DeleteOnExit.cpp
 SOURCES += CDeleteOnExitHelper.cpp
 SOURCES += CDropBox.cpp
 SOURCES += HeapBufferIterator.cpp
-
-=======
 SOURCES += Memory.cpp
 SOURCES += CMemory.cpp
 SOURCES += IoUtils.cpp
 SOURCES += CIoUtils.cpp
->>>>>>> compiled zip & update libcore/io.
+
