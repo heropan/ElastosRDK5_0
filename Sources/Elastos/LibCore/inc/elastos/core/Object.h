@@ -428,7 +428,7 @@ Boolean Object::Equals(
     /* [in] */ const AutoPtr<T1>& lhs,
     /* [in] */ T2* rhs)
 {
-    return Equals(lhs.Get(), rhs.Get());
+    return Equals(lhs.Get(), rhs);
 }
 
 template<typename T1, typename T2>
