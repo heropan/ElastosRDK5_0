@@ -1,6 +1,6 @@
 
-#ifndef __CXMLPULLPARSERFACTORY_H__
-#define __CXMLPULLPARSERFACTORY_H__
+#ifndef __ORG_XMLPULL_V1_CXMLPULLPARSERFACTORY_H__
+#define __ORG_XMLPULL_V1_CXMLPULLPARSERFACTORY_H__
 
 #include "_Org_Xmlpull_V1_CXmlPullParserFactory.h"
 #include "XmlPullParserFactory.h"
@@ -19,4 +19,4 @@ public:
 } // namespace Xmlpull
 } // namespace Org
 
-#endif // __CXMLPULLPARSERFACTORY_H__
+#endif // __ORG_XMLPULL_V1_CXMLPULLPARSERFACTORY_H__

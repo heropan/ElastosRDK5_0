@@ -1,6 +1,6 @@
 
-#ifndef __ORG_SAX2_CDRIVER_H__
-#define __ORG_SAX2_CDRIVER_H__
+#ifndef __ORG_XMLPULL_V1_SAX2_CDRIVER_H__
+#define __ORG_XMLPULL_V1_SAX2_CDRIVER_H__
 
 #include "_Org_Xmlpull_V1_Sax2_CDriver.h"
 #include <elastos/core/Object.h>
@@ -188,4 +188,4 @@ protected:
 } // namespace Xmlpull
 } // namespace Org
 
-#endif // __ORG_SAX2_CDRIVER_H__
+#endif // __ORG_XMLPULL_V1_SAX2_CDRIVER_H__

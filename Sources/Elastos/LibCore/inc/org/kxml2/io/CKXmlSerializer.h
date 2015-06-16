@@ -1,6 +1,6 @@
 
-#ifndef __CKXMLSERIALIZER_H__
-#define __CKXMLSERIALIZER_H__
+#ifndef __ORG_KXML2_IO_CKXMLSERIALIZER_H__
+#define __ORG_KXML2_IO_CKXMLSERIALIZER_H__
 
 #include "_Org_Kxml2_IO_CKXmlSerializer.h"
 #include <elastos/core/Object.h>
@@ -167,4 +167,4 @@ private:
 } //namespace Kxml2
 } //namespace Org
 
-#endif //__CKXMLSERIALIZER_H__
+#endif //__ORG_KXML2_IO_CKXMLSERIALIZER_H__
