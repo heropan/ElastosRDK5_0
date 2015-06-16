@@ -12,6 +12,7 @@
 #include "IoUtils.h"
 #include "CLinkedHashMap.h"
 #include "CStringWrapper.h"
+#include "HeapBufferIterator.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::ICharSequence;
@@ -33,7 +34,7 @@ using Libcore::IO::IoUtils;
 using Libcore::IO::IStreams;
 using Libcore::IO::CStreams;
 using Libcore::IO::IBufferIterator;
-using Libcore::IO::IHeapBufferIterator;
+using Libcore::IO::HeapBufferIterator;
 
 namespace Elastos {
 namespace Utility {
@@ -201,8 +202,7 @@ ECode ZipFile::ZipInflaterInputStream::Read(
         Int64 size;
         mEntry->GetSize(&size);
         if (size != mBytesRead) {
-            // throw new IOException("Size mismatch on inflated file: " + bytesRead + " vs "
-            //                             + entry.size);
+            ALOGE("IOException: Size mismatch on inflated file: %lld vs %lld", mBytesRead, size);
             return E_IO_EXCEPTION;
         }
     }
@@ -242,7 +242,9 @@ ECode ZipFile::ZipInflaterInputStream::Available(
 CAR_INTERFACE_IMPL(ZipFile::Enumeration, Object, IEnumeration)
 
 ZipFile::Enumeration::Enumeration(
-    /* [in] */ IIterator* it)
+    /* [in] */ IIterator* it,
+    /* [in] */ ZipFile* zipFile)
+    : mHost(zipFile)
 {
     mIt = it;
 }
@@ -251,7 +253,7 @@ ECode ZipFile::Enumeration::HasMoreElements(
     /* [out] */ Boolean * value)
 {
     VALIDATE_NOT_NULL(value);
-    // FAIL_RETURN(mHost->CheckNotClosed())
+    FAIL_RETURN(mHost->CheckNotClosed())
     return mIt->HasNext(value);
 }
 
@@ -259,7 +261,7 @@ ECode ZipFile::Enumeration::GetNextElement(
     /* [out] */ IInterface ** inter)
 {
     VALIDATE_NOT_NULL(inter);
-    // FAIL_RETURN(mHost->CheckNotClosed())
+    FAIL_RETURN(mHost->CheckNotClosed())
     return mIt->GetNext(inter);
 }
 
@@ -376,7 +378,7 @@ ECode ZipFile::GetEntries(
     mEntries->GetValues((ICollection**)&vals);
     AutoPtr<IIterator> iterator;
     IIterable::Probe(vals)->GetIterator((IIterator**)&iterator);
-    AutoPtr<Enumeration> res = new Enumeration(iterator);
+    AutoPtr<Enumeration> res = new Enumeration(iterator, this);
     *entries = res.Get();
     REFCOUNT_ADD(*entries);
     return NOERROR;
@@ -441,39 +443,75 @@ ECode ZipFile::GetInputStream(
         return NOERROR;
     }
 
+    using Elastos::Core::Math;
+
     // Create an InputStream at the right part of the file.
     AutoPtr<IRandomAccessFile> raf = mRaf;
-    Object::Autolock locK(this);
+    CRandomAccessFile* craf = (CRandomAccessFile*)raf.Get();
+
+    Object::Autolock locK(craf);
     // We don't know the entry data's start position. All we have is the
-    // position of the entry's local header. At position 28 we find the
-    // length of the extra data. In some cases this length differs from
-    // the one coming in the central header.
-    AutoPtr<RAFStream> rafstrm = new RAFStream(raf, ((CZipEntry*)ze.Get())->mLocalHeaderRelOffset + 28);
+    // position of the entry's local header.
+    // http://www.pkware.com/documents/casestudies/APPNOTE.TXT
+    AutoPtr<RAFStream> rafStream = new RAFStream(raf, ((CZipEntry*)ze.Get())->mLocalHeaderRelOffset + 28);
     AutoPtr<IDataInputStream> dis;
-    CDataInputStream::New((IInputStream*)rafstrm, (IDataInputStream**)&dis);
-    AutoPtr<IDataInput> di = (IDataInput*)dis->Probe(EIID_IDataInput);
-    //Int32 localExtraLenOrWhatever = Short.reverseBytes(is.readShort());
-    Int16 value;
-    di->ReadInt16(&value);
-    Int32 localExtraLenOrWhatever = (Int16)((value << 8) | ((((UInt16)value) >> 8) & 0xFF));
+    CDataInputStream::New((IInputStream*)rafStream, (IDataInputStream**)&dis);
+
+    AutoPtr<IDataInput> di = IDataInput::Probe(dis);
+    Int32 localMagic;
+    di->ReadInt32(&localMagic);
+    localMagic = Math::ReverseBytes(localMagic);
+    if (localMagic != IZipConstants::LOCSIG) {
+        ALOGE("ZipException: ZipFile::GetInputStream, Local File Header %08x", localMagic);
+        return E_ZIP_EXCEPTION;
+    }
+
+    Int32 skipped;
+    di->SkipBytes(2, &skipped);
+
+    // At position 6 we find the General Purpose Bit Flag.
+    Int16 shortVal;
+    di->ReadInt16(&shortVal);
+    Int32 gpbf = Math::ReverseBytes(shortVal) & 0xffff;
+    if ((gpbf & ZipFile::GPBF_UNSUPPORTED_MASK) != 0) {
+        ALOGE("ZipException: ZipFile::GetInputStream, Invalid General Purpose Bit Flag: %08x", gpbf);
+        return E_ZIP_EXCEPTION;
+    }
+
+    // Offset 26 has the file name length, and offset 28 has the extra field length.
+    // These lengths can differ from the ones in the central header.
+    di->SkipBytes(18, &skipped);
+    di->ReadInt16(&shortVal);
+    Int32 fileNameLength = Math::ReverseBytes(shortVal) & 0xffff;
+    di->ReadInt16(&shortVal);
+    Int32 extraFieldLength = Math::ReverseBytes(shortVal) & 0xffff;
     ICloseable::Probe(dis)->Close();
 
-    // Skip the name and this "extra" data or whatever it is:
-    Int64 number;
-    rafstrm->Skip(((CZipEntry*)ze.Get())->mNameLength + localExtraLenOrWhatever, &number);
-    if (((CZipEntry*)ze.Get())->mCompressionMethod == IZipEntry::DEFLATED) {
-        Int64 size;
-        ze->GetSize(&size);
-        Int32 bufSize = Elastos::Core::Math::Max(1024, (Int32)Elastos::Core::Math::Min(size, 65535ll));
-        AutoPtr<IInflater> i;
-        CInflater::New(TRUE, (IInflater**)&i);
-        *is = (IInputStream*)new ZipInflaterInputStream(rafstrm, i, bufSize, (CZipEntry*)ze.Get());
+    // Skip the variable-size file name and extra field data.
+    Int64 longVal;
+    rafStream->Skip(fileNameLength + extraFieldLength, &longVal);
+
+    Int32 compressionMethod;
+    Int64 size, compressedSize;
+    entry->GetMethod(&compressionMethod);
+    if (compressionMethod == IZipEntry::STORED) {
+        entry->GetSize(&size);
+        rafStream->mEndOffset = rafStream->mOffset + size;
+        *is = (IInputStream*)rafStream.Get();
+        REFCOUNT_ADD(*is)
     }
     else {
-        *is = (IInputStream*)rafstrm;
+        entry->GetCompressedSize(&compressedSize);
+        rafStream->mEndOffset = rafStream->mOffset + compressedSize;
+        entry->GetSize(&size);
+        Int32 bufSize = Math::Max(1024, (Int32) Math::Min(size, 65535L));
+        AutoPtr<IInflater> inf;
+        CInflater::New(TRUE, (IInflater**)&inf);
+
+        *is = (IInputStream*)new ZipInflaterInputStream(rafStream, inf, bufSize, ze);
+        REFCOUNT_ADD(*is)
     }
 
-    REFCOUNT_ADD(*is);
     return NOERROR;
 }
 
@@ -496,86 +534,117 @@ ECode ZipFile::GetSize(
 
 ECode ZipFile::ReadCentralDir()
 {
-    /*
-     * Scan back, looking for the End Of Central Directory field.  If
-     * the archive doesn't have a comment, we'll hit it on the first
-     * try.
-     *
-     * No need to synchronize mRaf here -- we only do this when we
-     * first open the Zip file.
-     */
+    // Scan back, looking for the End Of Central Directory field. If the zip file doesn't
+    // have an overall comment (unrelated to any per-entry comments), we'll hit the EOCD
+    // on the first try.
+    // No need to synchronize raf here -- we only do this when we first open the zip file.
     Int64 len;
     mRaf->GetLength(&len);
     Int64 scanOffset = len - IZipConstants::ENDHDR;
     if (scanOffset < 0) {
+        ALOGE("ZipException: File too short to be a zip file: %lld", len);
         return E_ZIP_EXCEPTION;
-//        throw new ZipException("File too short to be a zip file: " + mRaf.length());
     }
+    mRaf->Seek(0);
+
+    using Elastos::Core::Math;
+
+    Int32 headerMagic;
+    IDataInput::Probe(mRaf)->ReadInt32(&headerMagic);
+    headerMagic = Math::ReverseBytes(headerMagic);
+    if (headerMagic == IZipConstants::ENDSIG) {
+        ALOGE("ZipException: Empty zip archive not supported");
+        return E_ZIP_EXCEPTION;
+    }
+    if (headerMagic != IZipConstants::LOCSIG) {
+        ALOGE("ZipException: Not a zip archive");
+        return E_ZIP_EXCEPTION;
+    }
+
     Int64 stopOffset = scanOffset - 65536;
     if (stopOffset < 0) {
         stopOffset = 0;
     }
 
-    AutoPtr<IDataInput> di = IDataInput::Probe(mRaf);
-    const Int32 ENDHEADERMAGIC = 0x06054b50;
-    Int32 value;
-    while(TRUE) {
+    Int32 intVal;
+    while (TRUE) {
         mRaf->Seek(scanOffset);
-        di->ReadInt32(&value);
-        if (Elastos::Core::Math::ReverseBytes(value) == ENDHEADERMAGIC) {
+        IDataInput::Probe(mRaf)->ReadInt32(&intVal);
+        intVal = Math::ReverseBytes(intVal);
+        if (intVal == IZipConstants::ENDSIG) {
             break;
         }
 
         scanOffset--;
         if (scanOffset < stopOffset) {
+            ALOGE("ZipException: End Of Central Directory signature not found");
             return E_ZIP_EXCEPTION;
-//            throw new ZipException("EOCD not found; not a Zip archive?");
         }
     }
 
-    // Read the End Of Central Directory. We could use ENDHDR instead of the magic number 18,
-    // but we don't actually need all the header.
-    AutoPtr<ArrayOf<Byte> > eocd = ArrayOf<Byte>::Alloc(18);
-    di->ReadFully(eocd, 0, eocd->GetLength());
+    // Read the End Of Central Directory. ENDHDR includes the signature bytes,
+    // which we've already read.
+    AutoPtr<ArrayOf<Byte> > eocd = ArrayOf<Byte>::Alloc(IZipConstants::ENDHDR - 4);
+    IDataInput::Probe(mRaf)->ReadFully(eocd);
 
     // Pull out the information we need.
-    AutoPtr<IBufferIterator> it;
-    // CHeapBufferIterator::New(eocd, 0, eocd->GetLength(), ByteOrder_LITTLE_ENDIAN,
-    //         (IBufferIterator**)&it);
-
-    Int16 temp16;
-    it->ReadInt16(&temp16);
-    Int32 diskNumber = temp16 & 0xffff;
-    it->ReadInt16(&temp16);
-    Int32 diskWithCentralDir = temp16 & 0xffff;
-    it->ReadInt16(&temp16);
-    Int32 numEntries = temp16 & 0xffff;
-    it->ReadInt16(&temp16);
-    Int32 totalNumEntries = temp16 & 0xffff;
+    AutoPtr<IBufferIterator> it = HeapBufferIterator::Iterator(
+        eocd, 0, eocd->GetLength(), ByteOrder_LITTLE_ENDIAN);
+    Int16 shortVal;
+    it->ReadInt16(&shortVal);
+    Int32 diskNumber = shortVal & 0xffff;
+    it->ReadInt16(&shortVal);
+    Int32 diskWithCentralDir = shortVal & 0xffff;
+    it->ReadInt16(&shortVal);
+    Int32 numEntries = shortVal & 0xffff;
+    it->ReadInt16(&shortVal);
+    Int32 totalNumEntries = shortVal & 0xffff;
     it->Skip(4); // Ignore centralDirSize.
-    Int32 centralDirOffset;
-    it->ReadInt32(&centralDirOffset);
+    it->ReadInt32(&intVal);
+    Int64 centralDirOffset = ((Int64) intVal) & 0xffffffffL;
+    it->ReadInt16(&shortVal);
+    Int32 commentLength = shortVal & 0xffff;
 
     if (numEntries != totalNumEntries || diskNumber != 0 || diskWithCentralDir != 0) {
+        ALOGE("ZipException: Spanned archives not supported");
         return E_ZIP_EXCEPTION;
-//        throw new ZipException("spanned archives not supported");
+    }
+
+    if (commentLength > 0) {
+        AutoPtr<ArrayOf<Byte> > commentBytes = ArrayOf<Byte>::Alloc(commentLength);
+        IDataInput::Probe(mRaf)->ReadFully(commentBytes);
+        mComment = String((const char*)commentBytes->GetPayload(), commentBytes->GetLength());//, StandardCharsets.UTF_8);
     }
 
     // Seek to the first CDE and read all entries.
-    AutoPtr<RAFStream> rafs = new RAFStream(mRaf, centralDirOffset);
-    AutoPtr<IBufferedInputStream> bin;
-    FAIL_RETURN(CBufferedInputStream::New((IInputStream*)rafs, 4096,
-            (IBufferedInputStream**)&bin));
-    IInputStream* is = IInputStream::Probe(bin.Get());
+    // We have to do this now (from the constructor) rather than lazily because the
+    // public API doesn't allow us to throw IOException except from the constructor
+    // or from getInputStream.
+    AutoPtr<RAFStream> rafStream = new RAFStream(mRaf, centralDirOffset);
+    AutoPtr<IInputStream> bufferedStream;
+    FAIL_RETURN(CBufferedInputStream::New((IInputStream*)rafStream.Get(), 4096,
+            (IInputStream**)&bufferedStream));
 
     AutoPtr<ICharset> charset; //StandardCharsets.UTF_8
-    String name;
     AutoPtr<ArrayOf<Byte> > hdrBuf = ArrayOf<Byte>::Alloc(IZipConstants::CENHDR); // Reuse the same buffer for each entry.
     for (Int32 i = 0; i < numEntries; ++i) {
         AutoPtr<IZipEntry> newEntry;
-        FAIL_RETURN(CZipEntry::New(*hdrBuf, is, charset, (IZipEntry**)&newEntry));
-        newEntry->GetName(&name);
-        // mEntries[name] = newEntry;
+        FAIL_RETURN(CZipEntry::New(hdrBuf, bufferedStream, charset, (IZipEntry**)&newEntry));
+
+        if (((CZipEntry*)newEntry.Get())->mLocalHeaderRelOffset >= centralDirOffset) {
+            ALOGE("Local file header offset is after central directory");
+            return E_ZIP_EXCEPTION;
+        }
+        String entryName;
+        newEntry->GetName(&entryName);
+        AutoPtr<ICharSequence> csq;
+        CStringWrapper::New(entryName, (ICharSequence**)&csq);
+        AutoPtr<IInterface> oldValue;
+        mEntries->Put(TO_IINTERFACE(csq), TO_IINTERFACE(newEntry), (IInterface**)&oldValue);
+        if (oldValue.Get() != NULL) {
+            ALOGE("Duplicate entry name: %s", entryName.string());
+            return E_ZIP_EXCEPTION;
+        }
     }
 
     return NOERROR;
