@@ -1,11 +1,12 @@
 
-#ifndef __XMLPULLPARSERFACTORY_H__
-#define __XMLPULLPARSERFACTORY_H__
+#ifndef __ORG_XMLPULL_V1_XMLPULLPARSERFACTORY_H__
+#define __ORG_XMLPULL_V1_XMLPULLPARSERFACTORY_H__
 
 #include <elastos/core/Object.h>
-#include "elastos/HashMap.h"
+#include <elastos/utility/etl/HashMap.h>
 #include "Org.Xmlpull.V1_server.h"
 
+using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 using Org::Xmlpull::V1::IXmlPullParserFactory;
 
@@ -102,4 +103,4 @@ private:
 } // namespace Xmlpull
 } // namespace Org
 
-#endif // __XMLPULLPARSERFACTORY_H__
+#endif // __ORG_XMLPULL_V1_XMLPULLPARSERFACTORY_H__

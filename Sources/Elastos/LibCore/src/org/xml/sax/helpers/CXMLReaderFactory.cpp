@@ -11,9 +11,10 @@ using Elastos::IO::IBufferedReader;
 using Elastos::IO::CBufferedReader;
 using Elastos::IO::IInputStreamReader;
 using Elastos::IO::CInputStreamReader;
+using Elastos::IO::IReader;
 using Elastos::IO::Charset::ICharset;
-using Elastos::IO::Charset::IStandardCharsets;
-using Elastos::IO::Charset::CStandardCharsets;
+//using Elastos::IO::Charset::IStandardCharsets;
+//using Elastos::IO::Charset::CStandardCharsets;
 
 namespace Org {
 namespace Xml {
@@ -22,7 +23,9 @@ namespace Helpers {
 
 const String XMLReaderFactory::property("org.xml.sax.driver");
 
-CAR_SINGLETON_IMPL(CXMLReaderFactory, Singleton, IXMLReaderFactory)
+CAR_INTERFACE_IMPL(CXMLReaderFactory, Singleton, IXMLReaderFactory)
+
+CAR_SINGLETON_IMPL(CXMLReaderFactory)
 
 ECode CXMLReaderFactory::CreateXMLReader(
     /* [out] */ IXMLReader** reader)
@@ -68,14 +71,14 @@ ECode XMLReaderFactory::CreateXMLReader(
             // in = loader.getResourceAsStream (service);
 
         if (in != NULL) {
-            AutoPtr<IStandardCharsets> csets;
-            CStandardCharsets::AcquireSingleton((IStandardCharsets**)&csets);
+            // AutoPtr<IStandardCharsets> csets;
+            // CStandardCharsets::AcquireSingleton((IStandardCharsets**)&csets);
             AutoPtr<ICharset> charset;
-            csets->GetUTF_8((ICharset**)&charset);
+            // csets->GetUTF_8((ICharset**)&charset);
             String utf8str;
             charset->GetName(&utf8str);
-            AutoPtr<IInputStreamReader> isr;
-            FAIL_RETURN(CInputStreamReader::New(in, utf8str, (IInputStreamReader**)&isr));
+            AutoPtr<IReader> isr;
+            FAIL_RETURN(CInputStreamReader::New(in, utf8str, (IReader**)&isr));
             FAIL_RETURN(CBufferedReader::New(isr, (IBufferedReader**)&reader));
             reader->ReadLine(&className);
             in->Close ();

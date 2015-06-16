@@ -385,7 +385,7 @@ ECode CParserAdapter::StartElement(
     // OK, finally report the event.
     if (mContentHandler != NULL) {
         AutoPtr< ArrayOf<String> > name = ProcessName(qName, FALSE, FALSE);
-        mContentHandler->StartElement((*name)[0], (*name)[1], (*name)[2], mAtts);
+        mContentHandler->StartElement((*name)[0], (*name)[1], (*name)[2], IAttributes::Probe(mAtts));
     }
     return NOERROR;
 }
@@ -406,17 +406,15 @@ ECode CParserAdapter::EndElement(
     AutoPtr< ArrayOf<String> > names = ProcessName(qName, FALSE, FALSE);
     if (mContentHandler != NULL) {
         mContentHandler->EndElement((*names)[0], (*names)[1], (*names)[2]);
-        AutoPtr<IObjectContainer> prefixes;
-        mNsSupport->GetDeclaredPrefixes((IObjectContainer**)&prefixes);
+        AutoPtr<IEnumeration> prefixes;
+        mNsSupport->GetDeclaredPrefixes((IEnumeration**)&prefixes);
         if (prefixes != NULL) {
-            AutoPtr<IObjectEnumerator> oenum;
-            prefixes->GetObjectEnumerator((IObjectEnumerator**)&oenum);
+            String prefix;
             Boolean isflag = FALSE;
-            while (oenum->MoveNext(&isflag), isflag)
-            {
-                String prefix;
-                AutoPtr<ICharSequence> csq;
-                oenum->Current((IInterface**)&csq);
+            while (prefixes->HasMoreElements(&isflag), isflag) {
+                AutoPtr<IInterface> obj;
+                prefixes->GetNextElement((IInterface**)&obj);
+                ICharSequence* csq = ICharSequence::Probe(obj);
                 csq->ToString(&prefix);
                 mContentHandler->EndPrefixMapping(prefix);
             }
@@ -503,7 +501,7 @@ AutoPtr<ArrayOf<String> > CParserAdapter::ProcessName(
     /* [in] */ Boolean useException)
 {
     AutoPtr< ArrayOf<String> > parts;
-    mNsSupport->ProcessName(qName, *mNameParts, isAttribute, (ArrayOf<String>**)&parts);
+    mNsSupport->ProcessName(qName, mNameParts, isAttribute, (ArrayOf<String>**)&parts);
     if (parts == NULL) {
         if (useException)
             MakeException(String("Undeclared prefix: ") + qName);
@@ -549,7 +547,7 @@ CAR_INTERFACE_IMPL(CParserAdapter::AttributeListAdapter, Object, IAttributes);
 CParserAdapter::AttributeListAdapter::AttributeListAdapter(
     /* [in] */ CParserAdapter* host)
 {
-    IWeakReferenceSource* wrs = IWeakReferenceSource::Probe(host);
+    IWeakReferenceSource* wrs = (IWeakReferenceSource*)host->Probe(EIID_IWeakReferenceSource);
     wrs->GetWeakReference((IWeakReference**)&mWeakHost);
 }
 
@@ -634,11 +632,11 @@ ECode CParserAdapter::AttributeListAdapter::GetIndex(
     *value = -1;
 
     AutoPtr<IXMLReader> reader;
-    mWeakHost->Resovle(EIID_IXMLReader, (IInterface**)&reader);
+    mWeakHost->Resolve(EIID_IXMLReader, (IInterface**)&reader);
     if (reader) {
         CParserAdapter* host = (CParserAdapter*)reader.Get();
         Int32 max = 0;
-        host->mAtts->GetLength(&max);
+        IAttributes::Probe(host->mAtts)->GetLength(&max);
         for (Int32 i = 0; i < max; i++) {
             String name;
             mQAtts->GetName(i, &name);

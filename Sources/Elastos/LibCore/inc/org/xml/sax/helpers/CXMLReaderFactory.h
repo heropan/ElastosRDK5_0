@@ -1,11 +1,11 @@
 
-#ifndef __CXMLREADERFACTORY_H__
-#define __CXMLREADERFACTORY_H__
+#ifndef __ORG_XML_SAX_HELPERS_CXMLREADERFACTORY_H__
+#define __ORG_XML_SAX_HELPERS_CXMLREADERFACTORY_H__
 
 #include "_Org_Xml_Sax_Helpers_CXMLReaderFactory.h"
-#include "Singleton.h"
-#include <Elastos.CoreLibrary.h>
+#include <elastos/core/Singleton.h>
 
+using Elastos::Core::Singleton;
 using Elastos::Core::IClassLoader;
 
 namespace Org {
@@ -47,10 +47,12 @@ namespace Helpers {
  * @version 2.0.1 (sax2r2)
  */
 CarClass(CXMLReaderFactory)
-    : public Singleton
+    , public Singleton
     , public IXMLReaderFactory
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CAR_SINGLETON_DECL()
 
     /**
@@ -150,4 +152,4 @@ private:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CXMLREADERFACTORY_H__
+#endif // __ORG_XML_SAX_HELPERS_CXMLREADERFACTORY_H__

@@ -9,17 +9,16 @@ INCLUDES += $(MAKEDIR)/../../../../inc/org;
 INCLUDES += $(MAKEDIR)/../../../../inc/org/xmlpull/v1;
 INCLUDES += $(MAKEDIR)/../../../../inc/org/xmlpull/v1/sax2;
 
-VPATH := $(MAKEDIR)/Sax2
+VPATH := $(MAKEDIR)/sax2
 
 CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Org.Xmlpull.V1.car
-SOURCES += CDummy.cpp
-#SOURCES += XmlPullParserFactory.cpp
-#SOURCES += CXmlPullParserFactory.cpp
-#SOURCES += CXmlPullParserFactoryHelper.cpp
-#SOURCES += CDriver.cpp
+SOURCES += XmlPullParserFactory.cpp
+SOURCES += CXmlPullParserFactory.cpp
+SOURCES += CXmlPullParserFactoryHelper.cpp
+SOURCES += CDriver.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 SOURCES += Org.Xml.Sax.cpp
 

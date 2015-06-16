@@ -3,7 +3,11 @@
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
-using Elastos::Core::CObjectContainer;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::ICollections;
+// using Elastos::Utility::CCollections;
+using Elastos::Utility::IList;
 
 namespace Org {
 namespace Xml {
@@ -13,11 +17,11 @@ namespace Helpers {
 static AutoPtr<IEnumeration> InitEMPTY_ENUMERATION()
 {
     AutoPtr<ICollections> collections;
-    CCollections::AcquireSingleton((ICollections**)&collections);
+    // CCollections::AcquireSingleton((ICollections**)&collections);
     AutoPtr<IList> list;
     collections->GetEmptyList((IList**)&list);
     AutoPtr<IEnumeration> enu;
-    collections->Enumeration(list, (IEnumeration**)&enu);
+    // collections->Enumeration(list, (IEnumeration**)&enu);
     return enu;
 }
 
@@ -105,7 +109,7 @@ ECode CNamespaceSupport::ProcessName(
     VALIDATE_NOT_NULL(nName)
     *nName = NULL;
     VALIDATE_NOT_NULL(parts)
-    assert(parts->GetLength()　>= 3);
+    assert(parts->GetLength() >= 3);
 
     AutoPtr< ArrayOf<String> > myParts = mCurrentContext->ProcessName(qName, isAttribute);
     if (myParts != NULL) {
@@ -159,7 +163,7 @@ ECode CNamespaceSupport::GetPrefixes(
     VALIDATE_NOT_NULL(result)
 
     AutoPtr<IArrayList> prefixes;
-    CArrayList::New((IArrayList**)&prefixes)
+    CArrayList::New((IArrayList**)&prefixes);
 
     AutoPtr<IEnumeration> allPrefixes;
     GetPrefixes((IEnumeration**)&allPrefixes);
@@ -167,18 +171,19 @@ ECode CNamespaceSupport::GetPrefixes(
     Boolean hasMore;
     while (allPrefixes->HasMoreElements(&hasMore), hasMore) {
         AutoPtr<IInterface> obj;
-        allPrefixes->NextElement((IInterface**)&obj);
+        allPrefixes->GetNextElement((IInterface**)&obj);
         ICharSequence* seq =  ICharSequence::Probe(obj);
-        String prefix;
+        String prefix, us;
         seq->ToString(&prefix);
-        if (uri.Equals(GetURI(prefix))) {
+        GetURI(prefix, &us);
+        if (uri.Equals(us)) {
             AutoPtr<ICharSequence> csq;
             CStringWrapper::New(prefix, (ICharSequence**)&csq);
-            prefixes->Add(csq);
+            ICollection::Probe(prefixes)->Add(csq);
         }
     }
 
-    *result = prefixes;
+    *result = IEnumeration::Probe(prefixes);
     REFCOUNT_ADD(*result)
 
     return NOERROR;
@@ -233,7 +238,7 @@ ECode CNamespaceSupport::constructor()
 CNamespaceSupport::Context::Context(
     /* [in] */ CNamespaceSupport* parent)
 {
-    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(parent);
+    AutoPtr<IWeakReferenceSource> wrs = (IWeakReferenceSource*)parent->Probe(EIID_IWeakReferenceSource);
     wrs->GetWeakReference((IWeakReference**)&mWeakParentHolder);
     mDeclSeen = FALSE;
     mParentContext = NULL;
@@ -246,42 +251,6 @@ CNamespaceSupport::Context::Context(
 
 CNamespaceSupport::Context::~Context()
 {
-}
-
-PInterface CNamespaceSupport::Context::Probe(
-    /* [in] */ REIID riid)
-{
-    if ( riid == EIID_IInterface) {
-        return (IInterface*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 CNamespaceSupport::Context::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CNamespaceSupport::Context::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CNamespaceSupport::Context::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-
-    if (object == (IInterface*)this) {
-        *iid = EIID_IInterface;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    return NOERROR;
 }
 
 void CNamespaceSupport::Context::SetParent (
@@ -302,7 +271,6 @@ void CNamespaceSupport::Context::Clear ()
     mParentContext = NULL;
     mDefaultNS = String(NULL);
 }
-
 
 ECode CNamespaceSupport::Context::DeclarePrefix(
     /* [in] */ const String& prefix,
@@ -336,7 +304,7 @@ ECode CNamespaceSupport::Context::DeclarePrefix(
 
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(prefix, (ICharSequence**)&seq);
-    mDeclarations->Add(seq);
+    ICollection::Probe(mDeclarations)->Add(seq);
 }
 
 AutoPtr< ArrayOf<String> > CNamespaceSupport::Context::ProcessName (
@@ -382,7 +350,7 @@ AutoPtr< ArrayOf<String> > CNamespaceSupport::Context::ProcessName (
                 AutoPtr<INamespaceSupport> ns;
                 mWeakParentHolder->Resolve(EIID_INamespaceSupport, (IInterface**)&ns);
                 if (ns != NULL) {
-                    CNamespaceSupport* holder = (CNamespaceSupport**)ns.Get();
+                    CNamespaceSupport* holder = (CNamespaceSupport*)ns.Get();
                     if (holder->mNamespaceDeclUris) {
                         (*name)[0] = NSDECL;
                     }
@@ -454,9 +422,9 @@ AutoPtr<IEnumeration> CNamespaceSupport::Context::GetDeclaredPrefixes()
     }
     else {
         AutoPtr<ICollections> collections;
-        CCollections::AcquireSingleton((ICollections**)&collections);
+        // CCollections::AcquireSingleton((ICollections**)&collections);
         AutoPtr<IEnumeration> enu;
-        collections->Enumeration(IList::Probe(mDeclarations), (IEnumeration**)&enu);
+        // collections->Enumeration(IList::Probe(mDeclarations), (IEnumeration**)&enu);
         return enu;
     }
 }
@@ -468,20 +436,20 @@ AutoPtr<IEnumeration> CNamespaceSupport::Context::GetPrefixes ()
     }
     else {
         AutoPtr<IArrayList> prefixes;
-        CArrayList::New((IArrayList**)&prefixes)
+        CArrayList::New((IArrayList**)&prefixes);
 
         HashMap<String, String>::Iterator iter = mPrefixTable.Begin();
         while (iter != mPrefixTable.End()) {
             AutoPtr<ICharSequence> csq;
             CStringWrapper::New(iter->mFirst, (ICharSequence**)&csq);
-            prefixes->Add(csq);
+            ICollection::Probe(prefixes)->Add(csq);
             iter++;
         }
 
         AutoPtr<ICollections> collections;
-        CCollections::AcquireSingleton((ICollections**)&collections);
+        // CCollections::AcquireSingleton((ICollections**)&collections);
         AutoPtr<IEnumeration> enu;
-        collections->Enumeration(IList::Probe(prefixes), (IEnumeration**)&enu);
+        // collections->Enumeration(IList::Probe(prefixes), (IEnumeration**)&enu);
         return enu;
     }
 }

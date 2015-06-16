@@ -1,5 +1,5 @@
-#ifndef __LOCATORIMPL_H__
-#define __LOCATORIMPL_H__
+#ifndef __ORG_XML_SAX_HELPERS_LOCATORIMPL_H__
+#define __ORG_XML_SAX_HELPERS_LOCATORIMPL_H__
 
 #include <Org.Xml.Sax_server.h>
 #include <elastos/core/Object.h>
@@ -175,4 +175,4 @@ private:
 } // namespace Xml
 } // namespace Org
 
-#endif // __LOCATORIMPL_H__
+#endif // __ORG_XML_SAX_HELPERS_LOCATORIMPL_H__

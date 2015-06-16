@@ -1,6 +1,6 @@
 
-#ifndef __ATTRIBUTESIMPL_H__
-#define __ATTRIBUTESIMPL_H__
+#ifndef __ORG_XML_SAX_HELPERS_ATTRIBUTESIMPL_H__
+#define __ORG_XML_SAX_HELPERS_ATTRIBUTESIMPL_H__
 
 #include <elastos/core/Object.h>
 #include <Org.Xml.Sax_server.h>
@@ -394,4 +394,4 @@ private:
 } // namespace Xml
 } // namespace Org
 
-#endif // __ATTRIBUTESIMPL_H__
+#endif // __ORG_XML_SAX_HELPERS_ATTRIBUTESIMPL_H__

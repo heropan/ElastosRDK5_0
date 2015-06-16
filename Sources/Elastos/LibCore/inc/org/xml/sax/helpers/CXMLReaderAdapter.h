@@ -1,8 +1,12 @@
 
-#ifndef __CXMLREADERADAPTER_H__
-#define __CXMLREADERADAPTER_H__
+#ifndef __ORG_XML_SAX_HELPERS_CXMLREADERADAPTER_H__
+#define __ORG_XML_SAX_HELPERS_CXMLREADERADAPTER_H__
 
 #include "_Org_Xml_Sax_Helpers_CXMLReaderAdapter.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
+using Elastos::Utility::ILocale;
 
 namespace Org {
 namespace Xml {
@@ -12,12 +16,13 @@ namespace Helpers {
 class AttributesAdapter;
 
 CarClass(CXMLReaderAdapter)
-    , public　Object
+    , public Object
     , public IParser
     , public IContentHandler
 {
 public:
     CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     /**
@@ -56,7 +61,7 @@ public:
      * @exception org.xml.sax.SAXException Thrown unless overridden.
      */
     CARAPI SetLocale(
-        /* [in] */ Libcore::ICU::ILocale* locale);
+        /* [in] */ ILocale* locale);
 
     /**
      * Register the entity resolver.
@@ -373,4 +378,4 @@ private:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CXMLREADERADAPTER_H__
+#endif // __ORG_XML_SAX_HELPERS_CXMLREADERADAPTER_H__

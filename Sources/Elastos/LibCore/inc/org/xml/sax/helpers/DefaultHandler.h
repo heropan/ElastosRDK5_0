@@ -1,6 +1,6 @@
 
-#ifndef __DEFAULTHANDLER_H__
-#define __DEFAULTHANDLER_H__
+#ifndef __ORG_XML_SAX_HELPERS_DEFAULTHANDLER_H__
+#define __ORG_XML_SAX_HELPERS_DEFAULTHANDLER_H__
 
 #include <Org.Xml.Sax_server.h>
 #include <elastos/core/Object.h>
@@ -397,4 +397,4 @@ public:
 } // namespace Xml
 } // namespace Org
 
-#endif // __DEFAULTHANDLER_H__
+#endif // __ORG_XML_SAX_HELPERS_DEFAULTHANDLER_H__

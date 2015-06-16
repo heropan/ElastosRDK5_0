@@ -10,7 +10,9 @@ namespace Xml {
 namespace Sax {
 namespace Helpers {
 
-CAR_SINGLTON_IMPL(CParserFactory, Singleton, IParserFactory)
+CAR_INTERFACE_IMPL(CParserFactory, Singleton, IParserFactory)
+
+CAR_SINGLETON_IMPL(CParserFactory)
 
 ECode CParserFactory::MakeParser(
     /* [out] */ IParser** parser)

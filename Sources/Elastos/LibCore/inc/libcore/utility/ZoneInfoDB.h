@@ -24,7 +24,9 @@ public:
         public ElRefBase
     {
     public:
-        TzData(
+        TzData();
+
+        void Init(
             /* [in] */ ArrayOf<String>* paths);
 
         AutoPtr<ArrayOf<String> > GetAvailableIDs();

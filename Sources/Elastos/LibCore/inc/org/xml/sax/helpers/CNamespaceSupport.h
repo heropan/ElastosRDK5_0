@@ -1,15 +1,15 @@
 
-#ifndef __CNAMESPACESUPPORT_H__
-#define __CNAMESPACESUPPORT_H__
+#ifndef __ORG_XML_SAX_HELPERS_CNAMESPACESUPPORT_H__
+#define __ORG_XML_SAX_HELPERS_CNAMESPACESUPPORT_H__
 
 #include "_Org_Xml_Sax_Helpers_CNamespaceSupport.h"
-#include "Object.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
-#include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::Object;
 using Elastos::Utility::IEnumeration;
+using Elastos::Utility::IArrayList;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 
@@ -27,6 +27,7 @@ public:
 
 public:
     CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     CARAPI Reset();
@@ -116,7 +117,7 @@ public:
          * @param uri The associated Namespace URI.
          * @see org.xml.sax.helpers.NamespaceSupport#declarePrefix
          */
-        CARAPI_(void) DeclarePrefix(
+        CARAPI DeclarePrefix(
             /* [in] */ const String& prefix,
             /* [in] */ const String& uri);
 
@@ -220,4 +221,10 @@ public:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CNAMESPACESUPPORT_H__
+template <>
+struct Conversion<Org::Xml::Sax::Helpers::CNamespaceSupport::Context*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
+
+#endif // __ORG_XML_SAX_HELPERS_CNAMESPACESUPPORT_H__

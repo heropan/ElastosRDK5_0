@@ -1,10 +1,9 @@
 
-#ifndef __CINPUTSOURCE_H__
-#define __CINPUTSOURCE_H__
+#ifndef __ORG_XML_SAX_CINPUTSOURCE_H__
+#define __ORG_XML_SAX_CINPUTSOURCE_H__
 
 #include "_Org_Xml_Sax_CInputSource.h"
 #include <elastos/core/Object.h>
-#include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::Object;
 using Elastos::IO::IReader;
@@ -255,4 +254,4 @@ private:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CINPUTSOURCE_H__
+#endif // __ORG_XML_SAX_CINPUTSOURCE_H__

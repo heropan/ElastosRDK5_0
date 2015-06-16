@@ -6,6 +6,6 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/org/xml/sax;
 INCLUDES += $(MAKEDIR)/../../../../../inc/org/xml/sax/helpers;
 INCLUDES += $(MAKEDIR)/../../../../../inc/org/xml/sax/ext;
 
-#SOURCES = CLocator2Impl.cpp
+SOURCES = CLocator2Impl.cpp
 SOURCES += CAttributes2Impl.cpp
 SOURCES += CDefaultHandler2.cpp

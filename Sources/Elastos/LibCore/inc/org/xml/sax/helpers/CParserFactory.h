@@ -1,9 +1,9 @@
 
-#ifndef __CPARSERFACTORY_H__
-#define __CPARSERFACTORY_H__
+#ifndef __ORG_XML_SAX_HELPERS_CPARSERFACTORY_H__
+#define __ORG_XML_SAX_HELPERS_CPARSERFACTORY_H__
 
 #include "_Org_Xml_Sax_Helpers_CParserFactory.h"
-#include "Singleton.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::Singleton;
 
@@ -23,6 +23,7 @@ public:
 
 private:
     ParserFactory();
+    ParserFactory(const ParserFactory&);
 };
 
 CarClass(CParserFactory)
@@ -30,6 +31,8 @@ CarClass(CParserFactory)
     , public IParserFactory
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CAR_SINGLETON_DECL()
 
     /**
@@ -95,4 +98,4 @@ private:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CPARSERFACTORY_H__
+#endif // __ORG_XML_SAX_HELPERS_CPARSERFACTORY_H__

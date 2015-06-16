@@ -1,7 +1,7 @@
 
 #include "CKXmlSerializer.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -9,6 +9,8 @@ using Elastos::IO::CBufferedWriter;
 using Elastos::IO::IOutputStreamWriter;
 using Elastos::IO::COutputStreamWriter;
 using Elastos::IO::IFlushable;
+using Org::Xmlpull::V1::IXmlSerializer;
+using Org::Xmlpull::V1::EIID_IXmlSerializer;
 
 namespace Org {
 namespace Kxml2 {
@@ -55,19 +57,19 @@ ECode CKXmlSerializer::Check(
 
     for (Int32 i = (*mNspCounts)[mDepth - 1]; i < (*mNspCounts)[mDepth]; i++) {
         String ns;
-        FAIL_RETURN(mWriter->Write(' '));
-        FAIL_RETURN(mWriter->WriteString(String("xmlns")));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(' '));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("xmlns")));
         if (!(*mNspStack)[i * 2].IsEmpty()) {
-            FAIL_RETURN(mWriter->Write(':'));
-            FAIL_RETURN(mWriter->WriteString((*mNspStack)[i * 2]));
+            FAIL_RETURN(IWriter::Probe(mWriter)->Write(':'));
+            FAIL_RETURN(IWriter::Probe(mWriter)->Write((*mNspStack)[i * 2]));
         }
         else if ((GetNamespace(&ns), ns.IsEmpty()) && !(*mNspStack)[i * 2 + 1].IsEmpty()) {
 //            throw new IllegalStateException("Cannot set default namespace for elements in no namespace");
             return E_ILLEGAL_STATE_EXCEPTION;
         }
-        FAIL_RETURN(mWriter->WriteString(String("=\"")));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("=\"")));
         FAIL_RETURN(WriteEscaped((*mNspStack)[i * 2 + 1], '"'));
-        FAIL_RETURN(mWriter->Write('"'));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write('"'));
     }
 
     if (mNspCounts->GetLength() <= mDepth + 1) {
@@ -79,7 +81,7 @@ ECode CKXmlSerializer::Check(
     (*mNspCounts)[mDepth + 1] = (*mNspCounts)[mDepth];
     //   nspCounts[depth + 2] = nspCounts[depth];
 
-    return mWriter->WriteString(close ? String(" />") : String(">"));
+    return IWriter::Probe(mWriter)->Write(close ? String(" />") : String(">"));
 }
 
 ECode CKXmlSerializer::WriteEscaped(
@@ -96,29 +98,29 @@ ECode CKXmlSerializer::WriteEscaped(
             case '\r':
             case '\t':
                 if(quot == -1) {
-                    FAIL_RETURN(mWriter->Write(c));
+                    FAIL_RETURN(IWriter::Probe(mWriter)->Write(c));
                 }
                 else {
                     StringBuilder sb;
-                    sb.AppendString(String("&#"));
-                    sb.AppendInt32(c);
-                    sb.AppendString(String(";"));
+                    sb.Append(String("&#"));
+                    sb.AppendChar(c);
+                    sb.Append(String(";"));
                     String str = sb.ToString();
-                    FAIL_RETURN(mWriter->WriteString(str));
+                    FAIL_RETURN(IWriter::Probe(mWriter)->Write(str));
                 }
                 break;
             case '&' :
-                FAIL_RETURN(mWriter->WriteString(String("&amp;")));
+                FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("&amp;")));
                 break;
             case '>' :
-                FAIL_RETURN(mWriter->WriteString(String("&gt;")));
+                FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("&gt;")));
                 break;
             case '<' :
-                FAIL_RETURN(mWriter->WriteString(String("&lt;")));
+                FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("&lt;")));
                 break;
             default :
                 if (c == (Char32)quot) {
-                    FAIL_RETURN(mWriter->WriteString(
+                    FAIL_RETURN(IWriter::Probe(mWriter)->Write(
                         c == '"' ? String("&quot;") : String("&apos;")));
                     break;
                 }
@@ -135,15 +137,15 @@ ECode CKXmlSerializer::WriteEscaped(
                     return ReportInvalidCharacter(c);
                 }
                 if (mUnicode || c < 127) {
-                    FAIL_RETURN(mWriter->Write(c));
+                    FAIL_RETURN(IWriter::Probe(mWriter)->Write(c));
                 }
                 else {
                     StringBuilder sb;
-                    sb.AppendString(String("&#"));
-                    sb.AppendInt32(c);
-                    sb.AppendString(String(";"));
+                    sb.Append(String("&#"));
+                    sb.AppendChar(c);
+                    sb.Append(String(";"));
                     String str = sb.ToString();
-                    FAIL_RETURN(mWriter->WriteString(str));
+                    FAIL_RETURN(IWriter::Probe(mWriter)->Write(str));
                 }
                 // END android-changed
         }
@@ -163,9 +165,9 @@ ECode CKXmlSerializer::ReportInvalidCharacter(
 ECode CKXmlSerializer::WriteDocDecl(
     /* [in] */ const String& dd)
 {
-    FAIL_RETURN(mWriter->WriteString(String("<!DOCTYPE")));
-    FAIL_RETURN(mWriter->WriteString(dd));
-    return mWriter->WriteString(String(">"));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("<!DOCTYPE")));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(dd));
+    return IWriter::Probe(mWriter)->Write(String(">"));
 }
 
 ECode CKXmlSerializer::EndDocument()
@@ -182,9 +184,9 @@ ECode CKXmlSerializer::WriteEntityRef(
     /* [in] */ const String& text)
 {
     FAIL_RETURN(Check(FALSE));
-    FAIL_RETURN(mWriter->Write('&'));
-    FAIL_RETURN(mWriter->WriteString(text));
-    return mWriter->Write(';');
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write('&'));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(text));
+    return IWriter::Probe(mWriter)->Write(';');
 }
 
 ECode CKXmlSerializer::GetFeature(
@@ -409,7 +411,7 @@ ECode CKXmlSerializer::StartDocument(
     /* [in] */ const String& encoding,
     /* [in] */ IBoolean* standalone)
 {
-    FAIL_RETURN(mWriter->WriteString(String("<?xml version='1.0' ")));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("<?xml version='1.0' ")));
 
     if (!encoding.IsNull()) {
         mEncoding = encoding;
@@ -419,20 +421,20 @@ ECode CKXmlSerializer::StartDocument(
     }
 
     if (!mEncoding.IsNull()) {
-        FAIL_RETURN(mWriter->WriteString(String("encoding='")));
-        FAIL_RETURN(mWriter->WriteString(mEncoding));
-        FAIL_RETURN(mWriter->WriteString(String("' ")));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("encoding='")));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(mEncoding));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("' ")));
     }
 
     if (standalone != NULL) {
         Boolean b;
         standalone->GetValue(&b);
-        FAIL_RETURN(mWriter->WriteString(String("standalone='")));
-        FAIL_RETURN(mWriter->WriteString(
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("standalone='")));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(
             b ? String("yes") : String("no")));
-        FAIL_RETURN(mWriter->WriteString(String("' ")));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("' ")));
     }
-    return mWriter->WriteString(String("?>"));
+    return IWriter::Probe(mWriter)->Write(String("?>"));
 }
 
 ECode CKXmlSerializer::WriteStartTag(
@@ -445,9 +447,9 @@ ECode CKXmlSerializer::WriteStartTag(
     //            namespace = "";
 
     if ((*mIndent)[mDepth]) {
-        FAIL_RETURN(mWriter->WriteString(String("\r\n")));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("\r\n")));
         for (Int32 i = 0; i < mDepth; i++) {
-            FAIL_RETURN(mWriter->WriteString(String("  ")));
+            FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("  ")));
         }
     }
 
@@ -477,13 +479,13 @@ ECode CKXmlSerializer::WriteStartTag(
     (*mElementStack)[esp++] = prefix;
     (*mElementStack)[esp] = name;
 
-    FAIL_RETURN(mWriter->Write('<'));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write('<'));
     if (!prefix.IsEmpty()) {
-        FAIL_RETURN(mWriter->WriteString(prefix));
-        FAIL_RETURN(mWriter->Write(':'));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(prefix));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(':'));
     }
 
-    FAIL_RETURN(mWriter->WriteString(name));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(name));
 
     mPending = TRUE;
 
@@ -531,17 +533,17 @@ ECode CKXmlSerializer::WriteAttribute(
             }
             */
 
-    FAIL_RETURN(mWriter->Write(' '));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(' '));
     if (!prefix.IsEmpty()) {
-        FAIL_RETURN(mWriter->WriteString(prefix));
-        FAIL_RETURN(mWriter->Write(':'));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(prefix));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(':'));
     }
-    FAIL_RETURN(mWriter->WriteString(name));
-    FAIL_RETURN(mWriter->Write('='));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(name));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write('='));
     Char32 q = value.IndexOf('"') == -1 ? '"' : '\'';
-    FAIL_RETURN(mWriter->Write(q));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(q));
     FAIL_RETURN(WriteEscaped(value, q));
-    return mWriter->Write(q);
+    return IWriter::Probe(mWriter)->Write(q);
 }
 
 ECode CKXmlSerializer::Flush()
@@ -576,20 +578,20 @@ ECode CKXmlSerializer::WriteEndTag(
     }
     else {
         if ((*mIndent)[mDepth + 1]) {
-            FAIL_RETURN(mWriter->WriteString(String("\r\n")));
+            FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("\r\n")));
             for (Int32 i = 0; i < mDepth; i++) {
-                FAIL_RETURN(mWriter->WriteString(String("  ")));
+                FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("  ")));
             }
         }
 
-        FAIL_RETURN(mWriter->WriteString(String("</")));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("</")));
         String prefix = (*mElementStack)[mDepth * 3 + 1];
         if (!prefix.IsEmpty()) {
-            FAIL_RETURN(mWriter->WriteString(prefix));
-            FAIL_RETURN(mWriter->Write(':'));
+            FAIL_RETURN(IWriter::Probe(mWriter)->Write(prefix));
+            FAIL_RETURN(IWriter::Probe(mWriter)->Write(':'));
         }
-        FAIL_RETURN(mWriter->WriteString(name));
-        FAIL_RETURN(mWriter->Write('>'));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write(name));
+        FAIL_RETURN(IWriter::Probe(mWriter)->Write('>'));
     }
 
     (*mNspCounts)[mDepth + 1] = (*mNspCounts)[mDepth];
@@ -633,11 +635,12 @@ ECode CKXmlSerializer::WriteText(
 }
 
 ECode CKXmlSerializer::WriteText(
-    /* [in] */ const ArrayOf<Char32>& buf,
+    /* [in] */ ArrayOf<Char32>* buf,
     /* [in] */ Int32 start,
     /* [in] */ Int32 len)
 {
-    return WriteText(String(buf, start, len));
+    String str = String(*buf, start, len);
+    return WriteText(str);
 }
 
 ECode CKXmlSerializer::WriteCdSect(
@@ -662,9 +665,9 @@ ECode CKXmlSerializer::WriteCdSect(
             return ReportInvalidCharacter(ch);
         }
     }
-    FAIL_RETURN(mWriter->WriteString(String("<![CDATA[")));
-    FAIL_RETURN(mWriter->WriteString(data));
-    return mWriter->WriteString(String("]]>"));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("<![CDATA[")));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(data));
+    return IWriter::Probe(mWriter)->Write(String("]]>"));
     // END android-changed
 }
 
@@ -672,18 +675,18 @@ ECode CKXmlSerializer::WriteComment(
     /* [in] */ const String& text)
 {
     FAIL_RETURN(Check(FALSE));
-    FAIL_RETURN(mWriter->WriteString(String("<!--")));
-    FAIL_RETURN(mWriter->WriteString(text));
-    return mWriter->WriteString(String("-->"));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("<!--")));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(text));
+    return IWriter::Probe(mWriter)->Write(String("-->"));
 }
 
 ECode CKXmlSerializer::WriteProcessingInstruction(
     /* [in] */ const String& text)
 {
     FAIL_RETURN(Check(FALSE));
-    FAIL_RETURN(mWriter->WriteString(String("<?")));
-    FAIL_RETURN(mWriter->WriteString(text));
-    return mWriter->WriteString(String("?>"));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("<?")));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(text));
+    return IWriter::Probe(mWriter)->Write(String("?>"));
 }
 
 } //namespace IO

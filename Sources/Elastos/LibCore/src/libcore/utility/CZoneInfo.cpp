@@ -10,8 +10,8 @@
 #include <Math.h>
 #include <assert.h>
 
-namespace Elastos{
-namespace Utility{
+namespace Libcore {
+namespace Utility {
 
 using Elastos::Core::Math;
 using Elastos::Core::ISystem;
@@ -431,4 +431,4 @@ ECode CZoneInfo::Clone(
 }
 
 } // Utility
-} // Elastos
+} // Libcore

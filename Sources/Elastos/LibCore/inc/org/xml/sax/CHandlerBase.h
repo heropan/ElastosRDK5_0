@@ -1,6 +1,6 @@
 
-#ifndef __CHANDLERBASE_H__
-#define __CHANDLERBASE_H__
+#ifndef __ORG_XML_SAX_CHANDLERBASE_H__
+#define __ORG_XML_SAX_CHANDLERBASE_H__
 
 #include "_Org_Xml_Sax_CHandlerBase.h"
 #include "HandlerBase.h"
@@ -20,4 +20,4 @@ public:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CHANDLERBASE_H__
+#endif // __ORG_XML_SAX_CHANDLERBASE_H__
