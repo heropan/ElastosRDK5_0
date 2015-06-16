@@ -1,10 +1,10 @@
-#ifndef __ELASTOS_UTILITY_CZONEINFO_H__
-#define __ELASTOS_UTILITY_CZONEINFO_H__
+#ifndef __LIBCORE_UTILITY_CZONEINFO_H__
+#define __LIBCORE_UTILITY_CZONEINFO_H__
 
-#include "_Elastos_Utility_CZoneInfo.h"
+#include "_Libcore_Utility_CZoneInfo.h"
 #include "TimeZone.h"
 
-namespace Elastos {
+namespace Libcore {
 namespace Utility {
 
 /**
@@ -154,6 +154,6 @@ private:
 };
 
 } // namespace Utility
-} // namespace Elastos
+} // namespace Libcore
 
-#endif //__ELASTOS_UTILITY_CZONEINFO_H__
+#endif //__LIBCORE_UTILITY_CZONEINFO_H__
