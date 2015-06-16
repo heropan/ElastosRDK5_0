@@ -1,5 +1,5 @@
 #include "HeapBufferIterator.h"
-// #include "io/Memory.h"
+#include "io/Memory.h"
 #include "io/nio/CByteOrderHelper.h"
 
 // using Elastos::IO::Memory;
@@ -61,7 +61,7 @@ ECode HeapBufferIterator::ReadByte(
 ECode HeapBufferIterator::ReadInt32(
     /* [out] */ Int32* result)
 {
-    // *result = Memory::PeekInt32(*mBuffer, mOffset + mPosition, mOrder);
+    *result = Memory::PeekInt32(mBuffer, mOffset + mPosition, mOrder);
     mPosition += sizeof(Int32);
     return NOERROR;
 }
@@ -80,7 +80,7 @@ ECode HeapBufferIterator::ReadInt32Array(
     CByteOrderHelper::AcquireSingleton((IByteOrderHelper**)&helper);
     Boolean needsSwap;
     helper->IsNeedsSwap(mOrder, &needsSwap);
-    // Memory::UnsafeBulkGet((Byte*)(dst->GetPayload()), dstOffset, byteCount, *mBuffer, mOffset + mPosition, sizeof(Int32), needsSwap);
+    Memory::UnsafeBulkGet((Byte*)(dst->GetPayload()), dstOffset, byteCount, mBuffer, mOffset + mPosition, sizeof(Int32), needsSwap);
     mPosition += byteCount;
     return NOERROR;
 }
@@ -91,6 +91,8 @@ ECode HeapBufferIterator::ReadInt32Array(
 ECode HeapBufferIterator::ReadInt16(
     /* [out] */ Int16* result)
 {
+    *result = Memory::PeekInt16(mBuffer, mOffset + mPosition, mOrder);
+    mPosition += sizeof(Int32);
     return NOERROR;
 }
 
@@ -100,7 +102,7 @@ AutoPtr<IBufferIterator> HeapBufferIterator::Iterator(
     /* [in] */ Int32 byteCount,
     /* [in] */ ByteOrder order)
 {
-    return NOERROR;
+    return new HeapBufferIterator(buffer, offset, byteCount, order);
 }
 
 HeapBufferIterator::HeapBufferIterator(
@@ -108,7 +110,13 @@ HeapBufferIterator::HeapBufferIterator(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
     /* [in] */ ByteOrder order)
+    : mBuffer(buffer)
+    , mOffset(offset)
+    , mByteCount(byteCount)
+    , mOrder(order)
+    , mPosition(0)
 {
+
 }
 
 } // namespace IO

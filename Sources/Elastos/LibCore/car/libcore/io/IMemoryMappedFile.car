@@ -14,13 +14,6 @@ module
 
     interface IMemoryMappedFile {
         /**
-         * Use this to mmap the whole file read-only.
-         */
-        MmapRO(
-            [in] String path,
-            [out] IMemoryMappedFile** file);
-
-        /**
          * Returns a new iterator that treats the mapped data as big-endian.
          */
         BigEndianIterator(
@@ -37,6 +30,15 @@ module
          */
         Size(
             [out] Int64* size);
+    }
+
+    interface IMemoryMappedFileHelper {
+        /**
+         * Use this to mmap the whole file read-only.
+         */
+        MmapRO(
+            [in] String path,
+            [out] IMemoryMappedFile** file);
     }
 
     } // namespace IO

@@ -99,6 +99,10 @@ public:
         /* [in] */ IInterface* charset,
         /* [out] */ Int32* result);
 
+    CARAPI Equals(
+        /* [in] */ IInterface* other,
+        /* [out] */ Boolean* result);
+
     static CARAPI DefaultCharset(
         /* [out] */ ICharset** charset);
 

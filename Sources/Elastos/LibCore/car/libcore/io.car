@@ -19,6 +19,10 @@ module
     merge("io/IStreams.car");
     merge("io/IStrictLineReader.car");
 
+    interface Elastos.IO.IInputStream;
+    interface Elastos.IO.ICloseable;
+    interface Elastos.IO.Charset.ICharset;
+
     namespace Libcore {
     namespace IO {
         singleton class CAsynchronousCloseMonitor {
@@ -61,6 +65,35 @@ module
             interface IIoUtils;
         }
 
+        class CMemoryMappedFile {
+            constructor(
+                [in] Int64 address,
+                [in] Int64 size);
+
+            interface IMemoryMappedFile;
+            interface Elastos.Core.IAutoCloseable;
+        }
+
+        class CStrictLineReader {
+            constructor(
+                [in] IInputStream* input);
+
+            constructor(
+                [in] IInputStream* input,
+                [in] Int32 capacity);
+
+            constructor(
+                [in] IInputStream* input,
+                [in] ICharset* Charset);
+
+            constructor(
+                [in] IInputStream* input,
+                [in] Int32 capacity,
+                [in] ICharset* Charset);
+
+            interface IStrictLineReader;
+            interface ICloseable;
+        }
 //        class CPosix {
 //            interface IOs;
 //        }

@@ -35,4 +35,6 @@ SOURCES += Memory.cpp
 SOURCES += CMemory.cpp
 SOURCES += IoUtils.cpp
 SOURCES += CIoUtils.cpp
-
+SOURCES += NioBufferIterator.cpp
+SOURCES += CMemoryMappedFile.cpp
+SOURCES += CStrictLineReader.cpp
