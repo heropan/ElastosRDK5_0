@@ -131,7 +131,8 @@ public:
         CAR_INTERFACE_DECL()
 
         Enumeration(
-            /* [in] */ IIterator* it);
+            /* [in] */ IIterator* it,
+            /* [in] */ ZipFile* zipFile);
 
         CARAPI HasMoreElements(
             /* [out] */ Boolean * value);
@@ -141,6 +142,8 @@ public:
 
     public:
         AutoPtr<IIterator> mIt;
+    private:
+        ZipFile* mHost;
     };
 
 public:

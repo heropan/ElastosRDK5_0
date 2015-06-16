@@ -92,6 +92,11 @@ public:
         /* [out] */ Int32* number);
 
 protected:
+    /**
+     * Reads bytes from the current stream position returning the string representation.
+     */
+    String ReadString(
+        /* [in] */ Int32 byteLength);
 
     /**
      * creates a {@link ZipEntry } with the given name.
@@ -132,7 +137,8 @@ private:
 
     AutoPtr<ICRC32> mCrc;
 
-    AutoPtr<ArrayOf<Byte> > mNameBuf;
+    AutoPtr<ArrayOf<Byte> > mStringBytesBuf;
+    AutoPtr<ArrayOf<Char32> > mStringCharBuf;
 };
 
 } // namespace Zip

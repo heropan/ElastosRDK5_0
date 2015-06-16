@@ -192,6 +192,7 @@ ECode ZipEntry::constructor(
         //comment = new String(commentBytes, 0, commentBytes.length, charset);
         mComment = String((const char*)commentBytes->GetPayload(), commentByteCount);
     }
+    return NOERROR;
 }
 
 ECode ZipEntry::Clone(

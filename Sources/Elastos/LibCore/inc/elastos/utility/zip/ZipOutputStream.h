@@ -122,14 +122,6 @@ public:
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount);
 
-    static CARAPI_(Int32) GetUtf8Count(
-        /* [in] */ const String& value);
-
-    static CARAPI_(AutoPtr<ArrayOf<Byte> >) ToUTF8Bytes(
-        /* [in] */ const String& value,
-        /* [in] */ Int32 length);
-
-
 private:
     CARAPI_(Int64) WriteInt64(
         /* [in] */ IOutputStream* os,
@@ -139,17 +131,21 @@ private:
         /* [in] */ IOutputStream* os,
         /* [in] */ Int32 i);
 
-    CARAPI CheckClosed();
+    CARAPI CheckOpen();
+
+    CARAPI CheckSizeIsWithinShort(
+        /* [in] */ const String& property,
+        /* [in] */ ArrayOf<Byte>* bytes);
 
 protected:
-    static const Int32 ZIPLocalHeaderVersionNeeded = 20;
+    static const Int32 ZIP_VERSION_2_0 = 20;// Zip specification version 2.0.
 
 private:
-    String mComment;
+    AutoPtr<ArrayOf<Byte> > mCommentBytes;
 
     HashSet<String> mEntries;
 
-    Int32 mCompressMethod;
+    Int32 mDefaultCompressionMethod;
 
     Int32 mCompressLevel;
 
@@ -161,9 +157,12 @@ private:
 
     Int32 mOffset;
     Int32 mCurOffset;
-    Int32 mNameLength;
 
+    /** The charset-encoded name for the current entry. */
     AutoPtr<ArrayOf<Byte> > mNameBytes;
+
+    /** The charset-encoded comment for the current entry. */
+    AutoPtr<ArrayOf<Byte> > mEntryCommentBytes;
 };
 
 } // namespace Zip
