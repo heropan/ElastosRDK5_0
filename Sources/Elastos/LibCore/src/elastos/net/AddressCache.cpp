@@ -154,7 +154,8 @@ void AddressCache::Put(
 {
     AutoPtr<AddressCacheKey> key = new AddressCacheKey(hostname, netId);
     AutoPtr<AddressCacheEntry> entry = new AddressCacheEntry(addresses);
-    mCache->Put(TO_IINTERFACE(key), TO_IINTERFACE(entry));
+    AutoPtr<IInterface> outValue;
+    mCache->Put(TO_IINTERFACE(key), TO_IINTERFACE(entry), (IInterface**)&outValue);
 }
 
 /**
@@ -168,7 +169,8 @@ void AddressCache::PutUnknownHost(
 {
     AutoPtr<AddressCacheKey> key = new AddressCacheKey(hostname, netId);
     AutoPtr<AddressCacheEntry> entry = new AddressCacheEntry(detailMessage);
-    mCache->Put(TO_IINTERFACE(key), TO_IINTERFACE(entry));
+    AutoPtr<IInterface> outValue;
+    mCache->Put(TO_IINTERFACE(key), TO_IINTERFACE(entry), (IInterface**)&outValue);
 }
 
 } // namespace Net

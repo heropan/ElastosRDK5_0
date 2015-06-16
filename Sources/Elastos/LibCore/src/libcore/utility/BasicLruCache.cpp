@@ -8,17 +8,14 @@ using Elastos::Utility::IMapEntry;
 namespace Libcore {
 namespace Utility {
 
+CAR_INTERFACE_IMPL(BasicLruCache, Object, IBasicLruCache)
+
 BasicLruCache::BasicLruCache()
     : mMaxSize(0)
 {
 }
 
-ECode BasicLruCache::Init()
-{
-    return NOERROR;
-}
-
-ECode BasicLruCache::Init(
+ECode BasicLruCache::constructor(
     /* [in] */ Int32 maxSize)
 {
     if (maxSize <= 0) {

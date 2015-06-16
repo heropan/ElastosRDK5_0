@@ -1,28 +1,26 @@
 
-#ifndef __LIBCORE_UTILITY_BASICLRUCACHE_H__
-#define __LIBCORE_UTILITY_BASICLRUCACHE_H__
+#ifndef __BASICLRUCACHE_H__
+#define __BASICLRUCACHE_H__
 
 #include "Object.h"
-#include "elastos/utility/CLinkedHashMap.h"
 
 using Elastos::Core::Object;
 using Elastos::Utility::IMap;
-using Elastos::Utility::CLinkedHashMap;
 using Libcore::Utility::IBasicLruCache;
 
 namespace Libcore {
 namespace Utility {
 
 class BasicLruCache
-    , public Object
+    : public Object
     , public IBasicLruCache
 {
 public:
+    CAR_INTERFACE_DECL()
+
     BasicLruCache();
 
-    CARAPI Init();
-
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 maxSize);
 
     /**
@@ -88,4 +86,4 @@ private:
 } // namespace Utility
 } // namespace Libcore
 
-#endif //__LIBCORE_UTILITY_BASICLRUCACHE_H__
+#endif //__BASICLRUCACHE_H__

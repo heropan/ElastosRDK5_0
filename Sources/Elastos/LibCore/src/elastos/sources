@@ -38,6 +38,7 @@ INCLUDES += $(MAKEDIR)/../../inc/libcore/net/event
 INCLUDES += $(MAKEDIR)/../../inc/libcore/net/http
 INCLUDES += $(MAKEDIR)/../../inc/libcore/net/url
 INCLUDES += $(MAKEDIR)/../../inc/libcore/net/utility
+INCLUDES += $(MAKEDIR)/../../inc/libcore/utility
 
 SOURCES = Elastos.CoreLibrary.car
 
@@ -66,6 +67,7 @@ LIBRARIES += ../libcore/io/io.lib
 LIBRARIES += ../libcore/icu/icu.lib
 LIBRARIES += ../libcore/net/net.lib
 LIBRARIES += ../libcore/net/url/url.lib
+LIBRARIES += ../libcore/utility/utility.lib
 LIBRARIES += ../libcore/utility/utility.lib
 
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco

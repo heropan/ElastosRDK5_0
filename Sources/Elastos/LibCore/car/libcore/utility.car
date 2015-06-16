@@ -3,4 +3,16 @@ module {
     merge("utility/ICollectionUtils.car");
     merge("utility/IZoneInfo.car");
     merge("utility/IZoneInfoDB.car");
+
+    namespace Libcore {
+    namespace Utility {
+
+        class CBasicLruCache {
+            constructor(
+                [in] Int32 maxSize);
+
+            interface IBasicLruCache;
+        }
+    }
+    }
 }
