@@ -1,6 +1,6 @@
 
-#ifndef  __CKXMLPARSER_H__
-#define  __CKXMLPARSER_H__
+#ifndef  __ORG_KXML2_IO_CKXMLPARSER_H__
+#define  __ORG_KXML2_IO_CKXMLPARSER_H__
 
 #include "_Org_Kxml2_IO_CKXmlParser.h"
 #include <elastos/core/Object.h>
@@ -643,4 +643,4 @@ private:
 } //namespace Kxml2
 } //namespace Org
 
-#endif //__CKXMLPARSER_H__
+#endif //__ORG_KXML2_IO_CKXMLPARSER_H__
