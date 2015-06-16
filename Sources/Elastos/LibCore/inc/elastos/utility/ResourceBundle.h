@@ -1,11 +1,11 @@
 #ifndef __ELASTOS_UTILITY_RESOURCEBUNDLE_H__
 #define __ELASTOS_UTILITY_RESOURCEBUNDLE_H__
 
+#include <elastos/core/Object.h>
 
-
+using Elastos::Core::Object;
 using Elastos::Core::IClassLoader;
-using Elastos::Core::Mutex;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Utility {
@@ -487,7 +487,7 @@ public:
      *                if the resource is not found.
      */
     CARAPI GetObject(
-        /* [in] */ String key,
+        /* [in] */ const String& key,
         /* [out] */ IInterface** outface);
 
     /**
@@ -503,7 +503,7 @@ public:
      * @see #getObject(String)
      */
     CARAPI GetString(
-        /* [in] */ String key,
+        /* [in] */ const String& key,
         /* [out] */ String* outstr);
 
     /**
@@ -519,11 +519,11 @@ public:
      * @see #getObject(String)
      */
     CARAPI GetStringArray(
-        /* [in] */ String key,
+        /* [in] */ const String& key,
         /* [out, callee] */ ArrayOf<String>** arrstr);
 
     CARAPI ContainsKey(
-        /* [in] */ String key,
+        /* [in] */ const String& key,
         /* [out] */ Boolean* value);
 
     CARAPI GetKeySet(
@@ -612,7 +612,7 @@ private:
 
     static AutoPtr<ILocale> sCacheLocale;
 
-    static Mutex mLock;
+    static Object mLock;
 
     /**
      * The parent of this {@code ResourceBundle} that is used if this bundle doesn't

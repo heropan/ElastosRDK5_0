@@ -64,6 +64,10 @@ SOURCES += Calendar.cpp
 SOURCES += CObservable.cpp
 SOURCES += Properties.cpp
 SOURCES += CProperties.cpp
+SOURCES += ResourceBundle.cpp
+SOURCES += CPropertyResourceBundle.cpp
+SOURCES += CScanner.cpp
+SOURCES += CSimpleTimeZone.cpp
 
 
 SOURCES += utility.cpp

@@ -37,12 +37,6 @@ CSimpleTimeZone::CSimpleTimeZone()
 {
 }
 
-PInterface CSimpleTimeZone::Probe(
-        /* [in] */ REIID riid)
-{
-    return _CSimpleTimeZone::Probe(riid);
-}
-
 ECode CSimpleTimeZone::constructor(
     /* [in] */ Int32 offset,
     /* [in] */ const String& name)

@@ -2,8 +2,8 @@
 #include "ResourceBundle.h"
 #include "CArrayList.h"
 #include "CStringWrapper.h"
-#include "CCollections.h"
-#include "CWeakHashMap.h"
+//#include "CCollections.h"
+//#include "CWeakHashMap.h"
 #include "CLocale.h"
 #include "CFile.h"
 #include "CHashSet.h"
@@ -22,7 +22,7 @@ using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::Net::IURL;
 using Elastos::Net::IURLConnection;
-using Libcore::ICU::CLocale;
+using Elastos::Utility::CLocale;
 
 namespace Elastos {
 namespace Utility {
@@ -83,9 +83,9 @@ Boolean ResourceBundle::Control::isInit()
     sListClass->Add(sqjavaclass->Probe(EIID_IInterface), &isflag);
     sListProperties->Add(sqjavaproperties->Probe(EIID_IInterface), &isflag);
 
-    CCollections::_NewUnmodifiableList(sListDefault, (IList**)&FORMAT_DEFAULT);
-    CCollections::_NewUnmodifiableList(sListClass, (IList**)&FORMAT_CLASS);
-    CCollections::_NewUnmodifiableList(sListProperties, (IList**)&FORMAT_PROPERTIES);
+//    CCollections::_NewUnmodifiableList(sListDefault, (IList**)&FORMAT_DEFAULT);
+//    CCollections::_NewUnmodifiableList(sListClass, (IList**)&FORMAT_CLASS);
+//    CCollections::_NewUnmodifiableList(sListProperties, (IList**)&FORMAT_PROPERTIES);
 
     return TRUE;
 }
@@ -105,7 +105,7 @@ ResourceBundle::Control::Control()
     AutoPtr<CStringWrapper> sqjavaproperties;
     CStringWrapper::NewByFriend(JAVAPROPERTIES, (CStringWrapper**)&sqjavaproperties);
     sListClass->Add(sqjavaproperties->Probe(EIID_IInterface), &isflag);
-    CCollections::_NewUnmodifiableList(sListClass, (IList**)&mFormat);
+//    CCollections::_NewUnmodifiableList(sListClass, (IList**)&mFormat);
 }
 
 CAR_INTERFACE_IMPL(ResourceBundle::Control, Object, IResourceBundleControl)
@@ -138,20 +138,20 @@ ECode ResourceBundle::Control::GetCandidateLocales(
     if (!EMPTY_STRING.Equals(variant)) {
         AutoPtr<ILocale> newloc;
         CLocale::New(language, country, variant, (ILocale**)&newloc);
-        retList->Add(newloc, &isflag);
+        (IList::Probe(retList))->Add(newloc, &isflag);
     }
     if (!EMPTY_STRING.Equals(country)) {
         AutoPtr<ILocale> newloc;
         CLocale::New(language, country, (ILocale**)&newloc);
-        retList->Add(newloc, &isflag);
+        (IList::Probe(retList))->Add(newloc, &isflag);
     }
     if (!EMPTY_STRING.Equals(language)) {
         AutoPtr<ILocale> newloc;
         CLocale::New(language, (ILocale**)&newloc);
-        retList->Add(newloc, &isflag);
+        (IList::Probe(retList))->Add(newloc, &isflag);
     }
-    retList->Add(CLocale::ROOT, &isflag);
-    *obj = retList;
+    (IList::Probe(retList))->Add(CLocale::ROOT, &isflag);
+    *obj = IList::Probe(retList);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
@@ -354,7 +354,7 @@ ECode ResourceBundle::Control::NeedsReload(
         Int64 lastModified = 0;
         AutoPtr<IFile> infile;
         CFile::New(fileName, (IFile**)&infile);
-        infile->LastModified(&lastModified);
+        infile->GetLastModified(&lastModified);
         if (lastModified > loadTime) {
             *value = TRUE;
             return NOERROR;
@@ -435,7 +435,7 @@ AutoPtr<ResourceBundle::Control> ResourceBundle::Control::GetControl(
     /* [in] */ IList* formats)
 {
     Int32 sizelen = 0;
-    formats->GetSize(&sizelen);
+    (ICollection::Probe(formats))->GetSize(&sizelen);
     Boolean isflag = FALSE;
     AutoPtr<ICharSequence> sqjavaclass;
     CStringWrapper::New(JAVACLASS, (ICharSequence**)&sqjavaclass);
@@ -443,15 +443,15 @@ AutoPtr<ResourceBundle::Control> ResourceBundle::Control::GetControl(
     CStringWrapper::New(JAVAPROPERTIES, (ICharSequence**)&sqjavaproperties);
     switch (sizelen) {
         case 1:
-            if (formats->Contains(sqjavaclass, &isflag), isflag) {
+            if ((ICollection::Probe(formats))->Contains(sqjavaclass, &isflag), isflag) {
                 return FORMAT_CLASS_CONTROL;
             }
-            if (formats->Contains(sqjavaproperties, &isflag), isflag) {
+            if ((ICollection::Probe(formats))->Contains(sqjavaproperties, &isflag), isflag) {
                 return FORMAT_PROPERTIES_CONTROL;
             }
             break;
         case 2:
-            if (formats->Equals(FORMAT_DEFAULT, &isflag), isflag) {
+            if ((ICollection::Probe(formats))->Equals(FORMAT_DEFAULT, &isflag), isflag) {
                 return FORMAT_DEFAULT_CONTROL;
             }
             break;
@@ -464,7 +464,7 @@ AutoPtr<ResourceBundle::Control> ResourceBundle::Control::GetNoFallbackControl(
     /* [in] */ IList* formats)
 {
     Int32 sizelen = 0;
-    formats->GetSize(&sizelen);
+    (ICollection::Probe(formats))->GetSize(&sizelen);
     Boolean isflag = FALSE;
     AutoPtr<ICharSequence> sqjavaclass;
     CStringWrapper::New(JAVACLASS, (ICharSequence**)&sqjavaclass);
@@ -472,15 +472,15 @@ AutoPtr<ResourceBundle::Control> ResourceBundle::Control::GetNoFallbackControl(
     CStringWrapper::New(JAVAPROPERTIES, (ICharSequence**)&sqjavaproperties);
     switch (sizelen) {
         case 1:
-            if (formats->Contains(sqjavaclass, &isflag), isflag) {
+            if ((ICollection::Probe(formats))->Contains(sqjavaclass, &isflag), isflag) {
                 return NoFallbackControl::NOFALLBACK_FORMAT_CLASS_CONTROL;
             }
-            if (formats->Contains(sqjavaproperties, &isflag), isflag) {
+            if ((ICollection::Probe(formats))->Contains(sqjavaproperties, &isflag), isflag) {
                 return NoFallbackControl::NOFALLBACK_FORMAT_PROPERTIES_CONTROL;
             }
             break;
         case 2:
-            if (formats->Equals(FORMAT_DEFAULT, &isflag), isflag) {
+            if ((ICollection::Probe(formats))->Equals(FORMAT_DEFAULT, &isflag), isflag) {
                 return NoFallbackControl::NOFALLBACK_FORMAT_DEFAULT_CONTROL;
             }
             break;
@@ -509,7 +509,7 @@ ResourceBundle::NoFallbackControl::NoFallbackControl(
     CStringWrapper::NewByFriend(format, (CStringWrapper**)&sq);
     Boolean isflag = FALSE;
     sListClass->Add(sq->Probe(EIID_IInterface), &isflag);
-    CCollections::_NewUnmodifiableList(sListClass, (IList**)&mFormat);
+//    CCollections::_NewUnmodifiableList(sListClass, (IList**)&mFormat);
 }
 
 ResourceBundle::NoFallbackControl::NoFallbackControl(
@@ -549,7 +549,7 @@ ResourceBundle::SimpleControl::SimpleControl(
     CStringWrapper::NewByFriend(format, (CStringWrapper**)&sq);
     Boolean isflag = FALSE;
     sListClass->Add(sq->Probe(EIID_IInterface), &isflag);
-    CCollections::_NewUnmodifiableList(sListClass, (IList**)&mFormat);
+//    CCollections::_NewUnmodifiableList(sListClass, (IList**)&mFormat);
 }
 
 //==========================================================
@@ -566,7 +566,7 @@ const ResourceBundle* ResourceBundle::MISSINGBASE = new MissingBundle();
 
 const AutoPtr<IMap> ResourceBundle::sCache;
 
-Mutex ResourceBundle::mLock;
+Object ResourceBundle::mLock;
 
 AutoPtr<ILocale> ResourceBundle::sCacheLocale; // = CLocale::GetDefault();
 
@@ -574,9 +574,9 @@ CAR_INTERFACE_IMPL(ResourceBundle, Object, IResourceBundle)
 
 Boolean ResourceBundle::ishostinit()
 {
-    AutoPtr<CWeakHashMap> whm;
-    CWeakHashMap::NewByFriend((CWeakHashMap**)&whm);
-    sCache = (IMap*)whm->Probe(EIID_IMap);
+    // AutoPtr<CWeakHashMap> whm;
+    // CWeakHashMap::NewByFriend((CWeakHashMap**)&whm);
+    // sCache = (IMap*)whm->Probe(EIID_IMap);
     // AutoPtr<CLocale> clhel;
     // CLocale::NewByFriend((CLocale**)&clhel);
     // sCacheLocale = clhel->GetDefault();
@@ -761,7 +761,7 @@ ECode ResourceBundle::GetLocale(
 }
 
 ECode ResourceBundle::GetObject(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -782,7 +782,7 @@ ECode ResourceBundle::GetObject(
 }
 
 ECode ResourceBundle::GetString(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ String* outstr)
 {
     VALIDATE_NOT_NULL(outstr)
@@ -800,7 +800,7 @@ ECode ResourceBundle::GetString(
 }
 
 ECode ResourceBundle::GetStringArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out, callee] */ ArrayOf<String>** arrstr)
 {
     VALIDATE_NOT_NULL(arrstr)
@@ -825,7 +825,7 @@ ECode ResourceBundle::GetStringArray(
 }
 
 ECode ResourceBundle::ContainsKey(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
@@ -836,10 +836,10 @@ ECode ResourceBundle::ContainsKey(
         return E_NULL_POINTER_EXCEPTION;
     }
     AutoPtr<ISet> outset;
-    KeySet((ISet**)&outset);
+    GetKeySet((ISet**)&outset);
     AutoPtr<ICharSequence> sq;
     CStringWrapper::New(key, (ICharSequence**)&sq);
-    return outset->Contains(sq, value);
+    return (ICollection::Probe(outset))->Contains(sq, value);
 }
 
 ECode ResourceBundle::GetKeySet(
@@ -855,8 +855,8 @@ ECode ResourceBundle::GetKeySet(
     Boolean isflag = FALSE;
     while (keys->HasMoreElements(&isflag), isflag) {
         AutoPtr<IInterface> outface;
-        keys->NextElement((IInterface**)&outface);
-        ret->Add(outface, &isflag);
+        keys->GetNextElement((IInterface**)&outface);
+        (ICollection::Probe(ret))->Add(outface, &isflag);
     }
     *outset = ret;
     REFCOUNT_ADD(*outset)
@@ -895,11 +895,11 @@ ECode ResourceBundle::HandleKeySet(
     *outset = NULL;
 
     AutoPtr<ISet> set;
-    KeySet((ISet**)&set);
+    GetKeySet((ISet**)&set);
     AutoPtr<ISet> ret;
     CHashSet::New((ISet**)&ret);
     AutoPtr< ArrayOf<IInterface*> > outarr;
-    set->ToArray((ArrayOf<IInterface*>**)&outarr);
+    (ICollection::Probe(set))->ToArray((ArrayOf<IInterface*>**)&outarr);
     for (Int32 i = 0; i < outarr->GetLength(); i++) {
         AutoPtr<ICharSequence> sq = ICharSequence::Probe((*outarr)[i]);
         if (sq != NULL) {
@@ -908,7 +908,7 @@ ECode ResourceBundle::HandleKeySet(
             AutoPtr<IInterface> outface;
             if ((HandleGetObject(key, (IInterface**)&outface), outface != NULL)) {
                 Boolean isflag = FALSE;
-                ret->Add(sq, &isflag);
+                (ICollection::Probe(ret))->Add(sq, &isflag);
             }
         }
     }
@@ -953,11 +953,11 @@ AutoPtr<IResourceBundle> ResourceBundle::ProcessGetBundle(
     AutoPtr<IResourceBundle> currentBundle;
     AutoPtr<IResourceBundle> bundle;
     AutoPtr< ArrayOf<IInterface*> > outlocarr;
-    locales->ToArray((ArrayOf<IInterface*>**)&outlocarr);
+    (ICollection::Probe(locales))->ToArray((ArrayOf<IInterface*>**)&outlocarr);
     for (Int32 i = 0; i < outlocarr->GetLength(); i++) {
         AutoPtr<ILocale> locale = ILocale::Probe((*outlocarr)[i]);
         AutoPtr< ArrayOf<IInterface*> > outformatarr;
-        formats->ToArray((ArrayOf<IInterface*>**)&outformatarr);
+        (ICollection::Probe(formats))->ToArray((ArrayOf<IInterface*>**)&outformatarr);
         for (Int32 j = 0; j < outformatarr->GetLength(); j++) {
             AutoPtr<ICharSequence> sq = ICharSequence::Probe((*outformatarr)[j]);
             String format;
@@ -1017,8 +1017,8 @@ AutoPtr<IResourceBundle> ResourceBundle::ProcessGetBundle(
     Boolean isflag = FALSE;
     if ((ret == NULL)
             || (Object::Equals(CLocale::ROOT, retloc)
-            && (!(locales->GetSize(&sizelen), sizelen == 1)
-            && (locales->Contains(CLocale::ROOT, &isflag), isflag)))) {
+            && (!((ICollection::Probe(locales))->GetSize(&sizelen), sizelen == 1)
+            && ((ICollection::Probe(locales))->Contains(CLocale::ROOT, &isflag), isflag)))) {
         AutoPtr<ILocale> nextLocale;
         control->GetFallbackLocale(baseName, targetLocale, (ILocale**)&nextLocale);
         if (nextLocale != NULL) {
@@ -1133,7 +1133,7 @@ AutoPtr<IResourceBundle> ResourceBundle::HandleGetBundle(
 AutoPtr<IDictionary> ResourceBundle::GetLoaderCache(
     /* [in] */ IInterface* cacheKey)
 {
-    Mutex::Autolock lock(mLock);
+    Object::Autolock lock(mLock);
     AutoPtr<IInterface> outface;
     sCache->Get(cacheKey, (IInterface**)&outface);
     AutoPtr<IDictionary> loaderCache = IDictionary::Probe(outface);

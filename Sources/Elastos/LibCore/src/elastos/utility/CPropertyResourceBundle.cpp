@@ -45,7 +45,7 @@ ECode CPropertyResourceBundle::_Enumeration::GetNextElement(
 
     Boolean isflag = FALSE;
     if (mLocal->HasMoreElements(&isflag), isflag) {
-        return mLocal->NextElement(inter);
+        return mLocal->GetNextElement(inter);
     }
     if (FindNext()) {
         String result = mNextElement;
@@ -57,7 +57,7 @@ ECode CPropertyResourceBundle::_Enumeration::GetNextElement(
         return NOERROR;
     }
     // Cause an exception
-    return mPEnum->NextElement(inter);
+    return mPEnum->GetNextElement(inter);
 }
 
 Boolean CPropertyResourceBundle::_Enumeration::FindNext()
@@ -68,7 +68,7 @@ Boolean CPropertyResourceBundle::_Enumeration::FindNext()
     Boolean isflag = FALSE;
     while (mPEnum->HasMoreElements(&isflag), isflag) {
         AutoPtr<IInterface> next;
-        mPEnum->NextElement((IInterface**)&next);
+        mPEnum->GetNextElement((IInterface**)&next);
         if (IMap::Probe(mHost->mResources)->ContainsKey(next, &isflag), !isflag) {
             AutoPtr<ICharSequence> sq = ICharSequence::Probe(next);
             if (sq != NULL) {
@@ -89,6 +89,7 @@ CAR_OBJECT_IMPL(CPropertyResourceBundle)
 
 ECode CPropertyResourceBundle::constructor()
 {
+    return NOERROR;
 }
 
 ECode CPropertyResourceBundle::constructor(
@@ -133,7 +134,7 @@ ECode CPropertyResourceBundle::HandleGetObject(
 {
     AutoPtr<ICharSequence> sq;
     CStringWrapper::New(key, (ICharSequence**)&sq);
-    return mResources->Get(sq, outface);
+    return (IDictionary::Probe(mResources))->Get(sq, outface);
 }
 
 AutoPtr<IEnumeration> CPropertyResourceBundle::GetLocalKeys()

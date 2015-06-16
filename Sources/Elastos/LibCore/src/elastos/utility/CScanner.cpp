@@ -1,15 +1,15 @@
 
 #include "CScanner.h"
-#include "Pattern.h"
+//#include "Pattern.h"
 #include "CLocale.h"
-#include "Charset.h"
+//#include "Charset.h"
 #include "IoUtils.h"
 #include "CStringReader.h"
 #include "CFileInputStream.h"
 #include "CInputStreamReader.h"
 #include "CStringWrapper.h"
-#include "CBigDecimal.h"
-#include "CBigInteger.h"
+//#include "CBigDecimal.h"
+//#include "CBigInteger.h"
 #include "CByte.h"
 #include "CDouble.h"
 #include "CFloat.h"
@@ -17,8 +17,8 @@
 #include "CInteger32.h"
 #include "CInteger64.h"
 #include "Character.h"
-#include "CharBuffer.h"
-#include "NumberFormat.h"
+//#include "CharBuffer.h"
+//#include "NumberFormat.h"
 #include <Math.h>
 #include <StringUtils.h>
 
@@ -38,25 +38,26 @@ using Elastos::Core::CInteger32;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
 using Elastos::Core::Character;
-using Elastos::Utility::Regex::Pattern;
+//using Elastos::Utility::Regex::Pattern;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::IInputStreamReader;
 using Elastos::IO::CInputStreamReader;
-using Elastos::IO::IoUtils;
+//using Elastos::IO::IoUtils;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IStringReader;
 using Elastos::IO::CStringReader;
-using Elastos::IO::CharBuffer;
+//using Elastos::IO::CharBuffer;
 using Elastos::IO::Charset::ICharset;
-using Elastos::IO::Charset::Charset;
-using Elastos::Math::CBigDecimal;
+//using Elastos::IO::Charset::Charset;
+using Elastos::IO::IBuffer;
+//using Elastos::Math::CBigDecimal;
 using Elastos::Math::IBigInteger;
-using Elastos::Math::CBigInteger;
+//using Elastos::Math::CBigInteger;
 using Elastos::Text::INumberFormat;
-using Elastos::Text::NumberFormat;
+//using Elastos::Text::NumberFormat;
 using Elastos::Text::IDecimalFormatSymbols;
-using Libcore::ICU::CLocale;
+using Elastos::Utility::CLocale;
 
 namespace Elastos {
 namespace Utility {
@@ -85,14 +86,14 @@ CAR_OBJECT_IMPL(CScanner)
 
 Boolean CScanner::StaticInit()
 {
-    Pattern::Compile(String("\\p{javaWhitespace}+"), (IPattern**)&DEFAULT_DELIMITER);
-    Pattern::Compile(String("TRUE|FALSE"), IPattern::CASE_INSENSITIVE, (IPattern**)&BOOLEAN_PATTERN);
-    Pattern::Compile(String("(?s).*"), (IPattern**)&ANY_PATTERN);
+//    Pattern::Compile(String("\\p{javaWhitespace}+"), (IPattern**)&DEFAULT_DELIMITER);
+//    Pattern::Compile(String("TRUE|FALSE"), IPattern::CASE_INSENSITIVE, (IPattern**)&BOOLEAN_PATTERN);
+//    Pattern::Compile(String("(?s).*"), (IPattern**)&ANY_PATTERN);
 
     String NL = String("\n|\r\n|\r|\u0085|\u2028|\u2029");
-    Pattern::Compile(NL, (IPattern**)&LINE_TERMINATOR);
-    Pattern::Compile(String("(") + NL + String(")+"), (IPattern**)&MULTI_LINE_TERMINATOR);
-    Pattern::Compile(String(".*(") + NL + String(")|.+(") + NL + String(")?"), (IPattern**)&LINE_PATTERN);
+//    Pattern::Compile(NL, (IPattern**)&LINE_TERMINATOR);
+//    Pattern::Compile(String("(") + NL + String(")+"), (IPattern**)&MULTI_LINE_TERMINATOR);
+//    Pattern::Compile(String(".*(") + NL + String(")|.+(") + NL + String(")?"), (IPattern**)&LINE_PATTERN);
     return TRUE;
 }
 
@@ -117,7 +118,7 @@ ECode CScanner::constructor(
     /* [in] */ IFile* filesrc)
 {
     AutoPtr<ICharset> outset;
-    Charset::DefaultCharset((ICharset**)&outset);
+//    Charset::DefaultCharset((ICharset**)&outset);
     String outname;
     outset->GetName(&outname);
     return this->constructor(filesrc, outname);
@@ -139,10 +140,10 @@ ECode CScanner::constructor(
     }
     // try {
     AutoPtr<IInputStreamReader> isr;
-    ECode ec = CInputStreamReader::New(fis, charsetName, (IInputStreamReader**)&isr);
+    ECode ec = CInputStreamReader::New((IInputStream::Probe(fis)), charsetName, (IInputStreamReader**)&isr);
     // } catch (UnsupportedEncodingException e) {
     if (ec != NOERROR) {
-        IoUtils::CloseQuietly(ICloseable::Probe(fis));
+//        IoUtils::CloseQuietly(ICloseable::Probe(fis));
         // throw new IllegalArgumentException(e.getMessage());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -164,7 +165,7 @@ ECode CScanner::constructor(
     /* [in] */ IInputStream* inputsrc)
 {
     AutoPtr<ICharset> outset;
-    Charset::DefaultCharset((ICharset**)&outset);
+//    Charset::DefaultCharset((ICharset**)&outset);
     String outname;
     outset->GetName(&outname);
     return this->constructor(inputsrc, outname);
@@ -203,7 +204,7 @@ ECode CScanner::constructor(
     /* [in] */ IReadableByteChannel* rbcsrc)
 {
     AutoPtr<ICharset> outset;
-    Charset::DefaultCharset((ICharset**)&outset);
+//    Charset::DefaultCharset((ICharset**)&outset);
     String outname;
     outset->GetName(&outname);
     return this->constructor(rbcsrc, outname);
@@ -232,7 +233,7 @@ ECode CScanner::HasNext(
     return HasNext(ANY_PATTERN, result);
 }
 
-ECode CScanner::Next(
+ECode CScanner::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -295,8 +296,8 @@ ECode CScanner::FindInLine(
     Int32 terminatorLength = 0;
     while (!findComplete) {
         if (mMatcher->Find(&findComplete), findComplete) {
-            mMatcher->Start(&horizonLineSeparator);
-            mMatcher->End(&terminatorLength);
+            (IMatchResult::Probe(mMatcher))->Start(&horizonLineSeparator);
+            (IMatchResult::Probe(mMatcher))->End(&terminatorLength);
             terminatorLength -= horizonLineSeparator;
             findComplete = TRUE;
         }
@@ -321,29 +322,29 @@ ECode CScanner::FindInLine(
      * bug is fixed.
      */
     Int32 oldLimit = 0;
-    mBuffer->GetLimit(&oldLimit);
+    (IBuffer::Probe(mBuffer))->GetLimit(&oldLimit);
     // Considering the look ahead feature, the line terminator should be involved as RI
-    mBuffer->SetLimit(horizonLineSeparator + terminatorLength);
+    (IBuffer::Probe(mBuffer))->SetLimit(horizonLineSeparator + terminatorLength);
     // ========== To deal with regex bug ====================
 
     // Considering the look ahead feature, the line terminator should be involved as RI
     mMatcher->Region(mFindStartIndex, horizonLineSeparator + terminatorLength);
     if (mMatcher->Find(&findComplete), findComplete) {
         // The scanner advances past the input that matched
-        mMatcher->End(&mFindStartIndex);
+        (IMatchResult::Probe(mMatcher))->End(&mFindStartIndex);
         // If the matched pattern is immediately followed by line
         // terminator.
         Int32 endlength = 0;
-        if (horizonLineSeparator == (mMatcher->End(&endlength), endlength)) {
+        if (horizonLineSeparator == ((IMatchResult::Probe(mMatcher))->End(&endlength), endlength)) {
             mFindStartIndex += terminatorLength;
         }
         // the line terminator itself should not be a part of
         // the match result according to the Spec
 
         if (horizonLineSeparator != mBufferLength
-                && (horizonLineSeparator + terminatorLength == (mMatcher->End(&endlength), endlength))) {
+                && (horizonLineSeparator + terminatorLength == ((IMatchResult::Probe(mMatcher))->End(&endlength), endlength))) {
             // ========== To deal with regex bug ====================
-            mBuffer->SetLimit(oldLimit);
+            (IBuffer::Probe(mBuffer))->SetLimit(oldLimit);
             // ========== To deal with regex bug ====================
 
             mMatchSuccessful = FALSE;
@@ -353,14 +354,14 @@ ECode CScanner::FindInLine(
         mMatchSuccessful = TRUE;
 
         // ========== To deal with regex bug ====================
-        mBuffer->SetLimit(oldLimit);
+        (IBuffer::Probe(mBuffer))->SetLimit(oldLimit);
         // ========== To deal with regex bug ====================
 
-        return mMatcher->Group(str);
+        return (IMatchResult::Probe(mMatcher))->Group(str);
     }
 
     // ========== To deal with regex bug ====================
-    mBuffer->SetLimit(oldLimit);
+    (IBuffer::Probe(mBuffer))->SetLimit(oldLimit);
     // ========== To deal with regex bug ====================
 
     mMatchSuccessful = FALSE;
@@ -373,7 +374,7 @@ ECode CScanner::FindInLine(
     /* [out] */ String* str)
 {
     AutoPtr<IPattern> outpat;
-    Pattern::Compile(pattern, (IPattern**)&outpat);
+//    Pattern::Compile(pattern, (IPattern**)&outpat);
     return FindInLine(outpat, str);
 }
 
@@ -417,7 +418,7 @@ ECode CScanner::FindWithinHorizon(
         Boolean isflag = FALSE;
         if (mMatcher->Find(&isflag), isflag) {
             if (isHorizonInBuffer || mInputExhausted) {
-                mMatcher->Group(&result);
+                (IMatchResult::Probe(mMatcher))->Group(&result);
                 break;
             }
         }
@@ -437,7 +438,7 @@ ECode CScanner::FindWithinHorizon(
         }
     }
     if (!result.IsNull()) {
-        mMatcher->End(&mFindStartIndex);
+        (IMatchResult::Probe(mMatcher))->End(&mFindStartIndex);
         mMatchSuccessful = TRUE;
     }
     else {
@@ -453,7 +454,7 @@ ECode CScanner::FindWithinHorizon(
     /* [out] */ String* str)
 {
     AutoPtr<IPattern> outpat;
-    Pattern::Compile(pattern, (IPattern**)&outpat);
+//    Pattern::Compile(pattern, (IPattern**)&outpat);
     return FindWithinHorizon(outpat, horizon, str);
 }
 
@@ -492,7 +493,7 @@ ECode CScanner::HasNext(
     /* [out] */ Boolean* value)
 {
     AutoPtr<IPattern> outpat;
-    Pattern::Compile(pattern, (IPattern**)&outpat);
+//    Pattern::Compile(pattern, (IPattern**)&outpat);
     return HasNext(outpat, value);
 }
 
@@ -503,11 +504,11 @@ ECode CScanner::HasNextBigDecimal(
     Boolean isBigDecimalValue = FALSE;
     if (HasNext(floatPattern, &isBigDecimalValue), isBigDecimalValue) {
         String floatString;
-        mMatcher->Group(&floatString);
+        (IMatchResult::Probe(mMatcher))->Group(&floatString);
         floatString = RemoveLocaleInfoFromFloat(floatString);
         // try {
         AutoPtr<IBigDecimal> outbd;
-        ECode ec = CBigDecimal::New(floatString, (IBigDecimal**)&outbd);
+        ECode ec;// = CBigDecimal::New(floatString, (IBigDecimal**)&outbd);
         // } catch (NumberFormatException e) {
         if (ec == E_NUMBER_FORMAT_EXCEPTION) {
             mMatchSuccessful = FALSE;
@@ -539,11 +540,11 @@ ECode CScanner::HasNextBigInteger(
     Boolean isBigIntegerValue = FALSE;
     if (HasNext(integerPattern, &isBigIntegerValue), isBigIntegerValue) {
         String intString;
-        mMatcher->Group(&intString);
+        (IMatchResult::Probe(mMatcher))->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
         // try {
         AutoPtr<IBigInteger> outbi;
-        ECode ec = CBigInteger::New(intString, radix, (IBigInteger**)&outbi);
+        ECode ec;// = CBigInteger::New(intString, radix, (IBigInteger**)&outbi);
         // } catch (NumberFormatException e) {
         if (ec == E_NUMBER_FORMAT_EXCEPTION) {
             mMatchSuccessful = FALSE;
@@ -579,7 +580,7 @@ ECode CScanner::HasNextByte(
     Boolean isByteValue = FALSE;
     if (HasNext(integerPattern, &isByteValue), isByteValue) {
         String intString;
-        mMatcher->Group(&intString);
+        (IMatchResult::Probe(mMatcher))->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
         // try {
         Int32 outbyte = StringUtils::ParseInt32(intString, radix);
@@ -609,7 +610,7 @@ ECode CScanner::HasNextDouble(
     Boolean isDoubleValue = FALSE;
     if (HasNext(floatPattern, &isDoubleValue), isDoubleValue) {
         String floatString;
-        mMatcher->Group(&floatString);
+        (IMatchResult::Probe(mMatcher))->Group(&floatString);
         floatString = RemoveLocaleInfoFromFloat(floatString);
         // try {
         Double outdouble = StringUtils::ParseDouble(floatString);
@@ -638,7 +639,7 @@ ECode CScanner::HasNextFloat(
     Boolean isFloatValue = FALSE;
     if (HasNext(floatPattern, &isFloatValue), isFloatValue) {
         String floatString;
-        mMatcher->Group(&floatString);
+        (IMatchResult::Probe(mMatcher))->Group(&floatString);
         floatString = RemoveLocaleInfoFromFloat(floatString);
         // try {
         Float outfloat = StringUtils::ParseFloat(floatString);
@@ -674,7 +675,7 @@ ECode CScanner::HasNextInt32(
     Boolean isIntValue = FALSE;
     if (HasNext(integerPattern, &isIntValue), isIntValue) {
         String intString;
-        mMatcher->Group(&intString);
+        (IMatchResult::Probe(mMatcher))->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
         // try {
         Int32 outint = StringUtils::ParseInt32(intString, radix);
@@ -707,7 +708,7 @@ ECode CScanner::HasNextLine(
     while (TRUE) {
         if (mMatcher->Find(&hasNextLine), hasNextLine) {
             Int32 intend = 0;
-            if (mInputExhausted || (mMatcher->End(&intend), intend) != mBufferLength) {
+            if (mInputExhausted || ((IMatchResult::Probe(mMatcher))->End(&intend), intend) != mBufferLength) {
                 mMatchSuccessful = TRUE;
                 hasNextLine = TRUE;
                 break;
@@ -744,10 +745,10 @@ ECode CScanner::HasNextInt64(
     Boolean isLongValue = FALSE;
     if (HasNext(integerPattern, &isLongValue), isLongValue) {
         String intString;
-        mMatcher->Group(&intString);
+        (IMatchResult::Probe(mMatcher))->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
         // try {
-        Int64 outint = StringUtils::Parse(intString, radix);
+        Int64 outint = StringUtils::ParseInt64(intString, radix);
         AutoPtr<IInteger64> inint;
         ECode ec = CInteger64::New(outint, (IInteger64**)&inint);
         if (ec == NOERROR) {
@@ -780,7 +781,7 @@ ECode CScanner::HasNextInt16(
     Boolean isShortValue = FALSE;
     if (HasNext(integerPattern, &isShortValue), isShortValue) {
         String intString;
-        mMatcher->Group(&intString);
+        (IMatchResult::Probe(mMatcher))->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
         // try {
         Int16 outint = StringUtils::ParseInt16(intString, radix);
@@ -847,7 +848,7 @@ ECode CScanner::Next(
         return E_INPUT_MISMATCH_EXCEPTION;
     }
     mMatchSuccessful = TRUE;
-    return mMatcher->Group(str);
+    return (IMatchResult::Probe(mMatcher))->Group(str);
 }
 
 ECode CScanner::Next(
@@ -855,7 +856,7 @@ ECode CScanner::Next(
     /* [out] */ String* str)
 {
     AutoPtr<IPattern> outpat;
-    Pattern::Compile(pattern, (IPattern**)&outpat);
+//    Pattern::Compile(pattern, (IPattern**)&outpat);
     return Next(outpat, str);
 }
 
@@ -879,7 +880,7 @@ ECode CScanner::NextBigDecimal(
     floatString = RemoveLocaleInfoFromFloat(floatString);
     AutoPtr<IBigDecimal> bigDecimalValue;
     // try {
-    ECode ec = CBigDecimal::New(floatString, (IBigDecimal**)&bigDecimalValue);
+    ECode ec;// = CBigDecimal::New(floatString, (IBigDecimal**)&bigDecimalValue);
     // } catch (NumberFormatException e) {
     if (ec == E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
@@ -920,7 +921,7 @@ ECode CScanner::NextBigInteger(
     intString = RemoveLocaleInfo(intString, INT);
     AutoPtr<IBigInteger> bigIntegerValue;
     // try {
-    ECode ec = CBigInteger::New(intString, radix, (IBigInteger**)&bigIntegerValue);
+    ECode ec;// = CBigInteger::New(intString, radix, (IBigInteger**)&bigIntegerValue);
     // } catch (NumberFormatException e) {
     if (ec == E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
@@ -999,7 +1000,7 @@ ECode CScanner::NextDouble(
     floatString = RemoveLocaleInfoFromFloat(floatString);
     Double doubleValue = 0;
     // try {
-    ECode ec = StringUtils::ParseDouble(floatString, &doubleValue);
+    ECode ec = StringUtils::Parse(floatString, &doubleValue);
     // } catch (NumberFormatException e) {
     if (ec == E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
@@ -1028,7 +1029,7 @@ ECode CScanner::NextFloat(
     floatString = RemoveLocaleInfoFromFloat(floatString);
     Float floatValue = 0;
     // try {
-    ECode ec = StringUtils::ParseFloat(floatString, &floatValue);
+    ECode ec = StringUtils::Parse(floatString, &floatValue);
     // } catch (NumberFormatException e) {
     if (ec == E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
@@ -1066,7 +1067,7 @@ ECode CScanner::NextInt32(
     intString = RemoveLocaleInfo(intString, INT);
     Int32 intValue = 0;
     // try {
-    ECode ec = StringUtils::ParseInt32(intString, radix, &intValue);
+    ECode ec = StringUtils::Parse(intString, radix, &intValue);
     // } catch (NumberFormatException e) {
     if (ec == E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
@@ -1093,11 +1094,11 @@ ECode CScanner::NextLine(
     while (TRUE) {
         if (mMatcher->Find(&isflag), isflag) {
             Int32 endvalue = 0;
-            if (mInputExhausted || (mMatcher->End(&endvalue), endvalue) != mBufferLength
-                    || mBufferLength < (mBuffer->GetCapacity(&endvalue), endvalue)) {
+            if (mInputExhausted || ((IMatchResult::Probe(mMatcher))->End(&endvalue), endvalue) != mBufferLength
+                    || mBufferLength < ((IBuffer::Probe(mBuffer))->GetCapacity(&endvalue), endvalue)) {
                 mMatchSuccessful = TRUE;
-                mMatcher->End(&mFindStartIndex);
-                mMatcher->Group(&result);
+                (IMatchResult::Probe(mMatcher))->End(&mFindStartIndex);
+                (IMatchResult::Probe(mMatcher))->Group(&result);
                 break;
             }
         }
@@ -1119,7 +1120,7 @@ ECode CScanner::NextLine(
         LINE_TERMINATOR->Matcher(result, (IMatcher**)&terminatorMatcher);
         if (terminatorMatcher->Find(&isflag), isflag) {
             Int32 startvalue = 0;
-            terminatorMatcher->Start(&startvalue);
+            (IMatchResult::Probe(terminatorMatcher))->Start(&startvalue);
             result = result.Substring(0, startvalue);
         }
     }
@@ -1226,12 +1227,12 @@ ECode CScanner::Skip(
         Boolean isflag = FALSE;
         if (mMatcher->LookingAt(&isflag), isflag) {
             Int32 endvalue = 0;
-            mMatcher->End(&endvalue);
+            (IMatchResult::Probe(mMatcher))->End(&endvalue);
             Boolean matchInBuffer = endvalue < mBufferLength
                     || (endvalue == mBufferLength && mInputExhausted);
             if (matchInBuffer) {
                 mMatchSuccessful = TRUE;
-                mMatcher->End(&mFindStartIndex);
+                (IMatchResult::Probe(mMatcher))->End(&mFindStartIndex);
                 break;
             }
         }
@@ -1257,7 +1258,7 @@ ECode CScanner::Skip(
     /* [out] */ IScanner** outscan)
 {
     AutoPtr<IPattern> outpat;
-    Pattern::Compile(pattern, (IPattern**)&outpat);
+//    Pattern::Compile(pattern, (IPattern**)&outpat);
     return Skip(outpat, outscan);
 }
 
@@ -1293,7 +1294,7 @@ ECode CScanner::UseDelimiter(
     /* [out] */ IScanner** outscan)
 {
     AutoPtr<IPattern> outpat;
-    Pattern::Compile(pattern, (IPattern**)&outpat);
+//    Pattern::Compile(pattern, (IPattern**)&outpat);
     return UseDelimiter(outpat, outscan);
 }
 
@@ -1351,10 +1352,10 @@ ECode CScanner::CheckRadix(
 
 ECode CScanner::Initialization()
 {
-    FAIL_RETURN(CharBuffer::Allocate(DEFAULT_TRUNK_SIZE, (ICharBuffer**)&mBuffer));
-    mBuffer->SetLimit(0);
+//    FAIL_RETURN(CharBuffer::Allocate(DEFAULT_TRUNK_SIZE, (ICharBuffer**)&mBuffer));
+    (IBuffer::Probe(mBuffer))->SetLimit(0);
     String outstr;
-    mBuffer->ToString(&outstr);
+    (ICharSequence::Probe(mBuffer))->ToString(&outstr);
     return mDelimiter->Matcher(outstr, (IMatcher**)&mMatcher);
 }
 
@@ -1380,7 +1381,7 @@ ECode CScanner::CheckNull(
 ECode CScanner::ResetMatcher()
 {
     String outstr;
-    mBuffer->ToString(&outstr);
+    (ICharSequence::Probe(mBuffer))->ToString(&outstr);
     if (mMatcher == NULL) {
         mDelimiter->Matcher(outstr, (IMatcher**)&mMatcher);
     }
@@ -1410,7 +1411,7 @@ AutoPtr<IPattern> CScanner::GetIntegerPattern(
 {
     CheckRadix(radix);
     AutoPtr<INumberFormat> nf;
-    NumberFormat::GetInstance(mLocale, (INumberFormat**)&nf);
+//    NumberFormat::GetInstance(mLocale, (INumberFormat**)&nf);
     mDecimalFormat = IDecimalFormat::Probe(nf);
 
     String allAvailableDigits = String("0123456789abcdefghijklmnopqrstuvwxyz");
@@ -1434,14 +1435,14 @@ AutoPtr<IPattern> CScanner::GetIntegerPattern(
     integer += ")";
 
     AutoPtr<IPattern> integerPattern;
-    Pattern::Compile(integer.ToString(), (IPattern**)&integerPattern);
+//    Pattern::Compile(integer.ToString(), (IPattern**)&integerPattern);
     return integerPattern;
 }
 
 AutoPtr<IPattern> CScanner::GetFloatPattern()
 {
     AutoPtr<INumberFormat> numfor;
-    NumberFormat::GetInstance(mLocale, (INumberFormat**)&numfor);
+//    NumberFormat::GetInstance(mLocale, (INumberFormat**)&numfor);
     mDecimalFormat = IDecimalFormat::Probe(numfor);
 
     StringBuilder digit("([0-9]|(\\p{javaDigit}))");
@@ -1511,7 +1512,7 @@ AutoPtr<IPattern> CScanner::GetFloatPattern()
     floatString += "|";
     floatString += singedNonNumber;
     AutoPtr<IPattern> floatPattern;
-    Pattern::Compile(floatString.ToString(), (IPattern**)&floatPattern);
+//    Pattern::Compile(floatString.ToString(), (IPattern**)&floatPattern);
     return floatPattern;
 }
 
@@ -1636,9 +1637,9 @@ String CScanner::RemoveLocaleInfo(
     StringBuilder result("");
     if (INT == type) {
         for (Int32 i = 0; i < tokenBuilder.GetLength(); i++) {
-            if (-1 != Character::ToDigit(tokenBuilder.GetChar(i),
+            if (-1 != Character::ToDigit(tokenBuilder.GetCharAt(i),
                     Character::MAX_RADIX)) {
-                result += tokenBuilder.GetChar(i);
+                result += tokenBuilder.GetCharAt(i);
             }
         }
     }
@@ -1652,8 +1653,8 @@ String CScanner::RemoveLocaleInfo(
         }
         else {
             for (Int32 i = 0; i < tokenBuilder.GetLength(); i++) {
-                if (-1 != Character::ToDigit(tokenBuilder.GetChar(i), 10)) {
-                    result += Character::ToDigit(tokenBuilder.GetChar(i), 10);
+                if (-1 != Character::ToDigit(tokenBuilder.GetCharAt(i), 10)) {
+                    result += Character::ToDigit(tokenBuilder.GetCharAt(i), 10);
                 }
             }
         }
@@ -1754,8 +1755,8 @@ Int32 CScanner::FindPreDelimiter()
             findComplete = TRUE;
             // If just mDelimiter remains
             Int32 startvalue =0;
-            if ((mMatcher->Start(&startvalue), startvalue) == mFindStartIndex
-                    && (mMatcher->End(&startvalue), startvalue) == mBufferLength) {
+            if (((IMatchResult::Probe(mMatcher))->Start(&startvalue), startvalue) == mFindStartIndex
+                    && ((IMatchResult::Probe(mMatcher))->End(&startvalue), startvalue) == mBufferLength) {
                 // If more input resource exists
                 if (!mInputExhausted) {
                     ReadMore();
@@ -1774,8 +1775,8 @@ Int32 CScanner::FindPreDelimiter()
             }
         }
     }
-    mMatcher->End(&tokenStartIndex);
-    mMatcher->End(&mFindStartIndex);
+    (IMatchResult::Probe(mMatcher))->End(&tokenStartIndex);
+    (IMatchResult::Probe(mMatcher))->End(&mFindStartIndex);
     return tokenStartIndex;
 }
 
@@ -1795,10 +1796,10 @@ Boolean CScanner::SetHeadTokenRegion(
     }
     Int32 startvalue = 0;
     // If the first mDelimiter of scanner is not at the find start position
-    if (-1 != findIndex && mPreStartIndex != (mMatcher->Start(&startvalue), startvalue)) {
+    if (-1 != findIndex && mPreStartIndex != ((IMatchResult::Probe(mMatcher))->Start(&startvalue), startvalue)) {
         tokenStartIndex = mPreStartIndex;
-        mMatcher->Start(&tokenEndIndex);
-        mMatcher->Start(&mFindStartIndex);
+        (IMatchResult::Probe(mMatcher))->Start(&tokenEndIndex);
+        (IMatchResult::Probe(mMatcher))->Start(&mFindStartIndex);
         // set match region and return
         mMatcher->Region(tokenStartIndex, tokenEndIndex);
         setSuccess = TRUE;
@@ -1814,8 +1815,8 @@ Int32 CScanner::FindPostDelimiter()
         if (mMatcher->Find(&findComplete), findComplete) {
             findComplete = TRUE;
             Int32 endvalue = 0;
-            if ((mMatcher->Start(&tokenEndIndex), tokenEndIndex) == mFindStartIndex
-                    && tokenEndIndex == (mMatcher->End(&endvalue), endvalue)) {
+            if (((IMatchResult::Probe(mMatcher))->Start(&tokenEndIndex), tokenEndIndex) == mFindStartIndex
+                    && tokenEndIndex == ((IMatchResult::Probe(mMatcher))->End(&endvalue), endvalue)) {
                 findComplete = FALSE;
             }
         }
@@ -1829,27 +1830,27 @@ Int32 CScanner::FindPostDelimiter()
             }
         }
     }
-    mMatcher->Start(&tokenEndIndex);
-    mMatcher->Start(&mFindStartIndex);
+    (IMatchResult::Probe(mMatcher))->Start(&tokenEndIndex);
+    (IMatchResult::Probe(mMatcher))->Start(&mFindStartIndex);
     return tokenEndIndex;
 }
 
 ECode CScanner::ReadMore()
 {
     Int32 oldPosition = 0;
-    mBuffer->GetPosition(&oldPosition);
+    (IBuffer::Probe(mBuffer))->GetPosition(&oldPosition);
     Int32 oldBufferLength = mBufferLength;
     // Increase capacity if empty space is not enough
     Int32 capacitylen = 0;
-    if (mBufferLength >= (mBuffer->GetCapacity(&capacitylen), capacitylen)) {
+    if (mBufferLength >= ((IBuffer::Probe(mBuffer))->GetCapacity(&capacitylen), capacitylen)) {
         ExpandBuffer();
     }
 
     // Read input resource
     Int32 readCount = 0;
     // try {
-    mBuffer->SetLimit(capacitylen);
-    mBuffer->SetPosition(oldBufferLength);
+    (IBuffer::Probe(mBuffer))->SetLimit(capacitylen);
+    (IBuffer::Probe(mBuffer))->SetPosition(oldBufferLength);
     assert(0 && "TODO");
     ECode ec = NOERROR;
     // while ((readCount = mInput->Read(buffer)) == 0) {
@@ -1861,7 +1862,7 @@ ECode CScanner::ReadMore()
         // buffer and then an IOException is thrown out. In this case,
         // buffer is
         // actually grown, but readable.read() will never return.
-        mBuffer->GetPosition(&mBufferLength);
+        (IBuffer::Probe(mBuffer))->GetPosition(&mBufferLength);
         /*
          * Uses -1 to record IOException occurring, and no more input can be
          * read.
@@ -1871,8 +1872,8 @@ ECode CScanner::ReadMore()
     }
     // }
 
-    mBuffer->Flip();
-    mBuffer->SetPosition(oldPosition);
+    (IBuffer::Probe(mBuffer))->Flip();
+    (IBuffer::Probe(mBuffer))->SetPosition(oldPosition);
     if (-1 == readCount) {
         mInputExhausted = TRUE;
     }
@@ -1885,19 +1886,19 @@ ECode CScanner::ReadMore()
 ECode CScanner::ExpandBuffer()
 {
     Int32 oldPosition = 0;
-    mBuffer->GetPosition(&oldPosition);
+    (IBuffer::Probe(mBuffer))->GetPosition(&oldPosition);
     Int32 oldCapacity = 0;
-    mBuffer->GetCapacity(&oldCapacity);
+    (IBuffer::Probe(mBuffer))->GetCapacity(&oldCapacity);
     Int32 oldLimit = 0;
-    mBuffer->GetLimit(&oldLimit);
+    (IBuffer::Probe(mBuffer))->GetLimit(&oldLimit);
     Int32 newCapacity = oldCapacity * DIPLOID;
     AutoPtr< ArrayOf<Char32> > newBuffer = ArrayOf<Char32>::Alloc(newCapacity);
     AutoPtr< ArrayOf<Char32> > outarr;
     mBuffer->GetArray((ArrayOf<Char32>**)&outarr);
     newBuffer->Copy(0, outarr, 0, oldLimit);
-    CharBuffer::WrapArray(newBuffer, 0, newCapacity, (ICharBuffer**)&mBuffer);
-    mBuffer->SetPosition(oldPosition);
-    mBuffer->SetLimit(oldLimit);
+//    CharBuffer::WrapArray(newBuffer, 0, newCapacity, (ICharBuffer**)&mBuffer);
+    (IBuffer::Probe(mBuffer))->SetPosition(oldPosition);
+    (IBuffer::Probe(mBuffer))->SetLimit(oldLimit);
     return NOERROR;
 }
 

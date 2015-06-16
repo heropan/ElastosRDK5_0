@@ -4,20 +4,22 @@
 
 #include "_Elastos_Utility_CScanner.h"
 #include <StringBuilder.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IReadable;
 using Elastos::IO::ICharBuffer;
 using Elastos::IO::Channels::IReadableByteChannel;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::Regex::IPattern;
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::Regex::IMatchResult;
 using Elastos::Math::IBigDecimal;
 using Elastos::Math::IBigInteger;
 using Elastos::Text::IDecimalFormat;
-using Libcore::ICU::ILocale;
 
 namespace Elastos {
 namespace Utility {
@@ -157,7 +159,7 @@ public:
      *             if there are no more elements.
      * @see #hasNext
      */
-    CARAPI Next(
+    CARAPI GetNext(
         /* [out] */ IInterface** object);
 
     /**
