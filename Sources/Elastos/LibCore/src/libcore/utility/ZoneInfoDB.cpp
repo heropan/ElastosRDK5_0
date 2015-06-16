@@ -29,7 +29,8 @@ AutoPtr<ZoneInfoDB::TzData> InitDATA()
     AutoPtr<ArrayOf<String> > paths = ArrayOf<String>::Alloc(2);
     paths->Set(0, data);
     paths->Set(1, root);
-    AutoPtr<ZoneInfoDB::TzData> tz = new ZoneInfoDB::TzData(paths);
+    AutoPtr<ZoneInfoDB::TzData> tz = new ZoneInfoDB::TzData();
+    tz->Init(paths);
     return tz;
 }
 
@@ -74,23 +75,30 @@ AutoPtr<IInterface> ZoneInfoDB::TzData::MyBasicLruCache::Create(
 //===============================================================
 const Int32 ZoneInfoDB::TzData::CACHE_SIZE;
 
-ZoneInfoDB::TzData::TzData(
+ZoneInfoDB::TzData::TzData()
+{
+
+}
+
+void ZoneInfoDB::TzData::Init(
     /* [in] */ ArrayOf<String>* paths)
 {
-    // for (String path : paths) {
-    // if (loadData(path)) {
-    //   return;
-    // }
-    // }
+    for (Int32 i = 0; i < paths->GetLength(); ++i) {
+        if (LoadData((*paths)[i])) {
+            return;
+        }
+    }
 
     // // We didn't find any usable tzdata on disk, so let's just hard-code knowledge of "GMT".
     // // This is actually implemented in TimeZone itself, so if this is the only time zone
     // // we report, we won't be asked any more questions.
-    // System.logE("Couldn't find any tzdata!");
-    // version = "missing";
-    // zoneTab = "# Emergency fallback data.\n";
-    // ids = new String[] { "GMT" };
-    // byteOffsets = rawUtcOffsetsCache = new int[1];
+    ALOGE("Couldn't find any tzdata!");
+    mVersion = String("missing");
+    mZoneTab = String("# Emergency fallback data.\n");
+    mIds = ArrayOf<String>::Alloc(1);
+    mIds->Set(0, String("GMT"));
+    mByteOffsets = ArrayOf<Int32>::Alloc(1);
+    mRawUtcOffsetsCache = mByteOffsets;
 }
 
 Boolean ZoneInfoDB::TzData::LoadData(
@@ -219,7 +227,6 @@ AutoPtr<ArrayOf<String> > ZoneInfoDB::TzData::GetAvailableIDs(
       // }
       // return matches.toArray(new String[matches.size()]);
 }
-
 
 AutoPtr<ArrayOf<Int32> > ZoneInfoDB::TzData::GetRawUtcOffsets()
 {

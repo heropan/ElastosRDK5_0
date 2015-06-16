@@ -1,6 +1,6 @@
 
-#ifndef __CDEFAULTHANDLER2_H__
-#define __CDEFAULTHANDLER2_H__
+#ifndef __ORG_XML_SAX_EXT_CDEFAULTHANDLER2_H__
+#define __ORG_XML_SAX_EXT_CDEFAULTHANDLER2_H__
 
 #include "_Org_Xml_Sax_Ext_CDefaultHandler2.h"
 #include "DefaultHandler.h"
@@ -188,4 +188,4 @@ private:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CDEFAULTHANDLER2_H__
+#endif // __ORG_XML_SAX_EXT_CDEFAULTHANDLER2_H__

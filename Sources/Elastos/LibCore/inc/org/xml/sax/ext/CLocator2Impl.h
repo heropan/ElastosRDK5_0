@@ -1,6 +1,6 @@
 
-#ifndef __CLOCATOR2IMPL_H__
-#define __CLOCATOR2IMPL_H__
+#ifndef __ORG_XML_SAX_EXT_CLOCATOR2IMPL_H__
+#define __ORG_XML_SAX_EXT_CLOCATOR2IMPL_H__
 
 #include "_Org_Xml_Sax_Ext_CLocator2Impl.h"
 #include "LocatorImpl.h"
@@ -19,6 +19,7 @@ CarClass(CLocator2Impl)
 {
 public:
     CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     /**
@@ -87,4 +88,4 @@ private:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CLOCATOR2IMPL_H__
+#endif // __ORG_XML_SAX_EXT_CLOCATOR2IMPL_H__

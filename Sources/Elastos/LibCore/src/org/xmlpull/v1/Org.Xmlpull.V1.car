@@ -12,36 +12,34 @@ module
     using interface Org.Xml.Sax.ILocator;
     using interface Org.Xml.Sax.IXMLReader;
     using interface Org.Xml.Sax.IAttributes;
+    using interface Org.Xmlpull.V1.IXmlPullParser;
 
     namespace Org {
     namespace Xmlpull {
     namespace V1 {
 
-        class CDummy {
-            interface IObject;
+        class CXmlPullParserFactory {
+            interface IXmlPullParserFactory;
         }
-        // class CXmlPullParserFactory {
-        //     interface IXmlPullParserFactory;
-        // }
 
-        // singleton class CXmlPullParserFactoryHelper {
-        //     interface IXmlPullParserFactoryHelper;
-        // }
+        singleton class CXmlPullParserFactoryHelper {
+            interface IXmlPullParserFactoryHelper;
+        }
 
-        // namespace Sax2 {
+        namespace Sax2 {
 
-        //     class CDriver {
-        //         constructor();
+            class CDriver {
+                constructor();
 
-        //         constructor(
-        //             [in] IXmlPullParser* pp);
+                constructor(
+                    [in] IXmlPullParser* pp);
 
-        //         interface ILocator;
-        //         interface IXMLReader;
-        //         interface IAttributes;
-        //     }
+                interface ILocator;
+                interface IXMLReader;
+                interface IAttributes;
+            }
 
-        // } // namespace Sax2
+        } // namespace Sax2
 
     } // namespace V1
     } // namespace Xmlpull

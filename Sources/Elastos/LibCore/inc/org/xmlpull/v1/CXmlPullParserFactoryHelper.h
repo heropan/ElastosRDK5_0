@@ -3,7 +3,7 @@
 #define __CXMLPULLPARSERFACTORYHELPER_H__
 
 #include "_Org_Xmlpull_V1_CXmlPullParserFactoryHelper.h"
-#include "Singleton.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::Singleton;
 
@@ -16,6 +16,8 @@ CarClass(CXmlPullParserFactoryHelper)
     , public IXmlPullParserFactoryHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CAR_SINGLETON_DECL()
 
     CARAPI NewInstance(

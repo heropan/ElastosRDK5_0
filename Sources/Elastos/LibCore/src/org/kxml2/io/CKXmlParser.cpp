@@ -1,6 +1,6 @@
 
 #include "CKXmlParser.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
@@ -8,6 +8,7 @@ using Elastos::Core::CBoolean;
 using Elastos::Core::StringUtils;
 using Elastos::IO::IInputStreamReader;
 using Elastos::IO::CInputStreamReader;
+using Elastos::IO::EIID_ICloseable;
 
 namespace Org {
 namespace Kxml2 {
@@ -478,7 +479,7 @@ ECode CKXmlParser::ReadUntil(
 
     if (returnText && !mText.IsNull()) {
         result = new StringBuilder();
-        result->AppendString(mText);
+        result->Append(mText);
     }
 
     Int32 end;
@@ -490,7 +491,7 @@ search:
                 if (result == NULL) {
                     result = new StringBuilder();
                 }
-                result->AppendChars(*mBuffer, start, mPosition - start);
+                result->Append(*mBuffer, start, mPosition - start);
             }
             Boolean succeeded;
             FAIL_RETURN(FillBuffer(delimiter.GetLength(), &succeeded));
@@ -525,7 +526,7 @@ search:
         return NOERROR;
     }
     else {
-        result->AppendChars(*mBuffer, start, end - start);
+        result->Append(*mBuffer, start, end - start);
         return result->ToString(value);
     }
 }
@@ -626,7 +627,7 @@ ECode CKXmlParser::ReadDoctype(
     }
     Skip();
     if (saveDtdText) {
-        mBufferCapture->AppendChars(*mBuffer, 0, mPosition);
+        mBufferCapture->Append(*mBuffer, 0, mPosition);
         mBufferCapture->Delete(0, startPosition);
         mBufferCapture->ToString(&mText);
         mBufferCapture = NULL;
@@ -1395,7 +1396,8 @@ ECode CKXmlParser::ReadEntity(
         Int32 c = code.StartWith("#x")
                 ? StringUtils::ParseInt32(code.Substring(2), 16)
                 : StringUtils::ParseInt32(code.Substring(1));
-        out.Delete(start, out.GetLength());
+        out.GetLength(&length);
+        out.Delete(start, length);
         out.AppendChar(c);
         mUnresolved = FALSE;
         return NOERROR;
@@ -1421,7 +1423,7 @@ ECode CKXmlParser::ReadEntity(
         out.GetLength(&length);
         out.Delete(start, length);
         mUnresolved = FALSE;
-        out.AppendString(defaultEntity);
+        out.Append(defaultEntity);
         return NOERROR;
     }
 
@@ -1440,7 +1442,7 @@ ECode CKXmlParser::ReadEntity(
                 PushContentSource(resolved); // parse the entity as XML
             }
             else {
-                out.AppendChars(*resolved); // include the entity value as text
+                out.Append(*resolved); // include the entity value as text
             }
             return NOERROR;
         }
@@ -1511,7 +1513,7 @@ ECode CKXmlParser::ReadValue(
     // if a text section was already started, prefix the start
     if (valueContext == TEXT && !mText.IsNull()) {
         result = new StringBuilder();
-        result->AppendString(mText);
+        result->Append(mText);
     }
 
     while (TRUE) {
@@ -1526,7 +1528,7 @@ ECode CKXmlParser::ReadValue(
                 if (result == NULL) {
                     result = new StringBuilder();
                 }
-                result->AppendChars(*mBuffer, start, mPosition - start);
+                result->Append(*mBuffer, start, mPosition - start);
             }
             Boolean succeeded;
             if (FillBuffer(1, &succeeded), !succeeded) {
@@ -1570,7 +1572,7 @@ ECode CKXmlParser::ReadValue(
         if (result == NULL) {
             result = new StringBuilder();
         }
-        result->AppendChars(*mBuffer, start, mPosition - start);
+        result->Append(*mBuffer, start, mPosition - start);
 
         if (c == '\r') {
             Boolean succeeded;
@@ -1628,7 +1630,7 @@ ECode CKXmlParser::ReadValue(
         return NOERROR;
     }
     else {
-        result->AppendChars(*mBuffer, start, mPosition - start);
+        result->Append(*mBuffer, start, mPosition - start);
         result->ToString(value);
         return NOERROR;
     }
@@ -1641,7 +1643,7 @@ ECode CKXmlParser::Read(
     if ((Char32)c != expected) {
         FAIL_RETURN(CheckRelaxed(String("expected: '")/* + expected + "' actual: '" + ((Char32)c) + "'"*/));
         if (c == -1) {
-            return; // On EOF, don't move position beyond limit
+            return NOERROR; // On EOF, don't move position beyond limit
         }
     }
     mPosition++;
@@ -1716,7 +1718,7 @@ ECode CKXmlParser::FillBuffer(
     }
 
     if (mBufferCapture != NULL) {
-        mBufferCapture->AppendChars(*mBuffer, 0, mPosition);
+        mBufferCapture->Append(*mBuffer, 0, mPosition);
     }
 
     if (mLimit != mPosition) {
@@ -1730,14 +1732,14 @@ ECode CKXmlParser::FillBuffer(
 
     mPosition = 0;
     Int32 total = 0;
-    FAIL_RETURN(mReader->ReadChars(mBuffer, mLimit, mBuffer->GetLength() - mLimit, &total));
+    FAIL_RETURN(mReader->Read(mBuffer, mLimit, mBuffer->GetLength() - mLimit, &total));
     while (total != -1) {
         mLimit += total;
         if (mLimit >= minimum) {
             *result = TRUE;
             return NOERROR;
         }
-        FAIL_RETURN(mReader->ReadChars(mBuffer, mLimit, mBuffer->GetLength() - mLimit, &total));
+        FAIL_RETURN(mReader->Read(mBuffer, mLimit, mBuffer->GetLength() - mLimit, &total));
     }
 
     return NOERROR;
@@ -1787,7 +1789,7 @@ ECode CKXmlParser::ReadName(
             if (result == NULL) {
                 result = new StringBuilder();
             }
-            result->AppendChars(*mBuffer, start, mPosition - start);
+            result->Append(*mBuffer, start, mPosition - start);
             Boolean succeeded;
             if (FillBuffer(1, &succeeded), !succeeded) {
                 result->ToString(value);
@@ -1816,7 +1818,7 @@ ECode CKXmlParser::ReadName(
             return NOERROR;
         }
         else {
-            result->AppendChars(*mBuffer, start, mPosition - start);
+            result->Append(*mBuffer, start, mPosition - start);
             return result->ToString(value);
         }
     }
@@ -2210,7 +2212,7 @@ ECode CKXmlParser::GetPositionDescription(
 
     if (mType == START_TAG || mType == END_TAG) {
         if (mDegenerated) {
-            buf.AppendString(String("(empty) "));
+            buf.Append(String("(empty) "));
         }
         buf.AppendChar('<');
         if (mType == END_TAG) {
@@ -2218,18 +2220,18 @@ ECode CKXmlParser::GetPositionDescription(
         }
 
         if (!mPrefix.IsNull()) {
-            buf.AppendString(String("{") + mNamespace + "}" + mPrefix + ":");
+            buf.Append(String("{") + mNamespace + "}" + mPrefix + ":");
         }
-        buf.AppendString(mName);
+        buf.Append(mName);
 
         Int32 cnt = mAttributeCount * 4;
         for (Int32 i = 0; i < cnt; i += 4) {
             buf.AppendChar(' ');
             if (!(*mAttributes)[i + 1].IsNull()) {
-                buf.AppendString(String("{") + (*mAttributes)[i] + "}" + (*mAttributes)[i + 1] + ":");
+                buf.Append(String("{") + (*mAttributes)[i] + "}" + (*mAttributes)[i + 1] + ":");
             }
-            buf.AppendString((*mAttributes)[i + 2]);
-            buf.AppendString(String("='") + (*mAttributes)[i + 3] + "'");
+            buf.Append((*mAttributes)[i + 2]);
+            buf.Append(String("='") + (*mAttributes)[i + 3] + "'");
         }
 
         buf.AppendChar('>');
@@ -2238,10 +2240,10 @@ ECode CKXmlParser::GetPositionDescription(
     else if (mType != IXmlPullParser::TEXT) {
         String text;
         GetText(&text);
-        buf.AppendString(text);
+        buf.Append(text);
     }
     else if (mIsWhitespace) {
-        buf.AppendString(String("(whitespace)"));
+        buf.Append(String("(whitespace)"));
     }
     else {
         String text;
@@ -2249,27 +2251,27 @@ ECode CKXmlParser::GetPositionDescription(
         if (text.GetLength() > 16) {
             text = text.Substring(0, 16) + "...";
         }
-        buf.AppendString(text);
+        buf.Append(text);
     }
 
     Int32 lineNum = 0, columnNum = 0;
     GetLineNumber(&lineNum);
     GetColumnNumber(&columnNum);
     buf.AppendChar('@');
-    buf.AppendInt32(lineNum);
+    buf.Append(lineNum);
     buf.AppendChar(':');
-    buf.AppendInt32(columnNum);
+    buf.Append(columnNum);
     if(!mLocation.IsNull()){
-        buf.AppendString(String(" in "));
-        buf.AppendString(mLocation);
+        buf.Append(String(" in "));
+        buf.Append(mLocation);
     }
     else if(mReader != NULL){
         String str("Not Implemented, add later");
         //TODO:
         //assert(0);
         // mReader->ToString(&str);
-        buf.AppendString(String(" in "));
-        buf.AppendString(str);
+        buf.Append(String(" in "));
+        buf.Append(str);
     }
     return buf.ToString(des);
 }

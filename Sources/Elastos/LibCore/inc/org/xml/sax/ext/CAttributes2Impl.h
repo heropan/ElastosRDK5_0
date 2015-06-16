@@ -1,6 +1,6 @@
 
-#ifndef __CATTRIBUTES2IMPL_H__
-#define __CATTRIBUTES2IMPL_H__
+#ifndef __ORG_XML_SAX_EXT_CATTRIBUTES2IMPL_H__
+#define __ORG_XML_SAX_EXT_CATTRIBUTES2IMPL_H__
 
 #include "_Org_Xml_Sax_Ext_CAttributes2Impl.h"
 #include "AttributesImpl.h"
@@ -134,4 +134,4 @@ private:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CATTRIBUTES2IMPL_H__
+#endif // __ORG_XML_SAX_EXT_CATTRIBUTES2IMPL_H__

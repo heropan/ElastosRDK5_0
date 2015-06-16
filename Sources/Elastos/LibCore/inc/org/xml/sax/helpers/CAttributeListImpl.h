@@ -1,10 +1,12 @@
 
-#ifndef __CATTRIBUTELISTIMPL_H__
-#define __CATTRIBUTELISTIMPL_H__
+#ifndef __ORG_XML_SAX_HELPERS_CATTRIBUTELISTIMPL_H__
+#define __ORG_XML_SAX_HELPERS_CATTRIBUTELISTIMPL_H__
 
 #include "_Org_Xml_Sax_Helpers_CAttributeListImpl.h"
-#include <elastos/utility/List.h>
+#include <elastos/core/Object.h>
+#include <elastos/utility/etl/List.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Etl::List;
 
 namespace Org {
@@ -80,4 +82,4 @@ private:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CATTRIBUTELISTIMPL_H__
+#endif // __ORG_XML_SAX_HELPERS_CATTRIBUTELISTIMPL_H__

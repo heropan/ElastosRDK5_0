@@ -1,14 +1,14 @@
 
 #include "CDriver.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/StringBuilder.h>
 #include "XmlPullParserFactory.h"
-#include "Elastos.CoreLibrary.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IReader;
 using Elastos::Net::IURL;
-using Elastos::Net::CURL;
+// using Elastos::Net::CURL;
+using Org::Xml::Sax::EIID_IXMLReader;
 using Org::Xml::Sax::EIID_IContentHandler;
 using Org::Xml::Sax::EIID_IErrorHandler;
 using Org::Xml::Sax::EIID_ILocator;
@@ -29,8 +29,9 @@ const String CDriver::VALIDATION_FEATURE("http://xml.org/sax/features/validation
 const String CDriver::APACHE_SCHEMA_VALIDATION_FEATURE("http://apache.org/xml/features/validation/schema");
 const String CDriver::APACHE_DYNAMIC_VALIDATION_FEATURE("http://apache.org/xml/features/validation/dynamic");
 
-CAR_INTERFACE_DECL_3(CDriver, Object, ILocator, IXMLReader, IAttributes)
-CAR_OBJECT_DECL(CDriver)
+CAR_INTERFACE_IMPL_3(CDriver, Object, ILocator, IXMLReader, IAttributes)
+
+CAR_OBJECT_IMPL(CDriver)
 
 ECode CDriver::constructor()
 {
@@ -293,7 +294,7 @@ ECode CDriver::Parse(
             // NOTE: replace with Connection to run in J2ME environment
             // try {
             AutoPtr<IURL> url;
-            CURL::New(mSystemId, (IURL**)&url);
+            // CURL::New(mSystemId, (IURL**)&url);
             url->OpenStream((IInputStream**)&stream);
             // } catch (MalformedURLException nue) {
             //     try {
@@ -579,9 +580,9 @@ void CDriver::ParseSubTree(
                     if(!prefix.IsNull()) {
                         // rawName.setLength(0);
                         rawName.Reset();
-                        rawName.AppendString(prefix);
+                        rawName.Append(prefix);
                         rawName.AppendChar(':');
-                        rawName.AppendString(name);
+                        rawName.Append(name);
                     }
                     String strspace;
                     mPp->GetNamespace(&strspace);
@@ -618,9 +619,9 @@ void CDriver::ParseSubTree(
                     if(!prefix.IsNull()) {
                         // rawName.setLength(0);
                         rawName.Reset();
-                        rawName.AppendString(prefix);
+                        rawName.Append(prefix);
                         rawName.AppendChar(':');
-                        rawName.AppendString(name);
+                        rawName.Append(name);
                     }
                     String strspace;
                     mPp->GetNamespace(&strspace);

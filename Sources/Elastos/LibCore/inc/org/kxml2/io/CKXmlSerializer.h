@@ -3,14 +3,14 @@
 #define __CKXMLSERIALIZER_H__
 
 #include "_Org_Kxml2_IO_CKXmlSerializer.h"
-#include "Object.h"
-#include <Elastos.CoreLibrary.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 using Elastos::Core::IBoolean;
 using Elastos::IO::IWriter;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IBufferedWriter;
+using Org::Xmlpull::V1::IXmlSerializer;
 
 namespace Org {
 namespace Kxml2 {
@@ -103,7 +103,7 @@ public:
         /* [in] */ const String& text);
 
     CARAPI WriteText(
-        /* [in] */ const ArrayOf<Char32>& buf,
+        /* [in] */ ArrayOf<Char32>* buf,
         /* [in] */ Int32 start,
         /* [in] */ Int32 len);
 

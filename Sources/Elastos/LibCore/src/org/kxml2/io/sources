@@ -7,9 +7,8 @@ CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Org.Kxml2.IO.car
-SOURCES += CDummy.cpp
-#SOURCES += CKXmlParser.cpp
-#SOURCES += CKXmlSerializer.cpp
+SOURCES += CKXmlParser.cpp
+SOURCES += CKXmlSerializer.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES = $(XDK_TARGETS)/Elastos.Runtime.eco

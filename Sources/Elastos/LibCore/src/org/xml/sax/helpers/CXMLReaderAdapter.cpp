@@ -2,7 +2,6 @@
 #include "CXMLReaderAdapter.h"
 #include "CXMLReaderFactory.h"
 #include "CInputSource.h"
-#include "SaxError.h"
 
 namespace Org {
 namespace Xml {
@@ -10,10 +9,11 @@ namespace Sax {
 namespace Helpers {
 
 CAR_INTERFACE_IMPL_2(CXMLReaderAdapter, Object, IParser, IContentHandler)
+
 CAR_OBJECT_IMPL(CXMLReaderAdapter)
 
 ECode CXMLReaderAdapter::SetLocale(
-    /* [in] */ Libcore::ICU::ILocale* locale)
+    /* [in] */ ILocale* locale)
 {
     // throw new SAXNotSupportedException("setLocale not supported");
     return E_SAX_NOT_SUPPORTED_EXCEPTION;

@@ -1,6 +1,6 @@
 
-#ifndef __CXMLFILTERIMPL_H__
-#define __CXMLFILTERIMPL_H__
+#ifndef __ORG_XML_SAX_HELPERS_CXMLFILTERIMPL_H__
+#define __ORG_XML_SAX_HELPERS_CXMLFILTERIMPL_H__
 
 #include "_Org_Xml_Sax_Helpers_CXMLFilterImpl.h"
 #include <elastos/core/Object.h>
@@ -461,4 +461,4 @@ private:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CXMLFILTERIMPL_H__
+#endif // __ORG_XML_SAX_HELPERS_CXMLFILTERIMPL_H__

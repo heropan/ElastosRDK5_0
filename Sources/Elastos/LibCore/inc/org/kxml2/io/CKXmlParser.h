@@ -4,15 +4,19 @@
 
 #include "_Org_Kxml2_IO_CKXmlParser.h"
 #include <elastos/core/Object.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/StringBuilder.h>
-#include <Elastos.CoreLibrary.h>
+#include <Org.Kxml2.IO.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IBoolean;
 using Elastos::Utility::Etl::HashMap;
+using Elastos::IO::ICloseable;
 using Elastos::IO::IReader;
 using Elastos::IO::IInputStream;
+using Org::Xmlpull::V1::IXmlPullParser;
+using Org::Kxml2::IO::IKXmlParser;
 
 namespace Org {
 namespace Kxml2 {

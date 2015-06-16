@@ -1,6 +1,6 @@
 
-#ifndef __CPARSERADAPTER_H__
-#define __CPARSERADAPTER_H__
+#ifndef __ORG_XML_SAX_HELPERS_CPARSERADAPTER_H__
+#define __ORG_XML_SAX_HELPERS_CPARSERADAPTER_H__
 
 #include "_Org_Xml_Sax_Helpers_CParserAdapter.h"
 #include <elastos/core/Object.h>
@@ -440,4 +440,4 @@ public:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CPARSERADAPTER_H__
+#endif // __ORG_XML_SAX_HELPERS_CPARSERADAPTER_H__

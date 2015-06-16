@@ -7,11 +7,14 @@
 #include <Org.Xml.Sax.h>
 
 using Elastos::Core::Object;
+using Org::Xml::Sax::ILocator;
+using Org::Xml::Sax::IXMLReader;
 using Org::Xml::Sax::IEntityResolver;
 using Org::Xml::Sax::IDTDHandler;
 using Org::Xml::Sax::IContentHandler;
 using Org::Xml::Sax::IErrorHandler;
 using Org::Xml::Sax::IInputSource;
+using Org::Xml::Sax::IAttributes;
 
 namespace Org {
 namespace Xmlpull {

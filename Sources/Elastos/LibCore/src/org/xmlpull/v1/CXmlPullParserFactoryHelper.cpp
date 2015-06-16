@@ -6,7 +6,9 @@ namespace Org {
 namespace Xmlpull {
 namespace V1 {
 
-CAR_SINGLETON_IMPL(CXmlPullParserFactoryHelper, Singleton, IXmlPullParserFactoryHelper)
+CAR_SINGLETON_IMPL(CXmlPullParserFactoryHelper)
+
+CAR_INTERFACE_IMPL(CXmlPullParserFactoryHelper, Singleton, IXmlPullParserFactoryHelper)
 
 ECode CXmlPullParserFactoryHelper::NewInstance(
     /* [out] */ IXmlPullParserFactory** xmlPullParserFac)

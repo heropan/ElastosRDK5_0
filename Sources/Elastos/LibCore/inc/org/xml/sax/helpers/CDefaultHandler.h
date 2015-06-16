@@ -1,6 +1,6 @@
 
-#ifndef __CDEFAULTHANDLER_H__
-#define __CDEFAULTHANDLER_H__
+#ifndef __ORG_XML_SAX_HELPERS_CDEFAULTHANDLER_H__
+#define __ORG_XML_SAX_HELPERS_CDEFAULTHANDLER_H__
 
 #include "_Org_Xml_Sax_Helpers_CDefaultHandler.h"
 #include "DefaultHandler.h"
@@ -22,4 +22,4 @@ public:
 } // namespace Xml
 } // namespace Org
 
-#endif // __CDEFAULTHANDLER_H__
+#endif // __ORG_XML_SAX_HELPERS_CDEFAULTHANDLER_H__

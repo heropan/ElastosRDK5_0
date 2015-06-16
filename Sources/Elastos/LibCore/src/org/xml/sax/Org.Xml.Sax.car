@@ -42,6 +42,10 @@ module
     interface Org.Xml.Sax.IAttributes;
     interface Org.Xml.Sax.IAttributeList;
     interface Org.Xml.Sax.ILocator;
+    interface Org.Xml.Sax.IParser;
+    interface Org.Xml.Sax.IXMLReader;
+    interface Org.Xml.Sax.IXMLFilter;
+    interface Org.Xml.Sax.IDocumentHandler;
     interface Org.Xml.Sax.Ext.ILocator2;
     interface Org.Xml.Sax.Ext.ILocator2Impl;
 
@@ -73,15 +77,15 @@ module
 
     namespace Helpers {
 
-    //       class CAttributeListImpl {
-    //           constructor();
+        class CAttributeListImpl {
+            constructor();
 
-    //           constructor(
-    //               [in] IAttributeList* atts);
+            constructor(
+             [in] IAttributeList* atts);
 
-    //           interface IAttributeList;
-    //           interface IAttributeListImpl;
-    //       }
+            interface IAttributeList;
+            interface IAttributeListImpl;
+        }
 
         class CAttributesImpl {
             constructor();
@@ -93,29 +97,29 @@ module
             interface IAttributesImpl;
         }
 
-    //         class CLocatorImpl {
-    //             constructor();
+        class CLocatorImpl {
+            constructor();
 
-    //             constructor(
-    //                 [in] ILocator* locator);
+            constructor(
+                [in] ILocator* locator);
 
-    //             interface ILocator;
-    //             interface ILocatorImpl;
-    //         }
+            interface ILocator;
+            interface ILocatorImpl;
+        }
 
-    //         class CNamespaceSupport {
-    //             constructor();
+        class CNamespaceSupport {
+            constructor();
 
-    //             interface INamespaceSupport;
-    //         }
+            interface INamespaceSupport;
+        }
 
-    //         singleton class CParserFactory {
-    //             interface IParserFactory;
-    //         }
+        singleton class CParserFactory {
+            interface IParserFactory;
+        }
 
-    //         singleton class CXMLReaderFactory {
-    //             interface IXMLReaderFactory;
-    //         }
+        singleton class CXMLReaderFactory {
+            interface IXMLReaderFactory;
+        }
 
         class CDefaultHandler {
             interface IEntityResolver;
@@ -124,52 +128,52 @@ module
             interface IErrorHandler;
         }
 
-    //         class CXMLReaderAdapter {
-    //             constructor();
+        class CXMLReaderAdapter {
+            constructor();
 
-    //             constructor(
-    //                 [in] IXMLReader* xmlReader);
+            constructor(
+                [in] IXMLReader* xmlReader);
 
-    //             interface IParser;
-    //             interface IContentHandler;
-    //         }
+            interface IParser;
+            interface IContentHandler;
+        }
 
-    //         class CXMLFilterImpl {
-    //             constructor();
+        class CXMLFilterImpl {
+            constructor();
 
-    //             constructor(
-    //                 [in] IXMLReader* parent);
+            constructor(
+                [in] IXMLReader* parent);
 
-    //             interface IXMLReader;
-    //             interface IXMLFilter;
-    //             interface IEntityResolver;
-    //             interface IDTDHandler;
-    //             interface IContentHandler;
-    //             interface IErrorHandler;
-    //         }
+            interface IXMLReader;
+            interface IXMLFilter;
+            interface IEntityResolver;
+            interface IDTDHandler;
+            interface IContentHandler;
+            interface IErrorHandler;
+        }
 
-    //         class CParserAdapter {
-    //             constructor();
+        class CParserAdapter {
+            constructor();
 
-    //             constructor(
-    //                 [in] IParser* parent);
+            constructor(
+                [in] IParser* parent);
 
-    //             interface IXMLReader;
-    //             interface IDocumentHandler;
-    //         }
+            interface IXMLReader;
+            interface IDocumentHandler;
+        }
     }
 
     namespace Ext {
-        //class CLocator2Impl {
-        //    constructor();
+        class CLocator2Impl {
+            constructor();
 
-        //    constructor(
-        //        [in] ILocator* locator);
+            constructor(
+                [in] ILocator* locator);
 
-        //    interface ILocator;
-        //    interface ILocator2;
-        //    interface ILocator2Impl;
-        //}
+            interface ILocator;
+            interface ILocator2;
+            interface ILocator2Impl;
+        }
 
         class CAttributes2Impl {
             constructor();
