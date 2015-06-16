@@ -71,7 +71,7 @@ module
                 [in] Int64 size);
 
             interface IMemoryMappedFile;
-            interface Elastos.Core.IAutoCloseable;
+            interface ICloseable;
         }
 
         class CStrictLineReader {

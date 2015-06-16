@@ -10,7 +10,7 @@ using Elastos::IO::IByteOrderHelper;
 using Elastos::IO::ByteOrder;
 using Elastos::IO::ByteOrder_BIG_ENDIAN;
 using Elastos::IO::ByteOrder_LITTLE_ENDIAN;
-using Elastos::Core::EIID_IAutoCloseable;
+using Elastos::IO::EIID_ICloseable;
 using Elastos::Droid::System::OsConstants;
 using Elastos::Droid::System::IStructStat;
 using Elastos::IO::IFileDescriptor;
@@ -20,7 +20,7 @@ namespace IO {
 
 CAR_OBJECT_IMPL(CMemoryMappedFile)
 
-CAR_INTERFACE_IMPL_2(CMemoryMappedFile, Object, IMemoryMappedFile, IAutoCloseable)
+CAR_INTERFACE_IMPL_2(CMemoryMappedFile, Object, IMemoryMappedFile, ICloseable)
 
 ECode CMemoryMappedFile::constructor(
     /* [in] */ Int64 address,

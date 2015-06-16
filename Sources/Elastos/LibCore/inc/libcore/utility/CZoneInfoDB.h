@@ -6,8 +6,8 @@
 
 using Elastos::Core::Singleton;
 
-namespace Elastos{
-namespace Utility{
+namespace Libcore {
+namespace Utility {
 
 /**
  * Our concrete TimeZone implementation, backed by zoneinfo data.
@@ -48,6 +48,6 @@ public:
 };
 
 } // namespace Utility
-} // namespace Elastos
+} // namespace Libcore
 
 #endif //__ELASTOS_UTILITY_CZONEINFODB_H__

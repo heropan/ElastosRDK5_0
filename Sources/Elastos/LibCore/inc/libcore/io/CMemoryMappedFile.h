@@ -5,7 +5,7 @@
 #include "Object.h"
 
 using Elastos::Core::Object;
-using Elastos::Core::IAutoCloseable;
+using Elastos::IO::ICloseable;
 
 namespace Libcore {
 namespace IO {
@@ -13,7 +13,7 @@ namespace IO {
 CarClass(CMemoryMappedFile)
     , public Object
     , public IMemoryMappedFile
-    , public IAutoCloseable
+    , public ICloseable
 {
 public:
     CAR_OBJECT_DECL()

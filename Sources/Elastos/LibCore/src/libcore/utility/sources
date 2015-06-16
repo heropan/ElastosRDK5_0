@@ -16,3 +16,4 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 
 #SOURCES = BasicLruCache.cpp
 SOURCES += EmptyArray.cpp
+SOURCES += ZoneInfoDB.cpp
