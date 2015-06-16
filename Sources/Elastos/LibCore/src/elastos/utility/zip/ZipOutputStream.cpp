@@ -7,11 +7,12 @@
 #include "CDeflater.h"
 #include "CSystem.h"
 #include "Arrays.h"
-// #include "EmptyArray.h"
+#include "EmptyArray.h"
 #include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Core::ISystem;
 using Elastos::IO::CByteArrayOutputStream;
+using Libcore::Utility::EmptyArray;
 
 namespace Elastos {
 namespace Utility {
@@ -29,7 +30,7 @@ ZipOutputStream::ZipOutputStream()
 {
     CByteArrayOutputStream::New((IByteArrayOutputStream**)&mCDir);
     CCRC32::New((ICRC32**)&mCrc);
-    // mCommentBytes = EmptyArray::BYTE;
+    mCommentBytes = EmptyArray::BYTE;
 }
 
 ZipOutputStream::~ZipOutputStream()
@@ -158,7 +159,7 @@ ECode ZipOutputStream::CloseEntry()
     mOffset += mCurOffset;
     if (mEntryCommentBytes->GetLength() > 0) {
         os->Write(mEntryCommentBytes);
-        // mEntryCommentBytes = EmptyArray::BYTE; //TODO upgrade
+        mEntryCommentBytes = EmptyArray::BYTE;
     }
 
     mCurrentEntry = NULL;
@@ -261,7 +262,7 @@ ECode ZipOutputStream::PutNextEntry(
 
     mNameBytes = ze->mName.GetBytes(/*StandardCharsets.UTF_8*/);
     FAIL_RETURN(CheckSizeIsWithinShort(String("Name"), mNameBytes))
-    // mEntryCommentBytes = EmptyArray::BYTE; //TODO upgrade
+    mEntryCommentBytes = EmptyArray::BYTE;
 
     if (!ze->mComment.IsNull()) {
         mEntryCommentBytes = ze->mComment.GetBytes(/*StandardCharsets.UTF_8*/);
@@ -328,7 +329,7 @@ ECode ZipOutputStream::SetComment(
     /* [in] */ const String& comment)
 {
     if (comment.IsNull()) {
-        // mCommentBytes = EmptyArray::BYTE;//TODO upgrade
+        mCommentBytes = EmptyArray::BYTE;
         return NOERROR;
     }
 

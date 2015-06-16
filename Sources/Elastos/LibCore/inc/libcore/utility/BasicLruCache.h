@@ -1,10 +1,9 @@
 
-#ifndef __BASICLRUCACHE_H__
-#define __BASICLRUCACHE_H__
+#ifndef __LIBCORE_UTILITY_BASICLRUCACHE_H__
+#define __LIBCORE_UTILITY_BASICLRUCACHE_H__
 
 #include "Object.h"
 #include "elastos/utility/CLinkedHashMap.h"
-#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Core::Object;
 using Elastos::Utility::IMap;
@@ -89,4 +88,4 @@ private:
 } // namespace Utility
 } // namespace Libcore
 
-#endif //__BASICLRUCACHE_H__
+#endif //__LIBCORE_UTILITY_BASICLRUCACHE_H__

@@ -1115,3 +1115,15 @@ EXPORTS
     ;;_ZN7Elastos7Utility18DualPivotQuicksort6DoSortEPNS_7ArrayOfIjEEii
     ;;_ZN7Elastos7Utility18DualPivotQuicksort6DoSortEPNS_7ArrayOfIsEEii
     ;;_ZN7Elastos7Utility18DualPivotQuicksort6DoSortEPNS_7ArrayOfIxEEii
+
+    ;;EmptyArray
+    _ZN7Libcore7Utility10EmptyArray4BYTEE
+    _ZN7Libcore7Utility10EmptyArray5FLOATE
+    _ZN7Libcore7Utility10EmptyArray5INT32E
+    _ZN7Libcore7Utility10EmptyArray5INT64E
+    _ZN7Libcore7Utility10EmptyArray6CHAR32E
+    _ZN7Libcore7Utility10EmptyArray6DOUBLEE
+    _ZN7Libcore7Utility10EmptyArray6OBJECTE
+    _ZN7Libcore7Utility10EmptyArray6STRINGE
+    _ZN7Libcore7Utility10EmptyArray7BOOLEANE
+    _ZN7Libcore7Utility10EmptyArray9THROWABLEE

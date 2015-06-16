@@ -14,4 +14,5 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 
-SOURCES = BasicLruCache.cpp
+#SOURCES = BasicLruCache.cpp
+SOURCES += EmptyArray.cpp
