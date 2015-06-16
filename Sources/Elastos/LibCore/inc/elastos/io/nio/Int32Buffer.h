@@ -21,13 +21,13 @@ extern "C" const InterfaceID EIID_Int32Buffer;
  */
 class Int32Buffer
     : public Buffer
+    , public IInt32Buffer
 {
 public:
     Int32Buffer(
         /* [in] */ Int32 capacity);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
 
     /**
      * Creates an int buffer based on a newly allocated int array.

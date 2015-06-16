@@ -19,8 +19,7 @@ namespace IO {
  *
  */
 class ReadOnlyDoubleArrayBuffer
-    : public IDoubleBuffer
-    , public DoubleArrayBuffer
+    : public DoubleArrayBuffer
 {
 public:
     ReadOnlyDoubleArrayBuffer(

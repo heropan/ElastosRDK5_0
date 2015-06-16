@@ -14,6 +14,8 @@ FloatBuffer::FloatBuffer(
     : Buffer(2, capacity, NULL)
 {}
 
+CAR_INTERFACE_IMPL_2(FloatBuffer, Object, IFloatBuffer, IBuffer)
+
 ECode FloatBuffer::Allocate(
     /* [in] */ Int32 capacity,
     /* [out] */ IFloatBuffer** buf)

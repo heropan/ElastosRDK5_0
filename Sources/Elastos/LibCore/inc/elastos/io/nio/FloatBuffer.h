@@ -23,13 +23,13 @@ extern "C" const InterfaceID EIID_FloatBuffer;
  */
 class FloatBuffer
     : public Buffer
+    , public IFloatBuffer
 {
 public:
     FloatBuffer(
         /* [in] */ Int32 capacity);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
 
     /**
      * Creates a float buffer based on a newly allocated float array.

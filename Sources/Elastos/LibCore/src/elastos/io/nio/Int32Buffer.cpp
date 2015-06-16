@@ -14,6 +14,8 @@ Int32Buffer::Int32Buffer(
     : Buffer(2, capacity, NULL)
 {}
 
+CAR_INTERFACE_IMPL_2(Int32Buffer, Object, IInt32Buffer, IBuffer)
+
 ECode Int32Buffer::Allocate(
     /* [in] */ Int32 capacity,
     /* [out] */ IInt32Buffer** buf)

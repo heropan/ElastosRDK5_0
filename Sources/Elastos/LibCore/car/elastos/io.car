@@ -361,7 +361,6 @@ module
         interface IByteBuffer;
         interface IBuffer;
         interface IComparable;
-
     }
 
     class CFileDescriptor {

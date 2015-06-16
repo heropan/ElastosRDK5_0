@@ -18,8 +18,7 @@ namespace IO {
  *
  */
 class ReadWriteCharArrayBuffer
-    : public ICharBuffer
-    , public ICharSequence
+    : public ICharSequence
     , public CharArrayBuffer
 {
 public:
@@ -34,20 +33,11 @@ public:
         /* [in] */ ArrayOf<Char32>* backingArray,
         /* [in] */ Int32 arrayOffset);
 
+    CAR_INTERFACE_DECL()
+
     static CARAPI_(AutoPtr<ReadWriteCharArrayBuffer>) Copy(
         /* [in] */ CharArrayBuffer* other,
         /* [in] */ Int32 markOfOther);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
 
     CARAPI GetPrimitiveArray(
         /* [out] */ Handle32* arrayHandle);

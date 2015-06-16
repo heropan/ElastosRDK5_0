@@ -19,8 +19,7 @@ namespace IO {
  *
  */
 class ReadOnlyCharArrayBuffer
-    : public ICharBuffer
-    , public ICharSequence
+    : public ICharSequence
     , public CharArrayBuffer
 {
 public:

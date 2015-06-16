@@ -23,13 +23,13 @@ extern "C" const InterfaceID EIID_Int64Buffer;
  */
 class Int64Buffer
     : public Buffer
+    , public IInt64Buffer
 {
 public:
     Int64Buffer(
         /* [in] */ Int32 capacity);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
 
     /**
      * Creates a long buffer based on a newly allocated long array.

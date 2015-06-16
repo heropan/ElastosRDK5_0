@@ -19,8 +19,7 @@ namespace IO {
  *
  */
 class ReadOnlyFloatArrayBuffer
-    : public IFloatBuffer
-    , public FloatArrayBuffer
+    : public FloatArrayBuffer
 {
 public:
     static CARAPI_(AutoPtr<ReadOnlyFloatArrayBuffer>) Copy(

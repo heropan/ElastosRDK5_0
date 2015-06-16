@@ -27,10 +27,10 @@ extern "C" const InterfaceID EIID_CharBuffer;
  */
 class CharBuffer
     : public Buffer
+    , public ICharBuffer
 {
 public:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
 
 	/**
      * Creates a char buffer based on a newly allocated char array.
@@ -173,7 +173,8 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI Compact() = 0;
+    virtual CARAPI Compact(
+        /* [out] */ ICharBuffer** outbuf) = 0;
 
     /**
      * Compare the remaining chars of this buffer to another char
@@ -555,6 +556,8 @@ public:
         /* [out] */ Boolean* rst) = 0;
 
 protected:
+    CharBuffer();
+
     /**
      * Constructs a {@code CharBuffer} with given capacity.
      *

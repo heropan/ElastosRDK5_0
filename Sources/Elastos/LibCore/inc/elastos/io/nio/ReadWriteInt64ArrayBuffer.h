@@ -18,8 +18,7 @@ namespace IO {
  *
  */
 class ReadWriteInt64ArrayBuffer
-    : public IInt64Buffer
-    , public Int64ArrayBuffer
+    : public Int64ArrayBuffer
 {
 public:
     ReadWriteInt64ArrayBuffer(

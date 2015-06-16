@@ -19,8 +19,7 @@ namespace IO {
  *
  */
 class ReadWriteInt16ArrayBuffer
-    : public IInt16Buffer
-    , public Int16ArrayBuffer
+    : public Int16ArrayBuffer
 {
 public:
     ReadWriteInt16ArrayBuffer(

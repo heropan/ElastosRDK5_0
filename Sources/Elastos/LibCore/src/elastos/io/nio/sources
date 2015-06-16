@@ -76,3 +76,5 @@ SOURCES += SelectionKeyImpl.cpp
 SOURCES += CSelectorImpl.cpp
 #SOURCES += SocketChannelImpl.cpp
 SOURCES += CSelectorProviderImpl.cpp
+SOURCES += ByteBufferAsCharBuffer.cpp
+SOURCES += ByteBufferAsDoubleBuffer.cpp

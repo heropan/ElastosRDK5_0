@@ -23,13 +23,13 @@ extern "C" const InterfaceID EIID_Int16Buffer;
  */
 class Int16Buffer
     : public Buffer
+    , public IInt16Buffer
 {
 public:
     Int16Buffer(
         /* [in] */ Int32 capacity);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
 
     /**
      * Creates a short buffer based on a newly allocated short array.

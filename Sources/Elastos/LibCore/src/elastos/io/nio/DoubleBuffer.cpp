@@ -9,10 +9,15 @@ namespace IO {
 extern "C" const InterfaceID EIID_DoubleBuffer =
     { 0x6548cb4d, 0x7de, 0x41e9, { 0x9a, 0xf8, 0x86, 0x25, 0xe6, 0xdf, 0x3f, 0x8 } };
 
+DoubleBuffer::DoubleBuffer()
+{}
+
 DoubleBuffer::DoubleBuffer(
     /* [in] */ Int32 capacity)
     : Buffer(3, capacity, NULL)
 {}
+
+CAR_INTERFACE_IMPL_2(DoubleBuffer, Object, IDoubleBuffer, IBuffer)
 
 ECode DoubleBuffer::Allocate(
     /* [in] */ Int32 capacity,

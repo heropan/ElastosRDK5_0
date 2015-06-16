@@ -37,57 +37,7 @@ AutoPtr<ReadWriteCharArrayBuffer> ReadWriteCharArrayBuffer::Copy(
     return buf;
 }
 
-PInterface ReadWriteCharArrayBuffer::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(ICharBuffer*)this;
-    }
-    else if (riid == EIID_ICharBuffer) {
-        return (ICharBuffer*)this;
-    }
-    else if (riid == EIID_IBuffer) {
-        return (IBuffer*)this;
-    }
-    else if (riid == EIID_ICharSequence) {
-        return (ICharSequence*)this;
-    }
-    else if (riid == EIID_Buffer) {
-        return reinterpret_cast<PInterface>((Buffer*)this);
-    }
-    else if (riid == EIID_CharBuffer) {
-        return reinterpret_cast<PInterface>((CharBuffer*)this);
-    }
-
-    return NULL;
-}
-
-UInt32 ReadWriteCharArrayBuffer::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ReadWriteCharArrayBuffer::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ReadWriteCharArrayBuffer::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-    if (pObject == (IInterface*)(ICharBuffer*)this) {
-        *pIID = EIID_ICharBuffer;
-    }
-    else if (pObject == (IInterface*)(ICharSequence*)this) {
-        *pIID = EIID_ICharSequence;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_2(ReadWriteCharArrayBuffer, Object, ICharBuffer, ICharSequence)
 
 ECode ReadWriteCharArrayBuffer::GetPrimitiveArray(
     /* [out] */ Handle32* arrayHandle)

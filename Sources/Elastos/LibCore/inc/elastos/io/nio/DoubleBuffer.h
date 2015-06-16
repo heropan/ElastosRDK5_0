@@ -25,8 +25,11 @@ extern "C" const InterfaceID EIID_DoubleBuffer;
  */
 class DoubleBuffer
     : public Buffer
+    , public IDoubleBuffer
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Creates a double buffer based on a newly allocated double array.
      *
@@ -77,9 +80,6 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 doubleCount,
         /* [out] */ IDoubleBuffer** buf);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     CARAPI GetArray(
         /* [out, callee] */ ArrayOf<Double>** array);
@@ -401,6 +401,8 @@ public:
         /* [out] */ Boolean* hasArray);
 
 protected:
+    DoubleBuffer();
+
     /**
      * Constructs a {@code DoubleBuffer} with given capacity.
      *

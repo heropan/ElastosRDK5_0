@@ -89,7 +89,8 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        Compact();
+        Compact(
+            [out] ICharBuffer** outbuf);
 
         /**
          * Returns a duplicated buffer that shares its content with this buffer.

@@ -14,6 +14,8 @@ namespace IO {
 extern "C" const InterfaceID EIID_CharBuffer =
     { 0x43410042, 0xec51, 0x485f, { 0x9c, 0x70, 0x1d, 0xdb, 0xc1, 0x1b, 0x75, 0x9d } };
 
+CAR_INTERFACE_IMPL_2(CharBuffer, Object, IBuffer, ICharBuffer)
+
 ECode CharBuffer::Allocate(
     /* [in] */ Int32 capacity,
     /* [out] */ ICharBuffer** buf)
@@ -95,6 +97,9 @@ ECode CharBuffer::WrapSequence(
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
+
+CharBuffer::CharBuffer()
+{}
 
 CharBuffer::CharBuffer(
     /* [in] */ Int32 capacity)

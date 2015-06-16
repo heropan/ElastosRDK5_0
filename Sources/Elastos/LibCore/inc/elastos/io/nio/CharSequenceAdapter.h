@@ -19,8 +19,7 @@ namespace IO {
  *
  */
 class CharSequenceAdapter
-    : public ICharBuffer
-    , public ICharSequence
+    : public ICharSequence
     , public CharBuffer
 {
 public:

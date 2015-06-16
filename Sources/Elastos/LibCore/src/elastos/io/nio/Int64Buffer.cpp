@@ -14,6 +14,8 @@ Int64Buffer::Int64Buffer(
     : Buffer(3, capacity, NULL)
 {}
 
+CAR_INTERFACE_IMPL_2(Int64Buffer, Object, IInt64Buffer, IBuffer)
+
 ECode Int64Buffer::Allocate(
     /* [in] */ Int32 capacity,
     /* [out] */ IInt64Buffer** buf)

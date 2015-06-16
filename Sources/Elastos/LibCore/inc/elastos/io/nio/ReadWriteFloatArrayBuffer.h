@@ -19,8 +19,7 @@ namespace IO {
  *
  */
 class ReadWriteFloatArrayBuffer
-    : public IFloatBuffer
-    , public FloatArrayBuffer
+    : public FloatArrayBuffer
 {
 public:
     ReadWriteFloatArrayBuffer(
