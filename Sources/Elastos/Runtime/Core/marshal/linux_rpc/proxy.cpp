@@ -39,7 +39,7 @@ void *GetUnalignedPtr(void *pPtr);
 
 namespace Elastos {
 namespace RPC {
-Address s_proxyEntryAddress = NULL;
+Address s_proxyEntryAddress = (Address)NULL;
 } // namespace RPC
 } // namespace Elastos
 #define PROXY_ENTRY_BASE    Elastos::RPC::s_proxyEntryAddress
@@ -323,7 +323,7 @@ ECode GetRemoteClassInfo(
     totalSize = htonl(sizeof(totalSize) + payloadSize);
     dataBuf->Append((void*)&totalSize, sizeof(totalSize));
     dataBuf->Append(payload, payloadSize);
-    assert(ntohl(totalSize) == dataBuf->DataSize());
+    assert((Int32)ntohl(totalSize) == dataBuf->DataSize());
     if (send(socketfd, dataBuf->Data(), dataBuf->DataSize(), 0) == -1) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 printf("GetRemoteClassInfo: send socket failed.\n"));
@@ -558,7 +558,7 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
     AutoPtr<CRemoteParcel> pInParcel, pOutParcel;
     Int32 socketfd;
     struct sockaddr_in name;
-    timeval recvTimeout;
+    timeval recvTimeout = {60, 0};
     String netAddress, ipAddr;
     Int32 port;
     Int32 index;
@@ -581,7 +581,7 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
     puArgs++; // skip this
 
     MARSHAL_DBGOUT(MSHDBG_NORMAL,
-            printf("*puArgs = %x, puArgs = %x, ", *puArgs, puArgs));
+            printf("*puArgs = %x, puArgs = %x, ", *puArgs, (UInt32)puArgs));
     MARSHAL_DBGOUT(MSHDBG_NORMAL, printf("iid: "));
     MARSHAL_DBGOUT(MSHDBG_NORMAL, DUMP_GUID(pThis->m_pInfo->iid));
 
@@ -652,7 +652,6 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
                 goto ProxyExit;
             }
 
-            recvTimeout = {60, 0};
             if (setsockopt(socketfd, SOL_SOCKET, SO_RCVTIMEO, &recvTimeout, sizeof(recvTimeout)) == -1) {
                 MARSHAL_DBGOUT(MSHDBG_ERROR,
                         printf("ProxyEntry_RPC: set so_rcvtimeo failed.\n"));
@@ -691,7 +690,7 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
         dataBuf->Append(pData, payloadSize);
         MARSHAL_DBGOUT(MSHDBG_NORMAL, printf(
                 "Before RemoteInvoke: ParcelSize(%d)\n", payloadSize));
-        assert(ntohl(totalSize) == dataBuf->DataSize());
+        assert((Int32)ntohl(totalSize) == dataBuf->DataSize());
 
         {
             android::AutoMutex _l(pThis->m_pOwner->m_Lock);
@@ -951,7 +950,6 @@ void CarDeathRecipient::WarnIfStillLive()
 ECode CObjectProxy::PingRunnable::Run()
 {
     const Int32 tag = htonl(MSH_NOT_NULL);
-    const char pad = '\0';
     const char* PING = "PING";
     Int32 totalSize = htonl(sizeof(totalSize) + sizeof(tag) + strlen(PING) + 1);
     AutoPtr<DataBuffer> dataBuf = new DataBuffer();
@@ -1098,7 +1096,7 @@ UInt32 CObjectProxy::Release(void)
         dataBuf->Append((void*)&totalSize, sizeof(Int32));
         dataBuf->Append((void*)&tag, sizeof(tag));
         dataBuf->Append(RELEASE, strlen(RELEASE) + 1);
-        assert(ntohl(totalSize) == dataBuf->DataSize());
+        assert((Int32)ntohl(totalSize) == dataBuf->DataSize());
         if (send(m_cSocketfd, dataBuf->Data(), dataBuf->DataSize(), 0) == -1) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("GetRemoteClassInfo: send socket failed.\n"));

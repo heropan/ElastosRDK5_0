@@ -669,7 +669,7 @@ ECode CRemoteParcel::ReadCString(
         return ec;
     }
 
-    assert(tag == MSH_NOT_NULL);
+    assert((UInt32)tag == MSH_NOT_NULL);
     *pStr = CString::Duplicate(ReadCStringInner());
     return NOERROR;
 }
@@ -686,7 +686,7 @@ ECode CRemoteParcel::ReadString(
         return ec;
     }
 
-    assert(tag == MSH_NOT_NULL);
+    assert((UInt32)tag == MSH_NOT_NULL);
     *pStr = ReadCStringInner();
     return NOERROR;
 }
@@ -699,11 +699,11 @@ ECode CRemoteParcel::ReadStruct(
     Int32 tag;
     ECode ec = ReadInt32(&tag);
     if (FAILED(ec) || tag == MSH_NULL) {
-        *pAddress = NULL;
+        *pAddress = (Handle32)NULL;
         return ec;
     }
 
-    assert(tag == MSH_NOT_NULL);
+    assert((UInt32)tag == MSH_NOT_NULL);
     Int32 len;
     ReadInt32(&len);
     return Read(pAddress, len);
@@ -792,7 +792,7 @@ ECode CRemoteParcel::ReadArrayOfInner(
                 if (CarQuintetFlag_Type_String
                     == (q.m_flags & CarQuintetFlag_TypeMask)) {
                     ArrayOf<String>* strArr = (ArrayOf<String>*)(*pValue);
-                    for (Int32 i = 0; i < size / sizeof(String); i++) {
+                    for (Int32 i = 0; i < (Int32)(size / sizeof(String)); i++) {
                         ReadInt32(&tag);
                         if (tag != MSH_NULL) {
                             const char* str = ReadCStringInner();

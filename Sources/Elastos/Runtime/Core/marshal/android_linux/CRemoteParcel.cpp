@@ -275,7 +275,7 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
                             if (CarQuintetFlag_Type_String
                                 == (q.m_flags & CarQuintetFlag_TypeMask)) {
                                 ArrayOf<String>* strArr = (ArrayOf<String>*)(*(PCARQUINTET*)pValue);
-                                for (Int32 i = 0; i < size / sizeof(String); i++) {
+                                for (Int32 i = 0; i < (Int32)(size / sizeof(String)); i++) {
                                     Int32 tag = m_pData->readInt32();
                                     if (tag != MSH_NULL) {
                                         const char* str = m_pData->readCString();
@@ -336,7 +336,7 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
                     }
                 }
                 else {
-                    *(UInt32*)pValue = NULL;
+                    *(UInt32*)pValue = (UInt32)NULL;
                 }
             }
             break;
@@ -375,7 +375,7 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
                     ECode ec;
 
                     android::sp<android::IBinder> binder = m_pData->readStrongBinder();
-                    (InterfacePack *)m_pData->read((void *)&ipack, sizeof(InterfacePack));
+                    m_pData->read((void *)&ipack, sizeof(InterfacePack));
                     if (ipack.m_pBinder != NULL) {
                         memset(&ipack, 0, sizeof(InterfacePack));
                         return E_INVALID_PARCEL_DATA;

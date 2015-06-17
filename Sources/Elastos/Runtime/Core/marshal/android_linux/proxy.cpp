@@ -35,7 +35,7 @@ void *GetUnalignedPtr(void *pPtr);
 
 namespace Elastos {
 namespace IPC {
-Address s_proxyEntryAddress = NULL;
+Address s_proxyEntryAddress = (Address)NULL;
 }
 }
 #define PROXY_ENTRY_BASE    Elastos::IPC::s_proxyEntryAddress
@@ -516,7 +516,7 @@ ECode CInterfaceProxy::ProxyEntry(UInt32 *puArgs)
     puArgs++; // skip this
 
     MARSHAL_DBGOUT(MSHDBG_NORMAL,
-            ALOGD("*puArgs = %x, puArgs = %x, ", *puArgs, puArgs));
+            ALOGD("*puArgs = %x, puArgs = %x, ", *puArgs, (UInt32)puArgs));
     MARSHAL_DBGOUT(MSHDBG_NORMAL, ALOGD("iid: "));
     MARSHAL_DBGOUT(MSHDBG_NORMAL, DUMP_GUID(pThis->m_pInfo->iid));
 

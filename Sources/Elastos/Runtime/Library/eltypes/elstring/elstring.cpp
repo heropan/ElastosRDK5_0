@@ -674,7 +674,7 @@ ECode String::Append(const ArrayOf<Char32>& array, UInt32 offset)
 
 ECode String::Append(const ArrayOf<Char32>& array, UInt32 offset, UInt32 length)
 {
-    if (offset >= array.GetLength()) return E_INVALID_ARGUMENT;
+    if (offset >= (UInt32)array.GetLength()) return E_INVALID_ARGUMENT;
     length = MIN(array.GetLength() - offset, length);
     if (length == 0) return NOERROR;
 
@@ -848,7 +848,7 @@ String String::ToLowerCase(UInt32 offset, UInt32 numOfChars) const
 
     AutoPtr<ArrayOf<Char32> > newChars = ArrayOf<Char32>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
-        if (i >= offset && i < offset + numOfChars) {
+        if ((UInt32)i >= offset && (UInt32)i < offset + numOfChars) {
             (*newChars)[i] = ToLowerCase((*chars)[i]);
         }
         else {
@@ -872,7 +872,7 @@ String String::ToUpperCase(UInt32 offset, UInt32 numOfChars) const
 
     AutoPtr<ArrayOf<Char32> > newChars = ArrayOf<Char32>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
-        if (i >= offset && i < offset + numOfChars) {
+        if ((UInt32)i >= offset && (UInt32)i < offset + numOfChars) {
             (*newChars)[i] = ToUpperCase((*chars)[i]);
         }
         else {
@@ -1224,11 +1224,11 @@ Int32 String::LastIndexOf(const String& subString, UInt32 start) const
     Int32 subCount = subChars->GetLength();
     if (subCount <= count && start >= 0) {
         if (subCount > 0) {
-            if (start > count - subCount) {
+            if (start > (UInt32)(count - subCount)) {
                 start = count - subCount;
             }
 
-            if (start >= count) {
+            if (start >= (UInt32)count) {
                 start = count - 1;
             }
 
@@ -1260,7 +1260,7 @@ Int32 String::LastIndexOf(const String& subString, UInt32 start) const
                 start = index - 1;
             }
         }
-        return start < count ? start : count;
+        return start < (UInt32)count ? start : count;
     }
     return -1;
 }
@@ -1295,11 +1295,11 @@ Int32 String::LastIndexOfIgnoreCase(const String& subString, UInt32 start) const
     Int32 subCount = subChars->GetLength();
     if (subCount <= count && start >= 0) {
         if (subCount > 0) {
-            if (start > count - subCount) {
+            if (start > (UInt32)(count - subCount)) {
                 start = count - subCount;
             }
 
-            if (start >= count) {
+            if (start >= (UInt32)count) {
                 start = count - 1;
             }
 
@@ -1335,7 +1335,7 @@ Int32 String::LastIndexOfIgnoreCase(const String& subString, UInt32 start) const
                 start = index - 1;
             }
         }
-        return start < count ? start : count;
+        return start < (UInt32)count ? start : count;
     }
     return -1;
 }
