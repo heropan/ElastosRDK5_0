@@ -10,8 +10,11 @@
 
 _ELASTOS_NAMESPACE_USING
 
-EXTERN_C SharedBuffer* gElEmptyStringBuf = NULL;
-EXTERN_C char* gElEmptyString = NULL;
+extern "C"
+{
+    SharedBuffer* gElEmptyStringBuf = NULL;
+    char* gElEmptyString = NULL;
+}
 
 static void InitString()
 {
@@ -72,22 +75,6 @@ void __cdecl _String_Free(char * str)
     if (str) {
         free((void *)str);
     }
-}
-
-Int32 __cdecl _String_GetLength(const char *str, Int32 maxLen)
-{
-    if (!str || maxLen < -1) return -1;
-    if (maxLen == 0) return 0;
-    if (maxLen == -1)  return strlen(str);
-
-    const char *p = str;
-    int i = 0;
-    while (*p) {
-        if (i >= maxLen) return -1;
-        p++;
-        i++;
-    }
-    return (p - str);
 }
 
 Char32 __cdecl _String_Char32_ToLowerCase(Char32 ch)
