@@ -27,8 +27,8 @@ public:
 
     template<typename T>
     static CARAPI_(Int32) Compare(
-        /* [in] */ AutoPtr<T> a,
-        /* [in] */ AutoPtr<T> b,
+        /* [in] */ const AutoPtr<T>& a,
+        /* [in] */ const AutoPtr<T>& b,
         /* [in] */ IComparator* c);
 
     /**
@@ -44,8 +44,8 @@ public:
 
     template<typename T>
     static CARAPI_(Boolean) DeepEquals(
-        /* [in] */ AutoPtr<T> a,
-        /* [in] */ AutoPtr<T> b);
+        /* [in] */ const AutoPtr<T>& a,
+        /* [in] */ const AutoPtr<T>& b);
 
     /**
      * Null-safe equivalent of {@code a.equals(b)}.
@@ -57,8 +57,8 @@ public:
 
     template<typename T>
     static CARAPI_(Boolean) Equals(
-        /* [in] */ AutoPtr<T> a,
-        /* [in] */ AutoPtr<T> b);
+        /* [in] */ const AutoPtr<T>& a,
+        /* [in] */ const AutoPtr<T>& b);
 
     /**
      * Returns 0 for null or {@code o.hashCode()}.
@@ -69,7 +69,7 @@ public:
 
     template<typename T>
     static CARAPI_(Boolean) GetHashCode(
-        /* [in] */ AutoPtr<T> a);
+        /* [in] */ const AutoPtr<T>& a);
 
     /**
      * Returns {@code o} if non-null, or throws {@code NullPointerException}.
@@ -80,7 +80,7 @@ public:
 
     template<typename T>
     static CARAPI RequireNonNull(
-        /* [in] */ AutoPtr<T> a);
+        /* [in] */ const AutoPtr<T>& a);
 
     /**
      * Returns "null" for null or {@code o.toString()}.
@@ -91,7 +91,7 @@ public:
 
     template<typename T>
     static CARAPI_(String) ToString(
-        /* [in] */ AutoPtr<T> a);
+        /* [in] */ const AutoPtr<T>& a);
 
     /**
      * Returns {@code nullString} for null or {@code o.toString()}.
@@ -103,7 +103,7 @@ public:
 
     template<typename T>
     static CARAPI_(String) ToString(
-        /* [in] */ AutoPtr<T> a,
+        /* [in] */ const AutoPtr<T>& a,
         /* [in] */ const String& nullString);
 
 private:
@@ -125,8 +125,8 @@ template<typename T>
 
 template<typename T>
  Int32 Objects::Compare(
-    /* [in] */ AutoPtr<T> a,
-    /* [in] */ AutoPtr<T> b,
+    /* [in] */ const AutoPtr<T>& a,
+    /* [in] */ const AutoPtr<T>& b,
     /* [in] */ IComparator* c)
 {
     return Objects::Compare(a.Get(), b.Get(), c);
@@ -152,8 +152,8 @@ Boolean Objects::DeepEquals(
 
 template<typename T>
 Boolean Objects::DeepEquals(
-    /* [in] */ AutoPtr<T> a,
-    /* [in] */ AutoPtr<T> b)
+    /* [in] */ const AutoPtr<T>& a,
+    /* [in] */ const AutoPtr<T>& b)
 {
     return Objects::DeepEquals(a.Get(), b.Get());
 }
@@ -168,8 +168,8 @@ Boolean Objects::Equals(
 
 template<typename T>
 Boolean Objects::Equals(
-    /* [in] */ AutoPtr<T> a,
-    /* [in] */ AutoPtr<T> b)
+    /* [in] */ const AutoPtr<T>& a,
+    /* [in] */ const AutoPtr<T>& b)
 {
     return Objects::Equals(a.Get(), b.Get());
 }
@@ -183,7 +183,7 @@ Int32 Objects::GetHashCode(
 
 template<typename T>
 Int32 Objects::GetHashCode(
-    /* [in] */ AutoPtr<T> a)
+    /* [in] */ const AutoPtr<T>& a)
 {
     return Objects::GetHashCode(a.Get());
 }
@@ -200,7 +200,7 @@ ECode Objects::RequireNonNull(
 
 template<typename T>
 ECode Objects::RequireNonNull(
-    /* [in] */ AutoPtr<T> a)
+    /* [in] */ const AutoPtr<T>& a)
 {
     return Objects::RequireNonNull(a.Get());
 }
@@ -214,7 +214,7 @@ String Objects::ToString(
 
 template<typename T>
 String Objects::ToString(
-    /* [in] */ AutoPtr<T> a)
+    /* [in] */ const AutoPtr<T>& a)
 {
     return Objects::ToString(a.Get());
 }
@@ -229,7 +229,7 @@ String Objects::ToString(
 
 template<typename T>
 String Objects::ToString(
-    /* [in] */ AutoPtr<T> a,
+    /* [in] */ const AutoPtr<T>& a,
     /* [in] */ const String& nullString)
 {
     return Objects::ToString(a.Get(), nullString);

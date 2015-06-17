@@ -543,7 +543,7 @@ ECode CKXmlParser::ReadXmlDeclaration()
     FAIL_RETURN(Read(*START_PROCESSING_INSTRUCTION));
     FAIL_RETURN(ParseStartTag(TRUE, TRUE));
 
-    if (mAttributeCount < 1 || !CString("version").Equals((*mAttributes)[2])) {
+    if (mAttributeCount < 1 || !(*mAttributes)[2].Equals("version")) {
         FAIL_RETURN(CheckRelaxed(String("version expected")));
     }
 
@@ -551,18 +551,18 @@ ECode CKXmlParser::ReadXmlDeclaration()
 
     Int32 pos = 1;
 
-    if (pos < mAttributeCount && CString("encoding").Equals((*mAttributes)[2 + 4])) {
+    if (pos < mAttributeCount && (*mAttributes)[2 + 4].Equals("encoding")) {
         mEncoding = (*mAttributes)[3 + 4];
         pos++;
     }
 
-    if (pos < mAttributeCount && CString("standalone").Equals((*mAttributes)[4 * pos + 2])) {
+    if (pos < mAttributeCount && (*mAttributes)[4 * pos + 2].Equals("standalone")) {
         String st = (*mAttributes)[3 + 4 * pos];
-        if (CString("yes").Equals(st)) {
+        if (st.Equals("yes")) {
             mStandalone = NULL;
             CBoolean::New(TRUE, (IBoolean**)&mStandalone);
         }
-        else if (CString("no").Equals(st)) {
+        else if (st.Equals("no")) {
             mStandalone = NULL;
             CBoolean::New(FALSE, (IBoolean**)&mStandalone);
         }
@@ -2167,11 +2167,11 @@ ECode CKXmlParser::GetNamespace(
 {
     VALIDATE_NOT_NULL(ns);
 
-    if (CString("xml").Equals(prefix)) {
+    if (prefix.Equals("xml")) {
         *ns = "http://www.w3.org/XML/1998/namespace";
         return NOERROR;
     }
-    if (CString("xmlns").Equals(prefix)) {
+    if (prefix.Equals("xmlns")) {
         *ns = "http://www.w3.org/2000/xmlns/";
         return NOERROR;
     }

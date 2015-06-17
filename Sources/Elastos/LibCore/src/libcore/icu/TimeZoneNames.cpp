@@ -196,23 +196,31 @@ ECode TimeZoneNames::GetDisplayName(
     /* [in] */ Int32 style ,
     /* [out] */ String * str)
 {
-    VALIDATE_NOT_NULL(zoneStrings)
     VALIDATE_NOT_NULL(str)
+    *str = String(NULL);
+    VALIDATE_NOT_NULL(zoneStrings)
+
+    Int32 index = -1;
 
     Int32 length = zoneStrings->GetLength();
-    AutoPtr< ArrayOf<String> > arrstr = ArrayOf<String>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
         AutoPtr<IArrayOf> row = (*zoneStrings)[i];
-        AutoPtr<IInterface> outface;
-        row->Get(0, (IInterface**)&outface);
-        String outstr;
-        if (ICharSequence::Probe(outface) != NULL) {
-            ICharSequence::Probe(outface)->ToString(&outstr);
+        if (row) {
+            AutoPtr<IInterface> outface;
+            row->Get(0, (IInterface**)&outface);
+
+            if (ICharSequence::Probe(outface) != NULL) {
+                String outstr;
+                ICharSequence::Probe(outface)->ToString(&outstr);
+                if (outstr.Equals(id)) {
+                    index = i;
+                    break;
+                }
+            }
         }
-        (*arrstr)[i] = outstr;
     }
-    Int32 index = arrstr->BinarySearch(id);
-    if (index > 0) {
+
+    if (index >= 0) {
         AutoPtr<IArrayOf> row = (*zoneStrings)[index];
         AutoPtr<IInterface> outface;
         if (daylight) {
@@ -240,16 +248,18 @@ ECode TimeZoneNames::GetDisplayName(
 }
 
 ECode TimeZoneNames::GetZoneStrings(
-    /* [in] */ ILocale * locale,
+    /* [in] */ ILocale * l,
     /* [out, callee] */ ArrayOf<IArrayOf*> ** outarray)
 {
     VALIDATE_NOT_NULL(outarray)
 
+    AutoPtr<ILocale> locale = l;
     if (locale == NULL) {
-        AutoPtr<ILocaleHelper> lh;
-        CLocaleHelper::AcquireSingleton((ILocaleHelper **)&lh);
+        AutoPtr<CLocaleHelper> lh;
+        CLocaleHelper::AcquireSingletonByFriend((CLocaleHelper **)&lh);
         lh->GetDefault((ILocale **)&locale);
     }
+
     AutoPtr< ArrayOf< AutoPtr< ArrayOf<String> > > > result = sCachedZoneStrings->Create(locale);
     Int32 length = result->GetLength();
     AutoPtr< ArrayOf<IArrayOf*> > resarr = ArrayOf<IArrayOf*>::Alloc(length);
