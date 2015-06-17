@@ -6,6 +6,9 @@ module
     namespace Libcore {
     namespace ICU {
 
+    /**
+     * Provides access to ICU's time zone name data.
+     */
     [deprecated]
     interface ITimeZoneNames {
         /*
@@ -43,7 +46,9 @@ module
         /**
          * Returns an array containing the time zone ids in use in the country corresponding to
          * the given locale. This is not necessary for Java API, but is used by telephony as a
-         * fallback.
+         * fallback. We retrieve these strings from zone.tab rather than icu4c because the latter
+         * supplies them in alphabetical order where zone.tab has them in a kind of "importance"
+         * order (as defined in the zone.tab header).
          */
         ForLocale(
             [in] ILocale * locale ,
