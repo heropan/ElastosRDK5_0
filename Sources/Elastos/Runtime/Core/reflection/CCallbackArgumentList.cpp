@@ -85,9 +85,7 @@ ECode CCallbackArgumentList::GetParamValue(
     /* [in] */ CarDataType type)
 {
     if (type == CarDataType_CarArray
-        && (m_pParamElem[index].type == CarDataType_ArrayOf
-        || m_pParamElem[index].type == CarDataType_BufferOf
-        || m_pParamElem[index].type == CarDataType_MemoryBuf)) {
+        && m_pParamElem[index].type == CarDataType_ArrayOf) {
         type = m_pParamElem[index].type;
     }
 

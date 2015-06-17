@@ -282,13 +282,13 @@ ECode AbstractStringBuilder::Append(
 ECode AbstractStringBuilder::AppendChar(
     /* [in] */ Char32 ch)
 {
-    ArrayOf_<Char8, 5> buf;
+    AutoPtr< ArrayOf<Char8> > buf = ArrayOf<Char8>::Alloc(5);
     Int32 len;
-    Character::ToChars(ch, buf, 0, &len);
+    Character::ToChars(ch, *buf, 0, &len);
 
     Break(len);
 
-    strncat(mString, (const char*)buf.GetPayload(), len);
+    strncat(mString, (const char*)buf->GetPayload(), len);
     mByteCount += len;
     if (mIsCounted) {
         mCharCount += 1;

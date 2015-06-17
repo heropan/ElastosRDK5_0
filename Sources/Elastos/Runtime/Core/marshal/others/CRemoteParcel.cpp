@@ -513,7 +513,6 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             break;
 
         case Type_ArrayOfString:
-        case Type_BufferOfString:
         default:
             assert(0);
             break;

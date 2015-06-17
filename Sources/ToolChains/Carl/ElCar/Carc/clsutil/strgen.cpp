@@ -104,9 +104,6 @@ void GenerateTypeString(
         case Type_EGuid:
             strcat(pszBuf, "EGuid");
             break;
-        case Type_DateTime:
-            strcat(pszBuf, "struct DateTime");
-            break;
         case Type_ArrayOf:
             if (0 > pType->nSize) {
                 strcat(pszBuf, "ArrayOf<");
@@ -117,43 +114,6 @@ void GenerateTypeString(
                 strcat(pszBuf, "ArrayOf_<");
                 GenerateTypeString(pModule, pType->pNestedType, pszBuf);
                 strcat(pszBuf, ",");
-                sprintf(buf, "%d", pType->nSize);
-                strcat(pszBuf, buf);
-                strcat(pszBuf, ">");
-            }
-            break;
-        case Type_BufferOf:
-            if (0 > pType->nSize) {
-                strcat(pszBuf, "BufferOf<");
-                GenerateTypeString(pModule, pType->pNestedType, pszBuf);
-                strcat(pszBuf, ">");
-            }
-            else {
-                strcat(pszBuf, "BufferOf_<");
-                GenerateTypeString(pModule, pType->pNestedType, pszBuf);
-                strcat(pszBuf, ",");
-                sprintf(buf, "%d", pType->nSize);
-                strcat(pszBuf, buf);
-                strcat(pszBuf, ">");
-            }
-            break;
-        case Type_MemoryBuf:
-            if (0 > pType->nSize) {
-                strcat(pszBuf, "MemoryBuf");
-            }
-            else {
-                strcat(pszBuf, "MemoryBuf_<");
-                sprintf(buf, "%d", pType->nSize);
-                strcat(pszBuf, buf);
-                strcat(pszBuf, ">");
-            }
-            break;
-        case Type_StringBuf:
-            if (0 > pType->nSize) {
-                strcat(pszBuf, "StringBuf");
-            }
-            else {
-                strcat(pszBuf, "StringBuf_<");
                 sprintf(buf, "%d", pType->nSize);
                 strcat(pszBuf, buf);
                 strcat(pszBuf, ">");
@@ -304,22 +264,9 @@ void GenerateTypeStringForParam(
         case Type_EGuid:
             strcat(pszBuf, "EGuid");
             break;
-        case Type_DateTime:
-            strcat(pszBuf, "DateTime");
-            break;
         case Type_ArrayOf:
             strcat(pszBuf, "ArrayOf");
             GenerateTypeStringForParam(pModule, pType->pNestedType, pszBuf);
-            break;
-        case Type_BufferOf:
-            strcat(pszBuf, "BufferOf");
-            GenerateTypeStringForParam(pModule, pType->pNestedType, pszBuf);
-            break;
-        case Type_MemoryBuf:
-            strcat(pszBuf, "MemoryBuf");
-            break;
-        case Type_StringBuf:
-            strcat(pszBuf, "StringBuf");
             break;
         case Type_EventHandler:
             strcat(pszBuf, "EventHandler");
@@ -412,8 +359,7 @@ const char *CStyleStructParamType2CString(
     const TypeDescriptor *pType)
 {
     assert(Type_struct == pType->type || Type_EMuid == pType->type
-           || Type_EGuid == pType->type || Type_alias == pType->type
-           || Type_DateTime == pType->type);
+           || Type_EGuid == pType->type || Type_alias == pType->type);
 
     s_szStringBuf[0] = 0;
     // If struct parameter type is't pointer, we have to change its type
@@ -437,8 +383,7 @@ const char *StructType2CString(
     assert(Type_struct == pType->type
             || Type_EMuid == pType->type
             || Type_EGuid == pType->type
-            || Type_alias == pType->type
-            || Type_DateTime == pType->type);
+            || Type_alias == pType->type);
 
     TypeDescriptor type;
 
@@ -476,12 +421,6 @@ void GenerateITypeString(
     const CLSModule *pModule, const TypeDescriptor *pType, char *pszBuf)
 {
     switch (pType->type) {
-        case Type_BufferOf:
-            strcat(pszBuf, "SAFEARRAY(");
-            GenerateITypeString(pModule, pType->pNestedType, pszBuf);
-            strcat(pszBuf, ")");
-            break;
-
         default:
             GenerateTypeString(pModule, pType, pszBuf);
             return;

@@ -262,7 +262,7 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
                     CarQuintet q;
                     m_pData->read((void*)&q, sizeof(CarQuintet));
                     Int32 size = q.m_size;
-                    PCarQuintet qq = _BufferOf_Alloc(size, q.m_flags);
+                    PCarQuintet qq = _ArrayOf_Alloc(size, q.m_flags);
                     if (qq == NULL) {
                         *(PCARQUINTET*)pValue = NULL;
                         break;

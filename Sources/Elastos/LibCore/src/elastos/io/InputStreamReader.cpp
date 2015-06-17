@@ -143,9 +143,9 @@ ECode InputStreamReader::Read(
         return E_IO_EXCEPTION;
 //        throw new IOException("InputStreamReader is closed");
     }
-    ArrayOf_<Char32, 1> buf;
+    AutoPtr< ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(1);
     Int32 number;
-    FAIL_RETURN(Read(&buf, 0, 1, &number));
+    FAIL_RETURN(Read(buf, 0, 1, &number));
     *value = number != -1 ? buf[0] : -1;
 
     return NOERROR;

@@ -257,9 +257,7 @@ ECode CStructInfo::GetMaxAlignSize(
             ((CStructInfo *)(*m_pFieldTypeInfos)[i]) \
                 ->GetMaxAlignSize(&size);
         }
-        else if (dataType == CarDataType_ArrayOf
-                || dataType == CarDataType_BufferOf
-                || dataType == CarDataType_MemoryBuf) {
+        else if (dataType == CarDataType_ArrayOf) {
             ((CCarArrayInfo *)(*m_pFieldTypeInfos)[i]) \
                 ->GetMaxAlignSize(&size);
         }
@@ -346,9 +344,7 @@ ECode CStructInfo::InitFieldElement()
                 ->GetMaxAlignSize(&elemtAlign);
             ((CStructInfo *)(*m_pFieldTypeInfos)[i])->GetSize(&elemtSize);
         }
-        else if (dataType == CarDataType_ArrayOf
-                || dataType == CarDataType_BufferOf
-                || dataType == CarDataType_MemoryBuf) {
+        else if (dataType == CarDataType_ArrayOf) {
             ((CCarArrayInfo *)(*m_pFieldTypeInfos)[i]) \
                 ->GetMaxAlignSize(&elemtAlign);
             ((CCarArrayInfo *)(*m_pFieldTypeInfos)[i])->GetSize(&elemtSize);

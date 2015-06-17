@@ -93,9 +93,7 @@ ECode CArgumentList::SetParamValue(
     /* [in] */ Int32 iPointer)
 {
     if (type == CarDataType_CarArray
-        && (m_pParamElem[index].type == CarDataType_ArrayOf
-        || m_pParamElem[index].type == CarDataType_BufferOf
-        || m_pParamElem[index].type == CarDataType_MemoryBuf)) {
+        && m_pParamElem[index].type == CarDataType_ArrayOf) {
         type = m_pParamElem[index].type;
     }
 
@@ -458,22 +456,6 @@ ECode CArgumentList::SetOutputArgumentOfEnumPtr(
 {
     return SetParamValue(index, &pValue, CarDataType_Enum,
         ParamIOAttribute_CallerAllocOut, 1);
-}
-
-ECode CArgumentList::SetOutputArgumentOfStringBufPtr(
-    /* [in] */ Int32 index,
-    /* [out] */ StringBuf * pValue)
-{
-    return SetParamValue(index, &pValue, CarDataType_StringBuf,
-        ParamIOAttribute_CallerAllocOut, 0);
-}
-
-ECode CArgumentList::SetOutputArgumentOfStringBufPtrPtr(
-    /* [in] */ Int32 index,
-    /* [out] */ StringBuf ** ppValue)
-{
-    return SetParamValue(index, &ppValue, CarDataType_StringBuf,
-        ParamIOAttribute_CalleeAllocOut, 2);
 }
 
 ECode CArgumentList::SetOutputArgumentOfCarArrayPtr(

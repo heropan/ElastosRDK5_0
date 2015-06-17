@@ -178,7 +178,6 @@ static const KeywordToken s_keywords_A[] = {
 static const KeywordToken s_keywords_B[] = {
     { "Boolean", Token_K_Boolean },
     { "Byte", Token_K_Byte},
-    { "BufferOf", Token_K_BufferOf },
 };
 
 static const KeywordToken s_keywords_C[] = {
@@ -190,7 +189,6 @@ static const KeywordToken s_keywords_C[] = {
 
 static const KeywordToken s_keywords_D[] = {
     { "Double", Token_K_Double },
-    { "DateTime", Token_K_DateTime },
 };
 
 static const KeywordToken s_keywords_E[] = {
@@ -215,10 +213,6 @@ static const KeywordToken s_keywords_I[] = {
     { "Int8", Token_K_Int8 },
 };
 
-static const KeywordToken s_keywords_M[] = {
-    { "MemoryBuf", Token_K_MemoryBuf },
-};
-
 static const KeywordToken s_keywords_O[] = {
 };
 
@@ -227,7 +221,6 @@ static const KeywordToken s_keywords_P[] = {
 };
 
 static const KeywordToken s_keywords_S[] = {
-    { "StringBuf", Token_K_StringBuf },
     { "String", Token_K_String },
 };
 
@@ -291,7 +284,7 @@ static const KeywordIndex s_upperIndexTable[26] = {
     { 0, NULL },                                                    // J
     { 0, NULL },                                                    // K
     { 0, NULL },                                                    // L
-    { sizeof(s_keywords_M) / sizeof(KeywordToken), s_keywords_M },  // M
+    { 0, NULL },                                                    // M
     { 0, NULL },                                                    // N
     { sizeof(s_keywords_O) / sizeof(KeywordToken), s_keywords_O },  // O
     { sizeof(s_keywords_P) / sizeof(KeywordToken), s_keywords_P },  // P                                                  // P

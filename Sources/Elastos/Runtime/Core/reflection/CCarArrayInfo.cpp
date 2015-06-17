@@ -72,18 +72,16 @@ ECode CCarArrayInfo::GetName(
 
     *pName = g_cDataTypeList[m_quintetType].name;
 
-    if (m_quintetType != CarDataType_MemoryBuf) {
-        String elementName;
-        ECode ec = m_pElementTypeInfo->GetName(&elementName);
-        if (FAILED(ec)) return ec;
+    String elementName;
+    ECode ec = m_pElementTypeInfo->GetName(&elementName);
+    if (FAILED(ec)) return ec;
 
-        pName->Append("<");
-        pName->Append(elementName);
-        if (m_elementDataType == CarDataType_Interface) {
-            pName->Append("*");
-        }
-        pName->Append(">");
+    pName->Append("<");
+    pName->Append(elementName);
+    if (m_elementDataType == CarDataType_Interface) {
+        pName->Append("*");
     }
+    pName->Append(">");
 
     return NOERROR;
 }

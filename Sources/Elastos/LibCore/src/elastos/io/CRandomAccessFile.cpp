@@ -595,10 +595,10 @@ ECode CRandomAccessFile::WriteByte(
 ECode CRandomAccessFile::WriteChar(
     /* [in] */ Int32 value)
 {
-    ArrayOf_<Byte, 4> buffer;
+    AutoPtr< ArrayOf<Char8> > buffer = ArrayOf<Char8>::Alloc(4);
     Int32 len;
-    Character::ToChars((Char32)value, *(ArrayOf<Char8>*)&buffer, 0, &len);
-    return Write(buffer, 0, len);
+    Character::ToChars((Char32)value, *buffer, 0, &len);
+    return Write((ArrayOf<Byte>*)buffer.Get(), 0, len);
 }
 
 ECode CRandomAccessFile::WriteBytes(

@@ -18,17 +18,13 @@ static char * s_elatypes[] = {
     "PHandle32", "PHandle64",
     "Boolean",  "PBoolean",
     "CString", "String",
-    "StringBuf",
 
-    "CarQuintet",  "BufferOf",      "ArrayOf",
+    "CarQuintet",  "ArrayOf",
 
-    "MemoryBuf",
-    "PMemoryBuf",  "PCarQuintet",
-
-    "StringBuf_",  "MemoryBuf_",   "BufferOf_","ArrayOf_",
+    "PCarQuintet",
 
     "MemorySize",
-    "Address",      "DateTime",     "Timestamp64",
+    "Address",      "Timestamp64",
 
     "EventHandler",
 

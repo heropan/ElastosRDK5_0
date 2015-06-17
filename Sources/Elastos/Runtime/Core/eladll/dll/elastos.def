@@ -84,7 +84,7 @@ EXPORTS
     ;; CAR data-type APIs, using ordinal 200-400
     ;;
 
-    ;; CarArray, StringBuf
+    ;; CarArray
     ;;
     _CarQuintet_Init                                @201    NONAME
     _CarQuintet_Alloc                               @202    NONAME
@@ -100,172 +100,15 @@ EXPORTS
     _ArrayOf_Alloc_Box                              @212    NONAME
     _ArrayOf_Replace                                @213    NONAME
 
-    _BufferOf_Alloc                                 @215    NONAME
-    _BufferOf_Alloc_Box                             @216    NONAME
-    _BufferOf_Insert                                @217    NONAME
-    _BufferOf_Replace                               @218    NONAME
-    _BufferOf_Copy                                  @219    NONAME
-    _BufferOf_CopyEx                                @220    NONAME
-    _BufferOf_Append                                @221    NONAME
-
-    _MemoryBuf_SetByteValue                         @225    NONAME
-    _MemoryBuf_Compare                              @226    NONAME
-
     _String_GetLength                               @231    NONAME
-    _String_Compare                                 @234    NONAME
 
-    _String_ToInt32                                 @239    NONAME
-    _String_ToInt64                                 @241    NONAME
-    _String_ToBoolean                               @243    NONAME
-    _String_ToDouble                                @245    NONAME
-
-    _String_GetCharCount                            @247    NONAME
-    _String_GetChar                                 @248    NONAME
-    _String_GetCharByOffset                         @249    NONAME
-
-    _String_Contains                                @250    NONAME
-    _String_StartWith                               @252    NONAME
-    _String_EndWith                                 @254    NONAME
-    _String_RegionMatches                           @255    NONAME
-
-    _String_IndexOf_Char8                           @256    NONAME
-    _String_IndexOf_AnyChar8                        @257    NONAME
-    _String_IndexOf_Char                            @258    NONAME
-    _String_IndexOf_AnyChar                         @259    NONAME
-    _String_IndexOf_Substring                       @260    NONAME
-
-    _String_LastIndexOf_Char8                       @266    NONAME
-    _String_LastIndexOf_AnyChar8                    @267    NONAME
-    _String_LastIndexOf_Char                        @268    NONAME
-    _String_LastIndexOf_AnyChar                     @269    NONAME
-    _String_LastIndexOf_Substring                   @270    NONAME
-
-    _String_Substring_Buffer                        @276    NONAME
-    _String_Substring                               @277    NONAME
-    _String_Substring_Length_Buffer                 @278    NONAME
-
-    _String_ToLowerCase                             @282    NONAME
     _String_Char32_ToLowerCase                      @283    NONAME
-    _String_ToUpperCase                             @284    NONAME
     _String_Char32_ToUpperCase                      @285    NONAME
 
-    _String_TrimStart                               @286    NONAME
-    _String_TrimEnd                                 @288    NONAME
-    _String_Trim                                    @290    NONAME
     _String_GetHashCode                             @291    NONAME
     _String_Duplicate                               @292    NONAME
     _String_Free                                    @296    NONAME
 
-    _StringBuf_ToUnicode                            @299    NONAME
-    _StringBuf_FromUnicode                          @300    NONAME
-
-    _StringBuf_Init                                 @302    NONAME
-    _StringBuf_Alloc                                @303    NONAME
-    _StringBuf_Alloc_Box                            @305    NONAME
-
-    _StringBuf_ToInt32                              @308    NONAME
-    _StringBuf_ToInt64                              @310    NONAME
-    _StringBuf_ToBoolean                            @312    NONAME
-    _StringBuf_ToDouble                             @314    NONAME
-
-    _StringBuf_GetCharCount                         @316    NONAME
-    _StringBuf_SetLength                            @318    NONAME
-    _StringBuf_GetChar                              @320    NONAME
-
-    _StringBuf_Insert                               @322    NONAME
-    _StringBuf_Copy                                 @324    NONAME
-    _StringBuf_Replace                              @326    NONAME
-
-    _StringBuf_Append_String                        @328    NONAME
-    _StringBuf_Append_Char16                        @330    NONAME
-    _StringBuf_Append_Char8                         @332    NONAME
-
-    _StringBuf_Append_Int8                          @334    NONAME
-    _StringBuf_Append_Int16                         @336    NONAME
-    _StringBuf_Append_Int32                         @338    NONAME
-    _StringBuf_Append_Int64                         @340    NONAME
-    _StringBuf_Append_Double                        @342    NONAME
-
-    _StringBuf_Contains                             @345    NONAME
-    _StringBuf_StartWith                            @347    NONAME
-    _StringBuf_EndWith                              @349    NONAME
-
-    _StringBuf_IndexOf_Char8                        @351    NONAME
-    _StringBuf_IndexOf_AnyChar8                     @352    NONAME
-    _StringBuf_IndexOf_Char                         @353    NONAME
-    _StringBuf_IndexOf_AnyChar                      @354    NONAME
-    _StringBuf_IndexOf_Substring                    @355    NONAME
-
-    _StringBuf_LastIndexOf_Char8                    @361    NONAME
-    _StringBuf_LastIndexOf_AnyChar8                 @362    NONAME
-    _StringBuf_LastIndexOf_Char                     @363    NONAME
-    _StringBuf_LastIndexOf_AnyChar                  @364    NONAME
-    _StringBuf_LastIndexOf_Substring                @365    NONAME
-
-    _StringBuf_Substring                            @371    NONAME
-    _StringBuf_Substring_Length                     @372    NONAME
-
-    _StringBuf_ToLowerCase                          @375    NONAME
-    _StringBuf_ToUpperCase                          @377    NONAME
-
-    _StringBuf_TrimStart                            @379    NONAME
-    _StringBuf_TrimEnd                              @381    NONAME
-    _StringBuf_Trim                                 @383    NONAME
-
-    _StringBuf_PadLeft                              @385    NONAME
-    _StringBuf_PadLeft_Char8                        @387    NONAME
-
-    _StringBuf_PadRight                             @389    NONAME
-    _StringBuf_PadRight_Char8                       @391    NONAME
-
-    _StringBuf_Box_Init                             @394    NONAME
-
-    _StringTokenizer_GetCount                       @396    NONAME
-    _StringTokenizer_NextToken                      @398    NONAME
-    _StringTokenizer_HasMoreTokens                  @400    NONAME
-
-    _StringBuf_Append_DateTime                      @403    NONAME
-
-    _StringBuf_EncodeURL                            @405    NONAME
-    _StringBuf_DecodeURL                            @406    NONAME
-
-    _Char8_IsASCII                                  @411    NONAME
-    _Char8_IsControl                                @412    NONAME
-    _Char8_IsDigit                                  @413    NONAME
-    _Char8_IsLeadByte                               @414    NONAME
-    _Char8_IsLetter                                 @415    NONAME
-    _Char8_IsLetterOrDigit                          @416    NONAME
-    _Char8_IsLower                                  @417    NONAME
-    _Char8_IsNumber                                 @418    NONAME
-    _Char8_IsPunctuation                            @419    NONAME
-    _Char8_IsUpper                                  @420    NONAME
-    _Char8_IsWhiteSpace                             @421    NONAME
-    _Char8_ToLower                                  @422    NONAME
-    _Char8_ToUpper                                  @423    NONAME
-
-    _Char16_IsASCII                                 @425    NONAME
-    _Char16_IsControl                               @426    NONAME
-    _Char16_IsDigit                                 @427    NONAME
-    _Char16_IsLetter                                @428    NONAME
-    _Char16_IsLetterOrDigit                         @429    NONAME
-    _Char16_IsLower                                 @430    NONAME
-    _Char16_IsNumber                                @431    NONAME
-    _Char16_IsPunctuation                           @432    NONAME
-    _Char16_IsUpper                                 @433    NONAME
-    _Char16_IsWhiteSpace                            @434    NONAME
-    _Char16_ToLower                                 @435    NONAME
-    _Char16_ToUpper                                 @436    NONAME
-
-    _DateTime_Initialize                            @444    NONAME
-    _DateTime_IsValid                               @445    NONAME
-    _DateTime_Parse_String                          @446    NONAME
-    _DateTime_ToLocalTime                           @448    NONAME
-    _DateTime_ToUniversalTime                       @449    NONAME
-
-    _Timestamp_ToUniversalDateTime                  @450    NONAME
-    _Timestamp_FromUniversalDateTime                @451    NONAME
-    _Timestamp_ToLocalDateTime                      @452    NONAME
-    _Timestamp_FromLocalDateTime                    @453    NONAME
     atomic_swap                                     @454    NONAME
     atomic_cmpxchg                                  @455    NONAME
     atomic_inc                                      @456    NONAME
@@ -311,7 +154,6 @@ EXPORTS
     EIID_IEnumInfo                                  @609    NONAME  DATA
     EIID_IEnumItemInfo                              @610    NONAME  DATA
     EIID_ICarArrayInfo                              @611    NONAME  DATA
-    EIID_IStringBufInfo                             @612    NONAME  DATA
     EIID_ICppVectorInfo                             @614    NONAME  DATA
     EIID_IStructInfo                                @615    NONAME  DATA
     EIID_IFieldInfo                                 @616    NONAME  DATA
@@ -323,12 +165,9 @@ EXPORTS
     EIID_IArgumentList                              @622    NONAME  DATA
     EIID_IVariable                                  @623    NONAME  DATA
     EIID_IVariableOfCarArray                        @624    NONAME  DATA
-    EIID_IVariableOfStringBuf                       @625    NONAME  DATA
     EIID_IVariableOfStruct                          @627    NONAME  DATA
     EIID_ICarArraySetter                            @628    NONAME  DATA
     EIID_ICarArrayGetter                            @629    NONAME  DATA
-    EIID_IStringBufSetter                           @630    NONAME  DATA
-    EIID_IStringBufGetter                           @631    NONAME  DATA
     EIID_IStructSetter                              @634    NONAME  DATA
     EIID_IStructGetter                              @635    NONAME  DATA
     EIID_ICppVectorSetter                           @636    NONAME  DATA

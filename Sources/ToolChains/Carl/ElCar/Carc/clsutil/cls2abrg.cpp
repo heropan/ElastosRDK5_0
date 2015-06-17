@@ -41,9 +41,7 @@ const char *AbrgParamType(AbridgedParamsInfo param)
         ABRG_TYPE(guid);
         ABRG_TYPE(CString);
         ABRG_TYPE(String);
-        ABRG_TYPE(StringBuf);
         ABRG_TYPE(ArrayOf);
-        ABRG_TYPE(BufferOf);
         ABRG_TYPE(eventhandler);
         ABRG_TYPE(interface);
         ABRG_TYPE(clsid);
@@ -54,7 +52,6 @@ const char *AbrgParamType(AbridgedParamsInfo param)
         ABRG_TYPE(puint32);
         ABRG_TYPE(puint64);
         ABRG_TYPE(pguid);
-        ABRG_TYPE(pbufferof);
         ABRG_TYPE(peventhandler);
         ABRG_TYPE(pinterface);
         ABRG_TYPE(pclsid);

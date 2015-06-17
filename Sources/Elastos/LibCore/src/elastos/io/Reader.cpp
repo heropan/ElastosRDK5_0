@@ -65,11 +65,11 @@ ECode Reader::Read(
 
     Object::Autolock lock(mLock);
 
-    ArrayOf_<Char32, 1> buf;
+    AutoPtr< ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(1);
     Int32 number;
-    FAIL_RETURN(Read(&buf, 0, 1, &number));
+    FAIL_RETURN(Read(buf, 0, 1, &number));
     if (number != -1) {
-        *value = buf[0];
+        *value = (*buf)[0];
     }
     else
         *value = -1;

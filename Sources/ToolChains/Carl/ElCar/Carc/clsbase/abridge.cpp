@@ -190,19 +190,6 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
             }
         }
 
-        case Type_DateTime:
-        {
-            UINT uSize = sizeof(DateTime);
-            uSize = (uSize % 4 == 0 ? uSize / 4 : (uSize / 4 + 1));
-            if (pType->nPointer) {
-                *pStackSize += 1;
-                return (Param_Type_pstructure | PUSH_SIZE(uSize));
-            }
-            else {//if is struct, we only push a pointer in stack.
-                *pStackSize += 1;
-                return (Param_Type_structure | PUSH_SIZE(uSize));
-            }
-        }
         case Type_EGuid:
             //if is EGuid, we only push a pointer in stack.
             *pStackSize += 1;
@@ -219,10 +206,6 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
             }
             return pType->nPointer ? Param_Type_pString:Param_Type_String;
 
-        case Type_StringBuf:
-            *pStackSize += 1;
-            return (Param_Type_StringBuf | PUSH_SIZE(pType->nSize));
-
         case Type_ArrayOf:
             *pStackSize += 1;
             if (pType->pNestedType && (Type_interface == pType->\
@@ -230,14 +213,6 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
                 *pStackSize |= 0x80;
             }
             return Param_Type_ArrayOf;
-        case Type_MemoryBuf:
-        case Type_BufferOf:
-            *pStackSize += 1;
-            if (pType->pNestedType && (Type_interface == pType->\
-                pNestedType->type) && (dwAttribs & ParamAttrib_in)) {
-                *pStackSize |= 0x80;
-            }
-            return Param_Type_BufferOf;
 
         case Type_EventHandler:
             if (pType->nPointer) {

@@ -54,7 +54,3 @@ SOURCES += CStructInfo.cpp
 SOURCES += CVariableOfStruct.cpp
 SOURCES += CVariableOfCppVector.cpp
 SOURCES += CTypeAliasInfo.cpp
-SOURCES += CStringBufInfo.cpp
-SOURCES += CVariableOfStringBuf.cpp
-
-

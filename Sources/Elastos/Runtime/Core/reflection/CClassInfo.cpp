@@ -545,11 +545,10 @@ ECode CClassInfo::GetConstructorInfoByParamNames(
     ECode ec = AcquireConstructorList();
     if (FAILED(ec)) return ec;
 
-    StringBuf_<_MAX_PATH> objName;
-    objName.Copy("CreateObjectWith");
-    objName.Append(name);
+    String objName("CreateObjectWith");
+    objName.Append((const char*)name);
 
-    ec = m_pCtorList->AcquireObjByName(objName,
+    ec = m_pCtorList->AcquireObjByName(CString(objName.string()),
             (IInterface **)ppConstructorInfo);
     if (FAILED(ec)) return ec;
 

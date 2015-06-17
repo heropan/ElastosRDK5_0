@@ -83,7 +83,7 @@ typedef struct TypeDescriptor
     unsigned short      sIndex;
     unsigned char       nPointer;
     unsigned char       bUnsigned;
-    int                 nSize;          //n value in the StringBuf_<n> or Char8Array_<n> etc
+    int                 nSize;          //n value in the Char8Array_<n> etc
     unsigned char       bNested;
     TypeDescriptor      *pNestedType;   // just for EzArry and EzEnum
 } TypeDescriptor;

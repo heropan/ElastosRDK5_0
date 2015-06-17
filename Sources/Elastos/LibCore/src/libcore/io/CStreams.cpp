@@ -235,13 +235,13 @@ ECode CStreams::Copy(
     VALIDATE_NOT_NULL(out);
 
     Int32 total = 0;
-    ArrayOf_<Byte, 8192> buffer;
+    AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(8192);
     Int32 c;
-    FAIL_RETURN(in->Read(&buffer, &c));
+    FAIL_RETURN(in->Read(buffer, &c));
     while (c != -1) {
         total += c;
-        FAIL_RETURN(out->Write(buffer, 0, c));
-        FAIL_RETURN(in->Read(&buffer, &c));
+        FAIL_RETURN(out->Write(*buffer, 0, c));
+        FAIL_RETURN(in->Read(buffer, &c));
     }
 
     *number = total;

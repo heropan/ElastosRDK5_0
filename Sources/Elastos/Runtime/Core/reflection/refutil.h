@@ -17,7 +17,7 @@
 
 _ELASTOS_NAMESPACE_USING
 
-//For CarDataType_ArrayOf, CarDataType_BufferOf, CarDataType_MemoryBuf
+//For CarDataType_ArrayOf
 #define CarDataType_CarArray 100
 
 #define MK_METHOD_INDEX(i, m)       (((i) + 1) << 16 | (m))

@@ -779,7 +779,7 @@ ECode CRemoteParcel::ReadArrayOfInner(
         CarQuintet q;
         Read((void*)&q, sizeof(CarQuintet));
         Int32 size = q.m_size;
-        PCarQuintet qq = _BufferOf_Alloc(size, q.m_flags);
+        PCarQuintet qq = _ArrayOf_Alloc(size, q.m_flags);
         if (qq == NULL) {
             *pValue = NULL;
             return NOERROR;

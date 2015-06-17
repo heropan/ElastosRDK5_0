@@ -189,14 +189,6 @@ public:
         /* [in] */ Int32 index,
         /* [out] */ Int32 * pValue);
 
-    CARAPI SetOutputArgumentOfStringBufPtr(
-        /* [in] */ Int32 index,
-        /* [out] */ StringBuf * pvalue);
-
-    CARAPI SetOutputArgumentOfStringBufPtrPtr(
-        /* [in] */ Int32 index,
-        /* [out] */ StringBuf ** pValue);
-
     CARAPI SetOutputArgumentOfCarArrayPtr(
         /* [in] */ Int32 index,
         /* [out] */ PCarQuintet value);

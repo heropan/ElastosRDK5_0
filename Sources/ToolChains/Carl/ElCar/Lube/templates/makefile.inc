@@ -76,19 +76,3 @@ lube.lbo :  $(MAKEDIR)/background/backcpp.lub       \
             $(MAKEDIR)/public/public.lub            \
             $(MAKEDIR)/public/uuidcpp.lub           \
             $(MAKEDIR)/public/uuidh.lub
-
-a2clube.lbo :   $(MAKEDIR)/android/android.lub          \
-                $(MAKEDIR)/android/socpp.lub            \
-                $(MAKEDIR)/android/soh.lub              \
-                $(MAKEDIR)/android/sosources.lub        \
-                $(MAKEDIR)/android/so2libdef.lub        \
-                $(MAKEDIR)/android/dirs.lub             \
-                $(MAKEDIR)/android/a2cforeground.lub    \
-                $(MAKEDIR)/android/a2cforecpph.lub      \
-                $(MAKEDIR)/android/a2cforecpp.lub       \
-                $(MAKEDIR)/android/a2cforeh.lub         \
-                $(MAKEDIR)/android/a2csources.lub
-
-CAR2Javalube.lbo :    $(MAKEDIR)/car2java/CAR2Java.lub             \
-                      $(MAKEDIR)/car2java/CoNativeClass.lub        \
-                      $(MAKEDIR)/car2java/CoNativeInterface.lub

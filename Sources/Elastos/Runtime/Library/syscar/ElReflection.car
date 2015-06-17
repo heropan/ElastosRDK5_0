@@ -26,12 +26,9 @@ library
 
     interface IVariable;
     interface IVariableOfCarArray;
-    interface IVariableOfStringBuf;
     interface IVariableOfStruct;
     interface ICarArraySetter;
     interface ICarArrayGetter;
-    interface IStringBufSetter;
-    interface IStringBufGetter;
     interface IStructSetter;
     interface IStructGetter;
     interface ICppVectorSetter;
@@ -60,13 +57,10 @@ library
         CarDataType_LocalPtr    = 16,
         CarDataType_LocalType   = 17,
         CarDataType_Enum        = 18,
-        CarDataType_StringBuf   = 19,
-        CarDataType_ArrayOf     = 20,
-        CarDataType_BufferOf    = 21,
-        CarDataType_MemoryBuf   = 22,
-        CarDataType_CppVector   = 23,
-        CarDataType_Struct      = 24,
-        CarDataType_Interface   = 25
+        CarDataType_ArrayOf     = 19,
+        CarDataType_CppVector   = 20,
+        CarDataType_Struct      = 21,
+        CarDataType_Interface   = 22
     }
 
     enum ParamIOAttribute {
@@ -146,17 +140,6 @@ library
         CreateVariableBox(
             [in] PCarQuintet variableDescriptor,
             [out] IVariableOfCarArray** variableBox);
-    }
-
-    [local]
-    interface IStringBufInfo extends IDataTypeInfo {
-        CreateVariable(
-            [in] Int32 capacity,
-            [out] IVariableOfStringBuf** variableBox);
-
-        CreateVariableBox(
-            [in] PCarQuintet variableDescriptor,
-            [out] IVariableOfStringBuf** variableBox);
     }
 
     [local]
@@ -468,16 +451,6 @@ library
             [out] Int32* value);
 
         // Caller allocated
-        SetOutputArgumentOfStringBufPtr(
-            [in] Int32 index,
-            [out] StringBuf<> value);
-
-        // Callee allocated
-        SetOutputArgumentOfStringBufPtrPtr(
-            [in] Int32 index,
-            [out, callee] StringBuf<>* value);
-
-        // Caller allocated
         SetOutputArgumentOfCarArrayPtr(
             [in] Int32 index,
             [out] PCarQuintet value);
@@ -521,15 +494,6 @@ library
 
         GetGetter(
             [out] ICarArrayGetter** getter);
-    }
-
-    [local]
-    interface IVariableOfStringBuf extends IVariable {
-        GetSetter(
-            [out] IStringBufSetter** setter);
-
-        GetGetter(
-            [out] IStringBufGetter** getter);
     }
 
     [local]
@@ -706,32 +670,6 @@ library
         GetStructElementGetter(
             [in] Int32 index,
             [out] IStructGetter** getter);
-    }
-
-    [local]
-    interface IStringBufSetter {
-        SetElement(
-            [in] Int32 index,
-            [in] Char8 character);
-
-        SetData (
-            [in] CString str);
-    }
-
-    [local]
-    interface IStringBufGetter {
-        GetCapacity(
-            [out] Int32* capacity);
-
-        GetLength(
-            [out] Int32* length);
-
-        GetElement(
-            [in] Int32 index,
-            [out] Char8* character);
-
-        GetData (
-            [out] StringBuf<> stringBuf);
     }
 
     [local, deprecated]

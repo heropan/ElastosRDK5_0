@@ -131,10 +131,7 @@ ECode CParamInfo::GetAdvisedCapacity(
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_pParmElement->type != CarDataType_ArrayOf
-        && m_pParmElement->type != CarDataType_BufferOf
-        && m_pParmElement->type != CarDataType_MemoryBuf
-        && m_pParmElement->type != CarDataType_StringBuf) {
+    if (m_pParmElement->type != CarDataType_ArrayOf) {
         return E_INVALID_OPERATION;
     }
 

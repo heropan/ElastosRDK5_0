@@ -36,12 +36,10 @@ typedef enum CARToken {
     Token_K_UInt32,         Token_K_UInt64,         Token_K_Char16,
     Token_K_String,         Token_K_CString,        Token_K_Char32,
 
-    Token_K_StringBuf,
-
-    Token_K_BufferOf,       Token_K_MemoryBuf,     Token_K_ArrayOf,
+    Token_K_ArrayOf,
 
     Token_K_EMuid,          Token_K_EGuid,         Token_K_ECode,
-    Token_K_delegate,       Token_K_DateTime,      Token_K_EventHandler,
+    Token_K_delegate,       Token_K_EventHandler,
 
     Token_K_class,          Token_K_scriptable,
     Token_K_singleton,      Token_K_aggregates,

@@ -385,14 +385,11 @@ BOOL IsValidParamTypeAttrib(
          * local|unlocal, deprecated: [in] ArrayOf<Type, size> *; //warning
          */
         case Type_ArrayOf:
-        case Type_BufferOf:
             if (IsLocalCarQuintet(pModule, pType->pNestedType, dwAttribs) && (!isLocal)) {
                 ErrorReport(CAR_E_IllegalTypeUsage, "Type is a local type.");
                 return FALSE;
             }
-            //no break or return here
 
-        case Type_MemoryBuf:
             if (dwAttribs & ParamAttrib_in) {
                 if (0 == pType->nPointer) return TRUE;
                 if (1 == pType->nPointer) {
@@ -420,27 +417,6 @@ BOOL IsValidParamTypeAttrib(
                 ErrorReport(CAR_E_IllegalTypeUsage, "Type cann't have more than one '*'.");
                 return FALSE;
             }
-            return FALSE;
-
-        /*
-         * local|unlocal: [out] StringBuf<>;
-         * local|unlocal: [out] StringBuf<5>;
-         * local|: [out, callee] StringBuf<>*;
-         */
-        case Type_StringBuf:
-            if (dwAttribs & ParamAttrib_out) {
-                if (0 == pType->nPointer) {
-                    if (!(dwAttribs & ParamAttrib_callee)) return TRUE;
-                    ErrorReport(CAR_E_IllegalTypeUsage, "Attribute [callee] is illegal.");
-                    return FALSE;
-                }
-                if (1 == pType->nPointer) {
-                    if (dwAttribs & ParamAttrib_callee) return TRUE;
-                    ErrorReport(CAR_E_IllegalTypeUsage, "Attribute should be [callee].");
-                    return FALSE;
-                }
-            }
-            ErrorReport(CAR_E_IllegalTypeUsage, "Type can only modify [out] parameter.");
             return FALSE;
 
         /*
@@ -739,9 +715,7 @@ int P_CarQuient(TypeDescriptor *pType)
         return Ret_AbortOnError;
     }
 
-    if ((Type_ArrayOf == pType->type)
-            || (Type_BufferOf == pType->type)
-            || (Type_MemoryBuf == pType->type)){
+    if (Type_ArrayOf == pType->type){
 
         pType->pNestedType = new TypeDescriptor;
         if (!pType->pNestedType) {
@@ -751,29 +725,21 @@ int P_CarQuient(TypeDescriptor *pType)
         memset(pType->pNestedType, 0, sizeof(TypeDescriptor));
         pType->pNestedType->bNested = 1;
 
-        if (Type_MemoryBuf == pType->type) {
-            pType->pNestedType->type = Type_Byte;
+        if (P_Type(pType->pNestedType) == Ret_AbortOnError) {
+            goto ErrorExit;
         }
-        else {
-            if (P_Type(pType->pNestedType) == Ret_AbortOnError) {
-                goto ErrorExit;
-            }
 
-            if ((Type_ArrayOf == pType->pNestedType->type)
-                    || (Type_BufferOf == pType->pNestedType->type)
-                    || (Type_MemoryBuf == pType->pNestedType->type)
-                    || (Type_StringBuf == pType->pNestedType->type)) {
-                ErrorReport(CAR_E_NestedCARQuient);
+        if (Type_ArrayOf == pType->pNestedType->type) {
+            ErrorReport(CAR_E_NestedCARQuient);
+            return Ret_AbortOnError;
+        }
+
+        if (Token_S_comma == PeekToken(s_pFile)) {
+            GetToken(s_pFile);
+            token = PeekToken(s_pFile);
+            if (!(Token_integer == token) && !(Token_ident == token)){
+                ErrorReport(CAR_E_IlleagalSizeType);    //< n > n must be an integer
                 return Ret_AbortOnError;
-            }
-
-            if (Token_S_comma == PeekToken(s_pFile)) {
-                GetToken(s_pFile);
-                token = PeekToken(s_pFile);
-                if (!(Token_integer == token) && !(Token_ident == token)){
-                    ErrorReport(CAR_E_IlleagalSizeType);    //< n > n must be an integer
-                    return Ret_AbortOnError;
-                }
             }
         }
     }
@@ -873,9 +839,6 @@ int P_BaseType(CARToken token, TypeDescriptor *pType)
         case Token_K_EGuid:
             pType->type = Type_EGuid;
             break;
-        case Token_K_DateTime:
-            pType->type = Type_DateTime;
-            break;
         case Token_K_EventHandler:
             pType->type = Type_EventHandler;
             break;
@@ -887,15 +850,6 @@ int P_BaseType(CARToken token, TypeDescriptor *pType)
             break;
         case Token_K_ArrayOf:
             pType->type = Type_ArrayOf;
-            return P_CarQuient(pType);
-        case Token_K_BufferOf:
-            pType->type = Type_BufferOf;
-            return P_CarQuient(pType);
-        case Token_K_MemoryBuf:
-            pType->type = Type_MemoryBuf;
-            return P_CarQuient(pType);
-        case Token_K_StringBuf:
-            pType->type = Type_StringBuf;
             return P_CarQuient(pType);
         default:
             ErrorReport(CAR_E_UndefType, g_szCurrentToken);
@@ -3799,8 +3753,7 @@ int P_MethodArg(MethodDescriptor *pMethod, BOOL isLocal, BOOL isDeprecated)
     }
 
     if ((dwAttribs & ParamAttrib_callee) && !isLocal &&
-        (type.type != Type_ArrayOf && type.type != Type_BufferOf &&
-        type.type != Type_MemoryBuf && type.type != Type_StringBuf)) {
+        (type.type != Type_ArrayOf)) {
         ErrorReport(CAR_E_CalleeParam, g_szCurrentToken, pMethod->pszName);
         return Ret_AbortOnError;
     }

@@ -136,8 +136,8 @@ ECode FileOutputStream::GetFD(
 ECode FileOutputStream::Write(
     /* [in] */ Int32 oneByte)
 {
-    ArrayOf_<Byte, 1> bytes;
-    (bytes)[0] = (Byte)oneByte;
+    AutoPtr< ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(1);
+    (*bytes)[0] = (Byte)oneByte;
     return Write(bytes, 0, 1);
 }
 

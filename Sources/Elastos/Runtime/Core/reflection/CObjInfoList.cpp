@@ -18,7 +18,6 @@
 #include "CConstructorInfo.h"
 #include "CLocalTypeInfo.h"
 #include "CLocalPtrInfo.h"
-#include "CStringBufInfo.h"
 #include "CCallbackMethodInfo.h"
 #include <pthread.h>
 #include <dlfcn.h>
@@ -993,15 +992,14 @@ ECode CObjInfoList::AcquireDataTypeInfo(
             (ICppVectorInfo**)ppDataTypeInfo);
     }
     //CarArrayInfo
-    else if (type == CarDataType_ArrayOf || type == CarDataType_BufferOf
-            || type == CarDataType_MemoryBuf) {
+    else if (type == CarDataType_ArrayOf) {
         AutoPtr<IDataTypeInfo> pElemInfo;
         ec = AcquireCarArrayElementTypeInfo(pCClsModule, pTypeDesc,
             (IDataTypeInfo**)&pElemInfo);
         if (FAILED(ec)) return ec;
         ec = AcquireCarArrayInfo(type, pElemInfo, (ICarArrayInfo**)ppDataTypeInfo);
     }
-    //IntrinsicInfo, StringBufInfo
+    //IntrinsicInfo
     else {
         CarDataType type = GetCarDataType(pTypeDesc->type);
 
@@ -1029,14 +1027,7 @@ ECode CObjInfoList::AcquireIntrinsicInfo(
 
     LockHashTable(EntryType_DataType);
     if (!m_pDataTypeInfos[dataType]) {
-        if (dataType == CarDataType_StringBuf) {
-            m_pDataTypeInfos[dataType] = new CStringBufInfo();
-        }
-//        else if (dataType ==
-//            m_pDataTypeInfos[dataType] = new CCarArrayInfo(quintetType, pElementTypeInfo, dataType)
-        else {
-            m_pDataTypeInfos[dataType] = new CIntrinsicInfo(dataType, uSize);
-        }
+        m_pDataTypeInfos[dataType] = new CIntrinsicInfo(dataType, uSize);
 
         if (!m_pDataTypeInfos[dataType]) {
             UnlockHashTable(EntryType_DataType);
@@ -1195,8 +1186,6 @@ ECode CObjInfoList::AcquireCarArrayElementTypeInfo(
     CarDataType type;
     switch (pTypeDesc->type) {
         case Type_ArrayOf:
-        case Type_BufferOf:
-        case Type_MemoryBuf:
             return AcquireDataTypeInfo(pCClsModule,
                 adjustNestedTypeAddr(pCClsModule->m_nBase, pTypeDesc->pNestedType),
                 ppElementTypeInfo);
@@ -1213,24 +1202,11 @@ ECode CObjInfoList::AcquireCarArrayInfo(
     /* [out] */ ICarArrayInfo **ppCarArrayInfo)
 {
 
-    if ((quintetType != CarDataType_ArrayOf && quintetType != CarDataType_BufferOf
-        && quintetType != CarDataType_MemoryBuf) || !ppCarArrayInfo) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    //BUGBUG::CarDataType_MemoryBuf should move to AcquireIntrinsicInfo,
-    //        And should add CArrayOfInfo, CBufferOfInfo, CMemoryBufInfo
-    if ((quintetType != CarDataType_MemoryBuf) && !pElementTypeInfo) {
+    if ((quintetType != CarDataType_ArrayOf) || !pElementTypeInfo || !ppCarArrayInfo) {
         return E_INVALID_ARGUMENT;
     }
 
     ECode ec = NOERROR;
-    if (quintetType == CarDataType_MemoryBuf) {
-        ec = AcquireIntrinsicInfo(CarDataType_Byte, &pElementTypeInfo);
-        if (FAILED(ec)) return ec;
-        //  release for [out] parameter. pElementTypeInfo is alive after release
-        pElementTypeInfo->Release();
-    }
 
     InfoLinkNode *pNode = m_pCarArrayInfoHead;
     AutoPtr<ICarArrayInfo> pCarArrayInfo;
@@ -1238,10 +1214,6 @@ ECode CObjInfoList::AcquireCarArrayInfo(
     CarDataType dataType;
     ec = pElementTypeInfo->GetDataType(&dataType);
     if (FAILED(ec)) return ec;
-
-    if (dataType == CarDataType_StringBuf) {
-        return E_INVALID_ARGUMENT;
-    }
 
     if (dataType != CarDataType_Struct) {
         LockHashTable(EntryType_DataType);

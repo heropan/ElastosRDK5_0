@@ -237,10 +237,7 @@ ECode CMethodInfo::SetParamElem(
         || pTypeDesc->type == Type_EMuid
         || pTypeDesc->type == Type_EGuid
         || pTypeDesc->type == Type_ArrayOf
-        || pTypeDesc->type == Type_BufferOf
-        || pTypeDesc->type == Type_MemoryBuf
-        || pTypeDesc->type == Type_Array
-        || pTypeDesc->type == Type_StringBuf) {
+        || pTypeDesc->type == Type_Array) {
         pParmElement->size = sizeof(PVoid);
     }
     else {

@@ -535,22 +535,17 @@ int LubeContext::ParamMember(MemberType member, char *pszBuffer)
         case Member_Type:
             if (Type_struct == m_pParam->type.type
                     || Type_EMuid == m_pParam->type.type
-                    || Type_EGuid == m_pParam->type.type
-                    || Type_DateTime == m_pParam->type.type) {
+                    || Type_EGuid == m_pParam->type.type) {
                 pszOutput = StructType2CString(m_pModule, &m_pParam->type);
             }
             else if (Type_alias == m_pParam->type.type) {
                 GetOriginalType(m_pModule, &m_pParam->type, &type);
                 if ((Type_EMuid == type.type)
                         || (Type_EGuid == type.type)
-                        || (Type_DateTime == type.type)
                         || (Type_struct == type.type)) {
                     pszOutput = StructType2CString(m_pModule, &m_pParam->type);
                 }
-                else if (Type_ArrayOf == type.type
-                        || Type_BufferOf == type.type
-                        || Type_MemoryBuf == type.type
-                        || Type_StringBuf == type.type) {
+                else if (Type_ArrayOf == type.type) {
                     if (m_pParam->dwAttribs & ParamAttrib_in) {
                         if (0 == type.nPointer) {
                             strcpy(pszBuffer, "const ");
@@ -592,45 +587,6 @@ int LubeContext::ParamMember(MemberType member, char *pszBuffer)
                 else if (0 == m_pParam->type.nPointer) strcat(pszBuffer, " *");
                 else strcat(pszBuffer, " **");
                 return LUBE_OK;
-            }
-            else if (Type_BufferOf == m_pParam->type.type) {
-                if ((m_pParam->dwAttribs & ParamAttrib_in)
-                    && (0 == m_pParam->type.nPointer)) pszOutput = "const BufferOf";
-                else pszOutput = "BufferOf";
-                strcpy(pszBuffer, pszOutput);
-                strcat(pszBuffer, "<");
-                strcat(pszBuffer, Type2CString(m_pModule, m_pParam->type.pNestedType));
-                strcat(pszBuffer, ">");
-                if (m_pParam->dwAttribs & ParamAttrib_in) {
-                    if (0 == m_pParam->type.nPointer) strcat(pszBuffer, " &");
-                    else {
-                       assert (1 == m_pParam->type.nPointer);
-                       strcat(pszBuffer, " *");
-                    }
-                }
-                else if (0 == m_pParam->type.nPointer) strcat(pszBuffer, " *");
-                else strcat(pszBuffer, " **");
-                return LUBE_OK;
-            }
-            else if (Type_MemoryBuf == m_pParam->type.type) {
-                if ((m_pParam->dwAttribs & ParamAttrib_in)
-                    && (0 == m_pParam->type.nPointer)) pszOutput = "const MemoryBuf";
-                else pszOutput = "MemoryBuf";
-                strcpy(pszBuffer, pszOutput);
-                if (m_pParam->dwAttribs & ParamAttrib_in) {
-                    if (0 == m_pParam->type.nPointer) strcat(pszBuffer, " &");
-                    else {
-                       assert (1 == m_pParam->type.nPointer);
-                       strcat(pszBuffer, " *");
-                    }
-                }
-                else if (0 == m_pParam->type.nPointer) strcat(pszBuffer, " *");
-                else strcat(pszBuffer, " **");
-                return LUBE_OK;
-            }
-            else if (Type_StringBuf == m_pParam->type.type) {
-                if (0 == m_pParam->type.nPointer) pszOutput = "StringBuf *";
-                else pszOutput = "StringBuf **";
             }
             else {
                 pszOutput = Type2CString(m_pModule, &m_pParam->type);

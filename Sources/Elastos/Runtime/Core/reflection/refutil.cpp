@@ -24,10 +24,7 @@ const DateTypeDesc g_cDataTypeList[] = {
    {"LocalPtr",      sizeof(PVoid),    },
    {"LocalType",     0,                },
    {"Enum",          sizeof(Int32),    },
-   {"StringBuf",     sizeof(PVoid),    },
    {"ArrayOf",       0,                },
-   {"BufferOf",      0,                },
-   {"MemoryBuf",     0,                },
    {"CppVector",     sizeof(PVoid),    },
    {"Struct",        0,                },
    {"Interface",     sizeof(IInterface *),},
@@ -88,9 +85,6 @@ CarDataType GetCarDataType(CARDataType type)
         case Type_enum:
             dataType = CarDataType_Enum;
             break;
-        case Type_StringBuf:
-            dataType = CarDataType_StringBuf;
-            break;
         case Type_Array:
             dataType = CarDataType_CppVector;
             break;
@@ -102,12 +96,6 @@ CarDataType GetCarDataType(CARDataType type)
             break;
         case Type_ArrayOf:
             dataType = CarDataType_ArrayOf;
-            break;
-        case Type_BufferOf:
-            dataType = CarDataType_BufferOf;
-            break;
-        case Type_MemoryBuf:
-        	dataType = CarDataType_MemoryBuf;
             break;
         case Type_Int8:
         case Type_UInt16:
@@ -254,27 +242,8 @@ UInt32 GetDataTypeSize(const CClsModule *pCClsModule, TypeDescriptor *pTypeDesc)
             uSize = sizeof(int);
             break;
         case Type_ArrayOf:
-        case Type_BufferOf:
             uSize = GetDataTypeSize(pCClsModule,
                             adjustNestedTypeAddr(nBase, pTypeDesc->pNestedType));
-            break;
-        case Type_MemoryBuf:
-            if (pTypeDesc->nSize < 0) {
-                //if the size of carquient isn't assigned, then it's -1;
-                uSize = sizeof(MemoryBuf);
-            }
-            else {
-                uSize = pTypeDesc->nSize;
-            }
-            break;
-        case Type_StringBuf:
-            if (pTypeDesc->nSize < 0) {
-                //if the size of carquient isn't assigned, then it's -1;
-                uSize = sizeof(StringBuf);
-            }
-            else {
-                uSize = pTypeDesc->nSize;
-            }
             break;
 //        case Type_EzEnum:
 //            uSize = sizeof(EzEnum);
@@ -374,7 +343,6 @@ CarQuintetFlag DataTypeToFlag(CarDataType type)
             flag = CarQuintetFlag_Type_Double;
             break;
         case CarDataType_Char8:
-        case CarDataType_StringBuf:
             flag = CarQuintetFlag_Type_Char8;
             break;
         case CarDataType_Char16:

@@ -73,9 +73,6 @@ void dump_param_type(ParamDescriptor* paramDesc)
     case Type_PVoid:
         printf("PVoid");
         break;
-    case Type_DateTime:
-        printf("DateTime");
-        break;
     case Type_String:
         printf("String");
         break;
@@ -84,15 +81,6 @@ void dump_param_type(ParamDescriptor* paramDesc)
         break;
     case Type_ArrayOf:
         printf("ArrayOf");
-        break;
-    case Type_BufferOf:
-        printf("BufferOf");
-        break;
-    case Type_MemoryBuf:
-        printf("MemoryBuf");
-        break;
-    case Type_StringBuf:
-        printf("StringBuf");
         break;
     default:
         printf("Unknow type");

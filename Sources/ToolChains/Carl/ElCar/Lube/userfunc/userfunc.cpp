@@ -69,18 +69,6 @@ DECL_USERFUNC(NamespaceType);
 DECL_USERFUNC(ParamNamespaceType);
 DECL_USERFUNC(MemberNamespaceType);
 DECL_USERFUNC(ParamType2String);
-DECL_USERFUNC(CopyOutParam);
-DECL_USERFUNC(AndriodType);
-DECL_USERFUNC(WriteToAndriodParcel);
-DECL_USERFUNC(DelcareVariablesForSoMethod);
-DECL_USERFUNC(MethodIndexInInterface);
-DECL_USERFUNC(CallSoMethod);
-DECL_USERFUNC(GenerateAndriodParameter);
-DECL_USERFUNC(GenerateCBDataParameter);
-DECL_USERFUNC(GenerateAndriodArgument);
-DECL_USERFUNC(ReadOutParamFromParcel);
-DECL_USERFUNC(ReadFromAndriodParcelOnTransact);
-DECL_USERFUNC(PrepareParamForResponseCallback);
 DECL_USERFUNC(IsFiltered);
 DECL_USERFUNC(HasTrivialConstructor);
 DECL_USERFUNC(HasDefaultConstructor);
@@ -169,30 +157,6 @@ const UserFuncEntry g_userFuncs[] = {
             "Generate elastos namepasce prefixing"),
     USERFUNC_(ParamType2String, ARGTYPE_(Object_None, Member_None), \
             "Generate paramters type string"),
-    USERFUNC_(CopyOutParam, ARGTYPE_(Object_Param, Member_None), \
-            "Generate copying code for output-parameters"),
-    USERFUNC_(AndriodType, ARGTYPE_(Object_Param, Member_Type), \
-            "Generate andriod C style type string"),
-    USERFUNC_(WriteToAndriodParcel, ARGTYPE_(Object_Param, Member_Type), \
-            "Generate code for writing parameters to andriod parcel"),
-    USERFUNC_(DelcareVariablesForSoMethod, ARGTYPE_(Object_IntfMethod, Member_None), \
-            "Generate code for reading parameters from andriod parcel"),
-    USERFUNC_(MethodIndexInInterface, ARGTYPE_(Object_IntfMethod, Member_None), \
-            "Generate the index of the method in its interface"),
-    USERFUNC_(CallSoMethod, ARGTYPE_(Object_IntfMethod, Member_None), \
-            "Generate the index of the method in its interface"),
-    USERFUNC_(GenerateAndriodParameter, ARGTYPE_(Object_Param, Member_None), \
-            "Generate parameters according to andriod"),
-    USERFUNC_(GenerateCBDataParameter, ARGTYPE_(Object_Param, Member_None), \
-            "Generate parameters according to andriod"),
-    USERFUNC_(GenerateAndriodArgument, ARGTYPE_(Object_Param, Member_None), \
-            "Generate parameters according to andriod"),
-    USERFUNC_(ReadOutParamFromParcel, ARGTYPE_(Object_IntfMethod, Member_None), \
-            "Generate parameters according to andriod"),
-    USERFUNC_(ReadFromAndriodParcelOnTransact, ARGTYPE_(Object_IntfMethod, Member_None), \
-            "Generate the parameters of the method in its interface"),
-    USERFUNC_(PrepareParamForResponseCallback, ARGTYPE_(Object_Param, Member_None), \
-            "Prepare Android parameters according to Elastos"),
     USERFUNC_(IsFiltered, ARGTYPE_(Object_ClsIntf, Member_None), \
             "Judge whether the interface is filtered"),
     USERFUNC_(HasTrivialConstructor, ARGTYPE_(Object_Class, Member_None), \
@@ -383,7 +347,6 @@ IMPL_USERFUNC(CStyleParamType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             GetOriginalType(pCtx->m_pModule, pType, &type);
             if ((Type_EMuid == type.type)
                     || (Type_EGuid == type.type)
-                    || (Type_DateTime == type.type)
                     || (Type_struct == type.type)){
                 if (dwAttribs & ParamAttrib_in) {
                     if (0 == type.nPointer) {
@@ -395,10 +358,7 @@ IMPL_USERFUNC(CStyleParamType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
                 }
                 else pszType = Type2CString(pCtx->m_pModule, pType);
             }
-            else if ((Type_ArrayOf == type.type)
-                    || (Type_BufferOf == type.type)
-                    || (Type_MemoryBuf == type.type)
-                    || (Type_StringBuf == type.type)) {
+            else if (Type_ArrayOf == type.type) {
                 if (dwAttribs & ParamAttrib_in) {
                     if (0 == type.nPointer) {
                         assert(0 == pType->nPointer);
@@ -432,7 +392,6 @@ IMPL_USERFUNC(CStyleParamType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 
         case Type_EMuid:
         case Type_EGuid:
-        case Type_DateTime:
         case Type_struct:
             if (dwAttribs & ParamAttrib_in) {
                 if (0 == pType->nPointer) {
@@ -445,7 +404,6 @@ IMPL_USERFUNC(CStyleParamType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             break;
 
         case Type_ArrayOf:
-        case Type_BufferOf:
             if (dwAttribs & ParamAttrib_in) {
                 pszType = "PCarQuintet";    //const
             }
@@ -453,19 +411,6 @@ IMPL_USERFUNC(CStyleParamType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
                 if (dwAttribs & ParamAttrib_callee) pszType = "PCarQuintet *";
                 else pszType = "PCarQuintet";
             }
-            break;
-
-        case Type_MemoryBuf:
-            if (dwAttribs & ParamAttrib_in) pszType = "const MemoryBuf *";
-            else {
-                if (dwAttribs & ParamAttrib_callee) pszType = "MemoryBuf **";
-                else pszType = "MemoryBuf *";
-            }
-            break;
-
-        case Type_StringBuf:
-            if (dwAttribs & ParamAttrib_callee) pszType = "StringBuf **";
-            else pszType = "StringBuf *";
             break;
 
         case Type_CString:
@@ -550,20 +495,7 @@ Restart:
                 pszType = "CarArray";
             }
             break;
-        case Type_BufferOf:
-            if (Type_CString == pType->pNestedType->type) {
-                pszType = "BufferOfCString";
-            }
-            else if (Type_String == pType->pNestedType->type) {
-                pszType = "BufferOfString";
-            }
-            else {
-                pszType = "CarArray";
-            }
-            break;
 
-        case Type_MemoryBuf:
-        case Type_StringBuf:
         case Type_Array:
             pszType = "CarArray";
             break;
@@ -654,15 +586,13 @@ IMPL_USERFUNC(ClassNameOfClassObj)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
                     memset(szBuf, 0, c_nStrBufSize);\
                     type = pCtorInterface->pDesc->ppMethods[m]->ppParams[p]->type;\
                     if (Type_struct == type.type || Type_EMuid == type.type ||\
-                        Type_EGuid == type.type || Type_BufferOf == type.type ||\
-                        Type_ArrayOf == type.type) {\
+                        Type_EGuid == type.type || Type_ArrayOf == type.type) {\
                         string = StructType2CString(pCtx->m_pModule, &type);\
                     }\
                     else if (Type_alias == type.type) {\
                         GetOriginalType(pCtx->m_pModule, &type, &OrigType);\
                         if ((Type_struct == OrigType.type || Type_EMuid == OrigType.type ||\
-                             Type_EGuid == OrigType.type || Type_BufferOf == OrigType.type ||\
-                             Type_ArrayOf == type.type)\
+                             Type_EGuid == OrigType.type || Type_ArrayOf == type.type)\
                              && OrigType.nPointer == 0) {\
                             string = StructType2CString(pCtx->m_pModule, &type);\
                         }\
@@ -1214,10 +1144,7 @@ IMPL_USERFUNC(PrefixingNameByName)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         TYPE_CASE(Type_PVoid, "p", "pp", NULL)
         TYPE_CASE(Type_CString, NULL, "p", NULL)
         TYPE_CASE(Type_String, NULL, "p", NULL)
-        TYPE_CASE(Type_StringBuf, "p", "pp", NULL)
         TYPE_CASE(Type_ArrayOf, "p", "pp", NULL)
-        TYPE_CASE(Type_BufferOf, "p", "pp", NULL)
-        TYPE_CASE(Type_MemoryBuf, "p", "pp", NULL)
         case Type_enum:
         case Type_struct:
             pszPrefix1 = "p";
@@ -1294,9 +1221,6 @@ IMPL_USERFUNC(PrefixingName)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         TYPE_CASE(Type_CString, NULL, "p", NULL)
         TYPE_CASE(Type_String, NULL, "p", NULL)
         TYPE_CASE(Type_ArrayOf, "p", "pp", NULL)
-        TYPE_CASE(Type_BufferOf, "p", "pp", NULL)
-        TYPE_CASE(Type_MemoryBuf, "p", "pp", NULL)
-        TYPE_CASE(Type_StringBuf, "p", "pp", NULL)
         case Type_enum:
         case Type_struct:
             pszPrefix1 = "p";
@@ -1464,30 +1388,6 @@ IMPL_USERFUNC(ParamOrigType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             pszType = szType;
             break;
 
-        case Type_BufferOf:
-            assert(pType->pNestedType);
-            if (dwAttribs & ParamAttrib_in) {
-                sprintf(szType, "BufferOf<%s>",
-                    Type2CString(pCtx->m_pModule, pType->pNestedType));
-            }
-            else {
-                sprintf(szType, "BufferOf<%s>*",
-                    Type2CString(pCtx->m_pModule, pType->pNestedType));
-            }
-            pszType = szType;
-            break;
-
-        case Type_MemoryBuf:
-            if (dwAttribs & ParamAttrib_in) strcpy(szType, "MemoryBuf");
-            else strcpy(szType, "MemoryBuf*");
-            pszType = szType;
-            break;
-
-        case Type_StringBuf:
-            strcpy(szType, "StringBuf*");
-            pszType = szType;
-            break;
-
         case Type_alias:
             GetOriginalType(pCtx->m_pModule, pType, &type);
             if ((type.type == Type_EGuid ||
@@ -1543,8 +1443,7 @@ IMPL_USERFUNC(ParamNamespaceType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 
     if ((Type_struct == pType->type)
             || (Type_EMuid == pType->type)
-            || (Type_EGuid == pType->type)
-            || (Type_DateTime == pType->type)) {
+            || (Type_EGuid == pType->type)) {
         if (0 == pType->nPointer) {
             sprintf(szType, "const %s &",
                     Type2CString(pCtx->m_pModule, pType));
@@ -1558,7 +1457,6 @@ IMPL_USERFUNC(ParamNamespaceType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         GetOriginalType(pCtx->m_pModule, pType, &type);
         if ((Type_EMuid == type.type)
                 || (Type_EGuid == type.type)
-                || (Type_DateTime == type.type)
                 || (Type_struct == type.type)) {
             if (dwAttribs & ParamAttrib_in) {
                 if (0 == type.nPointer) {
@@ -1573,10 +1471,7 @@ IMPL_USERFUNC(ParamNamespaceType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             }
             else pszType = Type2CString(pCtx->m_pModule, pType);
         }
-        else if ((Type_ArrayOf == type.type)
-                || (Type_BufferOf == type.type)
-                || (Type_MemoryBuf == type.type)
-                || (Type_StringBuf == type.type)) {
+        else if (Type_ArrayOf == type.type) {
             if (dwAttribs & ParamAttrib_in) {
                 if (0 == type.nPointer) {
                     assert(0 == pType->nPointer);
@@ -1627,36 +1522,6 @@ IMPL_USERFUNC(ParamNamespaceType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         }
         pszType = szType;
     }
-    else if (Type_BufferOf == pType->type) {
-        if (dwAttribs & ParamAttrib_in) {
-            if (0 == pType->nPointer) {
-                sprintf(szType, "const BufferOf<%s> &",
-                        Type2CString(pCtx->m_pModule, pType->pNestedType));
-            }
-            else sprintf(szType, "%s", Type2CString(pCtx->m_pModule, pType));
-        }
-        else {
-            //dwAttribs == ParamAttrib_out
-            sprintf(szType, "BufferOf<%s>",
-                    Type2CString(pCtx->m_pModule, pType->pNestedType));
-            if (0 == pType->nPointer) strcat(szType, " *");
-            else strcat(szType, " **");
-        }
-        pszType = szType;
-    }
-    else if (Type_MemoryBuf == pType->type) {
-        if (dwAttribs & ParamAttrib_in) {
-            if (0 == pType->nPointer) pszType = "const MemoryBuf &";
-            else pszType = Type2CString(pCtx->m_pModule, pType);
-        }
-        else if ((dwAttribs & ParamAttrib_out)
-                && (0 == pType->nPointer)) pszType = "MemoryBuf *";
-        else pszType = "MemoryBuf **";
-    }
-    else if (Type_StringBuf == pType->type) {
-        if (0 == pType->nPointer) pszType = "StringBuf *";
-        else pszType = "StringBuf **";
-    }
     else {
         pszType = Type2CString(pCtx->m_pModule, pType);
     }
@@ -1680,29 +1545,6 @@ IMPL_USERFUNC(NamespaceType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             strcpy(szType, "ArrayOf<");
             strcat(szType, Type2CString(pCtx->m_pModule, pType->pNestedType));
             strcat(szType, ">");
-            if (1 == pType->nPointer) strcat(szType, " *");
-            else if (2 == pType->nPointer) strcat(szType, " **");
-            pszType = szType;
-            break;
-
-        case Type_BufferOf:
-            strcpy(szType, "BufferOf<");
-            strcat(szType, Type2CString(pCtx->m_pModule, pType->pNestedType));
-            strcat(szType, ">");
-            if (1 == pType->nPointer) strcat(szType, " *");
-            else if (2 == pType->nPointer) strcat(szType, " **");
-            pszType = szType;
-            break;
-
-        case Type_MemoryBuf:
-            strcpy(szType, "MemoryBuf");
-            if (1 == pType->nPointer) strcat(szType, " *");
-            else if (2 == pType->nPointer) strcat(szType, " **");
-            pszType = szType;
-            break;
-
-        case Type_StringBuf:
-            strcpy(szType, "StringBuf");
             if (1 == pType->nPointer) strcat(szType, " *");
             else if (2 == pType->nPointer) strcat(szType, " **");
             pszType = szType;
@@ -1738,1191 +1580,6 @@ IMPL_USERFUNC(ParamType2String)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     }
 
     pCtx->PutString(szOutput);
-
-    return LUBE_OK;
-}
-
-IMPL_USERFUNC(CopyOutParam)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
-{
-    assert(NULL != pvArg);
-    TypeDescriptor type;
-    TypeDescriptor *pType = &((ParamDescriptor *)pvArg)->type;
-
-Begin:
-    switch(pType->type) {
-        case Type_ArrayOf:
-        case Type_BufferOf:
-        case Type_MemoryBuf:
-        case Type_StringBuf:
-            pCtx->PutString("_BufferOf_Copy((PCarQuintet)");
-            UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-            pCtx->PutString(", (PCarQuintet)_pCallbackEvent_->m_pUserParams->m_");
-            UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-            pCtx->PutString(");");
-            break;
-        case Type_alias:
-            GetOriginalType(pCtx->m_pModule, pType, &type);
-            pType = &type;
-            goto Begin;
-        default:
-            pCtx->PutString("*");
-            UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-            pCtx->PutString(" = *_pCallbackEvent_->m_pUserParams->m_");
-            UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-            break;
-    }
-
-    return LUBE_OK;
-}
-
-/* ������aidl2car�����õ���USERFUNC������Ӧ���Ƽ�ʹ��UTF8�ַ���������
- * �����У�switch case����漰String��StringBuf�ķ�֧������ִ�У�������
- * Щ��֧�ڱ��ļ�����ʱ����
- */
-
-char* AndroidType2CString(TypeDescriptor* pTypeDesc)
-{
-    switch(pTypeDesc->type) {
-        case Type_Boolean:
-            return "int";
-        case Type_Int32:
-            return "int";
-        case Type_Int64:
-            return "jlong";
-        case Type_Byte:
-            return "int";
-        case Type_Double:
-            return "double";
-        case Type_Float:
-            return "float";
-
-        default:
-            return "default";
-    }
-}
-
-char* CAR2AndriodRWType(TypeDescriptor* pTypeDesc)
-{
-    switch(pTypeDesc->type) {
-        case Type_Boolean:
-        case Type_Int32:
-        case Type_Byte:
-            return "Int32";
-        case Type_Int64:
-            return "Int64";
-        case Type_Double:
-            return "Double";
-        case Type_Float:
-            return "Float";
-
-        default:
-            return "default";
-    }
-}
-
-IMPL_USERFUNC(AndriodType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
-{
-    assert(NULL != pvArg);
-
-    const char *pszType;
-    char szType[32];
-    TypeDescriptor type;
-    TypeDescriptor *pType = (TypeDescriptor *)pvArg;
-
-     switch (pType->type) {
-        case Type_CString:
-        case Type_String:
-            assert(0 == pType->nPointer);
-            sprintf(szType, "const char*");
-            pszType = szType;
-            break;
-        case Type_Boolean:
-            if (0 == pType->nPointer) sprintf(szType, "int");
-            else if (1 == pType->nPointer) sprintf(szType, "int *");
-            pszType = szType;
-            break;
-        case Type_Byte:
-            if (0 == pType->nPointer) sprintf(szType, "int");
-            else if (1 == pType->nPointer) sprintf(szType, "int *");
-            pszType = szType;
-            break;
-        case Type_Int32:
-            if (0 == pType->nPointer) sprintf(szType, "int");
-            else if (1 == pType->nPointer) sprintf(szType, "int *");
-            pszType = szType;
-            break;
-        case Type_Int64:
-            if (0 == pType->nPointer) sprintf(szType, "jlong");
-            else if (1 == pType->nPointer) sprintf(szType, "jlong *");
-            pszType = szType;
-            break;
-        case Type_Double:
-            if (0 == pType->nPointer) sprintf(szType, "bouble");
-            else if (1 == pType->nPointer) sprintf(szType, "bouble *");
-            pszType = szType;
-            break;
-        case Type_Float:
-            if (0 == pType->nPointer) sprintf(szType, "float");
-            else if (1 == pType->nPointer) sprintf(szType, "float *");
-            pszType = szType;
-            break;
-        case Type_ArrayOf:
-            assert(pType->pNestedType);
-            sprintf(szType, "ArrayOf<%s>",
-                Type2CString(pCtx->m_pModule, pType->pNestedType));
-            pszType = szType;
-            break;
-        case Type_BufferOf:
-            assert(pType->pNestedType);
-            sprintf(szType, "BufferOf<%s>",
-                Type2CString(pCtx->m_pModule, pType->pNestedType));
-            pszType = szType;
-            break;
-        case Type_MemoryBuf:
-            strcpy(szType, "MemoryBuf*");
-            pszType = szType;
-            break;
-        case Type_StringBuf:
-            strcpy(szType, "StringBuf*");
-            pszType = szType;
-            break;
-        case Type_alias:
-            GetOriginalType(pCtx->m_pModule, pType, &type);
-            if ((type.type == Type_EGuid ||
-                type.type == Type_EMuid) &&
-                1 == type.nPointer) {
-                if (type.type == Type_EGuid) strcpy(szType, "EGuid");
-                else if (type.type == Type_EMuid) strcpy(szType, "EMuid");
-                pszType = szType;
-                break;
-            }
-        default:
-            pszType = Type2CString(pCtx->m_pModule, pType);
-            break;
-    }
-
-    pCtx->PutString(pszType);
-
-    return LUBE_OK;
-}
-
-IMPL_USERFUNC(DelcareVariablesForSoMethod)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
-{
-    assert(NULL != pvArg);
-    assert(pvArg == pCtx->m_pMethod);
-
-    int pn;
-    bool rtFlag = false;
-    ParamDescriptor* pParamDesc;
-
-    const char *pszType;
-    char szType[256];
-
-    pCtx->PutString("    Parcel data, reply;\n");
-
-    pn = pCtx->m_pMethod->cParams;
-    for(int i = 0; i < pn; i++) {
-        pParamDesc = pCtx->m_pMethod->ppParams[i];
-        if (ParamAttrib_out & pParamDesc->dwAttribs) {
-            switch (pParamDesc->type.type) {
-                case Type_StringBuf:
-                    sprintf(szType, "    size_t %sStrlen;\n"
-                                    "    const char16_t* %sStr16;\n",
-                                    pParamDesc->pszName,
-                                    pParamDesc->pszName);
-                    pszType = szType;
-                    pCtx->PutString(pszType);
-                    break;
-
-                default:
-                    if (!rtFlag){
-                        sprintf(szType, "    int rt;\n");
-                        pszType = szType;
-                        pCtx->PutString(pszType);
-                        rtFlag = true;
-                    }
-                    break;
-            }
-        }
-    }
-
-    return LUBE_OK;
-}
-
-IMPL_USERFUNC(WriteToAndriodParcel)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
-{
-    assert(NULL != pCtx->m_pParam);
-
-    const char *pszType;
-    char szType[256];
-
-    switch (pCtx->m_pParam->type.type) {
-        case Type_CString:
-        case Type_String:
-            sprintf(szType, "data.writeString16(String16(%s));\n", pCtx->m_pParam->pszName);
-            pszType = szType;
-            break;
-
-        case Type_Boolean:
-            sprintf(szType, "data.writeInt32(%s);\n", pCtx->m_pParam->pszName);
-            pszType = szType;
-            break;
-        case Type_Int64:
-            sprintf(szType, "data.writeInt64(%s);\n", pCtx->m_pParam->pszName);
-            pszType = szType;
-            break;
-        case Type_Int32:
-            sprintf(szType, "data.writeInt32(%s);\n", pCtx->m_pParam->pszName);
-            pszType = szType;
-            break;
-        case Type_Double:
-            sprintf(szType, "data.writeDouble(%s);\n", pCtx->m_pParam->pszName);
-            pszType = szType;
-            break;
-        case Type_Float:
-            sprintf(szType, "data.writeFloat(%s);\n", pCtx->m_pParam->pszName);
-            pszType = szType;
-            break;
-        case Type_Byte:
-            sprintf(szType, "data.writeInt32(%s);\n", pCtx->m_pParam->pszName);
-            pszType = szType;
-            break;
-
-        case Type_MemoryBuf:
-            sprintf(szType, "data.writeInt32(%sCount);\n"
-                            "    for (int i = 0; i < %sCount; i++) data.writeInt32(%s[i]);\n",
-                            pCtx->m_pParam->pszName,
-                            pCtx->m_pParam->pszName,
-                            pCtx->m_pParam->pszName);
-            pszType = szType;
-            break;
-        case Type_BufferOf:
-        case Type_ArrayOf:
-            sprintf(szType, "data.writeInt32(%sCount);\n"
-                            "    for (int i = 0; i < %sCount; i++) data.write%s(%s[i]);\n",
-                            pCtx->m_pParam->pszName,
-                            pCtx->m_pParam->pszName,
-                            CAR2AndriodRWType(pCtx->m_pParam->type.pNestedType),
-                            pCtx->m_pParam->pszName);
-            pszType = szType;
-            break;
-
-        default:
-            sprintf(szType, "default\n");
-            pszType = szType;
-            break;
-    }
-
-    pCtx->PutString(pszType);
-
-    return LUBE_OK;
-}
-
-void ReadFromParcel(PLUBECTX pCtx, ParamDescriptor* pParamDesc)
-{
-    const char *pszType = NULL;
-    char szType[512];
-
-    switch (pParamDesc->type.type) {
-        case Type_CString:
-        case Type_String:
-            assert(0);
-            break;
-        case Type_StringBuf:
-            sprintf(szType,
-                    "    %sStr16 = reply.readString16Inplace(&%sStrlen);\n"
-                    "    if (%sStr16 != NULL && %sStr16[0] != '\\0'){\n"
-                    "        *%s = strndup16to8(%sStr16, %sStrlen);\n"
-                    "    } \n"
-                    "    else {\n"
-                    "        *%s = NULL;\n"
-                    "    }\n",
-                    pParamDesc->pszName,pParamDesc->pszName,
-                    pParamDesc->pszName,pParamDesc->pszName,
-                    pParamDesc->pszName,pParamDesc->pszName,
-                    pParamDesc->pszName,pParamDesc->pszName);
-            pszType = szType;
-            break;
-
-        case Type_Boolean:
-        case Type_Int32:
-            assert(1 == pParamDesc->type.nPointer);
-            sprintf(szType, "    rt = reply.readInt32(%s);\n"
-                            "    if (rt != 0) return E_FAIL;\n\n",
-                    pParamDesc->pszName);
-            pszType = szType;
-            break;
-        case Type_Int64:
-            assert(1 == pParamDesc->type.nPointer);
-            sprintf(szType, "    rt = reply.readInt64(%s);\n"
-                            "    if (rt != 0) return E_FAIL;\n\n",
-                    pParamDesc->pszName);
-            pszType = szType;
-            break;
-        case Type_Byte:
-            assert(1 == pParamDesc->type.nPointer);
-            sprintf(szType, "    rt = reply.readInt32(%s);\n"
-                            "    if (rt != 0) return E_FAIL;\n\n",
-                    pParamDesc->pszName);
-            pszType = szType;
-            break;
-        case Type_Double:
-            assert(1 == pParamDesc->type.nPointer);
-            sprintf(szType, "    rt = reply.readDouble(%s);\n"
-                            "    if (rt != 0) return E_FAIL;\n\n",
-                    pParamDesc->pszName);
-            pszType = szType;
-            break;
-        case Type_Float:
-            assert(1 == pParamDesc->type.nPointer);
-            sprintf(szType, "    rt = reply.readFloat(%s);\n"
-                            "    if (rt != 0) return E_FAIL;\n\n",
-                    pParamDesc->pszName);
-            pszType = szType;
-            break;
-
-        case Type_MemoryBuf:
-            sprintf(szType, "    rt = reply.readInt32(%sCount);\n"
-                            "    if (rt != 0) {\n"
-                            "        return E_FAIL;\n"
-                            "    } else {\n"
-                            "        *%s = (int*)malloc((*%sCount)*sizeof(int));\n"
-                            "        if (*%s)\n"
-                            "            for (int i = 0; i < *%sCount; i++)\n"
-                            "                (*%s)[i] = reply.readInt32();\n"
-                            "    }\n\n",
-                            pParamDesc->pszName,
-                            pParamDesc->pszName,
-                            pParamDesc->pszName,
-                            pParamDesc->pszName,
-                            pParamDesc->pszName,
-                            pParamDesc->pszName);
-            pszType = szType;
-            break;
-        case Type_BufferOf:
-        case Type_ArrayOf:
-            sprintf(szType, "    rt = reply.readInt32(%sCount);\n"
-                            "    if (rt != 0) {\n"
-                            "        return E_FAIL;\n"
-                            "    } else {\n"
-                            "        *%s = (%s*)malloc((*%sCount)*sizeof(%s));\n"
-                            "        if (*%s)\n"
-                            "            for (int i = 0; i < *%sCount; i++)\n"
-                            "                (*%s)[i] = (%s)reply.read%s();\n"
-                            "    }\n\n",
-                            pParamDesc->pszName,
-                            pParamDesc->pszName,
-                            AndroidType2CString(pParamDesc->type.pNestedType),
-                            pParamDesc->pszName,
-                            AndroidType2CString(pParamDesc->type.pNestedType),
-                            pParamDesc->pszName,
-                            pParamDesc->pszName,
-                            pParamDesc->pszName,
-                            AndroidType2CString(pParamDesc->type.pNestedType),
-                            CAR2AndriodRWType(pParamDesc->type.pNestedType));
-            pszType = szType;
-            break;
-
-        default:
-            sprintf(szType,
-                    "           default\n");
-            pszType = szType;
-            break;
-    }
-
-    pCtx->PutString(pszType);
-
-}
-
-IMPL_USERFUNC(ReadOutParamFromParcel)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
-{
-    assert(NULL != pCtx->m_pMethod);
-    assert(pvArg == pCtx->m_pMethod);
-
-    char szType[512];
-    bool isFirstOutParam = true;
-
-    for (int i = 0; i < pCtx->m_pMethod->cParams; i++) {
-        if (ParamAttrib_out & pCtx->m_pMethod->ppParams[i]->dwAttribs) {
-            if (isFirstOutParam) {
-                sprintf(szType, "    //readException\n"
-                                "    int exceptionCode = reply.readInt32();\n"
-                                "    if (0 != exceptionCode) {\n"
-                                "        ReportException(TRANSACTION_%s, reply);\n"
-                                "        return E_FAIL;\n"
-                                "    }\n\n",
-                                pCtx->m_pMethod->pszName);
-                pCtx->PutString(szType);
-
-                isFirstOutParam = false;
-            }
-            ReadFromParcel(pCtx, pCtx->m_pMethod->ppParams[i]);
-
-        }
-    }
-
-    return LUBE_OK;
-}
-
-IMPL_USERFUNC(MethodIndexInInterface)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
-{
-    assert(NULL != pvArg);
-    assert(pvArg == pCtx->m_pMethod);
-
-    char szType[5];
-
-    InterfaceDescriptor* pInterfaceDesc = pCtx->m_pModule->ppInterfaceDir[pCtx->m_pClsIntf->sIndex]->pDesc;
-    int mn = pInterfaceDesc->cMethods;
-    for (int i = 0; i < mn; i++) {
-        if (!strcmp(pCtx->m_pMethod->pszName, pInterfaceDesc->ppMethods[i]->pszName)) {
-            sprintf(szType, "%d", i + 1);
-            pCtx->PutString(szType);
-        }
-    }
-
-    return LUBE_OK;
-}
-
-IMPL_USERFUNC(CallSoMethod)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
-{
-    assert(NULL != pvArg);
-    assert(pvArg == pCtx->m_pMethod);
-
-    char szBuffer[256];
-    char szTemp[256];
-
-    int pn;
-    ParamDescriptor* pParamDesc;
-
-    pn = pCtx->m_pMethod->cParams;
-    for(int i = 0; i < pn; i++) {
-        pParamDesc = pCtx->m_pMethod->ppParams[i];
-
-        switch (pParamDesc->type.type) {
-            case Type_CString:
-            case Type_String:
-                sprintf(szBuffer, "    const char* p%sTmp = (const char*)%s;\n",
-                        pParamDesc->pszName, pParamDesc->pszName);
-                pCtx->PutString(szBuffer);
-                break;
-            case Type_Byte:
-            case Type_Boolean:
-                if (ParamAttrib_out & pParamDesc->dwAttribs){
-                    sprintf(szBuffer, "    Int32 retValue;\n");
-                    pCtx->PutString(szBuffer);
-                }
-                break;
-
-            case Type_MemoryBuf:
-                if (ParamAttrib_in & pParamDesc->dwAttribs) {
-                    sprintf(szBuffer, "    Byte* %sBuf = %s.GetPayload();\n"
-                                  "    int %sCount = %s.GetUsed();\n"
-                                  "    int* tmpBuf;\n\n"
-                                  "    tmpBuf = (int*)malloc(%sCount*sizeof(int));\n\n"
-                                  "    for (int i=0;i<%sCount;i++)\n"
-                                  "        tmpBuf[i] = %sBuf[i];\n",
-                        pParamDesc->pszName, pParamDesc->pszName,
-                        pParamDesc->pszName, pParamDesc->pszName,
-                        pParamDesc->pszName, pParamDesc->pszName,
-                        pParamDesc->pszName);
-                }
-                else if (ParamAttrib_out & pParamDesc->dwAttribs) {
-                    sprintf(szBuffer, "    int %sCount;\n"
-                                      "    int* %sBuf;\n",
-                            pParamDesc->pszName, pParamDesc->pszName);
-                  }
-                pCtx->PutString(szBuffer);
-                break;
-            case Type_BufferOf:
-                if (ParamAttrib_in & pParamDesc->dwAttribs) {
-                    if (Type_Byte == pParamDesc->type.pNestedType->type ||
-                        Type_Boolean == pParamDesc->type.pNestedType->type) {
-                        sprintf(szBuffer, "    int %sCount = %s.GetUsed();\n"
-                                      "    %s* %sBuf = %s.GetPayload();\n"
-                                      "    int* tmpBuf;\n\n"
-                                      "    tmpBuf = (int*)malloc(%sCount*sizeof(int));\n\n"
-                                      "    for (int i=0;i<%sCount;i++)\n"
-                                      "        tmpBuf[i] = %sBuf[i];\n",
-                            pParamDesc->pszName, pParamDesc->pszName,
-                            Type2CString(pCtx->m_pModule, pParamDesc->type.pNestedType),
-                            pParamDesc->pszName, pParamDesc->pszName,
-                            pParamDesc->pszName, pParamDesc->pszName,
-                            pParamDesc->pszName);
-                    }
-                    else {
-                        sprintf(szBuffer, "    int %sCount = %s.GetUsed();\n"
-                                      "    %s* %sBuf = %s.GetPayload();\n",
-                            pParamDesc->pszName, pParamDesc->pszName,
-                            Type2CString(pCtx->m_pModule, pParamDesc->type.pNestedType),
-                            pParamDesc->pszName, pParamDesc->pszName);
-                    }
-                }
-                else if (ParamAttrib_out & pParamDesc->dwAttribs) {
-                    if (Type_Byte == pParamDesc->type.pNestedType->type ||
-                        Type_Boolean == pParamDesc->type.pNestedType->type) {
-                        sprintf(szBuffer, "    int %sCount;\n"
-                                      "    int* %sBuf;\n",
-                            pParamDesc->pszName, pParamDesc->pszName);
-                    }
-                    else {
-                        sprintf(szBuffer, "    int %sCount;\n"
-                                      "    %s* %sBuf;\n",
-                            pParamDesc->pszName,
-                            AndroidType2CString(pParamDesc->type.pNestedType),
-                            pParamDesc->pszName);
-                    }
-                  }
-                pCtx->PutString(szBuffer);
-                break;
-            case Type_ArrayOf:
-                if (ParamAttrib_in & pParamDesc->dwAttribs) {
-                    if (Type_Byte == pParamDesc->type.pNestedType->type ||
-                        Type_Boolean == pParamDesc->type.pNestedType->type) {
-                        sprintf(szBuffer, "    int %sCount = %s.GetLength();\n"
-                                      "    %s* %sBuf = %s.GetPayload();\n"
-                                      "    int* tmpBuf;\n\n"
-                                      "    tmpBuf = (int*)malloc(%sCount*sizeof(int));\n\n"
-                                      "    for (int i=0;i<%sCount;i++)\n"
-                                      "        tmpBuf[i] = %sBuf[i];\n",
-                            pParamDesc->pszName, pParamDesc->pszName,
-                            Type2CString(pCtx->m_pModule, pParamDesc->type.pNestedType),
-                            pParamDesc->pszName, pParamDesc->pszName,
-                            pParamDesc->pszName, pParamDesc->pszName,
-                            pParamDesc->pszName);
-                    }
-                    else {
-                        sprintf(szBuffer, "    int %sCount = %s.GetLength();\n"
-                                      "    %s* %sBuf = %s.GetPayload();\n",
-                            pParamDesc->pszName, pParamDesc->pszName,
-                            Type2CString(pCtx->m_pModule, pParamDesc->type.pNestedType),
-                            pParamDesc->pszName, pParamDesc->pszName);
-                    }
-                }
-                else if (ParamAttrib_out & pParamDesc->dwAttribs) {
-                    if (Type_Byte == pParamDesc->type.pNestedType->type ||
-                        Type_Boolean == pParamDesc->type.pNestedType->type) {
-                        sprintf(szBuffer, "    int %sCount;\n"
-                                      "    int* %sBuf;\n",
-                            pParamDesc->pszName, pParamDesc->pszName);
-                    }
-                    else {
-                        sprintf(szBuffer, "    int %sCount;\n"
-                                      "    %s* %sBuf;\n",
-                            pParamDesc->pszName,
-                            AndroidType2CString(pParamDesc->type.pNestedType),
-                            pParamDesc->pszName);
-                    }
-                  }
-                pCtx->PutString(szBuffer);
-                break;
-            case Type_StringBuf:
-                sprintf(szBuffer, "    const char* p%sTmp = NULL;\n",
-                        pParamDesc->pszName);
-                pCtx->PutString(szBuffer);
-                break;
-            default:
-                break;
-        }
-    }
-
-    sprintf(szBuffer, "\n    ec = %sSo%s(", pCtx->m_pClass->pszName, pCtx->m_pMethod->pszName);
-    pCtx->PutString(szBuffer);
-    for(int i = 0; i < pn; i++) {
-        pParamDesc = pCtx->m_pMethod->ppParams[i];
-
-        switch (pParamDesc->type.type) {
-            case Type_CString:
-            case Type_String:
-                assert(0 == pParamDesc->type.nPointer);
-                sprintf(szBuffer, "p%sTmp", pParamDesc->pszName);
-                pCtx->PutString(szBuffer);
-                break;
-
-            case Type_Boolean:
-            case Type_Byte:
-                if (0 == pParamDesc->type.nPointer) {
-                    sprintf(szBuffer, "%s", pParamDesc->pszName);
-                }
-                else {
-                    sprintf(szBuffer, "&retValue");
-                }
-                pCtx->PutString(szBuffer);
-                break;
-
-            case Type_Int32:
-                if (0 == pParamDesc->type.nPointer) {
-                    sprintf(szBuffer, "%s", pParamDesc->pszName);
-                }
-                else {
-                    sprintf(szBuffer, "p%s", pParamDesc->pszName);
-                    szBuffer[1] -= 32;
-                }
-                pCtx->PutString(szBuffer);
-                break;
-            case Type_Int64:
-                if (0 == pParamDesc->type.nPointer) {
-                    sprintf(szBuffer, "(jlong)%s", pParamDesc->pszName);
-                }
-                else {
-                    sprintf(szBuffer, "(jlong*)p%s", pParamDesc->pszName);
-                    szBuffer[9] -= 32;
-                }
-                pCtx->PutString(szBuffer);
-                break;
-
-            case Type_MemoryBuf:
-                if (0 == pParamDesc->type.nPointer) {
-                    sprintf(szBuffer, "%sCount, tmpBuf",
-                            pParamDesc->pszName,
-                            pParamDesc->pszName);
-                }
-                else {
-                    sprintf(szBuffer, "&%sCount, (int**)&%sBuf",
-                            pParamDesc->pszName,
-                            pParamDesc->pszName);
-                    }
-                pCtx->PutString(szBuffer);
-                break;
-            case Type_BufferOf:
-            case Type_ArrayOf:
-                if (0 == pParamDesc->type.nPointer) {
-                    if (Type_Byte == pParamDesc->type.pNestedType->type ||
-                        Type_Boolean == pParamDesc->type.pNestedType->type){
-                        sprintf(szBuffer, "%sCount, tmpBuf",
-                            pParamDesc->pszName,
-                            pParamDesc->pszName);
-                    }
-                    else if (Type_Int64 == pParamDesc->type.pNestedType->type){
-                        sprintf(szBuffer, "%sCount, (jlong*)%sBuf",
-                            pParamDesc->pszName,
-                            pParamDesc->pszName);
-                    }
-                    else {
-                        sprintf(szBuffer, "%sCount, %sBuf",
-                            pParamDesc->pszName,
-                            pParamDesc->pszName);
-                    }
-                }
-                else {
-                    if (Type_Byte == pParamDesc->type.pNestedType->type ||
-                        Type_Boolean == pParamDesc->type.pNestedType->type){
-                        sprintf(szBuffer, "&%sCount, (int**)&%sBuf",
-                            pParamDesc->pszName,
-                            pParamDesc->pszName);
-                    }
-                    else if (Type_Int64 == pParamDesc->type.pNestedType->type){
-                        sprintf(szBuffer, "&%sCount, (jlong**)&%sBuf",
-                            pParamDesc->pszName,
-                            pParamDesc->pszName);
-                    }
-                    else {
-                        sprintf(szBuffer, "&%sCount, &%sBuf",
-                            pParamDesc->pszName,
-                            pParamDesc->pszName);
-                    }
-                }
-                pCtx->PutString(szBuffer);
-                break;
-            case Type_StringBuf:
-                sprintf(szBuffer, "&p%sTmp", pParamDesc->pszName);
-                pCtx->PutString(szBuffer);
-                break;
-            default:
-                if (0 == pParamDesc->type.nPointer) {
-                    sprintf(szBuffer, "%s", pParamDesc->pszName);
-                }
-                else {
-                    sprintf(szBuffer, "p%s", pParamDesc->pszName);
-                    szBuffer[1] -= 32;
-                }
-                pCtx->PutString(szBuffer);
-                break;
-
-        }
-
-        if (i < pn - 1) pCtx->PutString(", ");
-    }
-    pCtx->PutString(");\n");
-
-    for(int i = 0; i < pn; i++) {
-        pParamDesc = pCtx->m_pMethod->ppParams[i];
-
-        if (ParamAttrib_out & pParamDesc->dwAttribs) {
-            switch (pParamDesc->type.type) {
-                case Type_MemoryBuf:
-                    strcpy(szTemp, pParamDesc->pszName);
-                    szTemp[0] -= 32;
-                    sprintf(szBuffer,"\n    if (%sBuf) {\n"
-                                     "       *pp%s = MemoryBuf::Alloc(%sCount);\n"
-                                     "        if (*pp%s)\n"
-                                     "            for (int i=0;i<%sCount;i++)\n",
-                            pParamDesc->pszName,
-                            szTemp, pParamDesc->pszName,
-                            szTemp, pParamDesc->pszName);
-                    pCtx->PutString(szBuffer);
-
-                    sprintf(szBuffer,"                (**pp%s)[i] = (Int8)(%sBuf[i] & 0xff);\n"
-                                     "        free(%sBuf);\n"
-                                     "    }\n"
-                                     "    else\n"
-                                     "        *pp%s = NULL;",
-                            szTemp, pParamDesc->pszName,
-                            pParamDesc->pszName, szTemp);
-                    pCtx->PutString(szBuffer);
-                    break;
-                case Type_BufferOf:
-                    strcpy(szTemp, pParamDesc->pszName);
-                    szTemp[0] -= 32;
-                    if (Type_Byte == pParamDesc->type.pNestedType->type ||
-                        Type_Boolean == pParamDesc->type.pNestedType->type){
-                        sprintf(szBuffer,"\n    if (%sBuf) {\n"
-                                         "        *pp%s = BufferOf<%s>::Alloc(%sCount);\n"
-                                         "        if (*pp%s)\n"
-                                         "            for (int i=0;i<%sCount;i++)\n",
-                            pParamDesc->pszName,
-                            szTemp,
-                            Type2CString(pCtx->m_pModule, pParamDesc->type.pNestedType),
-                            pParamDesc->pszName,
-                            szTemp, pParamDesc->pszName);
-                        pCtx->PutString(szBuffer);
-
-                        sprintf(szBuffer,"                (**pp%s)[i] = (Int8)(%sBuf[i] & 0xff);\n"
-                                         "        free(%sBuf);\n"
-                                         "    }\n"
-                                         "    else\n"
-                                         "        *pp%s = NULL;\n",
-                            szTemp, pParamDesc->pszName,
-                            pParamDesc->pszName, szTemp);
-                        pCtx->PutString(szBuffer);
-                    }
-                    else{
-                        sprintf(szBuffer, "\n    if (%sBuf) {\n"
-                                          "        *pp%s = BufferOf<%s>::Alloc(%sCount);\n"
-                                          "        if (*pp%s) (*pp%s)->Copy(%sBuf, %sCount);\n"
-                                          "        free(%sBuf);\n"
-                                          "    }\n"
-                                          "    else\n"
-                                          "        *pp%s = NULL;\n",
-                                pParamDesc->pszName,
-                                szTemp, Type2CString(pCtx->m_pModule, pParamDesc->type.pNestedType),
-                                pParamDesc->pszName, szTemp, szTemp,
-                                pParamDesc->pszName, pParamDesc->pszName,
-                                pParamDesc->pszName, szTemp);
-                        pCtx->PutString(szBuffer);
-                    }
-                    break;
-                case Type_ArrayOf:
-                    strcpy(szTemp, pParamDesc->pszName);
-                    szTemp[0] -= 32;
-                    if (Type_Byte == pParamDesc->type.pNestedType->type ||
-                        Type_Boolean == pParamDesc->type.pNestedType->type){
-                        sprintf(szBuffer,"\n    if (%sBuf) {\n"
-                                         "        *pp%s = ArrayOf<%s>::Alloc(%sCount);\n"
-                                         "        if (*pp%s)\n"
-                                         "            for (int i=0;i<%sCount;i++)\n",
-                            pParamDesc->pszName,
-                            szTemp,
-                            Type2CString(pCtx->m_pModule, pParamDesc->type.pNestedType),
-                            pParamDesc->pszName,
-                            szTemp, pParamDesc->pszName);
-                        pCtx->PutString(szBuffer);
-
-                        sprintf(szBuffer,"                (**pp%s)[i] = (Int8)(%sBuf[i] & 0xff);\n"
-                                         "        free(%sBuf);\n"
-                                         "    }\n"
-                                         "    else\n"
-                                         "        *pp%s = NULL;\n",
-                            szTemp, pParamDesc->pszName,
-                            pParamDesc->pszName, szTemp);
-                        pCtx->PutString(szBuffer);
-                    }
-                    else{
-                        sprintf(szBuffer, "\n    if (%sBuf) {\n"
-                                          "        *pp%s = ArrayOf<%s>::Alloc(%sCount);\n"
-                                          "        if (*pp%s) (*pp%s)->Copy(%sBuf, %sCount);\n"
-                                          "        free(%sBuf);\n"
-                                          "    }\n"
-                                          "    else\n"
-                                          "        *pp%s = NULL;\n",
-                                pParamDesc->pszName,
-                                szTemp, Type2CString(pCtx->m_pModule, pParamDesc->type.pNestedType),
-                                pParamDesc->pszName, szTemp, szTemp,
-                                pParamDesc->pszName, pParamDesc->pszName,
-                                pParamDesc->pszName, szTemp);
-                        pCtx->PutString(szBuffer);
-                    }
-                    break;
-                case Type_StringBuf:
-                    strcpy(szTemp, pParamDesc->pszName);
-                    szTemp[0] -= 32;
-
-                    sprintf(szBuffer, "\n    if (p%sTmp) {\n",
-                            pParamDesc->pszName);
-                    pCtx->PutString(szBuffer);
-
-                    sprintf(szBuffer,
-                                "        *pp%s = StringBuf::Alloc(strlen(p%sTmp)+1);\n",
-                                szTemp, pParamDesc->pszName);
-                    pCtx->PutString(szBuffer);
-
-                    sprintf(szBuffer,
-                                "        if (*pp%s) (*pp%s)->Copy(p%sTmp);\n"
-                                "        free((char *)p%sTmp);\n"
-                                "    }\n"
-                                "    else\n",
-                            szTemp, szTemp,
-                            pParamDesc->pszName, pParamDesc->pszName);
-                    pCtx->PutString(szBuffer);
-
-                    sprintf(szBuffer,
-                                "        *pp%s = StringBuf::Alloc(0);\n",
-                            szTemp);
-                    pCtx->PutString(szBuffer);
-                    break;
-                case Type_Boolean:
-                    sprintf(szBuffer, "\n    *p%s = (Boolean)retValue;\n",
-                            pParamDesc->pszName);
-                    szBuffer[7] -= 32;
-                    pCtx->PutString(szBuffer);
-                    break;
-                case Type_Byte:
-                    sprintf(szBuffer, "\n    *p%s = (Byte)(retValue & 0xff);\n",
-                            pParamDesc->pszName);
-                    szBuffer[7] -= 32;
-                    pCtx->PutString(szBuffer);
-                    break;
-
-                default:
-                    break;
-            }
-        }
-        else if (ParamAttrib_in & pParamDesc->dwAttribs){
-            switch (pParamDesc->type.type) {
-                case Type_MemoryBuf:
-                case Type_BufferOf:
-                case Type_ArrayOf:
-                    if (Type_Byte == pParamDesc->type.pNestedType->type ||
-                            Type_Boolean == pParamDesc->type.pNestedType->type){
-                        sprintf(szBuffer, "\n    free(tmpBuf);\n");
-                        pCtx->PutString(szBuffer);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    return LUBE_OK;
-}
-
-IMPL_USERFUNC(GenerateAndriodParameter)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
-{
-    assert(NULL != pCtx->m_pParam);
-    assert(pvArg == pCtx->m_pParam);
-
-    char szBuffer[256];
-    ParamDescriptor* pParamDesc = pCtx->m_pParam;
-
-    switch(pParamDesc->type.type) {
-        case Type_CString:
-            assert(0 == pParamDesc->type.nPointer);
-            sprintf(szBuffer, "const char* %s", pParamDesc->pszName);
-            break;
-
-        case Type_String:
-            assert(0 == pParamDesc->type.nPointer);
-            sprintf(szBuffer, "const char* %s", pParamDesc->pszName);
-            break;
-
-        case Type_Boolean:
-            if (0 == pParamDesc->type.nPointer) {
-                sprintf(szBuffer, "int %s", pParamDesc->pszName);
-            }
-            else if (1 == pParamDesc->type.nPointer) {
-                sprintf(szBuffer, "int* %s", pParamDesc->pszName);
-            }
-            break;
-
-        case Type_Int32:
-            if (0 == pParamDesc->type.nPointer) {
-                sprintf(szBuffer, "int %s", pParamDesc->pszName);
-            }
-            else if (1 == pParamDesc->type.nPointer) {
-                sprintf(szBuffer, "int* %s", pParamDesc->pszName);
-            }
-            break;
-        case Type_Int64:
-            if (0 == pParamDesc->type.nPointer) {
-                sprintf(szBuffer, "jlong %s", pParamDesc->pszName);
-            }
-            else if (1 == pParamDesc->type.nPointer) {
-                sprintf(szBuffer, "jlong* %s", pParamDesc->pszName);
-            }
-            break;
-        case Type_Double:
-            if (0 == pParamDesc->type.nPointer) {
-                sprintf(szBuffer, "double %s", pParamDesc->pszName);
-            }
-            else if (1 == pParamDesc->type.nPointer) {
-                sprintf(szBuffer, "double* %s", pParamDesc->pszName);
-            }
-            break;
-        case Type_Float:
-            if (0 == pParamDesc->type.nPointer) {
-                sprintf(szBuffer, "float %s", pParamDesc->pszName);
-            }
-            else if (1 == pParamDesc->type.nPointer) {
-                sprintf(szBuffer, "float* %s", pParamDesc->pszName);
-            }
-            break;
-        case Type_Byte:
-            if (0 == pParamDesc->type.nPointer) {
-                sprintf(szBuffer, "int %s", pParamDesc->pszName);
-            }
-            else if (1 == pParamDesc->type.nPointer) {
-                sprintf(szBuffer, "int* %s", pParamDesc->pszName);
-            }
-            break;
-
-        case Type_MemoryBuf:
-            if (ParamAttrib_in & pParamDesc->dwAttribs) {
-                sprintf(szBuffer, "int %sCount, int* %s",
-                        pParamDesc->pszName,
-                        pParamDesc->pszName);
-            }
-            else if (ParamAttrib_out & pParamDesc->dwAttribs) {
-                sprintf(szBuffer, "int* %sCount, int** %s",
-                        pParamDesc->pszName,
-                        pParamDesc->pszName);
-            }
-            break;
-        case Type_BufferOf:
-        case Type_ArrayOf:
-            if (ParamAttrib_in & pParamDesc->dwAttribs) {
-                assert(pParamDesc->type.pNestedType);
-                sprintf(szBuffer, "int %sCount, %s* %s",
-                        pParamDesc->pszName,
-                        AndroidType2CString(pParamDesc->type.pNestedType),
-                        pParamDesc->pszName);
-            }
-            else if (ParamAttrib_out & pParamDesc->dwAttribs) {
-                assert(pParamDesc->type.pNestedType);
-                sprintf(szBuffer, "int* %sCount, %s** %s",
-                        pParamDesc->pszName,
-                        AndroidType2CString(pParamDesc->type.pNestedType),
-                        pParamDesc->pszName);
-            }
-            break;
-
-        case Type_StringBuf:
-            sprintf(szBuffer, "const char** %s", pParamDesc->pszName);
-            break;
-
-        default:
-            sprintf(szBuffer, "default");
-            break;
-    }
-
-    pCtx->PutString(szBuffer);
-
-    return LUBE_OK;
-}
-
-IMPL_USERFUNC(GenerateCBDataParameter)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
-{
-    assert(NULL != pCtx->m_pParam);
-    assert(pvArg == pCtx->m_pParam);
-
-    char szBuffer[256];
-    ParamDescriptor* pParamDesc = pCtx->m_pParam;
-
-    switch(pParamDesc->type.type) {
-        case Type_CString:
-            assert(0 == pParamDesc->type.nPointer);
-            sprintf(szBuffer, "char* %s", pParamDesc->pszName);
-            break;
-        case Type_String:
-            assert(0 == pParamDesc->type.nPointer);
-            sprintf(szBuffer, "char* %s", pParamDesc->pszName);
-            break;
-        case Type_Boolean:
-            sprintf(szBuffer, "int %s", pParamDesc->pszName);
-        case Type_Int32:
-            sprintf(szBuffer, "int %s", pParamDesc->pszName);
-            break;
-        case Type_Int64:
-            sprintf(szBuffer, "jlong %s", pParamDesc->pszName);
-            break;
-        case Type_Double:
-            sprintf(szBuffer, "double %s", pParamDesc->pszName);
-            break;
-        case Type_Float:
-            sprintf(szBuffer, "float %s", pParamDesc->pszName);
-            break;
-        case Type_Byte:
-            sprintf(szBuffer, "int %s", pParamDesc->pszName);
-            break;
-
-        default:
-            sprintf(szBuffer, "default");
-            break;
-    }
-
-    pCtx->PutString(szBuffer);
-
-    return LUBE_OK;
-}
-
-IMPL_USERFUNC(GenerateAndriodArgument)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
-{
-    assert(NULL != pCtx->m_pParam);
-    assert(pvArg == pCtx->m_pParam);
-
-    char szBuffer[256];
-    ParamDescriptor* pParamDesc = pCtx->m_pParam;
-
-    switch(pParamDesc->type.type) {
-        case Type_MemoryBuf:
-        case Type_BufferOf:
-        case Type_ArrayOf:
-            assert(pParamDesc->type.pNestedType);
-            sprintf(szBuffer, "%sCount, %s",
-                    pParamDesc->pszName,
-                    pParamDesc->pszName);
-            break;
-
-        default:
-            sprintf(szBuffer, "%s", pParamDesc->pszName);
-            break;
-    }
-
-    pCtx->PutString(szBuffer);
-
-    return LUBE_OK;
-}
-
-IMPL_USERFUNC(ReadFromAndriodParcelOnTransact)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
-{
-    assert(NULL != pvArg);
-    assert(pvArg == pCtx->m_pMethod);
-
-    char szBuffer[512];
-
-    int pn;
-    ParamDescriptor* pParamDesc;
-
-    pn = pCtx->m_pMethod->cParams;
-    for(int i = 0; i < pn; i++) {
-        pParamDesc = pCtx->m_pMethod->ppParams[i];
-
-        switch (pParamDesc->type.type) {
-            case Type_CString:
-                sprintf(szBuffer,
-                    "            str16 = data.readString16Inplace(&strlen);\n"
-                    "            if (str16 != NULL && str16[0] != '\\0'){\n"
-                    "                m_p%sData->%s = strndup16to8(str16, strlen);\n"
-                    "            } \n"
-                    "            else {\n"
-                    "                m_p%sData->%s = NULL;\n"
-                    "            }\n",
-                    pCtx->m_pMethod->pszName, pParamDesc->pszName,
-                    pCtx->m_pMethod->pszName, pParamDesc->pszName);
-                break;
-            case Type_String:
-                sprintf(szBuffer,
-                    "            str16 = data.readString16Inplace(&strlen);\n"
-                    "            if (str16 != NULL && str16[0] != '\\0'){\n"
-                    "                m_p%sData->%s = strndup16to8(str16, strlen);\n"
-                    "            } \n"
-                    "            else {\n"
-                    "                m_p%sData->%s = NULL;\n"
-                    "            }\n",
-                    pCtx->m_pMethod->pszName, pParamDesc->pszName,
-                    pCtx->m_pMethod->pszName, pParamDesc->pszName);
-                break;
-            case Type_Boolean:
-            case Type_Int32:
-                sprintf(szBuffer, "            m_p%sData->%s = data.readInt32();\n\n",
-                        pCtx->m_pMethod->pszName, pParamDesc->pszName);
-                break;
-            case Type_Int64:
-                sprintf(szBuffer, "            m_p%sData->%s = data.readInt64();\n\n",
-                        pCtx->m_pMethod->pszName, pParamDesc->pszName);
-                break;
-            case Type_Double:
-                sprintf(szBuffer, "            m_p%sData->%s = data.readDouble();\n\n",
-                        pCtx->m_pMethod->pszName, pParamDesc->pszName);
-                break;
-            case Type_Float:
-                sprintf(szBuffer, "            m_p%sData->%s = data.readFloat();\n\n",
-                        pCtx->m_pMethod->pszName, pParamDesc->pszName);
-                break;
-            case Type_Byte:
-                sprintf(szBuffer, "            m_p%sData->%s = data.readInt32();\n\n",
-                        pCtx->m_pMethod->pszName, pParamDesc->pszName);
-                break;
-            default:
-                sprintf(szBuffer, "default");
-                break;
-        }
-        pCtx->PutString(szBuffer);
-    }
-    return LUBE_OK;
-}
-
-IMPL_USERFUNC(PrepareParamForResponseCallback)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
-{
-    assert(NULL != pCtx->m_pParam);
-    assert(pvArg == pCtx->m_pParam);
-
-    char szBuffer[256];
-    ParamDescriptor* pParamDesc = pCtx->m_pParam;
-
-    switch (pParamDesc->type.type) {
-        case Type_Boolean:
-            sprintf(szBuffer, "    Boolean %s = (Boolean)_%s;\n",
-                    pParamDesc->pszName, pParamDesc->pszName);
-            pCtx->PutString(szBuffer);
-            break;
-        case Type_Byte:
-            sprintf(szBuffer, "    Byte %s = (Byte)(_%s & 0xff);\n",
-                    pParamDesc->pszName, pParamDesc->pszName);
-            pCtx->PutString(szBuffer);
-            break;
-        case Type_CString:
-            sprintf(szBuffer, "    CString %s(_%s);\n",
-                    pParamDesc->pszName, pParamDesc->pszName);
-            pCtx->PutString(szBuffer);
-            break;
-        case Type_String:
-            sprintf(szBuffer, "    String %s(_%s);\n",
-                    pParamDesc->pszName, pParamDesc->pszName);
-            pCtx->PutString(szBuffer);
-            break;
-        case Type_Int32:
-            sprintf(szBuffer, "    Int32 %s = _%s;\n",
-                    pParamDesc->pszName, pParamDesc->pszName);
-            pCtx->PutString(szBuffer);
-            break;
-        case Type_Int64:
-            sprintf(szBuffer, "    Int64 %s = _%s;\n",
-                    pParamDesc->pszName, pParamDesc->pszName);
-            pCtx->PutString(szBuffer);
-            break;
-        case Type_Double:
-            sprintf(szBuffer, "    Double %s = _%s;\n",
-                    pParamDesc->pszName, pParamDesc->pszName);
-            pCtx->PutString(szBuffer);
-            break;
-        case Type_Float:
-            sprintf(szBuffer, "    Float %s = _%s;\n",
-                    pParamDesc->pszName, pParamDesc->pszName);
-            pCtx->PutString(szBuffer);
-            break;
-        default:
-            break;
-    }
 
     return LUBE_OK;
 }
@@ -3229,10 +1886,6 @@ Restart:
 
             break;
 
-        case Type_StringBuf:
-            assert(0);
-            break;
-
         case Type_ArrayOf:
             assert(0 == pType->nPointer);
 
@@ -3252,14 +1905,6 @@ Restart:
             else {
                 pCtx->PutString(");");
             }
-            break;
-
-        case Type_BufferOf:
-            assert(0);
-            break;
-
-        case Type_MemoryBuf:
-            assert(0);
             break;
 
         default:

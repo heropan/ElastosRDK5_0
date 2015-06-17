@@ -31,24 +31,8 @@
 #include <elquintet.h>
 #endif
 
-#ifndef __ELTIME_H__
-#include <eltime.h>
-#endif
-
-#ifndef __EZSTRBUF_H__
-#include <elstrbuf.h>
-#endif
-
-#ifndef __EZSTRTOKEN_H__
-#include <elstrtoken.h>
-#endif
-
 #ifndef __EZALLOCA_H__
 #include <elalloc.h>
-#endif
-
-#ifndef __ELACHAR_H__
-#include <elchar.h>
 #endif
 
 #ifndef __ELDEBUGDEF_H__

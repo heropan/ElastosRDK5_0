@@ -25,8 +25,7 @@
         (t == Type_Float ? 4 : \
         (t == Type_Int64 ? 8 : \
         (t == Type_UInt64 ? 8 : \
-        (t == Type_Double ? 8 : \
-        (t == Type_DateTime ? sizeof(_ELASTOS DateTime) : 0)))))))))))))))))
+        (t == Type_Double ? 8 : 0))))))))))))))))
 
 #define STRUCT_TYPE_TO_SIZE(t) \
         (t == Type_Char8 ? 1 : \
@@ -44,8 +43,7 @@
         (t == Type_Float ? 4 : \
         (t == Type_Int64 ? 8 : \
         (t == Type_UInt64 ? 8 : \
-        (t == Type_Double ? 8 : \
-        (t == Type_DateTime ? sizeof(_ELASTOS DateTime) : 0)))))))))))))))))
+        (t == Type_Double ? 8 : 0))))))))))))))))
 
 #define STRUCT_IS_PRIMARY_TYPE(t) \
         (t == Type_Char8 ? TRUE : \
@@ -59,8 +57,7 @@
         (t == Type_enum  ? TRUE : \
         (t == Type_Float ? TRUE : \
         (t == Type_Int64 ? TRUE : \
-        (t == Type_Double ? TRUE : \
-        (t == Type_DateTime ? TRUE : FALSE)))))))))))))
+        (t == Type_Double ? TRUE : FALSE))))))))))))
 
 #define STRUCT_ALIGN_SIZE(size, align) \
         ((size % align) == 0 ? (size) : ((size / align + 1) * align))
