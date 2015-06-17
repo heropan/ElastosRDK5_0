@@ -509,7 +509,7 @@ ECode Stub_ProcessUnmsh_In(
 {
     int n, cParams;
     const CIBaseType *pParams;
-    Int32 pointValue, size;
+    Int32 pointValue;
     ECode ec;
 
     if (puOutBuffer) {
@@ -712,7 +712,6 @@ ECode Stub_ProcessMsh_Out(
 {
     int n, cParams;
     const CIBaseType *pParams;
-    MarshalHeader * pOutHeader = NULL;
     ECode ec;
 
     cParams = pMethodInfo->paramNum;
@@ -720,7 +719,6 @@ ECode Stub_ProcessMsh_Out(
 
     // skip the Out Marshal Header;
     if (puOutBuffer) {
-        pOutHeader = (MarshalHeader *)(Void *)puOutBuffer;
         puOutBuffer = (UInt32 *)((MarshalHeader *)puOutBuffer + 1);
     }
 

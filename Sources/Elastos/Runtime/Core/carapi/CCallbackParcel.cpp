@@ -478,10 +478,10 @@ ECode CCallbackParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
 ECode CCallbackParcel::Clone(
     /* [in] */ IParcel *pSrcParcel)
 {
-    Byte type, bv, *pbv, *pSrcElemPtr;
-    Int16 i16v, *pi16v;
-    Int32 i32v, *pi32v, size;
-    Int64 i64v, *pi64v;
+    Byte type, bv, *pSrcElemPtr;
+    Int16 i16v;
+    Int32 i32v, size;
+    Int64 i64v;
     char *str;
     CCallbackParcel *pSrc;
 

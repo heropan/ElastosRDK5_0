@@ -149,8 +149,8 @@ Int32 Looper::AddFd(
     { // acquire lock
         android::AutoMutex _l(mLock);
 
-        if (mRequests.size() >= EPOLL_MAX_EVENTS) {
-            ALOGE("Error adding epoll events for fd %d, reach EPOLL_MAX_EVENTS");
+        if (mRequests.size() >= (size_t)EPOLL_MAX_EVENTS) {
+            ALOGE("Error adding epoll events for fd %d, reach EPOLL_MAX_EVENTS", fd);
             return -1;
         }
 

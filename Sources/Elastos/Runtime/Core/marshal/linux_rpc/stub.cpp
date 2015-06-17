@@ -198,7 +198,7 @@ ECode CInterfaceStub::MarshalOut(
     /* [in] */ Boolean bOnlyReleaseIn,
     /* [in, out] */ CRemoteParcel* pParcel)
 {
-    MarshalHeader *pHeader;
+//    MarshalHeader *pHeader;
     ECode ec;
 
     ec = Stub_ProcessMsh_Out(
@@ -437,7 +437,7 @@ ECode CObjectStub::Invoke(
 
         MARSHAL_DBGOUT(MSHDBG_NORMAL,
                 printf("Stub: invoke method - args(%x), addr(%x) \n",
-                puArgs, (UInt32)uMethodAddr));
+                (UInt32)puArgs, (UInt32)uMethodAddr));
 
 #ifdef _x86
         GET_REG(EAX, uEAX);
@@ -715,7 +715,7 @@ ECode CObjectStub::TransactRunnable::Run()
         Int32 totalSize = htonl(sizeof(totalSize) + payloadSize);
         dataBuf->Append((void*)&totalSize, sizeof(totalSize));
         dataBuf->Append(payload, payloadSize);
-        assert(ntohl(totalSize) == dataBuf->DataSize());
+        assert((Int32)ntohl(totalSize) == dataBuf->DataSize());
         send(mConnfd, dataBuf->Data(), dataBuf->DataSize(), 0);
     }
     return NOERROR;

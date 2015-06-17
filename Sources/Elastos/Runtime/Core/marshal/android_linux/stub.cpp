@@ -206,7 +206,7 @@ ECode CInterfaceStub::MarshalOut(
     /* [in] */ Boolean bOnlyReleaseIn,
     /* [in, out] */ CRemoteParcel* pParcel)
 {
-    MarshalHeader *pHeader;
+//    MarshalHeader *pHeader;
     ECode ec;
 
     ec = Stub_ProcessMsh_Out(
@@ -434,7 +434,7 @@ ECode CObjectStub::Invoke(
                     ALOGE("Stub error: UnmarshalIn() failed.\n"));
             MARSHAL_DBGOUT(MSHDBG_ERROR, __DumpGUID(pCurInterface->m_pInfo->iid));
             MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE("uMethodIndex = %d", uMethodIndex));
-            if (ec == E_INVALID_PARCEL_DATA)
+            if (ec == (ECode)E_INVALID_PARCEL_DATA)
                 assert(0);
             goto ErrorExit;
         }
@@ -443,7 +443,7 @@ ECode CObjectStub::Invoke(
 
         MARSHAL_DBGOUT(MSHDBG_NORMAL,
                 ALOGD("Stub: invoke method - args(%x), addr(%x) \n",
-                puArgs, (UInt32)uMethodAddr));
+                (UInt32)puArgs, (UInt32)uMethodAddr));
 
 #ifdef _x86
         GET_REG(EAX, uEAX);
