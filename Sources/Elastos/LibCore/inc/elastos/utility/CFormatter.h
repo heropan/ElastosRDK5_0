@@ -4,7 +4,9 @@
 
 #include "_Elastos_Utility_CFormatter.h"
 #include "StringBuilder.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::IAppendable;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
@@ -13,6 +15,8 @@ using Libcore::ICU::INativeDecimalFormat;
 using Elastos::IO::IFile;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IPrintStream;
+using Elastos::IO::ICloseable;
+using Elastos::IO::IFlushable;
 using Elastos::Utility::ILocale;
 
 namespace Elastos {
@@ -21,6 +25,8 @@ namespace Utility {
 CarClass(CFormatter)
     , public Object
     , public IFormatter
+    , public ICloseable
+    , public IFlushable
 {
     friend Boolean InitTLS();
 public:

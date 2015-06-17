@@ -1,14 +1,14 @@
 
 #include "CFormatter.h"
-#include "CNativeDecimalFormat.h"
+//#include "CNativeDecimalFormat.h"
 #include "CLocale.h"
-#include "LocaleData.h"
+//#include "LocaleData.h"
 #include "CFile.h"
 #include "CFileOutputStream.h"
 #include "COutputStreamWriter.h"
 #include "CBufferedWriter.h"
 #include "IoUtils.h"
-#include "Charset.h"
+//#include "Charset.h"
 #include "CStringWrapper.h"
 #include "CBigInteger.h"
 #include "Date.h"
@@ -21,9 +21,10 @@
 #include "StringUtils.h"
 #include "Math.h"
 #include "CSystem.h"
+#include "CDate.h"
 
-using Libcore::ICU::CNativeDecimalFormat;
-using Libcore::ICU::LocaleData;
+//using Libcore::ICU::CNativeDecimalFormat;
+//using Libcore::ICU::LocaleData;
 using Elastos::Core::EIID_IAppendable;
 using Elastos::Core::IStringBuilder;
 using Elastos::Core::EIID_IStringBuilder;
@@ -57,15 +58,17 @@ using Elastos::IO::IOutputStreamWriter;
 using Elastos::IO::COutputStreamWriter;
 using Elastos::IO::IBufferedWriter;
 using Elastos::IO::CBufferedWriter;
-using Elastos::IO::IoUtils;
+//using Elastos::IO::IoUtils;
 using Elastos::IO::Charset::ICharset;
-using Elastos::IO::Charset::Charset;
+//using Elastos::IO::Charset::Charset;
 using Elastos::IO::EIID_ICloseable;
 using Elastos::IO::EIID_IFlushable;
+using Elastos::IO::IWriter;
 using Elastos::Math::IBigInteger;
 using Elastos::Math::EIID_IBigInteger;
 using Elastos::Math::CBigInteger;
 using Elastos::Math::EIID_IBigDecimal;
+using Elastos::Math::IBigDecimal;
 using Elastos::Math::CBigDecimal;
 using Elastos::Math::IMathContext;
 using Elastos::Math::CMathContext;
@@ -109,7 +112,7 @@ AutoPtr<ArrayOf<Char32> > InitZEROS()
 }
 const AutoPtr<ArrayOf<Char32> > CFormatter::ZEROS = InitZEROS(); //ZEROS[] = { '0', '0', '0', '0', '0', '0', '0', '0', '0' };
 
-CAR_INTERFACE_IMPL(CFormatter, Object, IFormatter)
+CAR_INTERFACE_IMPL_3(CFormatter, Object, IFormatter, ICloseable, IFlushable)
 
 CAR_OBJECT_IMPL(CFormatter)
 
@@ -187,7 +190,7 @@ ECode CFormatter::constructor(
 {
     AutoPtr<IFileOutputStream> ops;
     FAIL_RETURN(CFileOutputStream::New(file, (IFileOutputStream**)&ops));
-    return this->constructor(ops);
+    return this->constructor(IOutputStream::Probe(ops));
 }
 
 ECode CFormatter::constructor(
@@ -207,12 +210,12 @@ ECode CFormatter::constructor(
     // try {
     ECode ec1 = CFileOutputStream::New(file, (IFileOutputStream**)&fout);
     if (ec1 != NOERROR) {
-        IoUtils::CloseQuietly(fout);
+//        IoUtils::CloseQuietly(fout);
         return ec1;
     }
     AutoPtr<IOutputStreamWriter> osw;
-    FAIL_RETURN(COutputStreamWriter::New(fout, csn, (IOutputStreamWriter**)&osw));
-    FAIL_RETURN(CBufferedWriter::New(osw, (IBufferedWriter**)&mOut));
+    FAIL_RETURN(COutputStreamWriter::New(IOutputStream::Probe(fout), csn, (IOutputStreamWriter**)&osw));
+    FAIL_RETURN(CBufferedWriter::New(IWriter::Probe(osw), (IBufferedWriter**)&mOut));
     // } catch (RuntimeException e) {
     //     IoUtils.closeQuietly(fout);
     //     throw e;
@@ -229,12 +232,12 @@ ECode CFormatter::constructor(
     /* [in] */ IOutputStream* os)
 {
     AutoPtr<ICharset> defchar;
-    Charset::DefaultCharset((ICharset**)&defchar);
+//    Charset::DefaultCharset((ICharset**)&defchar);
     String charname;
     defchar->GetName(&charname);
     AutoPtr<IOutputStreamWriter> osw;
     FAIL_RETURN(COutputStreamWriter::New(os, charname, (IOutputStreamWriter**)&osw));
-    FAIL_RETURN(CBufferedWriter::New(osw, (IBufferedWriter**)&mOut));
+    FAIL_RETURN(CBufferedWriter::New(IWriter::Probe(osw), (IBufferedWriter**)&mOut));
     mLocale = CLocale::GetDefault();
     return NOERROR;
 }
@@ -254,7 +257,7 @@ ECode CFormatter::constructor(
 {
     AutoPtr<IOutputStreamWriter> osw;
     FAIL_RETURN(COutputStreamWriter::New(os, csn, (IOutputStreamWriter**)&osw));
-    FAIL_RETURN(CBufferedWriter::New(osw, (IBufferedWriter**)&mOut));
+    FAIL_RETURN(CBufferedWriter::New(IWriter::Probe(osw), (IBufferedWriter**)&mOut));
     mLocale = l;
     return NOERROR;
 }
@@ -383,7 +386,7 @@ ECode CFormatter::Format(
     AutoPtr<ILocale> originalLocale = mLocale;
     // try {
     mLocale = (l == NULL ? (CLocale::US).Get() : l);
-    mLocaleData = LocaleData::Get(mLocale);
+//    mLocaleData = LocaleData::Get(mLocale);
     FAIL_RETURN(DoFormat(format, mArgs));
     // } finally {
     mLocale = originalLocale;
@@ -448,7 +451,7 @@ void CFormatter::OutputCharSequence(
     /* [in] */ Int32 end)
 {
     // try {
-    ECode ec = mOut->AppendCharSequence(cs, start, end);
+    ECode ec = mOut->Append(cs, start, end);
     if (ec != NOERROR) {
         mLastIOException = ec;
     }
@@ -523,7 +526,7 @@ AutoPtr<ICharSequence> CFormatter::Transform(
                 String argValue;
                 if (isNumber) {
                     INumber* number = INumber::Probe(mArg);
-                    number->ToString(&argValue);
+//                    number->ToString(&argValue);  // Compile error
                 }
 
                 Char32 zeroDigit;
@@ -532,7 +535,7 @@ AutoPtr<ICharSequence> CFormatter::Transform(
                 if (IStringBuilder::Probe(mOut) && !needLocalizedDigits) {
                     IStringBuilder* sb = IStringBuilder::Probe(mOut);
                     if (isNumber) {
-                        sb->AppendString(argValue);
+                        sb->Append(argValue);
                         return NULL;
                     }
                 }
@@ -659,7 +662,7 @@ AutoPtr<ICharSequence> CFormatter::InsertGrouping(
     if (headLength == 0) {
         headLength = 3;
     }
-    result->AppendCharSequence(s, i, i + headLength);
+    result->Append(s, i, i + headLength);
     i += headLength;
 
     // Append the remaining groups.
@@ -668,7 +671,7 @@ AutoPtr<ICharSequence> CFormatter::InsertGrouping(
         Char32 groupingSeparator;
         mLocaleData->GetGroupingSeparator(&groupingSeparator);
         result->AppendChar(groupingSeparator);
-        result->AppendCharSequence(s, i, i + 3);
+        result->Append(s, i, i + 3);
     }
     return result;
 }
@@ -679,7 +682,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromBoolean()
     String result;
     AutoPtr<IBoolean> res = (IBoolean*)mArg->Probe(EIID_IBoolean);
     if (res != NULL) {
-        res->ToString(&result);
+//        res->ToString(&result);
     }
     else if (mArg == NULL) {
         result = "FALSE";
@@ -700,7 +703,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromHashCode()
     }
     else {
         Int32 codevalue = Object::GetHashCode(mArg);
-        result = StringUtils::Int32ToHexString(codevalue);
+        result = StringUtils::ToHexString(codevalue);
     }
     CStringWrapper::New(result, (ICharSequence**)&cs);
     return Padding(cs, 0);
@@ -744,7 +747,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromCharacter()
     }
     if (Elastos::Core::IChar32::Probe(mArg) /*mArg instanceof Character*/) {
         String str;
-        Elastos::Core::IChar32::Probe(mArg)->ToString(&str);
+//        Elastos::Core::IChar32::Probe(mArg)->ToString(&str);
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(str, (ICharSequence**)&cs);
         return Padding(cs, 0);
@@ -757,7 +760,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromCharacter()
         //     return NULL
         // }
         String str;
-        INumber::Probe(mArg)->ToString(&str);
+//        INumber::Probe(mArg)->ToString(&str);
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(str, (ICharSequence**)&cs);
         return Padding(cs, 0);
@@ -822,10 +825,10 @@ AutoPtr<ICharSequence> CFormatter::Padding(
     Boolean paddingRight = mFormatToken->mFlagMinus;
     AutoPtr<StringBuilder> result = ToStringBuilder(source);
     if (paddingRight) {
-        result->AppendChars(*paddingChars);
+        result->Append(*paddingChars);
     }
     else {
-        result->InsertChars(start, *paddingChars);
+        result->Insert(start, *paddingChars);
     }
     return result;
 }
@@ -849,7 +852,7 @@ AutoPtr<StringBuilder> CFormatter::WrapParentheses(
     /* [in] */ StringBuilder* _result)
 {
     AutoPtr<StringBuilder> result = _result;
-    result->SetChar(0, '('); // Replace the '-'.
+    result->SetCharAt(0, '('); // Replace the '-'.
     if (mFormatToken->mFlagZero) {
         mFormatToken->SetWidth(mFormatToken->GetWidth() - 1);
         result = (StringBuilder*)IStringBuilder::Probe(Padding(result, 1));
@@ -870,16 +873,16 @@ AutoPtr<ICharSequence> CFormatter::TransformFromInteger()
 
     Int64 value = 0;
     if (IInteger64::Probe(mArg)) {
-        ((IInteger64*) mArg->Probe(EIID_IInteger64))->Int64Value(&value);
+        ((IInteger64*) mArg->Probe(EIID_IInteger64))->GetValue(&value);
     }
     else if (IInteger32::Probe(mArg)) {
-        ((IInteger32*) mArg->Probe(EIID_IInteger32))->Int64Value(&value);
+        (INumber::Probe(mArg))->Int64Value(&value);
     }
     else if (IInteger16::Probe(mArg)) {
-        ((IInteger16*) mArg->Probe(EIID_IInteger16))->Int64Value(&value);
+        (INumber::Probe(mArg))->Int64Value(&value);
     }
     else if (IByte::Probe(mArg)) {
-        ((IByte*) mArg->Probe(EIID_IByte))->Int64Value(&value);
+        (INumber::Probe(mArg))->Int64Value(&value);
     }
     else {
         // throw badArgumentType();
@@ -888,18 +891,18 @@ AutoPtr<ICharSequence> CFormatter::TransformFromInteger()
 
     if (mFormatToken->mFlagSharp) {
         if (currentConversionType == 'o') {
-            result->AppendString(String("0"));
+            result->Append(String("0"));
             startIndex += 1;
         }
         else {
-            result->AppendString(String("0x"));
+            result->Append(String("0x"));
             startIndex += 2;
         }
     }
 
     if (currentConversionType == 'd') {
         AutoPtr<ICharSequence> digits;
-        CStringWrapper::New(StringUtils::Int64ToString(value), (ICharSequence**)&digits);
+        CStringWrapper::New(StringUtils::ToString(value), (ICharSequence**)&digits);
         if (mFormatToken->mFlagComma) {
             digits = InsertGrouping(digits);
         }
@@ -908,7 +911,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromInteger()
         if (zeroDigit != '0') {
             digits = LocalizeDigits(digits);
         }
-        result->AppendCharSequence(digits);
+        result->Append(digits);
 
         if (value < 0) {
             if (mFormatToken->mFlagParenthesis) {
@@ -941,10 +944,10 @@ AutoPtr<ICharSequence> CFormatter::TransformFromInteger()
             value &= 0xffffffffLL;
         }
         if (currentConversionType == 'o') {
-            result->AppendString(StringUtils::Int64ToOctalString(value));
+            result->Append(StringUtils::ToOctalString(value));
         }
         else {
-            result->AppendString(StringUtils::ToHexString(value));
+            result->Append(StringUtils::ToHexString(value));
         }
     }
 
@@ -971,7 +974,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromBigInteger()
     }
 
     Int32 comvalue = 0;
-    bigInt->CompareTo(CBigInteger::ZERO, &comvalue);
+    (IComparable::Probe(bigInt))->CompareTo(CBigInteger::ZERO, &comvalue);
     Boolean isNegative = (comvalue < 0);
 
     if (currentConversionType == 'd') {
@@ -982,28 +985,28 @@ AutoPtr<ICharSequence> CFormatter::TransformFromBigInteger()
         if (mFormatToken->mFlagComma) {
             digits = InsertGrouping(digits);
         }
-        result->AppendCharSequence(digits);
+        result->Append(digits);
     }
     else if (currentConversionType == 'o') {
         // convert BigInteger to a string presentation using radix 8
         String str;
         bigInt->ToString(8, &str);
-        result->AppendString(str);
+        result->Append(str);
     }
     else {
         // convert BigInteger to a string presentation using radix 16
         String str;
         bigInt->ToString(16, &str);
-        result->AppendString(str);
+        result->Append(str);
     }
     if (mFormatToken->mFlagSharp) {
         startIndex = isNegative ? 1 : 0;
         if (currentConversionType == 'o') {
-            result->InsertString(startIndex, String("0"));
+            result->Insert(startIndex, String("0"));
             startIndex += 1;
         }
         else if (currentConversionType == 'x' || currentConversionType == 'X') {
-            result->InsertString(startIndex, String("0x"));
+            result->Insert(startIndex, String("0x"));
             startIndex += 2;
         }
     }
@@ -1040,7 +1043,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromDateTime()
         AutoPtr<IDate> date;
         if (IInteger64::Probe(mArg)) {
             Int64 longvalue = 0;
-            ((IInteger64*) mArg->Probe(EIID_IInteger64))->Int64Value(&longvalue);
+            ((IInteger64*) mArg->Probe(EIID_IInteger64))->GetValue(&longvalue);
             CDate::New(longvalue, (IDate**)&date);
         }
         else if (IDate::Probe(mArg)) {
@@ -1074,7 +1077,7 @@ Boolean CFormatter::AppendT(
             calendar->Get(ICalendar::DAY_OF_WEEK, &calvalue);
             AutoPtr<ArrayOf<String> > longWeekdayNames;
             mLocaleData->GetLongWeekdayNames((ArrayOf<String>**)&longWeekdayNames);
-            result->AppendString((*longWeekdayNames)[calvalue]);
+            result->Append((*longWeekdayNames)[calvalue]);
             return TRUE;
         }
         case 'a':
@@ -1083,7 +1086,7 @@ Boolean CFormatter::AppendT(
             calendar->Get(ICalendar::DAY_OF_WEEK, &calvalue);
             AutoPtr<ArrayOf<String> > shortWeekdayNames;
             mLocaleData->GetShortWeekdayNames((ArrayOf<String>**)&shortWeekdayNames);
-            result->AppendString((*shortWeekdayNames)[calvalue]);
+            result->Append((*shortWeekdayNames)[calvalue]);
             return TRUE;
         }
         case 'B':
@@ -1092,7 +1095,7 @@ Boolean CFormatter::AppendT(
             calendar->Get(ICalendar::MONTH, &calvalue);
             AutoPtr<ArrayOf<String> > longMonthNames;
             mLocaleData->GetLongMonthNames((ArrayOf<String>**)&longMonthNames);
-            result->AppendString((*longMonthNames)[calvalue]);
+            result->Append((*longMonthNames)[calvalue]);
             return TRUE;
         }
         case 'b': case 'h':
@@ -1101,7 +1104,7 @@ Boolean CFormatter::AppendT(
             calendar->Get(ICalendar::MONTH, &calvalue);
             AutoPtr<ArrayOf<String> > shortMonthNames;
             mLocaleData->GetShortMonthNames((ArrayOf<String>**)&shortMonthNames);
-            result->AppendString((*shortMonthNames)[calvalue]);
+            result->Append((*shortMonthNames)[calvalue]);
             return TRUE;
         }
         case 'C':
@@ -1203,7 +1206,7 @@ Boolean CFormatter::AppendT(
             timeZone->InDaylightTime(adate, &isflag);
             String str;
             timeZone->GetDisplayName(isflag, ITimeZone::SHORT, mLocale, &str);
-            result->AppendString(str);
+            result->Append(str);
             return TRUE;
         }
         case 'c':
@@ -1268,7 +1271,7 @@ Boolean CFormatter::AppendT(
             calendar->Get(ICalendar::AM_PM, &calvalue);
             AutoPtr<ArrayOf<String> > amPm;
             mLocaleData->GetAmPm((ArrayOf<String>**)&amPm);
-            result->AppendString((*amPm)[calvalue].ToLowerCase()); // ToLowerCase(mLocale)
+            result->Append((*amPm)[calvalue].ToLowerCase()); // ToLowerCase(mLocale)
             return TRUE;
         }
         case 'r':
@@ -1283,7 +1286,7 @@ Boolean CFormatter::AppendT(
             calendar->Get(ICalendar::AM_PM, &calvalue);
             AutoPtr<ArrayOf<String> > amPm;
             mLocaleData->GetAmPm((ArrayOf<String>**)&amPm);
-            result->AppendString((*amPm)[calvalue]);
+            result->Append((*amPm)[calvalue]);
             return TRUE;
         }
         case 's':
@@ -1337,12 +1340,12 @@ void CFormatter::AppendLocalized(
     Char32 zeroDigit;
     mLocaleData->GetZeroDigit(&zeroDigit);
     if (zeroDigit == '0') {
-        result->AppendInt64(value);
+        result->Append(value);
     }
     else {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(StringUtils::Int64ToString(value), (ICharSequence**)&cs);
-        result->AppendCharSequence(LocalizeDigits(cs));
+        CStringWrapper::New(StringUtils::ToString(value), (ICharSequence**)&cs);
+        result->Append(LocalizeDigits(cs));
     }
     Int32 len = 0;
     Int32 zeroCount = width - ((result->GetLength(&len), len) - paddingIndex);
@@ -1350,7 +1353,7 @@ void CFormatter::AppendLocalized(
         return;
     }
     if (zeroDigit == '0') {
-        result->InsertChars(paddingIndex, *ZEROS, 0, zeroCount);
+        result->Insert(paddingIndex, *ZEROS, 0, zeroCount);
     }
     else {
         for (Int32 i = 0; i < zeroCount; ++i) {
@@ -1452,8 +1455,8 @@ AutoPtr<ICharSequence> CFormatter::TransformFromFloat()
 
     Int32 startIndex = 0;
     Char32 minusSign;
-    mLocaleData->GetMinusSign(&minusSign);
-    if (result->GetChar(0) == minusSign) {
+//    mLocaleData->GetMinusSign(&minusSign);
+    if (result->GetCharAt(0) == minusSign) {
         if (mFormatToken->mFlagParenthesis) {
             return WrapParentheses(result);
         }
@@ -1469,7 +1472,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromFloat()
         }
     }
 
-    Char32 firstChar = result->GetChar(0);
+    Char32 firstChar = result->GetCharAt(0);
     if (mFormatToken->mFlagZero && (firstChar == '+' || firstChar == minusSign)) {
         startIndex = 1;
     }
@@ -1492,8 +1495,8 @@ void CFormatter::TransformE(
         for (Int32 i = 0; i < precision; ++i) {
             (*zeros)[i] = '0';
         }
-        sb.AppendChars(*ZEROS);
-        sb.AppendCStr("E+00");
+        sb.Append(*ZEROS);
+        sb.Append("E+00");
         pattern = sb.ToString();
     }
 
@@ -1513,14 +1516,14 @@ void CFormatter::TransformE(
             (*chars)[i] = 'e';
         }
     }
-    result->AppendChars(*chars);
+    result->Append(*chars);
     // The # flag requires that we always output a decimal separator.
     if (mFormatToken->mFlagSharp && precision == 0) {
         Int32 indexOfE = 0;
         result->IndexOf(String("e"), &indexOfE);
         Char32 decimalSeparator;
         mLocaleData->GetDecimalSeparator(&decimalSeparator);
-        result->InsertInt32(indexOfE, decimalSeparator);
+        result->Insert(indexOfE, (Int32)decimalSeparator);
     }
 }
 
@@ -1558,17 +1561,17 @@ void CFormatter::TransformG(
     AutoPtr<IMathContext> mc;
     CMathContext::New(precision, (IMathContext**)&mc);
     CBigDecimal::New(d, mc, (IBigDecimal**)&b);
-    b->DoubleValue(&d);
+    INumber::Probe(b)->DoubleValue(&d);
     Int64 l = 0;
-    b->Int64Value(&l);
+    INumber::Probe(b)->Int64Value(&l);
 
     if (d >= 1 && d < Elastos::Core::Math::Pow(10, precision)) {
         if (l < Elastos::Core::Math::Pow(10, precision)) {
             requireScientificRepresentation = FALSE;
-            precision -= StringUtils::Int64ToString(l).GetLength();
+            precision -= StringUtils::ToString(l).GetLength();
             precision = precision < 0 ? 0 : precision;
             l = Elastos::Core::Math::Round(d * Elastos::Core::Math::Pow(10, precision + 1));
-            if (StringUtils::Int64ToString(l).GetLength() <= mFormatToken->GetPrecision()) {
+            if (StringUtils::ToString(l).GetLength() <= mFormatToken->GetPrecision()) {
                 precision++;
             }
             mFormatToken->SetPrecision(precision);
@@ -1577,19 +1580,19 @@ void CFormatter::TransformG(
     else {
         AutoPtr<IBigDecimal> bmove;
         b->MovePointRight(4, (IBigDecimal**)&bmove);
-        bmove->Int64Value(&l);
+        INumber::Probe(bmove)->Int64Value(&l);
         if (d >= Elastos::Core::Math::Pow(10, -4) && d < 1) {
             requireScientificRepresentation = FALSE;
-            precision += 4 - StringUtils::Int64ToString(l).GetLength();
+            precision += 4 - StringUtils::ToString(l).GetLength();
             bmove = NULL;
             b->MovePointRight(precision + 1, (IBigDecimal**)&bmove);
-            bmove->Int64Value(&l);
-            if (StringUtils::Int64ToString(l).GetLength() <= mFormatToken->GetPrecision()) {
+            INumber::Probe(bmove)->Int64Value(&l);
+            if (StringUtils::ToString(l).GetLength() <= mFormatToken->GetPrecision()) {
                 precision++;
             }
             bmove = NULL;
             b->MovePointRight(precision, (IBigDecimal**)&bmove);
-            bmove->Int64Value(&l);
+            INumber::Probe(bmove)->Int64Value(&l);
             if (l >= Elastos::Core::Math::Pow(10, precision - 4)) {
                 mFormatToken->SetPrecision(precision);
             }
@@ -1621,7 +1624,7 @@ void CFormatter::TransformF(
             for (Int32 i = 0; i < sharps->GetLength(); ++i) {
                 (*sharps)[i] = '#';
             }
-            patternBuilder.AppendChars(*sharps);
+            patternBuilder.Append(*sharps);
         }
         patternBuilder.AppendChar('0');
         if (precision > 0) {
@@ -1637,20 +1640,20 @@ void CFormatter::TransformF(
     if (IBigDecimal::Probe(mArg)) {
         AutoPtr<ArrayOf<Char32> > chars;
         nf->FormatBigDecimal((IBigDecimal*) mArg->Probe(EIID_IBigDecimal), NULL, (ArrayOf<Char32>**)&chars);
-        result->AppendChars(*chars);
+        result->Append(*chars);
     }
     else {
         AutoPtr<ArrayOf<Char32> > chars;
         Double dvalue = 0;
         ((INumber*) mArg->Probe(EIID_INumber))->DoubleValue(&dvalue);
         nf->FormatDouble(dvalue, NULL, (ArrayOf<Char32>**)&chars);
-        result->AppendChars(*chars);
+        result->Append(*chars);
     }
     // The # flag requires that we always output a decimal separator.
     if (mFormatToken->mFlagSharp && precision == 0) {
         Char32 decimalSeparator;
         mLocaleData->GetDecimalSeparator(&decimalSeparator);
-        result->AppendInt32(decimalSeparator);
+        result->Append((Int32)decimalSeparator);
     }
 }
 
@@ -1659,13 +1662,13 @@ void CFormatter::TransformA(
 {
     if (IFloat::Probe(mArg)) {
         Float fvalue = 0;
-        ((IFloat*) mArg->Probe(EIID_IFloat))->FloatValue(&fvalue);
+        ((IFloat*) mArg->Probe(EIID_IFloat))->GetValue(&fvalue);
         assert(0 && "TODO");
         // result->Append(Float.toHexString());
     }
     else if (IDouble::Probe(mArg)) {
         Double dvalue = 0;
-        ((IDouble*) mArg->Probe(EIID_IDouble))->DoubleValue(&dvalue);
+        ((IDouble*) mArg->Probe(EIID_IDouble))->GetValue(&dvalue);
         assert(0 && "TODO");
         // result.append(Double.toHexString());
     }
@@ -1698,7 +1701,7 @@ void CFormatter::TransformA(
         for (Int32 i = 0; i < zeros->GetLength(); ++i) {
             (*zeros)[i] = '0'; // %a shouldn't be localized.
         }
-        result->InsertChars(indexOfP, *zeros);
+        result->Insert(indexOfP, *zeros);
         return;
     }
     result->Delete(indexOfFirstFractionalDigit + precision, indexOfP);
@@ -1719,7 +1722,7 @@ AutoPtr<INativeDecimalFormat> CFormatter::CachedDecimalFormat::Update(
     if (mDecimalFormat == NULL) {
         mCurrentPattern = pattern;
         mCurrentLocaleData = localeData;
-        CNativeDecimalFormat::New(mCurrentPattern, mCurrentLocaleData, (INativeDecimalFormat**)&mDecimalFormat);
+//        CNativeDecimalFormat::New(mCurrentPattern, mCurrentLocaleData, (INativeDecimalFormat**)&mDecimalFormat);
     }
     if (!pattern.Equals(mCurrentPattern)) {
         mDecimalFormat->ApplyPattern(pattern);
