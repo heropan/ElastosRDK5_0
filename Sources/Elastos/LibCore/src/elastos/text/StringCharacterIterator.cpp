@@ -4,7 +4,9 @@
 namespace Elastos {
 namespace Text {
 
-ECode StringCharacterIterator::Init(
+CAR_INTERFACE_IMPL(StringCharacterIterator, Object, ICharacterIterator)
+
+ECode StringCharacterIterator::constructor(
     /* [in] */ const String& value)
 {
     string = String(value);
@@ -13,7 +15,7 @@ ECode StringCharacterIterator::Init(
     return NOERROR;
 }
 
-ECode StringCharacterIterator::Init(
+ECode StringCharacterIterator::constructor(
     /* [in] */ const String& value,
     /* [in] */ Int32 location)
 {
@@ -27,7 +29,7 @@ ECode StringCharacterIterator::Init(
     return NOERROR;
 }
 
-ECode StringCharacterIterator::Init(
+ECode StringCharacterIterator::constructor(
     /* [in] */ const String& value,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,

@@ -1,24 +1,28 @@
 #ifndef __STRINGCHARACTERITERATOR_H__
 #define __STRINGCHARACTERITERATOR_H__
 
-#include "Elastos.CoreLibrary_server.h"
-#include <elastos.h>
+#include "Object.h"
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Text {
 
 class StringCharacterIterator
+    : public Object
+    , public ICharacterIterator
 {
 public:
+    CAR_INTERFACE_DECL()
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& value);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& value,
         /* [in] */ Int32 location);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& value,
         /* [in] */ int start,
         /* [in] */ int end,

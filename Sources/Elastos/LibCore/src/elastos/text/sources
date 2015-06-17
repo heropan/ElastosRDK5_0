@@ -32,7 +32,6 @@ SOURCES += CChoiceFormatHelper.cpp
 SOURCES += CNumberFormatHelper.cpp
 SOURCES += DecimalFormat.cpp
 SOURCES += DecimalFormatSymbols.cpp
-SOURCES += CDecimalFormatSymbols.cpp
 SOURCES += CDecimalFormatSymbolsHelper.cpp
 SOURCES += MessageFormat.cpp
 SOURCES += SimpleDateFormat.cpp

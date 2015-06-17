@@ -8,8 +8,8 @@
 #include "CNumberFormatField.h"
 #include "CRuleBasedCollator.h"
 #include "CSimpleDateFormat.h"
-
-
+#include "CDecimalFormatSymbols.h"
+//#include "CStringCharacterIterator.h"
 
 
 namespace Elastos {
@@ -32,6 +32,10 @@ CAR_OBJECT_IMPL(CNumberFormatField)
 CAR_OBJECT_IMPL(CRuleBasedCollator)
 
 CAR_OBJECT_IMPL(CSimpleDateFormat)
+
+CAR_OBJECT_IMPL(CDecimalFormatSymbols)
+
+//CAR_OBJECT_IMPL(CStringCharacterIterator)
 
 
 } // namespace Text
