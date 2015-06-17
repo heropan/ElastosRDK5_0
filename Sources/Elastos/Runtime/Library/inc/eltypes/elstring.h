@@ -306,6 +306,8 @@ public:
     static Char32 ToUpperCase(Char32 codePoint);
 
 private:
+    friend class CString;
+
     void SetCounted(UInt32 charCount) const;
     void ClearCounted() const;
     Boolean IsCounted() const;

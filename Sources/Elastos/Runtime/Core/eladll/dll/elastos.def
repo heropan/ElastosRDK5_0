@@ -16,7 +16,7 @@ DESCRIPTION "Elastos Execution Engine"
 
 EXPORTS
     ;;============================================================
-    ;; Elastos Execution Engine APIs, using ordinal 1-200
+    ;; Elastos Execution Engine APIs, using ordinal 1-199
     ;;
     getTlSystemSlotBase
 
@@ -81,7 +81,7 @@ EXPORTS
     _CObject_UnmarshalInterface                     @176    NONAME
 
     ;;============================================================
-    ;; CAR data-type APIs, using ordinal 200-400
+    ;; CAR data-type APIs, using ordinal 200-499
     ;;
 
     ;; CarArray
@@ -100,11 +100,8 @@ EXPORTS
     _ArrayOf_Alloc_Box                              @212    NONAME
     _ArrayOf_Replace                                @213    NONAME
 
-    _String_GetLength                               @231    NONAME
-
     _String_Char32_ToLowerCase                      @283    NONAME
     _String_Char32_ToUpperCase                      @285    NONAME
-
     _String_GetHashCode                             @291    NONAME
     _String_Duplicate                               @292    NONAME
     _String_Free                                    @296    NONAME
@@ -118,7 +115,7 @@ EXPORTS
     atomic_or                                       @460    NONAME
 
     ;;============================================================
-    ;; CAR Class IDs and Interface IDs, using ordinal 500-700
+    ;; CAR Class IDs and Interface IDs, using ordinal 500-799
     ;;
     DllGetClassObject = __stdc(DllGetClassObject, 12) PRIVATE
 

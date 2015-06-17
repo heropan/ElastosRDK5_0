@@ -35,8 +35,6 @@ extern "C" {
 
     _ELASTOS Int32 __cdecl _String_GetHashCode(const char *string);
 
-    _ELASTOS Int32 __cdecl _String_GetLength(const char *string,
-        _ELASTOS Int32 nMaxLen);
     char* __cdecl _String_Duplicate(const char *strSource);
     void __cdecl _String_Free(char * str);
 

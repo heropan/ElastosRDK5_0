@@ -23,159 +23,125 @@ class CString
 {
 public:
     // e.g., CString as;
-    CString() : m_string(NULL) {}
+    CString() : mString(NULL) {}
 
 //  This class accords with bitwise copy semantics, and needn't declare copy
 //  contructor.
 //  //e.g., CString as(str);
-//  CString(const CString& str) : m_string(str.m_string) {};
+//  CString(const CString& str) : mString(str.mString) {};
 
     // e.g., CString as("Hello");
-    CString(const char* pch) : m_string(pch) {}
+    CString(const char* pch) : mString(pch) {}
 
-    Int32 GetLength(Int32 maxLen = -1) const { // e.g., as.Length(64);
-        return _String_GetLength(m_string, maxLen);
+    /**
+     * @return the number of characters in this string.
+     */
+    UInt32 GetLength() const;
+
+    /**
+     * @return the number of bytes in this string.
+     */
+    inline UInt32 GetByteLength() const
+    {
+        if (IsNullOrEmpty()) return 0;
+        return strlen(mString);
     }
 
-    Int32 Compare(const CString& str, StringCase stringCase = StringCase_Sensitive) const { //e.g., as.Compare(str);
-        assert(0);
-        return -1;
+    Int32 Compare(const char* other) const;
+    Int32 CompareIgnoreCase(const char* other) const;
+
+    inline Int32 Compare(const CString& other) const
+    {
+        return Compare(other.mString);
     }
 
-    Int32 Equals(const CString& str) const {
-        return !Compare(str, StringCase_Sensitive);
+    inline Int32 CompareIgnoreCase(const CString& other) const
+    {
+        return CompareIgnoreCase(other.mString);
     }
 
-    Int32 EqualsIgnoreCase(const CString& str) const {
-        return !Compare(str, StringCase_Insensitive);
+    inline Boolean Equals(const CString& other) const
+    {
+        return Compare(other) == 0;
+    }
+
+    inline Boolean Equals(const char* other) const
+    {
+        return Compare(other) == 0;
+    }
+
+    inline Boolean EqualsIgnoreCase(const CString& other) const
+    {
+        return CompareIgnoreCase(other) == 0;
+    }
+
+    inline Boolean EqualsIgnoreCase(const char* other) const
+    {
+        return CompareIgnoreCase(other) == 0;
     }
 
     Boolean IsNull() const {  // e.g., if (str.IsNull()) {...} or Boolean b = str.IsNull();
-        return m_string == NULL;
+        return mString == NULL;
     }
 
     Boolean IsEmpty() const {
-        assert(m_string);
-        return m_string[0] == '\0';
+        assert(mString);
+        return mString[0] == '\0';
     }
 
     Boolean IsNullOrEmpty() const {
-        return (m_string == NULL || m_string[0] == '\0');
+        return (mString == NULL || mString[0] == '\0');
     }
 
-    Int32 GetCharCount() const {
-        assert(0);
-        return -1;
-    }
-
-    Char32 GetChar(Int32 index) const {
-        assert(0);
-        return 0;
-    }
-
-    Int32 GetCharByOffset(UInt32 offset, UInt32 *nextOffset = NULL) const {
-        assert(0);
-        return -1;
-    }
+    /*
+     * @returns the character at the specified offset in this string.
+     */
+    Char32 GetChar(UInt32 charIndex) const;
 
     //---- Contains ----
-    Boolean Contains(const CString&  substr, StringCase stringCase = StringCase_Sensitive) const {
-        assert(0);
-        return FALSE;
-    }
+    Boolean Contains(const char* str) const;
+    Boolean Contains(const CString& str) const;
+    Boolean StartWith(const char* str) const;
+    Boolean StartWith(const CString& str) const;
+    Boolean EndWith(const char* str) const;
+    Boolean EndWith(const CString& str) const;
 
-    Boolean StartWith(const CString&  substr,
-            StringCase stringCase = StringCase_Sensitive) const {
-        assert(0);
-        return FALSE;
-    }
-
-    Boolean EndWith(const CString& substr,
-            StringCase stringCase = StringCase_Sensitive) const {
-        assert(0);
-        return FALSE;
-    }
+    Boolean ContainsIgnoreCase(const char* str) const;
+    Boolean ContainsIgnoreCase(const CString& str) const;
+    Boolean StartWithIgnoreCase(const char* str) const;
+    Boolean StartWithIgnoreCase(const CString& str) const;
+    Boolean EndWithIgnoreCase(const char* str) const;
+    Boolean EndWithIgnoreCase(const CString& str) const;
 
     //---- IndexOf ----
-    Int32 IndexOf(Char8 ch, Int32 start = 0,
-        StringCase stringCase = StringCase_Sensitive) const {
-        assert(0);
-        return -1;
-    }
+    /*
+     * @returns the byte offset of a specified character in this string.
+     */
+    Int32 ByteIndexOf(Char32 ch) const;
 
-    Int32 IndexOfAny(const CString& strCharSet, Int32 start = 0,
-            StringCase stringCase = StringCase_Sensitive) const {
-        assert(0);
-        return -1;
-    }
+    Int32 IndexOf(const char* str, UInt32 startChar = 0) const;
+    Int32 IndexOf(Char32 ch, UInt32 startChar = 0) const;
+    Int32 IndexOf(const CString& str, UInt32 startChar = 0) const;
 
-    Int32 IndexOfChar(Char32 ch, Int32 start = 0, StringCase stringCase  = StringCase_Sensitive) const {
-        assert(0);
-        return -1;
-    }
-
-    Int32 IndexOfAnyChar(Char32 *strCharSet, Int32 start = 0,
-            StringCase stringCase = StringCase_Sensitive) const {
-        assert(0);
-        return -1;
-    }
-
-    Int32 IndexOf(const CString& str, Int32 start = 0, StringCase stringCase  = StringCase_Sensitive) const {
-        assert(0);
-        return -1;
-    }
-
-    //---- LastIndexOf ----
-    Int32 LastIndexOf(Char8 ch, Int32 start = 0,
-            StringCase stringCase = StringCase_Sensitive) const {
-        assert(0);
-        return -1;
-    }
-
-    Int32 LastIndexOfAny(const CString& strCharSet, Int32 start = 0,
-            StringCase stringCase = StringCase_Sensitive) const {
-        assert(0);
-        return -1;
-    }
-
-    Int32 LastIndexOfChar(Char32 ch, Int32 start = 0,
-        StringCase stringCase  = StringCase_Sensitive) const {
-        assert(0);
-        return -1;
-    }
-
-    Int32 LastIndexOfAnyChar(Char32 *strCharSet, Int32 start = 0,
-            StringCase stringCase = StringCase_Sensitive) const {
-        assert(0);
-        return -1;
-    }
-
-    Int32 LastIndexOf(const CString& str, Int32 start = 0,
-        StringCase stringCase  = StringCase_Sensitive) const {
-        assert(0);
-        return -1;
-    }
+    Int32 IndexOfIgnoreCase(const char* str, UInt32 startChar = 0) const;
+    Int32 IndexOfIgnoreCase(Char32 ch, UInt32 startChar = 0) const;
+    Int32 IndexOfIgnoreCase(const CString& str, UInt32 startChar = 0) const;
 
     operator const char*() const
     {  //  for 3rd party API such as foo(char* pch);
-        return (char *)m_string;
+        return (char *)mString;
     }
 
     void operator=(const CString& str) { // e.g., str1 = str2;
-        m_string = str.m_string;
+        mString = str.mString;
     }
 
     void operator=(const char* pch) {  // e.g., str = "Hello";
-        m_string = pch;
-    }
-
-    const Char8 operator[](Int32 idx) const {
-        assert(idx >= 0);
-        return m_string[idx];
+        mString = pch;
     }
 
     Int32 GetHashCode() {
-        return _String_GetHashCode(m_string);
+        return _String_GetHashCode(mString);
     }
 
     static CString Duplicate(const CString& strSource) {
@@ -183,7 +149,7 @@ public:
     }
 
     static void Free(CString& str) {
-        _String_Free((char *)str.m_string);
+        _String_Free((char *)str.mString);
     }
 
 protected:
@@ -199,7 +165,7 @@ protected:
     void operator+(const int) {}
     void operator-(const int) {}
 
-    const char* m_string;
+    const char* mString;
 };
 /** @} */
 
