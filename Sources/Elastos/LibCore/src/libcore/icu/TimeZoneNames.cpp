@@ -1,12 +1,14 @@
 
 #include "TimeZoneNames.h"
-//#include "TimeZone.h"
+#include "TimeZone.h"
 #include "ElStringByteSink.h"
 #include "CLocaleHelper.h"
 #include "CArrayOf.h"
 #include "CStringWrapper.h"
 #include "CSystem.h"
-#include <UniquePtr.h>
+// #include "CZoneInfoDB.h"
+#include "StringUtils.h"
+#include "UniquePtr.h"
 //#include <elastos/utility/etl/Pair.h>
 #include <elastos/utility/etl/Vector.h>
 #include <elastos/utility/etl/List.h>
@@ -15,8 +17,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "unicode/tznames.h"
-// #include "CZoneInfoDB.h"
-#include "StringUtils.h"
 #include "unicode/locid.h"
 
 // jni class
@@ -30,6 +30,8 @@ using Elastos::Core::ICharSequence;
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::CStringWrapper;
+using Elastos::Utility::TimeZone;
+using Elastos::Utility::ITimeZone;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 // using Elastos::Utility::Etl::Pair;
@@ -37,16 +39,10 @@ using Elastos::Utility::Etl::Vector;
 // using Elastos::Utility::Etl::Map;
 using Elastos::Utility::Etl::List;
 using Libcore::Utility::IZoneInfoDB;
-//using Libcore::Utility::TimeZone;
 // using Libcore::Utility::CZoneInfoDB;
-
-//const RBTreeColorType S_RBTreeRed = FALSE;
-//const RBTreeColorType S_RBTreeBlack = TRUE;
 
 namespace Libcore {
 namespace ICU {
-
-const static Int32 TimeZone_LONG = 1; // Itimezone::LONG
 
 Boolean SetStringArrayElement(ArrayOf<String>* array, Int32 i, const UnicodeString& s)
 {
@@ -64,32 +60,19 @@ Boolean SetStringArrayElement(ArrayOf<String>* array, Int32 i, const UnicodeStri
     return true;
 }
 
-Int32 ReadFully(Int32 file , ArrayOf<Byte>* buffer)
-{
-    Int32 number;
-    Int32 offset = 0;
-    Int32 length = buffer->GetLength();
-    while (length > 0) {
-        number = read(file , buffer->GetPayload() + offset , length);
-        if (number < 0) {
-            return -1;
-        }
-        offset += number;
-        length -= number;
-    }
-    return number;
-}
+static bool isUtc(const UnicodeString& id) {
+    static UnicodeString etcUct("Etc/UCT", 7, US_INV);
+    static UnicodeString etcUtc("Etc/UTC", 7, US_INV);
+    static UnicodeString etcUniversal("Etc/Universal", 13, US_INV);
+    static UnicodeString etcZulu("Etc/Zulu", 8, US_INV);
 
-Int32 ReadInt32(Int32 file)
-{
-    AutoPtr<ArrayOf<Byte> > scratch = ArrayOf<Byte>::Alloc(4);
-    Int32 num = ReadFully(file , scratch);
-    if (num == -1) {
-        return -1;
-    }
-    Int32 result = (((*scratch)[0] & 0xff) << 24) + (((*scratch)[1] & 0xff) << 16)
-                    + (((*scratch)[2] & 0xff) << 8) + ((*scratch)[3] & 0xff);
-    return result;
+    static UnicodeString uct("UCT", 3, US_INV);
+    static UnicodeString utc("UTC", 3, US_INV);
+    static UnicodeString universal("Universal", 9, US_INV);
+    static UnicodeString zulu("Zulu", 4, US_INV);
+
+    return id == etcUct || id == etcUtc || id == etcUniversal || id == etcZulu ||
+            id == uct || id == utc || id == universal || id == zulu;
 }
 
 //===============================================================
@@ -102,8 +85,8 @@ TimeZoneNames::ZoneStringsCache::~ZoneStringsCache()
 {
 }
 
-AutoPtr<ArrayOf<AutoPtr<ArrayOf<String> > > > TimeZoneNames::ZoneStringsCache::Create(
-    /* [in] */ AutoPtr<ILocale> locale)
+AutoPtr<ArrayOf<StringArray > > TimeZoneNames::ZoneStringsCache::Create(
+    /* [in] */ ILocale* locale)
 {
     AutoPtr<ISystem> system;
 #ifdef ELASTOS_CORELIBRARY
@@ -116,12 +99,13 @@ AutoPtr<ArrayOf<AutoPtr<ArrayOf<String> > > > TimeZoneNames::ZoneStringsCache::C
 
     Int64 start = 0, nativeStart = 0;
     system->GetCurrentTimeMillis(&start);
-    AutoPtr<ArrayOf<AutoPtr<ArrayOf<String> > > > result = ArrayOf<AutoPtr<ArrayOf<String> > >::Alloc(sAvailableTimeZoneIds->GetLength());
-    for(int i = 0; i < sAvailableTimeZoneIds->GetLength(); ++i)
-    {
-        result->operator[](i) = ArrayOf<String>::Alloc(5);
-        result->operator[](i)->operator[](0) = sAvailableTimeZoneIds->operator[](i);
+    AutoPtr<ArrayOf<StringArray > > result = ArrayOf<StringArray >::Alloc(sAvailableTimeZoneIds->GetLength());
+    for (Int32 i = 0; i < sAvailableTimeZoneIds->GetLength(); ++i) {
+        AutoPtr<ArrayOf<String> > subArr = ArrayOf<String>::Alloc(5);
+        subArr->Set(0, (*sAvailableTimeZoneIds)[i]);
+        result->Set(i, subArr);
     }
+
     system->GetCurrentTimeMillis(&nativeStart);
     String locname;
     locale->ToString(&locname);
@@ -137,8 +121,7 @@ AutoPtr<ArrayOf<AutoPtr<ArrayOf<String> > > > TimeZoneNames::ZoneStringsCache::C
     system->GetCurrentTimeMillis(&end);
     Int64 nativeDuration = nativeEnd - nativeStart;
     Int64 duration = end - start;
-    // System.logI("Loaded time zone names for \"" + locale + "\" in " + duration + "ms" +
-    //     " (" + nativeDuration + "ms in ICU)");
+    ALOGI("Loaded time zone names for \"%s\" in %lld ms (%lld ms in ICU)", locname.string(), duration, nativeDuration);
     return result;
 }
 
@@ -147,15 +130,18 @@ void TimeZoneNames::ZoneStringsCache::InternStrings(
 {
     HashMap<String, String> internTable;
     Object::Autolock lock(this);
+    HashMap<String, String>::Iterator it;
+    ArrayOf<String> * subArr;
     for (Int32 i = 0; i < result->GetLength(); ++i) {
+        subArr = (*result)[i];
         for (Int32 j = 1; j < ITimeZoneNames::NAME_COUNT; ++j) {
-            String original = (*((*result)[i]))[j];
-            String nonDuplicate = internTable[original];
-            if (nonDuplicate.IsNull()) {
+            String original = (*subArr)[j];
+            it = internTable.Find(original);
+            if (it == internTable.End()) {
                 internTable[original] = original;
             }
             else {
-                (*((*result)[i]))[j] = nonDuplicate;
+                (*subArr)[j] = it->mSecond;
             }
         }
     }
@@ -183,7 +169,7 @@ AutoPtr<TimeZoneNames::ZoneStringsCache> TimeZoneNames::sCachedZoneStrings = Cre
 AutoPtr< ArrayOf<String> > TimeZoneNames::GetAvailableTimeZones()
 {
     if (sAvailableTimeZoneIds == NULL) {
-        //TODO sAvailableTimeZoneIds = TimeZone::GetAvailableIDs();
+        sAvailableTimeZoneIds = Elastos::Utility::TimeZone::GetAvailableIDs();
     }
 
     return sAvailableTimeZoneIds;
@@ -207,7 +193,7 @@ ECode TimeZoneNames::GetDisplayName(
         AutoPtr<IArrayOf> row = (*zoneStrings)[i];
         if (row) {
             AutoPtr<IInterface> outface;
-            row->Get(0, (IInterface**)&outface);
+            row->Get(ITimeZoneNames::OLSON_NAME, (IInterface**)&outface);
 
             if (ICharSequence::Probe(outface) != NULL) {
                 String outstr;
@@ -224,7 +210,7 @@ ECode TimeZoneNames::GetDisplayName(
         AutoPtr<IArrayOf> row = (*zoneStrings)[index];
         AutoPtr<IInterface> outface;
         if (daylight) {
-            if (style == TimeZone_LONG) {
+            if (style == ITimeZone::LONG) {
                 row->Get(ITimeZoneNames::LONG_NAME_DST, (IInterface**)&outface);
             }
             else {
@@ -232,7 +218,7 @@ ECode TimeZoneNames::GetDisplayName(
             }
         }
         else {
-            if (style == TimeZone_LONG) {
+            if (style == ITimeZone::LONG) {
                 row->Get(ITimeZoneNames::LONG_NAME, (IInterface**)&outface);
             }
             else {
@@ -252,6 +238,7 @@ ECode TimeZoneNames::GetZoneStrings(
     /* [out, callee] */ ArrayOf<IArrayOf*> ** outarray)
 {
     VALIDATE_NOT_NULL(outarray)
+    *outarray = NULL;
 
     AutoPtr<ILocale> locale = l;
     if (locale == NULL) {
@@ -263,14 +250,15 @@ ECode TimeZoneNames::GetZoneStrings(
     AutoPtr< ArrayOf< AutoPtr< ArrayOf<String> > > > result = sCachedZoneStrings->Create(locale);
     Int32 length = result->GetLength();
     AutoPtr< ArrayOf<IArrayOf*> > resarr = ArrayOf<IArrayOf*>::Alloc(length);
+    ArrayOf<String>* subArr;
     for (Int32 i = 0; i < length; ++i) {
-        AutoPtr< ArrayOf<String> > minarr = (*result)[i];
-        Int32 midlen = minarr->GetLength();
+        subArr = (*result)[i];
+        Int32 midlen = subArr->GetLength();
         AutoPtr<IArrayOf> arrof;
         FAIL_RETURN(CArrayOf::New(midlen, (IArrayOf**)&arrof));
         for (Int32 j = 0; j < midlen; ++j) {
             AutoPtr<ICharSequence> sq;
-            CStringWrapper::New((*minarr)[j], (ICharSequence**)&sq);
+            CStringWrapper::New((*subArr)[j], (ICharSequence**)&sq);
             arrof->Put(j, sq);
         }
         resarr->Set(i, arrof);
@@ -283,7 +271,7 @@ ECode TimeZoneNames::GetZoneStrings(
 
 ECode TimeZoneNames::ForLocale(
     /* [in] */ ILocale * locale ,
-    /* [out,callee] */ ArrayOf<String> ** outarray)
+    /* [out, callee] */ ArrayOf<String> ** outarray)
 {
     VALIDATE_NOT_NULL(locale)
     VALIDATE_NOT_NULL(outarray)
@@ -314,43 +302,13 @@ ECode TimeZoneNames::ForLocale(
 
     AutoPtr<ArrayOf<String> > res = ArrayOf<String>::Alloc(ids.GetSize());
     Int32 count = 0;
-    for (List<String>::Iterator it = ids.Begin(); it != ids.End(); ++it)
-    {
+    for (List<String>::Iterator it = ids.Begin(); it != ids.End(); ++it) {
         (*res)[count] = *it;
         ++count;
     }
     *outarray = res;
     REFCOUNT_ADD(*outarray);
     return NOERROR;
-}
-
-#if 0 // temp reserve for probablly use
-struct TimeZoneNames {
-    TimeZone* tz;
-
-    UnicodeString longStd;
-    UnicodeString shortStd;
-    UnicodeString longDst;
-    UnicodeString shortDst;
-
-    UDate standardDate;
-    UDate daylightSavingDate;
-};
-#endif // #if 0
-
-static bool isUtc(const UnicodeString& id) {
-    static UnicodeString etcUct("Etc/UCT", 7, US_INV);
-    static UnicodeString etcUtc("Etc/UTC", 7, US_INV);
-    static UnicodeString etcUniversal("Etc/Universal", 13, US_INV);
-    static UnicodeString etcZulu("Etc/Zulu", 8, US_INV);
-
-    static UnicodeString uct("UCT", 3, US_INV);
-    static UnicodeString utc("UTC", 3, US_INV);
-    static UnicodeString universal("Universal", 9, US_INV);
-    static UnicodeString zulu("Zulu", 4, US_INV);
-
-    return id == etcUct || id == etcUtc || id == etcUniversal || id == etcZulu ||
-            id == uct || id == utc || id == universal || id == zulu;
 }
 
 ECode TimeZoneNames::GetExemplarLocation(
@@ -363,6 +321,10 @@ ECode TimeZoneNames::GetExemplarLocation(
 
     if (locale.IsNull())
         return E_NULL_POINTER_EXCEPTION;
+
+    if (tz.IsNull())
+        return E_NULL_POINTER_EXCEPTION;
+
     NATIVE(Locale) icuLocale;
     icuLocale = NATIVE(Locale)::createFromName(locale);
     if (icuLocale.isBogus()) {
@@ -374,9 +336,6 @@ ECode TimeZoneNames::GetExemplarLocation(
     if(!U_SUCCESS(status))
         return NOERROR;
 
-    if (tz.IsNull())
-        return E_NULL_POINTER_EXCEPTION;
-
     UnicodeString s;
     const UDate now(Calendar::getNow());
     names->getDisplayName(UnicodeString::fromUTF8(tz.string()), UTZNM_EXEMPLAR_LOCATION, now, s);
@@ -387,12 +346,15 @@ ECode TimeZoneNames::GetExemplarLocation(
     return NOERROR;
 }
 
-void TimeZoneNames::FillZoneStrings(const String& locale, AutoPtr<ArrayOf<AutoPtr<ArrayOf<String> > > > result)
+ECode TimeZoneNames::FillZoneStrings(
+    /* [in] */ const String& locale,
+    /* [in] */ ArrayOf<StringArray >* result)
 {
     VALIDATE_NOT_NULL(result)
 
     if (locale.IsNull())
         return E_NULL_POINTER_EXCEPTION;
+
     NATIVE(Locale) icuLocale = NATIVE(Locale)::createFromName(locale);
     if (icuLocale.isBogus()) {
         return NOERROR;
@@ -408,14 +370,17 @@ void TimeZoneNames::FillZoneStrings(const String& locale, AutoPtr<ArrayOf<AutoPt
     static const UnicodeString kUtc("UTC", 3, US_INV);
 
     size_t id_count = result->GetLength();
-
+    ArrayOf<String>* java_row;
     for (size_t i = 0; i < id_count; ++i) {
-        AutoPtr<ArrayOf<String> > java_row = (*result)[i];
-        String& java_zone_id = (*java_row)[0];
-        UnicodeString zone_id(java_zone_id);
-        if(zone_id == UnicodeString()) {
-            return;
+        java_row = (*result)[i];
+        String java_zone_id = (*java_row)[0];
+        if (java_zone_id.IsNull()) {
+            return NOERROR;
         }
+
+        UnicodeString zone_id;
+        AutoPtr<ArrayOf<Char16> > char16s = java_zone_id.GetChar16s();
+        zone_id.setTo(false, (UChar*)char16s->GetPayload(), char16s->GetLength());
 
         UnicodeString long_std;
         names->getDisplayName(zone_id, UTZNM_LONG_STANDARD, now, long_std);
@@ -441,9 +406,11 @@ void TimeZoneNames::FillZoneStrings(const String& locale, AutoPtr<ArrayOf<AutoPt
             SetStringArrayElement(java_row, 3, long_dst) &&
             SetStringArrayElement(java_row, 4, short_dst);
         if (!okay) {
-            return;
+            return NOERROR;
         }
     }
+
+    return NOERROR;
 }
 
 } // namespace ICU
