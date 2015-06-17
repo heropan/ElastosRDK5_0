@@ -25,3 +25,4 @@ SOURCES += CollationKeyICU.cpp
 SOURCES += LocaleData.cpp
 SOURCES += CLocaleDataHelper.cpp
 SOURCES += TimeZoneNames.cpp
+SOURCES += CTimeZoneNames.cpp

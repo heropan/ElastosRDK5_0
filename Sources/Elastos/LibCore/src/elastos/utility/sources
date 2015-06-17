@@ -59,7 +59,6 @@ SOURCES += CLocaleBuilder.cpp
 SOURCES += CLocaleHelper.cpp
 SOURCES += MapEntry.cpp
 #SOURCES += MiniEnumSet.java
-#SOURCES += Objects.cpp
 SOURCES += CObservable.cpp
 #SOURCES += CPriorityQueue.cpp
 SOURCES += Properties.cpp

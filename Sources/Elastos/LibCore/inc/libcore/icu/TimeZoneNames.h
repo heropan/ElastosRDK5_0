@@ -2,27 +2,23 @@
 #ifndef __ELASTOS_UTILITY_TIMEZONENAMES_H__
 #define __ELASTOS_UTILITY_TIMEZONENAMES_H__
 
-#include <Singleton.h>
+#include "Object.h"
 #include <elastos/utility/etl/HashMap.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::IArrayOf;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::ILocale;
-using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace ICU {
 
 class TimeZoneNames
-    : public Singleton
-    , public ITimeZoneNames
 {
-public:
-    CAR_INTERFACE_DECL()
-
 public:
     class ZoneStringsCache
         : public Object
+        // , public BasicLruCache
     {
     public:
         ZoneStringsCache();
@@ -45,25 +41,29 @@ public:
     };
 
 public:
-    CARAPI GetDisplayName(
+    static CARAPI GetDisplayName(
         /* [in] */ ArrayOf<IArrayOf*>*  zoneStrings,
         /* [in] */ const String& id,
         /* [in] */ Boolean daylight,
         /* [in] */ Int32 style ,
         /* [out] */ String * str);
 
-    CARAPI GetZoneStrings(
+    static CARAPI GetZoneStrings(
         /* [in] */ ILocale * locale,
-        /* [out,callee] */ ArrayOf<IArrayOf*>** outarray);
+        /* [out, callee] */ ArrayOf<IArrayOf*>** outarray);
 
-    CARAPI ForLocale(
+    static CARAPI ForLocale(
         /* [in] */ ILocale * locale ,
         /* [out,callee] */ ArrayOf<String>** outarray);
 
-    CARAPI GetExemplarLocation(
+    static CARAPI GetExemplarLocation(
         /* [in] */ const String& locale,
         /* [in] */ const String& tz,
         /* [out] */ String* location);
+
+private:
+    TimeZoneNames();
+    TimeZoneNames(const TimeZoneNames&);
 
 private:
     static CARAPI_(AutoPtr< ArrayOf<String> >) GetAvailableTimeZones();

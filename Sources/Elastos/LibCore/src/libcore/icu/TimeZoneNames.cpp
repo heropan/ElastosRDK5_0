@@ -1,9 +1,11 @@
 
 #include "TimeZoneNames.h"
+//#include "TimeZone.h"
 #include "ElStringByteSink.h"
 #include "CLocaleHelper.h"
 #include "CArrayOf.h"
 #include "CStringWrapper.h"
+#include "CSystem.h"
 #include <UniquePtr.h>
 //#include <elastos/utility/etl/Pair.h>
 #include <elastos/utility/etl/Vector.h>
@@ -12,9 +14,6 @@
 #include <unicode/smpdtfmt.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#ifdef ELASTOS_CORELIBRARY
-#include <CSystem.h>
-#endif
 #include "unicode/tznames.h"
 // #include "CZoneInfoDB.h"
 #include "StringUtils.h"
@@ -28,6 +27,7 @@ using Elastos::Core::CSystem;
 using Elastos::Core::UniquePtr;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::ILocaleHelper;
@@ -37,16 +37,14 @@ using Elastos::Utility::Etl::Vector;
 // using Elastos::Utility::Etl::Map;
 using Elastos::Utility::Etl::List;
 using Libcore::Utility::IZoneInfoDB;
+//using Libcore::Utility::TimeZone;
 // using Libcore::Utility::CZoneInfoDB;
-using Elastos::Core::StringUtils;
 
 //const RBTreeColorType S_RBTreeRed = FALSE;
 //const RBTreeColorType S_RBTreeBlack = TRUE;
 
 namespace Libcore {
 namespace ICU {
-
-CAR_INTERFACE_IMPL(TimeZoneNames, Object, ITimeZoneNames)
 
 const static Int32 TimeZone_LONG = 1; // Itimezone::LONG
 
@@ -94,92 +92,9 @@ Int32 ReadInt32(Int32 file)
     return result;
 }
 
-AutoPtr<ArrayOf<String> > TimeZoneNames::sAvailableTimeZoneIds;
-AutoPtr<TimeZoneNames::ZoneStringsCache> TimeZoneNames::sCachedZoneStrings = new TimeZoneNames::ZoneStringsCache();
-
-AutoPtr< ArrayOf<String> > TimeZoneNames::GetAvailableTimeZones()
-{
-    if (sAvailableTimeZoneIds != NULL) {
-        return sAvailableTimeZoneIds;
-    }
-
-    AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORELIBRARY
-    AutoPtr<Elastos::Core::CSystem> cs;
-    Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
-    system = (ISystem*)cs.Get();
-#else
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-#endif
-
-    String path;
-    system->GetEnv(String("ANDROID_ROOT"), &path);
-    path += "/usr/share/zoneinfo/zoneinfo.idx";
-    struct stat statbuff;
-    if (stat(path.string(), &statbuff) < 0){
-        return NULL;
-    }
-    Int32 indexFile = open(path.string() , O_RDONLY);
-
-    // The database reserves 40 bytes for each id.
-    const Int32 SIZEOF_TZNAME = 40;
-    // The database uses 32-bit (4 byte) integers.
-    const Int32 SIZEOF_TZINT = 4;
-
-    Int64 len = statbuff.st_size;
-    AutoPtr<ArrayOf<Byte> > idBytes = ArrayOf<Byte>::Alloc(SIZEOF_TZNAME);
-    Int32 numEntries = (Int32) (len / (SIZEOF_TZNAME + 3 * SIZEOF_TZINT));
-
-    AutoPtr<ArrayOf<Char32> > idChars = ArrayOf<Char32>::Alloc(numEntries * SIZEOF_TZNAME);
-    AutoPtr<ArrayOf<Int32> > idEnd = ArrayOf<Int32>::Alloc(numEntries);
-    Int32 idOffset = 0;
-
-    AutoPtr<ArrayOf<Int32> > mByteOffsets = ArrayOf<Int32>::Alloc(numEntries);
-    AutoPtr<ArrayOf<Int32> > mRawUtcOffsets = ArrayOf<Int32>::Alloc(numEntries);
-
-    Int32 length = 0;
-    for (Int32 i = 0; i < numEntries; i++) {
-        if (ReadFully(indexFile, idBytes) == -1)
-        {
-            close(indexFile);
-            return NULL;
-        }
-        Int32 offset = ReadInt32(indexFile);
-        (*mByteOffsets)[i] = offset;
-        length = ReadInt32(indexFile);
-        if (length < 44) {
-            close(indexFile);
-            return NULL;
-        }
-        offset = ReadInt32(indexFile);
-        (*mRawUtcOffsets)[i] = offset;
-        // Don't include null chars in the String
-        Int32 len = idBytes->GetLength();
-        Int32 value;
-        for (Int32 j = 0; j < len; j++) {
-            if ((*idBytes)[j] == 0) {
-                break;
-            }
-            value = (*idBytes)[j] & 0xFF;
-            (*idChars)[idOffset++] = *((Char32 *)&value);
-        }
-        (*idEnd)[i] = idOffset;
-    }
-
-    // We create one string containing all the ids, and then break that into substrings.
-    // This way, all ids share a single char[] on the heap.
-    String allIds = String(*idChars ,0 ,idOffset);
-    AutoPtr<ArrayOf<String> > ids = ArrayOf<String>::Alloc(numEntries);
-    for (Int32 i = 0; i < numEntries; i++) {
-        Int32 substart =  i == 0 ? 0 : (*idEnd)[i - 1];
-        (*ids)[i] = allIds.Substring(substart, (*idEnd)[i]);
-    }
-
-    close(indexFile);
-    sAvailableTimeZoneIds = ids;
-    return sAvailableTimeZoneIds;
-}
-
+//===============================================================
+// TimeZoneNames::ZoneStringsCache
+//===============================================================
 TimeZoneNames::ZoneStringsCache::ZoneStringsCache()
 {}
 
@@ -246,6 +161,34 @@ void TimeZoneNames::ZoneStringsCache::InternStrings(
     }
 }
 
+//===============================================================
+// TimeZoneNames
+//===============================================================
+static AutoPtr<TimeZoneNames::ZoneStringsCache> CreateCache()
+{
+    AutoPtr<TimeZoneNames::ZoneStringsCache> cache = new TimeZoneNames::ZoneStringsCache();
+    // // Ensure that we pull in the zone strings for the root locale, en_US, and the
+    // // user's default locale. (All devices must support the root locale and en_US,
+    // // and they're used for various system things like HTTP headers.) Pre-populating
+    // // the cache is especially useful on Android because we'll share this via the Zygote.
+    // cachedZoneStrings.get(Locale.ROOT);
+    // cachedZoneStrings.get(Locale.US);
+    // cachedZoneStrings.get(Locale.getDefault());
+    return cache;
+}
+AutoPtr<ArrayOf<String> > TimeZoneNames::sAvailableTimeZoneIds;
+
+AutoPtr<TimeZoneNames::ZoneStringsCache> TimeZoneNames::sCachedZoneStrings = CreateCache();
+
+AutoPtr< ArrayOf<String> > TimeZoneNames::GetAvailableTimeZones()
+{
+    if (sAvailableTimeZoneIds == NULL) {
+        //TODO sAvailableTimeZoneIds = TimeZone::GetAvailableIDs();
+    }
+
+    return sAvailableTimeZoneIds;
+}
+
 ECode TimeZoneNames::GetDisplayName(
     /* [in] */ ArrayOf<IArrayOf*>*  zoneStrings,
     /* [in] */ const String& id,
@@ -298,7 +241,7 @@ ECode TimeZoneNames::GetDisplayName(
 
 ECode TimeZoneNames::GetZoneStrings(
     /* [in] */ ILocale * locale,
-    /* [out,callee] */ ArrayOf<IArrayOf*> ** outarray)
+    /* [out, callee] */ ArrayOf<IArrayOf*> ** outarray)
 {
     VALIDATE_NOT_NULL(outarray)
 
@@ -314,7 +257,7 @@ ECode TimeZoneNames::GetZoneStrings(
         AutoPtr< ArrayOf<String> > minarr = (*result)[i];
         Int32 midlen = minarr->GetLength();
         AutoPtr<IArrayOf> arrof;
-        FAIL_RETURN(CArrayOf::New(EIID_ICharSequence, midlen, (IArrayOf**)&arrof));
+        FAIL_RETURN(CArrayOf::New(midlen, (IArrayOf**)&arrof));
         for (Int32 j = 0; j < midlen; ++j) {
             AutoPtr<ICharSequence> sq;
             CStringWrapper::New((*minarr)[j], (ICharSequence**)&sq);
