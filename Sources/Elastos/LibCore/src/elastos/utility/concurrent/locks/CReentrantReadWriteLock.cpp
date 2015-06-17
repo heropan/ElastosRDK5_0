@@ -1,19 +1,23 @@
 
 #include "CReentrantReadWriteLock.h"
-#include "elastos/StringUtils.h"
+#include "StringUtils.h"
 
 using Elastos::Core::StringUtils;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 namespace Locks {
 
-
 //==========================================================
 //       CReentrantReadWriteLock
 //==========================================================
 const Int64 CReentrantReadWriteLock::sSerialVersionUID = -6992448646407690164L;
+
+CAR_INTERFACE_IMPL_3(CReentrantReadWriteLock, Object, IReentrantReadWriteLock, IReadWriteLock, ISerializable)
+
+CAR_OBJECT_IMPL(CReentrantReadWriteLock)
 
 ECode CReentrantReadWriteLock::constructor()
 {
@@ -55,7 +59,7 @@ ECode CReentrantReadWriteLock::IsFair(
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = mSync->Probe(CLSID_FairSync) == NULL ? FALSE : TRUE;
+//    *value = mSync->Probe(CLSID_FairSync) == NULL ? FALSE : TRUE;
     return NOERROR;
 }
 
@@ -112,13 +116,15 @@ ECode CReentrantReadWriteLock::GetReadHoldCount(
 
 AutoPtr<ICollection> CReentrantReadWriteLock::GetQueuedWriterThreads()
 {
-    AutoPtr<ICollection> res = mSync->GetExclusiveQueuedThreads();
+    AutoPtr<ICollection> res;
+    mSync->GetExclusiveQueuedThreads((ICollection**)&res);
     return res;
 }
 
 AutoPtr<ICollection> CReentrantReadWriteLock::GetQueuedReaderThreads()
 {
-    AutoPtr<ICollection> res = mSync->GetSharedQueuedThreads();
+    AutoPtr<ICollection> res;
+    mSync->GetSharedQueuedThreads((ICollection**)&res);
     return res;
 }
 
@@ -127,8 +133,7 @@ ECode CReentrantReadWriteLock::HasQueuedThreads(
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = mSync->HasQueuedThreads();
-    return NOERROR;
+    return mSync->HasQueuedThreads(value);
 }
 
 ECode CReentrantReadWriteLock::HasQueuedThread(
@@ -137,8 +142,7 @@ ECode CReentrantReadWriteLock::HasQueuedThread(
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = mSync->IsQueued(thread);
-    return NOERROR;
+    return mSync->IsQueued(thread, value);
 }
 
 ECode CReentrantReadWriteLock::GetQueueLength(
@@ -146,13 +150,13 @@ ECode CReentrantReadWriteLock::GetQueueLength(
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = mSync->GetQueueLength();
-    return NOERROR;
+    return mSync->GetQueueLength(value);
 }
 
 AutoPtr<ICollection> CReentrantReadWriteLock::GetQueuedThreads()
 {
-    AutoPtr<ICollection> res = mSync->GetQueuedThreads();
+    AutoPtr<ICollection> res;
+    mSync->GetQueuedThreads((ICollection**)&res);
     return res;
 }
 
@@ -218,9 +222,9 @@ ECode CReentrantReadWriteLock::ToString(
 
     // return super.toString() + "[Write locks = " + w + ", Read locks = " + r + "]";
     *str = String("[Write locks = ") +
-           StringUtils::Int32ToString(w) +
+           StringUtils::ToString(w) +
            String(", Read locks = ") +
-           StringUtils::Int32ToString(r) +
+           StringUtils::ToString(r) +
            String("]");
 
     return NOERROR;
@@ -607,7 +611,7 @@ void CReentrantReadWriteLock::Sync::ReadObject(
 //==========================================================
 //       CReentrantReadWriteLock::CReadLock
 //==========================================================
-CAR_INTERFACE_IMPL(CReentrantReadWriteLock::CReadLock, ILock)
+CAR_INTERFACE_IMPL_2(CReentrantReadWriteLock::CReadLock, Object, ILock, ISerializable)
 
 CReentrantReadWriteLock::CReadLock::CReadLock(
     /* [in] */ CReentrantReadWriteLock* lock)
@@ -644,7 +648,8 @@ ECode CReentrantReadWriteLock::CReadLock::TryLock(
 
 ECode CReentrantReadWriteLock::CReadLock::UnLock()
 {
-    return mSync->ReleaseShared(1);
+    Boolean b = FALSE;
+    return mSync->ReleaseShared(1, &b);
 }
 
 ECode CReentrantReadWriteLock::CReadLock::NewCondition(
@@ -661,7 +666,7 @@ ECode CReentrantReadWriteLock::CReadLock::ToString(
 
     Int32 r = mSync->GetReadLockCount();
     // return super.toString() + "[Read locks = " + r + "]";
-    *str = String("[Read locks = ") + StringUtils::Int32ToString(r) + String("]");
+    *str = String("[Read locks = ") + StringUtils::ToString(r) + String("]");
     return NOERROR;
 }
 
@@ -669,7 +674,7 @@ ECode CReentrantReadWriteLock::CReadLock::ToString(
 //==========================================================
 //       CReentrantReadWriteLock::WriteLock
 //==========================================================
-CAR_INTERFACE_IMPL(CReentrantReadWriteLock::CWriteLock, ILock)
+CAR_INTERFACE_IMPL_2(CReentrantReadWriteLock::CWriteLock, Object, ILock, ISerializable)
 
 CReentrantReadWriteLock::CWriteLock::CWriteLock(
     /* [in] */ CReentrantReadWriteLock* lock)
@@ -705,8 +710,7 @@ ECode CReentrantReadWriteLock::CWriteLock::TryLock(
 
     Int64 result = 0;
     unit->ToNanos(timeout, &result);
-    *value = mSync->TryAcquireNanos(1, result);
-    return NOERROR;
+    return mSync->TryAcquireNanos(1, result, value);
 }
 
 ECode CReentrantReadWriteLock::CWriteLock::UnLock()

@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_REENTRANTLOCK_H__
 
 #include "AbstractQueuedSynchronizer.h"
-#include "Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 using Elastos::IO::IObjectInputStream;
@@ -16,6 +16,8 @@ namespace Locks {
 class ReentrantLock
     : public Object
     , public IReentrantLock
+    , public ISerializable
+    , public ILock
 {
 public:
     enum CLSID {
@@ -33,12 +35,6 @@ public:
         : public AbstractQueuedSynchronizer
     {
     public:
-        /**
-         * Performs {@link Lock#lock}. The main reason for subclassing
-         * is to allow fast path for nonfair version.
-         */
-        virtual CARAPI_(void) Lock() = 0;
-
         /**
          * Performs non-fair tryLock.  tryAcquire is
          * implemented in subclasses, but both need nonfair
@@ -75,7 +71,7 @@ public:
          * Performs lock.  Try immediate barge, backing up to normal
          * acquire on failure.
          */
-        CARAPI_(void) Lock();
+        CARAPI Lock();
 
     protected:
         CARAPI_(Boolean) TryAcquire(
@@ -87,7 +83,7 @@ public:
      */
     class FairSync : public Sync {
     public:
-        CARAPI_(void) Lock();
+        CARAPI Lock();
 
     protected:
         /**

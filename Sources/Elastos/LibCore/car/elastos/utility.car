@@ -2178,35 +2178,35 @@ module
 
     // } // namespace Atomic
 
-    // namespace Locks {
+    namespace Locks {
 
-    // singleton class CLockSupport {
-    //     interface ILockSupport;
-    // }
+    singleton class CLockSupport {
+        interface ILockSupport;
+    }
 
-    // class CReentrantLock {
-    //     constructor();
+    class CReentrantLock {
+        constructor();
 
-    //     constructor(
-    //         [in] Boolean fair);
+        constructor(
+            [in] Boolean fair);
 
-    //     interface IReentrantLock;
-    //     interface ILock;
-    //     interface ISerializable;
-    // }
+        interface IReentrantLock;
+        interface ILock;
+        interface ISerializable;
+    }
 
-    // class CReentrantReadWriteLock {
-    //     constructor();
+    class CReentrantReadWriteLock {
+        constructor();
 
-    //     constructor(
-    //         [in] Boolean fair);
+        constructor(
+            [in] Boolean fair);
 
-    //     interface IReentrantReadWriteLock;
-    //     interface IReadWriteLock;
-    //     interface ISerializable;
-    // }
+        interface IReentrantReadWriteLock;
+        interface IReadWriteLock;
+        interface ISerializable;
+    }
 
-    // } // namespace Locks
+    } // namespace Locks
 
     // class CSemaphore {
     //     constructor(

@@ -1,6 +1,6 @@
 
-TARGET_NAME= concurrent
-TARGET_TYPE= lib
+TARGET_NAME = concurrent
+TARGET_TYPE = lib
 
 C_DEFINES += -DELASTOS_CORELIBRARY
 
@@ -13,9 +13,10 @@ INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/concurrent;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/concurrent/atomic;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/concurrent/locks;
 
-//VPATH := $(MAKEDIR)/atomic
-//SOURCES += AtomicReference.cpp
+VPATH := $(MAKEDIR)/atomic:$(MAKEDIR)/locks
+//SOURCES = AtomicReference.cpp
 //SOURCES += CAtomicBoolean.cpp
 //SOURCES += CAtomicInteger32.cpp
 //SOURCES += CAtomicInteger32Array.cpp
@@ -27,13 +28,12 @@ INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/concurrent/atomic;
 //SOURCES += CAtomicStampedReference.cpp
 //SOURCES += CFencesHelper.cpp
 
-VPATH := $(MAKEDIR)/locks
-//SOURCES += AbstractQueuedSynchronizer.cpp
-//SOURCES += CLockSupport.cpp
-//SOURCES += CReentrantLock.cpp
-//SOURCES += CReentrantReadWriteLock.cpp
-//SOURCES += LockSupport.cpp
-//SOURCES += ReentrantLock.cpp
+SOURCES += AbstractQueuedSynchronizer.cpp
+SOURCES += CLockSupport.cpp
+SOURCES += CReentrantLock.cpp
+SOURCES += CReentrantReadWriteLock.cpp
+SOURCES += LockSupport.cpp
+SOURCES += ReentrantLock.cpp
 
 //SOURCES += AbstractExecutorService.cpp
 //SOURCES += CArrayBlockingQueue.cpp
@@ -66,3 +66,5 @@ SOURCES += CopyOnWriteArrayList.cpp
 //SOURCES += ForkJoinTask.cpp
 //SOURCES += FutureTask.cpp
 SOURCES += TimeUnit.cpp
+
+SOURCES += concurrent.cpp

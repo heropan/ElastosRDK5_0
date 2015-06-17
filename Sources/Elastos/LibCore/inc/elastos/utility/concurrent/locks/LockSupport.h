@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_UTILITY_LOCKSUPPORT_H__
 #define __ELASTOS_UTILITY_LOCKSUPPORT_H__
 
-#include "Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 using Elastos::Core::IThread;
@@ -14,10 +14,8 @@ namespace Locks {
 
 class LockSupport
     : public Object
-    , public ILockSupport
 {
 public:
-    CAR_INTERFACE_DECL()
     /**
      * Makes available the permit for the given thread, if it
      * was not already available.  If the thread was blocked on
