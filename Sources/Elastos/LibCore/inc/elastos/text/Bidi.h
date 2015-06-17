@@ -11,7 +11,10 @@ using Elastos::Text::IAttributedCharacterIterator;;
 namespace Elastos {
 namespace Text {
 
-class Bidi : public Object {
+class Bidi
+    : public Object
+    , public IBidi
+{
 public:
     class BidiRun : public Object {
     public:
@@ -32,14 +35,17 @@ public:
         Int32 mLevel;
     };
 
+public:
+    CAR_INTERFACE_DECL()
+
     Bidi();
 
     virtual ~Bidi();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IAttributedCharacterIterator* paragraph);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 textStart,
         /* [in] */ ArrayOf<Byte>* embeddings,
@@ -47,11 +53,11 @@ public:
         /* [in] */ Int32 paragraphLength,
         /* [in] */ Int32 flags);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& paragraph,
         /* [in] */ Int32 flags);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int64 pBidi);
 
     CARAPI BaseIsLeftToRight(

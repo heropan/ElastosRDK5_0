@@ -4,6 +4,7 @@
 #include "Object.h"
 
 using Elastos::Core::Object;
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Text {
@@ -11,6 +12,8 @@ namespace Text {
 class StringCharacterIterator
     : public Object
     , public ICharacterIterator
+    , public IStringCharacterIterator
+    , public ICloneable
 {
 public:
     CAR_INTERFACE_DECL()
@@ -24,20 +27,21 @@ public:
 
     CARAPI constructor(
         /* [in] */ const String& value,
-        /* [in] */ int start,
-        /* [in] */ int end,
-        /* [in] */ int location);
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end,
+        /* [in] */ Int32 location);
 
     CARAPI Clone(
-        /* [out] */ ICharacterIterator** copy);
+        /* [out] */ IInterface** copy);
 
-    CARAPI Current(
+    CARAPI GetCurrent(
         /* [out] */ Char32* currentCharacter);
 
-    //@Override
-    //public boolean equals(Object object);
+    CARAPI Equals(
+        /* [in] */ IInterface* other,
+        /* [out] */ Boolean* result);
 
-    CARAPI First(
+    CARAPI GetFirst(
         /* [out] */ Char32* firstCharacter);
 
     CARAPI GetBeginIndex(
@@ -49,16 +53,16 @@ public:
     CARAPI GetIndex(
         /* [out] */ Int32* index);
 
-    //@Override
-    //public int hashCode();
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hash);
 
-    CARAPI Last(
+    CARAPI GetLast(
         /* [out] */ Char32* endCharacter);
 
-    CARAPI Next(
+    CARAPI GetNext(
         /* [out] */ Char32* nextCharacter);
 
-    CARAPI Previous(
+    CARAPI GetPrevious(
         /* [out] */ Char32* previousCharacter);
 
     CARAPI SetIndex(
@@ -69,13 +73,21 @@ public:
         /* [in] */ const String& value);
 
 protected:
-    String string;
+    StringCharacterIterator();
 
-    Int32 start;
+    virtual ~StringCharacterIterator();
 
-    Int32 end;
+    CARAPI CloneImpl(
+        /* [in] */ IStringCharacterIterator* obj);
 
-    Int32 offset;
+protected:
+    String mString;
+
+    Int32 mStart;
+
+    Int32 mEnd;
+
+    Int32 mOffset;
 };
 
 } // namespace Text

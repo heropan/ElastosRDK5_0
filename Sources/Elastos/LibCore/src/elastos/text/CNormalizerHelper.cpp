@@ -1,9 +1,6 @@
 
 #include "CNormalizerHelper.h"
-// #include "CNativeNormalizerHelper.h"
-
-using Libcore::ICU::INativeNormalizerHelper;
-// using Libcore::ICU::CNativeNormalizerHelper;
+#include "Normalizer.h"
 
 namespace Elastos {
 namespace Text {
@@ -17,13 +14,11 @@ ECode CNormalizerHelper::IsNormalized(
     /* [in] */ NormalizerForm form,
     /* [out] */ Boolean* isNormalized)
 {
-    VALIDATE_NOT_NULL(src)
     VALIDATE_NOT_NULL(isNormalized)
-
-    AutoPtr<INativeNormalizerHelper> normhelper;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CNativeNormalizerHelper::AcquireSingleton((INativeNormalizerHelper **)&normhelper));
-    return normhelper->IsNormalized(src,form,isNormalized);
+    *isNormalized = FALSE;
+    VALIDATE_NOT_NULL(src)
+    *isNormalized = Normalizer::IsNormalized(src, form);
+    return NOERROR;
 }
 
 ECode CNormalizerHelper::Normalize(
@@ -35,10 +30,8 @@ ECode CNormalizerHelper::Normalize(
     *normalizeString = String(NULL);
     VALIDATE_NOT_NULL(src)
 
-    AutoPtr<INativeNormalizerHelper> normhelper;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CNativeNormalizerHelper::AcquireSingleton((INativeNormalizerHelper **)&normhelper));
-    return normhelper->Normalize(src,form,normalizeString);
+    *normalizeString = Normalizer::Normalize(src, form);
+    return NOERROR;
 }
 
 } // namespace Text

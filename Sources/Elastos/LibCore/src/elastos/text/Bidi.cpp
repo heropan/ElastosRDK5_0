@@ -43,6 +43,11 @@ Int32 Bidi::BidiRun::GetStart()
     return mStart;
 }
 
+//===================================================
+// Bidi
+//===================================================
+CAR_INTERFACE_IMPL(Bidi, Object, IBidi)
+
 // const Int32 Bidi::UBIDI_LEVEL_OVERRIDE = 0x80;
 
 const Int32 Bidi::UBiDiDirection_UBIDI_LTR = 0;
@@ -62,7 +67,7 @@ Bidi::~Bidi()
 {
 }
 
-ECode Bidi::Init(
+ECode Bidi::constructor(
     /* [in] */ IAttributedCharacterIterator* paragraph)
 {
     if (paragraph == NULL) {
@@ -158,7 +163,7 @@ ECode Bidi::Init(
     return NOERROR;
 }
 
-ECode Bidi::Init(
+ECode Bidi::constructor(
     /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 textStart,
     /* [in] */ ArrayOf<Byte>* embeddings,
@@ -201,17 +206,17 @@ ECode Bidi::Init(
     return NOERROR;
 }
 
-ECode Bidi::Init(
+ECode Bidi::constructor(
     /* [in] */ const String& paragraph,
     /* [in] */ Int32 flags)
 {
     AutoPtr< ArrayOf<Char32> > text = paragraph.GetChars();
-    FAIL_RETURN(Init(text, 0, NULL, 0, text->GetLength(), flags));
+    FAIL_RETURN(constructor(text, 0, NULL, 0, text->GetLength(), flags));
 
     return NOERROR;
 }
 
-ECode Bidi::Init(
+ECode Bidi::constructor(
     /* [in] */ Int64 pBidi)
 {
     ReadBidiInfo(pBidi);

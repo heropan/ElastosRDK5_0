@@ -65,7 +65,7 @@ static ECode maybeThrowIcuException(UErrorCode errorCode)
 
 ECode NativeNormalizer::NormalizeImpl(
     /* [in] */ const String& src,
-    /* [in] */ Int32 form,
+    /* [in] */ NormalizerForm form,
     /* [out] */ String* result)
 {
     UNormalizationMode mode = static_cast<UNormalizationMode>(form);
@@ -87,7 +87,7 @@ ECode NativeNormalizer::NormalizeImpl(
 
 ECode NativeNormalizer::IsNormalizedImpl(
     /* [in] */ const String& src,
-    /* [in] */ Int32 form,
+    /* [in] */ NormalizerForm form,
     /* [out] */ Boolean* isNormalized)
 {
     UNormalizationMode mode = static_cast<UNormalizationMode>(form);

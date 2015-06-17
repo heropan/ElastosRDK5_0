@@ -201,7 +201,7 @@ public:
         /* [in] */ Int32 end);
 
     CARAPI AddAttributes(
-        /* [in] */ AttributeObjectMap* attributes,
+        /* [in] */ IMap* attributes,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 

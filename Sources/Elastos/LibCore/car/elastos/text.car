@@ -1,31 +1,31 @@
 
 module
 {
-    merge("text/ICharacterIterator.car");
-    merge("text/ICollationKey.car");
-    merge("text/IStringCharacterIterator.car");
-    merge("text/IDecimalFormatSymbols.car");
-    merge("text/IFieldPosition.car");
-    merge("text/IParsePosition.car");
-    merge("text/IAttributedCharacterIterator.car");
-    merge("text/IAttributedString.car");
 
     merge("text/Exceptions.car");
     merge("text/IAnnotation.car");
-    merge("text/IFormat.car");
+    merge("text/IAttributedCharacterIterator.car");
+    merge("text/IAttributedString.car");
+    merge("text/IBidi.car");
+    merge("text/IBreakIterator.car");
+    merge("text/ICharacterIterator.car");
+    merge("text/IChoiceFormat.car");
+    merge("text/ICollationElementIterator.car");
+    merge("text/ICollationKey.car");
+    merge("text/ICollator.car");
     merge("text/IDateFormat.car");
     merge("text/IDateFormatSymbols.car");
-    merge("text/INumberFormat.car");
-    merge("text/IMessageFormat.car");
-    merge("text/IChoiceFormat.car");
     merge("text/IDecimalFormat.car");
-    merge("text/ISimpleDateFormat.car");
-    merge("text/IBreakIterator.car");
-    merge("text/ICollator.car");
-    merge("text/ICollationElementIterator.car");
-    merge("text/IRuleBasedCollator.car");
+    merge("text/IDecimalFormatSymbols.car");
+    merge("text/IFieldPosition.car");
+    merge("text/IFormat.car");
+    merge("text/IMessageFormat.car");
     merge("text/INormalizer.car");
-    merge("text/IBidi.car");
+    merge("text/INumberFormat.car");
+    merge("text/IParsePosition.car");
+    merge("text/IRuleBasedCollator.car");
+    merge("text/ISimpleDateFormat.car");
+    merge("text/IStringCharacterIterator.car");
 
     merge("text/spi/IBreakIteratorProvider.car");
     merge("text/spi/ICollatorProvider.car");
@@ -34,6 +34,7 @@ module
     merge("text/spi/IDecimalFormatSymbolsProvider.car");
     merge("text/spi/INumberFormatProvider.car");
 
+    interface Elastos.Core.ICloneable;
     interface Elastos.Text.IAnnotation;
     interface Elastos.Text.IAttributedCharacterIteratorAttribute;
     interface Elastos.IO.ISerializable;
@@ -261,7 +262,6 @@ module
         interface ICollationElementIteratorHelper;
     }
 
-    [deprecated]
     class CRuleBasedCollator {
         constructor(
             [in] IRuleBasedCollatorICU* wrapper);
@@ -272,6 +272,26 @@ module
         interface IRuleBasedCollator;
         // interface IComparator;
     }
+
+    class CStringCharacterIterator {
+        constructor(
+            [in] String value);
+
+        constructor(
+            [in] String value,
+            [in] Int32 location);
+
+        constructor(
+            [in] String value,
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] Int32 location);
+
+        interface IStringCharacterIterator;
+        interface ICharacterIterator;
+        interface ICloneable;
+    }
+
 
     } // Text
     } // Elastos

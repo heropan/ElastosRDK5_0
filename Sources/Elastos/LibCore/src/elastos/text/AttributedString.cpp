@@ -853,15 +853,28 @@ ECode AttributedString::AddAttribute(
 }
 
 ECode AttributedString::AddAttributes(
-    /* [in] */ AttributeObjectMap* attributes,
+    /* [in] */ IMap* attributes,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    AttributeObjectMapIterator itnext = attributes->Begin();
-    while (itnext != attributes->End()) {
-        AddAttribute( itnext->mFirst, itnext->mSecond, start, end);
-        ++attributes;
+    VALIDATE_NOT_NULL(attributes)
+    AutoPtr<ISet> entries;
+    attributes->GetEntrySet((ISet**)&entries);
+
+    AutoPtr<IIterator> it;
+    IIterable::Probe(entries)->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    IMapEntry* entry;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        entry = IMapEntry::Probe(obj);
+        AutoPtr<IInterface> key, value;
+        entry->GetKey((IInterface**)&key);
+        entry->GetValue((IInterface**)&value);
+        AddAttribute(IAttributedCharacterIteratorAttribute::Probe(key), value, start, end);
     }
+
     return NOERROR;
 }
 

@@ -1,9 +1,7 @@
 #ifndef __ELASTOS_TEXT_COLLATIONKEY_H__
 #define __ELASTOS_TEXT_COLLATIONKEY_H__
 
-#include <elastos.h>
-#include <Object.h>
-#include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
 
 using Elastos::Core::Object;
 
@@ -17,6 +15,9 @@ class CollationKey
 public:
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor(
+        /* [in] */ const String& source);
+
     virtual CARAPI CompareTo(
         /* [in] */ IInterface* value,
         /* [out] */ Int32* result) = 0;
@@ -27,12 +28,14 @@ public:
     virtual CARAPI ToByteArray(
         /* [out, callee] */ ArrayOf<Byte>** array) = 0;
 
+
 protected:
-    CARAPI Init(
-        /* [in] */ const String& source);
+    CollationKey();
+
+    virtual ~CollationKey();
 
 private:
-    String source;
+    String mSource;
 };
 
 } // namespace Text

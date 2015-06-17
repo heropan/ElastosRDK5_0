@@ -3,10 +3,10 @@
 #define __NATIVENORMALIZER_H__
 
 #include <elastos.h>
-#include <cmdef.h>
 #include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Core::ICharSequence;
+using Elastos::Text::NormalizerForm;
 
 namespace Libcore {
 namespace ICU {
@@ -16,28 +16,28 @@ class NativeNormalizer
 public:
     static CARAPI IsNormalized(
         /* [in] */ ICharSequence* src,
-        /* [in] */ Form form,
+        /* [in] */ NormalizerForm form,
         /* [out] */ Boolean* isNormalized);
 
     static CARAPI Normalize(
         /* [in] */ ICharSequence* src,
-        /* [in] */ Form form,
+        /* [in] */ NormalizerForm form,
         /* [out] */ String* result);
 
 private:
     NativeNormalizer() {}
 
     static CARAPI_(Int32) ToUNormalizationMode(
-        /* [in] */ Form form);
+        /* [in] */ NormalizerForm form);
 
     static CARAPI NormalizeImpl(
         /* [in] */ const String& src,
-        /* [in] */ Int32 form,
+        /* [in] */ NormalizerForm form,
         /* [out] */ String* result);
 
     static CARAPI IsNormalizedImpl(
         /* [in] */ const String& src,
-        /* [in] */ Int32 form,
+        /* [in] */ NormalizerForm form,
         /* [out] */ Boolean* isNormalized);
 };
 

@@ -1,17 +1,31 @@
 
 #include "StringCharacterIterator.h"
+#include "CStringCharacterIterator.h"
+
+using Elastos::Core::EIID_ICloneable;
 
 namespace Elastos {
 namespace Text {
 
-CAR_INTERFACE_IMPL(StringCharacterIterator, Object, ICharacterIterator)
+CAR_INTERFACE_IMPL_3(StringCharacterIterator, Object, ICharacterIterator, ICharacterIterator, ICloneable)
+
+StringCharacterIterator::StringCharacterIterator()
+    : mStart(0)
+    , mEnd(0)
+    , mOffset(0)
+{
+}
+
+StringCharacterIterator::~StringCharacterIterator()
+{
+}
 
 ECode StringCharacterIterator::constructor(
     /* [in] */ const String& value)
 {
-    string = String(value);
-    start = offset = 0;
-    end = string.GetLength();
+    mString = String(value);
+    mStart = mOffset = 0;
+    mEnd = mString.GetLength();
     return NOERROR;
 }
 
@@ -19,13 +33,13 @@ ECode StringCharacterIterator::constructor(
     /* [in] */ const String& value,
     /* [in] */ Int32 location)
 {
-    string = String(value);
-    start = 0;
-    end = string.GetLength();
-    if (location < 0 || location > end) {
+    mString = String(value);
+    mStart = 0;
+    mEnd = mString.GetLength();
+    if (location < 0 || location > mEnd) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    offset = location;
+    mOffset = location;
     return NOERROR;
 }
 
@@ -35,39 +49,82 @@ ECode StringCharacterIterator::constructor(
     /* [in] */ Int32 end,
     /* [in] */ Int32 location)
 {
-    string = value;
-    if (start < 0 || end > (Int32)(string.GetLength()) || start > end
+    mString = value;
+    if (start < 0 || end > (Int32)(mString.GetLength()) || start > end
             || location < start || location > end) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    this->start = start;
-    this->end = end;
-    offset = location;
+    this->mStart = start;
+    this->mEnd = end;
+    mOffset = location;
     return NOERROR;
 }
 
-ECode StringCharacterIterator::Current(
+ECode StringCharacterIterator::Clone(
+    /* [out] */ IInterface** copy)
+{
+    VALIDATE_NOT_NULL(copy)
+    *copy = NULL;
+
+    AutoPtr<IStringCharacterIterator> sci;
+    CStringCharacterIterator::New(mString, (IStringCharacterIterator**)&sci);
+    FAIL_RETURN(CloneImpl(sci));
+    *copy = TO_IINTERFACE(sci);
+    REFCOUNT_ADD(*copy)
+    return NOERROR;
+}
+
+ECode StringCharacterIterator::CloneImpl(
+    /* [in] */ IStringCharacterIterator* obj)
+{
+    assert(obj);
+    StringCharacterIterator* sci = (StringCharacterIterator*)obj;
+    sci->mString = mString;
+    sci->mStart = mStart;
+    sci->mEnd = mEnd;
+    sci->mOffset = mOffset;
+    return NOERROR;
+}
+
+ECode StringCharacterIterator::GetCurrent(
     /* [out] */ Char32* currentCharacter)
 {
     VALIDATE_NOT_NULL(currentCharacter);
-    if (offset == end) {
-        *currentCharacter = -1;
+    if (mOffset == mEnd) {
+        *currentCharacter = ICharacterIterator::DONE;
         return NOERROR;
     }
-    *currentCharacter = string.GetChar(offset);
+    *currentCharacter = mString.GetChar(mOffset);
     return NOERROR;
 }
 
-ECode StringCharacterIterator::First(
+ECode StringCharacterIterator::Equals(
+    /* [in] */ IInterface* other,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    IStringCharacterIterator* obj = IStringCharacterIterator::Probe(other);
+    if (obj == NULL) return NOERROR;
+
+    StringCharacterIterator* sci = (StringCharacterIterator*)obj;
+    return sci->mString.Equals(mString)
+        && sci->mStart == mStart
+        && sci->mEnd == mEnd
+        && sci->mOffset == mOffset;
+}
+
+ECode StringCharacterIterator::GetFirst(
     /* [out] */ Char32* firstCharacter)
 {
     VALIDATE_NOT_NULL(firstCharacter);
-    if (start == end) {
-        *firstCharacter = -1;
+    if (mStart == mEnd) {
+        *firstCharacter = ICharacterIterator::DONE;
         return NOERROR;
     }
-    offset = start;
-    *firstCharacter = string.GetChar(offset);
+    mOffset = mStart;
+    *firstCharacter = mString.GetChar(mOffset);
     return NOERROR;
 }
 
@@ -75,7 +132,7 @@ ECode StringCharacterIterator::GetBeginIndex(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
-    *index = start;
+    *index = mStart;
     return NOERROR;
 }
 
@@ -83,7 +140,7 @@ ECode StringCharacterIterator::GetEndIndex(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
-    *index = end;
+    *index = mEnd;
     return NOERROR;
 }
 
@@ -91,20 +148,28 @@ ECode StringCharacterIterator::GetIndex(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
-    *index = offset;
+    *index = mOffset;
     return NOERROR;
 }
 
-ECode StringCharacterIterator::Last(
+ECode StringCharacterIterator::GetHashCode(
+    /* [out] */ Int32* hash)
+{
+    VALIDATE_NOT_NULL(hash)
+    *hash =  mString.GetHashCode() + mStart + mEnd + mOffset;
+    return NOERROR;
+}
+
+ECode StringCharacterIterator::GetLast(
     /* [out] */ Char32* endCharacter)
 {
     VALIDATE_NOT_NULL(endCharacter);
-    if (start == end) {
-        *endCharacter = -1;
+    if (mStart == mEnd) {
+        *endCharacter = ICharacterIterator::DONE;
         return NOERROR;
     }
-    offset = end - 1;
-    *endCharacter = string.GetChar(offset);
+    mOffset = mEnd - 1;
+    *endCharacter = mString.GetChar(mOffset);
     return NOERROR;
 }
 
@@ -112,24 +177,24 @@ ECode StringCharacterIterator::GetNext(
     /* [out] */ Char32* nextCharacter)
 {
     VALIDATE_NOT_NULL(nextCharacter);
-    if (offset >= (end - 1)) {
-        offset = end;
-        *nextCharacter = -1;
+    if (mOffset >= (mEnd - 1)) {
+        mOffset = mEnd;
+        *nextCharacter = ICharacterIterator::DONE;
         return NOERROR;
     }
-    *nextCharacter = string.GetChar(++offset);
+    *nextCharacter = mString.GetChar(++mOffset);
     return NOERROR;
 }
 
-ECode StringCharacterIterator::Previous(
+ECode StringCharacterIterator::GetPrevious(
     /* [out] */ Char32* previousCharacter)
 {
     VALIDATE_NOT_NULL(previousCharacter);
-    if (offset == start) {
-        *previousCharacter = -1;
+    if (mOffset == mStart) {
+        *previousCharacter = ICharacterIterator::DONE;
         return NOERROR;
     }
-    *previousCharacter = string.GetChar(--offset);
+    *previousCharacter = mString.GetChar(--mOffset);
     return NOERROR;
 }
 
@@ -138,30 +203,24 @@ ECode StringCharacterIterator::SetIndex(
     /* [out] */ Char32* index)
 {
     VALIDATE_NOT_NULL(index);
-    if (location < start || location > end) {
+    if (location < mStart || location > mEnd) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    offset = location;
-    if (offset == end) {
-        *index = -1;
+    mOffset = location;
+    if (mOffset == mEnd) {
+        *index = ICharacterIterator::DONE;
         return NOERROR;
     }
-    *index = string.GetChar(offset);
+    *index = mString.GetChar(mOffset);
     return NOERROR;
 }
 
 ECode StringCharacterIterator::SetText(
     /* [in] */ const String& value)
 {
-    string = value;
-    start = offset = 0;
-    end = value.GetLength();
-    return NOERROR;
-}
-
-ECode StringCharacterIterator::Clone(
-    /* [out] */ ICharacterIterator** copy)
-{
+    mString = value;
+    mStart = mOffset = 0;
+    mEnd = value.GetLength();
     return NOERROR;
 }
 

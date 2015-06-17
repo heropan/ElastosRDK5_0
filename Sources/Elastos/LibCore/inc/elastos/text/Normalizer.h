@@ -1,5 +1,5 @@
-#ifndef __TEXTNORMALIZER_H__
-#define __TEXTNORMALIZER_H__
+#ifndef __ELASTOS_TEXT_TEXTNORMALIZER_H__
+#define __ELASTOS_TEXT_TEXTNORMALIZER_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include <elastos.h>
@@ -9,7 +9,7 @@ using Elastos::Core::ICharSequence;
 namespace Elastos {
 namespace Text {
 
-class TextNormalizer {
+class Normalizer {
 public:
     static CARAPI_(Boolean) IsNormalized(
         /* [in] */ ICharSequence* src,
@@ -20,10 +20,11 @@ public:
         /* [in] */ NormalizerForm form);
 
 private:
-    TextNormalizer();
+    Normalizer();
+    Normalizer(const Normalizer&);
 };
 
 } // namespace Text
 } // namespace Elastos
 
-#endif //__TEXTNORMALIZER_H__
+#endif //__ELASTOS_TEXT_TEXTNORMALIZER_H__
