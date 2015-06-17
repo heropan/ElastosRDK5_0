@@ -1,23 +1,25 @@
 
 #include "Currency.h"
 #include "CLocale.h"
-#include "ICUUtil.h"
-#include "CLocaleData.h"
+//#include "ICUUtil.h"
+//#include "CLocaleData.h"
 #include "CLinkedHashSet.h"
 
-using Libcore::ICU::CLocale;
-using Libcore::ICU::ICUUtil;
-using Libcore::ICU::LocaleData;
+using Elastos::IO::EIID_ISerializable;
+using Elastos::Utility::CLocale;
+//using Libcore::ICU::ICUUtil;
+//using Libcore::ICU::LocaleData;
 using Libcore::ICU::ILocaleData;
-using Libcore::ICU::CLocaleData;
+//using Libcore::ICU::CLocaleData;
 
 namespace Elastos{
 namespace Utility{
 
-HashMap<String, AutoPtr<ICurrency> > Currency::sCodesToCurrencies;
-HashMap<AutoPtr<ILocale>, AutoPtr<ICurrency> > Currency::sLocalesToCurrencies;
+//HashMap<String, AutoPtr<ICurrency> > Currency::sCodesToCurrencies;
+//HashMap<AutoPtr<ILocale>, AutoPtr<ICurrency> > Currency::sLocalesToCurrencies;
+Object Currency::sLock;
 
-CAR_INTERFACE_IMPL(Currency, Object, ICurrency)
+CAR_INTERFACE_IMPL_2(Currency, Object, ICurrency, ISerializable)
 
 Currency::Currency(
     /* [in] */ const String& currencyCode)
@@ -25,7 +27,7 @@ Currency::Currency(
     mCurrencyCode = currencyCode;
     String usstr;
     CLocale::US->ToString(&usstr);
-    String symbol = ICUUtil::GetCurrencySymbol(usstr, mCurrencyCode);
+    String symbol;// = ICUUtil::GetCurrencySymbol(usstr, mCurrencyCode);
     if (symbol.IsNull()) {
         // throw new IllegalArgumentException("Unsupported ISO 4217 currency code: " + currencyCode);
         printf("Unsupported ISO 4217 currency code:  %s\n", mCurrencyCode.string());
@@ -35,12 +37,12 @@ Currency::Currency(
 AutoPtr<ICurrency> Currency::GetInstance(
     /* [in] */ const String& currencyCode)
 {
-    Object::Autolock lock(this);
+    Object::Autolock lock(sLock);
 
-    AutoPtr<ICurrency> currency = sCodesToCurrencies[currencyCode];
+    AutoPtr<ICurrency> currency ;//= sCodesToCurrencies[currencyCode];
     if (currency == NULL) {
         currency = new Currency(currencyCode);
-        sCodesToCurrencies[currencyCode] = currency;
+//        sCodesToCurrencies[currencyCode] = currency;
     }
     return currency;
 }
@@ -49,9 +51,9 @@ ECode Currency::GetInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ ICurrency** instance)
 {
-    Object::Autolock lock(this);
+    Object::Autolock lock(sLock);
 
-    AutoPtr<ICurrency> currency = sLocalesToCurrencies[locale];
+    AutoPtr<ICurrency> currency ;//= sLocalesToCurrencies[locale];
     if (currency != NULL) {
         *instance = currency;
         REFCOUNT_ADD(*instance)
@@ -68,7 +70,7 @@ ECode Currency::GetInstance(
         country = country + String("_") + variant;
     }
 
-    String currencyCode = ICUUtil::GetCurrencyCode(country);
+    String currencyCode;// = ICUUtil::GetCurrencyCode(country);
     if (currencyCode.IsNull()) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;;
     }
@@ -77,7 +79,7 @@ ECode Currency::GetInstance(
         return NOERROR;
     }
     AutoPtr<ICurrency> result = GetInstance(currencyCode);
-    sLocalesToCurrencies[locale] = result;
+//    sLocalesToCurrencies[locale] = result;
     *instance = result;
     REFCOUNT_ADD(*instance)
     return NOERROR;
@@ -89,12 +91,12 @@ ECode Currency::GetAvailableCurrencies(
     VALIDATE_NOT_NULL(currencies);
     FAIL_RETURN(CLinkedHashSet::New(currencies));
     AutoPtr<ArrayOf<String> > currencyCodes;
-    FAIL_RETURN(ICUUtil::GetAvailableCurrencyCodes((ArrayOf<String>**)&currencyCodes));
+//    FAIL_RETURN(ICUUtil::GetAvailableCurrencyCodes((ArrayOf<String>**)&currencyCodes));
     Int32 length = currencyCodes->GetLength();
     for (Int32 i = 0; i < length; i++) {
         AutoPtr<ICurrency> currency = GetInstance((*currencyCodes)[i]);
         Boolean res;
-        (*currencies)->Add((IInterface*)currency, &res);
+        (ICollection::Probe(*currencies))->Add((IInterface*)currency, &res);
     }
     return NOERROR;
 }
@@ -122,7 +124,7 @@ ECode Currency::GetDisplayName(
 
     String locstr;
     locale->ToString(&locstr);
-    *str = ICUUtil::GetCurrencyDisplayName(locstr, mCurrencyCode);
+//    *str = ICUUtil::GetCurrencyDisplayName(locstr, mCurrencyCode);
     return NOERROR;
 }
 
@@ -146,14 +148,14 @@ ECode Currency::GetSymbol(
     }
 
     // Check the locale first, in case the locale has the same currency.
-    AutoPtr<ILocaleData> localeData = LocaleData::Get(locale);
-    if (((CLocaleData*)localeData.Get())->mInternationalCurrencySymbol.Equals(mCurrencyCode)) {
-        *str = ((CLocaleData*)localeData.Get())->mCurrencySymbol;
-        return NOERROR;
-    }
+    AutoPtr<ILocaleData> localeData;// = LocaleData::Get(locale);
+    // if (((CLocaleData*)localeData.Get())->mInternationalCurrencySymbol.Equals(mCurrencyCode)) {
+    //     *str = ((CLocaleData*)localeData.Get())->mCurrencySymbol;
+    //     return NOERROR;
+    // }
 
     // Try ICU, and fall back to the currency code if ICU has nothing.
-    String symbol = ICUUtil::GetCurrencySymbol((locale->ToString(&coustr), coustr), mCurrencyCode);
+    String symbol;// = ICUUtil::GetCurrencySymbol((locale->ToString(&coustr), coustr), mCurrencyCode);
     *str = !symbol.IsNull() ? symbol : mCurrencyCode;
     return NOERROR;
 }
@@ -169,7 +171,7 @@ ECode Currency::GetDefaultFractionDigits(
         *value = -1;
         return NOERROR;
     }
-    *value = ICUUtil::GetCurrencyFractionDigits(mCurrencyCode);
+//    *value = ICUUtil::GetCurrencyFractionDigits(mCurrencyCode);
     return NOERROR;
 }
 

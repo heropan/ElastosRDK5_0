@@ -10,6 +10,7 @@ INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/math;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;
@@ -68,6 +69,9 @@ SOURCES += ResourceBundle.cpp
 SOURCES += CPropertyResourceBundle.cpp
 SOURCES += CScanner.cpp
 SOURCES += CSimpleTimeZone.cpp
+SOURCES += CTimeZoneHelper.cpp
+SOURCES += Currency.cpp
+SOURCES += CFormatter.cpp
 
 
 SOURCES += utility.cpp

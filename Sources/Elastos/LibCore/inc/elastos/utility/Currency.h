@@ -2,38 +2,38 @@
 #ifndef __ELASTOS_UTILITY_CURRENCY_H__
 #define __ELASTOS_UTILITY_CURRENCY_H__
 
-#include <elastos/utility/etl/HashMap.h>
+#include <HashMap.h>
 #include <elastos/core/Object.h>
 
 using Elastos::Utility::ILocale;
 using Elastos::Utility::HashMap;
 
-_ETL_NAMESPACE_BEGIN
-#ifndef DEFINE_HASH_AUTOPTR_ILOCALE_USING_HASH_CODE
-#define DEFINE_HASH_AUTOPTR_ILOCALE_USING_HASH_CODE(ILocale)
-template<> struct Hash<AutoPtr<ILocale> >
-{
-    size_t operator()(const AutoPtr<ILocale> s) const
-    {
-        assert(s != NULL);
-        Int32 hashCode;
-        s->GetHashCode(&hashCode);
-        return (size_t)hashCode;
-    }
-};
+// _ETL_NAMESPACE_BEGIN
+// #ifndef DEFINE_HASH_AUTOPTR_ILOCALE_USING_HASH_CODE
+// #define DEFINE_HASH_AUTOPTR_ILOCALE_USING_HASH_CODE(ILocale)
+// template<> struct Hash<AutoPtr<ILocale> >
+// {
+//     size_t operator()(const AutoPtr<ILocale> s) const
+//     {
+//         assert(s != NULL);
+//         Int32 hashCode;
+//         s->GetHashCode(&hashCode);
+//         return (size_t)hashCode;
+//     }
+// };
 
-template<> struct EqualTo<AutoPtr<ILocale> >
-{
-    size_t operator()(const AutoPtr<ILocale> x, const AutoPtr<ILocale> y) const
-    {
-        assert(x != NULL);
-        Boolean isEqual;
-        x->Equals(y, &isEqual);
-        return isEqual;
-    }
-};
-#endif
-_ETL_NAMESPACE_END
+// template<> struct EqualTo<AutoPtr<ILocale> >
+// {
+//     size_t operator()(const AutoPtr<ILocale> x, const AutoPtr<ILocale> y) const
+//     {
+//         assert(x != NULL);
+//         Boolean isEqual;
+//         x->Equals(y, &isEqual);
+//         return isEqual;
+//     }
+// };
+// #endif
+// _ETL_NAMESPACE_END
 
 namespace Elastos{
 namespace Utility{
@@ -41,6 +41,7 @@ namespace Utility{
 class Currency
     : public Object
     , public ICurrency
+    , public ISerializable
 {
 public:
     CAR_INTERFACE_DECL()
@@ -85,10 +86,12 @@ private:
     CARAPI_(AutoPtr<IInterface>) ReadResolve();
 
 private:
-    static HashMap<String, AutoPtr<ICurrency> > sCodesToCurrencies; // = new HashMap<String, Currency>();
-    static HashMap<AutoPtr<ILocale>, AutoPtr<ICurrency> > sLocalesToCurrencies; // = new HashMap<Locale, Currency>();
+//    static HashMap<String, AutoPtr<ICurrency> > sCodesToCurrencies; // = new HashMap<String, Currency>();
+//    static HashMap<AutoPtr<ILocale>, AutoPtr<ICurrency> > sLocalesToCurrencies; // = new HashMap<Locale, Currency>();
 
     String mCurrencyCode;
+
+    static Object sLock;
 };
 
 } // namespace Utility
