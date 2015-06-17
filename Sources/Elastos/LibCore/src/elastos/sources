@@ -26,6 +26,7 @@ INCLUDES += $(MAKEDIR)/../../inc/elastos/text
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/concurrent
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/concurrent/atomic
+INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/concurrent/locks
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/regex
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/zip
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/logging
@@ -68,7 +69,6 @@ LIBRARIES += ../libcore/io/io.lib
 LIBRARIES += ../libcore/icu/icu.lib
 LIBRARIES += ../libcore/net/net.lib
 LIBRARIES += ../libcore/net/url/url.lib
-LIBRARIES += ../libcore/utility/utility.lib
 LIBRARIES += ../libcore/utility/utility.lib
 
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco

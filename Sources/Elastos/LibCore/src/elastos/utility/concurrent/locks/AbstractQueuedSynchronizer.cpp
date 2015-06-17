@@ -12,6 +12,7 @@
 using Elastos::Core::Thread;
 using Elastos::Core::ISystem;
 using Elastos::Core::StringUtils;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -551,7 +552,7 @@ void AbstractQueuedSynchronizer::DoReleaseShared()
      */
     for (;;) {
         AutoPtr<Node> h = mHead;
-        if (h != NULL && h != mTail) {
+        if (h != NULL && !Object::Equals(h->Probe(EIID_IInterface), mTail->Probe(EIID_IInterface))) {
             Int32 ws = h->mWaitStatus;
             if (ws == Node::SIGNAL) {
                 if (!CompareAndSetWaitStatus(h, Node::SIGNAL, 0)) {
@@ -564,7 +565,7 @@ void AbstractQueuedSynchronizer::DoReleaseShared()
                 continue;                // loop on failed CAS
             }
         }
-        if (h == mHead) {                   // loop if mHead changed
+        if (Object::Equals(h->Probe(EIID_IInterface), mHead->Probe(EIID_IInterface))) {                   // loop if mHead changed
             break;
         }
     }
@@ -805,6 +806,7 @@ ECode AbstractQueuedSynchronizer::AcquireIt(
             SelfInterrupt();
         }
     }
+    return NOERROR;
 }
 
 ECode AbstractQueuedSynchronizer::ReleaseIt(
@@ -837,14 +839,18 @@ ECode AbstractQueuedSynchronizer::AcquireSharedInterruptibly(
     return NOERROR;
 }
 
-Boolean AbstractQueuedSynchronizer::ReleaseShared(
-    /* [in] */ Int32 arg)
+ECode AbstractQueuedSynchronizer::ReleaseShared(
+    /* [in] */ Int32 arg,
+    /* [out] */ Boolean* value)
 {
+    VALIDATE_NOT_NULL(value);
     if (TryReleaseShared(arg)) {
         DoReleaseShared();
-        return TRUE;
+        *value = TRUE;
+        return NOERROR;
     }
-    return FALSE;
+    *value = FALSE;
+    return NOERROR;
 }
 
 Boolean AbstractQueuedSynchronizer::CompareAndSetHead(
@@ -986,7 +992,6 @@ Boolean AbstractQueuedSynchronizer::DoAcquireNanos(
         lastTime = now;
         if (Thread::Interrupted()) {
             // throw new InterruptedException();
-            return E_INTERRUPTED_EXCEPTION;
         }
     }
     // } finally {
@@ -994,7 +999,7 @@ Boolean AbstractQueuedSynchronizer::DoAcquireNanos(
         CancelAcquire(node);
     }
     // }
-    return NOERROR;
+    return FALSE;
 }
 
 ECode AbstractQueuedSynchronizer::DoAcquireShared(
@@ -1030,7 +1035,7 @@ ECode AbstractQueuedSynchronizer::DoAcquireShared(
 }
 
 ECode AbstractQueuedSynchronizer::TryAcquireSharedNanos(
-    /* [in] */ Int64 arg,
+    /* [in] */ Int32 arg,
     /* [in] */ Int64 nanosTimeout,
     /* [out] */ Boolean* result)
 {
@@ -1042,8 +1047,17 @@ ECode AbstractQueuedSynchronizer::TryAcquireSharedNanos(
     return NOERROR;
 }
 
+ECode AbstractQueuedSynchronizer::Acquire(
+    /* [in] */ Int32 arg)
+{
+    if (!TryAcquire(arg) &&
+        AcquireQueued(AddWaiter(Node::EXCLUSIVE), arg))
+        SelfInterrupt();
+    return NOERROR;
+}
+
 ECode AbstractQueuedSynchronizer::AcquireInterruptibly(
-    /* [in] */ Int64 arg)
+    /* [in] */ Int32 arg)
 {
     if (Thread::Interrupted()) {
         // throw new InterruptedException();
@@ -1055,80 +1069,109 @@ ECode AbstractQueuedSynchronizer::AcquireInterruptibly(
     return NOERROR;
 }
 
-Boolean AbstractQueuedSynchronizer::TryAcquireNanos(
-    /* [in] */ Int64 arg,
-    /* [in] */ Int64 nanosTimeout)
+ECode AbstractQueuedSynchronizer::TryAcquireNanos(
+    /* [in] */ Int32 arg,
+    /* [in] */ Int64 nanosTimeout,
+    /* [out] */ Boolean* value)
 {
+    VALIDATE_NOT_NULL(value);
     if (Thread::Interrupted()) {
-        // throw new InterruptedException();
+        *value = FALSE;
         return E_INTERRUPTED_EXCEPTION;
     }
-    return TryAcquire(arg) || DoAcquireNanos(arg, nanosTimeout);
+    *value = TryAcquire(arg) || DoAcquireNanos(arg, nanosTimeout);
+    return NOERROR;
 }
 
-Boolean AbstractQueuedSynchronizer::HasQueuedThreads()
+ECode AbstractQueuedSynchronizer::HasQueuedThreads(
+    /* [out] */ Boolean* value)
 {
-    return mHead != mTail;
+    VALIDATE_NOT_NULL(value);
+    *value = mHead != mTail;
+    return NOERROR;
 }
 
-Boolean AbstractQueuedSynchronizer::HasContended()
+ECode AbstractQueuedSynchronizer::HasContended(
+    /* [out] */ Boolean* value)
 {
-    return mHead != NULL;
+    VALIDATE_NOT_NULL(value);
+    *value = mHead != NULL;
+    return NOERROR;
 }
 
-AutoPtr<IThread> AbstractQueuedSynchronizer::GetFirstQueuedThread()
+ECode AbstractQueuedSynchronizer::GetFirstQueuedThread(
+    /* [out] */ IThread** outthread)
 {
+    VALIDATE_NOT_NULL(outthread);
     // handle only fast path, else relay
-    return (mHead == mTail) ? NULL : FullGetFirstQueuedThread();
+    *outthread = (mHead == mTail) ? NULL : FullGetFirstQueuedThread();
+    REFCOUNT_ADD(*outthread);
+    return NOERROR;
 }
 
-Boolean AbstractQueuedSynchronizer::IsQueued(
-    /* [in] */ IThread* thread)
+ECode AbstractQueuedSynchronizer::IsQueued(
+    /* [in] */ IThread* thread,
+    /* [out] */ Boolean* value)
 {
+    VALIDATE_NOT_NULL(value)
     if (thread == NULL) {
-        // throw new NullPointerException();
-        return FALSE;
+        *value = FALSE;
+        return E_NULL_POINTER_EXCEPTION;
     }
     for (AutoPtr<Node> p = mTail; p != NULL; p = p->mPrev)
-        if (p->mThread == thread)
-            return TRUE;
-    return FALSE;
+        if (p->mThread == thread) {
+            *value = TRUE;
+            return NOERROR;
+        }
+    *value = FALSE;
+    return NOERROR;
 }
 
-Boolean AbstractQueuedSynchronizer::ApparentlyFirstQueuedIsExclusive()
+ECode AbstractQueuedSynchronizer::ApparentlyFirstQueuedIsExclusive(
+    /* [out] */ Boolean* value)
 {
+    VALIDATE_NOT_NULL(value);
     AutoPtr<Node> h;
     AutoPtr<Node> s;
-    return (h = mHead) != NULL &&
+    *value = (h = mHead) != NULL &&
            (s = h->mNext) != NULL &&
            !s->IsShared()         &&
            s->mThread != NULL;
+    return NOERROR;
 }
 
-Boolean AbstractQueuedSynchronizer::HasQueuedPredecessors()
+ECode AbstractQueuedSynchronizer::HasQueuedPredecessors(
+    /* [out] */ Boolean* value)
 {
+    VALIDATE_NOT_NULL(value);
     // The correctness of this depends on mHead being initialized
     // before mTail and on mHead.next being accurate if the current
     // thread is first in queue.
     AutoPtr<Node> t = mTail; // Read fields in reverse initialization order
     AutoPtr<Node> h = mHead;
     AutoPtr<Node> s;
-    return h != t && ((s = h->mNext) == NULL || s->mThread != Thread::GetCurrentThread());
+    *value = h != t && ((s = h->mNext) == NULL || s->mThread != Thread::GetCurrentThread());
+    return NOERROR;
 }
 
-Int32 AbstractQueuedSynchronizer::GetQueueLength()
+ECode AbstractQueuedSynchronizer::GetQueueLength(
+    /* [out] */ Int32* value)
 {
+    VALIDATE_NOT_NULL(value);
     Int32 n = 0;
     for (AutoPtr<Node> p = mTail; p != NULL; p = p->mPrev) {
         if (p->mThread != NULL)
             ++n;
     }
-    return n;
+    *value = n;
+    return NOERROR;
 }
 
-AutoPtr<ICollection> AbstractQueuedSynchronizer::GetQueuedThreads()
+ECode AbstractQueuedSynchronizer::GetQueuedThreads(
+    /* [out] */ ICollection** outlect)
 {
     assert(0 && "TODO");
+    VALIDATE_NOT_NULL(outlect);
     // ArrayList<Thread> list = new ArrayList<Thread>();
     // for (Node p = mTail; p != null; p = p.prev) {
     //     Thread t = p.thread;
@@ -1136,12 +1179,14 @@ AutoPtr<ICollection> AbstractQueuedSynchronizer::GetQueuedThreads()
     //         list.add(t);
     // }
     // return list;
-    return NULL;
+    return NOERROR;
 }
 
-AutoPtr<ICollection> AbstractQueuedSynchronizer::GetExclusiveQueuedThreads()
+ECode AbstractQueuedSynchronizer::GetExclusiveQueuedThreads(
+    /* [out] */ ICollection** outlect)
 {
     assert(0 && "TODO");
+    VALIDATE_NOT_NULL(outlect);
     // ArrayList<Thread> list = new ArrayList<Thread>();
     // for (Node p = mTail; p != null; p = p.prev) {
     //     if (!p.isShared()) {
@@ -1151,12 +1196,14 @@ AutoPtr<ICollection> AbstractQueuedSynchronizer::GetExclusiveQueuedThreads()
     //     }
     // }
     // return list;
-    return NULL;
+    return NOERROR;
 }
 
-AutoPtr<ICollection> AbstractQueuedSynchronizer::GetSharedQueuedThreads()
+ECode AbstractQueuedSynchronizer::GetSharedQueuedThreads(
+    /* [out] */ ICollection** outlect)
 {
     assert(0 && "TODO");
+    VALIDATE_NOT_NULL(outlect);
     // ArrayList<Thread> list = new ArrayList<Thread>();
     // for (Node p = mTail; p != null; p = p.prev) {
     //     if (p.isShared()) {
@@ -1166,7 +1213,7 @@ AutoPtr<ICollection> AbstractQueuedSynchronizer::GetSharedQueuedThreads()
     //     }
     // }
     // return list;
-    return NULL;
+    return NOERROR;
 }
 
 ECode AbstractQueuedSynchronizer::ToString(
@@ -1175,10 +1222,11 @@ ECode AbstractQueuedSynchronizer::ToString(
     VALIDATE_NOT_NULL(str)
 
     Int32 s = GetState();
-    String q  = HasQueuedThreads() ? String("non") : String("");
+    Boolean b = FALSE;
+    String q  = (HasQueuedThreads(&b), b) ? String("non") : String("");
     // return super.toString() + "[State = " + s + ", " + q + "empty queue]";
     *str = String("[State = ") +
-        StringUtils::Int32ToString(s) +
+        StringUtils::ToString(s) +
         String(", ") +
         q +
         String("empty queue]");
@@ -1346,7 +1394,7 @@ AutoPtr<IThread> AbstractQueuedSynchronizer::FullGetFirstQueuedThread()
 
     AutoPtr<Node> t = mTail;
     AutoPtr<IThread> firstThread = NULL;
-    while (t != NULL && t != mHead) {
+    while (t != NULL && !Object::Equals(t->Probe(EIID_IInterface), mHead->Probe(EIID_IInterface))) {
         AutoPtr<IThread> tt = t->mThread;
         if (tt != NULL)
             firstThread = tt;
@@ -1360,7 +1408,7 @@ Boolean AbstractQueuedSynchronizer::FindNodeFromTail(
 {
     AutoPtr<Node> t = mTail;
     for (;;) {
-        if (t == node)
+        if (Object::Equals(t->Probe(EIID_IInterface), node->Probe(EIID_IInterface)))
             return TRUE;
         if (t == NULL)
             return FALSE;

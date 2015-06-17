@@ -1,10 +1,10 @@
 
-#ifndef __CREENTRANTREADWRITELOCK_H__
-#define __CREENTRANTREADWRITELOCK_H__
+#ifndef __ELASTOS_UTILITY_CREENTRANTREADWRITELOCK_H__
+#define __ELASTOS_UTILITY_CREENTRANTREADWRITELOCK_H__
 
-#include "_CReentrantReadWriteLock.h"
+#include "_Elastos_Utility_Concurrent_Locks_CReentrantReadWriteLock.h"
 #include "AbstractQueuedSynchronizer.h"
-#include "elastos/Thread.h"
+#include "Thread.h"
 
 using Elastos::Core::IThread;
 using Elastos::Core::Thread;
@@ -18,6 +18,10 @@ namespace Concurrent {
 namespace Locks {
 
 CarClass(CReentrantReadWriteLock)
+    , public Object
+    , public IReentrantReadWriteLock
+    , public IReadWriteLock
+    , public ISerializable
 {
 public:
     enum CLSID {
@@ -32,12 +36,8 @@ public:
      */
     class Sync
         : public AbstractQueuedSynchronizer
-        , public ElRefBase
     {
     public:
-        virtual CARAPI_(Sync*) Probe(
-            /* [in] */ Int32 clsID) = 0;
-
         /** Returns the number of shared holds represented in count  */
         static CARAPI_(Int32) SharedCount(
             /* [in] */ Int32 c);
@@ -50,7 +50,8 @@ public:
          * A counter for per-thread read hold counts.
          * Maintained as a ThreadLocal; cached in cachedHoldCounter
          */
-        class HoldCounter : public ElRefBase {
+        class HoldCounter : public Object
+        {
         public:
             HoldCounter(){
                 mCount = 0;
@@ -66,7 +67,8 @@ public:
          * ThreadLocal subclass. Easiest to explicitly define for sake
          * of deserialization mechanics.
          */
-        class ThreadLocalHoldCounter : public ElRefBase { // extends ThreadLocal<HoldCounter> {
+        class ThreadLocalHoldCounter : public Object
+        { // extends ThreadLocal<HoldCounter> {
         public:
             ThreadLocalHoldCounter() {}
 
@@ -232,20 +234,9 @@ public:
     /**
      * Nonfair version of Sync
      */
-    class NonfairSync : public Sync {
+    class NonfairSync : public Sync
+    {
     public:
-        CARAPI_(Sync*) Probe(
-            /* [in] */ Int32 clsID)
-        {
-            if (clsID == CLSID_Sync) {
-                return (Sync*)(NonfairSync*)(this);
-            }
-            else if (clsID == CLSID_NonfairSync) {
-                return (Sync*)(NonfairSync*)(this);
-            }
-            return NULL;
-        }
-
         NonfairSync(){}
 
         CARAPI_(Boolean) WriterShouldBlock() {
@@ -272,20 +263,9 @@ public:
     /**
      * Fair version of Sync
      */
-    class FairSync : public Sync {
+    class FairSync : public Sync
+    {
     public:
-        CARAPI_(Sync*) Probe(
-            /* [in] */ Int32 clsID)
-        {
-            if (clsID == CLSID_Sync) {
-                return (Sync*)(FairSync*)(this);
-            }
-            else if (clsID == CLSID_FairSync) {
-                return (Sync*)(FairSync*)(this);
-            }
-            return NULL;
-        }
-
         FairSync(){}
 
         CARAPI_(Boolean) WriterShouldBlock() {
@@ -308,11 +288,12 @@ public:
      * The lock returned by method {@link ReentrantReadWriteLock#readLock}.
      */
     class CReadLock
-        : public ElRefBase
+        : public Object
         , public ILock
         , public ISerializable
     {
     public:
+        CAR_INTERFACE_DECL();
         /**
          * Constructor for use by subclasses
          *
@@ -321,8 +302,6 @@ public:
          */
         CReadLock(
             /* [in] */ CReentrantReadWriteLock* lock);
-
-        CAR_INTERFACE_DECL();
 
         /**
          * Acquires the read lock.
@@ -514,11 +493,12 @@ public:
      * The lock returned by method {@link ReentrantReadWriteLock#writeLock}.
      */
     class CWriteLock
-        : public ElRefBase
+        : public Object
         , public ILock
         , public ISerializable
     {
     public:
+        CAR_INTERFACE_DECL();
         /**
          * Constructor for use by subclasses
          *
@@ -527,8 +507,6 @@ public:
          */
         CWriteLock(
             /* [in] */ CReentrantReadWriteLock* lock);
-
-        CAR_INTERFACE_DECL();
 
         /**
          * Acquires the write lock.
@@ -821,6 +799,9 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
     /**
      * Creates a new {@code ReentrantReadWriteLock} with
      * default (nonfair) ordering properties.
@@ -1032,4 +1013,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CREENTRANTREADWRITELOCK_H__
+#endif //__ELASTOS_UTILITY_CREENTRANTREADWRITELOCK_H__

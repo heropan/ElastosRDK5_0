@@ -74,20 +74,6 @@ module
             [out] Boolean* value);
 
         /**
-         * Releases in exclusive mode.  Implemented by unblocking one or
-         * more threads if {@link #tryRelease} returns true.
-         * This method can be used to implement method {@link Lock#unlock}.
-         *
-         * @param arg the release argument.  This value is conveyed to
-         *        {@link #tryRelease} but is otherwise uninterpreted and
-         *        can represent anything you like.
-         * @return the value returned from {@link #tryRelease}
-         */
-        ToRelease(
-            [in] Int32 arg,
-            [out] Boolean* value);
-
-        /**
          * Acquires in shared mode, ignoring interrupts.  Implemented by
          * first invoking at least once {@link #tryAcquireShared},
          * returning on success.  Otherwise the thread is queued, possibly

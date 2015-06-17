@@ -1,8 +1,9 @@
 
 #include "ReentrantLock.h"
-#include "elastos/Thread.h"
+#include "Thread.h"
 
 using Elastos::Core::Thread;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -96,7 +97,7 @@ void ReentrantLock::Sync::ReadObject(
 //===============================================================================
 // ReentrantLock::NonfairSync
 //===============================================================================
-void ReentrantLock::NonfairSync::Lock()
+ECode ReentrantLock::NonfairSync::Lock()
 {
     if (CompareAndSetState(0, 1)) {
         AutoPtr<IThread> current = Thread::GetCurrentThread();
@@ -105,6 +106,7 @@ void ReentrantLock::NonfairSync::Lock()
     else {
         TryAcquire(1);
     }
+    return NOERROR;
 }
 
 Boolean ReentrantLock::NonfairSync::TryAcquire(
@@ -116,9 +118,10 @@ Boolean ReentrantLock::NonfairSync::TryAcquire(
 //===============================================================================
 // ReentrantLock::FairSync
 //===============================================================================
-void ReentrantLock::FairSync::Lock()
+ECode ReentrantLock::FairSync::Lock()
 {
     TryAcquire(1);
+    return NOERROR;
 }
 
 Boolean ReentrantLock::FairSync::TryAcquire(
@@ -127,7 +130,8 @@ Boolean ReentrantLock::FairSync::TryAcquire(
     AutoPtr<IThread> current = Thread::GetCurrentThread();
     Int32 c = GetState();
     if (c == 0) {
-        if (!HasQueuedPredecessors() &&
+        Boolean b = FALSE;
+        if (!(HasQueuedPredecessors(&b), b) &&
             CompareAndSetState(0, acquires)) {
             SetExclusiveOwnerThread(current);
             return TRUE;
@@ -148,7 +152,7 @@ Boolean ReentrantLock::FairSync::TryAcquire(
 //===============================================================================
 // ReentrantLock
 //===============================================================================
-CAR_INTERFACE_IMPL(ReentrantLock, Object, IReentrantLock)
+CAR_INTERFACE_IMPL_3(ReentrantLock, Object, IReentrantLock, ISerializable, ILock)
 
 ECode ReentrantLock::constructor()
 {
@@ -161,11 +165,11 @@ ECode ReentrantLock::constructor(
 {
     if (fair) {
         AutoPtr<FairSync> fs = new FairSync();
-        mSync = fs->Probe(CLSID_Sync);
+//        mSync = fs->Probe(EIID_Sync);
     }
     else {
         AutoPtr<NonfairSync> fs = new NonfairSync();
-        mSync = fs->Probe(CLSID_Sync);
+//        mSync = fs->Probe(EIID_Sync);
     }
     return NOERROR;
 }
@@ -201,8 +205,7 @@ ECode ReentrantLock::TryLock(
     VALIDATE_NOT_NULL(unit);
     Int64 nanos;
     unit->ToNanos(timeout, &nanos);
-    *result = mSync->TryAcquireNanos(1, nanos);
-    return NOERROR;
+    return mSync->TryAcquireNanos(1, nanos, result);
 }
 
 ECode ReentrantLock::UnLock()
@@ -249,7 +252,7 @@ ECode ReentrantLock::IsFair(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = mSync->Probe(CLSID_FairSync) != NULL;
+//    *result = mSync->Probe(EIID_FairSync) != NULL;
     return NOERROR;
 }
 
@@ -262,8 +265,7 @@ ECode ReentrantLock::HasQueuedThreads(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = mSync->HasQueuedThreads();
-    return NOERROR;
+    return mSync->HasQueuedThreads(result);
 }
 
 ECode ReentrantLock::HasQueuedThread(
@@ -271,21 +273,21 @@ ECode ReentrantLock::HasQueuedThread(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = mSync->IsQueued(thread);
-    return NOERROR;
+    return mSync->IsQueued(thread, result);
 }
 
 ECode ReentrantLock::GetQueueLength(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = mSync->GetQueueLength();
-    return NOERROR;
+    return mSync->GetQueueLength(result);
 }
 
 AutoPtr<ICollection> ReentrantLock::GetQueuedThreads()
 {
-    return mSync->GetQueuedThreads();
+    AutoPtr<ICollection> res;
+    mSync->GetQueuedThreads((ICollection**)&res);
+    return res;
 }
 
 ECode ReentrantLock::HasWaiters(

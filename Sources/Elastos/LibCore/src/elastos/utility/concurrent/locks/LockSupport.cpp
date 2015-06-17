@@ -11,8 +11,6 @@ namespace Locks {
 
 const Int64 LockSupport::mParkBlockerOffset = 0;
 
-CAR_INTERFACE_IMPL(LockSupport, Object, ILockSupport)
-
 ECode LockSupport::Unpark(
     /* [in] */ IThread* thread)
 {

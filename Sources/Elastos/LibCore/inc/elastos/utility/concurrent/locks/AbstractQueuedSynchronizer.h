@@ -605,7 +605,7 @@ public:
      * @throws InterruptedException if the current thread is interrupted
      */
     CARAPI TryAcquireSharedNanos(
-        /* [in] */ Int64 arg,
+        /* [in] */ Int32 arg,
         /* [in] */ Int64 nanosTimeout,
         /* [out] */ Boolean* result);
 
@@ -618,7 +618,23 @@ public:
      *        and can represent anything you like.
      * @return the value returned from {@link #tryReleaseShared}
      */
-    CARAPI_(Boolean) ReleaseShared(
+    CARAPI ReleaseShared(
+        /* [in] */ Int32 arg,
+        /* [out] */ Boolean* value);
+
+    /**
+     * Acquires in exclusive mode, ignoring interrupts.  Implemented
+     * by invoking at least once {@link #tryAcquire},
+     * returning on success.  Otherwise the thread is queued, possibly
+     * repeatedly blocking and unblocking, invoking {@link
+     * #tryAcquire} until success.  This method can be used
+     * to implement method {@link Lock#lock}.
+     *
+     * @param arg the acquire argument.  This value is conveyed to
+     *        {@link #tryAcquire} but is otherwise uninterpreted and
+     *        can represent anything you like.
+     */
+    CARAPI Acquire(
         /* [in] */ Int32 arg);
 
     /**
@@ -636,7 +652,7 @@ public:
      * @throws InterruptedException if the current thread is interrupted
      */
     CARAPI AcquireInterruptibly(
-        /* [in] */ Int64 arg);
+        /* [in] */ Int32 arg);
 
     /**
      * Attempts to acquire in exclusive mode, aborting if interrupted,
@@ -655,9 +671,10 @@ public:
      * @return {@code true} if acquired; {@code false} if timed out
      * @throws InterruptedException if the current thread is interrupted
      */
-    CARAPI_(Boolean) TryAcquireNanos(
-        /* [in] */ Int64 arg,
-        /* [in] */ Int64 nanosTimeout);
+    CARAPI TryAcquireNanos(
+        /* [in] */ Int32 arg,
+        /* [in] */ Int64 nanosTimeout,
+        /* [out] */ Boolean* value);
 
 
     // Queue inspection methods
@@ -673,7 +690,8 @@ public:
      *
      * @return {@code true} if there may be other threads waiting to acquire
      */
-    CARAPI_(Boolean) HasQueuedThreads();
+    CARAPI HasQueuedThreads(
+        /* [out] */ Boolean* value);
 
     /**
      * Queries whether any threads have ever contended to acquire this
@@ -684,7 +702,8 @@ public:
      *
      * @return {@code true} if there has ever been contention
      */
-    CARAPI_(Boolean) HasContended();
+    CARAPI HasContended(
+        /* [out] */ Boolean* value);
 
     /**
      * Returns the first (longest-waiting) thread in the queue, or
@@ -697,7 +716,8 @@ public:
      * @return the first (longest-waiting) thread in the queue, or
      *         {@code null} if no threads are currently queued
      */
-    CARAPI_(AutoPtr<IThread>) GetFirstQueuedThread();
+    CARAPI GetFirstQueuedThread(
+        /* [out] */ IThread** outthread);
 
     /**
      * Returns true if the given thread is currently queued.
@@ -709,8 +729,9 @@ public:
      * @return {@code true} if the given thread is on the queue
      * @throws NullPointerException if the thread is null
      */
-    CARAPI_(Boolean) IsQueued(
-        /* [in] */ IThread* thread);
+    CARAPI IsQueued(
+        /* [in] */ IThread* thread,
+        /* [out] */ Boolean* value);
 
     /**
      * Returns {@code true} if the apparent first queued thread, if one
@@ -721,7 +742,8 @@ public:
      * is not the first queued thread.  Used only as a heuristic in
      * ReentrantReadWriteLock.
      */
-    CARAPI_(Boolean) ApparentlyFirstQueuedIsExclusive();
+    CARAPI ApparentlyFirstQueuedIsExclusive(
+        /* [out] */ Boolean* value);
 
     /**
      * Queries whether any threads have been waiting to acquire longer
@@ -767,7 +789,8 @@ public:
      * @since 1.7
      * @hide
      */
-    CARAPI_(Boolean) HasQueuedPredecessors();
+    CARAPI HasQueuedPredecessors(
+        /* [out] */ Boolean* value);
 
 
     // Instrumentation and monitoring methods
@@ -782,7 +805,8 @@ public:
      *
      * @return the estimated number of threads waiting to acquire
      */
-    CARAPI_(Int32) GetQueueLength();
+    CARAPI GetQueueLength(
+        /* [out] */ Int32* value);
 
     /**
      * Returns a collection containing threads that may be waiting to
@@ -795,7 +819,8 @@ public:
      *
      * @return the collection of threads
      */
-    CARAPI_(AutoPtr<ICollection>) GetQueuedThreads();
+    CARAPI GetQueuedThreads(
+        /* [out] */ ICollection** outlect);
 
     /**
      * Returns a collection containing threads that may be waiting to
@@ -805,7 +830,8 @@ public:
      *
      * @return the collection of threads
      */
-    CARAPI_(AutoPtr<ICollection>) GetExclusiveQueuedThreads();
+    CARAPI GetExclusiveQueuedThreads(
+        /* [out] */ ICollection** outlect);
 
     /**
      * Returns a collection containing threads that may be waiting to
@@ -815,7 +841,8 @@ public:
      *
      * @return the collection of threads
      */
-    CARAPI_(AutoPtr<ICollection>) GetSharedQueuedThreads();
+    CARAPI GetSharedQueuedThreads(
+        /* [out] */ ICollection** outlect);
 
     /**
      * Returns a string identifying this synchronizer, as well as its state.

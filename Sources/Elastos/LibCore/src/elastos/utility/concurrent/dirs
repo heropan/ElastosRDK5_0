@@ -1,3 +1,0 @@
-
-DIRS += atomic
-DIRS += locks

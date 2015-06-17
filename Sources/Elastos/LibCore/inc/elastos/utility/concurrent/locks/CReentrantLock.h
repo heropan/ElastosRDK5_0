@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_UTILITY_CREENTRANTLOCK_H__
 #define __ELASTOS_UTILITY_CREENTRANTLOCK_H__
 
-#include "_Elastos_Utility_Concurrent_CReentrantLock.h"
+#include "_Elastos_Utility_Concurrent_Locks_CReentrantLock.h"
 #include "ReentrantLock.h"
 
 namespace Elastos {
@@ -12,7 +12,8 @@ namespace Locks {
 
 CarClass(CReentrantLock), public ReentrantLock
 {
-    CAR_OBJECT_DECL(CReentrantLock)
+public:
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Locks

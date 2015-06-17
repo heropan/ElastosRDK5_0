@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_UTILITY_ABSTRACTOWNABLESYNCHRONIZER_H__
 #define __ELASTOS_UTILITY_ABSTRACTOWNABLESYNCHRONIZER_H__
 
-#include <Elastos/core/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IThread;
 using Elastos::Core::Object;
