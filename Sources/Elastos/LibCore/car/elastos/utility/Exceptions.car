@@ -22,4 +22,5 @@ module
     const E_MISSING_RESOURCE_EXCEPTION                      = 0xA700000C;
     const E_BROKEN_BARRIER_EXCEPTION                        = 0xA700000D;
     const E_ILLFORMED_LOCALE_EXCEPTION                      = 0xA700000E;
+    const E_BACKING_STORE_EXCEPTION                         = 0xA700000F;
 }

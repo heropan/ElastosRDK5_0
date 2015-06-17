@@ -14,12 +14,6 @@ module
          */
         GetSource(
             [out] IInterface** outface);
-
-        /**
-         * Returns the string representation of this {@code EventObject}.
-         */
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Utility

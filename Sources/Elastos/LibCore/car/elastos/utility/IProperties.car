@@ -12,7 +12,7 @@ module
 
     /**
      * @Involve
-     * interface IDictionary;
+     * interface IHashtable;
      */
     interface IProperties {
 

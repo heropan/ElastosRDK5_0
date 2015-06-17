@@ -62,6 +62,7 @@ LIBRARIES += utility/concurrent/concurrent.lib
 LIBRARIES += utility/regex/regex.lib
 LIBRARIES += utility/zip/zip.lib
 LIBRARIES += utility/logging/logging.lib
+LIBRARIES += utility/prefs/prefs.lib
 //LIBRARIES += utility/jar/jar.lib
 LIBRARIES += ../libcore/io/io.lib
 LIBRARIES += ../libcore/icu/icu.lib

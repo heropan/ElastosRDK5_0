@@ -72,6 +72,7 @@ SOURCES += CSimpleTimeZone.cpp
 SOURCES += CTimeZoneHelper.cpp
 SOURCES += Currency.cpp
 SOURCES += CFormatter.cpp
+SOURCES += EventObject.cpp
 
 
 SOURCES += utility.cpp

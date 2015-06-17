@@ -4,3 +4,4 @@ DIRS += concurrent
 DIRS += logging
 DIRS += regex
 DIRS += zip
+DIRS += prefs
