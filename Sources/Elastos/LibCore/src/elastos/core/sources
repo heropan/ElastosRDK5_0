@@ -28,7 +28,6 @@ SOURCES += CInteger64.cpp
 SOURCES += CFloat.cpp
 SOURCES += CDouble.cpp
 SOURCES += CArrayOf.cpp
-SOURCES += CRandom.cpp
 SOURCES += Init.cpp
 
 SOURCES += ThreadGroup.cpp

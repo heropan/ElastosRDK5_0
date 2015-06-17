@@ -5,7 +5,6 @@
 #include "CMessageFormatField.h"
 #include "CMessageFormat.h"
 #include "CStringWrapper.h"
-// #include "CObjectContainer.h"
 #include "CAttributedString.h"
 #include "CDecimalFormatSymbols.h"
 #include "CDouble.h"
@@ -21,7 +20,6 @@ using Elastos::Core::IByte;
 using Elastos::Core::IInteger16;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger64;
-// using Elastos::Core::CObjectContainer;
 using Elastos::Utility::EIID_IDate;
 using Elastos::Text::IAttributedString;
 using Elastos::Text::CAttributedString;
@@ -526,19 +524,19 @@ ECode MessageFormat::ParseObject(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    AutoPtr<ArrayOf<IInterface*> > objects;
-    FAIL_RETURN(Parse(string, position, (ArrayOf<IInterface*>**)&objects));
-    if (objects != NULL) {
-        AutoPtr<IObjectContainer> bc;
-        assert(0 && "TODO");
-        // CObjectContainer::New((IObjectContainer**)&bc);
-        for (Int32 i = 0; i < objects->GetLength(); ++i) {
-            bc->Add((*objects)[i]);
-        }
+    // AutoPtr<ArrayOf<IInterface*> > objects;
+    // FAIL_RETURN(Parse(string, position, (ArrayOf<IInterface*>**)&objects));
+    // if (objects != NULL) {
+    //     AutoPtr<IObjectContainer> bc;
+    //     assert(0 && "TODO");
+    //     // CObjectContainer::New((IObjectContainer**)&bc);
+    //     for (Int32 i = 0; i < objects->GetLength(); ++i) {
+    //         bc->Add((*objects)[i]);
+    //     }
 
-        *result = bc->Probe(EIID_IInterface);
-        REFCOUNT_ADD(*result);
-    }
+    //     *result = bc->Probe(EIID_IInterface);
+    //     REFCOUNT_ADD(*result);
+    // }
 
     return NOERROR;
 }

@@ -102,8 +102,10 @@ ECode CLinkedList::LinkIterator::GetNext(
             REFCOUNT_ADD(*object);
             return NOERROR;
         }
+        *object = NULL;
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
+    *object = NULL;
     return E_CONCURRENT_MODIFICATION_EXCEPTION;
 }
 
@@ -128,8 +130,10 @@ ECode CLinkedList::LinkIterator::Previous(
             REFCOUNT_ADD(*object);
             return NOERROR;
         }
+        *object = NULL;
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
+    *object = NULL;
     return E_CONCURRENT_MODIFICATION_EXCEPTION;
 }
 
@@ -333,7 +337,6 @@ ECode CLinkedList::Add(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     return AddLastImpl(object, result);
 }
 
@@ -502,11 +505,18 @@ ECode CLinkedList::Clone(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
+    *object = NULL;
+
     // try {
     AutoPtr<ILinkedList> l;
     CLinkedList::New((ILinkedList**)&l);
-    Boolean flag = FALSE;
-    FAIL_RETURN((ICollection::Probe(l))->AddAll(this, &flag));
+    CLinkedList* cl = (CLinkedList*)l.Get();
+    cl->mSize = 0;
+    cl->mVoidLink = new Link(NULL, NULL, NULL);
+    cl->mVoidLink->mPrevious = cl->mVoidLink;
+    cl->mVoidLink->mNext = cl->mVoidLink;
+
+    FAIL_RETURN((ICollection::Probe(l))->AddAll(this));
     *object = l.Get();
     REFCOUNT_ADD(*object);
     return NOERROR;
@@ -564,25 +574,27 @@ ECode CLinkedList::Get(
         REFCOUNT_ADD(*object);
         return NOERROR;
     }
+    *object = NULL;
     return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 }
 
 ECode CLinkedList::GetFirst(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
     return GetFirstImpl(object);
 }
 
 ECode CLinkedList::GetFirstImpl(
     /* [out] */ IInterface** object)
 {
+    VALIDATE_NOT_NULL(object)
     AutoPtr<Link> first = mVoidLink->mNext;
     if (first != mVoidLink) {
         *object = first->mData;
         REFCOUNT_ADD(*object);
         return NOERROR;
     }
+    *object = NULL;
     return E_NO_SUCH_ELEMENT_EXCEPTION;
 }
 
@@ -596,6 +608,7 @@ ECode CLinkedList::GetLast(
         REFCOUNT_ADD(*object);
         return NOERROR;
     }
+    *object = NULL;
     return E_NO_SUCH_ELEMENT_EXCEPTION;
 }
 
@@ -666,7 +679,8 @@ ECode CLinkedList::GetListIterator(
     /* [out] */ IListIterator** it)
 {
     VALIDATE_NOT_NULL(it);
-    *it = new LinkIterator(this, location);
+    AutoPtr<IListIterator> obj = new LinkIterator(this , location);
+    *it = obj;
     REFCOUNT_ADD(*it);
     return NOERROR;
 }
@@ -698,6 +712,7 @@ ECode CLinkedList::Remove(
         REFCOUNT_ADD(*object);
         return NOERROR;
     }
+    *object = NULL;
     return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 }
 
@@ -705,20 +720,19 @@ ECode CLinkedList::Remove(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     return RemoveFirstOccurrenceImpl(object, result);
 }
 
 ECode CLinkedList::RemoveFirst(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
     return RemoveFirstImpl(object);
 }
 
 ECode CLinkedList::RemoveFirstImpl(
     /* [out] */ IInterface** object)
 {
+    VALIDATE_NOT_NULL(object)
     AutoPtr<Link> first = mVoidLink->mNext;
     if (first != mVoidLink) {
         AutoPtr<Link> next = first->mNext;
@@ -729,19 +743,20 @@ ECode CLinkedList::RemoveFirstImpl(
         REFCOUNT_ADD(*object);
         return NOERROR;
     }
+    *object = NULL;
     return E_NO_SUCH_ELEMENT_EXCEPTION;
 }
 
 ECode CLinkedList::RemoveLast(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
     return RemoveLastImpl(object);
 }
 
 ECode CLinkedList::RemoveLastImpl(
     /* [out] */ IInterface** object)
 {
+    VALIDATE_NOT_NULL(object)
     AutoPtr<Link> last = mVoidLink->mPrevious;
     if(last != mVoidLink) {
         AutoPtr<Link> previous = last->mPrevious;
@@ -753,6 +768,7 @@ ECode CLinkedList::RemoveLastImpl(
         REFCOUNT_ADD(*object);
         return NOERROR;
     }
+    *object = NULL;
     return E_NO_SUCH_ELEMENT_EXCEPTION;
 }
 
@@ -769,7 +785,6 @@ ECode CLinkedList::OfferFirst(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     return AddFirstImpl(object, result);
 }
 
@@ -777,14 +792,12 @@ ECode CLinkedList::OfferLast(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     return AddLastImpl(object, result);
 }
 
 ECode CLinkedList::PeekFirst(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
     return PeekFirstImpl(object);
 }
 
@@ -837,7 +850,6 @@ ECode CLinkedList::RemoveFirstOccurrence(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     return RemoveFirstOccurrenceImpl(object, result);
 }
 
@@ -902,6 +914,7 @@ ECode CLinkedList::Set(
         link->mData = object;
         return NOERROR;
     }
+    *prevObject = NULL;
     return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 }
 
@@ -917,7 +930,6 @@ ECode CLinkedList::Offer(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     return AddLastImpl(object, result);
 }
 
@@ -935,20 +947,19 @@ ECode CLinkedList::Poll(
 ECode CLinkedList::Remove(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
     return RemoveFirstImpl(object);
 }
 
 ECode CLinkedList::Peek(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
     return PeekFirstImpl(object);
 }
 
 ECode CLinkedList::PeekFirstImpl(
     /* [out] */ IInterface** object)
 {
+    VALIDATE_NOT_NULL(object)
     AutoPtr<Link> first = mVoidLink->mNext;
     if (first != mVoidLink) {
         *object = first->mData;
@@ -962,7 +973,6 @@ ECode CLinkedList::PeekFirstImpl(
 ECode CLinkedList::GetElement(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
     return GetFirstImpl(object);
 }
 
@@ -986,8 +996,10 @@ ECode CLinkedList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    VALIDATE_NOT_NULL(contents);
     VALIDATE_NOT_NULL(outArray);
+    *outArray = NULL;
+    VALIDATE_NOT_NULL(contents);
+
     Int32 index = 0;
     Int32 size = contents->GetLength();
     if (mSize > size) {
@@ -1010,122 +1022,54 @@ ECode CLinkedList::ToArray(
 ECode CLinkedList::WriteObject(
     /* [in] */ IObjectOutputStream* stream)
 {
-    VALIDATE_NOT_NULL(stream);
-    stream->DefaultWriteObject();
-    AutoPtr<IObjectOutput> outputstream;
-    //need CObjectOutputStream implement
-    assert(0 && "TODO");
-    // outputstream = (CObjectOutputStream*)stream->Probe(EIID_IObjectOutput);
-    (IDataOutput::Probe(outputstream))->WriteInt32(mSize);
-    AutoPtr<IIterator> it;
-    GetIterator((IIterator**)&it);
-    Boolean flag = FALSE;
-    while ((it->HasNext(&flag), flag)) {
-        AutoPtr<IInterface> nextobject;
-        it->GetNext((IInterface**)&nextobject);
-        outputstream->WriteObject(nextobject);
-    }
+    assert(0);
+    // VALIDATE_NOT_NULL(stream);
+    // stream->DefaultWriteObject();
+    // AutoPtr<IObjectOutput> outputstream;
+    // //need CObjectOutputStream implement
+    // assert(0 && "TODO");
+    // // outputstream = (CObjectOutputStream*)stream->Probe(EIID_IObjectOutput);
+    // (IDataOutput::Probe(outputstream))->WriteInt32(mSize);
+    // AutoPtr<IIterator> it;
+    // GetIterator((IIterator**)&it);
+    // Boolean flag = FALSE;
+    // while ((it->HasNext(&flag), flag)) {
+    //     AutoPtr<IInterface> nextobject;
+    //     it->GetNext((IInterface**)&nextobject);
+    //     outputstream->WriteObject(nextobject);
+    // }
     return NOERROR;
 }
 
 ECode CLinkedList::ReadObject(
     /* [in] */ IObjectInputStream* stream)
 {
-    VALIDATE_NOT_NULL(stream);
-    stream->DefaultReadObject();
-    AutoPtr<IObjectInput> inputstream;
-    // need CObjectInputStream implement
-    assert(0 && "TODO");
-    // inputstream = (CObjectInputStream*)stream->Probe(EIID_IObjectInput);
-    Int32 result;
-    (IDataInput::Probe(inputstream))->ReadInt32(&result);
-    mVoidLink = new Link(NULL, NULL, NULL);
-    AutoPtr<Link> link = mVoidLink;
-    for (Int32 i = mSize; --i >= 0;) {
-        AutoPtr<IInterface> object;
-        inputstream->ReadObject((IInterface**)&object);
-        AutoPtr<Link> nextLink = new Link(object, link, NULL);
-        link->mNext = nextLink;
-        link = nextLink;
-    }
-    link->mNext = mVoidLink;
-    mVoidLink->mPrevious = link;
+    assert(0);
+    // VALIDATE_NOT_NULL(stream);
+    // stream->DefaultReadObject();
+    // AutoPtr<IObjectInput> inputstream;
+    // // need CObjectInputStream implement
+    // assert(0 && "TODO");
+    // // inputstream = (CObjectInputStream*)stream->Probe(EIID_IObjectInput);
+    // Int32 result;
+    // (IDataInput::Probe(inputstream))->ReadInt32(&result);
+    // mVoidLink = new Link(NULL, NULL, NULL);
+    // AutoPtr<Link> link = mVoidLink;
+    // for (Int32 i = mSize; --i >= 0;) {
+    //     AutoPtr<IInterface> object;
+    //     inputstream->ReadObject((IInterface**)&object);
+    //     AutoPtr<Link> nextLink = new Link(object, link, NULL);
+    //     link->mNext = nextLink;
+    //     link = nextLink;
+    // }
+    // link->mNext = mVoidLink;
+    // mVoidLink->mPrevious = link;
     return NOERROR;
-}
-
-ECode CLinkedList::GetIterator(
-    /* [out] */ IIterator** iterator)
-{
-    VALIDATE_NOT_NULL(iterator);
-    return AbstractSequentialList::GetIterator(iterator);
-}
-
-ECode CLinkedList::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return AbstractSequentialList::ContainsAll(collection, result);
-}
-
-ECode CLinkedList::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return AbstractSequentialList::Equals(object, result);
-}
-
-ECode CLinkedList::GetHashCode(
-    /* [out] */ Int32* hashCode)
-{
-    VALIDATE_NOT_NULL(hashCode);
-    return AbstractSequentialList::GetHashCode(hashCode);
-}
-
-ECode CLinkedList::IsEmpty(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return AbstractSequentialList::IsEmpty(result);
-}
-
-ECode CLinkedList::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return AbstractSequentialList::RemoveAll(collection, result);
-}
-
-ECode CLinkedList::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return AbstractSequentialList::RetainAll(collection, result);
-}
-
-ECode CLinkedList::GetListIterator(
-    /* [out] */ IListIterator** it)
-{
-    VALIDATE_NOT_NULL(it);
-    return new LinkIterator(this , it);
-}
-
-ECode CLinkedList::GetSubList(
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out] */ IList** subList)
-{
-    VALIDATE_NOT_NULL(subList);
-    return AbstractSequentialList::GetSubList(start, end, subList);
 }
 
 ECode CLinkedList::Element(
         /* [out] */ IInterface** e)
 {
-    VALIDATE_NOT_NULL(e);
     return GetFirstImpl(e);
 }
 

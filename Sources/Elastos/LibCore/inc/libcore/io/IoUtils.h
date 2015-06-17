@@ -4,7 +4,7 @@
 
 #include "Elastos.CoreLibrary_server.h"
 
-using Elastos::Core::IRandom;
+using Elastos::Utility::IRandom;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;

@@ -26,7 +26,6 @@ module
     merge("core/IThread.car");
     merge("core/IThreadGroup.car");
     merge("core/IClassLoader.car");
-    merge("core/IRandom.car");
     merge("core/IThrowable.car");
     merge("core/IStackTraceElement.car");
     merge("core/IBlockGuard.car");
@@ -140,20 +139,9 @@ module
 
     class CArrayOf {
         constructor(
-            [in] InterfaceID riid,
             [in] Int32 size);
 
         interface IArrayOf;
-    }
-
-    class CRandom {
-        constructor();
-
-        constructor(
-            [in] Int64 seed);
-
-        interface IRandom;
-        interface ISerializable;
     }
 
     singleton class CBlockGuard {

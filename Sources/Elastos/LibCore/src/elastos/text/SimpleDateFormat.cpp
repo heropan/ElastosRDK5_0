@@ -43,7 +43,6 @@ using Elastos::Utility::ILocale;
 using Elastos::Utility::CLocale;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
-using Elastos::Utility::IObjectEnumerator;
 using Libcore::ICU::ITimeZoneNames;
 // using Libcore::ICU::TimeZones;
 
@@ -579,29 +578,29 @@ ECode SimpleDateFormat::AppendTimeZone(
         tz->GetID(&ID);
         String custom;
 
-        AutoPtr< ArrayOf<IObjectContainer*> > outarray;
-        assert(0 && "TODO");
-        // mFormatData->GetZoneStrings((ArrayOf<IObjectContainer*>**)&outarray);
-        Int32 length = outarray->GetLength();
-        AutoPtr< ArrayOf<IArrayOf*> > outresult = ArrayOf<IArrayOf*>::Alloc(length);
-        for (Int32 i = 0; i < length; ++i) {
-            AutoPtr<IObjectContainer> newBc = (*outarray)[i];
-            Int32 objlen = 0;
-            newBc->GetObjectCount(&objlen);
-            AutoPtr<IArrayOf> arrstr;
-            CArrayOf::New(EIID_ICharSequence, objlen, (IArrayOf**)&arrstr);
-            AutoPtr<IObjectEnumerator> oenum;
-            newBc->GetObjectEnumerator((IObjectEnumerator**)&oenum);
-            Boolean isflag = FALSE;
-            Int32 j = 0;
-            while (oenum->MoveNext(&isflag), isflag) {
-                AutoPtr<IInterface> outface;
-                oenum->Current((IInterface**)&outface);
-                arrstr->Put(j, outface);
-                ++j;
-            }
-            outresult->Set(i, arrstr);
-        }
+        // AutoPtr< ArrayOf<IObjectContainer*> > outarray;
+        // assert(0 && "TODO");
+        // // mFormatData->GetZoneStrings((ArrayOf<IObjectContainer*>**)&outarray);
+        // Int32 length = outarray->GetLength();
+        // AutoPtr< ArrayOf<IArrayOf*> > outresult = ArrayOf<IArrayOf*>::Alloc(length);
+        // for (Int32 i = 0; i < length; ++i) {
+        //     AutoPtr<IObjectContainer> newBc = (*outarray)[i];
+        //     Int32 objlen = 0;
+        //     newBc->GetObjectCount(&objlen);
+        //     AutoPtr<IArrayOf> arrstr;
+        //     CArrayOf::New(EIID_ICharSequence, objlen, (IArrayOf**)&arrstr);
+        //     AutoPtr<IObjectEnumerator> oenum;
+        //     newBc->GetObjectEnumerator((IObjectEnumerator**)&oenum);
+        //     Boolean isflag = FALSE;
+        //     Int32 j = 0;
+        //     while (oenum->MoveNext(&isflag), isflag) {
+        //         AutoPtr<IInterface> outface;
+        //         oenum->Current((IInterface**)&outface);
+        //         arrstr->Put(j, outface);
+        //         ++j;
+        //     }
+        //     outresult->Set(i, arrstr);
+        // }
         assert(0 && "TODO");
         // TimeZones::GetDisplayName(outresult, ID, daylight, style, &custom);
         if (!custom.IsNull()) {
@@ -1132,33 +1131,6 @@ ECode SimpleDateFormat::ParseText(
     return NOERROR;
 }
 
-AutoPtr<ArrayOf<String> > SimpleDateFormat::ObjectContainerToStringArray(
-    /* [in] */ IObjectContainer* bc)
-{
-    if (bc == NULL)
-        return NULL;
-
-    Int32 count;
-    bc->GetObjectCount(&count);
-
-    AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(count);
-
-    AutoPtr<IObjectEnumerator> enumerator;
-    bc->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-    Boolean hasNext = FALSE;
-    Int32 i = 0;
-    while (enumerator->MoveNext(&hasNext), hasNext) {
-        AutoPtr<ICharSequence> seq;
-        enumerator->Current((IInterface**)&seq);
-        String str;
-        seq->ToString(&str);
-
-        (*array)[i++] = str;
-    }
-
-    return array;
-}
-
 ECode SimpleDateFormat::ParseTimeZone(
     /* [in] */ const String& string,
     /* [in] */ Int32 offset,
@@ -1231,52 +1203,52 @@ ECode SimpleDateFormat::ParseTimeZone(
         return NOERROR;
     }
 
-    AutoPtr<ArrayOf<IObjectContainer*> > zones = ((CDateFormatSymbols *)mFormatData.Get())->InternalZoneStrings();
-    for (Int32 i = 0; i < zones->GetLength(); ++i) {
-        AutoPtr<IObjectContainer> bc = (*zones)[i];
-        if (!bc) continue;
+    // AutoPtr<ArrayOf<IObjectContainer*> > zones = ((CDateFormatSymbols *)mFormatData.Get())->InternalZoneStrings();
+    // for (Int32 i = 0; i < zones->GetLength(); ++i) {
+    //     AutoPtr<IObjectContainer> bc = (*zones)[i];
+    //     if (!bc) continue;
 
-        AutoPtr<ArrayOf<String> > element = ObjectContainerToStringArray(bc);
-        for (Int32 j = ITimeZoneNames::LONG_NAME; j < ITimeZoneNames::NAME_COUNT; ++j) {
-            String zoneStr = (*element)[j];
-            if (string.RegionMatchesIgnoreCase(offset, zoneStr, 0, zoneStr.GetLength())) {
-                AutoPtr<ITimeZoneHelper> tzh;
-                assert(0 && "TODO");
-                // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzh);
-                AutoPtr<ITimeZone> zone;
-                tzh->GetTimeZone((*element)[ITimeZoneNames::OLSON_NAME], (ITimeZone**)&zone);
-                if (zone == NULL) {
-                    *value = -offset - 1;
-                    return NOERROR;
-                }
-                Int32 raw;
-                zone->GetRawOffset(&raw);
-                Boolean isUsed;
-                zone->UseDaylightTime(&isUsed);
-                if (j == ITimeZoneNames::LONG_NAME_DST || j == ITimeZoneNames::SHORT_NAME_DST) {
-                    // Not all time zones use a one-hour difference, so we need to query
-                    // the TimeZone. (Australia/Lord_Howe is the usual example of this.)
-                    Int32 dstSavings;
-                    zone->GetDSTSavings(&dstSavings);
-                    // One problem with TimeZone.getDSTSavings is that it will return 0 if the
-                    // time zone has stopped using DST, even if we're parsing a date from
-                    // the past. In that case, assume the default.
-                    if (dstSavings == 0) {
-                        // TODO: we should change this to use TimeZone.getOffset(long),
-                        // but that requires the complete date to be parsed first.
-                        dstSavings = 3600000;
-                    }
-                    raw += dstSavings;
-                }
-                AutoPtr<ISimpleTimeZone> stz;
-                assert(0 && "TODO");
-                // CSimpleTimeZone::New(raw, String(""), (ISimpleTimeZone**)&stz);
-                // mCalendar->SetTimeZone(stz);
-                *value = offset + zoneStr.GetLength();
-                return NOERROR;
-            }
-        }
-    }
+    //     AutoPtr<ArrayOf<String> > element = ObjectContainerToStringArray(bc);
+    //     for (Int32 j = ITimeZoneNames::LONG_NAME; j < ITimeZoneNames::NAME_COUNT; ++j) {
+    //         String zoneStr = (*element)[j];
+    //         if (string.RegionMatchesIgnoreCase(offset, zoneStr, 0, zoneStr.GetLength())) {
+    //             AutoPtr<ITimeZoneHelper> tzh;
+    //             assert(0 && "TODO");
+    //             // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzh);
+    //             AutoPtr<ITimeZone> zone;
+    //             tzh->GetTimeZone((*element)[ITimeZoneNames::OLSON_NAME], (ITimeZone**)&zone);
+    //             if (zone == NULL) {
+    //                 *value = -offset - 1;
+    //                 return NOERROR;
+    //             }
+    //             Int32 raw;
+    //             zone->GetRawOffset(&raw);
+    //             Boolean isUsed;
+    //             zone->UseDaylightTime(&isUsed);
+    //             if (j == ITimeZoneNames::LONG_NAME_DST || j == ITimeZoneNames::SHORT_NAME_DST) {
+    //                 // Not all time zones use a one-hour difference, so we need to query
+    //                 // the TimeZone. (Australia/Lord_Howe is the usual example of this.)
+    //                 Int32 dstSavings;
+    //                 zone->GetDSTSavings(&dstSavings);
+    //                 // One problem with TimeZone.getDSTSavings is that it will return 0 if the
+    //                 // time zone has stopped using DST, even if we're parsing a date from
+    //                 // the past. In that case, assume the default.
+    //                 if (dstSavings == 0) {
+    //                     // TODO: we should change this to use TimeZone.getOffset(long),
+    //                     // but that requires the complete date to be parsed first.
+    //                     dstSavings = 3600000;
+    //                 }
+    //                 raw += dstSavings;
+    //             }
+    //             AutoPtr<ISimpleTimeZone> stz;
+    //             assert(0 && "TODO");
+    //             // CSimpleTimeZone::New(raw, String(""), (ISimpleTimeZone**)&stz);
+    //             // mCalendar->SetTimeZone(stz);
+    //             *value = offset + zoneStr.GetLength();
+    //             return NOERROR;
+    //         }
+    //     }
+    // }
     *value = -offset - 1;
     return NOERROR;
 }

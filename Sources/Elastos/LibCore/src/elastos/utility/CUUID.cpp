@@ -7,7 +7,7 @@
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::EIID_IComparable;
-using Elastos::Core::IRandom;
+using Elastos::Utility::IRandom;
 using Libcore::IO::Memory;
 using Elastos::IO::ByteOrder_BIG_ENDIAN;
 using Elastos::IO::EIID_ISerializable;

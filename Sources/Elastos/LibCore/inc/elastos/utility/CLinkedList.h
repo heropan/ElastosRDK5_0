@@ -274,39 +274,6 @@ public:
         /* [in] */ ArrayOf<IInterface*>* contents,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
-    CARAPI GetIterator(
-        /* [out] */ IIterator** iterator);
-
-    CARAPI ContainsAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* result);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* object,
-        /* [out] */ Boolean* result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hashCode);
-
-    CARAPI IsEmpty(
-        /* [out] */ Boolean* result);
-
-    CARAPI RemoveAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* result);
-
-    CARAPI RetainAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* result);
-
-    CARAPI GetListIterator(
-        /* [out] */ IListIterator** it);
-
-    CARAPI GetSubList(
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [out] */ IList** subList);
-
     CARAPI Element(
         /* [out] */ IInterface** e);
 

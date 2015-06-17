@@ -4,7 +4,7 @@
 #include "Object.h"
 
 using Elastos::Core::Object;
-using Elastos::Core::IRandom;
+using Elastos::Utility::IRandom;
 using Elastos::Core::IComparable;
 using Elastos::IO::ISerializable;
 using Elastos::Net::IURI;

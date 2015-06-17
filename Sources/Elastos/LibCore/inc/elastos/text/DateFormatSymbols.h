@@ -1,12 +1,11 @@
 #ifndef __ELASTOS_TEXT_DATEFORMATSYMBOLS_H__
 #define __ELASTOS_TEXT_DATEFORMATSYMBOLS_H__
 
-#include "Elastos.CoreLibrary_server.h"
-#include "elastos/core/Object.h"
+#include "Object.h"
 
 using Elastos::Utility::ILocale;
-using Elastos::Utility::IObjectContainer;
 using Elastos::Core::Object;
+using Elastos::Core::IArrayOf;
 
 namespace Elastos {
 namespace Text {
@@ -23,7 +22,7 @@ public:
     CARAPI constructor(
         /* [in] */ ILocale* locale);
 
-    CARAPI_(AutoPtr<ArrayOf<IObjectContainer*> >) InternalZoneStrings();
+    CARAPI_(AutoPtr<ArrayOf<IArrayOf*> >) InternalZoneStrings();
 
     static CARAPI GetInstance(
         /* [out] */ IDateFormatSymbols** instance);
@@ -87,7 +86,7 @@ public:
         /* [out, callee] */ ArrayOf<String>** arrayOfStrings);
 
     virtual CARAPI GetZoneStrings(
-        /* [out, callee] */ ArrayOf<IObjectContainer*> ** zoneStrings);
+        /* [out, callee] */ ArrayOf<IArrayOf*> ** zoneStrings);
 
 //    @Override
 //    public int hashCode();
@@ -114,7 +113,7 @@ public:
         /* [in] */ const ArrayOf<String>& data);
 
     virtual CARAPI SetZoneStrings(
-        /* [in] */ ArrayOf<IObjectContainer*>* zoneStrings);
+        /* [in] */ ArrayOf<IArrayOf*>* zoneStrings);
 
 private:
 //    private void readObject(ObjectInputStream ois);
@@ -125,9 +124,9 @@ private:
         /* [in] */ IDateFormatSymbols* lhs,
         /* [in] */ IDateFormatSymbols* rhs);
 
-    CARAPI Clone2dStringArray(
-        /* [in] */ ArrayOf<IObjectContainer*>* array,
-        /* [out, callee] */ ArrayOf<IObjectContainer*>** stringArray);
+    // CARAPI Clone2dStringArray(
+    //     /* [in] */ ArrayOf<IObjectContainer*>* array,
+    //     /* [out, callee] */ ArrayOf<IObjectContainer*>** stringArray);
 
 public:
     AutoPtr<ArrayOf<String> > mAmpms, mEras, mMonths, mShortMonths, mShortWeekdays, mWeekdays;
@@ -140,7 +139,7 @@ public:
 
     AutoPtr<ArrayOf<String> > mShortStandAloneWeekdays;
 
-    AutoPtr<ArrayOf<IObjectContainer*> > mZoneStrings;// String[][]
+    AutoPtr<ArrayOf<IArrayOf*> > mZoneStrings;// String[][]
 
     Boolean mCustomZoneStrings;
 

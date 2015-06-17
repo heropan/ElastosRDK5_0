@@ -2,7 +2,6 @@
 #include "DateFormatSymbols.h"
 #include "CDateFormatSymbols.h"
 #include "CStringWrapper.h"
-// #include "CObjectContainer.h"
 #include "CLocaleHelper.h"
 // #include "CLocaleDataHelper.h"
 // #include "CICUHelper.h"
@@ -11,10 +10,8 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::IArrayOf;
-// using Elastos::Core::CObjectContainer;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
-using Elastos::Utility::IObjectEnumerator;
 using Libcore::ICU::ILocaleDataHelper;
 // using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
@@ -34,30 +31,30 @@ DateFormatSymbols::~DateFormatSymbols()
 {
 }
 
-AutoPtr<ArrayOf<IObjectContainer*> > DateFormatSymbols::InternalZoneStrings()
+AutoPtr<ArrayOf<IArrayOf*> > DateFormatSymbols::InternalZoneStrings()
 {
     Object::Autolock lock(mLock);
-    if (mZoneStrings == NULL) {
-        AutoPtr< ArrayOf<IArrayOf*> > result;
-        assert(0 && "TODO");
-        // TimeZones::GetZoneStrings(mLocale, (ArrayOf<IArrayOf*>**)&result);
-        Int32 length = result->GetLength();
-        mZoneStrings = ArrayOf<IObjectContainer*>::Alloc(length);
-        for (Int32 i = 0; i < length; ++i) {
-            AutoPtr<IArrayOf> arrstr = (*result)[i];
-            AutoPtr<IObjectContainer> newBc;
-            assert(0 && "TODO");
-            // CObjectContainer::New((IObjectContainer**)&newBc);
-            Int32 arrlen = 0;
-            arrstr->GetLength(&arrlen);
-            for (Int32 j = 0; j < arrlen; ++j) {
-                AutoPtr<IInterface> newSeq;
-                arrstr->Get(j, (IInterface**)&newSeq);
-                newBc->Add(newSeq);
-            }
-            mZoneStrings->Set(i, newBc);
-        }
-    }
+    // if (mZoneStrings == NULL) {
+    //     AutoPtr< ArrayOf<IArrayOf*> > result;
+    //     assert(0 && "TODO");
+    //     // TimeZones::GetZoneStrings(mLocale, (ArrayOf<IArrayOf*>**)&result);
+    //     Int32 length = result->GetLength();
+    //     mZoneStrings = ArrayOf<IObjectContainer*>::Alloc(length);
+    //     for (Int32 i = 0; i < length; ++i) {
+    //         AutoPtr<IArrayOf> arrstr = (*result)[i];
+    //         AutoPtr<IObjectContainer> newBc;
+    //         assert(0 && "TODO");
+    //         // CObjectContainer::New((IObjectContainer**)&newBc);
+    //         Int32 arrlen = 0;
+    //         arrstr->GetLength(&arrlen);
+    //         for (Int32 j = 0; j < arrlen; ++j) {
+    //             AutoPtr<IInterface> newSeq;
+    //             arrstr->Get(j, (IInterface**)&newSeq);
+    //             newBc->Add(newSeq);
+    //         }
+    //         mZoneStrings->Set(i, newBc);
+    //     }
+    // }
 
     return mZoneStrings;
 }
@@ -199,57 +196,57 @@ Boolean DateFormatSymbols::TimeZoneStringsEqual(
 {
     // Quick check that may keep us from having to load the zone strings.
     // Note that different locales may have the same strings, so the opposite check isn't valid.
-    Boolean loflag;
-    ((CDateFormatSymbols *)lhs)->mLocale->Equals(((CDateFormatSymbols *)rhs)->mLocale, &loflag);
-    if (loflag && ((CDateFormatSymbols *)lhs)->mZoneStrings == NULL &&
-        ((CDateFormatSymbols *)rhs)->mZoneStrings == NULL) {
-        return TRUE;
-    }
+    // Boolean loflag;
+    // ((CDateFormatSymbols *)lhs)->mLocale->Equals(((CDateFormatSymbols *)rhs)->mLocale, &loflag);
+    // if (loflag && ((CDateFormatSymbols *)lhs)->mZoneStrings == NULL &&
+    //     ((CDateFormatSymbols *)rhs)->mZoneStrings == NULL) {
+    //     return TRUE;
+    // }
 
-    // Make sure zone strings are loaded, then check.
-    AutoPtr<ArrayOf<IObjectContainer*> > arrays1 = ((CDateFormatSymbols *)lhs)->InternalZoneStrings();
-    AutoPtr<ArrayOf<IObjectContainer*> > arrays2 = ((CDateFormatSymbols *)rhs)->InternalZoneStrings();
-    if (arrays1 != NULL || arrays2 != NULL || arrays1->GetLength() != arrays2->GetLength()) {
-        return FALSE;
-    }
+    // // Make sure zone strings are loaded, then check.
+    // AutoPtr<ArrayOf<IObjectContainer*> > arrays1 = ((CDateFormatSymbols *)lhs)->InternalZoneStrings();
+    // AutoPtr<ArrayOf<IObjectContainer*> > arrays2 = ((CDateFormatSymbols *)rhs)->InternalZoneStrings();
+    // if (arrays1 != NULL || arrays2 != NULL || arrays1->GetLength() != arrays2->GetLength()) {
+    //     return FALSE;
+    // }
 
-    Int32 n1, n2;
-    String str1, str2;
-    Boolean hasNext1, hasNext2;
-    for (Int32 i = 0; i < arrays1->GetLength(); ++i) {
-        AutoPtr<IObjectContainer> arr1 = (*arrays1)[i];
-        AutoPtr<IObjectContainer> arr2 = (*arrays2)[i];
+    // Int32 n1, n2;
+    // String str1, str2;
+    // Boolean hasNext1, hasNext2;
+    // for (Int32 i = 0; i < arrays1->GetLength(); ++i) {
+    //     AutoPtr<IObjectContainer> arr1 = (*arrays1)[i];
+    //     AutoPtr<IObjectContainer> arr2 = (*arrays2)[i];
 
-        if (arr1.Get() == arr2.Get())
-            continue;
+    //     if (arr1.Get() == arr2.Get())
+    //         continue;
 
-        if (arr1 == NULL || arr2 == NULL) return FALSE;
+    //     if (arr1 == NULL || arr2 == NULL) return FALSE;
 
-        arr1->GetObjectCount(&n1);
-        arr2->GetObjectCount(&n2);
-        if (n1 != n2) return FALSE;
+    //     arr1->GetObjectCount(&n1);
+    //     arr2->GetObjectCount(&n2);
+    //     if (n1 != n2) return FALSE;
 
-        AutoPtr<IObjectEnumerator> e1, e2;
-        arr1->GetObjectEnumerator((IObjectEnumerator**)&e1);
-        arr2->GetObjectEnumerator((IObjectEnumerator**)&e2);
+    //     AutoPtr<IObjectEnumerator> e1, e2;
+    //     arr1->GetObjectEnumerator((IObjectEnumerator**)&e1);
+    //     arr2->GetObjectEnumerator((IObjectEnumerator**)&e2);
 
-        for (Int32 i = 0; i < n1; ++i) {
-            e1->MoveNext(&hasNext1);
-            e2->MoveNext(&hasNext2);
-            if (hasNext1 != hasNext2) return FALSE;
-            if (!hasNext1) break;
+    //     for (Int32 i = 0; i < n1; ++i) {
+    //         e1->MoveNext(&hasNext1);
+    //         e2->MoveNext(&hasNext2);
+    //         if (hasNext1 != hasNext2) return FALSE;
+    //         if (!hasNext1) break;
 
-            AutoPtr<ICharSequence> seq1, seq2;
-            e1->Current((IInterface**)&seq1);
-            e2->Current((IInterface**)&seq2);
-            if (seq1 == seq2) continue;
-            if (seq1 == NULL) continue;
+    //         AutoPtr<ICharSequence> seq1, seq2;
+    //         e1->Current((IInterface**)&seq1);
+    //         e2->Current((IInterface**)&seq2);
+    //         if (seq1 == seq2) continue;
+    //         if (seq1 == NULL) continue;
 
-            seq1->ToString(&str1);
-            seq2->ToString(&str2);
-            if (!str1.Equals(str2)) return FALSE;
-        }
-    }
+    //         seq1->ToString(&str1);
+    //         seq2->ToString(&str2);
+    //         if (!str1.Equals(str2)) return FALSE;
+    //     }
+    // }
 
     return TRUE;
 }
@@ -384,53 +381,53 @@ ECode DateFormatSymbols::GetWeekdays(
 }
 
 ECode DateFormatSymbols::GetZoneStrings(
-    /* [out, callee] */ ArrayOf<IObjectContainer*>** zoneStrings)
+    /* [out, callee] */ ArrayOf<IArrayOf*>** zoneStrings)
 {
     VALIDATE_NOT_NULL(zoneStrings)
-    AutoPtr<ArrayOf<IObjectContainer*> > strings = InternalZoneStrings();
-    return Clone2dStringArray(strings, zoneStrings);
+    AutoPtr<ArrayOf<IArrayOf*> > strings = InternalZoneStrings();
+    // return Clone2dStringArray(strings, zoneStrings);
 }
 
-ECode DateFormatSymbols::Clone2dStringArray(
-    /* [in] */ ArrayOf<IObjectContainer*>* inArray,
-    /* [out, callee] */ ArrayOf<IObjectContainer*>** outArray)
-{
-    VALIDATE_NOT_NULL(inArray)
-    VALIDATE_NOT_NULL(outArray)
+// ECode DateFormatSymbols::Clone2dStringArray(
+//     /* [in] */ ArrayOf<IObjectContainer*>* inArray,
+//     /* [out, callee] */ ArrayOf<IObjectContainer*>** outArray)
+// {
+//     VALIDATE_NOT_NULL(inArray)
+//     VALIDATE_NOT_NULL(outArray)
 
-    String string;
-    AutoPtr<ArrayOf<IObjectContainer*> > result = ArrayOf<IObjectContainer*>::Alloc(inArray->GetLength());
-    for (Int32 i = 0; i < inArray->GetLength(); ++i) {
-        AutoPtr<IObjectContainer> bc = (*inArray)[i];
-        if (bc == NULL) {
-            result->Set(i, NULL);
-            continue;
-        }
+//     String string;
+//     AutoPtr<ArrayOf<IObjectContainer*> > result = ArrayOf<IObjectContainer*>::Alloc(inArray->GetLength());
+//     for (Int32 i = 0; i < inArray->GetLength(); ++i) {
+//         AutoPtr<IObjectContainer> bc = (*inArray)[i];
+//         if (bc == NULL) {
+//             result->Set(i, NULL);
+//             continue;
+//         }
 
-        AutoPtr<IObjectContainer> newBc;
-        assert(0 && "TODO");
-        // CObjectContainer::New((IObjectContainer**)&newBc);
+//         AutoPtr<IObjectContainer> newBc;
+//         assert(0 && "TODO");
+//         // CObjectContainer::New((IObjectContainer**)&newBc);
 
-        AutoPtr<IObjectEnumerator> enumerator;
-        bc->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-        Boolean hasNext = FALSE;
-        while (enumerator->MoveNext(&hasNext), hasNext) {
-            AutoPtr<ICharSequence> seq;
-            enumerator->Current((IInterface**)&seq);
-            seq->ToString(&string);
+//         AutoPtr<IObjectEnumerator> enumerator;
+//         bc->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
+//         Boolean hasNext = FALSE;
+//         while (enumerator->MoveNext(&hasNext), hasNext) {
+//             AutoPtr<ICharSequence> seq;
+//             enumerator->Current((IInterface**)&seq);
+//             seq->ToString(&string);
 
-            AutoPtr<ICharSequence> newSeq;
-            CStringWrapper::New(string, (ICharSequence**)&newSeq);
-            newBc->Add(newSeq->Probe(EIID_IInterface));
-        };
+//             AutoPtr<ICharSequence> newSeq;
+//             CStringWrapper::New(string, (ICharSequence**)&newSeq);
+//             newBc->Add(newSeq->Probe(EIID_IInterface));
+//         };
 
-        result->Set(i, newBc);
-    }
+//         result->Set(i, newBc);
+//     }
 
-    *outArray = result;
-    REFCOUNT_ADD(*outArray)
-    return NOERROR;
-}
+//     *outArray = result;
+//     REFCOUNT_ADD(*outArray)
+//     return NOERROR;
+// }
 
 ECode DateFormatSymbols::SetAmPmStrings(
     /* [in] */ const ArrayOf<String>& data)
@@ -485,26 +482,26 @@ ECode DateFormatSymbols::SetWeekdays(
 }
 
 ECode DateFormatSymbols::SetZoneStrings(
-    /* [in] */ ArrayOf<IObjectContainer*>* zoneStrings)
+    /* [in] */ ArrayOf<IArrayOf*>* zoneStrings)
 {
     if (zoneStrings == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Int32 length;
-    for (Int32 i = 0; i < zoneStrings->GetLength(); i++) {
-        AutoPtr<IObjectContainer> bc = (*zoneStrings)[i];
-        if (bc == NULL) return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    // for (Int32 i = 0; i < zoneStrings->GetLength(); i++) {
+    //     AutoPtr<IObjectContainer> bc = (*zoneStrings)[i];
+    //     if (bc == NULL) return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
-        bc->GetObjectCount(&length);
-        if (length < 5) {
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        }
-    }
+    //     bc->GetObjectCount(&length);
+    //     if (length < 5) {
+    //         return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    //     }
+    // }
 
-    mZoneStrings = NULL;
-    Clone2dStringArray(zoneStrings, (ArrayOf<IObjectContainer*>**)&mZoneStrings);
-    mCustomZoneStrings = TRUE;
+    // mZoneStrings = NULL;
+    // Clone2dStringArray(zoneStrings, (ArrayOf<IObjectContainer*>**)&mZoneStrings);
+    // mCustomZoneStrings = TRUE;
     return NOERROR;
 }
 

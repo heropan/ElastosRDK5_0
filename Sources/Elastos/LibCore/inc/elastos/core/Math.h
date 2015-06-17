@@ -8,6 +8,8 @@
 #include "Elastos.CoreLibrary.h"
 #endif
 
+using Elastos::Utility::IRandom;
+
 namespace Elastos {
 namespace Core {
 

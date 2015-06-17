@@ -668,12 +668,6 @@ Boolean Arrays::DeepEquals(
      */
     AutoPtr<IArrayOf> a1 = IArrayOf::Probe(e1);
     AutoPtr<IArrayOf> a2 = IArrayOf::Probe(e2);
-    InterfaceID riid1, riid2;
-    a1->GetTypeId(&riid1);
-    a2->GetTypeId(&riid2);
-    if (riid1 != riid2) {
-        return FALSE;
-    }
 
     Int32 len1, len2;
     a1->GetLength(&len1);

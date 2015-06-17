@@ -9,7 +9,7 @@ using Elastos::Core::IComparable;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::EIID_IComparator;
-using Elastos::Core::CRandom;
+using Elastos::Utility::CRandom;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;

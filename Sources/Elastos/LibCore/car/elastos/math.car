@@ -8,7 +8,7 @@ module
     //interface Elastos.IO.ISerializable;
     interface Elastos.Core.INumber;
     interface Elastos.Core.IComparable;
-    interface Elastos.Core.IRandom;
+    interface Elastos.Utility.IRandom;
 
     namespace Elastos {
     namespace Math {

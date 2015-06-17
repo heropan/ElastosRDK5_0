@@ -5,7 +5,7 @@
 #include <elastos/core/Singleton.h>
 
 using Elastos::Core::Singleton;
-using Elastos::Core::IRandom;
+using Elastos::Utility::IRandom;
 
 namespace Elastos {
 namespace Math {

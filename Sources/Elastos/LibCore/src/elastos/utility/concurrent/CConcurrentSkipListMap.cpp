@@ -6,7 +6,7 @@
 #include "CCollections.h"
 
 using Elastos::Core::Math;
-using Elastos::Core::CRandom;
+using Elastos::Utility::CRandom;
 using Elastos::Core::EIID_IComparable;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;

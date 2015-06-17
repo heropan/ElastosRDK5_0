@@ -10,8 +10,8 @@
 #include "CSystem.h"
 #include <fcntl.h>
 
-using Elastos::Core::CRandom;
-using Elastos::Core::EIID_IRandom;
+using Elastos::Utility::CRandom;
+using Elastos::Utility::EIID_IRandom;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CSystem;
 using Elastos::Droid::System::IStructStat;

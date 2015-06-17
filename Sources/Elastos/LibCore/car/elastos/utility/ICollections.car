@@ -1,7 +1,7 @@
 module
 {
     interface Elastos.Core.IComparator;
-    interface Elastos.Core.IRandom;
+    interface Elastos.Utility.IRandom;
     interface Elastos.Utility.IArrayList;
 
     namespace Elastos {

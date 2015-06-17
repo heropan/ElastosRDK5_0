@@ -6,7 +6,7 @@
 #include "AbstractExecutorService.h"
 
 using Elastos::Core::IThrowable;
-using Elastos::Core::IRandom;
+using Elastos::Utility::IRandom;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;
 using Elastos::Utility::Concurrent::Locks::ICondition;

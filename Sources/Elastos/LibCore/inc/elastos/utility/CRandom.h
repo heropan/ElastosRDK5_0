@@ -1,15 +1,16 @@
 
-#ifndef __ELASTOS_CORE_CRANDOM_H__
-#define __ELASTOS_CORE_CRANDOM_H__
+#ifndef __ELASTOS_UTILITY_CRANDOM_H__
+#define __ELASTOS_UTILITY_CRANDOM_H__
 
-#include "_Elastos_Core_CRandom.h"
+#include "_Elastos_Utility_CRandom.h"
 #include "Object.h"
 
-using Elastos::Core::IRandom;
+using Elastos::Core::Object;
 using Elastos::IO::ISerializable;
+using Elastos::Utility::IRandom;
 
 namespace Elastos {
-namespace Core {
+namespace Utility {
 
 CarClass(CRandom)
     , public Object
@@ -127,7 +128,7 @@ private:
     Double mNextNextGaussian;
 };
 
+} // namespace Utility
 } // namespace Elastos
-} // namespace Core
 
 #endif //__ELASTOS_CORE_CRANDOM_H__

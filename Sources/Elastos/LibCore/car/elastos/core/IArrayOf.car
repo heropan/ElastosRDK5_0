@@ -16,9 +16,6 @@ module
             [in] Int32 index,
             [in] IInterface* element);
 
-        GetTypeId(
-            [out] InterfaceID* id);
-
         /**
          * Creates a <i>"deep"</i> {@code String} representation of the
          * {@code Object[]} passed, such that if the array contains other arrays,

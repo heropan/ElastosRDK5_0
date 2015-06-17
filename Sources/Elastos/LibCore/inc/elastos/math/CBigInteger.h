@@ -9,7 +9,7 @@
 using Elastos::Core::Object;
 using Elastos::Core::INumber;
 using Elastos::Core::IComparable;
-using Elastos::Core::IRandom;
+using Elastos::Utility::IRandom;
 
 namespace Elastos {
 namespace Math {

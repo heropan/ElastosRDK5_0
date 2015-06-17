@@ -9,7 +9,7 @@
 using Elastos::Core::Object;
 using Elastos::Core::IComparable;
 using Elastos::Core::IComparator;
-using Elastos::Core::IRandom;
+using Elastos::Utility::IRandom;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 

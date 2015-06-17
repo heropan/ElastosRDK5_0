@@ -10,7 +10,7 @@
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 using Elastos::Core::IComparator;
-using Elastos::Core::IRandom;
+using Elastos::Utility::IRandom;
 
 namespace Elastos {
 namespace Utility {

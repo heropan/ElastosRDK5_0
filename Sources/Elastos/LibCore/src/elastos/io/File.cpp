@@ -19,7 +19,7 @@
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::Vector;
-using Elastos::Core::CRandom;
+using Elastos::Utility::CRandom;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CSystem;;
 using Elastos::Core::ISystem;

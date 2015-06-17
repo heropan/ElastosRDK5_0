@@ -18,15 +18,14 @@ CArrayOf::CArrayOf()
 
 CArrayOf::~CArrayOf()
 {
+    mElements = NULL;
 }
 
 ECode CArrayOf::constructor(
-    /* [in] */ InterfaceID riid,
     /* [in] */ Int32 size)
 {
     if (size < 0) return E_ILLEGAL_ARGUMENT_EXCEPTION;
     mElements = ArrayOf<IInterface *>::Alloc(size);
-    mTypeId = riid;
     return NOERROR;
 }
 
@@ -58,23 +57,13 @@ ECode CArrayOf::Put(
     /* [in] */ Int32 index,
     /* [in] */ IInterface* element)
 {
-    if (index < 0 || mElements == NULL || index >= mElements->GetLength()
-        || (element != NULL && element->Probe(mTypeId) == NULL)) {
+    if (index < 0 || index >= mElements->GetLength()) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     mElements->Set(index, element);
     return NOERROR;
 }
-
-ECode CArrayOf::GetTypeId(
-    /* [out] */ InterfaceID* id)
-{
-    VALIDATE_NOT_NULL(id);
-    *id = mTypeId;
-    return NOERROR;
-}
-
 
 ECode CArrayOf::DeepToString(
     /* [out] */ String* str)
@@ -135,8 +124,6 @@ ECode CArrayOf::DeepEquals(
     *equals = TRUE;
     return NOERROR;
 }
-
-
 
 } // namespace Core
 } // namespace Elastos

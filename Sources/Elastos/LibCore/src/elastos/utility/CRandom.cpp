@@ -7,7 +7,7 @@ using Elastos::Core::CSystem;
 using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
-namespace Core {
+namespace Utility {
 
 CAR_INTERFACE_IMPL_2(CRandom, Object, IRandom, ISerializable)
 
@@ -206,5 +206,5 @@ ECode CRandom::SetSeed(
     return NOERROR;
 }
 
+} // namespace Utility
 } // namespace Elastos
-} // namespace Core

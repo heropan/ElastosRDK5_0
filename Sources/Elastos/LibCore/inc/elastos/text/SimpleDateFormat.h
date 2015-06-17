@@ -1,5 +1,5 @@
-#ifndef __SIMPLEDATEFORMAT_H__
-#define __SIMPLEDATEFORMAT_H__
+#ifndef __ELASTOS_TEXT_SIMPLEDATEFORMAT_H__
+#define __ELASTOS_TEXT_SIMPLEDATEFORMAT_H__
 
 #include "Elastos.CoreLibrary_server.h"
 #include "DateFormat.h"
@@ -9,7 +9,6 @@
 
 using Elastos::Core::StringBuffer;
 using Elastos::Utility::Etl::List;
-using Elastos::Utility::IObjectContainer;
 using Elastos::Core::Character;
 using Elastos::Core::INumber;
 using Elastos::Text::IAttributedCharacterIterator;;
@@ -211,10 +210,6 @@ private:
 
     //CARAPI ReadObject(ObjectInputStream stream);
 
-private:
-    CARAPI_(AutoPtr<ArrayOf<String> >) ObjectContainerToStringArray(
-        /* [in] */ IObjectContainer* bc);
-
 protected:
     const static String PATTERN_CHARS;
 
@@ -245,4 +240,4 @@ private:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__SIMPLEDATEFORMAT_H__
+#endif //__ELASTOS_TEXT_SIMPLEDATEFORMAT_H__
