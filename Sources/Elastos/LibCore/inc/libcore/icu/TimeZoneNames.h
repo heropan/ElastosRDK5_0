@@ -26,12 +26,12 @@ public:
         ~ZoneStringsCache();
 
         CARAPI_(AutoPtr< ArrayOf< AutoPtr< ArrayOf<String> > > >) Create(
-            /* [in] */ AutoPtr<ILocale> locale);
+            /* [in] */ ILocale* locale);
 
     private:
         // De-duplicate the strings (http://b/2672057).
         CARAPI_(void) InternStrings(
-            /* [in] */ ArrayOf<StringArray>* result);
+            /* [in] */ ArrayOf<StringArray >* result);
 
         // static final Comparator<String[]> ZONE_STRINGS_COMPARATOR = new Comparator<String[]>() {
         // public int compare(String[] lhs, String[] rhs) {
@@ -54,7 +54,7 @@ public:
 
     static CARAPI ForLocale(
         /* [in] */ ILocale * locale ,
-        /* [out,callee] */ ArrayOf<String>** outarray);
+        /* [out, callee] */ ArrayOf<String>** outarray);
 
     static CARAPI GetExemplarLocation(
         /* [in] */ const String& locale,
@@ -68,7 +68,9 @@ private:
 private:
     static CARAPI_(AutoPtr< ArrayOf<String> >) GetAvailableTimeZones();
 
-    static CARAPI_(void) FillZoneStrings(const String& locale, AutoPtr<ArrayOf<AutoPtr<ArrayOf<String> > > > result);
+    static CARAPI FillZoneStrings(
+        /* [in] */ const String& locale,
+        /* [in] */ ArrayOf<StringArray >* result);
 
 private:
     static AutoPtr<ArrayOf<String> > sAvailableTimeZoneIds;

@@ -2262,7 +2262,7 @@ ECode CKXmlParser::GetPositionDescription(
     buf.AppendChar(':');
     buf.Append(columnNum);
     if(!mLocation.IsNull()){
-        buf.Append(String(" in "));
+        buf.Append(" in ");
         buf.Append(mLocation);
     }
     else if(mReader != NULL){
@@ -2270,7 +2270,7 @@ ECode CKXmlParser::GetPositionDescription(
         //TODO:
         //assert(0);
         // mReader->ToString(&str);
-        buf.Append(String(" in "));
+        buf.Append(" in ");
         buf.Append(str);
     }
     return buf.ToString(des);
@@ -2330,7 +2330,7 @@ ECode CKXmlParser::GetText(
         *text = NULL;
     }
     else if (mText.IsNull()) {
-        *text = "";
+        *text = String("");
     }
     else {
         *text = mText;
