@@ -54,6 +54,21 @@ SOURCES += CLinkedHashMap.cpp
 SOURCES += CLinkedHashSet.cpp
 SOURCES += CLinkedList.cpp
 #SOURCES += ListResourceBundle.java
+SOURCES += Collections.cpp
+SOURCES += Vector.cpp
+SOURCES += CStack.cpp
+SOURCES += CWeakHashMap.cpp
+SOURCES += CTreeMap.cpp
+
+
+SOURCES += CStringTokenizer.cpp
+SOURCES += Timer.cpp
+SOURCES += Grego.cpp
+SOURCES += TimerTask.cpp
+SOURCES += CUUID.cpp
+SOURCES += CUUIDHelper.cpp
+SOURCES += TimeZoneGetter.cpp
+SOURCES += CTimeZoneGetterHelper.cpp
 SOURCES += CLocale.cpp
 SOURCES += CLocaleBuilder.cpp
 SOURCES += CLocaleHelper.cpp

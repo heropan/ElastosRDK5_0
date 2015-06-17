@@ -1321,8 +1321,6 @@ public:
             MySet(
                 /* [in] */ SingletonMap* owner);
 
-            CAR_INTERFACE_DECL()
-
             CARAPI Contains(
                 /* [in] */ IInterface* object,
                 /* [out] */ Boolean* result);

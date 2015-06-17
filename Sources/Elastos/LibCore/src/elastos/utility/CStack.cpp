@@ -5,39 +5,25 @@
 namespace Elastos {
 namespace Utility {
 
+CAR_INTERFACE_IMPL(CStack, Vector, IStack)
+
 ECode CStack::constructor()
 {
-    return _Vector::Init();
-}
-
-PInterface CStack::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CStack::Probe(riid);
-}
-
-UInt32 CStack::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CStack::Release()
-{
-    return ElRefBase::Release();
+    return Vector::constructor();
 }
 
 ECode CStack::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
-    return _Vector::Add(location, object);
+    return Vector::Add(location, object);
 }
 
 ECode CStack::Add(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* modified)
 {
-    return _Vector::Add(object, modified);
+    return Vector::Add(object, modified);
 }
 
 ECode CStack::AddAll(
@@ -45,42 +31,37 @@ ECode CStack::AddAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    return _Vector::AddAll(location, collection, modified);
+    return Vector::AddAll(location, collection, modified);
 }
 
 ECode CStack::AddAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    return _Vector::AddAll(collection, modified);
+    return Vector::AddAll(collection, modified);
 }
 
 ECode CStack::AddElement(
     /* [in] */ IInterface* object)
 {
-    return _Vector::AddElement(object);
+    return Vector::AddElement(object);
 }
 
 ECode CStack::Capacity(
     /* [out] */ Int32* value)
 {
-    return _Vector::Capacity(value);
+    return Vector::Capacity(value);
 }
 
 ECode CStack::Clear()
 {
-    return _Vector::Clear();
+    return Vector::Clear();
 }
 
 ECode CStack::Clone(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object)
-    AutoPtr<CStack> stack;
-    CStack::NewByFriend((CStack**)&stack);
-    FAIL_RETURN(_Vector::Clone(stack));
-    *object = (IVector*)stack;
-    REFCOUNT_ADD(*object)
+    assert(0 && "TODO");
     return NOERROR;
 }
 
@@ -88,72 +69,72 @@ ECode CStack::Contains(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    return _Vector::Contains(object, result);
+    return Vector::Contains(object, result);
 }
 
 ECode CStack::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
-    return _Vector::ContainsAll(collection, result);
+    return Vector::ContainsAll(collection, result);
 }
 
 ECode CStack::CopyInto(
     /* [in] */ ArrayOf<IInterface*>* elements)
 {
-    return _Vector::CopyInto(elements);
+    return Vector::CopyInto(elements);
 }
 
 ECode CStack::ElementAt(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** outface)
 {
-    return _Vector::ElementAt(location, outface);
+    return Vector::ElementAt(location, outface);
 }
 
 ECode CStack::GetElements(
     /* [out] */ IEnumeration** enu)
 {
-    return _Vector::GetElements(enu);
+    return Vector::GetElements(enu);
 }
 
 ECode CStack::EnsureCapacity(
     /* [in] */ Int32 minimumCapacity)
 {
-    return _Vector::EnsureCapacity(minimumCapacity);
+    return Vector::EnsureCapacity(minimumCapacity);
 }
 
 ECode CStack::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    return _Vector::Equals(object, result);
+    return Vector::Equals(object, result);
 }
 
 ECode CStack::FirstElement(
     /* [out] */ IInterface** outface)
 {
-    return _Vector::FirstElement(outface);
+    return Vector::FirstElement(outface);
 }
 
 ECode CStack::Get(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
-    return _Vector::Get(location, object);
+    return Vector::Get(location, object);
 }
 
 ECode CStack::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
-    return _Vector::GetHashCode(hashCode);
+    return Vector::GetHashCode(hashCode);
 }
 
 ECode CStack::IndexOf(
     /* [in] */ IInterface* object,
     /* [out] */ Int32* index)
 {
-    return _Vector::IndexOf(object, index);
+    return Vector::IndexOf(object, index);
 }
 
 ECode CStack::IndexOf(
@@ -161,33 +142,33 @@ ECode CStack::IndexOf(
     /* [in] */ Int32 location,
     /* [out] */ Int32* value)
 {
-    return _Vector::IndexOf(object, location, value);
+    return Vector::IndexOf(object, location, value);
 }
 
 ECode CStack::InsertElementAt(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 location)
 {
-    return _Vector::InsertElementAt(object, location);
+    return Vector::InsertElementAt(object, location);
 }
 
 ECode CStack::IsEmpty(
     /* [out] */ Boolean* result)
 {
-    return _Vector::IsEmpty(result);
+    return Vector::IsEmpty(result);
 }
 
 ECode CStack::LastElement(
     /* [out] */ IInterface** outface)
 {
-    return _Vector::LastElement(outface);
+    return Vector::LastElement(outface);
 }
 
 ECode CStack::LastIndexOf(
     /* [in] */ IInterface* object,
     /* [out] */ Int32* index)
 {
-    return _Vector::LastIndexOf(object, index);
+    return Vector::LastIndexOf(object, index);
 }
 
 ECode CStack::LastIndexOf(
@@ -195,53 +176,53 @@ ECode CStack::LastIndexOf(
     /* [in] */ Int32 location,
     /* [out] */ Int32* value)
 {
-    return _Vector::LastIndexOf(object, location, value);
+    return Vector::LastIndexOf(object, location, value);
 }
 
 ECode CStack::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
-    return _Vector::Remove(location, object);
+    return Vector::Remove(location, object);
 }
 
 ECode CStack::Remove(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* modified)
 {
-    return _Vector::Remove(object, modified);
+    return Vector::Remove(object, modified);
 }
 
 ECode CStack::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    return _Vector::RemoveAll(collection, modified);
+    return Vector::RemoveAll(collection, modified);
 }
 
 ECode CStack::RemoveAllElements()
 {
-    return _Vector::RemoveAllElements();
+    return Vector::RemoveAllElements();
 }
 
 ECode CStack::RemoveElement(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* value)
 {
-    return _Vector::RemoveElement(object, value);
+    return Vector::RemoveElement(object, value);
 }
 
 ECode CStack::RemoveElementAt(
     /* [in] */ Int32 location)
 {
-    return _Vector::RemoveElementAt(location);
+    return Vector::RemoveElementAt(location);
 }
 
 ECode CStack::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    return _Vector::RetainAll(collection, modified);
+    return Vector::RetainAll(collection, modified);
 }
 
 ECode CStack::Set(
@@ -249,26 +230,26 @@ ECode CStack::Set(
     /* [in] */ IInterface* object,
     /* [out] */ IInterface** prevObject)
 {
-    return _Vector::Set(location, object, prevObject);
+    return Vector::Set(location, object, prevObject);
 }
 
 ECode CStack::SetElementAt(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 location)
 {
-    return _Vector::SetElementAt(object, location);
+    return Vector::SetElementAt(object, location);
 }
 
 ECode CStack::SetSize(
     /* [in] */ Int32 length)
 {
-    return _Vector::SetSize(length);
+    return Vector::SetSize(length);
 }
 
 ECode CStack::GetSize(
     /* [out] */ Int32* size)
 {
-    return _Vector::GetSize(size);
+    return Vector::GetSize(size);
 }
 
 ECode CStack::GetSubList(
@@ -276,50 +257,50 @@ ECode CStack::GetSubList(
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
 {
-    return _Vector::GetSubList(start, end, subList);
+    return Vector::GetSubList(start, end, subList);
 }
 
 ECode CStack::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
-    return _Vector::ToArray(array);
+    return Vector::ToArray(array);
 }
 
 ECode CStack::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return _Vector::ToArray(inArray, outArray);
+    return Vector::ToArray(inArray, outArray);
 }
 
 CARAPI CStack::ToString(
     /* [out] */ String* result)
 {
-    return _Vector::ToString(result);
+    return Vector::ToString(result);
 }
 
 ECode CStack::TrimToSize()
 {
-    return _Vector::TrimToSize();
+    return Vector::TrimToSize();
 }
 
 ECode CStack::GetIterator(
     /* [out] */ IIterator** it)
 {
-    return _Vector::GetIterator(it);
+    return Vector::GetIterator(it);
 }
 
 ECode CStack::GetListIterator(
     /* [out] */ IListIterator** it)
 {
-    return _Vector::GetListIterator(it);
+    return Vector::GetListIterator(it);
 }
 
 ECode CStack::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
-    return _Vector::GetListIterator(location, it);
+    return Vector::GetListIterator(location, it);
 }
 
 ECode CStack::Empty(
@@ -334,14 +315,14 @@ ECode CStack::Peek(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
-    Mutex::Autolock lock(GetSelfLock());
-    if (mElementCount == 0 || mElementData->GetLength() < mElementCount) {
-        return E_EMPTY_STACK_EXCEPTION;
+    synchronized (this) {
+        if (mElementCount == 0 || mElementData->GetLength() < mElementCount) {
+            return E_EMPTY_STACK_EXCEPTION;
+        }
+
+        *outface = (*mElementData)[mElementCount - 1];
+        REFCOUNT_ADD(*outface)
     }
-
-    *outface = (*mElementData)[mElementCount - 1];
-    REFCOUNT_ADD(*outface)
-
     return NOERROR;
 }
 
@@ -349,16 +330,17 @@ ECode CStack::Pop(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
-    Mutex::Autolock lock(GetSelfLock());
-    if (mElementCount == 0) {
-        return E_EMPTY_STACK_EXCEPTION;
+    synchronized (this) {
+        if (mElementCount == 0) {
+            return E_EMPTY_STACK_EXCEPTION;
+        }
+        Int32 index = --mElementCount;
+        AutoPtr<IInterface> obj = (*mElementData)[index];
+        mElementData->Set(index, NULL);
+        mModCount++;
+        *outface = obj;
+        REFCOUNT_ADD(*outface)
     }
-    Int32 index = --mElementCount;
-    AutoPtr<IInterface> obj = (*mElementData)[index];
-    mElementData->Set(index, NULL);
-    mModCount++;
-    *outface = obj;
-    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 
@@ -373,32 +355,28 @@ ECode CStack::Search(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
-    Mutex::Autolock lock(GetSelfLock());
-    AutoPtr< ArrayOf<IInterface*> > dumpArray = mElementData;
-    Int32 size = mElementCount;
-    if (o != NULL) {
-        for (Int32 i = size - 1; i >= 0; i--) {
-            if (Object::Equals(o, (*dumpArray)[i])) {
-                *value = size - i;
-                return NOERROR;
+    synchronized (this) {
+        AutoPtr< ArrayOf<IInterface*> > dumpArray = mElementData;
+        Int32 size = mElementCount;
+        if (o != NULL) {
+            for (Int32 i = size - 1; i >= 0; i--) {
+                if (Object::Equals(o, (*dumpArray)[i])) {
+                    *value = size - i;
+                    return NOERROR;
+                }
             }
         }
-    }
-    else {
-        for (Int32 i = size - 1; i >= 0; i--) {
-            if ((*dumpArray)[i] == NULL) {
-                *value = size - i;
-                return NOERROR;
+        else {
+            for (Int32 i = size - 1; i >= 0; i--) {
+                if ((*dumpArray)[i] == NULL) {
+                    *value = size - i;
+                    return NOERROR;
+                }
             }
         }
+        *value = -1;
     }
-    *value = -1;
     return NOERROR;
-}
-
-Mutex* CStack::GetSelfLock()
-{
-    return &_m_syncLock;
 }
 
 } // namespace Utility

@@ -1,23 +1,20 @@
 #ifndef __UTILITY_CSTACK_H__
 #define __UTILITY_CSTACK_H__
 
-#include "_CStack.h"
+#include "_Elastos_Utility_CStack.h"
 #include "Vector.h"
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CStack), public _Vector
+CarClass(CStack)
+    , public Vector
+    , public IStack
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
 
     CARAPI Add(
         /* [in] */ Int32 location,
@@ -235,8 +232,6 @@ public:
         /* [in] */ IInterface* o,
         /* [out] */ Int32* value);
 
-protected:
-    CARAPI_(Mutex*) GetSelfLock();
 };
 
 } // namespace Utility

@@ -20,7 +20,7 @@ CWeakHashMap::Entry::Entry(
     mValue = object;
 }
 
-CAR_INTERFACE_IMPL_LIGHT(CWeakHashMap::Entry, IMapEntry)
+CAR_INTERFACE_IMPL(CWeakHashMap::Entry, Object, IMapEntry)
 
 ECode CWeakHashMap::Entry::GetKey(
     /* [out] */ IInterface** key)
@@ -99,7 +99,7 @@ ECode CWeakHashMap::Entry::ToString(
 //==========================================================
 //       CWeakHashMap::HashIterator
 //==========================================================
-CAR_INTERFACE_IMPL_LIGHT(CWeakHashMap::HashIterator, IIterator);
+CAR_INTERFACE_IMPL(CWeakHashMap::HashIterator, Object, IIterator);
 
 ECode CWeakHashMap::HashIterator::HasNext(
     /* [out] */ Boolean* result)
@@ -190,49 +190,6 @@ ECode CWeakHashMap::_EntrySet::Type::Get(
 //==========================================================
 //       CWeakHashMap::_EntrySet
 //==========================================================
-UInt32 CWeakHashMap::_EntrySet::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CWeakHashMap::_EntrySet::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CWeakHashMap::_EntrySet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ISet*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ISet*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(ISet*)this;
-    }
-    else if (EIID_ISet == riid) {
-        return (ISet*)this;
-    }
-
-    return NULL;
-}
-
-ECode CWeakHashMap::_EntrySet::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ISet*)this) {
-        *pIID = EIID_ISet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
 
 ECode CWeakHashMap::_EntrySet::GetSize(
     /* [out] */ Int32* size)
@@ -380,49 +337,6 @@ ECode CWeakHashMap::_KeySet::Type::Get(
 //==========================================================
 //       CWeakHashMap::_KeySet
 //==========================================================
-UInt32 CWeakHashMap::_KeySet::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CWeakHashMap::_KeySet::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CWeakHashMap::_KeySet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ISet*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ISet*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(ISet*)this;
-    }
-    else if (EIID_ISet == riid) {
-        return (ISet*)this;
-    }
-
-    return NULL;
-}
-
-ECode CWeakHashMap::_KeySet::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ISet*)this) {
-        *pIID = EIID_ISet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
 
 ECode CWeakHashMap::_KeySet::Contains(
     /* [in] */ IInterface* o,
@@ -588,46 +502,6 @@ ECode CWeakHashMap::_Values::Type::Get(
 //==========================================================
 //       CWeakHashMap::_Values
 //==========================================================
-UInt32 CWeakHashMap::_Values::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CWeakHashMap::_Values::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CWeakHashMap::_Values::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ICollection*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ICollection*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)this;
-    }
-
-    return NULL;
-}
-
-ECode CWeakHashMap::_Values::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ICollection*)this) {
-        *pIID = EIID_ICollection;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
 
 ECode CWeakHashMap::_Values::GetSize(
     /* [out] */ Int32* size)
@@ -726,7 +600,7 @@ ECode CWeakHashMap::_Values::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    *result = Object::Equals(this), object);
+    *result = Object::Equals(this, object);
     return NOERROR;
 }
 
@@ -744,6 +618,8 @@ ECode CWeakHashMap::_Values::GetHashCode(
 //==========================================================
 //       CWeakHashMap
 //==========================================================
+CAR_INTERFACE_IMPL(CWeakHashMap, AbstractMap, IWeakHashMap)
+
 const Int32 CWeakHashMap::DEFAULT_SIZE;
 
 AutoPtr< ArrayOf<CWeakHashMap::Entry*> > CWeakHashMap::NewEntryArray(
@@ -800,12 +676,6 @@ ECode CWeakHashMap::constructor(
     FAIL_RETURN(constructor(capacity))
     PutAllImpl(map);
     return NOERROR;
-}
-
-PInterface CWeakHashMap::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CWeakHashMap::Probe(riid);
 }
 
 ECode CWeakHashMap::Clear()

@@ -1,32 +1,37 @@
 #ifndef __UTILITY_CTREEMAP_H__
 #define __UTILITY_CTREEMAP_H__
 
-#include "_CTreeMap.h"
+#include "_Elastos_Utility_CTreeMap.h"
 #include "AbstractMap.h"
 #include "AbstractSet.h"
+#include "MapEntry.h"
 
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectStreamField;
+using Elastos::IO::ISerializable;
+using Elastos::Core::ICloneable;
 using Elastos::Utility::AbstractMap;
 using Elastos::Core::IComparator;
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CTreeMap) , public AbstractMap
+CarClass(CTreeMap)
+    , public AbstractMap
+    , public ISortedMap
+    , public INavigableMap
+    , public ICloneable
+    , public ISerializable
 {
 public:
     class Node
-        : public IMapEntry
-        , public ElRefBase
+        : public MapEntry
     {
     public:
         Node(
             /* [in] */ Node* parent,
             /* [in] */ IInterface* key);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI_(AutoPtr<Node>) Copy(
             /* [in] */ Node* parent);
@@ -55,23 +60,23 @@ public:
          * Returns the next node in an inorder traversal, or null if this is the
          * last node in the tree.
          */
-        CARAPI_(AutoPtr<Node>) Next();
+        CARAPI_(AutoPtr<Node>) GetNext();
 
         /**
          * Returns the previous node in an inorder traversal, or null if this is
          * the first node in the tree.
          */
-        CARAPI_(AutoPtr<Node>) Prev();
+        CARAPI_(AutoPtr<Node>) GetPrev();
 
         /**
          * Returns the first node in this subtree.
          */
-        CARAPI_(AutoPtr<Node>) First();
+        CARAPI_(AutoPtr<Node>) GetFirst();
 
         /**
          * Returns the last node in this subtree.
          */
-        CARAPI_(AutoPtr<Node>) Last();
+        CARAPI_(AutoPtr<Node>) GetLast();
 
     public:
         AutoPtr<Node> mParent;
@@ -87,8 +92,8 @@ public:
      * descending iterations, {@code next} will return the previous node.
      */
     class MapIterator
-        : public IIterator
-        , public ElRefBase
+        : public Object
+        , public IIterator
     {
     public:
         MapIterator(
@@ -114,27 +119,6 @@ public:
         AutoPtr<CTreeMap> mHost;
     };
 
-    class _KeySetMapIterator
-        : public MapIterator
-    {
-    public:
-        _KeySetMapIterator(
-            /* [in] */ Node* next,
-            /* [in] */ CTreeMap* host)
-            : MapIterator(next, host){}
-
-        ECode Next(
-            /* [out] */ IInterface** object)
-        {
-            VALIDATE_NOT_NULL(object)
-
-            AutoPtr<Node> res = MapIterator::StepForward();
-            *object = res->mKey;
-            INTERFACE_ADDREF(*object)
-            return NOERROR;
-        }
-    };
-
     class _KeySetBackwardMapIterator
         : public MapIterator
     {
@@ -144,14 +128,14 @@ public:
             /* [in] */ CTreeMap* host)
             : MapIterator(next, host){}
 
-        ECode Next(
+        ECode GetNext(
             /* [out] */ IInterface** object)
         {
             VALIDATE_NOT_NULL(object)
 
             AutoPtr<Node> res = MapIterator::StepBackward();
             *object = res->mKey;
-            INTERFACE_ADDREF(*object)
+            REFCOUNT_ADD(*object)
             return NOERROR;
         }
     };
@@ -165,14 +149,14 @@ public:
             /* [in] */ CTreeMap* host)
             : MapIterator(next, host){}
 
-        ECode Next(
+        ECode GetNext(
             /* [out] */ IInterface** object)
         {
             VALIDATE_NOT_NULL(object)
 
             AutoPtr<Node> res = MapIterator::StepForward();
             *object = res->mKey;
-            INTERFACE_ADDREF(*object)
+            REFCOUNT_ADD(*object)
             return NOERROR;
         }
     };
@@ -186,14 +170,14 @@ public:
             /* [in] */ CTreeMap* host)
             : MapIterator(next, host){}
 
-        ECode Next(
+        ECode GetNext(
             /* [out] */ IInterface** object)
         {
             VALIDATE_NOT_NULL(object)
 
             AutoPtr<Node> res = MapIterator::StepForward();
             *object = IMapEntry::Probe(res);
-            INTERFACE_ADDREF(*object)
+            REFCOUNT_ADD(*object)
             return NOERROR;
         }
     };
@@ -204,14 +188,10 @@ public:
 
     class _EntrySet
         : public AbstractSet
-        , public ElRefBase
-        , public ISet
     {
     public:
         _EntrySet(
             /* [in] */ CTreeMap* host);
-
-        CAR_INTERFACE_DECL();
 
         CARAPI GetSize(
             /* [out] */ Int32* value);
@@ -272,7 +252,6 @@ public:
 
     class _KeySet
         : public AbstractSet
-        , public ElRefBase
         , public INavigableSet
     {
     public:
@@ -303,19 +282,19 @@ public:
             /* [in] */ IInterface* start,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI Lower(
+        CARAPI GetLower(
             /* [in] */ IInterface* e,
             /* [out] */ IInterface** outface);
 
-        CARAPI Floor(
+        CARAPI GetFloor(
             /* [in] */ IInterface* e,
             /* [out] */ IInterface** outface);
 
-        CARAPI Ceiling(
+        CARAPI GetCeiling(
             /* [in] */ IInterface* e,
             /* [out] */ IInterface** outface);
 
-        CARAPI Higher(
+        CARAPI GetHigher(
             /* [in] */ IInterface* e,
             /* [out] */ IInterface** outface);
 
@@ -325,25 +304,25 @@ public:
         CARAPI PollLast(
             /* [out] */ IInterface** outface);
 
-        CARAPI DescendingSet(
+        CARAPI GetDescendingSet(
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI DescendingIterator(
+        CARAPI GetDescendingIterator(
             /* [out] */ IIterator** outiter);
 
-        CARAPI SubSet(
+        CARAPI GetSubSet(
             /* [in] */ IInterface* fromElement,
             /* [in] */ Boolean fromInclusive,
             /* [in] */ IInterface* toElement,
             /* [in] */ Boolean toInclusive,
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI HeadSet(
+        CARAPI GetHeadSet(
             /* [in] */ IInterface* toElement,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI TailSet(
+        CARAPI GetTailSet(
             /* [in] */ IInterface* fromElement,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableSet** outnav);
@@ -488,7 +467,6 @@ public:
         : public AbstractMap
         , public INavigableMap
         , public ISerializable
-        , public ElRefBase
     {
     public:
         /*
@@ -513,8 +491,6 @@ public:
 
         class BoundedEntrySet
             : public AbstractSet
-            , public ElRefBase
-            , public ISet
         {
         private:
             class BoundedEntrySetIterator
@@ -532,8 +508,6 @@ public:
         public:
             BoundedEntrySet(
                 /* [in] */ BoundedMap* host);
-
-            CAR_INTERFACE_DECL()
 
             CARAPI GetSize(
                 /* [out] */ Int32* value);
@@ -595,7 +569,6 @@ public:
         class BoundedKeySet
             : public AbstractSet
             , public INavigableSet
-            , public ElRefBase
         {
         private:
             class BoundedKeySetIterator
@@ -650,19 +623,19 @@ public:
                 /* [in] */ IInterface* start,
                 /* [out] */ ISortedSet** outsort);
 
-            CARAPI Lower(
+            CARAPI GetLower(
                 /* [in] */ IInterface* e,
                 /* [out] */ IInterface** outface);
 
-            CARAPI Floor(
+            CARAPI GetFloor(
                 /* [in] */ IInterface* e,
                 /* [out] */ IInterface** outface);
 
-            CARAPI Ceiling(
+            CARAPI GetCeiling(
                 /* [in] */ IInterface* e,
                 /* [out] */ IInterface** outface);
 
-            CARAPI Higher(
+            CARAPI GetHigher(
                 /* [in] */ IInterface* e,
                 /* [out] */ IInterface** outface);
 
@@ -672,25 +645,25 @@ public:
             CARAPI PollLast(
                 /* [out] */ IInterface** outface);
 
-            CARAPI DescendingSet(
+            CARAPI GetDescendingSet(
                 /* [out] */ INavigableSet** outnav);
 
-            CARAPI DescendingIterator(
+            CARAPI GetDescendingIterator(
                 /* [out] */ IIterator** outiter);
 
-            CARAPI SubSet(
+            CARAPI GetSubSet(
                 /* [in] */ IInterface* fromElement,
                 /* [in] */ Boolean fromInclusive,
                 /* [in] */ IInterface* toElement,
                 /* [in] */ Boolean toInclusive,
                 /* [out] */ INavigableSet** outnav);
 
-            CARAPI HeadSet(
+            CARAPI GetHeadSet(
                 /* [in] */ IInterface* toElement,
                 /* [in] */ Boolean inclusive,
                 /* [out] */ INavigableSet** outnav);
 
-            CARAPI TailSet(
+            CARAPI GetTailSet(
                 /* [in] */ IInterface* fromElement,
                 /* [in] */ Boolean inclusive,
                 /* [out] */ INavigableSet** outnav);
@@ -816,58 +789,58 @@ public:
         CARAPI FirstKey(
             /* [out] */ IInterface** outface);
 
-        CARAPI HeadMap(
+        CARAPI GetHeadMap(
             /* [in] */ IInterface* endKey,
             /* [out] */ ISortedMap** sortmap);
 
         CARAPI LastKey(
             /* [out] */ IInterface** outface);
 
-        CARAPI SubMap(
+        CARAPI GetSubMap(
             /* [in] */ IInterface* startKey,
             /* [in] */ IInterface* endKey,
             /* [out] */ ISortedMap** sortmap);
 
-        CARAPI TailMap(
+        CARAPI GetTailMap(
             /* [in] */ IInterface* startKey,
             /* [out] */ ISortedMap** sortmap);
 
-        CARAPI LowerEntry(
+        CARAPI GetLowerEntry(
             /* [in] */ IInterface* key,
             /* [out] */ IMapEntry** outent);
 
-        CARAPI LowerKey(
+        CARAPI GetLowerKey(
             /* [in] */ IInterface* key,
             /* [out] */ IInterface** outface);
 
-        CARAPI FloorEntry(
+        CARAPI GetFloorEntry(
             /* [in] */ IInterface* key,
             /* [out] */ IMapEntry** outent);
 
-        CARAPI FloorKey(
+        CARAPI GetFloorKey(
             /* [in] */ IInterface* key,
             /* [out] */ IInterface** outface);
 
-        CARAPI CeilingEntry(
+        CARAPI GetCeilingEntry(
             /* [in] */ IInterface* key,
             /* [out] */ IMapEntry** outent);
 
-        CARAPI CeilingKey(
+        CARAPI GetCeilingKey(
             /* [in] */ IInterface* key,
             /* [out] */ IInterface** outface);
 
-        CARAPI HigherEntry(
+        CARAPI GetHigherEntry(
             /* [in] */ IInterface* key,
             /* [out] */ IMapEntry** outent);
 
-        CARAPI HigherKey(
+        CARAPI GetHigherKey(
             /* [in] */ IInterface* key,
             /* [out] */ IInterface** outface);
 
-        CARAPI FirstEntry(
+        CARAPI GetFirstEntry(
             /* [out] */ IMapEntry** outent);
 
-        CARAPI LastEntry(
+        CARAPI GetLastEntry(
             /* [out] */ IMapEntry** outent);
 
         CARAPI PollFirstEntry(
@@ -876,28 +849,28 @@ public:
         CARAPI PollLastEntry(
             /* [out] */ IMapEntry** outent);
 
-        CARAPI DescendingMap(
+        CARAPI GetDescendingMap(
             /* [out] */ INavigableMap** outnav);
 
-        CARAPI NavigableKeySet(
+        CARAPI GetNavigableKeySet(
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI DescendingKeySet(
+        CARAPI GetDescendingKeySet(
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI SubMap(
+        CARAPI GetSubMap(
             /* [in] */ IInterface* fromKey,
             /* [in] */ Boolean fromInclusive,
             /* [in] */ IInterface* toKey,
             /* [in] */ Boolean toInclusive,
             /* [out] */ INavigableMap** outnav);
 
-        CARAPI HeadMap(
+        CARAPI GetHeadMap(
             /* [in] */ IInterface* toKey,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableMap** outnav);
 
-        CARAPI TailMap(
+        CARAPI GetTailMap(
             /* [in] */ IInterface* fromKey,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableMap** outnav);
@@ -982,9 +955,7 @@ public:
 
     class NavigableSubMap
         : public AbstractMap
-        , public IMap
         , public ISerializable
-        , public ElRefBase
     {
     public:
         NavigableSubMap(
@@ -1091,9 +1062,7 @@ public:
 
     class SubMap
         : public AbstractMap
-        , public IMap
         , public ISerializable
-        , public ElRefBase
     {
     public:
         CAR_INTERFACE_DECL()
@@ -1162,8 +1131,8 @@ public:
 
 private:
     class OrderComparator
-        : public IComparator
-        , public ElRefBase
+        : public Object
+        , public IComparator
     {
     public:
         CAR_INTERFACE_DECL()
@@ -1176,6 +1145,8 @@ private:
 
 public:
     CTreeMap();
+
+    CAR_INTERFACE_DECL()
 
     /**
      * Create a natural order, empty tree map whose keys must be mutually
@@ -1230,9 +1201,6 @@ public:
     // @SuppressWarnings("unchecked") // if copyFrom's keys are comparable this map's keys must be also
     CARAPI constructor(
         /* [in] */ ISortedMap* copyFrom);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Removes all elements from this {@code Map}, leaving it empty.
@@ -1429,7 +1397,7 @@ public:
      *
      * @return the comparator or {@code null} if the natural order is used.
      */
-    CARAPI Comparator(
+    CARAPI GetComparator(
         /* [out] */ IComparator** comp);
 
     /**
@@ -1439,7 +1407,7 @@ public:
      * @throws NoSuchElementException
      *                if this sorted map is empty.
      */
-    CARAPI FirstKey(
+    CARAPI GetFirstKey(
         /* [out] */ IInterface** outface);
 
     /**
@@ -1463,7 +1431,7 @@ public:
      *             if this map is itself a sorted map over a range of another
      *             map and the specified key is outside of its range.
      */
-    CARAPI HeadMap(
+    CARAPI GetHeadMap(
         /* [in] */ IInterface* endKey,
         /* [out] */ ISortedMap** sortmap);
 
@@ -1474,7 +1442,7 @@ public:
      * @throws NoSuchElementException
      *                if this sorted map is empty.
      */
-    CARAPI LastKey(
+    CARAPI GetLastKey(
         /* [out] */ IInterface** outface);
 
     /**
@@ -1502,7 +1470,7 @@ public:
      *             is itself a sorted map over a range of another sorted map and
      *             the specified range is outside of its range.
      */
-    CARAPI SubMap(
+    CARAPI GetSubMap(
         /* [in] */ IInterface* startKey,
         /* [in] */ IInterface* endKey,
         /* [out] */ ISortedMap** sortmap);
@@ -1529,7 +1497,7 @@ public:
      *             if this map itself a sorted map over a range of another map
      *             and the specified key is outside of its range.
      */
-    CARAPI TailMap(
+    CARAPI GetTailMap(
         /* [in] */ IInterface* startKey,
         /* [out] */ ISortedMap** sortmap);
 
@@ -1546,7 +1514,7 @@ public:
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */
-    CARAPI LowerEntry(
+    CARAPI GetLowerEntry(
         /* [in] */ IInterface* key,
         /* [out] */ IMapEntry** outent);
 
@@ -1562,7 +1530,7 @@ public:
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */
-    CARAPI LowerKey(
+    CARAPI GetLowerKey(
         /* [in] */ IInterface* key,
         /* [out] */ IInterface** outface);
 
@@ -1579,7 +1547,7 @@ public:
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */
-    CARAPI FloorEntry(
+    CARAPI GetFloorEntry(
         /* [in] */ IInterface* key,
         /* [out] */ IMapEntry** outent);
 
@@ -1595,7 +1563,7 @@ public:
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */
-    CARAPI FloorKey(
+    CARAPI GetFloorKey(
         /* [in] */ IInterface* key,
         /* [out] */ IInterface** outface);
 
@@ -1612,7 +1580,7 @@ public:
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */
-    CARAPI CeilingEntry(
+    CARAPI GetCeilingEntry(
         /* [in] */ IInterface* key,
         /* [out] */ IMapEntry** outent);
 
@@ -1628,7 +1596,7 @@ public:
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */
-    CARAPI CeilingKey(
+    CARAPI GetCeilingKey(
         /* [in] */ IInterface* key,
         /* [out] */ IInterface** outface);
 
@@ -1645,7 +1613,7 @@ public:
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */
-    CARAPI HigherEntry(
+    CARAPI GetHigherEntry(
         /* [in] */ IInterface* key,
         /* [out] */ IMapEntry** outent);
 
@@ -1661,7 +1629,7 @@ public:
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */
-    CARAPI HigherKey(
+    CARAPI GetHigherKey(
         /* [in] */ IInterface* key,
         /* [out] */ IInterface** outface);
 
@@ -1672,7 +1640,7 @@ public:
      * @return an entry with the least key,
      *         or {@code null} if this map is empty
      */
-    CARAPI FirstEntry(
+    CARAPI GetFirstEntry(
         /* [out] */ IMapEntry** outent);
 
     /**
@@ -1682,7 +1650,7 @@ public:
      * @return an entry with the greatest key,
      *         or {@code null} if this map is empty
      */
-    CARAPI LastEntry(
+    CARAPI GetLastEntry(
         /* [out] */ IMapEntry** outent);
 
     /**
@@ -1720,7 +1688,7 @@ public:
      *
      * @return a reverse order view of this map
      */
-    CARAPI DescendingMap(
+    CARAPI GetDescendingMap(
         /* [out] */ INavigableMap** outnav);
 
     /**
@@ -1737,7 +1705,7 @@ public:
      *
      * @return a navigable set view of the keys in this map
      */
-    CARAPI NavigableKeySet(
+    CARAPI GetNavigableKeySet(
         /* [out] */ INavigableSet** outnav);
 
     /**
@@ -1754,7 +1722,7 @@ public:
      *
      * @return a reverse order navigable set view of the keys in this map
      */
-    CARAPI DescendingKeySet(
+    CARAPI GetDescendingKeySet(
         /* [out] */ INavigableSet** outnav);
 
     /**
@@ -1791,7 +1759,7 @@ public:
      *         range, and {@code fromKey} or {@code toKey} lies
      *         outside the bounds of the range
      */
-    CARAPI SubMap(
+    CARAPI GetSubMap(
         /* [in] */ IInterface* fromKey,
         /* [in] */ Boolean fromInclusive,
         /* [in] */ IInterface* toKey,
@@ -1825,7 +1793,7 @@ public:
      *         restricted range, and {@code toKey} lies outside the
      *         bounds of the range
      */
-    CARAPI HeadMap(
+    CARAPI GetHeadMap(
         /* [in] */ IInterface* toKey,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableMap** outnav);
@@ -1857,7 +1825,7 @@ public:
      *         restricted range, and {@code fromKey} lies outside the
      *         bounds of the range
      */
-    CARAPI TailMap(
+    CARAPI GetTailMap(
         /* [in] */ IInterface* fromKey,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableMap** outnav);

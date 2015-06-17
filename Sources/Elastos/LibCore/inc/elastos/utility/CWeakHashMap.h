@@ -1,18 +1,20 @@
 #ifndef __UTILITY_CWEAKHASHMAP_H__
 #define __UTILITY_CWEAKHASHMAP_H__
 
-#include "_CWeakHashMap.h"
+#include "_Elastos_Utility_CWeakHashMap.h"
 #include "AbstractMap.h"
 #include "MapEntry.h"
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CWeakHashMap), public AbstractMap
+CarClass(CWeakHashMap)
+    , public AbstractMap
+    , public IWeakHashMap
 {
 private:
     class Entry
-        : public ElLightRefBase
+        : public Object
         , public IMapEntry
     {
     public:
@@ -52,7 +54,7 @@ private:
 
 public:
     class HashIterator
-        : public ElLightRefBase
+        : public Object
         , public IIterator
     {
     public:
@@ -87,12 +89,11 @@ public:
 
 private:
     class _EntrySet
-        : public ElRefBase
-        , public ISet
-        , public AbstractSet
+        : public AbstractSet
     {
     private:
-        class Type : public MapEntry::Type
+        class Type
+            : public MapEntry::Type
         {
         public:
             CARAPI Get(
@@ -105,8 +106,6 @@ private:
             /* [in] */ CWeakHashMap* owner)
             : mOwner(owner)
         {}
-
-        CAR_INTERFACE_DECL()
 
         CARAPI GetSize(
             /* [out] */ Int32* size);
@@ -166,12 +165,11 @@ private:
     };
 
     class _KeySet
-        : public ElRefBase
-        , public ISet
-        , public AbstractSet
+        : public AbstractSet
     {
     private:
-        class Type : public MapEntry::Type
+        class Type
+            : public MapEntry::Type
         {
         public:
             CARAPI Get(
@@ -184,8 +182,6 @@ private:
             /* [in] */ CWeakHashMap* owner)
             : mOwner(owner)
         {}
-
-        CAR_INTERFACE_DECL()
 
         CARAPI Contains(
             /* [in] */ IInterface* o,
@@ -246,12 +242,11 @@ private:
     };
 
     class _Values
-        : public ElRefBase
-        , public ICollection
-        , public AbstractCollection
+        : public AbstractCollection
     {
     private:
-        class Type : public MapEntry::Type
+        class Type
+            : public MapEntry::Type
         {
         public:
             CARAPI Get(
@@ -264,8 +259,6 @@ private:
             /* [in] */ CWeakHashMap* owner)
             : mOwner(owner)
         {}
-
-        CAR_INTERFACE_DECL()
 
         CARAPI GetSize(
             /* [out] */ Int32* size);
@@ -325,6 +318,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     CWeakHashMap()
         : mElementCount(0)
         , mLoadFactor(0)
@@ -368,9 +363,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ IMap* map);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Removes all mappings from this map, leaving it empty.
@@ -552,5 +544,11 @@ private:
 
 } // namespace Utility
 } // namespace Elastos
+
+template <>
+struct Conversion<Elastos::Utility::CWeakHashMap::Entry*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
 
 #endif // __UTILITY_CWEAKHASHMAP_H__

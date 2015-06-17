@@ -1,15 +1,18 @@
 
 #include "CTreeMap.h"
-#include "CCollections.h"
-#include "elastos/Math.h"
+#include "Collections.h"
+#include "Math.h"
 
 using Elastos::Core::IComparable;
 using Elastos::Core::EIID_IComparable;
 using Elastos::Core::IComparator;
 using Elastos::Core::EIID_IComparator;
 using Elastos::IO::EIID_ISerializable;
+using Elastos::Core::EIID_ICloneable;
 using Elastos::IO::IObjectOutputStreamPutField;
 using Elastos::IO::IObjectInputStreamGetField;
+using Elastos::IO::IOutputStream;
+using Elastos::IO::IInputStream;
 
 namespace Elastos {
 namespace Utility {
@@ -19,6 +22,8 @@ namespace Utility {
 //       CTreeMap
 //==========================================================
 const AutoPtr<IComparator> CTreeMap::NATURAL_ORDER = (IComparator*) new OrderComparator();
+
+CAR_INTERFACE_IMPL_4(CTreeMap, AbstractMap, ISortedMap, INavigableMap, ICloneable, ISerializable)
 
 CTreeMap::CTreeMap()
     : mSize(0)
@@ -51,12 +56,6 @@ CTreeMap::Relation CTreeMap::ForOrder(
     }
 }
 
-PInterface CTreeMap::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CTreeMap::Probe(riid);
-}
-
 ECode CTreeMap::constructor()
 {
     mComparator = NATURAL_ORDER;
@@ -70,7 +69,7 @@ ECode CTreeMap::constructor(
     AutoPtr<ArrayOf<IInterface*> > entries;
     AutoPtr<ISet> outset;
     copyFrommap->GetEntrySet((ISet**)&outset);
-    outset->ToArray((ArrayOf<IInterface*>**)&entries);
+    (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&entries);
     for (Int32 i = 0; i < entries->GetLength(); i++) {
         AutoPtr<IMapEntry> entry = IMapEntry::Probe((*entries)[i]);
         AutoPtr<IInterface> keyface;
@@ -98,7 +97,7 @@ ECode CTreeMap::constructor(
     /* [in] */ ISortedMap* copyFrom)
 {
     AutoPtr<IComparator> sourceComparator;
-    copyFrom->Comparator((IComparator**)&copyFrom);
+    copyFrom->GetComparator((IComparator**)&copyFrom);
     if (sourceComparator != NULL) {
         mComparator = sourceComparator;
     }
@@ -107,8 +106,8 @@ ECode CTreeMap::constructor(
     }
     AutoPtr<ArrayOf<IInterface*> > entries;
     AutoPtr<ISet> outset;
-    copyFrom->GetEntrySet((ISet**)&entries);
-    outset->ToArray((ArrayOf<IInterface*>**)&entries);
+    (IMap::Probe(copyFrom))->GetEntrySet((ISet**)&entries);
+    (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&entries);
     for (Int32 i = 0; i < entries->GetLength(); i++) {
         AutoPtr<IMapEntry> entry = IMapEntry::Probe((*entries)[i]);
         AutoPtr<IInterface> keyface;
@@ -269,7 +268,7 @@ AutoPtr<CTreeMap::Node> CTreeMap::Find(
         if (comparison == 0) {
             switch (relation) {
                 case LOWER:
-                    return nearest->Prev();
+                    return nearest->GetPrev();
                 case FLOOR:
                 case EQUAL:
                 case CREATE:
@@ -294,7 +293,7 @@ AutoPtr<CTreeMap::Node> CTreeMap::Find(
             switch (relation) {
                 case LOWER:
                 case FLOOR:
-                    return nearest->Prev();
+                    return nearest->GetPrev();
                 case CEILING:
                 case HIGHER:
                     return nearest;
@@ -369,7 +368,7 @@ ECode CTreeMap::RemoveInternal(
          * gone!
          */
 
-        AutoPtr<Node> adjacent = (left->mHeight > right->mHeight) ? left->Last() : right->First();
+        AutoPtr<Node> adjacent = (left->mHeight > right->mHeight) ? left->GetLast() : right->GetFirst();
         RemoveInternal(adjacent); // takes care of rebalance and size--
 
         Int32 leftHeight = 0;
@@ -574,12 +573,12 @@ AutoPtr<CTreeMap::SimpleImmutableEntry> CTreeMap::ImmutableCopy(
     return entry == NULL ? NULL : (res = new SimpleImmutableEntry(entry));
 }
 
-ECode CTreeMap::FirstEntry(
+ECode CTreeMap::GetFirstEntry(
     /* [out] */ IMapEntry** outent)
 {
     VALIDATE_NOT_NULL(outent)
 
-    AutoPtr<Node> res = mRoot == NULL ? NULL : mRoot->First();
+    AutoPtr<Node> res = mRoot == NULL ? NULL : mRoot->GetFirst();
     AutoPtr<SimpleImmutableEntry> outsim = ImmutableCopy((IMapEntry*)res.Get());
     *outent = (IMapEntry*)outsim.Get();
     REFCOUNT_ADD(*outent)
@@ -591,7 +590,7 @@ AutoPtr<IMapEntry> CTreeMap::InternalPollFirstEntry()
     if (mRoot == NULL) {
         return NULL;
     }
-    AutoPtr<Node> result = mRoot->First();
+    AutoPtr<Node> result = mRoot->GetFirst();
     RemoveInternal(result);
     return result;
 }
@@ -608,7 +607,7 @@ ECode CTreeMap::PollFirstEntry(
     return NOERROR;
 }
 
-ECode CTreeMap::FirstKey(
+ECode CTreeMap::GetFirstKey(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -617,16 +616,16 @@ ECode CTreeMap::FirstKey(
         // throw new NoSuchElementException();
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
-    AutoPtr<Node> res = mRoot->First();
+    AutoPtr<Node> res = mRoot->GetFirst();
     return res->GetKey(outface);
 }
 
-ECode CTreeMap::LastEntry(
+ECode CTreeMap::GetLastEntry(
     /* [out] */ IMapEntry** outent)
 {
     VALIDATE_NOT_NULL(outent)
 
-    AutoPtr<Node> res = mRoot == NULL ? NULL : mRoot->Last();
+    AutoPtr<Node> res = mRoot == NULL ? NULL : mRoot->GetLast();
     AutoPtr<SimpleImmutableEntry> outsim = ImmutableCopy((IMapEntry*)res.Get());
     *outent = (IMapEntry*)outsim.Get();
     REFCOUNT_ADD(*outent)
@@ -638,7 +637,7 @@ AutoPtr<IMapEntry> CTreeMap::InternalPollLastEntry()
     if (mRoot == NULL) {
         return NULL;
     }
-    AutoPtr<Node> result = mRoot->Last();
+    AutoPtr<Node> result = mRoot->GetLast();
     RemoveInternal(result);
     return result;
 }
@@ -655,7 +654,7 @@ ECode CTreeMap::PollLastEntry(
     return NOERROR;
 }
 
-ECode CTreeMap::LastKey(
+ECode CTreeMap::GetLastKey(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -664,11 +663,11 @@ ECode CTreeMap::LastKey(
         // throw new NoSuchElementException();
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
-    AutoPtr<Node> res = mRoot->Last();
+    AutoPtr<Node> res = mRoot->GetLast();
     return res->GetKey(outface);
 }
 
-ECode CTreeMap::LowerEntry(
+ECode CTreeMap::GetLowerEntry(
     /* [in] */ IInterface* key,
     /* [out] */ IMapEntry** outent)
 {
@@ -681,7 +680,7 @@ ECode CTreeMap::LowerEntry(
     return NOERROR;
 }
 
-ECode CTreeMap::LowerKey(
+ECode CTreeMap::GetLowerKey(
     /* [in] */ IInterface* key,
     /* [out] */ IInterface** outface)
 {
@@ -694,7 +693,7 @@ ECode CTreeMap::LowerKey(
     return NOERROR;
 }
 
-ECode CTreeMap::FloorEntry(
+ECode CTreeMap::GetFloorEntry(
     /* [in] */ IInterface* key,
     /* [out] */ IMapEntry** outent)
 {
@@ -707,7 +706,7 @@ ECode CTreeMap::FloorEntry(
     return NOERROR;
 }
 
-ECode CTreeMap::FloorKey(
+ECode CTreeMap::GetFloorKey(
     /* [in] */ IInterface* key,
     /* [out] */ IInterface** outface)
 {
@@ -720,7 +719,7 @@ ECode CTreeMap::FloorKey(
     return NOERROR;
 }
 
-ECode CTreeMap::CeilingEntry(
+ECode CTreeMap::GetCeilingEntry(
     /* [in] */ IInterface* key,
     /* [out] */ IMapEntry** outent)
 {
@@ -733,7 +732,7 @@ ECode CTreeMap::CeilingEntry(
     return NOERROR;
 }
 
-ECode CTreeMap::CeilingKey(
+ECode CTreeMap::GetCeilingKey(
     /* [in] */ IInterface* key,
     /* [out] */ IInterface** outface)
 {
@@ -746,7 +745,7 @@ ECode CTreeMap::CeilingKey(
     return NOERROR;
 }
 
-ECode CTreeMap::HigherEntry(
+ECode CTreeMap::GetHigherEntry(
     /* [in] */ IInterface* key,
     /* [out] */ IMapEntry** outent)
 {
@@ -759,7 +758,7 @@ ECode CTreeMap::HigherEntry(
     return NOERROR;
 }
 
-ECode CTreeMap::HigherKey(
+ECode CTreeMap::GetHigherKey(
     /* [in] */ IInterface* key,
     /* [out] */ IInterface** outface)
 {
@@ -772,7 +771,7 @@ ECode CTreeMap::HigherKey(
     return NOERROR;
 }
 
-ECode CTreeMap::Comparator(
+ECode CTreeMap::GetComparator(
     /* [out] */ IComparator** comp)
 {
     VALIDATE_NOT_NULL(comp)
@@ -808,7 +807,7 @@ ECode CTreeMap::GetKeySet(
     return NOERROR;
 }
 
-ECode CTreeMap::NavigableKeySet(
+ECode CTreeMap::GetNavigableKeySet(
     /* [out] */ INavigableSet** outnav)
 {
     VALIDATE_NOT_NULL(outnav)
@@ -819,7 +818,7 @@ ECode CTreeMap::NavigableKeySet(
     return NOERROR;
 }
 
-ECode CTreeMap::SubMap(
+ECode CTreeMap::GetSubMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toKey,
@@ -836,7 +835,7 @@ ECode CTreeMap::SubMap(
     return NOERROR;
 }
 
-ECode CTreeMap::SubMap(
+ECode CTreeMap::GetSubMap(
     /* [in] */ IInterface* startKey,
     /* [in] */ IInterface* endKey,
     /* [out] */ ISortedMap** sortmap)
@@ -850,7 +849,7 @@ ECode CTreeMap::SubMap(
     return NOERROR;
 }
 
-ECode CTreeMap::HeadMap(
+ECode CTreeMap::GetHeadMap(
     /* [in] */ IInterface* toKey,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableMap** outnav)
@@ -864,7 +863,7 @@ ECode CTreeMap::HeadMap(
     return NOERROR;
 }
 
-ECode CTreeMap::HeadMap(
+ECode CTreeMap::GetHeadMap(
     /* [in] */ IInterface* endKey,
     /* [out] */ ISortedMap** sortmap)
 {
@@ -877,7 +876,7 @@ ECode CTreeMap::HeadMap(
     return NOERROR;
 }
 
-ECode CTreeMap::TailMap(
+ECode CTreeMap::GetTailMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableMap** outnav)
@@ -891,7 +890,7 @@ ECode CTreeMap::TailMap(
     return NOERROR;
 }
 
-ECode CTreeMap::TailMap(
+ECode CTreeMap::GetTailMap(
     /* [in] */ IInterface* startKey,
     /* [out] */ ISortedMap** sortmap)
 {
@@ -904,7 +903,7 @@ ECode CTreeMap::TailMap(
     return NOERROR;
 }
 
-ECode CTreeMap::DescendingMap(
+ECode CTreeMap::GetDescendingMap(
     /* [out] */ INavigableMap** outnav)
 {
     VALIDATE_NOT_NULL(outnav)
@@ -915,13 +914,13 @@ ECode CTreeMap::DescendingMap(
     return NOERROR;
 }
 
-ECode CTreeMap::DescendingKeySet(
+ECode CTreeMap::GetDescendingKeySet(
     /* [out] */ INavigableSet** outnav)
 {
     VALIDATE_NOT_NULL(outnav)
 
     AutoPtr<BoundedMap> res = new BoundedMap(FALSE, NULL, NO_BOUND, NULL, NO_BOUND, this);
-    return res->NavigableKeySet(outnav);
+    return res->GetNavigableKeySet(outnav);
 }
 
 Int32 CTreeMap::Count(
@@ -943,15 +942,15 @@ ECode CTreeMap::WriteObject(
     AutoPtr<IObjectOutputStreamPutField> strfield;
     stream->PutFields((IObjectOutputStreamPutField**)&strfield);
     AutoPtr<IComparator> rescom;
-    Comparator((IComparator**)&rescom);
-    strfield->PutObject(String("comparator"), rescom);
+    GetComparator((IComparator**)&rescom);
+    strfield->Put(String("comparator"), rescom);
     stream->WriteFields();
-    stream->Write(mSize);
+    (IOutputStream::Probe(stream))->Write(mSize);
 
     AutoPtr<ArrayOf<IInterface*> > entries;
     AutoPtr<ISet> outset;
     GetEntrySet((ISet**)&outset);
-    outset->ToArray((ArrayOf<IInterface*>**)&entries);
+    (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&entries);
     for (Int32 i = 0; i < entries->GetLength(); i++) {
         AutoPtr<IMapEntry> entry = IMapEntry::Probe((*entries)[i]);
         AutoPtr<IInterface> keyface;
@@ -971,12 +970,12 @@ ECode CTreeMap::ReadObject(
 {
     AutoPtr<IObjectInputStreamGetField> fields;
     stream->ReadFields((IObjectInputStreamGetField**)&fields);
-    fields->GetObject(String("comparator"), NULL, (IInterface**)&mComparator);
+    fields->Get(String("comparator"), NULL, (IInterface**)&mComparator);
     if (mComparator == NULL) {
         mComparator = NATURAL_ORDER;
     }
     Int32 size = 0;
-    stream->Read(&size);
+    (IInputStream::Probe(stream))->Read(&size);
     for (Int32 i = 0; i < size; i++) {
         assert(0 && "TODO");
         // PutInternal((K) stream.readObject(), (V) stream.readObject());
@@ -1019,11 +1018,10 @@ ECode CTreeMap::GetValues(
 //==========================================================
 //       CTreeMap::Node
 //==========================================================
-CAR_INTERFACE_IMPL(CTreeMap::Node, IMapEntry);
-
 CTreeMap::Node::Node(
     /* [in] */ Node* parent,
     /* [in] */ IInterface* key)
+    : MapEntry((IInterface*)(IMapEntry*)parent, key)
 {
     mParent = parent;
     mKey = key;
@@ -1114,10 +1112,10 @@ ECode CTreeMap::Node::ToString(
     return NOERROR;
 }
 
-AutoPtr<CTreeMap::Node> CTreeMap::Node::Next()
+AutoPtr<CTreeMap::Node> CTreeMap::Node::GetNext()
 {
     if (mRight != NULL) {
-        return mRight->First();
+        return mRight->GetFirst();
     }
 
     AutoPtr<Node> node = this;
@@ -1132,10 +1130,10 @@ AutoPtr<CTreeMap::Node> CTreeMap::Node::Next()
     return NULL;
 }
 
-AutoPtr<CTreeMap::Node> CTreeMap::Node::Prev()
+AutoPtr<CTreeMap::Node> CTreeMap::Node::GetPrev()
 {
     if (mLeft != NULL) {
-        return mLeft->Last();
+        return mLeft->GetLast();
     }
 
     AutoPtr<Node> node = this;
@@ -1150,7 +1148,7 @@ AutoPtr<CTreeMap::Node> CTreeMap::Node::Prev()
     return NULL;
 }
 
-AutoPtr<CTreeMap::Node> CTreeMap::Node::First()
+AutoPtr<CTreeMap::Node> CTreeMap::Node::GetFirst()
 {
     AutoPtr<Node> node = this;
     AutoPtr<Node> child = node->mLeft;
@@ -1161,7 +1159,7 @@ AutoPtr<CTreeMap::Node> CTreeMap::Node::First()
     return node;
 }
 
-AutoPtr<CTreeMap::Node> CTreeMap::Node::Last()
+AutoPtr<CTreeMap::Node> CTreeMap::Node::GetLast()
 {
     AutoPtr<Node> node = this;
     AutoPtr<Node> child = node->mRight;
@@ -1176,7 +1174,7 @@ AutoPtr<CTreeMap::Node> CTreeMap::Node::Last()
 //==========================================================
 //       CTreeMap::MapIterator
 //==========================================================
-CAR_INTERFACE_IMPL(CTreeMap::MapIterator, IIterator)
+CAR_INTERFACE_IMPL(CTreeMap::MapIterator, Object, IIterator)
 
 CTreeMap::MapIterator::MapIterator(
     /* [in] */ Node* next,
@@ -1220,7 +1218,7 @@ AutoPtr<CTreeMap::Node> CTreeMap::MapIterator::StepBackward()
         return NULL;
     }
     mLast = mNext;
-    mNext = mNext->Prev();
+    mNext = mNext->GetPrev();
     return mLast;
 }
 
@@ -1240,49 +1238,6 @@ ECode CTreeMap::MapIterator::Remove()
 //==========================================================
 //       CTreeMap::_EntrySet
 //==========================================================
-UInt32 CTreeMap::_EntrySet::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CTreeMap::_EntrySet::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CTreeMap::_EntrySet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ISet*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ISet*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(ISet*)this;
-    }
-    else if (EIID_ISet == riid) {
-        return (ISet*)this;
-    }
-
-    return NULL;
-}
-
-ECode CTreeMap::_EntrySet::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ISet*)this) {
-        *pIID = EIID_ISet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
 
 CTreeMap::_EntrySet::_EntrySet(
     /* [in] */ CTreeMap* host)
@@ -1304,7 +1259,7 @@ ECode CTreeMap::_EntrySet::GetIterator(
 {
     VALIDATE_NOT_NULL(outiter)
 
-    AutoPtr<IIterator> res = (IIterator*) new _EntrySetForwardMapIterator(mHost->mRoot == NULL ? NULL : mHost->mRoot->First(), mHost);
+    AutoPtr<IIterator> res = (IIterator*) new _EntrySetForwardMapIterator(mHost->mRoot == NULL ? NULL : mHost->mRoot->GetFirst(), mHost);
     *outiter = res;
     REFCOUNT_ADD(*outiter)
     return NOERROR;
@@ -1418,56 +1373,7 @@ ECode CTreeMap::_EntrySet::ToArray(
 //==========================================================
 //       CTreeMap::_KeySet
 //==========================================================
-
-UInt32 CTreeMap::_KeySet::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CTreeMap::_KeySet::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CTreeMap::_KeySet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(INavigableSet*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(INavigableSet*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(INavigableSet*)this;
-    }
-    else if (EIID_ISet == riid) {
-        return (ISet*)(INavigableSet*)this;
-    }
-    else if (EIID_ISortedSet == riid) {
-        return (ISortedSet*)(INavigableSet*)this;
-    }
-    else if (EIID_INavigableSet == riid) {
-        return (INavigableSet*)this;
-    }
-
-    return NULL;
-}
-
-ECode CTreeMap::_KeySet::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(INavigableSet*)this) {
-        *pIID = EIID_INavigableSet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(CTreeMap::_KeySet, AbstractSet, INavigableSet)
 
 CTreeMap::_KeySet::_KeySet(
     /* [in] */ CTreeMap* host)
@@ -1489,18 +1395,18 @@ ECode CTreeMap::_KeySet::GetIterator(
 {
     VALIDATE_NOT_NULL(outiter)
 
-    AutoPtr<IIterator> res = (IIterator*) new _KeySetForwardMapIterator(mHost->mRoot == NULL ? NULL : mHost->mRoot->First(), mHost);
+    AutoPtr<IIterator> res = (IIterator*) new _KeySetForwardMapIterator(mHost->mRoot == NULL ? NULL : mHost->mRoot->GetFirst(), mHost);
     *outiter = res;
     REFCOUNT_ADD(*outiter)
     return NOERROR;
 }
 
-ECode CTreeMap::_KeySet::DescendingIterator(
+ECode CTreeMap::_KeySet::GetDescendingIterator(
     /* [out] */ IIterator** outiter)
 {
     VALIDATE_NOT_NULL(outiter)
 
-    AutoPtr<IIterator> res = (IIterator*) new _KeySetBackwardMapIterator(mHost->mRoot == NULL ? NULL : mHost->mRoot->First(), mHost);
+    AutoPtr<IIterator> res = (IIterator*) new _KeySetBackwardMapIterator(mHost->mRoot == NULL ? NULL : mHost->mRoot->GetFirst(), mHost);
     *outiter = res;
     REFCOUNT_ADD(*outiter)
     return NOERROR;
@@ -1532,47 +1438,47 @@ ECode CTreeMap::_KeySet::Clear()
 ECode CTreeMap::_KeySet::Comparator(
     /* [out] */ IComparator** outcom)
 {
-    return mHost->Comparator(outcom);
+    return mHost->GetComparator(outcom);
 }
 
 ECode CTreeMap::_KeySet::First(
     /* [out] */ IInterface** outface)
 {
-    return mHost->FirstKey(outface);
+    return mHost->GetFirstKey(outface);
 }
 
 ECode CTreeMap::_KeySet::Last(
     /* [out] */ IInterface** outface)
 {
-    return mHost->LastKey(outface);
+    return mHost->GetLastKey(outface);
 }
 
-ECode CTreeMap::_KeySet::Lower(
+ECode CTreeMap::_KeySet::GetLower(
     /* [in] */ IInterface* e,
     /* [out] */ IInterface** outface)
 {
-    return mHost->LowerKey(e, outface);
+    return mHost->GetLowerKey(e, outface);
 }
 
-ECode CTreeMap::_KeySet::Floor(
+ECode CTreeMap::_KeySet::GetFloor(
     /* [in] */ IInterface* e,
     /* [out] */ IInterface** outface)
 {
-    return mHost->FloorKey(e, outface);
+    return mHost->GetFloorKey(e, outface);
 }
 
-ECode CTreeMap::_KeySet::Ceiling(
+ECode CTreeMap::_KeySet::GetCeiling(
     /* [in] */ IInterface* e,
     /* [out] */ IInterface** outface)
 {
-    return mHost->CeilingKey(e, outface);
+    return mHost->GetCeilingKey(e, outface);
 }
 
-ECode CTreeMap::_KeySet::Higher(
+ECode CTreeMap::_KeySet::GetHigher(
     /* [in] */ IInterface* e,
     /* [out] */ IInterface** outface)
 {
-    return mHost->HigherKey(e, outface);
+    return mHost->GetHigherKey(e, outface);
 }
 
 ECode CTreeMap::_KeySet::PollFirst(
@@ -1599,7 +1505,7 @@ ECode CTreeMap::_KeySet::PollLast(
     return NOERROR;
 }
 
-ECode CTreeMap::_KeySet::SubSet(
+ECode CTreeMap::_KeySet::GetSubSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toElement,
@@ -1607,8 +1513,8 @@ ECode CTreeMap::_KeySet::SubSet(
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<INavigableMap> res;
-    mHost->SubMap(fromElement, fromInclusive, toElement, toInclusive, (INavigableMap**)&res);
-    return res->NavigableKeySet(outnav);
+    mHost->GetSubMap(fromElement, fromInclusive, toElement, toInclusive, (INavigableMap**)&res);
+    return res->GetNavigableKeySet(outnav);
 }
 
 ECode CTreeMap::_KeySet::SubSet(
@@ -1617,18 +1523,18 @@ ECode CTreeMap::_KeySet::SubSet(
     /* [out] */ ISortedSet** outsort)
 {
     AutoPtr<INavigableMap> res;
-    mHost->SubMap(start, TRUE, end, FALSE, (INavigableMap**)&res);
-    return res->NavigableKeySet((INavigableSet**)outsort);
+    mHost->GetSubMap(start, TRUE, end, FALSE, (INavigableMap**)&res);
+    return res->GetNavigableKeySet((INavigableSet**)outsort);
 }
 
-ECode CTreeMap::_KeySet::HeadSet(
+ECode CTreeMap::_KeySet::GetHeadSet(
     /* [in] */ IInterface* toElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<INavigableMap> res;
-    mHost->HeadMap(toElement, inclusive, (INavigableMap**)&res);
-    return res->NavigableKeySet(outnav);
+    mHost->GetHeadMap(toElement, inclusive, (INavigableMap**)&res);
+    return res->GetNavigableKeySet(outnav);
 }
 
 ECode CTreeMap::_KeySet::HeadSet(
@@ -1636,18 +1542,18 @@ ECode CTreeMap::_KeySet::HeadSet(
     /* [out] */ ISortedSet** outsort)
 {
     AutoPtr<INavigableMap> res;
-    mHost->HeadMap(end, FALSE, (INavigableMap**)&res);
-    return res->NavigableKeySet((INavigableSet**)outsort);
+    mHost->GetHeadMap(end, FALSE, (INavigableMap**)&res);
+    return res->GetNavigableKeySet((INavigableSet**)outsort);
 }
 
-ECode CTreeMap::_KeySet::TailSet(
+ECode CTreeMap::_KeySet::GetTailSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<INavigableMap> res;
-    mHost->TailMap(fromElement, inclusive, (INavigableMap**)&res);
-    return res->NavigableKeySet(outnav);
+    mHost->GetTailMap(fromElement, inclusive, (INavigableMap**)&res);
+    return res->GetNavigableKeySet(outnav);
 }
 
 ECode CTreeMap::_KeySet::TailSet(
@@ -1655,15 +1561,15 @@ ECode CTreeMap::_KeySet::TailSet(
     /* [out] */ ISortedSet** outsort)
 {
     AutoPtr<INavigableMap> res;
-    mHost->TailMap(start, TRUE, (INavigableMap**)&res);
-    return res->NavigableKeySet((INavigableSet**)outsort);
+    mHost->GetTailMap(start, TRUE, (INavigableMap**)&res);
+    return res->GetNavigableKeySet((INavigableSet**)outsort);
 }
 
-ECode CTreeMap::_KeySet::DescendingSet(
+ECode CTreeMap::_KeySet::GetDescendingSet(
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<BoundedMap> res = new BoundedMap(FALSE, NULL, NO_BOUND, NULL, NO_BOUND, mHost);
-    return res->NavigableKeySet(outnav);
+    return res->GetNavigableKeySet(outnav);
 }
 
 ECode CTreeMap::_KeySet::IsEmpty(
@@ -1778,7 +1684,7 @@ ECode CTreeMap::BoundedMap::BoundedEntrySet::BoundedEntrySetIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
-    *object = mBoundParent->mAscending ? StepForward() : StepBackward();
+    *object = mBoundParent->mAscending ? (IInterface*)(IMapEntry*)StepForward() : (IInterface*)(IMapEntry*)StepBackward();
     REFCOUNT_ADD(*object);
     return NOERROR;
 }
@@ -1786,50 +1692,6 @@ ECode CTreeMap::BoundedMap::BoundedEntrySet::BoundedEntrySetIterator::GetNext(
 //==========================================================
 //       CTreeMap::BoundedMap::BoundedEntrySet
 //==========================================================
-
-UInt32 CTreeMap::BoundedMap::BoundedEntrySet::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CTreeMap::BoundedMap::BoundedEntrySet::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CTreeMap::BoundedMap::BoundedEntrySet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(ISet*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(ISet*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(ISet*)this;
-    }
-    else if (EIID_ISet == riid) {
-        return (ISet*)this;
-    }
-
-    return NULL;
-}
-
-ECode CTreeMap::BoundedMap::BoundedEntrySet::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ISet*)this) {
-        *pIID = EIID_ISet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
 
 CTreeMap::BoundedMap::BoundedEntrySet::BoundedEntrySet(
     /* [in] */ BoundedMap* host)
@@ -1893,7 +1755,7 @@ ECode CTreeMap::BoundedMap::BoundedEntrySet::Remove(
     AutoPtr<ISet> entries;
     mHost->mHost->GetEntrySet((ISet**)&entries);
     Boolean isflag = FALSE;
-    *value = mHost->IsInBounds(keyface) && (entries->Remove(entry, &isflag), isflag);
+    *value = mHost->IsInBounds(keyface) && ((ICollection::Probe(entries))->Remove(entry, &isflag), isflag);
     return NOERROR;
 }
 
@@ -2006,56 +1868,7 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::BoundedKeySetDescendingIterator::GetN
 //==========================================================
 //       CTreeMap::BoundedMap::BoundedKeySet
 //==========================================================
-
-UInt32 CTreeMap::BoundedMap::BoundedKeySet::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CTreeMap::BoundedMap::BoundedKeySet::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CTreeMap::BoundedMap::BoundedKeySet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(INavigableSet*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(INavigableSet*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(INavigableSet*)this;
-    }
-    else if (EIID_ISet == riid) {
-        return (ISet*)(INavigableSet*)this;
-    }
-    else if (EIID_ISortedSet == riid) {
-        return (ISortedSet*)(INavigableSet*)this;
-    }
-    else if (EIID_INavigableSet == riid) {
-        return (INavigableSet*)this;
-    }
-
-    return NULL;
-}
-
-ECode CTreeMap::BoundedMap::BoundedKeySet::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(INavigableSet*)this) {
-        *pIID = EIID_INavigableSet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(CTreeMap::BoundedMap::BoundedKeySet, AbstractSet, INavigableSet)
 
 CTreeMap::BoundedMap::BoundedKeySet::BoundedKeySet(
     /* [in] */ BoundedMap* host)
@@ -2085,7 +1898,7 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::GetIterator(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::DescendingIterator(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetDescendingIterator(
     /* [out] */ IIterator** outiter)
 {
     VALIDATE_NOT_NULL(outiter)
@@ -2151,32 +1964,32 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::PollLast(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::Lower(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetLower(
     /* [in] */ IInterface* e,
     /* [out] */ IInterface** outface)
 {
-    return mHost->LowerKey(e, outface);
+    return mHost->GetLowerKey(e, outface);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::Floor(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetFloor(
     /* [in] */ IInterface* e,
     /* [out] */ IInterface** outface)
 {
-    return mHost->FloorKey(e, outface);
+    return mHost->GetFloorKey(e, outface);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::Ceiling(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetCeiling(
     /* [in] */ IInterface* e,
     /* [out] */ IInterface** outface)
 {
-    return mHost->CeilingKey(e, outface);
+    return mHost->GetCeilingKey(e, outface);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::Higher(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetHigher(
     /* [in] */ IInterface* e,
     /* [out] */ IInterface** outface)
 {
-    return mHost->HigherKey(e, outface);
+    return mHost->GetHigherKey(e, outface);
 }
 
 ECode CTreeMap::BoundedMap::BoundedKeySet::Comparator(
@@ -2185,7 +1998,7 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::Comparator(
     return mHost->Comparator(outcom);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::SubSet(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetSubSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toElement,
@@ -2193,8 +2006,8 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::SubSet(
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<INavigableMap> res;
-    mHost->SubMap(fromElement, fromInclusive, toElement, toInclusive, (INavigableMap**)&res);
-    return res->NavigableKeySet(outnav);
+    mHost->GetSubMap(fromElement, fromInclusive, toElement, toInclusive, (INavigableMap**)&res);
+    return res->GetNavigableKeySet(outnav);
 }
 
 ECode CTreeMap::BoundedMap::BoundedKeySet::SubSet(
@@ -2203,18 +2016,18 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::SubSet(
     /* [out] */ ISortedSet** outsort)
 {
     AutoPtr<ISortedMap> res;
-    mHost->SubMap(start, end, (ISortedMap**)&res);
-    return INavigableMap::Probe(res)->NavigableKeySet((INavigableSet**)outsort);
+    mHost->GetSubMap(start, end, (ISortedMap**)&res);
+    return INavigableMap::Probe(res)->GetNavigableKeySet((INavigableSet**)outsort);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::HeadSet(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetHeadSet(
     /* [in] */ IInterface* toElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<INavigableMap> res;
-    mHost->HeadMap(toElement, inclusive, (INavigableMap**)&res);
-    return res->NavigableKeySet(outnav);
+    mHost->GetHeadMap(toElement, inclusive, (INavigableMap**)&res);
+    return res->GetNavigableKeySet(outnav);
 }
 
 ECode CTreeMap::BoundedMap::BoundedKeySet::HeadSet(
@@ -2222,18 +2035,18 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::HeadSet(
     /* [out] */ ISortedSet** outsort)
 {
     AutoPtr<ISortedMap> res;
-    mHost->HeadMap(end, (ISortedMap**)&res);
-    return INavigableMap::Probe(res)->NavigableKeySet((INavigableSet**)outsort);
+    mHost->GetHeadMap(end, (ISortedMap**)&res);
+    return INavigableMap::Probe(res)->GetNavigableKeySet((INavigableSet**)outsort);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::TailSet(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetTailSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<INavigableMap> res;
-    mHost->TailMap(fromElement, inclusive, (INavigableMap**)&res);
-    return res->NavigableKeySet(outnav);
+    mHost->GetTailMap(fromElement, inclusive, (INavigableMap**)&res);
+    return res->GetNavigableKeySet(outnav);
 }
 
 ECode CTreeMap::BoundedMap::BoundedKeySet::TailSet(
@@ -2241,17 +2054,17 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::TailSet(
     /* [out] */ ISortedSet** outsort)
 {
     AutoPtr<ISortedMap> res;
-    mHost->TailMap(start, (ISortedMap**)&res);
-    return INavigableMap::Probe(res)->NavigableKeySet((INavigableSet**)outsort);
+    mHost->GetTailMap(start, (ISortedMap**)&res);
+    return INavigableMap::Probe(res)->GetNavigableKeySet((INavigableSet**)outsort);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::DescendingSet(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetDescendingSet(
     /* [out] */ INavigableSet** outnav)
 {
     AutoPtr<BoundedMap> res = new BoundedMap(
         !mHost->mAscending, mHost->mFrom, mHost->mFromBound,
         mHost->mTo, mHost->mToBound, mHost->mHost);
-    return res->NavigableKeySet(outnav);
+    return res->GetNavigableKeySet(outnav);
 }
 
 ECode CTreeMap::BoundedMap::BoundedKeySet::Clear()
@@ -2325,61 +2138,7 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::GetHashCode(
 //       CTreeMap::BoundedMap
 //==========================================================
 
-UInt32 CTreeMap::BoundedMap::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CTreeMap::BoundedMap::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CTreeMap::BoundedMap::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(INavigableMap*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(INavigableMap*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(INavigableMap*)this;
-    }
-    else if (EIID_IMap == riid) {
-        return (IMap*)(INavigableMap*)this;
-    }
-    else if (EIID_ISortedMap == riid) {
-        return (ISortedMap*)(INavigableMap*)this;
-    }
-    else if (EIID_INavigableMap == riid) {
-        return (INavigableMap*)this;
-    }
-    else if (Elastos::IO::EIID_ISerializable == riid) {
-        return (ISerializable*)this;
-    }
-
-    return NULL;
-}
-
-ECode CTreeMap::BoundedMap::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(INavigableMap*)this) {
-        *pIID = EIID_INavigableMap;
-    }
-    else if (pObject == (IInterface*)(ISerializable*)this) {
-        *pIID = Elastos::IO::EIID_ISerializable;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_2(CTreeMap::BoundedMap, AbstractMap, INavigableMap, ISerializable)
 
 CTreeMap::BoundedMap::BoundedMap(
     /* [in] */ Boolean ascending,
@@ -2422,7 +2181,7 @@ ECode CTreeMap::BoundedMap::GetSize(
     AutoPtr<ISet> outset;
     GetEntrySet((ISet**)&outset);
     AutoPtr<IIterator> it;
-    outset->GetIterator((IIterator**)&it);
+    (IIterable::Probe(outset))->GetIterator((IIterator**)&it);
     *size = Count(it);
     return NOERROR;
 }
@@ -2541,7 +2300,7 @@ AutoPtr<CTreeMap::Node> CTreeMap::BoundedMap::GetBound(
     return res;
 }
 
-ECode CTreeMap::BoundedMap::FirstEntry(
+ECode CTreeMap::BoundedMap::GetFirstEntry(
     /* [out] */ IMapEntry** outent)
 {
     VALIDATE_NOT_NULL(outent)
@@ -2579,7 +2338,7 @@ ECode CTreeMap::BoundedMap::FirstKey(
     return entry->GetKey(outface);
 }
 
-ECode CTreeMap::BoundedMap::LastEntry(
+ECode CTreeMap::BoundedMap::GetLastEntry(
     /* [out] */ IMapEntry** outent)
 {
     VALIDATE_NOT_NULL(outent)
@@ -2626,7 +2385,7 @@ AutoPtr<CTreeMap::Node> CTreeMap::BoundedMap::Endpoint(
     if (mAscending == first) {
         switch (mFromBound) {
             case NO_BOUND:
-                node = mHost->mRoot == NULL ? NULL : mHost->mRoot->First();
+                node = mHost->mRoot == NULL ? NULL : mHost->mRoot->GetFirst();
                 break;
             case INCLUSIVE:
                 node = mHost->Find(mFrom, CEILING);
@@ -2643,7 +2402,7 @@ AutoPtr<CTreeMap::Node> CTreeMap::BoundedMap::Endpoint(
     else {
         switch (mToBound) {
             case NO_BOUND:
-                node = mHost->mRoot == NULL ? NULL : mHost->mRoot->Last();
+                node = mHost->mRoot == NULL ? NULL : mHost->mRoot->GetLast();
                 break;
             case INCLUSIVE:
                 node = mHost->Find(mTo, FLOOR);
@@ -2701,7 +2460,7 @@ AutoPtr<IMapEntry> CTreeMap::BoundedMap::FindBounded(
     return GetBound(nodfind, fromBoundForCheck, toBoundForCheck);
 }
 
-ECode CTreeMap::BoundedMap::LowerEntry(
+ECode CTreeMap::BoundedMap::GetLowerEntry(
     /* [in] */ IInterface* key,
     /* [out] */ IMapEntry** outent)
 {
@@ -2714,7 +2473,7 @@ ECode CTreeMap::BoundedMap::LowerEntry(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::LowerKey(
+ECode CTreeMap::BoundedMap::GetLowerKey(
     /* [in] */ IInterface* key,
     /* [out] */ IInterface** outface)
 {
@@ -2727,7 +2486,7 @@ ECode CTreeMap::BoundedMap::LowerKey(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::FloorEntry(
+ECode CTreeMap::BoundedMap::GetFloorEntry(
     /* [in] */ IInterface* key,
     /* [out] */ IMapEntry** outent)
 {
@@ -2740,7 +2499,7 @@ ECode CTreeMap::BoundedMap::FloorEntry(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::FloorKey(
+ECode CTreeMap::BoundedMap::GetFloorKey(
     /* [in] */ IInterface* key,
     /* [out] */ IInterface** outface)
 {
@@ -2753,7 +2512,7 @@ ECode CTreeMap::BoundedMap::FloorKey(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::CeilingEntry(
+ECode CTreeMap::BoundedMap::GetCeilingEntry(
     /* [in] */ IInterface* key,
     /* [out] */ IMapEntry** outent)
 {
@@ -2766,7 +2525,7 @@ ECode CTreeMap::BoundedMap::CeilingEntry(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::CeilingKey(
+ECode CTreeMap::BoundedMap::GetCeilingKey(
     /* [in] */ IInterface* key,
     /* [out] */ IInterface** outface)
 {
@@ -2779,7 +2538,7 @@ ECode CTreeMap::BoundedMap::CeilingKey(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::HigherEntry(
+ECode CTreeMap::BoundedMap::GetHigherEntry(
     /* [in] */ IInterface* key,
     /* [out] */ IMapEntry** outent)
 {
@@ -2792,7 +2551,7 @@ ECode CTreeMap::BoundedMap::HigherEntry(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::HigherKey(
+ECode CTreeMap::BoundedMap::GetHigherKey(
     /* [in] */ IInterface* key,
     /* [out] */ IInterface** outface)
 {
@@ -2811,14 +2570,14 @@ ECode CTreeMap::BoundedMap::Comparator(
     VALIDATE_NOT_NULL(comp)
 
     AutoPtr<IComparator> forward;
-    mHost->Comparator((IComparator**)&forward);
+    mHost->GetComparator((IComparator**)&forward);
     if (mAscending) {
         *comp = forward;
         REFCOUNT_ADD(*comp)
         return NOERROR;
     }
     else {
-        return CCollections::_ReverseOrder(forward, comp);
+        return Collections::ReverseOrder(forward, comp);
     }
 }
 
@@ -2839,14 +2598,14 @@ ECode CTreeMap::BoundedMap::GetKeySet(
     VALIDATE_NOT_NULL(keySet)
 
     AutoPtr<INavigableSet> outnav;
-    FAIL_RETURN(NavigableKeySet((INavigableSet**)&outnav));
+    FAIL_RETURN(mHost->GetNavigableKeySet((INavigableSet**)&outnav));
     AutoPtr<ISet> outset = ISet::Probe(outnav);
     *keySet = outset;
     REFCOUNT_ADD(*keySet)
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::NavigableKeySet(
+ECode CTreeMap::BoundedMap::GetNavigableKeySet(
     /* [out] */ INavigableSet** outnav)
 {
     VALIDATE_NOT_NULL(outnav)
@@ -2857,7 +2616,7 @@ ECode CTreeMap::BoundedMap::NavigableKeySet(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::DescendingMap(
+ECode CTreeMap::BoundedMap::GetDescendingMap(
     /* [out] */ INavigableMap** outnav)
 {
     VALIDATE_NOT_NULL(outnav)
@@ -2868,16 +2627,16 @@ ECode CTreeMap::BoundedMap::DescendingMap(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::DescendingKeySet(
+ECode CTreeMap::BoundedMap::GetDescendingKeySet(
     /* [out] */ INavigableSet** outnav)
 {
     VALIDATE_NOT_NULL(outnav)
 
     AutoPtr<BoundedMap> res = new BoundedMap(!mAscending, mFrom, mFromBound, mTo, mToBound, mHost);
-    return res->NavigableKeySet(outnav);
+    return res->GetNavigableKeySet(outnav);
 }
 
-ECode CTreeMap::BoundedMap::SubMap(
+ECode CTreeMap::BoundedMap::GetSubMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toKey,
@@ -2894,7 +2653,7 @@ ECode CTreeMap::BoundedMap::SubMap(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::SubMap(
+ECode CTreeMap::BoundedMap::GetSubMap(
     /* [in] */ IInterface* startKey,
     /* [in] */ IInterface* endKey,
     /* [out] */ ISortedMap** sortmap)
@@ -2902,12 +2661,12 @@ ECode CTreeMap::BoundedMap::SubMap(
     VALIDATE_NOT_NULL(sortmap)
 
     AutoPtr<INavigableMap> res = SubMap(startKey, INCLUSIVE, endKey, EXCLUSIVE);
-    *sortmap = res;
+    *sortmap = (ISortedMap*)res.Get();
     REFCOUNT_ADD(*sortmap);
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::HeadMap(
+ECode CTreeMap::BoundedMap::GetHeadMap(
     /* [in] */ IInterface* toKey,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableMap** outnav)
@@ -2921,19 +2680,19 @@ ECode CTreeMap::BoundedMap::HeadMap(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::HeadMap(
+ECode CTreeMap::BoundedMap::GetHeadMap(
     /* [in] */ IInterface* endKey,
     /* [out] */ ISortedMap** sortmap)
 {
     VALIDATE_NOT_NULL(sortmap)
 
     AutoPtr<INavigableMap> res = SubMap(NULL, NO_BOUND, endKey, EXCLUSIVE);
-    *sortmap = res;
+    *sortmap = (ISortedMap*)res.Get();
     REFCOUNT_ADD(*sortmap)
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::TailMap(
+ECode CTreeMap::BoundedMap::GetTailMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableMap** outnav)
@@ -2947,14 +2706,14 @@ ECode CTreeMap::BoundedMap::TailMap(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::TailMap(
+ECode CTreeMap::BoundedMap::GetTailMap(
     /* [in] */ IInterface* startKey,
     /* [out] */ ISortedMap** sortmap)
 {
     VALIDATE_NOT_NULL(sortmap)
 
     AutoPtr<INavigableMap> res = SubMap(startKey, INCLUSIVE, NULL, NO_BOUND);
-    *sortmap = res;
+    *sortmap = (ISortedMap*)res.Get();
     REFCOUNT_ADD(*sortmap)
     return NOERROR;
 }
@@ -3069,49 +2828,8 @@ ECode CTreeMap::BoundedMap::GetValues(
 //==========================================================
 //       CTreeMap::NavigableSubMap
 //==========================================================
-UInt32 CTreeMap::NavigableSubMap::AddRef()
-{
-    return ElRefBase::AddRef();
-}
 
-UInt32 CTreeMap::NavigableSubMap::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CTreeMap::NavigableSubMap::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(IMap*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(IMap*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(IMap*)this;
-    }
-    else if (EIID_IMap == riid) {
-        return (IMap*)this;
-    }
-
-    return NULL;
-}
-
-ECode CTreeMap::NavigableSubMap::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(IMap*)this) {
-        *pIID = EIID_IMap;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(CTreeMap::NavigableSubMap, AbstractMap, ISerializable)
 
 CTreeMap::NavigableSubMap::NavigableSubMap(
     /* [in] */ CTreeMap* delegate,
@@ -3263,50 +2981,6 @@ CTreeMap::AscendingSubMap::AscendingSubMap(
 //       CTreeMap::SubMap
 //==========================================================
 
-UInt32 CTreeMap::SubMap::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CTreeMap::SubMap::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CTreeMap::SubMap::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (PInterface)(IMap*)this;
-    }
-    else if (EIID_IIterable == riid) {
-        return (IIterable*)(IMap*)this;
-    }
-    else if (EIID_ICollection == riid) {
-        return (ICollection*)(IMap*)this;
-    }
-    else if (EIID_IMap == riid) {
-        return (IMap*)this;
-    }
-
-    return NULL;
-}
-
-ECode CTreeMap::SubMap::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(IMap*)this) {
-        *pIID = EIID_IMap;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
-
 ECode CTreeMap::SubMap::GetEntrySet(
     /* [out] */ ISet** entries)
 {
@@ -3409,7 +3083,7 @@ ECode CTreeMap::SubMap::GetValues(
 //==========================================================
 //       CTreeMap::OrderComparator
 //==========================================================
-CAR_INTERFACE_IMPL(CTreeMap::OrderComparator, IComparator);
+CAR_INTERFACE_IMPL(CTreeMap::OrderComparator, Object, IComparator);
 
 ECode CTreeMap::OrderComparator::Compare(
     /* [in] */ IInterface* lhs,

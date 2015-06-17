@@ -1,10 +1,13 @@
 
+#include "Vector.h"
 #include "Arrays.h"
-#include "CCollections.h"
+#include "Collections.h"
 #include "StringBuilder.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Arrays;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -40,14 +43,16 @@ ECode Vector::Enumeration::GetNextElement(
 // Vector::
 //====================================================================
 
+CAR_INTERFACE_IMPL_3(Vector, AbstractList, IRandomAccess, ICloneable, ISerializable)
+
 const Int32 Vector::DEFAULT_SIZE = 10;
 
-Vector::Vector()
-    : mElementCount(0)
-    , mCapacityIncrement(0)
-{}
+ECode Vector::constructor()
+{
+    return NOERROR;
+}
 
-ECode Vector::Init(
+ECode Vector::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Int32 capacityIncrement)
 {
@@ -60,15 +65,15 @@ ECode Vector::Init(
     return NOERROR;
 }
 
-ECode Vector::Init(
+ECode Vector::constructor(
     /* [in] */ ICollection* collection)
 {
     VALIDATE_NOT_NULL(collection);
     Int32 size;
     collection->GetSize(&size);
-    Init(size, 0);
+    constructor(size, 0);
     AutoPtr<IIterator> it;
-    collection->GetIterator((IIterator**)&it);
+    (IIterable::Probe(collection))->GetIterator((IIterator**)&it);
     Boolean result;
     while ((it->HasNext(&result),result)) {
         AutoPtr<IInterface> next;
@@ -132,7 +137,7 @@ ECode Vector::AddAll(
                 mElementData->Copy(location + size, mElementData, location, count);
             }
             AutoPtr<IIterator> it;
-            collection->GetIterator((IIterator**)&it);
+            (IIterable::Probe(collection))->GetIterator((IIterator**)&it);
             Boolean result = FALSE;
             while ((it->HasNext(&result),result)) {
                 AutoPtr<IInterface> next;
@@ -185,12 +190,9 @@ ECode Vector::Clear()
 }
 
 ECode Vector::Clone(
-    /* [in] */ Vector* object)
+    /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object)
-    synchronized (this) {
-        object->mElementData = mElementData->Clone();
-    }
+    assert(0 && "TODO");
     return NOERROR;
 }
 
@@ -278,7 +280,7 @@ ECode Vector::Equals(
         if (IList::Probe(object) != NULL) {
             AutoPtr<IList> list = IList::Probe(object);
             Int32 size;
-            list->GetSize(&size);
+            (ICollection::Probe(list))->GetSize(&size);
             if (size != mElementCount) {
                 *result = FALSE;
                 return NOERROR;
@@ -692,7 +694,7 @@ ECode Vector::SetSize(
         }
         EnsureCapacity(length);
         if (mElementCount > length) {
-            FAIL_RETURN(Arrays::Fill(mElementData.Get(), length, mElementCount, NULL));
+            FAIL_RETURN(Arrays::Fill(mElementData, length, mElementCount, (IInterface*)NULL));
         }
         mElementCount = length;
         mModCount++;
@@ -720,7 +722,7 @@ ECode Vector::GetSubList(
     synchronized (this) {
         AutoPtr<IList> ssList;
         AbstractList::GetSubList(start, end, (IList**)&ssList);
-        *subList = new CCollections::SynchronizedRandomAccessList(ssList, GetSelfLock());
+        *subList = new Collections::SynchronizedRandomAccessList(ssList, this);
         REFCOUNT_ADD(*subList);
     }
     return NOERROR;
@@ -773,19 +775,19 @@ CARAPI Vector::ToString(
         for (Int32 i = 0; i < length; i++) {
             AutoPtr<IInterface> ele = (*mElementData)[i];
             if (ele->Probe(EIID_IInterface) == Probe(EIID_IInterface)) {
-                buffer.AppendString(String("(this Collection)"));
+                buffer.Append(String("(this Collection)"));
             }
             else {
-                buffer.AppendObject((*mElementData)[i]);
+                buffer.Append((*mElementData)[i]);
             }
-            buffer.AppendString(String(", "));
+            buffer.Append(String(", "));
         }
         AutoPtr<IInterface> lastEle = (*mElementData)[length];
         if (lastEle->Probe(EIID_IInterface) == Probe(EIID_IInterface)) {
-            buffer.AppendString(String("(this Collection)"));
+            buffer.Append(String("(this Collection)"));
         }
         else {
-            buffer.AppendObject((*mElementData)[length]);
+            buffer.Append((*mElementData)[length]);
         }
         buffer.AppendChar(']');
         *result = buffer.ToString();

@@ -31,6 +31,8 @@ module
     merge("utility/IListIterator.car");
     merge("utility/IQueue.car");
     merge("utility/IDeque.car");
+    merge("utility/IWeakHashMap.car");
+    merge("utility/ITreeMap.car");
     merge("utility/IRandomAccess.car");
     merge("utility/ITimeZone.car");
     merge("utility/ISimpleTimeZone.car");
@@ -224,6 +226,14 @@ module
     interface Elastos.IO.IFlushable;
     interface Elastos.IO.Channels.IReadableByteChannel;
     interface Elastos.IO.Charset.ICharset;
+    interface Elastos.Core.IComparable;
+    // interface Elastos.Core.IThread;
+    // interface Elastos.Core.IRunnable;
+    interface Elastos.Core.ICloneable;
+    interface Elastos.Core.IComparator;
+    // interface Elastos.Core.IComparator;
+    // interface Elastos.Core.ISynchronize;
+    // interface Elastos.Core.IThreadUncaughtExceptionHandler;
     interface Elastos.Utility.ICollection;
     interface Elastos.Utility.ISet;
     interface Elastos.Utility.IDeque;
@@ -502,6 +512,78 @@ module
             interface IIterable;
             interface IDeque;
             interface IQueue;
+            interface ICloneable;
+            interface ISerializable;
+        }
+
+        class CVector {
+            constructor();
+
+            constructor(
+                [in] Int32 capacity);
+
+            constructor(
+                [in] Int32 capacity,
+                [in] Int32 capacityIncrement);
+
+            constructor(
+                [in] ICollection* collection);
+
+            interface IVector;
+            interface ICollection;
+            interface IIterable;
+            interface IList;
+            interface IRandomAccess;
+            interface ICloneable;
+            interface ISerializable;
+        }
+
+        class CStack {
+            constructor();
+
+            interface IStack;
+            interface IVector;
+            interface ICollection;
+            interface IIterable;
+            interface IList;
+            interface IRandomAccess;
+            interface ICloneable;
+            interface ISerializable;
+        }
+
+        class CWeakHashMap {
+            constructor();
+
+            constructor(
+                [in] Int32 capacity);
+
+            constructor(
+                [in] Int32 capacity,
+                [in] Float loadFactor);
+
+            constructor(
+                [in] IMap* map);
+
+            interface IWeakHashMap;
+            interface IMap;
+        }
+
+        class CTreeMap {
+            constructor();
+
+            constructor(
+                [in] IMap* copyFrommap);
+
+            constructor(
+                [in] IComparator* comparator);
+
+            constructor(
+                [in] ISortedMap* copyFrom);
+
+            interface ITreeMap;
+            interface IMap;
+            interface ISortedMap;
+            interface INavigableMap;
             interface ICloneable;
             interface ISerializable;
         }

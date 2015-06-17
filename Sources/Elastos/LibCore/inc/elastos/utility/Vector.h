@@ -3,8 +3,10 @@
 
 #include "AbstractList.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::Utility::AbstractList;
 using Elastos::IO::IObjectOutputStream;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -41,6 +43,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI Add(
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object);
@@ -186,14 +190,13 @@ public:
 
     CARAPI TrimToSize();
 
-protected:
-    Vector();
+    CARAPI constructor();
 
-    CARAPI Init(
-        /* [in] */ Int32 capacity = DEFAULT_SIZE,
-        /* [in] */ Int32 capacityIncrement = 0);
+    CARAPI constructor(
+        /* [in] */ Int32 capacity,
+        /* [in] */ Int32 capacityIncremen);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ICollection* collection);
 
     CARAPI RemoveRange(
@@ -201,7 +204,7 @@ protected:
         /* [in] */ Int32 end);
 
     CARAPI Clone(
-        /* [in] */ Vector* object);
+        /* [out] */ IInterface** object);
 
 private:
     AutoPtr<ArrayOf<IInterface*> > NewElementArray(
