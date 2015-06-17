@@ -20,17 +20,10 @@ typedef GUID IID;
 typedef GUID *PIID;
 typedef GUID CLSID;
 
-#if defined(__cplusplus)
 #define REFGUID  const GUID &
 #define RIID   const _ELASTOS InterfaceID &
 #define REFCLSID const CLSID &
 #define REZCLSID const _ELASTOS ClassID &
-#else // !__cplusplus
-#define REFGUID  const GUID * const
-#define RIID   const _ELASTOS InterfaceID * const
-#define REFCLSID const CLSID * const
-#define REZCLSID const _ELASTOS ClassID * const
-#endif // !__cplusplus
 #endif // __ELATYPES_H__
 
 #endif //_WINDEF_H

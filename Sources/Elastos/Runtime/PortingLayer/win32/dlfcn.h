@@ -11,9 +11,7 @@ details. */
 #ifndef _DLFCN_H
 #define _DLFCN_H
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 /* declarations used for dynamic linking support routines */
 extern void*        dlopen(const char*  filename, int flag);
@@ -32,8 +30,6 @@ extern int dlGetClassInfo(void *handle, void **pAddress, int *pSize);
 #define RTLD_GLOBAL	4	/* symbols in this dlopen'ed obj are visible to other dlopen'ed objs */
 #define RTLD_LOCAL  8
 
-#ifdef __cplusplus
 }
-#endif
 
 #endif /* _DLFCN_H */

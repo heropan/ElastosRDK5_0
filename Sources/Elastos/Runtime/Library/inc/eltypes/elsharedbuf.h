@@ -11,8 +11,6 @@
 #include <stdio.h>
 #endif
 
-#ifdef __cplusplus
-
 _ELASTOS_NAMESPACE_BEGIN
 
 class SharedBuffer
@@ -180,7 +178,5 @@ Boolean SharedBuffer::IsOnlyOwner() const
 }
 
 _ELASTOS_NAMESPACE_END
-
-#endif
 
 #endif //__ELSHAREDBUF_H__

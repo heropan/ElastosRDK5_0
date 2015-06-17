@@ -27,9 +27,7 @@ typedef enum _StringCase
 
 _ELASTOS_NAMESPACE_END
 
-#ifdef __cplusplus
 extern "C" {
-#endif
     _ELASTOS Int32 __cdecl _String_Compare(const char *string1,
         const char *string2, _ELASTOS StringCase stringCase);
 
@@ -40,8 +38,6 @@ extern "C" {
 
     _ELASTOS Char32 __cdecl _String_Char32_ToLowerCase(_ELASTOS Char32 ch);
     _ELASTOS Char32 __cdecl _String_Char32_ToUpperCase(_ELASTOS Char32 ch);
-#ifdef __cplusplus
 }
-#endif
 
 #endif //__ELSTRINGAPI_H__

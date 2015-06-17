@@ -22,9 +22,7 @@
 #include <stdio.h>
 #endif
 
-#ifdef __cplusplus
 extern "C" {
-#endif
     _ELASTOS PCarQuintet __cdecl _CarQuintet_Init(_ELASTOS PCarQuintet pCq,
             _ELASTOS PVoid pBuf, _ELASTOS Int32 size, _ELASTOS Int32 used,
             _ELASTOS CarQuintetFlags flags);
@@ -47,9 +45,7 @@ extern "C" {
 
     _ELASTOS PCarQuintet __cdecl _CarQuintet_GetNullValue(
             _ELASTOS CarQuintetFlags flag);
-#ifdef __cplusplus
 }
-#endif
 
 //
 //  Memory structure of ArrayOf:
@@ -64,8 +60,6 @@ extern "C" {
 //  |____ ArrayOf (m_pCq)
 //
 //
-
-#ifdef __cplusplus
 
 _ELASTOS_NAMESPACE_BEGIN
 
@@ -754,30 +748,5 @@ inline Int32 QuintetObjectCopyOp::operator()(
             Type2Flag<type>::Flag())
 
 _ELASTOS_NAMESPACE_END
-
-#else // !__cplusplus
-
-typedef CarQuintet  ArrayOf;
-
-#define NULL_ARRAYOF            0
-
-//ArrayOf
-#define ARRAYOF_BOX(pCq, pBuf, size, flags) \
-            do { \
-                assert((size) >= 0); \
-                (pCq)->m_flags = flags; \
-                (pCq)->m_reserve = 0; \
-                (pCq)->m_size = size; \
-                (pCq)->m_used = size; \
-                (pCq)->m_pBuf = pBuf; \
-            } while (0)
-
-#define ARRAYOF_UNBOX(Cq, ppBuf, pSize, elemsize) \
-            do { \
-                (*ppBuf) = (Cq).m_pBuf; \
-                *(Int32*)pSize= (Cq).m_size / elemsize; \
-            } while (0)
-
-#endif // __cplusplus
 
 #endif // __ELQUINTET_H__

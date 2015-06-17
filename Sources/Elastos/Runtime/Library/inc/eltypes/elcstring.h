@@ -12,8 +12,6 @@
 #include <elstringapi.h>
 #include <assert.h>
 
-#ifdef __cplusplus
-
 _ELASTOS_NAMESPACE_BEGIN
 
 /** @addtogroup CARTypesRef
@@ -170,11 +168,5 @@ protected:
 /** @} */
 
 _ELASTOS_NAMESPACE_END
-
-#else //!__cplusplus
-
-typedef const char* CString;
-
-#endif //__cplusplus
 
 #endif //__EZCSTRING_H__

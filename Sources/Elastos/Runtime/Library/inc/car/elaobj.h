@@ -10,9 +10,7 @@
 
 #define CONST_VTBL          const
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 typedef interface IInterface IInterface;
 typedef interface IInterface SynchronizedIObject;
@@ -57,8 +55,6 @@ EXTERN_C DLLEXP const _ELASTOS InterfaceID EIID_IWeakReference;
 EXTERN_C DLLEXP const _ELASTOS InterfaceID EIID_IWeakReferenceSource;
 
 #define BASE_INTERFACE_METHOD_COUNT 4
-
-#ifdef __cplusplus
 
 CAR_INTERFACE("00000000-0000-0000-C000-000000000066")
 IInterface
@@ -226,62 +222,8 @@ IWeakReferenceSource : public IInterface
             /* [out] */ IWeakReference** weakReference) = 0;
 };
 
-#else // !__cplusplus : C style interface
-
-typedef struct IInterfaceVtbl {
-    _ELASTOS PInterface (CARAPICALLTYPE *Probe)(
-            PInterface pThis,
-            /* [in] */ _ELASTOS REIID riid);
-
-    _ELASTOS UInt32 (CARAPICALLTYPE *AddRef)(
-            PInterface pThis);
-
-    _ELASTOS UInt32 (CARAPICALLTYPE *Release)(
-            PInterface pThis);
-}   IInterfaceVtbl;
-
-interface IInterface {
-    CONST_VTBL struct IInterfaceVtbl *v;
-};
-
-typedef struct IAspectVtbl
-{
-    _ELASTOS PInterface (CARAPICALLTYPE *Probe)(
-            PInterface pThis,
-            /* [in] */ _ELASTOS REIID riid);
-
-    _ELASTOS UInt32 (CARAPICALLTYPE *AddRef)(
-            PInterface pThis);
-
-    _ELASTOS UInt32 (CARAPICALLTYPE *Release)(
-            PInterface pThis);
-
-    _ELASTOS ECode (CARAPICALLTYPE *AspectAggregate)(
-            PASPECT pThis,
-            /* [in] */ AggregateType type,
-            /* [in] */ PInterface pObject);
-
-    _ELASTOS ECode (CARAPICALLTYPE *AspectGetDomain)(
-            PASPECT pThis,
-            /* [out] */ PInterface *ppObject);
-
-    _ELASTOS ECode (CARAPICALLTYPE *GetAspectID)(
-            PASPECT pThis,
-            /* [out] */ _ELASTOS ClassID *clsid);
-}   IAspectVtbl;
-
-interface IAspect
-{
-    CONST_VTBL struct IAspectVtbl *v;
-};
-
-#endif // __cplusplus
-
-#ifdef __cplusplus
 }   // extern "C"
-#endif
 
-#ifdef __cplusplus
 // Helper types Small and Big - guarantee that sizeof(Small) < sizeof(Big)
 //
 template <class T, class U>
@@ -333,7 +275,5 @@ struct Conversion<void, CCarObject>
 #define SUPERSUBCLASS_EX(Super, Sub) \
     (Conversion<Sub, Super>::exists && !Conversion<Super, void*>::sameType)
 #endif
-
-#endif // __cplusplus
 
 #endif // __CAR_ELAOBJ_H__

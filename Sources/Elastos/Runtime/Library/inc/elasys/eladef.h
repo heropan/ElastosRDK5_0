@@ -282,8 +282,6 @@ EXTERN_C pthread_key_t *getTlSystemSlotBase();
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 #endif
 
-#ifdef __cplusplus
-
 template <class type>
 CAR_INLINE const type &Max(const type &a, const type &b)
 {
@@ -345,7 +343,5 @@ CAR_INLINE bool_t IsAlignment2(type n, size_t size)
 {
     return 0 == ((size_t)n & (size - 1));
 }
-
-#endif // __cplusplus
 
 #endif //__ELADEF_H__

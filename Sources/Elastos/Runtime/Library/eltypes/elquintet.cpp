@@ -4,9 +4,7 @@
 
 #include <eltypes.h>
 
-#ifdef  __cplusplus
 extern "C" {
-#endif
 
 _ELASTOS_NAMESPACE_USING
 
@@ -203,6 +201,4 @@ Int32 __cdecl _ArrayOf_CopyEx(PCarQuintet pCq, const Byte* p, MemorySize n)
     return n;
 }
 
-#ifdef  __cplusplus
 }
-#endif

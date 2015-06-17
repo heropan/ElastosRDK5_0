@@ -1,8 +1,6 @@
 #include <elrefbase.h>
 #include <cutils/log.h>
 
-#ifdef __cplusplus
-
 _ELASTOS_NAMESPACE_BEGIN
 
 // compile with refcounting debugging enabled
@@ -681,5 +679,3 @@ ECode WeakReferenceImpl::Resolve(
 }
 
 _ELASTOS_NAMESPACE_END
-
-#endif // __cplusplus

@@ -5,9 +5,7 @@
 #include <elatypes.h>
 #include <elapi.h>
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 #ifdef _MSC_VER
 __declspec(naked)
@@ -96,6 +94,4 @@ int invokeCallback(CallbackEventFlags cFlags, void* pSender, void* pThis, void* 
 }
 #endif // _MSC_VER
 
-#ifdef __cplusplus
 }
-#endif

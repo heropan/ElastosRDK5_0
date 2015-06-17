@@ -160,13 +160,8 @@ ELAPI _CObject_DetachAspect(
     pObject = (IObject*)pAggregator->Probe(EIID_IObject);
     if (pObject == NULL) return E_NO_INTERFACE;
 
-#ifdef __cplusplus
     return pObject->Aggregate(AggrType_Unaggregate,
                     (PInterface)&rAspectClsid);
-#else
-    return pObject->Aggregate(AggrType_Unaggregate,
-                    (PInterface)rAspectClsid);
-#endif
 }
 
 ELAPI _CObject_AddCallback(

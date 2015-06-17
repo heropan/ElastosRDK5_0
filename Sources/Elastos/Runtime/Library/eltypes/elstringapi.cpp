@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include <ucase.h>
+
 #define _atoi64 atol
 
 _ELASTOS_NAMESPACE_USING
@@ -48,12 +50,7 @@ public:
 
 static LibUtilsFirstStatics gFirstStatics;
 
-#ifdef  __cplusplus
 extern "C" {
-#endif
-
-Char32 _getChar32LowerCase(Char32 ch);
-Char32 _getChar32UpperCase(Char32 ch);
 
 char* __cdecl _String_Duplicate(const char *strSource)
 {
@@ -79,12 +76,12 @@ void __cdecl _String_Free(char * str)
 
 Char32 __cdecl _String_Char32_ToLowerCase(Char32 ch)
 {
-    return _getChar32LowerCase(ch);
+    return u_tolower(ch);
 }
 
 Char32 __cdecl _String_Char32_ToUpperCase(_ELASTOS Char32 ch)
 {
-    return _getChar32UpperCase(ch);
+    return u_toupper(ch);
 }
 
 //---- HashCode ----
@@ -100,6 +97,4 @@ Int32 _String_GetHashCode(const char *string)
     return (Int32)h;
 }
 
-#ifdef  __cplusplus
 }
-#endif

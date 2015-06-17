@@ -13,9 +13,7 @@ struct timeval {
 #endif /* _WINSOCK_H */
 #define CLOCK_MONOTONIC 4
 //typedef unsigned long clock_t;
-#ifdef __cplusplus
 extern "C" {
-#endif
 int gettimeofday(struct timeval *__p, void *__tz);
 int Elastos_QueryPerformanceCounter(long long *pPerformanceCount);
 int Elastos_QueryPerformanceFrequency(long long *pFrequency );
@@ -30,6 +28,4 @@ int Elastos_QueryPerformanceFrequency(long long *pFrequency );
 
 //int clock_gettime(unsigned long clock_id, struct timespec *tp);
 //unsigned long clock_getres(unsigned long clock_id, struct timespec *res);
-#ifdef __cplusplus
 }
-#endif

@@ -16,9 +16,7 @@
 #include <stdint.h>
 #endif
 
-#ifdef __cplusplus
 extern "C"{
-#endif
 
 #if defined(_MSC_VER) || defined(_EVC)
 #define DECLSPEC_SELECTANY      __declspec(selectany)
@@ -317,17 +315,10 @@ typedef struct
 #endif // _win32
 #endif // _arm
 
-#if defined(__cplusplus)
 typedef const EMuid&        REMuid;
 typedef const ClassID&      RClassID;
 typedef const InterfaceID&  REIID;
 typedef const InterfaceID&  RInterfaceID;
-#else // !__cplusplus
-typedef const EMuid* const       REMuid;
-typedef const ClassID * const    RClassID;
-typedef const InterfaceID* const REIID;
-typedef const InterfaceID* const RInterfaceID;
-#endif // !__cplusplus
 
 _ELASTOS_NAMESPACE_END
 
@@ -345,25 +336,17 @@ _ELASTOS_NAMESPACE_END
 #define VOLATILE    volatile
 
 //---- EXTERN_C ----
-#ifdef __cplusplus
 #define EXTERN_C            extern "C"
 #define EXTERN_C_BEGIN      EXTERN_C {
 #define EXTERN_C_END        }
-#else
-#define EXTERN_C            extern
-#define EXTERN_C_BEGIN
-#define EXTERN_C_END
-#endif
 
 //---- CAR_INLINE ----
-#ifdef __cplusplus
+#ifdef _GNUC
 #define CAR_INLINE inline
 #elif defined(_MSC_VER)
 #define CAR_INLINE __inline
 #elif defined(DIAB_COMPILER)
 #define CAR_INLINE /* only pragmas supported, don't bother */
-#else
-#define CAR_INLINE static __inline__ /* GNU c style */
 #endif
 
 // ---- Boolean Value ----
@@ -433,8 +416,6 @@ typedef _ELASTOS ECode (ELFUNCCALLTYPE *PThreadMain)(_ELASTOS PVoid);
 typedef _ELASTOS Void (ELFUNCCALLTYPE *PThreadQuitRoutine)(_ELASTOS PVoid);
 typedef _ELASTOS Void (ELFUNCCALLTYPE *PProcessExitRoutine)(_ELASTOS PVoid);
 
-#ifdef __cplusplus
 }
-#endif
 
 #endif // __ELATYPES_H__

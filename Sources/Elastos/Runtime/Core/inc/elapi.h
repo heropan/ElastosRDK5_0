@@ -39,34 +39,17 @@ ELAPI _CReflector_AcquireIntrinsicTypeInfo(
     /* [in] */ CarDataType intrinsicType,
     /* [out] */ IDataTypeInfo **ppIntrinsicTypeInfo);
 
-#ifdef __cplusplus
 ELAPI _CReflector_AcquireEnumInfo(
     /* [in] */ const _ELASTOS String& name,
     /* [in] */ _ELASTOS ArrayOf<_ELASTOS String> *pItemNames,
     /* [in] */ _ELASTOS ArrayOf<_ELASTOS Int32> *pItemValues,
     /* [out] */ IEnumInfo **ppEnumInfo);
 
-
 ELAPI _CReflector_AcquireStructInfo(
     /* [in] */ const _ELASTOS String& name,
     /* [in] */ _ELASTOS ArrayOf<_ELASTOS String> *pFieldNames,
     /* [in] */ _ELASTOS ArrayOf<IDataTypeInfo *> *pFieldTypeInfos,
     /* [out] */ IStructInfo **ppStructInfo);
-#else
-
-ELAPI _CReflector_AcquireEnumInfo(
-    /* [in] */ _ELASTOS CString name,
-    /* [in] */ const _ELASTOS PCarQuintet pItemNames,
-    /* [in] */ const _ELASTOS PCarQuintet pItemValues,
-    /* [out] */ IEnumInfo **ppEnumInfo);
-
-
-ELAPI _CReflector_AcquireStructInfo(
-    /* [in] */ _ELASTOS CString name,
-    /* [in] */ const _ELASTOS PCarQuintet pFieldNames,
-    /* [in] */ const _ELASTOS PCarQuintet pFieldTypeInfos,
-    /* [out] */ IStructInfo **ppStructInfo);
-#endif
 
 ELAPI _CReflector_AcquireCppVectorInfo(
     /* [in] */ IDataTypeInfo *pElementTypeInfo,

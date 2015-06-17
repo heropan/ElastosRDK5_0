@@ -38,8 +38,6 @@ typedef _ELASTOS ECode (ELFUNCCALLTYPE *PCallbackEventHandleRoutine)(_ELASTOS PV
 
 typedef _ELASTOS ECode (ELFUNCCALLTYPE *PCoalesceEventFunc)(_ELASTOS PVoid* ppOld, _ELASTOS PVoid* ppNew);
 
-#ifdef __cplusplus
-
 class _EzCallbackEvent
 {
 public:
@@ -182,12 +180,6 @@ private:
 
 typedef class _EzCallbackEvent  *PCallbackEvent;
 
-#else
-
-typedef _ELASTOS PVoid PCallbackEvent;
-
-#endif // __cplusplus
-
 ELAPI _Impl_CallbackSink_InitCallbackContext(
             PInterface *ppCallbackContext);
 
@@ -259,8 +251,6 @@ ELAPI _Impl_CCallbackRendezvous_New(
         _ELASTOS Boolean* pbEventFlag,
         _ELASTOS Boolean bNewCallback,
         ICallbackRendezvous** ppICallbackRendezvous);
-
-#ifdef __cplusplus
 
 //
 //  struct DelegateNode
@@ -804,7 +794,5 @@ CAR_INLINE _ELASTOS ECode CallbackContextContainer::Reset()
     m_pCurrent = &m_head;
     return NOERROR;
 }
-
-#endif // __cplusplus
 
 #endif //__CALLBACK_H__

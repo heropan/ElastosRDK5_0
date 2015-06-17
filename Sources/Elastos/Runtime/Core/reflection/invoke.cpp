@@ -4,9 +4,7 @@
 
 #include <elatypes.h>
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 #ifdef _mips
 __declspec(naked)
@@ -80,6 +78,4 @@ int invoke(void* pFunc, int *pParam, int nSize)
 
 #endif // _MSC_VER
 
-#ifdef __cplusplus
 }
-#endif

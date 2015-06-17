@@ -11,9 +11,7 @@
 
 #include <eldelegate.h>
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 struct EzMultiQI
 {
@@ -147,9 +145,7 @@ ELAPI _QueryFreeThreadedMarshaler(
     /* [out] */ PInterface *ppObj);
 #endif // _win32
 
-#ifdef __cplusplus
 }
 // extern "C"
-#endif
 
 #endif // __CAR_CARAPI_H__

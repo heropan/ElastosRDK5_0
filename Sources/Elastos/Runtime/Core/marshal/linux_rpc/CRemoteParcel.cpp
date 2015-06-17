@@ -11,12 +11,10 @@ ECode LookupClassInfo(
     /* [in] */ REMuid rclsid,
     /* [out] */ CIClassInfo **ppClassInfo);
 
-#ifdef __cplusplus
 template<bool> struct CompileTimeAssert;
 template<> struct CompileTimeAssert<true> {};
 #define COMPILE_TIME_ASSERT(_exp) \
     template class CompileTimeAssert< (_exp) >;
-#endif
 #define COMPILE_TIME_ASSERT_FUNCTION_SCOPE(_exp) \
     CompileTimeAssert<( _exp )>();
 

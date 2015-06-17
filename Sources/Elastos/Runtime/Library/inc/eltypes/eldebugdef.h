@@ -15,8 +15,6 @@
 #include <stdio.h>
 #endif
 
-#ifdef __cplusplus
-
 _ELASTOS_NAMESPACE_BEGIN
 
 class FileLinePrinter
@@ -147,7 +145,5 @@ public:
 
 
 _ELASTOS_NAMESPACE_END
-
-#endif //!__cplusplus
 
 #endif // __ELDEBUGDEF_H__

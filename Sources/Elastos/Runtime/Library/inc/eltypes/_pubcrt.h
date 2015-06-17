@@ -36,9 +36,7 @@ typedef union
 #define DOUBLE_FRACTION_MASK  ULLONG(0xfffffffffffff)
 #define DOUBLE_EXP_MASK  ULLONG(0x7ff0000000000000)
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 _ELASTOS Int32 _getNextCharLength(const char *string);
 
@@ -54,9 +52,7 @@ _ELASTOS ECode CrtEnterLock(_ELASTOS PVoid);
 _ELASTOS ECode CrtLeaveLock(_ELASTOS PVoid);
 _ELASTOS ECode CrtDeleteLock(_ELASTOS PVoid*);
 
-#ifdef __cplusplus
 }
-#endif
 
 #define _MAX_PATH     260     /* max length of full pathname */
 #define _MAX_PATH_MB  520     //max length of full pathname for hanzi

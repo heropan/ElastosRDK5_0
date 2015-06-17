@@ -3,11 +3,9 @@
 
 #include <elatypes.h>
 
-#ifdef __cplusplus
 using namespace Elastos;
 
 extern "C" {
-#endif
 
 struct UCaseProps;
 typedef struct UCaseProps UCaseProps;
@@ -27,9 +25,7 @@ Char32 u_tolower(Char32 c);
 
 Boolean u_isULowercase(Char32 c);
 
-#ifdef __cplusplus
 }
-#endif
 /* indexes into indexes[] */
 enum {
     UCASE_IX_INDEX_TOP,

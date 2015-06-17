@@ -19,9 +19,7 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 struct UTrie2;
 typedef struct UTrie2 UTrie2;
@@ -185,8 +183,5 @@ enum {
 #define _UTRIE2_GET(trie, data, asciiOffset, c) \
     (trie)->data[_UTRIE2_INDEX_FROM_CP(trie, asciiOffset, c)]
 
-#ifdef __cplusplus
 }
-
-#endif
 #endif

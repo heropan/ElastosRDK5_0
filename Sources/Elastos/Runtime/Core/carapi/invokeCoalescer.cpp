@@ -4,9 +4,7 @@
 
 #include <elatypes.h>
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 #ifdef _MSC_VER
 __declspec(naked)
@@ -103,6 +101,4 @@ int invokeCoalescer(void* pFunc, void* pOldParam, void* pNewParam, int nSize)
 }
 #endif // _MSC_VER
 
-#ifdef __cplusplus
 }
-#endif

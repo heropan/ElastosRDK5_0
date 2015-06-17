@@ -23,8 +23,6 @@ EXTERN_C DLLEXP const _ELASTOS InterfaceID EIID_SUPER_OBJECT;
 #define _Impl_Memcmp memcmp
 #define _Impl_Strcmp strcmp
 
-#ifdef __cplusplus
-
 _ELASTOS_NAMESPACE_BEGIN
 
 #if defined(_arm) || defined(_mips)
@@ -78,16 +76,8 @@ CAR_INLINE Boolean operator !=(RClassID rclsid, REMuid rguid)
 
 _ELASTOS_NAMESPACE_END
 
-#else  // !__cplusplus
-
-#define IsEqualEMuid(rguid1, rguid2) (!_Impl_Memcmp(rguid1, rguid2, sizeof(_ELASTOS EMuid)))
-
-#endif // __cplusplus
-
 #define IsEqualIID(riid1, riid2)        IsEqualEMuid(riid1, riid2)
 #define IsEqualCLSID(rclsid1, rclsid2)  IsEqualEMuid(rclsid1, rclsid2)
-
-#ifdef __cplusplus
 
 _ELASTOS_NAMESPACE_BEGIN
 
@@ -112,15 +102,5 @@ CAR_INLINE Boolean operator !=(RClassID r1, RClassID r2)
 }
 
 _ELASTOS_NAMESPACE_END
-
-#else // !__cplusplus
-
-#define IsEqualUunm(u1, u2) \
-    !_Impl_Strcmp(u1, u2)
-
-#define IsEqualClassId(r1, r2) \
-    (IsEqualEMuid(&r1.clsid, &r2.clsid) && IsEqualUunm(r1.pUunm, r2.pUunm))
-
-#endif // __cplusplus
 
 #endif // __CAR_UUID_H__

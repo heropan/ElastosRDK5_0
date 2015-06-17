@@ -7,8 +7,6 @@
 
 #define HEAP_ALLOC_THRESHOLD 1024
 
-#ifdef __cplusplus
-
 extern "C" {
     _ELASTOS PCarQuintet __cdecl _CarQuintet_Init(_ELASTOS PCarQuintet pCq,
             _ELASTOS PVoid pBuf, _ELASTOS Int32 size, _ELASTOS Int32 used,
@@ -53,7 +51,4 @@ CAR_INLINE PCarQuintet _Auto_Init(PVoid pv, Int32 size, Int32 used,
 
 _ELASTOS_NAMESPACE_END
 
-#endif //__cplusplus
-
 #endif //__EZALLOCA_H__
-

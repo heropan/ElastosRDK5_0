@@ -47,7 +47,6 @@ typedef enum {
 *     pFunc is a car Class member method
 */
 
-#ifdef __cplusplus
 _ELASTOS_NAMESPACE_BEGIN
 class EventHandler
 {
@@ -151,9 +150,5 @@ public:
     void* m_hackDomain;
 };
 _ELASTOS_NAMESPACE_END
-
-#else  // C FileAccessMode
-typedef  _Delegate EventHandler;
-#endif // __cplusplus
 
 #endif // __DELEGATE_H__

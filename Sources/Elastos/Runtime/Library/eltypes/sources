@@ -11,8 +11,7 @@ endif
 
 SOURCES = elquintet.cpp
 SOURCES += elstringapi.cpp
-SOURCES += unicode.c
-SOURCES += ucase.c
+SOURCES += ucase.cpp
 
 LIBRARIES = elstring/elstring.lib
 LIBRARIES += elrefbase/elrefbase.lib

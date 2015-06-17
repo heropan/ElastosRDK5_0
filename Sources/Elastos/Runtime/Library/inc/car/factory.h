@@ -5,9 +5,7 @@
 #ifndef __CAR_FACTORY_H__
 #define __CAR_FACTORY_H__
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 typedef interface IClassObject IClassObject;
 typedef interface IClassObject *PClassObject;
@@ -20,8 +18,6 @@ typedef interface IClassObject *PClassObject;
 
 EXTERN_C DLLEXP const _ELASTOS InterfaceID EIID_IClassObject;
 EXTERN_C DLLEXP const _ELASTOS ClassID ECLSID_CClassObject;
-
-#ifdef __cplusplus
 
 CAR_INTERFACE("00000001-0000-0000-C000-000000000046")
 IClassObject : public IInterface
@@ -41,7 +37,7 @@ IClassObject : public IInterface
 typedef _ELASTOS ECode (CARAPICALLTYPE *_CreateObjectFn)(
         PInterface *ppObject);
 
-class _CBaseClassObject : 
+class _CBaseClassObject :
 	public IObject,
 	public IClassObject
 {
@@ -97,52 +93,9 @@ typedef enum _InitComponentFlags_
     _InitComponentFlags_InitCallbackLock        = 0x4,
 } _InitComponentFlags_;
 
-#else // !__cplusplus : C style interface
-
-typedef struct IClassObjectVtbl
-{
-    _ELASTOS PInterface (CARAPICALLTYPE *Probe)(
-            PClassObject pThis,
-            /* [in] */ _ELASTOS REIID riid);
-
-    _ELASTOS UInt32 (CARAPICALLTYPE *AddRef)(
-            PClassObject pThis);
-
-    _ELASTOS UInt32 (CARAPICALLTYPE *Release)(
-            PClassObject pThis);
-
-    _ELASTOS ECode (CARAPICALLTYPE *Aggregate)(
-            PInterface pThis,
-            /* [in] */ AggregateType type,
-            /* [in] */ PInterface pObject);
-
-    _ELASTOS ECode (CARAPICALLTYPE *GetDomain)(
-            PInterface pThis,
-            /* [out] */ PInterface *ppObject);
-
-    _ELASTOS ECode (CARAPICALLTYPE *CreateObject)(
-            PClassObject pThis,
-            /* [in] */ PInterface pOuter,
-            /* [in] */ _ELASTOS REIID riid,
-            /* [out] */ PInterface *ppObject);
-
-    _ELASTOS ECode (CARAPICALLTYPE *StayResident)(
-            PClassObject pThis,
-            /* [in] */ _ELASTOS Boolean bIsStayResident);
-}   IClassObjectVtbl;
-
-interface IClassObject
-{
-    CONST_VTBL struct IClassObjectVtbl *v;
-};
-
-#endif // __cplusplus
-
 ELAPI_(void) IncrementDllLockCount();
 ELAPI_(void) DecrementDllLockCount();
 
-#ifdef __cplusplus
 }   // extern "C"
-#endif
 
 #endif // __CAR_FACTORY_H__

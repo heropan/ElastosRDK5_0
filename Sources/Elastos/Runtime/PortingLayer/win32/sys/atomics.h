@@ -28,17 +28,13 @@
 #ifndef _SYS_ATOMICS_H
 #define _SYS_ATOMICS_H
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 extern int __atomic_cmpxchg(int old, int _new, int *ptr);
 extern int __atomic_swap(int _new, int *ptr);
 extern int __atomic_dec(int *ptr);
 extern int __atomic_inc(int *ptr);
 
-#ifdef __cplusplus
 }
-#endif
 
 #endif /* _SYS_ATOMICS_H */

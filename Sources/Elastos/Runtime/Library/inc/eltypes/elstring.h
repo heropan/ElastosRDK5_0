@@ -15,8 +15,6 @@
 #include <elsharedbuf.h>
 #include <elcstring.h>
 
-#ifdef __cplusplus
-
 _ELASTOS_NAMESPACE_BEGIN
 
 template <class T> class ArrayOf;
@@ -552,12 +550,5 @@ inline String String::operator+(Char32 other) const
 }
 
 _ELASTOS_NAMESPACE_END
-
-
-#else //!__cplusplus
-
-typedef const char* String;
-
-#endif //__cplusplus
 
 #endif // __ELSTRING_H__

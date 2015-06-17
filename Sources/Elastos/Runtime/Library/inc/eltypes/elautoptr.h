@@ -6,8 +6,6 @@
 #include <elatypes.h>
 #endif
 
-#ifdef __cplusplus
-
 _ELASTOS_NAMESPACE_BEGIN
 
 //------------------------- IsSpecializedAutoPtr ------------------------------
@@ -172,7 +170,5 @@ void AutoPtr<T>::Clear()
 }
 
 _ELASTOS_NAMESPACE_END
-
-#endif // __cplusplus
 
 #endif //__ELAUTOPTR_H__
