@@ -1,17 +1,16 @@
 #ifndef __ELASTOS_NET_CURLENCODER_H__
 #define __ELASTOS_NET_CURLENCODER_H__
 
-#include "_ELASTOS_NET_CURLEncoder.h"
-#include "Singleton.h"
+#include "_Elastos_Net_CURLEncoder.h"
+#include <elastos/core/Singleton.h>
 #include "UriCodec.h"
-
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CURLEncoder)
-    : public Singleton
-    , public IURLEncoderHelper
+    , public Singleton
+    , public IURLEncoder
 {
 public:
     CAR_INTERFACE_DECL()
@@ -27,17 +26,17 @@ public:
         /* [in] */ const String& charsetName,
         /* [out] */ String* result);
 private:
-    class UriCodecEx : public UriCodec
-    {
-        Boolean IsRetained(
-            /* [in] */ char c) const
-        {
-            String str(" .-*_");
-            return str.IndexOf(c) != -1;
-        }
-    };
+    // class UriCodecEx : public UriCodec
+    // {
+    //     Boolean IsRetained(
+    //         /* [in] */ char c) const
+    //     {
+    //         String str(" .-*_");
+    //         return str.IndexOf(c) != -1;
+    //     }
+    // };
 
-    UriCodecEx ENCODER;
+    // UriCodecEx ENCODER;
 };
 
 } // namespace Net

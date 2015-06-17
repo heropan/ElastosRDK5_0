@@ -1,9 +1,9 @@
 
 #include "DatagramSocketImpl.h"
-#include "CIoBridge.h"
+//#include "CIoBridge.h"
 
 using Libcore::IO::IIoBridge;
-using Libcore::IO::CIoBridge;
+//using Libcore::IO::CIoBridge;
 
 namespace Elastos {
 namespace Net {
@@ -30,7 +30,7 @@ ECode DatagramSocketImpl::GetLocalAddress(
 
     Int32 iFd;
     mFd->GetDescriptor(&iFd);
-    return CIoBridge::_GetSocketLocalAddress(iFd, address);
+    ///////////////////////////return CIoBridge::_GetSocketLocalAddress(iFd, address);
 }
 
 ECode DatagramSocketImpl::GetLocalPort(

@@ -1,16 +1,15 @@
 #ifndef __ELASTOS_NET_CURLDCODER_H__
 #define __ELASTOS_NET_CURLDCODER_H__
 
-#include "_ELASTOS_NET_CURLDecoder.h"
+#include "_Elastos_Net_CURLDecoder.h"
 #include "Singleton.h"
-
 
 namespace Elastos {
 namespace Net {
 
 CarClass(CURLDecoder)
-    : public Singleton
-    , public IURLDecoderHelper
+    , public Singleton
+    , public IURLDecoder
 {
 public:
     CAR_INTERFACE_DECL()

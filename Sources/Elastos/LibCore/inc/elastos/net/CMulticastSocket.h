@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_CMULTICASTSOCKET_H__
 #define __ELASTOS_NET_CMULTICASTSOCKET_H__
 
-#include "_ELASTOS_NET_CMulticastSocket.h"
+#include "_Elastos_Net_CMulticastSocket.h"
 #include "DatagramSocket.h"
 
 using Elastos::IO::IFileDescriptor;
@@ -176,7 +176,7 @@ private:
     CARAPI CheckJoinOrLeave(
         /* [in] */ IInetAddress* groupAddr);
 
-    CARAPI_(Mutex*) GetSelfLock();
+    //CARAPI_(Mutex*) GetSelfLock();
 
 private:
     AutoPtr<IInetAddress> mSetAddress;

@@ -53,7 +53,7 @@ ECode CookieStoreImpl::Add(
     /* [in] */ IURI* uri,
     /* [in] */ IHttpCookie* cookie)
 {
-    Mutex::Autolock lock(mLock);
+    //Mutex::Autolock lock(mLock);
 
     if (cookie == NULL) {
         // throw new NullPointerException("cookie == null");
@@ -108,7 +108,7 @@ ECode CookieStoreImpl::Get(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mLock);
+    //Mutex::Autolock lock(mLock);
 
     if (uri == NULL) {
         // throw new NullPointerException("uri == null");
@@ -212,7 +212,7 @@ ECode CookieStoreImpl::GetURIs(
 {
     VALIDATE_NOT_NULL(URIs);
 
-    Mutex::Autolock lock(mLock);
+    //Mutex::Autolock lock(mLock);
     AutoPtr<IList> outresult;
     CArrayList::New((IArrayList**)&outresult);
 
@@ -233,7 +233,7 @@ ECode CookieStoreImpl::Remove(
 {
     VALIDATE_NOT_NULL(succeeded);
 
-    Mutex::Autolock lock(mLock);
+    //Mutex::Autolock lock(mLock);
 
     if (cookie == NULL) {
 //        throw new NullPointerException("cookie == null");
@@ -262,7 +262,7 @@ ECode CookieStoreImpl::RemoveAll(
 {
     VALIDATE_NOT_NULL(succeeded);
 
-    Mutex::Autolock lock(mLock);
+    //Mutex::Autolock lock(mLock);
 
     *succeeded = mMap.Begin() != mMap.End();
     mMap.Clear();

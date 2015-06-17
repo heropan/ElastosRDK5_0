@@ -8,11 +8,15 @@
 namespace Elastos {
 namespace Net {
 
-extern const InterfaceID EIID_Authenticator;
+extern "C" const InterfaceID EIID_Authenticator;
 
-class Authenticator : public Object
+class Authenticator
+    : public Object
+    //, public IAuthenticator
 {
 public:
+    //CAR_INTERFACE_DECL()
+
     Authenticator();
 
     virtual CARAPI GetPasswordAuthentication(
@@ -94,7 +98,7 @@ private:
 
     AuthenticatorRequestorType mRt;
 
-    static Mutex sLock;
+    //static Mutex sLock;
 };
 
 } // namespace Net

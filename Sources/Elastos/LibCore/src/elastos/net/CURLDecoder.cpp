@@ -13,7 +13,7 @@ ECode CURLDecoder::Decode(
     /* [in] */ const String& s,
     /* [out] */ String* result)
 {
-    return URLDecoder::Decode(s, result);
+    //return URLDecoder::Decode(s, result);
 }
 
 ECode CURLDecoder::Decode(
@@ -21,7 +21,7 @@ ECode CURLDecoder::Decode(
     /* [in] */ const String& charsetName,
     /* [out] */ String* result)
 {
-    return URLDecoder::Decode(s, charsetName, result);
+    //return URLDecoder::Decode(s, charsetName, result);
 }
 
 } // namespace Net

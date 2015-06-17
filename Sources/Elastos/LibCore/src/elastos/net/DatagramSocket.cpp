@@ -6,26 +6,29 @@
 #include "CInteger32.h"
 #include "CBoolean.h"
 #include "CPlainDatagramSocketImpl.h"
-#include "CLibcore.h"
-#include "COsConstants.h"
+//#include "CLibcore.h"
+//#include "COsConstants.h"
 #include <cutils/log.h>
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
+using Elastos::IO::ICloseable;
+using Elastos::IO::EIID_ICloseable;
 using Libcore::IO::IOs;
-using Libcore::IO::CLibcore;
-using Libcore::IO::COsConstants;
+//using Libcore::IO::CLibcore;
+//using Libcore::IO::COsConstants;
+using Elastos::Net::EIID_ISocketOptions;
 
 namespace Elastos {
 namespace Net {
 
 const String DatagramSocket::TAG("DatagramSocket");
 AutoPtr<IDatagramSocketImplFactory> DatagramSocket::mFactory;
-Mutex DatagramSocket::sLock;
+//Mutex DatagramSocket::sLock;
 
-CAR_SINGLETON_IMPL_2(DatagramSocket, Object, IDatagramSocket, ICloseable)
+CAR_INTERFACE_IMPL_2(DatagramSocket, Object, IDatagramSocket, ICloseable)
 
 DatagramSocket::DatagramSocket()
     : mPort(-1)
@@ -126,7 +129,7 @@ ECode DatagramSocket::CreateSocket(
     /* [in] */ Int32 aPort,
     /* [in] */ IInetAddress* addr)
 {
-    Mutex::Autolock lock(GetSelfLock());
+    //Mutex::Autolock lock(GetSelfLock());
 
     mImpl = NULL;
     if (mFactory != NULL) {
@@ -223,11 +226,12 @@ ECode DatagramSocket::GetReceiveBufferSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size);
-    Mutex::Autolock lock(GetSelfLock());
+    //Mutex::Autolock lock(GetSelfLock());
 
     FAIL_RETURN(CheckOpen());
     AutoPtr<IInteger32> optVal;
-    FAIL_RETURN(mImpl->GetOption(ISocketOptions::SO_RCVBUF, (IInterface**)&optVal));
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    FAIL_RETURN(option->GetOption(ISocketOptions::_SO_RCVBUF, (IInterface**)&optVal));
     return optVal->GetValue(size);
 }
 
@@ -236,11 +240,12 @@ ECode DatagramSocket::GetSendBufferSize(
 {
     VALIDATE_NOT_NULL(size);
 
-    Mutex::Autolock lock(GetSelfLock());
+    //Mutex::Autolock lock(GetSelfLock());
 
     FAIL_RETURN(CheckOpen());
     AutoPtr<IInteger32> optVal;
-    FAIL_RETURN(mImpl->GetOption(ISocketOptions::SO_SNDBUF, (IInterface**)&optVal));
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    FAIL_RETURN(option->GetOption(ISocketOptions::_SO_SNDBUF, (IInterface**)&optVal));
     return optVal->GetValue(size);
 }
 
@@ -249,18 +254,19 @@ ECode DatagramSocket::GetSoTimeout(
 {
     VALIDATE_NOT_NULL(timeout);
 
-    Mutex::Autolock lock(GetSelfLock());
+    //Mutex::Autolock lock(GetSelfLock());
 
     FAIL_RETURN(CheckOpen());
     AutoPtr<IInteger32> optVal;
-    FAIL_RETURN(mImpl->GetOption(ISocketOptions::SO_TIMEOUT, (IInterface**)&optVal));
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    FAIL_RETURN(option->GetOption(ISocketOptions::_SO_TIMEOUT, (IInterface**)&optVal));
     return optVal->GetValue(timeout);
 }
 
 ECode DatagramSocket::Receive(
     /* [in] */ IDatagramPacket* pack)
 {
-    Mutex::Autolock lock(GetSelfLock());
+    //Mutex::Autolock lock(GetSelfLock());
     FAIL_RETURN(CheckOpen());
     FAIL_RETURN(EnsureBound());
     if (pack == NULL) {
@@ -287,7 +293,8 @@ ECode DatagramSocket::Send(
             Int32 port;
             pack->GetPort(&port);
             Boolean flag = FALSE;
-            mAddress->Equals(packAddr, &flag);
+            IObject* o = (IObject*)mAddress->Probe(EIID_IObject);
+            o->Equals(packAddr, &flag);
             if (!flag || mPort != port) {
                 ALOGD("Error in DatagramSocket: Packet address mismatch with connected address!");
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -321,7 +328,7 @@ ECode DatagramSocket::SetNetworkInterface(
     outfd->GetDescriptor(&fd);
     String netname;
     netInterface->GetName(&netname);
-    ECode ec = CLibcore::sOs->SetsockoptIfreq(fd, COsConstants::sSOL_SOCKET, COsConstants::sSO_BINDTODEVICE, netname);
+    ECode ec;// = CLibcore::sOs->SetsockoptIfreq(fd, COsConstants::sSOL_SOCKET, COsConstants::sSO_BINDTODEVICE, netname);
     if (FAILED(ec)) {
         return E_SOCKET_EXCEPTION;
     }
@@ -335,7 +342,7 @@ ECode DatagramSocket::SetNetworkInterface(
 ECode DatagramSocket::SetSendBufferSize(
     /* [in] */ Int32 size)
 {
-    Mutex::Autolock lock(GetSelfLock());
+    //Mutex::Autolock lock(GetSelfLock());
 
     if (size < 1) {
         ALOGD("Error in DatagramSocket: send buffer size < 1!");
@@ -344,13 +351,14 @@ ECode DatagramSocket::SetSendBufferSize(
     FAIL_RETURN(CheckOpen());
     AutoPtr<IInteger32> optVal;
     CInteger32::New(size, (IInteger32**)&optVal);
-    return mImpl->SetOption(ISocketOptions::SO_SNDBUF, optVal);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    return option->SetOption(ISocketOptions::_SO_SNDBUF, optVal);
 }
 
 ECode DatagramSocket::SetReceiveBufferSize(
     /* [in] */ Int32 size)
 {
-    Mutex::Autolock lock(GetSelfLock());
+    //Mutex::Autolock lock(GetSelfLock());
 
     if (size < 1) {
         ALOGD("Error in DatagramSocket: receive buffer size < 1!");
@@ -359,13 +367,14 @@ ECode DatagramSocket::SetReceiveBufferSize(
     FAIL_RETURN(CheckOpen());
     AutoPtr<IInteger32> optVal;
     CInteger32::New(size, (IInteger32**)&optVal);
-    return mImpl->SetOption(ISocketOptions::SO_RCVBUF, optVal);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    return option->SetOption(ISocketOptions::_SO_RCVBUF, optVal);
 }
 
 ECode DatagramSocket::SetSoTimeout(
     /* [in] */ Int32 timeout)
 {
-    Mutex::Autolock lock(GetSelfLock());
+    //Mutex::Autolock lock(GetSelfLock());
 
     if (timeout < 0) {
         ALOGD("Error in DatagramSocket: timeout < 0!");
@@ -374,13 +383,14 @@ ECode DatagramSocket::SetSoTimeout(
     FAIL_RETURN(CheckOpen());
     AutoPtr<IInteger32> optVal;
     CInteger32::New(timeout, (IInteger32**)&optVal);
-    return mImpl->SetOption(ISocketOptions::SO_TIMEOUT, optVal);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    return option->SetOption(ISocketOptions::_SO_TIMEOUT, optVal);
 }
 
 ECode DatagramSocket::SetDatagramSocketImplFactory(
     /* [in] */ IDatagramSocketImplFactory* fac)
 {
-    Mutex::Autolock lock(&sLock);
+    //Mutex::Autolock lock(&sLock);
     if (mFactory != NULL) {
         ALOGD("Error in DatagramSocket: Factory already set!");
         return E_SOCKET_EXCEPTION;
@@ -462,7 +472,7 @@ ECode DatagramSocket::Connect(
     }
 
     {
-        Mutex::Autolock lock(mLock);
+        //Mutex::Autolock lock(mLock);
         FAIL_RETURN(CheckOpen());
         FAIL_RETURN(EnsureBound());
 
@@ -487,7 +497,7 @@ ECode DatagramSocket::Connect(
     // try {
     AutoPtr<IInetSocketAddress> addr;
     CInetSocketAddress::New(address, port, (IInetSocketAddress**)&addr);
-    mPendingConnectException = Connect(addr.Get());
+    mPendingConnectException = Connect((ISocketAddress*)addr->Probe(EIID_ISocketAddress));
     // } catch (SocketException connectException) {
     //     // TODO: or just use SneakyThrow? There's a clear API bug here.
     //     pendingConnectException = connectException;
@@ -551,7 +561,8 @@ ECode DatagramSocket::SetReuseAddress(
     FAIL_RETURN(CheckOpen());
     AutoPtr<IBoolean> optVal;
     CBoolean::New(reuse, (IBoolean**)&optVal);
-    return mImpl->SetOption(ISocketOptions::SO_REUSEADDR, optVal);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    return option->SetOption(ISocketOptions::_SO_REUSEADDR, optVal);
 }
 
 ECode DatagramSocket::GetReuseAddress(
@@ -561,7 +572,8 @@ ECode DatagramSocket::GetReuseAddress(
 
     FAIL_RETURN(CheckOpen());
     AutoPtr<IBoolean> optVal;
-    FAIL_RETURN(mImpl->GetOption(ISocketOptions::SO_REUSEADDR, (IInterface**)&optVal));
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    FAIL_RETURN(option->GetOption(ISocketOptions::_SO_REUSEADDR, (IInterface**)&optVal));
     return optVal->GetValue(reuse);
 }
 
@@ -571,7 +583,8 @@ ECode DatagramSocket::SetBroadcast(
     FAIL_RETURN(CheckOpen());
     AutoPtr<IBoolean> optVal;
     CBoolean::New(broadcast, (IBoolean**)&optVal);
-    return mImpl->SetOption(ISocketOptions::_SO_BROADCAST, optVal);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    return option->SetOption(ISocketOptions::_SO_BROADCAST, optVal);
 }
 
 ECode DatagramSocket::GetBroadcast(
@@ -581,7 +594,8 @@ ECode DatagramSocket::GetBroadcast(
 
     FAIL_RETURN(CheckOpen());
     AutoPtr<IBoolean> optVal;
-    FAIL_RETURN(mImpl->GetOption(ISocketOptions::_SO_BROADCAST, (IInterface**)&optVal));
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    FAIL_RETURN(option->GetOption(ISocketOptions::_SO_BROADCAST, (IInterface**)&optVal));
     return optVal->GetValue(broadcast);
 }
 
@@ -595,7 +609,8 @@ ECode DatagramSocket::SetTrafficClass(
     }
     AutoPtr<IInteger32> optVal;
     CInteger32::New(value, (IInteger32**)&optVal);
-    return mImpl->SetOption(ISocketOptions::IP_TOS, optVal);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    return option->SetOption(ISocketOptions::_IP_TOS, optVal);
 }
 
 ECode DatagramSocket::GetTrafficClass(
@@ -605,7 +620,8 @@ ECode DatagramSocket::GetTrafficClass(
 
     FAIL_RETURN(CheckOpen());
     AutoPtr<IInteger32> optVal;
-    FAIL_RETURN(mImpl->GetOption(ISocketOptions::IP_TOS, (IInterface**)&optVal));
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    FAIL_RETURN(option->GetOption(ISocketOptions::_IP_TOS, (IInterface**)&optVal));
     return optVal->GetValue(value);
 }
 

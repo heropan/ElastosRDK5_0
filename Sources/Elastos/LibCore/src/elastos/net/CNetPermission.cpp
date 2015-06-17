@@ -1,6 +1,9 @@
 
 #include "CNetPermission.h"
 
+namespace Elastos {
+namespace Net {
+
 CAR_INTERFACE_IMPL(CNetPermission, BasicPermission, INetPermission)
 
 CAR_OBJECT_IMPL(CNetPermission)
@@ -8,12 +11,15 @@ CAR_OBJECT_IMPL(CNetPermission)
 ECode CNetPermission::constructor(
     /* [in] */ const String& name)
 {
-    return BasicPermission::Init(name);
+    //return BasicPermission::Init(name);
 }
 
 ECode CNetPermission::constructor(
     /* [in] */ const String& name,
     /* [in] */ const String& action)
 {
-    return BasicPermission::Init(name, action);
+    //return BasicPermission::Init(name, action);
 }
+
+} // namespace Net
+} // namespace Elastos

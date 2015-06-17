@@ -3,15 +3,19 @@
 #define __ELASTOS_NET_PROXYSELECTOR_H__
 
 #include <elastos/core/Object.h>
+#include <elastos/utility/etl/List.h>
 
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::IList;
+using Elastos::Core::Object;
 using Elastos::Net::INetPermission;
 
 namespace Elastos {
 namespace Net {
 
-class ProxySelect
+class ProxySelector
     : public Object
-    , public IProxySelect
+    , public IProxySelector
 {
 public:
     CAR_INTERFACE_DECL()
@@ -24,7 +28,7 @@ public:
 
     virtual CARAPI Select(
         /* [in] */ IURI* uri,
-        /* [out] */ IObjectContainer** container) = 0;
+        /* [out] */ IList** container) = 0;
 
     virtual CARAPI ConnectFailed(
         /* [in] */ IURI* uri,

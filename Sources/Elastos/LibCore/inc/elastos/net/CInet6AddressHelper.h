@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_NET_CINET6ADDRESSHELPER_H__
 #define __ELASTOS_NET_CINET6ADDRESSHELPER_H__
 
-#include "_ELASTOS_NET_CInet6AddressHelper.h"
+#include "_Elastos_Net_CInet6AddressHelper.h"
 #include "InetAddress.h"
 #include "Singleton.h"
 
@@ -13,6 +13,10 @@ CarClass(CInet6AddressHelper)
     , public Singleton
     , public IInet6AddressHelper
 {
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetByAddress(
         /* [in] */ const String& host,
         /* [in] */ ArrayOf<Byte>* addr,

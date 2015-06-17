@@ -80,7 +80,7 @@ ECode CDatagramPacket::GetAddress(
     /* [out] */ IInetAddress** address)
 {
     VALIDATE_NOT_NULL(address);
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     *address = mAddress;
     REFCOUNT_ADD(*address);
@@ -91,7 +91,7 @@ ECode CDatagramPacket::GetData(
     /* [out, callee] */ ArrayOf<Byte>** data)
 {
     VALIDATE_NOT_NULL(data);
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     *data = mData;
     REFCOUNT_ADD(*data);
@@ -102,7 +102,7 @@ ECode CDatagramPacket::GetLength(
     /* [out] */ Int32* length)
 {
     VALIDATE_NOT_NULL(length);
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     *length = mLength;
     return NOERROR;
@@ -112,7 +112,7 @@ ECode CDatagramPacket::GetOffset(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset);
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     *offset = mOffset;
     return NOERROR;
@@ -135,7 +135,7 @@ ECode CDatagramPacket::GetPort(
     /* [out] */ Int32* port)
 {
     VALIDATE_NOT_NULL(port);
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     *port = mPort;
     return NOERROR;
@@ -144,7 +144,7 @@ ECode CDatagramPacket::GetPort(
 ECode CDatagramPacket::SetAddress(
     /* [in] */ IInetAddress* addr)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     mAddress = addr;
     return NOERROR;
@@ -155,7 +155,7 @@ ECode CDatagramPacket::SetData(
     /* [in] */ Int32 anOffset,
     /* [in] */ Int32 aLength)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     if (0 > anOffset || anOffset > buf->GetLength() || 0 > aLength
             || aLength > buf->GetLength() - anOffset) {
@@ -173,7 +173,7 @@ ECode CDatagramPacket::SetData(
 ECode CDatagramPacket::SetData(
     /* [in] */ ArrayOf<Byte>* buf)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     mLength = buf->GetLength(); // This will check for null
     mUserSuppliedLength = mLength;
@@ -185,7 +185,7 @@ ECode CDatagramPacket::SetData(
 ECode CDatagramPacket::SetLength(
     /* [in] */ Int32 len)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     if (0 > len || mOffset + len > mData->GetLength()) {
 //        throw new IndexOutOfBoundsException();
@@ -199,7 +199,7 @@ ECode CDatagramPacket::SetLength(
 ECode CDatagramPacket::SetPort(
     /* [in] */ Int32 aPort)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     if (aPort < 0 || aPort > 65535) {
 //        throw new IllegalArgumentException("Port out of range: " + aPort);
@@ -213,7 +213,7 @@ ECode CDatagramPacket::GetSocketAddress(
     /* [out] */ ISocketAddress** sockAddr)
 {
     VALIDATE_NOT_NULL(sockAddr);
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     AutoPtr<IInetAddress> addr;
     GetAddress((IInetAddress**)&addr);
@@ -229,7 +229,7 @@ ECode CDatagramPacket::GetSocketAddress(
 ECode CDatagramPacket::SetSocketAddress(
     /* [in] */ ISocketAddress* sockAddr)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     if (sockAddr == NULL || IInetSocketAddress::Probe(sockAddr) == NULL) {
 //        throw new IllegalArgumentException("Socket address not an InetSocketAddress: " +

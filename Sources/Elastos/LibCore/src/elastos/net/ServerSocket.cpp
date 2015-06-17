@@ -7,17 +7,23 @@
 #include "CPlainSocketImpl.h"
 #include "CInteger32.h"
 #include "CBoolean.h"
+#include "CSocket.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
+using Elastos::IO::EIID_ICloseable;
+using Elastos::Net::CSocket;
+using Elastos::Net::CInet4Address;
+using Elastos::Net::CPlainSocketImpl;
+using Elastos::Net::CPlainServerSocketImpl;
 
 namespace Elastos {
 namespace Net {
 
 AutoPtr<ISocketImplFactory> ServerSocket::sFactory;
-Mutex ServerSocket::sLock;
+//Mutex ServerSocket::sLock;
 
 CAR_INTERFACE_IMPL_2(ServerSocket, Object, IServerSocket, ICloseable)
 
@@ -83,7 +89,7 @@ ECode ServerSocket::constructor(
     }
 
     AutoPtr<IInetAddress> addr = localAddr == NULL ? CInet4Address::ANY.Get() : localAddr;
-    Mutex::Autolock lock(&mLock);
+    //Mutex::Autolock lock(&mLock);
     mImpl->Create(TRUE);
     mIsCreated = TRUE;
 //    try {
@@ -205,7 +211,7 @@ ECode ServerSocket::GetSoTimeout(
     VALIDATE_NOT_NULL(timeout);
 
     if (!mIsCreated) {
-        Mutex::Autolock lock(&mLock);
+        //Mutex::Autolock lock(&mLock);
 
         if (!mIsCreated) {
 //            try {
@@ -225,7 +231,8 @@ ECode ServerSocket::GetSoTimeout(
         }
     }
     AutoPtr<IInteger32> optVal;
-    FAIL_RETURN(mImpl->GetOption(ISocketOptions::SO_TIMEOUT, (IInterface**)&optVal));
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    FAIL_RETURN(option->GetOption(ISocketOptions::_SO_TIMEOUT, (IInterface**)&optVal));
     return optVal->GetValue(timeout);
 }
 
@@ -233,7 +240,7 @@ ECode ServerSocket::ImplAccept(
     /* [in] */ ISocket* aSocket)
 {
     {
-        Mutex::Autolock lock(&mLock);
+        //Mutex::Autolock lock(&mLock);
         mImpl->Accept(((CSocket*)aSocket)->mImpl);
         ((CSocket*)aSocket)->Accepted();
     }
@@ -250,7 +257,7 @@ ECode ServerSocket::ImplAccept(
 ECode ServerSocket::SetSocketFactory(
     /* [in] */ ISocketImplFactory* aFactory)
 {
-    Mutex::Autolock lock(&sLock);
+    //Mutex::Autolock lock(&sLock);
 
 //    SecurityManager security = System.getSecurityManager();
 //    if (security != null) {
@@ -267,7 +274,7 @@ ECode ServerSocket::SetSocketFactory(
 ECode ServerSocket::SetSoTimeout(
     /* [in] */ Int32 timeout)
 {
-    Mutex::Autolock lock(&mLock);
+    //Mutex::Autolock lock(&mLock);
 
     FAIL_RETURN(CheckClosedAndCreate(TRUE));
     if (timeout < 0) {
@@ -276,7 +283,8 @@ ECode ServerSocket::SetSoTimeout(
     }
     AutoPtr<IInteger32> optVal;
     CInteger32::New(timeout, (IInteger32**)&optVal);
-    return mImpl->SetOption(ISocketOptions::SO_TIMEOUT, optVal);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    return option->SetOption(ISocketOptions::_SO_TIMEOUT, optVal);
 }
 
 ECode ServerSocket::Bind(
@@ -317,7 +325,7 @@ ECode ServerSocket::Bind(
 //        security.checkListen(port);
 //    }
 
-    Mutex::Autolock lock(mLock);
+    //Mutex::Autolock lock(mLock);
 //    try {
     ECode ec = mImpl->Bind(addr, port);
     if (FAILED(ec)) {
@@ -385,7 +393,7 @@ ECode ServerSocket::CheckClosedAndCreate(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mLock);
+    //Mutex::Autolock lock(mLock);
 
     if (mIsCreated) {
         return NOERROR;
@@ -411,7 +419,8 @@ ECode ServerSocket::SetReuseAddress(
     CheckClosedAndCreate(TRUE);
     AutoPtr<IBoolean> optVal;
     CBoolean::New(reuse, (IBoolean**)&optVal);
-    return mImpl->SetOption(ISocketOptions::SO_REUSEADDR, optVal);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    return option->SetOption(ISocketOptions::_SO_REUSEADDR, optVal);
 }
 
 ECode ServerSocket::GetReuseAddress(
@@ -421,7 +430,8 @@ ECode ServerSocket::GetReuseAddress(
 
     FAIL_RETURN(CheckClosedAndCreate(TRUE));
     AutoPtr<IBoolean> optVal;
-    FAIL_RETURN(mImpl->GetOption(ISocketOptions::SO_REUSEADDR, (IInterface**)&optVal));
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    FAIL_RETURN(option->GetOption(ISocketOptions::_SO_REUSEADDR, (IInterface**)&optVal));
     return optVal->GetValue(reuse);
 }
 
@@ -435,7 +445,8 @@ ECode ServerSocket::SetReceiveBufferSize(
     }
     AutoPtr<IInteger32> optVal;
     CInteger32::New(size, (IInteger32**)&optVal);
-    return mImpl->SetOption(ISocketOptions::SO_RCVBUF, optVal);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    return option->SetOption(ISocketOptions::_SO_RCVBUF, optVal);
 }
 
 ECode ServerSocket::GetReceiveBufferSize(
@@ -445,7 +456,8 @@ ECode ServerSocket::GetReceiveBufferSize(
 
     FAIL_RETURN(CheckClosedAndCreate(TRUE));
     AutoPtr<IInteger32> optVal;
-    FAIL_RETURN(mImpl->GetOption(ISocketOptions::SO_RCVBUF, (IInterface**)&optVal));
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    FAIL_RETURN(option->GetOption(ISocketOptions::_SO_RCVBUF, (IInterface**)&optVal));
     return optVal->GetValue(size);
 }
 

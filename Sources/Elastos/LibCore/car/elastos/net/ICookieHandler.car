@@ -46,17 +46,12 @@ module
     interface ICookieHandlerHelper {
         /**
          * Returns the system-wide cookie handler or {@code null} if not set.
-         *
-         * @return the system-wide cookie handler.
          */
         GetDefault(
             [out] ICookieHandler** handler);
 
         /**
          * Sets the system-wide cookie handler.
-         *
-         * @param cHandler
-         *            a cookie handler to set as the system-wide default handler.
          */
         SetDefault(
             [in] ICookieHandler* handler);

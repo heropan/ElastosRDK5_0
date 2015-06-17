@@ -5,6 +5,8 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Net::IInetAddress;
+using Elastos::Net::IDatagramSocket;
+using Elastos::IO::ICloseable;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::Channels::IDatagramChannel;
 
@@ -162,8 +164,8 @@ private:
 
     Boolean mIsClosed;
 
-    Mutex mLock;
-    static Mutex sLock;
+    //Mutex mLock;
+    //static Mutex sLock;
 };
 
 } // namespace Net

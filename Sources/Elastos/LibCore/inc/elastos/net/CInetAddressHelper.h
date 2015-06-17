@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_NET_CINETADDRESSHELPER_H__
 #define __ELASTOS_NET_CINETADDRESSHELPER_H__
 
-#include "_ELASTOS_NET_CInetAddressHelper.h"
+#include "_Elastos_Net_CInetAddressHelper.h"
 #include "InetAddress.h"
 #include "Singleton.h"
 

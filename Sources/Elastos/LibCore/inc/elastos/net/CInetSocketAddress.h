@@ -2,9 +2,13 @@
 #ifndef __ELASTOS_NET_CINETSOCKETADDRESS_H__
 #define __ELASTOS_NET_CINETSOCKETADDRESS_H__
 
-#include "_ELASTOS_NET_CInetSocketAddress.h"
+#include "_Elastos_Net_CInetSocketAddress.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
+using Elastos::Net::IInetSocketAddress;
+using Elastos::Net::ISocketAddress;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Net {

@@ -1,13 +1,11 @@
 
 #include "CURI.h"
 #include "InetAddress.h"
-// #include "CURL.h"
-#include "UrlUtils.h"
-#include "StringBuilder.h"
-#include "StringUtils.h"
-
-namespace Elastos {
-namespace Net {
+#include "CURL.h"
+#include "url/UrlUtils.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -15,14 +13,18 @@ using Elastos::Core::EIID_IComparable;
 using Elastos::IO::EIID_ISerializable;
 using Libcore::Net::Url::UrlUtils;
 
-const String CURI::UNRESERVED("_-!.~\'()*");
-const String CURI::PUNCTUATION(",;:$&+=");
-const AutoPtr<UriCodec> CURI::USER_INFO_ENCODER = new CURI::PartEncoder(String(""));
-const AutoPtr<UriCodec> CURI::PATH_ENCODER = new CURI::PartEncoder(String("/@"));
-const AutoPtr<UriCodec> CURI::AUTHORITY_ENCODER = new CURI::PartEncoder(String("@[]"));
-const AutoPtr<UriCodec> CURI::FILE_AND_QUERY_ENCODER = new CURI::PartEncoder(String("/@?"));
-const AutoPtr<UriCodec> CURI::ALL_LEGAL_ENCODER = new CURI::PartEncoder(String("?/[]@"));
-const AutoPtr<UriCodec> CURI::ASCII_ONLY = new CURI::ASCIIEncoder();
+
+namespace Elastos {
+namespace Net {
+
+const String CURI::UNRESERVED = String("_-!.~\'()*");
+const String CURI::PUNCTUATION = String(",;:$&+=");
+const UriCodec& CURI::USER_INFO_ENCODER = CURI::PartEncoder(String(""));
+const UriCodec& CURI::PATH_ENCODER = CURI::PartEncoder(String("/@"));
+const UriCodec& CURI::AUTHORITY_ENCODER = CURI::PartEncoder(String("@[]"));
+const UriCodec& CURI::FILE_AND_QUERY_ENCODER = CURI::PartEncoder(String("/@?"));
+const UriCodec& CURI::ALL_LEGAL_ENCODER = CURI::PartEncoder(String("?/[]@"));
+const UriCodec& CURI::ASCII_ONLY = CURI::ASCIIEncoder();
 
 CAR_INTERFACE_IMPL_3(CURI, Object, IURI, ISerializable, IComparable)
 

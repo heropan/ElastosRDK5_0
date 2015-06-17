@@ -5,6 +5,7 @@
 #include "StringUtils.h"
 
 using Elastos::Core::StringUtils;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Net {
@@ -203,7 +204,8 @@ ECode CInetSocketAddress::Equals(
         *result = FALSE;
         return NOERROR;
     }
-    return mAddr->Equals(iSockAddr->mAddr, result);
+    IObject* o = (IObject*)mAddr->Probe(EIID_IObject);
+    return o->Equals(iSockAddr->mAddr, result);
 }
 
 ECode CInetSocketAddress::ToString(
@@ -212,9 +214,10 @@ ECode CInetSocketAddress::ToString(
     VALIDATE_NOT_NULL(result)
 
     String str;
-    *result = ((mAddr != NULL) ? (mAddr->ToString(&str), str) : mHostname)
+    IObject* o = (IObject*)mAddr->Probe(EIID_IObject);
+    *result = ((mAddr != NULL) ? (o->ToString(&str), str) : mHostname)
                 + String(":")
-                + StringUtils::Int32ToString(mPort);
+                + StringUtils::ToString(mPort);
     return NOERROR;
 }
 
@@ -228,7 +231,8 @@ ECode CInetSocketAddress::GetHashCode(
         return NOERROR;
     }
     Int32 addrcode = 0;
-    *hashCode = (mAddr->GetHashCode(&addrcode), addrcode) + mPort;
+    IObject* o = (IObject*)mAddr->Probe(EIID_IObject);
+    *hashCode = (o->GetHashCode(&addrcode), addrcode) + mPort;
     return NOERROR;
 }
 

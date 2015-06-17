@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_CCOOKIEMANAGER_H__
 #define __ELASTOS_NET_CCOOKIEMANAGER_H__
 
-#include "_ELASTOS_NET_CCookieManager.h"
+#include "_Elastos_Net_CCookieManager.h"
 #include <elastos/utility/etl/List.h>
 #include "CStringWrapper.h"
 #include "CookieHandler.h"

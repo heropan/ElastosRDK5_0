@@ -16,16 +16,7 @@ class MyRunnable
 public:
     MyRunnable();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    CAR_INTERFACE_DECL()
 
     CARAPI Run();
 
@@ -33,10 +24,10 @@ public:
     Boolean mStop;
 
 private:
-    CARAPI_(Mutex*) GetSelfLock();
+    //CARAPI_(Mutex*) GetSelfLock();
 
 private:
-    Mutex mLock;
+    //Mutex mLock;
 };
 
 #endif //__ELASTOS_NET_MyRunnable_H__

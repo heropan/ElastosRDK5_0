@@ -1,7 +1,6 @@
 
 #include "CInet6AddressHelper.h"
 #include "CInet6Address.h"
-#include "NetworkInterface.h"
 
 namespace Elastos {
 namespace Net {

@@ -10,7 +10,9 @@ const InterfaceID EIID_Authenticator =
 
 AutoPtr<Authenticator> Authenticator::sThisAuthenticator = NULL;
 
-Mutex Authenticator::sLock;
+//Mutex Authenticator::sLock;
+
+//CAR_INTERFACE_IMPL(Authenticator, Object, IAuthenticator)
 
 Authenticator::Authenticator()
     : mPort(0)
@@ -81,7 +83,7 @@ ECode Authenticator::RequestPasswordAuthentication(
 {
     VALIDATE_NOT_NULL(passwordAuthentication)
 
-    Mutex::Autolock lock(sLock);
+    //Mutex::Autolock lock(sLock);
 
 //    SecurityManager sm = System.getSecurityManager();
 //    if (sm != null) {
@@ -112,7 +114,7 @@ void Authenticator::SetDefault(
     // if (sm != null) {
     //     sm.checkPermission(setDefaultAuthenticatorPermission);
     // }
-    sThisAuthenticator = a == NULL ? NULL : (Authenticator*)a->Probe(EIID_Authenticator);
+    //sThisAuthenticator = (a == NULL ? NULL : (Authenticator*)a->Probe(EIID_Authenticator));
 }
 
 ECode Authenticator::RequestPasswordAuthentication(
@@ -126,7 +128,7 @@ ECode Authenticator::RequestPasswordAuthentication(
 {
     VALIDATE_NOT_NULL(passwordAuthentication)
 
-    Mutex::Autolock lock(sLock);
+    //Mutex::Autolock lock(sLock);
 
     // SecurityManager sm = System.getSecurityManager();
     // if (sm != null) {
@@ -173,7 +175,7 @@ ECode Authenticator::RequestPasswordAuthentication(
 {
     VALIDATE_NOT_NULL(passwordAuthentication)
 
-    Mutex::Autolock lock(sLock);
+    //Mutex::Autolock lock(sLock);
 
     // SecurityManager sm = System.getSecurityManager();
     // if (null != sm) {

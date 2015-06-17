@@ -1,12 +1,12 @@
 #ifndef __ELASTOS_NET_CPLAINDATAGRAMSOCKETIMPL_H__
 #define __ELASTOS_NET_CPLAINDATAGRAMSOCKETIMPL_H__
 
-#include "_ELASTOS_NET_CPlainDatagramSocketImpl.h"
+#include "_Elastos_Net_CPlainDatagramSocketImpl.h"
 #include "DatagramSocketImpl.h"
 
 using Elastos::Core::ICloseGuard;
 using Elastos::IO::IFileDescriptor;
-using Libcore::IO::IStructGroupReq;
+using Elastos::Droid::System::IStructGroupReq;
 
 namespace Elastos {
 namespace Net {

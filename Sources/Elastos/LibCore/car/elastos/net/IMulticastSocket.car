@@ -11,6 +11,7 @@ module
 
     /*
      * @Involve
+     * interface ICloseable;
      * interface IDatagramSocket;
      */
     interface IMulticastSocket {

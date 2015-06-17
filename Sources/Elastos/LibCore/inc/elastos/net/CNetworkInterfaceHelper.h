@@ -3,6 +3,7 @@
 
 #include "_Elastos_Net_CNetworkInterfaceHelper.h"
 #include "Singleton.h"
+#include "NetworkInterface.h"
 
 using Elastos::Utility::IEnumeration;
 

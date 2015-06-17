@@ -1,7 +1,7 @@
 
 #include "URLConnection.h"
 #include "DefaultFileNameMap.h"
-#include "CDateHelper.h"
+//#include "CDateHelper.h"
 #include "CSystem.h"
 #include "Character.h"
 #include "StringBuffer.h"
@@ -12,7 +12,7 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
 using Elastos::Core::ISystem;
 using Elastos::Utility::IDateHelper;
-using Elastos::Utility::CDateHelper;
+//using Elastos::Utility::CDateHelper;
 
 namespace Elastos {
 namespace Net {
@@ -82,7 +82,7 @@ Boolean URLConnection::sDefaultUseCaches = TRUE;
 HashMap<String, AutoPtr<IContentHandler> > URLConnection::sContentHandlers;
 AutoPtr<IContentHandlerFactory> URLConnection::sContentHandlerFactory;
 AutoPtr<IFileNameMap> URLConnection::sFileNameMap;
-Mutex URLConnection::sLock;
+//Mutex URLConnection::sLock;
 
 URLConnection::URLConnection()
     : mIfModifiedSince(0)
@@ -308,7 +308,7 @@ ECode URLConnection::GetExpiration(
 
 AutoPtr<IFileNameMap> URLConnection::GetFileNameMap()
 {
-    Mutex::Autolock lock(&sLock);
+    //Mutex::Autolock lock(&sLock);
 
     if (sFileNameMap == NULL) {
         sFileNameMap = new DefaultFileNameMap();
@@ -377,7 +377,7 @@ ECode URLConnection::GetHeaderFieldDate(
     }
 
     AutoPtr<IDateHelper> dateHelper;
-    CDateHelper::AcquireSingleton((IDateHelper**)&dateHelper);
+    ///////////////////////////CDateHelper::AcquireSingleton((IDateHelper**)&dateHelper);
     ECode ec = dateHelper->Parse(date, value);
     if(FAILED(ec))
     {
@@ -501,7 +501,7 @@ String URLConnection::GuessContentTypeFromStream(
     is->Mark(64);
     ArrayOf_<Byte, 64> bytes;
     Int32 length;
-    is->ReadBytes(&bytes, &length);
+    is->Read(&bytes, &length);
     is->Reset();
 
     // If there is no data from the input stream, we can't determine content type.
@@ -585,7 +585,7 @@ String URLConnection::ParseTypeString(
         Char32 c;
         typeStringBuffer.GetCharAt(i, &c);
         if (!(Character::IsLetter(c) || Character::IsDigit(c) || c == '.')) {
-            typeStringBuffer.SetChar(i, '_');
+            typeStringBuffer.SetCharAt(i, '_');
         }
     }
     String result;
@@ -605,7 +605,7 @@ ECode URLConnection::SetAllowUserInteraction(
 ECode URLConnection::SetContentHandlerFactory(
     /* [in] */ IContentHandlerFactory* contentFactory)
 {
-    Mutex::Autolock lock(&sLock);
+    //Mutex::Autolock lock(&sLock);
 
     if (sContentHandlerFactory != NULL) {
 //        throw new Error("Factory already set");
@@ -663,7 +663,7 @@ void URLConnection::SetFileNameMap(
 //    if (manager != null) {
 //        manager.checkSetFactory();
 //    }
-    Mutex::Autolock lock(&sLock);
+    //Mutex::Autolock lock(&sLock);
 
     sFileNameMap = map;
 }

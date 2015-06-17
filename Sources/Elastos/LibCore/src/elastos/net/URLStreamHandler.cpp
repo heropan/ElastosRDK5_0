@@ -7,7 +7,7 @@
 #include "StringUtils.h"
 #include "Math.h"
 //#include <Elastos.Security.h>
-#include <UrlUtils.h>
+#include "url/UrlUtils.h"
 
 namespace Elastos {
 namespace Net {
@@ -15,6 +15,7 @@ namespace Net {
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Math;
+using Libcore::Net::Url::UrlUtils;
 
 // {99E0A5EB-DDD7-4ab4-820E-7B926C0A7036}
 const InterfaceID EIID_URLStreamHandler =

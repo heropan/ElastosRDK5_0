@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_CDATAGRAMPACKET_H__
 #define __ELASTOS_NET_CDATAGRAMPACKET_H__
 
-#include "_ELASTOS_NET_CDatagramPacket.h"
+#include "_Elastos_Net_CDatagramPacket.h"
 #include <elastos/core/Object.h>
 
 

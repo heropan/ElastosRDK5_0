@@ -3,6 +3,11 @@
 #define __ELASTOS_NET_SERVERSOCKET_H__
 
 #include "CSocket.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
+using Elastos::IO::ICloseable;
+using Elastos::IO::Channels::IServerSocketChannel;
 
 namespace Elastos {
 namespace Net {
@@ -82,19 +87,19 @@ public:
 protected:
     ServerSocket();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ISocketImpl* impl);
 
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 aPort);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 aPort,
         /* [in] */ Int32 backlog);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 aPort,
         /* [in] */ Int32 backlog,
         /* [in] */ IInetAddress* localAddr);
@@ -118,8 +123,8 @@ private:
 
     Boolean mIsClosed;
 
-    Mutex mLock;
-    static Mutex sLock;
+    //Mutex mLock;
+    //static Mutex sLock;
 };
 
 } // namespace Net

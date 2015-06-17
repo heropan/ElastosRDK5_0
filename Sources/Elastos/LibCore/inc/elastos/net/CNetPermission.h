@@ -2,9 +2,13 @@
 #ifndef __ELASTOS_NET_CNETPERMISSION_H__
 #define __ELASTOS_NET_CNETPERMISSION_H__
 
-#include "_ELASTOS_NET_CNetPermission.h"
-#include "BasicPermission.h"
-#include <elastos/AutoPtr.h>
+#include "_Elastos_Net_CNetPermission.h"
+#include "security/BasicPermission.h"
+
+using Elastos::Security::BasicPermission;
+
+namespace Elastos {
+namespace Net {
 
 CarClass(CNetPermission)
     , public BasicPermission
@@ -22,5 +26,8 @@ public:
         /* [in] */ const String& name,
         /* [in] */ const String& actions);
 };
+
+} // namespace Net
+} // namespace Elastos
 
 #endif //__ELASTOS_NET_CNETPERMISSION_H__

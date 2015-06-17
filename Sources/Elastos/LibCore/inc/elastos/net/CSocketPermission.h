@@ -2,9 +2,10 @@
 #ifndef __ELASTOS_NET_CSOCKETPERMISSION_H__
 #define __ELASTOS_NET_CSOCKETPERMISSION_H__
 
-#include "_ELASTOS_NET_CSocketPermission.h"
-#include "Permission.h"
-#include <elastos/AutoPtr.h>
+#include "_Elastos_Net_CSocketPermission.h"
+#include "security/Permission.h"
+
+using Elastos::Security::Permission;
 
 CarClass(CSocketPermission)
     , public Permission

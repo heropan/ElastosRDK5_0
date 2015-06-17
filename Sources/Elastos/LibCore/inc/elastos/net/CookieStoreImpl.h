@@ -88,7 +88,7 @@ private:
     /** this map may have null keys! */
     HashMap<AutoPtr<IURI>, AutoPtr<List<AutoPtr<IHttpCookie> > > > mMap;
 
-    Mutex mLock;
+    //Mutex mLock;
 };
 
 } // namespace Net

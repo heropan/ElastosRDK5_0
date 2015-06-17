@@ -13,7 +13,7 @@ ECode ContentHandler::GetClassID(
 {
     VALIDATE_NOT_NULL(clsid);
 
-    *clsid = EIID_ContentHandler;
+    //*clsid = EIID_ContentHandler;
     return NOERROR;
 }
 
@@ -22,7 +22,7 @@ ECode ContentHandler::ToString(
 {
     VALIDATE_NOT_NULL(result);
 
-    result->AppendFormat("\nClass[%s]\n", String("ContentHandler"));
+    result->AppendFormat("\nClass[%s]\n", "ContentHandler");
     return NOERROR;
 }
 

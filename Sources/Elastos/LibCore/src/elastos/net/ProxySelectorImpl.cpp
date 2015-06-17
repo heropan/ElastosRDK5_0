@@ -3,11 +3,10 @@
 #include "CProxy.h"
 #include "CInetSocketAddress.h"
 // #include <Com.Kortide.Platform.h>
-#include "StringUtils.h"
-#include "StringBuffer.h"
-#include <CObjectContainer.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
 
-using Elastos::Core::CObjectContainer;
+//using Elastos::Core::CObjectContainer;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
 
@@ -48,7 +47,8 @@ PInterface ProxySelectorImpl::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)this;
+        assert(0 && "TODO");
+        //return (PInterface)this;
     }
     else if (riid == EIID_IProxySelector) {
         return (IProxySelector*)this;
@@ -89,7 +89,7 @@ ECode ProxySelectorImpl::ConnectFailed(
 
 ECode ProxySelectorImpl::Select(
     /* [in] */ IURI* uri,
-    /* [out] */ IObjectContainer** container)
+    /* [out] */ IList** container)
 {
     VALIDATE_NOT_NULL(container);
 
@@ -123,7 +123,7 @@ ECode ProxySelectorImpl::Select(
         proxy = SelectSocksProxy();
     }
 
-    FAIL_RETURN(CObjectContainer::New(container));
+    //////////////////////////FAIL_RETURN(CObjectContainer::New(container));
     (*container)->Add(proxy);
     return NOERROR;
 }
@@ -146,20 +146,20 @@ AutoPtr<IProxy> ProxySelectorImpl::SelectHttpProxy(
         // case 1: http.proxyHost is set, use exact http proxy
         type = ProxyType_HTTP;
         port = GetSystemPropertyOrAlternative(String("http.proxyPort"),
-                String("proxyPort"), StringUtils::Int32ToString(HTTP_PROXY_PORT));
+                String("proxyPort"), StringUtils::ToString(HTTP_PROXY_PORT));
     }
     else if (!(host = GetSystemProperty(String("proxyHost"), String(NULL))).IsNull()) {
         // case 2: proxyHost is set, use exact http proxy
         type = ProxyType_HTTP;
         port = GetSystemPropertyOrAlternative(String("proxyPort"),
-                String("http.proxyPort"), StringUtils::Int32ToString(HTTP_PROXY_PORT));
+                String("http.proxyPort"), StringUtils::ToString(HTTP_PROXY_PORT));
 
     }
     else if (!(host = GetSystemProperty(String("socksProxyHost"))).IsNull()) {
         // case 3: use socks proxy instead
         type = ProxyType_SOCKS;
         port = GetSystemProperty(
-                String("socksProxyPort"), StringUtils::Int32ToString(SOCKS_PROXY_PORT));
+                String("socksProxyPort"), StringUtils::ToString(SOCKS_PROXY_PORT));
     }
     Int32 defaultPort = (type == ProxyType_SOCKS) ? SOCKS_PROXY_PORT
             : HTTP_PROXY_PORT;
@@ -180,7 +180,7 @@ AutoPtr<IProxy> ProxySelectorImpl::SelectHttpsProxy()
         // case 1: use exact https proxy
         type = ProxyType_HTTP;
         port = GetSystemProperty(
-                String("https.proxyPort"), StringUtils::Int32ToString(HTTPS_PROXY_PORT));
+                String("https.proxyPort"), StringUtils::ToString(HTTPS_PROXY_PORT));
     }
     else {
         host = GetSystemProperty(String("socksProxyHost"));
@@ -188,7 +188,7 @@ AutoPtr<IProxy> ProxySelectorImpl::SelectHttpsProxy()
             // case 2: use socks proxy instead
             type = ProxyType_SOCKS;
             port = GetSystemProperty(
-                    String("socksProxyPort"), StringUtils::Int32ToString(SOCKS_PROXY_PORT));
+                    String("socksProxyPort"), StringUtils::ToString(SOCKS_PROXY_PORT));
         }
     }
     Int32 defaultPort = (type == ProxyType_SOCKS) ? SOCKS_PROXY_PORT
@@ -216,7 +216,7 @@ AutoPtr<IProxy> ProxySelectorImpl::SelectFtpProxy(
         // case 1: use exact ftp proxy
         type = ProxyType_HTTP;
         port = GetSystemProperty(
-                String("ftp.proxyPort"), StringUtils::Int32ToString(FTP_PROXY_PORT));
+                String("ftp.proxyPort"), StringUtils::ToString(FTP_PROXY_PORT));
     }
     else {
         host = GetSystemProperty(String("socksProxyHost"));
@@ -224,7 +224,7 @@ AutoPtr<IProxy> ProxySelectorImpl::SelectFtpProxy(
             // case 2: use socks proxy instead
             type = ProxyType_SOCKS;
             port = GetSystemProperty(
-                    String("socksProxyPort"), StringUtils::Int32ToString(SOCKS_PROXY_PORT));
+                    String("socksProxyPort"), StringUtils::ToString(SOCKS_PROXY_PORT));
         }
     }
     Int32 defaultPort = (type == ProxyType_SOCKS) ? SOCKS_PROXY_PORT
@@ -245,7 +245,7 @@ AutoPtr<IProxy> ProxySelectorImpl::SelectSocksProxy()
     if (!host.IsNull()) {
         type = ProxyType_SOCKS;
         port = GetSystemProperty(
-                String("socksProxyPort"), StringUtils::Int32ToString(SOCKS_PROXY_PORT));
+                String("socksProxyPort"), StringUtils::ToString(SOCKS_PROXY_PORT));
     }
     return CreateProxy(type, host, port, SOCKS_PROXY_PORT);
 }

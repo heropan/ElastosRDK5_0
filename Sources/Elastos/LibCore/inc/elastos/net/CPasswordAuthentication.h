@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_CPASSWORDAUTHENTICATION_H__
 #define __ELASTOS_NET_CPASSWORDAUTHENTICATION_H__
 
-#include "_ELASTOS_NET_CPasswordAuthentication.h"
+#include "_Elastos_Net_CPasswordAuthentication.h"
 #include <elastos/core/Object.h>
 
 

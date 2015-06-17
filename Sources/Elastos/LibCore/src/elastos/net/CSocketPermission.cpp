@@ -1,6 +1,6 @@
 
 #include "CSocketPermission.h"
-#include "SocketPermissionCollection.h"
+//#include "SocketPermissionCollection.h"
 #include "InetAddress.h"
 #include <StringBuffer.h>
 

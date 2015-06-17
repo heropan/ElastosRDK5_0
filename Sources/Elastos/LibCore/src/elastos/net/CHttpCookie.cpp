@@ -1,6 +1,6 @@
 
 #include "CHttpCookie.h"
-#include "CHttpDate.h"
+//#include "CHttpDate.h"
 #include "Arrays.h"
 #include "CStringWrapper.h"
 #include "Character.h"
@@ -9,16 +9,15 @@
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-
-namespace Elastos {
-namespace Net {
-
 using Elastos::Core::Character;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
-using Elastos::Net::Http::CHttpDate;
+//using Elastos::Net::Http::CHttpDate;
 using Elastos::Utility::Arrays;
+
+namespace Elastos {
+namespace Net {
 
 const String CHttpCookie::CookieParser::ATTRIBUTE_NAME_TERMINATORS = String(",;= \t");
 const String CHttpCookie::CookieParser::WHITESPACE = String(" \t");

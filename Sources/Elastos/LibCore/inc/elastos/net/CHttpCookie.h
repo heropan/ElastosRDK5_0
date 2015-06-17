@@ -2,13 +2,15 @@
 #ifndef __ELASTOS_NET_CHTTPCOOKIE_H__
 #define __ELASTOS_NET_CHTTPCOOKIE_H__
 
-#include "_ELASTOS_NET_CHttpCookie.h"
+#include "_Elastos_Net_CHttpCookie.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringBuilder.h>
 #include "InetAddress.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
+using Elastos::Core::ICloneable;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;

@@ -17,7 +17,7 @@ module
      */
     /**
      * @Involve
-     * interface ICloseable
+     * interface ICloseable;
      */
     interface ISocket {
         /**

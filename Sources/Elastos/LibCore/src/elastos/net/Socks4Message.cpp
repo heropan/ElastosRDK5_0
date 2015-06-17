@@ -37,7 +37,7 @@ ECode Socks4Message::SetCommandOrResult(
 }
 
 ECode Socks4Message::GetPort(
-    /* [out] */ Int32* port);
+    /* [out] */ Int32* port)
 {
     VALIDATE_NOT_NULL(port)
 
@@ -48,7 +48,8 @@ ECode Socks4Message::GetPort(
 ECode Socks4Message::SetPort(
     /* [in] */ Int32 port)
 {
-    return SetInt16(INDEX_PORT, port);
+    SetInt16(INDEX_PORT, port);
+    return NOERROR;
 }
 
 ECode Socks4Message::GetIP(
@@ -67,6 +68,7 @@ ECode Socks4Message::SetIP(
     (*mBuffer)[INDEX_IP + 1] = (*ip)[1];
     (*mBuffer)[INDEX_IP + 2] = (*ip)[2];
     (*mBuffer)[INDEX_IP + 3] = (*ip)[3];
+    return NOERROR;
 }
 
 ECode Socks4Message::GetUserId(
@@ -81,7 +83,8 @@ ECode Socks4Message::GetUserId(
 ECode Socks4Message::SetUserId(
     /* [in] */ const String& id)
 {
-    return SetString(INDEX_USER_ID, MAX_USER_ID_LENGTH, id);
+    SetString(INDEX_USER_ID, MAX_USER_ID_LENGTH, id);
+    return NOERROR;
 }
 
 ECode Socks4Message::ToString(

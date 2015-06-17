@@ -2,13 +2,12 @@
 #ifndef __ELASTOS_NET_URLCONNECTION_H__
 #define __ELASTOS_NET_URLCONNECTION_H__
 
-#include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/Object.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 using Elastos::Utility::Etl::HashMap;
-
 
 namespace Elastos {
 namespace Net {
@@ -206,8 +205,8 @@ protected:
     CARAPI Init(
         /* [in] */ IURL* url);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    // virtual CARAPI_(PInterface) Probe(
+    //     /* [in] */ REIID riid) = 0;
 
 private:
     CARAPI GetContentHandler(
@@ -257,7 +256,7 @@ private:
 
     static AutoPtr<IFileNameMap> sFileNameMap;
 
-    static Mutex sLock;
+    //static Mutex sLock;
 };
 
 } // namespace Net

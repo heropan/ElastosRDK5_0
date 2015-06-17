@@ -3,12 +3,13 @@
 #define __ELASTOS_NET_CURI_H__
 
 #include "_Elastos_Net_CURI.h"
-
 #include "Object.h"
 #include "Character.h"
 #include "UriCodec.h"
 
 using Elastos::Core::Character;
+using Elastos::IO::ISerializable;
+using Elastos::Core::IComparable;
 using Libcore::Net::UriCodec;
 
 namespace Elastos {

@@ -3,6 +3,10 @@
 #define __ELASTOS_NET_PROXYSELECTORIMPL_H__
 
 #include "ProxySelector.h"
+#include <elastos/utility/etl/List.h>
+
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Net {
@@ -30,7 +34,7 @@ public:
     //@Override
     CARAPI Select(
         /* [in] */ IURI* uri,
-        /* [out] */ IObjectContainer** container);
+        /* [out] */ IList** container);
 
     // read net.properties file
     // static {

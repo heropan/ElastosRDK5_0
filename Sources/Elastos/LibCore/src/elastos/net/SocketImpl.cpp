@@ -38,10 +38,11 @@ ECode SocketImpl::ToString(
     AutoPtr<IInetAddress> netadd;
     GetInetAddress((IInetAddress**)&netadd);
     String outstr;
-    netadd->ToString(&outstr);
+    IObject* o = (IObject*)netadd->Probe(EIID_IObject);
+    o->ToString(&outstr);
     *str = String("Socket[address=") + outstr +
-            String(",port=") + StringUtils::Int32ToString(mPort) +
-            String(",localPort=") + StringUtils::Int32ToString(mLocalport) + String("]");
+            String(",port=") + StringUtils::ToString(mPort) +
+            String(",localPort=") + StringUtils::ToString(mLocalport) + String("]");
     return NOERROR;
 }
 

@@ -22,21 +22,21 @@ CAR_OBJECT_IMPL(CMulticastSocket)
 
 ECode CMulticastSocket::constructor()
 {
-    FAIL_RETURN(DatagramSocket::Init());
+    FAIL_RETURN(DatagramSocket::constructor());
     return SetReuseAddress(TRUE);
 }
 
 ECode CMulticastSocket::constructor(
     /* [in] */ Int32 aPort)
 {
-    FAIL_RETURN(DatagramSocket::Init(aPort));
+    FAIL_RETURN(DatagramSocket::constructor(aPort));
     return SetReuseAddress(TRUE);
 }
 
 ECode CMulticastSocket::constructor(
     /* [in] */ ISocketAddress* localAddr)
 {
-    FAIL_RETURN(DatagramSocket::Init(localAddr));
+    FAIL_RETURN(DatagramSocket::constructor(localAddr));
     return SetReuseAddress(TRUE);
 }
 
@@ -48,7 +48,8 @@ ECode CMulticastSocket::GetInterface(
     FAIL_RETURN(CheckOpen());
     if (mSetAddress == NULL) {
         AutoPtr<IInetAddress> ipvXaddress;
-        mImpl->GetOption(ISocketOptions::IP_MULTICAST_IF, (IInterface**)&ipvXaddress);
+        ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+        option->GetOption(ISocketOptions::_IP_MULTICAST_IF, (IInterface**)&ipvXaddress);
         Boolean isAnyLocalAddress;
         if (ipvXaddress->IsAnyLocalAddress(&isAnyLocalAddress), isAnyLocalAddress) {
             // the address was not set at the IPV4 level so check the IPV6
@@ -62,7 +63,7 @@ ECode CMulticastSocket::GetInterface(
                     Boolean hasNext;
                     while(enumerator->HasMoreElements(&hasNext), hasNext) {
                         AutoPtr<IInterface> nextAddress;
-                        enumerator->NextElement((IInterface**)&nextAddress);
+                        enumerator->GetNextElement((IInterface**)&nextAddress);
                         if (nextAddress != NULL &&
                                 IInet6Address::Probe(nextAddress.Get()) != NULL) {
                             *address = nextAddress;
@@ -95,7 +96,8 @@ ECode CMulticastSocket::GetNetworkInterface(
     // Integer theIndex = Integer.valueOf(0);
     AutoPtr<IInteger32> theIndex;
     // try {
-    ECode ec = mImpl->GetOption(ISocketOptions::IP_MULTICAST_IF2, (IInterface**)&theIndex);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    ECode ec = option->GetOption(ISocketOptions::_IP_MULTICAST_IF2, (IInterface**)&theIndex);
     if (FAILED(ec)) {
         theIndex = NULL;
         CInteger32::New(0, (IInteger32**)&theIndex);
@@ -280,10 +282,12 @@ ECode CMulticastSocket::SetInterface(
     Boolean isAnyLocalAddress;
     addr->IsAnyLocalAddress(&isAnyLocalAddress);
     if (isAnyLocalAddress) {
-        mImpl->SetOption(ISocketOptions::IP_MULTICAST_IF, CInet4Address::ANY.Get());
+        ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+        option->SetOption(ISocketOptions::_IP_MULTICAST_IF, CInet4Address::ANY.Get());
     }
     else if (IInet4Address::Probe(addr) != NULL) {
-        mImpl->SetOption(ISocketOptions::IP_MULTICAST_IF, addr);
+        ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+        option->SetOption(ISocketOptions::_IP_MULTICAST_IF, addr);
         // keep the address used to do the set as we must return the same
         // value and for IPv6 we may not be able to get it back uniquely
         mSetAddress = addr;
@@ -302,7 +306,8 @@ ECode CMulticastSocket::SetInterface(
 //        try {
         AutoPtr<IInteger32> index;
         CInteger32::New(indexvalue, (IInteger32**)&index);
-        mImpl->SetOption(ISocketOptions::IP_MULTICAST_IF2, index.Get());
+        ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+        option->SetOption(ISocketOptions::_IP_MULTICAST_IF2, index.Get());
 //        } catch (SocketException e) {
             // Ignored
 //        }
@@ -311,7 +316,8 @@ ECode CMulticastSocket::SetInterface(
 //        try {
         AutoPtr<IInteger32> index;
         CInteger32::New(0, (IInteger32**)&index);
-        mImpl->SetOption(ISocketOptions::IP_MULTICAST_IF2, index.Get());
+        ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+        option->SetOption(ISocketOptions::_IP_MULTICAST_IF2, index.Get());
 //        } catch (SocketException e) {
             // Ignored
 //        }
@@ -338,8 +344,9 @@ ECode CMulticastSocket::SetNetworkInterface(
     Int32 index = 0;
     netInterface->GetIndex(&index);
     AutoPtr<IInteger32> intindex;
-    CInteger32::New(intindex, (IInteger32**)&intindex);
-    mImpl->SetOption(ISocketOptions::IP_MULTICAST_IF2, intindex);
+    CInteger32::New(index, (IInteger32**)&intindex);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    option->SetOption(ISocketOptions::_IP_MULTICAST_IF2, intindex);
     mSetAddress = NULL;
     return NOERROR;
 }
@@ -366,7 +373,7 @@ ECode CMulticastSocket::CreateSocket(
     /* [in] */ Int32 aPort,
     /* [in] */ IInetAddress* addr)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    //Mutex::Autolock lock(_m_syncLock);
 
     if (mFactory != NULL) {
         mFactory->CreateDatagramSocketImpl((IDatagramSocketImpl**)&mImpl);
@@ -379,7 +386,8 @@ ECode CMulticastSocket::CreateSocket(
     // try {
     AutoPtr<IBoolean> value;
     CBoolean::New(TRUE, (IBoolean**)&value);
-    mImpl->SetOption(ISocketOptions::SO_REUSEADDR, value);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    option->SetOption(ISocketOptions::_SO_REUSEADDR, value);
     ECode ec = mImpl->Bind(aPort, addr);
     if (FAILED(ec)) {
         Close();
@@ -401,7 +409,8 @@ ECode CMulticastSocket::GetLoopbackMode(
 
     FAIL_RETURN(CheckOpen());
     AutoPtr<IBoolean> value;
-    mImpl->GetOption(ISocketOptions::IP_MULTICAST_LOOP, (IInterface**)&value);
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    option->GetOption(ISocketOptions::_IP_MULTICAST_LOOP, (IInterface**)&value);
     Boolean bv;
     value->GetValue(&bv);
     *isDisabled = !bv;
@@ -415,7 +424,8 @@ ECode CMulticastSocket::SetLoopbackMode(
     FAIL_RETURN(CheckOpen());
     AutoPtr<IBoolean> value;
     CBoolean::New(!isDisabled, (IBoolean**)&value);
-    mImpl->SetOption(ISocketOptions::IP_MULTICAST_LOOP, value.Get());
+    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+    option->SetOption(ISocketOptions::_IP_MULTICAST_LOOP, value.Get());
 
     return NOERROR;
 }
@@ -616,10 +626,10 @@ ECode CMulticastSocket::GetFileDescriptor(
     return DatagramSocket::GetFileDescriptor(fd);
 }
 
-Mutex* CMulticastSocket::GetSelfLock()
-{
-    return &_m_syncLock;
-}
+// Mutex* CMulticastSocket::GetSelfLock()
+// {
+//     return &_m_syncLock;
+// }
 
 } // namespace Net
 } // namespace Elastos

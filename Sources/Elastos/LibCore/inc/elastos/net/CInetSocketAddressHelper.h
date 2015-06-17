@@ -5,7 +5,6 @@
 #include "_ELASTOS_NET_CInetSocketAddressHelper.h"
 #include "Singleton.h"
 
-
 namespace Elastos {
 namespace Net {
 

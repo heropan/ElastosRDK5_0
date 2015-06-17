@@ -3,21 +3,21 @@
 #include "CookieStoreImpl.h"
 #include "CHttpCookie.h"
 #include "CCookiePolicyHelper.h"
-#include "CCollections.h"
-#include "StringBuilder.h"
-#include "StringUtils.h"
-#include "Math.h"
+//#include "CCollections.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::ICollections;
-using Elastos::Utility::CCollections;
+//using Elastos::Utility::CCollections;
 using Elastos::Utility::IMapEntry;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::Math;
 
 namespace Elastos {
 namespace Net {
 
-using Elastos::Core::StringBuilder;
-using Elastos::Core::Math;
 const String CCookieManager::VERSION_ZERO_HEADER = String("Set-cookie");
 const String CCookieManager::VERSION_ONE_HEADER = String("Set-cookie2");
 
@@ -84,7 +84,7 @@ ECode CCookieManager::CookiesToHeaders(
     VALIDATE_NOT_NULL(cookiesMap)
 
     AutoPtr<ICollections> outcol;
-    CCollections::AcquireSingleton((ICollections**)&outcol);
+    /////////////////////CCollections::AcquireSingleton((ICollections**)&outcol);
     if (cookies.IsEmpty()) {
         return outcol->GetEmptyMap(cookiesMap);
     }
@@ -163,7 +163,7 @@ ECode CCookieManager::Put(
         if (portList.Equals("")) {
             Int32 port;
             uri->GetEffectivePort(&port);
-            cookie->SetPortList(StringUtils::Int32ToString(port));
+            cookie->SetPortList(StringUtils::ToString(port));
         }
         else if (!portList.IsNull() && !CHttpCookie::PortMatches(cookie, uri)) {
             continue;

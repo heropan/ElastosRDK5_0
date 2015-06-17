@@ -4,9 +4,12 @@
 
 #include "Object.h"
 
+using Elastos::Core::Object;
+using Elastos::IO::ICloseable;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IFileDescriptor;
+using Elastos::IO::Channels::ISocketChannel;
 
 namespace Elastos {
 namespace Net {
@@ -186,7 +189,7 @@ protected:
         /* [in] */ Int32 port,
         /* [in] */ Boolean streaming);
 
-    virtual CARAPI_(Mutex*) GetSelfLock() = 0;
+    //virtual CARAPI_(Mutex*) GetSelfLock() = 0;
 
 private:
     CARAPI TryAllAddresses(
@@ -223,7 +226,7 @@ public:
 
 private:
     static AutoPtr<ISocketImplFactory> sFactory;
-    static Mutex sLock;
+    //static Mutex sLock;
 
     AutoPtr<IProxy> mProxy;
 
@@ -235,7 +238,7 @@ private:
     Boolean mIsOutputShutdown;
 
     AutoPtr<IInetAddress> mLocalAddress;
-    Mutex mConnectLock;
+    //Mutex mConnectLock;
 };
 
 } // namespace Net

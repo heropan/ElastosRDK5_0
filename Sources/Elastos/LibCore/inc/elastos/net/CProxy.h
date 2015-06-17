@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_NET_CPROXY_H__
 #define __ELASTOS_NET_CPROXY_H__
 
-#include "_ELASTOS_NET_CProxy.h"
+#include "_Elastos_Net_CProxy.h"
 #include <elastos/core/Object.h>
 
 

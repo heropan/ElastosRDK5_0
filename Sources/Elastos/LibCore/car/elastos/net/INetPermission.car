@@ -8,7 +8,12 @@ module
     namespace Net {
 
     /**
+     * Legacy security code; do not use.
+     *
      * @Involve
+     * interface ISerializable;
+     * interface IGuard;
+     * interface IPermission;
      * interface IBasicPermission
      */
     interface INetPermission {

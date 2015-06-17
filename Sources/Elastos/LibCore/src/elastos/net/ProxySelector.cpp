@@ -23,7 +23,7 @@ AutoPtr<INetPermission> ProxySelector::sGetProxySelectorPermission;
 
 AutoPtr<INetPermission> ProxySelector::sSetProxySelectorPermission;
 
-CAR_INTERFACE_IMPL(ProxySelector, Object, IProxySelect)
+CAR_INTERFACE_IMPL(ProxySelector, Object, IProxySelector)
 
 ECode ProxySelector::GetDefault(
     /* [out] */ IProxySelector** defaultSelector)
@@ -34,7 +34,7 @@ ECode ProxySelector::GetDefault(
     //     sm.checkPermission(getProxySelectorPermission);
     // }
     if (sDefaultSelector == NULL) {
-        sDefaultSelector = new ProxySelectorImpl();
+        //sDefaultSelector = new ProxySelectorImpl();
     }
 
     *defaultSelector = sDefaultSelector;
