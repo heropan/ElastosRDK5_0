@@ -293,7 +293,7 @@ ECode CPrintStream::Print(
 
 
     AutoPtr< ArrayOf<Byte> > tmp = str.GetBytes();
-    if (mEncoding == NULL && NOERROR != Write(tmp)) {
+    if (mEncoding == NULL && NOERROR != Write(tmp, 0, tmp->GetLength())) {
         SetError();
     }
 /*    if(mEncoding != NULL && NOERROR != WriteBuffer(str.getBytes(mEncoding)))

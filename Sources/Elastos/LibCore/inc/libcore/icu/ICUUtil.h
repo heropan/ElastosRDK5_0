@@ -81,11 +81,11 @@ public:
 
     static CARAPI_(String) ToLowerCase(
         /* [in] */ const String& s,
-        /* [in] */ const String& localname);
+        /* [in] */ ILocale* locale);
 
     static CARAPI_(String) ToUpperCase(
         /* [in] */ const String& s,
-        /* [in] */ const String& localname);
+        /* [in] */ ILocale* locale);
 
     static CARAPI GetAvailableCurrencyCodes(
         /* [out, callee] */ ArrayOf<String>** codes);

@@ -57,6 +57,5 @@ SOURCES += Character.cpp
 SOURCES += AbstractStringBuilder.cpp
 SOURCES += StringBuffer.cpp
 SOURCES += StringBuilder.cpp
-
-#SOURCES += CaseMapper.java
+SOURCES += CaseMapper.cpp
 

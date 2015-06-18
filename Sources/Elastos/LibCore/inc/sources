@@ -9,6 +9,7 @@ EXPORT_HEADERS += elastos/core/Thread.h
 EXPORT_HEADERS += elastos/core/Math.h
 EXPORT_HEADERS += elastos/core/StrictMath.h
 EXPORT_HEADERS += elastos/core/Character.h
+EXPORT_HEADERS += elastos/core/CaseMapper.h
 EXPORT_HEADERS += elastos/core/StringUtils.h
 EXPORT_HEADERS += elastos/core/HexStringParser.h
 EXPORT_HEADERS += elastos/core/StringToIntegral.h

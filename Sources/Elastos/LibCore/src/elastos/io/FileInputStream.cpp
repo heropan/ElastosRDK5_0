@@ -59,7 +59,9 @@ ECode FileInputStream::constructor(
     CIoBridge::AcquireSingletonByFriend((CIoBridge**)&ioBridge);
     AutoPtr<IFileDescriptor> fd;
     FAIL_RETURN(ioBridge->Open(path, OsConstants::_O_RDONLY, (IFileDescriptor**)&fd));
-    mFd->SetDescriptor(fd);
+    Int32 ifd;
+    fd->GetDescriptor(&ifd);
+    mFd->SetDescriptor(ifd);
     mShouldClose = TRUE;
     return NOERROR;
 }

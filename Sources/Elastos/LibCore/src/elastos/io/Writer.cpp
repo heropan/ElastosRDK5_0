@@ -15,7 +15,7 @@ ECode Writer::constructor(
 {
     assert(lock != NULL);
     VALIDATE_NOT_NULL(lock)
-    mLock = lock;
+    mLock = (Object*)lock;
 
     if (mLock && mLock != (Object*)this) {
         REFCOUNT_ADD(mLock)

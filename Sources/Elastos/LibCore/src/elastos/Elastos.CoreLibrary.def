@@ -650,6 +650,10 @@ EXPORTS
     _ZN7Elastos4Core9Character9ToChar32sERKNS_6StringEiiPNS_7ArrayOfIjEEi
     _ZThn8_N7Elastos4Core9Character6Subset8ToStringEPNS_6StringE
 
+    ;; CaseMapper
+    _ZN7Elastos4Core10CaseMapper11ToLowerCaseEPNS_7Utility7ILocaleERKNS_6StringEPNS_7ArrayOfIjEEii
+    _ZN7Elastos4Core10CaseMapper11ToUpperCaseEPNS_7Utility7ILocaleERKNS_6StringEPNS_7ArrayOfIjEEii
+
     ;;HexStringParser
     _ZN7Elastos4Core15HexStringParser5ParseERKNS_6StringEPd
     _ZN7Elastos4Core15HexStringParser5ParseERKNS_6StringEPf

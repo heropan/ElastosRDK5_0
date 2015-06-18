@@ -257,11 +257,14 @@ String ICUUtil::GetUnicodeVersion()
 
 String ICUUtil::ToLowerCase(
     /* [in] */ const String& s,
-    /* [in] */ const String& localname)
+    /* [in] */ ILocale* locale)
 {
+    assert(locale);
+    String tag;
+    locale->ToLanguageTag(&tag);
     UnicodeString us = UnicodeString::fromUTF8(s.string());
     UnicodeString original(us);
-    us.toLower(Locale::createFromName(localname.string()));
+    us.toLower(Locale::createFromName(tag.string()));
     if (us == original) {
         return s;
     }
@@ -275,11 +278,14 @@ String ICUUtil::ToLowerCase(
 
 String ICUUtil::ToUpperCase(
     /* [in] */ const String& s,
-    /* [in] */ const String& localname)
+    /* [in] */ ILocale* locale)
 {
+    assert(locale);
+    String tag;
+    locale->ToLanguageTag(&tag);
     UnicodeString us = UnicodeString::fromUTF8(s.string());
     UnicodeString original(us);
-    us.toUpper(Locale::createFromName(localname.string()));
+    us.toUpper(Locale::createFromName(tag.string()));
     if (us == original) {
         return s;
     }

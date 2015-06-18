@@ -92,8 +92,10 @@ ECode CRandomAccessFile::constructor(
     AutoPtr<IFileDescriptor> fd;
     FAIL_RETURN(ioBridge->Open(path, flags, (IFileDescriptor**)&fd));
 
+    Int32 ifd;
+    fd->GetDescriptor(&ifd);
     CFileDescriptor::NewByFriend((CFileDescriptor**)&mFd);
-    mFd->SetDescriptor(fd);
+    mFd->SetDescriptor(ifd);
 
     // if we are in "rws" mode, attempt to sync file+metadata
     if (mSyncMetadata) {
