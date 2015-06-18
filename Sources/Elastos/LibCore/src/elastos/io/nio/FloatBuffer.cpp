@@ -9,6 +9,9 @@ namespace IO {
 extern "C" const InterfaceID EIID_FloatBuffer =
     { 0xf4fee9e7, 0xcaa5, 0x4d2e, { 0x91, 0x71, 0xa9, 0x6e, 0xb3, 0xcc, 0xb0, 0x46 } };
 
+FloatBuffer::FloatBuffer()
+{}
+
 FloatBuffer::FloatBuffer(
     /* [in] */ Int32 capacity)
     : Buffer(2, capacity, NULL)

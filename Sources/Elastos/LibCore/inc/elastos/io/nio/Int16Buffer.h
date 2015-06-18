@@ -26,6 +26,8 @@ class Int16Buffer
     , public IInt16Buffer
 {
 public:
+    Int16Buffer();
+
     Int16Buffer(
         /* [in] */ Int32 capacity);
 

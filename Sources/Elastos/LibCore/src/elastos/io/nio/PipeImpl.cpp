@@ -32,7 +32,9 @@ ECode PipeSourceChannel::ImplConfigureBlocking(Boolean blocking)
         return ecRet;
     }
 
-//    return IoUtils::SetBlocking(descriptor, blocking);
+    assert(0 && "TODO");
+    // return IoUtils::SetBlocking(descriptor, blocking);
+    return NOERROR;
 }
 
 ECode PipeSourceChannel::ReadByteBuffer(IByteBuffer* buffer, Int32* nRead)
@@ -84,7 +86,9 @@ ECode PipeSinkChannel::ImplConfigureBlocking(Boolean blocking)
     if(NOERROR != ecRet)
         return ecRet;
 
-//    return IoUtils::SetBlocking(desc, blocking);
+    assert(0 && "TODO");
+    // return IoUtils::SetBlocking(desc, blocking);
+    return NOERROR;
 }
 
 ECode PipeSinkChannel::WriteBuffer(IByteBuffer* buffer, Int32* nWrite)

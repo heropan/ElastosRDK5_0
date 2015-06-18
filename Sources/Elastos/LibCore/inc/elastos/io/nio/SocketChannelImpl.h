@@ -1,22 +1,19 @@
 #ifndef __ELASTOS_IO_SOCKETCHANNELIMPL_H__
 #define __ELASTOS_IO_SOCKETCHANNELIMPL_H__
 
+#include "Elastos.CoreLibrary_server.h"
 #include "SocketChannel.h"
 #include "CFileDescriptor.h"
-#include "CInetSocketAddress.h"
-#include "Elastos.CoreLibrary_server.h"
-#include "Socket.h"
+#include "FilterOutputStream.h"
+#include "FilterInputStream.h"
+// #include "CInetSocketAddress.h"
+// #include "Socket.h"
 
-using Elastos::IO::IFileDescriptor;
-using Elastos::IO::IFileDescriptorChannel;
-using Elastos::IO::CFileDescriptor;
-using Elastos::IO::IInputStream;
-using Elastos::IO::IOutputStream;
-using Elastos::IO::CFileDescriptor;
 using Elastos::IO::Channels::SocketChannel;
-using Elastos::Net::CInetSocketAddress;
+// using Elastos::Net::CInetSocketAddress;
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IInetSocketAddress;
+using Elastos::Net::IPlainSocketImpl;
 
 namespace Elastos {
 namespace IO {
@@ -29,6 +26,109 @@ class SocketChannelImpl
     : public SocketChannel
     , public IFileDescriptorChannel
 {
+private:
+    /*
+     * Adapter classes for internal socket.
+     */
+    class SocketAdapter // : public Socket
+    {
+    public:
+        SocketAdapter(
+            /* [in] */ IPlainSocketImpl* socketImpl,
+            /* [in] */ SocketChannelImpl* channel);
+
+        CARAPI_(AutoPtr<SocketChannel>) GetChannel();
+
+        CARAPI Connect(
+            /* [in] */ ISocketAddress* remoteAddr,
+            /* [in] */ Int32 timeout);
+
+        CARAPI Bind(
+            /* [in] */ ISocketAddress* localAddr);
+
+        CARAPI Close();
+
+        CARAPI GetInputStream(
+            /* [out] */ IInputStream** inputStream);
+
+        CARAPI GetOutputStream(
+            /* [out] */ IOutputStream** outstream);
+
+        CARAPI GetFileDescriptor(
+            /* [out] */ IFileDescriptor** outfd);
+
+    private:
+        AutoPtr<SocketChannelImpl> mChannel;
+        // PlainSocketImpl* mSocketImpl;
+    };
+
+
+    /*
+     * This output stream delegates all operations to the associated channel.
+     * Throws an IllegalBlockingModeException if the channel is in non-blocking
+     * mode when performing write operations.
+     */
+    class BlockingCheckOutputStream : public FilterOutputStream
+    {
+    public:
+        BlockingCheckOutputStream(
+            /* [in] */ IOutputStream* out,
+            /* [in] */ SocketChannel* channel);
+
+        CARAPI Write(
+            /* [in] */ ArrayOf<Byte>* buffer,
+            /* [in] */ Int32 offset,
+            /* [in] */ Int32 count);
+
+        CARAPI Write(
+            /* [in] */ Int32 oneByte);
+
+        CARAPI Write(
+            /* [in] */ ArrayOf<Byte>* buffer);
+
+        CARAPI Close();
+
+    private:
+        CARAPI CheckBlocking();
+
+    private:
+            AutoPtr<SocketChannel> mChannel;
+    };
+
+    /*
+     * This input stream delegates all operations to the associated channel.
+     * Throws an IllegalBlockingModeException if the channel is in non-blocking
+     * mode when performing read operations.
+    */
+    class BlockingCheckInputStream : public FilterInputStream
+    {
+    public:
+        BlockingCheckInputStream(
+            /* [in] */ IInputStream* in,
+            /* [in] */ SocketChannel* channel);
+
+        CARAPI Read(
+            /* [out] */ Int32* value);
+
+        CARAPI Read(
+            /* [in] */ ArrayOf<Byte>* buffer,
+            /* [in] */ Int32 byteOffset,
+            /* [in] */ Int32 byteCount,
+            /* [out] */ Int32* number);
+
+        CARAPI Read(
+            /* [in] */ ArrayOf<Byte>* buffer,
+            /* [out] */ Int32* number);
+
+        CARAPI Close();
+
+    private:
+        CARAPI CheckBlocking();
+
+    private:
+        AutoPtr<SocketChannel> mChannel;
+    };
+
 public:
     /*
      * Constructor for creating a connected socket channel.
@@ -50,6 +150,8 @@ public:
         /* [in] */ ISelectorProvider* provider,
         /* [in] */ IFileDescriptor* existingFd);
 
+    CAR_INTERFACE_DECL()
+
     /*
      * Getting the internal Socket If we have not the socket, we create a new
      * one.
@@ -70,20 +172,20 @@ public:
     CARAPI FinishConnect(
         /* [out] */ Boolean* ret);
 
-    CARAPI ReadByteBuffer(
+    CARAPI Read(
         /* [in] */ IByteBuffer* dst,
         /* [out] */ Int32* ret);
 
-    CARAPI ReadBytesBuffer(
+    CARAPI Read(
         /* [in] */ ArrayOf<IByteBuffer*>& target,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 len,
         /* [out] */ Int32* ret);
 
-    CARAPI WriteByteBuffer(
+    CARAPI Write(
         /* [in] */ IByteBuffer* src);
 
-    CARAPI WriteBytesBuffer(
+    CARAPI Write(
         /* [in] */ ArrayOf<IByteBuffer*>& source,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 len,
@@ -101,13 +203,42 @@ public:
     CARAPI GetFD(
         /* [out] */ IFileDescriptor** dstcriptor);
 
-protected:
-    void SetConnected();
+    /* @hide used by ServerSocketChannelImpl to sync channel state during accept() */
+    CARAPI OnAccept(
+        /* [in] */ IInetSocketAddress* remoteAddress,
+        /* [in] */ Boolean updateSocketState);
 
-    void SetBound(
+protected:
+    /**
+     * Initialise the isBound, localAddress and localPort state from the file descriptor. Used when
+     * some or all of the bound state has been left to the OS to decide, or when the Socket handled
+     * bind() or connect().
+     *
+     * @param updateSocketState
+     *      if the associated socket (if present) needs to be updated
+     * @hide package visible for other nio classes
+     */
+    CARAPI_(void) OnBind(
+        /* [in] */ Boolean updateSocketState);
+
+    /**
+     * Initialise the connect() state with the supplied information.
+     *
+     * @param updateSocketState
+     *     if the associated socket (if present) needs to be updated
+     * @hide package visible for other nio classes
+     */
+    CARAPI_(void) OnConnectStatusChanged(
+        /* [in] */ IInetSocketAddress* address,
+        /* [in] */ Int32 status,
+        /* [in] */ Boolean updateSocketState);
+
+    CARAPI_(void) SetConnected();
+
+    CARAPI_(void) SetBound(
         /* [in] */ Boolean flag);
 
-    void FinishAccept();
+    CARAPI_(void) FinishAccept();
 
     /*
      * Shared by this class and DatagramChannelImpl, to do the address transfer
@@ -126,6 +257,9 @@ protected:
         /* [in] */ Boolean block);
 
 private:
+    CARAPI_(Boolean) IsEINPROGRESS(
+        /* [in] */ ECode e);
+
     CARAPI InitLocalAddressAndPort();
 
     CARAPI ReadImpl(
@@ -147,7 +281,7 @@ private:
     CARAPI CheckUnconnected();
 
 private:
-    const static Int32 SOCKET_STATUS_UNINITITLIZED = -1;
+    const static Int32 SOCKET_STATUS_UNINITITLIZED;
 
     // Status before connect.
     const static Int32 SOCKET_STATUS_UNCONNECTED;
@@ -167,238 +301,19 @@ private:
     SocketAdapter* mSocket;
 
     // The address to be connected.
-    CInetSocketAddress* mConnectAddress;
+    AutoPtr<IInetSocketAddress> mConnectAddress;
 
     IInetAddress* mLocalAddress;
 
     Int32 mLocalPort;
 
+    volatile Boolean mIsBound;
+
     Int32 mStatus;
 
-    volatile Boolean mIsBound;
     Object mReadLock;
+
     Object mWriteLock;
-};
-
-/*
- * Adapter classes for internal socket.
- */
-class SocketAdapter : public Socket
-{
-public:
-    virtual ~SocketAdapter()
-    {
-
-    }
-
-    SocketChannel* GetChannel()
-    {
-        return mChannel;
-    }
-
-    Boolean IsBound()
-    {
-        return mChannel->mIsBound;
-    }
-
-    Boolean IsConnected()
-    {
-        Boolean ret;
-        mChannel->IsConnected(&ret);
-        return ret;
-    }
-
-    ECode GetLocalAddress(IInetAddress** address)
-    {
-        return mChannel->GetLocalAddress(address);
-    }
-
-    ECode Connect(ISocketAddress* remoteAddr, Int32 timeout)
-    {
-        Boolean bRet;
-        ECode ecRet;
-        ecRet = mChannel->IsBlocking(&bRet);
-        assert(NOERROR == ecRet);
-        if (!bRet)
-        {
-            return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
-        }
-
-        if (!IsConnected())
-        {
-            return E_ALREADY_CONNECTED_EXCEPTION;
-        }
-
-        Socket::Connect(remoteAddr, timeout);
-        mChannel->InitLocalAddressAndPort();
-        Socket::IsConnected(&bRet);
-        if (bRet)
-        {
-            mChannel->SetConnected();
-            Socket::IsBound(&bRet);
-            mChannel->mIsBound = bRet;
-        }
-
-        return NOERROR;
-    }
-
-    ECode Bind(ISocketAddress* localAddr)
-    {
-        Boolean bRet;
-        mChannel->IsConnected(&bRet);
-        if (bRet)
-            return E_ALREADY_CONNECTED_EXCEPTION;
-
-        if (mChannel->mStatus == SocketChannelImpl::SOCKET_STATUS_PENDING)
-            return E_CONNECTION_PENDING_EXCEPTION;
-
-        Socket::Bind (localaAddr);
-        mChannel->InitLocalAddressAndPort();
-        mChannel->mIsBound = TRUE;
-        return NOERROR;
-    }
-
-    ECode Close()
-    {
-        printf("WARNING: synchronized  has not implemented\n");
-        Boolean bRet;
-        ECode ecRet = mChannel->IsOpen(&bRet);
-        assert(NOERROR == ecRet);
-
-        if (bRet)
-        {
-            ecRet = mChannel->Close();
-        }
-        else
-        {
-            ecRet = Socket::Close();
-        }
-
-        mChannel->mStatus = SocketChannelImpl::SOCKET_STATUS_CLOSED;
-        return ecRet;
-    }
-
-    ECode GetInputStream(InputStream** inputStream)
-    {
-        ECode ecRet = CheckOpenAndConnected();
-        if (NOERROR != ecRet)
-            return ecRet;
-
-        Boolean bRet;
-        IsInputShutdown(&bRet);
-        if (bRet)
-            return E_SOCKET_EXCEPTION;
-
-        (*inputStream) = new SocketChannelInputStream(mChannel);
-        return NOERROR;
-    }
-
-    ECode CheckOpenAndConnected()
-    {
-        Boolean bRet;
-        mChannel->IsOpen(&bRet);
-        if (!bRet)
-            return E_SOCKET_EXCEPTION;
-
-        mChannel->IsConnected(&bRet);
-        if (!bRet)
-            return E_SOCKET_EXCEPTION;
-
-        return NOERROR;
-    }
-
-    CFileDescriptor* GetFileDescriptor()
-    {
-        printf("ERROR: Socket has not implemented GetFileDescriptor\n");
-        assert(0);
-        return 0;
-    }
-
-protected:
-    PlainSocketImpl* SocketImpl()
-    {
-        return mSocketImpl;
-    }
-
-private:
-    SocketChannelImpl* mChannel;
-    PlainSocketImpl* mSocketImpl;
-};
-
-
-/*
- * This output stream delegates all operations to the associated channel.
- * Throws an IllegalBlockingModeException if the channel is in non-blocking
- * mode when performing write operations.
- */
-class SocketChannelOutputStream : public OutputStream
-{
-public:
-    SocketChannelOutputStream(SocketChannel* channel)
-            : mChannel(new AutoPtr(channel))
-    {
-        assert(0 != channel);
-    }
-
-    ECode Close()
-    {
-        return mChannel->Close();
-    }
-
-    ECode WriteBytesBuffer(ArrayOf<IByteBuffer*> & buffer, Int32 offset,
-            Int32 byteCount)
-    {
-        printf("ERROR: Not Implemented Yet\n");
-        return E_NOT_IMPLEMENTED;
-    }
-
-    ECode Write(Int32 oneByte)
-    {
-        printf("ERROR: Not Implemented Yet\n");
-        return E_NOT_IMPLEMENTED;
-    }
-
-protected:
-
-private:
-        AutoPtr<SocketChannel> mChannel;
-};
-
-/*
- * This input stream delegates all operations to the associated channel.
- * Throws an IllegalBlockingModeException if the channel is in non-blocking
- * mode when performing read operations.
-*/
-class SocketChannelInputStream : public InputStream
-{
-public:
-    SocketChannelInputStream(SocketChannel* channel)
-        : mChannel(new AutoPtr(channel))
-    {
-        assert(0 != channel);
-    }
-
-    ECode Close()
-    {
-        return mChannel->Close();
-    }
-
-    ECode Read(Int32* ret)
-    {
-        printf("ERROR: Not Implemented Yet\n");
-        return E_NOT_IMPLEMENTED;
-    }
-
-    ECode ReadBytesBuffer(ArrayOf<IByteBuffer*> & buffer, Int32 offset, Int32 byteCount, Int32* ret)
-    {
-        printf("ERROR: Not Implemented Yet\n");
-        return E_NOT_IMPLEMENTED;
-    }
-
-protected:
-
-private:
-    AutoPtr<SocketChannel> mChannel;
 };
 
 } // namespace IO

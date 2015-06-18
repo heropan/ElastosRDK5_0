@@ -18,6 +18,8 @@ namespace Channels {
 class ServerSocketChannel : public AbstractSelectableChannel
 {
 public:
+    ServerSocketChannel();
+
     ServerSocketChannel(
         /* [in] */ ISelectorProvider* provider);
 

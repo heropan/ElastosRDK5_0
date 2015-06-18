@@ -26,6 +26,8 @@ class FloatBuffer
     , public IFloatBuffer
 {
 public:
+    FloatBuffer();
+
     FloatBuffer(
         /* [in] */ Int32 capacity);
 

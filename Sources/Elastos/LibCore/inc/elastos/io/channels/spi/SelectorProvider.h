@@ -3,8 +3,10 @@
 
 #include <Elastos.CoreLibrary_server.h>
 #include <elastos/core/Thread.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IRunnable;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace IO {
@@ -22,8 +24,12 @@ namespace Spi {
  * the system default provider is returned.
  */
 class SelectorProvider
+    : public ISelectorProvider
+    , public Object
 {
 public:
+    CAR_INTERFACE_DECL()
+
     virtual ~SelectorProvider();
 
     /**

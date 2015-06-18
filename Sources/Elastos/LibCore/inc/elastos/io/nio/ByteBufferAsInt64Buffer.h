@@ -1,14 +1,14 @@
 
-#ifndef __ELASTOS_IO_BYTEBUFFERASCHARBUFFER_H__
-#define __ELASTOS_IO_BYTEBUFFERASCHARBUFFER_H__
+#ifndef __ELASTOS_IO_BYTEBUFFERASINT64BUFFER_H__
+#define __ELASTOS_IO_BYTEBUFFERASINT64BUFFER_H__
 
-#include "CharBuffer.h"
+#include "Int64Buffer.h"
 #include "ByteBuffer.h"
 
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_ByteBufferAsCharBuffer;
+extern "C" const InterfaceID EIID_ByteBufferAsInt64Buffer;
 
 /**
  * A buffer for bytes.
@@ -24,42 +24,42 @@ extern "C" const InterfaceID EIID_ByteBufferAsCharBuffer;
  * </ul>
  *
  */
-class ByteBufferAsCharBuffer
-    : public CharBuffer
+class ByteBufferAsInt64Buffer
+    : public Int64Buffer
 {
 private:
-    ByteBufferAsCharBuffer(
+    ByteBufferAsInt64Buffer(
         /* [in] */ ByteBuffer* byteBuffer);
 
 protected:
-    static CARAPI_(AutoPtr<ICharBuffer>) AsCharBuffer(
+    static CARAPI_(AutoPtr<IInt64Buffer>) AsInt64Buffer(
         /* [in] */ ByteBuffer* byteBuffer);
 
 public:
     // @Override
     CARAPI AsReadOnlyBuffer(
-        /* [out] */ ICharBuffer** buffer);
+        /* [out] */ IInt64Buffer** buffer);
 
     // @Override
     CARAPI Compact(
-        /* [out] */ ICharBuffer** outbuf);
+        /* [out] */ IInt64Buffer** outbuf);
 
     // @Override
     CARAPI Duplicate(
-        /* [out] */ ICharBuffer** buffer);
+        /* [out] */ IInt64Buffer** buffer);
 
     // @Override
     CARAPI Get(
-        /* [out] */ Char32* value);
+        /* [out] */ Int64* value);
 
     // @Override
     CARAPI Get(
         /* [in] */ Int32 index,
-        /* [out] */ Char32* value);
+        /* [out] */ Int64* value);
 
     // @Override
     CARAPI Get(
-        /* [out] */ ArrayOf<Char32>* dst,
+        /* [out] */ ArrayOf<Int64>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 charCount);
 
@@ -76,29 +76,23 @@ public:
         /* [out] */ ByteOrder* byteOrder);
 
     CARAPI Put(
-        /* [in] */ Char32 c);
+        /* [in] */ Int64 c);
 
     CARAPI Put(
         /* [in] */ Int32 index,
-        /* [in] */ Char32 c);
-
+        /* [in] */ Int64 c);
 
     CARAPI Put(
-        /* [in] */ ArrayOf<Char32>* src,
+        /* [in] */ ArrayOf<Int64>* src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 charCount);
 
     CARAPI Slice(
-        /* [out] */ ICharBuffer** buffer);
-
-    CARAPI SubSequence(
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [out] */ ICharSequence** csq);
+        /* [out] */ IInt64Buffer** buffer);
 
 protected:
     CARAPI ProtectedArray(
-        /* [out, callee] */ ArrayOf<Char32>** array);
+        /* [out, callee] */ ArrayOf<Int64>** array);
 
     /**
      * Child class implements this method to realize {@code arrayOffset()}.
@@ -123,4 +117,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __ELASTOS_IO_BYTEBUFFERASCHARBUFFER_H__
+#endif // __ELASTOS_IO_BYTEBUFFERASINT64BUFFER_H__
