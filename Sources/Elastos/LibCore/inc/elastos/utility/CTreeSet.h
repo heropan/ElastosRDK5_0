@@ -1,20 +1,29 @@
 #ifndef __UTILITY_CTREESET_H__
 #define __UTILITY_CTREESET_H__
 
-#include "_CTreeSet.h"
+#include "_Elastos_Utility_CTreeSet.h"
 #include "AbstractSet.h"
 
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectStreamField;
 using Elastos::Core::IComparator;
+using Elastos::Core::ICloneable;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CTreeSet) , public AbstractSet
+CarClass(CTreeSet)
+    , public AbstractSet
+    , public ITreeSet
+    , public INavigableSet
+    , public ICloneable
+    , public ISerializable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -28,9 +37,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ ISortedSet* set);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI Add(
         /* [in] */ IInterface* object,
@@ -85,19 +91,19 @@ public:
     CARAPI GetIterator(
         /* [out] */ IIterator** it);
 
-    CARAPI Lower(
+    CARAPI GetLower(
         /* [in] */ IInterface* e,
         /* [out] */ IInterface** outface);
 
-    CARAPI Floor(
+    CARAPI GetFloor(
         /* [in] */ IInterface* e,
         /* [out] */ IInterface** outface);
 
-    CARAPI Ceiling(
+    CARAPI GetCeiling(
         /* [in] */ IInterface* e,
         /* [out] */ IInterface** outface);
 
-    CARAPI Higher(
+    CARAPI GetHigher(
         /* [in] */ IInterface* e,
         /* [out] */ IInterface** outface);
 
@@ -107,25 +113,25 @@ public:
     CARAPI PollLast(
         /* [out] */ IInterface** outface);
 
-    CARAPI DescendingSet(
+    CARAPI GetDescendingSet(
         /* [out] */ INavigableSet** outnav);
 
-    CARAPI DescendingIterator(
+    CARAPI GetDescendingIterator(
         /* [out] */ IIterator** outiter);
 
-    CARAPI SubSet(
+    CARAPI GetSubSet(
         /* [in] */ IInterface* fromElement,
         /* [in] */ Boolean fromInclusive,
         /* [in] */ IInterface* toElement,
         /* [in] */ Boolean toInclusive,
         /* [out] */ INavigableSet** outnav);
 
-    CARAPI HeadSet(
+    CARAPI GetHeadSet(
         /* [in] */ IInterface* toElement,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableSet** outnav);
 
-    CARAPI TailSet(
+    CARAPI GetTailSet(
         /* [in] */ IInterface* fromElement,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableSet** outnav);

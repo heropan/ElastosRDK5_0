@@ -33,6 +33,7 @@ module
     merge("utility/IDeque.car");
     merge("utility/IWeakHashMap.car");
     merge("utility/ITreeMap.car");
+    merge("utility/ITreeSet.car");
     merge("utility/IRandomAccess.car");
     merge("utility/ITimeZone.car");
     merge("utility/ISimpleTimeZone.car");
@@ -585,6 +586,56 @@ module
             interface ISortedMap;
             interface INavigableMap;
             interface ICloneable;
+            interface ISerializable;
+        }
+
+        class CTreeSet {
+            constructor();
+
+            constructor(
+                [in] INavigableMap* navmap);
+
+            constructor(
+                [in] ICollection* map);
+
+            constructor(
+                [in] IComparator* comparator);
+
+            constructor(
+                [in] ISortedSet* set);
+
+            interface ITreeSet;
+            interface ISet;
+            interface ICollection;
+            interface IIterable;
+            interface INavigableSet;
+            interface ICloneable;
+            interface ISerializable;
+        }
+
+        class CPriorityQueue {
+            constructor();
+
+            constructor(
+                [in] Int32 initialCapacity);
+
+            constructor(
+                [in] Int32 initialCapacity,
+                [in] IComparator* comparator);
+
+            constructor(
+                [in] ICollection* co);
+
+            constructor(
+                [in] IPriorityQueue* queue);
+
+            constructor(
+                [in] ISortedSet* set);
+
+            interface IPriorityQueue;
+            interface ICollection;
+            interface IIterable;
+            interface IQueue;
             interface ISerializable;
         }
 

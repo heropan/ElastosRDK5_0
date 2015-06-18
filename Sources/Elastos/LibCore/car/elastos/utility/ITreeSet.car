@@ -1,0 +1,21 @@
+module
+{
+    namespace Elastos {
+    namespace Utility {
+
+    /**
+     * @Involve
+     * interface ICollection;
+     * interface Iterable;
+     * interface ISet;
+     * interface INavigableSet;
+     * interface ICloneable;
+     * interface ISerializable;
+     */
+    interface ITreeSet {
+
+    }
+
+    } // namespace Utility
+    } // namespace Elastos
+}
