@@ -7,9 +7,11 @@ C_DEFINES += -DELASTOS_CORELIBRARY
 include $(MAKEDIR)/../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += $(PREBUILD_INC)/fdlibm;
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility/regex;
 
 SOURCES += Thread.cpp
@@ -43,6 +45,7 @@ SOURCES += Enum.cpp
 SOURCES += CSystem.cpp
 
 SOURCES += Math.cpp
+SOURCES += StrictMath.cpp
 SOURCES += cbigint.cpp
 SOURCES += StringUtils.cpp
 SOURCES += HexStringParser.cpp
@@ -54,3 +57,6 @@ SOURCES += Character.cpp
 SOURCES += AbstractStringBuilder.cpp
 SOURCES += StringBuffer.cpp
 SOURCES += StringBuilder.cpp
+
+#SOURCES += CaseMapper.java
+

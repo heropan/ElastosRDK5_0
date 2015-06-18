@@ -181,8 +181,16 @@ public:
      */
     static const Int32 DOUBLE_MIN_EXPONENT;
 
-    static const Double DOUBLE_E;
-    static const Double DOUBLE_PI;
+    /**
+     * The double value closest to e, the base of the natural logarithm.
+     */
+    static const Double E;// = 2.718281828459045;
+
+    /**
+     * The double value closest to pi, the ratio of a circle's circumference to
+     * its diameter.
+     */
+    static const Double PI;// = 3.141592653589793;
 
     /**
      * An array with powers of ten that fit in the type <code>long</code>
@@ -253,7 +261,6 @@ public:
      * @return the argument if it is positive, otherwise the negation of the
      *         argument.
      */
-
     static CARAPI_(Int32) Abs(
         /* [in] */ Int32 i);
 
@@ -1090,8 +1097,15 @@ public:
      * Returns the exponent of double {@code d}.
      * @since 1.6
      */
-    static CARAPI_(Double) GetExponent(
+    static CARAPI_(Int32) GetExponent(
         /* [in] */ Double d);
+
+    /**
+     * Returns the unbiased base-2 exponent of float {@code f}.
+     * @since 1.6
+     */
+    static CARAPI_(Int32) GetExponent(
+        /* [in] */ Float d);
 
     /**
      * Returns the next double after {@code start} in the given {@code direction}.
@@ -1099,6 +1113,13 @@ public:
      */
     static CARAPI_(Double) NextAfter(
         /* [in] */ Double start,
+        /* [in] */ Double direction);
+
+    /*!
+     * @brief Returns the next Float after @c start in the given @c direction.
+     */
+    static CARAPI_(Float) NextAfter(
+        /* [in] */ Float start,
         /* [in] */ Double direction);
 
     /**
@@ -1172,13 +1193,6 @@ public:
     static CARAPI_(Float) CopySign(
         /* [in] */ Float magnitude,
         /* [in] */ Float sign);
-
-    /*!
-     * @brief Returns the next Float after @c start in the given @c direction.
-     */
-    static CARAPI_(Float) NextAfter(
-        /* [in] */ Float start,
-        /* [in] */ Double direction);
 
     /*!
      * @brief Returns the next Float larger than @c f.
@@ -1426,11 +1440,11 @@ public:
         /* [in] */ Double float2);
 
 private:
-    static CARAPI_(Double) Nextafter(
+    static CARAPI_(Double) NativeNextAfter(
         /* [in] */ Double x,
         /* [in] */ Double y);
 
-    static CARAPI_(Float) Nextafterf(
+    static CARAPI_(Float) NativeNextAfter(
         /* [in] */ Float x,
         /* [in] */ Float y);
 
@@ -1449,6 +1463,10 @@ private:
     static CARAPI_(Int64) ShiftInt64Bits(
         /* [in] */ Int64 bits,
         /* [in] */ Int64 digits);
+
+private:
+    Math();
+    Math(const Math&);
 
 private:
     static AutoPtr<IRandom> mRandom;

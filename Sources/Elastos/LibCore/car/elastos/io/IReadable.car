@@ -1,35 +1,30 @@
 
 module
 {
-//    interface Elastos.IO.ICharBuffer;
+    interface Elastos.IO.ICharBuffer;
 
     namespace Elastos {
     namespace IO {
 
     /**
      * Represents a sequence of characters that can be incrementally read (copied)
-     * into a CharBuffer.
-     *
-     *@sa CharBuffer
-     *
+     * into a {@link CharBuffer}.
      */
     interface IReadable {
         /**
-         * Reads characters into the specified CharBuffer. The maximum
-         * number of characters read is CharBuffer.remaining().
+         * Reads characters into the specified {@code CharBuffer}. The maximum
+         * number of characters read is {@code CharBuffer.remaining()}.
          *
          * @param cb
          *            the buffer to be filled with characters read.
          * @return the number of characters actually read, or -1 if this
-         *         Readable reaches its end
-         * @return ECode = NOERROR(0) if success, elas as follows:
-         * Value | Meaning |
-         * :-|:------------|
-         * IOException | if an I/O error occurs.
+         *         {@code Readable} reaches its end
+         * @throws IOException
+         *             if an I/O error occurs.
          */
-//        Read(
-//            [in] ICharBuffer* cb,
-//            [out] Int32* number);
+        Read(
+            [in] ICharBuffer* cb,
+            [out] Int32* number);
     }
 
     } // namespace IO

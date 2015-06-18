@@ -3,11 +3,10 @@
 #include <math.h>
 #include <stdlib.h>
 #ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-// #include "CRandom.h"
-#else
-#include "Elastos.CoreLibrary.h"
+#include "CRandom.h"
 #endif
+
+using Elastos::Utility::CRandom;
 
 namespace Elastos {
 namespace Core {
@@ -61,8 +60,8 @@ const Double Math::DOUBLE_MIN_NORMAL        = 2.2250738585072014E-308;
 const Int32 Math::DOUBLE_MAX_EXPONENT       = 1023;
 const Int32 Math::DOUBLE_MIN_EXPONENT       = -1022;
 
-const Double Math::DOUBLE_E                 = 2.718281828459045;
-const Double Math::DOUBLE_PI                = 3.141592653589793;
+const Double Math::E                        = 2.718281828459045;
+const Double Math::PI                       = 3.141592653589793;
 
 const Byte Math::IntegerNtzTable[] = {
     32,  0,  1, 12,  2,  6, -1, 13,   3, -1,  7, -1, -1, -1, -1, 14,
@@ -139,7 +138,7 @@ Boolean Math::Constrain(Float amount, Float low, Float high)
 Double Math::Abs(
     /* [in] */ Double d)
 {
-    Int64 i = DoubleToInt64Bits(d);
+    Int64 i = DoubleToRawInt64Bits(d);
     i &= 0X7FFFFFFFFFFFFFFFLL;
     return Int64BitsToDouble(i);
 }
@@ -147,7 +146,7 @@ Double Math::Abs(
 Float Math::Abs(
     /* [in] */ Float f)
 {
-    Int32 bits = FloatToInt32Bits(f);
+    Int32 bits = FloatToRawInt32Bits(f);
     bits &= 0X7FFFFFFF;
     return Int32BitsToFloat(bits);
 }
@@ -155,7 +154,13 @@ Float Math::Abs(
 Int32 Math::Abs(
     /* [in] */ Int32 i)
 {
-    return i >= 0 ? i : -i;
+    return (i >= 0) ? i : -i;
+}
+
+Int64 Math::Abs(
+    /* [in] */Int64 i)
+{
+    return (i >= 0) ? i : -i;
 }
 
 Double Math::Acos(
@@ -217,12 +222,6 @@ Double Math::Expm1(
     /* [in] */ Double d)
 {
     return expm1(d);
-}
-
-Int64 Math::Abs(
-    /* [in] */Int64 i)
-{
-    return (i >= 0) ? i : -i;
 }
 
 Double Math::Floor(
@@ -395,7 +394,7 @@ Int64 Math::Round(
     /* [in] */ Double d)
 {
     // check for NAN
-    if (IsNaN(d)) {
+    if (d != d) {
         return 0;
     }
     return (Int64)Floor(d + 0.5);
@@ -408,7 +407,7 @@ Int32 Math::Round(
     if (f != f) {
         return 0;
     }
-    return (int)Floor(f + 0.5F);
+    return (Int32)Floor(f + 0.5F);
 }
 
 Double Math::Signum(
@@ -422,6 +421,22 @@ Double Math::Signum(
         sig = 1.0;
     } else if (d < 0) {
         sig = -1.0;
+    }
+    return sig;
+}
+
+Float Math::Signum(
+    /* [in] */ Float f)
+{
+    //check for NAN
+    if(IsNaN(f)){
+        return FLOAT_NAN;
+    }
+    Float sig = f;
+    if(f > 0){
+        sig = 1.0F;
+    }else if(f < 0){
+        sig = -1.0F;
     }
     return sig;
 }
@@ -471,8 +486,7 @@ Double Math::Tanh(
 Double Math::Random()
 {
     if (NULL == mRandom) {
-        // TODO upgrade
-        // CRandom::New((IRandom**)&mRandom);
+        CRandom::New((IRandom**)&mRandom);
     }
 
     Double d;
@@ -483,13 +497,13 @@ Double Math::Random()
 Double Math::ToRadians(
     /* [in] */ Double angdeg)
 {
-    return angdeg / 180 * DOUBLE_PI;
+    return angdeg / 180 * Math::PI;
 }
 
 Double Math::ToDegrees(
     /* [in] */ Double angrad)
 {
-    return angrad * 180 / DOUBLE_PI;
+    return angrad * 180 / Math::PI;
 }
 
 Double Math::Ulp(
@@ -497,19 +511,57 @@ Double Math::Ulp(
 {
     if (IsInfinite(d)) {
         return DOUBLE_POSITIVE_INFINITY;
-    } else if (d == DOUBLE_MAX_VALUE || d == -DOUBLE_MAX_VALUE) {
-
+    }
+    else if (d == DOUBLE_MAX_VALUE || d == -DOUBLE_MAX_VALUE) {
         return pow(2.0, 971);
     }
     d = Abs(d);
-    return Nextafter(d, DOUBLE_MAX_VALUE) - d;
+    return NativeNextAfter(d, DOUBLE_MAX_VALUE) - d;
 }
 
-Double Math::Nextafter(
+Double Math::NativeNextAfter(
     /* [in] */ Double x,
     /* [in] */ Double y)
 {
     return nextafter(x, y);
+}
+
+Float Math::Ulp(
+   /* [in] */ Float f)
+{
+    //special cases
+    if(IsNaN(f)){
+        return FLOAT_NAN;
+    }
+    else if(IsInfinite(f)){
+        return FLOAT_POSITIVE_INFINITY;
+    }
+    else if (f == FLOAT_MAX_VALUE || f == -FLOAT_MAX_VALUE) {
+        return (Float) pow(2, 104);
+    }
+
+    f = Abs(f);
+    Int32 hx = FloatToRawInt32Bits(f);
+    Int32 hy = FloatToRawInt32Bits(FLOAT_MAX_VALUE);
+    if ((hx & 0x7fffffff) == 0) { /* f == 0 */
+        return Int32BitsToFloat((hy & 0x80000000) | 0x1);
+    }
+    if ((hx > 0) ^ (hx > hy)) { /* |f| < |FLOAT_MAX_VALUE| */
+        hx += 1;
+    } else {
+        hx -= 1;
+    }
+    return Int32BitsToFloat(hx) - f;
+}
+
+Float Math::CopySign(
+    /* [in] */ Float magnitude,
+    /* [in] */ Float sign)
+{
+    Int32 magnitudeBits = FloatToRawInt32Bits(magnitude);
+    Int32 signBits = FloatToRawInt32Bits(sign);
+    magnitudeBits = (magnitudeBits & ~FLOAT_SIGN_MASK) | (signBits & FLOAT_SIGN_MASK);
+    return Int32BitsToFloat(magnitudeBits);
 }
 
 Double Math::CopySign(
@@ -522,12 +574,20 @@ Double Math::CopySign(
     return Int64BitsToDouble(magnitudeBits);
 }
 
-Double Math::GetExponent(
+Int32 Math::GetExponent(
     /* [in] */ Double d)
 {
     Int64 bits = DoubleToRawInt64Bits(d);
     bits = (bits & DOUBLE_EXPONENT_MASK) >> DOUBLE_MANTISSA_BITS;
     return (Int32) bits - DOUBLE_EXPONENT_BIAS;
+}
+
+Int32 Math::GetExponent(
+    /* [in] */ Float d)
+{
+    Int32 bits = FloatToRawInt32Bits(d);
+    bits = (bits & FLOAT_EXPONENT_MASK) >> FLOAT_MANTISSA_BITS;
+    return (Int32) bits - FLOAT_EXPONENT_BIAS;
 }
 
 Double Math::NextAfter(
@@ -537,7 +597,67 @@ Double Math::NextAfter(
     if (start == 0 && direction == 0) {
         return direction;
     }
-    return nextafter(start, direction);
+    return NativeNextAfter(start, direction);
+}
+
+Float Math::NextAfter(
+    /* [in] */ Float start,
+    /* [in] */ Double direction)
+{
+    if(IsNaN(start) || IsNaN(direction)){
+        return FLOAT_NAN;
+    }
+    if(start == 0 && direction == 0){
+        return (Float)direction;
+    }
+    if ((start == FLOAT_MIN_VALUE && direction < start)
+             || (start == -FLOAT_MIN_VALUE && direction > start)) {
+        return ((start > 0) ? 0.0F : -0.0F);
+    }
+    if (IsInfinite(start) && (direction != start)) {
+          return (start > 0 ? FLOAT_MAX_VALUE : -FLOAT_MAX_VALUE);
+    }
+    if ((start == FLOAT_MAX_VALUE && direction > start)
+             || (start == -FLOAT_MAX_VALUE && direction < start)) {
+        return (start > 0 ? FLOAT_POSITIVE_INFINITY : FLOAT_NEGATIVE_INFINITY);
+    }
+    if (direction > start) {
+        if (start > 0) {
+            return Int32BitsToFloat(FloatToInt32Bits(start) + 1);
+        }
+        if (start < 0) {
+            return Int32BitsToFloat(FloatToInt32Bits(start) - 1);
+        }
+        return +FLOAT_MIN_VALUE;
+    }
+    if (direction < start) {
+        if (start > 0) {
+            return Int32BitsToFloat(FloatToInt32Bits(start) - 1);
+        }
+        if (start < 0) {
+            return Int32BitsToFloat(FloatToInt32Bits(start) + 1);
+        }
+        return -FLOAT_MIN_VALUE;
+    }
+    return (Float)direction;
+}
+
+Float Math::NextUp(
+    /* [in] */ Float f)
+{
+    if(IsNaN(f)){
+        return FLOAT_NAN;
+    }
+    if(f == FLOAT_POSITIVE_INFINITY){
+        return FLOAT_POSITIVE_INFINITY;
+    }
+    if(f == 0){
+        return FLOAT_MIN_VALUE;
+    }else if(f > 0){
+        return Int32BitsToFloat(FloatToInt32Bits(f) + 1);
+    }else{
+        return Int32BitsToFloat(FloatToInt32Bits(f) - 1);
+    }
 }
 
 Double Math::NextUp(
@@ -612,6 +732,56 @@ Double Math::Scalb(
     return Int64BitsToDouble(result | sign);
 }
 
+Float Math::Scalb(
+    /* [in] */ Float d,
+    /* [in] */ Int32 scaleFactor)
+{
+    if ((IsNaN(d)) || IsInfinite(d) || d == 0) {
+        return d;
+    }
+    Int32 bits = FloatToInt32Bits(d);
+    Int32 sign = bits & FLOAT_SIGN_MASK;
+    Int32 factor = ((bits & FLOAT_EXPONENT_MASK) >> FLOAT_MANTISSA_BITS)
+                - FLOAT_EXPONENT_BIAS + scaleFactor;
+    // calcutes the factor of sub-normal values
+    Int32 subNormalFactor = NumberOfLeadingZeros((Int32)(bits & ~FLOAT_SIGN_MASK))
+                - FLOAT_NON_MANTISSA_BITS;
+    if (subNormalFactor < 0) {
+    // not sub-normal values
+        subNormalFactor = 0;
+    } else {
+           factor = factor - subNormalFactor;
+    }
+    if (factor > FLOAT_MAX_EXPONENT) {
+           return (d > 0 ? FLOAT_POSITIVE_INFINITY : FLOAT_NEGATIVE_INFINITY);
+    }
+
+    Int32 result;
+    // if result is a sub-normal
+    if (factor <= -FLOAT_EXPONENT_BIAS) {
+        // the number of digits that shifts
+        Int32 digits = factor + FLOAT_EXPONENT_BIAS + subNormalFactor;
+        if (Abs(d) < FLOAT_MIN_NORMAL) {
+            // origin d is already sub-normal
+            result = ShiftInt32Bits(bits & FLOAT_MANTISSA_MASK, digits);
+        } else {
+            // origin d is not sub-normal, change mantissa to sub-normal
+            result = ShiftInt32Bits((bits & FLOAT_MANTISSA_MASK) | 0X00800000, digits - 1);
+        }
+    } else {
+        if (Abs(d) >= FLOAT_MIN_NORMAL) {
+            // common situation
+            result = ((factor + FLOAT_EXPONENT_BIAS) << FLOAT_MANTISSA_BITS)
+                        | (bits & FLOAT_MANTISSA_MASK);
+        } else {
+            // origin d is sub-normal, change mantissa to normal style
+            result = ((factor + FLOAT_EXPONENT_BIAS) << FLOAT_MANTISSA_BITS)
+                        | ((bits << (subNormalFactor + 1)) & FLOAT_MANTISSA_MASK);
+        }
+    }
+    return Int32BitsToFloat(result | sign);
+}
+
 Int32 Math::ShiftInt32Bits(
     /* [in] */ Int32 bits,
     /* [in] */ Int32 digits)
@@ -634,6 +804,35 @@ Int32 Math::ShiftInt32Bits(
             if ((ret & 0X1) == 1) {
                 ret = ret + 1;
             }
+        }
+    }
+    return ret;
+}
+
+Int64 Math::ShiftInt64Bits(
+    /* [in] */ Int64 bits,
+    /* [in] */ Int64 digits)
+{
+    if (digits > 0) {
+        return bits << digits;
+    }
+    // change it to positive
+    Int64 absdigits = -digits;
+    if (!(NumberOfLeadingZeros((Int64)(bits & ~DOUBLE_SIGN_MASK)) <= (64 - absdigits))) {
+        return 0;
+    }
+    Int64 ret = bits >> absdigits;
+    Boolean halfbit = ((bits >> (absdigits - 1)) & 0X1) == 1;
+    if (halfbit) {
+        // some bits will remain after shifting, calculates its carry
+        // subnormal
+        if (NumberOfTrailingZeros((Int64)bits) < (absdigits - 1)) {
+             ret = ret + 1;
+        }
+        if (NumberOfTrailingZeros((Int64)bits) == (absdigits - 1)) {
+             if ((ret & 0X1) == 1) {
+                 ret = ret + 1;
+             }
         }
     }
     return ret;
@@ -759,169 +958,6 @@ Int32 Math::NumberOfLeadingZeros(
     return n - ((UInt32)i >> 31);
 }
 
-Float Math::Signum(
-    /* [in] */ Float f)
-{
-    //check for NAN
-    if(IsNaN(f)){
-        return FLOAT_NAN;
-    }
-    Float sig = f;
-    if(f > 0){
-        sig = 1.0F;
-    }else if(f < 0){
-        sig = -1.0F;
-    }
-    return sig;
-}
-
-Float Math::Ulp(
-   /* [in] */ Float f)
-{
-    //special cases
-    if(IsNaN(f)){
-        return FLOAT_NAN;
-    }else if(IsInfinite(f)){
-        return FLOAT_POSITIVE_INFINITY;
-    }else if (f == FLOAT_MAX_VALUE || f == -FLOAT_MAX_VALUE) {
-        return (Float) pow(2, 104);
-    }
-
-    f = Abs(f);
-    Int32 hx = FloatToRawInt32Bits(f);
-    Int32 hy = FloatToRawInt32Bits(FLOAT_MAX_VALUE);
-    if ((hx & 0x7fffffff) == 0) { /* f == 0 */
-        return Int32BitsToFloat((hy & 0x80000000) | 0x1);
-    }
-    if ((hx > 0) ^ (hx > hy)) { /* |f| < |FLOAT_MAX_VALUE| */
-        hx += 1;
-    } else {
-        hx -= 1;
-    }
-    return Int32BitsToFloat(hx) - f;
-}
-
-Float Math::CopySign(
-    /* [in] */ Float magnitude,
-    /* [in] */ Float sign)
-{
-    Int32 magnitudeBits = FloatToRawInt32Bits(magnitude);
-    Int32 signBits = FloatToRawInt32Bits(sign);
-    magnitudeBits = (magnitudeBits & ~FLOAT_SIGN_MASK) | (signBits & FLOAT_SIGN_MASK);
-    return Int32BitsToFloat(magnitudeBits);
-}
-
-Float Math::NextAfter(
-    /* [in] */ Float start,
-    /* [in] */ Double direction)
-{
-    if(IsNaN(start) || IsNaN(direction)){
-        return FLOAT_NAN;
-    }
-    if(start == 0 && direction == 0){
-        return (Float)direction;
-    }
-    if ((start == FLOAT_MIN_VALUE && direction < start)
-                 || (start == -FLOAT_MIN_VALUE && direction > start)) {
-            return ((start > 0) ? 0.0F : -0.0F);
-    }
-    if (IsInfinite(start) && (direction != start)) {
-          return (start > 0 ? FLOAT_MAX_VALUE : -FLOAT_MAX_VALUE);
-    }
-    if ((start == FLOAT_MAX_VALUE && direction > start)
-                 || (start == -FLOAT_MAX_VALUE && direction < start)) {
-            return (start > 0 ? FLOAT_POSITIVE_INFINITY : FLOAT_NEGATIVE_INFINITY);
-    }
-    if (direction > start) {
-        if (start > 0) {
-            return Int32BitsToFloat(FloatToInt32Bits(start) + 1);
-        }
-        if (start < 0) {
-            return Int32BitsToFloat(FloatToInt32Bits(start) - 1);
-        }
-        return +FLOAT_MIN_VALUE;
-    }
-    if (direction < start) {
-        if (start > 0) {
-            return Int32BitsToFloat(FloatToInt32Bits(start) - 1);
-        }
-        if (start < 0) {
-            return Int32BitsToFloat(FloatToInt32Bits(start) + 1);
-        }
-        return -FLOAT_MIN_VALUE;
-    }
-    return (Float)direction;
-}
-
-Float Math::NextUp(
-    /* [in] */ Float f)
-{
-    if(IsNaN(f)){
-        return FLOAT_NAN;
-    }
-    if(f == FLOAT_POSITIVE_INFINITY){
-        return FLOAT_POSITIVE_INFINITY;
-    }
-    if(f == 0){
-        return FLOAT_MIN_VALUE;
-    }else if(f > 0){
-        return Int32BitsToFloat(FloatToInt32Bits(f) + 1);
-    }else{
-        return Int32BitsToFloat(FloatToInt32Bits(f) - 1);
-    }
-}
-
-Float Math::Scalb(
-    /* [in] */ Float d,
-    /* [in] */ Int32 scaleFactor)
-{
-    if ((IsNaN(d)) || IsInfinite(d) || d == 0) {
-        return d;
-    }
-    Int32 bits = FloatToInt32Bits(d);
-    Int32 sign = bits & FLOAT_SIGN_MASK;
-    Int32 factor = ((bits & FLOAT_EXPONENT_MASK) >> FLOAT_MANTISSA_BITS)
-                - FLOAT_EXPONENT_BIAS + scaleFactor;
-    // calcutes the factor of sub-normal values
-    Int32 subNormalFactor = NumberOfLeadingZeros((Int32)(bits & ~FLOAT_SIGN_MASK))
-                - FLOAT_NON_MANTISSA_BITS;
-    if (subNormalFactor < 0) {
-    // not sub-normal values
-        subNormalFactor = 0;
-    } else {
-           factor = factor - subNormalFactor;
-    }
-    if (factor > FLOAT_MAX_EXPONENT) {
-           return (d > 0 ? FLOAT_POSITIVE_INFINITY : FLOAT_NEGATIVE_INFINITY);
-    }
-
-    Int32 result;
-    // if result is a sub-normal
-    if (factor <= -FLOAT_EXPONENT_BIAS) {
-        // the number of digits that shifts
-        Int32 digits = factor + FLOAT_EXPONENT_BIAS + subNormalFactor;
-        if (Abs(d) < FLOAT_MIN_NORMAL) {
-            // origin d is already sub-normal
-            result = ShiftInt32Bits(bits & FLOAT_MANTISSA_MASK, digits);
-        } else {
-            // origin d is not sub-normal, change mantissa to sub-normal
-            result = ShiftInt32Bits((bits & FLOAT_MANTISSA_MASK) | 0X00800000, digits - 1);
-        }
-    } else {
-        if (Abs(d) >= FLOAT_MIN_NORMAL) {
-            // common situation
-            result = ((factor + FLOAT_EXPONENT_BIAS) << FLOAT_MANTISSA_BITS)
-                        | (bits & FLOAT_MANTISSA_MASK);
-        } else {
-            // origin d is sub-normal, change mantissa to normal style
-            result = ((factor + FLOAT_EXPONENT_BIAS) << FLOAT_MANTISSA_BITS)
-                        | ((bits << (subNormalFactor + 1)) & FLOAT_MANTISSA_MASK);
-        }
-    }
-    return Int32BitsToFloat(result | sign);
-
-}
-
 Boolean Math::IsNaN(
     /* [in] */ Float f)
 {
@@ -968,40 +1004,11 @@ Float Math::Int32BitsToFloat(
     return convert.ff;
 }
 
-Float Math::Nextafterf(
+Float Math::NativeNextAfter(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
     return nextafterf(x,y);
-}
-
-Int64 Math::ShiftInt64Bits(
-    /* [in] */ Int64 bits,
-    /* [in] */ Int64 digits)
-{
-    if (digits > 0) {
-        return bits << digits;
-    }
-    // change it to positive
-    Int64 absdigits = -digits;
-    if (!(NumberOfLeadingZeros((Int64)(bits & ~DOUBLE_SIGN_MASK)) <= (64 - absdigits))) {
-        return 0;
-    }
-    Int64 ret = bits >> absdigits;
-    Boolean halfbit = ((bits >> (absdigits - 1)) & 0X1) == 1;
-    if (halfbit) {
-        // some bits will remain after shifting, calculates its carry
-        // subnormal
-        if (NumberOfTrailingZeros((Int64)bits) < (absdigits - 1)) {
-             ret = ret + 1;
-        }
-        if (NumberOfTrailingZeros((Int64)bits) == (absdigits - 1)) {
-             if ((ret & 0X1) == 1) {
-                 ret = ret + 1;
-             }
-        }
-    }
-    return ret;
 }
 
 Int32 Math::BitCount(

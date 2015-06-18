@@ -920,8 +920,9 @@ ECode Instrumentation::NewApplication(
     *app = NULL;
     VALIDATE_NOT_NULL(clazz)
 
-    AutoPtr<IApplication> _app;
-    FAIL_RETURN(clazz->CreateObject((IInterface**)&_app))
+    AutoPtr<IInterface> obj;
+    FAIL_RETURN(clazz->CreateObject((IInterface**)&obj))
+    IApplication* _app = IApplication::Probe(obj);
     if (_app) FAIL_RETURN(_app->Attach(context))
     *app = _app;
     INTERFACE_ADDREF(*app)
@@ -935,8 +936,9 @@ ECode Instrumentation::NewApplication(
 {
     VALIDATE_NOT_NULL(app)
     *app = NULL;
-    AutoPtr<IApplication> _app;
-    FAIL_RETURN(_CObject_CreateInstance(clsid, RGM_SAME_DOMAIN, EIID_IApplication, (IInterface**)&_app))
+    AutoPtr<IInterface> obj;
+    FAIL_RETURN(_CObject_CreateInstance(clsid, RGM_SAME_DOMAIN, EIID_IApplication, (IInterface**)&obj))
+    IApplication* _app = IApplication::Probe(obj);
     if (_app) FAIL_RETURN(_app->Attach(context))
     *app = _app;
     INTERFACE_ADDREF(*app)
@@ -964,15 +966,16 @@ ECode Instrumentation::NewActivity(
 {
     VALIDATE_NOT_NULL(activity)
     *activity = NULL;
-    AutoPtr<IActivity> obj;
+    AutoPtr<IInterface> obj;
     FAIL_RETURN(clazz->CreateObject((IInterface**)&obj))
+    IActivity* actObj = IActivity::Probe(obj);
     AutoPtr<IConfiguration> config;
     CConfiguration::New((IConfiguration**)&config);
-    AutoPtr<Activity> act = reinterpret_cast<Activity*>(obj->Probe(EIID_Activity));
+    AutoPtr<Activity> act = reinterpret_cast<Activity*>(actObj->Probe(EIID_Activity));
     FAIL_RETURN(act->Attach(
             context, NULL, (IInstrumentation*)this->Probe(EIID_IInstrumentation), token, application, intent,
             info, title, parent, id, lastNonConfigurationInstance, config))
-    *activity = obj;
+    *activity = actObj;
     INTERFACE_ADDREF(*activity)
     return NOERROR;
 }
@@ -987,9 +990,9 @@ ECode Instrumentation::NewActivityEx(
     *activity = NULL;
     AutoPtr<IClassInfo> clsInfo;
     FAIL_RETURN(cl->LoadClass(className, (IClassInfo**)&clsInfo))
-    AutoPtr<IActivity> obj;
+    AutoPtr<IInterface> obj;
     FAIL_RETURN(clsInfo->CreateObject((IInterface**)&obj))
-    *activity = obj;
+    *activity = IActivity::Probe(obj);
     INTERFACE_ADDREF(*activity)
     return NOERROR;
 }

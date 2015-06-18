@@ -304,7 +304,7 @@ ECode CNamespaceSupport::Context::DeclarePrefix(
 
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(prefix, (ICharSequence**)&seq);
-    ICollection::Probe(mDeclarations)->Add(seq);
+    return ICollection::Probe(mDeclarations)->Add(seq);
 }
 
 AutoPtr< ArrayOf<String> > CNamespaceSupport::Context::ProcessName (

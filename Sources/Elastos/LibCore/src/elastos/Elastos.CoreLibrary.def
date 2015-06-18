@@ -218,12 +218,12 @@ EXPORTS
 #endif
 
     ;;Math
-    _ZN7Elastos4Core4Math10DOUBLE_NANE
     _ZN7Elastos4Core4Math10FLOAT_ZEROE
     _ZN7Elastos4Core4Math10IsInfiniteEd
     _ZN7Elastos4Core4Math10IsInfiniteEf
     _ZN7Elastos4Core4Math11DOUBLE_ZEROE
     _ZN7Elastos4Core4Math11GetExponentEd
+    _ZN7Elastos4Core4Math11GetExponentEf
     _ZN7Elastos4Core4Math12ReverseBytesEi
     _ZN7Elastos4Core4Math13HighestOneBitEi
     _ZN7Elastos4Core4Math13IEEEremainderEdd
@@ -238,7 +238,6 @@ EXPORTS
     _ZN7Elastos4Core4Math15INT32_MIN_VALUEE
     _ZN7Elastos4Core4Math15INT64_MAX_VALUEE
     _ZN7Elastos4Core4Math15INT64_MIN_VALUEE
-    _ZN7Elastos4Core4Math15IntegerNtzTableE
     _ZN7Elastos4Core4Math15LongPowersOfTenE
     _ZN7Elastos4Core4Math16DOUBLE_MAX_VALUEE
     _ZN7Elastos4Core4Math16DOUBLE_MIN_VALUEE
@@ -259,6 +258,7 @@ EXPORTS
     _ZN7Elastos4Core4Math19FLOAT_MANTISSA_BITSE
     _ZN7Elastos4Core4Math19FLOAT_MANTISSA_MASKE
     _ZN7Elastos4Core4Math19FloatToRawInt32BitsEf
+    _ZN7Elastos4Core4Math1EE
     _ZN7Elastos4Core4Math20DOUBLE_EXPONENT_BIASE
     _ZN7Elastos4Core4Math20DOUBLE_EXPONENT_BITSE
     _ZN7Elastos4Core4Math20DOUBLE_EXPONENT_MASKE
@@ -275,6 +275,7 @@ EXPORTS
     _ZN7Elastos4Core4Math24DOUBLE_NEGATIVE_INFINITYE
     _ZN7Elastos4Core4Math24DOUBLE_NON_MANTISSA_BITSE
     _ZN7Elastos4Core4Math24DOUBLE_POSITIVE_INFINITYE
+    _ZN7Elastos4Core4Math2PIE
     _ZN7Elastos4Core4Math3AbsEd
     _ZN7Elastos4Core4Math3AbsEf
     _ZN7Elastos4Core4Math3AbsEi
@@ -332,14 +333,71 @@ EXPORTS
     _ZN7Elastos4Core4Math8BitCountEx
     _ZN7Elastos4Core4Math8CopySignEdd
     _ZN7Elastos4Core4Math8CopySignEff
-    _ZN7Elastos4Core4Math8DOUBLE_EE
     _ZN7Elastos4Core4Math9ConstrainEfff
     _ZN7Elastos4Core4Math9ConstrainEiii
     _ZN7Elastos4Core4Math9ConstrainExxx
-    _ZN7Elastos4Core4Math9DOUBLE_PIE
-    _ZN7Elastos4Core4Math9FLOAT_NANE
+    _ZN7Elastos4Core4Math9NextAfterEdd
+    _ZN7Elastos4Core4Math9NextAfterEfd
     _ZN7Elastos4Core4Math9ToDegreesEd
     _ZN7Elastos4Core4Math9ToRadiansEd
+
+    ;;StrictMath
+    _ZN7Elastos4Core10StrictMath11GetExponentEd
+    _ZN7Elastos4Core10StrictMath11GetExponentEf
+    _ZN7Elastos4Core10StrictMath13IEEEremainderEdd
+    _ZN7Elastos4Core10StrictMath1EE
+    _ZN7Elastos4Core10StrictMath2PIE
+    _ZN7Elastos4Core10StrictMath3AbsEd
+    _ZN7Elastos4Core10StrictMath3AbsEf
+    _ZN7Elastos4Core10StrictMath3AbsEi
+    _ZN7Elastos4Core10StrictMath3AbsEx
+    _ZN7Elastos4Core10StrictMath3CosEd
+    _ZN7Elastos4Core10StrictMath3ExpEd
+    _ZN7Elastos4Core10StrictMath3LogEd
+    _ZN7Elastos4Core10StrictMath3MaxEdd
+    _ZN7Elastos4Core10StrictMath3MaxEff
+    _ZN7Elastos4Core10StrictMath3MaxEii
+    _ZN7Elastos4Core10StrictMath3MaxExx
+    _ZN7Elastos4Core10StrictMath3MinEdd
+    _ZN7Elastos4Core10StrictMath3MinEff
+    _ZN7Elastos4Core10StrictMath3MinEii
+    _ZN7Elastos4Core10StrictMath3MinExx
+    _ZN7Elastos4Core10StrictMath3PowEdd
+    _ZN7Elastos4Core10StrictMath3SinEd
+    _ZN7Elastos4Core10StrictMath3TanEd
+    _ZN7Elastos4Core10StrictMath3UlpEd
+    _ZN7Elastos4Core10StrictMath3UlpEf
+    _ZN7Elastos4Core10StrictMath4AcosEd
+    _ZN7Elastos4Core10StrictMath4AsinEd
+    _ZN7Elastos4Core10StrictMath4AtanEd
+    _ZN7Elastos4Core10StrictMath4CbrtEd
+    _ZN7Elastos4Core10StrictMath4CeilEd
+    _ZN7Elastos4Core10StrictMath4CoshEd
+    _ZN7Elastos4Core10StrictMath4RintEd
+    _ZN7Elastos4Core10StrictMath4SinhEd
+    _ZN7Elastos4Core10StrictMath4SqrtEd
+    _ZN7Elastos4Core10StrictMath4TanhEd
+    _ZN7Elastos4Core10StrictMath5Atan2Edd
+    _ZN7Elastos4Core10StrictMath5Expm1Ed
+    _ZN7Elastos4Core10StrictMath5FloorEd
+    _ZN7Elastos4Core10StrictMath5HypotEdd
+    _ZN7Elastos4Core10StrictMath5Log10Ed
+    _ZN7Elastos4Core10StrictMath5Log1pEd
+    _ZN7Elastos4Core10StrictMath5RoundEd
+    _ZN7Elastos4Core10StrictMath5RoundEf
+    _ZN7Elastos4Core10StrictMath5ScalbEdi
+    _ZN7Elastos4Core10StrictMath5ScalbEfi
+    _ZN7Elastos4Core10StrictMath6NextUpEd
+    _ZN7Elastos4Core10StrictMath6NextUpEf
+    _ZN7Elastos4Core10StrictMath6RandomEv
+    _ZN7Elastos4Core10StrictMath6SignumEd
+    _ZN7Elastos4Core10StrictMath6SignumEf
+    _ZN7Elastos4Core10StrictMath8CopySignEdd
+    _ZN7Elastos4Core10StrictMath8CopySignEff
+    _ZN7Elastos4Core10StrictMath9NextAfterEdd
+    _ZN7Elastos4Core10StrictMath9NextAfterEfd
+    _ZN7Elastos4Core10StrictMath9ToDegreesEd
+    _ZN7Elastos4Core10StrictMath9ToRadiansEd
 
     ;;Character
     _ZN7Elastos4Core9Character10IsMirroredEj
@@ -675,6 +733,11 @@ EXPORTS
     _ZN7Elastos4Core11StringUtils8ToStringEf
     _ZN7Elastos4Core11StringUtils8ToStringEii
     _ZN7Elastos4Core11StringUtils8ToStringExi
+
+    ;;AbstractStringBuilder
+    _ZN7Elastos4Core21AbstractStringBuilder9GetLengthEv
+    _ZN7Elastos4Core21AbstractStringBuilder12GetByteCountEv
+    _ZN7Elastos4Core21AbstractStringBuilder11GetCapacityEv
 
     ;;StringBuilder
     _ZN7Elastos4Core13StringBuilder10AppendCharEj
@@ -1052,10 +1115,15 @@ EXPORTS
     _ZN7Elastos7Utility6Arrays11GetHashCodeEPNS_7ArrayOfIfEE
     _ZN7Elastos7Utility6Arrays11GetHashCodeEPNS_7ArrayOfIhEE
     _ZN7Elastos7Utility6Arrays11GetHashCodeEPNS_7ArrayOfIxEE
+    _ZN7Elastos7Utility6Arrays11GetHashCodeERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEE
     _ZN7Elastos7Utility6Arrays12BinarySearchEPNS_7ArrayOfIP10IInterfaceEES4_PNS_4Core11IComparatorEPi
     _ZN7Elastos7Utility6Arrays12BinarySearchEPNS_7ArrayOfIP10IInterfaceEES4_Pi
     _ZN7Elastos7Utility6Arrays12BinarySearchEPNS_7ArrayOfIP10IInterfaceEEiiS4_PNS_4Core11IComparatorEPi
     _ZN7Elastos7Utility6Arrays12BinarySearchEPNS_7ArrayOfIP10IInterfaceEEiiS4_Pi
+    _ZN7Elastos7Utility6Arrays12BinarySearchERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEES5_PNS_4Core11IComparatorEPi
+    _ZN7Elastos7Utility6Arrays12BinarySearchERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEES5_Pi
+    _ZN7Elastos7Utility6Arrays12BinarySearchERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEEiiS5_PNS_4Core11IComparatorEPi
+    _ZN7Elastos7Utility6Arrays12BinarySearchERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEEiiS5_Pi
     ;;_ZN7Elastos7Utility6Arrays12DeepToStringEP10IInterfacePNS_4Core8IArrayOfERNS4_13StringBuilderE
     ;;_ZN7Elastos7Utility6Arrays12DeepToStringEP10IInterfacePNS_7ArrayOfIS3_EERNS_4Core13StringBuilderE
     _ZN7Elastos7Utility6Arrays12DeepToStringEPNS_7ArrayOfIP10IInterfaceEE
@@ -1070,11 +1138,19 @@ EXPORTS
     _ZN7Elastos7Utility6Arrays4SortEPNS_7ArrayOfIP10IInterfaceEEPNS_4Core11IComparatorE
     _ZN7Elastos7Utility6Arrays4SortEPNS_7ArrayOfIP10IInterfaceEEii
     _ZN7Elastos7Utility6Arrays4SortEPNS_7ArrayOfIP10IInterfaceEEiiPNS_4Core11IComparatorE
+    _ZN7Elastos7Utility6Arrays4SortERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEE
+    _ZN7Elastos7Utility6Arrays4SortERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEEPNS_4Core11IComparatorE
+    _ZN7Elastos7Utility6Arrays4SortERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEEii
+    _ZN7Elastos7Utility6Arrays4SortERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEEiiPNS_4Core11IComparatorE
     _ZN7Elastos7Utility6Arrays6AsListEPNS_7ArrayOfIP10IInterfaceEEPPNS0_5IListE
+    _ZN7Elastos7Utility6Arrays6EqualsEPNS_7ArrayOfIP10IInterfaceEERNS_7AutoPtrIS5_EE
     _ZN7Elastos7Utility6Arrays6EqualsEPNS_7ArrayOfIP10IInterfaceEES6_
     _ZN7Elastos7Utility6Arrays6EqualsEPNS_7ArrayOfIdEES4_
     _ZN7Elastos7Utility6Arrays6EqualsEPNS_7ArrayOfIfEES4_
+    _ZN7Elastos7Utility6Arrays6EqualsERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEEPS6_
+    _ZN7Elastos7Utility6Arrays6EqualsERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEES8_
     _ZN7Elastos7Utility6Arrays8ToStringEPNS_7ArrayOfIjEE
+
 
     ;;DualPivotQuicksort
     ;;_ZN7Elastos7Utility18DualPivotQuicksort11FindAnyZeroEPNS_7ArrayOfIdEEii
