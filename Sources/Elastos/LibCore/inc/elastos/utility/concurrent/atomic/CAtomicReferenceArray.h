@@ -2,11 +2,12 @@
 #ifndef __ELASTOS_UTILITY_CATOMICREFERENCEARRAY_H__
 #define __ELASTOS_UTILITY_CATOMICREFERENCEARRAY_H__
 
-#include "_Elastos_Utility_Concurrent_CAtomicReferenceArray.h"
+#include "_Elastos_Utility_Concurrent_Atomic_CAtomicReferenceArray.h"
 #include "Object.h"
 
 using Elastos::Core::Object;
 using Elastos::IO::IObjectInputStream;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -16,6 +17,7 @@ namespace Atomic {
 CarClass(CAtomicReferenceArray)
     , public Object
     , public IAtomicReferenceArray
+    , public ISerializable
 {
 public:
     CAR_INTERFACE_DECL()

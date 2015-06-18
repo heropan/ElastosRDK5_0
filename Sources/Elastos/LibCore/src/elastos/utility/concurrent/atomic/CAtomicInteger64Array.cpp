@@ -3,6 +3,7 @@
 #include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -15,7 +16,7 @@ const Int32 CAtomicInteger64Array::sBase = 0; // = unsafe.arrayBaseOffset(long[]
 
 const Int32 CAtomicInteger64Array::sShift = 0;
 
-CAR_INTERFACE_IMPL(CAtomicInteger64Array, Object, IAtomicInteger64Array)
+CAR_INTERFACE_IMPL_2(CAtomicInteger64Array, Object, IAtomicInteger64Array, ISerializable)
 
 CAR_OBJECT_IMPL(CAtomicInteger64Array)
 
@@ -189,7 +190,7 @@ ECode CAtomicInteger64Array::ToString(
     StringBuilder b;
     b.AppendChar('[');
     for (Int32 i = 0; ; i++) {
-        b.AppendInt64(GetRaw(ByteOffset(i)));
+        b.Append(GetRaw(ByteOffset(i)));
         if (i == iMax) {
             b.AppendChar(']');
             *str = b.ToString();

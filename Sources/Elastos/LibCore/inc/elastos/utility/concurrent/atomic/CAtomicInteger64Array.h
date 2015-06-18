@@ -2,10 +2,11 @@
 #ifndef __ELASTOS_UTILITY_CATOMICINTEGER64_H__
 #define __ELASTOS_UTILITY_CATOMICINTEGER64_H__
 
-#include "_Elastos_Utility_CAtomicInteger64Array.h"
+#include "_Elastos_Utility_Concurrent_Atomic_CAtomicInteger64Array.h"
 #include "Object.h"
 
 using Elastos::Core::Object;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -15,6 +16,7 @@ namespace Atomic {
 CarClass(CAtomicInteger64Array)
     , public Object
     , public IAtomicInteger64Array
+    , public ISerializable
 {
 public:
     CAR_INTERFACE_DECL()

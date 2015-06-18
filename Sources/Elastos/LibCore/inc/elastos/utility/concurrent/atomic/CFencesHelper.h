@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_UTILITY_CFENCES_H__
 #define __ELASTOS_UTILITY_CFENCES_H__
 
-#include "_Elastos_Utility_Concurrent_CFencesHelper.h"
+#include "_Elastos_Utility_Concurrent_Atomic_CFencesHelper.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Core::Singleton;

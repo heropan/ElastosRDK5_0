@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_UTILITY_CATOMICSTAMPEDREFRERNCE_H__
 #define __ELASTOS_UTILITY_CATOMICSTAMPEDREFRERNCE_H__
 
-#include "_Elastos_Utility_Concurrent_CAtomicStampedReference.h"
+#include "_Elastos_Utility_Concurrent_Atomic_CAtomicStampedReference.h"
 #include "Object.h"
 
 using Elastos::Core::Object;

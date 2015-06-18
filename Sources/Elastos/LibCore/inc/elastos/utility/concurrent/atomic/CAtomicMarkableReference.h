@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_UTILITY_CATOMICMARKABLEREFERENCE_H__
 #define __ELASTOS_UTILITY_CATOMICMARKABLEREFERENCE_H__
 
-#include "_Elastos_Utility_Concurrent_CAtomicMarkableReference.h"
+#include "_Elastos_Utility_Concurrent_Atomic_CAtomicMarkableReference.h"
 #include "Object.h"
 
 using Elastos::Core::Object;
