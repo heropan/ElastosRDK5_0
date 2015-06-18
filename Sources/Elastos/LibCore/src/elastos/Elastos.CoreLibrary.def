@@ -416,7 +416,7 @@ EXPORTS
     _ZN7Elastos4Core9Character11ToUpperCaseEj
     _ZN7Elastos4Core9Character12GetByteCountEj
     _ZN7Elastos4Core9Character12GetCharCountERKNS_6StringEiiPi
-    _ZN7Elastos4Core9Character12GetCharCountERKNS_7ArrayOfIcEEiiPi
+    _ZN7Elastos4Core9Character12GetCharCountERKNS_7ArrayOfIhEEiiPi
     _ZN7Elastos4Core9Character12IsISOControlEj
     _ZN7Elastos4Core9Character12IsWhitespaceEj
     _ZN7Elastos4Core9Character12OTHER_LETTERE
@@ -558,7 +558,7 @@ EXPORTS
     _ZN7Elastos4Core9Character12UnicodeBlockD1Ev
     _ZN7Elastos4Core9Character12UnicodeBlockD2Ev
     _ZN7Elastos4Core9Character13GetCharBeforeERKNS_6StringEiPj
-    _ZN7Elastos4Core9Character13GetCharBeforeERKNS_7ArrayOfIcEEiPj
+    _ZN7Elastos4Core9Character13GetCharBeforeERKNS_7ArrayOfIhEEiPj
     _ZN7Elastos4Core9Character13LETTER_NUMBERE
     _ZN7Elastos4Core9Character13MAX_SURROGATEE
     _ZN7Elastos4Core9Character13MIN_SURROGATEE
@@ -579,7 +579,7 @@ EXPORTS
     _ZN7Elastos4Core9Character15SPACE_SEPARATORE
     _ZN7Elastos4Core9Character16DASH_PUNCTUATIONE
     _ZN7Elastos4Core9Character16GetOffsetByCharsERKNS_6StringEiiPi
-    _ZN7Elastos4Core9Character16GetOffsetByCharsERKNS_7ArrayOfIcEEiiiiPi
+    _ZN7Elastos4Core9Character16GetOffsetByCharsERKNS_7ArrayOfIhEEiiiiPi
     _ZN7Elastos4Core9Character16LOWERCASE_LETTERE
     _ZN7Elastos4Core9Character16NON_SPACING_MARKE
     _ZN7Elastos4Core9Character16TITLECASE_LETTERE
@@ -635,14 +635,14 @@ EXPORTS
     _ZN7Elastos4Core9Character7GetTypeEj
     _ZN7Elastos4Core9Character7IsDigitEj
     _ZN7Elastos4Core9Character7IsSpaceEj
-    _ZN7Elastos4Core9Character7ToCharsERKNS_7ArrayOfIjEEiiPPNS2_IcEEPi
-    _ZN7Elastos4Core9Character7ToCharsEjPPNS_7ArrayOfIcEE
-    _ZN7Elastos4Core9Character7ToCharsEjRNS_7ArrayOfIcEEiPi
+    _ZN7Elastos4Core9Character7ToCharsERKNS_7ArrayOfIjEEiiPPNS2_IhEEPi
+    _ZN7Elastos4Core9Character7ToCharsEjPPNS_7ArrayOfIhEE
+    _ZN7Elastos4Core9Character7ToCharsEjRNS_7ArrayOfIhEEiPi
     _ZN7Elastos4Core9Character7ToDigitEji
     _ZN7Elastos4Core9Character8ForDigitEii
     _ZN7Elastos4Core9Character8IsLetterEj
     _ZN7Elastos4Core9Character9GetCharAtEPKciiPi
-    _ZN7Elastos4Core9Character9GetCharAtERKNS_7ArrayOfIcEEiPjPi
+    _ZN7Elastos4Core9Character9GetCharAtERKNS_7ArrayOfIhEEiPjPi
     _ZN7Elastos4Core9Character9IsDefinedEj
     _ZN7Elastos4Core9Character9MAX_RADIXE
     _ZN7Elastos4Core9Character9MIN_RADIXE
