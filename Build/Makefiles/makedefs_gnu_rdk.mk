@@ -357,7 +357,7 @@ ifeq "$(XDK_TARGET_CPU)" "x86"
   C_FLAGS := -mno-align-double $(C_FLAGS)
 endif
 ifeq "$(XDK_VERSION)" "rls"
-  C_FLAGS:= -Os $(C_FLAGS)
+  C_FLAGS:= -Os -fno-strict-aliasing $(C_FLAGS)
   C_DEFINES:= -D_RELEASE -DNDEBUG $(C_DEFINES)
   LINK_FLAGS:= -O3 $(LINK_FLAGS)
 endif
