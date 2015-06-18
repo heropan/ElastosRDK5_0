@@ -178,14 +178,6 @@ ECode CArgumentList::SetInputArgumentOfDouble(
     return SetParamValue(index, &value, CarDataType_Double, ParamIOAttribute_In);
 }
 
-ECode CArgumentList::SetInputArgumentOfChar8(
-    /* [in] */ Int32 index,
-    /* [in] */ Char8 value)
-{
-    UInt32 nParam = value;
-    return SetParamValue(index, &nParam, CarDataType_Char8, ParamIOAttribute_In);
-}
-
 ECode CArgumentList::SetInputArgumentOfChar16(
     /* [in] */ Int32 index,
     /* [in] */ Char16 value)
@@ -359,14 +351,6 @@ ECode CArgumentList::SetOutputArgumentOfDoublePtr(
     /* [out] */ Double * pValue)
 {
     return SetParamValue(index, &pValue, CarDataType_Double,
-        ParamIOAttribute_CallerAllocOut, 1);
-}
-
-ECode CArgumentList::SetOutputArgumentOfChar8Ptr(
-    /* [in] */ Int32 index,
-    /* [out] */ Char8 * pValue)
-{
-    return SetParamValue(index, &pValue, CarDataType_Char8,
         ParamIOAttribute_CallerAllocOut, 1);
 }
 

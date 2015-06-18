@@ -58,12 +58,6 @@ public:
     CARAPI WriteBoolean(
         /* [in] */ Boolean value);
 
-    CARAPI ReadChar8(
-        /* [out] */ Char8 *pValue);
-
-    CARAPI WriteChar8(
-        /* [in] */ Char8 value);
-
     CARAPI ReadChar16(
         /* [out] */ Char16 *pValue);
 

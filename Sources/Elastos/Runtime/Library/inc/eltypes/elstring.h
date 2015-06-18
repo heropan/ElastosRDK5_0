@@ -298,7 +298,7 @@ public:
         return byteCount;
     }
 
-    static AutoPtr<ArrayOf<Char8> > ToByteArray(Char32 c);
+    static AutoPtr<ArrayOf<Byte> > ToByteArray(Char32 c);
     static Char32 ToLowerCase(Char32 codePoint);
     static Char32 ToUpperCase(Char32 codePoint);
 

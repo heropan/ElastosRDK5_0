@@ -68,10 +68,6 @@ public:
         /* [in] */ Int32 index,
         /* [out] */ Double * pValue);
 
-    CARAPI GetChar8Argument(
-        /* [in] */ Int32 index,
-        /* [out] */ Char8 * pValue);
-
     CARAPI GetChar16Argument(
         /* [in] */ Int32 index,
         /* [out] */ Char16 * pValue);

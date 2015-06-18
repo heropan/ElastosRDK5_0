@@ -273,13 +273,6 @@ ECode CVariableOfStruct::SetDoubleField(
     return SetFieldValueByName(name, &value, CarDataType_Double);
 }
 
-ECode CVariableOfStruct::SetChar8Field(
-    /* [in] */ const String& name,
-    /* [in] */ Char8 value)
-{
-    return SetFieldValueByName(name, &value, CarDataType_Char8);
-}
-
 ECode CVariableOfStruct::SetChar16Field(
     /* [in] */ const String& name,
     /* [in] */ Char16 value)
@@ -451,13 +444,6 @@ ECode CVariableOfStruct::GetDoubleField(
     /* [out] */ Double * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Double);
-}
-
-ECode CVariableOfStruct::GetChar8Field(
-    /* [in] */ const String& name,
-    /* [out] */ Char8 * pValue)
-{
-    return GetFieldValueByName(name, pValue, CarDataType_Char8);
 }
 
 ECode CVariableOfStruct::GetChar16Field(

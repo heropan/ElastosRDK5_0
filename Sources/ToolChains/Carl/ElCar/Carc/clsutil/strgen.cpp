@@ -39,9 +39,6 @@ void GenerateTypeString(
     char buf[32];
 
     switch (pType->type) {
-        case Type_Char8:
-            strcat(pszBuf, "Char8");
-            break;
         case Type_Char16:
             strcat(pszBuf, "Char16");
             break;
@@ -201,9 +198,6 @@ void GenerateTypeStringForParam(
     }
 
     switch (pType->type) {
-        case Type_Char8:
-            strcat(pszBuf, "Char8");
-            break;
         case Type_Char16:
             strcat(pszBuf, "Char16");
             break;

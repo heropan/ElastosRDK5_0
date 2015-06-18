@@ -64,10 +64,6 @@ public:
         /* [in] */ Int32 index,
         /* [in] */ Double value);
 
-    CARAPI SetChar8Element(
-        /* [in] */ Int32 index,
-        /* [in] */ Char8 value);
-
     CARAPI SetChar16Element(
         /* [in] */ Int32 index,
         /* [in] */ Char16 value);
@@ -148,10 +144,6 @@ public:
     CARAPI GetDoubleElement(
         /* [in] */ Int32 index,
         /* [out] */ Double * pValue);
-
-    CARAPI GetChar8Element(
-        /* [in] */ Int32 index,
-        /* [out] */ Char8 * pValue);
 
     CARAPI GetChar16Element(
         /* [in] */ Int32 index,

@@ -13,8 +13,8 @@ const DateTypeDesc g_cDataTypeList[] = {
    {"Byte",          sizeof(Byte),     },
    {"Float",         sizeof(Float),    },
    {"Double",        sizeof(Double),   },
-   {"Char8",         sizeof(Char8),    },
    {"Char16",        sizeof(Char16),   },
+   {"Char32",        sizeof(Char32),   },
    {"String",        sizeof(String),   },
    {"Boolean",       sizeof(Boolean),  },
    {"EMuid",         sizeof(EMuid),    },
@@ -53,9 +53,6 @@ CarDataType GetCarDataType(CARDataType type)
             break;
         case Type_Double:
             dataType = CarDataType_Double;
-            break;
-        case Type_Char8:
-            dataType = CarDataType_Char8;
             break;
         case Type_Char16:
             dataType = CarDataType_Char16;
@@ -156,9 +153,6 @@ UInt32 GetDataTypeSize(const CClsModule *pCClsModule, TypeDescriptor *pTypeDesc)
     StructDirEntry* pStructDir = NULL;
     Int32 nBase = pCClsModule->m_nBase;
     switch (pTypeDesc->type) {
-        case Type_Char8:
-            uSize = sizeof(Char8);
-            break;
         case Type_Char16:
             uSize = sizeof(Char16);
             break;
@@ -272,9 +266,6 @@ UInt32 GetDataTypeSize(const CClsModule *pCClsModule, TypeDescriptor *pTypeDesc)
 //        case Type_DoubleArray_:
 //            type = Type_Double;
 //            break;
-//        case Type_Char8Array_:
-//            type = Type_Char8;
-//            break;
 //        case Type_Char16Array_:
 //            type = Type_Char16;
 //            break;
@@ -334,9 +325,6 @@ CarQuintetFlag DataTypeToFlag(CarDataType type)
             break;
         case CarDataType_Double:
             flag = CarQuintetFlag_Type_Double;
-            break;
-        case CarDataType_Char8:
-            flag = CarQuintetFlag_Type_Char8;
             break;
         case CarDataType_Char16:
             flag = CarQuintetFlag_Type_Char16;

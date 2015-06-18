@@ -66,7 +66,6 @@ typedef void * PVoid;
 typedef signed char Int8;
 typedef unsigned char UInt8;
 typedef UInt8 Byte;
-typedef char Char8;
 typedef unsigned short Char16;
 typedef unsigned int Char32;
 typedef signed short Int16;
@@ -86,7 +85,6 @@ typedef unsigned char Boolean;
 typedef Int32 ECode;
 /** @} */
 
-typedef Char8 *PChar8;
 typedef Char16 *PChar16;
 typedef Char32 *PChar32;
 typedef Int8 *PInt8;

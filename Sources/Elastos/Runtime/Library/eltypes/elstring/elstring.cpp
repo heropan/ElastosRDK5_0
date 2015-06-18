@@ -458,16 +458,16 @@ void String::WriteUTFBytesToBuffer(Byte* dstP, Char32 srcChar, Int32 bytes)
     }
 }
 
-AutoPtr<ArrayOf<Char8> > String::ToByteArray(Char32 ch)
+AutoPtr<ArrayOf<Byte> > String::ToByteArray(Char32 ch)
 {
-    AutoPtr<ArrayOf<Char8> > array;
+    AutoPtr<ArrayOf<Byte> > array;
     if (!IsValidChar(ch)) {
-        array = ArrayOf<Char8>::Alloc(0);
+        array = ArrayOf<Byte>::Alloc(0);
         return array;
     }
 
     Int32 bytes = GetByteCount(ch);
-    array = ArrayOf<Char8>::Alloc(bytes);
+    array = ArrayOf<Byte>::Alloc(bytes);
     WriteUTFBytesToBuffer((Byte*)(array->GetPayload()), ch, bytes);
     return array;
 }
@@ -526,7 +526,7 @@ ECode String::Append(Char32 ch)
 {
     if (!IsValidChar(ch)) return E_INVALID_ARGUMENT;
 
-    AutoPtr<ArrayOf<Char8> > buf = ToByteArray(ch);
+    AutoPtr<ArrayOf<Byte> > buf = ToByteArray(ch);
     if (buf && buf->GetLength() > 0)
         return Append((const char*)buf->GetPayload(), buf->GetLength());
     return NOERROR;
@@ -694,7 +694,7 @@ ECode String::Append(const ArrayOf<Char32>& array, UInt32 offset, UInt32 length)
 
     if (totalByteLength == 0) return NOERROR;
 
-    AutoPtr<ArrayOf<Char8> > byteArray = ArrayOf<Char8>::Alloc(totalByteLength);
+    AutoPtr<ArrayOf<Byte> > byteArray = ArrayOf<Byte>::Alloc(totalByteLength);
     if (byteArray == NULL) return E_OUT_OF_MEMORY;
 
     Byte* p = (Byte*)(byteArray->GetPayload());

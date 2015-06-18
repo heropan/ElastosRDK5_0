@@ -45,21 +45,20 @@ library
         CarDataType_Byte        = 4,
         CarDataType_Float       = 5,
         CarDataType_Double      = 6,
-        CarDataType_Char8       = 7,
-        CarDataType_Char16      = 8,
-        CarDataType_Char32      = 9,
-        CarDataType_String      = 10,
-        CarDataType_Boolean     = 11,
-        CarDataType_EMuid       = 12,
-        CarDataType_EGuid       = 13,
-        CarDataType_ECode       = 14,
-        CarDataType_LocalPtr    = 15,
-        CarDataType_LocalType   = 16,
-        CarDataType_Enum        = 17,
-        CarDataType_ArrayOf     = 18,
-        CarDataType_CppVector   = 19,
-        CarDataType_Struct      = 20,
-        CarDataType_Interface   = 21
+        CarDataType_Char16      = 7,
+        CarDataType_Char32      = 8,
+        CarDataType_String      = 9,
+        CarDataType_Boolean     = 10,
+        CarDataType_EMuid       = 11,
+        CarDataType_EGuid       = 12,
+        CarDataType_ECode       = 13,
+        CarDataType_LocalPtr    = 14,
+        CarDataType_LocalType   = 15,
+        CarDataType_Enum        = 16,
+        CarDataType_ArrayOf     = 17,
+        CarDataType_CppVector   = 18,
+        CarDataType_Struct      = 29,
+        CarDataType_Interface   = 20
     }
 
     enum ParamIOAttribute {
@@ -321,10 +320,6 @@ library
             [in] Int32 index,
             [in] Double value);
 
-        SetInputArgumentOfChar8(
-            [in] Int32 index,
-            [in] Char8 value);
-
         SetInputArgumentOfChar16(
             [in] Int32 index,
             [in] Char16 value);
@@ -400,10 +395,6 @@ library
         SetOutputArgumentOfDoublePtr(
             [in] Int32 index,
             [out] Double* value);
-
-        SetOutputArgumentOfChar8Ptr(
-            [in] Int32 index,
-            [out] Char8* value);
 
         SetOutputArgumentOfChar16Ptr(
             [in] Int32 index,
@@ -533,10 +524,6 @@ library
             [in] Int32 index,
             [in] Int32 value);
 
-        SetChar8Element(
-            [in] Int32 index,
-            [in] Char8 value);
-
         SetChar16Element(
             [in] Int32 index,
             [in] Char16 value);
@@ -614,10 +601,6 @@ library
             [in] Int32 index,
             [out] Int32* value);
 
-        GetChar8Element(
-            [in] Int32 index,
-            [out] Char8* value);
-
         GetChar16Element(
             [in] Int32 index,
             [out] Char16* value);
@@ -686,10 +669,6 @@ library
         SetDoubleField(
             [in] String name,
             [in] Double value);
-
-        SetChar8Field(
-            [in] String name,
-            [in] Char8 value);
 
         SetChar16Field(
             [in] String name,
@@ -761,10 +740,6 @@ library
         GetDoubleField(
             [in] String name,
             [out] Double* value);
-
-        GetChar8Field(
-            [in] String name,
-            [out] Char8* value);
 
         GetChar16Field(
             [in] String name,
@@ -843,10 +818,6 @@ library
             [in] Int32 index,
             [in] Double value);
 
-        SetChar8Element(
-            [in] Int32 index,
-            [in] Char8 value);
-
         SetChar16Element(
             [in] Int32 index,
             [in] Char16 value);
@@ -923,10 +894,6 @@ library
         GetDoubleElement(
             [in] Int32 index,
             [out] Double* value);
-
-        GetChar8Element(
-            [in] Int32 index,
-            [out] Char8* value);
 
         GetChar16Element(
             [in] Int32 index,
@@ -1288,10 +1255,6 @@ library
         GetDoubleArgument(
             [in] Int32 index,
             [out] Double* value);
-
-        GetChar8Argument(
-            [in] Int32 index,
-            [out] Char8* value);
 
         GetChar16Argument(
             [in] Int32 index,

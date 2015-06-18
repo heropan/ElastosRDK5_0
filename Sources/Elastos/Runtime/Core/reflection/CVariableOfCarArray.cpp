@@ -224,13 +224,6 @@ ECode CVariableOfCarArray::SetEnumElement(
     return SetElementValue(index, &value, CarDataType_Enum);
 }
 
-ECode CVariableOfCarArray::SetChar8Element(
-    /* [in] */ Int32 index,
-    /* [in] */ Char8 value)
-{
-    return SetElementValue(index, &value, CarDataType_Char8);
-}
-
 ECode CVariableOfCarArray::SetChar16Element(
     /* [in] */ Int32 index,
     /* [in] */ Char16 value)
@@ -429,13 +422,6 @@ ECode CVariableOfCarArray::GetEnumElement(
     /* [out] */ Int32 * pValue)
 {
     return GetElementValue(index, pValue, CarDataType_Enum);
-}
-
-ECode CVariableOfCarArray::GetChar8Element(
-    /* [in] */ Int32 index,
-    /* [out] */ Char8 * pValue)
-{
-    return GetElementValue(index, pValue, CarDataType_Char8);
 }
 
 ECode CVariableOfCarArray::GetChar16Element(

@@ -76,10 +76,6 @@ public:
         /* [in] */ const String& name,
         /* [in] */ Double value);
 
-    CARAPI SetChar8Field(
-        /* [in] */ const String& name,
-        /* [in] */ Char8 value);
-
     CARAPI SetChar16Field(
         /* [in] */ const String& name,
         /* [in] */ Char16 value);
@@ -154,10 +150,6 @@ public:
     CARAPI GetDoubleField(
         /* [in] */ const String& name,
         /* [out] */ Double * pValue);
-
-    CARAPI GetChar8Field(
-        /* [in] */ const String& name,
-        /* [out] */ Char8 * pValue);
 
     CARAPI GetChar16Field(
         /* [in] */ const String& name,
