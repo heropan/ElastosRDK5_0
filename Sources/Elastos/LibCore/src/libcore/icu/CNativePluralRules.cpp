@@ -5,15 +5,20 @@
 namespace Libcore {
 namespace ICU {
 
+CAR_OBJECT_IMPL(CNativePluralRules)
+
+CAR_INTERFACE_IMPL(CNativePluralRules, Object, INativePluralRules)
+
 CNativePluralRules::~CNativePluralRules()
 {
     FinalizeImpl(mAddress);
 }
 
-CNativePluralRules::Init(
-    /* [in] */ Int32 address)
+ECode CNativePluralRules::constructor(
+    /* [in] */ Int64 address)
 {
     mAddress = address;
+    return NOERROR;
 }
 
 AutoPtr<INativePluralRules> CNativePluralRules::ForLocale(
@@ -22,8 +27,7 @@ AutoPtr<INativePluralRules> CNativePluralRules::ForLocale(
     String s;
     locale->ToString(&s);
     AutoPtr<INativePluralRules> cres;
-    CNativePluralRules::New((INativePluralRules **)&cres);
-    ((CNativePluralRules *)cres.Get())->Init(ForLocaleImpl(s));
+    CNativePluralRules::New(ForLocaleImpl(s), (INativePluralRules **)&cres);
     return cres;
 }
 
@@ -38,7 +42,7 @@ ECode CNativePluralRules::QuantityForInt(
 }
 
 static PluralRules* toPluralRules(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address)
 {
     return reinterpret_cast<PluralRules*>(static_cast<uintptr_t>(address));
 }
@@ -64,14 +68,24 @@ static ECode maybeThrowIcuException(UErrorCode errorCode)
 }
 
 void CNativePluralRules::FinalizeImpl(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address)
 {
     delete toPluralRules(address);
 }
 
-Int32 CNativePluralRules::ForLocaleImpl(
-    /* [in] */ const String& localeName)
+Int64 CNativePluralRules::ForLocaleImpl(
+    /* [in] */ String& localeName)
 {
+    // The icu4c PluralRules returns a "other: n" default rule for the deprecated locales Java uses.
+    // Work around this by translating back to the current language codes.
+    if (localeName.StartWith("iw")) {
+        localeName = String("he") + localeName.Substring(2);
+    } else if (localeName.StartWith("in")) {
+        localeName = String("id") + localeName.Substring(2);
+    } else if (localeName.StartWith("ji")) {
+        localeName = String("yi") + localeName.Substring(2);
+    }
+
     Locale locale = Locale::createFromName(localeName.string());
     UErrorCode status = U_ZERO_ERROR;
     PluralRules* result = PluralRules::forLocale(locale, status);
@@ -80,7 +94,7 @@ Int32 CNativePluralRules::ForLocaleImpl(
 }
 
 Int32 CNativePluralRules::QuantityForIntImpl(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ Int32 value)
 {
     UnicodeString keyword = toPluralRules(address)->select(value);

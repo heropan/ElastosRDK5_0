@@ -60,6 +60,18 @@ module
     singleton class CNativeNormalizerHelper {
         interface INativeNormalizerHelper;
     }
+
+    class CNativePluralRules {
+        constructor(
+            [in] Int64 address);
+
+        interface INativePluralRules;
+    }
+
+    singleton class CNativePluralRulesHelper {
+        interface INativePluralRulesHelper;
+    }
+
     } // namespace ICU
     } // namespace LibCore
 }
