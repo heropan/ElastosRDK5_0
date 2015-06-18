@@ -97,3 +97,5 @@ SOURCES += CStrictMode.cpp
 SOURCES += CStrictModeSpan.cpp
 SOURCES += CStrictModeThreadPolicyBuilder.cpp
 SOURCES += CStrictModeVmPolicyBuilder.cpp
+SOURCES += CParcelStringList.cpp
+SOURCES += CZigbeeManager.cpp

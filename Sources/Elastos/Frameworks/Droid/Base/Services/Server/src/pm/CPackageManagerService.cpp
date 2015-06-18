@@ -4035,7 +4035,10 @@ AutoPtr<IPackageInfo> CPackageManagerService::GeneratePackageInfo(
 {
     if (!sUserManager->Exists(userId)) return NULL;
     AutoPtr<IPackageInfo> pi;
-    AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(p->mExtras->Probe(EIID_PackageSetting));
+    AutoPtr<PackageSetting> ps;
+    if (p->mExtras != NULL) {
+        ps = reinterpret_cast<PackageSetting*>(p->mExtras->Probe(EIID_PackageSetting));
+    }
     if (ps == NULL) {
         return NULL;
     }

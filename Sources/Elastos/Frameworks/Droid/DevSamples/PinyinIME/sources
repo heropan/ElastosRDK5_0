@@ -9,7 +9,7 @@ include $(MAKEDIR)/../../sources.inc
 
 IMPORTS = Elastos.Droid.Core.eco
 
-CAR_FLAGS += -n -u
+CAR_FLAGS += -u
 LUBE_FLAGS += -n -u
 
 SOURCES  = PinyinIME.car

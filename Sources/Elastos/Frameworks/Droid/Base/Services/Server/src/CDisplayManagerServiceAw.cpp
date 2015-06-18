@@ -114,11 +114,10 @@ ECode CDisplayManagerServiceAw::constructor(
     mPm = pm;
     NativeInit();
     // set initial hotplug status
-    String key("ro.display.switch");
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String value;
-    if(sysProp->Get(String("debug.freemem"), &value), value == "1")
+    if(sysProp->Get(String("ro.display.switch"), &value), value == "1")
     {
         if (sThreadStarted == FALSE)
         {

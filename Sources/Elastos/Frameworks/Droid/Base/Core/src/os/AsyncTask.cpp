@@ -129,8 +129,13 @@ ECode AsyncTask::SerialExecutor::Execute(
 
 ECode AsyncTask::SerialExecutor::ScheduleNext()
 {
-    mActive = mTasks.GetFront();
-    mTasks.PopFront();
+    if (mTasks.GetSize() > 0) {
+        mActive = mTasks.GetFront();
+        mTasks.PopFront();
+    }
+    else
+        mActive = NULL;
+
     if (mActive != NULL) {
         THREAD_POOL_EXECUTOR->Execute(mActive);
     }
@@ -246,6 +251,7 @@ AutoPtr<IHandler> AsyncTask::GetHandler()
     if (sHandler == NULL) {
         AutoPtr<ILooperHelper> helper;
         CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
+        helper->Prepare();
         AutoPtr<ILooper> myLooper;
         helper->MyLooper((ILooper**)&myLooper);
         assert(myLooper != NULL && "Failed to get myLooper!");
@@ -281,7 +287,7 @@ AutoPtr<IInterface> AsyncTask::PostResult(
     AutoPtr<AsyncTaskResult> atResult = new AsyncTaskResult(this, data);
 
     AutoPtr<IMessage> msg;
-    sHandler->ObtainMessageEx(MESSAGE_POST_RESULT, atResult, (IMessage**)&msg);
+    GetHandler()->ObtainMessageEx(MESSAGE_POST_RESULT, atResult, (IMessage**)&msg);
     msg->SendToTarget();
 
     return result;
@@ -370,7 +376,7 @@ void AsyncTask::PublishProgress(
         AutoPtr<AsyncTaskResult> atResult = new AsyncTaskResult(this, values);
 
         AutoPtr<IMessage> msg;
-        sHandler->ObtainMessageEx(MESSAGE_POST_PROGRESS, atResult, (IMessage**)&msg);
+        GetHandler()->ObtainMessageEx(MESSAGE_POST_PROGRESS, atResult, (IMessage**)&msg);
         msg->SendToTarget();
     }
 }

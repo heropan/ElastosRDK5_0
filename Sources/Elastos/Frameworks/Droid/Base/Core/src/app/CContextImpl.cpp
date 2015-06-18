@@ -44,6 +44,7 @@
 #include "view/inputmethod/CInputMethodManager.h"
 #include "view/CContextThemeWrapper.h"
 #include "view/WindowManagerImpl.h"
+#include "view/CDisplayManagerAw.h"
 #include "media/media/CAudioManager.h"
 #include "database/sqlite/SQLiteDatabase.h"
 #include "accounts/CAccountManager.h"
@@ -83,6 +84,8 @@ using Elastos::Droid::Privacy::Surrogate::CPrivacyLocationManager;
 using Elastos::Droid::View::WindowManagerImpl;
 using Elastos::Droid::View::IContextThemeWrapper;
 using Elastos::Droid::View::CContextThemeWrapper;
+using Elastos::Droid::View::IDisplayManagerAw;
+using Elastos::Droid::View::CDisplayManagerAw;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::View::Accessibility::CAccessibilityManager;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
@@ -2308,6 +2311,13 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IUserManager> userMgr;
         CUserManager::New(this, service, (IUserManager**)&userMgr);
         *object = userMgr.Get();
+        INTERFACE_ADDREF(*object);
+        return NOERROR;
+    }
+    else if (IContext::DISPLAY_SERVICE_AW.Equals(name)) {
+        AutoPtr<IDisplayManagerAw> dmAw;
+        CDisplayManagerAw::New((IDisplayManagerAw**)&dmAw);
+        *object = dmAw.Get();
         INTERFACE_ADDREF(*object);
         return NOERROR;
     }

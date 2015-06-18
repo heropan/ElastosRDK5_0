@@ -1100,7 +1100,7 @@ public:
      * @param state  must be AUDIO_INPUT_ACTIVE or AUDIO_OUTPUT_ACTIVE
      */
     CARAPI SetAudioDeviceActive(
-        /* [in] */ const ArrayOf<String>* devices,
+        /* [in] */ const ArrayOf<String>& devices,
         /* [in] */ const String& state);
 
 private:

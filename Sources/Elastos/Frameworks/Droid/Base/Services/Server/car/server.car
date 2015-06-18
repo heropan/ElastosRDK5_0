@@ -73,6 +73,8 @@ module
     using interface Elastos.Droid.Os.IBundle;
     using interface Elastos.Droid.Os.IIPowerManager;
     using interface Elastos.Droid.Os.IHardwareService;
+    using interface Elastos.Droid.Os.IZigbeeService;
+    using interface Elastos.Droid.Os.IKortideRemoteService;
     using interface Elastos.Droid.Os.Storage.IMountService;
     using interface Elastos.Droid.Os.Storage.IMountShutdownObserver;
     using interface Elastos.Droid.View.IIWindowManager;
@@ -1140,6 +1142,24 @@ module
             [in] IIPowerManager* powerManagerService);
 
         interface IWifiDisplayManager;
+    }
+
+    [local]
+    class CZigbeeService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IZigbeeService;
+        interface IBinder;
+    }
+
+    [local]
+    class CKortideRemoteService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IKortideRemoteService;
+        interface IBinder;
     }
 
     } // namespace Server

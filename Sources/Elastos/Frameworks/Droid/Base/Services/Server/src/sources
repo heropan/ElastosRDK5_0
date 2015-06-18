@@ -72,7 +72,7 @@ INCLUDES += $(PREBUILD_INC)/hardware
 
 C_DEFINES += -DDROID_SERVER
 
-CAR_FLAGS += -n -u
+CAR_FLAGS += -u
 LUBE_FLAGS += -n -u
 
 SOURCES = Elastos.Droid.Server.car
@@ -236,6 +236,10 @@ SOURCES += PackageManagerBackupAgent.cpp
 SOURCES += ArrayAdapter.cpp
 SOURCES += BaseAdapter.cpp
 SOURCES += Filter.cpp
+SOURCES += AudioDeviceManagerObserver.cpp
+SOURCES += CZigbeeService.cpp
+SOURCES += HandlerThread.cpp
+SOURCES += CKortideRemoteService.cpp
 
 LIBRARIES += am/am.lib
 LIBRARIES += display/display.lib
@@ -251,6 +255,8 @@ LIBRARIES += accounts/accounts.lib
 LIBRARIES += power/power.lib
 LIBRARIES += dreams/dreams.lib
 LIBRARIES += search/search.lib
+LIBRARIES += zigbee/zigbee.lib
+LIBRARIES += remote/remote.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
 

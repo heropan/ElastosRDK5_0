@@ -1417,6 +1417,11 @@ ECode AudioEffect::ByteArrayToInt32Ex(
     AutoPtr<IByteBufferHelper> tempByteBufferHelper;
     CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&tempByteBufferHelper);
     tempByteBufferHelper->WrapArray(valueBuf,(IByteBuffer**)&converter);
+    AutoPtr<IByteOrderHelper> helper;
+    CByteOrderHelper::AcquireSingleton((IByteOrderHelper**)&helper);
+    ByteOrder nativeOrder;
+    helper->GetNativeOrder(&nativeOrder);
+    converter->SetOrder(nativeOrder);
     return converter->GetInt32Ex(offset, result);
 }
 

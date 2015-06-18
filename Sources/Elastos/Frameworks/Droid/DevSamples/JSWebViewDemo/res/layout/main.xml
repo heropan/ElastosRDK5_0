@@ -12,27 +12,6 @@
         android:layout_gravity="center"
     >
         <EditText
-            android:id="@+id/data"
-            android:text="@string/edata"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-        />
-        <Button
-            android:id="@+id/load_button"
-            android:text="@string/bload"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="10"
-        />
-    </LinearLayout>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-    >
-        <EditText
             android:id="@+id/uri1"
             android:text="@string/localfile"
             android:layout_width="match_parent"
@@ -41,48 +20,6 @@
         />
         <Button
             android:id="@+id/goto_button1"
-            android:text="@string/bgoto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="10"
-        />
-    </LinearLayout>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        >
-        <EditText
-            android:id="@+id/uri2"
-            android:text="@string/netpage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-        />
-        <Button
-            android:id="@+id/goto_button2"
-            android:text="@string/bgoto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="10"
-        />
-    </LinearLayout>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-    >
-        <EditText
-            android:id="@+id/uri3"
-            android:text="@string/file"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-        />
-        <Button
-            android:id="@+id/goto_button3"
             android:text="@string/bgoto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

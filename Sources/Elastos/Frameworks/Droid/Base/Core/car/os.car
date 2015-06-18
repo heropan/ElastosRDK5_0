@@ -30,6 +30,7 @@ module
     merge("os/Messenger.car");
     merge("os/IMessenger.car");
     merge("os/ParcelFileDescriptor.car");
+    merge("os/ParcelStringList.car");
     merge("os/PatternMatcher.car");
     merge("os/Process.car");
     merge("os/ProcessStats.car");
@@ -58,6 +59,9 @@ module
     merge("os/StrictMode.car");
     merge("os/ParcelUuid.car");
     merge("os/PkgUsageStats.car");
+    merge("os/IZigbeeService.car");
+    merge("os/ZigbeeManager.car");
+    merge("os/IKortideRemoteService.car");
 
     using interface Elastos.Core.IClassLoader;
     using interface Elastos.IO.IFileDescriptor;
@@ -539,6 +543,19 @@ module
         interface IStrictModeViolationInfo;
     }
 
+    [deprecated]
+    class CParcelStringList {
+        constructor(
+            [in] ArrayOf<String>* list);
+
+        interface IParcelStringList;
+        interface IParcelable;
+    }
+
+    singleton class CZigbeeManager {
+        interface IZigbeeManager;
+    }
+
     } // namespace Os
     } // namespace Droid
     } // namespace Elastos
@@ -579,7 +596,6 @@ module
         interface IPkgUsageStats;
         interface IParcelable;
     }
-
 
     } // namespace Os
     } // namespace Internal

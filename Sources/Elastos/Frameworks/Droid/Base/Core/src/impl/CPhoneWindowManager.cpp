@@ -6066,8 +6066,8 @@ ECode CPhoneWindowManager::InterceptMotionBeforeQueueingWhenScreenOff(
     Boolean isWakeMotion = (policyFlags
             & (IWindowManagerPolicy::FLAG_WAKE | IWindowManagerPolicy::FLAG_WAKE_DROPPED)) != 0;
     if (isWakeMotion) {
-        assert(0);
-        // TODO: keyguardMediator is not implement.
+        // assert(0);
+        Logger::D(TAG, "TODO: keyguardMediator is not implement.");
         // if (mKeyguardMediator != NULL && mKeyguardMediator.isShowing()) {
         //     // If the keyguard is showing, let it decide what to do with the wake motion.
         //     mKeyguardMediator.onWakeMotionWhenKeyguardShowingTq();

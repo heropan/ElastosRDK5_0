@@ -50,6 +50,45 @@ CAR_INTERFACE_IMPL_LIGHT(CActivityOne::ViewOnKeyListener, IViewOnKeyListener);
 
 static const String WVD_TAG("WebViewDemo");
 
+PInterface CActivityOne::Probe(
+    /* [in] */ REIID riid)
+{
+    if ( riid == EIID_IObjectFactory) {
+        return (IObjectFactory *)this;
+    }
+    else return Activity::Probe(riid);
+}
+
+UInt32 CActivityOne::AddRef()
+{
+    return Activity::AddRef();
+}
+
+UInt32 CActivityOne::Release()
+{
+    return Activity::Release();
+}
+
+ECode CActivityOne::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    VALIDATE_NOT_NULL(iid);
+    if (object == (IInterface*)(IObjectFactory *)this) {
+        *iid = EIID_IObjectFactory;
+        return NOERROR;
+    }
+    else return Activity::GetInterfaceID(object, iid);
+}
+
+ECode CActivityOne::GetClassID(
+    /* [out] */ ClassID *pCLSID)
+{
+    VALIDATE_NOT_NULL(pCLSID);
+    *pCLSID =  ECLSID_CActivityOne;
+    return NOERROR;
+}
+
 ECode CActivityOne::HandleMessage(
     /* [in] */ Int32 what)
 {
@@ -109,18 +148,9 @@ ECode CActivityOne::OnCreate(
 
     mClickListener = new ButtonOnClickListener(this);
     AutoPtr<IView> gotoButton;
+    gotoButton = NULL;
     FindViewById(R::id::goto_button1, (IView**)&gotoButton);
     gotoButton->SetOnClickListener(mClickListener);
-    gotoButton = NULL;
-    FindViewById(R::id::goto_button2, (IView**)&gotoButton);
-    gotoButton->SetOnClickListener(mClickListener);
-    gotoButton = NULL;
-    FindViewById(R::id::goto_button3, (IView**)&gotoButton);
-    gotoButton->SetOnClickListener(mClickListener);
-
-    AutoPtr<IView> loadButton;
-    FindViewById(R::id::load_button, (IView**)&loadButton);
-    loadButton->SetOnClickListener(mClickListener);
 
     AutoPtr<IView> exitButton;
     FindViewById(R::id::exit_button, (IView**)&exitButton);
@@ -130,10 +160,7 @@ ECode CActivityOne::OnCreate(
     FindViewById(R::id::test_button, (IView**)&testButton);
     testButton->SetOnClickListener(mClickListener);
 
-    mKeyListener = new CActivityOne::ViewOnKeyListener(this);
-    AutoPtr<IView> dataEdit;
-    FindViewById(R::id::data, (IView**)&dataEdit);
-    dataEdit->SetOnKeyListener(mKeyListener);
+    mWebView->AddJavascriptInterface(THIS_PROBE(IObjectFactory), String("CarObjectFactory"));
 
     return NOERROR;
 }
@@ -217,16 +244,18 @@ ECode CActivityOne::OnCreateContextMenu(
     return NOERROR;
 }
 
-ECode CActivityOne::TestJSAPI()
+ECode CActivityOne::CreateInstance(
+    /* [in] */ const String& moduleName,
+    /* [in] */ const String& className,
+    /* [out] */ IInterface** object)
 {
-    String moduleName("/data/elastos/JSTestObject.eco");
-    String className("CTestObject");
+    assert(object != NULL);
 
     AutoPtr<IModuleInfo> moduleInfo;
     ECode ec = _CReflector_AcquireModuleInfo(
             moduleName.string(), (IModuleInfo**)&moduleInfo);
     if (FAILED(ec)) {
-        Logger::E(WVD_TAG, "Acquire \"%s\" module info failed!\n", moduleName.string());
+        ALOGD("Acquire \"%s\" module info failed!\n", moduleName.string());
         return ec;
     }
 
@@ -234,18 +263,19 @@ ECode CActivityOne::TestJSAPI()
     ec = moduleInfo->GetClassInfo(
             className.string(), (IClassInfo**)&classInfo);
     if (FAILED(ec)) {
-        Logger::E(WVD_TAG, "Acquire \"%s\" class info failed!\n", className.string());
+        ALOGD("Acquire \"%s\" class info failed!\n", className.string());
         return ec;
     }
 
-    ec = classInfo->CreateObject((IInterface**)&mJSTestObject);
+    AutoPtr<IInterface> testObject;
+    ec = classInfo->CreateObject((IInterface**)&testObject);
     if (FAILED(ec)) {
-        Logger::E(WVD_TAG, "Create object failed!\n");
+        ALOGD("Create object failed!\n");
         return ec;
     }
 
-    mWebView->AddJavascriptInterface(mJSTestObject, String("CarObject"));
-
+    *object = testObject;
+    INTERFACE_ADDREF(*object);
     return NOERROR;
 }
 
@@ -270,53 +300,7 @@ ECode CActivityOne::ButtonOnClickListener::OnClick(
             ALOGD("====== File: %s, Line: %d ======, ", __FILE__, __LINE__);
             break;
         }
-        case R::id::goto_button2:
-        {
-            AutoPtr<IView> myUri;
-            mHost->FindViewById(R::id::uri2, (IView**)&myUri);
-            AutoPtr<IEditText> text = IEditText::Probe(myUri);
-            AutoPtr<ICharSequence> ttt;
-            text->GetText((ICharSequence**)&ttt);
-            String uri;
-            ttt->ToString(&uri);
-            ALOGD("====== File: %s, Line: %d ======, uri: %s ", __FILE__, __LINE__, uri.string());
-            mHost->mWebView->LoadUrl(uri);
-            ALOGD("====== File: %s, Line: %d ======, ", __FILE__, __LINE__);
-            break;
-        }
-        case R::id::goto_button3:
-        {
-            AutoPtr<IView> myUri;
-            mHost->FindViewById(R::id::uri3, (IView**)&myUri);
-            AutoPtr<IEditText> text = IEditText::Probe(myUri);
-            AutoPtr<ICharSequence> ttt;
-            text->GetText((ICharSequence**)&ttt);
-            String uri;
-            ttt->ToString(&uri);
-            ALOGD("====== File: %s, Line: %d ======, uri: %s ", __FILE__, __LINE__, uri.string());
-            mHost->mWebView->LoadUrl(uri);
-            ALOGD("====== File: %s, Line: %d ======, ", __FILE__, __LINE__);
-            break;
-        }
-        case R::id::load_button:
-        {
-            AutoPtr<IView> myData;
-            mHost->FindViewById(R::id::data, (IView**)&myData);
-            AutoPtr<IEditText> text = IEditText::Probe(myData);
-            AutoPtr<ICharSequence> ttt;
-            text->GetText((ICharSequence**)&ttt);
-            String data;
-            ttt->ToString(&data);
-            ALOGD("====== File: %s, Line: %d ======, view: %s data: %s ", __FILE__, __LINE__, "load_button", data.string());
-            data = String("<html><body bgcolor=\"#FFCC80\"><b>Hello World!</b></body></html>");
-            String mimeType("text/html");
-            String encoding("utf-8");
-            ALOGD("====== File: %s, Line: %d ======, view: %s data: %s ", __FILE__, __LINE__, "load_button", data.string());
-            mHost->mWebView->LoadData(data, mimeType, encoding);
-            break;
-        }
         case R::id::test_button:
-            mHost->TestJSAPI();
             break;
         case R::id::exit_button:
             mHost->Finish();
@@ -379,7 +363,6 @@ ECode CActivityOne::ViewOnKeyListener::OnKey(
 
     return NOERROR;
 }
-
 
 } // namespace WebViewDemo
 } // namespace DevSamples

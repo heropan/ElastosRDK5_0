@@ -7,7 +7,7 @@ IMPORTS = Elastos.Droid.Core.eco
 
 INCLUDES += $(MAKEDIR)/../../Base/Core/inc
 
-CAR_FLAGS += -n -u
+CAR_FLAGS += -u
 LUBE_FLAGS += -u
 
 SOURCES = Elastos.car

@@ -19,6 +19,10 @@ using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Utility::HashMap;
 
+#ifndef HASH_EQUALTO_FUNC_FOR_AUTOPTR_IDISPLISTDISPFORMAT
+#define HASH_EQUALTO_FUNC_FOR_AUTOPTR_IDISPLISTDISPFORMAT
+DEFINE_EQUALTO_FUNC_FOR_AUTOPTR(Elastos::Droid::View::IDispListDispFormat)
+#endif
 
 namespace Elastos {
 namespace Droid {

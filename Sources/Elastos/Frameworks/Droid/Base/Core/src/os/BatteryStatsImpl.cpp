@@ -3326,7 +3326,7 @@ AutoPtr< HashMap<String, AutoPtr<Elastos::Droid::Os::BatteryStatsImpl::KernelWak
     startIndex = endIndex = i + 1;
 
     Mutex::Autolock lock(mLock);
-    HashMap<String, AutoPtr<KernelWakelockStats> > m = mProcWakelockFileStats;
+    HashMap<String, AutoPtr<KernelWakelockStats> >& m = mProcWakelockFileStats;
 
     sKernelWakelockUpdateVersion++;
     while (endIndex < len) {

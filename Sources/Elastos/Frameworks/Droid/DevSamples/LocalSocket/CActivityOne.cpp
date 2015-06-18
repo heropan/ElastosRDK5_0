@@ -56,7 +56,7 @@ ECode CActivityOne::PostcppCallback(int index)
 
     AutoPtr<IParcel> params;
     CCallbackParcel::New((IParcel**)&params);
-    params->WriteInt32(index);
+    params->WriteInt32Ptr(index);
     Boolean result;
     return mDefaultHandler->PostCppCallback((Handle32)this, *(Handle32*)&pHandlerFunc, params, 0, FALSE, &result);
 }
