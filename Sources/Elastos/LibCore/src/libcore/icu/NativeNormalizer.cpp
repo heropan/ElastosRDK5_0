@@ -2,6 +2,7 @@
 #include "NativeNormalizer.h"
 #include "ElStringByteSink.h"
 #include <unicode/normlzr.h>
+#include <coredef.h>
 
 namespace Libcore {
 namespace ICU {
