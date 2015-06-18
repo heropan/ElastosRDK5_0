@@ -1,0 +1,55 @@
+
+module
+{
+    merge("dom/INodeList.car");
+    merge("dom/INode.car");
+    merge("dom/IAttr.car");
+    merge("dom/ICharacterData.car");
+    merge("dom/IText.car");
+    merge("dom/ICDATASection.car");
+    merge("dom/IComment.car");
+    merge("dom/IDOMConfiguration.car");
+    merge("dom/IDOMError.car");
+    merge("dom/IDOMErrorHandler.car");
+    merge("dom/IDOMImplementation.car");
+    merge("dom/IDOMImplementationList.car");
+    merge("dom/IDOMImplementationSource.car");
+    merge("dom/IDOMLocator.car");
+    merge("dom/IDOMStringList.car");
+    merge("dom/IDocument.car");
+    merge("dom/IDocumentFragment.car");
+    merge("dom/IDocumentType.car");
+    merge("dom/IElement.car");
+    merge("dom/IEntity.car");
+    merge("dom/IEntityReference.car");
+    merge("dom/INameList.car");
+    merge("dom/INamedNodeMap.car");
+    merge("dom/INotation.car");
+    merge("dom/IProcessingInstruction.car");
+    merge("dom/ITypeInfo.car");
+    merge("dom/IUserDataHandler.car");
+
+    merge("dom/traversal/INodeFilter.car");
+    merge("dom/traversal/INodeIterator.car");
+
+    merge("dom/ls/IDOMImplementationLS.car");
+    merge("dom/ls/ILSInput.car");
+    merge("dom/ls/ILSOutput.car");
+    merge("dom/ls/ILSParser.car");
+    merge("dom/ls/ILSParserFilter.car");
+    merge("dom/ls/ILSResourceResolver.car");
+    merge("dom/ls/ILSSerializer.car");
+    merge("dom/ls/ILSSerializerFilter.car");
+
+    namespace Org {
+    namespace W3c {
+    namespace Dom {
+
+    class CText {
+        interface Org.W3c.Dom.IText;
+    }
+
+    } // namespace Dom
+    } // namespace W3c
+    } // namespace Org
+}

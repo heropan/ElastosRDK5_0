@@ -14,5 +14,6 @@ INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/prefs;
 
 SOURCES += Preferences.cpp
+SOURCES += NodeChangeEvent.cpp
 #SOURCES += AbstractPreferences.cpp
-#SOURCES += NodeSet.cpp
+SOURCES += NodeSet.cpp

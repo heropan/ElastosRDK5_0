@@ -11,6 +11,66 @@ namespace Elastos {
 namespace Utility {
 namespace Prefs {
 
+/**
+ * An instance of the class {@code Preferences} represents one node in a
+ * preference tree, which provides a mechanism to store and access configuration
+ * data in a hierarchical way. Two hierarchy trees are maintained, one for
+ * system preferences shared by all users and the other for user preferences
+ * specific to the user. {@code Preferences} hierarchy trees and data are stored
+ * in an implementation-dependent back-end.
+ * <p>
+ * Every node has one name and one unique absolute path following the same
+ * notational conventions as directories in a file system. The root node's
+ * name is "", and other node name strings cannot contain the slash character
+ * and cannot be empty. The root node's absolute path is "/", and all other
+ * nodes' absolute paths are constructed in the standard way: &lt;parent's
+ * absolute path&gt; + "/" + &lt;node's name&gt;. Since the set of nodes forms a
+ * tree with the root node at its base, all absolute paths start with the slash
+ * character. Every node has one relative path to each of its ancestors. The
+ * relative path doesn't start with slash: it equals the node's absolute path
+ * with leading substring removed corresponding to the ancestor's absolute path
+ * and a slash.
+ * <p>
+ * Modification to preferences data may be asynchronous, which means that
+ * preference update method calls may return immediately instead of blocking.
+ * The {@code flush()} and {@code sync()} methods force the back-end to
+ * synchronously perform all pending updates, but the implementation is
+ * permitted to perform the modifications on the underlying back-end data
+ * at any time between the moment the request is made and the moment the
+ * {@code flush()} or {@code sync()} method returns. Please note that if the JVM
+ * exits normally, the implementation must assure all modifications are
+ * persisted implicitly.
+ * <p>
+ * When invoking a method that retrieves preferences, the user must provide
+ * a default value. The default value is returned when the preferences cannot
+ * be found or the back-end is unavailable. Some other methods will throw
+ * {@code BackingStoreException} when the back-end is unavailable.
+ * </p>
+ * <p>
+ * Preferences can be exported to and imported from an XML files. These
+ * documents must have an XML DOCTYPE declaration:
+ * <pre>{@code
+ * <!DOCTYPE preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
+ * }</pre>
+ * This system URI is not really accessed by network, it is only a
+ * identification string. Visit the DTD location to see the actual format
+ * permitted.
+ * <p>
+ * There must be a concrete {@code PreferencesFactory} type for every concrete
+ * {@code Preferences} type developed. Every J2SE implementation must provide a
+ * default implementation for every supported platform, and must also provide a
+ * means of replacing the default implementation. This implementation uses the
+ * system property {@code java.util.prefs.PreferencesFactory} to determine which
+ * preferences implementation to use.
+ * <p>
+ * The methods of this class are thread-safe. If multiple JVMs are using the
+ * same back-end concurrently, the back-end won't be corrupted, but no other
+ * behavior guarantees are made.
+ *
+ * @see PreferencesFactory
+ *
+ * @since 1.4
+ */
 class Preferences
     : public Object
     , public IPreferences
@@ -819,14 +879,14 @@ public:
         /* [out] */ String* value) = 0;
 
 protected:
-    static CARAPI_(AutoPtr<IPreferencesFactory>) FindPreferencesFactory();
-
-private:
     /**
      * Default constructor, for use by subclasses only.
      */
     Preferences();
 
+    static CARAPI_(AutoPtr<IPreferencesFactory>) FindPreferencesFactory();
+
+private:
     //parse node's absolute path from class instance
     static CARAPI_(String) GetNodeName(
         /* [in] */ IInterface* c);

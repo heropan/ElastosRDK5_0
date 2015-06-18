@@ -1,5 +1,6 @@
 
 #include "AbstractPreferences.h"
+#include "CLinkedList.h"
 
 namespace Elastos {
 namespace Utility {
@@ -21,7 +22,7 @@ AbstractPreferences::NodeRemoveEvent::NodeRemoveEvent(
 
 Boolean AbstractPreferences::sStaticInit = AbstractPreferences::staticInit();
 AutoPtr<IList> AbstractPreferences::sEvents;
-AutoPtr<EventDispatcher> AbstractPreferences::sDispatcher;
+// AutoPtr<EventDispatcher> AbstractPreferences::sDispatcher;
 
 Boolean AbstractPreferences::staticInit()
 {
@@ -68,18 +69,30 @@ AbstractPreferences::AbstractPreferences(
         // throw new IllegalArgumentException();
         assert(0);
     }
-    mRoot = (parent == NULL) ? this : parent->mRoot;
+    if (parent == NULL) {
+        mRoot = this;
+    } else {
+        mRoot = parent->mRoot;
+    }
     CLinkedList::New((ILinkedList**)&mNodeChangeListeners);
     CLinkedList::New((ILinkedList**)&mPreferenceChangeListeners);
     mIsRemoved = FALSE;
     mNodeName = name;
     mParentPref = parent;
-    mUserNode = root->mUserNode;
+    mUserNode = mRoot->mUserNode;
 }
 
 AutoPtr<ArrayOf<AutoPtr<AbstractPreferences> > > AbstractPreferences::CachedChildren()
 {
-    return cachedNode.values().toArray(new AbstractPreferences[cachedNode.size()]);
+    AutoPtr<ArrayOf<AutoPtr<AbstractPreferences> > > absps
+        = ArrayOf<AutoPtr<AbstractPreferences> >::Alloc(mCachedNode.GetSize());
+
+    HashMap<String, AutoPtr<AbstractPreferences> >::Iterator iter = mCachedNode.Begin();
+    for (Int32 i = 0; iter != mCachedNode.End(); ++iter, i++) {
+        absps->Set(i, iter->mSecond);
+    }
+
+    return absps;
 }
 
 ECode AbstractPreferences::GetChild(
@@ -128,7 +141,7 @@ ECode AbstractPreferences::AbsolutePath(
     }
 
     String tmp;
-    mParentPref->AbsolutePath(tmp);
+    mParentPref->AbsolutePath(&tmp);
     *path = tmp + String("/") + mNodeName
     return NOERROR;
 }
@@ -139,9 +152,26 @@ ECode AbstractPreferences::ChildrenNames(
     VALIDATE_NOT_NULL(names);
     synchronized (mLock) {
         FAIL_RETURN(CheckState());
-        TreeSet<String> result = new TreeSet<String>(cachedNode.keySet());
-        String[] names = childrenNamesSpi();
-        for (int i = 0; i < names.length; i++) {
+        AutoPtr<ITreeSet> result;
+        CTreeSet::New((ITreeSet**)&result);
+
+        HashMap<String, AutoPtr<AbstractPreferences> >::Iterator iter = mCachedNode.Begin();
+        Boolean modified = FALSE;
+        for (Int32 i = 0; iter != mCachedNode.End(); ++iter, i++) {
+            AutoPtr<ICharSequence> name;
+            CStringWrapper::New(iter->mFirst, (ICharSequence**)&name);
+            result->Add(name, &modified);
+        }
+
+        AutoPtr<ArrayOf<String> > names;
+        FAIL_RETURN(ChildrenNamesSpi((ArrayOf<String>**)&names));
+        for (Int32 i = 0; i < names->GetLength(); i++) {
+            AutoPtr<ICharSequence> name;
+            CStringWrapper::New((*names)[i], (ICharSequence**)&name);
+            result->Add(name, &modified);
+        }
+
+        for (Int32 i = 0; i < names.length; i++) {
             result.add(names[i]);
         }
         return result.toArray(new String[result.size()]);
@@ -161,7 +191,8 @@ ECode AbstractPreferences::ExportNode(
     /* [in] */ IOutputStream* ostream) /*throws IOException, BackingStoreException */
 {
     if (ostream == NULL) {
-        throw new NullPointerException("ostream == null");
+        // throw new NullPointerException("ostream == NULL");
+        return E_NULL_POINTER_EXCEPTION;
     }
     checkState();
     XMLParser.exportPrefs(this, ostream, false);
@@ -170,8 +201,9 @@ ECode AbstractPreferences::ExportNode(
 ECode AbstractPreferences::ExportSubtree(
     /* [in] */ IOutputStream* ostream) /*throws IOException, BackingStoreException*/
 {
-    if (ostream == null) {
-        throw new NullPointerException("ostream == null");
+    if (ostream == NULL) {
+        // throw new NullPointerException("ostream == NULL");
+        return E_NULL_POINTER_EXCEPTION;
     }
     checkState();
     XMLParser.exportPrefs(this, ostream, true);
@@ -183,7 +215,7 @@ ECode AbstractPreferences::Flush() /*throws BackingStoreException */
         flushSpi();
     }
     AbstractPreferences[] cc = cachedChildren();
-    int i;
+    Int32 i;
     for (i = 0; i < cc.length; i++) {
         cc[i].flush();
     }
@@ -195,10 +227,11 @@ ECode AbstractPreferences::Get(
     /* [out] */ String* value)
 {
     VALIDATE_NOT_NULL(value);
-    if (key == null) {
-        throw new NullPointerException("key == null");
+    if (key == NULL) {
+        // throw new NullPointerException("key == NULL");
+        return E_NULL_POINTER_EXCEPTION;
     }
-    String result = null;
+    String result = NULL;
     synchronized (lock) {
         checkState();
         try {
@@ -207,7 +240,7 @@ ECode AbstractPreferences::Get(
             // ignored
         }
     }
-    return (result == null ? deflt : result);
+    return (result == NULL ? deflt : result);
 }
 
 ECode AbstractPreferences::GetBoolean(
@@ -216,8 +249,8 @@ ECode AbstractPreferences::GetBoolean(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
-    String result = get(key, null);
-    if (result == null) {
+    String result = get(key, NULL);
+    if (result == NULL) {
         return deflt;
     }
     if ("true".equalsIgnoreCase(result)) {
@@ -235,8 +268,8 @@ ECode AbstractPreferences::GetByteArray(
     /* [out] */ ArrayOf<Byte>** values)
 {
     VALIDATE_NOT_NULL(values);
-    String svalue = get(key, null);
-    if (svalue == null) {
+    String svalue = get(key, NULL);
+    if (svalue == NULL) {
         return deflt;
     }
     if (svalue.length() == 0) {
@@ -259,8 +292,8 @@ ECode AbstractPreferences::GetDouble(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value);
-    String result = get(key, null);
-    if (result == null) {
+    String result = get(key, NULL);
+    if (result == NULL) {
         return deflt;
     }
     try {
@@ -276,8 +309,8 @@ ECode AbstractPreferences::GetFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
-    String result = get(key, null);
-    if (result == null) {
+    String result = get(key, NULL);
+    if (result == NULL) {
         return deflt;
     }
     try {
@@ -293,8 +326,8 @@ ECode AbstractPreferences::GetInt32(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
-    String result = get(key, null);
-    if (result == null) {
+    String result = get(key, NULL);
+    if (result == NULL) {
         return deflt;
     }
     try {
@@ -310,8 +343,8 @@ ECode AbstractPreferences::GetInt64(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
-    String result = get(key, null);
-    if (result == null) {
+    String result = get(key, NULL);
+    if (result == NULL) {
         return deflt;
     }
     try {
@@ -351,7 +384,7 @@ ECode AbstractPreferences::Node(
     /* [out] */ IPreferences** pfs)
 {
     VALIDATE_NOT_NULL(pfs);
-    AbstractPreferences startNode = null;
+    AbstractPreferences startNode = NULL;
     synchronized (lock) {
         checkState();
         validateName(name);
@@ -371,7 +404,7 @@ ECode AbstractPreferences::Node(
         return startNode.nodeImpl(name, true);
     } catch (BackingStoreException e) {
         // should not happen
-        return null;
+        return NULL;
     }
 }
 
@@ -396,13 +429,13 @@ ECode AbstractPreferences::NodeImpl(
     AbstractPreferences temp;
     for (String name : names) {
         synchronized (currentNode.lock) {
-            temp = currentNode.cachedNode.get(name);
-            if (temp == null) {
+            temp = currentNode.mCachedNode.get(name);
+            if (temp == NULL) {
                 temp = getNodeFromBackend(createNew, currentNode, name);
             }
         }
         currentNode = temp;
-        if (currentNode == null) {
+        if (currentNode == NULL) {
             break;
         }
     }
@@ -421,7 +454,7 @@ ECode AbstractPreferences::GetNodeFromBackend(
     AbstractPreferences temp;
     if (createNew) {
         temp = currentNode.childSpi(name);
-        currentNode.cachedNode.put(name, temp);
+        currentNode.mCachedNode.put(name, temp);
         if (temp.newNode && currentNode.nodeChangeListeners.size() > 0) {
             currentNode.notifyChildAdded(temp);
         }
@@ -436,10 +469,11 @@ ECode AbstractPreferences::NodeExists(
     /* [out] */ Boolean* exist)
 {
     VALIDATE_NOT_NULL(exist);
-    if (name == null) {
-        throw new NullPointerException("name == null");
+    if (name == NULL) {
+        // throw new NullPointerException("name == NULL");
+        return E_NULL_POINTER_EXCEPTION;
     }
-    AbstractPreferences startNode = null;
+    AbstractPreferences startNode = NULL;
     synchronized (lock) {
         if (isRemoved()) {
             if (name.isEmpty()) {
@@ -460,7 +494,7 @@ ECode AbstractPreferences::NodeExists(
     }
     try {
         Preferences result = startNode.nodeImpl(name, false);
-        return (result != null);
+        return (result != NULL);
     } catch(IllegalArgumentException e) {
         return false;
     }
@@ -484,10 +518,12 @@ ECode AbstractPreferences::Put(
     /* [in] */ const String& key,
     /* [in] */ const String& value)
 {
-    if (key == null) {
-        throw new NullPointerException("key == null");
-    } else if (value == null) {
-        throw new NullPointerException("value == null");
+    if (key == NULL) {
+        // throw new NullPointerException("key == NULL");
+        return E_NULL_POINTER_EXCEPTION;
+    } else if (value == NULL) {
+        // throw new NullPointerException("value == NULL");
+        return E_NULL_POINTER_EXCEPTION;
     }
     if (key.length() > MAX_KEY_LENGTH || value.length() > MAX_VALUE_LENGTH) {
         throw new IllegalArgumentException();
@@ -548,7 +584,7 @@ ECode AbstractPreferences::Remove(
         checkState();
         removeSpi(key);
     }
-    notifyPreferenceChange(key, null);
+    notifyPreferenceChange(key, NULL);
 }
 
 ECode AbstractPreferences::RemoveNode() /*throws BackingStoreException */
@@ -568,20 +604,20 @@ ECode AbstractPreferences::RemoveNodeImpl()/* throws BackingStoreException */
         AutoPtr<ArrayOf<String> > childrenNames;
         FAIL_RETURN(ChildrenNamesSpi((ArrayOf<String>**)&childrenNames));
         for (String childrenName : childrenNames) {
-            if (cachedNode.get(childrenName) == null) {
+            if (mCachedNode.get(childrenName) == NULL) {
                 AbstractPreferences child = ChildSpi(childrenName);
-                cachedNode.put(childrenName, child);
+                mCachedNode.put(childrenName, child);
             }
         }
 
-        final Collection<AbstractPreferences> values = cachedNode.values();
+        final Collection<AbstractPreferences> values = mCachedNode.values();
         final AbstractPreferences[] children = values.toArray(new AbstractPreferences[values.size()]);
         for (AbstractPreferences child : children) {
             child.removeNodeImpl();
         }
         FAIL_RETURN(RemoveNodeSpi());
         isRemoved = true;
-        parentPref.cachedNode.remove(nodeName);
+        parentPref.mCachedNode.remove(nodeName);
     }
     if (parentPref.nodeChangeListeners.size() > 0) {
         FAIL_RETURN(parentPref.notifyChildRemoved(this));
@@ -592,8 +628,9 @@ ECode AbstractPreferences::RemoveNodeImpl()/* throws BackingStoreException */
 ECode AbstractPreferences::AddNodeChangeListener(
     /* [in] */ INodeChangeListener* ncl)
 {
-    if (ncl == null) {
-        throw new NullPointerException("ncl == null");
+    if (ncl == NULL) {
+        // throw new NullPointerException("ncl == NULL");
+        return E_NULL_POINTER_EXCEPTION;
     }
     checkState();
     synchronized (nodeChangeListeners) {
@@ -604,8 +641,9 @@ ECode AbstractPreferences::AddNodeChangeListener(
 ECode AbstractPreferences::AddPreferenceChangeListener(
     /* [in] */ IPreferenceChangeListener* pcl)
 {
-    if (pcl == null) {
-        throw new NullPointerException("pcl == null");
+    if (pcl == NULL) {
+        // throw new NullPointerException("pcl == NULL");
+        return E_NULL_POINTER_EXCEPTION;
     }
     checkState();
     synchronized (preferenceChangeListeners) {
@@ -618,7 +656,7 @@ ECode AbstractPreferences::RemoveNodeChangeListener(
 {
     checkState();
     synchronized (nodeChangeListeners) {
-        int pos;
+        Int32 pos;
         if ((pos = nodeChangeListeners.indexOf(ncl)) == -1) {
             throw new IllegalArgumentException();
         }
@@ -631,7 +669,7 @@ ECode AbstractPreferences::RemovePreferenceChangeListener(
 {
     checkState();
     synchronized (preferenceChangeListeners) {
-        int pos;
+        Int32 pos;
         if ((pos = preferenceChangeListeners.indexOf(pcl)) == -1) {
             throw new IllegalArgumentException();
         }
