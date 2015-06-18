@@ -1,7 +1,7 @@
 module
 {
-    interface Elastos.IO.IWriter;
-    interface Elastos.IO.IOutputStream;
+    using interface Elastos.IO.IWriter;
+    using interface Elastos.IO.IOutputStream;
 
     namespace Org {
     namespace W3c {

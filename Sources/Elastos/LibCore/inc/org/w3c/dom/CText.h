@@ -2,16 +2,24 @@
 #ifndef __CTEXT_H__
 #define __CTEXT_H__
 
-#include "_CText.h"
+#include "_Org_W3c_Dom_CText.h"
 #include "Elastos.CoreLibrary.h"
+#include <elastos/core/Object.h>
+#include <elastos/coredef.h>
+
+using Elastos::Core::Object;
 
 namespace Org {
 namespace W3c {
 namespace Dom {
 
 CarClass(CText)
+    , public Object
+    , public IText
 {
 public:
+    CAR_INTERFACE_DECL();
+
     CARAPI GetNodeName(
         /* [out] */ String * pStr);
 

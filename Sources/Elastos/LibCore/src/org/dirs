@@ -3,3 +3,4 @@ DIRS = xml
 DIRS += xmlpull
 DIRS += kxml2
 //DIRS += apache
+DIRS += w3c
