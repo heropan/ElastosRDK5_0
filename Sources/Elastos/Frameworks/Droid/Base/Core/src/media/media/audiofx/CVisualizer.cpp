@@ -434,6 +434,29 @@ static Int32 translateError(Int32 code) {
     }
 }
 
+// ----------------------------------------------------------------------------
+void CVisualizer::ensureArraySize(
+    /* [in] */ ArrayOf<Byte>* arrayIn,
+    /* [in] */ uint32_t size,
+    /* [out] */ ArrayOf<Byte>** arrayOut)
+{
+    if (arrayIn != NULL && arrayIn->GetPayload() != NULL) {
+        uint32_t len = arrayIn->GetLength();
+        if (len == size) {
+            *arrayOut = arrayIn;
+            INTERFACE_ADDREF(*arrayOut);
+            return;
+        }
+    }
+
+    AutoPtr<ArrayOf<Byte> > localRef = ArrayOf<Byte>::Alloc(size);
+    if (NULL != localRef) {
+        // Promote to global ref.
+        *arrayOut = localRef;
+        INTERFACE_ADDREF(*arrayOut);
+    }
+}
+
 void CVisualizer::captureCallback(
     /* [in] */ void* user,
     /* [in] */ uint32_t waveformSize,
@@ -463,10 +486,9 @@ void CVisualizer::captureCallback(
     CObjectContainer::New((IObjectContainer**)&obj);
 
     if (waveformSize != 0 && waveform != NULL) {
-        ArrayOf<Byte>* jArray;
+        AutoPtr<ArrayOf<Byte> > jArray;
 
-        jArray = callbackInfo->waveform_data;
-
+        ensureArraySize(callbackInfo->waveform_data, waveformSize, (ArrayOf<Byte>**)&jArray);
         if (jArray != NULL) {
             Byte* nArray = jArray->GetPayload();
             memcpy(nArray, waveform, waveformSize);
@@ -481,10 +503,9 @@ void CVisualizer::captureCallback(
     }
 
     if (fftSize != 0 && fft != NULL) {
-        ArrayOf<Byte>* jArray;
+        AutoPtr<ArrayOf<Byte> > jArray;
 
-        jArray = callbackInfo->fft_data;
-
+        ensureArraySize(callbackInfo->fft_data, fftSize, (ArrayOf<Byte>**)&jArray);
         if (jArray != NULL) {
             Byte* nArray = jArray->GetPayload();
             memcpy(nArray, fft, fftSize);

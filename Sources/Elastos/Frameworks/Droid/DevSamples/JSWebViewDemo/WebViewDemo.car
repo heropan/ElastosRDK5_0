@@ -10,8 +10,16 @@ module
     namespace DevSamples {
     namespace WebViewDemo {
 
+    interface IObjectFactory {
+        CreateInstance(
+            [in] String moduleName,
+            [in] String className,
+            [out] IInterface** object);
+    }
+
     class CActivityOne {
         interface IActivity;
+        interface IObjectFactory;
     }
 
     } // namespace WebViewDemo

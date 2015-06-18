@@ -303,7 +303,19 @@ ECode CApplicationThreadNative::BindApplication(
     }
 
     if (instrumentationWatcher != NULL) {
-        LOGGERE(TAG, String("BindApplication: instrumentationWatcher not NULL!"));;
+        LOGGERE(TAG, String("BindApplication: instrumentationWatcher not NULL!"));
+
+        jclass c = env->FindClass("android/app/ElInstrumentationWatcherProxy");
+        Util::CheckErrorAndLog(env, "BindApplication", "FindClass: ElInstrumentationWatcherProxy %d", __LINE__);
+
+        jmethodID m = env->GetMethodID(c, "<init>", "(I)V");
+        Util::CheckErrorAndLog(env, "BindApplication", "GetMethodID: ElInstrumentationWatcherProxy %d", __LINE__);
+
+        jInstrumentationWatcher = env->NewObject(c, m, (jint)instrumentationWatcher);
+        Util::CheckErrorAndLog(env, "BindApplication", "NewObject: ElInstrumentationWatcherProxy %d", __LINE__);
+
+        instrumentationWatcher->AddRef();
+        env->DeleteLocalRef(c);
     }
 
     if (config != NULL) {

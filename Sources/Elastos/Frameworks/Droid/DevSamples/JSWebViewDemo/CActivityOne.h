@@ -24,7 +24,9 @@ namespace Droid {
 namespace DevSamples {
 namespace WebViewDemo {
 
-class CActivityOne : public Activity
+class CActivityOne
+    : public Activity
+    , public IObjectFactory
 {
 public:
     class ButtonOnClickListener
@@ -88,6 +90,11 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CARAPI GetClassID(
+        /* [out] */ ClassID *pCLSID);
+
     //@Override
     CARAPI OnCreate(
         /* [in] */ IBundle* savedInstanceState);
@@ -104,7 +111,10 @@ public:
         /* [in] */ IView* v,
         /* [in] */ IContextMenuInfo* menuInfo);
 
-    CARAPI TestJSAPI();
+    CARAPI CreateInstance(
+        /* [in] */ const String& moduleName,
+        /* [in] */ const String& className,
+        /* [out] */ IInterface** object);
 
 private:
     CARAPI HandleMessage(

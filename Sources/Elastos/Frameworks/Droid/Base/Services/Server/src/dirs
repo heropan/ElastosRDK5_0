@@ -13,3 +13,5 @@ DIRS += accounts
 DIRS += power
 DIRS += dreams
 DIRS += search
+DIRS += zigbee
+DIRS += remote

@@ -138,11 +138,14 @@ ECode CEqualizer::GetBandLevelRange(
 {
     VALIDATE_NOT_NULL(bandLevelRange);
 
-    ArrayOf_<Int16,2> result;
+    AutoPtr<ArrayOf<Int16> > result = ArrayOf<Int16>::Alloc(2);
+
     Int32 status;
-    GetParameterEx3(IEqualizer::PARAM_LEVEL_RANGE, &result, &status);
+    GetParameterEx3(IEqualizer::PARAM_LEVEL_RANGE, result, &status);
     FAIL_RETURN(CheckStatus(status));
-    *bandLevelRange = &result;
+    *bandLevelRange = result;
+    INTERFACE_ADDREF(*bandLevelRange);
+
     return NOERROR;
 }
 
@@ -205,14 +208,15 @@ ECode CEqualizer::GetBandFreqRange(
     VALIDATE_NOT_NULL(bandFreqRange);
 
     ArrayOf_<Int32,2> param;
-    ArrayOf_<Int32,2> result;
+    AutoPtr<ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(2);
 
     param[0] = IEqualizer::PARAM_BAND_FREQ_RANGE;
     param[1] = (Int32) band;
     Int32 status;
-    GetParameterEx4(&param, &result, &status);
+    GetParameterEx4(&param, result, &status);
     FAIL_RETURN(CheckStatus(status));
-    *bandFreqRange = &result;
+    *bandFreqRange = result;
+    INTERFACE_ADDREF(*bandFreqRange);
     return NOERROR;
 }
 

@@ -98,6 +98,7 @@ private:
     static const String ENCRYPTED_STATE;// = "1";
 
     AutoPtr<IContentResolver> mContentResolver;
+    const Boolean mDeviceHasYpbpr;
 };
 
 CarClass(CSystemServer)

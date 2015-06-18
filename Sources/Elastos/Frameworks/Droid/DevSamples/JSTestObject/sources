@@ -3,11 +3,21 @@ TARGET_TYPE= eco
 
 IMPORTS = Elastos.Core.eco
 
-CAR_FLAGS += -n -u
+CAR_FLAGS += -u
 LUBE_FLAGS += -u
 
 SOURCES = JSTestObject.car
 SOURCES += CTestObject.cpp
+SOURCES += CTestCarDataType.cpp
+
+SOURCES += CTestModuleInfo.cpp
+SOURCES += CTestClassInfo.cpp
+SOURCES += CTestMethodInfo.cpp
+SOURCES += CTestParamInfo.cpp
+SOURCES += CTestArgumentList.cpp
+SOURCES += CTestTypeAliasInfo.cpp
+SOURCES += CTestProperty.cpp
+
 SOURCES += Elastos.Core.cpp
 
 LIBRARIES  = $(XDK_USER_LIB)/Elastos.Runtime.lib

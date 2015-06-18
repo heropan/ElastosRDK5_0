@@ -288,6 +288,11 @@ private:
     //---------------------------------------------------------
     // Interface definitions
     //--------------------
+    static CARAPI_(void) ensureArraySize(
+        /* [in] */ ArrayOf<Byte>* arrayIn,
+        /* [in] */ uint32_t size,
+        /* [out] */ ArrayOf<Byte>** arrayOut);
+
     static CARAPI_(void) captureCallback(
         /* [in] */ void* user,
         /* [in] */ uint32_t waveformSize,

@@ -1832,16 +1832,16 @@ ECode CAudioManager::GetActiveAudioDevices(
 }
 
 ECode CAudioManager::SetAudioDeviceActive(
-    /* [in] */ const ArrayOf<String>* _devices,
+    /* [in] */ const ArrayOf<String>& _devices,
     /* [in] */ const String& state)
 {
-    if (_devices == NULL ||
+    if (_devices.GetLength() == 0 ||
         (!state.Equals(IAudioManager::AUDIO_INPUT_ACTIVE)
         && !state.Equals(IAudioManager::AUDIO_OUTPUT_ACTIVE))){
         return NOERROR;
     }
 
-    AutoPtr<ArrayOf<String> > devices = _devices->Clone();
+    AutoPtr<ArrayOf<String> > devices = _devices.Clone();
 
     String audio;
 

@@ -1805,6 +1805,29 @@ module
         GetProperty(
             [in] String key,
             [out] String* result);
+
+        /* get audio devices list(the devices which are supported)
+         *  @param devType  the audio device type,maybe in/out
+         */
+        GetAudioDevices(
+            [in] String devType,
+            [out, callee] ArrayOf<String>* result);
+
+        /* get current active devices */
+        /* @param devType  the audio device type
+         *  @return the current list of the active device
+         */
+        GetActiveAudioDevices(
+            [in] String devType,
+            [out, callee] ArrayOf<String>* result);
+
+        /* set audio devices active
+         * @param devices
+         * @param state  must be AUDIO_INPUT_ACTIVE or AUDIO_OUTPUT_ACTIVE
+         */
+        SetAudioDeviceActive(
+            [in] ArrayOf<String> devices,
+            [in] String state);
     }
 
     interface IAudioManagerHelper{
@@ -1818,6 +1841,18 @@ module
          */
         IsValidRingerMode(
             [in] Int32 rightMode,
+            [out] Boolean* result);
+
+        SetHdmiAvailable(
+            [in] Boolean val);
+
+        GetHdmiAvailable(
+            [out] Boolean* result);
+
+        SetHdmiExpected(
+            [in] Boolean val);
+
+        GetHdmiExpected(
             [out] Boolean* result);
 
         GetDefaultStreamVolume(

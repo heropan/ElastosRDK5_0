@@ -94,7 +94,10 @@ PInterface BaseErrorDialog::Probe(
         return (PInterface)(IKeyEventCallback*)this;
     }
     else if (riid == EIID_IViewOnCreateContextMenuListener) {
-       return (PInterface)(IViewOnCreateContextMenuListener*)this;
+        return (PInterface)(IViewOnCreateContextMenuListener*)this;
+    }
+    else if (riid == EIID_IWeakReferenceSource) {
+        return (PInterface)(IWeakReferenceSource*)this;
     }
 
     return NULL;
@@ -218,6 +221,15 @@ ECode BaseErrorDialog::OnKeyMultiple(
     VALIDATE_NOT_NULL(result);
     *result = AlertDialog::OnKeyMultiple(keyCode, repeatCount, event);
 
+    return NOERROR;
+}
+
+ECode BaseErrorDialog::GetWeakReference(
+    /* [out] */ IWeakReference** weakReference)
+{
+    VALIDATE_NOT_NULL(weakReference);
+    *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
+    (*weakReference)->AddRef();
     return NOERROR;
 }
 

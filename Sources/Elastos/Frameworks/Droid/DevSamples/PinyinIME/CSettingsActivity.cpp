@@ -63,32 +63,25 @@ ECode CSettingsActivity::OnCreate(
     PreferenceActivity::OnCreate(savedInstanceState);
     AddPreferencesFromResource(R::xml::settings);
 
-    AutoPtr<IPreferenceScreen> prefSet;
-    GetPreferenceScreen((IPreferenceScreen**)&prefSet);
+    AutoPtr<IPreferenceScreen> prefSet = GetPreferenceScreen();
     assert(prefSet != NULL);
     String key;
     GetString(R::string::setting_sound_key, &key);
     AutoPtr<ICharSequence> value;
     CStringWrapper::New(key, (ICharSequence**)&value);
-    AutoPtr<IPreference> temp;
-    prefSet->FindPreference(value, (IPreference**)&temp);
-    mKeySoundPref = ICheckBoxPreference::Probe(temp);
+    prefSet->FindPreference(value, (IPreference**)&mKeySoundPref);
 
     GetString(R::string::setting_vibrate_key, &key);
     value = NULL;
     CStringWrapper::New(key, (ICharSequence**)&value);
-    temp = NULL;
-    prefSet->FindPreference(value, (IPreference**)&temp);
-    mVibratePref = ICheckBoxPreference::Probe(temp);
+    prefSet->FindPreference(value, (IPreference**)&mVibratePref);
 
     GetString(R::string::setting_prediction_key, &key);
     value = NULL;
     CStringWrapper::New(key, (ICharSequence**)&value);
-    temp = NULL;
-    prefSet->FindPreference(value, (IPreference**)&temp);
-    mPredictionPref = ICheckBoxPreference::Probe(temp);
+    prefSet->FindPreference(value, (IPreference**)&mPredictionPref);
 
-    IPreference::Probe(prefSet)->SetOnPreferenceChangeListener(
+    prefSet->SetOnPreferenceChangeListener(
         (IPreferenceOnPreferenceChangeListener*)this->Probe(EIID_IPreferenceOnPreferenceChangeListener));
 
     CPinyinSettings::AcquireSingleton((ISettings**)&mSettings);
@@ -156,7 +149,8 @@ ECode CSettingsActivity::OnPreferenceTreeClick(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return PreferenceActivity::OnPreferenceTreeClick(preferenceScreen, preference, result);
+    *result = PreferenceActivity::OnPreferenceTreeClick(preferenceScreen, preference);
+    return NOERROR;
 }
 
 ECode CSettingsActivity::OnPreferenceStartFragment(
@@ -165,7 +159,8 @@ ECode CSettingsActivity::OnPreferenceStartFragment(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return PreferenceActivity::OnPreferenceStartFragment(caller, pref, result);
+    *result = PreferenceActivity::OnPreferenceStartFragment(caller, pref);
+    return NOERROR;
 }
 
 void CSettingsActivity::UpdateWidgets()

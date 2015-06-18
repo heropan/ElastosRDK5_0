@@ -67,7 +67,6 @@ module
          * @param buf
          *            the buffer to store the data.
          */
-
         SetData(
             [in] ArrayOf<Byte>* buf);
 
@@ -82,7 +81,6 @@ module
          *            the length of the data to be sent or the length of buffer to
          *            store the received data.
          */
-
         SetData(
             [in] ArrayOf<Byte>* buf,
             [in] Int32 anOffset,

@@ -37,6 +37,9 @@
 #include "accessibility/CAccessibilityManagerService.h"
 #include "CBackupManagerService.h"
 #include "dreams/CDreamManagerService.h"
+#include "AudioDeviceManagerObserver.h"
+#include "CKortideRemoteService.h"
+#include "CZigbeeService.h"
 
 #include <elastos/Slogger.h>
 #include <unistd.h>
@@ -48,6 +51,8 @@
 
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
+using Elastos::IO::CFileOutputStream;
+using Elastos::IO::IFlushable;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::App::Backup::IIBackupManager;
 using Elastos::Droid::App::IIWallpaperManager;
@@ -95,7 +100,9 @@ using Elastos::Droid::View::CDisplayManagerAw;
 using Elastos::Droid::View::IDispListHelper;
 using Elastos::Droid::View::CDispListHelper;
 using Elastos::Droid::View::IDispListDispFormat;
+using Elastos::Droid::View::CDispListDispFormat;
 using Elastos::Droid::View::IIWindowManager;
+using Elastos::Droid::View::IDispList;
 using Elastos::Droid::View::Textservice::IITextServicesManager;
 using Elastos::Droid::View::Accessibility::IIAccessibilityManager;
 using Elastos::Droid::Widget::Internal::ILockSettings;
@@ -138,6 +145,10 @@ using Elastos::Droid::Location::IICountryDetector;
 using Elastos::Droid::Media::IIAudioService;
 using Elastos::Droid::Media::IAudioService;
 using Elastos::Droid::Media::CAudioService;
+using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Media::CAudioManager;
+using Elastos::Droid::Provider::ISettingsSystem;
+using Elastos::Droid::Provider::CSettingsSystem;
 
 namespace Elastos {
 namespace Droid {
@@ -164,6 +175,7 @@ public:
 };
 
 ServerThread::ServerThread()
+    : mDeviceHasYpbpr(FALSE)
 {
     Thread::Init();
 }
@@ -768,9 +780,9 @@ ECode ServerThread::Run()
         // }
 
         // try {
-        //     Slog.i(TAG, "Audio device manager Observer");
-        //     // Listen for wired headset changes
-        //     AudioDeviceManagerObserver.getInstance(context);
+            Slogger::I(TAG, "Audio device manager Observer");
+            // Listen for wired headset changes
+            AudioDeviceManagerObserver::GetInstance(context);
         // } catch (Throwable e) {
         //     reportWtf("starting AudioDeviceManagerObserver", e);
         // }
@@ -834,6 +846,16 @@ ECode ServerThread::Run()
         AutoPtr<CDiskStatsService> diskStats;
         CDiskStatsService::NewByFriend(context, (CDiskStatsService**)&diskStats);
         ServiceManager::AddService(String("diskstats"), (IBinder*)diskStats);
+
+        Slogger::I(TAG, "KortideRemote Service");
+        AutoPtr<CKortideRemoteService> krService;
+        CKortideRemoteService::NewByFriend(context, (CKortideRemoteService**)&krService);
+        ServiceManager::AddService(String("KortideRemote"), (IBinder*)krService.Get());
+
+        Slogger::I(TAG, "Zigbee Service");
+        AutoPtr<CZigbeeService> zigbeeService;
+        CZigbeeService::NewByFriend(context, (CZigbeeService**)&zigbeeService);
+        ServiceManager::AddService(String("zigbee"), (IBinder*)zigbeeService.Get());
 
         // need to add this service even if SamplingProfilerIntegration.isEnabled()
         // is false, because it is this service that detects system property change and
@@ -994,206 +1016,226 @@ ECode ServerThread::Run()
      * Description : Initialize the DisplayManagerAw, to set the display area.
      * Date : 2013-3-15
      */
-    // AutoPtr<IDisplayManagerAw> displayManager;
-    // CDisplayManagerAw::New((IDisplayManagerAw**)&displayManager);
-    // if (displayManager == NULL) {
-    //     Logger::W(TAG, "Failed in creating DisplayManager.");
-    //     assert(0);
-    // }
-
-    // init the display area
-    // Int32 ratio = GetDispRatio();
-    // Slogger::I(TAG, "Display area ratio = %d", ratio);
-    // Int32 result;
-    // displayManager->SetDisplayAreaPercent(0, ratio, &result);
+    AutoPtr<IDisplayManagerAw> displayManager;
+    CDisplayManagerAw::New((IDisplayManagerAw**)&displayManager);
+    if (displayManager == NULL) {
+        Logger::W(TAG, "Failed in creating DisplayManager.");
+        assert(0);
+        // init the display area
+        // Int32 ratio = GetDispRatio();
+        // Slogger::I(TAG, "Display area ratio = %d", ratio);
+        // Int32 result;
+        // displayManager->SetDisplayAreaPercent(0, ratio, &result);
+    }
 
     // /* add by Gary. start {{----------------------------------- */
     // /* 2011-12-10 */
     /* init display output */
-    // Boolean ypbprIsConnected = FALSE;
-    // Boolean cvbsIsConnected = FALSE;
-    // Boolean hdmiIsConnected = FALSE;
-    // AutoPtr<IDispListDispFormat> finalFormat;
+    Boolean ypbprIsConnected = FALSE;
+    Boolean cvbsIsConnected = FALSE;
+    Boolean hdmiIsConnected = FALSE;
+    AutoPtr<IDispListDispFormat> finalFormat;
 
-    // AutoPtr<IInterface> tempObj;
-    // context->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&tempObj);
-    // AutoPtr<IDisplayManager> displayManager = IDisplayManager::Probe(tempObj.Get());
-    // if (displayManager == NULL) {
-    //     Logger::W(TAG, "Fail in creating DisplayManager.");
-    // }
+    if (displayManager == NULL) {
+        Logger::W(TAG, "Fail in creating DisplayManager.");
+    }
 
     // /* check cable's connection status */
-    // Int23 hdmiStatus;
-    // displayManager->GetHdmiHotPlugStatus(&hdmiStatus);
-    // if (hdmiStatus != 0)
-    //     hdmiIsConnected = TRUE;
+    Int32 hdmiStatus;
+    displayManager->GetHdmiHotPlugStatus(&hdmiStatus);
+    if (hdmiStatus != 0)
+        hdmiIsConnected = TRUE;
 
-    // Int32 tvStatus;
-    // displayManager->GetTvHotPlugStatus(&tvStatus);
-    // Logger::D(TAG, "tv connect status = %d" + tvStatus);
-    // if (tvStatus == IDisplayManagerAw::DISPLAY_TVDAC_CVBS)
-    //     cvbsIsConnected = TRUE;
-    // else if (tvStatus == IDisplayManagerAw::DISPLAY_TVDAC_YPBPR)
-    //     ypbprIsConnected = TRUE;
-    // else if (tvStatus == IDisplayManagerAw::DISPLAY_TVDAC_ALL) {
-    //     cvbsIsConnected = TRUE;
-    //     ypbprIsConnected = TRUE;
+    Int32 tvStatus;
+    displayManager->GetTvHotPlugStatus(&tvStatus);
+    Logger::D(TAG, "tv connect status = %d", tvStatus);
+    if (tvStatus == IDisplayManagerAw::DISPLAY_TVDAC_CVBS)
+        cvbsIsConnected = TRUE;
+    else if (tvStatus == IDisplayManagerAw::DISPLAY_TVDAC_YPBPR)
+        ypbprIsConnected = TRUE;
+    else if (tvStatus == IDisplayManagerAw::DISPLAY_TVDAC_ALL) {
+        cvbsIsConnected = TRUE;
+        ypbprIsConnected = TRUE;
+    }
+    Logger::D(TAG, "HDMI connect status = %d, av connnect status = %d, YPbPr connect status = %d",
+        hdmiIsConnected, cvbsIsConnected, ypbprIsConnected);
+
+    AutoPtr<IContentResolver> cr;
+    context->GetContentResolver((IContentResolver**)&cr);
+    AutoPtr<ISettingsSystem> systemSettings;
+    CSettingsSystem::AcquireSingleton((ISettingsSystem**)&systemSettings);
+    AutoPtr<IDispListHelper> dispListHelper;
+    CDispListHelper::AcquireSingleton((IDispListHelper**)&dispListHelper);
+
+    AutoPtr<IDispListDispFormat> savedFormat;
+    String savedFormatName;
+    systemSettings->GetString(cr, ISettingsSystem::DISPLY_OUTPUT_FORMAT, &savedFormatName);
+    if (savedFormatName.IsNull()) {
+        Logger::W(TAG, "Fail in getting saved display format.");
+        dispListHelper->GetStaticDispFormat(IDispList::HDMI_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&savedFormat);
+    }
+    else {
+        dispListHelper->ItemName2Code(savedFormatName, (IDispListDispFormat**)&savedFormat);
+        Logger::D(TAG, "saved display = %s", savedFormatName.string());
+    }
+
+    Int32 savedType;
+    savedFormat->GetOutputType(&savedType);
+
+    Int32 doType, doFormat;
+    displayManager->GetDisplayOutputType(0, &doType);
+    displayManager->GetDisplayOutputFormat(0, &doFormat);
+    AutoPtr<IDispListDispFormat> curFormat;
+    CDispListDispFormat::New(doType, doFormat, (IDispListDispFormat**)&curFormat);
+    Logger::D(TAG, "current format is (type, format): (%d, %d)", doType, doFormat);
+
+    Int32 savedIntType;
+    dispListHelper->GetAdvancedDisplayType(savedFormat, &savedIntType);
+    Int32 finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_HDMI;
+
+    Boolean bval;
+    if (hdmiIsConnected && (dispListHelper->IsHDMI(curFormat, &bval), bval)) {
+        finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_HDMI;
+        finalFormat = curFormat;
+    }
+    else if (cvbsIsConnected && (dispListHelper->IsCVBS(curFormat, &bval), bval)) {
+        finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_CVBS;
+        finalFormat = curFormat;
+    }
+    else if (mDeviceHasYpbpr && ypbprIsConnected
+        && (dispListHelper->IsYPbPr(curFormat, &bval), bval)) {
+        finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_YPBPR;
+        finalFormat = curFormat;
+    }
+    else if (!mDeviceHasYpbpr && ypbprIsConnected
+        && (dispListHelper->IsVGA(curFormat, &bval), bval)) {
+        finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_VGA;
+        dispListHelper->GetStaticDispFormat(
+            IDispList::VGA_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&finalFormat);
+    }
+    else if (hdmiIsConnected) {
+        finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_HDMI;
+        dispListHelper->GetStaticDispFormat(
+            IDispList::HDMI_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&finalFormat);
+    }
+    else if (cvbsIsConnected) {
+        finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_CVBS;
+        dispListHelper->GetStaticDispFormat(
+            IDispList::CVBS_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&finalFormat);
+    }
+    else if (mDeviceHasYpbpr && ypbprIsConnected) {
+        finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_YPBPR;
+        dispListHelper->GetStaticDispFormat(
+            IDispList::YPBPR_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&finalFormat);
+    }
+    else if (!mDeviceHasYpbpr && ypbprIsConnected){
+        finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_VGA;
+        dispListHelper->GetStaticDispFormat(
+            IDispList::VGA_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&finalFormat);
+    }
+    else {
+        finalIntType = savedIntType;
+        finalFormat = savedFormat;
+    }
+
+    if (finalIntType == savedIntType)
+        finalFormat = savedFormat;
+
+    Int32 finalOutputType, finalFormatFormat;
+    finalFormat->GetOutputType(&finalOutputType);
+    finalFormat->GetFormat(&finalFormatFormat);
+    if (finalOutputType == IDisplayManagerAw::DISPLAY_OUTPUT_TYPE_HDMI) {
+        Int32 ival;
+        displayManager->IsSupportHdmiMode(finalFormatFormat, &ival);
+        Boolean isSupport = ival != 0;
+        if (!isSupport) {
+            String str;
+            dispListHelper->ItemCode2Name(finalFormat, &str);
+            Logger::D(TAG, "HDMI mode %s is NOT supported by the TV.", str.string());
+            finalFormat = NULL;
+            dispListHelper->GetStaticDispFormat(
+                IDispList::HDMI_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&finalFormat);
+        }
+    }
+    String finalFormatStr;
+    dispListHelper->ItemCode2Name(finalFormat, &finalFormatStr);
+    Logger::D(TAG, "final format is %s", finalFormatStr.string());
+
+    finalFormat->GetOutputType(&finalOutputType);
+    finalFormat->GetFormat(&finalFormatFormat);
+    String srcPath("/data/displaysetmode");
+    AutoPtr<IFile> FILE;
+    CFile::New(srcPath, (IFile**)&FILE);
+    String values;
+    values.AppendFormat("%d\n%d", finalOutputType, finalFormatFormat);
+    // try {
+    AutoPtr<IFileOutputStream> fos;
+    CFileOutputStream::New(FILE, (IFileOutputStream**)&fos);
+    fos->WriteBytes(*values.GetBytes());
+    IFlushable::Probe(fos)->Flush();
+    AutoPtr<IFileDescriptor> fd;
+    fos->GetFD((IFileDescriptor**)&fd);
+    fd->Sync();
+    fos->Close();
+    // } catch (FileNotFoundException e) {
+    // } catch (IOException e) {
     // }
-    // Logger::D(TAG, "HDMI connect status = %d, av connnect status = %d, YPbPr connect status = %d",
-    //     hdmiIsConnected, cvbsIsConnected, ypbprIsConnected);
 
-    // AutoPtr<IContentResolver> cr;
-    // context->GetContentResolver((IContentResolver**)&cr);
-    // AutoPtr<ISettingsSystem> systemSettings;
-    // CSettingsSystem::AcquireSingleton((ISettingsSystem**)&systemSettings);
-    // AutoPtr<IDispListHelper> dispListHelper;
-    // CDispListHelper::AcquireSingleton((IDispListHelper**)&dispListHelper);
+    systemSettings->PutString(cr, ISettingsSystem::DISPLY_OUTPUT_FORMAT, finalFormatStr, &res);
 
-    // AutoPtr<IDispListDispFormat> savedFormat;
-    // String savedFormatName;
-    // systemSettings->GetString(cr, ISettingsSystem::DISPLY_OUTPUT_FORMAT, &savedFormatName);
-    // if (savedFormatName.IsNull()) {
-    //     Logger::W(TAG, "Fail in getting saved display format.");
-    //     savedFormat = IDispList::HDMI_DEFAULT_FORMAT;
-    // }
-    // else {
-    //     dispListHelper->ItemName2Code(savedFormatName, (IDispListDispFormat**)&savedFormat);
-    //     Logger::D(TAG, "saved display = %s", savedFormatName);
-    // }
+    AutoPtr<IAudioManager> audioManager;
+    CAudioManager::New(context, (IAudioManager**)&audioManager);
+    if (audioManager == NULL) {
+        Logger::E(TAG, "audioManager is NULL");
+    }
+    else {
+        /* modified by chenjd,chenjd@allwinnertech.com,20120710, start {{--------
+        * init audio output mode,may be multi channels */
+        String audioOutputChannelName;
+        systemSettings->GetString(cr, ISettingsSystem::AUDIO_OUTPUT_CHANNEL, &audioOutputChannelName);
 
-    // Int32 savedType;
-    // savedFormat->GetOutputType(&savedType);
+        if (audioOutputChannelName.IsNull()) {
+            audioOutputChannelName = IAudioManager::AUDIO_NAME_CODEC;
+            Logger::D(TAG,"use default audio output channel:%s", audioOutputChannelName.string());
+        }
+        Logger::D(TAG, "saved audio channel is %s", audioOutputChannelName.string());
+        List<String> audioOutputChannels;
+        AutoPtr<ArrayOf<String> > audioList;
+        StringUtils::Split(audioOutputChannelName, ",", (ArrayOf<String>**)&audioList);
+        for (Int32 i = 0; i < audioList->GetLength(); i++){
+            String audio = (*audioList)[i];
+            if (!audio.IsEmpty()) {
+                audioOutputChannels.PushBack(audio);
+            }
+        }
+        // Logger::D(TAG, "active the saved audio channels " + audioOutputChannels);
+        AutoPtr<ArrayOf<String> > activedChannels = ArrayOf<String>::Alloc(1);
+        if (Find(audioOutputChannels.Begin(), audioOutputChannels.End(),
+            IAudioManager::AUDIO_NAME_SPDIF) != audioOutputChannels.End()) {
+             activedChannels->Set(0, IAudioManager::AUDIO_NAME_SPDIF);
+        }
+        else if (finalOutputType == IDisplayManagerAw::DISPLAY_OUTPUT_TYPE_HDMI){
+             activedChannels->Set(0, IAudioManager::AUDIO_NAME_HDMI);
+        }
+        else {
+             activedChannels->Set(0, IAudioManager::AUDIO_NAME_CODEC);
+        }
+        audioManager->SetAudioDeviceActive(*activedChannels, IAudioManager::AUDIO_OUTPUT_ACTIVE);
 
-    // Int32 doType, doFormat;
-    // displayManager->GetDisplayOutputType(0, &doType);
-    // displayManager->GetDisplayOutputFormat(0, &doFormat);
-    // AutoPtr<IDispListDispFormat> curFormat;
-    // CDispListDispFormat::New(doType, doFormat, (IDispListDispFormat**)&curFormat);
-    // Logger::D(TAG, "current format is (type, format): (%d, %d)", doType, doFormat);
-
-    // Int32 savedIntType;
-    // dispListHelper->GetAdvancedDisplayType(savedFormat, &savedIntType);
-    // Int32 finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_HDMI;
-
-    // Boolean bval;
-    // if (hdmiIsConnected && (dispListHelper->IsHDMI(curFormat, &bval), bval)) {
-    //     finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_HDMI;
-    //     finalFormat = curFormat;
-    // } else if (cvbsIsConnected && (dispListHelper->IsCVBS(curFormat)) {
-    //     finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_CVBS;
-    //     finalFormat = curFormat;
-    // } else if (mDeviceHasYpbpr && ypbprIsConnected
-    //     && (dispListHelper->IsYPbPr(curFormat, &bval), bval)) {
-    //     finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_YPBPR;
-    //     finalFormat = curFormat;
-    // } else if (!mDeviceHasYpbpr && ypbprIsConnected
-    //     && (dispListHelper->IsVGA(curFormat, &bval), bval)) {
-    //     finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_VGA;
-    //     finalFormat = IDispList::VGA_DEFAULT_FORMAT;
-    // } else if (hdmiIsConnected) {
-    //     finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_HDMI;
-    //     finalFormat = IDispList::HDMI_DEFAULT_FORMAT;
-    // } else if (cvbsIsConnected) {
-    //     finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_CVBS;
-    //     finalFormat = IDispList::CVBS_DEFAULT_FORMAT;
-    // } else if (mDeviceHasYpbpr && ypbprIsConnected) {
-    //     finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_YPBPR;
-    //     finalFormat = IDispList::YPBPR_DEFAULT_FORMAT;
-    // } else if (!mDeviceHasYpbpr && ypbprIsConnected){
-    //     finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_VGA;
-    //     finalFormat = IDispList::VGA_DEFAULT_FORMAT;
-    // } else {
-    //     finalIntType = savedIntType;
-    //     finalFormat = savedFormat;
-    // }
-
-    // if (finalIntType == savedIntType)
-    //     finalFormat = savedFormat;
-
-    // Int32 finalOutputType, finalFormat;
-    // finalFormat->GetOutputType(&finalOutputType);
-    // if (finalOutputType == IDisplayManagerAw::DISPLAY_OUTPUT_TYPE_HDMI) {
-    //     Int32 ival;
-    //     finalFormat->GetFormat(&finalFormat);
-    //     displayManager->IsSupportHdmiMode(iformat, &ival);
-    //     Boolean isSupport = ival != 0;
-    //     if (!isSupport) {
-    //         String str;
-    //         dispListHelper->ItemCode2Name(finalFormat, &str);
-    //         Logger::D(TAG, "HDMI mode %s is NOT supported by the TV.", str.string());
-    //         finalFormat = IDispList::HDMI_DEFAULT_FORMAT;
-    //     }
-    // }
-    // String finalFormatStr;
-    // dispListHelper->ItemCode2Name(finalFormat, &finalFormatStr);
-    // Logger::D(TAG, "final format is %s", finalFormatStr.string());
-
-    // finalFormat->GetOutputType(&finalOutputType);
-    // finalFormat->GetFormat(&finalFormat);
-    // String srcPath("/data/displaysetmode");
-    // AutoPtr<IFile> FILE;
-    // CFile::New(srcPath, (IFile**)&FILE);
-    // String values;
-    // values.AppendFormat("%d\n%d", finalOutputType, finalFormat);
-    // // try {
-    // AutoPtr<IFileOutputStream> fos;
-    // CFileOutputStream::New(FILE, (IFileOutputStream**)&fos);
-    // fos->Write(values.getBytes());
-    // fos->Flush();
-    // fos.getFD().sync();
-    // if (fos) {
-    //     fos->Close();
-    //     fos = NULL;
-    //     FILE = NULL;
-    // }
-    // // } catch (FileNotFoundException e) {
-    // // } catch (IOException e) {
-    // // }
-
-    // settingsSystem->PutString(cr, ISettingsSystem::DISPLY_OUTPUT_FORMAT, finalFormatStr);
-
-    // AudioManager audioManager = new AudioManager(context);
-    // if(audioManager == null){
-    //     Log.e(TAG, "audioManager is null");
-    // }else {
-    //     /* modified by chenjd,chenjd@allwinnertech.com,20120710, start {{--------
-    //     * init audio output mode,may be multi channels */
-    //     String audioOutputChannelName = Settings.System.getString(context.getContentResolver(),
-    //         Settings.System.AUDIO_OUTPUT_CHANNEL);
-    //     if(audioOutputChannelName == null) {
-    //         audioOutputChannelName = AudioManager.AUDIO_NAME_CODEC;
-    //         Log.d(TAG,"use default audio output channel:" + audioOutputChannelName);
-    //     }
-    //     Log.d(TAG, "saved audio channel is " + audioOutputChannelName);
-    //     ArrayList<String> audioOutputChannels = new ArrayList<String>();
-    //     String[] audioList = audioOutputChannelName.split(",");
-    //     for(String audio:audioList){
-    //         if(!"".equals(audio)){
-    //             audioOutputChannels.add(audio);
-    //         }
-    //     }
-    //     Log.d(TAG, "active the saved audio channels " + audioOutputChannels);
-    //     ArrayList<String> activedChannels = new ArrayList<String>();
-    //       if(audioOutputChannels.contains(AudioManager.AUDIO_NAME_SPDIF)){
-    //          activedChannels.add(AudioManager.AUDIO_NAME_SPDIF);
-    //      }else if(finalFormat.mOutputType == DisplayManagerAw.DISPLAY_OUTPUT_TYPE_HDMI){
-    //          activedChannels.add(AudioManager.AUDIO_NAME_HDMI);
-    //      }else{
-    //          activedChannels.add(AudioManager.AUDIO_NAME_CODEC);
-    //      }
-    //     audioManager.setAudioDeviceActive(activedChannels,AudioManager.AUDIO_OUTPUT_ACTIVE);
-    //     /* record the audio output channel */
-    //     String st = null;
-    //     for(int i = 0; i < audioOutputChannels.size(); i++){
-    //         if(st == null){
-    //             st = audioOutputChannels.get(i);
-    //         }else{
-    //             st = st + "," + audioOutputChannels.get(i);
-    //         }
-    //     }
-    //     Settings.System.putString(context.getContentResolver(), Settings.System.AUDIO_OUTPUT_CHANNEL,st);
-    //     Log.d(TAG,"audio channels change to {" + st + "}");
-    // }
+        /* record the audio output channel */
+        String st;
+        List<String>::Iterator iter = audioOutputChannels.Begin();
+        for(; iter != audioOutputChannels.End(); ++iter){
+            if (st.IsNull()){
+                st = *iter;
+            }
+            else {
+                st = st + "," + *iter;
+            }
+        }
+        systemSettings->PutString(cr, ISettingsSystem::AUDIO_OUTPUT_CHANNEL, st, &res);
+        Logger::D(TAG, "audio channels change to {%s}", st.string());
+    }
 
     Slogger::I(TAG, "== END == Initializing Services... ");
 
