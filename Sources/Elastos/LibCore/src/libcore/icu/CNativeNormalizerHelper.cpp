@@ -5,6 +5,10 @@
 namespace Libcore {
 namespace ICU {
 
+CAR_SINGLETON_IMPL(CNativeNormalizerHelper)
+
+CAR_INTERFACE_IMPL(CNativeNormalizerHelper, Singleton, INativeNormalizerHelper)
+
 ECode CNativeNormalizerHelper::IsNormalized(
     /* [in] */ ICharSequence * src,
     /* [in] */ Form form,

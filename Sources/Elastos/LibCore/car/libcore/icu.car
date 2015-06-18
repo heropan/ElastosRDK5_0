@@ -57,6 +57,9 @@ module
         interface INativeIDNHelper;
     }
 
+    singleton class CNativeNormalizerHelper {
+        interface INativeNormalizerHelper;
+    }
     } // namespace ICU
     } // namespace LibCore
 }
