@@ -172,23 +172,23 @@ private:
 public:
     static void* Allocate(size_t n)
     {
-        Char8* result = (Char8*)Alloc::Allocate(n + (Int32)extra);
+        Byte* result = (Byte*)Alloc::Allocate(n + (Int32)extra);
         *(size_t*)result = n;
         return result + (Int32)extra;
     }
 
     static void Deallocate(void* p, size_t n)
     {
-        Char8* realp = (Char8*)p - (Int32)extra;
+        Byte* realp = (Byte*)p - (Int32)extra;
         assert(*(size_t*)realp == n);
         Alloc::Deallocate(realp, n + (Int32)extra);
     }
 
     static void* Reallocate(void* p, size_t oldSize, size_t newSize)
     {
-        Char8* realp = (Char8*)p - (Int32)extra;
+        Byte* realp = (Byte*)p - (Int32)extra;
         assert(*(size_t*)realp == oldSize);
-        Char8* result = (Char8*)Alloc::Reallocate(realp,
+        Byte* result = (Byte*)Alloc::Reallocate(realp,
                 oldSize + (Int32)extra, newSize + (Int32)extra);
         *(size_t*)result = newSize;
         return result + (Int32)extra;

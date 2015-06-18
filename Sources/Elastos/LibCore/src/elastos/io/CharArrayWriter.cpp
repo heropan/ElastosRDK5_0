@@ -119,9 +119,9 @@ ECode CharArrayWriter::ToString(
 
     Object::Autolock lock(mLock);
 
-    AutoPtr<ArrayOf<Char8> > dst;
+    AutoPtr<ArrayOf<Byte> > dst;
     Int32 dstOffset = 0;
-    FAIL_RETURN(Character::ToChars(*mBuf, 0, mCount, (ArrayOf<Char8>**)&dst, &dstOffset));
+    FAIL_RETURN(Character::ToChars(*mBuf, 0, mCount, (ArrayOf<Byte>**)&dst, &dstOffset));
 
     *result = String((char*)dst->GetPayload(), dst->GetLength());
 

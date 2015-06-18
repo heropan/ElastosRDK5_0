@@ -76,7 +76,7 @@ String Conversion::BigInteger2String(
     Int32 resLengthInChars =
             (Int32) (absBitLen / bitsForRadixDigit + ((sign < 0) ? 1 : 0)) + 1;
 
-    AutoPtr< ArrayOf<Char8> > result = ArrayOf<Char8>::Alloc(resLengthInChars);
+    AutoPtr< ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(resLengthInChars);
 
     Int32 currentChar = resLengthInChars;
     Int32 resDigit;
@@ -176,7 +176,7 @@ String Conversion::ToDecimalScaledString(
     // +1 - one char for sign if needed.
     // +7 - For "special case 2" (see below) we have 7 free chars for
     // inserting necessary scaled digits.
-    AutoPtr<ArrayOf<Char8> > result = ArrayOf<Char8>::Alloc(resLengthInChars + 1);
+    AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(resLengthInChars + 1);
 
     // allocated [resLengthInChars+1] characters.
     // a free latest character may be used for "special case 1" (see
@@ -358,7 +358,7 @@ String Conversion::ToDecimalScaledString(
     // +1 - one char for sign if needed.
     // +7 - For "special case 2" (see below) we have 7 free chars for
     //  inserting necessary scaled digits.
-    AutoPtr<ArrayOf<Char8> > result = ArrayOf<Char8>::Alloc(resLengthInChars+1);
+    AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(resLengthInChars+1);
     //  Allocated [resLengthInChars+1] characters.
     // a free latest character may be used for "special case 1" (see below)
     Int32 currentChar = resLengthInChars;

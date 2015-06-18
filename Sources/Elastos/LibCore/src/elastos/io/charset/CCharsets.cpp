@@ -140,7 +140,7 @@ ECode CCharsets::ToUtf8Bytes(
     }
 
     for (Int32 i = offset; i < end; ++i) {
-        Char8 ch = chars[i];
+        char ch = chars[i];
         if (ch < 0x80) {
             // One byte.
             if (!out->Append(ch)) {
@@ -155,8 +155,8 @@ ECode CCharsets::ToUtf8Bytes(
             }
         } else if (U16_IS_SURROGATE(ch)) {
             // A supplementary character.
-            Char8 high = ch;
-            Char8 low = (i + 1 != end) ? chars[i + 1] : 0;
+            char high = ch;
+            char low = (i + 1 != end) ? chars[i + 1] : 0;
             if (!U16_IS_SURROGATE_LEAD(high) || !U16_IS_SURROGATE_TRAIL(low)) {
                 if (!out->Append('?')) {
                     result = E_RUNTIME_EXCEPTION;

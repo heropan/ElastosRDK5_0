@@ -81,7 +81,7 @@ private:
      * next time this method is called). Note that n is interpreted as a large
      * positive integer (not a negative integer) if its sign bit is set.
      */
-    static CARAPI_(Int32) Int32IntoCharArray(ArrayOf<Char8>& buf, Int32 cursor, Int32 n);
+    static CARAPI_(Int32) Int32IntoCharArray(ArrayOf<Byte>& buf, Int32 cursor, Int32 n);
 
 private:
     static const Int32 TENS_LENGTH = 100;

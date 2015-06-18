@@ -26,7 +26,7 @@ public:
         /* [in] */ Int64 address);
 
     CARAPI CanEncode(
-        /* [in] */ Char8 c,
+        /* [in] */ Char32 c,
         /* [out] */ Boolean* result);
 
     CARAPI CanEncode(

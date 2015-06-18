@@ -31,7 +31,27 @@ struct TypeTraits<Boolean>
 };
 
 template <>
-struct TypeTraits<Char8>
+struct TypeTraits<Char16>
+{
+    typedef TrueType    HasTrivialDefaultConstructor;
+    typedef TrueType    HasTrivialCopyConstructor;
+    typedef TrueType    HasTrivialAssignmentOperator;
+    typedef TrueType    HasTrivialDestructor;
+    typedef TrueType    IsPODType;
+};
+
+template <>
+struct TypeTraits<Char32>
+{
+    typedef TrueType    HasTrivialDefaultConstructor;
+    typedef TrueType    HasTrivialCopyConstructor;
+    typedef TrueType    HasTrivialAssignmentOperator;
+    typedef TrueType    HasTrivialDestructor;
+    typedef TrueType    IsPODType;
+};
+
+template <>
+struct TypeTraits<Int16>
 {
     typedef TrueType    HasTrivialDefaultConstructor;
     typedef TrueType    HasTrivialCopyConstructor;
@@ -42,6 +62,16 @@ struct TypeTraits<Char8>
 
 template <>
 struct TypeTraits<Int32>
+{
+    typedef TrueType    HasTrivialDefaultConstructor;
+    typedef TrueType    HasTrivialCopyConstructor;
+    typedef TrueType    HasTrivialAssignmentOperator;
+    typedef TrueType    HasTrivialDestructor;
+    typedef TrueType    IsPODType;
+};
+
+template <>
+struct TypeTraits<Int64>
 {
     typedef TrueType    HasTrivialDefaultConstructor;
     typedef TrueType    HasTrivialCopyConstructor;

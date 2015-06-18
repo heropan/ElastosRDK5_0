@@ -87,7 +87,7 @@ String IntegralToString::ToString(
     }
 
     Int32 bufLen = radix < 8 ? 33 : 12;  // Max chars in result (conservative)
-    AutoPtr< ArrayOf<Char8> > buf = ArrayOf<Char8>::Alloc(bufLen);
+    AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(bufLen);
     Int32 cursor = bufLen;
 
     do {
@@ -231,7 +231,7 @@ String IntegralToString::ToString(
     }
 
     Int32 bufLen = radix < 8 ? 65 : 23;  // Max chars in result (conservative)
-    AutoPtr< ArrayOf<Char8> > buf = ArrayOf<Char8>::Alloc(bufLen);
+    AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(bufLen);
     Int32 cursor = bufLen;
 
     do {
@@ -267,7 +267,7 @@ String IntegralToString::ConvertInt64(
 
     Int32 bufLen = 20; // Maximum number of chars in result
     //char[] buf = (sb != null) ? BUFFER.get() : new char[bufLen];
-    AutoPtr< ArrayOf<Char8> > buf = ArrayOf<Char8>::Alloc(bufLen);
+    AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(bufLen);
 
     Int32 low = (Int32) (n % 1000000000); // Extract low-order 9 digits
     Int32 cursor = Int32IntoCharArray(*buf, bufLen, low);
@@ -329,7 +329,7 @@ String IntegralToString::ConvertInt64(
 }
 
 Int32 IntegralToString::Int32IntoCharArray(
-    /* [in] */ ArrayOf<Char8>& buf,
+    /* [in] */ ArrayOf<Byte>& buf,
     /* [in] */ Int32 cursor,
     /* [in] */ Int32 n)
 {
@@ -365,7 +365,7 @@ String IntegralToString::ToBinaryString(
     /* [in] */ Int32 i)
 {
     Int32 bufLen = 32;  // Max number of binary digits in an int
-    AutoPtr< ArrayOf<Char8> > buf = ArrayOf<Char8>::Alloc(bufLen);
+    AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(bufLen);
     Int32 cursor = bufLen;
 
     UInt32 idx = (UInt32)i;
@@ -386,7 +386,7 @@ String IntegralToString::ToBinaryString(
     }
 
     Int32 bufLen = 64;  // Max number of binary digits in a long
-    AutoPtr< ArrayOf<Char8> > buf = ArrayOf<Char8>::Alloc(bufLen);
+    AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(bufLen);
     Int32 cursor = bufLen;
 
     UInt64 uv = (UInt64)v;

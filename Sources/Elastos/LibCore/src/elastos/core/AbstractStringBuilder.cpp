@@ -154,7 +154,7 @@ Int32 AbstractStringBuilder::GetLength()
 {
     if (!mIsCounted) {
         mIsCounted = TRUE;
-        ArrayOf<Char8> bytes(mString, mByteCount);
+        ArrayOf<Byte> bytes(mString, mByteCount);
         Character::GetCharCount(bytes, 0, mByteCount, &mCharCount);
     }
 
@@ -282,7 +282,7 @@ ECode AbstractStringBuilder::Append(
 ECode AbstractStringBuilder::AppendChar(
     /* [in] */ Char32 ch)
 {
-    AutoPtr< ArrayOf<Char8> > buf = ArrayOf<Char8>::Alloc(5);
+    AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(5);
     Int32 len;
     Character::ToChars(ch, *buf, 0, &len);
 
@@ -457,8 +457,8 @@ ECode AbstractStringBuilder::InsertChar(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    AutoPtr< ArrayOf<Char8> > char8s;
-    Character::ToChars(c, (ArrayOf<Char8>**)&char8s);
+    AutoPtr< ArrayOf<Byte> > char8s;
+    Character::ToChars(c, (ArrayOf<Byte>**)&char8s);
 
     char str[5];
     Int32 length = char8s->GetLength();

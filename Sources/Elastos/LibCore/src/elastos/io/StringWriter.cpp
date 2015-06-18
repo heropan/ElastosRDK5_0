@@ -104,9 +104,9 @@ ECode StringWriter::Write(
         return NOERROR;
     }
 
-    AutoPtr<ArrayOf<Char8> > dst;
+    AutoPtr<ArrayOf<Byte> > dst;
     Int32 dstOffset = 0;
-    FAIL_RETURN(Character::ToChars(*buffer, offset, count, (ArrayOf<Char8>**)&dst, &dstOffset));
+    FAIL_RETURN(Character::ToChars(*buffer, offset, count, (ArrayOf<Byte>**)&dst, &dstOffset));
 
     mBuf->Append(String(dst->GetPayload()));
 

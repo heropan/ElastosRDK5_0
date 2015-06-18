@@ -62,10 +62,10 @@ ECode CharsetEncoderICU::Init(
 }
 
 ECode CharsetEncoderICU::CanEncode(
-    /* [in] */ Char8 c,
+    /* [in] */ Char32 c,
     /* [out] */ Boolean* result)
 {
-    return CanEncode((Int32) c, result);
+    return CanEncode((Int32)c, result);
 }
 
 ECode CharsetEncoderICU::CanEncode(

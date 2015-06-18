@@ -232,10 +232,10 @@ ECode CPrintStream::Newline()
 ECode CPrintStream::Print(
     /* [in] */ ArrayOf<Char32>* charArray)
 {
-    AutoPtr<ArrayOf<Char8> > dst;
+    AutoPtr<ArrayOf<Byte> > dst;
     Int32 dstOffset = 0;
     FAIL_RETURN(Character::ToChars(
-        *charArray, 0, charArray->GetLength(), (ArrayOf<Char8>**)&dst, &dstOffset));
+        *charArray, 0, charArray->GetLength(), (ArrayOf<Byte>**)&dst, &dstOffset));
 
     return Print(String(dst->GetPayload()));
 }
@@ -243,8 +243,8 @@ ECode CPrintStream::Print(
 ECode CPrintStream::PrintChar(
     /* [in] */ Char32 ch)
 {
-    AutoPtr<ArrayOf<Char8> > charArray;
-    FAIL_RETURN(Character::ToChars(ch, (ArrayOf<Char8>**)&charArray));
+    AutoPtr<ArrayOf<Byte> > charArray;
+    FAIL_RETURN(Character::ToChars(ch, (ArrayOf<Byte>**)&charArray));
     return Print(String(charArray->GetPayload()));
 }
 
@@ -318,10 +318,10 @@ ECode CPrintStream::Println()
 ECode CPrintStream::Println(
     /* [in] */ ArrayOf<Char32>* charArray)
 {
-    AutoPtr<ArrayOf<Char8> > dst;
+    AutoPtr<ArrayOf<Byte> > dst;
     Int32 dstOffset = 0;
     FAIL_RETURN(Character::ToChars(
-        *charArray, 0, charArray->GetLength(), (ArrayOf<Char8>**)&dst, &dstOffset));
+        *charArray, 0, charArray->GetLength(), (ArrayOf<Byte>**)&dst, &dstOffset));
 
     return Println(String(dst->GetPayload()));
 }

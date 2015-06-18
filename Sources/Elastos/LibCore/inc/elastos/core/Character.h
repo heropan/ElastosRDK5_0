@@ -1010,7 +1010,7 @@ public:
      * @since 1.5
      */
     static CARAPI GetCharAt(
-        /* [in] */ const ArrayOf<Char8>& seq,
+        /* [in] */ const ArrayOf<Byte>& seq,
         /* [in] */ Int32 index,
         /* [out] */ Char32* c,
         /* [out] */ Int32* nextIndex = NULL);
@@ -1044,7 +1044,7 @@ public:
      * @since 1.5
      */
     static CARAPI GetCharBefore(
-        /*[in]*/ const ArrayOf<Char8>& seq,
+        /*[in]*/ const ArrayOf<Byte>& seq,
         /*[in]*/ Int32 index,
         /* [out] */ Char32* c);
 
@@ -1078,7 +1078,7 @@ public:
      */
     static CARAPI ToChars(
         /*[in]*/ Char32 c,
-        /*[in]*/ ArrayOf<Char8>& dst,
+        /*[in]*/ ArrayOf<Byte>& dst,
         /*[in]*/ Int32 dstIndex,
         /* [out] */ Int32* number);
 
@@ -1098,13 +1098,13 @@ public:
      */
     static CARAPI ToChars(
         /*[in] */ Char32 c,
-        /*[out, callee] */ ArrayOf<Char8>** seq);
+        /*[out, callee] */ ArrayOf<Byte>** seq);
 
     static CARAPI ToChars(
         /* [in] */ const ArrayOf<Char32>& src,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
-        /* [out, callee] */ ArrayOf<Char8>** dst,
+        /* [out, callee] */ ArrayOf<Byte>** dst,
         /* [out] */ Int32* number);
 
     static CARAPI ToChar32s(
@@ -1137,7 +1137,7 @@ public:
      * @since 1.5
      */
     static CARAPI GetCharCount(
-        /*[in]*/ const ArrayOf<Char8>& seq,
+        /*[in]*/ const ArrayOf<Byte>& seq,
         /*[in]*/ Int32 offset,
         /*[in]*/ Int32 count,
         /* [out] */ Int32* number);
@@ -1228,7 +1228,7 @@ public:
      * @since 1.5
      */
     static CARAPI GetOffsetByChars(
-        /*[in]*/ const ArrayOf<Char8>& seq,
+        /*[in]*/ const ArrayOf<Byte>& seq,
         /*[in]*/ Int32 start,
         /*[in]*/ Int32 count,
         /*[in]*/ Int32 index,
@@ -1690,13 +1690,13 @@ private:
         /* [in] */ Int32 codePoint);
 
     static CARAPI_(Int32) GetCharAt(
-        /* [in] */ const Char8* src,
+        /* [in] */ const char* src,
         /* [in] */ Int32 srcLen,
         /* [in] */ Int32 index,
         /* [out] */ Int32* nextIndex);
 
     static CARAPI_(Int32) GetCharAtInternal(
-        /* [in] */ const Char8* cur,
+        /* [in] */ const char* cur,
         /* [out] */ Int32* numRead);
 
     // Write out the source character to <dstP>.

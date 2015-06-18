@@ -489,7 +489,7 @@ Int32 Character::GetByteCount(
 }
 
 ECode Character::GetCharAt(
-    /* [in] */ const ArrayOf<Char8>& seq,
+    /* [in] */ const ArrayOf<Byte>& seq,
     /* [in] */ Int32 index,
     /* [out] */ Char32* c,
     /* [out] */ Int32* nextIndex)
@@ -524,7 +524,7 @@ ECode Character::GetCharAt(
 }
 
 ECode Character::GetCharBefore(
-    /*[in]*/ const ArrayOf<Char8>& seq,
+    /*[in]*/ const ArrayOf<Byte>& seq,
     /*[in]*/ Int32 index,
     /* [out] */ Char32* c)
 {
@@ -534,8 +534,8 @@ ECode Character::GetCharBefore(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    const Char8* src = seq.GetPayload();
-    Char8 b = src[--index];
+    const char* src = (const char*)seq.GetPayload();
+    char b = src[--index];
     if ((b & 0x80) == 0) { // ASCII
         *c = b;
         return NOERROR;
@@ -565,8 +565,8 @@ ECode Character::GetCharBefore(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    const Char8* src = (const char*)seq;
-    Char8 b = src[--index];
+    const char* src = seq.string();
+    char b = src[--index];
     if ((b & 0x80) == 0) { // ASCII
         *c = b;
         return NOERROR;
@@ -584,7 +584,7 @@ ECode Character::GetCharBefore(
 
 ECode Character::ToChars(
     /*[in]*/ Char32 c,
-    /*[in]*/ ArrayOf<Char8>& dst,
+    /*[in]*/ ArrayOf<Byte>& dst,
     /*[in]*/ Int32 dstIndex,
     /* [out] */ Int32* number)
 {
@@ -606,7 +606,7 @@ ECode Character::ToChars(
 
 ECode Character::ToChars(
     /* [in] */ Char32 c,
-    /*[out, callee] */ ArrayOf<Char8>** seq)
+    /*[out, callee] */ ArrayOf<Byte>** seq)
 {
     VALIDATE_NOT_NULL(seq);
 
@@ -615,7 +615,7 @@ ECode Character::ToChars(
     }
 
     Int32 bytes = GetByteCount(c);
-    *seq = ArrayOf<Char8>::Alloc(bytes);
+    *seq = ArrayOf<Byte>::Alloc(bytes);
     REFCOUNT_ADD(*seq);
     WriteUTFBytesToBuffer((Byte*)(*seq)->GetPayload(), c, bytes);
     return NOERROR;
@@ -625,7 +625,7 @@ ECode Character::ToChars(
     /* [in] */ const ArrayOf<Char32>& src,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
-    /* [out, callee] */ ArrayOf<Char8>** dst,
+    /* [out, callee] */ ArrayOf<Byte>** dst,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(dst);
@@ -634,7 +634,7 @@ ECode Character::ToChars(
     if (offset < 0 || count < 0 || offset > src.GetLength() - count)
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
-    *dst = ArrayOf<Char8>::Alloc(src.GetLength() * 4);
+    *dst = ArrayOf<Byte>::Alloc(src.GetLength() * 4);
     REFCOUNT_ADD(*dst);
     Int32 dstOffset = 0;
     for (Int32 i = 0; i < count; ++i) {
@@ -674,7 +674,7 @@ ECode Character::ToChar32s(
 }
 
 ECode Character::GetCharCount(
-    /*[in]*/ const ArrayOf<Char8>& seq,
+    /*[in]*/ const ArrayOf<Byte>& seq,
     /*[in]*/ Int32 offset,
     /*[in]*/ Int32 count,
     /* [out] */ Int32* number)
@@ -688,7 +688,7 @@ ECode Character::GetCharCount(
     }
 
     Int32 result = 0;
-    const Char8* src = seq.GetPayload();
+    const char* src = (const char*)seq.GetPayload();
     while (offset < endIndex) {
         GetCharAt(src, len, offset, &offset);
         result++;
@@ -715,7 +715,7 @@ ECode Character::GetCharCount(
     }
 
     Int32 result = 0;
-    const Char8* src = (const char*)seq;
+    const char* src = seq.string();
     while (offset < endIndex) {
         GetCharAt(src, len, offset, &offset);
         result++;
@@ -771,7 +771,7 @@ ECode Character::GetCharCount(
 // }
 
 ECode Character::GetOffsetByChars(
-    /*[in]*/ const ArrayOf<Char8>& seq,
+    /*[in]*/ const ArrayOf<Byte>& seq,
     /*[in]*/ Int32 start,
     /*[in]*/ Int32 count,
     /*[in]*/ Int32 index,
@@ -794,7 +794,7 @@ ECode Character::GetOffsetByChars(
     if (charOffset > 0) {
         Int32 chars = charOffset;
         Int32 i = index;
-        Char8* bytes = seq.GetPayload();
+        Byte* bytes = seq.GetPayload();
         while (chars > 0) {
             chars--;
             if (i >= end) {
@@ -822,7 +822,7 @@ ECode Character::GetOffsetByChars(
     assert(charOffset < 0);
     Int32 chars = -charOffset;
     Int32 i = index;
-    Char8* bytes = seq.GetPayload();
+    Byte* bytes = seq.GetPayload();
     while (chars > 0) {
         chars--;
         if (i < start) {
@@ -1444,7 +1444,7 @@ void Character::WriteUTFBytesToBuffer(
 }
 
 Int32 Character::GetCharAt(
-    /* [in] */ const Char8* src,
+    /* [in] */ const char* src,
     /* [in] */ Int32 srcLen,
     /* [in] */ Int32 index,
     /* [out] */ Int32* nextIndex)
@@ -1465,10 +1465,10 @@ Int32 Character::GetCharAt(
 }
 
 Int32 Character::GetCharAtInternal(
-    /* [in] */ const Char8* cur,
+    /* [in] */ const char* cur,
     /* [out] */ Int32* numRead)
 {
-    const Char8 firstChar = *cur;
+    const Byte firstChar = *cur;
     if ((firstChar & 0x80) == 0) { // ASCII
         *numRead = 1;
         return *cur;
