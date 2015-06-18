@@ -1,22 +1,26 @@
 #ifndef __UTILITY_CSTACK_H__
 #define __UTILITY_CSTACK_H__
 
-#include "_CPriorityQueue.h"
+#include "_Elastos_Utility_CPriorityQueue.h"
 #include "AbstractQueue.h"
 
 using Elastos::Core::IComparator;
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::IObjectOutputStream;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
 
-CarClass(CPriorityQueue), public AbstractQueue
+CarClass(CPriorityQueue)
+    , public AbstractQueue
+    , public IPriorityQueue
+    , public ISerializable
 {
 private:
     class PriorityIterator
-        : public IIterator
-        , public ElRefBase
+        : public Object
+        , public IIterator
     {
     public:
         PriorityIterator(
@@ -41,6 +45,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Constructs a priority queue with an initial capacity of 11 and natural
      * ordering.
@@ -117,16 +123,13 @@ public:
     CARAPI constructor(
         /* [in] */ ISortedSet* c);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
     /**
      * Gets the comparator of the priority queue.
      *
      * @return the comparator of the priority queue or null if the natural
      *         ordering is used.
      */
-    CARAPI Comparator(
+    CARAPI GetComparator(
         /* [out] */ IComparator** outcom);
 
     /**

@@ -1,9 +1,12 @@
 
 #include "CPriorityQueue.h"
 #include "Arrays.h"
-#include <elastos/Math.h>
+#include "Math.h"
 
 using Elastos::Core::IComparable;
+using Elastos::IO::EIID_ISerializable;
+using Elastos::IO::IOutputStream;
+using Elastos::IO::IInputStream;
 
 namespace Elastos {
 namespace Utility {
@@ -20,7 +23,7 @@ CPriorityQueue::PriorityIterator::PriorityIterator(
 {
 }
 
-CAR_INTERFACE_IMPL(CPriorityQueue::PriorityIterator, IIterator);
+CAR_INTERFACE_IMPL(CPriorityQueue::PriorityIterator, Object, IIterator);
 
 ECode CPriorityQueue::PriorityIterator::HasNext(
     /* [out] */ Boolean* value)
@@ -62,6 +65,8 @@ ECode CPriorityQueue::PriorityIterator::Remove()
 //==========================================================
 //       CPriorityQueue
 //==========================================================
+
+CAR_INTERFACE_IMPL_2(CPriorityQueue, AbstractQueue, IPriorityQueue, ISerializable)
 
 const Int64 CPriorityQueue::sSerialVersionUID;
 
@@ -124,13 +129,7 @@ ECode CPriorityQueue::constructor(
     return GetFromSortedSet(c);
 }
 
-PInterface CPriorityQueue::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CPriorityQueue::Probe(riid);
-}
-
-ECode CPriorityQueue::Comparator(
+ECode CPriorityQueue::GetComparator(
     /* [out] */ IComparator** outcom)
 {
     VALIDATE_NOT_NULL(outcom)
@@ -218,7 +217,7 @@ ECode CPriorityQueue::AddAll(
 
 ECode CPriorityQueue::Clear()
 {
-    Arrays::Fill(mElements, NULL);
+    Arrays::Fill(mElements, (IInterface*)NULL);
     mSize = 0;
     return NOERROR;
 }
@@ -243,7 +242,7 @@ ECode CPriorityQueue::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    *result = Object::Equals(object, this);
+    *result = Object::Equals(object, (IPriorityQueue*)this);
     return NOERROR;
 }
 
@@ -334,7 +333,7 @@ ECode CPriorityQueue::ReadObject(
 {
     in->DefaultReadObject();
     Int32 capacity = 0;
-    in->Read(&capacity);
+    (IInputStream::Probe(in))->Read(&capacity);
     mElements = NewElementArray(capacity);
     for (Int32 i = 0; i < mSize; i++) {
         assert(0 && "TODO");
@@ -354,7 +353,7 @@ ECode CPriorityQueue::WriteObject(
     /* [in] */ IObjectOutputStream* out)
 {
     out->DefaultWriteObject();
-    out->Write(mElements->GetLength());
+    (IOutputStream::Probe(out))->Write(mElements->GetLength());
     for (Int32 i = 0; i < mSize; i++) {
         assert(0 && "TODO");
         // out.writeObject(mElements[i]);
@@ -365,8 +364,8 @@ ECode CPriorityQueue::WriteObject(
 ECode CPriorityQueue::GetFromPriorityQueue(
     /* [in] */ IPriorityQueue* c)
 {
-    FAIL_RETURN(InitSize(c));
-    c->Comparator((IComparator**)&mComparator);
+    FAIL_RETURN(InitSize(ICollection::Probe(c)));
+    c->GetComparator((IComparator**)&mComparator);
     mElements->Copy(0, ((CPriorityQueue*)c)->mElements, 0, ((CPriorityQueue*)c)->mSize);
     mSize = ((CPriorityQueue*)c)->mSize;
     return NOERROR;
@@ -375,10 +374,10 @@ ECode CPriorityQueue::GetFromPriorityQueue(
 ECode CPriorityQueue::GetFromSortedSet(
     /* [in] */ ISortedSet* c)
 {
-    FAIL_RETURN(InitSize(c));
-    c->Comparator((IComparator**)&mComparator);
+    FAIL_RETURN(InitSize(ICollection::Probe(c)));
+    c->GetComparator((IComparator**)&mComparator);
     AutoPtr<IIterator> iter;
-    c->GetIterator((IIterator**)&iter);
+    (IIterable::Probe(c))->GetIterator((IIterator**)&iter);
     Boolean isflag = FALSE;
     while (iter->HasNext(&isflag), isflag) {
         AutoPtr<IInterface> outface;
