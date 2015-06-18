@@ -160,11 +160,6 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
             m_elemPtr++;
             break;
 
-        case Type_Char8:
-            *(Char8*)pValue = *(Char8*)m_elemPtr;
-            m_elemPtr++;
-            break;
-
         case Type_Char16:
             *(Char16*)pValue = *(Char16*)m_elemPtr;
             m_elemPtr++;
@@ -327,7 +322,6 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
     switch(type) {
         case Type_Byte:
         case Type_Boolean:
-        case Type_Char8:
             *m_elemPtr = *((Byte*)pValue);
             m_elemPtr++;
 

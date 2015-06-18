@@ -181,7 +181,6 @@ static const KeywordToken s_keywords_B[] = {
 };
 
 static const KeywordToken s_keywords_C[] = {
-    { "Char8", Token_K_Char8},
     { "Char16", Token_K_Char16 },
     { "Char32", Token_K_Char32 },
 };

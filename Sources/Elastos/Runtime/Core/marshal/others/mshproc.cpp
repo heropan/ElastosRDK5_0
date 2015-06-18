@@ -557,8 +557,8 @@ ECode Stub_ProcessUnmsh_In(
                         ((PCARQUINTET)*puArgs)->m_pBuf = \
                             (byte *)puOutBuffer + sizeof(CarQuintet);
                         if ((BT_TYPE(pParams[n]) == BT_TYPE_STRINGBUF)) {
-                            ((PCARQUINTET)*puArgs)->m_used = sizeof(Char8);
-                            *(Char8 *)(((PCARQUINTET)*puArgs)->m_pBuf) = 0;
+                            ((PCARQUINTET)*puArgs)->m_used = sizeof(Byte);
+                            *(Byte *)(((PCARQUINTET)*puArgs)->m_pBuf) = 0;
                         }
                         else if (BT_TYPE(pParams[n]) == BT_TYPE_ARRAYOF) {
                             ((PCARQUINTET)*puArgs)->m_used =

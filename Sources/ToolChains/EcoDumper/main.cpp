@@ -19,9 +19,6 @@ static CLSModule* sModule = NULL;
 void dump_param_type(ParamDescriptor* paramDesc)
 {
     switch(paramDesc->type.type) {
-    case Type_Char8:
-        printf("Char8");
-        break;
     case Type_Char16:
         printf("Char16");
         break;

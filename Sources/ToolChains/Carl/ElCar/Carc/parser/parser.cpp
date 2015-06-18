@@ -818,9 +818,6 @@ int P_BaseType(CARToken token, TypeDescriptor *pType)
         case Token_K_PVoid:
             pType->type = Type_PVoid;
             break;
-        case Token_K_Char8:
-            pType->type = Type_Char8;
-            break;
         case Token_K_Char16:
             pType->type = Type_Char16;
             break;
@@ -3535,11 +3532,11 @@ int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
     CARDataType type = pType->type;
     int pointer = pType->nPointer;
     switch(type) {
-        case Type_Char8:
-            sb.Append("C8");
-            break;
         case Type_Char16:
             sb.Append("C16");
+            break;
+        case Type_Char32:
+            sb.Append("C32");
             break;
         case Type_Boolean:
             sb.Append("Z");

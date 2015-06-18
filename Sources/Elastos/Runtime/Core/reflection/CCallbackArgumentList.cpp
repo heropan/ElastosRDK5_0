@@ -172,13 +172,6 @@ ECode CCallbackArgumentList::GetDoubleArgument(
     return GetParamValue(index, pValue, CarDataType_Double);
 }
 
-ECode CCallbackArgumentList::GetChar8Argument(
-    /* [in] */ Int32 index,
-    /* [out] */ Char8 * pValue)
-{
-    return GetParamValue(index, pValue, CarDataType_Char8);
-}
-
 ECode CCallbackArgumentList::GetChar16Argument(
     /* [in] */ Int32 index,
     /* [out] */ Char16 * pValue)

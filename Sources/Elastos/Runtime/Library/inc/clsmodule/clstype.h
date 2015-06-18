@@ -47,7 +47,7 @@ typedef enum CARAttrib
 
 typedef enum CARDataType
 {
-    Type_Char8 = 0x01,   Type_Char16,       Type_Char32,
+    Type_Char16 = 0x01,  Type_Char32,
     Type_Boolean,        Type_Float,        Type_Double,
     Type_Int8,           Type_Int16 ,       Type_Int32,       Type_Int64,
     Type_Byte,           Type_UInt16,       Type_UInt32,      Type_UInt64,
@@ -55,8 +55,7 @@ typedef enum CARDataType
     Type_Array,          Type_PVoid,         Type_const,
     Type_interface,      Type_struct,       Type_enum,        Type_alias,
 
-    Type_String,
-    Type_ArrayOf
+    Type_String,         Type_ArrayOf
 
 } CARDataType;
 

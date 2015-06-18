@@ -59,7 +59,7 @@ typedef struct InterfacePack
 {
     EMuid               m_clsid;            // clsid of object
     UInt32              m_uIndex;           // interface index in class
-    Char8               m_stubConnName[256];// dbus unique connection name of stub
+    Byte                m_stubConnName[256];// dbus unique connection name of stub
 }   InterfacePack;
 
 extern ECode StdMarshalInterface(

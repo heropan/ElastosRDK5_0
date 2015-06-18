@@ -428,7 +428,7 @@ extern int SelectEnumElement(const char *, const EnumDescriptor *);
 typedef enum GlobalSymbolType
 {
     GType_None              = 0,
-    GType_Class             = Type_Char8,
+    GType_Class             = Type_String,
     GType_Interface         = Type_interface,
     GType_Struct            = Type_struct,
     GType_Enum              = Type_enum,

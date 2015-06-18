@@ -158,13 +158,6 @@ ECode CVariableOfCppVector::SetDoubleElement(
     return SetElementValue(index, &value, CarDataType_Double);
 }
 
-ECode CVariableOfCppVector::SetChar8Element(
-    /* [in] */ Int32 index,
-    /* [in] */ Char8 value)
-{
-    return SetElementValue(index, &value, CarDataType_Char8);
-}
-
 ECode CVariableOfCppVector::SetChar16Element(
     /* [in] */ Int32 index,
     /* [in] */ Char16 value)
@@ -363,13 +356,6 @@ ECode CVariableOfCppVector::GetDoubleElement(
     /* [out] */ Double * pValue)
 {
     return GetElementValue(index, pValue, CarDataType_Double);
-}
-
-ECode CVariableOfCppVector::GetChar8Element(
-    /* [in] */ Int32 index,
-    /* [out] */ Char8 * pValue)
-{
-    return GetElementValue(index, pValue, CarDataType_Char8);
 }
 
 ECode CVariableOfCppVector::GetChar16Element(

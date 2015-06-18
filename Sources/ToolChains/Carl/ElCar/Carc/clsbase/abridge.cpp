@@ -132,7 +132,6 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
     TypeDescriptor type;
 
     switch (pType->type) {
-        case Type_Char8:
         case Type_Byte:
         case Type_Int8:
         case Type_Boolean:
