@@ -195,10 +195,6 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
             *pStackSize += 1;
             return Param_Type_pclsid;
 
-        case Type_CString:
-            *pStackSize += 1;
-            return pType->nPointer ? Param_Type_pCString:Param_Type_CString;
-
         case Type_String:
             *pStackSize += 1;
             if (dwAttribs & ParamAttrib_in) {

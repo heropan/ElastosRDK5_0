@@ -58,7 +58,7 @@ public:
         /* [out] */ ArrayOf<IEnumItemInfo *> * pItemInfos);
 
     CARAPI GetItemInfo(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IEnumItemInfo ** ppEnumItemInfo);
 
     CARAPI InitItemInfos();

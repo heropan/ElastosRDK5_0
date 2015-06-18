@@ -63,7 +63,7 @@ public:
         /* [out] */ ArrayOf<IStructInfo *> * pStructInfos);
 
     CARAPI GetStructInfo(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IStructInfo ** ppStructInfo);
 
     CARAPI GetEnumCount(
@@ -83,7 +83,7 @@ public:
         /* [out] */ ArrayOf<ITypeAliasInfo *> * pTypeAliasInfos);
 
     CARAPI GetTypeAliasInfo(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ ITypeAliasInfo ** ppTypeAliasInfo);
 
     CARAPI GetConstantCount(
@@ -93,7 +93,7 @@ public:
         /* [out] */ ArrayOf<IConstantInfo *> * pConstantInfos);
 
     CARAPI GetConstantInfo(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IConstantInfo ** ppConstantInfo);
 
     CARAPI GetImportModuleInfoCount(

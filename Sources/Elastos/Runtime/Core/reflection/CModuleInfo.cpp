@@ -217,7 +217,7 @@ ECode CModuleInfo::GetAllStructInfos(
 }
 
 ECode CModuleInfo::GetStructInfo(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IStructInfo ** ppStructInfo)
 {
     if (name.IsNull() || !ppStructInfo) {
@@ -336,7 +336,7 @@ ECode CModuleInfo::GetAllTypeAliasInfos(
 }
 
 ECode CModuleInfo::GetTypeAliasInfo(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ ITypeAliasInfo ** ppTypeAliasInfo)
 {
     if (name.IsNull() || !ppTypeAliasInfo) {
@@ -390,7 +390,7 @@ ECode CModuleInfo::GetAllConstantInfos(
 }
 
 ECode CModuleInfo::GetConstantInfo(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IConstantInfo ** ppConstantInfo)
 {
     if (name.IsNull() || !ppConstantInfo) {

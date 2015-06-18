@@ -45,7 +45,7 @@ public:
         /* [out] */ IParamInfo ** ppParamInfo);
 
     CARAPI GetParamInfoByName(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IParamInfo ** ppParamInfo);
 
     CARAPI AddCallback(

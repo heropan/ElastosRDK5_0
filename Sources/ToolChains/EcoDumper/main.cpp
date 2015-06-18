@@ -76,9 +76,6 @@ void dump_param_type(ParamDescriptor* paramDesc)
     case Type_String:
         printf("String");
         break;
-    case Type_CString:
-        printf("CString");
-        break;
     case Type_ArrayOf:
         printf("ArrayOf");
         break;

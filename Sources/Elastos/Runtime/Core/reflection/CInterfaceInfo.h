@@ -65,8 +65,8 @@ public:
         /* [out] */ ArrayOf<IMethodInfo *> * pMethodInfos);
 
     CARAPI GetMethodInfo(
-        /* [in] */ CString name,
-        /* [in] */ CString signature,
+        /* [in] */ const String& name,
+        /* [in] */ const String& signature,
         /* [out] */ IMethodInfo ** ppMethodInfo);
 
     CARAPI CreateIFList();

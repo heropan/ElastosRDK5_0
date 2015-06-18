@@ -228,8 +228,8 @@ ECode CInterfaceInfo::GetAllMethodInfos(
 }
 
 ECode CInterfaceInfo::GetMethodInfo(
-    /* [in] */ CString name,
-    /* [in] */ CString signature,
+    /* [in] */ const String& name,
+    /* [in] */ const String& signature,
     /* [out] */ IMethodInfo ** ppMethodInfo)
 {
     if (name.IsNull() || signature.IsNull() || !ppMethodInfo) {
@@ -241,8 +241,8 @@ ECode CInterfaceInfo::GetMethodInfo(
     ECode ec = AcquireMethodList();
     if (FAILED(ec)) return ec;
 
-    String strName = String(name) + String(signature);
-    return m_pMethodList->AcquireObjByName(strName.string(), (IInterface **)ppMethodInfo);
+    String strName = name + signature;
+    return m_pMethodList->AcquireObjByName(strName, (IInterface **)ppMethodInfo);
 }
 
 ECode CInterfaceInfo::CreateIFList()

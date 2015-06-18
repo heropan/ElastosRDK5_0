@@ -842,9 +842,6 @@ int P_BaseType(CARToken token, TypeDescriptor *pType)
         case Token_K_EventHandler:
             pType->type = Type_EventHandler;
             break;
-        case Token_K_CString:
-            pType->type = Type_CString;
-            break;
         case Token_K_String:
             pType->type = Type_String;
             break;
@@ -3588,9 +3585,6 @@ int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
             break;
         case Type_String:
             sb.Append("LElastos/String;");
-            break;
-        case Type_CString:
-            sb.Append("LElastos/CString;");
             break;
         case Type_enum: {
             sb.Append("L");

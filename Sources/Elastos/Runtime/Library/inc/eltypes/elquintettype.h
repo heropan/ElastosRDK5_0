@@ -39,17 +39,16 @@ typedef enum _CarQuintetFlag
     CarQuintetFlag_Type_Char8       = 11,
     CarQuintetFlag_Type_Char16      = CarQuintetFlag_Type_UInt16,
     CarQuintetFlag_Type_Char32      = CarQuintetFlag_Type_UInt32,
-    CarQuintetFlag_Type_CString     = 12,
-    CarQuintetFlag_Type_String      = 13,
+    CarQuintetFlag_Type_String      = 12,
 
-    CarQuintetFlag_Type_EMuid       = 14,
-    CarQuintetFlag_Type_EGuid       = 15,
+    CarQuintetFlag_Type_EMuid       = 13,
+    CarQuintetFlag_Type_EGuid       = 14,
     CarQuintetFlag_Type_ECode       = CarQuintetFlag_Type_Int32,
     CarQuintetFlag_Type_Enum        = CarQuintetFlag_Type_Int32,
-    CarQuintetFlag_Type_Struct      = 16,
-    CarQuintetFlag_Type_IObject     = 17,
-    CarQuintetFlag_Type_RefObject   = 18,
-    CarQuintetFlag_Type_LightRefObject   = 19,
+    CarQuintetFlag_Type_Struct      = 15,
+    CarQuintetFlag_Type_IObject     = 16,
+    CarQuintetFlag_Type_RefObject   = 17,
+    CarQuintetFlag_Type_LightRefObject   = 18,
 
     CarQuintetFlag_TypeMask         = 0x0000ffff
 } CarQuintetFlag;

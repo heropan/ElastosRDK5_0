@@ -245,13 +245,6 @@ ECode CVariableOfCarArray::SetChar32Element(
     return SetElementValue(index, &value, CarDataType_Char32);
 }
 
-ECode CVariableOfCarArray::SetCStringElement(
-    /* [in] */ Int32 index,
-    /* [in] */ CString value)
-{
-    return SetElementValue(index, reinterpret_cast<void*>(const_cast<CString*>(&value)), CarDataType_CString);
-}
-
 ECode CVariableOfCarArray::SetStringElement(
     /* [in] */ Int32 index,
     /* [in] */ const String& value)
@@ -457,13 +450,6 @@ ECode CVariableOfCarArray::GetChar32Element(
     /* [out] */ Char32 * pValue)
 {
     return GetElementValue(index, pValue, CarDataType_Char32);
-}
-
-ECode CVariableOfCarArray::GetCStringElement(
-    /* [in] */ Int32 index,
-    /* [out] */ CString* pValue)
-{
-    return GetElementValue(index, pValue, CarDataType_CString);
 }
 
 ECode CVariableOfCarArray::GetStringElement(

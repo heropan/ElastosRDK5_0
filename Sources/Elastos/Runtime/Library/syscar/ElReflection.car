@@ -48,19 +48,18 @@ library
         CarDataType_Char8       = 7,
         CarDataType_Char16      = 8,
         CarDataType_Char32      = 9,
-        CarDataType_CString     = 10,
-        CarDataType_String      = 11,
-        CarDataType_Boolean     = 12,
-        CarDataType_EMuid       = 13,
-        CarDataType_EGuid       = 14,
-        CarDataType_ECode       = 15,
-        CarDataType_LocalPtr    = 16,
-        CarDataType_LocalType   = 17,
-        CarDataType_Enum        = 18,
-        CarDataType_ArrayOf     = 19,
-        CarDataType_CppVector   = 20,
-        CarDataType_Struct      = 21,
-        CarDataType_Interface   = 22
+        CarDataType_String      = 10,
+        CarDataType_Boolean     = 11,
+        CarDataType_EMuid       = 12,
+        CarDataType_EGuid       = 13,
+        CarDataType_ECode       = 14,
+        CarDataType_LocalPtr    = 15,
+        CarDataType_LocalType   = 16,
+        CarDataType_Enum        = 17,
+        CarDataType_ArrayOf     = 18,
+        CarDataType_CppVector   = 19,
+        CarDataType_Struct      = 20,
+        CarDataType_Interface   = 21
     }
 
     enum ParamIOAttribute {
@@ -112,7 +111,7 @@ library
             [out] ArrayOf<IEnumItemInfo*> itemInfos);
 
         GetItemInfo(
-            [in] CString name,
+            [in] String name,
             [out] IEnumItemInfo** enumItemInfo);
     }
 
@@ -163,7 +162,7 @@ library
             [out] ArrayOf<IFieldInfo*> fieldInfos);
 
         GetFieldInfo(
-            [in] CString name,
+            [in] String name,
             [out] IFieldInfo** fieldInfo);
 
         CreateVariable(
@@ -210,8 +209,8 @@ library
             [out] ArrayOf<IMethodInfo*> methodInfos);
 
         GetMethodInfo(
-            [in] CString name,
-            [in] CString signature,
+            [in] String name,
+            [in] String signature,
             [out] IMethodInfo** methodInfo);
     }
 
@@ -231,7 +230,7 @@ library
             [out] IParamInfo** paramInfo);
 
         GetParamInfoByName(
-            [in] CString name,
+            [in] String name,
             [out] IParamInfo** paramInfo);
     }
 
@@ -333,10 +332,6 @@ library
         SetInputArgumentOfChar32(
             [in] Int32 index,
             [in] Char32 value);
-
-        SetInputArgumentOfCString(
-            [in] Int32 index,
-            [in] CString value);
 
         SetInputArgumentOfString(
             [in] Int32 index,
@@ -550,10 +545,6 @@ library
             [in] Int32 index,
             [in] Char32 value);
 
-        SetCStringElement(
-            [in] Int32 index,
-            [in] CString value);
-
         SetStringElement(
             [in] Int32 index,
             [in] String value);
@@ -635,10 +626,6 @@ library
             [in] Int32 index,
             [out] Char32* value);
 
-        GetCStringElement(
-            [in] Int32 index,
-            [out] CString* value);
-
         GetStringElement(
             [in] Int32 index,
             [out] String* value);
@@ -677,150 +664,150 @@ library
         ZeroAllFields();
 
         SetInt16Field(
-            [in] CString name,
+            [in] String name,
             [in] Int16 value);
 
         SetInt32Field(
-            [in] CString name,
+            [in] String name,
             [in] Int32 value);
 
         SetInt64Field(
-            [in] CString name,
+            [in] String name,
             [in] Int64 value);
 
         SetByteField(
-            [in] CString name,
+            [in] String name,
             [in] Byte value);
 
         SetFloatField(
-            [in] CString name,
+            [in] String name,
             [in] Float value);
 
         SetDoubleField(
-            [in] CString name,
+            [in] String name,
             [in] Double value);
 
         SetChar8Field(
-            [in] CString name,
+            [in] String name,
             [in] Char8 value);
 
         SetChar16Field(
-            [in] CString name,
+            [in] String name,
             [in] Char16 value);
 
         SetChar32Field(
-            [in] CString name,
+            [in] String name,
             [in] Char32 value);
 
         SetBooleanField(
-            [in] CString name,
+            [in] String name,
             [in] Boolean value);
 
         SetEMuidField(
-            [in] CString name,
+            [in] String name,
             [in] EMuid* value);
 
         SetEGuidField(
-            [in] CString name,
+            [in] String name,
             [in] EGuid* value);
 
         SetECodeField(
-            [in] CString name,
+            [in] String name,
             [in] ECode value);
 
         SetLocalPtrField(
-            [in] CString name,
+            [in] String name,
             [in] LocalPtr value);
 
         SetLocalTypeField(
-            [in] CString name,
+            [in] String name,
             [in] PVoid value);
 
         SetEnumField(
-            [in] CString name,
+            [in] String name,
             [in] Int32 value);
 
         GetStructFieldSetter(
-            [in] CString name,
+            [in] String name,
             [out] IStructSetter** setter);
 
         GetCppVectorFieldSetter(
-            [in] CString name,
+            [in] String name,
             [out] ICppVectorSetter** setter);
     }
 
     [local]
     interface IStructGetter {
         GetInt16Field(
-            [in] CString name,
+            [in] String name,
             [out] Int16* value);
 
         GetInt32Field(
-            [in] CString name,
+            [in] String name,
             [out] Int32* value);
 
         GetInt64Field(
-            [in] CString name,
+            [in] String name,
             [out] Int64* value);
 
         GetByteField(
-            [in] CString name,
+            [in] String name,
             [out] Byte* value);
 
         GetFloatField(
-            [in] CString name,
+            [in] String name,
             [out] Float* value);
 
         GetDoubleField(
-            [in] CString name,
+            [in] String name,
             [out] Double* value);
 
         GetChar8Field(
-            [in] CString name,
+            [in] String name,
             [out] Char8* value);
 
         GetChar16Field(
-            [in] CString name,
+            [in] String name,
             [out] Char16* value);
 
         GetChar32Field(
-            [in] CString name,
+            [in] String name,
             [out] Char32* value);
 
         GetBooleanField(
-            [in] CString name,
+            [in] String name,
             [out] Boolean* value);
 
         GetEMuidField(
-            [in] CString name,
+            [in] String name,
             [out] EMuid* value);
 
         GetEGuidField(
-            [in] CString name,
+            [in] String name,
             [out] EGuid* value);
 
         GetECodeField(
-            [in] CString name,
+            [in] String name,
             [out] ECode* value);
 
         GetLocalPtrField(
-            [in] CString name,
+            [in] String name,
             [out] LocalPtr* value);
 
         GetLocalTypeField(
-            [in] CString name,
+            [in] String name,
             [out] PVoid value);
 
         GetEnumField(
-            [in] CString name,
+            [in] String name,
             [out] Int32* value);
 
         GetStructFieldGetter(
-            [in] CString name,
+            [in] String name,
             [out] IStructGetter** getter);
 
         GetCppVectorFieldGetter(
-            [in] CString name,
+            [in] String name,
             [out] ICppVectorGetter** getter);
     }
 
@@ -1024,7 +1011,7 @@ library
             [out] ArrayOf<IStructInfo*> structInfos);
 
         GetStructInfo(
-            [in] CString name,
+            [in] String name,
             [out] IStructInfo** structInfo);
 
         GetEnumCount(
@@ -1044,7 +1031,7 @@ library
             [out] ArrayOf<ITypeAliasInfo*> typeAliasInfos);
 
         GetTypeAliasInfo(
-            [in] CString name,
+            [in] String name,
             [out] ITypeAliasInfo** typeAliasInfo);
 
         GetConstantCount(
@@ -1054,7 +1041,7 @@ library
             [out] ArrayOf<IConstantInfo*> constantInfos);
 
         GetConstantInfo(
-            [in] CString name,
+            [in] String name,
             [out] IConstantInfo** constantInfo);
 
         GetImportModuleInfoCount(
@@ -1130,7 +1117,7 @@ library
             [out] ArrayOf<IClassInfo*> aspectInfos);
 
         GetAspectInfo(
-            [in] CString name,
+            [in] String name,
             [out] IClassInfo** aspectInfo);
 
         IsAspect(
@@ -1143,7 +1130,7 @@ library
             [out] ArrayOf<IClassInfo*> aggregateeInfos);
 
         GetAggregateeInfo(
-            [in] CString name,
+            [in] String name,
             [out] IClassInfo** aggregateeInfo);
 
         GetConstructorCount(
@@ -1153,7 +1140,7 @@ library
             [out] ArrayOf<IConstructorInfo*> constructorInfos);
 
         GetConstructorInfoByParamNames(
-            [in] CString name,
+            [in] String name,
             [out] IConstructorInfo** constructorInfo);
 
         GetConstructorInfoByParamCount(
@@ -1177,7 +1164,7 @@ library
             [out] ArrayOf<IInterfaceInfo*> callbackInterfaceInfos);
 
         GetCallbackInterfaceInfo(
-            [in] CString name,
+            [in] String name,
             [out] IInterfaceInfo** callbackInterfaceInfo);
 
         GetMethodCount(
@@ -1187,8 +1174,8 @@ library
             [out] ArrayOf<IMethodInfo*> methodInfos);
 
         GetMethodInfo(
-            [in] CString name,
-            [in] CString signature,
+            [in] String name,
+            [in] String signature,
             [out] IMethodInfo** methodInfo);
 
         GetCallbackMethodCount(
@@ -1198,7 +1185,7 @@ library
             [out] ArrayOf<ICallbackMethodInfo*> callbackMethodInfos);
 
         GetCallbackMethodInfo(
-            [in] CString name,
+            [in] String name,
             [out] ICallbackMethodInfo** callbackMethodInfo);
 
         RemoveAllCallbackHandlers(
@@ -1313,10 +1300,6 @@ library
         GetChar32Argument(
             [in] Int32 index,
             [out] Char32* value);
-
-        GetCStringArgument(
-            [in] Int32 index,
-            [out] CString* value);
 
         GetStringArgument(
             [in] Int32 index,

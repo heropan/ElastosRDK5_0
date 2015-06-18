@@ -361,7 +361,7 @@ ECode CClassInfo::GetAllAspectInfos(
 }
 
 ECode CClassInfo::GetAspectInfo(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IClassInfo ** ppAspectInfo)
 {
     if (name.IsNull() || !ppAspectInfo) {
@@ -433,7 +433,7 @@ ECode CClassInfo::GetAllAggregateeInfos(
 }
 
 ECode CClassInfo::GetAggregateeInfo(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IClassInfo ** ppAggregateeInfo)
 {
     if (name.IsNull() || !ppAggregateeInfo) {
@@ -531,7 +531,7 @@ ECode CClassInfo::GetAllConstructorInfos(
 }
 
 ECode CClassInfo::GetConstructorInfoByParamNames(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IConstructorInfo **ppConstructorInfo)
 {
     if (name.IsNull() || !ppConstructorInfo) {
@@ -546,9 +546,9 @@ ECode CClassInfo::GetConstructorInfoByParamNames(
     if (FAILED(ec)) return ec;
 
     String objName("CreateObjectWith");
-    objName.Append((const char*)name);
+    objName += name;
 
-    ec = m_pCtorList->AcquireObjByName(CString(objName.string()),
+    ec = m_pCtorList->AcquireObjByName(objName,
             (IInterface **)ppConstructorInfo);
     if (FAILED(ec)) return ec;
 
@@ -709,7 +709,7 @@ ECode CClassInfo::GetAllCallbackInterfaceInfos(
 }
 
 ECode CClassInfo::GetCallbackInterfaceInfo(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IInterfaceInfo ** ppCallbackInterfaceInfo)
 {
     if (name.IsNull() || !ppCallbackInterfaceInfo) {
@@ -799,8 +799,8 @@ ECode CClassInfo::GetAllMethodInfos(
 }
 
 ECode CClassInfo::GetMethodInfo(
-    /* [in] */ CString name,
-    /* [in] */ CString signature,
+    /* [in] */ const String& name,
+    /* [in] */ const String& signature,
     /* [out] */ IMethodInfo ** ppMethodInfo)
 {
     if (name.IsNull() || signature.IsNull() || !ppMethodInfo) {
@@ -814,8 +814,8 @@ ECode CClassInfo::GetMethodInfo(
     ECode ec = AcquireMethodList();
     if (FAILED(ec)) return ec;
 
-    String strName = String(name) + String(signature);
-    return m_pMethodList->AcquireObjByName(strName.string(), (IInterface **)ppMethodInfo);
+    String strName = name + signature;
+    return m_pMethodList->AcquireObjByName(strName, (IInterface **)ppMethodInfo);
 }
 
 ECode CClassInfo::GetCallbackMethodCount(
@@ -857,7 +857,7 @@ ECode CClassInfo::GetAllCallbackMethodInfos(
 }
 
 ECode CClassInfo::GetCallbackMethodInfo(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ ICallbackMethodInfo ** ppCallbackMethodInfo)
 {
     if (name.IsNull() || !ppCallbackMethodInfo) {

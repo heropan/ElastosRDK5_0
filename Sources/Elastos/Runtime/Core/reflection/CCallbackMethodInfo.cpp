@@ -90,7 +90,7 @@ ECode CCallbackMethodInfo::GetParamInfoByIndex(
 }
 
 ECode CCallbackMethodInfo::GetParamInfoByName(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IParamInfo ** ppParamInfo)
 {
     return m_pMethodInfo->GetParamInfoByName(name, ppParamInfo);

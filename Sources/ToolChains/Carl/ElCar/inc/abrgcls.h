@@ -42,7 +42,6 @@ typedef enum MethodParam {
     Param_Type_clsid        = 0x00000009,
     Param_Type_String       = 0x0000000a,
     Param_Type_structure    = 0x0000000b,
-    Param_Type_CString      = 0x0000000c,
 
     Param_Pointer           = 0x00000100,
 
@@ -56,7 +55,6 @@ typedef enum MethodParam {
     Param_Type_pclsid       = Param_Type_clsid | Param_Pointer,
     Param_Type_pstructure   = Param_Type_structure | Param_Pointer,
     Param_Type_pString      = Param_Type_String | Param_Pointer,
-    Param_Type_pCString     = Param_Type_CString | Param_Pointer,
 }   MethodParam;
 
 inline int ParamAttribs(int nParam)

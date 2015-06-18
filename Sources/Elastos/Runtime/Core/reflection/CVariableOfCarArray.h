@@ -90,10 +90,6 @@ public:
         /* [in] */ Int32 index,
         /* [in] */ Char32 value);
 
-    CARAPI SetCStringElement(
-        /* [in] */ Int32 index,
-        /* [in] */ CString value);
-
     CARAPI SetStringElement(
         /* [in] */ Int32 index,
         /* [in] */ const String& value);
@@ -174,10 +170,6 @@ public:
     CARAPI GetChar32Element(
         /* [in] */ Int32 index,
         /* [out] */ Char32 * pValue);
-
-    CARAPI GetCStringElement(
-        /* [in] */ Int32 index,
-        /* [out] */ CString* pValue);
 
     CARAPI GetStringElement(
         /* [in] */ Int32 index,
