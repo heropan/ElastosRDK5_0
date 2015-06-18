@@ -7,4 +7,3 @@ TARGET_TYPE= lib
 
 SOURCES = elsharedbuf.cpp
 SOURCES += elstring.cpp
-SOURCES += elcstring.cpp

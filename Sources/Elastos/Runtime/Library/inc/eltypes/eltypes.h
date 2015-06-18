@@ -19,10 +19,6 @@
 #include <elatypes.h>
 #endif
 
-#ifndef __EZCSTRING_H__
-#include <elcstring.h>
-#endif
-
 #ifndef __ELSTRING_H__
 #include <elstring.h>
 #endif
