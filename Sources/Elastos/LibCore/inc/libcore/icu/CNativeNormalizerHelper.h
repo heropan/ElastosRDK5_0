@@ -1,17 +1,25 @@
 
-#ifndef __ICU_CNATIVENORMALIZERHELPER_H__
-#define __ICU_CNATIVENORMALIZERHELPER_H__
+#ifndef __LIBCORE_ICU_CNATIVENORMALIZERHELPER_H__
+#define __LIBCORE_ICU_CNATIVENORMALIZERHELPER_H__
 
-#include "_CNativeNormalizerHelper.h"
+#include <Singleton.h>
+#include "_Libcore_ICU_CNativeNormalizerHelper.h"
 
 using Elastos::Core::ICharSequence;
+using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace ICU {
 
 CarClass(CNativeNormalizerHelper)
+	, public Singleton
+	, public INativeNormalizerHelper
 {
+	CAR_SINGLETON_DECL()
+
 public:
+	CAR_INTERFACE_DECL()
+
     CARAPI IsNormalized(
         /* [in] */ ICharSequence * src,
         /* [in] */ Form form,
@@ -26,4 +34,4 @@ public:
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__ICU_CNATIVENORMALIZERHELPER_H__
+#endif //__LIBCORE_ICU_CNATIVENORMALIZERHELPER_H__

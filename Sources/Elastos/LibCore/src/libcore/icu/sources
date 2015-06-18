@@ -28,3 +28,5 @@ SOURCES += TimeZoneNames.cpp
 SOURCES += CTimeZoneNames.cpp
 SOURCES += NativeIDN.cpp
 SOURCES += CNativeIDNHelper.cpp
+SOURCES += NativeNormalizer.cpp
+SOURCES += CNativeNormalizerHelper.cpp
