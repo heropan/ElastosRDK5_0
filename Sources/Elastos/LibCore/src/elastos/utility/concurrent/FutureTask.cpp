@@ -12,6 +12,7 @@
 using Elastos::Core::ISystem;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
+using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::Concurrent::Locks::ILockSupport;
 using Elastos::Utility::Concurrent::Locks::CLockSupport;
 using Elastos::Utility::Concurrent::IExecutors;
@@ -311,7 +312,7 @@ void FutureTask::FinishCompletion()
 {
     // assert state > COMPLETING;
     for (AutoPtr<WaitNode> q; (q = mWaiters) != NULL;) {
-        if (CompareAndSwapObject((volatile int32_t*)&mWaiters, q, NULL)) {
+        if (CompareAndSwapObject((volatile int32_t*)&mWaiters, q->Probe(EIID_IInterface), NULL)) {
             for (;;) {
                 AutoPtr<IThread> t = q->mThread;
                 if (t != NULL) {
@@ -379,7 +380,7 @@ ECode FutureTask::AwaitDone(
         }
         else if (!queued) {
             queued = CompareAndSwapObject((volatile int32_t*)&mWaiters,
-                    q->mNext = mWaiters, q);
+                    (q->mNext = mWaiters)->Probe(EIID_IInterface), q->Probe(EIID_IInterface));
         }
         else if (timed) {
             Int64 now;
@@ -429,7 +430,7 @@ RETRY:
                     if (pred->mThread == NULL) // check for race
                         goto RETRY;
                 }
-                else if (!CompareAndSwapObject((volatile int32_t*)&mWaiters, q, s)) {
+                else if (!CompareAndSwapObject((volatile int32_t*)&mWaiters, q->Probe(EIID_IInterface), s->Probe(EIID_IInterface))) {
                     goto RETRY;
                 }
             }

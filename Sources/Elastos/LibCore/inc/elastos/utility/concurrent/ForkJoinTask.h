@@ -2,9 +2,11 @@
 #ifndef __ELASTOS_UTILITY_FORKJOINTASK_H__
 #define __ELASTOS_UTILITY_FORKJOINTASK_H__
 
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 using Elastos::Core::IThrowable;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::ISerializable;
@@ -326,7 +328,7 @@ private:
      *
      * Note: These statics are initialized below in static block.
      */
-    static AutoPtr<ArrayOf<ExceptionNode*> > sExceptionTable;
+//    static AutoPtr<ArrayOf<ExceptionNode*> > sExceptionTable;
     static AutoPtr<IReentrantLock> sExceptionTableLock;
 //    static AutoPtr<IReferenceQueue> sExceptionTableRefQueue;
 

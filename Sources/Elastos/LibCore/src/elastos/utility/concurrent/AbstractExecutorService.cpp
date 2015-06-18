@@ -1,15 +1,15 @@
 
 #include "AbstractExecutorService.h"
-#include "CFutureTask.h"
+//#include "CFutureTask.h"
 #include "TimeUnit.h"
-#include "CExecutorCompletionService.h"
+//#include "CExecutorCompletionService.h"
 #include "CSystem.h"
-#include <List.h>
+//#include <List.h>
 #include "CArrayList.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Utility::List;
+//using Elastos::Utility::List;
 using Elastos::Utility::CArrayList;
 
 namespace Elastos {
@@ -27,7 +27,7 @@ AutoPtr<IRunnableFuture> AbstractExecutorService::NewTaskFor(
     /* [in] */ IInterface* value)
 {
     AutoPtr<IRunnableFuture> task;
-    CFutureTask::New(runnable, value, (IRunnableFuture**)&task);
+//    CFutureTask::New(runnable, value, (IRunnableFuture**)&task);
     return task;
 }
 
@@ -35,7 +35,7 @@ AutoPtr<IRunnableFuture> AbstractExecutorService::NewTaskFor(
     /* [in] */ ICallable* callable)
 {
     AutoPtr<IRunnableFuture> task;
-    CFutureTask::New(callable, (IRunnableFuture**)&task);
+//    CFutureTask::New(callable, (IRunnableFuture**)&task);
     return task;
 }
 
@@ -49,7 +49,7 @@ ECode AbstractExecutorService::Submit(
 
     AutoPtr<IRunnableFuture> ftask = NewTaskFor(task, NULL);
     Execute(IRunnable::Probe(ftask));
-    *future = ftask;
+    *future = IFuture::Probe(ftask);
     REFCOUNT_ADD(*future);
     return NOERROR;
 }
@@ -65,7 +65,7 @@ ECode AbstractExecutorService::Submit(
 
     AutoPtr<IRunnableFuture> ftask = NewTaskFor(task, result);
     Execute(IRunnable::Probe(ftask));
-    *future = ftask;
+    *future = IFuture::Probe(ftask);
     REFCOUNT_ADD(*future);
     return NOERROR;
 }
@@ -80,7 +80,7 @@ ECode AbstractExecutorService::Submit(
 
     AutoPtr<IRunnableFuture> ftask = NewTaskFor(task);
     Execute(IRunnable::Probe(ftask));
-    *future = ftask;
+    *future = IFuture::Probe(ftask);
     REFCOUNT_ADD(*future);
     return NOERROR;
 }
@@ -98,9 +98,10 @@ ECode AbstractExecutorService::DoInvokeAny(
     tasks->GetSize(&ntasks);
     if (ntasks == 0) return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
-    List< AutoPtr<IFuture> > futures;
+    AutoPtr<IArrayList> futures;
+    CArrayList::New(ntasks, (IArrayList**)&futures);
     AutoPtr<ICompletionService> ecs;
-    CExecutorCompletionService::New(THIS_PROBE(IExecutor), (ICompletionService**)&ecs);
+//    CExecutorCompletionService::New(THIS_PROBE(IExecutor), (ICompletionService**)&ecs);
 
     // For efficiency, especially in executors with limited
     // parallelism, check to see if previously submitted tasks are
@@ -120,14 +121,14 @@ ECode AbstractExecutorService::DoInvokeAny(
         system->GetNanoTime(&lastTime);
     }
     AutoPtr<IIterator> it;
-    tasks->GetIterator((IIterator**)&it);
+    IIterable::Probe(tasks)->GetIterator((IIterator**)&it);
 
     // Start one task for sure; the rest incrementally
     AutoPtr<IInterface> obj;
     it->GetNext((IInterface**)&obj);
     AutoPtr<IFuture> f;
     ecs->Submit(ICallable::Probe(obj), (IFuture**)&f);
-    futures.PushBack(f);
+    (IList::Probe(futures))->Add(f);
     --ntasks;
     Int32 active = 1;
 
@@ -140,7 +141,7 @@ ECode AbstractExecutorService::DoInvokeAny(
                 obj = NULL;
                 it->GetNext((IInterface**)&obj);
                 ecs->Submit(ICallable::Probe(obj), (IFuture**)&f);
-                futures.PushBack(f);
+                (IList::Probe(futures))->Add(f);
                 ++active;
             }
             else if (active == 0) break;
@@ -176,10 +177,14 @@ ECode AbstractExecutorService::DoInvokeAny(
     if (ec == NOERROR) ec = E_EXECUTION_EXCEPTION;
 EXIT:
     // } finally {
-    List< AutoPtr<IFuture> >::Iterator fit;
+    Int32 size;
+    (ICollection::Probe(futures))->GetSize(&size);
     Boolean bval;
-    for (fit = futures.Begin(); fit != futures.End(); ++fit) {
-        (*fit)->Cancel(TRUE, &bval);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> p;
+        (IList::Probe(futures))->Get(i, (IInterface**)&p);
+        AutoPtr<IFuture> n = IFuture::Probe(p);
+        n->Cancel(TRUE, &bval);
     }
     // }
     return ec;
@@ -232,14 +237,14 @@ ECode AbstractExecutorService::InvokeAll(
     for (Int32 i = 0; i < taskArray->GetLength(); i++) {
         AutoPtr<ICallable> t = ICallable::Probe((*taskArray)[i]);
         AutoPtr<IRunnableFuture> f = NewTaskFor(t);
-        res->Add(f, &b);
+        (IList::Probe(res))->Add(f, &b);
         Execute(IRunnable::Probe(f));
     }
 
     Boolean isDone;
     for (Int32 i = 0; i < size; ++i) {
         AutoPtr<IInterface> obj;
-        res->Get(i, (IInterface**)&obj);
+        (IList::Probe(res))->Get(i, (IInterface**)&obj);
         AutoPtr<IFuture> f = IFuture::Probe(obj);
         if (f->IsDone(&isDone), !isDone) {
             // try {
@@ -256,7 +261,7 @@ ECode AbstractExecutorService::InvokeAll(
         Boolean result;
         for (Int32 i = 0; i < size; ++i) {
             AutoPtr<IInterface> obj;
-            res->Get(i, (IInterface**)&obj);
+            (IList::Probe(res))->Get(i, (IInterface**)&obj);
             AutoPtr<IFuture> f = IFuture::Probe(obj);
             f->Cancel(TRUE, &result);
         }
@@ -291,7 +296,7 @@ ECode AbstractExecutorService::InvokeAll(
     for (Int32 i = 0; i < taskArray->GetLength(); i++) {
         AutoPtr<ICallable> t = ICallable::Probe((*taskArray)[i]);
         AutoPtr<IRunnableFuture> f = NewTaskFor(t);
-        res->Add(f, &b);
+        (IList::Probe(res))->Add(f, &b);
     }
 
     AutoPtr<ISystem> system;
@@ -303,7 +308,7 @@ ECode AbstractExecutorService::InvokeAll(
     // Interleave time checks and calls to execute in case
     // executor doesn't have any/much parallelism.
     AutoPtr<IIterator> it;
-    res->GetIterator((IIterator**)&it);
+    (IIterable::Probe(res))->GetIterator((IIterator**)&it);
     Boolean hasNext = FALSE;
     Int64 now;
     while ((it->HasNext(&hasNext), hasNext)) {
@@ -320,7 +325,7 @@ ECode AbstractExecutorService::InvokeAll(
 
     for (Int32 i = 0; i < size; ++i) {
         AutoPtr<IInterface> obj;
-        res->Get(i, (IInterface**)&obj);
+        (IList::Probe(res))->Get(i, (IInterface**)&obj);
         AutoPtr<IFuture> f = IFuture::Probe(obj);
         Boolean isDone;
         if (f->IsDone(&isDone), !isDone) {
@@ -348,7 +353,7 @@ EXIT:
         Boolean result;
        for (Int32 i = 0; i < size; ++i) {
             AutoPtr<IInterface> obj;
-            res->Get(i, (IInterface**)&obj);
+            (IList::Probe(res))->Get(i, (IInterface**)&obj);
             AutoPtr<IFuture> f = IFuture::Probe(obj);
             f->Cancel(TRUE, &result);
         }
