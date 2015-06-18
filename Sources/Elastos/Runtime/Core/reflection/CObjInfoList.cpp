@@ -379,12 +379,12 @@ ECode CObjInfoList:: RemoveModuleInfo(
 }
 
 ECode CObjInfoList:: RemoveClsModule(
-    /* [in] */ CString path)
+    /* [in] */ const String& path)
 {
     if (path.IsNull()) {
         return E_INVALID_ARGUMENT;
     }
-    m_hClsModule.Remove((PVoid)(const char *)path);
+    m_hClsModule.Remove((PVoid)path.string());
     return NOERROR;
 }
 

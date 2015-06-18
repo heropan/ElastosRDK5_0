@@ -4,7 +4,6 @@
 
 EXPORT_HEADERS = eltypes.h
 EXPORT_HEADERS += elstringapi.h
-EXPORT_HEADERS += elcstring.h
 EXPORT_HEADERS += elsharedbuf.h
 EXPORT_HEADERS += elstring.h
 EXPORT_HEADERS += elrefbase.h

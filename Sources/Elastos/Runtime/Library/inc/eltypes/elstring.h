@@ -13,7 +13,7 @@
 #include <elstringapi.h>
 #include <elautoptr.h>
 #include <elsharedbuf.h>
-#include <elcstring.h>
+#include <assert.h>
 
 _ELASTOS_NAMESPACE_BEGIN
 
@@ -98,7 +98,6 @@ public:
 
     inline const char* string() const;
     inline operator const char*() const;
-    inline operator CString() const;
 
     String Substring(UInt32 startChar) const;
 
@@ -304,8 +303,6 @@ public:
     static Char32 ToUpperCase(Char32 codePoint);
 
 private:
-    friend class CString;
-
     void SetCounted(UInt32 charCount) const;
     void ClearCounted() const;
     Boolean IsCounted() const;
@@ -391,11 +388,6 @@ inline const char* String::string() const
 }
 
 inline String::operator const char*() const
-{
-    return mString;
-}
-
-inline String::operator CString() const
 {
     return mString;
 }

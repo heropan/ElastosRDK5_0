@@ -179,7 +179,7 @@ public:
         /* [in] */ EntryType type);
 
     CARAPI RemoveClsModule(
-        /* [in] */ CString path);
+        /* [in] */ const String& path);
 
 private:
     HashTable<IInterface *> m_hTypeAliasInfos;

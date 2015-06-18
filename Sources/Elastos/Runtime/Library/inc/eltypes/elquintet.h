@@ -63,8 +63,6 @@ extern "C" {
 
 _ELASTOS_NAMESPACE_BEGIN
 
-class CString;
-
 // NOTE1: MS CL compiler can't support function's template specialization well,
 //   so only template class works.
 // NOTE2: We shall emit a COMPILE-TIME error if user let ArrayOf
