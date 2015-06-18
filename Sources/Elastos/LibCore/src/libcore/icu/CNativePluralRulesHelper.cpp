@@ -5,6 +5,10 @@
 namespace Libcore {
 namespace ICU {
 
+CAR_SINGLETON_IMPL(CNativePluralRulesHelper)
+
+CAR_INTERFACE_IMPL(CNativePluralRulesHelper, Singleton, INativePluralRulesHelper)
+
 ECode CNativePluralRulesHelper::ForLocale(
     /* [in] */ ILocale * locale,
     /* [out] */ INativePluralRules ** outrules)

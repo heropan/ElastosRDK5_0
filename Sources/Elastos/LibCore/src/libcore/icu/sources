@@ -30,3 +30,5 @@ SOURCES += NativeIDN.cpp
 SOURCES += CNativeIDNHelper.cpp
 SOURCES += NativeNormalizer.cpp
 SOURCES += CNativeNormalizerHelper.cpp
+SOURCES += CNativePluralRules.cpp
+SOURCES += CNativePluralRulesHelper.cpp
