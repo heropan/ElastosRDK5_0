@@ -202,14 +202,6 @@ ECode CArgumentList::SetInputArgumentOfChar32(
     return SetParamValue(index, &nParam, CarDataType_Char32, ParamIOAttribute_In);
 }
 
-ECode CArgumentList::SetInputArgumentOfCString(
-    /* [in] */ Int32 index,
-    /* [in] */ CString value)
-{
-    return SetParamValue(index, reinterpret_cast<PVoid>(const_cast<CString*>(&value)),
-            CarDataType_CString, ParamIOAttribute_In);
-}
-
 ECode CArgumentList::SetInputArgumentOfString(
     /* [in] */ Int32 index,
     /* [in] */ const String& value)

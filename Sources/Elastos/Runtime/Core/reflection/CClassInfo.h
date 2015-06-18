@@ -90,7 +90,7 @@ public:
         /* [out] */ ArrayOf<IClassInfo *> * pAspectInfos);
 
     CARAPI GetAspectInfo(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IClassInfo ** ppAspectInfo);
 
     CARAPI IsAspect(
@@ -103,7 +103,7 @@ public:
         /* [out] */ ArrayOf<IClassInfo *> * pAggregateeInfos);
 
     CARAPI GetAggregateeInfo(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IClassInfo ** ppAggregateeInfo);
 
     CARAPI GetConstructorCount(
@@ -113,7 +113,7 @@ public:
         /* [out] */ ArrayOf<IConstructorInfo *> * pConstructorInfos);
 
     CARAPI GetConstructorInfoByParamNames(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IConstructorInfo **ppConstructorInfo);
 
     CARAPI GetConstructorInfoByParamCount(
@@ -137,7 +137,7 @@ public:
         /* [out] */ ArrayOf<IInterfaceInfo *> * pCallbackInterfaceInfos);
 
     CARAPI GetCallbackInterfaceInfo(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IInterfaceInfo ** ppCallbackInterfaceInfo);
 
     CARAPI GetMethodCount(
@@ -147,8 +147,8 @@ public:
         /* [out] */ ArrayOf<IMethodInfo *> * pMethodInfos);
 
     CARAPI GetMethodInfo(
-        /* [in] */ CString name,
-        /* [in] */ CString signature,
+        /* [in] */ const String& name,
+        /* [in] */ const String& signature,
         /* [out] */ IMethodInfo ** ppMethodInfo);
 
     CARAPI GetCallbackMethodCount(
@@ -158,7 +158,7 @@ public:
         /* [out] */ ArrayOf<ICallbackMethodInfo *> * pCallbackMethodInfos);
 
     CARAPI GetCallbackMethodInfo(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ ICallbackMethodInfo ** ppCallbackMethodInfo);
 
     CARAPI RemoveAllCallbackHandlers(

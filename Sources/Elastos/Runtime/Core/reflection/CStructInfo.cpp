@@ -227,7 +227,7 @@ ECode CStructInfo::GetAllFieldInfos(
 }
 
 ECode CStructInfo::GetFieldInfo(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IFieldInfo ** ppFieldInfo)
 {
     if (name.IsNull() || !ppFieldInfo) {

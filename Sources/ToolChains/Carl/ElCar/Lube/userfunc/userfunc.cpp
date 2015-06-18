@@ -413,16 +413,6 @@ IMPL_USERFUNC(CStyleParamType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             }
             break;
 
-        case Type_CString:
-            assert(pType->nPointer <= 1);
-            if (1 == pType->nPointer) {
-                pszType = "CString*";
-            }
-            else if (0 == pType->nPointer) {
-                pszType = "CString";
-            }
-            break;
-
         case Type_String:
             assert(pType->nPointer <= 1);
             if (1 == pType->nPointer) {
@@ -485,10 +475,7 @@ Restart:
             break;
 
         case Type_ArrayOf:
-            if (Type_CString == pType->pNestedType->type) {
-                pszType = "ArrayOfCString";
-            }
-            else if (Type_String == pType->pNestedType->type) {
+            if (Type_String == pType->pNestedType->type) {
                 pszType = "ArrayOfString";
             }
             else {
@@ -506,10 +493,6 @@ Restart:
 
         case Type_struct:
             pszType = "Struct";
-            break;
-
-        case Type_CString:
-            pszType = "CString";
             break;
 
         case Type_String:
@@ -1142,7 +1125,6 @@ IMPL_USERFUNC(PrefixingNameByName)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         TYPE_CASE(Type_Char16, NULL, "p", NULL)
         TYPE_CASE(Type_Char32, NULL, "p", NULL)
         TYPE_CASE(Type_PVoid, "p", "pp", NULL)
-        TYPE_CASE(Type_CString, NULL, "p", NULL)
         TYPE_CASE(Type_String, NULL, "p", NULL)
         TYPE_CASE(Type_ArrayOf, "p", "pp", NULL)
         case Type_enum:
@@ -1218,7 +1200,6 @@ IMPL_USERFUNC(PrefixingName)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         TYPE_CASE(Type_Char16, NULL, "p", NULL)
         TYPE_CASE(Type_Char32, NULL, "p", NULL)
         TYPE_CASE(Type_PVoid, "p", "pp", NULL)
-        TYPE_CASE(Type_CString, NULL, "p", NULL)
         TYPE_CASE(Type_String, NULL, "p", NULL)
         TYPE_CASE(Type_ArrayOf, "p", "pp", NULL)
         case Type_enum:
@@ -1728,15 +1709,6 @@ Restart:
             }
             break;
 
-        case Type_CString:
-            assert(0 == pType->nPointer);
-
-            pCtx->PutString("pParams->WriteCString(");
-            UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-            pCtx->PutString(");");
-            break;
-
-
         case Type_String:
             assert(0 == pType->nPointer);
 
@@ -1889,17 +1861,14 @@ Restart:
         case Type_ArrayOf:
             assert(0 == pType->nPointer);
 
-            if (Type_CString == pType->pNestedType->type) {
-                pCtx->PutString("pParams->WriteArrayOfCString(const_cast<ArrayOf<CString>*>(&");
-            }
-            else if (Type_String == pType->pNestedType->type) {
+            if (Type_String == pType->pNestedType->type) {
                 pCtx->PutString("pParams->WriteArrayOfString(const_cast<ArrayOf<String>*>(&");
             }
             else {
                 pCtx->PutString("pParams->WriteArrayOf((Handle32)&");
             }
             UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-            if (Type_CString == pType->pNestedType->type || Type_String == pType->pNestedType->type) {
+            if (Type_String == pType->pNestedType->type) {
                 pCtx->PutString("));");
             }
             else {

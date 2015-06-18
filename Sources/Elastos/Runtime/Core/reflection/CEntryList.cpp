@@ -226,7 +226,7 @@ ECode CEntryList::InitElemList()
 }
 
 ECode CEntryList::AcquireObjByName(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IInterface ** ppObject)
 {
     if (!ppObject || name.IsNull()) {
@@ -240,7 +240,7 @@ ECode CEntryList::AcquireObjByName(
         return ec;
     }
 
-    UInt32 *pIndex = m_pHTIndexs.Get((PVoid)(const char *)name);
+    UInt32 *pIndex = m_pHTIndexs.Get((PVoid)name.string());
     if (pIndex == NULL) {
         return E_DOES_NOT_EXIST;
     }

@@ -176,7 +176,7 @@ ECode CVariableOfStruct::GetGetter(
 //--------------Setter----------------------------------------------------------
 
 ECode CVariableOfStruct::GetIndexByName(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ Int32 *pIndex)
 {
     Int32 count = 0;
@@ -184,7 +184,7 @@ ECode CVariableOfStruct::GetIndexByName(
     if (FAILED(ec)) return ec;
 
     for (Int32 i = 0; i < count; i++) {
-        if (name.Compare(m_pStructFieldDesc[i].pszName) == 0) {
+        if (name.Equals(m_pStructFieldDesc[i].pszName)) {
             *pIndex = i;
             return NOERROR;
         }
@@ -194,7 +194,7 @@ ECode CVariableOfStruct::GetIndexByName(
 }
 
 ECode CVariableOfStruct::SetFieldValueByName(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ void *pParam,
     /* [in] */ CarDataType type)
 {
@@ -232,119 +232,119 @@ ECode CVariableOfStruct::ZeroAllFields()
 }
 
 ECode CVariableOfStruct::SetInt16Field(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ Int16 value)
 {
     return SetFieldValueByName(name, &value, CarDataType_Int16);
 }
 
 ECode CVariableOfStruct::SetInt32Field(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ Int32 value)
 {
     return SetFieldValueByName(name, &value, CarDataType_Int32);
 }
 
 ECode CVariableOfStruct::SetInt64Field(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ Int64 value)
 {
     return SetFieldValueByName(name, &value, CarDataType_Int64);
 }
 
 ECode CVariableOfStruct::SetByteField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ Byte value)
 {
     return SetFieldValueByName(name, &value, CarDataType_Byte);
 }
 
 ECode CVariableOfStruct::SetFloatField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ Float value)
 {
     return SetFieldValueByName(name, &value, CarDataType_Float);
 }
 
 ECode CVariableOfStruct::SetDoubleField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ Double value)
 {
     return SetFieldValueByName(name, &value, CarDataType_Double);
 }
 
 ECode CVariableOfStruct::SetChar8Field(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ Char8 value)
 {
     return SetFieldValueByName(name, &value, CarDataType_Char8);
 }
 
 ECode CVariableOfStruct::SetChar16Field(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ Char16 value)
 {
     return SetFieldValueByName(name, &value, CarDataType_Char16);
 }
 
 ECode CVariableOfStruct::SetChar32Field(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ Char32 value)
 {
     return SetFieldValueByName(name, &value, CarDataType_Char32);
 }
 
 ECode CVariableOfStruct::SetBooleanField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ Boolean value)
 {
     return SetFieldValueByName(name, &value, CarDataType_Boolean);
 }
 
 ECode CVariableOfStruct::SetEMuidField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ EMuid * pValue)
 {
     return SetFieldValueByName(name, &pValue, CarDataType_EMuid);
 }
 
 ECode CVariableOfStruct::SetEGuidField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ EGuid * pValue)
 {
     return SetFieldValueByName(name, &pValue, CarDataType_EGuid);
 }
 
 ECode CVariableOfStruct::SetECodeField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ ECode value)
 {
     return SetFieldValueByName(name, &value, CarDataType_ECode);
 }
 
 ECode CVariableOfStruct::SetLocalPtrField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ LocalPtr value)
 {
     return SetFieldValueByName(name, &value, CarDataType_LocalPtr);
 }
 
 ECode CVariableOfStruct::SetLocalTypeField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ PVoid value)
 {
     return SetFieldValueByName(name, value, CarDataType_LocalType);
 }
 
 ECode CVariableOfStruct::SetEnumField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ Int32 value)
 {
     return SetFieldValueByName(name, &value, CarDataType_Enum);
 }
 
 ECode CVariableOfStruct::GetStructFieldSetter(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IStructSetter ** ppSetter)
 {
     if (name.IsNull() || !ppSetter) {
@@ -376,7 +376,7 @@ ECode CVariableOfStruct::GetStructFieldSetter(
 }
 
 ECode CVariableOfStruct::GetCppVectorFieldSetter(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ ICppVectorSetter ** ppSetter)
 {
     return AcquireCppVectorFieldSGetter(name, TRUE, (IInterface**)ppSetter);
@@ -385,7 +385,7 @@ ECode CVariableOfStruct::GetCppVectorFieldSetter(
 //--------------Getter----------------------------------------------------------
 
 ECode CVariableOfStruct::GetFieldValueByName(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ void *pParam,
     /* [in] */ CarDataType type)
 {
@@ -412,119 +412,119 @@ ECode CVariableOfStruct::GetFieldValueByName(
 }
 
 ECode CVariableOfStruct::GetInt16Field(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ Int16 * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Int16);
 }
 
 ECode CVariableOfStruct::GetInt32Field(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ Int32 * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Int32);
 }
 
 ECode CVariableOfStruct::GetInt64Field(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ Int64 * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Int64);
 }
 
 ECode CVariableOfStruct::GetByteField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ Byte * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Byte);
 }
 
 ECode CVariableOfStruct::GetFloatField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ Float * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Float);
 }
 
 ECode CVariableOfStruct::GetDoubleField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ Double * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Double);
 }
 
 ECode CVariableOfStruct::GetChar8Field(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ Char8 * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Char8);
 }
 
 ECode CVariableOfStruct::GetChar16Field(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ Char16 * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Char16);
 }
 
 ECode CVariableOfStruct::GetChar32Field(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ Char32 * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Char32);
 }
 
 ECode CVariableOfStruct::GetBooleanField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ Boolean * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Boolean);
 }
 
 ECode CVariableOfStruct::GetEMuidField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ EMuid * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_EMuid);
 }
 
 ECode CVariableOfStruct::GetEGuidField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ EGuid * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_EGuid);
 }
 
 ECode CVariableOfStruct::GetECodeField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ ECode * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_ECode);
 }
 
 ECode CVariableOfStruct::GetLocalPtrField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ LocalPtr * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_LocalPtr);
 }
 
 ECode CVariableOfStruct::GetLocalTypeField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ PVoid value)
 {
     return GetFieldValueByName(name, value, CarDataType_LocalType);
 }
 
 ECode CVariableOfStruct::GetEnumField(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ Int32 * pValue)
 {
     return GetFieldValueByName(name, pValue, CarDataType_Enum);
 }
 
 ECode CVariableOfStruct::GetStructFieldGetter(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IStructGetter ** ppGetter)
 {
     if (name.IsNull() || !ppGetter) {
@@ -556,14 +556,14 @@ ECode CVariableOfStruct::GetStructFieldGetter(
 }
 
 ECode CVariableOfStruct::GetCppVectorFieldGetter(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ ICppVectorGetter ** ppGetter)
 {
     return AcquireCppVectorFieldSGetter(name, FALSE, (IInterface**)ppGetter);
 }
 
 ECode CVariableOfStruct::AcquireCppVectorFieldSGetter(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [in] */ Boolean bSetter,
     /* [out] */ IInterface ** ppSGetter)
 {

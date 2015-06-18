@@ -193,13 +193,6 @@ ECode CCallbackArgumentList::GetChar32Argument(
     return GetParamValue(index, pValue, CarDataType_Char32);
 }
 
-ECode CCallbackArgumentList::GetCStringArgument(
-    /* [in] */ Int32 index,
-    /* [out] */ CString* value)
-{
-    return GetParamValue(index, value, CarDataType_CString);
-}
-
 ECode CCallbackArgumentList::GetStringArgument(
     /* [in] */ Int32 index,
     /* [out] */ String* value)

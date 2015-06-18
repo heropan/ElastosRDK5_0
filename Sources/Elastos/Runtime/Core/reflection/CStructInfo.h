@@ -55,7 +55,7 @@ public:
         /* [out] */ ArrayOf<IFieldInfo *> * pFieldInfos);
 
     CARAPI GetFieldInfo(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IFieldInfo ** ppFieldInfo);
 
     CARAPI CreateVariable(

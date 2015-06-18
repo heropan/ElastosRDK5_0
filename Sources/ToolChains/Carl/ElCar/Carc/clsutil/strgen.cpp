@@ -75,9 +75,6 @@ void GenerateTypeString(
         case Type_UInt64:
             strcat(pszBuf, "UInt64");
             break;
-        case Type_CString:
-            strcat(pszBuf, "CString");
-            break;
         case Type_String:
             if ((!pType->bNested) && (0 == pType->nPointer)) {
                 strcat(pszBuf, "const String&");
@@ -239,9 +236,6 @@ void GenerateTypeStringForParam(
             break;
         case Type_UInt64:
             strcat(pszBuf, "UInt64");
-            break;
-        case Type_CString:
-            strcat(pszBuf, "CString");
             break;
         case Type_String:
             strcat(pszBuf, "String");

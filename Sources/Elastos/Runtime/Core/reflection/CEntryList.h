@@ -58,7 +58,7 @@ public:
     CARAPI InitElemList();
 
     CARAPI AcquireObjByName(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IInterface ** ppObject);
 
     CARAPI AcquireObjByIndex(

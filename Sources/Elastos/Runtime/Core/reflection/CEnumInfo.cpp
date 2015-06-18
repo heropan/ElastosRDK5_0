@@ -245,7 +245,7 @@ ECode CEnumInfo::GetAllItemInfos(
 }
 
 ECode CEnumInfo::GetItemInfo(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IEnumItemInfo ** ppEnumItemInfo)
 {
     if (name.IsNull() || !ppEnumItemInfo) {

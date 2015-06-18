@@ -158,7 +158,7 @@ ECode CMethodInfo::GetParamInfoByIndex(
 }
 
 ECode CMethodInfo::GetParamInfoByName(
-    /* [in] */ CString name,
+    /* [in] */ const String& name,
     /* [out] */ IParamInfo ** ppParamInfo)
 {
     if (name.IsNull() || !ppParamInfo) {
@@ -172,7 +172,7 @@ ECode CMethodInfo::GetParamInfoByName(
     ParamDescriptor* pParam = NULL;
     for (Int32 i = 0; i < m_pMethodDescriptor->cParams; i++) {
         pParam = getParamDescAddr(m_nBase, m_pMethodDescriptor->ppParams, i);
-        if (!name.Compare(adjustNameAddr(m_nBase, pParam->pszName))) {
+        if (name.Equals(adjustNameAddr(m_nBase, pParam->pszName))) {
             return GetParamInfoByIndex(i, ppParamInfo);
         }
     }
@@ -217,7 +217,7 @@ ECode CMethodInfo::SetParamElem(
             pParmElement->pointer -= 1;
         }
         else if (pParmElement->pointer == 2 && type != CarDataType_Interface) {
-            if (type == CarDataType_CString || type == CarDataType_String) {
+            if (type == CarDataType_String) {
                 pParmElement->attrib = ParamIOAttribute_CalleeAllocOut;
             }
             else {

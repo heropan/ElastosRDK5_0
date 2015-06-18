@@ -73,10 +73,6 @@ public:
         /* [in] */ Int32 index,
         /* [in] */ Char32 value);
 
-    CARAPI SetInputArgumentOfCString(
-        /* [in] */ Int32 index,
-        /* [in] */ CString value);
-
     CARAPI SetInputArgumentOfString(
         /* [in] */ Int32 index,
         /* [in] */ const String& value);

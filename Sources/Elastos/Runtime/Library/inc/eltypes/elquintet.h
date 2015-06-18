@@ -110,7 +110,6 @@ DECL_TYPE2FLAG_TMPL(Double,             CarQuintetFlag_Type_Double);
 
 DECL_TYPE2FLAG_TMPL(Char8,              CarQuintetFlag_Type_Char8);
 //DECL_TYPE2FLAG_TMPL(Char16,             CarQuintetFlag_Type_Char16);
-DECL_TYPE2FLAG_TMPL(CString,            CarQuintetFlag_Type_CString);
 DECL_TYPE2FLAG_TMPL(String,             CarQuintetFlag_Type_String);
 
 DECL_TYPE2FLAG_TMPL(EMuid,              CarQuintetFlag_Type_EMuid);

@@ -53,167 +53,167 @@ public:
     CARAPI ZeroAllFields();
 
     CARAPI SetInt16Field(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ Int16 value);
 
     CARAPI SetInt32Field(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ Int32 value);
 
     CARAPI SetInt64Field(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ Int64 value);
 
     CARAPI SetByteField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ Byte value);
 
     CARAPI SetFloatField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ Float value);
 
     CARAPI SetDoubleField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ Double value);
 
     CARAPI SetChar8Field(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ Char8 value);
 
     CARAPI SetChar16Field(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ Char16 value);
 
     CARAPI SetChar32Field(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ Char32 value);
 
     CARAPI SetBooleanField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ Boolean value);
 
     CARAPI SetEMuidField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ EMuid * pValue);
 
     CARAPI SetEGuidField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ EGuid * pValue);
 
     CARAPI SetECodeField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ ECode value);
 
     CARAPI SetLocalPtrField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ LocalPtr value);
 
     CARAPI SetLocalTypeField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ PVoid value);
 
     CARAPI SetEnumField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ Int32 value);
 
     CARAPI GetStructFieldSetter(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IStructSetter ** ppSetter);
 
     CARAPI GetCppVectorFieldSetter(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ ICppVectorSetter ** ppSetter);
 
     CARAPI SetFieldValueByName(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ void *pParam,
         /* [in] */ CarDataType type);
 
 //--------------Getter----------------------------------------------------------
 
     CARAPI GetInt16Field(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ Int16 * pValue);
 
     CARAPI GetInt32Field(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ Int32 * pValue);
 
     CARAPI GetInt64Field(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ Int64 * pValue);
 
     CARAPI GetByteField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ Byte * pValue);
 
     CARAPI GetFloatField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ Float * pValue);
 
     CARAPI GetDoubleField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ Double * pValue);
 
     CARAPI GetChar8Field(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ Char8 * pValue);
 
     CARAPI GetChar16Field(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ Char16 * pValue);
 
     CARAPI GetChar32Field(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ Char32 * pValue);
 
     CARAPI GetBooleanField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ Boolean * pValue);
 
     CARAPI GetEMuidField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ EMuid * pValue);
 
     CARAPI GetEGuidField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ EGuid * pValue);
 
     CARAPI GetECodeField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ ECode * pValue);
 
     CARAPI GetLocalPtrField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ LocalPtr * pValue);
 
     CARAPI GetLocalTypeField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ PVoid value);
 
     CARAPI GetEnumField(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ Int32 * pValue);
 
     CARAPI GetStructFieldGetter(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ IStructGetter ** ppGetter);
 
     CARAPI GetCppVectorFieldGetter(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ ICppVectorGetter ** ppGetter);
 
     CARAPI GetFieldValueByName(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ void *pParam,
         /* [in] */ CarDataType type);
 
     CARAPI GetIndexByName(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [out] */ Int32 *pIndex);
 
     CARAPI AcquireCppVectorFieldSGetter(
-        /* [in] */ CString name,
+        /* [in] */ const String& name,
         /* [in] */ Boolean bSetter,
         /* [out] */ IInterface ** ppSGetter);
 
