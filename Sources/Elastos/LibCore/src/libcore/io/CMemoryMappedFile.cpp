@@ -80,22 +80,22 @@ ECode CMemoryMappedFile::Close()
     return NOERROR;
 }
 
-AutoPtr<IMemoryMappedFile> CMemoryMappedFile::MmapRO(
-    /* [in] */ String path)
+ECode CMemoryMappedFile::MmapRO(
+    /* [in] */ String path,
+    /* [in] */ IMemoryMappedFile** rst)
 {
     AutoPtr<IFileDescriptor> fd;
     AutoPtr<IOs> os = CLibcore::sOs;
-    os->Open(path, OsConstants::_O_RDONLY, 0, (IFileDescriptor**)&fd);
+    FAIL_RETURN(os->Open(path, OsConstants::_O_RDONLY, 0, (IFileDescriptor**)&fd))
     AutoPtr<IStructStat> structState;
-    os->Fstat(fd, (IStructStat**)&structState);
+    FAIL_RETURN(os->Fstat(fd, (IStructStat**)&structState))
     Int64 size;
-    structState->GetSize(&size);
+    FAIL_RETURN(structState->GetSize(&size))
     Int64 address;
-    os->Mmap(0L, size, OsConstants::_PROT_READ, OsConstants::_MAP_SHARED, fd, 0, &address);
-    os->Close(fd);
-    AutoPtr<IMemoryMappedFile> rst;
-    New(address, size, (IMemoryMappedFile**)&rst);
-    return rst;
+    FAIL_RETURN(os->Mmap(0L, size, OsConstants::_PROT_READ, OsConstants::_MAP_SHARED, fd, 0, &address))
+    FAIL_RETURN(os->Close(fd))
+    FAIL_RETURN(New(address, size, (IMemoryMappedFile**)&rst))
+    return NOERROR;
 }
 
 } // namespace IO

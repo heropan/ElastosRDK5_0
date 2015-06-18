@@ -2,7 +2,12 @@
 #ifndef __CCOLLECTIONUTILS_H__
 #define __CCOLLECTIONUTILS_H__
 
-#include "_CCollectionUtils.h"
+#include "core/Object.h"
+#include "core/Singleton.h"
+#include "_Libcore_Utility_CCollectionUtils.h"
+
+using Elastos::Core::Object;
+using Elastos::Core::Singleton;
 
 using Elastos::Core::IComparator;
 using Elastos::Utility::IIterable;
@@ -13,23 +18,25 @@ namespace Libcore {
 namespace Utility {
 
 CarClass(CCollectionUtils)
+    , public Singleton
+    , public ICollectionUtils
 {
 private:
     class _Iterator
-        : public ElRefBase
+        : public Object
         , public IIterator
     {
     public:
+        CAR_INTERFACE_DECL()
+
         _Iterator(
             /* [in] */ IIterable* iterable,
             /* [in] */ Boolean trim);
 
-        CAR_INTERFACE_DECL();
-
         CARAPI HasNext(
             /* [out] */ Boolean* result);
 
-        CARAPI Next(
+        CARAPI GetNext(
             /* [out] */ IInterface** object);
 
         CARAPI Remove();
@@ -46,15 +53,15 @@ private:
     };
 
     class _Iterable
-        : public ElRefBase
+        : public Object
         , public IIterable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         _Iterable(
             /* [in] */ IIterable* iterable,
             /* [in] */ Boolean trim);
-
-        CAR_INTERFACE_DECL();
 
         CARAPI GetIterator(
             /* [out] */ IIterator** it);
@@ -72,6 +79,10 @@ public:
      * @param trim true to remove reference objects from the iterable after
      *     their referenced values have been cleared.
      */
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI DereferenceIterable(
         /* [in] */ IIterable* iterable,
         /* [in] */ Boolean trim,
