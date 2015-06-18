@@ -1,54 +1,52 @@
 
-#include "CSelectorProviderImpl.h"
+#include "SelectorProviderImpl.h"
 
 namespace Elastos {
 namespace IO {
 
-CAR_OBJECT_IMPL(CSelectorProviderImpl)
-
-ECode CSelectorProviderImpl::OpenDatagramChannel(
+ECode SelectorProviderImpl::OpenDatagramChannel(
     /* [out] */ Elastos::IO::Channels::IDatagramChannel** ppChannel)
 {
-    // TODO: Add your code here
+    // return new DatagramChannelImpl(this);
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CSelectorProviderImpl::OpenPipe(
+ECode SelectorProviderImpl::OpenPipe(
     /* [out] */ Elastos::IO::Channels::IPipe** ppPipe)
 {
-    // TODO: Add your code here
+    // return new PipeImpl(this);
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CSelectorProviderImpl::OpenSelector(
+ECode SelectorProviderImpl::OpenSelector(
     /* [out] */ Elastos::IO::Channels::Spi::IAbstractSelector** ppSelector)
 {
-    // TODO: Add your code here
+    // return new SelectorImpl(this);
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CSelectorProviderImpl::OpenServerSocketChannel(
+ECode SelectorProviderImpl::OpenServerSocketChannel(
     /* [out] */ Elastos::IO::Channels::IServerSocketChannel** ppChannel)
 {
-    // TODO: Add your code here
+    // return new ServerSocketChannelImpl(this);
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CSelectorProviderImpl::OpenSocketChannel(
+ECode SelectorProviderImpl::OpenSocketChannel(
     /* [out] */ Elastos::IO::Channels::ISocketChannel** ppSocketChannel)
 {
-    // TODO: Add your code here
+    // return new SocketChannelImpl(this);
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CSelectorProviderImpl::InheritedChannel(
+ECode SelectorProviderImpl::InheritedChannel(
     /* [out] */ Elastos::IO::Channels::IChannel** ppChanel)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CSelectorProviderImpl::constructor()
+ECode SelectorProviderImpl::constructor()
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;

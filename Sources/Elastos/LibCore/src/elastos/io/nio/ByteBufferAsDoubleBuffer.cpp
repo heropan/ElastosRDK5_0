@@ -170,14 +170,6 @@ ECode ByteBufferAsDoubleBuffer::Slice(
     return NOERROR;
 }
 
-ECode ByteBufferAsDoubleBuffer::SubSequence(
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out] */ ICharSequence** csq)
-{
-    return NOERROR;
-}
-
 ECode ByteBufferAsDoubleBuffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Double>** array)
 {

@@ -31,6 +31,8 @@ class AbstractSelectableChannel
 public:
     CAR_INTERFACE_DECL()
 
+    AbstractSelectableChannel();
+
     AbstractSelectableChannel(
         /* [in] */ ISelectorProvider* provider);
 

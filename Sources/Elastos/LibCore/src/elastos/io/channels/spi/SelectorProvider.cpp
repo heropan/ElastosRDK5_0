@@ -6,6 +6,8 @@ namespace IO {
 namespace Channels {
 namespace Spi {
 
+CAR_INTERFACE_IMPL(SelectorProvider, Object, ISelectorProvider)
+
 AutoPtr<ISelectorProvider> SelectorProvider::sProvider;
 
 SelectorProvider::SelectorProvider()

@@ -24,6 +24,8 @@ class Int32Buffer
     , public IInt32Buffer
 {
 public:
+    Int32Buffer();
+
     Int32Buffer(
         /* [in] */ Int32 capacity);
 

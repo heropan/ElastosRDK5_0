@@ -20,6 +20,8 @@ class SocketChannel
     , public IGatheringByteChannel
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Creates an open and unconnected socket channel.
      * <p>
@@ -344,7 +346,10 @@ public:
         /* [out] */ Int64* number);
 
 protected:
-    SocketChannel(ISelectorProvider* provider);
+    SocketChannel();
+
+    SocketChannel(
+        /* [in] */ ISelectorProvider* provider);
 
 private:
 

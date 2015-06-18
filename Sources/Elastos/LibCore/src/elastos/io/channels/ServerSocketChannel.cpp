@@ -5,6 +5,9 @@ namespace Elastos {
 namespace IO {
 namespace Channels {
 
+ServerSocketChannel::ServerSocketChannel()
+{}
+
 ServerSocketChannel::ServerSocketChannel(
     /* [in] */ ISelectorProvider* provider)
     : AbstractSelectableChannel(provider)

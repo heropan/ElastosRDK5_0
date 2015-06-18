@@ -5,8 +5,6 @@
 #include "DoubleBuffer.h"
 #include "ByteBuffer.h"
 
-using Elastos::Core::ICharSequence;
-
 namespace Elastos {
 namespace IO {
 
@@ -92,11 +90,6 @@ public:
     CARAPI Slice(
         /* [out] */ IDoubleBuffer** buffer);
 
-    CARAPI SubSequence(
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [out] */ ICharSequence** csq);
-
 protected:
     CARAPI ProtectedArray(
         /* [out, callee] */ ArrayOf<Double>** array);
@@ -118,7 +111,7 @@ protected:
         /* [out] */ Boolean* result);
 
 private:
-        AutoPtr<ByteBuffer> mByteBuffer;
+    AutoPtr<ByteBuffer> mByteBuffer;
 };
 
 } // namespace IO

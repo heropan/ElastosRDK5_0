@@ -19,9 +19,7 @@ namespace IO {
  * </p>
  *
  */
-class DoubleToByteBufferAdapter
-    : public IDoubleBuffer
-    , public DoubleBuffer
+class DoubleToByteBufferAdapter : public DoubleBuffer
 {
 public:
     static CARAPI AsDoubleBuffer(

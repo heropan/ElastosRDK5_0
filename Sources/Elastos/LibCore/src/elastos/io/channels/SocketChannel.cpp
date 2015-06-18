@@ -4,12 +4,17 @@ namespace Elastos {
 namespace IO {
 namespace Channels {
 
+SocketChannel::SocketChannel()
+{}
+
 SocketChannel::SocketChannel(
     /* [in] */ ISelectorProvider* provider)
     : AbstractSelectableChannel(provider)
 {
     assert(NULL != provider);
 }
+
+CAR_INTERFACE_IMPL_2(SocketChannel, Object, IScatteringByteChannel, IGatheringByteChannel)
 
 ECode SocketChannel::Open(
     /* [out] */ ISocketChannel** channel)

@@ -9,6 +9,9 @@ namespace IO {
 extern "C" const InterfaceID EIID_Int16Buffer =
      { 0xae6aa98e, 0x18b9, 0x4de2, { 0xa2, 0xda, 0xc0, 0x30, 0xce, 0xf9, 0x7, 0x46 } };
 
+Int16Buffer::Int16Buffer()
+{}
+
 Int16Buffer::Int16Buffer(
     /* [in] */ Int32 capacity)
     : Buffer(1, capacity, NULL)

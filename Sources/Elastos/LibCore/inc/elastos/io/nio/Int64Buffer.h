@@ -26,6 +26,8 @@ class Int64Buffer
     , public IInt64Buffer
 {
 public:
+    Int64Buffer();
+
     Int64Buffer(
         /* [in] */ Int32 capacity);
 

@@ -1,5 +1,5 @@
 
-#include "CSelectorImpl.h"
+#include "SelectorImpl.h"
 // #include "CLibcore.h"
 //#include "IoUtils.h"
 #include "CStructPollfd.h"
@@ -23,18 +23,16 @@ using Elastos::Utility::IList;
 namespace Elastos {
 namespace IO {
 
-CAR_OBJECT_IMPL(CSelectorImpl)
-
-ECode CSelectorImpl::constructor()
+ECode SelectorImpl::constructor()
 {
     return NOERROR;
 }
 
-ECode CSelectorImpl::constructor(
+ECode SelectorImpl::constructor(
     /* [in] */ ISelectorProvider* selectorProvider)
 {
     AbstractSelector::constructor(selectorProvider);
-    ECode result;
+    ECode result = NOERROR;
     AutoPtr<ArrayOf<Int32> > fds;
     assert(0 && "TODO");
     // result = CLibcore::sOs->Pipe((ArrayOf<Int32>**)&fds);
@@ -55,30 +53,30 @@ ECode CSelectorImpl::constructor(
     return NOERROR;
 }
 
-ECode CSelectorImpl::Cancel(
+ECode SelectorImpl::Cancel(
     /* [in] */ ISelectionKey* key)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CSelectorImpl::Close()
+ECode SelectorImpl::Close()
 {
     return AbstractSelector::Close();
 }
 
-ECode CSelectorImpl::IsOpen(
+ECode SelectorImpl::IsOpen(
     /* [out] */ Boolean* isOpen)
 {
     return AbstractSelector::IsOpen(isOpen);
 }
 
-ECode CSelectorImpl::GetProvider(
+ECode SelectorImpl::GetProvider(
     /* [out] */ ISelectorProvider** provider)
 {
     return AbstractSelector::GetProvider(provider);
 }
 
-ECode CSelectorImpl::ImplCloseSelector()
+ECode SelectorImpl::ImplCloseSelector()
 {
     Wakeup();
 
@@ -98,7 +96,7 @@ ECode CSelectorImpl::ImplCloseSelector()
     return NOERROR;
 }
 
-ECode CSelectorImpl::Register(
+ECode SelectorImpl::Register(
     /* [in] */ IAbstractSelectableChannel* asc,
     /* [in] */ Int32 operations,
     /* [in] */ IObject* attachment,
@@ -114,7 +112,6 @@ ECode CSelectorImpl::Register(
     GetProvider((ISelectorProvider**)&sp1);
     AutoPtr<ISelectorProvider> sp2;
     channel->GetProvider((ISelectorProvider**)&sp2);
-    Boolean isflag = FALSE;
     if (!Object::Equals(sp1,sp2)) {
         // throw new IllegalSelectorException();
         return E_ILLEGAL_SELECTOR_EXCEPTION;
@@ -129,7 +126,7 @@ ECode CSelectorImpl::Register(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CSelectorImpl::GetKeys(
+ECode SelectorImpl::GetKeys(
     /* [out] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
@@ -140,7 +137,7 @@ ECode CSelectorImpl::GetKeys(
     return NOERROR;
 }
 
-ECode CSelectorImpl::CheckClosed()
+ECode SelectorImpl::CheckClosed()
 {
     Boolean ret;
     IsOpen(&ret);
@@ -150,13 +147,13 @@ ECode CSelectorImpl::CheckClosed()
     return NOERROR;
 }
 
-ECode CSelectorImpl::Select(
+ECode SelectorImpl::Select(
     /* [out] */ Int32* ret)
 {
     return SelectInternal(-1, ret);
 }
 
-ECode CSelectorImpl::Select(
+ECode SelectorImpl::Select(
     /* [in] */ Int64 timeout,
     /* [out] */ Int32* ret)
 {
@@ -166,13 +163,13 @@ ECode CSelectorImpl::Select(
     return SelectInternal((timeout == 0) ? -1 : timeout, ret);
 }
 
-ECode CSelectorImpl::SelectNow(
+ECode SelectorImpl::SelectNow(
     /* [out] */ Int32* ret)
 {
     return SelectInternal(0, ret);
 }
 
-ECode CSelectorImpl::SelectInternal(
+ECode SelectorImpl::SelectInternal(
     /* [in] */ Int64 timeout,
     /* [out] */ Int32* ret)
 {
@@ -207,7 +204,7 @@ ECode CSelectorImpl::SelectInternal(
     return NOERROR;
 }
 
-void CSelectorImpl::SetPollFd(
+void SelectorImpl::SetPollFd(
     /* [in] */ Int32 index,
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 events,
@@ -217,15 +214,13 @@ void CSelectorImpl::SetPollFd(
     IList::Probe(mPollFds)->Get(index, (IInterface**)&outface);
     AutoPtr<IStructPollfd> pollFd = IStructPollfd::Probe(outface);
     if (pollFd != NULL) {
-        Int32 fdvalue = 0;
-        fd->GetDescriptor(&fdvalue);
-        pollFd->SetFd(fdvalue);
+        pollFd->SetFd(fd);
         pollFd->SetEvents(events);
         pollFd->SetUserData(object);
     }
 }
 
-void CSelectorImpl::PreparePollFds()
+void SelectorImpl::PreparePollFds()
 {
     AutoPtr< ArrayOf<IInterface*> > outarr;
     ICollection::Probe(mMutableKeys)->ToArray((ArrayOf<IInterface*>**)&outarr);
@@ -264,7 +259,7 @@ void CSelectorImpl::PreparePollFds()
     }
 }
 
-void CSelectorImpl::EnsurePollFdsCapacity()
+void SelectorImpl::EnsurePollFdsCapacity()
 {
     // We need one slot for each element of mutableKeys, plus one for the wakeup pipe.
     Int32 fdsvalue = 0;
@@ -281,7 +276,7 @@ void CSelectorImpl::EnsurePollFdsCapacity()
     }
 }
 
-Int32 CSelectorImpl::ProcessPollFds()
+Int32 SelectorImpl::ProcessPollFds()
 {
     AutoPtr< ArrayOf<IInterface*> > outarr;
     ICollection::Probe(mPollFds)->ToArray((ArrayOf<IInterface*>**)&outarr);
@@ -362,7 +357,7 @@ Int32 CSelectorImpl::ProcessPollFds()
     return readyKeyCount;
 }
 
-ECode CSelectorImpl::SelectedKeys(
+ECode SelectorImpl::SelectedKeys(
     /* [out] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
@@ -373,7 +368,7 @@ ECode CSelectorImpl::SelectedKeys(
     return NOERROR;
 }
 
-Int32 CSelectorImpl::DoCancel()
+Int32 SelectorImpl::DoCancel()
 {
     Int32 deselected = 0;
     AutoPtr<ISet> cancelledKeys;
@@ -399,7 +394,7 @@ Int32 CSelectorImpl::DoCancel()
     return deselected;
 }
 
-ECode CSelectorImpl::Wakeup()
+ECode SelectorImpl::Wakeup()
 {
     Int32 fd, nWrite;
     mWakeupOut->GetDescriptor(&fd);

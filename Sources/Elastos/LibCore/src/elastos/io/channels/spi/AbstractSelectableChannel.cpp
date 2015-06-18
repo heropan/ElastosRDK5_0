@@ -11,6 +11,9 @@ namespace Spi {
 
 CAR_INTERFACE_IMPL(AbstractSelectableChannel, SelectableChannel, IAbstractSelectableChannel)
 
+AbstractSelectableChannel::AbstractSelectableChannel()
+{}
+
 AbstractSelectableChannel::AbstractSelectableChannel(
     /* [in] */ ISelectorProvider* provider)
     : mProvider(provider)
