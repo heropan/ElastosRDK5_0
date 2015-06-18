@@ -997,7 +997,7 @@ ECode CObjectProxy::LinkToDeath(
     /* [in] */ Int32 flags)
 {
     if (recipient == NULL) {
-        return E_INVALID_POINTER;
+        return E_INVALID_ARGUMENT;
     }
 
     android::IBinder* target = m_pBinder.get();
@@ -1034,7 +1034,7 @@ ECode CObjectProxy::UnlinkToDeath(
 
     *result = FALSE;
     if (recipient == NULL) {
-        return E_INVALID_POINTER;
+        return E_INVALID_ARGUMENT;
     }
 
     android::IBinder* target = m_pBinder.get();

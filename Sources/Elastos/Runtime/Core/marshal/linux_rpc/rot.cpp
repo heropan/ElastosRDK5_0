@@ -107,7 +107,7 @@ ECode FindExportObject(
     }
 
     pthread_mutex_unlock(&g_exportTableLock);
-    return E_NO_EXPORT_SERVER;
+    return E_NO_EXPORT_OBJECT;
 }
 
 ECode FindExportObject(
@@ -130,7 +130,7 @@ ECode FindExportObject(
     }
 
     pthread_mutex_unlock(&g_exportTableLock);
-    return E_NO_EXPORT_SERVER;
+    return E_NO_EXPORT_OBJECT;
 }
 
 ECode UnregisterExportObject(
@@ -161,7 +161,7 @@ ECode UnregisterExportObject(
     }
 
     pthread_mutex_unlock(&g_exportTableLock);
-    return E_NO_EXPORT_SERVER;
+    return E_NO_EXPORT_OBJECT;
 }
 
 ECode RegisterImportObject(
@@ -202,7 +202,7 @@ ECode FindImportObject(
     }
 
     pthread_mutex_unlock(&g_importTableLock);
-    return E_NO_IMPORT_SERVER;
+    return E_NO_IMPORT_OBJECT;
 }
 
 // BUGBUG: must atomic operation with delete proxy
@@ -233,7 +233,7 @@ ECode UnregisterImportObject(
     }
 
     pthread_mutex_unlock(&g_importTableLock);
-    return E_NO_IMPORT_SERVER;
+    return E_NO_IMPORT_OBJECT;
 }
 
 } // namespace RPC

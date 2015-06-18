@@ -23,10 +23,6 @@
 #include <factory.h>
 #endif
 
-#ifndef __CAR_CARERR_H__
-#include <carerr.h>
-#endif
-
 #ifndef __CAR_CARAPI_H__
 #include <carapi.h>
 #endif

@@ -16,12 +16,12 @@ static UInt32 Hash(const char* key)
     UInt32 val = 0;
     UInt32 pos = 0;
     UInt32 len = strlen(key);
-    
+
     while(pos < len) {
         val += key[pos] * pos;
-        pos++; 
+        pos++;
     }
-    
+
     return val % ROT_HASHTABLE_SIZE;
 }
 
@@ -35,7 +35,7 @@ ECode InitROT()
         s_hashExportObjects[n].Initialize();
         s_hashExportObjects[n].m_pNext = NULL;
     }
-    
+
     pthread_mutexattr_t recursiveAttr;
     pthread_mutexattr_init(&recursiveAttr);
     pthread_mutexattr_settype(&recursiveAttr, PTHREAD_MUTEX_RECURSIVE);
@@ -47,7 +47,7 @@ ECode InitROT()
     }
     else if (FAILED(pthread_mutex_init(&g_marshalLock, &recursiveAttr))) {
         ec = E_FAIL;
-    }       
+    }
     pthread_mutexattr_destroy(&recursiveAttr);
 
     return ec;
@@ -106,7 +106,7 @@ ECode FindExportObject(
     }
 
     pthread_mutex_unlock(&g_exportTableLock);
-    return E_NO_EXPORT_SERVER;
+    return E_NO_EXPORT_OBJECT;
 }
 
 ECode FindExportObject(
@@ -127,7 +127,7 @@ ECode FindExportObject(
     }
 
     pthread_mutex_unlock(&g_exportTableLock);
-    return E_NO_EXPORT_SERVER;
+    return E_NO_EXPORT_OBJECT;
 }
 
 ECode UnregisterExportObject(
@@ -156,7 +156,7 @@ ECode UnregisterExportObject(
     }
 
     pthread_mutex_unlock(&g_exportTableLock);
-    return E_NO_EXPORT_SERVER;
+    return E_NO_EXPORT_OBJECT;
 }
 
 ECode RegisterImportObject(
@@ -198,7 +198,7 @@ ECode FindImportObject(
     }
 
     pthread_mutex_unlock(&g_importTableLock);
-    return E_NO_IMPORT_SERVER;
+    return E_NO_IMPORT_OBJECT;
 }
 
 // BUGBUG: must atomic operation with delete proxy
@@ -229,5 +229,5 @@ ECode UnregisterImportObject(
     }
 
     pthread_mutex_unlock(&g_importTableLock);
-    return E_NO_IMPORT_SERVER;
+    return E_NO_IMPORT_OBJECT;
 }

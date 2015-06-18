@@ -642,7 +642,7 @@ void* CObjectStub::S_ServiceRoutine(void *arg)
     const char *uname;
 
     if (arg == NULL) {
-        pthread_exit((void*)E_THREAD_ABORTED);
+        pthread_exit((void*)E_ABORTED);
     }
 
     MARSHAL_DBGOUT(MSHDBG_NORMAL,
@@ -715,7 +715,7 @@ ECode CObjectStub::StartIPCService()
                        NULL,
                        S_ServiceRoutine,
                        (void*)this)) {
-        return E_THREAD_ABORTED;
+        return E_ABORTED;
     }
     sem_wait(&m_sem);
     return NOERROR;

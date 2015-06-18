@@ -6,6 +6,5 @@ EXPORT_HEADERS = car.h
 EXPORT_HEADERS += uuid.h
 EXPORT_HEADERS += elaobj.h
 EXPORT_HEADERS += factory.h
-EXPORT_HEADERS += carerr.h
 EXPORT_HEADERS += carapi.h
 EXPORT_HEADERS += eldelegate.h

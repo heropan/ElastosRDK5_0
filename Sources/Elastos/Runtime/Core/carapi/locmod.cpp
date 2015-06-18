@@ -196,7 +196,7 @@ ELAPI _CProcess_FreeUnusedModule(String szDllName)
             continue;
         }
         else if (NULL == pLocalModule->m_pDllCanUnloadNow) {
-            ec = E_NOT_CAR_DLL;
+            ec = E_NOT_CAR_COMPONENT;
         }
         else if (NOERROR == (*pLocalModule->m_pDllCanUnloadNow)()) {
             pLocalModule->Detach();
@@ -207,7 +207,7 @@ ELAPI _CProcess_FreeUnusedModule(String szDllName)
             ec = NOERROR;
         }
         else {
-            ec = E_DLL_CANNOT_UNLOAD_NOW;
+            ec = E_COMPONENT_CANNOT_UNLOAD_NOW;
         }
         pthread_mutex_unlock(&g_LocModListLock);
         return ec;
@@ -215,7 +215,7 @@ ELAPI _CProcess_FreeUnusedModule(String szDllName)
 
     pthread_mutex_unlock(&g_LocModListLock);
 
-    return E_DLL_NOT_LOADED;
+    return E_COMPONENT_NOT_LOADED;
 }
 
 ELAPI_(void) _CProcess_FreeUnusedModules(Boolean bImmediate)

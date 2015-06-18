@@ -108,7 +108,7 @@ ECode RegisterModuleInfo(
 
     if (pCurNode != NULL) {
         pthread_mutex_unlock(&s_moduleInfoLock);
-        return S_ALREADY_EXISTS;
+        return NOERROR;
     }
 
     pModuleInfo = (CIModuleInfo *)malloc(pSrcModuleInfo->totalSize);
