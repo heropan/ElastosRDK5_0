@@ -5,6 +5,10 @@
 namespace Libcore {
 namespace ICU {
 
+CAR_SINGLETON_IMPL(CNativeIDNHelper)
+
+CAR_INTERFACE_IMPL(CNativeIDNHelper, Singleton, INativeIDNHelper)
+
 ECode CNativeIDNHelper::ToASCII(
     /* [in] */ const String& s,
     /* [in] */ Int32 flags,

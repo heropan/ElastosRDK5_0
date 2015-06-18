@@ -1,17 +1,25 @@
 
-#ifndef __ICU_CNATIVEIDNHELPER_H__
-#define __ICU_CNATIVEIDNHELPER_H__
+#ifndef __LIBCORE_ICU_CNATIVEIDNHELPER_H__
+#define __LIBCORE_ICU_CNATIVEIDNHELPER_H__
 
-#include "_CNativeIDNHelper.h"
+#include <Singleton.h>
+#include "_Libcore_ICU_CNativeIDNHelper.h"
 
 using Elastos::Core::ICharSequence;
+using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace ICU {
 
 CarClass(CNativeIDNHelper)
+	, public Singleton
+	, public INativeIDNHelper
 {
+	CAR_SINGLETON_DECL()
+	
 public:
+	CAR_INTERFACE_DECL()
+
     CARAPI ToASCII(
         /* [in] */ const String& s,
         /* [in] */ Int32 flags,
@@ -26,4 +34,4 @@ public:
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__ICU_CNATIVEIDNHELPER_H__
+#endif //__LIBCORE_ICU_CNATIVEIDNHELPER_H__

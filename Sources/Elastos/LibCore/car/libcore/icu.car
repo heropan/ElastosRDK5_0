@@ -53,6 +53,10 @@ module
         interface ITimeZoneNames;
     }
 
+    singleton class CNativeIDNHelper {
+        interface INativeIDNHelper;
+    }
+
     } // namespace ICU
     } // namespace LibCore
 }

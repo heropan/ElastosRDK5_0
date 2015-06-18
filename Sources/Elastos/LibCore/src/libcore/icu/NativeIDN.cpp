@@ -2,6 +2,7 @@
 #include "NativeIDN.h"
 #include "ElStringByteSink.h"
 #include <unicode/uidna.h>
+#include <unicode/unistr.h>
 
 namespace Libcore {
 namespace ICU {
@@ -71,30 +72,30 @@ ECode NativeIDN::ConvertImpl(
     }
     UChar dst[256];
     UErrorCode status = U_ZERO_ERROR;
-//     UnicodeString unicodeS = UnicodeString::fromUTF8(s.string());
-//     size_t resultLength = toAscii
-//         ? uidna_IDNToASCII(unicodeS.getBuffer(), unicodeS.length(), &dst[0], sizeof(dst), flags, NULL, &status)
-//         : uidna_IDNToUnicode(unicodeS.getBuffer(), unicodeS.length(), &dst[0], sizeof(dst), flags, NULL, &status);
-//     if (U_FAILURE(status)) {
-//         *result = NULL;
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-// //        jniThrowException(env, "java/lang/IllegalArgumentException", u_errorName(status));
-//     }
-//     if (!toAscii) {
-//         // ICU only translates separators to ASCII for toASCII.
-//         // Java expects the translation for toUnicode too.
-//         // We may as well do this here, while the string is still mutable.
-//         for (size_t i = 0; i < resultLength; ++i) {
-//             if (isLabelSeparator(dst[i])) {
-//                 dst[i] = '.';
-//             }
-//         }
-//     }
-//     UnicodeString us(&dst[0], resultLength);
-//     String s("");
-//     ElStringByteSink sink(&s);
-//     rules.toUTF8(sink);
-//     *result = s;
+    UnicodeString unicodeS = UnicodeString::fromUTF8(s.string());
+    size_t resultLength = toAscii
+        ? uidna_IDNToASCII(unicodeS.getBuffer(), unicodeS.length(), &dst[0], sizeof(dst), flags, NULL, &status)
+        : uidna_IDNToUnicode(unicodeS.getBuffer(), unicodeS.length(), &dst[0], sizeof(dst), flags, NULL, &status);
+    if (U_FAILURE(status)) {
+        *result = NULL;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+//        jniThrowException(env, "java/lang/IllegalArgumentException", u_errorName(status));
+    }
+    if (!toAscii) {
+        // ICU only translates separators to ASCII for toASCII.
+        // Java expects the translation for toUnicode too.
+        // We may as well do this here, while the string is still mutable.
+        for (size_t i = 0; i < resultLength; ++i) {
+            if (isLabelSeparator(dst[i])) {
+               dst[i] = '.';
+            }
+        }
+    }
+    UnicodeString us(&dst[0], resultLength);
+    String str("");
+    ElStringByteSink sink(&str);
+    us.toUTF8(sink);
+    *result = s;
     return NOERROR;
 }
 

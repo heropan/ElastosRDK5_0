@@ -1,9 +1,9 @@
 
-#ifndef __NATIVEIDN_H__
-#define __NATIVEIDN_H__
+#ifndef __LIBCORE_ICU_NATIVEIDN_H__
+#define __LIBCORE_ICU_NATIVEIDN_H__
 
 #include <elastos.h>
-#include <cmdef.h>
+#include <coredef.h>
 #include "Elastos.CoreLibrary_server.h"
 
 namespace Libcore {
@@ -21,7 +21,7 @@ public:
         /* [in] */ Int32 flags);
 
 private:
-    NativeIDN() {}
+    NativeIDN();
 
     static CARAPI Convert(
         /* [in] */ const String& s,
@@ -39,4 +39,4 @@ private:
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__NATIVEIDN_H__
+#endif //__LIBCORE_ICU_NATIVEIDN_H__
