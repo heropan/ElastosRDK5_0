@@ -5,7 +5,7 @@ module
     namespace Libcore{
     namespace Utility{
 
-    interface IZoneInfoDB {
+    interface ITzData {
         GetAvailableIDs(
             [out, callee] ArrayOf<String>* array);
 
@@ -13,19 +13,20 @@ module
             [in] Int32 rawOffset,
             [out, callee] ArrayOf<String>* array);
 
-        GetSystemDefault(
-            [out] ITimeZone** tz);
-
-        GetTimeZone(
-            [in] String id,
-            [out] ITimeZone** tz);
-
         GetVersion(
             [out] String* v);
 
+        GetZoneTab(
+            [out] String* tab);
+
         MakeTimeZone(
             [in]  String id,
-            [out] ITimeZone** tz);
+            [out] IZoneInfo** tz);
+    }
+
+    interface IZoneInfoDB {
+        GetInstance(
+            [out] ITzData** instance);
     }
 
     } // namespace Utility

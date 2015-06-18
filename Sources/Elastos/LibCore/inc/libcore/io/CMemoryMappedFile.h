@@ -44,8 +44,9 @@ public:
 
     CARAPI Close();
 
-    static AutoPtr<IMemoryMappedFile> MmapRO(
-        /* [in] */ String path);
+    static CARAPI MmapRO(
+        /* [in] */ String path,
+        /* [in] */ IMemoryMappedFile** rst);
 
 private:
     Int64 mAddress;

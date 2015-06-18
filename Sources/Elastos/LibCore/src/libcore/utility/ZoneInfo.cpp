@@ -1,14 +1,15 @@
 
-#include "CZoneInfo.h"
+#include "ZoneInfo.h"
 #include "Arrays.h"
 #include "CFormatter.h"
 #include "CInteger32.h"
 #include "CBoolean.h"
 #include "CStringWrapper.h"
-#include "CSimpleDateFormat.h"
+#include "CDate.h"
+#include "text/CSimpleDateFormat.h"
 #include "CSystem.h"
 #include <Math.h>
-#include <assert.h>
+// #include <assert.h>
 
 namespace Libcore {
 namespace Utility {
@@ -23,24 +24,116 @@ using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Text::ISimpleDateFormat;
 using Elastos::Text::CSimpleDateFormat;
+using Elastos::Utility::CDate;
+using Elastos::Text::IDateFormat;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::IFormatter;
+using Elastos::Utility::CFormatter;
 
-const Int64 CZoneInfo::MILLISECONDS_PER_DAY;
-const Int64 CZoneInfo::MILLISECONDS_PER_400_YEARS;
-const Int64 CZoneInfo::UNIX_OFFSET;
+CAR_INTERFACE_IMPL(ZoneInfo::OffsetInterval, Object, IOffsetInterval)
 
-const Int32 CZoneInfo::NORMAL[] = {
+ECode ZoneInfo::OffsetInterval::ContainsWallTime(
+    /* [in] */ Int64 wallTimeSeconds,
+    /* [out] */ Boolean* result)
+{
+    *result = wallTimeSeconds >= mStartWallTimeSeconds && wallTimeSeconds < mEndWallTimeSeconds;
+    return NOERROR;
+}
+
+ECode ZoneInfo::OffsetInterval::GetIsDst(
+    /* [out] */ Int32* result)
+{
+    *result = mIsDst;
+    return NOERROR;
+}
+
+ECode ZoneInfo::OffsetInterval::GetTotalOffsetSeconds(
+    /* [out] */ Int32* result)
+{
+    *result = mTotalOffsetSeconds;
+    return NOERROR;
+}
+
+ECode ZoneInfo::OffsetInterval::GetEndWallTimeSeconds(
+    /* [out] */ Int64* result)
+{
+    *result = mEndWallTimeSeconds;
+    return NOERROR;
+}
+
+ECode ZoneInfo::OffsetInterval::GetStartWallTimeSeconds(
+    /* [out] */ Int64* result)
+{
+    *result = mStartWallTimeSeconds;
+    return NOERROR;
+}
+
+ZoneInfo::OffsetInterval::OffsetInterval(
+    /* [in] */ Int32 startWallTimeSeconds,
+    /* [in] */ Int32 endWallTimeSeconds,
+    /* [in] */ Int32 isDst,
+    /* [in] */ Int32 totalOffsetSeconds)
+{
+    mStartWallTimeSeconds = startWallTimeSeconds;
+    mEndWallTimeSeconds = endWallTimeSeconds;
+    mIsDst = isDst;
+    mTotalOffsetSeconds = totalOffsetSeconds;
+}
+
+ECode ZoneInfo::OffsetInterval::Create(
+    /* [in] */ IZoneInfo* timeZone,
+    /* [in] */ Int32 transitionIndex,
+    /* [out] */ IOffsetInterval** result)
+{
+    ZoneInfo* zoneInfo = (ZoneInfo*)timeZone;
+    if (transitionIndex < -1 || transitionIndex >= zoneInfo->mTransitions->GetLength()) {
+        *result = NULL;
+        return NOERROR;
+    }
+
+    Int32 rawOffsetSeconds = zoneInfo->mRawOffset / 1000;
+    if (transitionIndex == -1) {
+        Int32 endWallTimeSeconds;
+        CheckedAdd((*zoneInfo->mTransitions)[0], rawOffsetSeconds, &endWallTimeSeconds);
+        *result = new OffsetInterval(Math::INT32_MIN_VALUE, endWallTimeSeconds, 0 /* isDst */,
+                rawOffsetSeconds);
+        return NOERROR;
+    }
+
+    Byte type = (*zoneInfo->mTypes)[transitionIndex];
+    Int32 totalOffsetSeconds = (*zoneInfo->mOffsets)[type] + rawOffsetSeconds;
+    Int32 endWallTimeSeconds;
+    if (transitionIndex == zoneInfo->mTransitions->GetLength() - 1) {
+        // If this is the last transition, make up the end time.
+        endWallTimeSeconds = Math::INT32_MAX_VALUE;
+    } else {
+        CheckedAdd((*zoneInfo->mTransitions)[transitionIndex + 1],
+                totalOffsetSeconds, &endWallTimeSeconds);
+    }
+    Int32 isDst = (*zoneInfo->mIsDsts)[type];
+    Int32 startWallTimeSeconds;
+    CheckedAdd((*zoneInfo->mTransitions)[transitionIndex], totalOffsetSeconds, &startWallTimeSeconds);
+    *result = new OffsetInterval(
+            startWallTimeSeconds, endWallTimeSeconds, isDst, totalOffsetSeconds);
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+const Int64 ZoneInfo::MILLISECONDS_PER_DAY;
+const Int64 ZoneInfo::MILLISECONDS_PER_400_YEARS;
+const Int64 ZoneInfo::UNIX_OFFSET;
+
+const Int32 ZoneInfo::NORMAL[] = {
         0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334,
 };
 
-const Int32 CZoneInfo::LEAP[] = {
+const Int32 ZoneInfo::LEAP[] = {
         0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335,
 };
 
-CAR_INTERFACE_IMPL(CZoneInfo, TimeZone, IZoneInfo)
+CAR_INTERFACE_IMPL(ZoneInfo, TimeZone, IZoneInfo)
 
-CAR_OBJECT_IMPL(CZoneInfo)
-
-ECode CZoneInfo::constructor(
+ZoneInfo::ZoneInfo(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<Int32>* transitions,
     /* [in] */ ArrayOf<Byte>* type,
@@ -134,10 +227,62 @@ ECode CZoneInfo::constructor(
     // tzdata uses seconds, but Java uses milliseconds.
     mRawOffset *= 1000;
     mEarliestRawOffset = earliestRawOffset * 1000;
-    return NOERROR;
 }
 
-ECode CZoneInfo::GetOffset(
+AutoPtr<IZoneInfo> ZoneInfo::MakeTimeZone(
+    /* [in] */ const String& id,
+    /* [in] */ IBufferIterator* it)
+{
+    // Variable names beginning tzh_ correspond to those in "tzfile.h".
+
+    // Check tzh_magic.
+    Int32 iValue;
+    it->ReadInt32(&iValue);
+    if (iValue != 0x545a6966) { // "TZif"
+        return NULL;
+    }
+
+    // Skip the uninteresting part of the header.
+    it->Skip(28);
+
+    // Read the sizes of the arrays we're about to read.
+    Int32 tzh_timecnt;
+    it->ReadInt32(&tzh_timecnt);
+    Int32 tzh_typecnt;
+    it->ReadInt32(&tzh_typecnt);
+
+    it->Skip(4); // Skip tzh_charcnt.
+
+    AutoPtr<ArrayOf<Int32> > transitions = ArrayOf<Int32>::Alloc(tzh_timecnt);
+    it->ReadInt32Array(transitions, 0, transitions->GetLength());
+
+    AutoPtr<ArrayOf<Byte> > type = ArrayOf<Byte>::Alloc(tzh_timecnt);
+    it->ReadByteArray(type, 0, type->GetLength());
+
+    AutoPtr<ArrayOf<Int32> > gmtOffsets = ArrayOf<Int32>::Alloc(tzh_typecnt);
+    AutoPtr<ArrayOf<Byte> > isDsts = ArrayOf<Byte>::Alloc(tzh_typecnt);
+    for (Int32 i = 0; i < tzh_typecnt; ++i) {
+        Int32 iTmp;
+        it->ReadInt32(&iTmp);
+        (*gmtOffsets)[i] = iTmp;
+        Byte bTmp;
+        it->ReadByte(&bTmp);
+        (*isDsts)[i] = iTmp;
+        // We skip the abbreviation index. This would let us provide historically-accurate
+        // time zone abbreviations (such as "AHST", "YST", and "AKST" for standard time in
+        // America/Anchorage in 1982, 1983, and 1984 respectively). ICU only knows the current
+        // names, though, so even if we did use this data to provide the correct abbreviations
+        // for en_US, we wouldn't be able to provide correct abbreviations for other locales,
+        // nor would we be able to provide correct long forms (such as "Yukon Standard Time")
+        // for any locale. (The RI doesn't do any better than us here either.)
+        it->Skip(1);
+    }
+
+    AutoPtr<IZoneInfo> rst;
+    return new ZoneInfo(id, transitions, type, gmtOffsets, isDsts);
+}
+
+ECode ZoneInfo::GetOffset(
     /* [in] */ Int32 era,
     /* [in] */ Int32 year,
     /* [in] */ Int32 month,
@@ -172,9 +317,10 @@ ECode CZoneInfo::GetOffset(
     calc -= UNIX_OFFSET;
 
     return GetOffset(calc, offset);
+    return NOERROR;
 }
 
-ECode CZoneInfo::GetOffset(
+ECode ZoneInfo::GetOffset(
     /* [in] */ Int64 when,
     /* [out] */ Int32* offset)
 {
@@ -197,7 +343,7 @@ ECode CZoneInfo::GetOffset(
     return NOERROR;
 }
 
-ECode CZoneInfo::InDaylightTime(
+ECode ZoneInfo::InDaylightTime(
     /* [in] */ IDate* time,
     /* [out] */ Boolean* value)
 {
@@ -225,7 +371,7 @@ ECode CZoneInfo::InDaylightTime(
     return NOERROR;
 }
 
-ECode CZoneInfo::GetRawOffset(
+ECode ZoneInfo::GetRawOffset(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset);
@@ -233,14 +379,14 @@ ECode CZoneInfo::GetRawOffset(
      return NOERROR;
 }
 
-ECode CZoneInfo::SetRawOffset(
+ECode ZoneInfo::SetRawOffset(
     /* [in] */ Int32 off)
 {
     mRawOffset = off;
     return NOERROR;
 }
 
-ECode CZoneInfo::GetDSTSavings(
+ECode ZoneInfo::GetDSTSavings(
     /* [out] */ Int32* savings)
 {
     VALIDATE_NOT_NULL(savings);
@@ -248,7 +394,7 @@ ECode CZoneInfo::GetDSTSavings(
     return NOERROR;
 }
 
-ECode CZoneInfo::UseDaylightTime(
+ECode ZoneInfo::UseDaylightTime(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -256,7 +402,7 @@ ECode CZoneInfo::UseDaylightTime(
     return NOERROR;
 }
 
-ECode CZoneInfo::HasSameRules(
+ECode ZoneInfo::HasSameRules(
     /* [in] */ ITimeZone* timeZone,
     /* [out] */ Boolean* value)
 {
@@ -269,7 +415,7 @@ ECode CZoneInfo::HasSameRules(
         return NOERROR;
     }
 
-    CZoneInfo* other = (CZoneInfo*)timeZone;
+    ZoneInfo* other = (ZoneInfo*)timeZone;
     if (mUseDst != other->mUseDst) {
         return NOERROR;
     }
@@ -291,7 +437,7 @@ ECode CZoneInfo::HasSameRules(
     return NOERROR;
 }
 
-ECode CZoneInfo::Clone(
+ECode ZoneInfo::Clone(
     /* [out] */ ITimeZone** newObj)
 {
     VALIDATE_NOT_NULL(newObj);
@@ -299,15 +445,14 @@ ECode CZoneInfo::Clone(
     for (Int32 i = 0; i < offsets->GetLength(); i++) {
         (*offsets)[i] += mRawOffset / 1000;
     }
-    AutoPtr<CZoneInfo> info;
-    FAIL_RETURN(CZoneInfo::NewByFriend(mID, mTransitions->Clone(), mTypes->Clone(), offsets, mIsDsts->Clone(),
-            (CZoneInfo**)&info));
-    *newObj = (ITimeZone*)info.Get();
+    AutoPtr<ZoneInfo> info = new ZoneInfo(mID, mTransitions->Clone(), mTypes->Clone(), offsets, mIsDsts->Clone());
+    info->mID = mID;
+    *newObj = info;
     REFCOUNT_ADD(*newObj);
     return NOERROR;
 }
 
-ECode CZoneInfo::Equals(
+ECode ZoneInfo::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean* isEqual)
 {
@@ -315,21 +460,24 @@ ECode CZoneInfo::Equals(
     *isEqual = FALSE;
     VALIDATE_NOT_NULL(other);
 
-    IZoneInfo* zoneInfo = (IZoneInfo*)other->Probe(EIID_IZoneInfo);
+    IZoneInfo* zoneInfo = IZoneInfo::Probe(other);
     if (!zoneInfo)
         return NOERROR;
 
     String thisID, otherID;
     GetID(&thisID);
-    zoneInfo->GetID(&otherID);
+    ITimeZone* timeZone = ITimeZone::Probe(zoneInfo);
+    if (!timeZone)
+        return NOERROR;
+    timeZone->GetID(&otherID);
     if (thisID != otherID) {
         return NOERROR;
     }
 
-    return HasSameRules(zoneInfo, isEqual);
+    return HasSameRules(timeZone, isEqual);
 }
 
-ECode CZoneInfo::GetHashCode(
+ECode ZoneInfo::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     VALIDATE_NOT_NULL(hashCode);
@@ -337,7 +485,6 @@ ECode CZoneInfo::GetHashCode(
     Int32 result = 1;
     String id;
     GetID(&id);
-    Int32 code;
     result = prime * result + id.GetHashCode();
     result = prime * result + Arrays::GetHashCode(mOffsets);
     result = prime * result + Arrays::GetHashCode(mIsDsts);
@@ -349,14 +496,14 @@ ECode CZoneInfo::GetHashCode(
     return NOERROR;
 }
 
-ECode CZoneInfo::ToString(
+ECode ZoneInfo::ToString(
     /* [out] */ String* str)
 {
     StringBuilder sb;
     // First the basics...
     String id;
     GetID(&id);
-    sb += "CZoneInfo[";
+    sb += "ZoneInfo[";
     sb += id;
     sb += ",mRawOffset=";
     sb += mRawOffset;
@@ -404,22 +551,52 @@ ECode CZoneInfo::ToString(
     return NOERROR;
 }
 
-String CZoneInfo::FormatTime(
+String ZoneInfo::FormatTime(
     /* [in] */ Int32 s,
     /* [in] */ ITimeZone* tz)
 {
     AutoPtr<ISimpleDateFormat> sdf;
     CSimpleDateFormat::New(String("EEE MMM dd HH:mm:ss yyyy zzz"), (ISimpleDateFormat**)&sdf);
-    sdf->SetTimeZone(tz);
+    AutoPtr<IDateFormat> df = IDateFormat::Probe(sdf);
+    df->SetTimeZone(tz);
     Int64 ms = ((Int64)s) * 1000LL;
     AutoPtr<IDate> date;
     CDate::New(ms, (IDate**)&date);
     String str;
-    sdf->FormatDate(date, &str);
+    df->Format(date, &str);
     return str;
 }
 
-ECode CZoneInfo::Clone(
+ECode ZoneInfo::CheckedAdd(
+    /* [in] */ Int32 a,
+    /* [in] */ Int32 b,
+    /* [out] */ Int32* result)
+{
+    // Adapted from Guava IntMath.checkedAdd();
+    Int64 tmp = (Int64) a + b;
+    if (tmp != (Int32) tmp) {
+        *result = 0;
+        return E_CHECKED_ARITHMETIC_EXCEPTION;
+    }
+    *result = (Int32) tmp;
+    return NOERROR;
+}
+
+ECode ZoneInfo::CheckedSubtract(
+    /* [in] */ Int32 a,
+    /* [in] */ Int32 b,
+    /* [out] */ Int32* result)
+{
+    // Adapted from Guava IntMath.checkedSubtract();
+    Int64 tmp = (Int64) a - b;
+    if (tmp != (Int32) tmp) {
+        return E_CHECKED_ARITHMETIC_EXCEPTION;
+    }
+    *result = (Int32) tmp;
+    return NOERROR;
+}
+
+ECode ZoneInfo::Clone(
     /* [out] */ IInterface** newObj)
 {
     VALIDATE_NOT_NULL(newObj);

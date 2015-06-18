@@ -1,8 +1,11 @@
-#ifndef __LIBCORE_UTILITY_CZONEINFO_H__
-#define __LIBCORE_UTILITY_CZONEINFO_H__
+#ifndef __LIBCORE_UTILITY_ZONEINFO_H__
+#define __LIBCORE_UTILITY_ZONEINFO_H__
 
-#include "_Libcore_Utility_CZoneInfo.h"
 #include "TimeZone.h"
+
+using Elastos::Utility::IDate;
+using Elastos::Utility::TimeZone;
+using Libcore::IO::IBufferIterator;
 
 namespace Libcore {
 namespace Utility {
@@ -12,21 +15,57 @@ namespace Utility {
  *
  * @hide - used to implement TimeZone
  */
-CarClass(CZoneInfo)
-    , public TimeZone
+class CZoneInfoWallTime;
+class COffsetIntervalHelper;
+
+class ZoneInfo
+    : public TimeZone
     , public IZoneInfo
 {
+protected:
+    class OffsetInterval
+        : public Object
+        , public IOffsetInterval
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI ContainsWallTime(
+            /* [in] */ Int64 wallTimeSeconds,
+            /* [out] */ Boolean* result);
+
+        CARAPI GetIsDst(
+            /* [out] */ Int32* result);
+
+        CARAPI GetTotalOffsetSeconds(
+            /* [out] */ Int32* result);
+
+        CARAPI GetEndWallTimeSeconds(
+            /* [out] */ Int64* result);
+
+        CARAPI GetStartWallTimeSeconds(
+            /* [out] */ Int64* result);
+
+        static CARAPI Create(
+            /* [in] */ IZoneInfo* timeZone,
+            /* [in] */ Int32 transitionIndex,
+            /* [out] */ IOffsetInterval** result);
+
+    private:
+        OffsetInterval(
+            /* [in] */ Int32 startWallTimeSeconds,
+            /* [in] */ Int32 endWallTimeSeconds,
+            /* [in] */ Int32 isDst,
+            /* [in] */ Int32 totalOffsetSeconds);
+
+        Int32 mStartWallTimeSeconds;
+        Int32 mEndWallTimeSeconds;
+        Int32 mIsDst;
+        Int32 mTotalOffsetSeconds;
+    };
+
 public:
     CAR_INTERFACE_DECL()
-
-    CAR_OBJECT_DECL()
-
-    CARAPI constructor(
-        /* [in] */ const String& name,
-        /* [in] */ ArrayOf<Int32>* transitions,
-        /* [in] */ ArrayOf<Byte>* type,
-        /* [in] */ ArrayOf<Int32>* gmtoff,
-        /* [in] */ ArrayOf<Byte>* isdst);
 
     /**
      * Returns the offset in milliseconds from UTC for this time zone at {@code
@@ -126,10 +165,31 @@ public:
     CARAPI Clone(
         /* [out] */ IInterface** newObj);
 
+    static AutoPtr<IZoneInfo> MakeTimeZone(
+        /* [in] */ const String& id,
+        /* [in] */ IBufferIterator* it);
+
 private:
+    ZoneInfo(
+        /* [in] */ const String& name,
+        /* [in] */ ArrayOf<Int32>* transitions,
+        /* [in] */ ArrayOf<Byte>* type,
+        /* [in] */ ArrayOf<Int32>* gmtoff,
+        /* [in] */ ArrayOf<Byte>* isdst);
+
     static String FormatTime(
         /* [in] */ Int32 s,
         /* [in] */ ITimeZone* tz);
+
+    static CARAPI CheckedAdd(
+        /* [in] */ Int32 a,
+        /* [in] */ Int32 b,
+        /* [out] */ Int32* result);
+
+    static CARAPI CheckedSubtract(
+        /* [in] */ Int32 a,
+        /* [in] */ Int32 b,
+        /* [out] */ Int32* result);
 
 private:
     static const Int64 MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -151,6 +211,9 @@ private:
     AutoPtr<ArrayOf<Byte> > mIsDsts;
     Boolean mUseDst;
     Int32 mDstSavings; // Implements TimeZone.getDSTSavings.
+
+    friend class CZoneInfoWallTime;
+    friend class COffsetIntervalHelper;
 };
 
 } // namespace Utility

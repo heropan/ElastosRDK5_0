@@ -13,6 +13,26 @@ module {
 
             interface IBasicLruCache;
         }
+
+        class CZoneInfoWallTime {
+            interface IZoneInfoWallTime;
+        }
+
+        singleton class CCollectionUtils {
+            interface ICollectionUtils;
+        }
+
+        singleton class COffsetIntervalHelper {
+            interface IOffsetIntervalHelper;
+        }
+
+        singleton class CZoneInfoHelper {
+            interface IZoneInfoHelper;
+        }
+
+        singleton class CZoneInfoDB {
+            interface IZoneInfoDB;
+        }
     }
     }
 }
