@@ -1,7 +1,6 @@
 ifneq "$(XDK_TARGET_PRODUCT)" "devtools"
 ifeq "$(XDK_TARGET_PLATFORM)" "android"
   DIRS = Elastos
-  DIRS += External/cURL
 endif
 ifeq "$(XDK_TARGET_PLATFORM)" "linux"
   DIRS = Elastos/Runtime
