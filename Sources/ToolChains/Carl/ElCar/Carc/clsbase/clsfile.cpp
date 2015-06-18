@@ -124,7 +124,7 @@ int LoadCLSFromFile(const char *pszName, CLSModule **ppDest)
 
 ErrorExit:
     fclose(pFile);
-    _Return (nRet);
+    _Return(nRet);
 }
 
 #ifdef _win32
@@ -182,7 +182,6 @@ int LoadResourceFromPE(const char *pszName, CLSModule **ppDest)
 int LoadCLSFromDll(const char *pszName, CLSModule **ppDest)
 {
     FILE *pFile  = NULL;
-    int  ret     = 0;
 
     if( pszName == NULL ){
 #ifdef _linux

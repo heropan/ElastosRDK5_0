@@ -390,8 +390,8 @@ void CAbridgedBuffer::InitInterfaceIndexTable()
 
     for (n = 0; n < m_pModule->cInterfaces; n++) {
         pEntry = m_pModule->ppInterfaceDir[n];
-        if (!(pEntry->pDesc->dwAttribs & InterfaceAttrib_t_external) &&
-            (!(pEntry->pDesc->dwAttribs & InterfaceAttrib_local)) ||
+        if ((!(pEntry->pDesc->dwAttribs & InterfaceAttrib_t_external) &&
+            !(pEntry->pDesc->dwAttribs & InterfaceAttrib_local)) ||
             (pEntry->pDesc->dwAttribs & InterfaceAttrib_parcelable)) {
             cMethods = CalcMethodNumber(pEntry->pDesc);
             m_cInterfaces++;
@@ -402,7 +402,7 @@ void CAbridgedBuffer::InitInterfaceIndexTable()
 
 void CAbridgedBuffer::AddClassInterfaceToIndex(ClassDescriptor *pClass)
 {
-    int n, cMethods, nIndex, nIntfIdx, nVirTable=0;
+    int n, cMethods, nIndex, nVirTable=0;
     InterfaceDirEntry *pEntry;
     InterfaceDirEntry *pIntfEntry;
     InterfaceDescriptor *pIntfDesc;
@@ -428,7 +428,7 @@ void CAbridgedBuffer::AddClassInterfaceToIndex(ClassDescriptor *pClass)
             && !(pClass->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
             && (!(pEntry->pDesc->dwAttribs & InterfaceAttrib_local)
                 || (pEntry->pDesc->dwAttribs & InterfaceAttrib_parcelable))) {
-            nIntfIdx = CreateClassInterface(pIntfDesc->sParentIndex, pClass);
+            CreateClassInterface(pIntfDesc->sParentIndex, pClass);
             pIntfEntry = m_pModule->ppInterfaceDir[pIntfDesc->sParentIndex];
             m_classVirTable[pIntfDesc->sParentIndex] = nVirTable;
             pIntfDesc = pIntfEntry->pDesc;

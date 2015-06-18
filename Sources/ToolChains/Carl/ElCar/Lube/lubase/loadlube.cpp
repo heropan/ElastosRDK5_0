@@ -212,7 +212,7 @@ int LoadLubeFromELF(const char *pszName, PLUBEHEADER *ppLube)
     char            *pGetSec      = NULL;
     char            *secHeader    = NULL;
     int             cnt           = 0;
-    int             rRet          = 0;
+    // int             rRet          = 0;
     int             nRet          = CLS_NoError;
 
     if (pszName == NULL) {

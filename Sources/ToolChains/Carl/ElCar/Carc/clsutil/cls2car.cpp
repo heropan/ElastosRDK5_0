@@ -13,7 +13,6 @@ typedef unsigned char  byte;
 void CGenerateCARAttribs(FILE *pFile, const CLSModule *pModule)
 {
     BOOL bBracket;
-    BOOL bComma;
 
     if (0 == CAR_ATTR(pModule->dwAttribs)
         && !pModule->pszUunm
@@ -22,7 +21,6 @@ void CGenerateCARAttribs(FILE *pFile, const CLSModule *pModule)
         return;
 
     bBracket = FALSE;
-    bComma = FALSE;
 
     if (0 != pModule->cMajorVersion || 0 != pModule->cMinorVersion) {
         if (!bBracket) {
@@ -30,7 +28,6 @@ void CGenerateCARAttribs(FILE *pFile, const CLSModule *pModule)
             bBracket = TRUE;
         }
         fprintf(pFile, "    version(%d.%d)", pModule->cMajorVersion, pModule->cMinorVersion);
-        bComma = TRUE;
     }
     if (bBracket) {
         fputs("\n]\n", pFile);
@@ -193,23 +190,18 @@ void CGenerateStructs(FILE *pFile, const CLSModule *pModule)
 void CGenerateInterfaceAttribs(
     FILE *pFile, const InterfaceDescriptor *pDesc)
 {
-    BOOL bComma = FALSE;
-
     if (0 == INTERFACE_ATTR(pDesc->dwAttribs))
         return;
 
     fputs("    [\n", pFile);
     if (pDesc->dwAttribs & InterfaceAttrib_local) {
         fputs("        local", pFile);
-        bComma = TRUE;
     }
     if (pDesc->dwAttribs & InterfaceAttrib_oneway) {
         fputs("        oneway", pFile);
-        bComma = TRUE;
     }
     if (pDesc->dwAttribs & InterfaceAttrib_parcelable) {
         fputs("        parcelable", pFile);
-        bComma = TRUE;
     }
 
     fputs("\n    ]\n", pFile);

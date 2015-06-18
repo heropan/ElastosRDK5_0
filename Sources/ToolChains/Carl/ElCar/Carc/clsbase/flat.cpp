@@ -141,7 +141,6 @@ int CFlatBuffer::WriteClassDirEntry(ClassDirEntry *pClassDirEntry)
 
 int CFlatBuffer::WriteInterfaceConstDescriptor(InterfaceConstDescriptor *pDesc)
 {
-    int *p, n;
     InterfaceConstDescriptor d;
 
     memcpy(&d, pDesc, sizeof(InterfaceConstDescriptor));
@@ -543,7 +542,7 @@ int CalcClassSize(ClassDirEntry *p)
 
 int CalcInterfaceConstSize(InterfaceConstDescriptor *p)
 {
-    int n, size = sizeof(InterfaceConstDescriptor);
+    int size = sizeof(InterfaceConstDescriptor);
 
     size += StringAlignSize(p->pszName);
 

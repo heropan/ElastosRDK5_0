@@ -1973,7 +1973,6 @@ int ExtendCLS(CLSModule *pModule, BOOL bNoElastos)
     ClassDirEntry *pClass=NULL;
     ClassDescriptor *pDesc=NULL;
     InterfaceDirEntry *pIntf=NULL;
-    InterfaceDescriptor *pIntfDesc=NULL, *pIntfDescSink=NULL;
     char szInterfaceName[c_nMaxTokenSize + 1];
     char szSeedBuf[c_nMaxTokenSize + 1];
     CLSModule *pModuleTmp;
@@ -1996,7 +1995,6 @@ int ExtendCLS(CLSModule *pModule, BOOL bNoElastos)
             for (n = 0; n < pDesc->cInterfaces; n++) {
                 if (pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback) {
                     pIntf = pModule->ppInterfaceDir[pDesc->ppInterfaces[n]->sIndex];
-                    pIntfDesc = pIntf->pDesc;
 
                     /*
                      * check callback interface of original class
@@ -2011,7 +2009,6 @@ int ExtendCLS(CLSModule *pModule, BOOL bNoElastos)
                      * generate enum and interface for callback
                      */
                     x = GenerateSinkInterface(szInterfaceName, pModule, pModule->ppInterfaceDir[j]);
-                    pIntfDescSink = pModule->ppInterfaceDir[x]->pDesc;
 
                     GenIIDSeedString(pModule, pModule->ppInterfaceDir[x], szSeedBuf);
                     GuidFromSeedString(szSeedBuf, &pModule->ppInterfaceDir[x]->pDesc->iid);
@@ -2430,11 +2427,9 @@ int ToCharacter(const char* token)
 int P_Char32(InterfaceDescriptor* pInterface, InterfaceConstDescriptor *pDesc, int opKind)
 {
     CARToken token;
-    BOOL doNot = FALSE;
 
     if (PeekToken(s_pFile) == Token_S_not) {
         GetToken(s_pFile);
-        doNot = TRUE;
     }
 
     switch (token = GetToken(s_pFile)) {
@@ -2927,7 +2922,6 @@ int P_Double(InterfaceDescriptor* pInterface, InterfaceConstDescriptor *pDesc)
 
 int P_InterfaceConstChar32(InterfaceDescriptor *pDesc)
 {
-    CARToken token;
     int r;
 
     if (GetToken(s_pFile) != Token_ident) {
@@ -3359,7 +3353,6 @@ int P_InterfaceConstInt64(InterfaceDescriptor *pDesc)
 
 int P_InterfaceConstFloat(InterfaceDescriptor *pDesc)
 {
-    CARToken token;
     int r;
 
     if (GetToken(s_pFile) != Token_ident) {
@@ -3399,7 +3392,6 @@ int P_InterfaceConstFloat(InterfaceDescriptor *pDesc)
 
 int P_InterfaceConstDouble(InterfaceDescriptor *pDesc)
 {
-    CARToken token;
     int r;
 
     if (GetToken(s_pFile) != Token_ident) {
@@ -3439,7 +3431,6 @@ int P_InterfaceConstDouble(InterfaceDescriptor *pDesc)
 
 int P_InterfaceConstString(InterfaceDescriptor *pDesc)
 {
-    CARToken token;
     int r;
 
     if (GetToken(s_pFile) != Token_ident) {
@@ -3484,7 +3475,6 @@ int P_InterfaceConstString(InterfaceDescriptor *pDesc)
 
 int P_InterfaceConst(InterfaceDirEntry *pItfDirEntry)
 {
-    CARToken token;
     InterfaceDescriptor *pDesc = pItfDirEntry->pDesc;
 
     if (GetToken(s_pFile) != Token_K_const) {
@@ -5488,8 +5478,6 @@ int P_UsingInterface()
 
 int P_UsingNamespace()
 {
-    CARToken token;
-
     if (GetToken(s_pFile) != Token_ident) {
         ErrorReport(CAR_E_UnexpectSymbol, g_szCurrentToken);
         return Ret_AbortOnError;

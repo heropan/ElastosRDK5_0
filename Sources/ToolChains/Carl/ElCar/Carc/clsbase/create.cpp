@@ -919,7 +919,6 @@ int CreateInterfaceConstDirEntry(
 int CreateInterfaceMethod(
     const char *pszName, InterfaceDescriptor *pInterface)
 {
-    int n;
     MethodDescriptor *pMethod;
 
     assert(pInterface != NULL);

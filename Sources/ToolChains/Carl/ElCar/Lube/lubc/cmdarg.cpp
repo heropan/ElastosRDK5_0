@@ -365,6 +365,9 @@ const char *UserFuncArgString(DWORD dwArg)
         case Member_Name:
             p = "name";
             break;
+        case Member_FullName:
+            p = "fullname";
+            break;
         case Member_Attrib:
             p = "attrib";
             break;
@@ -400,6 +403,9 @@ const char *UserFuncArgString(DWORD dwArg)
             break;
         case Member_Dimention:
             p = "dimention";
+            break;
+        case Member_NameSpace:
+            p = "namespace";
             break;
         case Member_None:
             assert(TRUE == FALSE);

@@ -488,7 +488,7 @@ CARToken GetIdentifyToken(FILE *fp)
     return TryGetKeywordToken(g_szCurrentToken);
 }
 
-#define ishex(c) (isdigit(c) || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F')
+#define ishex(c) (isdigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))
 
 CARToken GetNumberToken(FILE *fp, char c)
 {
