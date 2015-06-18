@@ -3,12 +3,14 @@
 #include <cutils/atomic.h>
 #include <cutils/atomic-inline.h>
 
+using Elastos::IO::EIID_ISerializable;
+
 namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 namespace Atomic {
 
-CAR_INTERFACE_IMPL(CAtomicInteger32, Object, IAtomicInteger32)
+CAR_INTERFACE_IMPL_2(CAtomicInteger32, Object, IAtomicInteger32, ISerializable)
 
 CAR_OBJECT_IMPL(CAtomicInteger32)
 /**

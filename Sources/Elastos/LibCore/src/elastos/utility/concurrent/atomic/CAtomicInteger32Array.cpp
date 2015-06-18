@@ -5,13 +5,14 @@
 #include <StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
+using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 namespace Atomic {
 
-CAR_INTERFACE_IMPL(CAtomicInteger32Array, Object, IAtomicInteger32Array)
+CAR_INTERFACE_IMPL_2(CAtomicInteger32Array, Object, IAtomicInteger32Array, ISerializable)
 
 CAR_OBJECT_IMPL(CAtomicInteger32Array)
 /**
@@ -49,6 +50,7 @@ ECode CAtomicInteger32Array::CheckedByteOffset(
 {
     if (index < 0 || index >= mArray->GetLength())
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    return NOERROR;
 }
 
 /**

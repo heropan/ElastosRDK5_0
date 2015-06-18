@@ -2,10 +2,11 @@
 #ifndef __ELASTOS_UTILITY_CATOMICBOOLEAN_H__
 #define __ELASTOS_UTILITY_CATOMICBOOLEAN_H__
 
-#include "_Elastos_Utility_Concurrent_CAtomicBoolean.h"
+#include "_Elastos_Utility_Concurrent_Atomic_CAtomicBoolean.h"
 #include "Object.h"
 
 using Elastos::Core::Object;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -15,6 +16,7 @@ namespace Atomic {
 CarClass(CAtomicBoolean)
     , public Object
     , public IAtomicBoolean
+    , public ISerializable
 {
 public:
     CAR_INTERFACE_DECL()

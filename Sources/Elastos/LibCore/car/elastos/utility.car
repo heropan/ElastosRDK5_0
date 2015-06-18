@@ -2100,134 +2100,134 @@ module
     //     interface ISerializable;
     // }
 
-    // namespace Atomic {
+    namespace Atomic {
 
-    // class CAtomicBoolean {
-    //     /**
-    //      * Creates a new AtomicInteger with the given initial value.
-    //      *
-    //      * @param initialValue the initial value
-    //      */
-    //     constructor(
-    //         [in] Boolean initialValue);
+    class CAtomicBoolean {
+        /**
+         * Creates a new AtomicInteger with the given initial value.
+         *
+         * @param initialValue the initial value
+         */
+        constructor(
+            [in] Boolean initialValue);
 
-    //     /**
-    //      * Creates a new AtomicInteger with initial value {@code FALSE}.
-    //      */
-    //     constructor();
+        /**
+         * Creates a new AtomicInteger with initial value {@code FALSE}.
+         */
+        constructor();
 
-    //     interface IAtomicBoolean;
-    //     interface ISerializable;
-    // }
+        interface IAtomicBoolean;
+        interface ISerializable;
+    }
 
-    // class CAtomicInteger32 {
-    //     /**
-    //      * Creates a new AtomicInteger with the given initial value.
-    //      *
-    //      * @param initialValue the initial value
-    //      */
-    //     constructor(
-    //         [in] Int32 initialValue);
+    class CAtomicInteger32 {
+        /**
+         * Creates a new AtomicInteger with the given initial value.
+         *
+         * @param initialValue the initial value
+         */
+        constructor(
+            [in] Int32 initialValue);
 
-    //     /**
-    //      * Creates a new AtomicInteger with initial value {@code 0}.
-    //      */
-    //     constructor();
+        /**
+         * Creates a new AtomicInteger with initial value {@code 0}.
+         */
+        constructor();
 
-    //     interface IAtomicInteger32;
-    //     interface ISerializable;
-    // }
+        interface IAtomicInteger32;
+        interface ISerializable;
+    }
 
-    // class CAtomicInteger32Array {
-    //     /**
-    //      * Creates a new AtomicInteger with the given initial value.
-    //      *
-    //      * @param initialValue the initial value
-    //      */
-    //     constructor(
-    //         [in] Int32 length);
+    class CAtomicInteger32Array {
+        /**
+         * Creates a new AtomicInteger with the given initial value.
+         *
+         * @param initialValue the initial value
+         */
+        constructor(
+            [in] Int32 length);
 
-    //     /**
-    //      * Creates a new AtomicInteger with initial value {@code 0}.
-    //      */
-    //     constructor(
-    //         [in] ArrayOf<Int32> other);
+        /**
+         * Creates a new AtomicInteger with initial value {@code 0}.
+         */
+        constructor(
+            [in] ArrayOf<Int32> other);
 
-    //     interface IAtomicInteger32Array;
-    //     interface ISerializable;
-    // }
+        interface IAtomicInteger32Array;
+        interface ISerializable;
+    }
 
-    // class CAtomicInteger64 {
-    //     /**
-    //      * Creates a new AtomicInteger with the given initial value.
-    //      *
-    //      * @param initialValue the initial value
-    //      */
-    //     constructor(
-    //         [in] Int64 initialValue);
+    class CAtomicInteger64 {
+        /**
+         * Creates a new AtomicInteger with the given initial value.
+         *
+         * @param initialValue the initial value
+         */
+        constructor(
+            [in] Int64 initialValue);
 
-    //     /**
-    //      * Creates a new AtomicInteger with initial value {@code 0}.
-    //      */
-    //     constructor();
+        /**
+         * Creates a new AtomicInteger with initial value {@code 0}.
+         */
+        constructor();
 
-    //     interface IAtomicInteger64;
-    //     interface ISerializable;
-    // }
+        interface IAtomicInteger64;
+        interface ISerializable;
+    }
 
-    // class CAtomicInteger64Array {
-    //     constructor(
-    //         [in] Int32 length);
+    class CAtomicInteger64Array {
+        constructor(
+            [in] Int32 length);
 
-    //     constructor(
-    //         [in] ArrayOf<Int64> other);
+        constructor(
+            [in] ArrayOf<Int64> other);
 
-    //     interface IAtomicInteger64Array;
-    //     interface ISerializable;
-    // }
+        interface IAtomicInteger64Array;
+        interface ISerializable;
+    }
 
-    // class CAtomicMarkableReference {
-    //     constructor(
-    //         [in] IInterface* initialRef,
-    //         [in] Boolean initialMark);
+    class CAtomicMarkableReference {
+        constructor(
+            [in] IInterface* initialRef,
+            [in] Boolean initialMark);
 
-    //     interface IAtomicMarkableReference;
-    // }
+        interface IAtomicMarkableReference;
+    }
 
-    // class CAtomicReference {
-    //     constructor(
-    //         [in] IInterface* initialValue);
+    class CAtomicReference {
+        constructor(
+            [in] IInterface* initialValue);
 
-    //     constructor();
+        constructor();
 
-    //     interface IAtomicReference;
-    //     interface ISerializable;
-    // }
+        interface IAtomicReference;
+        interface ISerializable;
+    }
 
-    // class CAtomicReferenceArray {
-    //     constructor(
-    //         [in] Int32 length);
+    class CAtomicReferenceArray {
+        constructor(
+            [in] Int32 length);
 
-    //     constructor(
-    //         [in] ArrayOf<IInterface*> array);
+        constructor(
+            [in] ArrayOf<IInterface*> array);
 
-    //     interface IAtomicReferenceArray;
-    //     interface ISerializable;
-    // }
+        interface IAtomicReferenceArray;
+        interface ISerializable;
+    }
 
-    // class CAtomicStampedReference {
-    //     constructor(
-    //         [in] IInterface* initialRef,
-    //         [in] Int32 initialStamp);
+    class CAtomicStampedReference {
+        constructor(
+            [in] IInterface* initialRef,
+            [in] Int32 initialStamp);
 
-    //     interface IAtomicStampedReference;
-    // }
+        interface IAtomicStampedReference;
+    }
 
-    // singleton class CFencesHelper {
-    //     interface IFencesHelper;
-    // }
+    singleton class CFencesHelper {
+        interface IFencesHelper;
+    }
 
-    // } // namespace Atomic
+    } // namespace Atomic
 
     namespace Locks {
 
