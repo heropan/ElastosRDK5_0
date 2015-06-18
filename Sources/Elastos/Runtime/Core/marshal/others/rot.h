@@ -3,11 +3,11 @@
 #define __ROT_H__
 
 #include "prxstub.h"
-#include "syslinknode.h"
+#include "elcontainer.h"
 
 _ELASTOS_NAMESPACE_USING
 
-typedef struct ExportObject: SLinkNode 
+typedef struct ExportObject: SLinkNode
 {
     ExportObject() : m_connName(NULL) {}
 
@@ -20,7 +20,7 @@ typedef struct ExportObject: SLinkNode
     IStub           *m_pIStub;
 } ExportObject;
 
-typedef struct ImportObject: SLinkNode 
+typedef struct ImportObject: SLinkNode
 {
     ImportObject() : m_stubConnName(NULL) {}
 

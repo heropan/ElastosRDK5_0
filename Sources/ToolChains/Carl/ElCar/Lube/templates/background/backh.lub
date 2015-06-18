@@ -9,11 +9,7 @@ $OUTPUT "_${fullname}.h"
 #define __CAR_${fullname}_H__
 
 #include "${module.name}_server.h"
-$IF lubeoption is "inkernel"
-#include <syscontainer.h>
-$ELSE
-#include <container.h>
-$END IF
+#include <elcontainer.h>
 #include <elastos/core/Mutex.h>
 
 using Elastos::Core::Mutex;

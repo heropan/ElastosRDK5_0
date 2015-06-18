@@ -3,7 +3,7 @@
 #define __ROT_H__
 
 #include "prxstub.h"
-#include "syslinknode.h"
+#include "elcontainer.h"
 
 namespace Elastos {
 namespace RPC {

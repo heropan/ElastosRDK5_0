@@ -33,8 +33,8 @@ ECode InitROT_RPC()
     ECode ec = NOERROR;
 
     for (int n = 0; n < ROT_HASHTABLE_SIZE; n++) {
-        s_hashImportObjects[n].m_pNext = NULL;
-        s_hashExportObjects[n].m_pNext = NULL;
+        s_hashImportObjects[n].mNext = NULL;
+        s_hashExportObjects[n].mNext = NULL;
     }
 
     pthread_mutexattr_t recursiveAttr;

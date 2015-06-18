@@ -4,11 +4,7 @@ $OUTPUT "_CCallbackSink_.cpp"
 #include "_CCallbackSink_.h"
 #include <new>
 #include <unistd.h>
-$IF lubeoption is "inkernel"
-#include <syslinknode.h>
-$ELSE
-#include <linknode.h>
-$END IF
+#include <elcontainer.h>
 
 ECode _CCallbackSink_::_AddCallback(
     PInterface pCallbackContext,

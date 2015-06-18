@@ -5,7 +5,7 @@
 #define __LOCMOD_H__
 
 #include <clsinfo.h>
-#include <syslinknode.h>
+#include <elcontainer.h>
 
 typedef ECode (__stdcall *PDLLGETCLASSOBJECT)(
                 REMuid, REIID, PInterface *);

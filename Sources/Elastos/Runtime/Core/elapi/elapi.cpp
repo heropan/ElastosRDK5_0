@@ -2,7 +2,7 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#include <syslinknode.h>
+#include <elcontainer.h>
 #include <elapi.h>
 #include <eladef.h>
 #include <stdlib.h>

@@ -15,3 +15,4 @@ SOURCES += ucase.cpp
 
 LIBRARIES = elstring/elstring.lib
 LIBRARIES += elrefbase/elrefbase.lib
+LIBRARIES += elcontainer/elcontainer.lib
