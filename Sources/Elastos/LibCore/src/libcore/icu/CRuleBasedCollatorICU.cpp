@@ -3,32 +3,25 @@
 #include "NativeCollation.h"
 #include "CCollationKeyICU.h"
 #include "CollationElementIteratorICU.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
+using Elastos::Core::EIID_ICloneable;
 
 namespace Libcore {
 namespace ICU {
 
-PInterface CRuleBasedCollatorICU::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IRuleBasedCollatorICU *)this;
-    }
-    else if (riid == EIID_IRuleBasedCollatorICU) {
-       return (IRuleBasedCollatorICU*)this;
-    }
-    return NULL;
-}
+CAR_OBJECT_IMPL(CRuleBasedCollatorICU)
+
+CAR_INTERFACE_IMPL_2(CRuleBasedCollatorICU, Object, IRuleBasedCollatorICU, ICloneable)
 
 CRuleBasedCollatorICU::CRuleBasedCollatorICU()
 {}
 
 CRuleBasedCollatorICU::CRuleBasedCollatorICU(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address)
+    : mAddress(address)
 {
-    mAddress = address;
 }
 
 CRuleBasedCollatorICU::~CRuleBasedCollatorICU()
@@ -48,18 +41,16 @@ ECode CRuleBasedCollatorICU::constructor(
 ECode CRuleBasedCollatorICU::constructor(
     /* [in] */ ILocale * locale)
 {
-    String str;
-    locale->ToString(&str);
-    return NativeCollation::OpenCollator(str,&mAddress);
+    return NativeCollation::OpenCollator(locale, &mAddress);
 }
 
 ECode CRuleBasedCollatorICU::Clone(
-    /* [out] */ IRuleBasedCollatorICU ** outruleicu)
+    /* [out] */ IInterface ** outruleicu)
 {
     VALIDATE_NOT_NULL(outruleicu)
 
     AutoPtr<IRuleBasedCollatorICU> ans;
-    Int32 value(0);
+    Int64 value(0);
     FAIL_RETURN(NativeCollation::SafeClone(mAddress, &value));
     ans =  new CRuleBasedCollatorICU(value);
     *outruleicu = ans;
@@ -135,8 +126,8 @@ ECode CRuleBasedCollatorICU::GetCollationKey(
             *outkey = NULL;
         } else {
             AutoPtr<ICollationKeyICU> ans;
-            FAIL_RETURN(CCollationKeyICU::New(source, *key ,(ICollationKeyICU **)&ans));
-            *outkey = ans;
+            FAIL_RETURN(CCollationKeyICU::New(source, key ,(ICollationKeyICU **)&ans));
+            *outkey = ICollationKey::Probe(ans);
             REFCOUNT_ADD(*outkey);
         }
     }
@@ -180,7 +171,7 @@ String CRuleBasedCollatorICU::CharacterIteratorToString(
 {
     StringBuilder result;
     Char32 ch(0);
-    for (it->Current(&ch); ch != ICharacterIterator::DONE; it->GetNext(&ch)) {
+    for (it->GetCurrent(&ch); ch != ICharacterIterator::DONE; it->GetNext(&ch)) {
         result.AppendChar(ch);
     }
     return result.ToString();

@@ -95,6 +95,7 @@ AutoPtr<ILocaleData> LocaleData::Get(
         sLocaleDataCache[languageTag] = newLocaleData;
         return (ILocaleData*)newLocaleData.Get();
     }
+    return NULL;
 }
 
 String LocaleData::ToString()

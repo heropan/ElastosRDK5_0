@@ -32,3 +32,4 @@ SOURCES += NativeNormalizer.cpp
 SOURCES += CNativeNormalizerHelper.cpp
 SOURCES += CNativePluralRules.cpp
 SOURCES += CNativePluralRulesHelper.cpp
+SOURCES += CRuleBasedCollatorICU.cpp

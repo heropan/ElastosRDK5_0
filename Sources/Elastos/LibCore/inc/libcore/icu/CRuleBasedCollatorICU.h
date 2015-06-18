@@ -1,21 +1,28 @@
 
-#ifndef __ICU_CRULEBASEDCOLLATORICU_H__
-#define __ICU_CRULEBASEDCOLLATORICU_H__
+#ifndef __LIBCORE_ICU_CRULEBASEDCOLLATORICU_H__
+#define __LIBCORE_ICU_CRULEBASEDCOLLATORICU_H__
 
-#include "_CRuleBasedCollatorICU.h"
+#include <Object.h>
+#include "_Libcore_ICU_CRuleBasedCollatorICU.h"
 
+using Elastos::Core::Object;
 using Elastos::Text::ICollationKey;
 using Elastos::Text::ICharacterIterator;
+using Elastos::Core::ICloneable;
+using Elastos::Utility::ILocale;
 
 namespace Libcore {
 namespace ICU {
 
 CarClass(CRuleBasedCollatorICU)
+    , public Object
+    , public ICloneable
+    , public IRuleBasedCollatorICU
 {
 public:
+    CAR_OBJECT_DECL()
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_INTERFACE_DECL()
 
     CRuleBasedCollatorICU();
 
@@ -28,7 +35,7 @@ public:
         /* [in] */ ILocale * locale);
 
     CARAPI Clone(
-        /* [out] */ IRuleBasedCollatorICU ** outruleicu);
+        /* [out] */ IInterface ** outruleicu);
 
     CARAPI Compare(
         /* [in] */ const String& source,
@@ -86,16 +93,16 @@ public:
 
 private:
     CRuleBasedCollatorICU(
-        /* [in] */ Int32 address);
+        /* [in] */ Int64 address);
 
     CARAPI_(String) CharacterIteratorToString(
         /* [in] */ ICharacterIterator * it);
 
 private:
-    Int32 mAddress;
+    Int64 mAddress;
 };
 
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__ICU_CRULEBASEDCOLLATORICU_H__
+#endif //__LIBCORE_ICU_CRULEBASEDCOLLATORICU_H__
