@@ -280,17 +280,6 @@ ECode CRemoteParcel::WriteDouble(
     return WriteDouble(value);
 }
 
-ECode CRemoteParcel::WriteCString(
-    /* [in] */ CString str)
-{
-    if (str.IsNull()) {
-        return WriteInt32(MSH_NULL);
-    }
-
-    WriteInt32(MSH_NOT_NULL);
-    return WriteCStringInner((const char*)str);
-}
-
 ECode CRemoteParcel::WriteString(
     /* [in] */ const String& str)
 {
@@ -333,12 +322,6 @@ ECode CRemoteParcel::WriteArrayOf(
     /* [in] */ Handle32 pArray)
 {
     return WriteArrayOfInner((PCARQUINTET)pArray);
-}
-
-ECode CRemoteParcel::WriteArrayOfCString(
-    /* [in] */ ArrayOf<CString>* array)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode CRemoteParcel::WriteArrayOfString(
@@ -655,23 +638,6 @@ ECode CRemoteParcel::ReadDouble(
     return ReadAligned(pValue);
 }
 
-ECode CRemoteParcel::ReadCString(
-    /* [out] */ CString* pStr)
-{
-    if (pStr == NULL) return E_INVALID_ARGUMENT;
-
-    Int32 tag;
-    ECode ec = ReadInt32(&tag);
-    if (FAILED(ec) || tag == MSH_NULL) {
-        *pStr = NULL;
-        return ec;
-    }
-
-    assert((UInt32)tag == MSH_NOT_NULL);
-    *pStr = CString::Duplicate(ReadCStringInner());
-    return NOERROR;
-}
-
 ECode CRemoteParcel::ReadString(
     /* [out] */ String* pStr)
 {
@@ -734,12 +700,6 @@ ECode CRemoteParcel::ReadArrayOf(
     if (ppArray == NULL) return E_INVALID_ARGUMENT;
 
     return ReadArrayOfInner((PCARQUINTET*)ppArray);
-}
-
-ECode CRemoteParcel::ReadArrayOfCString(
-    /* [out, callee] */ ArrayOf<CString>** ppArray)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode CRemoteParcel::ReadArrayOfString(

@@ -91,12 +91,6 @@ library
         WriteDouble(
             [in] Double value);
 
-        ReadCString(
-            [out] CString* str);
-
-        WriteCString(
-            [in] CString str);
-
         ReadString(
             [out] String* str);
 
@@ -127,12 +121,6 @@ library
 
         WriteArrayOf(
             [in] Handle32 array);
-
-        ReadArrayOfCString(
-            [out, callee] ArrayOf<CString>* array);
-
-        WriteArrayOfCString(
-            [in] ArrayOf<CString>* array);
 
         ReadArrayOfString(
             [out, callee] ArrayOf<String>* array);

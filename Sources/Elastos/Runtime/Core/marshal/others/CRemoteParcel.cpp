@@ -20,9 +20,8 @@ enum Type {
 
     Type_Byte, Type_Boolean, Type_Char32,
     Type_Int16, Type_Int32, Type_Int64, Type_Float, Type_Double,
-    Type_CString, Type_String, Type_Struct, Type_EMuid, Type_EGuid,
-    Type_ArrayOf, Type_ArrayOfCString, Type_ArrayOfString,
-    Type_InterfacePtr,
+    Type_String, Type_Struct, Type_EMuid, Type_EGuid,
+    Type_ArrayOf, Type_ArrayOfString, Type_InterfacePtr,
 };
 
 CRemoteParcel::CRemoteParcel() :
@@ -202,25 +201,6 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
             m_elemPtr++;
             break;
 
-        case Type_CString:
-            if (*m_elemPtr == MSH_NOT_NULL) {
-                m_elemPtr++;
-
-                Int32 len = (Int32)*m_elemPtr;
-                m_elemPtr++;
-
-                //todo: should check memory leak
-                *(CString*)pValue = CString::Duplicate((char*)m_elemPtr);
-                assert(len == (Int32) MSH_ALIGN_4(strlen((char*)m_elemPtr) + 1));
-                m_elemPtr += len / 4;
-            }
-            else {
-                assert(*m_elemPtr == MSH_NULL);
-                m_elemPtr++;
-                *(CString*)pValue = NULL;
-            }
-            break;
-
         case Type_String:
             if (*m_elemPtr == MSH_NOT_NULL) {
                 m_elemPtr++;
@@ -375,20 +355,6 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             m_elemPtr++;
             *m_elemPtr = (Int32)((*((Int64*)pValue) >> 32) & 0xffffffff);
             m_elemPtr++;
-            break;
-
-        case Type_CString:
-            *m_elemPtr = pValue ? MSH_NOT_NULL : MSH_NULL;
-            m_elemPtr++;
-
-            if (pValue) {
-                Int32 len = size - sizeof(UInt32) * 2;
-                *m_elemPtr = len;
-                m_elemPtr++;
-
-                memcpy(m_elemPtr, (const void *)pValue, len);
-                m_elemPtr = (UInt32 *)((Byte *)m_elemPtr + len);
-            }
             break;
 
         case Type_String:
@@ -585,14 +551,6 @@ ECode CRemoteParcel::ReadDouble(
     return ReadValue((PVoid)pValue, Type_Double);
 }
 
-ECode CRemoteParcel::ReadCString(
-    /* [out] */ CString *pStr)
-{
-    if (pStr == NULL) return E_INVALID_ARGUMENT;
-
-    return ReadValue((PVoid)pStr, Type_CString);
-}
-
 ECode CRemoteParcel::ReadString(
     /* [out] */ String* pStr)
 {
@@ -627,12 +585,6 @@ ECode CRemoteParcel::ReadInterfacePtr(
 
 ECode CRemoteParcel::ReadArrayOf(
     /* [out] */ Handle32 *ppArray)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CRemoteParcel::ReadArrayOfCString(
-    /* [out, callee] */ ArrayOf<CString>** ppArray)
 {
     return E_NOT_IMPLEMENTED;
 }
@@ -694,17 +646,6 @@ ECode CRemoteParcel::WriteDouble(
     return WriteValue((PVoid)&value, Type_Double, 8);
 }
 
-ECode CRemoteParcel::WriteCString(CString str)
-{
-    Int32 size = sizeof(UInt32);
-
-    if (!str.IsNull()) {
-        size += MSH_ALIGN_4(strlen((const char*)(str)) + 1) + sizeof(UInt32);
-    }
-
-    return WriteValue((PVoid)(const char*)(str), Type_CString, size);
-}
-
 ECode CRemoteParcel::WriteString(const String& str)
 {
     Int32 size = sizeof(UInt32);
@@ -742,12 +683,6 @@ ECode CRemoteParcel::WriteArrayOf(
 {
     Int32 size = sizeof(UInt32) + sizeof(CarQuintet) + ((CarQuintet*)pArray)->m_size;
     return WriteValue((PVoid)pArray, Type_ArrayOf, size);
-}
-
-ECode CRemoteParcel::WriteArrayOfCString(
-    /* [in] */ ArrayOf<CString>* array)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode CRemoteParcel::WriteArrayOfString(

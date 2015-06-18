@@ -29,17 +29,15 @@ enum Type {
     Type_Int64              = 6,
     Type_Float              = 7,
     Type_Double             = 8,
-    Type_CString            = 9,
-    Type_String             = 10,
-    Type_Struct             = 11,
-    Type_EMuid              = 12,
-    Type_EGuid              = 13,
-    Type_ArrayOf            = 14,
-    Type_ArrayOfCString     = 15,
-    Type_ArrayOfString      = 16,
-    Type_InterfacePtr       = 17,
-    Type_Fd                 = 18,
-    Type_Fd_Dup             = 19
+    Type_String             = 9,
+    Type_Struct             = 10,
+    Type_EMuid              = 11,
+    Type_EGuid              = 12,
+    Type_ArrayOf            = 13,
+    Type_ArrayOfString      = 14,
+    Type_InterfacePtr       = 15,
+    Type_Fd                 = 16,
+    Type_Fd_Dup             = 17
 };
 
 CRemoteParcel::CRemoteParcel(
@@ -198,19 +196,6 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
 
         case Type_Float:
             *(Float*)pValue = (Float)m_pData->readFloat();
-            break;
-
-        case Type_CString:
-            {
-                Int32 tag = m_pData->readInt32();
-                if (tag != MSH_NULL) {
-                    const char* str = m_pData->readCString();
-                    *(CString*)pValue = CString::Duplicate(str);
-                }
-                else {
-                    *(CString*)pValue = NULL;
-                }
-            }
             break;
 
         case Type_String:
@@ -456,14 +441,6 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             m_pData->writeDouble(*((Double*)pValue));
             break;
 
-        case Type_CString:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
-
-            if (pValue) {
-                m_pData->writeCString((const char*)pValue);
-            }
-            break;
-
         case Type_String:
             m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
 
@@ -679,14 +656,6 @@ ECode CRemoteParcel::ReadDouble(
     return ReadValue((PVoid)pValue, Type_Double);
 }
 
-ECode CRemoteParcel::ReadCString(
-    /* [out] */ CString* pStr)
-{
-    if (pStr == NULL) return E_INVALID_ARGUMENT;
-
-    return ReadValue((PVoid)pStr, Type_CString);
-}
-
 ECode CRemoteParcel::ReadString(
     /* [out] */ String* pStr)
 {
@@ -725,12 +694,6 @@ ECode CRemoteParcel::ReadArrayOf(
     assert(ppArray != NULL);
 
     return ReadValue((PVoid)ppArray, Type_ArrayOf);
-}
-
-ECode CRemoteParcel::ReadArrayOfCString(
-    /* [out, callee] */ ArrayOf<CString>** ppArray)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode CRemoteParcel::ReadArrayOfString(
@@ -794,17 +757,6 @@ ECode CRemoteParcel::WriteDouble(
     return WriteValue((PVoid)&value, Type_Double, 8);
 }
 
-ECode CRemoteParcel::WriteCString(CString str)
-{
-    Int32 size = sizeof(UInt32);
-
-    if (!str.IsNull()) {
-        size += MSH_ALIGN_4(strlen((const char*)(str)) + 1) + sizeof(UInt32);
-    }
-
-    return WriteValue((PVoid)(const char*)(str), Type_CString, size);
-}
-
 ECode CRemoteParcel::WriteString(const String& str)
 {
     Int32 size = sizeof(UInt32);
@@ -843,12 +795,6 @@ ECode CRemoteParcel::WriteArrayOf(
     Int32 size = pArray != 0 ? sizeof(UInt32) + sizeof(CarQuintet) + ((CarQuintet*)pArray)->m_size
         : sizeof(UInt32);
     return WriteValue((PVoid)pArray, Type_ArrayOf, size);
-}
-
-ECode CRemoteParcel::WriteArrayOfCString(
-    /* [in] */ ArrayOf<CString>* array)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode CRemoteParcel::WriteArrayOfString(

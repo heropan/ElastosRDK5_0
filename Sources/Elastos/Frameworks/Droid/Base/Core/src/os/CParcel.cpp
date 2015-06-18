@@ -105,12 +105,6 @@ ECode CParcel::ReadDouble(
     return mData->ReadDouble(value);
 }
 
-ECode CParcel::ReadCString(
-    /* [out] */ CString* str)
-{
-    return mData->ReadCString(str);
-}
-
 ECode CParcel::ReadString(
     /* [out] */ String* str)
 {
@@ -145,12 +139,6 @@ ECode CParcel::ReadArrayOf(
     /* [out] */ Handle32* array)
 {
     return mData->ReadArrayOf(array);
-}
-
-ECode CParcel::ReadArrayOfCString(
-    /* [out, callee] */ ArrayOf<CString>** array)
-{
-    return mData->ReadArrayOfCString(array);
 }
 
 ECode CParcel::ReadArrayOfString(
@@ -347,12 +335,6 @@ ECode CParcel::WriteDouble(
     return mData->WriteDouble(value);
 }
 
-ECode CParcel::WriteCString(
-    /* [in] */ CString str)
-{
-    return mData->WriteCString(str);
-}
-
 ECode CParcel::WriteString(
     /* [in] */ const String& str)
 {
@@ -388,12 +370,6 @@ ECode CParcel::WriteArrayOf(
     /* [in] */ Handle32 array)
 {
     return mData->WriteArrayOf(array);
-}
-
-ECode CParcel::WriteArrayOfCString(
-    /* [in] */ ArrayOf<CString>* array)
-{
-    return mData->WriteArrayOfCString(array);
 }
 
 ECode CParcel::WriteArrayOfString(
