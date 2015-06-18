@@ -10,6 +10,7 @@
 #define __EZCSTRING_H__
 
 #include <elstringapi.h>
+#include <string.h>
 #include <assert.h>
 
 _ELASTOS_NAMESPACE_BEGIN
