@@ -146,7 +146,7 @@ ECode InputStreamReader::Read(
     AutoPtr< ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(1);
     Int32 number;
     FAIL_RETURN(Read(buf, 0, 1, &number));
-    *value = number != -1 ? buf[0] : -1;
+    *value = number != -1 ? (*buf)[0] : -1;
 
     return NOERROR;
 }

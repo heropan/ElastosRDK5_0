@@ -76,26 +76,24 @@ AutoPtr<ILocaleData> LocaleData::Get(
     String tmp;
     locale->ToLanguageTag(&tmp);
     const String languageTag = tmp;
-    synchronized(sLocaleDataCacheLock)
-    {
+    synchronized(sLocaleDataCacheLock) {
         HashMap< String, AutoPtr<ILocaleData> >::Iterator it =
                 sLocaleDataCache.Find(languageTag);
         if (it != sLocaleDataCache.End()) {
             return (ILocaleData*)it->mSecond.Get();
         }
     }
+
     AutoPtr<ILocaleData> newLocaleData = InitLocaleData(locale);
-    synchronized(sLocaleDataCacheLock)
-    {
+    synchronized(sLocaleDataCacheLock) {
         HashMap< String, AutoPtr<ILocaleData> >::Iterator it =
                 sLocaleDataCache.Find(languageTag);
         if (it != sLocaleDataCache.End()) {
-            return (ILocaleData*)it->mSecond.Get();
+            return it->mSecond;
         }
         sLocaleDataCache[languageTag] = newLocaleData;
-        return (ILocaleData*)newLocaleData.Get();
     }
-    return NULL;
+    return newLocaleData;
 }
 
 String LocaleData::ToString()

@@ -291,11 +291,9 @@ ECode CPrintStream::Print(
         return NOERROR;
     }
 
-    Int32 size = str.GetByteLength();
-    AutoPtr< ArrayOf<Byte> > tmp = ArrayOf<Byte>::Alloc(size);
-    tmp->Copy((Byte*)str.string(), size);
 
-    if (mEncoding == NULL && NOERROR != Write(*tmp)) {
+    AutoPtr< ArrayOf<Byte> > tmp = str.GetBytes();
+    if (mEncoding == NULL && NOERROR != Write(tmp)) {
         SetError();
     }
 /*    if(mEncoding != NULL && NOERROR != WriteBuffer(str.getBytes(mEncoding)))

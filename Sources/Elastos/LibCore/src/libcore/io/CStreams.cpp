@@ -240,7 +240,7 @@ ECode CStreams::Copy(
     FAIL_RETURN(in->Read(buffer, &c));
     while (c != -1) {
         total += c;
-        FAIL_RETURN(out->Write(*buffer, 0, c));
+        FAIL_RETURN(out->Write(buffer, 0, c));
         FAIL_RETURN(in->Read(buffer, &c));
     }
 

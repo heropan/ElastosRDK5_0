@@ -52,7 +52,7 @@ ECode CharsetEncoderICU::Init(
     /* [in] */ ICharset* cs,
     /* [in] */ Float averageBytesPerChar,
     /* [in] */ Float maxBytesPerChar,
-    /* [in] */ const ArrayOf<Byte>& replacement,
+    /* [in] */ ArrayOf<Byte>* replacement,
     /* [in] */ Int64 address)
 {
     ASSERT_SUCCEEDED(CharsetEncoder::Init(cs, averageBytesPerChar, maxBytesPerChar, replacement, TRUE));

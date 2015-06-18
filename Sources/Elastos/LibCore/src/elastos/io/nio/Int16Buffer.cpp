@@ -206,7 +206,7 @@ ECode Int16Buffer::Put(
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
     for (Int32 i = srcOffset; i < srcOffset + int16Count; ++i) {
-        PutInt16(src[i]);
+        PutInt16((*src)[i]);
     }
     return NOERROR;
 }

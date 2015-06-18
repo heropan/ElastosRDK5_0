@@ -401,7 +401,7 @@ ECode PrintWriter::Write(
 {
     AutoPtr<ArrayOf<Char32> > tmp = ArrayOf<Char32>::Alloc(1);
     (*tmp)[0] = (Char32)oneChar32;
-    return DoWrite(0, 1, *tmp);
+    return DoWrite(0, 1, tmp);
 }
 
 ECode PrintWriter::DoWrite(

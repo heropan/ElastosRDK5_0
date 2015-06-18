@@ -88,7 +88,7 @@ ECode MappedByteBuffer::IsLoaded(
     size += pageOffset;
     Int32 pageCount = (Int32) ((size + pageSize - 1) / pageSize);
     AutoPtr< ArrayOf<Byte> > vector = ArrayOf<Byte>::Alloc(pageCount);
-    FAIL_RETURN(os->Mincore(address, size, *vector))
+    FAIL_RETURN(os->Mincore(address, size, vector))
     for (Int32 i = 0; i < vector->GetLength(); ++i) {
         if (((*vector)[i] & 1) != 1) {
             *isLoaded = FALSE;

@@ -303,7 +303,7 @@ ECode ResourceBundle::Control::GetTimeToLive(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value)
-    *value = NULL;
+    *value = 0;
 
     if (baseName.IsNull()) {
         // throw new NullPointerException("baseName == NULL");
@@ -327,7 +327,7 @@ ECode ResourceBundle::Control::NeedsReload(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
-    *value = NULL;
+    *value = FALSE;
 
     if (bundle == NULL) {
         // FIXME what's the use of bundle?

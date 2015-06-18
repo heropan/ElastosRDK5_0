@@ -87,7 +87,7 @@ ECode OutputStreamWriter::FlushBytes(
         mBytes->GetArray((ArrayOf<Byte>**)&buf);
         Int32 offset;
         IBuffer::Probe(mBytes)->GetArrayOffset(&offset);
-        mOut->Write(*buf, offset, position);
+        mOut->Write(buf, offset, position);
         IBuffer::Probe(mBytes)->Clear();
     }
 

@@ -1151,7 +1151,6 @@ EXPORTS
     _ZN7Elastos7Utility6Arrays6EqualsERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEES8_
     _ZN7Elastos7Utility6Arrays8ToStringEPNS_7ArrayOfIjEE
 
-
     ;;DualPivotQuicksort
     ;;_ZN7Elastos7Utility18DualPivotQuicksort11FindAnyZeroEPNS_7ArrayOfIdEEii
     ;;_ZN7Elastos7Utility18DualPivotQuicksort11FindAnyZeroEPNS_7ArrayOfIfEEii

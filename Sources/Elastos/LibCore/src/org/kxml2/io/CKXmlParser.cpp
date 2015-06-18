@@ -1345,7 +1345,6 @@ ECode CKXmlParser::ReadEntity(
     /* [in] */ ValueContext valueContext)
 {
     Int32 start = out.GetLength();
-    //out.GetLength(&start);
 
     if ((*mBuffer)[mPosition++] != '&') {
         // throw new AssertionError();
