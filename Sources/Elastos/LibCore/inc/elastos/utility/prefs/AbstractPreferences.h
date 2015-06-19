@@ -2,7 +2,8 @@
 #ifndef __UTILITY_PREFS_ABSTRACTPREFERENCES_H__
 #define __UTILITY_PREFS_ABSTRACTPREFERENCES_H__
 
-#include "Object.h"
+#include "Preferences.h"
+#include "NodeChangeEvent.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
@@ -360,7 +361,7 @@ protected:
      *             failure.
      */
     virtual CARAPI ChildrenNamesSpi(
-        /* [out] */ ArrayOf<String>** namesSpi) = 0/* throws BackingStoreException*/;
+        /* [out, callee] */ ArrayOf<String>** namesSpi) = 0/* throws BackingStoreException*/;
 
     /**
      * Returns the child preference node with the given name, creating it
@@ -525,12 +526,12 @@ private:
     // private static final List<EventObject> events = new LinkedList<EventObject>();
     static AutoPtr<IList> sEvents;
     /** the event dispatcher thread */
-    static AutoPtr<EventDispatcher> sDispatcher;
+    // static AutoPtr<EventDispatcher> sDispatcher;
 
     static Boolean sStaticInit;
 
     /** cached child nodes */
-    HashMap<String, AutoPtr<AbstractPreferences> > cachedNode;
+    HashMap<String, AutoPtr<AbstractPreferences> > mCachedNode;
 
     //the collections of listeners
     AutoPtr<ILinkedList> mNodeChangeListeners;

@@ -1,5 +1,9 @@
 
 #include "NodeSet.h"
+#include "CArrayList.h"
+
+using Elastos::Utility::CArrayList;
+using Org::W3c::Dom::EIID_INodeList;
 
 namespace Elastos {
 namespace Utility {
@@ -16,8 +20,8 @@ NodeSet::NodeSet(
     CArrayList::New((IArrayList**)&mList);
     Boolean hasNext = FALSE;
     while(nodes->HasNext(&hasNext), hasNext) {
-        AutoPtr<IIterator> value;
-        nodes->GetNext((IIterator**)&value);
+        AutoPtr<IInterface> value;
+        nodes->GetNext((IInterface**)&value);
         IList::Probe(mList)->Add(value);
     }
 }

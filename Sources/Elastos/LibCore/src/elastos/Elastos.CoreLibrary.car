@@ -15,4 +15,5 @@ module
     merge("../../car/libcore/io.car");
     merge("../../car/libcore/utility.car");
     merge("../../car/libcore/net.car");
+    merge("../../car/org/w3c/dom.car");
 }
