@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_IO_PIPEIMPL_H__
 #define __ELASTOS_IO_PIPEIMPL_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "SourceChannel.h"
 #include "SinkChannel.h"
 

@@ -5,7 +5,6 @@
 #include "_Org_Apache_Http_Conn_CBasicManagedEntity.h"
 #include "HttpEntityWrapper.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 
 namespace Org {

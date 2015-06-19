@@ -5,7 +5,6 @@
 #include "AbstractQueuedSynchronizer.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::IO::IObjectInputStream;
 
 namespace Elastos {

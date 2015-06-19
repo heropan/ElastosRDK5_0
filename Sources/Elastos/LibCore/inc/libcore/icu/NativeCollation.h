@@ -2,12 +2,10 @@
 #ifndef __NATIVECOLLATION_H__
 #define __NATIVECOLLATION_H__
 
-#include <coredef.h>
-#include <elastos.h>
-#include <eltypes.h>
 #include <unicode/unistr.h>
+#include "coredef.h"
 #include <elastos/utility/etl/HashMap.h>
-#include <Mutex.h>
+#include "Mutex.h"
 #include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Utility::Etl::HashMap;

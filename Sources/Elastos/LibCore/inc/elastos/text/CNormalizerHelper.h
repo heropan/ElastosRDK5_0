@@ -3,11 +3,10 @@
 #define __ELASTOS_TEXT_CNORMALIZERHELPER_H__
 
 #include "_Elastos_Text_CNormalizerHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
 using Elastos::Utility::ILocale;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Text {

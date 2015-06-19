@@ -2,10 +2,9 @@
 #ifndef __CBASE64_H__
 #define __CBASE64_H__
 
-#include "core/Singleton.h"
+#include "Singleton.h"
 #include "_Libcore_IO_CBase64.h"
 
-using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace IO {

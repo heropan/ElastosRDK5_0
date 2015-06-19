@@ -4,7 +4,6 @@
 #include "Singleton.h"
 #include "_Libcore_Utility_CZoneInfoHelper.h"
 
-using Elastos::Core::Singleton;
 using Libcore::IO::IBufferIterator;
 
 namespace Libcore {

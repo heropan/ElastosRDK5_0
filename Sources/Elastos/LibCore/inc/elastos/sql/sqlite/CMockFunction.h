@@ -6,7 +6,6 @@
 #include <elastos/core/StringBuffer.h>
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::StringBuffer;
 
 namespace Elastos {

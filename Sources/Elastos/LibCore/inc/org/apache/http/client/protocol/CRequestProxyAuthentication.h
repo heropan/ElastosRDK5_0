@@ -5,7 +5,6 @@
 #include "_Org_Apache_Http_Client_Protocol_CRequestProxyAuthentication.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Org::Apache::Http::IHttpRequest;
 using Org::Apache::Http::IHttpRequestInterceptor;
 using Org::Apache::Http::Protocol::IHttpContext;

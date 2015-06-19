@@ -5,7 +5,6 @@
 #include "_Org_Xml_Sax_Helpers_CXMLReaderFactory.h"
 #include <elastos/core/Singleton.h>
 
-using Elastos::Core::Singleton;
 using Elastos::Core::IClassLoader;
 
 namespace Org {

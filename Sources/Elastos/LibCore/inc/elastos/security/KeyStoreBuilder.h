@@ -6,7 +6,6 @@
 #include <elastos/Object.h>
 
 using Elastos::IO::IFile;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Security {

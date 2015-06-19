@@ -10,7 +10,6 @@ using Elastos::Utility::IMap;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IObjectMap;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {

@@ -6,7 +6,6 @@
 #include "zlib.h"
 #include "zutil.h"// For DEF_WBITS and DEF_MEM_LEVEL.
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {

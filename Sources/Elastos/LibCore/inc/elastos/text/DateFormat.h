@@ -2,11 +2,6 @@
 #ifndef __ELASTOS_TEXT_DATEFORMAT_H__
 #define __ELASTOS_TEXT_DATEFORMAT_H__
 
-#ifndef __USE_MALLOC
-#define __USE_MALLOC
-#endif
-
-#include "Elastos.CoreLibrary_server.h"
 #include "Format.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "AttributedCharacterIteratorAttributeMacro.h"

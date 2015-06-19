@@ -6,7 +6,6 @@
 #include <StringBuilder.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;

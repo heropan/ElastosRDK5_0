@@ -16,11 +16,11 @@ Reader::Reader()
 }
 
 Reader::Reader(
-    /* [in] */ IObject* lock)
-    : mIsStrongLock(FALSE)
+    /* [in] */ ISynchronize* lock)
+    : mIsStrongLock(TRUE)
 {
     assert(lock != NULL);
-    mLock = (Object *)lock;
+    mLock = lock;
     REFCOUNT_ADD(mLock);
 }
 
@@ -31,13 +31,20 @@ Reader::~Reader()
     }
 }
 
+ECode Reader::constructor()
+{
+    mLock = THIS_PROBE(ISynchronize);
+    mIsStrongLock = FALSE;
+    return NOERROR;
+}
+
 ECode Reader::constructor(
-    /* [in] */ IObject* lock)
+    /* [in] */ ISynchronize* lock)
 {
     VALIDATE_NOT_NULL(lock)
 
-    mLock = (Object *)lock;
-    if (mLock && mLock != (Object *)this) {
+    mLock = lock;
+    if (mLock && mLock != THIS_PROBE(ISynchronize)) {
         REFCOUNT_ADD(mLock)
         mIsStrongLock = TRUE;
     }

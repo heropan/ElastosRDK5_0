@@ -4,11 +4,7 @@
 
 #include "_CCodeSigner.h"
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+
 
 using Elastos::Security::Cert::ICertPath;
 

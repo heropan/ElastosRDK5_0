@@ -1,8 +1,7 @@
 #ifndef __ELASTOS_TEXT_RULEBASEDBREAKITERATOR_H__
 #define __ELASTOS_TEXT_RULEBASEDBREAKITERATOR_H__
 
-#include "Elastos.CoreLibrary_server.h"
-#include <elastos.h>
+
 #include "BreakIterator.h"
 
 using Elastos::Text::ICharacterIterator;

@@ -8,7 +8,6 @@
 
 #include "core/Object.h"
 
-using Elastos::Core::Object;
 using Libcore::IO::ISocketTagger;
 using Libcore::IO::EIID_ISocketTagger;
 using Elastos::IO::IFileDescriptor;

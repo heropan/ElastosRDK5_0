@@ -6,7 +6,6 @@
 #include "_Libcore_ICU_CNativeIDNHelper.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace ICU {
@@ -16,7 +15,7 @@ CarClass(CNativeIDNHelper)
 	, public INativeIDNHelper
 {
 	CAR_SINGLETON_DECL()
-	
+
 public:
 	CAR_INTERFACE_DECL()
 

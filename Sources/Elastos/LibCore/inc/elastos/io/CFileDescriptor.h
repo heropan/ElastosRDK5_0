@@ -4,7 +4,6 @@
 #include "Object.h"
 #include "_Elastos_IO_CFileDescriptor.h"
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace IO {

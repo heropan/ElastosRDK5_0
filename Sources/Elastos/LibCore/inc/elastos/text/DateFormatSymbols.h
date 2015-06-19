@@ -4,7 +4,6 @@
 #include "Object.h"
 
 using Elastos::Utility::ILocale;
-using Elastos::Core::Object;
 using Elastos::Core::IArrayOf;
 
 namespace Elastos {

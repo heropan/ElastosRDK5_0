@@ -2,10 +2,8 @@
 #ifndef __ELASTOS_NET_CONTENTHANDLER_H__
 #define __ELASTOS_NET_CONTENTHANDLER_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Net {

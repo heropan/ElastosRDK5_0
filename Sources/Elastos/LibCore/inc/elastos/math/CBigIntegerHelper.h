@@ -2,9 +2,8 @@
 #define __ELASTOS_MATH_CBIGINTEGERHELPER_H__
 
 #include "_Elastos_Math_CBigIntegerHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 using Elastos::Utility::IRandom;
 
 namespace Elastos {

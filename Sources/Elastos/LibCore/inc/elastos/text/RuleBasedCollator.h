@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_TEXT_RULEBASEDCOLLATOR_H__
 #define __ELASTOS_TEXT_RULEBASEDCOLLATOR_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "Collator.h"
 
 using Libcore::ICU::ICollationElementIteratorICU;

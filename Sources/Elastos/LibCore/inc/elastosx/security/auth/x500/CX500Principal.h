@@ -9,7 +9,6 @@ using Elastos::IO::IInputStream;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 using Elastos::Utility::IMap;
-using Elastos::Core::Object;
 
 namespace Elastosx {
 namespace Security {

@@ -3,7 +3,6 @@
 #define __ELASTOS_NET_PROXYSELECTORIMPL_H__
 
 #include "ProxySelector.h"
-#include "Elastos.CoreLibrary_server.h"
 
 namespace Elastos {
 namespace Net {

@@ -5,7 +5,6 @@
 #include "_Elastos_Sql_SQLite_CTestProgressHandler.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {

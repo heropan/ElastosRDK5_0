@@ -5,7 +5,6 @@
 #include "Object.h"
 #include "Math.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::ISynchronize;
 using Elastos::Core::IThread;
 

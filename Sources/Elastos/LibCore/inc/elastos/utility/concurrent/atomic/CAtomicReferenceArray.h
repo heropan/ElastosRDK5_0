@@ -5,7 +5,6 @@
 #include "_Elastos_Utility_Concurrent_Atomic_CAtomicReferenceArray.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::ISerializable;
 

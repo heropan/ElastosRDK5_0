@@ -2,11 +2,7 @@
 #ifndef __MESSAGEDIGEST_H__
 #define __MESSAGEDIGEST_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+
 
 #include <cmdef.h>
 #include "MessageDigestMacro.h"

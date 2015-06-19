@@ -6,7 +6,6 @@
 #include "AtomicReference.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::Concurrent::Atomic::IAtomicReference;
 using Elastos::Utility::Concurrent::Atomic::AtomicReference;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;

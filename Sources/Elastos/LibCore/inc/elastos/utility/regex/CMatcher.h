@@ -11,7 +11,6 @@ using Elastos::Core::ICharSequence;
 using Elastos::Core::IStringBuffer;
 using Elastos::Core::StringBuffer;
 using U_ICU_NAMESPACE::RegexMatcher;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {

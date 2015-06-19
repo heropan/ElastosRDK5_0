@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_SOCKET_H__
 #define __ELASTOS_NET_SOCKET_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;

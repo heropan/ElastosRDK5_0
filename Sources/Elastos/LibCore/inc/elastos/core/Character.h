@@ -7,7 +7,6 @@
 
 using Elastos::IO::ISerializable;
 using Elastos::Core::IComparable;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Core {

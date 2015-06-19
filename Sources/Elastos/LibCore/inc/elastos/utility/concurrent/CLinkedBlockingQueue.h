@@ -7,7 +7,6 @@
 #include <Condition.h>
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::Condition;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;

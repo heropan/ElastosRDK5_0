@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_NET_SOCKS4MESSAGE_H__
 #define __ELASTOS_NET_SOCKE4MESSAGE_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
 
 namespace Elastos {
 namespace Net {

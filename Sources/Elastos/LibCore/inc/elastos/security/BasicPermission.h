@@ -2,11 +2,7 @@
 #ifndef __BASICPERMISSION_H__
 #define __BASICPERMISSION_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+
 #include "Permission.h"
 
 namespace Elastos {
@@ -33,4 +29,3 @@ public:
 } // namespace Security
 } // namespace Elastos
 
-#endif // __BASICPERMISSION_H__

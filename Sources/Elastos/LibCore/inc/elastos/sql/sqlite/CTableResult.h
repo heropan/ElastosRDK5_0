@@ -4,7 +4,6 @@
 
 #include "_Elastos_Sql_SQLite_CTableResult.h"
 #include "TableResult.h"
-#include "coredef.h"
 #include <elstring.h>
 
 namespace Elastos {

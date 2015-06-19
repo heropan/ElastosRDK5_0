@@ -5,7 +5,6 @@
 #include <Org.Apache.Http_server.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Org {
 namespace Apache {

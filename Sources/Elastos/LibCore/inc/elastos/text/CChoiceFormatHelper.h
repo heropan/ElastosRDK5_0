@@ -5,7 +5,6 @@
 #include "_Elastos_Text_CChoiceFormatHelper.h"
 #include "elastos/core/Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Text {

@@ -5,7 +5,6 @@
 #include "_Libcore_Utility_CZoneInfoWallTime.h"
 
 using Elastos::Core::IInteger32;
-using Elastos::Core::Object;
 using Elastos::Utility::IGregorianCalendar;
 
 namespace Libcore {

@@ -8,7 +8,6 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <Org.Kxml2.IO.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IBoolean;
 using Elastos::Utility::Etl::HashMap;

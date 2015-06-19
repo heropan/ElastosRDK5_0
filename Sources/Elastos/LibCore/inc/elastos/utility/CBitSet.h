@@ -5,7 +5,6 @@
 #include "_Elastos_Utility_CBitSet.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 using Elastos::IO::IInt64Buffer;
 using Elastos::IO::IByteBuffer;

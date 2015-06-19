@@ -1,6 +1,5 @@
 
 #include "CModifiedUtf8.h"
-#include <coredef.h>
 #include <stdio.h>
 
 namespace Elastos {

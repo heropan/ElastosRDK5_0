@@ -3,7 +3,6 @@
 
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::ISet;
 using Elastos::IO::ICloseable;
 using Elastos::IO::Channels::Spi::ISelectorProvider;

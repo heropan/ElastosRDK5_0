@@ -3,7 +3,6 @@
 
 #include "Buffer.h"
 #include "ByteBuffer.h"
-#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::IO::Channels::IFileChannel;
 

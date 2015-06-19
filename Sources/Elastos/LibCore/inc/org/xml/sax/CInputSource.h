@@ -5,7 +5,6 @@
 #include "_Org_Xml_Sax_CInputSource.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::IO::IReader;
 using Elastos::IO::IInputStream;
 

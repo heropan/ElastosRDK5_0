@@ -3,11 +3,9 @@
 #define __CCOLLECTIONUTILS_H__
 
 #include "core/Object.h"
-#include "core/Singleton.h"
+#include "Singleton.h"
 #include "_Libcore_Utility_CCollectionUtils.h"
 
-using Elastos::Core::Object;
-using Elastos::Core::Singleton;
 
 using Elastos::Core::IComparator;
 using Elastos::Utility::IIterable;

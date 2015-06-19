@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_IO_SOCKETCHANNELIMPL_H__
 #define __ELASTOS_IO_SOCKETCHANNELIMPL_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "SocketChannel.h"
 #include "CFileDescriptor.h"
 #include "FilterOutputStream.h"

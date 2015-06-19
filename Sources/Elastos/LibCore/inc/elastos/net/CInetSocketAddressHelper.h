@@ -3,9 +3,8 @@
 #define __ELASTOS_NET_CINETSOCKETADDRESSHELPER_H__
 
 #include "_ELASTOS_NET_CInetSocketAddressHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {

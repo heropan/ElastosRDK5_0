@@ -5,7 +5,6 @@
 #include "_Libcore_ICU_CTimeZoneNames.h"
 #include "Singleton.h"
 
-using Elastos::Core::Singleton;
 using Elastos::Core::IArrayOf;
 using Elastos::Utility::ILocale;
 

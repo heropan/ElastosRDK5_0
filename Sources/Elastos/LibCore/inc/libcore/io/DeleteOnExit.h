@@ -6,7 +6,6 @@
 #include <elastos/core/Thread.h>
 #include "utility/CArrayList.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::Thread;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;

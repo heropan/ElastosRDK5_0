@@ -1,5 +1,4 @@
 #include "CBlobR.h"
-#include <coredef.h>
 
 namespace Elastos {
 namespace Sql {

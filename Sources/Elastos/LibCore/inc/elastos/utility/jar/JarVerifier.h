@@ -9,7 +9,6 @@
 
 using Elastos::Utility::IVector;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Object;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::OutputStream;
 using Elastos::Security::Cert::ICertificate;

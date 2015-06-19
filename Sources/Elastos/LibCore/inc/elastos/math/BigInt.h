@@ -6,7 +6,6 @@
 #include <elastos.h>
 #include <elquintet.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {

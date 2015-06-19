@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CDatabaseHelper.h"
 #include "Database.h"
 
@@ -40,7 +39,7 @@ ECode CDatabaseHelper::Status(
     /* [in] */ Boolean flag,
     /* [out] */ Int32 * value)
 {
-    *value = Database::Status(op,(ArrayOf<Int32>* )&info,flag);
+    *value = Database::Status(op, (ArrayOf<Int32>* )&info,flag);
     return NOERROR;
 }
 

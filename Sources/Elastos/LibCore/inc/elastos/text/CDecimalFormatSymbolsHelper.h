@@ -4,9 +4,8 @@
 
 #include "_Elastos_Text_CDecimalFormatSymbolsHelper.h"
 #include <Elastos.CoreLibrary.h>
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 using Elastos::Utility::ILocale;
 
 namespace Elastos {

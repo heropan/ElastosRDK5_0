@@ -4,7 +4,6 @@
 
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IThrowable;
 using Elastos::Core::IRunnable;
 using Elastos::IO::IObjectOutputStream;

@@ -39,7 +39,7 @@ ECode StringWriter::constructor(
     if (mBuf == NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
-    mLock = mBuf;
+    mLock = ISynchronize::Probe(mBuf);
 
     return NOERROR;
 }
@@ -108,7 +108,7 @@ ECode StringWriter::Write(
     Int32 dstOffset = 0;
     FAIL_RETURN(Character::ToChars(*buffer, offset, count, (ArrayOf<Byte>**)&dst, &dstOffset));
 
-    mBuf->Append(String(dst->GetPayload()));
+    mBuf->Append(String((const char*)dst->GetPayload(), dst->GetLength()));
 
     return NOERROR;
 }

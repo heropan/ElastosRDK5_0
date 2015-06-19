@@ -5,7 +5,6 @@
 #include "_Org_Apache_Http_Auth_CAuthSchemeRegistry.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::IMap;
 
 namespace Org {

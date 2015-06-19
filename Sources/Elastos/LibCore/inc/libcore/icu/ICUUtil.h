@@ -1,8 +1,7 @@
 
-#ifndef __ICU_ICU_H__
-#define __ICU_ICU_H__
+#ifndef __ICU_ICUUTIL_H__
+#define __ICU_ICUUTIL_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "LocaleData.h"
 
 using Libcore::ICU::ILocale;
@@ -173,4 +172,4 @@ private:
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__ICU_ICU_H__
+#endif //__ICU_ICUUTIL_H__

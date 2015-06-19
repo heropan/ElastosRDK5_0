@@ -2,7 +2,6 @@
 #ifndef __CERTPATHVALIDATOR_H__
 #define __CERTPATHVALIDATOR_H__
 
-#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Security::IProvider;
 

@@ -7,7 +7,6 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IInputStream;
 

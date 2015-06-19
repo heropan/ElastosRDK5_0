@@ -1,10 +1,9 @@
 #ifndef __CDELETEONEXITHELPER_H__
 #define __CDELETEONEXITHELPER_H__
 
-#include "core/Singleton.h"
+#include "Singleton.h"
 #include "_Libcore_IO_CDeleteOnExitHelper.h"
 
-using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace IO {

@@ -2,9 +2,8 @@
 #define __ELASTOS_IO_CHARSET_CCODERRESULTHELPER_H__
 
 #include "_Elastos_IO_Charset_CCoderResultHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace IO {

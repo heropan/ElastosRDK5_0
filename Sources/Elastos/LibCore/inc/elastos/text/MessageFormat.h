@@ -1,13 +1,12 @@
 #ifndef __ELASTOS_TEXT_MESSAGEFORMAT_H__
 #define __ELASTOS_TEXT_MESSAGEFORMAT_H__
-#include "Elastos.CoreLibrary_server.h"
-#include <elastos.h>
-#include <elastos/core/StringBuffer.h>
-#include <elastos/utility/etl/List.h>
-#include <elastos/core/Character.h>
+
 #include "Format.h"
 #include "NumberFormat.h"
 #include "DateFormat.h"
+#include <elastos/core/StringBuffer.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Utility::Etl::List;
 using Elastos::Text::IAttributedCharacterIteratorAttribute;

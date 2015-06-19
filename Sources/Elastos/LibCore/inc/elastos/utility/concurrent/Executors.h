@@ -5,7 +5,6 @@
 #include "elastos/core/Object.h"
 #include "AbstractExecutorService.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 using Elastos::Core::IThread;
 using Elastos::Core::IThreadGroup;

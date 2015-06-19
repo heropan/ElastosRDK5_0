@@ -4,7 +4,6 @@
 #include "TimSort.h"
 // #include "CArrayList.h"
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {

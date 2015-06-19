@@ -3,7 +3,6 @@
 #define __X509CRL_H__
 
 #include "CRL.h"
-#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Security::IPublicKey;
 using Elastosx::Security::Auth::X500::IX500Principal;

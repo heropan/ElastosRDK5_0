@@ -20,7 +20,7 @@ ECode FilterReader::constructor(
 {
     VALIDATE_NOT_NULL(in);
 
-    FAIL_RETURN(Reader::constructor(IObject::Probe(in)))
+    FAIL_RETURN(Reader::constructor(ISynchronize::Probe(in)))
 
     mIn = in;
 

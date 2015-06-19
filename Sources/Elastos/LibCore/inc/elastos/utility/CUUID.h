@@ -4,7 +4,6 @@
 #include "_Elastos_Utility_CUUID.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::IComparable;
 using Elastos::IO::ISerializable;
 using Elastos::IO::IObjectInputStream;

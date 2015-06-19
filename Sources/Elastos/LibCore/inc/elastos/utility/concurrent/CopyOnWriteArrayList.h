@@ -5,7 +5,6 @@
 #include "AbstractList.h"
 #include "elastos/core/Object.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 using Elastos::Utility::AbstractList;

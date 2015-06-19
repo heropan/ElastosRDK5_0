@@ -3,9 +3,8 @@
 #define __ORG_APACHE_HTTP_CLIENT_PARAMS_CHTTPCLIENTPARAMS_H_
 
 #include "_Org_Apache_Http_Client_Params_CHttpClientParams.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Org {
 namespace Apache {

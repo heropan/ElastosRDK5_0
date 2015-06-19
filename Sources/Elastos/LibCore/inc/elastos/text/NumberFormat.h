@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_TEXT_NUMBERFORMAT_H__
 #define __ELASTOS_TEXT_NUMBERFORMAT_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include <elastos/core/StringBuffer.h>
 #include "Format.h"
 #include "CLocaleHelper.h"

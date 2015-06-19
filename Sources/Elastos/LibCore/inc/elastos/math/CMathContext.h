@@ -4,7 +4,6 @@
 #include "_Elastos_Math_CMathContext.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Math {

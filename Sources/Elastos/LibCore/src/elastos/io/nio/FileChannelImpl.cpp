@@ -1,6 +1,5 @@
-#include "Elastos.CoreLibrary_server.h"
 #include "FileChannelImpl.h"
-#include "elastos/core/Math.h"
+#include "Math.h"
 #include "FileLock.h"
 #include "MemoryBlock.h"
 #include "MappedByteBufferAdapter.h"

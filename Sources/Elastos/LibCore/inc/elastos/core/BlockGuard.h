@@ -3,8 +3,6 @@
 
 #include "Singleton.h"
 
-using Elastos::Core::Object;
-
 namespace Elastos {
 namespace Core {
 

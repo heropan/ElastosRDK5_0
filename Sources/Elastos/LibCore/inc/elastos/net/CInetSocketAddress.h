@@ -5,7 +5,6 @@
 #include "_ELASTOS_NET_CInetSocketAddress.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Net {

@@ -5,14 +5,9 @@
 #include "StringToReal.h"
 #include "IntegralToString.h"
 #include "RealToString.h"
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
 #include "CStringWrapper.h"
 #include "CPatternHelper.h"
 #include "CSplitter.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;

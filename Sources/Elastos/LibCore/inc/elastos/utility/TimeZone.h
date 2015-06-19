@@ -6,7 +6,6 @@
 #include "StringBuffer.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::StringBuffer;
 using Elastos::Utility::Regex::IPattern;
 //using Libcore::ICU::ILocale;

@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "ComparableTimSort.h"
 #include "Math.h"
 #include "Arrays.h"

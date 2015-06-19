@@ -6,7 +6,6 @@
 #include "Executors.h"
 #include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {

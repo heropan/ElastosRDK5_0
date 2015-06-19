@@ -4,7 +4,6 @@
 
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::IO::ISerializable;
 using Elastos::Text::IAttributedCharacterIteratorAttribute;
 

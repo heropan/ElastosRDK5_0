@@ -1,11 +1,9 @@
-#ifndef __DATABASE_H__
-#define __DATABASE_H__
+#ifndef __ELASTOS_SQL_SQLITE_DATABASE_H__
+#define __ELASTOS_SQL_SQLITE_DATABASE_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "sqlitejni.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {
@@ -331,4 +329,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif //__DATABASE_H__
+#endif //__ELASTOS_SQL_SQLITE_DATABASE_H__

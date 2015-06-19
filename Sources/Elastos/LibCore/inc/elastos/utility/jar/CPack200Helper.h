@@ -3,11 +3,10 @@
 #define __ELASTOS_UTILITY_CPACK200HELPER_H__
 
 #include "_Elastos_Utility_Jar_CPack200Helper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
 using Elastos::Utility::Jar::IPacker;
 using Elastos::Utility::Jar::IUnpacker;
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {

@@ -3,9 +3,8 @@
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CCONNMANAGERPARAMS_H__
 
 #include "_Org_Apache_Http_Conn_Params_CConnManagerParams.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Org {
 namespace Apache {

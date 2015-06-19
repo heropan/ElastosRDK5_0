@@ -5,7 +5,6 @@
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructGroupReq.h"
 
-using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
 
 namespace Elastos {

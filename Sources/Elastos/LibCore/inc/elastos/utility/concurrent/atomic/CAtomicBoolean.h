@@ -5,7 +5,6 @@
 #include "_Elastos_Utility_Concurrent_Atomic_CAtomicBoolean.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::ISerializable;
 
 namespace Elastos {

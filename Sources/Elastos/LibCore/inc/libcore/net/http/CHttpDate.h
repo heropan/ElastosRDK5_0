@@ -3,11 +3,9 @@
 #define __LIBCORE_NET_HTTP_CHTTPDATEHELPER_H__
 
 #include "_LIBCORE_NET_HTTP_CHttpDate.h"
-#include "Elastos.CoreLibrary_server.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 #include <pthread.h>
 
-using Elastos::Core::Singleton;
 using Elastos::Utility::IDate;
 
 namespace Libcore {

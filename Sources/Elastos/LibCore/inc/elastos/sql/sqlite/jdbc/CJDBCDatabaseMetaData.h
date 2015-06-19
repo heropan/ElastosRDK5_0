@@ -2,7 +2,6 @@
 #ifndef __CJDBCDATABASEMETADATA_H__
 #define __CJDBCDATABASEMETADATA_H__
 
-#include <coredef.h>
 #include "_Elastos_Sql_SQLite_JDBC_CJDBCDatabaseMetaData.h"
 #include "CJDBCConnection.h"
 #include "CJDBCDriver.h"

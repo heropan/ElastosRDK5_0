@@ -3,7 +3,6 @@
 
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 
 namespace Elastos {

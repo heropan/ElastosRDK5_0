@@ -6,7 +6,6 @@
 
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
-using Elastos::Core::Object;
 using Elastos::IO::Charset::ICharsets;
 using Elastos::IO::Charset::ICharset;
 using Elastos::IO::IByteBuffer;

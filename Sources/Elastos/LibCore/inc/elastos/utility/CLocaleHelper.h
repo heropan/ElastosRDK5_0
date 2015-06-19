@@ -5,7 +5,6 @@
 #include "_Elastos_Utility_CLocaleHelper.h"
 #include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {

@@ -3,9 +3,8 @@
 #define __ELASTOS_UTILITY_CFENCES_H__
 
 #include "_Elastos_Utility_Concurrent_Atomic_CFencesHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {

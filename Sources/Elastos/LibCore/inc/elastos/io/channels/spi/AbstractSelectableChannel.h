@@ -6,7 +6,6 @@
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::List;
 
 namespace Elastos {

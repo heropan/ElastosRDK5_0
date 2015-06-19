@@ -2,7 +2,6 @@
 #define __ELASTOS_IO_SERVERSOCKET_CHANNEL_H__
 
 #include "AbstractSelectableChannel.h"
-#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::IO::Channels::Spi::AbstractSelectableChannel;
 using Elastos::IO::Channels::ISelectionKey;
@@ -15,7 +14,8 @@ namespace Elastos {
 namespace IO {
 namespace Channels {
 
-class ServerSocketChannel : public AbstractSelectableChannel
+class ServerSocketChannel
+    : public AbstractSelectableChannel
 {
 public:
     ServerSocketChannel();

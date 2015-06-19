@@ -37,7 +37,7 @@ ECode OutputStreamWriter::constructor(
     /* [in] */ IOutputStream *out,
     /* [in] */ const String &charsetName)
 {
-    FAIL_RETURN(Writer::constructor(IObject::Probe(out)));
+    FAIL_RETURN(Writer::constructor(ISynchronize::Probe(out)));
 
     // if (charsetName null) {
     //     throw new NullPointerException("charsetName == null");

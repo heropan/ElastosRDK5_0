@@ -5,7 +5,6 @@
 #include "Object.h"
 #include "ByteArrayOutputStream.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IInputStream;
 using Elastos::IO::Charset::ICharset;

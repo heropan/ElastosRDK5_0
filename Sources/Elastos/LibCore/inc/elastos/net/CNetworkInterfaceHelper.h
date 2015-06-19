@@ -3,9 +3,8 @@
 
 #include <_CNetworkInterfaceHelper.h>
 #include <NetworkInterface.h>
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {

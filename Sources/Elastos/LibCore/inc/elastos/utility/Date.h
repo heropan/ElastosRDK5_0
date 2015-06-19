@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 using Elastos::Core::IComparable;
 

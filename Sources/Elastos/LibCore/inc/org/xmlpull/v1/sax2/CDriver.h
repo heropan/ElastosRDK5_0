@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 #include <Org.Xml.Sax.h>
 
-using Elastos::Core::Object;
 using Org::Xml::Sax::ILocator;
 using Org::Xml::Sax::IXMLReader;
 using Org::Xml::Sax::IEntityResolver;

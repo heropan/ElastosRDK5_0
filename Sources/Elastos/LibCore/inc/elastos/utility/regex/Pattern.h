@@ -7,7 +7,6 @@
 
 using Elastos::Core::ICharSequence;
 using U_ICU_NAMESPACE::RegexPattern;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {

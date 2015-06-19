@@ -6,7 +6,6 @@
 
 using Elastos::IO::IUnsafeByteSequence;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {

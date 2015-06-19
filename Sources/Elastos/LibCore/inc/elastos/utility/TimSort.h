@@ -5,7 +5,6 @@
 
 using Elastos::Core::IComparator;
 using Elastos::Core::IComparable;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {

@@ -3,9 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CCONNROUTEPARAMS_H__
 
 #include "_Org_Apache_Http_Conn_Params_CConnRouteParams.h"
-#include <elastos/core/Singleton.h>
-
-using Elastos::Core::Singleton;
+#include "Singleton.h"
 
 namespace Org {
 namespace Apache {

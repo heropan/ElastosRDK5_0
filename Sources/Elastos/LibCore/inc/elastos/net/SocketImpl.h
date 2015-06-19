@@ -2,10 +2,8 @@
 #ifndef __ELASTOS_NET_SOCKETIMPL_H__
 #define __ELASTOS_NET_SOCKETIMPL_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;

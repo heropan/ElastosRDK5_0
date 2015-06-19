@@ -5,7 +5,6 @@
 #include "_Org_Apache_Http_Conn_Routing_CRouteTracker.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
 using Org::Apache::Http::IHttpHost;
 

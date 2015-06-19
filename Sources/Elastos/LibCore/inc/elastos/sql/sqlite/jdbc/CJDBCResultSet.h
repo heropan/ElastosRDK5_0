@@ -1,11 +1,10 @@
 
-#ifndef __CJDBCRESULTSET_H__
-#define __CJDBCRESULTSET_H__
+#ifndef __ELASTOS_SQL_SQLITE_JDBC_CJDBCRESULTSET_H__
+#define __ELASTOS_SQL_SQLITE_JDBC_CJDBCRESULTSET_H__
 
 #include <elastos/core/Object.h>
 #include "_Elastos_Sql_SQLite_JDBC_CJDBCResultSet.h"
 #include "CTableResult.h"
-#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IReader;
@@ -14,7 +13,6 @@ using Elastos::Net::IURL;
 using Elastos::Utility::ICalendar;
 using Elastos::Utility::IMap;
 using Elastos::Sql::ISQLWarning;
-using Elastos::Core::Object;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger16;
 using Elastos::Core::IInteger64;
@@ -842,4 +840,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CJDBCRESULTSET_H__
+#endif // __ELASTOS_SQL_SQLITE_JDBC_CJDBCRESULTSET_H__

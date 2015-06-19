@@ -3,9 +3,8 @@
 #define __ELASTOS_NET_CSERVERSOCKETHELPER_H__
 
 #include "_ELASTOS_NET_CServerSocketHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {

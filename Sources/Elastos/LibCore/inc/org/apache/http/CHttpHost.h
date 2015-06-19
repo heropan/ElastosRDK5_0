@@ -6,7 +6,6 @@
 #include "_Org_Apache_Http_CHttpHost.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Org {
 namespace Apache {

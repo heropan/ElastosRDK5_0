@@ -4,7 +4,6 @@
 #include "Object.h"
 #include "Thread.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::Thread;
 using Elastos::Core::IClassLoader;
 using Elastos::Core::IRunnable;

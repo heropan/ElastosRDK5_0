@@ -1,7 +1,6 @@
 
 #include "CStmt.h"
 #include "sqlitejni.h"
-#include "coredef.h"
 
 namespace Elastos {
 namespace Sql {

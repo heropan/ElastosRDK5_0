@@ -3,9 +3,8 @@
 #define __ORG_APACHE_HTTP_CHTTPVERSIONHELPER_H__
 
 #include "_Org_Apache_Http_CHttpVersionHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Org {
 namespace Apache {

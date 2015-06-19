@@ -4,7 +4,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Object;
 using Elastos::IO::ICloseable;
 
 namespace Elastos {

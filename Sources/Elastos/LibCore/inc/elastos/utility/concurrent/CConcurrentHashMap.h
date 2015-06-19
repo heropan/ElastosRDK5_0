@@ -7,7 +7,6 @@
 #include "ReentrantLock.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::ISerializable;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;

@@ -5,7 +5,6 @@
 #include "_Reflection_CFooBar.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Reflection {
 

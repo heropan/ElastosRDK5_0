@@ -1,7 +1,6 @@
 #ifndef __COLLATIONKEYICU_H__
 #define __COLLATIONKEYICU_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #if 0 // for compiling
 #include "CollationKey.h"
 
@@ -9,7 +8,6 @@ using Elastos::Text::CollationKey;
 using Elastos::Text::ICollationKey;
 #else
 #include <Object.h>
-using Elastos::Core::Object;
 #endif // #if 0
 
 extern "C" const InterfaceID EIID_CollationKeyICU;
@@ -17,7 +15,7 @@ extern "C" const InterfaceID EIID_CollationKeyICU;
 namespace Libcore {
 namespace ICU {
 
-class CollationKeyICU 
+class CollationKeyICU
 #if 0 // for compiling
     : public CollationKey
 #else

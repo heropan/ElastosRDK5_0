@@ -2,9 +2,8 @@
 #define __ELASTOS_MATH_CMATHCONTEXTHELPER_H__
 
 #include "_Elastos_Math_CMathContextHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Math {

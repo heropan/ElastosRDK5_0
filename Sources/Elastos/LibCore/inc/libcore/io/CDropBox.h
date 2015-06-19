@@ -2,11 +2,9 @@
 #define __CDROPBOX_H__
 
 #include "core/Object.h"
-#include "core/Singleton.h"
+#include "Singleton.h"
 #include "_Libcore_IO_CDropBox.h"
 
-using Elastos::Core::Object;
-using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace IO {

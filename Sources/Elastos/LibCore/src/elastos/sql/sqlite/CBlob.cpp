@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CBlob.h"
 #include "CBlobR.h"
 #include "CBlobW.h"

@@ -4,7 +4,6 @@
 
 #include "Object.h"
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {

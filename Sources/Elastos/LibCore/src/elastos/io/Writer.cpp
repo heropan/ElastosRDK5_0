@@ -11,20 +11,6 @@ namespace IO {
 
 CAR_INTERFACE_IMPL_4(Writer, Object, IWriter, IAppendable, ICloseable, IFlushable)
 
-ECode Writer::constructor(
-    /* [in] */ IObject* lock)
-{
-    assert(lock != NULL);
-    VALIDATE_NOT_NULL(lock)
-    mLock = (Object*)lock;
-
-    if (mLock && mLock != (Object*)this) {
-        REFCOUNT_ADD(mLock)
-        mIsStrongLock = TRUE;
-    }
-    return NOERROR;
-}
-
 Writer::Writer()
     : mLock(NULL)
     , mIsStrongLock(FALSE)
@@ -32,11 +18,11 @@ Writer::Writer()
 }
 
 Writer::Writer(
-    /* [in] */ IObject* lock)
-    : mIsStrongLock(FALSE)
+    /* [in] */ ISynchronize* lock)
+    : mIsStrongLock(TRUE)
 {
     assert(lock != NULL);
-    mLock = (Object *)lock;
+    mLock = lock;
     REFCOUNT_ADD(mLock);
 }
 
@@ -45,6 +31,27 @@ Writer::~Writer()
     if (mIsStrongLock) {
         REFCOUNT_RELEASE(mLock)
     }
+}
+
+ECode Writer::constructor()
+{
+    mLock = THIS_PROBE(ISynchronize);
+    mIsStrongLock = FALSE;
+    return NOERROR;
+}
+
+ECode Writer::constructor(
+    /* [in] */ ISynchronize* lock)
+{
+    assert(lock != NULL);
+    VALIDATE_NOT_NULL(lock)
+
+    mLock = lock;
+    if (mLock && mLock != THIS_PROBE(ISynchronize)) {
+        REFCOUNT_ADD(mLock)
+        mIsStrongLock = TRUE;
+    }
+    return NOERROR;
 }
 
 ECode Writer::Write(

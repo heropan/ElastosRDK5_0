@@ -6,7 +6,6 @@
 #include "Singleton.h"
 
 using Elastos::Utility::ILocale;
-using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace ICU {

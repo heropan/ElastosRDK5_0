@@ -4,7 +4,6 @@
 #include "_Elastos_Utility_CStringTokenizer.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {

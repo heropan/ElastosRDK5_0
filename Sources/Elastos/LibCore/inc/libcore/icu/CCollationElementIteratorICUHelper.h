@@ -5,7 +5,6 @@
 #include "_Libcore_ICU_CCollationElementIteratorICUHelper.h"
 #include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace ICU {

@@ -68,7 +68,7 @@ ECode PrintWriter::constructor(
     /* [in] */ IWriter* wr,
     /* [in] */ Boolean autoflush)
 {
-    Writer::constructor(IObject::Probe(wr));
+    FAIL_RETURN(Writer::constructor(ISynchronize::Probe(wr)))
 
     mAutoflush = autoflush;
     mOut = wr;

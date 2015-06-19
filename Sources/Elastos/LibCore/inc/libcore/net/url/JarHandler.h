@@ -2,7 +2,6 @@
 #ifndef __LIBCORE_NET_URI_JARHANDLER_H__
 #define __LIBCORE_NET_URI_JARHANDLER_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "URLStreamHandler.h"
 
 using Elastos::Net::IURLConnection;

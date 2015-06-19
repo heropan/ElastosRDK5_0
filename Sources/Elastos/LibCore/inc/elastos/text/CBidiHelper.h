@@ -3,9 +3,8 @@
 #define __ELASTOS_TEXT_CBIDIHELPER_H__
 
 #include "_Elastos_Text_CBidiHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Text {

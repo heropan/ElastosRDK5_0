@@ -36,7 +36,7 @@ ECode BufferedReader::constructor(
 {
     VALIDATE_NOT_NULL(rin);
 
-    Reader::constructor(IObject::Probe(rin));
+    FAIL_RETURN(Reader::constructor(ISynchronize::Probe(rin)))
 
     if (size <= 0) {
 //      throw new IllegalArgumentException("size <= 0");

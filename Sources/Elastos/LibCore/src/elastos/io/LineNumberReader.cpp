@@ -93,7 +93,7 @@ ECode LineNumberReader::Read(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number)
-    *number = NULL;
+    *number = -1;
     VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
     Autolock lock(mLock);

@@ -5,7 +5,6 @@
 #include "_Elastos_Utility_Zip_CAdler32.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Utility {

@@ -3,7 +3,6 @@
 
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::Regex::IPattern;
 
 namespace Elastos {

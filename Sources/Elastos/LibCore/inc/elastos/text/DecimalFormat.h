@@ -1,8 +1,6 @@
-#ifndef __DECIMALFORMAT__
-#define __DECIMALFORMAT__
+#ifndef __ELASTOS_TEXT_DECIMALFORMAT__
+#define __ELASTOS_TEXT_DECIMALFORMAT__
 
-#include "Elastos.CoreLibrary_server.h"
-#include <elautoptr.h>
 #include "NumberFormat.h"
 
 using Libcore::ICU::INativeDecimalFormat;
@@ -248,4 +246,4 @@ private:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__DECIMALFORMAT__
+#endif //__ELASTOS_TEXT_DECIMALFORMAT__

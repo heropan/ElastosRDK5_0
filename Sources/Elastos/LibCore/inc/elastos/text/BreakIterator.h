@@ -1,11 +1,9 @@
 #ifndef __ELASTOS_TEXT_BREAKITERATOR_H__
 #define __ELASTOS_TEXT_BREAKITERATOR_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include <elastos/core/Object.h>
 
 using Libcore::ICU::INativeBreakIterator;
-using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 using Elastos::Text::ICharacterIterator;
 

@@ -2,7 +2,6 @@
 #ifndef __ELASTOS_NET_HTTPURLCONNECTION_H__
 #define __ELASTOS_NET_HTTPURLCONNECTION_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "URLConnection.h"
 
 namespace Elastos {

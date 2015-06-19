@@ -4,7 +4,6 @@
 
 #include "_Elastos_Sql_SQLite_CDBDump.h"
 #include "CShell.h"
-#include <coredef.h>
 
 namespace Elastos {
 namespace Sql {

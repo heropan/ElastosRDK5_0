@@ -5,7 +5,6 @@
 #include "_Elastos_Sql_CDataTruncation.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::ISerializable;
 
 namespace Elastos {

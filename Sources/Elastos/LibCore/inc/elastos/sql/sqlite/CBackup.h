@@ -5,7 +5,6 @@
 #include "_Elastos_Sql_SQLite_CBackup.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 
 namespace Elastos {

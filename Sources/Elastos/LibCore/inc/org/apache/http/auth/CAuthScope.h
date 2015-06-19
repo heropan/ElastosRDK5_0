@@ -5,7 +5,6 @@
 #include "_Org_Apache_Http_Auth_CAuthScope.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Org {
 namespace Apache {

@@ -3,9 +3,8 @@
 #define __LIBCORE_NET_URI_CURLUTILSHELPER_H__
 
 #include "_LIBCORE_NET_URI_CUrlUtilsHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace Net {

@@ -6,7 +6,6 @@
 #include "NativeZipStream.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::ICloseGuard;
 using Elastos::IO::IFileDescriptor;
 

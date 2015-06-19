@@ -4,7 +4,6 @@
 #include "Singleton.h"
 #include "_Libcore_IO_CAsynchronousCloseMonitor.h"
 
-using Elastos::Core::Singleton;
 using Elastos::IO::IFileDescriptor;
 
 namespace Libcore {

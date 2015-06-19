@@ -2,11 +2,6 @@
 #ifndef __X509CERTIFICATE_H__
 #define __X509CERTIFICATE_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
 #include "Certificate.h"
 
 using Elastos::Utility::IDate;

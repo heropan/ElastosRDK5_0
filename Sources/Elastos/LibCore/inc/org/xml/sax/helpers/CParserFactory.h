@@ -5,8 +5,6 @@
 #include "_Org_Xml_Sax_Helpers_CParserFactory.h"
 #include <elastos/core/Singleton.h>
 
-using Elastos::Core::Singleton;
-
 namespace Org {
 namespace Xml {
 namespace Sax {

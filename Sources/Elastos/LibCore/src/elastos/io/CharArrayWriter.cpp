@@ -45,7 +45,7 @@ ECode CharArrayWriter::constructor(
     if (mBuf == NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
-    mLock = mBufLock;
+    mLock = ISynchronize::Probe(mBufLock);
     return NOERROR;
 }
 

@@ -5,7 +5,6 @@
 #include "_Org_Apache_Http_Client_Protocol_CClientContextConfigurer.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::IList;
 using Org::Apache::Http::Auth::IAuthSchemeRegistry;
 using Org::Apache::Http::Client::ICookieStore;

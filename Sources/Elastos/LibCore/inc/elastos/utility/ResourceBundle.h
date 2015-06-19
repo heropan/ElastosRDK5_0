@@ -3,7 +3,6 @@
 
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IClassLoader;
 using Elastos::Utility::ILocale;
 

@@ -1,10 +1,8 @@
 #ifndef __UTILITY_MAPENTRY_H__
 #define __UTILITY_MAPENTRY_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 
 namespace Elastos {

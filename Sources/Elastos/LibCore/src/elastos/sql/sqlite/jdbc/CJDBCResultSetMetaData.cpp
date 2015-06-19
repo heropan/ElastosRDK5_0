@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CJDBCResultSetMetaData.h"
 #include "CJDBCResultSet.h"
 #include "CTableResultX.h"

@@ -5,8 +5,6 @@
 #include <elastos/core/Object.h>
 #include <elastos/core/NativeThread.h>
 
-using Elastos::Core::Object;
-
 namespace Elastos {
 namespace Core {
 

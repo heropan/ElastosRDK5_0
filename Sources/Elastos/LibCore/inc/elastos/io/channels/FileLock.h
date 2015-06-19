@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_IO_FILELOCK_H__
 #define __ELASTOS_IO_FILELOCK_H__
 
-#include <FileChannel.h>
+#include "FileChannel.h"
 
 using Elastos::IO::Channels::FileChannel;
 

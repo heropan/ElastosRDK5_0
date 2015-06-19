@@ -7,7 +7,6 @@
 #include <elastos.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IClassLoader;
 using Elastos::IO::IPrintStream;
 using Elastos::IO::IPrintWriter;

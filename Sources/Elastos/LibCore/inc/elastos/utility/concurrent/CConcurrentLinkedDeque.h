@@ -6,7 +6,6 @@
 #include "AbstractCollection.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::ISerializable;

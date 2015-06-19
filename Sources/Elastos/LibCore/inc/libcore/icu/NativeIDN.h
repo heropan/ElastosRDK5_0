@@ -3,8 +3,9 @@
 #define __LIBCORE_ICU_NATIVEIDN_H__
 
 #include <elastos.h>
-#include <coredef.h>
-#include "Elastos.CoreLibrary_server.h"
+#include <elatypes.h>
+
+using namespace Elastos;
 
 namespace Libcore {
 namespace ICU {

@@ -6,7 +6,6 @@
 
 using Elastos::Core::IComparable;
 using Elastos::Core::ICloneable;
-using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 using Elastos::IO::ISerializable;
 

@@ -4,7 +4,6 @@
 #include <Elastos.CoreLibrary_server.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace IO {

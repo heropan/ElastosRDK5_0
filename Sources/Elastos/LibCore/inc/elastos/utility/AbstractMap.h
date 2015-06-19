@@ -1,7 +1,6 @@
-#ifndef __UTILITY_ABSTRACTMAP_H__
-#define __UTILITY_ABSTRACTMAP_H__
+#ifndef __ELASTOS_UTILITY_ABSTRACTMAP_H__
+#define __ELASTOS_UTILITY_ABSTRACTMAP_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "AbstractSet.h"
 
 using Elastos::Utility::ICollection;
@@ -529,4 +528,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_ABSTRACTMAP_H__
+#endif // __ELASTOS_UTILITY_ABSTRACTMAP_H__

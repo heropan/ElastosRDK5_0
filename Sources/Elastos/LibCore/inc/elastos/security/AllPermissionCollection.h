@@ -3,12 +3,7 @@
 #define __ALLPERMISSIONCOLLECTION_H__
 
 #include "PermissionCollection.h"
-
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include "Object.h"
 
 using Elastos::Utility::IEnumeration;
 

@@ -6,7 +6,6 @@
 #include <elastos/HashMap.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IInteger32;
 using Elastos::Utility::HashMap;
 using Org::Apache::Http::Conn::Routing::IHttpRoute;

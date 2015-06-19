@@ -5,10 +5,8 @@
 #include <elastos.h>
 #include <eltypes.h>
 #include <stdio.h>
-#include "Elastos.CoreLibrary_server.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 
 class MyRunnable

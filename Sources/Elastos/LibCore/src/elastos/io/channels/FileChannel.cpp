@@ -1,5 +1,4 @@
 #include "FileChannel.h"
-#include <coredef.h>
 
 namespace Elastos {
 namespace IO {

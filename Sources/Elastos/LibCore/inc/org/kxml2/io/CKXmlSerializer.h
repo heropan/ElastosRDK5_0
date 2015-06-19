@@ -5,7 +5,6 @@
 #include "_Org_Kxml2_IO_CKXmlSerializer.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IBoolean;
 using Elastos::IO::IWriter;
 using Elastos::IO::IOutputStream;

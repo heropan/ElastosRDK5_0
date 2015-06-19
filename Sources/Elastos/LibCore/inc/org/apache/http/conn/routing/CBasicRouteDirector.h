@@ -5,7 +5,6 @@
 #include "_Org_Apache_Http_Conn_Routing_CBasicRouteDirector.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Org::Apache::Http::Params::IHttpParams;
 
 namespace Org {

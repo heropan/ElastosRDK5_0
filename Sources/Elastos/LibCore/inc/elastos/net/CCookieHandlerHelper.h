@@ -2,9 +2,8 @@
 #define __ELASTOS_NET_CCOOKIEHANDLERHELPER_H__
 
 #include "_ELASTOS_NET_CCookieHandlerHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {

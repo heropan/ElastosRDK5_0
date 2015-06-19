@@ -5,7 +5,6 @@
 #include <Org.Xml.Sax_server.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Org {
 namespace Xml {

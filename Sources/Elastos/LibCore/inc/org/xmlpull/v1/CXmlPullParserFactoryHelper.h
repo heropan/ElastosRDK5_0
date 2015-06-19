@@ -5,8 +5,6 @@
 #include "_Org_Xmlpull_V1_CXmlPullParserFactoryHelper.h"
 #include <elastos/core/Singleton.h>
 
-using Elastos::Core::Singleton;
-
 namespace Org {
 namespace Xmlpull {
 namespace V1 {

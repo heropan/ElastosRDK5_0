@@ -8,7 +8,6 @@
 using Elastos::Text::IAttributedCharacterIterator;;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::IParsePosition;
-using Elastos::Core::Object;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::IStringBuffer;
 using Elastos::Core::ICloneable;

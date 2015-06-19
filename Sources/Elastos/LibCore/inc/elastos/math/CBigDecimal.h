@@ -7,7 +7,6 @@
 #include <elastos/core/Object.h>
 #include <elstring.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::INumber;
 using Elastos::Core::IComparable;
 

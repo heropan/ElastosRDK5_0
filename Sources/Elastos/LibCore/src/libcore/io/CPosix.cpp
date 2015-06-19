@@ -49,7 +49,6 @@
 #include "LocalArray.h"
 #include <elastos/utility/etl/Vector.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::UniquePtr;
 using Elastos::IO::IBuffer;
 using Elastos::IO::CFileDescriptor;

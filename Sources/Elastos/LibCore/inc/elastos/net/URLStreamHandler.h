@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_URLSTREAMHANDLER_H__
 #define __ELASTOS_NET_URLSTREAMHANDLER_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
 
 extern "C" const InterfaceID EIID_URLStreamHandler;
 

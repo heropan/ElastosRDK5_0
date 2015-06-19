@@ -3,7 +3,6 @@
 
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::IRandom;
 using Elastos::Core::IComparable;
 using Elastos::IO::ISerializable;

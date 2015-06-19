@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 
 using Libcore::ICU::ICollationElementIteratorICU;
-using Elastos::Core::Object;
 using Elastos::Text::ICharacterIterator;
 
 namespace Elastos {

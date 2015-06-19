@@ -1,5 +1,4 @@
 #include "CharsetICU.h"
-#include <coredef.h>
 #include "CharsetEncoderICU.h"
 #include "CharsetDecoderICU.h"
 // #include "NativeConverter.h"

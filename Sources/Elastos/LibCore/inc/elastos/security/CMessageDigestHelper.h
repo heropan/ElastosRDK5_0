@@ -4,11 +4,7 @@
 
 #include "_CMessageDigestHelper.h"
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+
 
 namespace Elastos {
 namespace Security {

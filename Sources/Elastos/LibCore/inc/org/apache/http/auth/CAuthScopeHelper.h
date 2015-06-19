@@ -3,9 +3,8 @@
 #define __ORG_APACHE_HTTP_AUTH_CAUTHSCOPEHELPER_H_
 
 #include "_Org_Apache_Http_Auth_CAuthScopeHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 
 namespace Org {

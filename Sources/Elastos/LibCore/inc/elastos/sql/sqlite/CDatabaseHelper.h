@@ -5,7 +5,6 @@
 #include "_Elastos_Sql_SQLite_CDatabaseHelper.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {

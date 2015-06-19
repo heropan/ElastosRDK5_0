@@ -3,10 +3,9 @@
 #define __REGEX_CPATTERNHELPER_H__
 
 #include "_Elastos_Utility_Regex_CPatternHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {

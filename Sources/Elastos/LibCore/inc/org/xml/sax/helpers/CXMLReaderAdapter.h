@@ -5,7 +5,6 @@
 #include "_Org_Xml_Sax_Helpers_CXMLReaderAdapter.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 
 namespace Org {

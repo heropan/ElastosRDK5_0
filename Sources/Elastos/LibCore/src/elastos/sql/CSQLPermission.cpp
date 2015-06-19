@@ -1,5 +1,4 @@
 
-#include "coredef.h"
 #include "CSQLPermission.h"
 
 namespace Elastos {

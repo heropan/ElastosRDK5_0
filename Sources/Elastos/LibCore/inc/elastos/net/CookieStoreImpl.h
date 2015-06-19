@@ -2,12 +2,10 @@
 #ifndef __ELASTOS_NET_COOKIESTOREIMPL_H__
 #define __ELASTOS_NET_COOKIESTOREIMPL_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IList;

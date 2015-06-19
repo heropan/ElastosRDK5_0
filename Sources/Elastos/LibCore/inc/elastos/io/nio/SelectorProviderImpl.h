@@ -4,7 +4,6 @@
 
 #include "SelectorProvider.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::Channels::IDatagramChannel;
 using Elastos::IO::Channels::IPipe;
 using Elastos::IO::Channels::IServerSocketChannel;

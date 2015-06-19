@@ -6,7 +6,6 @@
 #include "AbstractQueuedSynchronizer.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::Concurrent::Locks::AbstractQueuedSynchronizer;
 
 namespace Elastos {

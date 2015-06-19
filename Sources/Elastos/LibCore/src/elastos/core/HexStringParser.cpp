@@ -4,12 +4,8 @@
 #include "StringBuilder.h"
 #include "StringToIntegral.h"
 #include "StringUtils.h"
-#ifdef ELASTOS_CORELIBRARY
 #include "Elastos.CoreLibrary_server.h"
 #include "CPatternHelper.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
 
 using Elastos::Core::Math;
 using Elastos::Utility::Regex::IMatcher;

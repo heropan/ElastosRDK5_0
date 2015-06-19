@@ -5,7 +5,6 @@
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::List;
 using Elastos::Sql::IResultSet;
 using Elastos::Sql::ISQLWarning;

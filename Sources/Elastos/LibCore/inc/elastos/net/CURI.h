@@ -8,7 +8,6 @@
 #include "UriCodec.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::Character;
 
 namespace Elastos {

@@ -7,7 +7,6 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::Etl::HashMap;

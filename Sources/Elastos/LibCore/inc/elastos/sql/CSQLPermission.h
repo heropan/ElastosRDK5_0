@@ -7,7 +7,6 @@
 //#include "BasicPermission.h"
 
 //TODO: temp.
-using Elastos::Core::Object;
 //using Elastos::Security::BasicPermission;
 using Elastos::Security::IPermission;
 

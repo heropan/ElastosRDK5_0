@@ -2,11 +2,8 @@
 #ifndef __CERTIFICATEX_H__
 #define __CERTIFICATEX_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+
+#include "Object.h"
 
 using Elastos::Security::IPublicKey;
 

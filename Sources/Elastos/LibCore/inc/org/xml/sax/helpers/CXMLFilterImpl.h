@@ -5,7 +5,6 @@
 #include "_Org_Xml_Sax_Helpers_CXMLFilterImpl.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Org {
 namespace Xml {

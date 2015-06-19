@@ -3,9 +3,8 @@
 #define __ORG_APACHE_HTTP_CONN_CMULTIHOMEPLAINSOCKETFACTORYHELPER_H__
 
 #include "_Org_Apache_Http_Conn_CMultihomePlainSocketFactoryHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Org {
 namespace Apache {

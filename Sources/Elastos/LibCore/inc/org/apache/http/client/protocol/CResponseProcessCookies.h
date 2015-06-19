@@ -5,7 +5,6 @@
 #include "_Org_Apache_Http_Client_Protocol_CResponseProcessCookies.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Org::Apache::Http::IHeaderIterator;
 using Org::Apache::Http::IHttpResponse;
 using Org::Apache::Http::IHttpResponseInterceptor;

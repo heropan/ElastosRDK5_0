@@ -2,7 +2,6 @@
 #ifndef __LIBCORE_NET_URI_FTPURLINPUTSTREAM_H__
 #define __LIBCORE_NET_URI_FTPURLINPUTSTREAM_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "InputStream.h"
 
 using Elastos::IO::InputStream;

@@ -5,7 +5,6 @@
 #include <elastos/core/Object.h>
 #include <pthread.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 //using Libcore::ICU::Transliterator;
 

@@ -41,7 +41,7 @@ ECode BufferedWriter::constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    FAIL_RETURN(Writer::constructor(IObject::Probe(wout)))
+    FAIL_RETURN(Writer::constructor(ISynchronize::Probe(wout)))
 
     mOut = wout;
     mBuf = ArrayOf<Char32>::Alloc(size);

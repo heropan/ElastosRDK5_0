@@ -18,7 +18,7 @@ FilterWriter::~FilterWriter()
 ECode FilterWriter::constructor(
     /* [in] */ IWriter* out)
 {
-    FAIL_RETURN(Writer::constructor(IObject::Probe(out)))
+    FAIL_RETURN(Writer::constructor(ISynchronize::Probe(out)))
 
     mOut = out;
 

@@ -5,8 +5,6 @@
 #include <elastos/core/Object.h>
 #include <spinlock.h>
 
-using Elastos::Core::Object;
-
 namespace Elastos {
 namespace Core {
 
@@ -30,6 +28,9 @@ protected:
 
 } // namespace Core
 } // namespace Elastos
+
+
+using Elastos::Core::Singleton;
 
 
 #endif //__ELASTOS_CORE_SINGLETON_H__

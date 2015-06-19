@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_TEXT_CHOICEFORMAT_H__
 #define __ELASTOS_TEXT_CHOICEFORMAT_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "NumberFormat.h"
 #include <elastos/utility/etl/List.h>
 

@@ -5,7 +5,6 @@
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructTimeval.h"
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

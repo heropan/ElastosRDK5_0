@@ -6,7 +6,6 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;

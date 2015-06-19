@@ -4,7 +4,6 @@
 #include "_Libcore_Net_CMimeUtils.h"
 #include "Singleton.h"
 
-using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace Net {

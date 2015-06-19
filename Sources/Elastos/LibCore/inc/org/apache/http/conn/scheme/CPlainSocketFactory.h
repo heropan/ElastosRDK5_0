@@ -5,7 +5,6 @@
 #include "_Org_Apache_Http_Conn_Scheme_CPlainSocketFactory.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
 using Elastos::Net::ISocket;
 using Org::Apache::Http::Params::IHttpParams;

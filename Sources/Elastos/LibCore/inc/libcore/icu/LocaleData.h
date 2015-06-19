@@ -1,13 +1,11 @@
 #ifndef __IO_LOCALEDATA_H__
 #define __IO_LOCALEDATA_H__
 
-#include <Elastos.CoreLibrary_server.h>
 #include <Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <Mutex.h>
 #include "CInteger32.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::Mutex;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;

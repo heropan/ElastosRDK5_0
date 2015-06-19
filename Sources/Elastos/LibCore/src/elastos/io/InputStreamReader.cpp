@@ -44,7 +44,7 @@ ECode InputStreamReader::constructor(
     /* [in] */ IInputStream *in,
     /* [in] */ const String &enc)
 {
-    FAIL_RETURN(Reader::constructor(IObject::Probe(in)))
+    FAIL_RETURN(Reader::constructor(ISynchronize::Probe(in)))
 
     if (enc.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
@@ -74,7 +74,7 @@ ECode InputStreamReader::constructor(
     /* [in] */ ICharsetDecoder* dec)
 {
     VALIDATE_NOT_NULL(dec)
-    FAIL_RETURN(Reader::constructor(IObject::Probe(in)))
+    FAIL_RETURN(Reader::constructor(ISynchronize::Probe(in)))
     Float fval;
     dec->AverageCharsPerByte(&fval);
     mIn = in;
@@ -87,7 +87,7 @@ ECode InputStreamReader::constructor(
     /* [in] */ IInputStream* in,
     /* [in] */ ICharset* charset)
 {
-    FAIL_RETURN(Reader::constructor(IObject::Probe(in)))
+    FAIL_RETURN(Reader::constructor(ISynchronize::Probe(in)))
 
     mIn = in;
     charset->NewDecoder((ICharsetDecoder**)&mDecoder);

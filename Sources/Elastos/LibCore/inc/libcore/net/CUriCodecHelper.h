@@ -2,9 +2,8 @@
 #define __LIBCORE_NET_URICODECHELPER_H__
 
 #include "_Libcore_Net_CUriCodecHelper.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 
-using Elastos::Core::Singleton;
 using Elastos::IO::Charset::ICharset;
 
 namespace Libcore {

@@ -3,11 +3,10 @@
 #define __REGEX_SPLITTER_H__
 
 #include "_Elastos_Utility_Regex_CSplitter.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Utility {

@@ -5,7 +5,6 @@
 #include "Object.h"
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IArrayOf;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::ILocale;

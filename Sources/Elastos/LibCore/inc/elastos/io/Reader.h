@@ -2,11 +2,7 @@
 #ifndef __ELASTOS_IO_READER_H__
 #define __ELASTOS_IO_READER_H__
 
-#include <elastos.h>
-#include "Elastos.CoreLibrary_server.h"
 #include <elastos/core/Object.h>
-
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace IO {
@@ -22,7 +18,7 @@ public:
     CARAPI constructor();
 
     CARAPI constructor(
-        /* [in] */ IObject* lock);
+        /* [in] */ ISynchronize* lock);
 
     /**
      * Closes this reader. Implementations of this method should free any
@@ -191,13 +187,13 @@ protected:
      *             if {@code lock} is {@code null}.
      */
     Reader(
-        /* [in] */ IObject* lock);
+        /* [in] */ ISynchronize* lock);
 
     virtual ~Reader();
 
 
 protected:
-    Object* mLock;
+    ISynchronize* mLock;
     Boolean mIsStrongLock;
 };
 

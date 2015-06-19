@@ -9,7 +9,6 @@
 #include "InetAddress.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;

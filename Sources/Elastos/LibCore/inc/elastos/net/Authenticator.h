@@ -2,10 +2,8 @@
 #ifndef __ELASTOS_NET_AUTHENTICATOR_H__
 #define __ELASTOS_NET_AUTHENTICATOR_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Net {

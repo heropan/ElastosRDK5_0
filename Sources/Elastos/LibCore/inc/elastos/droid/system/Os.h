@@ -1,9 +1,8 @@
-#ifndef __OS_H__
-#define __OS_H__
+#ifndef __ELASTOS_DROID_SYSTEM_OS_H__
+#define __ELASTOS_DROID_SYSTEM_OS_H__
 
 #include "core/Object.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IByteBuffer;
 using Elastos::Net::IInetAddress;
@@ -588,4 +587,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif
+#endif //__ELASTOS_DROID_SYSTEM_OS_H__

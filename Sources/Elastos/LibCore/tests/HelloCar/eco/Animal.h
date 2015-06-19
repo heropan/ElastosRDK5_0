@@ -5,7 +5,6 @@
 #include <Elastos.HelloCar_server.h>    // include 模块头文件，文件名格式：模块名称_server.h
 #include <elastos/core/Object.h>        // include Object 基类
 
-using Elastos::Core::Object;
 using Elastos::Core::IComparable;
 
 namespace Elastos {

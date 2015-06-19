@@ -4,7 +4,6 @@
 #include "Singleton.h"
 #include "_Libcore_Utility_COffsetIntervalHelper.h"
 
-using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace Utility {

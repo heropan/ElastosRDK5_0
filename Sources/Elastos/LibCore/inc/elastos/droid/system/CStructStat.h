@@ -5,7 +5,6 @@
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructStat.h"
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

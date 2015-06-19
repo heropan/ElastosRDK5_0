@@ -1,10 +1,8 @@
 #ifndef __ELASTOS_TEXT_COLLATOR_H__
 #define __ELASTOS_TEXT_COLLATOR_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 using Libcore::ICU::IRuleBasedCollatorICU;
 

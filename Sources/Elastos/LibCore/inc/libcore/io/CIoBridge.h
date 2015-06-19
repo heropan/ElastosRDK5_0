@@ -2,7 +2,7 @@
 #ifndef __CIOBRIDGE_H__
 #define __CIOBRIDGE_H__
 
-#include "core/Singleton.h"
+#include "Singleton.h"
 #include "_Libcore_IO_CIoBridge.h"
 
 using Elastos::IO::IByteBuffer;
@@ -10,7 +10,6 @@ using Elastos::IO::IFileDescriptor;
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IDatagramPacket;
 using Elastos::Net::IInetSocketAddress;
-using Elastos::Core::Singleton;
 
 namespace Libcore {
 namespace IO {

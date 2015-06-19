@@ -3,6 +3,8 @@
 #include "ElStringByteSink.h"
 #include <unicode/uidna.h>
 #include <unicode/unistr.h>
+#include "coredef.h"
+#include "Elastos.CoreLibrary_server.h"
 
 namespace Libcore {
 namespace ICU {

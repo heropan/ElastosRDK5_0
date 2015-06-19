@@ -2,11 +2,7 @@
 #ifndef __CERTSTORE_H__
 #define __CERTSTORE_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+
 
 using Elastos::Security::IProvider;
 using Elastos::Utility::ICollection;

@@ -2,10 +2,9 @@
 #define __ELASTOS_NET_CURLENCODER_H__
 
 #include "_ELASTOS_NET_CURLEncoder.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
 #include "UriCodec.h"
 
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Net {

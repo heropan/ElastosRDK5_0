@@ -4,7 +4,6 @@
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructUcred.h"
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

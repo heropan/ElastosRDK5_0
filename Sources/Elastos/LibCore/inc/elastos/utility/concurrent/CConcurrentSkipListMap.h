@@ -6,7 +6,6 @@
 #include "AbstractMap.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::IComparable;
 using Elastos::Core::IComparator;
 using Elastos::Utility::IRandom;

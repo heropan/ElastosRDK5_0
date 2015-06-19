@@ -2,11 +2,7 @@
 #ifndef __CERTIFICATE_H__
 #define __CERTIFICATE_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::IO::IInputStream;

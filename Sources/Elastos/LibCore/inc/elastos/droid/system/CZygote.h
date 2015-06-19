@@ -1,11 +1,9 @@
 
-#ifndef __CZYGOTE_H__
-#define __CZYGOTE_H__
+#ifndef __ELASTOS_DROID_SYSTEM_CZYGOTE_H__
+#define __ELASTOS_DROID_SYSTEM_CZYGOTE_H__
 
 #include "_Elastos_Droid_System_CZygote.h"
 #include "core/Singleton.h"
-
-using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
@@ -131,4 +129,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CZYGOTE_H__
+#endif //__ELASTOS_DROID_SYSTEM_CZYGOTE_H__

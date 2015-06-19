@@ -2,11 +2,7 @@
 #ifndef __KEYSTORESPI_H__
 #define __KEYSTORESPI_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;

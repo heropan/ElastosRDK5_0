@@ -2,11 +2,7 @@
 #ifndef __PERMISSIONCOLLECTION_H__
 #define __PERMISSIONCOLLECTION_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+
 
 using Elastos::Utility::IEnumeration;
 

@@ -5,7 +5,6 @@
 #include <Object.h>
 #include "_Libcore_ICU_CNativePluralRules.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 
 namespace Libcore {

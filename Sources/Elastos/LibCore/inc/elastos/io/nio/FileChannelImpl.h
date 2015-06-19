@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_IO_FILECHANNELIMPL_H__
 #define __ELASTOS_IO_FILECHANNELIMPL_H__
 
-#include "Elastos.CoreLibrary_server.h"
 #include "FileChannel.h"
 
 using Elastos::Core::IComparator;

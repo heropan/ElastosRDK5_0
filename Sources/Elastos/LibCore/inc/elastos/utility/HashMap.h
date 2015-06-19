@@ -4,7 +4,6 @@
 #include "AbstractMap.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 using Elastos::IO::ISerializable;
 using Elastos::IO::IObjectInputStream;

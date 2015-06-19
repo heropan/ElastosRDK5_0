@@ -4,7 +4,6 @@
 
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::IMap;
 using Libcore::Utility::IBasicLruCache;
 

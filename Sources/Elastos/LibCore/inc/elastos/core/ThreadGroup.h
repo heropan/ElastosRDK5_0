@@ -5,7 +5,6 @@
 #include "Mutex.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Core {

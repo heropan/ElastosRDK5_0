@@ -5,16 +5,11 @@
 #include "_CSecurity.h"
 #include "elastos/Object.h"
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+
 
 using Elastos::Utility::IMap;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IProperties;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Security {

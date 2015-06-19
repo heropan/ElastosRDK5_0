@@ -5,7 +5,6 @@
 #include "_Elastos_Sql_SQLite_JDBC_CJDBCConnection.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::IMap;
 using Elastos::Utility::IProperties;
 using Elastos::Sql::ISQLWarning;

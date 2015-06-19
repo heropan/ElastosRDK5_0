@@ -6,7 +6,6 @@
 #include <elastos/utility/etl/Vector.h>
 
 using Elastos::Utility::Etl::Vector;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Sql {

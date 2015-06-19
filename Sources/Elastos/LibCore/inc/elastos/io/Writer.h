@@ -4,7 +4,6 @@
 
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IAppendable;
 using Elastos::Core::ISynchronize;
@@ -22,8 +21,10 @@ class Writer
 public:
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor();
+
     CARAPI constructor(
-        /* [in] */ IObject* lock);
+        /* [in] */ ISynchronize* lock);
 
     /**
      * Closes this writer. Implementations of this method should free any
@@ -200,12 +201,12 @@ protected:
      *             if {@code lock} is {@code null}.
      */
     Writer(
-        /* [in] */ IObject* lock);
+        /* [in] */ ISynchronize* lock);
 
     virtual ~Writer();
 
 protected:
-    IObject* mLock;
+    ISynchronize* mLock;
     Boolean mIsStrongLock;
 };
 

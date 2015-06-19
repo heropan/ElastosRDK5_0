@@ -5,7 +5,6 @@
 #include "_Elastos_IO_Channels_CChannels.h"
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::Charset::ICharsetEncoder;
 using Elastos::IO::Charset::ICharsetDecoder;
 
