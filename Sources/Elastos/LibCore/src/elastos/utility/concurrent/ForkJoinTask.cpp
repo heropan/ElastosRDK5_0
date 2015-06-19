@@ -1,13 +1,15 @@
 
 #include "ForkJoinTask.h"
 #include <Thread.h>
-#include "CForkJoinWorkerThread.h"
+//#include "CForkJoinWorkerThread.h"
 #include "CSystem.h"
 
+using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::ISystem;
 using Elastos::Core::Thread;
 using Elastos::Core::IThread;
-using Elastos::Utility::Concurrent::CForkJoinWorkerThread;
+//using Elastos::Utility::Concurrent::CForkJoinWorkerThread;
+using Elastos::Utility::Concurrent::Locks::ILock;
 
 namespace Elastos {
 namespace Utility {
@@ -177,7 +179,7 @@ Int32 ForkJoinTask::DoInvoke()
         return DoJoin();
 }
 
-AutoPtr<ArrayOf<ForkJoinTask::ExceptionNode*> > ForkJoinTask::sExceptionTable;
+//AutoPtr<ArrayOf<ForkJoinTask::ExceptionNode*> > ForkJoinTask::sExceptionTable;
 AutoPtr<IReentrantLock> ForkJoinTask::sExceptionTableLock;
 //AutoPtr<ReferenceQueue> ForkJoinTask::sExceptionTableRefQueue;
 
@@ -209,10 +211,10 @@ Int32 ForkJoinTask::SetExceptionalCompletion(
     Int32 h;
     sys->IdentityHashCode(THIS_PROBE(IInterface), &h);
     AutoPtr<IReentrantLock> lock = sExceptionTableLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     ExpungeStaleExceptions();
-    AutoPtr<ArrayOf<ExceptionNode*> > t = sExceptionTable;
-    Int32 i = h & (t->GetLength() - 1);
+    // AutoPtr<ArrayOf<ExceptionNode*> > t = sExceptionTable;
+    // Int32 i = h & (t->GetLength() - 1);
     // for (AutoPtr<ExceptionNode> e = (*t)[i]; ; e = e->mNext) {
     //     if (e == NULL) {
     //         (*t)[i] = new ExceptionNode(this, ex, (*t)[i]);
@@ -221,7 +223,7 @@ Int32 ForkJoinTask::SetExceptionalCompletion(
     //     if (e->Get() == this) // already present
     //         break;
     // }
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     return SetCompletion(EXCEPTIONAL);
 }
 
@@ -232,9 +234,9 @@ void ForkJoinTask::ClearExceptionalCompletion()
     Int32 h;
     sys->IdentityHashCode(THIS_PROBE(IInterface), &h);
     AutoPtr<IReentrantLock> lock = sExceptionTableLock;
-    lock->Lock();
-    AutoPtr<ArrayOf<ExceptionNode*> > t = sExceptionTable;
-    Int32 i = h & (t->GetLength() - 1);
+    (ILock::Probe(lock))->Lock();
+    // AutoPtr<ArrayOf<ExceptionNode*> > t = sExceptionTable;
+    // Int32 i = h & (t->GetLength() - 1);
     // AutoPtr<ExceptionNode> e = (*t)[i];
     // AutoPtr<ExceptionNode> pred = NULL;
     // while (e != NULL) {
@@ -251,7 +253,7 @@ void ForkJoinTask::ClearExceptionalCompletion()
     // }
     ExpungeStaleExceptions();
     mStatus = 0;
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
 }
 
 AutoPtr<IThrowable> ForkJoinTask::GetThrowableException()
@@ -331,9 +333,9 @@ void ForkJoinTask::HelpExpungeStaleExceptions()
 {
     AutoPtr<IReentrantLock> lock = sExceptionTableLock;
     Boolean b = FALSE;
-    if ((lock->TryLock(&b), b)) {
+    if (((ILock::Probe(lock))->TryLock(&b), b)) {
         ExpungeStaleExceptions();
-        lock->UnLock();
+        (ILock::Probe(lock))->UnLock();
     }
 }
 
@@ -511,8 +513,8 @@ ECode ForkJoinTask::Get(
             if (completed)
                 SetCompletion(NORMAL);
             else if (mStatus >= 0 && nanos > 0) {
-                AutoPtr<CForkJoinWorkerThread> cw = (CForkJoinWorkerThread*)w.Get();
-                cw->mPool->TimedAwaitJoin(this, nanos);
+                // AutoPtr<CForkJoinWorkerThread> cw = (CForkJoinWorkerThread*)w.Get();
+                // cw->mPool->TimedAwaitJoin(this, nanos);
             }
         }
     }
@@ -600,7 +602,7 @@ void ForkJoinTask::InvokeAll(
         if (t != NULL) {
             if (ex != NULL) {
                 Boolean b = FALSE;
-                t->Cancel(FALSE, &b);
+                (IFuture::Probe(t))->Cancel(FALSE, &b);
             }
             else if (ct->DoJoin() < NORMAL)
                 t->GetException((IThrowable**)&ex);
@@ -625,11 +627,12 @@ AutoPtr<ICollection> ForkJoinTask::InvokeAll(
     AutoPtr<IList> ts = (IList*)tasks->Probe(EIID_IList);
     AutoPtr<IThrowable> ex;
     Int32 last = 0;
-    ts->GetSize(&last);
+    (ICollection::Probe(ts))->GetSize(&last);
     last -= 1;
     for (Int32 i = last; i >= 0; --i) {
-        AutoPtr<IForkJoinTask> t;
-        ts->Get(i, (IForkJoinTask**)&t);
+        AutoPtr<IInterface> p;
+        ts->Get(i, (IInterface**)&p);
+        AutoPtr<IForkJoinTask> t = IForkJoinTask::Probe(p);
         AutoPtr<ForkJoinTask> ct = (ForkJoinTask*)t.Get();
         if (t == NULL) {
             // if (ex == null)
@@ -643,13 +646,14 @@ AutoPtr<ICollection> ForkJoinTask::InvokeAll(
             t->GetException((IThrowable**)&ex);
     }
     for (Int32 i = 1; i <= last; ++i) {
-        AutoPtr<IForkJoinTask> t;
-        ts->Get(i, (IForkJoinTask**)&t);
+        AutoPtr<IInterface> p;
+        ts->Get(i, (IInterface**)&p);
+        AutoPtr<IForkJoinTask> t = IForkJoinTask::Probe(p);
         AutoPtr<ForkJoinTask> ct = (ForkJoinTask*)t.Get();
         if (t != NULL) {
             if (ex != NULL) {
                 Boolean b = FALSE;
-                t->Cancel(FALSE, &b);
+                (IFuture::Probe(t))->Cancel(FALSE, &b);
             }
             else if (ct->DoJoin() < NORMAL)
                 t->GetException((IThrowable**)&ex);
@@ -673,8 +677,8 @@ AutoPtr<IForkJoinPool> ForkJoinTask::GetPool()
     AutoPtr<IForkJoinWorkerThread> ft = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
     AutoPtr<IForkJoinPool> p;
     if (ft != NULL) {
-        AutoPtr<CForkJoinWorkerThread> cft = (CForkJoinWorkerThread*)ft.Get();
-        p = cft->mPool;
+        // AutoPtr<CForkJoinWorkerThread> cft = (CForkJoinWorkerThread*)ft.Get();
+        // p = cft->mPool;
     }
     else
         p = NULL;

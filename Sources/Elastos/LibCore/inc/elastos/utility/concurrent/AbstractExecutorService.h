@@ -2,6 +2,9 @@
 #ifndef __ELASTOS_UTILITY_ABSTRACTEXECUTORSERVICE_H__
 #define __ELASTOS_UTILITY_ABSTRACTEXECUTORSERVICE_H__
 
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 
 namespace Elastos {

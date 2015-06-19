@@ -1578,9 +1578,9 @@ module
     //     interface ICompletionService;
     // }
 
-    // singleton class CExecutors {
-    //     interface IExecutors;
-    // }
+    singleton class CExecutors {
+        interface IExecutors;
+    }
 
     // class CFutureTask {
     //     constructor(
