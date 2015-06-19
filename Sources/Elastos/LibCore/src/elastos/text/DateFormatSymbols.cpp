@@ -6,6 +6,7 @@
 // #include "CLocaleDataHelper.h"
 // #include "CICUHelper.h"
 // #include "TimeZones.h"
+#include "Autolock.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
@@ -33,7 +34,7 @@ DateFormatSymbols::~DateFormatSymbols()
 
 AutoPtr<ArrayOf<IArrayOf*> > DateFormatSymbols::InternalZoneStrings()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     // if (mZoneStrings == NULL) {
     //     AutoPtr< ArrayOf<IArrayOf*> > result;
     //     assert(0 && "TODO");

@@ -2,6 +2,7 @@
 #include "CFloat.h"
 #include "StringBuilder.h"
 #include "HashTable.h"
+#include "Autolock.h"
 
 using Elastos::Core::IFloat;
 using Elastos::Core::CFloat;
@@ -711,7 +712,7 @@ ECode HashTable::_EntrySet::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    Object::Autolock lock(mHost);
+    Autolock lock(mHost);
     return AbstractSet::RemoveAll(collection, value);
 }
 
@@ -719,7 +720,7 @@ ECode HashTable::_EntrySet::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    Object::Autolock lock(mHost);
+    Autolock lock(mHost);
     return AbstractSet::RetainAll(collection, value);
 }
 
@@ -727,7 +728,7 @@ ECode HashTable::_EntrySet::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* value)
 {
-    Object::Autolock lock(mHost);
+    Autolock lock(mHost);
     return AbstractSet::ContainsAll(collection, value);
 }
 
@@ -735,7 +736,7 @@ ECode HashTable::_EntrySet::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* value)
 {
-    Object::Autolock lock(mHost);
+    Autolock lock(mHost);
     return AbstractSet::Equals(object, value);
 }
 
@@ -748,14 +749,14 @@ ECode HashTable::_EntrySet::GetHashCode(
 ECode HashTable::_EntrySet::ToString(
     /* [out] */ String* str)
 {
-    Object::Autolock lock(mHost);
+    Autolock lock(mHost);
     return AbstractSet::ToString(str);
 }
 
 ECode HashTable::_EntrySet::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
-    Object::Autolock lock(mHost);
+    Autolock lock(mHost);
     return AbstractSet::ToArray(array);
 }
 
@@ -763,7 +764,7 @@ ECode HashTable::_EntrySet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    Object::Autolock lock(mHost);
+    Autolock lock(mHost);
     return AbstractSet::ToArray(contents, outArray);
 }
 

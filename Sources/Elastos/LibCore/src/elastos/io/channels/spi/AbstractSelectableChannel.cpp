@@ -1,5 +1,6 @@
 #include "AbstractSelectableChannel.h"
 #include "AbstractSelector.h"
+#include "Autolock.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::Thread;
@@ -38,7 +39,7 @@ ECode AbstractSelectableChannel::IsRegistered(
     /* [in] */ Boolean* isRegister)
 {
     VALIDATE_NOT_NULL(isRegister);
-    Object::Autolock lock(mBlockingLock);
+    Autolock lock(mBlockingLock);
     *isRegister = !mKeyList.IsEmpty();
     return NOERROR;
 }
@@ -50,7 +51,7 @@ ECode AbstractSelectableChannel::KeyFor(
     VALIDATE_NOT_NULL(key);
     *key = NULL;
 
-    Object::Autolock lock(mBlockingLock);
+    Autolock lock(mBlockingLock);
     ISelectionKey* selKey;
     AutoPtr<ISelector> sel;
     List<AutoPtr<ISelectionKey> >::Iterator it = mKeyList.Begin();
@@ -93,7 +94,7 @@ ECode AbstractSelectableChannel::Register(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Object::Autolock lock(mBlockingLock);
+    Autolock lock(mBlockingLock);
     ECode ec = NOERROR;
     if (mIsBlocking) {
         return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
@@ -132,7 +133,7 @@ ECode AbstractSelectableChannel::Register(
 ECode AbstractSelectableChannel::IsBlocking(
     /* out*/ Boolean* isBlocking)
 {
-    Object::Autolock lock(mBlockingLock);
+    Autolock lock(mBlockingLock);
     *isBlocking = mIsBlocking;
     return NOERROR;
 }
@@ -158,7 +159,7 @@ ECode AbstractSelectableChannel::ConfigureBlocking(
         return E_CLOSED_CHANNEL_EXCEPTION;
     }
 
-    Object::Autolock lock(mBlockingLock);
+    Autolock lock(mBlockingLock);
 
     if (mIsBlocking == blockingMode) {
         *channel = THIS_PROBE(ISelectableChannel);
@@ -181,14 +182,14 @@ ECode AbstractSelectableChannel::ConfigureBlocking(
 ECode AbstractSelectableChannel::Deregister(
    /* [in] */ ISelectionKey* key)
 {
-    Object::Autolock lock(mBlockingLock);
+    Autolock lock(mBlockingLock);
     mKeyList.Remove(key);
     return NOERROR;
 }
 
 ECode AbstractSelectableChannel::ImplCloseChannel()
 {
-    Object::Autolock lock(mBlockingLock);
+    Autolock lock(mBlockingLock);
 
     ImplCloseSelectableChannel();
 
@@ -205,7 +206,7 @@ ECode AbstractSelectableChannel::ImplCloseChannel()
 
 Boolean AbstractSelectableChannel::ContainsValidKeys()
 {
-    Object::Autolock lock(mBlockingLock);
+    Autolock lock(mBlockingLock);
 
     Boolean bval;
     ISelectionKey* key;

@@ -2,11 +2,9 @@
 #ifndef __ELASTOS_CORE_AUTOLOCK_H__
 #define __ELASTOS_CORE_AUTOLOCK_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include <elastos/core/Object.h>
+
+using Elastos::Core::EIID_ISynchronize;
 
 namespace Elastos {
 namespace Core {
@@ -15,25 +13,85 @@ class Autolock
 {
 public:
     Autolock(
-        /* [in] */ IInterface* obj)
+        /* [in] */ ISynchronize * obj)
+        : mLocked(TRUE)
     {
         assert(obj != NULL);
-        mSyncObj = ISynchronize::Probe(obj);
+        mSyncObj = obj;
+        ASSERT_SUCCEEDED(mSyncObj->Lock());
+    }
+
+    Autolock(
+        /* [in] */ IInterface * obj)
+        : mLocked(TRUE)
+    {
+        assert(obj != NULL);
+        mSyncObj = (ISynchronize *)obj->Probe(EIID_ISynchronize);
         assert(mSyncObj != NULL);
-        assert(SUCCEEDED(mSyncObj->Lock()));
+        ASSERT_SUCCEEDED(mSyncObj->Lock());
+    }
+
+    Autolock(
+        /* [in] */ IObject * obj)
+        : mLocked(TRUE)
+    {
+        assert(obj != NULL);
+        mSyncObj = (ISynchronize *)obj->Probe(EIID_ISynchronize);
+        assert(mSyncObj != NULL);
+        ASSERT_SUCCEEDED(mSyncObj->Lock());
+    }
+
+    Autolock(
+        /* [in] */ Object * obj)
+        : mLocked(TRUE)
+    {
+        mSyncObj = (ISynchronize *)obj->Probe(EIID_ISynchronize);
+        assert(mSyncObj != NULL);
+        ASSERT_SUCCEEDED(mSyncObj->Lock());
+    }
+
+    Autolock(
+        /* [in] */ Object & obj)
+        : mLocked(TRUE)
+    {
+        mSyncObj = (ISynchronize *)obj.Probe(EIID_ISynchronize);
+        assert(mSyncObj != NULL);
+        ASSERT_SUCCEEDED(mSyncObj->Lock());
     }
 
     ~Autolock()
     {
         assert(mSyncObj != NULL);
-        assert(SUCCEEDED(mSyncObj->Unlock()));
+        ASSERT_SUCCEEDED(mSyncObj->Unlock());
+    }
+
+    // report the state of locking when used as a boolean
+    inline operator Boolean () const
+    {
+        return mLocked;
+    }
+
+    // unlock
+    inline void SetUnlock()
+    {
+        mLocked = FALSE;
     }
 
 private:
+    Autolock(const Autolock&);
+
+private:
     AutoPtr<ISynchronize> mSyncObj;
+    Boolean mLocked;
 };
 
 } // namespace Core
 } // namespace Elastos
+
+#ifndef synchronized
+#define synchronized(obj)  for(Elastos::Core::Autolock obj##_lock(obj); obj##_lock; obj##_lock.SetUnlock())
+#endif
+
+using Elastos::Core::Autolock;
 
 #endif //__ELASTOS_CORE_AUTOLOCK_H__

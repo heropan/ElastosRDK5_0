@@ -22,6 +22,4 @@ module
     const E_SOCKET_CLOSE_EXCEPTION                          = 0xAB0D0000;
     const E_MALFORMED_REPLY_EXCEPTION                       = 0xAB0E0000;
     const E_INVALID_SOCKET_EXCEPTION                        = 0xAB0F0000;
-    const E_ASSERTION_ERROR_EXCEPTION                       = 0xAB0F0001;
-    const E_ILLEGAL_ACCESS_ERROR_EXCEPTION                  = 0xAB0F0002;
 }

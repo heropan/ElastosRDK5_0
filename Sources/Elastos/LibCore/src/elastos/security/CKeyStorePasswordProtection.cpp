@@ -11,7 +11,7 @@ CKeyStorePasswordProtection::CKeyStorePasswordProtection()
 ECode CKeyStorePasswordProtection::GetPassword(
     /* [out, callee] */ ArrayOf<Char32> **pwd)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     VALIDATE_NOT_NULL(pwd)
     if (mIsDestroyed) {
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -23,7 +23,7 @@ ECode CKeyStorePasswordProtection::GetPassword(
 
 ECode CKeyStorePasswordProtection::Destroy()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     if (mPassword) {
         mPassword = NULL;
     }
@@ -33,7 +33,7 @@ ECode CKeyStorePasswordProtection::Destroy()
 ECode CKeyStorePasswordProtection::IsDestroyed(
     /* [out] */ Boolean *isDestroyed)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     VALIDATE_NOT_NULL(isDestroyed)
     *isDestroyed = mIsDestroyed;
     return NOERROR;

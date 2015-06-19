@@ -4,9 +4,10 @@
 #include "BitLevel.h"
 #include "Logical.h"
 #include "Primality.h"
-#include <elastos/core/Math.h>
-#include <elastos/core/Character.h>
-#include <elastos/core/StringUtils.h>
+#include "Math.h"
+#include "Character.h"
+#include "StringUtils.h"
+#include "Autolock.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::Character;

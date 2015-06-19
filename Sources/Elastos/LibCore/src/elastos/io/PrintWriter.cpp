@@ -9,6 +9,7 @@
 //#include "CFormatter.h"
 #include "CSystem.h"
 #include "utility/logging/Slogger.h"
+#include "Autolock.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -144,7 +145,7 @@ ECode PrintWriter::CheckError(
 
 ECode PrintWriter::ClearError()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     mIoError = FALSE;
 
     return NOERROR;
@@ -152,7 +153,7 @@ ECode PrintWriter::ClearError()
 
 ECode PrintWriter::Close()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     if (mOut != NULL) {
         if (FAILED(ICloseable::Probe(mOut)->Close())) {
             SetError();
@@ -165,7 +166,7 @@ ECode PrintWriter::Close()
 
 ECode PrintWriter::Flush()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     if (mOut != NULL) {
         if (FAILED(IFlushable::Probe(mOut)->Flush())) {
             SetError();
@@ -284,7 +285,7 @@ ECode PrintWriter::Print(
 
 ECode PrintWriter::Println()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     AutoPtr<ISystem> system;
 #ifdef ELASTOS_CORELIBRARY
@@ -362,7 +363,7 @@ ECode PrintWriter::Println(
 ECode PrintWriter::Println(
     /* [in] */ const String& str)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     FAIL_RETURN(Print(str))
     FAIL_RETURN(Println())
@@ -378,7 +379,7 @@ ECode PrintWriter::Println(
 
 void PrintWriter::SetError()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     mIoError = TRUE;
 }
 
@@ -409,7 +410,7 @@ ECode PrintWriter::DoWrite(
     /* [in] */ Int32 count,
     /* [in] */ ArrayOf<Char32>* buf)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     if (mOut != NULL) {
 #ifdef DEBUG

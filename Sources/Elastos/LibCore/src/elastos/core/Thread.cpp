@@ -1,10 +1,10 @@
 
 #include "Thread.h"
 #include "ThreadGroup.h"
-#include <elastos/core/Math.h>
-// #ifdef ELASTOS_CORELIBRARY
-// #include "CSystem.h"
-// #endif
+#include "Math.h"
+#include "Autolock.h"
+#include "CSystem.h"
+
 
 // using Elastos::Core::ISystem;
 // using Elastos::Core::CSystem;
@@ -169,6 +169,11 @@ ECode Thread::Create(
     /* [in] */ const String& threadName,
     /* [in] */ Int64 stackSize)
 {
+    Object obj;
+    synchronized(obj) {
+
+    }
+
     AutoPtr<IThreadGroup> group = _group;
     AutoPtr<IThread> currentThread = Thread::GetCurrentThread();
     if (group == NULL) {
@@ -503,7 +508,7 @@ ECode Thread::Join()
     //     return;
     // }
 
-    Object::Autolock lock(this);
+    Autolock lock(this);
     Boolean isAlive;
     IsAlive(&isAlive);
     while (isAlive) {
@@ -540,7 +545,7 @@ ECode Thread::Join(
     //     return;
     // }
 
-    Object::Autolock lock(this);
+    Autolock lock(this);
     Boolean isAlive;
     IsAlive(&isAlive);
     if (!isAlive) {
@@ -736,7 +741,7 @@ ECode Thread::SetUncaughtExceptionHandler(
 
 ECode Thread::Start()
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     if (mHasBeenStarted) {
         // throw new IllegalThreadStateException("Thread already started."); // TODO Externalize?
@@ -830,7 +835,7 @@ ECode Thread::Unpark()
     }
 
     {
-        Object::Autolock lock(this);
+        Autolock lock(this);
 
         switch (mParkState) {
             case ParkState::PREEMPTIVELY_UNPARKED: {
@@ -868,7 +873,7 @@ ECode Thread::ParkFor(
     }
 
     {
-        Object::Autolock lock(this);
+        Autolock lock(this);
 
         switch (mParkState) {
             case ParkState::PREEMPTIVELY_UNPARKED: {
@@ -929,7 +934,7 @@ ECode Thread::ParkUntil(
     }
 
     {
-        Object::Autolock lock(this);
+        Autolock lock(this);
 
         /*
          * Note: This conflates the two time bases of "wall clock"

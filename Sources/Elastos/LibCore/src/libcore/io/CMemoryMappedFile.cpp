@@ -4,6 +4,7 @@
 #include "nio/CByteOrderHelper.h"
 #include "NioBufferIterator.h"
 #include "CLibcore.h"
+#include "Autolock.h"
 
 using Elastos::IO::CByteOrderHelper;
 using Elastos::IO::IByteOrderHelper;

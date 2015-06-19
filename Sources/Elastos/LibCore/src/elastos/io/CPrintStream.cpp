@@ -7,6 +7,7 @@
 //#include "CFormatter.h"
 #include "Character.h"
 #include "StringUtils.h"
+#include "Autolock.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::StringUtils;
@@ -387,7 +388,7 @@ ECode CPrintStream::SetError()
 ECode CPrintStream::Write(
     /* [in] */ Int32 oneChar32)
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     if (mOut == NULL) {
         SetError();
@@ -422,7 +423,7 @@ ECode CPrintStream::Write(
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     if (mOut == NULL) {
         SetError();

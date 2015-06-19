@@ -1,6 +1,7 @@
 #include "CStrictLineReader.h"
 #include "charset/Charset.h"
-#include "core/StringUtils.h"
+#include "StringUtils.h"
+#include "Autolock.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::Charset::Charset;

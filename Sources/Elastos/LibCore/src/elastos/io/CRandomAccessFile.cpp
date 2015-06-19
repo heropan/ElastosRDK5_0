@@ -11,6 +11,7 @@
 #include "CLibcore.h"
 #include "CFileDescriptor.h"
 //#include "CModifiedUtf8.h"
+#include "Autolock.h"
 
 using Elastos::Droid::System::OsConstants;
 using Elastos::Droid::System::IStructStat;
@@ -118,7 +119,7 @@ ECode CRandomAccessFile::constructor(
 ECode CRandomAccessFile::Close()
 {
     // guard.close();
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     Boolean isflag(FALSE);
     if (mChannel != NULL && (IChannel::Probe(mChannel)->IsOpen(&isflag) , isflag)) {
@@ -135,7 +136,7 @@ ECode CRandomAccessFile::GetChannel(
     /* [out] */ IFileChannel **channel)
 {
     VALIDATE_NOT_NULL(channel)
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     // BEGIN android-added
     if(mChannel == NULL) {

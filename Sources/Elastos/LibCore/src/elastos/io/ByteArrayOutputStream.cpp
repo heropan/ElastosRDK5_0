@@ -1,5 +1,6 @@
 
 #include "ByteArrayOutputStream.h"
+#include "Autolock.h"
 
 namespace Elastos {
 namespace IO {
@@ -64,7 +65,7 @@ ECode ByteArrayOutputStream::Expand(
 
 ECode ByteArrayOutputStream::Reset()
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     mCount = 0;
     return NOERROR;
@@ -84,7 +85,7 @@ ECode ByteArrayOutputStream::ToByteArray(
 {
     VALIDATE_NOT_NULL(byteArray)
 
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     AutoPtr< ArrayOf<Byte> > newArray = ArrayOf<Byte>::Alloc(mCount);
     newArray->Copy(mBuf, mCount);
@@ -115,7 +116,7 @@ ECode ByteArrayOutputStream::ToString(
 ECode ByteArrayOutputStream::Write(
     /* [in] */ Int32 oneByte)
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     if (mCount == mBuf->GetLength()){
         Expand(1);
@@ -131,7 +132,7 @@ ECode ByteArrayOutputStream::Write(
     /* [in] */ Int32 count)
 {
     VALIDATE_NOT_NULL(buffer)
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     // avoid int overflow
     // BEGIN android-changed
@@ -161,7 +162,7 @@ ECode ByteArrayOutputStream::WriteTo(
 {
     VALIDATE_NOT_NULL(out);
 
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     return out->Write(mBuf, 0, mCount);
 }

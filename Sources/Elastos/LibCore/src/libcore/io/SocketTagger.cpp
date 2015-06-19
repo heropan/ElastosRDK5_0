@@ -1,5 +1,6 @@
 
 #include "SocketTagger.h"
+#include "Autolock.h"
 
 using Elastos::IO::IFileDescriptor;
 

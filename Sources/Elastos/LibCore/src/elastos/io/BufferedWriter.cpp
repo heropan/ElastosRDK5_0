@@ -1,6 +1,7 @@
 
 #include "BufferedWriter.h"
 #include "Character.h"
+#include "Autolock.h"
 
 using Elastos::Core::Character;
 
@@ -50,7 +51,7 @@ ECode BufferedWriter::constructor(
 
 ECode BufferedWriter::Close()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     if (IsClosed()) {
         return NOERROR;
@@ -67,7 +68,7 @@ ECode BufferedWriter::Close()
 
 ECode BufferedWriter::Flush()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     FAIL_RETURN(FlushInternal());
@@ -112,7 +113,7 @@ ECode BufferedWriter::Write(
 {
     VALIDATE_NOT_NULL(cbuf)
 
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     // BEGIN android-changed
@@ -165,7 +166,7 @@ ECode BufferedWriter::Write(
 ECode BufferedWriter::Write(
     /* [in] */ Int32 oneChar)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
 
@@ -185,7 +186,7 @@ ECode BufferedWriter::Write(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     if (count <= 0) {

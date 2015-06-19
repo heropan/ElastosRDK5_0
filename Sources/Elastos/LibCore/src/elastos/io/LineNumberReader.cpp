@@ -1,6 +1,7 @@
 
 #include "LineNumberReader.h"
 #include "Character.h"
+#include "Autolock.h"
 
 using Elastos::Core::Character;
 
@@ -39,7 +40,7 @@ ECode LineNumberReader::GetLineNumber(
 {
     VALIDATE_NOT_NULL(lineNumber)
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     *lineNumber = mLineNumber;
 
@@ -50,7 +51,7 @@ ECode LineNumberReader::Mark(
     /* [in] */ Int32 readLimit)
 {
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     FAIL_RETURN(BufferedReader::Mark(readLimit));
     mMarkedLineNumber = mLineNumber;
@@ -64,7 +65,7 @@ ECode LineNumberReader::Read(
 {
     VALIDATE_NOT_NULL(value)
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     Int32 ch;
     FAIL_RETURN(BufferedReader::Read(&ch));
@@ -95,7 +96,7 @@ ECode LineNumberReader::Read(
     *number = NULL;
     VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     Int32 read;
     FAIL_RETURN(BufferedReader::Read(buffer, offset, length, &read));
@@ -131,7 +132,7 @@ ECode LineNumberReader::ReadLine(
     VALIDATE_NOT_NULL(result)
     *result = String(NULL);
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     if (mLastWasCR) {
         FAIL_RETURN(ChompNewline());
@@ -150,7 +151,7 @@ ECode LineNumberReader::ReadLine(
 ECode LineNumberReader::Reset()
 {
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     FAIL_RETURN(BufferedReader::Reset());
     mLineNumber = mMarkedLineNumber;
@@ -163,7 +164,7 @@ ECode LineNumberReader::SetLineNumber(
     /* [in] */ Int32 lineNumber)
 {
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     mLineNumber = lineNumber;
 
@@ -183,7 +184,7 @@ ECode LineNumberReader::Skip(
     }
 
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     Int32 value;
     for (Int32 i = 0; i < count; i++) {

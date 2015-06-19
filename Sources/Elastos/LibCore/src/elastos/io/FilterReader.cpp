@@ -1,5 +1,6 @@
 
 #include "FilterReader.h"
+#include "Autolock.h"
 
 namespace Elastos {
 namespace IO {
@@ -29,7 +30,7 @@ ECode FilterReader::constructor(
 ECode FilterReader::Close()
 {
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     return ICloseable::Probe(mIn)->Close();
 }
@@ -38,7 +39,7 @@ ECode FilterReader::Mark(
     /* [in] */ Int32 readLimit)
 {
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     return mIn->Mark(readLimit);
 }
@@ -48,7 +49,7 @@ ECode FilterReader::IsMarkSupported(
 {
     VALIDATE_NOT_NULL(supported)
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     return mIn->IsMarkSupported(supported);
 }
@@ -58,7 +59,7 @@ ECode FilterReader::Read(
 {
     VALIDATE_NOT_NULL(value)
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     return mIn->Read(value);
 }
@@ -73,7 +74,7 @@ ECode FilterReader::Read(
     *number = 0;
     VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     return mIn->Read(buffer, offset, count, number);
 }
@@ -83,7 +84,7 @@ ECode FilterReader::IsReady(
 {
     VALIDATE_NOT_NULL(ready)
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     return mIn->IsReady(ready);
 }
@@ -91,7 +92,7 @@ ECode FilterReader::IsReady(
 ECode FilterReader::Reset()
 {
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     return mIn->Reset();
 }
@@ -102,7 +103,7 @@ ECode FilterReader:: Skip(
 {
     VALIDATE_NOT_NULL(number)
     assert(mLock != NULL);
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     return mIn->Skip(count, number);
 }

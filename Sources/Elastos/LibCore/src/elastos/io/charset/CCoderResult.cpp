@@ -1,6 +1,7 @@
 
 #include "CCoderResult.h"
-#include <elastos/core/StringUtils.h>
+#include "StringUtils.h"
+#include "Autolock.h"
 
 using Elastos::Core::StringUtils;
 
@@ -80,7 +81,7 @@ ECode CCoderResult::MalformedForLength(
     //         return r;
     //     }
         // Temporary achieve
-        Object::Autolock lock(sMalformedMutex);
+        Autolock lock(sMalformedMutex);
         AutoPtr<ICoderResult> r;
         HashMap<Int32, AutoPtr<ICoderResult> >::Iterator iter = sMalformedErrors->Find(length);
         if (iter == sMalformedErrors->End()) {
@@ -116,7 +117,7 @@ ECode CCoderResult::UnmappableForLength(
     //         return r;
     //     }
         // Temporary achieve
-        Object::Autolock lock(sUnmappableMutex);
+        Autolock lock(sUnmappableMutex);
         AutoPtr<ICoderResult> r;
         HashMap<Int32, AutoPtr<ICoderResult> >::Iterator iter = sUnmappableErrors->Find(length);
         if (iter == sUnmappableErrors->End()) {

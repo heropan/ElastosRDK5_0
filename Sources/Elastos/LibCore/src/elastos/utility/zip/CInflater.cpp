@@ -3,6 +3,7 @@
 #include "Math.h"
 #include "Arrays.h"
 #include "CCloseGuardHelper.h"
+#include "Autolock.h"
 #include <unistd.h>
 #include <errno.h>
 
@@ -78,7 +79,7 @@ ECode CInflater::CreateStream(
 
 ECode CInflater::End()
 {
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     mGuard->Close();
     if (mStreamHandle != NULL) {
@@ -103,7 +104,7 @@ ECode CInflater::Finished(
 {
     VALIDATE_NOT_NULL(finished);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     *finished = mFinished;
     return NOERROR;
@@ -114,7 +115,7 @@ ECode CInflater::GetAdler(
 {
     VALIDATE_NOT_NULL(checksum);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     *checksum = GetAdlerImpl(mStreamHandle);
@@ -133,7 +134,7 @@ ECode CInflater::GetBytesRead(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     *number = GetTotalInImpl(mStreamHandle);
@@ -146,7 +147,7 @@ ECode CInflater::GetBytesWritten(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     *number = GetTotalOutImpl(mStreamHandle);
@@ -158,7 +159,7 @@ ECode CInflater::GetRemaining(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     *number = mInLength - mInRead;
 
@@ -170,7 +171,7 @@ ECode CInflater::GetCurrentOffset(
 {
     VALIDATE_NOT_NULL(offset);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
     *offset = mInRead;
     return NOERROR;
 }
@@ -180,7 +181,7 @@ ECode CInflater::GetTotalIn(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     *number = (Int32)Elastos::Core::Math::Min(
@@ -199,7 +200,7 @@ ECode CInflater::GetTotalOut(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     *number = (Int32)Elastos::Core::Math::Min(
@@ -233,7 +234,7 @@ ECode CInflater::Inflate(
     *number = -1;
     VALIDATE_NOT_NULL(buf);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
 
@@ -310,7 +311,7 @@ ECode CInflater::NeedsDictionary(
 {
     VALIDATE_NOT_NULL(result);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     *result = mNeedsDictionary;
     return NOERROR;
@@ -321,7 +322,7 @@ ECode CInflater::NeedsInput(
 {
     VALIDATE_NOT_NULL(result);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     *result = mInRead == mInLength;
     return NOERROR;
@@ -329,7 +330,7 @@ ECode CInflater::NeedsInput(
 
 ECode CInflater::Reset()
 {
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     mFinished = FALSE;
@@ -362,7 +363,7 @@ ECode CInflater::SetDictionary(
     /* [in] */ Int32 byteCount)
 {
     VALIDATE_NOT_NULL(buf)
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
@@ -392,7 +393,7 @@ ECode CInflater::SetInput(
     /* [in] */ Int32 byteCount)
 {
     VALIDATE_NOT_NULL(buf)
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
 
@@ -409,7 +410,7 @@ Int32 CInflater::SetFileInput(
     /* [in] */ Int64 offset,
     /* [in] */ Int32 byteCount)
 {
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     mInRead = 0;

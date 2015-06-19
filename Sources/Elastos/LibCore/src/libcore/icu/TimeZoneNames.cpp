@@ -9,6 +9,7 @@
 // #include "CZoneInfoDB.h"
 #include "StringUtils.h"
 #include "UniquePtr.h"
+#include "Autolock.h"
 //#include <elastos/utility/etl/Pair.h>
 #include <elastos/utility/etl/Vector.h>
 #include <elastos/utility/etl/List.h>
@@ -129,7 +130,7 @@ void TimeZoneNames::ZoneStringsCache::InternStrings(
     /* [in] */ ArrayOf<StringArray>* result)
 {
     HashMap<String, String> internTable;
-    Object::Autolock lock(this);
+    Autolock lock(this);
     HashMap<String, String>::Iterator it;
     ArrayOf<String> * subArr;
     for (Int32 i = 0; i < result->GetLength(); ++i) {

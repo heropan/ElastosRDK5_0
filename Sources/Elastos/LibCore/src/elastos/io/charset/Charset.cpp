@@ -3,9 +3,8 @@
 #include "CCodingErrorAction.h"
 // #include "NativeConverter.h"
 #include "CStringWrapper.h"
-#ifdef ELASTOS_CORELIBRARY
-#include <CSystem.h>
-#endif
+#include "Autolock.h"
+#include "CSystem.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -83,7 +82,7 @@ ECode Charset::ForName(
     // Is this charset in our cache?
     AutoPtr<ICharset> cs;
     {
-        Object::Autolock lock(gCachedCharsetsLock);
+        Autolock lock(gCachedCharsetsLock);
         HashMap<String, AutoPtr<ICharset> >::Iterator it = CACHED_CHARSETS->Find(charsetName);
         if (it != CACHED_CHARSETS->End()) {
             *charset = it->mSecond;
@@ -331,7 +330,7 @@ ECode Charset::CacheCharset(
     *charset = NULL;
     VALIDATE_NOT_NULL(cs);
 
-    Object::Autolock lock(gCachedCharsetsLock);
+    Autolock lock(gCachedCharsetsLock);
 
     // Get the canonical name for this charset, and the canonical instance from the table.
     String canonicalName;

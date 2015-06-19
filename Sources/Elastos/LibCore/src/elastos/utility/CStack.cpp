@@ -1,6 +1,6 @@
 
 #include "CStack.h"
-
+#include "Autolock.h"
 
 namespace Elastos {
 namespace Utility {

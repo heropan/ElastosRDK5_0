@@ -236,7 +236,7 @@ ECode CX500Principal::GetCanonicalName(
         /* [out] */ String *name)
 {
     VALIDATE_NOT_NULL(name)
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     if (mCanonicalName.IsNull()) {
         //Apache...Todo later
         //canonicalName = dn.getName(CANONICAL);

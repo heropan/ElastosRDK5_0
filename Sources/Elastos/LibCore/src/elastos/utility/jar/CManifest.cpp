@@ -203,7 +203,7 @@ ECode CManifest::ExposeByteArrayInputStreamBytes(
 {
     AutoPtr<ArrayOf<Byte> > buffer;
     {
-        Object::Autolock lock(this);
+        Autolock lock(this);
         AutoPtr<ArrayOf<Byte> > buf;
         Int32 pos;
         //later I will add two public function to wrapper the protected members

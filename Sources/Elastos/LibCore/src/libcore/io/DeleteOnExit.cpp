@@ -1,6 +1,7 @@
 
 #include "DeleteOnExit.h"
-#include "core/CStringWrapper.h"
+#include "CStringWrapper.h"
+#include "Autolock.h"
 
 using Elastos::IO::IFile;
 // using Elastos::IO::CFile;

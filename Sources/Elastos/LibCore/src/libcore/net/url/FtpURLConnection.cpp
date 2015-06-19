@@ -182,7 +182,7 @@ ECode FtpURLConnection::SetDoInput(
 {
     if (mConnected) {
         // throw new IllegalAccessError();
-        return E_ILLEGAL_ACCESS_ERROR_EXCEPTION;
+        return E_ILLEGAL_ACCESS_ERROR;
     }
     mDoInput = newValue;
     mDoOutput = !newValue;
@@ -194,7 +194,7 @@ ECode FtpURLConnection::SetDoOutput(
 {
     if (mConnected) {
         // throw new IllegalAccessError();
-        return E_ILLEGAL_ACCESS_ERROR_EXCEPTION;
+        return E_ILLEGAL_ACCESS_ERROR;
     }
     mDoOutput = newValue;
     mDoInput = !newValue;

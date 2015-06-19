@@ -63,7 +63,7 @@ Int32 ForkJoinTask::ExternalAwaitDone()
     if ((s = mStatus) >= 0) {
         Boolean interrupted = FALSE;
         {
-            Object::Autolock lock(this);
+            Autolock lock(this);
             while ((s = mStatus) >= 0) {
                 if (s == 0) {
                     assert(0 && "TODO");
@@ -92,7 +92,7 @@ Int32 ForkJoinTask::ExternalInterruptibleAwaitDone(
         return s;
 //        throw new InterruptedException();
     if ((s = mStatus) >= 0) {
-        Object::Autolock lock(this);
+        Autolock lock(this);
         while ((s = mStatus) >= 0) {
             if (s == 0) {
                 assert(0 && "TODO");

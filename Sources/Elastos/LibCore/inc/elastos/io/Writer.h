@@ -4,12 +4,13 @@
 
 #include <elastos/core/Object.h>
 
-namespace Elastos {
-namespace IO {
-
+using Elastos::Core::Object;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IAppendable;
-using Elastos::Core::Object;
+using Elastos::Core::ISynchronize;
+
+namespace Elastos {
+namespace IO {
 
 class Writer
     : public Object
@@ -204,7 +205,7 @@ protected:
     virtual ~Writer();
 
 protected:
-    Object* mLock;
+    IObject* mLock;
     Boolean mIsStrongLock;
 };
 

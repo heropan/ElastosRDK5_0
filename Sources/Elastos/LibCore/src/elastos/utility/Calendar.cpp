@@ -328,7 +328,7 @@ ECode Calendar::GetAvailableLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** ppLocales)
 {
     VALIDATE_NOT_NULL(ppLocales);
-//    Object::Autolock lock(this);
+//    Autolock lock(this);
     AutoPtr<IICUHelper> icuHelper;
 //    CICUHelper::AcquireSingleton((IICUHelper**)&icuHelper);
     return icuHelper->GetAvailableCalendarLocales(ppLocales);
@@ -347,7 +347,7 @@ ECode Calendar::GetInstance(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = NULL;
-//    Object::Autolock lock(this);
+//    Autolock lock(this);
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend((CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
@@ -361,7 +361,7 @@ ECode Calendar::GetInstance(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = NULL;
-//    Object::Autolock lock(this);
+//    Autolock lock(this);
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(locale, (CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
@@ -375,7 +375,7 @@ ECode Calendar::GetInstance(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = NULL;
-//    Object::Autolock lock(this);
+//    Autolock lock(this);
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(timezone, (CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);
@@ -390,7 +390,7 @@ ECode Calendar::GetInstance(
 {
     VALIDATE_NOT_NULL(calendar);
     *calendar = NULL;
-//    Object::Autolock lock(this);
+//    Autolock lock(this);
     AutoPtr<CGregorianCalendar> cc;
     FAIL_RETURN(CGregorianCalendar::NewByFriend(timezone, locale, (CGregorianCalendar**)&cc));
     *calendar = (ICalendar*)cc->Probe(EIID_ICalendar);

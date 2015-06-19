@@ -35,7 +35,7 @@ ECode FtpURLInputStream::Close()
 ECode FtpURLInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     return mIs->Mark(readLimit);;
 }
 
@@ -62,7 +62,7 @@ ECode FtpURLInputStream::ReadBytes(
 
 ECode FtpURLInputStream::Reset()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     return mIs->Reset();;
 }
 

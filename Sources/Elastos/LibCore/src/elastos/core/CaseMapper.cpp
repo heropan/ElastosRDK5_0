@@ -82,6 +82,38 @@ const Char32 CaseMapper::GREEK_SMALL_FINAL_SIGMA = 0x03c2;  //'\u03c2';
 
 // static final ThreadLocal<Transliterator> EL_UPPER
 
+pthread_key_t CaseMapper::sKey;
+pthread_once_t CaseMapper::sKeyOnce = PTHREAD_ONCE_INIT;
+
+static void TransliteratorDestructor(void* st)
+{
+    // Transliterator* obj = static_cast<Transliterator*>(st);
+    // if (obj) {
+    //     obj->Release();
+    // }
+}
+
+static void MakeKey()
+{
+    ASSERT_TRUE(pthread_key_create(&CaseMapper::sKey, TransliteratorDestructor) == 0);
+}
+
+// AutoPtr<Transliterator> CaseMapper::GetEL_UPPER()
+// {
+//     pthread_once(&sKeyOnce, MakeKey);
+
+//     AutoPtr<Transliterator> tl = (Transliterator*)pthread_getspecific(sTlsKey);
+//     if (tl == NULL) {
+//         tl = new Transliterator();
+
+//         ASSERT_TRUE(pthread_setspecific(sKey, tl.Get()) == 0);
+//         tl->AddRef();
+//         tl = (Transliterator*)pthread_getspecific(sKey);
+//     }
+//     assert(tl.Get() != NULL && "check Transliterator failed!");
+//     return tl;
+// }
+
 String CaseMapper::ToLowerCase(
     /* [in] */ ILocale* locale,
     /* [in] */ const String& s,
@@ -138,13 +170,17 @@ String CaseMapper::ToUpperCase(
     assert(locale);
     assert(value);
 
+    pthread_once(&sKeyOnce, MakeKey);
+    pthread_setspecific(sKey, NULL);
+
     String languageCode;
     locale->GetLanguage(&languageCode);
     if (languageCode.Equals("tr") || languageCode.Equals("az") || languageCode.Equals("lt")) {
         // return ICUUtil::ToUpperCase(s, locale);
     }
     if (languageCode.Equals("el")) {
-        // return EL_UPPER.get().transliterate(s);
+        // AutoPtr<Transliterator> tl = GetEL_UPPER();
+        // return tl->Transliterate(s);
     }
 
     AutoPtr<ArrayOf<Char32> > output;

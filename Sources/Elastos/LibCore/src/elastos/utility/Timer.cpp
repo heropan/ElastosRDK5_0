@@ -2,6 +2,7 @@
 #include "Timer.h"
 #include "CSystem.h"
 #include "StringBuilder.h"
+#include "Autolock.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::StringBuilder;
@@ -320,7 +321,7 @@ Timer::FinalizerHelper::FinalizerHelper(
 
 Timer::FinalizerHelper::~FinalizerHelper()
 {
-    Object::Autolock lock(mImpl);
+    Autolock lock(mImpl);
     mImpl->mFinished = TRUE;
     mImpl->Notify();
 }
@@ -336,7 +337,7 @@ CAR_INTERFACE_IMPL(Timer, Object, ITimer)
 
 Int64 Timer::NextId()
 {
-    Object::Autolock lock(sTimerIdLock);
+    Autolock lock(sTimerIdLock);
     return sTimerId++;
 }
 
@@ -407,7 +408,7 @@ ECode Timer::Cancel()
 ECode Timer::Purge(
     /* [out] */ Int32* number)
 {
-    Object::Autolock lock(mImpl);
+    Autolock lock(mImpl);
     *number = mImpl->Purge();
     return NOERROR;
 }
@@ -513,7 +514,7 @@ ECode Timer::ScheduleImpl(
     /* [in] */ Int64 period,
     /* [in] */ Boolean fixed)
 {
-    Object::Autolock lock(mImpl);
+    Autolock lock(mImpl);
 
     if (mImpl->mCancelled) {
         // throw new IllegalStateException("Timer was canceled");

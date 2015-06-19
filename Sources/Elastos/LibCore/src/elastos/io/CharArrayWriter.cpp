@@ -3,6 +3,7 @@
 #include "Math.h"
 #include "Character.h"
 #include "CStringWrapper.h"
+#include "Autolock.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::CStringWrapper;
@@ -77,7 +78,7 @@ ECode CharArrayWriter::Flush()
 
 ECode CharArrayWriter::Reset()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     mCount = 0;
     return NOERROR;
@@ -88,7 +89,7 @@ ECode CharArrayWriter::GetSize(
 {
     VALIDATE_NOT_NULL(size)
 
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     *size = mCount;
     return NOERROR;
@@ -100,7 +101,7 @@ ECode CharArrayWriter::ToCharArray(
     VALIDATE_NOT_NULL(str)
     *str = NULL;
 
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     AutoPtr<ArrayOf<Char32> > arr = mBuf->Clone();
     if (arr == NULL)
@@ -117,7 +118,7 @@ ECode CharArrayWriter::ToString(
     VALIDATE_NOT_NULL(result)
     *result = String(NULL);
 
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     AutoPtr<ArrayOf<Byte> > dst;
     Int32 dstOffset = 0;
@@ -131,7 +132,7 @@ ECode CharArrayWriter::ToString(
 ECode CharArrayWriter::Write(
     /* [in] */ Int32 oneChar32)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     Expand(1);
     (*mBuf)[mCount++] = oneChar32;
@@ -159,7 +160,7 @@ ECode CharArrayWriter::Write(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     // END android-changed
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     Expand(count);
     mBuf->Copy(mCount, buffer, offset, count);
@@ -185,7 +186,7 @@ ECode CharArrayWriter::Write(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     // END android-changed
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     AutoPtr<ArrayOf<Char32> > charArray = str.GetChars(offset, offset + count);
     count = charArray->GetLength();
@@ -201,7 +202,7 @@ ECode CharArrayWriter::Write(
 ECode CharArrayWriter::WriteTo(
     /* [in] */ IWriter* out)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     return out->Write(mBuf, 0, mCount);
 }

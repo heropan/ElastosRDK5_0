@@ -3,6 +3,7 @@
 #include "Arrays.h"
 #include "Collections.h"
 #include "StringBuilder.h"
+#include "Autolock.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringBuilder;
@@ -271,6 +272,8 @@ ECode Vector::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     synchronized (this) {
         if (THIS_PROBE(IInterface) == object) {
             *result = TRUE;
@@ -300,11 +303,9 @@ ECode Vector::Equals(
                 }
             }
             *result = TRUE;
-            return NOERROR;
         }
-        *result = FALSE;
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode Vector::FirstElement(

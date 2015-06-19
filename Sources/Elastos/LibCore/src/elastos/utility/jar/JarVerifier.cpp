@@ -268,7 +268,7 @@ ECode JarVerifier::ReadCertificates(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    Object::Autolock lock(this);
+    Autolock lock(this);
     VALIDATE_NOT_NULL(result)
     if (mMetaEntries == NULL) {
         return NOERROR;

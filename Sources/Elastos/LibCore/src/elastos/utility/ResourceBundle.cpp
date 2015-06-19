@@ -8,9 +8,10 @@
 #include "CFile.h"
 #include "CHashSet.h"
 #include "CHashTable.h"
-#include <StringBuilder.h>
-#include <StringUtils.h>
-#include <CSystem.h>
+#include "StringBuilder.h"
+#include "StringUtils.h"
+#include "CSystem.h"
+#include "Autolock.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
@@ -1133,7 +1134,7 @@ AutoPtr<IResourceBundle> ResourceBundle::HandleGetBundle(
 AutoPtr<IDictionary> ResourceBundle::GetLoaderCache(
     /* [in] */ IInterface* cacheKey)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     AutoPtr<IInterface> outface;
     sCache->Get(cacheKey, (IInterface**)&outface);
     AutoPtr<IDictionary> loaderCache = IDictionary::Probe(outface);

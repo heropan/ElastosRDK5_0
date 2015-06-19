@@ -4,6 +4,7 @@
 #include "CharBuffer.h"
 #include "CStringWrapper.h"
 #include "Charset.h"
+#include "Autolock.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::IO::Charset::ICharset;
@@ -54,7 +55,7 @@ ECode OutputStreamWriter::constructor(
 
 ECode OutputStreamWriter::Close()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     // if (mEncoder != NULL) {
     //     mEncoder->Flush(mBuf);
     if (mOut != NULL) {
@@ -76,7 +77,7 @@ ECode OutputStreamWriter::Flush()
 ECode OutputStreamWriter::FlushBytes(
     /* [in] */ Boolean flushUnderlyingStream)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     FAIL_RETURN(CheckStatus());
     Int32 position;
@@ -182,7 +183,7 @@ ECode OutputStreamWriter::GetEncoding(
 ECode OutputStreamWriter::Write(
     /* [in] */ Int32 oneChar32)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     FAIL_RETURN(CheckStatus());
     AutoPtr<ArrayOf<Char32> > c = ArrayOf<Char32>::Alloc(1);
@@ -199,7 +200,7 @@ ECode OutputStreamWriter::Write(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     FAIL_RETURN(CheckStatus());
     Int32 arrayLength = buffer->GetLength();
@@ -219,7 +220,7 @@ ECode OutputStreamWriter::Write(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
 
     if (count < 0) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;

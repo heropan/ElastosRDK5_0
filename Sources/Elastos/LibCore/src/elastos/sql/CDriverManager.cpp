@@ -3,6 +3,7 @@
 #include "CSystem.h"
 #include "Pattern.h"
 // #include "CProperties.h"
+#include "Autolock.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Utility::Regex::Pattern;

@@ -6,6 +6,7 @@
 #include "CLibcore.h"
 #include "CIoBridge.h"
 #include "CFileDescriptor.h"
+#include "Autolock.h"
 
 using Elastos::Droid::System::OsConstants;
 using Libcore::IO::ILibcore;
@@ -113,7 +114,7 @@ ECode FileOutputStream::GetChannel(
 {
     VALIDATE_NOT_NULL(channel)
 
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     // if (channel == null) {
     //     channel = NioUtils.newFileChannel(this, fd, mode);
@@ -156,7 +157,7 @@ ECode FileOutputStream::Write(
 
 ECode FileOutputStream::CloseInner()
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     if (mShouldClose) {
         AutoPtr<IIoBridge> ioBridge;

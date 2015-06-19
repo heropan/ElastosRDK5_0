@@ -15,61 +15,18 @@
 using Elastos::Core::ISynchronize;
 using Elastos::Core::NativeObject;
 
-#ifndef synchronized
-#define synchronized(obj)  for(Elastos::Core::Object::Autolock obj##_lock(obj); obj##_lock; obj##_lock.SetUnlock())
-#endif
-
 namespace Elastos {
 namespace Core {
 
+//====================================================================
+// Object
+//====================================================================
 class Object
     : public ElRefBase
     , public IObject
     , public ISynchronize
     , public IWeakReferenceSource
 {
-public:
-    class Autolock
-    {
-    public:
-        inline Autolock(
-            /* [in] */ Object& object)
-            : mObject(object)
-            , mLocked(TRUE)
-        {
-            mObject.Lock();
-        }
-
-        inline Autolock(
-            /* [in] */ Object* object)
-            : mObject(*object)
-            , mLocked(TRUE)
-        {
-            mObject.Lock();
-        }
-
-        inline ~Autolock()
-        {
-            mObject.Unlock();
-        }
-
-        // report the state of locking when used as a boolean
-        inline operator Boolean () const
-        {
-            return mLocked;
-        }
-
-        // unlock
-        inline void SetUnlock()
-        {
-            mLocked = FALSE;
-        }
-
-    private:
-        Object& mObject;
-        Boolean mLocked;
-    };
-
 public:
     CAR_INTERFACE_DECL();
 
@@ -322,6 +279,8 @@ public:
 };
 
 //====================================================================
+// Implements
+//====================================================================
 
 // GetHashCode
 //
@@ -457,5 +416,9 @@ Boolean Object::Equals(
 
 } // namespace Core
 } // namespace Elastos
+
+
+using Elastos::Core::Object;
+
 
 #endif //__ELASTOS_CORE_OBJECT_H__

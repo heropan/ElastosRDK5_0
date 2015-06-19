@@ -6,6 +6,7 @@
 // #include "COsConstants.h"
 // #include "CIoBridge.h"
 #include "SelectionKeyImpl.h"
+#include "Autolock.h"
 
 using Libcore::IO::IOs;
 using Libcore::IO::ILibcore;
@@ -80,7 +81,7 @@ ECode SelectorImpl::ImplCloseSelector()
 {
     Wakeup();
 
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     assert(0 && "TODO");
     // FAIL_RETURN(IoUtils::Close(mWakeupIn));
     // FAIL_RETURN(IoUtils::Close(mWakeupOut));
@@ -116,7 +117,7 @@ ECode SelectorImpl::Register(
         // throw new IllegalSelectorException();
         return E_ILLEGAL_SELECTOR_EXCEPTION;
     }
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     assert(0 && "TODO");
     // SelectionKeyImpl selectionKey = new SelectionKeyImpl(channel, operations,
     //         attachment, this);
@@ -176,7 +177,7 @@ ECode SelectorImpl::SelectInternal(
     VALIDATE_NOT_NULL(ret)
 
     FAIL_RETURN(CheckClosed());
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     DoCancel();
     Boolean isBlock = (timeout != 0);
     PreparePollFds();

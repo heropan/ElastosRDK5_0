@@ -4,6 +4,7 @@
 #include "CLocale.h"
 // #include "ICUUtil.h"
 #include "StringUtils.h"
+#include "Autolock.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::CLocale;

@@ -3,6 +3,7 @@
 #define __ELASTOS_CORE_CASEMAPPER_H__
 
 #include <elastos/core/Object.h>
+#include <pthread.h>
 
 using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
@@ -14,7 +15,8 @@ namespace Core {
 /**
  * Performs case operations as described by http://unicode.org/reports/tr21/tr21-5.html.
  */
-class CaseMapper{
+class CaseMapper
+{
 public:
     /**
      * Implements String.toLowerCase. We need 's' so that we can return the original String instance
@@ -56,11 +58,17 @@ private:
     static CARAPI_(Int32) UpperIndex(
         /* [in] */ Int32 ch);
 
+    // static AutoPtr<Transliterator> GetEL_UPPER();
+
 private:
     CaseMapper();
     CaseMapper(const CaseMapper&);
 
+public:
+    static pthread_key_t sKey;
+
 private:
+    static pthread_once_t sKeyOnce;
     // static final ThreadLocal<Transliterator> EL_UPPER
 
     static const Char32 sUpperValues[306];

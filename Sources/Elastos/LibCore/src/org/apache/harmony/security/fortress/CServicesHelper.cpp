@@ -75,7 +75,7 @@ ECode CServicesHelper::GetProviders(
     /* [out, callee] */ ArrayOf<IProvider *>** providers)
 {
     VALIDATE_NOT_NULL(providers)
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     //return providers.toArray(new Provider[providers.size()]);
     AutoPtr<ArrayOf<IInterface*> > tmp1, tmp2;
     Int32 size;
@@ -94,7 +94,7 @@ ECode CServicesHelper::GetProviders(
 ECode CServicesHelper::GetProvidersList(
     /* [out] */ IList** providersList)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     return CArrayList::New(sProviders.Get(), providersList);
 }
 
@@ -102,7 +102,7 @@ ECode CServicesHelper::GetProvider(
     /* [in] */ const String& name,
     /* [out] */ IProvider** provider)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     VALIDATE_NOT_NULL(provider)
     if (name.IsNull()) {
         return NOERROR;
@@ -122,7 +122,7 @@ ECode CServicesHelper::InsertProviderAt(
     /* [in] */ Int32 position,
     /* [out] */ Int32* pos)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     VALIDATE_NOT_NULL(pos)
     Int32 size;
     sProviders->GetSize(&size);
@@ -144,7 +144,7 @@ ECode CServicesHelper::InsertProviderAt(
 ECode CServicesHelper::RemoveProvider(
     /* [in] */ Int32 providerNumber)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     AutoPtr<IInterface> rm;
     sProviders->RemoveEx(providerNumber - 1, (IInterface**)&rm);
     AutoPtr<IProvider> p = IProvider::Probe(rm);
@@ -160,7 +160,7 @@ ECode CServicesHelper::RemoveProvider(
 ECode CServicesHelper::InitServiceInfo(
     /* [in] */ IProvider* p)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     AutoPtr<ISet> set;
     p->GetServices((ISet**)&set);
     AutoPtr<IIterator> it;
@@ -215,7 +215,7 @@ ECode CServicesHelper::InitServiceInfo(
 ECode CServicesHelper::IsEmpty(
     /* [out] */ Boolean* empty)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     return sServices->IsEmpty(empty);
 }
 
@@ -223,7 +223,7 @@ ECode CServicesHelper::GetService(
     /* [in] */ const String& key,
     /* [out] */ IService** service)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     VALIDATE_NOT_NULL(service)
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(key, (ICharSequence**)&cs);
@@ -237,7 +237,7 @@ ECode CServicesHelper::GetService(
 ECode CServicesHelper::GetSecureRandomService(
     /* [out] */ IService** service)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     VALIDATE_NOT_NULL(service)
     GetCacheVersion(); // used for side effect of updating cache if needed
     *service = sCachedSecureRandomService;
@@ -247,7 +247,7 @@ ECode CServicesHelper::GetSecureRandomService(
 
 ECode CServicesHelper::SetNeedRefresh()
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     sNeedRefresh = TRUE;
     return NOERROR;
 }
@@ -255,13 +255,13 @@ ECode CServicesHelper::SetNeedRefresh()
 ECode CServicesHelper::GetCacheVersion(
     /* [out] */ Int32* cacheVersion)
 {
-    Object::Autolock lock(mLock);
+    Autolock lock(mLock);
     VALIDATE_NOT_NULL(cacheVersion)
     if (sNeedRefresh) {
         sCacheVersion++;
         //synchronized (services)
         {
-            Object::Autolock lock(mLockForServices);
+            Autolock lock(mLockForServices);
             sServices->Clear();
         }
         sCachedSecureRandomService = NULL;

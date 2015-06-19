@@ -3,6 +3,7 @@
 #include "CJDBCConnection.h"
 #include "CJDBCResultSet.h"
 #include <sys/wait.h>
+#include "Autolock.h"
 
 namespace Elastos {
 namespace Sql {

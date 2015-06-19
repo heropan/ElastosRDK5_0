@@ -2,6 +2,7 @@
 #include "CDeflater.h"
 #include "Arrays.h"
 #include "CCloseGuardHelper.h"
+#include "Autolock.h"
 
 using Elastos::Core::ICloseGuardHelper;
 using Elastos::Core::CCloseGuardHelper;
@@ -96,7 +97,7 @@ ECode CDeflater::Deflate(
     *number = -1;
     VALIDATE_NOT_NULL(buf);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     return DeflateImplLocked(offset, byteCount, mFlushParm, buf, number);
 }
@@ -112,7 +113,7 @@ ECode CDeflater::Deflate(
     *number = -1;
     VALIDATE_NOT_NULL(buf);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     if (flush != NO_FLUSH && flush != SYNC_FLUSH && flush != FULL_FLUSH) {
 //        throw new IllegalArgumentException();
@@ -195,7 +196,7 @@ void CDeflater::EndImplLocked(
 
 ECode CDeflater::End()
 {
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     mGuard->Close();
     EndImplLocked();
@@ -213,7 +214,7 @@ void CDeflater::EndImplLocked()
 
 ECode CDeflater::Finish()
 {
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     mFlushParm = FINISH;
     return NOERROR;
@@ -224,7 +225,7 @@ ECode CDeflater::Finished(
 {
     VALIDATE_NOT_NULL(finished);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
     *finished = mFinished;
     return NOERROR;
 }
@@ -234,7 +235,7 @@ ECode CDeflater::GetAdler(
 {
     VALIDATE_NOT_NULL(checksum);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
 
@@ -253,7 +254,7 @@ ECode CDeflater::GetTotalIn(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
 
@@ -272,7 +273,7 @@ ECode CDeflater::GetTotalOut(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
 
@@ -291,7 +292,7 @@ ECode CDeflater::NeedsInput(
 {
     VALIDATE_NOT_NULL(result);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     if (mInputBuffer == NULL) {
         *result = TRUE;
@@ -303,7 +304,7 @@ ECode CDeflater::NeedsInput(
 
 ECode CDeflater::Reset()
 {
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
 
@@ -337,7 +338,7 @@ ECode CDeflater::SetDictionary(
     /* [in] */ Int32 byteCount)
 {
     VALIDATE_NOT_NULL(buf)
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
@@ -368,7 +369,7 @@ ECode CDeflater::SetInput(
     /* [in] */ Int32 byteCount)
 {
     VALIDATE_NOT_NULL(buf)
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen())
     FAIL_RETURN(Arrays::CheckOffsetAndCount(buf->GetLength(), offset, byteCount))
@@ -415,7 +416,7 @@ void CDeflater::SetInputImplLocked(
 ECode CDeflater::SetLevel(
     /* [in] */ Int32 level)
 {
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     if (level < DEFAULT_COMPRESSION ||
             level > BEST_COMPRESSION) {
@@ -433,7 +434,7 @@ ECode CDeflater::SetLevel(
 ECode CDeflater::SetStrategy(
     /* [in] */ Int32 strategy)
 {
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     if (strategy < DEFAULT_STRATEGY ||
         strategy > HUFFMAN_ONLY) {
@@ -453,7 +454,7 @@ ECode CDeflater::GetBytesRead(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     *number = GetTotalInImplLocked(mStreamHandle);
@@ -465,7 +466,7 @@ ECode CDeflater::GetBytesWritten(
 {
     VALIDATE_NOT_NULL(number);
 
-    Object::Autolock locK(this);
+    Autolock locK(this);
 
     FAIL_RETURN(CheckOpen());
     *number = GetTotalOutImplLocked(mStreamHandle);

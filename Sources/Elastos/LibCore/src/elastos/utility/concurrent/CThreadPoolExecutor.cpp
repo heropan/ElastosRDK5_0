@@ -252,7 +252,7 @@ void CThreadPoolExecutor::TryTerminate()
             return;
         }
 
-        Object::Autolock lock(mMainLock);
+        Autolock lock(mMainLock);
 
         Boolean result;
         if (mCtl->CompareAndSet(c, CtlOf(TIDYING, 0), &result), result) {
@@ -285,7 +285,7 @@ ECode CThreadPoolExecutor::CheckShutdownAccess()
 
 void CThreadPoolExecutor::InterruptWorkers()
 {
-    Object::Autolock lock(mMainLock);
+    Autolock lock(mMainLock);
 
     HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
     for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
@@ -297,7 +297,7 @@ void CThreadPoolExecutor::InterruptWorkers()
 void CThreadPoolExecutor::InterruptIdleWorkers(
     /* [in] */ Boolean onlyOne)
 {
-    Object::Autolock lock(mMainLock);
+    Autolock lock(mMainLock);
 
     HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
     for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
@@ -409,7 +409,7 @@ NEXT:
 
     Int32 c;
     {
-        Object::Autolock lock(mMainLock);
+        Autolock lock(mMainLock);
 
         // Recheck while holding lock.
         // Back out on ThreadFactory failure or if
@@ -458,7 +458,7 @@ void CThreadPoolExecutor::ProcessWorkerExit(
     }
 
     {
-        Object::Autolock lock(mMainLock);
+        Autolock lock(mMainLock);
 
         mCompletedTaskCount += w->mCompletedTasks;
         mWorkers.Erase(w);
@@ -631,7 +631,7 @@ ECode CThreadPoolExecutor::Execute(
 ECode CThreadPoolExecutor::Shutdown()
 {
     {
-        Object::Autolock lock(mMainLock);
+        Autolock lock(mMainLock);
 
         FAIL_RETURN(CheckShutdownAccess());
         AdvanceRunState(SHUTDOWN);
@@ -650,7 +650,7 @@ ECode CThreadPoolExecutor::ShutdownNow(
     }
 
     {
-        Object::Autolock lock(mMainLock);
+        Autolock lock(mMainLock);
 
         FAIL_RETURN(CheckShutdownAccess());
         AdvanceRunState(STOP);
@@ -703,7 +703,7 @@ ECode CThreadPoolExecutor::AwaitTermination(
     VALIDATE_NOT_NULL(result);
     Int64 nanos;
     unit->ToNanos(timeout, &nanos);
-    Object::Autolock lock(mMainLock);
+    Autolock lock(mMainLock);
 
     for (;;) {
         Int32 c;
@@ -964,7 +964,7 @@ ECode CThreadPoolExecutor::GetPoolSize(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    Object::Autolock lock(mMainLock);
+    Autolock lock(mMainLock);
     // Remove rare and surprising possibility of
     // isTerminated() && getPoolSize() > 0
     Int32 c;
@@ -977,7 +977,7 @@ ECode CThreadPoolExecutor::GetActiveCount(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    Object::Autolock lock(mMainLock);
+    Autolock lock(mMainLock);
     Int32 n = 0;
     HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
     for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
@@ -994,7 +994,7 @@ ECode CThreadPoolExecutor::GetLargestPoolSize(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    Object::Autolock lock(mMainLock);
+    Autolock lock(mMainLock);
     *number = mLargestPoolSize;
     return NOERROR;
 }
@@ -1003,7 +1003,7 @@ ECode CThreadPoolExecutor::GetTaskCount(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number);
-    Object::Autolock lock(mMainLock);
+    Autolock lock(mMainLock);
     Int64 n = mCompletedTaskCount;
     HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
     for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
@@ -1023,7 +1023,7 @@ ECode CThreadPoolExecutor::GetCompletedTaskCount(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number);
-    Object::Autolock lock(mMainLock);
+    Autolock lock(mMainLock);
     Int64 n = mCompletedTaskCount;
     HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
     for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {

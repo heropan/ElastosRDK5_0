@@ -4,6 +4,7 @@
 #include "Arrays.h"
 #include "CArrayList.h"
 #include "CRandom.h"
+#include "Autolock.h"
 
 using Elastos::Core::IComparable;
 using Elastos::Core::IBoolean;

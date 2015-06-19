@@ -1,5 +1,6 @@
 
 #include "BufferedInputStream.h"
+#include "Autolock.h"
 
 namespace Elastos {
 namespace IO {
@@ -39,7 +40,7 @@ ECode BufferedInputStream::Available(
     VALIDATE_NOT_NULL(number)
     *number = 0;
 
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     AutoPtr<IInputStream> localIn = mIn; // 'in' could be invalidated by close()
     if (mBuf == NULL || localIn == NULL) {
@@ -128,7 +129,7 @@ ECode BufferedInputStream::Fillbuf(
 ECode BufferedInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     mMarklimit = readLimit;
     mMarkpos = mPos;
@@ -149,7 +150,7 @@ ECode BufferedInputStream::Read(
     VALIDATE_NOT_NULL(value)
     *value = '\0';
 
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     // Use local refs since buf and in may be invalidated by an
     // unsynchronized close()
@@ -195,7 +196,7 @@ ECode BufferedInputStream::Read(
     VALIDATE_NOT_NULL(number);
     *number = 0;
 
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     if (buffer == NULL) {
 //      throw new NullPointerException("buffer == null");
@@ -295,7 +296,7 @@ ECode BufferedInputStream::Read(
 
 ECode BufferedInputStream::Reset()
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
     // BEGIN android-changed
     /*
      * These exceptions get thrown in some "normalish" circumstances,
@@ -322,7 +323,7 @@ ECode BufferedInputStream::Skip(
     VALIDATE_NOT_NULL(number)
     *number = 0;
 
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     // Use local refs since buf and in may be invalidated by an
     // unsynchronized close()

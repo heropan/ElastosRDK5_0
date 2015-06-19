@@ -1,5 +1,6 @@
 
 #include "FilterInputStream.h"
+#include "Autolock.h"
 
 namespace Elastos {
 namespace IO {
@@ -35,7 +36,7 @@ ECode FilterInputStream::Close()
 ECode FilterInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
     return mIn->Mark(readLimit);
 }
 
@@ -62,7 +63,7 @@ ECode FilterInputStream::Read(
 
 ECode FilterInputStream::Reset()
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
     return mIn->Reset();
 }
 

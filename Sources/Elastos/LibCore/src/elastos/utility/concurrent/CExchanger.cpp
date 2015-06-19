@@ -126,7 +126,7 @@ void CExchanger::CreateSlot(
     AutoPtr<Slot> newSlot = new Slot();
     AutoPtr<ArrayOf<Slot*> > a = mArena;
     {
-        Object::Autolock lock(this);
+        Autolock lock(this);
         if ((*a)[index] == NULL)
             a->Set(index, newSlot);
     }

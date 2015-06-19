@@ -1,6 +1,7 @@
 
 #include "OutputStream.h"
 #include <utils/Log.h>
+#include "Autolock.h"
 
 namespace Elastos {
 namespace IO {
@@ -28,7 +29,7 @@ ECode OutputStream::Write(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony

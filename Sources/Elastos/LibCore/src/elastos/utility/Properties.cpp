@@ -10,9 +10,10 @@
 #include "CHashTable.h"
 //#include "CCollections.h"
 #include "CSystem.h"
-#include <StringBuilder.h>
-#include <StringUtils.h>
-#include <Character.h>
+#include "StringBuilder.h"
+#include "StringUtils.h"
+#include "Character.h"
+#include "Autolock.h"
 #include <cutils/log.h>
 
 using Elastos::Core::StringBuilder;
@@ -230,7 +231,7 @@ ECode Properties::Load(
 ECode Properties::Load(
     /* [in] */ IReader* inreader)
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
     if (inreader == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -487,7 +488,7 @@ ECode Properties::Store(
     /* [in] */ IWriter* writer,
     /* [in] */ const String& comment)
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
 
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
@@ -536,7 +537,7 @@ ECode Properties::Store(
 ECode Properties::LoadFromXML(
     /* [in] */ IInputStream* instream)
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
     if (instream == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -623,7 +624,7 @@ ECode Properties::StoreToXML(
     /* [in] */ const String& comment,
     /* [in] */ const String& encoding)
 {
-    Object::Autolock lock(this);
+    Autolock lock(this);
     if (os == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
