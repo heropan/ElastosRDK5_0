@@ -5,6 +5,7 @@
 #include "_Elastos_Utility_Concurrent_CArrayBlockingQueue.h"
 #include "AbstractQueue.h"
 
+using Elastos::IO::ISerializable;
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;
 using Elastos::Utility::Concurrent::Locks::ICondition;
 
@@ -16,6 +17,7 @@ CarClass(CArrayBlockingQueue)
     , public AbstractQueue
     , public IArrayBlockingQueue
     , public IBlockingQueue
+    , public ISerializable
 {
 private:
     /**

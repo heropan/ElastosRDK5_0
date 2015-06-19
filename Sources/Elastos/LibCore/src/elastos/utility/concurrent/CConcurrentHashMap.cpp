@@ -69,7 +69,7 @@ AutoPtr<IInterface> CConcurrentHashMap::Segment::Put(
     for (AutoPtr<HashEntry> e = first;;) {
         if (e != NULL) {
             AutoPtr<IInterface> k;
-            if ((k = e->mKey) == key ||
+            if (Object::Equals((k = e->mKey), key) ||
                 (e->mHash == hash && Object::Equals(key, k))) {
                 oldValue = e->mValue;
                 if (!onlyIfAbsent) {
@@ -253,7 +253,7 @@ AutoPtr<IInterface> CConcurrentHashMap::Segment::Remove(
     while (e != NULL) {
         AutoPtr<IInterface> k;
         AutoPtr<HashEntry> next = e->mNext;
-        if ((k = e->mKey) == key ||
+        if (Object::Equals((k = e->mKey), key) ||
             (e->mHash == hash && Object::Equals(key, k))) {
             AutoPtr<IInterface> v = e->mValue;
             if (value == NULL || value == v || Object::Equals(value, v)) {
@@ -294,7 +294,7 @@ Boolean CConcurrentHashMap::Segment::Replace(
     AutoPtr<HashEntry> e;
     for (e = EntryForHash(this, hash); e != NULL; e = e->mNext) {
         AutoPtr<IInterface> k;
-        if ((k = e->mKey) == key ||
+        if (Object::Equals((k = e->mKey), key) ||
             (e->mHash == hash && Object::Equals(key, k))) {
             if (Object::Equals(oldValue, e->mValue)) {
                 e->mValue = newValue;
@@ -325,7 +325,7 @@ AutoPtr<IInterface> CConcurrentHashMap::Segment::Replace(
     AutoPtr<HashEntry> e;
     for (e = EntryForHash(this, hash); e != NULL; e = e->mNext) {
         AutoPtr<IInterface> k;
-        if ((k = e->mKey) == key ||
+        if (Object::Equals((k = e->mKey), key) ||
             (e->mHash == hash && Object::Equals(key, k))) {
             oldValue = e->mValue;
             e->mValue = value;
@@ -460,6 +460,14 @@ ECode CConcurrentHashMap::KeyIterator::GetNextElement(
     return NOERROR;
 }
 
+ECode CConcurrentHashMap::KeyIterator::HasMoreElements(
+    /* [out] */ Boolean* value)
+{
+    VALIDATE_NOT_NULL(value)
+
+    return HashIterator::HasMoreElements(value);
+}
+
 //===============================================================================
 // CConcurrentHashMap::ValueIterator
 //===============================================================================
@@ -493,6 +501,13 @@ ECode CConcurrentHashMap::ValueIterator::GetNextElement(
     return NOERROR;
 }
 
+ECode CConcurrentHashMap::ValueIterator::HasMoreElements(
+    /* [out] */ Boolean* value)
+{
+    VALIDATE_NOT_NULL(value)
+
+    return HashIterator::HasMoreElements(value);
+}
 //===============================================================================
 // CConcurrentHashMap::WriteThroughEntry
 //===============================================================================
@@ -614,8 +629,6 @@ CConcurrentHashMap::_Values::_Values(
 {
 }
 
-CAR_INTERFACE_IMPL(CConcurrentHashMap::_Values, ICollection);
-
 ECode CConcurrentHashMap::_Values::GetIterator(
     /* [out] */ IIterator** result)
 {
@@ -679,8 +692,6 @@ CConcurrentHashMap::_EntrySet::_EntrySet(
     : mHost(host)
 {
 }
-
-CAR_INTERFACE_IMPL(CConcurrentHashMap::_EntrySet, ISet);
 
 ECode CConcurrentHashMap::_EntrySet::GetIterator(
     /* [out] */ IIterator** result)
@@ -753,7 +764,7 @@ ECode CConcurrentHashMap::_EntrySet::Clear()
 //===============================================================================
 // CConcurrentHashMap
 //===============================================================================
-CAR_INTERFACE_IMPL_2(CConcurrentHashMap, AbstractMap, IConcurrentHashMap, IConcurrentMap)
+CAR_INTERFACE_IMPL_3(CConcurrentHashMap, AbstractMap, IConcurrentHashMap, IConcurrentMap, ISerializable)
 
 CAR_OBJECT_IMPL(CConcurrentHashMap);
 
@@ -1142,7 +1153,7 @@ ECode CConcurrentHashMap::PutAll(
     AutoPtr<ISet> outset;
     map->GetEntrySet((ISet**)&outset);
     AutoPtr< ArrayOf<IInterface*> > outarr;
-    outset->ToArray((ArrayOf<IInterface*>**)&outarr);
+    (ICollection::Probe(outset))->ToArray((ArrayOf<IInterface*>**)&outarr);
     for (Int32 i = 0; i < outarr->GetLength(); i++) {
         AutoPtr<IMapEntry> e = IMapEntry::Probe((*outarr)[i]);
         AutoPtr<IInterface> keyface;
@@ -1394,6 +1405,18 @@ ECode CConcurrentHashMap::ReadObject(
     //     put(key, value);
     // }
     return NOERROR;
+}
+
+ECode CConcurrentHashMap::Keys(
+    /* [out] */ IEnumeration** outenum)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CConcurrentHashMap::Elements(
+    /* [out] */ IEnumeration** outenum)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 } // namespace Concurrent

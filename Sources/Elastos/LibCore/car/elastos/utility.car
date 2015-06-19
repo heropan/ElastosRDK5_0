@@ -176,6 +176,7 @@ module
     merge("utility/concurrent/ITransferQueue.car");
     merge("utility/concurrent/IConcurrentMap.car");
     merge("utility/concurrent/IConcurrentHashMap.car");
+    merge("utility/concurrent/IConcurrentNavigableMap.car");
 
     //======================================================
     // Elastos.Utility.Zip
@@ -229,7 +230,7 @@ module
     interface Elastos.IO.Charset.ICharset;
     interface Elastos.Core.IComparable;
     // interface Elastos.Core.IThread;
-    // interface Elastos.Core.IRunnable;
+    interface Elastos.Core.IRunnable;
     interface Elastos.Core.ICloneable;
     interface Elastos.Core.IComparator;
     // interface Elastos.Core.IComparator;
@@ -241,6 +242,8 @@ module
     interface Elastos.Utility.IQueue;
     interface Elastos.Utility.IIterable;
     interface Elastos.Utility.IRandomAccess;
+    interface Elastos.Utility.ISortedMap;
+    interface Elastos.Utility.INavigableMap;
     interface Elastos.Utility.Zip.IZipEntry;
 
 
@@ -1582,18 +1585,18 @@ module
         interface IExecutors;
     }
 
-    // class CFutureTask {
-    //     constructor(
-    //         [in] ICallable* callable);
+    class CFutureTask {
+        constructor(
+            [in] ICallable* callable);
 
-    //     constructor(
-    //         [in] IRunnable* runnable,
-    //         [in] IInterface* result);
+        constructor(
+            [in] IRunnable* runnable,
+            [in] IInterface* result);
 
-    //     interface IRunnableFuture;
-    //     interface IFuture;
-    //     interface IRunnable;
-    // }
+        interface IRunnableFuture;
+        interface IFuture;
+        interface IRunnable;
+    }
 
     // class CLinkedBlockingQueue {
     //     constructor();
@@ -1755,58 +1758,58 @@ module
         interface ITimeUnitHelper;
     }
 
-    // class CArrayBlockingQueue {
-    //     /**
-    //      * Creates an {@code ArrayBlockingQueue} with the given (fixed)
-    //      * capacity and default access policy.
-    //      *
-    //      * @param capacity the capacity of this queue
-    //      * @throws IllegalArgumentException if {@code capacity < 1}
-    //      */
-    //     constructor(
-    //         [in] Int32 capacity);
+    class CArrayBlockingQueue {
+        /**
+         * Creates an {@code ArrayBlockingQueue} with the given (fixed)
+         * capacity and default access policy.
+         *
+         * @param capacity the capacity of this queue
+         * @throws IllegalArgumentException if {@code capacity < 1}
+         */
+        constructor(
+            [in] Int32 capacity);
 
-    //     /**
-    //      * Creates an {@code ArrayBlockingQueue} with the given (fixed)
-    //      * capacity and the specified access policy.
-    //      *
-    //      * @param capacity the capacity of this queue
-    //      * @param fair if {@code true} then queue accesses for threads blocked
-    //      *        on insertion or removal, are processed in FIFO order;
-    //      *        if {@code false} the access order is unspecified.
-    //      * @throws IllegalArgumentException if {@code capacity < 1}
-    //      */
-    //     constructor(
-    //         [in] Int32 capacity,
-    //         [in] Boolean fair);
+        /**
+         * Creates an {@code ArrayBlockingQueue} with the given (fixed)
+         * capacity and the specified access policy.
+         *
+         * @param capacity the capacity of this queue
+         * @param fair if {@code true} then queue accesses for threads blocked
+         *        on insertion or removal, are processed in FIFO order;
+         *        if {@code false} the access order is unspecified.
+         * @throws IllegalArgumentException if {@code capacity < 1}
+         */
+        constructor(
+            [in] Int32 capacity,
+            [in] Boolean fair);
 
-    //     /**
-    //      * Creates an {@code ArrayBlockingQueue} with the given (fixed)
-    //      * capacity, the specified access policy and initially containing the
-    //      * elements of the given collection,
-    //      * added in traversal order of the collection's iterator.
-    //      *
-    //      * @param capacity the capacity of this queue
-    //      * @param fair if {@code true} then queue accesses for threads blocked
-    //      *        on insertion or removal, are processed in FIFO order;
-    //      *        if {@code false} the access order is unspecified.
-    //      * @param c the collection of elements to initially contain
-    //      * @throws IllegalArgumentException if {@code capacity} is less than
-    //      *         {@code c.size()}, or less than 1.
-    //      * @throws NullPointerException if the specified collection or any
-    //      *         of its elements are null
-    //      */
-    //     constructor(
-    //         [in] Int32 capacity,
-    //         [in] Boolean fair,
-    //         [in] ICollection* c);
+        /**
+         * Creates an {@code ArrayBlockingQueue} with the given (fixed)
+         * capacity, the specified access policy and initially containing the
+         * elements of the given collection,
+         * added in traversal order of the collection's iterator.
+         *
+         * @param capacity the capacity of this queue
+         * @param fair if {@code true} then queue accesses for threads blocked
+         *        on insertion or removal, are processed in FIFO order;
+         *        if {@code false} the access order is unspecified.
+         * @param c the collection of elements to initially contain
+         * @throws IllegalArgumentException if {@code capacity} is less than
+         *         {@code c.size()}, or less than 1.
+         * @throws NullPointerException if the specified collection or any
+         *         of its elements are null
+         */
+        constructor(
+            [in] Int32 capacity,
+            [in] Boolean fair,
+            [in] ICollection* c);
 
-    //     interface IBlockingQueue;
-    //     interface IQueue;
-    //     interface ICollection;
-    //     interface IIterable;
-    //     interface ISerializable;
-    // }
+        interface IBlockingQueue;
+        interface IQueue;
+        interface ICollection;
+        interface IIterable;
+        interface ISerializable;
+    }
 
     class CConcurrentLinkedDeque {
         constructor();
@@ -1833,25 +1836,25 @@ module
         interface ISerializable;
     }
 
-    // class CConcurrentSkipListMap {
-    //     constructor();
+    class CConcurrentSkipListMap {
+        constructor();
 
-    //     constructor(
-    //         [in] IComparator* comparator);
+        constructor(
+            [in] IComparator* comparator);
 
-    //     constructor(
-    //         [in] IMap* map);
+        constructor(
+            [in] IMap* map);
 
-    //     constructor(
-    //         [in] ISortedMap* sortedMap);
+        constructor(
+            [in] ISortedMap* sortedMap);
 
-    //     interface INavigableMap;
-    //     interface ISortedMap;
-    //     interface IMap;
-    //     interface IConcurrentMap;
-    //     interface ISerializable;
-    //     interface ICloneable;
-    // }
+        interface INavigableMap;
+        interface ISortedMap;
+        interface IMap;
+        interface IConcurrentMap;
+        interface ISerializable;
+        interface ICloneable;
+    }
 
     // class CConcurrentSkipListSet {
     //     constructor();
@@ -1922,9 +1925,9 @@ module
     //     interface IExecutor;
     // }
 
-    // singleton class CForkJoinTaskHelper {
-    //     interface IForkJoinTaskHelper;
-    // }
+    singleton class CForkJoinTaskHelper {
+        interface IForkJoinTaskHelper;
+    }
 
     class CLinkedBlockingDeque {
         constructor();
@@ -2024,81 +2027,81 @@ module
         interface ISerializable;
     }
 
-    // class CConcurrentHashMap {
-    //     /**
-    //      * Creates a new, empty map with the specified initial
-    //      * capacity, load factor and concurrency level.
-    //      *
-    //      * @param initialCapacity the initial capacity. The implementation
-    //      * performs internal sizing to accommodate this many elements.
-    //      * @param loadFactor  the load factor threshold, used to control resizing.
-    //      * Resizing may be performed when the average number of elements per
-    //      * bin exceeds this threshold.
-    //      * @param concurrencyLevel the estimated number of concurrently
-    //      * updating threads. The implementation performs internal sizing
-    //      * to try to accommodate this many threads.
-    //      * @throws IllegalArgumentException if the initial capacity is
-    //      * negative or the load factor or concurrencyLevel are
-    //      * nonpositive.
-    //      */
-    //     // @SuppressWarnings("unchecked")
-    //     constructor(
-    //         [in] Int32 initialCapacity,
-    //         [in] Float loadFactor,
-    //         [in] Int32 concurrencyLevel);
+    class CConcurrentHashMap {
+        /**
+         * Creates a new, empty map with the specified initial
+         * capacity, load factor and concurrency level.
+         *
+         * @param initialCapacity the initial capacity. The implementation
+         * performs internal sizing to accommodate this many elements.
+         * @param loadFactor  the load factor threshold, used to control resizing.
+         * Resizing may be performed when the average number of elements per
+         * bin exceeds this threshold.
+         * @param concurrencyLevel the estimated number of concurrently
+         * updating threads. The implementation performs internal sizing
+         * to try to accommodate this many threads.
+         * @throws IllegalArgumentException if the initial capacity is
+         * negative or the load factor or concurrencyLevel are
+         * nonpositive.
+         */
+        // @SuppressWarnings("unchecked")
+        constructor(
+            [in] Int32 initialCapacity,
+            [in] Float loadFactor,
+            [in] Int32 concurrencyLevel);
 
-    //     /**
-    //      * Creates a new, empty map with the specified initial capacity
-    //      * and load factor and with the default concurrencyLevel (16).
-    //      *
-    //      * @param initialCapacity The implementation performs internal
-    //      * sizing to accommodate this many elements.
-    //      * @param loadFactor  the load factor threshold, used to control resizing.
-    //      * Resizing may be performed when the average number of elements per
-    //      * bin exceeds this threshold.
-    //      * @throws IllegalArgumentException if the initial capacity of
-    //      * elements is negative or the load factor is nonpositive
-    //      *
-    //      * @since 1.6
-    //      */
-    //     constructor(
-    //         [in] Int32 initialCapacity,
-    //         [in] Float loadFactor);
+        /**
+         * Creates a new, empty map with the specified initial capacity
+         * and load factor and with the default concurrencyLevel (16).
+         *
+         * @param initialCapacity The implementation performs internal
+         * sizing to accommodate this many elements.
+         * @param loadFactor  the load factor threshold, used to control resizing.
+         * Resizing may be performed when the average number of elements per
+         * bin exceeds this threshold.
+         * @throws IllegalArgumentException if the initial capacity of
+         * elements is negative or the load factor is nonpositive
+         *
+         * @since 1.6
+         */
+        constructor(
+            [in] Int32 initialCapacity,
+            [in] Float loadFactor);
 
-    //     /**
-    //      * Creates a new, empty map with the specified initial capacity,
-    //      * and with default load factor (0.75) and concurrencyLevel (16).
-    //      *
-    //      * @param initialCapacity the initial capacity. The implementation
-    //      * performs internal sizing to accommodate this many elements.
-    //      * @throws IllegalArgumentException if the initial capacity of
-    //      * elements is negative.
-    //      */
-    //     constructor(
-    //         [in] Int32 initialCapacity);
+        /**
+         * Creates a new, empty map with the specified initial capacity,
+         * and with default load factor (0.75) and concurrencyLevel (16).
+         *
+         * @param initialCapacity the initial capacity. The implementation
+         * performs internal sizing to accommodate this many elements.
+         * @throws IllegalArgumentException if the initial capacity of
+         * elements is negative.
+         */
+        constructor(
+            [in] Int32 initialCapacity);
 
-    //     /**
-    //      * Creates a new, empty map with a default initial capacity (16),
-    //      * load factor (0.75) and concurrencyLevel (16).
-    //      */
-    //     constructor();
+        /**
+         * Creates a new, empty map with a default initial capacity (16),
+         * load factor (0.75) and concurrencyLevel (16).
+         */
+        constructor();
 
-    //     /**
-    //      * Creates a new map with the same mappings as the given map.
-    //      * The map is created with a capacity of 1.5 times the number
-    //      * of mappings in the given map or 16 (whichever is greater),
-    //      * and a default load factor (0.75) and concurrencyLevel (16).
-    //      *
-    //      * @param m the map
-    //      */
-    //     constructor(
-    //         [in] IMap* m);
+        /**
+         * Creates a new map with the same mappings as the given map.
+         * The map is created with a capacity of 1.5 times the number
+         * of mappings in the given map or 16 (whichever is greater),
+         * and a default load factor (0.75) and concurrencyLevel (16).
+         *
+         * @param m the map
+         */
+        constructor(
+            [in] IMap* m);
 
-    //     interface IConcurrentHashMap;
-    //     interface IConcurrentMap;
-    //     interface IMap;
-    //     interface ISerializable;
-    // }
+        interface IConcurrentHashMap;
+        interface IConcurrentMap;
+        interface IMap;
+        interface ISerializable;
+    }
 
     namespace Atomic {
 

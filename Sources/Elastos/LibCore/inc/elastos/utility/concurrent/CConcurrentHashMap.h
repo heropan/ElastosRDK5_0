@@ -10,6 +10,7 @@
 using Elastos::IO::ISerializable;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
+using Elastos::IO::ISerializable;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::Concurrent::Locks::ReentrantLock;
@@ -24,6 +25,7 @@ CarClass(CConcurrentHashMap)
     , public AbstractMap
     , public IConcurrentHashMap
     , public IConcurrentMap
+    , public ISerializable
 {
 public:
     /**
@@ -249,6 +251,7 @@ public:
 
         CARAPI HasNext(
             /* [out] */ Boolean* value);
+
         CARAPI HasMoreElements(
             /* [out] */ Boolean* value);
 
@@ -278,6 +281,9 @@ public:
 
         CARAPI GetNextElement(
             /* [out] */ IInterface** object);
+
+        CARAPI HasMoreElements(
+            /* [out] */ Boolean* value);
     };
 
     class ValueIterator
@@ -295,6 +301,9 @@ public:
 
         CARAPI GetNextElement(
             /* [out] */ IInterface** object);
+
+        CARAPI HasMoreElements(
+            /* [out] */ Boolean* value);
     };
 
     /**
@@ -899,6 +908,12 @@ public:
         /* [in] */ Segment* seg,
         /* [in] */ Int32 h);
 
+    CARAPI Keys(
+        /* [out] */ IEnumeration** outenum);
+
+    CARAPI Elements(
+        /* [out] */ IEnumeration** outenum);
+
 private:
     /**
      * Returns the segment for the given index, creating it and
@@ -1060,5 +1075,17 @@ private:
 } // namespace Concurrent
 } // namespace Utility
 } // namespace Elastos
+
+template <>
+struct Conversion<Elastos::Utility::Concurrent::CConcurrentHashMap::HashEntry*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
+
+template <>
+struct Conversion<AutoPtr<Elastos::Utility::Concurrent::CConcurrentHashMap::Segment>, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
 
 #endif //__ELASTOS_UTILITY_CCONCURRENTHASHMAP_H__
