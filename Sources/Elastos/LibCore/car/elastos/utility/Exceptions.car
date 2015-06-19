@@ -24,4 +24,5 @@ module
     const E_ILLFORMED_LOCALE_EXCEPTION                      = 0xA700000E;
     const E_BACKING_STORE_EXCEPTION                         = 0xA700000F;
     const E_CHECKED_ARITHMETIC_EXCEPTION                    = 0xA7000010;
+    const E_INVALID_PREFERENCES_FORMAT_EXCEPTION            = 0xA7000011;
 }

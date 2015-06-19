@@ -12,8 +12,11 @@ namespace Elastos {
 namespace Utility {
 namespace Prefs {
 
+class XMLParser;
+
 class AbstractPreferences
     : public Preferences
+    , public IAbstractPreferences
 {
 public:
     // class EventDispatcher extends Thread {
@@ -112,6 +115,7 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
     /*
      * -----------------------------------------------------------
      * Methods inherited from Preferences
@@ -548,6 +552,8 @@ private:
 
     //handler to this node's root node
     AutoPtr<AbstractPreferences> mRoot;
+
+    friend class XMLParser;
 };
 
 } // namespace Prefs
