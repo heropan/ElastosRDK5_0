@@ -5,6 +5,7 @@
 #include "CStringCharacterIterator.h"
 #include "elastos/core/StringBuilder.h"
 #include "unicode/brkiter.h"
+#include <Autolock.h>
 
 using Elastos::Core::StringBuilder;
 using Libcore::ICU::EIID_INativeBreakIterator;
